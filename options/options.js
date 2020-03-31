@@ -8,6 +8,13 @@ setupLivePrefs();
 enforceInputRange($('#popupWidth'));
 setTimeout(splitLongTooltips);
 
+// TODO: add max version to re-enable once crbug.com/996859 is resolved
+if (!FIREFOX && CHROME >= 3809) {
+  const dropboxOption = $('option[value="dropbox"]');
+  dropboxOption.disabled = true;
+  dropboxOption.setAttribute('title', t('hostDisabled'));
+}
+
 if (CHROME_HAS_BORDER_BUG) {
   const borderOption = $('.chrome-no-popup-border');
   if (borderOption) {
@@ -38,6 +45,10 @@ if (FIREFOX && 'update' in (chrome.commands || {})) {
 }
 
 // actions
+$('#options-close-icon').onclick = () => {
+  top.dispatchEvent(new CustomEvent('closeOptions'));
+};
+
 document.onclick = e => {
   const target = e.target.closest('[data-cmd]');
   if (!target) {
@@ -48,7 +59,7 @@ document.onclick = e => {
 
   switch (target.dataset.cmd) {
     case 'open-manage':
-      openURL({url: 'manage.html'});
+      API.openManage();
       break;
 
     case 'check-updates':
@@ -268,3 +279,9 @@ function customizeHotkeys() {
     }
   }
 }
+
+window.onkeydown = event => {
+  if (event.keyCode === 27) {
+    top.dispatchEvent(new CustomEvent('closeOptions'));
+  }
+};

@@ -534,10 +534,6 @@
     "message": "检查更新",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "若想允许检查更新，请将文件拖动到标签栏上，或在样式的元数据中声明 @updateURL。",
-    "description": ""
-  },
   "license": {
     "message": "许可证",
     "description": "Label for the license"
@@ -613,17 +609,9 @@
     "message": "查看文件时发生错误",
     "description": "The label of live-reload error"
   },
-  "liveReloadInstallHint": {
-    "message": "动态刷新被激活后，当被安装的样式被更新时，只要本网页和目标网页都是开启状态，在样式上进行的更新会实时反映到目标网页上。",
-    "description": "The label of live-reload feature"
-  },
   "liveReloadLabel": {
     "message": "动态刷新",
     "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "要想激活动态刷新，请将文件拖到标签条（即选项卡的区域）上。",
-    "description": ""
   },
   "manageFavicons": {
     "message": "显示已应用的图标",
@@ -916,14 +904,6 @@
   "openManage": {
     "message": "管理样式",
     "description": "Link to open the manage page."
-  },
-  "openOptionsManage": {
-    "message": "设置用户界面",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
-    "message": "设置用户界面",
-    "description": "Go to Options UI"
   },
   "openStylesManager": {
     "message": "打开样式管理器",

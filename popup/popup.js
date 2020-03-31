@@ -1,36 +1,41 @@
-/* global configDialog hotkeys onTabReady msg
-  getActiveTab FIREFOX getTabRealURL URLS API onDOMready $ $$ prefs CHROME
+/* global configDialog hotkeys msg
+  getActiveTab CHROME FIREFOX URLS API onDOMready $ $$ prefs
   setupLivePrefs template t $create animateElement
-  tryJSONparse debounce CHROME_HAS_BORDER_BUG capitalize */
+  tryJSONparse CHROME_HAS_BORDER_BUG capitalize */
 
 'use strict';
 
+/** @type Element */
 let installed;
+/** @type string */
 let tabURL;
 const handleEvent = {};
 
+const ABOUT_BLANK = 'about:blank';
 const ENTRY_ID_PREFIX_RAW = 'style-';
 const ENTRY_ID_PREFIX = '#' + ENTRY_ID_PREFIX_RAW;
 
+if (CHROME >= 3345 && CHROME < 3533) { // Chrome 66-69 adds a gap, https://crbug.com/821143
+  document.head.appendChild($create('style', 'html { overflow: overlay }'));
+}
+
 toggleSideBorders();
 
-getActiveTab()
-  .then(tab =>
-    FIREFOX && tab.url === 'about:blank' && tab.status === 'loading'
-    ? getTabRealURLFirefox(tab)
-    : getTabRealURL(tab)
-  )
-  .then(url => Promise.all([
-    (tabURL = URLS.supported(url) ? url : '') &&
-      API.getStylesByUrl(tabURL),
-    onDOMready().then(initPopup),
-  ]))
-  .then(([results]) => {
-    if (!results) {
+initTabUrls()
+  .then(frames =>
+    Promise.all([
+      onDOMready().then(() => initPopup(frames)),
+      ...frames
+        .filter(f => f.url && !f.isDupe)
+        .map(({url}) => API.getStylesByUrl(url).then(styles => ({styles, url}))),
+    ]))
+  .then(([, ...results]) => {
+    if (results[0]) {
+      showStyles(results);
+    } else {
       // unsupported URL;
-      return;
+      $('#popup-manage-button').removeAttribute('title');
     }
-    showStyles(results.map(r => Object.assign(r.data, r)));
   })
   .catch(console.error);
 
@@ -80,8 +85,32 @@ function toggleSideBorders(state = prefs.get('popup.borders')) {
   }
 }
 
+function initTabUrls() {
+  return getActiveTab()
+    .then((tab = {}) =>
+      FIREFOX && tab.status === 'loading' && tab.url === ABOUT_BLANK
+        ? waitForTabUrlFF(tab)
+        : tab)
+    .then(tab => new Promise(resolve =>
+      chrome.webNavigation.getAllFrames({tabId: tab.id}, frames =>
+        resolve({frames, tab}))))
+    .then(({frames, tab}) => {
+      let url = tab.pendingUrl || tab.url || ''; // new Chrome uses pendingUrl while connecting
+      frames = sortTabFrames(frames);
+      if (url === 'chrome://newtab/' && !URLS.chromeProtectsNTP) {
+        url = frames[0].url || '';
+      }
+      if (!URLS.supported(url)) {
+        url = '';
+        frames.length = 1;
+      }
+      tabURL = frames[0].url = url;
+      return frames;
+    });
+}
 
-function initPopup() {
+/** @param {chrome.webNavigation.GetAllFrameResultDetails[]} frames */
+function initPopup(frames) {
   installed = $('#installed');
 
   setPopupWidth();
@@ -99,7 +128,7 @@ function initPopup() {
   });
 
   $('#popup-options-button').onclick = () => {
-    chrome.runtime.openOptionsPage();
+    API.openManage({options: true});
     window.close();
   };
 
@@ -117,6 +146,13 @@ function initPopup() {
     return;
   }
 
+  frames.forEach(createWriterElement);
+  if (frames.length > 1) {
+    const el = $('#write-for-frames');
+    el.hidden = false;
+    el.onclick = () => el.classList.toggle('expanded');
+  }
+
   getActiveTab().then(function ping(tab, retryCountdown = 10) {
     msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0})
       .catch(() => false)
@@ -128,7 +164,7 @@ function initPopup() {
         // so we'll wait a bit to handle popup being invoked right after switching
         if (retryCountdown > 0 && (
             tab.status !== 'complete' ||
-            FIREFOX && tab.url === 'about:blank')) {
+            FIREFOX && tab.url === ABOUT_BLANK)) {
           setTimeout(ping, 100, tab, --retryCountdown);
           return;
         }
@@ -142,10 +178,12 @@ function initPopup() {
           const note = (FIREFOX < 59 ? t('unreachableAMOHintOldFF') : t('unreachableAMOHint')) +
                        (FIREFOX < 60 ? '' : '\n' + t('unreachableAMOHintNewFF'));
           const renderToken = s => s[0] === '<'
-            ? $create('strong', {
+            ? $create('a', {
               textContent: s.slice(1, -1),
               onclick: handleEvent.copyContent,
-              tabIndex: -1,
+              href: '#',
+              className: 'copy',
+              tabIndex: 0,
               title: t('copy'),
             })
             : s;
@@ -161,24 +199,26 @@ function initPopup() {
         document.body.insertBefore(info, document.body.firstChild);
       });
   });
+}
 
-  // Write new style links
-  const writeStyle = $('#write-style');
-  const matchTargets = document.createElement('span');
-  const matchWrapper = document.createElement('span');
-  matchWrapper.id = 'match';
-  matchWrapper.appendChild(matchTargets);
+/** @param {chrome.webNavigation.GetAllFrameResultDetails} frame */
+function createWriterElement(frame) {
+  const {url, frameId, parentFrameId, isDupe} = frame;
+  const targets = $create('span');
 
   // For this URL
   const urlLink = template.writeStyle.cloneNode(true);
+  const isAboutBlank = url === ABOUT_BLANK;
   Object.assign(urlLink, {
-    href: 'edit.html?url-prefix=' + encodeURIComponent(tabURL),
-    title: `url-prefix("${tabURL}")`,
+    href: 'edit.html?url-prefix=' + encodeURIComponent(url),
+    title: `url-prefix("${url}")`,
+    tabIndex: isAboutBlank ? -1 : 0,
     textContent: prefs.get('popup.breadcrumbs.usePath')
-      ? new URL(tabURL).pathname.slice(1)
-      // this&nbsp;URL
-      : t('writeStyleForURL').replace(/ /g, '\u00a0'),
-    onclick: handleEvent.openLink,
+      ? new URL(url).pathname.slice(1)
+      : frameId
+        ? isAboutBlank ? url : 'URL'
+        : t('writeStyleForURL').replace(/ /g, '\u00a0'), // this&nbsp;URL
+    onclick: e => handleEvent.openEditor(e, {'url-prefix': url}),
   });
   if (prefs.get('popup.breadcrumbs')) {
     urlLink.onmouseenter =
@@ -186,10 +226,10 @@ function initPopup() {
     urlLink.onmouseleave =
       urlLink.onblur = () => urlLink.parentNode.classList.remove('url()');
   }
-  matchTargets.appendChild(urlLink);
+  targets.appendChild(urlLink);
 
   // For domain
-  const domains = getDomains(tabURL);
+  const domains = getDomains(url);
   for (const domain of domains) {
     const numParts = domain.length - domain.replace(/\./g, '').length + 1;
     // Don't include TLD
@@ -201,67 +241,93 @@ function initPopup() {
       href: 'edit.html?domain=' + encodeURIComponent(domain),
       textContent: numParts > 2 ? domain.split('.')[0] : domain,
       title: `domain("${domain}")`,
-      onclick: handleEvent.openLink,
+      onclick: e => handleEvent.openEditor(e, {domain}),
     });
     domainLink.setAttribute('subdomain', numParts > 1 ? 'true' : '');
-    matchTargets.appendChild(domainLink);
+    targets.appendChild(domainLink);
   }
 
   if (prefs.get('popup.breadcrumbs')) {
-    matchTargets.classList.add('breadcrumbs');
-    matchTargets.appendChild(matchTargets.removeChild(matchTargets.firstElementChild));
+    targets.classList.add('breadcrumbs');
+    targets.appendChild(urlLink); // making it the last element
   }
-  writeStyle.appendChild(matchWrapper);
 
-  function getDomains(url) {
-    let d = /.*?:\/*([^/:]+)|$/.exec(url)[1];
-    if (!d || url.startsWith('file:')) {
-      return [];
-    }
-    const domains = [d];
-    while (d.indexOf('.') !== -1) {
-      d = d.substring(d.indexOf('.') + 1);
-      domains.push(d);
-    }
-    return domains;
-  }
+  const root = $('#write-style');
+  const parent = $(`[data-frame-id="${parentFrameId}"]`, root) || root;
+  const child = $create({
+    tag: 'span',
+    className: `match${isDupe ? ' dupe' : ''}${isAboutBlank ? ' about-blank' : ''}`,
+    dataset: {frameId},
+    appendChild: targets,
+  });
+  parent.appendChild(child);
+  parent.dataset.children = (Number(parent.dataset.children) || 0) + 1;
 }
 
+function getDomains(url) {
+  let d = url.split(/[/:]+/, 2)[1];
+  if (!d || url.startsWith('file:')) {
+    return [];
+  }
+  const domains = [d];
+  while (d.includes('.')) {
+    d = d.substring(d.indexOf('.') + 1);
+    domains.push(d);
+  }
+  return domains;
+}
+
+/** @param {chrome.webNavigation.GetAllFrameResultDetails[]} frames */
+function sortTabFrames(frames) {
+  const unknown = new Map(frames.map(f => [f.frameId, f]));
+  const known = new Map([[0, unknown.get(0) || {frameId: 0, url: ''}]]);
+  unknown.delete(0);
+  let lastSize = 0;
+  while (unknown.size !== lastSize) {
+    for (const [frameId, f] of unknown) {
+      if (known.has(f.parentFrameId)) {
+        unknown.delete(frameId);
+        if (!f.errorOccurred) known.set(frameId, f);
+        if (f.url === ABOUT_BLANK) f.url = known.get(f.parentFrameId).url;
+      }
+    }
+    lastSize = unknown.size; // guard against an infinite loop due to a weird frame structure
+  }
+  const sortedFrames = [...known.values(), ...unknown.values()];
+  const urls = new Set([ABOUT_BLANK]);
+  for (const f of sortedFrames) {
+    if (!f.url) f.url = '';
+    f.isDupe = urls.has(f.url);
+    urls.add(f.url);
+  }
+  return sortedFrames;
+}
 
 function sortStyles(entries) {
   const enabledFirst = prefs.get('popup.enabledFirst');
-  entries.sort((a, b) =>
-    enabledFirst && a.styleMeta.enabled !== b.styleMeta.enabled ?
-      (a.styleMeta.enabled ? -1 : 1) :
-      a.styleMeta.name.localeCompare(b.styleMeta.name)
-  );
+  return entries.sort(({styleMeta: a}, {styleMeta: b}) =>
+    Boolean(a.frameUrl) - Boolean(b.frameUrl) ||
+    enabledFirst && Boolean(b.enabled) - Boolean(a.enabled) ||
+    a.name.localeCompare(b.name));
 }
 
-function showStyles(styles) {
-  if (!styles) {
-    return;
-  }
-  if (!styles.length) {
+function showStyles(frameResults) {
+  const entries = new Map();
+  frameResults.forEach(({styles = [], url}, index) => {
+    styles.forEach(style => {
+      const {id} = style.data;
+      if (!entries.has(id)) {
+        style.frameUrl = index === 0 ? '' : url;
+        entries.set(id, createStyleElement(Object.assign(style.data, style)));
+      }
+    });
+  });
+  if (entries.size) {
+    installed.append(...sortStyles([...entries.values()]));
+  } else {
     installed.appendChild(template.noStyles.cloneNode(true));
-    window.dispatchEvent(new Event('showStyles:done'));
-    return;
   }
-  const entries = styles.map(createStyleElement);
-  sortStyles(entries);
-  entries.forEach(e => installed.appendChild(e));
   window.dispatchEvent(new Event('showStyles:done'));
-}
-
-function sortStylesInPlace() {
-  if (!prefs.get('popup.autoResort')) {
-    return;
-  }
-  const entries = $$('.entry', installed);
-  if (!entries.length) {
-    return;
-  }
-  sortStyles(entries);
-  entries.forEach(e => installed.appendChild(e));
 }
 
 
@@ -287,7 +353,7 @@ function createStyleElement(style) {
     const editLink = $('.style-edit-link', entry);
     Object.assign(editLink, {
       href: editLink.getAttribute('href') + style.id,
-      onclick: handleEvent.openLink,
+      onclick: e => handleEvent.openEditor(e, {id: style.id}),
     });
     const styleName = $('.style-name', entry);
     Object.assign(styleName, {
@@ -352,6 +418,14 @@ function createStyleElement(style) {
   $('.exclude-by-domain', entry).title = getExcludeRule('domain');
   $('.exclude-by-url', entry).title = getExcludeRule('url');
 
+  const {frameUrl} = style;
+  if (frameUrl) {
+    const sel = 'span.frame-url';
+    const frameEl = $(sel, entry) || styleName.insertBefore($create(sel), styleName.lastChild);
+    frameEl.title = frameUrl;
+  }
+  entry.classList.toggle('frame', Boolean(frameUrl));
+
   return entry;
 }
 
@@ -396,7 +470,11 @@ Object.assign(handleEvent, {
     event.stopPropagation();
     API
       .toggleStyle(handleEvent.getClickedStyleId(event), this.checked)
-      .then(sortStylesInPlace);
+      .then(() => {
+        if (prefs.get('popup.autoResort')) {
+          installed.append(...sortStyles($$('.entry', installed)));
+        }
+      });
   },
 
   toggleExclude(event, type) {
@@ -527,18 +605,10 @@ Object.assign(handleEvent, {
     $('#regexp-explanation').remove();
   },
 
-  openLink(event) {
-    if (!chrome.windows || !prefs.get('openEditInWindow', false)) {
-      handleEvent.openURLandHide.call(this, event);
-      return;
-    }
+  openEditor(event, options) {
     event.preventDefault();
-    chrome.windows.create(
-      Object.assign({
-        url: this.href
-      }, prefs.get('windowPosition', {}))
-    );
-    close();
+    API.openEditor(options);
+    window.close();
   },
 
   maybeEdit(event) {
@@ -565,33 +635,32 @@ Object.assign(handleEvent, {
 
   openURLandHide(event) {
     event.preventDefault();
-    const message = tryJSONparse(this.dataset.sendMessage);
     getActiveTab()
       .then(activeTab => API.openURL({
         url: this.href || this.dataset.href,
-        index: activeTab.index + 1
+        index: activeTab.index + 1,
+        message: tryJSONparse(this.dataset.sendMessage),
       }))
-      .then(tab => {
-        if (message) {
-          return onTabReady(tab)
-            .then(() => msg.sendTab(tab.id, message));
-        }
-      })
       .then(window.close);
   },
 
   openManager(event) {
+    if (event.button === 2 && !tabURL) return;
     event.preventDefault();
     if (!this.eventHandled) {
+      // FIXME: this only works if popup is closed
       this.eventHandled = true;
-      this.dataset.href += event.shiftKey || event.button === 2 ?
-        '?url=' + encodeURIComponent(tabURL) : '';
-      handleEvent.openURLandHide.call(this, event);
+      API.openManage({
+        search: tabURL && (event.shiftKey || event.button === 2) ?
+          `url:${tabURL}` : null
+      });
+      window.close();
     }
   },
 
   copyContent(event) {
-    const target = event.target;
+    event.preventDefault();
+    const target = document.activeElement;
     const message = $('.copy-message');
     navigator.clipboard.writeText(target.textContent);
     target.classList.add('copied');
@@ -639,32 +708,17 @@ function handleDelete(id) {
   }
 }
 
-function getTabRealURLFirefox(tab) {
-  // wait for FF tab-on-demand to get a real URL (initially about:blank), 5 sec max
+function waitForTabUrlFF(tab) {
   return new Promise(resolve => {
-    function onNavigation({tabId, url, frameId}) {
-      if (tabId === tab.id && frameId === 0) {
-        detach();
-        resolve(url);
-      }
-    }
-
-    function detach(timedOut) {
-      if (timedOut) {
-        resolve(tab.url);
-      } else {
-        debounce.unregister(detach);
-      }
-      chrome.webNavigation.onBeforeNavigate.removeListener(onNavigation);
-      chrome.webNavigation.onCommitted.removeListener(onNavigation);
-      chrome.tabs.onRemoved.removeListener(detach);
-      chrome.tabs.onReplaced.removeListener(detach);
-    }
-
-    chrome.webNavigation.onBeforeNavigate.addListener(onNavigation);
-    chrome.webNavigation.onCommitted.addListener(onNavigation);
-    chrome.tabs.onRemoved.addListener(detach);
-    chrome.tabs.onReplaced.addListener(detach);
-    debounce(detach, 5000, {timedOut: true});
+    browser.tabs.onUpdated.addListener(...[
+      function onUpdated(tabId, info, updatedTab) {
+        if (info.url && tabId === tab.id) {
+          chrome.tabs.onUpdated.removeListener(onUpdated);
+          resolve(updatedTab);
+        }
+      },
+      ...'UpdateFilter' in browser.tabs ? [{tabId: tab.id}] : [],
+      // TODO: remove both spreads and tabId check when strict_min_version >= 61
+    ]);
   });
 }

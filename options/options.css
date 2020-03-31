@@ -1,36 +1,80 @@
-html.opera {
+html {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
-}
-
-html.opera body {
-  width: auto;
+  height: 100vh;
+  background-color: none;
 }
 
 body {
-  background: #fff;
+  background: none;
   margin: 0;
   font-family: "Helvetica Neue", Helvetica, sans-serif;
   font-size: 12px;
-  min-width: 480px;
+  display: flex;
+  flex-direction: column;
+  width: auto;
   max-width: 800px;
-  width: max-content;
-  overflow-x: hidden;
+  max-height: calc(100vh - 32px);
+  border: 1px solid #999;
+  box-shadow: 0px 5px 15px 3px hsla(0, 0%, 0%, .35);
+  animation: scalein .25s ease-in-out;
 }
 
-@supports (-moz-appearance:none) {
-  body {
-    --addons-page-left-padding: 6px;
-    /* compensate 'html.firefox .block' padding-left */
-    width: calc(100% - var(--addons-page-left-padding));
-    /* match the default FF theme */
-    background-color: #f9f9fa;
-  }
-  html.firefox .block {
-    padding-left: var(--addons-page-left-padding);
-  }
+body.scaleout {
+  animation: scaleout .25s ease-in-out;
+}
+
+#options {
+  background: #fff;
+  overflow-y: auto;
+}
+
+#options-close-icon .svg-icon {
+  fill: #666;
+  transition: fill .5s;
+}
+
+#options-close-icon:hover .svg-icon {
+  fill: #000;
+}
+
+#options-close-icon {
+  display: inline-flex;
+  cursor: pointer;
+  position: absolute;
+  right: 6px;
+  top: 6px;
+}
+
+#options-close-icon .svg-icon {
+  height: 20px;
+  width: 20px;
+}
+
+#options-title {
+  font-weight: bold;
+  background-color: rgb(145, 208, 198);
+  padding: .75rem 26px .75rem calc(30% + 4px);
+  font-size: 22px;
+  letter-spacing: .5px;
+  position: relative;
+  min-height: 42px;
+  box-sizing: border-box;
+  border-bottom: 1px solid #999;
+}
+
+#options-title::before {
+  content: "";
+  width: 0;
+  height: 0;
+  padding: 0 32px 32px 0;
+  background: url(/images/icon/32.png);
+  position: absolute;
+  left: 26px;
+  top: 0;
+  bottom: 0;
+  margin: auto;
 }
 
 .firefox .chromium-only,
@@ -153,23 +197,20 @@ input[type="color"] {
 #actions {
   justify-content: space-around;
   align-items: stretch;
-  padding: 1em;
+  flex-wrap: wrap;
+  padding: .5em 1em 1em;
   white-space: nowrap;
   background-color: rgba(0, 0, 0, .05);
   margin: 0;
 }
 
-.firefox #actions,
-.opera #actions {
-  background-color: transparent;
-}
-
 #actions button {
   width: auto;
+  margin-top: .5em;
 }
 
 #actions button:not(:last-child) {
-  margin-right: 8px;
+  margin-right: 4px;
 }
 
 [data-cmd="check-updates"] button {
@@ -299,13 +340,16 @@ html:not(.firefox):not(.opera) #updates {
   fill: #000;
 }
 
-#message-box.note > div {
-  max-width: calc(100vw - 6rem);
+#message-box.note {
+  align-items: center;
+  justify-content: center;
 }
 
-.opera #message-box.note,
-.firefox #message-box.note {
-  background-color: transparent;
+#message-box.note > div {
+  max-width: calc(100% - 5rem);
+  top: unset;
+  right: unset;
+  position: relative;
 }
 
 /* radio group */
@@ -375,6 +419,21 @@ input[type="radio"].radio:checked::after {
   text-transform: uppercase;
 }
 
-.sync-options .actions {
-  padding-top: 6px;
+.sync-options .actions button {
+  margin-top: .5em;
+}
+
+@keyframes scalein {
+  0% {
+    transform: scale3d(.3, .3, .3);
+  }
+  100% {
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes scaleout {
+  100% {
+    transform: scale3d(0, 0, 0);
+  }
 }

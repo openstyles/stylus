@@ -244,6 +244,14 @@
     "message": "Tak",
     "description": "'Yes' button in a confirm dialog"
   },
+  "copied": {
+    "message": "Skopiowane do schowka",
+    "description": "Message shown when content has been copied to the clipboard"
+  },
+  "copy": {
+    "message": "Skopiuj do schowka",
+    "description": "Tooltip for elements which can be copied"
+  },
   "dateInstalled": {
     "message": "Data zainstalowania",
     "description": "Option text for the user to sort the style by install date"
@@ -283,6 +291,10 @@
   "dragDropMessage": {
     "message": "Upuść twój plik kopii zapasowej gdziekolwiek na tej stronie, aby zaimportować.",
     "description": "Drag'n'drop message"
+  },
+  "dragDropUsercssTabstrip": {
+    "message": "Aby zainstalować plik, upuść go na pasku kart (obszar, w którym wyświetlane są tytuły kart).",
+    "description": "Message popup shown when erroneously dropping a usercss file into the manager page"
   },
   "editDeleteText": {
     "message": "Usuń",
@@ -441,6 +453,10 @@
     "message": "Naciśnij klawisz skrótu",
     "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
   },
+  "hostDisabled": {
+    "message": "Ten host został wyłączony z powodu błędu w bieżącej wersji używanej przeglądarki",
+    "description": "Tooltip for cloud host disabled"
+  },
   "importAppendLabel": {
     "message": "Dołącz do stylu",
     "description": "Label for the button to import a style and append to the existing sections"
@@ -534,10 +550,6 @@
     "message": "Sprawdź aktualizacje",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "Aby włączyć sprawdzanie aktualizacji, upuść plik na pasku kart lub określ @updateURL w metadanych stylu.",
-    "description": ""
-  },
   "license": {
     "message": "Licencja",
     "description": "Label for the license"
@@ -614,16 +626,16 @@
     "description": "The label of live-reload error"
   },
   "liveReloadInstallHint": {
-    "message": "Przeładowanie na żywo jest włączone, więc zainstalowany styl zostanie automatycznie zaktualizowany w przypadku zmian zewnętrznych, gdy ta karta i karta pliku źródłowego są otwarte.",
+    "message": "Pozostaw tę kartę otwartą, aby automatycznie aktualizować styl w przypadku zmian zewnętrznych.",
     "description": "The label of live-reload feature"
+  },
+  "liveReloadInstallHintFF": {
+    "message": "Pozostaw zarówno tę kartę, jak i kartę pierwotną otwarte, aby automatycznie aktualizować styl w przypadku zmian zewnętrznych.",
+    "description": "The extra hint of live-reload feature shown only for file:// URLs in Firefox"
   },
   "liveReloadLabel": {
     "message": "Przeładuj na żywo",
     "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "Aby włączyć przeładowanie na żywo, upuść plik na pasku kart (obszar, w którym wyświetlane są tytuły kart).",
-    "description": ""
   },
   "manageFavicons": {
     "message": "Ikony ulubionych w kolumnie dotyczących",
@@ -917,11 +929,7 @@
     "message": "Zarządzaj",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "Opcje interfejsu",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "Opcje",
     "description": "Go to Options UI"
   },
@@ -985,6 +993,10 @@
     "message": "Aktualizacje",
     "description": ""
   },
+  "optionsCustomizeSync": {
+    "message": "Synchronizuj z chmurą",
+    "description": ""
+  },
   "optionsHeading": {
     "message": "Opcje",
     "description": "Heading for options section on manage page."
@@ -1027,6 +1039,70 @@
   },
   "optionsUpdateInterval": {
     "message": "Interwał automatycznej aktualizacji stylu w godzinach (podaj 0, aby wyłączyć)",
+    "description": ""
+  },
+  "optionsSyncNone": {
+    "message": "Brak",
+    "description": ""
+  },
+  "optionsSyncConnect": {
+    "message": "Połącz",
+    "description": ""
+  },
+  "optionsSyncDisconnect": {
+    "message": "Rozłącz",
+    "description": ""
+  },
+  "optionsSyncSyncNow": {
+    "message": "Synchronizuj teraz",
+    "description": ""
+  },
+  "optionsSyncLogin": {
+    "message": "Logowanie",
+    "description": ""
+  },
+  "optionsSyncStatusPull": {
+    "message": "Przyciąganie stylu $loaded$ z $total$",
+    "description": "",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusPush": {
+    "message": "Dostarczanie stylu $loaded$ z $total$",
+    "description": "",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "Synchronizowanie...",
+    "description": ""
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "Łączenie...",
+    "description": ""
+  },
+  "optionsSyncStatusConnected": {
+    "message": "Połączono",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "Rozłączanie...",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "Rozłączono",
     "description": ""
   },
   "paginationCurrent": {
@@ -1104,6 +1180,10 @@
   "previewTooltip": {
     "message": "Tymczasowo stosuje zmiany bez zapisywania.\nZapisz styl, aby zmiany stały się trwałe.",
     "description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+  },
+  "reload": {
+    "message": "Przeładuj rozszerzenie Stylus",
+    "description": "Context menu reload"
   },
   "replace": {
     "message": "Zamień",
@@ -1510,6 +1590,10 @@
   },
   "syncDropboxStyles": {
     "message": "Eksportuj do Dropboksa",
+    "description": ""
+  },
+  "syncDropboxDeprecated": {
+    "message": "Importowanie i eksportowanie związane z Dropboksem zostaje zastąpione bardziej zaawansowaną synchronizacją stylów na stronie opcji.",
     "description": ""
   },
   "retrieveDropboxSync": {

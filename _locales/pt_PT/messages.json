@@ -506,10 +506,6 @@
     "message": "Procurar atualizações",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "Para ativar a verificação de atualizações, solte o ficheiro na faixa de separadores ou especifique @updateURL nos metadados de estilo.",
-    "description": ""
-  },
   "license": {
     "message": "Licença",
     "description": "Label for the license"
@@ -585,17 +581,9 @@
     "message": "Ocorreu um erro ao vigiar o arquivo",
     "description": "The label of live-reload error"
   },
-  "liveReloadInstallHint": {
-    "message": "O recarregamento dinâmico está ativado para que o estilo instalado seja atualizado automaticamente em alterações externas enquanto esse separador e o separador do arquivo de origem estiverem abertos.",
-    "description": "The label of live-reload feature"
-  },
   "liveReloadLabel": {
     "message": "Recarregamento dinâmico",
     "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "Para ativar recarregamento dinâmico, solte o ficheiro na faixa de separadores (a área onde os títulos dos separadores são mostrados).",
-    "description": ""
   },
   "manageFavicons": {
     "message": "Favicons em colunas de aplica-se a",
@@ -672,14 +660,6 @@
   "openManage": {
     "message": "Gerir",
     "description": "Link to open the manage page."
-  },
-  "openOptionsManage": {
-    "message": "interface de Opções",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
-    "message": "Opções",
-    "description": "Go to Options UI"
   },
   "openStylesManager": {
     "message": "Abrir gestor de estilos",

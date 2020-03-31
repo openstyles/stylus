@@ -20,17 +20,7 @@ window.addEventListener('showStyles:done', function _() {
   const API_URL = BASE_URL + '/api/v1/styles/';
   const UPDATE_URL = 'https://update.userstyles.org/%.md5';
 
-  // normal category is just one word like 'github' or 'google'
-  // but for some sites we need a fallback
-  //   key: category.tld
-  //   value <string>: use as category
-  //   value true: fallback to search_terms
-  const CATEGORY_FALLBACK = {
-    'userstyles.org': 'userstyles.org',
-    'last.fm': true,
-    'Stylus': true,
-  };
-  const RX_CATEGORY = /^(?:.*?)([^.]+)(?:\.com?)?\.(\w+)$/;
+  const STYLUS_CATEGORY = 'chrome-extension';
 
   const DISPLAY_PER_PAGE = 10;
   // Millisecs to wait before fetching next batch of search results.
@@ -54,7 +44,7 @@ window.addEventListener('showStyles:done', function _() {
 
   let searchTotalPages;
   let searchCurrentPage = 1;
-  let searchExhausted = false;
+  let searchExhausted = 0; // 1: once, 2: twice (first host.jp, then host)
 
   // currently active USO requests
   const xhrSpoofIds = new Set();
@@ -79,7 +69,7 @@ window.addEventListener('showStyles:done', function _() {
   const dom = {};
 
   Object.assign($('#find-styles-link'), {
-    href: getSearchPageURL(tabURL),
+    href: BASE_URL + '/styles/browse/' + getCategory(),
     onclick(event) {
       if (!prefs.get('popup.findStylesInline') || dom.container) {
         handleEvent.openURLandHide.call(this, event);
@@ -222,7 +212,7 @@ window.addEventListener('showStyles:done', function _() {
    * Initializes search results container, starts fetching results.
    */
   function load() {
-    if (searchExhausted) {
+    if (searchExhausted > 1) {
       if (!processedResults.length) {
         error(404);
       }
@@ -233,21 +223,21 @@ window.addEventListener('showStyles:done', function _() {
     dom.container.classList.remove('hidden');
     dom.error.classList.add('hidden');
 
-    let pass = category ? 1 : 0;
     category = category || getCategory();
 
     search({category})
       .then(function process(results) {
-        const data = results.data.filter(sameCategory);
+        const data = results.data.filter(sameCategoryNoDupes);
 
-        pass++;
-        if (pass === 1 && !data.length) {
-          category = getCategory({keepTLD: true});
-          return search({category, restart: true}).then(process);
+        if (!data.length && searchExhausted <= 1) {
+          const old = category;
+          const uso = (processedResults[0] || {}).subcategory;
+          category = uso !== category && uso || getCategory({retry: true});
+          if (category !== old) return search({category, restart: true}).then(process);
         }
 
         const numIrrelevant = results.data.length - data.length;
-        totalResults = results.current_page === 1 ? results.total_entries : totalResults;
+        totalResults += results.current_page === 1 ? results.total_entries : 0;
         totalResults = Math.max(0, totalResults - numIrrelevant);
         totalPages = Math.ceil(totalResults / DISPLAY_PER_PAGE);
 
@@ -258,7 +248,7 @@ window.addEventListener('showStyles:done', function _() {
           processNextResult();
         } else if (numIrrelevant) {
           load();
-        } else {
+        } else if (!processedResults.length) {
           return Promise.reject(404);
         }
       })
@@ -610,18 +600,10 @@ window.addEventListener('showStyles:done', function _() {
   //endregion
   //region USO API wrapper
 
-  function getSearchPageURL() {
-    const category = getCategory();
-    return BASE_URL +
-      '/styles/browse/' +
-      (category in CATEGORY_FALLBACK ? '?search_terms=' : '') +
-      category;
-  }
-
   /**
    * Resolves the Userstyles.org "category" for a given URL.
    */
-  function getCategory({keepTLD} = {}) {
+  function getCategory({retry} = {}) {
     const u = tryCatch(() => new URL(tabURL));
     if (!u) {
       // Invalid URL
@@ -629,21 +611,28 @@ window.addEventListener('showStyles:done', function _() {
     } else if (u.protocol === 'file:') {
       return 'file:';
     } else if (u.protocol === location.protocol) {
-      return 'Stylus';
+      return STYLUS_CATEGORY;
     } else {
-      // Website address, strip TLD & subdomain
-      const [, category = u.hostname, tld = ''] = u.hostname.match(RX_CATEGORY) || [];
-      const categoryWithTLD = category + '.' + tld;
-      const fallback = CATEGORY_FALLBACK[categoryWithTLD];
-      return fallback === true && categoryWithTLD || fallback || category + (keepTLD ? tld : '');
+      const parts = u.hostname.replace(/\.(?:com?|org)(\.\w{2,3})$/, '$1').split('.');
+      const [tld, main = u.hostname, third, fourth] = parts.reverse();
+      const keepTld = !retry && !(
+        tld === 'com' ||
+        tld === 'org' && main !== 'userstyles'
+      );
+      const keepThird = !retry && (
+        fourth ||
+        third && third !== 'www' && third !== 'm'
+      );
+      return (keepThird && `${third}.` || '') + main + (keepTld || keepThird ? `.${tld}` : '');
     }
   }
 
-  function sameCategory(result) {
-    return result.subcategory && (
-      category === result.subcategory ||
-      category === 'Stylus' && /^(chrome|moz)-extension$/.test(result.subcategory) ||
-      category.replace('.', '').toLowerCase() === result.subcategory.replace('.', '').toLowerCase()
+  function sameCategoryNoDupes(result) {
+    return (
+      result.subcategory &&
+      !processedResults.some(pr => pr.id === result.id) &&
+      (category !== STYLUS_CATEGORY || /\bStylus\b/i.test(result.name + result.description)) &&
+      category.split('.').includes(result.subcategory.split('.')[0])
     );
   }
 
@@ -704,10 +693,10 @@ window.addEventListener('showStyles:done', function _() {
       .then(json => {
         searchCurrentPage = json.current_page + 1;
         searchTotalPages = json.total_pages;
-        searchExhausted = (searchCurrentPage > searchTotalPages);
+        searchExhausted += searchCurrentPage > searchTotalPages;
         return json;
       }).catch(reason => {
-        searchExhausted = true;
+        searchExhausted++;
         return Promise.reject(reason);
       });
   }

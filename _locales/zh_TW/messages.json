@@ -244,6 +244,14 @@
     "message": "是",
     "description": "'Yes' button in a confirm dialog"
   },
+  "copied": {
+    "message": "已複製到剪貼簿",
+    "description": "Message shown when content has been copied to the clipboard"
+  },
+  "copy": {
+    "message": "複製到剪貼簿",
+    "description": "Tooltip for elements which can be copied"
+  },
   "dateInstalled": {
     "message": "安裝日期",
     "description": "Option text for the user to sort the style by install date"
@@ -283,6 +291,10 @@
   "dragDropMessage": {
     "message": "將您的備份檔拖曳到此頁面的任何地方以匯入。",
     "description": "Drag'n'drop message"
+  },
+  "dragDropUsercssTabstrip": {
+    "message": "要安裝檔案，請將其放到分頁上（顯示分頁標題的區域）。",
+    "description": "Message popup shown when erroneously dropping a usercss file into the manager page"
   },
   "editDeleteText": {
     "message": "删除",
@@ -441,6 +453,10 @@
     "message": "按下快速鍵",
     "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
   },
+  "hostDisabled": {
+    "message": "由於所用目前版本瀏覽器的臭蟲，此主機已被停用",
+    "description": "Tooltip for cloud host disabled"
+  },
   "importAppendLabel": {
     "message": "追加到樣式",
     "description": "Label for the button to import a style and append to the existing sections"
@@ -534,10 +550,6 @@
     "message": "檢查更新",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "要啟用檢查更新，將檔案拖放到分頁條上或是在樣式詮釋資料中指定 @updateURL。",
-    "description": ""
-  },
   "license": {
     "message": "授權條款",
     "description": "Label for the license"
@@ -614,16 +626,16 @@
     "description": "The label of live-reload error"
   },
   "liveReloadInstallHint": {
-    "message": "即時重新整理已啟用，以便在這個分頁與來源檔案分頁都開啟時自動於有外部變更時自動更新已安裝樣式。",
+    "message": "保持此分頁開啟以根據外部變更自動更新樣式。",
     "description": "The label of live-reload feature"
+  },
+  "liveReloadInstallHintFF": {
+    "message": "保持此分頁與原始分頁開啟以根據外部變更自動更新樣式。",
+    "description": "The extra hint of live-reload feature shown only for file:// URLs in Firefox"
   },
   "liveReloadLabel": {
     "message": "即時重新整理",
     "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "要啟用即時重新整理，將檔案托放到分頁條上（分頁標題顯示的區域）。",
-    "description": ""
   },
   "manageFavicons": {
     "message": "Favicons 要套用到的欄位",
@@ -917,11 +929,7 @@
     "message": "管理已安裝樣式",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "選項介面",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "選項",
     "description": "Go to Options UI"
   },
@@ -985,6 +993,10 @@
     "message": "更新",
     "description": ""
   },
+  "optionsCustomizeSync": {
+    "message": "同步到雲端",
+    "description": ""
+  },
   "optionsHeading": {
     "message": "選項",
     "description": "Heading for options section on manage page."
@@ -1027,6 +1039,70 @@
   },
   "optionsUpdateInterval": {
     "message": "使用者樣式自動更新間隔（以小時計，指定為 0 以停用）",
+    "description": ""
+  },
+  "optionsSyncNone": {
+    "message": "無",
+    "description": ""
+  },
+  "optionsSyncConnect": {
+    "message": "連線",
+    "description": ""
+  },
+  "optionsSyncDisconnect": {
+    "message": "斷線",
+    "description": ""
+  },
+  "optionsSyncSyncNow": {
+    "message": "立刻同步",
+    "description": ""
+  },
+  "optionsSyncLogin": {
+    "message": "登入",
+    "description": ""
+  },
+  "optionsSyncStatusPull": {
+    "message": "正在拉取樣式 $total$ 中的 $loaded$",
+    "description": "",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusPush": {
+    "message": "正在拉取樣式 $total$ 中的 $loaded$",
+    "description": "",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "正在同步……",
+    "description": ""
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "正在連線……",
+    "description": ""
+  },
+  "optionsSyncStatusConnected": {
+    "message": "已連線",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "正在斷線……",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "已斷線",
     "description": ""
   },
   "paginationCurrent": {
@@ -1104,6 +1180,10 @@
   "previewTooltip": {
     "message": "不儲存而暫時套用變更。\n儲存樣式以永久變更。",
     "description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+  },
+  "reload": {
+    "message": "重新載入 Stylus 附加元件",
+    "description": "Context menu reload"
   },
   "replace": {
     "message": "取代",
@@ -1510,6 +1590,10 @@
   },
   "syncDropboxStyles": {
     "message": "Dropbox 匯出",
+    "description": ""
+  },
+  "syncDropboxDeprecated": {
+    "message": "Dropbox 匯入／匯出已被選項頁面中的更進階的樣式同步所取代。",
     "description": ""
   },
   "retrieveDropboxSync": {

@@ -1,10 +1,6 @@
-## Jsonlint v1.6.3
+## jsonlint v1.6.3
 
-Jsonlint installed via npm - source repo:
+Following files are copied from npm (node_modules):
 
-https://github.com/zaach/jsonlint/blob/v1.6.3/lib/jsonlint.js
-
-If the link doesn't work, it is likely that the npm version and the release versions don't match:
-
-- https://www.npmjs.com/package/jsonlint
-- https://github.com/zaach/jsonlint/releases
+* jsonlint.js: lib\jsonlint.js
+* LICENSE: README.md

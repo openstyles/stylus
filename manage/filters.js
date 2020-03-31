@@ -1,4 +1,4 @@
-/* global installed messageBox sorter $ $$ $create t debounce prefs API onDOMready */
+/* global installed messageBox sorter $ $$ $create t debounce prefs API router */
 /* exported filterAndAppend */
 'use strict';
 
@@ -9,11 +9,17 @@ const filtersSelector = {
   numTotal: 0,
 };
 
-// TODO: remove .replace(/^\?/, '') when minimum_chrome_version >= 52 (https://crbug.com/601425)
-const urlFilterParam = new URLSearchParams(location.search.replace(/^\?/, '')).get('url');
-if (location.search) {
-  history.replaceState(0, document.title, location.origin + location.pathname);
-}
+let initialized = false;
+
+router.watch({search: ['search']}, ([search]) => {
+  $('#search').value = search || '';
+  if (!initialized) {
+    init();
+    initialized = true;
+  } else {
+    searchStyles();
+  }
+});
 
 HTMLSelectElement.prototype.adjustWidth = function () {
   const option0 = this.selectedOptions[0];
@@ -30,11 +36,11 @@ HTMLSelectElement.prototype.adjustWidth = function () {
   parent.replaceChild(this, singleSelect);
 };
 
-onDOMready().then(() => {
-  $('#search').oninput = searchStyles;
-  if (urlFilterParam) {
-    $('#search').value = 'url:' + urlFilterParam;
-  }
+function init() {
+  $('#search').oninput = e => {
+    router.updateSearch('search', e.target.value);
+  };
+
   $('#search-help').onclick = event => {
     event.preventDefault();
     messageBox({
@@ -120,6 +126,7 @@ onDOMready().then(() => {
       }
     }
     filterOnChange({forceRefilter: true});
+    router.updateSearch('search', '');
   };
 
   // Adjust width after selects are visible
@@ -131,7 +138,7 @@ onDOMready().then(() => {
   });
 
   filterOnChange({forceRefilter: true});
-});
+}
 
 
 function filterOnChange({target: el, forceRefilter}) {
@@ -271,7 +278,7 @@ function showFiltersStats() {
 }
 
 
-function searchStyles({immediately, container}) {
+function searchStyles({immediately, container} = {}) {
   const el = $('#search');
   const query = el.value.trim();
   if (query === el.lastValue && !immediately && !container) {

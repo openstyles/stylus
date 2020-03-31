@@ -232,6 +232,14 @@
     "message": "Ja",
     "description": "'Yes' button in a confirm dialog"
   },
+  "copied": {
+    "message": "In die Zwischenablage kopiert",
+    "description": "Message shown when content has been copied to the clipboard"
+  },
+  "copy": {
+    "message": "In die Zwischenablage kopieren",
+    "description": "Tooltip for elements which can be copied"
+  },
   "dateInstalled": {
     "message": "Installationsdatum",
     "description": "Option text for the user to sort the style by install date"
@@ -271,6 +279,10 @@
   "dragDropMessage": {
     "message": "Ziehe die Backup Datei zum importieren an irgendeinen Ort auf dieser Seite.",
     "description": "Drag'n'drop message"
+  },
+  "dragDropUsercssTabstrip": {
+    "message": "Ziehe die Datei auf die Tableiste, um sie zu installieren.",
+    "description": "Message popup shown when erroneously dropping a usercss file into the manager page"
   },
   "editDeleteText": {
     "message": "Löschen",
@@ -421,6 +433,10 @@
     "message": "Hotkey drücken",
     "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
   },
+  "hostDisabled": {
+    "message": "Dieser Host wurde deaktiviert, weil die aktuell genutzte Version deines Browsers einen Fehler enthält.",
+    "description": "Tooltip for cloud host disabled"
+  },
   "importAppendLabel": {
     "message": "Zum Style anfügen",
     "description": "Label for the button to import a style and append to the existing sections"
@@ -514,10 +530,6 @@
     "message": "Nach Updates suchen",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "Ziehe die Datei auf die Tableiste oder definiere @updateURL in den Metadaten des Styles, um automatisch nach Updates zu suchen.",
-    "description": ""
-  },
   "license": {
     "message": "Lizenz",
     "description": "Label for the license"
@@ -594,16 +606,16 @@
     "description": "The label of live-reload error"
   },
   "liveReloadInstallHint": {
-    "message": "Echtzeitaktualisierung ist aktiviert, sodass die Darstellung des jeweiligen Styles automatisch aktualisiert wird, wenn externe Änderungen erfolgen.",
+    "message": "Lasse diesen Tab geöffnet, um den Style bei externen Änderungen automatisch zu aktualisieren.",
     "description": "The label of live-reload feature"
+  },
+  "liveReloadInstallHintFF": {
+    "message": "Lasse diesen und den Originaltab offen, um den Style bei externen Änderungen automatisch zu aktualisieren.",
+    "description": "The extra hint of live-reload feature shown only for file:// URLs in Firefox"
   },
   "liveReloadLabel": {
     "message": "Echtzeitaktualisierung",
     "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "Ziehe die Datei auf die Tableiste, um die Echtzeitaktualisierung nutzen zu können.",
-    "description": ""
   },
   "manageFavicons": {
     "message": "Favicons in der \"Gilt für\" Spalte anzeigen",
@@ -897,11 +909,7 @@
     "message": "Verwalten",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "Optionen",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "Optionen",
     "description": "Go to Options UI"
   },
@@ -957,6 +965,10 @@
     "message": "Symbolleisten-Icon",
     "description": ""
   },
+  "optionsCustomizeSync": {
+    "message": "Mit Cloud synchronisieren",
+    "description": ""
+  },
   "optionsHeading": {
     "message": "Optionen",
     "description": "Heading for options section on manage page."
@@ -999,6 +1011,70 @@
   },
   "optionsUpdateInterval": {
     "message": "Style-Updateintervall in Stunden (0 zum Deaktivieren)",
+    "description": ""
+  },
+  "optionsSyncNone": {
+    "message": "Nichts",
+    "description": ""
+  },
+  "optionsSyncConnect": {
+    "message": "Verbinden",
+    "description": ""
+  },
+  "optionsSyncDisconnect": {
+    "message": "Trennen",
+    "description": ""
+  },
+  "optionsSyncSyncNow": {
+    "message": "Jetzt synchronisieren",
+    "description": ""
+  },
+  "optionsSyncLogin": {
+    "message": "Anmelden",
+    "description": ""
+  },
+  "optionsSyncStatusPull": {
+    "message": "Hole Style $loaded$ von $total$",
+    "description": "",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusPush": {
+    "message": "Lade Style $loaded$ von $total$ hoch",
+    "description": "",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "Synchronisiere...",
+    "description": ""
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "Verbinde...",
+    "description": ""
+  },
+  "optionsSyncStatusConnected": {
+    "message": "Verbunden",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "Trenne Verbindung...",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "Verbindung getrennt",
     "description": ""
   },
   "paginationCurrent": {
@@ -1076,6 +1152,10 @@
   "previewTooltip": {
     "message": "Übernimmt die Änderungen nur vorübergehend.\nSpeichere den Style, um die Änderungen dauerhaft anzuwenden.",
     "description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+  },
+  "reload": {
+    "message": "Stylus Addon neu laden",
+    "description": "Context menu reload"
   },
   "replace": {
     "message": "Ersetzen",
@@ -1471,6 +1551,10 @@
   "writeStyleForURL": {
     "message": "diese URL",
     "description": "Text for link in toolbar pop-up to write a new style for the current URL"
+  },
+  "syncDropboxDeprecated": {
+    "message": "Dropbox Import / Export wurde durch einen fortschrittlicheren Mechanismus auf der Optionsseite ersetzt.",
+    "description": ""
   },
   "overwriteFileExport": {
     "message": "Willst du die existierende Datei überschreiben?",

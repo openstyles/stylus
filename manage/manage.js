@@ -1,13 +1,13 @@
 /*
 global messageBox getStyleWithNoCode
-  filterAndAppend urlFilterParam showFiltersStats
+  filterAndAppend showFiltersStats
   checkUpdate handleUpdateInstalled
   objectDiff
   configDialog
   sorter msg prefs API onDOMready $ $$ $create template setupLivePrefs
   URLS enforceInputRange t tWordBreak formatDate
   getOwnTab getActiveTab openURL animateElement sessionStorageHash debounce
-  scrollElementIntoView CHROME VIVALDI FIREFOX
+  scrollElementIntoView CHROME VIVALDI FIREFOX router
 */
 'use strict';
 
@@ -35,7 +35,8 @@ const handleEvent = {};
 
 Promise.all([
   API.getAllStyles(true),
-  urlFilterParam && API.searchDB({query: 'url:' + urlFilterParam}),
+  // FIXME: integrate this into filter.js
+  router.getSearch('search') && API.searchDB({query: router.getSearch('search')}),
   Promise.all([
     onDOMready(),
     prefs.initializing,
@@ -80,7 +81,9 @@ function onRuntimeMessage(msg) {
 function initGlobalEvents() {
   installed = $('#installed');
   installed.onclick = handleEvent.entryClicked;
-  $('#manage-options-button').onclick = () => chrome.runtime.openOptionsPage();
+  $('#manage-options-button').onclick = () => {
+    router.updateHash('#stylus-options');
+  };
   {
     const btn = $('#manage-shortcuts-button');
     btn.onclick = btn.onclick || (() => openURL({url: URLS.configureCommands}));
@@ -700,3 +703,39 @@ function highlightEditedStyle() {
     requestAnimationFrame(() => scrollElementIntoView(entry));
   }
 }
+
+
+function embedOptions() {
+  let options = $('#stylus-embedded-options');
+  if (!options) {
+    options = document.createElement('iframe');
+    options.id = 'stylus-embedded-options';
+    options.src = '/options.html';
+    document.documentElement.appendChild(options);
+  }
+  options.focus();
+}
+
+function unembedOptions() {
+  const options = $('#stylus-embedded-options');
+  if (options) {
+    options.contentWindow.document.body.classList.add('scaleout');
+    options.classList.add('fadeout');
+    animateElement(options, {
+      className: 'fadeout',
+      onComplete: () => options.remove(),
+    });
+  }
+}
+
+router.watch({hash: '#stylus-options'}, state => {
+  if (state) {
+    embedOptions();
+  } else {
+    unembedOptions();
+  }
+});
+
+window.addEventListener('closeOptions', () => {
+  router.updateHash('');
+});

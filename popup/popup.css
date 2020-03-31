@@ -8,12 +8,6 @@
   --outer-padding: 9px;
 }
 
-html {
-  /* Chrome 66-?? adds a gap equal to the scrollbar width,
-     which looks like a bug, see https://crbug.com/821143 */
-  overflow: overlay;
-}
-
 html, body {
   height: min-content;
   max-height: 600px;
@@ -313,6 +307,15 @@ a.configure[target="_blank"] .svg-icon.config {
   color: darkred;
 }
 
+.frame-url::before {
+  content: "iframe: ";
+  color: lightslategray;
+}
+
+.frame .style-name {
+  font-weight: normal;
+}
+
 /* entry menu */
 .entry .menu {
   display: none;
@@ -516,11 +519,83 @@ body.blocked .actions > .main-controls {
   content: "\00ad"; /* "soft" hyphen */
 }
 
-#match {
+.about-blank > .breadcrumbs {
+  pointer-events: none;
+}
+
+.about-blank > .breadcrumbs a {
+  text-decoration: none;
+}
+
+.match {
   overflow-wrap: break-word;
   display: block;
   flex-grow: 9;
+}
+
+.match[data-frame-id="0"] {
   min-width: 200px;
+}
+
+.match[data-frame-id="0"] > .match {
+  margin-top: .25em;
+}
+
+.match:not([data-frame-id="0"]) a {
+  text-decoration: none; /* not underlining iframe links until hovered to reduce visual noise */
+}
+
+.match .match {
+  margin-left: .5rem;
+}
+
+.match .match::before {
+  content: "";
+  width: .25rem;
+  height: .25rem;
+  margin-left: -.5rem;
+  display: block;
+  position: absolute;
+  border-width: 1px;
+  border-style: none none solid solid;
+}
+
+.dupe > .breadcrumbs {
+  opacity: .5;
+}
+
+.dupe:not([data-children]) {
+  display: none;
+}
+
+#write-for-frames {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  margin-left: -12px;
+  margin-top: 4px;
+  --dash: transparent 2px, currentColor 2px, currentColor 3px, transparent 3px;
+  background: linear-gradient(var(--dash)), linear-gradient(90deg, var(--dash));
+}
+
+#write-for-frames.expanded {
+  background: linear-gradient(var(--dash));
+}
+
+#write-for-frames::after {
+  position: absolute;
+  margin: -2px;
+  border: 1px solid currentColor;
+  content: "";
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+#write-for-frames:not(.expanded) ~ .match:not([data-frame-id="0"]),
+#write-for-frames:not(.expanded) ~ .match .match {
+  display: none;
 }
 
 /* "breadcrumbs" 'new style' links */
@@ -714,13 +789,19 @@ body.blocked .actions > .main-controls {
   margin: 0;
 }
 
-.blocked-info strong {
+.blocked-info .copy {
   cursor: pointer;
   transition: all .1s;
   border-bottom: 1px dotted #000;
+  text-decoration: none;
+  font-weight: bold;
 }
 
-.blocked-info strong.copied {
+.blocked-info .copy:hover {
+  color: #000;
+}
+
+.blocked-info .copy.copied {
   background: hsl(170, 40%, 80%);
   color: #000;
 }
@@ -745,7 +826,7 @@ body.blocked .actions > .main-controls {
   display: block;
 }
 
-.blocked-info strong:after {
+.blocked-info .copy:after {
   content: '';
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAMAAAC67D+PAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAGUExURQAAAAAAAKVnuc8AAAABdFJOUwBA5thmAAAAIElEQVQI12NgYGCEAgYgkwEMGBFijEhixDMZkUSRLQAACpYALjrE2uIAAAAASUVORK5CYII=)center no-repeat;
   height: 10px;

@@ -31,7 +31,7 @@ rules:
   dot-location: [2, property]
   dot-notation: [0]
   eol-last: [2]
-  eqeqeq: [1, always]
+  eqeqeq: [1, smart]
   func-call-spacing: [2, never]
   func-name-matching: [0]
   func-names: [0]
@@ -84,7 +84,7 @@ rules:
   no-empty-function: [0]
   no-empty-pattern: [2]
   no-empty: [2, {allowEmptyCatch: true}]
-  no-eq-null: [2]
+  no-eq-null: [0]
   no-eval: [2]
   no-ex-assign: [2]
   no-extend-native: [2]
@@ -211,3 +211,12 @@ rules:
   wrap-iife: [2, inside]
   yield-star-spacing: [2, {before: true, after: false}]
   yoda: [2, never]
+
+overrides:
+  - files: [tools/*]
+    env:
+      node: true
+      browser: false
+      webextensions: false
+    parserOptions:
+      ecmaVersion: 2017

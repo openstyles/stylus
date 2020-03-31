@@ -1,4 +1,4 @@
-/* global chromeLocal promisify */
+/* global chromeLocal promisify FIREFOX */
 /* exported tokenManager */
 'use strict';
 
@@ -43,7 +43,9 @@ const tokenManager = (() => {
       clientSecret: '9Pj=TpsrStq8K@1BiwB9PIWLppM:@s=w',
       authURL: 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
       tokenURL: 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
-      redirect_uri: 'https://clngdbkpkpeebahjckkjfobafhncgmne.chromiumapp.org/',
+      redirect_uri: FIREFOX ?
+        'https://clngdbkpkpeebahjckkjfobafhncgmne.chromiumapp.org/' :
+        'https://' + location.hostname + '.chromiumapp.org/',
       scopes: ['Files.ReadWrite.AppFolder', 'offline_access']
     }
   };

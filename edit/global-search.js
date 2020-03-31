@@ -823,11 +823,13 @@ onDOMready().then(() => {
     if (numApplies === undefined && state.searchInApplies && state.numApplies < 0) {
       numApplies = 0;
       const elements = state.find ? document.getElementsByClassName(APPLIES_VALUE_CLASS) : [];
+      const {rx} = state;
       for (const el of elements) {
         const value = el.value;
-        if (state.rx) {
-          state.rx.lastIndex = 0;
-          while (state.rx.exec(value)) numApplies++;
+        if (rx) {
+          rx.lastIndex = 0;
+          // preventing an infinite loop if matched an empty string and didn't advance
+          for (let m; (m = rx.exec(value)) && ++numApplies && rx.lastIndex > m.index;) { /* NOP */ }
         } else {
           let i = -1;
           while ((i = value.indexOf(state.find, i + 1)) >= 0) numApplies++;

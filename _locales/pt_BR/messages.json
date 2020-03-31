@@ -245,10 +245,6 @@
     "message": "Gerenciar estilos instalados",
     "description": "Link to open the manage page."
   },
-  "openOptionsPopup": {
-    "message": "Opções",
-    "description": "Go to Options UI"
-  },
   "optionsActions": {
     "message": "Ações",
     "description": ""

@@ -1109,6 +1109,22 @@ input[id^="manage.newUI"] {
   -moz-osx-font-smoothing: grayscale;
 }
 
+#stylus-embedded-options {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  border: 0;
+  z-index: 2147483647;
+  background-color: hsla(0, 0%, 0%, .45);
+  animation: fadein .25s ease-in-out;
+}
+
+#stylus-embedded-options.fadeout {
+  animation: fadeout .25s ease-in-out;
+}
+
 @keyframes fadein {
   from {
     opacity: 0;
@@ -1285,4 +1301,15 @@ input[id^="manage.newUI"] {
   #filters summary h2 {
     margin-left: -2px;
   }
+}
+
+/* Deprecated dropbox backup (dropbox-sync) */
+#sync-dropbox-export,
+#sync-dropbox-import {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+#backup-buttons .dropdown-content #sync-dropbox-export:hover,
+#backup-buttons .dropdown-content #sync-dropbox-import:hover {
+  background: transparent;
 }

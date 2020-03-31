@@ -462,10 +462,6 @@
     "message": "Verificați update-urile",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "Pentru a activa verificarea de updates. trage fișierul pe taburi (zona cu titluri) sau specifica @updateURL în metadata temei.",
-    "description": ""
-  },
   "license": {
     "message": "Licență",
     "description": "Label for the license"
@@ -536,14 +532,6 @@
   "liveReloadError": {
     "message": "A avut loc o eroare în timpul monitorizării acestui fișier",
     "description": "The label of live-reload error"
-  },
-  "liveReloadInstallHint": {
-    "message": "Reload automat este activat deci tema instalată va fi updatată automat când acest tab si fișierul surca sunt deschise.",
-    "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "Pentru a activa live reload (refresh automat), trage fișierul pe taburi (zona unde titlurile temelor sunt afișate) ",
-    "description": ""
   },
   "manageFavicons": {
     "message": "Favicons în coloana 'se aplică la'",
@@ -616,14 +604,6 @@
   "openManage": {
     "message": "Managerul",
     "description": "Link to open the manage page."
-  },
-  "openOptionsManage": {
-    "message": "UI cu opțiuni",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
-    "message": "Opțiuni",
-    "description": "Go to Options UI"
   },
   "openStylesManager": {
     "message": "Deschideți managerul de teme",

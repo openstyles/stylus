@@ -398,14 +398,6 @@
     "message": "Управление",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "Прозорец за настройките",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
-    "message": "Настройки",
-    "description": "Go to Options UI"
-  },
   "openStylesManager": {
     "message": "Управление на стиловете",
     "description": "Label for the style maanger opener in the browser action context menu."

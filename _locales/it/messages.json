@@ -639,14 +639,6 @@
     "message": "Gestisci gli stili installati",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "Opzioni UI",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
-    "message": "Opzioni",
-    "description": "Go to Options UI"
-  },
   "openStylesManager": {
     "message": "Apri gestore stili",
     "description": "Label for the style maanger opener in the browser action context menu."

@@ -49,7 +49,7 @@
     "description": "A warning that applies-to information won't show properly with minified CSS"
   },
   "appliesRegexpOption": {
-    "message": "URLs coincidentes con la regexp",
+    "message": "URLs que coinciden con la regexp",
     "description": "Option to make the style apply to the entered string as a regular expression"
   },
   "appliesRemove": {
@@ -85,7 +85,7 @@
     "description": "Heading for backup"
   },
   "backupMessage": {
-    "message": "Seleccione un archivo o arrástrelo y suéltelo en esta página.",
+    "message": "Al exportar hará una copia de respaldo de TODOS los estilos instalados. Para restaurar una copia de respaldo, importe el archivo o arrástrelo a esta página.",
     "description": "Message for backup"
   },
   "bckpInstStyles": {
@@ -109,7 +109,7 @@
     "description": "Text to display when checking a style for an update"
   },
   "clickToUninstall": {
-    "message": "Pulse para desinstalar",
+    "message": "Haga clic para desinstalar",
     "description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
   },
   "cm_autoCloseBrackets": {
@@ -139,6 +139,10 @@
   "cm_lineWrapping": {
     "message": "Ajuste de línea",
     "description": "Label for the checkbox controlling word wrap option for the style editor."
+  },
+  "cm_linter": {
+    "message": "Validador lint",
+    "description": "Select the linter to check for CSS issues"
   },
   "cm_matchHighlight": {
     "message": "Resaltar",
@@ -236,6 +240,14 @@
     "message": "Sí",
     "description": "'Yes' button in a confirm dialog"
   },
+  "copied": {
+    "message": "Copiado al portapapeles",
+    "description": "Message shown when content has been copied to the clipboard"
+  },
+  "copy": {
+    "message": "Copiar al portapapeles",
+    "description": "Tooltip for elements which can be copied"
+  },
   "dateInstalled": {
     "message": "Fecha de instalación",
     "description": "Option text for the user to sort the style by install date"
@@ -308,6 +320,14 @@
   "enableStyleLabel": {
     "message": "Activar",
     "description": "Label for the button to enable a style"
+  },
+  "excludeStyleByDomainLabel": {
+    "message": "Excluir el dominio Actual",
+    "description": ""
+  },
+  "excludeStyleByUrlLabel": {
+    "message": "Excluir la URL actual",
+    "description": ""
   },
   "exportLabel": {
     "message": "Exportar",
@@ -514,10 +534,6 @@
     "message": "Buscar actualizaciones",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "Para habilitar la búsqueda de actualizaciones, suelte el archivo en la pestaña o especifique @updateURL en los metadatos del estilo.",
-    "description": ""
-  },
   "license": {
     "message": "Licencia",
     "description": "Label for the license"
@@ -593,17 +609,9 @@
     "message": "Se ha producido un error al visualizar el archivo",
     "description": "The label of live-reload error"
   },
-  "liveReloadInstallHint": {
-    "message": "La recarga en tiempo real está habilitada, por lo que el estilo instalado se actualizará automáticamente con los cambios externos mientras estén abiertas esta pestaña y la pestaña del archivo de origen.",
-    "description": "The label of live-reload feature"
-  },
   "liveReloadLabel": {
     "message": "Recarga en tiempo real",
     "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "Para habilitar la recarga en tiempo real, suelte el archivo en la pestaña (el área donde se muestran los títulos de las pestañas).",
-    "description": ""
   },
   "manageFavicons": {
     "message": "Favicons en la columna 'Se aplica a'",
@@ -897,11 +905,7 @@
     "message": "Administrar",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "Interfaz de opciones",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "Opciones",
     "description": "Go to Options UI"
   },
@@ -1005,6 +1009,42 @@
     "message": "Intervalo de actualización automática en horas (especifique 0 para deshabilitar)",
     "description": ""
   },
+  "optionsSyncConnect": {
+    "message": "Conectar",
+    "description": ""
+  },
+  "optionsSyncDisconnect": {
+    "message": "Desconectar",
+    "description": ""
+  },
+  "optionsSyncSyncNow": {
+    "message": "Sincronizar ahora",
+    "description": ""
+  },
+  "optionsSyncLogin": {
+    "message": "Iniciar Sesión",
+    "description": ""
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "Sincronizando...",
+    "description": ""
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "Conectando...",
+    "description": ""
+  },
+  "optionsSyncStatusConnected": {
+    "message": "Conectado",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "Desconectando...",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "Desconectado",
+    "description": ""
+  },
   "paginationCurrent": {
     "message": "Página actual",
     "description": "Tooltip for the current page index in search results"
@@ -1048,6 +1088,10 @@
   "popupManageTooltip": {
     "message": "Mayús+clic o clic secundario abre el administrador con estilos aplicables para el sitio actual.",
     "description": "Tooltip for the 'Manage' button in the popup."
+  },
+  "popupMenuButtonTooltip": {
+    "message": "Acciones",
+    "description": "Tooltip for menu button in popup."
   },
   "popupOpenEditInWindow": {
     "message": "Abrir editor en una nueva ventana",

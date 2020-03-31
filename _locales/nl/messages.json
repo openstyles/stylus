@@ -117,7 +117,7 @@
     "description": "Label for the checkbox in the style editor."
   },
   "cm_autoCloseBracketsTooltip": {
-    "message": "Automatisch sluitteken toevoegen by typen van een openingsteken uit ()[]{}''\"\"",
+    "message": "Automatisch sluitingsteken toevoegen bij typen van een openingsteken uit ()[]{}''\"\"",
     "description": "Label for the checkbox in the style editor."
   },
   "cm_autocompleteOnTyping": {
@@ -240,6 +240,14 @@
     "message": "Ja",
     "description": "'Yes' button in a confirm dialog"
   },
+  "copied": {
+    "message": "Gekopieerd naar klembord",
+    "description": "Message shown when content has been copied to the clipboard"
+  },
+  "copy": {
+    "message": "Kopiëren naar klembord",
+    "description": "Tooltip for elements which can be copied"
+  },
   "dateInstalled": {
     "message": "Installatiedatum",
     "description": "Option text for the user to sort the style by install date"
@@ -279,6 +287,10 @@
   "dragDropMessage": {
     "message": "Sleep uw back-upbestand naar deze pagina om het te importeren.",
     "description": "Drag'n'drop message"
+  },
+  "dragDropUsercssTabstrip": {
+    "message": "Sleep het bestand naar de tabbladenstrook (het gebied waar de tabbladtitels worden getoond) om het te installeren.",
+    "description": "Message popup shown when erroneously dropping a usercss file into the manager page"
   },
   "editDeleteText": {
     "message": "Verwijderen",
@@ -429,6 +441,10 @@
     "message": "Druk op een sneltoets",
     "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
   },
+  "hostDisabled": {
+    "message": "Deze host is uitgeschakeld vanwege een bug in de huidige versie van de gebruikte browser",
+    "description": "Tooltip for cloud host disabled"
+  },
   "importAppendLabel": {
     "message": "Toevoegen aan stijl",
     "description": "Label for the button to import a style and append to the existing sections"
@@ -522,10 +538,6 @@
     "message": "Controleren op updates",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "Als u controle op updates wilt inschakelen, sleep dan het bestand naar de tabbladenstrook of geef een @updateURL op in de metagegevens van de stijl.",
-    "description": ""
-  },
   "license": {
     "message": "Licentie",
     "description": "Label for the license"
@@ -602,16 +614,16 @@
     "description": "The label of live-reload error"
   },
   "liveReloadInstallHint": {
-    "message": "Live herladen is ingeschakeld. De geïnstalleerde stijl zal bij externe wijzigingen automatisch worden bijgewerkt als zowel dit tabblad als het tabblad van het bronbestand zijn geopend.",
+    "message": "Houd dit tabblad geopend om de stijl automatisch bij te werken bij externe wijzigingen.",
     "description": "The label of live-reload feature"
+  },
+  "liveReloadInstallHintFF": {
+    "message": "Houd zowel dit tabblad als het oorspronkelijke tabblad geopend om de stijl automatisch bij te werken bij externe wijzigingen.",
+    "description": "The extra hint of live-reload feature shown only for file:// URLs in Firefox"
   },
   "liveReloadLabel": {
     "message": "Live herladen",
     "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "Als u live herladen wilt inschakelen, sleep dan het bestand naar de tabbladenstrook (het gebied waar de tabbladtitels worden getoond).",
-    "description": ""
   },
   "manageFavicons": {
     "message": "Favicons in kolom ‘Van toepassing op’",
@@ -901,11 +913,7 @@
     "message": "Beheren",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "Opties",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "Opties",
     "description": "Go to Options UI"
   },
@@ -965,6 +973,10 @@
     "message": "Pop-up",
     "description": ""
   },
+  "optionsCustomizeSync": {
+    "message": "Synchroniseren met cloud",
+    "description": ""
+  },
   "optionsHeading": {
     "message": "Opties",
     "description": "Heading for options section on manage page."
@@ -1007,6 +1019,70 @@
   },
   "optionsUpdateInterval": {
     "message": "Interval voor automatisch bijwerken van gebruikersstijlen in uren (geef 0 op om dit uit te schakelen)",
+    "description": ""
+  },
+  "optionsSyncNone": {
+    "message": "Geen",
+    "description": ""
+  },
+  "optionsSyncConnect": {
+    "message": "Koppelen",
+    "description": ""
+  },
+  "optionsSyncDisconnect": {
+    "message": "Ontkoppelen",
+    "description": ""
+  },
+  "optionsSyncSyncNow": {
+    "message": "Nu synchroniseren",
+    "description": ""
+  },
+  "optionsSyncLogin": {
+    "message": "Aanmelden",
+    "description": ""
+  },
+  "optionsSyncStatusPull": {
+    "message": "Stijl $loaded$ van $total$ ophalen",
+    "description": "",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusPush": {
+    "message": "Stijl $loaded$ van $total$ uploaden",
+    "description": "",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "Synchroniseren...",
+    "description": ""
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "Koppelen...",
+    "description": ""
+  },
+  "optionsSyncStatusConnected": {
+    "message": "Gekoppeld",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "Ontkoppelen...",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "Ontkoppeld",
     "description": ""
   },
   "paginationCurrent": {
@@ -1084,6 +1160,10 @@
   "previewTooltip": {
     "message": "Past de wijzigingen tijdelijk toe zonder deze op te slaan.\nSla de stijl op om de wijzigingen permanent te maken.",
     "description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+  },
+  "reload": {
+    "message": "Stylus-extensie herladen",
+    "description": "Context menu reload"
   },
   "replace": {
     "message": "Vervangen",
@@ -1486,6 +1566,10 @@
   },
   "syncDropboxStyles": {
     "message": "Dropbox - Exporteren",
+    "description": ""
+  },
+  "syncDropboxDeprecated": {
+    "message": "Importeren/exporteren via Dropbox is vervangen door een meer geavanceerde stijlsynchronisatie in de optiespagina.",
     "description": ""
   },
   "retrieveDropboxSync": {

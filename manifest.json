@@ -1,6 +1,6 @@
 {
   "name": "Stylus",
-  "version": "1.5.6",
+  "version": "1.5.10",
   "minimum_chrome_version": "49",
   "description": "__MSG_description__",
   "homepage_url": "https://add0n.com/stylus.html",
@@ -41,11 +41,14 @@
       "background/token-manager.js",
       "background/sync.js",
       "background/content-scripts.js",
+      "background/db-chrome-storage.js",
       "background/db.js",
       "background/color-scheme.js",
       "background/style-manager.js",
       "background/navigator-util.js",
       "background/icon-util.js",
+      "background/tab-manager.js",
+      "background/icon-manager.js",
       "background/background.js",
       "background/usercss-helper.js",
       "background/style-via-api.js",
@@ -58,6 +61,9 @@
     "_execute_browser_action": {},
     "openManage": {
     "description": "__MSG_openManage__"
+    },
+    "reload": {
+      "description": "__MSG_reload__"
     },
     "styleDisableAll": {
     "description": "__MSG_disableAllStyles__"
@@ -89,30 +95,6 @@
       "run_at": "document_start",
       "all_frames": false,
       "js": ["content/install-hook-openusercss.js"]
-    },
-    {
-      "matches": [
-        "*://*/*.user.css",
-        "*://*/*.user.styl",
-
-        "file://*/*.user.css",
-        "file://*/*.user.styl",
-
-        "ftp://*/*.user.css",
-        "ftp://*/*.user.styl",
-
-        "*://*/*.user.css?*",
-        "*://*/*.user.styl?*",
-
-        "file://*/*.user.css?*",
-        "file://*/*.user.styl?*",
-
-        "ftp://*/*.user.css?*",
-        "ftp://*/*.user.styl?*"
-      ],
-      "run_at": "document_idle",
-      "all_frames": false,
-      "js": ["content/install-hook-usercss.js"]
     }
   ],
   "browser_action": {
@@ -126,10 +108,6 @@
     "default_popup": "popup.html"
   },
   "default_locale": "en",
-  "options_ui": {
-    "page": "options.html",
-    "chrome_style": false
-  },
   "applications": {
     "gecko": {
       "id": "{7a7a4a92-a2a0-41d1-9fd7-1e92480d612d}",

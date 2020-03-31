@@ -290,6 +290,10 @@
     "message": "Drop your backup file anywhere on this page to import.",
     "description": "Drag'n'drop message"
   },
+  "dragDropUsercssTabstrip": {
+    "message": "To install the file, drop it on the tab strip (the area where the tab titles are shown).",
+    "description": "Message popup shown when erroneously dropping a usercss file into the manager page"
+  },
   "editDeleteText": {
     "message": "Delete",
     "description": "Label for the context menu item in the editor to delete selected text"
@@ -445,6 +449,10 @@
     "message": "Press a hotkey",
     "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
   },
+  "hostDisabled": {
+    "message": "This host has been disabled due to a bug in the current version of the browser being used",
+    "description": "Tooltip for cloud host disabled"
+  },
   "importAppendLabel": {
     "message": "Append to style",
     "description": "Label for the button to import a style and append to the existing sections"
@@ -550,9 +558,6 @@
     "message": "Check for updates",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "To enable check for updates, drop the file on the tab strip or specify @updateURL in the style metadata."
-  },
   "license": {
     "message": "License",
     "description": "Label for the license"
@@ -633,15 +638,16 @@
     "description": "The label of live-reload error"
   },
   "liveReloadInstallHint": {
-    "message": "Live reload is enabled so the installed style will be auto-updated on external changes while both this tab and the source file tab are open.",
+    "message": "Keep this tab open to auto-update the style on external changes.",
     "description": "The label of live-reload feature"
+  },
+  "liveReloadInstallHintFF": {
+    "message": "Keep both this tab and the original tab open to auto-update the style on external changes.",
+    "description": "The extra hint of live-reload feature shown only for file:// URLs in Firefox"
   },
   "liveReloadLabel": {
     "message": "Live reload",
     "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "To enable live reload, drop the file on the tab strip (the area where the tab titles are shown)."
   },
   "manageFavicons": {
     "message": "Favicons in applies-to column",
@@ -939,11 +945,7 @@
     "message": "Manage",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "Options UI",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "Options",
     "description": "Go to Options UI"
   },
@@ -1168,6 +1170,10 @@
   "previewTooltip": {
     "message": "Temporarily applies the changes without saving.\nSave the style to make the changes permanent.",
     "description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+  },
+  "reload": {
+    "message": "Reload Stylus extension",
+    "description": "Context menu reload"
   },
   "replace": {
     "message": "Replace",
@@ -1573,6 +1579,9 @@
   },
   "syncDropboxStyles": {
     "message": "Dropbox Export"
+  },
+  "syncDropboxDeprecated": {
+    "message": "Dropbox import/export is replaced by a more advanced style sync in the options page."
   },
   "retrieveDropboxSync": {
     "message": "Dropbox Import"

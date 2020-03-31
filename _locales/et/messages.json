@@ -236,6 +236,14 @@
     "message": "Jah",
     "description": "'Yes' button in a confirm dialog"
   },
+  "copied": {
+    "message": "Kopeeritud lõikelauale",
+    "description": "Message shown when content has been copied to the clipboard"
+  },
+  "copy": {
+    "message": "Kopeeri lõikelauale",
+    "description": "Tooltip for elements which can be copied"
+  },
   "dateInstalled": {
     "message": "Paigaldamise kuupäev",
     "description": "Option text for the user to sort the style by install date"
@@ -275,6 +283,10 @@
   "dragDropMessage": {
     "message": "Lohista importimiseks oma varundusfail kuskile siia lehele.",
     "description": "Drag'n'drop message"
+  },
+  "dragDropUsercssTabstrip": {
+    "message": "Faili installimiseks lohista see kaartide ribale (ala, kus näidatakse kaartide pealkirju).",
+    "description": "Message popup shown when erroneously dropping a usercss file into the manager page"
   },
   "editDeleteText": {
     "message": "Kustuta",
@@ -433,6 +445,10 @@
     "message": "Vajuta kiirklahvi",
     "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
   },
+  "hostDisabled": {
+    "message": "See host on keelatud hetkel kasutatavas brauseri praeguses versioonis oleva vea tõttu",
+    "description": "Tooltip for cloud host disabled"
+  },
   "importAppendLabel": {
     "message": "Lisa stiilile",
     "description": "Label for the button to import a style and append to the existing sections"
@@ -526,10 +542,6 @@
     "message": "Kontrolli uuendusi",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "Uuenduste kontrollimise lubamiseks lohista failid kaartide ribale või määratle stiili metaandmetes @updateURL.",
-    "description": ""
-  },
   "license": {
     "message": "Litsents",
     "description": "Label for the license"
@@ -609,17 +621,9 @@
     "message": "Faili vaatamisel esines viga",
     "description": "The label of live-reload error"
   },
-  "liveReloadInstallHint": {
-    "message": "Reaalajas uuestilaadimine on lubatud, seega paigaldatud stiili uuendatakse väliste muudatuste korral automaatselt, kuniks see kaart ja lähtefaili kaart mõlemad lahti on.",
-    "description": "The label of live-reload feature"
-  },
   "liveReloadLabel": {
     "message": "Reaalajas uuestilaadimine",
     "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "Reaalajas uuestilaadimise lubamiseks lohista fail kaartide ribale (ala, kus näidatakse kaartide pealkirju).",
-    "description": ""
   },
   "manageFavicons": {
     "message": "Lehe ikoonid rakendub-tulbas",
@@ -815,11 +819,7 @@
     "message": "Halda",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "Valikute liides",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
+  "openOptions": {
     "message": "Valikud",
     "description": "Go to Options UI"
   },
@@ -883,6 +883,10 @@
     "message": "Uuendused",
     "description": ""
   },
+  "optionsCustomizeSync": {
+    "message": "Sünkrooni pilve",
+    "description": ""
+  },
   "optionsHeading": {
     "message": "Valikud",
     "description": "Heading for options section on manage page."
@@ -925,6 +929,34 @@
   },
   "optionsUpdateInterval": {
     "message": "Kasutajastiilide automaatse uuendamise ajavahe (keelamiseks pane 0)",
+    "description": ""
+  },
+  "optionsSyncNone": {
+    "message": "Pole",
+    "description": ""
+  },
+  "optionsSyncSyncNow": {
+    "message": "Sünkrooni kohe",
+    "description": ""
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "Sünkroonimine...",
+    "description": ""
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "Ühendumine...",
+    "description": ""
+  },
+  "optionsSyncStatusConnected": {
+    "message": "Ühendatud",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "Lahtiühendamine...",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "Lahti ühendatud",
     "description": ""
   },
   "paginationCurrent": {
@@ -1402,6 +1434,18 @@
     "message": "see URL",
     "description": "Text for link in toolbar pop-up to write a new style for the current URL"
   },
+  "syncDropboxStyles": {
+    "message": "Dropboxi eksportimine",
+    "description": ""
+  },
+  "syncDropboxDeprecated": {
+    "message": "Dropboxi importimine/eksportimine on asendatud edasijõudnuma stiilide sünkroonijaga valikute lehel.",
+    "description": ""
+  },
+  "retrieveDropboxSync": {
+    "message": "Dropboxi importimine",
+    "description": ""
+  },
   "overwriteFileExport": {
     "message": "Kas tahad olemasoleva faili üle kirjutada?",
     "description": ""
@@ -1414,8 +1458,24 @@
     "message": "Oma stiilide importimiseks peaksid esmalt selle eksportima.",
     "description": ""
   },
+  "connectingDropbox": {
+    "message": "Dropboxiga ühendumine...",
+    "description": ""
+  },
+  "connectingDropboxNotAllowed": {
+    "message": "Dropboxiga ühendumine on saadaval ainult veebipoe kaudu installitud rakendustes",
+    "description": ""
+  },
   "gettingStyles": {
     "message": "Kõigi stiilide hankimine...",
+    "description": ""
+  },
+  "zipStyles": {
+    "message": "Stiilide kokkupakkimine...",
+    "description": ""
+  },
+  "unzipStyles": {
+    "message": "Stiilide lahtipakkimine...",
     "description": ""
   },
   "readingStyles": {

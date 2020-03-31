@@ -236,6 +236,14 @@
     "message": "Ja",
     "description": "'Yes' button in a confirm dialog"
   },
+  "copied": {
+    "message": "Kopierad till urklipp",
+    "description": "Message shown when content has been copied to the clipboard"
+  },
+  "copy": {
+    "message": "Kopiera till urklipp",
+    "description": "Tooltip for elements which can be copied"
+  },
   "dateInstalled": {
     "message": "Installerat datum",
     "description": "Option text for the user to sort the style by install date"
@@ -514,10 +522,6 @@
     "message": "Sök efter uppdateringar",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "För att aktivera sök efter uppdateringar, släpp filen på flikremsan eller ange @updateURL i stilmetadatan.",
-    "description": ""
-  },
   "license": {
     "message": "Licens",
     "description": "Label for the license"
@@ -589,17 +593,9 @@
     "message": "Ett fel uppstod medan du tittade på filen",
     "description": "The label of live-reload error"
   },
-  "liveReloadInstallHint": {
-    "message": "Uppdatering i realtid är aktiverat så att den installerade stilen automatiskt uppdateras vid externa ändringar medan både den här fliken och fliken för källfilen är öppna.",
-    "description": "The label of live-reload feature"
-  },
   "liveReloadLabel": {
     "message": "Uppdaterar i realtid",
     "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "För att aktivera uppdatering i realtid, släpp filen på fliken strip (det område där fliktitlar visas).",
-    "description": ""
   },
   "manageFavicons": {
     "message": "Ikoner i 'Tillämpad för' kolumnen",
@@ -871,14 +867,6 @@
     "message": "Hantera installerade stilar",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "Alternativ UI",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
-    "message": "Alternativ",
-    "description": "Go to Options UI"
-  },
   "openStylesManager": {
     "message": "Öppna stilhanteraren",
     "description": "Label for the style maanger opener in the browser action context menu."
@@ -939,6 +927,10 @@
     "message": "Uppdateringar",
     "description": ""
   },
+  "optionsCustomizeSync": {
+    "message": "Synkronisera till molnet",
+    "description": ""
+  },
   "optionsHeading": {
     "message": "Alternativ",
     "description": "Heading for options section on manage page."
@@ -981,6 +973,46 @@
   },
   "optionsUpdateInterval": {
     "message": "Userstyle automatisk uppdateringsintervall i timmar (ange 0 för att inaktivera)",
+    "description": ""
+  },
+  "optionsSyncNone": {
+    "message": "Inga",
+    "description": ""
+  },
+  "optionsSyncConnect": {
+    "message": "Anslut",
+    "description": ""
+  },
+  "optionsSyncDisconnect": {
+    "message": "Koppla från",
+    "description": ""
+  },
+  "optionsSyncSyncNow": {
+    "message": "Synkronisera nu",
+    "description": ""
+  },
+  "optionsSyncLogin": {
+    "message": "Logga in",
+    "description": ""
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "Synkroniserar...",
+    "description": ""
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "Ansluter..",
+    "description": ""
+  },
+  "optionsSyncStatusConnected": {
+    "message": "Ansluten",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "Kopplar från...",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "Frånkopplad",
     "description": ""
   },
   "paginationCurrent": {

@@ -1,42 +1,66 @@
-/* global API_METHODS usercss chromeLocal styleManager FIREFOX deepCopy openURL
-  download */
+/* global API_METHODS usercss styleManager deepCopy openURL download URLS getTab */
+/* exports usercssHelper */
 'use strict';
 
-(() => {
+// eslint-disable-next-line no-unused-vars
+const usercssHelper = (() => {
+  const installCodeCache = {};
+  const clearInstallCode = url => delete installCodeCache[url];
+  const isResponseText = r => /^text\/(css|plain)(;.*?)?$/i.test(r.headers.get('content-type'));
+  // in Firefox we have to use a content script to read file://
+  const fileLoader = !chrome.app && // not relying on navigator.ua which can be spoofed
+    (tabId => browser.tabs.executeScript(tabId, {file: '/content/install-hook-usercss.js'}).then(r => r[0]));
+
   API_METHODS.installUsercss = installUsercss;
   API_METHODS.editSaveUsercss = editSaveUsercss;
   API_METHODS.configUsercssVars = configUsercssVars;
 
   API_METHODS.buildUsercss = build;
-  API_METHODS.openUsercssInstallPage = install;
-
   API_METHODS.findUsercss = find;
 
-  const TEMP_CODE_PREFIX = 'tempUsercssCode';
-  const TEMP_CODE_CLEANUP_DELAY = 60e3;
-  let tempCodeLastWriteDate = 0;
-  if (FIREFOX) {
-    // the temp code is created on direct installation of usercss URLs in FF
-    // and can be left behind in case the install page didn't open in time before
-    // the extension was updated/reloaded/disabled or the browser was closed
-    setTimeout(function poll() {
-      if (Date.now() - tempCodeLastWriteDate < TEMP_CODE_CLEANUP_DELAY) {
-        setTimeout(poll, TEMP_CODE_CLEANUP_DELAY);
-        return;
+  API_METHODS.getUsercssInstallCode = url => {
+    // when the installer tab is reloaded after the cache is expired, this will throw intentionally
+    const {code, timer} = installCodeCache[url];
+    clearInstallCode(url);
+    clearTimeout(timer);
+    return code;
+  };
+
+  return {
+
+    testUrl(url) {
+      return url.includes('.user.') &&
+        /^(https?|file|ftps?):/.test(url) &&
+        /\.user\.(css|styl)$/.test(url.split(/[#?]/, 1)[0]);
+    },
+
+    /** @return {Promise<{ code:string, inTab:boolean } | false>} */
+    testContents(tabId, url) {
+      const isFile = url.startsWith('file:');
+      const inTab = isFile && Boolean(fileLoader);
+      return Promise.resolve(isFile || fetch(url, {method: 'HEAD'}).then(isResponseText))
+        .then(ok => ok && (inTab ? fileLoader(tabId) : download(url)))
+        .then(code => /==userstyle==/i.test(code) && {code, inTab});
+    },
+
+    openInstallerPage(tabId, url, {code, inTab} = {}) {
+      const newUrl = `${URLS.installUsercss}?updateUrl=${encodeURIComponent(url)}`;
+      if (inTab) {
+        getTab(tabId).then(tab =>
+          openURL({
+            url: `${newUrl}&tabId=${tabId}`,
+            active: tab.active,
+            index: tab.index + 1,
+            openerTabId: tabId,
+            currentWindow: null,
+          }));
+      } else {
+        const timer = setTimeout(clearInstallCode, 10e3, url);
+        installCodeCache[url] = {code, timer};
+        chrome.tabs.update(tabId, {url: newUrl});
       }
-      chrome.storage.local.get(null, storage => {
-        const leftovers = [];
-        for (const key in storage) {
-          if (key.startsWith(TEMP_CODE_PREFIX)) {
-            leftovers.push(key);
-          }
-        }
-        if (leftovers.length) {
-          chrome.storage.local.remove(leftovers);
-        }
-      });
-    }, TEMP_CODE_CLEANUP_DELAY);
-  }
+    },
+  };
 
   function buildMeta(style) {
     if (style.usercssData) {
@@ -154,35 +178,6 @@
           return dup;
         }
       }
-    });
-  }
-
-  function install({url, direct, downloaded, tab}, sender = this.sender) {
-    tab = tab !== undefined ? tab : sender.tab;
-    url = url || tab.url;
-    if (direct && !downloaded) {
-      prefetchCodeForInstallation(tab.id, url);
-    }
-    return openURL({
-      url: '/install-usercss.html' +
-        '?updateUrl=' + encodeURIComponent(url) +
-        '&tabId=' + tab.id +
-        (direct ? '&direct=yes' : ''),
-      index: tab.index + 1,
-      openerTabId: tab.id,
-      currentWindow: null,
-    });
-  }
-
-  function prefetchCodeForInstallation(tabId, url) {
-    const key = TEMP_CODE_PREFIX + tabId;
-    tempCodeLastWriteDate = Date.now();
-    Promise.all([
-      download(url),
-      chromeLocal.setValue(key, {loading: true}),
-    ]).then(([code]) => {
-      chromeLocal.setValue(key, code);
-      setTimeout(() => chromeLocal.remove(key), TEMP_CODE_CLEANUP_DELAY);
     });
   }
 })();

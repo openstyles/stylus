@@ -244,6 +244,14 @@
     "message": "Oui",
     "description": "'Yes' button in a confirm dialog"
   },
+  "copied": {
+    "message": "Copié dans le presse-papier",
+    "description": "Message shown when content has been copied to the clipboard"
+  },
+  "copy": {
+    "message": "Copier dans le presse-papier",
+    "description": "Tooltip for elements which can be copied"
+  },
   "dateInstalled": {
     "message": "Date d'installation",
     "description": "Option text for the user to sort the style by install date"
@@ -437,6 +445,10 @@
     "message": "Pressez un raccourci clavier",
     "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
   },
+  "hostDisabled": {
+    "message": "Cet hôte a été désactivé en raison d'un bogue dans la version actuelle du navigateur utilisé",
+    "description": "Tooltip for cloud host disabled"
+  },
   "importAppendLabel": {
     "message": "Ajouter au style",
     "description": "Label for the button to import a style and append to the existing sections"
@@ -530,10 +542,6 @@
     "message": "Rechercher les mises à jour",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "Pour activer la vérification des mises à jour, glissez le fichier sur la barre des onglets ou spécifiez @updateURL dans les métadonnées du style.",
-    "description": ""
-  },
   "license": {
     "message": "Licence",
     "description": "Label for the license"
@@ -609,17 +617,9 @@
     "message": "Une erreur est survenue durant la surveillance du fichier",
     "description": "The label of live-reload error"
   },
-  "liveReloadInstallHint": {
-    "message": "Le rechargement automatique est activé, donc le style installé sera mis à jour automatiquement après une modification externe quand à la fois cet onglet et l’onglet du fichier source sont ouverts.",
-    "description": "The label of live-reload feature"
-  },
   "liveReloadLabel": {
     "message": "Rechargement immédiat",
     "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "Pour activer le rechargement automatique, glisser le fichier sur la barre des onglets (la zone où les titres des onglets sont affichés).",
-    "description": ""
   },
   "manageFavicons": {
     "message": "Favicons dans la colonne « s’applique à »",
@@ -913,14 +913,6 @@
     "message": "Gestion",
     "description": "Link to open the manage page."
   },
-  "openOptionsManage": {
-    "message": "Paramètres d'interface graphique",
-    "description": "Go to Options UI"
-  },
-  "openOptionsPopup": {
-    "message": "Paramètres",
-    "description": "Go to Options UI"
-  },
   "openStylesManager": {
     "message": "Ouvrir le gestionnaire de styles",
     "description": "Label for the style maanger opener in the browser action context menu."
@@ -936,6 +928,10 @@
   "optionsAdvancedExposeIframes": {
     "message": "Exposer les iframes via HTML[stylus-iframe]",
     "description": ""
+  },
+  "optionsAdvancedExposeIframesNote": {
+    "message": "Expose le domaine principal dans chaque iframe.\nPermet d’écrire du CSS spécifique aux iframe tel que :\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }",
+    "description": "Add attribute to iframe; make sure to include the double $$ in the css example, or the `$=` will be omitted in the displayed text."
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Écrire un nouveau style en tant que usercss",
@@ -967,6 +963,10 @@
   },
   "optionsCustomizeUpdate": {
     "message": "Mises à jour",
+    "description": ""
+  },
+  "optionsCustomizeSync": {
+    "message": "Synchroniser dans le nuage",
     "description": ""
   },
   "optionsIconDark": {
@@ -1009,6 +1009,70 @@
     "message": "Intervalle de mise à jour automatique des styles utilisateur en heures (spécifier 0 pour désactiver)",
     "description": ""
   },
+  "optionsSyncNone": {
+    "message": "Aucun",
+    "description": ""
+  },
+  "optionsSyncConnect": {
+    "message": "Connecter",
+    "description": ""
+  },
+  "optionsSyncDisconnect": {
+    "message": "Disconnecter",
+    "description": ""
+  },
+  "optionsSyncSyncNow": {
+    "message": "Synchroniser maintenant",
+    "description": ""
+  },
+  "optionsSyncLogin": {
+    "message": "Se connecter",
+    "description": ""
+  },
+  "optionsSyncStatusPull": {
+    "message": "Récupération du style  $loaded$de $total$",
+    "description": "",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusPush": {
+    "message": "Application du style $loaded$ de $total$",
+    "description": "",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "Synchronisation...",
+    "description": ""
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "Connection...",
+    "description": ""
+  },
+  "optionsSyncStatusConnected": {
+    "message": "Connecté",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "Disconnection...",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "Disconnecté",
+    "description": ""
+  },
   "paginationCurrent": {
     "message": "Page courante",
     "description": "Tooltip for the current page index in search results"
@@ -1033,6 +1097,10 @@
     "message": "Stylus a échoué à parser le usercss :",
     "description": "The error message to show when stylus failed to parse usercss"
   },
+  "popupAutoResort": {
+    "message": "Retrier les styles dans la popup à chaque (dés)activation",
+    "description": "Label for the checkbox controlling popup resorting."
+  },
   "popupBorders": {
     "message": "Ajouter des bordures blanches sur les côtés",
     "description": ""
@@ -1052,6 +1120,10 @@
   "popupManageTooltip": {
     "message": "Maj-clic ou clic droit ouvre le gestionnaire avec les styles applicables au site courant.",
     "description": "Tooltip for the 'Manage' button in the popup."
+  },
+  "popupMenuButtonTooltip": {
+    "message": "Actions",
+    "description": "Tooltip for menu button in popup."
   },
   "popupOpenEditInWindow": {
     "message": "Ouvrir l'éditeur dans une nouvelle fenêtre",
@@ -1076,6 +1148,10 @@
   "previewTooltip": {
     "message": "Applique temporairement les changements sans sauvegarder.\nSauvegarde le style pour rendre les changements permanents.",
     "description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+  },
+  "reload": {
+    "message": "Recharger l´extension Stylus",
+    "description": "Context menu reload"
   },
   "replace": {
     "message": "Remplacer",
@@ -1478,6 +1554,10 @@
   },
   "syncDropboxStyles": {
     "message": "Exporter vers Dropbox",
+    "description": ""
+  },
+  "syncDropboxDeprecated": {
+    "message": "L´import/export Dropbox est remplacé par une méthode de synchronisation de styles plus avancés dans la page des options",
     "description": ""
   },
   "retrieveDropboxSync": {

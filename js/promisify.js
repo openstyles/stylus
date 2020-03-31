@@ -1,4 +1,3 @@
-/* exported promisify */
 'use strict';
 /*
 Convert chrome APIs into promises. Example:
@@ -7,8 +6,8 @@ Convert chrome APIs into promises. Example:
   storageSyncGet(['key']).then(result => {...});
 
 */
-function promisify(fn) {
-  return (...args) =>
+self.promisify = self.INJECTED === 1 ? self.promisify : fn =>
+  (...args) =>
     new Promise((resolve, reject) => {
       fn(...args, (...result) => {
         if (chrome.runtime.lastError) {
@@ -21,4 +20,3 @@ function promisify(fn) {
         );
       });
     });
-}

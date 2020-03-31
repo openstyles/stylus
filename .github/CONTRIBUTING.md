@@ -34,25 +34,9 @@ You can help us translate the extension on [Transifex](https://www.transifex.com
 * Make any changes within a branch of this repository (not the `master` branch).
 * Submit a pull request and include a reference to the initial issue with the discussion.
 
-## Scripts
+## Build scripts
 
-* `npm run lint` - Run ESLint on all JavaScript files.
-* `npm run update` - Runs update-node & update-main scripts.
-* `npm run update-quick` - Updates development dependencies (uses `npm update`; does not include new dependencies).
-* `npm run update-locales` (admin only)- Updates locale files from Transifex. See the [updating locale files section](#updating-locale-files-admin-only) for more details.
-* `npm run update-main` - Runs update-versions & update-codemirror.
-* `npm run update-node` - Update development dependencies, removes & reinstalls `node_modules` folder (slow).
-* `npm run update-transifex` (admin only) - Upload `en/messages.json` source to Transifex.
-* `npm run update-vendor` - Update codemirror, codemirror themes & other vendor libraries.
-* `npm run update-versions` - Update version of `manifest.json` to match `package.json`.
-* `npm run zip` - Run update-versions, then compress required files into a zip file.
-
-## Updating locale files (admin only)
-
-* Make sure you have the Transifex client installed. Follow the instructions on [this page](https://docs.transifex.com/client/installing-the-client).
-* Contact another admin if you need the `.transifexrc` file in the root folder. It includes the API key to use Transifex's API.
-* Use `npm run update-locales` in the command line to [update the language files](https://docs.transifex.com/client/pull) in the repo.
-* Use `npm run update-transifex` in the command line to [upload the source](https://docs.transifex.com/client/push) `en/messages.json` file to Transifex.
+See [BUILD.md](../BUILD.md) for more information.
 
 ## Contact us
 

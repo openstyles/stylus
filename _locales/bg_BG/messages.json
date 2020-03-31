@@ -230,10 +230,6 @@
     "message": "Провери за обновления",
     "description": "Label for the checkbox to save current URL for update check"
   },
-  "installUpdateUnavailable": {
-    "message": "За да разрешите проверка за обновления, пуснете файла върху лентата с табове, или в метаданните на стила укажете @updateURL.",
-    "description": ""
-  },
   "license": {
     "message": "Лиценз",
     "description": "Label for the license"
@@ -309,17 +305,9 @@
     "message": "Получи се грешка докато наблюдавахме файла",
     "description": "The label of live-reload error"
   },
-  "liveReloadInstallHint": {
-    "message": "Преглед на живо е разрешен, така че инсталирания стил ще бъде обновен автоматично при външни промени докато двата прозореца с кода и оригинала са отворени.",
-    "description": "The label of live-reload feature"
-  },
   "liveReloadLabel": {
     "message": "Преглед на живо",
     "description": "The label of live-reload feature"
-  },
-  "liveReloadUnavailable": {
-    "message": "За да разрешите презареждане в реално време, пуснете файла върху лентата с табове (областта, където са показани заглавията на табовете).",
-    "description": ""
   },
   "manageFilters": {
     "message": "Филтри",
