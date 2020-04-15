@@ -267,6 +267,10 @@ input:invalid {
   margin-top: 4em;
 }
 /************ section editor ***********/
+.CodeMirror-vscrollbar,
+.CodeMirror-hscrollbar {
+  pointer-events: auto !important; /* FF bug */
+}
 .section-editor .section {
   margin: 0 0.7rem;
   padding: 1rem;
