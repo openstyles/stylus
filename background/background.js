@@ -11,6 +11,20 @@ var backgroundWorker = workerUtil.createWorker({
   url: '/background/background-worker.js'
 });
 
+// eslint-disable-next-line no-var
+var browserCommands, contextMenus;
+
+// *************************************************************************
+// browser commands
+browserCommands = {
+  openManage,
+  openOptions: () => openManage({options: true}),
+  styleDisableAll(info) {
+    prefs.set('disableAll', info ? info.checked : !prefs.get('disableAll'));
+  },
+  reload: () => chrome.runtime.reload(),
+};
+
 window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   deleteStyle: styleManager.deleteStyle,
   editSave: styleManager.editSave,
@@ -71,8 +85,8 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   },
 
   optionsCustomizeHotkeys() {
-    return browser.runtime.openOptionsPage()
-      .then(() => new Promise(resolve => setTimeout(resolve, 100)))
+    return browserCommands.openOptions()
+      .then(() => new Promise(resolve => setTimeout(resolve, 500)))
       .then(() => msg.broadcastExtension({method: 'optionsCustomizeHotkeys'}));
   },
 
@@ -84,9 +98,6 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
 
   openManage
 });
-
-// eslint-disable-next-line no-var
-var browserCommands, contextMenus;
 
 // *************************************************************************
 // register all listeners
@@ -146,17 +157,6 @@ chrome.runtime.onInstalled.addListener(({reason}) => {
   // themes may change
   delete localStorage.codeMirrorThemes;
 });
-
-// *************************************************************************
-// browser commands
-browserCommands = {
-  openManage,
-  openOptions: () => openManage({options: true}),
-  styleDisableAll(info) {
-    prefs.set('disableAll', info ? info.checked : !prefs.get('disableAll'));
-  },
-  reload: () => chrome.runtime.reload(),
-};
 
 // *************************************************************************
 // context menus
