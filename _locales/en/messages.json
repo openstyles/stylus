@@ -3,6 +3,14 @@
     "message": "Write new style",
     "description": "Label for the button to go to the add style page"
   },
+  "addPlainStyleLabel": {
+    "message": "New plain style",
+    "description": "Label for the button to go to the add style page"
+  },
+  "addUserCSSStyleLabel": {
+    "message": "New UserCSS style",
+    "description": "Label for the button to go to the add style page"
+  },
   "addStyleTitle": {
     "message": "Add Style",
     "description": "Title of the page for adding styles"
@@ -23,10 +31,6 @@
       }
     },
     "description": "Text on the manage screen to describe what the style applies to"
-  },
-  "appliesDisplayTruncatedSuffix": {
-    "message": "and more",
-    "description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
   },
   "appliesDomainOption": {
     "message": "URLs on the domain",
@@ -88,12 +92,17 @@
     "message": "Backup",
     "description": "Heading for backup"
   },
+  "backupImport": {
+    "message": "Import backup",
+    "description": "Tooltip for header import/restore backup icon"
+  },
   "backupMessage": {
     "message": "Select a file or drag and drop to this page.",
     "description": "Message for backup"
   },
   "bckpInstStyles": {
-    "message": "Export styles"
+    "message": "Local device",
+    "description": "Selected option to backup indicated styles to local device/drive"
   },
   "checkAllUpdates": {
     "message": "Check all styles for updates",
@@ -335,7 +344,11 @@
   },
   "exportLabel": {
     "message": "Export",
-    "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+    "description": "Label for the button to export a style ('edit' page) or bulk styles ('manage' page)"
+  },
+  "exportAllLabel": {
+    "message": "Export All",
+    "description": "Label for the button to export all styles ('manage' page)"
   },
   "externalFeedback": {
     "message": "Feedback",
@@ -405,6 +418,10 @@
     "message": "Enabled",
     "description": "Used in various lists/options to indicate that something is enabled"
   },
+  "genericFilterLabel": {
+    "message": "Filter",
+    "description": "Used in various lists/options to indicate that something is or will be filtered"
+  },
   "genericError": {
     "message": "Error",
     "description": "Used in various places to indicate some error occurred."
@@ -412,6 +429,10 @@
   "genericHistoryLabel": {
     "message": "History",
     "description": "Used in various places to show a history log of something"
+  },
+  "genericName": {
+    "message": "Name",
+    "description": "Used in various places to indicate the style name"
   },
   "genericNext": {
     "message": "Next",
@@ -553,6 +574,10 @@
   "linkGetHelp": {
     "message": "Get help",
     "description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
+  },
+  "linkChat": {
+    "message": "Chat with us",
+    "description": "Link to open a new browser tab to chat with users & developers on Discord"
   },
   "linkGetStyles": {
     "message": "Get styles",
@@ -1164,7 +1189,8 @@
     "description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
   },
   "retrieveBckp": {
-    "message": "Import styles"
+    "message": "Local source",
+    "description": "Selected option to get a backup of styles from a local device/drive"
   },
   "search": {
     "message": "Search",
@@ -1214,6 +1240,26 @@
     "message": "</> key focuses the search field.\nPlain text: search within the name, code, homepage URL and sites it is applied to. Words with less than 3 letters are ignored.\nStyles matching a full URL: prefix the search with <url:>, e.g. <url:https://github.com/openstyles/stylus>\nRegular expressions: include slashes and flags, e.g. </body.*?\\ba\\b/simguy>\nExact words: wrap the query in double quotes, e.g. <\".header ~ div\">",
     "description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
   },
+  "bulkActions": {
+    "message": "Apply actions to selected styles",
+    "description": "Label for bulk actions select dropdown"
+  },
+  "bulkActionsSelect": {
+    "message": "Choose a bulk action",
+    "description": "Placeholder text in dropdown to tell the user to choose an action to apply to all selected styles"
+  },
+  "bulkActionsApply": {
+    "message": "Apply",
+    "description": "Text for button to apply the selected action"
+  },
+  "bulkActionsTooltip": {
+    "message": "Bulk actions can be applied to selected styles in this column",
+    "description": "Select style for bulk action header tooltip"
+  },
+  "bulkActionsError": {
+    "message": "Choose at least one style",
+    "description": "Error displayed in a tooltip when the user attempts to apply an action with no styles selected"
+  },
   "sectionAdd": {
     "message": "Add another section",
     "description": "Label for the button to add a section"
@@ -1237,33 +1283,34 @@
   "shortcutsNote": {
     "message": "Define keyboard shortcuts"
   },
-  "sortDateNewestFirst": {
-    "message": "newest first",
-    "description": "Text added to indicate that sorting a date would add the newest entries at the top"
+  "sortColumnEnabled": {
+    "message": "enabled styles",
+    "description": "Column name seen in the tooltip when hovering over the header; used to replace the 'sortLabel` placeholder"
   },
-  "sortDateOldestFirst": {
-    "message": "oldest first",
-    "description": "Text added to indicate that sorting a date would add the oldest entries at the top"
+  "sortColumnName": {
+    "message": "style name",
+    "description": "Column name seen in the tooltip when hovering over the header; used to replace the 'sortLabel` placeholder"
+  },
+  "sortColumnVersion": {
+    "message": "style version",
+    "description": "Column name seen in the tooltip when hovering over the header; used to replace the 'sortLabel` placeholder"
+  },
+  "sortColumnLastUpdate": {
+    "message": "last updated",
+    "description": "Column name seen in the tooltip when hovering over the header; used to replace the 'sortLabel` placeholder"
+  },
+  "sortHeader": {
+    "message": "Sort",
+    "description": "Title of sort column, indicating that the style can be manually sorted by dragging & dropping"
   },
   "sortLabel": {
-    "message": "Select a sort to apply to the installed styles",
-    "description": "Title on the sort select to indicate it is used for sorting entries"
-  },
-  "sortLabelTitleAsc": {
-    "message": "Title Ascending",
-    "description": "Text added to option group to indicate a block of options that apply a title ascending (A to Z) sort"
-  },
-  "sortLabelTitleDesc": {
-    "message": "Title Descending",
-    "description": "Text added to option group to indicate a block of options that apply a title descending (Z to A) sort"
-  },
-  "sortStylesHelp": {
-    "message": "Choose the type of sort to apply to the installed entries from within the sort dropdown. The default setting applies an ascending sort (A to Z) to the entry titles. Sorts within the \"Title Descending\" group will apply a descending sort (Z to A) to the title.\nThere are other presets that will allow sorting the entries by multiple criteria. Think of this like sorting a table with multiple columns and each category in a select (between the plus signs) represents a column, or group.\nFor example, if the setting is \"Enabled (first) + Title\", the entries would sort so that all the enabled entries are sorted to the top of the list, then an entry title ascending sort (A to Z) is applied to both the enabled and disabled entries separately.",
-    "description": "Text in the minihelp displayed when clicking (i) icon to the right of the sort input field on the Manage styles page"
-  },
-  "sortStylesHelpTitle": {
-    "message": "Sort contents",
-    "description": "Label for the sort info popup on the Manage styles page"
+    "message": "Click to sort the \"$name$\" column;\nUse shift + click to sort multiple columns",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    },
+    "description": "Title added to links in the manager page header to inform the user on how to sort the columns"
   },
   "styleBadRegexp": {
     "message": "Regexp is invalid.",

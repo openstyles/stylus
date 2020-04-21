@@ -1,11 +1,12 @@
-/* global messageBox ENTRY_ID_PREFIX newUI filtersSelector filterAndAppend
+/* global messageBox UI handleEvent filtersSelector filterAndAppend
   sorter $ $$ $create API onDOMready scrollElementIntoView t chromeLocal */
-/* exported handleUpdateInstalled */
+/* exported handleUpdateInstalled resetUpdates */
 'use strict';
 
+let updateTimer;
+
 onDOMready().then(() => {
-  $('#check-all-updates').onclick = checkUpdateAll;
-  $('#check-all-updates-force').onclick = checkUpdateAll;
+  $('#check-all-updates-force').onclick = checkUpdateBulk;
   $('#apply-all-updates').onclick = applyUpdateAll;
   $('#update-history').onclick = showUpdateHistory;
 });
@@ -26,18 +27,28 @@ function applyUpdateAll() {
   });
 }
 
+function resetUpdates() {
+  $('#check-all-updates-force').classList.add('hidden');
+  $('#apply-all-updates').classList.add('hidden');
+  $('#update-history').classList.add('hidden');
+  const checkbox = $('#only-updates');
+  checkbox.checked = false;
+  checkbox.parentElement.classList.add('hidden');
+}
 
-function checkUpdateAll() {
+
+function checkUpdateBulk() {
+  clearTimeout(updateTimer);
   document.body.classList.add('update-in-progress');
-  const btnCheck = $('#check-all-updates');
+  // const btnCheck = $('#check-all-updates');
   const btnCheckForce = $('#check-all-updates-force');
   const btnApply = $('#apply-all-updates');
   const noUpdates = $('#update-all-no-updates');
-  btnCheck.disabled = true;
+  const styleIds = $$('.entry-filter-toggle:checked').map(el => el.closest('.entry').styleMeta.id);
+  // btnCheck.disabled = true;
   btnCheckForce.classList.add('hidden');
   btnApply.classList.add('hidden');
   noUpdates.classList.add('hidden');
-
   const ignoreDigest = this && this.id === 'check-all-updates-force';
   $$('.updatable:not(.can-update)' + (ignoreDigest ? '' : ':not(.update-problem)'))
     .map(checkUpdate);
@@ -53,10 +64,11 @@ function checkUpdateAll() {
     chrome.runtime.onConnect.removeListener(onConnect);
   });
 
-  API.updateCheckAll({
+  API.updateCheckBulk({
     save: false,
     observe: true,
     ignoreDigest,
+    styleIds,
   });
 
   function observer(info, port) {
@@ -82,21 +94,26 @@ function checkUpdateAll() {
 
     port.onMessage.removeListener(observer);
     document.body.classList.remove('update-in-progress');
-    btnCheck.disabled = total === 0;
+    // btnCheck.disabled = total === 0;
     btnApply.disabled = false;
     renderUpdatesOnlyFilter({check: updated + skippedEdited > 0});
     if (!updated) {
-      noUpdates.dataset.skippedEdited = skippedEdited > 0;
+      if (skippedEdited > 0) {
+        noUpdates.dataset.title = t('updateAllCheckSucceededSomeEdited');
+      }
       noUpdates.classList.remove('hidden');
       btnCheckForce.classList.toggle('hidden', skippedEdited === 0);
+      updateTimer = setTimeout(() => {
+        noUpdates.classList.add('hidden');
+        noUpdates.dataset.title = '';
+      }, 1e4);
     }
   }
 }
 
 
 function checkUpdate(entry, {single} = {}) {
-  $('.update-note', entry).textContent = t('checkingForUpdate');
-  $('.check-update', entry).title = '';
+  $('.check-update', entry).dataset.title = t('checkingForUpdate');
   if (single) {
     API.updateCheck({
       save: false,
@@ -111,7 +128,8 @@ function checkUpdate(entry, {single} = {}) {
 
 function reportUpdateState({updated, style, error, STATES}) {
   const isCheckAll = document.body.classList.contains('update-in-progress');
-  const entry = $(ENTRY_ID_PREFIX + style.id);
+  const entry = $(UI.ENTRY_ID_PREFIX + style.id);
+  if (!entry) return;
   const newClasses = new Map([
     /*
      When a style is updated/installed, handleUpdateInstalled() clears "updatable"
@@ -130,8 +148,10 @@ function reportUpdateState({updated, style, error, STATES}) {
   if (updated) {
     newClasses.set('can-update', true);
     entry.updatedCode = style;
-    $('.update-note', entry).textContent = '';
-    $('#only-updates').classList.remove('hidden');
+    const onlyUpdates = $('#only-updates');
+    onlyUpdates.parentElement.classList.remove('hidden');
+    onlyUpdates.checked = true;
+    onlyUpdates.change();
   } else if (!entry.classList.contains('can-update')) {
     const same = (
       error === STATES.SAME_MD5 ||
@@ -155,15 +175,14 @@ function reportUpdateState({updated, style, error, STATES}) {
     const message = same ? t('updateCheckSucceededNoUpdate') : error;
     newClasses.set('no-update', true);
     newClasses.set('update-problem', !same);
-    $('.update-note', entry).textContent = message;
-    $('.check-update', entry).title = newUI.enabled ? message : '';
-    $('.update', entry).title = t(edited ? 'updateCheckManualUpdateForce' : 'installUpdate');
+    $('.check-update', entry).dataset.title = UI.enabled ? message : '';
+    $('.update', entry).dataset.title = t(edited ? 'updateCheckManualUpdateForce' : 'installUpdate');
     // digest may change silently when forcing an update of a locally edited style
     // so we need to update it in entry's styleMeta in all open manager tabs
     if (error === STATES.SAME_CODE) {
       for (const view of chrome.extension.getViews({type: 'tab'})) {
         if (view.location.pathname === location.pathname) {
-          const entry = view.$(ENTRY_ID_PREFIX + style.id);
+          const entry = view.$(UI.ENTRY_ID_PREFIX + style.id);
           if (entry) entry.styleMeta.originalDigest = style.originalDigest;
         }
       }
@@ -196,16 +215,15 @@ function reportUpdateState({updated, style, error, STATES}) {
   }
 }
 
-
 function renderUpdatesOnlyFilter({show, check} = {}) {
   const numUpdatable = $$('.can-update').length;
   const mightUpdate = numUpdatable > 0 || $('.update-problem');
-  const checkbox = $('#only-updates input');
+  const checkbox = $('#only-updates');
   show = show !== undefined ? show : mightUpdate;
   check = check !== undefined ? show && check : checkbox.checked && mightUpdate;
 
-  $('#only-updates').classList.toggle('hidden', !show);
-  checkbox.checked = check && show;
+  checkbox.checked = check;
+  checkbox.parentElement.classList.toggle('hidden', !show);
   checkbox.dispatchEvent(new Event('change'));
 
   const btnApply = $('#apply-all-updates');
@@ -296,7 +314,6 @@ function handleUpdateInstalled(entry, reason) {
   const note = t(isNew ? 'installButtonInstalled' : 'updateCompleted');
   entry.classList.add('update-done', ...(isNew ? ['install-done'] : []));
   entry.classList.remove('can-update', 'updatable');
-  $('.update-note', entry).textContent = note;
-  $('.updated', entry).title = note;
+  $('.updated', entry).dataset.title = note;
   renderUpdatesOnlyFilter();
 }

@@ -1,12 +1,22 @@
-/* global installed messageBox t $ $create prefs */
+/* global installed t $ prefs semverCompare */
 /* exported sorter */
 'use strict';
 
 const sorter = (() => {
 
+  // Set up for only one column
+  const defaultSort = 'title,asc';
+
+  const sortOrder = [
+    'asc',
+    'desc',
+    '' // unsorted
+  ];
+
   const sorterType = {
     alpha: (a, b) => a < b ? -1 : a === b ? 0 : 1,
     number: (a, b) => (a || 0) - (b || 0),
+    semver: (a, b) => semverCompare(a, b)
   };
 
   const tagData = {
@@ -20,113 +30,129 @@ const sorter = (() => {
       parse: ({style}) => style.usercssData ? 0 : 1,
       sorter: sorterType.number
     },
+    enabled: {
+      text: t('genericEnabledLabel'),
+      parse: ({style}) => style.enabled ? 0 : 1,
+      sorter: sorterType.number
+    },
     disabled: {
-      text: '', // added as either "enabled" or "disabled" by the addOptions function
+      text: t('genericDisabledLabel'),
       parse: ({style}) => style.enabled ? 1 : 0,
       sorter: sorterType.number
     },
+    version: {
+      text: '#',
+      parse: ({style}) => (style.usercssData && style.usercssData.version || ''),
+      sorter: sorterType.semver
+    },
     dateInstalled: {
       text: t('dateInstalled'),
-      parse: ({style}) => style.installDate,
+      parse: ({style}) => style.installDate || '',
       sorter: sorterType.number
     },
     dateUpdated: {
       text: t('dateUpdated'),
-      parse: ({style}) => style.updateDate,
+      parse: ({style}) => style.updateDate || '',
       sorter: sorterType.number
     }
   };
 
-  // Adding (assumed) most commonly used ('title,asc' should always be first)
-  // whitespace before & after the comma is ignored
-  const selectOptions = [
-    '{groupAsc}',
-    'title,asc',
-    'dateInstalled,desc, title,asc',
-    'dateInstalled,asc, title,asc',
-    'dateUpdated,desc, title,asc',
-    'dateUpdated,asc, title,asc',
-    'usercss,asc, title,asc',
-    'usercss,desc, title,asc',
-    'disabled,asc, title,asc',
-    'disabled,desc, title,asc',
-    'disabled,desc, usercss,asc, title,asc',
-    '{groupDesc}',
-    'title,desc',
-    'usercss,asc, title,desc',
-    'usercss,desc, title,desc',
-    'disabled,desc, title,desc',
-    'disabled,desc, usercss,asc, title,desc'
-  ];
-
   const splitRegex = /\s*,\s*/;
+  const whitespace = /\s+/g;
 
   let columns = 1;
-
-  function addOptions() {
-    let container;
-    const select = $('#manage.newUI.sort');
-    const renderBin = document.createDocumentFragment();
-    const option = $create('option');
-    const optgroup = $create('optgroup');
-    const meta = {
-      desc: ' \u21E9',
-      enabled: t('genericEnabledLabel'),
-      disabled: t('genericDisabledLabel'),
-      dateNew: ` (${t('sortDateNewestFirst')})`,
-      dateOld: ` (${t('sortDateOldestFirst')})`,
-      groupAsc: t('sortLabelTitleAsc'),
-      groupDesc: t('sortLabelTitleDesc')
-    };
-    const optgroupRegex = /\{\w+\}/;
-    selectOptions.forEach(sort => {
-      if (optgroupRegex.test(sort)) {
-        if (container) {
-          renderBin.appendChild(container);
-        }
-        container = optgroup.cloneNode();
-        container.label = meta[sort.substring(1, sort.length - 1)];
-        return;
-      }
-      let lastTag = '';
-      const opt = option.cloneNode();
-      opt.textContent = sort.split(splitRegex).reduce((acc, val) => {
-        if (tagData[val]) {
-          lastTag = val;
-          return acc + (acc !== '' ? ' + ' : '') + tagData[val].text;
-        }
-        if (lastTag.indexOf('date') > -1) return acc + meta[val === 'desc' ? 'dateNew' : 'dateOld'];
-        if (lastTag === 'disabled') return acc + meta[val === 'desc' ? 'enabled' : 'disabled'];
-        return acc + (meta[val] || '');
-      }, '');
-      opt.value = sort;
-      container.appendChild(opt);
-    });
-    renderBin.appendChild(container);
-    select.appendChild(renderBin);
-    select.value = prefs.get('manage.newUI.sort');
-  }
+  let lastSort;
 
   function sort({styles}) {
-    const sortBy = prefs.get('manage.newUI.sort').split(splitRegex);
+    let sortBy = prefs.get('manage.newUI.sort').replace(whitespace, '');
+    if (lastSort === sortBy) {
+      return styles;
+    }
+    sortBy = sortBy.split(splitRegex);
+    updateHeaders(sortBy);
+    // Always append an ascending title (default) sort to keep sorts consistent; but don't
+    // show it in the header
+    sortBy = sortBy.concat(defaultSort.split(splitRegex));
     const len = sortBy.length;
+
+    // Add first column sort to #installed; show sortable column when id column sorted
+    installed.dataset.sort = sortBy[0];
+
     return styles.sort((a, b) => {
-      let types, direction;
+      let types, direction, x, y;
       let result = 0;
       let index = 0;
       // multi-sort
       while (result === 0 && index < len) {
         types = tagData[sortBy[index++]];
         direction = sortBy[index++] === 'asc' ? 1 : -1;
-        result = types.sorter(types.parse(a), types.parse(b)) * direction;
+        x = types.parse(a);
+        // sort empty values to the bottom
+        if (x === '') {
+          return 1;
+        }
+        y = types.parse(b);
+        if (y === '') {
+          return -1;
+        }
+        result = types.sorter(x, y) * direction;
       }
       return result;
     });
   }
 
+  // Update default sort on init & when all other columns are unsorted
+  function updateHeaders(sortBy) {
+    let header, sortDir;
+    let i = 0;
+    const len = sortBy.length;
+    while (i < len) {
+      header = $(`.entry-header [data-type="${sortBy[i++]}"]`);
+      sortDir = sortBy[i++];
+      if (header) {
+        header.dataset.sortDir = sortDir;
+      }
+    }
+  }
+
+  function updateSort(event) {
+    const sortables = $$('.entry-header .sortable');
+    const elm = event.target;
+    // default sort column only allows asc, desc; not unsorted
+    const len = sortOrder.length - (elm.dataset.type === defaultSort.split(splitRegex)[0] ? 1 : 0);
+    let index = (sortOrder.indexOf(elm.dataset.sortDir) + 1) % len;
+    // shift key for multi-column sorting
+    if (!event.shiftKey) {
+      sortables.forEach(el => {
+        el.dataset.sortDir = '';
+        el.dataset.timestamp = '';
+      });
+    }
+    elm.dataset.sortDir = sortOrder[index];
+    elm.dataset.timestamp = Date.now();
+
+    const newSort = sortables
+      .filter(el => el.dataset.sortDir !== '')
+      .reduce((acc, el) => {
+        const {sortDir, type, timestamp = new Date()} = el.dataset;
+        if (sortDir) {
+          acc.push({sortDir, type, timestamp: parseFloat(timestamp)});
+        }
+        return acc;
+      }, [])
+      .sort((a, b) => a.timestamp - b.timestamp)
+      .reduce((acc, item) => {
+        acc = acc.concat(item.type, item.sortDir);
+        return acc;
+      }, [])
+      .join(',');
+    prefs.set('manage.newUI.sort', newSort || defaultSort);
+  }
+
   function update() {
     if (!installed) return;
     const current = [...installed.children];
+    current.shift(); // remove header
     const sorted = sort({
       styles: current.map(entry => ({
         entry,
@@ -148,7 +174,7 @@ const sorter = (() => {
     let isOdd = false;
     const flipRows = columns % 2 === 0;
     for (const {classList} of installed.children) {
-      if (classList.contains('hidden')) continue;
+      if (classList.contains('hidden') || classList.contains('entry-header')) continue;
       classList.toggle('odd', isOdd);
       classList.toggle('even', !isOdd);
       if (flipRows && ++index >= columns) {
@@ -162,8 +188,9 @@ const sorter = (() => {
   function updateColumnCount() {
     let newValue = 1;
     for (let el = document.documentElement.lastElementChild;
-         el.localName === 'style';
-         el = el.previousElementSibling) {
+      el.localName === 'style';
+      el = el.previousElementSibling
+    ) {
       if (el.textContent.includes('--columns:')) {
         newValue = Math.max(1, getComputedStyle(document.documentElement).getPropertyValue('--columns') | 0);
         break;
@@ -175,25 +202,10 @@ const sorter = (() => {
     }
   }
 
-  function showHelp(event) {
-    event.preventDefault();
-    messageBox({
-      className: 'help-text',
-      title: t('sortStylesHelpTitle'),
-      contents:
-        $create('div',
-          t('sortStylesHelp').split('\n').map(line =>
-            $create('p', line))),
-      buttons: [t('confirmOK')],
-    });
-  }
-
   function init() {
     prefs.subscribe(['manage.newUI.sort'], update);
-    $('#sorter-help').onclick = showHelp;
-    addOptions();
     updateColumnCount();
   }
 
-  return {init, update, sort, updateStripes};
+  return {init, update, sort, updateSort, updateStripes};
 })();

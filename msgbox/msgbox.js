@@ -145,8 +145,10 @@ function messageBox({
   }
 
   function removeSelf() {
-    messageBox.element.remove();
-    messageBox.element = null;
+    if (messageBox.element) {
+      messageBox.element.remove();
+      messageBox.element = null;
+    }
     messageBox.resolve = null;
   }
 }
