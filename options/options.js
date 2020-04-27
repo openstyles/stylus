@@ -9,7 +9,6 @@ setupRadioButtons();
 enforceInputRange($('#popupWidth'));
 setTimeout(splitLongTooltips);
 
-// TODO: add max version to re-enable once crbug.com/996859 is resolved
 if (!FIREFOX && CHROME >= 3809 && CHROME < 4044) {
   const dropboxOption = $('option[value="dropbox"]');
   dropboxOption.disabled = true;
