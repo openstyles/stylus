@@ -548,7 +548,7 @@ function handleUpdate(style, {reason, method} = {}) {
     handleUpdateInstalled(entry, reason);
   }
   filterAndAppend({entry}).then(sorter.update);
-  if (!entry.matches('.hidden') && reason !== 'import' && !$('#stylus-embedded-options')) {
+  if (!entry.matches('.hidden') && reason !== 'import' && reason !== 'sync') {
     animateElement(entry);
     requestAnimationFrame(() => scrollElementIntoView(entry));
   }
