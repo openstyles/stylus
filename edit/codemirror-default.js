@@ -372,7 +372,13 @@ CodeMirror.hint && (() => {
     }
 
     if (!editor || !style || !style.includes(USO_VAR)) {
-      return originalHelper(cm);
+      // add ":" after a property name
+      const res = originalHelper(cm);
+      const state = res && cm.getTokenAt(pos).state.state;
+      if (state === 'block' || state === 'maybeprop') {
+        res.list = res.list.map(str => str + ': ');
+      }
+      return res;
     }
 
     // USO vars in usercss mode editor
