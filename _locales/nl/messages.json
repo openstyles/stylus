@@ -634,7 +634,7 @@
     "description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
   },
   "manageFaviconsHelp": {
-    "message": "Stylus gebruikt een externe dienst: https://www.google.com/s2/favicons",
+    "message": "Stylus gebruikt een externe dienst: https://icons.duckduckgo.com/ip2/domain.ico",
     "description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
   },
   "manageHeading": {

@@ -28,7 +28,7 @@ const newUI = {
 newUI.renderClass();
 
 const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps'];
-const GET_FAVICON_URL = 'https://www.google.com/s2/favicons?domain=';
+const GET_FAVICON_URL = 'https://icons.duckduckgo.com/ip2/';
 const OWN_ICON = chrome.runtime.getManifest().icons['16'];
 
 const handleEvent = {};
@@ -321,11 +321,11 @@ function getFaviconImgSrc(container = installed) {
   const regexpMatchDomain = /^.*?:\/\/([^/]+)/;
   for (const target of $$('.target', container)) {
     const type = target.dataset.type;
-    const targetValue = target.textContent;
+    const targetValue = target.textContent.replace(/\*$/, '');;
     if (!targetValue) continue;
     let favicon = '';
     if (type === 'domains') {
-      favicon = GET_FAVICON_URL + targetValue;
+      favicon = `${GET_FAVICON_URL}${targetValue}.ico`;
     } else if (targetValue.includes('chrome-extension:') || targetValue.includes('moz-extension:')) {
       favicon = OWN_ICON;
     } else if (type === 'regexps') {
@@ -333,10 +333,10 @@ function getFaviconImgSrc(container = installed) {
         .replace(regexpRemoveNegativeLookAhead, '')
         .replace(regexpReplaceExtraCharacters, '')
         .match(regexpMatchRegExp);
-      favicon = favicon ? GET_FAVICON_URL + favicon.shift() : '';
+      favicon = favicon ? `${GET_FAVICON_URL}${favicon.shift()}.ico` : '';
     } else {
       favicon = targetValue.includes('://') && targetValue.match(regexpMatchDomain);
-      favicon = favicon ? GET_FAVICON_URL + favicon[1] : '';
+      favicon = favicon ? `${GET_FAVICON_URL}${favicon[1]}.ico` : '';
     }
     if (favicon) {
       const img = target.children[0];

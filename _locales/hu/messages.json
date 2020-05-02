@@ -622,7 +622,7 @@
     "description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
   },
   "manageFaviconsHelp": {
-    "message": "A Stylus külső szolgáltatást használ (https://www.google.com/s2/favicons)",
+    "message": "A Stylus külső szolgáltatást használ (https://icons.duckduckgo.com/ip2/domain.ico)",
     "description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
   },
   "manageFilters": {
