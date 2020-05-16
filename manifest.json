@@ -18,6 +18,7 @@
     "webRequestBlocking",
     "contextMenus",
     "storage",
+    "unlimitedStorage",
     "alarms",
     "identity",
     "<all_urls>"
