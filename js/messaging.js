@@ -381,7 +381,8 @@ function download(url, {
   body,
   responseType = 'text',
   requiredStatusCode = 200,
-  timeout = 10e3,
+  timeout = 10e3, // connection timeout
+  loadTimeout = 2 * 60e3, // data transfer timeout (counted from the first remote response)
   headers = {
     'Content-type': 'application/x-www-form-urlencoded',
   },
@@ -398,23 +399,41 @@ function download(url, {
   const usoVars = [];
 
   return new Promise((resolve, reject) => {
+    let xhr;
     const u = new URL(collapseUsoVars(url));
-    if (u.protocol === 'file:' && FIREFOX) {
+    const onTimeout = () => {
+      if (xhr) xhr.abort();
+      reject(new Error('Timeout fetching ' + u.href));
+    };
+    let timer = setTimeout(onTimeout, timeout);
+    const switchTimer = () => {
+      clearTimeout(timer);
+      timer = loadTimeout && setTimeout(onTimeout, loadTimeout);
+    };
+    if (u.protocol === 'file:' && FIREFOX) { // TODO: maybe remove this since FF68+ can't do it anymore
       // https://stackoverflow.com/questions/42108782/firefox-webextensions-get-local-files-content-by-path
       // FIXME: add FetchController when it is available.
-      const timer = setTimeout(reject, timeout, new Error('Timeout fetching ' + u.href));
       fetch(u.href, {mode: 'same-origin'})
         .then(r => {
-          clearTimeout(timer);
+          switchTimer();
           return r.status === 200 ? r.text() : Promise.reject(r.status);
         })
         .catch(reject)
-        .then(resolve);
+        .then(text => {
+          clearTimeout(timer);
+          resolve(text);
+        });
       return;
     }
-    const xhr = new XMLHttpRequest();
-    xhr.timeout = timeout;
+    xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState >= XMLHttpRequest.HEADERS_RECEIVED) {
+        xhr.onreadystatechange = null;
+        switchTimer();
+      }
+    };
     xhr.onloadend = event => {
+      clearTimeout(timer);
       if (event.type !== 'error' && (
           xhr.status === requiredStatusCode || !requiredStatusCode ||
           u.protocol === 'file:')) {
