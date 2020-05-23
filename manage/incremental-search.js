@@ -73,16 +73,20 @@ onDOMready().then(() => {
   }
 
   function maybeRefocus(event) {
-    if (event.altKey || event.ctrlKey || event.metaKey ||
-        event.target.matches('[type="text"], [type="search"], [type="number"]') ||
-        $('#message-box')) {
+    if (event.altKey || event.metaKey || $('#message-box')) {
       return;
     }
+    const inTextInput = event.target.matches('[type=text], [type=search], [type=number]');
     const {which: k, key} = event;
-    // focus search field on "/" key
-    if (key === '/' || !key && k === 191 && !event.shiftKey) {
+    // focus search field on "/" or Ctrl-F key
+    if (event.ctrlKey
+        ? (event.code === 'KeyF' || !event.code && k === 70) && !event.shiftKey
+        : (key === '/' || !key && k === 191 && !event.shiftKey) && !inTextInput) {
       event.preventDefault();
       $('#search').focus();
+      return;
+    }
+    if (event.ctrlKey || inTextInput) {
       return;
     }
     const time = performance.now();
