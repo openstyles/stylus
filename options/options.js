@@ -10,7 +10,7 @@ enforceInputRange($('#popupWidth'));
 setTimeout(splitLongTooltips);
 
 // https://github.com/openstyles/stylus/issues/822
-if (!FIREFOX && CHROME >= 3809 && CHROME < 4044) {
+if (!FIREFOX && CHROME >= 76 && CHROME <= 81) {
   const dropboxOption = $('option[value="dropbox"]');
   dropboxOption.disabled = true;
   dropboxOption.setAttribute('title', t('hostDisabled'));
@@ -24,7 +24,7 @@ if (CHROME_HAS_BORDER_BUG) {
 }
 
 // collapse #advanced block in Chrome pre-66 (classic chrome://extensions UI)
-if (!FIREFOX && !OPERA && CHROME < 3343) {
+if (!FIREFOX && !OPERA && CHROME < 66) {
   const block = $('#advanced');
   $('h1', block).onclick = event => {
     event.preventDefault();

@@ -3,7 +3,7 @@
 'use strict';
 
 const iconManager = (() => {
-  const ICON_SIZES = FIREFOX || CHROME >= 2883 && !VIVALDI ? [16, 32] : [19, 38];
+  const ICON_SIZES = FIREFOX || CHROME >= 55 && !VIVALDI ? [16, 32] : [19, 38];
   const staleBadges = new Set();
 
   prefs.subscribe([

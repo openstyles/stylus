@@ -625,7 +625,7 @@ function switchUI({styleOnly} = {}) {
       filter: none;
       opacity: 1;
     }
-  `) + (CHROME >= 3004 ? `
+  `) + (CHROME >= 58 ? `
     .newUI .entry {
       contain: strict;
     }
