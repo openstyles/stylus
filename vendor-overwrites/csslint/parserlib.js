@@ -4017,7 +4017,7 @@ self.parserlib = (() => {
       const stream = this._tokenStream;
       if (stream.match(Tokens.LPAREN)) {
         this._ws();
-        if (stream.match(Tokens.IDENT)) {
+        if (stream.match([Tokens.IDENT, Tokens.CUSTOM_PROP])) {
           // look ahead for not keyword,
           // if not given, continue with declaration condition.
           const ident = lower(stream._token.value);
