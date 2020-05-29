@@ -5421,6 +5421,7 @@ self.parserlib = (() => {
     ]),
 
     supports: new Map([
+      [Tokens.KEYFRAMES_SYM, Parser.prototype._keyframes],
       [Tokens.MEDIA_SYM, Parser.prototype._media],
       [Tokens.SUPPORTS_SYM, Parser.prototype._supports],
       [Tokens.DOCUMENT_SYM, Parser.prototype._documentMisplaced],
@@ -5428,6 +5429,7 @@ self.parserlib = (() => {
     ]),
 
     media: new Map([
+      [Tokens.KEYFRAMES_SYM, Parser.prototype._keyframes],
       [Tokens.MEDIA_SYM, Parser.prototype._media],
       [Tokens.DOCUMENT_SYM, Parser.prototype._documentMisplaced],
       [Tokens.SUPPORTS_SYM, Parser.prototype._supports],
