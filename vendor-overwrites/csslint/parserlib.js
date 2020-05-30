@@ -4017,7 +4017,7 @@ self.parserlib = (() => {
       const stream = this._tokenStream;
       if (stream.match(Tokens.LPAREN)) {
         this._ws();
-        if (stream.match(Tokens.IDENT)) {
+        if (stream.match([Tokens.IDENT, Tokens.CUSTOM_PROP])) {
           // look ahead for not keyword,
           // if not given, continue with declaration condition.
           const ident = lower(stream._token.value);
@@ -5421,6 +5421,7 @@ self.parserlib = (() => {
     ]),
 
     supports: new Map([
+      [Tokens.KEYFRAMES_SYM, Parser.prototype._keyframes],
       [Tokens.MEDIA_SYM, Parser.prototype._media],
       [Tokens.SUPPORTS_SYM, Parser.prototype._supports],
       [Tokens.DOCUMENT_SYM, Parser.prototype._documentMisplaced],
@@ -5428,6 +5429,7 @@ self.parserlib = (() => {
     ]),
 
     media: new Map([
+      [Tokens.KEYFRAMES_SYM, Parser.prototype._keyframes],
       [Tokens.MEDIA_SYM, Parser.prototype._media],
       [Tokens.DOCUMENT_SYM, Parser.prototype._documentMisplaced],
       [Tokens.SUPPORTS_SYM, Parser.prototype._supports],
