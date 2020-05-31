@@ -1,10 +1,14 @@
 /* global messageBox styleSectionsEqual API onDOMready
   tryJSONparse scrollElementIntoView $ $$ API $create t animateElement
   styleJSONseemsValid */
+/* exported bulkChangeQueue bulkChangeTime */
 'use strict';
 
 const STYLISH_DUMP_FILE_EXT = '.txt';
 const STYLUS_BACKUP_FILE_EXT = '.json';
+
+let bulkChangeQueue = [];
+let bulkChangeTime = 0;
 
 onDOMready().then(() => {
   $('#file-all-styles').onclick = event => {
@@ -136,6 +140,8 @@ function importFromString(jsonString) {
         items.push({info, item});
       }
     });
+    bulkChangeQueue.length = 0;
+    bulkChangeTime = performance.now();
     return API.importManyStyles(items.map(i => i.item))
       .then(styles => {
         for (let i = 0; i < styles.length; i++) {
