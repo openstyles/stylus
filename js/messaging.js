@@ -4,15 +4,13 @@
 /* global promisify */
 'use strict';
 
-const CHROME = Boolean(chrome.app) && parseInt(navigator.userAgent.match(/Chrom\w+\/(?:\d+\.){2}(\d+)|$/)[1]);
+const CHROME = Boolean(chrome.app) && parseInt(navigator.userAgent.match(/Chrom\w+\/(\d+)|$/)[1]);
 const OPERA = Boolean(chrome.app) && parseFloat(navigator.userAgent.match(/\bOPR\/(\d+\.\d+)|$/)[1]);
 const VIVALDI = Boolean(chrome.app) && navigator.userAgent.includes('Vivaldi');
-// FIXME: who use this?
-// const ANDROID = !chrome.windows;
 let FIREFOX = !chrome.app && parseFloat(navigator.userAgent.match(/\bFirefox\/(\d+\.\d+)|$/)[1]);
 
 // see PR #781
-const CHROME_HAS_BORDER_BUG = CHROME >= 3167 && CHROME <= 3704;
+const CHROME_HAS_BORDER_BUG = CHROME >= 62 && CHROME <= 74;
 
 if (!CHROME && !chrome.browserAction.openPopup) {
   // in FF pre-57 legacy addons can override useragent so we assume the worst
@@ -62,7 +60,7 @@ const URLS = {
 
   // Chrome 61.0.3161+ doesn't run content scripts on NTP https://crrev.com/2978953002/
   // TODO: remove when "minimum_chrome_version": "61" or higher
-  chromeProtectsNTP: CHROME >= 3161,
+  chromeProtectsNTP: CHROME >= 61,
 
   userstylesOrgJson: 'https://userstyles.org/styles/chrome/',
 

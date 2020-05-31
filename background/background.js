@@ -217,7 +217,7 @@ function createContextMenus(ids) {
 
 if (chrome.contextMenus) {
   // circumvent the bug with disabling check marks in Chrome 62-64
-  const toggleCheckmark = CHROME >= 3172 && CHROME <= 3288 ?
+  const toggleCheckmark = CHROME >= 62 && CHROME <= 64 ?
     (id => chrome.contextMenus.remove(id, () => createContextMenus([id]) + ignoreChromeError())) :
     ((id, checked) => chrome.contextMenus.update(id, {checked}, ignoreChromeError));
 

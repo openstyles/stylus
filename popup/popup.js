@@ -15,7 +15,7 @@ const ABOUT_BLANK = 'about:blank';
 const ENTRY_ID_PREFIX_RAW = 'style-';
 const ENTRY_ID_PREFIX = '#' + ENTRY_ID_PREFIX_RAW;
 
-if (CHROME >= 3345 && CHROME < 3533) { // Chrome 66-69 adds a gap, https://crbug.com/821143
+if (CHROME >= 66 && CHROME <= 69) { // Chrome 66-69 adds a gap, https://crbug.com/821143
   document.head.appendChild($create('style', 'html { overflow: overlay }'));
 }
 
