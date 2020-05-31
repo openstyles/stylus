@@ -1345,165 +1345,154 @@ self.parserlib = (() => {
    * The following token names are defined in CSS3 Grammar:
    * https://www.w3.org/TR/css3-syntax/#lexical
    */
-  const Tokens = [
+  const Tokens = Object.assign([], {
+    EOF: {}, // must be the first token
+  }, {
     // HTML-style comments
-    {name: 'CDO'},
-    {name: 'CDC'},
+    CDO: {},
+    CDC: {},
 
     // ignorables
-    {name: 'S', whitespace: true},
-    {name: 'COMMENT', whitespace: true, comment: true, hide: true},
+    S: {whitespace: true},
+    COMMENT: {whitespace: true, comment: true, hide: true},
 
     // attribute equality
-    {name: 'INCLUDES', text: '~='},
-    {name: 'DASHMATCH', text: '|='},
-    {name: 'PREFIXMATCH', text: '^='},
-    {name: 'SUFFIXMATCH', text: '$='},
-    {name: 'SUBSTRINGMATCH', text: '*='},
+    INCLUDES: {text: '~='},
+    DASHMATCH: {text: '|='},
+    PREFIXMATCH: {text: '^='},
+    SUFFIXMATCH: {text: '$='},
+    SUBSTRINGMATCH: {text: '*='},
 
     // identifier types
-    {name: 'STRING'},
-    {name: 'IDENT'},
-    {name: 'HASH'},
+    STRING: {},
+    IDENT: {},
+    HASH: {},
 
     // at-keywords
-    {name: 'IMPORT_SYM', text: '@import'},
-    {name: 'PAGE_SYM', text: '@page'},
-    {name: 'MEDIA_SYM', text: '@media'},
-    {name: 'FONT_FACE_SYM', text: '@font-face'},
-    {name: 'CHARSET_SYM', text: '@charset'},
-    {name: 'NAMESPACE_SYM', text: '@namespace'},
-    {name: 'SUPPORTS_SYM', text: '@supports'},
-    {name: 'VIEWPORT_SYM', text: ['@viewport', '@-ms-viewport', '@-o-viewport']},
-    {name: 'DOCUMENT_SYM', text: ['@document', '@-moz-document']},
-    {name: 'UNKNOWN_SYM'}, //{ name: "ATKEYWORD"},
+    IMPORT_SYM: {text: '@import'},
+    PAGE_SYM: {text: '@page'},
+    MEDIA_SYM: {text: '@media'},
+    FONT_FACE_SYM: {text: '@font-face'},
+    CHARSET_SYM: {text: '@charset'},
+    NAMESPACE_SYM: {text: '@namespace'},
+    SUPPORTS_SYM: {text: '@supports'},
+    VIEWPORT_SYM: {text: ['@viewport', '@-ms-viewport', '@-o-viewport']},
+    DOCUMENT_SYM: {text: ['@document', '@-moz-document']},
+    UNKNOWN_SYM: {}, //{ name: "ATKEYWORD"},
 
     // CSS3 animations
-    {name: 'KEYFRAMES_SYM', text: ['@keyframes', '@-webkit-keyframes', '@-moz-keyframes', '@-o-keyframes']},
+    KEYFRAMES_SYM: {text: ['@keyframes', '@-webkit-keyframes', '@-moz-keyframes', '@-o-keyframes']},
 
     // important symbol
-    {name: 'IMPORTANT_SYM'},
+    IMPORTANT_SYM: {},
 
     // measurements
-    {name: 'LENGTH'},
-    {name: 'ANGLE'},
-    {name: 'TIME'},
-    {name: 'FREQ'},
-    {name: 'DIMENSION'},
-    {name: 'PERCENTAGE'},
-    {name: 'NUMBER'},
+    LENGTH: {},
+    ANGLE: {},
+    TIME: {},
+    FREQ: {},
+    DIMENSION: {},
+    PERCENTAGE: {},
+    NUMBER: {},
 
     // functions
-    {name: 'URI'},
-    {name: 'FUNCTION'},
+    URI: {},
+    FUNCTION: {},
 
     // Unicode ranges
-    {name: 'UNICODE_RANGE'},
+    UNICODE_RANGE: {},
 
     /*
      * The following token names are defined in CSS3 Selectors: https://www.w3.org/TR/css3-selectors/#selector-syntax
      */
 
     // invalid string
-    {name: 'INVALID'},
+    INVALID: {},
 
     // combinators
-    {name: 'PLUS', text: '+'},
-    {name: 'GREATER', text: '>'},
-    {name: 'COMMA', text: ','},
-    {name: 'TILDE', text: '~'},
+    PLUS: {text: '+'},
+    GREATER: {text: '>'},
+    COMMA: {text: ','},
+    TILDE: {text: '~'},
 
     // modifier
-    {name: 'NOT'},
-    {name: 'ANY', text: ['any', '-webkit-any', '-moz-any']},
-    {name: 'MATCHES'},
-    {name: 'IS'},
+    NOT: {},
+    ANY: {text: ['any', '-webkit-any', '-moz-any']},
+    MATCHES: {},
+    IS: {},
 
     /*
      * Defined in CSS3 Paged Media
      */
-    {name: 'TOPLEFTCORNER_SYM', text: '@top-left-corner'},
-    {name: 'TOPLEFT_SYM', text: '@top-left'},
-    {name: 'TOPCENTER_SYM', text: '@top-center'},
-    {name: 'TOPRIGHT_SYM', text: '@top-right'},
-    {name: 'TOPRIGHTCORNER_SYM', text: '@top-right-corner'},
-    {name: 'BOTTOMLEFTCORNER_SYM', text: '@bottom-left-corner'},
-    {name: 'BOTTOMLEFT_SYM', text: '@bottom-left'},
-    {name: 'BOTTOMCENTER_SYM', text: '@bottom-center'},
-    {name: 'BOTTOMRIGHT_SYM', text: '@bottom-right'},
-    {name: 'BOTTOMRIGHTCORNER_SYM', text: '@bottom-right-corner'},
-    {name: 'LEFTTOP_SYM', text: '@left-top'},
-    {name: 'LEFTMIDDLE_SYM', text: '@left-middle'},
-    {name: 'LEFTBOTTOM_SYM', text: '@left-bottom'},
-    {name: 'RIGHTTOP_SYM', text: '@right-top'},
-    {name: 'RIGHTMIDDLE_SYM', text: '@right-middle'},
-    {name: 'RIGHTBOTTOM_SYM', text: '@right-bottom'},
+    TOPLEFTCORNER_SYM: {text: '@top-left-corner'},
+    TOPLEFT_SYM: {text: '@top-left'},
+    TOPCENTER_SYM: {text: '@top-center'},
+    TOPRIGHT_SYM: {text: '@top-right'},
+    TOPRIGHTCORNER_SYM: {text: '@top-right-corner'},
+    BOTTOMLEFTCORNER_SYM: {text: '@bottom-left-corner'},
+    BOTTOMLEFT_SYM: {text: '@bottom-left'},
+    BOTTOMCENTER_SYM: {text: '@bottom-center'},
+    BOTTOMRIGHT_SYM: {text: '@bottom-right'},
+    BOTTOMRIGHTCORNER_SYM: {text: '@bottom-right-corner'},
+    LEFTTOP_SYM: {text: '@left-top'},
+    LEFTMIDDLE_SYM: {text: '@left-middle'},
+    LEFTBOTTOM_SYM: {text: '@left-bottom'},
+    RIGHTTOP_SYM: {text: '@right-top'},
+    RIGHTMIDDLE_SYM: {text: '@right-middle'},
+    RIGHTBOTTOM_SYM: {text: '@right-bottom'},
 
     /*
      * The following token names are defined in CSS3 Media Queries: https://www.w3.org/TR/css3-mediaqueries/#syntax
      */
-    {name: 'RESOLUTION', state: 'media'},
+    RESOLUTION: {state: 'media'},
 
     /*
      * The following token names are not defined in any CSS specification but are used by the lexer.
      */
 
     // not a real token, but useful for stupid IE filters
-    {name: 'IE_FUNCTION'},
+    IE_FUNCTION: {},
 
     // part of CSS3 grammar but not the Flex code
-    {name: 'CHAR'},
+    CHAR: {},
 
     // TODO: Needed?
     // Not defined as tokens, but might as well be
-    {name: 'PIPE', text: '|'},
-    {name: 'SLASH', text: '/'},
-    {name: 'MINUS', text: '-'},
-    {name: 'STAR', text: '*'},
+    PIPE: {text: '|'},
+    SLASH: {text: '/'},
+    MINUS: {text: '-'},
+    STAR: {text: '*'},
 
-    {name: 'LBRACE', text: '{', endChar: '}'},
-    {name: 'RBRACE', text: '}'},
-    {name: 'LBRACKET', text: '[', endChar: ']'},
-    {name: 'RBRACKET', text: ']'},
-    {name: 'EQUALS', text: '='},
-    {name: 'COLON', text: ':'},
-    {name: 'SEMICOLON', text: ';'},
-    {name: 'LPAREN', text: '(', endChar: ')'},
-    {name: 'RPAREN', text: ')'},
-    {name: 'DOT', text: '.'},
+    LBRACE: {text: '{', endChar: '}'},
+    RBRACE: {text: '}'},
+    LBRACKET: {text: '[', endChar: ']'},
+    RBRACKET: {text: ']'},
+    EQUALS: {text: '='},
+    COLON: {text: ':'},
+    SEMICOLON: {text: ';'},
+    LPAREN: {text: '(', endChar: ')'},
+    RPAREN: {text: ')'},
+    DOT: {text: '.'},
 
-    {name: 'USO_VAR', comment: true},
-    {name: 'CUSTOM_PROP'},
-  ];
-
-  {
-    Tokens.UNKNOWN = -1;
-    Tokens.unshift({name: 'EOF'});
-
-    const nameMap = [];
-    const typeMap = new Map();
-    for (let i = 0, len = Tokens.length; i < len; i++) {
-      nameMap.push(Tokens[i].name);
-      Tokens[Tokens[i].name] = i;
-      if (Tokens[i].text) {
-        if (Tokens[i].text instanceof Array) {
-          for (let j = 0; j < Tokens[i].text.length; j++) {
-            typeMap.set(Tokens[i].text[j], i);
-          }
-        } else {
-          typeMap.set(Tokens[i].text, i);
-        }
+    USO_VAR: {comment: true},
+    CUSTOM_PROP: {},
+  });
+  // make Tokens an array of tokens, store the index in original prop, add 'name' to each token
+  const typeMap = new Map();
+  for (const [k, val] of Object.entries(Tokens)) {
+    const index = Tokens[k] = Tokens.length;
+    val.name = k;
+    Tokens.push(val);
+    const {text} = val;
+    if (text) {
+      for (const item of Array.isArray(text) ? text : [text]) {
+        typeMap.set(item, index);
       }
     }
-
-    Tokens.name = function (tt) {
-      return nameMap[tt];
-    };
-
-    Tokens.type = function (c) {
-      return typeMap.get(c) || -1;
-    };
   }
+  Tokens.UNKNOWN = -1;
+  Tokens.name = index => (Tokens[index] || {}).name;
+  Tokens.type = text => typeMap.get(text) || -1;
 
   //endregion
   //region lowerCase helper
