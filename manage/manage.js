@@ -8,6 +8,7 @@ global messageBox getStyleWithNoCode
   URLS enforceInputRange t tWordBreak formatDate
   getOwnTab getActiveTab openURL animateElement sessionStorageHash debounce
   scrollElementIntoView CHROME VIVALDI FIREFOX router
+  bulkChangeTime:true bulkChangeQueue
 */
 'use strict';
 
@@ -15,6 +16,8 @@ let installed;
 
 const ENTRY_ID_PREFIX_RAW = 'style-';
 const ENTRY_ID_PREFIX = '#' + ENTRY_ID_PREFIX_RAW;
+
+const BULK_THROTTLE_MS = 100;
 
 const newUI = {
   enabled: prefs.get('manage.newUI'),
@@ -62,11 +65,13 @@ function onRuntimeMessage(msg) {
   switch (msg.method) {
     case 'styleUpdated':
     case 'styleAdded':
-      API.getStyle(msg.style.id, true)
-        .then(style => handleUpdate(style, msg));
-      break;
     case 'styleDeleted':
-      handleDelete(msg.style.id);
+      bulkChangeQueue.push(msg);
+      if (performance.now() - bulkChangeTime < BULK_THROTTLE_MS) {
+        debounce(handleBulkChange, BULK_THROTTLE_MS);
+      } else {
+        handleBulkChange();
+      }
       break;
     case 'styleApply':
     case 'styleReplaceAll':
@@ -529,6 +534,26 @@ Object.assign(handleEvent, {
 });
 
 
+function handleBulkChange() {
+  for (const msg of bulkChangeQueue) {
+    const {id} = msg.style;
+    if (msg.method === 'styleDeleted') {
+      handleDelete(id);
+      bulkChangeTime = performance.now();
+    } else {
+      handleUpdateForId(id, msg);
+    }
+  }
+  bulkChangeQueue.length = 0;
+}
+
+function handleUpdateForId(id, opts) {
+  return API.getStyle(id, true).then(style => {
+    handleUpdate(style, opts);
+    bulkChangeTime = performance.now();
+  });
+}
+
 function handleUpdate(style, {reason, method} = {}) {
   if (reason === 'editPreview' || reason === 'editPreviewEnd') return;
   let entry;
@@ -677,15 +702,14 @@ function onVisibilityChange() {
     // page restored without reloading via history navigation (currently only in FF)
     // the catch here is that DOM may be outdated so we'll at least refresh the just edited style
     // assuming other changes aren't important enough to justify making a complicated DOM sync
-    case 'visible':
-      if (sessionStorage.justEditedStyleId) {
-        API.getStyle(Number(sessionStorage.justEditedStyleId), true)
-          .then(style => {
-            handleUpdate(style, {method: 'styleUpdated'});
-          });
+    case 'visible': {
+      const id = sessionStorage.justEditedStyleId;
+      if (id) {
+        handleUpdateForId(Number(id), {method: 'styleUpdated'});
         delete sessionStorage.justEditedStyleId;
       }
       break;
+    }
     // going away
     case 'hidden':
       history.replaceState({scrollY: window.scrollY}, document.title);
