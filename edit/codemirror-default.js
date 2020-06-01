@@ -8,6 +8,8 @@
     prefs.reset('editor.keyMap');
   }
 
+  const CM_BOOKMARK = 'CodeMirror-bookmark';
+  const CM_BOOKMARK_GUTTER = CM_BOOKMARK + 'gutter';
   const defaults = {
     autoCloseBrackets: prefs.get('editor.autoCloseBrackets'),
     mode: 'css',
@@ -15,6 +17,7 @@
     lineWrapping: prefs.get('editor.lineWrapping'),
     foldGutter: true,
     gutters: [
+      CM_BOOKMARK_GUTTER,
       'CodeMirror-linenumbers',
       'CodeMirror-foldgutter',
       ...(prefs.get('editor.linter') ? ['CodeMirror-lint-markers'] : []),
@@ -242,22 +245,27 @@
     CodeMirror.commands[name] = (...args) => editor[name](...args);
   }
 
-  // speedup: reuse the old folding marks
-  // TODO: remove when https://github.com/codemirror/CodeMirror/pull/6010 is shipped in /vendor
-  const {setGutterMarker} = CodeMirror.prototype;
-  CodeMirror.prototype.setGutterMarker = function (line, gutterID, value) {
-    const o = this.state.foldGutter.options;
-    if (typeof o.indicatorOpen === 'string' ||
-        typeof o.indicatorFolded === 'string') {
-      const old = line.gutterMarkers && line.gutterMarkers[gutterID];
-      // old className can contain other names set by CodeMirror so we'll use classList
-      if (old && value && old.classList.contains(value.className) ||
-          !old && !value) {
-        return line;
-      }
+  const elBookmark = document.createElement('div');
+  elBookmark.className = CM_BOOKMARK;
+  elBookmark.textContent = '\u00A0';
+  const clearMarker = function () {
+    const line = this.lines[0];
+    CodeMirror.TextMarker.prototype.clear.apply(this);
+    if (!line.markedSpans.some(span => span.marker.sublimeBookmark)) {
+      this.doc.setGutterMarker(line, CM_BOOKMARK_GUTTER, null);
     }
-    return setGutterMarker.apply(this, arguments);
   };
+  const {markText} = CodeMirror.prototype;
+  Object.assign(CodeMirror.prototype, {
+    markText() {
+      const marker = markText.apply(this, arguments);
+      if (marker.sublimeBookmark) {
+        this.doc.setGutterMarker(marker.lines[0], CM_BOOKMARK_GUTTER, elBookmark.cloneNode(true));
+        marker.clear = clearMarker;
+      }
+      return marker;
+    },
+  });
 
   // CodeMirror convenience commands
   Object.assign(CodeMirror.commands, {
