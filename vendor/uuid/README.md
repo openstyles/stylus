@@ -1,4 +1,4 @@
-## uuid v7.0.0-beta.0
+## uuid v8.1.0
 
 Following files are copied from npm (node_modules):
 
