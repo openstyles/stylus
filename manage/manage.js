@@ -454,6 +454,8 @@ Object.assign(handleEvent, {
         API.deleteStyle(id);
       }
     });
+    const deleteButton = $('#message-box-buttons > button');
+    if (deleteButton) deleteButton.removeAttribute('data-focused-via-click');
   },
 
   external(event) {

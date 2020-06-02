@@ -341,6 +341,13 @@ a.configure[target="_blank"] .svg-icon.config {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+#confirm button[data-cmd="ok"]:not([data-focused-via-click]):focus {
+  outline: red auto 1px;
+}
+/* FF ignores color with 'auto' */
+.firefox #confirm button[data-cmd="ok"]:not([data-focused-via-click]):focus {
+  outline: red solid 1px;
+}
 .menu-items-wrapper {
   width: 80%;
   max-height: 80%;
