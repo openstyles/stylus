@@ -2604,9 +2604,11 @@ self.parserlib = (() => {
         if (expression._i < expression._parts.length - 1) {
           expression.mark();
           expression._i++;
-          result = ValidationTypes.isType(expression, type);
-          expression.restore();
-          expression._i += result ? 1 : 0;
+          if (ValidationTypes.isType(expression, type)) {
+            expression.drop();
+          } else {
+            expression.restore();
+          }
         }
         result = true;
 
