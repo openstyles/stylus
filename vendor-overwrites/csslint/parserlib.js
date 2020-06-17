@@ -319,7 +319,7 @@ self.parserlib = (() => {
     'drop-initial-before-align':  'caps-height | baseline | use-script | before-edge | text-before-edge | ' +
                                   'after-edge | text-after-edge | central | middle | ideographic | alphabetic | ' +
                                   'hanging | mathematical',
-    'drop-initial-size':          'auto | line | <length> | <percentage>',
+    'drop-initial-size':          'auto | line | <length-percentage>',
     'drop-initial-value':         '<integer>',
 
     // E
@@ -711,7 +711,7 @@ self.parserlib = (() => {
 
       '<clip-source>': '<uri>',
 
-      '<column-gap>': 'normal | <length> | <percentage>',
+      '<column-gap>': 'normal | <length-percentage>',
 
       '<content-distribution>': 'space-between | space-around | space-evenly | stretch',
       '<content-position>': 'center | start | end | flex-start | flex-end',
@@ -747,7 +747,7 @@ self.parserlib = (() => {
       '<flex-shrink>': '<number>',
       '<flex-wrap>': 'nowrap | wrap | wrap-reverse',
 
-      '<font-size>': '<absolute-size> | <relative-size> | <length> | <percentage>',
+      '<font-size>': '<absolute-size> | <relative-size> | <length-percentage>',
       '<font-stretch>': 'normal | ultra-condensed | extra-condensed | condensed | semi-condensed | ' +
                         'semi-expanded | expanded | extra-expanded | ultra-expanded',
       '<font-style>': 'normal | italic | oblique',
@@ -798,7 +798,7 @@ self.parserlib = (() => {
 
       '<line>': part => part.type === 'integer',
 
-      '<line-height>': '<number> | <length> | <percentage> | normal',
+      '<line-height>': '<number> | <length-percentage> | normal',
 
       '<line-names>': function (part) {
         // eslint-disable-next-line no-use-before-define
@@ -901,7 +901,7 @@ self.parserlib = (() => {
         );
       },
 
-      '<width>': '<length> | <percentage> | auto',
+      '<width>': '<length-percentage> | auto',
     },
 
     complex: {
@@ -929,7 +929,7 @@ self.parserlib = (() => {
         '[ left | center | right | <length-percentage> ] [ top | center | bottom | <length-percentage> ] | ' +
         '[ left | center | right | top | bottom | <length-percentage> ]',
 
-      '<bg-size>': '[ <length> | <percentage> | auto ]{1,2} | cover | contain',
+      '<bg-size>': '[ <length-percentage> | auto ]{1,2} | cover | contain',
 
       '<border-image-outset>': '[ <length> | <number> ]{1,4}',
       '<border-image-repeat>': '[ stretch | repeat | round | space ]{1,2}',
@@ -943,7 +943,7 @@ self.parserlib = (() => {
           Matcher.cast('<nonnegative-number-or-percentage>'),
           Matcher.cast('<nonnegative-number-or-percentage>'),
           'fill'),
-      '<border-image-width>': '[ <length> | <percentage> | <number> | auto ]{1,4}',
+      '<border-image-width>': '[ <length-percentage> | <number> | auto ]{1,4}',
       '<border-radius>': '<nonnegative-length-or-percentage>{1,4} [ / <nonnegative-length-or-percentage>{1,4} ]?',
       '<border-shorthand>': '<border-width> || <border-style> || <color>',
 
@@ -1076,7 +1076,7 @@ self.parserlib = (() => {
 
       '<will-change>': 'auto | <animateable-feature>#',
 
-      '<x-one-radius>': '[ <length> | <percentage> ]{1,2}',
+      '<x-one-radius>': '<length-percentage>{1,2}',
     },
 
     functions: {
