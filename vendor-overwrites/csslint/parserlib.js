@@ -392,7 +392,7 @@ self.parserlib = (() => {
     'grid-gap':              '<row-gap> <column-gap>?',
 
     // H
-    'hanging-punctuation': 1,
+    'hanging-punctuation': 'none | [ first || [ force-end | allow-end ] || last ]',
     'height':              'auto | <width-height>',
     'hyphenate-after':     '<integer> | auto',
     'hyphenate-before':    '<integer> | auto',
@@ -431,7 +431,7 @@ self.parserlib = (() => {
     'left':                   '<width>',
     'letter-spacing':         '<length> | normal',
     'line-height':            '<line-height>',
-    'line-break':             'auto | loose | normal | strict',
+    'line-break':             'auto | loose | normal | strict | anywhere',
     'line-stacking':          1,
     'line-stacking-ruby':     'exclude-ruby | include-ruby',
     'line-stacking-shift':    'consider-shifts | disregard-shifts',
@@ -502,7 +502,7 @@ self.parserlib = (() => {
     'overflow-block':  '<overflow>',
     'overflow-inline': '<overflow>',
     'overflow-style':  1,
-    'overflow-wrap':   'normal | break-word',
+    'overflow-wrap':   'normal | break-word | anywhere',
     'overflow-x':      '<overflow>',
     'overflow-y':      '<overflow>',
 
@@ -588,14 +588,14 @@ self.parserlib = (() => {
 
     // T
     'table-layout':    'auto | fixed',
-    'tab-size':        '<integer> | <length>',
+    'tab-size':        '<number> | <length>',
     'target':          1,
     'target-name':     1,
     'target-new':      1,
     'target-position': 1,
-    'text-align':      'start | end | left | right | center | justify | match-parent | justify-all',
-    'text-align-all':  'start | end | left | right | center | justify | match-parent',
-    'text-align-last': 'auto | start | end | left | right | center | justify',
+    'text-align':      '<text-align> | justify-all',
+    'text-align-all':  '<text-align>',
+    'text-align-last': '<text-align> | auto',
     'text-anchor':     'start | middle | end',
     'text-decoration':       '<text-decoration-line> || <text-decoration-style> || <color>',
     'text-decoration-color': '<color>',
@@ -607,13 +607,13 @@ self.parserlib = (() => {
     'text-emphasis-style':   '<text-emphasis-style>',
     'text-emphasis-position': '[ over | under ] && [ right | left ]?',
     'text-height':      1,
-    'text-indent':      '<length> | <percentage>',
-    'text-justify':     'auto | none | inter-word | inter-ideograph | inter-cluster | distribute | kashida',
+    'text-indent':      '<length-percentage> && hanging? && each-line?',
+    'text-justify':     'auto | none | inter-word | inter-character',
     'text-outline':     1,
     'text-overflow':    'clip | ellipsis',
     'text-rendering':   'auto | optimizeSpeed | optimizeLegibility | geometricPrecision',
     'text-shadow':      'none | [ <color>? && <length>{2,3} ]#',
-    'text-transform':   'capitalize | uppercase | lowercase | none',
+    'text-transform':   'none | [ capitalize | uppercase | lowercase ] || full-width || full-size-kana',
     'text-underline-position': 'auto | [ under || [ left | right ] ]',
     'text-wrap':        'normal | none | avoid',
     'top':              '<width>',
@@ -650,15 +650,14 @@ self.parserlib = (() => {
     'volume':            1,
 
     // W
-    'white-space':          'normal | pre | nowrap | pre-wrap | pre-line | -pre-wrap |' +
-                            ' -o-pre-wrap | -moz-pre-wrap | -hp-pre-wrap',
+    'white-space':          'normal | pre | nowrap | pre-wrap | break-spaces | pre-line',
     'white-space-collapse': 1,
     'widows':               '<integer>',
     'width':                'auto | <width-height>',
     'will-change':          '<will-change>',
-    'word-break':           'normal | keep-all | break-all',
+    'word-break':           'normal | keep-all | break-all | break-word',
     'word-spacing':         '<length> | normal',
-    'word-wrap':            'normal | break-word',
+    'word-wrap':            'normal | break-word | anywhere',
     'writing-mode':         'horizontal-tb | vertical-rl | vertical-lr | lr-tb | rl-tb | tb-rl | ' +
                             'bt-rl | tb-lr | bt-lr | lr-bt | rl-bt | lr | rl | tb',
 
@@ -867,6 +866,8 @@ self.parserlib = (() => {
       '<step-timing-function>': 'step-start | step-end | steps()',
 
       '<string>': part => part.type === 'string',
+
+      '<text-align>': 'start | end | left | right | center | justify | match-parent',
 
       '<text-decoration-style>': 'solid | double | dotted | dashed | wavy',
 
