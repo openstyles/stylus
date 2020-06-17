@@ -347,19 +347,28 @@ self.parserlib = (() => {
     'flood-opacity':  '<opacity-value>',
     'font':           '<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar',
     'font-family':    '<font-family>',
-    'font-feature-settings':   '<feature-tag-value> | normal',
+    'font-feature-settings':   '<feature-tag-value># | normal',
     'font-kerning':            'auto | normal | none',
+    'font-language-override':  'normal | <string>',
+    'font-optical-sizing':     'auto | none',
+    'font-palette':            'none | normal | light | dark | <ident>',
     'font-size':               '<font-size>',
     'font-size-adjust':        '<number> | none',
     'font-stretch':            '<font-stretch>',
     'font-style':              '<font-style>',
+    'font-synthesis':          'none | [ weight || style ]',
+    'font-synthesis-style':    'auto | none',
+    'font-synthesis-weight':   'auto | none',
+    'font-synthesis-small-caps': 'auto | none',
     'font-variant':            '<font-variant> | normal | none',
     'font-variant-alternates': '<font-variant-alternates> | normal',
     'font-variant-caps':       '<font-variant-caps> | normal',
     'font-variant-east-asian': '<font-variant-east-asian> | normal',
+    'font-variant-emoji':      'auto | text | emoji | unicode',
     'font-variant-ligatures':  '<font-variant-ligatures> | normal | none',
     'font-variant-numeric':    '<font-variant-numeric> | normal',
     'font-variant-position':   'normal | sub | super',
+    'font-variation-settings': 'normal | [ <string> <number>]#',
     'font-weight':             '<font-weight>',
     '-ms-flex-align': 'start | end | center | stretch | baseline',
     '-ms-flex-order': '<number>',
@@ -747,16 +756,16 @@ self.parserlib = (() => {
       '<flex-wrap>': 'nowrap | wrap | wrap-reverse',
 
       '<font-size>': '<absolute-size> | <relative-size> | <length-percentage>',
-      '<font-stretch>': 'normal | ultra-condensed | extra-condensed | condensed | semi-condensed | ' +
+      '<font-stretch>': 'normal | <percentage> | ultra-condensed | extra-condensed | condensed | semi-condensed | ' +
                         'semi-expanded | expanded | extra-expanded | ultra-expanded',
-      '<font-style>': 'normal | italic | oblique',
+      '<font-style>': 'normal | italic | oblique <angle>?',
       '<font-variant-caps>': 'small-caps | all-small-caps | petite-caps | all-petite-caps | ' +
                              'unicase | titling-caps',
       '<font-variant-css21>': 'normal | small-caps',
-      '<font-weight>': 'normal | bold | bolder | lighter | ' +
-                       '100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900',
+      '<font-weight>': 'normal | bold | bolder | lighter | <number>',
 
-      '<generic-family>': 'serif | sans-serif | cursive | fantasy | monospace',
+      '<generic-family>': 'serif | sans-serif | cursive | fantasy | monospace | system-ui | emoji | ' +
+                          'math | fangsong | ui-serif | ui-sans-serif | ui-monospace | ui-rounded',
 
       '<geometry-box>': '<shape-box> | fill-box | stroke-box | view-box',
 
