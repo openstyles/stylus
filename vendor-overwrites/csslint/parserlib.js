@@ -573,6 +573,8 @@ self.parserlib = (() => {
 
     // S
     'scale':             'none | <number>{1,3}',
+    'scrollbar-color':   'auto | dark | light | <color>{2}',
+    'scrollbar-width':   'auto | thin | none',
     'shape-inside':      'auto | outside-shape | [ <basic-shape> || shape-box ] | <image> | display',
     'shape-rendering':   'auto | optimizeSpeed | crispEdges | geometricPrecision',
     'size':              1,
