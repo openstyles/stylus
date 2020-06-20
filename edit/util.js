@@ -1,4 +1,5 @@
-/* exported dirtyReporter memoize clipString sectionsToMozFormat */
+/* global CodeMirror $create prefs */
+/* exported dirtyReporter memoize clipString sectionsToMozFormat createHotkeyInput */
 'use strict';
 
 function dirtyReporter() {
@@ -134,4 +135,53 @@ function memoize(fn) {
     }
     return result;
   };
+}
+
+/**
+ * @param {!string} prefId
+ * @param {?function(isEnter:boolean)} onDone
+ */
+function createHotkeyInput(prefId, onDone = () => {}) {
+  return $create('input', {
+    type: 'search',
+    spellcheck: false,
+    value: prefs.get(prefId),
+    onkeydown(event) {
+      const key = CodeMirror.keyName(event);
+      if (key === 'Tab' || key === 'Shift-Tab') {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      switch (key) {
+        case 'Enter':
+          if (this.checkValidity()) onDone(true);
+          return;
+        case 'Esc':
+          onDone(false);
+          return;
+        default:
+          // disallow: [Shift?] characters, modifiers-only, [modifiers?] + Esc, Tab, nav keys
+          if (!key || new RegExp('^(' + [
+            '(Back)?Space',
+            '(Shift-)?.', // a single character
+            '(Shift-?|Ctrl-?|Alt-?|Cmd-?){0,2}(|Esc|Tab|(Page)?(Up|Down)|Left|Right|Home|End|Insert|Delete)',
+          ].join('|') + ')$', 'i').test(key)) {
+            this.value = key || this.value;
+            this.setCustomValidity('Not allowed');
+            return;
+          }
+      }
+      this.value = key;
+      this.setCustomValidity('');
+      prefs.set(prefId, key);
+    },
+    oninput() {
+      // fired on pressing "x" to clear the field
+      prefs.set(prefId, '');
+    },
+    onpaste(event) {
+      event.preventDefault();
+    }
+  });
 }

@@ -1,8 +1,49 @@
 /* global loadScript css_beautify showHelp prefs t $ $create */
-/* exported beautify */
+/* global editor createHotkeyInput moveFocus CodeMirror */
+/* exported initBeautifyButton */
 'use strict';
 
-function beautify(scope) {
+const HOTKEY_ID = 'editor.beautify.hotkey';
+
+prefs.initializing.then(() => {
+  CodeMirror.defaults.extraKeys[prefs.get(HOTKEY_ID) || ''] = 'beautify';
+  CodeMirror.commands.beautify = cm => {
+    // using per-section mode when code editor or applies-to block is focused
+    const isPerSection = cm.display.wrapper.parentElement.contains(document.activeElement);
+    beautify(isPerSection ? [cm] : editor.getEditors(), false);
+  };
+});
+
+prefs.subscribe([HOTKEY_ID], (key, value) => {
+  const {extraKeys} = CodeMirror.defaults;
+  for (const [key, cmd] of Object.entries(extraKeys)) {
+    if (cmd === 'beautify') {
+      delete extraKeys[key];
+      break;
+    }
+  }
+  if (value) {
+    extraKeys[value] = 'beautify';
+  }
+});
+
+/**
+ * @param {HTMLElement} btn - the button element shown in the UI
+ * @param {function():CodeMirror[]} getScope
+ */
+function initBeautifyButton(btn, getScope) {
+  btn.addEventListener('click', () => beautify(getScope()));
+  btn.addEventListener('contextmenu', e => {
+    e.preventDefault();
+    beautify(getScope(), false);
+  });
+}
+
+/**
+ * @param {CodeMirror[]} scope
+ * @param {?boolean} ui
+ */
+function beautify(scope, ui = true) {
   loadScript('/vendor-overwrites/beautify/beautify-css-mod.js')
     .then(() => {
       if (!window.css_beautify && window.exports) {
@@ -19,7 +60,41 @@ function beautify(scope) {
     }
     options.indent_size = tabs ? 1 : prefs.get('editor.tabSize');
     options.indent_char = tabs ? '\t' : ' ';
+    if (ui) {
+      createBeautifyUI(scope, options);
+    }
+    for (const cm of scope) {
+      setTimeout(doBeautifyEditor, 0, cm, options);
+    }
+  }
 
+  function doBeautifyEditor(cm, options) {
+    const pos = options.translate_positions =
+      [].concat.apply([], cm.doc.sel.ranges.map(r =>
+        [Object.assign({}, r.anchor), Object.assign({}, r.head)]));
+    const text = cm.getValue();
+    const newText = css_beautify(text, options);
+    if (newText !== text) {
+      if (!cm.beautifyChange || !cm.beautifyChange[cm.changeGeneration()]) {
+        // clear the list if last change wasn't a css-beautify
+        cm.beautifyChange = {};
+      }
+      cm.setValue(newText);
+      const selections = [];
+      for (let i = 0; i < pos.length; i += 2) {
+        selections.push({anchor: pos[i], head: pos[i + 1]});
+      }
+      const {scrollX, scrollY} = window;
+      cm.setSelections(selections);
+      window.scrollTo(scrollX, scrollY);
+      cm.beautifyChange[cm.changeGeneration()] = true;
+      if (ui) {
+        $('#help-popup button[role="close"]').disabled = false;
+      }
+    }
+  }
+
+  function createBeautifyUI(scope, options) {
     showHelp(t('styleBeautify'),
       $create([
         $create('.beautify-options', [
@@ -31,6 +106,10 @@ function beautify(scope) {
           $createOption('}', 'newline_between_rules'),
           $createLabeledCheckbox('preserve_newlines', 'styleBeautifyPreserveNewlines'),
           $createLabeledCheckbox('indent_conditional', 'styleBeautifyIndentConditional'),
+        ]),
+        $create('p.beautify-hint', [
+          $create('span', t('styleBeautifyHint') + '\u00A0'),
+          createHotkeyInput(HOTKEY_ID, () => moveFocus($('#help-popup'), 1)),
         ]),
         $create('.buttons', [
           $create('button', {
@@ -59,32 +138,6 @@ function beautify(scope) {
       ]));
 
     $('#help-popup').className = 'wide';
-
-    scope.forEach(cm => {
-      setTimeout(() => {
-        const pos = options.translate_positions =
-          [].concat.apply([], cm.doc.sel.ranges.map(r =>
-            [Object.assign({}, r.anchor), Object.assign({}, r.head)]));
-        const text = cm.getValue();
-        const newText = css_beautify(text, options);
-        if (newText !== text) {
-          if (!cm.beautifyChange || !cm.beautifyChange[cm.changeGeneration()]) {
-            // clear the list if last change wasn't a css-beautify
-            cm.beautifyChange = {};
-          }
-          cm.setValue(newText);
-          const selections = [];
-          for (let i = 0; i < pos.length; i += 2) {
-            selections.push({anchor: pos[i], head: pos[i + 1]});
-          }
-          const {scrollX, scrollY} = window;
-          cm.setSelections(selections);
-          window.scrollTo(scrollX, scrollY);
-          cm.beautifyChange[cm.changeGeneration()] = true;
-          $('#help-popup button[role="close"]').disabled = false;
-        }
-      });
-    });
 
     $('.beautify-options').onchange = ({target}) => {
       const value = target.type === 'checkbox' ? target.checked : target.selectedIndex > 0;

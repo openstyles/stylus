@@ -59,6 +59,7 @@ self.prefs = self.INJECTED === 1 ? self.prefs : (() => {
       end_with_newline: false,
       indent_conditional: true,
     },
+    'editor.beautify.hotkey': '',
     'editor.lintDelay': 300,        // lint gutter marker update delay, ms
     'editor.linter': 'csslint',     // 'csslint' or 'stylelint' or ''
     'editor.lintReportDelay': 500,  // lint report update delay, ms

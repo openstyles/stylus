@@ -1,5 +1,5 @@
 /* global template cmFactory $ propertyToCss CssToProperty linter regExpTester
-  FIREFOX toggleContextMenuDelete beautify showHelp t tryRegExp */
+  FIREFOX toggleContextMenuDelete initBeautifyButton showHelp t tryRegExp */
 /* exported createSection */
 'use strict';
 
@@ -196,12 +196,12 @@ function createSection({
     $('.clone-section', el).addEventListener('click', () => insertSectionAfter(getModel(), section));
     $('.move-section-up', el).addEventListener('click', () => moveSectionUp(section));
     $('.move-section-down', el).addEventListener('click', () => moveSectionDown(section));
-    $('.beautify-section', el).addEventListener('click', () => beautify([cm]));
     $('.restore-section', el).addEventListener('click', () => restoreSection(section));
     $('.test-regexp', el).addEventListener('click', () => {
       regExpTester.toggle();
       updateRegexpTester();
     });
+    initBeautifyButton($('.beautify-section', el), () => [cm]);
   }
 
   function handleKeydown(cm, event) {
