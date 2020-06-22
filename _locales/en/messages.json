@@ -1273,6 +1273,10 @@
     "message": "Beautify",
     "description": "Label for the CSS-beautifier button on the edit style page"
   },
+  "styleBeautifyHint": {
+    "message": "Hint: right-click the “Beautify” button or use the keyboard shortcut defined below to beautify without showing this panel",
+    "description": "Hint shown inside the CSS-beautifier panel"
+  },
   "styleBeautifyIndentConditional": {
     "message": "Indent @media, @supports",
     "description": "CSS-beautifier option"

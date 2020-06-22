@@ -1,7 +1,7 @@
 /* global CodeMirror onDOMready prefs setupLivePrefs $ $$ $create t tHTML
   createSourceEditor queryTabs sessionStorageHash getOwnTab FIREFOX API tryCatch
   closeCurrentTab messageBox debounce workerUtil
-  beautify ignoreChromeError
+  initBeautifyButton ignoreChromeError
   moveFocus msg createSectionsEditor rerouteHotkeys CODEMIRROR_THEMES */
 /* exported showCodeMirrorPopup editorWorker toggleContextMenuDelete */
 'use strict';
@@ -170,10 +170,8 @@ preinit();
         $('#heading').textContent = t(style.id ? 'editStyleHeading' : 'addStyleTitle');
         $('#name').placeholder = t(usercss ? 'usercssEditorNamePlaceholder' : 'styleMissingName');
         $('#name').title = usercss ? t('usercssReplaceTemplateName') : '';
-
         $('#preview-label').classList.toggle('hidden', !style.id);
-
-        $('#beautify').onclick = () => beautify(editor.getEditors());
+        initBeautifyButton($('#beautify'), () => editor.getEditors());
         window.addEventListener('resize', () => {
           debounce(rememberWindowSize, 100);
           detectLayout();

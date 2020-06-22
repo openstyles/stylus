@@ -1,4 +1,4 @@
-/* global CodeMirror showHelp cmFactory onDOMready $ $create prefs t */
+/* global CodeMirror showHelp cmFactory onDOMready $ prefs t createHotkeyInput */
 'use strict';
 
 (() => {
@@ -62,46 +62,8 @@
 
   function configureColorpicker(event) {
     event.preventDefault();
-    const input = $create('input', {
-      type: 'search',
-      spellcheck: false,
-      value: prefs.get('editor.colorpicker.hotkey'),
-      onkeydown(event) {
-        event.preventDefault();
-        event.stopPropagation();
-        const key = CodeMirror.keyName(event);
-        switch (key) {
-          case 'Enter':
-            if (this.checkValidity()) {
-              $('#help-popup .dismiss').onclick();
-            }
-            return;
-          case 'Esc':
-            $('#help-popup .dismiss').onclick();
-            return;
-          default:
-            // disallow: [Shift?] characters, modifiers-only, [modifiers?] + Esc, Tab, nav keys
-            if (!key || new RegExp('^(' + [
-              '(Back)?Space',
-              '(Shift-)?.', // a single character
-              '(Shift-?|Ctrl-?|Alt-?|Cmd-?){0,2}(|Esc|Tab|(Page)?(Up|Down)|Left|Right|Home|End|Insert|Delete)',
-            ].join('|') + ')$', 'i').test(key)) {
-              this.value = key || this.value;
-              this.setCustomValidity('Not allowed');
-              return;
-            }
-        }
-        this.value = key;
-        this.setCustomValidity('');
-        prefs.set('editor.colorpicker.hotkey', key);
-      },
-      oninput() {
-        // fired on pressing "x" to clear the field
-        prefs.set('editor.colorpicker.hotkey', '');
-      },
-      onpaste(event) {
-        event.preventDefault();
-      }
+    const input = createHotkeyInput('editor.colorpicker.hotkey', () => {
+      $('#help-popup .dismiss').onclick();
     });
     const popup = showHelp(t('helpKeyMapHotkey'), input);
     if (this instanceof Element) {
