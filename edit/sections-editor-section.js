@@ -94,6 +94,7 @@ function createSection({
   const cm = cmFactory.create(wrapper => {
     el.insertBefore(wrapper, $('.code-label', el).nextSibling);
   }, {value: originalSection.code});
+  el.CodeMirror = cm; // used by getAssociatedEditor
 
   const changeListeners = new Set();
 
