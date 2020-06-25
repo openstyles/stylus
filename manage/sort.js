@@ -32,7 +32,7 @@ const sorter = (() => {
     },
     dateUpdated: {
       text: t('dateUpdated'),
-      parse: ({style}) => style.updateDate,
+      parse: ({style}) => style.updateDate || style.installDate,
       sorter: sorterType.number
     }
   };
