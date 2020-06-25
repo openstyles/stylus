@@ -229,30 +229,33 @@ var CSSLint = (() => {
 
   // Example 1:
 
-  /* csslint ignore:start */
-      // the chunk of code where errors won't be reported
-      // the chunk's start is hardwired to the line of the opening comment
-      // the chunk's end is hardwired to the line of the closing comment
-  /* csslint ignore:end */
+      /* csslint ignore:start */
+      /*
+      the chunk of code where errors won't be reported
+      the chunk's start is hardwired to the line of the opening comment
+      the chunk's end is hardwired to the line of the closing comment
+      */
+      /* csslint ignore:end */
 
   // Example 2:
+  // allow rule violations on the current line:
 
-  /* csslint allow:rulename1,rulename2,... */
-      // allows to break the specified rules on the next single line of code
+      // foo: bar; /* csslint allow:rulename1,rulename2,... */
+      /* csslint allow:rulename1,rulename2,... */ // foo: bar;
 
   // Example 3:
 
-  /* csslint rulename1 */
-  /* csslint rulename2:N */
-  /* csslint rulename3:N, rulename4:N */
+      /* csslint rulename1 */
+      /* csslint rulename2:N */
+      /* csslint rulename3:N, rulename4:N */
 
-      // entire code is affected;
-      // comments futher down the code extend/override previous comments of this kind
-      // values for N:
-      // "2" or "true" means "error"
-      // "1" or nothing means "warning" - note in this case ":" can also be omitted
-      // "0" or "false" means "ignore"
-      // (the quotes are added here for convenience, don't put them in the actual comments)
+  /* entire code is affected;
+   * comments futher down the code extend/override previous comments of this kind
+   * values for N (without the backquotes):
+     `2` or `true` means "error"
+     `1` or omitted means "warning" (when omitting, the colon can be omitted too)
+     `0` or `false` means "ignore"
+  */
 
   function applyEmbeddedOverrides(text, ruleset, allow, ignore) {
     let ignoreStart = null;
@@ -282,7 +285,7 @@ var CSSLint = (() => {
             allowRuleset[allowRule.trim()] = true;
             num++;
           });
-          if (num) allow[lineno + 1] = allowRuleset;
+          if (num) allow[lineno] = allowRuleset;
           break;
         }
 
