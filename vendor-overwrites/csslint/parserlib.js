@@ -1426,6 +1426,7 @@ self.parserlib = (() => {
     GREATER: {text: '>'},
     COMMA: {text: ','},
     TILDE: {text: '~'},
+    COLUMN: {text: '||'},
 
     // modifier
     NOT: {},
@@ -1468,7 +1469,6 @@ self.parserlib = (() => {
     // part of CSS3 grammar but not the Flex code
     CHAR: {},
 
-    // TODO: Needed?
     // Not defined as tokens, but might as well be
     PIPE: {text: '|'},
     SLASH: {text: '/'},
@@ -2205,6 +2205,7 @@ self.parserlib = (() => {
         value === '>' ? 'child' :
         value === '+' ? 'adjacent-sibling' :
         value === '~' ? 'sibling' :
+        value === '||' ? 'column' :
         !value.trim() ? 'descendant' :
           'unknown';
     }
@@ -2943,6 +2944,7 @@ self.parserlib = (() => {
          * - PREFIXMATCH
          * - SUFFIXMATCH
          * - SUBSTRINGMATCH
+         * - COLUMN
          * - CHAR
          */
         case '|':
@@ -2950,10 +2952,11 @@ self.parserlib = (() => {
         case '^':
         case '$':
         case '*':
-          return reader.peek() === '=' ?
-            this.comparisonToken(c, pos) :
-            this.charToken(c, pos);
-
+          return (
+            reader.peek() === '=' ? this.comparisonToken(c, pos) :
+            reader.readMatch('|') ? this.createToken(Tokens.COLUMN, '||', pos) :
+              this.charToken(c, pos)
+          );
         /*
          * Potential tokens:
          * - STRING
@@ -4369,7 +4372,7 @@ self.parserlib = (() => {
     }
 
     _combinator() {
-      if (this._tokenStream.match([Tokens.PLUS, Tokens.GREATER, Tokens.TILDE])) {
+      if (this._tokenStream.match([Tokens.PLUS, Tokens.GREATER, Tokens.TILDE, Tokens.COLUMN])) {
         const value = new Combinator(this._tokenStream._token);
         this._ws();
         return value;
@@ -4634,7 +4637,7 @@ self.parserlib = (() => {
 
         if (stream.match([Tokens.IDENT])) {
           const caseMod = lower(stream._token.value);
-          if (caseMod === 'i' || caseMode === 's') {
+          if (caseMod === 'i' || caseMod === 's') {
             value += stream._token.value +
                      this._ws();
           } else {
