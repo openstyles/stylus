@@ -4633,7 +4633,8 @@ self.parserlib = (() => {
                  this._ws();
 
         if (stream.match([Tokens.IDENT])) {
-          if (lower(stream._token.value) === 'i') {
+          const caseMod = lower(stream._token.value);
+          if (caseMod === 'i' || caseMode === 's') {
             value += stream._token.value +
                      this._ws();
           } else {
