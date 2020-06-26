@@ -1430,8 +1430,8 @@ self.parserlib = (() => {
     // modifier
     NOT: {},
     ANY: {text: ['any', '-webkit-any', '-moz-any']},
-    MATCHES: {},
     IS: {},
+    WHERE: {},
 
     /*
      * Defined in CSS3 Paged Media
@@ -3043,8 +3043,8 @@ self.parserlib = (() => {
          * Potential tokens:
          * - ANY
          * - IS
-         * - MATCHES
          * - NOT
+         * - WHERE
          * - CHAR
          */
         case ':':
@@ -3258,18 +3258,18 @@ self.parserlib = (() => {
     // NOT
     // IS
     // ANY
-    // MATCHES
     // CHAR
     notOrIsToken(first, pos) {
       // first is always ':'
       const reader = this._reader;
-      const func = reader.readMatch(/(not|is|(-(moz|webkit)-)?(any|matches))\(/iy);
+      const func = reader.readMatch(/(not|is|where|(-(moz|webkit)-)?any)\(/iy);
       if (func) {
         const lcase = func[0].toLowerCase();
         const type =
           lcase === 'n' ? Tokens.NOT :
           lcase === 'i' ? Tokens.IS :
-          lcase === 'm' ? Tokens.MATCHES : Tokens.ANY;
+          lcase === 'w' ? Tokens.WHERE :
+            Tokens.ANY;
         return this.createToken(type, first + func, pos);
       }
       return this.charToken(first, pos);
@@ -4713,7 +4713,7 @@ self.parserlib = (() => {
 
     _is() {
       const stream = this._tokenStream;
-      if (!stream.match([Tokens.IS, Tokens.ANY, Tokens.MATCHES])) return null;
+      if (!stream.match([Tokens.IS, Tokens.ANY, Tokens.WHERE])) return null;
 
       let arg;
       const start = stream._token;
@@ -5448,7 +5448,7 @@ self.parserlib = (() => {
       [Tokens.COLON, Parser.prototype._pseudo],
       [Tokens.IS, Parser.prototype._is],
       [Tokens.ANY, Parser.prototype._is],
-      [Tokens.MATCHES, Parser.prototype._is],
+      [Tokens.WHERE, Parser.prototype._is],
       [Tokens.NOT, Parser.prototype._negation],
     ]),
   };
