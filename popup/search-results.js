@@ -779,6 +779,7 @@ window.addEventListener('showStyles:done', function _() {
     return download(url, {
       body: null,
       responseType: 'json',
+      timeout: 60e3,
       headers: {
         'Referrer-Policy': 'origin-when-cross-origin',
         [xhrSpoofTelltale]: requestId,
