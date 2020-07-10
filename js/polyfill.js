@@ -12,10 +12,12 @@ self.INJECTED !== 1 && (() => {
     Object.values = obj => Object.keys(obj).map(k => obj[k]);
   }
 
-  if (!self.chrome) return;
+  // don't use self.chrome. It is undefined in Firefox
+  if (typeof chrome !== 'object') return;
   // the rest is for content scripts and our extension pages
 
   self.browser = polyfillBrowser();
+
   /* Promisifies the specified `chrome` methods into `browser`.
     The definitions is an object like this: {
       'storage.sync': ['get', 'set'], // if deeper than one level, combine the path via `.`
@@ -29,14 +31,13 @@ self.INJECTED !== 1 && (() => {
       const dst = path.reduce((obj, p) => obj[p] || (obj[p] = {}), browser);
       for (const name of methods) {
         const fn = src[name];
-        if (!fn || dst[name].isPromisified) continue;
+        if (!fn || dst[name] && !dst[name].isTrap) continue;
         dst[name] = (...args) => new Promise((resolve, reject) =>
           fn.call(src, ...args, (...results) =>
             chrome.runtime.lastError ?
               reject(chrome.runtime.lastError) :
               resolve(results.length <= 1 ? results[0] : results)));
               // a couple of callbacks have 2 parameters (we don't use those methods, but just in case)
-        dst[name].isPromisified = true;
       }
     }
   };
@@ -107,10 +108,15 @@ self.INJECTED !== 1 && (() => {
   }
 
   function polyfillBrowser() {
+    if (typeof browser === 'object' && browser.runtime) {
+      return browser;
+    }
     return createTrap(chrome, null);
 
     function createTrap(base, parent) {
-      return new Proxy(typeof base === 'function' ? () => {} : {}, {
+      const target = typeof base === 'function' ? () => {} : {};
+      target.isTrap = true;
+      return new Proxy(target, {
         get: (target, prop) => {
           if (target[prop]) return target[prop];
           if (base[prop] && (typeof base[prop] === 'object' || typeof base[prop] === 'function')) {
