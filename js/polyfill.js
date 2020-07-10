@@ -15,16 +15,13 @@ self.INJECTED !== 1 && (() => {
   if (!self.chrome) return;
   // the rest is for content scripts and our extension pages
 
+  self.browser = polyfillBrowser();
   /* Promisifies the specified `chrome` methods into `browser`.
     The definitions is an object like this: {
       'storage.sync': ['get', 'set'], // if deeper than one level, combine the path via `.`
       windows: ['create', 'update'], // items and sub-objects will only be created if present in `chrome`
     } */
   self.promisifyChrome = definitions => {
-    // a web page may have <html id="browser"> which creates a global variable `browser` pointing to this element
-    if (!self.browser || !self.browser.runtime && !self.browser.promisifyChrome) {
-      self.browser = Object.defineProperty({}, 'promisifyChrome', {value: true});
-    }
     for (const [scopeName, methods] of Object.entries(definitions)) {
       const path = scopeName.split('.');
       const src = path.reduce((obj, p) => obj && obj[p], chrome);
@@ -32,13 +29,14 @@ self.INJECTED !== 1 && (() => {
       const dst = path.reduce((obj, p) => obj[p] || (obj[p] = {}), browser);
       for (const name of methods) {
         const fn = src[name];
-        if (!fn || dst[name]) continue;
+        if (!fn || dst[name].isPromisified) continue;
         dst[name] = (...args) => new Promise((resolve, reject) =>
           fn.call(src, ...args, (...results) =>
             chrome.runtime.lastError ?
               reject(chrome.runtime.lastError) :
               resolve(results.length <= 1 ? results[0] : results)));
               // a couple of callbacks have 2 parameters (we don't use those methods, but just in case)
+        dst[name].isPromisified = true;
       }
     }
   };
@@ -106,5 +104,23 @@ self.INJECTED !== 1 && (() => {
     delete sessionStorage._access_check;
   } catch (err) {
     Object.defineProperty(self, 'sessionStorage', {value: {}});
+  }
+
+  function polyfillBrowser() {
+    return createTrap(chrome, null);
+
+    function createTrap(base, parent) {
+      return new Proxy(typeof base === 'function' ? () => {} : {}, {
+        get: (target, prop) => {
+          if (target[prop]) return target[prop];
+          if (base[prop] && (typeof base[prop] === 'object' || typeof base[prop] === 'function')) {
+            target[prop] = createTrap(base[prop], base);
+            return target[prop];
+          }
+          return base[prop];
+        },
+        apply: (target, thisArg, args) => base.apply(parent, args)
+      });
+    }
   }
 })();
