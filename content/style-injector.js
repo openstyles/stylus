@@ -19,90 +19,91 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
   let isTransitionPatched;
   // will store the original method refs because the page can override them
   let creationDoc, createElement, createElementNS;
+
   return {
-    apply,
-    clear,
-    clearOrphans,
-    remove,
-    replace,
-    toggle,
+
     list,
+
+    apply(styleMap) {
+      const styles = _styleMapToArray(styleMap);
+      return (
+        !styles.length ?
+          Promise.resolve([]) :
+          docRootObserver.evade(() => {
+            if (!isTransitionPatched && isEnabled) {
+              _applyTransitionPatch(styles);
+            }
+            return styles.map(_addUpdate);
+          })
+      ).then(_emitUpdate);
+    },
+
+    clear() {
+      _addRemoveElements(false);
+      list.length = 0;
+      table.clear();
+      _emitUpdate();
+    },
+
+    clearOrphans() {
+      for (const el of document.querySelectorAll(`style[id^="${PREFIX}"].stylus`)) {
+        const id = el.id.slice(PREFIX.length);
+        if (/^\d+$/.test(id) || id === PATCH_ID) {
+          el.remove();
+        }
+      }
+    },
+
+    remove(id) {
+      _remove(id);
+      _emitUpdate();
+    },
+
+    replace(styleMap) {
+      const styles = _styleMapToArray(styleMap);
+      const added = new Set(styles.map(s => s.id));
+      const removed = [];
+      for (const style of list) {
+        if (!added.has(style.id)) {
+          removed.push(style.id);
+        }
+      }
+      styles.forEach(_addUpdate);
+      removed.forEach(_remove);
+      _emitUpdate();
+    },
+
+    toggle(enable) {
+      if (isEnabled === enable) return;
+      isEnabled = enable;
+      if (!enable) _toggleObservers(false);
+      _addRemoveElements(enable);
+      if (enable) _toggleObservers(true);
+    },
   };
 
-  function apply(styleMap) {
-    const styles = _styleMapToArray(styleMap);
-    return !styles.length ?
-      Promise.resolve([]) :
-      docRootObserver.evade(() => {
-        if (!isTransitionPatched) _applyTransitionPatch(styles);
-        const els = styles.map(_apply);
-        _emitUpdate();
-        return els;
-      });
-  }
-
-  function clear() {
-    for (const style of list) {
-      style.el.remove();
+  function _add(style) {
+    const el = style.el = _createStyle(style.id, style.code);
+    const i = list.findIndex(item => compare(item, style) > 0);
+    table.set(style.id, style);
+    list.splice(i < 0 ? list.length : i, 0, style);
+    if (isEnabled) {
+      document.documentElement.insertBefore(el, i < 0 ? null : list[i].el);
     }
-    list.length = 0;
-    table.clear();
-    _emitUpdate();
+    return el;
   }
 
-  function clearOrphans() {
-    for (const el of document.querySelectorAll(`style[id^="${PREFIX}"].stylus`)) {
-      const id = el.id.slice(PREFIX.length);
-      if (/^\d+$/.test(id) || id === PATCH_ID) {
+  function _addRemoveElements(add) {
+    for (const {el} of list) {
+      if (add) {
+        document.documentElement.appendChild(el);
+      } else {
         el.remove();
       }
     }
   }
 
-  function remove(id) {
-    _remove(id);
-    _emitUpdate();
-  }
-
-  function replace(styleMap) {
-    const styles = _styleMapToArray(styleMap);
-    const added = new Set(styles.map(s => s.id));
-    const removed = [];
-    for (const style of list) {
-      if (!added.has(style.id)) {
-        removed.push(style.id);
-      }
-    }
-    styles.forEach(_apply);
-    removed.forEach(_remove);
-    _emitUpdate();
-  }
-
-  function toggle(_enabled) {
-    if (isEnabled === _enabled) return;
-    isEnabled = _enabled;
-    for (const style of list) {
-      style.el.disabled = !isEnabled;
-    }
-  }
-
-  function _add(style) {
-    const el = style.el = _createStyle(style.id, style.code);
-    table.set(style.id, style);
-    const nextIndex = list.findIndex(i => compare(i, style) > 0);
-    if (nextIndex < 0) {
-      document.documentElement.appendChild(el);
-      list.push(style);
-    } else {
-      document.documentElement.insertBefore(el, list[nextIndex].el);
-      list.splice(nextIndex, 0, style);
-    }
-    // moving an element resets its 'disabled' state
-    el.disabled = !isEnabled;
-    return el;
-  }
-
-  function _apply(style) {
+  function _addUpdate(style) {
     return table.has(style.id) ? _update(style) : _add(style);
   }
 
@@ -151,15 +152,16 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
     return el;
   }
 
-  function _emitUpdate() {
-    if (!IS_OWN_PAGE && list.length) {
-      docRewriteObserver.start();
-      docRootObserver.start();
-    } else {
-      docRewriteObserver.stop();
-      docRootObserver.stop();
-    }
+  function _toggleObservers(shouldStart) {
+    const onOff = shouldStart && isEnabled ? 'start' : 'stop';
+    docRewriteObserver[onOff]();
+    docRootObserver[onOff]();
+  }
+
+  function _emitUpdate(value) {
+    _toggleObservers(!IS_OWN_PAGE && list.length);
     onUpdate();
+    return value;
   }
 
   /*
@@ -193,11 +195,7 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
   function _sort() {
     docRootObserver.evade(() => {
       list.sort(compare);
-      for (const style of list) {
-        // moving an element resets its 'disabled' state
-        document.documentElement.appendChild(style.el);
-        style.el.disabled = !isEnabled;
-      }
+      _addRemoveElements(true);
     });
   }
 
@@ -241,13 +239,13 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
     if (isChromePre65) {
       const oldEl = style.el;
       style.el = _createStyle(id, code);
-      oldEl.parentNode.insertBefore(style.el, oldEl.nextSibling);
-      oldEl.remove();
+      if (isEnabled) {
+        oldEl.parentNode.insertBefore(style.el, oldEl.nextSibling);
+        oldEl.remove();
+      }
     } else {
       style.el.textContent = code;
     }
-    // https://github.com/openstyles/stylus/issues/693
-    style.el.disabled = !isEnabled;
   }
 
   function RewriteObserver(onChange) {
