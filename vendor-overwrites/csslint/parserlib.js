@@ -2953,8 +2953,10 @@ self.parserlib = (() => {
         case '$':
         case '*':
           return (
-            reader.peek() === '=' ? this.comparisonToken(c, pos) :
-            reader.readMatch('|') ? this.createToken(Tokens.COLUMN, '||', pos) :
+            reader.peek() === '=' ?
+              this.comparisonToken(c, pos) :
+            c === '|' && reader.readMatch('|') ?
+              this.createToken(Tokens.COLUMN, '||', pos) :
               this.charToken(c, pos)
           );
         /*
