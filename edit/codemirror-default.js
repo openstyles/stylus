@@ -315,6 +315,7 @@ CodeMirror.hint && (() => {
   const RX_IMPORTANT = /(i(m(p(o(r(t(a(nt?)?)?)?)?)?)?)?)?(?=\b|\W|$)/iy;
   const RX_VAR_KEYWORD = /(^|[^-\w\u0080-\uFFFF])var\(/iy;
   const RX_END_OF_VAR = /[\s,)]|$/g;
+  const RX_CONSUME_PROP = /[-\w]*\s*:\s?|$/y;
 
   const originalHelper = CodeMirror.hint.css || (() => {});
   const helper = cm => {
@@ -385,6 +386,8 @@ CodeMirror.hint && (() => {
       const state = res && cm.getTokenAt(pos).state.state;
       if (state === 'block' || state === 'maybeprop') {
         res.list = res.list.map(str => str + ': ');
+        RX_CONSUME_PROP.lastIndex = res.to.ch;
+        res.to.ch += RX_CONSUME_PROP.exec(text)[0].length;
       }
       return res;
     }
