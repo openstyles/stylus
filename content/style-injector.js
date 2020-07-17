@@ -86,10 +86,10 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
     const el = style.el = _createStyle(style.id, style.code);
     const i = list.findIndex(item => compare(item, style) > 0);
     table.set(style.id, style);
-    list.splice(i < 0 ? list.length : i, 0, style);
     if (isEnabled) {
       document.documentElement.insertBefore(el, i < 0 ? null : list[i].el);
     }
+    list.splice(i < 0 ? list.length : i, 0, style);
     return el;
   }
 
