@@ -93,7 +93,7 @@
     "description": ""
   },
   "checkAllUpdates": {
-    "message": "Rechercher des mises à jour pour tous les styles",
+    "message": "Rechercher des mises à jour",
     "description": "Label for the button to check all styles for updates"
   },
   "checkAllUpdatesForce": {
@@ -101,7 +101,7 @@
     "description": "Label for the button to apply all detected updates"
   },
   "checkForUpdate": {
-    "message": "Rechercher des mises à jour",
+    "message": "Rechercher une mise à jour",
     "description": "Label for the button to check a single style for an update"
   },
   "checkingForUpdate": {
@@ -291,6 +291,10 @@
   "dragDropMessage": {
     "message": "Glisser votre fichier de sauvegarde n’importe où sur cette page pour l’importer.",
     "description": "Drag'n'drop message"
+  },
+  "dragDropUsercssTabstrip": {
+    "message": "Pour installer le fichier, glisser le fichier sur la barre des onglets (la zone où les titres des onglets sont affichés).",
+    "description": "Message popup shown when erroneously dropping a usercss file into the manager page"
   },
   "editDeleteText": {
     "message": "Supprimer",
@@ -617,6 +621,14 @@
     "message": "Une erreur est survenue durant la surveillance du fichier",
     "description": "The label of live-reload error"
   },
+  "liveReloadInstallHint": {
+    "message": "Gardez cet onglet ouvert pour mettre à jour le style automatiquement basé sur les modifications extérieures.",
+    "description": "The label of live-reload feature"
+  },
+  "liveReloadInstallHintFF": {
+    "message": "Gardez cet onglet ouvert ainsi que l´onglet original pour mettre à jour le style automatiquement basé sur les modifications extérieures.",
+    "description": "The extra hint of live-reload feature shown only for file:// URLs in Firefox"
+  },
   "liveReloadLabel": {
     "message": "Rechargement immédiat",
     "description": "The label of live-reload feature"
@@ -674,15 +686,15 @@
     "description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
   },
   "manageOnlyNonUsercss": {
-    "message": "Uniquement les styles non Usercss",
+    "message": "Styles non Usercss uniquement",
     "description": "Checkbox to show only non-Usercss (standard) styles"
   },
   "manageOnlyUpdates": {
-    "message": "Uniquement avec mises à jour ou problèmes",
+    "message": "Avec mises à jour ou problèmes uniquement",
     "description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
   },
   "manageOnlyUsercss": {
-    "message": "Uniquement les styles Usercss",
+    "message": "Styles Usercss uniquement",
     "description": "Checkbox to show only Usercss styles"
   },
   "menuShowBadge": {
@@ -1464,7 +1476,7 @@
     "description": "Note in the toolbar popup for some file types that cannot be accessed"
   },
   "updateAllCheckSucceededNoUpdate": {
-    "message": "All styles are up to date.",
+    "message": "Aucune mise à jour trouvée.",
     "description": "Text that displays when an update all check completed and no updates are available"
   },
   "updateAllCheckSucceededSomeEdited": {

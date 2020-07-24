@@ -125,7 +125,7 @@
     "description": "Label for the checkbox in the style editor."
   },
   "cm_autocompleteOnTyping": {
-    "message": "输入时自动完成",
+    "message": "输入时自动补全",
     "description": "Label for the checkbox in the style editor."
   },
   "cm_colorpicker": {
@@ -133,7 +133,7 @@
     "description": "Label for the checkbox controlling colorpicker option for the style editor."
   },
   "cm_indentWithTabs": {
-    "message": "使用 Tab 智能缩进",
+    "message": "使用Tab智能缩进",
     "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
   },
   "cm_keyMap": {
@@ -153,7 +153,7 @@
     "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
   },
   "cm_matchHighlightToken": {
-    "message": "光标所在 token 字段",
+    "message": "光标所在token字段",
     "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of the word/token under cursor even if nothing is selected"
   },
   "cm_resizeGripHint": {
@@ -244,6 +244,14 @@
     "message": "是",
     "description": "'Yes' button in a confirm dialog"
   },
+  "copied": {
+    "message": "已复制到粘贴板",
+    "description": "Message shown when content has been copied to the clipboard"
+  },
+  "copy": {
+    "message": "复制到粘贴板",
+    "description": "Tooltip for elements which can be copied"
+  },
   "dateInstalled": {
     "message": "安装日期",
     "description": "Option text for the user to sort the style by install date"
@@ -283,6 +291,10 @@
   "dragDropMessage": {
     "message": "把 JSON 备份文件拖放到页面的任意位置，即可导入",
     "description": "Drag'n'drop message"
+  },
+  "dragDropUsercssTabstrip": {
+    "message": "要安装文件，就将其放在选项卡条（显示选项卡标题的区域）上。",
+    "description": "Message popup shown when erroneously dropping a usercss file into the manager page"
   },
   "editDeleteText": {
     "message": "删除",
@@ -440,6 +452,10 @@
   "helpKeyMapHotkey": {
     "message": "按下热键",
     "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+  },
+  "hostDisabled": {
+    "message": "由于当前使用的浏览器版本中存在的错误，此主机已被禁用",
+    "description": "Tooltip for cloud host disabled"
   },
   "importAppendLabel": {
     "message": "追加到样式",
@@ -609,6 +625,14 @@
     "message": "查看文件时发生错误",
     "description": "The label of live-reload error"
   },
+  "liveReloadInstallHint": {
+    "message": "保持此选项卡为打开状态，将在外部更改后自动更新样式。",
+    "description": "The label of live-reload feature"
+  },
+  "liveReloadInstallHintFF": {
+    "message": "保持此选项卡和原始选项卡处于打开状态，将在外部更改时自动重新更新样式。",
+    "description": "The extra hint of live-reload feature shown only for file:// URLs in Firefox"
+  },
   "liveReloadLabel": {
     "message": "动态刷新",
     "description": "The label of live-reload feature"
@@ -642,7 +666,7 @@
     "description": "VERY SHORT label for the checkbox next to the 'Write new style' button in the style manager"
   },
   "manageNewUI": {
-    "message": "新的样式管理界面",
+    "message": "新版管理器",
     "description": "Label for the checkbox that toggles the new UI on manage page"
   },
   "manageOnlyDisabled": {
@@ -905,6 +929,10 @@
     "message": "管理样式",
     "description": "Link to open the manage page."
   },
+  "openOptions": {
+    "message": "选项",
+    "description": "Go to Options UI"
+  },
   "openStylesManager": {
     "message": "打开样式管理器",
     "description": "Label for the style maanger opener in the browser action context menu."
@@ -965,6 +993,10 @@
     "message": "检测更新",
     "description": ""
   },
+  "optionsCustomizeSync": {
+    "message": "同步到云端",
+    "description": ""
+  },
   "optionsHeading": {
     "message": "选项",
     "description": "Heading for options section on manage page."
@@ -1007,6 +1039,70 @@
   },
   "optionsUpdateInterval": {
     "message": "每隔 N 小时，检查所有样式更新（0 为关闭检查）",
+    "description": ""
+  },
+  "optionsSyncNone": {
+    "message": "无",
+    "description": ""
+  },
+  "optionsSyncConnect": {
+    "message": "连接",
+    "description": ""
+  },
+  "optionsSyncDisconnect": {
+    "message": "断开连接",
+    "description": ""
+  },
+  "optionsSyncSyncNow": {
+    "message": "现在同步",
+    "description": ""
+  },
+  "optionsSyncLogin": {
+    "message": "登录",
+    "description": ""
+  },
+  "optionsSyncStatusPull": {
+    "message": "正在获取样式  $loaded$ 中的  $total$",
+    "description": "",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusPush": {
+    "message": "正在上传样式  $loaded$ 中的  $total$",
+    "description": "",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "同步中...",
+    "description": ""
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "连接中...",
+    "description": ""
+  },
+  "optionsSyncStatusConnected": {
+    "message": "已连接",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "正在断开连接...",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "已断开连接",
     "description": ""
   },
   "paginationCurrent": {
@@ -1084,6 +1180,10 @@
   "previewTooltip": {
     "message": "无需保存即可临时应用样式预览效果。保存以使更改永久生效。",
     "description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+  },
+  "reload": {
+    "message": "重新加载 Stylus 扩展程序",
+    "description": "Context menu reload"
   },
   "replace": {
     "message": "替换",
@@ -1209,6 +1309,10 @@
     "message": "格式化",
     "description": "Label for the CSS-beautifier button on the edit style page"
   },
+  "styleBeautifyHint": {
+    "message": "提示: 你可以不显示此面板, 而是用右键“美化”按钮 或用下面定义的快捷键来美化.",
+    "description": "Hint shown inside the CSS-beautifier panel"
+  },
   "styleBeautifyIndentConditional": {
     "message": "缩进 @media、@supports",
     "description": "CSS-beautifier option"
@@ -1218,7 +1322,7 @@
     "description": "CSS-beautifier option"
   },
   "styleCancelEditLabel": {
-    "message": "返回管理页面",
+    "message": "返回管理器",
     "description": "Label for cancel button for style editing"
   },
   "styleChangesNotSaved": {
@@ -1490,6 +1594,10 @@
   },
   "syncDropboxStyles": {
     "message": "导出至 Dropbox",
+    "description": ""
+  },
+  "syncDropboxDeprecated": {
+    "message": "在选项页面中， Dropbox 导入/导出 已经替换为更高级的样式同步方式。",
     "description": ""
   },
   "retrieveDropboxSync": {

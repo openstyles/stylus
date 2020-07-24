@@ -1277,6 +1277,10 @@
     "message": "Code formatieren",
     "description": "Label for the CSS-beautifier button on the edit style page"
   },
+  "styleBeautifyHint": {
+    "message": "Hinweis: Mache einen Rechtsklick auf \"Code formatieren\" oder nutze das weiter unten definierte Tastenkürzel, um den Code zu formatieren ohne dieses Fenster anzuzeigen.",
+    "description": "Hint shown inside the CSS-beautifier panel"
+  },
   "styleBeautifyIndentConditional": {
     "message": "Rücke @media / @supports ein",
     "description": "CSS-beautifier option"

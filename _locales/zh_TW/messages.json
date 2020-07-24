@@ -1309,6 +1309,10 @@
     "message": "美化",
     "description": "Label for the CSS-beautifier button on the edit style page"
   },
+  "styleBeautifyHint": {
+    "message": "提示：右鍵點選「美化」按鈕或使用下面定義的鍵盤快捷鍵來美化而不顯示此面板",
+    "description": "Hint shown inside the CSS-beautifier panel"
+  },
   "styleBeautifyIndentConditional": {
     "message": "縮排 @media, @supports",
     "description": "CSS-beautifier option"

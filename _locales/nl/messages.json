@@ -1285,6 +1285,10 @@
     "message": "Mooier maken",
     "description": "Label for the CSS-beautifier button on the edit style page"
   },
+  "styleBeautifyHint": {
+    "message": "Hint: klik met de rechtermuisknop op de knop ‘Mooier maken’ of gebruik de hieronder gedefinieerde sneltoets om iets mooier te maken zonder dit paneel te tonen",
+    "description": "Hint shown inside the CSS-beautifier panel"
+  },
   "styleBeautifyIndentConditional": {
     "message": "@media, @supports inspringen",
     "description": "CSS-beautifier option"

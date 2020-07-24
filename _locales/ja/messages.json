@@ -1162,7 +1162,7 @@
     "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
   },
   "popupStylesFirst": {
-    "message": "スタイルをコマンドボタンより上に表示",
+    "message": "スタイル一覧をコマンドボタンより上に表示",
     "description": "Label for the checkbox controlling section order in the popup."
   },
   "prefShowBadge": {
@@ -1304,6 +1304,10 @@
   "styleBeautify": {
     "message": "書式整形",
     "description": "Label for the CSS-beautifier button on the edit style page"
+  },
+  "styleBeautifyHint": {
+    "message": "ヒント: 書式整形ボタンを右クリックするか、下で設定したキーボードショートカットを使用すると、このパネルを表示せずに書式設定が行えます",
+    "description": "Hint shown inside the CSS-beautifier panel"
   },
   "styleBeautifyIndentConditional": {
     "message": "@media, @supports をインデント",
