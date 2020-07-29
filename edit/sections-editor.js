@@ -34,7 +34,8 @@ function createSectionsEditor({style, onTitleChanged}) {
   $('#from-mozilla').addEventListener('click', () => showMozillaFormatImport());
   $('#save-button').addEventListener('click', saveStyle);
 
-  document.addEventListener('wheel', scrollEntirePageOnCtrlShift);
+  document.addEventListener('wheel', scrollEntirePageOnCtrlShift, {passive: false});
+  CodeMirror.defaults.extraKeys['Shift-Ctrl-Wheel'] = 'scrollWindow';
 
   if (!FIREFOX) {
     $$([
