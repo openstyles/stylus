@@ -85,6 +85,12 @@ onDOMready().then(() => {
 
 // set language for CSS :lang and [FF-only] hyphenation
 document.documentElement.setAttribute('lang', chrome.i18n.getUILanguage());
+// avoid adding # to the page URL when clicking dummy links
+document.addEventListener('click', e => {
+  if (e.target.closest('a[href="#"]')) {
+    e.preventDefault();
+  }
+});
 
 function onDOMready() {
   if (document.readyState !== 'loading') {
