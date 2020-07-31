@@ -172,8 +172,19 @@ preinit();
         $('#name').title = usercss ? t('usercssReplaceTemplateName') : '';
         $('#preview-label').classList.toggle('hidden', !style.id);
         initBeautifyButton($('#beautify'), () => editor.getEditors());
+        const {onBoundsChanged} = chrome.windows || {};
+        if (onBoundsChanged) {
+          // * movement is reported even if the window wasn't resized
+          // * fired just once when done so debounce is not needed
+          onBoundsChanged.addListener(wnd => {
+            // getting the current window id as it may change if the user attached/detached the tab
+            chrome.windows.getCurrent(ownWnd => {
+              if (wnd.id === ownWnd.id) rememberWindowSize();
+            });
+          });
+        }
         window.addEventListener('resize', () => {
-          debounce(rememberWindowSize, 100);
+          if (!onBoundsChanged) debounce(rememberWindowSize, 100);
           detectLayout();
         });
         detectLayout();
