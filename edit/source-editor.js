@@ -350,9 +350,6 @@ function createSourceEditor({style, onTitleChanged}) {
   }
 
   function headerOnScroll({target, deltaY, deltaMode, shiftKey}) {
-    if (target.tagName === 'INPUT' && target.type === 'number') {
-      return;
-    }
     while ((target = target.parentElement)) {
       if (deltaY < 0 && target.scrollTop ||
           deltaY > 0 && target.scrollTop + target.clientHeight < target.scrollHeight) {
