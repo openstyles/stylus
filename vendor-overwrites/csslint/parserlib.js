@@ -514,6 +514,11 @@ self.parserlib = (() => {
     'overflow-wrap':   'normal | break-word | anywhere',
     'overflow-x':      '<overflow>',
     'overflow-y':      '<overflow>',
+    'overscroll-behavior': '<overscroll>{1,2}',
+    'overscroll-behavior-block': '<overscroll>',
+    'overscroll-behavior-inline': '<overscroll>',
+    'overscroll-behavior-x': '<overscroll>',
+    'overscroll-behavior-y': '<overscroll>',
 
     // P
     'padding':            '<padding-width>{1,4}',
@@ -1061,6 +1066,8 @@ self.parserlib = (() => {
 
       '<hsl-color>': '[ <number> | <angle> ] <percentage>{2} [ / <nonnegative-number-or-percentage> ]? | ' +
                      '[ <number> | <angle> ] , <percentage>#{2} [ , <nonnegative-number-or-percentage> ]?',
+
+      '<overscroll>': 'contain | none | auto',
 
       '<shadow>': 'inset? && [ <length>{2,4} && <color>? ]',
 

@@ -159,9 +159,11 @@
     'padding-inline-start': true,
     'text-align-all': true,
 
+    // miscellaneous
     'contain': true,
     'mask-image': true,
     'mix-blend-mode': true,
+    'overscroll-behavior': true,
     'rotate': true,
     'isolation': true,
     'zoom': true,
