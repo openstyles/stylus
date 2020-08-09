@@ -106,7 +106,7 @@ const colorConverter = (() => {
     if (!type) return;
 
     const comma = value.includes(',') && !value.includes('/');
-    const num = value.split(comma ? /\s*,\s*/ : /\s+(?!\/)|\s*\/\s*/);
+    const num = value.trim().split(comma ? /\s*,\s*/ : /\s+(?!\/)|\s*\/\s*/);
     if (num.length < 3 || num.length > 4) return;
     if (num[3] && !validateAlpha(num[3])) return null;
 
