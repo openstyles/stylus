@@ -2,4 +2,4 @@
 
 Following files are copied from npm (node_modules):
 
-* webext-launch-web-auth-flow.js: dist\webext-launch-web-auth-flow.js
+* webext-launch-web-auth-flow.min.js: dist\webext-launch-web-auth-flow.min.js

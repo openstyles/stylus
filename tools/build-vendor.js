@@ -64,7 +64,7 @@ const files = {
     'dist/umd/uuidv4.min.js → uuid.min.js'
   ],
   'webext-launch-web-auth-flow': [
-    'dist/webext-launch-web-auth-flow.js → webext-launch-web-auth-flow.js'
+    'dist/webext-launch-web-auth-flow.min.js → webext-launch-web-auth-flow.min.js'
   ]
 };
 
