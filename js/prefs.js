@@ -1,4 +1,4 @@
-/* global promisify */
+/* global promisifyChrome */
 'use strict';
 
 self.prefs = self.INJECTED === 1 ? self.prefs : (() => {
@@ -107,10 +107,11 @@ self.prefs = self.INJECTED === 1 ? self.prefs : (() => {
     specific: new Map(),
   };
 
-  const syncSet = promisify(chrome.storage.sync.set.bind(chrome.storage.sync));
-  const syncGet = promisify(chrome.storage.sync.get.bind(chrome.storage.sync));
+  promisifyChrome({
+    'storage.sync': ['get', 'set'],
+  });
 
-  const initializing = syncGet('settings')
+  const initializing = browser.storage.sync.get('settings')
     .then(result => {
       if (result.settings) {
         setAll(result.settings, true);
@@ -237,7 +238,7 @@ self.prefs = self.INJECTED === 1 ? self.prefs : (() => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         timer = null;
-        syncSet({settings: values})
+        browser.storage.sync.set({settings: values})
           .then(resolve, reject);
       });
     });

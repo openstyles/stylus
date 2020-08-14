@@ -1,8 +1,7 @@
-/* global API_METHODS usercss styleManager deepCopy openURL download URLS getTab */
-/* exports usercssHelper */
+/* global API_METHODS usercss styleManager deepCopy openURL download URLS */
+/* exported usercssHelper */
 'use strict';
 
-// eslint-disable-next-line no-unused-vars
 const usercssHelper = (() => {
   const installCodeCache = {};
   const clearInstallCode = url => delete installCodeCache[url];
@@ -46,7 +45,7 @@ const usercssHelper = (() => {
     openInstallerPage(tabId, url, {code, inTab} = {}) {
       const newUrl = `${URLS.installUsercss}?updateUrl=${encodeURIComponent(url)}`;
       if (inTab) {
-        getTab(tabId).then(tab =>
+        browser.tabs.get(tabId).then(tab =>
           openURL({
             url: `${newUrl}&tabId=${tabId}`,
             active: tab.active,

@@ -1,9 +1,11 @@
-/* global chromeLocal promisify FIREFOX */
+/* global chromeLocal promisifyChrome FIREFOX */
 /* exported tokenManager */
 'use strict';
 
 const tokenManager = (() => {
-  const launchWebAuthFlow = promisify(chrome.identity.launchWebAuthFlow.bind(chrome.identity));
+  promisifyChrome({
+    identity: ['launchWebAuthFlow'],
+  });
   const AUTH = {
     dropbox: {
       flow: 'token',
@@ -158,7 +160,7 @@ const tokenManager = (() => {
       Object.assign(query, provider.authQuery);
     }
     const url = `${provider.authURL}?${stringifyQuery(query)}`;
-    return launchWebAuthFlow({
+    return browser.identity.launchWebAuthFlow({
       url,
       interactive
     })

@@ -1,46 +1,29 @@
-/* global promisify */
+/* global chromeLocal */
 /* exported createChromeStorageDB */
 'use strict';
 
 function createChromeStorageDB() {
-  const get = promisify(chrome.storage.local.get.bind(chrome.storage.local));
-  const set = promisify(chrome.storage.local.set.bind(chrome.storage.local));
-  const remove = promisify(chrome.storage.local.remove.bind(chrome.storage.local));
-
   let INC;
 
   const PREFIX = 'style-';
   const METHODS = {
     // FIXME: we don't use this method at all. Should we remove this?
-    get: id => get(PREFIX + id)
-      .then(result => result[PREFIX + id]),
-    put: obj => Promise.resolve()
-      .then(() => {
-        if (!obj.id) {
-          return prepareInc()
-            .then(() => {
-              // FIXME: should we clone the object?
-              obj.id = INC++;
-            });
-        }
-      })
-      .then(() => set({[PREFIX + obj.id]: obj}))
-      .then(() => obj.id),
+    get: id => chromeLocal.getValue(PREFIX + id),
+    put: obj =>
+      // FIXME: should we clone the object?
+      Promise.resolve(!obj.id && prepareInc().then(() => Object.assign(obj, {id: INC++})))
+        .then(() => chromeLocal.setValue(PREFIX + obj.id, obj))
+        .then(() => obj.id),
     putMany: items => prepareInc()
-      .then(() => {
-        for (const item of items) {
-          if (!item.id) {
-            item.id = INC++;
-          }
-        }
-        return set(items.reduce((obj, curr) => {
-          obj[PREFIX + curr.id] = curr;
-          return obj;
-        }, {}));
-      })
+      .then(() =>
+        chromeLocal.set(items.reduce((data, item) => {
+          if (!item.id) item.id = INC++;
+          data[PREFIX + item.id] = item;
+          return data;
+        }, {})))
       .then(() => items.map(i => i.id)),
-    delete: id => remove(PREFIX + id),
-    getAll: () => get(null)
+    delete: id => chromeLocal.remove(PREFIX + id),
+    getAll: () => chromeLocal.get()
       .then(result => {
         const output = [];
         for (const key in result) {
@@ -69,7 +52,7 @@ function createChromeStorageDB() {
 
   function prepareInc() {
     if (INC) return Promise.resolve();
-    return get(null).then(result => {
+    return chromeLocal.get().then(result => {
       INC = 1;
       for (const key in result) {
         if (key.startsWith(PREFIX)) {

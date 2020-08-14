@@ -1,4 +1,4 @@
-/* global promisify CHROME URLS */
+/* global CHROME URLS */
 /* exported navigatorUtil */
 'use strict';
 
@@ -6,7 +6,6 @@ const navigatorUtil = (() => {
   const handler = {
     urlChange: null
   };
-  const tabGet = promisify(chrome.tabs.get.bind(chrome.tabs));
   return extendNative({onUrlChange});
 
   function onUrlChange(fn) {
@@ -48,7 +47,7 @@ const navigatorUtil = (() => {
     ) {
       return Promise.resolve();
     }
-    return tabGet(data.tabId)
+    return browser.tabs.get(data.tabId)
       .then(tab => {
         if (tab.url === 'chrome://newtab/') {
           data.url = tab.url;

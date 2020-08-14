@@ -1,7 +1,7 @@
 /* global download prefs openURL FIREFOX CHROME
   URLS ignoreChromeError usercssHelper
   styleManager msg navigatorUtil workerUtil contentScripts sync
-  findExistingTab createTab activateTab isTabReplaceable getActiveTab
+  findExistingTab activateTab isTabReplaceable getActiveTab
   tabManager */
 
 'use strict';
@@ -336,7 +336,7 @@ function openManage({options = false, search} = {}) {
         if (isTabReplaceable(tab, url)) {
           return activateTab(tab, {url});
         }
-        return createTab({url});
+        return browser.tabs.create({url});
       });
     });
 }

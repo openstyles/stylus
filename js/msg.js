@@ -1,12 +1,12 @@
-/* global promisify deepCopy */
+/* global promisifyChrome deepCopy */
 // deepCopy is only used if the script is executed in extension pages.
 'use strict';
 
 self.msg = self.INJECTED === 1 ? self.msg : (() => {
-  const runtimeSend = promisify(chrome.runtime.sendMessage.bind(chrome.runtime));
-  const tabSend = chrome.tabs && promisify(chrome.tabs.sendMessage.bind(chrome.tabs));
-  const tabQuery = chrome.tabs && promisify(chrome.tabs.query.bind(chrome.tabs));
-
+  promisifyChrome({
+    runtime: ['sendMessage'],
+    tabs: ['sendMessage', 'query'],
+  });
   const isBg = chrome.extension.getBackgroundPage && chrome.extension.getBackgroundPage() === window;
   if (isBg) {
     window._msg = {
@@ -49,19 +49,21 @@ self.msg = self.INJECTED === 1 ? self.msg : (() => {
       }
     }
     if (chrome.runtime.getBackgroundPage) {
-      return promisify(chrome.runtime.getBackgroundPage.bind(chrome.runtime))()
-        .catch(() => null);
+      promisifyChrome({
+        runtime: ['getBackgroundPage'],
+      });
+      return browser.runtime.getBackgroundPage().catch(() => null);
     }
     return Promise.resolve(null);
   }
 
   function send(data, target = 'extension') {
     const message = {data, target};
-    return runtimeSend(message).then(unwrapData);
+    return browser.runtime.sendMessage(message).then(unwrapData);
   }
 
   function sendTab(tabId, data, options, target = 'tab') {
-    return tabSend(tabId, {data, target}, options)
+    return browser.tabs.sendMessage(tabId, {data, target}, options)
       .then(unwrapData);
   }
 
@@ -99,7 +101,7 @@ self.msg = self.INJECTED === 1 ? self.msg : (() => {
   }
 
   function broadcastTab(data, filter, options, ignoreExtension = false, target = 'tab') {
-    return tabQuery({})
+    return browser.tabs.query({})
       // TODO: send to activated tabs first?
       .then(tabs => {
         const requests = [];
@@ -123,7 +125,7 @@ self.msg = self.INJECTED === 1 ? self.msg : (() => {
           const message = {data: dataObj, target};
           if (tab && tab.id) {
             requests.push(
-              tabSend(tab.id, message, options)
+              browser.tabs.sendMessage(tab.id, message, options)
                 .then(unwrapData)
                 .catch(ignoreError)
             );
