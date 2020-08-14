@@ -49,7 +49,7 @@ var webextLaunchWebAuthFlow = (function () {
       }
 
       const tabOptions = {
-        active: options.focused,
+        active: options.state !== "minimized",
         url: options.url
       };
       const tab = yield browser.tabs.create(tabOptions);
@@ -112,10 +112,12 @@ var webextLaunchWebAuthFlow = (function () {
       interactive = false
     }) {
       const wInfo = yield createWindow({
-        // Firefox doesn't support focused
         type: "popup",
         url,
-        state: "minimized"
+        state: "minimized" // https://crbug.com/783827
+        // note that Firefox doesn't support focused either
+        // focused: false
+
       });
       const windowId = wInfo.id;
       const tabId = wInfo.tabs[0].id;
