@@ -50,9 +50,9 @@ function createSourceEditor({style, onTitleChanged}) {
     updateMeta();
   });
 
-  linter.enableForEditor(cm);
-
   updateMeta().then(() => {
+
+    linter.enableForEditor(cm);
 
     let prevMode = NaN;
     cm.on('optionChange', (cm, option) => {
