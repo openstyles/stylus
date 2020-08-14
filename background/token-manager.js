@@ -1,10 +1,11 @@
-/* global chromeLocal promisifyChrome FIREFOX */
+/* global chromeLocal promisifyChrome webextLaunchWebAuthFlow FIREFOX */
 /* exported tokenManager */
 'use strict';
 
 const tokenManager = (() => {
   promisifyChrome({
-    identity: ['launchWebAuthFlow'],
+    'browser.windows': ['create', 'update', 'remove'],
+    'browser.tabs': ['create', 'update', 'remove']
   });
   const AUTH = {
     dropbox: {
@@ -160,9 +161,10 @@ const tokenManager = (() => {
       Object.assign(query, provider.authQuery);
     }
     const url = `${provider.authURL}?${stringifyQuery(query)}`;
-    return browser.identity.launchWebAuthFlow({
+    return webextLaunchWebAuthFlow({
       url,
-      interactive
+      interactive,
+      redirect_uri: query.redirect_uri
     })
       .then(url => {
         const params = new URLSearchParams(
@@ -185,7 +187,7 @@ const tokenManager = (() => {
           code,
           grant_type: 'authorization_code',
           client_id: provider.clientId,
-          redirect_uri: provider.redirect_uri || chrome.identity.getRedirectURL()
+          redirect_uri: query.redirect_uri
         };
         if (provider.clientSecret) {
           body.client_secret = provider.clientSecret;
