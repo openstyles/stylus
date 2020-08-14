@@ -61,7 +61,7 @@
   border: none;
   background-color: white;
   font-weight: bold;
-  white-space: nowrap;
+  white-space: pre; /* issue #1000 */
   color: currentColor; /* use the current theme's color instead of UserAgent's CSS */
   flex: 1;
 }

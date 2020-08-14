@@ -1,7 +1,7 @@
 /* global download prefs openURL FIREFOX CHROME
   URLS ignoreChromeError usercssHelper
   styleManager msg navigatorUtil workerUtil contentScripts sync
-  findExistingTab createTab activateTab isTabReplaceable getActiveTab
+  findExistingTab activateTab isTabReplaceable getActiveTab
   tabManager colorScheme */
 'use strict';
 
@@ -9,6 +9,20 @@
 var backgroundWorker = workerUtil.createWorker({
   url: '/background/background-worker.js'
 });
+
+// eslint-disable-next-line no-var
+var browserCommands, contextMenus;
+
+// *************************************************************************
+// browser commands
+browserCommands = {
+  openManage,
+  openOptions: () => openManage({options: true}),
+  styleDisableAll(info) {
+    prefs.set('disableAll', info ? info.checked : !prefs.get('disableAll'));
+  },
+  reload: () => chrome.runtime.reload(),
+};
 
 window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   deleteStyle: styleManager.deleteStyle,
@@ -70,8 +84,8 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   },
 
   optionsCustomizeHotkeys() {
-    return browser.runtime.openOptionsPage()
-      .then(() => new Promise(resolve => setTimeout(resolve, 100)))
+    return browserCommands.openOptions()
+      .then(() => new Promise(resolve => setTimeout(resolve, 500)))
       .then(() => msg.broadcastExtension({method: 'optionsCustomizeHotkeys'}));
   },
 
@@ -85,9 +99,6 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
 
   openManage
 });
-
-// eslint-disable-next-line no-var
-var browserCommands, contextMenus;
 
 // *************************************************************************
 // register all listeners
@@ -149,17 +160,6 @@ chrome.runtime.onInstalled.addListener(({reason}) => {
 });
 
 // *************************************************************************
-// browser commands
-browserCommands = {
-  openManage,
-  openOptions: () => openManage({options: true}),
-  styleDisableAll(info) {
-    prefs.set('disableAll', info ? info.checked : !prefs.get('disableAll'));
-  },
-  reload: () => chrome.runtime.reload(),
-};
-
-// *************************************************************************
 // context menus
 contextMenus = {
   'show-badge': {
@@ -218,7 +218,7 @@ function createContextMenus(ids) {
 
 if (chrome.contextMenus) {
   // circumvent the bug with disabling check marks in Chrome 62-64
-  const toggleCheckmark = CHROME >= 3172 && CHROME <= 3288 ?
+  const toggleCheckmark = CHROME >= 62 && CHROME <= 64 ?
     (id => chrome.contextMenus.remove(id, () => createContextMenus([id]) + ignoreChromeError())) :
     ((id, checked) => chrome.contextMenus.update(id, {checked}, ignoreChromeError));
 
@@ -337,7 +337,7 @@ function openManage({options = false, search} = {}) {
         if (isTabReplaceable(tab, url)) {
           return activateTab(tab, {url});
         }
-        return createTab({url});
+        return browser.tabs.create({url});
       });
     });
 }

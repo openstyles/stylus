@@ -1,7 +1,7 @@
 /* global CodeMirror onDOMready prefs setupLivePrefs $ $$ $create t tHTML
-  createSourceEditor queryTabs sessionStorageHash getOwnTab FIREFOX API tryCatch
+  createSourceEditor sessionStorageHash getOwnTab FIREFOX API tryCatch
   closeCurrentTab messageBox debounce workerUtil
-  beautify ignoreChromeError
+  initBeautifyButton ignoreChromeError
   moveFocus msg createSectionsEditor rerouteHotkeys CODEMIRROR_THEMES */
 /* exported showCodeMirrorPopup editorWorker toggleContextMenuDelete */
 'use strict';
@@ -170,12 +170,21 @@ preinit();
         $('#heading').textContent = t(style.id ? 'editStyleHeading' : 'addStyleTitle');
         $('#name').placeholder = t(usercss ? 'usercssEditorNamePlaceholder' : 'styleMissingName');
         $('#name').title = usercss ? t('usercssReplaceTemplateName') : '';
-
         $('#preview-label').classList.toggle('hidden', !style.id);
-
-        $('#beautify').onclick = () => beautify(editor.getEditors());
+        initBeautifyButton($('#beautify'), () => editor.getEditors());
+        const {onBoundsChanged} = chrome.windows || {};
+        if (onBoundsChanged) {
+          // * movement is reported even if the window wasn't resized
+          // * fired just once when done so debounce is not needed
+          onBoundsChanged.addListener(wnd => {
+            // getting the current window id as it may change if the user attached/detached the tab
+            chrome.windows.getCurrent(ownWnd => {
+              if (wnd.id === ownWnd.id) rememberWindowSize();
+            });
+          });
+        }
         window.addEventListener('resize', () => {
-          debounce(rememberWindowSize, 100);
+          if (!onBoundsChanged) debounce(rememberWindowSize, 100);
           detectLayout();
         });
         detectLayout();
@@ -217,7 +226,7 @@ function preinit() {
   }).observe(document, {subtree: true, childList: true});
 
   if (chrome.windows) {
-    queryTabs({currentWindow: true}).then(tabs => {
+    browser.tabs.query({currentWindow: true}).then(tabs => {
       const windowId = tabs[0].windowId;
       if (prefs.get('openEditInWindow')) {
         if (

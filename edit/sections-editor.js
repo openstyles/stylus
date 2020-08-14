@@ -34,7 +34,8 @@ function createSectionsEditor({style, onTitleChanged}) {
   $('#from-mozilla').addEventListener('click', () => showMozillaFormatImport());
   $('#save-button').addEventListener('click', saveStyle);
 
-  document.addEventListener('wheel', scrollEntirePageOnCtrlShift);
+  document.addEventListener('wheel', scrollEntirePageOnCtrlShift, {passive: false});
+  CodeMirror.defaults.extraKeys['Shift-Ctrl-Wheel'] = 'scrollWindow';
 
   if (!FIREFOX) {
     $$([
@@ -154,9 +155,7 @@ function createSectionsEditor({style, onTitleChanged}) {
   function closestVisible(nearbyElement) {
     const cm =
       nearbyElement instanceof CodeMirror ? nearbyElement :
-      nearbyElement instanceof Node &&
-        (nearbyElement.closest('#sections > .section') || {}).CodeMirror ||
-      getLastActivatedEditor();
+        nearbyElement instanceof Node && getAssociatedEditor(nearbyElement) || getLastActivatedEditor();
     if (nearbyElement instanceof Node && cm) {
       const {left, top} = nearbyElement.getBoundingClientRect();
       const bounds = cm.display.wrapper.getBoundingClientRect();
@@ -225,6 +224,15 @@ function createSectionsEditor({style, onTitleChanged}) {
         scrollToEditor(cm);
       }
       return cm;
+    }
+  }
+
+  function getAssociatedEditor(nearbyElement) {
+    for (let el = nearbyElement; el; el = el.parentElement) {
+      // added by createSection
+      if (el.CodeMirror) {
+        return el.CodeMirror;
+      }
     }
   }
 

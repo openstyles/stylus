@@ -244,6 +244,14 @@
     "message": "Да",
     "description": "'Yes' button in a confirm dialog"
   },
+  "copied": {
+    "message": "Скопировано в буфер обмена",
+    "description": "Message shown when content has been copied to the clipboard"
+  },
+  "copy": {
+    "message": "Скопировать в буфер обмена",
+    "description": "Tooltip for elements which can be copied"
+  },
   "dateInstalled": {
     "message": "Дата установки",
     "description": "Option text for the user to sort the style by install date"
@@ -283,6 +291,10 @@
   "dragDropMessage": {
     "message": "Перетащите файл с резервной копией стилей в любое место этой страницы, чтобы импортировать его.",
     "description": "Drag'n'drop message"
+  },
+  "dragDropUsercssTabstrip": {
+    "message": "Чтобы установить файл, поместите его на вкладку (область, где отображаются заголовки вкладок).",
+    "description": "Message popup shown when erroneously dropping a usercss file into the manager page"
   },
   "editDeleteText": {
     "message": "Удалить",
@@ -440,6 +452,10 @@
   "helpKeyMapHotkey": {
     "message": "Нажмите клавишу",
     "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+  },
+  "hostDisabled": {
+    "message": "Этот хост был отключен из-за ошибки в текущей версии используемого браузера",
+    "description": "Tooltip for cloud host disabled"
   },
   "importAppendLabel": {
     "message": "Добавить к стилю",
@@ -612,6 +628,14 @@
   "liveReloadError": {
     "message": "Ошибка слежения за файлом",
     "description": "The label of live-reload error"
+  },
+  "liveReloadInstallHint": {
+    "message": "Держите эту вкладку открытой, чтобы автоматически обновлять стиль при внешних изменениях.",
+    "description": "The label of live-reload feature"
+  },
+  "liveReloadInstallHintFF": {
+    "message": "Оставьте эту вкладку и исходную вкладку открытой, чтобы автоматически обновлять стиль при внешних изменениях.",
+    "description": "The extra hint of live-reload feature shown only for file:// URLs in Firefox"
   },
   "liveReloadLabel": {
     "message": "Автозагрузка изменений",
@@ -909,6 +933,10 @@
     "message": "Менеджер",
     "description": "Link to open the manage page."
   },
+  "openOptions": {
+    "message": "Опции",
+    "description": "Go to Options UI"
+  },
   "openStylesManager": {
     "message": "Менеджер стилей",
     "description": "Label for the style maanger opener in the browser action context menu."
@@ -969,6 +997,10 @@
     "message": "Обновления",
     "description": ""
   },
+  "optionsCustomizeSync": {
+    "message": "Синхронизация с облаком",
+    "description": ""
+  },
   "optionsHeading": {
     "message": "Настройки",
     "description": "Heading for options section on manage page."
@@ -1011,6 +1043,70 @@
   },
   "optionsUpdateInterval": {
     "message": "Интервал обновления стилей, в часах (укажите 0 для выключения)",
+    "description": ""
+  },
+  "optionsSyncNone": {
+    "message": "Ничего",
+    "description": ""
+  },
+  "optionsSyncConnect": {
+    "message": "Подключить",
+    "description": ""
+  },
+  "optionsSyncDisconnect": {
+    "message": "Отсоединить",
+    "description": ""
+  },
+  "optionsSyncSyncNow": {
+    "message": "Синхронизировать",
+    "description": ""
+  },
+  "optionsSyncLogin": {
+    "message": "Логин",
+    "description": ""
+  },
+  "optionsSyncStatusPull": {
+    "message": "Загружено стилей $loaded$ из $total$",
+    "description": "",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusPush": {
+    "message": "Загружено стилей $loaded$ из $total$",
+    "description": "",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "Синхронизация",
+    "description": ""
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "Подключение…",
+    "description": ""
+  },
+  "optionsSyncStatusConnected": {
+    "message": "Подключено",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "Отсоединение…",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "Отсоединено",
     "description": ""
   },
   "paginationCurrent": {
@@ -1088,6 +1184,10 @@
   "previewTooltip": {
     "message": "Временно применяет стиль пока вы его редактируете.\nСохраните стиль, чтобы сделать изменения постоянными.",
     "description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+  },
+  "reload": {
+    "message": "Перезагрузить расширение Stylus",
+    "description": "Context menu reload"
   },
   "replace": {
     "message": "Заменить",
@@ -1494,6 +1594,10 @@
   },
   "syncDropboxStyles": {
     "message": "Экспорт Dropbox",
+    "description": ""
+  },
+  "syncDropboxDeprecated": {
+    "message": "Импорт/экспорт Dropbox заменен более продвинутой синхронизацией стилей на странице параметров.",
     "description": ""
   },
   "retrieveDropboxSync": {

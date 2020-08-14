@@ -8,6 +8,8 @@
     prefs.reset('editor.keyMap');
   }
 
+  const CM_BOOKMARK = 'CodeMirror-bookmark';
+  const CM_BOOKMARK_GUTTER = CM_BOOKMARK + 'gutter';
   const defaults = {
     autoCloseBrackets: prefs.get('editor.autoCloseBrackets'),
     mode: 'css',
@@ -15,6 +17,7 @@
     lineWrapping: prefs.get('editor.lineWrapping'),
     foldGutter: true,
     gutters: [
+      CM_BOOKMARK_GUTTER,
       'CodeMirror-linenumbers',
       'CodeMirror-foldgutter',
       ...(prefs.get('editor.linter') ? ['CodeMirror-lint-markers'] : []),
@@ -102,92 +105,19 @@
   }
 
   Object.assign(CodeMirror.mimeModes['text/css'].propertyKeywords, {
-    // CSS Backgrounds and Borders Module L4
     'background-position-x': true,
     'background-position-y': true,
-
-    // CSS Logical Properties and Values L1
-    'block-size': true,
-    'border-block-color': true,
-    'border-block-end': true,
-    'border-block-end-color': true,
-    'border-block-end-style': true,
-    'border-block-end-width': true,
-    'border-block-start': true,
-    'border-block-start-color': true,
-    'border-block-start-style': true,
-    'border-block-start-width': true,
-    'border-block-style': true,
-    'border-block-width': true,
-    'border-inline-color': true,
-    'border-inline-end': true,
-    'border-inline-end-color': true,
-    'border-inline-end-style': true,
-    'border-inline-end-width': true,
-    'border-inline-start': true,
-    'border-inline-start-color': true,
-    'border-inline-start-style': true,
-    'border-inline-start-width': true,
-    'border-inline-style': true,
-    'border-inline-width': true,
-    'inline-size': true,
-    'inset': true,
-    'inset-block': true,
-    'inset-block-end': true,
-    'inset-block-start': true,
-    'inset-inline': true,
-    'inset-inline-end': true,
-    'inset-inline-start': true,
-    'margin-block': true,
-    'margin-block-end': true,
-    'margin-block-start': true,
-    'margin-inline': true,
-    'margin-inline-end': true,
-    'margin-inline-start': true,
-    'max-block-size': true,
-    'max-inline-size': true,
-    'min-block-size': true,
-    'min-inline-size': true,
-    'padding-block': true,
-    'padding-block-end': true,
-    'padding-block-start': true,
-    'padding-inline': true,
-    'padding-inline-end': true,
-    'padding-inline-start': true,
-    'text-align-all': true,
-
     'contain': true,
     'mask-image': true,
     'mix-blend-mode': true,
+    'overscroll-behavior': true,
     'rotate': true,
     'isolation': true,
-    'zoom': true,
-
-    // https://www.w3.org/TR/css-round-display-1/
-    'border-boundary': true,
-    'shape': true,
-    'shape-inside': true,
-    'viewport-fit': true,
-
-    // nonstandard https://compat.spec.whatwg.org/
-    'box-reflect': true,
-    'text-fill-color': true,
-    'text-stroke': true,
-    'text-stroke-color': true,
-    'text-stroke-width': true,
-    // end
-  });
-  Object.assign(CodeMirror.mimeModes['text/css'].valueKeywords, {
-    'isolate': true,
-    'rect': true,
-    'recto': true,
-    'verso': true,
   });
   Object.assign(CodeMirror.mimeModes['text/css'].colorKeywords, {
     'darkgrey': true,
     'darkslategrey': true,
     'dimgrey': true,
-    'grey': true,
     'lightgrey': true,
     'lightslategrey': true,
     'slategrey': true,
@@ -242,22 +172,27 @@
     CodeMirror.commands[name] = (...args) => editor[name](...args);
   }
 
-  // speedup: reuse the old folding marks
-  // TODO: remove when https://github.com/codemirror/CodeMirror/pull/6010 is shipped in /vendor
-  const {setGutterMarker} = CodeMirror.prototype;
-  CodeMirror.prototype.setGutterMarker = function (line, gutterID, value) {
-    const o = this.state.foldGutter.options;
-    if (typeof o.indicatorOpen === 'string' ||
-        typeof o.indicatorFolded === 'string') {
-      const old = line.gutterMarkers && line.gutterMarkers[gutterID];
-      // old className can contain other names set by CodeMirror so we'll use classList
-      if (old && value && old.classList.contains(value.className) ||
-          !old && !value) {
-        return line;
-      }
+  const elBookmark = document.createElement('div');
+  elBookmark.className = CM_BOOKMARK;
+  elBookmark.textContent = '\u00A0';
+  const clearMarker = function () {
+    const line = this.lines[0];
+    CodeMirror.TextMarker.prototype.clear.apply(this);
+    if (!line.markedSpans.some(span => span.marker.sublimeBookmark)) {
+      this.doc.setGutterMarker(line, CM_BOOKMARK_GUTTER, null);
     }
-    return setGutterMarker.apply(this, arguments);
   };
+  const {markText} = CodeMirror.prototype;
+  Object.assign(CodeMirror.prototype, {
+    markText() {
+      const marker = markText.apply(this, arguments);
+      if (marker.sublimeBookmark) {
+        this.doc.setGutterMarker(marker.lines[0], CM_BOOKMARK_GUTTER, elBookmark.cloneNode(true));
+        marker.clear = clearMarker;
+      }
+      return marker;
+    },
+  });
 
   // CodeMirror convenience commands
   Object.assign(CodeMirror.commands, {
@@ -307,6 +242,7 @@ CodeMirror.hint && (() => {
   const RX_IMPORTANT = /(i(m(p(o(r(t(a(nt?)?)?)?)?)?)?)?)?(?=\b|\W|$)/iy;
   const RX_VAR_KEYWORD = /(^|[^-\w\u0080-\uFFFF])var\(/iy;
   const RX_END_OF_VAR = /[\s,)]|$/g;
+  const RX_CONSUME_PROP = /[-\w]*\s*:\s?|$/y;
 
   const originalHelper = CodeMirror.hint.css || (() => {});
   const helper = cm => {
@@ -372,7 +308,15 @@ CodeMirror.hint && (() => {
     }
 
     if (!editor || !style || !style.includes(USO_VAR)) {
-      return originalHelper(cm);
+      // add ":" after a property name
+      const res = originalHelper(cm);
+      const state = res && cm.getTokenAt(pos).state.state;
+      if (state === 'block' || state === 'maybeprop') {
+        res.list = res.list.map(str => str + ': ');
+        RX_CONSUME_PROP.lastIndex = res.to.ch;
+        res.to.ch += RX_CONSUME_PROP.exec(text)[0].length;
+      }
+      return res;
     }
 
     // USO vars in usercss mode editor

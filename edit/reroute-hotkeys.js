@@ -12,6 +12,7 @@ const rerouteHotkeys = (() => {
     'toggleEditorFocus',
     'find', 'findNext', 'findPrev', 'replace', 'replaceAll',
     'colorpicker',
+    'beautify',
   ]);
 
   return rerouteHotkeys;

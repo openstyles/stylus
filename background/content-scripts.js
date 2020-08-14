@@ -1,4 +1,4 @@
-/* global msg queryTabs ignoreChromeError URLS */
+/* global msg ignoreChromeError URLS */
 /* exported contentScripts */
 'use strict';
 
@@ -55,7 +55,7 @@ const contentScripts = (() => {
   }
 
   function injectToAllTabs() {
-    return queryTabs({}).then(tabs => {
+    return browser.tabs.query({}).then(tabs => {
       for (const tab of tabs) {
         // skip unloaded/discarded/chrome tabs
         if (!tab.width || tab.discarded || !URLS.supported(tab.url)) continue;

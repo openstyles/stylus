@@ -1,15 +1,15 @@
 {
   "name": "Stylus",
-  "version": "1.5.10",
+  "version": "1.5.13",
   "minimum_chrome_version": "49",
   "description": "__MSG_description__",
   "homepage_url": "https://add0n.com/stylus.html",
   "manifest_version": 2,
   "icons": {
-    "16": "/images/icon/16.png",
-    "32": "/images/icon/32.png",
-    "48": "/images/icon/48.png",
-    "128": "/images/icon/128.png"
+    "16": "images/icon/16.png",
+    "32": "images/icon/32.png",
+    "48": "images/icon/48.png",
+    "128": "images/icon/128.png"
   },
   "permissions": [
     "tabs",
@@ -18,6 +18,7 @@
     "webRequestBlocking",
     "contextMenus",
     "storage",
+    "unlimitedStorage",
     "alarms",
     "identity",
     "<all_urls>"
@@ -25,7 +26,6 @@
   "background": {
     "scripts": [
       "js/polyfill.js",
-      "js/promisify.js",
       "js/messaging.js",
       "js/msg.js",
       "js/storage-util.js",
@@ -77,7 +77,6 @@
       "match_about_blank": true,
       "js": [
         "js/polyfill.js",
-        "js/promisify.js",
         "js/msg.js",
         "js/prefs.js",
         "content/style-injector.js",
@@ -99,10 +98,10 @@
   ],
   "browser_action": {
     "default_icon": {
-      "16": "/images/icon/16w.png",
-      "32": "/images/icon/32w.png",
-      "19": "/images/icon/19w.png",
-      "38": "/images/icon/38w.png"
+      "16": "images/icon/16w.png",
+      "32": "images/icon/32w.png",
+      "19": "images/icon/19w.png",
+      "38": "images/icon/38w.png"
     },
     "default_title": "Stylus",
     "default_popup": "popup.html"

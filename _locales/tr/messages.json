@@ -40,6 +40,10 @@
     "message": "Şuraya uygulanır",
     "description": "Label for 'applies to' fields on the edit/add screen"
   },
+  "appliesLineWidgetWarning": {
+    "message": "Küçültülmüş CSS ile çalışmaz",
+    "description": "A warning that applies-to information won't show properly with minified CSS"
+  },
   "appliesRegexpOption": {
     "message": "regexp ile eşleşen URL'ler",
     "description": "Option to make the style apply to the entered string as a regular expression"
@@ -68,6 +72,14 @@
     "message": "Yazar",
     "description": "Label for the style author"
   },
+  "backupButtons": {
+    "message": "Yedek",
+    "description": "Heading for backup"
+  },
+  "backupMessage": {
+    "message": "Bir dosya seçin veya bu sayfaya sürükleyip bırakın.",
+    "description": "Message for backup"
+  },
   "bckpInstStyles": {
     "message": "Dışa aktar",
     "description": ""
@@ -75,6 +87,10 @@
   "checkAllUpdates": {
     "message": "Tüm stiller için güncellemeleri denetle",
     "description": "Label for the button to check all styles for updates"
+  },
+  "checkAllUpdatesForce": {
+    "message": "Tekrar kontrol et, herhangi bir stil düzenlemedim!",
+    "description": "Label for the button to apply all detected updates"
   },
   "checkForUpdate": {
     "message": "Güncellemeleri denetle",
@@ -92,6 +108,10 @@
     "message": "Parantezleri ve tırnak işaretlerini otomatik olarak kapat",
     "description": "Label for the checkbox in the style editor."
   },
+  "cm_autoCloseBracketsTooltip": {
+    "message": "()[]{}''\"\" Açılışlarından birini yazarken otomatik olarak bir kapanış çifti ekleyin",
+    "description": "Label for the checkbox in the style editor."
+  },
   "cm_autocompleteOnTyping": {
     "message": "Yazarken tamamla",
     "description": "Label for the checkbox in the style editor."
@@ -104,6 +124,14 @@
     "message": "Akıllı girintili tab kullan",
     "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
   },
+  "cm_keyMap": {
+    "message": "Tuşeşlem",
+    "description": "Label for the drop-down list controlling the keymap for the style editor."
+  },
+  "cm_lineWrapping": {
+    "message": "Kelime kaydırma",
+    "description": "Label for the checkbox controlling word wrap option for the style editor."
+  },
   "cm_matchHighlight": {
     "message": "Vurgulama",
     "description": "Label for the drop-down list controlling the automatic highlighting of current word/selection occurrences in the style editor."
@@ -111,6 +139,26 @@
   "cm_matchHighlightSelection": {
     "message": "Yalnızca seçim",
     "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
+  },
+  "cm_matchHighlightToken": {
+    "message": "İmleç altındaki token",
+    "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of the word/token under cursor even if nothing is selected"
+  },
+  "cm_resizeGripHint": {
+    "message": "Yüksekliği en üst düzeye çıkarmak/geri yüklemek için çift tıklayın",
+    "description": "Tooltip for the resize grip in style editor"
+  },
+  "cm_selectByTokens": {
+    "message": "Çift tıklamak tokenleri seçer",
+    "description": "Label for the checkbox in the editor."
+  },
+  "cm_selectByTokensTooltip": {
+    "message": "Token örnekleri: .foo-bar-2 #aabbcc 0.32 !important\nDevre dışı bırakıldığında: noktalama işareti ile ayrılmış kelimeler seçilir.",
+    "description": ""
+  },
+  "cm_smartIndent": {
+    "message": "Akıllı girinti kullanma",
+    "description": "Label for the checkbox controlling smart indentation option for the style editor."
   },
   "cm_tabSize": {
     "message": "Tab büyüklüğü",
@@ -120,9 +168,29 @@
     "message": "Tema",
     "description": "Label for the style editor's CSS theme."
   },
+  "colorpickerSwitchFormatTooltip": {
+    "message": "Format değişimleri: HEX -> RGB -> HSL.\nYönü ters çevirmek için Shift tuşunu basılı tutup tıklatın.\nAyrıca PgUp (PageUp), PgDn (PageDown) tuşları ile.",
+    "description": "Tooltip for the switch button in the color picker popup in the style editor."
+  },
+  "colorpickerTooltip": {
+    "message": "Renk seçiciyi aç",
+    "description": "Tooltip for the colored squares shown before CSS colors in the style editor."
+  },
   "configOnChange": {
     "message": "değişiklikte",
     "description": "VERY SHORT label for the checkbox in style config dialog after the save button - when enabled the changes in the dialog are saved and applied automatically without the need to press the Save button"
+  },
+  "configOnChangeTooltip": {
+    "message": "Otomatik kaydetme ve değişiklikleri otomatik olarak uygulama",
+    "description": ""
+  },
+  "configureStyle": {
+    "message": "Yapılandır",
+    "description": "Label for the button to configure usercss userstyle"
+  },
+  "configureStyleOnHomepage": {
+    "message": "Ana sayfada yapılandır",
+    "description": "Label for the button to configure userstyles.org userstyle"
   },
   "confirmCancel": {
     "message": "İptal",
@@ -180,6 +248,10 @@
     "message": "Güncelleme tarihi",
     "description": "Option text for the user to sort the style by last update date"
   },
+  "dbError": {
+    "message": "Stylus veritabanı kullanılırken bir hata oluştu. Olası çözümler içeren bir web sayfasını ziyaret etmek ister misiniz?",
+    "description": "Prompt when a DB error is encountered"
+  },
   "defaultTheme": {
     "message": "öntanımlı",
     "description": "Default CodeMirror CSS theme option on the edit style page"
@@ -203,6 +275,14 @@
   "disableStyleLabel": {
     "message": "Devre dışı bırak",
     "description": "Label for the button to disable a style"
+  },
+  "dragDropMessage": {
+    "message": "İçe aktarmak için yedek dosyanızı bu sayfada herhangi bir yere bırakın.",
+    "description": "Drag'n'drop message"
+  },
+  "dragDropUsercssTabstrip": {
+    "message": "Dosyayı yüklemek için sekme şeridine (sekme başlıklarının gösterildiği alan) bırakın.",
+    "description": "Message popup shown when erroneously dropping a usercss file into the manager page"
   },
   "editDeleteText": {
     "message": "Sil",
@@ -237,6 +317,14 @@
     "message": "Etkinleştir",
     "description": "Label for the button to enable a style"
   },
+  "excludeStyleByDomainLabel": {
+    "message": "Mevcut alan adını hariç tut",
+    "description": ""
+  },
+  "excludeStyleByUrlLabel": {
+    "message": "Mevcut URL'yi hariç tut",
+    "description": ""
+  },
   "exportLabel": {
     "message": "Dışa aktar",
     "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
@@ -249,9 +337,33 @@
     "message": "Anasayfa",
     "description": "Label for the external link to style's homepage"
   },
+  "externalLink": {
+    "message": "Harici bağlantı",
+    "description": "Label for external links"
+  },
   "externalSupport": {
     "message": "Destek",
     "description": "Label for the external link to style's support site"
+  },
+  "externalUsercssDocument": {
+    "message": "Usercss belgeleri",
+    "description": "Label for the external link to usercss documentation"
+  },
+  "filteredStyles": {
+    "message": "Toplam $numTotal$ gösterilen $numShown$",
+    "description": "TL note - make this message short",
+    "placeholders": {
+      "numTotal": {
+        "content": "$2"
+      },
+      "numShown": {
+        "content": "$1"
+      }
+    }
+  },
+  "filteredStylesAllHidden": {
+    "message": "Şu anda uygulanan filtreler hiçbir stille eşleşmiyor",
+    "description": "Text shown when no styles match currently applied filter in the style manager"
   },
   "findStyles": {
     "message": "Stil bul",
@@ -261,9 +373,21 @@
     "message": "Bu site için başka stiller bul",
     "description": "Text for a link that gets a list of styles for the current site"
   },
+  "findStylesInline": {
+    "message": "Hizada",
+    "description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
+  },
+  "findStylesInlineTooltip": {
+    "message": "Arama sonuçlarını bu pencerede görüntüleyin.",
+    "description": "Text for a checkbox that displays search results within the Stylus popup."
+  },
   "genericAdd": {
     "message": "Ekle",
     "description": "Used in various places for an action that adds something"
+  },
+  "genericClone": {
+    "message": "Klon",
+    "description": "Used in various places for an action that clones something"
   },
   "genericDisabledLabel": {
     "message": "Devre dışı",
@@ -289,6 +413,10 @@
     "message": "Önceki",
     "description": "Used in various places to select/perform the previous step/action"
   },
+  "genericResetLabel": {
+    "message": "Yenile",
+    "description": "Used in various parts of UI to indicate that something may be reset to its original state"
+  },
   "genericSavedMessage": {
     "message": "Kaydedildi",
     "description": "Used in various parts of the UI to indicate that something was saved"
@@ -305,9 +433,25 @@
     "message": "Yardım",
     "description": "Alternate text for help buttons"
   },
+  "helpKeyMapCommand": {
+    "message": "Bir komut adı yazın",
+    "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+  },
+  "helpKeyMapHotkey": {
+    "message": "Bir kısayol tuşuna basın",
+    "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+  },
+  "hostDisabled": {
+    "message": "Bu ana bilgisayar, kullanılan tarayıcının mevcut sürümündeki bir hata nedeniyle devre dışı bırakıldı",
+    "description": "Tooltip for cloud host disabled"
+  },
   "importAppendLabel": {
     "message": "Stile ekle",
     "description": "Label for the button to import a style and append to the existing sections"
+  },
+  "importAppendTooltip": {
+    "message": "İçe aktarılan stili geçerli stile ekleme",
+    "description": "Tooltip for the button to import a style and append to the existing sections"
   },
   "importLabel": {
     "message": "İçe aktar",
@@ -317,9 +461,17 @@
     "message": "Stilin üzerine yaz",
     "description": "Label for the button to import and overwrite current style"
   },
+  "importReplaceTooltip": {
+    "message": "Geçerli stilin içeriğini atın ve içe aktarılan stil ile üzerine yazın",
+    "description": "Label for the button to import and overwrite current style"
+  },
   "importReportLegendAdded": {
     "message": "eklendi",
     "description": "Text after the number of styles added in the report shown after importing styles"
+  },
+  "importReportLegendUpdatedBoth": {
+    "message": "hem meta bilgi hem de kod güncellendi",
+    "description": "Text after the number of styles updated entirely in the report shown after importing styles"
   },
   "importReportLegendUpdatedCode": {
     "message": "güncellenmiş kod",
@@ -640,6 +792,10 @@
     "message": "Güncelleme kontrolü geçmişi",
     "description": ""
   },
+  "updateCheckSkippedMaybeLocallyEdited": {
+    "message": "Bu stil yerel olarak düzenlenmiş olabilir.",
+    "description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
+  },
   "updateCheckSucceededNoUpdate": {
     "message": "Stil güncel.",
     "description": "Text that displays when an update check completed and no update is available"
@@ -652,6 +808,38 @@
     "message": "Kurulan güncellemeler:",
     "description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
   },
+  "usercssAvoidOverwriting": {
+    "message": "Mevcut bir stilin üzerine yazmaktan kaçınmak için lütfen @name veya @ ad alanının değerini değiştirin.",
+    "description": "Shown in a message box when attempting to save a new Usercss style that would overwrite an existing one."
+  },
+  "usercssConfigIncomplete": {
+    "message": "Stil, yapılandırma iletişim kutusu gösterildikten sonra güncellendi veya silindi. Bu değişkenler, stilin meta verilerini bozmamak için kaydedilmedi:",
+    "description": ""
+  },
+  "usercssEditorNamePlaceholder": {
+    "message": "Kodda @name belirtin",
+    "description": "Placeholder text for the empty name input field when creating a new Usercss style"
+  },
+  "usercssReplaceTemplateConfirmation": {
+    "message": "Yeni Usercss stilleri için varsayılan şablonu geçerli kodla değiştir?",
+    "description": ""
+  },
+  "usercssReplaceTemplateName": {
+    "message": "Boş @name, varsayılan şablonun yerini alır",
+    "description": "The text shown after @name when creating a new Usercss style"
+  },
+  "usercssReplaceTemplateSectionBody": {
+    "message": "Kodu buraya ekle...",
+    "description": "The code placeholder comment in a new style created by clicking 'Write style' in the popup"
+  },
+  "versionInvalidOlder": {
+    "message": "Sürüm, kurulu stillerden daha eski.",
+    "description": "Displayed when the version of style is older than the installed one"
+  },
+  "writeStyleFor": {
+    "message": "Şunun için stil yaz:",
+    "description": "Label for toolbar pop-up that precedes the links to write a new style"
+  },
   "writeStyleForURL": {
     "message": "bu URL",
     "description": "Text for link in toolbar pop-up to write a new style for the current URL"
@@ -660,12 +848,32 @@
     "message": "Dropbox'tan aktar",
     "description": ""
   },
+  "syncDropboxDeprecated": {
+    "message": "Dropbox içe/dışa aktarma, seçenekler sayfasında daha gelişmiş bir stil senkronizasyonu ile değiştirilir.",
+    "description": ""
+  },
   "retrieveDropboxSync": {
     "message": "Dropbox'a aktar",
     "description": ""
   },
+  "overwriteFileExport": {
+    "message": "Mevcut bir dosyanın üzerine yazmak istiyor musunuz?",
+    "description": ""
+  },
   "exportSavedSuccess": {
     "message": "Dosya başarıyla kaydedildi",
+    "description": ""
+  },
+  "noFileToImport": {
+    "message": "Stillerinizi içe aktarmak için önce dışa aktarmanız gerekir.",
+    "description": ""
+  },
+  "connectingDropbox": {
+    "message": "Dropbox'a bağlanıyor...",
+    "description": ""
+  },
+  "connectingDropboxNotAllowed": {
+    "message": "Dropbox'a bağlanmak yalnızca doğrudan web mağazasından yüklenen uygulamalarda kullanılabilir",
     "description": ""
   },
   "gettingStyles": {
@@ -674,6 +882,10 @@
   },
   "zipStyles": {
     "message": "Stiller sıkıştırılıyor...",
+    "description": ""
+  },
+  "unzipStyles": {
+    "message": "Stiller açılıyor...",
     "description": ""
   },
   "readingStyles": {

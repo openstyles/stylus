@@ -267,6 +267,10 @@ input:invalid {
   margin-top: 4em;
 }
 /************ section editor ***********/
+.CodeMirror-vscrollbar,
+.CodeMirror-hscrollbar {
+  pointer-events: auto !important; /* FF bug */
+}
 .section-editor .section {
   margin: 0 0.7rem;
   padding: 1rem;
@@ -774,6 +778,11 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   font-weight: bold;
   padding-left: 4px;
   margin-left: 4px;
+}
+.beautify-hint {
+  width: 0;
+  min-width: 100%;
+  font-size: 90%;
 }
 
 /************ single editor **************/

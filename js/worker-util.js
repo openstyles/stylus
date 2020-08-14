@@ -6,7 +6,7 @@ const workerUtil = (() => {
   const loadedScripts = new Set();
   return {createWorker, createAPI, loadScript, cloneError};
 
-  function createWorker({url, lifeTime = 30}) {
+  function createWorker({url, lifeTime = 300}) {
     let worker;
     let id;
     let timer;

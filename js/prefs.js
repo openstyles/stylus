@@ -1,4 +1,4 @@
-/* global promisify */
+/* global promisifyChrome */
 'use strict';
 
 self.prefs = self.INJECTED === 1 ? self.prefs : (() => {
@@ -63,6 +63,7 @@ self.prefs = self.INJECTED === 1 ? self.prefs : (() => {
       end_with_newline: false,
       indent_conditional: true,
     },
+    'editor.beautify.hotkey': '',
     'editor.lintDelay': 300,        // lint gutter marker update delay, ms
     'editor.linter': 'csslint',     // 'csslint' or 'stylelint' or ''
     'editor.lintReportDelay': 500,  // lint report update delay, ms
@@ -110,10 +111,11 @@ self.prefs = self.INJECTED === 1 ? self.prefs : (() => {
     specific: new Map(),
   };
 
-  const syncSet = promisify(chrome.storage.sync.set.bind(chrome.storage.sync));
-  const syncGet = promisify(chrome.storage.sync.get.bind(chrome.storage.sync));
+  promisifyChrome({
+    'storage.sync': ['get', 'set'],
+  });
 
-  const initializing = syncGet('settings')
+  const initializing = browser.storage.sync.get('settings')
     .then(result => {
       if (result.settings) {
         setAll(result.settings, true);
@@ -240,7 +242,7 @@ self.prefs = self.INJECTED === 1 ? self.prefs : (() => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         timer = null;
-        syncSet({settings: values})
+        browser.storage.sync.set({settings: values})
           .then(resolve, reject);
       });
     });

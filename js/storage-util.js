@@ -1,6 +1,11 @@
-/* global loadScript tryJSONparse */
+/* global loadScript tryJSONparse promisifyChrome */
 /* exported chromeLocal chromeSync */
 'use strict';
+
+promisifyChrome({
+  'storage.local': ['get', 'remove', 'set'],
+  'storage.sync': ['get', 'remove', 'set'],
+});
 
 const [chromeLocal, chromeSync] = (() => {
   return [
@@ -9,11 +14,11 @@ const [chromeLocal, chromeSync] = (() => {
   ];
 
   function createWrapper(name) {
-    const storage = chrome.storage[name];
+    const storage = browser.storage[name];
     const wrapper = {
-      get: data => new Promise(resolve => storage.get(data, resolve)),
-      set: data => new Promise(resolve => storage.set(data, () => resolve(data))),
-      remove: data => new Promise(resolve => storage.remove(data, resolve)),
+      get: storage.get.bind(storage),
+      set: data => storage.set(data).then(() => data),
+      remove: storage.remove.bind(storage),
 
       /**
        * @param {String} key

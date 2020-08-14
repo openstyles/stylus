@@ -319,7 +319,7 @@ self.parserlib = (() => {
     'drop-initial-before-align':  'caps-height | baseline | use-script | before-edge | text-before-edge | ' +
                                   'after-edge | text-after-edge | central | middle | ideographic | alphabetic | ' +
                                   'hanging | mathematical',
-    'drop-initial-size':          'auto | line | <length> | <percentage>',
+    'drop-initial-size':          'auto | line | <length-percentage>',
     'drop-initial-value':         '<integer>',
 
     // E
@@ -347,19 +347,28 @@ self.parserlib = (() => {
     'flood-opacity':  '<opacity-value>',
     'font':           '<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar',
     'font-family':    '<font-family>',
-    'font-feature-settings':   '<feature-tag-value> | normal',
+    'font-feature-settings':   '<feature-tag-value># | normal',
     'font-kerning':            'auto | normal | none',
+    'font-language-override':  'normal | <string>',
+    'font-optical-sizing':     'auto | none',
+    'font-palette':            'none | normal | light | dark | <ident>',
     'font-size':               '<font-size>',
     'font-size-adjust':        '<number> | none',
     'font-stretch':            '<font-stretch>',
     'font-style':              '<font-style>',
+    'font-synthesis':          'none | [ weight || style ]',
+    'font-synthesis-style':    'auto | none',
+    'font-synthesis-weight':   'auto | none',
+    'font-synthesis-small-caps': 'auto | none',
     'font-variant':            '<font-variant> | normal | none',
     'font-variant-alternates': '<font-variant-alternates> | normal',
     'font-variant-caps':       '<font-variant-caps> | normal',
     'font-variant-east-asian': '<font-variant-east-asian> | normal',
+    'font-variant-emoji':      'auto | text | emoji | unicode',
     'font-variant-ligatures':  '<font-variant-ligatures> | normal | none',
     'font-variant-numeric':    '<font-variant-numeric> | normal',
     'font-variant-position':   'normal | sub | super',
+    'font-variation-settings': 'normal | [ <string> <number>]#',
     'font-weight':             '<font-weight>',
     '-ms-flex-align': 'start | end | center | stretch | baseline',
     '-ms-flex-order': '<number>',
@@ -392,7 +401,7 @@ self.parserlib = (() => {
     'grid-gap':              '<row-gap> <column-gap>?',
 
     // H
-    'hanging-punctuation': 1,
+    'hanging-punctuation': 'none | [ first || [ force-end | allow-end ] || last ]',
     'height':              'auto | <width-height>',
     'hyphenate-after':     '<integer> | auto',
     'hyphenate-before':    '<integer> | auto',
@@ -431,7 +440,7 @@ self.parserlib = (() => {
     'left':                   '<width>',
     'letter-spacing':         '<length> | normal',
     'line-height':            '<line-height>',
-    'line-break':             'auto | loose | normal | strict',
+    'line-break':             'auto | loose | normal | strict | anywhere',
     'line-stacking':          1,
     'line-stacking-ruby':     'exclude-ruby | include-ruby',
     'line-stacking-shift':    'consider-shifts | disregard-shifts',
@@ -502,9 +511,14 @@ self.parserlib = (() => {
     'overflow-block':  '<overflow>',
     'overflow-inline': '<overflow>',
     'overflow-style':  1,
-    'overflow-wrap':   'normal | break-word',
+    'overflow-wrap':   'normal | break-word | anywhere',
     'overflow-x':      '<overflow>',
     'overflow-y':      '<overflow>',
+    'overscroll-behavior': '<overscroll>{1,2}',
+    'overscroll-behavior-block': '<overscroll>',
+    'overscroll-behavior-inline': '<overscroll>',
+    'overscroll-behavior-x': '<overscroll>',
+    'overscroll-behavior-y': '<overscroll>',
 
     // P
     'padding':            '<padding-width>{1,4}',
@@ -564,6 +578,8 @@ self.parserlib = (() => {
 
     // S
     'scale':             'none | <number>{1,3}',
+    'scrollbar-color':   'auto | dark | light | <color>{2}',
+    'scrollbar-width':   'auto | thin | none',
     'shape-inside':      'auto | outside-shape | [ <basic-shape> || shape-box ] | <image> | display',
     'shape-rendering':   'auto | optimizeSpeed | crispEdges | geometricPrecision',
     'size':              1,
@@ -588,14 +604,14 @@ self.parserlib = (() => {
 
     // T
     'table-layout':    'auto | fixed',
-    'tab-size':        '<integer> | <length>',
+    'tab-size':        '<number> | <length>',
     'target':          1,
     'target-name':     1,
     'target-new':      1,
     'target-position': 1,
-    'text-align':      'start | end | left | right | center | justify | match-parent | justify-all',
-    'text-align-all':  'start | end | left | right | center | justify | match-parent',
-    'text-align-last': 'auto | start | end | left | right | center | justify',
+    'text-align':      '<text-align> | justify-all',
+    'text-align-all':  '<text-align>',
+    'text-align-last': '<text-align> | auto',
     'text-anchor':     'start | middle | end',
     'text-decoration':       '<text-decoration-line> || <text-decoration-style> || <color>',
     'text-decoration-color': '<color>',
@@ -607,13 +623,13 @@ self.parserlib = (() => {
     'text-emphasis-style':   '<text-emphasis-style>',
     'text-emphasis-position': '[ over | under ] && [ right | left ]?',
     'text-height':      1,
-    'text-indent':      '<length> | <percentage>',
-    'text-justify':     'auto | none | inter-word | inter-ideograph | inter-cluster | distribute | kashida',
+    'text-indent':      '<length-percentage> && hanging? && each-line?',
+    'text-justify':     'auto | none | inter-word | inter-character',
     'text-outline':     1,
     'text-overflow':    'clip | ellipsis',
     'text-rendering':   'auto | optimizeSpeed | optimizeLegibility | geometricPrecision',
     'text-shadow':      'none | [ <color>? && <length>{2,3} ]#',
-    'text-transform':   'capitalize | uppercase | lowercase | none',
+    'text-transform':   'none | [ capitalize | uppercase | lowercase ] || full-width || full-size-kana',
     'text-underline-position': 'auto | [ under || [ left | right ] ]',
     'text-wrap':        'normal | none | avoid',
     'top':              '<width>',
@@ -650,15 +666,14 @@ self.parserlib = (() => {
     'volume':            1,
 
     // W
-    'white-space':          'normal | pre | nowrap | pre-wrap | pre-line | -pre-wrap |' +
-                            ' -o-pre-wrap | -moz-pre-wrap | -hp-pre-wrap',
+    'white-space':          'normal | pre | nowrap | pre-wrap | break-spaces | pre-line',
     'white-space-collapse': 1,
     'widows':               '<integer>',
     'width':                'auto | <width-height>',
     'will-change':          '<will-change>',
-    'word-break':           'normal | keep-all | break-all',
+    'word-break':           'normal | keep-all | break-all | break-word',
     'word-spacing':         '<length> | normal',
-    'word-wrap':            'normal | break-word',
+    'word-wrap':            'normal | break-word | anywhere',
     'writing-mode':         'horizontal-tb | vertical-rl | vertical-lr | lr-tb | rl-tb | tb-rl | ' +
                             'bt-rl | tb-lr | bt-lr | lr-bt | rl-bt | lr | rl | tb',
 
@@ -711,7 +726,7 @@ self.parserlib = (() => {
 
       '<clip-source>': '<uri>',
 
-      '<column-gap>': 'normal | <length> | <percentage>',
+      '<column-gap>': 'normal | <length-percentage>',
 
       '<content-distribution>': 'space-between | space-around | space-evenly | stretch',
       '<content-position>': 'center | start | end | flex-start | flex-end',
@@ -747,17 +762,17 @@ self.parserlib = (() => {
       '<flex-shrink>': '<number>',
       '<flex-wrap>': 'nowrap | wrap | wrap-reverse',
 
-      '<font-size>': '<absolute-size> | <relative-size> | <length> | <percentage>',
-      '<font-stretch>': 'normal | ultra-condensed | extra-condensed | condensed | semi-condensed | ' +
+      '<font-size>': '<absolute-size> | <relative-size> | <length-percentage>',
+      '<font-stretch>': 'normal | <percentage> | ultra-condensed | extra-condensed | condensed | semi-condensed | ' +
                         'semi-expanded | expanded | extra-expanded | ultra-expanded',
-      '<font-style>': 'normal | italic | oblique',
+      '<font-style>': 'normal | italic | oblique <angle>?',
       '<font-variant-caps>': 'small-caps | all-small-caps | petite-caps | all-petite-caps | ' +
                              'unicase | titling-caps',
       '<font-variant-css21>': 'normal | small-caps',
-      '<font-weight>': 'normal | bold | bolder | lighter | ' +
-                       '100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900',
+      '<font-weight>': 'normal | bold | bolder | lighter | <number>',
 
-      '<generic-family>': 'serif | sans-serif | cursive | fantasy | monospace',
+      '<generic-family>': 'serif | sans-serif | cursive | fantasy | monospace | system-ui | emoji | ' +
+                          'math | fangsong | ui-serif | ui-sans-serif | ui-monospace | ui-rounded',
 
       '<geometry-box>': '<shape-box> | fill-box | stroke-box | view-box',
 
@@ -798,7 +813,7 @@ self.parserlib = (() => {
 
       '<line>': part => part.type === 'integer',
 
-      '<line-height>': '<number> | <length> | <percentage> | normal',
+      '<line-height>': '<number> | <length-percentage> | normal',
 
       '<line-names>': function (part) {
         // eslint-disable-next-line no-use-before-define
@@ -868,6 +883,8 @@ self.parserlib = (() => {
 
       '<string>': part => part.type === 'string',
 
+      '<text-align>': 'start | end | left | right | center | justify | match-parent',
+
       '<text-decoration-style>': 'solid | double | dotted | dashed | wavy',
 
       '<time>': part => part.type === 'time',
@@ -901,7 +918,7 @@ self.parserlib = (() => {
         );
       },
 
-      '<width>': '<length> | <percentage> | auto',
+      '<width>': '<length-percentage> | auto',
     },
 
     complex: {
@@ -929,7 +946,7 @@ self.parserlib = (() => {
         '[ left | center | right | <length-percentage> ] [ top | center | bottom | <length-percentage> ] | ' +
         '[ left | center | right | top | bottom | <length-percentage> ]',
 
-      '<bg-size>': '[ <length> | <percentage> | auto ]{1,2} | cover | contain',
+      '<bg-size>': '[ <length-percentage> | auto ]{1,2} | cover | contain',
 
       '<border-image-outset>': '[ <length> | <number> ]{1,4}',
       '<border-image-repeat>': '[ stretch | repeat | round | space ]{1,2}',
@@ -943,7 +960,7 @@ self.parserlib = (() => {
           Matcher.cast('<nonnegative-number-or-percentage>'),
           Matcher.cast('<nonnegative-number-or-percentage>'),
           'fill'),
-      '<border-image-width>': '[ <length> | <percentage> | <number> | auto ]{1,4}',
+      '<border-image-width>': '[ <length-percentage> | <number> | auto ]{1,4}',
       '<border-radius>': '<nonnegative-length-or-percentage>{1,4} [ / <nonnegative-length-or-percentage>{1,4} ]?',
       '<border-shorthand>': '<border-width> || <border-style> || <color>',
 
@@ -1050,6 +1067,8 @@ self.parserlib = (() => {
       '<hsl-color>': '[ <number> | <angle> ] <percentage>{2} [ / <nonnegative-number-or-percentage> ]? | ' +
                      '[ <number> | <angle> ] , <percentage>#{2} [ , <nonnegative-number-or-percentage> ]?',
 
+      '<overscroll>': 'contain | none | auto',
+
       '<shadow>': 'inset? && [ <length>{2,4} && <color>? ]',
 
       '<single-timing-function>': 'linear | <cubic-bezier-timing-function> | <step-timing-function> | frames()',
@@ -1076,7 +1095,7 @@ self.parserlib = (() => {
 
       '<will-change>': 'auto | <animateable-feature>#',
 
-      '<x-one-radius>': '[ <length> | <percentage> ]{1,2}',
+      '<x-one-radius>': '<length-percentage>{1,2}',
     },
 
     functions: {
@@ -1345,165 +1364,154 @@ self.parserlib = (() => {
    * The following token names are defined in CSS3 Grammar:
    * https://www.w3.org/TR/css3-syntax/#lexical
    */
-  const Tokens = [
+  const Tokens = Object.assign([], {
+    EOF: {}, // must be the first token
+  }, {
     // HTML-style comments
-    {name: 'CDO'},
-    {name: 'CDC'},
+    CDO: {},
+    CDC: {},
 
     // ignorables
-    {name: 'S', whitespace: true},
-    {name: 'COMMENT', whitespace: true, comment: true, hide: true},
+    S: {whitespace: true},
+    COMMENT: {whitespace: true, comment: true, hide: true},
 
     // attribute equality
-    {name: 'INCLUDES', text: '~='},
-    {name: 'DASHMATCH', text: '|='},
-    {name: 'PREFIXMATCH', text: '^='},
-    {name: 'SUFFIXMATCH', text: '$='},
-    {name: 'SUBSTRINGMATCH', text: '*='},
+    INCLUDES: {text: '~='},
+    DASHMATCH: {text: '|='},
+    PREFIXMATCH: {text: '^='},
+    SUFFIXMATCH: {text: '$='},
+    SUBSTRINGMATCH: {text: '*='},
 
     // identifier types
-    {name: 'STRING'},
-    {name: 'IDENT'},
-    {name: 'HASH'},
+    STRING: {},
+    IDENT: {},
+    HASH: {},
 
     // at-keywords
-    {name: 'IMPORT_SYM', text: '@import'},
-    {name: 'PAGE_SYM', text: '@page'},
-    {name: 'MEDIA_SYM', text: '@media'},
-    {name: 'FONT_FACE_SYM', text: '@font-face'},
-    {name: 'CHARSET_SYM', text: '@charset'},
-    {name: 'NAMESPACE_SYM', text: '@namespace'},
-    {name: 'SUPPORTS_SYM', text: '@supports'},
-    {name: 'VIEWPORT_SYM', text: ['@viewport', '@-ms-viewport', '@-o-viewport']},
-    {name: 'DOCUMENT_SYM', text: ['@document', '@-moz-document']},
-    {name: 'UNKNOWN_SYM'}, //{ name: "ATKEYWORD"},
+    IMPORT_SYM: {text: '@import'},
+    PAGE_SYM: {text: '@page'},
+    MEDIA_SYM: {text: '@media'},
+    FONT_FACE_SYM: {text: '@font-face'},
+    CHARSET_SYM: {text: '@charset'},
+    NAMESPACE_SYM: {text: '@namespace'},
+    SUPPORTS_SYM: {text: '@supports'},
+    VIEWPORT_SYM: {text: ['@viewport', '@-ms-viewport', '@-o-viewport']},
+    DOCUMENT_SYM: {text: ['@document', '@-moz-document']},
+    UNKNOWN_SYM: {}, //{ name: "ATKEYWORD"},
 
     // CSS3 animations
-    {name: 'KEYFRAMES_SYM', text: ['@keyframes', '@-webkit-keyframes', '@-moz-keyframes', '@-o-keyframes']},
+    KEYFRAMES_SYM: {text: ['@keyframes', '@-webkit-keyframes', '@-moz-keyframes', '@-o-keyframes']},
 
     // important symbol
-    {name: 'IMPORTANT_SYM'},
+    IMPORTANT_SYM: {},
 
     // measurements
-    {name: 'LENGTH'},
-    {name: 'ANGLE'},
-    {name: 'TIME'},
-    {name: 'FREQ'},
-    {name: 'DIMENSION'},
-    {name: 'PERCENTAGE'},
-    {name: 'NUMBER'},
+    LENGTH: {},
+    ANGLE: {},
+    TIME: {},
+    FREQ: {},
+    DIMENSION: {},
+    PERCENTAGE: {},
+    NUMBER: {},
 
     // functions
-    {name: 'URI'},
-    {name: 'FUNCTION'},
+    URI: {},
+    FUNCTION: {},
 
     // Unicode ranges
-    {name: 'UNICODE_RANGE'},
+    UNICODE_RANGE: {},
 
     /*
      * The following token names are defined in CSS3 Selectors: https://www.w3.org/TR/css3-selectors/#selector-syntax
      */
 
     // invalid string
-    {name: 'INVALID'},
+    INVALID: {},
 
     // combinators
-    {name: 'PLUS', text: '+'},
-    {name: 'GREATER', text: '>'},
-    {name: 'COMMA', text: ','},
-    {name: 'TILDE', text: '~'},
+    PLUS: {text: '+'},
+    GREATER: {text: '>'},
+    COMMA: {text: ','},
+    TILDE: {text: '~'},
+    COLUMN: {text: '||'},
 
     // modifier
-    {name: 'NOT'},
-    {name: 'ANY', text: ['any', '-webkit-any', '-moz-any']},
-    {name: 'MATCHES'},
-    {name: 'IS'},
+    NOT: {},
+    ANY: {text: ['any', '-webkit-any', '-moz-any']},
+    IS: {},
+    WHERE: {},
 
     /*
      * Defined in CSS3 Paged Media
      */
-    {name: 'TOPLEFTCORNER_SYM', text: '@top-left-corner'},
-    {name: 'TOPLEFT_SYM', text: '@top-left'},
-    {name: 'TOPCENTER_SYM', text: '@top-center'},
-    {name: 'TOPRIGHT_SYM', text: '@top-right'},
-    {name: 'TOPRIGHTCORNER_SYM', text: '@top-right-corner'},
-    {name: 'BOTTOMLEFTCORNER_SYM', text: '@bottom-left-corner'},
-    {name: 'BOTTOMLEFT_SYM', text: '@bottom-left'},
-    {name: 'BOTTOMCENTER_SYM', text: '@bottom-center'},
-    {name: 'BOTTOMRIGHT_SYM', text: '@bottom-right'},
-    {name: 'BOTTOMRIGHTCORNER_SYM', text: '@bottom-right-corner'},
-    {name: 'LEFTTOP_SYM', text: '@left-top'},
-    {name: 'LEFTMIDDLE_SYM', text: '@left-middle'},
-    {name: 'LEFTBOTTOM_SYM', text: '@left-bottom'},
-    {name: 'RIGHTTOP_SYM', text: '@right-top'},
-    {name: 'RIGHTMIDDLE_SYM', text: '@right-middle'},
-    {name: 'RIGHTBOTTOM_SYM', text: '@right-bottom'},
+    TOPLEFTCORNER_SYM: {text: '@top-left-corner'},
+    TOPLEFT_SYM: {text: '@top-left'},
+    TOPCENTER_SYM: {text: '@top-center'},
+    TOPRIGHT_SYM: {text: '@top-right'},
+    TOPRIGHTCORNER_SYM: {text: '@top-right-corner'},
+    BOTTOMLEFTCORNER_SYM: {text: '@bottom-left-corner'},
+    BOTTOMLEFT_SYM: {text: '@bottom-left'},
+    BOTTOMCENTER_SYM: {text: '@bottom-center'},
+    BOTTOMRIGHT_SYM: {text: '@bottom-right'},
+    BOTTOMRIGHTCORNER_SYM: {text: '@bottom-right-corner'},
+    LEFTTOP_SYM: {text: '@left-top'},
+    LEFTMIDDLE_SYM: {text: '@left-middle'},
+    LEFTBOTTOM_SYM: {text: '@left-bottom'},
+    RIGHTTOP_SYM: {text: '@right-top'},
+    RIGHTMIDDLE_SYM: {text: '@right-middle'},
+    RIGHTBOTTOM_SYM: {text: '@right-bottom'},
 
     /*
      * The following token names are defined in CSS3 Media Queries: https://www.w3.org/TR/css3-mediaqueries/#syntax
      */
-    {name: 'RESOLUTION', state: 'media'},
+    RESOLUTION: {state: 'media'},
 
     /*
      * The following token names are not defined in any CSS specification but are used by the lexer.
      */
 
     // not a real token, but useful for stupid IE filters
-    {name: 'IE_FUNCTION'},
+    IE_FUNCTION: {},
 
     // part of CSS3 grammar but not the Flex code
-    {name: 'CHAR'},
+    CHAR: {},
 
-    // TODO: Needed?
     // Not defined as tokens, but might as well be
-    {name: 'PIPE', text: '|'},
-    {name: 'SLASH', text: '/'},
-    {name: 'MINUS', text: '-'},
-    {name: 'STAR', text: '*'},
+    PIPE: {text: '|'},
+    SLASH: {text: '/'},
+    MINUS: {text: '-'},
+    STAR: {text: '*'},
 
-    {name: 'LBRACE', text: '{', endChar: '}'},
-    {name: 'RBRACE', text: '}'},
-    {name: 'LBRACKET', text: '[', endChar: ']'},
-    {name: 'RBRACKET', text: ']'},
-    {name: 'EQUALS', text: '='},
-    {name: 'COLON', text: ':'},
-    {name: 'SEMICOLON', text: ';'},
-    {name: 'LPAREN', text: '(', endChar: ')'},
-    {name: 'RPAREN', text: ')'},
-    {name: 'DOT', text: '.'},
+    LBRACE: {text: '{', endChar: '}'},
+    RBRACE: {text: '}'},
+    LBRACKET: {text: '[', endChar: ']'},
+    RBRACKET: {text: ']'},
+    EQUALS: {text: '='},
+    COLON: {text: ':'},
+    SEMICOLON: {text: ';'},
+    LPAREN: {text: '(', endChar: ')'},
+    RPAREN: {text: ')'},
+    DOT: {text: '.'},
 
-    {name: 'USO_VAR', comment: true},
-    {name: 'CUSTOM_PROP'},
-  ];
-
-  {
-    Tokens.UNKNOWN = -1;
-    Tokens.unshift({name: 'EOF'});
-
-    const nameMap = [];
-    const typeMap = new Map();
-    for (let i = 0, len = Tokens.length; i < len; i++) {
-      nameMap.push(Tokens[i].name);
-      Tokens[Tokens[i].name] = i;
-      if (Tokens[i].text) {
-        if (Tokens[i].text instanceof Array) {
-          for (let j = 0; j < Tokens[i].text.length; j++) {
-            typeMap.set(Tokens[i].text[j], i);
-          }
-        } else {
-          typeMap.set(Tokens[i].text, i);
-        }
+    USO_VAR: {comment: true},
+    CUSTOM_PROP: {},
+  });
+  // make Tokens an array of tokens, store the index in original prop, add 'name' to each token
+  const typeMap = new Map();
+  for (const [k, val] of Object.entries(Tokens)) {
+    const index = Tokens[k] = Tokens.length;
+    val.name = k;
+    Tokens.push(val);
+    const {text} = val;
+    if (text) {
+      for (const item of Array.isArray(text) ? text : [text]) {
+        typeMap.set(item, index);
       }
     }
-
-    Tokens.name = function (tt) {
-      return nameMap[tt];
-    };
-
-    Tokens.type = function (c) {
-      return typeMap.get(c) || -1;
-    };
   }
+  Tokens.UNKNOWN = -1;
+  Tokens.name = index => (Tokens[index] || {}).name;
+  Tokens.type = text => typeMap.get(text) || -1;
 
   //endregion
   //region lowerCase helper
@@ -2204,6 +2212,7 @@ self.parserlib = (() => {
         value === '>' ? 'child' :
         value === '+' ? 'adjacent-sibling' :
         value === '~' ? 'sibling' :
+        value === '||' ? 'column' :
         !value.trim() ? 'descendant' :
           'unknown';
     }
@@ -2603,9 +2612,11 @@ self.parserlib = (() => {
         if (expression._i < expression._parts.length - 1) {
           expression.mark();
           expression._i++;
-          result = ValidationTypes.isType(expression, type);
-          expression.restore();
-          expression._i += result ? 1 : 0;
+          if (ValidationTypes.isType(expression, type)) {
+            expression.drop();
+          } else {
+            expression.restore();
+          }
         }
         result = true;
 
@@ -2940,6 +2951,7 @@ self.parserlib = (() => {
          * - PREFIXMATCH
          * - SUFFIXMATCH
          * - SUBSTRINGMATCH
+         * - COLUMN
          * - CHAR
          */
         case '|':
@@ -2947,10 +2959,13 @@ self.parserlib = (() => {
         case '^':
         case '$':
         case '*':
-          return reader.peek() === '=' ?
-            this.comparisonToken(c, pos) :
-            this.charToken(c, pos);
-
+          return (
+            reader.peek() === '=' ?
+              this.comparisonToken(c, pos) :
+            c === '|' && reader.readMatch('|') ?
+              this.createToken(Tokens.COLUMN, '||', pos) :
+              this.charToken(c, pos)
+          );
         /*
          * Potential tokens:
          * - STRING
@@ -3040,8 +3055,8 @@ self.parserlib = (() => {
          * Potential tokens:
          * - ANY
          * - IS
-         * - MATCHES
          * - NOT
+         * - WHERE
          * - CHAR
          */
         case ':':
@@ -3255,18 +3270,18 @@ self.parserlib = (() => {
     // NOT
     // IS
     // ANY
-    // MATCHES
     // CHAR
     notOrIsToken(first, pos) {
       // first is always ':'
       const reader = this._reader;
-      const func = reader.readMatch(/(not|is|(-(moz|webkit)-)?(any|matches))\(/iy);
+      const func = reader.readMatch(/(not|is|where|(-(moz|webkit)-)?any)\(/iy);
       if (func) {
         const lcase = func[0].toLowerCase();
         const type =
           lcase === 'n' ? Tokens.NOT :
           lcase === 'i' ? Tokens.IS :
-          lcase === 'm' ? Tokens.MATCHES : Tokens.ANY;
+          lcase === 'w' ? Tokens.WHERE :
+            Tokens.ANY;
         return this.createToken(type, first + func, pos);
       }
       return this.charToken(first, pos);
@@ -4017,7 +4032,7 @@ self.parserlib = (() => {
       const stream = this._tokenStream;
       if (stream.match(Tokens.LPAREN)) {
         this._ws();
-        if (stream.match(Tokens.IDENT)) {
+        if (stream.match([Tokens.IDENT, Tokens.CUSTOM_PROP])) {
           // look ahead for not keyword,
           // if not given, continue with declaration condition.
           const ident = lower(stream._token.value);
@@ -4366,7 +4381,7 @@ self.parserlib = (() => {
     }
 
     _combinator() {
-      if (this._tokenStream.match([Tokens.PLUS, Tokens.GREATER, Tokens.TILDE])) {
+      if (this._tokenStream.match([Tokens.PLUS, Tokens.GREATER, Tokens.TILDE, Tokens.COLUMN])) {
         const value = new Combinator(this._tokenStream._token);
         this._ws();
         return value;
@@ -4630,7 +4645,8 @@ self.parserlib = (() => {
                  this._ws();
 
         if (stream.match([Tokens.IDENT])) {
-          if (lower(stream._token.value) === 'i') {
+          const caseMod = lower(stream._token.value);
+          if (caseMod === 'i' || caseMod === 's') {
             value += stream._token.value +
                      this._ws();
           } else {
@@ -4710,7 +4726,7 @@ self.parserlib = (() => {
 
     _is() {
       const stream = this._tokenStream;
-      if (!stream.match([Tokens.IS, Tokens.ANY, Tokens.MATCHES])) return null;
+      if (!stream.match([Tokens.IS, Tokens.ANY, Tokens.WHERE])) return null;
 
       let arg;
       const start = stream._token;
@@ -5421,6 +5437,7 @@ self.parserlib = (() => {
     ]),
 
     supports: new Map([
+      [Tokens.KEYFRAMES_SYM, Parser.prototype._keyframes],
       [Tokens.MEDIA_SYM, Parser.prototype._media],
       [Tokens.SUPPORTS_SYM, Parser.prototype._supports],
       [Tokens.DOCUMENT_SYM, Parser.prototype._documentMisplaced],
@@ -5428,6 +5445,7 @@ self.parserlib = (() => {
     ]),
 
     media: new Map([
+      [Tokens.KEYFRAMES_SYM, Parser.prototype._keyframes],
       [Tokens.MEDIA_SYM, Parser.prototype._media],
       [Tokens.DOCUMENT_SYM, Parser.prototype._documentMisplaced],
       [Tokens.SUPPORTS_SYM, Parser.prototype._supports],
@@ -5443,7 +5461,7 @@ self.parserlib = (() => {
       [Tokens.COLON, Parser.prototype._pseudo],
       [Tokens.IS, Parser.prototype._is],
       [Tokens.ANY, Parser.prototype._is],
-      [Tokens.MATCHES, Parser.prototype._is],
+      [Tokens.WHERE, Parser.prototype._is],
       [Tokens.NOT, Parser.prototype._negation],
     ]),
   };

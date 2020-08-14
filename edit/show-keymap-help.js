@@ -10,7 +10,6 @@ function showKeyMapHelp() {
   const keyMap = mergeKeyMaps({}, prefs.get('editor.keyMap'), CodeMirror.defaults.extraKeys);
   const keyMapSorted = Object.keys(keyMap)
     .map(key => ({key, cmd: keyMap[key]}))
-    .concat([{key: 'Shift-Ctrl-Wheel', cmd: 'scrollWindow'}])
     .sort((a, b) => (a.cmd < b.cmd || (a.cmd === b.cmd && a.key < b.key) ? -1 : 1));
   const table = template.keymapHelp.cloneNode(true);
   const tBody = table.tBodies[0];

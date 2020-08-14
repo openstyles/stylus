@@ -182,12 +182,13 @@
 
     if (viewFrom > 0 || viewTo < cm.doc.size) {
       clearTimeout(state.colorizeTimer);
-      state.colorizeTimer = setTimeout(colorizeInvisible, 100, state, viewFrom, viewTo, 0);
+      state.line = 0;
+      state.colorizeTimer = setTimeout(colorizeInvisible, 100, state, viewFrom, viewTo);
     }
   }
 
 
-  function colorizeInvisible(state, viewFrom, viewTo, line) {
+  function colorizeInvisible(state, viewFrom, viewTo) {
     const {cm} = state;
     const {curOp} = cm;
     if (!curOp) cm.startOperation();
@@ -197,22 +198,19 @@
     state.stopped = null;
 
     // before the visible range
-    if (viewFrom) {
-      state.line = line;
-      cm.doc.iter(line, viewFrom, lineHandle => colorizeLine(state, lineHandle));
-    }
+    cm.eachLine(state.line, viewFrom, lineHandle => colorizeLine(state, lineHandle));
 
     // after the visible range
     if (!state.stopped && viewTo < cm.doc.size) {
-      state.line = viewTo;
-      cm.doc.iter(viewTo, cm.doc.size, lineHandle => colorizeLine(state, lineHandle));
+      state.line = Math.max(viewTo, state.line);
+      cm.eachLine(state.line, cm.doc.size, lineHandle => colorizeLine(state, lineHandle));
     }
 
     updateMarkers(state);
     if (!curOp) cm.endOperation();
 
     if (state.stopped) {
-      state.colorizeTimer = setTimeout(colorizeInvisible, 0, state, viewFrom, viewFrom, state.line);
+      state.colorizeTimer = setTimeout(colorizeInvisible, 0, state, viewFrom, viewTo);
     }
   }
 

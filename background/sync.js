@@ -192,6 +192,7 @@ const sync = (() => {
         .catch(handle401Error)
         .then(() => syncNow()),
       err => {
+        status.errorMessage = err ? err.message : null;
         // FIXME: should we move this logic to options.js?
         if (err && !fromPref) {
           console.error(err);

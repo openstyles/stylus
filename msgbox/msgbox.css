@@ -134,6 +134,15 @@
   text-align: center;
 }
 
+.danger #message-box-buttons > button:not([data-focused-via-click]):first-child:focus {
+  outline: red auto 1px;
+}
+
+/* FF ignores color with 'auto' */
+.firefox .danger #message-box-buttons > button:not([data-focused-via-click]):first-child:focus {
+  outline: red solid 1px;
+}
+
 .non-windows #message-box-buttons {
   text-align: right;
   direction: rtl;

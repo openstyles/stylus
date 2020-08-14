@@ -85,6 +85,27 @@ onDOMready().then(() => {
 
 // set language for CSS :lang and [FF-only] hyphenation
 document.documentElement.setAttribute('lang', chrome.i18n.getUILanguage());
+// avoid adding # to the page URL when clicking dummy links
+document.addEventListener('click', e => {
+  if (e.target.closest('a[href="#"]')) {
+    e.preventDefault();
+  }
+});
+// update inputs on mousewheel when focused
+document.addEventListener('wheel', event => {
+  const el = document.activeElement;
+  if (!el || el !== event.target && !el.contains(event.target)) {
+    return;
+  }
+  if (el.tagName === 'SELECT') {
+    el.selectedIndex = Math.max(0, Math.min(el.length - 1, el.selectedIndex + Math.sign(event.deltaY)));
+    event.preventDefault();
+  }
+  event.stopImmediatePropagation();
+}, {
+  capture: true,
+  passive: false,
+});
 
 function onDOMready() {
   if (document.readyState !== 'loading') {

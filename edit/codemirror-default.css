@@ -18,6 +18,12 @@
   outline: -webkit-focus-ring-color auto 5px;
   outline-offset: -2px;
 }
+.CodeMirror-bookmark {
+  background: linear-gradient(to right, currentColor, transparent);
+  position: absolute;
+  width: 2em;
+  opacity: .5;
+}
 @supports (-moz-appearance:none) {
   /* restrict to FF */
   .CodeMirror-focused {
