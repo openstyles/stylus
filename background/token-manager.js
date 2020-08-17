@@ -4,8 +4,8 @@
 
 const tokenManager = (() => {
   promisifyChrome({
-    'browser.windows': ['create', 'update', 'remove'],
-    'browser.tabs': ['create', 'update', 'remove']
+    'windows': ['create', 'update', 'remove'],
+    'tabs': ['create', 'update', 'remove']
   });
   const AUTH = {
     dropbox: {
