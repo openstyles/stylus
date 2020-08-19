@@ -64,7 +64,7 @@ self.INJECTED !== 1 && (() => {
 
   function getMatchUrl() {
     let matchUrl = location.href;
-    if (!matchUrl.match(/^(http|file|chrome|ftp)/)) {
+    if (!chrome.tabs && !matchUrl.match(/^(http|file|chrome|ftp)/)) {
       // dynamic about: and javascript: iframes don't have an URL yet
       // so we'll try the parent frame which is guaranteed to have a real URL
       try {
