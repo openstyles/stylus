@@ -105,14 +105,7 @@
   }
 
   Object.assign(CodeMirror.mimeModes['text/css'].propertyKeywords, {
-    'background-position-x': true,
-    'background-position-y': true,
-    'contain': true,
-    'mask-image': true,
-    'mix-blend-mode': true,
     'overscroll-behavior': true,
-    'rotate': true,
-    'isolation': true,
   });
   Object.assign(CodeMirror.mimeModes['text/css'].colorKeywords, {
     'darkgrey': true,
