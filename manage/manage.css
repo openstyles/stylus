@@ -291,7 +291,8 @@ a:hover {
   padding-top: .1rem;
 }
 
-#options-buttons button,
+#options-buttons > a,
+#options-buttons > button,
 #backup-buttons button {
   margin: 0 .2rem .5rem 0;
 }
@@ -1046,54 +1047,6 @@ input[id^="manage.newUI"] {
   text-overflow: ellipsis;
 }
 
-/* export/import buttons */
-#backup-buttons .dropbtn {
-  padding: 3px 7px;
-  cursor: pointer;
-  text-overflow: inherit;
-}
-
-#backup-buttons .dropbtn span {
-  display: inline-block;
-  margin-right: 12px;
-}
-
-#backup-buttons .dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-#backup-buttons .dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  z-index: 1;
-}
-
-#backup-buttons .dropdown-content a {
-  color: black;
-  padding: 8px;
-  text-decoration: none;
-  display: block;
-}
-
-#backup-buttons .dropdown-content a:hover {
-  /* background-color: #f2f2f2 */
-  background-color: #e9e9e9
-}
-
-#backup-buttons .dropdown:hover .dropdown-content {
-  display: block;
-}
-
-#backup-buttons .dropdown:hover .dropbtn {
-  background-color: hsl(0, 0%, 95%);
-  border-color: hsl(0, 0%, 52%);
-  /* background-color: #3e8e41; */
-}
-
 /* sort font */
 @font-face {
   font-family: 'sorticon';
@@ -1301,15 +1254,4 @@ input[id^="manage.newUI"] {
   #filters summary h2 {
     margin-left: -2px;
   }
-}
-
-/* Deprecated dropbox backup (dropbox-sync) */
-#sync-dropbox-export,
-#sync-dropbox-import {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-#backup-buttons .dropdown-content #sync-dropbox-export:hover,
-#backup-buttons .dropdown-content #sync-dropbox-import:hover {
-  background: transparent;
 }

@@ -86,9 +86,8 @@ function onRuntimeMessage(msg) {
 function initGlobalEvents() {
   installed = $('#installed');
   installed.onclick = handleEvent.entryClicked;
-  $('#manage-options-button').onclick = () => {
-    router.updateHash('#stylus-options');
-  };
+  $('#manage-options-button').onclick = () => router.updateHash('#stylus-options');
+  $('#sync-styles').onclick = () => router.updateHash('#stylus-options');
   {
     const btn = $('#manage-shortcuts-button');
     btn.onclick = btn.onclick || (() => openURL({url: URLS.configureCommands}));
