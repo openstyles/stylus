@@ -2722,6 +2722,10 @@ self.parserlib = (() => {
 
     constructor(input) {
       this._reader = new StringReader(input ? input.toString() : '');
+      this.resetLT();
+    }
+
+    resetLT() {
       // Token object for the last consumed token.
       this._token = null;
       // Lookahead token buffer.
@@ -3148,8 +3152,7 @@ self.parserlib = (() => {
      */
     atRuleToken(first, pos) {
       this._reader.mark();
-      const ident = this.readName();
-      let rule = first + ident;
+      let rule = first + this.readName();
       let tt = Tokens.type(lower(rule));
       // if it's not valid, use the first character only and reset the reader
       if (tt === Tokens.CHAR || tt === Tokens.UNKNOWN) {
@@ -5296,19 +5299,62 @@ self.parserlib = (() => {
         throw new SyntaxError('Unknown @ rule.', lt0);
       }
 
-      this.fire({
-        type: 'error',
-        error: null,
-        message: 'Unknown @ rule: ' + lt0.value + '.',
-      }, lt0);
+      this._ws();
+      const simpleValue =
+        stream.match([Tokens.IDENT, Tokens.CUSTOM_PROP]) && SyntaxUnit.fromToken(stream._token) ||
+        stream.peek() === Tokens.FUNCTION && this._function({asText: true}) ||
+        this._unknownBlock([Tokens.LBRACKET, Tokens.LPAREN]);
 
-      // skip {} block
-      let count = 0;
-      do {
-        const brace = stream.advance([Tokens.LBRACE, Tokens.RBRACE]);
-        count += brace === Tokens.LBRACE ? 1 : -1;
-      } while (count > 0 && !stream._reader.eof());
-      if (count < 0) stream.unget();
+      this._ws();
+      const blockValue = this._unknownBlock();
+      if (!blockValue) {
+        stream.match(Tokens.SEMICOLON);
+      }
+
+      this.fire({
+        type: 'unknown-at-rule',
+        name: lt0.value,
+        simpleValue,
+        blockValue,
+      }, lt0);
+      this._ws();
+    }
+
+    _unknownBlock(canStartWith = [Tokens.LBRACE]) {
+      const stream = this._tokenStream;
+      if (!canStartWith.includes(stream.peek())) {
+        return null;
+      }
+      stream.get();
+      const start = stream._token;
+      const reader = stream._reader;
+      reader.mark();
+      reader._cursor = start.offset;
+      reader._line = start.startLine;
+      reader._col = start.startCol;
+      const value = [];
+      const endings = [];
+      let blockEnd;
+      while (!reader.eof()) {
+        const chunk = reader.readMatch(/[^{}()[\]]*[{}()[\]]?/y);
+        const c = chunk.slice(-1);
+        value.push(chunk);
+        if (c === '{' || c === '(' || c === '[') {
+          endings.push(blockEnd);
+          blockEnd = c === '{' ? '}' : c === '(' ? ')' : ']';
+        } else if (c === '}' || c === ')' || c === ']') {
+          if (c !== blockEnd) {
+            break;
+          }
+          blockEnd = endings.pop();
+          if (!blockEnd) {
+            stream.resetLT();
+            return new SyntaxUnit(value.join(''), start);
+          }
+        }
+      }
+      reader.reset();
+      return null;
     }
 
     _unexpectedToken(token) {
@@ -5406,18 +5452,28 @@ self.parserlib = (() => {
   Object.assign(Parser.prototype, TYPES);
   Parser.prototype._readWhitespace = Parser.prototype._ws;
 
+  const symDocument = [Tokens.DOCUMENT_SYM, Parser.prototype._document];
+  const symDocMisplaced = [Tokens.DOCUMENT_SYM, Parser.prototype._documentMisplaced];
+  const symFontFace = [Tokens.FONT_FACE_SYM, Parser.prototype._fontFace];
+  const symKeyframes = [Tokens.KEYFRAMES_SYM, Parser.prototype._keyframes];
+  const symMedia = [Tokens.MEDIA_SYM, Parser.prototype._media];
+  const symPage = [Tokens.PAGE_SYM, Parser.prototype._page];
+  const symSupports = [Tokens.SUPPORTS_SYM, Parser.prototype._supports];
+  const symUnknown = [Tokens.UNKNOWN_SYM, Parser.prototype._unknownSym];
+  const symViewport = [Tokens.VIEWPORT_SYM, Parser.prototype._viewport];
+
   Parser.ACTIONS = {
 
     stylesheet: new Map([
-      [Tokens.MEDIA_SYM, Parser.prototype._media],
-      [Tokens.DOCUMENT_SYM, Parser.prototype._document],
-      [Tokens.SUPPORTS_SYM, Parser.prototype._supports],
-      [Tokens.PAGE_SYM, Parser.prototype._page],
-      [Tokens.FONT_FACE_SYM, Parser.prototype._fontFace],
-      [Tokens.KEYFRAMES_SYM, Parser.prototype._keyframes],
-      [Tokens.VIEWPORT_SYM, Parser.prototype._viewport],
+      symMedia,
+      symDocument,
+      symSupports,
+      symPage,
+      symFontFace,
+      symKeyframes,
+      symViewport,
+      symUnknown,
       [Tokens.S, Parser.prototype._ws],
-      [Tokens.UNKNOWN_SYM, Parser.prototype._unknownSym],
     ]),
 
     stylesheetMisplaced: new Map([
@@ -5427,31 +5483,34 @@ self.parserlib = (() => {
     ]),
 
     document: new Map([
-      [Tokens.MEDIA_SYM, Parser.prototype._media],
-      [Tokens.DOCUMENT_SYM, Parser.prototype._documentMisplaced],
-      [Tokens.SUPPORTS_SYM, Parser.prototype._supports],
-      [Tokens.PAGE_SYM, Parser.prototype._page],
-      [Tokens.FONT_FACE_SYM, Parser.prototype._fontFace],
-      [Tokens.VIEWPORT_SYM, Parser.prototype._viewport],
-      [Tokens.KEYFRAMES_SYM, Parser.prototype._keyframes],
+      symMedia,
+      symDocMisplaced,
+      symSupports,
+      symPage,
+      symFontFace,
+      symViewport,
+      symKeyframes,
+      symUnknown,
     ]),
 
     supports: new Map([
-      [Tokens.KEYFRAMES_SYM, Parser.prototype._keyframes],
-      [Tokens.MEDIA_SYM, Parser.prototype._media],
-      [Tokens.SUPPORTS_SYM, Parser.prototype._supports],
-      [Tokens.DOCUMENT_SYM, Parser.prototype._documentMisplaced],
-      [Tokens.VIEWPORT_SYM, Parser.prototype._viewport],
+      symKeyframes,
+      symMedia,
+      symSupports,
+      symDocMisplaced,
+      symViewport,
+      symUnknown,
     ]),
 
     media: new Map([
-      [Tokens.KEYFRAMES_SYM, Parser.prototype._keyframes],
-      [Tokens.MEDIA_SYM, Parser.prototype._media],
-      [Tokens.DOCUMENT_SYM, Parser.prototype._documentMisplaced],
-      [Tokens.SUPPORTS_SYM, Parser.prototype._supports],
-      [Tokens.PAGE_SYM, Parser.prototype._page],
-      [Tokens.FONT_FACE_SYM, Parser.prototype._fontFace],
-      [Tokens.VIEWPORT_SYM, Parser.prototype._viewport],
+      symKeyframes,
+      symMedia,
+      symDocMisplaced,
+      symSupports,
+      symPage,
+      symFontFace,
+      symViewport,
+      symUnknown,
     ]),
 
     simpleSelectorSequence: new Map([
