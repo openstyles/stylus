@@ -15,7 +15,8 @@
     "stylelint-bundle": "^8.0.0",
     "stylus-lang-bundle": "^0.54.5",
     "usercss-meta": "^0.9.0",
-    "uuid": "^8.1.0"
+    "uuid": "^8.1.0",
+    "webext-launch-web-auth-flow": "^0.1.0"
   },
   "devDependencies": {
     "archiver": "^4.0.1",
