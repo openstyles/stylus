@@ -9,13 +9,6 @@ setupRadioButtons();
 enforceInputRange($('#popupWidth'));
 setTimeout(splitLongTooltips);
 
-// https://github.com/openstyles/stylus/issues/822
-if (!FIREFOX && CHROME >= 76 && CHROME <= 81) {
-  const dropboxOption = $('option[value="dropbox"]');
-  dropboxOption.disabled = true;
-  dropboxOption.setAttribute('title', t('hostDisabled'));
-}
-
 if (CHROME_HAS_BORDER_BUG) {
   const borderOption = $('.chrome-no-popup-border');
   if (borderOption) {
