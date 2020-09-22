@@ -58,13 +58,13 @@ const contentScripts = (() => {
     return browser.tabs.query({}).then(tabs => {
       for (const tab of tabs) {
         // skip unloaded/discarded/chrome tabs
-        if (!tab.width || tab.discarded || !URLS.supported(tab.url)) continue;
+        if (!tab.width || tab.discarded || !URLS.supported(tab.pendingUrl || tab.url)) continue;
         // our content scripts may still be pending injection at browser start so it's too early to ping them
         if (tab.status === 'loading') {
           trackBusyTab(tab.id, true);
         } else {
           injectToTab({
-            url: tab.url,
+            url: tab.pendingUrl || tab.url,
             tabId: tab.id
           });
         }

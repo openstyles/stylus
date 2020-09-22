@@ -328,7 +328,7 @@ function openManage({options = false, search} = {}) {
       if (tab) {
         return Promise.all([
           activateTab(tab),
-          tab.url !== url && msg.sendTab(tab.id, {method: 'pushState', url})
+          (tab.pendingUrl || tab.url) !== url && msg.sendTab(tab.id, {method: 'pushState', url})
             .catch(console.error)
         ]);
       }

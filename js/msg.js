@@ -106,12 +106,13 @@ self.msg = self.INJECTED === 1 ? self.msg : (() => {
       .then(tabs => {
         const requests = [];
         for (const tab of tabs) {
-          const isExtension = tab.url.startsWith(EXTENSION_URL);
+          const tabUrl = tab.pendingUrl || tab.url;
+          const isExtension = tabUrl.startsWith(EXTENSION_URL);
           if (
             tab.discarded ||
             // FIXME: use `URLS.supported`?
-            !/^(http|ftp|file)/.test(tab.url) &&
-            !tab.url.startsWith('chrome://newtab/') &&
+            !/^(http|ftp|file)/.test(tabUrl) &&
+            !tabUrl.startsWith('chrome://newtab/') &&
             !isExtension ||
             isExtension && ignoreExtension ||
             filter && !filter(tab)
