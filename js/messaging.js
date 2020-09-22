@@ -132,7 +132,7 @@ function findExistingTab({url, currentWindow, ignoreHash = true, ignoreSearch = 
     .then(tabs => tabs.find(matchTab));
 
   function matchTab(tab) {
-    const tabUrl = new URL(tab.url);
+    const tabUrl = new URL(tab.pendingUrl || tab.url);
     return tabUrl.protocol === url.protocol &&
       tabUrl.username === url.username &&
       tabUrl.password === url.password &&
@@ -175,7 +175,7 @@ function openURL({
         index,
         openerTabId,
         // when hash is different we can only set `url` if it has # otherwise the tab would reload
-        url: url !== tab.url && url.includes('#') ? url : undefined,
+        url: url !== (tab.pendingUrl || tab.url) && url.includes('#') ? url : undefined,
       });
     }
     if (newWindow && browser.windows) {
@@ -200,10 +200,9 @@ function openURL({
 // except when new URL is chrome:// or chrome-extension:// and the empty tab is
 // in incognito
 function isTabReplaceable(tab, newUrl) {
-  if (!tab || !URLS.emptyTab.includes(tab.url)) {
+  if (!tab || !URLS.emptyTab.includes(tab.pendingUrl || tab.url)) {
     return false;
   }
-  // FIXME: but why?
   if (tab.incognito && newUrl.startsWith('chrome')) {
     return false;
   }

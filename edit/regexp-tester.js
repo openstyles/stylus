@@ -67,8 +67,7 @@ const regExpTester = (() => {
     });
     const getMatchInfo = m => m && {text: m[0], pos: m.index};
     browser.tabs.query({}).then(tabs => {
-      const supported = tabs.map(tab => tab.url)
-        .filter(url => URLS.supported(url));
+      const supported = tabs.map(tab => tab.pendingUrl || tab.url).filter(URLS.supported);
       const unique = [...new Set(supported).values()];
       for (const rxData of regexps) {
         const {rx, urls} = rxData;
