@@ -508,6 +508,7 @@ self.parserlib = (() => {
     'outline-style':   '<border-style> | auto',
     'outline-width':   '<border-width>',
     'overflow':        '<overflow>{1,2}',
+    'overflow-anchor': 'auto | none',
     'overflow-block':  '<overflow>',
     'overflow-inline': '<overflow>',
     'overflow-style':  1,
