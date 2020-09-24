@@ -18,7 +18,7 @@ function parseMozFormat({code, styleId}) {
     'regexp':     'regexps',
   };
   const hasSingleEscapes = /([^\\]|^)\\([^\\]|$)/;
-  const parser = new parserlib.css.Parser();
+  const parser = new parserlib.css.Parser({starHack: true});
   const sectionStack = [{code: '', start: 0}];
   const errors = [];
   const sections = [];
