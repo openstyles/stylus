@@ -105,6 +105,7 @@
   }
 
   Object.assign(CodeMirror.mimeModes['text/css'].propertyKeywords, {
+    'content-visibility': true,
     'overflow-anchor': true,
     'overscroll-behavior': true,
   });
