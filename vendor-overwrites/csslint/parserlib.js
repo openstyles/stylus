@@ -286,6 +286,7 @@ self.parserlib = (() => {
     'columns':           1,
     'contain':           'none | strict | content | [ size || layout || style || paint ]',
     'content':           'normal | none | <content-list> [ / <string> ]?',
+    'content-visibility': 'visible | auto | hidden',
     'counter-increment': 1,
     'counter-reset':     1,
     'crop':              'rect() | inset-rect() | auto',
