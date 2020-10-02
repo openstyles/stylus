@@ -321,10 +321,6 @@
       }
     }
   },
-  "editorStylesButton": {
-    "message": "Сменить тему Стилус",
-    "description": "Find styles for the editor"
-  },
   "enableStyleLabel": {
     "message": "Включить",
     "description": "Label for the button to enable a style"

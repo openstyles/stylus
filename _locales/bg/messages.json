@@ -217,10 +217,6 @@
       }
     }
   },
-  "editorStylesButton": {
-    "message": "Стилове за редактора",
-    "description": "Find styles for the editor"
-  },
   "enableStyleLabel": {
     "message": "Включване",
     "description": "Label for the button to enable a style"

@@ -317,10 +317,6 @@
       }
     }
   },
-  "editorStylesButton": {
-    "message": "편집기 스타일 찾기",
-    "description": "Find styles for the editor"
-  },
   "enableStyleLabel": {
     "message": "활성화",
     "description": "Label for the button to enable a style"

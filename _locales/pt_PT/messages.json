@@ -301,10 +301,6 @@
       }
     }
   },
-  "editorStylesButton": {
-    "message": "Encontrar estilos para o editor",
-    "description": "Find styles for the editor"
-  },
   "enableStyleLabel": {
     "message": "Ativar",
     "description": "Label for the button to enable a style"
