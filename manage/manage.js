@@ -5,7 +5,7 @@ global messageBox getStyleWithNoCode
   objectDiff
   configDialog
   sorter msg prefs API onDOMready $ $$ $create template setupLivePrefs
-  URLS enforceInputRange t tWordBreak formatDate
+  t tWordBreak formatDate
   getOwnTab getActiveTab openURL animateElement sessionStorageHash debounce
   scrollElementIntoView CHROME VIVALDI FIREFOX router
   bulkChangeTime:true bulkChangeQueue
@@ -19,15 +19,24 @@ const ENTRY_ID_PREFIX = '#' + ENTRY_ID_PREFIX_RAW;
 
 const BULK_THROTTLE_MS = 100;
 
+// define pref-mapped ids separately
 const newUI = {
-  enabled: prefs.get('manage.newUI'),
-  favicons: prefs.get('manage.newUI.favicons'),
-  faviconsGray: prefs.get('manage.newUI.faviconsGray'),
-  targets: prefs.get('manage.newUI.targets'),
-  renderClass() {
-    document.documentElement.classList.toggle('newUI', newUI.enabled);
-  },
+  enabled: null, // the global option should come first
+  favicons: null,
+  faviconsGray: null,
+  targets: null,
 };
+// ...add utility functions
+Object.assign(newUI, {
+  ids: Object.keys(newUI),
+  prefGroup: 'manage.newUI',
+  prefKeyForId: id => id === 'enabled' ? newUI.prefGroup : `${newUI.prefGroup}.${id}`,
+  renderClass: () => document.documentElement.classList.toggle('newUI', newUI.enabled),
+});
+// ...read the actual values
+for (const id of newUI.ids) {
+  newUI[id] = prefs.get(newUI.prefKeyForId(id));
+}
 newUI.renderClass();
 
 const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps'];
@@ -88,10 +97,6 @@ function initGlobalEvents() {
   installed.onclick = handleEvent.entryClicked;
   $('#manage-options-button').onclick = () => router.updateHash('#stylus-options');
   $('#sync-styles').onclick = () => router.updateHash('#stylus-options');
-  {
-    const btn = $('#manage-shortcuts-button');
-    btn.onclick = btn.onclick || (() => openURL({url: URLS.configureCommands}));
-  }
   $$('#header a[href^="http"]').forEach(a => (a.onclick = handleEvent.external));
   // show date installed & last update on hover
   installed.addEventListener('mouseover', handleEvent.lazyAddEntryTitle);
@@ -113,19 +118,11 @@ function initGlobalEvents() {
     };
   });
 
-  // triggered automatically by setupLivePrefs() below
-  enforceInputRange($('#manage.newUI.targets'));
-
   // N.B. triggers existing onchange listeners
   setupLivePrefs();
   sorter.init();
 
-  prefs.subscribe([
-    'manage.newUI',
-    'manage.newUI.favicons',
-    'manage.newUI.faviconsGray',
-    'manage.newUI.targets',
-  ], () => switchUI());
+  prefs.subscribe(newUI.ids.map(newUI.prefKeyForId), () => switchUI());
 
   switchUI({styleOnly: true});
 
@@ -488,7 +485,7 @@ Object.assign(handleEvent, {
       const y = Math.max(0, top);
       const first = document.elementFromPoint(x, y);
       const lastOffset = first.offsetTop + window.innerHeight;
-      const numTargets = prefs.get('manage.newUI.targets');
+      const numTargets = newUI.targets;
       let entry = first && first.closest('.entry') || installed.children[0];
       while (entry && entry.offsetTop <= lastOffset) {
         favicons.push(...$$('img', entry).slice(0, numTargets).filter(img => img.dataset.src));
@@ -618,10 +615,8 @@ function switchUI({styleOnly} = {}) {
   const current = {};
   const changed = {};
   let someChanged = false;
-  // ensure the global option is processed first
-  for (const el of [$('#manage.newUI'), ...$$('[id^="manage.newUI."]')]) {
-    const id = el.id.replace(/^manage\.newUI\.?/, '') || 'enabled';
-    const value = el.type === 'checkbox' ? el.checked : Number(el.value);
+  for (const id of newUI.ids) {
+    const value = prefs.get(newUI.prefKeyForId(id));
     const valueChanged = value !== newUI[id] && (id === 'enabled' || current.enabled);
     current[id] = value;
     changed[id] = valueChanged;

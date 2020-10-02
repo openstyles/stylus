@@ -6,7 +6,7 @@
 
 setupLivePrefs();
 setupRadioButtons();
-enforceInputRange($('#popupWidth'));
+$$('input[min], input[max]').forEach(enforceInputRange);
 setTimeout(splitLongTooltips);
 
 // https://github.com/openstyles/stylus/issues/822

@@ -285,14 +285,6 @@ a:hover {
   margin-top: .5rem;
 }
 
-#options-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  padding-top: .1rem;
-}
-
-#options-buttons > a,
-#options-buttons > button,
 #backup-buttons button {
   margin: 0 .2rem .5rem 0;
 }
@@ -695,65 +687,6 @@ a:hover {
   filter: grayscale(0);
 }
 
-#newUIoptions {
-  display: none;
-}
-
-.newUI #newUIoptions {
-  display: initial;
-}
-
-#newUIoptions > * {
-  display: flex;
-  align-items: center;
-  margin-bottom: auto;
-  flex-wrap: wrap;
-  position: relative;
-}
-
-#newUIoptions input[type="number"] {
-  width: 3em;
-  margin-right: .5em;
-}
-
-#newUIoptions [data-toggle-on-click="#faviconsHelp"] {
-  width: 14px;
-  height: 14px;
-  display: inline-block;
-  vertical-align: middle;
-  position: relative;
-  top: -1px;
-}
-
-#newUIoptions [data-toggle-on-click] > svg {
-  position:  static;
-}
-
-#newUIoptions [data-toggle-on-click]:not([open]) > svg {
-  /* note: without ">" FF52 also transforms the nested svg inside <use> */
-  transform: rotate(-90deg);
-}
-
-html:not(.newUI) #newUIoptions + * {
-  margin-top: .5em;
-}
-
-input[id^="manage.newUI"] {
-  margin-left: 0;
-}
-
-#faviconsHelp {
-  overflow-y: auto;
-  font-size: 90%;
-  padding: 1ex 0 2ex 16px;
-}
-
-#faviconsHelp div {
-  display: flex;
-  align-items: center;
-  margin-top: 1ex;
-}
-
 /* Default, no update buttons */
 .updater-icons .update,
 .updater-icons .check-update {
@@ -1076,6 +1009,10 @@ input[id^="manage.newUI"] {
 
 #stylus-embedded-options.fadeout {
   animation: fadeout .25s ease-in-out;
+}
+
+.settings-column {
+  margin-top: 1rem;
 }
 
 @keyframes fadein {
