@@ -6,7 +6,7 @@
 
 setupLivePrefs();
 setupRadioButtons();
-enforceInputRange($('#popupWidth'));
+$$('input[min], input[max]').forEach(enforceInputRange);
 setTimeout(splitLongTooltips);
 
 if (CHROME_HAS_BORDER_BUG) {

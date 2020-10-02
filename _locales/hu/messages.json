@@ -309,10 +309,6 @@
       }
     }
   },
-  "editorStylesButton": {
-    "message": "A szerkesztő stílusainak keresése",
-    "description": "Find styles for the editor"
-  },
   "enableStyleLabel": {
     "message": "Engedélyezés",
     "description": "Label for the button to enable a style"

@@ -309,10 +309,6 @@
       }
     }
   },
-  "editorStylesButton": {
-    "message": "Editör stili bul",
-    "description": "Find styles for the editor"
-  },
   "enableStyleLabel": {
     "message": "Etkinleştir",
     "description": "Label for the button to enable a style"

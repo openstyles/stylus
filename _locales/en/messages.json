@@ -319,10 +319,6 @@
     },
     "description": "Title of the page for editing styles"
   },
-  "editorStylesButton": {
-    "message": "Find editor styles",
-    "description": "Find styles for the editor"
-  },
   "enableStyleLabel": {
     "message": "Enable",
     "description": "Label for the button to enable a style"
@@ -1011,6 +1007,9 @@
   },
   "optionsResetButton": {
     "message": "Reset options"
+  },
+  "optionsStylusThemes": {
+    "message": "Find a Stylus UI theme"
   },
   "optionsSubheading": {
     "message": "More Options",

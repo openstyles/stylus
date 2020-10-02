@@ -321,10 +321,6 @@
       }
     }
   },
-  "editorStylesButton": {
-    "message": "מצא עיצובים לעורך",
-    "description": "Find styles for the editor"
-  },
   "enableStyleLabel": {
     "message": "אפשר",
     "description": "Label for the button to enable a style"
