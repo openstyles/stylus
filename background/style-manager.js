@@ -586,7 +586,7 @@ const styleManager = (() => {
     ) {
       return true;
     }
-    if (section.urlPrefixes && section.urlPrefixes.some(p => query.url.startsWith(p))) {
+    if (section.urlPrefixes && section.urlPrefixes.some(p => p && query.url.startsWith(p))) {
       return true;
     }
     // as per spec the fragment portion is ignored in @-moz-document:
