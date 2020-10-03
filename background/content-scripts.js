@@ -17,6 +17,21 @@ const contentScripts = (() => {
   }
   const busyTabs = new Set();
   let busyTabsTimer;
+
+  // expose version on greasyfork/sleazyfork 1) info page and 2) code page
+  const urlMatches = '/scripts/\\d+[^/]*(/code)?([?#].*)?$';
+  chrome.webNavigation.onCommitted.addListener(({tabId}) => {
+    chrome.tabs.executeScript(tabId, {
+      file: '/content/install-hook-greasyfork.js',
+      runAt: 'document_start',
+    });
+  }, {
+    url: [
+      {hostEquals: 'greasyfork.org', urlMatches},
+      {hostEquals: 'sleazyfork.org', urlMatches},
+    ]
+  });
+
   return {injectToTab, injectToAllTabs};
 
   function injectToTab({url, tabId, frameId = null}) {
