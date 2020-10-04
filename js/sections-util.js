@@ -1,4 +1,4 @@
-/* exported styleSectionsEqual styleCodeEmpty calcStyleDigest styleJSONseemsValid */
+/* exported styleSectionsEqual styleCodeEmpty styleSectionGlobal calcStyleDigest styleJSONseemsValid */
 'use strict';
 
 function styleCodeEmpty(code) {
@@ -12,6 +12,14 @@ function styleCodeEmpty(code) {
     }
   }
   return false;
+}
+
+/** Checks if section is global i.e. has no targets at all */
+function styleSectionGlobal(section) {
+  return (!section.regexps || !section.regexps.length) &&
+         (!section.urlPrefixes || !section.urlPrefixes.length) &&
+         (!section.urls || !section.urls.length) &&
+         (!section.domains || !section.domains.length);
 }
 
 /**
