@@ -54,19 +54,13 @@ body.search-results-shown {
   background-color: #fff;
 }
 
-.search-result .lds-spinner {
+#search-results .lds-spinner {
   transform: scale(.5);
   filter: invert(1) drop-shadow(1px 1px 3px #000);
 }
 
-.search-result-empty .lds-spinner {
-  transform: scale(.5);
+#search-results .search-result-empty .lds-spinner {
   filter: opacity(.2);
-}
-
-.search-result-fadein {
-  animation: fadein 1s;
-  animation-fill-mode: both;
 }
 
 .search-result-screenshot {
@@ -255,6 +249,18 @@ body.search-results-shown {
 #find-styles-inline-group label {
   position: relative;
   padding-left: 16px;
+}
+
+#search-params {
+  display: flex;
+  position: relative;
+  margin-bottom: 1.25rem;
+}
+
+#search-query {
+  min-width: 3em;
+  margin-right: .5em;
+  flex: auto;
 }
 
 /* spinner: https://github.com/loadingio/css-spinner */

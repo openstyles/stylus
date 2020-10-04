@@ -1181,6 +1181,10 @@
     "message": "Number of matches in code and applies-to values",
     "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
   },
+  "searchStyleQueryHint": {
+    "message": "Search style names case-insensitively:\nsome words - all words in any order\n\"some phrase\" - this exact phrase without quotes\n2020 - a year like this also shows styles updated in 2020",
+    "description": "Tooltip shown for the text input in the popup's inline style finder"
+  },
   "searchRegexp": {
     "message": "Use /re/ syntax for regexp search",
     "description": "Label after the search input field in the editor shown on Ctrl-F"

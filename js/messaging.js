@@ -62,7 +62,15 @@ const URLS = {
   // TODO: remove when "minimum_chrome_version": "61" or higher
   chromeProtectsNTP: CHROME >= 61,
 
-  userstylesOrgJson: 'https://userstyles.org/styles/chrome/',
+  uso: 'https://userstyles.org/',
+  usoJson: 'https://userstyles.org/styles/chrome/',
+
+  usoArchive: 'https://33kk.github.io/uso-archive/',
+  usoArchiveRaw: 'https://raw.githubusercontent.com/33kk/uso-archive/flomaster/data/',
+  extractUsoArchiveId: url =>
+    url &&
+    url.startsWith(URLS.usoArchiveRaw) &&
+    parseInt(url.match(/\/(\d+)\.user\.css|$/)[1]),
 
   supported: url => (
     url.startsWith('http') && (FIREFOX || !url.startsWith(URLS.browserWebStore)) ||
@@ -438,7 +446,7 @@ function download(url, {
   function collapseUsoVars(url) {
     if (queryPos < 0 ||
         url.length < 2000 ||
-        !url.startsWith(URLS.userstylesOrgJson) ||
+        !url.startsWith(URLS.usoJson) ||
         !/^get$/i.test(method)) {
       return url;
     }
