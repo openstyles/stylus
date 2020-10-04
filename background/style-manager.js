@@ -1,5 +1,5 @@
 /* eslint no-eq-null: 0, eqeqeq: [2, "smart"] */
-/* global createCache db calcStyleDigest db tryRegExp styleCodeEmpty
+/* global createCache db calcStyleDigest db tryRegExp styleCodeEmpty styleSectionGlobal
   getStyleWithNoCode msg sync uuidv4 */
 /* exported styleManager */
 'use strict';
@@ -445,7 +445,7 @@ const styleManager = (() => {
         excluded = true;
       }
       for (const section of data.sections) {
-        if (styleCodeEmpty(section.code)) {
+        if (styleSectionGlobal(section) && styleCodeEmpty(section.code)) {
           continue;
         }
         const match = urlMatchSection(query, section);
@@ -612,15 +612,7 @@ const styleManager = (() => {
       return 'sloppy';
     }
     // TODO: check for invalid regexps?
-    if (
-      (!section.regexps || !section.regexps.length) &&
-      (!section.urlPrefixes || !section.urlPrefixes.length) &&
-      (!section.urls || !section.urls.length) &&
-      (!section.domains || !section.domains.length)
-    ) {
-      return true;
-    }
-    return false;
+    return styleSectionGlobal(section);
   }
 
   function createCompiler(compile) {
