@@ -7,7 +7,7 @@ global messageBox getStyleWithNoCode
   sorter msg prefs API onDOMready $ $$ $create template setupLivePrefs
   t tWordBreak formatDate
   getOwnTab getActiveTab openURL animateElement sessionStorageHash debounce
-  scrollElementIntoView CHROME VIVALDI FIREFOX router
+  scrollElementIntoView CHROME VIVALDI router
   bulkChangeTime:true bulkChangeQueue
 */
 'use strict';
