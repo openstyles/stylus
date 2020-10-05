@@ -58,11 +58,6 @@ Promise.all([
       if (!VIVALDI) {
         $$('#header select').forEach(el => el.adjustWidth());
       }
-      if (FIREFOX && 'update' in (chrome.commands || {})) {
-        const btn = $('#manage-shortcuts-button');
-        btn.classList.remove('chromium-only');
-        btn.onclick = API.optionsCustomizeHotkeys;
-      }
     }),
 ]).then(args => {
   showStyles(...args);
