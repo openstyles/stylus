@@ -318,7 +318,9 @@
     let sequence = null;
     if (tabId < 0) {
       getData = DirectDownloader();
-      sequence = API.getUsercssInstallCode(initialUrl).catch(getData);
+      sequence = API.getUsercssInstallCode(initialUrl)
+        .then(code => code || getData())
+        .catch(getData);
     } else {
       getData = PortDownloader();
       sequence = getData({timer: false});

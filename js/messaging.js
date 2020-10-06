@@ -72,6 +72,10 @@ const URLS = {
     url.startsWith(URLS.usoArchiveRaw) &&
     parseInt(url.match(/\/(\d+)\.user\.css|$/)[1]),
 
+  extractGreasyForkId: url =>
+    /^https:\/\/(?:greasy|sleazy)fork\.org\/scripts\/(\d+)[^/]*\/code\/[^/]*\.user\.css$/.test(url) &&
+    RegExp.$1,
+
   supported: url => (
     url.startsWith('http') && (FIREFOX || !url.startsWith(URLS.browserWebStore)) ||
     url.startsWith('ftp') ||

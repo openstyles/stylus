@@ -1,8 +1,8 @@
 /* global download prefs openURL FIREFOX CHROME
-  URLS ignoreChromeError usercssHelper chromeLocal semverCompare
+  URLS ignoreChromeError chromeLocal semverCompare
   styleManager msg navigatorUtil workerUtil contentScripts sync
   findExistingTab activateTab isTabReplaceable getActiveTab
-  tabManager */
+*/
 
 'use strict';
 
@@ -108,14 +108,6 @@ navigatorUtil.onUrlChange(({tabId, frameId}, type) => {
   if (type !== 'committed') {
     msg.sendTab(tabId, {method: 'urlChanged'}, {frameId})
       .catch(msg.ignoreError);
-  }
-});
-
-tabManager.onUpdate(({tabId, url, oldUrl = ''}) => {
-  if (usercssHelper.testUrl(url) && !oldUrl.startsWith(URLS.installUsercss)) {
-    usercssHelper.testContents(tabId, url).then(data => {
-      if (data.code) usercssHelper.openInstallerPage(tabId, url, data);
-    });
   }
 });
 
