@@ -1,5 +1,5 @@
 /* global download prefs openURL FIREFOX CHROME
-  URLS ignoreChromeError usercssHelper
+  URLS ignoreChromeError usercssHelper chromeLocal semverCompare
   styleManager msg navigatorUtil workerUtil contentScripts sync
   findExistingTab activateTab isTabReplaceable getActiveTab
   tabManager */
@@ -139,7 +139,7 @@ if (chrome.commands) {
 }
 
 // *************************************************************************
-chrome.runtime.onInstalled.addListener(({reason}) => {
+chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   // save install type: "admin", "development", "normal", "sideload" or "other"
   // "normal" = addon installed from webstore
   chrome.management.getSelf(info => {
@@ -156,6 +156,14 @@ chrome.runtime.onInstalled.addListener(({reason}) => {
   });
   // themes may change
   delete localStorage.codeMirrorThemes;
+  // inline search cache for USO is not needed anymore, TODO: remove this by the middle of 2021
+  if (semverCompare(previousVersion, '1.5.13') <= 0) {
+    setTimeout(async () => {
+      const del = Object.keys(await chromeLocal.get())
+        .filter(key => key.startsWith('usoSearchCache'));
+      if (del.length) chromeLocal.remove(del);
+    }, 15e3);
+  }
 });
 
 // *************************************************************************
