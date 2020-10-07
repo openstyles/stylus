@@ -1,6 +1,6 @@
 /* eslint no-eq-null: 0, eqeqeq: [2, "smart"] */
 /* global createCache db calcStyleDigest db tryRegExp styleCodeEmpty styleSectionGlobal
-  getStyleWithNoCode msg sync uuidv4 */
+  getStyleWithNoCode msg sync uuidv4 URLS */
 /* exported styleManager */
 'use strict';
 
@@ -225,6 +225,13 @@ const styleManager = (() => {
     }
     if (!reason) {
       reason = style ? 'update' : 'install';
+    }
+    let url = !data.url && data.updateUrl;
+    if (url) {
+      const usoId = URLS.extractUsoArchiveId(url);
+      url = usoId && `${URLS.usoArchive}?style=${usoId}` ||
+            URLS.extractGreasyForkId(url) && url.match(/^.*?\/\d+/)[0];
+      if (url) data.url = data.installationUrl = url;
     }
     // FIXME: update updateDate? what about usercss config?
     return calcStyleDigest(data)

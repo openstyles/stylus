@@ -46,7 +46,7 @@ function createSourceEditor({style, onTitleChanged}) {
   metaCompiler.onUpdated(meta => {
     style.usercssData = meta;
     style.name = meta.name;
-    style.url = meta.homepageURL;
+    style.url = meta.homepageURL || style.installationUrl;
     updateMeta();
   });
 
