@@ -12,7 +12,6 @@ createAPI({
   compileUsercss,
   parseUsercssMeta(text, indexOffset = 0) {
     loadScript(
-      '/js/polyfill.js',
       '/vendor/usercss-meta/usercss-meta.min.js',
       '/vendor-overwrites/colorpicker/colorconverter.js',
       '/js/meta-parser.js'
@@ -21,7 +20,6 @@ createAPI({
   },
   nullifyInvalidVars(vars) {
     loadScript(
-      '/js/polyfill.js',
       '/vendor/usercss-meta/usercss-meta.min.js',
       '/vendor-overwrites/colorpicker/colorconverter.js',
       '/js/meta-parser.js'
