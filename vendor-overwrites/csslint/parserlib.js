@@ -154,6 +154,7 @@ self.parserlib = (() => {
     'azimuth': '<azimuth>',
 
     // B
+    'backdrop-filter':         '<filter-function-list> | none',
     'backface-visibility':     'visible | hidden',
     'background':              '[ <bg-layer> , ]* <final-bg-layer>',
     'background-attachment':   '<attachment>#',
