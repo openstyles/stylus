@@ -562,6 +562,7 @@ function createSectionsEditor({style, onTitleChanged}) {
       const index = sections.indexOf(base);
       sections.splice(index + 1, 0, section);
       container.insertBefore(section.el, base.el.nextSibling);
+      section.cm.focus();
     } else {
       sections.push(section);
       container.appendChild(section.el);
