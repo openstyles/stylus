@@ -331,7 +331,11 @@
       onToggled(e) {
         if (e) isEnabled = e.target.checked;
         if (installed || installedDup) {
-          (isEnabled ? start : stop)();
+          if (isEnabled) {
+            check({force: true});
+          } else {
+            stop();
+          }
           $('.install').disabled = isEnabled;
           Object.assign($('#live-reload-install-hint'), {
             hidden: !isEnabled,
@@ -340,8 +344,8 @@
         }
       },
     };
-    function check() {
-      getData()
+    function check(opts) {
+      getData(opts)
         .then(update, logError)
         .then(() => {
           timer = 0;
@@ -398,10 +402,11 @@
           .then(tab => tab.url === initialUrl && location.reload())
           .catch(closeCurrentTab);
       });
-      return ({timer = true} = {}) => new Promise((resolve, reject) => {
+      return (opts = {}) => new Promise((resolve, reject) => {
         const id = performance.now();
         resolvers.set(id, {resolve, reject});
-        port.postMessage({id, timer});
+        opts.id = id;
+        port.postMessage(opts);
       });
     }
   }

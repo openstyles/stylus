@@ -5,10 +5,10 @@ if (typeof self.oldCode !== 'string') {
   self.oldCode = (document.querySelector('body > pre') || document.body).textContent;
   chrome.runtime.onConnect.addListener(port => {
     if (port.name !== 'downloadSelf') return;
-    port.onMessage.addListener(({id, timer}) => {
+    port.onMessage.addListener(({id, force}) => {
       fetch(location.href, {mode: 'same-origin'})
         .then(r => r.text())
-        .then(code => ({id, code: timer && code === self.oldCode ? null : code}))
+        .then(code => ({id, code: force || code !== self.oldCode ? code : null}))
         .catch(error => ({id, error: error.message || `${error}`}))
         .then(msg => {
           port.postMessage(msg);
