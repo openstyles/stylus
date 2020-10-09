@@ -3856,6 +3856,7 @@ self.parserlib = (() => {
      * @param {Boolean} [options.starHack] - allows IE6 star hack
      * @param {Boolean} [options.underscoreHack] - interprets leading underscores as IE6-7 for known properties
      * @param {Boolean} [options.ieFilters] - accepts IE < 8 filters instead of throwing syntax errors
+     * @param {Boolean} [options.emptyDocument] - accepts @document without {} block produced by stylus-lang
      */
     constructor(options) {
       super();
@@ -4329,6 +4330,11 @@ self.parserlib = (() => {
         functions.push(this._documentFunction());
       } while (stream.match(Tokens.COMMA));
 
+      this._ws();
+      if (this.options.emptyDocument && stream.peek() !== Tokens.LBRACE) {
+        this.fire({type: 'emptydocument', functions, prefix}, start);
+        return;
+      }
       stream.mustMatch(Tokens.LBRACE);
 
       this.fire({

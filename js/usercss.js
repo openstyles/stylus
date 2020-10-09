@@ -71,7 +71,7 @@ const usercss = (() => {
       .then(({sections, errors}) => {
         if (!errors.length) errors = false;
         if (!sections.length || errors && !allowErrors) {
-          throw errors;
+          throw errors || 'Style does not contain any actual CSS to apply.';
         }
         style.sections = sections;
         return allowErrors ? {style, errors} : style;
