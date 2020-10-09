@@ -63,6 +63,7 @@ label {
 #sections {
   padding-left: 280px;
   min-height: 0;
+  height: 100%;
 }
 #sections h2 {
   margin-top: 1rem;
@@ -817,13 +818,8 @@ body.linter-disabled .hidden-unless-compact {
   color: #888;
 }
 
-/* FIXME: remove the ID selector */
-#sections .single-editor {
+.single-editor {
   height: 100%;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  box-sizing: border-box;
 }
 
 .single-editor .CodeMirror {
@@ -843,7 +839,6 @@ body.linter-disabled .hidden-unless-compact {
 }
 
 .usercss.firefox #sections,
-.usercss.firefox .single-editor,
 .usercss.firefox .CodeMirror {
   height: 100%;
 }
@@ -996,7 +991,7 @@ body.linter-disabled .hidden-unless-compact {
     flex-direction: column;
     flex: 1;
   }
-  #sections > * {
+  #sections > :not(.single-editor) {
     margin: 0 .5rem;
     padding: .5rem 0;
   }
