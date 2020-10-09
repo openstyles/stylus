@@ -20,29 +20,19 @@
     }
   });
 
-  function stylelint(text, config, mode) {
+  function stylelint(text, config) {
     return editorWorker.stylelint(text, config)
-      .then(({results}) => {
-        if (!results[0]) {
-          return [];
-        }
-        const output = results[0].warnings.map(({line, column: ch, text, severity}) =>
-          ({
-            from: {line: line - 1, ch: ch - 1},
-            to: {line: line - 1, ch},
-            message: text
-              .replace('Unexpected ', '')
-              .replace(/^./, firstLetter => firstLetter.toUpperCase())
-              .replace(/\s*\([^(]+\)$/, ''), // strip the rule,
-            rule: text.replace(/^.*?\s*\(([^(]+)\)$/, '$1'),
-            severity,
-          })
-        );
-        return mode !== 'stylus' ?
-          output :
-          output.filter(({message}) =>
-            !message.includes('"@css"') || !message.includes('(at-rule-no-unknown)'));
-      });
+      .then(({results}) => !results[0] ? [] :
+        results[0].warnings.map(({line, column: ch, text, severity}) => ({
+          from: {line: line - 1, ch: ch - 1},
+          to: {line: line - 1, ch},
+          message: text
+            .replace('Unexpected ', '')
+            .replace(/^./, firstLetter => firstLetter.toUpperCase())
+            .replace(/\s*\([^(]+\)$/, ''), // strip the rule,
+          rule: text.replace(/^.*?\s*\(([^(]+)\)$/, '$1'),
+          severity,
+        })));
   }
 
   function csslint(text, config) {
