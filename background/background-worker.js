@@ -37,7 +37,7 @@ function compileUsercss(preprocessor, code, vars) {
   const builder = getUsercssCompiler(preprocessor);
   vars = simpleVars(vars);
   return Promise.resolve(builder.preprocess ? builder.preprocess(code, vars) : code)
-    .then(code => parseMozFormat({code}))
+    .then(code => parseMozFormat({code, emptyDocument: preprocessor === 'stylus'}))
     .then(({sections, errors}) => {
       if (builder.postprocess) {
         builder.postprocess(sections, vars);
