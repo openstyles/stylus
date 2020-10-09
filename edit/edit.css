@@ -279,12 +279,6 @@ input:invalid {
 .section-editor .section:not(:first-child) {
   border-top: 2px solid hsl(0, 0%, 80%);
 }
-.section-editor:not(.section-editor-ready) .section {
-  opacity: 0 !important;
-}
-.section-editor:not(.section-editor-ready) .CodeMirror {
-  height: 0;
-}
 .add-section:after {
   content: attr(short-text);
 }

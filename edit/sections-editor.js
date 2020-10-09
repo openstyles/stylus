@@ -29,6 +29,9 @@ function createSectionsEditor({style, onTitleChanged}) {
     updateLivePreview();
   });
 
+  updateHeader();
+  rerouteHotkeys(true);
+
   $('#to-mozilla').addEventListener('click', showMozillaFormat);
   $('#to-mozilla-help').addEventListener('click', showToMozillaHelp);
   $('#from-mozilla').addEventListener('click', () => showMozillaFormatImport());
@@ -47,17 +50,24 @@ function createSectionsEditor({style, onTitleChanged}) {
       .forEach(e => e.addEventListener('mousedown', toggleContextMenuDelete));
   }
 
-  let sectionOrder = '';
-  const initializing = new Promise(resolve => initSection({
-    sections: style.sections.slice(),
-    done:() => {
-      dirty.clear();
-      rerouteHotkeys(true);
-      resolve();
-      updateHeader();
-      sections.forEach(fitToContent);
+  const xo = window.IntersectionObserver && new IntersectionObserver(entries => {
+    for (const {isIntersecting, target} of entries) {
+      if (isIntersecting) {
+        target.CodeMirror.refresh();
+        xo.unobserve(target);
+      }
     }
-  }));
+  });
+  CodeMirror.defineExtension('refreshOnView', function () {
+    if (xo) {
+      xo.observe(this.display.wrapper);
+    } else {
+      this.refresh();
+    }
+  });
+
+  let sectionOrder = '';
+  const initializing = initSections(style.sections.slice());
 
   const livePreview = createLivePreview();
   livePreview.show(Boolean(style.id));
@@ -83,28 +93,22 @@ function createSectionsEditor({style, onTitleChanged}) {
   };
 
   function fitToContent(section) {
-    if (section.cm.isRefreshed) {
+    if (section.cm.display.renderedView) {
       resize();
     } else {
       section.cm.on('update', resize);
     }
 
     function resize() {
-      let contentHeight = section.el.querySelector('.CodeMirror-sizer').offsetHeight;
+      let contentHeight = section.cm.display.sizer.offsetHeight;
       if (contentHeight < section.cm.defaultTextHeight()) {
         return;
       }
       contentHeight += 9; // border & resize grip
       section.cm.off('update', resize);
-      const cmHeight = section.cm.getWrapperElement().offsetHeight;
-      const maxHeight = cmHeight + window.innerHeight - section.el.offsetHeight;
+      const cmHeight = section.cm.display.wrapper.offsetHeight;
+      const maxHeight = window.innerHeight - (section.el.offsetHeight - cmHeight);
       section.cm.setSize(null, Math.min(contentHeight, maxHeight));
-      if (sections.every(s => s.cm.isRefreshed)) {
-        fitToAvailableSpace();
-      }
-      setTimeout(() => {
-        container.classList.add('section-editor-ready');
-      }, 50);
     }
   }
 
@@ -367,7 +371,7 @@ function createSectionsEditor({style, onTitleChanged}) {
           if (replaceOldStyle) {
             return replaceSections(sections);
           }
-          return new Promise(resolve => initSection({sections, done: resolve, focusOn: false}));
+          return initSections(sections, {focusOn: false});
         })
         .then(() => {
           $('.dismiss').dispatchEvent(new Event('click'));
@@ -472,36 +476,33 @@ function createSectionsEditor({style, onTitleChanged}) {
     livePreview.update(getModel());
   }
 
-  function initSection({
-    sections: originalSections,
+  function initSections(originalSections, {
     total = originalSections.length,
     focusOn = 0,
-    done
-  }) {
-    container.classList.add('hidden');
-    chunk();
-
-    function chunk() {
-      if (!originalSections.length) {
-        setGlobalProgress();
-        if (focusOn !== false) {
-          setTimeout(() => sections[focusOn].cm.focus());
-        }
-        container.classList.remove('hidden');
-        for (const section of sections) {
-          section.cm.refreshOnView();
-        }
-        if (done) {
-          done();
-        }
-        return;
-      }
+  } = {}) {
+    let done;
+    return new Promise(resolve => {
+      done = resolve;
+      chunk(true);
+    });
+    function chunk(forceRefresh) {
       const t0 = performance.now();
       while (originalSections.length && performance.now() - t0 < 100) {
-        insertSectionAfter(originalSections.shift());
+        insertSectionAfter(originalSections.shift(), undefined, forceRefresh);
+        dirty.clear();
+        if (focusOn !== false && sections[focusOn]) {
+          sections[focusOn].cm.focus();
+          focusOn = false;
+        }
       }
       setGlobalProgress(total - originalSections.length, total);
-      setTimeout(chunk);
+      if (!originalSections.length) {
+        setGlobalProgress();
+        fitToAvailableSpace();
+        done();
+      } else {
+        setTimeout(chunk);
+      }
     }
   }
 
@@ -540,7 +541,7 @@ function createSectionsEditor({style, onTitleChanged}) {
     updateLivePreview();
   }
 
-  function insertSectionAfter(init, base) {
+  function insertSectionAfter(init, base, forceRefresh) {
     if (!init) {
       init = {code: '', urlPrefixes: ['http://example.com']};
     }
@@ -565,7 +566,8 @@ function createSectionsEditor({style, onTitleChanged}) {
       sections.push(section);
       container.appendChild(section.el);
     }
-    section.render();
+    section.cm[forceRefresh ? 'refresh' : 'refreshOnView']();
+    fitToContent(section);
     updateSectionOrder();
     section.onChange(updateLivePreview);
     updateLivePreview();
@@ -599,7 +601,7 @@ function createSectionsEditor({style, onTitleChanged}) {
     }
     sections.length = 0;
     container.textContent = '';
-    return new Promise(resolve => initSection({sections: originalSections, done: resolve}));
+    return initSections(originalSections);
   }
 
   function replaceStyle(newStyle, codeIsUpdated) {
