@@ -568,7 +568,10 @@ function createSectionsEditor({style, onTitleChanged}) {
       container.appendChild(section.el);
     }
     section.cm[forceRefresh ? 'refresh' : 'refreshOnView']();
-    fitToContent(section);
+    if (!base || init.code) {
+      // Fit a) during startup or b) when the clone button is clicked on a section with some code
+      fitToContent(section);
+    }
     updateSectionOrder();
     section.onChange(updateLivePreview);
     updateLivePreview();
