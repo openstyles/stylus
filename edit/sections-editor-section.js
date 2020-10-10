@@ -296,19 +296,14 @@ function createSection({
 
   function insertApplyAfter(init, base) {
     const apply = createApply(init);
-    if (base) {
-      const index = appliesTo.indexOf(base);
-      appliesTo.splice(index + 1, 0, apply);
-      appliesToContainer.insertBefore(apply.el, base.el.nextSibling);
-    } else {
-      appliesTo.push(apply);
-      appliesToContainer.appendChild(apply.el);
-    }
+    appliesTo.splice(base ? appliesTo.indexOf(base) + 1 : appliesTo.length, 0, apply);
+    appliesToContainer.insertBefore(apply.el, base ? base.el.nextSibling : null);
     dirty.add(apply, apply);
     if (appliesTo.length > 1 && appliesTo[0].all) {
       removeApply(appliesTo[0]);
     }
     emitSectionChange();
+    return apply;
   }
 
   function removeApply(apply) {
@@ -380,7 +375,7 @@ function createSection({
     }
     $('.add-applies-to', el).addEventListener('click', e => {
       e.preventDefault();
-      insertApplyAfter({type, value: ''}, apply);
+      $('input', insertApplyAfter({type, value: ''}, apply).el).focus();
     });
 
     return apply;
