@@ -558,19 +558,17 @@ function createSectionsEditor({style, onTitleChanged}) {
       prevEditor,
       nextEditor
     });
-    if (base) {
-      const index = sections.indexOf(base);
-      sections.splice(index + 1, 0, section);
-      container.insertBefore(section.el, base.el.nextSibling);
-      section.cm.focus();
-    } else {
-      sections.push(section);
-      container.appendChild(section.el);
-    }
-    section.cm[forceRefresh ? 'refresh' : 'refreshOnView']();
+    const {cm} = section;
+    sections.splice(base ? sections.indexOf(base) + 1 : sections.length, 0, section);
+    container.insertBefore(section.el, base ? base.el.nextSibling : null);
+    cm[forceRefresh ? 'refresh' : 'refreshOnView']();
     if (!base || init.code) {
       // Fit a) during startup or b) when the clone button is clicked on a section with some code
       fitToContent(section);
+    }
+    if (base) {
+      cm.focus();
+      setTimeout(scrollToEditor, 0, cm);
     }
     updateSectionOrder();
     section.onChange(updateLivePreview);
