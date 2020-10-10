@@ -34,6 +34,7 @@ window.addEventListener('showStyles:done', () => {
   /** @type IndexEntry[] */
   let index;
   let category = '';
+  let searchGlobals = $('#search-globals').checked;
   /** @type string[] */
   let query = [];
   /** @type 'n' | 'u' | 't' | 'w' | 'r'  */
@@ -45,9 +46,9 @@ window.addEventListener('showStyles:done', () => {
 
   calcCategory();
 
-  const $orNode = (sel, base) => sel instanceof Node ? sel : $(sel, base);
-  const show = (...args) => $orNode(...args).classList.remove('hidden');
-  const hide = (...args) => $orNode(...args).classList.add('hidden');
+  const $class = sel => (sel instanceof Node ? sel : $(sel)).classList;
+  const show = sel => $class(sel).remove('hidden');
+  const hide = sel => $class(sel).add('hidden');
 
   Object.assign($('#find-styles-link'), {
     href: URLS.usoArchive,
@@ -70,6 +71,10 @@ window.addEventListener('showStyles:done', () => {
   function init() {
     setTimeout(() => document.body.classList.add('search-results-shown'));
     hide('#find-styles-inline-group');
+    $('#search-globals').onchange = function () {
+      searchGlobals = this.checked;
+      ready = ready.then(start);
+    };
     $('#search-query').oninput = function () {
       query = [];
       const text = this.value.trim().toLocaleLowerCase();
@@ -156,8 +161,7 @@ window.addEventListener('showStyles:done', () => {
   function error(reason) {
     dom.error.textContent = reason;
     show(dom.error);
-    (results.length ? show : hide)(dom.container);
-    document.body.classList.toggle('search-results-shown', results.length > 0);
+    hide(dom.list);
     if (dom.error.getBoundingClientRect().bottom < 0) {
       dom.error.scrollIntoView({behavior: 'smooth', block: 'start'});
     }
@@ -165,6 +169,7 @@ window.addEventListener('showStyles:done', () => {
 
   async function start() {
     show(dom.container);
+    show(dom.list);
     hide(dom.error);
     results = [];
     try {
@@ -176,9 +181,9 @@ window.addEventListener('showStyles:done', () => {
         const allUsoIds = new Set(installedStyles.map(calcUsoId));
         results = results.filter(r => !allUsoIds.has(r.i));
       }
-      if (results.length || $('#search-query').value) {
-        render();
-      } else {
+      render();
+      (results.length ? show : hide)(dom.list);
+      if (!results.length && !$('#search-query').value) {
         error(t('searchResultNoneFound'));
       }
     } catch (reason) {
@@ -445,7 +450,8 @@ window.addEventListener('showStyles:done', () => {
 
   async function fetchIndex() {
     const timer = setTimeout(showSpinner, BUSY_DELAY, dom.list);
-    index = await download(INDEX_URL, {responseType: 'json'});
+    index = (await download(INDEX_URL, {responseType: 'json'}))
+      .filter(res => res.f === 'uso');
     clearTimeout(timer);
     $.remove(':scope > .lds-spinner', dom.list);
     return index;
@@ -459,18 +465,19 @@ window.addEventListener('showStyles:done', () => {
 
   function isResultMatching(res) {
     return (
-      res.f === 'uso' &&
-      res.c === category && (
-        category === STYLUS_CATEGORY
-         ? /\bStylus\b/.test(res.n)
-         : !query.length || query.every(isInHaystack, calcHaystack(res))
-       )
+      res.c === category ||
+      searchGlobals && res.c === 'global' && (query.length || calcHaystack(res)._nLC.includes(category))
+    ) && (
+      category === STYLUS_CATEGORY
+       ? /\bStylus\b/.test(res.n)
+       : !query.length || query.every(isInHaystack, calcHaystack(res))
     );
   }
 
   /** @this {IndexEntry} haystack */
   function isInHaystack(needle) {
-    return needle === this._year || this._nLC.includes(needle);
+    return this._year === needle && this.c !== 'global' ||
+           this._nLC.includes(needle);
   }
 
   /**
