@@ -1173,6 +1173,10 @@
     "message": "Case-sensitive",
     "description": "Tooltip for the 'Aa' icon that enables case-sensitive search in the editor shown on Ctrl-F"
   },
+  "searchGlobalStyles": {
+    "message": "Also search global styles",
+    "description": "Checkbox label in the popup's inline style search, shown when the text to search is entered"
+  },
   "searchNumberOfResults": {
     "message": "Number of matches",
     "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
@@ -1180,6 +1184,10 @@
   "searchNumberOfResults2": {
     "message": "Number of matches in code and applies-to values",
     "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+  },
+  "searchStyleQueryHint": {
+    "message": "Search style names case-insensitively:\nsome words - all words in any order\n\"some phrase\" - this exact phrase without quotes\n2020 - a year like this also shows styles updated in 2020",
+    "description": "Tooltip shown for the text input in the popup's inline style finder"
   },
   "searchRegexp": {
     "message": "Use /re/ syntax for regexp search",

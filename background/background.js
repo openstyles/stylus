@@ -1,8 +1,8 @@
 /* global download prefs openURL FIREFOX CHROME
-  URLS ignoreChromeError usercssHelper
+  URLS ignoreChromeError chromeLocal semverCompare
   styleManager msg navigatorUtil workerUtil contentScripts sync
   findExistingTab activateTab isTabReplaceable getActiveTab
-  tabManager */
+*/
 
 'use strict';
 
@@ -111,14 +111,6 @@ navigatorUtil.onUrlChange(({tabId, frameId}, type) => {
   }
 });
 
-tabManager.onUpdate(({tabId, url, oldUrl = ''}) => {
-  if (usercssHelper.testUrl(url) && !oldUrl.startsWith(URLS.installUsercss)) {
-    usercssHelper.testContents(tabId, url).then(data => {
-      if (data.code) usercssHelper.openInstallerPage(tabId, url, data);
-    });
-  }
-});
-
 if (FIREFOX) {
   // FF misses some about:blank iframes so we inject our content script explicitly
   navigatorUtil.onDOMContentLoaded(webNavIframeHelperFF, {
@@ -139,7 +131,7 @@ if (chrome.commands) {
 }
 
 // *************************************************************************
-chrome.runtime.onInstalled.addListener(({reason}) => {
+chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   // save install type: "admin", "development", "normal", "sideload" or "other"
   // "normal" = addon installed from webstore
   chrome.management.getSelf(info => {
@@ -156,6 +148,14 @@ chrome.runtime.onInstalled.addListener(({reason}) => {
   });
   // themes may change
   delete localStorage.codeMirrorThemes;
+  // inline search cache for USO is not needed anymore, TODO: remove this by the middle of 2021
+  if (semverCompare(previousVersion, '1.5.13') <= 0) {
+    setTimeout(async () => {
+      const del = Object.keys(await chromeLocal.get())
+        .filter(key => key.startsWith('usoSearchCache'));
+      if (del.length) chromeLocal.remove(del);
+    }, 15e3);
+  }
 });
 
 // *************************************************************************

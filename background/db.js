@@ -1,4 +1,4 @@
-/* global chromeLocal ignoreChromeError workerUtil createChromeStorageDB */
+/* global chromeLocal workerUtil createChromeStorageDB */
 /* exported db */
 /*
 Initialize a database. There are some problems using IndexedDB in Firefox:
@@ -10,29 +10,18 @@ https://www.reddit.com/r/firefox/comments/7ijuaq/firefox_59_webextensions_can_us
 'use strict';
 
 const db = (() => {
-  let exec;
-  const preparing = prepare();
-  return {
-    exec: (...args) =>
-      preparing.then(() => exec(...args))
+  const DATABASE = 'stylish';
+  const STORE = 'styles';
+  const FALLBACK = 'dbInChromeStorage';
+  const dbApi = {
+    async exec(...args) {
+      dbApi.exec = await tryUsingIndexedDB().catch(useChromeStorage);
+      return dbApi.exec(...args);
+    },
   };
+  return dbApi;
 
-  function prepare() {
-    return withPromise(shouldUseIndexedDB).then(
-      ok => {
-        if (ok) {
-          useIndexedDB();
-        } else {
-          useChromeStorage();
-        }
-      },
-      err => {
-        useChromeStorage(err);
-      }
-    );
-  }
-
-  function shouldUseIndexedDB() {
+  async function tryUsingIndexedDB() {
     // we use chrome.storage.local fallback if IndexedDB doesn't save data,
     // which, once detected on the first run, is remembered in chrome.storage.local
     // for reliablility and in localStorage for fast synchronous access
@@ -42,115 +31,81 @@ const db = (() => {
     if (typeof indexedDB === 'undefined') {
       throw new Error('indexedDB is undefined');
     }
-    // test localStorage
-    const fallbackSet = localStorage.dbInChromeStorage;
-    if (fallbackSet === 'true') {
-      return false;
+    switch (await getFallback()) {
+      case true: throw null;
+      case false: break;
+      default: await testDB();
     }
-    if (fallbackSet === 'false') {
-      return true;
-    }
-    // test storage.local
-    return chromeLocal.get('dbInChromeStorage')
-      .then(data => {
-        if (data && data.dbInChromeStorage) {
-          return false;
-        }
-        return testDBSize()
-          .then(ok => ok || testDBMutation());
-      });
+    return useIndexedDB();
   }
 
-  function withPromise(fn) {
-    try {
-      return Promise.resolve(fn());
-    } catch (err) {
-      return Promise.reject(err);
-    }
+  async function getFallback() {
+    return localStorage[FALLBACK] === 'true' ? true :
+      localStorage[FALLBACK] === 'false' ? false :
+        chromeLocal.getValue(FALLBACK);
   }
 
-  function testDBSize() {
-    return dbExecIndexedDB('getAllKeys', IDBKeyRange.lowerBound(1), 1)
-      .then(event => (
-        event.target.result &&
-        event.target.result.length &&
-        event.target.result[0]
-      ));
-  }
-
-  function testDBMutation() {
-    return dbExecIndexedDB('put', {id: -1})
-      .then(() => dbExecIndexedDB('get', -1))
-      .then(event => {
-        if (!event.target.result) {
-          throw new Error('failed to get previously put item');
-        }
-        if (event.target.result.id !== -1) {
-          throw new Error('item id is wrong');
-        }
-        return dbExecIndexedDB('delete', -1);
-      })
-      .then(() => true);
+  async function testDB() {
+    let e = await dbExecIndexedDB('getAllKeys', IDBKeyRange.lowerBound(1), 1);
+    // throws if result is null
+    e = e.target.result[0];
+    const id = `${performance.now()}.${Math.random()}.${Date.now()}`;
+    await dbExecIndexedDB('put', {id});
+    e = await dbExecIndexedDB('get', id);
+    // throws if result or id is null
+    await dbExecIndexedDB('delete', e.target.result.id);
   }
 
   function useChromeStorage(err) {
-    exec = createChromeStorageDB().exec;
-    chromeLocal.set({dbInChromeStorage: true}, ignoreChromeError);
+    chromeLocal.setValue(FALLBACK, true);
     if (err) {
-      chromeLocal.setValue('dbInChromeStorageReason', workerUtil.cloneError(err));
+      chromeLocal.setValue(FALLBACK + 'Reason', workerUtil.cloneError(err));
       console.warn('Failed to access indexedDB. Switched to storage API.', err);
     }
-    localStorage.dbInChromeStorage = 'true';
+    localStorage[FALLBACK] = 'true';
+    return createChromeStorageDB().exec;
   }
 
   function useIndexedDB() {
-    exec = dbExecIndexedDB;
-    chromeLocal.set({dbInChromeStorage: false}, ignoreChromeError);
-    localStorage.dbInChromeStorage = 'false';
+    chromeLocal.setValue(FALLBACK, false);
+    localStorage[FALLBACK] = 'false';
+    return dbExecIndexedDB;
   }
 
-  function dbExecIndexedDB(method, ...args) {
-    return open().then(database => {
-      if (!method) {
-        return database;
-      }
-      if (method === 'putMany') {
-        return putMany(database, ...args);
-      }
-      const mode = method.startsWith('get') ? 'readonly' : 'readwrite';
-      const transaction = database.transaction(['styles'], mode);
-      const store = transaction.objectStore('styles');
-      return storeRequest(store, method, ...args);
+  async function dbExecIndexedDB(method, ...args) {
+    const mode = method.startsWith('get') ? 'readonly' : 'readwrite';
+    const store = (await open()).transaction([STORE], mode).objectStore(STORE);
+    const fn = method === 'putMany' ? putMany : storeRequest;
+    return fn(store, method, ...args);
+  }
+
+  function storeRequest(store, method, ...args) {
+    return new Promise((resolve, reject) => {
+      const request = store[method](...args);
+      request.onsuccess = resolve;
+      request.onerror = reject;
     });
+  }
 
-    function storeRequest(store, method, ...args) {
-      return new Promise((resolve, reject) => {
-        const request = store[method](...args);
-        request.onsuccess = resolve;
-        request.onerror = reject;
+  function putMany(store, _method, items) {
+    return Promise.all(items.map(item => storeRequest(store, 'put', item)));
+  }
+
+  function open() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(DATABASE, 2);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = reject;
+      request.onupgradeneeded = create;
+    });
+  }
+
+  function create(event) {
+    if (event.oldVersion === 0) {
+      event.target.result.createObjectStore(STORE, {
+        keyPath: 'id',
+        autoIncrement: true,
       });
-    }
-
-    function open() {
-      return new Promise((resolve, reject) => {
-        const request = indexedDB.open('stylish', 2);
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = reject;
-        request.onupgradeneeded = event => {
-          if (event.oldVersion === 0) {
-            event.target.result.createObjectStore('styles', {
-              keyPath: 'id',
-              autoIncrement: true,
-            });
-          }
-        };
-      });
-    }
-
-    function putMany(database, items) {
-      const transaction = database.transaction(['styles'], 'readwrite');
-      const store = transaction.objectStore('styles');
-      return Promise.all(items.map(item => storeRequest(store, 'put', item)));
     }
   }
 })();

@@ -98,7 +98,11 @@ document.addEventListener('wheel', event => {
     return;
   }
   if (el.tagName === 'SELECT') {
-    el.selectedIndex = Math.max(0, Math.min(el.length - 1, el.selectedIndex + Math.sign(event.deltaY)));
+    const old = el.selectedIndex;
+    el.selectedIndex = Math.max(0, Math.min(el.length - 1, old + Math.sign(event.deltaY)));
+    if (el.selectedIndex !== old) {
+      el.dispatchEvent(new Event('change', {bubbles: true}));
+    }
     event.preventDefault();
   }
   event.stopImmediatePropagation();

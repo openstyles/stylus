@@ -16,7 +16,6 @@ createAPI({
   },
   metalint: code => {
     loadScript(
-      '/js/polyfill.js',
       '/vendor/usercss-meta/usercss-meta.min.js',
       '/vendor-overwrites/colorpicker/colorconverter.js',
       '/js/meta-parser.js'
