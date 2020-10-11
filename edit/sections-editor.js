@@ -57,6 +57,8 @@ function createSectionsEditor({style, onTitleChanged}) {
         xo.unobserve(target);
       }
     }
+  }, {
+    rootMargin: '100%',
   });
   CodeMirror.defineExtension('refreshOnView', function () {
     if (xo) {
