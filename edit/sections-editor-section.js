@@ -375,7 +375,8 @@ function createSection({
     }
     $('.add-applies-to', el).addEventListener('click', e => {
       e.preventDefault();
-      $('input', insertApplyAfter({type, value: ''}, apply).el).focus();
+      const newApply = insertApplyAfter({type, value: ''}, apply);
+      $('input', newApply.el).focus();
     });
 
     return apply;
