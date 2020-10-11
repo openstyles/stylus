@@ -177,38 +177,14 @@ self.parserlib = (() => {
     'bookmark-level':          'none | <integer>',
     'bookmark-state':          'open | closed',
     'bookmark-target':         'none | <uri> | attr()',
-    'border':                  '<border-shorthand>',
-    'border-block-color':         '<color>{1,2}',
-    'border-block-end':           '<border-shorthand>',
-    'border-block-end-color':     '<color>',
-    'border-block-end-style':     '<border-style>',
-    'border-block-end-width':     '<border-width>',
-    'border-block-start':         '<border-shorthand>',
-    'border-block-start-color':   '<color>',
-    'border-block-start-style':   '<border-style>',
-    'border-block-start-width':   '<border-width>',
-    'border-block-style':         '<border-style>{1,2}',
-    'border-block-width':         '<border-width>{1,2}',
-    'border-bottom':              '<border-shorthand>',
-    'border-bottom-color':        '<color>',
+
     'border-bottom-left-radius':  '<x-one-radius>',
     'border-bottom-right-radius': '<x-one-radius>',
-    'border-bottom-style':        '<border-style>',
-    'border-bottom-width':        '<border-width>',
-    'border-boundary':            'none | parent | display',
-    'border-inline-color':        '<color>{1,2}',
-    'border-inline-end':          '<border-shorthand>',
-    'border-inline-end-color':    '<color>',
-    'border-inline-end-style':    '<border-style>',
-    'border-inline-end-width':    '<border-width>',
-    'border-inline-start':        '<border-shorthand>',
-    'border-inline-start-color':  '<color>',
-    'border-inline-start-style':  '<border-style>',
-    'border-inline-start-width':  '<border-width>',
-    'border-inline-style':        '<border-style>{1,2}',
-    'border-inline-width':        '<border-width>{1,2}',
+    'border-top-left-radius':     '<x-one-radius>',
+    'border-top-right-radius':    '<x-one-radius>',
+
+    'border-boundary':         'none | parent | display',
     'border-collapse':         'collapse | separate',
-    'border-color':            '<color>{1,4}',
     'border-image':            '[ none | <image> ] || <border-image-slice> ' +
                                '[ / <border-image-width> | / <border-image-width>? / <border-image-outset> ]? || ' +
                                '<border-image-repeat>',
@@ -217,24 +193,8 @@ self.parserlib = (() => {
     'border-image-slice':      '<border-image-slice>',
     'border-image-source':     '<image> | none',
     'border-image-width':      '<border-image-width>',
-    'border-left':             '<border-shorthand>',
-    'border-left-color':       '<color>',
-    'border-left-style':       '<border-style>',
-    'border-left-width':       '<border-width>',
     'border-radius':           '<border-radius>',
-    'border-right':            '<border-shorthand>',
-    'border-right-color':      '<color>',
-    'border-right-style':      '<border-style>',
-    'border-right-width':      '<border-width>',
     'border-spacing':          '<length>{1,2}',
-    'border-style':            '<border-style>{1,4}',
-    'border-top':              '<border-shorthand>',
-    'border-top-color':        '<color>',
-    'border-top-left-radius':  '<x-one-radius>',
-    'border-top-right-radius': '<x-one-radius>',
-    'border-top-style':        '<border-style>',
-    'border-top-width':        '<border-width>',
-    'border-width':            '<border-width>{1,4}',
     'bottom':                  '<width>',
     'box-decoration-break':    'slice | clone',
     'box-shadow':              '<box-shadow>',
@@ -370,7 +330,7 @@ self.parserlib = (() => {
     'font-variant-ligatures':  '<font-variant-ligatures> | normal | none',
     'font-variant-numeric':    '<font-variant-numeric> | normal',
     'font-variant-position':   'normal | sub | super',
-    'font-variation-settings': 'normal | [ <string> <number>]#',
+    'font-variation-settings': 'normal | [ <string> <number> ]#',
     'font-weight':             '<font-weight>',
     '-ms-flex-align': 'start | end | center | stretch | baseline',
     '-ms-flex-order': '<number>',
@@ -581,6 +541,34 @@ self.parserlib = (() => {
 
     // S
     'scale':             'none | <number>{1,3}',
+
+    'scroll-behavior':             'auto | smooth',
+    'scroll-margin':               '<length>{1,4}',
+    'scroll-margin-bottom':        '<length>',
+    'scroll-margin-left':          '<length>',
+    'scroll-margin-right':         '<length>',
+    'scroll-margin-top':           '<length>',
+    'scroll-margin-block':         '<length>{1,2}',
+    'scroll-margin-block-end':     '<length>',
+    'scroll-margin-block-start':   '<length>',
+    'scroll-margin-inline':        '<length>{1,2}',
+    'scroll-margin-inline-end':    '<length>',
+    'scroll-margin-inline-start':  '<length>',
+    'scroll-padding':              '<auto-length-pct>{1,4}',
+    'scroll-padding-left':         '<auto-length-pct>',
+    'scroll-padding-right':        '<auto-length-pct>',
+    'scroll-padding-top':          '<auto-length-pct>',
+    'scroll-padding-bottom':       '<auto-length-pct>',
+    'scroll-padding-block':        '<auto-length-pct>{1,2}',
+    'scroll-padding-block-end':    '<auto-length-pct>',
+    'scroll-padding-block-start':  '<auto-length-pct>',
+    'scroll-padding-inline':       '<auto-length-pct>{1,2}',
+    'scroll-padding-inline-end':   '<auto-length-pct>',
+    'scroll-padding-inline-start': '<auto-length-pct>',
+    'scroll-snap-align':           '[ none | start | end | center ]{1,2}',
+    'scroll-snap-stop':            'normal | always',
+    'scroll-snap-type':            'none | [ x | y | block | inline | both ] [ mandatory | proximity ]?',
+
     'scrollbar-color':   'auto | dark | light | <color>{2}',
     'scrollbar-width':   'auto | thin | none',
     'shape-inside':      'auto | outside-shape | [ <basic-shape> || shape-box ] | <image> | display',
@@ -692,6 +680,25 @@ self.parserlib = (() => {
     '-webkit-text-stroke-width': '<border-width>',
   };
 
+  for (const [k, reps] of Object.entries({
+    'border': '{1,4}',
+    'border-bottom': '',
+    'border-left': '',
+    'border-right': '',
+    'border-top': '',
+    'border-block': '{1,2}',
+    'border-block-end': '',
+    'border-block-start': '',
+    'border-inline': '{1,2}',
+    'border-inline-end': '',
+    'border-inline-start': '',
+  })) {
+    Properties[k] = '<border-shorthand>';
+    Properties[`${k}-color`] = '<color>' + reps;
+    Properties[`${k}-style`] = '<border-style>' + reps;
+    Properties[`${k}-width`] = '<border-width>' + reps;
+  }
+
   //endregion
   //region ValidationTypes - definitions
 
@@ -712,6 +719,8 @@ self.parserlib = (() => {
       '<attr-fallback>': part => !/\battr\(/i.test(part.text),
 
       '<attachment>': 'scroll | fixed | local',
+
+      '<auto-length-pct>': 'auto | <length> | <percentage>',
 
       '<basic-shape>': 'inset() | circle() | ellipse() | polygon()',
 
