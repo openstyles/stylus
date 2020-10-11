@@ -88,6 +88,9 @@ label {
   display: flex;
   align-items: center;
 }
+#reset-name {
+  margin: 0 .25em 0 .5em;
+}
 #url {
   margin-left: 0.25rem;
 }
@@ -811,11 +814,6 @@ body.linter-disabled .hidden-unless-compact {
 
 #options-wrapper .options-column:nth-child(2) {
   margin-top: .75rem;
-}
-
-.usercss #name {
-  background-color: #eee;
-  color: #888;
 }
 
 .single-editor {

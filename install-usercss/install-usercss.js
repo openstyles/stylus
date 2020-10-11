@@ -243,7 +243,7 @@
       (!dup ?
         Promise.resolve(true) :
         messageBox.confirm(t('styleInstallOverwrite', [
-          data.name,
+          data.name + (dup.customName ? ` (${dup.customName})` : ''),
           dupData.version,
           data.version,
         ]))

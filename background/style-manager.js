@@ -61,6 +61,8 @@ const styleManager = (() => {
     username: ''
   };
 
+  const DELETE_IF_NULL = ['id', 'customName'];
+
   handleLivePreviewConnections();
 
   return Object.assign({
@@ -387,8 +389,10 @@ const styleManager = (() => {
     if (!style.name) {
       throw new Error('style name is empty');
     }
-    if (style.id == null) {
-      delete style.id;
+    for (const key of DELETE_IF_NULL) {
+      if (style[key] == null) {
+        delete style[key];
+      }
     }
     if (!style._id) {
       style._id = uuidv4();
@@ -568,6 +572,16 @@ const styleManager = (() => {
           style[key] = ADD_MISSING_PROPS[key](style);
           touched = true;
         }
+      }
+      // upgrade the old way of customizing local names
+      const {originalName} = style;
+      if (originalName) {
+        touched = true;
+        if (originalName !== style.name) {
+          style.customName = style.name;
+          style.name = originalName;
+        }
+        delete style.originalName;
       }
       return touched;
     }

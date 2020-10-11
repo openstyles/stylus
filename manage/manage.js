@@ -137,10 +137,14 @@ function initGlobalEvents() {
 
 function showStyles(styles = [], matchUrlIds) {
   const sorted = sorter.sort({
-    styles: styles.map(style => ({
-      style,
-      name: (style.name || '').toLocaleLowerCase() + '\n' + style.name,
-    })),
+    styles: styles.map(style => {
+      const name = style.customName || style.name || '';
+      return {
+        style,
+        // sort case-insensitively the whole list then sort dupes like `Foo` and `foo` case-sensitively
+        name: name.toLocaleLowerCase() + '\n' + name,
+      };
+    }),
   });
   let index = 0;
   let firstRun = true;
@@ -187,7 +191,7 @@ function showStyles(styles = [], matchUrlIds) {
 }
 
 
-function createStyleElement({style, name}) {
+function createStyleElement({style, name: nameLC}) {
   // query the sub-elements just once, then reuse the references
   if ((createStyleElement.parts || {}).newUI !== newUI.enabled) {
     const entry = template[`style${newUI.enabled ? 'Compact' : ''}`];
@@ -216,8 +220,9 @@ function createStyleElement({style, name}) {
   }
   const parts = createStyleElement.parts;
   const configurable = style.usercssData && style.usercssData.vars && Object.keys(style.usercssData.vars).length > 0;
+  const name = style.customName || style.name;
   parts.checker.checked = style.enabled;
-  parts.nameLink.textContent = tWordBreak(style.name);
+  parts.nameLink.textContent = tWordBreak(name);
   parts.nameLink.href = parts.editLink.href = parts.editHrefBase + style.id;
   parts.homepage.href = parts.homepage.title = style.url || '';
   if (!newUI.enabled) {
@@ -234,7 +239,7 @@ function createStyleElement({style, name}) {
   const entry = parts.entry.cloneNode(true);
   entry.id = ENTRY_ID_PREFIX_RAW + style.id;
   entry.styleId = style.id;
-  entry.styleNameLowerCase = name || style.name.toLocaleLowerCase();
+  entry.styleNameLowerCase = nameLC || name.toLocaleLowerCase() + '\n' + name;
   entry.styleMeta = style;
   entry.className = parts.entryClassBase + ' ' +
     (style.enabled ? 'enabled' : 'disabled') +
@@ -437,7 +442,7 @@ Object.assign(handleEvent, {
     animateElement(entry);
     messageBox({
       title: t('deleteStyleConfirm'),
-      contents: entry.styleMeta.name,
+      contents: entry.styleMeta.customName || entry.styleMeta.name,
       className: 'danger center',
       buttons: [t('confirmDelete'), t('confirmCancel')],
     })

@@ -284,7 +284,13 @@
       <h1 id="heading">&nbsp;</h1> <!-- nbsp allocates the actual height which prevents page shift -->
       <section id="basic-info">
         <div id="basic-info-name">
-          <input id="name" class="style-contributor" spellcheck="false" required>
+          <input id="name" class="style-contributor" spellcheck="false">
+          <a id="reset-name" href="#" i18n-title="customNameResetHint" tabindex="0" hidden>
+            <svg class="svg-icon" viewBox="0 0 20 20">
+              <polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5
+                               5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10 "/>
+            </svg>
+          </a>
           <a id="url" target="_blank"><svg class="svg-icon"><use xlink:href="#svg-icon-external-link"/></svg></a>
         </div>
         <div id="basic-info-enabled">

@@ -23,7 +23,7 @@ function configDialog(style) {
   vars.forEach(renderValueState);
 
   return messageBox({
-    title: `${style.name} v${data.version}`,
+    title: `${style.customName || style.name} v${data.version}`,
     className: 'config-dialog' + (isPopup ? ' stylus-popup' : ''),
     contents: [
       $create('.config-heading', data.supportURL &&

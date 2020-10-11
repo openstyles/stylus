@@ -1,7 +1,7 @@
 /* global CodeMirror onDOMready prefs setupLivePrefs $ $$ $create t tHTML
   createSourceEditor sessionStorageHash getOwnTab FIREFOX API tryCatch
   closeCurrentTab messageBox debounce workerUtil
-  initBeautifyButton ignoreChromeError
+  initBeautifyButton ignoreChromeError dirtyReporter
   moveFocus msg createSectionsEditor rerouteHotkeys CODEMIRROR_THEMES */
 /* exported showCodeMirrorPopup editorWorker toggleContextMenuDelete */
 'use strict';
@@ -30,46 +30,72 @@ msg.onExtension(onRuntimeMessage);
 
 preinit();
 
-(() => {
-  onDOMready().then(() => {
-    prefs.subscribe(['editor.keyMap'], showHotkeyInTooltip);
-    addEventListener('showHotkeyInTooltip', showHotkeyInTooltip);
-    showHotkeyInTooltip();
+(async function init() {
+  const [style] = await Promise.all([
+    initStyleData(),
+    onDOMready(),
+    prefs.initializing,
+  ]);
+  const usercss = isUsercss(style);
+  const dirty = dirtyReporter();
+  let wasDirty = false;
+  let nameTarget;
 
-    buildThemeElement();
-    buildKeymapElement();
+  prefs.subscribe(['editor.keyMap'], showHotkeyInTooltip);
+  addEventListener('showHotkeyInTooltip', showHotkeyInTooltip);
+  showHotkeyInTooltip();
 
-    setupLivePrefs();
+  buildThemeElement();
+  buildKeymapElement();
+  setupLivePrefs();
+  initNameArea(style, usercss);
+  initBeautifyButton($('#beautify'), () => editor.getEditors());
+  initResizeListener();
+  detectLayout();
+  updateTitle();
+
+  $('#heading').textContent = t(style.id ? 'editStyleHeading' : 'addStyleTitle');
+  $('#preview-label').classList.toggle('hidden', !style.id);
+
+  editor = (usercss ? createSourceEditor : createSectionsEditor)({
+    style,
+    dirty,
+    updateName,
+    toggleStyle,
   });
+  dirty.onChange(updateDirty);
+  await editor.ready;
 
-  initEditor();
+  // enabling after init to prevent flash of validation failure on an empty name
+  $('#name').required = !usercss;
+  $('#save-button').onclick = editor.save;
 
-  function getCodeMirrorThemes() {
-    if (!chrome.runtime.getPackageDirectoryEntry) {
-      const themes = [
-        chrome.i18n.getMessage('defaultTheme'),
-        ...CODEMIRROR_THEMES
-      ];
-      localStorage.codeMirrorThemes = themes.join(' ');
-      return Promise.resolve(themes);
-    }
-    return new Promise(resolve => {
-      chrome.runtime.getPackageDirectoryEntry(rootDir => {
-        rootDir.getDirectory('vendor/codemirror/theme', {create: false}, themeDir => {
-          themeDir.createReader().readEntries(entries => {
-            const themes = [
-              chrome.i18n.getMessage('defaultTheme')
-            ].concat(
-              entries.filter(entry => entry.isFile)
-                .sort((a, b) => (a.name < b.name ? -1 : 1))
-                .map(entry => entry.name.replace(/\.css$/, ''))
-            );
-            localStorage.codeMirrorThemes = themes.join(' ');
-            resolve(themes);
-          });
-        });
-      });
+  function initNameArea(style, usercss) {
+    const nameEl = $('#name');
+    const resetEl = $('#reset-name');
+    const isCustomName = style.updateUrl || usercss;
+    nameTarget = isCustomName ? 'customName' : 'name';
+    nameEl.placeholder = t(usercss ? 'usercssEditorNamePlaceholder' : 'styleMissingName');
+    nameEl.title = isCustomName ? t('customNameHint') : '';
+    nameEl.addEventListener('input', () => {
+      updateName();
+      resetEl.hidden = false;
     });
+    resetEl.hidden = !style.customName;
+    resetEl.onclick = () => {
+      const style = editor.style;
+      nameEl.focus();
+      nameEl.select();
+      // trying to make it undoable via Ctrl-Z
+      if (!document.execCommand('insertText', false, style.name)) {
+        nameEl.value = style.name;
+        updateName();
+      }
+      style.customName = null; // to delete it from db
+      resetEl.hidden = true;
+    };
+    const enabledEl = $('#enabled');
+    enabledEl.onchange = () => updateEnabledness(enabledEl.checked);
   }
 
   function findKeyForCommand(command, map) {
@@ -88,27 +114,8 @@ preinit();
   }
 
   function buildThemeElement() {
-    const themeElement = $('#editor.theme');
-    const themeList = localStorage.codeMirrorThemes;
-
-    const optionsFromArray = options => {
-      const fragment = document.createDocumentFragment();
-      options.forEach(opt => fragment.appendChild($create('option', opt)));
-      themeElement.appendChild(fragment);
-    };
-
-    if (themeList) {
-      optionsFromArray(themeList.split(/\s+/));
-    } else {
-      // Chrome is starting up and shows our edit.html, but the background page isn't loaded yet
-      const theme = prefs.get('editor.theme');
-      optionsFromArray([theme === 'default' ? t('defaultTheme') : theme]);
-      getCodeMirrorThemes().then(() => {
-        const themes = (localStorage.codeMirrorThemes || '').split(/\s+/);
-        optionsFromArray(themes);
-        themeElement.selectedIndex = Math.max(0, themes.indexOf(theme));
-      });
-    }
+    CODEMIRROR_THEMES.unshift(chrome.i18n.getMessage('defaultTheme'));
+    $('#editor.theme').append(...CODEMIRROR_THEMES.map(s => $create('option', s)));
   }
 
   function buildKeymapElement() {
@@ -159,58 +166,55 @@ preinit();
     }
   }
 
-  function initEditor() {
-    return Promise.all([
-      initStyleData(),
-      onDOMready(),
-      prefs.initializing,
-    ])
-      .then(([style]) => {
-        const usercss = isUsercss(style);
-        $('#heading').textContent = t(style.id ? 'editStyleHeading' : 'addStyleTitle');
-        $('#name').placeholder = t(usercss ? 'usercssEditorNamePlaceholder' : 'styleMissingName');
-        $('#name').title = usercss ? t('usercssReplaceTemplateName') : '';
-        $('#preview-label').classList.toggle('hidden', !style.id);
-        initBeautifyButton($('#beautify'), () => editor.getEditors());
-        const {onBoundsChanged} = chrome.windows || {};
-        if (onBoundsChanged) {
-          // * movement is reported even if the window wasn't resized
-          // * fired just once when done so debounce is not needed
-          onBoundsChanged.addListener(wnd => {
-            // getting the current window id as it may change if the user attached/detached the tab
-            chrome.windows.getCurrent(ownWnd => {
-              if (wnd.id === ownWnd.id) rememberWindowSize();
-            });
-          });
-        }
-        window.addEventListener('resize', () => {
-          if (!onBoundsChanged) debounce(rememberWindowSize, 100);
-          detectLayout();
+  function initResizeListener() {
+    const {onBoundsChanged} = chrome.windows || {};
+    if (onBoundsChanged) {
+      // * movement is reported even if the window wasn't resized
+      // * fired just once when done so debounce is not needed
+      onBoundsChanged.addListener(wnd => {
+        // getting the current window id as it may change if the user attached/detached the tab
+        chrome.windows.getCurrent(ownWnd => {
+          if (wnd.id === ownWnd.id) rememberWindowSize();
         });
-        detectLayout();
-        editor = (usercss ? createSourceEditor : createSectionsEditor)({
-          style,
-          onTitleChanged: updateTitle
-        });
-        editor.dirty.onChange(updateDirty);
-        return Promise.resolve(editor.ready && editor.ready())
-          .then(updateDirty);
       });
+    }
+    window.addEventListener('resize', () => {
+      if (!onBoundsChanged) debounce(rememberWindowSize, 100);
+      detectLayout();
+    });
   }
 
-  function updateTitle() {
-    if (editor) {
-      const styleName = editor.getStyle().name;
-      const isDirty = editor.dirty.isDirty();
-      document.title = (isDirty ? '* ' : '') + styleName;
-    }
+  function toggleStyle() {
+    $('#enabled').checked = !style.enabled;
+    updateEnabledness(!style.enabled);
   }
 
   function updateDirty() {
-    const isDirty = editor.dirty.isDirty();
-    document.body.classList.toggle('dirty', isDirty);
-    $('#save-button').disabled = !isDirty;
+    const isDirty = dirty.isDirty();
+    if (wasDirty !== isDirty) {
+      wasDirty = isDirty;
+      document.body.classList.toggle('dirty', isDirty);
+      $('#save-button').disabled = !isDirty;
+    }
     updateTitle();
+  }
+
+  function updateEnabledness(enabled) {
+    dirty.modify('enabled', style.enabled, enabled);
+    style.enabled = enabled;
+    editor.updateLivePreview();
+  }
+
+  function updateName() {
+    if (!editor) return;
+    const {value} = $('#name');
+    dirty.modify('name', style[nameTarget] || style.name, value);
+    style[nameTarget] = value;
+    updateTitle({});
+  }
+
+  function updateTitle() {
+    document.title = `${dirty.isDirty() ? '* ' : ''}${style.customName || style.name}`;
   }
 })();
 
@@ -295,7 +299,7 @@ function onRuntimeMessage(request) {
   switch (request.method) {
     case 'styleUpdated':
       if (
-        editor.getStyleId() === request.style.id &&
+        editor.style.id === request.style.id &&
         !['editPreview', 'editPreviewEnd', 'editSave', 'config']
           .includes(request.reason)
       ) {
@@ -309,7 +313,7 @@ function onRuntimeMessage(request) {
       }
       break;
     case 'styleDeleted':
-      if (editor.getStyleId() === request.style.id) {
+      if (editor.style.id === request.style.id) {
         document.removeEventListener('visibilitychange', beforeUnload);
         document.removeEventListener('beforeunload', beforeUnload);
         closeCurrentTab();
