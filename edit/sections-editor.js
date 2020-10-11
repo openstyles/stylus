@@ -57,16 +57,11 @@ function createSectionsEditor({style, onTitleChanged}) {
         xo.unobserve(target);
       }
     }
-  }, {
-    rootMargin: '100%',
-  });
-  CodeMirror.defineExtension('refreshOnView', function () {
-    if (xo) {
-      xo.observe(this.display.wrapper);
-    } else {
-      this.refresh();
-    }
-  });
+  }, {rootMargin: '100%'});
+  const refreshOnView = (cm, force) =>
+    force || !xo ?
+      cm.refresh() :
+      xo.observe(cm.display.wrapper);
 
   let sectionOrder = '';
   const initializing = initSections(style.sections.slice());
@@ -563,7 +558,7 @@ function createSectionsEditor({style, onTitleChanged}) {
     const {cm} = section;
     sections.splice(base ? sections.indexOf(base) + 1 : sections.length, 0, section);
     container.insertBefore(section.el, base ? base.el.nextSibling : null);
-    cm[forceRefresh ? 'refresh' : 'refreshOnView']();
+    refreshOnView(cm, forceRefresh);
     if (!base || init.code) {
       // Fit a) during startup or b) when the clone button is clicked on a section with some code
       fitToContent(section);
