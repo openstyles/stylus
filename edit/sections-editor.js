@@ -64,6 +64,7 @@ function createSectionsEditor({style, onTitleChanged}) {
       xo.observe(cm.display.wrapper);
 
   let sectionOrder = '';
+  let headerOffset; // in compact mode the header is at the top so it reduces the available height
   const initializing = initSections(style.sections.slice());
 
   const livePreview = createLivePreview();
@@ -90,22 +91,26 @@ function createSectionsEditor({style, onTitleChanged}) {
   };
 
   function fitToContent(section) {
-    if (section.cm.display.renderedView) {
+    const {cm, cm: {display: {wrapper, sizer}}} = section;
+    if (cm.display.renderedView) {
       resize();
     } else {
-      section.cm.on('update', resize);
+      cm.on('update', resize);
     }
 
     function resize() {
-      let contentHeight = section.cm.display.sizer.offsetHeight;
-      if (contentHeight < section.cm.defaultTextHeight()) {
+      let contentHeight = sizer.offsetHeight;
+      if (contentHeight < cm.defaultTextHeight()) {
         return;
       }
+      if (headerOffset == null) {
+        headerOffset = wrapper.getBoundingClientRect().top;
+      }
       contentHeight += 9; // border & resize grip
-      section.cm.off('update', resize);
-      const cmHeight = section.cm.display.wrapper.offsetHeight;
-      const maxHeight = window.innerHeight - (section.el.offsetHeight - cmHeight);
-      section.cm.setSize(null, Math.min(contentHeight, maxHeight));
+      cm.off('update', resize);
+      const cmHeight = wrapper.offsetHeight;
+      const maxHeight = (window.innerHeight - headerOffset) - (section.el.offsetHeight - cmHeight);
+      cm.setSize(null, Math.min(contentHeight, maxHeight));
     }
   }
 
