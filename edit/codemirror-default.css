@@ -17,6 +17,9 @@
 .CodeMirror-focused {
   outline: #7dadd9 auto 1px; /* not using the ring-color hack as it became ugly in new Chrome */
 }
+#sections[data-section-count="1"] .CodeMirror {
+  outline: none !important;
+}
 .CodeMirror-bookmark {
   background: linear-gradient(to right, currentColor, transparent);
   position: absolute;
