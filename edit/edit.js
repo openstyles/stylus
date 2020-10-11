@@ -541,7 +541,7 @@ function detectLayout() {
           body.classList.add('fixed-header');
         }
       }, 250);
-      window.addEventListener('scroll', fixedHeader);
+      window.addEventListener('scroll', fixedHeader, {passive: true});
     }
   } else {
     body.classList.remove('compact-layout');

@@ -29,6 +29,9 @@ function createSectionsEditor({style, onTitleChanged}) {
     updateLivePreview();
   });
 
+  updateHeader();
+  rerouteHotkeys(true);
+
   $('#to-mozilla').addEventListener('click', showMozillaFormat);
   $('#to-mozilla-help').addEventListener('click', showToMozillaHelp);
   $('#from-mozilla').addEventListener('click', () => showMozillaFormatImport());
@@ -47,17 +50,22 @@ function createSectionsEditor({style, onTitleChanged}) {
       .forEach(e => e.addEventListener('mousedown', toggleContextMenuDelete));
   }
 
-  let sectionOrder = '';
-  const initializing = new Promise(resolve => initSection({
-    sections: style.sections.slice(),
-    done:() => {
-      dirty.clear();
-      rerouteHotkeys(true);
-      resolve();
-      updateHeader();
-      sections.forEach(fitToContent);
+  const xo = window.IntersectionObserver && new IntersectionObserver(entries => {
+    for (const {isIntersecting, target} of entries) {
+      if (isIntersecting) {
+        target.CodeMirror.refresh();
+        xo.unobserve(target);
+      }
     }
-  }));
+  }, {rootMargin: '100%'});
+  const refreshOnView = (cm, force) =>
+    force || !xo ?
+      cm.refresh() :
+      xo.observe(cm.display.wrapper);
+
+  let sectionOrder = '';
+  let headerOffset; // in compact mode the header is at the top so it reduces the available height
+  const initializing = initSections(style.sections.slice());
 
   const livePreview = createLivePreview();
   livePreview.show(Boolean(style.id));
@@ -83,28 +91,26 @@ function createSectionsEditor({style, onTitleChanged}) {
   };
 
   function fitToContent(section) {
-    if (section.cm.isRefreshed) {
+    const {cm, cm: {display: {wrapper, sizer}}} = section;
+    if (cm.display.renderedView) {
       resize();
     } else {
-      section.cm.on('update', resize);
+      cm.on('update', resize);
     }
 
     function resize() {
-      let contentHeight = section.el.querySelector('.CodeMirror-sizer').offsetHeight;
-      if (contentHeight < section.cm.defaultTextHeight()) {
+      let contentHeight = sizer.offsetHeight;
+      if (contentHeight < cm.defaultTextHeight()) {
         return;
       }
-      contentHeight += 9; // border & resize grip
-      section.cm.off('update', resize);
-      const cmHeight = section.cm.getWrapperElement().offsetHeight;
-      const maxHeight = cmHeight + window.innerHeight - section.el.offsetHeight;
-      section.cm.setSize(null, Math.min(contentHeight, maxHeight));
-      if (sections.every(s => s.cm.isRefreshed)) {
-        fitToAvailableSpace();
+      if (headerOffset == null) {
+        headerOffset = wrapper.getBoundingClientRect().top;
       }
-      setTimeout(() => {
-        container.classList.add('section-editor-ready');
-      }, 50);
+      contentHeight += 9; // border & resize grip
+      cm.off('update', resize);
+      const cmHeight = wrapper.offsetHeight;
+      const maxHeight = (window.innerHeight - headerOffset) - (section.el.offsetHeight - cmHeight);
+      cm.setSize(null, Math.min(contentHeight, maxHeight));
     }
   }
 
@@ -367,7 +373,7 @@ function createSectionsEditor({style, onTitleChanged}) {
           if (replaceOldStyle) {
             return replaceSections(sections);
           }
-          return new Promise(resolve => initSection({sections, done: resolve, focusOn: false}));
+          return initSections(sections, {focusOn: false});
         })
         .then(() => {
           $('.dismiss').dispatchEvent(new Event('click'));
@@ -472,36 +478,33 @@ function createSectionsEditor({style, onTitleChanged}) {
     livePreview.update(getModel());
   }
 
-  function initSection({
-    sections: originalSections,
+  function initSections(originalSections, {
     total = originalSections.length,
     focusOn = 0,
-    done
-  }) {
-    container.classList.add('hidden');
-    chunk();
-
-    function chunk() {
-      if (!originalSections.length) {
-        setGlobalProgress();
-        if (focusOn !== false) {
-          setTimeout(() => sections[focusOn].cm.focus());
-        }
-        container.classList.remove('hidden');
-        for (const section of sections) {
-          section.cm.refreshOnView();
-        }
-        if (done) {
-          done();
-        }
-        return;
-      }
+  } = {}) {
+    let done;
+    return new Promise(resolve => {
+      done = resolve;
+      chunk(true);
+    });
+    function chunk(forceRefresh) {
       const t0 = performance.now();
       while (originalSections.length && performance.now() - t0 < 100) {
-        insertSectionAfter(originalSections.shift());
+        insertSectionAfter(originalSections.shift(), undefined, forceRefresh);
+        dirty.clear();
+        if (focusOn !== false && sections[focusOn]) {
+          sections[focusOn].cm.focus();
+          focusOn = false;
+        }
       }
       setGlobalProgress(total - originalSections.length, total);
-      setTimeout(chunk);
+      if (!originalSections.length) {
+        setGlobalProgress();
+        fitToAvailableSpace();
+        done();
+      } else {
+        setTimeout(chunk);
+      }
     }
   }
 
@@ -540,7 +543,7 @@ function createSectionsEditor({style, onTitleChanged}) {
     updateLivePreview();
   }
 
-  function insertSectionAfter(init, base) {
+  function insertSectionAfter(init, base, forceRefresh) {
     if (!init) {
       init = {code: '', urlPrefixes: ['http://example.com']};
     }
@@ -557,15 +560,18 @@ function createSectionsEditor({style, onTitleChanged}) {
       prevEditor,
       nextEditor
     });
-    if (base) {
-      const index = sections.indexOf(base);
-      sections.splice(index + 1, 0, section);
-      container.insertBefore(section.el, base.el.nextSibling);
-    } else {
-      sections.push(section);
-      container.appendChild(section.el);
+    const {cm} = section;
+    sections.splice(base ? sections.indexOf(base) + 1 : sections.length, 0, section);
+    container.insertBefore(section.el, base ? base.el.nextSibling : null);
+    refreshOnView(cm, forceRefresh);
+    if (!base || init.code) {
+      // Fit a) during startup or b) when the clone button is clicked on a section with some code
+      fitToContent(section);
     }
-    section.render();
+    if (base) {
+      cm.focus();
+      setTimeout(scrollToEditor, 0, cm);
+    }
     updateSectionOrder();
     section.onChange(updateLivePreview);
     updateLivePreview();
@@ -599,7 +605,7 @@ function createSectionsEditor({style, onTitleChanged}) {
     }
     sections.length = 0;
     container.textContent = '';
-    return new Promise(resolve => initSection({sections: originalSections, done: resolve}));
+    return initSections(originalSections);
   }
 
   function replaceStyle(newStyle, codeIsUpdated) {
