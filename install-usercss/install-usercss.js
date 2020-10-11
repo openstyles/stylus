@@ -398,9 +398,10 @@
         }
       });
       port.onDisconnect.addListener(() => {
-        browser.tabs.get(tabId)
-          .then(tab => tab.url === initialUrl && location.reload())
-          .catch(closeCurrentTab);
+        chrome.tabs.get(tabId, tab =>
+          !chrome.runtime.lastError && tab.url === initialUrl
+            ? location.reload()
+            : closeCurrentTab());
       });
       return (opts = {}) => new Promise((resolve, reject) => {
         const id = performance.now();

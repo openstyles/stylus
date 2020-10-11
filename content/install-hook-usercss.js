@@ -15,6 +15,8 @@ if (typeof self.oldCode !== 'string') {
           if (msg.code != null) self.oldCode = msg.code;
         });
     });
+    // FF keeps content scripts connected on navigation https://github.com/openstyles/stylus/issues/864
+    addEventListener('pagehide', () => port.disconnect(), {once: true});
   });
 }
 
