@@ -288,9 +288,7 @@ li {
 
 #header:not(.meta-init) > *:not(.lds-spinner),
 #header.meta-init > .lds-spinner {
-  -webkit-user-select: none;
   -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
   pointer-events: none;
   opacity: 0;
@@ -299,9 +297,7 @@ li {
 #header.meta-init > * {
   opacity: 1;
   transition: opacity .5s;
-  -webkit-user-select: auto;
   -moz-user-select: auto;
-  -ms-user-select: auto;
   user-select: auto;
 }
 

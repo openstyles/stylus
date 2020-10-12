@@ -3,9 +3,8 @@
 .onoffswitch {
   position: relative;
   margin: 1ex 0;
-  -webkit-user-select: none;
   -moz-user-select: none;
-  -ms-user-select: none;
+  user-select: none;
 }
 
 .onoffswitch input {

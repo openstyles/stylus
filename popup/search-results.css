@@ -271,9 +271,7 @@ body.search-results-shown {
 
 /* spinner: https://github.com/loadingio/css-spinner */
 .lds-spinner {
-  -webkit-user-select: none;
   -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
   pointer-events: none;
   position: absolute;

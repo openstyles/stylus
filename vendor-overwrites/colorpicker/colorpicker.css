@@ -86,10 +86,7 @@
   border: 1px solid var(--main-border-color);
   background-color: var(--main-background-color);
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.12);
-  -webkit-user-select: none;
   -moz-user-select: none;
-  -ms-user-select: none;
-  -o-user-select: none;
   user-select: none;
 }
 
@@ -295,10 +292,7 @@
   font-size: 11px;
   font-weight: bold;
   box-sizing: border-box;
-  -webkit-user-select: text;
   -moz-user-select: text;
-  -ms-user-select: text;
-  -o-user-select: text;
   user-select: text;
   border: 1px solid var(--input-border-color);
   background-color: var(--input-background-color);
