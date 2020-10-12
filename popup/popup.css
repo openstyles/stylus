@@ -342,11 +342,7 @@ a.configure[target="_blank"] .svg-icon.config {
   text-overflow: ellipsis;
 }
 #confirm button[data-cmd="ok"]:not([data-focused-via-click]):focus {
-  outline: red auto 1px;
-}
-/* FF ignores color with 'auto' */
-.firefox #confirm button[data-cmd="ok"]:not([data-focused-via-click]):focus {
-  outline: red solid 1px;
+  box-shadow: 0 0 0 1px red; /* Using box-shadow instead of the ugly outline in new Chrome */
 }
 .menu-items-wrapper {
   width: 80%;
