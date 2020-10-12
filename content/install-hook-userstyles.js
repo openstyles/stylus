@@ -1,7 +1,11 @@
 /* global cloneInto msg API */
 'use strict';
 
-(() => {
+// eslint-disable-next-line no-unused-expressions
+/^\/styles\/(\d+)(\/([^/]*))?([?#].*)?$/.test(location.pathname) && (() => {
+  const styleId = RegExp.$1;
+  const pageEventId = `${performance.now()}${Math.random()}`;
+
   window.dispatchEvent(new CustomEvent(chrome.runtime.id + '-install'));
   window.addEventListener(chrome.runtime.id + '-install', orphanCheck, true);
 
@@ -17,35 +21,18 @@
     }, '*');
   });
 
-  let gotBody = false;
   let currentMd5;
-  new MutationObserver(observeDOM).observe(document.documentElement, {
-    childList: true,
-    subtree: true,
-  });
-  observeDOM();
+  const md5Url = getMeta('stylish-md5-url') || `https://update.userstyles.org/${styleId}.md5`;
+  Promise.all([
+    API.findStyle({md5Url}),
+    getResource(md5Url),
+    onDOMready(),
+  ]).then(checkUpdatability);
 
-  function observeDOM() {
-    if (!gotBody) {
-      if (!document.body) return;
-      gotBody = true;
-      // TODO: remove the following statement when USO pagination title is fixed
-      document.title = document.title.replace(/^(\d+)&\w+=/, '#$1: ');
-      const md5Url = getMeta('stylish-md5-url') || location.href;
-      Promise.all([
-        API.findStyle({md5Url}),
-        getResource(md5Url)
-      ])
-      .then(checkUpdatability);
-    }
-    if (document.getElementById('install_button')) {
-      onDOMready().then(() => {
-        requestAnimationFrame(() => {
-          sendEvent(sendEvent.lastEvent);
-        });
-      });
-    }
-  }
+  document.documentElement.appendChild(
+    Object.assign(document.createElement('script'), {
+      textContent: `(${inPageContext})('${pageEventId}')`,
+    }));
 
   function onMessage(msg) {
     switch (msg.method) {
@@ -72,7 +59,7 @@
 
   function checkUpdatability([installedStyle, md5]) {
     // TODO: remove the following statement when USO is fixed
-    document.dispatchEvent(new CustomEvent('stylusFixBuggyUSOsettings', {
+    document.dispatchEvent(new CustomEvent(pageEventId, {
       detail: installedStyle && installedStyle.updateUrl,
     }));
     currentMd5 = md5;
@@ -140,7 +127,6 @@
       document.dispatchEvent(new CustomEvent(type, detail));
     });
   }
-
 
   function onClick(event) {
     if (onClick.processing || !orphanCheck()) {
@@ -227,12 +213,10 @@
     }
   }
 
-
   function getMeta(name) {
     const e = document.querySelector(`link[rel="${name}"]`);
     return e ? e.getAttribute('href') : null;
   }
-
 
   function getResource(url, options) {
     if (url.startsWith('#')) {
@@ -280,7 +264,6 @@
       .catch(() => null);
   }
 
-
   function styleSectionsEqual({sections: a}, {sections: b}) {
     if (!a || !b) {
       return undefined;
@@ -318,13 +301,11 @@
     }
   }
 
-
   function onDOMready() {
     return document.readyState !== 'loading'
       ? Promise.resolve()
       : new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve, {once: true}));
   }
-
 
   function openSettings(countdown = 10e3) {
     const button = document.querySelector('.customize_button');
@@ -343,12 +324,12 @@
     }
   }
 
-
   function orphanCheck() {
-    // TODO: switch to install-hook-usercss.js impl, and remove explicit orphanCheck() calls
-    if (chrome.i18n && chrome.i18n.getUILanguage()) {
-      return true;
-    }
+    try {
+      if (chrome.i18n.getUILanguage()) {
+        return true;
+      }
+    } catch (e) {}
     // In Chrome content script is orphaned on an extension update/reload
     // so we need to detach event listeners
     window.removeEventListener(chrome.runtime.id + '-install', orphanCheck, true);
@@ -360,129 +341,56 @@
   }
 })();
 
-// run in page context
-document.documentElement.appendChild(document.createElement('script')).text = '(' + (
-  () => {
-    document.currentScript.remove();
-
-    // spoof Stylish extension presence in Chrome
-    if (window.chrome && chrome.app) {
-      const realImage = window.Image;
-      window.Image = function Image(...args) {
-        return new Proxy(new realImage(...args), {
-          get(obj, key) {
-            return obj[key];
-          },
-          set(obj, key, value) {
-            if (key === 'src' && /^chrome-extension:/i.test(value)) {
-              setTimeout(() => typeof obj.onload === 'function' && obj.onload());
-            } else {
-              obj[key] = value;
-            }
-            return true;
-          },
-        });
-      };
-    }
-
-    // USO bug workaround: use the actual style settings in API response
-    let settings;
-    const originalResponseJson = Response.prototype.json;
-    document.addEventListener('stylusFixBuggyUSOsettings', ({detail}) => {
-      settings = /\?/.test(detail) && new URL(detail).searchParams;
-      if (!settings) {
-        Response.prototype.json = originalResponseJson;
+function inPageContext(eventId) {
+  document.currentScript.remove();
+  const origMethods = {
+    json: Response.prototype.json,
+    byId: document.getElementById,
+  };
+  let vars;
+  // USO bug workaround: prevent errors in console after install and busy cursor
+  document.getElementById = id =>
+    origMethods.byId.call(document, id) ||
+    (/^(stylish-code|stylish-installed-style-installed-\w+|post-install-ad|style-install-unknown)$/.test(id)
+      ? Object.assign(document.createElement('p'), {className: 'afterdownload-ad'})
+      : null);
+  // USO bug workaround: use the actual image data in customized settings
+  document.addEventListener(eventId, ({detail}) => {
+    vars = /\?/.test(detail) && new URL(detail).searchParams;
+    if (!vars) Response.prototype.json = origMethods.json;
+  }, {once: true});
+  Response.prototype.json = async function () {
+    const json = await origMethods.json.apply(this, arguments);
+    if (vars && json && Array.isArray(json.style_settings)) {
+      Response.prototype.json = origMethods.json;
+      const images = new Map();
+      for (const ss of json.style_settings) {
+        const value = vars.get('ik-' + ss.install_key);
+        if (value && ss.setting_type === 'image' && ss.style_setting_options) {
+          let isListed;
+          for (const opt of ss.style_setting_options) {
+            isListed |= opt.default = (opt.value === value);
+          }
+          images.set(ss.install_key, {url: value, isListed});
+        }
       }
-    }, {once: true});
-    Response.prototype.json = function (...args) {
-      return originalResponseJson.call(this, ...args).then(json => {
-        if (!settings || typeof ((json || {}).style_settings || {}).every !== 'function') {
-          return json;
-        }
-        Response.prototype.json = originalResponseJson;
-        const images = new Map();
-        for (const jsonSetting of json.style_settings) {
-          let value = settings.get('ik-' + jsonSetting.install_key);
-          if (!value
-          || !jsonSetting.style_setting_options
-          || !jsonSetting.style_setting_options[0]) {
-            continue;
-          }
-          if (value.startsWith('ik-')) {
-            value = value.replace(/^ik-/, '');
-            const defaultItem = jsonSetting.style_setting_options.find(item => item.default);
-            if (!defaultItem || defaultItem.install_key !== value) {
-              if (defaultItem) {
-                defaultItem.default = false;
-              }
-              jsonSetting.style_setting_options.some(item => {
-                if (item.install_key === value) {
-                  item.default = true;
-                  return true;
-                }
-              });
-            }
-          } else if (jsonSetting.setting_type === 'image') {
-            jsonSetting.style_setting_options.some(item => {
-              if (item.default) {
-                item.default = false;
-                return true;
-              }
-            });
-            images.set(jsonSetting.install_key, value);
-          } else {
-            const item = jsonSetting.style_setting_options[0];
-            if (item.value !== value && item.install_key === 'placeholder') {
-              item.value = value;
-            }
-          }
-        }
-        if (images.size) {
-          new MutationObserver((_, observer) => {
-            if (!document.getElementById('style-settings')) {
-              return;
-            }
+      if (images.size) {
+        new MutationObserver((_, observer) => {
+          if (document.getElementById('style-settings')) {
             observer.disconnect();
-            for (const [name, url] of images.entries()) {
+            for (const [name, {url, isListed}] of images) {
               const elRadio = document.querySelector(`input[name="ik-${name}"][value="user-url"]`);
-              const elUrl = elRadio && document.getElementById(elRadio.id.replace('url-choice', 'user-url'));
+              const elUrl = elRadio &&
+                            document.getElementById(elRadio.id.replace('url-choice', 'user-url'));
               if (elUrl) {
+                elRadio.checked = !isListed;
                 elUrl.value = url;
               }
             }
-          }).observe(document, {childList: true, subtree: true});
-        }
-        return json;
-      });
-    };
-  }
-) + `)('${chrome.runtime.getURL('').slice(0, -1)}')`;
-
-// TODO: remove the following statement when USO pagination is fixed
-if (location.search.includes('category=')) {
-  document.addEventListener('DOMContentLoaded', () => {
-    new MutationObserver((_, observer) => {
-      if (!document.getElementById('pagination')) {
-        return;
+          }
+        }).observe(document, {childList: true, subtree: true});
       }
-      observer.disconnect();
-      const category = '&' + location.search.match(/category=[^&]+/)[0];
-      const links = document.querySelectorAll('#pagination a[href*="page="]:not([href*="category="])');
-      for (let i = 0; i < links.length; i++) {
-        links[i].href += category;
-      }
-    }).observe(document, {childList: true, subtree: true});
-  }, {once: true});
-}
-
-if (/^https?:\/\/userstyles\.org\/styles\/\d{3,}/.test(location.href)) {
-  new MutationObserver((_, observer) => {
-    const cssButton = document.getElementsByClassName('css_button');
-    if (cssButton.length) {
-      // Click on the "Show CSS Code" button to workaround the JS error
-      cssButton[0].click();
-      cssButton[0].click();
-      observer.disconnect();
     }
-  }).observe(document, {childList: true, subtree: true});
+    return json;
+  };
 }
