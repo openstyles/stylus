@@ -355,20 +355,23 @@ function focusAccessibility() {
     'a',
     'button',
     'input',
-    'textarea',
     'label',
     'select',
     'summary',
   ];
   // try to find a focusable parent for this many parentElement jumps:
   const GIVE_UP_DEPTH = 4;
+  const isOutlineAllowed = ({localName, type}) =>
+    !focusAccessibility.ELEMENTS.includes(localName) ||
+    // allow outline on text/search inputs in addition to textareas
+    localName === 'input' && (type === 'text' || type === 'search');
 
   addEventListener('mousedown', suppressOutlineOnClick, {passive: true});
   addEventListener('keydown', keepOutlineOnTab, {passive: true});
 
   function suppressOutlineOnClick({target}) {
     for (let el = target, i = 0; el && i++ < GIVE_UP_DEPTH; el = el.parentElement) {
-      if (focusAccessibility.ELEMENTS.includes(el.localName)) {
+      if (!isOutlineAllowed(el)) {
         focusAccessibility.lastFocusedViaClick = true;
         if (el.dataset.focusedViaClick === undefined) {
           el.dataset.focusedViaClick = '';
@@ -387,7 +390,7 @@ function focusAccessibility() {
       return;
     }
     let el = document.activeElement;
-    if (!el || !focusAccessibility.ELEMENTS.includes(el.localName)) {
+    if (!el || isOutlineAllowed(el)) {
       return;
     }
     if (el.dataset.focusedViaClick !== undefined) {
