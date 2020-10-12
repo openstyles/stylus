@@ -208,9 +208,16 @@ select[disabled] + .select-arrow {
   display: none !important;
 }
 
+:focus,
+.CodeMirror-focused {
+  /* Using box-shadow instead of the ugly outline in new Chrome */
+  outline: none;
+  box-shadow: 0 0 0 1px hsl(180, 100%, 38%), 0 0 3px hsla(180, 100%, 60%, .5);
+}
 [data-focused-via-click] :focus,
 [data-focused-via-click]:focus {
   outline: none;
+  box-shadow: none;
 }
 
 @supports (-moz-appearance: none) {
