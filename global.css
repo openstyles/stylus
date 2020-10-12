@@ -58,7 +58,8 @@ input  {
   font: inherit;
 }
 
-input:not([type]) {
+input:not([type]),
+input[type=search] {
   background: #fff;
   color: #000;
   height: 22px;
