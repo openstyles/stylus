@@ -306,7 +306,6 @@
 }
 
 .colorpicker-theme-dark .colorpicker-input::-webkit-inner-spin-button {
-  -webkit-filter: invert(1);
   filter: invert(1);
 }
 

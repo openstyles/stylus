@@ -550,8 +550,6 @@ a:hover {
 .newUI .update-done .updated svg {
   top: -4px;
   position: relative;
-  /* unprefixed since Chrome 53 */
-  -webkit-filter: drop-shadow(0 4px 0 currentColor);
   filter: drop-shadow(0 5px 0 currentColor);
 }
 
@@ -663,8 +661,6 @@ a:hover {
   margin-left: -20px;
   margin-right: 4px;
   transition: opacity .5s, filter .5s;
-  /* unprefixed since Chrome 53 */
-  -webkit-filter: grayscale(1);
   filter: grayscale(1);
   /* workaround for the buggy CSS filter: images in the hidden overflow are shown on Mac */
   backface-visibility: hidden;
@@ -682,9 +678,7 @@ a:hover {
 
 .newUI .entry:hover .target img {
   opacity: 1;
-  /* unprefixed since Chrome 53 */
-  -webkit-filter: grayscale(0);
-  filter: grayscale(0);
+  filter: none;
 }
 
 /* Default, no update buttons */
