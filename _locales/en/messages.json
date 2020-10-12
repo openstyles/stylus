@@ -943,6 +943,9 @@
   "optionsAdvanced": {
     "message": "Advanced"
   },
+  "optionsAdvancedAdoptedStyleSheets": {
+    "message": "Apply styles directly via <a href='https://developers.google.com/web/updates/2019/02/constructable-stylesheets'>AdoptedStyleSheets</a>"
+  },
   "optionsAdvancedContextDelete": {
     "message": "Add 'Delete' in editor context menu"
   },

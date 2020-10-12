@@ -59,7 +59,7 @@ self.INJECTED !== 1 && (() => {
   function init() {
     return STYLE_VIA_API ?
       API.styleViaAPI({method: 'styleApply'}) :
-      API.getSectionsByUrl(getMatchUrl()).then(styleInjector.apply);
+      API.getSectionsByUrl(getMatchUrl(), null, true).then(styleInjector.apply);
   }
 
   function getMatchUrl() {

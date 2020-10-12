@@ -38,6 +38,10 @@ if (FIREFOX && 'update' in (chrome.commands || {})) {
   });
 }
 
+if (!Array.isArray(document.adoptedStyleSheets)) {
+  $('#adoptedStyleSheets').closest('label').classList.add('hidden');
+}
+
 // actions
 $('#options-close-icon').onclick = () => {
   top.dispatchEvent(new CustomEvent('closeOptions'));

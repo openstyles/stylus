@@ -9,6 +9,7 @@ self.prefs = self.INJECTED === 1 ? self.prefs : (() => {
     'disableAll': false,            // boss key
     'exposeIframes': false,         // Add 'stylus-iframe' attribute to HTML element in all iframes
     'newStyleAsUsercss': false,     // create new style in usercss format
+    'adoptedStyleSheets': false,    // try to apply styles via document.adoptedStyleSheets
 
     // checkbox in style config dialog
     'config.autosave': true,

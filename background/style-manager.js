@@ -1,6 +1,6 @@
 /* eslint no-eq-null: 0, eqeqeq: [2, "smart"] */
 /* global createCache db calcStyleDigest db tryRegExp styleCodeEmpty styleSectionGlobal
-  getStyleWithNoCode msg sync uuidv4 URLS */
+  getStyleWithNoCode msg sync uuidv4 URLS prefs */
 /* exported styleManager */
 'use strict';
 
@@ -332,8 +332,10 @@ const styleManager = (() => {
   function ensurePrepared(methods) {
     const prepared = {};
     for (const [name, fn] of Object.entries(methods)) {
-      prepared[name] = (...args) =>
-        preparing.then(() => fn(...args));
+      prepared[name] = async function () {
+        await preparing;
+        return fn.apply(this, arguments);
+      };
     }
     return prepared;
   }
@@ -475,7 +477,7 @@ const styleManager = (() => {
     return result;
   }
 
-  function getSectionsByUrl(url, id) {
+  function getSectionsByUrl(url, id, checkASS) {
     let cache = cachedStyleForUrl.get(url);
     if (!cache) {
       cache = {
@@ -491,13 +493,12 @@ const styleManager = (() => {
           .map(i => styles.get(i))
       );
     }
-    if (id) {
-      if (cache.sections[id]) {
-        return {[id]: cache.sections[id]};
-      }
-      return {};
-    }
-    return cache.sections;
+    const sections = id
+      ? cache.sections[id] && {[id]: cache.sections[id]} || {}
+      : cache.sections;
+    return checkASS
+      ? Object.assign({ASS: prefs.get('adoptedStyleSheets')}, sections)
+      : sections;
 
     function buildCache(styleList) {
       const query = createMatchQuery(url);

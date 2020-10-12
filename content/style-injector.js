@@ -1,3 +1,4 @@
+/* global prefs */
 'use strict';
 
 self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
@@ -16,6 +17,7 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
   const table = new Map();
   let isEnabled = true;
   let isTransitionPatched;
+  let ASS;
   // will store the original method refs because the page can override them
   let creationDoc, createElement, createElementNS;
 
@@ -24,6 +26,7 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
     list,
 
     apply(styleMap) {
+      if ('ASS' in styleMap) _init(styleMap);
       const styles = _styleMapToArray(styleMap);
       return (
         !styles.length ?
@@ -45,6 +48,7 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
     },
 
     clearOrphans() {
+      if (ASS) ASS.list = ASS.wipedList;
       for (const el of document.querySelectorAll(`style[id^="${PREFIX}"].stylus`)) {
         const id = el.id.slice(PREFIX.length);
         if (/^\d+$/.test(id) || id === PATCH_ID) {
@@ -82,23 +86,27 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
   };
 
   function _add(style) {
-    const el = style.el = _createStyle(style.id, style.code);
+    _domCreate(style);
     const i = list.findIndex(item => compare(item, style) > 0);
     table.set(style.id, style);
-    if (isEnabled) {
-      document.documentElement.insertBefore(el, i < 0 ? null : list[i].el);
-    }
+    if (isEnabled) _domInsert(style, (list[i] || {}).el);
     list.splice(i < 0 ? list.length : i, 0, style);
-    return el;
+    return style.el;
   }
 
   function _addRemoveElements(add) {
-    for (const {el} of list) {
-      if (add) {
-        document.documentElement.appendChild(el);
+    const asses = [];
+    for (const style of list) {
+      if (style.ass) {
+        asses.push(style.el);
+      } else if (add) {
+        _domInsert(style);
       } else {
-        el.remove();
+        _domDelete(style);
       }
+    }
+    if (ASS) {
+      ASS.list = ASS.wipedList.concat(add ? asses : []);
     }
   }
 
@@ -115,20 +123,35 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
         !styles.some(s => s.code.includes('transition'))) {
       return;
     }
-    const el = _createStyle(PATCH_ID, `
-      :root:not(#\\0):not(#\\0) * {
-        transition: none !important;
-      }
-    `);
-    document.documentElement.appendChild(el);
+    const style = {
+      id: PATCH_ID,
+      code: `
+        :root:not(#\\0):not(#\\0) * {
+          transition: none !important;
+        }
+      `,
+    };
+    _domCreate(style);
+    _domInsert(style);
     // wait for the next paint to complete
     // note: requestAnimationFrame won't fire in inactive tabs
-    requestAnimationFrame(() => setTimeout(() => el.remove()));
+    requestAnimationFrame(() => setTimeout(_domDelete, 0, style));
   }
 
-  function _createStyle(id, code = '') {
-    if (!creationDoc) _initCreationDoc();
+  /**
+   * @returns {Element|CSSStyleSheet}
+   * @mutates style
+   */
+  function _domCreate(style = {}) {
+    const {id, code = ''} = style;
     let el;
+    if (ASS) {
+      el = style.el = new CSSStyleSheet(id ? {media: PREFIX + id} : {});
+      if (_setASSCode(style, code)) {
+        return el;
+      }
+    }
+    if (!creationDoc) _initCreationDoc();
     if (document.documentElement instanceof SVGSVGElement) {
       // SVG document style
       el = createElementNS.call(creationDoc, 'http://www.w3.org/2000/svg', 'style');
@@ -148,7 +171,43 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
     // SVG className is not a string, but an instance of SVGAnimatedString
     el.classList.add('stylus');
     el.textContent = code;
+    style.el = el;
+    style.ass = false;
     return el;
+  }
+
+  function _domInsert({ass, el}, beforeEl) {
+    if (ass) {
+      const list = ASS.omit({el});
+      const i = list.indexOf(beforeEl);
+      list.splice(i >= 0 ? i : list.length, 0, el);
+      ASS.list = list;
+    } else {
+      document.documentElement.insertBefore(el, beforeEl);
+    }
+  }
+
+  function _domDelete({ass, el}) {
+    if (ass) {
+      ASS.omit({el, commit: true});
+    } else {
+      el.remove();
+    }
+  }
+
+  function _setASSCode(style, code) {
+    try {
+      style.el.replaceSync(code); // throws on @import per spec
+      style.ass = true;
+    } catch (err) {
+      style.ass = false;
+    }
+    const isTight = style.ass && list.every(s => s.ass);
+    if (ASS.isTight !== isTight) {
+      ASS.isTight = isTight;
+      docRootObserver[isTight ? 'stop' : 'start']();
+    }
+    return style.ass;
   }
 
   function _toggleObservers(shouldStart) {
@@ -163,6 +222,51 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
     return value;
   }
 
+
+  function _init(styleMap) {
+    if (ASS == null && Array.isArray(document.adoptedStyleSheets)) {
+      _initASS(styleMap.ASS);
+      prefs.subscribe(['adoptedStyleSheets'], (key, value) => {
+        _toggleObservers(false);
+        _addRemoveElements(false);
+        _initASS(value);
+        list.forEach(_domCreate);
+        if (isEnabled) _addRemoveElements(true);
+        _toggleObservers(true);
+      });
+    }
+    delete styleMap.ASS;
+  }
+
+  function _initASS(enable) {
+    if (ASS && !enable) {
+      ASS = false;
+    } else if (!ASS && enable) {
+      ASS = {
+        isTight: true,
+        /** @param {CSSStyleSheet[]} sheets */
+        set list(sheets) {
+          document.adoptedStyleSheets = sheets;
+        },
+        /** @returns {CSSStyleSheet[]} */
+        get list() {
+          return [...document.adoptedStyleSheets];
+        },
+        /** @returns {CSSStyleSheet[]} without our elements */
+        get wipedList() {
+          return ASS.list.filter(({media: {0: id = ''}}) =>
+            !(id.startsWith(PREFIX) && Number(id.slice(PREFIX.length)) || id.endsWith(PATCH_ID)));
+        },
+        omit({el, list = ASS.list, commit}) {
+          const i = list.indexOf(el);
+          if (i >= 0) list.splice(i, 1);
+          if (commit) ASS.list = list;
+          return list;
+        },
+      };
+    }
+  }
+
   /*
   FF59+ workaround: allow the page to read our sheets, https://github.com/openstyles/stylus/issues/461
   First we're trying the page context document where inline styles may be forbidden by CSP
@@ -174,7 +278,7 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
     creationDoc = !Event.prototype.getPreventDefault && document.wrappedJSObject;
     if (creationDoc) {
       ({createElement, createElementNS} = creationDoc);
-      const el = document.documentElement.appendChild(_createStyle());
+      const el = document.documentElement.appendChild(_domCreate());
       const isApplied = el.sheet;
       el.remove();
       if (isApplied) return;
@@ -188,7 +292,7 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
     if (!style) return;
     table.delete(id);
     list.splice(list.indexOf(style), 1);
-    style.el.remove();
+    _domDelete(style);
   }
 
   function _sort() {
@@ -237,13 +341,16 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
     // workaround for Chrome devtools bug fixed in v65
     if (isChromePre65) {
       const oldEl = style.el;
-      style.el = _createStyle(id, code);
+      style.el = _domCreate({id, code});
       if (isEnabled) {
         oldEl.parentNode.insertBefore(style.el, oldEl.nextSibling);
         oldEl.remove();
       }
-    } else {
+    } else if (!style.ass) {
       style.el.textContent = code;
+    } else if (!_setASSCode(style, code)) {
+      _remove(id);
+      _add(style);
     }
   }
 
@@ -283,20 +390,24 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
     let digest = 0;
     let lastCalledTime = NaN;
     let observing = false;
-    const observer = new MutationObserver(() => {
-      if (digest) {
-        if (performance.now() - lastCalledTime > 1000) {
-          digest = 0;
-        } else if (digest > 5) {
-          throw new Error('The page keeps generating mutations. Skip the event.');
-        }
-      }
-      if (onChange()) {
-        digest++;
-        lastCalledTime = performance.now();
-      }
-    });
+    let observer;
     return {evade, start, stop};
+
+    function create() {
+      observer = new MutationObserver(() => {
+        if (digest) {
+          if (performance.now() - lastCalledTime > 1000) {
+            digest = 0;
+          } else if (digest > 5) {
+            throw new Error('The page keeps generating mutations. Skip the event.');
+          }
+        }
+        if (onChange()) {
+          digest++;
+          lastCalledTime = performance.now();
+        }
+      });
+    }
 
     function evade(fn) {
       const restore = observing && start;
@@ -306,7 +417,8 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
     }
 
     function start() {
-      if (observing) return;
+      if (observing || ASS && ASS.isTight) return;
+      if (!observer) create();
       observer.observe(document.documentElement, {childList: true});
       observing = true;
     }
