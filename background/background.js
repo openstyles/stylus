@@ -297,13 +297,10 @@ function openEditor(params) {
     'url-prefix'?: String
   }
   */
-  const searchParams = new URLSearchParams();
-  for (const key in params) {
-    searchParams.set(key, params[key]);
-  }
-  const search = searchParams.toString();
+  const u = new URL(chrome.runtime.getURL('edit.html'));
+  u.search = new URLSearchParams(params);
   return openURL({
-    url: 'edit.html' + (search && `?${search}`),
+    url: `${u}`,
     newWindow: prefs.get('openEditInWindow'),
     windowPosition: prefs.get('windowPosition'),
     currentWindow: null

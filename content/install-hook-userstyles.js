@@ -396,8 +396,7 @@ document.documentElement.appendChild(document.createElement('script')).text = '(
     const originalResponseJson = Response.prototype.json;
     document.addEventListener('stylusFixBuggyUSOsettings', function _({detail}) {
       document.removeEventListener('stylusFixBuggyUSOsettings', _);
-      // TODO: remove .replace(/^\?/, '') when minimum_chrome_version >= 52 (https://crbug.com/601425)
-      settings = /\?/.test(detail) && new URLSearchParams(new URL(detail).search.replace(/^\?/, ''));
+      settings = /\?/.test(detail) && new URL(detail).searchParams;
       if (!settings) {
         Response.prototype.json = originalResponseJson;
       }

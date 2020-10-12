@@ -352,8 +352,7 @@ function isUsercss(style) {
 }
 
 function initStyleData() {
-  // TODO: remove .replace(/^\?/, '') when minimum_chrome_version >= 52 (https://crbug.com/601425)
-  const params = new URLSearchParams(location.search.replace(/^\?/, ''));
+  const params = new URLSearchParams(location.search);
   const id = Number(params.get('id'));
   const createEmptyStyle = () => ({
     name: params.get('domain') ||

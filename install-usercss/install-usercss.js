@@ -3,8 +3,7 @@
 'use strict';
 
 (() => {
-  // TODO: remove .replace(/^\?/, '') when minimum_chrome_version >= 52 (https://crbug.com/601425)
-  const params = new URLSearchParams(location.search.replace(/^\?/, ''));
+  const params = new URLSearchParams(location.search);
   const tabId = params.has('tabId') ? Number(params.get('tabId')) : -1;
   const initialUrl = params.get('updateUrl');
 
