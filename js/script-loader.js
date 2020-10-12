@@ -82,7 +82,7 @@ const loadScript = (() => {
     for (const {addedNodes} of mutations) {
       for (const n of addedNodes) {
         if (n.src && getSubscribersForSrc(n.src)) {
-          n.addEventListener('load', notifySubscribers);
+          n.addEventListener('load', notifySubscribers, {once: true});
         }
       }
     }
@@ -97,7 +97,6 @@ const loadScript = (() => {
   }
 
   function notifySubscribers(event) {
-    this.removeEventListener('load', notifySubscribers);
     for (let data; (data = getSubscribersForSrc(this.src));) {
       data.listeners.forEach(fn => fn(event));
       if (emptyAfterCleanup(data.suffix)) {

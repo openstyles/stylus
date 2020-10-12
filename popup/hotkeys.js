@@ -9,14 +9,13 @@ const hotkeys = (() => {
   let enabled = false;
   let ready = false;
 
-  window.addEventListener('showStyles:done', function _() {
-    window.removeEventListener('showStyles:done', _);
+  window.addEventListener('showStyles:done', () => {
     togglablesShown = true;
     togglables = getTogglables();
     ready = true;
     setState(true);
     initHotkeyInfo();
-  });
+  }, {once: true});
 
   window.addEventListener('resize', adjustInfoPosition);
 

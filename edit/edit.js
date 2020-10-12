@@ -478,13 +478,12 @@ function showCodeMirrorPopup(title, html, options) {
   };
   window.addEventListener('keydown', onKeyDown, true);
 
-  window.addEventListener('closeHelp', function _() {
-    window.removeEventListener('closeHelp', _);
+  window.addEventListener('closeHelp', () => {
     window.removeEventListener('keydown', onKeyDown, true);
     document.documentElement.style.removeProperty('pointer-events');
     rerouteHotkeys(true);
     cm = popup.codebox = null;
-  });
+  }, {once: true});
 
   return popup;
 }

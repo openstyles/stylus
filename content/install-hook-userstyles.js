@@ -320,15 +320,9 @@
 
 
   function onDOMready() {
-    if (document.readyState !== 'loading') {
-      return Promise.resolve();
-    }
-    return new Promise(resolve => {
-      document.addEventListener('DOMContentLoaded', function _() {
-        document.removeEventListener('DOMContentLoaded', _);
-        resolve();
-      });
-    });
+    return document.readyState !== 'loading'
+      ? Promise.resolve()
+      : new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve, {once: true}));
   }
 
 
@@ -394,13 +388,12 @@ document.documentElement.appendChild(document.createElement('script')).text = '(
     // USO bug workaround: use the actual style settings in API response
     let settings;
     const originalResponseJson = Response.prototype.json;
-    document.addEventListener('stylusFixBuggyUSOsettings', function _({detail}) {
-      document.removeEventListener('stylusFixBuggyUSOsettings', _);
+    document.addEventListener('stylusFixBuggyUSOsettings', ({detail}) => {
       settings = /\?/.test(detail) && new URL(detail).searchParams;
       if (!settings) {
         Response.prototype.json = originalResponseJson;
       }
-    });
+    }, {once: true});
     Response.prototype.json = function (...args) {
       return originalResponseJson.call(this, ...args).then(json => {
         if (!settings || typeof ((json || {}).style_settings || {}).every !== 'function') {
@@ -467,8 +460,7 @@ document.documentElement.appendChild(document.createElement('script')).text = '(
 
 // TODO: remove the following statement when USO pagination is fixed
 if (location.search.includes('category=')) {
-  document.addEventListener('DOMContentLoaded', function _() {
-    document.removeEventListener('DOMContentLoaded', _);
+  document.addEventListener('DOMContentLoaded', () => {
     new MutationObserver((_, observer) => {
       if (!document.getElementById('pagination')) {
         return;
@@ -480,7 +472,7 @@ if (location.search.includes('category=')) {
         links[i].href += category;
       }
     }).observe(document, {childList: true, subtree: true});
-  });
+  }, {once: true});
 }
 
 if (/^https?:\/\/userstyles\.org\/styles\/\d{3,}/.test(location.href)) {

@@ -112,15 +112,9 @@ document.addEventListener('wheel', event => {
 });
 
 function onDOMready() {
-  if (document.readyState !== 'loading') {
-    return Promise.resolve();
-  }
-  return new Promise(resolve => {
-    document.addEventListener('DOMContentLoaded', function _() {
-      document.removeEventListener('DOMContentLoaded', _);
-      resolve();
-    });
-  });
+  return document.readyState !== 'loading'
+    ? Promise.resolve()
+    : new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve, {once: true}));
 }
 
 
@@ -144,8 +138,7 @@ function animateElement(
     onComplete,
   } = {}) {
   return element && new Promise(resolve => {
-    element.addEventListener('animationend', function _() {
-      element.removeEventListener('animationend', _);
+    element.addEventListener('animationend', () => {
       element.classList.remove(
         className,
         // In Firefox, `resolve()` might be called one frame later.
@@ -157,7 +150,7 @@ function animateElement(
         onComplete.call(element);
       }
       resolve();
-    });
+    }, {once: true});
     element.classList.add(className);
   });
 }
