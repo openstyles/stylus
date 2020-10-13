@@ -10,7 +10,7 @@ function createLivePreview(preprocess) {
   const errorContainer = $('#preview-errors');
 
   prefs.subscribe(['editor.livePreview'], (key, value) => {
-    if (value && data && data.id && data.enabled) {
+    if (value && data && data.id && (data.enabled || editor.dirty.has('enabled'))) {
       previewer = createPreviewer();
       previewer.update(data);
     }

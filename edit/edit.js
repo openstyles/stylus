@@ -352,8 +352,7 @@ function isUsercss(style) {
 }
 
 function initStyleData() {
-  // TODO: remove .replace(/^\?/, '') when minimum_chrome_version >= 52 (https://crbug.com/601425)
-  const params = new URLSearchParams(location.search.replace(/^\?/, ''));
+  const params = new URLSearchParams(location.search);
   const id = Number(params.get('id'));
   const createEmptyStyle = () => ({
     name: params.get('domain') ||
@@ -409,7 +408,7 @@ function showHelp(title = '', body) {
       !event ||
       event.type === 'click' ||
       (
-        event.which === 27 &&
+        event.key === 'Escape' &&
         !event.altKey && !event.ctrlKey && !event.shiftKey && !event.metaKey &&
         !$('.CodeMirror-hints, #message-box') &&
         (
@@ -470,7 +469,7 @@ function showCodeMirrorPopup(title, html, options) {
   popup.style.pointerEvents = 'auto';
 
   const onKeyDown = event => {
-    if (event.which === 9 && !event.ctrlKey && !event.altKey && !event.metaKey) {
+    if (event.key === 'Tab' && !event.ctrlKey && !event.altKey && !event.metaKey) {
       const search = $('#search-replace-dialog');
       const area = search && search.contains(document.activeElement) ? search : popup;
       moveFocus(area, event.shiftKey ? -1 : 1);
@@ -479,13 +478,12 @@ function showCodeMirrorPopup(title, html, options) {
   };
   window.addEventListener('keydown', onKeyDown, true);
 
-  window.addEventListener('closeHelp', function _() {
-    window.removeEventListener('closeHelp', _);
+  window.addEventListener('closeHelp', () => {
     window.removeEventListener('keydown', onKeyDown, true);
     document.documentElement.style.removeProperty('pointer-events');
     rerouteHotkeys(true);
     cm = popup.codebox = null;
-  });
+  }, {once: true});
 
   return popup;
 }

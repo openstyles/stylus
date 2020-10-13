@@ -31,18 +31,9 @@ const router = (() => {
   }
 
   function updateSearch(key, value) {
-    const search = new URLSearchParams(location.search.replace(/^\?/, ''));
-    if (!value) {
-      search.delete(key);
-    } else {
-      search.set(key, value);
-    }
-    const finalSearch = search.toString();
-    if (finalSearch) {
-      history.replaceState(history.state, null, `?${finalSearch}${location.hash}`);
-    } else {
-      history.replaceState(history.state, null, `${location.pathname}${location.hash}`);
-    }
+    const u = new URL(location);
+    u.searchParams[value ? 'set' : 'delete'](key, value);
+    history.replaceState(history.state, null, `${u}`);
     update(true);
   }
 
@@ -66,7 +57,7 @@ const router = (() => {
   }
 
   function getSearch(key) {
-    return new URLSearchParams(location.search.replace(/^\?/, '')).get(key);
+    return new URLSearchParams(location.search).get(key);
   }
 
   function update(replace) {
@@ -86,8 +77,7 @@ const router = (() => {
       if (options.hash) {
         state = options.hash === location.hash;
       } else if (options.search) {
-        // TODO: remove .replace(/^\?/, '') when minimum_chrome_version >= 52 (https://crbug.com/601425)
-        const search = new URLSearchParams(location.search.replace(/^\?/, ''));
+        const search = new URLSearchParams(location.search);
         state = options.search.map(key => search.get(key));
       }
       if (!deepEqual(state, options.currentState)) {

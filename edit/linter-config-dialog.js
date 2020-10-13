@@ -53,11 +53,10 @@
     cm.on('changes', updateButtonState);
 
     rerouteHotkeys(false);
-    window.addEventListener('closeHelp', function _() {
-      window.removeEventListener('closeHelp', _);
+    window.addEventListener('closeHelp', () => {
       rerouteHotkeys(true);
       cm = null;
-    });
+    }, {once: true});
 
     loadScript([
       '/vendor/codemirror/mode/javascript/javascript.js',

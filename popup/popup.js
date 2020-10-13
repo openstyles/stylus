@@ -507,16 +507,15 @@ Object.assign(handleEvent, {
       window.onkeydown = event => {
         const close = $('.menu-close', entry);
         const checkbox = $('.exclude-by-domain-checkbox', entry);
-        const keyCode = event.keyCode || event.which;
-        if (document.activeElement === close && (keyCode === 9) && !event.shiftKey) {
+        if (document.activeElement === close && (event.key === 'Tab') && !event.shiftKey) {
           event.preventDefault();
           checkbox.focus();
         }
-        if (document.activeElement === checkbox && (keyCode === 9) && event.shiftKey) {
+        if (document.activeElement === checkbox && (event.key === 'Tab') && event.shiftKey) {
           event.preventDefault();
           close.focus();
         }
-        if (keyCode === 27) {
+        if (event.key === 'Escape') {
           event.preventDefault();
           close.click();
         }
@@ -542,20 +541,20 @@ Object.assign(handleEvent, {
       const close = $('.menu-close', entry);
       const checkbox = $('.exclude-by-domain-checkbox', entry);
       const confirmActive = $('#confirm[data-display="true"]');
-      const keyCode = event.keyCode || event.which;
-      if (document.activeElement === cancel && (keyCode === 9)) {
+      const {key} = event;
+      if (document.activeElement === cancel && (key === 'Tab')) {
         event.preventDefault();
         affirm.focus();
       }
-      if (document.activeElement === close && (keyCode === 9) && !event.shiftKey) {
+      if (document.activeElement === close && (key === 'Tab') && !event.shiftKey) {
         event.preventDefault();
         checkbox.focus();
       }
-      if (document.activeElement === checkbox && (keyCode === 9) && event.shiftKey) {
+      if (document.activeElement === checkbox && (key === 'Tab') && event.shiftKey) {
         event.preventDefault();
         close.focus();
       }
-      if (keyCode === 27) {
+      if (key === 'Escape') {
         event.preventDefault();
         if (confirmActive) {
           box.dataset.display = false;

@@ -135,12 +135,7 @@
 }
 
 .danger #message-box-buttons > button:not([data-focused-via-click]):first-child:focus {
-  outline: red auto 1px;
-}
-
-/* FF ignores color with 'auto' */
-.firefox .danger #message-box-buttons > button:not([data-focused-via-click]):first-child:focus {
-  outline: red solid 1px;
+  box-shadow: 0 0 0 1px red; /* Using box-shadow instead of the ugly outline in new Chrome */
 }
 
 .non-windows #message-box-buttons {

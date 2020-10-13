@@ -206,36 +206,32 @@ function createSection({
   }
 
   function handleKeydown(cm, event) {
-    const key = event.which;
-    if (key < 37 || key > 40 || event.shiftKey || event.altKey || event.metaKey) {
+    if (event.shiftKey || event.altKey || event.metaKey) {
       return;
     }
+    const {key} = event;
     const {line, ch} = cm.getCursor();
     switch (key) {
-      case 37:
-        // arrow Left
+      case 'ArrowLeft':
         if (line || ch) {
           return;
         }
-      // fallthrough to arrow Up
-      case 38:
-        // arrow Up
+      // fallthrough
+      case 'ArrowUp':
         cm = line === 0 && prevEditor(cm, false);
         if (!cm) {
           return;
         }
         event.preventDefault();
         event.stopPropagation();
-        cm.setCursor(cm.doc.size - 1, key === 37 ? 1e20 : ch);
+        cm.setCursor(cm.doc.size - 1, key === 'ArrowLeft' ? 1e20 : ch);
         break;
-      case 39:
-        // arrow Right
+      case 'ArrowRight':
         if (line < cm.doc.size - 1 || ch < cm.getLine(line).length - 1) {
           return;
         }
-      // fallthrough to arrow Down
-      case 40:
-        // arrow Down
+      // fallthrough
+      case 'ArrowDown':
         cm = line === cm.doc.size - 1 && nextEditor(cm, false);
         if (!cm) {
           return;
@@ -245,13 +241,6 @@ function createSection({
         cm.setCursor(0, 0);
         break;
     }
-    // FIXME: what is this?
-    // const animation = (cm.getSection().firstElementChild.getAnimations() || [])[0];
-    // if (animation) {
-      // animation.playbackRate = -1;
-      // animation.currentTime = 2000;
-      // animation.play();
-    // }
   }
 
   function showAppliesToHelp(event) {

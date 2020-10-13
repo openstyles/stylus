@@ -66,11 +66,13 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   /* Same as openURL, the only extra prop in `opts` is `message` - it'll be sent when the tab is ready,
   which is needed in the popup, otherwise another extension could force the tab to open in foreground
   thus auto-closing the popup (in Chrome at least) and preventing the sendMessage code from running */
-  openURL(opts) {
-    const {message} = opts;
-    return openURL(opts) // will pass the resolved value untouched when `message` is absent or falsy
-      .then(message && (tab => tab.status === 'complete' ? tab : onTabReady(tab)))
-      .then(message && (tab => msg.sendTab(tab.id, opts.message)));
+  async openURL(opts) {
+    const tab = await openURL(opts);
+    if (opts.message) {
+      await onTabReady(tab);
+      await msg.sendTab(tab.id, opts.message);
+    }
+    return tab;
     function onTabReady(tab) {
       return new Promise((resolve, reject) =>
         setTimeout(function ping(numTries = 10, delay = 100) {
@@ -297,13 +299,10 @@ function openEditor(params) {
     'url-prefix'?: String
   }
   */
-  const searchParams = new URLSearchParams();
-  for (const key in params) {
-    searchParams.set(key, params[key]);
-  }
-  const search = searchParams.toString();
+  const u = new URL(chrome.runtime.getURL('edit.html'));
+  u.search = new URLSearchParams(params);
   return openURL({
-    url: 'edit.html' + (search && `?${search}`),
+    url: `${u}`,
     newWindow: prefs.get('openEditInWindow'),
     windowPosition: prefs.get('windowPosition'),
     currentWindow: null

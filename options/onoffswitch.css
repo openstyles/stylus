@@ -3,9 +3,8 @@
 .onoffswitch {
   position: relative;
   margin: 1ex 0;
-  -webkit-user-select: none;
   -moz-user-select: none;
-  -ms-user-select: none;
+  user-select: none;
 }
 
 .onoffswitch input {
@@ -17,6 +16,7 @@
   bottom: -10px;
   left: -10px;
   width: calc(100% + 12px);
+  border: 0;
 }
 
 #message-box .onoffswitch input {

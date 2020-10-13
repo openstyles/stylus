@@ -62,5 +62,20 @@ self.INJECTED !== 1 && (() => {
     }
   }
 
+  if (!(new URLSearchParams({foo: 1})).get('foo')) {
+    // TODO: remove when minimum_chrome_version >= 61
+    window.URLSearchParams = class extends URLSearchParams {
+      constructor(init) {
+        if (init && typeof init === 'object') {
+          super();
+          for (const [key, val] of Object.entries(init)) {
+            this.set(key, val);
+          }
+        } else {
+          super(...arguments);
+        }
+      }
+    };
+  }
   //#endregion
 })();

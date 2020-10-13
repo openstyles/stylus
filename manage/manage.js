@@ -631,13 +631,11 @@ function switchUI({styleOnly} = {}) {
     }
   ` + (newUI.faviconsGray ? `
     .newUI .target img {
-      -webkit-filter: grayscale(1);
       filter: grayscale(1);
       opacity: .25;
     }
   ` : `
     .newUI .target img {
-      -webkit-filter: none;
       filter: none;
       opacity: 1;
     }
