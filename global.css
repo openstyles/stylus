@@ -54,8 +54,10 @@ button:active {
   border-color: hsl(0, 0%, 50%);
 }
 
-input  {
+input {
   font: inherit;
+  border: 1px solid hsl(0, 0%, 66%);
+  transition: border-color .1s, box-shadow .1s;
 }
 
 input:not([type]),
@@ -66,7 +68,6 @@ input[type=search] {
   min-height: 22px!important;
   line-height: 22px;
   padding: 0 3px;
-  font: inherit;
   border: 1px solid hsl(0, 0%, 66%);
 }
 
@@ -210,11 +211,14 @@ select[disabled] + .select-arrow {
 }
 
 :focus,
-.CodeMirror-focused {
+.CodeMirror-focused,
+[data-focused-via-click] input[type="text"]:focus,
+[data-focused-via-click] input[type="number"]:focus {
   /* Using box-shadow instead of the ugly outline in new Chrome */
   outline: none;
   box-shadow: 0 0 0 1px hsl(180, 100%, 38%), 0 0 3px hsla(180, 100%, 60%, .5);
 }
+
 [data-focused-via-click] :focus,
 [data-focused-via-click]:focus {
   outline: none;

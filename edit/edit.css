@@ -611,6 +611,9 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   right: 4px;
   top: .5em;
 }
+#help-popup input[type="search"] {
+  margin: 3px;
+}
 
 .keymap-list {
   font-size: 12px;
@@ -786,6 +789,10 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   height: 100vh;
   flex-direction: column;
   justify-items: normal;
+}
+
+.usercss .CodeMirror-focused {
+  box-shadow: none;
 }
 
 html:not(.usercss) .usercss-only,

@@ -16,6 +16,7 @@
   bottom: -10px;
   left: -10px;
   width: calc(100% + 12px);
+  border: 0;
 }
 
 #message-box .onoffswitch input {
