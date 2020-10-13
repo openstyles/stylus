@@ -1,14 +1,10 @@
 /* global CodeMirror onDOMready prefs setupLivePrefs $ $$ $create t tHTML
   createSourceEditor sessionStorageHash getOwnTab FIREFOX API tryCatch
-  closeCurrentTab messageBox debounce workerUtil
-  initBeautifyButton ignoreChromeError dirtyReporter
+  closeCurrentTab messageBox debounce
+  initBeautifyButton ignoreChromeError dirtyReporter linter
   moveFocus msg createSectionsEditor rerouteHotkeys CODEMIRROR_THEMES */
 /* exported showCodeMirrorPopup editorWorker toggleContextMenuDelete */
 'use strict';
-
-const editorWorker = workerUtil.createWorker({
-  url: '/edit/editor-worker.js'
-});
 
 let saveSizeOnClose;
 
@@ -28,27 +24,37 @@ document.addEventListener('visibilitychange', beforeUnload);
 window.addEventListener('beforeunload', beforeUnload);
 msg.onExtension(onRuntimeMessage);
 
-preinit();
+lazyInit();
 
 (async function init() {
   const [style] = await Promise.all([
     initStyleData(),
     onDOMready(),
-    prefs.initializing,
+    prefs.initializing.then(() => new Promise(resolve => {
+      const theme = prefs.get('editor.theme');
+      const el = $('#cm-theme');
+      if (theme === 'default') {
+        resolve();
+      } else {
+        // preload the theme so CodeMirror can use the correct metrics
+        el.href = `vendor/codemirror/theme/${theme}.css`;
+        el.addEventListener('load', resolve, {once: true});
+      }
+    })),
   ]);
   const usercss = isUsercss(style);
   const dirty = dirtyReporter();
   let wasDirty = false;
   let nameTarget;
 
+  prefs.subscribe(['editor.linter'], updateLinter);
   prefs.subscribe(['editor.keyMap'], showHotkeyInTooltip);
   addEventListener('showHotkeyInTooltip', showHotkeyInTooltip);
   showHotkeyInTooltip();
-
   buildThemeElement();
   buildKeymapElement();
   setupLivePrefs();
-  initNameArea(style, usercss);
+  initNameArea();
   initBeautifyButton($('#beautify'), () => editor.getEditors());
   initResizeListener();
   detectLayout();
@@ -70,7 +76,7 @@ preinit();
   $('#name').required = !usercss;
   $('#save-button').onclick = editor.save;
 
-  function initNameArea(style, usercss) {
+  function initNameArea() {
     const nameEl = $('#name');
     const resetEl = $('#reset-name');
     const isCustomName = style.updateUrl || usercss;
@@ -116,6 +122,8 @@ preinit();
   function buildThemeElement() {
     CODEMIRROR_THEMES.unshift(chrome.i18n.getMessage('defaultTheme'));
     $('#editor.theme').append(...CODEMIRROR_THEMES.map(s => $create('option', s)));
+    // move the theme after built-in CSS so that its same-specificity selectors win
+    document.head.appendChild($('#cm-theme'));
   }
 
   function buildKeymapElement() {
@@ -216,81 +224,68 @@ preinit();
   function updateTitle() {
     document.title = `${dirty.isDirty() ? '* ' : ''}${style.customName || style.name}`;
   }
+
+  function updateLinter(key, value) {
+    $('body').classList.toggle('linter-disabled', value === '');
+    linter.run();
+  }
 })();
 
-function preinit() {
-  // preload the theme so that CodeMirror can calculate its metrics in DOMContentLoaded->setupLivePrefs()
-  new MutationObserver((mutations, observer) => {
-    const themeElement = $('#cm-theme');
-    if (themeElement) {
-      themeElement.href = prefs.get('editor.theme') === 'default' ? ''
-        : 'vendor/codemirror/theme/' + prefs.get('editor.theme') + '.css';
-      observer.disconnect();
-    }
-  }).observe(document, {subtree: true, childList: true});
-
-  if (chrome.windows) {
-    browser.tabs.query({currentWindow: true}).then(tabs => {
-      const windowId = tabs[0].windowId;
-      if (prefs.get('openEditInWindow')) {
-        if (
-          /true/.test(sessionStorage.saveSizeOnClose) &&
-          'left' in prefs.get('windowPosition', {}) &&
-          !isWindowMaximized()
-        ) {
-          // window was reopened via Ctrl-Shift-T etc.
-          chrome.windows.update(windowId, prefs.get('windowPosition'));
-        }
-        if (tabs.length === 1 && window.history.length === 1) {
-          chrome.windows.getAll(windows => {
-            if (windows.length > 1) {
-              sessionStorageHash('saveSizeOnClose').set(windowId, true);
-              saveSizeOnClose = true;
-            }
-          });
-        } else {
-          saveSizeOnClose = sessionStorageHash('saveSizeOnClose').value[windowId];
-        }
-      }
+/* Stuff not needed for the main init so we can let it run at its own tempo */
+async function lazyInit() {
+  const ownTabId = (await getOwnTab()).id;
+  // use browser history back when 'back to manage' is clicked
+  if (sessionStorageHash('manageStylesHistory').value[ownTabId] === location.href) {
+    onDOMready().then(() => {
+      $('#cancel-button').onclick = event => {
+        event.stopPropagation();
+        event.preventDefault();
+        history.back();
+      };
     });
   }
-
-  getOwnTab().then(tab => {
-    const ownTabId = tab.id;
-
-    // use browser history back when 'back to manage' is clicked
-    if (sessionStorageHash('manageStylesHistory').value[ownTabId] === location.href) {
-      onDOMready().then(() => {
-        $('#cancel-button').onclick = event => {
-          event.stopPropagation();
-          event.preventDefault();
-          history.back();
-        };
-      });
+  // no windows on android
+  if (!chrome.windows) {
+    return;
+  }
+  const tabs = await browser.tabs.query({currentWindow: true});
+  const windowId = tabs[0].windowId;
+  if (prefs.get('openEditInWindow')) {
+    if (
+      /true/.test(sessionStorage.saveSizeOnClose) &&
+      'left' in prefs.get('windowPosition', {}) &&
+      !isWindowMaximized()
+    ) {
+      // window was reopened via Ctrl-Shift-T etc.
+      chrome.windows.update(windowId, prefs.get('windowPosition'));
     }
-    // no windows on android
-    if (!chrome.windows) {
+    if (tabs.length === 1 && window.history.length === 1) {
+      chrome.windows.getAll(windows => {
+        if (windows.length > 1) {
+          sessionStorageHash('saveSizeOnClose').set(windowId, true);
+          saveSizeOnClose = true;
+        }
+      });
+    } else {
+      saveSizeOnClose = sessionStorageHash('saveSizeOnClose').value[windowId];
+    }
+  }
+  chrome.tabs.onAttached.addListener((tabId, info) => {
+    if (tabId !== ownTabId) {
       return;
     }
-    // When an edit page gets attached or detached, remember its state
-    // so we can do the same to the next one to open.
-    chrome.tabs.onAttached.addListener((tabId, info) => {
-      if (tabId !== ownTabId) {
-        return;
+    if (info.newPosition !== 0) {
+      prefs.set('openEditInWindow', false);
+      return;
+    }
+    chrome.windows.get(info.newWindowId, {populate: true}, win => {
+      // If there's only one tab in this window, it's been dragged to new window
+      const openEditInWindow = win.tabs.length === 1;
+      if (openEditInWindow && FIREFOX) {
+        // FF-only because Chrome retardedly resets the size during dragging
+        chrome.windows.update(info.newWindowId, prefs.get('windowPosition'));
       }
-      if (info.newPosition !== 0) {
-        prefs.set('openEditInWindow', false);
-        return;
-      }
-      chrome.windows.get(info.newWindowId, {populate: true}, win => {
-        // If there's only one tab in this window, it's been dragged to new window
-        const openEditInWindow = win.tabs.length === 1;
-        if (openEditInWindow && FIREFOX) {
-          // FF-only because Chrome retardedly resets the size during dragging
-          chrome.windows.update(info.newWindowId, prefs.get('windowPosition'));
-        }
-        prefs.set('openEditInWindow', openEditInWindow);
-      });
+      prefs.set('openEditInWindow', openEditInWindow);
     });
   });
 }
@@ -506,10 +501,6 @@ function rememberWindowSize() {
     });
   }
 }
-
-prefs.subscribe(['editor.linter'], (key, value) => {
-  $('body').classList.toggle('linter-disabled', value === '');
-});
 
 function fixedHeader() {
   const scrollPoint = $('#header').clientHeight - 40;

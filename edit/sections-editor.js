@@ -71,7 +71,7 @@ function createSectionsEditor(editorBase) {
   });
 
   function fitToContent(section) {
-    const {cm, cm: {display: {wrapper, sizer}}} = section;
+    const {el, cm, cm: {display: {wrapper, sizer}}} = section;
     if (cm.display.renderedView) {
       resize();
     } else {
@@ -84,7 +84,7 @@ function createSectionsEditor(editorBase) {
         return;
       }
       if (headerOffset == null) {
-        headerOffset = wrapper.getBoundingClientRect().top;
+        headerOffset = el.getBoundingClientRect().top;
       }
       contentHeight += 9; // border & resize grip
       cm.off('update', resize);
@@ -95,16 +95,15 @@ function createSectionsEditor(editorBase) {
   }
 
   function fitToAvailableSpace() {
-    const available =
-      Math.floor(container.offsetHeight - sections.reduce((h, s) => h + s.el.offsetHeight, 0)) ||
-      window.innerHeight - container.offsetHeight;
-    if (available <= 0) {
-      return;
+    const ch = container.offsetHeight;
+    let available = ch - sections[sections.length - 1].el.getBoundingClientRect().bottom + headerOffset;
+    if (available <= 1) available = window.innerHeight - ch - headerOffset;
+    const delta = Math.floor(available / sections.length);
+    if (delta > 1) {
+      sections.forEach(({cm}) => {
+        cm.setSize(null, cm.display.wrapper.offsetHeight + delta);
+      });
     }
-    const cmHeights = sections.map(s => s.cm.getWrapperElement().offsetHeight);
-    sections.forEach((section, i) => {
-      section.cm.setSize(null, cmHeights[i] + Math.floor(available / sections.length));
-    });
   }
 
   function genId() {
