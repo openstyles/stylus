@@ -20,6 +20,9 @@ for (const type of [NodeList, NamedNodeMap, HTMLCollection, HTMLAllCollection]) 
   }
 }
 
+$.isTextLikeInput = el =>
+    el.localName === 'input' && /^(text|search|number)$/.test(el.type);
+
 $.remove = (selector, base = document) => {
   const el = selector && typeof selector === 'string' ? $(selector, base) : selector;
   if (el) {
@@ -354,10 +357,10 @@ function focusAccessibility() {
   ];
   // try to find a focusable parent for this many parentElement jumps:
   const GIVE_UP_DEPTH = 4;
-  const isOutlineAllowed = ({localName, type}) =>
-    !focusAccessibility.ELEMENTS.includes(localName) ||
-    // allow outline on text/search inputs in addition to textareas
-    localName === 'input' && /^(text|search|number)$/.test(type);
+  // allow outline on text/search inputs in addition to textareas
+  const isOutlineAllowed = el =>
+    !focusAccessibility.ELEMENTS.includes(el.localName) ||
+    $.isTextLikeInput(el);
 
   addEventListener('mousedown', suppressOutlineOnClick, {passive: true});
   addEventListener('keydown', keepOutlineOnTab, {passive: true});
@@ -375,7 +378,7 @@ function focusAccessibility() {
   }
 
   function keepOutlineOnTab(event) {
-    if (event.which === 9) {
+    if (event.key === 'Tab') {
       focusAccessibility.lastFocusedViaClick = false;
       setTimeout(keepOutlineOnTab, 0, true);
       return;

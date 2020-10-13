@@ -298,7 +298,7 @@ function customizeHotkeys() {
 }
 
 window.onkeydown = event => {
-  if (event.keyCode === 27) {
+  if (event.key === 'Escape') {
     top.dispatchEvent(new CustomEvent('closeOptions'));
   }
 };

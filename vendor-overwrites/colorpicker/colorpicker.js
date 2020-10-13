@@ -355,29 +355,29 @@
   }
 
   function setFromKeyboard(event) {
-    const {which, ctrlKey: ctrl, altKey: alt, shiftKey: shift, metaKey: meta} = event;
-    switch (which) {
-      case 9: // Tab
-      case 33: // PgUp
-      case 34: // PgDn
+    const {key, ctrlKey: ctrl, altKey: alt, shiftKey: shift, metaKey: meta} = event;
+    switch (key) {
+      case 'Tab':
+      case 'PageUp':
+      case 'PageDown':
         if (!ctrl && !alt && !meta) {
           const el = document.activeElement;
           const inputs = $inputs[currentFormat];
           const lastInput = inputs[inputs.length - 1];
-          if (which === 9 && shift && el === inputs[0]) {
+          if (key === 'Tab' && shift && el === inputs[0]) {
             maybeFocus(lastInput);
-          } else if (which === 9 && !shift && el === lastInput) {
+          } else if (key === 'Tab' && !shift && el === lastInput) {
             maybeFocus(inputs[0]);
-          } else if (which !== 9 && !shift) {
-            setFromFormatElement({shift: which === 33 || shift});
+          } else if (key !== 'Tab' && !shift) {
+            setFromFormatElement({shift: key === 'PageUp' || shift});
           } else {
             return;
           }
           event.preventDefault();
         }
         return;
-      case 38: // Up
-      case 40: // Down
+      case 'ArrowUp':
+      case 'ArrowDown':
         if (!event.metaKey &&
             document.activeElement.localName === 'input' &&
             document.activeElement.checkValidity()) {
@@ -389,8 +389,8 @@
 
   function setFromKeyboardIncrement(event) {
     const el = document.activeElement;
-    const {which, ctrlKey: ctrl, altKey: alt, shiftKey: shift} = event;
-    const dir = which === 38 ? 1 : -1;
+    const {key, ctrlKey: ctrl, altKey: alt, shiftKey: shift} = event;
+    const dir = key === 'ArrowUp' ? 1 : -1;
     let value, newValue;
     if (currentFormat === 'hex') {
       value = el.value.trim();
@@ -617,9 +617,9 @@
 
   function onKeyDown(e) {
     if (!e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
-      switch (e.which) {
-        case 13:
-        case 27:
+      switch (e.key) {
+        case 'Enter':
+        case 'Escape':
           e.preventDefault();
           e.stopPropagation();
           hide();

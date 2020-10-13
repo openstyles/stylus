@@ -408,7 +408,7 @@ function showHelp(title = '', body) {
       !event ||
       event.type === 'click' ||
       (
-        event.which === 27 &&
+        event.key === 'Escape' &&
         !event.altKey && !event.ctrlKey && !event.shiftKey && !event.metaKey &&
         !$('.CodeMirror-hints, #message-box') &&
         (
@@ -469,7 +469,7 @@ function showCodeMirrorPopup(title, html, options) {
   popup.style.pointerEvents = 'auto';
 
   const onKeyDown = event => {
-    if (event.which === 9 && !event.ctrlKey && !event.altKey && !event.metaKey) {
+    if (event.key === 'Tab' && !event.ctrlKey && !event.altKey && !event.metaKey) {
       const search = $('#search-replace-dialog');
       const area = search && search.contains(document.activeElement) ? search : popup;
       moveFocus(area, event.shiftKey ? -1 : 1);
