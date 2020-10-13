@@ -357,8 +357,7 @@ function focusAccessibility() {
   const isOutlineAllowed = ({localName, type}) =>
     !focusAccessibility.ELEMENTS.includes(localName) ||
     // allow outline on text/search inputs in addition to textareas
-    localName === 'input' &&
-    !/^(button|checkbox|color|file|image|radio|submit|range)$/.test(type);
+    localName === 'input' && /^(text|search|number)$/.test(type);
 
   addEventListener('mousedown', suppressOutlineOnClick, {passive: true});
   addEventListener('keydown', keepOutlineOnTab, {passive: true});
