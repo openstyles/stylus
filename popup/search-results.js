@@ -54,7 +54,7 @@ window.addEventListener('showStyles:done', () => {
     href: URLS.usoArchive,
     onclick(event) {
       if (!prefs.get('popup.findStylesInline') || dom.container) {
-        this.search = `${new URLSearchParams({category, search: $('#search-query').value})}`;
+        this.search = new URLSearchParams({category, search: $('#search-query').value});
         handleEvent.openURLandHide.call(this, event);
         return;
       }
@@ -82,6 +82,9 @@ window.addEventListener('showStyles:done', () => {
       for (let re = /"(.+?)"|(\S+)/g, m; (m = re.exec(text));) {
         const n = Number(m[2]);
         query.push(n >= 2000 && n <= thisYear ? n : m[1] || m[2]);
+      }
+      if (category === STYLUS_CATEGORY && !query.includes('stylus')) {
+        query.push('stylus');
       }
       ready = ready.then(start);
     };
@@ -464,13 +467,18 @@ window.addEventListener('showStyles:done', () => {
   }
 
   function isResultMatching(res) {
+    // We're trying to call calcHaystack only when needed, not on all 100K items
+    const {c} = res;
     return (
-      res.c === category ||
-      searchGlobals && res.c === 'global' && (query.length || calcHaystack(res)._nLC.includes(category))
+      c === category ||
+      category !== STYLUS_CATEGORY && (
+        searchGlobals &&
+        c === 'global' &&
+        (query.length || calcHaystack(res)._nLC.includes(category))
+      )
     ) && (
-      category === STYLUS_CATEGORY
-       ? /\bStylus\b/.test(res.n)
-       : !query.length || query.every(isInHaystack, calcHaystack(res))
+      !query.length || // to skip calling calcHaystack
+      query.every(isInHaystack, calcHaystack(res))
     );
   }
 
