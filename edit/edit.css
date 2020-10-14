@@ -50,7 +50,6 @@ label {
   top: 0;
   padding: 1rem;
   border-right: 1px dashed #AAA;
-  -webkit-box-shadow: 0 0 3rem -1.2rem black;
   box-shadow: 0 0 3rem -1.2rem black;
   box-sizing: border-box;
   z-index: 10;
