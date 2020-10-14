@@ -4020,24 +4020,19 @@ self.parserlib = (() => {
 
     _supportsCondition() {
       const stream = this._tokenStream;
-      if (stream.match(Tokens.IDENT)) {
-        const ident = lower(stream._token.value);
-        if (ident === 'not') {
-          stream.mustMatch(Tokens.S);
-          this._supportsConditionInParens();
-        } else {
-          stream.unget();
-        }
+      const next = stream.LT(1);
+      if (next.type === Tokens.IDENT && lower(next.value) === 'not') {
+        stream.get();
+        stream.mustMatch(Tokens.S);
+        this._supportsConditionInParens();
       } else {
         this._supportsConditionInParens();
-        this._ws();
         while (stream.peek() === Tokens.IDENT) {
           const ident = lower(stream.LT(1).value);
           if (ident === 'and' || ident === 'or') {
-            stream.mustMatch(Tokens.IDENT);
+            stream.get();
             this._ws();
             this._supportsConditionInParens();
-            this._ws();
           }
         }
       }
@@ -4045,36 +4040,41 @@ self.parserlib = (() => {
 
     _supportsConditionInParens() {
       const stream = this._tokenStream;
-      if (stream.match(Tokens.LPAREN)) {
+      const next = stream.LT(1);
+      if (next.type === Tokens.LPAREN) {
+        stream.get();
         this._ws();
-        if (stream.match([Tokens.IDENT, Tokens.CUSTOM_PROP])) {
-          // look ahead for not keyword,
-          // if not given, continue with declaration condition.
-          const ident = lower(stream._token.value);
-          if (ident === 'not') {
-            this._ws();
+        const {type, value} = stream.LT(1);
+        if (type === Tokens.IDENT || type === Tokens.CUSTOM_PROP) {
+          if (lower(value) === 'not') {
             this._supportsCondition();
             stream.mustMatch(Tokens.RPAREN);
           } else {
-            stream.unget();
-            this._supportsDeclarationCondition(false);
+            this._supportsDecl(false);
           }
         } else {
           this._supportsCondition();
           stream.mustMatch(Tokens.RPAREN);
         }
+      } else if (next.type === Tokens.FUNCTION && lower(next.value) === 'selector(') {
+        stream.get();
+        this._ws();
+        this._selector();
+        stream.mustMatch(Tokens.RPAREN);
       } else {
-        this._supportsDeclarationCondition();
+        this._supportsDecl();
       }
+      this._ws();
     }
 
-    _supportsDeclarationCondition(requireStartParen = true) {
+    _supportsDecl(requireStartParen = true) {
+      const stream = this._tokenStream;
       if (requireStartParen) {
-        this._tokenStream.mustMatch(Tokens.LPAREN);
+        stream.mustMatch(Tokens.LPAREN);
       }
       this._ws();
       this._declaration();
-      this._tokenStream.mustMatch(Tokens.RPAREN);
+      stream.mustMatch(Tokens.RPAREN);
     }
 
     _media() {
