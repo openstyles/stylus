@@ -191,8 +191,8 @@ async function openURL({
   if (newWindow && browser.windows) {
     return (await browser.windows.create(Object.assign({url}, newWindow)).tabs)[0];
   }
-  tab = await getActiveTab();
-  if (await isTabReplaceable(tab, url)) {
+  tab = await getActiveTab() || {url: ''};
+  if (isTabReplaceable(tab, url)) {
     return activateTab(tab, {url, openerTabId});
   }
   const id = openerTabId == null ? tab.id : openerTabId;
