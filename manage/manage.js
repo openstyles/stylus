@@ -4,11 +4,10 @@ global messageBox getStyleWithNoCode
   checkUpdate handleUpdateInstalled
   objectDiff
   configDialog
-  sorter msg prefs API onDOMready $ $$ $create template setupLivePrefs
+  sorter msg prefs API $ $$ $create template setupLivePrefs
   t tWordBreak formatDate
   getOwnTab getActiveTab openURL animateElement sessionStorageHash debounce
   scrollElementIntoView CHROME VIVALDI router
-  bulkChangeTime:true bulkChangeQueue
 */
 'use strict';
 
@@ -18,6 +17,8 @@ const ENTRY_ID_PREFIX_RAW = 'style-';
 const ENTRY_ID_PREFIX = '#' + ENTRY_ID_PREFIX_RAW;
 
 const BULK_THROTTLE_MS = 100;
+const bulkChangeQueue = [];
+bulkChangeQueue.time = 0;
 
 // define pref-mapped ids separately
 const newUI = {
@@ -49,46 +50,10 @@ Promise.all([
   API.getAllStyles(true),
   // FIXME: integrate this into filter.js
   router.getSearch('search') && API.searchDB({query: router.getSearch('search')}),
-  Promise.all([
-    onDOMready(),
-    prefs.initializing,
-  ])
-    .then(() => {
-      initGlobalEvents();
-      if (!VIVALDI) {
-        $$('#header select').forEach(el => el.adjustWidth());
-      }
-    }),
-]).then(args => {
-  showStyles(...args);
-});
-
-msg.onExtension(onRuntimeMessage);
-
-function onRuntimeMessage(msg) {
-  switch (msg.method) {
-    case 'styleUpdated':
-    case 'styleAdded':
-    case 'styleDeleted':
-      bulkChangeQueue.push(msg);
-      if (performance.now() - bulkChangeTime < BULK_THROTTLE_MS) {
-        debounce(handleBulkChange, BULK_THROTTLE_MS);
-      } else {
-        handleBulkChange();
-      }
-      break;
-    case 'styleApply':
-    case 'styleReplaceAll':
-      break;
-    default:
-      return;
-  }
-  setTimeout(sorter.updateStripes, 0, {onlyWhenColumnsChanged: true});
-}
-
-
-function initGlobalEvents() {
-  installed = $('#installed');
+  waitForSelector('#installed'), // needed to avoid flicker due to an extra frame and layout shift
+  prefs.initializing
+]).then(([styles, ids, el]) => {
+  installed = el;
   installed.onclick = handleEvent.entryClicked;
   $('#manage-options-button').onclick = () => router.updateHash('#stylus-options');
   $('#sync-styles').onclick = () => router.updateHash('#stylus-options');
@@ -96,31 +61,12 @@ function initGlobalEvents() {
   // show date installed & last update on hover
   installed.addEventListener('mouseover', handleEvent.lazyAddEntryTitle);
   installed.addEventListener('mouseout', handleEvent.lazyAddEntryTitle);
-
   document.addEventListener('visibilitychange', onVisibilityChange);
-
-  $$('[data-toggle-on-click]').forEach(el => {
-    // dataset on SVG doesn't work in Chrome 49-??, works in 57+
-    const target = $(el.getAttribute('data-toggle-on-click'));
-    el.onclick = event => {
-      event.preventDefault();
-      target.classList.toggle('hidden');
-      if (target.classList.contains('hidden')) {
-        el.removeAttribute('open');
-      } else {
-        el.setAttribute('open', '');
-      }
-    };
-  });
-
   // N.B. triggers existing onchange listeners
   setupLivePrefs();
   sorter.init();
-
   prefs.subscribe(newUI.ids.map(newUI.prefKeyForId), () => switchUI());
-
   switchUI({styleOnly: true});
-
   // translate CSS manually
   document.head.appendChild($create('style', `
     .disabled h2::after {
@@ -133,6 +79,39 @@ function initGlobalEvents() {
       content: "${t('filteredStylesAllHidden')}";
     }
   `));
+  if (!VIVALDI) {
+    $$('#header select').forEach(el => el.adjustWidth());
+  }
+  if (CHROME >= 80 && CHROME <= 88) {
+    // Wrong checkboxes are randomly checked after going back in history, https://crbug.com/1138598
+    addEventListener('pagehide', () => {
+      $$('input[type=checkbox]').forEach((el, i) => (el.name = `bug${i}`));
+    });
+  }
+  showStyles(styles, ids);
+});
+
+msg.onExtension(onRuntimeMessage);
+
+function onRuntimeMessage(msg) {
+  switch (msg.method) {
+    case 'styleUpdated':
+    case 'styleAdded':
+    case 'styleDeleted':
+      bulkChangeQueue.push(msg);
+      if (performance.now() - bulkChangeQueue.time < BULK_THROTTLE_MS) {
+        debounce(handleBulkChange, BULK_THROTTLE_MS);
+      } else {
+        handleBulkChange();
+      }
+      break;
+    case 'styleApply':
+    case 'styleReplaceAll':
+      break;
+    default:
+      return;
+  }
+  setTimeout(sorter.updateStripes, 0, {onlyWhenColumnsChanged: true});
 }
 
 function showStyles(styles = [], matchUrlIds) {
@@ -538,7 +517,7 @@ function handleBulkChange() {
     const {id} = msg.style;
     if (msg.method === 'styleDeleted') {
       handleDelete(id);
-      bulkChangeTime = performance.now();
+      bulkChangeQueue.time = performance.now();
     } else {
       handleUpdateForId(id, msg);
     }
@@ -549,7 +528,7 @@ function handleBulkChange() {
 function handleUpdateForId(id, opts) {
   return API.getStyle(id, true).then(style => {
     handleUpdate(style, opts);
-    bulkChangeTime = performance.now();
+    bulkChangeQueue.time = performance.now();
   });
 }
 
@@ -723,6 +702,20 @@ function highlightEditedStyle() {
   }
 }
 
+function waitForSelector(selector) {
+  // TODO: if used in other places, move to dom.js
+  // TODO: if used concurrently, rework to use just one observer internally
+  return new Promise(resolve => {
+    const mo = new MutationObserver(() => {
+      const el = $(selector);
+      if (el) {
+        mo.disconnect();
+        resolve(el);
+      }
+    });
+    mo.observe(document, {childList: true, subtree: true});
+  });
+}
 
 function embedOptions() {
   let options = $('#stylus-embedded-options');
