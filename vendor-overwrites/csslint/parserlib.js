@@ -4326,13 +4326,8 @@ self.parserlib = (() => {
     _document() {
       const stream = this._tokenStream;
       const functions = [];
-      let prefix = '';
-
       const start = stream.mustMatch(Tokens.DOCUMENT_SYM);
-      if (/^@-([^-]+)-/.test(start.value)) {
-        prefix = RegExp.$1;
-      }
-
+      const prefix = start.value.split('-')[1] || '';
       do {
         this._ws();
         functions.push(this._documentFunction());
@@ -4373,9 +4368,12 @@ self.parserlib = (() => {
 
     _documentFunction() {
       const stream = this._tokenStream;
-      return stream.match(Tokens.URI) ?
-        new PropertyValuePart(stream._token) :
-        this._function();
+      if (stream.match(Tokens.URI)) {
+        const res = new PropertyValuePart(stream._token);
+        this._ws();
+        return res;
+      }
+      return this._function();
     }
 
     _operator(inFunction) {
