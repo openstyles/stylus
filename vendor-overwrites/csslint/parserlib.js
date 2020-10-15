@@ -159,7 +159,7 @@ self.parserlib = (() => {
     'background':              '[ <bg-layer> , ]* <final-bg-layer>',
     'background-attachment':   '<attachment>#',
     'background-blend-mode':   '<blend-mode>',
-    'background-clip':         '<box>#',
+    'background-clip':         '[ <box> | text ]#',
     'background-color':        '<color>',
     'background-image':        '<bg-image>#',
     'background-origin':       '<box>#',
