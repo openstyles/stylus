@@ -392,10 +392,11 @@ Object.assign(handleEvent, {
     const openWindow = left && shift && !ctrl;
     const openBackgroundTab = (middle && !shift) || (left && ctrl && !shift);
     const openForegroundTab = (middle && shift) || (left && ctrl && shift);
-    const url = $('[href]', event.target.closest('.entry')).href;
+    const entry = event.target.closest('.entry');
+    const url = $('[href]', entry).href;
     if (openWindow || openBackgroundTab || openForegroundTab) {
       if (chrome.windows && openWindow) {
-        chrome.windows.create(Object.assign(prefs.get('windowPosition'), {url}));
+        API.openEditor({id: entry.styleId});
       } else {
         getOwnTab().then(({index}) => {
           openURL({

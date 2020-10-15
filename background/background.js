@@ -303,9 +303,10 @@ function openEditor(params) {
   u.search = new URLSearchParams(params);
   return openURL({
     url: `${u}`,
-    newWindow: prefs.get('openEditInWindow'),
-    windowPosition: prefs.get('windowPosition'),
-    currentWindow: null
+    currentWindow: null,
+    newWindow: prefs.get('openEditInWindow') && Object.assign({},
+      prefs.get('openEditInWindow.popup') && {type: 'popup'},
+      prefs.get('windowPosition')),
   });
 }
 
