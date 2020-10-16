@@ -357,3 +357,15 @@
 .colorpicker-format-change-button:hover {
   color: var(--label-color-hover);
 }
+
+.colorpicker-palette:not(:empty) {
+  padding: 0 8px 8px;
+  min-height: 14px; /* same as padding-left in .colorview-swatch */
+  max-height: 10vw;
+  overflow: auto;
+  box-sizing: content-box;
+}
+
+.colorpicker-palette .colorview-swatch {
+  padding-bottom: 14px; /* same as padding-left in .colorview-swatch */
+}
