@@ -557,7 +557,7 @@
     const palette = new Map();
     let i = 0;
     let nums;
-    cm.doc.eachLine(({markedSpans}) => {
+    cm.eachLine(({markedSpans}) => {
       ++i;
       if (!markedSpans) return;
       for (const {from, marker: m} of markedSpans) {
