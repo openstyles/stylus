@@ -1122,6 +1122,10 @@
     "message": "Action menu",
     "description": "Tooltip for menu button in popup."
   },
+  "popupOpenEditInPopup": {
+    "message": "Use a simple window (no omnibox)",
+    "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+  },
   "popupOpenEditInWindow": {
     "message": "Open editor in a new window",
     "description": "Label for the checkbox controlling 'edit' action behavior in the popup."

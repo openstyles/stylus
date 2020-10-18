@@ -4,6 +4,7 @@
 self.prefs = self.INJECTED === 1 ? self.prefs : (() => {
   const defaults = {
     'openEditInWindow': false,      // new editor opens in a own browser window
+    'openEditInWindow.popup': false, // new editor opens in a simplified browser window without omnibox
     'windowPosition': {},           // detached window position
     'show-badge': true,             // display text on popup menu icon
     'disableAll': false,            // boss key
