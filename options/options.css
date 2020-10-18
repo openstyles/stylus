@@ -342,6 +342,7 @@ html:not(.firefox):not(.opera) #updates {
 #message-box.note {
   align-items: center;
   justify-content: center;
+  white-space: pre-wrap;
 }
 
 #message-box.note > div {
