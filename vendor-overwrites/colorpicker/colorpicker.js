@@ -585,8 +585,9 @@
   function onPaletteClicked(e) {
     if (e.target !== e.currentTarget) {
       e.preventDefault();
-      if (!e.button) {
-        setColor(e.target.__color);
+      if (!e.button && setColor(e.target.__color)) {
+        userActivity = performance.now();
+        colorpickerCallback();
       } else if (e.button === 2 && options.paletteCallback) {
         options.paletteCallback(e.target);
       }
