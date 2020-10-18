@@ -461,7 +461,7 @@
     const newHSV = color.type === 'hsl' ?
       colorConverter.HSLtoHSV(color) :
       colorConverter.RGBtoHSV(color);
-    if (Object.keys(newHSV).every(k => Math.abs(newHSV[k] - HSV[k]) < 1e-3)) {
+    if (Object.entries(newHSV).every(([k, v]) => v === HSV[k] || Math.abs(v - HSV[k]) < 1e-3)) {
       return;
     }
     HSV = newHSV;
