@@ -30,6 +30,7 @@
   let $swatch;
   let $formatChangeButton;
   let $hexCode;
+  let $palette;
   const $inputGroups = {};
   const $inputs = {};
   const $rgb = {};
@@ -164,6 +165,7 @@
           $formatChangeButton = $('format-change-button', {textContent: '↔'}),
         ]}),
       ]}),
+      $palette = $('palette'),
     ]});
 
     $inputs.hex = [$hexCode];
@@ -220,6 +222,11 @@
 
     if (!isNaN(options.left) && !isNaN(options.top)) {
       reposition();
+    }
+    if (Array.isArray(options.palette)) {
+      // Might need to clear a lot of elements so this is known to be faster than textContent = ''
+      while ($palette.firstChild) $palette.firstChild.remove();
+      $palette.append(...(options.palette));
     }
   }
 
@@ -454,7 +461,7 @@
     const newHSV = color.type === 'hsl' ?
       colorConverter.HSLtoHSV(color) :
       colorConverter.RGBtoHSV(color);
-    if (Object.keys(newHSV).every(k => Math.abs(newHSV[k] - HSV[k]) < 1e-3)) {
+    if (Object.entries(newHSV).every(([k, v]) => v === HSV[k] || Math.abs(v - HSV[k]) < 1e-3)) {
       return;
     }
     HSV = newHSV;
@@ -571,6 +578,19 @@
   function onOpacityMouseDown(event) {
     if (captureMouse(event, 'opacity')) {
       setFromOpacityElement(event);
+    }
+  }
+
+  /** @param {MouseEvent} e */
+  function onPaletteClicked(e) {
+    if (e.target !== e.currentTarget) {
+      e.preventDefault();
+      if (!e.button && setColor(e.target.__color)) {
+        userActivity = performance.now();
+        colorpickerCallback();
+      } else if (e.button === 2 && options.paletteCallback) {
+        options.paletteCallback(e.target);
+      }
     }
   }
 
@@ -710,6 +730,8 @@
     $opacity.addEventListener('mousedown', onOpacityMouseDown);
     $hexLettercase.true.addEventListener('click', onHexLettercaseClicked);
     $hexLettercase.false.addEventListener('click', onHexLettercaseClicked);
+    $palette.addEventListener('click', onPaletteClicked);
+    $palette.addEventListener('contextmenu', onPaletteClicked);
 
     stopSnoozing();
     if (!options.isShortCut) {
@@ -735,6 +757,8 @@
     $opacity.removeEventListener('mousedown', onOpacityMouseDown);
     $hexLettercase.true.removeEventListener('click', onHexLettercaseClicked);
     $hexLettercase.false.removeEventListener('click', onHexLettercaseClicked);
+    $palette.removeEventListener('click', onPaletteClicked);
+    $palette.removeEventListener('contextmenu', onPaletteClicked);
     releaseMouse();
     stopSnoozing();
   }
