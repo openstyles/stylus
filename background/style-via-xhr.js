@@ -45,11 +45,8 @@ CHROME && (async () => {
         actions: [
           new chrome.declarativeContent.RequestContentScript({
             allFrames: true,
-            js: [
-              '/content/style-via-xhr.js',
-              // This sets them to run earlier than document_start
-              ...chrome.runtime.getManifest().content_scripts[0].js,
-            ],
+            // This runs earlier than document_start
+            js: chrome.runtime.getManifest().content_scripts[0].js,
           }),
         ],
       }]);

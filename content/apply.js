@@ -57,10 +57,22 @@ self.INJECTED !== 1 && (() => {
     if (STYLE_VIA_API) {
       await API.styleViaAPI({method: 'styleApply'});
     } else {
-      const styles = Array.isArray(window.STYLES) && window.STYLES[0] ||
-                     await API.getSectionsByUrl(getMatchUrl());
-      delete window.STYLES;
+      const styles = chrome.app && getStylesViaXhr() || await API.getSectionsByUrl(getMatchUrl());
       await styleInjector.apply(styles);
+    }
+  }
+
+  function getStylesViaXhr() {
+    if (new RegExp(`(^|\\s|;)${chrome.runtime.id}=\\s*([-\\w]+)\\s*(;|$)`).test(document.cookie)) {
+      const url = 'blob:' + chrome.runtime.getURL(RegExp.$2);
+      const xhr = new XMLHttpRequest();
+      document.cookie = `${chrome.runtime.id}=1; max-age=0`; // remove our cookie
+      try {
+        xhr.open('GET', url, false); // synchronous
+        xhr.send();
+        URL.revokeObjectURL(url);
+        return JSON.parse(xhr.response);
+      } catch (e) {}
     }
   }
 
