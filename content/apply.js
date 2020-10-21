@@ -46,10 +46,12 @@ self.INJECTED !== 1 && (() => {
   function onInjectorUpdate() {
     if (!isOrphaned) {
       updateCount();
-      updateExposeIframes();
       const onOff = prefs[styleInjector.list.length ? 'subscribe' : 'unsubscribe'];
       onOff(['disableAll'], updateDisableAll);
-      if (IS_FRAME) onOff(['exposeIframes'], updateExposeIframes);
+      if (IS_FRAME) {
+        updateExposeIframes();
+        onOff(['exposeIframes'], updateExposeIframes);
+      }
     }
   }
 
@@ -164,7 +166,7 @@ self.INJECTED !== 1 && (() => {
     const attr = 'stylus-iframe';
     const el = document.documentElement;
     if (!el) return; // got no styles so styleInjector didn't wait for <html>
-    if (!value || window === parent || !styleInjector.list.length) {
+    if (!value || !styleInjector.list.length) {
       el.removeAttribute(attr);
     } else {
       if (!parentDomain) parentDomain = await API.getTabUrlPrefix();
