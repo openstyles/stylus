@@ -57,7 +57,12 @@ function createZip({isFirefox} = {}) {
 }
 
 (async () => {
-  await createZip();
-  await createZip({isFirefox: true});
-  console.log('\x1b[32m%s\x1b[0m', 'Stylus zip complete');
+  try {
+    await createZip();
+    await createZip({isFirefox: true});
+    console.log('\x1b[32m%s\x1b[0m', 'Stylus zip complete');
+  } catch (err) {
+    console.error(err);
+    process.exit(1);
+  }
 })();
