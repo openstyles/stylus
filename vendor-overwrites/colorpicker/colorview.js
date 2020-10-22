@@ -532,6 +532,8 @@
       color: data.color,
       prevColor: data.color || '',
       callback: popupOnChange,
+      palette: makePalette(state),
+      paletteCallback: el => paletteCallback(state, el),
     }));
   }
 
@@ -549,6 +551,49 @@
     if (typeof embedderCallback === 'function') {
       embedderCallback(this);
     }
+  }
+
+  function makePalette({cm, options}) {
+    const palette = new Map();
+    let i = 0;
+    let nums;
+    cm.eachLine(({markedSpans}) => {
+      ++i;
+      if (!markedSpans) return;
+      for (const {from, marker: m} of markedSpans) {
+        if (from == null || m.className !== COLORVIEW_CLASS) continue;
+        nums = palette.get(m.color);
+        if (!nums) palette.set(m.color, (nums = []));
+        nums.push(i);
+      }
+    });
+    const res = [];
+    if (palette.size > 1 || nums && nums.length > 1) {
+      const old = new Map((options.popup.palette || []).map(el => [el.__color, el]));
+      for (const [color, data] of palette) {
+        res.push(old.get(color) || makePaletteSwatch(color, data));
+      }
+    }
+    return res;
+  }
+
+  function makePaletteSwatch(color, nums) {
+    const s = nums.join(', ');
+    const el = document.createElement('div');
+    el.className = COLORVIEW_SWATCH_CLASS;
+    el.style.cssText = COLORVIEW_SWATCH_CSS + color;
+    el.title = color + (!s ? '' : `\nLine: ${s.length > 50 ? s.replace(/([^,]+,\s){10}/g, '$&\n') : s}`);
+    el.__color = color;
+    return el;
+  }
+
+  function paletteCallback({cm}, el) {
+    const lines = el.title.split('\n')[1].match(/\d+/g).map(Number);
+    const curLine = cm.getCursor().line + 1;
+    const i = lines.indexOf(curLine) + 1;
+    const pos = {line: (lines[i] || curLine) - 1, ch: 0};
+    cm.scrollIntoView(pos, cm.defaultTextHeight());
+    cm.setCursor(pos);
   }
 
   //endregion

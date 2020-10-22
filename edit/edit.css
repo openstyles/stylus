@@ -50,7 +50,6 @@ label {
   top: 0;
   padding: 1rem;
   border-right: 1px dashed #AAA;
-  -webkit-box-shadow: 0 0 3rem -1.2rem black;
   box-shadow: 0 0 3rem -1.2rem black;
   box-sizing: border-box;
   z-index: 10;
@@ -63,6 +62,7 @@ label {
 #sections {
   padding-left: 280px;
   min-height: 0;
+  height: 100%;
 }
 #sections h2 {
   margin-top: 1rem;
@@ -87,6 +87,9 @@ label {
 #basic-info-name {
   display: flex;
   align-items: center;
+}
+#reset-name {
+  margin: 0 .25em 0 .5em;
 }
 #url {
   margin-left: 0.25rem;
@@ -277,12 +280,6 @@ input:invalid {
 }
 .section-editor .section:not(:first-child) {
   border-top: 2px solid hsl(0, 0%, 80%);
-}
-.section-editor:not(.section-editor-ready) .section {
-  opacity: 0 !important;
-}
-.section-editor:not(.section-editor-ready) .CodeMirror {
-  height: 0;
 }
 .add-section:after {
   content: attr(short-text);
@@ -616,6 +613,10 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   right: 4px;
   top: .5em;
 }
+#help-popup input[type="search"],
+#help-popup .CodeMirror {
+  margin: 3px;
+}
 
 .keymap-list {
   font-size: 12px;
@@ -793,6 +794,10 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   justify-items: normal;
 }
 
+.usercss .CodeMirror-focused {
+  box-shadow: none;
+}
+
 html:not(.usercss) .usercss-only,
 .usercss #mozilla-format-container,
 .usercss #sections > h2 {
@@ -812,18 +817,8 @@ body.linter-disabled .hidden-unless-compact {
   margin-top: .75rem;
 }
 
-.usercss #name {
-  background-color: #eee;
-  color: #888;
-}
-
-/* FIXME: remove the ID selector */
-#sections .single-editor {
+.single-editor {
   height: 100%;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  box-sizing: border-box;
 }
 
 .single-editor .CodeMirror {
@@ -843,7 +838,6 @@ body.linter-disabled .hidden-unless-compact {
 }
 
 .usercss.firefox #sections,
-.usercss.firefox .single-editor,
 .usercss.firefox .CodeMirror {
   height: 100%;
 }
@@ -996,7 +990,7 @@ body.linter-disabled .hidden-unless-compact {
     flex-direction: column;
     flex: 1;
   }
-  #sections > * {
+  #sections > :not(.single-editor) {
     margin: 0 .5rem;
     padding: .5rem 0;
   }

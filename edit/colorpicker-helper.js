@@ -20,13 +20,11 @@
         defaults.extraKeys[keyName] = 'colorpicker';
       }
       defaults.colorpicker = {
-        // FIXME: who uses this?
-        // forceUpdate: editor.getEditors().length > 0,
         tooltip: t('colorpickerTooltip'),
         popup: {
           tooltipForSwitcher: t('colorpickerSwitchFormatTooltip'),
           hexUppercase: prefs.get('editor.colorpicker.hexUppercase'),
-          hideDelay: 5000,
+          hideDelay: 30e3,
           embedderCallback: state => {
             ['hexUppercase', 'color']
               .filter(name => state[name] !== prefs.get('editor.colorpicker.' + name))

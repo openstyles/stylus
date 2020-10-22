@@ -62,7 +62,19 @@ const URLS = {
   // TODO: remove when "minimum_chrome_version": "61" or higher
   chromeProtectsNTP: CHROME >= 61,
 
-  userstylesOrgJson: 'https://userstyles.org/styles/chrome/',
+  uso: 'https://userstyles.org/',
+  usoJson: 'https://userstyles.org/styles/chrome/',
+
+  usoArchive: 'https://33kk.github.io/uso-archive/',
+  usoArchiveRaw: 'https://raw.githubusercontent.com/33kk/uso-archive/flomaster/data/',
+  extractUsoArchiveId: url =>
+    url &&
+    url.startsWith(URLS.usoArchiveRaw) &&
+    parseInt(url.match(/\/(\d+)\.user\.css|$/)[1]),
+
+  extractGreasyForkId: url =>
+    /^https:\/\/(?:greasy|sleazy)fork\.org\/scripts\/(\d+)[^/]*\/code\/[^/]*\.user\.css$/.test(url) &&
+    RegExp.$1,
 
   supported: url => (
     url.startsWith('http') && (FIREFOX || !url.startsWith(URLS.browserWebStore)) ||
@@ -132,7 +144,7 @@ function findExistingTab({url, currentWindow, ignoreHash = true, ignoreSearch = 
     .then(tabs => tabs.find(matchTab));
 
   function matchTab(tab) {
-    const tabUrl = new URL(tab.url);
+    const tabUrl = new URL(tab.pendingUrl || tab.url);
     return tabUrl.protocol === url.protocol &&
       tabUrl.username === url.username &&
       tabUrl.password === url.password &&
@@ -153,57 +165,48 @@ function findExistingTab({url, currentWindow, ignoreHash = true, ignoreSearch = 
  * @param {number} [_.openerTabId] defaults to the active tab
  * @param {Boolean} [_.active=true] `true` to activate the tab
  * @param {Boolean|null} [_.currentWindow=true] `null` to check all windows
- * @param {Boolean} [_.newWindow=false] `true` to open a new window
- * @param {chrome.windows.CreateData} [_.windowPosition] options for chrome.windows.create
+ * @param {chrome.windows.CreateData} [_.newWindow] creates a new window with these params if specified
  * @returns {Promise<chrome.tabs.Tab>} Promise -> opened/activated tab
  */
-function openURL({
+async function openURL({
   url,
   index,
   openerTabId,
   active = true,
   currentWindow = true,
-  newWindow = false,
-  windowPosition,
+  newWindow,
 }) {
   if (!url.includes('://')) {
     url = chrome.runtime.getURL(url);
   }
-  return findExistingTab({url, currentWindow}).then(tab => {
-    if (tab) {
-      return activateTab(tab, {
-        index,
-        openerTabId,
-        // when hash is different we can only set `url` if it has # otherwise the tab would reload
-        url: url !== tab.url && url.includes('#') ? url : undefined,
-      });
-    }
-    if (newWindow && browser.windows) {
-      return browser.windows.create(Object.assign({url}, windowPosition))
-        .then(wnd => wnd.tabs[0]);
-    }
-    return getActiveTab().then((activeTab = {url: ''}) =>
-      isTabReplaceable(activeTab, url) ?
-        activateTab(activeTab, {url, openerTabId}) : // not moving the tab
-        createTabWithOpener(activeTab, {url, index, active}));
-  });
-  function createTabWithOpener(openerTab, options) {
-    const id = openerTabId == null ? openerTab.id : openerTabId;
-    if (id != null && !openerTab.incognito && openerTabIdSupported) {
-      options.openerTabId = id;
-    }
-    return browser.tabs.create(options);
+  let tab = await findExistingTab({url, currentWindow});
+  if (tab) {
+    return activateTab(tab, {
+      index,
+      openerTabId,
+      // when hash is different we can only set `url` if it has # otherwise the tab would reload
+      url: url !== (tab.pendingUrl || tab.url) && url.includes('#') ? url : undefined,
+    });
   }
+  if (newWindow && browser.windows) {
+    return (await browser.windows.create(Object.assign({url}, newWindow)).tabs)[0];
+  }
+  tab = await getActiveTab() || {url: ''};
+  if (isTabReplaceable(tab, url)) {
+    return activateTab(tab, {url, openerTabId});
+  }
+  const id = openerTabId == null ? tab.id : openerTabId;
+  const opener = id != null && !tab.incognito && openerTabIdSupported && {openerTabId: id};
+  return browser.tabs.create(Object.assign({url, index, active}, opener));
 }
 
 // replace empty tab (NTP or about:blank)
 // except when new URL is chrome:// or chrome-extension:// and the empty tab is
 // in incognito
 function isTabReplaceable(tab, newUrl) {
-  if (!tab || !URLS.emptyTab.includes(tab.url)) {
+  if (!tab || !URLS.emptyTab.includes(tab.pendingUrl || tab.url)) {
     return false;
   }
-  // FIXME: but why?
   if (tab.incognito && newUrl.startsWith('chrome')) {
     return false;
   }
@@ -439,7 +442,7 @@ function download(url, {
   function collapseUsoVars(url) {
     if (queryPos < 0 ||
         url.length < 2000 ||
-        !url.startsWith(URLS.userstylesOrgJson) ||
+        !url.startsWith(URLS.usoJson) ||
         !/^get$/i.test(method)) {
       return url;
     }

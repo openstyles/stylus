@@ -1,14 +1,18 @@
-/* global promisifyChrome */
+/* global promisifyChrome msg API */
 'use strict';
+
+// Needs msg.js loaded first
 
 self.prefs = self.INJECTED === 1 ? self.prefs : (() => {
   const defaults = {
     'openEditInWindow': false,      // new editor opens in a own browser window
+    'openEditInWindow.popup': false, // new editor opens in a simplified browser window without omnibox
     'windowPosition': {},           // detached window position
     'show-badge': true,             // display text on popup menu icon
     'disableAll': false,            // boss key
     'exposeIframes': false,         // Add 'stylus-iframe' attribute to HTML element in all iframes
     'newStyleAsUsercss': false,     // create new style in usercss format
+    'styleViaXhr': false,           // early style injection to avoid FOUC
 
     // checkbox in style config dialog
     'config.autosave': true,
@@ -32,9 +36,9 @@ self.prefs = self.INJECTED === 1 ? self.prefs : (() => {
     'manage.onlyLocal.invert': false,   // display only externally installed styles
     'manage.onlyUsercss.invert': false, // display only non-usercss (standard) styles
     // UI element state: expanded/collapsed
+    'manage.actions.expanded': true,
     'manage.backup.expanded': true,
     'manage.filters.expanded': true,
-    'manage.options.expanded': true,
     // the new compact layout doesn't look good on Android yet
     'manage.newUI': !navigator.appVersion.includes('Android'),
     'manage.newUI.favicons': false, // show favicons for the sites in applies-to
@@ -115,12 +119,11 @@ self.prefs = self.INJECTED === 1 ? self.prefs : (() => {
     'storage.sync': ['get', 'set'],
   });
 
-  const initializing = browser.storage.sync.get('settings')
-    .then(result => {
-      if (result.settings) {
-        setAll(result.settings, true);
-      }
-    });
+  const initializing = (
+    msg.isBg
+      ? browser.storage.sync.get('settings').then(res => res.settings)
+      : API.getPrefs()
+  ).then(res => res && setAll(res, true));
 
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area !== 'sync' || !changes.settings || !changes.settings.newValue) {

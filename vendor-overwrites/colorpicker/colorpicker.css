@@ -86,10 +86,7 @@
   border: 1px solid var(--main-border-color);
   background-color: var(--main-background-color);
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.12);
-  -webkit-user-select: none;
   -moz-user-select: none;
-  -ms-user-select: none;
-  -o-user-select: none;
   user-select: none;
 }
 
@@ -139,8 +136,6 @@
   position: absolute;
   width: 10px;
   height: 10px;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
   border-radius: 50%;
   left: -5px;
   top: -5px;
@@ -168,8 +163,6 @@
   -webkit-border-radius: 50%;
   -moz-border-radius: 50%;
   border-radius: 50%;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   border: 1px solid var(--input-border-color);
 }
@@ -191,8 +184,6 @@
   position: relative;
   width: 100%;
   height: 10px;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
   border-radius: 3px;
   cursor: pointer;
   background: linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
@@ -212,8 +203,6 @@
   width: 100%;
   height: 10px;
   z-index: 2;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
   border-radius: 3px;
   cursor: pointer;
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAJElEQVQYV2NctWrVfwYkEBYWxojMZ6SDAmT7QGx0K1EcRBsFAADeG/3M/HteAAAAAElFTkSuQmCC");
@@ -239,9 +228,6 @@
 
 .colorpicker-input-container {
   position: relative;
-  -webkit-box-sizing: padding-box;
-  -moz-box-sizing: padding-box;
-  box-sizing: padding-box;
 }
 
 .colorpicker-input-group {
@@ -263,8 +249,6 @@
   position: relative;
   flex: 1;
   padding: 5px;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
 
@@ -295,10 +279,7 @@
   font-size: 11px;
   font-weight: bold;
   box-sizing: border-box;
-  -webkit-user-select: text;
   -moz-user-select: text;
-  -ms-user-select: text;
-  -o-user-select: text;
   user-select: text;
   border: 1px solid var(--input-border-color);
   background-color: var(--input-background-color);
@@ -306,7 +287,6 @@
 }
 
 .colorpicker-theme-dark .colorpicker-input::-webkit-inner-spin-button {
-  -webkit-filter: invert(1);
   filter: invert(1);
 }
 
@@ -376,4 +356,16 @@
 
 .colorpicker-format-change-button:hover {
   color: var(--label-color-hover);
+}
+
+.colorpicker-palette:not(:empty) {
+  padding: 0 8px 8px;
+  min-height: 14px; /* same as padding-left in .colorview-swatch */
+  max-height: 10vw;
+  overflow: auto;
+  box-sizing: content-box;
+}
+
+.colorpicker-palette .colorview-swatch {
+  padding-bottom: 14px; /* same as padding-left in .colorview-swatch */
 }

@@ -20,6 +20,9 @@ for (const type of [NodeList, NamedNodeMap, HTMLCollection, HTMLAllCollection]) 
   }
 }
 
+$.isTextLikeInput = el =>
+    el.localName === 'input' && /^(text|search|number)$/.test(el.type);
+
 $.remove = (selector, base = document) => {
   const el = selector && typeof selector === 'string' ? $(selector, base) : selector;
   if (el) {
@@ -98,7 +101,11 @@ document.addEventListener('wheel', event => {
     return;
   }
   if (el.tagName === 'SELECT') {
-    el.selectedIndex = Math.max(0, Math.min(el.length - 1, el.selectedIndex + Math.sign(event.deltaY)));
+    const old = el.selectedIndex;
+    el.selectedIndex = Math.max(0, Math.min(el.length - 1, old + Math.sign(event.deltaY)));
+    if (el.selectedIndex !== old) {
+      el.dispatchEvent(new Event('change', {bubbles: true}));
+    }
     event.preventDefault();
   }
   event.stopImmediatePropagation();
@@ -108,15 +115,9 @@ document.addEventListener('wheel', event => {
 });
 
 function onDOMready() {
-  if (document.readyState !== 'loading') {
-    return Promise.resolve();
-  }
-  return new Promise(resolve => {
-    document.addEventListener('DOMContentLoaded', function _() {
-      document.removeEventListener('DOMContentLoaded', _);
-      resolve();
-    });
-  });
+  return document.readyState !== 'loading'
+    ? Promise.resolve()
+    : new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve, {once: true}));
 }
 
 
@@ -140,8 +141,7 @@ function animateElement(
     onComplete,
   } = {}) {
   return element && new Promise(resolve => {
-    element.addEventListener('animationend', function _() {
-      element.removeEventListener('animationend', _);
+    element.addEventListener('animationend', () => {
       element.classList.remove(
         className,
         // In Firefox, `resolve()` might be called one frame later.
@@ -153,7 +153,7 @@ function animateElement(
         onComplete.call(element);
       }
       resolve();
-    });
+    }, {once: true});
     element.classList.add(className);
   });
 }
@@ -351,20 +351,23 @@ function focusAccessibility() {
     'a',
     'button',
     'input',
-    'textarea',
     'label',
     'select',
     'summary',
   ];
   // try to find a focusable parent for this many parentElement jumps:
   const GIVE_UP_DEPTH = 4;
+  // allow outline on text/search inputs in addition to textareas
+  const isOutlineAllowed = el =>
+    !focusAccessibility.ELEMENTS.includes(el.localName) ||
+    $.isTextLikeInput(el);
 
   addEventListener('mousedown', suppressOutlineOnClick, {passive: true});
   addEventListener('keydown', keepOutlineOnTab, {passive: true});
 
   function suppressOutlineOnClick({target}) {
     for (let el = target, i = 0; el && i++ < GIVE_UP_DEPTH; el = el.parentElement) {
-      if (focusAccessibility.ELEMENTS.includes(el.localName)) {
+      if (!isOutlineAllowed(el)) {
         focusAccessibility.lastFocusedViaClick = true;
         if (el.dataset.focusedViaClick === undefined) {
           el.dataset.focusedViaClick = '';
@@ -375,7 +378,7 @@ function focusAccessibility() {
   }
 
   function keepOutlineOnTab(event) {
-    if (event.which === 9) {
+    if (event.key === 'Tab') {
       focusAccessibility.lastFocusedViaClick = false;
       setTimeout(keepOutlineOnTab, 0, true);
       return;
@@ -383,7 +386,7 @@ function focusAccessibility() {
       return;
     }
     let el = document.activeElement;
-    if (!el || !focusAccessibility.ELEMENTS.includes(el.localName)) {
+    if (!el || isOutlineAllowed(el)) {
       return;
     }
     if (el.dataset.focusedViaClick !== undefined) {

@@ -1,6 +1,6 @@
 /* eslint no-eq-null: 0, eqeqeq: [2, "smart"] */
-/* global createCache db calcStyleDigest db tryRegExp styleCodeEmpty
-  getStyleWithNoCode msg sync uuidv4 colorScheme */
+/* global createCache db calcStyleDigest db tryRegExp styleCodeEmpty styleSectionGlobal
+  getStyleWithNoCode msg prefs sync uuidv4 URLS colorScheme */
 /* exported styleManager */
 'use strict';
 
@@ -60,6 +60,8 @@ const styleManager = (() => {
     searchParams: new URLSearchParams(),
     username: ''
   };
+
+  const DELETE_IF_NULL = ['id', 'customName'];
 
   handleLivePreviewConnections();
   handleColorScheme();
@@ -237,6 +239,13 @@ const styleManager = (() => {
     if (!reason) {
       reason = style ? 'update' : 'install';
     }
+    let url = !data.url && data.updateUrl;
+    if (url) {
+      const usoId = URLS.extractUsoArchiveId(url);
+      url = usoId && `${URLS.usoArchive}?style=${usoId}` ||
+            URLS.extractGreasyForkId(url) && url.match(/^.*?\/\d+/)[0];
+      if (url) data.url = data.installationUrl = url;
+    }
     // FIXME: update updateDate? what about usercss config?
     return calcStyleDigest(data)
       .then(digest => {
@@ -391,8 +400,10 @@ const styleManager = (() => {
     if (!style.name) {
       throw new Error('style name is empty');
     }
-    if (style.id == null) {
-      delete style.id;
+    for (const key of DELETE_IF_NULL) {
+      if (style[key] == null) {
+        delete style[key];
+      }
     }
     if (!style._id) {
       style._id = uuidv4();
@@ -460,7 +471,7 @@ const styleManager = (() => {
         excludedScheme = true;
       }
       for (const section of data.sections) {
-        if (styleCodeEmpty(section.code)) {
+        if (styleSectionGlobal(section) && styleCodeEmpty(section.code)) {
           continue;
         }
         const match = urlMatchSection(query, section);
@@ -484,7 +495,7 @@ const styleManager = (() => {
     return result;
   }
 
-  function getSectionsByUrl(url, id) {
+  function getSectionsByUrl(url, id, isInitialApply) {
     let cache = cachedStyleForUrl.get(url);
     if (!cache) {
       cache = {
@@ -500,13 +511,13 @@ const styleManager = (() => {
           .map(i => styles.get(i))
       );
     }
-    if (id) {
-      if (cache.sections[id]) {
-        return {[id]: cache.sections[id]};
-      }
-      return {};
-    }
-    return cache.sections;
+    const res = id
+      ? cache.sections[id] ? {[id]: cache.sections[id]} : {}
+      : cache.sections;
+    // Avoiding flicker of needlessly applied styles by providing both styles & pref in one API call
+    return isInitialApply && prefs.get('disableAll')
+      ? Object.assign({disableAll: true}, res)
+      : res;
 
     function buildCache(styleList) {
       const query = createMatchQuery(url);
@@ -578,6 +589,16 @@ const styleManager = (() => {
           touched = true;
         }
       }
+      // upgrade the old way of customizing local names
+      const {originalName} = style;
+      if (originalName) {
+        touched = true;
+        if (originalName !== style.name) {
+          style.customName = style.name;
+          style.name = originalName;
+        }
+        delete style.originalName;
+      }
       return touched;
     }
   }
@@ -605,7 +626,7 @@ const styleManager = (() => {
     ) {
       return true;
     }
-    if (section.urlPrefixes && section.urlPrefixes.some(p => query.url.startsWith(p))) {
+    if (section.urlPrefixes && section.urlPrefixes.some(p => p && query.url.startsWith(p))) {
       return true;
     }
     // as per spec the fragment portion is ignored in @-moz-document:
@@ -631,15 +652,7 @@ const styleManager = (() => {
       return 'sloppy';
     }
     // TODO: check for invalid regexps?
-    if (
-      (!section.regexps || !section.regexps.length) &&
-      (!section.urlPrefixes || !section.urlPrefixes.length) &&
-      (!section.urls || !section.urls.length) &&
-      (!section.domains || !section.domains.length)
-    ) {
-      return true;
-    }
-    return false;
+    return styleSectionGlobal(section);
   }
 
   function createCompiler(compile) {

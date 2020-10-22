@@ -1,8 +1,7 @@
 /* global download prefs openURL FIREFOX CHROME
-  URLS ignoreChromeError usercssHelper
+  URLS ignoreChromeError chromeLocal semverCompare
   styleManager msg navigatorUtil workerUtil contentScripts sync
-  findExistingTab activateTab isTabReplaceable getActiveTab
-  tabManager colorScheme */
+  findExistingTab activateTab isTabReplaceable getActiveTab colorScheme */
 'use strict';
 
 // eslint-disable-next-line no-var
@@ -65,11 +64,13 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   /* Same as openURL, the only extra prop in `opts` is `message` - it'll be sent when the tab is ready,
   which is needed in the popup, otherwise another extension could force the tab to open in foreground
   thus auto-closing the popup (in Chrome at least) and preventing the sendMessage code from running */
-  openURL(opts) {
-    const {message} = opts;
-    return openURL(opts) // will pass the resolved value untouched when `message` is absent or falsy
-      .then(message && (tab => tab.status === 'complete' ? tab : onTabReady(tab)))
-      .then(message && (tab => msg.sendTab(tab.id, opts.message)));
+  async openURL(opts) {
+    const tab = await openURL(opts);
+    if (opts.message) {
+      await onTabReady(tab);
+      await msg.sendTab(tab.id, opts.message);
+    }
+    return tab;
     function onTabReady(tab) {
       return new Promise((resolve, reject) =>
         setTimeout(function ping(numTries = 10, delay = 100) {
@@ -112,14 +113,6 @@ navigatorUtil.onUrlChange(({tabId, frameId}, type) => {
   }
 });
 
-tabManager.onUpdate(({tabId, url, oldUrl = ''}) => {
-  if (usercssHelper.testUrl(url) && !oldUrl.startsWith(URLS.installUsercss)) {
-    usercssHelper.testContents(tabId, url).then(data => {
-      if (data.code) usercssHelper.openInstallerPage(tabId, url, data);
-    });
-  }
-});
-
 if (FIREFOX) {
   // FF misses some about:blank iframes so we inject our content script explicitly
   navigatorUtil.onDOMContentLoaded(webNavIframeHelperFF, {
@@ -140,7 +133,7 @@ if (chrome.commands) {
 }
 
 // *************************************************************************
-chrome.runtime.onInstalled.addListener(({reason}) => {
+chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   // save install type: "admin", "development", "normal", "sideload" or "other"
   // "normal" = addon installed from webstore
   chrome.management.getSelf(info => {
@@ -157,6 +150,14 @@ chrome.runtime.onInstalled.addListener(({reason}) => {
   });
   // themes may change
   delete localStorage.codeMirrorThemes;
+  // inline search cache for USO is not needed anymore, TODO: remove this by the middle of 2021
+  if (semverCompare(previousVersion, '1.5.13') <= 0) {
+    setTimeout(async () => {
+      const del = Object.keys(await chromeLocal.get())
+        .filter(key => key.startsWith('usoSearchCache'));
+      if (del.length) chromeLocal.remove(del);
+    }, 15e3);
+  }
 });
 
 // *************************************************************************
@@ -298,16 +299,14 @@ function openEditor(params) {
     'url-prefix'?: String
   }
   */
-  const searchParams = new URLSearchParams();
-  for (const key in params) {
-    searchParams.set(key, params[key]);
-  }
-  const search = searchParams.toString();
+  const u = new URL(chrome.runtime.getURL('edit.html'));
+  u.search = new URLSearchParams(params);
   return openURL({
-    url: 'edit.html' + (search && `?${search}`),
-    newWindow: prefs.get('openEditInWindow'),
-    windowPosition: prefs.get('windowPosition'),
-    currentWindow: null
+    url: `${u}`,
+    currentWindow: null,
+    newWindow: prefs.get('openEditInWindow') && Object.assign({},
+      prefs.get('openEditInWindow.popup') && {type: 'popup'},
+      prefs.get('windowPosition')),
   });
 }
 
@@ -329,7 +328,7 @@ function openManage({options = false, search} = {}) {
       if (tab) {
         return Promise.all([
           activateTab(tab),
-          tab.url !== url && msg.sendTab(tab.id, {method: 'pushState', url})
+          (tab.pendingUrl || tab.url) !== url && msg.sendTab(tab.id, {method: 'pushState', url})
             .catch(console.error)
         ]);
       }

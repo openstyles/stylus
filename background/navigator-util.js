@@ -49,8 +49,9 @@ const navigatorUtil = (() => {
     }
     return browser.tabs.get(data.tabId)
       .then(tab => {
-        if (tab.url === 'chrome://newtab/') {
-          data.url = tab.url;
+        const url = tab.pendingUrl || tab.url;
+        if (url === 'chrome://newtab/') {
+          data.url = url;
         }
       });
   }

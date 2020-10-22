@@ -7,29 +7,24 @@
 }
 .CodeMirror {
   border: solid #CCC 1px;
+  transition: box-shadow .1s;
+}
+#stylus#stylus .CodeMirror {
+  /* Using a specificity hack to override userstyles */
+  /* Not using the ring-color hack as it became ugly in new Chrome */
+  outline: none !important;
 }
 .CodeMirror-lint-mark-warning {
   background: none;
 }
 .CodeMirror-dialog {
-  -webkit-animation: highlight 3s cubic-bezier(.18, .02, 0, .94);
-}
-.CodeMirror-focused {
-  outline: -webkit-focus-ring-color auto 5px;
-  outline-offset: -2px;
+  animation: highlight 3s cubic-bezier(.18, .02, 0, .94);
 }
 .CodeMirror-bookmark {
   background: linear-gradient(to right, currentColor, transparent);
   position: absolute;
   width: 2em;
   opacity: .5;
-}
-@supports (-moz-appearance:none) {
-  /* restrict to FF */
-  .CodeMirror-focused {
-    outline: #7dadd9 auto 1px;
-    outline-offset: -1px;
-  }
 }
 .CodeMirror-search-field {
   width: 10em;

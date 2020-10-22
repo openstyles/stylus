@@ -42,6 +42,16 @@
   <div id="options">
 
     <div class="block">
+      <h1 i18n-text="cm_theme"></h1>
+      <div class="items">
+        <label>
+          <a i18n-text="optionsStylusThemes" target="_blank"
+             href="https://33kk.github.io/uso-archive/?category=chrome-extension&search=Stylus"></a>
+        </label>
+      </div>
+    </div>
+
+    <div class="block">
       <h1 i18n-text="optionsCustomizeIcon"></h1>
       <div class="items">
         <label>
@@ -102,6 +112,13 @@
           </span>
         </label>
         <label>
+          <span i18n-text="popupOpenEditInPopup"></span>
+          <span class="onoffswitch">
+            <input type="checkbox" id="openEditInWindow.popup" class="slider">
+            <span></span>
+          </span>
+        </label>
+        <label>
           <span i18n-text="popupStylesFirst"></span>
           <span class="onoffswitch">
             <input type="checkbox" id="popup.stylesFirst" class="slider">
@@ -121,6 +138,45 @@
             <input type="checkbox" id="popup.borders" class="slider">
             <span></span>
           </span>
+        </label>
+      </div>
+    </div>
+
+    <div class="block">
+      <h1 i18n-text="openManage"></h1>
+      <div class="items">
+        <label>
+          <span i18n-text="manageNewUI"></span>
+          <span class="onoffswitch">
+            <input type="checkbox" id="manage.newUI" class="slider">
+            <span></span>
+          </span>
+        </label>
+        <label>
+          <span i18n-text="manageFavicons">
+            <a data-cmd="note"
+               i18n-title="manageFaviconsHelp"
+               href="#"
+               class="svg-inline-wrapper"
+               tabindex="0">
+              <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+            </a>
+          </span>
+          <span class="onoffswitch">
+            <input type="checkbox" id="manage.newUI.favicons" class="slider">
+            <span></span>
+          </span>
+        </label>
+        <label>
+          <span i18n-text="manageFaviconsGray"></span>
+          <span class="onoffswitch">
+            <input type="checkbox" id="manage.newUI.faviconsGray" class="slider">
+            <span></span>
+          </span>
+        </label>
+        <label>
+          <span i18n-text="manageMaxTargets"></span>
+          <input id="manage.newUI.targets" type="number" min="1" max="99">
         </label>
       </div>
     </div>
@@ -183,9 +239,25 @@
         </h1>
       </div>
       <div class="items">
+        <label class="chromium-only">
+          <span i18n-text="optionsAdvancedStyleViaXhr">
+            <a data-cmd="note"
+               i18n-title="optionsAdvancedStyleViaXhrNote"
+               href="#"
+               class="svg-inline-wrapper"
+               tabindex="0">
+              <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+            </a>
+          </span>
+          <span class="onoffswitch">
+            <input type="checkbox" id="styleViaXhr" class="slider">
+            <span></span>
+          </span>
+        </label>
         <label class="option-item">
           <span i18n-text="optionsAdvancedExposeIframes">
             <a data-cmd="note"
+               i18n-data-title="optionsAdvancedExposeIframesNote"
                i18n-title="optionsAdvancedExposeIframesNote"
                href="#"
                class="svg-inline-wrapper"

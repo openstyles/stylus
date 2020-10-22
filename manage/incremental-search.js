@@ -24,12 +24,12 @@ onDOMready().then(() => {
   document.body.appendChild(input);
   window.addEventListener('keydown', maybeRefocus, true);
 
-  function incrementalSearch({which}, immediately) {
+  function incrementalSearch({key}, immediately) {
     if (!immediately) {
       debounce(incrementalSearch, 100, {}, true);
       return;
     }
-    const direction = which === 38 ? -1 : which === 40 ? 1 : 0;
+    const direction = key === 'ArrowUp' ? -1 : key === 'ArrowDown' ? 1 : 0;
     const text = input.value.toLocaleLowerCase();
     if (!text.trim() || !direction && (text === prevText || focusedName.startsWith(text))) {
       prevText = text;
@@ -76,40 +76,32 @@ onDOMready().then(() => {
     if (event.altKey || event.metaKey || $('#message-box')) {
       return;
     }
-    const inTextInput = event.target.matches('[type=text], [type=search], [type=number]');
-    const {which: k, key} = event;
-    // focus search field on "/" or Ctrl-F key
-    if (event.ctrlKey
-        ? (event.code === 'KeyF' || !event.code && k === 70) && !event.shiftKey
-        : (key === '/' || !key && k === 191 && !event.shiftKey) && !inTextInput) {
+    const inTextInput = $.isTextLikeInput(event.target);
+    const {key, code, ctrlKey: ctrl} = event;
+    // `code` is independent of the current keyboard language
+    if ((code === 'KeyF' && ctrl && !event.shiftKey) ||
+        (code === 'Slash' || key === '/') && !ctrl && !inTextInput) {
+      // focus search field on "/" or Ctrl-F key
       event.preventDefault();
       $('#search').focus();
       return;
     }
-    if (event.ctrlKey || inTextInput) {
+    if (ctrl || inTextInput ||
+        key === ' ' && !input.value /* Space or Shift-Space is for page down/up */) {
       return;
     }
     const time = performance.now();
-    if (
-      // 0-9
-      k >= 48 && k <= 57 ||
-      // a-z
-      k >= 65 && k <= 90 ||
-      // numpad keys
-      k >= 96 && k <= 111 ||
-      // marks
-      k >= 186
-    ) {
+    if (key.length === 1) {
       input.focus();
       if (time - prevTime > 1000) {
         input.value = '';
       }
       prevTime = time;
     } else
-    if (k === 13 && focusedLink) {
+    if (key === 'Enter' && focusedLink) {
       focusedLink.dispatchEvent(new MouseEvent('click', {bubbles: true}));
     } else
-    if ((k === 38 || k === 40) && !event.shiftKey &&
+    if ((key === 'ArrowUp' || key === 'ArrowDown') && !event.shiftKey &&
         time - prevTime < 5000 && incrementalSearch(event, true)) {
       prevTime = time;
     } else

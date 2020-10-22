@@ -1,24 +1,14 @@
 /* global messageBox styleSectionsEqual API onDOMready
   tryJSONparse scrollElementIntoView $ $$ API $create t animateElement
-  styleJSONseemsValid */
-/* exported bulkChangeQueue bulkChangeTime */
+  styleJSONseemsValid bulkChangeQueue */
 'use strict';
 
 const STYLISH_DUMP_FILE_EXT = '.txt';
 const STYLUS_BACKUP_FILE_EXT = '.json';
 
-let bulkChangeQueue = [];
-let bulkChangeTime = 0;
-
 onDOMready().then(() => {
-  $('#file-all-styles').onclick = event => {
-    event.preventDefault();
-    exportToFile();
-  };
-  $('#unfile-all-styles').onclick = event => {
-    event.preventDefault();
-    importFromFile({fileTypeFilter: STYLUS_BACKUP_FILE_EXT});
-  };
+  $('#file-all-styles').onclick = () => exportToFile();
+  $('#unfile-all-styles').onclick = () => importFromFile({fileTypeFilter: STYLUS_BACKUP_FILE_EXT});
 
   Object.assign(document.body, {
     ondragover(event) {
@@ -141,7 +131,7 @@ function importFromString(jsonString) {
       }
     });
     bulkChangeQueue.length = 0;
-    bulkChangeTime = performance.now();
+    bulkChangeQueue.time = performance.now();
     return API.importManyStyles(items.map(i => i.item))
       .then(styles => {
         for (let i = 0; i < styles.length; i++) {

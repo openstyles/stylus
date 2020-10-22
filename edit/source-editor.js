@@ -1,4 +1,4 @@
-/* global dirtyReporter
+/* global
   createAppliesToLineWidget messageBox
   sectionsToMozFormat
   createMetaCompiler linter createLivePreview cmFactory $ $create API prefs t
@@ -6,16 +6,15 @@
 /* exported createSourceEditor */
 'use strict';
 
-function createSourceEditor({style, onTitleChanged}) {
-  $('#name').disabled = true;
-  $('#save-button').disabled = true;
+function createSourceEditor(editorBase) {
+  const {style, dirty} = editorBase;
+
+  let placeholderName = '';
+
   $('#mozilla-format-container').remove();
-  $('#save-button').onclick = save;
   $('#header').addEventListener('wheel', headerOnScroll);
   $('#sections').textContent = '';
   $('#sections').appendChild($create('.single-editor'));
-
-  const dirty = dirtyReporter();
 
   // normalize style
   if (!style.id) setupNewStyle(style);
@@ -28,13 +27,6 @@ function createSourceEditor({style, onTitleChanged}) {
   const livePreview = createLivePreview(preprocess);
   livePreview.show(Boolean(style.id));
 
-  $('#enabled').onchange = function () {
-    const value = this.checked;
-    dirty.modify('enabled', style.enabled, value);
-    style.enabled = value;
-    updateLivePreview();
-  };
-
   cm.on('changes', () => {
     dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
     updateLivePreview();
@@ -46,13 +38,13 @@ function createSourceEditor({style, onTitleChanged}) {
   metaCompiler.onUpdated(meta => {
     style.usercssData = meta;
     style.name = meta.name;
-    style.url = meta.homepageURL;
+    style.url = meta.homepageURL || style.installationUrl;
     updateMeta();
   });
 
-  linter.enableForEditor(cm);
-
   updateMeta().then(() => {
+
+    linter.enableForEditor(cm);
 
     let prevMode = NaN;
     cm.on('optionChange', (cm, option) => {
@@ -122,7 +114,7 @@ function createSourceEditor({style, onTitleChanged}) {
     return name;
   }
 
-  function setupNewStyle(style) {
+  async function setupNewStyle(style) {
     style.sections[0].code = ' '.repeat(prefs.get('editor.tabSize')) +
       `/* ${t('usercssReplaceTemplateSectionBody')} */`;
     let section = sectionsToMozFormat(style);
@@ -143,33 +135,35 @@ function createSourceEditor({style, onTitleChanged}) {
     dirty.clear('sourceGeneration');
     style.sourceCode = '';
 
-    chromeSync.getLZValue('usercssTemplate').then(code => {
-      const name = style.name || t('usercssReplaceTemplateName');
-      const date = new Date().toLocaleString();
-      code = code || DEFAULT_CODE;
-      code = code.replace(/@name(\s*)(?=[\r\n])/, (str, space) =>
-        `${str}${space ? '' : ' '}${name} - ${date}`);
-      // strip the last dummy section if any, add an empty line followed by the section
-      style.sourceCode = code.replace(/\s*@-moz-document[^{]*\{[^}]*\}\s*$|\s+$/g, '') + '\n\n' + section;
-      cm.startOperation();
-      cm.setValue(style.sourceCode);
-      cm.clearHistory();
-      cm.markClean();
-      cm.endOperation();
-      dirty.clear('sourceGeneration');
-      savedGeneration = cm.changeGeneration();
-    });
+    placeholderName = `${style.name || t('usercssReplaceTemplateName')} - ${new Date().toLocaleString()}`;
+    let code = await chromeSync.getLZValue('usercssTemplate');
+    code = code || DEFAULT_CODE;
+    code = code.replace(/@name(\s*)(?=[\r\n])/, (str, space) =>
+      `${str}${space ? '' : ' '}${placeholderName}`);
+    // strip the last dummy section if any, add an empty line followed by the section
+    style.sourceCode = code.replace(/\s*@-moz-document[^{]*{[^}]*}\s*$|\s+$/g, '') + '\n\n' + section;
+    cm.startOperation();
+    cm.setValue(style.sourceCode);
+    cm.clearHistory();
+    cm.markClean();
+    cm.endOperation();
+    dirty.clear('sourceGeneration');
+    savedGeneration = cm.changeGeneration();
   }
 
   function updateMeta() {
-    $('#name').value = style.name;
+    const name = style.customName || style.name;
+    if (name !== placeholderName) {
+      $('#name').value = name;
+    }
     $('#enabled').checked = style.enabled;
     $('#url').href = style.url;
-    onTitleChanged();
+    editorBase.updateName();
     return cm.setPreprocessor((style.usercssData || {}).preprocessor);
   }
 
   function replaceStyle(newStyle, codeIsUpdated) {
+    dirty.clear('name');
     const sameCode = newStyle.sourceCode === cm.getValue();
     if (sameCode) {
       savedGeneration = cm.changeGeneration();
@@ -210,14 +204,6 @@ function createSourceEditor({style, onTitleChanged}) {
     }
   }
 
-  function toggleStyle() {
-    const value = !style.enabled;
-    dirty.modify('enabled', style.enabled, value);
-    style.enabled = value;
-    updateMeta();
-    $('#enabled').dispatchEvent(new Event('change', {bubbles: true}));
-  }
-
   function save() {
     if (!dirty.isDirty()) return;
     const code = cm.getValue();
@@ -226,6 +212,7 @@ function createSourceEditor({style, onTitleChanged}) {
         id: style.id,
         enabled: style.enabled,
         sourceCode: code,
+        customName: style.customName,
       }))
       .then(replaceStyle)
       .catch(err => {
@@ -372,19 +359,17 @@ function createSourceEditor({style, onTitleChanged}) {
            (mode.helperType || '');
   }
 
-  return {
+  return Object.assign({}, editorBase, {
+    ready: Promise.resolve(),
     replaceStyle,
-    dirty,
-    getStyle: () => style,
     getEditors: () => [cm],
     scrollToEditor: () => {},
-    getStyleId: () => style.id,
     getEditorTitle: () => '',
     save,
-    toggleStyle,
     prevEditor: cm => nextPrevMozDocument(cm, -1),
     nextEditor: cm => nextPrevMozDocument(cm, 1),
     closestVisible: () => cm,
-    getSearchableInputs: () => []
-  };
+    getSearchableInputs: () => [],
+    updateLivePreview,
+  });
 }

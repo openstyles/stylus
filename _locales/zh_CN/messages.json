@@ -321,10 +321,6 @@
       }
     }
   },
-  "editorStylesButton": {
-    "message": "查找编辑器样式",
-    "description": "Find styles for the editor"
-  },
   "enableStyleLabel": {
     "message": "启用",
     "description": "Label for the button to enable a style"

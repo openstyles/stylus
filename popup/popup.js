@@ -13,7 +13,8 @@ const handleEvent = {};
 
 const ABOUT_BLANK = 'about:blank';
 const ENTRY_ID_PREFIX_RAW = 'style-';
-const ENTRY_ID_PREFIX = '#' + ENTRY_ID_PREFIX_RAW;
+
+$.entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrId}`);
 
 if (CHROME >= 66 && CHROME <= 69) { // Chrome 66-69 adds a gap, https://crbug.com/821143
   document.head.appendChild($create('style', 'html { overflow: overlay }'));
@@ -27,7 +28,7 @@ initTabUrls()
       onDOMready().then(() => initPopup(frames)),
       ...frames
         .filter(f => f.url && !f.isDupe)
-        .map(({url}) => API.getStylesByUrl(url).then(styles => ({styles, url}))),
+        .map(({url}) => getStyleDataMerged(url).then(styles => ({styles, url}))),
     ]))
   .then(([, ...results]) => {
     if (results[0]) {
@@ -53,17 +54,19 @@ if (CHROME_HAS_BORDER_BUG) {
 }
 
 function onRuntimeMessage(msg) {
+  if (!tabURL) return;
+  let ready = Promise.resolve();
   switch (msg.method) {
     case 'styleAdded':
     case 'styleUpdated':
       if (msg.reason === 'editPreview' || msg.reason === 'editPreviewEnd') return;
-      handleUpdate(msg);
+      ready = handleUpdate(msg);
       break;
     case 'styleDeleted':
       handleDelete(msg.style.id);
       break;
   }
-  dispatchEvent(new CustomEvent(msg.method, {detail: msg}));
+  ready.then(() => dispatchEvent(new CustomEvent(msg.method, {detail: msg})));
 }
 
 
@@ -141,8 +144,7 @@ function initPopup(frames) {
   }
 
   if (!tabURL) {
-    document.body.classList.add('blocked');
-    document.body.insertBefore(template.unavailableInfo, document.body.firstChild);
+    blockPopup();
     return;
   }
 
@@ -308,31 +310,37 @@ function sortStyles(entries) {
   return entries.sort(({styleMeta: a}, {styleMeta: b}) =>
     Boolean(a.frameUrl) - Boolean(b.frameUrl) ||
     enabledFirst && Boolean(b.enabled) - Boolean(a.enabled) ||
-    a.name.localeCompare(b.name));
+    (a.customName || a.name).localeCompare(b.customName || b.name));
 }
 
 function showStyles(frameResults) {
   const entries = new Map();
   frameResults.forEach(({styles = [], url}, index) => {
     styles.forEach(style => {
-      const {id} = style.data;
+      const {id} = style;
       if (!entries.has(id)) {
         style.frameUrl = index === 0 ? '' : url;
-        entries.set(id, createStyleElement(Object.assign(style.data, style)));
+        entries.set(id, createStyleElement(style));
       }
     });
   });
   if (entries.size) {
-    installed.append(...sortStyles([...entries.values()]));
+    resortEntries([...entries.values()]);
   } else {
-    installed.appendChild(template.noStyles.cloneNode(true));
+    installed.appendChild(template.noStyles);
   }
   window.dispatchEvent(new Event('showStyles:done'));
 }
 
+function resortEntries(entries) {
+  // `entries` is specified only at startup, after that we respect the prefs
+  if (entries || prefs.get('popup.autoResort')) {
+    installed.append(...sortStyles(entries || $$('.entry', installed)));
+  }
+}
 
 function createStyleElement(style) {
-  let entry = $(ENTRY_ID_PREFIX + style.id);
+  let entry = $.entry(style);
   if (!entry) {
     entry = template.style.cloneNode(true);
     entry.setAttribute('style-id', style.id);
@@ -400,7 +408,7 @@ function createStyleElement(style) {
   $('.checker', entry).checked = style.enabled;
 
   const styleName = $('.style-name', entry);
-  styleName.lastChild.textContent = style.name;
+  styleName.lastChild.textContent = style.customName || style.name;
   setTimeout(() => {
     styleName.title =
       entry.styleMeta.sloppy ? t('styleNotAppliedRegexpProblemTooltip') :
@@ -470,11 +478,7 @@ Object.assign(handleEvent, {
     event.stopPropagation();
     API
       .toggleStyle(handleEvent.getClickedStyleId(event), this.checked)
-      .then(() => {
-        if (prefs.get('popup.autoResort')) {
-          installed.append(...sortStyles($$('.entry', installed)));
-        }
-      });
+      .then(() => resortEntries());
   },
 
   toggleExclude(event, type) {
@@ -504,16 +508,15 @@ Object.assign(handleEvent, {
       window.onkeydown = event => {
         const close = $('.menu-close', entry);
         const checkbox = $('.exclude-by-domain-checkbox', entry);
-        const keyCode = event.keyCode || event.which;
-        if (document.activeElement === close && (keyCode === 9) && !event.shiftKey) {
+        if (document.activeElement === close && (event.key === 'Tab') && !event.shiftKey) {
           event.preventDefault();
           checkbox.focus();
         }
-        if (document.activeElement === checkbox && (keyCode === 9) && event.shiftKey) {
+        if (document.activeElement === checkbox && (event.key === 'Tab') && event.shiftKey) {
           event.preventDefault();
           close.focus();
         }
-        if (keyCode === 27) {
+        if (event.key === 'Escape') {
           event.preventDefault();
           close.click();
         }
@@ -539,20 +542,20 @@ Object.assign(handleEvent, {
       const close = $('.menu-close', entry);
       const checkbox = $('.exclude-by-domain-checkbox', entry);
       const confirmActive = $('#confirm[data-display="true"]');
-      const keyCode = event.keyCode || event.which;
-      if (document.activeElement === cancel && (keyCode === 9)) {
+      const {key} = event;
+      if (document.activeElement === cancel && (key === 'Tab')) {
         event.preventDefault();
         affirm.focus();
       }
-      if (document.activeElement === close && (keyCode === 9) && !event.shiftKey) {
+      if (document.activeElement === close && (key === 'Tab') && !event.shiftKey) {
         event.preventDefault();
         checkbox.focus();
       }
-      if (document.activeElement === checkbox && (keyCode === 9) && event.shiftKey) {
+      if (document.activeElement === checkbox && (key === 'Tab') && event.shiftKey) {
         event.preventDefault();
         close.focus();
       }
-      if (keyCode === 27) {
+      if (key === 'Escape') {
         event.preventDefault();
         if (confirmActive) {
           box.dataset.display = false;
@@ -673,38 +676,25 @@ Object.assign(handleEvent, {
 });
 
 
-function handleUpdate({style, reason}) {
-  if (!tabURL) return;
-
-  fetchStyle()
-    .then(style => {
-      if (!style) {
-        return;
-      }
-      if ($(ENTRY_ID_PREFIX + style.id)) {
-        createStyleElement(style);
-        return;
-      }
-      document.body.classList.remove('blocked');
-      $$.remove('.blocked-info, #no-styles');
-      createStyleElement(style);
-    })
-    .catch(console.error);
-
-  function fetchStyle() {
-    if (reason === 'toggle' && $(ENTRY_ID_PREFIX + style.id)) {
-      return Promise.resolve(style);
-    }
-    return API.getStylesByUrl(tabURL, style.id)
-      .then(([result]) => result && Object.assign(result.data, result));
+async function handleUpdate({style, reason}) {
+  if (reason !== 'toggle' || !$.entry(style)) {
+    style = await getStyleDataMerged(tabURL, style.id);
+    if (!style) return;
   }
+  const el = createStyleElement(style);
+  if (!el.parentNode) {
+    installed.appendChild(el);
+    blockPopup(false);
+  }
+  resortEntries();
 }
 
 
 function handleDelete(id) {
-  $.remove(ENTRY_ID_PREFIX + id);
-  if (!$('.entry')) {
-    installed.appendChild(template.noStyles.cloneNode(true));
+  const el = $.entry(id);
+  if (el) {
+    el.remove();
+    if (!$('.entry')) installed.appendChild(template.noStyles);
   }
 }
 
@@ -721,4 +711,22 @@ function waitForTabUrlFF(tab) {
       // TODO: remove both spreads and tabId check when strict_min_version >= 61
     ]);
   });
+}
+
+/* Merges the extra props from API into style data.
+ * When `id` is specified returns a single object otherwise an array */
+async function getStyleDataMerged(url, id) {
+  const styles = (await API.getStylesByUrl(url, id))
+    .map(r => Object.assign(r.data, r));
+  return id ? styles[0] : styles;
+}
+
+function blockPopup(isBlocked = true) {
+  document.body.classList.toggle('blocked', isBlocked);
+  if (isBlocked) {
+    document.body.prepend(template.unavailableInfo);
+  } else {
+    template.unavailableInfo.remove();
+    template.noStyles.remove();
+  }
 }

@@ -250,6 +250,13 @@
     "message": "Copy to clipboard",
     "description": "Tooltip for elements which can be copied"
   },
+  "customNameHint": {
+    "message": "Enter a custom name here to rename the style in UI without breaking its updates"
+  },
+  "customNameResetHint": {
+    "message": "Stop using customized name, switch to the style's own name",
+    "description": "Tooltip of 'x' button shown in editor when changing the name input of a) styles updated from a URL i.e. not locally created, b) UserCSS styles"
+  },
   "dateInstalled": {
     "message": "Date installed",
     "description": "Option text for the user to sort the style by install date"
@@ -318,10 +325,6 @@
       }
     },
     "description": "Title of the page for editing styles"
-  },
-  "editorStylesButton": {
-    "message": "Find editor styles",
-    "description": "Find styles for the editor"
   },
   "enableStyleLabel": {
     "message": "Enable",
@@ -984,6 +987,12 @@
   "optionsAdvancedAutoSwitchSchemeByTime": {
     "message": "By night time:"
   },
+  "optionsAdvancedStyleViaXhr": {
+    "message": "Instant inject mode"
+  },
+  "optionsAdvancedStyleViaXhrNote": {
+    "message": "Enable this if you encounter flashing of unstyled content (FOUC) when browsing, which is especially noticeable with dark themes.\n\nThe technical reason is that Chrome/Chromium postpones asynchronous communication of extensions, in a usually meaningless attempt to improve page load speed, potentially causing styles to be late to apply. To circumvent this, since web extensions are not provided a synchronous API, Stylus provides this option to utilize the \"deprecated\" synchronous XMLHttpRequest web API to fetch applicable styles. There shouldn't be any detrimental effects, since the request is fulfilled within a few milliseconds while the page is still being downloaded from the server.\n\nNevertheless, Chromium will print a warning in devtools' console. Right-clicking a warning, and hiding them, will prevent future warnings from being shown."
+  },
   "optionsBadgeDisabled": {
     "message": "Background color when disabled"
   },
@@ -1035,6 +1044,9 @@
   },
   "optionsResetButton": {
     "message": "Reset options"
+  },
+  "optionsStylusThemes": {
+    "message": "Find a Stylus UI theme"
   },
   "optionsSubheading": {
     "message": "More Options",
@@ -1147,6 +1159,10 @@
     "message": "Action menu",
     "description": "Tooltip for menu button in popup."
   },
+  "popupOpenEditInPopup": {
+    "message": "Use a simple window (no omnibox)",
+    "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+  },
   "popupOpenEditInWindow": {
     "message": "Open editor in a new window",
     "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
@@ -1198,6 +1214,10 @@
     "message": "Case-sensitive",
     "description": "Tooltip for the 'Aa' icon that enables case-sensitive search in the editor shown on Ctrl-F"
   },
+  "searchGlobalStyles": {
+    "message": "Also search global styles",
+    "description": "Checkbox label in the popup's inline style search, shown when the text to search is entered"
+  },
   "searchNumberOfResults": {
     "message": "Number of matches",
     "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
@@ -1205,6 +1225,10 @@
   "searchNumberOfResults2": {
     "message": "Number of matches in code and applies-to values",
     "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+  },
+  "searchStyleQueryHint": {
+    "message": "Search style names case-insensitively:\nsome words - all words in any order\n\"some phrase\" - this exact phrase without quotes\n2020 - a year like this also shows styles updated in 2020",
+    "description": "Tooltip shown for the text input in the popup's inline style finder"
   },
   "searchRegexp": {
     "message": "Use /re/ syntax for regexp search",

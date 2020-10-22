@@ -1,38 +1,24 @@
-/* global dirtyReporter showHelp toggleContextMenuDelete createSection
+/* global showHelp toggleContextMenuDelete createSection
   CodeMirror linter createLivePreview showCodeMirrorPopup
   sectionsToMozFormat messageBox clipString
-  rerouteHotkeys $ $$ $create t FIREFOX API
+  $ $$ $create t FIREFOX API
   debounce */
 /* exported createSectionsEditor */
 'use strict';
 
-function createSectionsEditor({style, onTitleChanged}) {
+function createSectionsEditor(editorBase) {
+  const {style, dirty} = editorBase;
+
   let INC_ID = 0; // an increment id that is used by various object to track the order
-  const dirty = dirtyReporter();
 
   const container = $('#sections');
   const sections = [];
 
   container.classList.add('section-editor');
-
-  const nameEl = $('#name');
-  nameEl.addEventListener('input', () => {
-    dirty.modify('name', style.name, nameEl.value);
-    style.name = nameEl.value;
-    onTitleChanged();
-  });
-
-  const enabledEl = $('#enabled');
-  enabledEl.addEventListener('change', () => {
-    dirty.modify('enabled', style.enabled, enabledEl.checked);
-    style.enabled = enabledEl.checked;
-    updateLivePreview();
-  });
-
+  updateHeader();
   $('#to-mozilla').addEventListener('click', showMozillaFormat);
   $('#to-mozilla-help').addEventListener('click', showToMozillaHelp);
   $('#from-mozilla').addEventListener('click', () => showMozillaFormatImport());
-  $('#save-button').addEventListener('click', saveStyle);
 
   document.addEventListener('wheel', scrollEntirePageOnCtrlShift, {passive: false});
   CodeMirror.defaults.extraKeys['Shift-Ctrl-Wheel'] = 'scrollWindow';
@@ -47,78 +33,77 @@ function createSectionsEditor({style, onTitleChanged}) {
       .forEach(e => e.addEventListener('mousedown', toggleContextMenuDelete));
   }
 
-  let sectionOrder = '';
-  const initializing = new Promise(resolve => initSection({
-    sections: style.sections.slice(),
-    done:() => {
-      dirty.clear();
-      rerouteHotkeys(true);
-      resolve();
-      updateHeader();
-      sections.forEach(fitToContent);
+  const xo = window.IntersectionObserver && new IntersectionObserver(entries => {
+    for (const {isIntersecting, target} of entries) {
+      if (isIntersecting) {
+        target.CodeMirror.refresh();
+        xo.unobserve(target);
+      }
     }
-  }));
+  }, {rootMargin: '100%'});
+  const refreshOnView = (cm, force) =>
+    force || !xo ?
+      cm.refresh() :
+      xo.observe(cm.display.wrapper);
+
+  let sectionOrder = '';
+  let headerOffset; // in compact mode the header is at the top so it reduces the available height
+  const ready = initSections(style.sections, {isFirstInit: true});
 
   const livePreview = createLivePreview();
   livePreview.show(Boolean(style.id));
 
-  return {
-    ready: () => initializing,
+  return Object.assign({}, editorBase, {
+    ready,
     replaceStyle,
-    dirty,
-    getStyle: () => style,
     getEditors,
     scrollToEditor,
-    getStyleId: () => style.id,
     getEditorTitle: cm => {
       const index = sections.filter(s => !s.isRemoved()).findIndex(s => s.cm === cm);
       return `${t('sectionCode')} ${index + 1}`;
     },
-    save: saveStyle,
-    toggleStyle,
+    save,
     nextEditor,
     prevEditor,
     closestVisible,
     getSearchableInputs,
-  };
+    updateLivePreview,
+  });
 
   function fitToContent(section) {
-    if (section.cm.isRefreshed) {
+    const {el, cm, cm: {display: {wrapper, sizer}}} = section;
+    if (cm.display.renderedView) {
       resize();
     } else {
-      section.cm.on('update', resize);
+      cm.on('update', resize);
     }
 
     function resize() {
-      let contentHeight = section.el.querySelector('.CodeMirror-sizer').offsetHeight;
-      if (contentHeight < section.cm.defaultTextHeight()) {
+      let contentHeight = sizer.offsetHeight;
+      if (contentHeight < cm.defaultTextHeight()) {
         return;
       }
-      contentHeight += 9; // border & resize grip
-      section.cm.off('update', resize);
-      const cmHeight = section.cm.getWrapperElement().offsetHeight;
-      const maxHeight = cmHeight + window.innerHeight - section.el.offsetHeight;
-      section.cm.setSize(null, Math.min(contentHeight, maxHeight));
-      if (sections.every(s => s.cm.isRefreshed)) {
-        fitToAvailableSpace();
+      if (headerOffset == null) {
+        headerOffset = el.getBoundingClientRect().top;
       }
-      setTimeout(() => {
-        container.classList.add('section-editor-ready');
-      }, 50);
+      contentHeight += 9; // border & resize grip
+      cm.off('update', resize);
+      const cmHeight = wrapper.offsetHeight;
+      const maxHeight = (window.innerHeight - headerOffset) - (section.el.offsetHeight - cmHeight);
+      cm.setSize(null, Math.min(contentHeight, maxHeight));
     }
   }
 
   function fitToAvailableSpace() {
-    const available =
-      Math.floor(container.offsetHeight - sections.reduce((h, s) => h + s.el.offsetHeight, 0)) ||
-      window.innerHeight - container.offsetHeight;
-    if (available <= 0) {
-      return;
+    const ch = container.offsetHeight;
+    let available = ch - sections[sections.length - 1].el.getBoundingClientRect().bottom + headerOffset;
+    if (available <= 1) available = window.innerHeight - ch - headerOffset;
+    const delta = Math.floor(available / sections.length);
+    if (delta > 1) {
+      sections.forEach(({cm}) => {
+        cm.setSize(null, cm.display.wrapper.offsetHeight + delta);
+      });
     }
-    const cmHeights = sections.map(s => s.cm.getWrapperElement().offsetHeight);
-    sections.forEach((section, i) => {
-      section.cm.setSize(null, cmHeights[i] + Math.floor(available / sections.length));
-    });
   }
 
   function genId() {
@@ -240,14 +225,6 @@ function createSectionsEditor({style, onTitleChanged}) {
     return sections.filter(s => !s.isRemoved()).map(s => s.cm);
   }
 
-  function toggleStyle() {
-    const newValue = !style.enabled;
-    dirty.modify('enabled', style.enabled, newValue);
-    style.enabled = newValue;
-    enabledEl.checked = newValue;
-    updateLivePreview();
-  }
-
   function nextEditor(cm, cycle = true) {
     if (!cycle && findLast(sections, s => !s.isRemoved()).cm === cm) {
       return;
@@ -367,7 +344,7 @@ function createSectionsEditor({style, onTitleChanged}) {
           if (replaceOldStyle) {
             return replaceSections(sections);
           }
-          return new Promise(resolve => initSection({sections, done: resolve, focusOn: false}));
+          return initSections(sections, {focusOn: false});
         })
         .then(() => {
           $('.dismiss').dispatchEvent(new Event('click'));
@@ -411,7 +388,7 @@ function createSectionsEditor({style, onTitleChanged}) {
   }
 
   function validate() {
-    if (!nameEl.reportValidity()) {
+    if (!$('#name').reportValidity()) {
       messageBox.alert(t('styleMissingName'));
       return false;
     }
@@ -429,7 +406,7 @@ function createSectionsEditor({style, onTitleChanged}) {
     return true;
   }
 
-  function saveStyle() {
+  function save() {
     if (!dirty.isDirty()) {
       return;
     }
@@ -458,10 +435,10 @@ function createSectionsEditor({style, onTitleChanged}) {
   }
 
   function updateHeader() {
-    nameEl.value = style.name || '';
-    enabledEl.checked = style.enabled !== false;
+    $('#name').value = style.customName || style.name || '';
+    $('#enabled').checked = style.enabled !== false;
     $('#url').href = style.url || '';
-    onTitleChanged();
+    editorBase.updateName();
   }
 
   function updateLivePreview() {
@@ -472,36 +449,35 @@ function createSectionsEditor({style, onTitleChanged}) {
     livePreview.update(getModel());
   }
 
-  function initSection({
-    sections: originalSections,
-    total = originalSections.length,
+  function initSections(originalSections, {
     focusOn = 0,
-    done
-  }) {
-    container.classList.add('hidden');
-    chunk();
-
-    function chunk() {
-      if (!originalSections.length) {
-        setGlobalProgress();
-        if (focusOn !== false) {
-          setTimeout(() => sections[focusOn].cm.focus());
-        }
-        container.classList.remove('hidden');
-        for (const section of sections) {
-          section.cm.refreshOnView();
-        }
-        if (done) {
-          done();
-        }
-        return;
-      }
+    isFirstInit,
+  } = {}) {
+    let done;
+    const total = originalSections.length;
+    originalSections = originalSections.slice();
+    return new Promise(resolve => {
+      done = resolve;
+      chunk(true);
+    });
+    function chunk(forceRefresh) {
       const t0 = performance.now();
       while (originalSections.length && performance.now() - t0 < 100) {
-        insertSectionAfter(originalSections.shift());
+        insertSectionAfter(originalSections.shift(), undefined, forceRefresh);
+        if (isFirstInit) dirty.clear();
+        if (focusOn !== false && sections[focusOn]) {
+          sections[focusOn].cm.focus();
+          focusOn = false;
+        }
       }
       setGlobalProgress(total - originalSections.length, total);
-      setTimeout(chunk);
+      if (!originalSections.length) {
+        setGlobalProgress();
+        fitToAvailableSpace();
+        done();
+      } else {
+        setTimeout(chunk);
+      }
     }
   }
 
@@ -540,7 +516,7 @@ function createSectionsEditor({style, onTitleChanged}) {
     updateLivePreview();
   }
 
-  function insertSectionAfter(init, base) {
+  function insertSectionAfter(init, base, forceRefresh) {
     if (!init) {
       init = {code: '', urlPrefixes: ['http://example.com']};
     }
@@ -557,15 +533,18 @@ function createSectionsEditor({style, onTitleChanged}) {
       prevEditor,
       nextEditor
     });
-    if (base) {
-      const index = sections.indexOf(base);
-      sections.splice(index + 1, 0, section);
-      container.insertBefore(section.el, base.el.nextSibling);
-    } else {
-      sections.push(section);
-      container.appendChild(section.el);
+    const {cm} = section;
+    sections.splice(base ? sections.indexOf(base) + 1 : sections.length, 0, section);
+    container.insertBefore(section.el, base ? base.el.nextSibling : null);
+    refreshOnView(cm, forceRefresh);
+    if (!base || init.code) {
+      // Fit a) during startup or b) when the clone button is clicked on a section with some code
+      fitToContent(section);
     }
-    section.render();
+    if (base) {
+      cm.focus();
+      setTimeout(scrollToEditor, 0, cm);
+    }
     updateSectionOrder();
     section.onChange(updateLivePreview);
     updateLivePreview();
@@ -593,16 +572,17 @@ function createSectionsEditor({style, onTitleChanged}) {
     updateSectionOrder();
   }
 
-  function replaceSections(originalSections) {
+  function replaceSections(...args) {
     for (const section of sections) {
       section.remove(true);
     }
     sections.length = 0;
     container.textContent = '';
-    return new Promise(resolve => initSection({sections: originalSections, done: resolve}));
+    return initSections(...args);
   }
 
   function replaceStyle(newStyle, codeIsUpdated) {
+    dirty.clear('name');
     // FIXME: avoid recreating all editors?
     reinit().then(() => {
       Object.assign(style, newStyle);
@@ -619,7 +599,7 @@ function createSectionsEditor({style, onTitleChanged}) {
 
     function reinit() {
       if (codeIsUpdated !== false) {
-        return replaceSections(newStyle.sections.slice());
+        return replaceSections(newStyle.sections, {isFirstInit: true});
       }
       return Promise.resolve();
     }

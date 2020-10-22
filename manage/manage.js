@@ -4,11 +4,10 @@ global messageBox getStyleWithNoCode
   checkUpdate handleUpdateInstalled
   objectDiff
   configDialog
-  sorter msg prefs API onDOMready $ $$ $create template setupLivePrefs
-  URLS enforceInputRange t tWordBreak formatDate
+  sorter msg prefs API $ $$ $create template setupLivePrefs
+  t tWordBreak formatDate
   getOwnTab getActiveTab openURL animateElement sessionStorageHash debounce
-  scrollElementIntoView CHROME VIVALDI FIREFOX router
-  bulkChangeTime:true bulkChangeQueue
+  scrollElementIntoView CHROME VIVALDI router
 */
 'use strict';
 
@@ -18,16 +17,27 @@ const ENTRY_ID_PREFIX_RAW = 'style-';
 const ENTRY_ID_PREFIX = '#' + ENTRY_ID_PREFIX_RAW;
 
 const BULK_THROTTLE_MS = 100;
+const bulkChangeQueue = [];
+bulkChangeQueue.time = 0;
 
+// define pref-mapped ids separately
 const newUI = {
-  enabled: prefs.get('manage.newUI'),
-  favicons: prefs.get('manage.newUI.favicons'),
-  faviconsGray: prefs.get('manage.newUI.faviconsGray'),
-  targets: prefs.get('manage.newUI.targets'),
-  renderClass() {
-    document.documentElement.classList.toggle('newUI', newUI.enabled);
-  },
+  enabled: null, // the global option should come first
+  favicons: null,
+  faviconsGray: null,
+  targets: null,
 };
+// ...add utility functions
+Object.assign(newUI, {
+  ids: Object.keys(newUI),
+  prefGroup: 'manage.newUI',
+  prefKeyForId: id => id === 'enabled' ? newUI.prefGroup : `${newUI.prefGroup}.${id}`,
+  renderClass: () => document.documentElement.classList.toggle('newUI', newUI.enabled),
+});
+// ...read the actual values
+for (const id of newUI.ids) {
+  newUI[id] = prefs.get(newUI.prefKeyForId(id));
+}
 newUI.renderClass();
 
 const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps'];
@@ -40,23 +50,45 @@ Promise.all([
   API.getAllStyles(true),
   // FIXME: integrate this into filter.js
   router.getSearch('search') && API.searchDB({query: router.getSearch('search')}),
-  Promise.all([
-    onDOMready(),
-    prefs.initializing,
-  ])
-    .then(() => {
-      initGlobalEvents();
-      if (!VIVALDI) {
-        $$('#header select').forEach(el => el.adjustWidth());
-      }
-      if (FIREFOX && 'update' in (chrome.commands || {})) {
-        const btn = $('#manage-shortcuts-button');
-        btn.classList.remove('chromium-only');
-        btn.onclick = API.optionsCustomizeHotkeys;
-      }
-    }),
-]).then(args => {
-  showStyles(...args);
+  waitForSelector('#installed'), // needed to avoid flicker due to an extra frame and layout shift
+  prefs.initializing
+]).then(([styles, ids, el]) => {
+  installed = el;
+  installed.onclick = handleEvent.entryClicked;
+  $('#manage-options-button').onclick = () => router.updateHash('#stylus-options');
+  $('#sync-styles').onclick = () => router.updateHash('#stylus-options');
+  $$('#header a[href^="http"]').forEach(a => (a.onclick = handleEvent.external));
+  // show date installed & last update on hover
+  installed.addEventListener('mouseover', handleEvent.lazyAddEntryTitle);
+  installed.addEventListener('mouseout', handleEvent.lazyAddEntryTitle);
+  document.addEventListener('visibilitychange', onVisibilityChange);
+  // N.B. triggers existing onchange listeners
+  setupLivePrefs();
+  sorter.init();
+  prefs.subscribe(newUI.ids.map(newUI.prefKeyForId), () => switchUI());
+  switchUI({styleOnly: true});
+  // translate CSS manually
+  document.head.appendChild($create('style', `
+    .disabled h2::after {
+      content: "${t('genericDisabledLabel')}";
+    }
+    #update-all-no-updates[data-skipped-edited="true"]::after {
+      content: " ${t('updateAllCheckSucceededSomeEdited')}";
+    }
+    body.all-styles-hidden-by-filters::after {
+      content: "${t('filteredStylesAllHidden')}";
+    }
+  `));
+  if (!VIVALDI) {
+    $$('#header select').forEach(el => el.adjustWidth());
+  }
+  if (CHROME >= 80 && CHROME <= 88) {
+    // Wrong checkboxes are randomly checked after going back in history, https://crbug.com/1138598
+    addEventListener('pagehide', () => {
+      $$('input[type=checkbox]').forEach((el, i) => (el.name = `bug${i}`));
+    });
+  }
+  showStyles(styles, ids);
 });
 
 msg.onExtension(onRuntimeMessage);
@@ -67,7 +99,7 @@ function onRuntimeMessage(msg) {
     case 'styleAdded':
     case 'styleDeleted':
       bulkChangeQueue.push(msg);
-      if (performance.now() - bulkChangeTime < BULK_THROTTLE_MS) {
+      if (performance.now() - bulkChangeQueue.time < BULK_THROTTLE_MS) {
         debounce(handleBulkChange, BULK_THROTTLE_MS);
       } else {
         handleBulkChange();
@@ -82,74 +114,16 @@ function onRuntimeMessage(msg) {
   setTimeout(sorter.updateStripes, 0, {onlyWhenColumnsChanged: true});
 }
 
-
-function initGlobalEvents() {
-  installed = $('#installed');
-  installed.onclick = handleEvent.entryClicked;
-  $('#manage-options-button').onclick = () => {
-    router.updateHash('#stylus-options');
-  };
-  {
-    const btn = $('#manage-shortcuts-button');
-    btn.onclick = btn.onclick || (() => openURL({url: URLS.configureCommands}));
-  }
-  $$('#header a[href^="http"]').forEach(a => (a.onclick = handleEvent.external));
-  // show date installed & last update on hover
-  installed.addEventListener('mouseover', handleEvent.lazyAddEntryTitle);
-  installed.addEventListener('mouseout', handleEvent.lazyAddEntryTitle);
-
-  document.addEventListener('visibilitychange', onVisibilityChange);
-
-  $$('[data-toggle-on-click]').forEach(el => {
-    // dataset on SVG doesn't work in Chrome 49-??, works in 57+
-    const target = $(el.getAttribute('data-toggle-on-click'));
-    el.onclick = event => {
-      event.preventDefault();
-      target.classList.toggle('hidden');
-      if (target.classList.contains('hidden')) {
-        el.removeAttribute('open');
-      } else {
-        el.setAttribute('open', '');
-      }
-    };
-  });
-
-  // triggered automatically by setupLivePrefs() below
-  enforceInputRange($('#manage.newUI.targets'));
-
-  // N.B. triggers existing onchange listeners
-  setupLivePrefs();
-  sorter.init();
-
-  prefs.subscribe([
-    'manage.newUI',
-    'manage.newUI.favicons',
-    'manage.newUI.faviconsGray',
-    'manage.newUI.targets',
-  ], () => switchUI());
-
-  switchUI({styleOnly: true});
-
-  // translate CSS manually
-  document.head.appendChild($create('style', `
-    .disabled h2::after {
-      content: "${t('genericDisabledLabel')}";
-    }
-    #update-all-no-updates[data-skipped-edited="true"]::after {
-      content: " ${t('updateAllCheckSucceededSomeEdited')}";
-    }
-    body.all-styles-hidden-by-filters::after {
-      content: "${t('filteredStylesAllHidden')}";
-    }
-  `));
-}
-
 function showStyles(styles = [], matchUrlIds) {
   const sorted = sorter.sort({
-    styles: styles.map(style => ({
-      style,
-      name: (style.name || '').toLocaleLowerCase() + '\n' + style.name,
-    })),
+    styles: styles.map(style => {
+      const name = style.customName || style.name || '';
+      return {
+        style,
+        // sort case-insensitively the whole list then sort dupes like `Foo` and `foo` case-sensitively
+        name: name.toLocaleLowerCase() + '\n' + name,
+      };
+    }),
   });
   let index = 0;
   let firstRun = true;
@@ -196,7 +170,7 @@ function showStyles(styles = [], matchUrlIds) {
 }
 
 
-function createStyleElement({style, name}) {
+function createStyleElement({style, name: nameLC}) {
   // query the sub-elements just once, then reuse the references
   if ((createStyleElement.parts || {}).newUI !== newUI.enabled) {
     const entry = template[`style${newUI.enabled ? 'Compact' : ''}`];
@@ -225,8 +199,9 @@ function createStyleElement({style, name}) {
   }
   const parts = createStyleElement.parts;
   const configurable = style.usercssData && style.usercssData.vars && Object.keys(style.usercssData.vars).length > 0;
+  const name = style.customName || style.name;
   parts.checker.checked = style.enabled;
-  parts.nameLink.textContent = tWordBreak(style.name);
+  parts.nameLink.textContent = tWordBreak(name);
   parts.nameLink.href = parts.editLink.href = parts.editHrefBase + style.id;
   parts.homepage.href = parts.homepage.title = style.url || '';
   if (!newUI.enabled) {
@@ -243,7 +218,7 @@ function createStyleElement({style, name}) {
   const entry = parts.entry.cloneNode(true);
   entry.id = ENTRY_ID_PREFIX_RAW + style.id;
   entry.styleId = style.id;
-  entry.styleNameLowerCase = name || style.name.toLocaleLowerCase();
+  entry.styleNameLowerCase = nameLC || name.toLocaleLowerCase() + '\n' + name;
   entry.styleMeta = style;
   entry.className = parts.entryClassBase + ' ' +
     (style.enabled ? 'enabled' : 'disabled') +
@@ -401,10 +376,11 @@ Object.assign(handleEvent, {
     const openWindow = left && shift && !ctrl;
     const openBackgroundTab = (middle && !shift) || (left && ctrl && !shift);
     const openForegroundTab = (middle && shift) || (left && ctrl && shift);
-    const url = $('[href]', event.target.closest('.entry')).href;
+    const entry = event.target.closest('.entry');
+    const url = $('[href]', entry).href;
     if (openWindow || openBackgroundTab || openForegroundTab) {
       if (chrome.windows && openWindow) {
-        chrome.windows.create(Object.assign(prefs.get('windowPosition'), {url}));
+        API.openEditor({id: entry.styleId});
       } else {
         getOwnTab().then(({index}) => {
           openURL({
@@ -445,7 +421,7 @@ Object.assign(handleEvent, {
     animateElement(entry);
     messageBox({
       title: t('deleteStyleConfirm'),
-      contents: entry.styleMeta.name,
+      contents: entry.styleMeta.customName || entry.styleMeta.name,
       className: 'danger center',
       buttons: [t('confirmDelete'), t('confirmCancel')],
     })
@@ -489,7 +465,7 @@ Object.assign(handleEvent, {
       const y = Math.max(0, top);
       const first = document.elementFromPoint(x, y);
       const lastOffset = first.offsetTop + window.innerHeight;
-      const numTargets = prefs.get('manage.newUI.targets');
+      const numTargets = newUI.targets;
       let entry = first && first.closest('.entry') || installed.children[0];
       while (entry && entry.offsetTop <= lastOffset) {
         favicons.push(...$$('img', entry).slice(0, numTargets).filter(img => img.dataset.src));
@@ -541,7 +517,7 @@ function handleBulkChange() {
     const {id} = msg.style;
     if (msg.method === 'styleDeleted') {
       handleDelete(id);
-      bulkChangeTime = performance.now();
+      bulkChangeQueue.time = performance.now();
     } else {
       handleUpdateForId(id, msg);
     }
@@ -552,7 +528,7 @@ function handleBulkChange() {
 function handleUpdateForId(id, opts) {
   return API.getStyle(id, true).then(style => {
     handleUpdate(style, opts);
-    bulkChangeTime = performance.now();
+    bulkChangeQueue.time = performance.now();
   });
 }
 
@@ -619,10 +595,8 @@ function switchUI({styleOnly} = {}) {
   const current = {};
   const changed = {};
   let someChanged = false;
-  // ensure the global option is processed first
-  for (const el of [$('#manage.newUI'), ...$$('[id^="manage.newUI."]')]) {
-    const id = el.id.replace(/^manage\.newUI\.?/, '') || 'enabled';
-    const value = el.type === 'checkbox' ? el.checked : Number(el.value);
+  for (const id of newUI.ids) {
+    const value = prefs.get(newUI.prefKeyForId(id));
     const valueChanged = value !== newUI[id] && (id === 'enabled' || current.enabled);
     current[id] = value;
     changed[id] = valueChanged;
@@ -642,13 +616,11 @@ function switchUI({styleOnly} = {}) {
     }
   ` + (newUI.faviconsGray ? `
     .newUI .target img {
-      -webkit-filter: grayscale(1);
       filter: grayscale(1);
       opacity: .25;
     }
   ` : `
     .newUI .target img {
-      -webkit-filter: none;
       filter: none;
       opacity: 1;
     }
@@ -730,6 +702,20 @@ function highlightEditedStyle() {
   }
 }
 
+function waitForSelector(selector) {
+  // TODO: if used in other places, move to dom.js
+  // TODO: if used concurrently, rework to use just one observer internally
+  return new Promise(resolve => {
+    const mo = new MutationObserver(() => {
+      const el = $(selector);
+      if (el) {
+        mo.disconnect();
+        resolve(el);
+      }
+    });
+    mo.observe(document, {childList: true, subtree: true});
+  });
+}
 
 function embedOptions() {
   let options = $('#stylus-embedded-options');

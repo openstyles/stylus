@@ -12,7 +12,6 @@ createAPI({
   compileUsercss,
   parseUsercssMeta(text, indexOffset = 0) {
     loadScript(
-      '/js/polyfill.js',
       '/vendor/usercss-meta/usercss-meta.min.js',
       '/vendor-overwrites/colorpicker/colorconverter.js',
       '/js/meta-parser.js'
@@ -21,7 +20,6 @@ createAPI({
   },
   nullifyInvalidVars(vars) {
     loadScript(
-      '/js/polyfill.js',
       '/vendor/usercss-meta/usercss-meta.min.js',
       '/vendor-overwrites/colorpicker/colorconverter.js',
       '/js/meta-parser.js'
@@ -31,11 +29,15 @@ createAPI({
 });
 
 function compileUsercss(preprocessor, code, vars) {
-  loadScript('/vendor-overwrites/csslint/parserlib.js', '/js/moz-parser.js');
+  loadScript(
+    '/vendor-overwrites/csslint/parserlib.js',
+    '/vendor-overwrites/colorpicker/colorconverter.js',
+    '/js/moz-parser.js'
+  );
   const builder = getUsercssCompiler(preprocessor);
   vars = simpleVars(vars);
   return Promise.resolve(builder.preprocess ? builder.preprocess(code, vars) : code)
-    .then(code => parseMozFormat({code}))
+    .then(code => parseMozFormat({code, emptyDocument: preprocessor === 'stylus'}))
     .then(({sections, errors}) => {
       if (builder.postprocess) {
         builder.postprocess(sections, vars);
@@ -122,28 +124,39 @@ function getUsercssCompiler(preprocessor) {
         const pool = new Map();
         return Promise.resolve(doReplace(source));
 
-        function getValue(name, rgb) {
+        function getValue(name, rgbName) {
           if (!vars.hasOwnProperty(name)) {
             if (name.endsWith('-rgb')) {
-              return getValue(name.slice(0, -4), true);
+              return getValue(name.slice(0, -4), name);
             }
             return null;
           }
-          if (rgb) {
-            if (vars[name].type === 'color') {
-              const color = colorConverter.parse(vars[name].value);
-              if (!color) return null;
-              const {r, g, b} = color;
-              return `${r}, ${g}, ${b}`;
+          const {type, value} = vars[name];
+          switch (type) {
+            case 'color': {
+              let color = pool.get(rgbName || name);
+              if (color == null) {
+                color = colorConverter.parse(value);
+                if (color) {
+                  if (color.type === 'hsl') {
+                    color = colorConverter.HSVtoRGB(colorConverter.HSLtoHSV(color));
+                  }
+                  const {r, g, b} = color;
+                  color = rgbName
+                    ? `${r}, ${g}, ${b}`
+                    : `#${(0x1000000 + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+                }
+                // the pool stores `false` for bad colors to differentiate from a yet unknown color
+                pool.set(rgbName || name, color || false);
+              }
+              return color || null;
             }
-            return null;
+            case 'dropdown':
+            case 'select': // prevent infinite recursion
+              pool.set(name, '');
+              return doReplace(value);
           }
-          if (vars[name].type === 'dropdown' || vars[name].type === 'select') {
-            // prevent infinite recursion
-            pool.set(name, '');
-            return doReplace(vars[name].value);
-          }
-          return vars[name].value;
+          return value;
         }
 
         function doReplace(text) {

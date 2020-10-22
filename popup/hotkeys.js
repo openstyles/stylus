@@ -9,14 +9,13 @@ const hotkeys = (() => {
   let enabled = false;
   let ready = false;
 
-  window.addEventListener('showStyles:done', function _() {
-    window.removeEventListener('showStyles:done', _);
+  window.addEventListener('showStyles:done', () => {
     togglablesShown = true;
     togglables = getTogglables();
     ready = true;
     setState(true);
     initHotkeyInfo();
-  });
+  }, {once: true});
 
   window.addEventListener('resize', adjustInfoPosition);
 
@@ -33,44 +32,32 @@ const hotkeys = (() => {
   }
 
   function onKeyDown(event) {
-    if (event.ctrlKey || event.altKey || event.metaKey || !enabled) {
+    if (event.ctrlKey || event.altKey || event.metaKey || !enabled ||
+        /^(text|search)$/.test((document.activeElement || {}).type)) {
       return;
     }
     let entry;
-    const {which: k, key, code} = event;
+    let {key, code, shiftKey} = event;
 
-    if (code.startsWith('Digit') || code.startsWith('Numpad') && code.length === 7) {
+    if (key >= '0' && key <= '9') {
+      entry = entries[(Number(key) || 10) - 1];
+    } else if (code >= 'Digit0' && code <= 'Digit9') {
       entry = entries[(Number(code.slice(-1)) || 10) - 1];
-
-    } else if (
-        code === 'Backquote' || code === 'NumpadMultiply' ||
-        key && (key === '`' || key === '*') ||
-        k === 192 || k === 106) {
+    } else if (key === '`' || key === '*' || code === 'Backquote' || code === 'NumpadMultiply') {
       invertTogglables();
-
-    } else if (
-        code === 'NumpadSubtract' ||
-        key && key === '-' ||
-        k === 109) {
+    } else if (key === '-' || code === 'NumpadSubtract') {
       toggleState(entries, 'enabled', false);
-
-    } else if (
-        code === 'NumpadAdd' ||
-        key && key === '+' ||
-        k === 107) {
+    } else if (key === '+' || code === 'NumpadAdd') {
       toggleState(entries, 'disabled', true);
-
-    } else if (
-    // any single character
-        key && key.length === 1 ||
-        k >= 65 && k <= 90) {
-      const letter = new RegExp(key ? '^' + key : '^\\x' + k.toString(16), 'i');
-      entry = [...entries].find(entry => letter.test(entry.textContent));
+    } else if (key.length === 1) {
+      shiftKey = false; // typing ':' etc. needs Shift so we hide it here to avoid opening editor
+      key = key.toLocaleLowerCase();
+      entry = [...entries].find(e => e.innerText.toLocaleLowerCase().startsWith(key));
     }
     if (!entry) {
       return;
     }
-    const target = $(event.shiftKey ? '.style-edit-link' : '.checker', entry);
+    const target = $(shiftKey ? '.style-edit-link' : '.checker', entry);
     target.dispatchEvent(new MouseEvent('click', {cancelable: true}));
   }
 

@@ -105,14 +105,9 @@
   }
 
   Object.assign(CodeMirror.mimeModes['text/css'].propertyKeywords, {
-    'background-position-x': true,
-    'background-position-y': true,
-    'contain': true,
-    'mask-image': true,
-    'mix-blend-mode': true,
+    'content-visibility': true,
+    'overflow-anchor': true,
     'overscroll-behavior': true,
-    'rotate': true,
-    'isolation': true,
   });
   Object.assign(CodeMirror.mimeModes['text/css'].colorKeywords, {
     'darkgrey': true,
@@ -320,7 +315,7 @@ CodeMirror.hint && (() => {
     }
 
     // USO vars in usercss mode editor
-    const vars = editor.getStyle().usercssData.vars;
+    const vars = editor.style.usercssData.vars;
     const list = vars ?
       Object.keys(vars).filter(name => name.startsWith(leftPart)) : [];
     return {
@@ -348,7 +343,7 @@ CodeMirror.hint && (() => {
         string[start + 3] === '[' &&
         string[pos - 3] === ']' &&
         string[pos - 4] === ']') {
-      const vars = typeof editor !== 'undefined' && (editor.getStyle().usercssData || {}).vars;
+      const vars = typeof editor !== 'undefined' && (editor.style.usercssData || {}).vars;
       const name = vars && string.slice(start + 4, pos - 4);
       if (vars && Object.hasOwnProperty.call(vars, name.endsWith('-rgb') ? name.slice(0, -4) : name)) {
         token[0] = USO_VALID_VAR;

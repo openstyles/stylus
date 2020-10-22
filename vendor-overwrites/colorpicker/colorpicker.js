@@ -30,6 +30,7 @@
   let $swatch;
   let $formatChangeButton;
   let $hexCode;
+  let $palette;
   const $inputGroups = {};
   const $inputs = {};
   const $rgb = {};
@@ -164,6 +165,7 @@
           $formatChangeButton = $('format-change-button', {textContent: '↔'}),
         ]}),
       ]}),
+      $palette = $('palette'),
     ]});
 
     $inputs.hex = [$hexCode];
@@ -220,6 +222,11 @@
 
     if (!isNaN(options.left) && !isNaN(options.top)) {
       reposition();
+    }
+    if (Array.isArray(options.palette)) {
+      // Might need to clear a lot of elements so this is known to be faster than textContent = ''
+      while ($palette.firstChild) $palette.firstChild.remove();
+      $palette.append(...(options.palette));
     }
   }
 
@@ -355,29 +362,29 @@
   }
 
   function setFromKeyboard(event) {
-    const {which, ctrlKey: ctrl, altKey: alt, shiftKey: shift, metaKey: meta} = event;
-    switch (which) {
-      case 9: // Tab
-      case 33: // PgUp
-      case 34: // PgDn
+    const {key, ctrlKey: ctrl, altKey: alt, shiftKey: shift, metaKey: meta} = event;
+    switch (key) {
+      case 'Tab':
+      case 'PageUp':
+      case 'PageDown':
         if (!ctrl && !alt && !meta) {
           const el = document.activeElement;
           const inputs = $inputs[currentFormat];
           const lastInput = inputs[inputs.length - 1];
-          if (which === 9 && shift && el === inputs[0]) {
+          if (key === 'Tab' && shift && el === inputs[0]) {
             maybeFocus(lastInput);
-          } else if (which === 9 && !shift && el === lastInput) {
+          } else if (key === 'Tab' && !shift && el === lastInput) {
             maybeFocus(inputs[0]);
-          } else if (which !== 9 && !shift) {
-            setFromFormatElement({shift: which === 33 || shift});
+          } else if (key !== 'Tab' && !shift) {
+            setFromFormatElement({shift: key === 'PageUp' || shift});
           } else {
             return;
           }
           event.preventDefault();
         }
         return;
-      case 38: // Up
-      case 40: // Down
+      case 'ArrowUp':
+      case 'ArrowDown':
         if (!event.metaKey &&
             document.activeElement.localName === 'input' &&
             document.activeElement.checkValidity()) {
@@ -389,8 +396,8 @@
 
   function setFromKeyboardIncrement(event) {
     const el = document.activeElement;
-    const {which, ctrlKey: ctrl, altKey: alt, shiftKey: shift} = event;
-    const dir = which === 38 ? 1 : -1;
+    const {key, ctrlKey: ctrl, altKey: alt, shiftKey: shift} = event;
+    const dir = key === 'ArrowUp' ? 1 : -1;
     let value, newValue;
     if (currentFormat === 'hex') {
       value = el.value.trim();
@@ -454,7 +461,7 @@
     const newHSV = color.type === 'hsl' ?
       colorConverter.HSLtoHSV(color) :
       colorConverter.RGBtoHSV(color);
-    if (Object.keys(newHSV).every(k => Math.abs(newHSV[k] - HSV[k]) < 1e-3)) {
+    if (Object.entries(newHSV).every(([k, v]) => v === HSV[k] || Math.abs(v - HSV[k]) < 1e-3)) {
       return;
     }
     HSV = newHSV;
@@ -574,6 +581,19 @@
     }
   }
 
+  /** @param {MouseEvent} e */
+  function onPaletteClicked(e) {
+    if (e.target !== e.currentTarget) {
+      e.preventDefault();
+      if (!e.button && setColor(e.target.__color)) {
+        userActivity = performance.now();
+        colorpickerCallback();
+      } else if (e.button === 2 && options.paletteCallback) {
+        options.paletteCallback(e.target);
+      }
+    }
+  }
+
   function onMouseUp(event) {
     releaseMouse(event, ['saturation', 'hue', 'opacity']);
     if (onMouseDown.outsideClick) {
@@ -617,9 +637,9 @@
 
   function onKeyDown(e) {
     if (!e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
-      switch (e.which) {
-        case 13:
-        case 27:
+      switch (e.key) {
+        case 'Enter':
+        case 'Escape':
           e.preventDefault();
           e.stopPropagation();
           hide();
@@ -710,6 +730,8 @@
     $opacity.addEventListener('mousedown', onOpacityMouseDown);
     $hexLettercase.true.addEventListener('click', onHexLettercaseClicked);
     $hexLettercase.false.addEventListener('click', onHexLettercaseClicked);
+    $palette.addEventListener('click', onPaletteClicked);
+    $palette.addEventListener('contextmenu', onPaletteClicked);
 
     stopSnoozing();
     if (!options.isShortCut) {
@@ -735,6 +757,8 @@
     $opacity.removeEventListener('mousedown', onOpacityMouseDown);
     $hexLettercase.true.removeEventListener('click', onHexLettercaseClicked);
     $hexLettercase.false.removeEventListener('click', onHexLettercaseClicked);
+    $palette.removeEventListener('click', onPaletteClicked);
+    $palette.removeEventListener('contextmenu', onPaletteClicked);
     releaseMouse();
     stopSnoozing();
   }

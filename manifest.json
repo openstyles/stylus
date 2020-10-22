@@ -1,7 +1,7 @@
 {
   "name": "Stylus",
   "version": "1.5.13",
-  "minimum_chrome_version": "49",
+  "minimum_chrome_version": "55",
   "description": "__MSG_description__",
   "homepage_url": "https://add0n.com/stylus.html",
   "manifest_version": 2,
@@ -23,6 +23,9 @@
     "identity",
     "<all_urls>"
   ],
+  "optional_permissions": [
+    "declarativeContent"
+  ],
   "background": {
     "scripts": [
       "js/polyfill.js",
@@ -38,6 +41,7 @@
       "vendor/semver-bundle/semver.js",
       "vendor/db-to-cloud/db-to-cloud.min.js",
       "vendor/uuid/uuid.min.js",
+      "vendor/webext-launch-web-auth-flow/webext-launch-web-auth-flow.min.js",
       "background/token-manager.js",
       "background/sync.js",
       "background/content-scripts.js",
@@ -51,7 +55,9 @@
       "background/icon-manager.js",
       "background/background.js",
       "background/usercss-helper.js",
+      "background/usercss-install-helper.js",
       "background/style-via-api.js",
+      "background/style-via-xhr.js",
       "background/search-db.js",
       "background/update.js",
       "background/openusercss-api.js"

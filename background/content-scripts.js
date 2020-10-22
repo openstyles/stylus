@@ -17,6 +17,21 @@ const contentScripts = (() => {
   }
   const busyTabs = new Set();
   let busyTabsTimer;
+
+  // expose version on greasyfork/sleazyfork 1) info page and 2) code page
+  const urlMatches = '/scripts/\\d+[^/]*(/code)?([?#].*)?$';
+  chrome.webNavigation.onCommitted.addListener(({tabId}) => {
+    chrome.tabs.executeScript(tabId, {
+      file: '/content/install-hook-greasyfork.js',
+      runAt: 'document_start',
+    });
+  }, {
+    url: [
+      {hostEquals: 'greasyfork.org', urlMatches},
+      {hostEquals: 'sleazyfork.org', urlMatches},
+    ]
+  });
+
   return {injectToTab, injectToAllTabs};
 
   function injectToTab({url, tabId, frameId = null}) {
@@ -58,13 +73,13 @@ const contentScripts = (() => {
     return browser.tabs.query({}).then(tabs => {
       for (const tab of tabs) {
         // skip unloaded/discarded/chrome tabs
-        if (!tab.width || tab.discarded || !URLS.supported(tab.url)) continue;
+        if (!tab.width || tab.discarded || !URLS.supported(tab.pendingUrl || tab.url)) continue;
         // our content scripts may still be pending injection at browser start so it's too early to ping them
         if (tab.status === 'loading') {
           trackBusyTab(tab.id, true);
         } else {
           injectToTab({
-            url: tab.url,
+            url: tab.pendingUrl || tab.url,
             tabId: tab.id
           });
         }

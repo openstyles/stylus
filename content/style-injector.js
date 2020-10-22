@@ -8,7 +8,6 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
   const PATCH_ID = 'transition-patch';
   // styles are out of order if any of these elements is injected between them
   const ORDERED_TAGS = new Set(['head', 'body', 'frameset', 'style', 'link']);
-  const IS_OWN_PAGE = Boolean(chrome.tabs);
   // detect Chrome 65 via a feature it added since browser version can be spoofed
   const isChromePre65 = chrome.app && typeof Worklet !== 'function';
   const docRewriteObserver = RewriteObserver(_sort);
@@ -159,7 +158,7 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
   }
 
   function _emitUpdate(value) {
-    _toggleObservers(!IS_OWN_PAGE && list.length);
+    _toggleObservers(list.length);
     onUpdate();
     return value;
   }

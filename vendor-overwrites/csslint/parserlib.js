@@ -154,11 +154,12 @@ self.parserlib = (() => {
     'azimuth': '<azimuth>',
 
     // B
+    'backdrop-filter':         '<filter-function-list> | none',
     'backface-visibility':     'visible | hidden',
     'background':              '[ <bg-layer> , ]* <final-bg-layer>',
     'background-attachment':   '<attachment>#',
     'background-blend-mode':   '<blend-mode>',
-    'background-clip':         '<box>#',
+    'background-clip':         '[ <box> | text ]#',
     'background-color':        '<color>',
     'background-image':        '<bg-image>#',
     'background-origin':       '<box>#',
@@ -176,38 +177,14 @@ self.parserlib = (() => {
     'bookmark-level':          'none | <integer>',
     'bookmark-state':          'open | closed',
     'bookmark-target':         'none | <uri> | attr()',
-    'border':                  '<border-shorthand>',
-    'border-block-color':         '<color>{1,2}',
-    'border-block-end':           '<border-shorthand>',
-    'border-block-end-color':     '<color>',
-    'border-block-end-style':     '<border-style>',
-    'border-block-end-width':     '<border-width>',
-    'border-block-start':         '<border-shorthand>',
-    'border-block-start-color':   '<color>',
-    'border-block-start-style':   '<border-style>',
-    'border-block-start-width':   '<border-width>',
-    'border-block-style':         '<border-style>{1,2}',
-    'border-block-width':         '<border-width>{1,2}',
-    'border-bottom':              '<border-shorthand>',
-    'border-bottom-color':        '<color>',
+
     'border-bottom-left-radius':  '<x-one-radius>',
     'border-bottom-right-radius': '<x-one-radius>',
-    'border-bottom-style':        '<border-style>',
-    'border-bottom-width':        '<border-width>',
-    'border-boundary':            'none | parent | display',
-    'border-inline-color':        '<color>{1,2}',
-    'border-inline-end':          '<border-shorthand>',
-    'border-inline-end-color':    '<color>',
-    'border-inline-end-style':    '<border-style>',
-    'border-inline-end-width':    '<border-width>',
-    'border-inline-start':        '<border-shorthand>',
-    'border-inline-start-color':  '<color>',
-    'border-inline-start-style':  '<border-style>',
-    'border-inline-start-width':  '<border-width>',
-    'border-inline-style':        '<border-style>{1,2}',
-    'border-inline-width':        '<border-width>{1,2}',
+    'border-top-left-radius':     '<x-one-radius>',
+    'border-top-right-radius':    '<x-one-radius>',
+
+    'border-boundary':         'none | parent | display',
     'border-collapse':         'collapse | separate',
-    'border-color':            '<color>{1,4}',
     'border-image':            '[ none | <image> ] || <border-image-slice> ' +
                                '[ / <border-image-width> | / <border-image-width>? / <border-image-outset> ]? || ' +
                                '<border-image-repeat>',
@@ -216,24 +193,8 @@ self.parserlib = (() => {
     'border-image-slice':      '<border-image-slice>',
     'border-image-source':     '<image> | none',
     'border-image-width':      '<border-image-width>',
-    'border-left':             '<border-shorthand>',
-    'border-left-color':       '<color>',
-    'border-left-style':       '<border-style>',
-    'border-left-width':       '<border-width>',
     'border-radius':           '<border-radius>',
-    'border-right':            '<border-shorthand>',
-    'border-right-color':      '<color>',
-    'border-right-style':      '<border-style>',
-    'border-right-width':      '<border-width>',
     'border-spacing':          '<length>{1,2}',
-    'border-style':            '<border-style>{1,4}',
-    'border-top':              '<border-shorthand>',
-    'border-top-color':        '<color>',
-    'border-top-left-radius':  '<x-one-radius>',
-    'border-top-right-radius': '<x-one-radius>',
-    'border-top-style':        '<border-style>',
-    'border-top-width':        '<border-width>',
-    'border-width':            '<border-width>{1,4}',
     'bottom':                  '<width>',
     'box-decoration-break':    'slice | clone',
     'box-shadow':              '<box-shadow>',
@@ -286,6 +247,7 @@ self.parserlib = (() => {
     'columns':           1,
     'contain':           'none | strict | content | [ size || layout || style || paint ]',
     'content':           'normal | none | <content-list> [ / <string> ]?',
+    'content-visibility': 'visible | auto | hidden',
     'counter-increment': 1,
     'counter-reset':     1,
     'crop':              'rect() | inset-rect() | auto',
@@ -368,7 +330,7 @@ self.parserlib = (() => {
     'font-variant-ligatures':  '<font-variant-ligatures> | normal | none',
     'font-variant-numeric':    '<font-variant-numeric> | normal',
     'font-variant-position':   'normal | sub | super',
-    'font-variation-settings': 'normal | [ <string> <number>]#',
+    'font-variation-settings': 'normal | [ <string> <number> ]#',
     'font-weight':             '<font-weight>',
     '-ms-flex-align': 'start | end | center | stretch | baseline',
     '-ms-flex-order': '<number>',
@@ -508,6 +470,7 @@ self.parserlib = (() => {
     'outline-style':   '<border-style> | auto',
     'outline-width':   '<border-width>',
     'overflow':        '<overflow>{1,2}',
+    'overflow-anchor': 'auto | none',
     'overflow-block':  '<overflow>',
     'overflow-inline': '<overflow>',
     'overflow-style':  1,
@@ -578,6 +541,34 @@ self.parserlib = (() => {
 
     // S
     'scale':             'none | <number>{1,3}',
+
+    'scroll-behavior':             'auto | smooth',
+    'scroll-margin':               '<length>{1,4}',
+    'scroll-margin-bottom':        '<length>',
+    'scroll-margin-left':          '<length>',
+    'scroll-margin-right':         '<length>',
+    'scroll-margin-top':           '<length>',
+    'scroll-margin-block':         '<length>{1,2}',
+    'scroll-margin-block-end':     '<length>',
+    'scroll-margin-block-start':   '<length>',
+    'scroll-margin-inline':        '<length>{1,2}',
+    'scroll-margin-inline-end':    '<length>',
+    'scroll-margin-inline-start':  '<length>',
+    'scroll-padding':              '<auto-length-pct>{1,4}',
+    'scroll-padding-left':         '<auto-length-pct>',
+    'scroll-padding-right':        '<auto-length-pct>',
+    'scroll-padding-top':          '<auto-length-pct>',
+    'scroll-padding-bottom':       '<auto-length-pct>',
+    'scroll-padding-block':        '<auto-length-pct>{1,2}',
+    'scroll-padding-block-end':    '<auto-length-pct>',
+    'scroll-padding-block-start':  '<auto-length-pct>',
+    'scroll-padding-inline':       '<auto-length-pct>{1,2}',
+    'scroll-padding-inline-end':   '<auto-length-pct>',
+    'scroll-padding-inline-start': '<auto-length-pct>',
+    'scroll-snap-align':           '[ none | start | end | center ]{1,2}',
+    'scroll-snap-stop':            'normal | always',
+    'scroll-snap-type':            'none | [ x | y | block | inline | both ] [ mandatory | proximity ]?',
+
     'scrollbar-color':   'auto | dark | light | <color>{2}',
     'scrollbar-width':   'auto | thin | none',
     'shape-inside':      'auto | outside-shape | [ <basic-shape> || shape-box ] | <image> | display',
@@ -689,6 +680,25 @@ self.parserlib = (() => {
     '-webkit-text-stroke-width': '<border-width>',
   };
 
+  for (const [k, reps] of Object.entries({
+    'border': '{1,4}',
+    'border-bottom': '',
+    'border-left': '',
+    'border-right': '',
+    'border-top': '',
+    'border-block': '{1,2}',
+    'border-block-end': '',
+    'border-block-start': '',
+    'border-inline': '{1,2}',
+    'border-inline-end': '',
+    'border-inline-start': '',
+  })) {
+    Properties[k] = '<border-shorthand>';
+    Properties[`${k}-color`] = '<color>' + reps;
+    Properties[`${k}-style`] = '<border-style>' + reps;
+    Properties[`${k}-width`] = '<border-width>' + reps;
+  }
+
   //endregion
   //region ValidationTypes - definitions
 
@@ -709,6 +719,8 @@ self.parserlib = (() => {
       '<attr-fallback>': part => !/\battr\(/i.test(part.text),
 
       '<attachment>': 'scroll | fixed | local',
+
+      '<auto-length-pct>': 'auto | <length> | <percentage>',
 
       '<basic-shape>': 'inset() | circle() | ellipse() | polygon()',
 
@@ -2722,6 +2734,10 @@ self.parserlib = (() => {
 
     constructor(input) {
       this._reader = new StringReader(input ? input.toString() : '');
+      this.resetLT();
+    }
+
+    resetLT() {
       // Token object for the last consumed token.
       this._token = null;
       // Lookahead token buffer.
@@ -3148,8 +3164,7 @@ self.parserlib = (() => {
      */
     atRuleToken(first, pos) {
       this._reader.mark();
-      const ident = this.readName();
-      let rule = first + ident;
+      let rule = first + this.readName();
       let tt = Tokens.type(lower(rule));
       // if it's not valid, use the first character only and reset the reader
       if (tt === Tokens.CHAR || tt === Tokens.UNKNOWN) {
@@ -3850,6 +3865,7 @@ self.parserlib = (() => {
      * @param {Boolean} [options.starHack] - allows IE6 star hack
      * @param {Boolean} [options.underscoreHack] - interprets leading underscores as IE6-7 for known properties
      * @param {Boolean} [options.ieFilters] - accepts IE < 8 filters instead of throwing syntax errors
+     * @param {Boolean} [options.emptyDocument] - accepts @document without {} block produced by stylus-lang
      */
     constructor(options) {
       super();
@@ -4005,24 +4021,19 @@ self.parserlib = (() => {
 
     _supportsCondition() {
       const stream = this._tokenStream;
-      if (stream.match(Tokens.IDENT)) {
-        const ident = lower(stream._token.value);
-        if (ident === 'not') {
-          stream.mustMatch(Tokens.S);
-          this._supportsConditionInParens();
-        } else {
-          stream.unget();
-        }
+      const next = stream.LT(1);
+      if (next.type === Tokens.IDENT && lower(next.value) === 'not') {
+        stream.get();
+        stream.mustMatch(Tokens.S);
+        this._supportsConditionInParens();
       } else {
         this._supportsConditionInParens();
-        this._ws();
         while (stream.peek() === Tokens.IDENT) {
           const ident = lower(stream.LT(1).value);
           if (ident === 'and' || ident === 'or') {
-            stream.mustMatch(Tokens.IDENT);
+            stream.get();
             this._ws();
             this._supportsConditionInParens();
-            this._ws();
           }
         }
       }
@@ -4030,36 +4041,41 @@ self.parserlib = (() => {
 
     _supportsConditionInParens() {
       const stream = this._tokenStream;
-      if (stream.match(Tokens.LPAREN)) {
+      const next = stream.LT(1);
+      if (next.type === Tokens.LPAREN) {
+        stream.get();
         this._ws();
-        if (stream.match([Tokens.IDENT, Tokens.CUSTOM_PROP])) {
-          // look ahead for not keyword,
-          // if not given, continue with declaration condition.
-          const ident = lower(stream._token.value);
-          if (ident === 'not') {
-            this._ws();
+        const {type, value} = stream.LT(1);
+        if (type === Tokens.IDENT || type === Tokens.CUSTOM_PROP) {
+          if (lower(value) === 'not') {
             this._supportsCondition();
             stream.mustMatch(Tokens.RPAREN);
           } else {
-            stream.unget();
-            this._supportsDeclarationCondition(false);
+            this._supportsDecl(false);
           }
         } else {
           this._supportsCondition();
           stream.mustMatch(Tokens.RPAREN);
         }
+      } else if (next.type === Tokens.FUNCTION && lower(next.value) === 'selector(') {
+        stream.get();
+        this._ws();
+        this._selector();
+        stream.mustMatch(Tokens.RPAREN);
       } else {
-        this._supportsDeclarationCondition();
+        this._supportsDecl();
       }
+      this._ws();
     }
 
-    _supportsDeclarationCondition(requireStartParen = true) {
+    _supportsDecl(requireStartParen = true) {
+      const stream = this._tokenStream;
       if (requireStartParen) {
-        this._tokenStream.mustMatch(Tokens.LPAREN);
+        stream.mustMatch(Tokens.LPAREN);
       }
       this._ws();
       this._declaration();
-      this._tokenStream.mustMatch(Tokens.RPAREN);
+      stream.mustMatch(Tokens.RPAREN);
     }
 
     _media() {
@@ -4311,18 +4327,18 @@ self.parserlib = (() => {
     _document() {
       const stream = this._tokenStream;
       const functions = [];
-      let prefix = '';
-
       const start = stream.mustMatch(Tokens.DOCUMENT_SYM);
-      if (/^@-([^-]+)-/.test(start.value)) {
-        prefix = RegExp.$1;
-      }
-
+      const prefix = start.value.split('-')[1] || '';
       do {
         this._ws();
         functions.push(this._documentFunction());
       } while (stream.match(Tokens.COMMA));
 
+      this._ws();
+      if (this.options.emptyDocument && stream.peek() !== Tokens.LBRACE) {
+        this.fire({type: 'emptydocument', functions, prefix}, start);
+        return;
+      }
       stream.mustMatch(Tokens.LBRACE);
 
       this.fire({
@@ -4358,9 +4374,12 @@ self.parserlib = (() => {
 
     _documentFunction() {
       const stream = this._tokenStream;
-      return stream.match(Tokens.URI) ?
-        new PropertyValuePart(stream._token) :
-        this._function();
+      if (stream.match(Tokens.URI)) {
+        const res = new PropertyValuePart(stream._token);
+        this._ws();
+        return res;
+      }
+      return this._function();
     }
 
     _operator(inFunction) {
@@ -5296,19 +5315,62 @@ self.parserlib = (() => {
         throw new SyntaxError('Unknown @ rule.', lt0);
       }
 
-      this.fire({
-        type: 'error',
-        error: null,
-        message: 'Unknown @ rule: ' + lt0.value + '.',
-      }, lt0);
+      this._ws();
+      const simpleValue =
+        stream.match([Tokens.IDENT, Tokens.CUSTOM_PROP]) && SyntaxUnit.fromToken(stream._token) ||
+        stream.peek() === Tokens.FUNCTION && this._function({asText: true}) ||
+        this._unknownBlock([Tokens.LBRACKET, Tokens.LPAREN]);
 
-      // skip {} block
-      let count = 0;
-      do {
-        const brace = stream.advance([Tokens.LBRACE, Tokens.RBRACE]);
-        count += brace === Tokens.LBRACE ? 1 : -1;
-      } while (count > 0 && !stream._reader.eof());
-      if (count < 0) stream.unget();
+      this._ws();
+      const blockValue = this._unknownBlock();
+      if (!blockValue) {
+        stream.match(Tokens.SEMICOLON);
+      }
+
+      this.fire({
+        type: 'unknown-at-rule',
+        name: lt0.value,
+        simpleValue,
+        blockValue,
+      }, lt0);
+      this._ws();
+    }
+
+    _unknownBlock(canStartWith = [Tokens.LBRACE]) {
+      const stream = this._tokenStream;
+      if (!canStartWith.includes(stream.peek())) {
+        return null;
+      }
+      stream.get();
+      const start = stream._token;
+      const reader = stream._reader;
+      reader.mark();
+      reader._cursor = start.offset;
+      reader._line = start.startLine;
+      reader._col = start.startCol;
+      const value = [];
+      const endings = [];
+      let blockEnd;
+      while (!reader.eof()) {
+        const chunk = reader.readMatch(/[^{}()[\]]*[{}()[\]]?/y);
+        const c = chunk.slice(-1);
+        value.push(chunk);
+        if (c === '{' || c === '(' || c === '[') {
+          endings.push(blockEnd);
+          blockEnd = c === '{' ? '}' : c === '(' ? ')' : ']';
+        } else if (c === '}' || c === ')' || c === ']') {
+          if (c !== blockEnd) {
+            break;
+          }
+          blockEnd = endings.pop();
+          if (!blockEnd) {
+            stream.resetLT();
+            return new SyntaxUnit(value.join(''), start);
+          }
+        }
+      }
+      reader.reset();
+      return null;
     }
 
     _unexpectedToken(token) {
@@ -5406,18 +5468,28 @@ self.parserlib = (() => {
   Object.assign(Parser.prototype, TYPES);
   Parser.prototype._readWhitespace = Parser.prototype._ws;
 
+  const symDocument = [Tokens.DOCUMENT_SYM, Parser.prototype._document];
+  const symDocMisplaced = [Tokens.DOCUMENT_SYM, Parser.prototype._documentMisplaced];
+  const symFontFace = [Tokens.FONT_FACE_SYM, Parser.prototype._fontFace];
+  const symKeyframes = [Tokens.KEYFRAMES_SYM, Parser.prototype._keyframes];
+  const symMedia = [Tokens.MEDIA_SYM, Parser.prototype._media];
+  const symPage = [Tokens.PAGE_SYM, Parser.prototype._page];
+  const symSupports = [Tokens.SUPPORTS_SYM, Parser.prototype._supports];
+  const symUnknown = [Tokens.UNKNOWN_SYM, Parser.prototype._unknownSym];
+  const symViewport = [Tokens.VIEWPORT_SYM, Parser.prototype._viewport];
+
   Parser.ACTIONS = {
 
     stylesheet: new Map([
-      [Tokens.MEDIA_SYM, Parser.prototype._media],
-      [Tokens.DOCUMENT_SYM, Parser.prototype._document],
-      [Tokens.SUPPORTS_SYM, Parser.prototype._supports],
-      [Tokens.PAGE_SYM, Parser.prototype._page],
-      [Tokens.FONT_FACE_SYM, Parser.prototype._fontFace],
-      [Tokens.KEYFRAMES_SYM, Parser.prototype._keyframes],
-      [Tokens.VIEWPORT_SYM, Parser.prototype._viewport],
+      symMedia,
+      symDocument,
+      symSupports,
+      symPage,
+      symFontFace,
+      symKeyframes,
+      symViewport,
+      symUnknown,
       [Tokens.S, Parser.prototype._ws],
-      [Tokens.UNKNOWN_SYM, Parser.prototype._unknownSym],
     ]),
 
     stylesheetMisplaced: new Map([
@@ -5427,31 +5499,34 @@ self.parserlib = (() => {
     ]),
 
     document: new Map([
-      [Tokens.MEDIA_SYM, Parser.prototype._media],
-      [Tokens.DOCUMENT_SYM, Parser.prototype._documentMisplaced],
-      [Tokens.SUPPORTS_SYM, Parser.prototype._supports],
-      [Tokens.PAGE_SYM, Parser.prototype._page],
-      [Tokens.FONT_FACE_SYM, Parser.prototype._fontFace],
-      [Tokens.VIEWPORT_SYM, Parser.prototype._viewport],
-      [Tokens.KEYFRAMES_SYM, Parser.prototype._keyframes],
+      symMedia,
+      symDocMisplaced,
+      symSupports,
+      symPage,
+      symFontFace,
+      symViewport,
+      symKeyframes,
+      symUnknown,
     ]),
 
     supports: new Map([
-      [Tokens.KEYFRAMES_SYM, Parser.prototype._keyframes],
-      [Tokens.MEDIA_SYM, Parser.prototype._media],
-      [Tokens.SUPPORTS_SYM, Parser.prototype._supports],
-      [Tokens.DOCUMENT_SYM, Parser.prototype._documentMisplaced],
-      [Tokens.VIEWPORT_SYM, Parser.prototype._viewport],
+      symKeyframes,
+      symMedia,
+      symSupports,
+      symDocMisplaced,
+      symViewport,
+      symUnknown,
     ]),
 
     media: new Map([
-      [Tokens.KEYFRAMES_SYM, Parser.prototype._keyframes],
-      [Tokens.MEDIA_SYM, Parser.prototype._media],
-      [Tokens.DOCUMENT_SYM, Parser.prototype._documentMisplaced],
-      [Tokens.SUPPORTS_SYM, Parser.prototype._supports],
-      [Tokens.PAGE_SYM, Parser.prototype._page],
-      [Tokens.FONT_FACE_SYM, Parser.prototype._fontFace],
-      [Tokens.VIEWPORT_SYM, Parser.prototype._viewport],
+      symKeyframes,
+      symMedia,
+      symDocMisplaced,
+      symSupports,
+      symPage,
+      symFontFace,
+      symViewport,
+      symUnknown,
     ]),
 
     simpleSelectorSequence: new Map([

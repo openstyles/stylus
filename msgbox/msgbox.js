@@ -62,28 +62,28 @@ function messageBox({
         resolveWith({button: this.buttonIndex});
       },
       key(event) {
-        const {which, shiftKey, ctrlKey, altKey, metaKey, target} = event;
-        if (shiftKey && which !== 9 || ctrlKey || altKey || metaKey) {
+        const {key, shiftKey, ctrlKey, altKey, metaKey, target} = event;
+        if (shiftKey && key !== 'Tab' || ctrlKey || altKey || metaKey) {
           return;
         }
-        switch (which) {
-          case 13:
+        switch (key) {
+          case 'Enter':
             if (target.closest(focusAccessibility.ELEMENTS.join(','))) {
               return;
             }
             break;
-          case 27:
+          case 'Escape':
             event.preventDefault();
             event.stopPropagation();
             break;
-          case 9:
+          case 'Tab':
             moveFocus(messageBox.element, shiftKey ? -1 : 1);
             event.preventDefault();
             return;
           default:
             return;
         }
-        resolveWith(which === 13 ? {enter: true} : {esc: true});
+        resolveWith(key === 'Enter' ? {enter: true} : {esc: true});
       },
       scroll() {
         scrollTo(blockScroll.x, blockScroll.y);

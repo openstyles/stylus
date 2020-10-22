@@ -1,10 +1,11 @@
-/* global chromeLocal promisifyChrome FIREFOX */
+/* global chromeLocal promisifyChrome webextLaunchWebAuthFlow FIREFOX */
 /* exported tokenManager */
 'use strict';
 
 const tokenManager = (() => {
   promisifyChrome({
-    identity: ['launchWebAuthFlow'],
+    'windows': ['create', 'update', 'remove'],
+    'tabs': ['create', 'update', 'remove']
   });
   const AUTH = {
     dropbox: {
@@ -36,7 +37,7 @@ const tokenManager = (() => {
       scopes: ['https://www.googleapis.com/auth/drive.appdata'],
       revoke: token => {
         const params = {token};
-        return postQuery(`https://accounts.google.com/o/oauth2/revoke?${stringifyQuery(params)}`);
+        return postQuery(`https://accounts.google.com/o/oauth2/revoke?${new URLSearchParams(params)}`);
       }
     },
     onedrive: {
@@ -136,14 +137,6 @@ const tokenManager = (() => {
       });
   }
 
-  function stringifyQuery(obj) {
-    const search = new URLSearchParams();
-    for (const key of Object.keys(obj)) {
-      search.set(key, obj[key]);
-    }
-    return search.toString();
-  }
-
   function authUser(name, k, interactive = false) {
     const provider = AUTH[name];
     const state = Math.random().toFixed(8).slice(2);
@@ -159,10 +152,11 @@ const tokenManager = (() => {
     if (provider.authQuery) {
       Object.assign(query, provider.authQuery);
     }
-    const url = `${provider.authURL}?${stringifyQuery(query)}`;
-    return browser.identity.launchWebAuthFlow({
+    const url = `${provider.authURL}?${new URLSearchParams(query)}`;
+    return webextLaunchWebAuthFlow({
       url,
-      interactive
+      interactive,
+      redirect_uri: query.redirect_uri
     })
       .then(url => {
         const params = new URLSearchParams(
@@ -185,7 +179,7 @@ const tokenManager = (() => {
           code,
           grant_type: 'authorization_code',
           client_id: provider.clientId,
-          redirect_uri: provider.redirect_uri || chrome.identity.getRedirectURL()
+          redirect_uri: query.redirect_uri
         };
         if (provider.clientSecret) {
           body.client_secret = provider.clientSecret;
@@ -209,11 +203,9 @@ const tokenManager = (() => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
-      }
+      },
+      body: body ? new URLSearchParams(body) : null,
     };
-    if (body) {
-      options.body = stringifyQuery(body);
-    }
     return fetch(url, options)
       .then(r => {
         if (r.ok) {

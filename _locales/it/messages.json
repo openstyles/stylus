@@ -273,10 +273,6 @@
       }
     }
   },
-  "editorStylesButton": {
-    "message": "Cerca stili editor",
-    "description": "Find styles for the editor"
-  },
   "enableStyleLabel": {
     "message": "Attiva",
     "description": "Label for the button to enable a style"

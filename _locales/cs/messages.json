@@ -305,10 +305,6 @@
       }
     }
   },
-  "editorStylesButton": {
-    "message": "Najít styly pro editor",
-    "description": "Find styles for the editor"
-  },
   "enableStyleLabel": {
     "message": "Povolit",
     "description": "Label for the button to enable a style"

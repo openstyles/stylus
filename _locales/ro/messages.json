@@ -269,10 +269,6 @@
       }
     }
   },
-  "editorStylesButton": {
-    "message": "Găsiți teme pentru editor",
-    "description": "Find styles for the editor"
-  },
   "enableStyleLabel": {
     "message": "Activați",
     "description": "Label for the button to enable a style"

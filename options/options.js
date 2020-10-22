@@ -5,15 +5,8 @@
 'use strict';
 
 setupLivePrefs();
-enforceInputRange($('#popupWidth'));
+$$('input[min], input[max]').forEach(enforceInputRange);
 setTimeout(splitLongTooltips);
-
-// https://github.com/openstyles/stylus/issues/822
-if (!FIREFOX && CHROME >= 76 && CHROME <= 81) {
-  const dropboxOption = $('option[value="dropbox"]');
-  dropboxOption.disabled = true;
-  dropboxOption.setAttribute('title', t('hostDisabled'));
-}
 
 if (CHROME_HAS_BORDER_BUG) {
   const borderOption = $('.chrome-no-popup-border');
@@ -42,6 +35,27 @@ if (FIREFOX && 'update' in (chrome.commands || {})) {
       customizeHotkeys();
     }
   });
+}
+
+if (CHROME) {
+  // Show the option as disabled until the permission is actually granted
+  const el = $('#styleViaXhr');
+  el.addEventListener('click', () => {
+    if (el.checked && !chrome.declarativeContent) {
+      chrome.permissions.request({permissions: ['declarativeContent']}, ok => {
+        if (chrome.runtime.lastError || !ok) {
+          el.checked = false;
+        }
+      });
+    }
+  });
+  if (!chrome.declarativeContent) {
+    prefs.initializing.then(() => {
+      if (prefs.get('styleViaXhr')) {
+        el.checked = false;
+      }
+    });
+  }
 }
 
 // actions
@@ -85,7 +99,7 @@ document.onclick = e => {
       e.preventDefault();
       messageBox({
         className: 'note',
-        contents: target.title,
+        contents: target.dataset.title,
         buttons: [t('confirmClose')],
       });
     }
@@ -216,6 +230,7 @@ function splitLongTooltips() {
       .map(s => s.replace(/(.{50,80}(?=.{40,}))\s+/g, '$1\n'))
       .join('\n');
     if (newTitle !== el.title) {
+      el.dataset.title = el.title;
       el.title = newTitle;
     }
   }
@@ -281,7 +296,7 @@ function customizeHotkeys() {
 }
 
 window.onkeydown = event => {
-  if (event.keyCode === 27) {
+  if (event.key === 'Escape') {
     top.dispatchEvent(new CustomEvent('closeOptions'));
   }
 };
