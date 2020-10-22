@@ -71,7 +71,7 @@ CHROME && (async () => {
       const {responseHeaders} = req;
       responseHeaders.push({
         name: 'Set-Cookie',
-        value: `${chrome.runtime.id}=${blobId}`,
+        value: `${chrome.runtime.id}=${prefs.get('disableAll') ? 1 : 0}${blobId}`,
       });
       return {responseHeaders};
     }

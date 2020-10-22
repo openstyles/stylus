@@ -1,6 +1,6 @@
 /* eslint no-eq-null: 0, eqeqeq: [2, "smart"] */
 /* global createCache db calcStyleDigest db tryRegExp styleCodeEmpty styleSectionGlobal
-  getStyleWithNoCode msg sync uuidv4 URLS */
+  getStyleWithNoCode msg prefs sync uuidv4 URLS */
 /* exported styleManager */
 'use strict';
 
@@ -479,7 +479,7 @@ const styleManager = (() => {
     return result;
   }
 
-  function getSectionsByUrl(url, id) {
+  function getSectionsByUrl(url, id, isInitialApply) {
     let cache = cachedStyleForUrl.get(url);
     if (!cache) {
       cache = {
@@ -495,13 +495,13 @@ const styleManager = (() => {
           .map(i => styles.get(i))
       );
     }
-    if (id) {
-      if (cache.sections[id]) {
-        return {[id]: cache.sections[id]};
-      }
-      return {};
-    }
-    return cache.sections;
+    const res = id
+      ? cache.sections[id] ? {[id]: cache.sections[id]} : {}
+      : cache.sections;
+    // Avoiding flicker of needlessly applied styles by providing both styles & pref in one API call
+    return isInitialApply && prefs.get('disableAll')
+      ? Object.assign({disableAll: true}, res)
+      : res;
 
     function buildCache(styleList) {
       const query = createMatchQuery(url);

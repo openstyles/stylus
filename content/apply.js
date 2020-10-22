@@ -59,22 +59,33 @@ self.INJECTED !== 1 && (() => {
     if (STYLE_VIA_API) {
       await API.styleViaAPI({method: 'styleApply'});
     } else {
-      const styles = chrome.app && getStylesViaXhr() || await API.getSectionsByUrl(getMatchUrl());
+      const styles = chrome.app && getStylesViaXhr() ||
+        await API.getSectionsByUrl(getMatchUrl(), null, true);
+      if (styles.disableAll) {
+        delete styles.disableAll;
+        styleInjector.toggle(false);
+      }
       await styleInjector.apply(styles);
     }
   }
 
   function getStylesViaXhr() {
     if (new RegExp(`(^|\\s|;)${chrome.runtime.id}=\\s*([-\\w]+)\\s*(;|$)`).test(document.cookie)) {
-      const url = 'blob:' + chrome.runtime.getURL(RegExp.$2);
-      const xhr = new XMLHttpRequest();
+      const data = RegExp.$2;
+      const disableAll = data[0] === '1';
+      const url = 'blob:' + chrome.runtime.getURL(data.slice(1));
       document.cookie = `${chrome.runtime.id}=1; max-age=0`; // remove our cookie
+      let res;
       try {
-        xhr.open('GET', url, false); // synchronous
-        xhr.send();
+        if (!disableAll) { // will get the styles asynchronously
+          const xhr = new XMLHttpRequest();
+          xhr.open('GET', url, false); // synchronous
+          xhr.send();
+          res = JSON.parse(xhr.response);
+        }
         URL.revokeObjectURL(url);
-        return JSON.parse(xhr.response);
       } catch (e) {}
+      return res;
     }
   }
 
