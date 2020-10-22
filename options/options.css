@@ -372,10 +372,6 @@ html:not(.firefox):not(.opera) #updates {
   width: 3em;
 }
 
-.option-item {
-  margin: .25ex 0;
-}
-
 /* pixel perfect radio */
 input[type="radio"].radio::after {
   position: absolute;
