@@ -310,7 +310,7 @@ function sortStyles(entries) {
   return entries.sort(({styleMeta: a}, {styleMeta: b}) =>
     Boolean(a.frameUrl) - Boolean(b.frameUrl) ||
     enabledFirst && Boolean(b.enabled) - Boolean(a.enabled) ||
-    a.name.localeCompare(b.name));
+    (a.customName || a.name).localeCompare(b.customName || b.name));
 }
 
 function showStyles(frameResults) {
@@ -408,7 +408,7 @@ function createStyleElement(style) {
   $('.checker', entry).checked = style.enabled;
 
   const styleName = $('.style-name', entry);
-  styleName.lastChild.textContent = style.name;
+  styleName.lastChild.textContent = style.customName || style.name;
   setTimeout(() => {
     styleName.title = entry.styleMeta.sloppy ?
       t('styleNotAppliedRegexpProblemTooltip') :

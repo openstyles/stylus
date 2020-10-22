@@ -250,6 +250,13 @@
     "message": "Copy to clipboard",
     "description": "Tooltip for elements which can be copied"
   },
+  "customNameHint": {
+    "message": "Enter a custom name here to rename the style in UI without breaking its updates"
+  },
+  "customNameResetHint": {
+    "message": "Stop using customized name, switch to the style's own name",
+    "description": "Tooltip of 'x' button shown in editor when changing the name input of a) styles updated from a URL i.e. not locally created, b) UserCSS styles"
+  },
   "dateInstalled": {
     "message": "Date installed",
     "description": "Option text for the user to sort the style by install date"

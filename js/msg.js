@@ -33,7 +33,8 @@ self.msg = self.INJECTED === 1 ? self.msg : (() => {
     onExtension,
     off,
     RX_NO_RECEIVER,
-    RX_PORT_CLOSED
+    RX_PORT_CLOSED,
+    isBg,
   };
 
   function getBg() {

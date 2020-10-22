@@ -1,5 +1,7 @@
-/* global promisifyChrome */
+/* global promisifyChrome msg API */
 'use strict';
+
+// Needs msg.js loaded first
 
 self.prefs = self.INJECTED === 1 ? self.prefs : (() => {
   const defaults = {
@@ -112,12 +114,11 @@ self.prefs = self.INJECTED === 1 ? self.prefs : (() => {
     'storage.sync': ['get', 'set'],
   });
 
-  const initializing = browser.storage.sync.get('settings')
-    .then(result => {
-      if (result.settings) {
-        setAll(result.settings, true);
-      }
-    });
+  const initializing = (
+    msg.isBg
+      ? browser.storage.sync.get('settings').then(res => res.settings)
+      : API.getPrefs()
+  ).then(res => res && setAll(res, true));
 
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area !== 'sync' || !changes.settings || !changes.settings.newValue) {

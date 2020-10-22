@@ -116,7 +116,7 @@
     }
 
     function reportSuccess(saved) {
-      log(STATES.UPDATED + ` #${style.id} ${style.name}`);
+      log(STATES.UPDATED + ` #${style.id} ${style.customName || style.name}`);
       const info = {updated: true, style: saved};
       if (port) port.postMessage(info);
       return info;
@@ -139,7 +139,7 @@
       if (typeof error === 'object' && error.message) {
         error = error.message;
       }
-      log(STATES.SKIPPED + ` (${error}) #${style.id} ${style.name}`);
+      log(STATES.SKIPPED + ` (${error}) #${style.id} ${style.customName || style.name}`);
       const info = {error, STATES, style: getStyleWithNoCode(style)};
       if (port) port.postMessage(info);
       return info;
@@ -206,13 +206,6 @@
 
       // keep current state
       delete json.enabled;
-
-      // keep local name customizations
-      if (style.originalName !== style.name && style.name !== json.name) {
-        delete json.name;
-      } else {
-        json.originalName = json.name;
-      }
 
       const newStyle = Object.assign({}, style, json);
       if (styleSectionsEqual(json, style, {checkSource: true})) {

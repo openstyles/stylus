@@ -1,5 +1,10 @@
-/* global prefs */
+/* global workerUtil */
 'use strict';
+
+/* exported editorWorker */
+const editorWorker = workerUtil.createWorker({
+  url: '/edit/editor-worker.js'
+});
 
 /* exported linter */
 const linter = (() => {
@@ -59,8 +64,3 @@ const linter = (() => {
       .then(results => [].concat(...results.filter(Boolean)));
   }
 })();
-
-// FIXME: this should be put inside edit.js
-prefs.subscribe(['editor.linter'], () => {
-  linter.run();
-});

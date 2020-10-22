@@ -315,7 +315,7 @@ CodeMirror.hint && (() => {
     }
 
     // USO vars in usercss mode editor
-    const vars = editor.getStyle().usercssData.vars;
+    const vars = editor.style.usercssData.vars;
     const list = vars ?
       Object.keys(vars).filter(name => name.startsWith(leftPart)) : [];
     return {
@@ -343,7 +343,7 @@ CodeMirror.hint && (() => {
         string[start + 3] === '[' &&
         string[pos - 3] === ']' &&
         string[pos - 4] === ']') {
-      const vars = typeof editor !== 'undefined' && (editor.getStyle().usercssData || {}).vars;
+      const vars = typeof editor !== 'undefined' && (editor.style.usercssData || {}).vars;
       const name = vars && string.slice(start + 4, pos - 4);
       if (vars && Object.hasOwnProperty.call(vars, name.endsWith('-rgb') ? name.slice(0, -4) : name)) {
         token[0] = USO_VALID_VAR;

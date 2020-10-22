@@ -14,7 +14,7 @@ let initialized = false;
 router.watch({search: ['search']}, ([search]) => {
   $('#search').value = search || '';
   if (!initialized) {
-    init();
+    initFilters();
     initialized = true;
   } else {
     searchStyles();
@@ -36,7 +36,7 @@ HTMLSelectElement.prototype.adjustWidth = function () {
   parent.replaceChild(this, singleSelect);
 };
 
-function init() {
+function initFilters() {
   $('#search').oninput = e => {
     router.updateSearch('search', e.target.value);
   };

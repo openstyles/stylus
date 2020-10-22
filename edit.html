@@ -18,6 +18,22 @@
       }
     </style>
 
+    <link id="cm-theme" rel="stylesheet">
+
+    <script src="js/polyfill.js"></script>
+    <script src="js/dom.js"></script>
+    <script src="js/messaging.js"></script>
+    <script src="js/msg.js"></script>
+    <script src="js/prefs.js"></script>
+    <script src="js/localization.js"></script>
+    <script src="js/script-loader.js"></script>
+    <script src="js/storage-util.js"></script>
+
+    <script src="content/style-injector.js"></script>
+    <script src="content/apply.js"></script>
+
+    <script src="edit/edit.js"></script> <!-- run it ASAP to send a request for the style -->
+
     <link  href="vendor/codemirror/lib/codemirror.css" rel="stylesheet">
     <script src="vendor/codemirror/lib/codemirror.js"></script>
 
@@ -63,44 +79,27 @@
 
     <script src="vendor-overwrites/codemirror-addon/match-highlighter.js"></script>
 
-    <script src="js/polyfill.js"></script>
-    <script src="js/dom.js"></script>
-    <script src="js/messaging.js"></script>
-    <script src="js/prefs.js"></script>
-    <script src="js/localization.js"></script>
-    <script src="js/script-loader.js"></script>
-    <script src="js/storage-util.js"></script>
-    <script src="js/msg.js"></script>
-    <script src="js/worker-util.js"></script>
-
-    <script src="content/style-injector.js"></script>
-    <script src="content/apply.js"></script>
-
-    <link  href="edit/global-search.css" rel="stylesheet">
-    <script src="edit/global-search.js"></script>
+    <script src="msgbox/msgbox.js" async></script>
 
     <link  href="edit/codemirror-default.css" rel="stylesheet">
     <script src="edit/codemirror-default.js"></script>
-
+    <script src="edit/codemirror-factory.js"></script>
     <script src="edit/util.js"></script>
     <script src="edit/regexp-tester.js"></script>
     <script src="edit/live-preview.js"></script>
     <script src="edit/applies-to-line-widget.js"></script>
     <script src="edit/reroute-hotkeys.js"></script>
-    <script src="edit/codemirror-factory.js"></script>
+    <link  href="edit/global-search.css" rel="stylesheet">
+    <script src="edit/global-search.js"></script>
     <script src="edit/colorpicker-helper.js"></script>
     <script src="edit/beautify.js"></script>
     <script src="edit/show-keymap-help.js"></script>
     <script src="edit/codemirror-themes.js"></script>
-
     <script src="edit/source-editor.js"></script>
     <script src="edit/sections-editor-section.js"></script>
     <script src="edit/sections-editor.js"></script>
 
-    <script src="edit/edit.js"></script>
-
-    <script src="msgbox/msgbox.js" async></script>
-
+    <script src="js/worker-util.js"></script>
     <script src="edit/linter.js"></script>
     <script src="edit/linter-defaults.js"></script>
     <script src="edit/linter-engines.js"></script>
@@ -108,8 +107,6 @@
     <script src="edit/linter-help-dialog.js"></script>
     <script src="edit/linter-report.js"></script>
     <script src="edit/linter-config-dialog.js"></script>
-
-    <link id="cm-theme" rel="stylesheet">
 
     <template data-id="appliesTo">
       <li class="applies-to-item">
@@ -284,7 +281,13 @@
       <h1 id="heading">&nbsp;</h1> <!-- nbsp allocates the actual height which prevents page shift -->
       <section id="basic-info">
         <div id="basic-info-name">
-          <input id="name" class="style-contributor" spellcheck="false" required>
+          <input id="name" class="style-contributor" spellcheck="false">
+          <a id="reset-name" href="#" i18n-title="customNameResetHint" tabindex="0" hidden>
+            <svg class="svg-icon" viewBox="0 0 20 20">
+              <polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5
+                               5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10 "/>
+            </svg>
+          </a>
           <a id="url" target="_blank"><svg class="svg-icon"><use xlink:href="#svg-icon-external-link"/></svg></a>
         </div>
         <div id="basic-info-enabled">

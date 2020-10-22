@@ -1,4 +1,4 @@
-/* global dirtyReporter
+/* global
   createAppliesToLineWidget messageBox
   sectionsToMozFormat
   createMetaCompiler linter createLivePreview cmFactory $ $create API prefs t
@@ -6,16 +6,13 @@
 /* exported createSourceEditor */
 'use strict';
 
-function createSourceEditor({style, onTitleChanged}) {
-  $('#name').disabled = true;
-  $('#save-button').disabled = true;
+function createSourceEditor(editorBase) {
+  const {style, dirty} = editorBase;
+
   $('#mozilla-format-container').remove();
-  $('#save-button').onclick = save;
   $('#header').addEventListener('wheel', headerOnScroll);
   $('#sections').textContent = '';
   $('#sections').appendChild($create('.single-editor'));
-
-  const dirty = dirtyReporter();
 
   // normalize style
   if (!style.id) setupNewStyle(style);
@@ -27,13 +24,6 @@ function createSourceEditor({style, onTitleChanged}) {
 
   const livePreview = createLivePreview(preprocess);
   livePreview.show(Boolean(style.id));
-
-  $('#enabled').onchange = function () {
-    const value = this.checked;
-    dirty.modify('enabled', style.enabled, value);
-    style.enabled = value;
-    updateLivePreview();
-  };
 
   cm.on('changes', () => {
     dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
@@ -162,14 +152,15 @@ function createSourceEditor({style, onTitleChanged}) {
   }
 
   function updateMeta() {
-    $('#name').value = style.name;
+    $('#name').value = style.customName || style.name;
     $('#enabled').checked = style.enabled;
     $('#url').href = style.url;
-    onTitleChanged();
+    editorBase.updateName();
     return cm.setPreprocessor((style.usercssData || {}).preprocessor);
   }
 
   function replaceStyle(newStyle, codeIsUpdated) {
+    dirty.clear('name');
     const sameCode = newStyle.sourceCode === cm.getValue();
     if (sameCode) {
       savedGeneration = cm.changeGeneration();
@@ -210,14 +201,6 @@ function createSourceEditor({style, onTitleChanged}) {
     }
   }
 
-  function toggleStyle() {
-    const value = !style.enabled;
-    dirty.modify('enabled', style.enabled, value);
-    style.enabled = value;
-    updateMeta();
-    $('#enabled').dispatchEvent(new Event('change', {bubbles: true}));
-  }
-
   function save() {
     if (!dirty.isDirty()) return;
     const code = cm.getValue();
@@ -226,6 +209,7 @@ function createSourceEditor({style, onTitleChanged}) {
         id: style.id,
         enabled: style.enabled,
         sourceCode: code,
+        customName: style.customName,
       }))
       .then(replaceStyle)
       .catch(err => {
@@ -372,19 +356,17 @@ function createSourceEditor({style, onTitleChanged}) {
            (mode.helperType || '');
   }
 
-  return {
+  return Object.assign({}, editorBase, {
+    ready: Promise.resolve(),
     replaceStyle,
-    dirty,
-    getStyle: () => style,
     getEditors: () => [cm],
     scrollToEditor: () => {},
-    getStyleId: () => style.id,
     getEditorTitle: () => '',
     save,
-    toggleStyle,
     prevEditor: cm => nextPrevMozDocument(cm, -1),
     nextEditor: cm => nextPrevMozDocument(cm, 1),
     closestVisible: () => cm,
-    getSearchableInputs: () => []
-  };
+    getSearchableInputs: () => [],
+    updateLivePreview,
+  });
 }

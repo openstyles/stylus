@@ -57,7 +57,7 @@
           continue;
         }
         for (const part in PARTS) {
-          const text = style[part];
+          const text = part === 'name' ? style.customName || style.name : style[part];
           if (text && PARTS[part](text, rx, words, icase)) {
             results.push(id);
             break;

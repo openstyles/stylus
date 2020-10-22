@@ -130,7 +130,7 @@ const sorter = (() => {
     const sorted = sort({
       styles: current.map(entry => ({
         entry,
-        name: entry.styleNameLowerCase + '\n' + entry.styleMeta.name,
+        name: entry.styleNameLowerCase,
         style: entry.styleMeta,
       }))
     });
