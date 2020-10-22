@@ -9,6 +9,8 @@
 function createSourceEditor(editorBase) {
   const {style, dirty} = editorBase;
 
+  let placeholderName = '';
+
   $('#mozilla-format-container').remove();
   $('#header').addEventListener('wheel', headerOnScroll);
   $('#sections').textContent = '';
@@ -112,7 +114,7 @@ function createSourceEditor(editorBase) {
     return name;
   }
 
-  function setupNewStyle(style) {
+  async function setupNewStyle(style) {
     style.sections[0].code = ' '.repeat(prefs.get('editor.tabSize')) +
       `/* ${t('usercssReplaceTemplateSectionBody')} */`;
     let section = sectionsToMozFormat(style);
@@ -133,26 +135,27 @@ function createSourceEditor(editorBase) {
     dirty.clear('sourceGeneration');
     style.sourceCode = '';
 
-    chromeSync.getLZValue('usercssTemplate').then(code => {
-      const name = style.name || t('usercssReplaceTemplateName');
-      const date = new Date().toLocaleString();
-      code = code || DEFAULT_CODE;
-      code = code.replace(/@name(\s*)(?=[\r\n])/, (str, space) =>
-        `${str}${space ? '' : ' '}${name} - ${date}`);
-      // strip the last dummy section if any, add an empty line followed by the section
-      style.sourceCode = code.replace(/\s*@-moz-document[^{]*\{[^}]*\}\s*$|\s+$/g, '') + '\n\n' + section;
-      cm.startOperation();
-      cm.setValue(style.sourceCode);
-      cm.clearHistory();
-      cm.markClean();
-      cm.endOperation();
-      dirty.clear('sourceGeneration');
-      savedGeneration = cm.changeGeneration();
-    });
+    placeholderName = `${style.name || t('usercssReplaceTemplateName')} - ${new Date().toLocaleString()}`;
+    let code = await chromeSync.getLZValue('usercssTemplate');
+    code = code || DEFAULT_CODE;
+    code = code.replace(/@name(\s*)(?=[\r\n])/, (str, space) =>
+      `${str}${space ? '' : ' '}${placeholderName}`);
+    // strip the last dummy section if any, add an empty line followed by the section
+    style.sourceCode = code.replace(/\s*@-moz-document[^{]*{[^}]*}\s*$|\s+$/g, '') + '\n\n' + section;
+    cm.startOperation();
+    cm.setValue(style.sourceCode);
+    cm.clearHistory();
+    cm.markClean();
+    cm.endOperation();
+    dirty.clear('sourceGeneration');
+    savedGeneration = cm.changeGeneration();
   }
 
   function updateMeta() {
-    $('#name').value = style.customName || style.name;
+    const name = style.customName || style.name;
+    if (name !== placeholderName) {
+      $('#name').value = name;
+    }
     $('#enabled').checked = style.enabled;
     $('#url').href = style.url;
     editorBase.updateName();
