@@ -48,7 +48,7 @@ function createSectionsEditor(editorBase) {
 
   let sectionOrder = '';
   let headerOffset; // in compact mode the header is at the top so it reduces the available height
-  const ready = initSections(style.sections.slice(), {isFirstInit: true});
+  const ready = initSections(style.sections, {isFirstInit: true});
 
   const livePreview = createLivePreview();
   livePreview.show(Boolean(style.id));
@@ -455,6 +455,7 @@ function createSectionsEditor(editorBase) {
   } = {}) {
     let done;
     const total = originalSections.length;
+    originalSections = originalSections.slice();
     return new Promise(resolve => {
       done = resolve;
       chunk(true);
@@ -571,13 +572,13 @@ function createSectionsEditor(editorBase) {
     updateSectionOrder();
   }
 
-  function replaceSections(originalSections) {
+  function replaceSections(...args) {
     for (const section of sections) {
       section.remove(true);
     }
     sections.length = 0;
     container.textContent = '';
-    return initSections(originalSections);
+    return initSections(...args);
   }
 
   function replaceStyle(newStyle, codeIsUpdated) {
@@ -598,7 +599,7 @@ function createSectionsEditor(editorBase) {
 
     function reinit() {
       if (codeIsUpdated !== false) {
-        return replaceSections(newStyle.sections.slice());
+        return replaceSections(newStyle.sections, {isFirstInit: true});
       }
       return Promise.resolve();
     }
