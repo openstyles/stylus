@@ -84,7 +84,7 @@ lazyInit();
     nameEl.placeholder = t(usercss ? 'usercssEditorNamePlaceholder' : 'styleMissingName');
     nameEl.title = isCustomName ? t('customNameHint') : '';
     nameEl.addEventListener('input', () => {
-      updateName();
+      updateName(true);
       resetEl.hidden = false;
     });
     resetEl.hidden = !style.customName;
@@ -95,7 +95,7 @@ lazyInit();
       // trying to make it undoable via Ctrl-Z
       if (!document.execCommand('insertText', false, style.name)) {
         nameEl.value = style.name;
-        updateName();
+        updateName(true);
       }
       style.customName = null; // to delete it from db
       resetEl.hidden = true;
@@ -213,11 +213,13 @@ lazyInit();
     editor.updateLivePreview();
   }
 
-  function updateName() {
+  function updateName(isUserInput) {
     if (!editor) return;
-    const {value} = $('#name');
-    dirty.modify('name', style[nameTarget] || style.name, value);
-    style[nameTarget] = value;
+    if (isUserInput) {
+      const {value} = $('#name');
+      dirty.modify('name', style[nameTarget] || style.name, value);
+      style[nameTarget] = value;
+    }
     updateTitle({});
   }
 
