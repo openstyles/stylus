@@ -86,7 +86,8 @@ onDOMready().then(() => {
       $('#search').focus();
       return;
     }
-    if (ctrl || inTextInput) {
+    if (ctrl || inTextInput ||
+        key === ' ' && !input.value /* Space or Shift-Space is for page down/up */) {
       return;
     }
     const time = performance.now();
