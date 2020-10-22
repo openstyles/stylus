@@ -23,6 +23,9 @@
     "identity",
     "<all_urls>"
   ],
+  "optional_permissions": [
+    "declarativeContent"
+  ],
   "background": {
     "scripts": [
       "js/polyfill.js",
@@ -53,6 +56,7 @@
       "background/usercss-helper.js",
       "background/usercss-install-helper.js",
       "background/style-via-api.js",
+      "background/style-via-xhr.js",
       "background/search-db.js",
       "background/update.js",
       "background/openusercss-api.js"

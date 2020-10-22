@@ -38,6 +38,27 @@ if (FIREFOX && 'update' in (chrome.commands || {})) {
   });
 }
 
+if (CHROME) {
+  // Show the option as disabled until the permission is actually granted
+  const el = $('#styleViaXhr');
+  el.addEventListener('click', () => {
+    if (el.checked && !chrome.declarativeContent) {
+      chrome.permissions.request({permissions: ['declarativeContent']}, ok => {
+        if (chrome.runtime.lastError || !ok) {
+          el.checked = false;
+        }
+      });
+    }
+  });
+  if (!chrome.declarativeContent) {
+    prefs.initializing.then(() => {
+      if (prefs.get('styleViaXhr')) {
+        el.checked = false;
+      }
+    });
+  }
+}
+
 // actions
 $('#options-close-icon').onclick = () => {
   top.dispatchEvent(new CustomEvent('closeOptions'));
@@ -79,7 +100,7 @@ document.onclick = e => {
       e.preventDefault();
       messageBox({
         className: 'note',
-        contents: target.title,
+        contents: target.dataset.title,
         buttons: [t('confirmClose')],
       });
     }
@@ -233,6 +254,7 @@ function splitLongTooltips() {
       .map(s => s.replace(/(.{50,80}(?=.{40,}))\s+/g, '$1\n'))
       .join('\n');
     if (newTitle !== el.title) {
+      el.dataset.title = el.title;
       el.title = newTitle;
     }
   }

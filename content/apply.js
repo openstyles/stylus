@@ -20,6 +20,7 @@ self.INJECTED !== 1 && (() => {
   /** @type chrome.runtime.Port */
   let port;
   let lazyBadge = IS_FRAME;
+  let parentDomain;
 
   // the popup needs a check as it's not a tab but can be opened in a tab manually for whatever reason
   if (!IS_TAB) {
@@ -42,24 +43,39 @@ self.INJECTED !== 1 && (() => {
     window.addEventListener(orphanEventId, orphanCheck, true);
   }
 
-  let parentDomain;
-
-  prefs.subscribe(['disableAll'], (key, value) => doDisableAll(value));
-  if (IS_FRAME) {
-    prefs.subscribe(['exposeIframes'], updateExposeIframes);
-  }
-
   function onInjectorUpdate() {
     if (!isOrphaned) {
       updateCount();
-      updateExposeIframes();
+      const onOff = prefs[styleInjector.list.length ? 'subscribe' : 'unsubscribe'];
+      onOff(['disableAll'], updateDisableAll);
+      if (IS_FRAME) {
+        updateExposeIframes();
+        onOff(['exposeIframes'], updateExposeIframes);
+      }
     }
   }
 
-  function init() {
-    return STYLE_VIA_API ?
-      API.styleViaAPI({method: 'styleApply'}) :
-      API.getSectionsByUrl(getMatchUrl()).then(styleInjector.apply);
+  async function init() {
+    if (STYLE_VIA_API) {
+      await API.styleViaAPI({method: 'styleApply'});
+    } else {
+      const styles = chrome.app && getStylesViaXhr() || await API.getSectionsByUrl(getMatchUrl());
+      await styleInjector.apply(styles);
+    }
+  }
+
+  function getStylesViaXhr() {
+    if (new RegExp(`(^|\\s|;)${chrome.runtime.id}=\\s*([-\\w]+)\\s*(;|$)`).test(document.cookie)) {
+      const url = 'blob:' + chrome.runtime.getURL(RegExp.$2);
+      const xhr = new XMLHttpRequest();
+      document.cookie = `${chrome.runtime.id}=1; max-age=0`; // remove our cookie
+      try {
+        xhr.open('GET', url, false); // synchronous
+        xhr.send();
+        URL.revokeObjectURL(url);
+        return JSON.parse(xhr.response);
+      } catch (e) {}
+    }
   }
 
   function getMatchUrl() {
@@ -138,7 +154,7 @@ self.INJECTED !== 1 && (() => {
     }
   }
 
-  function doDisableAll(disableAll) {
+  function updateDisableAll(key, disableAll) {
     if (STYLE_VIA_API) {
       API.styleViaAPI({method: 'prefChanged', prefs: {disableAll}});
     } else {
@@ -146,22 +162,18 @@ self.INJECTED !== 1 && (() => {
     }
   }
 
-  function fetchParentDomain() {
-    return parentDomain ?
-      Promise.resolve() :
-      API.getTabUrlPrefix()
-        .then(newDomain => {
-          parentDomain = newDomain;
-        });
-  }
-
-  function updateExposeIframes() {
-    if (!prefs.get('exposeIframes') || window === parent || !styleInjector.list.length) {
-      document.documentElement.removeAttribute('stylus-iframe');
+  async function updateExposeIframes(key, value = prefs.get('exposeIframes')) {
+    const attr = 'stylus-iframe';
+    const el = document.documentElement;
+    if (!el) return; // got no styles so styleInjector didn't wait for <html>
+    if (!value || !styleInjector.list.length) {
+      el.removeAttribute(attr);
     } else {
-      fetchParentDomain().then(() => {
-        document.documentElement.setAttribute('stylus-iframe', parentDomain);
-      });
+      if (!parentDomain) parentDomain = await API.getTabUrlPrefix();
+      // Check first to avoid triggering DOM mutation
+      if (el.getAttribute(attr) !== parentDomain) {
+        el.setAttribute(attr, parentDomain);
+      }
     }
   }
 
