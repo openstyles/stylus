@@ -48,7 +48,7 @@ function createSectionsEditor(editorBase) {
 
   let sectionOrder = '';
   let headerOffset; // in compact mode the header is at the top so it reduces the available height
-  const ready = initSections(style.sections.slice());
+  const ready = initSections(style.sections.slice(), {isFirstInit: true});
 
   const livePreview = createLivePreview();
   livePreview.show(Boolean(style.id));
@@ -450,10 +450,11 @@ function createSectionsEditor(editorBase) {
   }
 
   function initSections(originalSections, {
-    total = originalSections.length,
     focusOn = 0,
+    isFirstInit,
   } = {}) {
     let done;
+    const total = originalSections.length;
     return new Promise(resolve => {
       done = resolve;
       chunk(true);
@@ -462,7 +463,7 @@ function createSectionsEditor(editorBase) {
       const t0 = performance.now();
       while (originalSections.length && performance.now() - t0 < 100) {
         insertSectionAfter(originalSections.shift(), undefined, forceRefresh);
-        dirty.clear();
+        if (isFirstInit) dirty.clear();
         if (focusOn !== false && sections[focusOn]) {
           sections[focusOn].cm.focus();
           focusOn = false;
