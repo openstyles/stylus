@@ -1,258 +1,169 @@
-/* global promisifyChrome deepCopy */
-// deepCopy is only used if the script is executed in extension pages.
+/* global promisifyChrome deepCopy getOwnTab URLS msg */
 'use strict';
 
-self.msg = self.INJECTED === 1 ? self.msg : (() => {
+// eslint-disable-next-line no-unused-expressions
+window.INJECTED !== 1 && (() => {
   promisifyChrome({
     runtime: ['sendMessage'],
     tabs: ['sendMessage', 'query'],
   });
-  const isBg = chrome.extension.getBackgroundPage && chrome.extension.getBackgroundPage() === window;
-  if (isBg) {
-    window._msg = {
-      handler: null,
-      clone: deepCopy
-    };
-  }
-  const bgReady = getBg();
-  const EXTENSION_URL = chrome.runtime.getURL('');
-  let handler;
-  const RX_NO_RECEIVER = /Receiving end does not exist/;
-  // typo in Chrome 49
-  const RX_PORT_CLOSED = /The message port closed before a res?ponse was received/;
-  return {
-    send,
-    sendTab,
-    sendBg,
-    broadcast,
-    broadcastTab,
-    broadcastExtension,
-    ignoreError,
-    on,
-    onTab,
-    onExtension,
-    off,
-    RX_NO_RECEIVER,
-    RX_PORT_CLOSED,
-    isBg,
+  const TARGETS = Object.assign(Object.create(null), {
+    all: ['both', 'tab', 'extension'],
+    extension: ['both', 'extension'],
+    tab: ['both', 'tab'],
+  });
+  const NEEDS_TAB_IN_SENDER = [
+    'getTabUrlPrefix',
+    'updateIconBadge',
+    'styleViaAPI',
+  ];
+  const isBg = getExtBg() === window;
+  const handler = {
+    both: new Set(),
+    tab: new Set(),
+    extension: new Set(),
   };
 
-  function getBg() {
-    if (isBg) {
-      return Promise.resolve(window);
-    }
-    // try using extension.getBackgroundPage because runtime.getBackgroundPage is too slow
-    // https://github.com/openstyles/stylus/issues/771
-    if (chrome.extension.getBackgroundPage) {
-      const bg = chrome.extension.getBackgroundPage();
-      if (bg && bg.document && bg.document.readyState !== 'loading') {
-        return Promise.resolve(bg);
-      }
-    }
-    if (chrome.runtime.getBackgroundPage) {
-      promisifyChrome({
-        runtime: ['getBackgroundPage'],
-      });
-      return browser.runtime.getBackgroundPage().catch(() => null);
-    }
-    return Promise.resolve(null);
-  }
+  chrome.runtime.onMessage.addListener(handleMessage);
 
-  function send(data, target = 'extension') {
-    const message = {data, target};
-    return browser.runtime.sendMessage(message).then(unwrapData);
-  }
-
-  function sendTab(tabId, data, options, target = 'tab') {
-    return browser.tabs.sendMessage(tabId, {data, target}, options)
-      .then(unwrapData);
-  }
-
-  function sendBg(data) {
-    return bgReady.then(bg => {
-      if (bg) {
-        if (!bg._msg.handler) {
-          throw new Error('there is no bg handler');
-        }
-        const handlers = bg._msg.handler.extension.concat(bg._msg.handler.both);
+  window.API = new Proxy({}, {
+    get(target, name) {
+      return async (...args) => {
+        const bg = isBg && window || chrome.tabs && (getExtBgIfReady() || await getRuntimeBg());
+        const message = {method: 'invokeAPI', name, args};
+        // frames and probably private tabs
+        if (!bg || window !== parent) return msg.send(message);
         // in FF, the object would become a dead object when the window
         // is closed, so we have to clone the object into background.
-        return Promise.resolve(executeCallbacks(handlers, bg._msg.clone(data), {url: location.href}))
-          .then(deepCopy);
+        const res = bg.msg._execute(TARGETS.extension, bg.deepCopy(message), {
+          frameId: 0,
+          tab: NEEDS_TAB_IN_SENDER.includes(name) && await getOwnTab(),
+          url: location.href,
+        });
+        // avoiding an unnecessary `await` microtask сycle
+        return deepCopy(res instanceof bg.Promise ? await res : res);
+      };
+    },
+  });
+
+  window.msg = {
+    isBg,
+
+    async broadcast(data) {
+      const requests = [msg.send(data, 'both').catch(msg.ignoreError)];
+      for (const tab of await browser.tabs.query({})) {
+        const url = tab.pendingUrl || tab.url;
+        if (!tab.discarded &&
+            !url.startsWith(URLS.ownOrigin) &&
+            URLS.supported(url)) {
+          requests[tab.active ? 'unshift' : 'push'](
+            msg.sendTab(tab.id, data, null, 'both').catch(msg.ignoreError));
+        }
       }
-      return send(data);
-    });
-  }
+      return Promise.all(requests);
+    },
 
-  function ignoreError(err) {
-    if (err.message && (
-      RX_NO_RECEIVER.test(err.message) ||
-      RX_PORT_CLOSED.test(err.message)
-    )) {
-      return;
-    }
-    console.warn(err);
-  }
+    isIgnorableError(err) {
+      return /Receiving end does not exist|The message port closed before/.test(err.message);
+    },
 
-  function broadcast(data, filter) {
-    return Promise.all([
-      send(data, 'both').catch(ignoreError),
-      broadcastTab(data, filter, null, true, 'both')
-    ]);
-  }
+    ignoreError(err) {
+      if (!msg.isIgnorableError(err)) {
+        console.warn(err);
+      }
+    },
 
-  function broadcastTab(data, filter, options, ignoreExtension = false, target = 'tab') {
-    return browser.tabs.query({})
-      // TODO: send to activated tabs first?
-      .then(tabs => {
-        const requests = [];
-        for (const tab of tabs) {
-          const tabUrl = tab.pendingUrl || tab.url;
-          const isExtension = tabUrl.startsWith(EXTENSION_URL);
-          if (
-            tab.discarded ||
-            // FIXME: use `URLS.supported`?
-            !/^(http|ftp|file)/.test(tabUrl) &&
-            !tabUrl.startsWith('chrome://newtab/') &&
-            !isExtension ||
-            isExtension && ignoreExtension ||
-            filter && !filter(tab)
-          ) {
-            continue;
+    on(fn) {
+      handler.both.add(fn);
+    },
+
+    onTab(fn) {
+      handler.tab.add(fn);
+    },
+
+    onExtension(fn) {
+      handler.extension.add(fn);
+    },
+
+    off(fn) {
+      for (const type of TARGETS.all) {
+        handler[type].delete(fn);
+      }
+    },
+
+    send(data, target = 'extension') {
+      return browser.runtime.sendMessage({data, target})
+        .then(unwrapData);
+    },
+
+    sendTab(tabId, data, options, target = 'tab') {
+      return browser.tabs.sendMessage(tabId, {data, target}, options)
+        .then(unwrapData);
+    },
+
+    _execute(types, ...args) {
+      let result;
+      for (const type of types) {
+        for (const fn of handler[type]) {
+          let res;
+          try {
+            res = fn(...args);
+          } catch (err) {
+            res = Promise.reject(err);
           }
-          const dataObj = typeof data === 'function' ? data(tab) : data;
-          if (!dataObj) {
-            continue;
-          }
-          const message = {data: dataObj, target};
-          if (tab && tab.id) {
-            requests.push(
-              browser.tabs.sendMessage(tab.id, message, options)
-                .then(unwrapData)
-                .catch(ignoreError)
-            );
+          if (res !== undefined && result === undefined) {
+            result = res;
           }
         }
-        return Promise.all(requests);
-      });
-  }
-
-  function broadcastExtension(...args) {
-    return send(...args).catch(ignoreError);
-  }
-
-  function on(fn) {
-    initHandler();
-    handler.both.push(fn);
-  }
-
-  function onTab(fn) {
-    initHandler();
-    handler.tab.push(fn);
-  }
-
-  function onExtension(fn) {
-    initHandler();
-    handler.extension.push(fn);
-  }
-
-  function off(fn) {
-    for (const type of ['both', 'tab', 'extension']) {
-      const index = handler[type].indexOf(fn);
-      if (index >= 0) {
-        handler[type].splice(index, 1);
       }
-    }
+      return result;
+    },
+  };
+
+  function getExtBg() {
+    const fn = chrome.extension.getBackgroundPage;
+    return fn && fn();
   }
 
-  function initHandler() {
-    if (handler) {
-      return;
-    }
-    handler = {
-      both: [],
-      tab: [],
-      extension: []
-    };
-    if (isBg) {
-      window._msg.handler = handler;
-    }
-    chrome.runtime.onMessage.addListener(handleMessage);
+  function getExtBgIfReady() {
+    const bg = getExtBg();
+    return bg && bg.document && bg.document.readyState !== 'loading' && bg;
   }
 
-  function executeCallbacks(callbacks, ...args) {
-    let result;
-    for (const fn of callbacks) {
-      const data = withPromiseError(fn, ...args);
-      if (data !== undefined && result === undefined) {
-        result = data;
-      }
-    }
-    return result;
+  function getRuntimeBg() {
+    return new Promise(resolve =>
+      chrome.runtime.getBackgroundPage(bg =>
+        resolve(!chrome.runtime.lastError && bg)));
   }
 
-  function handleMessage(message, sender, sendResponse) {
-    const handlers = message.target === 'tab' ?
-      handler.tab.concat(handler.both) : message.target === 'extension' ?
-      handler.extension.concat(handler.both) :
-      handler.both.concat(handler.extension, handler.tab);
-    if (!handlers.length) {
-      return;
+  function handleMessage({data, target}, sender, sendResponse) {
+    const res = msg._execute(TARGETS[target] || TARGETS.all, data, sender);
+    if (res instanceof Promise) {
+      handleResponseAsync(res, sendResponse);
+      return true;
     }
-    const result = executeCallbacks(handlers, message.data, sender);
-    if (result === undefined) {
-      return;
-    }
-    Promise.resolve(result)
-      .then(
-        data => ({
-          error: false,
-          data
-        }),
-        err => ({
-          error: true,
-          data: Object.assign({
-            message: err.message || String(err),
-            // FIXME: do we want to pass the entire stack?
-            stack: err.stack
-          }, err) // this allows us to pass custom properties e.g. `err.index`
-        })
-      )
-      .then(sendResponse);
-    return true;
+    if (res !== undefined) sendResponse({data: res});
   }
 
-  function withPromiseError(fn, ...args) {
+  async function handleResponseAsync(promise, sendResponse) {
     try {
-      return fn(...args);
+      sendResponse({
+        data: await promise,
+      });
     } catch (err) {
-      return Promise.reject(err);
+      sendResponse({
+        error: true,
+        data: Object.assign({
+          message: err.message || String(err),
+          stack: err.stack,
+        }, err), // passing custom properties e.g. `err.index` to unwrapData
+      });
     }
   }
 
-  // {type, error, data, id}
-  function unwrapData(result) {
-    if (result === undefined) {
-      throw new Error('Receiving end does not exist');
-    }
-    if (result.error) {
-      throw Object.assign(new Error(result.data.message), result.data);
-    }
-    return result.data;
+  function unwrapData({data, error} = {}) {
+    return error
+      ? Promise.reject(Object.assign(new Error(data.message), data))
+      : data;
   }
 })();
-
-self.API = self.INJECTED === 1 ? self.API : new Proxy({
-  // Handlers for these methods need sender.tab.id which is set by `send` as it uses messaging,
-  // unlike `sendBg` which invokes the background page directly in our own extension tabs
-  getTabUrlPrefix: true,
-  updateIconBadge: true,
-  styleViaAPI: true,
-}, {
-  get: (target, name) =>
-    (...args) => Promise.resolve(self.msg[target[name] ? 'send' : 'sendBg']({
-      method: 'invokeAPI',
-      name,
-      args
-    }))
-});
