@@ -384,7 +384,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .cm-matchhighlight,
 body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-highlight-scrollbar {
   animation: none;
 }
-@-webkit-keyframes highlight {
+@keyframes highlight {
   from {
     background-color: #ff9;
   }
