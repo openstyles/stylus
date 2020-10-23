@@ -40,7 +40,6 @@
       "js/cache.js",
       "vendor/semver-bundle/semver.js",
       "vendor/db-to-cloud/db-to-cloud.min.js",
-      "vendor/uuid/uuid.min.js",
       "vendor/webext-launch-web-auth-flow/webext-launch-web-auth-flow.min.js",
       "background/token-manager.js",
       "background/sync.js",

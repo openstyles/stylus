@@ -60,9 +60,6 @@ const files = {
   'db-to-cloud': [
     'dist/db-to-cloud.min.js → db-to-cloud.min.js'
   ],
-  'uuid': [
-    'dist/umd/uuidv4.min.js → uuid.min.js'
-  ],
   'webext-launch-web-auth-flow': [
     'dist/webext-launch-web-auth-flow.min.js → webext-launch-web-auth-flow.min.js'
   ]

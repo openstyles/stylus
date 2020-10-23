@@ -1,6 +1,6 @@
 /* eslint no-eq-null: 0, eqeqeq: [2, "smart"] */
 /* global createCache db calcStyleDigest db tryRegExp styleCodeEmpty styleSectionGlobal
-  getStyleWithNoCode msg prefs sync uuidv4 URLS */
+  getStyleWithNoCode msg prefs sync URLS */
 /* exported styleManager */
 'use strict';
 
@@ -715,5 +715,18 @@ const styleManager = (() => {
     } catch (err) {
       return DUMMY_URL;
     }
+  }
+
+  function uuidv4() {
+    const seeds = crypto.getRandomValues(new Uint16Array(8));
+    // 00001111-2222-M333-N444-555566667777
+    seeds[3] = seeds[3] & 0x0FFF | 0x4000; // UUID version 4, M = 4
+    seeds[4] = seeds[4] & 0x3FFF | 0x8000; // UUID variant 1, N = 8..0xB
+    return Array.from(seeds, hex4dashed).join('');
+  }
+
+  /** uuidv4 helper: converts to a 4-digit hex string and adds "-" at required positions */
+  function hex4dashed(num, i) {
+    return (num + 0x10000).toString(16).slice(-4) + (i >= 1 && i <= 4 ? '-' : '');
   }
 })();
