@@ -245,6 +245,7 @@ function setupRadioButtons() {
 
 function splitLongTooltips() {
   for (const el of $$('[title]')) {
+    el.dataset.title = el.title;
     if (el.title.length < 50) {
       continue;
     }
@@ -253,10 +254,7 @@ function splitLongTooltips() {
       .map(s => s.replace(/([^.][.。?!]|.{50,60},)\s+/g, '$1\n'))
       .map(s => s.replace(/(.{50,80}(?=.{40,}))\s+/g, '$1\n'))
       .join('\n');
-    if (newTitle !== el.title) {
-      el.dataset.title = el.title;
-      el.title = newTitle;
-    }
+    if (newTitle !== el.title) el.title = newTitle;
   }
 }
 
