@@ -77,7 +77,7 @@ const URLS = {
     RegExp.$1,
 
   supported: url => (
-    url.startsWith('http') && (FIREFOX || !url.startsWith(URLS.browserWebStore)) ||
+    url.startsWith('http') ||
     url.startsWith('ftp') ||
     url.startsWith('file') ||
     url.startsWith(URLS.ownOrigin) ||
@@ -85,25 +85,12 @@ const URLS = {
   ),
 };
 
-const IS_BG = chrome.extension.getBackgroundPage && chrome.extension.getBackgroundPage() === window;
-
-if (!IS_BG) {
-  if (FIREFOX) {
-    document.documentElement.classList.add('firefox');
-  } else if (OPERA) {
-    document.documentElement.classList.add('opera');
-  } else {
-    if (VIVALDI) document.documentElement.classList.add('vivaldi');
-  }
-}
-
-if (IS_BG) {
+if (chrome.extension.getBackgroundPage && chrome.extension.getBackgroundPage() === window) {
   window.API_METHODS = {};
+} else {
+  const cls = FIREFOX ? 'firefox' : OPERA ? 'opera' : VIVALDI ? 'vivaldi' : '';
+  if (cls) document.documentElement.classList.add(cls);
 }
-
-// FIXME: `localStorage` and `sessionStorage` may be disabled via dom.storage.enabled
-// Object.defineProperty(window, 'localStorage', {value: {}});
-// Object.defineProperty(window, 'sessionStorage', {value: {}});
 
 promisifyChrome({
   tabs: ['create', 'get', 'getCurrent', 'move', 'query', 'update'],
