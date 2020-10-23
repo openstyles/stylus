@@ -27,7 +27,36 @@ body.scaleout {
 
 #options {
   background: #fff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.options-wrapper {
   overflow-y: auto;
+}
+
+a {
+  color: #000;
+  transition: color .5s;
+}
+
+a:hover {
+  color: #666;
+}
+
+.svg-icon {
+  fill: #666;
+  transition: fill .5s;
+}
+
+a:hover .svg-icon,
+.svg-icon:hover {
+  fill: #000;
+}
+
+.svg-inline-wrapper .svg-icon {
+  pointer-events: none;
 }
 
 #options-close-icon .svg-icon {
@@ -91,13 +120,9 @@ body.scaleout {
   position: relative;
 }
 
-.block:nth-last-child(2) {
+.options-wrapper .block:last-child {
   margin-bottom: 0;
-}
-
-.block:last-child {
   border-bottom: none;
-  padding-bottom: 0;
 }
 
 .collapsed, .collapsible h1 {
@@ -139,15 +164,16 @@ label,
 label > :first-child {
   margin-right: 8px;
   flex-grow: 1;
+  transition: text-shadow: .1s;
 }
 
-label:not([disabled]) > :first-child {
-  cursor: default;
+label:not([disabled]),
+label:not([disabled]) :not([type="number"]) {
+  cursor: pointer;
 }
 
 label:not([disabled]):hover > :first-child {
   text-shadow: 0 0 0.01px rgba(0, 0, 0, .25);
-  cursor: pointer;
 }
 
 input[type=number],
@@ -201,6 +227,8 @@ input[type="color"] {
   white-space: nowrap;
   background-color: rgba(0, 0, 0, .05);
   margin: 0;
+  border-top: 1px solid #999;
+  border-bottom: none;
 }
 
 #actions button {

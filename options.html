@@ -41,243 +41,247 @@
 
   <div id="options">
 
-    <div class="block">
-      <h1 i18n-text="cm_theme"></h1>
-      <div class="items">
-        <label>
-          <a i18n-text="optionsStylusThemes" target="_blank"
-             href="https://33kk.github.io/uso-archive/?category=chrome-extension&search=Stylus"></a>
-        </label>
-      </div>
-    </div>
+    <div class="options-wrapper">
 
-    <div class="block">
-      <h1 i18n-text="optionsCustomizeIcon"></h1>
-      <div class="items">
-        <label>
-          <span i18n-text="optionsIconDark"></span>
-          <div class="iconset">
-            <input type="radio" name="iconset">
-            <img src="/images/icon/16.png">
-            <img src="/images/icon/16w.png">
-            <img src="/images/icon/16x.png">
-          </div>
-        </label>
-        <label>
-          <span i18n-text="optionsIconLight"></span>
-          <div class="iconset">
-            <input type="radio" name="iconset">
-            <img src="/images/icon/light/16.png">
-            <img src="/images/icon/light/16w.png">
-            <img src="/images/icon/light/16x.png">
-          </div>
-        </label>
-      </div>
-    </div>
-
-    <div class="block">
-      <h1 i18n-text="optionsCustomizeBadge"></h1>
-      <div class="items">
-        <label>
-          <span i18n-text="prefShowBadge"></span>
-          <span class="onoffswitch">
-            <input type="checkbox" id="show-badge" class="slider">
-            <span></span>
-          </span>
-        </label>
-        <label>
-          <span i18n-text="optionsBadgeNormal"></span>
-          <input type="color" id="badgeNormal">
-        </label>
-        <label>
-          <span i18n-text="optionsBadgeDisabled"></span>
-          <input type="color" id="badgeDisabled">
-        </label>
-      </div>
-    </div>
-
-    <div class="block">
-      <h1 i18n-text="optionsCustomizePopup"></h1>
-      <div class="items">
-        <label>
-          <span i18n-text="optionsPopupWidth"></span>
-          <input type="number" id="popupWidth" min="200" max="800">
-        </label>
-        <label>
-          <span i18n-text="popupOpenEditInWindow"
-                i18n-title="popupOpenEditInWindowTooltip"></span>
-          <span class="onoffswitch">
-            <input type="checkbox" id="openEditInWindow" class="slider">
-            <span></span>
-          </span>
-        </label>
-        <label>
-          <span i18n-text="popupOpenEditInPopup"></span>
-          <span class="onoffswitch">
-            <input type="checkbox" id="openEditInWindow.popup" class="slider">
-            <span></span>
-          </span>
-        </label>
-        <label>
-          <span i18n-text="popupStylesFirst"></span>
-          <span class="onoffswitch">
-            <input type="checkbox" id="popup.stylesFirst" class="slider">
-            <span></span>
-          </span>
-        </label>
-        <label>
-          <span i18n-text="popupAutoResort"></span>
-          <span class="onoffswitch">
-            <input type="checkbox" id="popup.autoResort" class="slider">
-            <span></span>
-          </span>
-        </label>
-        <label class="chromium-only chrome-no-popup-border">
-          <span i18n-text="popupBorders" i18n-title="popupBordersTooltip"></span>
-          <span class="onoffswitch">
-            <input type="checkbox" id="popup.borders" class="slider">
-            <span></span>
-          </span>
-        </label>
-      </div>
-    </div>
-
-    <div class="block">
-      <h1 i18n-text="openManage"></h1>
-      <div class="items">
-        <label>
-          <span i18n-text="manageNewUI"></span>
-          <span class="onoffswitch">
-            <input type="checkbox" id="manage.newUI" class="slider">
-            <span></span>
-          </span>
-        </label>
-        <label>
-          <span i18n-text="manageFavicons">
-            <a data-cmd="note"
-               i18n-title="manageFaviconsHelp"
-               href="#"
-               class="svg-inline-wrapper"
-               tabindex="0">
-              <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
-            </a>
-          </span>
-          <span class="onoffswitch">
-            <input type="checkbox" id="manage.newUI.favicons" class="slider">
-            <span></span>
-          </span>
-        </label>
-        <label>
-          <span i18n-text="manageFaviconsGray"></span>
-          <span class="onoffswitch">
-            <input type="checkbox" id="manage.newUI.faviconsGray" class="slider">
-            <span></span>
-          </span>
-        </label>
-        <label>
-          <span i18n-text="manageMaxTargets"></span>
-          <input id="manage.newUI.targets" type="number" min="1" max="99">
-        </label>
-      </div>
-    </div>
-
-    <div class="block" id="updates">
-      <h1 i18n-text="optionsCustomizeUpdate"></h1>
-      <div class="items">
-        <label>
-          <span i18n-text="optionsUpdateInterval">
-            <a data-cmd="note"
-               i18n-title="optionsUpdateImportNote"
-               href="#"
-               class="svg-inline-wrapper"
-               tabindex="0">
-              <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
-            </a>
-          </span>
-          <input type="number" min="0" id="updateInterval">
-        </label>
-      </div>
-    </div>
-
-    <div class="block sync-options">
-      <h1 i18n-text="optionsCustomizeSync"></h1>
-      <div class="items">
-        <div class="label">
-          <span class="sync-status"></span>
-          <div class="select-resizer">
-            <select class="cloud-name">
-              <option value="none" i18n-text="optionsSyncNone"></option>
-              <option value="dropbox">Dropbox</option>
-              <option value="google">Google Drive</option>
-              <option value="onedrive">OneDrive</option>
-            </select>
-            <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+      <div class="block">
+        <h1 i18n-text="cm_theme"></h1>
+        <div class="items">
+          <div class="label">
+            <a i18n-text="optionsStylusThemes" target="_blank"
+               href="https://33kk.github.io/uso-archive/?category=chrome-extension&search=Stylus"></a>
           </div>
         </div>
-        <div class="actions">
-          <button type="button" class="connect" i18n-text="optionsSyncConnect"></button>
-          <button type="button" class="disconnect" i18n-text="optionsSyncDisconnect"></button>
-          <button type="button" class="sync-now" i18n-text="optionsSyncSyncNow"></button>
-          <button type="button" class="sync-login" i18n-text="optionsSyncLogin"></button>
+      </div>
+      
+      <div class="block">
+        <h1 i18n-text="optionsCustomizeIcon"></h1>
+        <div class="items">
+          <label>
+            <span i18n-text="optionsIconDark"></span>
+            <div class="iconset">
+              <input type="radio" name="iconset">
+              <img src="/images/icon/16.png">
+              <img src="/images/icon/16w.png">
+              <img src="/images/icon/16x.png">
+            </div>
+          </label>
+          <label>
+            <span i18n-text="optionsIconLight"></span>
+            <div class="iconset">
+              <input type="radio" name="iconset">
+              <img src="/images/icon/light/16.png">
+              <img src="/images/icon/light/16w.png">
+              <img src="/images/icon/light/16x.png">
+            </div>
+          </label>
         </div>
       </div>
-    </div>
+      
+      <div class="block">
+        <h1 i18n-text="optionsCustomizeBadge"></h1>
+        <div class="items">
+          <label>
+            <span i18n-text="prefShowBadge"></span>
+            <span class="onoffswitch">
+              <input type="checkbox" id="show-badge" class="slider">
+              <span></span>
+            </span>
+          </label>
+          <label>
+            <span i18n-text="optionsBadgeNormal"></span>
+            <input type="color" id="badgeNormal">
+          </label>
+          <label>
+            <span i18n-text="optionsBadgeDisabled"></span>
+            <input type="color" id="badgeDisabled">
+          </label>
+        </div>
+      </div>
+      
+      <div class="block">
+        <h1 i18n-text="optionsCustomizePopup"></h1>
+        <div class="items">
+          <label>
+            <span i18n-text="optionsPopupWidth"></span>
+            <input type="number" id="popupWidth" min="200" max="800">
+          </label>
+          <label>
+            <span i18n-text="popupOpenEditInWindow"
+                  i18n-title="popupOpenEditInWindowTooltip"></span>
+            <span class="onoffswitch">
+              <input type="checkbox" id="openEditInWindow" class="slider">
+              <span></span>
+            </span>
+          </label>
+          <label>
+            <span i18n-text="popupOpenEditInPopup"></span>
+            <span class="onoffswitch">
+              <input type="checkbox" id="openEditInWindow.popup" class="slider">
+              <span></span>
+            </span>
+          </label>
+          <label>
+            <span i18n-text="popupStylesFirst"></span>
+            <span class="onoffswitch">
+              <input type="checkbox" id="popup.stylesFirst" class="slider">
+              <span></span>
+            </span>
+          </label>
+          <label>
+            <span i18n-text="popupAutoResort"></span>
+            <span class="onoffswitch">
+              <input type="checkbox" id="popup.autoResort" class="slider">
+              <span></span>
+            </span>
+          </label>
+          <label class="chromium-only chrome-no-popup-border">
+            <span i18n-text="popupBorders" i18n-title="popupBordersTooltip"></span>
+            <span class="onoffswitch">
+              <input type="checkbox" id="popup.borders" class="slider">
+              <span></span>
+            </span>
+          </label>
+        </div>
+      </div>
+      
+      <div class="block">
+        <h1 i18n-text="openManage"></h1>
+        <div class="items">
+          <label>
+            <span i18n-text="manageNewUI"></span>
+            <span class="onoffswitch">
+              <input type="checkbox" id="manage.newUI" class="slider">
+              <span></span>
+            </span>
+          </label>
+          <label>
+            <span i18n-text="manageFavicons">
+              <a data-cmd="note"
+                 i18n-title="manageFaviconsHelp"
+                 href="#"
+                 class="svg-inline-wrapper"
+                 tabindex="0">
+                <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+              </a>
+            </span>
+            <span class="onoffswitch">
+              <input type="checkbox" id="manage.newUI.favicons" class="slider">
+              <span></span>
+            </span>
+          </label>
+          <label>
+            <span i18n-text="manageFaviconsGray"></span>
+            <span class="onoffswitch">
+              <input type="checkbox" id="manage.newUI.faviconsGray" class="slider">
+              <span></span>
+            </span>
+          </label>
+          <label>
+            <span i18n-text="manageMaxTargets"></span>
+            <input id="manage.newUI.targets" type="number" min="1" max="99">
+          </label>
+        </div>
+      </div>
+      
+      <div class="block" id="updates">
+        <h1 i18n-text="optionsCustomizeUpdate"></h1>
+        <div class="items">
+          <label>
+            <span i18n-text="optionsUpdateInterval">
+              <a data-cmd="note"
+                 i18n-title="optionsUpdateImportNote"
+                 href="#"
+                 class="svg-inline-wrapper"
+                 tabindex="0">
+                <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+              </a>
+            </span>
+            <input type="number" min="0" id="updateInterval">
+          </label>
+        </div>
+      </div>
+      
+      <div class="block sync-options">
+        <h1 i18n-text="optionsCustomizeSync"></h1>
+        <div class="items">
+          <div class="label">
+            <span class="sync-status"></span>
+            <div class="select-resizer">
+              <select class="cloud-name">
+                <option value="none" i18n-text="optionsSyncNone"></option>
+                <option value="dropbox">Dropbox</option>
+                <option value="google">Google Drive</option>
+                <option value="onedrive">OneDrive</option>
+              </select>
+              <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+            </div>
+          </div>
+          <div class="actions">
+            <button type="button" class="connect" i18n-text="optionsSyncConnect"></button>
+            <button type="button" class="disconnect" i18n-text="optionsSyncDisconnect"></button>
+            <button type="button" class="sync-now" i18n-text="optionsSyncSyncNow"></button>
+            <button type="button" class="sync-login" i18n-text="optionsSyncLogin"></button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="block" id="advanced">
+        <div class="collapsible-resizer">
+          <h1 i18n-text="optionsAdvanced">
+            <a href="#" class="svg-inline-wrapper is-collapsed" tabindex="0">
+              <svg class="svg-icon" viewBox="0 0 1792 1792">
+                <path fill-rule="evenodd" d="M1408 704q0 26-19 45l-448 448q-19 19-45 19t-45-19l-448-448q-19-19-19-45t19-45 45-19h896q26 0 45 19t19 45z"/>
+              </svg>
+            </a>
+            <a href="#" class="svg-inline-wrapper is-expanded" tabindex="0">
+              <svg class="svg-icon" viewBox="0 0 1792 1792">
+                <path fill-rule="evenodd" d="M1408 1216q0 26-19 45t-45 19h-896q-26 0-45-19t-19-45 19-45l448-448q19-19 45-19t45 19l448 448q19 19 19 45z"/>
+              </svg>
+            </a>
+          </h1>
+        </div>
+        <div class="items">
+          <label class="chromium-only">
+            <span i18n-text="optionsAdvancedStyleViaXhr">
+              <a data-cmd="note"
+                 i18n-title="optionsAdvancedStyleViaXhrNote"
+                 href="#"
+                 class="svg-inline-wrapper"
+                 tabindex="0">
+                <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+              </a>
+            </span>
+            <span class="onoffswitch">
+              <input type="checkbox" id="styleViaXhr" class="slider">
+              <span></span>
+            </span>
+          </label>
+          <label>
+            <span i18n-text="optionsAdvancedExposeIframes">
+              <a data-cmd="note"
+                 i18n-data-title="optionsAdvancedExposeIframesNote"
+                 i18n-title="optionsAdvancedExposeIframesNote"
+                 href="#"
+                 class="svg-inline-wrapper"
+                 tabindex="0">
+                <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+              </a>
+            </span>
+            <span class="onoffswitch">
+              <input type="checkbox" id="exposeIframes" class="slider">
+              <span></span>
+            </span>
+          </label>
+          <label class="chromium-only">
+            <span i18n-text="optionsAdvancedContextDelete"></span>
+            <span class="onoffswitch">
+              <input type="checkbox" id="editor.contextDelete" class="slider">
+              <span></span>
+            </span>
+          </label>
+        </div>
+      </div>
 
-    <div class="block" id="advanced">
-      <div class="collapsible-resizer">
-        <h1 i18n-text="optionsAdvanced">
-          <a href="#" class="svg-inline-wrapper is-collapsed" tabindex="0">
-            <svg class="svg-icon" viewBox="0 0 1792 1792">
-              <path fill-rule="evenodd" d="M1408 704q0 26-19 45l-448 448q-19 19-45 19t-45-19l-448-448q-19-19-19-45t19-45 45-19h896q26 0 45 19t19 45z"/>
-            </svg>
-          </a>
-          <a href="#" class="svg-inline-wrapper is-expanded" tabindex="0">
-            <svg class="svg-icon" viewBox="0 0 1792 1792">
-              <path fill-rule="evenodd" d="M1408 1216q0 26-19 45t-45 19h-896q-26 0-45-19t-19-45 19-45l448-448q19-19 45-19t45 19l448 448q19 19 19 45z"/>
-            </svg>
-          </a>
-        </h1>
-      </div>
-      <div class="items">
-        <label class="chromium-only">
-          <span i18n-text="optionsAdvancedStyleViaXhr">
-            <a data-cmd="note"
-               i18n-title="optionsAdvancedStyleViaXhrNote"
-               href="#"
-               class="svg-inline-wrapper"
-               tabindex="0">
-              <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
-            </a>
-          </span>
-          <span class="onoffswitch">
-            <input type="checkbox" id="styleViaXhr" class="slider">
-            <span></span>
-          </span>
-        </label>
-        <label>
-          <span i18n-text="optionsAdvancedExposeIframes">
-            <a data-cmd="note"
-               i18n-data-title="optionsAdvancedExposeIframesNote"
-               i18n-title="optionsAdvancedExposeIframesNote"
-               href="#"
-               class="svg-inline-wrapper"
-               tabindex="0">
-              <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
-            </a>
-          </span>
-          <span class="onoffswitch">
-            <input type="checkbox" id="exposeIframes" class="slider">
-            <span></span>
-          </span>
-        </label>
-        <label class="chromium-only">
-          <span i18n-text="optionsAdvancedContextDelete"></span>
-          <span class="onoffswitch">
-            <input type="checkbox" id="editor.contextDelete" class="slider">
-            <span></span>
-          </span>
-        </label>
-      </div>
     </div>
 
     <div class="block" id="actions">
