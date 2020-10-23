@@ -120,13 +120,9 @@ a:hover .svg-icon,
   position: relative;
 }
 
-.block:nth-last-child(2) {
+.options-wrapper .block:last-child {
   margin-bottom: 0;
-}
-
-.block:last-child {
   border-bottom: none;
-  padding-bottom: 0;
 }
 
 .collapsed, .collapsible h1 {
@@ -232,6 +228,7 @@ input[type="color"] {
   background-color: rgba(0, 0, 0, .05);
   margin: 0;
   border-top: 1px solid #999;
+  border-bottom: none;
 }
 
 #actions button {
