@@ -40,8 +40,7 @@ window.INJECTED !== 1 && (() => {
           tab: NEEDS_TAB_IN_SENDER.includes(name) && await getOwnTab(),
           url: location.href,
         });
-        // avoiding an unnecessary `await` microtask сycle
-        return deepCopy(res instanceof bg.Promise ? await res : res);
+        return deepCopy(await res);
       };
     },
   });
