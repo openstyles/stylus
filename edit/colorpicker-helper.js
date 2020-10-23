@@ -23,12 +23,19 @@
         tooltip: t('colorpickerTooltip'),
         popup: {
           tooltipForSwitcher: t('colorpickerSwitchFormatTooltip'),
+          paletteLine: t('numberedLine'),
+          paletteHint: t('colorpickerPaletteHint'),
           hexUppercase: prefs.get('editor.colorpicker.hexUppercase'),
-          hideDelay: 30e3,
           embedderCallback: state => {
             ['hexUppercase', 'color']
               .filter(name => state[name] !== prefs.get('editor.colorpicker.' + name))
               .forEach(name => prefs.set('editor.colorpicker.' + name, state[name]));
+          },
+          get maxHeight() {
+            return prefs.get('editor.colorpicker.maxHeight');
+          },
+          set maxHeight(h) {
+            prefs.set('editor.colorpicker.maxHeight', h);
           },
         },
       };

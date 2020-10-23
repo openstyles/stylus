@@ -182,6 +182,9 @@
     "message": "Theme",
     "description": "Label for the style editor's CSS theme."
   },
+  "colorpickerPaletteHint": {
+    "message": "Right-click a swatch to cycle through its source lines"
+  },
   "colorpickerSwitchFormatTooltip": {
     "message": "Switch formats: HEX -> RGB -> HSL.\nShift-click to reverse the direction.\nAlso via PgUp (PageUp), PgDn (PageDown) keys.",
     "description": "Tooltip for the switch button in the color picker popup in the style editor."
@@ -937,6 +940,10 @@
   "noStylesForSite": {
     "message": "No styles installed for this site.",
     "description": "Text displayed when no styles are installed for the current site"
+  },
+  "numberedLine": {
+    "message": "Line:",
+    "description": "Will be followed by one or more line numbers in the editor."
   },
   "openManage": {
     "message": "Manage",

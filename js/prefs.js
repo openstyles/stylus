@@ -86,6 +86,7 @@ self.prefs = self.INJECTED === 1 ? self.prefs : (() => {
     'editor.colorpicker.hotkey': '',
     // last color
     'editor.colorpicker.color': '',
+    'editor.colorpicker.maxHeight': 300,
 
     // Firefox-only chrome.commands.update
     'hotkey._execute_browser_action': '',

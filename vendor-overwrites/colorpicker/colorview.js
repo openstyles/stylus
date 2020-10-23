@@ -533,7 +533,7 @@
       prevColor: data.color || '',
       callback: popupOnChange,
       palette: makePalette(state),
-      paletteCallback: el => paletteCallback(state, el),
+      paletteCallback,
     }));
   }
 
@@ -562,8 +562,9 @@
       if (!markedSpans) return;
       for (const {from, marker: m} of markedSpans) {
         if (from == null || m.className !== COLORVIEW_CLASS) continue;
-        nums = palette.get(m.color);
-        if (!nums) palette.set(m.color, (nums = []));
+        const color = m.color.toLowerCase();
+        nums = palette.get(color);
+        if (!nums) palette.set(color, (nums = []));
         nums.push(i);
       }
     });
@@ -571,29 +572,37 @@
     if (palette.size > 1 || nums && nums.length > 1) {
       const old = new Map((options.popup.palette || []).map(el => [el.__color, el]));
       for (const [color, data] of palette) {
-        res.push(old.get(color) || makePaletteSwatch(color, data));
+        res.push(old.get(color) || makePaletteSwatch(color, data, options.popup.paletteLine));
       }
+      res.push(Object.assign(document.createElement('span'), {
+        className: 'colorpicker-palette-hint',
+        title: options.popup.paletteHint,
+        textContent: '?',
+      }));
     }
     return res;
   }
 
-  function makePaletteSwatch(color, nums) {
+  function makePaletteSwatch(color, nums, label) {
     const s = nums.join(', ');
     const el = document.createElement('div');
     el.className = COLORVIEW_SWATCH_CLASS;
     el.style.cssText = COLORVIEW_SWATCH_CSS + color;
-    el.title = color + (!s ? '' : `\nLine: ${s.length > 50 ? s.replace(/([^,]+,\s){10}/g, '$&\n') : s}`);
+    // break down long lists: 10 per line
+    el.title = `${color}\n${label} ${s.length > 50 ? s.replace(/([^,]+,\s){10}/g, '$&\n') : s}`;
     el.__color = color;
     return el;
   }
 
-  function paletteCallback({cm}, el) {
+  function paletteCallback(el) {
+    const {cm} = this;
     const lines = el.title.split('\n')[1].match(/\d+/g).map(Number);
-    const curLine = cm.getCursor().line + 1;
-    const i = lines.indexOf(curLine) + 1;
-    const pos = {line: (lines[i] || curLine) - 1, ch: 0};
-    cm.scrollIntoView(pos, cm.defaultTextHeight());
-    cm.setCursor(pos);
+    const i = lines.indexOf(cm.getCursor().line + 1) + 1;
+    const line = (lines[i] || lines[0]) - 1;
+    const vpm = cm.options.viewportMargin;
+    const inView = line >= cm.display.viewFrom - vpm && line <= cm.display.viewTo - vpm;
+    cm.scrollIntoView(line, inView ? cm.defaultTextHeight() : cm.display.wrapper.clientHeight / 2);
+    cm.setCursor(line);
   }
 
   //endregion

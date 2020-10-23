@@ -399,7 +399,6 @@ function configDialog(style) {
       color: this.va.value || this.va.default,
       top: this.getBoundingClientRect().bottom - 5,
       left: box.getBoundingClientRect().left - 360,
-      hideDelay: 1e6,
       guessBrightness: box,
       callback: onColorChanged,
     });
