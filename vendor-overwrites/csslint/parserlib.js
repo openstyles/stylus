@@ -74,6 +74,8 @@ self.parserlib = (() => {
 
     dpi:  'resolution',
     dpcm: 'resolution',
+    dppx: 'resolution',
+    x:    'resolution',
 
     ar:   'dimension',
   };
@@ -105,51 +107,55 @@ self.parserlib = (() => {
     'animation-play-state':      '[ running | paused ]#',
     'animation-timing-function': '<single-timing-function>#',
 
-    'appearance':         'none | auto',
-    '-moz-appearance':    'none | button | button-arrow-down | button-arrow-next | button-arrow-previous | ' +
-                          'button-arrow-up | button-bevel | button-focus | caret | checkbox | checkbox-container | ' +
-                          'checkbox-label | checkmenuitem | dualbutton | groupbox | listbox | listitem | ' +
-                          'menuarrow | menubar | menucheckbox | menuimage | menuitem | menuitemtext | menulist | ' +
-                          'menulist-button | menulist-text | menulist-textfield | menupopup | menuradio | ' +
-                          'menuseparator | meterbar | meterchunk | progressbar | progressbar-vertical | ' +
-                          'progresschunk | progresschunk-vertical | radio | radio-container | radio-label | ' +
-                          'radiomenuitem | range | range-thumb | resizer | resizerpanel | scale-horizontal | ' +
-                          'scalethumbend | scalethumb-horizontal | scalethumbstart | scalethumbtick | ' +
-                          'scalethumb-vertical | scale-vertical | scrollbarbutton-down | scrollbarbutton-left | ' +
-                          'scrollbarbutton-right | scrollbarbutton-up | scrollbarthumb-horizontal | ' +
-                          'scrollbarthumb-vertical | scrollbartrack-horizontal | scrollbartrack-vertical | ' +
-                          'searchfield | separator | sheet | spinner | spinner-downbutton | spinner-textfield | ' +
-                          'spinner-upbutton | splitter | statusbar | statusbarpanel | tab | tabpanel | tabpanels | ' +
-                          'tab-scroll-arrow-back | tab-scroll-arrow-forward | textfield | textfield-multiline | ' +
-                          'toolbar | toolbarbutton | toolbarbutton-dropdown | toolbargripper | toolbox | tooltip | ' +
-                          'treeheader | treeheadercell | treeheadersortarrow | treeitem | treeline | treetwisty | ' +
-                          'treetwistyopen | treeview | -moz-mac-unified-toolbar | -moz-win-borderless-glass | ' +
-                          '-moz-win-browsertabbar-toolbox | -moz-win-communicationstext | ' +
-                          '-moz-win-communications-toolbox | -moz-win-exclude-glass | -moz-win-glass | ' +
-                          '-moz-win-mediatext | -moz-win-media-toolbox | -moz-window-button-box | ' +
-                          '-moz-window-button-box-maximized | -moz-window-button-close | ' +
-                          '-moz-window-button-maximize | -moz-window-button-minimize | -moz-window-button-restore | ' +
-                          '-moz-window-frame-bottom | -moz-window-frame-left | -moz-window-frame-right | ' +
-                          '-moz-window-titlebar | -moz-window-titlebar-maximized',
-    '-ms-appearance':     'none | icon | window | desktop | workspace | document | tooltip | dialog | button | ' +
-                          'push-button | hyperlink | radio | radio-button | checkbox | menu-item | tab | menu | ' +
-                          'menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | ' +
-                          'outline-tree | range | field | combo-box | signature | password | normal',
-    '-webkit-appearance': 'none | button | button-bevel | caps-lock-indicator | caret | checkbox | ' +
-                          'default-button | listbox | listitem | media-fullscreen-button | media-mute-button | ' +
-                          'media-play-button | media-seek-back-button | media-seek-forward-button | media-slider | ' +
-                          'media-sliderthumb | menulist | menulist-button | menulist-text | menulist-textfield | ' +
-                          'push-button | radio | searchfield | searchfield-cancel-button | searchfield-decoration | ' +
-                          'searchfield-results-button | searchfield-results-decoration | slider-horizontal | ' +
-                          'slider-vertical | sliderthumb-horizontal | sliderthumb-vertical | square-button | ' +
-                          'textarea | textfield | scrollbarbutton-down | scrollbarbutton-left | ' +
-                          'scrollbarbutton-right | scrollbarbutton-up | scrollbargripper-horizontal | ' +
-                          'scrollbargripper-vertical | scrollbarthumb-horizontal | scrollbarthumb-vertical | ' +
-                          'scrollbartrack-horizontal | scrollbartrack-vertical',
-    '-o-appearance':      'none | window | desktop | workspace | document | tooltip | dialog | button | ' +
-                          'push-button | hyperlink | radio | radio-button | checkbox | menu-item | tab | menu | ' +
-                          'menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | ' +
-                          'outline-tree | range | field | combo-box | signature | password | normal',
+    'appearance': 'none | auto',
+    '-moz-appearance':
+      'none | button | button-arrow-down | button-arrow-next | button-arrow-previous | ' +
+      'button-arrow-up | button-bevel | button-focus | caret | checkbox | checkbox-container | ' +
+      'checkbox-label | checkmenuitem | dualbutton | groupbox | listbox | listitem | ' +
+      'menuarrow | menubar | menucheckbox | menuimage | menuitem | menuitemtext | menulist | ' +
+      'menulist-button | menulist-text | menulist-textfield | menupopup | menuradio | ' +
+      'menuseparator | meterbar | meterchunk | progressbar | progressbar-vertical | ' +
+      'progresschunk | progresschunk-vertical | radio | radio-container | radio-label | ' +
+      'radiomenuitem | range | range-thumb | resizer | resizerpanel | scale-horizontal | ' +
+      'scalethumbend | scalethumb-horizontal | scalethumbstart | scalethumbtick | ' +
+      'scalethumb-vertical | scale-vertical | scrollbarbutton-down | scrollbarbutton-left | ' +
+      'scrollbarbutton-right | scrollbarbutton-up | scrollbarthumb-horizontal | ' +
+      'scrollbarthumb-vertical | scrollbartrack-horizontal | scrollbartrack-vertical | ' +
+      'searchfield | separator | sheet | spinner | spinner-downbutton | spinner-textfield | ' +
+      'spinner-upbutton | splitter | statusbar | statusbarpanel | tab | tabpanel | tabpanels | ' +
+      'tab-scroll-arrow-back | tab-scroll-arrow-forward | textfield | textfield-multiline | ' +
+      'toolbar | toolbarbutton | toolbarbutton-dropdown | toolbargripper | toolbox | tooltip | ' +
+      'treeheader | treeheadercell | treeheadersortarrow | treeitem | treeline | treetwisty | ' +
+      'treetwistyopen | treeview | -moz-mac-unified-toolbar | -moz-win-borderless-glass | ' +
+      '-moz-win-browsertabbar-toolbox | -moz-win-communicationstext | ' +
+      '-moz-win-communications-toolbox | -moz-win-exclude-glass | -moz-win-glass | ' +
+      '-moz-win-mediatext | -moz-win-media-toolbox | -moz-window-button-box | ' +
+      '-moz-window-button-box-maximized | -moz-window-button-close | ' +
+      '-moz-window-button-maximize | -moz-window-button-minimize | -moz-window-button-restore | ' +
+      '-moz-window-frame-bottom | -moz-window-frame-left | -moz-window-frame-right | ' +
+      '-moz-window-titlebar | -moz-window-titlebar-maximized',
+    '-ms-appearance':
+      'none | icon | window | desktop | workspace | document | tooltip | dialog | button | ' +
+      'push-button | hyperlink | radio | radio-button | checkbox | menu-item | tab | menu | ' +
+      'menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | ' +
+      'outline-tree | range | field | combo-box | signature | password | normal',
+    '-webkit-appearance':
+      'auto | none | button | button-bevel | caps-lock-indicator | caret | checkbox | ' +
+      'default-button | listbox | listitem | media-fullscreen-button | media-mute-button | ' +
+      'media-play-button | media-seek-back-button | media-seek-forward-button | media-slider | ' +
+      'media-sliderthumb | menulist | menulist-button | menulist-text | menulist-textfield | ' +
+      'push-button | radio | searchfield | searchfield-cancel-button | searchfield-decoration | ' +
+      'searchfield-results-button | searchfield-results-decoration | slider-horizontal | ' +
+      'slider-vertical | sliderthumb-horizontal | sliderthumb-vertical | square-button | ' +
+      'textarea | textfield | scrollbarbutton-down | scrollbarbutton-left | ' +
+      'scrollbarbutton-right | scrollbarbutton-up | scrollbargripper-horizontal | ' +
+      'scrollbargripper-vertical | scrollbarthumb-horizontal | scrollbarthumb-vertical | ' +
+      'scrollbartrack-horizontal | scrollbartrack-vertical',
+    '-o-appearance':
+      'none | window | desktop | workspace | document | tooltip | dialog | button | ' +
+      'push-button | hyperlink | radio | radio-button | checkbox | menu-item | tab | menu | ' +
+      'menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | ' +
+      'outline-tree | range | field | combo-box | signature | password | normal',
 
     'azimuth': '<azimuth>',
 
@@ -176,7 +182,7 @@ self.parserlib = (() => {
     'bookmark-label':          '<content-list>',
     'bookmark-level':          'none | <integer>',
     'bookmark-state':          'open | closed',
-    'bookmark-target':         'none | <uri> | attr()',
+    'bookmark-target':         'none | <uri>',
 
     'border-bottom-left-radius':  '<x-one-radius>',
     'border-bottom-right-radius': '<x-one-radius>',
@@ -246,10 +252,12 @@ self.parserlib = (() => {
     'column-width':      '<length> | auto',
     'columns':           1,
     'contain':           'none | strict | content | [ size || layout || style || paint ]',
+    'contain-intrinsic-size': 'none | <length>{1,2}',
     'content':           'normal | none | <content-list> [ / <string> ]?',
     'content-visibility': 'visible | auto | hidden',
-    'counter-increment': 1,
-    'counter-reset':     1,
+    'counter-increment': '<counter>',
+    'counter-reset':     '<counter>',
+    'counter-set':       '<counter>',
     'crop':              'rect() | inset-rect() | auto',
     'cue':               'cue-after | cue-before',
     'cue-after':         1,
@@ -374,8 +382,8 @@ self.parserlib = (() => {
 
     // I
     'icon':              1,
-    'image-orientation': 'angle | auto',
-    'image-rendering':   'auto | optimizeSpeed | optimizeQuality',
+    'image-orientation': 'from-image | none | [ <angle> || flip ]',
+    'image-rendering':   'auto | smooth | high-quality | crisp-edges | pixelated | optimizeSpeed | optimizeQuality',
     'image-resolution':  1,
     'ime-mode':          'auto | normal | active | inactive | disabled',
     'inline-box-align':  'last | <integer>',
@@ -410,9 +418,10 @@ self.parserlib = (() => {
     'list-style':             1,
     'list-style-image':       '<uri> | none',
     'list-style-position':    'inside | outside',
-    'list-style-type':        'disc | circle | square | decimal | decimal-leading-zero | lower-roman | ' +
-                              'upper-roman | lower-greek | lower-latin | upper-latin | armenian | ' +
-                              'georgian | lower-alpha | upper-alpha | none',
+    'list-style-type':
+      '<string> | disc | circle | square | decimal | decimal-leading-zero | lower-roman | ' +
+      'upper-roman | lower-greek | lower-latin | upper-latin | armenian | ' +
+      'georgian | lower-alpha | upper-alpha | none',
 
     // M
     'margin':             '<width>{1,4}',
@@ -461,7 +470,7 @@ self.parserlib = (() => {
     // O
     'object-fit':      'fill | contain | cover | none | scale-down',
     'object-position': '<position>',
-    'opacity':         '<opacity-value>',
+    'opacity':         '<opacity-value> | <percentage>',
     'order':           '<integer>',
     'orphans':         '<integer>',
     'outline':         '[ <color> | invert ] || [ auto | <border-style> ] || <border-width>',
@@ -702,19 +711,22 @@ self.parserlib = (() => {
   //endregion
   //region ValidationTypes - definitions
 
+  const RX_VENDOR_PREFIX = /^-(webkit|moz|ms|o)-(.+)/i;
+  const RX_CALC = /^(-(ms|moz|o|webkit)-)?(calc|min|max|clamp)\(/i;
+
   const ValidationTypes = {
     simple: {
       '<absolute-size>': 'xx-small | x-small | small | medium | large | x-large | xx-large',
 
       '<animateable-feature>': 'scroll-position | contents | <animateable-feature-name>',
-      '<animateable-feature-name>': function (part) {
+      '<animateable-feature-name>'(part) {
         return this['<ident>'](part) &&
                !/^(unset|initial|inherit|will-change|auto|scroll-position|contents)$/i.test(part);
       },
 
       '<angle>': part => part.type === 'angle',
 
-      '<aspect-ratio>': part => part.units && lower(part.units) === 'ar',
+      '<aspect-ratio>': part => part.units && lowerCmp(part.units, 'ar'),
 
       '<attr-fallback>': part => !/\battr\(/i.test(part.text),
 
@@ -804,8 +816,11 @@ self.parserlib = (() => {
       '<ident-for-grid>': part =>
         (part.type === 'identifier' || part.wasIdent) &&
         !/^(span|auto|initial|inherit|unset|default)$/i.test(part.value),
-      '<ident-not-generic-family>': function (part) {
+      '<ident-not-generic-family>'(part) {
         return this['<ident>'](part) && !this['<generic-family>'](part);
+      },
+      '<ident-not-none>'(part) {
+        return this['<ident>'](part) && !lowerCmp(part.value, 'none');
       },
 
       '<image>': '<uri> | <gradient> | cross-fade()',
@@ -814,12 +829,12 @@ self.parserlib = (() => {
 
       '<integer>': part => part.type === 'integer',
 
-      '<length>': part =>
-        part.type === 'function' && /^(?:-(?:ms|moz|o|webkit)-)?calc/i.test(part) ||
-        part.type === 'length' ||
-        part.type === 'number' ||
-        part.type === 'integer' ||
-        part.text === '0',
+      '<length>': ({text, type}) =>
+        type === 'function' && RX_CALC.test(text) ||
+        type === 'length' ||
+        type === 'number' ||
+        type === 'integer' ||
+        text === '0',
 
       '<length-percentage>': '<length> | <percentage>',
 
@@ -827,7 +842,7 @@ self.parserlib = (() => {
 
       '<line-height>': '<number> | <length-percentage> | normal',
 
-      '<line-names>': function (part) {
+      '<line-names>'(part) {
         // eslint-disable-next-line no-use-before-define
         return part.tokenType === Tokens.LBRACKET &&
           part.text.endsWith(']') && (
@@ -837,33 +852,35 @@ self.parserlib = (() => {
           );
       },
 
-      '<miterlimit>': function (part) {
+      '<miterlimit>'(part) {
         return this['<number>'](part) && part.value >= 1;
       },
 
-      '<nonnegative-length-or-percentage>': function (part) {
-        return (this['<length>'](part) || this['<percentage>'](part)) &&
-               (String(part) === '0' || part.type === 'function' || (part.value) >= 0);
+      '<nonnegative-length-or-percentage>'(part) {
+        return `${part}` === '0' ||
+               (part.type === 'function' || part.value >= 0) &&
+               (this['<length>'](part) || this['<percentage>'](part));
       },
-      '<nonnegative-number-or-percentage>': function (part) {
-        return (this['<number>'](part) || this['<percentage>'](part)) &&
-               (String(part) === '0' || part.type === 'function' || (part.value) >= 0);
+      '<nonnegative-number-or-percentage>'(part) {
+        return `${part}` === '0' ||
+               (part.type === 'function' || part.value >= 0) &&
+               (this['<number>'](part) || this['<percentage>'](part));
       },
 
       '<number-percentage>': '<number> | <percentage>',
 
-      '<positive-integer>': function (part) {
+      '<positive-integer>'(part) {
         return this['<number>'](part) && (part.type === 'function' || part.value > 0);
       },
 
       //eslint-disable-next-line no-use-before-define
-      '<named-color>': part => lower(part.text) in Colors,
+      '<named-color>': part => part.text in Colors || lower(part.text) in Colors,
 
-      '<number>': function (part) {
+      '<number>'(part) {
         return part.type === 'number' || this['<integer>'](part);
       },
 
-      '<opacity-value>': function (part) {
+      '<opacity-value>'(part) {
         return this['<number>'](part) && part.value >= 0 && part.value <= 1;
       },
 
@@ -873,7 +890,7 @@ self.parserlib = (() => {
 
       '<padding-width>': '<nonnegative-length-or-percentage>',
 
-      '<percentage>': part => part.type === 'percentage' || String(part) === '0',
+      '<percentage>': part => part.type === 'percentage' || `${part}` === '0',
 
       '<relative-size>': 'smaller | larger',
 
@@ -885,7 +902,7 @@ self.parserlib = (() => {
 
       '<single-animation-direction>': 'normal | reverse | alternate | alternate-reverse',
       '<single-animation-fill-mode>': 'none | forwards | backwards | both',
-      '<single-animation-name>': function (part) {
+      '<single-animation-name>'(part) {
         return this['<ident>'](part) &&
                /^-?[a-z_][-a-z0-9_]+$/i.test(part) &&
                !/^(none|unset|initial|inherit)$/i.test(part);
@@ -910,7 +927,7 @@ self.parserlib = (() => {
 
       '<unicode-range>': part => /^U\+[0-9a-f?]{1,6}(-[0-9a-f?]{1,6})?\s*$/i.test(part),
 
-      '<unit>': part => part.text === '%' || lower(part) in UNITS,
+      '<unit>': part => part.text === '%' || part in UNITS || lower(part) in UNITS,
 
       '<uri>': part => part.type === 'uri',
 
@@ -918,15 +935,11 @@ self.parserlib = (() => {
         //eslint-disable-next-line no-use-before-define
         if (part.tokenType === Tokens.USO_VAR) return true;
         if (part.type !== 'function' || !part.expr) return false;
-        const subparts = part.expr.parts;
-        if (!subparts.length) return false;
-        const name = lower(part.name);
-        return (
-          name === 'var' && subparts[0].type === 'custom-property' ||
-          name === 'env' && subparts[0].type === 'identifier'
-        ) && (
-          subparts.length === 1 ||
-          subparts[1].text === ','
+        const sp = part.expr.parts;
+        return sp.length && (
+          (sp.length === 1 || sp[1].text === ',') &&
+          (sp[0].type === 'custom-property' && /^var$/i.test(part.name) ||
+           sp[0].type === 'identifier' && /^env$/i.test(part.name))
         );
       },
 
@@ -990,6 +1003,8 @@ self.parserlib = (() => {
       '<content-list>': '[ <string> | <image> | attr() | content() | counter() | counters() | leader() | ' +
                         '[ open-quote | close-quote | no-open-quote | no-close-quote ] | ' +
                         '[ target-counter() | target-counters() | target-text() ] ]+',
+
+      '<counter>': '[ <ident-not-none> <integer>? ]+ | none',
 
       // "list of comma and/or white space separated <length>s and
       // <percentage>s".  There is a non-negative constraint.
@@ -1367,6 +1382,19 @@ self.parserlib = (() => {
     window: '',
     windowframe: '',
     windowtext: '',
+
+    // CSS4 system colors, only additions to the above
+    // https://drafts.csswg.org/css-color-4/#css-system-colors
+    activetext: '',
+    buttonborder: '',
+    canvas: '',
+    canvastext: '',
+    field: '',
+    fieldtext: '',
+    linktext: '',
+    mark: '',
+    marktext: '',
+    visitedtext: '',
   };
 
   //endregion
@@ -1525,18 +1553,138 @@ self.parserlib = (() => {
   Tokens.name = index => (Tokens[index] || {}).name;
   Tokens.type = text => typeMap.get(text) || -1;
 
+  const TT = {
+    attrMatch: [
+      Tokens.PREFIXMATCH,
+      Tokens.SUFFIXMATCH,
+      Tokens.SUBSTRINGMATCH,
+      Tokens.EQUALS,
+      Tokens.INCLUDES,
+      Tokens.DASHMATCH,
+    ],
+    combinator: [
+      Tokens.PLUS,
+      Tokens.GREATER,
+      Tokens.TILDE,
+      Tokens.COLUMN,
+    ],
+    cruft: [
+      Tokens.S,
+      Tokens.CDO,
+      Tokens.CDC,
+    ],
+    expression: [
+      Tokens.PLUS,
+      Tokens.MINUS,
+      Tokens.DIMENSION,
+      Tokens.NUMBER,
+      Tokens.STRING,
+      Tokens.IDENT,
+      Tokens.LENGTH,
+      Tokens.FREQ,
+      Tokens.ANGLE,
+      Tokens.TIME,
+      Tokens.RESOLUTION,
+      Tokens.SLASH,
+    ],
+    identString: [
+      Tokens.IDENT,
+      Tokens.STRING,
+    ],
+    identCustom: [
+      Tokens.IDENT,
+      Tokens.CUSTOM_PROP,
+    ],
+    LParenBracket: [
+      Tokens.LPAREN,
+      Tokens.LBRACKET,
+    ],
+    LParenBracketBrace: [
+      Tokens.LPAREN,
+      Tokens.LBRACKET,
+      Tokens.LBRACE,
+    ],
+    margins: [
+      Tokens.TOPLEFTCORNER_SYM,
+      Tokens.TOPLEFT_SYM,
+      Tokens.TOPCENTER_SYM,
+      Tokens.TOPRIGHT_SYM,
+      Tokens.TOPRIGHTCORNER_SYM,
+      Tokens.BOTTOMLEFTCORNER_SYM,
+      Tokens.BOTTOMLEFT_SYM,
+      Tokens.BOTTOMCENTER_SYM,
+      Tokens.BOTTOMRIGHT_SYM,
+      Tokens.BOTTOMRIGHTCORNER_SYM,
+      Tokens.LEFTTOP_SYM,
+      Tokens.LEFTMIDDLE_SYM,
+      Tokens.LEFTBOTTOM_SYM,
+      Tokens.RIGHTTOP_SYM,
+      Tokens.RIGHTMIDDLE_SYM,
+      Tokens.RIGHTBOTTOM_SYM,
+    ],
+    op: [
+      Tokens.SLASH,
+      Tokens.COMMA,
+    ],
+    opInFunc: [
+      Tokens.SLASH,
+      Tokens.COMMA,
+      Tokens.PLUS,
+      Tokens.STAR,
+      Tokens.MINUS,
+    ],
+    ns: [
+      Tokens.IDENT,
+      Tokens.STAR,
+    ],
+    plusMinus: [
+      Tokens.MINUS,
+      Tokens.PLUS,
+    ],
+    stringUri: [
+      Tokens.STRING,
+      Tokens.URI,
+    ],
+    term: [
+      Tokens.NUMBER,
+      Tokens.PERCENTAGE,
+      Tokens.LENGTH,
+      Tokens.ANGLE,
+      Tokens.TIME,
+      Tokens.DIMENSION,
+      Tokens.FREQ,
+      Tokens.STRING,
+      Tokens.IDENT,
+      Tokens.URI,
+      Tokens.UNICODE_RANGE,
+      Tokens.USO_VAR,
+    ],
+    usoS: [
+      Tokens.USO_VAR,
+      Tokens.S,
+    ],
+  };
+  TT.termVar = [
+    ...TT.term,
+    Tokens.CUSTOM_PROP,
+  ];
+
   //endregion
   //region lowerCase helper
 
   const lowercaseCache = new Map();
 
   function lower(text) {
-    if (typeof text !== 'string') text = String(text);
+    if (typeof text !== 'string') text = `${text}`;
     let result = lowercaseCache.get(text);
     if (result) return result;
     result = text.toLowerCase();
     lowercaseCache.set(text, result);
     return result;
+  }
+
+  function lowerCmp(a, b) {
+    return a.length === b.length && (a === b || lower(a) === lower(b));
   }
 
   //endregion
@@ -1681,7 +1829,7 @@ self.parserlib = (() => {
     /** Simple recursive-descent grammar to build matchers from strings. */
     static doParse(str) {
       const reader = new StringReader(str);
-      const result = Matcher.grammarParser.parse(reader);
+      const result = Matcher.parseGrammar(reader);
       if (!reader.eof()) {
         throw new Error(`Internal error. Expected end of string ${reader._line}:${reader._col}.`);
       }
@@ -1744,16 +1892,12 @@ self.parserlib = (() => {
     static oror(...args) {
       return Matcher.many(false, ...args);
     }
-
-    match(expression) {
-      expression.mark();
-      const result = this.matchFunc(expression);
-      if (result) {
-        expression.drop();
-      } else {
-        expression.restore();
-      }
-      return result;
+    /**
+     * @param {PropertyValueIterator} e
+     * @return {?boolean}
+     */
+    match(e) {
+      return e.popMark(this.matchFunc(e.mark()));
     }
 
     // Basic combinators
@@ -1792,22 +1936,22 @@ self.parserlib = (() => {
     }
 
     braces(min, max, marker, optSep) {
-      optSep = optSep && optSep.then(this);
-      if (!marker || marker === '#') {
-        marker = (marker || '') + '{' + min + (min === max ? '' : ',' + max) + '}';
+      if (optSep) {
+        optSep = optSep.then(this);
       }
-
-      const matchNext = !optSep
-        ? expression => this.match(expression)
-        : (expression, i) => (!i ? this : optSep).match(expression);
-
-      const matchFunc = expression => {
+      if (!marker || marker === '#') {
+        marker = `${marker || ''}{${min}${min === max ? '' : ',' + max}}`;
+      }
+      const bracesMatch = expression => {
         let i = 0;
-        while (i < max && matchNext(expression, i)) i++;
+        while (i < max && (i && optSep || this).match(expression)) {
+          i++;
+        }
         return i >= min;
       };
-
-      return new Matcher(matchFunc, () => this.toString(Matcher.prec.MOD) + marker);
+      const bracesToString = () =>
+        this.toString(Matcher.prec.MOD) + marker;
+      return new Matcher(bracesMatch, bracesToString);
     }
   }
 
@@ -1823,10 +1967,7 @@ self.parserlib = (() => {
   Matcher.matchFunc = {
 
     alt(expression) {
-      for (const m of this.options) {
-        if (m.match(expression)) return true;
-      }
-      return false;
+      return this.options.some(m => m.match(expression));
     },
 
     fromType(expr) {
@@ -1834,10 +1975,7 @@ self.parserlib = (() => {
     },
 
     seq(expression) {
-      for (const m of this.options) {
-        if (!m.match(expression)) return false;
-      }
-      return true;
+      return this.options.every(m => m.match(expression));
     },
 
     many(expression) {
@@ -1867,19 +2005,19 @@ self.parserlib = (() => {
           if (seen[i]) continue;
           expression.mark();
           if (!ms[i].match(expression)) {
-            expression.drop();
+            expression.popMark(true);
             continue;
           }
           seen[i] = true;
           // Increase matchCount if this was a required element
           // (or if all the elements are optional)
           if (tryMatch(matchCount + (required === false || required[i] ? 1 : 0))) {
-            expression.drop();
+            expression.popMark(true);
             return true;
           }
           // Backtrack: try *not* matching using this rule, and
           // let's see if it leads to a better overall match.
-          expression.restore();
+          expression.popMark();
           seen[i] = false;
         }
         if (pass === 0) {
@@ -1920,33 +2058,28 @@ self.parserlib = (() => {
     }
   };
 
-  Matcher.grammarParser = (() => {
+  Matcher.parseGrammar = (() => {
     let reader;
-    return {parse};
-
-    function parse(newReader) {
+    return newReader => {
       reader = newReader;
       return expr();
-    }
-
+    };
     function expr() {
       // expr = oror (" | " oror)*
       const m = [oror()];
       while (reader.readMatch(' | ')) {
         m.push(oror());
       }
-      return m.length === 1 ? m[0] : Matcher.alt.apply(Matcher, m);
+      return m.length === 1 ? m[0] : Matcher.alt(...m);
     }
-
     function oror() {
       // oror = andand ( " || " andand)*
       const m = [andand()];
       while (reader.readMatch(' || ')) {
         m.push(andand());
       }
-      return m.length === 1 ? m[0] : Matcher.oror.apply(Matcher, m);
+      return m.length === 1 ? m[0] : Matcher.oror(...m);
     }
-
     function andand() {
       // andand = seq ( " && " seq)*
       const m = [seq()];
@@ -1967,16 +2100,14 @@ self.parserlib = (() => {
       }
       return m.length === 1 ? m[0] : Matcher.many(required, ...m);
     }
-
     function seq() {
       // seq = mod ( " " mod)*
       const m = [mod()];
       while (reader.readMatch(/\s(?![&|\]])/y)) {
         m.push(mod());
       }
-      return m.length === 1 ? m[0] : Matcher.seq.apply(Matcher, m);
+      return m.length === 1 ? m[0] : Matcher.seq(...m);
     }
-
     function mod() {
       // mod = term ( "?" | "*" | "+" | "#" | "{<num>,<num>}" )?
       const m = term();
@@ -2002,7 +2133,6 @@ self.parserlib = (() => {
       }
       return m;
     }
-
     function term() {
       // term = <nt> | literal | "[ " expression " ]"
       if (reader.readMatch('[ ')) {
@@ -2012,15 +2142,13 @@ self.parserlib = (() => {
       }
       return Matcher.fromType(eat(/[^\s?*+#{]+/y));
     }
-
     function eat(matcher) {
       const result = reader.readMatch(matcher);
-      if (result === null) {
+      if (result == null) {
         throw new Error(`Internal error. Expected ${matcher} at ${reader._line}:${reader._col}.`);
       }
       return result;
     }
-
     function isOptional(item) {
       return !Array.isArray(item.options) && item.toString().endsWith('?');
     }
@@ -2145,7 +2273,7 @@ self.parserlib = (() => {
   // e.g. max-width:500.
   class MediaFeature extends SyntaxUnit {
     constructor(name, value) {
-      const text = '(' + name + (value !== null ? ':' + value : '') + ')';
+      const text = `(${name}${value != null ? ':' + value : ''})`;
       super(text, name, TYPES.MEDIA_FEATURE_TYPE);
 
       this.name = name;
@@ -2450,7 +2578,7 @@ self.parserlib = (() => {
 
       const text = self.text;
       let namedColor;
-      if (!text.includes('-') && (namedColor = Colors[lower(text)])) {
+      if (!text.includes('-') && (namedColor = Colors[text] || Colors[lower(text)])) {
         tokenConverter.get(Tokens.HASH)(self, {value: namedColor});
       } else {
         self.type = 'identifier';
@@ -2522,23 +2650,17 @@ self.parserlib = (() => {
     next() {
       return this._i < this._parts.length ? this._parts[this._i++] : null;
     }
-
-    previous() {
-      return this._i > 0 ? this._parts[--this._i] : null;
-    }
-
     mark() {
       this._marks.push(this._i);
+      return this;
     }
 
-    restore() {
-      if (this._marks.length) {
-        this._i = this._marks.pop();
+    popMark(success) {
+      const i = this._marks.pop();
+      if (!success && i != null) {
+        this._i = i;
       }
-    }
-
-    drop() {
-      this._marks.pop();
+      return success;
     }
   }
 
@@ -2547,55 +2669,98 @@ self.parserlib = (() => {
 
   Object.assign(ValidationTypes, {
 
-    isLiteral(part, literals) {
-      const args = literals.includes(' | ') ? literals.split(' | ') : [literals];
-      const {text} = part;
-      let textLo;
+    /**
+     * @param {string} name
+     * @param {PropertyValuePart} part
+     * @returns {boolean}
+     * @throws {ValidationError}
+     */
+    isFunction(name, {expr}) {
+      // no parameter means the initial value is used so it's a valid function call
+      if (!expr) {
+        return this.functionsMayBeEmpty.has(name);
+      }
+      // USO vars can span any number of grammar parts so not gonna try to guess. KISS.
+      if (expr.parts.some(p => p.tokenType === Tokens.USO_VAR)) {
+        return true;
+      }
+      const fn = this.functions[name];
+      if (!fn) {
+        return true;
+      }
+      const vi = new PropertyValueIterator(expr);
+      if (fn.match(vi) && !vi.hasNext()) {
+        return true;
+      }
+      throw new ValidationError(
+        `Expected '${this.explode(`${fn}`)}' but found '${vi.value.text}'.`, vi.value);
+    },
 
-      for (const arg of args) {
-
-        if (arg[0] === '<') {
-          const simple = this.simple[arg];
-          if (simple && simple.call(this.simple, part)) {
+    /**
+     * @param {string} literals
+     * @param {PropertyValuePart} part
+     * @return {?boolean}
+     */
+    isLiteral(literals, part) {
+      let text;
+      for (const arg of literals.includes(' | ') ? literals.split(' | ') : [literals]) {
+        if (arg.startsWith('<')) {
+          if (arg in this.simple && this.simple[arg](part)) {
             return true;
           }
-          continue;
-        }
-
-        if (arg.endsWith('()')) {
-          if (!part.name || part.name.length !== arg.length - 2) continue;
+        } else if (
+          arg.endsWith('()') &&
+          part.type === 'function' &&
+          part.name && part.name.length === arg.length - 2
+        ) {
           const name = arg.slice(0, -2);
-          if (part.name === name ||
-              lower(arg).startsWith((textLo = textLo || lower(text)).slice(0, name.length))) {
-            // empty function parameter means the initial value is used
-            if (!part.expr) return this.functionsMayBeEmpty.has(name);
-            const fn = this.functions[name];
-            if (!fn) return true;
-            const expression = new PropertyValueIterator(part.expr);
-            if (fn.match(expression) && !expression.hasNext()) {
-              return true;
-            }
-            const {text} = expression.value;
-            throw new ValidationError(`Expected '${this.explode(String(fn))}' but found '${text}'.`,
-              expression.value);
+          const isFn = lowerCmp(name, part.name) ? this.isFunction(name, part) : null;
+          if (isFn != null) {
+            return isFn;
           }
-          continue;
+        } else if (part.text.length >= arg.length) {
+          if (!text) text = RX_VENDOR_PREFIX.test(text) ? RegExp.$2 : part.text;
+          if (lowerCmp(text, arg)) {
+            return true;
+          }
         }
-
-        let argLo;
-        if (text === arg ||
-            (textLo = textLo || lower(text)) === (argLo = argLo || lower(arg)) ||
-            text[0] === '-' && (
-              textLo.startsWith('-webkit-') ||
-              textLo.startsWith('-moz-') ||
-              textLo.startsWith('-ms-') ||
-              textLo.startsWith('-o-')
-            ) && textLo.slice(textLo.indexOf('-', 1) + 1) === argLo) {
-          return true;
-        }
-
       }
-      return false;
+    },
+
+    /**
+     * @param {PropertyValueIterator} expression
+     * @param {string} type
+     * @return {?boolean}
+     */
+    isType(expression, type) {
+      const part = expression.peek();
+      let result, m;
+
+      if (this.simple['<var>'](part)) {
+        if (expression._i < expression._parts.length - 1) {
+          expression.mark().next();
+          expression.popMark(ValidationTypes.isType(expression, type));
+        }
+        result = true;
+
+      } else if (!type.startsWith('<')) {
+        result = this.isLiteral(type, part);
+
+      } else if ((m = this.simple[type])) {
+        result = m.call(this.simple, part);
+
+      } else {
+        m = this.complex[type];
+        return m instanceof Matcher ?
+          m.match(expression) :
+          m.call(this.complex, expression);
+      }
+
+      if (!result && part.type === 'function' && lowerCmp(part.name, 'attr')) {
+        result = ValidationTypes.isFunction('attr', part);
+      }
+      if (result) expression.next();
+      return result;
     },
 
     describe(type) {
@@ -2615,55 +2780,21 @@ self.parserlib = (() => {
             return ((mod ? '[' : '') + this.explode(ref.originalText) + (mod ? ']' : '')) + mod;
           });
     },
-
-    isType(expression, type) {
-      const part = expression.peek();
-      let result, m;
-
-      if (this.simple['<var>'](part)) {
-        if (expression._i < expression._parts.length - 1) {
-          expression.mark();
-          expression._i++;
-          if (ValidationTypes.isType(expression, type)) {
-            expression.drop();
-          } else {
-            expression.restore();
-          }
-        }
-        result = true;
-
-      } else if (!type.startsWith('<')) {
-        result = this.isLiteral(part, type);
-
-      } else if ((m = this.simple[type])) {
-        result = m.call(this.simple, part);
-
-      } else {
-        m = this.complex[type];
-        return m instanceof Matcher ?
-          m.match(expression) :
-          m.call(this.complex, expression);
-      }
-
-      if (result) expression.next();
-      return result;
-    },
   });
 
-  {
-    let action = rule => part => ValidationTypes.isLiteral(part, rule);
-    ['simple', 'complex', 'functions'].forEach(name => {
-      const set = ValidationTypes[name];
-      for (const id in set) {
-        const rule = set[id];
-        if (typeof rule === 'string') {
-          set[id] = Object.defineProperty(action(rule), 'originalText', {value: rule});
-        } else if (/^Matcher\s/.test(rule)) {
-          set[id] = rule(Matcher);
-        }
+  for (const name of ['simple', 'complex', 'functions']) {
+    const action = name === 'simple'
+      ? rule => ValidationTypes.isLiteral.bind(ValidationTypes, rule)
+      : Matcher.parse;
+    const set = ValidationTypes[name];
+    for (const id in set) {
+      const rule = set[id];
+      if (typeof rule === 'string') {
+        set[id] = Object.defineProperty(action(rule), 'originalText', {value: rule});
+      } else if (/^Matcher\s/.test(rule)) {
+        set[id] = rule(Matcher);
       }
-      action = rule => Matcher.parse(rule);
-    });
+    }
   }
 
   //endregion
@@ -2672,9 +2803,9 @@ self.parserlib = (() => {
   const validationCache = new Map();
 
   function validateProperty(property, value) {
-    // All properties accept some CSS-wide values.
-    // https://drafts.csswg.org/css-values-3/#common-keywords
-    if (/^(inherit|initial|unset)$/i.test(value.parts[0])) {
+    // Global keywords that can be set for any property are conveniently listed in `all` prop:
+    // https://drafts.csswg.org/css-cascade/#all-shorthand
+    if (/^(inherit|initial|unset|revert)$/i.test(value.parts[0])) {
       if (value.parts.length > 1) {
         throwEndExpected(value.parts[1], true);
       }
@@ -2685,7 +2816,7 @@ self.parserlib = (() => {
     let known = validationCache.get(prop);
     if (known && known.has(value.text)) return;
 
-    const spec = Properties[prop] || /^-(webkit|moz|ms|o)-(.+)/i.test(prop) && Properties[RegExp.$2];
+    const spec = Properties[prop] || RX_VENDOR_PREFIX.test(prop) && Properties[RegExp.$2];
 
     if (typeof spec === 'number') return;
     if (!spec && prop.startsWith('-')) return;
@@ -2749,19 +2880,18 @@ self.parserlib = (() => {
     /**
      * Consumes the next token if that matches any of the given token type(s).
      * @param {int|int[]} tokenTypes
-     * @return {Boolean}
+     * @return {Object|false}
      */
     match(tokenTypes) {
-      const isArray = Array.isArray(tokenTypes);
-      let tt;
-      do {
-        tt = this.get();
+      const isArray = typeof tokenTypes === 'object';
+      for (let tt; (tt = this.get());) {
         if (isArray ? tokenTypes.includes(tt) : tt === tokenTypes) {
-          return true;
+          return this._token;
         }
-      } while (tt === Tokens.COMMENT && this.LA(0) !== 0);
-
-      // no match found, put the token back
+        if (tt !== Tokens.COMMENT) {
+          break;
+        }
+      }
       this.unget();
       return false;
     }
@@ -2778,6 +2908,7 @@ self.parserlib = (() => {
         const info = Tokens[Array.isArray(tokenTypes) ? tokenTypes[0] : tokenTypes];
         throw new SyntaxError(`Expected ${info.text || info.name} at line ${line}, col ${col}.`, {line, col, offset});
       }
+      return this._token;
     }
 
     /**
@@ -2909,8 +3040,7 @@ self.parserlib = (() => {
       if (skipCruftBefore && tokenTypes !== Tokens.S) {
         this.skipComment(true);
       }
-      super.mustMatch(tokenTypes);
-      return this._token;
+      return super.mustMatch(tokenTypes);
     }
 
     /**
@@ -2921,7 +3051,7 @@ self.parserlib = (() => {
       if (tt === Tokens.USO_VAR ||
           tt === Tokens.COMMENT ||
           skipWS && tt === Tokens.S) {
-        while (this.match([Tokens.USO_VAR, Tokens.S])) { /*NOP*/ }
+        while (this.match(TT.usoS)) { /*NOP*/ }
       }
     }
 
@@ -3242,7 +3372,7 @@ self.parserlib = (() => {
       // might be a URI or function
       if (next === '(') {
         reader.read();
-        if (['url', 'url-prefix', 'domain'].includes(lower(name))) {
+        if (/^(url(-prefix)?|domain)$/i.test(name)) {
           reader.mark();
           const uri = this.readURI(name + '(');
           if (uri) {
@@ -3256,7 +3386,7 @@ self.parserlib = (() => {
         return this.createToken(Tokens.FUNCTION, name + '(', pos);
       }
       // might be an IE-specific function with progid:
-      if (next === ':' && lower(name) === 'progid') {
+      if (next === ':' && lowerCmp(name, 'progid')) {
         return this.createToken(Tokens.IE_FUNCTION, name + reader.readTo('('), pos);
       }
       const type = name.startsWith('--') ? Tokens.CUSTOM_PROP : Tokens.IDENT;
@@ -3320,7 +3450,7 @@ self.parserlib = (() => {
       const c = reader.peek();
       if (isIdentStart(c)) {
         units = this.readName(reader.read());
-        type = UNITS[lower(units)];
+        type = UNITS[units] || UNITS[lower(units)];
         tt = type && Tokens[type.toUpperCase()] ||
              type === 'frequency' && Tokens.FREQ ||
              Tokens.DIMENSION;
@@ -3354,7 +3484,7 @@ self.parserlib = (() => {
 
         if (c === '\\') {
           c = reader.read();
-          if (c === null) {
+          if (c == null) {
             break; // premature EOF after backslash
           } else if (/[^\r\n\f0-9a-f]/i.test(c)) {
             // single-character escape
@@ -3474,7 +3604,7 @@ self.parserlib = (() => {
 
       if (/['"]/.test(reader.peek())) {
         value = this.readString();
-        if (value === null) return null;
+        if (value == null) return null;
         value = parseString(value);
       } else {
         value = this.readUnquotedURL();
@@ -3957,7 +4087,7 @@ self.parserlib = (() => {
     _import(emit = true) {
       const stream = this._tokenStream;
       const start = stream.mustMatch(Tokens.IMPORT_SYM);
-      stream.mustMatch([Tokens.STRING, Tokens.URI]);
+      stream.mustMatch(TT.stringUri);
       const uri = stream._token.value.replace(/^(?:url\()?["']?([^"']+?)["']?\)?$/, '$1');
       this._ws();
       const mediaList = this._mediaQueryList();
@@ -3981,7 +4111,7 @@ self.parserlib = (() => {
         prefix = stream._token.value;
         this._ws();
       }
-      stream.mustMatch([Tokens.STRING, Tokens.URI]);
+      stream.mustMatch(TT.stringUri);
       const uri = stream._token.value.replace(/(?:url\()?["']([^"']+)["']\)?/, '$1');
       stream.mustMatch(Tokens.SEMICOLON);
       if (emit) {
@@ -4022,15 +4152,14 @@ self.parserlib = (() => {
     _supportsCondition() {
       const stream = this._tokenStream;
       const next = stream.LT(1);
-      if (next.type === Tokens.IDENT && lower(next.value) === 'not') {
+      if (next.type === Tokens.IDENT && lowerCmp(next.value, 'not')) {
         stream.get();
         stream.mustMatch(Tokens.S);
         this._supportsConditionInParens();
       } else {
         this._supportsConditionInParens();
         while (stream.peek() === Tokens.IDENT) {
-          const ident = lower(stream.LT(1).value);
-          if (ident === 'and' || ident === 'or') {
+          if (/^(and|or)$/i.test(stream.LT(1).value)) {
             stream.get();
             this._ws();
             this._supportsConditionInParens();
@@ -4047,7 +4176,7 @@ self.parserlib = (() => {
         this._ws();
         const {type, value} = stream.LT(1);
         if (type === Tokens.IDENT || type === Tokens.CUSTOM_PROP) {
-          if (lower(value) === 'not') {
+          if (lowerCmp(value, 'not')) {
             this._supportsCondition();
             stream.mustMatch(Tokens.RPAREN);
           } else {
@@ -4057,7 +4186,7 @@ self.parserlib = (() => {
           this._supportsCondition();
           stream.mustMatch(Tokens.RPAREN);
         }
-      } else if (next.type === Tokens.FUNCTION && lower(next.value) === 'selector(') {
+      } else if (next.type === Tokens.FUNCTION && lowerCmp(next.value, 'selector(')) {
         stream.get();
         this._ws();
         this._selector();
@@ -4122,71 +4251,52 @@ self.parserlib = (() => {
 
     _mediaQuery() {
       const stream = this._tokenStream;
-      let type = null;
-      let ident = null;
-      let token = null;
       const expressions = [];
-
-      if (stream.match(Tokens.IDENT)) {
-        ident = lower(stream._token.value);
-
-        // since there's no custom tokens for these, need to manually check
-        if (ident !== 'only' && ident !== 'not') {
-          stream.unget();
-          ident = null;
-        } else {
-          token = stream._token;
-        }
+      let type = null;
+      let token = stream.LT(1);
+      let ident = token.value;
+      if (token.type === Tokens.IDENT && /^(only|not)$/i.test(ident)) {
+        stream.get();
+      } else {
+        token = ident = null;
       }
-
       this._ws();
-
-      if (stream.peek() === Tokens.IDENT) {
+      const next = stream.LT(1);
+      if (next.type === Tokens.IDENT) {
+        token = token || next;
         type = this._mediaFeature();
-        if (token === null) {
-          token = stream._token;
-        }
-      } else if (stream.peek() === Tokens.LPAREN) {
-        if (token === null) {
-          token = stream.LT(1);
-        }
+      } else if (next.type === Tokens.LPAREN) {
+        token = token || next;
         expressions.push(this._mediaExpression());
+      } else {
+        return;
       }
-
-      if (type === null && expressions.length === 0) return null;
-
       this._ws();
       while (stream.match(Tokens.IDENT)) {
-        if (lower(stream._token.value) !== 'and') {
+        if (lowerCmp(stream._token.value, 'and')) {
+          this._ws();
+          expressions.push(this._mediaExpression());
+        } else {
           this._unexpectedToken(stream._token);
         }
-        this._ws();
-        expressions.push(this._mediaExpression());
       }
-
       return new MediaQuery(ident, type, expressions, token);
     }
 
     _mediaExpression() {
       const stream = this._tokenStream;
-      let feature = null;
       let token;
       let expression = null;
-
       stream.mustMatch(Tokens.LPAREN);
-
-      feature = this._mediaFeature();
+      const feature = this._mediaFeature();
       this._ws();
-
       if (stream.match(Tokens.COLON)) {
         this._ws();
         token = stream.LT(1);
-        expression = this._expression();
+        expression = this._expression({calc: true});
       }
-
       stream.mustMatch(Tokens.RPAREN);
       this._ws();
-
       return new MediaFeature(feature, expression ? new SyntaxUnit(expression, token) : null);
     }
 
@@ -4210,7 +4320,7 @@ self.parserlib = (() => {
         identifier = stream._token.value;
 
         // The value 'auto' may not be used as a page name and MUST be treated as a syntax error.
-        if (lower(identifier) === 'auto') {
+        if (lowerCmp(identifier, 'auto')) {
           this._unexpectedToken(stream._token);
         }
       }
@@ -4257,24 +4367,7 @@ self.parserlib = (() => {
     }
 
     _marginSym() {
-      if (this._tokenStream.match([
-        Tokens.TOPLEFTCORNER_SYM,
-        Tokens.TOPLEFT_SYM,
-        Tokens.TOPCENTER_SYM,
-        Tokens.TOPRIGHT_SYM,
-        Tokens.TOPRIGHTCORNER_SYM,
-        Tokens.BOTTOMLEFTCORNER_SYM,
-        Tokens.BOTTOMLEFT_SYM,
-        Tokens.BOTTOMCENTER_SYM,
-        Tokens.BOTTOMRIGHT_SYM,
-        Tokens.BOTTOMRIGHTCORNER_SYM,
-        Tokens.LEFTTOP_SYM,
-        Tokens.LEFTMIDDLE_SYM,
-        Tokens.LEFTBOTTOM_SYM,
-        Tokens.RIGHTTOP_SYM,
-        Tokens.RIGHTMIDDLE_SYM,
-        Tokens.RIGHTBOTTOM_SYM,
-      ])) {
+      if (this._tokenStream.match(TT.margins)) {
         return SyntaxUnit.fromToken(this._tokenStream._token);
       } else {
         return null;
@@ -4383,29 +4476,19 @@ self.parserlib = (() => {
     }
 
     _operator(inFunction) {
-      if (this._tokenStream.match([
-        Tokens.SLASH,
-        Tokens.COMMA,
-        ...(!inFunction ? [] : [
-          Tokens.PLUS,
-          Tokens.STAR,
-          Tokens.MINUS,
-        ])
-      ])) {
+      if (this._tokenStream.match(inFunction ? TT.opInFunc : TT.op)) {
         const value = new PropertyValuePart(this._tokenStream._token);
         this._ws();
         return value;
       }
-      return null;
     }
 
     _combinator() {
-      if (this._tokenStream.match([Tokens.PLUS, Tokens.GREATER, Tokens.TILDE, Tokens.COLUMN])) {
+      if (this._tokenStream.match(TT.combinator)) {
         const value = new Combinator(this._tokenStream._token);
         this._ws();
         return value;
       }
-      return null;
     }
 
     _property() {
@@ -4422,7 +4505,7 @@ self.parserlib = (() => {
         hack = token.value;
       }
 
-      if (stream.match([Tokens.IDENT, Tokens.CUSTOM_PROP])) {
+      if (stream.match(TT.identCustom)) {
         token = stream._token;
         tokenValue = token.value;
 
@@ -4480,7 +4563,7 @@ self.parserlib = (() => {
         this.fire(Object.assign({}, ex, {type: 'error', error: ex}));
         // if there's a right brace, the rule is finished so don't do anything
         // otherwise, rethrow the error because it wasn't handled properly
-        if (braceOpened && stream.advance([Tokens.RBRACE]) !== Tokens.RBRACE) throw ex;
+        if (braceOpened && stream.advance(Tokens.RBRACE) !== Tokens.RBRACE) throw ex;
         // If even a single selector fails to parse, the entire ruleset should be thrown away,
         // so we let the parser continue with the next one
         return true;
@@ -4620,63 +4703,34 @@ self.parserlib = (() => {
           (i + 1 < lt.length && lt[i + 1].type || stream.LA(2)) !== Tokens.PIPE) {
         return null;
       }
-      let value = '';
-      if (stream.match([Tokens.IDENT, Tokens.STAR])) {
-        value += stream._token.value;
-      }
-      stream.mustMatch(Tokens.PIPE, false);
-      return value + '|';
+      return (stream.match(TT.ns).value || '') + stream.mustMatch(Tokens.PIPE, false).value;
     }
 
     _universal(ns = this._namespacePrefix()) {
-      return ((ns || '') + (this._tokenStream.match(Tokens.STAR) ? '*' : '')) || null;
+      return `${ns || ''}${this._tokenStream.match(Tokens.STAR).value || ''}` || null;
     }
 
     _attrib() {
       const stream = this._tokenStream;
-
       if (!stream.match(Tokens.LBRACKET)) return null;
-
-      const token = stream._token;
-      let value =
-        token.value +
+      const start = stream._token;
+      let value = start.value +
         this._ws() +
-        (this._namespacePrefix() || '');
-
-      stream.mustMatch(Tokens.IDENT, false);
-      value +=
-        stream._token.value +
+        (this._namespacePrefix() || '') +
+        stream.mustMatch(Tokens.IDENT, false).value +
         this._ws();
-
-      if (stream.match([
-        Tokens.PREFIXMATCH,
-        Tokens.SUFFIXMATCH,
-        Tokens.SUBSTRINGMATCH,
-        Tokens.EQUALS,
-        Tokens.INCLUDES,
-        Tokens.DASHMATCH
-      ])) {
-        value += stream._token.value +
-                 this._ws();
-
-        stream.mustMatch([Tokens.IDENT, Tokens.STRING]);
-        value += stream._token.value +
-                 this._ws();
-
-        if (stream.match([Tokens.IDENT])) {
-          const caseMod = lower(stream._token.value);
-          if (caseMod === 'i' || caseMod === 's') {
-            value += stream._token.value +
-                     this._ws();
-          } else {
-            stream.unget();
-          }
+      if (stream.match(TT.attrMatch)) {
+        value += stream._token.value + this._ws() +
+          stream.mustMatch(TT.identString).value +
+          this._ws();
+        const next = stream.LT(1);
+        if (next.type === Tokens.IDENT && /^[is]$/i.test(next.value)) {
+          stream.get();
+          value += next.value + this._ws();
         }
       }
-
       stream.mustMatch(Tokens.RBRACKET);
-
-      return new SelectorSubPart(value + ']', 'attribute', token);
+      return new SelectorSubPart(value + ']', 'attribute', start);
     }
 
     _pseudo() {
@@ -4717,30 +4771,24 @@ self.parserlib = (() => {
         {startLine, startCol});
     }
 
-    _expression({list = false} = {}) {
+    _expression({calc, list} = {}) {
+      const chunks = [];
       const stream = this._tokenStream;
-      let value = '';
-
-      while (stream.match([
-        Tokens.PLUS,
-        Tokens.MINUS,
-        Tokens.DIMENSION,
-        Tokens.NUMBER,
-        Tokens.STRING,
-        Tokens.IDENT,
-        Tokens.LENGTH,
-        Tokens.FREQ,
-        Tokens.ANGLE,
-        Tokens.TIME,
-        Tokens.RESOLUTION,
-        Tokens.SLASH,
-        list && Tokens.COMMA,
-      ])) {
-        value += stream._token.value;
-        value += this._ws();
+      while (stream.get()) {
+        const {type, value} = stream._token;
+        if (calc && type === Tokens.FUNCTION) {
+          if (!RX_CALC.test(value)) this._unexpectedToken();
+          chunks.push(value,
+            this._expr('calc').text,
+            stream.mustMatch(Tokens.RPAREN).value);
+        } else if (TT.expression.includes(type) || list && type === Tokens.COMMA) {
+          chunks.push(value, this._ws());
+        } else if (type !== Tokens.COMMENT) {
+          stream.unget();
+          break;
+        }
       }
-
-      return value.length ? value : null;
+      return chunks.length ? chunks.join('') : null;
     }
 
     _is() {
@@ -4965,7 +5013,7 @@ self.parserlib = (() => {
 
     _term(inFunction) {
       const stream = this._tokenStream;
-      const unary = stream.match([Tokens.MINUS, Tokens.PLUS]) && stream._token;
+      const unary = stream.match(TT.plusMinus) && stream._token;
 
       const finalize = (token, value) => {
         if (!token && unary) stream.unget();
@@ -4987,35 +5035,16 @@ self.parserlib = (() => {
       }
 
       // see if it's a simple block
-      if (stream.match([
-        Tokens.LPAREN,
-        Tokens.LBRACKET,
-        inFunction && Tokens.LBRACE,
-      ])) {
+      if (stream.match(inFunction ? TT.LParenBracketBrace : TT.LParenBracket)) {
         const token = stream._token;
         const endToken = Tokens.type(token.endChar);
         token.expr = this._expr(inFunction, endToken);
         stream.mustMatch(endToken);
         return finalize(token, token.value + (token.expr || '') + token.endChar);
       }
-
       return finalize(
         // see if there's a simple match
-        stream.match([
-          Tokens.NUMBER,
-          Tokens.PERCENTAGE,
-          Tokens.LENGTH,
-          Tokens.ANGLE,
-          Tokens.TIME,
-          Tokens.DIMENSION,
-          Tokens.FREQ,
-          Tokens.STRING,
-          inFunction === 'var' && Tokens.CUSTOM_PROP,
-          Tokens.IDENT,
-          Tokens.URI,
-          Tokens.UNICODE_RANGE,
-          Tokens.USO_VAR,
-        ]) && stream._token ||
+        stream.match(inFunction === 'var' ? TT.termVar : TT.term) && stream._token ||
         this._hexcolor() ||
         this._function({asText: Boolean(unary)}));
     }
@@ -5182,7 +5211,7 @@ self.parserlib = (() => {
 
     _keyframeName() {
       const stream = this._tokenStream;
-      stream.mustMatch([Tokens.IDENT, Tokens.STRING]);
+      stream.mustMatch(TT.identString);
       return SyntaxUnit.fromToken(stream._token);
     }
 
@@ -5245,11 +5274,7 @@ self.parserlib = (() => {
     //-----------------------------------------------------------------
 
     _skipCruft() {
-      while (this._tokenStream.match([
-        Tokens.S,
-        Tokens.CDO,
-        Tokens.CDC,
-      ])) { /*NOP*/ }
+      while (this._tokenStream.match(TT.cruft)) { /*NOP*/ }
     }
 
     /**
@@ -5300,7 +5325,7 @@ self.parserlib = (() => {
     _ws(skipUsoVar) {
       let ws = '';
       const stream = this._tokenStream;
-      const tokens = skipUsoVar ? [Tokens.S, Tokens.USO_VAR] : Tokens.S;
+      const tokens = skipUsoVar ? TT.usoS : Tokens.S;
       while (stream.match(tokens)) {
         ws += stream._token.value;
       }
@@ -5317,9 +5342,9 @@ self.parserlib = (() => {
 
       this._ws();
       const simpleValue =
-        stream.match([Tokens.IDENT, Tokens.CUSTOM_PROP]) && SyntaxUnit.fromToken(stream._token) ||
+        stream.match(TT.identCustom) && SyntaxUnit.fromToken(stream._token) ||
         stream.peek() === Tokens.FUNCTION && this._function({asText: true}) ||
-        this._unknownBlock([Tokens.LBRACKET, Tokens.LPAREN]);
+        this._unknownBlock(TT.LParenBracket);
 
       this._ws();
       const blockValue = this._unknownBlock();
@@ -5373,7 +5398,7 @@ self.parserlib = (() => {
       return null;
     }
 
-    _unexpectedToken(token) {
+    _unexpectedToken(token = this._tokenStream._token) {
       const {value, startLine: line, startCol: col} = token;
       throw new SyntaxError(`Unexpected token '${value}' at line ${line}, col ${col}.`, token);
     }
@@ -5545,26 +5570,26 @@ self.parserlib = (() => {
   //region Helper functions
 
   function isHexDigit(c) {
-    return c !== null && (
+    return (
       c >= '0' && c <= '9' ||
       c >= 'a' && c <= 'f' ||
       c >= 'A' && c <= 'F');
   }
 
   function isDigit(c) {
-    return c !== null && c >= '0' && c <= '9';
+    return c >= '0' && c <= '9';
   }
 
   function isWhitespace(c) {
-    return c !== null && (c === ' ' || c === '\t' || c === '\n' || c === '\f' || c === '\r');
+    return (c === ' ' || c === '\t' || c === '\n' || c === '\f' || c === '\r');
   }
 
   function isNewLine(c) {
-    return c !== null && (c === '\n' || c === '\r\n' || c === '\r' || c === '\f');
+    return (c === '\n' || c === '\r\n' || c === '\r' || c === '\f');
   }
 
   function isNameStart(c) {
-    return c !== null && (
+    return (
       c >= 'a' && c <= 'z' ||
       c >= 'A' && c <= 'Z' ||
       c === '_' || c === '\\' ||
@@ -5572,22 +5597,16 @@ self.parserlib = (() => {
   }
 
   function isNameChar(c) {
-    return c !== null && (c === '-' || c >= '0' && c <= '9' || isNameStart(c));
+    return (c === '-' || c >= '0' && c <= '9' || isNameStart(c));
   }
 
   function isIdentStart(c) {
-    return c !== null && (c === '-' || isNameStart(c));
+    return c === '-' || isNameStart(c);
   }
 
   function isPseudoElement(pseudo) {
-    if (pseudo.startsWith('::')) return true;
-    switch (lower(pseudo)) {
-      case ':first-letter':
-      case ':first-line':
-      case ':before':
-      case ':after':
-        return true;
-    }
+    return pseudo.startsWith('::') ||
+           /^:(first-(letter|line)|before|after)$/i.test(pseudo);
   }
 
   function parseString(str) {
