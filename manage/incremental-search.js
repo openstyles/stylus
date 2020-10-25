@@ -15,10 +15,11 @@ onDOMready().then(() => {
     position: 'absolute',
     color: 'transparent',
     border: '1px solid hsla(180, 100%, 100%, .5)',
-    top: '-1000px',
+    margin: '-1px -2px',
     overflow: 'hidden',
     resize: 'none',
     'background-color': 'hsla(180, 100%, 100%, .2)',
+    'box-sizing': 'content-box',
     'pointer-events': 'none',
   });
   document.body.appendChild(input);
@@ -48,6 +49,7 @@ onDOMready().then(() => {
     }
     let found;
     for (const entry of rotated || entries) {
+      if (entry.classList.contains('hidden')) continue;
       const name = entry.styleNameLowerCase;
       const pos = name.indexOf(text);
       if (pos === 0) {
@@ -67,7 +69,11 @@ onDOMready().then(() => {
       focusedName = found.styleNameLowerCase;
       scrollElementIntoView(found, {invalidMarginRatio: .25});
       animateElement(found, {className: 'highlight-quick'});
-      resizeTo(focusedLink);
+      replaceInlineStyle({
+        width: focusedLink.offsetWidth + 'px',
+        height: focusedLink.offsetHeight + 'px',
+      });
+      focusedLink.prepend(input);
       return true;
     }
   }
@@ -109,17 +115,6 @@ onDOMready().then(() => {
       (focusedLink || document.body).focus();
       input.value = '';
     }
-  }
-
-  function resizeTo(el) {
-    const bounds = el.getBoundingClientRect();
-    const base = document.scrollingElement;
-    replaceInlineStyle({
-      left: bounds.left - 2 + base.scrollLeft + 'px',
-      top: bounds.top - 1 + base.scrollTop + 'px',
-      width: bounds.width + 4 + 'px',
-      height: bounds.height + 2 + 'px',
-    });
   }
 
   function replaceInlineStyle(css) {
