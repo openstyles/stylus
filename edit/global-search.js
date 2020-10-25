@@ -22,6 +22,7 @@ onDOMready().then(() => {
   const RX_MAYBE_REGEXP = /^\s*\/(.+?)\/([simguy]*)\s*$/;
 
   const state = {
+    firstRun: true,
     // used for case-sensitive matching directly
     find: '',
     // used when /re/ is detected or for case-insensitive matching
@@ -241,6 +242,7 @@ onDOMready().then(() => {
     } else {
       showTally(0, 0);
     }
+    state.firstRun = false;
     return found;
   }
 
@@ -559,6 +561,7 @@ onDOMready().then(() => {
 
   function createDialog(type) {
     state.originalFocus = document.activeElement;
+    state.firstRun = true;
 
     const dialog = state.dialog = template.searchReplaceDialog.cloneNode(true);
     Object.assign(dialog, DIALOG_PROPS.dialog);
@@ -766,7 +769,7 @@ onDOMready().then(() => {
 
   // scrolls the editor to reveal the match
   function makeMatchVisible(cm, searchCursor) {
-    const canFocus = !state.dialog || !state.dialog.contains(document.activeElement);
+    const canFocus = !state.firstRun && (!state.dialog || !state.dialog.contains(document.activeElement));
     state.cm = cm;
 
     // scroll within the editor
@@ -779,12 +782,11 @@ onDOMready().then(() => {
       unclosedOp: !cm.curOp,
     });
     if (!cm.curOp) cm.startOperation();
-    if (canFocus) cm.setSelection(searchCursor.pos.from, searchCursor.pos.to);
-    cm.scrollIntoView(searchCursor.pos, SCROLL_REVEAL_MIN_PX);
-
-    // scroll to the editor itself
-    editor.scrollToEditor(cm);
-
+    if (!state.firstRun) {
+      editor.scrollToEditor(cm);
+      cm.setSelection(searchCursor.pos.from, searchCursor.pos.to);
+      cm.scrollIntoView(searchCursor.pos, SCROLL_REVEAL_MIN_PX);
+    }
     // focus or expose as the current search target
     clearMarker();
     if (canFocus) {
