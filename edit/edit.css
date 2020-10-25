@@ -853,10 +853,6 @@ body.linter-disabled .hidden-unless-compact {
   margin: 0;
 }
 
-.CodeMirror-linewidget .applies-to li + li {
-  margin-top: 0.35rem;
-}
-
 .CodeMirror-linewidget .applies-to li[data-type="regexp"] .test-regexp {
   display: inline;
 }
