@@ -468,6 +468,12 @@
     "message": "Import",
     "description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
   },
+  "importPreprocessor": {
+    "message": "Style with a <code>@preprocessor</code> won't work in the classic mode. You can switch the editor to Usercss mode: 1) open the style manager, 2) enable \"as Usercss\" checkbox, 3) click \"Write new style\"\n\nImport now anyway?"
+  },
+  "importPreprocessorTitle": {
+    "message": "Potential problem due to @preprocessor"
+  },
   "importReplaceLabel": {
     "message": "Overwrite style",
     "description": "Label for the button to import and overwrite current style"

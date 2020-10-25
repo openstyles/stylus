@@ -168,10 +168,12 @@ messageBox.alert = (contents, className, title) =>
 /**
  * @param {String|Node|Array<String|Node>} contents
  * @param {String} [className] like 'pre' for monospace font
+ * @param {String} [title]
  * @returns {Promise<Boolean>} resolves to true when confirmed
  */
-messageBox.confirm = (contents, className) =>
+messageBox.confirm = (contents, className, title) =>
   messageBox({
+    title,
     contents,
     className: `center ${className || ''}`,
     buttons: [t('confirmYes'), t('confirmNo')]

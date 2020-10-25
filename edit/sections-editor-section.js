@@ -176,10 +176,9 @@ function createSection({
     });
     cm.on('paste', (cm, event) => {
       const text = event.clipboardData.getData('text') || '';
-      if (
-        text.includes('@-moz-document') &&
-        text.replace(/\/\*[\s\S]*?(?:\*\/|$)/g, '')
-          .match(/@-moz-document[\s\r\n]+(url|url-prefix|domain|regexp)\(/)
+      if (/@-moz-document/i.test(text) &&
+          /@-moz-document\s+(url|url-prefix|domain|regexp)\(/i
+            .test(text.replace(/\/\*([^*]|\*(?!\/))*(\*\/|$)/g, ''))
       ) {
         event.preventDefault();
         showMozillaFormatImport(text);

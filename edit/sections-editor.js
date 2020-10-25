@@ -333,24 +333,38 @@ function createSectionsEditor(editorBase) {
       'Shift-Ctrl-Enter': () => doImport({replaceOldStyle: true}),
     };
 
-    function doImport({replaceOldStyle = false}) {
+    async function doImport({replaceOldStyle = false}) {
       lockPageUI(true);
-      API.parseCss({code: popup.codebox.getValue().trim()})
-        .then(({sections, errors}) => {
+      try {
+        const code = popup.codebox.getValue().trim();
+        if (!/==userstyle==/i.test(code) ||
+            !await getPreprocessor(code) ||
+            await messageBox.confirm(
+              t('importPreprocessor'), 'pre-line',
+              t('importPreprocessorTitle'))
+        ) {
+          const {sections, errors} = await API.parseCss({code});
           // shouldn't happen but just in case
           if (!sections.length || errors.length) {
             throw errors;
           }
           if (replaceOldStyle) {
-            return replaceSections(sections);
+            replaceSections(sections);
+          } else {
+            initSections(sections, {focusOn: false});
           }
-          return initSections(sections, {focusOn: false});
-        })
-        .then(() => {
           $('.dismiss').dispatchEvent(new Event('click'));
-        })
-        .catch(showError)
-        .then(() => lockPageUI(false));
+        }
+      } catch (err) {
+        showError(err);
+      }
+      lockPageUI(false);
+    }
+
+    async function getPreprocessor(code) {
+      try {
+        return (await API.buildUsercssMeta({sourceCode: code})).usercssData.preprocessor;
+      } catch (e) {}
     }
 
     function lockPageUI(locked) {

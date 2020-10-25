@@ -8,6 +8,7 @@ const usercssHelper = (() => {
   API_METHODS.configUsercssVars = configUsercssVars;
 
   API_METHODS.buildUsercss = build;
+  API_METHODS.buildUsercssMeta = buildMeta;
   API_METHODS.findUsercss = find;
 
   function buildMeta(style) {
