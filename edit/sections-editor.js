@@ -48,7 +48,7 @@ function createSectionsEditor(editorBase) {
 
   let sectionOrder = '';
   let headerOffset; // in compact mode the header is at the top so it reduces the available height
-  const ready = initSections(style.sections, {isFirstInit: true});
+  const ready = initSections(style.sections, {pristine: true});
 
   const livePreview = createLivePreview();
   livePreview.show(Boolean(style.id));
@@ -348,11 +348,10 @@ function createSectionsEditor(editorBase) {
           if (!sections.length || errors.length) {
             throw errors;
           }
-          if (replaceOldStyle) {
-            replaceSections(sections);
-          } else {
-            initSections(sections, {focusOn: false});
-          }
+          await initSections(sections, {
+            replace: replaceOldStyle,
+            focusOn: replaceOldStyle ? 0 : false,
+          });
           $('.dismiss').dispatchEvent(new Event('click'));
         }
       } catch (err) {
@@ -465,8 +464,14 @@ function createSectionsEditor(editorBase) {
 
   function initSections(originalSections, {
     focusOn = 0,
-    isFirstInit,
+    replace = false,
+    pristine = false,
   } = {}) {
+    if (replace) {
+      sections.forEach(s => s.remove(true));
+      sections.length = 0;
+      container.textContent = '';
+    }
     let done;
     const total = originalSections.length;
     originalSections = originalSections.slice();
@@ -478,7 +483,7 @@ function createSectionsEditor(editorBase) {
       const t0 = performance.now();
       while (originalSections.length && performance.now() - t0 < 100) {
         insertSectionAfter(originalSections.shift(), undefined, forceRefresh);
-        if (isFirstInit) dirty.clear();
+        if (pristine) dirty.clear();
         if (focusOn !== false && sections[focusOn]) {
           sections[focusOn].cm.focus();
           focusOn = false;
@@ -586,15 +591,6 @@ function createSectionsEditor(editorBase) {
     updateSectionOrder();
   }
 
-  function replaceSections(...args) {
-    for (const section of sections) {
-      section.remove(true);
-    }
-    sections.length = 0;
-    container.textContent = '';
-    return initSections(...args);
-  }
-
   function replaceStyle(newStyle, codeIsUpdated) {
     dirty.clear('name');
     // FIXME: avoid recreating all editors?
@@ -613,7 +609,7 @@ function createSectionsEditor(editorBase) {
 
     function reinit() {
       if (codeIsUpdated !== false) {
-        return replaceSections(newStyle.sections, {isFirstInit: true});
+        return initSections(newStyle.sections, {replace: true, pristine: true});
       }
       return Promise.resolve();
     }
