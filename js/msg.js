@@ -1,10 +1,11 @@
-/* global promisifyChrome deepCopy getOwnTab URLS msg */
+/* global promisifyChrome */
+/* global deepCopy getOwnTab URLS */ // not used in content scripts
 'use strict';
 
-// eslint-disable-next-line no-unused-expressions
-window.INJECTED !== 1 && (() => {
+// eslint-disable-next-line no-unused-expressions, no-var
+var msg = window.INJECTED === 1 && window.msg || (() => {
   promisifyChrome({
-    runtime: ['sendMessage'],
+    runtime: ['sendMessage', 'getBackgroundPage'],
     tabs: ['sendMessage', 'query'],
   });
   const TARGETS = Object.assign(Object.create(null), {
@@ -17,22 +18,34 @@ window.INJECTED !== 1 && (() => {
     'updateIconBadge',
     'styleViaAPI',
   ];
-  const isBg = getExtBg() === window;
+  const ERR_NO_RECEIVER = 'Receiving end does not exist';
+  const ERR_PORT_CLOSED = 'The message port closed before';
   const handler = {
     both: new Set(),
     tab: new Set(),
     extension: new Set(),
   };
 
+  let bg = chrome.extension.getBackgroundPage && chrome.extension.getBackgroundPage();
+  const isBg = bg === window;
+  if (!isBg && (!bg || !bg.document || bg.document.readyState === 'loading')) {
+    bg = null;
+  }
+
   chrome.runtime.onMessage.addListener(handleMessage);
 
   window.API = new Proxy({}, {
     get(target, name) {
-      return async (...args) => {
-        const bg = isBg && window || chrome.tabs && (getExtBgIfReady() || await getRuntimeBg());
+      // using a named function for convenience when debugging
+      return async function invokeAPI(...args) {
+        if (!bg && chrome.tabs) {
+          bg = await browser.runtime.getBackgroundPage().catch(() => {});
+        }
         const message = {method: 'invokeAPI', name, args};
-        // frames and probably private tabs
-        if (!bg || window !== parent) return msg.send(message);
+        // content scripts, frames and probably private tabs
+        if (!bg || window !== parent) {
+          return msg.send(message);
+        }
         // in FF, the object would become a dead object when the window
         // is closed, so we have to clone the object into background.
         const res = bg.msg._execute(TARGETS.extension, bg.deepCopy(message), {
@@ -45,7 +58,7 @@ window.INJECTED !== 1 && (() => {
     },
   });
 
-  window.msg = {
+  return {
     isBg,
 
     async broadcast(data) {
@@ -62,8 +75,13 @@ window.INJECTED !== 1 && (() => {
       return Promise.all(requests);
     },
 
+    broadcastExtension(...args) {
+      return msg.send(...args).catch(msg.ignoreError);
+    },
+
     isIgnorableError(err) {
-      return /Receiving end does not exist|The message port closed before/.test(err.message);
+      const msg = `${err && err.message || err}`;
+      return msg.includes(ERR_NO_RECEIVER) || msg.includes(ERR_PORT_CLOSED);
     },
 
     ignoreError(err) {
@@ -92,12 +110,12 @@ window.INJECTED !== 1 && (() => {
 
     send(data, target = 'extension') {
       return browser.runtime.sendMessage({data, target})
-        .then(unwrapData);
+        .then(unwrapResponse);
     },
 
     sendTab(tabId, data, options, target = 'tab') {
       return browser.tabs.sendMessage(tabId, {data, target}, options)
-        .then(unwrapData);
+        .then(unwrapResponse);
     },
 
     _execute(types, ...args) {
@@ -119,50 +137,32 @@ window.INJECTED !== 1 && (() => {
     },
   };
 
-  function getExtBg() {
-    const fn = chrome.extension.getBackgroundPage;
-    return fn && fn();
-  }
-
-  function getExtBgIfReady() {
-    const bg = getExtBg();
-    return bg && bg.document && bg.document.readyState !== 'loading' && bg;
-  }
-
-  function getRuntimeBg() {
-    return new Promise(resolve =>
-      chrome.runtime.getBackgroundPage(bg =>
-        resolve(!chrome.runtime.lastError && bg)));
-  }
-
+  // TODO: maybe move into polyfill.js and hook addListener + sendMessage so they wrap/unwrap automatically
   function handleMessage({data, target}, sender, sendResponse) {
     const res = msg._execute(TARGETS[target] || TARGETS.all, data, sender);
     if (res instanceof Promise) {
-      handleResponseAsync(res, sendResponse);
+      res.then(wrapData, wrapError).then(sendResponse);
       return true;
     }
-    if (res !== undefined) sendResponse({data: res});
+    if (res !== undefined) sendResponse(wrapData(res));
   }
 
-  async function handleResponseAsync(promise, sendResponse) {
-    try {
-      sendResponse({
-        data: await promise,
-      });
-    } catch (err) {
-      sendResponse({
-        error: true,
-        data: Object.assign({
-          message: err.message || String(err),
-          stack: err.stack,
-        }, err), // passing custom properties e.g. `err.index` to unwrapData
-      });
-    }
+  function wrapData(data) {
+    return {data};
   }
 
-  function unwrapData({data, error} = {}) {
+  function wrapError(error) {
+    return {
+      error: Object.assign({
+        message: error.message || `${error}`,
+        stack: error.stack,
+      }, error), // passing custom properties e.g. `error.index`
+    };
+  }
+
+  function unwrapResponse({data, error} = {error: {message: ERR_NO_RECEIVER}}) {
     return error
-      ? Promise.reject(Object.assign(new Error(data.message), data))
+      ? Promise.reject(Object.assign(new Error(error.message), error))
       : data;
   }
 })();
