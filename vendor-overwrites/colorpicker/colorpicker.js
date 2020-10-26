@@ -14,6 +14,9 @@
     {hex: '#ff00ff', start: .83},
     {hex: '#ff0000', start: 1}
   ];
+  const MIN_HEIGHT = 220;
+  const MARGIN = 8;
+  let maxHeight = '0px';
 
   let HSV = {};
   let currentFormat;
@@ -23,14 +26,18 @@
   let shown = false;
   let options = {};
 
-  let $root;
-  let $sat, $satPointer;
-  let $hue, $hueKnob;
-  let $opacity, $opacityBar, $opacityKnob;
-  let $swatch;
-  let $formatChangeButton;
-  let $hexCode;
-  let $palette;
+  let /** @type {HTMLElement} */ $root;
+  let /** @type {HTMLElement} */ $sat;
+  let /** @type {HTMLElement} */ $satPointer;
+  let /** @type {HTMLElement} */ $hue;
+  let /** @type {HTMLElement} */ $hueKnob;
+  let /** @type {HTMLElement} */ $opacity;
+  let /** @type {HTMLElement} */ $opacityBar;
+  let /** @type {HTMLElement} */ $opacityKnob;
+  let /** @type {HTMLElement} */ $swatch;
+  let /** @type {HTMLElement} */ $formatChangeButton;
+  let /** @type {HTMLElement} */ $hexCode;
+  let /** @type {HTMLElement} */ $palette;
   const $inputGroups = {};
   const $inputs = {};
   const $rgb = {};
@@ -45,14 +52,12 @@
     saturation: false,
     hue: false,
     opacity: false,
+    popup: false,
   };
 
   let prevFocusedElement;
   let lastOutputColor;
   let userActivity;
-
-  let timerCloseColorPicker;
-  let timerFadeColorPicker;
 
   const PUBLIC_API = {
     $root,
@@ -67,106 +72,107 @@
   //region DOM
 
   function init() {
-    // simplified createElement
-    function $(a, b) {
-      const cls = typeof a === 'string' || Array.isArray(a) ? a : '';
-      const props = b || a;
-      const {tag = 'div', children} = props || {};
-      const el = document.createElement(tag);
-      el.className = (Array.isArray(cls) ? cls : [cls])
-        .map(c => (c ? CSS_PREFIX + c : ''))
-        .join(' ');
-      if (!props) {
-        return el;
+    /** @returns {HTMLElement} */
+    function $(cls, props = {}, children = []) {
+      if (Array.isArray(props) || typeof props === 'string' || props instanceof Node) {
+        children = props;
+        props = {};
       }
-      for (const child of Array.isArray(children) ? children : [children]) {
-        if (child) {
-          el.appendChild(child instanceof Node ? child : document.createTextNode(child));
-        }
-      }
-      delete props.tag;
-      delete props.children;
+      const el = document.createElement(props.tag || 'div');
+      el.className = toArray(cls).map(c => c ? CSS_PREFIX + c : '').join(' ');
+      el.append(...toArray(children));
+      if (props) delete props.tag;
       return Object.assign(el, props);
     }
     const alphaPattern = /^\s*(0+\.?|0*\.\d+|0*1\.?|0*1\.0*)?\s*$/.source;
-    $root = $('popup', {children: [
-      $sat = $('saturation-container', {children: [
-        $('saturation', {children: [
-          $('value', {children: [
+    $root = $('popup', {
+      oninput: setFromInputs,
+      onkeydown: setFromKeyboard,
+    }, [
+      $sat = $('saturation-container', {
+        onmousedown: onSaturationMouseDown,
+        onmouseup: onSaturationMouseUp,
+      }, [
+        $('saturation', [
+          $('value', [
             $satPointer = $('drag-pointer'),
-          ]}),
-        ]}),
-      ]}),
-      $('sliders', {children: [
-        $('hue', {children: [
-          $hue = $('hue-container', {children: [
-            $hueKnob = $('hue-knob'),
-          ]}),
-        ]}),
-        $('opacity', {children: [
-          $opacity = $('opacity-container', {children: [
+          ]),
+        ]),
+      ]),
+      $('popup-mover', {onmousedown: onPopupMoveStart}),
+      $('sliders', [
+        $('hue', {onmousedown: onHueMouseDown}, [
+          $hue = $('hue-container', [
+            $hueKnob = $('hue-knob', {onmousedown: onHueKnobMouseDown}),
+          ]),
+        ]),
+        $('opacity', [
+          $opacity = $('opacity-container', {onmousedown: onOpacityMouseDown}, [
             $opacityBar = $('opacity-bar'),
-            $opacityKnob = $('opacity-knob'),
-          ]}),
-        ]}),
+            $opacityKnob = $('opacity-knob', {onmousedown: onOpacityKnobMouseDown}),
+          ]),
+        ]),
         $('empty'),
         $swatch = $('swatch'),
-      ]}),
-      $(['input-container', 'hex'], {children: [
-        $inputGroups.hex = $(['input-group', 'hex'], {children: [
-          $(['input-field', 'hex'], {children: [
+      ]),
+      $(['input-container', 'hex'], [
+        $inputGroups.hex = $(['input-group', 'hex'], [
+          $(['input-field', 'hex'], [
             $hexCode = $('input', {tag: 'input', type: 'text', spellcheck: false,
               pattern: /^\s*#([a-fA-F\d]{3}([a-fA-F\d]([a-fA-F\d]{2}([a-fA-F\d]{2})?)?)?)\s*$/.source
             }),
-            $('title', {children: [
-              $hexLettercase.true = $('title-action', {textContent: 'HEX'}),
+            $('title', [
+              $hexLettercase.true = $('title-action', {onclick: onHexLettercaseClicked}, 'HEX'),
               '\xA0/\xA0',
-              $hexLettercase.false = $('title-action', {textContent: 'hex'}),
-            ]}),
-          ]}),
-        ]}),
-        $inputGroups.rgb = $(['input-group', 'rgb'], {children: [
-          $(['input-field', 'rgb-r'], {children: [
+              $hexLettercase.false = $('title-action', {onclick: onHexLettercaseClicked}, 'hex'),
+            ]),
+          ]),
+        ]),
+        $inputGroups.rgb = $(['input-group', 'rgb'], [
+          $(['input-field', 'rgb-r'], [
             $rgb.r = $('input', {tag: 'input', type: 'number', min: 0, max: 255, step: 1}),
-            $('title', {textContent: 'R'}),
-          ]}),
-          $(['input-field', 'rgb-g'], {children: [
+            $('title', 'R'),
+          ]),
+          $(['input-field', 'rgb-g'], [
             $rgb.g = $('input', {tag: 'input', type: 'number', min: 0, max: 255, step: 1}),
-            $('title', {textContent: 'G'}),
-          ]}),
-          $(['input-field', 'rgb-b'], {children: [
+            $('title', 'G'),
+          ]),
+          $(['input-field', 'rgb-b'], [
             $rgb.b = $('input', {tag: 'input', type: 'number', min: 0, max: 255, step: 1}),
-            $('title', {textContent: 'B'}),
-          ]}),
-          $(['input-field', 'rgb-a'], {children: [
+            $('title', 'B'),
+          ]),
+          $(['input-field', 'rgb-a'], [
             $rgb.a = $('input', {tag: 'input', type: 'text', pattern: alphaPattern, spellcheck: false}),
-            $('title', {textContent: 'A'}),
-          ]}),
-        ]}),
-        $inputGroups.hsl = $(['input-group', 'hsl'], {children: [
-          $(['input-field', 'hsl-h'], {children: [
+            $('title', 'A'),
+          ]),
+        ]),
+        $inputGroups.hsl = $(['input-group', 'hsl'], [
+          $(['input-field', 'hsl-h'], [
             $hsl.h = $('input', {tag: 'input', type: 'number', step: 1}),
-            $('title', {textContent: 'H'}),
-          ]}),
-          $(['input-field', 'hsl-s'], {children: [
+            $('title', 'H'),
+          ]),
+          $(['input-field', 'hsl-s'], [
             $hsl.s = $('input', {tag: 'input', type: 'number', min: 0, max: 100, step: 1}),
-            $('title', {textContent: 'S'}),
-          ]}),
-          $(['input-field', 'hsl-l'], {children: [
+            $('title', 'S'),
+          ]),
+          $(['input-field', 'hsl-l'], [
             $hsl.l = $('input', {tag: 'input', type: 'number', min: 0, max: 100, step: 1}),
-            $('title', {textContent: 'L'}),
-          ]}),
-          $(['input-field', 'hsl-a'], {children: [
+            $('title', 'L'),
+          ]),
+          $(['input-field', 'hsl-a'], [
             $hsl.a = $('input', {tag: 'input', type: 'text', pattern: alphaPattern, spellcheck: false}),
-            $('title', {textContent: 'A'}),
-          ]}),
-        ]}),
-        $('format-change', {children: [
-          $formatChangeButton = $('format-change-button', {textContent: '↔'}),
-        ]}),
-      ]}),
-      $palette = $('palette'),
-    ]});
+            $('title', 'A'),
+          ]),
+        ]),
+        $('format-change', [
+          $formatChangeButton = $('format-change-button', {onclick: setFromFormatElement}, '↔'),
+        ]),
+      ]),
+      $palette = $('palette', {
+        onclick: onPaletteClicked,
+        oncontextmenu: onPaletteClicked,
+      }),
+    ]);
 
     $inputs.hex = [$hexCode];
     $inputs.rgb = [$rgb.r, $rgb.g, $rgb.b, $rgb.a];
@@ -184,7 +190,7 @@
     });
 
     HUE_COLORS.forEach(color => Object.assign(color, colorConverter.parse(color.hex)));
-
+    $root.style.setProperty('--margin', MARGIN + 'px');
     initialized = true;
   }
 
@@ -202,16 +208,12 @@
     userActivity = 0;
     lastOutputColor = opt.color || '';
     $formatChangeButton.title = opt.tooltipForSwitcher || '';
-    opt.hideDelay = Math.max(0, opt.hideDelay) || 2000;
+    maxHeight = `${opt.maxHeight || 300}px`;
 
     $root.className = $root.className.replace(new RegExp(CSS_PREFIX + 'theme-\\S+\\s*'), '') +
       ' ' + CSS_PREFIX + 'theme-' +
       (opt.theme === 'dark' || opt.theme === 'light' ? opt.theme :
         guessTheme());
-    $root.style = `
-      display: block !important;
-      position: fixed !important;
-    `;
 
     document.body.appendChild($root);
     shown = true;
@@ -220,13 +222,22 @@
     setFromColor(opt.color);
     setFromHexLettercaseElement();
 
-    if (!isNaN(options.left) && !isNaN(options.top)) {
-      reposition();
-    }
     if (Array.isArray(options.palette)) {
       // Might need to clear a lot of elements so this is known to be faster than textContent = ''
       while ($palette.firstChild) $palette.firstChild.remove();
-      $palette.append(...(options.palette));
+      $palette.append(...options.palette);
+      if (options.palette.length) {
+        $root.dataset.resizable = '';
+        $root.addEventListener('mousedown', onPopupResizeStart);
+        fitPaletteHeight();
+      } else {
+        delete $root.dataset.resizable;
+        $root.removeEventListener('mousedown', onPopupResizeStart);
+      }
+    }
+
+    if (!isNaN(options.left) && !isNaN(options.top)) {
+      reposition();
     }
   }
 
@@ -299,8 +310,9 @@
     event.preventDefault();
     const w = $sat.offsetWidth;
     const h = $sat.offsetHeight;
-    const deltaX = event.clientX - parseFloat($root.style.left);
-    const deltaY = event.clientY - parseFloat($root.style.top);
+    const bb = $root.getBoundingClientRect();
+    const deltaX = event.clientX - bb.left;
+    const deltaY = event.clientY - bb.top;
     const x = dragging.saturationPointerPos.x = constrain(0, w, deltaX);
     const y = dragging.saturationPointerPos.y = constrain(0, h, deltaY);
 
@@ -546,6 +558,52 @@
   //endregion
   //region Event listeners
 
+  /** @param {MouseEvent} event */
+  function onPopupMoveStart(event) {
+    if (!event.button && !hasModifiers(event)) {
+      captureMouse(event, 'popup');
+      $root.dataset.moving = '';
+      const [x, y] = ($root.style.transform.match(/[-.\d]+/g) || []).map(parseFloat);
+      dragging.popupX = event.clientX - (x || 0);
+      dragging.popupY = event.clientY - (y || 0);
+      document.addEventListener('mouseup', onPopupMoveEnd);
+    }
+  }
+
+  /** @param {MouseEvent} event */
+  function onPopupMove({clientX: x, clientY: y}) {
+    $root.style.transform = `translate(${x - dragging.popupX}px, ${y - dragging.popupY}px)`;
+  }
+
+  /** @param {MouseEvent} event */
+  function onPopupMoveEnd(event) {
+    if (!event.button) {
+      document.addEventListener('mouseup', onPopupMoveEnd);
+      delete $root.dataset.moving;
+    }
+  }
+
+  /** @param {MouseEvent} event */
+  function onPopupResizeStart(event) {
+    if (event.target === $root && !event.button && !hasModifiers(event)) {
+      document.addEventListener('mouseup', onPopupResizeEnd);
+      $root.dataset.resizing = '';
+    }
+  }
+
+  /** @param {MouseEvent} event */
+  function onPopupResizeEnd(event) {
+    if (!event.button) {
+      delete $root.dataset.resizing;
+      document.removeEventListener('mouseup', onPopupResizeEnd);
+      if (maxHeight !== $root.style.height) {
+        maxHeight = $root.style.height;
+        PUBLIC_API.options.maxHeight = parseFloat(maxHeight);
+        fitPaletteHeight();
+      }
+    }
+  }
+
   function onHexLettercaseClicked() {
     options.hexUppercase = !options.hexUppercase;
     setFromHexLettercaseElement();
@@ -583,19 +641,19 @@
 
   /** @param {MouseEvent} e */
   function onPaletteClicked(e) {
-    if (e.target !== e.currentTarget) {
-      e.preventDefault();
+    if (e.target !== e.currentTarget && e.target.__color) {
       if (!e.button && setColor(e.target.__color)) {
         userActivity = performance.now();
         colorpickerCallback();
-      } else if (e.button === 2 && options.paletteCallback) {
+      } else if (e.button && options.paletteCallback) {
+        e.preventDefault(); // suppress the default context menu
         options.paletteCallback(e.target);
       }
     }
   }
 
   function onMouseUp(event) {
-    releaseMouse(event, ['saturation', 'hue', 'opacity']);
+    releaseMouse(event, ['saturation', 'hue', 'opacity', 'popup']);
     if (onMouseDown.outsideClick) {
       if (!prevFocusedElement) hide();
     }
@@ -610,33 +668,15 @@
   }
 
   function onMouseMove(event) {
-    if (event.button !== 0) {
-      return;
-    }
-    if (dragging.saturation) {
-      setFromSaturationElement(event);
-    } else if (dragging.hue) {
-      setFromHueElement(event);
-    } else if (dragging.opacity) {
-      setFromOpacityElement(event);
-    }
-  }
-
-  function stopSnoozing() {
-    clearTimeout(timerCloseColorPicker);
-    clearTimeout(timerFadeColorPicker);
-    if ($root.dataset.fading) {
-      delete $root.dataset.fading;
-    }
-  }
-
-  function snooze() {
-    clearTimeout(timerFadeColorPicker);
-    timerFadeColorPicker = setTimeout(fade, options.hideDelay / 2);
+    if (event.button) return;
+    if (dragging.saturation) setFromSaturationElement(event);
+    if (dragging.hue) setFromHueElement(event);
+    if (dragging.opacity) setFromOpacityElement(event);
+    if (dragging.popup) onPopupMove(event);
   }
 
   function onKeyDown(e) {
-    if (!e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
+    if (!hasModifiers(e)) {
       switch (e.key) {
         case 'Enter':
         case 'Escape':
@@ -688,11 +728,15 @@
     if (!mode) {
       return;
     }
-    for (const m of (Array.isArray(mode) ? mode : [mode])) {
+    for (const m of toArray(mode)) {
       dragging[m] = true;
     }
     userActivity = performance.now();
     return true;
+  }
+
+  function hasModifiers(e) {
+    return e.shiftKey || e.ctrlKey || e.altKey || e.metaKey;
   }
 
   function releaseMouse(event, mode) {
@@ -704,7 +748,7 @@
     if (!mode) {
       return;
     }
-    for (const m of (Array.isArray(mode) ? mode : [mode])) {
+    for (const m of toArray(mode)) {
       dragging[m] = false;
     }
     userActivity = performance.now();
@@ -719,48 +763,13 @@
     window.addEventListener('keydown', onKeyDown, true);
     window.addEventListener('mousedown', onMouseDown, true);
     window.addEventListener('close-colorpicker-popup', onCloseRequest, true);
-    $root.addEventListener('input', setFromInputs);
-    $root.addEventListener('keydown', setFromKeyboard);
-    $formatChangeButton.addEventListener('click', setFromFormatElement);
-    $sat.addEventListener('mousedown', onSaturationMouseDown);
-    $sat.addEventListener('mouseup', onSaturationMouseUp);
-    $hueKnob.addEventListener('mousedown', onHueKnobMouseDown);
-    $opacityKnob.addEventListener('mousedown', onOpacityKnobMouseDown);
-    $hue.addEventListener('mousedown', onHueMouseDown);
-    $opacity.addEventListener('mousedown', onOpacityMouseDown);
-    $hexLettercase.true.addEventListener('click', onHexLettercaseClicked);
-    $hexLettercase.false.addEventListener('click', onHexLettercaseClicked);
-    $palette.addEventListener('click', onPaletteClicked);
-    $palette.addEventListener('contextmenu', onPaletteClicked);
-
-    stopSnoozing();
-    if (!options.isShortCut) {
-      $root.addEventListener('mouseleave', snooze);
-      $root.addEventListener('mouseenter', stopSnoozing);
-      timerFadeColorPicker = setTimeout(fade, options.hideDelay / 2);
-    }
   }
 
   function unregisterEvents() {
     window.removeEventListener('keydown', onKeyDown, true);
     window.removeEventListener('mousedown', onMouseDown, true);
     window.removeEventListener('close-colorpicker-popup', onCloseRequest, true);
-    $root.removeEventListener('mouseleave', snooze);
-    $root.removeEventListener('mouseenter', stopSnoozing);
-    $root.removeEventListener('input', setFromInputs);
-    $formatChangeButton.removeEventListener('click', setFromFormatElement);
-    $sat.removeEventListener('mousedown', onSaturationMouseDown);
-    $sat.removeEventListener('mouseup', onSaturationMouseUp);
-    $hueKnob.removeEventListener('mousedown', onHueKnobMouseDown);
-    $opacityKnob.removeEventListener('mousedown', onOpacityKnobMouseDown);
-    $hue.removeEventListener('mousedown', onHueMouseDown);
-    $opacity.removeEventListener('mousedown', onOpacityMouseDown);
-    $hexLettercase.true.removeEventListener('click', onHexLettercaseClicked);
-    $hexLettercase.false.removeEventListener('click', onHexLettercaseClicked);
-    $palette.removeEventListener('click', onPaletteClicked);
-    $palette.removeEventListener('contextmenu', onPaletteClicked);
     releaseMouse();
-    stopSnoozing();
   }
 
   //endregion
@@ -816,25 +825,13 @@
     const maxRightUnobscured = options.left <= maxRight ? maxRight : options.left - width;
     const left = constrain(0, Math.max(0, maxRightUnobscured), options.left);
     const top = constrain(0, Math.max(0, maxTopUnobscured), options.top);
-    $root.style.setProperty('left', left + 'px', 'important');
-    $root.style.setProperty('top', top + 'px', 'important');
+    $root.style.left = left + 'px';
+    $root.style.top = top + 'px';
   }
 
-  function fade({fadingStage = 1} = {}) {
-    const timeInactive = performance.now() - userActivity;
-    const delay = options.hideDelay / 2;
-    if (userActivity && timeInactive < delay) {
-      timerFadeColorPicker = setTimeout(fade, delay - timeInactive, 2);
-      clearTimeout(timerCloseColorPicker);
-      delete $root.dataset.fading;
-      return;
-    }
-    $root.dataset.fading = fadingStage;
-    if (fadingStage === 1) {
-      timerFadeColorPicker = setTimeout(fade, Math.max(0, delay - 500), {fadingStage: 2});
-    } else {
-      timerCloseColorPicker = setTimeout(hide, 500);
-    }
+  function fitPaletteHeight() {
+    const fit = MIN_HEIGHT + $palette.scrollHeight + MARGIN;
+    $root.style.setProperty('--fit-height', Math.min(fit, parseFloat(maxHeight)) + 'px');
   }
 
   function maybeFocus(el) {
@@ -885,6 +882,10 @@
       el.value = num;
       return true;
     }
+  }
+
+  function toArray(val) {
+    return !val ? [] : Array.isArray(val) ? val : [val];
   }
 
   //endregion

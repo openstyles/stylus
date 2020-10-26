@@ -77,9 +77,13 @@
 }
 
 .colorpicker-popup {
-  --switcher-width: 30px;
-  position: relative;
+  --switcher-width: 29px;
+  --sat-height: 120px;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
   width: 325px;
+  max-height: var(--fit-height);
   z-index: 1000;
   transition: opacity .5s;
   color: var(--label-color);
@@ -90,17 +94,42 @@
   user-select: none;
 }
 
-.colorpicker-popup[data-fading="1"] {
-  opacity: .75;
+.colorpicker-popup[data-moving] {
+  opacity: .5;
+  cursor: move;
 }
 
-.colorpicker-popup[data-fading="2"] {
-  opacity: 0;
+.colorpicker-popup[data-resizing] {
+  max-height: 90vh !important;
+}
+
+.colorpicker-popup[data-resizable] {
+  resize: vertical;
+  overflow: hidden;
+}
+
+.colorpicker-popup-mover {
+  position: absolute;
+  box-sizing: border-box;
+  width: calc(var(--switcher-width) - 10px);
+  height: 50px;
+  padding: 5px;
+  margin-top: 5px;
+  top: var(--sat-height);
+  right: 3px;
+  background: repeating-linear-gradient(to right,
+    currentColor, currentColor 1px, transparent 1px, transparent 3px);
+  cursor: move;
+  -webkit-background-clip: content-box;
+  background-clip: content-box;
+  opacity: .5;
+  z-index: 2;
 }
 
 .colorpicker-saturation-container {
   position: relative;
-  height: 120px;
+  height: var(--sat-height);
+  flex: 0 0 var(--sat-height);
   overflow: hidden;
   cursor: pointer;
 }
@@ -145,7 +174,7 @@
 
 .colorpicker-sliders {
   position: relative;
-  padding: 10px 0 6px 0;
+  padding: 10px calc(var(--switcher-width) - 12px) 6px 0;
   border-top: 1px solid transparent;
 }
 
@@ -156,10 +185,10 @@
 .colorpicker-swatch,
 .colorpicker-empty {
   position: absolute;
-  left: 11px;
-  top: 17px;
-  width: 30px;
-  height: 30px;
+  left: 10px;
+  top: 12px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   box-sizing: border-box;
   border: 1px solid var(--input-border-color);
@@ -349,13 +378,24 @@
 }
 
 .colorpicker-palette:not(:empty) {
-  padding: 0 8px 8px;
-  min-height: 14px; /* same as padding-left in .colorview-swatch */
-  max-height: 10vw;
-  overflow: auto;
+  --swatch-size: 16px;
+  margin: 0 var(--margin) var(--margin);
+  min-height: calc(var(--swatch-size) - 4px);
+  overflow-y: auto;
   box-sizing: content-box;
 }
 
 .colorpicker-palette .colorview-swatch {
-  padding-bottom: 14px; /* same as padding-left in .colorview-swatch */
+  padding: calc(var(--swatch-size) / 2 + 1px);
+}
+
+.colorpicker-palette .colorview-swatch::before {
+  width: var(--swatch-size);
+  height: var(--swatch-size);
+}
+
+.colorpicker-palette-hint {
+  vertical-align: super;
+  padding: 0 .5em;
+  font-weight: bold;
 }
