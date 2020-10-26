@@ -591,27 +591,21 @@ function createSectionsEditor(editorBase) {
     updateSectionOrder();
   }
 
-  function replaceStyle(newStyle, codeIsUpdated) {
+  async function replaceStyle(newStyle, codeIsUpdated) {
     dirty.clear('name');
     // FIXME: avoid recreating all editors?
-    reinit().then(() => {
-      Object.assign(style, newStyle);
-      updateHeader();
-      dirty.clear();
-      // Go from new style URL to edit style URL
-      if (location.href.indexOf('id=') === -1 && style.id) {
-        history.replaceState({}, document.title, 'edit.html?id=' + style.id);
-        $('#heading').textContent = t('editStyleHeading');
-      }
-      livePreview.show(Boolean(style.id));
-      updateLivePreview();
-    });
-
-    function reinit() {
-      if (codeIsUpdated !== false) {
-        return initSections(newStyle.sections, {replace: true, pristine: true});
-      }
-      return Promise.resolve();
+    if (codeIsUpdated !== false) {
+      await initSections(newStyle.sections, {replace: true, pristine: true});
     }
+    Object.assign(style, newStyle);
+    updateHeader();
+    dirty.clear();
+      // Go from new style URL to edit style URL
+    if (location.href.indexOf('id=') === -1 && style.id) {
+      history.replaceState({}, document.title, 'edit.html?id=' + style.id);
+      $('#heading').textContent = t('editStyleHeading');
+    }
+    livePreview.show(Boolean(style.id));
+    updateLivePreview();
   }
 }
