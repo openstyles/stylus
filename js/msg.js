@@ -2,8 +2,8 @@
 /* global deepCopy getOwnTab URLS */ // not used in content scripts
 'use strict';
 
-// eslint-disable-next-line no-unused-expressions, no-var
-var msg = window.INJECTED === 1 && window.msg || (() => {
+// eslint-disable-next-line no-unused-expressions
+window.INJECTED !== 1 && (() => {
   promisifyChrome({
     runtime: ['sendMessage', 'getBackgroundPage'],
     tabs: ['sendMessage', 'query'],
@@ -32,33 +32,31 @@ var msg = window.INJECTED === 1 && window.msg || (() => {
     bg = null;
   }
 
-  chrome.runtime.onMessage.addListener(handleMessage);
-
-  window.API = new Proxy({}, {
-    get(target, name) {
-      // using a named function for convenience when debugging
-      return async function invokeAPI(...args) {
-        if (!bg && chrome.tabs) {
-          bg = await browser.runtime.getBackgroundPage().catch(() => {});
-        }
-        const message = {method: 'invokeAPI', name, args};
-        // content scripts, frames and probably private tabs
-        if (!bg || window !== parent) {
-          return msg.send(message);
-        }
-        // in FF, the object would become a dead object when the window
-        // is closed, so we have to clone the object into background.
-        const res = bg.msg._execute(TARGETS.extension, bg.deepCopy(message), {
-          frameId: 0,
-          tab: NEEDS_TAB_IN_SENDER.includes(name) && await getOwnTab(),
-          url: location.href,
-        });
-        return deepCopy(await res);
-      };
-    },
+  // TODO: maybe move into polyfill.js and hook addListener + sendMessage so they wrap/unwrap automatically
+  const wrapData = data => ({
+    data,
+  });
+  const wrapError = error => ({
+    error: Object.assign({
+      message: error.message || `${error}`,
+      stack: error.stack,
+    }, error), // passing custom properties e.g. `error.index`
+  });
+  const unwrapResponse = ({data, error} = {error: {message: ERR_NO_RECEIVER}}) =>
+    error
+      ? Promise.reject(Object.assign(new Error(error.message), error))
+      : data;
+  chrome.runtime.onMessage.addListener(({data, target}, sender, sendResponse) => {
+    const res = window.msg._execute(TARGETS[target] || TARGETS.all, data, sender);
+    if (res instanceof Promise) {
+      res.then(wrapData, wrapError).then(sendResponse);
+      return true;
+    }
+    if (res !== undefined) sendResponse(wrapData(res));
   });
 
-  return {
+  // This direct assignment allows IDEs to provide autocomplete for msg methods automatically
+  const msg = window.msg = {
     isBg,
 
     async broadcast(data) {
@@ -137,32 +135,27 @@ var msg = window.INJECTED === 1 && window.msg || (() => {
     },
   };
 
-  // TODO: maybe move into polyfill.js and hook addListener + sendMessage so they wrap/unwrap automatically
-  function handleMessage({data, target}, sender, sendResponse) {
-    const res = msg._execute(TARGETS[target] || TARGETS.all, data, sender);
-    if (res instanceof Promise) {
-      res.then(wrapData, wrapError).then(sendResponse);
-      return true;
-    }
-    if (res !== undefined) sendResponse(wrapData(res));
-  }
-
-  function wrapData(data) {
-    return {data};
-  }
-
-  function wrapError(error) {
-    return {
-      error: Object.assign({
-        message: error.message || `${error}`,
-        stack: error.stack,
-      }, error), // passing custom properties e.g. `error.index`
-    };
-  }
-
-  function unwrapResponse({data, error} = {error: {message: ERR_NO_RECEIVER}}) {
-    return error
-      ? Promise.reject(Object.assign(new Error(error.message), error))
-      : data;
-  }
+  window.API = new Proxy({}, {
+    get(target, name) {
+      // using a named function for convenience when debugging
+      return async function invokeAPI(...args) {
+        if (!bg && chrome.tabs) {
+          bg = await browser.runtime.getBackgroundPage().catch(() => {});
+        }
+        const message = {method: 'invokeAPI', name, args};
+        // content scripts, frames and probably private tabs
+        if (!bg || window !== parent) {
+          return msg.send(message);
+        }
+        // in FF, the object would become a dead object when the window
+        // is closed, so we have to clone the object into background.
+        const res = bg.msg._execute(TARGETS.extension, bg.deepCopy(message), {
+          frameId: 0,
+          tab: NEEDS_TAB_IN_SENDER.includes(name) && await getOwnTab(),
+          url: location.href,
+        });
+        return deepCopy(await res);
+      };
+    },
+  });
 })();
