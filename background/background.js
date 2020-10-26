@@ -258,7 +258,7 @@ if (FIREFOX && browser.commands && browser.commands.update) {
   });
 }
 
-msg.broadcastTab({method: 'backgroundReady'});
+msg.broadcast({method: 'backgroundReady'});
 
 function webNavIframeHelperFF({tabId, frameId}) {
   if (!frameId) return;

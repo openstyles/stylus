@@ -155,13 +155,10 @@ self.INJECTED !== 1 && (() => {
         break;
 
       case 'backgroundReady':
-        initializing
-          .catch(err => {
-            if (msg.RX_NO_RECEIVER.test(err.message)) {
-              return init();
-            }
-          })
-          .catch(console.error);
+        initializing.catch(err =>
+          msg.isIgnorableError(err)
+            ? init()
+            : console.error(err));
         break;
 
       case 'updateCount':
