@@ -48,7 +48,7 @@ function createSectionsEditor(editorBase) {
 
   let sectionOrder = '';
   let headerOffset; // in compact mode the header is at the top so it reduces the available height
-  const ready = initSections(style.sections, {isFirstInit: true});
+  const ready = initSections(style.sections, {pristine: true});
 
   const livePreview = createLivePreview();
   livePreview.show(Boolean(style.id));
@@ -333,24 +333,37 @@ function createSectionsEditor(editorBase) {
       'Shift-Ctrl-Enter': () => doImport({replaceOldStyle: true}),
     };
 
-    function doImport({replaceOldStyle = false}) {
+    async function doImport({replaceOldStyle = false}) {
       lockPageUI(true);
-      API.parseCss({code: popup.codebox.getValue().trim()})
-        .then(({sections, errors}) => {
+      try {
+        const code = popup.codebox.getValue().trim();
+        if (!/==userstyle==/i.test(code) ||
+            !await getPreprocessor(code) ||
+            await messageBox.confirm(
+              t('importPreprocessor'), 'pre-line',
+              t('importPreprocessorTitle'))
+        ) {
+          const {sections, errors} = await API.parseCss({code});
           // shouldn't happen but just in case
           if (!sections.length || errors.length) {
             throw errors;
           }
-          if (replaceOldStyle) {
-            return replaceSections(sections);
-          }
-          return initSections(sections, {focusOn: false});
-        })
-        .then(() => {
+          await initSections(sections, {
+            replace: replaceOldStyle,
+            focusOn: replaceOldStyle ? 0 : false,
+          });
           $('.dismiss').dispatchEvent(new Event('click'));
-        })
-        .catch(showError)
-        .then(() => lockPageUI(false));
+        }
+      } catch (err) {
+        showError(err);
+      }
+      lockPageUI(false);
+    }
+
+    async function getPreprocessor(code) {
+      try {
+        return (await API.buildUsercssMeta({sourceCode: code})).usercssData.preprocessor;
+      } catch (e) {}
     }
 
     function lockPageUI(locked) {
@@ -451,8 +464,14 @@ function createSectionsEditor(editorBase) {
 
   function initSections(originalSections, {
     focusOn = 0,
-    isFirstInit,
+    replace = false,
+    pristine = false,
   } = {}) {
+    if (replace) {
+      sections.forEach(s => s.remove(true));
+      sections.length = 0;
+      container.textContent = '';
+    }
     let done;
     const total = originalSections.length;
     originalSections = originalSections.slice();
@@ -464,7 +483,7 @@ function createSectionsEditor(editorBase) {
       const t0 = performance.now();
       while (originalSections.length && performance.now() - t0 < 100) {
         insertSectionAfter(originalSections.shift(), undefined, forceRefresh);
-        if (isFirstInit) dirty.clear();
+        if (pristine) dirty.clear();
         if (focusOn !== false && sections[focusOn]) {
           sections[focusOn].cm.focus();
           focusOn = false;
@@ -572,36 +591,21 @@ function createSectionsEditor(editorBase) {
     updateSectionOrder();
   }
 
-  function replaceSections(...args) {
-    for (const section of sections) {
-      section.remove(true);
-    }
-    sections.length = 0;
-    container.textContent = '';
-    return initSections(...args);
-  }
-
-  function replaceStyle(newStyle, codeIsUpdated) {
+  async function replaceStyle(newStyle, codeIsUpdated) {
     dirty.clear('name');
     // FIXME: avoid recreating all editors?
-    reinit().then(() => {
-      Object.assign(style, newStyle);
-      updateHeader();
-      dirty.clear();
-      // Go from new style URL to edit style URL
-      if (location.href.indexOf('id=') === -1 && style.id) {
-        history.replaceState({}, document.title, 'edit.html?id=' + style.id);
-        $('#heading').textContent = t('editStyleHeading');
-      }
-      livePreview.show(Boolean(style.id));
-      updateLivePreview();
-    });
-
-    function reinit() {
-      if (codeIsUpdated !== false) {
-        return replaceSections(newStyle.sections, {isFirstInit: true});
-      }
-      return Promise.resolve();
+    if (codeIsUpdated !== false) {
+      await initSections(newStyle.sections, {replace: true, pristine: true});
     }
+    Object.assign(style, newStyle);
+    updateHeader();
+    dirty.clear();
+      // Go from new style URL to edit style URL
+    if (location.href.indexOf('id=') === -1 && style.id) {
+      history.replaceState({}, document.title, 'edit.html?id=' + style.id);
+      $('#heading').textContent = t('editStyleHeading');
+    }
+    livePreview.show(Boolean(style.id));
+    updateLivePreview();
   }
 }
