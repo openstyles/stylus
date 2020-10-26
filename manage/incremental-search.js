@@ -84,7 +84,7 @@ onDOMready().then(() => {
     if (event.altKey || event.metaKey || $('#message-box')) {
       return;
     }
-    const inTextInput = $.isTextLikeInput(event.target);
+    const inTextInput = $.isTextInput(event.target);
     const {key, code, ctrlKey: ctrl} = event;
     // `code` is independent of the current keyboard language
     if ((code === 'KeyF' && ctrl && !event.shiftKey) ||

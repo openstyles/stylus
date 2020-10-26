@@ -45,6 +45,7 @@ window.INJECTED !== 1 && (() => {
     'manage.newUI.sort': 'title,asc',
 
     'editor.options': {},           // CodeMirror.defaults.*
+    'editor.toc.expanded': true,    // UI element state: expanded/collapsed
     'editor.options.expanded': true, // UI element state: expanded/collapsed
     'editor.lint.expanded': true,   // UI element state: expanded/collapsed
     'editor.lineWrapping': true,    // word wrap
@@ -178,6 +179,11 @@ window.INJECTED !== 1 && (() => {
       } else {
         onChange.any.add(fn);
         if (now) fn();
+      }
+    },
+    subscribeMany(data, opts) {
+      for (const [k, fn] of Object.entries(data)) {
+        prefs.subscribe(k, fn, opts);
       }
     },
     unsubscribe(keys, fn) {

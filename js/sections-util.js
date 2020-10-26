@@ -79,7 +79,7 @@ function styleSectionsEqual(a, b, {ignoreCode, checkSource} = {}) {
 
 function normalizeStyleSections({sections}) {
   // retain known properties in an arbitrarily predefined order
-  return (sections || []).map(section => ({
+  return (sections || []).map(section => /** @namespace StyleSection */({
     code: section.code || '',
     urls: section.urls || [],
     urlPrefixes: section.urlPrefixes || [],

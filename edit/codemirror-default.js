@@ -1,4 +1,4 @@
-/* global CodeMirror prefs loadScript editor $ template */
+/* global CodeMirror prefs editor $ template */
 
 'use strict';
 
@@ -117,49 +117,24 @@
     'lightslategrey': true,
     'slategrey': true,
   });
-
-  const MODE = {
-    less: {
-      family: 'css',
-      value: 'text/x-less',
-      isActive: cm =>
-        cm.doc.mode &&
-        cm.doc.mode.name === 'css' &&
-        cm.doc.mode.helperType === 'less',
-    },
-    stylus: 'stylus',
-    uso: 'css'
-  };
-
-  CodeMirror.defineExtension('setPreprocessor', function (preprocessor, force = false) {
-    const mode = MODE[preprocessor] || 'css';
-    const isActive = mode.isActive || (
-      cm => cm.doc.mode === mode ||
-            cm.doc.mode && (cm.doc.mode.name + (cm.doc.mode.helperType || '') === mode)
-    );
-    if (!force && isActive(this)) {
-      return Promise.resolve();
-    }
-    if ((mode.family || mode) === 'css') {
-      // css.js is always loaded via html
-      this.setOption('mode', mode.value || mode);
-      return Promise.resolve();
-    }
-    return loadScript(`/vendor/codemirror/mode/${mode}/${mode}.js`).then(() => {
-      this.setOption('mode', mode);
-    });
-  });
-
-  CodeMirror.defineExtension('isBlank', function () {
-    // superfast checking as it runs only until the first non-blank line
-    let isBlank = true;
-    this.doc.eachLine(line => {
-      if (line.text && line.text.trim()) {
-        isBlank = false;
-        return true;
+  Object.assign(CodeMirror.prototype, {
+    /**
+     * @param {'less' | 'stylus' | ?} [pp] - any value besides `less` or `stylus` sets `css` mode
+     * @param {boolean} [force]
+     */
+    setPreprocessor(pp, force) {
+      const name = pp === 'less' ? 'text/x-less' : pp === 'stylus' ? pp : 'css';
+      const m = this.doc.mode;
+      if (force || (m.helperType ? m.helperType !== pp : m.name !== name)) {
+        this.setOption('mode', name);
       }
-    });
-    return isBlank;
+    },
+    /** Superfast GC-friendly check that runs until the first non-space line */
+    isBlank() {
+      let filled;
+      this.eachLine(({text}) => (filled = text && /\S/.test(text)));
+      return !filled;
+    }
   });
 
   // editor commands

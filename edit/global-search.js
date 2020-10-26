@@ -79,7 +79,7 @@ onDOMready().then(() => {
             doReplace();
             return;
         }
-        return !event.target.closest(focusAccessibility.ELEMENTS.join(','));
+        return !focusAccessibility.closest(event.target);
       },
       'Esc': () => {
         destroyDialog({restoreFocus: true});

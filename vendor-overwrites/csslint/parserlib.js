@@ -4435,13 +4435,22 @@ self.parserlib = (() => {
       const prefix = start.value.split('-')[1] || '';
       do {
         this._ws();
-        functions.push(this._documentFunction());
+        functions.push(this._documentFunction() || stream.LT(1));
       } while (stream.match(Tokens.COMMA));
-
       this._ws();
       if (this.options.emptyDocument && stream.peek() !== Tokens.LBRACE) {
         this.fire({type: 'emptydocument', functions, prefix}, start);
         return;
+      }
+      for (const fn of functions) {
+        if ((fn.type !== 'function' || !/^(url(-prefix)?|domain|regexp)$/i.test(fn.name)) &&
+            fn.type !== 'uri') {
+          this.fire({
+            type: 'error',
+            message: 'Expected url( or url-prefix( or domain( or regexp(, instead saw ' +
+              Tokens.name(fn.tokenType || fn.type) + ' ' + (fn.text || fn.value),
+          }, fn);
+        }
       }
       stream.mustMatch(Tokens.LBRACE);
 

@@ -1,130 +1,161 @@
-/* global CodeMirror $create prefs */
-/* exported dirtyReporter memoize clipString sectionsToMozFormat createHotkeyInput */
+/* global
+  $create
+  CodeMirror
+  prefs
+*/
 'use strict';
 
-function dirtyReporter() {
-  const dirty = new Map();
-  const onchanges = [];
+/* exported DirtyReporter */
+class DirtyReporter {
+  constructor() {
+    this._dirty = new Map();
+    this._onchange = new Set();
+  }
 
-  function add(obj, value) {
-    const saved = dirty.get(obj);
+  add(obj, value) {
+    const wasDirty = this.isDirty();
+    const saved = this._dirty.get(obj);
     if (!saved) {
-      dirty.set(obj, {type: 'add', newValue: value});
+      this._dirty.set(obj, {type: 'add', newValue: value});
     } else if (saved.type === 'remove') {
       if (saved.savedValue === value) {
-        dirty.delete(obj);
+        this._dirty.delete(obj);
       } else {
         saved.newValue = value;
         saved.type = 'modify';
       }
     }
+    this.notifyChange(wasDirty);
   }
 
-  function remove(obj, value) {
-    const saved = dirty.get(obj);
+  remove(obj, value) {
+    const wasDirty = this.isDirty();
+    const saved = this._dirty.get(obj);
     if (!saved) {
-      dirty.set(obj, {type: 'remove', savedValue: value});
+      this._dirty.set(obj, {type: 'remove', savedValue: value});
     } else if (saved.type === 'add') {
-      dirty.delete(obj);
+      this._dirty.delete(obj);
     } else if (saved.type === 'modify') {
       saved.type = 'remove';
     }
+    this.notifyChange(wasDirty);
   }
 
-  function modify(obj, oldValue, newValue) {
-    const saved = dirty.get(obj);
+  modify(obj, oldValue, newValue) {
+    const wasDirty = this.isDirty();
+    const saved = this._dirty.get(obj);
     if (!saved) {
       if (oldValue !== newValue) {
-        dirty.set(obj, {type: 'modify', savedValue: oldValue, newValue});
+        this._dirty.set(obj, {type: 'modify', savedValue: oldValue, newValue});
       }
     } else if (saved.type === 'modify') {
       if (saved.savedValue === newValue) {
-        dirty.delete(obj);
+        this._dirty.delete(obj);
       } else {
         saved.newValue = newValue;
       }
     } else if (saved.type === 'add') {
       saved.newValue = newValue;
     }
+    this.notifyChange(wasDirty);
   }
 
-  function clear(obj) {
+  clear(obj) {
+    const wasDirty = this.isDirty();
     if (obj === undefined) {
-      dirty.clear();
+      this._dirty.clear();
     } else {
-      dirty.delete(obj);
+      this._dirty.delete(obj);
+    }
+    this.notifyChange(wasDirty);
+  }
+
+  isDirty() {
+    return this._dirty.size > 0;
+  }
+
+  onChange(cb, add = true) {
+    this._onchange[add ? 'add' : 'delete'](cb);
+  }
+
+  notifyChange(wasDirty) {
+    if (wasDirty !== this.isDirty()) {
+      this._onchange.forEach(cb => cb());
     }
   }
 
-  function isDirty() {
-    return dirty.size > 0;
+  has(key) {
+    return this._dirty.has(key);
   }
-
-  function onChange(cb) {
-    // make sure the callback doesn't throw
-    onchanges.push(cb);
-  }
-
-  function wrap(obj) {
-    for (const key of ['add', 'remove', 'modify', 'clear']) {
-      obj[key] = trackChange(obj[key]);
-    }
-    return obj;
-  }
-
-  function emitChange() {
-    for (const cb of onchanges) {
-      cb();
-    }
-  }
-
-  function trackChange(fn) {
-    return function () {
-      const dirty = isDirty();
-      const result = fn.apply(null, arguments);
-      if (dirty !== isDirty()) {
-        emitChange();
-      }
-      return result;
-    };
-  }
-
-  function has(key) {
-    return dirty.has(key);
-  }
-
-  return wrap({add, remove, modify, clear, isDirty, onChange, has});
 }
 
-
-function sectionsToMozFormat(style) {
-  const propertyToCss = {
-    urls:        'url',
+/* exported DocFuncMapper */
+const DocFuncMapper = {
+  TO_CSS: {
+    urls: 'url',
     urlPrefixes: 'url-prefix',
-    domains:     'domain',
-    regexps:     'regexp',
-  };
-  return style.sections.map(section => {
-    let cssMds = [];
-    for (const i in propertyToCss) {
-      if (section[i]) {
-        cssMds = cssMds.concat(section[i].map(v =>
-          propertyToCss[i] + '("' + v.replace(/\\/g, '\\\\') + '")'
-        ));
+    domains: 'domain',
+    regexps: 'regexp',
+  },
+  FROM_CSS: {
+    'url': 'urls',
+    'url-prefix': 'urlPrefixes',
+    'domain': 'domains',
+    'regexp': 'regexps',
+  },
+  /**
+   * @param {Object} section
+   * @param {function(func:string, value:string)} fn
+   */
+  forEachProp(section, fn) {
+    for (const [propName, func] of Object.entries(DocFuncMapper.TO_CSS)) {
+      const props = section[propName];
+      if (props) props.forEach(value => fn(func, value));
+    }
+  },
+  /**
+   * @param {Array<?[type,value]>} funcItems
+   * @param {?Object} [section]
+   * @returns {Object} section
+   */
+  toSection(funcItems, section = {}) {
+    for (const item of funcItems) {
+      const [func, value] = item || [];
+      const propName = DocFuncMapper.FROM_CSS[func];
+      if (propName) {
+        const props = section[propName] || (section[propName] = []);
+        if (Array.isArray(value)) props.push(...value);
+        else props.push(value);
       }
     }
-    return cssMds.length ?
-      '@-moz-document ' + cssMds.join(', ') + ' {\n' + section.code + '\n}' :
+    return section;
+  },
+};
+
+/* exported sectionsToMozFormat */
+function sectionsToMozFormat(style) {
+  return style.sections.map(section => {
+    const cssFuncs = [];
+    DocFuncMapper.forEachProp(section, (type, value) =>
+      cssFuncs.push(`${type}("${value.replace(/\\/g, '\\\\')}")`));
+    return cssFuncs.length ?
+      `@-moz-document ${cssFuncs.join(', ')} {\n${section.code}\n}` :
       section.code;
   }).join('\n\n');
 }
 
+/* exported trimCommentLabel */
+function trimCommentLabel(str, limit = 1000) {
+  // stripping /*** foo ***/ to foo
+  return clipString(str.replace(/^[!-/:;=\s]*|[-#$&(+,./:;<=>\s*]*$/g, ''), limit);
+}
 
+/* exported clipString */
 function clipString(str, limit = 100) {
   return str.length <= limit ? str : str.substr(0, limit) + '...';
 }
 
-// this is a decorator. Cache the first call
+/* exported memoize */
 function memoize(fn) {
   let cached = false;
   let result;
@@ -137,6 +168,7 @@ function memoize(fn) {
   };
 }
 
+/* exported createHotkeyInput */
 /**
  * @param {!string} prefId
  * @param {?function(isEnter:boolean)} onDone

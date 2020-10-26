@@ -2,7 +2,7 @@
 /* exported createLivePreview */
 'use strict';
 
-function createLivePreview(preprocess) {
+function createLivePreview(preprocess, shouldShow) {
   let data;
   let previewer;
   let enabled = prefs.get('editor.livePreview');
@@ -20,6 +20,7 @@ function createLivePreview(preprocess) {
     }
     enabled = value;
   });
+  if (shouldShow != null) show(shouldShow);
   return {update, show};
 
   function show(state) {

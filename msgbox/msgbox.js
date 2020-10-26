@@ -68,7 +68,7 @@ function messageBox({
         }
         switch (key) {
           case 'Enter':
-            if (target.closest(focusAccessibility.ELEMENTS.join(','))) {
+            if (focusAccessibility.closest(target)) {
               return;
             }
             break;
