@@ -1,12 +1,10 @@
 /* global CodeMirror onDOMready prefs setupLivePrefs $ $$ $create t tHTML
   createSourceEditor sessionStorageHash getOwnTab FIREFOX API tryCatch
-  closeCurrentTab messageBox debounce
+  closeCurrentTab messageBox debounce tryJSONparse
   initBeautifyButton ignoreChromeError dirtyReporter linter
   moveFocus msg createSectionsEditor rerouteHotkeys CODEMIRROR_THEMES */
 /* exported showCodeMirrorPopup editorWorker toggleContextMenuDelete */
 'use strict';
-
-let saveSizeOnClose;
 
 // direct & reverse mapping of @-moz-document keywords and internal property names
 const propertyToCss = {urls: 'url', urlPrefixes: 'url-prefix', domains: 'domain', regexps: 'regexp'};
@@ -17,10 +15,9 @@ const CssToProperty = Object.entries(propertyToCss)
   }, {});
 
 let editor;
-
+let isWindowed;
 let scrollPointTimer;
 
-document.addEventListener('visibilitychange', beforeUnload);
 window.addEventListener('beforeunload', beforeUnload);
 msg.onExtension(onRuntimeMessage);
 
@@ -182,12 +179,12 @@ lazyInit();
       onBoundsChanged.addListener(wnd => {
         // getting the current window id as it may change if the user attached/detached the tab
         chrome.windows.getCurrent(ownWnd => {
-          if (wnd.id === ownWnd.id) rememberWindowSize();
+          if (wnd.id === ownWnd.id) saveWindowPos();
         });
       });
     }
     window.addEventListener('resize', () => {
-      if (!onBoundsChanged) debounce(rememberWindowSize, 100);
+      if (!onBoundsChanged) debounce(saveWindowPos, 100);
       detectLayout();
     });
   }
@@ -234,44 +231,41 @@ lazyInit();
 })();
 
 /* Stuff not needed for the main init so we can let it run at its own tempo */
-async function lazyInit() {
-  const ownTabId = (await getOwnTab()).id;
-  // use browser history back when 'back to manage' is clicked
-  if (sessionStorageHash('manageStylesHistory').value[ownTabId] === location.href) {
-    onDOMready().then(() => {
+function lazyInit() {
+  let ownTabId;
+  getOwnTab().then(async tab => {
+    ownTabId = tab.id;
+    // use browser history back when 'back to manage' is clicked
+    if (sessionStorageHash('manageStylesHistory').value[ownTabId] === location.href) {
+      await onDOMready();
       $('#cancel-button').onclick = event => {
         event.stopPropagation();
         event.preventDefault();
         history.back();
       };
-    });
-  }
+    }
+  });
   // no windows on android
   if (!chrome.windows) {
     return;
   }
-  const tabs = await browser.tabs.query({currentWindow: true});
-  const windowId = tabs[0].windowId;
-  if (prefs.get('openEditInWindow')) {
-    if (
-      /true/.test(sessionStorage.saveSizeOnClose) &&
-      'left' in prefs.get('windowPosition', {}) &&
-      !isWindowMaximized()
-    ) {
-      // window was reopened via Ctrl-Shift-T etc.
-      chrome.windows.update(windowId, prefs.get('windowPosition'));
-    }
-    if (tabs.length === 1 && window.history.length === 1) {
-      chrome.windows.getAll(windows => {
-        if (windows.length > 1) {
-          sessionStorageHash('saveSizeOnClose').set(windowId, true);
-          saveSizeOnClose = true;
-        }
-      });
-    } else {
-      saveSizeOnClose = sessionStorageHash('saveSizeOnClose').value[windowId];
-    }
+  // resize on 'undo close'
+  const pos = tryJSONparse(sessionStorage.windowPos);
+  delete sessionStorage.windowPos;
+  if (pos && pos.left != null && chrome.windows) {
+    chrome.windows.update(chrome.windows.WINDOW_ID_CURRENT, pos);
   }
+  // detect isWindowed
+  if (prefs.get('openEditInWindow') && history.length === 1) {
+    chrome.tabs.query({currentWindow: true}, tabs => {
+      if (tabs.length === 1) {
+        chrome.windows.getAll(windows => {
+          isWindowed = windows.length > 1; // not modifying the main browser window
+        });
+      }
+    });
+  }
+  // toggle openEditInWindow
   chrome.tabs.onAttached.addListener((tabId, info) => {
     if (tabId !== ownTabId) {
       return;
@@ -311,8 +305,6 @@ function onRuntimeMessage(request) {
       break;
     case 'styleDeleted':
       if (editor.style.id === request.style.id) {
-        document.removeEventListener('visibilitychange', beforeUnload);
-        document.removeEventListener('beforeunload', beforeUnload);
         closeCurrentTab();
         break;
       }
@@ -323,15 +315,8 @@ function onRuntimeMessage(request) {
   }
 }
 
-/**
- * Invoked for 'visibilitychange' event by default.
- * Invoked for 'beforeunload' event when the style is modified and unsaved.
- * See https://developers.google.com/web/updates/2018/07/page-lifecycle-api#legacy-lifecycle-apis-to-avoid
- *   > Never add a beforeunload listener unconditionally or use it as an end-of-session signal.
- *   > Only add it when a user has unsaved work, and remove it as soon as that work has been saved.
- */
 function beforeUnload(e) {
-  if (saveSizeOnClose) rememberWindowSize();
+  sessionStorage.windowPos = JSON.stringify(canSaveWindowPos() && prefs.get('windowPosition'));
   const activeElement = document.activeElement;
   if (activeElement) {
     // blurring triggers 'change' or 'input' event if needed
@@ -489,12 +474,15 @@ function showCodeMirrorPopup(title, html, options) {
   return popup;
 }
 
-function rememberWindowSize() {
-  if (
+function canSaveWindowPos() {
+  return isWindowed &&
     document.visibilityState === 'visible' &&
     prefs.get('openEditInWindow') &&
-    !isWindowMaximized()
-  ) {
+    !isWindowMaximized();
+}
+
+function saveWindowPos() {
+  if (canSaveWindowPos()) {
     prefs.set('windowPosition', {
       left: window.screenX,
       top: window.screenY,
