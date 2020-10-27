@@ -216,6 +216,10 @@
 
 
   function colorizeChanges(state, changes) {
+    if (changes.length === 1 && changes[0].origin === 'setValue') {
+      colorizeAll(state);
+      return;
+    }
     const queue = [];
     const postponed = [];
     const viewFrom = state.cm.display.viewFrom || 0;
