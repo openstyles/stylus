@@ -12,6 +12,7 @@ onDOMready().then(() => {
     oninput: incrementalSearch,
   });
   replaceInlineStyle({
+    opacity: '0',
     position: 'absolute',
     color: 'transparent',
     border: '1px solid hsla(180, 100%, 100%, .5)',
@@ -72,6 +73,7 @@ onDOMready().then(() => {
       replaceInlineStyle({
         width: focusedLink.offsetWidth + 'px',
         height: focusedLink.offsetHeight + 'px',
+        opacity: '1',
       });
       focusedLink.prepend(input);
       return true;
