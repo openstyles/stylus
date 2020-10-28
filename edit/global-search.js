@@ -902,7 +902,9 @@ onDOMready().then(() => {
 
   // produces [i, i+1, i-1, i+2, i-2, i+3, i-3, ...]
   function radiateArray(arr, focalIndex) {
-    const result = [arr[focalIndex]];
+    const focus = arr[focalIndex];
+    if (!focus) return arr;
+    const result = [focus];
     const len = arr.length;
     for (let i = 1; i < len; i++) {
       if (focalIndex + i < len) {
