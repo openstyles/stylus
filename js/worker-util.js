@@ -1,17 +1,12 @@
-/* global importScripts */
-/* exported workerUtil */
 'use strict';
 
-const workerUtil = (() => {
-  const loadedScripts = new Set();
-  return {createWorker, createAPI, loadScript, cloneError};
+const workerUtil = {
 
-  function createWorker({url, lifeTime = 300}) {
+  createWorker({url, lifeTime = 300}) {
     let worker;
     let id;
     let timer;
     const pendingResponse = new Map();
-
     return new Proxy({}, {
       get: (target, prop) =>
         (...args) => {
@@ -19,7 +14,7 @@ const workerUtil = (() => {
             init();
           }
           return invoke(prop, args);
-        }
+        },
     });
 
     function init() {
@@ -34,10 +29,9 @@ const workerUtil = (() => {
       worker = null;
     }
 
-    function onMessage(e) {
-      const message = e.data;
-      pendingResponse.get(message.id)[message.error ? 'reject' : 'resolve'](message.data);
-      pendingResponse.delete(message.id);
+    function onMessage({data: {id, data, error}}) {
+      pendingResponse.get(id)[error ? 'reject' : 'resolve'](data);
+      pendingResponse.delete(id);
       if (!pendingResponse.size && lifeTime >= 0) {
         timer = setTimeout(uninit, lifeTime * 1000);
       }
@@ -47,36 +41,26 @@ const workerUtil = (() => {
       return new Promise((resolve, reject) => {
         pendingResponse.set(id, {resolve, reject});
         clearTimeout(timer);
-        worker.postMessage({
-          id,
-          action,
-          args
-        });
+        worker.postMessage({id, action, args});
         id++;
       });
     }
-  }
+  },
 
-  function createAPI(methods) {
-    self.onmessage = e => {
-      const message = e.data;
-      Promise.resolve()
-        .then(() => methods[message.action](...message.args))
-        .then(result => ({
-          id: message.id,
-          error: false,
-          data: result
-        }))
-        .catch(err => ({
-          id: message.id,
-          error: true,
-          data: cloneError(err)
-        }))
-        .then(data => self.postMessage(data));
+  createAPI(methods) {
+    self.onmessage = async ({data: {id, action, args}}) => {
+      let data, error;
+      try {
+        data = await methods[action](...args);
+      } catch (err) {
+        error = true;
+        data = workerUtil.cloneError(err);
+      }
+      self.postMessage({id, data, error});
     };
-  }
+  },
 
-  function cloneError(err) {
+  cloneError(err) {
     return Object.assign({
       name: err.name,
       stack: err.stack,
@@ -85,14 +69,16 @@ const workerUtil = (() => {
       columnNumber: err.columnNumber,
       fileName: err.fileName
     }, err);
-  }
+  },
 
-  function loadScript(...scripts) {
-    const urls = scripts.filter(u => !loadedScripts.has(u));
+  loadScript(...urls) {
+    urls = urls.filter(u => !workerUtil._loadedScripts.has(u));
     if (!urls.length) {
       return;
     }
-    importScripts(...urls);
-    urls.forEach(u => loadedScripts.add(u));
-  }
-})();
+    self.importScripts(...urls);
+    urls.forEach(u => workerUtil._loadedScripts.add(u));
+  },
+
+  _loadedScripts: new Set(),
+};

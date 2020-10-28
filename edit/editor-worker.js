@@ -2,9 +2,9 @@
 'use strict';
 
 importScripts('/js/worker-util.js');
-const {createAPI, loadScript} = workerUtil;
+const {loadScript} = workerUtil;
 
-createAPI({
+workerUtil.createAPI({
   csslint: (code, config) => {
     loadScript('/vendor-overwrites/csslint/parserlib.js', '/vendor-overwrites/csslint/csslint.js');
     return CSSLint.verify(code, config).messages

@@ -2,9 +2,9 @@
 'use strict';
 
 importScripts('/js/worker-util.js');
-const {loadScript, createAPI} = workerUtil;
+const {loadScript} = workerUtil;
 
-createAPI({
+workerUtil.createAPI({
   parseMozFormat(arg) {
     loadScript('/vendor-overwrites/csslint/parserlib.js', '/js/moz-parser.js');
     return parseMozFormat(arg);
