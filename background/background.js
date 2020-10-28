@@ -59,7 +59,8 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   parseCss({code}) {
     return backgroundWorker.parseMozFormat({code});
   },
-  getPrefs: prefs.getAll,
+  getPrefs: () => prefs.values, // will be deepCopy'd by invokeAPI handler
+  setPref: (key, value) => prefs.set(key, value),
 
   openEditor,
 
@@ -218,6 +219,14 @@ function createContextMenus(ids) {
 }
 
 if (chrome.contextMenus) {
+  // "Delete" item in context menu for browsers that don't have it
+  if (CHROME &&
+      // looking at the end of UA string
+      /(Vivaldi|Safari)\/[\d.]+$/.test(navigator.userAgent) &&
+      // skip forks with Flash as those are likely to have the menu e.g. CentBrowser
+      !Array.from(navigator.plugins).some(p => p.name === 'Shockwave Flash')) {
+    prefs.defaults['editor.contextDelete'] = true;
+  }
   // circumvent the bug with disabling check marks in Chrome 62-64
   const toggleCheckmark = CHROME >= 62 && CHROME <= 64 ?
     (id => chrome.contextMenus.remove(id, () => createContextMenus([id]) + ignoreChromeError())) :
@@ -233,7 +242,7 @@ if (chrome.contextMenus) {
 
   const keys = Object.keys(contextMenus);
   prefs.subscribe(keys.filter(id => typeof prefs.defaults[id] === 'boolean'), toggleCheckmark);
-  prefs.subscribe(keys.filter(id => contextMenus[id].presentIf), togglePresence);
+  prefs.subscribe(keys.filter(id => contextMenus[id].presentIf && id in prefs.defaults), togglePresence);
   createContextMenus(keys);
 }
 

@@ -1,9 +1,11 @@
 /* global promisifyChrome msg API */
+/* global deepCopy deepEqual debounce */ // not used in content scripts
 'use strict';
 
-// Needs msg.js loaded first
-
-self.prefs = self.INJECTED === 1 ? self.prefs : (() => {
+// eslint-disable-next-line no-unused-expressions
+window.INJECTED !== 1 && (() => {
+  const STORAGE_KEY = 'settings';
+  const clone = msg.isBg ? deepCopy : (val => JSON.parse(JSON.stringify(val)));
   const defaults = {
     'openEditInWindow': false,      // new editor opens in a own browser window
     'openEditInWindow.popup': false, // new editor opens in a simplified browser window without omnibox
@@ -72,7 +74,8 @@ self.prefs = self.INJECTED === 1 ? self.prefs : (() => {
                                       // '' (empty string) = disabled
     'editor.autoCloseBrackets': true,    // auto-add a closing pair when typing an opening one of ()[]{}''""
     'editor.autocompleteOnTyping': false, // show autocomplete dropdown on typing a word token
-    'editor.contextDelete': contextDeleteMissing(), // "Delete" item in context menu
+    // "Delete" item in context menu for browsers that don't have it
+    'editor.contextDelete': null,
     'editor.selectByTokens': true,
 
     'editor.appliesToLineWidget': true, // show applies-to line widget on the editor
@@ -105,189 +108,126 @@ self.prefs = self.INJECTED === 1 ? self.prefs : (() => {
 
     'updateInterval': 24,           // user-style automatic update interval, hours (0 = disable)
   };
-  const values = deepCopy(defaults);
-
+  const values = clone(defaults);
   const onChange = {
     any: new Set(),
-    specific: new Map(),
+    specific: {},
   };
-
-  promisifyChrome({
-    'storage.sync': ['get', 'set'],
-  });
-
-  const initializing = (
-    msg.isBg
-      ? browser.storage.sync.get('settings').then(res => res.settings)
-      : API.getPrefs()
-  ).then(res => res && setAll(res, true));
-
-  chrome.storage.onChanged.addListener((changes, area) => {
-    if (area !== 'sync' || !changes.settings || !changes.settings.newValue) {
-      return;
-    }
-    initializing.then(() => setAll(changes.settings.newValue, true));
-  });
-
-  let timer;
-
-  // coalesce multiple pref changes in broadcast
-  // let changes = {};
-
-  return {
-    initializing,
-    defaults,
-    get(key, defaultValue) {
-      if (key in values) {
-        return values[key];
-      }
-      if (defaultValue !== undefined) {
-        return defaultValue;
-      }
-      if (key in defaults) {
-        return defaults[key];
-      }
-      console.warn("No default preference for '%s'", key);
-    },
-    getAll() {
-      return deepCopy(values);
-    },
-    set,
-    reset: key => set(key, deepCopy(defaults[key])),
-    subscribe(keys, listener) {
-      // keys:     string[] ids
-      //           or a falsy value to subscribe to everything
-      // listener: function (key, value)
-      if (keys) {
-        for (const key of keys) {
-          const existing = onChange.specific.get(key);
-          if (!existing) {
-            onChange.specific.set(key, listener);
-          } else if (existing instanceof Set) {
-            existing.add(listener);
-          } else {
-            onChange.specific.set(key, new Set([existing, listener]));
-          }
-        }
-      } else {
-        onChange.any.add(listener);
-      }
-    },
-    unsubscribe(keys, listener) {
-      if (keys) {
-        for (const key of keys) {
-          const existing = onChange.specific.get(key);
-          if (existing instanceof Set) {
-            existing.delete(listener);
-            if (!existing.size) {
-              onChange.specific.delete(key);
-            }
-          } else if (existing) {
-            onChange.specific.delete(key);
-          }
-        }
-      } else {
-        onChange.all.remove(listener);
-      }
-    },
-  };
-
-  function setAll(settings, synced) {
-    for (const [key, value] of Object.entries(settings)) {
-      set(key, value, synced);
-    }
-  }
-
-  function set(key, value, synced = false) {
-    const oldValue = values[key];
-    switch (typeof defaults[key]) {
-      case typeof value:
-        break;
-      case 'string':
-        value = String(value);
-        break;
-      case 'number':
-        value |= 0;
-        break;
-      case 'boolean':
-        value = value === true || value === 'true';
-        break;
-    }
-    if (equal(value, oldValue)) {
-      return;
-    }
-    values[key] = value;
-    emitChange(key, value);
-    if (!synced && !timer) {
-      timer = syncPrefsLater();
-    }
-    return timer;
-  }
-
-  function emitChange(key, value) {
-    const specific = onChange.specific.get(key);
-    if (typeof specific === 'function') {
-      specific(key, value);
-    } else if (specific instanceof Set) {
-      for (const listener of specific.values()) {
-        listener(key, value);
-      }
-    }
-    for (const listener of onChange.any.values()) {
-      listener(key, value);
-    }
-  }
-
-  function syncPrefsLater() {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        timer = null;
-        browser.storage.sync.set({settings: values})
-          .then(resolve, reject);
-      });
+  if (msg.isBg) {
+    promisifyChrome({
+      'storage.sync': ['get', 'set'],
     });
   }
+  const initializing = (
+    msg.isBg
+      ? browser.storage.sync.get(STORAGE_KEY).then(res => res[STORAGE_KEY])
+      : API.getPrefs()
+  ).then(setAll);
 
-  function equal(a, b) {
-    if (!a || !b || typeof a !== 'object' || typeof b !== 'object') {
-      return a === b;
+  chrome.storage.onChanged.addListener(async (changes, area) => {
+    const data = area === 'sync' && changes[STORAGE_KEY];
+    if (data) {
+      await initializing;
+      setAll(data.newValue);
     }
-    if (Object.keys(a).length !== Object.keys(b).length) {
-      return false;
-    }
-    for (const k in a) {
-      if (typeof a[k] === 'object') {
-        if (!equal(a[k], b[k])) {
-          return false;
+  });
+
+  // This direct assignment allows IDEs to provide correct autocomplete for methods
+  const prefs = window.prefs = {
+    initializing,
+    defaults,
+    values,
+    get(key) {
+      return isKnown(key) && values[key];
+    },
+    set(key, value, isSynced) {
+      if (!isKnown(key)) return;
+      const oldValue = values[key];
+      const type = typeof defaults[key];
+      if (type !== typeof value) {
+        if (type === 'string') value = String(value);
+        if (type === 'number') value = Number(value) || 0;
+        if (type === 'boolean') value = Boolean(value);
+      }
+      if (value !== oldValue && !deepEqual(value, oldValue)) {
+        values[key] = value;
+        emitChange(key, value, isSynced);
+      }
+    },
+    reset(key) {
+      prefs.set(key, clone(defaults[key]));
+    },
+    /**
+     * @param {?string|string[]} keys - pref ids or a falsy value to subscribe to everything
+     * @param {function(key:string, value:any)} fn
+     * @param {Object} [opts]
+     * @param {boolean} [opts.now] - when truthy, the listener is called immediately:
+     *   1) if `keys` is an array of keys, each `key` will be fired separately with a real `value`
+     *   2) if `keys` is falsy, no key/value will be provided
+     */
+    subscribe(keys, fn, {now} = {}) {
+      if (keys) {
+        for (const key of Array.isArray(keys) ? keys : [keys]) {
+          if (!isKnown(key)) continue;
+          const listeners = onChange.specific[key] ||
+            (onChange.specific[key] = new Set());
+          listeners.add(fn);
+          if (now) fn(key, values[key]);
         }
-      } else if (a[k] !== b[k]) {
-        return false;
+      } else {
+        onChange.any.add(fn);
+        if (now) fn();
+      }
+    },
+    unsubscribe(keys, fn) {
+      if (keys) {
+        for (const key of keys) {
+          const listeners = onChange.specific[key];
+          if (listeners) {
+            listeners.delete(fn);
+            if (!listeners.size) {
+              delete onChange.specific[key];
+            }
+          }
+        }
+      } else {
+        onChange.all.remove(fn);
+      }
+    },
+  };
+
+  function isKnown(key) {
+    const res = defaults.hasOwnProperty(key);
+    if (!res) console.warn('Unknown preference "%s"', key);
+    return res;
+  }
+
+  function setAll(settings) {
+    for (const [key, value] of Object.entries(settings || {})) {
+      prefs.set(key, value, true);
+    }
+  }
+
+  function emitChange(key, value, isSynced) {
+    for (const fn of onChange.specific[key] || []) {
+      fn(key, value);
+    }
+    for (const fn of onChange.any) {
+      fn(key, value);
+    }
+    if (!isSynced) {
+      /* browser.storage is slow and can randomly lose values if the tab was closed immediately
+       so we're sending the value to the background script which will save it to the storage;
+       the extra bonus is that invokeAPI is immediate in extension tabs */
+      if (msg.isBg) {
+        debounce(updateStorage);
+      } else {
+        API.setPref(key, value);
       }
     }
-    return true;
   }
 
-  function contextDeleteMissing() {
-    return /Chrome\/\d+/.test(navigator.userAgent) && (
-      // detect browsers without Delete by looking at the end of UA string
-      /Vivaldi\/[\d.]+$/.test(navigator.userAgent) ||
-      // Chrome and co.
-      /Safari\/[\d.]+$/.test(navigator.userAgent) &&
-      // skip forks with Flash as those are likely to have the menu e.g. CentBrowser
-      !Array.from(navigator.plugins).some(p => p.name === 'Shockwave Flash')
-    );
-  }
-
-  function deepCopy(obj) {
-    if (!obj || typeof obj !== 'object') {
-      return obj;
-    }
-    if (Array.isArray(obj)) {
-      return obj.map(deepCopy);
-    }
-    return Object.keys(obj).reduce((output, key) => {
-      output[key] = deepCopy(obj[key]);
-      return output;
-    }, {});
+  function updateStorage() {
+    return browser.storage.sync.set({[STORAGE_KEY]: values});
   }
 })();
