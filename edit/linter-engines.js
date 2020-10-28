@@ -20,19 +20,31 @@
     }
   });
 
-  function stylelint(text, config) {
-    return editorWorker.stylelint(text, config)
-      .then(({results}) => !results[0] ? [] :
-        results[0].warnings.map(({line, column: ch, text, severity}) => ({
-          from: {line: line - 1, ch: ch - 1},
-          to: {line: line - 1, ch},
-          message: text
-            .replace('Unexpected ', '')
-            .replace(/^./, firstLetter => firstLetter.toUpperCase())
-            .replace(/\s*\([^(]+\)$/, ''), // strip the rule,
-          rule: text.replace(/^.*?\s*\(([^(]+)\)$/, '$1'),
-          severity,
-        })));
+  async function stylelint(text, config, mode) {
+    const raw = await editorWorker.stylelint(text, config);
+    if (!raw) {
+      return [];
+    }
+    // Hiding the errors about "//" comments as we're preprocessing only when saving/applying
+    // and we can't just pre-remove the comments since "//" may be inside a string token or whatever
+    const slashCommentAllowed = mode === 'text/x-less' || mode === 'stylus';
+    const res = [];
+    for (const w of raw.warnings) {
+      const msg = w.text.match(/^(?:Unexpected\s+)?(.*?)\s*\([^()]+\)$|$/)[1] || w.text;
+      if (!slashCommentAllowed || !(
+          w.rule === 'no-invalid-double-slash-comments' ||
+          w.rule === 'property-no-unknown' && msg.includes('"//"')
+      )) {
+        res.push({
+          from: {line: w.line - 1, ch: w.column - 1},
+          to: {line: w.line - 1, ch: w.column},
+          message: msg.slice(0, 1).toUpperCase() + msg.slice(1),
+          severity: w.severity,
+          rule: w.rule,
+        });
+      }
+    }
+    return res;
   }
 
   function csslint(text, config) {

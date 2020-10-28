@@ -10,9 +10,11 @@ workerUtil.createAPI({
     return CSSLint.verify(code, config).messages
       .map(m => Object.assign(m, {rule: {id: m.rule.id}}));
   },
-  stylelint: (code, config) => {
+  stylelint: async (code, config) => {
     loadScript('/vendor/stylelint-bundle/stylelint-bundle.min.js');
-    return require('stylelint').lint({code, config});
+    const {results: [res]} = await require('stylelint').lint({code, config});
+    delete res._postcssResult; // huge and unused
+    return res;
   },
   metalint: code => {
     loadScript(
