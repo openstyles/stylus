@@ -210,10 +210,10 @@
     $formatChangeButton.title = opt.tooltipForSwitcher || '';
     maxHeight = `${opt.maxHeight || 300}px`;
 
-    $root.className = $root.className.replace(new RegExp(CSS_PREFIX + 'theme-\\S+\\s*'), '') +
-      ' ' + CSS_PREFIX + 'theme-' +
-      (opt.theme === 'dark' || opt.theme === 'light' ? opt.theme :
-        guessTheme());
+    $root.className = [...$root.classList]
+      .filter(c => !c.startsWith(`${CSS_PREFIX}theme-`))
+      .concat(`${CSS_PREFIX}theme-${['dark', 'light'].includes(opt.theme) ? opt.theme : guessTheme()}`)
+      .join(' ');
 
     document.body.appendChild($root);
     shown = true;
@@ -221,21 +221,9 @@
     registerEvents();
     setFromColor(opt.color);
     setFromHexLettercaseElement();
-
     if (Array.isArray(options.palette)) {
-      // Might need to clear a lot of elements so this is known to be faster than textContent = ''
-      while ($palette.firstChild) $palette.firstChild.remove();
-      $palette.append(...options.palette);
-      if (options.palette.length) {
-        $root.dataset.resizable = '';
-        $root.addEventListener('mousedown', onPopupResizeStart);
-        fitPaletteHeight();
-      } else {
-        delete $root.dataset.resizable;
-        $root.removeEventListener('mousedown', onPopupResizeStart);
-      }
+      renderPalette();
     }
-
     if (!isNaN(options.left) && !isNaN(options.top)) {
       reposition();
     }
@@ -827,6 +815,21 @@
     const top = constrain(0, Math.max(0, maxTopUnobscured), options.top);
     $root.style.left = left + 'px';
     $root.style.top = top + 'px';
+    $root.style.transform = '';
+  }
+
+  function renderPalette() {
+    // Might need to clear a lot of elements so this is known to be faster than textContent = ''
+    while ($palette.firstChild) $palette.firstChild.remove();
+    $palette.append(...options.palette);
+    if (options.palette.length) {
+      $root.dataset.resizable = '';
+      $root.addEventListener('mousedown', onPopupResizeStart);
+      fitPaletteHeight();
+    } else {
+      delete $root.dataset.resizable;
+      $root.removeEventListener('mousedown', onPopupResizeStart);
+    }
   }
 
   function fitPaletteHeight() {
