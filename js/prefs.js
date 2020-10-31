@@ -1,5 +1,5 @@
 /* global promisifyChrome msg API */
-/* global deepCopy deepEqual debounce */ // not used in content scripts
+/* global deepCopy debounce */ // not used in content scripts
 'use strict';
 
 // eslint-disable-next-line no-unused-expressions
@@ -149,7 +149,7 @@ window.INJECTED !== 1 && (() => {
         if (type === 'number') value = Number(value) || 0;
         if (type === 'boolean') value = Boolean(value);
       }
-      if (value !== oldValue && !deepEqual(value, oldValue)) {
+      if (value !== oldValue && !simpleDeepEqual(value, oldValue)) {
         values[key] = value;
         emitChange(key, value, isSynced);
       }
@@ -229,5 +229,11 @@ window.INJECTED !== 1 && (() => {
 
   function updateStorage() {
     return browser.storage.sync.set({[STORAGE_KEY]: values});
+  }
+
+  function simpleDeepEqual(a, b) {
+    return !a || !b || typeof a !== 'object' || typeof b !== 'object' ? a === b :
+      Object.keys(a).length === Object.keys(b).length &&
+      Object.keys(a).every(key => b.hasOwnProperty(key) && simpleDeepEqual(a[key], b[key]));
   }
 })();
