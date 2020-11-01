@@ -296,8 +296,8 @@ function onRuntimeMessage(msg, sender) {
   if (!fn) {
     throw new Error(`unknown API: ${msg.name}`);
   }
-  const context = {msg, sender};
-  return fn.apply(context, msg.args);
+  const res = fn.apply({msg, sender}, msg.args);
+  return res === undefined ? null : res;
 }
 
 function openEditor(params) {
