@@ -3,7 +3,7 @@ html {
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background-color: none;
+  background: none;
 }
 
 body {
@@ -164,7 +164,7 @@ label,
 label > :first-child {
   margin-right: 8px;
   flex-grow: 1;
-  transition: text-shadow: .1s;
+  transition: text-shadow .1s;
 }
 
 label:not([disabled]),
