@@ -725,9 +725,11 @@ self.parserlib = (() => {
       },
 
       '<angle>': part => part.type === 'angle',
+      '<angle-or-0>': p => p.type === 'angle' || p.text === '0',
 
       '<aspect-ratio>': part => part.units && lowerCmp(part.units, 'ar'),
 
+      '<attr>': p => p.type === 'function' && lowerCmp(p.name, 'attr'),
       '<attr-fallback>': part => !/\battr\(/i.test(part.text),
 
       '<attachment>': 'scroll | fixed | local',
@@ -1153,7 +1155,7 @@ self.parserlib = (() => {
       'contrast':    '<number-percentage>',
       'drop-shadow': '<length>{2,3} && <color>?',
       'grayscale':   '<number-percentage>',
-      'hue-rotate':  '<angle> | <zero>',
+      'hue-rotate':  '<angle-or-0>',
       'invert':      '<number-percentage>',
       'opacity':     '<number-percentage>',
       'saturate':    '<number-percentage>',
@@ -1172,17 +1174,17 @@ self.parserlib = (() => {
       'scale':      '<number> [ , <number> ]?',
       'scaleX':     '<number>',
       'scaleY':     '<number>',
-      'rotate':     '[ <angle> | <zero> ]',
-      'skew':       '[ <angle> | <zero> ] [ , [ <angle> | <zero> ] ]?',
-      'skewX':      '[ <angle> | <zero> ]',
-      'skewY':      '[ <angle> | <zero> ]',
+      'rotate':     '<angle-or-0>',
+      'skew':       '<angle-or-0> [ , <angle-or-0> ]?',
+      'skewX':      '<angle-or-0>',
+      'skewY':      '<angle-or-0>',
 
       'matrix3d':    '<number>#{16}',
       'translate3d': '<length-percentage>#{2} , <length>',
       'translateZ':  '<length>',
       'scale3d':     '<number>#{3}',
       'scaleZ':      '<number>',
-      'rotate3d':    '<number>#{3} , [ <angle> | <zero> ]',
+      'rotate3d':    '<number>#{3} , <angle-or-0>',
     },
 
     functionsMayBeEmpty: new Set([
@@ -2728,18 +2730,18 @@ self.parserlib = (() => {
     },
 
     /**
-     * @param {PropertyValueIterator} expression
+     * @param {PropertyValueIterator} expr
      * @param {string} type
      * @return {?boolean}
      */
-    isType(expression, type) {
-      const part = expression.peek();
+    isType(expr, type) {
+      const part = expr.peek();
       let result, m;
 
       if (this.simple['<var>'](part)) {
-        if (expression._i < expression._parts.length - 1) {
-          expression.mark().next();
-          expression.popMark(ValidationTypes.isType(expression, type));
+        if (expr._i < expr._parts.length - 1) {
+          expr.mark().next();
+          expr.popMark(ValidationTypes.isType(expr, type));
         }
         result = true;
 
@@ -2752,14 +2754,14 @@ self.parserlib = (() => {
       } else {
         m = this.complex[type];
         return m instanceof Matcher ?
-          m.match(expression) :
-          m.call(this.complex, expression);
+          m.match(expr) :
+          m.call(this.complex, expr);
       }
 
-      if (!result && part.type === 'function' && lowerCmp(part.name, 'attr')) {
+      if (!result && expr.tryAttr && part.type === 'function' && lowerCmp(part.name, 'attr')) {
         result = ValidationTypes.isFunction('attr', part);
       }
-      if (result) expression.next();
+      if (result) expr.next();
       return result;
     },
 
@@ -2823,21 +2825,30 @@ self.parserlib = (() => {
     if (!spec) throw new ValidationError(`Unknown property '${property}'.`, property);
 
     // Property-specific validation.
-    const expression = new PropertyValueIterator(value);
-    const result = Matcher.parse(spec).match(expression);
-
-    const hasNext = expression.hasNext();
-    if (result) {
-      if (hasNext) throwEndExpected(expression.next());
-
-    } else {
-      if (hasNext && expression._i) {
-        throwEndExpected(expression.peek());
-      } else {
-        const {text} = expression.value;
-        throw new ValidationError(`Expected '${ValidationTypes.describe(spec)}' but found '${text}'.`,
-          expression.value);
+    const expr = new PropertyValueIterator(value);
+    const tryAttr = /\battr\(/i.test(value.text);
+    const m = Matcher.parse(spec);
+    let result = m.match(expr);
+    if (tryAttr) {
+      if (!result) {
+        expr.tryAttr = true;
+        expr._i = 0;
+        result = m.match(expr);
       }
+      while (expr.hasNext() &&
+          ValidationTypes.simple['<attr>'](expr.peek()) &&
+          ValidationTypes.isFunction('attr', expr.peek())) {
+        expr.next();
+      }
+    }
+    if (result) {
+      if (expr.hasNext()) throwEndExpected(expr.next());
+    } else if (expr.hasNext() && expr._i) {
+      throwEndExpected(expr.peek());
+    } else {
+      const {text} = expr.value;
+      throw new ValidationError(`Expected '${ValidationTypes.describe(spec)}' but found '${text}'.`,
+        expr.value);
     }
 
     if (!known) validationCache.set(prop, (known = new Set()));
