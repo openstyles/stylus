@@ -143,14 +143,14 @@ window.INJECTED !== 1 && (() => {
           bg = await browser.runtime.getBackgroundPage().catch(() => {});
         }
         const message = {method: 'invokeAPI', name, args};
-        // content scripts, frames and probably private tabs
-        if (!bg || window !== parent) {
+        // content scripts and probably private tabs
+        if (!bg) {
           return msg.send(message);
         }
         // in FF, the object would become a dead object when the window
         // is closed, so we have to clone the object into background.
         const res = bg.msg._execute(TARGETS.extension, bg.deepCopy(message), {
-          frameId: 0,
+          frameId: 0, // false in case of our Options frame but we really want to fetch styles early
           tab: NEEDS_TAB_IN_SENDER.includes(name) && await getOwnTab(),
           url: location.href,
         });
