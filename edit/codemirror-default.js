@@ -172,8 +172,9 @@
   elBookmark.textContent = '\u00A0';
   const clearMarker = function () {
     const line = this.lines[0];
-    CodeMirror.TextMarker.prototype.clear.apply(this);
-    if (!line.markedSpans.some(span => span.marker.sublimeBookmark)) {
+    delete this.clear; // removing our patch from the instance...
+    this.clear(); // ...and using the original prototype
+    if (!(line.markedSpans || []).some(span => span.marker.sublimeBookmark)) {
       this.doc.setGutterMarker(line, CM_BOOKMARK_GUTTER, null);
     }
   };
