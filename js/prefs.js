@@ -140,18 +140,19 @@ window.INJECTED !== 1 && (() => {
     get(key) {
       return isKnown(key) && values[key];
     },
-    set(key, value, isSynced) {
+    set(key, val, isSynced) {
       if (!isKnown(key)) return;
       const oldValue = values[key];
       const type = typeof defaults[key];
-      if (type !== typeof value) {
-        if (type === 'string') value = String(value);
-        if (type === 'number') value = Number(value) || 0;
-        if (type === 'boolean') value = Boolean(value);
+      if (type !== typeof val) {
+        if (type === 'string') val = String(val);
+        if (type === 'number') val = Number(val) || 0;
+        if (type === 'boolean') val = val === 'true' || val !== 'false' && Boolean(val);
+        // 'true' and 'false' strings are used by manage.html in `.invert` elements
       }
-      if (value !== oldValue && !simpleDeepEqual(value, oldValue)) {
-        values[key] = value;
-        emitChange(key, value, isSynced);
+      if (val !== oldValue && !simpleDeepEqual(val, oldValue)) {
+        values[key] = val;
+        emitChange(key, val, isSynced);
       }
     },
     reset(key) {
