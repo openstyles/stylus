@@ -44,8 +44,6 @@ window.addEventListener('showStyles:done', () => {
   let totalPages = 1;
   let ready;
 
-  calcCategory();
-
   const $class = sel => (sel instanceof Node ? sel : $(sel)).classList;
   const show = sel => $class(sel).remove('hidden');
   const hide = sel => $class(sel).add('hidden');
@@ -54,6 +52,8 @@ window.addEventListener('showStyles:done', () => {
     href: URLS.usoArchive,
     onclick(event) {
       if (!prefs.get('popup.findStylesInline') || dom.container) {
+        // use a less specific category if the inline search wasn't used yet
+        if (!category) calcCategory({retry: 1});
         this.search = new URLSearchParams({category, search: $('#search-query').value});
         handleEvent.openURLandHide.call(this, event);
         return;
@@ -62,6 +62,7 @@ window.addEventListener('showStyles:done', () => {
       this.textContent = this.title;
       this.title = '';
       init();
+      calcCategory();
       ready = start();
     },
   });
