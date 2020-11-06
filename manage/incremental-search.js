@@ -94,17 +94,21 @@ onDOMready().then(() => {
       $('#search').focus();
       return;
     }
-    if (ctrl || inTextInput ||
-        key === ' ' && !input.value /* Space or Shift-Space is for page down/up */) {
+    if (ctrl || inTextInput && event.target !== input) {
       return;
     }
     const time = performance.now();
     if (key.length === 1) {
-      input.focus();
       if (time - prevTime > 1000) {
         input.value = '';
       }
-      prevTime = time;
+      // Space or Shift-Space is for page down/up
+      if (key === ' ' && !input.value) {
+        input.blur();
+      } else {
+        input.focus();
+        prevTime = time;
+      }
     } else
     if (key === 'Enter' && focusedLink) {
       focusedLink.dispatchEvent(new MouseEvent('click', {bubbles: true}));
