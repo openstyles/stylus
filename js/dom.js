@@ -134,27 +134,31 @@ function scrollElementIntoView(element, {invalidMarginRatio = 0} = {}) {
 }
 
 
-function animateElement(
-  element, {
-    className = 'highlight',
-    removeExtraClasses = [],
-    onComplete,
-  } = {}) {
-  return element && new Promise(resolve => {
-    element.addEventListener('animationend', () => {
-      element.classList.remove(
-        className,
-        // In Firefox, `resolve()` might be called one frame later.
-        // This is helpful to clean-up on the same frame
-        ...removeExtraClasses
-      );
-      // TODO: investigate why animation restarts for 'display' modification in .then()
-      if (typeof onComplete === 'function') {
-        onComplete.call(element);
-      }
+/**
+ * @param {HTMLElement} el
+ * @param {string} [cls] - class name that defines or starts an animation
+ * @param [removeExtraClasses] - class names to remove at animation end in the *same* paint frame,
+ *        which is needed in e.g. Firefox as it may call resolve() in the next frame
+ * @returns {Promise<void>}
+ */
+function animateElement(el, cls = 'highlight', ...removeExtraClasses) {
+  return !el ? Promise.resolve(el) : new Promise(resolve => {
+    let onDone = () => {
+      el.classList.remove(cls, ...removeExtraClasses);
+      onDone = null;
       resolve();
-    }, {once: true});
-    element.classList.add(className);
+    };
+    requestAnimationFrame(() => {
+      if (onDone) {
+        const style = getComputedStyle(el);
+        if (style.animationName === 'none' || !parseFloat(style.animationDuration)) {
+          el.removeEventListener('animationend', onDone);
+          onDone();
+        }
+      }
+    });
+    el.addEventListener('animationend', onDone, {once: true});
+    el.classList.add(cls);
   });
 }
 

@@ -69,7 +69,7 @@ onDOMready().then(() => {
       focusedLink = $('.style-name-link', found);
       focusedName = found.styleNameLowerCase;
       scrollElementIntoView(found, {invalidMarginRatio: .25});
-      animateElement(found, {className: 'highlight-quick'});
+      animateElement(found, 'highlight-quick');
       replaceInlineStyle({
         width: focusedLink.offsetWidth + 'px',
         height: focusedLink.offsetHeight + 'px',

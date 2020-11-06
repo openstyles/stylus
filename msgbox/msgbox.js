@@ -94,10 +94,8 @@ function messageBox({
   function resolveWith(value) {
     unbindGlobalListeners();
     setTimeout(messageBox.resolve, 0, value);
-    animateElement(messageBox.element, {
-      className: 'fadeout',
-      onComplete: removeSelf,
-    });
+    animateElement(messageBox.element, 'fadeout')
+      .then(removeSelf);
     if (messageBox.element.contains(document.activeElement)) {
       messageBox.originalFocus.focus();
     }

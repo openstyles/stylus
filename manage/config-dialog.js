@@ -70,7 +70,6 @@ function configDialog(style) {
 
     if (isPopup) {
       adjustSizeForPopup(box);
-      box.style.animationDuration = '0s';
     }
 
     box.addEventListener('change', onchange);

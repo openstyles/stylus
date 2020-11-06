@@ -495,10 +495,8 @@ Object.assign(handleEvent, {
     const menuActive = $('.menu[data-display=true]');
     if (menuActive) {
       // fade-out style menu
-      animateElement(menu, {
-        className: 'lights-on',
-        onComplete: () => (menu.dataset.display = false),
-      });
+      animateElement(menu, 'lights-on')
+        .then(() => (menu.dataset.display = false));
       window.onkeydown = null;
     } else {
       $('.menu-title', entry).textContent = $('.style-name', entry).textContent;
@@ -567,10 +565,8 @@ Object.assign(handleEvent, {
     function confirm(ok) {
       if (ok) {
         // fade-out deletion confirmation dialog
-        animateElement(box, {
-          className: 'lights-on',
-          onComplete: () => (box.dataset.display = false),
-        });
+        animateElement(box, 'lights-on')
+          .then(() => (box.dataset.display = false));
         window.onkeydown = null;
         API.deleteStyle(id);
       } else {

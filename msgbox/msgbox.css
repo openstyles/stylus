@@ -12,6 +12,10 @@
   -moz-user-select: none;
 }
 
+#stylus-popup #message-box {
+  animation: none;
+}
+
 #message-box > div {
   top: 3rem;
   right: 3rem;

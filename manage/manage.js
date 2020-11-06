@@ -728,15 +728,13 @@ function embedOptions() {
   options.focus();
 }
 
-function unembedOptions() {
+async function unembedOptions() {
   const options = $('#stylus-embedded-options');
   if (options) {
     options.contentWindow.document.body.classList.add('scaleout');
     options.classList.add('fadeout');
-    animateElement(options, {
-      className: 'fadeout',
-      onComplete: () => options.remove(),
-    });
+    await animateElement(options, 'fadeout');
+    options.remove();
   }
 }
 

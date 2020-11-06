@@ -21,10 +21,9 @@ onDOMready().then(() => {
         this.classList.remove('fadeout');
       }
     },
-    ondragend() {
-      animateElement(this, {className: 'fadeout', removeExtraClasses: ['dropzone']}).then(() => {
-        this.style.animationDuration = '';
-      });
+    async ondragend() {
+      await animateElement(this, 'fadeout', 'dropzone');
+      this.style.animationDuration = '';
     },
     ondragleave(event) {
       try {
