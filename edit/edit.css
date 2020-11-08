@@ -773,13 +773,15 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 #lint tr:hover {
   background-color: hsla(180, 50%, 36%, .2);
 }
+#lint td {
+  padding: 0;
+}
 #lint td[role="severity"] {
   font-size: 0;
   width: 16px;
 }
 #lint td[role="line"], #lint td[role="sep"] {
   text-align: right;
-  padding-right: 0;
 }
 #lint td[role="col"] {
   text-align: left;
