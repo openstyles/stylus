@@ -7,21 +7,18 @@ if (!/^Win\d+/.test(navigator.platform)) {
   document.documentElement.classList.add('non-windows');
 }
 
-// make querySelectorAll enumeration code readable
-// FIXME: avoid extending native?
-['forEach', 'some', 'indexOf', 'map'].forEach(method => {
-  NodeList.prototype[method] = Array.prototype[method];
+Object.assign(EventTarget.prototype, {
+  on: addEventListener,
+  off: removeEventListener,
+  /** args: [el:EventTarget, type:string, fn:function, ?opts] */
+  onOff(enable, ...args) {
+    (enable ? addEventListener : removeEventListener).apply(this, args);
+  },
 });
 
-// polyfill for old browsers to enable [...results] and for-of
-for (const type of [NodeList, NamedNodeMap, HTMLCollection, HTMLAllCollection]) {
-  if (!type.prototype[Symbol.iterator]) {
-    type.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
-  }
-}
-
-$.isTextLikeInput = el =>
-    el.localName === 'input' && /^(text|search|number)$/.test(el.type);
+$.isTextInput = (el = {}) =>
+  el.localName === 'textarea' ||
+  el.localName === 'input' && /^(text|search|number)$/.test(el.type);
 
 $.remove = (selector, base = document) => {
   const el = selector && typeof selector === 'string' ? $(selector, base) : selector;
@@ -61,7 +58,7 @@ $$.remove = (selector, base = document) => {
   setTimeout(addTooltipsToEllipsized, 500);
   // throttle on continuous resizing
   let timer;
-  window.addEventListener('resize', () => {
+  window.on('resize', () => {
     clearTimeout(timer);
     timer = setTimeout(addTooltipsToEllipsized, 100);
   });
@@ -89,13 +86,13 @@ onDOMready().then(() => {
 // set language for CSS :lang and [FF-only] hyphenation
 document.documentElement.setAttribute('lang', chrome.i18n.getUILanguage());
 // avoid adding # to the page URL when clicking dummy links
-document.addEventListener('click', e => {
+document.on('click', e => {
   if (e.target.closest('a[href="#"]')) {
     e.preventDefault();
   }
 });
 // update inputs on mousewheel when focused
-document.addEventListener('wheel', event => {
+document.on('wheel', event => {
   const el = document.activeElement;
   if (!el || el !== event.target && !el.contains(event.target)) {
     return;
@@ -117,7 +114,7 @@ document.addEventListener('wheel', event => {
 function onDOMready() {
   return document.readyState !== 'loading'
     ? Promise.resolve()
-    : new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve, {once: true}));
+    : new Promise(resolve => document.on('DOMContentLoaded', resolve, {once: true}));
 }
 
 
@@ -152,12 +149,12 @@ function animateElement(el, cls = 'highlight', ...removeExtraClasses) {
       if (onDone) {
         const style = getComputedStyle(el);
         if (style.animationName === 'none' || !parseFloat(style.animationDuration)) {
-          el.removeEventListener('animationend', onDone);
+          el.off('animationend', onDone);
           onDone();
         }
       }
     });
-    el.addEventListener('animationend', onDone, {once: true});
+    el.on('animationend', onDone, {once: true});
     el.classList.add(cls);
   });
 }
@@ -175,8 +172,8 @@ function enforceInputRange(element) {
       doNotify();
     }
   };
-  element.addEventListener('change', onChange);
-  element.addEventListener('input', onChange);
+  element.on('change', onChange);
+  element.on('input', onChange);
 }
 
 
@@ -320,7 +317,7 @@ function initCollapsibles({bindClickOn = 'h2'} = {}) {
     const key = el.dataset.pref;
     prefMap[key] = el;
     el.open = prefs.get(key);
-    (bindClickOn && $(bindClickOn, el) || el).addEventListener('click', onClick);
+    (bindClickOn && $(bindClickOn, el) || el).on('click', onClick);
   }
 
   prefs.subscribe(Object.keys(prefMap), (key, value) => {
@@ -339,7 +336,7 @@ function initCollapsibles({bindClickOn = 'h2'} = {}) {
   }
 
   function saveState(el) {
-    if (!el.classList.contains('ignore-pref')) {
+    if (!el.matches('.compact-layout .ignore-pref-if-compact')) {
       prefs.set(el.dataset.pref, el.open);
     }
   }
@@ -349,58 +346,41 @@ function initCollapsibles({bindClickOn = 'h2'} = {}) {
 function focusAccessibility() {
   // last event's focusedViaClick
   focusAccessibility.lastFocusedViaClick = false;
-  // tags of focusable elements;
-  // to avoid a full layout recalc we modify the closest one
-  focusAccessibility.ELEMENTS = [
-    'a',
-    'button',
-    'input',
-    'label',
-    'select',
-    'summary',
-  ];
-  // try to find a focusable parent for this many parentElement jumps:
-  const GIVE_UP_DEPTH = 4;
-  // allow outline on text/search inputs in addition to textareas
-  const isOutlineAllowed = el =>
-    !focusAccessibility.ELEMENTS.includes(el.localName) ||
-    $.isTextLikeInput(el);
-
-  addEventListener('mousedown', suppressOutlineOnClick, {passive: true});
-  addEventListener('keydown', keepOutlineOnTab, {passive: true});
-
-  function suppressOutlineOnClick({target}) {
-    for (let el = target, i = 0; el && i++ < GIVE_UP_DEPTH; el = el.parentElement) {
-      if (!isOutlineAllowed(el)) {
-        focusAccessibility.lastFocusedViaClick = true;
-        if (el.dataset.focusedViaClick === undefined) {
-          el.dataset.focusedViaClick = '';
-        }
-        return;
+  // to avoid a full layout recalc due to changes on body/root
+  // we modify the closest focusable element (like input or button or anything with tabindex=0)
+  focusAccessibility.closest = el => {
+    let labelSeen;
+    for (; el; el = el.parentElement) {
+      if (el.localName === 'label' && el.control && !labelSeen) {
+        el = el.control;
+        labelSeen = true;
+      }
+      if (el.tabIndex >= 0) return el;
+    }
+  };
+  // suppress outline on click
+  window.on('mousedown', ({target}) => {
+    const el = focusAccessibility.closest(target);
+    if (el) {
+      focusAccessibility.lastFocusedViaClick = true;
+      if (el.dataset.focusedViaClick === undefined) {
+        el.dataset.focusedViaClick = '';
       }
     }
-  }
-
-  function keepOutlineOnTab(event) {
-    if (event.key === 'Tab') {
+  }, {passive: true});
+  // keep outline on Tab or Shift-Tab key
+  window.on('keydown', event => {
+    if (event.key === 'Tab' && !event.ctrlKey && !event.altKey && !event.metaKey) {
       focusAccessibility.lastFocusedViaClick = false;
-      setTimeout(keepOutlineOnTab, 0, true);
-      return;
-    } else if (event !== true) {
-      return;
+      setTimeout(() => {
+        let el = document.activeElement;
+        if (el) {
+          el = el.closest('[data-focused-via-click]');
+          if (el) delete el.dataset.focusedViaClick;
+        }
+      });
     }
-    let el = document.activeElement;
-    if (!el || isOutlineAllowed(el)) {
-      return;
-    }
-    if (el.dataset.focusedViaClick !== undefined) {
-      delete el.dataset.focusedViaClick;
-    }
-    el = el.closest('[data-focused-via-click]');
-    if (el) {
-      delete el.dataset.focusedViaClick;
-    }
-  }
+  }, {passive: true});
 }
 
 /**
@@ -437,7 +417,7 @@ function setupLivePrefs(
   for (const id of IDs) {
     const element = $('#' + id);
     updateElement({id, element, force: true});
-    element.addEventListener('change', onChange);
+    element.on('change', onChange);
   }
   prefs.subscribe(IDs, (id, value) => updateElement({id, value}));
 

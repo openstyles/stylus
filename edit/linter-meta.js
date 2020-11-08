@@ -2,8 +2,11 @@
 /* exported createMetaCompiler */
 'use strict';
 
-function createMetaCompiler(cm) {
-  const updateListeners = [];
+/**
+ * @param {CodeMirror} cm
+ * @param {function(meta:Object)} onUpdated
+ */
+function createMetaCompiler(cm, onUpdated) {
   let meta = null;
   let metaIndex = null;
   let cache = [];
@@ -22,9 +25,7 @@ function createMetaCompiler(cm) {
     return editorWorker.metalint(match[0])
       .then(({metadata, errors}) => {
         if (errors.every(err => err.code === 'unknownMeta')) {
-          for (const cb of updateListeners) {
-            cb(metadata);
-          }
+          onUpdated(metadata);
         }
         cache = errors.map(err =>
           ({
@@ -40,8 +41,4 @@ function createMetaCompiler(cm) {
         return cache;
       });
   });
-
-  return {
-    onUpdated: cb => updateListeners.push(cb)
-  };
 }

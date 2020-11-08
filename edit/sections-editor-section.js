@@ -1,112 +1,43 @@
-/* global template cmFactory $ propertyToCss CssToProperty linter regExpTester
-  FIREFOX toggleContextMenuDelete initBeautifyButton showHelp t tryRegExp */
-/* exported createSection */
+/* global
+  $
+  cmFactory
+  debounce
+  DocFuncMapper
+  editor
+  initBeautifyButton
+  linter
+  prefs
+  regExpTester
+  t
+  template
+  trimCommentLabel
+  tryRegExp
+*/
 'use strict';
 
-function createResizeGrip(cm) {
-  const wrapper = cm.display.wrapper;
-  wrapper.classList.add('resize-grip-enabled');
-  const resizeGrip = template.resizeGrip.cloneNode(true);
-  wrapper.appendChild(resizeGrip);
-  let lastClickTime = 0;
-  let initHeight;
-  let initY;
-  resizeGrip.onmousedown = event => {
-    initHeight = wrapper.offsetHeight;
-    initY = event.pageY;
-    if (event.button !== 0) {
-      return;
-    }
-    event.preventDefault();
-    if (Date.now() - lastClickTime < 500) {
-      lastClickTime = 0;
-      toggleSectionHeight(cm);
-      return;
-    }
-    lastClickTime = Date.now();
-    const minHeight = cm.defaultTextHeight() +
-      /* .CodeMirror-lines padding */
-      cm.display.lineDiv.offsetParent.offsetTop +
-      /* borders */
-      wrapper.offsetHeight - wrapper.clientHeight;
-    wrapper.style.pointerEvents = 'none';
-    document.body.style.cursor = 's-resize';
-    document.addEventListener('mousemove', resize);
-    document.addEventListener('mouseup', resizeStop);
+/* exported createSection */
 
-    function resize(e) {
-      const height = Math.max(minHeight, initHeight + e.pageY - initY);
-      if (height !== wrapper.offsetHeight) {
-        cm.setSize(null, height);
-      }
-    }
-
-    function resizeStop() {
-      document.removeEventListener('mouseup', resizeStop);
-      document.removeEventListener('mousemove', resize);
-      wrapper.style.pointerEvents = '';
-      document.body.style.cursor = '';
-    }
-  };
-
-  function toggleSectionHeight(cm) {
-    if (cm.state.toggleHeightSaved) {
-      // restore previous size
-      cm.setSize(null, cm.state.toggleHeightSaved);
-      cm.state.toggleHeightSaved = 0;
-    } else {
-      // maximize
-      const wrapper = cm.display.wrapper;
-      const allBounds = $('#sections').getBoundingClientRect();
-      const pageExtrasHeight = allBounds.top + window.scrollY +
-        parseFloat(getComputedStyle($('#sections')).paddingBottom);
-      const sectionEl = wrapper.parentNode;
-      const sectionExtrasHeight = sectionEl.clientHeight - wrapper.offsetHeight;
-      cm.state.toggleHeightSaved = wrapper.clientHeight;
-      cm.setSize(null, window.innerHeight - sectionExtrasHeight - pageExtrasHeight);
-      const bounds = sectionEl.getBoundingClientRect();
-      if (bounds.top < 0 || bounds.bottom > window.innerHeight) {
-        window.scrollBy(0, bounds.top);
-      }
-    }
-  }
-}
-
-function createSection({
-  // data model
-  originalSection,
-  dirty,
-  // util
-  nextEditor,
-  prevEditor,
-  genId,
-  // emit events
-  // TODO: better names like `onRemoved`? Or make a real event emitter.
-  showMozillaFormatImport,
-  removeSection,
-  insertSectionAfter,
-  moveSectionUp,
-  moveSectionDown,
-  restoreSection,
-}) {
+/** @returns {EditorSection} */
+function createSection(originalSection, genId) {
+  const {dirty} = editor;
   const sectionId = genId();
   const el = template.section.cloneNode(true);
+  const elLabel = $('.code-label', el);
   const cm = cmFactory.create(wrapper => {
-    el.insertBefore(wrapper, $('.code-label', el).nextSibling);
-  }, {value: originalSection.code});
+    // making it tall during initial load so IntersectionObserver sees only one adjacent CM
+    wrapper.style.height = '100vh';
+    elLabel.after(wrapper);
+  }, {
+    value: originalSection.code,
+  });
   el.CodeMirror = cm; // used by getAssociatedEditor
 
   const changeListeners = new Set();
 
   const appliesToContainer = $('.applies-to-list', el);
   const appliesTo = [];
-  for (const [key, fnName] of Object.entries(propertyToCss)) {
-    if (originalSection[key]) {
-      originalSection[key].forEach(value =>
-        insertApplyAfter({type: fnName, value})
-      );
-    }
-  }
+  DocFuncMapper.forEachProp(originalSection, (type, value) =>
+    insertApplyAfter({type, value}));
   if (!appliesTo.length) {
     insertApplyAfter({all: true});
   }
@@ -118,53 +49,60 @@ function createSection({
   updateRegexpTester();
   createResizeGrip(cm);
 
-  linter.enableForEditor(cm);
-
+  /** @namespace EditorSection */
   const section = {
     id: sectionId,
     el,
     cm,
-    render,
-    getModel,
-    remove,
-    destroy,
-    restore,
-    isRemoved: () => removed,
-    onChange,
-    off,
-    appliesTo
+    appliesTo,
+    getModel() {
+      const items = appliesTo.map(a => !a.all && [a.type, a.value]);
+      return DocFuncMapper.toSection(items, {code: cm.getValue()});
+    },
+    remove() {
+      linter.disableForEditor(cm);
+      el.classList.add('removed');
+      removed = true;
+      appliesTo.forEach(a => a.remove());
+    },
+    render() {
+      cm.refresh();
+    },
+    destroy() {
+      cmFactory.destroy(cm);
+    },
+    restore() {
+      linter.enableForEditor(cm);
+      el.classList.remove('removed');
+      removed = false;
+      appliesTo.forEach(a => a.restore());
+      cm.refresh();
+    },
+    onChange(fn) {
+      changeListeners.add(fn);
+    },
+    off(fn) {
+      changeListeners.delete(fn);
+    },
+    get removed() {
+      return removed;
+    },
+    tocEntry: {
+      label: '',
+      get removed() {
+        return removed;
+      },
+    },
   };
+
+  prefs.subscribe('editor.toc.expanded', updateTocPrefToggled, {now: true});
+
   return section;
 
-  function onChange(fn) {
-    changeListeners.add(fn);
-  }
-
-  function off(fn) {
-    changeListeners.delete(fn);
-  }
-
-  function emitSectionChange() {
+  function emitSectionChange(origin) {
     for (const fn of changeListeners) {
-      fn();
+      fn(origin);
     }
-  }
-
-  function getModel() {
-    const section = {
-      code: cm.getValue()
-    };
-    for (const apply of appliesTo) {
-      if (apply.all) {
-        continue;
-      }
-      const key = CssToProperty[apply.getType()];
-      if (!section[key]) {
-        section[key] = [];
-      }
-      section[key].push(apply.getValue());
-    }
-    return section;
   }
 
   function registerEvents() {
@@ -172,35 +110,13 @@ function createSection({
       const newGeneration = cm.changeGeneration();
       dirty.modify(`section.${sectionId}.code`, changeGeneration, newGeneration);
       changeGeneration = newGeneration;
-      emitSectionChange();
+      emitSectionChange('code');
     });
-    cm.on('paste', (cm, event) => {
-      const text = event.clipboardData.getData('text') || '';
-      if (/@-moz-document/i.test(text) &&
-          /@-moz-document\s+(url|url-prefix|domain|regexp)\(/i
-            .test(text.replace(/\/\*([^*]|\*(?!\/))*(\*\/|$)/g, ''))
-      ) {
-        event.preventDefault();
-        showMozillaFormatImport(text);
-      }
-    });
-    if (!FIREFOX) {
-      cm.on('mousedown', (cm, event) => toggleContextMenuDelete.call(cm, event));
-    }
-    cm.display.wrapper.addEventListener('keydown', event =>
-      handleKeydown(cm, event), true);
-
-    $('.applies-to-help', el).addEventListener('click', showAppliesToHelp);
-    $('.remove-section', el).addEventListener('click', () => removeSection(section));
-    $('.add-section', el).addEventListener('click', () => insertSectionAfter(undefined, section));
-    $('.clone-section', el).addEventListener('click', () => insertSectionAfter(getModel(), section));
-    $('.move-section-up', el).addEventListener('click', () => moveSectionUp(section));
-    $('.move-section-down', el).addEventListener('click', () => moveSectionDown(section));
-    $('.restore-section', el).addEventListener('click', () => restoreSection(section));
-    $('.test-regexp', el).addEventListener('click', () => {
+    cm.display.wrapper.on('keydown', event => handleKeydown(cm, event), true);
+    $('.test-regexp', el).onclick = () => {
       regExpTester.toggle();
       updateRegexpTester();
-    });
+    };
     initBeautifyButton($('.beautify-section', el), () => [cm]);
   }
 
@@ -217,7 +133,7 @@ function createSection({
         }
       // fallthrough
       case 'ArrowUp':
-        cm = line === 0 && prevEditor(cm, false);
+        cm = line === 0 && editor.prevEditor(cm, false);
         if (!cm) {
           return;
         }
@@ -231,7 +147,7 @@ function createSection({
         }
       // fallthrough
       case 'ArrowDown':
-        cm = line === cm.doc.size - 1 && nextEditor(cm, false);
+        cm = line === cm.doc.size - 1 && editor.nextEditor(cm, false);
         if (!cm) {
           return;
         }
@@ -242,37 +158,9 @@ function createSection({
     }
   }
 
-  function showAppliesToHelp(event) {
-    event.preventDefault();
-    showHelp(t('appliesLabel'), t('appliesHelp'));
-  }
-
-  function remove() {
-    linter.disableForEditor(cm);
-    el.classList.add('removed');
-    removed = true;
-    appliesTo.forEach(a => a.remove());
-  }
-
-  function destroy() {
-    cmFactory.destroy(cm);
-  }
-
-  function restore() {
-    linter.enableForEditor(cm);
-    el.classList.remove('removed');
-    removed = false;
-    appliesTo.forEach(a => a.restore());
-    render();
-  }
-
-  function render() {
-    cm.refresh();
-  }
-
   function updateRegexpTester() {
-    const regexps = appliesTo.filter(a => a.getType() === 'regexp')
-      .map(a => a.getValue());
+    const regexps = appliesTo.filter(a => a.type === 'regexp')
+      .map(a => a.value);
     if (regexps.length) {
       el.classList.add('has-regexp');
       regExpTester.update(regexps);
@@ -280,6 +168,68 @@ function createSection({
       el.classList.remove('has-regexp');
       regExpTester.toggle(false);
     }
+  }
+
+  function updateTocEntry(origin) {
+    const te = section.tocEntry;
+    let changed;
+    if (origin === 'code' || !origin) {
+      const label = getLabelFromComment();
+      if (te.label !== label) {
+        te.label = elLabel.dataset.text = label;
+        changed = true;
+      }
+    }
+    if (!te.label) {
+      const target = appliesTo[0].all ? null : appliesTo[0].value;
+      if (te.target !== target) {
+        te.target = target;
+        changed = true;
+      }
+      if (te.numTargets !== appliesTo.length) {
+        te.numTargets = appliesTo.length;
+        changed = true;
+      }
+    }
+    if (changed) editor.updateToc([section]);
+  }
+
+  function updateTocEntryLazy(...args) {
+    debounce(updateTocEntry, 0, ...args);
+  }
+
+  function updateTocFocus() {
+    editor.updateToc({focus: true, 0: section});
+  }
+
+  function updateTocPrefToggled(key, val) {
+    changeListeners[val ? 'add' : 'delete'](updateTocEntryLazy);
+    el.onOff(val, 'focusin', updateTocFocus);
+    if (val) {
+      updateTocEntry();
+      if (el.contains(document.activeElement)) {
+        updateTocFocus();
+      }
+    }
+  }
+
+  function getLabelFromComment() {
+    let cmt = '';
+    let inCmt;
+    cm.eachLine(({text}) => {
+      let i = 0;
+      if (!inCmt) {
+        i = text.search(/\S/);
+        if (i < 0) return;
+        inCmt = text[i] === '/' && text[i + 1] === '*';
+        if (!inCmt) return true;
+        i += 2;
+      }
+      const j = text.indexOf('*/', i);
+      cmt = trimCommentLabel(text.slice(i, j >= 0 ? j : text.length));
+      return j >= 0 || cmt;
+    });
+    return cmt;
   }
 
   function insertApplyAfter(init, base) {
@@ -290,7 +240,7 @@ function createSection({
     if (appliesTo.length > 1 && appliesTo[0].all) {
       removeApply(appliesTo[0]);
     }
-    emitSectionChange();
+    emitSectionChange('apply');
     return apply;
   }
 
@@ -303,7 +253,7 @@ function createSection({
     if (!appliesTo.length) {
       insertApplyAfter({all: true});
     }
-    emitSectionChange();
+    emitSectionChange('apply');
   }
 
   function createApply({type = 'url', value, all = false}) {
@@ -315,14 +265,14 @@ function createSection({
     const selectEl = !all && $('.applies-type', el);
     if (selectEl) {
       selectEl.value = type;
-      selectEl.addEventListener('change', () => {
+      selectEl.on('change', () => {
         const oldType = type;
         dirty.modify(`${dirtyPrefix}.type`, type, selectEl.value);
         type = selectEl.value;
         if (oldType === 'regexp' || type === 'regexp') {
           updateRegexpTester();
         }
-        emitSectionChange();
+        emitSectionChange('apply');
         validate();
       });
     }
@@ -330,15 +280,15 @@ function createSection({
     const valueEl = !all && $('.applies-value', el);
     if (valueEl) {
       valueEl.value = value;
-      valueEl.addEventListener('input', () => {
+      valueEl.on('input', () => {
         dirty.modify(`${dirtyPrefix}.value`, value, valueEl.value);
         value = valueEl.value;
         if (type === 'regexp') {
           updateRegexpTester();
         }
-        emitSectionChange();
+        emitSectionChange('apply');
       });
-      valueEl.addEventListener('change', validate);
+      valueEl.on('change', validate);
     }
 
     restore();
@@ -349,19 +299,23 @@ function createSection({
       remove,
       restore,
       el,
-      getType: () => type,
-      getValue: () => value,
-      valueEl // used by validator
+      valueEl, // used by validator
+      get type() {
+        return type;
+      },
+      get value() {
+        return value;
+      },
     };
 
     const removeButton = $('.remove-applies-to', el);
     if (removeButton) {
-      removeButton.addEventListener('click', e => {
+      removeButton.on('click', e => {
         e.preventDefault();
         removeApply(apply);
       });
     }
-    $('.add-applies-to', el).addEventListener('click', e => {
+    $('.add-applies-to', el).on('click', e => {
       e.preventDefault();
       const newApply = insertApplyAfter({type, value: ''}, apply);
       $('input', newApply.el).focus();
@@ -392,6 +346,75 @@ function createSection({
       }
       dirty.add(`${dirtyPrefix}.type`, type);
       dirty.add(`${dirtyPrefix}.value`, value);
+    }
+  }
+}
+
+function createResizeGrip(cm) {
+  const wrapper = cm.display.wrapper;
+  wrapper.classList.add('resize-grip-enabled');
+  const resizeGrip = template.resizeGrip.cloneNode(true);
+  wrapper.appendChild(resizeGrip);
+  let lastClickTime = 0;
+  let initHeight;
+  let initY;
+  resizeGrip.onmousedown = event => {
+    initHeight = wrapper.offsetHeight;
+    initY = event.pageY;
+    if (event.button !== 0) {
+      return;
+    }
+    event.preventDefault();
+    if (Date.now() - lastClickTime < 500) {
+      lastClickTime = 0;
+      toggleSectionHeight(cm);
+      return;
+    }
+    lastClickTime = Date.now();
+    const minHeight = cm.defaultTextHeight() +
+      /* .CodeMirror-lines padding */
+      cm.display.lineDiv.offsetParent.offsetTop +
+      /* borders */
+      wrapper.offsetHeight - wrapper.clientHeight;
+    wrapper.style.pointerEvents = 'none';
+    document.body.style.cursor = 's-resize';
+    document.on('mousemove', resize);
+    document.on('mouseup', resizeStop);
+
+    function resize(e) {
+      const height = Math.max(minHeight, initHeight + e.pageY - initY);
+      if (height !== wrapper.offsetHeight) {
+        cm.setSize(null, height);
+      }
+    }
+
+    function resizeStop() {
+      document.off('mouseup', resizeStop);
+      document.off('mousemove', resize);
+      wrapper.style.pointerEvents = '';
+      document.body.style.cursor = '';
+    }
+  };
+
+  function toggleSectionHeight(cm) {
+    if (cm.state.toggleHeightSaved) {
+      // restore previous size
+      cm.setSize(null, cm.state.toggleHeightSaved);
+      cm.state.toggleHeightSaved = 0;
+    } else {
+      // maximize
+      const wrapper = cm.display.wrapper;
+      const allBounds = $('#sections').getBoundingClientRect();
+      const pageExtrasHeight = allBounds.top + window.scrollY +
+        parseFloat(getComputedStyle($('#sections')).paddingBottom);
+      const sectionEl = wrapper.parentNode;
+      const sectionExtrasHeight = sectionEl.clientHeight - wrapper.offsetHeight;
+      cm.state.toggleHeightSaved = wrapper.clientHeight;
+      cm.setSize(null, window.innerHeight - sectionExtrasHeight - pageExtrasHeight);
+      const bounds = sectionEl.getBoundingClientRect();
+      if (bounds.top < 0 || bounds.bottom > window.innerHeight) {
+        window.scrollBy(0, bounds.top);
+      }
     }
   }
 }

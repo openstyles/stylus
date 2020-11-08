@@ -1267,6 +1267,10 @@
     "message": "Restore removed section",
     "description": "Label for the button to restore a removed section"
   },
+  "sections": {
+    "message": "Sections",
+    "description": "Header for the table of contents block listing style section names in the left panel of the classic editor"
+  },
   "shortcuts": {
     "message": "Shortcuts",
     "description": "Go to shortcut configuration"

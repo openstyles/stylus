@@ -1,52 +1,72 @@
-/* global CodeMirror onDOMready prefs setupLivePrefs $ $$ $create t tHTML
-  createSourceEditor sessionStorageHash getOwnTab FIREFOX API tryCatch
-  closeCurrentTab messageBox debounce tryJSONparse
-  initBeautifyButton ignoreChromeError dirtyReporter linter
-  moveFocus msg createSectionsEditor rerouteHotkeys CODEMIRROR_THEMES */
-/* exported showCodeMirrorPopup editorWorker toggleContextMenuDelete */
+/* global
+  $
+  $$
+  $create
+  API
+  clipString
+  closeCurrentTab
+  CodeMirror
+  CODEMIRROR_THEMES
+  debounce
+  deepEqual
+  DirtyReporter
+  DocFuncMapper
+  FIREFOX
+  getOwnTab
+  initBeautifyButton
+  linter
+  messageBox
+  moveFocus
+  msg
+  onDOMready
+  prefs
+  rerouteHotkeys
+  SectionsEditor
+  sessionStorageHash
+  setupLivePrefs
+  SourceEditor
+  t
+  tHTML
+  tryCatch
+  tryJSONparse
+*/
 'use strict';
 
-// direct & reverse mapping of @-moz-document keywords and internal property names
-const propertyToCss = {urls: 'url', urlPrefixes: 'url-prefix', domains: 'domain', regexps: 'regexp'};
-const CssToProperty = Object.entries(propertyToCss)
-  .reduce((o, v) => {
-    o[v[1]] = v[0];
-    return o;
-  }, {});
-
-let editor;
+/** @type {EditorBase|SourceEditor|SectionsEditor} */
+const editor = {
+  isUsercss: false,
+  previewDelay: 200, // Chrome devtools uses 200
+};
 let isWindowed;
-let scrollPointTimer;
+let headerHeight;
 
-window.addEventListener('beforeunload', beforeUnload);
+window.on('beforeunload', beforeUnload);
 msg.onExtension(onRuntimeMessage);
 
 lazyInit();
 
 (async function init() {
-  const [style] = await Promise.all([
-    initStyleData(),
-    onDOMready(),
-    prefs.initializing.then(() => new Promise(resolve => {
-      const theme = prefs.get('editor.theme');
-      const el = $('#cm-theme');
-      if (theme === 'default') {
-        resolve();
-      } else {
-        // preload the theme so CodeMirror can use the correct metrics
-        el.href = `vendor/codemirror/theme/${theme}.css`;
-        el.addEventListener('load', resolve, {once: true});
-      }
-    })),
-  ]);
-  const usercss = isUsercss(style);
-  const dirty = dirtyReporter();
-  let wasDirty = false;
+  let style;
   let nameTarget;
-
-  prefs.subscribe(['editor.linter'], updateLinter);
-  prefs.subscribe(['editor.keyMap'], showHotkeyInTooltip);
-  addEventListener('showHotkeyInTooltip', showHotkeyInTooltip);
+  let wasDirty = false;
+  const dirty = new DirtyReporter();
+  await Promise.all([
+    initStyle(),
+    prefs.initializing
+      .then(initTheme),
+    onDOMready(),
+  ]);
+  /** @namespace EditorBase */
+  Object.assign(editor, {
+    style,
+    dirty,
+    updateName,
+    updateToc,
+    toggleStyle,
+  });
+  prefs.subscribe('editor.linter', updateLinter);
+  prefs.subscribe('editor.keyMap', showHotkeyInTooltip);
+  window.on('showHotkeyInTooltip', showHotkeyInTooltip);
   showHotkeyInTooltip();
   buildThemeElement();
   buildKeymapElement();
@@ -55,32 +75,57 @@ lazyInit();
   initBeautifyButton($('#beautify'), () => editor.getEditors());
   initResizeListener();
   detectLayout();
-  updateTitle();
 
   $('#heading').textContent = t(style.id ? 'editStyleHeading' : 'addStyleTitle');
   $('#preview-label').classList.toggle('hidden', !style.id);
 
-  editor = (usercss ? createSourceEditor : createSectionsEditor)({
-    style,
-    dirty,
-    updateName,
-    toggleStyle,
-  });
+  const toc = [];
+  const elToc = $('#toc');
+  elToc.onclick = e => editor.jumpToEditor([...elToc.children].indexOf(e.target));
+
+  (editor.isUsercss ? SourceEditor : SectionsEditor)();
+
+  prefs.subscribe('editor.toc.expanded', (k, val) => val && editor.updateToc(), {now: true});
   dirty.onChange(updateDirty);
   await editor.ready;
 
   // enabling after init to prevent flash of validation failure on an empty name
-  $('#name').required = !usercss;
+  $('#name').required = !editor.isUsercss;
   $('#save-button').onclick = editor.save;
+
+  async function initStyle() {
+    const params = new URLSearchParams(location.search);
+    const id = Number(params.get('id'));
+    style = id ? await API.getStyle(id) : initEmptyStyle(params);
+    // switching the mode here to show the correct page ASAP, usually before DOMContentLoaded
+    editor.isUsercss = Boolean(style.usercssData || !style.id && prefs.get('newStyleAsUsercss'));
+    document.documentElement.classList.toggle('usercss', editor.isUsercss);
+    sessionStorage.justEditedStyleId = style.id || '';
+    // no such style so let's clear the invalid URL parameters
+    if (!style.id) history.replaceState({}, '', location.pathname);
+    updateTitle(false);
+  }
+
+  function initEmptyStyle(params) {
+    return {
+      name: params.get('domain') ||
+        tryCatch(() => new URL(params.get('url-prefix')).hostname) ||
+        '',
+      enabled: true,
+      sections: [
+        DocFuncMapper.toSection([...params], {code: ''}),
+      ],
+    };
+  }
 
   function initNameArea() {
     const nameEl = $('#name');
     const resetEl = $('#reset-name');
-    const isCustomName = style.updateUrl || usercss;
+    const isCustomName = style.updateUrl || editor.isUsercss;
     nameTarget = isCustomName ? 'customName' : 'name';
-    nameEl.placeholder = t(usercss ? 'usercssEditorNamePlaceholder' : 'styleMissingName');
+    nameEl.placeholder = t(editor.isUsercss ? 'usercssEditorNamePlaceholder' : 'styleMissingName');
     nameEl.title = isCustomName ? t('customNameHint') : '';
-    nameEl.addEventListener('input', () => {
+    nameEl.on('input', () => {
       updateName(true);
       resetEl.hidden = false;
     });
@@ -99,6 +144,38 @@ lazyInit();
     };
     const enabledEl = $('#enabled');
     enabledEl.onchange = () => updateEnabledness(enabledEl.checked);
+  }
+
+  function initResizeListener() {
+    const {onBoundsChanged} = chrome.windows || {};
+    if (onBoundsChanged) {
+      // * movement is reported even if the window wasn't resized
+      // * fired just once when done so debounce is not needed
+      onBoundsChanged.addListener(wnd => {
+        // getting the current window id as it may change if the user attached/detached the tab
+        chrome.windows.getCurrent(ownWnd => {
+          if (wnd.id === ownWnd.id) saveWindowPos();
+        });
+      });
+    }
+    window.on('resize', () => {
+      if (!onBoundsChanged) debounce(saveWindowPos, 100);
+      detectLayout();
+    });
+  }
+
+  function initTheme() {
+    return new Promise(resolve => {
+      const theme = prefs.get('editor.theme');
+      const el = $('#cm-theme');
+      if (theme === 'default') {
+        resolve();
+      } else {
+        // preload the theme so CodeMirror can use the correct metrics
+        el.href = `vendor/codemirror/theme/${theme}.css`;
+        el.on('load', resolve, {once: true});
+      }
+    });
   }
 
   function findKeyForCommand(command, map) {
@@ -171,24 +248,6 @@ lazyInit();
     }
   }
 
-  function initResizeListener() {
-    const {onBoundsChanged} = chrome.windows || {};
-    if (onBoundsChanged) {
-      // * movement is reported even if the window wasn't resized
-      // * fired just once when done so debounce is not needed
-      onBoundsChanged.addListener(wnd => {
-        // getting the current window id as it may change if the user attached/detached the tab
-        chrome.windows.getCurrent(ownWnd => {
-          if (wnd.id === ownWnd.id) saveWindowPos();
-        });
-      });
-    }
-    window.addEventListener('resize', () => {
-      if (!onBoundsChanged) debounce(saveWindowPos, 100);
-      detectLayout();
-    });
-  }
-
   function toggleStyle() {
     $('#enabled').checked = !style.enabled;
     updateEnabledness(!style.enabled);
@@ -217,16 +276,49 @@ lazyInit();
       dirty.modify('name', style[nameTarget] || style.name, value);
       style[nameTarget] = value;
     }
-    updateTitle({});
+    updateTitle();
   }
 
-  function updateTitle() {
-    document.title = `${dirty.isDirty() ? '* ' : ''}${style.customName || style.name}`;
+  function updateTitle(isDirty = dirty.isDirty()) {
+    document.title = `${isDirty ? '* ' : ''}${style.customName || style.name}`;
   }
 
   function updateLinter(key, value) {
     $('body').classList.toggle('linter-disabled', value === '');
     linter.run();
+  }
+
+  function updateToc(added = editor.sections) {
+    const {sections} = editor;
+    const first = sections.indexOf(added[0]);
+    let el = elToc.children[first];
+    if (added.focus) {
+      const cls = 'current';
+      const old = $('.' + cls, elToc);
+      if (old && old !== el) old.classList.remove(cls);
+      el.classList.add(cls);
+      return;
+    }
+    if (first >= 0) {
+      for (let i = first; i < sections.length; i++) {
+        const entry = sections[i].tocEntry;
+        if (!deepEqual(entry, toc[i])) {
+          if (!el) el = elToc.appendChild($create('li', {tabIndex: 0}));
+          el.tabIndex = entry.removed ? -1 : 0;
+          toc[i] = Object.assign({}, entry);
+          const s = el.textContent = clipString(entry.label) || (
+            entry.target == null
+              ? t('appliesToEverything')
+              : clipString(entry.target) + (entry.numTargets > 1 ? ', ...' : ''));
+          if (s.length > 30) el.title = s;
+        }
+        el = el.nextElementSibling;
+      }
+    }
+    while (toc.length > sections.length) {
+      elToc.lastElementChild.remove();
+      toc.length--;
+    }
   }
 })();
 
@@ -330,53 +422,6 @@ function beforeUnload(e) {
   }
 }
 
-function isUsercss(style) {
-  return (
-    style.usercssData ||
-    !style.id && prefs.get('newStyleAsUsercss')
-  );
-}
-
-function initStyleData() {
-  const params = new URLSearchParams(location.search);
-  const id = Number(params.get('id'));
-  const createEmptyStyle = () => ({
-    name: params.get('domain') ||
-          tryCatch(() => new URL(params.get('url-prefix')).hostname) ||
-          '',
-    enabled: true,
-    sections: [
-      Object.assign({code: ''},
-        ...Object.keys(CssToProperty)
-          .map(name => ({
-            [CssToProperty[name]]: params.get(name) && [params.get(name)] || []
-          }))
-      )
-    ],
-  });
-  return fetchStyle()
-    .then(style => {
-      if (style.id) sessionStorage.justEditedStyleId = style.id;
-      // we set "usercss" class on <html> when <body> is empty
-      // so there'll be no flickering of the elements that depend on it
-      if (isUsercss(style)) {
-        document.documentElement.classList.add('usercss');
-      }
-      // strip URL parameters when invoked for a non-existent id
-      if (!style.id) {
-        history.replaceState({}, document.title, location.pathname);
-      }
-      return style;
-    });
-
-  function fetchStyle() {
-    if (id) {
-      return API.getStyle(id);
-    }
-    return Promise.resolve(createEmptyStyle());
-  }
-}
-
 function showHelp(title = '', body) {
   const div = $('#help-popup');
   div.className = '';
@@ -419,11 +464,11 @@ function showHelp(title = '', body) {
     div.style.display = '';
     contents.textContent = '';
     clearTimeout(contents.timer);
-    window.removeEventListener('keydown', showHelp.close, true);
+    window.off('keydown', showHelp.close, true);
     window.dispatchEvent(new Event('closeHelp'));
   });
 
-  window.addEventListener('keydown', showHelp.close, true);
+  window.on('keydown', showHelp.close, true);
   $('.dismiss', div).onclick = showHelp.close;
 
   // reset any inline styles
@@ -433,6 +478,7 @@ function showHelp(title = '', body) {
   return div;
 }
 
+/* exported showCodeMirrorPopup */
 function showCodeMirrorPopup(title, html, options) {
   const popup = showHelp(title, html);
   popup.classList.add('big');
@@ -462,10 +508,10 @@ function showCodeMirrorPopup(title, html, options) {
       event.preventDefault();
     }
   };
-  window.addEventListener('keydown', onKeyDown, true);
+  window.on('keydown', onKeyDown, true);
 
-  window.addEventListener('closeHelp', () => {
-    window.removeEventListener('keydown', onKeyDown, true);
+  window.on('closeHelp', () => {
+    window.off('keydown', onKeyDown, true);
     document.documentElement.style.removeProperty('pointer-events');
     rerouteHotkeys(true);
     cm = popup.codebox = null;
@@ -493,59 +539,32 @@ function saveWindowPos() {
 }
 
 function fixedHeader() {
-  const scrollPoint = $('#header').clientHeight - 40;
-  const linterEnabled = prefs.get('editor.linter') !== '';
-  if (window.scrollY >= scrollPoint && !$('.fixed-header') && linterEnabled) {
+  const headerFixed = $('.fixed-header');
+  if (!headerFixed) headerHeight = $('#header').clientHeight;
+  const scrollPoint = headerHeight - 43;
+  if (window.scrollY >= scrollPoint && !headerFixed) {
+    $('body').style.setProperty('--fixed-padding', ` ${headerHeight}px`);
     $('body').classList.add('fixed-header');
-  } else if (window.scrollY < 40 && linterEnabled) {
+  } else if (window.scrollY < scrollPoint && headerFixed) {
     $('body').classList.remove('fixed-header');
   }
 }
 
 function detectLayout() {
-  const body = $('body');
-  const options = $('#options');
-  const lint = $('#lint');
   const compact = window.innerWidth <= 850;
-  const shortViewportLinter = window.innerHeight < 692;
-  const shortViewportNoLinter = window.innerHeight < 554;
-  const linterEnabled = prefs.get('editor.linter') !== '';
   if (compact) {
-    body.classList.add('compact-layout');
-    options.removeAttribute('open');
-    options.classList.add('ignore-pref');
-    lint.removeAttribute('open');
-    lint.classList.add('ignore-pref');
-    if (!$('.usercss')) {
-      clearTimeout(scrollPointTimer);
-      scrollPointTimer = setTimeout(() => {
-        const scrollPoint = $('#header').clientHeight - 40;
-        if (window.scrollY >= scrollPoint && !$('.fixed-header') && linterEnabled) {
-          body.classList.add('fixed-header');
-        }
-      }, 250);
-      window.addEventListener('scroll', fixedHeader, {passive: true});
+    document.body.classList.add('compact-layout');
+    if (!editor.isUsercss) {
+      debounce(fixedHeader, 250);
+      window.on('scroll', fixedHeader, {passive: true});
     }
   } else {
-    body.classList.remove('compact-layout');
-    body.classList.remove('fixed-header');
-    window.removeEventListener('scroll', fixedHeader);
-    if (shortViewportLinter && linterEnabled || shortViewportNoLinter && !linterEnabled) {
-      options.removeAttribute('open');
-      options.classList.add('ignore-pref');
-      if (prefs.get('editor.lint.expanded')) {
-        lint.setAttribute('open', '');
-      }
-    } else {
-      options.classList.remove('ignore-pref');
-      lint.classList.remove('ignore-pref');
-      if (prefs.get('editor.options.expanded')) {
-        options.setAttribute('open', '');
-      }
-      if (prefs.get('editor.lint.expanded')) {
-        lint.setAttribute('open', '');
-      }
-    }
+    document.body.classList.remove('compact-layout', 'fixed-header');
+    window.off('scroll', fixedHeader);
+  }
+  for (const type of ['options', 'toc', 'lint']) {
+    const el = $(`details[data-pref="editor.${type}.expanded"]`);
+    el.open = compact ? false : prefs.get(el.dataset.pref);
   }
 }
 
@@ -561,15 +580,4 @@ function isWindowMaximized() {
     window.outerWidth < screen.availWidth + 10 &&
     window.outerHeight < screen.availHeight + 10
   );
-}
-
-function toggleContextMenuDelete(event) {
-  if (chrome.contextMenus && event.button === 2 && prefs.get('editor.contextDelete')) {
-    chrome.contextMenus.update('editor.contextDelete', {
-      enabled: Boolean(
-        this.selectionStart !== this.selectionEnd ||
-        this.somethingSelected && this.somethingSelected()
-      ),
-    }, ignoreChromeError);
-  }
 }

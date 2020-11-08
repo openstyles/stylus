@@ -1,70 +1,98 @@
 /* global
-  createAppliesToLineWidget messageBox
+  $
+  $$
+  $create
+  API
+  chromeSync
+  cmFactory
+  CodeMirror
+  createLivePreview
+  createMetaCompiler
+  debounce
+  editor
+  linter
+  messageBox
+  MozSectionFinder
+  MozSectionWidget
+  prefs
   sectionsToMozFormat
-  createMetaCompiler linter createLivePreview cmFactory $ $create API prefs t
-  chromeSync */
-/* exported createSourceEditor */
+  t
+*/
+
 'use strict';
 
-function createSourceEditor(editorBase) {
-  const {style, dirty} = editorBase;
+/* exported SourceEditor */
 
+function SourceEditor() {
+  const {style, dirty} = editor;
+  let savedGeneration;
   let placeholderName = '';
+  let prevMode = NaN;
 
-  $('#mozilla-format-container').remove();
-  $('#header').addEventListener('wheel', headerOnScroll);
+  $$.remove('.sectioned-only');
+  $('#header').on('wheel', headerOnScroll);
   $('#sections').textContent = '';
   $('#sections').appendChild($create('.single-editor'));
 
-  // normalize style
   if (!style.id) setupNewStyle(style);
 
-  const cm = cmFactory.create($('.single-editor'), {
-    value: style.sourceCode,
+  const cm = cmFactory.create($('.single-editor'));
+  const sectionFinder = MozSectionFinder(cm);
+  const sectionWidget = MozSectionWidget(cm, sectionFinder, editor.updateToc);
+  const livePreview = createLivePreview(preprocess, style.id);
+  /** @namespace SourceEditor */
+  Object.assign(editor, {
+    sections: sectionFinder.sections,
+    replaceStyle,
+    getEditors: () => [cm],
+    scrollToEditor: () => {},
+    getEditorTitle: () => '',
+    save,
+    prevEditor: nextPrevSection.bind(null, -1),
+    nextEditor: nextPrevSection.bind(null, 1),
+    jumpToEditor(i) {
+      const sec = sectionFinder.sections[i];
+      if (sec) {
+        sectionFinder.updatePositions(sec);
+        jumpToPos(sec.start);
+      }
+    },
+    closestVisible: () => cm,
+    getSearchableInputs: () => [],
+    updateLivePreview,
   });
-  let savedGeneration = cm.changeGeneration();
-
-  const livePreview = createLivePreview(preprocess);
-  livePreview.show(Boolean(style.id));
-
-  cm.on('changes', () => {
-    dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
-    updateLivePreview();
-  });
-
-  cm.operation(initAppliesToLineWidget);
-
-  const metaCompiler = createMetaCompiler(cm);
-  metaCompiler.onUpdated(meta => {
+  createMetaCompiler(cm, meta => {
     style.usercssData = meta;
     style.name = meta.name;
     style.url = meta.homepageURL || style.installationUrl;
     updateMeta();
   });
-
-  updateMeta().then(() => {
-
-    linter.enableForEditor(cm);
-
-    let prevMode = NaN;
-    cm.on('optionChange', (cm, option) => {
-      if (option !== 'mode') return;
-      const mode = getModeName();
-      if (mode === prevMode) return;
-      prevMode = mode;
-      linter.run();
-      updateLinterSwitch();
-    });
-
-    $('#editor.linter').addEventListener('change', updateLinterSwitch);
-    updateLinterSwitch();
-
-    setTimeout(() => {
-      if ((document.activeElement || {}).localName !== 'input') {
-        cm.focus();
-      }
-    });
+  updateMeta();
+  cm.setValue(style.sourceCode);
+  prefs.subscribeMany({
+    'editor.linter': updateLinterSwitch,
+    'editor.appliesToLineWidget': (k, val) => sectionWidget.toggle(val),
+    'editor.toc.expanded': (k, val) => sectionFinder.onOff(editor.updateToc, val),
+  }, {now: true});
+  cm.clearHistory();
+  cm.markClean();
+  savedGeneration = cm.changeGeneration();
+  cm.on('changes', () => {
+    dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
+    debounce(updateLivePreview, editor.previewDelay);
   });
+  cm.on('optionChange', (cm, option) => {
+    if (option !== 'mode') return;
+    const mode = getModeName();
+    if (mode === prevMode) return;
+    prevMode = mode;
+    linter.run();
+    updateLinterSwitch();
+  });
+  debounce(linter.enableForEditor, 0, cm);
+  if (!$.isTextInput(document.activeElement)) {
+    cm.focus();
+  }
 
   function preprocess(style) {
     return API.buildUsercss({
@@ -83,13 +111,6 @@ function createSourceEditor(editorBase) {
       return;
     }
     livePreview.update(Object.assign({}, style, {sourceCode: cm.getValue()}));
-  }
-
-  function initAppliesToLineWidget() {
-    const PREF_NAME = 'editor.appliesToLineWidget';
-    const widget = createAppliesToLineWidget(cm);
-    widget.toggle(prefs.get(PREF_NAME));
-    prefs.subscribe([PREF_NAME], (key, value) => widget.toggle(value));
   }
 
   function updateLinterSwitch() {
@@ -158,8 +179,8 @@ function createSourceEditor(editorBase) {
     }
     $('#enabled').checked = style.enabled;
     $('#url').href = style.url;
-    editorBase.updateName();
-    return cm.setPreprocessor((style.usercssData || {}).preprocessor);
+    editor.updateName();
+    cm.setPreprocessor((style.usercssData || {}).preprocessor);
   }
 
   function replaceStyle(newStyle, codeIsUpdated) {
@@ -272,68 +293,30 @@ function createSourceEditor(editorBase) {
     );
   }
 
-  function nextPrevMozDocument(cm, dir) {
-    const MOZ_DOC = '@-moz-document';
-    const cursor = cm.getCursor();
-    const usePrevLine = dir < 0 && cursor.ch <= MOZ_DOC.length;
-    let line = cursor.line + (usePrevLine ? -1 : 0);
-    let start = usePrevLine ? 1e9 : cursor.ch + (dir > 0 ? 1 : -MOZ_DOC.length);
-    let found;
-    if (dir > 0) {
-      cm.doc.iter(cursor.line, cm.doc.size, goFind);
-      if (!found && cursor.line > 0) {
-        line = 0;
-        cm.doc.iter(0, cursor.line + 1, goFind);
-      }
-    } else {
-      let handle, parentLines;
-      let passesRemain = line < cm.doc.size - 1 ? 2 : 1;
-      let stopAtLine = 0;
-      while (passesRemain--) {
-        let indexInParent = 0;
-        while (line >= stopAtLine) {
-          if (!indexInParent--) {
-            handle = cm.getLineHandle(line);
-            parentLines = handle.parent.lines;
-            indexInParent = parentLines.indexOf(handle);
-          } else {
-            handle = parentLines[indexInParent];
-          }
-          if (goFind(handle)) {
-            return true;
-          }
-        }
-        line = cm.doc.size - 1;
-        stopAtLine = cursor.line;
-      }
+  function nextPrevSection(dir) {
+    // ensure the data is ready in case the user wants to jump around a lot in a large style
+    sectionFinder.keepAliveFor(nextPrevSection, 10e3);
+    sectionFinder.updatePositions();
+    const {sections} = sectionFinder;
+    const num = sections.length;
+    if (!num) return;
+    dir = dir < 0 ? -1 : 0;
+    const pos = cm.getCursor();
+    let i = sections.findIndex(sec => CodeMirror.cmpPos(sec.start, pos) > Math.min(dir, 0));
+    if (i < 0 && (!dir || CodeMirror.cmpPos(sections[num - 1].start, pos) < 0)) {
+      i = 0;
     }
-    function goFind({text}) {
-      // use the initial 'start' on cursor row...
-      let ch = start;
-      // ...and reset it for the rest
-      start = dir > 0 ? 0 : 1e9;
-      while (true) {
-        // indexOf is 1000x faster than toLowerCase().indexOf() so we're trying it first
-        ch = dir > 0 ? text.indexOf('@-', ch) : text.lastIndexOf('@-', ch);
-        if (ch < 0) {
-          line += dir;
-          return;
-        }
-        if (text.substr(ch, MOZ_DOC.length).toLowerCase() === MOZ_DOC &&
-            cm.getTokenTypeAt({line, ch: ch + 1}) === 'def') {
-          break;
-        }
-        ch += dir * 3;
-      }
-      cm.setCursor(line, ch);
-      if (cm.cursorCoords().bottom > cm.display.scroller.clientHeight - 100) {
-        const margin = Math.min(100, cm.display.scroller.clientHeight / 4);
-        line += prefs.get('editor.appliesToLineWidget') ? 1 : 0;
-        cm.scrollIntoView({line, ch}, margin);
-      }
-      found = true;
-      return true;
+    jumpToPos(sections[(i + dir + num) % num].start);
+  }
+
+  function jumpToPos(pos) {
+    const coords = cm.cursorCoords(pos, 'page');
+    const b = cm.display.wrapper.getBoundingClientRect();
+    if (coords.top < b.top + cm.defaultTextHeight() * 2 ||
+        coords.bottom > b.bottom - 100) {
+      cm.scrollIntoView(pos, b.height / 2);
     }
+    cm.setCursor(pos, null, {scroll: false});
   }
 
   function headerOnScroll({target, deltaY, deltaMode, shiftKey}) {
@@ -358,18 +341,4 @@ function createSourceEditor(editorBase) {
     return (mode.name || mode || '') +
            (mode.helperType || '');
   }
-
-  return Object.assign({}, editorBase, {
-    ready: Promise.resolve(),
-    replaceStyle,
-    getEditors: () => [cm],
-    scrollToEditor: () => {},
-    getEditorTitle: () => '',
-    save,
-    prevEditor: cm => nextPrevMozDocument(cm, -1),
-    nextEditor: cm => nextPrevMozDocument(cm, 1),
-    closestVisible: () => cm,
-    getSearchableInputs: () => [],
-    updateLivePreview,
-  });
 }

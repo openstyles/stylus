@@ -32,12 +32,14 @@
     <script src="content/style-injector.js"></script>
     <script src="content/apply.js"></script>
 
+    <script src="edit/util.js"></script>
     <script src="edit/edit.js"></script> <!-- run it ASAP to send a request for the style -->
 
     <link  href="vendor/codemirror/lib/codemirror.css" rel="stylesheet">
     <script src="vendor/codemirror/lib/codemirror.js"></script>
 
     <script src="vendor/codemirror/mode/css/css.js"></script>
+    <script src="vendor/codemirror/mode/stylus/stylus.js"></script>
 
     <link  href="vendor/codemirror/addon/dialog/dialog.css" rel="stylesheet">
     <script src="vendor/codemirror/addon/dialog/dialog.js"></script>
@@ -84,10 +86,10 @@
     <link  href="edit/codemirror-default.css" rel="stylesheet">
     <script src="edit/codemirror-default.js"></script>
     <script src="edit/codemirror-factory.js"></script>
-    <script src="edit/util.js"></script>
     <script src="edit/regexp-tester.js"></script>
     <script src="edit/live-preview.js"></script>
-    <script src="edit/applies-to-line-widget.js"></script>
+    <script src="edit/moz-section-finder.js"></script>
+    <script src="edit/moz-section-widget.js"></script>
     <script src="edit/reroute-hotkeys.js"></script>
     <link  href="edit/global-search.css" rel="stylesheet">
     <script src="edit/global-search.js"></script>
@@ -311,154 +313,147 @@
           <button id="beautify" i18n-text="styleBeautify"></button>
           <a href="manage.html" tabindex="-1"><button id="cancel-button" i18n-text="styleCancelEditLabel"></button></a>
         </div>
-        <div id="mozilla-format-container">
-          <h2 id="mozilla-format-heading" i18n-text="styleMozillaFormatHeading">
-            <a id="to-mozilla-help" class="svg-inline-wrapper" href="#" tabindex="0">
-              <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
-            </a>
-          </h2>
-          <div id="mozilla-format-buttons">
-            <button id="from-mozilla" i18n-text="importLabel"></button>
-            <button id="to-mozilla" i18n-text="exportLabel"></button>
-          </div>
+        <div id="mozilla-format-buttons" class="sectioned-only">
+          <button id="from-mozilla" i18n-text="importLabel"></button>
+          <button id="to-mozilla" i18n-text="exportLabel"></button>
+          <a id="to-mozilla-help" class="svg-inline-wrapper" href="#" tabindex="0"
+             i18n-title="styleMozillaFormatHeading">
+            <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+          </a>
         </div>
       </section>
-      <details id="options" data-pref="editor.options.expanded">
-        <summary><h2 id="options-heading" i18n-text="optionsHeading"></h2></summary>
-        <div id="options-wrapper">
-          <div class="options-column">
-            <div class="option">
-              <label id="lineWrapping-label" i18n-text="cm_lineWrapping">
-                <input id="editor.lineWrapping" type="checkbox">
-                <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-              </label>
-            </div>
-            <div class="option">
-              <label id="smartIndent-label" i18n-text="cm_smartIndent">
-                <input id="editor.smartIndent" type="checkbox">
-                <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-              </label>
-            </div>
-            <div class="option">
-              <label id="indentWithTabs-label" i18n-text="cm_indentWithTabs">
-                <input id="editor.indentWithTabs" type="checkbox">
-                <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-              </label>
-            </div>
-            <div class="option">
-              <label i18n-text="cm_autoCloseBrackets" i18n-title="cm_autoCloseBracketsTooltip">
-                <input id="editor.autoCloseBrackets" type="checkbox">
-                <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-              </label>
-            </div>
-            <div class="option">
-              <label i18n-text="cm_autocompleteOnTyping">
-                <input id="editor.autocompleteOnTyping" type="checkbox">
-                <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-              </label>
-            </div>
-            <div class="option">
-              <label i18n-text="cm_selectByTokens"
-                     i18n-title="cm_selectByTokensTooltip">
-                <input id="editor.selectByTokens" type="checkbox">
-                <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-              </label>
-            </div>
-            <div class="option">
-              <label i18n-text="cm_colorpicker">
-                <input id="editor.colorpicker" type="checkbox">
-                <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-              </label>
-              <a id="colorpicker-settings" href="#" class="svg-inline-wrapper" i18n-title="shortcutsNote" tabindex="0">
-                <svg class="svg-icon settings"><use xlink:href="#svg-icon-settings"/></svg>
-              </a>
-            </div>
-            <div class="option usercss-only">
-              <label i18n-text="appliesLineWidgetLabel" i18n-title="appliesLineWidgetWarning">
-                <input id="editor.appliesToLineWidget" type="checkbox">
-                <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-              </label>
-            </div>
-          </div>
-          <div class="options-column">
-            <div class="option aligned">
-              <label id="tabSize-label" for="editor.tabSize" i18n-text="cm_tabSize"></label>
-              <input id="editor.tabSize" type="number" min="0">
-            </div>
-            <div class="option aligned">
-              <label id="keyMap-label" for="editor.keyMap" i18n-text="cm_keyMap"></label>
-              <div class="select-resizer">
-                <select id="editor.keyMap"></select>
-                <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+      <div id="details-wrapper">
+        <details id="options" data-pref="editor.options.expanded" class="ignore-pref-if-compact">
+          <summary><h2 id="options-heading" i18n-text="optionsHeading"></h2></summary>
+          <div id="options-wrapper">
+            <div class="options-column">
+              <div class="option">
+                <label id="lineWrapping-label" i18n-text="cm_lineWrapping">
+                  <input id="editor.lineWrapping" type="checkbox">
+                  <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+                </label>
               </div>
-              <a id="keyMap-help" href="#" class="svg-inline-wrapper" tabindex="0">
-                <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
-              </a>
-            </div>
-            <div class="option aligned">
-              <label id="theme-label" for="editor.theme" i18n-text="cm_theme"></label>
-              <div class="select-resizer">
-                <select id="editor.theme"></select>
-                <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+              <div class="option">
+                <label id="smartIndent-label" i18n-text="cm_smartIndent">
+                  <input id="editor.smartIndent" type="checkbox">
+                  <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+                </label>
+              </div>
+              <div class="option">
+                <label id="indentWithTabs-label" i18n-text="cm_indentWithTabs">
+                  <input id="editor.indentWithTabs" type="checkbox">
+                  <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+                </label>
+              </div>
+              <div class="option">
+                <label i18n-text="cm_autoCloseBrackets" i18n-title="cm_autoCloseBracketsTooltip">
+                  <input id="editor.autoCloseBrackets" type="checkbox">
+                  <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+                </label>
+              </div>
+              <div class="option">
+                <label i18n-text="cm_autocompleteOnTyping">
+                  <input id="editor.autocompleteOnTyping" type="checkbox">
+                  <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+                </label>
+              </div>
+              <div class="option">
+                <label i18n-text="cm_selectByTokens"
+                       i18n-title="cm_selectByTokensTooltip">
+                  <input id="editor.selectByTokens" type="checkbox">
+                  <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+                </label>
+              </div>
+              <div class="option">
+                <label i18n-text="cm_colorpicker">
+                  <input id="editor.colorpicker" type="checkbox">
+                  <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+                </label>
+                <a id="colorpicker-settings" href="#" class="svg-inline-wrapper" i18n-title="shortcutsNote" tabindex="0">
+                  <svg class="svg-icon settings"><use xlink:href="#svg-icon-settings"/></svg>
+                </a>
+              </div>
+              <div class="option usercss-only">
+                <label i18n-text="appliesLineWidgetLabel" i18n-title="appliesLineWidgetWarning">
+                  <input id="editor.appliesToLineWidget" type="checkbox">
+                  <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+                </label>
               </div>
             </div>
-            <div class="option aligned">
-              <label id="highlight-label" for="editor.matchHighlight" i18n-text="cm_matchHighlight"></label>
-              <div class="select-resizer">
-                <select id="editor.matchHighlight">
-                  <option i18n-text="cm_matchHighlightToken" value="token">
-                  <option i18n-text="cm_matchHighlightSelection" value="selection">
-                  <option i18n-text="genericDisabledLabel" value="">
-                </select>
-                <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+            <div class="options-column">
+              <div class="option aligned">
+                <label id="tabSize-label" for="editor.tabSize" i18n-text="cm_tabSize"></label>
+                <input id="editor.tabSize" type="number" min="0">
               </div>
-            </div>
-            <div class="option aligned">
-              <label id="linter-label" for="editor.linter" i18n-text="cm_linter"></label>
+              <div class="option aligned">
+                <label id="keyMap-label" for="editor.keyMap" i18n-text="cm_keyMap"></label>
                 <div class="select-resizer">
-                  <select id="editor.linter">
-                    <option value="csslint" selected>CSSLint</option>
-                    <option value="stylelint">Stylelint</option>
-                    <option value="" i18n-text="genericDisabledLabel"></option>
+                  <select id="editor.keyMap"></select>
+                  <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+                </div>
+                <a id="keyMap-help" href="#" class="svg-inline-wrapper" tabindex="0">
+                  <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+                </a>
+              </div>
+              <div class="option aligned">
+                <label id="theme-label" for="editor.theme" i18n-text="cm_theme"></label>
+                <div class="select-resizer">
+                  <select id="editor.theme"></select>
+                  <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+                </div>
+              </div>
+              <div class="option aligned">
+                <label id="highlight-label" for="editor.matchHighlight" i18n-text="cm_matchHighlight"></label>
+                <div class="select-resizer">
+                  <select id="editor.matchHighlight">
+                    <option i18n-text="cm_matchHighlightToken" value="token">
+                    <option i18n-text="cm_matchHighlightSelection" value="selection">
+                    <option i18n-text="genericDisabledLabel" value="">
                   </select>
                   <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
                 </div>
-              <a id="linter-settings" href="#" class="svg-inline-wrapper" i18n-title="linterConfigTooltip" tabindex="0">
-                <svg class="svg-icon settings"><use xlink:href="#svg-icon-settings"/></svg>
-              </a>
+              </div>
+              <div class="option aligned">
+                <label id="linter-label" for="editor.linter" i18n-text="cm_linter"></label>
+                  <div class="select-resizer">
+                    <select id="editor.linter">
+                      <option value="csslint" selected>CSSLint</option>
+                      <option value="stylelint">Stylelint</option>
+                      <option value="" i18n-text="genericDisabledLabel"></option>
+                    </select>
+                    <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+                  </div>
+                <a id="linter-settings" href="#" class="svg-inline-wrapper" i18n-title="linterConfigTooltip" tabindex="0">
+                  <svg class="svg-icon settings"><use xlink:href="#svg-icon-settings"/></svg>
+                </a>
+              </div>
             </div>
           </div>
-        </div>
-      </details>
-      <details id="lint" class="hidden-unless-compact" data-pref="editor.lint.expanded">
-        <summary>
-          <h2 i18n-text="linterIssues">: <span id="issue-count"></span>
-            <a id="lint-help" href="#" class="svg-inline-wrapper intercepts-click" tabindex="0">
-              <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
-            </a>
-          </h2>
-        </summary>
-        <div class="lint-scroll-container">
-          <div class="lint-report-container"></div>
-        </div>
-      </details>
+        </details>
+        <details id="sections-list" data-pref="editor.toc.expanded" class="ignore-pref-if-compact">
+          <summary><h2 i18n-text="sections"></h2></summary>
+          <ol id="toc"></ol>
+        </details>
+        <details id="lint" data-pref="editor.lint.expanded" class="hidden-unless-compact ignore-pref-if-compact">
+          <summary>
+            <h2 i18n-text="linterIssues">: <span id="issue-count"></span>
+              <a id="lint-help" href="#" class="svg-inline-wrapper intercepts-click" tabindex="0">
+                <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+              </a>
+            </h2>
+          </summary>
+          <div class="lint-scroll-container">
+            <div class="lint-report-container"></div>
+          </div>
+        </details>
+      </div>
       <div id="footer" class="hidden">
         <a href="https://github.com/openstyles/stylus/wiki/Usercss"
            i18n-text="externalUsercssDocument"
            target="_blank"></a>
       </div>
     </div>
-    <section id="sections">
-      <!--
-        It seems that we don't use these anymore
-        https://github.com/openstyles/stylus/blob/5cbe8a8d780a6eb9fce11d5846e92bf244c3a3f3/edit/sections.js#L18
-      -->
-      <!-- <h2><span id="sections-heading" i18n-text="styleSectionsTitle"></span>
-        <a id="sections-help" href="#" class="svg-inline-wrapper" tabindex="0">
-          <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
-        </a>
-      </h2> -->
-    </section>
+    <section id="sections"></section>
     <div id="help-popup">
       <div class="title"></div><svg id="sections-help" class="svg-icon dismiss"><use xlink:href="#svg-icon-close"/></svg>
       <div class="contents"></div>
