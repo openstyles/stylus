@@ -203,7 +203,10 @@
 
       json.id = style.id;
       json.updateDate = Date.now();
-
+      json.sections.forEach((sec, i) => {
+        const ls = (style.sections[i] || {}).localState;
+        if (ls) sec.localState = ls;
+      });
       // keep current state
       delete json.enabled;
 

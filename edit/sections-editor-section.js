@@ -24,8 +24,9 @@ function createSection(originalSection, genId) {
   const el = template.section.cloneNode(true);
   const elLabel = $('.code-label', el);
   const cm = cmFactory.create(wrapper => {
+    const {height} = originalSection.localState || {};
     // making it tall during initial load so IntersectionObserver sees only one adjacent CM
-    wrapper.style.height = '100vh';
+    wrapper.style.height = height ? height + 'px' : '100vh';
     elLabel.after(wrapper);
   }, {
     value: originalSection.code,
@@ -57,7 +58,12 @@ function createSection(originalSection, genId) {
     appliesTo,
     getModel() {
       const items = appliesTo.map(a => !a.all && [a.type, a.value]);
-      return DocFuncMapper.toSection(items, {code: cm.getValue()});
+      const height = Number(cm.display.wrapper.style.height.match(/[0-9.]+(?=px)|$/)[0]) || 0;
+      return DocFuncMapper.toSection(items, Object.assign({
+        code: cm.getValue(),
+      }, height && {
+        localState: {height},
+      }));
     },
     remove() {
       linter.disableForEditor(cm);

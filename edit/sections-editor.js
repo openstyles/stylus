@@ -171,8 +171,10 @@ function SectionsEditor() {
     const lastSectionBottom = sections[sections.length - 1].el.getBoundingClientRect().bottom;
     const delta = Math.floor((window.innerHeight - lastSectionBottom) / sections.length);
     if (delta > 1) {
-      sections.forEach(({cm}) => {
-        cm.setSize(null, cm.display.lastWrapHeight + delta);
+      sections.forEach(({cm}, i) => {
+        if (!(style.sections[i].localState || {}).height) {
+          cm.setSize(null, cm.display.wrapper.offsetHeight + delta);
+        }
       });
     }
   }
@@ -575,8 +577,9 @@ function SectionsEditor() {
     container.insertBefore(section.el, base ? base.el.nextSibling : null);
     refreshOnView(cm, forceRefresh);
     registerEvents(section);
-    if (!base || init.code) {
-      // Fit a) during startup or b) when the clone button is clicked on a section with some code
+    /* Fit a) when the clone button is clicked on a section with non-empty code
+       or b) during startup if height wasn't saved in storage */
+    if (base ? init.code : !(init.localState || {}).height) {
       fitToContent(section);
     }
     if (base) {
