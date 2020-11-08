@@ -264,40 +264,31 @@
       .catch(() => null);
   }
 
+  /**
+   * The sections are checked in successive order because it matters when many sections
+   * match the same URL and they have rules with the same CSS specificity
+   * @param {Object} a - first style object
+   * @param {Object} b - second style object
+   * @returns {?boolean}
+   */
   function styleSectionsEqual({sections: a}, {sections: b}) {
-    if (!a || !b) {
-      return undefined;
+    const targets = ['urls', 'urlPrefixes', 'domains', 'regexps'];
+    return a && b && a.length === b.length && a.every(sameSection);
+    function sameSection(secA, i) {
+      return equalOrEmpty(secA.code, b[i].code, 'string', (a, b) => a === b) &&
+        targets.every(target => equalOrEmpty(secA[target], b[i][target], 'array', arrayMirrors));
     }
-    if (a.length !== b.length) {
-      return false;
+    function equalOrEmpty(a, b, type, comparator) {
+      const typeA = type === 'array' ? Array.isArray(a) : typeof a === type;
+      const typeB = type === 'array' ? Array.isArray(b) : typeof b === type;
+      return typeA && typeB && comparator(a, b) ||
+        (a == null || typeA && !a.length) &&
+        (b == null || typeB && !b.length);
     }
-    // order of sections should be identical to account for the case of multiple
-    // sections matching the same URL because the order of rules is part of cascading
-    return a.every((sectionA, index) => propertiesEqual(sectionA, b[index]));
-
-    function propertiesEqual(secA, secB) {
-      for (const name of ['urlPrefixes', 'urls', 'domains', 'regexps']) {
-        if (!equalOrEmpty(secA[name], secB[name], 'every', arrayMirrors)) {
-          return false;
-        }
-      }
-      return equalOrEmpty(secA.code, secB.code, 'substr', (a, b) => a === b);
-    }
-
-    function equalOrEmpty(a, b, telltale, comparator) {
-      const typeA = a && typeof a[telltale] === 'function';
-      const typeB = b && typeof b[telltale] === 'function';
-      return (
-        (a === null || a === undefined || (typeA && !a.length)) &&
-        (b === null || b === undefined || (typeB && !b.length))
-      ) || typeA && typeB && a.length === b.length && comparator(a, b);
-    }
-
-    function arrayMirrors(array1, array2) {
-      return (
-        array1.every(el => array2.includes(el)) &&
-        array2.every(el => array1.includes(el))
-      );
+    function arrayMirrors(a, b) {
+      return a.length === b.length &&
+        a.every(el => b.includes(el)) &&
+        b.every(el => a.includes(el));
     }
   }
 
