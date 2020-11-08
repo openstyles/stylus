@@ -27,7 +27,7 @@
     if (!linter) {
       return;
     }
-    const storageName = linter === 'stylelint' ? 'editorStylelintConfig' : 'editorCSSLintConfig';
+    const storageName = chromeSync.LZ_KEY[linter];
     const getRules = memoize(linter === 'stylelint' ?
       editorWorker.getStylelintRules : editorWorker.getCsslintRules);
     const linterTitle = linter === 'stylelint' ? 'Stylelint' : 'CSSLint';

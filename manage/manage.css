@@ -913,22 +913,6 @@ a:hover {
   white-space: nowrap;
 }
 
-#import ul {
-  margin-left: 0;
-  padding-left: 0;
-  list-style: none;
-}
-
-#import li {
-  margin-bottom: .5em;
-}
-
-#import pre {
-  background: #eee;
-  overflow: auto;
-  margin: 0 0 .5em 0;
-}
-
 /* drag-n-drop on import button */
 .dropzone:after {
   background-color: rgba(0, 0, 0, 0.7);
@@ -954,16 +938,20 @@ a:hover {
 }
 
 /* post-import report */
-#message-box details:not([data-id="invalid"]) div:hover {
+#import details:not([data-id="invalid"]) div:hover {
   background-color: rgba(128, 128, 128, .3);
 }
 
-#message-box details:not(:last-child) {
+#import details:not(:last-child) {
   margin-bottom: 1em;
 }
 
-#message-box details small div {
+#import details small > * {
   margin-left: 1.5em;
+}
+
+#import details > button {
+  margin: .5em 1.25em 0;
 }
 
 .update-history-log {

@@ -157,7 +157,7 @@ function SourceEditor() {
     style.sourceCode = '';
 
     placeholderName = `${style.name || t('usercssReplaceTemplateName')} - ${new Date().toLocaleString()}`;
-    let code = await chromeSync.getLZValue('usercssTemplate');
+    let code = await chromeSync.getLZValue(chromeSync.LZ_KEY.usercssTemplate);
     code = code || DEFAULT_CODE;
     code = code.replace(/@name(\s*)(?=[\r\n])/, (str, space) =>
       `${str}${space ? '' : ' '}${placeholderName}`);
@@ -247,9 +247,10 @@ function SourceEditor() {
 
           // save template
           if (err.code === 'missingValue' && meta.includes('@name')) {
+            const key = chromeSync.LZ_KEY.usercssTemplate;
             messageBox.confirm(t('usercssReplaceTemplateConfirmation')).then(ok => ok &&
-              chromeSync.setLZValue('usercssTemplate', code)
-                .then(() => chromeSync.getLZValue('usercssTemplate'))
+              chromeSync.setLZValue(key, code)
+                .then(() => chromeSync.getLZValue(key))
                 .then(saved => saved !== code && messageBox.alert(t('syncStorageErrorSaving'))));
             return;
           }
