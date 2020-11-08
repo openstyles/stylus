@@ -252,7 +252,7 @@ function MozSectionWidget(
       }
     }
     // renumber
-    for (let i = cutAt, {sections} = finder, sec; (sec = sections[i++]);) {
+    for (let i = Math.max(0, cutAt), {sections} = finder, sec; (sec = sections[i++]);) {
       if (!toDelay.includes(sec)) {
         const data = $(C_LABEL, sec.widget.node).dataset;
         if (data.index !== `${i}`) data.index = `${i}`;
