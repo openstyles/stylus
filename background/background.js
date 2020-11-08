@@ -59,7 +59,7 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   parseCss({code}) {
     return backgroundWorker.parseMozFormat({code});
   },
-  getPrefs: () => prefs.values, // will be deepCopy'd by invokeAPI handler
+  getPrefs: () => prefs.values,
   setPref: (key, value) => prefs.set(key, value),
 
   openEditor,

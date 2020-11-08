@@ -137,7 +137,9 @@ window.INJECTED !== 1 && (() => {
   const prefs = window.prefs = {
     initializing,
     defaults,
-    values,
+    get values() {
+      return deepCopy(values);
+    },
     get(key) {
       return isKnown(key) && values[key];
     },
