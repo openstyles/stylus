@@ -97,10 +97,13 @@ document.on('wheel', event => {
   if (!el || el !== event.target && !el.contains(event.target)) {
     return;
   }
-  if (el.tagName === 'SELECT') {
-    const old = el.selectedIndex;
-    el.selectedIndex = Math.max(0, Math.min(el.length - 1, old + Math.sign(event.deltaY)));
-    if (el.selectedIndex !== old) {
+  const isSelect = el.tagName === 'SELECT';
+  if (isSelect || el.tagName === 'INPUT' && el.type === 'range') {
+    const key = isSelect ? 'selectedIndex' : 'valueAsNumber';
+    const old = el[key];
+    const rawVal = old + Math.sign(event.deltaY) * (el.step || 1);
+    el[key] = Math.max(el.min || 0, Math.min(el.max || el.length - 1, rawVal));
+    if (el[key] !== old) {
       el.dispatchEvent(new Event('change', {bubbles: true}));
     }
     event.preventDefault();
