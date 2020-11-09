@@ -38,25 +38,17 @@ if (FIREFOX && 'update' in (chrome.commands || {})) {
   });
 }
 
-if (CHROME) {
+if (CHROME && !chrome.declarativeContent) {
   // Show the option as disabled until the permission is actually granted
   const el = $('#styleViaXhr');
+  prefs.initializing.then(() => {
+    el.checked = false;
+  });
   el.addEventListener('click', () => {
-    if (el.checked && !chrome.declarativeContent) {
-      chrome.permissions.request({permissions: ['declarativeContent']}, ok => {
-        if (chrome.runtime.lastError || !ok) {
-          el.checked = false;
-        }
-      });
+    if (el.checked) {
+      chrome.permissions.request({permissions: ['declarativeContent']}, ignoreChromeError);
     }
   });
-  if (!chrome.declarativeContent) {
-    prefs.initializing.then(() => {
-      if (prefs.get('styleViaXhr')) {
-        el.checked = false;
-      }
-    });
-  }
 }
 
 // actions

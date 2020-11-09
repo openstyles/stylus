@@ -35,7 +35,7 @@ const [chromeLocal, chromeSync] = (() => {
       setValue: (key, value) => wrapper.set({[key]: value}),
 
       getLZValue: key => wrapper.getLZValues([key]).then(data => data[key]),
-      getLZValues: keys =>
+      getLZValues: (keys = Object.values(wrapper.LZ_KEY)) =>
         Promise.all([
           wrapper.get(keys),
           loadLZStringScript(),
@@ -64,3 +64,9 @@ const [chromeLocal, chromeSync] = (() => {
         (window.LZString = window.LZString || window.LZStringUnsafe));
   }
 })();
+
+chromeSync.LZ_KEY = {
+  csslint: 'editorCSSLintConfig',
+  stylelint: 'editorStylelintConfig',
+  usercssTemplate: 'usercssTemplate',
+};

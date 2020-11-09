@@ -1,7 +1,18 @@
-/* global styleSectionsEqual prefs download tryJSONparse ignoreChromeError
-  calcStyleDigest getStyleWithNoCode debounce chromeLocal
-  usercss semverCompare styleJSONseemsValid
-  API_METHODS styleManager */
+/* global
+  API_METHODS
+  calcStyleDigest
+  chromeLocal
+  debounce
+  download
+  getStyleWithNoCode
+  ignoreChromeError
+  prefs
+  semverCompare
+  styleJSONseemsValid
+  styleManager
+  tryJSONparse
+  usercss
+*/
 'use strict';
 
 (() => {
@@ -208,7 +219,7 @@
       delete json.enabled;
 
       const newStyle = Object.assign({}, style, json);
-      if (styleSectionsEqual(json, style, {checkSource: true})) {
+      if (json.sourceCode === style.sourceCode) {
         // update digest even if save === false as there might be just a space added etc.
         return styleManager.installStyle(newStyle)
           .then(saved => {

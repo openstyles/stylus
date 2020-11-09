@@ -4,13 +4,13 @@
 (() => {
   registerLinters({
     csslint: {
-      storageName: 'editorCSSLintConfig',
+      storageName: chromeSync.LZ_KEY.csslint,
       lint: csslint,
       validMode: mode => mode === 'css',
       getConfig: config => Object.assign({}, LINTER_DEFAULTS.CSSLINT, config)
     },
     stylelint: {
-      storageName: 'editorStylelintConfig',
+      storageName: chromeSync.LZ_KEY.stylelint,
       lint: stylelint,
       validMode: () => true,
       getConfig: config => ({

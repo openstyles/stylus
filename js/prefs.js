@@ -135,9 +135,12 @@ window.INJECTED !== 1 && (() => {
 
   // This direct assignment allows IDEs to provide correct autocomplete for methods
   const prefs = window.prefs = {
+    STORAGE_KEY,
     initializing,
     defaults,
-    values,
+    get values() {
+      return deepCopy(values);
+    },
     get(key) {
       return isKnown(key) && values[key];
     },
