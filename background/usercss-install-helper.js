@@ -4,7 +4,8 @@
 (() => {
   const installCodeCache = {};
   const clearInstallCode = url => delete installCodeCache[url];
-  const isContentTypeText = type => /^text\/(css|plain)(;.*?)?$/i.test(type);
+  /** Sites may be using custom types like text/stylus so this coarse filter only excludes html */
+  const isContentTypeText = type => /^text\/(?!html)/i.test(type);
 
   // in Firefox we have to use a content script to read file://
   const fileLoader = !chrome.app && (
