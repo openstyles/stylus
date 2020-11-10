@@ -7,12 +7,10 @@
  * Puts the global comments into the following section to minimize the amount of global sections.
  * Doesn't move the comment with ==UserStyle== inside.
  * @param {string} code
- * @param {boolean} emptyDocument - https://github.com/stylus/stylus/issues/2415,
- * TODO: update stylus-lang and remove emptyDocument everywhere
  * @param {number} styleId - used to preserve parserCache on subsequent runs over the same style
  * @returns {{sections: Array, errors: Array}}
  */
-function parseMozFormat({code, emptyDocument, styleId}) {
+function parseMozFormat({code, styleId}) {
   const CssToProperty = {
     'url':        'urls',
     'url-prefix': 'urlPrefixes',
@@ -20,7 +18,7 @@ function parseMozFormat({code, emptyDocument, styleId}) {
     'regexp':     'regexps',
   };
   const hasSingleEscapes = /([^\\]|^)\\([^\\]|$)/;
-  const parser = new parserlib.css.Parser({starHack: true, emptyDocument});
+  const parser = new parserlib.css.Parser({starHack: true});
   const sectionStack = [{code: '', start: 0}];
   const errors = [];
   const sections = [];
@@ -70,13 +68,6 @@ function parseMozFormat({code, emptyDocument, styleId}) {
     section.code += mozStyle.slice(section.start, e.offset);
     lastSection.start = e.offset + 1;
     doAddSection(section);
-  });
-
-  parser.addListener('emptydocument', e => {
-    const token = parser._tokenStream._token;
-    const section = sectionStack[sectionStack.length - 1];
-    section.code += mozStyle.slice(section.start, e.offset);
-    section.start = token.offset + token.value.length;
   });
 
   parser.addListener('endstylesheet', () => {
