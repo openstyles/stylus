@@ -52,7 +52,7 @@ const files = {
     'https://github.com/stylelint/stylelint/raw/{VERSION}/LICENSE → LICENSE'
   ],
   'stylus-lang-bundle': [
-    'stylus.min.js'
+    'dist/stylus-renderer.min.js → stylus-renderer.min.js'
   ],
   'usercss-meta': [
     'dist/usercss-meta.min.js → usercss-meta.min.js'

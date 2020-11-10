@@ -90,17 +90,11 @@ function getUsercssCompiler(preprocessor) {
     },
     stylus: {
       preprocess(source, vars) {
-        loadScript('/vendor/stylus-lang-bundle/stylus.min.js');
+        loadScript('/vendor/stylus-lang-bundle/stylus-renderer.min.js');
         return new Promise((resolve, reject) => {
           const varDef = Object.keys(vars).map(key => `${key} = ${vars[key].value};\n`).join('');
-          if (!Error.captureStackTrace) Error.captureStackTrace = () => {};
-          self.stylus(varDef + source).render((err, output) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(output);
-            }
-          });
+          new self.StylusRenderer(varDef + source)
+            .render((err, output) => err ? reject(err) : resolve(output));
         });
       }
     },
