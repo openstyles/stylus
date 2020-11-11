@@ -139,17 +139,11 @@ function showStyles(styles = [], matchUrlIds) {
 
   function renderStyles() {
     const t0 = performance.now();
-    let rendered = 0;
-    while (
-      index < sorted.length &&
-      // eslint-disable-next-line no-unmodified-loop-condition
-      (shouldRenderAll || ++rendered < 20 || performance.now() - t0 < 10)
-    ) {
+    while (index < sorted.length && (shouldRenderAll || performance.now() - t0 < 20)) {
       const info = sorted[index++];
       const entry = createStyleElement(info);
       if (matchUrlIds && !matchUrlIds.includes(info.style.id)) {
         entry.classList.add('not-matching');
-        rendered--;
       }
       renderBin.appendChild(entry);
     }
@@ -241,12 +235,16 @@ function createStyleElement({style, name: nameLC}) {
 }
 
 
-function createStyleTargetsElement({entry, style}) {
+function createStyleTargetsElement({entry, expanded, style = entry.styleMeta}) {
   const parts = createStyleElement.parts;
   const entryTargets = $('.targets', entry);
+  const expanderCls = $('.applies-to', entry).classList;
   const targets = parts.targets.cloneNode(true);
   let container = targets;
+  let el = entryTargets.firstElementChild;
   let numTargets = 0;
+  let allTargetsRendered = true;
+  const maxTargets = expanded ? 1000 : newUI.enabled ? newUI.targets : 10;
   const displayed = new Set();
   for (const type of TARGET_TYPES) {
     for (const section of style.sections) {
@@ -254,30 +252,37 @@ function createStyleTargetsElement({entry, style}) {
         if (displayed.has(targetValue)) {
           continue;
         }
+        if (++numTargets > maxTargets) {
+          allTargetsRendered = expanded;
+          break;
+        }
         displayed.add(targetValue);
+        const text =
+          (parts.decorations[type + 'Before'] || '') +
+          targetValue +
+          (parts.decorations[type + 'After'] || '');
+        if (el && el.dataset.type === type && el.lastChild.textContent === text) {
+          const next = el.nextElementSibling;
+          container.appendChild(el);
+          el = next;
+          continue;
+        }
         const element = template.appliesToTarget.cloneNode(true);
         if (!newUI.enabled) {
-          if (numTargets === 10) {
+          if (numTargets === maxTargets) {
             container = container.appendChild(template.extraAppliesTo.cloneNode(true));
           } else if (numTargets > 0) {
             container.appendChild(template.appliesToSeparator.cloneNode(true));
           }
         }
         element.dataset.type = type;
-        element.appendChild(
-          document.createTextNode(
-            (parts.decorations[type + 'Before'] || '') +
-            targetValue +
-            (parts.decorations[type + 'After'] || '')));
+        element.appendChild(document.createTextNode(text));
         container.appendChild(element);
-        numTargets++;
       }
     }
   }
-  if (newUI.enabled) {
-    if (numTargets > newUI.targets) {
-      $('.applies-to', entry).classList.add('has-more');
-    }
+  if (newUI.enabled && numTargets > newUI.targets) {
+    expanderCls.add('has-more');
   }
   if (numTargets) {
     entryTargets.parentElement.replaceChild(targets, entryTargets);
@@ -289,6 +294,8 @@ function createStyleTargetsElement({entry, style}) {
     entryTargets.appendChild(template.appliesToEverything.cloneNode(true));
   }
   entry.classList.toggle('global', !numTargets);
+  entry._allTargetsRendered = allTargetsRendered;
+  entry._numTargets = numTargets;
 }
 
 
@@ -449,8 +456,12 @@ Object.assign(handleEvent, {
     event.preventDefault();
   },
 
-  expandTargets(event) {
+  expandTargets(event, entry) {
     event.preventDefault();
+    if (!entry._allTargetsRendered) {
+      createStyleTargetsElement({entry, expanded: true});
+      setTimeout(getFaviconImgSrc, 0, entry);
+    }
     this.closest('.applies-to').classList.toggle('expanded');
   },
 
@@ -651,20 +662,23 @@ function switchUI({styleOnly} = {}) {
     return;
   }
 
-  const missingFavicons = newUI.enabled && newUI.favicons && !$('.applies-to img');
-  if (changed.enabled || (missingFavicons && !createStyleElement.parts)) {
+  const iconsEnabled = newUI.enabled && newUI.favicons;
+  let iconsMissing = iconsEnabled && !$('.applies-to img');
+  if (changed.enabled || (iconsMissing && !createStyleElement.parts)) {
     installed.textContent = '';
     API.getAllStyles(true).then(showStyles);
     return;
   }
   if (changed.targets) {
-    for (const targets of $$('.entry .targets')) {
-      const hasMore = targets.children.length > newUI.targets;
-      targets.parentElement.classList.toggle('has-more', hasMore);
+    for (const entry of installed.children) {
+      $('.applies-to', entry).classList.toggle('has-more', entry._numTargets > newUI.targets);
+      if (!entry._allTargetsRendered && newUI.targets > $('.targets', entry).childElementCount) {
+        createStyleTargetsElement({entry, expanded: true});
+        iconsMissing |= iconsEnabled;
+      }
     }
-    return;
   }
-  if (missingFavicons) {
+  if (iconsMissing) {
     debounce(getFaviconImgSrc);
     return;
   }
