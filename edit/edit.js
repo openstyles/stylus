@@ -22,7 +22,7 @@
   prefs
   rerouteHotkeys
   SectionsEditor
-  sessionStorageHash
+  sessionStore
   setupLivePrefs
   SourceEditor
   t
@@ -100,7 +100,7 @@ lazyInit();
     // switching the mode here to show the correct page ASAP, usually before DOMContentLoaded
     editor.isUsercss = Boolean(style.usercssData || !style.id && prefs.get('newStyleAsUsercss'));
     document.documentElement.classList.toggle('usercss', editor.isUsercss);
-    sessionStorage.justEditedStyleId = style.id || '';
+    sessionStore.justEditedStyleId = style.id || '';
     // no such style so let's clear the invalid URL parameters
     if (!style.id) history.replaceState({}, '', location.pathname);
     updateTitle(false);
@@ -335,7 +335,7 @@ function lazyInit() {
   async function patchHistoryBack(tab) {
     ownTabId = tab.id;
     // use browser history back when 'back to manage' is clicked
-    if (sessionStorageHash('manageStylesHistory').value[ownTabId] === location.href) {
+    if (sessionStore['manageStylesHistory' + ownTabId] === location.href) {
       await onDOMready();
       $('#cancel-button').onclick = event => {
         event.stopPropagation();
@@ -346,8 +346,8 @@ function lazyInit() {
   }
   /** resize on 'undo close' */
   function restoreWindowSize() {
-    const pos = tryJSONparse(sessionStorage.windowPos);
-    delete sessionStorage.windowPos;
+    const pos = tryJSONparse(sessionStore.windowPos);
+    delete sessionStore.windowPos;
     if (pos && pos.left != null && chrome.windows) {
       chrome.windows.update(chrome.windows.WINDOW_ID_CURRENT, pos);
     }
@@ -408,7 +408,7 @@ function onRuntimeMessage(request) {
 }
 
 function beforeUnload(e) {
-  sessionStorage.windowPos = JSON.stringify(canSaveWindowPos() && prefs.get('windowPosition'));
+  sessionStore.windowPos = JSON.stringify(canSaveWindowPos() && prefs.get('windowPosition'));
   const activeElement = document.activeElement;
   if (activeElement) {
     // blurring triggers 'change' or 'input' event if needed

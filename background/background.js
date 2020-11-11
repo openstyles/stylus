@@ -135,24 +135,13 @@ if (chrome.commands) {
 
 // *************************************************************************
 chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
-  // save install type: "admin", "development", "normal", "sideload" or "other"
-  // "normal" = addon installed from webstore
-  chrome.management.getSelf(info => {
-    localStorage.installType = info.installType;
-    if (reason === 'install' && info.installType === 'development' && chrome.contextMenus) {
-      createContextMenus(['reload']);
-    }
-  });
-
   if (reason !== 'update') return;
-  // translations may change
-  localStorage.L10N = JSON.stringify({
-    browserUIlanguage: chrome.i18n.getUILanguage(),
-  });
-  // themes may change
-  delete localStorage.codeMirrorThemes;
-  // inline search cache for USO is not needed anymore, TODO: remove this by the middle of 2021
   if (semverCompare(previousVersion, '1.5.13') <= 0) {
+    // Removing unused stuff
+    // TODO: delete this entire block by the middle of 2021
+    try {
+      localStorage.clear();
+    } catch (e) {}
     setTimeout(async () => {
       const del = Object.keys(await chromeLocal.get())
         .filter(key => key.startsWith('usoSearchCache'));
@@ -181,7 +170,7 @@ contextMenus = {
     click: browserCommands.openOptions,
   },
   'reload': {
-    presentIf: () => localStorage.installType === 'development',
+    presentIf: async () => (await browser.management.getSelf()).installType === 'development',
     title: 'reload',
     click: browserCommands.reload,
   },
@@ -198,10 +187,10 @@ contextMenus = {
   }
 };
 
-function createContextMenus(ids) {
+async function createContextMenus(ids) {
   for (const id of ids) {
     let item = contextMenus[id];
-    if (item.presentIf && !item.presentIf()) {
+    if (item.presentIf && !await item.presentIf()) {
       continue;
     }
     item = Object.assign({id}, item);

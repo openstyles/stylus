@@ -1,6 +1,20 @@
-/* exported getTab getActiveTab onTabReady stringAsRegExp openURL ignoreChromeError
-  getStyleWithNoCode tryRegExp sessionStorageHash download deepEqual
-  closeCurrentTab capitalize CHROME_HAS_BORDER_BUG */
+/* exported
+  capitalize
+  CHROME_HAS_BORDER_BUG
+  closeCurrentTab
+  deepEqual
+  download
+  getActiveTab
+  getStyleWithNoCode
+  getTab
+  ignoreChromeError
+  onTabReady
+  openURL
+  sessionStore
+  stringAsRegExp
+  tryCatch
+  tryRegExp
+*/
 'use strict';
 
 const CHROME = Boolean(chrome.app) && parseInt(navigator.userAgent.match(/Chrom\w+\/(\d+)|$/)[1]);
@@ -316,24 +330,28 @@ function deepEqual(a, b, ignoredKeys) {
   return true;
 }
 
-
-function sessionStorageHash(name) {
-  return {
-    name,
-    value: tryCatch(JSON.parse, sessionStorage[name]) || {},
-    set(k, v) {
-      this.value[k] = v;
-      this.updateStorage();
-    },
-    unset(k) {
-      delete this.value[k];
-      this.updateStorage();
-    },
-    updateStorage() {
-      sessionStorage[this.name] = JSON.stringify(this.value);
+/* A simple polyfill in case DOM storage is disabled in the browser */
+const sessionStore = new Proxy({}, {
+  get(target, name) {
+    try {
+      return sessionStorage[name];
+    } catch (e) {
+      Object.defineProperty(window, 'sessionStorage', {value: target});
     }
-  };
-}
+  },
+  set(target, name, value, proxy) {
+    try {
+      sessionStorage[name] = `${value}`;
+    } catch (e) {
+      proxy[name]; // eslint-disable-line no-unused-expressions
+      target[name] = `${value}`;
+    }
+    return true;
+  },
+  deleteProperty(target, name) {
+    return delete target[name];
+  },
+});
 
 /**
  * @param {String} url

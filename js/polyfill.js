@@ -66,15 +66,6 @@ self.INJECTED !== 1 && (() => {
 
   //#region for our extension pages
 
-  for (const storage of ['localStorage', 'sessionStorage']) {
-    try {
-      window[storage]._access_check = 1;
-      delete window[storage]._access_check;
-    } catch (err) {
-      Object.defineProperty(window, storage, {value: {}});
-    }
-  }
-
   if (!(new URLSearchParams({foo: 1})).get('foo')) {
     // TODO: remove when minimum_chrome_version >= 61
     window.URLSearchParams = class extends URLSearchParams {

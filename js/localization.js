@@ -7,14 +7,8 @@ tDocLoader();
 
 
 function t(key, params) {
-  const cache = !params && t.cache[key];
-  const s = cache || chrome.i18n.getMessage(key, params);
-  if (s === '') {
-    throw `Missing string "${key}"`;
-  }
-  if (!params && !cache) {
-    t.cache[key] = s;
-  }
+  const s = chrome.i18n.getMessage(key, params);
+  if (!s) throw `Missing string "${key}"`;
   return s;
 }
 
@@ -138,11 +132,6 @@ function tNodeList(nodes) {
 
 function tDocLoader() {
   t.DOMParser = new DOMParser();
-  t.cache = (() => {
-    try {
-      return JSON.parse(localStorage.L10N);
-    } catch (e) {}
-  })() || {};
   t.RX_WORD_BREAK = new RegExp([
     '(',
     /[\d\w\u007B-\uFFFF]{10}/,
@@ -153,14 +142,6 @@ function tDocLoader() {
     ')',
     /(?!\b|\s|$)/,
   ].map(rx => rx.source || rx).join(''), 'g');
-
-  // reset L10N cache on UI language change
-  const UIlang = chrome.i18n.getUILanguage();
-  if (t.cache.browserUIlanguage !== UIlang) {
-    t.cache = {browserUIlanguage: UIlang};
-    localStorage.L10N = JSON.stringify(t.cache);
-  }
-  const cacheLength = Object.keys(t.cache).length;
 
   Object.assign(tDocLoader, {
     observer: new MutationObserver(process),
@@ -197,9 +178,6 @@ function tDocLoader() {
     document.removeEventListener('DOMContentLoaded', onLoad);
     process(tDocLoader.observer.takeRecords());
     tDocLoader.stop();
-    if (cacheLength !== Object.keys(t.cache).length) {
-      localStorage.L10N = JSON.stringify(t.cache);
-    }
   }
 }
 

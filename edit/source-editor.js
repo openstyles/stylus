@@ -16,6 +16,7 @@
   MozSectionWidget
   prefs
   sectionsToMozFormat
+  sessionStore
   t
 */
 
@@ -217,7 +218,7 @@ function SourceEditor() {
       if (style.id !== newStyle.id) {
         history.replaceState({}, '', `?id=${newStyle.id}`);
       }
-      sessionStorage.justEditedStyleId = newStyle.id;
+      sessionStore.justEditedStyleId = newStyle.id;
       Object.assign(style, newStyle);
       $('#preview-label').classList.remove('hidden');
       updateMeta();

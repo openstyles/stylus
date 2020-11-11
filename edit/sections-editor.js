@@ -15,6 +15,7 @@
   messageBox
   prefs
   sectionsToMozFormat
+  sessionStore
   showCodeMirrorPopup
   showHelp
   t
@@ -117,7 +118,7 @@ function SectionsEditor() {
       }
       newStyle = await API.editSave(newStyle);
       destroyRemovedSections();
-      sessionStorage.justEditedStyleId = newStyle.id;
+      sessionStore.justEditedStyleId = newStyle.id;
       editor.replaceStyle(newStyle, false);
     },
 

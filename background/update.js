@@ -35,7 +35,7 @@
   const ALARM_NAME = 'scheduledUpdate';
   const MIN_INTERVAL_MS = 60e3;
 
-  let lastUpdateTime = parseInt(localStorage.lastUpdateTime) || Date.now();
+  let lastUpdateTime;
   let checkingAll = false;
   let logQueue = [];
   let logLastWriteTime = 0;
@@ -46,9 +46,11 @@
   API_METHODS.updateCheck = checkStyle;
   API_METHODS.getUpdaterStates = () => STATES;
 
-  prefs.subscribe(['updateInterval'], schedule);
-  schedule();
-  chrome.alarms.onAlarm.addListener(onAlarm);
+  chromeLocal.getValue('lastUpdateTime').then(val => {
+    lastUpdateTime = val || Date.now();
+    prefs.subscribe('updateInterval', schedule, {now: true});
+    chrome.alarms.onAlarm.addListener(onAlarm);
+  });
 
   return {checkAllStyles, checkStyle, STATES};
 
@@ -255,7 +257,7 @@
   }
 
   function resetInterval() {
-    localStorage.lastUpdateTime = lastUpdateTime = Date.now();
+    chromeLocal.setValue('lastUpdateTime', lastUpdateTime = Date.now());
     schedule();
   }
 

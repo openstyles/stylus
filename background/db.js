@@ -24,25 +24,16 @@ const db = (() => {
   async function tryUsingIndexedDB() {
     // we use chrome.storage.local fallback if IndexedDB doesn't save data,
     // which, once detected on the first run, is remembered in chrome.storage.local
-    // for reliablility and in localStorage for fast synchronous access
-    // (FF may block localStorage depending on its privacy options)
-    // note that it may throw when accessing the variable
-    // https://github.com/openstyles/stylus/issues/615
+    // note that accessing indexedDB may throw, https://github.com/openstyles/stylus/issues/615
     if (typeof indexedDB === 'undefined') {
       throw new Error('indexedDB is undefined');
     }
-    switch (await getFallback()) {
+    switch (await chromeLocal.getValue(FALLBACK)) {
       case true: throw null;
       case false: break;
       default: await testDB();
     }
     return useIndexedDB();
-  }
-
-  async function getFallback() {
-    return localStorage[FALLBACK] === 'true' ? true :
-      localStorage[FALLBACK] === 'false' ? false :
-        chromeLocal.getValue(FALLBACK);
   }
 
   async function testDB() {
@@ -62,13 +53,11 @@ const db = (() => {
       chromeLocal.setValue(FALLBACK + 'Reason', workerUtil.cloneError(err));
       console.warn('Failed to access indexedDB. Switched to storage API.', err);
     }
-    localStorage[FALLBACK] = 'true';
     return createChromeStorageDB().exec;
   }
 
   function useIndexedDB() {
     chromeLocal.setValue(FALLBACK, false);
-    localStorage[FALLBACK] = 'false';
     return dbExecIndexedDB;
   }
 

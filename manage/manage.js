@@ -6,7 +6,7 @@ global messageBox getStyleWithNoCode
   configDialog
   sorter msg prefs API $ $$ $create template setupLivePrefs
   t tWordBreak formatDate
-  getOwnTab getActiveTab openURL animateElement sessionStorageHash debounce
+  getOwnTab getActiveTab openURL animateElement sessionStore debounce
   scrollElementIntoView CHROME VIVALDI router
 */
 'use strict';
@@ -129,7 +129,7 @@ function showStyles(styles = [], matchUrlIds) {
   let firstRun = true;
   installed.dataset.total = styles.length;
   const scrollY = (history.state || {}).scrollY;
-  const shouldRenderAll = scrollY > window.innerHeight || sessionStorage.justEditedStyleId;
+  const shouldRenderAll = scrollY > window.innerHeight || sessionStore.justEditedStyleId;
   const renderBin = document.createDocumentFragment();
   if (scrollY) {
     renderStyles();
@@ -155,7 +155,7 @@ function showStyles(styles = [], matchUrlIds) {
       return;
     }
     setTimeout(getFaviconImgSrc);
-    if (sessionStorage.justEditedStyleId) {
+    if (sessionStore.justEditedStyleId) {
       highlightEditedStyle();
     } else if ('scrollY' in (history.state || {})) {
       setTimeout(window.scrollTo, 0, 0, history.state.scrollY);
@@ -400,7 +400,7 @@ Object.assign(handleEvent, {
     } else {
       onVisibilityChange();
       getActiveTab().then(tab => {
-        sessionStorageHash('manageStylesHistory').set(tab.id, url);
+        sessionStore['manageStylesHistory' + tab.id] = url;
         location.href = url;
       });
     }
@@ -691,10 +691,10 @@ function onVisibilityChange() {
     // the catch here is that DOM may be outdated so we'll at least refresh the just edited style
     // assuming other changes aren't important enough to justify making a complicated DOM sync
     case 'visible': {
-      const id = sessionStorage.justEditedStyleId;
+      const id = sessionStore.justEditedStyleId;
       if (id) {
         handleUpdateForId(Number(id), {method: 'styleUpdated'});
-        delete sessionStorage.justEditedStyleId;
+        delete sessionStore.justEditedStyleId;
       }
       break;
     }
@@ -707,9 +707,9 @@ function onVisibilityChange() {
 
 
 function highlightEditedStyle() {
-  if (!sessionStorage.justEditedStyleId) return;
-  const entry = $(ENTRY_ID_PREFIX + sessionStorage.justEditedStyleId);
-  delete sessionStorage.justEditedStyleId;
+  if (!sessionStore.justEditedStyleId) return;
+  const entry = $(ENTRY_ID_PREFIX + sessionStore.justEditedStyleId);
+  delete sessionStore.justEditedStyleId;
   if (entry) {
     animateElement(entry);
     requestAnimationFrame(() => scrollElementIntoView(entry));
