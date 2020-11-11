@@ -119,11 +119,9 @@ window.INJECTED !== 1 && (() => {
       'storage.sync': ['get', 'set'],
     });
   }
-  const initializing = (
-    msg.isBg
-      ? browser.storage.sync.get(STORAGE_KEY).then(res => res[STORAGE_KEY])
-      : API.getPrefs()
-  ).then(setAll);
+  // getPrefs may fail on browser startup in the active tab as it loads before the background script
+  const initializing = (msg.isBg ? readStorage() : API.getPrefs().catch(readStorage))
+    .then(setAll);
 
   chrome.storage.onChanged.addListener(async (changes, area) => {
     const data = area === 'sync' && changes[STORAGE_KEY];
@@ -235,6 +233,14 @@ window.INJECTED !== 1 && (() => {
         API.setPref(key, value);
       }
     }
+  }
+
+  function readStorage() {
+    /* Using a non-promisified call since this code may also run in a content script
+       when API.getPrefs occasionally fails during browser startup in the active tab */
+    return new Promise(resolve =>
+      chrome.storage.sync.get(STORAGE_KEY, data =>
+        resolve(data[STORAGE_KEY])));
   }
 
   function updateStorage() {
