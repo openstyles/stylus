@@ -398,11 +398,13 @@
           r.resolve(code);
         }
       });
-      port.onDisconnect.addListener(() => {
-        chrome.tabs.get(tabId, tab =>
-          !chrome.runtime.lastError && tab.url === initialUrl
-            ? location.reload()
-            : closeCurrentTab());
+      port.onDisconnect.addListener(async () => {
+        const tab = await browser.tabs.get(tabId);
+        if (!chrome.runtime.lastError && tab.url === initialUrl) {
+          location.reload();
+        } else {
+          closeCurrentTab();
+        }
       });
       return (opts = {}) => new Promise((resolve, reject) => {
         const id = performance.now();

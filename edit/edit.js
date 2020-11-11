@@ -151,11 +151,10 @@ lazyInit();
     if (onBoundsChanged) {
       // * movement is reported even if the window wasn't resized
       // * fired just once when done so debounce is not needed
-      onBoundsChanged.addListener(wnd => {
+      onBoundsChanged.addListener(async wnd => {
         // getting the current window id as it may change if the user attached/detached the tab
-        chrome.windows.getCurrent(ownWnd => {
-          if (wnd.id === ownWnd.id) saveWindowPos();
-        });
+        const {id} = await browser.windows.getCurrent();
+        if (id === wnd.id) saveWindowPos();
       });
     }
     window.on('resize', () => {
@@ -325,7 +324,15 @@ lazyInit();
 /* Stuff not needed for the main init so we can let it run at its own tempo */
 function lazyInit() {
   let ownTabId;
-  getOwnTab().then(async tab => {
+  // not using `await` so we don't block the subsequent code
+  getOwnTab().then(patchHistoryBack);
+  // no windows on android
+  if (chrome.windows) {
+    restoreWindowSize();
+    detectWindowedState();
+    chrome.tabs.onAttached.addListener(onAttached);
+  }
+  async function patchHistoryBack(tab) {
     ownTabId = tab.id;
     // use browser history back when 'back to manage' is clicked
     if (sessionStorageHash('manageStylesHistory').value[ownTabId] === location.href) {
@@ -336,29 +343,23 @@ function lazyInit() {
         history.back();
       };
     }
-  });
-  // no windows on android
-  if (!chrome.windows) {
-    return;
   }
-  // resize on 'undo close'
-  const pos = tryJSONparse(sessionStorage.windowPos);
-  delete sessionStorage.windowPos;
-  if (pos && pos.left != null && chrome.windows) {
-    chrome.windows.update(chrome.windows.WINDOW_ID_CURRENT, pos);
+  /** resize on 'undo close' */
+  function restoreWindowSize() {
+    const pos = tryJSONparse(sessionStorage.windowPos);
+    delete sessionStorage.windowPos;
+    if (pos && pos.left != null && chrome.windows) {
+      chrome.windows.update(chrome.windows.WINDOW_ID_CURRENT, pos);
+    }
   }
-  // detect isWindowed
-  if (prefs.get('openEditInWindow') && history.length === 1) {
-    chrome.tabs.query({currentWindow: true}, tabs => {
-      if (tabs.length === 1) {
-        chrome.windows.getAll(windows => {
-          isWindowed = windows.length > 1; // not modifying the main browser window
-        });
-      }
-    });
+  async function detectWindowedState() {
+    isWindowed =
+      prefs.get('openEditInWindow') &&
+      history.length === 1 &&
+      browser.windows.getAll().length > 1 &&
+      (await browser.tabs.query({currentWindow: true})).length === 1;
   }
-  // toggle openEditInWindow
-  chrome.tabs.onAttached.addListener((tabId, info) => {
+  async function onAttached(tabId, info) {
     if (tabId !== ownTabId) {
       return;
     }
@@ -366,16 +367,15 @@ function lazyInit() {
       prefs.set('openEditInWindow', false);
       return;
     }
-    chrome.windows.get(info.newWindowId, {populate: true}, win => {
-      // If there's only one tab in this window, it's been dragged to new window
-      const openEditInWindow = win.tabs.length === 1;
-      if (openEditInWindow && FIREFOX) {
-        // FF-only because Chrome retardedly resets the size during dragging
-        chrome.windows.update(info.newWindowId, prefs.get('windowPosition'));
-      }
-      prefs.set('openEditInWindow', openEditInWindow);
-    });
-  });
+    const win = await browser.windows.get(info.newWindowId, {populate: true});
+    // If there's only one tab in this window, it's been dragged to new window
+    const openEditInWindow = win.tabs.length === 1;
+    // FF-only because Chrome retardedly resets the size during dragging
+    if (openEditInWindow && FIREFOX) {
+      chrome.windows.update(info.newWindowId, prefs.get('windowPosition'));
+    }
+    prefs.set('openEditInWindow', openEditInWindow);
+  }
 }
 
 function onRuntimeMessage(request) {

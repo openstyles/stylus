@@ -1,4 +1,4 @@
-/* global promisifyChrome msg API */
+/* global msg API */
 /* global deepCopy debounce */ // not used in content scripts
 'use strict';
 
@@ -114,11 +114,6 @@ window.INJECTED !== 1 && (() => {
     any: new Set(),
     specific: {},
   };
-  if (msg.isBg) {
-    promisifyChrome({
-      'storage.sync': ['get', 'set'],
-    });
-  }
   // getPrefs may fail on browser startup in the active tab as it loads before the background script
   const initializing = (msg.isBg ? readStorage() : API.getPrefs().catch(readStorage))
     .then(setAll);
@@ -236,11 +231,8 @@ window.INJECTED !== 1 && (() => {
   }
 
   function readStorage() {
-    /* Using a non-promisified call since this code may also run in a content script
-       when API.getPrefs occasionally fails during browser startup in the active tab */
-    return new Promise(resolve =>
-      chrome.storage.sync.get(STORAGE_KEY, data =>
-        resolve(data[STORAGE_KEY])));
+    return browser.storage.sync.get(STORAGE_KEY)
+      .then(data => data[STORAGE_KEY]);
   }
 
   function updateStorage() {

@@ -88,28 +88,23 @@ function toggleSideBorders(state = prefs.get('popup.borders')) {
   }
 }
 
-function initTabUrls() {
-  return getActiveTab()
-    .then((tab = {}) =>
-      FIREFOX && tab.status === 'loading' && tab.url === ABOUT_BLANK
-        ? waitForTabUrlFF(tab)
-        : tab)
-    .then(tab => new Promise(resolve =>
-      chrome.webNavigation.getAllFrames({tabId: tab.id}, frames =>
-        resolve({frames, tab}))))
-    .then(({frames, tab}) => {
-      let url = tab.pendingUrl || tab.url || ''; // new Chrome uses pendingUrl while connecting
-      frames = sortTabFrames(frames);
-      if (url === 'chrome://newtab/' && !URLS.chromeProtectsNTP) {
-        url = frames[0].url || '';
-      }
-      if (!URLS.supported(url)) {
-        url = '';
-        frames.length = 1;
-      }
-      tabURL = frames[0].url = url;
-      return frames;
-    });
+async function initTabUrls() {
+  let tab = await getActiveTab();
+  if (FIREFOX && tab.status === 'loading' && tab.url === ABOUT_BLANK) {
+    tab = await waitForTabUrlFF(tab);
+  }
+  let frames = await browser.webNavigation.getAllFrames({tabId: tab.id});
+  let url = tab.pendingUrl || tab.url || ''; // new Chrome uses pendingUrl while connecting
+  frames = sortTabFrames(frames);
+  if (url === 'chrome://newtab/' && !URLS.chromeProtectsNTP) {
+    url = frames[0].url || '';
+  }
+  if (!URLS.supported(url)) {
+    url = '';
+    frames.length = 1;
+  }
+  tabURL = frames[0].url = url;
+  return frames;
 }
 
 /** @param {chrome.webNavigation.GetAllFrameResultDetails[]} frames */

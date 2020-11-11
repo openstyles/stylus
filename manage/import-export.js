@@ -257,8 +257,7 @@ async function importFromString(jsonString) {
     // Must acquire the permission before setting the pref
     if (CHROME && !chrome.declarativeContent &&
         stats.options.names.find(_ => _.name === 'styleViaXhr' && _.isValid && _.val)) {
-      await new Promise(resolve =>
-        chrome.permissions.request({permissions: ['declarativeContent']}, resolve));
+      await browser.permissions.request({permissions: ['declarativeContent']});
     }
     const oldStorage = await chromeSync.get();
     for (const {name, val, isValid, isPref} of stats.options.names) {
