@@ -656,9 +656,8 @@ a:hover {
 .newUI .target img {
   width: 16px;
   height: 16px;
-  vertical-align: sub;
-  margin-left: -20px;
-  margin-right: 4px;
+  vertical-align: middle;
+  margin: -1px 4px 0 -20px;
   transition: opacity .5s, filter .5s;
   filter: grayscale(1);
   /* workaround for the buggy CSS filter: images in the hidden overflow are shown on Mac */
