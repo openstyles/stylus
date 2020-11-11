@@ -181,7 +181,7 @@ window.addEventListener('showStyles:done', () => {
         results = await search({retry});
       }
       if (results.length) {
-        const installedStyles = await API.getAllStyles(true);
+        const installedStyles = await API.getAllStyles();
         const allUsoIds = new Set(installedStyles.map(calcUsoId));
         results = results.filter(r => !allUsoIds.has(r.i));
       }

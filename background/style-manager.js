@@ -12,6 +12,8 @@ script would try to fetch the new code.
 The live preview feature relies on `runtime.connect` and `port.onDisconnect`
 to cleanup the temporary code. See /edit/live-preview.js.
 */
+
+/** @type {styleManager} */
 const styleManager = (() => {
   const preparing = prepare();
 
@@ -65,9 +67,9 @@ const styleManager = (() => {
 
   handleLivePreviewConnections();
 
-  return Object.assign({
+  return Object.assign(/** @namespace styleManager */{
     compareRevision
-  }, ensurePrepared({
+  }, ensurePrepared(/** @namespace styleManager */{
     get,
     getByUUID,
     getSectionsByUrl,
@@ -135,9 +137,8 @@ const styleManager = (() => {
     }
   }
 
-  function getAllStyles(noCode = false) {
-    const datas = [...styles.values()].map(s => s.data);
-    return noCode ? datas.map(getStyleWithNoCode) : datas;
+  function getAllStyles() {
+    return [...styles.values()].map(s => s.data);
   }
 
   function compareRevision(rev1, rev2) {

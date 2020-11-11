@@ -47,7 +47,7 @@ const OWN_ICON = chrome.runtime.getManifest().icons['16'];
 const handleEvent = {};
 
 Promise.all([
-  API.getAllStyles(true),
+  API.getAllStyles(),
   // FIXME: integrate this into filter.js
   router.getSearch('search') && API.searchDB({query: router.getSearch('search')}),
   waitForSelector('#installed'), // needed to avoid flicker due to an extra frame and layout shift
@@ -666,7 +666,7 @@ function switchUI({styleOnly} = {}) {
   let iconsMissing = iconsEnabled && !$('.applies-to img');
   if (changed.enabled || (iconsMissing && !createStyleElement.parts)) {
     installed.textContent = '';
-    API.getAllStyles(true).then(showStyles);
+    API.getAllStyles().then(showStyles);
     return;
   }
   if (changed.targets) {
