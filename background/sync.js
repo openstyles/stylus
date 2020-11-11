@@ -38,14 +38,11 @@ const sync = (() => {
     },
     getState(drive) {
       const key = `sync/state/${drive.name}`;
-      return chromeLocal.get(key)
-        .then(obj => obj[key]);
+      return chromeLocal.getValue(key);
     },
     setState(drive, state) {
       const key = `sync/state/${drive.name}`;
-      return chromeLocal.set({
-        [key]: state
-      });
+      return chromeLocal.setValue(key, state);
     }
   });
 

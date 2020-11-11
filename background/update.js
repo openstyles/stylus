@@ -264,9 +264,9 @@
     debounce(flushQueue, text && checkingAll ? 1000 : 0);
   }
 
-  function flushQueue(lines) {
+  async function flushQueue(lines) {
     if (!lines) {
-      chromeLocal.getValue('updateLog', []).then(flushQueue);
+      flushQueue(await chromeLocal.getValue('updateLog') || []);
       return;
     }
     const time = Date.now() - logLastWriteTime > 11e3 ?

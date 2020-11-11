@@ -1,12 +1,8 @@
-/* global chromeLocal promisifyChrome webextLaunchWebAuthFlow FIREFOX */
+/* global chromeLocal webextLaunchWebAuthFlow FIREFOX */
 /* exported tokenManager */
 'use strict';
 
 const tokenManager = (() => {
-  promisifyChrome({
-    'windows': ['create', 'update', 'remove'],
-    'tabs': ['create', 'update', 'remove']
-  });
   const AUTH = {
     dropbox: {
       flow: 'token',
@@ -93,24 +89,20 @@ const tokenManager = (() => {
       });
   }
 
-  function revokeToken(name) {
+  async function revokeToken(name) {
     const provider = AUTH[name];
     const k = buildKeys(name);
-    return revoke()
-      .then(() => chromeLocal.remove(k.LIST));
-
-    function revoke() {
-      if (!provider.revoke) {
-        return Promise.resolve();
+    if (provider.revoke) {
+      try {
+        const token = await chromeLocal.getValue(k.TOKEN);
+        if (token) {
+          await provider.revoke(token);
+        }
+      } catch (e) {
+        console.error(e);
       }
-      return chromeLocal.get(k.TOKEN)
-        .then(obj => {
-          if (obj[k.TOKEN]) {
-            return provider.revoke(obj[k.TOKEN]);
-          }
-        })
-        .catch(console.error);
     }
+    await chromeLocal.remove(k.LIST);
   }
 
   function refreshToken(name, k, obj) {

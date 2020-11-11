@@ -1,7 +1,6 @@
 /* exported getTab getActiveTab onTabReady stringAsRegExp openURL ignoreChromeError
   getStyleWithNoCode tryRegExp sessionStorageHash download deepEqual
   closeCurrentTab capitalize CHROME_HAS_BORDER_BUG */
-/* global promisifyChrome */
 'use strict';
 
 const CHROME = Boolean(chrome.app) && parseInt(navigator.userAgent.match(/Chrom\w+\/(\d+)|$/)[1]);
@@ -92,10 +91,6 @@ if (chrome.extension.getBackgroundPage && chrome.extension.getBackgroundPage() =
   if (cls) document.documentElement.classList.add(cls);
 }
 
-promisifyChrome({
-  tabs: ['create', 'get', 'getCurrent', 'move', 'query', 'update'],
-  windows: ['create', 'update'], // Android doesn't have chrome.windows
-});
 // FF57+ supports openerTabId, but not in Android
 // (detecting FF57 by the feature it added, not navigator.ua which may be spoofed in about:config)
 const openerTabIdSupported = (!FIREFOX || window.AbortController) && chrome.windows != null;

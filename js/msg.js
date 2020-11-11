@@ -1,13 +1,8 @@
-/* global promisifyChrome */
 /* global deepCopy getOwnTab URLS */ // not used in content scripts
 'use strict';
 
 // eslint-disable-next-line no-unused-expressions
 window.INJECTED !== 1 && (() => {
-  promisifyChrome({
-    runtime: ['sendMessage', 'getBackgroundPage'],
-    tabs: ['sendMessage', 'query'],
-  });
   const TARGETS = Object.assign(Object.create(null), {
     all: ['both', 'tab', 'extension'],
     extension: ['both', 'extension'],

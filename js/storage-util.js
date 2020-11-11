@@ -1,72 +1,51 @@
-/* global loadScript tryJSONparse promisifyChrome */
-/* exported chromeLocal chromeSync */
+/* global loadScript tryJSONparse */
 'use strict';
 
-promisifyChrome({
-  'storage.local': ['get', 'remove', 'set'],
-  'storage.sync': ['get', 'remove', 'set'],
-});
-
-const [chromeLocal, chromeSync] = (() => {
-  return [
-    createWrapper('local'),
-    createWrapper('sync'),
-  ];
-
-  function createWrapper(name) {
-    const storage = browser.storage[name];
-    const wrapper = {
-      get: storage.get.bind(storage),
-      set: data => storage.set(data).then(() => data),
-      remove: storage.remove.bind(storage),
-
-      /**
-       * @param {String} key
-       * @param {Any}    [defaultValue]
-       * @returns {Promise<any>}
-       */
-      getValue: (key, defaultValue) =>
-        wrapper.get(
-          defaultValue !== undefined ?
-            {[key]: defaultValue} :
-            key
-        ).then(data => data[key]),
-
-      setValue: (key, value) => wrapper.set({[key]: value}),
-
-      getLZValue: key => wrapper.getLZValues([key]).then(data => data[key]),
-      getLZValues: (keys = Object.values(wrapper.LZ_KEY)) =>
-        Promise.all([
-          wrapper.get(keys),
-          loadLZStringScript(),
-        ]).then(([data = {}, LZString]) => {
-          for (const key of keys) {
-            const value = data[key];
-            data[key] = value && tryJSONparse(LZString.decompressFromUTF16(value));
-          }
-          return data;
-        }),
-      setLZValue: (key, value) =>
-        loadLZStringScript().then(LZString =>
-          wrapper.set({
-            [key]: LZString.compressToUTF16(JSON.stringify(value)),
-          })),
-
-      loadLZStringScript,
-    };
-    return wrapper;
-  }
-
-  function loadLZStringScript() {
-    return window.LZString ?
-      Promise.resolve(window.LZString) :
-      loadScript('/vendor/lz-string-unsafe/lz-string-unsafe.min.js').then(() =>
-        (window.LZString = window.LZString || window.LZStringUnsafe));
-  }
+(() => {
+  /** @namespace StorageExtras */
+  const StorageExtras = {
+    async getValue(key) {
+      return (await this.get(key))[key];
+    },
+    async setValue(key, value) {
+      await this.set({[key]: value});
+    },
+    async getLZValue(key) {
+      return (await this.getLZValues([key]))[key];
+    },
+    async getLZValues(keys = Object.values(this.LZ_KEY)) {
+      const [data, LZString] = await Promise.all([
+        this.get(keys),
+        this.getLZString(),
+      ]);
+      for (const key of keys) {
+        const value = data[key];
+        data[key] = value && tryJSONparse(LZString.decompressFromUTF16(value));
+      }
+      return data;
+    },
+    async setLZValue(key, value) {
+      const LZString = await this.getLZString();
+      return this.setValue(key, LZString.compressToUTF16(JSON.stringify(value)));
+    },
+    async getLZString() {
+      if (!window.LZString) {
+        await loadScript('/vendor/lz-string-unsafe/lz-string-unsafe.min.js');
+        window.LZString = window.LZString || window.LZStringUnsafe;
+      }
+      return window.LZString;
+    },
+  };
+  /** @namespace StorageExtrasSync */
+  const StorageExtrasSync = {
+    LZ_KEY: {
+      csslint: 'editorCSSLintConfig',
+      stylelint: 'editorStylelintConfig',
+      usercssTemplate: 'usercssTemplate',
+    },
+  };
+  /** @type {chrome.storage.StorageArea|StorageExtras} */
+  window.chromeLocal = Object.assign(browser.storage.local, StorageExtras);
+  /** @type {chrome.storage.StorageArea|StorageExtras|StorageExtrasSync} */
+  window.chromeSync = Object.assign(browser.storage.sync, StorageExtras, StorageExtrasSync);
 })();
-
-chromeSync.LZ_KEY = {
-  csslint: 'editorCSSLintConfig',
-  stylelint: 'editorStylelintConfig',
-  usercssTemplate: 'usercssTemplate',
-};
