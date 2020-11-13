@@ -517,7 +517,6 @@ function SectionsEditor() {
       if (!originalSections.length) {
         setGlobalProgress();
         requestAnimationFrame(fitToAvailableSpace);
-        sections.forEach(({cm}) => setTimeout(linter.enableForEditor, 0, cm));
         done();
       } else {
         setTimeout(chunk);
