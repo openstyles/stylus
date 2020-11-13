@@ -647,11 +647,18 @@ function SectionsEditor() {
       xo.observe(cm.display.wrapper);
   }
 
+  /** @param {IntersectionObserverEntry[]} entries */
   function refreshOnViewListener(entries) {
-    for (const {isIntersecting, target} of entries) {
-      if (isIntersecting) {
-        target.CodeMirror.refresh();
-        xo.unobserve(target);
+    for (const e of entries) {
+      const r = e.isIntersecting && e.intersectionRect;
+      if (r) {
+        xo.unobserve(e.target);
+        const cm = e.target.CodeMirror;
+        if (r.bottom > 0 && r.top < window.innerHeight) {
+          cm.refresh();
+        } else {
+          setTimeout(() => cm.refresh());
+        }
       }
     }
   }
