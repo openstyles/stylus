@@ -73,6 +73,11 @@
       const height = cm.display.lastWrapHeight;
       if (!height || !textHeight) return;
       maxRenderChunkSize = Math.max(20, Math.ceil(height / textHeight));
+      const state = cm.state.colorpicker;
+      if (state.colorizeOnUpdate) {
+        state.colorizeOnUpdate = false;
+        colorizeAll(state);
+      }
       cm.off('update', CM_EVENTS.update);
     },
     mousedown(cm, event) {
@@ -166,7 +171,7 @@
     const {cm} = state;
     const {viewFrom, viewTo} = cm.display;
     if (!viewTo) {
-      requestAnimationFrame(() => colorizeAll(state));
+      state.colorizeOnUpdate = true;
       return;
     }
     const {curOp} = cm;
