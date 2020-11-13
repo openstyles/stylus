@@ -75,6 +75,7 @@ function SourceEditor() {
     'editor.appliesToLineWidget': (k, val) => sectionWidget.toggle(val),
     'editor.toc.expanded': (k, val) => sectionFinder.onOff(editor.updateToc, val),
   }, {now: true});
+  editor.applyScrollInfo(cm);
   cm.clearHistory();
   cm.markClean();
   savedGeneration = cm.changeGeneration();

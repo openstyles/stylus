@@ -17,20 +17,26 @@
 
 /* exported createSection */
 
-/** @returns {EditorSection} */
-function createSection(originalSection, genId) {
+/**
+ * @param {StyleSection} originalSection
+ * @param {function():number} genId
+ * @param {EditorScrollInfo} [si]
+ * @returns {EditorSection}
+ */
+function createSection(originalSection, genId, si) {
   const {dirty} = editor;
   const sectionId = genId();
   const el = template.section.cloneNode(true);
   const elLabel = $('.code-label', el);
   const cm = cmFactory.create(wrapper => {
     // making it tall during initial load so IntersectionObserver sees only one adjacent CM
-    wrapper.style.height = '100vh';
+    wrapper.style.height = si ? si.height : '100vh';
     elLabel.after(wrapper);
   }, {
     value: originalSection.code,
   });
   el.CodeMirror = cm; // used by getAssociatedEditor
+  editor.applyScrollInfo(cm, si);
 
   const changeListeners = new Set();
 

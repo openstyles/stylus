@@ -56,13 +56,23 @@ lazyInit();
       .then(initTheme),
     onDOMready(),
   ]);
+  const scrollInfo = style.id && tryJSONparse(sessionStore['editorScrollInfo' + style.id]);
   /** @namespace EditorBase */
   Object.assign(editor, {
     style,
     dirty,
+    scrollInfo,
     updateName,
     updateToc,
     toggleStyle,
+    applyScrollInfo(cm, si = ((scrollInfo || {}).cms || [])[0]) {
+      if (si && si.sel) {
+        cm.operation(() => {
+          cm.setSelections(...si.sel, {scroll: false});
+          cm.scrollIntoView(cm.getCursor(), si.parentHeight / 2);
+        });
+      }
+    }
   });
   prefs.subscribe('editor.linter', updateLinter);
   prefs.subscribe('editor.keyMap', showHotkeyInTooltip);
@@ -410,6 +420,15 @@ function onRuntimeMessage(request) {
 
 function beforeUnload(e) {
   sessionStore.windowPos = JSON.stringify(canSaveWindowPos() && prefs.get('windowPosition'));
+  sessionStore['editorScrollInfo' + editor.style.id] = JSON.stringify({
+    scrollY: window.scrollY,
+    cms: editor.getEditors().map(cm => /** @namespace EditorScrollInfo */({
+      focus: cm.hasFocus(),
+      height: cm.display.wrapper.style.height.replace('100vh', ''),
+      parentHeight: cm.display.wrapper.parentElement.offsetHeight,
+      sel: cm.isClean() && [cm.doc.sel.ranges, cm.doc.sel.primIndex],
+    })),
+  });
   const activeElement = document.activeElement;
   if (activeElement) {
     // blurring triggers 'change' or 'input' event if needed

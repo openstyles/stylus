@@ -486,7 +486,7 @@ function SectionsEditor() {
     livePreview.update(getModel());
   }
 
-  function initSections(originalSections, {
+  function initSections(src, {
     focusOn = 0,
     replace = false,
     pristine = false,
@@ -497,26 +497,35 @@ function SectionsEditor() {
       container.textContent = '';
     }
     let done;
-    const total = originalSections.length;
-    originalSections = originalSections.slice();
+    let index = 0;
+    let y = 0;
+    const total = src.length;
+    let si = editor.scrollInfo;
+    if (si && si.cms && si.cms.length === src.length) {
+      si.scrollY2 = si.scrollY + window.innerHeight;
+      container.style.height = si.scrollY2 + 'px';
+      scrollTo(0, si.scrollY);
+    } else {
+      si = null;
+    }
     return new Promise(resolve => {
       done = resolve;
-      chunk(true);
+      chunk(!si);
     });
     function chunk(forceRefresh) {
       const t0 = performance.now();
-      while (originalSections.length && performance.now() - t0 < 100) {
-        insertSectionAfter(originalSections.shift(), undefined, forceRefresh);
+      while (index < total && performance.now() - t0 < 100) {
+        if (si) forceRefresh = y < si.scrollY2 && (y += si.cms[index].parentHeight) > si.scrollY;
+        insertSectionAfter(src[index], undefined, forceRefresh, si && si.cms[index]);
         if (pristine) dirty.clear();
-        if (focusOn !== false && sections[focusOn]) {
-          sections[focusOn].cm.focus();
-          focusOn = false;
-        }
+        if (index === focusOn && !si) sections[index].cm.focus();
+        index++;
       }
-      setGlobalProgress(total - originalSections.length, total);
-      if (!originalSections.length) {
+      setGlobalProgress(index, total);
+      if (index === total) {
         setGlobalProgress();
-        requestAnimationFrame(fitToAvailableSpace);
+        if (!si) requestAnimationFrame(fitToAvailableSpace);
+        container.style.removeProperty('height');
         done();
       } else {
         setTimeout(chunk);
@@ -565,18 +574,19 @@ function SectionsEditor() {
    * @param {StyleSection} [init]
    * @param {EditorSection} [base]
    * @param {boolean} [forceRefresh]
+   * @param {EditorScrollInfo} [si]
    */
-  function insertSectionAfter(init, base, forceRefresh) {
+  function insertSectionAfter(init, base, forceRefresh, si) {
     if (!init) {
       init = {code: '', urlPrefixes: ['http://example.com']};
     }
-    const section = createSection(init, genId);
+    const section = createSection(init, genId, si);
     const {cm} = section;
     sections.splice(base ? sections.indexOf(base) + 1 : sections.length, 0, section);
     container.insertBefore(section.el, base ? base.el.nextSibling : null);
     refreshOnView(cm, forceRefresh);
     registerEvents(section);
-    if (!base || init.code) {
+    if ((!si || !si.height) && (!base || init.code)) {
       // Fit a) during startup or b) when the clone button is clicked on a section with some code
       fitToContent(section);
     }
