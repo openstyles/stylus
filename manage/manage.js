@@ -1,13 +1,33 @@
-/*
-global messageBox getStyleWithNoCode
-  filterAndAppend showFiltersStats
-  checkUpdate handleUpdateInstalled
-  objectDiff
+/* global
+  $
+  $$
+  $create
+  animateElement
+  API
+  checkUpdate
+  CHROME
   configDialog
-  sorter msg prefs API $ $$ $create template setupLivePrefs
-  t tWordBreak formatDate
-  getOwnTab getActiveTab openURL animateElement sessionStore debounce
-  scrollElementIntoView CHROME VIVALDI router
+  debounce
+  filterAndAppend
+  formatDate
+  getOwnTab
+  getStyleWithNoCode
+  handleUpdateInstalled
+  messageBox
+  msg
+  objectDiff
+  openURL
+  prefs
+  router
+  scrollElementIntoView
+  sessionStore
+  setupLivePrefs
+  showFiltersStats
+  sorter
+  t
+  template
+  tWordBreak
+  VIVALDI
 */
 'use strict';
 
@@ -366,42 +386,29 @@ Object.assign(handleEvent, {
     }
   },
 
-  name(event) {
-    if (newUI.enabled) handleEvent.edit(event);
+  name(event, entry) {
+    if (newUI.enabled) handleEvent.edit(event, entry);
   },
 
-  edit(event) {
+  async edit(event, entry) {
     if (event.altKey) {
       return;
     }
     event.preventDefault();
     event.stopPropagation();
-    const left = event.button === 0;
-    const middle = event.button === 1;
-    const shift = event.shiftKey;
-    const ctrl = event.ctrlKey;
-    const openWindow = left && shift && !ctrl;
-    const openBackgroundTab = (middle && !shift) || (left && ctrl && !shift);
-    const openForegroundTab = (middle && shift) || (left && ctrl && shift);
-    const entry = event.target.closest('.entry');
+    const key = `${event.shiftKey ? 's' : ''}${event.ctrlKey ? 'c' : ''}${'LMR'[event.button]}`;
     const url = $('[href]', entry).href;
-    if (openWindow || openBackgroundTab || openForegroundTab) {
-      if (chrome.windows && openWindow) {
-        API.openEditor({id: entry.styleId});
-      } else {
-        getOwnTab().then(({index}) => {
-          openURL({
-            url,
-            index: index + 1,
-            active: openForegroundTab
-          });
-        });
-      }
+    const ownTab = await getOwnTab();
+    if (key === 'L') {
+      sessionStore['manageStylesHistory' + ownTab.id] = url;
+      location.href = url;
+    } else if (chrome.windows && key === 'sL') {
+      API.openEditor({id: entry.styleId});
     } else {
-      onVisibilityChange();
-      getActiveTab().then(tab => {
-        sessionStore['manageStylesHistory' + tab.id] = url;
-        location.href = url;
+      openURL({
+        url,
+        index: ownTab.index + 1,
+        active: key === 'sM' || key === 'scL',
       });
     }
   },
