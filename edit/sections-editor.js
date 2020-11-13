@@ -160,7 +160,8 @@ function SectionsEditor() {
       contentHeight += 9; // border & resize grip
       cm.off('update', resize);
       const cmHeight = wrapper.offsetHeight;
-      const maxHeight = (window.innerHeight - headerOffset) - (section.el.offsetHeight - cmHeight);
+      const appliesToHeight = Math.min(section.el.offsetHeight - cmHeight, window.innerHeight / 2);
+      const maxHeight = (window.innerHeight - headerOffset) - appliesToHeight;
       const fit = Math.min(contentHeight, maxHeight);
       if (Math.abs(fit - cmHeight) > 1) {
         cm.setSize(null, fit);
