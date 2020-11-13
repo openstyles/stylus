@@ -164,11 +164,13 @@
 
   function colorizeAll(state) {
     const {cm} = state;
+    const {viewFrom, viewTo} = cm.display;
+    if (!viewTo) {
+      requestAnimationFrame(() => colorizeAll(state));
+      return;
+    }
     const {curOp} = cm;
     if (!curOp) cm.startOperation();
-
-    const viewFrom = cm.display.viewFrom;
-    const viewTo = (cm.display.viewTo || maxRenderChunkSize - 1) + 1;
 
     state.line = viewFrom;
     state.inComment = null;
