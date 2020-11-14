@@ -78,6 +78,13 @@ CHROME && (async () => {
         name: 'Set-Cookie',
         value: `${chrome.runtime.id}=${prefs.get('disableAll') ? 1 : 0}${blobId}`,
       });
+      // allow cookies for sandbox CSP (known case: raw github urls)
+      for (const h of responseHeaders) {
+        if (h.name.toLowerCase() === 'content-security-policy' && h.value.includes('sandbox')) {
+          h.value = h.value.replace(/((^|;)\s*sandbox)(\s+[^;]+)?\s*(?=;|$)/, '$1 allow-same-origin');
+          break;
+        }
+      }
       return {responseHeaders};
     }
   }
