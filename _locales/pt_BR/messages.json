@@ -40,6 +40,14 @@
     "message": "Aplica-se a",
     "description": "Label for 'applies to' fields on the edit/add screen"
   },
+  "appliesLineWidgetLabel": {
+    "message": "Mostrar informações de \"Aplica-se a\"",
+    "description": "Label for the checkbox to display applies-to information in the single editor"
+  },
+  "appliesLineWidgetWarning": {
+    "message": "Não funciona com CSS minificado",
+    "description": "A warning that applies-to information won't show properly with minified CSS"
+  },
   "appliesRegexpOption": {
     "message": "URLs que correspondem a regexp",
     "description": "Option to make the style apply to the entered string as a regular expression"
@@ -47,6 +55,10 @@
   "appliesRemove": {
     "message": "Remover",
     "description": "Label for the button to remove an 'applies' entry"
+  },
+  "appliesRemoveError": {
+    "message": "Não é possível remover a última entrada de 'aplica-se a'",
+    "description": "Error displayed when the last 'applies' is going to be removed"
   },
   "appliesSpecify": {
     "message": "Especificar",
@@ -96,6 +108,42 @@
     "message": "Clique para desistalar",
     "description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
   },
+  "cm_autoCloseBrackets": {
+    "message": "Auto fechar parênteses, colchetes e aspas",
+    "description": "Label for the checkbox in the style editor."
+  },
+  "cm_autoCloseBracketsTooltip": {
+    "message": "Adicione automaticamente um par de fechamento ao digitar uma abertura de ()[]{}''\"\"",
+    "description": "Label for the checkbox in the style editor."
+  },
+  "cm_autocompleteOnTyping": {
+    "message": "Autocompletar ao digitar",
+    "description": "Label for the checkbox in the style editor."
+  },
+  "cm_colorpicker": {
+    "message": "Colorpickers para cores CSS",
+    "description": "Label for the checkbox controlling colorpicker option for the style editor."
+  },
+  "cm_indentWithTabs": {
+    "message": "Usar tabs com indentação inteligente",
+    "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
+  },
+  "cm_lineWrapping": {
+    "message": "Quebra de linha",
+    "description": "Label for the checkbox controlling word wrap option for the style editor."
+  },
+  "cm_resizeGripHint": {
+    "message": "Duplo clique para maximizar/restaurar a altura",
+    "description": "Tooltip for the resize grip in style editor"
+  },
+  "cm_selectByTokens": {
+    "message": "Clicar duas vezes seleciona tokens",
+    "description": "Label for the checkbox in the editor."
+  },
+  "cm_smartIndent": {
+    "message": "Usar indentação inteligente",
+    "description": "Label for the checkbox controlling smart indentation option for the style editor."
+  },
   "cm_theme": {
     "message": "Tema",
     "description": "Label for the style editor's CSS theme."
@@ -143,6 +191,14 @@
   "confirmYes": {
     "message": "Sim",
     "description": "'Yes' button in a confirm dialog"
+  },
+  "copied": {
+    "message": "Copiado para a área de transferência",
+    "description": "Message shown when content has been copied to the clipboard"
+  },
+  "copy": {
+    "message": "Copiar para a área de transferência",
+    "description": "Tooltip for elements which can be copied"
   },
   "dateInstalled": {
     "message": "Data instalada ",
@@ -209,9 +265,17 @@
     "message": "Procurar mais estilos para este site",
     "description": "Text for a link that gets a list of styles for the current site"
   },
+  "genericDisabledLabel": {
+    "message": "Desativado",
+    "description": "Used in various lists/options to indicate that something is disabled"
+  },
   "helpAlt": {
     "message": "Ajuda",
     "description": "Alternate text for help buttons"
+  },
+  "hostDisabled": {
+    "message": "Este hospedeiro foi desabilitado devido a um bug na versão atual que o navegador utilizado se encontra",
+    "description": "Tooltip for cloud host disabled"
   },
   "importAppendLabel": {
     "message": "Anexar ao estilo",
@@ -229,13 +293,89 @@
     "message": "Sobrescrever estilo",
     "description": "Label for the button to import and overwrite current style"
   },
+  "importReportUnchanged": {
+    "message": "Nada foi alterado.",
+    "description": "Message in the report shown after importing styles"
+  },
   "installUpdate": {
     "message": "Instalar atualização",
     "description": "Label for the button to install an update for a single style"
   },
+  "linkTranslate": {
+    "message": "Traduzir",
+    "description": "Transifex link text on the manage page"
+  },
   "manageHeading": {
     "message": "Estilos instalados",
     "description": "Heading for the manage page"
+  },
+  "manageOnlyDisabled": {
+    "message": "Somente estilos desativados",
+    "description": "Checkbox to show only disabled styles"
+  },
+  "manageOnlyEnabled": {
+    "message": "Apenas estilos habilitados",
+    "description": "Checkbox to show only enabled styles"
+  },
+  "meta_invalidRange": {
+    "message": "@var inválido $type$: valor deve ser um número ou um vetor",
+    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidNumber": {
+    "message": "Espera-se um número",
+    "description": "Error displayed when the value is expected to be a number"
+  },
+  "meta_invalidString": {
+    "message": "Espera-se um texto entre aspas",
+    "description": "Error displayed when the value is expected to be a quoted string"
+  },
+  "meta_invalidWord": {
+    "message": "Espera-se uma palavra",
+    "description": "Error displayed when the value is expected to be a word"
+  },
+  "meta_missingChar": {
+    "message": "Caracteres esperados: $chars$",
+    "description": "Error displayed when the value is expected to be some characters",
+    "placeholders": {
+      "chars": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_missingMandatory": {
+    "message": "Metadata obrigatório não encontrado: $keys$",
+    "description": "Error displayed when mandatory keys are missing",
+    "placeholders": {
+      "keys": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownMeta": {
+    "message": "Metadata desconhecido: $key$",
+    "description": "Error displayed when unknown metadata is parsed",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownVarType": {
+    "message": "Tipo desconhecido da variável @$varkey$: $vartype$",
+    "description": "Error displayed when unknown variable type is parsed",
+    "placeholders": {
+      "varkey": {
+        "content": "$1"
+      },
+      "vartype": {
+        "content": "$2"
+      }
+    }
   },
   "noStylesForSite": {
     "message": "Nenhum estilo instalado para este site.",
@@ -244,6 +384,14 @@
   "openManage": {
     "message": "Gerenciar estilos instalados",
     "description": "Link to open the manage page."
+  },
+  "openOptions": {
+    "message": "Opções",
+    "description": "Go to Options UI"
+  },
+  "openStylesManager": {
+    "message": "Abrir gerenciador de estilos",
+    "description": "Label for the style maanger opener in the browser action context menu."
   },
   "optionsActions": {
     "message": "Ações",
@@ -261,6 +409,18 @@
     "message": "Atualizar estilos",
     "description": ""
   },
+  "optionsCheckUpdate": {
+    "message": "Verifique e instale todas as atualizações disponíveis",
+    "description": ""
+  },
+  "optionsCustomizeUpdate": {
+    "message": "Atualizações",
+    "description": ""
+  },
+  "optionsCustomizeSync": {
+    "message": "Sincronizar para a nuvem",
+    "description": ""
+  },
   "optionsHeading": {
     "message": "Opções",
     "description": "Heading for options section on manage page."
@@ -269,13 +429,61 @@
     "message": "Abrir",
     "description": ""
   },
+  "optionsOpenManager": {
+    "message": "Gerenciar estilos",
+    "description": ""
+  },
+  "optionsPopupWidth": {
+    "message": "Largura do popup (em pixels)",
+    "description": ""
+  },
   "optionsSubheading": {
     "message": "Mais Opções",
     "description": "Subheading for options section on manage page."
   },
+  "optionsSyncNone": {
+    "message": "Nenhum",
+    "description": ""
+  },
+  "optionsSyncConnect": {
+    "message": "Conectar",
+    "description": ""
+  },
+  "optionsSyncDisconnect": {
+    "message": "Desconectar",
+    "description": ""
+  },
+  "optionsSyncSyncNow": {
+    "message": "Sincronizar agora",
+    "description": ""
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "Sincronizando...",
+    "description": ""
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "Conectando...",
+    "description": ""
+  },
+  "optionsSyncStatusConnected": {
+    "message": "Conectado",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "Desconectando...",
+    "description": ""
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "Desconectado",
+    "description": ""
+  },
   "prefShowBadge": {
-    "message": "Show number of styles active for the current site on the toolbar button",
+    "message": "Número de estilos ativos para o site atual",
     "description": "Label for the checkbox controlling toolbar badge text."
+  },
+  "reload": {
+    "message": "Recarregar a extensão do Stylus",
+    "description": "Context menu reload"
   },
   "replace": {
     "message": "Substituir",
@@ -297,6 +505,10 @@
     "message": "Buscar",
     "description": "Label before the search input field in the editor shown on Ctrl-F"
   },
+  "searchRegexp": {
+    "message": "Use a sintaxe /re/ para busca por regexp",
+    "description": "Label after the search input field in the editor shown on Ctrl-F"
+  },
   "searchStyles": {
     "message": "Buscar conteúdos",
     "description": "Label for the search filter textbox on the Manage styles page"
@@ -313,6 +525,10 @@
     "message": "Remover seção",
     "description": "Label for the button to remove a section"
   },
+  "shortcuts": {
+    "message": "Atalhos",
+    "description": "Go to shortcut configuration"
+  },
   "styleBadRegexp": {
     "message": "Expressão regular é inválida",
     "description": "Validation message for a bad regexp in a style"
@@ -320,6 +536,10 @@
   "styleBeautify": {
     "message": "Embelezar",
     "description": "Label for the CSS-beautifier button on the edit style page"
+  },
+  "styleBeautifyHint": {
+    "message": "Dica: clique com o botão direito no botão \"Embelezar\" ou use o atalho de teclado definido para embelezar sem mostrar esse painel",
+    "description": "Hint shown inside the CSS-beautifier panel"
   },
   "styleCancelEditLabel": {
     "message": "Voltar ao gerenciamento",
@@ -358,6 +578,15 @@
     "message": "O formato Mozilla do código pode ser usado com o Stylish para Firefox e pode ser enviado para userstyles.org.",
     "description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
   },
+  "styleUpdate": {
+    "message": "Você tem certeza que quer atualizar '$stylename$'?",
+    "description": "Confirmation when updating a style",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
   "undo": {
     "message": "Desfazer",
     "description": "Button label"
@@ -382,6 +611,14 @@
   "updateCheckFailServerUnreachable": {
     "message": "A atualização falhou: servidor inacessível.",
     "description": "Text that displays when an update check failed because the update server is unreachable"
+  },
+  "updateCheckManualUpdateHint": {
+    "message": "Forçar uma atualização irá sobrescrever qualquer alteração local.",
+    "description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
+  },
+  "updateCheckSkippedLocallyEdited": {
+    "message": "Esse estilo foi editado localmente.",
+    "description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
   },
   "updateCheckSkippedMaybeLocallyEdited": {
     "message": "Este estilo parece ter sido editado localmente.",
@@ -444,19 +681,19 @@
     "description": ""
   },
   "connectingDropboxNotAllowed": {
-    "message": "Conectar ao Dropbox somente é disponível em apps instalados diretamente da lojaweb",
+    "message": "Conectar ao Dropbox somente é disponível em apps instalados diretamente da loja web",
     "description": ""
   },
   "gettingStyles": {
-    "message": "Obtendo todos estilos...",
+    "message": "Obtendo todos os estilos...",
     "description": ""
   },
   "zipStyles": {
-    "message": "Zipando estilos...",
+    "message": "Compactando estilos...",
     "description": ""
   },
   "unzipStyles": {
-    "message": "Unzipando estilos...",
+    "message": "Descompactando estilos...",
     "description": ""
   },
   "readingStyles": {

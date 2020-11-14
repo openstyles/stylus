@@ -172,6 +172,10 @@
     "message": "Tab-Größe",
     "description": "Label for the text box controlling tab size option for the style editor."
   },
+  "colorpickerPaletteHint": {
+    "message": "Rechtsklicke auf ein Farbmuster, um durch die entsprechenden Codezeilen zu springen",
+    "description": ""
+  },
   "colorpickerSwitchFormatTooltip": {
     "message": "Formate wechseln: HEX -> RGB ->HSL.\nShift-Klick, um Richtung umzukehren.\nKürzel: Bild auf- und Bild ab-Tasten.",
     "description": "Tooltip for the switch button in the color picker popup in the style editor."
@@ -239,6 +243,14 @@
   "copy": {
     "message": "In die Zwischenablage kopieren",
     "description": "Tooltip for elements which can be copied"
+  },
+  "customNameHint": {
+    "message": "Neuen Anzeigenamen des Styles hier eingeben, um trotzdem weiterhin Updates zu erhalten",
+    "description": ""
+  },
+  "customNameResetHint": {
+    "message": "Eigenen Anzeigenamen nicht mehr benutzen, wechsle wieder zum Standardnamen des Styles",
+    "description": "Tooltip of 'x' button shown in editor when changing the name input of a) styles updated from a URL i.e. not locally created, b) UserCSS styles"
   },
   "dateInstalled": {
     "message": "Installationsdatum",
@@ -444,6 +456,14 @@
   "importLabel": {
     "message": "Importieren",
     "description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+  },
+  "importPreprocessor": {
+    "message": "Ein Style mit einem <code>@preprocessor</code>funktioniert nicht im klassischen Modus. Du kannst den Editor auf UserCSS umstellen: 1) Öffne den Style-Manager, 2) Aktiviere das Kästchen \"Als UserCSS\", 3) Klicke auf \"Neuen Style erstellen\"\n\nTrotzdem jetzt importieren?",
+    "description": ""
+  },
+  "importPreprocessorTitle": {
+    "message": "Mögliches Problem wegen @preprocessor",
+    "description": ""
   },
   "importReplaceLabel": {
     "message": "Style überschreiben",
@@ -901,6 +921,10 @@
     "message": "Für diese Webseite sind keine Styles installiert.",
     "description": "Text displayed when no styles are installed for the current site"
   },
+  "numberedLine": {
+    "message": "Zeile:",
+    "description": "Will be followed by one or more line numbers in the editor."
+  },
   "openManage": {
     "message": "Verwalten",
     "description": "Link to open the manage page."
@@ -935,6 +959,14 @@
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Schreibe neuen Style als UserCSS",
+    "description": ""
+  },
+  "optionsAdvancedStyleViaXhr": {
+    "message": "Style unverzüglich einfügen",
+    "description": ""
+  },
+  "optionsAdvancedStyleViaXhrNote": {
+    "message": "Aktivieren, falls während dem Browsen ungestylter Inhalt aufblitzt (FOUC). Besonders auffällig bei dunklen Styles.\n\nDer technische Grund ist, dass Chrome/Chromium die asynchrone Kommunikation von Erweiterungen zeitlich nach hinten verschiebt, um vermeintlich die Seitenladegeschwindigkeit zu erhöhen. Dies kann das Einfügen von Styles spürbar verzögern. Da für WebExtensions keine synchrone API bereitgestellt wird, versucht Stylus als Notbehelf, Styles über die veraltete XMLHttpRequest web API zu laden. Es sollten keine nachteiligen Effekte eintreten, weil die Anfrage innerhalb weniger Millisekunden abgearbeitet wird, während die Seite noch vom Server geladen wird.\n\nTrotzdem wird Chromium eine Warnung in der Entwicklerkonsole ausgeben. Über Rechtsklick auf die Warnung können zukünftige Meldungen versteckt werden.",
     "description": ""
   },
   "optionsBadgeDisabled": {
@@ -995,6 +1027,10 @@
   },
   "optionsResetButton": {
     "message": "Optionen zurücksetzen",
+    "description": ""
+  },
+  "optionsStylusThemes": {
+    "message": "Stylus UI-Theme suchen",
     "description": ""
   },
   "optionsSubheading": {
@@ -1125,6 +1161,10 @@
     "message": "Aktionsmenü",
     "description": "Tooltip for menu button in popup."
   },
+  "popupOpenEditInPopup": {
+    "message": "Einfaches Fenster verwenden (keine Omnibox)",
+    "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+  },
   "popupOpenEditInWindow": {
     "message": "Editor in neuem Fenster öffnen",
     "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
@@ -1177,6 +1217,10 @@
     "message": "Groß- / Kleinschreibung beachten",
     "description": "Tooltip for the 'Aa' icon that enables case-sensitive search in the editor shown on Ctrl-F"
   },
+  "searchGlobalStyles": {
+    "message": "Auch globale Styles suchen",
+    "description": "Checkbox label in the popup's inline style search, shown when the text to search is entered"
+  },
   "searchNumberOfResults": {
     "message": "Trefferanzahl",
     "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
@@ -1184,6 +1228,10 @@
   "searchNumberOfResults2": {
     "message": "Trefferanzahl im Code und in \"Gilt für\" Feldern",
     "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+  },
+  "searchStyleQueryHint": {
+    "message": "Stylenamen ohne Beachtung der Groß-/Kleinschreibung suchen:\nMehrere Suchworte - alle Wörter in beliebiger Reihenfolge\n\"Bestimmte Phrase\" - genau diese Phrase ohne Anführungszeichen\n2020 - zeigt auch Styles, die 2020 aktualisiert wurden",
+    "description": "Tooltip shown for the text input in the popup's inline style finder"
   },
   "searchRegexp": {
     "message": "Verwende die /re/ Syntax zur Suche als RegExp",
@@ -1228,6 +1276,10 @@
   "sectionRestore": {
     "message": "Gelöschten Bereich wiederherstellen",
     "description": "Label for the button to restore a removed section"
+  },
+  "sections": {
+    "message": "Bereiche",
+    "description": "Header for the table of contents block listing style section names in the left panel of the classic editor"
   },
   "shortcuts": {
     "message": "Tastenkürzel",

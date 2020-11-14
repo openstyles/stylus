@@ -1301,6 +1301,10 @@
     "message": "유효하지 않은 정규 표현식입니다.",
     "description": "Validation message for a bad regexp in a style"
   },
+  "styleBeautifyHint": {
+    "message": "힌트: “Beautify” 버튼을 우클릭 하거나 아래 지정한 키보드 단축키를 사용하면 이 패널을 숨기면서 “Beautify”를 활성화 합니다",
+    "description": "Hint shown inside the CSS-beautifier panel"
+  },
   "styleBeautifyIndentConditional": {
     "message": "@media, @supports 들여쓰기",
     "description": "CSS-beautifier option"

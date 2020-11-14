@@ -180,6 +180,10 @@
     "message": "Thema",
     "description": "Label for the style editor's CSS theme."
   },
+  "colorpickerPaletteHint": {
+    "message": "Klik met de rechtermuisknop op een kleurstaal om de bronregels ervan te doorlopen",
+    "description": ""
+  },
   "colorpickerSwitchFormatTooltip": {
     "message": "Indelingen omschakelen: HEX -> RGB -> HSL.\nShift-klik om de volgorde om te keren.\nWerkt ook met de toetsen PgUp (PageUp) en PgDn (PageDown).",
     "description": "Tooltip for the switch button in the color picker popup in the style editor."
@@ -247,6 +251,14 @@
   "copy": {
     "message": "Kopiëren naar klembord",
     "description": "Tooltip for elements which can be copied"
+  },
+  "customNameHint": {
+    "message": "Voer hier een aangepaste naam in om de stijl in de UI te hernoemen zonder updates ervan te beschadigen",
+    "description": ""
+  },
+  "customNameResetHint": {
+    "message": "Geen aangepaste naam meer gebruiken, wisselen naar eigen naam van de stijl",
+    "description": "Tooltip of 'x' button shown in editor when changing the name input of a) styles updated from a URL i.e. not locally created, b) UserCSS styles"
   },
   "dateInstalled": {
     "message": "Installatiedatum",
@@ -452,6 +464,14 @@
   "importLabel": {
     "message": "Importeren",
     "description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+  },
+  "importPreprocessor": {
+    "message": "Stijlen met een <code>@preprocessor</code> werken niet in de klassieke modus. U kunt de editor omschakelen naar Usercss-modus: 1) open de stijlbeheerder, 2) vink het selectievakje ‘als Usercss’ aan, 3) klik op ‘Nieuwe stijl schrijven’\n\nToch nu importeren?",
+    "description": ""
+  },
+  "importPreprocessorTitle": {
+    "message": "Mogelijk probleem vanwege @preprocessor",
+    "description": ""
   },
   "importReplaceLabel": {
     "message": "Stijl overschrijven",
@@ -771,7 +791,7 @@
     }
   },
   "meta_invalidRangeUnits": {
-    "message": "Ongeldige @var $type$: '$units$' is geen geldige eenheid",
+    "message": "Ongeldige @var $type$: ‘$units$’ is geen geldige eenheid",
     "description": "Error displayed when the value of @var range or @var number is invalid",
     "placeholders": {
       "type": {
@@ -905,6 +925,10 @@
     "message": "Geen geïnstalleerde stijlen voor deze website.",
     "description": "Text displayed when no styles are installed for the current site"
   },
+  "numberedLine": {
+    "message": "Regel:",
+    "description": "Will be followed by one or more line numbers in the editor."
+  },
   "openManage": {
     "message": "Beheren",
     "description": "Link to open the manage page."
@@ -939,6 +963,14 @@
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Nieuwe stijl schrijven als usercss",
+    "description": ""
+  },
+  "optionsAdvancedStyleViaXhr": {
+    "message": "Directe-injectiemodus",
+    "description": ""
+  },
+  "optionsAdvancedStyleViaXhrNote": {
+    "message": "Schakel dit in als u knipperende inhoud zonder stijlen (‘FOUC’) ondervindt tijdens het browsen, wat met name bij donkere thema’s opvalt.\n\nDe technische reden is dat Chrome/Chromium asynchrone communicatie van extensies uitstelt, doorgaans om te proberen paginalaadsnelheden te verbeteren, waardoor stijlen mogelijk te laat worden toegepast. Om dit te omzeilen, en aangezien er voor webextensies geen synchrone API wordt aangeboden, biedt Stylus deze optie om de ‘verouderde’ synchrone XMLHttpRequest-web-API voor het ophalen van toepasbare stijlen te gebruiken. Er zouden geen nadelige effecten mogen zijn, omdat de aanvraag binnen enkele milliseconden wordt behandeld terwijl de pagina nog van de server wordt gedownload.\n\nNiettemin toont Chromium een waarschuwing in de console van devtools. Door met de rechtermuisknop op een waarschuwing te klikken en deze te verbergen, worden toekomstige waarschuwingen niet meer getoond.",
     "description": ""
   },
   "optionsBadgeDisabled": {
@@ -1003,6 +1035,10 @@
   },
   "optionsResetButton": {
     "message": "Standaardwaarden",
+    "description": ""
+  },
+  "optionsStylusThemes": {
+    "message": "Een UI-thema voor Stylus zoeken",
     "description": ""
   },
   "optionsSubheading": {
@@ -1133,6 +1169,10 @@
     "message": "Actiemenu",
     "description": "Tooltip for menu button in popup."
   },
+  "popupOpenEditInPopup": {
+    "message": "Een eenvoudig venster gebruiken (geen omnibox)",
+    "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+  },
   "popupOpenEditInWindow": {
     "message": "Editor openen in nieuw venster",
     "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
@@ -1185,6 +1225,10 @@
     "message": "Hoofdlettergevoelig",
     "description": "Tooltip for the 'Aa' icon that enables case-sensitive search in the editor shown on Ctrl-F"
   },
+  "searchGlobalStyles": {
+    "message": "Ook globale stijlen doorzoeken",
+    "description": "Checkbox label in the popup's inline style search, shown when the text to search is entered"
+  },
   "searchNumberOfResults": {
     "message": "Aantal overeenkomsten",
     "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
@@ -1192,6 +1236,10 @@
   "searchNumberOfResults2": {
     "message": "Aantal overeenkomsten in code en ‘Van toepassing op’-waarden",
     "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+  },
+  "searchStyleQueryHint": {
+    "message": "Stijlnamen niet hoofdlettergevoelig doorzoeken:\nbepaalde woorden - alle woorden in willekeurige volgorde\n\"bepaalde woordgroep\" - deze exacte woordgroep zonder aanhalingstekens\n2020 - een jaar als dit toont ook stijlen die in 2020 zijn bijgewerkt",
+    "description": "Tooltip shown for the text input in the popup's inline style finder"
   },
   "searchRegexp": {
     "message": "Gebruik /re/-syntaxis voor regexp-zoeken",
@@ -1236,6 +1284,10 @@
   "sectionRestore": {
     "message": "Verwijderde sectie herstellen",
     "description": "Label for the button to restore a removed section"
+  },
+  "sections": {
+    "message": "Secties",
+    "description": "Header for the table of contents block listing style section names in the left panel of the classic editor"
   },
   "shortcuts": {
     "message": "Sneltoetsen",

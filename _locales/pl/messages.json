@@ -184,6 +184,10 @@
     "message": "Motyw",
     "description": "Label for the style editor's CSS theme."
   },
+  "colorpickerPaletteHint": {
+    "message": "Kliknij prawym przyciskiem myszy próbkę, aby przejść przez jej wiersze kodu",
+    "description": ""
+  },
   "colorpickerSwitchFormatTooltip": {
     "message": "Zmiana formatu: HEX -> RGB -> HSL.\nShift i kliknięcie do odwrócenia kierunku.\nTakże klawiszami PgUp (PageUp), PgDn (PageDown).",
     "description": "Tooltip for the switch button in the color picker popup in the style editor."
@@ -252,6 +256,14 @@
     "message": "Skopiuj do schowka",
     "description": "Tooltip for elements which can be copied"
   },
+  "customNameHint": {
+    "message": "Podaj tutaj niestandardową nazwę, aby zmienić nazwę stylu w interfejsie użytkownika bez przerywania jego aktualizacji",
+    "description": ""
+  },
+  "customNameResetHint": {
+    "message": "Przestań używać niestandardowej nazwy, przełącz na własną nazwę stylu",
+    "description": "Tooltip of 'x' button shown in editor when changing the name input of a) styles updated from a URL i.e. not locally created, b) UserCSS styles"
+  },
   "dateInstalled": {
     "message": "Data zainstalowania",
     "description": "Option text for the user to sort the style by install date"
@@ -301,7 +313,7 @@
     "description": "Label for the context menu item in the editor to delete selected text"
   },
   "editGotoLine": {
-    "message": "Przejdź do linii (lub linii:kol)",
+    "message": "Przejdź do wiersza (lub wiersz:kol)",
     "description": "Go to line or line:column on Ctrl-G in style code editor"
   },
   "editStyleHeading": {
@@ -464,6 +476,14 @@
   "importLabel": {
     "message": "Importuj",
     "description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+  },
+  "importPreprocessor": {
+    "message": "Styl z <code>@preprocessor</code> nie będzie działać w trybie klasycznym. Możesz przełączyć edytor w tryb Usercss: 1) otwórz menedżer stylów, 2) zaznacz pole wyboru \"jako Usercss\", 3) kliknij \"Napisz nowy styl\"\n\nCzy mimo to zaimportować teraz?",
+    "description": ""
+  },
+  "importPreprocessorTitle": {
+    "message": "Potencjalny problem związany z @preprocessor",
+    "description": ""
   },
   "importReplaceLabel": {
     "message": "Nadpisz styl",
@@ -921,6 +941,10 @@
     "message": "Nie ma zainstalownych stylów dla tej witryny.",
     "description": "Text displayed when no styles are installed for the current site"
   },
+  "numberedLine": {
+    "message": "Wiersz:",
+    "description": "Will be followed by one or more line numbers in the editor."
+  },
   "openManage": {
     "message": "Zarządzaj",
     "description": "Link to open the manage page."
@@ -955,6 +979,14 @@
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Napisz nowy styl jako usercss",
+    "description": ""
+  },
+  "optionsAdvancedStyleViaXhr": {
+    "message": "Tryb natychmiastowego wstrzyknięcia",
+    "description": ""
+  },
+  "optionsAdvancedStyleViaXhrNote": {
+    "message": "Włącz tę opcję, jeśli napotkasz miganie niestylizowanej treści (FOUC) podczas przeglądania, co jest szczególnie zauważalne w przypadku ciemnych motywów.\n\nTechnicznym powodem jest to, że Chrome/Chromium odracza asynchroniczną komunikację rozszerzeń, co zwykle jest bezsensowną próbą przyspieszenia ładowania strony i może powodować spóźnienie zastosowania stylów. Aby to obejść, ponieważ rozszerzenia internetowe nie mają synchronicznego interfejsu API, Stylus udostępnia tę opcję, która umożliwia wykorzystanie \"przestarzałego\" synchronicznego sieciowego API XMLHttpRequest do pobierania odpowiednich stylów. Nie powinno to mieć żadnych negatywnych skutków, ponieważ żądanie jest realizowane w ciągu kilku milisekund, podczas gdy strona jest nadal pobierana z serwera.\n\nNiemniej jednak Chromium wyświetli ostrzeżenie w konsoli narzędzi dla programistów. Kliknięcie ostrzeżenia prawym przyciskiem myszy i ukrycie go zapobiegnie wyświetlaniu przyszłych ostrzeżeń.",
     "description": ""
   },
   "optionsBadgeDisabled": {
@@ -1023,6 +1055,10 @@
   },
   "optionsResetButton": {
     "message": "Resetuj opcje",
+    "description": ""
+  },
+  "optionsStylusThemes": {
+    "message": "Znajdź motyw interfejsu Stylusa",
     "description": ""
   },
   "optionsSubheading": {
@@ -1153,6 +1189,10 @@
     "message": "Menu akcji",
     "description": "Tooltip for menu button in popup."
   },
+  "popupOpenEditInPopup": {
+    "message": "Użyj prostego okna (bez omniboksu)",
+    "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+  },
   "popupOpenEditInWindow": {
     "message": "Otwórz edytor w nowym oknie",
     "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
@@ -1205,6 +1245,10 @@
     "message": "Rozróżnianie wielkości liter",
     "description": "Tooltip for the 'Aa' icon that enables case-sensitive search in the editor shown on Ctrl-F"
   },
+  "searchGlobalStyles": {
+    "message": "Przeszukuj także style globalne",
+    "description": "Checkbox label in the popup's inline style search, shown when the text to search is entered"
+  },
   "searchNumberOfResults": {
     "message": "Liczba dopasowań",
     "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
@@ -1212,6 +1256,10 @@
   "searchNumberOfResults2": {
     "message": "Liczba dopasowań w kodzie oraz dotyczących wartości",
     "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+  },
+  "searchStyleQueryHint": {
+    "message": "Szukaj nazw stylów bez rozróżniania wielkości liter:\njakieś słowa - wszystkie słowa w dowolnej kolejności\n\"jakieś zdanie\" - dokładnie to zdanie bez cudzysłowów\n2020 - rok jak ten pokazuje również style zaktualizowane w 2020",
+    "description": "Tooltip shown for the text input in the popup's inline style finder"
   },
   "searchRegexp": {
     "message": "Użyj składni /re/ dla wyszukiwania regexp",
@@ -1260,6 +1308,10 @@
   "sectionRestore": {
     "message": "Przywróć usuniętą sekcję",
     "description": "Label for the button to restore a removed section"
+  },
+  "sections": {
+    "message": "Sekcje",
+    "description": "Header for the table of contents block listing style section names in the left panel of the classic editor"
   },
   "shortcuts": {
     "message": "Skróty",
@@ -1314,7 +1366,7 @@
     "description": "CSS-beautifier option"
   },
   "styleBeautifyPreserveNewlines": {
-    "message": "Zachowaj nowe linie",
+    "message": "Zachowaj nowe wiersze",
     "description": "CSS-beautifier option"
   },
   "styleCancelEditLabel": {

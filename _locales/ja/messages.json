@@ -176,6 +176,10 @@
     "message": "テーマ",
     "description": "Label for the style editor's CSS theme."
   },
+  "colorpickerPaletteHint": {
+    "message": "見本を右クリックして対応するソース行を選択します",
+    "description": ""
+  },
   "colorpickerSwitchFormatTooltip": {
     "message": "フォーマット切り替え: HEX -> RGB -> HSL\nシフトを押しながらクリックすると逆向きに切り替えます。\nまた、PgUp (PageUp), PgDn (PageDown) キーも使用できます。",
     "description": "Tooltip for the switch button in the color picker popup in the style editor."
@@ -243,6 +247,14 @@
   "copy": {
     "message": "クリップボードへコピー",
     "description": "Tooltip for elements which can be copied"
+  },
+  "customNameHint": {
+    "message": "（更新を妨げない）UI 上でのみ有効なスタイルのカスタム名を入力してください",
+    "description": ""
+  },
+  "customNameResetHint": {
+    "message": "カスタム名の使用をやめ、スタイル自身の名称に切り替えます",
+    "description": "Tooltip of 'x' button shown in editor when changing the name input of a) styles updated from a URL i.e. not locally created, b) UserCSS styles"
   },
   "dateInstalled": {
     "message": "インストール日",
@@ -456,6 +468,14 @@
   "importLabel": {
     "message": "インポート",
     "description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+  },
+  "importPreprocessor": {
+    "message": "<code>@preprocessor</code>を含むスタイルは、クラシックモードでは機能しません。エディタをUsercssモードにしてください : 1) スタイルマネージャーを開きます, 2)「Usercssとして」チェックボックスをONにします, 3)「新スタイルを作成」をクリックします",
+    "description": ""
+  },
+  "importPreprocessorTitle": {
+    "message": "@preprocessorの潜在的な問題",
+    "description": ""
   },
   "importReplaceLabel": {
     "message": "スタイルを上書き",
@@ -917,6 +937,10 @@
     "message": "該当するスタイルはありません。",
     "description": "Text displayed when no styles are installed for the current site"
   },
+  "numberedLine": {
+    "message": "行:",
+    "description": "Will be followed by one or more line numbers in the editor."
+  },
   "openManage": {
     "message": "管理",
     "description": "Link to open the manage page."
@@ -951,6 +975,14 @@
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "新しいスタイルを usercss として作成します",
+    "description": ""
+  },
+  "optionsAdvancedStyleViaXhr": {
+    "message": "即時更新モード",
+    "description": ""
+  },
+  "optionsAdvancedStyleViaXhrNote": {
+    "message": "閲覧時に、スタイルの指定されていないコンテンツが点滅するような場合に有効にしてください。これは、ダークテーマで特に目立つことがあります。\n\n技術的な原因は、Chrome/Chromium が拡張機能との非同期通信を遅延することです。これは（無意味なことが多いですが）ページのロード時間の短縮のために行われ、スタイルの適用を遅延する場合があります。これを回避するため（web拡張自体は同期通信APIを提供していないので）、Stylusは「非推奨」の XMLHttpRequest web API をスタイルの読み込みに使用するオプションを提供しています。サーバからページがダウンロードされている間に、リクエストは数ミリ秒で終了するため、悪影響はありません。\n\nそれでも、Chromium は、開発者ツールのコンソールに警告を出力します。 警告を右クリックして非表示にすると、以後は警告を表示しないようにすることができます。",
     "description": ""
   },
   "optionsBadgeDisabled": {
@@ -1019,6 +1051,10 @@
   },
   "optionsResetButton": {
     "message": "オプションをリセット",
+    "description": ""
+  },
+  "optionsStylusThemes": {
+    "message": "StylusのUIテーマを見つける",
     "description": ""
   },
   "optionsSubheading": {
@@ -1149,6 +1185,10 @@
     "message": "アクションメニュー",
     "description": "Tooltip for menu button in popup."
   },
+  "popupOpenEditInPopup": {
+    "message": "(アドレスバーのない)シンプルなウィンドウを使用",
+    "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+  },
   "popupOpenEditInWindow": {
     "message": "新しいウィンドウでエディタを開く",
     "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
@@ -1201,6 +1241,10 @@
     "message": "大文字小文字を区別する",
     "description": "Tooltip for the 'Aa' icon that enables case-sensitive search in the editor shown on Ctrl-F"
   },
+  "searchGlobalStyles": {
+    "message": "グローバルスタイルも検索",
+    "description": "Checkbox label in the popup's inline style search, shown when the text to search is entered"
+  },
   "searchNumberOfResults": {
     "message": "マッチ数",
     "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
@@ -1208,6 +1252,10 @@
   "searchNumberOfResults2": {
     "message": "コードおよび適用先欄のマッチ数",
     "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+  },
+  "searchStyleQueryHint": {
+    "message": "スタイル名を大文字小文字の区別なく検索します:\n複数の単語 - 全単語を順番の区別なく検索します\n\"複数の単語からなるフレーズ\" - 正確なフレーズを (引用符は除いて) 検索します\n2020 - このように数値 (年) を指定すると、2020年に更新されたスタイルも結果に表示します",
+    "description": "Tooltip shown for the text input in the popup's inline style finder"
   },
   "searchRegexp": {
     "message": "正規表現検索には /re/ を使用してください",
@@ -1256,6 +1304,10 @@
   "sectionRestore": {
     "message": "削除したセクションを復旧",
     "description": "Label for the button to restore a removed section"
+  },
+  "sections": {
+    "message": "セクション",
+    "description": "Header for the table of contents block listing style section names in the left panel of the classic editor"
   },
   "shortcuts": {
     "message": "ショートカット",

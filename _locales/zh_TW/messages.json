@@ -180,6 +180,10 @@
     "message": "主題",
     "description": "Label for the style editor's CSS theme."
   },
+  "colorpickerPaletteHint": {
+    "message": "右鍵點擊其中ㄧ部份以循環其原始碼",
+    "description": ""
+  },
   "colorpickerSwitchFormatTooltip": {
     "message": "切換格式：HEX → RGB → HSL。\nShift 並點選則為反向進行。\n也可以使用 PgUp (PageUp) 與 PgDn (PageDown) 鍵。",
     "description": "Tooltip for the switch button in the color picker popup in the style editor."
@@ -251,6 +255,14 @@
   "copy": {
     "message": "複製到剪貼簿",
     "description": "Tooltip for elements which can be copied"
+  },
+  "customNameHint": {
+    "message": "在此輸入自訂名稱以在使用者介面中重新命名樣式而不會中斷其更新",
+    "description": ""
+  },
+  "customNameResetHint": {
+    "message": "停止使用自訂的名稱，切換到樣式自己的名稱",
+    "description": "Tooltip of 'x' button shown in editor when changing the name input of a) styles updated from a URL i.e. not locally created, b) UserCSS styles"
   },
   "dateInstalled": {
     "message": "安裝日期",
@@ -464,6 +476,14 @@
   "importLabel": {
     "message": "匯入",
     "description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+  },
+  "importPreprocessor": {
+    "message": "使用 <code>@preprocessor</code> 的樣是在經典模式下無法運作。您可以將編輯器切換到 Usercss 模式：1) 開啟樣式管理程式，2) 啟用「做為 Usercss」對話框，3) 點擊「編寫新樣式」\n",
+    "description": ""
+  },
+  "importPreprocessorTitle": {
+    "message": "@preprocessor 引起的潛在問題",
+    "description": ""
   },
   "importReplaceLabel": {
     "message": "覆蓋樣式",
@@ -921,6 +941,10 @@
     "message": "目前網站沒有安裝任何樣式。",
     "description": "Text displayed when no styles are installed for the current site"
   },
+  "numberedLine": {
+    "message": "行",
+    "description": "Will be followed by one or more line numbers in the editor."
+  },
   "openManage": {
     "message": "管理已安裝樣式",
     "description": "Link to open the manage page."
@@ -955,6 +979,14 @@
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "以 usercss 編寫新樣式",
+    "description": ""
+  },
+  "optionsAdvancedStyleViaXhr": {
+    "message": "即時注入模式",
+    "description": ""
+  },
+  "optionsAdvancedStyleViaXhrNote": {
+    "message": "如果在瀏覽時遇到無樣式內容 (FOUC) 的閃爍（在深色主題下尤其明顯），請啟用此選項。\n\n技術上的原因是 Chrome/Chromium 通常以無意義的嘗試延遲擴充功能的非同步通訊來改善網頁的載入速度，這可能會導致樣式較慢才被套用。為了避免這種狀況，因為擴充功能無法使用同步 API，Stylus 提供了此選項以利用「已棄用」的同步 XMLHttpRequest 網路 API 來擷取可套用的樣式。應該不會有任何有害的影響，因為在從伺服器下載頁面的同時，請求也會在幾毫秒內完成。\n\n儘管如此，Chromium 還是會在開發者工具的主控台中顯示警告。右鍵點擊警告，然後隱藏它們，這樣警告就不會再顯示。",
     "description": ""
   },
   "optionsBadgeDisabled": {
@@ -1023,6 +1055,10 @@
   },
   "optionsResetButton": {
     "message": "重設選項",
+    "description": ""
+  },
+  "optionsStylusThemes": {
+    "message": "尋找 Sytlus UI 佈景主題",
     "description": ""
   },
   "optionsSubheading": {
@@ -1153,6 +1189,10 @@
     "message": "動作選單",
     "description": "Tooltip for menu button in popup."
   },
+  "popupOpenEditInPopup": {
+    "message": "使用簡易視窗（無多功能方框）",
+    "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+  },
   "popupOpenEditInWindow": {
     "message": "在新視窗開啟編輯器",
     "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
@@ -1205,6 +1245,10 @@
     "message": "區分大小寫",
     "description": "Tooltip for the 'Aa' icon that enables case-sensitive search in the editor shown on Ctrl-F"
   },
+  "searchGlobalStyles": {
+    "message": "同時搜尋全域樣式",
+    "description": "Checkbox label in the popup's inline style search, shown when the text to search is entered"
+  },
   "searchNumberOfResults": {
     "message": "符合數量",
     "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
@@ -1212,6 +1256,10 @@
   "searchNumberOfResults2": {
     "message": "在程式碼與套用到的值的符合數量",
     "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+  },
+  "searchStyleQueryHint": {
+    "message": "搜尋樣式名稱時是區分大小寫的：\nsome words - 以任意順序搜尋所有文字\n\"some phrase\" - 精確符合引號內的詞語\n2020 - 如此年份顯示在2020年更新的樣式",
+    "description": "Tooltip shown for the text input in the popup's inline style finder"
   },
   "searchRegexp": {
     "message": "使用/re/語法正規表示式搜尋",
@@ -1260,6 +1308,10 @@
   "sectionRestore": {
     "message": "復原已移除的部份",
     "description": "Label for the button to restore a removed section"
+  },
+  "sections": {
+    "message": "樣式段",
+    "description": "Header for the table of contents block listing style section names in the left panel of the classic editor"
   },
   "shortcuts": {
     "message": "快速鍵",
