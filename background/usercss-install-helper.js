@@ -33,23 +33,26 @@
     return code;
   };
 
+  // `glob`: pathname match pattern for webRequest
+  // `rx`: pathname regex to verify the URL really looks like a raw usercss
   const maybeDistro = {
     // https://github.com/StylishThemes/GitHub-Dark/raw/master/github-dark.user.css
     'github.com': {
       glob: '/*/raw/*',
-      rx: /^https:\/\/github\.com\/[^/]+\/[^/]+\/raw\/[^/]+\/[^/]+?\.user\.(css|styl)([#?].*)?$/,
+      rx: /^\/[^/]+\/[^/]+\/raw\/[^/]+\/[^/]+?\.user\.(css|styl)$/,
     },
     // https://raw.githubusercontent.com/StylishThemes/GitHub-Dark/master/github-dark.user.css
     'raw.githubusercontent.com': {
       glob: '/*',
-      rx: /^https:\/\/raw\.githubusercontent\.com(\/[^/]+?){4}\.user\.(css|styl)([#?].*)?$/,
+      rx: /^(\/[^/]+?){4}\.user\.(css|styl)$/,
     },
   };
 
   // Faster installation on known distribution sites to avoid flicker of css text
   chrome.webRequest.onBeforeSendHeaders.addListener(({tabId, url}) => {
-    const m = maybeDistro[new URL(url).hostname];
-    if (!m || m.rx.test(url)) {
+    const u = new URL(url);
+    const m = maybeDistro[u.hostname];
+    if (!m || m.rx.test(u.pathname)) {
       openInstallerPage(tabId, url, {});
       // Silently suppress navigation.
       // Don't redirect to the install URL as it'll flash the text!
