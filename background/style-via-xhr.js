@@ -6,15 +6,20 @@ CHROME && (async () => {
   const prefId = 'styleViaXhr';
   const blobUrlPrefix = 'blob:' + chrome.runtime.getURL('/');
   const stylesToPass = {};
+  let enabled;
 
   await prefs.initializing;
-  toggle(prefId, prefs.get(prefId));
-  prefs.subscribe([prefId], toggle);
+  prefs.subscribe([prefId, 'disableAll'], toggle, {now: true});
 
-  function toggle(key, value) {
+  function toggle() {
+    let value = prefs.get(prefId) && !prefs.get('disableAll');
     if (!chrome.declarativeContent) { // not yet granted in options page
       value = false;
     }
+    if (value === enabled) {
+      return;
+    }
+    enabled = value;
     if (value) {
       const reqFilter = {
         urls: ['<all_urls>'],
