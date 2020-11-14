@@ -85,7 +85,7 @@
         const observer = new MutationObserver(check);
         observer.observe(document.documentElement, {
           childList: true,
-          subtree: true
+          subtree: true,
         });
         check();
 
@@ -105,7 +105,7 @@
             ? 'styleCanBeUpdatedChrome'
             : 'styleAlreadyInstalledChrome',
           detail: {
-            updateUrl: installedStyle.updateUrl
+            updateUrl: installedStyle.updateUrl,
           },
         });
       });
@@ -155,7 +155,7 @@
   function doInstall() {
     let oldStyle;
     return API.findStyle({
-      md5Url: getMeta('stylish-md5-url') || location.href
+      md5Url: getMeta('stylish-md5-url') || location.href,
     }, true)
       .then(_oldStyle => {
         oldStyle = _oldStyle;

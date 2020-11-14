@@ -67,7 +67,7 @@ const workerUtil = {
       message: err.message,
       lineNumber: err.lineNumber,
       columnNumber: err.columnNumber,
-      fileName: err.fileName
+      fileName: err.fileName,
     }, err);
   },
 

@@ -273,7 +273,7 @@ window.addEventListener('showStyles:done', () => {
     // title
     Object.assign($('.search-result-title', entry), {
       onclick: handleEvent.openURLandHide,
-      href: URLS.usoArchive + `?category=${category}&style=${id}`
+      href: URLS.usoArchive + `?category=${category}&style=${id}`,
     });
     $('.search-result-title span', entry).textContent =
       tWordBreak(name.length < 300 ? name : name.slice(0, 300) + '...');
@@ -303,7 +303,7 @@ window.addEventListener('showStyles:done', () => {
     // time
     Object.assign($('[data-type="updated"] time', entry), {
       dateTime: updateTime * 1000,
-      textContent: formatDate(updateTime * 1000)
+      textContent: formatDate(updateTime * 1000),
     });
     // totals
     $('[data-type="weekly"] dd', entry).textContent = formatNumber(weeklyInstalls);

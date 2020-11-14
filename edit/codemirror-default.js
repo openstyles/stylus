@@ -82,7 +82,7 @@
       [
         {from: 'Ctrl-', to: ['Alt-', 'Ctrl-Alt-']},
         // Note: modifier order in CodeMirror is S-C-A
-        {from: 'Shift-Ctrl-', to: ['Ctrl-Alt-', 'Shift-Ctrl-Alt-']}
+        {from: 'Shift-Ctrl-', to: ['Ctrl-Alt-', 'Shift-Ctrl-Alt-']},
       ].forEach(remap => {
         const oldKey = remap.from + char;
         Object.keys(CodeMirror.keyMap).forEach(keyMapName => {
@@ -134,7 +134,7 @@
       let filled;
       this.eachLine(({text}) => (filled = text && /\S/.test(text)));
       return !filled;
-    }
+    },
   });
 
   // editor commands

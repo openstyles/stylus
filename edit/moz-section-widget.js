@@ -74,7 +74,7 @@ function MozSectionWidget(
         if (funcs.length < 2) {
           messageBox({
             contents: t('appliesRemoveError'),
-            buttons: [t('confirmClose')]
+            buttons: [t('confirmClose')],
           });
           return;
         }
@@ -125,7 +125,7 @@ function MozSectionWidget(
             return;
           }
         }
-      }
+      },
     };
 
     actualStyle = $create('style');

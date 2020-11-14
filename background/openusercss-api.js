@@ -31,11 +31,11 @@
     return fetch(api, {
       method: 'POST',
       headers: new Headers({
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       }),
       body: query({
-        id
-      })
+        id,
+      }),
     })
     .then(res => res.json());
   };

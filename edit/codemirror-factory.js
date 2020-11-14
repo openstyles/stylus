@@ -33,13 +33,13 @@ const cmFactory = (() => {
       cm.setOption('highlightSelectionMatches', {
         showToken: /[#.\-\w]/,
         annotateScrollbar: true,
-        onUpdate: updateMatchHighlightCount
+        onUpdate: updateMatchHighlightCount,
       });
     } else if (value === 'selection') {
       cm.setOption('highlightSelectionMatches', {
         showToken: false,
         annotateScrollbar: true,
-        onUpdate: updateMatchHighlightCount
+        onUpdate: updateMatchHighlightCount,
       });
     } else {
       cm.setOption('highlightSelectionMatches', null);

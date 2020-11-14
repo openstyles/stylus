@@ -157,7 +157,7 @@ function filterOnChange({target: el, forceRefilter}) {
       el.dataset[hide ? 'filterHide' : 'filter']
         .split(/,\s*/)
         .map(s => (hide ? '.entry:not(.hidden)' : '') + s)
-        .join(','))
+        .join(',')),
     ].join(hide ? ',' : '');
   Object.assign(filtersSelector, {
     hide: buildFilter(true),

@@ -32,7 +32,7 @@ function createChromeStorageDB() {
           }
         }
         return output;
-      })
+      }),
   };
 
   return {exec};

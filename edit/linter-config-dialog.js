@@ -61,7 +61,7 @@
     loadScript([
       '/vendor/codemirror/mode/javascript/javascript.js',
       '/vendor/codemirror/addon/lint/json-lint.js',
-      '/vendor/jsonlint/jsonlint.js'
+      '/vendor/jsonlint/jsonlint.js',
     ]).then(() => {
       cm.setOption('mode', 'application/json');
       cm.setOption('lint', true);

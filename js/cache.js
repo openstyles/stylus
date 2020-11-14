@@ -25,7 +25,7 @@ function createCache({size = 1000, onDeleted} = {}) {
     },
     get size() {
       return map.size;
-    }
+    },
   };
 
   function get(id) {

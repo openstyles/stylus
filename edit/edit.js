@@ -72,7 +72,7 @@ lazyInit();
           cm.scrollIntoView(cm.getCursor(), si.parentHeight / 2);
         });
       }
-    }
+    },
   });
   prefs.subscribe('editor.linter', updateLinter);
   prefs.subscribe('editor.keyMap', showHotkeyInTooltip);
@@ -512,7 +512,7 @@ function showCodeMirrorPopup(title, html, options) {
     matchBrackets: true,
     styleActiveLine: true,
     theme: prefs.get('editor.theme'),
-    keyMap: prefs.get('editor.keyMap')
+    keyMap: prefs.get('editor.keyMap'),
   }, options));
   cm.focus();
   rerouteHotkeys(false);

@@ -75,7 +75,7 @@ function MozSectionFinder(cm) {
     /** @param {MozSection} [section] */
     updatePositions(section) {
       (section ? [section] : getState().sections).forEach(setPositionFromMark);
-    }
+    },
   };
   return MozSectionFinder;
 

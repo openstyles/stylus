@@ -87,7 +87,7 @@ function messageBox({
       },
       scroll() {
         scrollTo(blockScroll.x, blockScroll.y);
-      }
+      },
     };
   }
 
@@ -160,7 +160,7 @@ messageBox.alert = (contents, className, title) =>
     title,
     contents,
     className: `center ${className || ''}`,
-    buttons: [t('confirmClose')]
+    buttons: [t('confirmClose')],
   });
 
 /**
@@ -174,5 +174,5 @@ messageBox.confirm = (contents, className, title) =>
     title,
     contents,
     className: `center ${className || ''}`,
-    buttons: [t('confirmYes'), t('confirmNo')]
+    buttons: [t('confirmYes'), t('confirmNo')],
   }).then(result => result.button === 0 || result.enter);

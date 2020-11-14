@@ -13,9 +13,9 @@ const tokenManager = (() => {
         fetch('https://api.dropboxapi.com/2/auth/token/revoke', {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        })
+            'Authorization': `Bearer ${token}`,
+          },
+        }),
     },
     google: {
       flow: 'code',
@@ -27,14 +27,14 @@ const tokenManager = (() => {
         // tokens for multiple machines.
         // https://stackoverflow.com/q/18519185
         access_type: 'offline',
-        prompt: 'consent'
+        prompt: 'consent',
       },
       tokenURL: 'https://oauth2.googleapis.com/token',
       scopes: ['https://www.googleapis.com/auth/drive.appdata'],
       revoke: token => {
         const params = {token};
         return postQuery(`https://accounts.google.com/o/oauth2/revoke?${new URLSearchParams(params)}`);
-      }
+      },
     },
     onedrive: {
       flow: 'code',
@@ -45,8 +45,8 @@ const tokenManager = (() => {
       redirect_uri: FIREFOX ?
         'https://clngdbkpkpeebahjckkjfobafhncgmne.chromiumapp.org/' :
         'https://' + location.hostname + '.chromiumapp.org/',
-      scopes: ['Files.ReadWrite.AppFolder', 'offline_access']
-    }
+      scopes: ['Files.ReadWrite.AppFolder', 'offline_access'],
+    },
   };
   const NETWORK_LATENCY = 30; // seconds
 
@@ -114,7 +114,7 @@ const tokenManager = (() => {
       client_id: provider.clientId,
       refresh_token: obj[k.REFRESH],
       grant_type: 'refresh_token',
-      scope: provider.scopes.join(' ')
+      scope: provider.scopes.join(' '),
     };
     if (provider.clientSecret) {
       body.client_secret = provider.clientSecret;
@@ -136,7 +136,7 @@ const tokenManager = (() => {
       response_type: provider.flow,
       client_id: provider.clientId,
       redirect_uri: provider.redirect_uri || chrome.identity.getRedirectURL(),
-      state
+      state,
     };
     if (provider.scopes) {
       query.scope = provider.scopes.join(' ');
@@ -148,7 +148,7 @@ const tokenManager = (() => {
     return webextLaunchWebAuthFlow({
       url,
       interactive,
-      redirect_uri: query.redirect_uri
+      redirect_uri: query.redirect_uri,
     })
       .then(url => {
         const params = new URLSearchParams(
@@ -171,7 +171,7 @@ const tokenManager = (() => {
           code,
           grant_type: 'authorization_code',
           client_id: provider.clientId,
-          redirect_uri: query.redirect_uri
+          redirect_uri: query.redirect_uri,
         };
         if (provider.clientSecret) {
           body.client_secret = provider.clientSecret;
@@ -185,7 +185,7 @@ const tokenManager = (() => {
     return chromeLocal.set({
       [k.TOKEN]: result.access_token,
       [k.EXPIRE]: result.expires_in ? Date.now() + (Number(result.expires_in) - NETWORK_LATENCY) * 1000 : undefined,
-      [k.REFRESH]: result.refresh_token
+      [k.REFRESH]: result.refresh_token,
     })
       .then(() => result.access_token);
   }
@@ -194,7 +194,7 @@ const tokenManager = (() => {
     const options = {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: body ? new URLSearchParams(body) : null,
     };

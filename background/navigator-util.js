@@ -4,7 +4,7 @@
 
 const navigatorUtil = (() => {
   const handler = {
-    urlChange: null
+    urlChange: null,
   };
   return extendNative({onUrlChange});
 
@@ -69,7 +69,7 @@ const navigatorUtil = (() => {
           return target[prop];
         }
         return chrome.webNavigation[prop].addListener.bind(chrome.webNavigation[prop]);
-      }
+      },
     });
   }
 })();

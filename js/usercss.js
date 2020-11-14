@@ -20,7 +20,7 @@ const usercss = (() => {
     const style = {
       enabled: true,
       sourceCode,
-      sections: []
+      sections: [],
     };
 
     const match = sourceCode.match(RX_META);

@@ -344,7 +344,7 @@ function createStyleElement(style) {
       styleId: style.id,
       styleIsUsercss: Boolean(style.usercssData),
       onmousedown: handleEvent.maybeEdit,
-      styleMeta: style
+      styleMeta: style,
     });
     const checkbox = $('.checker', entry);
     Object.assign(checkbox, {
@@ -645,7 +645,7 @@ Object.assign(handleEvent, {
       this.eventHandled = true;
       API.openManage({
         search: tabURL && (event.shiftKey || event.button === 2) ?
-          `url:${tabURL}` : null
+          `url:${tabURL}` : null,
       });
       window.close();
     }

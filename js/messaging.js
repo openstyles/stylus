@@ -126,7 +126,7 @@ function urlToMatchPattern(url, ignoreSearch) {
   if (ignoreSearch) {
     return [
       `${url.protocol}//${url.hostname}/${url.pathname}`,
-      `${url.protocol}//${url.hostname}/${url.pathname}?*`
+      `${url.protocol}//${url.hostname}/${url.pathname}?*`,
     ];
   }
   // FIXME: is %2f allowed in pathname and search?
@@ -220,7 +220,7 @@ function activateTab(tab, {url, index, openerTabId} = {}) {
   return Promise.all([
     browser.tabs.update(tab.id, options),
     browser.windows && browser.windows.update(tab.windowId, {focused: true}),
-    index != null && browser.tabs.move(tab.id, {index})
+    index != null && browser.tabs.move(tab.id, {index}),
   ])
     .then(() => tab);
 }

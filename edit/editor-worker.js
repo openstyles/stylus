@@ -29,13 +29,13 @@ workerUtil.createAPI({
         code: err.code,
         args: err.args,
         message: err.message,
-        index: err.index
+        index: err.index,
       })
     );
     return result;
   },
   getStylelintRules,
-  getCsslintRules
+  getCsslintRules,
 });
 
 function getCsslintRules() {

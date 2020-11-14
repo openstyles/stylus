@@ -214,6 +214,6 @@ function createHotkeyInput(prefId, onDone = () => {}) {
     },
     onpaste(event) {
       event.preventDefault();
-    }
+    },
   });
 }

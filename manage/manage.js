@@ -71,7 +71,7 @@ Promise.all([
   // FIXME: integrate this into filter.js
   router.getSearch('search') && API.searchDB({query: router.getSearch('search')}),
   waitForSelector('#installed'), // needed to avoid flicker due to an extra frame and layout shift
-  prefs.initializing
+  prefs.initializing,
 ]).then(([styles, ids, el]) => {
   installed = el;
   installed.onclick = handleEvent.entryClicked;
@@ -370,7 +370,7 @@ Object.assign(handleEvent, {
     '.update': 'update',
     '.delete': 'delete',
     '.applies-to .expander': 'expandTargets',
-    '.configure-usercss': 'config'
+    '.configure-usercss': 'config',
   },
 
   entryClicked(event) {
@@ -526,7 +526,7 @@ Object.assign(handleEvent, {
       {prop: 'updateDate', name: 'dateUpdated'},
     ].map(({prop, name}) =>
       t(name) + ': ' + (formatDate(entry.styleMeta[prop]) || '—')).join('\n');
-  }
+  },
 });
 
 

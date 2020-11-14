@@ -16,7 +16,7 @@ function createZip({isFirefox} = {}) {
     'package-lock.json',
     'yarn.lock',
     '*.zip',
-    '*.map'
+    '*.map',
   ];
 
   const file = fs.createWriteStream(fileName);

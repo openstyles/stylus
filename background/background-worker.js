@@ -25,7 +25,7 @@ workerUtil.createAPI({
       '/js/meta-parser.js'
     );
     return metaParser.nullifyInvalidVars(vars);
-  }
+  },
 });
 
 function compileUsercss(preprocessor, code, vars) {
@@ -55,7 +55,7 @@ function compileUsercss(preprocessor, code, vars) {
       const va = vars[key];
       output[key] = Object.assign({}, va, {
         value: va.value === null || va.value === undefined ?
-          getVarValue(va, 'default') : getVarValue(va, 'value')
+          getVarValue(va, 'default') : getVarValue(va, 'value'),
       });
       return output;
     }, {});
@@ -86,7 +86,7 @@ function getUsercssCompiler(preprocessor) {
             section.code = varDef + section.code;
           }
         }
-      }
+      },
     },
     stylus: {
       preprocess(source, vars) {
@@ -96,7 +96,7 @@ function getUsercssCompiler(preprocessor) {
           new self.StylusRenderer(varDef + source)
             .render((err, output) => err ? reject(err) : resolve(output));
         });
-      }
+      },
     },
     less: {
       preprocess(source, vars) {
@@ -110,7 +110,7 @@ function getUsercssCompiler(preprocessor) {
         const varDefs = Object.keys(vars).map(key => `@${key}:${vars[key].value};\n`).join('');
         return self.less.render(varDefs + source)
           .then(({css}) => css);
-      }
+      },
     },
     uso: {
       preprocess(source, vars) {
@@ -162,8 +162,8 @@ function getUsercssCompiler(preprocessor) {
             return pool.get(name);
           });
         }
-      }
-    }
+      },
+    },
   };
 
   if (preprocessor) {

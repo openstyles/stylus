@@ -19,7 +19,7 @@ const iconUtil = (() => {
     Cache imageData for paths
     */
     setIcon,
-    setBadgeText
+    setBadgeText,
   });
 
   function loadImage(url) {
@@ -85,7 +85,7 @@ const iconUtil = (() => {
           return target[prop];
         }
         return chrome.browserAction[prop].bind(chrome.browserAction);
-      }
+      },
     });
   }
 })();

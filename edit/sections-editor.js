@@ -436,7 +436,7 @@ function SectionsEditor() {
   /** @returns {Style} */
   function getModel() {
     return Object.assign({}, style, {
-      sections: sections.filter(s => !s.removed).map(s => s.getModel())
+      sections: sections.filter(s => !s.removed).map(s => s.getModel()),
     });
   }
 

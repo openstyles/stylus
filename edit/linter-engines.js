@@ -7,7 +7,7 @@
       storageName: chromeSync.LZ_KEY.csslint,
       lint: csslint,
       validMode: mode => mode === 'css',
-      getConfig: config => Object.assign({}, LINTER_DEFAULTS.CSSLINT, config)
+      getConfig: config => Object.assign({}, LINTER_DEFAULTS.CSSLINT, config),
     },
     stylelint: {
       storageName: chromeSync.LZ_KEY.stylelint,
@@ -15,9 +15,9 @@
       validMode: () => true,
       getConfig: config => ({
         syntax: 'sugarss',
-        rules: Object.assign({}, LINTER_DEFAULTS.STYLELINT.rules, config && config.rules)
-      })
-    }
+        rules: Object.assign({}, LINTER_DEFAULTS.STYLELINT.rules, config && config.rules),
+      }),
+    },
   });
 
   async function stylelint(text, config, mode) {

@@ -99,7 +99,7 @@ function SourceEditor() {
     return API.buildUsercss({
       styleId: style.id,
       sourceCode: style.sourceCode,
-      assignVars: true
+      assignVars: true,
     })
       .then(({style: newStyle}) => {
         delete newStyle.enabled;

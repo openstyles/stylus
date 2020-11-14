@@ -100,7 +100,7 @@ onDOMready().then(() => {
         state.lastFind = '';
         toggleDataset(this, 'enabled', !state.icase);
         doSearch({canAdvance: false});
-      }
+      },
     },
   };
 
@@ -136,7 +136,7 @@ onDOMready().then(() => {
       trimUndoHistory();
       enableUndoButton(state.undoHistory.length);
       if (state.find) doSearch({canAdvance: false});
-    }
+    },
   };
 
   const DIALOG_PROPS = {
@@ -152,7 +152,7 @@ onDOMready().then(() => {
         state.replace = this.value;
         adjustTextareaSize(this);
         debounce(writeStorage, STORAGE_UPDATE_DELAY);
-      }
+      },
     },
   };
 
@@ -169,7 +169,7 @@ onDOMready().then(() => {
     replace(cm) {
       state.reverse = false;
       focusDialog('replace', cm);
-    }
+    },
   };
   COMMANDS.replaceAll = COMMANDS.replace;
 

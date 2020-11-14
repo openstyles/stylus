@@ -8,7 +8,7 @@
 
 // eslint-disable-next-line no-var
 var backgroundWorker = workerUtil.createWorker({
-  url: '/background/background-worker.js'
+  url: '/background/background-worker.js',
 });
 
 // eslint-disable-next-line no-var
@@ -99,7 +99,7 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   getSyncStatus: sync.getStatus,
   syncLogin: sync.login,
 
-  openManage
+  openManage,
 });
 
 // *************************************************************************
@@ -119,7 +119,7 @@ if (FIREFOX) {
   navigatorUtil.onDOMContentLoaded(webNavIframeHelperFF, {
     url: [
       {urlEquals: 'about:blank'},
-    ]
+    ],
   });
 }
 
@@ -184,7 +184,7 @@ contextMenus = {
       msg.sendTab(tab.id, {method: 'editDeleteText'}, undefined, 'extension')
         .catch(msg.ignoreError);
     },
-  }
+  },
 };
 
 async function createContextMenus(ids) {
@@ -321,14 +321,14 @@ function openManage({options = false, search} = {}) {
     url,
     currentWindow: null,
     ignoreHash: true,
-    ignoreSearch: true
+    ignoreSearch: true,
   })
     .then(tab => {
       if (tab) {
         return Promise.all([
           activateTab(tab),
           (tab.pendingUrl || tab.url) !== url && msg.sendTab(tab.id, {method: 'pushState', url})
-            .catch(console.error)
+            .catch(console.error),
         ]);
       }
       return getActiveTab().then(tab => {

@@ -13,7 +13,7 @@ const iconManager = (() => {
   ], () => debounce(refreshIconBadgeColor));
 
   prefs.subscribe([
-    'show-badge'
+    'show-badge',
   ], () => debounce(refreshAllIconsBadgeText));
 
   prefs.subscribe([
@@ -79,7 +79,7 @@ const iconManager = (() => {
     tabManager.set(tabId, 'icon', newIcon);
     iconUtil.setIcon({
       path: getIconPath(newIcon),
-      tabId
+      tabId,
     });
   }
 
@@ -103,14 +103,14 @@ const iconManager = (() => {
 
   function refreshGlobalIcon() {
     iconUtil.setIcon({
-      path: getIconPath(getIconName())
+      path: getIconPath(getIconName()),
     });
   }
 
   function refreshIconBadgeColor() {
     const color = prefs.get(prefs.get('disableAll') ? 'badgeDisabled' : 'badgeNormal');
     iconUtil.setBadgeBackgroundColor({
-      color
+      color,
     });
   }
 
