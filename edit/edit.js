@@ -26,7 +26,6 @@
   setupLivePrefs
   SourceEditor
   t
-  tHTML
   tryCatch
   tryJSONparse
 */
@@ -449,7 +448,7 @@ function showHelp(title = '', body) {
   const contents = $('.contents', div);
   contents.textContent = '';
   if (body) {
-    contents.appendChild(typeof body === 'string' ? tHTML(body) : body);
+    contents.appendChild(typeof body === 'string' ? t.HTML(body) : body);
   }
 
   $('.title', div).textContent = title;

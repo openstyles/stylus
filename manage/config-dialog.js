@@ -1,5 +1,15 @@
-/* global messageBox deepCopy $create $createLink $ t tWordBreak
-  prefs setupLivePrefs debounce API */
+/* global
+  $
+  $create
+  $createLink
+  API
+  debounce
+  deepCopy
+  messageBox
+  prefs
+  setupLivePrefs
+  t
+*/
 /* exported configDialog */
 'use strict';
 
@@ -305,7 +315,7 @@ function configDialog(style) {
 
       elements.push(
         $create(`label.config-${va.type}`, [
-          $create('span.config-name', tWordBreak(va.label)),
+          $create('span.config-name', t.breakWord(va.label)),
           ...children,
           resetter,
         ]));

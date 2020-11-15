@@ -9,7 +9,6 @@
   prefs
   regExpTester
   t
-  template
   tryCatch
 */
 'use strict';
@@ -55,7 +54,7 @@ function MozSectionWidget(
           $create('ul' + C_LIST),
         ]),
       listItem:
-        template.appliesTo.cloneNode(true),
+        t.template.appliesTo.cloneNode(true),
       appliesToEverything:
         $create('li.applies-to-everything', t('appliesToEverything')),
     };

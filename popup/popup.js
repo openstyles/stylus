@@ -1,7 +1,23 @@
-/* global configDialog hotkeys msg
-  getActiveTab CHROME FIREFOX URLS API onDOMready $ $$ prefs
-  setupLivePrefs template t $create animateElement
-  tryJSONparse CHROME_HAS_BORDER_BUG */
+/* global
+  $
+  $$
+  $create
+  animateElement
+  API
+  CHROME
+  CHROME_HAS_BORDER_BUG
+  configDialog
+  FIREFOX
+  getActiveTab
+  hotkeys
+  msg
+  onDOMready
+  prefs
+  setupLivePrefs
+  t
+  tryJSONparse
+  URLS
+*/
 
 'use strict';
 
@@ -165,7 +181,7 @@ function initPopup(frames) {
           setTimeout(ping, 100, tab, --retryCountdown);
           return;
         }
-        const info = template.unreachableInfo;
+        const info = t.template.unreachableInfo;
         if (!FIREFOX) {
           // Chrome "Allow access to file URLs" in chrome://extensions message
           info.appendChild($create('p', t('unreachableFileHint')));
@@ -204,7 +220,7 @@ function createWriterElement(frame) {
   const targets = $create('span');
 
   // For this URL
-  const urlLink = template.writeStyle.cloneNode(true);
+  const urlLink = t.template.writeStyle.cloneNode(true);
   const isAboutBlank = url === ABOUT_BLANK;
   Object.assign(urlLink, {
     href: 'edit.html?url-prefix=' + encodeURIComponent(url),
@@ -233,7 +249,7 @@ function createWriterElement(frame) {
     if (domains.length > 1 && numParts === 1) {
       continue;
     }
-    const domainLink = template.writeStyle.cloneNode(true);
+    const domainLink = t.template.writeStyle.cloneNode(true);
     Object.assign(domainLink, {
       href: 'edit.html?domain=' + encodeURIComponent(domain),
       textContent: numParts > 2 ? domain.split('.')[0] : domain,
@@ -322,7 +338,7 @@ function showStyles(frameResults) {
   if (entries.size) {
     resortEntries([...entries.values()]);
   } else {
-    installed.appendChild(template.noStyles);
+    installed.appendChild(t.template.noStyles);
   }
   window.dispatchEvent(new Event('showStyles:done'));
 }
@@ -337,7 +353,7 @@ function resortEntries(entries) {
 function createStyleElement(style) {
   let entry = $.entry(style);
   if (!entry) {
-    entry = template.style.cloneNode(true);
+    entry = t.template.style.cloneNode(true);
     entry.setAttribute('style-id', style.id);
     Object.assign(entry, {
       id: ENTRY_ID_PREFIX_RAW + style.id,
@@ -384,7 +400,7 @@ function createStyleElement(style) {
 
     $('.delete', entry).onclick = handleEvent.delete;
 
-    const indicator = template.regexpProblemIndicator.cloneNode(true);
+    const indicator = t.template.regexpProblemIndicator.cloneNode(true);
     indicator.appendChild(document.createTextNode('!'));
     indicator.onclick = handleEvent.indicator;
     $('.main-controls', entry).appendChild(indicator);
@@ -587,7 +603,7 @@ Object.assign(handleEvent, {
 
   indicator(event) {
     const entry = handleEvent.getClickedStyleElement(event);
-    const info = template.regexpProblemExplanation.cloneNode(true);
+    const info = t.template.regexpProblemExplanation.cloneNode(true);
     $.remove('#' + info.id);
     $$('a', info).forEach(el => (el.onclick = handleEvent.openURLandHide));
     $$('button', info).forEach(el => (el.onclick = handleEvent.closeExplanation));
@@ -684,7 +700,7 @@ function handleDelete(id) {
   const el = $.entry(id);
   if (el) {
     el.remove();
-    if (!$('.entry')) installed.appendChild(template.noStyles);
+    if (!$('.entry')) installed.appendChild(t.template.noStyles);
   }
 }
 
@@ -714,9 +730,9 @@ async function getStyleDataMerged(url, id) {
 function blockPopup(isBlocked = true) {
   document.body.classList.toggle('blocked', isBlocked);
   if (isBlocked) {
-    document.body.prepend(template.unavailableInfo);
+    document.body.prepend(t.template.unavailableInfo);
   } else {
-    template.unavailableInfo.remove();
-    template.noStyles.remove();
+    t.template.unavailableInfo.remove();
+    t.template.noStyles.remove();
   }
 }

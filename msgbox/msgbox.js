@@ -1,11 +1,18 @@
-/* global focusAccessibility moveFocus $ $create t tHTML animateElement */
+/* global
+  $
+  $create
+  animateElement
+  focusAccessibility
+  moveFocus
+  t
+*/
 'use strict';
 
 /**
  * @param {Object} params
  * @param {String} params.title
  * @param {String|Node|Object|Array<String|Node|Object>} params.contents
- *        a string gets parsed via tHTML,
+ *        a string gets parsed via t.HTML,
  *        a non-string is passed as is to $create()
  * @param {String} [params.className]
  *        CSS class name of the message box element
@@ -116,7 +123,7 @@ function messageBox({
               $create('SVG:path', {d: 'M11.69,10l4.55,4.55-1.69,1.69L10,11.69,' +
                 '5.45,16.23,3.77,14.55,8.31,10,3.77,5.45,5.45,3.77,10,8.31l4.55-4.55,1.69,1.69Z',
               }))),
-          $create(`#${id}-contents`, tHTML(contents)),
+          $create(`#${id}-contents`, t.HTML(contents)),
           $create(`#${id}-buttons`,
             buttons.map((content, buttonIndex) => content &&
               $create('button', Object.assign({

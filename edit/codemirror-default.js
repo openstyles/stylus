@@ -1,4 +1,10 @@
-/* global CodeMirror prefs editor $ template */
+/* global
+  $
+  CodeMirror
+  editor
+  prefs
+  t
+*/
 
 'use strict';
 
@@ -183,7 +189,7 @@
     // setTimeout(() => {
       // $('.CodeMirror-dialog', section).focus();
     // });
-    cm.openDialog(template.jumpToLine.cloneNode(true), str => {
+    cm.openDialog(t.template.jumpToLine.cloneNode(true), str => {
       const m = str.match(/^\s*(\d+)(?:\s*:\s*(\d+))?\s*$/);
       if (m) {
         cm.setCursor(m[1] - 1, m[2] ? m[2] - 1 : cur.ch);

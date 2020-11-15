@@ -9,7 +9,6 @@
   prefs
   regExpTester
   t
-  template
   trimCommentLabel
   tryRegExp
 */
@@ -26,7 +25,7 @@
 function createSection(originalSection, genId, si) {
   const {dirty} = editor;
   const sectionId = genId();
-  const el = template.section.cloneNode(true);
+  const el = t.template.section.cloneNode(true);
   const elLabel = $('.code-label', el);
   const cm = cmFactory.create(wrapper => {
     // making it tall during initial load so IntersectionObserver sees only one adjacent CM
@@ -265,8 +264,8 @@ function createSection(originalSection, genId, si) {
   function createApply({type = 'url', value, all = false}) {
     const applyId = genId();
     const dirtyPrefix = `section.${sectionId}.apply.${applyId}`;
-    const el = all ? template.appliesToEverything.cloneNode(true) :
-      template.appliesTo.cloneNode(true);
+    const el = all ? t.template.appliesToEverything.cloneNode(true) :
+      t.template.appliesTo.cloneNode(true);
 
     const selectEl = !all && $('.applies-type', el);
     if (selectEl) {
@@ -359,7 +358,7 @@ function createSection(originalSection, genId, si) {
 function createResizeGrip(cm) {
   const wrapper = cm.display.wrapper;
   wrapper.classList.add('resize-grip-enabled');
-  const resizeGrip = template.resizeGrip.cloneNode(true);
+  const resizeGrip = t.template.resizeGrip.cloneNode(true);
   wrapper.appendChild(resizeGrip);
   let lastClickTime = 0;
   let initHeight;

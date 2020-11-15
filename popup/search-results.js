@@ -1,5 +1,18 @@
-/* global URLS tabURL handleEvent $ $$ prefs template FIREFOX debounce
-  $create t API tWordBreak formatDate tryCatch download */
+/* global
+  $
+  $$
+  $create
+  API
+  debounce
+  download
+  FIREFOX
+  handleEvent
+  prefs
+  t
+  tabURL
+  tryCatch
+  URLS
+*/
 'use strict';
 
 window.addEventListener('showStyles:done', () => {
@@ -103,7 +116,7 @@ window.addEventListener('showStyles:done', () => {
     const navOnClick = {prev, next};
     for (const place of ['top', 'bottom']) {
       const nav = $(`.search-results-nav[data-type="${place}"]`);
-      nav.appendChild(template.searchNav.cloneNode(true));
+      nav.appendChild(t.template.searchNav.cloneNode(true));
       dom.nav[place] = nav;
       for (const child of $$('[data-type]', nav)) {
         const type = child.dataset.type;
@@ -257,7 +270,7 @@ window.addEventListener('showStyles:done', () => {
    * @returns {Node}
    */
   function createSearchResultNode(result) {
-    const entry = template.searchResult.cloneNode(true);
+    const entry = t.template.searchResult.cloneNode(true);
     const {
       i: id,
       n: name,
@@ -276,7 +289,7 @@ window.addEventListener('showStyles:done', () => {
       href: URLS.usoArchive + `?category=${category}&style=${id}`,
     });
     $('.search-result-title span', entry).textContent =
-      tWordBreak(name.length < 300 ? name : name.slice(0, 300) + '...');
+      t.breakWord(name.length < 300 ? name : name.slice(0, 300) + '...');
     // screenshot
     const auto = URLS.uso + `auto_style_screenshots/${id}${USO_AUTO_PIC_SUFFIX}`;
     Object.assign($('.search-result-screenshot', entry), {
@@ -303,7 +316,7 @@ window.addEventListener('showStyles:done', () => {
     // time
     Object.assign($('[data-type="updated"] time', entry), {
       dateTime: updateTime * 1000,
-      textContent: formatDate(updateTime * 1000),
+      textContent: t.formatDate(updateTime * 1000),
     });
     // totals
     $('[data-type="weekly"] dd', entry).textContent = formatNumber(weeklyInstalls);

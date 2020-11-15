@@ -1,4 +1,12 @@
-/* global showHelp $ $create tryRegExp URLS t template openURL */
+/* global
+  $
+  $create
+  openURL
+  showHelp
+  t
+  tryRegExp
+  URLS
+*/
 /* exported regExpTester */
 'use strict';
 
@@ -86,7 +94,7 @@ const regExpTester = (() => {
         full: {data: [], label: t('styleRegexpTestFull')},
         partial: {data: [], label: [
           t('styleRegexpTestPartial'),
-          template.regexpTestPartial.cloneNode(true),
+          t.template.regexpTestPartial.cloneNode(true),
         ]},
         none: {data: [], label: t('styleRegexpTestNone')},
         invalid: {data: [], label: t('styleRegexpTestInvalid')},

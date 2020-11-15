@@ -1,5 +1,14 @@
-/* global CodeMirror showHelp onDOMready $ $$ $create template t
-  prefs stringAsRegExp */
+/* global
+  $
+  $$
+  $create
+  CodeMirror
+  onDOMready
+  prefs
+  showHelp
+  stringAsRegExp
+  t
+*/
 'use strict';
 
 onDOMready().then(() => {
@@ -11,7 +20,7 @@ function showKeyMapHelp() {
   const keyMapSorted = Object.keys(keyMap)
     .map(key => ({key, cmd: keyMap[key]}))
     .sort((a, b) => (a.cmd < b.cmd || (a.cmd === b.cmd && a.key < b.key) ? -1 : 1));
-  const table = template.keymapHelp.cloneNode(true);
+  const table = t.template.keymapHelp.cloneNode(true);
   const tBody = table.tBodies[0];
   const row = tBody.rows[0];
   const cellA = row.children[0];

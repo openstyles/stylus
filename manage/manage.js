@@ -9,7 +9,6 @@
   configDialog
   debounce
   filterAndAppend
-  formatDate
   getOwnTab
   getStyleWithNoCode
   handleUpdateInstalled
@@ -25,8 +24,6 @@
   showFiltersStats
   sorter
   t
-  template
-  tWordBreak
   VIVALDI
 */
 'use strict';
@@ -187,7 +184,7 @@ function showStyles(styles = [], matchUrlIds) {
 function createStyleElement({style, name: nameLC}) {
   // query the sub-elements just once, then reuse the references
   if ((createStyleElement.parts || {}).newUI !== newUI.enabled) {
-    const entry = template[`style${newUI.enabled ? 'Compact' : ''}`];
+    const entry = t.template[`style${newUI.enabled ? 'Compact' : ''}`];
     createStyleElement.parts = {
       newUI: newUI.enabled,
       entry,
@@ -197,7 +194,7 @@ function createStyleElement({style, name: nameLC}) {
       editLink: $('.style-edit-link', entry) || {},
       editHrefBase: 'edit.html?id=',
       homepage: $('.homepage', entry),
-      homepageIcon: template[`homepageIcon${newUI.enabled ? 'Small' : 'Big'}`],
+      homepageIcon: t.template[`homepageIcon${newUI.enabled ? 'Small' : 'Big'}`],
       appliesTo: $('.applies-to', entry),
       targets: $('.targets', entry),
       expander: $('.expander', entry),
@@ -215,7 +212,7 @@ function createStyleElement({style, name: nameLC}) {
   const configurable = style.usercssData && style.usercssData.vars && Object.keys(style.usercssData.vars).length > 0;
   const name = style.customName || style.name;
   parts.checker.checked = style.enabled;
-  parts.nameLink.textContent = tWordBreak(name);
+  parts.nameLink.textContent = t.breakWord(name);
   parts.nameLink.href = parts.editLink.href = parts.editHrefBase + style.id;
   parts.homepage.href = parts.homepage.title = style.url || '';
   if (!newUI.enabled) {
@@ -243,10 +240,10 @@ function createStyleElement({style, name: nameLC}) {
     $('.homepage', entry).appendChild(parts.homepageIcon.cloneNode(true));
   }
   if (style.updateUrl && newUI.enabled) {
-    $('.actions', entry).appendChild(template.updaterIcons.cloneNode(true));
+    $('.actions', entry).appendChild(t.template.updaterIcons.cloneNode(true));
   }
   if (configurable && newUI.enabled) {
-    $('.actions', entry).appendChild(template.configureIcon.cloneNode(true));
+    $('.actions', entry).appendChild(t.template.configureIcon.cloneNode(true));
   }
 
   createStyleTargetsElement({entry, style});
@@ -287,12 +284,12 @@ function createStyleTargetsElement({entry, expanded, style = entry.styleMeta}) {
           el = next;
           continue;
         }
-        const element = template.appliesToTarget.cloneNode(true);
+        const element = t.template.appliesToTarget.cloneNode(true);
         if (!newUI.enabled) {
           if (numTargets === maxTargets) {
-            container = container.appendChild(template.extraAppliesTo.cloneNode(true));
+            container = container.appendChild(t.template.extraAppliesTo.cloneNode(true));
           } else if (numTargets > 0) {
-            container.appendChild(template.appliesToSeparator.cloneNode(true));
+            container.appendChild(t.template.appliesToSeparator.cloneNode(true));
           }
         }
         element.dataset.type = type;
@@ -311,7 +308,7 @@ function createStyleTargetsElement({entry, expanded, style = entry.styleMeta}) {
     if (entryTargets.firstElementChild) {
       entryTargets.textContent = '';
     }
-    entryTargets.appendChild(template.appliesToEverything.cloneNode(true));
+    entryTargets.appendChild(t.template.appliesToEverything.cloneNode(true));
   }
   entry.classList.toggle('global', !numTargets);
   entry._allTargetsRendered = allTargetsRendered;
@@ -525,7 +522,7 @@ Object.assign(handleEvent, {
       {prop: 'installDate', name: 'dateInstalled'},
       {prop: 'updateDate', name: 'dateUpdated'},
     ].map(({prop, name}) =>
-      t(name) + ': ' + (formatDate(entry.styleMeta[prop]) || '—')).join('\n');
+      t(name) + ': ' + (t.formatDate(entry.styleMeta[prop]) || '—')).join('\n');
   },
 });
 
