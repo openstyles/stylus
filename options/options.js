@@ -238,6 +238,7 @@ function setupRadioButtons() {
 function splitLongTooltips() {
   for (const el of $$('[title]')) {
     el.dataset.title = el.title;
+    el.title = el.title.replace(/<\/?\w+>/g, ''); // strip html tags
     if (el.title.length < 50) {
       continue;
     }
