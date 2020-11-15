@@ -976,6 +976,12 @@
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Write new style as usercss"
   },
+  "optionsAdvancedPatchCsp": {
+    "message": "Patch <code>CSP</code> to allow style assets"
+  },
+  "optionsAdvancedPatchCspNote": {
+    "message": "Enable this if some of your styles fail to show an image/background/font on sites with a strict <code>Content-Security-Policy</code>.\n\nEnabling this will loosen CSP a bit by merging it with <code>img-src data: *; font-src data: *; style-src 'unsafe-inline'</code> which means you should accept the potential risk and/or regularly check the CSS code of your styles. Read about CSS-based attacks for more information.\n\nNote, this is not guaranteed to take effect if another installed extension modifies the network response first."
+  },
   "optionsAdvancedStyleViaXhr": {
     "message": "Instant inject mode"
   },
