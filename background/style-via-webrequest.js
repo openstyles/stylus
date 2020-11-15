@@ -89,7 +89,7 @@ CHROME && (async () => {
       res = true;
       responseHeaders.push({
         name: 'Set-Cookie',
-        value: `${chrome.runtime.id}=${prefs.get(idOff) ? 1 : 0}${id}`,
+        value: `${chrome.runtime.id}=${id}`,
       });
       // Allow cookies in CSP sandbox (known case: raw github urls)
       if (csp) {

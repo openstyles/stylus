@@ -59,8 +59,7 @@ self.INJECTED !== 1 && (() => {
     if (STYLE_VIA_API) {
       await API.styleViaAPI({method: 'styleApply'});
     } else {
-      const blobId = chrome.app && getXhrBlobId();
-      const styles = blobId && getStylesViaXhr(blobId) ||
+      const styles = chrome.app && !chrome.tabs && getStylesViaXhr() ||
         await API.getSectionsByUrl(getMatchUrl(), null, true);
       if (styles.disableAll) {
         delete styles.disableAll;
@@ -70,27 +69,16 @@ self.INJECTED !== 1 && (() => {
     }
   }
 
-  function getXhrBlobId() {
+  function getStylesViaXhr() {
     try {
-      const {cookie} = document; // may throw in sandboxed frames
-      return new RegExp(`(^|\\s|;)${chrome.runtime.id}=\\s*([-\\w]+)\\s*(;|$)`).exec(cookie)[2];
-    } catch (e) {}
-  }
-
-  function getStylesViaXhr(data) {
-    try {
-      const disableAll = data[0] === '1';
-      const url = 'blob:' + chrome.runtime.getURL(data.slice(1));
+      const blobId = document.cookie.split(chrome.runtime.id + '=')[1].split(';')[0];
+      const url = 'blob:' + chrome.runtime.getURL(blobId);
       document.cookie = `${chrome.runtime.id}=1; max-age=0`; // remove our cookie
-      let res;
-      if (!disableAll) { // when disabled, will get the styles asynchronously, no rush
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', url, false); // synchronous
-        xhr.send();
-        res = JSON.parse(xhr.response);
-      }
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', url, false); // synchronous
+      xhr.send();
       URL.revokeObjectURL(url);
-      return res;
+      return JSON.parse(xhr.response);
     } catch (e) {}
   }
 
