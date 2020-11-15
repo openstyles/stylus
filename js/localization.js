@@ -110,19 +110,21 @@ function tNodeList(nodes) {
   }
 
   function createHtml(value) {
-    // <a href=foo>bar</a> are the only recognizable HTML elements
-    const rx = /(?:<a\s([^>]*)>([^<]*)<\/a>)?([^<]*)/gi;
+    // <a> and <code> are the only acceptable HTML elements,
+    // <a> also allows `href` attribute with an http/https URL
+    const rx = /(<)(a|code)(\s[^>]*|)>(.*?)<\/\2>/i;
     const bin = document.createDocumentFragment();
-    for (let m; (m = rx.exec(value)) && m[0];) {
-      const [, linkParams, linkText, nextText] = m;
-      if (linkText) {
-        const href = /\bhref\s*=\s*(\S+)/.exec(linkParams);
-        const a = bin.appendChild(document.createElement('a'));
-        a.href = href && href[1].replace(/^(["'])(.*)\1$/, '$2') || '';
-        a.appendChild(createText(linkText));
-      }
-      if (nextText) {
-        bin.appendChild(createText(nextText));
+    for (let parts = value.split(rx), i = 0; i < parts.length; i++) {
+      const s = parts[i];
+      if (s === '<') {
+        const tag = parts[++i].toLowerCase();
+        const el = bin.appendChild(document.createElement(tag));
+        const attrs = parts[++i];
+        const href = tag === 'a' && /(?:^|\s)href\s*=\s*(["'])?(https?:\/\/\S*?)\1/i.exec(attrs);
+        if (href) el.href = href[2];
+        el.appendChild(createText(parts[++i]));
+      } else {
+        bin.appendChild(createText(s));
       }
     }
     return bin;
