@@ -90,7 +90,7 @@ Object.assign(t, {
     const toRemove = [];
     while (walker.nextNode()) {
       const textNode = walker.currentNode;
-      if (!textNode.nodeValue.trim()) {
+      if (!/[\xA0\S]/.test(textNode.nodeValue)) { // allow \xA0 to keep &nbsp;
         toRemove.push(textNode);
       }
     }
