@@ -80,42 +80,47 @@ CHROME && (async () => {
   /** @param {chrome.webRequest.WebResponseHeadersDetails} req */
   function modifyHeaders(req) {
     const {responseHeaders} = req;
-    const csp = responseHeaders.find(h => h.name.toLowerCase() === 'content-security-policy');
     const id = stylesToPass[req.requestId];
     if (!id) {
       return;
     }
-    let res;
     if (enabled.xhr) {
-      res = true;
       responseHeaders.push({
         name: 'Set-Cookie',
         value: `${chrome.runtime.id}=${id}`,
       });
-      // Allow cookies in CSP sandbox (known case: raw github urls)
-      if (csp) {
-        csp.value = csp.value.replace(/(?:^|;)\s*sandbox(\s+[^;]*|)(?=;|$)/, (s, allow) =>
-          allow.split(/\s+/).includes('allow-same-origin') ? s : `${s} allow-same-origin`);
-      }
     }
-    if (enabled.csp && csp) {
-      res = true;
-      const src = {};
-      for (let p of csp.value.split(';')) {
-        p = p.trim().split(/\s+/);
-        src[p[0]] = p.slice(1);
-      }
-      addToCsp(src, 'img-src', 'data:', '*');
-      addToCsp(src, 'font-src', 'data:', '*');
-      addToCsp(src, 'style-src', "'unsafe-inline'");
-      csp.value = Object.entries(src).map(([k, v]) => `${k} ${v.join(' ')}`).join('; ');
+    const csp = enabled.csp &&
+      responseHeaders.find(h => h.name.toLowerCase() === 'content-security-policy');
+    if (csp) {
+      patchCsp(csp);
     }
-    if (res) {
+    if (enabled.xhr || csp) {
       return {responseHeaders};
     }
   }
 
-  function addToCsp(src, name, ...values) {
+  /** @param {chrome.webRequest.HttpHeader} csp */
+  function patchCsp(csp) {
+    const src = {};
+    for (let p of csp.value.split(';')) {
+      p = p.trim().split(/\s+/);
+      src[p[0]] = p.slice(1);
+    }
+    // Allow style assets
+    patchCspSrc(src, 'img-src', 'data:', '*');
+    patchCspSrc(src, 'font-src', 'data:', '*');
+    // Allow our DOM styles
+    patchCspSrc(src, 'style-src', '\'unsafe-inline\'');
+    // Allow our XHR cookies in CSP sandbox (known case: raw github urls)
+    if (src.sandbox && !src.sandbox.includes('allow-same-origin')) {
+      src.sandbox.push('allow-same-origin');
+    }
+    csp.value = Object.entries(src).map(([k, v]) =>
+      `${k}${v.length ? ' ' : ''}${v.join(' ')}`).join('; ');
+  }
+
+  function patchCspSrc(src, name, ...values) {
     let def = src['default-src'];
     let list = src[name];
     if (def || list) {
