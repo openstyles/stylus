@@ -336,7 +336,7 @@ function createSizeText(el, style) {
     style.sections.reduce((sum, sec) => sum + (sec.code || '').length, 0);
   if (size) {
     el.textContent = size < 1000 ? '<1k' : `${size / 1000 | 0}k`;
-    el.title = addBigness(size);
+    el.title = padLeft(size, 8);
   }
 }
 
@@ -348,7 +348,7 @@ function createAgeText(el, style) {
       const rounded = Math.round(val);
       if (rounded < max) {
         el.textContent = text.replace('\x01', rounded);
-        el.dataset.value = addBigness(Math.round(rounded), 2) + unit;
+        el.dataset.value = padLeft(Math.round(rounded), 2) + unit;
         break;
       }
       val /= max;
@@ -359,8 +359,10 @@ function createAgeText(el, style) {
   }
 }
 
-function addBigness(val, max = 8) {
-  return ' '.repeat(max - Math.ceil(Math.log10(val))) + val;
+/** Adding spaces so CSS can detect "bigness" of a value via amount of spaces at the beginning */
+function padLeft(val, width) {
+  val = `${val}`;
+  return ' '.repeat(Math.max(0, width - val.length)) + val;
 }
 
 function getFaviconImgSrc(container = installed) {
