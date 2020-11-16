@@ -32,6 +32,7 @@ let installed;
 
 const ENTRY_ID_PREFIX_RAW = 'style-';
 const ENTRY_ID_PREFIX = '#' + ENTRY_ID_PREFIX_RAW;
+const REVEAL_DATES_FOR = 'h2.style-name, [data-type=age]';
 
 const BULK_THROTTLE_MS = 100;
 const bulkChangeQueue = [];
@@ -60,6 +61,12 @@ newUI.renderClass();
 const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps'];
 const GET_FAVICON_URL = 'https://www.google.com/s2/favicons?domain=';
 const OWN_ICON = chrome.runtime.getManifest().icons['16'];
+const AGES = [
+  [24, 'h', t('dateAbbrHour', '\x01')],
+  [30, 'd', t('dateAbbrDay', '\x01')],
+  [12, 'm', t('dateAbbrMonth', '\x01')],
+  [Infinity, 'y', t('dateAbbrYear', '\x01')],
+];
 
 const handleEvent = {};
 
@@ -184,7 +191,7 @@ function showStyles(styles = [], matchUrlIds) {
 function createStyleElement({style, name: nameLC}) {
   // query the sub-elements just once, then reuse the references
   if ((createStyleElement.parts || {}).newUI !== newUI.enabled) {
-    const entry = t.template[`style${newUI.enabled ? 'Compact' : ''}`];
+    const entry = t.template[newUI.enabled ? 'styleNewUI' : 'style'];
     createStyleElement.parts = {
       newUI: newUI.enabled,
       entry,
@@ -195,6 +202,9 @@ function createStyleElement({style, name: nameLC}) {
       editHrefBase: 'edit.html?id=',
       homepage: $('.homepage', entry),
       homepageIcon: t.template[`homepageIcon${newUI.enabled ? 'Small' : 'Big'}`],
+      infoAge: $('[data-type=age]', entry),
+      infoVer: $('[data-type=version]', entry),
+      infoSize: $('[data-type=size]', entry),
       appliesTo: $('.applies-to', entry),
       targets: $('.targets', entry),
       expander: $('.expander', entry),
@@ -209,13 +219,19 @@ function createStyleElement({style, name: nameLC}) {
     };
   }
   const parts = createStyleElement.parts;
-  const configurable = style.usercssData && style.usercssData.vars && Object.keys(style.usercssData.vars).length > 0;
+  const ud = style.usercssData;
+  const configurable = ud && ud.vars && Object.keys(ud.vars).length > 0;
   const name = style.customName || style.name;
   parts.checker.checked = style.enabled;
-  parts.nameLink.textContent = t.breakWord(name);
+  parts.nameLink.firstChild.textContent = t.breakWord(name);
   parts.nameLink.href = parts.editLink.href = parts.editHrefBase + style.id;
   parts.homepage.href = parts.homepage.title = style.url || '';
-  if (!newUI.enabled) {
+  parts.infoVer.textContent = ud ? ud.version : '';
+  parts.infoVer.dataset.value = ud ? ud.version : '';
+  if (newUI.enabled) {
+    createSizeText(parts.infoSize, style);
+    createAgeText(parts.infoAge, style);
+  } else {
     parts.oldConfigure.classList.toggle('hidden', !configurable);
     parts.oldCheckUpdate.classList.toggle('hidden', !style.updateUrl);
     parts.oldUpdate.classList.toggle('hidden', !style.updateUrl);
@@ -234,7 +250,7 @@ function createStyleElement({style, name: nameLC}) {
   entry.className = parts.entryClassBase + ' ' +
     (style.enabled ? 'enabled' : 'disabled') +
     (style.updateUrl ? ' updatable' : '') +
-    (style.usercssData ? ' usercss' : '');
+    (ud ? ' usercss' : '');
 
   if (style.url) {
     $('.homepage', entry).appendChild(parts.homepageIcon.cloneNode(true));
@@ -315,6 +331,37 @@ function createStyleTargetsElement({entry, expanded, style = entry.styleMeta}) {
   entry._numTargets = numTargets;
 }
 
+function createSizeText(el, style) {
+  const size = (style.sourceCode || '').length ||
+    style.sections.reduce((sum, sec) => sum + (sec.code || '').length, 0);
+  if (size) {
+    el.textContent = size < 1000 ? '<1k' : `${size / 1000 | 0}k`;
+    el.title = addBigness(size);
+  }
+}
+
+function createAgeText(el, style) {
+  let val = style.updateDate;
+  if (val) {
+    val = (Date.now() - val) / 3600e3; // age in hours
+    for (const [max, unit, text] of AGES) {
+      const rounded = Math.round(val);
+      if (rounded < max) {
+        el.textContent = text.replace('\x01', rounded);
+        el.dataset.value = addBigness(Math.round(rounded), 2) + unit;
+        break;
+      }
+      val /= max;
+    }
+  } else if (el.firstChild) {
+    el.textContent = '';
+    delete el.dataset.value;
+  }
+}
+
+function addBigness(val, max = 8) {
+  return ' '.repeat(max - Math.ceil(Math.log10(val))) + val;
+}
 
 function getFaviconImgSrc(container = installed) {
   if (!newUI.enabled || !newUI.favicons) return;
@@ -505,9 +552,9 @@ Object.assign(handleEvent, {
   },
 
   lazyAddEntryTitle({type, target}) {
-    const cell = target.closest('h2.style-name');
+    const cell = target.closest(REVEAL_DATES_FOR);
     if (cell) {
-      const link = $('.style-name-link', cell);
+      const link = $('.style-name-link', cell) || cell;
       if (type === 'mouseover' && !link.title) {
         debounce(handleEvent.addEntryTitle, 50, link);
       } else {
@@ -541,7 +588,7 @@ function handleBulkChange() {
 }
 
 function handleUpdateForId(id, opts) {
-  return API.getStyle(id, true).then(style => {
+  return API.getStyle(id).then(style => {
     handleUpdate(style, opts);
     bulkChangeQueue.time = performance.now();
   });

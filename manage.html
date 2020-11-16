@@ -32,7 +32,10 @@
   <template data-id="style">
     <div class="entry">
       <h2 class="style-name">
-        <a class="style-name-link"></a>
+        <a class="style-name-link">
+          &nbsp;
+          <span class="style-info" data-type="version"></span>
+        </a>
         <a target="_blank" class="homepage"></a>
       </h2>
       <p class="applies-to">
@@ -54,15 +57,20 @@
     </div>
   </template>
 
-  <template data-id="styleCompact">
+  <template data-id="styleNewUI">
     <div class="entry">
       <h2 class="style-name">
-      <div class="checkmate">
-        <input class="checker" type="checkbox" i18n-title="toggleStyle">
-        <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-      </div>
-        <a class="style-name-link"></a>
+        <div class="checkmate">
+          <input class="checker" type="checkbox" i18n-title="toggleStyle">
+          <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+        </div>
+        <a class="style-name-link">
+          &nbsp;
+          <span class="style-info" data-type="version"></span>
+        </a>
       </h2>
+      <p class="style-info" data-type="age"></p>
+      <p class="style-info" data-type="size"></p>
       <p class="actions">
         <a target="_blank" class="homepage" tabindex="0"></a>
         <a href="#" class="delete" i18n-title="deleteStyleLabel" tabindex="0">

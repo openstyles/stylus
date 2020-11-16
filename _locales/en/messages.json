@@ -260,6 +260,42 @@
     "message": "Stop using customized name, switch to the style's own name",
     "description": "Tooltip of 'x' button shown in editor when changing the name input of a) styles updated from a URL i.e. not locally created, b) UserCSS styles"
   },
+  "dateAbbrDay": {
+    "message": "$value$d",
+    "description": "Day suffix in a short relative date, for example: 8d",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrHour": {
+    "message": "$value$h",
+    "description": "Hour suffix in a short relative date, for example: 8h",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrMonth": {
+    "message": "$value$m",
+    "description": "Month suffix in a short relative date, for example: 8m",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrYear": {
+    "message": "$value$y",
+    "description": "Year suffix in a short relative date, for example: 8y",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
   "dateInstalled": {
     "message": "Date installed",
     "description": "Option text for the user to sort the style by install date"
