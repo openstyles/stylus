@@ -184,6 +184,7 @@ a:hover {
   color: #999;
 }
 .style-info[data-type=version] {
+  color: #666;
   padding-left: .5em;
 }
 .newUI .style-info[data-type=version][data-value="1.0.0"] {
