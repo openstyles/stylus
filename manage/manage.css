@@ -243,6 +243,10 @@ a:hover {
   margin-left: 1ex;
   white-space: nowrap;
   position: relative;
+  top: -2px;
+}
+.newUI .disabled h2::after,
+.newUI .entry.usercss .style-name-link::after {
   top: 2px;
 }
 

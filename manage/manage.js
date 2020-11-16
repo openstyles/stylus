@@ -288,7 +288,7 @@ function createStyleTargetsElement({entry, expanded, style = entry.styleMeta}) {
         if (!newUI.enabled) {
           if (numTargets === maxTargets) {
             container = container.appendChild(t.template.extraAppliesTo.cloneNode(true));
-          } else if (numTargets > 0) {
+          } else if (numTargets > 1) {
             container.appendChild(t.template.appliesToSeparator.cloneNode(true));
           }
         }
