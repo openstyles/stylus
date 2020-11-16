@@ -688,28 +688,7 @@ function switchUI({styleOnly} = {}) {
       filter: none;
       opacity: 1;
     }
-  `) + (CHROME >= 58 ? `
-    .newUI .entry {
-      contain: strict;
-    }
-    .newUI .entry > * {
-      contain: content;
-    }
-    .newUI .entry .actions {
-      contain: none;
-    }
-    .newUI .target {
-      contain: layout style;
-    }
-    .newUI .target img {
-      contain: layout style size;
-    }
-    .newUI .entry.can-update,
-    .newUI .entry.update-problem,
-    .newUI .entry.update-done {
-      contain: none;
-    }
-  ` : '');
+  `);
 
   if (styleOnly) {
     return;
