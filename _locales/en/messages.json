@@ -980,7 +980,7 @@
     "message": "Patch <code>CSP</code> to allow style assets"
   },
   "optionsAdvancedPatchCspNote": {
-    "message": "Enable this if some of your styles fail to show an image/background/font on sites with a strict <code>Content-Security-Policy</code>.\n\nEnabling this will loosen CSP a bit (only on sites where a userstyle is applied) by merging it with <code>img-src data: *; font-src data: *; style-src 'unsafe-inline'</code> (and <code>allow-same-origin</code> for <code>sandbox</code> if it's specified) which means you should accept the potential risk and/or regularly check the CSS code of your styles. Read about CSS-based attacks for more information.\n\nNote, this is not guaranteed to take effect if another installed extension modifies the network response first."
+    "message": "Enable this if styles contain images or fonts which fail to load on sites with a strict <code>CSP</code> (<code>Content-Security-Policy</code>).\n\nEnabling this setting will relax <code>CSP</code> restrictions, allowing essential style content to load. This option is only intended for advanced users who understand the potential security implications, and accept responsibility for monitoring the content which they're allowing. Read about CSS-based attacks for more information.\n\nAlso be aware, this particular setting is not guaranteed to take effect if another installed extension modifies the network response first."
   },
   "optionsAdvancedStyleViaXhr": {
     "message": "Instant inject mode"
