@@ -87,16 +87,19 @@ lazyInit();
 
   $('#heading').textContent = t(style.id ? 'editStyleHeading' : 'addStyleTitle');
   $('#preview-label').classList.toggle('hidden', !style.id);
-
   const toc = [];
   const elToc = $('#toc');
   elToc.onclick = e => editor.jumpToEditor([...elToc.children].indexOf(e.target));
-
-  (editor.isUsercss ? SourceEditor : SectionsEditor)();
-
+  if (editor.isUsercss) {
+    SourceEditor();
+  } else {
+    SectionsEditor();
+  }
   prefs.subscribe('editor.toc.expanded', (k, val) => val && editor.updateToc(), {now: true});
   dirty.onChange(updateDirty);
+
   await editor.ready;
+  editor.ready = true;
 
   setTimeout(() => editor.getEditors().forEach(linter.enableForEditor));
   // enabling after init to prevent flash of validation failure on an empty name

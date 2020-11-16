@@ -142,7 +142,7 @@ function SectionsEditor() {
 
   /** @param {EditorSection} section */
   function fitToContent(section) {
-    const {el, cm, cm: {display: {wrapper, sizer}}} = section;
+    const {cm, cm: {display: {wrapper, sizer}}} = section;
     if (cm.display.renderedView) {
       resize();
     } else {
@@ -155,7 +155,7 @@ function SectionsEditor() {
         return;
       }
       if (headerOffset == null) {
-        headerOffset = el.getBoundingClientRect().top;
+        headerOffset = container.getBoundingClientRect().top;
       }
       contentHeight += 9; // border & resize grip
       cm.off('update', resize);
@@ -582,9 +582,10 @@ function SectionsEditor() {
     }
     const section = createSection(init, genId, si);
     const {cm} = section;
-    sections.splice(base ? sections.indexOf(base) + 1 : sections.length, 0, section);
+    const index = base ? sections.indexOf(base) + 1 : sections.length;
+    sections.splice(index, 0, section);
     container.insertBefore(section.el, base ? base.el.nextSibling : null);
-    refreshOnView(cm, forceRefresh);
+    refreshOnView(cm, base || forceRefresh);
     registerEvents(section);
     if ((!si || !si.height) && (!base || init.code)) {
       // Fit a) during startup or b) when the clone button is clicked on a section with some code
@@ -592,7 +593,7 @@ function SectionsEditor() {
     }
     if (base) {
       cm.focus();
-      setTimeout(editor.scrollToEditor, 0, cm);
+      editor.scrollToEditor(cm);
       linter.enableForEditor(cm);
     }
     updateSectionOrder();
