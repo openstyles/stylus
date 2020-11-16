@@ -18,8 +18,8 @@ body {
   font-weight: normal;
 }
 
-body.all-styles-hidden-by-filters:before,
-body.all-styles-hidden-by-filters:after {
+body.all-styles-hidden-by-filters::before,
+body.all-styles-hidden-by-filters::after {
   position: absolute;
   left: calc(3rem + var(--header-width));
   color: hsla(180, 40%, 45%, .3);
@@ -32,7 +32,8 @@ body.all-styles-hidden-by-filters:before {
   top: 3.5rem;
 }
 
-body.all-styles-hidden-by-filters:after {
+body.all-styles-hidden-by-filters::after {
+  content: var(--filteredStylesAllHidden);
   font-size: 1.5rem;
   position: absolute;
   top: 3rem;
@@ -253,7 +254,11 @@ a:hover {
   vertical-align: text-top;
 }
 
-.disabled h2::after, .entry.usercss .style-name-link::after {
+.disabled h2::after {
+  content: var(--genericDisabledLabel);
+}
+.disabled h2::after,
+.entry.usercss .style-name-link::after {
   font-weight: normal;
   font-size: 11px;
   text-transform: lowercase;
@@ -642,6 +647,7 @@ a:hover {
 
 .newUI .targets {
   overflow: hidden;
+  max-height: calc(var(--num-targets) * 18px);
 }
 
 .newUI .applies-to.expanded .targets {
@@ -687,11 +693,14 @@ a:hover {
   vertical-align: middle;
   margin: -1px 4px 0 -20px;
   transition: opacity .5s, filter .5s;
-  filter: grayscale(1);
   /* workaround for the buggy CSS filter: images in the hidden overflow are shown on Mac */
   backface-visibility: hidden;
-  opacity: .25;
   display: none;
+}
+
+.newUI .favicons-grayed .target img {
+  filter: grayscale(1);
+  opacity: .25;
 }
 
 .newUI .has-favicons .target {
@@ -773,6 +782,7 @@ a:hover {
 }
 
 #update-all-no-updates[data-skipped-edited="true"]::after {
+  content: " " var(--updateAllCheckSucceededSomeEdited);
   font-weight: normal;
   display: block;
 }

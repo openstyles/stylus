@@ -28,6 +28,7 @@
 */
 'use strict';
 
+/** @type {HTMLElement} */
 let installed;
 
 const ENTRY_ID_PREFIX_RAW = 'style-';
@@ -70,21 +71,22 @@ const AGES = [
 
 const handleEvent = {};
 
-Promise.all([
-  API.getAllStyles(),
-  // FIXME: integrate this into filter.js
-  router.getSearch('search') && API.searchDB({query: router.getSearch('search')}),
-  waitForSelector('#installed'), // needed to avoid flicker due to an extra frame and layout shift
-  prefs.initializing,
-]).then(([styles, ids, el]) => {
+(async () => {
+  const query = router.getSearch('search');
+  const [styles, ids, el] = await Promise.all([
+    API.getAllStyles(),
+    query && API.searchDB({query}), // FIXME: integrate this into filter.js
+    waitForSelector('#installed'), // needed to avoid flicker due to an extra frame and layout shift
+    prefs.initializing,
+  ]);
   installed = el;
   installed.onclick = handleEvent.entryClicked;
   $('#manage-options-button').onclick = () => router.updateHash('#stylus-options');
   $('#sync-styles').onclick = () => router.updateHash('#stylus-options');
   $$('#header a[href^="http"]').forEach(a => (a.onclick = handleEvent.external));
   // show date installed & last update on hover
-  installed.addEventListener('mouseover', handleEvent.lazyAddEntryTitle);
-  installed.addEventListener('mouseout', handleEvent.lazyAddEntryTitle);
+  installed.addEventListener('mouseover', handleEvent.lazyAddEntryTitle, {passive: true});
+  installed.addEventListener('mouseout', handleEvent.lazyAddEntryTitle, {passive: true});
   document.addEventListener('visibilitychange', onVisibilityChange);
   // N.B. triggers existing onchange listeners
   setupLivePrefs();
@@ -92,17 +94,13 @@ Promise.all([
   prefs.subscribe(newUI.ids.map(newUI.prefKeyForId), () => switchUI());
   switchUI({styleOnly: true});
   // translate CSS manually
-  document.head.appendChild($create('style', `
-    .disabled h2::after {
-      content: "${t('genericDisabledLabel')}";
-    }
-    #update-all-no-updates[data-skipped-edited="true"]::after {
-      content: " ${t('updateAllCheckSucceededSomeEdited')}";
-    }
-    body.all-styles-hidden-by-filters::after {
-      content: "${t('filteredStylesAllHidden')}";
-    }
-  `));
+  document.styleSheets[0].insertRule(
+    `:root {${[
+      'genericDisabledLabel',
+      'updateAllCheckSucceededSomeEdited',
+      'filteredStylesAllHidden',
+    ].map(id => `--${id}:"${CSS.escape(t(id))}";`).join('')
+    }}`);
   if (!VIVALDI) {
     $$('#header select').forEach(el => el.adjustWidth());
   }
@@ -113,9 +111,11 @@ Promise.all([
     });
   }
   showStyles(styles, ids);
-});
+})();
 
 msg.onExtension(onRuntimeMessage);
+router.watch({hash: '#stylus-options'}, state => (state ? embedOptions : unembedOptions)());
+window.addEventListener('closeOptions', () => router.updateHash(''));
 
 function onRuntimeMessage(msg) {
   switch (msg.method) {
@@ -673,22 +673,9 @@ function switchUI({styleOnly} = {}) {
 
   Object.assign(newUI, current);
   newUI.renderClass();
-  installed.classList.toggle('has-favicons', newUI.favicons);
-  $('#style-overrides').textContent = `
-    .newUI .targets {
-      max-height: ${newUI.targets * 18}px;
-    }
-  ` + (newUI.faviconsGray ? `
-    .newUI .target img {
-      filter: grayscale(1);
-      opacity: .25;
-    }
-  ` : `
-    .newUI .target img {
-      filter: none;
-      opacity: 1;
-    }
-  `);
+  installed.classList.toggle('has-favicons', newUI.enabled && newUI.favicons);
+  installed.classList.toggle('favicons-grayed', newUI.enabled && newUI.faviconsGray);
+  if (changed.targets) installed.style.setProperty('--num-targets', newUI.targets);
 
   if (styleOnly) {
     return;
@@ -764,13 +751,11 @@ function waitForSelector(selector) {
 }
 
 function embedOptions() {
-  let options = $('#stylus-embedded-options');
-  if (!options) {
-    options = document.createElement('iframe');
-    options.id = 'stylus-embedded-options';
-    options.src = '/options.html';
-    document.documentElement.appendChild(options);
-  }
+  const options = $('#stylus-embedded-options') ||
+    document.documentElement.appendChild($create('iframe', {
+      id: 'stylus-embedded-options',
+      src: '/options.html',
+    }));
   options.focus();
 }
 
@@ -778,20 +763,7 @@ async function unembedOptions() {
   const options = $('#stylus-embedded-options');
   if (options) {
     options.contentWindow.document.body.classList.add('scaleout');
-    options.classList.add('fadeout');
     await animateElement(options, 'fadeout');
     options.remove();
   }
 }
-
-router.watch({hash: '#stylus-options'}, state => {
-  if (state) {
-    embedOptions();
-  } else {
-    unembedOptions();
-  }
-});
-
-window.addEventListener('closeOptions', () => {
-  router.updateHash('');
-});
