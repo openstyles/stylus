@@ -3,19 +3,20 @@
 
 // eslint-disable-next-line no-unused-expressions
 CHROME && (async () => {
-  const idCsp = 'patchCsp';
-  const idOff = 'disableAll';
-  const idXhr = 'styleViaXhr';
+  const idCSP = 'patchCsp';
+  const idOFF = 'disableAll';
+  const idXHR = 'styleViaXhr';
+  const rxHOST = /^('none'|(https?:\/\/)?[^']+?[^:'])$/; // strips CSP sources covered by *
   const blobUrlPrefix = 'blob:' + chrome.runtime.getURL('/');
   const stylesToPass = {};
   const enabled = {};
 
   await prefs.initializing;
-  prefs.subscribe([idXhr, idOff, idCsp], toggle, {now: true});
+  prefs.subscribe([idXHR, idOFF, idCSP], toggle, {now: true});
 
   function toggle() {
-    const csp = prefs.get(idCsp) && !prefs.get(idOff);
-    const xhr = prefs.get(idXhr) && !prefs.get(idOff) && Boolean(chrome.declarativeContent);
+    const csp = prefs.get(idCSP) && !prefs.get(idOFF);
+    const xhr = prefs.get(idXHR) && !prefs.get(idOFF) && Boolean(chrome.declarativeContent);
     if (xhr === enabled.xhr && csp === enabled.csp) {
       return;
     }
@@ -45,10 +46,10 @@ CHROME && (async () => {
   function toggleEarlyInjection() {
     const api = chrome.declarativeContent;
     if (!api) return;
-    api.onPageChanged.removeRules([idXhr], async () => {
+    api.onPageChanged.removeRules([idXHR], async () => {
       if (enabled.xhr) {
         api.onPageChanged.addRules([{
-          id: idXhr,
+          id: idXHR,
           conditions: [
             new api.PageStateMatcher({
               pageUrl: {urlContains: '://'},
@@ -115,10 +116,15 @@ CHROME && (async () => {
   }
 
   function addToCsp(src, name, ...values) {
-    const list = src[name] || (src[name] = []);
-    const def = src['default-src'] || [];
-    list.push(...values.filter(v => !list.includes(v) && !def.includes(v)));
-    if (!list.length) delete src[name];
+    let def = src['default-src'];
+    let list = src[name];
+    if (def || list) {
+      if (!def) def = [];
+      if (!list) list = [...def];
+      if (values.includes('*')) list = src[name] = list.filter(v => !rxHOST.test(v));
+      list.push(...values.filter(v => !list.includes(v) && !def.includes(v)));
+      if (!list.length) delete src[name];
+    }
   }
 
   function cleanUp(key) {
