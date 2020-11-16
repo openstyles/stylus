@@ -300,16 +300,9 @@ lazyInit();
   function updateToc(added = editor.sections) {
     const {sections} = editor;
     const first = sections.indexOf(added[0]);
-    let el = elToc.children[first];
-    if (added.focus) {
-      const cls = 'current';
-      const old = $('.' + cls, elToc);
-      if (old && old !== el) old.classList.remove(cls);
-      el.classList.add(cls);
-      return;
-    }
-    if (first >= 0) {
-      for (let i = first; i < sections.length; i++) {
+    const elFirst = elToc.children[first];
+    if (first >= 0 && (!added.focus || !elFirst)) {
+      for (let el = elFirst, i = first; i < sections.length; i++) {
         const entry = sections[i].tocEntry;
         if (!deepEqual(entry, toc[i])) {
           if (!el) el = elToc.appendChild($create('li', {tabIndex: 0}));
@@ -327,6 +320,13 @@ lazyInit();
     while (toc.length > sections.length) {
       elToc.lastElementChild.remove();
       toc.length--;
+    }
+    if (added.focus) {
+      const cls = 'current';
+      const old = $('.' + cls, elToc);
+      const el = elFirst || elToc.children[first];
+      if (old && old !== el) old.classList.remove(cls);
+      el.classList.add(cls);
     }
   }
 })();
