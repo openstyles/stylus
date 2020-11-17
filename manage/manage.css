@@ -884,6 +884,7 @@ a:hover {
 }
 
 #search, #manage\.newUI\.sort {
+  min-width: 4em; /* reduces the big default width */
   flex-grow: 1;
   background: #fff;
   height: 20px;
