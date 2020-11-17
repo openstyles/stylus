@@ -23,18 +23,17 @@ router.watch({search: ['search', 'searchMode']}, ([search, mode]) => {
 });
 
 HTMLSelectElement.prototype.adjustWidth = function () {
-  const option0 = this.selectedOptions[0];
-  if (!option0) return;
-  const parent = this.parentNode;
-  const singleSelect = this.cloneNode(false);
-  singleSelect.style.width = '';
-  singleSelect.appendChild(option0.cloneNode(true));
-  parent.replaceChild(singleSelect, this);
-  const w = singleSelect.offsetWidth;
-  if (w && this.style.width !== w + 'px') {
-    this.style.width = w + 'px';
-  }
-  parent.replaceChild(this, singleSelect);
+  const sel = this.selectedOptions[0];
+  if (!sel) return;
+  const wOld = parseFloat(this.style.width);
+  const opts = [...this];
+  opts.forEach(opt => opt !== sel && opt.remove());
+  this.style.width = '';
+  requestAnimationFrame(() => {
+    const w = this.offsetWidth;
+    if (w && wOld !== w) this.style.width = w + 'px';
+    this.append(...opts);
+  });
 };
 
 function initFilters() {
