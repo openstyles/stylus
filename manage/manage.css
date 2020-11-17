@@ -191,12 +191,6 @@ a:hover {
 .newUI .style-info[data-type=version][data-value="1.0.0"] {
   display: none;
 }
-.newUI .style-info[data-type=size][title^="    "] {
-  opacity: .25;
-}
-.newUI .style-info[data-type=size][title^="    "]:hover {
-  opacity: 1;
-}
 
 .applies-to {
   overflow-wrap: break-word;
@@ -383,7 +377,7 @@ a:hover {
 }
 
 .newUI .entry > .style-info {
-  padding-right: .5em;
+  padding-right: 1em;
 }
 
 .newUI .entry .actions {

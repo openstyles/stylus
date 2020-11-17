@@ -204,7 +204,6 @@ function createStyleElement({style, name: nameLC}) {
       homepageIcon: t.template[`homepageIcon${newUI.enabled ? 'Small' : 'Big'}`],
       infoAge: $('[data-type=age]', entry),
       infoVer: $('[data-type=version]', entry),
-      infoSize: $('[data-type=size]', entry),
       appliesTo: $('.applies-to', entry),
       targets: $('.targets', entry),
       expander: $('.expander', entry),
@@ -229,7 +228,6 @@ function createStyleElement({style, name: nameLC}) {
   parts.infoVer.textContent = ud ? ud.version : '';
   parts.infoVer.dataset.value = ud ? ud.version : '';
   if (newUI.enabled) {
-    createSizeText(parts.infoSize, style);
     createAgeText(parts.infoAge, style);
   } else {
     parts.oldConfigure.classList.toggle('hidden', !configurable);
@@ -331,17 +329,8 @@ function createStyleTargetsElement({entry, expanded, style = entry.styleMeta}) {
   entry._numTargets = numTargets;
 }
 
-function createSizeText(el, style) {
-  const size = (style.sourceCode || '').length ||
-    style.sections.reduce((sum, sec) => sum + (sec.code || '').length, 0);
-  if (size) {
-    el.textContent = size < 1000 ? '<1k' : `${size / 1000 | 0}k`;
-    el.title = padLeft(size, 8);
-  }
-}
-
 function createAgeText(el, style) {
-  let val = style.updateDate;
+  let val = style.updateDate || style.installDate;
   if (val) {
     val = (Date.now() - val) / 3600e3; // age in hours
     for (const [max, unit, text] of AGES) {
