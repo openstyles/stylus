@@ -75,7 +75,7 @@ const handleEvent = {};
   const query = router.getSearch('search');
   const [styles, ids, el] = await Promise.all([
     API.getAllStyles(),
-    query && API.searchDB({query}), // FIXME: integrate this into filter.js
+    query && API.searchDB({query, mode: router.getSearch('searchMode')}),
     waitForSelector('#installed'), // needed to avoid flicker due to an extra frame and layout shift
     prefs.initializing,
   ]);
@@ -102,7 +102,7 @@ const handleEvent = {};
     ].map(id => `--${id}:"${CSS.escape(t(id))}";`).join('')
     }}`);
   if (!VIVALDI) {
-    $$('#header select').forEach(el => el.adjustWidth());
+    $$('#filters select').forEach(el => el.adjustWidth());
   }
   if (CHROME >= 80 && CHROME <= 88) {
     // Wrong checkboxes are randomly checked after going back in history, https://crbug.com/1138598

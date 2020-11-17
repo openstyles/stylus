@@ -266,9 +266,19 @@
         </label>
 
         <div id="search-wrapper">
-          <input id="search" type="search" i18n-placeholder="searchStyles" spellcheck="false"
+          <input id="search" type="search" i18n-placeholder="search" spellcheck="false"
                  data-filter=":not(.not-matching)"
                  data-filter-hide=".not-matching">
+          <div class="select-wrapper">
+            <select id="searchMode">
+              <option i18n-text="searchStylesName" value="name"></option>
+              <option i18n-text="searchStylesMeta" value="meta" selected></option>
+              <option i18n-text="searchStylesCode" value="code"></option>
+              <option i18n-text="searchStylesMatchUrl" value="url"></option>
+              <option i18n-text="searchStylesAll" value="all"></option>
+            </select>
+            <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+          </div>
           <a href="#" id="search-help" tabindex="0">
             <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
           </a>

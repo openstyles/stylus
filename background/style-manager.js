@@ -470,11 +470,7 @@ const styleManager = (() => {
         }
       }
       if (sectionMatched) {
-        result.push({
-          data: getStyleWithNoCode(data),
-          excluded,
-          sloppy,
-        });
+        result.push({data, excluded, sloppy});
       }
     }
     return result;

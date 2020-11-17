@@ -11,8 +11,9 @@ const filtersSelector = {
 
 let initialized = false;
 
-router.watch({search: ['search']}, ([search]) => {
+router.watch({search: ['search', 'searchMode']}, ([search, mode]) => {
   $('#search').value = search || '';
+  if (mode) $('#searchMode').value = mode;
   if (!initialized) {
     initFilters();
     initialized = true;
@@ -37,15 +38,15 @@ HTMLSelectElement.prototype.adjustWidth = function () {
 };
 
 function initFilters() {
-  $('#search').oninput = e => {
-    router.updateSearch('search', e.target.value);
+  $('#search').oninput = $('#searchMode').oninput = function (e) {
+    router.updateSearch(this.id, e.target.value);
   };
 
   $('#search-help').onclick = event => {
     event.preventDefault();
     messageBox({
       className: 'help-text',
-      title: t('searchStyles'),
+      title: t('search'),
       contents:
         $create('ul',
           t('searchStylesHelp').split('\n').map(line =>
@@ -141,7 +142,7 @@ function initFilters() {
 }
 
 
-function filterOnChange({target: el, forceRefilter}) {
+function filterOnChange({target: el, forceRefilter, alreadySearched}) {
   const getValue = el => (el.type === 'checkbox' ? el.checked : el.value.trim());
   if (!forceRefilter) {
     const value = getValue(el);
@@ -164,7 +165,7 @@ function filterOnChange({target: el, forceRefilter}) {
     unhide: buildFilter(false),
   });
   if (installed) {
-    reapplyFilter().then(sorter.updateStripes);
+    reapplyFilter(installed, alreadySearched).then(sorter.updateStripes);
   }
 }
 
@@ -278,10 +279,12 @@ function showFiltersStats() {
 }
 
 
-function searchStyles({immediately, container} = {}) {
+async function searchStyles({immediately, container} = {}) {
   const el = $('#search');
+  const elMode = $('#searchMode');
   const query = el.value.trim();
-  if (query === el.lastValue && !immediately && !container) {
+  const mode = elMode.value;
+  if (query === el.lastValue && mode === elMode.lastValue && !immediately && !container) {
     return;
   }
   if (!immediately) {
@@ -289,24 +292,24 @@ function searchStyles({immediately, container} = {}) {
     return;
   }
   el.lastValue = query;
+  elMode.lastValue = mode;
 
-  const entries = container && container.children || container || installed.children;
-  return API.searchDB({
-    query,
-    ids: [...entries].map(el => el.styleId),
-  }).then(ids => {
-    ids = new Set(ids);
-    let needsRefilter = false;
-    for (const entry of entries) {
-      const isMatching = ids.has(entry.styleId);
-      if (entry.classList.contains('not-matching') !== !isMatching) {
-        entry.classList.toggle('not-matching', !isMatching);
-        needsRefilter = true;
-      }
+  const all = installed.children;
+  const entries = container && container.children || container || all;
+  const idsToSearch = entries !== all && [...entries].map(el => el.styleId);
+  const ids = entries[0]
+    ? await API.searchDB({query, mode, ids: idsToSearch})
+    : [];
+  let needsRefilter = false;
+  for (const entry of entries) {
+    const isMatching = ids.includes(entry.styleId);
+    if (entry.classList.contains('not-matching') !== !isMatching) {
+      entry.classList.toggle('not-matching', !isMatching);
+      needsRefilter = true;
     }
-    if (needsRefilter && !container) {
-      filterOnChange({forceRefilter: true});
-    }
-    return container;
-  });
+  }
+  if (needsRefilter && !container) {
+    filterOnChange({forceRefilter: true, alreadySearched: true});
+  }
+  return container;
 }

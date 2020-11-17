@@ -137,7 +137,6 @@ function initPopup(frames) {
 
   Object.assign($('#popup-manage-button'), {
     onclick: handleEvent.openManager,
-    onmouseup: handleEvent.openManager,
     oncontextmenu: handleEvent.openManager,
   });
 
@@ -654,17 +653,10 @@ Object.assign(handleEvent, {
   },
 
   openManager(event) {
-    if (event.button === 2 && !tabURL) return;
     event.preventDefault();
-    if (!this.eventHandled) {
-      // FIXME: this only works if popup is closed
-      this.eventHandled = true;
-      API.openManage({
-        search: tabURL && (event.shiftKey || event.button === 2) ?
-          `url:${tabURL}` : null,
-      });
-      window.close();
-    }
+    const isSearch = tabURL && (event.shiftKey || event.button === 2);
+    API.openManage(isSearch ? {search: tabURL, searchMode: 'url'} : {});
+    window.close();
   },
 
   copyContent(event) {

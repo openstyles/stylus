@@ -1,90 +1,97 @@
-/* global API_METHODS styleManager tryRegExp debounce */
+/* global
+  API_METHODS
+  debounce
+  stringAsRegExp
+  styleManager
+  tryRegExp
+  usercss
+*/
 'use strict';
 
 (() => {
   // toLocaleLowerCase cache, autocleared after 1 minute
   const cache = new Map();
-  // top-level style properties to be searched
-  const PARTS = {
-    name: searchText,
-    url: searchText,
-    sourceCode: searchText,
-    sections: searchSections,
-  };
+  const METAKEYS = ['customName', 'name', 'url', 'installationUrl', 'updateUrl'];
+
+  const extractMeta = style =>
+    style.usercssData
+      ? (style.sourceCode.match(usercss.RX_META) || [''])[0]
+      : null;
+
+  const stripMeta = style =>
+    style.usercssData
+      ? style.sourceCode.replace(usercss.RX_META, '')
+      : null;
+
+  const MODES = Object.assign(Object.create(null), {
+    code: (style, test) =>
+      style.usercssData
+        ? test(stripMeta(style))
+        : searchSections(style, test, 'code'),
+
+    meta: (style, test, part) =>
+      METAKEYS.some(key => test(style[key])) ||
+        test(part === 'all' ? style.sourceCode : extractMeta(style)) ||
+        searchSections(style, test, 'funcs'),
+
+    name: (style, test) =>
+      test(style.customName) ||
+      test(style.name),
+
+    all: (style, test) =>
+      MODES.meta(style, test, 'all') ||
+      !style.usercssData && MODES.code(style, test),
+  });
 
   /**
    * @param params
    * @param {string} params.query - 1. url:someurl 2. text (may contain quoted parts like "qUot Ed")
+   * @param {'name'|'meta'|'code'|'all'|'url'} [params.mode=all]
    * @param {number[]} [params.ids] - if not specified, all styles are searched
    * @returns {number[]} - array of matched styles ids
    */
-  API_METHODS.searchDB = ({query, ids}) => {
-    let rx, words, icase, matchUrl;
-    query = query.trim();
-
-    if (/^url:/i.test(query)) {
-      matchUrl = query.slice(query.indexOf(':') + 1).trim();
-      if (matchUrl) {
-        return styleManager.getStylesByUrl(matchUrl)
-          .then(results => results.map(r => r.data.id));
-      }
-    }
-    if (query.startsWith('/') && /^\/(.+?)\/([gimsuy]*)$/.test(query)) {
-      rx = tryRegExp(RegExp.$1, RegExp.$2);
-    }
-    if (!rx) {
-      words = query
-        .split(/(".*?")|\s+/)
-        .filter(Boolean)
-        .map(w => w.startsWith('"') && w.endsWith('"')
-          ? w.slice(1, -1)
-          : w)
-        .filter(w => w.length > 1);
-      words = words.length ? words : [query];
-      icase = words.some(w => w === lower(w));
-    }
-
-    return styleManager.getAllStyles().then(styles => {
-      if (ids) {
-        const idSet = new Set(ids);
-        styles = styles.filter(s => idSet.has(s.id));
-      }
-      const results = [];
-      for (const style of styles) {
-        const id = style.id;
-        if (!query || words && !words.length) {
-          results.push(id);
-          continue;
-        }
-        for (const part in PARTS) {
-          const text = part === 'name' ? style.customName || style.name : style[part];
-          if (text && PARTS[part](text, rx, words, icase)) {
-            results.push(id);
-            break;
-          }
-        }
-      }
+  API_METHODS.searchDB = async ({query, mode = 'all', ids}) => {
+    let res = [];
+    if (mode === 'url' && query) {
+      res = (await styleManager.getStylesByUrl(query)).map(r => r.data.id);
+    } else if (mode in MODES) {
+      const modeHandler = MODES[mode];
+      const m = /^\/(.+?)\/([gimsuy]*)$/.exec(query);
+      const rx = m && tryRegExp(m[1], m[2]);
+      const test = rx ? rx.test.bind(rx) : makeTester(query);
+      res = (await styleManager.getAllStyles())
+        .filter(style =>
+          (!ids || ids.includes(style.id)) &&
+          (!query || modeHandler(style, test)))
+        .map(style => style.id);
       if (cache.size) debounce(clearCache, 60e3);
-      return results;
-    });
+    }
+    return res;
   };
 
-  function searchText(text, rx, words, icase) {
-    if (rx) return rx.test(text);
-    for (let pass = 1; pass <= (icase ? 2 : 1); pass++) {
-      if (words.every(w => text.includes(w))) return true;
-      text = lower(text);
-    }
+  function makeTester(query) {
+    const flags = `u${lower(query) === query ? 'i' : ''}`;
+    const words = query
+      .split(/(".*?")|\s+/)
+      .filter(Boolean)
+      .map(w => w.startsWith('"') && w.endsWith('"')
+        ? w.slice(1, -1)
+        : w)
+      .filter(w => w.length > 1);
+    const rxs = (words.length ? words : [query])
+      .map(w => stringAsRegExp(w, flags));
+    return text => rxs.every(rx => rx.test(text));
   }
 
-  function searchSections(sections, rx, words, icase) {
+  function searchSections({sections}, test, part) {
+    const inCode = part === 'code' || part === 'all';
+    const inFuncs = part === 'funcs' || part === 'all';
     for (const section of sections) {
       for (const prop in section) {
         const value = section[prop];
-        if (typeof value === 'string') {
-          if (searchText(value, rx, words, icase)) return true;
-        } else if (Array.isArray(value)) {
-          if (value.some(str => searchText(str, rx, words, icase))) return true;
+        if (inCode && prop === 'code' && test(value) ||
+            inFuncs && Array.isArray(value) && value.some(str => test(str))) {
+          return true;
         }
       }
     }
@@ -92,9 +99,7 @@
 
   function lower(text) {
     let result = cache.get(text);
-    if (result) return result;
-    result = text.toLocaleLowerCase();
-    cache.set(text, result);
+    if (!result) cache.set(text, result = text.toLocaleLowerCase());
     return result;
   }
 

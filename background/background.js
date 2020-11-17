@@ -309,33 +309,29 @@ function openEditor(params) {
   });
 }
 
-function openManage({options = false, search} = {}) {
+async function openManage({options = false, search, searchMode} = {}) {
   let url = chrome.runtime.getURL('manage.html');
   if (search) {
-    url += `?search=${encodeURIComponent(search)}`;
+    url += `?search=${encodeURIComponent(search)}&searchMode=${searchMode}`;
   }
   if (options) {
     url += '#stylus-options';
   }
-  return findExistingTab({
+  let tab = await findExistingTab({
     url,
     currentWindow: null,
     ignoreHash: true,
     ignoreSearch: true,
-  })
-    .then(tab => {
-      if (tab) {
-        return Promise.all([
-          activateTab(tab),
-          (tab.pendingUrl || tab.url) !== url && msg.sendTab(tab.id, {method: 'pushState', url})
-            .catch(console.error),
-        ]);
-      }
-      return getActiveTab().then(tab => {
-        if (isTabReplaceable(tab, url)) {
-          return activateTab(tab, {url});
-        }
-        return browser.tabs.create({url});
-      });
-    });
+  });
+  if (tab) {
+    await activateTab(tab);
+    if (url !== (tab.pendingUrl || tab.url)) {
+      await msg.sendTab(tab.id, {method: 'pushState', url}).catch(console.error);
+    }
+    return tab;
+  }
+  tab = await getActiveTab();
+  return isTabReplaceable(tab, url)
+    ? activateTab(tab, {url})
+    : browser.tabs.create({url});
 }

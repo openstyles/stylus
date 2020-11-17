@@ -825,10 +825,6 @@ a:hover {
   background-color: hsla(0, 0%, 50%, .4);
 }
 
-#filters {
-  border: 1px solid transparent;
-}
-
 .active #filters-stats {
   background-color: darkcyan;
   border-color: darkcyan;
@@ -874,10 +870,11 @@ a:hover {
 #search-wrapper, #sort-wrapper {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
   margin-bottom: .5rem;
 }
-
+#searchMode {
+  margin-left: -1px;
+}
 #search-wrapper {
   margin-top: .35rem;
 }
@@ -886,15 +883,10 @@ a:hover {
   display: inline-flex;
   flex-grow: 1;
   position: relative;
-  max-width: calc(100% - 30px);
 }
 
 #manage\.newUI\.sort {
   max-width: 100%;
-}
-
-#search {
-  max-width: calc(100% - 30px);
 }
 
 #search, #manage\.newUI\.sort {

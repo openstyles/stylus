@@ -1285,13 +1285,29 @@
     "message": "Weekly installs",
     "description": "Text for label that shows the number of times a search result was installed during last week"
   },
-  "searchStyles": {
-    "message": "Search contents",
-    "description": "Label for the search filter textbox on the Manage styles page"
+  "searchStylesAll": {
+    "message": "All",
+    "description": "Option for `find styles` scope selector in the manager."
+  },
+  "searchStylesCode": {
+    "message": "CSS code",
+    "description": "Option for `find styles` scope selector in the manager."
   },
   "searchStylesHelp": {
-    "message": "</> key focuses the search field.\nPlain text: search within the name, code, homepage URL and sites it is applied to. Words with less than 3 letters are ignored.\nStyles matching a full URL: prefix the search with <url:>, e.g. <url:https://github.com/openstyles/stylus>\nRegular expressions: include slashes and flags, e.g. </body.*?\\ba\\b/simguy>\nExact words: wrap the query in double quotes, e.g. <\".header ~ div\">",
+    "message": "</> or <Ctrl-F> key focuses the search field.\nDefault mode is plain text search for all space-separated terms in any order.\nExact words: wrap the query in double quotes, e.g. <\".header ~ div\">\nRegular expressions: include slashes and flags, e.g. </body.*?\\ba\\b/i>\n\"For URL\" in scope selector: finds styles that apply to a fully specified URL e.g. https://www.example.org/\n\"Metadata\" in scope selector: searches in names, \"applies to\" specifiers, installation URL, update URL, and the entire metadata block for usercss styles.",
     "description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
+  },
+  "searchStylesMatchUrl": {
+    "message": "For URL",
+    "description": "Option for `find styles` scope selector in the manager. See searchMatchUrlHint for more info."
+  },
+  "searchStylesMeta": {
+    "message": "Metadata",
+    "description": "Option for `find styles` scope selector in the manager."
+  },
+  "searchStylesName": {
+    "message": "Name",
+    "description": "Option for `find styles` scope selector in the manager."
   },
   "sectionAdd": {
     "message": "Add another section",
