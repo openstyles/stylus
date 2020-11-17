@@ -102,7 +102,7 @@ const handleEvent = {};
     ].map(id => `--${id}:"${CSS.escape(t(id))}";`).join('')
     }}`);
   if (!VIVALDI) {
-    $$('#filters select').forEach(el => el.adjustWidth());
+    $$('.filter-selection select').forEach(el => el.adjustWidth());
   }
   if (CHROME >= 80 && CHROME <= 88) {
     // Wrong checkboxes are randomly checked after going back in history, https://crbug.com/1138598

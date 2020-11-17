@@ -133,7 +133,7 @@ function initFilters() {
   prefs.subscribe(['manage.filters.expanded'], () => {
     const el = $('#filters');
     if (el.open) {
-      $$('select', el).forEach(select => select.adjustWidth());
+      $$('.filter-selection select', el).forEach(select => select.adjustWidth());
     }
   });
 
