@@ -149,7 +149,7 @@ window.addEventListener('showStyles:done', () => {
     addEventListener('styleAdded', async ({detail: {style}}) => {
       restoreScrollPosition();
       const usoId = calcUsoId(style) ||
-                    calcUsoId(await API.getStyle(style.id, true));
+                    calcUsoId(await API.styles.get(style.id));
       if (usoId && results.find(r => r.i === usoId)) {
         renderActionButtons(usoId, style.id);
       }
@@ -194,7 +194,7 @@ window.addEventListener('showStyles:done', () => {
         results = await search({retry});
       }
       if (results.length) {
-        const installedStyles = await API.getAllStyles();
+        const installedStyles = await API.styles.getAll();
         const allUsoIds = new Set(installedStyles.map(calcUsoId));
         results = results.filter(r => !allUsoIds.has(r.i));
       }
@@ -419,7 +419,7 @@ window.addEventListener('showStyles:done', () => {
     const updateUrl = `${URLS.usoArchiveRaw}usercss/${id}.user.css`;
     try {
       const sourceCode = await download(updateUrl);
-      const style = await API.installUsercss({sourceCode, updateUrl});
+      const style = await API.usercss.install({sourceCode, updateUrl});
       renderFullInfo(entry, style);
     } catch (reason) {
       error(`Error while downloading usoID:${id}\nReason: ${reason}`);
@@ -432,7 +432,7 @@ window.addEventListener('showStyles:done', () => {
   function uninstall() {
     const entry = this.closest('.search-result');
     saveScrollPosition(entry);
-    API.deleteStyle(entry._result.installedStyleId);
+    API.styles.delete(entry._result.installedStyleId);
   }
 
   function saveScrollPosition(entry) {

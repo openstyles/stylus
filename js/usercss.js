@@ -1,4 +1,4 @@
-/* global backgroundWorker */
+/* global API */
 /* exported usercss */
 'use strict';
 
@@ -33,7 +33,7 @@ const usercss = (() => {
       throw new Error('can not find metadata');
     }
 
-    return backgroundWorker.parseUsercssMeta(match[0], match.index)
+    return API.worker.parseUsercssMeta(match[0], match.index)
       .catch(err => {
         if (err.code) {
           const args = ERR_ARGS_IS_LIST.has(err.code) ? drawList(err.args) : err.args;
@@ -68,7 +68,7 @@ const usercss = (() => {
    */
   function buildCode(style, allowErrors) {
     const match = style.sourceCode.match(RX_META);
-    return backgroundWorker.compileUsercss(
+    return API.worker.compileUsercss(
       style.usercssData.preprocessor,
       style.sourceCode.slice(0, match.index) + style.sourceCode.slice(match.index + match[0].length),
       style.usercssData.vars
@@ -95,7 +95,7 @@ const usercss = (() => {
         vars[key].value = oldVars[key].value;
       }
     }
-    return backgroundWorker.nullifyInvalidVars(vars)
+    return API.worker.nullifyInvalidVars(vars)
       .then(vars => {
         style.usercssData.vars = vars;
       });

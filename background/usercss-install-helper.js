@@ -1,5 +1,5 @@
 /* global
-  API_METHODS
+  API
   download
   openURL
   tabManager
@@ -25,7 +25,7 @@
       isContentTypeText((await fetch(url, {method: 'HEAD'})).headers.get('content-type'))
     ) && download(url);
 
-  API_METHODS.getUsercssInstallCode = url => {
+  API.usercss.getInstallCode = url => {
     // when the installer tab is reloaded after the cache is expired, this will throw intentionally
     const {code, timer} = installCodeCache[url];
     clearInstallCode(url);

@@ -35,20 +35,9 @@ function createChromeStorageDB() {
       }),
   };
 
-  return {exec};
-
-  function exec(method, ...args) {
-    if (METHODS[method]) {
-      return METHODS[method](...args)
-        .then(result => {
-          if (method === 'putMany' && result.map) {
-            return result.map(r => ({target: {result: r}}));
-          }
-          return {target: {result}};
-        });
-    }
-    return Promise.reject(new Error(`unknown DB method ${method}`));
-  }
+  return {
+    exec: (method, ...args) => METHODS[method](...args),
+  };
 
   function prepareInc() {
     if (INC) return Promise.resolve();

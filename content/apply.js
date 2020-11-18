@@ -60,7 +60,7 @@ self.INJECTED !== 1 && (() => {
       await API.styleViaAPI({method: 'styleApply'});
     } else {
       const styles = chrome.app && !chrome.tabs && getStylesViaXhr() ||
-        await API.getSectionsByUrl(getMatchUrl(), null, true);
+        await API.styles.getSectionsByUrl(getMatchUrl(), null, true);
       if (styles.disableAll) {
         delete styles.disableAll;
         styleInjector.toggle(false);
@@ -117,7 +117,7 @@ self.INJECTED !== 1 && (() => {
 
       case 'styleUpdated':
         if (request.style.enabled) {
-          API.getSectionsByUrl(getMatchUrl(), request.style.id)
+          API.styles.getSectionsByUrl(getMatchUrl(), request.style.id)
             .then(sections => {
               if (!sections[request.style.id]) {
                 styleInjector.remove(request.style.id);
@@ -132,13 +132,13 @@ self.INJECTED !== 1 && (() => {
 
       case 'styleAdded':
         if (request.style.enabled) {
-          API.getSectionsByUrl(getMatchUrl(), request.style.id)
+          API.styles.getSectionsByUrl(getMatchUrl(), request.style.id)
             .then(styleInjector.apply);
         }
         break;
 
       case 'urlChanged':
-        API.getSectionsByUrl(getMatchUrl())
+        API.styles.getSectionsByUrl(getMatchUrl())
           .then(styleInjector.replace);
         break;
 

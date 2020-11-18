@@ -94,7 +94,7 @@ const handleEvent = {};
 (async () => {
   const query = router.getSearch('search');
   const [styles, ids, el] = await Promise.all([
-    API.getAllStyles(),
+    API.styles.getAll(),
     query && API.searchDB({query, mode: router.getSearch('searchMode')}),
     waitForSelector('#installed'), // needed to avoid flicker due to an extra frame and layout shift
     prefs.initializing,
@@ -469,7 +469,7 @@ Object.assign(handleEvent, {
   },
 
   toggle(event, entry) {
-    API.toggleStyle(entry.styleId, this.matches('.enable') || this.checked);
+    API.styles.toggle(entry.styleId, this.matches('.enable') || this.checked);
   },
 
   check(event, entry) {
@@ -481,7 +481,7 @@ Object.assign(handleEvent, {
     event.preventDefault();
     const json = entry.updatedCode;
     json.id = entry.styleId;
-    API[json.usercssData ? 'installUsercss' : 'installStyle'](json);
+    (json.usercssData ? API.usercss : API.styles).install(json);
   },
 
   delete(event, entry) {
@@ -496,7 +496,7 @@ Object.assign(handleEvent, {
     })
     .then(({button}) => {
       if (button === 0) {
-        API.deleteStyle(id);
+        API.styles.delete(id);
       }
     });
     const deleteButton = $('#message-box-buttons > button');
@@ -599,7 +599,7 @@ function handleBulkChange() {
 }
 
 function handleUpdateForId(id, opts) {
-  return API.getStyle(id).then(style => {
+  return API.styles.get(id).then(style => {
     handleUpdate(style, opts);
     bulkChangeQueue.time = performance.now();
   });
@@ -697,7 +697,7 @@ function switchUI({styleOnly} = {}) {
   let iconsMissing = iconsEnabled && !$('.applies-to img');
   if (changed.enabled || (iconsMissing && !createStyleElement.parts)) {
     installed.textContent = '';
-    API.getAllStyles().then(showStyles);
+    API.styles.getAll().then(showStyles);
     return;
   }
   if (changed.sliders && newUI.enabled) {

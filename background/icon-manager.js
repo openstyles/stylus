@@ -1,4 +1,4 @@
-/* global prefs debounce iconUtil FIREFOX CHROME VIVALDI tabManager navigatorUtil API_METHODS */
+/* global prefs debounce iconUtil FIREFOX CHROME VIVALDI tabManager navigatorUtil API */
 /* exported iconManager */
 'use strict';
 
@@ -27,7 +27,7 @@ const iconManager = (() => {
     refreshAllIcons();
   });
 
-  Object.assign(API_METHODS, {
+  Object.assign(API, {
     /** @param {(number|string)[]} styleIds
      * @param {boolean} [lazyBadge=false] preventing flicker during page load */
     updateIconBadge(styleIds, {lazyBadge} = {}) {
@@ -53,7 +53,7 @@ const iconManager = (() => {
 
   function onPortDisconnected({sender}) {
     if (tabManager.get(sender.tab.id, 'styleIds')) {
-      API_METHODS.updateIconBadge.call({sender}, [], {lazyBadge: true});
+      API.updateIconBadge.call({sender}, [], {lazyBadge: true});
     }
   }
 

@@ -1,13 +1,23 @@
-/* global dbToCloud styleManager chromeLocal prefs tokenManager msg */
+/* global
+  API
+  chromeLocal
+  dbToCloud
+  msg
+  prefs
+  styleManager
+  tokenManager
+*/
 /* exported sync */
 
 'use strict';
 
-const sync = (() => {
+const sync = API.sync = (() => {
   const SYNC_DELAY = 1; // minutes
   const SYNC_INTERVAL = 30; // minutes
 
+  /** @typedef API.sync.Status */
   const status = {
+    /** @type {'connected'|'connecting'|'disconnected'|'disconnecting'} */
     state: 'disconnected',
     syncing: false,
     progress: null,
@@ -18,21 +28,30 @@ const sync = (() => {
   let currentDrive;
   const ctrl = dbToCloud.dbToCloud({
     onGet(id) {
-      return styleManager.getByUUID(id);
+      return API.styles.getByUUID(id);
     },
     onPut(doc) {
-      return styleManager.putByUUID(doc);
+      return API.styles.putByUUID(doc);
     },
     onDelete(id, rev) {
-      return styleManager.deleteByUUID(id, rev);
+      return API.styles.deleteByUUID(id, rev);
     },
-    onFirstSync() {
-      return styleManager.getAllStyles()
-        .then(styles => {
-          styles.forEach(i => ctrl.put(i._id, i._rev));
-        });
+    async onFirstSync() {
+      for (const i of await API.styles.getAll()) {
+        ctrl.put(i._id, i._rev);
+      }
     },
-    onProgress,
+    onProgress(e) {
+      if (e.phase === 'start') {
+        status.syncing = true;
+      } else if (e.phase === 'end') {
+        status.syncing = false;
+        status.progress = null;
+      } else {
+        status.progress = e;
+      }
+      emitStatusChange();
+    },
     compareRevision(a, b) {
       return styleManager.compareRevision(a, b);
     },
@@ -46,55 +65,126 @@ const sync = (() => {
     },
   });
 
-  const initializing = prefs.initializing.then(() => {
-    prefs.subscribe(['sync.enabled'], onPrefChange);
-    onPrefChange(null, prefs.get('sync.enabled'));
+  const ready = prefs.initializing.then(() => {
+    prefs.subscribe('sync.enabled',
+      (_, val) => val === 'none'
+        ? sync.stop()
+        : sync.start(val, true),
+      {now: true});
   });
 
   chrome.alarms.onAlarm.addListener(info => {
     if (info.name === 'syncNow') {
-      syncNow().catch(console.error);
+      sync.syncNow();
     }
   });
 
-  return Object.assign({
-    getStatus: () => status,
-  }, ensurePrepared({
-    start,
-    stop,
-    put: (...args) => {
-      if (!currentDrive) return;
-      schedule();
-      return ctrl.put(...args);
-    },
-    delete: (...args) => {
+  // Sorted alphabetically
+  return {
+
+    async delete(...args) {
+      await ready;
       if (!currentDrive) return;
       schedule();
       return ctrl.delete(...args);
     },
-    syncNow,
-    login,
-  }));
 
-  function ensurePrepared(obj) {
-    return Object.entries(obj).reduce((o, [key, fn]) => {
-      o[key] = (...args) =>
-        initializing.then(() => fn(...args));
-      return o;
-    }, {});
-  }
+    /**
+     * @returns {Promise<API.sync.Status>}
+     */
+    async getStatus() {
+      return status;
+    },
 
-  function onProgress(e) {
-    if (e.phase === 'start') {
-      status.syncing = true;
-    } else if (e.phase === 'end') {
-      status.syncing = false;
-      status.progress = null;
-    } else {
-      status.progress = e;
-    }
-    emitStatusChange();
-  }
+    async login(name = prefs.get('sync.enabled')) {
+      await ready;
+      try {
+        await tokenManager.getToken(name, true);
+      } catch (err) {
+        if (/Authorization page could not be loaded/i.test(err.message)) {
+          // FIXME: Chrome always fails at the first login so we try again
+          await tokenManager.getToken(name);
+        }
+        throw err;
+      }
+      status.login = true;
+      emitStatusChange();
+    },
+
+    async put(...args) {
+      await ready;
+      if (!currentDrive) return;
+      schedule();
+      return ctrl.put(...args);
+    },
+
+    async start(name, fromPref = false) {
+      await ready;
+      if (currentDrive) {
+        return;
+      }
+      currentDrive = getDrive(name);
+      ctrl.use(currentDrive);
+      status.state = 'connecting';
+      status.currentDriveName = currentDrive.name;
+      status.login = true;
+      emitStatusChange();
+      try {
+        if (!fromPref) {
+          await sync.login(name).catch(handle401Error);
+        }
+        await sync.syncNow();
+        status.errorMessage = null;
+      } catch (err) {
+        status.errorMessage = err.message;
+        // FIXME: should we move this logic to options.js?
+        if (!fromPref) {
+          console.error(err);
+          return sync.stop();
+        }
+      }
+      prefs.set('sync.enabled', name);
+      status.state = 'connected';
+      schedule(SYNC_INTERVAL);
+      emitStatusChange();
+    },
+
+    async stop() {
+      await ready;
+      if (!currentDrive) {
+        return;
+      }
+      chrome.alarms.clear('syncNow');
+      status.state = 'disconnecting';
+      emitStatusChange();
+      try {
+        await ctrl.stop();
+        await tokenManager.revokeToken(currentDrive.name);
+        await chromeLocal.remove(`sync/state/${currentDrive.name}`);
+      } catch (e) {
+      }
+      currentDrive = null;
+      prefs.set('sync.enabled', 'none');
+      status.state = 'disconnected';
+      status.currentDriveName = null;
+      status.login = false;
+      emitStatusChange();
+    },
+
+    async syncNow() {
+      await ready;
+      if (!currentDrive) {
+        return Promise.reject(new Error('cannot sync when disconnected'));
+      }
+      try {
+        await (ctrl.isInit() ? ctrl.syncNow() : ctrl.start()).catch(handle401Error);
+        status.errorMessage = null;
+      } catch (err) {
+        status.errorMessage = err.message;
+      }
+      emitStatusChange();
+    },
+  };
 
   function schedule(delay = SYNC_DELAY) {
     chrome.alarms.create('syncNow', {
@@ -103,104 +193,23 @@ const sync = (() => {
     });
   }
 
-  function onPrefChange(key, value) {
-    if (value === 'none') {
-      stop().catch(console.error);
-    } else {
-      start(value, true).catch(console.error);
-    }
-  }
-
-  function withFinally(p, cleanup) {
-    return p.then(
-      result => {
-        cleanup(undefined, result);
-        return result;
-      },
-      err => {
-        cleanup(err);
-        throw err;
-      }
-    );
-  }
-
-  function syncNow() {
-    if (!currentDrive) {
-      return Promise.reject(new Error('cannot sync when disconnected'));
-    }
-    return withFinally(
-      (ctrl.isInit() ? ctrl.syncNow() : ctrl.start())
-        .catch(handle401Error),
-      err => {
-        status.errorMessage = err ? err.message : null;
-        emitStatusChange();
-      }
-    );
-  }
-
-  function handle401Error(err) {
+  async function handle401Error(err) {
+    let emit;
     if (err.code === 401) {
-      return tokenManager.revokeToken(currentDrive.name)
-        .catch(console.error)
-        .then(() => {
-          status.login = false;
-          emitStatusChange();
-          throw err;
-        });
+      await tokenManager.revokeToken(currentDrive.name).catch(console.error);
+      emit = true;
+    } else if (/User interaction required|Requires user interaction/i.test(err.message)) {
+      emit = true;
     }
-    if (/User interaction required|Requires user interaction/i.test(err.message)) {
+    if (emit) {
       status.login = false;
       emitStatusChange();
     }
-    throw err;
+    return Promise.reject(err);
   }
 
   function emitStatusChange() {
     msg.broadcastExtension({method: 'syncStatusUpdate', status});
-  }
-
-  function login(name = prefs.get('sync.enabled')) {
-    return tokenManager.getToken(name, true)
-      .catch(err => {
-        if (/Authorization page could not be loaded/i.test(err.message)) {
-          // FIXME: Chrome always fails at the first login so we try again
-          return tokenManager.getToken(name);
-        }
-        throw err;
-      })
-      .then(() => {
-        status.login = true;
-        emitStatusChange();
-      });
-  }
-
-  function start(name, fromPref = false) {
-    if (currentDrive) {
-      return Promise.resolve();
-    }
-    currentDrive = getDrive(name);
-    ctrl.use(currentDrive);
-    status.state = 'connecting';
-    status.currentDriveName = currentDrive.name;
-    status.login = true;
-    emitStatusChange();
-    return withFinally(
-      (fromPref ? Promise.resolve() : login(name))
-        .catch(handle401Error)
-        .then(() => syncNow()),
-      err => {
-        status.errorMessage = err ? err.message : null;
-        // FIXME: should we move this logic to options.js?
-        if (err && !fromPref) {
-          console.error(err);
-          return stop();
-        }
-        prefs.set('sync.enabled', name);
-        schedule(SYNC_INTERVAL);
-        status.state = 'connected';
-        emitStatusChange();
-      }
-    );
   }
 
   function getDrive(name) {
@@ -210,27 +219,5 @@ const sync = (() => {
       });
     }
     throw new Error(`unknown cloud name: ${name}`);
-  }
-
-  function stop() {
-    if (!currentDrive) {
-      return Promise.resolve();
-    }
-    chrome.alarms.clear('syncNow');
-    status.state = 'disconnecting';
-    emitStatusChange();
-    return withFinally(
-      ctrl.stop()
-        .then(() => tokenManager.revokeToken(currentDrive.name))
-        .then(() => chromeLocal.remove(`sync/state/${currentDrive.name}`)),
-      () => {
-        currentDrive = null;
-        prefs.set('sync.enabled', 'none');
-        status.state = 'disconnected';
-        status.currentDriveName = null;
-        status.login = false;
-        emitStatusChange();
-      }
-    );
   }
 })();

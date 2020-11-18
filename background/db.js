@@ -33,18 +33,17 @@ const db = (() => {
       case false: break;
       default: await testDB();
     }
-    return useIndexedDB();
+    chromeLocal.setValue(FALLBACK, false);
+    return dbExecIndexedDB;
   }
 
   async function testDB() {
     let e = await dbExecIndexedDB('getAllKeys', IDBKeyRange.lowerBound(1), 1);
-    // throws if result is null
-    e = e.target.result[0];
+    e = e[0]; // throws if result is null
     const id = `${performance.now()}.${Math.random()}.${Date.now()}`;
     await dbExecIndexedDB('put', {id});
     e = await dbExecIndexedDB('get', id);
-    // throws if result or id is null
-    await dbExecIndexedDB('delete', e.target.result.id);
+    await dbExecIndexedDB('delete', e.id); // throws if `e` or id is null
   }
 
   function useChromeStorage(err) {
@@ -56,11 +55,6 @@ const db = (() => {
     return createChromeStorageDB().exec;
   }
 
-  function useIndexedDB() {
-    chromeLocal.setValue(FALLBACK, false);
-    return dbExecIndexedDB;
-  }
-
   async function dbExecIndexedDB(method, ...args) {
     const mode = method.startsWith('get') ? 'readonly' : 'readwrite';
     const store = (await open()).transaction([STORE], mode).objectStore(STORE);
@@ -70,8 +64,9 @@ const db = (() => {
 
   function storeRequest(store, method, ...args) {
     return new Promise((resolve, reject) => {
+      /** @type {IDBRequest} */
       const request = store[method](...args);
-      request.onsuccess = resolve;
+      request.onsuccess = () => resolve(request.result);
       request.onerror = reject;
     });
   }

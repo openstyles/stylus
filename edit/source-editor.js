@@ -97,7 +97,7 @@ function SourceEditor() {
   }
 
   function preprocess(style) {
-    return API.buildUsercss({
+    return API.usercss.build({
       styleId: style.id,
       sourceCode: style.sourceCode,
       assignVars: true,
@@ -231,7 +231,7 @@ function SourceEditor() {
     if (!dirty.isDirty()) return;
     const code = cm.getValue();
     return ensureUniqueStyle(code)
-      .then(() => API.editSaveUsercss({
+      .then(() => API.usercss.editSave({
         id: style.id,
         enabled: style.enabled,
         sourceCode: code,
@@ -265,7 +265,7 @@ function SourceEditor() {
 
   function ensureUniqueStyle(code) {
     return style.id ? Promise.resolve() :
-      API.buildUsercss({
+      API.usercss.build({
         sourceCode: code,
         checkDup: true,
         metaOnly: true,

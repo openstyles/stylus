@@ -1,7 +1,25 @@
-/* global messageBox msg setupLivePrefs enforceInputRange
-  $ $$ $create $createLink
-  FIREFOX OPERA CHROME URLS openURL prefs t API ignoreChromeError
-  CHROME_HAS_BORDER_BUG capitalize */
+/* global
+  $
+  $$
+  $create
+  $createLink
+  API
+  capitalize
+  CHROME
+  CHROME_HAS_BORDER_BUG
+  enforceInputRange
+  FIREFOX
+  getEventKeyName
+  ignoreChromeError
+  messageBox
+  msg
+  openURL
+  OPERA
+  prefs
+  setupLivePrefs
+  t
+  URLS
+*/
 'use strict';
 
 setupLivePrefs();
@@ -44,7 +62,7 @@ if (CHROME && !chrome.declarativeContent) {
   prefs.initializing.then(() => {
     el.checked = false;
   });
-  el.addEventListener('click', () => {
+  el.on('click', () => {
     if (el.checked) {
       chrome.permissions.request({permissions: ['declarativeContent']}, ignoreChromeError);
     }
@@ -101,84 +119,75 @@ document.onclick = e => {
 
 // sync to cloud
 (() => {
-  const cloud = document.querySelector('.sync-options .cloud-name');
-  const connectButton = document.querySelector('.sync-options .connect');
-  const disconnectButton = document.querySelector('.sync-options .disconnect');
-  const syncButton = document.querySelector('.sync-options .sync-now');
-  const statusText = document.querySelector('.sync-options .sync-status');
-  const loginButton = document.querySelector('.sync-options .sync-login');
-
+  const elCloud = $('.sync-options .cloud-name');
+  const elStart = $('.sync-options .connect');
+  const elStop = $('.sync-options .disconnect');
+  const elSyncNow = $('.sync-options .sync-now');
+  const elStatus = $('.sync-options .sync-status');
+  const elLogin = $('.sync-options .sync-login');
+  /** @type {API.sync.Status} */
   let status = {};
-
   msg.onExtension(e => {
     if (e.method === 'syncStatusUpdate') {
-      status = e.status;
-      updateButtons();
+      setStatus(e.status);
     }
   });
+  API.sync.getStatus()
+    .then(setStatus);
 
-  API.getSyncStatus()
-    .then(_status => {
-      status = _status;
-      updateButtons();
+  elCloud.on('change', updateButtons);
+  for (const [btn, fn] of [
+    [elStart, () => API.sync.start(elCloud.value)],
+    [elStop, API.sync.stop],
+    [elSyncNow, API.sync.syncNow],
+    [elLogin, API.sync.login],
+  ]) {
+    btn.on('click', e => {
+      if (getEventKeyName(e) === 'L') {
+        fn();
+      }
     });
-
-  function validClick(e) {
-    return e.button === 0 && !e.ctrl && !e.alt && !e.shift;
   }
 
-  cloud.addEventListener('change', updateButtons);
+  function setStatus(newStatus) {
+    status = newStatus;
+    updateButtons();
+  }
 
   function updateButtons() {
+    const isConnected = status.state === 'connected';
+    const isDisconnected = status.state === 'disconnected';
     if (status.currentDriveName) {
-      cloud.value = status.currentDriveName;
+      elCloud.value = status.currentDriveName;
     }
-    cloud.disabled = status.state !== 'disconnected';
-    connectButton.disabled = status.state !== 'disconnected' || cloud.value === 'none';
-    disconnectButton.disabled = status.state !== 'connected' || status.syncing;
-    syncButton.disabled = status.state !== 'connected' || status.syncing;
-    statusText.textContent = getStatusText();
-    loginButton.style.display = status.state === 'connected' && !status.login ? '' : 'none';
+    for (const [el, enable] of [
+      [elCloud, isDisconnected],
+      [elStart, isDisconnected && elCloud.value !== 'none'],
+      [elStop, isConnected && !status.syncing],
+      [elSyncNow, isConnected && !status.syncing],
+    ]) {
+      el.disabled = !enable;
+    }
+    elStatus.textContent = getStatusText();
+    elLogin.hidden = !isConnected || status.login;
   }
 
   function getStatusText() {
+    // chrome.i18n.getMessage is used instead of t() because calculated ids may be absent
+    let res;
     if (status.syncing) {
-      if (status.progress) {
-        const {phase, loaded, total} = status.progress;
-        return chrome.i18n.getMessage(`optionsSyncStatus${capitalize(phase)}`, [loaded + 1, total]) ||
-          `${phase} ${loaded} / ${total}`;
-      }
-      return chrome.i18n.getMessage('optionsSyncStatusSyncing') || 'syncing';
+      const {phase, loaded, total} = status.progress || {};
+      res = phase
+        ? chrome.i18n.getMessage(`optionsSyncStatus${capitalize(phase)}`, [loaded + 1, total]) ||
+          `${phase} ${loaded} / ${total}`
+        : t('optionsSyncStatusSyncing');
+    } else {
+      const {state, errorMessage} = status;
+      res = (state === 'connected' || state === 'disconnected') && errorMessage ||
+        chrome.i18n.getMessage(`optionsSyncStatus${capitalize(state)}`) || state;
     }
-    if ((status.state === 'connected' || status.state === 'disconnected') && status.errorMessage) {
-      return status.errorMessage;
-    }
-    return chrome.i18n.getMessage(`optionsSyncStatus${capitalize(status.state)}`) || status.state;
+    return res;
   }
-
-  connectButton.addEventListener('click', e => {
-    if (validClick(e)) {
-      API.syncStart(cloud.value).catch(console.error);
-    }
-  });
-
-  disconnectButton.addEventListener('click', e => {
-    if (validClick(e)) {
-      API.syncStop().catch(console.error);
-    }
-  });
-
-  syncButton.addEventListener('click', e => {
-    if (validClick(e)) {
-      API.syncNow().catch(console.error);
-    }
-  });
-
-  loginButton.addEventListener('click', e => {
-    if (validClick(e)) {
-      API.syncLogin().catch(console.error);
-    }
-  });
 })();
 
 function checkUpdates() {
@@ -193,7 +202,7 @@ function checkUpdates() {
     chrome.runtime.onConnect.removeListener(onConnect);
   });
 
-  API.updateCheckAll({observe: true});
+  API.updater.checkAllStyles({observe: true});
 
   function observer(info) {
     if ('count' in info) {
@@ -223,7 +232,7 @@ function setupRadioButtons() {
   // group all radio-inputs by name="prefName" attribute
   for (const el of $$('input[type="radio"][name]')) {
     (sets[el.name] = sets[el.name] || []).push(el);
-    el.addEventListener('change', onChange);
+    el.on('change', onChange);
   }
   // select the input corresponding to the actual pref value
   for (const name in sets) {

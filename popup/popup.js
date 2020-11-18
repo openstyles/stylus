@@ -143,7 +143,7 @@ async function initPopup(frames) {
     switch (e.target.dataset.cmd) {
       case 'ok':
         hideModal(this, {animate: true});
-        API.deleteStyle(Number(id));
+        API.styles.delete(Number(id));
         break;
       case 'cancel':
         showModal($('.menu', $.entry(id)), '.menu-close');
@@ -464,20 +464,19 @@ Object.assign(handleEvent, {
     event.preventDefault();
   },
 
-  toggle(event) {
+  async toggle(event) {
     // when fired on checkbox, prevent the parent label from seeing the event, see #501
     event.stopPropagation();
-    API
-      .toggleStyle(handleEvent.getClickedStyleId(event), this.checked)
-      .then(() => resortEntries());
+    await API.styles.toggle(handleEvent.getClickedStyleId(event), this.checked);
+    resortEntries();
   },
 
   toggleExclude(event, type) {
     const entry = handleEvent.getClickedStyleElement(event);
     if (event.target.checked) {
-      API.addExclusion(entry.styleMeta.id, getExcludeRule(type));
+      API.styles.addExclusion(entry.styleMeta.id, getExcludeRule(type));
     } else {
-      API.removeExclusion(entry.styleMeta.id, getExcludeRule(type));
+      API.styles.removeExclusion(entry.styleMeta.id, getExcludeRule(type));
     }
   },
 
@@ -503,7 +502,7 @@ Object.assign(handleEvent, {
   configure(event) {
     const {styleId, styleIsUsercss} = handleEvent.getClickedStyleElement(event);
     if (styleIsUsercss) {
-      API.getStyle(styleId, true).then(style => {
+      API.styles.get(styleId).then(style => {
         hotkeys.setState(false);
         configDialog(style).then(() => {
           hotkeys.setState(true);

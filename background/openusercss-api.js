@@ -1,3 +1,4 @@
+/* global API */
 'use strict';
 
 (() => {
@@ -40,7 +41,7 @@
     .then(res => res.json());
   };
 
-  window.API_METHODS = Object.assign(window.API_METHODS || {}, {
+  API.openusercss = {
     /**
      *   This function can be used to retrieve a theme object from the
      *   GraphQL API, set above
@@ -98,5 +99,5 @@
         }
       }
     `),
-  });
+  };
 })();

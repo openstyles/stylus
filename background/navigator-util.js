@@ -1,75 +1,103 @@
-/* global CHROME URLS */
-/* exported navigatorUtil */
+/* global
+  CHROME
+  FIREFOX
+  ignoreChromeError
+  msg
+  URLS
+*/
 'use strict';
 
-const navigatorUtil = (() => {
-  const handler = {
-    urlChange: null,
-  };
-  return extendNative({onUrlChange});
+(() => {
+  /** @type {Set<function(data: Object, type: string)>} */
+  const listeners = new Set();
+  /** @type {NavigatorUtil} */
+  const navigatorUtil = window.navigatorUtil = new Proxy({
+    onUrlChange(fn) {
+      listeners.add(fn);
+    },
+  }, {
+    get(target, prop) {
+      return target[prop] ||
+        (target = chrome.webNavigation[prop]).addListener.bind(target);
+    },
+  });
 
-  function onUrlChange(fn) {
-    initUrlChange();
-    handler.urlChange.push(fn);
+  navigatorUtil.onCommitted(onNavigation.bind('committed'));
+  navigatorUtil.onHistoryStateUpdated(onFakeNavigation.bind('history'));
+  navigatorUtil.onReferenceFragmentUpdated(onFakeNavigation.bind('hash'));
+  navigatorUtil.onCommitted(runGreasyforkContentScript, {
+    // expose style version on greasyfork/sleazyfork 1) info page and 2) code page
+    url: ['greasyfork', 'sleazyfork'].map(host => ({
+      hostEquals: host + '.org',
+      urlMatches: '/scripts/\\d+[^/]*(/code)?([?#].*)?$',
+    })),
+  });
+  if (FIREFOX) {
+    navigatorUtil.onDOMContentLoaded(runMainContentScripts, {
+      url: [{
+        urlEquals: 'about:blank',
+      }],
+    });
   }
 
-  function initUrlChange() {
-    if (handler.urlChange) {
-      return;
+  /** @this {string} type */
+  async function onNavigation(data) {
+    if (CHROME &&
+        URLS.chromeProtectsNTP &&
+        data.url.startsWith('https://www.google.') &&
+        data.url.includes('/_/chrome/newtab?')) {
+      // Modern Chrome switched to WebUI NTP so this is obsolete, but there may be exceptions
+      // TODO: investigate, and maybe use a separate listener for CHROME <= ver
+      const tab = await browser.tabs.get(data.tabId);
+      const url = tab.pendingUrl || tab.url;
+      if (url === 'chrome://newtab/') {
+        data.url = url;
+      }
     }
-    handler.urlChange = [];
-
-    chrome.webNavigation.onCommitted.addListener(data =>
-      fixNTPUrl(data)
-        .then(() => executeCallbacks(handler.urlChange, data, 'committed'))
-        .catch(console.error)
-    );
-
-    chrome.webNavigation.onHistoryStateUpdated.addListener(data =>
-      fixNTPUrl(data)
-        .then(() => executeCallbacks(handler.urlChange, data, 'historyStateUpdated'))
-        .catch(console.error)
-    );
-
-    chrome.webNavigation.onReferenceFragmentUpdated.addListener(data =>
-      fixNTPUrl(data)
-        .then(() => executeCallbacks(handler.urlChange, data, 'referenceFragmentUpdated'))
-        .catch(console.error)
-    );
+    listeners.forEach(fn => fn(data, this));
   }
 
-  function fixNTPUrl(data) {
-    if (
-      !CHROME ||
-      !URLS.chromeProtectsNTP ||
-      !data.url.startsWith('https://www.google.') ||
-      !data.url.includes('/_/chrome/newtab?')
-    ) {
-      return Promise.resolve();
-    }
-    return browser.tabs.get(data.tabId)
-      .then(tab => {
-        const url = tab.pendingUrl || tab.url;
-        if (url === 'chrome://newtab/') {
-          data.url = url;
-        }
-      });
+  /** @this {string} type */
+  function onFakeNavigation(data) {
+    onNavigation.call(this, data);
+    msg.sendTab(data.tabId, {method: 'urlChanged'}, {frameId: data.frameId})
+      .catch(msg.ignoreError);
   }
 
-  function executeCallbacks(callbacks, data, type) {
-    for (const cb of callbacks) {
-      cb(data, type);
+  /** FF misses some about:blank iframes so we inject our content script explicitly */
+  async function runMainContentScripts({tabId, frameId}) {
+    if (frameId &&
+        !await msg.sendTab(tabId, {method: 'ping'}, {frameId}).catch(ignoreChromeError)) {
+      for (const file of chrome.runtime.getManifest().content_scripts[0].js) {
+        chrome.tabs.executeScript(tabId, {
+          frameId,
+          file,
+          matchAboutBlank: true,
+        }, ignoreChromeError);
+      }
     }
   }
 
-  function extendNative(target) {
-    return new Proxy(target, {
-      get: (target, prop) => {
-        if (target[prop]) {
-          return target[prop];
-        }
-        return chrome.webNavigation[prop].addListener.bind(chrome.webNavigation[prop]);
-      },
+  function runGreasyforkContentScript({tabId}) {
+    chrome.tabs.executeScript(tabId, {
+      file: '/content/install-hook-greasyfork.js',
+      runAt: 'document_start',
     });
   }
 })();
+
+/**
+ * @typedef NavigatorUtil
+ * @property {NavigatorUtilEvent} onBeforeNavigate
+ * @property {NavigatorUtilEvent} onCommitted
+ * @property {NavigatorUtilEvent} onCompleted
+ * @property {NavigatorUtilEvent} onCreatedNavigationTarget
+ * @property {NavigatorUtilEvent} onDOMContentLoaded
+ * @property {NavigatorUtilEvent} onErrorOccurred
+ * @property {NavigatorUtilEvent} onHistoryStateUpdated
+ * @property {NavigatorUtilEvent} onReferenceFragmentUpdated
+ * @property {NavigatorUtilEvent} onTabReplaced
+*/
+/**
+ * @typedef {function(cb: function, filters: WebNavigationEventFilter?)} NavigatorUtilEvent
+ */

@@ -117,7 +117,7 @@ function SectionsEditor() {
       if (!validate(newStyle)) {
         return;
       }
-      newStyle = await API.editSave(newStyle);
+      newStyle = await API.styles.editSave(newStyle);
       destroyRemovedSections();
       sessionStore.justEditedStyleId = newStyle.id;
       editor.replaceStyle(newStyle, false);
@@ -384,7 +384,7 @@ function SectionsEditor() {
               t('importPreprocessor'), 'pre-line',
               t('importPreprocessorTitle'))
         ) {
-          const {sections, errors} = await API.parseCss({code});
+          const {sections, errors} = await API.worker.parseMozFormat({code});
           // shouldn't happen but just in case
           if (!sections.length || errors.length) {
             throw errors;
@@ -403,7 +403,7 @@ function SectionsEditor() {
 
     async function getPreprocessor(code) {
       try {
-        return (await API.buildUsercssMeta({sourceCode: code})).usercssData.preprocessor;
+        return (await API.usercss.buildMeta({sourceCode: code})).usercssData.preprocessor;
       } catch (e) {}
     }
 

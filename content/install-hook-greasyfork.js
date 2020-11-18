@@ -13,7 +13,7 @@ if (window.INJECTED_GREASYFORK !== 1) {
         e.data.name &&
         e.data.type === 'style-version-query') {
       removeEventListener('message', onMessage);
-      const style = await API.findUsercss(e.data) || {};
+      const style = await API.usercss.find(e.data) || {};
       const {version} = style.usercssData || {};
       postMessage({type: 'style-version', version}, '*');
     }

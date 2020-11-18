@@ -128,7 +128,7 @@ function configDialog(style) {
       return;
     }
     if (!bgStyle) {
-      API.getStyle(style.id, true)
+      API.styles.get(style.id)
         .catch(() => ({}))
         .then(bgStyle => save({anyChangeIsDirty}, bgStyle));
       return;
@@ -182,7 +182,7 @@ function configDialog(style) {
       return;
     }
     saving = true;
-    return API.configUsercssVars(style.id, style.usercssData.vars)
+    return API.usercss.configVars(style.id, style.usercssData.vars)
       .then(newVars => {
         varsInitial = getInitialValues(newVars);
         vars.forEach(va => onchange({target: va.input, justSaved: true}));

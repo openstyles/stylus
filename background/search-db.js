@@ -1,8 +1,7 @@
 /* global
-  API_METHODS
+  API
   debounce
   stringAsRegExp
-  styleManager
   tryRegExp
   usercss
 */
@@ -50,16 +49,16 @@
    * @param {number[]} [params.ids] - if not specified, all styles are searched
    * @returns {number[]} - array of matched styles ids
    */
-  API_METHODS.searchDB = async ({query, mode = 'all', ids}) => {
+  API.searchDB = async ({query, mode = 'all', ids}) => {
     let res = [];
     if (mode === 'url' && query) {
-      res = (await styleManager.getStylesByUrl(query)).map(r => r.data.id);
+      res = (await API.styles.getByUrl(query)).map(r => r.style.id);
     } else if (mode in MODES) {
       const modeHandler = MODES[mode];
       const m = /^\/(.+?)\/([gimsuy]*)$/.exec(query);
       const rx = m && tryRegExp(m[1], m[2]);
       const test = rx ? rx.test.bind(rx) : makeTester(query);
-      res = (await styleManager.getAllStyles())
+      res = (await API.styles.getAll())
         .filter(style =>
           (!ids || ids.includes(style.id)) &&
           (!query || modeHandler(style, test)))

@@ -110,7 +110,7 @@ lazyInit();
   async function initStyle() {
     const params = new URLSearchParams(location.search);
     const id = Number(params.get('id'));
-    style = id ? await API.getStyle(id) : initEmptyStyle(params);
+    style = id ? await API.styles.get(id) : initEmptyStyle(params);
     // switching the mode here to show the correct page ASAP, usually before DOMContentLoaded
     editor.isUsercss = Boolean(style.usercssData || !style.id && prefs.get('newStyleAsUsercss'));
     document.documentElement.classList.toggle('usercss', editor.isUsercss);
@@ -426,26 +426,18 @@ function lazyInit() {
 }
 
 function onRuntimeMessage(request) {
+  const {style} = request;
   switch (request.method) {
     case 'styleUpdated':
-      if (
-        editor.style.id === request.style.id &&
-        !['editPreview', 'editPreviewEnd', 'editSave', 'config']
-          .includes(request.reason)
-      ) {
-        Promise.resolve(
-          request.codeIsUpdated === false ?
-            request.style : API.getStyle(request.style.id)
-        )
-          .then(newStyle => {
-            editor.replaceStyle(newStyle, request.codeIsUpdated);
-          });
+      if (editor.style.id === style.id &&
+          !['editPreview', 'editPreviewEnd', 'editSave', 'config'].includes(request.reason)) {
+        Promise.resolve(request.codeIsUpdated === false ? style : API.styles.get(style.id))
+          .then(newStyle => editor.replaceStyle(newStyle, request.codeIsUpdated));
       }
       break;
     case 'styleDeleted':
-      if (editor.style.id === request.style.id) {
+      if (editor.style.id === style.id) {
         closeCurrentTab();
-        break;
       }
       break;
     case 'editDeleteText':

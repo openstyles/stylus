@@ -6,7 +6,7 @@
 window.INJECTED !== 1 && (() => {
   const STORAGE_KEY = 'settings';
   const clone = msg.isBg ? deepCopy : (val => JSON.parse(JSON.stringify(val)));
-  const defaults = {
+  const defaults = /** @namespace Prefs */{
     'openEditInWindow': false,      // new editor opens in a own browser window
     'openEditInWindow.popup': false, // new editor opens in a simplified browser window without omnibox
     'windowPosition': {},           // detached window position

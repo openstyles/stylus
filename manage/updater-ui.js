@@ -53,7 +53,7 @@ function checkUpdateAll() {
     chrome.runtime.onConnect.removeListener(onConnect);
   });
 
-  API.updateCheckAll({
+  API.updater.checkAllStyles({
     save: false,
     observe: true,
     ignoreDigest,
@@ -98,7 +98,7 @@ function checkUpdate(entry, {single} = {}) {
   $('.update-note', entry).textContent = t('checkingForUpdate');
   $('.check-update', entry).title = '';
   if (single) {
-    API.updateCheck({
+    API.updater.checkStyle({
       save: false,
       id: entry.styleId,
       ignoreDigest: entry.classList.contains('update-problem'),
@@ -221,7 +221,7 @@ function showUpdateHistory(event) {
   let deleted = false;
   Promise.all([
     chromeLocal.getValue('updateLog'),
-    API.getUpdaterStates(),
+    API.updater.getStates(),
   ]).then(([lines = [], states]) => {
     logText = lines.join('\n');
     messageBox({

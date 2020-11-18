@@ -109,7 +109,7 @@ function importFromFile({fileTypeFilter, file} = {}) {
 
 async function importFromString(jsonString) {
   const json = tryJSONparse(jsonString);
-  const oldStyles = Array.isArray(json) && json.length ? await API.getAllStyles() : [];
+  const oldStyles = Array.isArray(json) && json.length ? await API.styles.getAll() : [];
   const oldStylesById = new Map(oldStyles.map(style => [style.id, style]));
   const oldStylesByName = new Map(oldStyles.map(style => [style.name.trim(), style]));
   const items = [];
@@ -126,7 +126,7 @@ async function importFromString(jsonString) {
   await Promise.all(json.map(analyze));
   bulkChangeQueue.length = 0;
   bulkChangeQueue.time = performance.now();
-  (await API.importManyStyles(items))
+  (await API.styles.importMany(items))
     .forEach((style, i) => updateStats(style, infos[i]));
   return done();
 
@@ -290,10 +290,10 @@ async function importFromString(jsonString) {
     ];
     let tasks = Promise.resolve();
     for (const id of newIds) {
-      tasks = tasks.then(() => API.deleteStyle(id));
+      tasks = tasks.then(() => API.styles.delete(id));
       const oldStyle = oldStylesById.get(id);
       if (oldStyle) {
-        tasks = tasks.then(() => API.importStyle(oldStyle));
+        tasks = tasks.then(() => API.styles.import(oldStyle));
       }
     }
     // taskUI is superfast and updates style list only in this page,
@@ -338,7 +338,7 @@ async function exportToFile() {
     Object.assign({
       [prefs.STORAGE_KEY]: prefs.values,
     }, await chromeSync.getLZValues()),
-    ...await API.getAllStyles(),
+    ...await API.styles.getAll(),
   ];
   const text = JSON.stringify(data, null, '  ');
   const type = 'application/json';

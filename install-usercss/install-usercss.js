@@ -176,7 +176,7 @@
   function initSourceCode(sourceCode) {
     cm.setValue(sourceCode);
     cm.refresh();
-    API.buildUsercss({sourceCode, checkDup: true})
+    API.usercss.build({sourceCode, checkDup: true})
       .then(init)
       .catch(err => {
         $('#header').classList.add('meta-init-error');
@@ -248,7 +248,7 @@
           data.version,
         ]))
       ).then(ok => ok &&
-        API.installUsercss(style)
+        API.usercss.install(style)
           .then(install)
           .catch(err => messageBox.alert(t('styleInstallFailed', err), 'pre'))
       );
@@ -317,7 +317,7 @@
     let sequence = null;
     if (tabId < 0) {
       getData = DirectDownloader();
-      sequence = API.getUsercssInstallCode(initialUrl)
+      sequence = API.usercss.getInstallCode(initialUrl)
         .then(code => code || getData())
         .catch(getData);
     } else {
@@ -372,19 +372,20 @@
         cm.setValue(code);
         cm.setCursor(cursor);
         cm.scrollTo(scrollInfo.left, scrollInfo.top);
-        return API.installUsercss({id, sourceCode: code})
+        return API.usercss.install({id, sourceCode: code})
           .then(updateMeta)
           .catch(showError);
       });
     }
     function DirectDownloader() {
       let oldCode = null;
-      const passChangedCode = code => {
-        const isSame = code === oldCode;
-        oldCode = code;
-        return isSame ? null : code;
+      return async () => {
+        const code = await download(initialUrl);
+        if (oldCode !== code) {
+          oldCode = code;
+          return code;
+        }
       };
-      return () => download(initialUrl).then(passChangedCode);
     }
     function PortDownloader() {
       const resolvers = new Map();

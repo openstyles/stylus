@@ -84,10 +84,13 @@ const URLS = {
     url &&
     url.startsWith(URLS.usoArchiveRaw) &&
     parseInt(url.match(/\/(\d+)\.user\.css|$/)[1]),
+  extractUsoArchiveInstallUrl: url => {
+    const id = URLS.extractUsoArchiveId(url);
+    return id ? `${URLS.usoArchive}?style=${id}` : '';
+  },
 
-  extractGreasyForkId: url =>
-    /^https:\/\/(?:greasy|sleazy)fork\.org\/scripts\/(\d+)[^/]*\/code\/[^/]*\.user\.css$/.test(url) &&
-    RegExp.$1,
+  extractGreasyForkInstallUrl: url =>
+    /^(https:\/\/(?:greasy|sleazy)fork\.org\/scripts\/\d+)[^/]*\/code\/[^/]*\.user\.css$|$/.exec(url)[1],
 
   supported: url => (
     url.startsWith('http') ||
@@ -98,9 +101,7 @@ const URLS = {
   ),
 };
 
-if (chrome.extension.getBackgroundPage && chrome.extension.getBackgroundPage() === window) {
-  window.API_METHODS = {};
-} else {
+if (!chrome.extension.getBackgroundPage || chrome.extension.getBackgroundPage() !== window) {
   const cls = FIREFOX ? 'firefox' : OPERA ? 'opera' : VIVALDI ? 'vivaldi' : '';
   if (cls) document.documentElement.classList.add(cls);
 }
@@ -226,8 +227,9 @@ function activateTab(tab, {url, index, openerTabId} = {}) {
 }
 
 
-function stringAsRegExp(s, flags) {
-  return new RegExp(s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&'), flags);
+function stringAsRegExp(s, flags, asString) {
+  s = s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&');
+  return asString ? s : new RegExp(s, flags);
 }
 
 
@@ -371,70 +373,49 @@ function download(url, {
   requiredStatusCode = 200,
   timeout = 60e3, // connection timeout, USO is that bad
   loadTimeout = 2 * 60e3, // data transfer timeout (counted from the first remote response)
-  headers = {
-    'Content-type': 'application/x-www-form-urlencoded',
-  },
+  headers,
 } = {}) {
-  const queryPos = url.indexOf('?');
-  if (queryPos > 0 && body === undefined) {
-    method = 'POST';
-    body = url.slice(queryPos);
-    url = url.slice(0, queryPos);
+  /* USO can't handle POST requests for style json and XHR/fetch can't handle super long URL
+   * so we need to collapse all long variables and expand them in the response */
+  const queryPos = url.startsWith(URLS.uso) ? url.indexOf('?') : -1;
+  if (queryPos >= 0) {
+    if (body === undefined) {
+      method = 'POST';
+      body = url.slice(queryPos);
+      url = url.slice(0, queryPos);
+    }
+    if (headers === undefined) {
+      headers = {
+        'Content-type': 'application/x-www-form-urlencoded',
+      };
+    }
   }
-  // * USO can't handle POST requests for style json
-  // * XHR/fetch can't handle long URL
-  // So we need to collapse all long variables and expand them in the response
   const usoVars = [];
-
   return new Promise((resolve, reject) => {
-    let xhr;
+    const xhr = new XMLHttpRequest();
     const u = new URL(collapseUsoVars(url));
     const onTimeout = () => {
-      if (xhr) xhr.abort();
+      xhr.abort();
       reject(new Error('Timeout fetching ' + u.href));
     };
     let timer = setTimeout(onTimeout, timeout);
-    const switchTimer = () => {
-      clearTimeout(timer);
-      timer = loadTimeout && setTimeout(onTimeout, loadTimeout);
-    };
-    if (u.protocol === 'file:' && FIREFOX) { // TODO: maybe remove this since FF68+ can't do it anymore
-      // https://stackoverflow.com/questions/42108782/firefox-webextensions-get-local-files-content-by-path
-      // FIXME: add FetchController when it is available.
-      fetch(u.href, {mode: 'same-origin'})
-        .then(r => {
-          switchTimer();
-          return r.status === 200 ? r.text() : Promise.reject(r.status);
-        })
-        .catch(reject)
-        .then(text => {
-          clearTimeout(timer);
-          resolve(text);
-        });
-      return;
-    }
-    xhr = new XMLHttpRequest();
     xhr.onreadystatechange = () => {
       if (xhr.readyState >= XMLHttpRequest.HEADERS_RECEIVED) {
         xhr.onreadystatechange = null;
-        switchTimer();
+        clearTimeout(timer);
+        timer = loadTimeout && setTimeout(onTimeout, loadTimeout);
       }
     };
-    xhr.onloadend = event => {
-      clearTimeout(timer);
-      if (event.type !== 'error' && (
-          xhr.status === requiredStatusCode || !requiredStatusCode ||
-          u.protocol === 'file:')) {
-        resolve(expandUsoVars(xhr.response));
-      } else {
-        reject(xhr.status);
-      }
-    };
-    xhr.onerror = xhr.onloadend;
+    xhr.onload = () =>
+      xhr.status === requiredStatusCode || !requiredStatusCode || u.protocol === 'file:'
+        ? resolve(expandUsoVars(xhr.response))
+        : reject(xhr.status);
+    xhr.onerror = () => reject(xhr.status);
+    xhr.onloadend = () => clearTimeout(timer);
     xhr.responseType = responseType;
-    xhr.open(method, u.href, true);
-    for (const key in headers) {
-      xhr.setRequestHeader(key, headers[key]);
+    xhr.open(method, u.href);
+    for (const [name, value] of Object.entries(headers || {})) {
+      xhr.setRequestHeader(name, value);
     }
     xhr.send(body);
   });
