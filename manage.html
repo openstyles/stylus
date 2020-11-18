@@ -11,8 +11,6 @@
   <link rel="stylesheet" href="options/onoffswitch.css">
   <link rel="stylesheet" href="vendor-overwrites/colorpicker/colorpicker.css">
 
-  <style id="style-overrides"></style>
-
   <style id="firefox-transitions-bug-suppressor">
     /* restrict to FF */
     @supports (-moz-appearance:none) {
@@ -32,7 +30,10 @@
   <template data-id="style">
     <div class="entry">
       <h2 class="style-name">
-        <a class="style-name-link"></a>
+        <a class="style-name-link">
+          &nbsp;
+          <span class="style-info" data-type="version"></span>
+        </a>
         <a target="_blank" class="homepage"></a>
       </h2>
       <p class="applies-to">
@@ -54,14 +55,17 @@
     </div>
   </template>
 
-  <template data-id="styleCompact">
+  <template data-id="styleNewUI">
     <div class="entry">
       <h2 class="style-name">
-      <div class="checkmate">
-        <input class="checker" type="checkbox" i18n-title="toggleStyle">
-        <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-      </div>
-        <a class="style-name-link"></a>
+        <div class="checkmate">
+          <input class="checker" type="checkbox" i18n-title="toggleStyle">
+          <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+        </div>
+        <a class="style-name-link">
+          &nbsp;
+          <span class="style-info" data-type="version"></span>
+        </a>
       </h2>
       <p class="actions">
         <a target="_blank" class="homepage" tabindex="0"></a>
@@ -72,6 +76,7 @@
           </svg>
         </a>
       </p>
+      <p class="style-info" data-type="age"></p>
       <div class="applies-to">
         <div class="targets"></div>
         <a href="#" class="expander" tabindex="0">...</a>
@@ -260,9 +265,19 @@
         </label>
 
         <div id="search-wrapper">
-          <input id="search" type="search" i18n-placeholder="searchStyles" spellcheck="false"
+          <input id="search" type="search" i18n-placeholder="search" spellcheck="false"
                  data-filter=":not(.not-matching)"
                  data-filter-hide=".not-matching">
+          <div class="select-wrapper">
+            <select id="searchMode">
+              <option i18n-text="searchStylesName" value="name"></option>
+              <option i18n-text="searchStylesMeta" value="meta" selected></option>
+              <option i18n-text="searchStylesCode" value="code"></option>
+              <option i18n-text="searchStylesMatchUrl" value="url"></option>
+              <option i18n-text="searchStylesAll" value="all"></option>
+            </select>
+            <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+          </div>
           <a href="#" id="search-help" tabindex="0">
             <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
           </a>

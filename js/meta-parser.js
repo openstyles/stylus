@@ -12,17 +12,17 @@ const metaParser = (() => {
           throw new ParseError({
             code: 'unknownPreprocessor',
             args: [state.value],
-            index: state.valueIndex
+            index: state.valueIndex,
           });
         }
-      }
+      },
     },
     validateVar: {
       select: state => {
         if (state.varResult.options.every(o => o.name !== state.value)) {
           throw new ParseError({
             code: 'invalidSelectValueMismatch',
-            index: state.valueIndex
+            index: state.valueIndex,
           });
         }
       },
@@ -32,19 +32,19 @@ const metaParser = (() => {
           throw new ParseError({
             code: 'invalidColor',
             args: [state.value],
-            index: state.valueIndex
+            index: state.valueIndex,
           });
         }
         state.value = colorConverter.format(color, 'rgb');
-      }
-    }
+      },
+    },
   };
   const parser = createParser(options);
   const looseParser = createParser(Object.assign({}, options, {allowErrors: true, unknownKey: 'throw'}));
   return {
     parse,
     lint,
-    nullifyInvalidVars
+    nullifyInvalidVars,
   };
 
   function parse(text, indexOffset) {

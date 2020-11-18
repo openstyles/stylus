@@ -11,8 +11,9 @@ const filtersSelector = {
 
 let initialized = false;
 
-router.watch({search: ['search']}, ([search]) => {
+router.watch({search: ['search', 'searchMode']}, ([search, mode]) => {
   $('#search').value = search || '';
+  if (mode) $('#searchMode').value = mode;
   if (!initialized) {
     initFilters();
     initialized = true;
@@ -22,30 +23,29 @@ router.watch({search: ['search']}, ([search]) => {
 });
 
 HTMLSelectElement.prototype.adjustWidth = function () {
-  const option0 = this.selectedOptions[0];
-  if (!option0) return;
-  const parent = this.parentNode;
-  const singleSelect = this.cloneNode(false);
-  singleSelect.style.width = '';
-  singleSelect.appendChild(option0.cloneNode(true));
-  parent.replaceChild(singleSelect, this);
-  const w = singleSelect.offsetWidth;
-  if (w && this.style.width !== w + 'px') {
-    this.style.width = w + 'px';
-  }
-  parent.replaceChild(this, singleSelect);
+  const sel = this.selectedOptions[0];
+  if (!sel) return;
+  const wOld = parseFloat(this.style.width);
+  const opts = [...this];
+  opts.forEach(opt => opt !== sel && opt.remove());
+  this.style.width = '';
+  requestAnimationFrame(() => {
+    const w = this.offsetWidth;
+    if (w && wOld !== w) this.style.width = w + 'px';
+    this.append(...opts);
+  });
 };
 
 function initFilters() {
-  $('#search').oninput = e => {
-    router.updateSearch('search', e.target.value);
+  $('#search').oninput = $('#searchMode').oninput = function (e) {
+    router.updateSearch(this.id, e.target.value);
   };
 
   $('#search-help').onclick = event => {
     event.preventDefault();
     messageBox({
       className: 'help-text',
-      title: t('searchStyles'),
+      title: t('search'),
       contents:
         $create('ul',
           t('searchStylesHelp').split('\n').map(line =>
@@ -133,7 +133,7 @@ function initFilters() {
   prefs.subscribe(['manage.filters.expanded'], () => {
     const el = $('#filters');
     if (el.open) {
-      $$('select', el).forEach(select => select.adjustWidth());
+      $$('.filter-selection select', el).forEach(select => select.adjustWidth());
     }
   });
 
@@ -141,7 +141,7 @@ function initFilters() {
 }
 
 
-function filterOnChange({target: el, forceRefilter}) {
+function filterOnChange({target: el, forceRefilter, alreadySearched}) {
   const getValue = el => (el.type === 'checkbox' ? el.checked : el.value.trim());
   if (!forceRefilter) {
     const value = getValue(el);
@@ -157,14 +157,14 @@ function filterOnChange({target: el, forceRefilter}) {
       el.dataset[hide ? 'filterHide' : 'filter']
         .split(/,\s*/)
         .map(s => (hide ? '.entry:not(.hidden)' : '') + s)
-        .join(','))
+        .join(',')),
     ].join(hide ? ',' : '');
   Object.assign(filtersSelector, {
     hide: buildFilter(true),
     unhide: buildFilter(false),
   });
   if (installed) {
-    reapplyFilter().then(sorter.updateStripes);
+    reapplyFilter(installed, alreadySearched).then(sorter.updateStripes);
   }
 }
 
@@ -278,10 +278,12 @@ function showFiltersStats() {
 }
 
 
-function searchStyles({immediately, container} = {}) {
+async function searchStyles({immediately, container} = {}) {
   const el = $('#search');
+  const elMode = $('#searchMode');
   const query = el.value.trim();
-  if (query === el.lastValue && !immediately && !container) {
+  const mode = elMode.value;
+  if (query === el.lastValue && mode === elMode.lastValue && !immediately && !container) {
     return;
   }
   if (!immediately) {
@@ -289,24 +291,24 @@ function searchStyles({immediately, container} = {}) {
     return;
   }
   el.lastValue = query;
+  elMode.lastValue = mode;
 
-  const entries = container && container.children || container || installed.children;
-  return API.searchDB({
-    query,
-    ids: [...entries].map(el => el.styleId),
-  }).then(ids => {
-    ids = new Set(ids);
-    let needsRefilter = false;
-    for (const entry of entries) {
-      const isMatching = ids.has(entry.styleId);
-      if (entry.classList.contains('not-matching') !== !isMatching) {
-        entry.classList.toggle('not-matching', !isMatching);
-        needsRefilter = true;
-      }
+  const all = installed.children;
+  const entries = container && container.children || container || all;
+  const idsToSearch = entries !== all && [...entries].map(el => el.styleId);
+  const ids = entries[0]
+    ? await API.searchDB({query, mode, ids: idsToSearch})
+    : [];
+  let needsRefilter = false;
+  for (const entry of entries) {
+    const isMatching = ids.includes(entry.styleId);
+    if (entry.classList.contains('not-matching') !== !isMatching) {
+      entry.classList.toggle('not-matching', !isMatching);
+      needsRefilter = true;
     }
-    if (needsRefilter && !container) {
-      filterOnChange({forceRefilter: true});
-    }
-    return container;
-  });
+  }
+  if (needsRefilter && !container) {
+    filterOnChange({forceRefilter: true, alreadySearched: true});
+  }
+  return container;
 }

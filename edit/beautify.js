@@ -162,7 +162,7 @@ function beautify(scope, ui = true) {
               $create('SVG:path', {
                 'fill-rule': 'evenodd',
                 'd': 'M1408 704q0 26-19 45l-448 448q-19 19-45 ' +
-                     '19t-45-19l-448-448q-19-19-19-45t19-45 45-19h896q26 0 45 19t19 45z'
+                     '19t-45-19l-448-448q-19-19-19-45t19-45 45-19h896q26 0 45 19t19 45z',
               }),
             ]),
           ]),
@@ -176,7 +176,7 @@ function beautify(scope, ui = true) {
           $create('input', {
             type: 'checkbox',
             dataset: {option: optionName},
-            checked: options[optionName] !== false
+            checked: options[optionName] !== false,
           }),
           $create('SVG:svg.svg-icon.checked',
             $create('SVG:use', {'xlink:href': '#svg-icon-checked'})),

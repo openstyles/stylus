@@ -77,7 +77,7 @@ Object.assign(linter, (() => {
       element: table,
       trs,
       updateAnnotations,
-      updateCaption
+      updateCaption,
     };
 
     function updateCaption() {
@@ -124,18 +124,18 @@ Object.assign(linter, (() => {
       const message = $create('td', {attributes: {role: 'message'}});
 
       const trElement = $create('tr', {
-        onclick: () => gotoLintIssue(cm, anno)
+        onclick: () => gotoLintIssue(cm, anno),
       }, [
         severity,
         line,
         $create('td', {attributes: {role: 'sep'}}, ':'),
         col,
-        message
+        message,
       ]);
       return {
         element: trElement,
         update,
-        getAnnotation: () => anno
+        getAnnotation: () => anno,
       };
 
       function update(_anno) {

@@ -29,7 +29,7 @@ const contentScripts = (() => {
     url: [
       {hostEquals: 'greasyfork.org', urlMatches},
       {hostEquals: 'sleazyfork.org', urlMatches},
-    ]
+    ],
   });
 
   return {injectToTab, injectToAllTabs};
@@ -57,7 +57,7 @@ const contentScripts = (() => {
         const options = {
           runAt: script.run_at,
           allFrames: script.all_frames,
-          matchAboutBlank: script.match_about_blank
+          matchAboutBlank: script.match_about_blank,
         };
         if (frameId !== null) {
           options.allFrames = false;
@@ -80,7 +80,7 @@ const contentScripts = (() => {
         } else {
           injectToTab({
             url: tab.pendingUrl || tab.url,
-            tabId: tab.id
+            tabId: tab.id,
           });
         }
       }

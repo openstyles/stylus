@@ -2057,7 +2057,7 @@ self.parserlib = (() => {
         return m.toString(p);
       }).join(required === false ? ' || ' : ' && ');
       return prec > p ? `[ ${s} ]` : s;
-    }
+    },
   };
 
   Matcher.parseGrammar = (() => {
@@ -5300,7 +5300,7 @@ self.parserlib = (() => {
     _readDeclarations({
       checkStart = true,
       readMargins = false,
-      stopAfterBrace = false
+      stopAfterBrace = false,
     } = {}) {
       const stream = this._tokenStream;
       if (checkStart) stream.mustMatch(Tokens.LBRACE);

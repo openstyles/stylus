@@ -22,11 +22,10 @@
   prefs
   rerouteHotkeys
   SectionsEditor
-  sessionStorageHash
+  sessionStore
   setupLivePrefs
   SourceEditor
   t
-  tHTML
   tryCatch
   tryJSONparse
 */
@@ -56,13 +55,23 @@ lazyInit();
       .then(initTheme),
     onDOMready(),
   ]);
+  const scrollInfo = style.id && tryJSONparse(sessionStore['editorScrollInfo' + style.id]);
   /** @namespace EditorBase */
   Object.assign(editor, {
     style,
     dirty,
+    scrollInfo,
     updateName,
     updateToc,
     toggleStyle,
+    applyScrollInfo(cm, si = ((scrollInfo || {}).cms || [])[0]) {
+      if (si && si.sel) {
+        cm.operation(() => {
+          cm.setSelections(...si.sel, {scroll: false});
+          cm.scrollIntoView(cm.getCursor(), si.parentHeight / 2);
+        });
+      }
+    },
   });
   prefs.subscribe('editor.linter', updateLinter);
   prefs.subscribe('editor.keyMap', showHotkeyInTooltip);
@@ -78,17 +87,21 @@ lazyInit();
 
   $('#heading').textContent = t(style.id ? 'editStyleHeading' : 'addStyleTitle');
   $('#preview-label').classList.toggle('hidden', !style.id);
-
   const toc = [];
   const elToc = $('#toc');
   elToc.onclick = e => editor.jumpToEditor([...elToc.children].indexOf(e.target));
-
-  (editor.isUsercss ? SourceEditor : SectionsEditor)();
-
+  if (editor.isUsercss) {
+    SourceEditor();
+  } else {
+    SectionsEditor();
+  }
   prefs.subscribe('editor.toc.expanded', (k, val) => val && editor.updateToc(), {now: true});
   dirty.onChange(updateDirty);
-  await editor.ready;
 
+  await editor.ready;
+  editor.ready = true;
+
+  setTimeout(() => editor.getEditors().forEach(linter.enableForEditor));
   // enabling after init to prevent flash of validation failure on an empty name
   $('#name').required = !editor.isUsercss;
   $('#save-button').onclick = editor.save;
@@ -100,7 +113,7 @@ lazyInit();
     // switching the mode here to show the correct page ASAP, usually before DOMContentLoaded
     editor.isUsercss = Boolean(style.usercssData || !style.id && prefs.get('newStyleAsUsercss'));
     document.documentElement.classList.toggle('usercss', editor.isUsercss);
-    sessionStorage.justEditedStyleId = style.id || '';
+    sessionStore.justEditedStyleId = style.id || '';
     // no such style so let's clear the invalid URL parameters
     if (!style.id) history.replaceState({}, '', location.pathname);
     updateTitle(false);
@@ -290,16 +303,9 @@ lazyInit();
   function updateToc(added = editor.sections) {
     const {sections} = editor;
     const first = sections.indexOf(added[0]);
-    let el = elToc.children[first];
-    if (added.focus) {
-      const cls = 'current';
-      const old = $('.' + cls, elToc);
-      if (old && old !== el) old.classList.remove(cls);
-      el.classList.add(cls);
-      return;
-    }
-    if (first >= 0) {
-      for (let i = first; i < sections.length; i++) {
+    const elFirst = elToc.children[first];
+    if (first >= 0 && (!added.focus || !elFirst)) {
+      for (let el = elFirst, i = first; i < sections.length; i++) {
         const entry = sections[i].tocEntry;
         if (!deepEqual(entry, toc[i])) {
           if (!el) el = elToc.appendChild($create('li', {tabIndex: 0}));
@@ -318,6 +324,13 @@ lazyInit();
       elToc.lastElementChild.remove();
       toc.length--;
     }
+    if (added.focus) {
+      const cls = 'current';
+      const old = $('.' + cls, elToc);
+      const el = elFirst || elToc.children[first];
+      if (old && old !== el) old.classList.remove(cls);
+      el.classList.add(cls);
+    }
   }
 })();
 
@@ -335,7 +348,7 @@ function lazyInit() {
   async function patchHistoryBack(tab) {
     ownTabId = tab.id;
     // use browser history back when 'back to manage' is clicked
-    if (sessionStorageHash('manageStylesHistory').value[ownTabId] === location.href) {
+    if (sessionStore['manageStylesHistory' + ownTabId] === location.href) {
       await onDOMready();
       $('#cancel-button').onclick = event => {
         event.stopPropagation();
@@ -346,8 +359,8 @@ function lazyInit() {
   }
   /** resize on 'undo close' */
   function restoreWindowSize() {
-    const pos = tryJSONparse(sessionStorage.windowPos);
-    delete sessionStorage.windowPos;
+    const pos = tryJSONparse(sessionStore.windowPos);
+    delete sessionStore.windowPos;
     if (pos && pos.left != null && chrome.windows) {
       chrome.windows.update(chrome.windows.WINDOW_ID_CURRENT, pos);
     }
@@ -408,7 +421,16 @@ function onRuntimeMessage(request) {
 }
 
 function beforeUnload(e) {
-  sessionStorage.windowPos = JSON.stringify(canSaveWindowPos() && prefs.get('windowPosition'));
+  sessionStore.windowPos = JSON.stringify(canSaveWindowPos() && prefs.get('windowPosition'));
+  sessionStore['editorScrollInfo' + editor.style.id] = JSON.stringify({
+    scrollY: window.scrollY,
+    cms: editor.getEditors().map(cm => /** @namespace EditorScrollInfo */({
+      focus: cm.hasFocus(),
+      height: cm.display.wrapper.style.height.replace('100vh', ''),
+      parentHeight: cm.display.wrapper.parentElement.offsetHeight,
+      sel: cm.isClean() && [cm.doc.sel.ranges, cm.doc.sel.primIndex],
+    })),
+  });
   const activeElement = document.activeElement;
   if (activeElement) {
     // blurring triggers 'change' or 'input' event if needed
@@ -429,7 +451,7 @@ function showHelp(title = '', body) {
   const contents = $('.contents', div);
   contents.textContent = '';
   if (body) {
-    contents.appendChild(typeof body === 'string' ? tHTML(body) : body);
+    contents.appendChild(typeof body === 'string' ? t.HTML(body) : body);
   }
 
   $('.title', div).textContent = title;
@@ -492,7 +514,7 @@ function showCodeMirrorPopup(title, html, options) {
     matchBrackets: true,
     styleActiveLine: true,
     theme: prefs.get('editor.theme'),
-    keyMap: prefs.get('editor.keyMap')
+    keyMap: prefs.get('editor.keyMap'),
   }, options));
   cm.focus();
   rerouteHotkeys(false);

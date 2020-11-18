@@ -13,7 +13,7 @@ const sync = (() => {
     progress: null,
     currentDriveName: null,
     errorMessage: null,
-    login: false
+    login: false,
   };
   let currentDrive;
   const ctrl = dbToCloud.dbToCloud({
@@ -43,7 +43,7 @@ const sync = (() => {
     setState(drive, state) {
       const key = `sync/state/${drive.name}`;
       return chromeLocal.setValue(key, state);
-    }
+    },
   });
 
   const initializing = prefs.initializing.then(() => {
@@ -58,7 +58,7 @@ const sync = (() => {
   });
 
   return Object.assign({
-    getStatus: () => status
+    getStatus: () => status,
   }, ensurePrepared({
     start,
     stop,
@@ -73,7 +73,7 @@ const sync = (() => {
       return ctrl.delete(...args);
     },
     syncNow,
-    login
+    login,
   }));
 
   function ensurePrepared(obj) {
@@ -99,7 +99,7 @@ const sync = (() => {
   function schedule(delay = SYNC_DELAY) {
     chrome.alarms.create('syncNow', {
       delayInMinutes: delay,
-      periodInMinutes: SYNC_INTERVAL
+      periodInMinutes: SYNC_INTERVAL,
     });
   }
 
@@ -206,7 +206,7 @@ const sync = (() => {
   function getDrive(name) {
     if (name === 'dropbox' || name === 'google' || name === 'onedrive') {
       return dbToCloud.drive[name]({
-        getAccessToken: () => tokenManager.getToken(name)
+        getAccessToken: () => tokenManager.getToken(name),
       });
     }
     throw new Error(`unknown cloud name: ${name}`);

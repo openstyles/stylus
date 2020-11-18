@@ -3,7 +3,7 @@
 
 /* exported editorWorker */
 const editorWorker = workerUtil.createWorker({
-  url: '/edit/editor-worker.js'
+  url: '/edit/editor-worker.js',
 });
 
 /* exported linter */
@@ -19,7 +19,7 @@ const linter = (() => {
     enableForEditor,
     disableForEditor,
     onLintingUpdated,
-    onUnhook
+    onUnhook,
   };
 
   function onUnhook(cb) {

@@ -12,7 +12,7 @@
     {hex: '#00ffff', start: .50},
     {hex: '#0000ff', start: .67},
     {hex: '#ff00ff', start: .83},
-    {hex: '#ff0000', start: 1}
+    {hex: '#ff0000', start: 1},
   ];
   const MIN_HEIGHT = 220;
   const MARGIN = 8;
@@ -119,7 +119,7 @@
         $inputGroups.hex = $(['input-group', 'hex'], [
           $(['input-field', 'hex'], [
             $hexCode = $('input', {tag: 'input', type: 'text', spellcheck: false,
-              pattern: /^\s*#([a-fA-F\d]{3}([a-fA-F\d]([a-fA-F\d]{2}([a-fA-F\d]{2})?)?)?)\s*$/.source
+              pattern: /^\s*#([a-fA-F\d]{3}([a-fA-F\d]([a-fA-F\d]{2}([a-fA-F\d]{2})?)?)?)\s*$/.source,
             }),
             $('title', [
               $hexLettercase.true = $('title-action', {onclick: onHexLettercaseClicked}, 'HEX'),
@@ -186,7 +186,7 @@
     Object.defineProperty($inputs.hsl, 'color', {get: inputsToHSL});
     Object.defineProperty($inputs, 'color', {get: () => $inputs[currentFormat].color});
     Object.defineProperty($inputs, 'colorString', {
-      get: () => currentFormat && colorConverter.format($inputs[currentFormat].color)
+      get: () => currentFormat && colorConverter.format($inputs[currentFormat].color),
     });
 
     HUE_COLORS.forEach(color => Object.assign(color, colorConverter.parse(color.hex)));

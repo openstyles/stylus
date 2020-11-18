@@ -22,7 +22,7 @@
   if (theme !== 'default') {
     document.head.appendChild($create('link', {
       rel: 'stylesheet',
-      href: `vendor/codemirror/theme/${theme}.css`
+      href: `vendor/codemirror/theme/${theme}.css`,
     }));
   }
   window.addEventListener('resize', adjustCodeHeight);
@@ -111,7 +111,7 @@
         frag.appendChild($createLink(url,
           $create('SVG:svg.svg-icon', {viewBox: '0 0 20 20'},
             $create('SVG:path', {
-              d: 'M4,4h5v2H6v8h8v-3h2v5H4V4z M11,3h6v6l-2-2l-4,4L9,9l4-4L11,3z'
+              d: 'M4,4h5v2H6v8h8v-3h2v5H4V4z M11,3h6v6l-2-2l-4,4L9,9l4-4L11,3z',
             }))
         ));
       }
@@ -130,7 +130,7 @@
             $create('li',
               $createLink(...args)
             )
-          ))
+          )),
         ]));
     }
   }

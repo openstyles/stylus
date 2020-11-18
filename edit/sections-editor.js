@@ -15,6 +15,7 @@
   messageBox
   prefs
   sectionsToMozFormat
+  sessionStore
   showCodeMirrorPopup
   showHelp
   t
@@ -117,7 +118,7 @@ function SectionsEditor() {
       }
       newStyle = await API.editSave(newStyle);
       destroyRemovedSections();
-      sessionStorage.justEditedStyleId = newStyle.id;
+      sessionStore.justEditedStyleId = newStyle.id;
       editor.replaceStyle(newStyle, false);
     },
 
@@ -141,7 +142,7 @@ function SectionsEditor() {
 
   /** @param {EditorSection} section */
   function fitToContent(section) {
-    const {el, cm, cm: {display: {wrapper, sizer}}} = section;
+    const {cm, cm: {display: {wrapper, sizer}}} = section;
     if (cm.display.renderedView) {
       resize();
     } else {
@@ -154,12 +155,13 @@ function SectionsEditor() {
         return;
       }
       if (headerOffset == null) {
-        headerOffset = el.getBoundingClientRect().top;
+        headerOffset = container.getBoundingClientRect().top;
       }
       contentHeight += 9; // border & resize grip
       cm.off('update', resize);
       const cmHeight = wrapper.offsetHeight;
-      const maxHeight = (window.innerHeight - headerOffset) - (section.el.offsetHeight - cmHeight);
+      const appliesToHeight = Math.min(section.el.offsetHeight - cmHeight, window.innerHeight / 2);
+      const maxHeight = (window.innerHeight - headerOffset) - appliesToHeight;
       const fit = Math.min(contentHeight, maxHeight);
       if (Math.abs(fit - cmHeight) > 1) {
         cm.setSize(null, fit);
@@ -434,7 +436,7 @@ function SectionsEditor() {
   /** @returns {Style} */
   function getModel() {
     return Object.assign({}, style, {
-      sections: sections.filter(s => !s.removed).map(s => s.getModel())
+      sections: sections.filter(s => !s.removed).map(s => s.getModel()),
     });
   }
 
@@ -484,7 +486,7 @@ function SectionsEditor() {
     livePreview.update(getModel());
   }
 
-  function initSections(originalSections, {
+  function initSections(src, {
     focusOn = 0,
     replace = false,
     pristine = false,
@@ -495,27 +497,35 @@ function SectionsEditor() {
       container.textContent = '';
     }
     let done;
-    const total = originalSections.length;
-    originalSections = originalSections.slice();
+    let index = 0;
+    let y = 0;
+    const total = src.length;
+    let si = editor.scrollInfo;
+    if (si && si.cms && si.cms.length === src.length) {
+      si.scrollY2 = si.scrollY + window.innerHeight;
+      container.style.height = si.scrollY2 + 'px';
+      scrollTo(0, si.scrollY);
+    } else {
+      si = null;
+    }
     return new Promise(resolve => {
       done = resolve;
-      chunk(true);
+      chunk(!si);
     });
     function chunk(forceRefresh) {
       const t0 = performance.now();
-      while (originalSections.length && performance.now() - t0 < 100) {
-        insertSectionAfter(originalSections.shift(), undefined, forceRefresh);
+      while (index < total && performance.now() - t0 < 100) {
+        if (si) forceRefresh = y < si.scrollY2 && (y += si.cms[index].parentHeight) > si.scrollY;
+        insertSectionAfter(src[index], undefined, forceRefresh, si && si.cms[index]);
         if (pristine) dirty.clear();
-        if (focusOn !== false && sections[focusOn]) {
-          sections[focusOn].cm.focus();
-          focusOn = false;
-        }
+        if (index === focusOn && !si) sections[index].cm.focus();
+        index++;
       }
-      setGlobalProgress(total - originalSections.length, total);
-      if (!originalSections.length) {
+      setGlobalProgress(index, total);
+      if (index === total) {
         setGlobalProgress();
-        requestAnimationFrame(fitToAvailableSpace);
-        sections.forEach(({cm}) => setTimeout(linter.enableForEditor, 0, cm));
+        if (!si) requestAnimationFrame(fitToAvailableSpace);
+        container.style.removeProperty('height');
         done();
       } else {
         setTimeout(chunk);
@@ -564,24 +574,26 @@ function SectionsEditor() {
    * @param {StyleSection} [init]
    * @param {EditorSection} [base]
    * @param {boolean} [forceRefresh]
+   * @param {EditorScrollInfo} [si]
    */
-  function insertSectionAfter(init, base, forceRefresh) {
+  function insertSectionAfter(init, base, forceRefresh, si) {
     if (!init) {
       init = {code: '', urlPrefixes: ['http://example.com']};
     }
-    const section = createSection(init, genId);
+    const section = createSection(init, genId, si);
     const {cm} = section;
-    sections.splice(base ? sections.indexOf(base) + 1 : sections.length, 0, section);
+    const index = base ? sections.indexOf(base) + 1 : sections.length;
+    sections.splice(index, 0, section);
     container.insertBefore(section.el, base ? base.el.nextSibling : null);
-    refreshOnView(cm, forceRefresh);
+    refreshOnView(cm, base || forceRefresh);
     registerEvents(section);
-    if (!base || init.code) {
+    if ((!si || !si.height) && (!base || init.code)) {
       // Fit a) during startup or b) when the clone button is clicked on a section with some code
       fitToContent(section);
     }
     if (base) {
       cm.focus();
-      setTimeout(editor.scrollToEditor, 0, cm);
+      editor.scrollToEditor(cm);
       linter.enableForEditor(cm);
     }
     updateSectionOrder();
@@ -646,11 +658,18 @@ function SectionsEditor() {
       xo.observe(cm.display.wrapper);
   }
 
+  /** @param {IntersectionObserverEntry[]} entries */
   function refreshOnViewListener(entries) {
-    for (const {isIntersecting, target} of entries) {
-      if (isIntersecting) {
-        target.CodeMirror.refresh();
-        xo.unobserve(target);
+    for (const e of entries) {
+      const r = e.isIntersecting && e.intersectionRect;
+      if (r) {
+        xo.unobserve(e.target);
+        const cm = e.target.CodeMirror;
+        if (r.bottom > 0 && r.top < window.innerHeight) {
+          cm.refresh();
+        } else {
+          setTimeout(() => cm.refresh());
+        }
       }
     }
   }

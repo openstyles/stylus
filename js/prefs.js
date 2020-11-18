@@ -15,6 +15,7 @@ window.INJECTED !== 1 && (() => {
     'exposeIframes': false,         // Add 'stylus-iframe' attribute to HTML element in all iframes
     'newStyleAsUsercss': false,     // create new style in usercss format
     'styleViaXhr': false,           // early style injection to avoid FOUC
+    'patchCsp': false,              // add data: and popular image hosting sites to strict CSP
 
     // checkbox in style config dialog
     'config.autosave': true,

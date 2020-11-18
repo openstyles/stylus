@@ -1,4 +1,10 @@
-/* global API_METHODS openURL download URLS tabManager */
+/* global
+  API_METHODS
+  download
+  openURL
+  tabManager
+  URLS
+*/
 'use strict';
 
 (() => {
@@ -27,16 +33,39 @@
     return code;
   };
 
+  // `glob`: pathname match pattern for webRequest
+  // `rx`: pathname regex to verify the URL really looks like a raw usercss
+  const maybeDistro = {
+    // https://github.com/StylishThemes/GitHub-Dark/raw/master/github-dark.user.css
+    'github.com': {
+      glob: '/*/raw/*',
+      rx: /^\/[^/]+\/[^/]+\/raw\/[^/]+\/[^/]+?\.user\.(css|styl)$/,
+    },
+    // https://raw.githubusercontent.com/StylishThemes/GitHub-Dark/master/github-dark.user.css
+    'raw.githubusercontent.com': {
+      glob: '/*',
+      rx: /^(\/[^/]+?){4}\.user\.(css|styl)$/,
+    },
+  };
+
   // Faster installation on known distribution sites to avoid flicker of css text
   chrome.webRequest.onBeforeSendHeaders.addListener(({tabId, url}) => {
-    openInstallerPage(tabId, url, {});
-    // Silently suppressing navigation like it never happened
-    return {redirectUrl: 'javascript:void 0'}; // eslint-disable-line no-script-url
+    const u = new URL(url);
+    const m = maybeDistro[u.hostname];
+    if (!m || m.rx.test(u.pathname)) {
+      openInstallerPage(tabId, url, {});
+      // Silently suppress navigation.
+      // Don't redirect to the install URL as it'll flash the text!
+      return {redirectUrl: 'javascript:void 0'}; // eslint-disable-line no-script-url
+    }
   }, {
     urls: [
       URLS.usoArchiveRaw + 'usercss/*.user.css',
       '*://greasyfork.org/scripts/*/code/*.user.css',
       '*://sleazyfork.org/scripts/*/code/*.user.css',
+      ...[].concat(
+        ...Object.entries(maybeDistro)
+          .map(([host, {glob}]) => makeUsercssGlobs(host, glob))),
     ],
     types: ['main_frame'],
   }, ['blocking']);
@@ -46,7 +75,7 @@
     const h = responseHeaders.find(h => h.name.toLowerCase() === 'content-type');
     tabManager.set(tabId, isContentTypeText.name, h && isContentTypeText(h.value) || undefined);
   }, {
-    urls: '%css,%css?*,%styl,%styl?*'.replace(/%/g, '*://*/*.user.').split(','),
+    urls: makeUsercssGlobs('*', '/*'),
     types: ['main_frame'],
   }, ['responseHeaders']);
 
@@ -57,7 +86,7 @@
         !oldUrl.startsWith(URLS.installUsercss)) {
       const inTab = url.startsWith('file:') && Boolean(fileLoader);
       const code = await (inTab ? fileLoader : urlLoader)(tabId, url);
-      if (/==userstyle==/i.test(code)) {
+      if (/==userstyle==/i.test(code) && !/^\s*</.test(code)) {
         openInstallerPage(tabId, url, {code, inTab});
       }
     }
@@ -79,5 +108,9 @@
       installCodeCache[url] = {code, timer};
       chrome.tabs.update(tabId, {url: newUrl});
     }
+  }
+
+  function makeUsercssGlobs(host, path) {
+    return '%css,%css?*,%styl,%styl?*'.replace(/%/g, `*://${host}${path}.user.`).split(',');
   }
 })();

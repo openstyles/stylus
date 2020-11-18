@@ -73,6 +73,11 @@
       const height = cm.display.lastWrapHeight;
       if (!height || !textHeight) return;
       maxRenderChunkSize = Math.max(20, Math.ceil(height / textHeight));
+      const state = cm.state.colorpicker;
+      if (state.colorizeOnUpdate) {
+        state.colorizeOnUpdate = false;
+        colorizeAll(state);
+      }
       cm.off('update', CM_EVENTS.update);
     },
     mousedown(cm, event) {
@@ -164,11 +169,13 @@
 
   function colorizeAll(state) {
     const {cm} = state;
+    const {viewFrom, viewTo} = cm.display;
+    if (!viewTo) {
+      state.colorizeOnUpdate = true;
+      return;
+    }
     const {curOp} = cm;
     if (!curOp) cm.startOperation();
-
-    const viewFrom = cm.display.viewFrom;
-    const viewTo = (cm.display.viewTo || maxRenderChunkSize - 1) + 1;
 
     state.line = viewFrom;
     state.inComment = null;

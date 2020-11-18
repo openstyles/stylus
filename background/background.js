@@ -8,7 +8,7 @@
 
 // eslint-disable-next-line no-var
 var backgroundWorker = workerUtil.createWorker({
-  url: '/background/background-worker.js'
+  url: '/background/background-worker.js',
 });
 
 // eslint-disable-next-line no-var
@@ -99,7 +99,7 @@ window.API_METHODS = Object.assign(window.API_METHODS || {}, {
   getSyncStatus: sync.getStatus,
   syncLogin: sync.login,
 
-  openManage
+  openManage,
 });
 
 // *************************************************************************
@@ -119,7 +119,7 @@ if (FIREFOX) {
   navigatorUtil.onDOMContentLoaded(webNavIframeHelperFF, {
     url: [
       {urlEquals: 'about:blank'},
-    ]
+    ],
   });
 }
 
@@ -135,24 +135,13 @@ if (chrome.commands) {
 
 // *************************************************************************
 chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
-  // save install type: "admin", "development", "normal", "sideload" or "other"
-  // "normal" = addon installed from webstore
-  chrome.management.getSelf(info => {
-    localStorage.installType = info.installType;
-    if (reason === 'install' && info.installType === 'development' && chrome.contextMenus) {
-      createContextMenus(['reload']);
-    }
-  });
-
   if (reason !== 'update') return;
-  // translations may change
-  localStorage.L10N = JSON.stringify({
-    browserUIlanguage: chrome.i18n.getUILanguage(),
-  });
-  // themes may change
-  delete localStorage.codeMirrorThemes;
-  // inline search cache for USO is not needed anymore, TODO: remove this by the middle of 2021
   if (semverCompare(previousVersion, '1.5.13') <= 0) {
+    // Removing unused stuff
+    // TODO: delete this entire block by the middle of 2021
+    try {
+      localStorage.clear();
+    } catch (e) {}
     setTimeout(async () => {
       const del = Object.keys(await chromeLocal.get())
         .filter(key => key.startsWith('usoSearchCache'));
@@ -181,7 +170,7 @@ contextMenus = {
     click: browserCommands.openOptions,
   },
   'reload': {
-    presentIf: () => localStorage.installType === 'development',
+    presentIf: async () => (await browser.management.getSelf()).installType === 'development',
     title: 'reload',
     click: browserCommands.reload,
   },
@@ -195,13 +184,13 @@ contextMenus = {
       msg.sendTab(tab.id, {method: 'editDeleteText'}, undefined, 'extension')
         .catch(msg.ignoreError);
     },
-  }
+  },
 };
 
-function createContextMenus(ids) {
+async function createContextMenus(ids) {
   for (const id of ids) {
     let item = contextMenus[id];
-    if (item.presentIf && !item.presentIf()) {
+    if (item.presentIf && !await item.presentIf()) {
       continue;
     }
     item = Object.assign({id}, item);
@@ -320,33 +309,29 @@ function openEditor(params) {
   });
 }
 
-function openManage({options = false, search} = {}) {
+async function openManage({options = false, search, searchMode} = {}) {
   let url = chrome.runtime.getURL('manage.html');
   if (search) {
-    url += `?search=${encodeURIComponent(search)}`;
+    url += `?search=${encodeURIComponent(search)}&searchMode=${searchMode}`;
   }
   if (options) {
     url += '#stylus-options';
   }
-  return findExistingTab({
+  let tab = await findExistingTab({
     url,
     currentWindow: null,
     ignoreHash: true,
-    ignoreSearch: true
-  })
-    .then(tab => {
-      if (tab) {
-        return Promise.all([
-          activateTab(tab),
-          (tab.pendingUrl || tab.url) !== url && msg.sendTab(tab.id, {method: 'pushState', url})
-            .catch(console.error)
-        ]);
-      }
-      return getActiveTab().then(tab => {
-        if (isTabReplaceable(tab, url)) {
-          return activateTab(tab, {url});
-        }
-        return browser.tabs.create({url});
-      });
-    });
+    ignoreSearch: true,
+  });
+  if (tab) {
+    await activateTab(tab);
+    if (url !== (tab.pendingUrl || tab.url)) {
+      await msg.sendTab(tab.id, {method: 'pushState', url}).catch(console.error);
+    }
+    return tab;
+  }
+  tab = await getActiveTab();
+  return isTabReplaceable(tab, url)
+    ? activateTab(tab, {url})
+    : browser.tabs.create({url});
 }

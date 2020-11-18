@@ -1,20 +1,39 @@
-/*
-global messageBox getStyleWithNoCode
-  filterAndAppend showFiltersStats
-  checkUpdate handleUpdateInstalled
-  objectDiff
+/* global
+  $
+  $$
+  $create
+  animateElement
+  API
+  checkUpdate
+  CHROME
   configDialog
-  sorter msg prefs API $ $$ $create template setupLivePrefs
-  t tWordBreak formatDate
-  getOwnTab getActiveTab openURL animateElement sessionStorageHash debounce
-  scrollElementIntoView CHROME VIVALDI router
+  debounce
+  filterAndAppend
+  getOwnTab
+  getStyleWithNoCode
+  handleUpdateInstalled
+  messageBox
+  msg
+  objectDiff
+  openURL
+  prefs
+  router
+  scrollElementIntoView
+  sessionStore
+  setupLivePrefs
+  showFiltersStats
+  sorter
+  t
+  VIVALDI
 */
 'use strict';
 
+/** @type {HTMLElement} */
 let installed;
 
 const ENTRY_ID_PREFIX_RAW = 'style-';
 const ENTRY_ID_PREFIX = '#' + ENTRY_ID_PREFIX_RAW;
+const REVEAL_DATES_FOR = 'h2.style-name, [data-type=age]';
 
 const BULK_THROTTLE_MS = 100;
 const bulkChangeQueue = [];
@@ -43,24 +62,31 @@ newUI.renderClass();
 const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps'];
 const GET_FAVICON_URL = 'https://www.google.com/s2/favicons?domain=';
 const OWN_ICON = chrome.runtime.getManifest().icons['16'];
+const AGES = [
+  [24, 'h', t('dateAbbrHour', '\x01')],
+  [30, 'd', t('dateAbbrDay', '\x01')],
+  [12, 'm', t('dateAbbrMonth', '\x01')],
+  [Infinity, 'y', t('dateAbbrYear', '\x01')],
+];
 
 const handleEvent = {};
 
-Promise.all([
-  API.getAllStyles(true),
-  // FIXME: integrate this into filter.js
-  router.getSearch('search') && API.searchDB({query: router.getSearch('search')}),
-  waitForSelector('#installed'), // needed to avoid flicker due to an extra frame and layout shift
-  prefs.initializing
-]).then(([styles, ids, el]) => {
+(async () => {
+  const query = router.getSearch('search');
+  const [styles, ids, el] = await Promise.all([
+    API.getAllStyles(),
+    query && API.searchDB({query, mode: router.getSearch('searchMode')}),
+    waitForSelector('#installed'), // needed to avoid flicker due to an extra frame and layout shift
+    prefs.initializing,
+  ]);
   installed = el;
   installed.onclick = handleEvent.entryClicked;
   $('#manage-options-button').onclick = () => router.updateHash('#stylus-options');
   $('#sync-styles').onclick = () => router.updateHash('#stylus-options');
   $$('#header a[href^="http"]').forEach(a => (a.onclick = handleEvent.external));
   // show date installed & last update on hover
-  installed.addEventListener('mouseover', handleEvent.lazyAddEntryTitle);
-  installed.addEventListener('mouseout', handleEvent.lazyAddEntryTitle);
+  installed.addEventListener('mouseover', handleEvent.lazyAddEntryTitle, {passive: true});
+  installed.addEventListener('mouseout', handleEvent.lazyAddEntryTitle, {passive: true});
   document.addEventListener('visibilitychange', onVisibilityChange);
   // N.B. triggers existing onchange listeners
   setupLivePrefs();
@@ -68,19 +94,15 @@ Promise.all([
   prefs.subscribe(newUI.ids.map(newUI.prefKeyForId), () => switchUI());
   switchUI({styleOnly: true});
   // translate CSS manually
-  document.head.appendChild($create('style', `
-    .disabled h2::after {
-      content: "${t('genericDisabledLabel')}";
-    }
-    #update-all-no-updates[data-skipped-edited="true"]::after {
-      content: " ${t('updateAllCheckSucceededSomeEdited')}";
-    }
-    body.all-styles-hidden-by-filters::after {
-      content: "${t('filteredStylesAllHidden')}";
-    }
-  `));
+  document.styleSheets[0].insertRule(
+    `:root {${[
+      'genericDisabledLabel',
+      'updateAllCheckSucceededSomeEdited',
+      'filteredStylesAllHidden',
+    ].map(id => `--${id}:"${CSS.escape(t(id))}";`).join('')
+    }}`);
   if (!VIVALDI) {
-    $$('#header select').forEach(el => el.adjustWidth());
+    $$('.filter-selection select').forEach(el => el.adjustWidth());
   }
   if (CHROME >= 80 && CHROME <= 88) {
     // Wrong checkboxes are randomly checked after going back in history, https://crbug.com/1138598
@@ -89,9 +111,11 @@ Promise.all([
     });
   }
   showStyles(styles, ids);
-});
+})();
 
 msg.onExtension(onRuntimeMessage);
+router.watch({hash: '#stylus-options'}, state => (state ? embedOptions : unembedOptions)());
+window.addEventListener('closeOptions', () => router.updateHash(''));
 
 function onRuntimeMessage(msg) {
   switch (msg.method) {
@@ -129,7 +153,7 @@ function showStyles(styles = [], matchUrlIds) {
   let firstRun = true;
   installed.dataset.total = styles.length;
   const scrollY = (history.state || {}).scrollY;
-  const shouldRenderAll = scrollY > window.innerHeight || sessionStorage.justEditedStyleId;
+  const shouldRenderAll = scrollY > window.innerHeight || sessionStore.justEditedStyleId;
   const renderBin = document.createDocumentFragment();
   if (scrollY) {
     renderStyles();
@@ -155,7 +179,7 @@ function showStyles(styles = [], matchUrlIds) {
       return;
     }
     setTimeout(getFaviconImgSrc);
-    if (sessionStorage.justEditedStyleId) {
+    if (sessionStore.justEditedStyleId) {
       highlightEditedStyle();
     } else if ('scrollY' in (history.state || {})) {
       setTimeout(window.scrollTo, 0, 0, history.state.scrollY);
@@ -167,7 +191,7 @@ function showStyles(styles = [], matchUrlIds) {
 function createStyleElement({style, name: nameLC}) {
   // query the sub-elements just once, then reuse the references
   if ((createStyleElement.parts || {}).newUI !== newUI.enabled) {
-    const entry = template[`style${newUI.enabled ? 'Compact' : ''}`];
+    const entry = t.template[newUI.enabled ? 'styleNewUI' : 'style'];
     createStyleElement.parts = {
       newUI: newUI.enabled,
       entry,
@@ -177,7 +201,9 @@ function createStyleElement({style, name: nameLC}) {
       editLink: $('.style-edit-link', entry) || {},
       editHrefBase: 'edit.html?id=',
       homepage: $('.homepage', entry),
-      homepageIcon: template[`homepageIcon${newUI.enabled ? 'Small' : 'Big'}`],
+      homepageIcon: t.template[`homepageIcon${newUI.enabled ? 'Small' : 'Big'}`],
+      infoAge: $('[data-type=age]', entry),
+      infoVer: $('[data-type=version]', entry),
       appliesTo: $('.applies-to', entry),
       targets: $('.targets', entry),
       expander: $('.expander', entry),
@@ -192,13 +218,18 @@ function createStyleElement({style, name: nameLC}) {
     };
   }
   const parts = createStyleElement.parts;
-  const configurable = style.usercssData && style.usercssData.vars && Object.keys(style.usercssData.vars).length > 0;
+  const ud = style.usercssData;
+  const configurable = ud && ud.vars && Object.keys(ud.vars).length > 0;
   const name = style.customName || style.name;
   parts.checker.checked = style.enabled;
-  parts.nameLink.textContent = tWordBreak(name);
+  parts.nameLink.firstChild.textContent = t.breakWord(name);
   parts.nameLink.href = parts.editLink.href = parts.editHrefBase + style.id;
   parts.homepage.href = parts.homepage.title = style.url || '';
-  if (!newUI.enabled) {
+  parts.infoVer.textContent = ud ? ud.version : '';
+  parts.infoVer.dataset.value = ud ? ud.version : '';
+  if (newUI.enabled) {
+    createAgeText(parts.infoAge, style);
+  } else {
     parts.oldConfigure.classList.toggle('hidden', !configurable);
     parts.oldCheckUpdate.classList.toggle('hidden', !style.updateUrl);
     parts.oldUpdate.classList.toggle('hidden', !style.updateUrl);
@@ -217,16 +248,16 @@ function createStyleElement({style, name: nameLC}) {
   entry.className = parts.entryClassBase + ' ' +
     (style.enabled ? 'enabled' : 'disabled') +
     (style.updateUrl ? ' updatable' : '') +
-    (style.usercssData ? ' usercss' : '');
+    (ud ? ' usercss' : '');
 
   if (style.url) {
     $('.homepage', entry).appendChild(parts.homepageIcon.cloneNode(true));
   }
   if (style.updateUrl && newUI.enabled) {
-    $('.actions', entry).appendChild(template.updaterIcons.cloneNode(true));
+    $('.actions', entry).appendChild(t.template.updaterIcons.cloneNode(true));
   }
   if (configurable && newUI.enabled) {
-    $('.actions', entry).appendChild(template.configureIcon.cloneNode(true));
+    $('.actions', entry).appendChild(t.template.configureIcon.cloneNode(true));
   }
 
   createStyleTargetsElement({entry, style});
@@ -267,12 +298,12 @@ function createStyleTargetsElement({entry, expanded, style = entry.styleMeta}) {
           el = next;
           continue;
         }
-        const element = template.appliesToTarget.cloneNode(true);
+        const element = t.template.appliesToTarget.cloneNode(true);
         if (!newUI.enabled) {
           if (numTargets === maxTargets) {
-            container = container.appendChild(template.extraAppliesTo.cloneNode(true));
-          } else if (numTargets > 0) {
-            container.appendChild(template.appliesToSeparator.cloneNode(true));
+            container = container.appendChild(t.template.extraAppliesTo.cloneNode(true));
+          } else if (numTargets > 1) {
+            container.appendChild(t.template.appliesToSeparator.cloneNode(true));
           }
         }
         element.dataset.type = type;
@@ -291,13 +322,37 @@ function createStyleTargetsElement({entry, expanded, style = entry.styleMeta}) {
     if (entryTargets.firstElementChild) {
       entryTargets.textContent = '';
     }
-    entryTargets.appendChild(template.appliesToEverything.cloneNode(true));
+    entryTargets.appendChild(t.template.appliesToEverything.cloneNode(true));
   }
   entry.classList.toggle('global', !numTargets);
   entry._allTargetsRendered = allTargetsRendered;
   entry._numTargets = numTargets;
 }
 
+function createAgeText(el, style) {
+  let val = style.updateDate || style.installDate;
+  if (val) {
+    val = (Date.now() - val) / 3600e3; // age in hours
+    for (const [max, unit, text] of AGES) {
+      const rounded = Math.round(val);
+      if (rounded < max) {
+        el.textContent = text.replace('\x01', rounded);
+        el.dataset.value = padLeft(Math.round(rounded), 2) + unit;
+        break;
+      }
+      val /= max;
+    }
+  } else if (el.firstChild) {
+    el.textContent = '';
+    delete el.dataset.value;
+  }
+}
+
+/** Adding spaces so CSS can detect "bigness" of a value via amount of spaces at the beginning */
+function padLeft(val, width) {
+  val = `${val}`;
+  return ' '.repeat(Math.max(0, width - val.length)) + val;
+}
 
 function getFaviconImgSrc(container = installed) {
   if (!newUI.enabled || !newUI.favicons) return;
@@ -350,7 +405,7 @@ Object.assign(handleEvent, {
     '.update': 'update',
     '.delete': 'delete',
     '.applies-to .expander': 'expandTargets',
-    '.configure-usercss': 'config'
+    '.configure-usercss': 'config',
   },
 
   entryClicked(event) {
@@ -366,42 +421,29 @@ Object.assign(handleEvent, {
     }
   },
 
-  name(event) {
-    if (newUI.enabled) handleEvent.edit(event);
+  name(event, entry) {
+    if (newUI.enabled) handleEvent.edit(event, entry);
   },
 
-  edit(event) {
+  async edit(event, entry) {
     if (event.altKey) {
       return;
     }
     event.preventDefault();
     event.stopPropagation();
-    const left = event.button === 0;
-    const middle = event.button === 1;
-    const shift = event.shiftKey;
-    const ctrl = event.ctrlKey;
-    const openWindow = left && shift && !ctrl;
-    const openBackgroundTab = (middle && !shift) || (left && ctrl && !shift);
-    const openForegroundTab = (middle && shift) || (left && ctrl && shift);
-    const entry = event.target.closest('.entry');
+    const key = `${event.shiftKey ? 's' : ''}${event.ctrlKey ? 'c' : ''}${'LMR'[event.button]}`;
     const url = $('[href]', entry).href;
-    if (openWindow || openBackgroundTab || openForegroundTab) {
-      if (chrome.windows && openWindow) {
-        API.openEditor({id: entry.styleId});
-      } else {
-        getOwnTab().then(({index}) => {
-          openURL({
-            url,
-            index: index + 1,
-            active: openForegroundTab
-          });
-        });
-      }
+    const ownTab = await getOwnTab();
+    if (key === 'L') {
+      sessionStore['manageStylesHistory' + ownTab.id] = url;
+      location.href = url;
+    } else if (chrome.windows && key === 'sL') {
+      API.openEditor({id: entry.styleId});
     } else {
-      onVisibilityChange();
-      getActiveTab().then(tab => {
-        sessionStorageHash('manageStylesHistory').set(tab.id, url);
-        location.href = url;
+      openURL({
+        url,
+        index: ownTab.index + 1,
+        active: key === 'sM' || key === 'scL',
       });
     }
   },
@@ -501,9 +543,9 @@ Object.assign(handleEvent, {
   },
 
   lazyAddEntryTitle({type, target}) {
-    const cell = target.closest('h2.style-name');
+    const cell = target.closest(REVEAL_DATES_FOR);
     if (cell) {
-      const link = $('.style-name-link', cell);
+      const link = $('.style-name-link', cell) || cell;
       if (type === 'mouseover' && !link.title) {
         debounce(handleEvent.addEntryTitle, 50, link);
       } else {
@@ -518,8 +560,8 @@ Object.assign(handleEvent, {
       {prop: 'installDate', name: 'dateInstalled'},
       {prop: 'updateDate', name: 'dateUpdated'},
     ].map(({prop, name}) =>
-      t(name) + ': ' + (formatDate(entry.styleMeta[prop]) || '—')).join('\n');
-  }
+      t(name) + ': ' + (t.formatDate(entry.styleMeta[prop]) || '—')).join('\n');
+  },
 });
 
 
@@ -537,7 +579,7 @@ function handleBulkChange() {
 }
 
 function handleUpdateForId(id, opts) {
-  return API.getStyle(id, true).then(style => {
+  return API.getStyle(id).then(style => {
     handleUpdate(style, opts);
     bulkChangeQueue.time = performance.now();
   });
@@ -620,43 +662,9 @@ function switchUI({styleOnly} = {}) {
 
   Object.assign(newUI, current);
   newUI.renderClass();
-  installed.classList.toggle('has-favicons', newUI.favicons);
-  $('#style-overrides').textContent = `
-    .newUI .targets {
-      max-height: ${newUI.targets * 18}px;
-    }
-  ` + (newUI.faviconsGray ? `
-    .newUI .target img {
-      filter: grayscale(1);
-      opacity: .25;
-    }
-  ` : `
-    .newUI .target img {
-      filter: none;
-      opacity: 1;
-    }
-  `) + (CHROME >= 58 ? `
-    .newUI .entry {
-      contain: strict;
-    }
-    .newUI .entry > * {
-      contain: content;
-    }
-    .newUI .entry .actions {
-      contain: none;
-    }
-    .newUI .target {
-      contain: layout style;
-    }
-    .newUI .target img {
-      contain: layout style size;
-    }
-    .newUI .entry.can-update,
-    .newUI .entry.update-problem,
-    .newUI .entry.update-done {
-      contain: none;
-    }
-  ` : '');
+  installed.classList.toggle('has-favicons', newUI.enabled && newUI.favicons);
+  installed.classList.toggle('favicons-grayed', newUI.enabled && newUI.faviconsGray);
+  if (changed.targets) installed.style.setProperty('--num-targets', newUI.targets);
 
   if (styleOnly) {
     return;
@@ -666,7 +674,7 @@ function switchUI({styleOnly} = {}) {
   let iconsMissing = iconsEnabled && !$('.applies-to img');
   if (changed.enabled || (iconsMissing && !createStyleElement.parts)) {
     installed.textContent = '';
-    API.getAllStyles(true).then(showStyles);
+    API.getAllStyles().then(showStyles);
     return;
   }
   if (changed.targets) {
@@ -691,10 +699,10 @@ function onVisibilityChange() {
     // the catch here is that DOM may be outdated so we'll at least refresh the just edited style
     // assuming other changes aren't important enough to justify making a complicated DOM sync
     case 'visible': {
-      const id = sessionStorage.justEditedStyleId;
+      const id = sessionStore.justEditedStyleId;
       if (id) {
         handleUpdateForId(Number(id), {method: 'styleUpdated'});
-        delete sessionStorage.justEditedStyleId;
+        delete sessionStore.justEditedStyleId;
       }
       break;
     }
@@ -707,9 +715,9 @@ function onVisibilityChange() {
 
 
 function highlightEditedStyle() {
-  if (!sessionStorage.justEditedStyleId) return;
-  const entry = $(ENTRY_ID_PREFIX + sessionStorage.justEditedStyleId);
-  delete sessionStorage.justEditedStyleId;
+  if (!sessionStore.justEditedStyleId) return;
+  const entry = $(ENTRY_ID_PREFIX + sessionStore.justEditedStyleId);
+  delete sessionStore.justEditedStyleId;
   if (entry) {
     animateElement(entry);
     requestAnimationFrame(() => scrollElementIntoView(entry));
@@ -732,13 +740,11 @@ function waitForSelector(selector) {
 }
 
 function embedOptions() {
-  let options = $('#stylus-embedded-options');
-  if (!options) {
-    options = document.createElement('iframe');
-    options.id = 'stylus-embedded-options';
-    options.src = '/options.html';
-    document.documentElement.appendChild(options);
-  }
+  const options = $('#stylus-embedded-options') ||
+    document.documentElement.appendChild($create('iframe', {
+      id: 'stylus-embedded-options',
+      src: '/options.html',
+    }));
   options.focus();
 }
 
@@ -746,20 +752,7 @@ async function unembedOptions() {
   const options = $('#stylus-embedded-options');
   if (options) {
     options.contentWindow.document.body.classList.add('scaleout');
-    options.classList.add('fadeout');
     await animateElement(options, 'fadeout');
     options.remove();
   }
 }
-
-router.watch({hash: '#stylus-options'}, state => {
-  if (state) {
-    embedOptions();
-  } else {
-    unembedOptions();
-  }
-});
-
-window.addEventListener('closeOptions', () => {
-  router.updateHash('');
-});

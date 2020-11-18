@@ -12,6 +12,8 @@ script would try to fetch the new code.
 The live preview feature relies on `runtime.connect` and `port.onDisconnect`
 to cleanup the temporary code. See /edit/live-preview.js.
 */
+
+/** @type {styleManager} */
 const styleManager = (() => {
   const preparing = prepare();
 
@@ -38,7 +40,7 @@ const styleManager = (() => {
           style.appliesTo.delete(url);
         }
       }
-    }
+    },
   });
 
   const BAD_MATCHER = {test: () => false};
@@ -58,16 +60,16 @@ const styleManager = (() => {
     protocol: '',
     search: '',
     searchParams: new URLSearchParams(),
-    username: ''
+    username: '',
   };
 
   const DELETE_IF_NULL = ['id', 'customName'];
 
   handleLivePreviewConnections();
 
-  return Object.assign({
-    compareRevision
-  }, ensurePrepared({
+  return Object.assign(/** @namespace styleManager */{
+    compareRevision,
+  }, ensurePrepared(/** @namespace styleManager */{
     get,
     getByUUID,
     getSectionsByUrl,
@@ -86,7 +88,7 @@ const styleManager = (() => {
     addExclusion,
     removeExclusion,
     addInclusion,
-    removeInclusion
+    removeInclusion,
   }));
 
   function handleLivePreviewConnections() {
@@ -135,9 +137,8 @@ const styleManager = (() => {
     }
   }
 
-  function getAllStyles(noCode = false) {
-    const datas = [...styles.values()].map(s => s.data);
-    return noCode ? datas.map(getStyleWithNoCode) : datas;
+  function getAllStyles() {
+    return [...styles.values()].map(s => s.data);
   }
 
   function compareRevision(rev1, rev2) {
@@ -316,7 +317,7 @@ const styleManager = (() => {
         uuidIndex.delete(style.data._id);
         return msg.broadcast({
           method: 'styleDeleted',
-          style: {id}
+          style: {id},
         });
       })
       .then(() => id);
@@ -347,7 +348,7 @@ const styleManager = (() => {
       md5Url: null,
       url: null,
       originalMd5: null,
-      installDate: Date.now()
+      installDate: Date.now(),
     };
   }
 
@@ -368,7 +369,7 @@ const styleManager = (() => {
         updated.add(url);
         cache.sections[data.id] = {
           id: data.id,
-          code
+          code,
         };
       }
     }
@@ -378,10 +379,10 @@ const styleManager = (() => {
       style: {
         id: data.id,
         md5Url: data.md5Url,
-        enabled: data.enabled
+        enabled: data.enabled,
       },
       reason,
-      codeIsUpdated
+      codeIsUpdated,
     });
   }
 
@@ -424,7 +425,7 @@ const styleManager = (() => {
     if (!style) {
       styles.set(data.id, {
         appliesTo: new Set(),
-        data
+        data,
       });
       method = 'styleAdded';
     } else {
@@ -469,11 +470,7 @@ const styleManager = (() => {
         }
       }
       if (sectionMatched) {
-        result.push({
-          data: getStyleWithNoCode(data),
-          excluded,
-          sloppy
-        });
+        result.push({data, excluded, sloppy});
       }
     }
     return result;
@@ -484,7 +481,7 @@ const styleManager = (() => {
     if (!cache) {
       cache = {
         sections: {},
-        maybeMatch: new Set()
+        maybeMatch: new Set(),
       };
       buildCache(styles.values());
       cachedStyleForUrl.set(url, cache);
@@ -510,7 +507,7 @@ const styleManager = (() => {
         if (code) {
           cache.sections[data.id] = {
             id: data.id,
-            code
+            code,
           };
           appliesTo.add(url);
         }
@@ -535,7 +532,7 @@ const styleManager = (() => {
     const ADD_MISSING_PROPS = {
       name: style => `ID: ${style.id}`,
       _id: () => uuidv4(),
-      _rev: () => Date.now()
+      _rev: () => Date.now(),
     };
 
     return db.exec('getAll')
@@ -559,7 +556,7 @@ const styleManager = (() => {
           fixUsoMd5Issue(style);
           styles.set(style.id, {
             appliesTo: new Set(),
-            data: style
+            data: style,
           });
           uuidIndex.set(style._id, style.id);
         }
@@ -705,7 +702,7 @@ const styleManager = (() => {
           domain = u.hostname;
         }
         return domain;
-      }
+      },
     };
   }
 

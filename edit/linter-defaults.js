@@ -12,13 +12,13 @@ const LINTER_DEFAULTS = (() => {
     rules: {
       'at-rule-no-unknown': [true, {
         'ignoreAtRules': ['extend', 'extends', 'css', 'block'],
-        'severity': 'warning'
+        'severity': 'warning',
       }],
       'block-no-empty': [true, SEVERITY],
       'color-no-invalid-hex': [true, SEVERITY],
       'declaration-block-no-duplicate-properties': [true, {
         'ignore': ['consecutive-duplicates-with-different-values'],
-        'severity': 'warning'
+        'severity': 'warning',
       }],
       'declaration-block-no-shorthand-property-overrides': [true, SEVERITY],
       'font-family-no-duplicate-names': [true, SEVERITY],
@@ -172,7 +172,7 @@ const LINTER_DEFAULTS = (() => {
       'value-list-comma-space-before': 'never',
       'value-list-max-empty-lines': 0
       */
-    }
+    },
   };
   const CSSLINT = {
     // Default warnings
@@ -216,7 +216,7 @@ const LINTER_DEFAULTS = (() => {
     'universal-selector': 0,
     'unqualified-attributes': 0,
     'vendor-prefix': 0,
-    'zero-units': 0
+    'zero-units': 0,
   };
   return {STYLELINT, CSSLINT, SEVERITY};
 })();

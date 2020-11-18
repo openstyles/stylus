@@ -1,5 +1,18 @@
-/* global CodeMirror focusAccessibility colorMimicry editor chromeLocal
-  onDOMready $ $$ $create t debounce tryRegExp stringAsRegExp template */
+/* global
+  $
+  $$
+  $create
+  chromeLocal
+  CodeMirror
+  colorMimicry
+  debounce
+  editor
+  focusAccessibility
+  onDOMready
+  stringAsRegExp
+  t
+  tryRegExp
+*/
 'use strict';
 
 onDOMready().then(() => {
@@ -100,7 +113,7 @@ onDOMready().then(() => {
         state.lastFind = '';
         toggleDataset(this, 'enabled', !state.icase);
         doSearch({canAdvance: false});
-      }
+      },
     },
   };
 
@@ -136,7 +149,7 @@ onDOMready().then(() => {
       trimUndoHistory();
       enableUndoButton(state.undoHistory.length);
       if (state.find) doSearch({canAdvance: false});
-    }
+    },
   };
 
   const DIALOG_PROPS = {
@@ -152,7 +165,7 @@ onDOMready().then(() => {
         state.replace = this.value;
         adjustTextareaSize(this);
         debounce(writeStorage, STORAGE_UPDATE_DELAY);
-      }
+      },
     },
   };
 
@@ -169,7 +182,7 @@ onDOMready().then(() => {
     replace(cm) {
       state.reverse = false;
       focusDialog('replace', cm);
-    }
+    },
   };
   COMMANDS.replaceAll = COMMANDS.replace;
 
@@ -563,14 +576,14 @@ onDOMready().then(() => {
     state.originalFocus = document.activeElement;
     state.firstRun = true;
 
-    const dialog = state.dialog = template.searchReplaceDialog.cloneNode(true);
+    const dialog = state.dialog = t.template.searchReplaceDialog.cloneNode(true);
     Object.assign(dialog, DIALOG_PROPS.dialog);
     dialog.addEventListener('focusout', EVENTS.onfocusout);
     dialog.dataset.type = type;
     dialog.style.pointerEvents = 'auto';
 
     const content = $('[data-type="content"]', dialog);
-    content.parentNode.replaceChild(template[type].cloneNode(true), content);
+    content.parentNode.replaceChild(t.template[type].cloneNode(true), content);
 
     createInput(0, 'input', state.find);
     createInput(1, 'input2', state.replace);
@@ -633,7 +646,7 @@ onDOMready().then(() => {
     input.value = value;
     Object.assign(input, DIALOG_PROPS[name]);
 
-    input.parentElement.appendChild(template.clearSearch.cloneNode(true));
+    input.parentElement.appendChild(t.template.clearSearch.cloneNode(true));
     $('[data-action]', input.parentElement)._input = input;
   }
 

@@ -296,7 +296,7 @@ function $createLink(href = '', content) {
   const opt = {
     tag: 'a',
     target: '_blank',
-    rel: 'noopener'
+    rel: 'noopener',
   };
   if (typeof href === 'object') {
     Object.assign(opt, href);

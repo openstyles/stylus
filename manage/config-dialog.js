@@ -1,5 +1,15 @@
-/* global messageBox deepCopy $create $createLink $ t tWordBreak
-  prefs setupLivePrefs debounce API */
+/* global
+  $
+  $create
+  $createLink
+  API
+  debounce
+  deepCopy
+  messageBox
+  prefs
+  setupLivePrefs
+  t
+*/
 /* exported configDialog */
 'use strict';
 
@@ -28,7 +38,7 @@ function configDialog(style) {
     contents: [
       $create('.config-heading', data.supportURL &&
         $createLink({className: '.external-support', href: data.supportURL}, t('externalFeedback'))),
-      $create('.config-body', elements)
+      $create('.config-body', elements),
     ],
     buttons: [{
       textContent: t('confirmSave'),
@@ -210,8 +220,8 @@ function configDialog(style) {
           $create('SVG:polygon', {
             points: '16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5 ' +
                     '5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10',
-          })
-        ])
+          }),
+        ]),
       ]);
     for (const va of vars) {
       let children;
@@ -222,7 +232,7 @@ function configDialog(style) {
               va.input = $create('a.color-swatch', {
                 va,
                 href: '#',
-                onclick: showColorpicker
+                onclick: showColorpicker,
               }),
             ]),
           ];
@@ -268,7 +278,7 @@ function configDialog(style) {
             onblur: va.type === 'number' ? updateVarOnBlur : null,
             onchange: updateVarOnChange,
             oninput: updateVarOnInput,
-            required: true
+            required: true,
           };
           if (typeof va.min === 'number') {
             options.min = va.min;
@@ -281,7 +291,7 @@ function configDialog(style) {
           }
           children = [
             va.type === 'range' && $create('span.current-value'),
-            va.input = $create('input.config-value', options)
+            va.input = $create('input.config-value', options),
           ];
           break;
         }
@@ -305,7 +315,7 @@ function configDialog(style) {
 
       elements.push(
         $create(`label.config-${va.type}`, [
-          $create('span.config-name', tWordBreak(va.label)),
+          $create('span.config-name', t.breakWord(va.label)),
           ...children,
           resetter,
         ]));

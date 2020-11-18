@@ -19,7 +19,7 @@ rules:
   brace-style: [2, 1tbs, {allowSingleLine: false}]
   camelcase: [2, {properties: never}]
   class-methods-use-this: [2]
-  comma-dangle: [0]
+  comma-dangle: [2, {arrays: always-multiline, objects: always-multiline}]
   comma-spacing: [2, {before: false, after: true}]
   comma-style: [2, last]
   complexity: [0]

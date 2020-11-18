@@ -1,4 +1,10 @@
-/* global CodeMirror prefs editor $ template */
+/* global
+  $
+  CodeMirror
+  editor
+  prefs
+  t
+*/
 
 'use strict';
 
@@ -82,7 +88,7 @@
       [
         {from: 'Ctrl-', to: ['Alt-', 'Ctrl-Alt-']},
         // Note: modifier order in CodeMirror is S-C-A
-        {from: 'Shift-Ctrl-', to: ['Ctrl-Alt-', 'Shift-Ctrl-Alt-']}
+        {from: 'Shift-Ctrl-', to: ['Ctrl-Alt-', 'Shift-Ctrl-Alt-']},
       ].forEach(remap => {
         const oldKey = remap.from + char;
         Object.keys(CodeMirror.keyMap).forEach(keyMapName => {
@@ -134,7 +140,7 @@
       let filled;
       this.eachLine(({text}) => (filled = text && /\S/.test(text)));
       return !filled;
-    }
+    },
   });
 
   // editor commands
@@ -183,7 +189,7 @@
     // setTimeout(() => {
       // $('.CodeMirror-dialog', section).focus();
     // });
-    cm.openDialog(template.jumpToLine.cloneNode(true), str => {
+    cm.openDialog(t.template.jumpToLine.cloneNode(true), str => {
       const m = str.match(/^\s*(\d+)(?:\s*:\s*(\d+))?\s*$/);
       if (m) {
         cm.setCursor(m[1] - 1, m[2] ? m[2] - 1 : cur.ch);

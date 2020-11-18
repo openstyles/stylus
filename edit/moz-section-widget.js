@@ -9,7 +9,6 @@
   prefs
   regExpTester
   t
-  template
   tryCatch
 */
 'use strict';
@@ -55,7 +54,7 @@ function MozSectionWidget(
           $create('ul' + C_LIST),
         ]),
       listItem:
-        template.appliesTo.cloneNode(true),
+        t.template.appliesTo.cloneNode(true),
       appliesToEverything:
         $create('li.applies-to-everything', t('appliesToEverything')),
     };
@@ -74,7 +73,7 @@ function MozSectionWidget(
         if (funcs.length < 2) {
           messageBox({
             contents: t('appliesRemoveError'),
-            buttons: [t('confirmClose')]
+            buttons: [t('confirmClose')],
           });
           return;
         }
@@ -125,7 +124,7 @@ function MozSectionWidget(
             return;
           }
         }
-      }
+      },
     };
 
     actualStyle = $create('style');

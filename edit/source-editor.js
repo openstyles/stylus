@@ -16,6 +16,7 @@
   MozSectionWidget
   prefs
   sectionsToMozFormat
+  sessionStore
   t
 */
 
@@ -74,6 +75,7 @@ function SourceEditor() {
     'editor.appliesToLineWidget': (k, val) => sectionWidget.toggle(val),
     'editor.toc.expanded': (k, val) => sectionFinder.onOff(editor.updateToc, val),
   }, {now: true});
+  editor.applyScrollInfo(cm);
   cm.clearHistory();
   cm.markClean();
   savedGeneration = cm.changeGeneration();
@@ -89,7 +91,6 @@ function SourceEditor() {
     linter.run();
     updateLinterSwitch();
   });
-  debounce(linter.enableForEditor, 0, cm);
   if (!$.isTextInput(document.activeElement)) {
     cm.focus();
   }
@@ -98,7 +99,7 @@ function SourceEditor() {
     return API.buildUsercss({
       styleId: style.id,
       sourceCode: style.sourceCode,
-      assignVars: true
+      assignVars: true,
     })
       .then(({style: newStyle}) => {
         delete newStyle.enabled;
@@ -217,7 +218,7 @@ function SourceEditor() {
       if (style.id !== newStyle.id) {
         history.replaceState({}, '', `?id=${newStyle.id}`);
       }
-      sessionStorage.justEditedStyleId = newStyle.id;
+      sessionStore.justEditedStyleId = newStyle.id;
       Object.assign(style, newStyle);
       $('#preview-label').classList.remove('hidden');
       updateMeta();

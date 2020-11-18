@@ -52,7 +52,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="block">
         <h1 i18n-text="optionsCustomizeIcon"></h1>
         <div class="items">
@@ -76,7 +76,7 @@
           </label>
         </div>
       </div>
-      
+
       <div class="block">
         <h1 i18n-text="optionsCustomizeBadge"></h1>
         <div class="items">
@@ -97,7 +97,7 @@
           </label>
         </div>
       </div>
-      
+
       <div class="block">
         <h1 i18n-text="optionsCustomizePopup"></h1>
         <div class="items">
@@ -143,7 +143,7 @@
           </label>
         </div>
       </div>
-      
+
       <div class="block">
         <h1 i18n-text="openManage"></h1>
         <div class="items">
@@ -156,11 +156,8 @@
           </label>
           <label>
             <span i18n-text="manageFavicons">
-              <a data-cmd="note"
-                 i18n-title="manageFaviconsHelp"
-                 href="#"
-                 class="svg-inline-wrapper"
-                 tabindex="0">
+              <a i18n-title="manageFaviconsHelp"
+                 data-cmd="note" href="#" class="svg-inline-wrapper">
                 <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
               </a>
             </span>
@@ -182,17 +179,14 @@
           </label>
         </div>
       </div>
-      
+
       <div class="block" id="updates">
         <h1 i18n-text="optionsCustomizeUpdate"></h1>
         <div class="items">
           <label>
             <span i18n-text="optionsUpdateInterval">
-              <a data-cmd="note"
-                 i18n-title="optionsUpdateImportNote"
-                 href="#"
-                 class="svg-inline-wrapper"
-                 tabindex="0">
+              <a i18n-title="optionsUpdateImportNote"
+                 data-cmd="note" href="#" class="svg-inline-wrapper">
                 <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
               </a>
             </span>
@@ -200,7 +194,7 @@
           </label>
         </div>
       </div>
-      
+
       <div class="block sync-options">
         <h1 i18n-text="optionsCustomizeSync"></h1>
         <div class="items">
@@ -224,7 +218,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="block" id="advanced">
         <div class="collapsible-resizer">
           <h1 i18n-text="optionsAdvanced">
@@ -243,11 +237,8 @@
         <div class="items">
           <label class="chromium-only">
             <span i18n-text="optionsAdvancedStyleViaXhr">
-              <a data-cmd="note"
-                 i18n-title="optionsAdvancedStyleViaXhrNote"
-                 href="#"
-                 class="svg-inline-wrapper"
-                 tabindex="0">
+              <a i18n-title="optionsAdvancedStyleViaXhrNote"
+                 data-cmd="note" href="#" class="svg-inline-wrapper">
                 <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
               </a>
             </span>
@@ -257,13 +248,22 @@
             </span>
           </label>
           <label>
+            <span>
+              <span i18n-html="optionsAdvancedPatchCsp"></span>
+              <a i18n-title="optionsAdvancedPatchCspNote"
+                 data-cmd="note" href="#" class="svg-inline-wrapper">
+                <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+              </a>
+            </span>
+            <span class="onoffswitch">
+              <input type="checkbox" id="patchCsp" class="slider">
+              <span></span>
+            </span>
+          </label>
+          <label>
             <span i18n-text="optionsAdvancedExposeIframes">
-              <a data-cmd="note"
-                 i18n-data-title="optionsAdvancedExposeIframesNote"
-                 i18n-title="optionsAdvancedExposeIframesNote"
-                 href="#"
-                 class="svg-inline-wrapper"
-                 tabindex="0">
+              <a i18n-title="optionsAdvancedExposeIframesNote"
+                 data-cmd="note" href="#" class="svg-inline-wrapper">
                 <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
               </a>
             </span>

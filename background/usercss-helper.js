@@ -61,7 +61,7 @@ const usercssHelper = (() => {
           find(styleId ? {id: styleId} : style) : Promise.resolve();
         return Promise.all([
           metaOnly ? style : doBuild(style, findDup),
-          findDup
+          findDup,
         ]);
       })
       .then(([style, dup]) => ({style, dup}));

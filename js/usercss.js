@@ -12,7 +12,12 @@ const usercss = (() => {
   };
   const RX_META = /\/\*!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i;
   const ERR_ARGS_IS_LIST = new Set(['missingMandatory', 'missingChar']);
-  return {buildMeta, buildCode, assignVars};
+  return {
+    RX_META,
+    buildMeta,
+    buildCode,
+    assignVars,
+  };
 
   function buildMeta(sourceCode) {
     sourceCode = sourceCode.replace(/\r\n?/g, '\n');
@@ -20,7 +25,7 @@ const usercss = (() => {
     const style = {
       enabled: true,
       sourceCode,
-      sections: []
+      sections: [],
     };
 
     const match = sourceCode.match(RX_META);

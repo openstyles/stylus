@@ -13,28 +13,28 @@ const sorter = (() => {
     title: {
       text: t('genericTitle'),
       parse: ({name}) => name,
-      sorter: sorterType.alpha
+      sorter: sorterType.alpha,
     },
     usercss: {
       text: 'Usercss',
       parse: ({style}) => style.usercssData ? 0 : 1,
-      sorter: sorterType.number
+      sorter: sorterType.number,
     },
     disabled: {
       text: '', // added as either "enabled" or "disabled" by the addOptions function
       parse: ({style}) => style.enabled ? 1 : 0,
-      sorter: sorterType.number
+      sorter: sorterType.number,
     },
     dateInstalled: {
       text: t('dateInstalled'),
       parse: ({style}) => style.installDate,
-      sorter: sorterType.number
+      sorter: sorterType.number,
     },
     dateUpdated: {
       text: t('dateUpdated'),
       parse: ({style}) => style.updateDate || style.installDate,
-      sorter: sorterType.number
-    }
+      sorter: sorterType.number,
+    },
   };
 
   // Adding (assumed) most commonly used ('title,asc' should always be first)
@@ -56,7 +56,7 @@ const sorter = (() => {
     'usercss,asc, title,desc',
     'usercss,desc, title,desc',
     'disabled,desc, title,desc',
-    'disabled,desc, usercss,asc, title,desc'
+    'disabled,desc, usercss,asc, title,desc',
   ];
 
   const splitRegex = /\s*,\s*/;
@@ -76,7 +76,7 @@ const sorter = (() => {
       dateNew: ` (${t('sortDateNewestFirst')})`,
       dateOld: ` (${t('sortDateOldestFirst')})`,
       groupAsc: t('sortLabelTitleAsc'),
-      groupDesc: t('sortLabelTitleDesc')
+      groupDesc: t('sortLabelTitleDesc'),
     };
     const optgroupRegex = /\{\w+\}/;
     selectOptions.forEach(sort => {
@@ -132,7 +132,7 @@ const sorter = (() => {
         entry,
         name: entry.styleNameLowerCase,
         style: entry.styleMeta,
-      }))
+      })),
     });
     if (current.some((entry, index) => entry !== sorted[index].entry)) {
       const renderBin = document.createDocumentFragment();
