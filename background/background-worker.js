@@ -4,6 +4,7 @@
 importScripts('/js/worker-util.js');
 const {loadScript} = workerUtil;
 
+/** @namespace ApiWorker */
 workerUtil.createAPI({
   parseMozFormat(arg) {
     loadScript('/vendor-overwrites/csslint/parserlib.js', '/js/moz-parser.js');

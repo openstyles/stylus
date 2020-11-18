@@ -34,7 +34,7 @@
     && event.data.type === 'ouc-is-installed'
     && allowedOrigins.includes(event.origin)
     ) {
-      API.findUsercss({
+      API.usercss.find({
         name: event.data.name,
         namespace: event.data.namespace,
       }).then(style => {
@@ -129,7 +129,7 @@
     && event.data.type === 'ouc-install-usercss'
     && allowedOrigins.includes(event.origin)
     ) {
-      API.installUsercss({
+      API.usercss.install({
         name: event.data.title,
         sourceCode: event.data.code,
       }).then(style => {

@@ -24,7 +24,7 @@
   let currentMd5;
   const md5Url = getMeta('stylish-md5-url') || `https://update.userstyles.org/${styleId}.md5`;
   Promise.all([
-    API.findStyle({md5Url}),
+    API.styles.find({md5Url}),
     getResource(md5Url),
     onDOMready(),
   ]).then(checkUpdatability);
@@ -154,9 +154,9 @@
 
   function doInstall() {
     let oldStyle;
-    return API.findStyle({
+    return API.styles.find({
       md5Url: getMeta('stylish-md5-url') || location.href,
-    }, true)
+    })
       .then(_oldStyle => {
         oldStyle = _oldStyle;
         return oldStyle ?
@@ -187,7 +187,7 @@
         return;
       }
       // Update originalMd5 since USO changed it (2018-11-11) to NOT match the current md5
-      return API.installStyle(Object.assign(json, addProps, {originalMd5: currentMd5}))
+      return API.styles.install(Object.assign(json, addProps, {originalMd5: currentMd5}))
         .then(style => {
           if (!isNew && style.updateUrl.includes('?')) {
             enableUpdateButton(true);
@@ -218,20 +218,15 @@
     return e ? e.getAttribute('href') : null;
   }
 
-  function getResource(url, options) {
-    if (url.startsWith('#')) {
-      return Promise.resolve(document.getElementById(url.slice(1)).textContent);
+  async function getResource(url, type = 'text') {
+    try {
+      return url.startsWith('#')
+        ? document.getElementById(url.slice(1)).textContent
+        : await (await fetch(url))[type];
+    } catch (error) {
+      alert('Error\n' + error.message);
+      return Promise.reject(error);
     }
-    return API.download(Object.assign({
-      url,
-      timeout: 60e3,
-      // USO can't handle POST requests for style json
-      body: null,
-    }, options))
-      .catch(error => {
-        alert('Error' + (error ? '\n' + error : ''));
-        throw error;
-      });
   }
 
   // USO providing md5Url as "https://update.update.userstyles.org/#####.md5"
@@ -244,7 +239,7 @@
   }
 
   function getStyleJson() {
-    return getResource(getStyleURL(), {responseType: 'json'})
+    return getResource(getStyleURL(), 'json')
       .then(style => {
         if (!style || !Array.isArray(style.sections) || style.sections.length) {
           return style;
@@ -254,7 +249,7 @@
           return style;
         }
         return getResource(getMeta('stylish-update-url'))
-          .then(code => API.parseCss({code}))
+          .then(code => API.worker.parseMozFormat({code}))
           .then(result => {
             style.sections = result.sections;
             return style;

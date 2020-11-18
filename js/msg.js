@@ -130,27 +130,30 @@ window.INJECTED !== 1 && (() => {
     },
   };
 
-  window.API = new Proxy({}, {
-    get(target, name) {
-      // using a named function for convenience when debugging
-      return async function invokeAPI(...args) {
-        if (!bg && chrome.tabs) {
-          bg = await browser.runtime.getBackgroundPage().catch(() => {});
-        }
-        const message = {method: 'invokeAPI', name, args};
-        // content scripts and probably private tabs
-        if (!bg) {
-          return msg.send(message);
-        }
-        // in FF, the object would become a dead object when the window
-        // is closed, so we have to clone the object into background.
-        const res = bg.msg._execute(TARGETS.extension, bg.deepCopy(message), {
-          frameId: 0, // false in case of our Options frame but we really want to fetch styles early
-          tab: NEEDS_TAB_IN_SENDER.includes(name) && await getOwnTab(),
-          url: location.href,
-        });
-        return deepCopy(await res);
-      };
+  const apiHandler = !isBg && {
+    get({PATH}, name) {
+      const fn = () => {};
+      fn.PATH = [...PATH, name];
+      return new Proxy(fn, apiHandler);
     },
-  });
+    async apply({PATH: path}, thisObj, args) {
+      if (!bg && chrome.tabs) {
+        bg = await browser.runtime.getBackgroundPage().catch(() => {});
+      }
+      const message = {method: 'invokeAPI', path, args};
+      // content scripts and probably private tabs
+      if (!bg) {
+        return msg.send(message);
+      }
+      // in FF, the object would become a dead object when the window
+      // is closed, so we have to clone the object into background.
+      const res = bg.msg._execute(TARGETS.extension, bg.deepCopy(message), {
+        frameId: 0, // false in case of our Options frame but we really want to fetch styles early
+        tab: NEEDS_TAB_IN_SENDER.includes(path.join('.')) && await getOwnTab(),
+        url: location.href,
+      });
+      return deepCopy(await res);
+    },
+  };
+  window.API = isBg ? {} : new Proxy({PATH: []}, apiHandler);
 })();

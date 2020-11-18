@@ -89,7 +89,7 @@ const hotkeys = (() => {
       if (!match && $('input', entry).checked !== enable || entry.classList.contains(match)) {
         results.push(entry.id);
         task = task
-          .then(() => API.toggleStyle(entry.styleId, enable))
+          .then(() => API.styles.toggle(entry.styleId, enable))
           .then(() => {
             entry.classList.toggle('enabled', enable);
             entry.classList.toggle('disabled', !enable);

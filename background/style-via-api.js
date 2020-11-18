@@ -1,7 +1,7 @@
-/* global API_METHODS styleManager CHROME prefs */
+/* global API CHROME prefs */
 'use strict';
 
-API_METHODS.styleViaAPI = !CHROME && (() => {
+API.styleViaAPI = !CHROME && (() => {
   const ACTIONS = {
     styleApply,
     styleDeleted,
@@ -37,7 +37,7 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
       throw new Error('we do not count styles for frames');
     }
     const {frameStyles} = getCachedData(tab.id, frameId);
-    API_METHODS.updateIconBadge.call({sender}, Object.keys(frameStyles));
+    API.updateIconBadge.call({sender}, Object.keys(frameStyles));
   }
 
   function styleApply({id = null, ignoreUrlCheck = false}, {tab, frameId, url}) {
@@ -48,7 +48,7 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
     if (id === null && !ignoreUrlCheck && frameStyles.url === url) {
       return NOP;
     }
-    return styleManager.getSectionsByUrl(url, id).then(sections => {
+    return API.styles.getSectionsByUrl(url, id).then(sections => {
       const tasks = [];
       for (const section of Object.values(sections)) {
         const styleId = section.id;

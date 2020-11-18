@@ -1,4 +1,8 @@
-/* global API CHROME prefs */
+/* global
+  API
+  CHROME
+  prefs
+*/
 'use strict';
 
 // eslint-disable-next-line no-unused-expressions
@@ -67,14 +71,14 @@ CHROME && (async () => {
   }
 
   /** @param {chrome.webRequest.WebRequestBodyDetails} req */
-  function prepareStyles(req) {
-    API.getSectionsByUrl(req.url).then(sections => {
-      if (Object.keys(sections).length) {
-        stylesToPass[req.requestId] = !enabled.xhr ? true :
-          URL.createObjectURL(new Blob([JSON.stringify(sections)])).slice(blobUrlPrefix.length);
-        setTimeout(cleanUp, 600e3, req.requestId);
-      }
-    });
+  async function prepareStyles(req) {
+    const sections = await API.styles.getSectionsByUrl(req.url);
+    if (Object.keys(sections).length) {
+      stylesToPass[req.requestId] = !enabled.xhr ? true :
+        URL.createObjectURL(new Blob([JSON.stringify(sections)]))
+          .slice(blobUrlPrefix.length);
+      setTimeout(cleanUp, 600e3, req.requestId);
+    }
   }
 
   /** @param {chrome.webRequest.WebResponseHeadersDetails} req */

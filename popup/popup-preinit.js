@@ -81,7 +81,7 @@ const initializing = (async () => {
 /* Merges the extra props from API into style data.
  * When `id` is specified returns a single object otherwise an array */
 async function getStyleDataMerged(url, id) {
-  const styles = (await API.getStylesByUrl(url, id))
-    .map(r => Object.assign(r.data, r));
+  const styles = (await API.styles.getByUrl(url, id))
+    .map(r => Object.assign(r.style, r));
   return id ? styles[0] : styles;
 }
