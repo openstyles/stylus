@@ -10,6 +10,7 @@
   semverCompare
   styleJSONseemsValid
   styleManager
+  styleSectionsEqual
   tryJSONparse
   usercss
 */
@@ -221,7 +222,7 @@
       delete json.enabled;
 
       const newStyle = Object.assign({}, style, json);
-      if (json.sourceCode === style.sourceCode) {
+      if (!style.usercssData && styleSectionsEqual(json, style)) {
         // update digest even if save === false as there might be just a space added etc.
         return styleManager.installStyle(newStyle)
           .then(saved => {
