@@ -399,8 +399,8 @@
         }
       });
       port.onDisconnect.addListener(async () => {
-        const tab = await browser.tabs.get(tabId);
-        if (!chrome.runtime.lastError && tab.url === initialUrl) {
+        const tab = await browser.tabs.get(tabId).catch(() => ({}));
+        if (tab.url === initialUrl) {
           location.reload();
         } else {
           closeCurrentTab();
