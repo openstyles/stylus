@@ -369,7 +369,7 @@ function download(url, {
   body,
   responseType = 'text',
   requiredStatusCode = 200,
-  timeout = 10e3, // connection timeout
+  timeout = 60e3, // connection timeout, USO is that bad
   loadTimeout = 2 * 60e3, // data transfer timeout (counted from the first remote response)
   headers = {
     'Content-type': 'application/x-www-form-urlencoded',
