@@ -178,20 +178,6 @@ a:hover {
   text-decoration: none;
 }
 
-.style-info {
-  text-align: right;
-  padding: 0 .25em;
-  font-weight: normal;
-  color: #999;
-}
-.style-info[data-type=version] {
-  color: #666;
-  padding-left: .5em;
-}
-.newUI .style-info[data-type=version][data-value="1.0.0"] {
-  display: none;
-}
-
 .applies-to {
   overflow-wrap: break-word;
 }
@@ -243,40 +229,17 @@ a:hover {
   display: none;
 }
 
-.newUI .style-name::after,
-.newUI .style-name-link::after {
-  vertical-align: text-top;
-}
-
-.disabled h2::after {
-  content: var(--genericDisabledLabel);
-}
-.disabled h2::after,
 .entry.usercss .style-name-link::after {
-  font-weight: normal;
   font-size: 11px;
-  text-transform: lowercase;
-  background: rgba(128, 128, 128, .2);
-  padding: 2px 5px 3px;
   border-radius: 4px;
   margin-left: 1ex;
   white-space: nowrap;
-  position: relative;
-  top: -2px;
-}
-.newUI .disabled h2::after,
-.newUI .entry.usercss .style-name-link::after {
-  top: 2px;
-}
-
-.entry.usercss .style-name-link::after {
-  content: "usercss";
-  background-color: hsla(180, 100%, 20%, 1);
-  color: white;
+  content: "UC";
+  background-color: hsla(180, 35%, 50%, .35);
+  padding: 2px 3px;
 }
 
 .disabled h2 .style-name-link,
-.disabled h2::after,
 .disabled .actions,
 .disabled .applies-to {
   opacity: 0.6;
@@ -376,12 +339,23 @@ a:hover {
   vertical-align: middle;
 }
 
-.newUI .entry > .style-info {
-  padding-right: 1em;
-}
-
 .newUI .entry .actions {
   position: relative;
+}
+
+.style-info[data-type=version] {
+  color: #666;
+  padding-left: .5em;
+  font-weight: normal;
+}
+.newUI .style-info[data-type=version][data-value=""],
+.newUI .style-info[data-type=version][data-value="1.0.0"] {
+  display: none;
+}
+.newUI .entry .style-info[data-type=age] {
+  color: #999;
+  text-align: right;
+  padding-right: 1em;
 }
 
 /************ checkbox & select************/
@@ -1175,7 +1149,6 @@ a:hover {
     padding-right: 0;
   }
 
-  .newUI .style-name::after,
   .newUI .style-name-link::after {
     text-indent: 0;
     display: inline-block;

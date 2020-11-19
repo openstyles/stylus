@@ -221,6 +221,10 @@ html[style] .entry-content {
   opacity: 1;
 }
 
+.entry.disabled .style-name {
+  font-weight: normal;
+}
+
 .entry .main-controls {
   height: 100%;
   display: inline-flex;
