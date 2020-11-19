@@ -96,7 +96,6 @@ const handleEvent = {};
   // translate CSS manually
   document.styleSheets[0].insertRule(
     `:root {${[
-      'genericDisabledLabel',
       'updateAllCheckSucceededSomeEdited',
       'filteredStylesAllHidden',
     ].map(id => `--${id}:"${CSS.escape(t(id))}";`).join('')
@@ -555,12 +554,12 @@ Object.assign(handleEvent, {
   },
 
   addEntryTitle(link) {
-    const entry = link.closest('.entry');
-    link.title = [
-      {prop: 'installDate', name: 'dateInstalled'},
-      {prop: 'updateDate', name: 'dateUpdated'},
-    ].map(({prop, name}) =>
-      t(name) + ': ' + (t.formatDate(entry.styleMeta[prop]) || '—')).join('\n');
+    const style = link.closest('.entry').styleMeta;
+    const ucd = style.usercssData;
+    link.title =
+      `${t('dateInstalled')}: ${t.formatDate(style.installDate) || '—'}\n` +
+      `${t('dateUpdated')}: ${t.formatDate(style.updateDate) || '—'}\n` +
+      (ucd ? `UserCSS, v.${ucd.version}` : '');
   },
 });
 
