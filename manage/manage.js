@@ -44,14 +44,30 @@ const newUI = {
   enabled: null, // the global option should come first
   favicons: null,
   faviconsGray: null,
+  sliders: null,
   targets: null,
 };
 // ...add utility functions
 Object.assign(newUI, {
   ids: Object.keys(newUI),
-  prefGroup: 'manage.newUI',
-  prefKeyForId: id => id === 'enabled' ? newUI.prefGroup : `${newUI.prefGroup}.${id}`,
+  prefKeyForId: id =>
+    id === 'sliders' ? `ui.${id}` :
+      id === 'enabled' ? 'manage.newUI' :
+        `manage.newUI.${id}`,
   renderClass: () => document.documentElement.classList.toggle('newUI', newUI.enabled),
+  tpl: {
+    getToggle() {
+      return t.template[newUI.sliders ? 'toggleSlider' : 'toggleChecker'].cloneNode(true);
+    },
+    getEntry() {
+      const tpl = t.template[newUI.enabled ? 'styleNewUI' : 'style'].cloneNode(true);
+      if (newUI.enabled) {
+        const slot = $('toggle', tpl);
+        slot.parentElement.replaceChild(newUI.tpl.getToggle(), slot);
+      }
+      return tpl;
+    },
+  },
 });
 // ...read the actual values
 for (const id of newUI.ids) {
@@ -190,12 +206,12 @@ function showStyles(styles = [], matchUrlIds) {
 function createStyleElement({style, name: nameLC}) {
   // query the sub-elements just once, then reuse the references
   if ((createStyleElement.parts || {}).newUI !== newUI.enabled) {
-    const entry = t.template[newUI.enabled ? 'styleNewUI' : 'style'];
+    const entry = newUI.tpl.getEntry();
     createStyleElement.parts = {
       newUI: newUI.enabled,
       entry,
       entryClassBase: entry.className,
-      checker: $('.checker', entry) || {},
+      checker: $('input', entry) || {},
       nameLink: $('.style-name-link', entry),
       editLink: $('.style-edit-link', entry) || {},
       editHrefBase: 'edit.html?id=',
@@ -397,7 +413,7 @@ function getFaviconImgSrc(container = installed) {
 Object.assign(handleEvent, {
 
   ENTRY_ROUTES: {
-    '.checker, .enable, .disable': 'toggle',
+    'input, .enable, .disable': 'toggle',
     '.style-name': 'name',
     '.homepage': 'external',
     '.check-update': 'check',
@@ -621,7 +637,7 @@ function handleUpdate(style, {reason, method} = {}) {
     if (diff.length === 1 && diff[0].key === 'enabled') {
       oldEntry.classList.toggle('enabled', style.enabled);
       oldEntry.classList.toggle('disabled', !style.enabled);
-      $$('.checker', oldEntry).forEach(el => (el.checked = style.enabled));
+      $$('input', oldEntry).forEach(el => (el.checked = style.enabled));
       oldEntry.styleMeta = newStyleMeta;
       entry = oldEntry;
       oldEntry = null;
@@ -661,6 +677,7 @@ function switchUI({styleOnly} = {}) {
 
   Object.assign(newUI, current);
   newUI.renderClass();
+  installed.classList.toggle('has-sliders', newUI.enabled && newUI.sliders);
   installed.classList.toggle('has-favicons', newUI.enabled && newUI.favicons);
   installed.classList.toggle('favicons-grayed', newUI.enabled && newUI.faviconsGray);
   if (installed.style.getPropertyValue('--num-targets') !== `${newUI.targets}`) {
@@ -677,6 +694,15 @@ function switchUI({styleOnly} = {}) {
     installed.textContent = '';
     API.getAllStyles().then(showStyles);
     return;
+  }
+  if (changed.sliders && newUI.enabled) {
+    const dst = newUI.tpl.getToggle();
+    const dstChecker = $('input', dst);
+    for (const entry of installed.children) {
+      const src = $('.checkmate, .onoffswitch', entry);
+      dstChecker.checked = entry.classList.contains('enabled');
+      src.parentElement.replaceChild(dst.cloneNode(true), src);
+    }
   }
   if (changed.targets) {
     for (const entry of installed.children) {

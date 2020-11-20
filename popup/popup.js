@@ -47,6 +47,11 @@ initTabUrls()
         .map(({url}) => getStyleDataMerged(url).then(styles => ({styles, url}))),
     ]))
   .then(([, ...results]) => {
+    const sliders = prefs.get('ui.sliders');
+    const slot = $('toggle', t.template.style);
+    const toggle = t.template[sliders ? 'toggleSlider' : 'toggleChecker'];
+    slot.parentElement.replaceChild(toggle.cloneNode(true), slot);
+    document.body.classList.toggle('has-sliders', sliders);
     if (results[0]) {
       showStyles(results);
     } else {
@@ -353,7 +358,6 @@ function createStyleElement(style) {
   let entry = $.entry(style);
   if (!entry) {
     entry = t.template.style.cloneNode(true);
-    entry.setAttribute('style-id', style.id);
     Object.assign(entry, {
       id: ENTRY_ID_PREFIX_RAW + style.id,
       styleId: style.id,
@@ -361,12 +365,8 @@ function createStyleElement(style) {
       onmousedown: handleEvent.maybeEdit,
       styleMeta: style,
     });
-    const checkbox = $('.checker', entry);
-    Object.assign(checkbox, {
-      id: ENTRY_ID_PREFIX_RAW + style.id,
-      // title: t('exclusionsPopupTip'),
+    Object.assign($('input', entry), {
       onclick: handleEvent.toggle,
-      // oncontextmenu: handleEvent.openExcludeMenu
     });
     const editLink = $('.style-edit-link', entry);
     Object.assign(editLink, {
@@ -378,7 +378,6 @@ function createStyleElement(style) {
       htmlFor: ENTRY_ID_PREFIX_RAW + style.id,
       onclick: handleEvent.name,
     });
-    styleName.checkbox = checkbox;
     styleName.appendChild(document.createTextNode(' '));
 
     const config = $('.configure', entry);
@@ -415,7 +414,7 @@ function createStyleElement(style) {
 
   entry.classList.toggle('disabled', !style.enabled);
   entry.classList.toggle('enabled', style.enabled);
-  $('.checker', entry).checked = style.enabled;
+  $('input', entry).checked = style.enabled;
 
   const styleName = $('.style-name', entry);
   styleName.lastChild.textContent = style.customName || style.name;
@@ -478,7 +477,7 @@ Object.assign(handleEvent, {
   },
 
   name(event) {
-    this.checkbox.dispatchEvent(new MouseEvent('click'));
+    $('input', this).dispatchEvent(new MouseEvent('click'));
     event.preventDefault();
   },
 
