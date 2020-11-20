@@ -186,6 +186,10 @@ lazyInit();
         // preload the theme so CodeMirror can use the correct metrics
         el.href = `vendor/codemirror/theme/${theme}.css`;
         el.on('load', resolve, {once: true});
+        el.on('error', () => {
+          prefs.set('editor.theme', 'default');
+          resolve();
+        }, {once: true});
       }
     });
   }
@@ -206,8 +210,10 @@ lazyInit();
   }
 
   function buildThemeElement() {
-    CODEMIRROR_THEMES.unshift(chrome.i18n.getMessage('defaultTheme'));
-    $('#editor.theme').append(...CODEMIRROR_THEMES.map(s => $create('option', s)));
+    const elOptions = [chrome.i18n.getMessage('defaultTheme'), ...CODEMIRROR_THEMES]
+      .map(s => $create('option', s));
+    elOptions[0].value = 'default';
+    $('#editor.theme').append(...elOptions);
     // move the theme after built-in CSS so that its same-specificity selectors win
     document.head.appendChild($('#cm-theme'));
   }
