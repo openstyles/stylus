@@ -664,7 +664,9 @@ function switchUI({styleOnly} = {}) {
   newUI.renderClass();
   installed.classList.toggle('has-favicons', newUI.enabled && newUI.favicons);
   installed.classList.toggle('favicons-grayed', newUI.enabled && newUI.faviconsGray);
-  if (changed.targets) installed.style.setProperty('--num-targets', newUI.targets);
+  if (installed.style.getPropertyValue('--num-targets') !== `${newUI.targets}`) {
+    installed.style.setProperty('--num-targets', newUI.targets);
+  }
 
   if (styleOnly) {
     return;
