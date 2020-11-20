@@ -475,6 +475,10 @@
     "message": "Title",
     "description": "Used in various parts of the UI to indicate the title of something"
   },
+  "genericUI": {
+    "message": "UI",
+    "description": "UI = User Interface, this label is used to label generic UI-related stuff"
+  },
   "genericUnknown": {
     "message": "Unknown",
     "description": "Used in various parts of the UI to indicate if something is unknown (e.g. an unknown date)"
@@ -1075,6 +1079,9 @@
   },
   "optionsResetButton": {
     "message": "Reset options"
+  },
+  "optionsSliders": {
+    "message": "Use sliders to toggle style entries"
   },
   "optionsStylusThemes": {
     "message": "Find a Stylus UI theme"

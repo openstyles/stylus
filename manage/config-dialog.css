@@ -1,3 +1,7 @@
+:root {
+  --onoffswitch-width: 60px;
+}
+
 #stylus-manage .config-dialog #message-box-contents {
   padding: 2em 16px;
 }

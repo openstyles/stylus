@@ -1,10 +1,13 @@
 :root {
   --header-width: 280px;
-  --checkbox-width: 24px;
-  --name-padding-left: 40px;
+  --slider-width: 21px;
+  --name-padding-left: 20px;
   --name-padding-right: 40px;
   --actions-width: 75px;
-  --onoffswitch-width: 60px;
+}
+
+.has-sliders {
+  --name-padding-left: 46px;
 }
 
 body {
@@ -360,10 +363,6 @@ a:hover {
 
 /************ checkbox & select************/
 
-.newUI .checker {
-  margin: 0;
-}
-
 #newUIoptions > div, #newUIoptions > label {
   margin: 4px 0;
 }
@@ -464,7 +463,6 @@ a:hover {
 
 .newUI .style-name {
   font-size: 14px;
-  text-indent: calc(var(--checkbox-width) - var(--name-padding-left) - 4px);
   padding-left: var(--name-padding-left);
   padding-right: var(--name-padding-right);
   position: relative;
@@ -1028,6 +1026,14 @@ a:hover {
 }
 
 @media (max-width: 850px) {
+  :root {
+    --name-padding-left: 34px;
+  }
+
+  .has-sliders {
+    --name-padding-left: 44px;
+  }
+
   body {
     display: table;
   }
@@ -1049,6 +1055,11 @@ a:hover {
 
   #installed {
     table-layout: fixed;
+  }
+
+  .entry .onoffswitch {
+    --slider-width: 20px;
+    padding-left: 14px;
   }
 
   .newUI .entry .actions {
@@ -1131,7 +1142,6 @@ a:hover {
   }
 
   .newUI .entry .style-name {
-    padding: .5rem 0 .5rem 34px;
     text-indent: unset;
   }
 

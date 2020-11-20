@@ -1,11 +1,12 @@
 :root {
-  --header-width: 280px;
-  --checkbox-width: 24px;
-  --name-padding-left: 40px;
-  --name-padding-right: 40px;
-  --actions-width: 75px;
-  --onoffswitch-width: 60px;
+  --inner-padding: 18px; /* checkbox + gap */
   --outer-padding: 9px;
+  --hotkey-margin: 16px;
+}
+
+.has-sliders {
+  --inner-padding: 20px;
+  --slider-width: 18px;
 }
 
 html, body {
@@ -35,12 +36,12 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
 }
 /************ checkbox ************/
 
-.style-name:hover input[type="checkbox"]:checked {
+.style-name:hover .checker:checked {
   border-color: hsl(0, 0%, 32%);
   background-color: hsl(0, 0%, 82%);
 }
 
-.style-name:hover input[type="checkbox"] {
+.style-name:hover .checker {
   border-color: hsl(0, 0%, 32%);
   background-color: hsl(0, 0%, 82%);
 }
@@ -96,7 +97,7 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
 }
 
 #disable-all-wrapper .main-controls label {
-  padding-left: 16px;
+  padding-left: var(--inner-padding);
   position: relative;
   transition: color .25s;
   font-size: 12px;
@@ -126,7 +127,7 @@ a:hover {
 }
 
 .actions > .main-controls {
-  padding-left: 16px;
+  padding-left: var(--inner-padding);
 }
 
 .main-controls {
@@ -178,7 +179,7 @@ body.blocked > DIV {
 }
 
 html[style] .entry-content {
-  padding: 0 16px 0 0;
+  padding: 0 var(--hotkey-margin) 0 0;
 }
 
 #no-styles.entry {
@@ -199,7 +200,7 @@ html[style] .entry-content {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding-left: 26px;
+  padding-left: calc(var(--outer-padding) + var(--inner-padding));
   position: relative;
 }
 
@@ -234,6 +235,10 @@ html[style] .entry-content {
   padding-right: 5px;
 }
 
+.entry .onoffswitch {
+  padding: 0 0 0 6px;
+}
+
 .entry:nth-child(even) {
   background-color: rgba(0, 0, 0, 0.05);
 }
@@ -265,7 +270,7 @@ html[style*="border"] .entry:nth-child(11):before {
 
 .entry .actions > * {
   height: 26px;
-  width: 18px;
+  width: var(--inner-padding);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -849,7 +854,7 @@ body.blocked .actions > .main-controls {
   top: 0;
   right: 0;
   bottom: 0;
-  width: 16px;
+  width: var(--hotkey-margin);
   cursor: help;
   margin: 0;
   padding: 0;

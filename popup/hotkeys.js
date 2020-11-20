@@ -57,7 +57,7 @@ const hotkeys = (() => {
     if (!entry) {
       return;
     }
-    const target = $(shiftKey ? '.style-edit-link' : '.checker', entry);
+    const target = $(shiftKey ? '.style-edit-link' : 'input', entry);
     target.dispatchEvent(new MouseEvent('click', {cancelable: true}));
   }
 
@@ -86,14 +86,14 @@ const hotkeys = (() => {
     let task = Promise.resolve();
     for (let entry of list) {
       entry = typeof entry === 'string' ? $('#' + entry) : entry;
-      if (!match && $('.checker', entry).checked !== enable || entry.classList.contains(match)) {
+      if (!match && $('input', entry).checked !== enable || entry.classList.contains(match)) {
         results.push(entry.id);
         task = task
           .then(() => API.toggleStyle(entry.styleId, enable))
           .then(() => {
             entry.classList.toggle('enabled', enable);
             entry.classList.toggle('disabled', !enable);
-            $('.checker', entry).checked = enable;
+            $('input', entry).checked = enable;
           });
       }
     }
