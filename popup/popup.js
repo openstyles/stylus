@@ -439,6 +439,7 @@ function createStyleElement(style) {
     const sel = 'span.frame-url';
     const frameEl = $(sel, entry) || styleName.insertBefore($create(sel), styleName.lastChild);
     frameEl.title = frameUrl;
+    frameEl.onmousedown = handleEvent.maybeEdit;
   }
   entry.classList.toggle('frame', Boolean(frameUrl));
 
@@ -626,7 +627,8 @@ Object.assign(handleEvent, {
       return;
     }
     // open an editor on middleclick
-    if (event.target.matches('.entry, .style-name, .style-edit-link')) {
+    const el = event.target;
+    if (el.matches('.entry, .style-edit-link') || el.closest('.style-name')) {
       this.onmouseup = () => $('.style-edit-link', this).click();
       this.oncontextmenu = event => event.preventDefault();
       event.preventDefault();
@@ -634,7 +636,7 @@ Object.assign(handleEvent, {
     }
     // prevent the popup being opened in a background tab
     // when an irrelevant link was accidentally clicked
-    if (event.target.closest('a')) {
+    if (el.closest('a')) {
       event.preventDefault();
       return;
     }

@@ -80,6 +80,7 @@
   bottom: 0;
   margin: 0;
   padding: 0 4px 0 18px;
+  pointer-events: none;
 }
 .entry .onoffswitch span {
   position: absolute;
