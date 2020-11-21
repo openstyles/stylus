@@ -224,6 +224,7 @@ html[style] .entry-content {
 
 .entry.disabled .style-name {
   font-weight: normal;
+  color: #999;
 }
 
 .entry .main-controls {

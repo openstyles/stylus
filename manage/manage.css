@@ -249,6 +249,10 @@ a:hover {
   font-weight: normal;
   transition: opacity .5s .1s;
 }
+.disabled h2 .style-name-link {
+  opacity: 1;
+  color: #999;
+}
 
 .disabled:hover .actions {
   opacity: 1;
