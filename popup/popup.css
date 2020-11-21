@@ -504,7 +504,7 @@ body > .actions {
   vertical-align: middle;
 }
 
-body.blocked #installed > *,
+body.blocked #installed > :not(.frame),
 body.blocked .actions > .main-controls {
   display: none;
 }
