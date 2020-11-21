@@ -310,7 +310,9 @@ a.configure[target="_blank"] .svg-icon.config {
   opacity: .2;
   transition: opacity .5s ease-in-out .25s, color .5s ease-in-out .25s;
 }
-
+.not-applied .style-name {
+  opacity: .5;
+}
 .not-applied:hover .checker,
 .not-applied:hover .style-name,
 .not-applied:hover .actions > * {
