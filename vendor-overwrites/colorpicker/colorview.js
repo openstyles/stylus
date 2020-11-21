@@ -610,10 +610,7 @@
     const lines = el.title.split('\n')[1].match(/\d+/g).map(Number);
     const i = lines.indexOf(cm.getCursor().line + 1) + 1;
     const line = (lines[i] || lines[0]) - 1;
-    const vpm = cm.options.viewportMargin;
-    const inView = line >= cm.display.viewFrom - vpm && line <= cm.display.viewTo - vpm;
-    cm.scrollIntoView(line, inView ? cm.defaultTextHeight() : cm.display.wrapper.clientHeight / 2);
-    cm.setCursor(line);
+    cm.jumpToPos({line, ch: 0});
   }
 
   //endregion

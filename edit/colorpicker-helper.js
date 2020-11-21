@@ -5,9 +5,8 @@
   onDOMready().then(() => {
     $('#colorpicker-settings').onclick = configureColorpicker;
   });
-  prefs.subscribe(['editor.colorpicker.hotkey'], registerHotkey);
-  prefs.subscribe(['editor.colorpicker'], setColorpickerOption);
-  setColorpickerOption(null, prefs.get('editor.colorpicker'));
+  prefs.subscribe('editor.colorpicker.hotkey', registerHotkey);
+  prefs.subscribe('editor.colorpicker', setColorpickerOption, {now: true});
 
   function setColorpickerOption(id, enabled) {
     const defaults = CodeMirror.defaults;
@@ -44,7 +43,7 @@
         delete defaults.extraKeys[keyName];
       }
     }
-    cmFactory.setOption('colorpicker', defaults.colorpicker);
+    cmFactory.globalSetOption('colorpicker', defaults.colorpicker);
   }
 
   function registerHotkey(id, hotkey) {

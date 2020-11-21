@@ -1,86 +1,189 @@
-/* global CodeMirror loadScript rerouteHotkeys prefs $ debounce $create */
-/* exported cmFactory */
-'use strict';
-/*
-All cm instances created by this module are collected so we can broadcast prefs
-settings to them. You should `cmFactory.destroy(cm)` to unregister the listener
-when the instance is not used anymore.
+/* global
+  $
+  CodeMirror
+  debounce
+  editor
+  loadScript
+  prefs
+  rerouteHotkeys
 */
-const cmFactory = (() => {
-  const editors = new Set();
-  // used by `indentWithTabs` option
-  const INSERT_TAB_COMMAND = CodeMirror.commands.insertTab;
-  const INSERT_SOFT_TAB_COMMAND = CodeMirror.commands.insertSoftTab;
+'use strict';
 
-  CodeMirror.defineOption('tabSize', prefs.get('editor.tabSize'), (cm, value) => {
-    cm.setOption('indentUnit', Number(value));
-  });
+//#region cmFactory
+(() => {
+  /*
+  All cm instances created by this module are collected so we can broadcast prefs
+  settings to them. You should `cmFactory.destroy(cm)` to unregister the listener
+  when the instance is not used anymore.
+  */
+  const cms = new Set();
+  let lazyOpt;
 
-  CodeMirror.defineOption('indentWithTabs', prefs.get('editor.indentWithTabs'), (cm, value) => {
-    CodeMirror.commands.insertTab = value ?
-      INSERT_TAB_COMMAND :
-      INSERT_SOFT_TAB_COMMAND;
-  });
-
-  CodeMirror.defineOption('autocompleteOnTyping', prefs.get('editor.autocompleteOnTyping'), (cm, value) => {
-    const onOff = value ? 'on' : 'off';
-    cm[onOff]('changes', autocompleteOnTyping);
-    cm[onOff]('pick', autocompletePicked);
-  });
-
-  CodeMirror.defineOption('matchHighlight', prefs.get('editor.matchHighlight'), (cm, value) => {
-    if (value === 'token') {
-      cm.setOption('highlightSelectionMatches', {
-        showToken: /[#.\-\w]/,
-        annotateScrollbar: true,
-        onUpdate: updateMatchHighlightCount,
+  const cmFactory = window.cmFactory = {
+    create(place, options) {
+      const cm = CodeMirror(place, options);
+      const {wrapper} = cm.display;
+      cm.lastActive = 0;
+      cm.on('blur', () => {
+        rerouteHotkeys(true);
+        setTimeout(() => {
+          wrapper.classList.toggle('CodeMirror-active', wrapper.contains(document.activeElement));
+        });
       });
-    } else if (value === 'selection') {
-      cm.setOption('highlightSelectionMatches', {
-        showToken: false,
-        annotateScrollbar: true,
-        onUpdate: updateMatchHighlightCount,
+      cm.on('focus', () => {
+        rerouteHotkeys(false);
+        wrapper.classList.add('CodeMirror-active');
+        cm.lastActive = Date.now();
       });
-    } else {
-      cm.setOption('highlightSelectionMatches', null);
-    }
-  });
-
-  CodeMirror.defineOption('selectByTokens', prefs.get('editor.selectByTokens'), (cm, value) => {
-    cm.setOption('configureMouse', value ? configureMouseFn : null);
-  });
-
-  prefs.subscribe(null, (key, value) => {
-    const option = key.replace(/^editor\./, '');
-    if (!option) {
-      console.error('no "cm_option"', key);
-      return;
-    }
-    // FIXME: this is implemented in `colorpicker-helper.js`.
-    if (option === 'colorpicker') {
-      return;
-    }
-    if (option === 'theme') {
-      const themeLink = $('#cm-theme');
-      // use non-localized 'default' internally
-      if (value === 'default') {
-        themeLink.href = '';
+      cms.add(cm);
+      return cm;
+    },
+    destroy(cm) {
+      cms.delete(cm);
+    },
+    globalSetOption(key, value) {
+      CodeMirror.defaults[key] = value;
+      if (cms.size > 4 && lazyOpt && lazyOpt.names.includes(key)) {
+        lazyOpt.set(key, value);
       } else {
-        const url = chrome.runtime.getURL('vendor/codemirror/theme/' + value + '.css');
-        if (themeLink.href !== url) {
+        cms.forEach(cm => cm.setOption(key, value));
+      }
+    },
+  };
+
+  const handledPrefs = {
+    // handled in colorpicker-helper.js
+    'editor.colorpicker'() {},
+    /** @returns {?Promise<void>} */
+    'editor.theme'(key, value) {
+      const elt = $('#cm-theme');
+      if (value === 'default') {
+        elt.href = '';
+      } else {
+        const url = chrome.runtime.getURL(`vendor/codemirror/theme/${value}.css`);
+        if (url !== elt.href) {
           // avoid flicker: wait for the second stylesheet to load, then apply the theme
-          return loadScript(url, true).then(([newThemeLink]) => {
-            setOption(option, value);
-            themeLink.remove();
-            newThemeLink.id = 'cm-theme';
+          return loadScript(url, true).then(([newElt]) => {
+            cmFactory.globalSetOption('theme', value);
+            elt.remove();
+            newElt.id = elt.id;
           });
         }
       }
-    }
-    // broadcast option
-    setOption(option, value);
+    },
+  };
+  const pref2opt = k => k.slice('editor.'.length);
+  const mirroredPrefs = Object.keys(prefs.defaults).filter(k =>
+    !handledPrefs[k] &&
+    k.startsWith('editor.') &&
+    Object.hasOwnProperty.call(CodeMirror.defaults, pref2opt(k)));
+  prefs.subscribe(mirroredPrefs, (k, val) => cmFactory.globalSetOption(pref2opt(k), val));
+  prefs.subscribeMany(handledPrefs);
+
+  lazyOpt = window.IntersectionObserver && {
+    names: ['theme', 'lineWrapping'],
+    set(key, value) {
+      const {observer, queue} = lazyOpt;
+      for (const cm of cms) {
+        let opts = queue.get(cm);
+        if (!opts) queue.set(cm, opts = {});
+        opts[key] = value;
+        observer.observe(cm.display.wrapper);
+      }
+    },
+    setNow({cm, data}) {
+      cm.operation(() => data.forEach(kv => cm.setOption(...kv)));
+    },
+    onView(entries) {
+      const {queue, observer} = lazyOpt;
+      const delayed = [];
+      for (const e of entries) {
+        const r = e.isIntersecting && e.intersectionRect;
+        if (!r) continue;
+        const cm = e.target.CodeMirror;
+        const data = Object.entries(queue.get(cm) || {});
+        queue.delete(cm);
+        observer.unobserve(e.target);
+        if (!data.every(([key, val]) => cm.getOption(key) === val)) {
+          if (r.bottom > 0 && r.top < window.innerHeight) {
+            lazyOpt.setNow({cm, data});
+          } else {
+            delayed.push({cm, data});
+          }
+        }
+      }
+      if (delayed.length) {
+        setTimeout(() => delayed.forEach(lazyOpt.setNow));
+      }
+    },
+    get observer() {
+      if (!lazyOpt._observer) {
+        // must exceed refreshOnView's 100%
+        lazyOpt._observer = new IntersectionObserver(lazyOpt.onView, {rootMargin: '150%'});
+        lazyOpt.queue = new WeakMap();
+      }
+      return lazyOpt._observer;
+    },
+  };
+})();
+//#endregion
+
+//#region Commands
+(() => {
+  Object.assign(CodeMirror.commands, {
+    toggleEditorFocus(cm) {
+      if (!cm) return;
+      if (cm.hasFocus()) {
+        setTimeout(() => cm.display.input.blur());
+      } else {
+        cm.focus();
+      }
+    },
+    commentSelection(cm) {
+      cm.blockComment(cm.getCursor('from'), cm.getCursor('to'), {fullLines: false});
+    },
   });
-  return {create, destroy, setOption};
+  for (const cmd of [
+    'nextEditor',
+    'prevEditor',
+    'save',
+    'toggleStyle',
+  ]) {
+    CodeMirror.commands[cmd] = (...args) => editor[cmd](...args);
+  }
+})();
+//#endregion
+
+//#region CM option handlers
+(() => {
+  const {insertTab, insertSoftTab} = CodeMirror.commands;
+  Object.entries({
+    tabSize(cm, value) {
+      cm.setOption('indentUnit', Number(value));
+    },
+    indentWithTabs(cm, value) {
+      CodeMirror.commands.insertTab = value ? insertTab : insertSoftTab;
+    },
+    autocompleteOnTyping(cm, value) {
+      const onOff = value ? 'on' : 'off';
+      cm[onOff]('changes', autocompleteOnTyping);
+      cm[onOff]('pick', autocompletePicked);
+    },
+    matchHighlight(cm, value) {
+      const showToken = value === 'token' && /[#.\-\w]/;
+      const opt = (showToken || value === 'selection') && {
+        showToken,
+        annotateScrollbar: true,
+        onUpdate: updateMatchHighlightCount,
+      };
+      cm.setOption('highlightSelectionMatches', opt || null);
+    },
+    selectByTokens(cm, value) {
+      cm.setOption('configureMouse', value ? configureMouseFn : null);
+    },
+  }).forEach(([name, fn]) => {
+    CodeMirror.defineOption(name, prefs.get('editor.' + name), fn);
+  });
 
   function updateMatchHighlightCount(cm, state) {
     cm.display.wrapper.dataset.matchHighlightCount = state.matchesonscroll.matches.length;
@@ -173,121 +276,181 @@ const cmFactory = (() => {
   function autocompletePicked(cm) {
     cm.state.autocompletePicked = true;
   }
+})();
+//#endregion
 
-  function destroy(cm) {
-    editors.delete(cm);
-  }
+//#region Autocomplete
+(() => {
+  const USO_VAR = 'uso-variable';
+  const USO_VALID_VAR = 'variable-3 ' + USO_VAR;
+  const USO_INVALID_VAR = 'error ' + USO_VAR;
+  const RX_IMPORTANT = /(i(m(p(o(r(t(a(nt?)?)?)?)?)?)?)?)?(?=\b|\W|$)/iy;
+  const RX_VAR_KEYWORD = /(^|[^-\w\u0080-\uFFFF])var\(/iy;
+  const RX_END_OF_VAR = /[\s,)]|$/g;
+  const RX_CONSUME_PROP = /[-\w]*\s*:\s?|$/y;
+  const originalHelper = CodeMirror.hint.css || (() => {});
+  CodeMirror.registerHelper('hint', 'css', helper);
+  CodeMirror.registerHelper('hint', 'stylus', helper);
+  const hooks = CodeMirror.mimeModes['text/css'].tokenHooks;
+  const originalCommentHook = hooks['/'];
+  hooks['/'] = tokenizeUsoVariables;
 
-  function create(init, options) {
-    const cm = CodeMirror(init, options);
-    cm.lastActive = 0;
-    const wrapper = cm.display.wrapper;
-    cm.on('blur', () => {
-      rerouteHotkeys(true);
-      setTimeout(() => {
-        wrapper.classList.toggle('CodeMirror-active', wrapper.contains(document.activeElement));
-      });
-    });
-    cm.on('focus', () => {
-      rerouteHotkeys(false);
-      wrapper.classList.add('CodeMirror-active');
-      cm.lastActive = Date.now();
-    });
-    editors.add(cm);
-    return cm;
-  }
-
-  function getLastActivated() {
-    let result;
-    for (const cm of editors) {
-      if (!result || result.lastActive < cm.lastActive) {
-        result = cm;
-      }
+  function helper(cm) {
+    const pos = cm.getCursor();
+    const {line, ch} = pos;
+    const {styles, text} = cm.getLineHandle(line);
+    if (!styles) {
+      return originalHelper(cm);
     }
-    return result;
-  }
-
-  function setOption(key, value) {
-    CodeMirror.defaults[key] = value;
-    if (editors.size > 4 && (key === 'theme' || key === 'lineWrapping')) {
-      throttleSetOption({key, value, index: 0});
-      return;
+    const {style, index} = cm.getStyleAtPos({styles, pos: ch}) || {};
+    if (/^(comment|string)/.test(style)) {
+      return originalHelper(cm);
     }
-    for (const cm of editors) {
-      cm.setOption(key, value);
-    }
-  }
-
-  function throttleSetOption({
-    key,
-    value,
-    index,
-    timeStart = performance.now(),
-    editorsCopy = [...editors],
-    cmStart = getLastActivated(),
-    progress,
-  }) {
-    if (index === 0) {
-      if (!cmStart) {
-        return;
-      }
-      cmStart.setOption(key, value);
-    }
-
-    const THROTTLE_AFTER_MS = 100;
-    const THROTTLE_SHOW_PROGRESS_AFTER_MS = 100;
-
-    const t0 = performance.now();
-    const total = editorsCopy.length;
-    while (index < total) {
-      const cm = editorsCopy[index++];
-      if (cm === cmStart || !editors.has(cm)) {
-        continue;
-      }
-      cm.setOption(key, value);
-      if (performance.now() - t0 > THROTTLE_AFTER_MS) {
-        break;
-      }
-    }
-    if (index >= total) {
-      $.remove(progress);
-      return;
-    }
-    if (!progress &&
-        index < total / 2 &&
-        t0 - timeStart > THROTTLE_SHOW_PROGRESS_AFTER_MS) {
-      let option = $('#editor.' + key);
-      if (option) {
-        if (option.type === 'checkbox') {
-          option = (option.labels || [])[0] || option.nextElementSibling || option;
-        }
-        progress = document.body.appendChild(
-          $create('.set-option-progress', {targetElement: option}));
-      }
-    }
-    if (progress) {
-      const optionBounds = progress.targetElement.getBoundingClientRect();
-      const bounds = {
-        top: optionBounds.top + window.scrollY + 1,
-        left: optionBounds.left + window.scrollX + 1,
-        width: (optionBounds.width - 2) * index / total | 0,
-        height: optionBounds.height - 2,
+    // !important
+    if (text[ch - 1] === '!' && testAt(/i|\W|$/iy, ch, text)) {
+      return {
+        list: ['important'],
+        from: pos,
+        to: {line, ch: ch + execAt(RX_IMPORTANT, ch, text)[0].length},
       };
-      const style = progress.style;
-      for (const prop in bounds) {
-        if (bounds[prop] !== parseFloat(style[prop])) {
-          style[prop] = bounds[prop] + 'px';
-        }
+    }
+    let prev = index > 2 ? styles[index - 2] : 0;
+    let end = styles[index];
+    // #hex colors
+    if (text[prev] === '#') {
+      return {list: [], from: pos, to: pos};
+    }
+    // adjust cursor position for /*[[ and ]]*/
+    const adjust = text[prev] === '/' ? 4 : 0;
+    prev += adjust;
+    end -= adjust;
+    // --css-variables
+    const leftPart = text.slice(prev, ch);
+    const startsWithDoubleDash = testAt(/--/y, prev, text);
+    if (startsWithDoubleDash ||
+        leftPart === '(' && testAt(RX_VAR_KEYWORD, Math.max(0, prev - 4), text)) {
+      return {
+        list: findAllCssVars(cm, leftPart),
+        from: {line, ch: prev + !startsWithDoubleDash},
+        to: {line, ch: execAt(RX_END_OF_VAR, prev, text).index},
+      };
+    }
+    if (!editor || !style || !style.includes(USO_VAR)) {
+      const res = originalHelper(cm);
+      // add ":" after a property name
+      const state = res && cm.getTokenAt(pos).state.state;
+      if (state === 'block' || state === 'maybeprop') {
+        res.list = res.list.map(str => str + ': ');
+        res.to.ch += execAt(RX_CONSUME_PROP, res.to.ch, text)[0].length;
+      }
+      return res;
+    }
+    // USO vars in usercss mode editor
+    const vars = editor.style.usercssData.vars;
+    return {
+      list: vars ? Object.keys(vars).filter(v => v.startsWith(leftPart)) : [],
+      from: {line, ch: prev},
+      to: {line, ch: end},
+    };
+  }
+
+  function findAllCssVars(cm, leftPart) {
+    // simplified regex without CSS escapes
+    const RX_CSS_VAR = new RegExp(
+      '(?:^|[\\s/;{])(' +
+      (leftPart.startsWith('--') ? leftPart : '--') +
+      (leftPart.length <= 2 ? '[a-zA-Z_\u0080-\uFFFF]' : '') +
+      '[-0-9a-zA-Z_\u0080-\uFFFF]*)',
+      'g');
+    const list = new Set();
+    cm.eachLine(({text}) => {
+      for (let m; (m = RX_CSS_VAR.exec(text));) {
+        list.add(m[1]);
+      }
+    });
+    return [...list].sort();
+  }
+
+  function tokenizeUsoVariables(stream) {
+    const token = originalCommentHook.apply(this, arguments);
+    if (token[1] === 'comment') {
+      const {string, start, pos} = stream;
+      if (testAt(/\/\*\[\[/y, start, string) &&
+        testAt(/]]\*\//y, pos - 4, string)) {
+        const vars = (editor.style.usercssData || {}).vars;
+        token[0] =
+          vars && vars.hasOwnProperty(string.slice(start + 4, pos - 4).replace(/-rgb$/, ''))
+            ? USO_VALID_VAR
+            : USO_INVALID_VAR;
       }
     }
-    setTimeout(throttleSetOption, 0, {
-      key,
-      value,
-      index,
-      timeStart,
-      cmStart,
-      editorsCopy,
-      progress,
-    });
+    return token;
+  }
+
+  function execAt(rx, index, text) {
+    rx.lastIndex = index;
+    return rx.exec(text);
+  }
+
+  function testAt(rx, index, text) {
+    rx.lastIndex = index;
+    return rx.test(text);
   }
 })();
+//#endregion
+
+//#region Bookmarks
+(() => {
+  const CLS = 'gutter-bookmark';
+  const BRAND = 'sublimeBookmark';
+  const CLICK_AREA = 'CodeMirror-linenumbers';
+  const {markText} = CodeMirror.prototype;
+  CodeMirror.defineInitHook(cm => {
+    cm.on('gutterClick', onGutterClick);
+    cm.on('gutterContextMenu', onGutterContextMenu);
+  });
+  // TODO: reimplement bookmarking so next/prev order is decided solely by the line numbers
+  Object.assign(CodeMirror.prototype, {
+    markText() {
+      const marker = markText.apply(this, arguments);
+      if (marker[BRAND]) {
+        this.doc.addLineClass(marker.lines[0], 'gutter', CLS);
+        marker.clear = clearMarker;
+      }
+      return marker;
+    },
+  });
+  function clearMarker() {
+    const line = this.lines[0];
+    const spans = line.markedSpans;
+    delete this.clear; // removing our patch from the instance...
+    this.clear(); // ...and using the original prototype
+    if (!spans || spans.some(span => span.marker[BRAND])) {
+      this.doc.removeLineClass(line, 'gutter', CLS);
+    }
+  }
+  function onGutterClick(cm, line, name, e) {
+    switch (name === CLICK_AREA && e.button) {
+      case 0: {
+        // main button: toggle
+        const [mark] = cm.findMarks({line, ch: 0}, {line, ch: 1e9}, m => m[BRAND]);
+        cm.setCursor(mark ? mark.find(-1) : {line, ch: 0});
+        cm.execCommand('toggleBookmark');
+        break;
+      }
+      case 1:
+        // middle button: select all marks
+        cm.execCommand('selectBookmarks');
+        break;
+    }
+  }
+  function onGutterContextMenu(cm, line, name, e) {
+    if (name === CLICK_AREA) {
+      cm.setSelection = cm.jumpToPos;
+      cm.execCommand(e.ctrlKey ? 'prevBookmark' : 'nextBookmark');
+      delete cm.setSelection;
+      e.preventDefault();
+    }
+  }
+})();
+//#endregion

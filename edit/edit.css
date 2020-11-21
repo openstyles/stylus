@@ -290,12 +290,6 @@ input:invalid {
   padding: .1rem .25rem 0 0;
   vertical-align: middle;
 }
-.set-option-progress {
-  position: absolute;
-  background-color: currentColor;
-  content: "";
-  opacity: .15;
-}
 /* footer */
 .usercss #footer {
   display: block;
