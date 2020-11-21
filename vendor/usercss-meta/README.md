@@ -1,4 +1,4 @@
-## usercss-meta v0.9.0
+## usercss-meta v0.10.0
 
 Following files are copied from npm (node_modules):
 
