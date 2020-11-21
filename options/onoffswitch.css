@@ -109,8 +109,8 @@
   pointer-events: all;
 }
 .entry .onoffswitch input + span::before {
-  width: 9px;
-  height: 9px;
+  width: 7px;
+  height: 7px;
   left: 2px;
   right: auto;
   margin: auto;
