@@ -55,7 +55,7 @@ function SourceEditor() {
       const sec = sectionFinder.sections[i];
       if (sec) {
         sectionFinder.updatePositions(sec);
-        jumpToPos(sec.start);
+        cm.jumpToPos(sec.start);
       }
     },
     closestVisible: () => cm,
@@ -308,17 +308,7 @@ function SourceEditor() {
     if (i < 0 && (!dir || CodeMirror.cmpPos(sections[num - 1].start, pos) < 0)) {
       i = 0;
     }
-    jumpToPos(sections[(i + dir + num) % num].start);
-  }
-
-  function jumpToPos(pos) {
-    const coords = cm.cursorCoords(pos, 'page');
-    const b = cm.display.wrapper.getBoundingClientRect();
-    if (coords.top < b.top + cm.defaultTextHeight() * 2 ||
-        coords.bottom > b.bottom - 100) {
-      cm.scrollIntoView(pos, b.height / 2);
-    }
-    cm.setCursor(pos, null, {scroll: false});
+    cm.jumpToPos(sections[(i + dir + num) % num].start);
   }
 
   function headerOnScroll({target, deltaY, deltaMode, shiftKey}) {
