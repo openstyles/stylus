@@ -141,8 +141,6 @@ body.blocked > DIV {
 
 #installed {
   border-bottom: 1px solid black;
-  padding-bottom: 2px;
-  padding-top: 2px;
   max-height: 445px;
   overflow-y: auto;
   counter-reset: style-number;
