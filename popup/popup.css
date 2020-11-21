@@ -27,8 +27,8 @@ body {
 }
 
 body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
-  margin-left: var(--outer-padding);
-  margin-right: var(--outer-padding);
+  padding-left: var(--outer-padding);
+  padding-right: var(--outer-padding);
 }
 
 .firefox .chromium-only {
