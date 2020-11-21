@@ -14,6 +14,7 @@
   linter
   messageBox
   prefs
+  rerouteHotkeys
   sectionsToMozFormat
   sessionStore
   showCodeMirrorPopup
@@ -505,6 +506,7 @@ function SectionsEditor() {
       si.scrollY2 = si.scrollY + window.innerHeight;
       container.style.height = si.scrollY2 + 'px';
       scrollTo(0, si.scrollY);
+      rerouteHotkeys(true);
     } else {
       si = null;
     }
