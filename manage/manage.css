@@ -232,6 +232,7 @@ a:hover {
   display: none;
 }
 
+.oldUI .disabled h2::after,
 .entry.usercss .style-name-link::after {
   font-size: 11px;
   border-radius: 4px;
@@ -240,14 +241,32 @@ a:hover {
   content: "UC";
   background-color: hsla(180, 35%, 50%, .35);
   padding: 2px 3px;
+  color: #000;
+}
+.oldUI .disabled h2::after {
+  content: var(--genericDisabledLabel);
+  text-transform: lowercase;
+  font-weight: normal;
+  background: rgba(128, 128, 128, .2);
+  padding: 2px 5px 3px;
+  vertical-align: middle;
+}
+.oldUI .entry.usercss .style-name-link::after {
+  content: "usercss";
+  font-weight: normal;
+  vertical-align: middle;
 }
 
 .disabled h2 .style-name-link,
-.disabled .actions,
-.disabled .applies-to {
-  opacity: 0.6;
+.disabled .applies-to,
+.newUI .disabled.entry .svg-icon {
+  color: #888;
+  fill: #c4c4c4;
   font-weight: normal;
-  transition: opacity .5s .1s;
+  transition: color .5s .1s, fill .5s .1s;
+}
+.disabled.usercss .style-name-link::after {
+  background-color: hsla(180, 35%, 50%, .2);
 }
 
 .disabled:hover .actions {
@@ -319,10 +338,6 @@ a:hover {
   display: table;
   margin-top: .75rem;
   margin-bottom: .75rem;
-}
-
-.newUI .disabled {
-  opacity: 1;
 }
 
 .newUI .entry {

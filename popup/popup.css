@@ -27,8 +27,8 @@ body {
 }
 
 body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
-  margin-left: var(--outer-padding);
-  margin-right: var(--outer-padding);
+  padding-left: var(--outer-padding);
+  padding-right: var(--outer-padding);
 }
 
 .firefox .chromium-only {
@@ -141,8 +141,6 @@ body.blocked > DIV {
 
 #installed {
   border-bottom: 1px solid black;
-  padding-bottom: 2px;
-  padding-top: 2px;
   max-height: 445px;
   overflow-y: auto;
   counter-reset: style-number;
@@ -222,8 +220,17 @@ html[style] .entry-content {
   opacity: 1;
 }
 
-.entry.disabled .style-name {
+.entry.disabled .style-name,
+.entry.disabled .svg-icon {
   font-weight: normal;
+  color: #888;
+  fill: #aaa;
+}
+.entry.disabled:hover .svg-icon {
+    fill: #666;
+}
+.entry.disabled:hover a:hover .svg-icon {
+    fill: #000;
 }
 
 .entry .main-controls {
@@ -237,6 +244,12 @@ html[style] .entry-content {
 
 .entry .onoffswitch {
   padding: 0 0 0 6px;
+}
+.entry .onoffswitch input {
+  pointer-events: none;
+}
+.style-name:hover .onoffswitch span {
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, .8);
 }
 
 .entry:nth-child(even) {
@@ -305,7 +318,9 @@ a.configure[target="_blank"] .svg-icon.config {
   opacity: .2;
   transition: opacity .5s ease-in-out .25s, color .5s ease-in-out .25s;
 }
-
+.not-applied .style-name {
+  opacity: .5;
+}
 .not-applied:hover .checker,
 .not-applied:hover .style-name,
 .not-applied:hover .actions > * {
@@ -499,7 +514,7 @@ body > .actions {
   vertical-align: middle;
 }
 
-body.blocked #installed > *,
+body.blocked #installed > :not(.frame),
 body.blocked .actions > .main-controls {
   display: none;
 }
@@ -773,7 +788,7 @@ body.blocked .actions > .main-controls {
   margin: 0 .25em .25em 0;
 }
 
-.unreachable .entry {
+.unreachable .entry:not(.frame) {
   opacity: .25;
 }
 

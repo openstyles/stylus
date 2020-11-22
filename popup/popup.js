@@ -129,7 +129,7 @@ async function initTabUrls() {
 }
 
 /** @param {chrome.webNavigation.GetAllFrameResultDetails[]} frames */
-function initPopup(frames) {
+async function initPopup(frames) {
   installed = $('#installed');
 
   setPopupWidth();
@@ -170,52 +170,52 @@ function initPopup(frames) {
     el.onclick = () => el.classList.toggle('expanded');
   }
 
-  getActiveTab().then(function ping(tab, retryCountdown = 10) {
-    msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0})
-      .catch(() => false)
-      .then(pong => {
-        if (pong) {
-          return;
-        }
-        // FF and some Chrome forks (e.g. CentBrowser) implement tab-on-demand
-        // so we'll wait a bit to handle popup being invoked right after switching
-        if (retryCountdown > 0 && (
-            tab.status !== 'complete' ||
-            FIREFOX && tab.url === ABOUT_BLANK)) {
-          setTimeout(ping, 100, tab, --retryCountdown);
-          return;
-        }
-        const info = t.template.unreachableInfo;
-        if (!FIREFOX) {
-          // Chrome "Allow access to file URLs" in chrome://extensions message
-          info.appendChild($create('p', t('unreachableFileHint')));
-        }
-        if (FIREFOX && tabURL.startsWith(URLS.browserWebStore)) {
-          $('label', info).textContent = t('unreachableAMO');
-          const note = (FIREFOX < 59 ? t('unreachableAMOHintOldFF') : t('unreachableAMOHint')) +
-                       (FIREFOX < 60 ? '' : '\n' + t('unreachableAMOHintNewFF'));
-          const renderToken = s => s[0] === '<'
-            ? $create('a', {
-              textContent: s.slice(1, -1),
-              onclick: handleEvent.copyContent,
-              href: '#',
-              className: 'copy',
-              tabIndex: 0,
-              title: t('copy'),
-            })
-            : s;
-          const renderLine = line => $create('p', line.split(/(<.*?>)/).map(renderToken));
-          const noteNode = $create('fragment', note.split('\n').map(renderLine));
-          info.appendChild(noteNode);
-        }
-        // Inaccessible locally hosted file type, e.g. JSON, PDF, etc.
-        if (tabURL.length - tabURL.lastIndexOf('.') <= 5) {
-          info.appendChild($create('p', t('InaccessibleFileHint')));
-        }
-        document.body.classList.add('unreachable');
-        document.body.insertBefore(info, document.body.firstChild);
-      });
-  });
+  const isStore = tabURL.startsWith(URLS.browserWebStore);
+  if (isStore && !FIREFOX) {
+    blockPopup();
+    return;
+  }
+
+  for (let retryCountdown = 10; retryCountdown-- > 0;) {
+    const tab = await getActiveTab();
+    if (await msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0}).catch(() => {})) {
+      return;
+    }
+    if (tab.status === 'complete' && (!FIREFOX || tab.url !== ABOUT_BLANK)) {
+      break;
+    }
+    // FF and some Chrome forks (e.g. CentBrowser) implement tab-on-demand
+    // so we'll wait a bit to handle popup being invoked right after switching
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+  const info = t.template.unreachableInfo;
+  if (!FIREFOX) {
+    // Chrome "Allow access to file URLs" in chrome://extensions message
+    info.appendChild($create('p', t('unreachableFileHint')));
+  } else if (isStore) {
+    $('label', info).textContent = t('unreachableAMO');
+    const note = (FIREFOX < 59 ? t('unreachableAMOHintOldFF') : t('unreachableAMOHint')) +
+                 (FIREFOX < 60 ? '' : '\n' + t('unreachableAMOHintNewFF'));
+    const renderToken = s => s[0] === '<'
+      ? $create('a', {
+        textContent: s.slice(1, -1),
+        onclick: handleEvent.copyContent,
+        href: '#',
+        className: 'copy',
+        tabIndex: 0,
+        title: t('copy'),
+      })
+      : s;
+    const renderLine = line => $create('p', line.split(/(<.*?>)/).map(renderToken));
+    const noteNode = $create('fragment', note.split('\n').map(renderLine));
+    info.appendChild(noteNode);
+  }
+  // Inaccessible locally hosted file type, e.g. JSON, PDF, etc.
+  if (tabURL.length - tabURL.lastIndexOf('.') <= 5) {
+    info.appendChild($create('p', t('InaccessibleFileHint')));
+  }
+  document.body.classList.add('unreachable');
+  document.body.insertBefore(info, document.body.firstChild);
 }
 
 /** @param {chrome.webNavigation.GetAllFrameResultDetails} frame */
@@ -439,6 +439,7 @@ function createStyleElement(style) {
     const sel = 'span.frame-url';
     const frameEl = $(sel, entry) || styleName.insertBefore($create(sel), styleName.lastChild);
     frameEl.title = frameUrl;
+    frameEl.onmousedown = handleEvent.maybeEdit;
   }
   entry.classList.toggle('frame', Boolean(frameUrl));
 
@@ -626,7 +627,8 @@ Object.assign(handleEvent, {
       return;
     }
     // open an editor on middleclick
-    if (event.target.matches('.entry, .style-name, .style-edit-link')) {
+    const el = event.target;
+    if (el.matches('.entry, .style-edit-link') || el.closest('.style-name')) {
       this.onmouseup = () => $('.style-edit-link', this).click();
       this.oncontextmenu = event => event.preventDefault();
       event.preventDefault();
@@ -634,7 +636,7 @@ Object.assign(handleEvent, {
     }
     // prevent the popup being opened in a background tab
     // when an irrelevant link was accidentally clicked
-    if (event.target.closest('a')) {
+    if (el.closest('a')) {
       event.preventDefault();
       return;
     }

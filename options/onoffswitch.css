@@ -80,6 +80,7 @@
   bottom: 0;
   margin: 0;
   padding: 0 4px 0 18px;
+  pointer-events: none;
 }
 .entry .onoffswitch span {
   position: absolute;
@@ -109,8 +110,8 @@
   pointer-events: all;
 }
 .entry .onoffswitch input + span::before {
-  width: 9px;
-  height: 9px;
+  width: 7px;
+  height: 7px;
   left: 2px;
   right: auto;
   margin: auto;
