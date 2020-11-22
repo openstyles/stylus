@@ -258,15 +258,15 @@ a:hover {
 }
 
 .disabled h2 .style-name-link,
-.disabled .actions,
-.disabled .applies-to {
-  opacity: 0.6;
+.disabled .applies-to,
+.newUI .disabled.entry .svg-icon {
+  color: #888;
+  fill: #c4c4c4;
   font-weight: normal;
-  transition: opacity .5s .1s;
+  transition: color .5s .1s, fill .5s .1s;
 }
-.disabled h2 .style-name-link {
-  opacity: 1;
-  color: #999;
+.disabled.usercss .style-name-link::after {
+  background-color: hsla(180, 35%, 50%, .2);
 }
 
 .disabled:hover .actions {
@@ -338,10 +338,6 @@ a:hover {
   display: table;
   margin-top: .75rem;
   margin-bottom: .75rem;
-}
-
-.newUI .disabled {
-  opacity: 1;
 }
 
 .newUI .entry {

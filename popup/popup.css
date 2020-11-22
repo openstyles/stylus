@@ -220,9 +220,17 @@ html[style] .entry-content {
   opacity: 1;
 }
 
-.entry.disabled .style-name {
+.entry.disabled .style-name,
+.entry.disabled .svg-icon {
   font-weight: normal;
-  color: #999;
+  color: #888;
+  fill: #aaa;
+}
+.entry.disabled:hover .svg-icon {
+    fill: #666;
+}
+.entry.disabled:hover a:hover .svg-icon {
+    fill: #000;
 }
 
 .entry .main-controls {
