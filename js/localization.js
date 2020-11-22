@@ -19,7 +19,7 @@ Object.assign(t, {
     /((?!\s)\W){10}/,
     ')',
     /(?!\b|\s|$)/,
-  ].map(rx => rx.source || rx).join(''), 'g'),
+  ].map(rx => rx.source || rx).join(''), 'gu'),
 
   HTML(html) {
     return typeof html !== 'string'
