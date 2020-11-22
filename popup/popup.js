@@ -3,18 +3,22 @@
   $$
   $create
   animateElement
+  ABOUT_BLANK
   API
   CHROME
   CHROME_HAS_BORDER_BUG
   configDialog
   FIREFOX
   getActiveTab
+  getStyleDataMerged
   hotkeys
+  initializing
   msg
   onDOMready
   prefs
   setupLivePrefs
   t
+  tabURL
   tryJSONparse
   URLS
 */
@@ -23,11 +27,8 @@
 
 /** @type Element */
 let installed;
-/** @type string */
-let tabURL;
 const handleEvent = {};
 
-const ABOUT_BLANK = 'about:blank';
 const ENTRY_ID_PREFIX_RAW = 'style-';
 
 $.entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrId}`);
@@ -38,28 +39,21 @@ if (CHROME >= 66 && CHROME <= 69) { // Chrome 66-69 adds a gap, https://crbug.co
 
 toggleSideBorders();
 
-initTabUrls()
-  .then(frames =>
-    Promise.all([
-      onDOMready().then(() => initPopup(frames)),
-      ...frames
-        .filter(f => f.url && !f.isDupe)
-        .map(({url}) => getStyleDataMerged(url).then(styles => ({styles, url}))),
-    ]))
-  .then(([, ...results]) => {
-    const sliders = prefs.get('ui.sliders');
-    const slot = $('toggle', t.template.style);
-    const toggle = t.template[sliders ? 'toggleSlider' : 'toggleChecker'];
-    slot.parentElement.replaceChild(toggle.cloneNode(true), slot);
-    document.body.classList.toggle('has-sliders', sliders);
-    if (results[0]) {
-      showStyles(results);
-    } else {
-      // unsupported URL;
-      $('#popup-manage-button').removeAttribute('title');
-    }
-  })
-  .catch(console.error);
+Promise.all([
+  initializing,
+  onDOMready(),
+]).then(([
+  {frames, styles},
+]) => {
+  toggleUiSliders();
+  initPopup(frames);
+  if (styles[0]) {
+    showStyles(styles);
+  } else {
+    // unsupported URL;
+    $('#popup-manage-button').removeAttribute('title');
+  }
+});
 
 msg.onExtension(onRuntimeMessage);
 
@@ -109,23 +103,12 @@ function toggleSideBorders(state = prefs.get('popup.borders')) {
   }
 }
 
-async function initTabUrls() {
-  let tab = await getActiveTab();
-  if (FIREFOX && tab.status === 'loading' && tab.url === ABOUT_BLANK) {
-    tab = await waitForTabUrlFF(tab);
-  }
-  let frames = await browser.webNavigation.getAllFrames({tabId: tab.id});
-  let url = tab.pendingUrl || tab.url || ''; // new Chrome uses pendingUrl while connecting
-  frames = sortTabFrames(frames);
-  if (url === 'chrome://newtab/' && !URLS.chromeProtectsNTP) {
-    url = frames[0].url || '';
-  }
-  if (!URLS.supported(url)) {
-    url = '';
-    frames.length = 1;
-  }
-  tabURL = frames[0].url = url;
-  return frames;
+function toggleUiSliders() {
+  const sliders = prefs.get('ui.sliders');
+  const slot = $('toggle', t.template.style);
+  const toggle = t.template[sliders ? 'toggleSlider' : 'toggleChecker'];
+  slot.parentElement.replaceChild(toggle.cloneNode(true), slot);
+  document.body.classList.toggle('has-sliders', sliders);
 }
 
 /** @param {chrome.webNavigation.GetAllFrameResultDetails[]} frames */
@@ -158,6 +141,10 @@ async function initPopup(frames) {
       installed);
   }
 
+  for (const el of $$('link[media=print]')) {
+    el.removeAttribute('media');
+  }
+
   if (!tabURL) {
     blockPopup();
     return;
@@ -188,6 +175,11 @@ async function initPopup(frames) {
     // so we'll wait a bit to handle popup being invoked right after switching
     await new Promise(resolve => setTimeout(resolve, 100));
   }
+
+  initUnreachable(isStore);
+}
+
+function initUnreachable(isStore) {
   const info = t.template.unreachableInfo;
   if (!FIREFOX) {
     // Chrome "Allow access to file URLs" in chrome://extensions message
@@ -292,32 +284,6 @@ function getDomains(url) {
     domains.push(d);
   }
   return domains;
-}
-
-/** @param {chrome.webNavigation.GetAllFrameResultDetails[]} frames */
-function sortTabFrames(frames) {
-  const unknown = new Map(frames.map(f => [f.frameId, f]));
-  const known = new Map([[0, unknown.get(0) || {frameId: 0, url: ''}]]);
-  unknown.delete(0);
-  let lastSize = 0;
-  while (unknown.size !== lastSize) {
-    for (const [frameId, f] of unknown) {
-      if (known.has(f.parentFrameId)) {
-        unknown.delete(frameId);
-        if (!f.errorOccurred) known.set(frameId, f);
-        if (f.url === ABOUT_BLANK) f.url = known.get(f.parentFrameId).url;
-      }
-    }
-    lastSize = unknown.size; // guard against an infinite loop due to a weird frame structure
-  }
-  const sortedFrames = [...known.values(), ...unknown.values()];
-  const urls = new Set([ABOUT_BLANK]);
-  for (const f of sortedFrames) {
-    if (!f.url) f.url = '';
-    f.isDupe = urls.has(f.url);
-    urls.add(f.url);
-  }
-  return sortedFrames;
 }
 
 function sortStyles(entries) {
@@ -695,29 +661,6 @@ function handleDelete(id) {
     el.remove();
     if (!$('.entry')) installed.appendChild(t.template.noStyles);
   }
-}
-
-function waitForTabUrlFF(tab) {
-  return new Promise(resolve => {
-    browser.tabs.onUpdated.addListener(...[
-      function onUpdated(tabId, info, updatedTab) {
-        if (info.url && tabId === tab.id) {
-          chrome.tabs.onUpdated.removeListener(onUpdated);
-          resolve(updatedTab);
-        }
-      },
-      ...'UpdateFilter' in browser.tabs ? [{tabId: tab.id}] : [],
-      // TODO: remove both spreads and tabId check when strict_min_version >= 61
-    ]);
-  });
-}
-
-/* Merges the extra props from API into style data.
- * When `id` is specified returns a single object otherwise an array */
-async function getStyleDataMerged(url, id) {
-  const styles = (await API.getStylesByUrl(url, id))
-    .map(r => Object.assign(r.data, r));
-  return id ? styles[0] : styles;
 }
 
 function blockPopup(isBlocked = true) {
