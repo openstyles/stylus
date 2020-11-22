@@ -54,7 +54,11 @@ Object.assign(newUI, {
     id === 'sliders' ? `ui.${id}` :
       id === 'enabled' ? 'manage.newUI' :
         `manage.newUI.${id}`,
-  renderClass: () => document.documentElement.classList.toggle('newUI', newUI.enabled),
+  renderClass: () => {
+    const cl = document.documentElement.classList;
+    cl.toggle('newUI', newUI.enabled);
+    cl.toggle('oldUI', !newUI.enabled);
+  },
   tpl: {
     getToggle() {
       return t.template[newUI.sliders ? 'toggleSlider' : 'toggleChecker'].cloneNode(true);
@@ -112,6 +116,7 @@ const handleEvent = {};
   // translate CSS manually
   document.styleSheets[0].insertRule(
     `:root {${[
+      'genericDisabledLabel',
       'updateAllCheckSucceededSomeEdited',
       'filteredStylesAllHidden',
     ].map(id => `--${id}:"${CSS.escape(t(id))}";`).join('')
