@@ -12,6 +12,7 @@
   DirtyReporter
   DocFuncMapper
   FIREFOX
+  getEventKeyName
   getOwnTab
   initBeautifyButton
   linter
@@ -36,6 +37,7 @@ const editor = {
   isUsercss: false,
   previewDelay: 200, // Chrome devtools uses 200
 };
+let isSimpleWindow;
 let isWindowed;
 let headerHeight;
 
@@ -372,11 +374,34 @@ function lazyInit() {
     }
   }
   async function detectWindowedState() {
-    isWindowed =
+    isSimpleWindow =
+      (await browser.windows.getCurrent()).type === 'popup';
+    isWindowed = isSimpleWindow || (
       prefs.get('openEditInWindow') &&
       history.length === 1 &&
-      browser.windows.getAll().length > 1 &&
-      (await browser.tabs.query({currentWindow: true})).length === 1;
+      (await browser.windows.getAll()).length > 1 &&
+      (await browser.tabs.query({currentWindow: true})).length === 1
+    );
+    if (isSimpleWindow) {
+      await onDOMready();
+      initPopupButton();
+    }
+  }
+  function initPopupButton() {
+    const POPUP_HOTKEY = 'Shift-Ctrl-Alt-S';
+    const btn = $create('img', {
+      id: 'popup-button',
+      title: t('optionsCustomizePopup') + '\n' + POPUP_HOTKEY,
+      onclick: embedPopup,
+    });
+    const onIconsetChanged = (_, val) => {
+      const prefix = `images/icon/${val ? 'light/' : ''}`;
+      btn.srcset = `${prefix}16.png 1x,${prefix}32.png 2x`;
+    };
+    prefs.subscribe('iconset', onIconsetChanged, {now: true});
+    document.body.appendChild(btn);
+    window.on('keydown', e => getEventKeyName(e) === POPUP_HOTKEY && embedPopup());
+    CodeMirror.defaults.extraKeys[POPUP_HOTKEY] = 'openStylusPopup'; // adds to keymap help
   }
   async function onAttached(tabId, info) {
     if (tabId !== ownTabId) {
@@ -608,4 +633,57 @@ function isWindowMaximized() {
     window.outerWidth < screen.availWidth + 10 &&
     window.outerHeight < screen.availHeight + 10
   );
+}
+
+function embedPopup() {
+  const ID = 'popup-iframe';
+  const SEL = '#' + ID;
+  if ($(SEL)) return;
+  const frame = $create('iframe', {
+    id: ID,
+    src: chrome.runtime.getManifest().browser_action.default_popup,
+    height: 600,
+    width: prefs.get('popupWidth'),
+    onload() {
+      frame.onload = null;
+      frame.focus();
+      const pw = frame.contentWindow;
+      pw.on('keydown', e => getEventKeyName(e) === 'Escape' && embedPopup._close());
+      pw.close = embedPopup._close;
+      if (pw.IntersectionObserver) {
+        let loaded;
+        new pw.IntersectionObserver(([e]) => {
+          const el = pw.document.scrollingElement;
+          const h = e.isIntersecting && !pw.scrollY ? el.offsetHeight : el.scrollHeight;
+          const hasSB = h > el.offsetHeight;
+          frame.height = h;
+          if (!hasSB !== !frame._scrollbarWidth) {
+            frame._scrollbarWidth = hasSB ? e.boundingClientRect.width - el.offsetWidth : 0;
+            frame.width = prefs.get('popupWidth') + frame._scrollbarWidth;
+          }
+          if (!loaded) {
+            loaded = true;
+            frame.dataset.loaded = '';
+          }
+        }).observe(pw.document.body.appendChild(
+          $create('div', {style: {height: '1px', marginTop: '-1px'}})
+        ));
+      } else {
+        frame.dataset.loaded = '';
+        frame.height = pw.document.body.scrollHeight;
+      }
+    },
+  });
+  if (!embedPopup._close) {
+    embedPopup._close = () => {
+      $.remove(SEL);
+      window.off('mousedown', embedPopup._close);
+    };
+    prefs.subscribe('popupWidth', (_, w) => {
+      const el = $(SEL);
+      if (el) el.width = w + el._scrollbarWidth;
+    }, {now: true});
+  }
+  window.on('mousedown', embedPopup._close);
+  document.body.appendChild(frame);
 }
