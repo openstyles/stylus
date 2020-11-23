@@ -387,9 +387,10 @@ function focusAccessibility() {
 }
 
 /**
- * Switches to the next/previous keyboard-focusable element
+ * Switches to the next/previous keyboard-focusable element.
+ * Doesn't check `visibility` or `display` via getComputedStyle for simplicity.
  * @param {HTMLElement} rootElement
- * @param {Number} step - for exmaple 1 or -1
+ * @param {Number} step - for exmaple 1 or -1 (or 0 to focus the first focusable el in the box)
  * @returns {HTMLElement|false|undefined} -
  *   HTMLElement: focus changed,
  *   false: focus unchanged,
@@ -397,16 +398,15 @@ function focusAccessibility() {
  */
 function moveFocus(rootElement, step) {
   const elements = [...rootElement.getElementsByTagName('*')];
-  const activeIndex = Math.max(0, elements.indexOf(document.activeElement));
+  const activeEl = document.activeElement;
+  const activeIndex = step ? Math.max(step < 0 ? 0 : -1, elements.indexOf(activeEl)) : -1;
   const num = elements.length;
-  const {activeElement} = document;
+  if (!step) step = 1;
   for (let i = 1; i < num; i++) {
-    const elementIndex = (activeIndex + i * step + num) % num;
-    // we don't use positive tabindex so we stop at any valid value
-    const el = elements[elementIndex];
+    const el = elements[(activeIndex + i * step + num) % num];
     if (!el.disabled && el.tabIndex >= 0) {
       el.focus();
-      return activeElement !== el && el;
+      return activeEl !== el && el;
     }
   }
 }
@@ -461,4 +461,19 @@ function setupLivePrefs(
       input.dispatchEvent(new Event('change', {bubbles: true, cancelable: true}));
     }
   }
+}
+
+/* exported getEventKeyName */
+/**
+ * @param {KeyboardEvent} e
+ * @param {boolean} [letterAsCode] - use locale-independent KeyA..KeyZ for single-letter chars
+ */
+function getEventKeyName(e, letterAsCode) {
+  const mods =
+    (e.shiftKey ? 'Shift-' : '') +
+    (e.ctrlKey ? 'Ctrl-' : '') +
+    (e.altKey ? 'Alt-' : '') +
+    (e.metaKey ? 'Meta-' : '');
+  return (mods === e.key + '-' ? '' : mods) +
+    (e.key.length === 1 && letterAsCode ? e.code : e.key);
 }

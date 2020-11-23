@@ -729,11 +729,6 @@ body.blocked .actions > .main-controls {
   display: flex;
 }
 
-#confirm[data-display=true] + #installed .menu[data-display=true] {
-  opacity: 0;
-  pointer-events: none;
-}
-
 #confirm > div {
   width: 80%;
   max-height: 80%;
