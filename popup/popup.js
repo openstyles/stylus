@@ -10,9 +10,11 @@
   configDialog
   FIREFOX
   getActiveTab
+  getEventKeyName
   getStyleDataMerged
   hotkeys
   initializing
+  moveFocus
   msg
   onDOMready
   prefs
@@ -30,6 +32,7 @@ let installed;
 const handleEvent = {};
 
 const ENTRY_ID_PREFIX_RAW = 'style-';
+const MODAL_SHOWN = 'data-display'; // attribute name
 
 $.entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrId}`);
 
@@ -134,6 +137,19 @@ async function initPopup(frames) {
   };
 
   $('#popup-wiki-button').onclick = handleEvent.openURLandHide;
+
+  $('#confirm').onclick = function (e) {
+    const {id} = this.dataset;
+    switch (e.target.dataset.cmd) {
+      case 'ok':
+        hideModal(this, {animate: true});
+        API.deleteStyle(Number(id));
+        break;
+      case 'cancel':
+        showModal($('.menu', $.entry(id)), '.menu-close');
+        break;
+    }
+  };
 
   if (!prefs.get('popup.stylesFirst')) {
     document.body.insertBefore(
@@ -468,88 +484,20 @@ Object.assign(handleEvent, {
   toggleMenu(event) {
     const entry = handleEvent.getClickedStyleElement(event);
     const menu = $('.menu', entry);
-    const menuActive = $('.menu[data-display=true]');
-    if (menuActive) {
-      // fade-out style menu
-      animateElement(menu, 'lights-on')
-        .then(() => (menu.dataset.display = false));
-      window.onkeydown = null;
+    if (menu.hasAttribute(MODAL_SHOWN)) {
+      hideModal(menu, {animate: true});
     } else {
       $('.menu-title', entry).textContent = $('.style-name', entry).textContent;
-      menu.dataset.display = true;
-      menu.style.cssText = '';
-      window.onkeydown = event => {
-        const close = $('.menu-close', entry);
-        const checkbox = $('.exclude-by-domain-checkbox', entry);
-        if (document.activeElement === close && (event.key === 'Tab') && !event.shiftKey) {
-          event.preventDefault();
-          checkbox.focus();
-        }
-        if (document.activeElement === checkbox && (event.key === 'Tab') && event.shiftKey) {
-          event.preventDefault();
-          close.focus();
-        }
-        if (event.key === 'Escape') {
-          event.preventDefault();
-          close.click();
-        }
-      };
+      showModal(menu, '.menu-close');
     }
-    event.preventDefault();
   },
 
   delete(event) {
     const entry = handleEvent.getClickedStyleElement(event);
-    const id = entry.styleId;
     const box = $('#confirm');
-    const menu = $('.menu', entry);
-    const cancel = $('[data-cmd="cancel"]', box);
-    const affirm = $('[data-cmd="ok"]', box);
-    box.dataset.display = true;
-    box.style.cssText = '';
+    box.dataset.id = entry.styleId;
     $('b', box).textContent = $('.style-name', entry).textContent;
-    affirm.focus();
-    affirm.onclick = () => confirm(true);
-    cancel.onclick = () => confirm(false);
-    window.onkeydown = event => {
-      const close = $('.menu-close', entry);
-      const checkbox = $('.exclude-by-domain-checkbox', entry);
-      const confirmActive = $('#confirm[data-display="true"]');
-      const {key} = event;
-      if (document.activeElement === cancel && (key === 'Tab')) {
-        event.preventDefault();
-        affirm.focus();
-      }
-      if (document.activeElement === close && (key === 'Tab') && !event.shiftKey) {
-        event.preventDefault();
-        checkbox.focus();
-      }
-      if (document.activeElement === checkbox && (key === 'Tab') && event.shiftKey) {
-        event.preventDefault();
-        close.focus();
-      }
-      if (key === 'Escape') {
-        event.preventDefault();
-        if (confirmActive) {
-          box.dataset.display = false;
-          menu.focus();
-        } else {
-          close.click();
-        }
-      }
-    };
-    function confirm(ok) {
-      if (ok) {
-        // fade-out deletion confirmation dialog
-        animateElement(box, 'lights-on')
-          .then(() => (box.dataset.display = false));
-        window.onkeydown = null;
-        API.deleteStyle(id);
-      } else {
-        box.dataset.display = false;
-        menu.focus();
-      }
-    }
+    showModal(box, '[data-cmd=cancel]');
   },
 
   configure(event) {
@@ -671,4 +619,40 @@ function blockPopup(isBlocked = true) {
     t.template.unavailableInfo.remove();
     t.template.noStyles.remove();
   }
+}
+
+function showModal(box, cancelButtonSelector) {
+  const oldBox = $(`[${MODAL_SHOWN}]`);
+  if (oldBox) box.style.animationName = 'none';
+  // '' would be fine but 'true' is backward-compatible with the existing userstyles
+  box.setAttribute(MODAL_SHOWN, 'true');
+  box._onkeydown = e => {
+    const key = getEventKeyName(e);
+    switch (key) {
+      case 'Tab':
+      case 'Shift-Tab':
+        e.preventDefault();
+        moveFocus(box, e.shiftKey ? -1 : 1);
+        break;
+      case 'Escape': {
+        e.preventDefault();
+        window.onkeydown = null;
+        $(cancelButtonSelector, box).click();
+        break;
+      }
+    }
+  };
+  window.on('keydown', box._onkeydown);
+  moveFocus(box, 0);
+  hideModal(oldBox);
+}
+
+async function hideModal(box, {animate} = {}) {
+  window.off('keydown', box._onkeydown);
+  box._onkeydown = null;
+  if (animate) {
+    box.style.animationName = '';
+    await animateElement(box, 'lights-on');
+  }
+  box.removeAttribute(MODAL_SHOWN);
 }
