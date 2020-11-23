@@ -29,6 +29,35 @@ body {
   display: none !important;
 }
 
+
+/************ embedded popup for simple-window editor ************/
+#popup-iframe {
+  max-height: 600px;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 1001;
+  border: none;
+  background: #fff;
+  box-shadow: 0 0 30px #000;
+}
+#popup-iframe:not([data-loaded]) {
+  opacity: 0;
+}
+#popup-button {
+  position: fixed;
+  right: 7px;
+  top: 11px;
+  z-index: 1000;
+  cursor: pointer;
+  transition: filter .25s;
+}
+#popup-button:hover {
+  filter: drop-shadow(0 0 3px hsl(180, 70%, 50%));
+}
+body:not(.compact-layout) #popup-button {
+  right: 24px;
+}
 /************ checkbox & select************/
 .options-column > div[class="option"] {
   margin-bottom: 4px;
