@@ -36,8 +36,9 @@ body.search-results-shown {
 
 .search-result,
 .search-result-empty {
+  --pad: 8px;
   position: relative;
-  padding: 8px 8px 21px;
+  padding: var(--pad) var(--pad) 21px;
   min-height: 160px;
 }
 
@@ -207,6 +208,14 @@ body.search-results-shown {
   position: absolute;
   width: 100%;
   margin-top: 4px;
+}
+
+.not-matching-explainer {
+  padding: var(--pad);
+  margin: calc(-1 * var(--pad)) calc(-1 * var(--pad)) var(--pad);
+  border-bottom: 2px solid hsla(25, 100%, 60%, .5);
+  background-color: hsla(25, 100%, 60%, .2);
+  cursor: help;
 }
 
 .search-results-nav {
