@@ -278,6 +278,12 @@ function $create(selector = 'div', properties, children) {
     delete opt.attributes;
   }
 
+  if (opt.style) {
+    if (typeof opt.style === 'string') element.style.cssText = opt.style;
+    if (typeof opt.style === 'object') Object.assign(element.style, opt.style);
+    delete opt.style;
+  }
+
   if (ns) {
     for (const attr in opt) {
       const i = attr.indexOf(':') + 1;
