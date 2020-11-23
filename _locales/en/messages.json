@@ -1280,6 +1280,12 @@
     "message": "No styles found for this site.",
     "description": "Error text in the popup when inline search didn't find any site-specific styles"
   },
+  "searchResultNotMatching": {
+    "message": "The style is installed but it doesn't apply to the current site URL."
+  },
+  "searchResultNotMatchingNote": {
+    "message": "Try asking the author of this userstyle to add the URL.\n\nYou can also open the style in the manager and edit it yourself,\nbut be aware it disables automatic updates for this style."
+  },
   "searchResultRating": {
     "message": "Rating",
     "description": "Text for label that shows the search result's rating"

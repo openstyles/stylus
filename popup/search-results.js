@@ -366,6 +366,15 @@ window.addEventListener('showStyles:done', () => {
       $('.search-result-status', entry).textContent = '';
       hide('.search-result-customize', entry);
     }
+    const notMatching = installedId > 0 && !$.entry(installedId);
+    if (notMatching !== entry.classList.contains('not-matching')) {
+      entry.classList.toggle('not-matching');
+      if (notMatching) {
+        entry.prepend(t.template.searchResultNotMatching.cloneNode(true));
+      } else {
+        entry.firstElementChild.remove();
+      }
+    }
     Object.assign($('.search-result-screenshot', entry), {
       onclick: isInstalled ? uninstall : install,
       title: isInstalled ? '' : t('installButton'),
