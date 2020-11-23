@@ -104,7 +104,7 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
 }
 
 #no-styles {
-  padding: 4px var(--outer-padding) 6px;
+  padding: 6px var(--outer-padding);
   font-weight: bold;
 }
 
