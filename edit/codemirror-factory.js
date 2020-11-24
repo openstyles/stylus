@@ -405,6 +405,14 @@
   const BRAND = 'sublimeBookmark';
   const CLICK_AREA = 'CodeMirror-linenumbers';
   const {markText} = CodeMirror.prototype;
+  for (const name of ['prevBookmark', 'nextBookmark']) {
+    const cmdFn = CodeMirror.commands[name];
+    CodeMirror.commands[name] = cm => {
+      cm.setSelection = cm.jumpToPos;
+      cmdFn(cm);
+      delete cm.setSelection;
+    };
+  }
   CodeMirror.defineInitHook(cm => {
     cm.on('gutterClick', onGutterClick);
     cm.on('gutterContextMenu', onGutterContextMenu);
@@ -446,9 +454,7 @@
   }
   function onGutterContextMenu(cm, line, name, e) {
     if (name === CLICK_AREA) {
-      cm.setSelection = cm.jumpToPos;
       cm.execCommand(e.ctrlKey ? 'prevBookmark' : 'nextBookmark');
-      delete cm.setSelection;
       e.preventDefault();
     }
   }
