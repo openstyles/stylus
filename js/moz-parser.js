@@ -22,7 +22,7 @@ function parseMozFormat({code, styleId}) {
   const sectionStack = [{code: '', start: 0}];
   const errors = [];
   const sections = [];
-  const mozStyle = code;
+  const mozStyle = code.replace(/\r\n?/g, '\n'); // same as parserlib.StringReader
 
   parser.addListener('startdocument', e => {
     const lastSection = sectionStack[sectionStack.length - 1];
