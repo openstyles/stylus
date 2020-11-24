@@ -766,6 +766,7 @@ a:hover {
   content: " " var(--updateAllCheckSucceededSomeEdited);
   font-weight: normal;
   display: block;
+  margin: .75em 0 .5em;
 }
 
 /* highlight updated/added styles */
