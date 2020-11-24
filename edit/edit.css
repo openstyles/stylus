@@ -55,7 +55,7 @@ body {
 #popup-button:hover {
   filter: drop-shadow(0 0 3px hsl(180, 70%, 50%));
 }
-body:not(.compact-layout) #popup-button {
+.usercss body:not(.compact-layout) #popup-button {
   right: 24px;
 }
 /************ checkbox & select************/
