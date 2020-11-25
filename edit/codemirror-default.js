@@ -128,13 +128,16 @@
      * @param {CodeMirror.Pos} pos
      */
     jumpToPos(pos) {
+      const {curOp} = this;
+      if (!curOp) this.startOperation();
       const coords = this.cursorCoords(pos, 'page');
       const b = this.display.wrapper.getBoundingClientRect();
-      if (coords.top < b.top + this.defaultTextHeight() * 2 ||
-          coords.bottom > b.bottom - 100) {
+      if (coords.top < Math.max(0, b.top + this.defaultTextHeight() * 2) ||
+          coords.bottom > Math.min(window.innerHeight, b.bottom - 100)) {
         this.scrollIntoView(pos, b.height / 2);
       }
-      this.setCursor(pos, null, {scroll: false});
+      this.setCursor(pos);
+      if (!curOp) this.endOperation();
     },
   });
 
