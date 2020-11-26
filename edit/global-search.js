@@ -23,7 +23,6 @@ onDOMready().then(() => {
   const ANNOTATE_SCROLLBAR_DELAY = 350;
   const ANNOTATE_SCROLLBAR_OPTIONS = {maxMatches: 10e3};
   const STORAGE_UPDATE_DELAY = 500;
-  const SCROLL_REVEAL_MIN_PX = 50;
 
   const DIALOG_SELECTOR = '#search-replace-dialog';
   const DIALOG_STYLE_SELECTOR = '#search-replace-dialog-style';
@@ -80,8 +79,8 @@ onDOMready().then(() => {
                 const cm = target.CodeMirror;
                 (cm || target).focus();
                 if (cm) {
-                  const pos = cm.state.search.searchPos;
-                  cm.setSelection(pos.from, pos.to);
+                  const {from, to} = cm.state.search.searchPos;
+                  cm.jumpToPos(from, to);
                 }
               }
               destroyDialog({restoreFocus: !found});
@@ -784,21 +783,20 @@ onDOMready().then(() => {
   function makeMatchVisible(cm, searchCursor) {
     const canFocus = !state.firstRun && (!state.dialog || !state.dialog.contains(document.activeElement));
     state.cm = cm;
-
     // scroll within the editor
+    const pos = searchCursor.pos;
     Object.assign(getStateSafe(cm), {
       cursorPos: {
         from: cm.getCursor('from'),
         to: cm.getCursor('to'),
       },
-      searchPos: searchCursor.pos,
+      searchPos: pos,
       unclosedOp: !cm.curOp,
     });
     if (!cm.curOp) cm.startOperation();
     if (!state.firstRun) {
       editor.scrollToEditor(cm);
-      cm.setSelection(searchCursor.pos.from, searchCursor.pos.to);
-      cm.scrollIntoView(searchCursor.pos, SCROLL_REVEAL_MIN_PX);
+      cm.jumpToPos(pos.from, pos.to);
     }
     // focus or expose as the current search target
     clearMarker();
@@ -808,7 +806,6 @@ onDOMready().then(() => {
     } else {
       makeTargetVisible(cm.display.wrapper);
       // mark the match
-      const pos = searchCursor.pos;
       state.marker = cm.state.search.marker = cm.markText(pos.from, pos.to, {
         className: MATCH_CLASS,
         clearOnEnter: true,

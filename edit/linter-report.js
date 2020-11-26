@@ -156,6 +156,6 @@ Object.assign(linter, (() => {
   function gotoLintIssue(cm, anno) {
     editor.scrollToEditor(cm);
     cm.focus();
-    cm.setSelection(anno.from);
+    cm.jumpToPos(anno.from);
   }
 })());

@@ -126,17 +126,18 @@
     /**
      * Sets cursor and centers it in view if `pos` was out of view
      * @param {CodeMirror.Pos} pos
+     * @param {CodeMirror.Pos} [end] - will set a selection from `pos` to `end`
      */
-    jumpToPos(pos) {
+    jumpToPos(pos, end = pos) {
       const {curOp} = this;
       if (!curOp) this.startOperation();
-      const coords = this.cursorCoords(pos, 'page');
+      const coords = this.cursorCoords(pos, 'window');
       const b = this.display.wrapper.getBoundingClientRect();
       if (coords.top < Math.max(0, b.top + this.defaultTextHeight() * 2) ||
           coords.bottom > Math.min(window.innerHeight, b.bottom - 100)) {
         this.scrollIntoView(pos, b.height / 2);
       }
-      this.setCursor(pos);
+      CodeMirror.prototype.setSelection.call(this, pos, end);
       if (!curOp) this.endOperation();
     },
   });
