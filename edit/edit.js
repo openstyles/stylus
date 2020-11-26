@@ -300,7 +300,11 @@ lazyInit();
   }
 
   function updateTitle(isDirty = dirty.isDirty()) {
-    document.title = `${isDirty ? '* ' : ''}${style.customName || style.name}`;
+    document.title = `${
+      isDirty ? '* ' : ''
+    }${
+      style.customName || style.name || t('addStyleLabel')
+    } - Stylus`; // the suffix enables external utilities to process our windows e.g. pin on top
   }
 
   function updateLinter(key, value) {
