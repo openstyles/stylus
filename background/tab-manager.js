@@ -8,9 +8,9 @@ const tabManager = (() => {
   chrome.tabs.onRemoved.addListener(tabId => cache.delete(tabId));
   chrome.tabs.onReplaced.addListener((added, removed) => cache.delete(removed));
   navigatorUtil.onUrlChange(({tabId, frameId, url}) => {
+    const oldUrl = !frameId && tabManager.get(tabId, 'url', frameId);
+    tabManager.set(tabId, 'url', frameId, url);
     if (frameId) return;
-    const oldUrl = tabManager.get(tabId, 'url');
-    tabManager.set(tabId, 'url', url);
     for (const fn of listeners) {
       try {
         fn({tabId, url, oldUrl});
