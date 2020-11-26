@@ -471,7 +471,7 @@ function setupLivePrefs(
 
 /* exported getEventKeyName */
 /**
- * @param {KeyboardEvent} e
+ * @param {KeyboardEvent|MouseEvent} e
  * @param {boolean} [letterAsCode] - use locale-independent KeyA..KeyZ for single-letter chars
  */
 function getEventKeyName(e, letterAsCode) {
@@ -480,6 +480,11 @@ function getEventKeyName(e, letterAsCode) {
     (e.ctrlKey ? 'Ctrl-' : '') +
     (e.altKey ? 'Alt-' : '') +
     (e.metaKey ? 'Meta-' : '');
-  return (mods === e.key + '-' ? '' : mods) +
-    (e.key.length === 1 && letterAsCode ? e.code : e.key);
+  return `${
+    mods === e.key + '-' ? '' : mods
+  }${
+    e.key
+      ? e.key.length === 1 && letterAsCode ? e.code : e.key
+      : 'LMR'[e.button]
+  }`;
 }
