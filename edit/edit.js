@@ -303,7 +303,7 @@ lazyInit();
     document.title = `${
       isDirty ? '* ' : ''
     }${
-      style.customName || style.name || t('addStyleLabel')
+      style.customName || style.name || t('styleMissingName')
     } - Stylus`; // the suffix enables external utilities to process our windows e.g. pin on top
   }
 
