@@ -8,6 +8,7 @@
   stringAsRegExp
   styleCodeEmpty
   styleSectionGlobal
+  tabManager
   tryRegExp
   URLS
 */
@@ -148,6 +149,10 @@ const styleManager = API.styles = (() => {
     /** @returns {Promise<StyleSectionsToApply>} */
     async getSectionsByUrl(url, id, isInitialApply) {
       await ready;
+      /* Chrome hides text frament from location.href of the page e.g. #:~:text=foo
+         so we'll use the real URL reported by webNavigation API */
+      const {tab, frameId} = this.sender;
+      url = tab && tabManager.get(tab.id, 'url', frameId) || url;
       let cache = cachedStyleForUrl.get(url);
       if (!cache) {
         cache = {
