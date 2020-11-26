@@ -38,11 +38,9 @@ const db = (() => {
   }
 
   async function testDB() {
-    let e = await dbExecIndexedDB('getAllKeys', IDBKeyRange.lowerBound(1), 1);
-    e = e[0]; // throws if result is null
     const id = `${performance.now()}.${Math.random()}.${Date.now()}`;
     await dbExecIndexedDB('put', {id});
-    e = await dbExecIndexedDB('get', id);
+    const e = await dbExecIndexedDB('get', id);
     await dbExecIndexedDB('delete', e.id); // throws if `e` or id is null
   }
 
