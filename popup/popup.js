@@ -48,7 +48,6 @@ Promise.all([
 ]).then(([
   {frames, styles},
 ]) => {
-  toggleUiSliders();
   initPopup(frames);
   if (styles[0]) {
     showStyles(styles);
@@ -104,14 +103,6 @@ function toggleSideBorders(state = prefs.get('popup.borders')) {
   } else if (style.cssText) {
     style.borderLeft = style.borderRight = '';
   }
-}
-
-function toggleUiSliders() {
-  const sliders = prefs.get('ui.sliders');
-  const slot = $('toggle', t.template.style);
-  const toggle = t.template[sliders ? 'toggleSlider' : 'toggleChecker'];
-  slot.parentElement.replaceChild(toggle.cloneNode(true), slot);
-  document.body.classList.toggle('has-sliders', sliders);
 }
 
 /** @param {chrome.webNavigation.GetAllFrameResultDetails[]} frames */

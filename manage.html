@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title i18n-text="manageTitle"></title>
   <link rel="stylesheet" href="global.css">
-  <link rel="stylesheet" href="options/onoffswitch.css">
   <link rel="stylesheet" href="manage/manage.css">
   <link rel="stylesheet" href="manage/config-dialog.css">
   <link rel="stylesheet" href="msgbox/msgbox.css">
+  <link rel="stylesheet" href="options/onoffswitch.css">
   <link rel="stylesheet" href="vendor-overwrites/colorpicker/colorpicker.css">
 
   <style id="firefox-transitions-bug-suppressor">
@@ -58,7 +58,10 @@
   <template data-id="styleNewUI">
     <div class="entry">
       <h2 class="style-name">
-        <toggle></toggle>
+        <div class="checkmate">
+          <input class="checker" type="checkbox" i18n-title="toggleStyle">
+          <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+        </div>
         <a class="style-name-link">
           &nbsp;
           <span class="style-info" data-type="version"></span>
@@ -78,20 +81,6 @@
         <div class="targets"></div>
         <a href="#" class="expander" tabindex="0">...</a>
       </div>
-    </div>
-  </template>
-
-  <template data-id="toggleChecker">
-    <div class="checkmate">
-      <input class="checker" type="checkbox" i18n-title="toggleStyle">
-      <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-    </div>
-  </template>
-
-  <template data-id="toggleSlider">
-    <div class="onoffswitch">
-      <input class="slider" type="checkbox" i18n-title="toggleStyle">
-      <span></span>
     </div>
   </template>
 

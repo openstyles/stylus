@@ -44,34 +44,14 @@ const newUI = {
   enabled: null, // the global option should come first
   favicons: null,
   faviconsGray: null,
-  sliders: null,
   targets: null,
 };
 // ...add utility functions
 Object.assign(newUI, {
   ids: Object.keys(newUI),
-  prefKeyForId: id =>
-    id === 'sliders' ? `ui.${id}` :
-      id === 'enabled' ? 'manage.newUI' :
-        `manage.newUI.${id}`,
-  renderClass: () => {
-    const cl = document.documentElement.classList;
-    cl.toggle('newUI', newUI.enabled);
-    cl.toggle('oldUI', !newUI.enabled);
-  },
-  tpl: {
-    getToggle() {
-      return t.template[newUI.sliders ? 'toggleSlider' : 'toggleChecker'].cloneNode(true);
-    },
-    getEntry() {
-      const tpl = t.template[newUI.enabled ? 'styleNewUI' : 'style'].cloneNode(true);
-      if (newUI.enabled) {
-        const slot = $('toggle', tpl);
-        slot.parentElement.replaceChild(newUI.tpl.getToggle(), slot);
-      }
-      return tpl;
-    },
-  },
+  prefGroup: 'manage.newUI',
+  prefKeyForId: id => id === 'enabled' ? newUI.prefGroup : `${newUI.prefGroup}.${id}`,
+  renderClass: () => document.documentElement.classList.toggle('newUI', newUI.enabled),
 });
 // ...read the actual values
 for (const id of newUI.ids) {
@@ -211,7 +191,7 @@ function showStyles(styles = [], matchUrlIds) {
 function createStyleElement({style, name: nameLC}) {
   // query the sub-elements just once, then reuse the references
   if ((createStyleElement.parts || {}).newUI !== newUI.enabled) {
-    const entry = newUI.tpl.getEntry();
+    const entry = t.template[newUI.enabled ? 'styleNewUI' : 'style'];
     createStyleElement.parts = {
       newUI: newUI.enabled,
       entry,
@@ -682,7 +662,6 @@ function switchUI({styleOnly} = {}) {
 
   Object.assign(newUI, current);
   newUI.renderClass();
-  installed.classList.toggle('has-sliders', newUI.enabled && newUI.sliders);
   installed.classList.toggle('has-favicons', newUI.enabled && newUI.favicons);
   installed.classList.toggle('favicons-grayed', newUI.enabled && newUI.faviconsGray);
   if (installed.style.getPropertyValue('--num-targets') !== `${newUI.targets}`) {
@@ -699,15 +678,6 @@ function switchUI({styleOnly} = {}) {
     installed.textContent = '';
     API.getAllStyles().then(showStyles);
     return;
-  }
-  if (changed.sliders && newUI.enabled) {
-    const dst = newUI.tpl.getToggle();
-    const dstChecker = $('input', dst);
-    for (const entry of installed.children) {
-      const src = $('.checkmate, .onoffswitch', entry);
-      dstChecker.checked = entry.classList.contains('enabled');
-      src.parentElement.replaceChild(dst.cloneNode(true), src);
-    }
   }
   if (changed.targets) {
     for (const entry of installed.children) {
