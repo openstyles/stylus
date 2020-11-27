@@ -652,6 +652,7 @@ function embedPopup() {
       frame.onload = null;
       frame.focus();
       const pw = frame.contentWindow;
+      const body = pw.document.body;
       pw.on('keydown', e => getEventKeyName(e) === 'Escape' && embedPopup._close());
       pw.close = embedPopup._close;
       if (pw.IntersectionObserver) {
@@ -660,33 +661,38 @@ function embedPopup() {
           const el = pw.document.scrollingElement;
           const h = e.isIntersecting && !pw.scrollY ? el.offsetHeight : el.scrollHeight;
           const hasSB = h > el.offsetHeight;
+          const {width} = e.boundingClientRect;
           frame.height = h;
-          if (!hasSB !== !frame._scrollbarWidth) {
-            frame._scrollbarWidth = hasSB ? e.boundingClientRect.width - el.offsetWidth : 0;
-            frame.width = prefs.get('popupWidth') + frame._scrollbarWidth;
+          if (!hasSB !== !frame._scrollbarWidth || frame.width - width) {
+            frame._scrollbarWidth = hasSB ? width - el.offsetWidth : 0;
+            frame.width = width + frame._scrollbarWidth;
           }
           if (!loaded) {
             loaded = true;
             frame.dataset.loaded = '';
           }
-        }).observe(pw.document.body.appendChild(
+        }).observe(body.appendChild(
           $create('div', {style: {height: '1px', marginTop: '-1px'}})
         ));
       } else {
         frame.dataset.loaded = '';
-        frame.height = pw.document.body.scrollHeight;
+        frame.height = body.scrollHeight;
       }
+      new pw.MutationObserver(() => {
+        const bs = body.style;
+        const w = parseFloat(bs.minWidth || bs.width) + (frame._scrollbarWidth || 0);
+        const h = parseFloat(bs.minHeight || body.offsetHeight);
+        if (frame.width - w) frame.width = w;
+        if (frame.height - h) frame.height = h;
+      }).observe(body, {attributes: true, attributeFilter: ['style']});
     },
   });
+  // saving the listener here so it's the same function reference for window.off
   if (!embedPopup._close) {
     embedPopup._close = () => {
       $.remove(SEL);
       window.off('mousedown', embedPopup._close);
     };
-    prefs.subscribe('popupWidth', (_, w) => {
-      const el = $(SEL);
-      if (el) el.width = w + el._scrollbarWidth;
-    }, {now: true});
   }
   window.on('mousedown', embedPopup._close);
   document.body.appendChild(frame);
