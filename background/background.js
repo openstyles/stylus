@@ -85,7 +85,7 @@ Object.assign(API, {
     tab = await getActiveTab();
     return isTabReplaceable(tab, url)
       ? activateTab(tab, {url})
-      : browser.tabs.create({url});
+      : browser.tabs.create({url}).then(activateTab); // activateTab unminimizes the window
   },
 
   /**
