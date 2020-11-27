@@ -277,7 +277,7 @@ function MozSectionWidget(
 
   function renderWidget(sec, old) {
     let widget = old && old.widget;
-    const height = funcHeight * (sec.funcs.length || 1) || undefined;
+    const height = Math.round(funcHeight * (sec.funcs.length || 1)) || undefined;
     const node = renderContainer(sec, widget);
     if (widget) {
       widget.node = node;

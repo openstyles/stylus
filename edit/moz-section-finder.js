@@ -142,12 +142,16 @@ function MozSectionFinder(cm) {
     }
     let op;
     let reusedAtStart = 0;
+    let reusedAtEnd = 0;
     const removed = sections.slice(cutAt, cutTo);
     for (const sec of added) {
       const i = removed.findIndex(isSameSection, sec);
       if (i >= 0) {
-        removed[i].funcs = sec.funcs; // use the new valueStart, valueEnd
+        const r = removed[i];
+        r.funcs = sec.funcs; // use the new valueStart, valueEnd
+        sec.mark = r.mark;
         removed[i] = null;
+        reusedAtEnd++;
         if (!op) reusedAtStart++;
       } else {
         if (!op) op = cm.curOp || (cm.startOperation(), true);
@@ -156,8 +160,11 @@ function MozSectionFinder(cm) {
           inclusiveRight: true,
           [KEY]: sec,
         });
+        reusedAtEnd = 0;
       }
     }
+    added.length -= reusedAtEnd;
+    cutTo -= reusedAtEnd;
     if (reusedAtStart) {
       cutAt += reusedAtStart;
       added.splice(0, reusedAtStart);
@@ -321,6 +328,10 @@ function MozSectionFinder(cm) {
               valueEnd: url.end,
             });
             s = text.slice(ch, styles[j]).trim();
+            if (s.includes('}')) { // a single `null` token like ` { } `
+              goal = '';
+              break;
+            }
             goal = s.startsWith(',') ? '_func' :
               s.startsWith('{') ? '_cmt' :
                 !s && '_,'; // non-space something at this place = syntax error
