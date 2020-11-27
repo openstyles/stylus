@@ -717,7 +717,7 @@
     styles = this.getLineHandle(line).styles,
     pos,
   }) {
-    if (pos < 0) return;
+    if (pos < 0 || !styles) return;
     const len = styles.length;
     const end = styles[len - 2];
     if (pos > end) return;

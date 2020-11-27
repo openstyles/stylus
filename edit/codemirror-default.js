@@ -91,12 +91,13 @@
     }
   }
 
-  Object.assign(CodeMirror.mimeModes['text/css'].propertyKeywords, {
+  const cssMime = CodeMirror.mimeModes['text/css'];
+  Object.assign(cssMime.propertyKeywords, {
     'content-visibility': true,
     'overflow-anchor': true,
     'overscroll-behavior': true,
   });
-  Object.assign(CodeMirror.mimeModes['text/css'].colorKeywords, {
+  Object.assign(cssMime.colorKeywords, {
     'darkgrey': true,
     'darkslategrey': true,
     'dimgrey': true,
@@ -104,7 +105,17 @@
     'lightslategrey': true,
     'slategrey': true,
   });
-
+  Object.assign(cssMime.valueKeywords, {
+    'blur': true,
+    'brightness': true,
+    'contrast': true,
+    'cubic-bezier': true,
+    'drop-shadow': true,
+    'fit-content': true,
+    'hue-rotate': true,
+    'saturate': true,
+    'sepia': true,
+  });
   Object.assign(CodeMirror.prototype, {
     /**
      * @param {'less' | 'stylus' | ?} [pp] - any value besides `less` or `stylus` sets `css` mode

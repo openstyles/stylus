@@ -281,82 +281,155 @@
 
 //#region Autocomplete
 (() => {
+  const AT_RULES = [
+    '@-moz-document',
+    '@charset',
+    '@font-face',
+    '@import',
+    '@keyframes',
+    '@media',
+    '@namespace',
+    '@page',
+    '@supports',
+    '@viewport',
+  ];
   const USO_VAR = 'uso-variable';
   const USO_VALID_VAR = 'variable-3 ' + USO_VAR;
   const USO_INVALID_VAR = 'error ' + USO_VAR;
-  const RX_IMPORTANT = /(i(m(p(o(r(t(a(nt?)?)?)?)?)?)?)?)?(?=\b|\W|$)/iy;
-  const RX_VAR_KEYWORD = /(^|[^-\w\u0080-\uFFFF])var\(/iy;
-  const RX_END_OF_VAR = /[\s,)]|$/g;
-  const RX_CONSUME_PROP = /[-\w]*\s*:\s?|$/y;
+  const rxVAR = /(^|[^-.\w\u0080-\uFFFF])var\(/iyu;
+  const rxCONSUME = /([-\w]*\s*:\s?)?/yu;
+  const cssMime = CodeMirror.mimeModes['text/css'];
+  const docFuncs = addSuffix(cssMime.documentTypes, '(');
+  const {tokenHooks} = cssMime;
+  const originalCommentHook = tokenHooks['/'];
   const originalHelper = CodeMirror.hint.css || (() => {});
+  let cssProps, cssMedia;
   CodeMirror.registerHelper('hint', 'css', helper);
   CodeMirror.registerHelper('hint', 'stylus', helper);
-  const hooks = CodeMirror.mimeModes['text/css'].tokenHooks;
-  const originalCommentHook = hooks['/'];
-  hooks['/'] = tokenizeUsoVariables;
+  tokenHooks['/'] = tokenizeUsoVariables;
 
   function helper(cm) {
     const pos = cm.getCursor();
     const {line, ch} = pos;
     const {styles, text} = cm.getLineHandle(line);
-    if (!styles) {
-      return originalHelper(cm);
-    }
     const {style, index} = cm.getStyleAtPos({styles, pos: ch}) || {};
-    if (/^(comment|string)/.test(style)) {
+    const isStylusLang = cm.doc.mode.name === 'stylus';
+    const type = style && style.split(' ', 1)[0] || 'prop?';
+    if (!type || type === 'comment' || type === 'string') {
       return originalHelper(cm);
     }
-    // !important
-    if (text[ch - 1] === '!' && testAt(/i|\W|$/iy, ch, text)) {
-      return {
-        list: ['important'],
-        from: pos,
-        to: {line, ch: ch + execAt(RX_IMPORTANT, ch, text)[0].length},
-      };
+    // not using getTokenAt until the need is unavoidable because it reparses text
+    // and runs a whole lot of complex calc inside which is slow on long lines
+    // especially if autocomplete is auto-shown on each keystroke
+    let prev, end, state;
+    let i = index;
+    while (
+      (prev == null || `${styles[i - 1]}`.startsWith(type)) &&
+      (prev = i > 2 ? styles[i - 2] : 0) &&
+      isSameToken(text, style, prev)
+    ) i -= 2;
+    i = index;
+    while (
+      (end == null || `${styles[i + 1]}`.startsWith(type)) &&
+      (end = styles[i]) &&
+      isSameToken(text, style, end)
+    ) i += 2;
+    const getTokenState = () => state || (state = cm.getTokenAt(pos, true).state.state);
+    const str = text.slice(prev, end);
+    const left = text.slice(prev, ch).trim();
+    let leftLC = left.toLowerCase();
+    let list = [];
+    switch (leftLC[0]) {
+
+      case '!':
+        list = '!important'.startsWith(leftLC) ? ['!important'] : [];
+        break;
+
+      case '@':
+        list = AT_RULES;
+        break;
+
+      case '#': // prevents autocomplete for #hex colors
+        break;
+
+      case '-': // --variable
+      case '(': // var(
+        list = str.startsWith('--') || testAt(rxVAR, ch - 4, text)
+          ? findAllCssVars(cm, left)
+          : [];
+        prev += str.startsWith('(');
+        leftLC = left;
+        break;
+
+      case '/': // USO vars
+        if (str.startsWith('/*[[') && str.endsWith(']]*/')) {
+          prev += 4;
+          end -= 4;
+          end -= text.slice(end - 4, end) === '-rgb' ? 4 : 0;
+          list = Object.keys((editor.style.usercssData || {}).vars || {}).sort();
+          leftLC = left.slice(4);
+        }
+        break;
+
+      case 'u': // url(), url-prefix()
+      case 'd': // domain()
+      case 'r': // regexp()
+        if (/^(variable|tag|error)/.test(type) &&
+            docFuncs.some(s => s.startsWith(leftLC)) &&
+            /^(top|documentTypes|atBlock)/.test(getTokenState())) {
+          end++;
+          list = docFuncs;
+        }
+        break;
+
+      default:
+        // properties and media features
+        if (/^(prop(erty|\?)|atom|error)/.test(type) &&
+            /^(block|atBlock_parens|maybeprop)/.test(getTokenState())) {
+          if (!cssProps) initCssProps();
+          if (type === 'prop?') {
+            prev += leftLC.length;
+            leftLC = '';
+          }
+          list = state === 'atBlock_parens' ? cssMedia : cssProps;
+          end -= /\W$/u.test(str); // e.g. don't consume ) when inside ()
+          end += execAt(rxCONSUME, end, text)[0].length;
+        } else {
+          return isStylusLang
+            ? CodeMirror.hint.fromList(cm, {words: CodeMirror.hintWords.stylus})
+            : originalHelper(cm);
+        }
     }
-    let prev = index > 2 ? styles[index - 2] : 0;
-    let end = styles[index];
-    // #hex colors
-    if (text[prev] === '#') {
-      return {list: [], from: pos, to: pos};
-    }
-    // adjust cursor position for /*[[ and ]]*/
-    const adjust = text[prev] === '/' ? 4 : 0;
-    prev += adjust;
-    end -= adjust;
-    // --css-variables
-    const leftPart = text.slice(prev, ch);
-    const startsWithDoubleDash = testAt(/--/y, prev, text);
-    if (startsWithDoubleDash ||
-        leftPart === '(' && testAt(RX_VAR_KEYWORD, Math.max(0, prev - 4), text)) {
-      return {
-        list: findAllCssVars(cm, leftPart),
-        from: {line, ch: prev + !startsWithDoubleDash},
-        to: {line, ch: execAt(RX_END_OF_VAR, prev, text).index},
-      };
-    }
-    if (!editor || !style || !style.includes(USO_VAR)) {
-      const res = originalHelper(cm);
-      // add ":" after a property name
-      const state = res && cm.getTokenAt(pos).state.state;
-      if (state === 'block' || state === 'maybeprop') {
-        res.list = res.list.map(str => str + ': ');
-        res.to.ch += execAt(RX_CONSUME_PROP, res.to.ch, text)[0].length;
-      }
-      return res;
-    }
-    // USO vars in usercss mode editor
-    const vars = editor.style.usercssData.vars;
     return {
-      list: vars ? Object.keys(vars).filter(v => v.startsWith(leftPart)) : [],
-      from: {line, ch: prev},
+      list: (list || []).filter(s => s.startsWith(leftLC)),
+      from: {line, ch: prev + str.match(/^\s*/)[0].length},
       to: {line, ch: end},
     };
   }
 
+  function initCssProps() {
+    cssProps = addSuffix(cssMime.propertyKeywords).sort();
+    cssMedia = [].concat(...Object.entries(cssMime).map(getMediaKeys).filter(Boolean)).sort();
+  }
+
+  function addSuffix(obj, suffix = ': ') {
+    return Object.keys(obj).map(k => k + suffix);
+  }
+
+  function getMediaKeys([k, v]) {
+    return k === 'mediaFeatures' && addSuffix(v) ||
+      k.startsWith('media') && Object.keys(v);
+  }
+
+  /** makes sure we don't process a different adjacent comment */
+  function isSameToken(text, style, i) {
+    return !style || text[i] !== '/' && text[i + 1] !== '*' ||
+      !style.startsWith(USO_VALID_VAR) && !style.startsWith(USO_INVALID_VAR);
+  }
+
   function findAllCssVars(cm, leftPart) {
     // simplified regex without CSS escapes
-    const RX_CSS_VAR = new RegExp(
+    const rx = new RegExp(
       '(?:^|[\\s/;{])(' +
       (leftPart.startsWith('--') ? leftPart : '--') +
       (leftPart.length <= 2 ? '[a-zA-Z_\u0080-\uFFFF]' : '') +
@@ -364,7 +437,7 @@
       'g');
     const list = new Set();
     cm.eachLine(({text}) => {
-      for (let m; (m = RX_CSS_VAR.exec(text));) {
+      for (let m; (m = rx.exec(text));) {
         list.add(m[1]);
       }
     });
@@ -376,7 +449,7 @@
     if (token[1] === 'comment') {
       const {string, start, pos} = stream;
       if (testAt(/\/\*\[\[/y, start, string) &&
-        testAt(/]]\*\//y, pos - 4, string)) {
+          testAt(/]]\*\//y, pos - 4, string)) {
         const vars = (editor.style.usercssData || {}).vars;
         token[0] =
           vars && vars.hasOwnProperty(string.slice(start + 4, pos - 4).replace(/-rgb$/, ''))
@@ -393,7 +466,7 @@
   }
 
   function testAt(rx, index, text) {
-    rx.lastIndex = index;
+    rx.lastIndex = Math.max(0, index);
     return rx.test(text);
   }
 })();
