@@ -487,7 +487,7 @@ function SectionsEditor() {
     livePreview.update(getModel());
   }
 
-  function initSections(src, {
+  async function initSections(src, {
     focusOn = 0,
     replace = false,
     pristine = false,
@@ -497,10 +497,6 @@ function SectionsEditor() {
       sections.length = 0;
       container.textContent = '';
     }
-    let done;
-    let index = 0;
-    let y = 0;
-    const total = src.length;
     let si = editor.scrollInfo;
     if (si && si.cms && si.cms.length === src.length) {
       si.scrollY2 = si.scrollY + window.innerHeight;
@@ -510,29 +506,27 @@ function SectionsEditor() {
     } else {
       si = null;
     }
-    return new Promise(resolve => {
-      done = resolve;
-      chunk(!si);
-    });
-    function chunk(forceRefresh) {
-      const t0 = performance.now();
-      while (index < total && performance.now() - t0 < 100) {
-        if (si) forceRefresh = y < si.scrollY2 && (y += si.cms[index].parentHeight) > si.scrollY;
-        insertSectionAfter(src[index], undefined, forceRefresh, si && si.cms[index]);
-        if (pristine) dirty.clear();
-        if (index === focusOn && !si) sections[index].cm.focus();
-        index++;
+    let forceRefresh = true;
+    let y = 0;
+    let tPrev;
+    for (let i = 0; i < src.length; i++) {
+      const t = performance.now();
+      if (!tPrev) {
+        tPrev = t;
+      } else if (t - tPrev > 100) {
+        tPrev = 0;
+        forceRefresh = false;
+        await new Promise(setTimeout);
       }
-      setGlobalProgress(index, total);
-      if (index === total) {
-        setGlobalProgress();
-        if (!si) requestAnimationFrame(fitToAvailableSpace);
-        container.style.removeProperty('height');
-        done();
-      } else {
-        setTimeout(chunk);
-      }
+      if (si) forceRefresh = y < si.scrollY2 && (y += si.cms[i].parentHeight) > si.scrollY;
+      insertSectionAfter(src[i], null, forceRefresh, si && si.cms[i]);
+      setGlobalProgress(i, src.length);
+      if (pristine) dirty.clear();
+      if (i === focusOn && !si) sections[i].cm.focus();
     }
+    if (!si) requestAnimationFrame(fitToAvailableSpace);
+    container.style.removeProperty('height');
+    setGlobalProgress();
   }
 
   /** @param {EditorSection} section */
@@ -584,23 +578,23 @@ function SectionsEditor() {
     }
     const section = createSection(init, genId, si);
     const {cm} = section;
+    const {code} = init;
     const index = base ? sections.indexOf(base) + 1 : sections.length;
     sections.splice(index, 0, section);
     container.insertBefore(section.el, base ? base.el.nextSibling : null);
-    refreshOnView(cm, base || forceRefresh);
+    refreshOnView(cm, {code, force: base || forceRefresh});
     registerEvents(section);
-    if ((!si || !si.height) && (!base || init.code)) {
+    if ((!si || !si.height) && (!base || code)) {
       // Fit a) during startup or b) when the clone button is clicked on a section with some code
       fitToContent(section);
     }
     if (base) {
       cm.focus();
       editor.scrollToEditor(cm);
-      linter.enableForEditor(cm);
     }
     updateSectionOrder();
-    section.onChange(updateLivePreview);
     updateLivePreview();
+    section.onChange(updateLivePreview);
   }
 
   /** @param {EditorSection} section */
@@ -654,10 +648,12 @@ function SectionsEditor() {
     }
   }
 
-  function refreshOnView(cm, force) {
-    return force || !xo ?
-      cm.refresh() :
+  function refreshOnView(cm, {code, force} = {}) {
+    if (force || !xo) {
+      refreshOnViewNow(cm, code);
+    } else {
       xo.observe(cm.display.wrapper);
+    }
   }
 
   /** @param {IntersectionObserverEntry[]} entries */
@@ -668,12 +664,17 @@ function SectionsEditor() {
         xo.unobserve(e.target);
         const cm = e.target.CodeMirror;
         if (r.bottom > 0 && r.top < window.innerHeight) {
-          cm.refresh();
+          refreshOnViewNow(cm);
         } else {
-          setTimeout(() => cm.refresh());
+          setTimeout(refreshOnViewNow, 0, cm);
         }
       }
     }
+  }
+
+  async function refreshOnViewNow(cm, code) {
+    cm.refresh();
+    linter.enableForEditor(cm, code);
   }
 
   function toggleContextMenuDelete(event) {

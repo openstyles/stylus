@@ -4,6 +4,7 @@
 importScripts('/js/worker-util.js');
 const {loadScript} = workerUtil;
 
+/** @namespace EditorWorker */
 workerUtil.createAPI({
   csslint: (code, config) => {
     loadScript('/vendor-overwrites/csslint/parserlib.js', '/vendor-overwrites/csslint/csslint.js');

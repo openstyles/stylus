@@ -103,7 +103,6 @@ lazyInit();
   await editor.ready;
   editor.ready = true;
 
-  setTimeout(() => editor.getEditors().forEach(linter.enableForEditor));
   // enabling after init to prevent flash of validation failure on an empty name
   $('#name').required = !editor.isUsercss;
   $('#save-button').onclick = editor.save;

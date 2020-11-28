@@ -91,6 +91,7 @@ function SourceEditor() {
     linter.run();
     updateLinterSwitch();
   });
+  setTimeout(linter.enableForEditor, 0, cm);
   if (!$.isTextInput(document.activeElement)) {
     cm.focus();
   }
