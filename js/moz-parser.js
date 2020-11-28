@@ -78,7 +78,7 @@ function parseMozFormat({code, styleId}) {
   });
 
   parser.addListener('error', e => {
-    errors.push(`${e.line}:${e.col} ${e.message.replace(/ at line \d.+$/, '')}`);
+    errors.push(e);
   });
 
   try {
@@ -86,7 +86,13 @@ function parseMozFormat({code, styleId}) {
       reuseCache: !parseMozFormat.styleId || styleId === parseMozFormat.styleId,
     });
   } catch (e) {
-    errors.push(e.message);
+    errors.push(e);
+  }
+  for (const err of errors) {
+    for (const [k, v] of Object.entries(err)) {
+      if (typeof v === 'object') delete err[k];
+    }
+    err.message = `${err.line}:${err.col} ${err.message}`;
   }
   parseMozFormat.styleId = styleId;
   return {sections, errors};

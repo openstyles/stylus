@@ -385,9 +385,8 @@ function SectionsEditor() {
               t('importPreprocessorTitle'))
         ) {
           const {sections, errors} = await API.worker.parseMozFormat({code});
-          // shouldn't happen but just in case
-          if (!sections.length || errors.length) {
-            throw errors;
+          if (!sections.length || errors.some(e => !e.recoverable)) {
+            await Promise.reject(errors);
           }
           await initSections(sections, {
             replace: replaceOldStyle,
@@ -420,7 +419,9 @@ function SectionsEditor() {
       messageBox({
         className: 'center danger',
         title: t('styleFromMozillaFormatError'),
-        contents: $create('pre', Array.isArray(errors) ? errors.join('\n') : errors),
+        contents: $create('pre',
+          (Array.isArray(errors) ? errors : [errors])
+            .map(e => e.message || e).join('\n')),
         buttons: [t('confirmClose')],
       });
     }
