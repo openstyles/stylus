@@ -1,12 +1,13 @@
-/* global CodeMirror showHelp cmFactory onDOMready $ prefs t createHotkeyInput */
 'use strict';
 
-(() => {
-  onDOMready().then(() => {
-    $('#colorpicker-settings').onclick = configureColorpicker;
-  });
+define(require => {
+  const prefs = require('/js/prefs');
+  const t = require('/js/localization');
+  const {createHotkeyInput, helpPopup} = require('./util');
+  const {CodeMirror, globalSetOption} = require('./codemirror-factory');
+
   prefs.subscribe('editor.colorpicker.hotkey', registerHotkey);
-  prefs.subscribe('editor.colorpicker', setColorpickerOption, {now: true});
+  prefs.subscribe('editor.colorpicker', setColorpickerOption, {runNow: true});
 
   function setColorpickerOption(id, enabled) {
     const defaults = CodeMirror.defaults;
@@ -43,7 +44,7 @@
         delete defaults.extraKeys[keyName];
       }
     }
-    cmFactory.globalSetOption('colorpicker', defaults.colorpicker);
+    globalSetOption('colorpicker', defaults.colorpicker);
   }
 
   function registerHotkey(id, hotkey) {
@@ -66,16 +67,14 @@
 
   function configureColorpicker(event) {
     event.preventDefault();
-    const input = createHotkeyInput('editor.colorpicker.hotkey', () => {
-      $('#help-popup .dismiss').onclick();
-    });
-    const popup = showHelp(t('helpKeyMapHotkey'), input);
-    if (this instanceof Element) {
-      const bounds = this.getBoundingClientRect();
-      popup.style.left = bounds.right + 10 + 'px';
-      popup.style.top = bounds.top - popup.clientHeight / 2 + 'px';
-      popup.style.right = 'auto';
-    }
+    const input = createHotkeyInput('editor.colorpicker.hotkey', () => helpPopup.close());
+    const popup = helpPopup.show(t('helpKeyMapHotkey'), input);
+    const bounds = this.getBoundingClientRect();
+    popup.style.left = bounds.right + 10 + 'px';
+    popup.style.top = bounds.top - popup.clientHeight / 2 + 'px';
+    popup.style.right = 'auto';
     input.focus();
   }
-})();
+
+  return configureColorpicker;
+});

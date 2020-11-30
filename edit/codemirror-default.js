@@ -1,13 +1,13 @@
-/* global
-  $
-  CodeMirror
-  prefs
-  t
-*/
-
 'use strict';
 
-(function () {
+define(require => {
+  const {$} = require('/js/dom');
+  const t = require('/js/localization');
+  const prefs = require('/js/prefs');
+  const CodeMirror = require('/vendor/codemirror/lib/codemirror');
+  const editor = require('./editor');
+  require(['./codemirror-default.css']);
+
   // CodeMirror miserably fails on keyMap='' so let's ensure it's not
   if (!prefs.get('editor.keyMap')) {
     prefs.reset('editor.keyMap');
@@ -43,53 +43,55 @@
   Object.assign(CodeMirror.defaults, defaults, prefs.get('editor.options'));
 
   // Adding hotkeys to some keymaps except 'basic' which is primitive by design
-  const KM = CodeMirror.keyMap;
-  const extras = Object.values(CodeMirror.defaults.extraKeys);
-  if (!extras.includes('jumpToLine')) {
-    KM.sublime['Ctrl-G'] = 'jumpToLine';
-    KM.emacsy['Ctrl-G'] = 'jumpToLine';
-    KM.pcDefault['Ctrl-J'] = 'jumpToLine';
-    KM.macDefault['Cmd-J'] = 'jumpToLine';
-  }
-  if (!extras.includes('autocomplete')) {
-    // will be used by 'sublime' on PC via fallthrough
-    KM.pcDefault['Ctrl-Space'] = 'autocomplete';
-    // OSX uses Ctrl-Space and Cmd-Space for something else
-    KM.macDefault['Alt-Space'] = 'autocomplete';
-    // copied from 'emacs' keymap
-    KM.emacsy['Alt-/'] = 'autocomplete';
-    // 'vim' and 'emacs' define their own autocomplete hotkeys
-  }
-  if (!extras.includes('blockComment')) {
-    KM.sublime['Shift-Ctrl-/'] = 'commentSelection';
-  }
-  if (navigator.appVersion.includes('Windows')) {
-    // 'pcDefault' keymap on Windows should have F3/Shift-F3/Ctrl-R
-    if (!extras.includes('findNext')) KM.pcDefault['F3'] = 'findNext';
-    if (!extras.includes('findPrev')) KM.pcDefault['Shift-F3'] = 'findPrev';
-    if (!extras.includes('replace')) KM.pcDefault['Ctrl-R'] = 'replace';
-    // try to remap non-interceptable (Shift-)Ctrl-N/T/W hotkeys
-    // Note: modifier order in CodeMirror is S-C-A
-    for (const char of ['N', 'T', 'W']) {
-      for (const remap of [
-        {from: 'Ctrl-', to: ['Alt-', 'Ctrl-Alt-']},
-        {from: 'Shift-Ctrl-', to: ['Ctrl-Alt-', 'Shift-Ctrl-Alt-']},
-      ]) {
-        const oldKey = remap.from + char;
-        for (const km of Object.values(KM)) {
-          const command = km[oldKey];
-          if (!command) continue;
-          for (const newMod of remap.to) {
-            const newKey = newMod + char;
-            if (newKey in km) continue;
-            km[newKey] = command;
-            delete km[oldKey];
-            break;
+  require(Object.values(editor.lazyKeymaps || {}), () => {
+    const KM = CodeMirror.keyMap;
+    const extras = Object.values(CodeMirror.defaults.extraKeys);
+    if (!extras.includes('jumpToLine')) {
+      KM.sublime['Ctrl-G'] = 'jumpToLine';
+      KM.emacsy['Ctrl-G'] = 'jumpToLine';
+      KM.pcDefault['Ctrl-J'] = 'jumpToLine';
+      KM.macDefault['Cmd-J'] = 'jumpToLine';
+    }
+    if (!extras.includes('autocomplete')) {
+      // will be used by 'sublime' on PC via fallthrough
+      KM.pcDefault['Ctrl-Space'] = 'autocomplete';
+      // OSX uses Ctrl-Space and Cmd-Space for something else
+      KM.macDefault['Alt-Space'] = 'autocomplete';
+      // copied from 'emacs' keymap
+      KM.emacsy['Alt-/'] = 'autocomplete';
+      // 'vim' and 'emacs' define their own autocomplete hotkeys
+    }
+    if (!extras.includes('blockComment')) {
+      KM.sublime['Shift-Ctrl-/'] = 'commentSelection';
+    }
+    if (navigator.appVersion.includes('Windows')) {
+      // 'pcDefault' keymap on Windows should have F3/Shift-F3/Ctrl-R
+      if (!extras.includes('findNext')) KM.pcDefault['F3'] = 'findNext';
+      if (!extras.includes('findPrev')) KM.pcDefault['Shift-F3'] = 'findPrev';
+      if (!extras.includes('replace')) KM.pcDefault['Ctrl-R'] = 'replace';
+      // try to remap non-interceptable (Shift-)Ctrl-N/T/W hotkeys
+      // Note: modifier order in CodeMirror is S-C-A
+      for (const char of ['N', 'T', 'W']) {
+        for (const remap of [
+          {from: 'Ctrl-', to: ['Alt-', 'Ctrl-Alt-']},
+          {from: 'Shift-Ctrl-', to: ['Ctrl-Alt-', 'Shift-Ctrl-Alt-']},
+        ]) {
+          const oldKey = remap.from + char;
+          for (const km of Object.values(KM)) {
+            const command = km[oldKey];
+            if (!command) continue;
+            for (const newMod of remap.to) {
+              const newKey = newMod + char;
+              if (newKey in km) continue;
+              km[newKey] = command;
+              delete km[oldKey];
+              break;
+            }
           }
         }
       }
     }
-  }
+  });
 
   const cssMime = CodeMirror.mimeModes['text/css'];
   Object.assign(cssMime.propertyKeywords, {
@@ -164,4 +166,4 @@
       }, {value: cur.line + 1});
     },
   });
-})();
+});

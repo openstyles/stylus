@@ -1,12 +1,17 @@
-/* global msg API */
-/* global deepCopy debounce */ // not used in content scripts
 'use strict';
 
-// eslint-disable-next-line no-unused-expressions
-window.INJECTED !== 1 && (() => {
+/** The name is needed when running in content scripts but specifying it in define()
+    breaks IDE detection of exports so here's a workaround */
+define.currentModule = '/js/prefs';
+
+define(require => {
+  const {deepCopy, debounce} = require('/js/toolbox'); // will be empty in content scripts
+  const {API, msg} = require('/js/msg');
+
   const STORAGE_KEY = 'settings';
-  const clone = msg.isBg ? deepCopy : (val => JSON.parse(JSON.stringify(val)));
-  const defaults = /** @namespace Prefs */{
+  const clone = deepCopy || (val => JSON.parse(JSON.stringify(val)));
+  /** @type {PrefsValues} */
+  const defaults = /** @namespace PrefsValues */ {
     'openEditInWindow': false,      // new editor opens in a own browser window
     'openEditInWindow.popup': false, // new editor opens in a simplified browser window without omnibox
     'windowPosition': {},           // detached window position
@@ -117,9 +122,13 @@ window.INJECTED !== 1 && (() => {
     any: new Set(),
     specific: {},
   };
+  let isReady;
   // getPrefs may fail on browser startup in the active tab as it loads before the background script
   const initializing = (msg.isBg ? readStorage() : API.getPrefs().catch(readStorage))
-    .then(setAll);
+    .then(data => {
+      setAll(data);
+      isReady = true;
+    });
 
   chrome.storage.onChanged.addListener(async (changes, area) => {
     const data = area === 'sync' && changes[STORAGE_KEY];
@@ -129,17 +138,25 @@ window.INJECTED !== 1 && (() => {
     }
   });
 
-  // This direct assignment allows IDEs to provide correct autocomplete for methods
-  const prefs = window.prefs = {
+  /** @namespace Prefs */
+  const prefs = {
+
     STORAGE_KEY,
-    initializing,
     defaults,
+    initializing,
+    get isReady() {
+      return isReady;
+    },
+
+    /** @type {PrefsValues} */
     get values() {
       return deepCopy(values);
     },
+
     get(key) {
       return isKnown(key) && values[key];
     },
+
     set(key, val, isSynced) {
       if (!isKnown(key)) return;
       const oldValue = values[key];
@@ -155,36 +172,45 @@ window.INJECTED !== 1 && (() => {
         emitChange(key, val, isSynced);
       }
     },
+
     reset(key) {
       prefs.set(key, clone(defaults[key]));
     },
+
     /**
      * @param {?string|string[]} keys - pref ids or a falsy value to subscribe to everything
-     * @param {function(key:string, value:any)} fn
+     * @param {function(key:string?, value:any?)} fn
      * @param {Object} [opts]
-     * @param {boolean} [opts.now] - when truthy, the listener is called immediately:
+     * @param {boolean} [opts.runNow] - when truthy, the listener is called immediately:
      *   1) if `keys` is an array of keys, each `key` will be fired separately with a real `value`
      *   2) if `keys` is falsy, no key/value will be provided
      */
-    subscribe(keys, fn, {now} = {}) {
+    async subscribe(keys, fn, {runNow} = {}) {
+      const toRun = [];
       if (keys) {
         for (const key of Array.isArray(keys) ? keys : [keys]) {
           if (!isKnown(key)) continue;
           const listeners = onChange.specific[key] ||
             (onChange.specific[key] = new Set());
           listeners.add(fn);
-          if (now) fn(key, values[key]);
+          if (runNow) toRun.push({fn, args: [key, values[key]]});
         }
       } else {
         onChange.any.add(fn);
-        if (now) fn();
+        if (runNow) toRun.push({fn});
+      }
+      if (toRun.length) {
+        if (!isReady) await initializing;
+        toRun.forEach(({fn, args}) => fn(...args));
       }
     },
+
     subscribeMany(data, opts) {
       for (const [k, fn] of Object.entries(data)) {
         prefs.subscribe(k, fn, opts);
       }
     },
+
     unsubscribe(keys, fn) {
       if (keys) {
         for (const key of keys) {
@@ -233,9 +259,8 @@ window.INJECTED !== 1 && (() => {
     }
   }
 
-  function readStorage() {
-    return browser.storage.sync.get(STORAGE_KEY)
-      .then(data => data[STORAGE_KEY]);
+  async function readStorage() {
+    return (await browser.storage.sync.get(STORAGE_KEY))[STORAGE_KEY];
   }
 
   function updateStorage() {
@@ -247,4 +272,11 @@ window.INJECTED !== 1 && (() => {
       Object.keys(a).length === Object.keys(b).length &&
       Object.keys(a).every(key => b.hasOwnProperty(key) && simpleDeepEqual(a[key], b[key]));
   }
-})();
+
+  /* Exposing it for easier debugging otherwise it gets really cumbersome to type
+     (await require(['/js/prefs'])).get('disableAll')
+     Also we're still using it as a global in content scripts */
+  window.prefs = prefs;
+
+  return prefs;
+});

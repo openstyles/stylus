@@ -1,25 +1,24 @@
-/* global
-  FIREFOX
-  ignoreChromeError
-  msg
-  URLS
-*/
 'use strict';
 
 /*
  Reinject content scripts when the extension is reloaded/updated.
- Firefox handles this automatically.
+ Not used in Firefox as it reinjects automatically.
  */
 
-// eslint-disable-next-line no-unused-expressions
-!FIREFOX && (() => {
+define(require => {
+  const {
+    URLS,
+    ignoreChromeError,
+  } = require('/js/toolbox');
+  const {msg} = require('/js/msg');
+
   const NTP = 'chrome://newtab/';
   const ALL_URLS = '<all_urls>';
   const SCRIPTS = chrome.runtime.getManifest().content_scripts;
   // expand * as .*?
   const wildcardAsRegExp = (s, flags) => new RegExp(
-      s.replace(/[{}()[\]/\\.+?^$:=!|]/g, '\\$&')
-        .replace(/\*/g, '.*?'), flags);
+    s.replace(/[{}()[\]/\\.+?^$:=!|]/g, '\\$&')
+      .replace(/\*/g, '.*?'), flags);
   for (const cs of SCRIPTS) {
     cs.matches = cs.matches.map(m => (
       m === ALL_URLS ? m : wildcardAsRegExp(m)
@@ -118,4 +117,4 @@
   function onBusyTabRemoved(tabId) {
     trackBusyTab(tabId, false);
   }
-})();
+});

@@ -1,25 +1,30 @@
-/* global
-  $
-  CodeMirror
-  debounce
-  editor
-  loadScript
-  prefs
-  rerouteHotkeys
-*/
 'use strict';
 
-//#region cmFactory
-(() => {
-  /*
+/*
   All cm instances created by this module are collected so we can broadcast prefs
   settings to them. You should `cmFactory.destroy(cm)` to unregister the listener
   when the instance is not used anymore.
-  */
+*/
+
+define(require => {
+  const {debounce} = require('/js/toolbox');
+  const {$} = require('/js/dom');
+  const prefs = require('/js/prefs');
+  const editor = require('./editor');
+  const {rerouteHotkeys} = require('./util');
+  const CodeMirror = require('/vendor/codemirror/lib/codemirror');
+
+  require('./util').CodeMirror = CodeMirror;
+
+  //#region Factory
+
   const cms = new Set();
   let lazyOpt;
 
-  const cmFactory = window.cmFactory = {
+  const cmFactory = {
+
+    CodeMirror,
+
     create(place, options) {
       const cm = CodeMirror(place, options);
       const {wrapper} = cm.display;
@@ -38,9 +43,11 @@
       cms.add(cm);
       return cm;
     },
+
     destroy(cm) {
       cms.delete(cm);
     },
+
     globalSetOption(key, value) {
       CodeMirror.defaults[key] = value;
       if (cms.size > 4 && lazyOpt && lazyOpt.names.includes(key)) {
@@ -49,26 +56,31 @@
         cms.forEach(cm => cm.setOption(key, value));
       }
     },
+
+    initBeautifyButton(el, scope) {
+      el.on('click', e => require(['./beautify'], _ => _.beautifyOnClick(e, false, scope)));
+      el.on('contextmenu', e => require(['./beautify'], _ => _.beautifyOnClick(e, true, scope)));
+    },
   };
 
   const handledPrefs = {
-    // handled in colorpicker-helper.js
-    'editor.colorpicker'() {},
-    /** @returns {?Promise<void>} */
-    'editor.theme'(key, value) {
-      const elt = $('#cm-theme');
+    'editor.colorpicker'() {}, // handled in colorpicker-helper.js
+    async 'editor.theme'(key, value) {
+      let el2;
+      const el = $('#cm-theme');
       if (value === 'default') {
-        elt.href = '';
+        el.href = '';
       } else {
-        const url = chrome.runtime.getURL(`vendor/codemirror/theme/${value}.css`);
-        if (url !== elt.href) {
+        const path = `/vendor/codemirror/theme/${value}.css`;
+        if (el.href !== location.origin + path) {
           // avoid flicker: wait for the second stylesheet to load, then apply the theme
-          return loadScript(url, true).then(([newElt]) => {
-            cmFactory.globalSetOption('theme', value);
-            elt.remove();
-            newElt.id = elt.id;
-          });
+          el2 = await require([path]);
         }
+      }
+      cmFactory.globalSetOption('theme', value);
+      if (el2) {
+        el.remove();
+        el2.id = el.id;
       }
     },
   };
@@ -125,11 +137,10 @@
       return lazyOpt._observer;
     },
   };
-})();
-//#endregion
 
-//#region Commands
-(() => {
+  //#endregion
+  //#region Commands
+
   Object.assign(CodeMirror.commands, {
     toggleEditorFocus(cm) {
       if (!cm) return;
@@ -151,11 +162,10 @@
   ]) {
     CodeMirror.commands[cmd] = (...args) => editor[cmd](...args);
   }
-})();
-//#endregion
 
-//#region CM option handlers
-(() => {
+  //#endregion
+  //#region CM option handlers
+
   const {insertTab, insertSoftTab} = CodeMirror.commands;
   Object.entries({
     tabSize(cm, value) {
@@ -276,207 +286,13 @@
   function autocompletePicked(cm) {
     cm.state.autocompletePicked = true;
   }
-})();
-//#endregion
 
-//#region Autocomplete
-(() => {
-  const AT_RULES = [
-    '@-moz-document',
-    '@charset',
-    '@font-face',
-    '@import',
-    '@keyframes',
-    '@media',
-    '@namespace',
-    '@page',
-    '@supports',
-    '@viewport',
-  ];
-  const USO_VAR = 'uso-variable';
-  const USO_VALID_VAR = 'variable-3 ' + USO_VAR;
-  const USO_INVALID_VAR = 'error ' + USO_VAR;
-  const rxVAR = /(^|[^-.\w\u0080-\uFFFF])var\(/iyu;
-  const rxCONSUME = /([-\w]*\s*:\s?)?/yu;
-  const cssMime = CodeMirror.mimeModes['text/css'];
-  const docFuncs = addSuffix(cssMime.documentTypes, '(');
-  const {tokenHooks} = cssMime;
-  const originalCommentHook = tokenHooks['/'];
-  const originalHelper = CodeMirror.hint.css || (() => {});
-  let cssProps, cssMedia;
-  CodeMirror.registerHelper('hint', 'css', helper);
-  CodeMirror.registerHelper('hint', 'stylus', helper);
-  tokenHooks['/'] = tokenizeUsoVariables;
+  //#endregion
+  //#region Bookmarks
 
-  function helper(cm) {
-    const pos = cm.getCursor();
-    const {line, ch} = pos;
-    const {styles, text} = cm.getLineHandle(line);
-    const {style, index} = cm.getStyleAtPos({styles, pos: ch}) || {};
-    const isStylusLang = cm.doc.mode.name === 'stylus';
-    const type = style && style.split(' ', 1)[0] || 'prop?';
-    if (!type || type === 'comment' || type === 'string') {
-      return originalHelper(cm);
-    }
-    // not using getTokenAt until the need is unavoidable because it reparses text
-    // and runs a whole lot of complex calc inside which is slow on long lines
-    // especially if autocomplete is auto-shown on each keystroke
-    let prev, end, state;
-    let i = index;
-    while (
-      (prev == null || `${styles[i - 1]}`.startsWith(type)) &&
-      (prev = i > 2 ? styles[i - 2] : 0) &&
-      isSameToken(text, style, prev)
-    ) i -= 2;
-    i = index;
-    while (
-      (end == null || `${styles[i + 1]}`.startsWith(type)) &&
-      (end = styles[i]) &&
-      isSameToken(text, style, end)
-    ) i += 2;
-    const getTokenState = () => state || (state = cm.getTokenAt(pos, true).state.state);
-    const str = text.slice(prev, end);
-    const left = text.slice(prev, ch).trim();
-    let leftLC = left.toLowerCase();
-    let list = [];
-    switch (leftLC[0]) {
-
-      case '!':
-        list = '!important'.startsWith(leftLC) ? ['!important'] : [];
-        break;
-
-      case '@':
-        list = AT_RULES;
-        break;
-
-      case '#': // prevents autocomplete for #hex colors
-        break;
-
-      case '-': // --variable
-      case '(': // var(
-        list = str.startsWith('--') || testAt(rxVAR, ch - 4, text)
-          ? findAllCssVars(cm, left)
-          : [];
-        prev += str.startsWith('(');
-        leftLC = left;
-        break;
-
-      case '/': // USO vars
-        if (str.startsWith('/*[[') && str.endsWith(']]*/')) {
-          prev += 4;
-          end -= 4;
-          end -= text.slice(end - 4, end) === '-rgb' ? 4 : 0;
-          list = Object.keys((editor.style.usercssData || {}).vars || {}).sort();
-          leftLC = left.slice(4);
-        }
-        break;
-
-      case 'u': // url(), url-prefix()
-      case 'd': // domain()
-      case 'r': // regexp()
-        if (/^(variable|tag|error)/.test(type) &&
-            docFuncs.some(s => s.startsWith(leftLC)) &&
-            /^(top|documentTypes|atBlock)/.test(getTokenState())) {
-          end++;
-          list = docFuncs;
-        }
-        break;
-
-      default:
-        // properties and media features
-        if (/^(prop(erty|\?)|atom|error)/.test(type) &&
-            /^(block|atBlock_parens|maybeprop)/.test(getTokenState())) {
-          if (!cssProps) initCssProps();
-          if (type === 'prop?') {
-            prev += leftLC.length;
-            leftLC = '';
-          }
-          list = state === 'atBlock_parens' ? cssMedia : cssProps;
-          end -= /\W$/u.test(str); // e.g. don't consume ) when inside ()
-          end += execAt(rxCONSUME, end, text)[0].length;
-        } else {
-          return isStylusLang
-            ? CodeMirror.hint.fromList(cm, {words: CodeMirror.hintWords.stylus})
-            : originalHelper(cm);
-        }
-    }
-    return {
-      list: (list || []).filter(s => s.startsWith(leftLC)),
-      from: {line, ch: prev + str.match(/^\s*/)[0].length},
-      to: {line, ch: end},
-    };
-  }
-
-  function initCssProps() {
-    cssProps = addSuffix(cssMime.propertyKeywords).sort();
-    cssMedia = [].concat(...Object.entries(cssMime).map(getMediaKeys).filter(Boolean)).sort();
-  }
-
-  function addSuffix(obj, suffix = ': ') {
-    return Object.keys(obj).map(k => k + suffix);
-  }
-
-  function getMediaKeys([k, v]) {
-    return k === 'mediaFeatures' && addSuffix(v) ||
-      k.startsWith('media') && Object.keys(v);
-  }
-
-  /** makes sure we don't process a different adjacent comment */
-  function isSameToken(text, style, i) {
-    return !style || text[i] !== '/' && text[i + 1] !== '*' ||
-      !style.startsWith(USO_VALID_VAR) && !style.startsWith(USO_INVALID_VAR);
-  }
-
-  function findAllCssVars(cm, leftPart) {
-    // simplified regex without CSS escapes
-    const rx = new RegExp(
-      '(?:^|[\\s/;{])(' +
-      (leftPart.startsWith('--') ? leftPart : '--') +
-      (leftPart.length <= 2 ? '[a-zA-Z_\u0080-\uFFFF]' : '') +
-      '[-0-9a-zA-Z_\u0080-\uFFFF]*)',
-      'g');
-    const list = new Set();
-    cm.eachLine(({text}) => {
-      for (let m; (m = rx.exec(text));) {
-        list.add(m[1]);
-      }
-    });
-    return [...list].sort();
-  }
-
-  function tokenizeUsoVariables(stream) {
-    const token = originalCommentHook.apply(this, arguments);
-    if (token[1] === 'comment') {
-      const {string, start, pos} = stream;
-      if (testAt(/\/\*\[\[/y, start, string) &&
-          testAt(/]]\*\//y, pos - 4, string)) {
-        const vars = (editor.style.usercssData || {}).vars;
-        token[0] =
-          vars && vars.hasOwnProperty(string.slice(start + 4, pos - 4).replace(/-rgb$/, ''))
-            ? USO_VALID_VAR
-            : USO_INVALID_VAR;
-      }
-    }
-    return token;
-  }
-
-  function execAt(rx, index, text) {
-    rx.lastIndex = index;
-    return rx.exec(text);
-  }
-
-  function testAt(rx, index, text) {
-    rx.lastIndex = Math.max(0, index);
-    return rx.test(text);
-  }
-})();
-//#endregion
-
-//#region Bookmarks
-(() => {
-  const CLS = 'gutter-bookmark';
-  const BRAND = 'sublimeBookmark';
-  const CLICK_AREA = 'CodeMirror-linenumbers';
+  const BM_CLS = 'gutter-bookmark';
+  const BM_BRAND = 'sublimeBookmark';
+  const BM_CLICKER = 'CodeMirror-linenumbers';
   const {markText} = CodeMirror.prototype;
   for (const name of ['prevBookmark', 'nextBookmark']) {
     const cmdFn = CodeMirror.commands[name];
@@ -494,27 +310,29 @@
   Object.assign(CodeMirror.prototype, {
     markText() {
       const marker = markText.apply(this, arguments);
-      if (marker[BRAND]) {
-        this.doc.addLineClass(marker.lines[0], 'gutter', CLS);
+      if (marker[BM_BRAND]) {
+        this.doc.addLineClass(marker.lines[0], 'gutter', BM_CLS);
         marker.clear = clearMarker;
       }
       return marker;
     },
   });
+
   function clearMarker() {
     const line = this.lines[0];
     const spans = line.markedSpans;
     delete this.clear; // removing our patch from the instance...
     this.clear(); // ...and using the original prototype
-    if (!spans || spans.some(span => span.marker[BRAND])) {
-      this.doc.removeLineClass(line, 'gutter', CLS);
+    if (!spans || spans.some(span => span.marker[BM_BRAND])) {
+      this.doc.removeLineClass(line, 'gutter', BM_CLS);
     }
   }
+
   function onGutterClick(cm, line, name, e) {
-    switch (name === CLICK_AREA && e.button) {
+    switch (name === BM_CLICKER && e.button) {
       case 0: {
         // main button: toggle
-        const [mark] = cm.findMarks({line, ch: 0}, {line, ch: 1e9}, m => m[BRAND]);
+        const [mark] = cm.findMarks({line, ch: 0}, {line, ch: 1e9}, m => m[BM_BRAND]);
         cm.setCursor(mark ? mark.find(-1) : {line, ch: 0});
         cm.execCommand('toggleBookmark');
         break;
@@ -525,11 +343,15 @@
         break;
     }
   }
+
   function onGutterContextMenu(cm, line, name, e) {
-    if (name === CLICK_AREA) {
+    if (name === BM_CLICKER) {
       cm.execCommand(e.ctrlKey ? 'prevBookmark' : 'nextBookmark');
       e.preventDefault();
     }
   }
-})();
-//#endregion
+
+  //#endregion
+
+  return cmFactory;
+});

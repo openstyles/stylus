@@ -1,25 +1,25 @@
-/* global chromeLocal workerUtil createChromeStorageDB */
-/* exported db */
 /*
-Initialize a database. There are some problems using IndexedDB in Firefox:
-https://www.reddit.com/r/firefox/comments/74wttb/note_to_firefox_webextension_developers_who_use/
-
-Some of them are fixed in FF59:
-https://www.reddit.com/r/firefox/comments/7ijuaq/firefox_59_webextensions_can_use_indexeddb_when/
+ Initialize a database. There are some problems using IndexedDB in Firefox:
+ https://www.reddit.com/r/firefox/comments/74wttb/note_to_firefox_webextension_developers_who_use/
+ Some of them are fixed in FF59:
+ https://www.reddit.com/r/firefox/comments/7ijuaq/firefox_59_webextensions_can_use_indexeddb_when/
 */
 'use strict';
 
-const db = (() => {
+define(require => {
+  const {chromeLocal} = require('/js/storage-util');
+  const {cloneError} = require('/js/worker-util');
+
   const DATABASE = 'stylish';
   const STORE = 'styles';
   const FALLBACK = 'dbInChromeStorage';
-  const dbApi = {
+  const execFn = tryUsingIndexedDB().catch(useChromeStorage);
+
+  const exports = {
     async exec(...args) {
-      dbApi.exec = await tryUsingIndexedDB().catch(useChromeStorage);
-      return dbApi.exec(...args);
+      return (await execFn)(...args);
     },
   };
-  return dbApi;
 
   async function tryUsingIndexedDB() {
     // we use chrome.storage.local fallback if IndexedDB doesn't save data,
@@ -44,13 +44,13 @@ const db = (() => {
     await dbExecIndexedDB('delete', e.id); // throws if `e` or id is null
   }
 
-  function useChromeStorage(err) {
+  async function useChromeStorage(err) {
     chromeLocal.setValue(FALLBACK, true);
     if (err) {
-      chromeLocal.setValue(FALLBACK + 'Reason', workerUtil.cloneError(err));
+      chromeLocal.setValue(FALLBACK + 'Reason', cloneError(err));
       console.warn('Failed to access indexedDB. Switched to storage API.', err);
     }
-    return createChromeStorageDB().exec;
+    return require(['./db-chrome-storage']);
   }
 
   async function dbExecIndexedDB(method, ...args) {
@@ -90,4 +90,6 @@ const db = (() => {
       });
     }
   }
-})();
+
+  return exports;
+});

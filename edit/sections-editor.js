@@ -1,45 +1,48 @@
-/* global
-  $
-  $$
-  $create
-  API
-  clipString
-  CodeMirror
-  createLivePreview
-  createSection
-  debounce
-  editor
-  FIREFOX
-  ignoreChromeError
-  linter
-  messageBox
-  prefs
-  rerouteHotkeys
-  sectionsToMozFormat
-  sessionStore
-  showCodeMirrorPopup
-  showHelp
-  t
-*/
 'use strict';
 
-/* exported SectionsEditor */
+define(require => function SectionsEditor() {
+  const {API} = require('/js/msg');
+  const {
+    FIREFOX,
+    debounce,
+    ignoreChromeError,
+    sessionStore,
+  } = require('/js/toolbox');
+  const {
+    $,
+    $$,
+    $create,
+    $remove,
+    messageBoxProxy,
+  } = require('/js/dom');
+  const t = require('/js/localization');
+  const prefs = require('/js/prefs');
+  const {CodeMirror} = require('./codemirror-factory');
+  const editor = require('./editor');
+  const livePreview = require('./live-preview');
+  const linterMan = require('./linter-manager');
+  const createSection = require('./sections-editor-section');
+  const {
+    clipString,
+    helpPopup,
+    rerouteHotkeys,
+    sectionsToMozFormat,
+    showCodeMirrorPopup,
+  } = require('./util');
 
-function SectionsEditor() {
-  const {style, dirty} = editor;
+  const {style, /** @type DirtyReporter */dirty} = editor;
   const container = $('#sections');
   /** @type {EditorSection[]} */
   const sections = [];
   const xo = window.IntersectionObserver &&
     new IntersectionObserver(refreshOnViewListener, {rootMargin: '100%'});
-  const livePreview = createLivePreview(null, style.id);
-
   let INC_ID = 0; // an increment id that is used by various object to track the order
   let sectionOrder = '';
   let headerOffset; // in compact mode the header is at the top so it reduces the available height
 
-  container.classList.add('section-editor');
   updateHeader();
+  livePreview.init(null, style.id);
+  container.classList.add('section-editor');
   $('#to-mozilla').on('click', showMozillaFormat);
   $('#to-mozilla-help').on('click', showToMozillaHelp);
   $('#from-mozilla').on('click', () => showMozillaFormatImport());
@@ -50,8 +53,7 @@ function SectionsEditor() {
       .forEach(e => e.on('mousedown', toggleContextMenuDelete));
   }
 
-  /** @namespace SectionsEditor */
-  Object.assign(editor, {
+  Object.assign(editor, /** @mixin SectionsEditor */ {
 
     sections,
 
@@ -194,13 +196,13 @@ function SectionsEditor() {
         progressElement.title = progress + '%';
       });
     } else {
-      $.remove(progressElement);
+      $remove(progressElement);
     }
   }
 
   function showToMozillaHelp(event) {
     event.preventDefault();
-    showHelp(t('styleMozillaFormatHeading'), t('styleToMozillaFormatHelp'));
+    helpPopup.show(t('styleMozillaFormatHeading'), t('styleToMozillaFormatHelp'));
   }
 
   /**
@@ -380,7 +382,7 @@ function SectionsEditor() {
         const code = popup.codebox.getValue().trim();
         if (!/==userstyle==/i.test(code) ||
             !await getPreprocessor(code) ||
-            await messageBox.confirm(
+            await messageBoxProxy.confirm(
               t('importPreprocessor'), 'pre-line',
               t('importPreprocessorTitle'))
         ) {
@@ -416,7 +418,7 @@ function SectionsEditor() {
     }
 
     function showError(errors) {
-      messageBox({
+      messageBoxProxy.show({
         className: 'center danger',
         title: t('styleFromMozillaFormatError'),
         contents: $create('pre',
@@ -433,7 +435,7 @@ function SectionsEditor() {
     sectionOrder = validSections.map(s => s.id).join(',');
     dirty.modify('sectionOrder', oldOrder, sectionOrder);
     container.dataset.sectionCount = validSections.length;
-    linter.refreshReport();
+    require(['./linter-report'], rep => rep.refreshReport());
     editor.updateToc();
   }
 
@@ -446,7 +448,7 @@ function SectionsEditor() {
 
   function validate() {
     if (!$('#name').reportValidity()) {
-      messageBox.alert(t('styleMissingName'));
+      messageBoxProxy.alert(t('styleMissingName'));
       return false;
     }
     for (const section of sections) {
@@ -455,7 +457,7 @@ function SectionsEditor() {
           continue;
         }
         if (!apply.valueEl.reportValidity()) {
-          messageBox.alert(t('styleBadRegexp'));
+          messageBoxProxy.alert(t('styleBadRegexp'));
           return false;
         }
       }
@@ -627,7 +629,7 @@ function SectionsEditor() {
   /** @param {EditorSection} section */
   function registerEvents(section) {
     const {el, cm} = section;
-    $('.applies-to-help', el).onclick = () => showHelp(t('appliesLabel'), t('appliesHelp'));
+    $('.applies-to-help', el).onclick = () => helpPopup.show(t('appliesLabel'), t('appliesHelp'));
     $('.remove-section', el).onclick = () => removeSection(section);
     $('.add-section', el).onclick = () => insertSectionAfter(undefined, section);
     $('.clone-section', el).onclick = () => insertSectionAfter(section.getModel(), section);
@@ -643,8 +645,8 @@ function SectionsEditor() {
   function maybeImportOnPaste(cm, event) {
     const text = event.clipboardData.getData('text') || '';
     if (/@-moz-document/i.test(text) &&
-      /@-moz-document\s+(url|url-prefix|domain|regexp)\(/i
-        .test(text.replace(/\/\*([^*]|\*(?!\/))*(\*\/|$)/g, ''))
+        /@-moz-document\s+(url|url-prefix|domain|regexp)\(/i
+          .test(text.replace(/\/\*([^*]|\*(?!\/))*(\*\/|$)/g, ''))
     ) {
       event.preventDefault();
       showMozillaFormatImport(text);
@@ -653,7 +655,7 @@ function SectionsEditor() {
 
   function refreshOnView(cm, {code, force} = {}) {
     if (code) {
-      linter.enableForEditor(cm, code);
+      linterMan.enableForEditor(cm, code);
     }
     if (force || !xo) {
       refreshOnViewNow(cm);
@@ -679,7 +681,7 @@ function SectionsEditor() {
   }
 
   async function refreshOnViewNow(cm) {
-    linter.enableForEditor(cm);
+    linterMan.enableForEditor(cm);
     cm.refresh();
   }
 
@@ -693,4 +695,4 @@ function SectionsEditor() {
       }, ignoreChromeError);
     }
   }
-}
+});

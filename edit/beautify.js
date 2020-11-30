@@ -1,58 +1,41 @@
-/* global loadScript css_beautify showHelp prefs t $ $create */
-/* global editor createHotkeyInput moveFocus CodeMirror */
-/* exported initBeautifyButton */
 'use strict';
 
-const HOTKEY_ID = 'editor.beautify.hotkey';
+define(require => {
+  const {$, $create, moveFocus} = require('/js/dom');
+  const t = require('/js/localization');
+  const prefs = require('/js/prefs');
+  const editor = require('./editor');
+  const {CodeMirror} = require('./codemirror-factory');
+  const {createHotkeyInput, helpPopup} = require('./util');
+  const beautifier = require('/vendor-overwrites/beautify/beautify-css-mod').css_beautify;
 
-prefs.initializing.then(() => {
-  CodeMirror.defaults.extraKeys[prefs.get(HOTKEY_ID) || ''] = 'beautify';
+  const HOTKEY_ID = 'editor.beautify.hotkey';
+
   CodeMirror.commands.beautify = cm => {
     // using per-section mode when code editor or applies-to block is focused
     const isPerSection = cm.display.wrapper.parentElement.contains(document.activeElement);
     beautify(isPerSection ? [cm] : editor.getEditors(), false);
   };
-});
 
-prefs.subscribe([HOTKEY_ID], (key, value) => {
-  const {extraKeys} = CodeMirror.defaults;
-  for (const [key, cmd] of Object.entries(extraKeys)) {
-    if (cmd === 'beautify') {
-      delete extraKeys[key];
-      break;
-    }
-  }
-  if (value) {
-    extraKeys[value] = 'beautify';
-  }
-});
-
-/**
- * @param {HTMLElement} btn - the button element shown in the UI
- * @param {function():CodeMirror[]} getScope
- */
-function initBeautifyButton(btn, getScope) {
-  btn.addEventListener('click', () => beautify(getScope()));
-  btn.addEventListener('contextmenu', e => {
-    e.preventDefault();
-    beautify(getScope(), false);
-  });
-}
-
-/**
- * @param {CodeMirror[]} scope
- * @param {?boolean} ui
- */
-function beautify(scope, ui = true) {
-  loadScript('/vendor-overwrites/beautify/beautify-css-mod.js')
-    .then(() => {
-      if (!window.css_beautify && window.exports) {
-        window.css_beautify = window.exports.css_beautify;
+  prefs.subscribe([HOTKEY_ID], (key, value) => {
+    const {extraKeys} = CodeMirror.defaults;
+    for (const [key, cmd] of Object.entries(extraKeys)) {
+      if (cmd === 'beautify') {
+        delete extraKeys[key];
+        break;
       }
-    })
-    .then(doBeautify);
+    }
+    if (value) {
+      extraKeys[value] = 'beautify';
+    }
+  }, {runNow: true});
 
-  function doBeautify() {
+  /**
+   * @name beautify
+   * @param {CodeMirror[]} scope
+   * @param {boolean} [ui=true]
+   */
+  async function beautify(scope, ui = true) {
     const tabs = prefs.get('editor.indentWithTabs');
     const options = Object.assign({}, prefs.get('editor.beautify'));
     for (const k of Object.keys(prefs.defaults['editor.beautify'])) {
@@ -64,16 +47,16 @@ function beautify(scope, ui = true) {
       createBeautifyUI(scope, options);
     }
     for (const cm of scope) {
-      setTimeout(doBeautifyEditor, 0, cm, options);
+      setTimeout(doBeautifyEditor, 0, cm, options, ui);
     }
   }
 
-  function doBeautifyEditor(cm, options) {
+  function doBeautifyEditor(cm, options, ui) {
     const pos = options.translate_positions =
       [].concat.apply([], cm.doc.sel.ranges.map(r =>
         [Object.assign({}, r.anchor), Object.assign({}, r.head)]));
     const text = cm.getValue();
-    const newText = css_beautify(text, options);
+    const newText = beautifier(text, options);
     if (newText !== text) {
       if (!cm.beautifyChange || !cm.beautifyChange[cm.changeGeneration()]) {
         // clear the list if last change wasn't a css-beautify
@@ -95,7 +78,7 @@ function beautify(scope, ui = true) {
   }
 
   function createBeautifyUI(scope, options) {
-    showHelp(t('styleBeautify'),
+    helpPopup.show(t('styleBeautify'),
       $create([
         $create('.beautify-options', [
           $createOption('.selector1,', 'selector_separator_newline'),
@@ -114,8 +97,7 @@ function beautify(scope, ui = true) {
         $create('.buttons', [
           $create('button', {
             attributes: {role: 'close'},
-            // showHelp.close will be defined after showHelp() is invoked
-            onclick: () => showHelp.close(),
+            onclick: helpPopup.close,
           }, t('confirmClose')),
           $create('button', {
             attributes: {role: 'undo'},
@@ -145,7 +127,7 @@ function beautify(scope, ui = true) {
       if (target.parentNode.hasAttribute('newline')) {
         target.parentNode.setAttribute('newline', value.toString());
       }
-      doBeautify();
+      beautify(scope, false);
     };
 
     function $createOption(label, optionName, indent) {
@@ -185,4 +167,14 @@ function beautify(scope, ui = true) {
       );
     }
   }
-}
+
+  return {
+
+    beautify,
+
+    beautifyOnClick(event, ui, scope) {
+      event.preventDefault();
+      beautify(scope || editor.getEditors(), ui);
+    },
+  };
+});

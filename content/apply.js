@@ -1,18 +1,14 @@
-/* global msg API prefs createStyleInjector */
 'use strict';
 
-// Chrome reruns content script when documentElement is replaced.
-// Note, we're checking against a literal `1`, not just `if (truthy)`,
-// because <html id="INJECTED"> is exposed per HTML spec as a global variable and `window.INJECTED`.
-
-// eslint-disable-next-line no-unused-expressions
-self.INJECTED !== 1 && (() => {
-  self.INJECTED = 1;
+define(require => {
+  const {API, msg} = require('/js/msg');
+  const prefs = require('/js/prefs');
 
   let IS_TAB = !chrome.tabs || location.pathname !== '/popup.html';
   const IS_FRAME = window !== parent;
   const STYLE_VIA_API = !chrome.app && document instanceof XMLDocument;
-  const styleInjector = createStyleInjector({
+  /** @type {StyleInjector} */
+  const styleInjector = require('/content/style-injector')({
     compare: (a, b) => a.id - b.id,
     onUpdate: onInjectorUpdate,
   });
@@ -210,4 +206,4 @@ self.INJECTED !== 1 && (() => {
       msg.off(applyOnMessage);
     } catch (e) {}
   }
-})();
+});

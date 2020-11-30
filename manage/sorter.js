@@ -1,14 +1,20 @@
-/* global installed messageBox t $ $create prefs */
-/* exported sorter */
 'use strict';
 
-const sorter = (() => {
+define(require => {
+  const t = require('/js/localization');
+  const prefs = require('/js/prefs');
+  const {
+    $,
+    $create,
+    messageBoxProxy,
+    onDOMready,
+  } = require('/js/dom');
 
+  const splitRegex = /\s*,\s*/;
   const sorterType = {
     alpha: (a, b) => a < b ? -1 : a === b ? 0 : 1,
     number: (a, b) => (a || 0) - (b || 0),
   };
-
   const tagData = {
     title: {
       text: t('genericTitle'),
@@ -36,6 +42,63 @@ const sorter = (() => {
       sorter: sorterType.number,
     },
   };
+  let columns = 1;
+
+  const sorter = {
+
+    sort({styles}) {
+      const sortBy = prefs.get('manage.newUI.sort').split(splitRegex);
+      const len = sortBy.length;
+      return styles.sort((a, b) => {
+        let types, direction;
+        let result = 0;
+        let index = 0;
+        // multi-sort
+        while (result === 0 && index < len) {
+          types = tagData[sortBy[index++]];
+          direction = sortBy[index++] === 'asc' ? 1 : -1;
+          result = types.sorter(types.parse(a), types.parse(b)) * direction;
+        }
+        return result;
+      });
+    },
+
+    update() {
+      const installed = $('#installed');
+      if (!installed) return;
+      const current = [...installed.children];
+      const sorted = sorter.sort({
+        styles: current.map(entry => ({
+          entry,
+          name: entry.styleNameLowerCase,
+          style: entry.styleMeta,
+        })),
+      });
+      if (current.some((entry, index) => entry !== sorted[index].entry)) {
+        const renderBin = document.createDocumentFragment();
+        sorted.forEach(({entry}) => renderBin.appendChild(entry));
+        installed.appendChild(renderBin);
+      }
+      sorter.updateStripes();
+    },
+
+    updateStripes({onlyWhenColumnsChanged} = {}) {
+      if (onlyWhenColumnsChanged && !updateColumnCount()) return;
+      let index = 0;
+      let isOdd = false;
+      const flipRows = columns % 2 === 0;
+      for (const {classList} of $('#installed').children) {
+        if (classList.contains('hidden')) continue;
+        classList.toggle('odd', isOdd);
+        classList.toggle('even', !isOdd);
+        if (flipRows && ++index >= columns) {
+          index = 0;
+        } else {
+          isOdd = !isOdd;
+        }
+      }
+    },
+  };
 
   // Adding (assumed) most commonly used ('title,asc' should always be first)
   // whitespace before & after the comma is ignored
@@ -59,10 +122,6 @@ const sorter = (() => {
     'disabled,desc, usercss,asc, title,desc',
   ];
 
-  const splitRegex = /\s*,\s*/;
-
-  let columns = 1;
-
   function addOptions() {
     let container;
     const select = $('#manage.newUI.sort');
@@ -78,9 +137,8 @@ const sorter = (() => {
       groupAsc: t('sortLabelTitleAsc'),
       groupDesc: t('sortLabelTitleDesc'),
     };
-    const optgroupRegex = /\{\w+\}/;
     selectOptions.forEach(sort => {
-      if (optgroupRegex.test(sort)) {
+      if (/{\w+}/.test(sort)) {
         if (container) {
           renderBin.appendChild(container);
         }
@@ -107,58 +165,6 @@ const sorter = (() => {
     select.value = prefs.get('manage.newUI.sort');
   }
 
-  function sort({styles}) {
-    const sortBy = prefs.get('manage.newUI.sort').split(splitRegex);
-    const len = sortBy.length;
-    return styles.sort((a, b) => {
-      let types, direction;
-      let result = 0;
-      let index = 0;
-      // multi-sort
-      while (result === 0 && index < len) {
-        types = tagData[sortBy[index++]];
-        direction = sortBy[index++] === 'asc' ? 1 : -1;
-        result = types.sorter(types.parse(a), types.parse(b)) * direction;
-      }
-      return result;
-    });
-  }
-
-  function update() {
-    if (!installed) return;
-    const current = [...installed.children];
-    const sorted = sort({
-      styles: current.map(entry => ({
-        entry,
-        name: entry.styleNameLowerCase,
-        style: entry.styleMeta,
-      })),
-    });
-    if (current.some((entry, index) => entry !== sorted[index].entry)) {
-      const renderBin = document.createDocumentFragment();
-      sorted.forEach(({entry}) => renderBin.appendChild(entry));
-      installed.appendChild(renderBin);
-    }
-    updateStripes();
-  }
-
-  function updateStripes({onlyWhenColumnsChanged} = {}) {
-    if (onlyWhenColumnsChanged && !updateColumnCount()) return;
-    let index = 0;
-    let isOdd = false;
-    const flipRows = columns % 2 === 0;
-    for (const {classList} of installed.children) {
-      if (classList.contains('hidden')) continue;
-      classList.toggle('odd', isOdd);
-      classList.toggle('even', !isOdd);
-      if (flipRows && ++index >= columns) {
-        index = 0;
-      } else {
-        isOdd = !isOdd;
-      }
-    }
-  }
-
   function updateColumnCount() {
     let newValue = 1;
     for (let el = document.documentElement.lastElementChild;
@@ -175,9 +181,9 @@ const sorter = (() => {
     }
   }
 
-  function showHelp(event) {
+  async function showHelp(event) {
     event.preventDefault();
-    messageBox({
+    messageBoxProxy.show({
       className: 'help-text',
       title: t('sortStylesHelpTitle'),
       contents:
@@ -188,12 +194,12 @@ const sorter = (() => {
     });
   }
 
-  function init() {
-    prefs.subscribe(['manage.newUI.sort'], update);
+  onDOMready().then(() => {
+    prefs.subscribe('manage.newUI.sort', sorter.update);
     $('#sorter-help').onclick = showHelp;
     addOptions();
     updateColumnCount();
-  }
+  });
 
-  return {init, update, sort, updateStripes};
-})();
+  return sorter;
+});

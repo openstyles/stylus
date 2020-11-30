@@ -1,22 +1,20 @@
-/* global
-  $
-  $$
-  $create
-  API
-  debounce
-  download
-  FIREFOX
-  handleEvent
-  prefs
-  t
-  tabURL
-  tryCatch
-  URLS
-*/
 'use strict';
 
-window.addEventListener('showStyles:done', () => {
-  if (!tabURL) return;
+define(require => {
+  const {API} = require('/js/msg');
+  const {
+    FIREFOX,
+    URLS,
+    debounce,
+    download,
+    tryCatch,
+  } = require('/js/toolbox');
+  const t = require('/js/localization');
+  const {$, $$, $create, $remove} = require('/js/dom');
+  const prefs = require('/js/prefs');
+  const Events = require('./events');
+  require('./search.css');
+
   const RESULT_ID_PREFIX = 'search-result-';
   const INDEX_URL = URLS.usoArchiveRaw + 'search-index.json';
   const STYLUS_CATEGORY = 'chrome-extension';
@@ -61,26 +59,23 @@ window.addEventListener('showStyles:done', () => {
   const show = sel => $class(sel).remove('hidden');
   const hide = sel => $class(sel).add('hidden');
 
-  Object.assign($('#find-styles-link'), {
-    href: URLS.usoArchive,
+  const exports = {
+    /** @this {HTMLAnchorElement} */
     onclick(event) {
       if (!prefs.get('popup.findStylesInline') || dom.container) {
         // use a less specific category if the inline search wasn't used yet
         if (!category) calcCategory({retry: 1});
         this.search = new URLSearchParams({category, search: $('#search-query').value});
-        handleEvent.openURLandHide.call(this, event);
+        Events.openURLandHide.call(this, event);
         return;
       }
-      event.preventDefault();
       this.textContent = this.title;
       this.title = '';
       init();
       calcCategory();
       ready = start();
     },
-  });
-
-  return;
+  };
 
   function init() {
     setTimeout(() => document.body.classList.add('search-results-shown'));
@@ -127,7 +122,7 @@ window.addEventListener('showStyles:done', () => {
 
     if (FIREFOX) {
       let lastShift;
-      addEventListener('resize', () => {
+      window.on('resize', () => {
         const scrollbarWidth = window.innerWidth - document.scrollingElement.clientWidth;
         const shift = document.body.getBoundingClientRect().left;
         if (!scrollbarWidth || shift === lastShift) return;
@@ -137,7 +132,7 @@ window.addEventListener('showStyles:done', () => {
       }, {passive: true});
     }
 
-    addEventListener('styleDeleted', ({detail: {style: {id}}}) => {
+    window.on('styleDeleted', ({detail: {style: {id}}}) => {
       restoreScrollPosition();
       const result = results.find(r => r.installedStyleId === id);
       if (result) {
@@ -146,7 +141,7 @@ window.addEventListener('showStyles:done', () => {
       }
     });
 
-    addEventListener('styleAdded', async ({detail: {style}}) => {
+    window.on('styleAdded', async ({detail: {style}}) => {
       restoreScrollPosition();
       const usoId = calcUsoId(style) ||
                     calcUsoId(await API.styles.get(style.id));
@@ -285,7 +280,7 @@ window.addEventListener('showStyles:done', () => {
     entry.id = RESULT_ID_PREFIX + id;
     // title
     Object.assign($('.search-result-title', entry), {
-      onclick: handleEvent.openURLandHide,
+      onclick: Events.openURLandHide,
       href: URLS.usoArchive + `?category=${category}&style=${id}`,
     });
     $('.search-result-title span', entry).textContent =
@@ -304,7 +299,7 @@ window.addEventListener('showStyles:done', () => {
       textContent: author,
       title: author,
       href: URLS.usoArchive + '?author=' + encodeURIComponent(author).replace(/%20/g, '+'),
-      onclick: handleEvent.openURLandHide,
+      onclick: Events.openURLandHide,
     });
     // rating
     $('[data-type="rating"]', entry).dataset.class =
@@ -424,7 +419,7 @@ window.addEventListener('showStyles:done', () => {
     } catch (reason) {
       error(`Error while downloading usoID:${id}\nReason: ${reason}`);
     }
-    $.remove('.lds-spinner', entry);
+    $remove('.lds-spinner', entry);
     installButton.disabled = false;
     entry.style.pointerEvents = '';
   }
@@ -449,7 +444,7 @@ window.addEventListener('showStyles:done', () => {
    * @returns {boolean} true if the category has actually changed
    */
   function calcCategory({retry} = {}) {
-    const u = tryCatch(() => new URL(tabURL));
+    const u = tryCatch(() => new URL(Events.thisTab.url));
     const old = category;
     if (!u) {
       // Invalid URL
@@ -479,7 +474,7 @@ window.addEventListener('showStyles:done', () => {
     index = (await download(INDEX_URL, {responseType: 'json'}))
       .filter(res => res.f === 'uso');
     clearTimeout(timer);
-    $.remove(':scope > .lds-spinner', dom.list);
+    $remove(':scope > .lds-spinner', dom.list);
     return index;
   }
 
@@ -533,4 +528,6 @@ window.addEventListener('showStyles:done', () => {
     if (!res._year) res._year = new Date(res.u * 1000).getFullYear();
     return res;
   }
-}, {once: true});
+
+  return exports;
+});

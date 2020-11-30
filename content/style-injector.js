@@ -1,6 +1,10 @@
 'use strict';
 
-self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
+/** The name is needed when running in content scripts but specifying it in define()
+    breaks IDE detection of exports so here's a workaround */
+define.currentModule = '/content/style-injector';
+
+define(require => ({
   compare,
   onUpdate = () => {},
 }) => {
@@ -17,22 +21,22 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
   // will store the original method refs because the page can override them
   let creationDoc, createElement, createElementNS;
 
-  return {
+  return /** @namespace StyleInjector */ {
 
     list,
 
-    apply(styleMap) {
+    async apply(styleMap) {
       const styles = _styleMapToArray(styleMap);
-      return (
-        !styles.length ?
-          Promise.resolve([]) :
-          docRootObserver.evade(() => {
-            if (!isTransitionPatched && isEnabled) {
-              _applyTransitionPatch(styles);
-            }
-            return styles.map(_addUpdate);
-          })
-      ).then(_emitUpdate);
+      const value = !styles.length
+        ? []
+        : await docRootObserver.evade(() => {
+          if (!isTransitionPatched && isEnabled) {
+            _applyTransitionPatch(styles);
+          }
+          return styles.map(_addUpdate);
+        });
+      _emitUpdate();
+      return value;
     },
 
     clear() {
@@ -155,10 +159,9 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
     docRootObserver[onOff]();
   }
 
-  function _emitUpdate(value) {
+  function _emitUpdate() {
     _toggleObservers(list.length);
     onUpdate();
-    return value;
   }
 
   /*
@@ -321,4 +324,4 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
         .observe(document, {childList: true});
     }
   }
-};
+});

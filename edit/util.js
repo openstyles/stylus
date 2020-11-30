@@ -1,219 +1,231 @@
-/* global
-  $create
-  CodeMirror
-  prefs
-*/
 'use strict';
 
-/* exported DirtyReporter */
-class DirtyReporter {
-  constructor() {
-    this._dirty = new Map();
-    this._onchange = new Set();
-  }
+define(require => {
+  const {
+    $,
+    $create,
+    getEventKeyName,
+    messageBoxProxy,
+    moveFocus,
+  } = require('/js/dom');
+  const t = require('/js/localization');
+  const prefs = require('/js/prefs');
 
-  add(obj, value) {
-    const wasDirty = this.isDirty();
-    const saved = this._dirty.get(obj);
-    if (!saved) {
-      this._dirty.set(obj, {type: 'add', newValue: value});
-    } else if (saved.type === 'remove') {
-      if (saved.savedValue === value) {
-        this._dirty.delete(obj);
-      } else {
-        saved.newValue = value;
-        saved.type = 'modify';
+  let CodeMirror;
+
+  // TODO: maybe move to sections-util.js
+  const DocFuncMapper = {
+    TO_CSS: {
+      urls: 'url',
+      urlPrefixes: 'url-prefix',
+      domains: 'domain',
+      regexps: 'regexp',
+    },
+    FROM_CSS: {
+      'url': 'urls',
+      'url-prefix': 'urlPrefixes',
+      'domain': 'domains',
+      'regexp': 'regexps',
+    },
+    /**
+     * @param {Object} section
+     * @param {function(func:string, value:string)} fn
+     */
+    forEachProp(section, fn) {
+      for (const [propName, func] of Object.entries(DocFuncMapper.TO_CSS)) {
+        const props = section[propName];
+        if (props) props.forEach(value => fn(func, value));
       }
-    }
-    this.notifyChange(wasDirty);
-  }
-
-  remove(obj, value) {
-    const wasDirty = this.isDirty();
-    const saved = this._dirty.get(obj);
-    if (!saved) {
-      this._dirty.set(obj, {type: 'remove', savedValue: value});
-    } else if (saved.type === 'add') {
-      this._dirty.delete(obj);
-    } else if (saved.type === 'modify') {
-      saved.type = 'remove';
-    }
-    this.notifyChange(wasDirty);
-  }
-
-  modify(obj, oldValue, newValue) {
-    const wasDirty = this.isDirty();
-    const saved = this._dirty.get(obj);
-    if (!saved) {
-      if (oldValue !== newValue) {
-        this._dirty.set(obj, {type: 'modify', savedValue: oldValue, newValue});
+    },
+    /**
+     * @param {Array<?[type,value]>} funcItems
+     * @param {?Object} [section]
+     * @returns {Object} section
+     */
+    toSection(funcItems, section = {}) {
+      for (const item of funcItems) {
+        const [func, value] = item || [];
+        const propName = DocFuncMapper.FROM_CSS[func];
+        if (propName) {
+          const props = section[propName] || (section[propName] = []);
+          if (Array.isArray(value)) props.push(...value);
+          else props.push(value);
+        }
       }
-    } else if (saved.type === 'modify') {
-      if (saved.savedValue === newValue) {
-        this._dirty.delete(obj);
-      } else {
-        saved.newValue = newValue;
-      }
-    } else if (saved.type === 'add') {
-      saved.newValue = newValue;
-    }
-    this.notifyChange(wasDirty);
-  }
-
-  clear(obj) {
-    const wasDirty = this.isDirty();
-    if (obj === undefined) {
-      this._dirty.clear();
-    } else {
-      this._dirty.delete(obj);
-    }
-    this.notifyChange(wasDirty);
-  }
-
-  isDirty() {
-    return this._dirty.size > 0;
-  }
-
-  onChange(cb, add = true) {
-    this._onchange[add ? 'add' : 'delete'](cb);
-  }
-
-  notifyChange(wasDirty) {
-    if (wasDirty !== this.isDirty()) {
-      this._onchange.forEach(cb => cb());
-    }
-  }
-
-  has(key) {
-    return this._dirty.has(key);
-  }
-}
-
-/* exported DocFuncMapper */
-const DocFuncMapper = {
-  TO_CSS: {
-    urls: 'url',
-    urlPrefixes: 'url-prefix',
-    domains: 'domain',
-    regexps: 'regexp',
-  },
-  FROM_CSS: {
-    'url': 'urls',
-    'url-prefix': 'urlPrefixes',
-    'domain': 'domains',
-    'regexp': 'regexps',
-  },
-  /**
-   * @param {Object} section
-   * @param {function(func:string, value:string)} fn
-   */
-  forEachProp(section, fn) {
-    for (const [propName, func] of Object.entries(DocFuncMapper.TO_CSS)) {
-      const props = section[propName];
-      if (props) props.forEach(value => fn(func, value));
-    }
-  },
-  /**
-   * @param {Array<?[type,value]>} funcItems
-   * @param {?Object} [section]
-   * @returns {Object} section
-   */
-  toSection(funcItems, section = {}) {
-    for (const item of funcItems) {
-      const [func, value] = item || [];
-      const propName = DocFuncMapper.FROM_CSS[func];
-      if (propName) {
-        const props = section[propName] || (section[propName] = []);
-        if (Array.isArray(value)) props.push(...value);
-        else props.push(value);
-      }
-    }
-    return section;
-  },
-};
-
-/* exported sectionsToMozFormat */
-function sectionsToMozFormat(style) {
-  return style.sections.map(section => {
-    const cssFuncs = [];
-    DocFuncMapper.forEachProp(section, (type, value) =>
-      cssFuncs.push(`${type}("${value.replace(/\\/g, '\\\\')}")`));
-    return cssFuncs.length ?
-      `@-moz-document ${cssFuncs.join(', ')} {\n${section.code}\n}` :
-      section.code;
-  }).join('\n\n');
-}
-
-/* exported trimCommentLabel */
-function trimCommentLabel(str, limit = 1000) {
-  // stripping /*** foo ***/ to foo
-  return clipString(str.replace(/^[!-/:;=\s]*|[-#$&(+,./:;<=>\s*]*$/g, ''), limit);
-}
-
-/* exported clipString */
-function clipString(str, limit = 100) {
-  return str.length <= limit ? str : str.substr(0, limit) + '...';
-}
-
-/* exported memoize */
-function memoize(fn) {
-  let cached = false;
-  let result;
-  return (...args) => {
-    if (!cached) {
-      result = fn(...args);
-      cached = true;
-    }
-    return result;
+      return section;
+    },
   };
-}
 
-/* exported createHotkeyInput */
-/**
- * @param {!string} prefId
- * @param {?function(isEnter:boolean)} onDone
- */
-function createHotkeyInput(prefId, onDone = () => {}) {
-  return $create('input', {
-    type: 'search',
-    spellcheck: false,
-    value: prefs.get(prefId),
-    onkeydown(event) {
-      const key = CodeMirror.keyName(event);
-      if (key === 'Tab' || key === 'Shift-Tab') {
-        return;
-      }
-      event.preventDefault();
-      event.stopPropagation();
-      switch (key) {
-        case 'Enter':
-          if (this.checkValidity()) onDone(true);
+  const util = {
+
+    get CodeMirror() {
+      return CodeMirror;
+    },
+    set CodeMirror(val) {
+      CodeMirror = val;
+    },
+    DocFuncMapper,
+
+    helpPopup: {
+      show(title = '', body) {
+        const div = $('#help-popup');
+        const contents = $('.contents', div);
+        div.className = '';
+        contents.textContent = '';
+        if (body) {
+          contents.appendChild(typeof body === 'string' ? t.HTML(body) : body);
+        }
+        $('.title', div).textContent = title;
+        $('.dismiss', div).onclick = util.helpPopup.close;
+        window.on('keydown', util.helpPopup.close, true);
+        // reset any inline styles
+        div.style = 'display: block';
+        util.helpPopup.originalFocus = document.activeElement;
+        return div;
+      },
+      close(event) {
+        const canClose =
+          !event ||
+          event.type === 'click' || (
+            getEventKeyName(event) === 'Escape' &&
+            !$('.CodeMirror-hints, #message-box') && (
+              !document.activeElement ||
+              !document.activeElement.closest('#search-replace-dialog') &&
+              document.activeElement.matches(':not(input), .can-close-on-esc')
+            )
+          );
+        if (!canClose) {
           return;
-        case 'Esc':
-          onDone(false);
+        }
+        const div = $('#help-popup');
+        if (event && div.codebox && !div.codebox.options.readOnly && !div.codebox.isClean()) {
+          setTimeout(async () => {
+            const ok = await messageBoxProxy.confirm(t('confirmDiscardChanges'));
+            return ok && util.helpPopup.close();
+          });
           return;
-        default:
-          // disallow: [Shift?] characters, modifiers-only, [modifiers?] + Esc, Tab, nav keys
-          if (!key || new RegExp('^(' + [
-            '(Back)?Space',
-            '(Shift-)?.', // a single character
-            '(Shift-?|Ctrl-?|Alt-?|Cmd-?){0,2}(|Esc|Tab|(Page)?(Up|Down)|Left|Right|Home|End|Insert|Delete)',
-          ].join('|') + ')$', 'i').test(key)) {
-            this.value = key || this.value;
-            this.setCustomValidity('Not allowed');
+        }
+        if (div.contains(document.activeElement) && util.helpPopup.originalFocus) {
+          util.helpPopup.originalFocus.focus();
+        }
+        const contents = $('.contents', div);
+        div.style.display = '';
+        contents.textContent = '';
+        window.off('keydown', util.helpPopup.close, true);
+        window.dispatchEvent(new Event('closeHelp'));
+      },
+    },
+
+    clipString(str, limit = 100) {
+      return str.length <= limit ? str : str.substr(0, limit) + '...';
+    },
+
+    createHotkeyInput(prefId, onDone = () => {}) {
+      return $create('input', {
+        type: 'search',
+        spellcheck: false,
+        value: prefs.get(prefId),
+        onkeydown(event) {
+          const key = CodeMirror.keyName(event);
+          if (key === 'Tab' || key === 'Shift-Tab') {
             return;
           }
-      }
-      this.value = key;
-      this.setCustomValidity('');
-      prefs.set(prefId, key);
+          event.preventDefault();
+          event.stopPropagation();
+          switch (key) {
+            case 'Enter':
+              if (this.checkValidity()) onDone(true);
+              return;
+            case 'Esc':
+              onDone(false);
+              return;
+            default:
+              // disallow: [Shift?] characters, modifiers-only, [modifiers?] + Esc, Tab, nav keys
+              if (!key || new RegExp('^(' + [
+                '(Back)?Space',
+                '(Shift-)?.', // a single character
+                '(Shift-?|Ctrl-?|Alt-?|Cmd-?){0,2}(|Esc|Tab|(Page)?(Up|Down)|Left|Right|Home|End|Insert|Delete)',
+              ].join('|') + ')$', 'i').test(key)) {
+                this.value = key || this.value;
+                this.setCustomValidity('Not allowed');
+                return;
+              }
+          }
+          this.value = key;
+          this.setCustomValidity('');
+          prefs.set(prefId, key);
+        },
+        oninput() {
+          // fired on pressing "x" to clear the field
+          prefs.set(prefId, '');
+        },
+        onpaste(event) {
+          event.preventDefault();
+        },
+      });
     },
-    oninput() {
-      // fired on pressing "x" to clear the field
-      prefs.set(prefId, '');
+
+    async rerouteHotkeys(...args) {
+      require(['./reroute-hotkeys'], res => res(...args));
     },
-    onpaste(event) {
-      event.preventDefault();
+
+    sectionsToMozFormat(style) {
+      return style.sections.map(section => {
+        const cssFuncs = [];
+        DocFuncMapper.forEachProp(section, (type, value) =>
+          cssFuncs.push(`${type}("${value.replace(/\\/g, '\\\\')}")`));
+        return cssFuncs.length ?
+          `@-moz-document ${cssFuncs.join(', ')} {\n${section.code}\n}` :
+          section.code;
+      }).join('\n\n');
     },
-  });
-}
+
+    showCodeMirrorPopup(title, html, options) {
+      const popup = util.helpPopup.show(title, html);
+      popup.classList.add('big');
+
+      let cm = popup.codebox = CodeMirror($('.contents', popup), Object.assign({
+        mode: 'css',
+        lineNumbers: true,
+        lineWrapping: prefs.get('editor.lineWrapping'),
+        foldGutter: true,
+        gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'],
+        matchBrackets: true,
+        styleActiveLine: true,
+        theme: prefs.get('editor.theme'),
+        keyMap: prefs.get('editor.keyMap'),
+      }, options));
+      cm.focus();
+      util.rerouteHotkeys(false);
+
+      document.documentElement.style.pointerEvents = 'none';
+      popup.style.pointerEvents = 'auto';
+
+      const onKeyDown = event => {
+        if (event.key === 'Tab' && !event.ctrlKey && !event.altKey && !event.metaKey) {
+          const search = $('#search-replace-dialog');
+          const area = search && search.contains(document.activeElement) ? search : popup;
+          moveFocus(area, event.shiftKey ? -1 : 1);
+          event.preventDefault();
+        }
+      };
+      window.on('keydown', onKeyDown, true);
+
+      window.on('closeHelp', () => {
+        window.off('keydown', onKeyDown, true);
+        document.documentElement.style.removeProperty('pointer-events');
+        util.rerouteHotkeys(true);
+        cm = popup.codebox = null;
+      }, {once: true});
+
+      return popup;
+    },
+
+    trimCommentLabel(str, limit = 1000) {
+      // stripping /*** foo ***/ to foo
+      return util.clipString(str.replace(/^[!-/:;=\s]*|[-#$&(+,./:;<=>\s*]*$/g, ''), limit);
+    },
+  };
+
+  return util;
+});

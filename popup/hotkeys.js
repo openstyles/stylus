@@ -1,35 +1,35 @@
-/* global $ $$ API debounce $create t */
 'use strict';
 
-/* exported hotkeys */
-const hotkeys = (() => {
+define(require => {
+  const {API} = require('/js/msg');
+  const {debounce} = require('/js/toolbox');
+  const {$, $$, $create} = require('/js/dom');
+  const t = require('/js/localization');
+
   const entries = document.getElementsByClassName('entry');
   let togglablesShown;
   let togglables;
   let enabled = false;
   let ready = false;
 
-  window.addEventListener('showStyles:done', () => {
-    togglablesShown = true;
-    togglables = getTogglables();
-    ready = true;
-    setState(true);
-    initHotkeyInfo();
-  }, {once: true});
+  const hotkeys = {
 
-  window.addEventListener('resize', adjustInfoPosition);
+    initHotkeys() {
+      togglablesShown = true;
+      togglables = getTogglables();
+      ready = true;
+      hotkeys.setState(true);
+      window.on('resize', adjustInfoPosition);
+      initHotkeyInfo();
+    },
 
-  return {setState};
-
-  function setState(newState = !enabled) {
-    if (!ready) {
-      throw new Error('hotkeys no ready');
-    }
-    if (newState !== enabled) {
-      window[`${newState ? 'add' : 'remove'}EventListener`]('keydown', onKeyDown);
-      enabled = newState;
-    }
-  }
+    setState(newState = !enabled) {
+      if (newState !== enabled && ready) {
+        window[newState ? 'on' : 'off']('keydown', onKeyDown);
+        enabled = newState;
+      }
+    },
+  };
 
   function onKeyDown(event) {
     if (event.ctrlKey || event.altKey || event.metaKey || !enabled ||
@@ -116,11 +116,11 @@ const hotkeys = (() => {
       delete container.dataset.active;
       document.body.style.height = '';
       container.title = title;
-      window.addEventListener('resize', adjustInfoPosition);
+      window.on('resize', adjustInfoPosition);
     }
 
     function open() {
-      window.removeEventListener('resize', adjustInfoPosition);
+      window.off('resize', adjustInfoPosition);
       debounce.unregister(adjustInfoPosition);
       title = container.title;
       container.title = '';
@@ -172,4 +172,6 @@ const hotkeys = (() => {
       return;
     }
   }
-})();
+
+  return hotkeys;
+});

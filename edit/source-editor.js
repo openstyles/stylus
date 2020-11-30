@@ -1,36 +1,33 @@
-/* global
-  $
-  $$
-  $create
-  API
-  chromeSync
-  cmFactory
-  CodeMirror
-  createLivePreview
-  createMetaCompiler
-  debounce
-  editor
-  linter
-  messageBox
-  MozSectionFinder
-  MozSectionWidget
-  prefs
-  sectionsToMozFormat
-  sessionStore
-  t
-*/
-
 'use strict';
 
-/* exported SourceEditor */
+define(require => function SourceEditor() {
+  const {API} = require('/js/msg');
+  const {debounce, sessionStore} = require('/js/toolbox');
+  const {
+    $,
+    $create,
+    $isTextInput,
+    $$remove,
+    messageBoxProxy,
+  } = require('/js/dom');
+  const t = require('/js/localization');
+  const prefs = require('/js/prefs');
+  const {chromeSync} = require('/js/storage-util');
+  const cmFactory = require('./codemirror-factory');
+  const editor = require('./editor');
+  const livePreview = require('./live-preview');
+  const linterMan = require('./linter-manager');
+  const sectionFinder = require('./moz-section-finder');
+  const sectionWidget = require('./moz-section-widget');
+  const {sectionsToMozFormat} = require('./util');
 
-function SourceEditor() {
-  const {style, dirty} = editor;
+  const {CodeMirror} = cmFactory;
+  const {style, /** @type DirtyReporter */dirty} = editor;
   let savedGeneration;
   let placeholderName = '';
   let prevMode = NaN;
 
-  $$.remove('.sectioned-only');
+  $$remove('.sectioned-only');
   $('#header').on('wheel', headerOnScroll);
   $('#sections').textContent = '';
   $('#sections').appendChild($create('.single-editor'));
@@ -38,11 +35,19 @@ function SourceEditor() {
   if (!style.id) setupNewStyle(style);
 
   const cm = cmFactory.create($('.single-editor'));
-  const sectionFinder = MozSectionFinder(cm);
-  const sectionWidget = MozSectionWidget(cm, sectionFinder, editor.updateToc);
-  const livePreview = createLivePreview(preprocess, style.id);
-  /** @namespace SourceEditor */
-  Object.assign(editor, {
+  createMetaCompiler(cm, meta => {
+    style.usercssData = meta;
+    style.name = meta.name;
+    style.url = meta.homepageURL || style.installationUrl;
+    updateMeta();
+  });
+  updateMeta();
+  cm.setValue(style.sourceCode);
+  sectionFinder.init(cm);
+  sectionWidget.init(cm);
+  livePreview.init(preprocess, Boolean(style.id));
+
+  Object.assign(editor, /** @mixin SourceEditor */ {
     sections: sectionFinder.sections,
     replaceStyle,
     getEditors: () => [cm],
@@ -62,19 +67,12 @@ function SourceEditor() {
     getSearchableInputs: () => [],
     updateLivePreview,
   });
-  createMetaCompiler(cm, meta => {
-    style.usercssData = meta;
-    style.name = meta.name;
-    style.url = meta.homepageURL || style.installationUrl;
-    updateMeta();
-  });
-  updateMeta();
-  cm.setValue(style.sourceCode);
+
   prefs.subscribeMany({
     'editor.linter': updateLinterSwitch,
     'editor.appliesToLineWidget': (k, val) => sectionWidget.toggle(val),
     'editor.toc.expanded': (k, val) => sectionFinder.onOff(editor.updateToc, val),
-  }, {now: true});
+  }, {runNow: true});
   editor.applyScrollInfo(cm);
   cm.clearHistory();
   cm.markClean();
@@ -88,11 +86,11 @@ function SourceEditor() {
     const mode = getModeName();
     if (mode === prevMode) return;
     prevMode = mode;
-    linter.run();
+    linterMan.run();
     updateLinterSwitch();
   });
-  setTimeout(linter.enableForEditor, 0, cm);
-  if (!$.isTextInput(document.activeElement)) {
+  setTimeout(linterMan.enableForEditor, 0, cm);
+  if (!$isTextInput(document.activeElement)) {
     cm.focus();
   }
 
@@ -199,7 +197,7 @@ function SourceEditor() {
       return;
     }
 
-    Promise.resolve(messageBox.confirm(t('styleUpdateDiscardChanges'))).then(ok => {
+    Promise.resolve(messageBoxProxy.confirm(t('styleUpdateDiscardChanges'))).then(ok => {
       if (!ok) return;
       updateEnvironment();
       if (!sameCode) {
@@ -250,16 +248,16 @@ function SourceEditor() {
           // save template
           if (err.code === 'missingValue' && meta.includes('@name')) {
             const key = chromeSync.LZ_KEY.usercssTemplate;
-            messageBox.confirm(t('usercssReplaceTemplateConfirmation')).then(ok => ok &&
+            messageBoxProxy.confirm(t('usercssReplaceTemplateConfirmation')).then(ok => ok &&
               chromeSync.setLZValue(key, code)
                 .then(() => chromeSync.getLZValue(key))
-                .then(saved => saved !== code && messageBox.alert(t('syncStorageErrorSaving'))));
+                .then(saved => saved !== code && messageBoxProxy.alert(t('syncStorageErrorSaving'))));
             return;
           }
           contents[0] += ` (line ${pos.line + 1} col ${pos.ch + 1})`;
           contents.push($create('pre', meta));
         }
-        messageBox.alert(contents, 'pre');
+        messageBoxProxy.alert(contents, 'pre');
       });
   }
 
@@ -271,7 +269,7 @@ function SourceEditor() {
         metaOnly: true,
       }).then(({dup}) => {
         if (dup) {
-          messageBox.alert(t('usercssAvoidOverwriting'), 'danger', t('genericError'));
+          messageBoxProxy.alert(t('usercssAvoidOverwriting'), 'danger', t('genericError'));
           return Promise.reject({handled: true});
         }
       });
@@ -334,4 +332,37 @@ function SourceEditor() {
     return (mode.name || mode || '') +
            (mode.helperType || '');
   }
-}
+
+  function createMetaCompiler(cm, onUpdated) {
+    let meta = null;
+    let metaIndex = null;
+    let cache = [];
+    linterMan.register(async (text, options, _cm) => {
+      if (_cm !== cm) {
+        return;
+      }
+      // TODO: reuse this regexp everywhere for ==userstyle== check
+      const match = text.match(/\/\*!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i);
+      if (!match) {
+        return [];
+      }
+      if (match[0] === meta && match.index === metaIndex) {
+        return cache;
+      }
+      const {metadata, errors} = await linterMan.worker.metalint(match[0]);
+      if (errors.every(err => err.code === 'unknownMeta')) {
+        onUpdated(metadata);
+      }
+      cache = errors.map(err => ({
+        from: cm.posFromIndex((err.index || 0) + match.index),
+        to: cm.posFromIndex((err.index || 0) + match.index),
+        message: err.code && t(`meta_${err.code}`, err.args, false) || err.message,
+        severity: err.code === 'unknownMeta' ? 'warning' : 'error',
+        rule: err.code,
+      }));
+      meta = match[0];
+      metaIndex = match.index;
+      return cache;
+    });
+  }
+});

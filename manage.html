@@ -5,11 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title i18n-text="manageTitle"></title>
   <link rel="stylesheet" href="global.css">
-  <link rel="stylesheet" href="options/onoffswitch.css">
-  <link rel="stylesheet" href="manage/manage.css">
-  <link rel="stylesheet" href="manage/config-dialog.css">
-  <link rel="stylesheet" href="msgbox/msgbox.css">
-  <link rel="stylesheet" href="vendor-overwrites/colorpicker/colorpicker.css">
 
   <style id="firefox-transitions-bug-suppressor">
     /* restrict to FF */
@@ -162,30 +157,31 @@
     </details>
   </template>
 
+  <!-- IMPORTANT!
+       All these assets must be specified in html to avoid blank/unstyled frames while loading
+       as can be verified in devtools `Network` panel with screenshot option enabled.
+       TODO: use a proper build system instead to produce a single bundle. -->
+
   <script src="js/polyfill.js"></script>
-  <script src="js/dom.js"></script>
-  <script src="js/messaging.js"></script>
   <script src="js/msg.js"></script>
+  <script src="js/toolbox.js"></script>
   <script src="js/prefs.js"></script>
+  <script src="js/dom.js"></script>
+  <script src="js/localization.js"></script>
   <script src="js/router.js"></script>
+
   <script src="content/style-injector.js"></script>
   <script src="content/apply.js"></script>
-  <script src="js/localization.js"></script>
+
+  <script src="manage/events.js"></script>
   <script src="manage/filters.js"></script>
-  <script src="manage/sort.js"></script>
+  <script src="manage/new-ui.js"></script>
+  <script src="manage/render.js"></script>
+  <script src="manage/sorter.js"></script>
   <script src="manage/manage.js"></script>
 
-  <script src="vendor-overwrites/colorpicker/colorconverter.js"></script>
-  <script src="vendor-overwrites/colorpicker/colorpicker.js"></script>
-  <script src="manage/config-dialog.js"></script>
-  <script src="manage/updater-ui.js"></script>
-  <script src="manage/object-diff.js"></script>
-  <script src="manage/import-export.js"></script>
-  <script src="manage/incremental-search.js"></script>
-  <script src="msgbox/msgbox.js"></script>
-  <script src="js/sections-util.js"></script>
-  <script src="js/storage-util.js"></script>
-  <script src="js/script-loader.js"></script>
+  <link rel="stylesheet" href="options/onoffswitch.css">
+  <link rel="stylesheet" href="manage/manage.css">
 </head>
 
 <body id="stylus-manage" i18n-dragndrop-hint="dragDropMessage">

@@ -1,24 +1,29 @@
-/* global
-  API
-  chromeLocal
-  dbToCloud
-  msg
-  prefs
-  styleManager
-  tokenManager
-*/
-/* exported sync */
-
 'use strict';
 
-const sync = API.sync = (() => {
+define(require => {
+  const {API, msg} = require('/js/msg');
+  const {chromeLocal} = require('/js/storage-util');
+  const prefs = require('/js/prefs');
+  const {compareRevision} = require('./style-manager');
+  const tokenManager = require('./token-manager');
+
+  /** @type Sync */
+  let sync;
+
+  //#region Init
+
   const SYNC_DELAY = 1; // minutes
   const SYNC_INTERVAL = 30; // minutes
-
-  /** @typedef API.sync.Status */
-  const status = {
-    /** @type {'connected'|'connecting'|'disconnected'|'disconnecting'} */
-    state: 'disconnected',
+  const STATES = Object.freeze({
+    connected: 'connected',
+    connecting: 'connecting',
+    disconnected: 'disconnected',
+    disconnecting: 'disconnecting',
+  });
+  const STORAGE_KEY = 'sync/state/';
+  const status = /** @namespace Sync.Status */ {
+    STATES,
+    state: STATES.disconnected,
     syncing: false,
     progress: null,
     currentDriveName: null,
@@ -26,51 +31,14 @@ const sync = API.sync = (() => {
     login: false,
   };
   let currentDrive;
-  const ctrl = dbToCloud.dbToCloud({
-    onGet(id) {
-      return API.styles.getByUUID(id);
-    },
-    onPut(doc) {
-      return API.styles.putByUUID(doc);
-    },
-    onDelete(id, rev) {
-      return API.styles.deleteByUUID(id, rev);
-    },
-    async onFirstSync() {
-      for (const i of await API.styles.getAll()) {
-        ctrl.put(i._id, i._rev);
-      }
-    },
-    onProgress(e) {
-      if (e.phase === 'start') {
-        status.syncing = true;
-      } else if (e.phase === 'end') {
-        status.syncing = false;
-        status.progress = null;
-      } else {
-        status.progress = e;
-      }
-      emitStatusChange();
-    },
-    compareRevision(a, b) {
-      return styleManager.compareRevision(a, b);
-    },
-    getState(drive) {
-      const key = `sync/state/${drive.name}`;
-      return chromeLocal.getValue(key);
-    },
-    setState(drive, state) {
-      const key = `sync/state/${drive.name}`;
-      return chromeLocal.setValue(key, state);
-    },
-  });
+  let ctrl;
 
   const ready = prefs.initializing.then(() => {
     prefs.subscribe('sync.enabled',
       (_, val) => val === 'none'
         ? sync.stop()
         : sync.start(val, true),
-      {now: true});
+      {runNow: true});
   });
 
   chrome.alarms.onAlarm.addListener(info => {
@@ -79,8 +47,12 @@ const sync = API.sync = (() => {
     }
   });
 
-  // Sorted alphabetically
-  return {
+  //#endregion
+  //#region Exports
+
+  sync = /** @namespace Sync */ {
+
+    // sorted alphabetically
 
     async delete(...args) {
       await ready;
@@ -89,9 +61,7 @@ const sync = API.sync = (() => {
       return ctrl.delete(...args);
     },
 
-    /**
-     * @returns {Promise<API.sync.Status>}
-     */
+    /** @returns {Promise<Sync.Status>} */
     async getStatus() {
       return status;
     },
@@ -124,8 +94,9 @@ const sync = API.sync = (() => {
         return;
       }
       currentDrive = getDrive(name);
+      if (!ctrl) await initController();
       ctrl.use(currentDrive);
-      status.state = 'connecting';
+      status.state = STATES.connecting;
       status.currentDriveName = currentDrive.name;
       status.login = true;
       emitStatusChange();
@@ -144,7 +115,7 @@ const sync = API.sync = (() => {
         }
       }
       prefs.set('sync.enabled', name);
-      status.state = 'connected';
+      status.state = STATES.connected;
       schedule(SYNC_INTERVAL);
       emitStatusChange();
     },
@@ -155,17 +126,16 @@ const sync = API.sync = (() => {
         return;
       }
       chrome.alarms.clear('syncNow');
-      status.state = 'disconnecting';
+      status.state = STATES.disconnecting;
       emitStatusChange();
       try {
         await ctrl.stop();
         await tokenManager.revokeToken(currentDrive.name);
-        await chromeLocal.remove(`sync/state/${currentDrive.name}`);
-      } catch (e) {
-      }
+        await chromeLocal.remove(STORAGE_KEY + currentDrive.name);
+      } catch (e) {}
       currentDrive = null;
       prefs.set('sync.enabled', 'none');
-      status.state = 'disconnected';
+      status.state = STATES.disconnected;
       status.currentDriveName = null;
       status.login = false;
       emitStatusChange();
@@ -185,6 +155,47 @@ const sync = API.sync = (() => {
       emitStatusChange();
     },
   };
+
+  //#endregion
+  //#region Utils
+
+  async function initController() {
+    await require(['js!/vendor/db-to-cloud/db-to-cloud.min']); /* global dbToCloud */
+    ctrl = dbToCloud.dbToCloud({
+      onGet(id) {
+        return API.styles.getByUUID(id);
+      },
+      onPut(doc) {
+        return API.styles.putByUUID(doc);
+      },
+      onDelete(id, rev) {
+        return API.styles.deleteByUUID(id, rev);
+      },
+      async onFirstSync() {
+        for (const i of await API.styles.getAll()) {
+          ctrl.put(i._id, i._rev);
+        }
+      },
+      onProgress(e) {
+        if (e.phase === 'start') {
+          status.syncing = true;
+        } else if (e.phase === 'end') {
+          status.syncing = false;
+          status.progress = null;
+        } else {
+          status.progress = e;
+        }
+        emitStatusChange();
+      },
+      compareRevision,
+      getState(drive) {
+        return chromeLocal.getValue(STORAGE_KEY + drive.name);
+      },
+      setState(drive, state) {
+        return chromeLocal.setValue(STORAGE_KEY + drive.name, state);
+      },
+    });
+  }
 
   function schedule(delay = SYNC_DELAY) {
     chrome.alarms.create('syncNow', {
@@ -220,4 +231,8 @@ const sync = API.sync = (() => {
     }
     throw new Error(`unknown cloud name: ${name}`);
   }
-})();
+
+  //#endregion
+
+  return sync;
+});

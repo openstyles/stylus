@@ -1,8 +1,10 @@
-/* global cloneInto msg API */
 'use strict';
 
 // eslint-disable-next-line no-unused-expressions
-/^\/styles\/(\d+)(\/([^/]*))?([?#].*)?$/.test(location.pathname) && (() => {
+/^\/styles\/(\d+)(\/([^/]*))?([?#].*)?$/.test(location.pathname) &&
+define(require => {
+  const {API, msg} = require('/js/msg');
+
   const styleId = RegExp.$1;
   const pageEventId = `${performance.now()}${Math.random()}`;
 
@@ -119,7 +121,7 @@
     if (typeof cloneInto !== 'undefined') {
       // Firefox requires explicit cloning, however USO can't process our messages anyway
       // because USO tries to use a global "event" variable deprecated in Firefox
-      detail = cloneInto({detail}, document);
+      detail = cloneInto({detail}, document); /* global cloneInto */
     } else {
       detail = {detail};
     }
@@ -325,7 +327,7 @@
       msg.off(onMessage);
     } catch (e) {}
   }
-})();
+});
 
 function inPageContext(eventId) {
   document.currentScript.remove();

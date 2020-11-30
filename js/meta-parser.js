@@ -1,8 +1,8 @@
-/* global usercssMeta colorConverter */
-/* exported metaParser */
 'use strict';
 
-const metaParser = (() => {
+define(require => {
+  require('/vendor/usercss-meta/usercss-meta.min'); /* global usercssMeta */
+  const colorConverter = require('/js/color/color-converter');
   const {createParser, ParseError} = usercssMeta;
   const PREPROCESSORS = new Set(['default', 'uso', 'stylus', 'less']);
   const options = {
@@ -40,39 +40,27 @@ const metaParser = (() => {
     },
   };
   const parser = createParser(options);
-  const looseParser = createParser(Object.assign({}, options, {allowErrors: true, unknownKey: 'throw'}));
+  const looseParser = createParser(Object.assign({}, options, {
+    allowErrors: true,
+    unknownKey: 'throw',
+  }));
+
   return {
-    parse,
-    lint,
-    nullifyInvalidVars,
+
+    lint: looseParser.parse,
+    parse: parser.parse,
+
+    nullifyInvalidVars(vars) {
+      for (const va of Object.values(vars)) {
+        if (va.value !== null) {
+          try {
+            parser.validateVar(va);
+          } catch (err) {
+            va.value = null;
+          }
+        }
+      }
+      return vars;
+    },
   };
-
-  function parse(text, indexOffset) {
-    try {
-      return parser.parse(text);
-    } catch (err) {
-      if (typeof err.index === 'number') {
-        err.index += indexOffset;
-      }
-      throw err;
-    }
-  }
-
-  function lint(text) {
-    return looseParser.parse(text);
-  }
-
-  function nullifyInvalidVars(vars) {
-    for (const va of Object.values(vars)) {
-      if (va.value === null) {
-        continue;
-      }
-      try {
-        parser.validateVar(va);
-      } catch (err) {
-        va.value = null;
-      }
-    }
-    return vars;
-  }
-})();
+});

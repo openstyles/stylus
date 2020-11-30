@@ -26,7 +26,7 @@ THE SOFTWARE.
 'use strict';
 /* eslint-disable class-methods-use-this */
 
-self.parserlib = (() => {
+define(require => {
 
   //#region Properties
 
@@ -3191,9 +3191,9 @@ self.parserlib = (() => {
             for (const msg of messages) {
               const {line, col} = msg;
               if (L1 === L2 && line === L1 && C1 <= col && col <= C2 ||
-                line === L1 && col >= C1 ||
-                line === L2 && col <= C2 ||
-                line > L1 && line < L2) {
+                  line === L1 && col >= C1 ||
+                  line === L2 && col <= C2 ||
+                  line > L1 && line < L2) {
                 messages.delete(msg);
                 isClean = false;
               }
@@ -4685,7 +4685,8 @@ self.parserlib = (() => {
   //#endregion
   //#region PUBLIC API
 
-  return {
+  /** @type {parserlib} */
+  return /** @namespace parserlib */ {
     css: {
       Colors,
       Combinator,
@@ -4715,4 +4716,4 @@ self.parserlib = (() => {
   };
 
   //#endregion
-})();
+});

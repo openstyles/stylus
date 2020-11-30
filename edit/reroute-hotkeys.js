@@ -1,33 +1,34 @@
-/* global CodeMirror editor debounce */
-/* exported rerouteHotkeys */
 'use strict';
 
-const rerouteHotkeys = (() => {
+define(require => {
+  const {debounce} = require('/js/toolbox');
+  const {CodeMirror} = require('./codemirror-factory');
+  const editor = require('./editor');
+
   // reroute handling to nearest editor when keypress resolves to one of these commands
   const REROUTED = new Set([
-    'save',
-    'toggleStyle',
-    'jumpToLine',
-    'nextEditor', 'prevEditor',
-    'toggleEditorFocus',
-    'find', 'findNext', 'findPrev', 'replace', 'replaceAll',
-    'colorpicker',
     'beautify',
+    'colorpicker',
+    'find',
+    'findNext',
+    'findPrev',
+    'jumpToLine',
+    'nextEditor',
+    'prevEditor',
+    'replace',
+    'replaceAll',
+    'save',
+    'toggleEditorFocus',
+    'toggleStyle',
   ]);
 
-  return rerouteHotkeys;
-
-  // note that this function relies on `editor`. Calling this function before
-  // the editor is initialized may throw an error.
-  function rerouteHotkeys(enable, immediately) {
+  return function rerouteHotkeys(enable, immediately) {
     if (!immediately) {
       debounce(rerouteHotkeys, 0, enable, true);
-    } else if (enable) {
-      document.addEventListener('keydown', rerouteHandler);
     } else {
-      document.removeEventListener('keydown', rerouteHandler);
+      document[enable ? 'on' : 'off']('keydown', rerouteHandler);
     }
-  }
+  };
 
   function rerouteHandler(event) {
     const keyName = CodeMirror.keyName(event);
@@ -46,4 +47,4 @@ const rerouteHotkeys = (() => {
       event.stopPropagation();
     }
   }
-})();
+});

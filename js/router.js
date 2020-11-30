@@ -1,13 +1,14 @@
-/* global deepEqual msg */
-/* exported router */
 'use strict';
 
-const router = (() => {
+define(require => {
+  const {msg} = require('/js/msg');
+  const {deepEqual} = require('/js/toolbox');
+
   const buffer = [];
   const watchers = [];
-  document.addEventListener('DOMContentLoaded', () => update());
-  window.addEventListener('popstate', () => update());
-  window.addEventListener('hashchange', () => update());
+  document.on('DOMContentLoaded', () => update());
+  window.on('popstate', () => update());
+  window.on('hashchange', () => update());
   msg.on(e => {
     if (e.method === 'pushState' && e.url !== location.href) {
       history.pushState(history.state, null, e.url);
@@ -15,50 +16,52 @@ const router = (() => {
       return true;
     }
   });
-  return {watch, updateSearch, getSearch, updateHash};
 
-  function watch(options, callback) {
-    /* Watch search params or hash and get notified on change.
+  return {
 
-    options: {search?: Array<key: String>, hash?: String}
-    callback: (Array<value: String | null> | Boolean) => void
+    getSearch(key) {
+      return new URLSearchParams(location.search).get(key);
+    },
 
-    `hash` should always start with '#'.
-    When watching search params, callback receives a list of values.
-    When watching hash, callback receives a boolean.
-    */
-    watchers.push({options, callback});
-  }
+    updateHash(hash) {
+      /* hash: String
 
-  function updateSearch(key, value) {
-    const u = new URL(location);
-    u.searchParams[value ? 'set' : 'delete'](key, value);
-    history.replaceState(history.state, null, `${u}`);
-    update(true);
-  }
-
-  function updateHash(hash) {
-    /* hash: String
-
-    Send an empty string to remove the hash.
-    */
-    if (buffer.length > 1) {
-      if (!hash && !buffer[buffer.length - 2].includes('#') ||
-          hash && buffer[buffer.length - 2].endsWith(hash)) {
-        history.back();
-        return;
+       Send an empty string to remove the hash.
+       */
+      if (buffer.length > 1) {
+        if (!hash && !buffer[buffer.length - 2].includes('#') ||
+            hash && buffer[buffer.length - 2].endsWith(hash)) {
+          history.back();
+          return;
+        }
       }
-    }
-    if (!hash) {
-      hash = ' ';
-    }
-    history.pushState(history.state, null, hash);
-    update();
-  }
+      if (!hash) {
+        hash = ' ';
+      }
+      history.pushState(history.state, null, hash);
+      update();
+    },
 
-  function getSearch(key) {
-    return new URLSearchParams(location.search).get(key);
-  }
+    updateSearch(key, value) {
+      const u = new URL(location);
+      u.searchParams[value ? 'set' : 'delete'](key, value);
+      history.replaceState(history.state, null, `${u}`);
+      update(true);
+    },
+
+    watch(options, callback) {
+      /* Watch search params or hash and get notified on change.
+
+       options: {search?: Array<key: String>, hash?: String}
+       callback: (Array<value: String | null> | Boolean) => void
+
+       `hash` should always start with '#'.
+       When watching search params, callback receives a list of values.
+       When watching hash, callback receives a boolean.
+       */
+      watchers.push({options, callback});
+    },
+  };
 
   function update(replace) {
     if (!buffer.length) {
@@ -86,4 +89,4 @@ const router = (() => {
       }
     }
   }
-})();
+});

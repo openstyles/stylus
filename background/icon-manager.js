@@ -1,10 +1,43 @@
-/* global prefs debounce iconUtil FIREFOX CHROME VIVALDI tabManager navigatorUtil API */
-/* exported iconManager */
 'use strict';
 
-const iconManager = (() => {
+define(require => {
+  const {
+    FIREFOX,
+    VIVALDI,
+    CHROME,
+    debounce,
+  } = require('/js/toolbox');
+  const prefs = require('/js/prefs');
+  const {
+    setBadgeBackgroundColor,
+    setBadgeText,
+    setIcon,
+  } = require('./icon-util');
+  const tabManager = require('./tab-manager');
+
   const ICON_SIZES = FIREFOX || CHROME >= 55 && !VIVALDI ? [16, 32] : [19, 38];
   const staleBadges = new Set();
+
+  let exports;
+  const {
+
+    updateIconBadge,
+
+  } = exports = /** @namespace API */ {
+    /**
+     * @param {(number|string)[]} styleIds
+     * @param {boolean} [lazyBadge=false] preventing flicker during page load
+     */
+    updateIconBadge(styleIds, {lazyBadge} = {}) {
+      // FIXME: in some cases, we only have to redraw the badge. is it worth a optimization?
+      const {frameId, tab: {id: tabId}} = this.sender;
+      const value = styleIds.length ? styleIds.map(Number) : undefined;
+      tabManager.set(tabId, 'styleIds', frameId, value);
+      debounce(refreshStaleBadges, frameId && lazyBadge ? 250 : 0);
+      staleBadges.add(tabId);
+      if (!frameId) refreshIcon(tabId, true);
+    },
+  };
 
   prefs.subscribe([
     'disableAll',
@@ -27,21 +60,7 @@ const iconManager = (() => {
     refreshAllIcons();
   });
 
-  Object.assign(API, {
-    /** @param {(number|string)[]} styleIds
-     * @param {boolean} [lazyBadge=false] preventing flicker during page load */
-    updateIconBadge(styleIds, {lazyBadge} = {}) {
-      // FIXME: in some cases, we only have to redraw the badge. is it worth a optimization?
-      const {frameId, tab: {id: tabId}} = this.sender;
-      const value = styleIds.length ? styleIds.map(Number) : undefined;
-      tabManager.set(tabId, 'styleIds', frameId, value);
-      debounce(refreshStaleBadges, frameId && lazyBadge ? 250 : 0);
-      staleBadges.add(tabId);
-      if (!frameId) refreshIcon(tabId, true);
-    },
-  });
-
-  navigatorUtil.onCommitted(({tabId, frameId}) => {
+  chrome.webNavigation.onCommitted.addListener(({tabId, frameId}) => {
     if (!frameId) tabManager.set(tabId, 'styleIds', undefined);
   });
 
@@ -53,13 +72,13 @@ const iconManager = (() => {
 
   function onPortDisconnected({sender}) {
     if (tabManager.get(sender.tab.id, 'styleIds')) {
-      API.updateIconBadge.call({sender}, [], {lazyBadge: true});
+      updateIconBadge.call({sender}, [], {lazyBadge: true});
     }
   }
 
   function refreshIconBadgeText(tabId) {
     const text = prefs.get('show-badge') ? `${getStyleCount(tabId)}` : '';
-    iconUtil.setBadgeText({tabId, text});
+    setBadgeText({tabId, text});
   }
 
   function getIconName(hasStyles = false) {
@@ -77,7 +96,7 @@ const iconManager = (() => {
       return;
     }
     tabManager.set(tabId, 'icon', newIcon);
-    iconUtil.setIcon({
+    setIcon({
       path: getIconPath(newIcon),
       tabId,
     });
@@ -102,14 +121,14 @@ const iconManager = (() => {
   }
 
   function refreshGlobalIcon() {
-    iconUtil.setIcon({
+    setIcon({
       path: getIconPath(getIconName()),
     });
   }
 
   function refreshIconBadgeColor() {
     const color = prefs.get(prefs.get('disableAll') ? 'badgeDisabled' : 'badgeNormal');
-    iconUtil.setBadgeBackgroundColor({
+    setBadgeBackgroundColor({
       color,
     });
   }
@@ -133,4 +152,6 @@ const iconManager = (() => {
     }
     staleBadges.clear();
   }
-})();
+
+  return exports;
+});

@@ -1,48 +1,45 @@
-/* global
-  $
-  $$
-  $create
-  CodeMirror
-  onDOMready
-  prefs
-  showHelp
-  stringAsRegExp
-  t
-*/
 'use strict';
 
-onDOMready().then(() => {
-  $('#keyMap-help').addEventListener('click', showKeyMapHelp);
-});
+define(require => {
+  const {stringAsRegExp} = require('/js/toolbox');
+  const {$$, $create} = require('/js/dom');
+  const t = require('/js/localization');
+  const prefs = require('/js/prefs');
+  const {CodeMirror} = require('./codemirror-factory');
+  const {helpPopup} = require('./util');
 
-function showKeyMapHelp() {
-  const keyMap = mergeKeyMaps({}, prefs.get('editor.keyMap'), CodeMirror.defaults.extraKeys);
-  const keyMapSorted = Object.keys(keyMap)
-    .map(key => ({key, cmd: keyMap[key]}))
-    .sort((a, b) => (a.cmd < b.cmd || (a.cmd === b.cmd && a.key < b.key) ? -1 : 1));
-  const table = t.template.keymapHelp.cloneNode(true);
-  const tBody = table.tBodies[0];
-  const row = tBody.rows[0];
-  const cellA = row.children[0];
-  const cellB = row.children[1];
-  tBody.textContent = '';
-  for (const {key, cmd} of keyMapSorted) {
-    cellA.textContent = key;
-    cellB.textContent = cmd;
-    tBody.appendChild(row.cloneNode(true));
-  }
+  let tBody, inputs;
 
-  showHelp(t('cm_keyMap') + ': ' + prefs.get('editor.keyMap'), table);
+  return function showKeymapHelp() {
+    const keyMap = mergeKeyMaps({}, prefs.get('editor.keyMap'), CodeMirror.defaults.extraKeys);
+    const keyMapSorted = Object.keys(keyMap)
+      .map(key => ({key, cmd: keyMap[key]}))
+      .sort((a, b) => (a.cmd < b.cmd || (a.cmd === b.cmd && a.key < b.key) ? -1 : 1));
+    const table = t.template.keymapHelp.cloneNode(true);
+    table.oninput = filterTable;
+    tBody = table.tBodies[0];
+    const row = tBody.rows[0];
+    const cellA = row.children[0];
+    const cellB = row.children[1];
+    tBody.textContent = '';
+    for (const {key, cmd} of keyMapSorted) {
+      cellA.textContent = key;
+      cellB.textContent = cmd;
+      tBody.appendChild(row.cloneNode(true));
+    }
 
-  const inputs = $$('input', table);
-  inputs[0].addEventListener('keydown', hotkeyHandler);
-  inputs[1].focus();
+    helpPopup.show(t('cm_keyMap') + ': ' + prefs.get('editor.keyMap'), table);
 
-  table.oninput = filterTable;
+    inputs = $$('input', table);
+    inputs[0].on('keydown', hotkeyHandler);
+    inputs[1].focus();
+  };
 
   function hotkeyHandler(event) {
     const keyName = CodeMirror.keyName(event);
-    if (keyName === 'Esc' || keyName === 'Tab' || keyName === 'Shift-Tab') {
+    if (keyName === 'Esc' ||
+        keyName === 'Tab' ||
+        keyName === 'Shift-Tab') {
       return;
     }
     event.preventDefault();
@@ -90,6 +87,7 @@ function showKeyMapHelp() {
       }
     }
   }
+
   function mergeKeyMaps(merged, ...more) {
     more.forEach(keyMap => {
       if (typeof keyMap === 'string') {
@@ -102,7 +100,7 @@ function showKeyMapHelp() {
           if (typeof cmd === 'function') {
             // for 'emacs' keymap: provide at least something meaningful (hotkeys and the function body)
             // for 'vim*' keymaps: almost nothing as it doesn't rely on CM keymap mechanism
-            cmd = cmd.toString().replace(/^function.*?\{[\s\r\n]*([\s\S]+?)[\s\r\n]*\}$/, '$1');
+            cmd = cmd.toString().replace(/^function.*?{[\s\r\n]*([\s\S]+?)[\s\r\n]*}$/, '$1');
             merged[key] = cmd.length <= 200 ? cmd : cmd.substr(0, 200) + '...';
           } else {
             merged[key] = cmd;
@@ -115,4 +113,4 @@ function showKeyMapHelp() {
     });
     return merged;
   }
-}
+});

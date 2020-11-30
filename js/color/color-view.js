@@ -1,7 +1,9 @@
-/* global CodeMirror colorConverter */
 'use strict';
 
-(() => {
+define(require => {
+  const colorConverter = require('./color-converter');
+  const CodeMirror = require('/vendor/codemirror/lib/codemirror');
+
   //region Constants
 
   const COLORVIEW_CLASS = 'colorview';
@@ -99,13 +101,12 @@
   const cache = new Set();
 
   class ColorSwatch {
-    constructor(cm, options) {
+    constructor(cm, options = {}) {
       this.cm = cm;
       this.options = options;
       this.markersToRemove = [];
       this.markersToRepaint = [];
-      this.popup = cm.colorpicker && cm.colorpicker();
-      if (!this.popup) {
+      if (!options.popup) {
         delete CM_EVENTS.mousedown;
         document.head.appendChild(document.createElement('style')).textContent = `
           .colorview-swatch::before {
@@ -122,7 +123,9 @@
     }
 
     openPopup(color) {
-      if (this.popup) openPopupForCursor(this, color);
+      if (this.options.popup) {
+        openPopupForCursor(this, color);
+      }
     }
 
     registerEvents() {
@@ -534,7 +537,10 @@
   }
 
 
-  function doOpenPopup(state, data) {
+  async function doOpenPopup(state, data) {
+    if (!state.popup) {
+      state.popup = await require(['/js/color/color-picker']);
+    }
     const {left, bottom: top} = state.cm.charCoords(data, 'window');
     state.popup.show(Object.assign(state.options.popup, data, {
       top,
@@ -774,4 +780,4 @@
   }
 
   //endregion
-})();
+});

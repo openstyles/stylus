@@ -1,13 +1,10 @@
-/* global
-  CodeMirror
-  debounce
-  deepEqual
-  trimCommentLabel
- */
 'use strict';
 
-/* exported MozSectionFinder */
-function MozSectionFinder(cm) {
+define(require => {
+  const {debounce, deepEqual} = require('/js/toolbox');
+  const {CodeMirror} = require('./codemirror-factory');
+  const {trimCommentLabel} = require('./util');
+
   const KEY = 'MozSectionFinder';
   const MOZ_DOC_LEN = '@-moz-document'.length;
   const rxDOC = /@-moz-document(\s+|$)/ig;
@@ -25,6 +22,7 @@ function MozSectionFinder(cm) {
   let updFrom;
   /** @type {CodeMirror.Pos} */
   let updTo;
+  let cm;
 
   const MozSectionFinder = {
     IGNORE_ORIGIN: KEY,
@@ -37,6 +35,11 @@ function MozSectionFinder(cm) {
     get sections() {
       return getState().sections;
     },
+
+    init(newCM) {
+      cm = newCM;
+    },
+
     keepAliveFor(id, ms) {
       let data = keptAlive.get(id);
       if (data) {
@@ -49,6 +52,7 @@ function MozSectionFinder(cm) {
       }
       data.timer = setTimeout(id => keptAlive.delete(id), ms, id);
     },
+
     on(fn) {
       const {listeners} = getState();
       const needsInit = !listeners.size;
@@ -58,6 +62,7 @@ function MozSectionFinder(cm) {
         update();
       }
     },
+
     off(fn) {
       const {listeners, sections} = getState();
       if (listeners.size) {
@@ -69,15 +74,16 @@ function MozSectionFinder(cm) {
         }
       }
     },
+
     onOff(fn, enable) {
       MozSectionFinder[enable ? 'on' : 'off'](fn);
     },
+
     /** @param {MozSection} [section] */
     updatePositions(section) {
       (section ? [section] : getState().sections).forEach(setPositionFromMark);
     },
   };
-  return MozSectionFinder;
 
   /** @returns {MozSectionCmState} */
   function getState() {
@@ -389,9 +395,11 @@ function MozSectionFinder(cm) {
   function isSameFunc(func, i) {
     return deepEqual(func, this[i], MozSectionFinder.EQ_SKIP_KEYS);
   }
-}
 
-/** @typedef CodeMirror.Pos
- * @property {number} line
- * @property {number} ch
- */
+  /** @typedef CodeMirror.Pos
+   * @property {number} line
+   * @property {number} ch
+   */
+
+  return MozSectionFinder;
+});

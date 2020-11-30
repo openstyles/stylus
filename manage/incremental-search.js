@@ -1,8 +1,15 @@
-/* global installed onDOMready $create debounce $ scrollElementIntoView
-  animateElement */
 'use strict';
 
-onDOMready().then(() => {
+define(require => {
+  const {debounce} = require('/js/toolbox');
+  const {
+    $,
+    $create,
+    $isTextInput,
+    animateElement,
+    scrollElementIntoView,
+  } = require('/js/dom');
+
   let prevText, focusedLink, focusedEntry;
   let prevTime = performance.now();
   let focusedName = '';
@@ -24,7 +31,7 @@ onDOMready().then(() => {
     'pointer-events': 'none',
   });
   document.body.appendChild(input);
-  window.addEventListener('keydown', maybeRefocus, true);
+  window.on('keydown', maybeRefocus, true);
 
   function incrementalSearch({key}, immediately) {
     if (!immediately) {
@@ -39,13 +46,14 @@ onDOMready().then(() => {
     }
     let textAtPos = 1e6;
     let rotated;
-    const entries = [...installed.children];
+    const entries = [...$('#installed').children];
     const focusedIndex = entries.indexOf(focusedEntry);
     if (focusedIndex > 0) {
       if (direction > 0) {
         rotated = entries.slice(focusedIndex + 1).concat(entries.slice(0, focusedIndex + 1));
       } else if (direction < 0) {
-        rotated = entries.slice(0, focusedIndex).reverse().concat(entries.slice(focusedIndex).reverse());
+        rotated = entries.slice(0, focusedIndex).reverse()
+          .concat(entries.slice(focusedIndex).reverse());
       }
     }
     let found;
@@ -84,7 +92,7 @@ onDOMready().then(() => {
     if (event.altKey || event.metaKey || $('#message-box')) {
       return;
     }
-    const inTextInput = $.isTextInput(event.target);
+    const inTextInput = $isTextInput(event.target);
     const {key, code, ctrlKey: ctrl} = event;
     // `code` is independent of the current keyboard language
     if ((code === 'KeyF' && ctrl && !event.shiftKey) ||

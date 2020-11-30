@@ -1,113 +1,125 @@
-/* global chromeLocal webextLaunchWebAuthFlow FIREFOX */
-/* exported tokenManager */
 'use strict';
 
-const tokenManager = (() => {
-  const AUTH = {
-    dropbox: {
-      flow: 'token',
-      clientId: 'zg52vphuapvpng9',
-      authURL: 'https://www.dropbox.com/oauth2/authorize',
-      tokenURL: 'https://api.dropboxapi.com/oauth2/token',
-      revoke: token =>
-        fetch('https://api.dropboxapi.com/2/auth/token/revoke', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        }),
-    },
-    google: {
-      flow: 'code',
-      clientId: '283762574871-d4u58s4arra5jdan2gr00heasjlttt1e.apps.googleusercontent.com',
-      clientSecret: 'J0nc5TlR_0V_ex9-sZk-5faf',
-      authURL: 'https://accounts.google.com/o/oauth2/v2/auth',
-      authQuery: {
-        // NOTE: Google needs 'prompt' parameter to deliver multiple refresh
-        // tokens for multiple machines.
-        // https://stackoverflow.com/q/18519185
-        access_type: 'offline',
-        prompt: 'consent',
-      },
-      tokenURL: 'https://oauth2.googleapis.com/token',
-      scopes: ['https://www.googleapis.com/auth/drive.appdata'],
-      revoke: token => {
-        const params = {token};
-        return postQuery(`https://accounts.google.com/o/oauth2/revoke?${new URLSearchParams(params)}`);
-      },
-    },
-    onedrive: {
-      flow: 'code',
-      clientId: '3864ce03-867c-4ad8-9856-371a097d47b1',
-      clientSecret: '9Pj=TpsrStq8K@1BiwB9PIWLppM:@s=w',
-      authURL: 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
-      tokenURL: 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
-      redirect_uri: FIREFOX ?
-        'https://clngdbkpkpeebahjckkjfobafhncgmne.chromiumapp.org/' :
-        'https://' + location.hostname + '.chromiumapp.org/',
-      scopes: ['Files.ReadWrite.AppFolder', 'offline_access'],
-    },
-  };
+define(require => {
+  const {FIREFOX} = require('/js/toolbox');
+  const {chromeLocal} = require('/js/storage-util');
+
+  const AUTH = createAuth();
   const NETWORK_LATENCY = 30; // seconds
 
-  return {getToken, revokeToken, getClientId, buildKeys};
+  let exports;
+  const {
 
-  function getClientId(name) {
-    return AUTH[name].clientId;
-  }
+    buildKeys,
 
-  function buildKeys(name) {
-    const k = {
-      TOKEN: `secure/token/${name}/token`,
-      EXPIRE: `secure/token/${name}/expire`,
-      REFRESH: `secure/token/${name}/refresh`,
-    };
-    k.LIST = Object.values(k);
-    return k;
-  }
+  } = exports = {
 
-  function getToken(name, interactive) {
-    const k = buildKeys(name);
-    return chromeLocal.get(k.LIST)
-      .then(obj => {
-        if (!obj[k.TOKEN]) {
+    buildKeys(name) {
+      const k = {
+        TOKEN: `secure/token/${name}/token`,
+        EXPIRE: `secure/token/${name}/expire`,
+        REFRESH: `secure/token/${name}/refresh`,
+      };
+      k.LIST = Object.values(k);
+      return k;
+    },
+
+    getClientId(name) {
+      return AUTH[name].clientId;
+    },
+
+    getToken(name, interactive) {
+      const k = buildKeys(name);
+      return chromeLocal.get(k.LIST)
+        .then(obj => {
+          if (!obj[k.TOKEN]) {
+            return authUser(name, k, interactive);
+          }
+          if (!obj[k.EXPIRE] || Date.now() < obj[k.EXPIRE]) {
+            return obj[k.TOKEN];
+          }
+          if (obj[k.REFRESH]) {
+            return refreshToken(name, k, obj)
+              .catch(err => {
+                if (err.code === 401) {
+                  return authUser(name, k, interactive);
+                }
+                throw err;
+              });
+          }
           return authUser(name, k, interactive);
-        }
-        if (!obj[k.EXPIRE] || Date.now() < obj[k.EXPIRE]) {
-          return obj[k.TOKEN];
-        }
-        if (obj[k.REFRESH]) {
-          return refreshToken(name, k, obj)
-            .catch(err => {
-              if (err.code === 401) {
-                return authUser(name, k, interactive);
-              }
-              throw err;
-            });
-        }
-        return authUser(name, k, interactive);
-      });
-  }
+        });
+    },
 
-  async function revokeToken(name) {
-    const provider = AUTH[name];
-    const k = buildKeys(name);
-    if (provider.revoke) {
-      try {
-        const token = await chromeLocal.getValue(k.TOKEN);
-        if (token) {
-          await provider.revoke(token);
+    async revokeToken(name) {
+      const provider = AUTH[name];
+      const k = buildKeys(name);
+      if (provider.revoke) {
+        try {
+          const token = await chromeLocal.getValue(k.TOKEN);
+          if (token) {
+            await provider.revoke(token);
+          }
+        } catch (e) {
+          console.error(e);
         }
-      } catch (e) {
-        console.error(e);
       }
-    }
-    await chromeLocal.remove(k.LIST);
+      await chromeLocal.remove(k.LIST);
+    },
+  };
+
+  function createAuth() {
+    return {
+      dropbox: {
+        flow: 'token',
+        clientId: 'zg52vphuapvpng9',
+        authURL: 'https://www.dropbox.com/oauth2/authorize',
+        tokenURL: 'https://api.dropboxapi.com/oauth2/token',
+        revoke: token =>
+          fetch('https://api.dropboxapi.com/2/auth/token/revoke', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          }),
+      },
+      google: {
+        flow: 'code',
+        clientId: '283762574871-d4u58s4arra5jdan2gr00heasjlttt1e.apps.googleusercontent.com',
+        clientSecret: 'J0nc5TlR_0V_ex9-sZk-5faf',
+        authURL: 'https://accounts.google.com/o/oauth2/v2/auth',
+        authQuery: {
+          // NOTE: Google needs 'prompt' parameter to deliver multiple refresh
+          // tokens for multiple machines.
+          // https://stackoverflow.com/q/18519185
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+        tokenURL: 'https://oauth2.googleapis.com/token',
+        scopes: ['https://www.googleapis.com/auth/drive.appdata'],
+        revoke: token => {
+          const params = {token};
+          return postQuery(
+            `https://accounts.google.com/o/oauth2/revoke?${new URLSearchParams(params)}`);
+        },
+      },
+      onedrive: {
+        flow: 'code',
+        clientId: '3864ce03-867c-4ad8-9856-371a097d47b1',
+        clientSecret: '9Pj=TpsrStq8K@1BiwB9PIWLppM:@s=w',
+        authURL: 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
+        tokenURL: 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
+        redirect_uri: FIREFOX ?
+          'https://clngdbkpkpeebahjckkjfobafhncgmne.chromiumapp.org/' :
+          'https://' + location.hostname + '.chromiumapp.org/',
+        scopes: ['Files.ReadWrite.AppFolder', 'offline_access'],
+      },
+    };
   }
 
-  function refreshToken(name, k, obj) {
+  async function refreshToken(name, k, obj) {
     if (!obj[k.REFRESH]) {
-      return Promise.reject(new Error('no refresh token'));
+      throw new Error('No refresh token');
     }
     const provider = AUTH[name];
     const body = {
@@ -119,17 +131,17 @@ const tokenManager = (() => {
     if (provider.clientSecret) {
       body.client_secret = provider.clientSecret;
     }
-    return postQuery(provider.tokenURL, body)
-      .then(result => {
-        if (!result.refresh_token) {
-          // reuse old refresh token
-          result.refresh_token = obj[k.REFRESH];
-        }
-        return handleTokenResult(result, k);
-      });
+    const result = await postQuery(provider.tokenURL, body);
+    if (!result.refresh_token) {
+      // reuse old refresh token
+      result.refresh_token = obj[k.REFRESH];
+    }
+    return handleTokenResult(result, k);
   }
 
-  function authUser(name, k, interactive = false) {
+  async function authUser(name, k, interactive = false) {
+    await require(['js!/vendor/webext-launch-web-auth-flow/webext-launch-web-auth-flow.min']);
+    /* global webextLaunchWebAuthFlow */
     const provider = AUTH[name];
     const state = Math.random().toFixed(8).slice(2);
     const query = {
@@ -145,52 +157,54 @@ const tokenManager = (() => {
       Object.assign(query, provider.authQuery);
     }
     const url = `${provider.authURL}?${new URLSearchParams(query)}`;
-    return webextLaunchWebAuthFlow({
+    const finalUrl = await webextLaunchWebAuthFlow({
       url,
       interactive,
       redirect_uri: query.redirect_uri,
-    })
-      .then(url => {
-        const params = new URLSearchParams(
-          provider.flow === 'token' ?
-            new URL(url).hash.slice(1) :
-            new URL(url).search.slice(1)
-        );
-        if (params.get('state') !== state) {
-          throw new Error(`unexpected state: ${params.get('state')}, expected: ${state}`);
-        }
-        if (provider.flow === 'token') {
-          const obj = {};
-          for (const [key, value] of params.entries()) {
-            obj[key] = value;
-          }
-          return obj;
-        }
-        const code = params.get('code');
-        const body = {
-          code,
-          grant_type: 'authorization_code',
-          client_id: provider.clientId,
-          redirect_uri: query.redirect_uri,
-        };
-        if (provider.clientSecret) {
-          body.client_secret = provider.clientSecret;
-        }
-        return postQuery(provider.tokenURL, body);
-      })
-      .then(result => handleTokenResult(result, k));
+    });
+    const params = new URLSearchParams(
+      provider.flow === 'token' ?
+        new URL(finalUrl).hash.slice(1) :
+        new URL(finalUrl).search.slice(1)
+    );
+    if (params.get('state') !== state) {
+      throw new Error(`Unexpected state: ${params.get('state')}, expected: ${state}`);
+    }
+    let result;
+    if (provider.flow === 'token') {
+      const obj = {};
+      for (const [key, value] of params) {
+        obj[key] = value;
+      }
+      result = obj;
+    } else {
+      const code = params.get('code');
+      const body = {
+        code,
+        grant_type: 'authorization_code',
+        client_id: provider.clientId,
+        redirect_uri: query.redirect_uri,
+      };
+      if (provider.clientSecret) {
+        body.client_secret = provider.clientSecret;
+      }
+      result = await postQuery(provider.tokenURL, body);
+    }
+    return handleTokenResult(result, k);
   }
 
-  function handleTokenResult(result, k) {
-    return chromeLocal.set({
+  async function handleTokenResult(result, k) {
+    await chromeLocal.set({
       [k.TOKEN]: result.access_token,
-      [k.EXPIRE]: result.expires_in ? Date.now() + (Number(result.expires_in) - NETWORK_LATENCY) * 1000 : undefined,
+      [k.EXPIRE]: result.expires_in
+        ? Date.now() + (result.expires_in - NETWORK_LATENCY) * 1000
+        : undefined,
       [k.REFRESH]: result.refresh_token,
-    })
-      .then(() => result.access_token);
+    });
+    return result.access_token;
   }
 
-  function postQuery(url, body) {
+  async function postQuery(url, body) {
     const options = {
       method: 'POST',
       headers: {
@@ -198,17 +212,15 @@ const tokenManager = (() => {
       },
       body: body ? new URLSearchParams(body) : null,
     };
-    return fetch(url, options)
-      .then(r => {
-        if (r.ok) {
-          return r.json();
-        }
-        return r.text()
-          .then(body => {
-            const err = new Error(`failed to fetch (${r.status}): ${body}`);
-            err.code = r.status;
-            throw err;
-          });
-      });
+    const r = await fetch(url, options);
+    if (r.ok) {
+      return r.json();
+    }
+    const text = await r.text();
+    const err = new Error(`Failed to fetch (${r.status}): ${text}`);
+    err.code = r.status;
+    throw err;
   }
-})();
+
+  return exports;
+});

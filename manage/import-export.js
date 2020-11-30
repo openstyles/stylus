@@ -1,28 +1,35 @@
-/* global
-  $
-  $$
-  $create
-  animateElement
-  API
-  bulkChangeQueue
-  CHROME
-  chromeSync
-  deepEqual
-  messageBox
-  onDOMready
-  prefs
-  scrollElementIntoView
-  styleJSONseemsValid
-  styleSectionsEqual
-  t
-  tryJSONparse
-*/
 'use strict';
 
 const STYLISH_DUMP_FILE_EXT = '.txt';
 const STYLUS_BACKUP_FILE_EXT = '.json';
 
-onDOMready().then(() => {
+define(require => {
+  const {API} = require('/js/msg');
+  const {isEmptyObj} = require('/js/polyfill');
+  const {
+    CHROME,
+    deepEqual,
+    tryJSONparse,
+  } = require('/js/toolbox');
+  const t = require('/js/localization');
+  const prefs = require('/js/prefs');
+  const {
+    $,
+    $$,
+    $create,
+    animateElement,
+    messageBoxProxy,
+    scrollElementIntoView,
+  } = require('/js/dom');
+  const {
+    styleJSONseemsValid,
+    styleSectionsEqual,
+  } = require('/js/sections-util');
+  const {bulkChangeQueue} = require('./render');
+
+  /** @type {ChromeSync} */
+  let chromeSync;
+
   $('#file-all-styles').onclick = () => exportToFile();
   $('#unfile-all-styles').onclick = () => importFromFile({fileTypeFilter: STYLUS_BACKUP_FILE_EXT});
 
@@ -62,296 +69,296 @@ onDOMready().then(() => {
       setTimeout(() => this.ondragend(), 250);
     },
   });
-});
 
-function importFromFile({fileTypeFilter, file} = {}) {
-  return new Promise(resolve => {
-    const fileInput = document.createElement('input');
-    if (file) {
-      readFile();
-      return;
-    }
-    fileInput.style.display = 'none';
-    fileInput.type = 'file';
-    fileInput.accept = fileTypeFilter || STYLISH_DUMP_FILE_EXT;
-    fileInput.acceptCharset = 'utf-8';
+  function importFromFile({fileTypeFilter, file} = {}) {
+    return new Promise(async resolve => {
+      chromeSync = (await require(['/js/storage-util'])).chromeSync;
+      const fileInput = document.createElement('input');
+      if (file) {
+        readFile();
+        return;
+      }
+      fileInput.style.display = 'none';
+      fileInput.type = 'file';
+      fileInput.accept = fileTypeFilter || STYLISH_DUMP_FILE_EXT;
+      fileInput.acceptCharset = 'utf-8';
 
-    document.body.appendChild(fileInput);
-    fileInput.initialValue = fileInput.value;
-    fileInput.onchange = readFile;
-    fileInput.click();
+      document.body.appendChild(fileInput);
+      fileInput.initialValue = fileInput.value;
+      fileInput.onchange = readFile;
+      fileInput.click();
 
-    function readFile() {
-      if (file || fileInput.value !== fileInput.initialValue) {
-        file = file || fileInput.files[0];
-        if (file.size > 100e6) {
-          messageBox.alert("100MB backup? I don't believe you.");
-          resolve();
-          return;
-        }
-        const fReader = new FileReader();
-        fReader.onloadend = event => {
-          fileInput.remove();
-          const text = event.target.result;
-          const maybeUsercss = !/^\s*\[/.test(text) && /==UserStyle==/i.test(text);
-          if (maybeUsercss) {
-            messageBox.alert(t('dragDropUsercssTabstrip'));
-          } else {
-            importFromString(text).then(resolve);
+      function readFile() {
+        if (file || fileInput.value !== fileInput.initialValue) {
+          file = file || fileInput.files[0];
+          if (file.size > 100e6) {
+            messageBoxProxy.alert("100MB backup? I don't believe you.");
+            resolve();
+            return;
           }
-        };
-        fReader.readAsText(file, 'utf-8');
-      }
-    }
-  });
-}
-
-
-async function importFromString(jsonString) {
-  const json = tryJSONparse(jsonString);
-  const oldStyles = Array.isArray(json) && json.length ? await API.styles.getAll() : [];
-  const oldStylesById = new Map(oldStyles.map(style => [style.id, style]));
-  const oldStylesByName = new Map(oldStyles.map(style => [style.name.trim(), style]));
-  const items = [];
-  const infos = [];
-  const stats = {
-    options: {names: [], isOptions: true, legend: 'optionsHeading'},
-    added: {names: [], ids: [], legend: 'importReportLegendAdded', dirty: true},
-    unchanged: {names: [], ids: [], legend: 'importReportLegendIdentical'},
-    metaAndCode: {names: [], ids: [], legend: 'importReportLegendUpdatedBoth', dirty: true},
-    metaOnly: {names: [], ids: [], legend: 'importReportLegendUpdatedMeta', dirty: true},
-    codeOnly: {names: [], ids: [], legend: 'importReportLegendUpdatedCode', dirty: true},
-    invalid: {names: [], legend: 'importReportLegendInvalid'},
-  };
-  await Promise.all(json.map(analyze));
-  bulkChangeQueue.length = 0;
-  bulkChangeQueue.time = performance.now();
-  (await API.styles.importMany(items))
-    .forEach((style, i) => updateStats(style, infos[i]));
-  return done();
-
-  function analyze(item, index) {
-    if (item && !item.id && item[prefs.STORAGE_KEY]) {
-      return analyzeStorage(item);
-    }
-    if (typeof item !== 'object' || !styleJSONseemsValid(item)) {
-      stats.invalid.names.push(`#${index}: ${limitString(item && item.name || '')}`);
-      return;
-    }
-    item.name = item.name.trim();
-    const byId = oldStylesById.get(item.id);
-    const byName = oldStylesByName.get(item.name);
-    oldStylesByName.delete(item.name);
-    let oldStyle;
-    if (byId) {
-      if (sameStyle(byId, item)) {
-        oldStyle = byId;
-      } else {
-        delete item.id;
-      }
-    }
-    if (!oldStyle && byName) {
-      item.id = byName.id;
-      oldStyle = byName;
-    }
-    const metaEqual = oldStyle && deepEqual(oldStyle, item, ['sections', '_rev']);
-    const codeEqual = oldStyle && styleSectionsEqual(oldStyle, item);
-    if (metaEqual && codeEqual) {
-      stats.unchanged.names.push(oldStyle.name);
-      stats.unchanged.ids.push(oldStyle.id);
-    } else {
-      items.push(item);
-      infos.push({oldStyle, metaEqual, codeEqual});
-    }
-  }
-
-  async function analyzeStorage(storage) {
-    analyzePrefs(storage[prefs.STORAGE_KEY], Object.keys(prefs.defaults), prefs.values, true);
-    delete storage[prefs.STORAGE_KEY];
-    if (Object.keys(storage).length) {
-      analyzePrefs(storage, Object.values(chromeSync.LZ_KEY), await chromeSync.getLZValues());
-    }
-  }
-
-  function analyzePrefs(obj, validKeys, values, isPref) {
-    for (const [key, val] of Object.entries(obj || {})) {
-      const isValid = validKeys.includes(key);
-      if (!isValid || !deepEqual(val, values[key])) {
-        stats.options.names.push({name: key, val, isValid, isPref});
-      }
-    }
-  }
-
-  function sameStyle(oldStyle, newStyle) {
-    return oldStyle.name.trim() === newStyle.name.trim() ||
-      ['updateUrl', 'originalMd5', 'originalDigest']
-        .some(field => oldStyle[field] && oldStyle[field] === newStyle[field]);
-  }
-
-  function updateStats(style, {oldStyle, metaEqual, codeEqual}) {
-    if (!oldStyle) {
-      stats.added.names.push(style.name);
-      stats.added.ids.push(style.id);
-      return;
-    }
-    if (!metaEqual && !codeEqual) {
-      stats.metaAndCode.names.push(reportNameChange(oldStyle, style));
-      stats.metaAndCode.ids.push(style.id);
-      return;
-    }
-    if (!codeEqual) {
-      stats.codeOnly.names.push(style.name);
-      stats.codeOnly.ids.push(style.id);
-      return;
-    }
-    stats.metaOnly.names.push(reportNameChange(oldStyle, style));
-    stats.metaOnly.ids.push(style.id);
-  }
-
-  function done() {
-    scrollTo(0, 0);
-    const entries = Object.entries(stats);
-    const numChanged = entries.reduce((sum, [, val]) =>
-      sum + (val.dirty ? val.names.length : 0), 0);
-    const report = entries.map(renderStats).filter(Boolean);
-    messageBox({
-      title: t('importReportTitle'),
-      contents: $create('#import', report.length ? report : t('importReportUnchanged')),
-      buttons: [t('confirmClose'), numChanged && t('undo')],
-      onshow: bindClick,
-    })
-      .then(({button}) => {
-        if (button === 1) {
-          undo();
+          const fReader = new FileReader();
+          fReader.onloadend = event => {
+            fileInput.remove();
+            const text = event.target.result;
+            const maybeUsercss = !/^\s*\[/.test(text) && /==UserStyle==/i.test(text);
+            if (maybeUsercss) {
+              messageBoxProxy.alert(t('dragDropUsercssTabstrip'));
+            } else {
+              importFromString(text).then(resolve);
+            }
+          };
+          fReader.readAsText(file, 'utf-8');
         }
-      });
+      }
+    });
   }
 
-  function renderStats([id, {ids, names, legend, isOptions}]) {
-    return names.length &&
-      $create('details', {dataset: {id}, open: isOptions}, [
-        $create('summary',
-          $create('b', (isOptions ? '' : names.length + ' ') + t(legend))),
-        $create('small',
-          names.map(ids ? listItemsWithId : isOptions ? listOptions : listItems, ids)),
-        isOptions && names.some(_ => _.isValid) &&
-        $create('button', {onclick: importOptions}, t('importLabel')),
-      ]);
-  }
+  async function importFromString(jsonString) {
+    const json = tryJSONparse(jsonString);
+    const oldStyles = Array.isArray(json) && json.length ? await API.styles.getAll() : [];
+    const oldStylesById = new Map(oldStyles.map(style => [style.id, style]));
+    const oldStylesByName = new Map(oldStyles.map(style => [style.name.trim(), style]));
+    const items = [];
+    const infos = [];
+    const stats = {
+      options: {names: [], isOptions: true, legend: 'optionsHeading'},
+      added: {names: [], ids: [], legend: 'importReportLegendAdded', dirty: true},
+      unchanged: {names: [], ids: [], legend: 'importReportLegendIdentical'},
+      metaAndCode: {names: [], ids: [], legend: 'importReportLegendUpdatedBoth', dirty: true},
+      metaOnly: {names: [], ids: [], legend: 'importReportLegendUpdatedMeta', dirty: true},
+      codeOnly: {names: [], ids: [], legend: 'importReportLegendUpdatedCode', dirty: true},
+      invalid: {names: [], legend: 'importReportLegendInvalid'},
+    };
+    await Promise.all(json.map(analyze));
+    bulkChangeQueue.length = 0;
+    bulkChangeQueue.time = performance.now();
+    (await API.styles.importMany(items))
+      .forEach((style, i) => updateStats(style, infos[i]));
+    return done();
 
-  function listOptions({name, isValid}) {
-    return $create(isValid ? 'div' : 'del',
-      name + (isValid ? '' : ` (${t(stats.invalid.legend)})`));
-  }
-
-  function listItems(name) {
-    return $create('div', name);
-  }
-
-  /** @this stats.<item>.ids */
-  function listItemsWithId(name, i) {
-    return $create('div', {dataset: {id: this[i]}}, name);
-  }
-
-  async function importOptions() {
-    // Must acquire the permission before setting the pref
-    if (CHROME && !chrome.declarativeContent &&
-        stats.options.names.find(_ => _.name === 'styleViaXhr' && _.isValid && _.val)) {
-      await browser.permissions.request({permissions: ['declarativeContent']});
-    }
-    const oldStorage = await chromeSync.get();
-    for (const {name, val, isValid, isPref} of stats.options.names) {
-      if (isValid) {
-        if (isPref) {
-          prefs.set(name, val);
+    function analyze(item, index) {
+      if (item && !item.id && item[prefs.STORAGE_KEY]) {
+        return analyzeStorage(item);
+      }
+      if (typeof item !== 'object' || !styleJSONseemsValid(item)) {
+        stats.invalid.names.push(`#${index}: ${limitString(item && item.name || '')}`);
+        return;
+      }
+      item.name = item.name.trim();
+      const byId = oldStylesById.get(item.id);
+      const byName = oldStylesByName.get(item.name);
+      oldStylesByName.delete(item.name);
+      let oldStyle;
+      if (byId) {
+        if (sameStyle(byId, item)) {
+          oldStyle = byId;
         } else {
-          chromeSync.setLZValue(name, val);
+          delete item.id;
+        }
+      }
+      if (!oldStyle && byName) {
+        item.id = byName.id;
+        oldStyle = byName;
+      }
+      const metaEqual = oldStyle && deepEqual(oldStyle, item, ['sections', '_rev']);
+      const codeEqual = oldStyle && styleSectionsEqual(oldStyle, item);
+      if (metaEqual && codeEqual) {
+        stats.unchanged.names.push(oldStyle.name);
+        stats.unchanged.ids.push(oldStyle.id);
+      } else {
+        items.push(item);
+        infos.push({oldStyle, metaEqual, codeEqual});
+      }
+    }
+
+    async function analyzeStorage(storage) {
+      analyzePrefs(storage[prefs.STORAGE_KEY], Object.keys(prefs.defaults), prefs.values, true);
+      delete storage[prefs.STORAGE_KEY];
+      if (!isEmptyObj(storage)) {
+        analyzePrefs(storage, Object.values(chromeSync.LZ_KEY), await chromeSync.getLZValues());
+      }
+    }
+
+    function analyzePrefs(obj, validKeys, values, isPref) {
+      for (const [key, val] of Object.entries(obj || {})) {
+        const isValid = validKeys.includes(key);
+        if (!isValid || !deepEqual(val, values[key])) {
+          stats.options.names.push({name: key, val, isValid, isPref});
         }
       }
     }
-    const label = this.textContent;
-    this.textContent = t('undo');
-    this.onclick = async () => {
-      const curKeys = Object.keys(await chromeSync.get());
-      const keysToRemove = curKeys.filter(k => !oldStorage.hasOwnProperty(k));
-      await chromeSync.set(oldStorage);
-      await chromeSync.remove(keysToRemove);
-      this.textContent = label;
-      this.onclick = importOptions;
-    };
+
+    function sameStyle(oldStyle, newStyle) {
+      return oldStyle.name.trim() === newStyle.name.trim() ||
+        ['updateUrl', 'originalMd5', 'originalDigest']
+          .some(field => oldStyle[field] && oldStyle[field] === newStyle[field]);
+    }
+
+    function updateStats(style, {oldStyle, metaEqual, codeEqual}) {
+      if (!oldStyle) {
+        stats.added.names.push(style.name);
+        stats.added.ids.push(style.id);
+        return;
+      }
+      if (!metaEqual && !codeEqual) {
+        stats.metaAndCode.names.push(reportNameChange(oldStyle, style));
+        stats.metaAndCode.ids.push(style.id);
+        return;
+      }
+      if (!codeEqual) {
+        stats.codeOnly.names.push(style.name);
+        stats.codeOnly.ids.push(style.id);
+        return;
+      }
+      stats.metaOnly.names.push(reportNameChange(oldStyle, style));
+      stats.metaOnly.ids.push(style.id);
+    }
+
+    function done() {
+      scrollTo(0, 0);
+      const entries = Object.entries(stats);
+      const numChanged = entries.reduce((sum, [, val]) =>
+        sum + (val.dirty ? val.names.length : 0), 0);
+      const report = entries.map(renderStats).filter(Boolean);
+      messageBoxProxy.show({
+        title: t('importReportTitle'),
+        contents: $create('#import', report.length ? report : t('importReportUnchanged')),
+        buttons: [t('confirmClose'), numChanged && t('undo')],
+        onshow: bindClick,
+      })
+        .then(({button}) => {
+          if (button === 1) {
+            undo();
+          }
+        });
+    }
+
+    function renderStats([id, {ids, names, legend, isOptions}]) {
+      return names.length &&
+        $create('details', {dataset: {id}, open: isOptions}, [
+          $create('summary',
+            $create('b', (isOptions ? '' : names.length + ' ') + t(legend))),
+          $create('small',
+            names.map(ids ? listItemsWithId : isOptions ? listOptions : listItems, ids)),
+          isOptions && names.some(_ => _.isValid) &&
+          $create('button', {onclick: importOptions}, t('importLabel')),
+        ]);
+    }
+
+    function listOptions({name, isValid}) {
+      return $create(isValid ? 'div' : 'del',
+        name + (isValid ? '' : ` (${t(stats.invalid.legend)})`));
+    }
+
+    function listItems(name) {
+      return $create('div', name);
+    }
+
+    /** @this stats.<item>.ids */
+    function listItemsWithId(name, i) {
+      return $create('div', {dataset: {id: this[i]}}, name);
+    }
+
+    async function importOptions() {
+      // Must acquire the permission before setting the pref
+      if (CHROME && !chrome.declarativeContent &&
+          stats.options.names.find(_ => _.name === 'styleViaXhr' && _.isValid && _.val)) {
+        await browser.permissions.request({permissions: ['declarativeContent']});
+      }
+      const oldStorage = await chromeSync.get();
+      for (const {name, val, isValid, isPref} of stats.options.names) {
+        if (isValid) {
+          if (isPref) {
+            prefs.set(name, val);
+          } else {
+            chromeSync.setLZValue(name, val);
+          }
+        }
+      }
+      const label = this.textContent;
+      this.textContent = t('undo');
+      this.onclick = async () => {
+        const curKeys = Object.keys(await chromeSync.get());
+        const keysToRemove = curKeys.filter(k => !oldStorage.hasOwnProperty(k));
+        await chromeSync.set(oldStorage);
+        await chromeSync.remove(keysToRemove);
+        this.textContent = label;
+        this.onclick = importOptions;
+      };
+    }
+
+    function undo() {
+      const newIds = [
+        ...stats.metaAndCode.ids,
+        ...stats.metaOnly.ids,
+        ...stats.codeOnly.ids,
+        ...stats.added.ids,
+      ];
+      let tasks = Promise.resolve();
+      for (const id of newIds) {
+        tasks = tasks.then(() => API.styles.delete(id));
+        const oldStyle = oldStylesById.get(id);
+        if (oldStyle) {
+          tasks = tasks.then(() => API.styles.import(oldStyle));
+        }
+      }
+      // taskUI is superfast and updates style list only in this page,
+      // which should account for 99.99999999% of cases, supposedly
+      return tasks.then(() => messageBoxProxy.show({
+        title: t('importReportUndoneTitle'),
+        contents: newIds.length + ' ' + t('importReportUndone'),
+        buttons: [t('confirmClose')],
+      }));
+    }
+
+    function bindClick() {
+      const highlightElement = event => {
+        const styleElement = $('#style-' + event.target.dataset.id);
+        if (styleElement) {
+          scrollElementIntoView(styleElement);
+          animateElement(styleElement);
+        }
+      };
+      for (const block of $$('#message-box details')) {
+        if (block.dataset.id !== 'invalid') {
+          block.style.cursor = 'pointer';
+          block.onclick = highlightElement;
+        }
+      }
+    }
+
+    function limitString(s, limit = 100) {
+      return s.length <= limit ? s : s.substr(0, limit) + '...';
+    }
+
+    function reportNameChange(oldStyle, newStyle) {
+      return newStyle.name !== oldStyle.name
+        ? oldStyle.name + ' —> ' + newStyle.name
+        : oldStyle.name;
+    }
   }
 
-  function undo() {
-    const newIds = [
-      ...stats.metaAndCode.ids,
-      ...stats.metaOnly.ids,
-      ...stats.codeOnly.ids,
-      ...stats.added.ids,
+  async function exportToFile() {
+    chromeSync = (await require(['/js/storage-util'])).chromeSync;
+    const data = [
+      Object.assign({
+        [prefs.STORAGE_KEY]: prefs.values,
+      }, await chromeSync.getLZValues()),
+      ...await API.styles.getAll(),
     ];
-    let tasks = Promise.resolve();
-    for (const id of newIds) {
-      tasks = tasks.then(() => API.styles.delete(id));
-      const oldStyle = oldStylesById.get(id);
-      if (oldStyle) {
-        tasks = tasks.then(() => API.styles.import(oldStyle));
-      }
-    }
-    // taskUI is superfast and updates style list only in this page,
-    // which should account for 99.99999999% of cases, supposedly
-    return tasks.then(() => messageBox({
-      title: t('importReportUndoneTitle'),
-      contents: newIds.length + ' ' + t('importReportUndone'),
-      buttons: [t('confirmClose')],
-    }));
-  }
-
-  function bindClick() {
-    const highlightElement = event => {
-      const styleElement = $('#style-' + event.target.dataset.id);
-      if (styleElement) {
-        scrollElementIntoView(styleElement);
-        animateElement(styleElement);
-      }
-    };
-    for (const block of $$('#message-box details')) {
-      if (block.dataset.id !== 'invalid') {
-        block.style.cursor = 'pointer';
-        block.onclick = highlightElement;
-      }
+    const text = JSON.stringify(data, null, '  ');
+    const type = 'application/json';
+    $create('a', {
+      href: URL.createObjectURL(new Blob([text], {type})),
+      download: generateFileName(),
+      type,
+    }).dispatchEvent(new MouseEvent('click'));
+    function generateFileName() {
+      const today = new Date();
+      const dd = ('0' + today.getDate()).substr(-2);
+      const mm = ('0' + (today.getMonth() + 1)).substr(-2);
+      const yyyy = today.getFullYear();
+      return `stylus-${yyyy}-${mm}-${dd}${STYLUS_BACKUP_FILE_EXT}`;
     }
   }
-
-  function limitString(s, limit = 100) {
-    return s.length <= limit ? s : s.substr(0, limit) + '...';
-  }
-
-  function reportNameChange(oldStyle, newStyle) {
-    return newStyle.name !== oldStyle.name
-      ? oldStyle.name + ' —> ' + newStyle.name
-      : oldStyle.name;
-  }
-}
-
-
-async function exportToFile() {
-  const data = [
-    Object.assign({
-      [prefs.STORAGE_KEY]: prefs.values,
-    }, await chromeSync.getLZValues()),
-    ...await API.styles.getAll(),
-  ];
-  const text = JSON.stringify(data, null, '  ');
-  const type = 'application/json';
-  $create('a', {
-    href: URL.createObjectURL(new Blob([text], {type})),
-    download: generateFileName(),
-    type,
-  }).dispatchEvent(new MouseEvent('click'));
-  function generateFileName() {
-    const today = new Date();
-    const dd = ('0' + today.getDate()).substr(-2);
-    const mm = ('0' + (today.getMonth() + 1)).substr(-2);
-    const yyyy = today.getFullYear();
-    return `stylus-${yyyy}-${mm}-${dd}${STYLUS_BACKUP_FILE_EXT}`;
-  }
-}
+});

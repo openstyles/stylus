@@ -1,7 +1,8 @@
-/* global API */
 'use strict';
 
-(() => {
+define(require => {
+  const {API} = require('/js/msg');
+
   const manifest = chrome.runtime.getManifest();
   const allowedOrigins = [
     'https://openusercss.org',
@@ -55,7 +56,7 @@
     window.addEventListener('message', installedHandler);
   };
 
-  const doHandshake = () => {
+  const doHandshake = event => {
     // This is a representation of features that Stylus is capable of
     const implementedFeatures = [
       'install-usercss',
@@ -106,7 +107,7 @@
     && event.data.type === 'ouc-handshake-question'
     && allowedOrigins.includes(event.origin)
     ) {
-      doHandshake();
+      doHandshake(event);
     }
   };
 
@@ -171,4 +172,4 @@
   attachInstallListeners();
   attachInstalledListeners();
   askHandshake();
-})();
+});

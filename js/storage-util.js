@@ -1,7 +1,10 @@
-/* global loadScript tryJSONparse */
 'use strict';
 
-(() => {
+define(require => {
+  const {tryJSONparse} = require('/js/toolbox');
+
+  let LZString;
+
   /** @namespace StorageExtras */
   const StorageExtras = {
     async getValue(key) {
@@ -29,11 +32,8 @@
       return this.setValue(key, LZString.compressToUTF16(JSON.stringify(value)));
     },
     async getLZString() {
-      if (!window.LZString) {
-        await loadScript('/vendor/lz-string-unsafe/lz-string-unsafe.min.js');
-        window.LZString = window.LZString || window.LZStringUnsafe;
-      }
-      return window.LZString;
+      return LZString ||
+        (LZString = await require(['/vendor/lz-string-unsafe/lz-string-unsafe.min']));
     },
   };
   /** @namespace StorageExtrasSync */
@@ -44,8 +44,14 @@
       usercssTemplate: 'usercssTemplate',
     },
   };
-  /** @type {chrome.storage.StorageArea|StorageExtras} */
-  window.chromeLocal = Object.assign(browser.storage.local, StorageExtras);
-  /** @type {chrome.storage.StorageArea|StorageExtras|StorageExtrasSync} */
-  window.chromeSync = Object.assign(browser.storage.sync, StorageExtras, StorageExtrasSync);
-})();
+
+  /** @typedef {chrome.storage.StorageArea|StorageExtras} ChromeLocal */
+  /** @typedef {chrome.storage.StorageArea|StorageExtras|StorageExtrasSync} ChromeSync */
+
+  return {
+    /** @type {ChromeLocal} */
+    chromeLocal: Object.assign(browser.storage.local, StorageExtras),
+    /** @type {ChromeSync} */
+    chromeSync: Object.assign(browser.storage.sync, StorageExtras, StorageExtrasSync),
+  };
+});

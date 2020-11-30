@@ -1,7 +1,10 @@
-/* global API CHROME prefs */
 'use strict';
 
-API.styleViaAPI = !CHROME && (() => {
+define(require => {
+  const {isEmptyObj} = require('/js/polyfill');
+  const {API} = require('/js/msg');
+  const prefs = require('/js/prefs');
+
   const ACTIONS = {
     styleApply,
     styleDeleted,
@@ -11,24 +14,27 @@ API.styleViaAPI = !CHROME && (() => {
     prefChanged,
     updateCount,
   };
-  const NOP = Promise.resolve(new Error('NOP'));
+  const NOP = new Error('NOP');
   const onError = () => {};
-
   /* <tabId>: Object
        <frameId>: Object
          url: String, non-enumerable
          <styleId>: Array of strings
            section code */
   const cache = new Map();
-
   let observingTabs = false;
 
-  return function (request) {
-    const action = ACTIONS[request.method];
-    return !action ? NOP :
-      action(request, this.sender)
-        .catch(onError)
-        .then(maybeToggleObserver);
+  const exports = /** @namespace API */ {
+    /**
+     * Uses chrome.tabs.insertCSS
+     */
+    async styleViaAPI(request) {
+      try {
+        const fn = ACTIONS[request.method];
+        return fn ? fn(request, this.sender) : NOP;
+      } catch (e) {}
+      maybeToggleObserver();
+    },
   };
 
   function updateCount(request, sender) {
@@ -125,7 +131,7 @@ API.styleViaAPI = !CHROME && (() => {
       }
       const {tab, frameId} = sender;
       const {tabFrames, frameStyles} = getCachedData(tab.id, frameId);
-      if (isEmpty(frameStyles)) {
+      if (isEmptyObj(frameStyles)) {
         return NOP;
       }
       removeFrameIfEmpty(tab.id, frameId, tabFrames, {});
@@ -162,7 +168,7 @@ API.styleViaAPI = !CHROME && (() => {
     const tabFrames = cache.get(tabId);
     if (tabFrames && frameId in tabFrames) {
       delete tabFrames[frameId];
-      if (isEmpty(tabFrames)) {
+      if (isEmptyObj(tabFrames)) {
         onTabRemoved(tabId);
       }
     }
@@ -178,9 +184,9 @@ API.styleViaAPI = !CHROME && (() => {
   }
 
   function removeFrameIfEmpty(tabId, frameId, tabFrames, frameStyles) {
-    if (isEmpty(frameStyles)) {
+    if (isEmptyObj(frameStyles)) {
       delete tabFrames[frameId];
-      if (isEmpty(tabFrames)) {
+      if (isEmptyObj(tabFrames)) {
         cache.delete(tabId);
       }
       return true;
@@ -224,10 +230,5 @@ API.styleViaAPI = !CHROME && (() => {
       .catch(onError);
   }
 
-  function isEmpty(obj) {
-    for (const k in obj) {
-      return false;
-    }
-    return true;
-  }
-})();
+  return exports;
+});

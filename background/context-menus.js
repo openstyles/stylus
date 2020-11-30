@@ -1,16 +1,15 @@
-/* global
-  browserCommands
-  CHROME
-  FIREFOX
-  ignoreChromeError
-  msg
-  prefs
-  URLS
-*/
 'use strict';
 
-// eslint-disable-next-line no-unused-expressions
-chrome.contextMenus && (() => {
+define(require => {
+  const {
+    CHROME,
+    FIREFOX,
+    URLS,
+    ignoreChromeError,
+  } = require('/js/toolbox');
+  const {API, msg} = require('/js/msg');
+  const prefs = require('/js/prefs');
+
   const contextMenus = {
     'show-badge': {
       title: 'menuShowBadge',
@@ -18,20 +17,20 @@ chrome.contextMenus && (() => {
     },
     'disableAll': {
       title: 'disableAllStyles',
-      click: browserCommands.styleDisableAll,
+      click: API.browserCommands.styleDisableAll,
     },
     'open-manager': {
       title: 'openStylesManager',
-      click: browserCommands.openManage,
+      click: API.browserCommands.openManage,
     },
     'open-options': {
       title: 'openOptions',
-      click: browserCommands.openOptions,
+      click: API.browserCommands.openOptions,
     },
     'reload': {
       presentIf: async () => (await browser.management.getSelf()).installType === 'development',
       title: 'reload',
-      click: browserCommands.reload,
+      click: API.browserCommands.reload,
     },
     'editor.contextDelete': {
       presentIf: () => !FIREFOX && prefs.get('editor.contextDelete'),
@@ -104,4 +103,4 @@ chrome.contextMenus && (() => {
       chrome.contextMenus.remove(id, ignoreChromeError);
     }
   }
-})();
+});

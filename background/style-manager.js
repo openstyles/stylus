@@ -1,17 +1,3 @@
-/* global
-  API
-  calcStyleDigest
-  createCache
-  db
-  msg
-  prefs
-  stringAsRegExp
-  styleCodeEmpty
-  styleSectionGlobal
-  tabManager
-  tryRegExp
-  URLS
-*/
 'use strict';
 
 /*
@@ -23,10 +9,25 @@ The live preview feature relies on `runtime.connect` and `port.onDisconnect`
 to cleanup the temporary code. See /edit/live-preview.js.
 */
 
-/* exported styleManager */
-const styleManager = API.styles = (() => {
+define(require => {
+  const {
+    stringAsRegExp,
+    tryRegExp,
+    URLS,
+  } = require('/js/toolbox');
+  const {API, msg} = require('/js/msg');
+  const {
+    calcStyleDigest,
+    styleCodeEmpty,
+    styleSectionGlobal,
+  } = require('/js/sections-util');
+  const createCache = require('/js/cache');
+  const prefs = require('/js/prefs');
+  const db = require('./db');
+  const tabManager = require('./tab-manager');
 
   //#region Declarations
+
   const ready = init();
   /**
    * @typedef StyleMapData
@@ -40,7 +41,7 @@ const styleManager = API.styles = (() => {
   /** @typedef {Object<styleId,{id: number, code: string[]}>} StyleSectionsToApply */
   /** @type {Map<string,{maybeMatch: Set<styleId>, sections: StyleSectionsToApply}>} */
   const cachedStyleForUrl = createCache({
-    onDeleted: (url, cache) => {
+    onDeleted(url, cache) {
       for (const section of Object.values(cache.sections)) {
         const data = id2data(section.id);
         if (data) data.appliesTo.delete(url);
@@ -51,36 +52,30 @@ const styleManager = API.styles = (() => {
   const compileRe = createCompiler(text => `^(${text})$`);
   const compileSloppyRe = createCompiler(text => `^${text}$`);
   const compileExclusion = createCompiler(buildExclusion);
-  const DUMMY_URL = {
-    hash: '',
-    host: '',
-    hostname: '',
-    href: '',
-    origin: '',
-    password: '',
-    pathname: '',
-    port: '',
-    protocol: '',
-    search: '',
-    searchParams: new URLSearchParams(),
-    username: '',
-  };
   const MISSING_PROPS = {
     name: style => `ID: ${style.id}`,
     _id: () => uuidv4(),
     _rev: () => Date.now(),
   };
   const DELETE_IF_NULL = ['id', 'customName'];
-  //#endregion
 
   chrome.runtime.onConnect.addListener(handleLivePreview);
 
-  //#region Public surface
+  //#endregion
+  //#region Exports
 
-  // Sorted alphabetically
-  return {
+  /** @type {StyleManager} */
+  const styleManager = /** @namespace StyleManager */ {
 
-    compareRevision,
+    /* props first,
+       then method shorthands if any,
+       then inlined methods sorted alphabetically */
+
+    ready,
+
+    compareRevision(rev1, rev2) { // TODO: move somewhere else so it doesn't pollute API
+      return rev1 - rev2;
+    },
 
     /** @returns {Promise<number>} style id */
     async delete(id, reason) {
@@ -108,9 +103,9 @@ const styleManager = API.styles = (() => {
       await ready;
       const id = uuidIndex.get(_id);
       const oldDoc = id && id2style(id);
-      if (oldDoc && compareRevision(oldDoc._rev, rev) <= 0) {
+      if (oldDoc && styleManager.compareRevision(oldDoc._rev, rev) <= 0) {
         // FIXME: does it make sense to set reason to 'sync' in deleteByUUID?
-        return API.styles.delete(id, 'sync');
+        return styleManager.delete(id, 'sync');
       }
     },
 
@@ -151,7 +146,7 @@ const styleManager = API.styles = (() => {
       await ready;
       /* Chrome hides text frament from location.href of the page e.g. #:~:text=foo
          so we'll use the real URL reported by webNavigation API */
-      const {tab, frameId} = this.sender;
+      const {tab, frameId} = this && this.sender || {};
       url = tab && tabManager.get(tab.id, 'url', frameId) || url;
       let cache = cachedStyleForUrl.get(url);
       if (!cache) {
@@ -215,7 +210,7 @@ const styleManager = API.styles = (() => {
           }
         }
         if (sectionMatched) {
-          result.push(/** @namespace StylesByUrlResult */{style, excluded, sloppy});
+          result.push(/** @namespace StylesByUrlResult */ {style, excluded, sloppy});
         }
       }
       return result;
@@ -265,7 +260,7 @@ const styleManager = API.styles = (() => {
       const oldDoc = id && id2style(id);
       let diff = -1;
       if (oldDoc) {
-        diff = compareRevision(oldDoc._rev, doc._rev);
+        diff = styleManager.compareRevision(oldDoc._rev, doc._rev);
         if (diff > 0) {
           API.sync.put(oldDoc._id, oldDoc._rev);
           return;
@@ -297,8 +292,8 @@ const styleManager = API.styles = (() => {
     /** @returns {Promise<?StyleObj>} */
     removeInclusion: removeIncludeExclude.bind(null, 'inclusions'),
   };
-  //#endregion
 
+  //#endregion
   //#region Implementation
 
   /** @returns {StyleMapData} */
@@ -318,7 +313,7 @@ const styleManager = API.styles = (() => {
 
   /** @returns {StyleObj} */
   function createNewStyle() {
-    return /** @namespace StyleObj */{
+    return /** @namespace StyleObj */ {
       enabled: true,
       updateUrl: null,
       md5Url: null,
@@ -364,10 +359,6 @@ const styleManager = API.styles = (() => {
         }
       }
     });
-  }
-
-  function compareRevision(rev1, rev2) {
-    return rev1 - rev2;
   }
 
   async function addIncludeExclude(type, id, rule) {
@@ -661,7 +652,20 @@ const styleManager = API.styles = (() => {
     try {
       return new URL(url);
     } catch (err) {
-      return DUMMY_URL;
+      return {
+        hash: '',
+        host: '',
+        hostname: '',
+        href: '',
+        origin: '',
+        password: '',
+        pathname: '',
+        port: '',
+        protocol: '',
+        search: '',
+        searchParams: new URLSearchParams(),
+        username: '',
+      };
     }
   }
 
@@ -677,5 +681,8 @@ const styleManager = API.styles = (() => {
   function hex4dashed(num, i) {
     return (num + 0x10000).toString(16).slice(-4) + (i >= 1 && i <= 4 ? '-' : '');
   }
+
   //#endregion
-})();
+
+  return styleManager;
+});

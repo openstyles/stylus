@@ -23,7 +23,10 @@
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("./matchesonscrollbar"));
   else if (typeof define == "function" && define.amd) // AMD
-    define(["../../lib/codemirror", "./matchesonscrollbar"], mod);
+    define([
+      "/vendor/codemirror/lib/codemirror",
+      "/vendor/codemirror/addon/search/matchesonscrollbar",
+    ], mod);
   else // Plain browser env
     mod(CodeMirror);
 })(function(CodeMirror) {

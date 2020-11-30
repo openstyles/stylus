@@ -1,31 +1,27 @@
-/* global
-  CHROME
-  FIREFOX
-  ignoreChromeError
-  msg
-  URLS
-*/
 'use strict';
 
-(() => {
+define(require => {
+  const {
+    CHROME,
+    FIREFOX,
+    URLS,
+    ignoreChromeError,
+  } = require('/js/toolbox');
+  const {msg} = require('/js/msg');
+
   /** @type {Set<function(data: Object, type: string)>} */
   const listeners = new Set();
-  /** @type {NavigatorUtil} */
-  const navigatorUtil = window.navigatorUtil = new Proxy({
+
+  const exports = {
     onUrlChange(fn) {
       listeners.add(fn);
     },
-  }, {
-    get(target, prop) {
-      return target[prop] ||
-        (target = chrome.webNavigation[prop]).addListener.bind(target);
-    },
-  });
+  };
 
-  navigatorUtil.onCommitted(onNavigation.bind('committed'));
-  navigatorUtil.onHistoryStateUpdated(onFakeNavigation.bind('history'));
-  navigatorUtil.onReferenceFragmentUpdated(onFakeNavigation.bind('hash'));
-  navigatorUtil.onCommitted(runGreasyforkContentScript, {
+  chrome.webNavigation.onCommitted.addListener(onNavigation.bind('committed'));
+  chrome.webNavigation.onHistoryStateUpdated.addListener(onFakeNavigation.bind('history'));
+  chrome.webNavigation.onReferenceFragmentUpdated.addListener(onFakeNavigation.bind('hash'));
+  chrome.webNavigation.onCommitted.addListener(runGreasyforkContentScript, {
     // expose style version on greasyfork/sleazyfork 1) info page and 2) code page
     url: ['greasyfork', 'sleazyfork'].map(host => ({
       hostEquals: host + '.org',
@@ -33,7 +29,7 @@
     })),
   });
   if (FIREFOX) {
-    navigatorUtil.onDOMContentLoaded(runMainContentScripts, {
+    chrome.webNavigation.onDOMContentLoaded.addListener(runMainContentScripts, {
       url: [{
         urlEquals: 'about:blank',
       }],
@@ -84,20 +80,6 @@
       runAt: 'document_start',
     });
   }
-})();
 
-/**
- * @typedef NavigatorUtil
- * @property {NavigatorUtilEvent} onBeforeNavigate
- * @property {NavigatorUtilEvent} onCommitted
- * @property {NavigatorUtilEvent} onCompleted
- * @property {NavigatorUtilEvent} onCreatedNavigationTarget
- * @property {NavigatorUtilEvent} onDOMContentLoaded
- * @property {NavigatorUtilEvent} onErrorOccurred
- * @property {NavigatorUtilEvent} onHistoryStateUpdated
- * @property {NavigatorUtilEvent} onReferenceFragmentUpdated
- * @property {NavigatorUtilEvent} onTabReplaced
-*/
-/**
- * @typedef {function(cb: function, filters: WebNavigationEventFilter?)} NavigatorUtilEvent
- */
+  return exports;
+});

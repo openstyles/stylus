@@ -1,12 +1,10 @@
-/* global
-  API
-  CHROME
-  prefs
-*/
 'use strict';
 
-// eslint-disable-next-line no-unused-expressions
-CHROME && (async () => {
+define(async require => {
+  const {API} = require('/js/msg');
+  const {isEmptyObj} = require('/js/polyfill');
+  const prefs = require('/js/prefs');
+
   const idCSP = 'patchCsp';
   const idOFF = 'disableAll';
   const idXHR = 'styleViaXhr';
@@ -16,7 +14,7 @@ CHROME && (async () => {
   const enabled = {};
 
   await prefs.initializing;
-  prefs.subscribe([idXHR, idOFF, idCSP], toggle, {now: true});
+  prefs.subscribe([idXHR, idOFF, idCSP], toggle, {runNow: true});
 
   function toggle() {
     const csp = prefs.get(idCSP) && !prefs.get(idOFF);
@@ -73,12 +71,15 @@ CHROME && (async () => {
   /** @param {chrome.webRequest.WebRequestBodyDetails} req */
   async function prepareStyles(req) {
     const sections = await API.styles.getSectionsByUrl(req.url);
-    if (Object.keys(sections).length) {
-      stylesToPass[req.requestId] = !enabled.xhr ? true :
-        URL.createObjectURL(new Blob([JSON.stringify(sections)]))
-          .slice(blobUrlPrefix.length);
+    if (!isEmptyObj(sections)) {
+      stylesToPass[req.requestId] = !enabled.xhr || makeObjectUrl(sections);
       setTimeout(cleanUp, 600e3, req.requestId);
     }
+  }
+
+  function makeObjectUrl(sections) {
+    const blob = new Blob([JSON.stringify(sections)]);
+    return URL.createObjectURL(blob).slice(blobUrlPrefix.length);
   }
 
   /** @param {chrome.webRequest.WebResponseHeadersDetails} req */
@@ -115,7 +116,7 @@ CHROME && (async () => {
     patchCspSrc(src, 'img-src', 'data:', '*');
     patchCspSrc(src, 'font-src', 'data:', '*');
     // Allow our DOM styles
-    patchCspSrc(src, 'style-src', '\'unsafe-inline\'');
+    patchCspSrc(src, 'style-src', "'unsafe-inline'");
     // Allow our XHR cookies in CSP sandbox (known case: raw github urls)
     if (src.sandbox && !src.sandbox.includes('allow-same-origin')) {
       src.sandbox.push('allow-same-origin');
@@ -141,4 +142,4 @@ CHROME && (async () => {
     delete stylesToPass[key];
     if (blobId) URL.revokeObjectURL(blobUrlPrefix + blobId);
   }
-})();
+});

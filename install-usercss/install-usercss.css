@@ -301,6 +301,10 @@ li {
   user-select: auto;
 }
 
+#header.meta-init[data-arrived-fast="true"] > * {
+  transition-duration: .1s;
+}
+
 label {
   padding-left: 16px;
   position: relative;

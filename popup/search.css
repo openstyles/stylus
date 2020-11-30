@@ -1,3 +1,7 @@
+/* IMPORTANT!
+   This file is loaded dynamically when the inline search is invoked.
+   So don't put main popup's stuff here. */
+
 body.search-results-shown {
   overflow-y: auto;
   overflow-x: hidden;
@@ -253,11 +257,6 @@ body.search-results-shown {
 
 #search-results .search-results-nav button:not(:disabled):hover {
   text-shadow: 0 1px 4px rgba(0, 0, 0, .5);
-}
-
-#find-styles-inline-group label {
-  position: relative;
-  padding-left: 16px;
 }
 
 #search-params {

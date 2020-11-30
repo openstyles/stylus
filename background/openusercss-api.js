@@ -1,7 +1,6 @@
-/* global API */
 'use strict';
 
-(() => {
+define(require => {
   // begin:nanographql - Tiny graphQL client library
   // Author: yoshuawuyts (https://github.com/yoshuawuyts)
   // License: MIT
@@ -37,11 +36,10 @@
       body: query({
         id,
       }),
-    })
-    .then(res => res.json());
+    }).then(res => res.json());
   };
 
-  API.openusercss = {
+  const exports = /** @namespace API */ {
     /**
      *   This function can be used to retrieve a theme object from the
      *   GraphQL API, set above
@@ -100,4 +98,6 @@
       }
     `),
   };
-})();
+
+  return exports;
+});

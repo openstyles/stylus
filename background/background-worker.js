@@ -1,84 +1,44 @@
-/* global workerUtil importScripts parseMozFormat metaParser styleCodeEmpty colorConverter */
 'use strict';
 
-importScripts('/js/worker-util.js');
-const {loadScript} = workerUtil;
+define(require => { // define and require use `importScripts` which is synchronous
+  const {createAPI} = require('/js/worker-util');
 
-/** @namespace ApiWorker */
-workerUtil.createAPI({
-  parseMozFormat(arg) {
-    loadScript('/vendor-overwrites/csslint/parserlib.js', '/js/moz-parser.js');
-    return parseMozFormat(arg);
-  },
-  compileUsercss,
-  parseUsercssMeta(text, indexOffset = 0) {
-    loadScript(
-      '/vendor/usercss-meta/usercss-meta.min.js',
-      '/vendor-overwrites/colorpicker/colorconverter.js',
-      '/js/meta-parser.js'
-    );
-    return metaParser.parse(text, indexOffset);
-  },
-  nullifyInvalidVars(vars) {
-    loadScript(
-      '/vendor/usercss-meta/usercss-meta.min.js',
-      '/vendor-overwrites/colorpicker/colorconverter.js',
-      '/js/meta-parser.js'
-    );
-    return metaParser.nullifyInvalidVars(vars);
-  },
-});
+  let BUILDERS;
+  const bgw = /** @namespace BackgroundWorker */ {
 
-function compileUsercss(preprocessor, code, vars) {
-  loadScript(
-    '/vendor-overwrites/csslint/parserlib.js',
-    '/vendor-overwrites/colorpicker/colorconverter.js',
-    '/js/moz-parser.js'
-  );
-  const builder = getUsercssCompiler(preprocessor);
-  vars = simpleVars(vars);
-  return Promise.resolve(builder.preprocess ? builder.preprocess(code, vars) : code)
-    .then(code => parseMozFormat({code}))
-    .then(({sections, errors}) => {
-      if (builder.postprocess) {
-        builder.postprocess(sections, vars);
-      }
-      return {sections, errors};
-    });
+    async compileUsercss(preprocessor, code, vars) {
+      if (!BUILDERS) createBuilders();
+      const builder = BUILDERS[preprocessor] || BUILDERS.default;
+      if (!builder) throw new Error(`Unknown preprocessor "${preprocessor}"`);
+      vars = simplifyVars(vars);
+      const {preprocess, postprocess} = builder;
+      if (preprocess) code = await preprocess(code, vars);
+      const res = bgw.parseMozFormat({code});
+      if (postprocess) postprocess(res.sections, vars);
+      return res;
+    },
 
-  function simpleVars(vars) {
-    if (!vars) {
-      return {};
-    }
-    // simplify vars by merging `va.default` to `va.value`, so BUILDER don't
-    // need to test each va's default value.
-    return Object.keys(vars).reduce((output, key) => {
-      const va = vars[key];
-      output[key] = Object.assign({}, va, {
-        value: va.value === null || va.value === undefined ?
-          getVarValue(va, 'default') : getVarValue(va, 'value'),
-      });
-      return output;
-    }, {});
-  }
+    parseMozFormat(...args) {
+      return require('/js/moz-parser').extractSections(...args);
+    },
 
-  function getVarValue(va, prop) {
-    if (va.type === 'select' || va.type === 'dropdown' || va.type === 'image') {
-      // TODO: handle customized image
-      return va.options.find(o => o.name === va[prop]).value;
-    }
-    if ((va.type === 'number' || va.type === 'range') && va.units) {
-      return va[prop] + va.units;
-    }
-    return va[prop];
-  }
-}
+    parseUsercssMeta(text) {
+      return require('/js/meta-parser').parse(text);
+    },
 
-function getUsercssCompiler(preprocessor) {
-  const BUILDER = {
-    default: {
+    nullifyInvalidVars(vars) {
+      return require('/js/meta-parser').nullifyInvalidVars(vars);
+    },
+  };
+
+  createAPI(bgw);
+
+  function createBuilders() {
+    BUILDERS = Object.assign(Object.create(null));
+
+    BUILDERS.default = {
       postprocess(sections, vars) {
-        loadScript('/js/sections-util.js');
+        const {styleCodeEmpty} = require('/js/sections-util');
         let varDef = Object.keys(vars).map(k => `  --${k}: ${vars[k].value};\n`).join('');
         if (!varDef) return;
         varDef = ':root {\n' + varDef + '}\n';
@@ -88,18 +48,20 @@ function getUsercssCompiler(preprocessor) {
           }
         }
       },
-    },
-    stylus: {
+    };
+
+    BUILDERS.stylus = {
       preprocess(source, vars) {
-        loadScript('/vendor/stylus-lang-bundle/stylus-renderer.min.js');
+        require('/vendor/stylus-lang-bundle/stylus-renderer.min');
         return new Promise((resolve, reject) => {
           const varDef = Object.keys(vars).map(key => `${key} = ${vars[key].value};\n`).join('');
           new self.StylusRenderer(varDef + source)
             .render((err, output) => err ? reject(err) : resolve(output));
         });
       },
-    },
-    less: {
+    };
+
+    BUILDERS.less = {
       preprocess(source, vars) {
         if (!self.less) {
           self.less = {
@@ -107,17 +69,18 @@ function getUsercssCompiler(preprocessor) {
             useFileCache: false,
           };
         }
-        loadScript('/vendor/less-bundle/less.min.js');
+        require('/vendor/less-bundle/less.min');
         const varDefs = Object.keys(vars).map(key => `@${key}:${vars[key].value};\n`).join('');
         return self.less.render(varDefs + source)
           .then(({css}) => css);
       },
-    },
-    uso: {
-      preprocess(source, vars) {
-        loadScript('/vendor-overwrites/colorpicker/colorconverter.js');
+    };
+
+    BUILDERS.uso = {
+      async preprocess(source, vars) {
+        const colorConverter = require('/js/color/color-converter');
         const pool = new Map();
-        return Promise.resolve(doReplace(source));
+        return doReplace(source);
 
         function getValue(name, rgbName) {
           if (!vars.hasOwnProperty(name)) {
@@ -164,14 +127,35 @@ function getUsercssCompiler(preprocessor) {
           });
         }
       },
-    },
-  };
-
-  if (preprocessor) {
-    if (!BUILDER[preprocessor]) {
-      throw new Error('unknwon preprocessor');
-    }
-    return BUILDER[preprocessor];
+    };
   }
-  return BUILDER.default;
-}
+
+  function getVarValue(va, prop) {
+    if (va.type === 'select' || va.type === 'dropdown' || va.type === 'image') {
+      // TODO: handle customized image
+      return va.options.find(o => o.name === va[prop]).value;
+    }
+    if ((va.type === 'number' || va.type === 'range') && va.units) {
+      return va[prop] + va.units;
+    }
+    return va[prop];
+  }
+
+  function simplifyVars(vars) {
+    if (!vars) {
+      return {};
+    }
+    // simplify vars by merging `va.default` to `va.value`, so BUILDER don't
+    // need to test each va's default value.
+    return Object.keys(vars).reduce((output, key) => {
+      const va = vars[key];
+      output[key] = Object.assign({}, va, {
+        value: va.value === null || va.value === undefined ?
+          getVarValue(va, 'default') : getVarValue(va, 'value'),
+      });
+      return output;
+    }, {});
+  }
+
+  return bgw;
+});

@@ -1,15 +1,14 @@
-/* global linter editor clipString createLinterHelpDialog $ $create */
 'use strict';
 
-Object.assign(linter, (() => {
+define(require => {
+  const {$, $create} = require('/js/dom');
+  const editor = require('./editor');
+  const linterMan = require('./linter-manager');
+  const {clipString} = require('./util');
+
   const tables = new Map();
-  const helpDialog = createLinterHelpDialog(getIssues);
 
-  document.addEventListener('DOMContentLoaded', () => {
-    $('#lint-help').addEventListener('click', helpDialog.show);
-  }, {once: true});
-
-  linter.onLintingUpdated((annotationsNotSorted, annotations, cm) => {
+  linterMan.onLintingUpdated((annotationsNotSorted, annotations, cm) => {
     let table = tables.get(cm);
     if (!table) {
       table = createTable(cm);
@@ -23,7 +22,7 @@ Object.assign(linter, (() => {
     updateCount();
   });
 
-  linter.onUnhook(cm => {
+  linterMan.onUnhook(cm => {
     const table = tables.get(cm);
     if (table) {
       table.element.remove();
@@ -32,23 +31,30 @@ Object.assign(linter, (() => {
     updateCount();
   });
 
-  return {refreshReport};
+  return {
+
+    getIssues() {
+      const issues = new Set();
+      for (const table of tables.values()) {
+        for (const tr of table.trs) {
+          issues.add(tr.getAnnotation());
+        }
+      }
+      return issues;
+    },
+
+    refreshReport() {
+      for (const table of tables.values()) {
+        table.updateCaption();
+      }
+    },
+  };
 
   function updateCount() {
     const issueCount = Array.from(tables.values())
       .reduce((sum, table) => sum + table.trs.length, 0);
     $('#lint').classList.toggle('hidden-unless-compact', issueCount === 0);
     $('#issue-count').textContent = issueCount;
-  }
-
-  function getIssues() {
-    const issues = new Set();
-    for (const table of tables.values()) {
-      for (const tr of table.trs) {
-        issues.add(tr.getAnnotation());
-      }
-    }
-    return issues;
   }
 
   function findNextSibling(tables, cm) {
@@ -59,12 +65,6 @@ Object.assign(linter, (() => {
         return editors[i];
       }
       i++;
-    }
-  }
-
-  function refreshReport() {
-    for (const table of tables.values()) {
-      table.updateCaption();
     }
   }
 
@@ -158,4 +158,4 @@ Object.assign(linter, (() => {
     cm.focus();
     cm.jumpToPos(anno.from);
   }
-})());
+});
