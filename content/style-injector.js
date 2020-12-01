@@ -8,8 +8,6 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
   const PATCH_ID = 'transition-patch';
   // styles are out of order if any of these elements is injected between them
   const ORDERED_TAGS = new Set(['head', 'body', 'frameset', 'style', 'link']);
-  // detect Chrome 65 via a feature it added since browser version can be spoofed
-  const isChromePre65 = chrome.app && typeof Worklet !== 'function';
   const docRewriteObserver = RewriteObserver(_sort);
   const docRootObserver = RootObserver(_sortIfNeeded);
   const list = [];
@@ -232,17 +230,8 @@ self.createStyleInjector = self.INJECTED === 1 ? self.createStyleInjector : ({
 
   function _update({id, code}) {
     const style = table.get(id);
-    if (style.code === code) return;
-    style.code = code;
-    // workaround for Chrome devtools bug fixed in v65
-    if (isChromePre65) {
-      const oldEl = style.el;
-      style.el = _createStyle(id, code);
-      if (isEnabled) {
-        oldEl.parentNode.insertBefore(style.el, oldEl.nextSibling);
-        oldEl.remove();
-      }
-    } else {
+    if (style.code !== code) {
+      style.code = code;
       style.el.textContent = code;
     }
   }
