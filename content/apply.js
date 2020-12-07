@@ -16,11 +16,20 @@ self.INJECTED !== 1 && (() => {
     compare: (a, b) => a.id - b.id,
     onUpdate: onInjectorUpdate,
   });
-  const initializing = init();
+
+  // save it now because chrome.runtime will be unavailable in the orphaned script
+  const orphanEventId = chrome.runtime.id;
+  let isOrphaned;
+  // firefox doesn't orphanize content scripts so the old elements stay
+  if (!chrome.app) styleInjector.clearOrphans();
+
   /** @type chrome.runtime.Port */
   let port;
   let lazyBadge = IS_FRAME;
   let parentDomain;
+
+  // Declare all vars before init() or it'll throw due to "temporal dead zone" of const/let
+  const initializing = init();
 
   // the popup needs a check as it's not a tab but can be opened in a tab manually for whatever reason
   if (!IS_TAB) {
@@ -29,12 +38,6 @@ self.INJECTED !== 1 && (() => {
       if (tab && styleInjector.list.length) updateCount();
     });
   }
-
-  // save it now because chrome.runtime will be unavailable in the orphaned script
-  const orphanEventId = chrome.runtime.id;
-  let isOrphaned;
-  // firefox doesn't orphanize content scripts so the old elements stay
-  if (!chrome.app) styleInjector.clearOrphans();
 
   msg.onTab(applyOnMessage);
 
