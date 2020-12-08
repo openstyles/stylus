@@ -126,17 +126,12 @@ define(require => function SectionsEditor() {
     },
 
     scrollToEditor(cm) {
-      const section = sections.find(s => s.cm === cm).el;
-      const bounds = section.getBoundingClientRect();
-      if (
-        (bounds.bottom > window.innerHeight && bounds.top > 0) ||
-        (bounds.top < 0 && bounds.bottom < window.innerHeight)
-      ) {
-        if (bounds.top < 0) {
-          window.scrollBy(0, bounds.top - 1);
-        } else {
-          window.scrollBy(0, bounds.bottom - window.innerHeight + 1);
-        }
+      const {el} = sections.find(s => s.cm === cm);
+      const r = el.getBoundingClientRect();
+      const h = window.innerHeight;
+      if (r.bottom > h && r.top > 0 ||
+          r.bottom < h && r.top < 0) {
+        window.scrollBy(0, (r.top + r.bottom - h) / 2 | 0);
       }
     },
   });

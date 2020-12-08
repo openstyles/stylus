@@ -144,12 +144,16 @@ define(require => {
     jumpToPos(pos, end = pos) {
       const {curOp} = this;
       if (!curOp) this.startOperation();
-      const coords = this.cursorCoords(pos, 'window');
-      const b = this.display.wrapper.getBoundingClientRect();
-      if (coords.top < Math.max(0, b.top + this.defaultTextHeight() * 2) ||
-          coords.bottom > Math.min(window.innerHeight, b.bottom - 100)) {
-        this.scrollIntoView(pos, b.height / 2);
+      const y = this.cursorCoords(pos, 'window').top;
+      const rect = this.display.wrapper.getBoundingClientRect();
+      // case 1) outside of CM viewport or too close to edge so tell CM to render a new viewport
+      if (y < rect.top + 50 || y > rect.bottom - 100) {
+        this.scrollIntoView(pos, rect.height / 2);
+      // case 2) inside CM viewport but outside of window viewport so just scroll the window
+      } else if (y < 0 || y > innerHeight) {
+        editor.scrollToEditor(this);
       }
+      // Using prototype since our bookmark patch sets cm.setSelection to jumpToPos
       CodeMirror.prototype.setSelection.call(this, pos, end);
       if (!curOp) this.endOperation();
     },

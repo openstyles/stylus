@@ -797,7 +797,6 @@ define(require => {
     });
     if (!cm.curOp) cm.startOperation();
     if (!state.firstRun) {
-      editor.scrollToEditor(cm);
       cm.jumpToPos(pos.from, pos.to);
     }
     // focus or expose as the current search target
