@@ -209,23 +209,25 @@ function SectionsEditor() {
    2. last active if visible
    3. first visible
    */
-  function closestVisible(nearbyElement) {
-    const cm =
-      nearbyElement instanceof CodeMirror ? nearbyElement :
-        nearbyElement instanceof Node && getAssociatedEditor(nearbyElement) || getLastActivatedEditor();
-    if (nearbyElement instanceof Node && cm) {
-      const {left, top} = nearbyElement.getBoundingClientRect();
-      const bounds = cm.display.wrapper.getBoundingClientRect();
-      if (top >= 0 && top >= bounds.top &&
-          left >= 0 && left >= bounds.left) {
-        return cm;
-      }
-    }
+  function closestVisible(el) {
     // closest editor should have at least 2 lines visible
     const lineHeight = sections[0].cm.defaultTextHeight();
+    const margin = 2 * lineHeight;
+    const cm = el instanceof CodeMirror ? el :
+      el instanceof Node && getAssociatedEditor(el) || getLastActivatedEditor();
+    if (el === cm) el = document.body;
+    if (el instanceof Node && cm) {
+      const {wrapper} = cm.display;
+      if (!container.contains(el) || wrapper.closest('.section').contains(el)) {
+        const rect = wrapper.getBoundingClientRect();
+        if (rect.top < window.innerHeight - margin && rect.bottom > margin) {
+          return cm;
+        }
+      }
+    }
     const scrollY = window.scrollY;
-    const windowBottom = scrollY + window.innerHeight - 2 * lineHeight;
-    const allSectionsContainerTop = scrollY + $('#sections').getBoundingClientRect().top;
+    const windowBottom = scrollY + window.innerHeight - margin;
+    const allSectionsContainerTop = scrollY + container.getBoundingClientRect().top;
     const distances = [];
     const alreadyInView = cm && offscreenDistance(null, cm) === 0;
     return alreadyInView ? cm : findClosest();
