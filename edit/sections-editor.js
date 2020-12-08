@@ -507,6 +507,8 @@ define(require => function SectionsEditor() {
       si.scrollY2 = si.scrollY + window.innerHeight;
       container.style.height = si.scrollY2 + 'px';
       scrollTo(0, si.scrollY);
+      // only restore focus if it's the first CM to avoid derpy quirks
+      focusOn = si.cms[0].focus && 0;
       rerouteHotkeys(true);
     } else {
       si = null;
@@ -527,7 +529,7 @@ define(require => function SectionsEditor() {
       insertSectionAfter(src[i], null, forceRefresh, si && si.cms[i]);
       setGlobalProgress(i, src.length);
       if (pristine) dirty.clear();
-      if (i === focusOn && !si) sections[i].cm.focus();
+      if (i === focusOn) sections[i].cm.focus();
     }
     if (!si) requestAnimationFrame(fitToAvailableSpace);
     container.style.removeProperty('height');
