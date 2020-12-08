@@ -50,12 +50,13 @@ define(require => function SourceEditor() {
   Object.assign(editor, /** @mixin SourceEditor */ {
     sections: sectionFinder.sections,
     replaceStyle,
-    getEditors: () => [cm],
-    scrollToEditor: () => {},
-    getEditorTitle: () => '',
-    save,
-    prevEditor: nextPrevSection.bind(null, -1),
+    updateLivePreview,
     nextEditor: nextPrevSection.bind(null, 1),
+    prevEditor: nextPrevSection.bind(null, -1),
+    closestVisible: () => cm,
+    getEditors: () => [cm],
+    getEditorTitle: () => '',
+    getSearchableInputs: () => [],
     jumpToEditor(i) {
       const sec = sectionFinder.sections[i];
       if (sec) {
@@ -63,9 +64,29 @@ define(require => function SourceEditor() {
         cm.jumpToPos(sec.start);
       }
     },
-    closestVisible: () => cm,
-    getSearchableInputs: () => [],
-    updateLivePreview,
+    async save() {
+      if (!dirty.isDirty()) return;
+      const sourceCode = cm.getValue();
+      try {
+        const {customName, enabled, id} = style;
+        if (!id &&
+          (await API.usercss.build({sourceCode, checkDup: true, metaOnly: true})).dup) {
+          messageBoxProxy.alert(t('usercssAvoidOverwriting'), 'danger', t('genericError'));
+        } else {
+          await replaceStyle(
+            await API.usercss.editSave({customName, enabled, id, sourceCode}));
+        }
+      } catch (err) {
+        const i = err.index;
+        const isNameEmpty = i > 0 &&
+          err.code === 'missingValue' &&
+          sourceCode.slice(sourceCode.lastIndexOf('\n', i - 1), i).trim().endsWith('@name');
+        return isNameEmpty
+          ? saveTemplate(sourceCode)
+          : showSaveError(err);
+      }
+    },
+    scrollToEditor: () => {},
   });
 
   prefs.subscribeMany({
@@ -73,6 +94,7 @@ define(require => function SourceEditor() {
     'editor.appliesToLineWidget': (k, val) => sectionWidget.toggle(val),
     'editor.toc.expanded': (k, val) => sectionFinder.onOff(editor.updateToc, val),
   }, {runNow: true});
+
   editor.applyScrollInfo(cm);
   cm.clearHistory();
   cm.markClean();
@@ -94,16 +116,14 @@ define(require => function SourceEditor() {
     cm.focus();
   }
 
-  function preprocess(style) {
-    return API.usercss.build({
+  async function preprocess(style) {
+    const {style: newStyle} = await API.usercss.build({
       styleId: style.id,
       sourceCode: style.sourceCode,
       assignVars: true,
-    })
-      .then(({style: newStyle}) => {
-        delete newStyle.enabled;
-        return Object.assign(style, newStyle);
-      });
+    });
+    delete newStyle.enabled;
+    return Object.assign(style, newStyle);
   }
 
   function updateLivePreview() {
@@ -225,73 +245,25 @@ define(require => function SourceEditor() {
     }
   }
 
-  function save() {
-    if (!dirty.isDirty()) return;
-    const code = cm.getValue();
-    return ensureUniqueStyle(code)
-      .then(() => API.usercss.editSave({
-        id: style.id,
-        enabled: style.enabled,
-        sourceCode: code,
-        customName: style.customName,
-      }))
-      .then(replaceStyle)
-      .catch(err => {
-        if (err.handled) return;
-        const contents = Array.isArray(err) ?
-          $create('pre', err.join('\n')) :
-          [err.message || String(err)];
-        if (Number.isInteger(err.index)) {
-          const pos = cm.posFromIndex(err.index);
-          const meta = drawLinePointer(pos);
-
-          // save template
-          if (err.code === 'missingValue' && meta.includes('@name')) {
-            const key = chromeSync.LZ_KEY.usercssTemplate;
-            messageBoxProxy.confirm(t('usercssReplaceTemplateConfirmation')).then(ok => ok &&
-              chromeSync.setLZValue(key, code)
-                .then(() => chromeSync.getLZValue(key))
-                .then(saved => saved !== code && messageBoxProxy.alert(t('syncStorageErrorSaving'))));
-            return;
-          }
-          contents[0] += ` (line ${pos.line + 1} col ${pos.ch + 1})`;
-          contents.push($create('pre', meta));
-        }
-        messageBoxProxy.alert(contents, 'pre');
-      });
+  async function saveTemplate(code) {
+    if (await messageBoxProxy.confirm(t('usercssReplaceTemplateConfirmation'))) {
+      const key = chromeSync.LZ_KEY.usercssTemplate;
+      await chromeSync.setLZValue(key, code);
+      if (await chromeSync.getLZValue(key) !== code) {
+        messageBoxProxy.alert(t('syncStorageErrorSaving'));
+      }
+    }
   }
 
-  function ensureUniqueStyle(code) {
-    return style.id ? Promise.resolve() :
-      API.usercss.build({
-        sourceCode: code,
-        checkDup: true,
-        metaOnly: true,
-      }).then(({dup}) => {
-        if (dup) {
-          messageBoxProxy.alert(t('usercssAvoidOverwriting'), 'danger', t('genericError'));
-          return Promise.reject({handled: true});
-        }
-      });
-  }
-
-  function drawLinePointer(pos) {
-    const SIZE = 60;
-    const line = cm.getLine(pos.line);
-    const numTabs = pos.ch + 1 - line.slice(0, pos.ch + 1).replace(/\t/g, '').length;
-    const pointer = ' '.repeat(pos.ch) + '^';
-    const start = Math.max(Math.min(pos.ch - SIZE / 2, line.length - SIZE), 0);
-    const end = Math.min(Math.max(pos.ch + SIZE / 2, SIZE), line.length);
-    const leftPad = start !== 0 ? '...' : '';
-    const rightPad = end !== line.length ? '...' : '';
-    return (
-      leftPad +
-      line.slice(start, end).replace(/\t/g, ' '.repeat(cm.options.tabSize)) +
-      rightPad +
-      '\n' +
-      ' '.repeat(leftPad.length + numTabs * cm.options.tabSize) +
-      pointer.slice(start, end)
-    );
+  function showSaveError(err) {
+    err = Array.isArray(err) ? err : [err];
+    const text = err.map(e => e.message || e).join('\n');
+    const points = err.map(e =>
+      e.index >= 0 && cm.posFromIndex(e.index) || // usercss meta parser
+      e.offset >= 0 && {line: e.line - 1, ch: e.col - 1} // csslint code parser
+    ).filter(Boolean);
+    cm.setSelections(points.map(p => ({anchor: p, head: p})));
+    messageBoxProxy.alert($create('pre', text), 'pre');
   }
 
   function nextPrevSection(dir) {
