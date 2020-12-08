@@ -555,8 +555,9 @@
     }
     const {cm, line, ch, embedderCallback} = this;
     const to = {line, ch: ch + this.prevColor.length};
-    if (cm.getRange(this, to) !== newColor) {
-      cm.replaceRange(newColor, this, to, '*colorpicker');
+    const from = {line, ch};
+    if (cm.getRange(from, to) !== newColor) {
+      cm.replaceRange(newColor, from, to, '*colorpicker');
       this.prevColor = newColor;
     }
     if (typeof embedderCallback === 'function') {
