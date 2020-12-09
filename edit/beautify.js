@@ -92,7 +92,7 @@ define(require => {
         ]),
         $create('p.beautify-hint', [
           $create('span', t('styleBeautifyHint') + '\u00A0'),
-          createHotkeyInput(HOTKEY_ID, () => moveFocus($('#help-popup'), 1)),
+          createHotkeyInput(HOTKEY_ID, () => moveFocus($('#help-popup'), 0)),
         ]),
         $create('.buttons', [
           $create('button', {

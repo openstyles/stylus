@@ -87,7 +87,7 @@ define(require => {
 
       mess.originalFocus = document.activeElement;
       // skip external links like feedback
-      while ((moveFocus(mess.element, 1) || {}).target === '_blank') {/*NOP*/}
+      while ((moveFocus(mess.element, 0) || {}).target === '_blank') {/*NOP*/}
       // suppress focus outline when invoked via click
       if (focusAccessibility.lastFocusedViaClick && document.activeElement) {
         document.activeElement.dataset.focusedViaClick = '';
