@@ -2684,6 +2684,7 @@ define(require => {
       const reader = this._reader;
       /** @namespace parserlib.Token */
       const tok = {
+        value: '',
         type: Tokens.CHAR,
         col: reader._col,
         line: reader._line,
@@ -3063,6 +3064,73 @@ define(require => {
              this._reader.readCount(2 - first.length) +
              this._reader.readMatch(/([^*]|\*(?!\/))*(\*\/|$)/y);
     }
+
+    /**
+     * @param {boolean} [omitComments]
+     * @param {string} [stopOn] - goes to the parent if used at the top nesting level of the value,
+       specifying an empty string will stop after consuming the first encountered top block.
+     * @returns {?string}
+     */
+    readDeclValue({omitComments, stopOn = ';!})'} = {}) {
+      const reader = this._reader;
+      const value = [];
+      const endings = [];
+      let end = stopOn;
+      while (!reader.eof()) {
+        const chunk = reader.readMatch(/([^;!'"{}()[\]/\\]|\/(?!\*))+/y);
+        if (chunk) {
+          value.push(chunk);
+        }
+        reader.mark();
+        const c = reader.read();
+        if (!endings.length && stopOn.includes(c)) {
+          reader.reset();
+          break;
+        }
+        value.push(c);
+        if (c === '\\') {
+          value[value.length - 1] = this.readEscape();
+        } else if (c === '/') {
+          value[value.length - 1] = this.readComment(c);
+          if (omitComments) value.pop();
+        } else if (c === '"' || c === "'") {
+          value[value.length - 1] = this.readString(c);
+        } else if (c === '{' || c === '(' || c === '[') {
+          endings.push(end);
+          end = c === '{' ? '}' : c === '(' ? ')' : ']';
+        } else if (c === '}' || c === ')' || c === ']') {
+          if (!end.includes(c)) {
+            reader.reset();
+            return null;
+          }
+          end = endings.pop();
+          if (!end && !stopOn) {
+            break;
+          }
+        }
+      }
+      return fastJoin(value);
+    }
+
+    readUnknownSym() {
+      const reader = this._reader;
+      const prelude = [];
+      let block;
+      while (true) {
+        if (reader.eof()) this.throwUnexpected();
+        const c = reader.peek();
+        if (c === '{') {
+          block = this.readDeclValue({stopOn: ''});
+          break;
+        } else if (c === ';') {
+          reader.read();
+          break;
+        } else {
+          prelude.push(this.readDeclValue({omitComments: true, stopOn: ';{'}));
+        }
+      }
+      return {prelude, block};
+    }
   }
 
   //#endregion
@@ -3347,11 +3415,13 @@ define(require => {
   class Parser extends EventTarget {
     /**
      * @param {Object} [options]
-     * @param {Boolean} [options.starHack] - allows IE6 star hack
-     * @param {Boolean} [options.underscoreHack] - interprets leading underscores as IE6-7 for known properties
-     * @param {Boolean} [options.ieFilters] - accepts IE < 8 filters instead of throwing syntax errors
-     * @param {Boolean} [options.strict] - stop on errors instead of reporting them and continuing
-     * @param {Boolean} [options.skipValidation] - skip syntax validation
+     * @param {boolean} [options.ieFilters] - accepts IE < 8 filters instead of throwing
+     * @param {boolean} [options.skipValidation] - skip syntax validation
+     * @param {boolean} [options.starHack] - allows IE6 star hack
+     * @param {boolean} [options.strict] - stop on errors instead of reporting them and continuing
+     * @param {boolean} [options.topDocOnly] - quickly extract all top-level @-moz-document,
+       their {}-block contents is retrieved as text using _simpleBlock()
+     * @param {boolean} [options.underscoreHack] - interprets leading _ as IE6-7 for known props
      */
     constructor(options) {
       super();
@@ -3393,18 +3463,28 @@ define(require => {
           this._skipCruft();
         }
       }
-      for (let tt, token; (tt = (token = stream.LT(1)).type) > Tokens.EOF; this._skipCruft()) {
+      const {topDocOnly} = this.options;
+      const allowedActions = topDocOnly ? Parser.ACTIONS.topDoc : Parser.ACTIONS.stylesheet;
+      for (let tt, token; (tt = (token = stream.get(true)).type); this._skipCruft()) {
         try {
-          let action = Parser.ACTIONS.stylesheet.get(tt);
+          let action = allowedActions.get(tt);
           if (action) {
-            action.call(this, stream.get(true));
+            action.call(this, token);
             continue;
           }
           action = Parser.ACTIONS.stylesheetMisplaced.get(tt);
           if (action) {
-            action.call(this, stream.get(true), true);
+            action.call(this, token, true);
             throw new SyntaxError(Tokens[tt].text + ' not allowed here.', token);
           }
+          if (topDocOnly) {
+            stream.readDeclValue({stopOn: '{}'});
+            if (stream._reader.peek() === '{') {
+              stream.readDeclValue({stopOn: ''});
+            }
+            continue;
+          }
+          stream.unget();
           if (!this._ruleset() && stream.peek() !== Tokens.EOF) {
             stream.throwUnexpected(stream.get(true));
           }
@@ -3677,10 +3757,14 @@ define(require => {
       }
       stream.mustMatch(Tokens.LBRACE);
       this.fire({type: 'startdocument', functions, prefix}, start);
-      this._ws();
-      let action;
-      do action = Parser.ACTIONS.document.get(stream.peek());
-      while (action ? action.call(this, stream.get(true)) || true : this._ruleset());
+      if (this.options.topDocOnly) {
+        stream.readDeclValue({stopOn: '}'});
+      } else {
+        this._ws();
+        let action;
+        do action = Parser.ACTIONS.document.get(stream.peek());
+        while (action ? action.call(this, stream.get(true)) || true : this._ruleset());
+      }
       stream.mustMatch(Tokens.RBRACE);
       this.fire({type: 'enddocument', functions, prefix});
       this._ws();
@@ -4061,66 +4145,13 @@ define(require => {
     }
 
     _customProperty() {
-      const stream = this._tokenStream;
-      const reader = stream._reader;
-      const value = [];
-      // These chars belong to the parent if used at the top nesting level of the property's value
-      const UNGET = ';!})';
-      let end = UNGET;
-      const endings = [];
-      readValue:
-      while (!reader.eof()) {
-        const chunk = reader.readMatch(/([^;!'"{}()[\]/]|\/(?!\*))+/y);
-        if (chunk) {
-          value.push(chunk);
-        }
-        reader.mark();
-        const c = reader.read();
-        value.push(c);
-        switch (c) {
-          case '/':
-            value[value.length - 1] = stream.readComment(c);
-            continue;
-          case '"':
-          case "'":
-            value[value.length - 1] = stream.readString(c);
-            continue;
-          case '{':
-          case '(':
-          case '[':
-            endings.push(end);
-            end = c === '{' ? '}' : c === '(' ? ')' : ']';
-            continue;
-          case ';':
-          case '!':
-            if (endings.length) {
-              continue;
-            }
-            reader.reset();
-          // fallthrough
-          case '}':
-          case ')':
-          case ']':
-            if (!end.includes(c)) {
-              reader.reset();
-              return null;
-            }
-            end = endings.pop();
-            if (end) {
-              continue;
-            }
-            if (UNGET.includes(c)) {
-              reader.reset();
-              value.pop();
-            }
-            break readValue;
-        }
+      const value = this._tokenStream.readDeclValue();
+      if (value) {
+        const token = this._tokenStream._token;
+        token.value = value;
+        token.type = Tokens.IDENT;
+        return new PropertyValue([new PropertyValuePart(token)], token);
       }
-      if (!value[0]) return null;
-      const token = stream._token;
-      token.value = fastJoin(value);
-      token.type = Tokens.IDENT;
-      return new PropertyValue([new PropertyValuePart(token)], token);
     }
 
     _term(inFunction) {
@@ -4400,64 +4431,12 @@ define(require => {
     }
 
     _unknownSym(start) {
-      const stream = this._tokenStream;
       if (this.options.strict) {
         throw new SyntaxError('Unknown @ rule.', start);
       }
+      const {prelude, block} = this._tokenStream.readUnknownSym();
+      this.fire({type: 'unknown-at-rule', name: start.value, prelude, block}, start);
       this._ws();
-      const simpleValue =
-        stream.match(Tokens.IDENT) && SyntaxUnit.fromToken(stream._token) ||
-        stream.peek() === Tokens.FUNCTION && this._function({asText: true}) ||
-        this._unknownBlock(TT.LParenBracket);
-      this._ws();
-      const blockValue = this._unknownBlock();
-      if (!blockValue) {
-        stream.match(Tokens.SEMICOLON);
-      }
-      this.fire({
-        type: 'unknown-at-rule',
-        name: start.value,
-        simpleValue,
-        blockValue,
-      }, start);
-      this._ws();
-    }
-
-    _unknownBlock(canStartWith = [Tokens.LBRACE]) {
-      const stream = this._tokenStream;
-      if (!canStartWith.includes(stream.peek())) {
-        return null;
-      }
-      stream.get();
-      const start = stream._token;
-      const reader = stream._reader;
-      reader.mark();
-      reader._cursor = start.offset;
-      reader._line = start.line;
-      reader._col = start.col;
-      const value = [];
-      const endings = [];
-      let blockEnd;
-      while (!reader.eof()) {
-        const chunk = reader.readMatch(/[^{}()[\]]*[{}()[\]]?/y);
-        const c = chunk.slice(-1);
-        value.push(chunk);
-        if (c === '{' || c === '(' || c === '[') {
-          endings.push(blockEnd);
-          blockEnd = c === '{' ? '}' : c === '(' ? ')' : ']';
-        } else if (c === '}' || c === ')' || c === ']') {
-          if (c !== blockEnd) {
-            break;
-          }
-          blockEnd = endings.pop();
-          if (!blockEnd) {
-            stream.resetLT();
-            return new SyntaxUnit(fastJoin(value), start);
-          }
-        }
-      }
-      reader.reset();
-      return null;
     }
 
     _verifyEnd() {
@@ -4575,6 +4554,12 @@ define(require => {
       [Tokens.CHARSET_SYM, Parser.prototype._charset],
       [Tokens.IMPORT_SYM, Parser.prototype._import],
       [Tokens.NAMESPACE_SYM, Parser.prototype._namespace],
+    ]),
+
+    topDoc: new Map([
+      symDocument,
+      symUnknown,
+      [Tokens.S, Parser.prototype._ws],
     ]),
 
     document: new Map([

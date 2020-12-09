@@ -203,7 +203,8 @@ define(require => {
       try {
         parser.parse(text, {reuseCache});
       } catch (ex) {
-        reporter.error('Fatal error, cannot continue: ' + ex.message, ex.line, ex.col, {});
+        reporter.error('Fatal error, cannot continue!\n' + ex.stack,
+          ex.line || 1, ex.col || 1, {});
       }
 
       const report = {
@@ -1164,8 +1165,9 @@ define(require => {
 
     init(parser, reporter) {
       parser.addListener('property', event => {
-        if (event.invalid) {
-          reporter.report(event.invalid.message, event.line, event.col, this);
+        const inv = event.invalid;
+        if (inv) {
+          reporter.report(inv.message, inv.line, inv.col, this);
         }
       });
     },
