@@ -172,7 +172,7 @@ self.parserlib = (() => {
     'caret-color': 'auto | <color>',
     'caption-side': 'top | bottom | inline-start | inline-end',
     'clear': 'none | right | left | both | inline-start | inline-end',
-    'clip': 'rect() | inset-rect() | auto',
+    'clip': 'rect( [ <length> | auto ]#{4} ) | auto',
     'clip-path': '<clip-source> | <clip-path> | none',
     'clip-rule': 'nonzero | evenodd',
     'color': '<color>',
@@ -180,6 +180,7 @@ self.parserlib = (() => {
     'color-interpolation-filters': 'auto | sRGB | linearRGB',
     'color-profile': 1,
     'color-rendering': 'auto | optimizeSpeed | optimizeQuality',
+    'color-scheme': 'normal | [ light | dark ]+',
     'column-count': '<integer> | auto',
     'column-fill': 'auto | balance',
     'column-gap': '<column-gap>',
@@ -197,7 +198,6 @@ self.parserlib = (() => {
     'counter-increment': '<counter>',
     'counter-reset': '<counter>',
     'counter-set': '<counter>',
-    'crop': 'rect() | inset-rect() | auto',
     'cue': 'cue-after | cue-before',
     'cue-after': 1,
     'cue-before': 1,
@@ -695,9 +695,8 @@ self.parserlib = (() => {
     '<angle>': p => p.type === 'angle' || p.isCalc,
     '<angle-or-0>': p => p.text === '0' || p.type === 'angle' || p.isCalc,
     '<aspect-ratio>': p => p.units && lowerCmp(p.units, 'ar'),
-    '<attr-fallback>': p => !p.isAttr,
+    '<attr>': vtIsAttr,
     '<attachment>': 'scroll | fixed | local',
-    '<basic-shape>': 'inset() | circle() | ellipse() | polygon()',
     '<bg-image>': '<image> | none',
     '<blend-mode>': 'normal | multiply | screen | overlay | darken | lighten | color-dodge | ' +
       'color-burn | hard-light | soft-light | difference | exclusion | hue | ' +
@@ -707,12 +706,9 @@ self.parserlib = (() => {
     '<border-width>': '<length> | thin | medium | thick',
     '<box>': 'padding-box | border-box | content-box',
     '<clip-source>': '<uri>',
-    '<color>': '<hex-color> | rgb() | rgba() | hsl() | hsla() | hwb() | gray() | ' +
-      'device-cmyk() | color() | <named-color>',
     '<column-gap>': 'normal | <length-pct>',
     '<content-distribution>': 'space-between | space-around | space-evenly | stretch',
     '<content-position>': 'center | start | end | flex-start | flex-end',
-    '<cubic-bezier-timing-function>': 'ease | ease-in | ease-out | ease-in-out | cubic-bezier()',
     '<display-box>': 'contents | none',
     '<display-inside>': 'flow | flow-root | table | flex | grid | ruby',
     '<display-internal>': 'table-row-group | table-header-group | table-footer-group | ' +
@@ -721,9 +717,6 @@ self.parserlib = (() => {
     '<display-legacy>': 'inline-block | inline-table | inline-flex | inline-grid',
     '<display-outside>': 'block | inline | run-in',
     '<feature-tag-value>': p => p.type === 'function' && /^[A-Z0-9]{4}$/i.test(p),
-    // custom() isn't actually in the spec
-    '<filter-function>': 'blur() | brightness() | contrast() | custom() | drop-shadow() | ' +
-      'grayscale() | hue-rotate() | invert() | opacity() | saturate() | sepia()',
     '<flex>': p => p.type === 'grid' && p.value >= 0 || p.isCalc,
     '<flex-basis>': '<width>',
     '<flex-direction>': 'row | row-reverse | column | column-reverse',
@@ -788,22 +781,15 @@ self.parserlib = (() => {
     '<single-animation-fill-mode>': 'none | forwards | backwards | both',
     '<single-animation-name>': p => vtIsIdent(p) &&
       /^(?!(none|unset|initial|inherit)$)-?[a-z_][-a-z0-9_]+$/i.test(p),
-    '<step-timing-function>': 'step-start | step-end | steps()',
     '<string>': p => p.type === 'string',
     '<text-align>': 'start | end | left | right | center | justify | match-parent',
     '<text-decoration-style>': 'solid | double | dotted | dashed | wavy',
     '<time>': p => p.type === 'time',
     '<track-breadth>': '<length-pct> | <flex> | min-content | max-content | auto',
-    '<transform-function>': 'matrix() | translate() | translateX() | translateY() | ' +
-      'scale() | scaleX() | scaleY() | ' +
-      'rotate() | skew() | skewX() | skewY() | ' +
-      'matrix3d() | translate3d() | translateZ() | scale3d() | scaleZ() | rotate3d()',
     '<unicode-range>': p => /^U\+[0-9a-f?]{1,6}(-[0-9a-f?]{1,6})?\s*$/i.test(p),
     '<unit>': p => p.text === '%' || p in UNITS || lower(p) in UNITS,
     '<uri>': p => p.type === 'uri',
     '<width>': p => vtIsLength(p) || vtIsPct(p) || lowerCmp(p.text, 'auto'),
-    '<width-height>': '<length-pct> | min-content | max-content | fit-content() | ' +
-      '-moz-available | -webkit-fill-available',
   };
 
   const VTComplex = {
@@ -820,6 +806,12 @@ self.parserlib = (() => {
       '<angle> | [ [ left-side | far-left | left | center-left | center | center-right | ' +
       'right | far-right | right-side ] || behind ] | leftwards | rightwards',
     '<baseline-position>': '[ first | last ]? baseline',
+    '<basic-shape>':
+      'inset( <length-pct>{1,4} [ round <border-radius> ]? ) | ' +
+      'circle( [ <length-pct> | closest-side | farthest-side ]? [ at <position> ]? ) | ' +
+      'ellipse( [ [ <length-pct> | closest-side | farthest-side ]{2} ]? [ at <position> ]? ) | ' +
+      'path( [ [ nonzero | evenodd ] , ]? <string> ) | ' +
+      'polygon( [ [ nonzero | evenodd | inherit ] , ]? [ <length-pct> <length-pct> ]# )',
     '<bg-layer>':
       '<bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <box>{1,2}',
     '<bg-position>':
@@ -844,20 +836,36 @@ self.parserlib = (() => {
     '<border-shorthand>': '<border-width> || <border-style> || <color>',
     '<box-shadow>': 'none | <shadow>#',
     '<clip-path>': '<basic-shape> || <geometry-box>',
-    '<color-adjuster>':
-      'red() | green() | blue() | alpha() | a() | rgb() | hue() | saturation() | lightness() | ' +
-      'whiteness() | blackness() | tint() | shade() | blend() | blenda() | contrast()',
+    '<color>': '<hex-color> | <named-color> | rgb( <rgb-color> ) | rgba( <rgb-color> ) | ' +
+      'hsl( <hsl-color> ) | hsla( <hsl-color> )',
     '<content-list>':
-      '[ <string> | <image> | attr() | content() | counter() | counters() | leader() | ' +
+      '[ <string> | <image> | <attr> | ' +
+      'content( text | before | after | first-letter | marker ) | ' +
+      'counter() | counters() | leader() | ' +
       '[ open-quote | close-quote | no-open-quote | no-close-quote ] | ' +
       '[ target-counter() | target-counters() | target-text() ] ]+',
     '<counter>': '[ <ident-not-none> <integer>? ]+ | none',
+    '<cubic-bezier-timing-function>': 'ease | ease-in | ease-out | ease-in-out | ' +
+      'cubic-bezier( <number>#{4} )',
     '<dasharray>': Matcher =>
       Matcher.parse('<nonnegative-len-pct>')
         .braces(1, Infinity, '#', Matcher.parse(',').braces(0, 1, '?')),
     '<display-listitem>': '<display-outside>? && [ flow | flow-root ]? && list-item',
     '<explicit-track-list>': '[ <line-names>? <track-size> ]+ <line-names>?',
     '<family-name>': '<string> | <ident-not-generic-family> <ident>*',
+    // https://drafts.fxtf.org/filter-effects/#supported-filter-functions
+    // Value may be omitted in which case the default is used
+    '<filter-function>':
+      'blur( <length>? ) | ' +
+      'brightness( <number-pct>? ) | ' +
+      'contrast( <number-pct>? ) | ' +
+      'drop-shadow( [ <length>{2,3} && <color>? ]? ) | ' +
+      'grayscale( <number-pct>? ) | ' +
+      'hue-rotate( <angle-or-0>? ) | ' +
+      'invert( <number-pct>? ) | ' +
+      'opacity( <number-pct>? ) | ' +
+      'saturate( <number-pct>? ) | ' +
+      'sepia( <number-pct>? )',
     '<filter-function-list>': '[ <filter-function> | <uri> ]+',
     '<final-bg-layer>': '<color> || <bg-image> || <bg-position> [ / <bg-size> ]? || ' +
       '<repeat-style> || <attachment> || <box>{1,2}',
@@ -902,7 +910,7 @@ self.parserlib = (() => {
     '<justify-self>': 'auto | normal | stretch | <baseline-position> | <overflow-position>? ' +
       '[ <self-position> | left | right ]',
     '<overscroll>': 'contain | none | auto',
-    '<paint>': 'none | child | child() | <color> | ' +
+    '<paint>': 'none | child | child( <integer> ) | <color> | ' +
       '<uri> [ none | currentColor | <color> ]? | ' +
       'context-fill | context-stroke',
     // Because our `alt` combinator is ordered, we need to test these
@@ -917,7 +925,10 @@ self.parserlib = (() => {
       '[ <number>{3} | <percentage>{3} ] [ / <nonnegative-num-pct> ]? | ' +
       '[ <number>#{3} | <percentage>#{3} ] [ , <nonnegative-num-pct> ]?',
     '<shadow>': 'inset? && [ <length>{2,4} && <color>? ]',
-    '<single-timing-function>': 'linear | <cubic-bezier-timing-function> | <step-timing-function> | frames()',
+    '<single-timing-function>':
+      'linear | <cubic-bezier-timing-function> | <step-timing-function> | frames( <integer> )',
+    '<step-timing-function>': 'step-start | step-end | ' +
+      'steps( <integer> [ , [ jump-start | jump-end | jump-none | jump-both | start | end ] ]? )',
     '<text-decoration-line>': 'none | [ underline || overline || line-through || blink ]',
     '<text-emphasis-style>': 'none | ' +
       '[ [ filled | open ] || [ dot | circle | double-circle | triangle | sesame ] ] | ' +
@@ -926,90 +937,34 @@ self.parserlib = (() => {
     '<track-repeat>': 'repeat( [ <positive-integer> ] , [ <line-names>? <track-size> ]+ <line-names>? )',
     '<track-size>': '<track-breadth> | minmax( <inflexible-breadth> , <track-breadth> ) | ' +
       'fit-content( <length-pct> )',
+    '<transform-function>':
+      'matrix( <number>#{6} ) | ' +
+      'matrix3d( <number>#{16} ) | ' +
+      'rotate( <angle-or-0> ) | ' +
+      'rotate3d( <number>#{3} , <angle-or-0> ) | ' +
+      'scale( <number> [ , <number> ]? ) | ' +
+      'scale3d( <number>#{3} ) | ' +
+      'scaleX( <number> ) | ' +
+      'scaleY( <number> ) | ' +
+      'scaleZ( <number> ) | ' +
+      'skew( <angle-or-0> [ , <angle-or-0> ]? ) | ' +
+      'skewX( <angle-or-0> ) | ' +
+      'skewY( <angle-or-0> ) | ' +
+      'translate( <length-pct> [ , <length-pct> ]? ) | ' +
+      'translate3d( <length-pct>#{2} , <length> ) | ' +
+      'translateX( <length-pct> ) | ' +
+      'translateY( <length-pct> ) | ' +
+      'translateZ( <length> )',
     '<transform-origin>': '[ left | center | right | <length-pct> ] ' +
       '[ top | center | bottom | <length-pct> ] <length>? | ' +
       '[ left | center | right | top | bottom | <length-pct> ] | ' +
       '[ [ center | left | right ] && [ center | top | bottom ] ] <length>?',
     '<transition>': '[ none | [ all | <ident> ]# ] || <time> || <single-timing-function> || <time>',
+    '<width-height>': '<length-pct> | min-content | max-content | ' +
+      'fit-content | fit-content( <length-pct> ) | -moz-available | -webkit-fill-available',
     '<will-change>': 'auto | <animateable-feature>#',
     '<x-one-radius>': '<length-pct>{1,2}',
   };
-
-  const VTFunctions = {
-    'attr': '<ident> ' +
-      '[ string | color | url | integer | number | length | angle | time | frequency | <unit> ]? ' +
-      '[ , <attr-fallback> ]?',
-    'fit-content': '<length-pct>',
-
-    'rgb':  '<rgb-color>',
-    'rgba': '<rgb-color>',
-    'hsl':  '<hsl-color>',
-    'hsla': '<hsl-color>',
-    'hwb':  '<hsl-color>',
-    'gray': '<number> [ / <nonnegative-num-pct> ]?',
-    'device-cmyk': '<number-pct>{4} [ / <nonnegative-num-pct> ]? , <color>?',
-
-    'color':        '[ <color> | [ <number> | <angle> ] ] <color-adjuster>*',
-    'content':      'text | before | after | first-letter | marker',
-    'cubic-bezier': '<number>#{4}',
-    'frames':       '<integer>',
-    'steps':        '<integer> [ , [ start | end ] ]?',
-
-    // used in SVG2 <paint>
-    'child': '<integer>',
-
-    'blur':        '<length>',
-    'brightness':  '<number-pct>',
-    'contrast':    '<number-pct>',
-    'drop-shadow': '<length>{2,3} && <color>?',
-    'grayscale':   '<number-pct>',
-    'hue-rotate':  '<angle-or-0>',
-    'invert':      '<number-pct>',
-    'opacity':     '<number-pct>',
-    'saturate':    '<number-pct>',
-    'sepia':       '<number-pct>',
-
-    'inset':   '<length-pct>{1,4} [ round <border-radius> ]?',
-    'circle':  '[ <length-pct> | closest-side | farthest-side ]? [ at <position> ]?',
-    'ellipse': '[ [ <length-pct> | closest-side | farthest-side ]{2} ]? [ at <position> ]?',
-    'polygon': '[ [ nonzero | evenodd | inherit ] , ]? [ <length-pct> <length-pct> ]#',
-    'rect':    '[ <length> | auto ]#{4}',
-
-    'matrix':     '<number>#{6}',
-    'translate':  '<length-pct> [ , <length-pct> ]?',
-    'translateX': '<length-pct>',
-    'translateY': '<length-pct>',
-    'scale':      '<number> [ , <number> ]?',
-    'scaleX':     '<number>',
-    'scaleY':     '<number>',
-    'rotate':     '<angle-or-0>',
-    'skew':       '<angle-or-0> [ , <angle-or-0> ]?',
-    'skewX':      '<angle-or-0>',
-    'skewY':      '<angle-or-0>',
-
-    'matrix3d':    '<number>#{16}',
-    'translate3d': '<length-pct>#{2} , <length>',
-    'translateZ':  '<length>',
-    'scale3d':     '<number>#{3}',
-    'scaleZ':      '<number>',
-    'rotate3d':    '<number>#{3} , <angle-or-0>',
-  };
-
-  const VTFunctionsMayBeEmpty = new Set([
-    // https://drafts.fxtf.org/filter-effects/#supported-filter-functions
-    // omitted values default to the initial value for interpolation
-    'blur',
-    'brightness',
-    'content',
-    'contrast',
-    'drop-shadow',
-    'grayscale',
-    'hue-rotate',
-    'invert',
-    'opacity',
-    'saturate',
-    'sepia',
-  ]);
 
   //#endregion
   //#region Colors
@@ -1299,7 +1254,6 @@ self.parserlib = (() => {
      */
     CHAR: {},
     COLON: {text: ':'},
-    CUSTOM_PROP: {},
     DOT: {text: '.'},
     EQUALS: {text: '='},
     IE_FUNCTION: {},
@@ -1371,10 +1325,6 @@ self.parserlib = (() => {
     identString: [
       Tokens.IDENT,
       Tokens.STRING,
-    ],
-    identCustom: [
-      Tokens.IDENT,
-      Tokens.CUSTOM_PROP,
     ],
     LParenBracket: [
       Tokens.LPAREN,
@@ -1449,10 +1399,6 @@ self.parserlib = (() => {
       Tokens.S,
     ],
   };
-  TT.termVar = [
-    ...TT.term,
-    Tokens.CUSTOM_PROP,
-  ];
 
   //#endregion
   //#region StringReader
@@ -1475,7 +1421,8 @@ self.parserlib = (() => {
     }
 
     peekTest(stickyRx) {
-      return stickyTest(stickyRx, this._cursor, this._input);
+      stickyRx.lastIndex = this._cursor;
+      return stickyRx.test(this._input);
     }
 
     read() {
@@ -1528,7 +1475,8 @@ self.parserlib = (() => {
      */
     readMatch(matcher) {
       if (matcher.sticky) {
-        return stickyTest(matcher, this._cursor, this._input) ?
+        matcher.lastIndex = this._cursor;
+        return matcher.test(this._input) ?
           this.readCount(RegExp.lastMatch.length) :
           null;
       }
@@ -1633,6 +1581,15 @@ self.parserlib = (() => {
       return m;
     }
 
+    /**
+     * @param {string} name - functio name
+     * @param {Matcher} body - matcher for function body
+     * @returns {Matcher}
+     */
+    static func(name, body) {
+      return new Matcher(Matcher.funcFunc, Matcher.toStringFunc, {name, body});
+    }
+
     // Matcher for one or more juxtaposed words, which all must occur, in the given order.
     static seq(...args) {
       const ms = args.map(Matcher.cast);
@@ -1686,8 +1643,42 @@ self.parserlib = (() => {
      * @param {PropertyValueIterator} expr
      */
     static funcFromType(expr) {
-      return expr.hasNext &&
-        vtIsType(expr, this.options);
+      const part = expr.peek();
+      if (!part) return;
+      const type = this.options;
+      let result, m;
+      if (part.isVar) {
+        result = true;
+      } else if (!type.startsWith('<')) {
+        result = vtIsLiteral(type, part);
+      } else if ((m = VTSimple[type])) {
+        result = m.call(VTSimple, part);
+      } else {
+        m = VTComplex[type];
+        return m instanceof Matcher ?
+          m.match(expr) :
+          m.call(VTComplex, expr);
+      }
+      if (!result && expr.tryAttr && part.isAttr) {
+        result = vtIsAttr(part);
+      }
+      if (result) expr.next();
+      return result;
+    }
+    /**
+     * @this {Matcher}
+     * @param {PropertyValueIterator} expr
+     */
+    static funcFunc(expr) {
+      const p = expr.peek();
+      if (p && p.expr && p.tokenType === Tokens.FUNCTION && lowerCmp(p.name, this.options.name)) {
+        let res = hasVarParts(p.expr);
+        if (!res) {
+          const vi = new PropertyValueIterator(p.expr); // eslint-disable-line no-use-before-define
+          res = this.options.body.match(vi) && !vi.hasNext;
+        }
+        return res && expr.next();
+      }
     }
     /**
      * @this {PropertyValueIterator}
@@ -1774,6 +1765,11 @@ self.parserlib = (() => {
           : marker);
     }
     /** @this {Matcher} */
+    static toStringFunc() {
+      const {name, body} = this.options;
+      return `${name}( ${body} )`;
+    }
+    /** @this {Matcher} */
     static toStringMany(prec) {
       const {options: ms, required} = this;
       const p = required === false ? Matcher.prec.OROR : Matcher.prec.ANDAND;
@@ -1851,18 +1847,23 @@ self.parserlib = (() => {
     function seq() {
       // seq = mod ( " " mod)*
       const ms = [mod()];
-      while (reader.readMatch(/\s(?![&|\]])/y)) {
+      while (reader.readMatch(/\s(?![&|)\]])/y)) {
         ms.push(mod());
       }
       return Matcher.seq(...ms);
     }
     function mod() {
       // mod = term ( "?" | "*" | "+" | "#" | "{<num>,<num>}" )?
-      // term = <nt> | literal | "[ " expression " ]"
-      let m;
+      // term = <nt> | literal | "[ " expression " ]" | fn "( " alt " )"
+      let m, fn;
       if (reader.readMatch('[ ')) {
         m = alt();
         eat(' ]');
+      } else if ((fn = reader.readMatch(/[-\w]+(?=\(\s)/y))) {
+        reader.readCount(2);
+        m = alt();
+        eat(' )');
+        return Matcher.func(fn, m);
       } else {
         m = Matcher.fromType(eat(/[^\s?*+#{]+/y));
       }
@@ -1930,9 +1931,11 @@ self.parserlib = (() => {
   //#endregion
   //#region Syntax units
 
-  /** @property {boolean|number} [_isAttr] */
-  /** @property {boolean|number} [_isCalc] */
-  /** @property {boolean|number} [_isVar] */
+  /**
+   * @property {boolean|number} [_isAttr]
+   * @property {boolean|number} [_isCalc]
+   * @property {boolean|number} [_isVar]
+   */
   class SyntaxUnit {
     constructor(text, pos, type, extras) {
       this.col = pos.col;
@@ -2216,7 +2219,7 @@ self.parserlib = (() => {
    * @property {PropertyValue} expr
    */
   class PropertyValuePart extends SyntaxUnit {
-    /** @type {parserlib.Token} */
+    /** @param {parserlib.Token} token */
     constructor(token) {
       const {value, type} = token;
       super(value, token, TYPES.PROPERTY_VALUE_PART_TYPE);
@@ -2240,25 +2243,20 @@ self.parserlib = (() => {
           this.type = token.unitsType;
           this.isInt = this.type === 'number' && !value.includes('.');
           break;
-        case Tokens.CUSTOM_PROP:
-          this.type = 'custom-property';
-          this.value = this.text;
-          break;
         case Tokens.HASH:
           this.type = 'color';
           this.value = value;
           break;
-        case Tokens.IDENT: {
-          const namedColor = !value.includes('-') && (Colors[value] || Colors[lower(value)]);
-          if (namedColor) {
-            this.type = 'color';
-            this.value = namedColor;
-          } else {
-            this.type = 'identifier';
+        case Tokens.IDENT:
+          if (value.startsWith('--')) {
+            this.type = 'custom-property';
             this.value = value;
+          } else {
+            const namedColor = Colors[value] || Colors[lower(value)];
+            this.type = namedColor ? 'color' : 'identifier';
+            this.value = namedColor || value;
           }
           break;
-        }
         case Tokens.FUNCTION: {
           this.name = token.name;
           SyntaxUnit.addFuncInfo(this, token);
@@ -2332,7 +2330,7 @@ self.parserlib = (() => {
   //#endregion
   //#region ValidationTypes - implementation
 
-  for (const obj of [VTSimple, VTComplex, VTFunctions]) {
+  for (const obj of [VTSimple, VTComplex]) {
     const action = obj === VTSimple
       ? rule => vtIsLiteral.bind(obj, rule)
       : Matcher.parse;
@@ -2345,32 +2343,6 @@ self.parserlib = (() => {
     }
   }
 
-  /**
-   * @param {string} name
-   * @param {PropertyValue} expr
-   */
-  function vtFunc(name, {expr}) {
-    // no parameter means the initial value is used so it's a valid function call
-    if (!expr) {
-      return VTFunctionsMayBeEmpty.has(name);
-    }
-    // USO vars can span any number of grammar parts so not gonna try to guess. KISS.
-    if (expr.parts.some(hasUsoVarPart)) {
-      return true;
-    }
-    /** @type {Matcher} */
-    const fn = VTFunctions[name];
-    if (!fn) {
-      return true;
-    }
-    const vi = new PropertyValueIterator(expr);
-    if (fn.match(vi) && !vi.hasNext) {
-      return true;
-    }
-    throw new ValidationError(`Expected '${vtExplode(`${fn}`)}' but found '${vi.value.text}'.`,
-      vi.value);
-  }
-
   function vtDescribe(type) {
     const complex = VTComplex[type];
     const text = complex instanceof Matcher ? complex.toString(0) : type;
@@ -2379,13 +2351,18 @@ self.parserlib = (() => {
 
   function vtExplode(text) {
     if (!text.includes('<')) return text;
-    return text.replace(/(<.*?>)([{#?]?)/g, (_, rule, mod) => {
+    return text.replace(/(<.*?>)([{#?]?)/g, (s, rule, mod) => {
       const ref = VTSimple[rule] || VTComplex[rule];
-      if (!ref || !ref.originalText) return rule + mod;
+      if (!ref || !ref.originalText) return s;
       const full = vtExplode(ref.originalText);
       const brace = mod || full.includes(' ');
       return ((brace ? '[ ' : '') + full + (brace ? ' ]' : '')) + mod;
     });
+  }
+
+  /** @param {PropertyValuePart} p */
+  function vtIsAttr(p) {
+    return p.isAttr && (p = p.expr) && (p = p.parts) && p.length && vtIsIdent(p[0]);
   }
 
   /** @param {PropertyValuePart} p */
@@ -2415,15 +2392,9 @@ self.parserlib = (() => {
       }
       if (arg.endsWith('()') &&
           part.tokenType === Tokens.FUNCTION &&
-          part.name.length === arg.length - 2) {
-        const fnName = arg.slice(0, -2);
-        const isFn = arg.startsWith(part.name) || lowerCmp(fnName, part.name)
-          ? vtFunc(fnName, part)
-          : null;
-        if (isFn != null) {
-          return isFn;
-        }
-        continue;
+          part.name.length === arg.length - 2 &&
+          lowerCmp(part.name, arg.slice(0, -2))) {
+        return true;
       }
       if ((text || part.text) === arg ||
           (text || part.text).length >= arg.length &&
@@ -2436,37 +2407,6 @@ self.parserlib = (() => {
   /** @param {PropertyValuePart} p */
   function vtIsPct(p) {
     return p.text === '0' || p.type === 'percentage' || p.isCalc;
-  }
-
-  /**
-   * @param {PropertyValueIterator} expr
-   * @param {string} type
-   * @return {?boolean}
-   */
-  function vtIsType(expr, type) {
-    const part = expr.peek();
-    let result, m;
-    if (part.isVar) {
-      if (expr._i < expr._parts.length - 1) {
-        expr.mark().next();
-        expr.popMark(vtIsType(expr, type));
-      }
-      result = true;
-    } else if (!type.startsWith('<')) {
-      result = vtIsLiteral(type, part);
-    } else if ((m = VTSimple[type])) {
-      result = m.call(VTSimple, part);
-    } else {
-      m = VTComplex[type];
-      return m instanceof Matcher ?
-        m.match(expr) :
-        m.call(VTComplex, expr);
-    }
-    if (!result && expr.tryAttr && part.isAttr) {
-      result = vtFunc('attr', part);
-    }
-    if (result) expr.next();
-    return result;
   }
 
   //#endregion
@@ -2483,6 +2423,9 @@ self.parserlib = (() => {
       }
       return;
     }
+    if (hasVarParts(value)) {
+      return;
+    }
     const prop = lower(property);
     let known = validationCache.get(prop);
     if (known && known.has(value.text)) {
@@ -2493,7 +2436,7 @@ self.parserlib = (() => {
       return;
     }
     if (!spec) {
-      throw new ValidationError(`Unknown property '${property}'.`, property);
+      throw new ValidationError(`Unknown property '${property}'.`, value);
     }
     // Property-specific validation.
     const expr = new PropertyValueIterator(value);
@@ -2505,7 +2448,7 @@ self.parserlib = (() => {
         expr.resetTo(0);
         result = m.match(expr);
       }
-      for (let p; (p = expr.peek()) && p.isAttr && vtFunc('attr', p);) {
+      for (let p; (p = expr.peek()) && p.isAttr && vtIsAttr(p);) {
         expr.next();
       }
     }
@@ -2727,7 +2670,7 @@ self.parserlib = (() => {
           tt === Tokens.USO_VAR ||
           tt === Tokens.COMMENT ||
           tt == null && this._ltIndex === this._ltAhead && (
-            skipWS && this.readWhitespace(),
+            skipWS && this._reader.readMatch(/\s+/y),
             this._reader.peekTest(/\/\*/y))) {
         while (this.match(TT.usoS)) { /*NOP*/ }
       }
@@ -2738,121 +2681,154 @@ self.parserlib = (() => {
      */
     _getToken() {
       const reader = this._reader;
-      const pos = {
-        line: reader._line,
+      /** @namespace parserlib.Token */
+      const tok = {
+        type: Tokens.CHAR,
         col: reader._col,
+        line: reader._line,
         offset: reader._cursor,
       };
-      const c = reader.read();
-      switch (c) {
+      const a = tok.value = reader.read();
+      const b = reader.peek();
+      switch (a) {
         case ' ':
         case '\n':
         case '\r':
         case '\t':
         case '\f':
-          return this.whitespaceToken(c, pos);
+          tok.type = Tokens.S;
+          if (/\s/.test(b)) {
+            tok.value += reader.readMatch(/\s+/y) || '';
+          }
+          return tok;
+        case '{':
+          tok.type = Tokens.LBRACE;
+          tok.endChar = '}';
+          return tok;
+        case '(':
+          tok.type = Tokens.LPAREN;
+          tok.endChar = ')';
+          return tok;
+        case '[':
+          tok.type = Tokens.LBRACKET;
+          tok.endChar = ']';
+          return tok;
         case '/':
-          return reader.peek() === '*' ?
-            this.commentToken(c, pos) :
-            this.charToken(c, pos);
+          if (b === '*') {
+            const str = tok.value = this.readComment(a);
+            tok.type = str.startsWith('/*[[') && str.endsWith(']]*/')
+              ? Tokens.USO_VAR
+              : Tokens.COMMENT;
+          } else {
+            tok.type = Tokens.SLASH;
+          }
+          return tok;
         case '|':
         case '~':
         case '^':
         case '$':
         case '*':
-          return (
-            reader.peek() === '=' ?
-              this.comparisonToken(c, pos) :
-            c === '|' && reader.readMatch('|') ?
-              this.createToken(Tokens.COLUMN, '||', pos) :
-              this.charToken(c, pos)
-          );
+          if (b === '=') {
+            tok.value = a + reader.read();
+            tok.type = typeMap.get(tok.value) || Tokens.CHAR;
+          } else if (a === '|' && b === '|') {
+            reader.read();
+            tok.value = '||';
+            tok.type = Tokens.COLUMN;
+          } else {
+            tok.type = typeMap.get(a) || Tokens.CHAR;
+          }
+          return tok;
         case '"':
         case "'":
-          return this.stringToken(c, pos);
+          return this.stringToken(a, tok);
         case '#':
-          return reader.peekTest(rxNameChar) ?
-            this.hashToken(c, pos) :
-            this.charToken(c, pos);
+          if ((rxNameChar.lastIndex = 0, rxNameChar.test(b))) {
+            tok.type = Tokens.HASH;
+            tok.value = this.readName(a);
+          }
+          return tok;
         case '.':
-          return reader.peekTest(/\d/y) ?
-            this.numberToken(c, pos) :
-            this.charToken(c, pos);
-        case '-': {
-          const next = reader.peek();
+          if (b >= '0' && b <= '9') {
+            this.numberToken(a, tok);
+          } else {
+            tok.type = Tokens.DOT;
+          }
+          return tok;
+        case '-':
           // could be closing HTML-style comment or CSS variable
-          return (
-            next === '-' ?
-              /\w/.test(reader.peek(2)) ?
-                this.identOrFunctionToken(c, pos) :
-                this.htmlCommentEndToken(c, pos) :
-            reader.peekTest(/\.?\d/y) ?
-              this.numberToken(c, pos) :
-            reader.peekTest(rxIdentStart) ? // we can reuse rx for IDENT because '-' is handled above
-              this.identOrFunctionToken(c, pos) :
-              this.charToken(c, pos)
-          );
-        }
+          if (b === '-') {
+            if (reader.peekTest(/-\w/yu)) {
+              this.identOrFunctionToken(a, tok);
+            } else if (reader.readMatch('->')) {
+              tok.type = Tokens.CDC;
+              tok.value = '-->';
+            }
+          } else if (b >= '0' && b <= '9' || b === '.' && reader.peekTest(/\.\d/y)) {
+            this.numberToken(a, tok);
+          } else if ((rxIdentStart.lastIndex = 0, rxIdentStart.test(b))) {
+            this.identOrFunctionToken(a, tok);
+          } else {
+            tok.type = Tokens.MINUS;
+          }
+          return tok;
         case '+':
-          return (
-            reader.peekTest(/\.?\d/y) ?
-              this.numberToken(c, pos) :
-              this.charToken(c, pos)
-          );
+          if (b >= '0' && b <= '9' || b === '.' && reader.peekTest(/\.\d/y)) {
+            this.numberToken(a, tok);
+          } else {
+            tok.type = Tokens.PLUS;
+          }
+          return tok;
         case '!':
-          return this.importantToken(c, pos);
+          return this.importantToken(a, tok);
         case '@':
-          return this.atRuleToken(c, pos);
-        case ':':
-          return this.notOrIsToken(c, pos);
+          return this.atRuleToken(a, tok);
+        case ':': {
+          const func = /[-niw]/i.test(b) &&
+            reader.readMatch(/(not|is|where|(-(moz|webkit)-)?any)\(/iy);
+          if (func) {
+            const first = b.toLowerCase();
+            tok.type =
+              first === 'n' ? Tokens.NOT :
+              first === 'i' ? Tokens.IS :
+              first === 'w' ? Tokens.WHERE : Tokens.ANY;
+            tok.value += func;
+          } else {
+            tok.type = Tokens.COLON;
+          }
+          return tok;
+        }
         case '<':
-          return this.htmlCommentStartToken(c, pos);
+          if (b === '!' && reader.readMatch('!--')) {
+            tok.type = Tokens.CDO;
+            tok.value = '<!--';
+          }
+          return tok;
         case '\\':
-          return reader.peekTest(/[^\r\n\f]/y) ?
-            this.identOrFunctionToken(this.readEscape(c), pos) :
-            this.charToken(c, pos);
+          return b !== '\r' && b !== '\n' && b !== '\f' ?
+            this.identOrFunctionToken(this.readEscape(), tok) :
+            tok;
         // EOF
         case null:
-          return this.createToken(Tokens.EOF, null, pos);
+          tok.type = Tokens.EOF;
+          return tok;
         case 'U':
         case 'u':
-          if (reader.peek() === '+') {
-            return this.unicodeRangeToken(c, pos);
-          }
-          // fallthrough
+          return b === '+'
+            ? this.unicodeRangeToken(a, tok)
+            : this.identOrFunctionToken(a, tok);
       }
-      return (
-        c >= '0' && c <= '9' ?
-          this.numberToken(c, pos) :
-        stickyTest(rxIdentStart, 0, c) ?
-          this.identOrFunctionToken(c, pos) :
-          this.charToken(c, pos)
-      );
+      if (a >= '0' && a <= '9') {
+        this.numberToken(a, tok);
+      } else if ((rxIdentStart.lastIndex = 0, rxIdentStart.test(a))) {
+        this.identOrFunctionToken(a, tok);
+      } else {
+        tok.type = typeMap.get(a) || Tokens.CHAR;
+      }
+      return tok;
     }
 
-    /**
-     * Produces a token based on available data and the current
-     * reader position information. This method is called by other
-     * private methods to create tokens and is never called directly.
-     */
-    createToken(type, value, pos, opts) {
-      const token = /** @namespace parserlib.Token */{
-        value,
-        type,
-        line: pos.line,
-        col: pos.col,
-        offset: pos.offset,
-      };
-      if (opts && opts.endChar) token.endChar = opts.endChar;
-      return token;
-    }
-
-    /**
-     * Produces a token for any at-rule. If the at-rule is unknown, then
-     * the token is for a single "@" character.
-     * @param {String} first The first character for the token.
-     */
-    atRuleToken(first, pos) {
+    atRuleToken(first, token) {
       this._reader.mark();
       let rule = first + this.readName();
       let tt = Tokens.type(lower(rule));
@@ -2866,69 +2842,16 @@ self.parserlib = (() => {
           this._reader.reset();
         }
       }
-      return this.createToken(tt, rule, pos);
+      token.type = tt;
+      token.value = rule;
+      return token;
     }
 
-    // DOT, PIPE, PLUS, etc. (name for this character in 'Tokens')
-    // CHAR
-    charToken(c, pos) {
-      const tt = Tokens.type(c);
-      if (tt === -1) {
-        return this.createToken(Tokens.CHAR, c, pos, {});
-      } else {
-        return this.createToken(tt, c, pos, {endChar: Tokens[tt].endChar});
-      }
-    }
-
-    // COMMENT
-    // USO_VAR
-    commentToken(first, pos) {
-      const comment = this.readComment(first);
-      const isUsoVar = comment.startsWith('/*[[') && comment.endsWith(']]*/');
-      return this.createToken(isUsoVar ? Tokens.USO_VAR : Tokens.COMMENT, comment, pos);
-    }
-
-    // DASHMATCH
-    // INCLUDES
-    // PREFIXMATCH
-    // SUFFIXMATCH
-    // SUBSTRINGMATCH
-    // CHAR
-    comparisonToken(c, pos) {
-      const comparison = c + this._reader.read();
-      const tt = Tokens.type(comparison) || Tokens.CHAR;
-      return this.createToken(tt, comparison, pos);
-    }
-
-    // HASH
-    hashToken(first, pos) {
-      return this.createToken(Tokens.HASH, this.readName(first), pos);
-    }
-
-    // CDO
-    // CHAR
-    htmlCommentStartToken(first, pos) {
-      return this._reader.readMatch('!--') ?
-        this.createToken(Tokens.CDO, '<!--', pos) :
-        this.charToken(first, pos);
-    }
-
-    // CDC
-    // CHAR
-    htmlCommentEndToken(first, pos) {
-      return this._reader.readMatch('->') ?
-        this.createToken(Tokens.CDC, '-->', pos) :
-        this.charToken(first, pos);
-    }
-
-    // IDENT
-    // URI
-    // FUNCTION
-    // CUSTOM_PROP
-    identOrFunctionToken(first, pos) {
+    identOrFunctionToken(first, token) {
       const reader = this._reader;
-      const name = this.readName(first);
+      const name = this.readChunksWithEscape(first, rxNameChar);
       const next = reader.peek();
+      token.value = name;
       // might be a URI or function
       if (next === '(') {
         reader.read();
@@ -2936,80 +2859,60 @@ self.parserlib = (() => {
           reader.mark();
           const uri = this.readURI(name + '(');
           if (uri) {
-            const token = this.createToken(Tokens.URI, uri.text, pos);
+            token.type = Tokens.URI;
+            token.value = uri.text;
             token.name = name;
             token.uri = uri.value;
             return token;
           }
           reader.reset();
         }
-        return this.createToken(Tokens.FUNCTION, name + '(', pos);
+        token.type = Tokens.FUNCTION;
+        token.value += '(';
+      } else if (next === ':' && lowerCmp(name, 'progid')) {
+        token.type = Tokens.IE_FUNCTION;
+        token.value += reader.readTo('(');
+      } else {
+        token.type = Tokens.IDENT;
       }
-      // might be an IE-specific function with progid:
-      if (next === ':' && lowerCmp(name, 'progid')) {
-        return this.createToken(Tokens.IE_FUNCTION, name + reader.readTo('('), pos);
-      }
-      const type = name.startsWith('--') ? Tokens.CUSTOM_PROP : Tokens.IDENT;
-      return this.createToken(type, name, pos);
+      return token;
     }
 
-    // IMPORTANT
-    // CHAR
-    importantToken(first, pos) {
+    importantToken(first, token) {
       const reader = this._reader;
       let text = first;
       reader.mark();
       for (let pass = 1; pass++ <= 2;) {
         const important = reader.readMatch(/\s*important\b/iy);
         if (important) {
-          return this.createToken(Tokens.IMPORTANT, text + important, pos);
+          token.type = Tokens.IMPORTANT;
+          token.value = text + important;
+          return token;
         }
         const comment = reader.readMatch('/*');
         if (!comment) break;
-        text += comment + this.readComment(comment);
+        text += this.readComment(comment);
       }
       reader.reset();
-      return this.charToken(first, pos);
+      return token;
     }
 
-    // NOT
-    // IS
-    // ANY
-    // CHAR
-    notOrIsToken(first, pos) {
-      // first is always ':'
+    numberToken(first, token) {
       const reader = this._reader;
-      const func = reader.readMatch(/(not|is|where|(-(moz|webkit)-)?any)\(/iy);
-      if (func) {
-        const lcase = func[0].toLowerCase();
-        const type =
-          lcase === 'n' ? Tokens.NOT :
-          lcase === 'i' ? Tokens.IS :
-          lcase === 'w' ? Tokens.WHERE :
-            Tokens.ANY;
-        return this.createToken(type, first + func, pos);
-      }
-      return this.charToken(first, pos);
-    }
-
-    // NUMBER
-    // EMS
-    // EXS
-    // LENGTH
-    // ANGLE
-    // TIME
-    // FREQ
-    // DIMENSION
-    // PERCENTAGE
-    numberToken(first, pos) {
-      const reader = this._reader;
-      const value = this.readNumber(first);
+      const value = first + (
+        this._reader.readMatch(
+          first === '.' ?
+            /\d+(e[+-]?\d+)?/iy :
+          first >= '0' && first <= '9' ?
+            /\d*\.?\d*(e[+-]?\d+)?/iy :
+            /(\d*\.\d+|\d+\.?\d*)(e[+-]?\d+)?/iy
+        ) || '');
       let tt = Tokens.NUMBER;
       let units, type;
       const c = reader.peek();
-      if (stickyTest(rxIdentStart, 0, c)) {
+      if ((rxIdentStart.lastIndex = 0, rxIdentStart.test(c))) {
         units = this.readName(reader.read());
-        type = UNITS[lower(units)];
+        type = UNITS[units] || UNITS[lower(units)];
         tt = type && Tokens[type.toUpperCase()] ||
              type === 'frequency' && Tokens.FREQ ||
              Tokens.DIMENSION;
@@ -3020,16 +2923,15 @@ self.parserlib = (() => {
       } else {
         type = 'number';
       }
-      const token = this.createToken(tt, units ? value + units : value, pos);
+      token.type = tt;
+      token.value = units ? value + units : value;
       token.number = parseFloat(value);
       if (units) token.units = units;
       if (type) token.unitsType = type;
       return token;
     }
 
-    // STRING
-    // INVALID - in case the string isn't closed
-    stringToken(first, pos) {
+    stringToken(first, token) {
       const delim = first;
       const string = first ? [first] : [];
       const reader = this._reader;
@@ -3058,70 +2960,48 @@ self.parserlib = (() => {
           break;
         }
       }
-      // the string was never closed
-      if (!c) tt = Tokens.INVALID;
-      return this.createToken(tt, fastJoin(string), pos);
+      token.type = c ? tt : Tokens.INVALID; // if the string wasn't closed
+      token.value = fastJoin(string);
+      return token;
     }
 
-    // UNICODE_RANGE
-    // CHAR
-    unicodeRangeToken(first, pos) {
+    unicodeRangeToken(first, token) {
       const reader = this._reader;
       reader.mark();
-      reader.read();
-      let value = first + '+';
+      token.value += reader.read(); // +
       let chunk = this.readUnicodeRangePart(true);
       if (!chunk) {
         reader.reset();
-        return this.createToken(Tokens.CHAR, value, pos);
+        return token;
       }
-      value += chunk;
+      token.value += chunk;
       // if there's a ? in the first part, there can't be a second part
-      if (!value.includes('?') && reader.peek() === '-') {
+      if (!token.value.includes('?') && reader.peek() === '-') {
         reader.mark();
         reader.read();
         chunk = this.readUnicodeRangePart(false);
         if (!chunk) {
           reader.reset();
         } else {
-          value += '-' + chunk;
+          token.value += '-' + chunk;
         }
       }
-      return this.createToken(Tokens.UNICODE_RANGE, value, pos);
-    }
-
-    whitespaceToken(first, pos) {
-      return this.createToken(Tokens.S, first + this.readWhitespace(), pos);
+      token.type = Tokens.UNICODE_RANGE;
+      return token;
     }
 
     readUnicodeRangePart(allowQuestionMark) {
       const reader = this._reader;
       let part = reader.readMatch(/[0-9a-f]{1,6}/iy);
-      if (allowQuestionMark &&
-          part.length < 6 &&
-          reader.peek() === '?') {
-        part += reader.readMatch(new RegExp(`\\?{1,${6 - part.length}}`, 'y'));
+      while (allowQuestionMark && part.length < 6 && reader.peek() === '?') {
+        part += reader.read();
       }
       return part;
     }
 
-    readWhitespace() {
-      return this._reader.readMatch(/\s+/y) || '';
-    }
-
-    readNumber(first) {
-      const tail = this._reader.readMatch(
-        first === '.' ?
-          /\d+(e[+-]?\d+)?/iy :
-        first >= '0' && first <= '9' ?
-          /\d*\.?\d*(e[+-]?\d+)?/iy :
-          /(\d*\.\d+|\d+\.?\d*)(e[+-]?\d+)?/iy);
-      return first + (tail || '');
-    }
-
     // returns null w/o resetting reader if string is invalid.
     readString(first = this._reader.read()) {
-      const token = this.stringToken(first, 0);
+      const token = this.stringToken(first, {});
       return token.type !== Tokens.INVALID ? token.value : null;
     }
 
@@ -3130,25 +3010,21 @@ self.parserlib = (() => {
       const reader = this._reader;
       const uri = first;
       let value = '';
-      this.readWhitespace();
+      this._reader.readMatch(/\s+/y);
       if (reader.peekTest(/['"]/y)) {
         value = this.readString();
         if (value == null) return null;
         value = parseString(value);
       } else {
-        value = this.readUnquotedURL();
+        value = this.readChunksWithEscape('', rxUnquotedUrlChar);
       }
-      this.readWhitespace();
+      this._reader.readMatch(/\s+/y);
       // Ensure argument to URL is always double-quoted
       // (This simplifies later processing in PropertyValuePart.)
       return reader.peek() !== ')' ? null : {
         value,
         text: uri + serializeString(value) + reader.read(),
       };
-    }
-
-    readUnquotedURL(first) {
-      return this.readChunksWithEscape(first, rxUnquotedUrlChar);
     }
 
     readName(first) {
@@ -3452,8 +3328,8 @@ self.parserlib = (() => {
         return obj.map(deepCopy);
       }
       const copy = {};
-      for (const [k, v] of Object.entries(obj)) {
-        copy[k] = deepCopy(v);
+      for (const k in obj) {
+        copy[k] = deepCopy(obj[k]);
       }
       return copy;
     }
@@ -3530,6 +3406,9 @@ self.parserlib = (() => {
           if (ex instanceof SyntaxError && !this.options.strict) {
             this.fire(Object.assign({}, ex, {type: 'error', error: ex}));
           } else {
+            ex.message = ex.stack;
+            ex.line = token.line;
+            ex.col = token.col;
             throw ex;
           }
         }
@@ -3608,7 +3487,7 @@ self.parserlib = (() => {
         stream.get();
         this._ws();
         const {type, value} = stream.LT(1);
-        if (type === Tokens.IDENT || type === Tokens.CUSTOM_PROP) {
+        if (type === Tokens.IDENT) {
           if (lowerCmp(value, 'not')) {
             this._supportsCondition();
             stream.mustMatch(Tokens.RPAREN);
@@ -3828,7 +3707,7 @@ self.parserlib = (() => {
         start = token;
         token = stream.get(true);
       }
-      if (token.type === Tokens.IDENT || token.type === Tokens.CUSTOM_PROP) {
+      if (token.type === Tokens.IDENT) {
         let tokenValue = token.value;
         // check for underscore hack - no error if not allowed because it's valid CSS syntax
         if (this.options.underscoreHack && tokenValue.startsWith('_')) {
@@ -4119,6 +3998,9 @@ self.parserlib = (() => {
               : property.toString();
           validateProperty(name, value);
         } catch (ex) {
+          if (!(ex instanceof ValidationError)) {
+            ex.message = ex.stack;
+          }
           invalid = ex;
         }
       }
@@ -4231,7 +4113,7 @@ self.parserlib = (() => {
       if (!value[0]) return null;
       const token = stream._token;
       token.value = fastJoin(value);
-      token.type = Tokens.CUSTOM_PROP;
+      token.type = Tokens.IDENT;
       return new PropertyValue([new PropertyValuePart(token)], token);
     }
 
@@ -4264,7 +4146,7 @@ self.parserlib = (() => {
       }
       return finalize(
         // see if there's a simple match
-        stream.match(inFunction === 'var' ? TT.termVar : TT.term) && stream._token ||
+        stream.match(TT.term) && stream._token ||
         this._hexcolor() ||
         this._function({asText: Boolean(unary)}));
     }
@@ -4500,7 +4382,7 @@ self.parserlib = (() => {
         ws += stream.get(true).value;
       }
       if (stream._ltIndex === stream._ltAhead) {
-        ws += stream.readWhitespace();
+        ws += stream._reader.readMatch(/\s+/y) || '';
         if (!stream._reader.peekTest(/\/\*/y)) {
           return ws;
         }
@@ -4518,7 +4400,7 @@ self.parserlib = (() => {
       }
       this._ws();
       const simpleValue =
-        stream.match(TT.identCustom) && SyntaxUnit.fromToken(stream._token) ||
+        stream.match(Tokens.IDENT) && SyntaxUnit.fromToken(stream._token) ||
         stream.peek() === Tokens.FUNCTION && this._function({asText: true}) ||
         this._unknownBlock(TT.LParenBracket);
       this._ws();
@@ -4746,9 +4628,12 @@ self.parserlib = (() => {
           arr.join('');
   }
 
-  /** @param {PropertyValuePart} p */
-  function hasUsoVarPart(p) {
-    return p.tokenType === Tokens.USO_VAR;
+  /**
+   * vars can span any number of grammar parts so not gonna try to guess. KISS.
+   * @param {PropertyValue} value
+   */
+  function hasVarParts(value) {
+    return value.parts.some(p => p.isVar);
   }
 
   function isPseudoElement(pseudo) {
@@ -4781,11 +4666,6 @@ self.parserlib = (() => {
 
   function serializeString(value) {
     return `"${value.replace(/["\r\n\f]/g, escapeChar)}"`;
-  }
-
-  function stickyTest(rx, i, text) {
-    rx.lastIndex = i;
-    return rx.test(text);
   }
 
   function unescapeChar(m, c) {
