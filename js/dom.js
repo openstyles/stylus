@@ -307,43 +307,85 @@ define(require => {
       }
     },
 
-    // Accepts an array of pref names (values are fetched via prefs.get)
-    // and establishes a two-way connection between the document elements and the actual prefs
-    waitForSelector(selector, {stopOnDomReady = true} = {}) {
-      // TODO: if used concurrently see if it's worth reworking to use just one observer internally
-      return Promise.resolve($(selector) || new Promise(resolve => {
-        const mo = new MutationObserver(() => {
-          const el = $(selector);
-          if (el) {
-            mo.disconnect();
-            resolve(el);
-          } else if (stopOnDomReady && document.readyState === 'complete') {
-            mo.disconnect();
-          }
+    /**
+     * @param {string} selector - beware of $ quirks with `#dotted.id` that won't work with $$
+     * @param {Object} [opt]
+     * @param {function(HTMLElement, HTMLElement[]):boolean} [opt.recur] - called on each match
+       with (firstMatchingElement, allMatchingElements) parameters until stopOnDomReady,
+       you can also return `false` to disconnect the observer
+     * @param {boolean} [opt.stopOnDomReady] - stop observing on DOM ready
+     * @returns {Promise<HTMLElement>} - resolves on first match
+     */
+    waitForSelector(selector, {recur, stopOnDomReady = true} = {}) {
+      let el = $(selector);
+      let elems, isResolved;
+      return el && (!recur || recur(el, (elems = $$(selector))) === false)
+        ? Promise.resolve(el)
+        : new Promise(resolve => {
+          const mo = new MutationObserver(() => {
+            if (!el) el = $(selector);
+            if (!el) return;
+            if (!recur ||
+                callRecur() === false ||
+                stopOnDomReady && document.readyState === 'complete') {
+              mo.disconnect();
+            }
+            if (!isResolved) {
+              isResolved = true;
+              resolve(el);
+            }
+          });
+          mo.observe(document, {childList: true, subtree: true});
         });
-        mo.observe(document, {childList: true, subtree: true});
-      }));
+      function callRecur() {
+        const all = $$(selector); // simpler and faster than analyzing each node in `mutations`
+        const added = !elems ? all : all.filter(el => !elems.includes(el));
+        if (added.length) {
+          elems = all;
+          return recur(added[0], added);
+        }
+      }
     },
   };
 
   //#endregion
   //#region Init
 
+  const Collapsible = {
+    bindEvents(_, elems) {
+      const prefKeys = [];
+      for (const el of elems) {
+        prefKeys.push(el.dataset.pref);
+        ($('h2', el) || el).on('click', Collapsible.saveOnClick);
+      }
+      prefs.subscribe(prefKeys, Collapsible.updateOnPrefChange, {runNow: true});
+    },
+    canSave(el) {
+      return !el.matches('.compact-layout .ignore-pref-if-compact');
+    },
+    async saveOnClick(event) {
+      if (event.target.closest('.intercepts-click')) {
+        event.preventDefault();
+      } else {
+        const el = event.target.closest('details');
+        await new Promise(setTimeout);
+        if (Collapsible.canSave(el)) {
+          prefs.set(el.dataset.pref, el.open);
+        }
+      }
+    },
+    updateOnPrefChange(key, value) {
+      const el = $(`details[data-pref="${key}"]`);
+      if (el.open !== value && Collapsible.canSave(el)) {
+        el.open = value;
+      }
+    },
+  };
+
   require(['/js/prefs'], p => {
     prefs = p;
-    dom.waitForSelector('details[data-pref]')
-      .then(() => requestAnimationFrame(initCollapsibles));
-    if (!chrome.app) {
-      // add favicon in Firefox
-      const iconset = ['', 'light/'][prefs.get('iconset')] || '';
-      for (const size of [38, 32, 19, 16]) {
-        document.head.appendChild($create('link', {
-          rel: 'icon',
-          href: `/images/icon/${iconset}${size}.png`,
-          sizes: size + 'x' + size,
-        }));
-      }
-    }
+    dom.waitForSelector('details[data-pref]', {recur: Collapsible.bindEvents});
+    if (!chrome.app) addFaviconFF();
   });
 
   require(['/js/toolbox'], m => {
@@ -367,6 +409,17 @@ define(require => {
 
   //#endregion
   //#region Internals
+
+  function addFaviconFF() {
+    const iconset = ['', 'light/'][prefs.get('iconset')] || '';
+    for (const size of [38, 32, 19, 16]) {
+      document.head.appendChild($create('link', {
+        rel: 'icon',
+        href: `/images/icon/${iconset}${size}.png`,
+        sizes: size + 'x' + size,
+      }));
+    }
+  }
 
   function changeFocusedInputOnWheel(event) {
     const el = document.activeElement;
@@ -406,32 +459,6 @@ define(require => {
         btn.title = '';
       }
     }
-  }
-
-  // makes <details> with [data-pref] save/restore their state
-  function initCollapsibles() {
-    const onClick = async event => {
-      if (event.target.closest('.intercepts-click')) {
-        event.preventDefault();
-      } else {
-        const el = event.target.closest('details');
-        await new Promise(setTimeout);
-        if (!el.matches('.compact-layout .ignore-pref-if-compact')) {
-          prefs.set(el.dataset.pref, el.open);
-        }
-      }
-    };
-    const prefMap = {};
-    for (const el of $$('details[data-pref]')) {
-      prefMap[el.dataset.pref] = el;
-      ($('h2', el) || el).on('click', onClick);
-    }
-    prefs.subscribe(Object.keys(prefMap), (key, value) => {
-      const el = prefMap[key];
-      if (el.open !== value && !el.matches('.compact-layout .ignore-pref-if-compact')) {
-        el.open = value;
-      }
-    }, {runNow: true});
   }
 
   function keepAddressOnDummyClick(e) {
