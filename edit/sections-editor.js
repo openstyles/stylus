@@ -651,8 +651,11 @@ function SectionsEditor() {
   }
 
   function refreshOnView(cm, {code, force} = {}) {
+    if (code) {
+      linter.enableForEditor(cm, code);
+    }
     if (force || !xo) {
-      refreshOnViewNow(cm, code);
+      refreshOnViewNow(cm);
     } else {
       xo.observe(cm.display.wrapper);
     }
@@ -674,9 +677,9 @@ function SectionsEditor() {
     }
   }
 
-  async function refreshOnViewNow(cm, code) {
+  async function refreshOnViewNow(cm) {
+    linter.enableForEditor(cm);
     cm.refresh();
-    linter.enableForEditor(cm, code);
   }
 
   function toggleContextMenuDelete(event) {

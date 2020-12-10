@@ -29,6 +29,7 @@ const linter = (() => {
      * update when lint gutter is added to a lot of editors simultaneously.
      */
     enableForEditor(cm, code) {
+      if (cms.has(cm)) return;
       if (code) return enableOnProblems(cm, code);
       cm.setOption('lint', {getAnnotations, onUpdateLinting});
       cms.add(cm);
