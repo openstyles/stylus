@@ -107,11 +107,11 @@ function MozSectionFinder(cm) {
     }
   }
 
-  function update(
-    from = updFrom || {line: 0, ch: 0},
-    to = updTo || {line: cm.doc.size, ch: 0}
-  ) {
+  function update(from = updFrom, to = updTo) {
     updFrom = updTo = null;
+    // Cloning to avoid breaking the internals of CodeMirror
+    from = from ? {line: from.line, ch: from.ch} : {line: 0, ch: 0};
+    to = to ? {line: to.line, ch: to.ch} : {line: cm.doc.size, ch: 0};
     const {sections, listeners} = getState();
     let cutAt = -1;
     let cutTo = -1;
