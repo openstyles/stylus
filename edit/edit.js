@@ -48,6 +48,7 @@ define(require => {
     $('#preview-label').classList.toggle('hidden', !editor.style.id);
     $('#toc').onclick = e => editor.jumpToEditor([...$('#toc').children].indexOf(e.target));
 
+    await new Promise(requestAnimationFrame);
     (editor.isUsercss ? require('./source-editor') : require('./sections-editor'))();
     await editor.ready;
     editor.ready = true;

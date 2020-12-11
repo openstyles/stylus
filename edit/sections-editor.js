@@ -97,7 +97,7 @@ define(require => function SectionsEditor() {
       dirty.clear('name');
       // FIXME: avoid recreating all editors?
       if (codeIsUpdated !== false) {
-        await initSections(newStyle.sections, {replace: true, pristine: true});
+        await initSections(newStyle.sections, {replace: true});
       }
       Object.assign(style, newStyle);
       updateHeader();
@@ -136,7 +136,7 @@ define(require => function SectionsEditor() {
     },
   });
 
-  editor.ready = initSections(style.sections, {pristine: true});
+  editor.ready = initSections(style.sections);
 
   /** @param {EditorSection} section */
   function fitToContent(section) {
@@ -153,7 +153,7 @@ define(require => function SectionsEditor() {
         return;
       }
       if (headerOffset == null) {
-        headerOffset = container.getBoundingClientRect().top;
+        headerOffset = container.getBoundingClientRect().top + scrollY | 0;
       }
       contentHeight += 9; // border & resize grip
       cm.off('update', resize);
@@ -490,7 +490,6 @@ define(require => function SectionsEditor() {
   async function initSections(src, {
     focusOn = 0,
     replace = false,
-    pristine = false,
   } = {}) {
     if (replace) {
       sections.forEach(s => s.remove(true));
@@ -523,7 +522,7 @@ define(require => function SectionsEditor() {
       if (si) forceRefresh = y < si.scrollY2 && (y += si.cms[i].parentHeight) > si.scrollY;
       insertSectionAfter(src[i], null, forceRefresh, si && si.cms[i]);
       setGlobalProgress(i, src.length);
-      if (pristine) dirty.clear();
+      dirty.clear();
       if (i === focusOn) sections[i].cm.focus();
     }
     if (!si) requestAnimationFrame(fitToAvailableSpace);
