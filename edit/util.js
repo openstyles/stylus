@@ -94,10 +94,10 @@ define(require => {
               document.activeElement.matches(':not(input), .can-close-on-esc')
             )
           );
-        if (!canClose) {
+        const div = $('#help-popup');
+        if (!canClose || !div) {
           return;
         }
-        const div = $('#help-popup');
         if (event && div.codebox && !div.codebox.options.readOnly && !div.codebox.isClean()) {
           setTimeout(async () => {
             const ok = await messageBoxProxy.confirm(t('confirmDiscardChanges'));

@@ -4,7 +4,7 @@
 
 define(require => {
   const {URLS, openURL, tryRegExp} = require('/js/toolbox');
-  const {$, $create} = require('/js/dom');
+  const {$create} = require('/js/dom');
   const t = require('/js/localization');
   const {helpPopup} = require('./util');
 
@@ -12,27 +12,28 @@ define(require => {
   const OWN_ICON = chrome.runtime.getManifest().icons['16'];
   const cachedRegexps = new Map();
   let currentRegexps = [];
-  let isWatching;
-
-  const isShown = () => Boolean($('.regexp-report'));
+  let isWatching = false;
+  let isShown = false;
 
   const regexpTester = /** @namespace RegExpTester */{
 
-    toggle(state = !isShown()) {
-      if (state && !isShown()) {
+    toggle(state = !isShown) {
+      if (state && !isShown) {
         if (!isWatching) {
           isWatching = true;
           chrome.tabs.onUpdated.addListener(onTabUpdate);
         }
         helpPopup.show('', $create('.regexp-report'));
-      } else if (!state && isShown()) {
+        isShown = true;
+      } else if (!state && isShown) {
         unwatch();
         helpPopup.close();
+        isShown = false;
       }
     },
 
     async update(newRegexps) {
-      if (!isShown()) {
+      if (!isShown) {
         unwatch();
         return;
       }
@@ -187,6 +188,8 @@ define(require => {
       isWatching = false;
     }
   }
+
+  window.on('closeHelp', () => regexpTester.toggle(false));
 
   return regexpTester;
 });
