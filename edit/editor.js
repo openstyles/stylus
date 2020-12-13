@@ -22,6 +22,8 @@ define(require => {
   const editor = {
     dirty,
     isUsercss: false,
+    isWindowed: false,
+    isWindowSimple: false,
     /** @type {'customName'|'name'} */
     nameTarget: 'name',
     previewDelay: 200, // Chrome devtools uses 200

@@ -3,19 +3,14 @@
 define(require => {
   const {API, msg} = require('/js/msg');
   const {
-    FIREFOX,
     closeCurrentTab,
     debounce,
-    getOwnTab,
     sessionStore,
   } = require('/js/toolbox');
   const {
     $,
     $$,
     $create,
-    $remove,
-    getEventKeyName,
-    onDOMready,
     setupLivePrefs,
   } = require('/js/dom');
   const t = require('/js/localization');
@@ -26,13 +21,9 @@ define(require => {
   const {CodeMirror, initBeautifyButton} = require('./codemirror-factory');
 
   let headerHeight;
-  let isSimpleWindow;
-  let isWindowed;
 
   window.on('beforeunload', beforeUnload);
   msg.onExtension(onRuntimeMessage);
-
-  lazyInit();
 
   (async function init() {
     await preinit;
@@ -205,77 +196,6 @@ define(require => {
     }
   }
 
-  /* Stuff not needed for the main init so we can let it run at its own tempo */
-  function lazyInit() {
-    let ownTabId;
-    // not using `await` so we don't block the subsequent code
-    getOwnTab().then(patchHistoryBack);
-    // no windows on android
-    if (chrome.windows) {
-      detectWindowedState();
-      chrome.tabs.onAttached.addListener(onAttached);
-    }
-    async function patchHistoryBack(tab) {
-      ownTabId = tab.id;
-      // use browser history back when 'back to manage' is clicked
-      if (sessionStore['manageStylesHistory' + ownTabId] === location.href) {
-        await onDOMready();
-        $('#cancel-button').onclick = event => {
-          event.stopPropagation();
-          event.preventDefault();
-          history.back();
-        };
-      }
-    }
-    async function detectWindowedState() {
-      isSimpleWindow =
-        (await browser.windows.getCurrent()).type === 'popup';
-      isWindowed = isSimpleWindow || (
-        prefs.get('openEditInWindow') &&
-        history.length === 1 &&
-        (await browser.windows.getAll()).length > 1 &&
-        (await browser.tabs.query({currentWindow: true})).length === 1
-      );
-      if (isSimpleWindow) {
-        await onDOMready();
-        initPopupButton();
-      }
-    }
-    function initPopupButton() {
-      const POPUP_HOTKEY = 'Shift-Ctrl-Alt-S';
-      const btn = $create('img', {
-        id: 'popup-button',
-        title: t('optionsCustomizePopup') + '\n' + POPUP_HOTKEY,
-        onclick: embedPopup,
-      });
-      const onIconsetChanged = (_, val) => {
-        const prefix = `images/icon/${val ? 'light/' : ''}`;
-        btn.srcset = `${prefix}16.png 1x,${prefix}32.png 2x`;
-      };
-      prefs.subscribe('iconset', onIconsetChanged, {runNow: true});
-      document.body.appendChild(btn);
-      window.on('keydown', e => getEventKeyName(e) === POPUP_HOTKEY && embedPopup());
-      CodeMirror.defaults.extraKeys[POPUP_HOTKEY] = 'openStylusPopup'; // adds to keymap help
-    }
-    async function onAttached(tabId, info) {
-      if (tabId !== ownTabId) {
-        return;
-      }
-      if (info.newPosition !== 0) {
-        prefs.set('openEditInWindow', false);
-        return;
-      }
-      const win = await browser.windows.get(info.newWindowId, {populate: true});
-      // If there's only one tab in this window, it's been dragged to new window
-      const openEditInWindow = win.tabs.length === 1;
-      // FF-only because Chrome retardedly resets the size during dragging
-      if (openEditInWindow && FIREFOX) {
-        chrome.windows.update(info.newWindowId, prefs.get('windowPosition'));
-      }
-      prefs.set('openEditInWindow', openEditInWindow);
-    }
-  }
-
   function onRuntimeMessage(request) {
     const {style} = request;
     switch (request.method) {
@@ -322,7 +242,7 @@ define(require => {
   }
 
   function canSaveWindowPos() {
-    return isWindowed &&
+    return editor.isWindowed &&
       document.visibilityState === 'visible' &&
       prefs.get('openEditInWindow') &&
       !isWindowMaximized();
@@ -382,64 +302,5 @@ define(require => {
       window.outerWidth < screen.availWidth + 10 &&
       window.outerHeight < screen.availHeight + 10
     );
-  }
-
-  function embedPopup() {
-    const ID = 'popup-iframe';
-    const SEL = '#' + ID;
-    if ($(SEL)) return;
-    const frame = $create('iframe', {
-      id: ID,
-      src: chrome.runtime.getManifest().browser_action.default_popup,
-      height: 600,
-      width: prefs.get('popupWidth'),
-      onload() {
-        frame.onload = null;
-        frame.focus();
-        const pw = frame.contentWindow;
-        const body = pw.document.body;
-        pw.on('keydown', e => getEventKeyName(e) === 'Escape' && embedPopup._close());
-        pw.close = embedPopup._close;
-        if (pw.IntersectionObserver) {
-          let loaded;
-          new pw.IntersectionObserver(([e]) => {
-            const el = pw.document.scrollingElement;
-            const h = e.isIntersecting && !pw.scrollY ? el.offsetHeight : el.scrollHeight;
-            const hasSB = h > el.offsetHeight;
-            const {width} = e.boundingClientRect;
-            frame.height = h;
-            if (!hasSB !== !frame._scrollbarWidth || frame.width - width) {
-              frame._scrollbarWidth = hasSB ? width - el.offsetWidth : 0;
-              frame.width = width + frame._scrollbarWidth;
-            }
-            if (!loaded) {
-              loaded = true;
-              frame.dataset.loaded = '';
-            }
-          }).observe(body.appendChild(
-            $create('div', {style: {height: '1px', marginTop: '-1px'}})
-          ));
-        } else {
-          frame.dataset.loaded = '';
-          frame.height = body.scrollHeight;
-        }
-        new pw.MutationObserver(() => {
-          const bs = body.style;
-          const w = parseFloat(bs.minWidth || bs.width) + (frame._scrollbarWidth || 0);
-          const h = parseFloat(bs.minHeight || body.offsetHeight);
-          if (frame.width - w) frame.width = w;
-          if (frame.height - h) frame.height = h;
-        }).observe(body, {attributes: true, attributeFilter: ['style']});
-      },
-    });
-    // saving the listener here so it's the same function reference for window.off
-    if (!embedPopup._close) {
-      embedPopup._close = () => {
-        $remove(SEL);
-        window.off('mousedown', embedPopup._close);
-      };
-    }
-    window.on('mousedown', embedPopup._close);
-    document.body.appendChild(frame);
   }
 });
