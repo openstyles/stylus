@@ -444,7 +444,7 @@ define(require => {
    * @returns {boolean} true if the category has actually changed
    */
   function calcCategory({retry} = {}) {
-    const u = tryCatch(() => new URL(Events.thisTab.url));
+    const u = tryCatch(() => new URL(Events.tabURL));
     const old = category;
     if (!u) {
       // Invalid URL

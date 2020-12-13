@@ -7,9 +7,6 @@ define(require => {
   const {compareRevision} = require('./style-manager');
   const tokenManager = require('./token-manager');
 
-  /** @type Sync */
-  let sync;
-
   //#region Init
 
   const SYNC_DELAY = 1; // minutes
@@ -32,30 +29,23 @@ define(require => {
   };
   let currentDrive;
   let ctrl;
-
-  const ready = prefs.initializing.then(() => {
-    prefs.subscribe('sync.enabled',
-      (_, val) => val === 'none'
-        ? sync.stop()
-        : sync.start(val, true),
-      {runNow: true});
-  });
-
-  chrome.alarms.onAlarm.addListener(info => {
-    if (info.name === 'syncNow') {
-      sync.syncNow();
-    }
-  });
+  let ready = false;
+  const init = prefs.initializing.then(onPrefsReady);
+  chrome.alarms.onAlarm.addListener(onAlarm);
 
   //#endregion
   //#region Exports
 
-  sync = /** @namespace Sync */ {
+  /**
+   * @type Sync
+   * @namespace Sync
+   */
+  const sync = {
 
     // sorted alphabetically
 
     async delete(...args) {
-      await ready;
+      if (!ready) await init;
       if (!currentDrive) return;
       schedule();
       return ctrl.delete(...args);
@@ -67,7 +57,7 @@ define(require => {
     },
 
     async login(name = prefs.get('sync.enabled')) {
-      await ready;
+      if (!ready) await init;
       try {
         await tokenManager.getToken(name, true);
       } catch (err) {
@@ -82,14 +72,14 @@ define(require => {
     },
 
     async put(...args) {
-      await ready;
+      if (!ready) await init;
       if (!currentDrive) return;
       schedule();
       return ctrl.put(...args);
     },
 
     async start(name, fromPref = false) {
-      await ready;
+      if (!ready) await init;
       if (currentDrive) {
         return;
       }
@@ -121,7 +111,7 @@ define(require => {
     },
 
     async stop() {
-      await ready;
+      if (!ready) await init;
       if (!currentDrive) {
         return;
       }
@@ -142,7 +132,7 @@ define(require => {
     },
 
     async syncNow() {
-      await ready;
+      if (!ready) await init;
       if (!currentDrive) {
         return Promise.reject(new Error('cannot sync when disconnected'));
       }
@@ -197,13 +187,6 @@ define(require => {
     });
   }
 
-  function schedule(delay = SYNC_DELAY) {
-    chrome.alarms.create('syncNow', {
-      delayInMinutes: delay,
-      periodInMinutes: SYNC_INTERVAL,
-    });
-  }
-
   async function handle401Error(err) {
     let emit;
     if (err.code === 401) {
@@ -230,6 +213,28 @@ define(require => {
       });
     }
     throw new Error(`unknown cloud name: ${name}`);
+  }
+
+  function onAlarm(info) {
+    if (info.name === 'syncNow') {
+      sync.syncNow();
+    }
+  }
+
+  function onPrefsReady() {
+    ready = true;
+    prefs.subscribe('sync.enabled',
+      (_, val) => val === 'none'
+        ? sync.stop()
+        : sync.start(val, true),
+      {runNow: true});
+  }
+
+  function schedule(delay = SYNC_DELAY) {
+    chrome.alarms.create('syncNow', {
+      delayInMinutes: delay,
+      periodInMinutes: SYNC_INTERVAL,
+    });
   }
 
   //#endregion

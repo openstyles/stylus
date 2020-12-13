@@ -9,18 +9,11 @@ define(require => {
 
   /** @type {Prefs} */
   let prefs;
+  let $, $$;
 
   //#region Exports
 
-  /** @type {DOM} */
-  let dom;
-  const {
-
-    $,
-    $$,
-    $create,
-
-  } = dom = /** @namespace DOM */ {
+  const dom = {
 
     $(selector, base = document) {
       // we have ids with . like #manage.onlyEnabled which looks like #id.class
@@ -351,6 +344,8 @@ define(require => {
   //#endregion
   //#region Init
 
+  ({$, $$} = dom);
+
   const Collapsible = {
     bindEvents(_, elems) {
       const prefKeys = [];
@@ -413,7 +408,7 @@ define(require => {
   function addFaviconFF() {
     const iconset = ['', 'light/'][prefs.get('iconset')] || '';
     for (const size of [38, 32, 19, 16]) {
-      document.head.appendChild($create('link', {
+      document.head.appendChild(dom.$create('link', {
         rel: 'icon',
         href: `/images/icon/${iconset}${size}.png`,
         sizes: size + 'x' + size,

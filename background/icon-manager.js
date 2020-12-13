@@ -18,12 +18,7 @@ define(require => {
   const ICON_SIZES = FIREFOX || CHROME >= 55 && !VIVALDI ? [16, 32] : [19, 38];
   const staleBadges = new Set();
 
-  let exports;
-  const {
-
-    updateIconBadge,
-
-  } = exports = /** @namespace API */ {
+  const iconManager = /** @namespace API */ {
     /**
      * @param {(number|string)[]} styleIds
      * @param {boolean} [lazyBadge=false] preventing flicker during page load
@@ -72,7 +67,7 @@ define(require => {
 
   function onPortDisconnected({sender}) {
     if (tabManager.get(sender.tab.id, 'styleIds')) {
-      updateIconBadge.call({sender}, [], {lazyBadge: true});
+      iconManager.updateIconBadge.call({sender}, [], {lazyBadge: true});
     }
   }
 
@@ -153,5 +148,5 @@ define(require => {
     staleBadges.clear();
   }
 
-  return exports;
+  return iconManager;
 });

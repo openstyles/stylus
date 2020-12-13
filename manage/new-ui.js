@@ -5,6 +5,10 @@ define(require => {
   const t = require('/js/localization');
   const prefs = require('/js/prefs');
 
+  /**
+   * @type NewUI
+   * @namespace NewUI
+   */
   const newUI = {
     enabled: null, // the global option should come first
     favicons: null,
@@ -14,7 +18,7 @@ define(require => {
   };
 
   // ...add utility functions
-  Object.assign(newUI, {
+  Object.assign(newUI, /** @namespace NewUI */ {
 
     ids: Object.keys(newUI),
 

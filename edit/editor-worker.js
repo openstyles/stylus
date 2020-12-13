@@ -2,6 +2,39 @@
 
 define(require => { // define and require use `importScripts` which is synchronous
 
+  /** @namespace EditorWorker */
+  require('/js/worker-util').createAPI({
+
+    async csslint(code, config) {
+      return require('/js/csslint/csslint')
+        .verify(code, config).messages
+        .map(m => Object.assign(m, {rule: {id: m.rule.id}}));
+    },
+
+    getRules(linter) {
+      return ruleRetriever[linter](); // eslint-disable-line no-use-before-define
+    },
+
+    metalint(code) {
+      const result = require('/js/meta-parser').lint(code);
+      // extract needed info
+      result.errors = result.errors.map(err => ({
+        code: err.code,
+        args: err.args,
+        message: err.message,
+        index: err.index,
+      }));
+      return result;
+    },
+
+    async stylelint(code, config) {
+      require('/vendor/stylelint-bundle/stylelint-bundle.min');
+      const {results: [res]} = await self.require('stylelint').lint({code, config});
+      delete res._postcssResult; // huge and unused
+      return res;
+    },
+  });
+
   const ruleRetriever = {
 
     csslint() {
@@ -54,37 +87,4 @@ define(require => { // define and require use `importScripts` which is synchrono
       return options;
     },
   };
-
-  /** @namespace EditorWorker */
-  require('/js/worker-util').createAPI({
-
-    async csslint(code, config) {
-      return require('/js/csslint/csslint')
-        .verify(code, config).messages
-        .map(m => Object.assign(m, {rule: {id: m.rule.id}}));
-    },
-
-    getRules(linter) {
-      return ruleRetriever[linter]();
-    },
-
-    metalint(code) {
-      const result = require('/js/meta-parser').lint(code);
-      // extract needed info
-      result.errors = result.errors.map(err => ({
-        code: err.code,
-        args: err.args,
-        message: err.message,
-        index: err.index,
-      }));
-      return result;
-    },
-
-    async stylelint(code, config) {
-      require('/vendor/stylelint-bundle/stylelint-bundle.min');
-      const {results: [res]} = await self.require('stylelint').lint({code, config});
-      delete res._postcssResult; // huge and unused
-      return res;
-    },
-  });
 });

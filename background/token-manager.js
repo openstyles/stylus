@@ -7,12 +7,7 @@ define(require => {
   const AUTH = createAuth();
   const NETWORK_LATENCY = 30; // seconds
 
-  let exports;
-  const {
-
-    buildKeys,
-
-  } = exports = {
+  const tokenManager = {
 
     buildKeys(name) {
       const k = {
@@ -29,7 +24,7 @@ define(require => {
     },
 
     getToken(name, interactive) {
-      const k = buildKeys(name);
+      const k = tokenManager.buildKeys(name);
       return chromeLocal.get(k.LIST)
         .then(obj => {
           if (!obj[k.TOKEN]) {
@@ -53,7 +48,7 @@ define(require => {
 
     async revokeToken(name) {
       const provider = AUTH[name];
-      const k = buildKeys(name);
+      const k = tokenManager.buildKeys(name);
       if (provider.revoke) {
         try {
           const token = await chromeLocal.getValue(k.TOKEN);
@@ -222,5 +217,5 @@ define(require => {
     throw err;
   }
 
-  return exports;
+  return tokenManager;
 });

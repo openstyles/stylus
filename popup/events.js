@@ -15,26 +15,9 @@ define(require => {
 
   const MODAL_SHOWN = 'data-display'; // attribute name
 
-  /** @type {PopupEvents} */
-  let exports;
-  const {
+  const Events = {
 
-    closeExplanation,
-    getClickedStyleElement,
-    getClickedStyleId,
-    getExcludeRule,
-    hideModal,
-    openURLandHide,
-    showModal,
-    thisTab,
-
-  } = exports = /** @namespace PopupEvents */ {
-
-    thisTab: {url: ''},
-
-    closeExplanation() {
-      $('#regexp-explanation').remove();
-    },
+    tabURL: '',
 
     async configure(event) {
       const {styleId, styleIsUsercss} = getClickedStyleElement(event);
@@ -46,7 +29,7 @@ define(require => {
         await configDialog(style);
         hotkeys.setState(true);
       } else {
-        openURLandHide.call(this, event);
+        Events.openURLandHide.call(this, event);
       }
     },
 
@@ -68,19 +51,11 @@ define(require => {
       const box = $('#confirm');
       box.dataset.id = entry.styleId;
       $('b', box).textContent = $('.style-name', entry).textContent;
-      showModal(box, '[data-cmd=cancel]');
-    },
-
-    getClickedStyleId(event) {
-      return (getClickedStyleElement(event) || {}).styleId;
-    },
-
-    getClickedStyleElement(event) {
-      return event.target.closest('.entry');
+      Events.showModal(box, '[data-cmd=cancel]');
     },
 
     getExcludeRule(type) {
-      const u = new URL(thisTab.url);
+      const u = new URL(Events.tabURL);
       return type === 'domain'
         ? u.origin + '/*'
         : escapeGlob(u.origin + u.pathname); // current page
@@ -100,7 +75,7 @@ define(require => {
       const entry = getClickedStyleElement(event);
       const info = t.template.regexpProblemExplanation.cloneNode(true);
       $remove('#' + info.id);
-      $$('a', info).forEach(el => (el.onclick = openURLandHide));
+      $$('a', info).forEach(el => (el.onclick = Events.openURLandHide));
       $$('button', info).forEach(el => (el.onclick = closeExplanation));
       entry.appendChild(info);
     },
@@ -109,7 +84,7 @@ define(require => {
       if (!exclusions) {
         return false;
       }
-      const rule = getExcludeRule(type);
+      const rule = Events.getExcludeRule(type);
       return exclusions.includes(rule);
     },
 
@@ -149,8 +124,8 @@ define(require => {
 
     async openManager(event) {
       event.preventDefault();
-      const isSearch = thisTab.url && (event.shiftKey || event.button === 2);
-      await API.openManage(isSearch ? {search: thisTab.url, searchMode: 'url'} : {});
+      const isSearch = Events.tabURL && (event.shiftKey || event.button === 2);
+      await API.openManage(isSearch ? {search: Events.tabURL, searchMode: 'url'} : {});
       window.close();
     },
 
@@ -187,7 +162,7 @@ define(require => {
       };
       window.on('keydown', box._onkeydown);
       moveFocus(box, 0);
-      hideModal(oldBox);
+      Events.hideModal(oldBox);
     },
 
     async toggleState(event) {
@@ -200,9 +175,9 @@ define(require => {
     toggleExclude(event, type) {
       const entry = getClickedStyleElement(event);
       if (event.target.checked) {
-        API.styles.addExclusion(entry.styleMeta.id, getExcludeRule(type));
+        API.styles.addExclusion(entry.styleMeta.id, Events.getExcludeRule(type));
       } else {
-        API.styles.removeExclusion(entry.styleMeta.id, getExcludeRule(type));
+        API.styles.removeExclusion(entry.styleMeta.id, Events.getExcludeRule(type));
       }
     },
 
@@ -210,17 +185,29 @@ define(require => {
       const entry = getClickedStyleElement(event);
       const menu = $('.menu', entry);
       if (menu.hasAttribute(MODAL_SHOWN)) {
-        hideModal(menu, {animate: true});
+        Events.hideModal(menu, {animate: true});
       } else {
         $('.menu-title', entry).textContent = $('.style-name', entry).textContent;
-        showModal(menu, '.menu-close');
+        Events.showModal(menu, '.menu-close');
       }
     },
   };
+
+  function closeExplanation() {
+    $('#regexp-explanation').remove();
+  }
 
   function escapeGlob(text) {
     return text.replace(/\*/g, '\\*');
   }
 
-  return exports;
+  function getClickedStyleElement(event) {
+    return event.target.closest('.entry');
+  }
+
+  function getClickedStyleId(event) {
+    return (getClickedStyleElement(event) || {}).styleId;
+  }
+
+  return Events;
 });

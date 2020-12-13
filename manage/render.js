@@ -336,8 +336,6 @@ define(require => {
     },
   };
 
-  const {$entry} = render;
-
   function createAgeText(el, style) {
     let val = style.updateDate || style.installDate;
     if (val) {
@@ -359,7 +357,7 @@ define(require => {
 
   function highlightEditedStyle() {
     if (!sessionStore.justEditedStyleId) return;
-    const entry = $entry(sessionStore.justEditedStyleId);
+    const entry = render.$entry(sessionStore.justEditedStyleId);
     delete sessionStore.justEditedStyleId;
     if (entry) {
       animateElement(entry);

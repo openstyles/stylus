@@ -1,9 +1,6 @@
 'use strict';
 
 define(require => {
-  /** @type {Toolbox} */
-  let toolbox;
-
   const ua = navigator.userAgent;
   const chromeApp = Boolean(chrome.app);
   const CHROME = chromeApp && parseInt(ua.match(/Chrom\w+\/(\d+)|$/)[1]);
@@ -14,14 +11,9 @@ define(require => {
   // (detecting FF57 by the feature it added, not navigator.ua which may be spoofed in about:config)
   const openerTabIdSupported = (!FIREFOX || window.AbortController) && chrome.windows != null;
   const debounceTimers = new Map();
-  const {
+  let URLS, deepCopy, deepEqual, deepMerge;
 
-    URLS,
-    deepCopy,
-    deepEqual,
-    deepMerge,
-
-  } = toolbox = /** @namespace Toolbox */ {
+  const toolbox = {
 
     CHROME,
     FIREFOX,
@@ -383,6 +375,8 @@ define(require => {
       } catch (e) {}
     },
   };
+
+  ({URLS, deepCopy, deepEqual, deepMerge} = toolbox);
 
   // see PR #781
   if (!CHROME && !chrome.browserAction.openPopup) {

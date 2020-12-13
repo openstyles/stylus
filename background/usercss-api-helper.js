@@ -16,7 +16,11 @@ define(require => {
     'missingChar',
   ];
 
-  const usercss = /** @namespace UsercssHelper */ {
+  /**
+   * @type UsercssHelper
+   * @namespace UsercssHelper
+   */
+  const usercss = {
 
     rxMETA: /\/\*!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i,
 

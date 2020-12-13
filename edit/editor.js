@@ -11,9 +11,9 @@ define(require => {
   const {clipString} = require('./util');
 
   const dirty = DirtyReporter();
+  const toc = [];
   let style;
   let wasDirty = false;
-  const toc = [];
 
   /**
    * @mixes SectionsEditor

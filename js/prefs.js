@@ -10,8 +10,11 @@ define(require => {
 
   const STORAGE_KEY = 'settings';
   const clone = deepCopy || (val => JSON.parse(JSON.stringify(val)));
-  /** @type {PrefsValues} */
-  const defaults = /** @namespace PrefsValues */ {
+  /**
+   * @type PrefsValues
+   * @namespace PrefsValues
+   */
+  const defaults = {
     'openEditInWindow': false,      // new editor opens in a own browser window
     'openEditInWindow.popup': false, // new editor opens in a simplified browser window without omnibox
     'windowPosition': {},           // detached window position
@@ -138,7 +141,10 @@ define(require => {
     }
   });
 
-  /** @namespace Prefs */
+  /**
+   * @type Prefs
+   * @namespace Prefs
+   */
   const prefs = {
 
     STORAGE_KEY,

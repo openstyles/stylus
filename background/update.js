@@ -47,8 +47,11 @@ define(require => {
     chrome.alarms.onAlarm.addListener(onAlarm);
   });
 
-  /** @type {StyleUpdater} */
-  const updater = /** @namespace StyleUpdater */ {
+  /**
+   * @type StyleUpdater
+   * @namespace StyleUpdater
+   */
+  const updater = {
 
     async checkAllStyles({
       save = true,

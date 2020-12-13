@@ -28,13 +28,11 @@ define(require => {
 
   //#region Declarations
 
-  const ready = init();
-  /**
-   * @typedef StyleMapData
-   * @property {StyleObj} style
-   * @property {?StyleObj} [preview]
-   * @property {Set<string>} appliesTo - urls
-   */
+  /** @typedef {{
+    style: StyleObj
+    preview?: StyleObj
+    appliesTo: Set<string>
+  }} StyleMapData */
   /** @type {Map<number,StyleMapData>} */
   const dataMap = new Map();
   const uuidIndex = new Map();
@@ -59,13 +57,33 @@ define(require => {
   };
   const DELETE_IF_NULL = ['id', 'customName'];
 
+  let ready = false;
+  const init = db.exec('getAll').then(async res => {
+    const styles = res || [];
+    const updated = styles.filter(style =>
+      addMissingProps(style) +
+      addCustomName(style));
+    if (updated.length) {
+      await db.exec('putMany', updated);
+    }
+    for (const style of styles) {
+      fixUsoMd5Issue(style);
+      storeInMap(style);
+      uuidIndex.set(style._id, style.id);
+    }
+    ready = true;
+  });
+
   chrome.runtime.onConnect.addListener(handleLivePreview);
 
   //#endregion
   //#region Exports
 
-  /** @type {StyleManager} */
-  const styleManager = /** @namespace StyleManager */ {
+  /**
+   * @type StyleManager
+   * @namespace StyleManager
+   */
+  const styleManager = {
 
     /* props first,
        then method shorthands if any,
@@ -79,7 +97,7 @@ define(require => {
 
     /** @returns {Promise<number>} style id */
     async delete(id, reason) {
-      await ready;
+      if (!ready) await init;
       const data = id2data(id);
       await db.exec('delete', id);
       if (reason !== 'sync') {
@@ -100,7 +118,7 @@ define(require => {
 
     /** @returns {Promise<number>} style id */
     async deleteByUUID(_id, rev) {
-      await ready;
+      if (!ready) await init;
       const id = uuidIndex.get(_id);
       const oldDoc = id && id2style(id);
       if (oldDoc && styleManager.compareRevision(oldDoc._rev, rev) <= 0) {
@@ -111,7 +129,7 @@ define(require => {
 
     /** @returns {Promise<StyleObj>} */
     async editSave(style) {
-      await ready;
+      if (!ready) await init;
       style = mergeWithMapped(style);
       style.updateDate = Date.now();
       return handleSave(await saveStyle(style), 'editSave');
@@ -119,7 +137,7 @@ define(require => {
 
     /** @returns {Promise<?StyleObj>} */
     async find(filter) {
-      await ready;
+      if (!ready) await init;
       const filterEntries = Object.entries(filter);
       for (const {style} of dataMap.values()) {
         if (filterEntries.every(([key, val]) => style[key] === val)) {
@@ -131,19 +149,19 @@ define(require => {
 
     /** @returns {Promise<StyleObj[]>} */
     async getAll() {
-      await ready;
+      if (!ready) await init;
       return Array.from(dataMap.values(), data2style);
     },
 
     /** @returns {Promise<StyleObj>} */
     async getByUUID(uuid) {
-      await ready;
+      if (!ready) await init;
       return id2style(uuidIndex.get(uuid));
     },
 
     /** @returns {Promise<StyleSectionsToApply>} */
     async getSectionsByUrl(url, id, isInitialApply) {
-      await ready;
+      if (!ready) await init;
       /* Chrome hides text frament from location.href of the page e.g. #:~:text=foo
          so we'll use the real URL reported by webNavigation API */
       const {tab, frameId} = this && this.sender || {};
@@ -170,13 +188,13 @@ define(require => {
 
     /** @returns {Promise<StyleObj>} */
     async get(id) {
-      await ready;
+      if (!ready) await init;
       return id2style(id);
     },
 
     /** @returns {Promise<StylesByUrlResult[]>} */
     async getByUrl(url, id = null) {
-      await ready;
+      if (!ready) await init;
       // FIXME: do we want to cache this? Who would like to open popup rapidly
       // or search the DB with the same URL?
       const result = [];
@@ -218,7 +236,7 @@ define(require => {
 
     /** @returns {Promise<StyleObj[]>} */
     async importMany(items) {
-      await ready;
+      if (!ready) await init;
       items.forEach(beforeSave);
       const events = await db.exec('putMany', items);
       return Promise.all(items.map((item, i) => {
@@ -229,13 +247,13 @@ define(require => {
 
     /** @returns {Promise<StyleObj>} */
     async import(data) {
-      await ready;
+      if (!ready) await init;
       return handleSave(await saveStyle(data), 'import');
     },
 
     /** @returns {Promise<StyleObj>} */
     async install(style, reason = null) {
-      await ready;
+      if (!ready) await init;
       reason = reason || dataMap.has(style.id) ? 'update' : 'install';
       style = mergeWithMapped(style);
       const url = !style.url && style.updateUrl && (
@@ -250,7 +268,7 @@ define(require => {
 
     /** @returns {Promise<?StyleObj>} */
     async putByUUID(doc) {
-      await ready;
+      if (!ready) await init;
       const id = uuidIndex.get(doc._id);
       if (id) {
         doc.id = id;
@@ -275,7 +293,7 @@ define(require => {
 
     /** @returns {Promise<number>} style id */
     async toggle(id, enabled) {
-      await ready;
+      if (!ready) await init;
       const style = Object.assign({}, id2style(id), {enabled});
       handleSave(await saveStyle(style), 'toggle', false);
       return id;
@@ -362,7 +380,7 @@ define(require => {
   }
 
   async function addIncludeExclude(type, id, rule) {
-    await ready;
+    if (!ready) await init;
     const style = Object.assign({}, id2style(id));
     const list = style[type] || (style[type] = []);
     if (list.includes(rule)) {
@@ -373,7 +391,7 @@ define(require => {
   }
 
   async function removeIncludeExclude(type, id, rule) {
-    await ready;
+    if (!ready) await init;
     const style = Object.assign({}, id2style(id));
     const list = style[type];
     if (!list || !list.includes(rule)) {
@@ -470,21 +488,6 @@ define(require => {
       }
     }
     return code.length && code;
-  }
-
-  async function init() {
-    const styles = await db.exec('getAll') || [];
-    const updated = styles.filter(style =>
-      addMissingProps(style) +
-      addCustomName(style));
-    if (updated.length) {
-      await db.exec('putMany', updated);
-    }
-    for (const style of styles) {
-      fixUsoMd5Issue(style);
-      storeInMap(style);
-      uuidIndex.set(style._id, style.id);
-    }
   }
 
   function addMissingProps(style) {

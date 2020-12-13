@@ -31,8 +31,7 @@ define(require => {
   const ENTRY_ID_PREFIX_RAW = 'style-';
 
   initializing.then(({frames, styles, url}) => {
-    tabURL = url;
-    Events.thisTab.url = url;
+    tabURL = Events.tabURL = url;
     toggleUiSliders();
     initPopup(frames);
     if (styles[0]) {
