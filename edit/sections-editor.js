@@ -26,7 +26,6 @@ define(require => function SectionsEditor() {
     clipString,
     helpPopup,
     rerouteHotkeys,
-    sectionsToMozFormat,
     showCodeMirrorPopup,
   } = require('./util');
 
@@ -332,9 +331,11 @@ define(require => function SectionsEditor() {
   }
 
   function showMozillaFormat() {
-    const popup = showCodeMirrorPopup(t('styleToMozillaFormatTitle'), '', {readOnly: true});
-    popup.codebox.setValue(sectionsToMozFormat(getModel()));
-    popup.codebox.execCommand('selectAll');
+    require(['/js/sections-util'], util => {
+      const popup = showCodeMirrorPopup(t('styleToMozillaFormatTitle'), '', {readOnly: true});
+      popup.codebox.setValue(util.MozDocMapper.styleToCss(getModel()));
+      popup.codebox.execCommand('selectAll');
+    });
   }
 
   function showMozillaFormatImport(text = '') {

@@ -13,49 +13,6 @@ define(require => {
 
   let CodeMirror;
 
-  // TODO: maybe move to sections-util.js
-  const DocFuncMapper = {
-    TO_CSS: {
-      urls: 'url',
-      urlPrefixes: 'url-prefix',
-      domains: 'domain',
-      regexps: 'regexp',
-    },
-    FROM_CSS: {
-      'url': 'urls',
-      'url-prefix': 'urlPrefixes',
-      'domain': 'domains',
-      'regexp': 'regexps',
-    },
-    /**
-     * @param {Object} section
-     * @param {function(func:string, value:string)} fn
-     */
-    forEachProp(section, fn) {
-      for (const [propName, func] of Object.entries(DocFuncMapper.TO_CSS)) {
-        const props = section[propName];
-        if (props) props.forEach(value => fn(func, value));
-      }
-    },
-    /**
-     * @param {Array<?[type,value]>} funcItems
-     * @param {?Object} [section]
-     * @returns {Object} section
-     */
-    toSection(funcItems, section = {}) {
-      for (const item of funcItems) {
-        const [func, value] = item || [];
-        const propName = DocFuncMapper.FROM_CSS[func];
-        if (propName) {
-          const props = section[propName] || (section[propName] = []);
-          if (Array.isArray(value)) props.push(...value);
-          else props.push(value);
-        }
-      }
-      return section;
-    },
-  };
-
   const util = {
 
     get CodeMirror() {
@@ -64,7 +21,6 @@ define(require => {
     set CodeMirror(val) {
       CodeMirror = val;
     },
-    DocFuncMapper,
 
     helpPopup: {
       show(title = '', body) {
@@ -167,17 +123,6 @@ define(require => {
 
     async rerouteHotkeys(...args) {
       require(['./reroute-hotkeys'], res => res(...args));
-    },
-
-    sectionsToMozFormat(style) {
-      return style.sections.map(section => {
-        const cssFuncs = [];
-        DocFuncMapper.forEachProp(section, (type, value) =>
-          cssFuncs.push(`${type}("${value.replace(/\\/g, '\\\\')}")`));
-        return cssFuncs.length ?
-          `@-moz-document ${cssFuncs.join(', ')} {\n${section.code}\n}` :
-          section.code;
-      }).join('\n\n');
     },
 
     showCodeMirrorPopup(title, html, options) {

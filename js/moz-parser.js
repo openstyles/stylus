@@ -2,7 +2,8 @@
 
 define([
   '/js/csslint/parserlib',
-], parserlib => ({
+  '/js/sections-util',
+], (parserlib, util) => ({
 
   /**
    * Extracts @-moz-document blocks into sections and the code between them into global sections.
@@ -16,12 +17,6 @@ define([
    * @property {?number} lastStyleId
    */
   extractSections: function fn({code, styleId, fast = true}) {
-    const CssToProperty = {
-      'url': 'urls',
-      'url-prefix': 'urlPrefixes',
-      'domain': 'domains',
-      'regexp': 'regexps',
-    };
     const hasSingleEscapes = /([^\\]|^)\\([^\\]|$)/;
     const parser = new parserlib.css.Parser({
       starHack: true,
@@ -57,7 +52,7 @@ define([
         lastSection.code = '';
       }
       for (const {name, expr, uri} of e.functions) {
-        const aType = CssToProperty[name.toLowerCase()];
+        const aType = util.MozDocMapper.FROM_CSS[name.toLowerCase()];
         const p0 = expr && expr.parts[0];
         if (p0 && aType === 'regexps') {
           const s = p0.text;

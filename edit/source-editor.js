@@ -12,6 +12,7 @@ define(require => function SourceEditor() {
   } = require('/js/dom');
   const t = require('/js/localization');
   const prefs = require('/js/prefs');
+  const {MozDocMapper} = require('/js/sections-util');
   const {chromeSync} = require('/js/storage-util');
   const cmFactory = require('./codemirror-factory');
   const editor = require('./editor');
@@ -19,7 +20,6 @@ define(require => function SourceEditor() {
   const linterMan = require('./linter-manager');
   const sectionFinder = require('./moz-section-finder');
   const sectionWidget = require('./moz-section-widget');
-  const {sectionsToMozFormat} = require('./util');
 
   const {CodeMirror} = cmFactory;
   const {style, /** @type DirtyReporter */dirty} = editor;
@@ -158,10 +158,10 @@ define(require => function SourceEditor() {
   async function setupNewStyle(style) {
     style.sections[0].code = ' '.repeat(prefs.get('editor.tabSize')) +
       `/* ${t('usercssReplaceTemplateSectionBody')} */`;
-    let section = sectionsToMozFormat(style);
+    let section = MozDocMapper.styleToCss(style);
     if (!section.includes('@-moz-document')) {
       style.sections[0].domains = ['example.com'];
-      section = sectionsToMozFormat(style);
+      section = MozDocMapper.styleToCss(style);
     }
     const DEFAULT_CODE = `
       /* ==UserStyle==

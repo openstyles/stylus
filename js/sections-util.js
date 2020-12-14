@@ -1,7 +1,65 @@
 'use strict';
 
 define(require => {
-  const exports = {
+  const util = {
+
+    MozDocMapper: {
+      TO_CSS: {
+        urls: 'url',
+        urlPrefixes: 'url-prefix',
+        domains: 'domain',
+        regexps: 'regexp',
+      },
+      FROM_CSS: {
+        'url': 'urls',
+        'url-prefix': 'urlPrefixes',
+        'domain': 'domains',
+        'regexp': 'regexps',
+      },
+      /**
+       * @param {Object} section
+       * @param {function(func:string, value:string)} fn
+       */
+      forEachProp(section, fn) {
+        for (const [propName, func] of Object.entries(util.MozDocMapper.TO_CSS)) {
+          const props = section[propName];
+          if (props) props.forEach(value => fn(func, value));
+        }
+      },
+      /**
+       * @param {Array<?[type,value]>} funcItems
+       * @param {?Object} [section]
+       * @returns {Object} section
+       */
+      toSection(funcItems, section = {}) {
+        for (const item of funcItems) {
+          const [func, value] = item || [];
+          const propName = util.MozDocMapper.FROM_CSS[func];
+          if (propName) {
+            const props = section[propName] || (section[propName] = []);
+            if (Array.isArray(value)) props.push(...value);
+            else props.push(value);
+          }
+        }
+        return section;
+      },
+      /**
+       * @param {StyleObj} style
+       * @returns {string}
+       */
+      styleToCss(style) {
+        const res = [];
+        for (const section of style.sections) {
+          const funcs = [];
+          util.MozDocMapper.forEachProp(section, (type, value) =>
+            funcs.push(`${type}("${value.replace(/[\\"]/g, '\\$&')}")`));
+          res.push(funcs.length
+            ? `@-moz-document ${funcs.join(', ')} {\n${section.code}\n}`
+            : section.code);
+        }
+        return res.join('\n\n');
+      },
+    },
 
     async calcStyleDigest(style) {
       const src = style.usercssData
@@ -90,5 +148,5 @@ define(require => {
     }));
   }
 
-  return exports;
+  return util;
 });

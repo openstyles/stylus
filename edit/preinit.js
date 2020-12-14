@@ -10,9 +10,9 @@ define(require => {
     tryJSONparse,
   } = require('/js/toolbox');
   const {$, waitForSelector} = require('/js/dom');
+  const {MozDocMapper} = require('/js/sections-util');
   const prefs = require('/js/prefs');
   const editor = require('./editor');
-  const util = require('./util');
 
   const lazyKeymaps = {
     emacs: '/vendor/codemirror/keymap/emacs',
@@ -114,7 +114,7 @@ define(require => {
         '',
       enabled: true,
       sections: [
-        util.DocFuncMapper.toSection([...params], {code: ''}),
+        MozDocMapper.toSection([...params], {code: ''}),
       ],
     };
     // switching the mode here to show the correct page ASAP, usually before DOMContentLoaded

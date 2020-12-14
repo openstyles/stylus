@@ -5,10 +5,11 @@ define(require => {
   const {$} = require('/js/dom');
   const t = require('/js/localization');
   const prefs = require('/js/prefs');
+  const {MozDocMapper} = require('/js/sections-util');
   const cmFactory = require('./codemirror-factory');
   const editor = require('./editor');
   const linterMan = require('./linter-manager');
-  const {DocFuncMapper, trimCommentLabel} = require('./util');
+  const {trimCommentLabel} = require('./util');
   /** @type {RegExpTester} */
   let regExpTester;
 
@@ -40,7 +41,7 @@ define(require => {
 
     const appliesToContainer = $('.applies-to-list', el);
     const appliesTo = [];
-    DocFuncMapper.forEachProp(originalSection, (type, value) =>
+    MozDocMapper.forEachProp(originalSection, (type, value) =>
       insertApplyAfter({type, value}));
     if (!appliesTo.length) {
       insertApplyAfter({all: true});
@@ -61,7 +62,7 @@ define(require => {
       appliesTo,
       getModel() {
         const items = appliesTo.map(a => !a.all && [a.type, a.value]);
-        return DocFuncMapper.toSection(items, {code: cm.getValue()});
+        return MozDocMapper.toSection(items, {code: cm.getValue()});
       },
       remove() {
         linterMan.disableForEditor(cm);
