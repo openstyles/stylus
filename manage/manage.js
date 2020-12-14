@@ -34,7 +34,6 @@ define(async require => {
   } = require('./events');
 
   msg.onExtension(onRuntimeMessage);
-  router.watch({hash: '#stylus-options'}, toggleEmbeddedOptions);
   window.on('closeOptions', () => router.updateHash(''));
 
   const query = router.getSearch('search');
@@ -65,6 +64,9 @@ define(async require => {
       'filteredStylesAllHidden',
     ].map(id => `--${id}:"${CSS.escape(t(id))}";`).join('')
     }}`);
+
+  router.watch({hash: '#stylus-options'}, toggleEmbeddedOptions);
+  router.update();
 
   if (!VIVALDI) {
     fitSelectBoxInOpenDetails($('#filters'));

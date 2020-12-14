@@ -19,6 +19,8 @@ define(require => {
 
   return {
 
+    update,
+
     getSearch(key) {
       return new URLSearchParams(location.search).get(key);
     },
