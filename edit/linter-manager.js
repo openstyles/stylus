@@ -100,6 +100,7 @@ define(require => {
       'empty-rules': 1,
       'errors': 1,
       'known-properties': 1,
+      'selector-newline': 1,
       'simple-not': 1,
       'warnings': 1,
       // disabled
@@ -126,7 +127,6 @@ define(require => {
       'rules-count': 0,
       'selector-max': 0,
       'selector-max-approaching': 0,
-      'selector-newline': 0,
       'shorthand': 0,
       'star-property-hack': 0,
       'text-indent': 0,

@@ -676,8 +676,9 @@ define(require => {
     x:    'resolution',
     ar:   'dimension',
   };
-  const rxIdentStart = /[-\\_a-zA-Z\u00A0-\uFFFF]+/yu;
-  const rxNameChar = /[-\\_\da-zA-Z\u00A0-\uFFFF]+/yu;
+  // Sticky `y` flag must be used in expressions used with peekTest and readMatch
+  const rxIdentStart = /[-\\_a-zA-Z\u00A0-\uFFFF]/u;
+  const rxNameChar = /[-\\_\da-zA-Z\u00A0-\uFFFF]/u;
   const rxNameCharNoEsc = /[-_\da-zA-Z\u00A0-\uFFFF]+/yu; // must not match \\
   const rxUnquotedUrlCharNoEsc = /[-!#$%&*-[\]-~\u00A0-\uFFFF]+/yu; // must not match \\
   const rxVendorPrefix = /^-(webkit|moz|ms|o)-(.+)/i;
@@ -1174,6 +1175,7 @@ define(require => {
   //#region Tokens
 
   /* https://www.w3.org/TR/css3-syntax/#lexical */
+  /** @type {Object<string,number|Object>} */
   const Tokens = Object.assign([], {
     EOF: {}, // must be the first token
   }, {
@@ -1530,8 +1532,10 @@ define(require => {
 
     constructor(matchFunc, toString, options) {
       this.matchFunc = matchFunc;
+      /** @type {function(?number):string} */
       this.toString = typeof toString === 'function' ? toString : () => toString;
-      if (options) this.options = options;
+      /** @type {?Matcher[]} */
+      this.options = options;
     }
 
     /**
@@ -2013,11 +2017,6 @@ define(require => {
 
   // individual media query
   class MediaQuery extends SyntaxUnit {
-    /**
-     * @param {String} modifier The modifier "not" or "only" (or null).
-     * @param {String} mediaType The type of media (i.e., "print").
-     * @param {Array} features Array of selectors parts making up this selector.
-     */
     constructor(modifier, mediaType, features, pos) {
       const text = (modifier ? modifier + ' ' : '') +
                    (mediaType ? mediaType : '') +
@@ -2045,9 +2044,6 @@ define(require => {
    * including multiple selectors (those separated by commas).
    */
   class Selector extends SyntaxUnit {
-    /**
-     * @param {SelectorPart[]} parts
-     */
     constructor(parts, pos) {
       super(parts.join(' '), pos, TYPES.SELECTOR_TYPE);
       this.parts = parts;
@@ -2061,10 +2057,6 @@ define(require => {
    * Does not include combinators such as spaces, +, >, etc.
    */
   class SelectorPart extends SyntaxUnit {
-    /**
-     * @param {String} elementName or null if there's none
-     * @param {SelectorSubPart[]} modifiers - may be empty
-     */
     constructor(elementName, modifiers, text, pos) {
       super(text, pos, TYPES.SELECTOR_PART_TYPE);
       this.elementName = elementName;
@@ -2076,9 +2068,6 @@ define(require => {
    * Selector modifier string
    */
   class SelectorSubPart extends SyntaxUnit {
-    /**
-     * @param {string} type - elementName id class attribute pseudo any not
-     */
     constructor(text, type, pos) {
       super(text, pos, TYPES.SELECTOR_SUB_PART_TYPE);
       this.type = type;
@@ -2136,21 +2125,15 @@ define(require => {
       }
       return 0;
     }
-    /**
-     * @return {int} The numeric value for the specificity.
-     */
     valueOf() {
-      return (this.a * 1000) + (this.b * 100) + (this.c * 10) + this.d;
+      return this.a * 1000 + this.b * 100 + this.c * 10 + this.d;
     }
-    /**
-     * @return {String} The string representation of specificity.
-     */
     toString() {
-      return this.a + ',' + this.b + ',' + this.c + ',' + this.d;
+      return `${this.a},${this.b},${this.c},${this.d}`;
     }
     /**
      * Calculates the specificity of the given selector.
-     * @param {Selector} The selector to calculate specificity for.
+     * @param {Selector} selector The selector to calculate specificity for.
      * @return {Specificity} The specificity of the selector.
      */
     static calculate(selector) {
@@ -2192,7 +2175,6 @@ define(require => {
   class PropertyName extends SyntaxUnit {
     constructor(text, hack, pos) {
       super(text, pos, TYPES.PROPERTY_NAME_TYPE);
-      // type of IE hack applied ("*", "_", or null).
       this.hack = hack;
     }
     toString() {
@@ -2205,9 +2187,6 @@ define(require => {
    * separated by commas, this type represents just one of the values.
    */
   class PropertyValue extends SyntaxUnit {
-    /**
-     * @param {PropertyValuePart[]} parts An array of value parts making up this value.
-     */
     constructor(parts, pos) {
       super(parts.join(' '), pos, TYPES.PROPERTY_VALUE_TYPE);
       this.parts = parts;
@@ -2225,12 +2204,7 @@ define(require => {
       const {value, type} = token;
       super(value, token, TYPES.PROPERTY_VALUE_PART_TYPE);
       this.tokenType = type;
-      if (token.expr) this.expr = token.expr;
-      // There can be ambiguity with escape sequences in identifiers, as
-      // well as with "color" parts which are also "identifiers", so record
-      // an explicit hint when the token generating this PropertyValuePart
-      // was an identifier.
-      this.wasIdent = type === Tokens.IDENT;
+      this.expr = token.expr || null;
       switch (type) {
         case Tokens.ANGLE:
         case Tokens.DIMENSION:
@@ -2286,7 +2260,6 @@ define(require => {
     }
   }
 
-  // A utility class that allows for easy iteration over the various parts of a property value.
   class PropertyValueIterator {
     /**
      * @param {PropertyValue} value
@@ -2368,7 +2341,7 @@ define(require => {
 
   /** @param {PropertyValuePart} p */
   function vtIsIdent(p) {
-    return p.type === 'identifier' || p.wasIdent;
+    return p.tokenType === Tokens.IDENT;
   }
 
   /** @param {PropertyValuePart} p */
@@ -2690,8 +2663,13 @@ define(require => {
         line: reader._line,
         offset: reader._cursor,
       };
-      const a = tok.value = reader.read();
-      const b = reader.peek();
+      let a = tok.value = reader.read();
+      let b = reader.peek();
+      if (a === '\\') {
+        if (b === '\n' || b === '\f') return tok;
+        a = this.readEscape();
+        b = reader.peek();
+      }
       switch (a) {
         case ' ':
         case '\n':
@@ -2745,7 +2723,7 @@ define(require => {
         case "'":
           return this.stringToken(a, tok);
         case '#':
-          if ((rxNameChar.lastIndex = 0, rxNameChar.test(b))) {
+          if (rxNameChar.test(b)) {
             tok.type = Tokens.HASH;
             tok.value = this.readName(a);
           }
@@ -2768,7 +2746,7 @@ define(require => {
             }
           } else if (b >= '0' && b <= '9' || b === '.' && reader.peekTest(/\.\d/y)) {
             this.numberToken(a, tok);
-          } else if ((rxIdentStart.lastIndex = 0, rxIdentStart.test(b))) {
+          } else if (rxIdentStart.test(b)) {
             this.identOrFunctionToken(a, tok);
           } else {
             tok.type = Tokens.MINUS;
@@ -2806,10 +2784,6 @@ define(require => {
             tok.value = '<!--';
           }
           return tok;
-        case '\\':
-          return b !== '\r' && b !== '\n' && b !== '\f' ?
-            this.identOrFunctionToken(this.readEscape(), tok) :
-            tok;
         // EOF
         case null:
           tok.type = Tokens.EOF;
@@ -2822,7 +2796,7 @@ define(require => {
       }
       if (a >= '0' && a <= '9') {
         this.numberToken(a, tok);
-      } else if ((rxIdentStart.lastIndex = 0, rxIdentStart.test(a))) {
+      } else if (rxIdentStart.test(a)) {
         this.identOrFunctionToken(a, tok);
       } else {
         tok.type = typeMap.get(a) || Tokens.CHAR;
@@ -2912,7 +2886,7 @@ define(require => {
       let tt = Tokens.NUMBER;
       let units, type;
       const c = reader.peek();
-      if ((rxIdentStart.lastIndex = 0, rxIdentStart.test(c))) {
+      if (rxIdentStart.test(c)) {
         units = this.readName(reader.read());
         type = UNITS[units] || UNITS[lower(units)];
         tt = type && Tokens[type.toUpperCase()] ||
@@ -3076,8 +3050,11 @@ define(require => {
       const value = [];
       const endings = [];
       let end = stopOn;
+      const rx = stopOn.includes(';')
+        ? /([^;!'"{}()[\]/\\]|\/(?!\*))+/y
+        : /([^'"{}()[\]/\\]|\/(?!\*))+/y;
       while (!reader.eof()) {
-        const chunk = reader.readMatch(/([^;!'"{}()[\]/\\]|\/(?!\*))+/y);
+        const chunk = reader.readMatch(rx);
         if (chunk) {
           value.push(chunk);
         }
@@ -3431,14 +3408,12 @@ define(require => {
     }
 
     /**
-     * @param {String|{type: string, ...}} event
-     * @param {Token|SyntaxUnit} [token=this._tokenStream._token] - sets the position
+     * @param {string|Object} event
+     * @param {parserlib.Token|SyntaxUnit} [token=this._tokenStream._token] - sets the position
      */
     fire(event, token = this._tokenStream._token) {
       if (typeof event === 'string') {
         event = {type: event};
-      } else if (event.message && event.message.includes('/*[[')) {
-        return;
       }
       if (event.offset === undefined && token) {
         event.offset = token.offset;
@@ -4044,22 +4019,11 @@ define(require => {
 
     _negation(start) {
       const stream = this._tokenStream;
-      let value = start.value + this._ws();
+      const value = [start.value, this._ws()];
       const args = this._selectorsGroup();
       if (!args) stream.throwUnexpected(stream.LT(1));
-      const arg = args[0];
-      const parts = arg.parts;
-      if (args.length > 1 ||
-          parts.length !== 1 ||
-          parts[0].modifiers.length + (parts[0].elementName ? 1 : 0) > 1 ||
-          /^:not\b/i.test(parts[0])) {
-        this.fire({
-          type: 'warning',
-          message: `Simple selector expected, but found '${args.join(', ')}'`,
-        }, arg);
-      }
-      value += arg + this._ws() + stream.mustMatch(Tokens.RPAREN).value;
-      return Object.assign(new SelectorSubPart(value, 'not', start), {args: [arg]});
+      value.push(...args, this._ws(), stream.mustMatch(Tokens.RPAREN).value);
+      return Object.assign(new SelectorSubPart(fastJoin(value), 'not', start), {args});
     }
 
     _declaration(consumeSemicolon) {

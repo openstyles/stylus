@@ -1409,13 +1409,10 @@ define(require => {
     init(parser, reporter) {
       parser.addListener('startrule', event => {
         for (const {parts} of event.selectors) {
-          for (let p = 0, pLen = parts.length; p < pLen; p++) {
-            for (let n = p + 1; n < pLen; n++) {
-              if (parts[p].type === 'descendant' &&
-                  parts[n].line > parts[p].line) {
-                reporter.report('newline character found in selector (forgot a comma?)',
-                  parts[p].line, parts[0].col, this);
-              }
+          for (let i = 0, p, pn; i < parts.length - 1 && (p = parts[i]); i++) {
+            if (p.type === 'descendant' && (pn = parts[i + 1]).line > p.line) {
+              reporter.report('newline character found in selector (forgot a comma?)',
+                pn.line, pn.col, this);
             }
           }
         }
@@ -1475,6 +1472,37 @@ define(require => {
       parser.addListener('property', property);
       parser.addListener('endrule', endRule);
       parser.addListener('endfontface', endRule);
+    },
+  });
+
+  CSSLint.addRule({
+    id:       'simple-not',
+    name:     'Require use of simple selectors inside :not()',
+    desc:     'A complex selector inside :not() is only supported by CSS4-compliant browsers.',
+    browsers: 'All',
+
+    init(parser, reporter) {
+      parser.addListener('startrule', e => {
+        for (const sel of e.selectors) {
+          if (!/:not\(/i.test(sel.text)) continue;
+          for (const part of sel.parts) {
+            if (!part.modifiers) continue;
+            for (const mod of part.modifiers) {
+              if (mod.type !== 'not') continue;
+              const {args} = mod;
+              const {parts} = args[0];
+              if (args.length > 1 ||
+                parts.length !== 1 ||
+                parts[0].modifiers.length + (parts[0].elementName ? 1 : 0) > 1 ||
+                /^:not\(/i.test(parts[0])) {
+                reporter.report(
+                  `Simple selector expected, but found '${args.join(', ')}'`,
+                  args[0].line, args[0].col, this);
+              }
+            }
+          }
+        }
+      });
     },
   });
 
