@@ -390,7 +390,7 @@ define(require => function SectionsEditor() {
             replace: replaceOldStyle,
             focusOn: replaceOldStyle ? 0 : false,
           });
-          $('.dismiss').dispatchEvent(new Event('click'));
+          helpPopup.close();
         }
       } catch (err) {
         showError(err);

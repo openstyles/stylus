@@ -10,6 +10,7 @@ define(require => {
   } = require('/js/dom');
   const t = require('/js/localization');
   const {chromeSync} = require('/js/storage-util');
+  const editor = require('./editor');
   const {DEFAULTS, worker} = require('./linter-manager');
   const {getIssues} = require('./linter-report');
   const {
@@ -166,9 +167,9 @@ define(require => {
     };
   }
 
-  function onConfigCancel(event) {
-    event.preventDefault();
-    $('.dismiss').click();
+  function onConfigCancel() {
+    helpPopup.close();
+    editor.closestVisible().focus();
   }
 
   function onConfigClose() {
