@@ -13,7 +13,8 @@ define(require => {
   const debounceTimers = new Map();
   let URLS, deepCopy, deepEqual, deepMerge;
 
-  const toolbox = {
+  /** @type {Toolbox} */
+  const toolbox = /** @namespace Toolbox */ {
 
     CHROME,
     FIREFOX,

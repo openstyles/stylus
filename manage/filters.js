@@ -62,20 +62,6 @@ define(require => {
     }
   });
 
-  HTMLSelectElement.prototype.adjustWidth = function () {
-    const sel = this.selectedOptions[0];
-    if (!sel) return;
-    const wOld = parseFloat(this.style.width);
-    const opts = [...this];
-    opts.forEach(opt => opt !== sel && opt.remove());
-    this.style.width = '';
-    requestAnimationFrame(() => {
-      const w = this.offsetWidth;
-      if (w && wOld !== w) this.style.width = w + 'px';
-      this.append(...opts);
-    });
-  };
-
   function initFilters() {
     $('#search').oninput = $('#searchMode').oninput = function (e) {
       router.updateSearch(this.id, e.target.value);
@@ -112,10 +98,6 @@ define(require => {
         slaveData.filter = filter;
         slaveData.filterHide = valueMap.get(!value);
         debounce(filterOnChange, 0, event);
-        // avoid triggering MutationObserver during page load
-        if (document.readyState === 'complete') {
-          el.adjustWidth();
-        }
       };
       el.onchange({target: el});
     });
@@ -149,14 +131,6 @@ define(require => {
       filterOnChange({forceRefilter: true});
       router.updateSearch('search', '');
     };
-
-    // Adjust width after selects are visible
-    prefs.subscribe('manage.filters.expanded', () => {
-      const el = $('#filters');
-      if (el.open) {
-        $$('.filter-selection select', el).forEach(select => select.adjustWidth());
-      }
-    });
 
     filterOnChange({forceRefilter: true});
   }

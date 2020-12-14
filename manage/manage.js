@@ -1,6 +1,6 @@
 'use strict';
 
-define(require => {
+define(async require => {
   const {API, msg} = require('/js/msg');
   const {
     CHROME,
@@ -21,7 +21,8 @@ define(require => {
   const {
     BULK_THROTTLE_MS,
     bulkChangeQueue,
-    waitingForContainer,
+    containerPromise,
+    fitSelectBoxInOpenDetails,
     showStyles,
     switchUI,
   } = require('./render');
@@ -32,53 +33,55 @@ define(require => {
     handleVisibilityChange,
   } = require('./events');
 
-  (async () => {
-    const query = router.getSearch('search');
-    const [styles, ids, container] = await Promise.all([
-      API.styles.getAll(),
-      query && API.searchDB({query, mode: router.getSearch('searchMode')}),
-      waitingForContainer,
-      prefs.initializing,
-    ]);
-    container.onclick = Events.entryClicked;
-    $('#manage-options-button').onclick = () => router.updateHash('#stylus-options');
-    $('#sync-styles').onclick = () => router.updateHash('#stylus-options');
-    $$('#header a[href^="http"]').forEach(a => (a.onclick = Events.external));
-    // show date installed & last update on hover
-    container.on('mouseover', Events.lazyAddEntryTitle, {passive: true});
-    container.on('mouseout', Events.lazyAddEntryTitle, {passive: true});
-    document.on('visibilitychange', handleVisibilityChange);
-    // N.B. triggers existing onchange listeners
-    setupLivePrefs();
-    prefs.subscribe(newUI.ids.map(newUI.prefKeyForId), () => switchUI());
-    switchUI({styleOnly: true});
-    // translate CSS manually
-    document.styleSheets[0].insertRule(
-      `:root {${[
-        'genericDisabledLabel',
-        'updateAllCheckSucceededSomeEdited',
-        'filteredStylesAllHidden',
-      ].map(id => `--${id}:"${CSS.escape(t(id))}";`).join('')
-      }}`);
-    if (!VIVALDI) {
-      $$('.filter-selection select').forEach(el => el.adjustWidth());
-    }
-    if (CHROME >= 80 && CHROME <= 88) {
-      // Wrong checkboxes are randomly checked after going back in history, https://crbug.com/1138598
-      window.on('pagehide', () => {
-        $$('input[type=checkbox]').forEach((el, i) => (el.name = `bug${i}`));
-      });
-    }
-    showStyles(styles, ids);
-    require([
-      './import-export',
-      './incremental-search',
-    ]);
-  })();
-
   msg.onExtension(onRuntimeMessage);
-  router.watch({hash: '#stylus-options'}, state => (state ? embedOptions : unembedOptions)());
+  router.watch({hash: '#stylus-options'}, toggleEmbeddedOptions);
   window.on('closeOptions', () => router.updateHash(''));
+
+  const query = router.getSearch('search');
+  const [styles, ids, container] = await Promise.all([
+    API.styles.getAll(),
+    query && API.searchDB({query, mode: router.getSearch('searchMode')}),
+    containerPromise,
+    prefs.initializing,
+  ]);
+
+  container.on('click', Events.entryClicked);
+  container.on('mouseover', Events.lazyAddEntryTitle, {passive: true});
+  container.on('mouseout', Events.lazyAddEntryTitle, {passive: true});
+  $('#manage-options-button').onclick = () => router.updateHash('#stylus-options');
+  $('#sync-styles').onclick = () => router.updateHash('#stylus-options');
+  $$('#header a[href^="http"]').forEach(a => (a.onclick = Events.external));
+  document.on('visibilitychange', handleVisibilityChange);
+
+  setupLivePrefs();
+  prefs.subscribe(newUI.ids.map(newUI.prefKeyForId), () => switchUI());
+  switchUI({styleOnly: true});
+
+  // translate CSS manually
+  document.styleSheets[0].insertRule(
+    `:root {${[
+      'genericDisabledLabel',
+      'updateAllCheckSucceededSomeEdited',
+      'filteredStylesAllHidden',
+    ].map(id => `--${id}:"${CSS.escape(t(id))}";`).join('')
+    }}`);
+
+  if (!VIVALDI) {
+    fitSelectBoxInOpenDetails($('#filters'));
+  }
+  if (CHROME >= 80 && CHROME <= 88) {
+    // Wrong checkboxes are randomly checked after going back in history, https://crbug.com/1138598
+    window.on('pagehide', () => {
+      $$('input[type=checkbox]').forEach((el, i) => (el.name = `bug${i}`));
+    });
+  }
+
+  showStyles(styles, ids);
+
+  require([
+    './import-export',
+    './incremental-search',
+  ]);
 
   function onRuntimeMessage(msg) {
     switch (msg.method) {
@@ -101,21 +104,18 @@ define(require => {
     setTimeout(sorter.updateStripes, 0, {onlyWhenColumnsChanged: true});
   }
 
-  function embedOptions() {
-    const options = $('#stylus-embedded-options') ||
-      document.documentElement.appendChild($create('iframe', {
+  async function toggleEmbeddedOptions(state) {
+    const el = $('#stylus-embedded-options') ||
+      state && document.documentElement.appendChild($create('iframe', {
         id: 'stylus-embedded-options',
         src: '/options.html',
       }));
-    options.focus();
-  }
-
-  async function unembedOptions() {
-    const options = $('#stylus-embedded-options');
-    if (options) {
-      options.contentWindow.document.body.classList.add('scaleout');
-      await animateElement(options, 'fadeout');
-      options.remove();
+    if (state) {
+      el.focus();
+    } else if (el) {
+      el.contentDocument.body.classList.add('scaleout');
+      await animateElement(el, 'fadeout');
+      el.remove();
     }
   }
 });

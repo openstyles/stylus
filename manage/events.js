@@ -35,17 +35,6 @@ define(require => {
 
   const Events = {
 
-    ENTRY_ROUTES: {
-      'input, .enable, .disable': 'toggle',
-      '.style-name': 'name',
-      '.homepage': 'external',
-      '.check-update': 'check',
-      '.update': 'update',
-      '.delete': 'delete',
-      '.applies-to .expander': 'expandTargets',
-      '.configure-usercss': 'config',
-    },
-
     addEntryTitle(link) {
       const style = link.closest('.entry').styleMeta;
       const ucd = style.usercssData;
@@ -130,8 +119,7 @@ define(require => {
       for (const selector in Events.ENTRY_ROUTES) {
         for (let el = target; el && el !== entry; el = el.parentElement) {
           if (el.matches(selector)) {
-            const handler = Events.ENTRY_ROUTES[selector];
-            return Events[handler].call(el, event, entry);
+            return Events.ENTRY_ROUTES[selector].call(el, event, entry);
           }
         }
       }
@@ -162,6 +150,17 @@ define(require => {
       json.id = entry.styleId;
       (json.usercssData ? API.usercss : API.styles).install(json);
     },
+  };
+
+  Events.ENTRY_ROUTES = {
+    'input, .enable, .disable': Events.toggle,
+    '.style-name': Events.name,
+    '.homepage': Events.external,
+    '.check-update': Events.check,
+    '.update': Events.update,
+    '.delete': Events.delete,
+    '.applies-to .expander': Events.expandTargets,
+    '.configure-usercss': Events.config,
   };
 
   async function handleUpdateForId(id, opts) {

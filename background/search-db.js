@@ -7,6 +7,7 @@ define(require => {
     tryRegExp,
   } = require('/js/toolbox');
   const {API} = require('/js/msg');
+  const usercss = require('./usercss-api-helper');
 
   // toLocaleLowerCase cache, autocleared after 1 minute
   const cache = new Map();
@@ -103,13 +104,13 @@ define(require => {
 
   function extractMeta(style) {
     return style.usercssData
-      ? (style.sourceCode.match(API.usercss.rxMETA) || [''])[0]
+      ? (style.sourceCode.match(usercss.rxMETA) || [''])[0]
       : null;
   }
 
   function stripMeta(style) {
     return style.usercssData
-      ? style.sourceCode.replace(API.usercss.rxMETA, '')
+      ? style.sourceCode.replace(usercss.rxMETA, '')
       : null;
   }
 

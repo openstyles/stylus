@@ -141,10 +141,6 @@ define(require => {
     }
   });
 
-  /**
-   * @type Prefs
-   * @namespace Prefs
-   */
   const prefs = {
 
     STORAGE_KEY,

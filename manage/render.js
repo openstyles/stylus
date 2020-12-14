@@ -36,7 +36,7 @@ define(require => {
     BULK_THROTTLE_MS: 100,
     bulkChangeQueue: [],
     // needed to avoid flicker due to an extra frame and layout shift
-    waitingForContainer: waitForSelector('#installed').then(el => (installed = el)),
+    containerPromise: waitForSelector('#installed').then(el => (installed = el)),
 
     $entry(styleOrId, root = installed) {
       return $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrId}`, root);
@@ -182,6 +182,26 @@ define(require => {
       entry.classList.toggle('global', !numTargets);
       entry._allTargetsRendered = allTargetsRendered;
       entry._numTargets = numTargets;
+    },
+
+    /**
+     * @param {HTMLDetailsElement} el
+     * @param {string} targetSel
+     */
+    fitSelectBoxInOpenDetails(el, targetSel = 'select.fit-width') {
+      const run = () => {
+        if (el.open) {
+          fitSelectBox(...$$(targetSel, el));
+        }
+      };
+      el.on('change', ({target}) => {
+        if (el.open && target.matches(targetSel)) {
+          fitSelectBox(target);
+        }
+      });
+      new MutationObserver(run)
+        .observe(el, {attributeFilter: ['open'], attributes: true});
+      run();
     },
 
     getFaviconImgSrc(container = installed) {
@@ -355,6 +375,26 @@ define(require => {
     }
   }
 
+  function fitSelectBox(...elems) {
+    const data = [];
+    for (const el of elems) {
+      const sel = el.selectedOptions[0];
+      if (!sel) return;
+      const oldWidth = parseFloat(el.style.width);
+      const elOpts = [...el];
+      data.push({el, elOpts, oldWidth});
+      elOpts.forEach(opt => opt !== sel && opt.remove());
+      el.style.width = '';
+    }
+    requestAnimationFrame(() => {
+      for (const {el, elOpts, oldWidth} of data) {
+        const w = el.offsetWidth;
+        if (w && oldWidth !== w) el.style.width = w + 'px';
+        el.append(...elOpts);
+      }
+    });
+  }
+
   function highlightEditedStyle() {
     if (!sessionStore.justEditedStyleId) return;
     const entry = render.$entry(sessionStore.justEditedStyleId);
@@ -375,6 +415,7 @@ define(require => {
       const x = Math.max(0, left);
       const y = Math.max(0, top);
       const first = document.elementFromPoint(x, y);
+      if (!first) return requestAnimationFrame(loadFavicons.bind(null, ...arguments));
       const lastOffset = first.offsetTop + window.innerHeight;
       const numTargets = newUI.targets;
       let entry = first && first.closest('.entry') || installed.children[0];
