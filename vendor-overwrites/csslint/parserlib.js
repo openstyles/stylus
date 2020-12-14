@@ -678,7 +678,8 @@ self.parserlib = (() => {
   };
   const rxIdentStart = /[-\\_a-zA-Z\u00A0-\uFFFF]+/yu;
   const rxNameChar = /[-\\_\da-zA-Z\u00A0-\uFFFF]+/yu;
-  const rxUnquotedUrlChar = /[-!#$%&*-[\]-~\u00A0-\uFFFF]+/yu;
+  const rxNameCharNoEsc = /[-_\da-zA-Z\u00A0-\uFFFF]+/yu; // must not match \\
+  const rxUnquotedUrlCharNoEsc = /[-!#$%&*-[\]-~\u00A0-\uFFFF]+/yu; // must not match \\
   const rxVendorPrefix = /^-(webkit|moz|ms|o)-(.+)/i;
   const rxCalc = /^(?:-(webkit|moz|ms|o)-)?(calc|min|max|clamp)\(/i;
   const lowercaseCache = new Map();
@@ -2849,7 +2850,7 @@ self.parserlib = (() => {
 
     identOrFunctionToken(first, token) {
       const reader = this._reader;
-      const name = this.readChunksWithEscape(first, rxNameChar);
+      const name = this.readChunksWithEscape(first, rxNameCharNoEsc);
       const next = reader.peek();
       token.value = name;
       // might be a URI or function
@@ -3016,7 +3017,7 @@ self.parserlib = (() => {
         if (value == null) return null;
         value = parseString(value);
       } else {
-        value = this.readChunksWithEscape('', rxUnquotedUrlChar);
+        value = this.readChunksWithEscape('', rxUnquotedUrlCharNoEsc);
       }
       this._reader.readMatch(/\s+/y);
       // Ensure argument to URL is always double-quoted
@@ -3028,7 +3029,7 @@ self.parserlib = (() => {
     }
 
     readName(first) {
-      return this.readChunksWithEscape(first, rxNameChar);
+      return this.readChunksWithEscape(first, rxNameCharNoEsc);
     }
 
     readEscape() {
@@ -3036,6 +3037,11 @@ self.parserlib = (() => {
       return cp ? String.fromCodePoint(parseInt(cp, 16)) : this._reader.read();
     }
 
+    /**
+     * @param {?string} first
+     * @param {RegExp} rx - must not match \\
+     * @returns {string}
+     */
     readChunksWithEscape(first, rx) {
       const reader = this._reader;
       const url = first ? [first] : [];
