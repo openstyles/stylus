@@ -335,7 +335,7 @@ input:invalid {
 #sections {
   counter-reset: codebox;
 }
-#sections > .section > label {
+#sections > .section:not(.removed) > label {
   padding: 0 0 4px 0;
   display: inline-block;
   font-size: 13px;
