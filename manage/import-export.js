@@ -6,11 +6,7 @@ const STYLUS_BACKUP_FILE_EXT = '.json';
 define(require => {
   const {API} = require('/js/msg');
   const {isEmptyObj} = require('/js/polyfill');
-  const {
-    CHROME,
-    deepEqual,
-    tryJSONparse,
-  } = require('/js/toolbox');
+  const {deepEqual, tryJSONparse} = require('/js/toolbox');
   const t = require('/js/localization');
   const prefs = require('/js/prefs');
   const {
@@ -260,11 +256,6 @@ define(require => {
     }
 
     async function importOptions() {
-      // Must acquire the permission before setting the pref
-      if (CHROME && !chrome.declarativeContent &&
-          stats.options.names.find(_ => _.name === 'styleViaXhr' && _.isValid && _.val)) {
-        await browser.permissions.request({permissions: ['declarativeContent']});
-      }
       const oldStorage = await chromeSync.get();
       for (const {name, val, isValid, isPref} of stats.options.names) {
         if (isValid) {

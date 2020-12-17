@@ -53,19 +53,6 @@ define(require => {
     $('[data-cmd="open-keyboard"]').classList.remove('chromium-only');
   }
 
-  if (CHROME && !chrome.declarativeContent) {
-    // Show the option as disabled until the permission is actually granted
-    const el = $('#styleViaXhr');
-    prefs.initializing.then(() => {
-      el.checked = false;
-    });
-    el.on('click', () => {
-      if (el.checked) {
-        chrome.permissions.request({permissions: ['declarativeContent']}, ignoreChromeError);
-      }
-    });
-  }
-
   // actions
   $('#options-close-icon').onclick = () => {
     top.dispatchEvent(new CustomEvent('closeOptions'));

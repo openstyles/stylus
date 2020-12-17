@@ -58,8 +58,12 @@ define(require => {
     if (STYLE_VIA_API) {
       await API.styleViaAPI({method: 'styleApply'});
     } else {
-      const styles = chrome.app && !chrome.tabs && getStylesViaXhr() ||
+      const SYM = Symbol.for('styles');
+      const styles =
+        window[SYM] ||
+        chrome.app && !chrome.tabs && getStylesViaXhr() ||
         await API.styles.getSectionsByUrl(getMatchUrl(), null, true);
+      delete window[SYM];
       if (styles.disableAll) {
         delete styles.disableAll;
         styleInjector.toggle(false);

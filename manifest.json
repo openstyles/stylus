@@ -23,9 +23,6 @@
     "identity",
     "<all_urls>"
   ],
-  "optional_permissions": [
-    "declarativeContent"
-  ],
   "background": {
     "scripts": [
       "js/polyfill.js",

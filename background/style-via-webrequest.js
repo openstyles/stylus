@@ -11,96 +11,91 @@ define(async require => {
   const rxHOST = /^('none'|(https?:\/\/)?[^']+?[^:'])$/; // strips CSP sources covered by *
   const blobUrlPrefix = 'blob:' + chrome.runtime.getURL('/');
   const stylesToPass = {};
-  const enabled = {};
+  const state = {};
 
   await prefs.initializing;
-  prefs.subscribe([idXHR, idOFF, idCSP], toggle, {runNow: true});
+  prefs.subscribe([idXHR, idOFF, idCSP], toggle);
+  toggle();
 
   function toggle() {
-    const csp = prefs.get(idCSP) && !prefs.get(idOFF);
-    const xhr = prefs.get(idXHR) && !prefs.get(idOFF) && Boolean(chrome.declarativeContent);
-    if (xhr === enabled.xhr && csp === enabled.csp) {
+    const off = prefs.get(idOFF);
+    const csp = prefs.get(idCSP) && !off;
+    const xhr = prefs.get(idXHR) && !off;
+    if (xhr === state.xhr && csp === state.csp && off === state.off) {
       return;
     }
-    // Need to unregister first so that the optional EXTRA_HEADERS is properly registered
+    const reqFilter = {
+      urls: ['*://*/*'],
+      types: ['main_frame', 'sub_frame'],
+    };
+    chrome.webNavigation.onCommitted.removeListener(injectData);
     chrome.webRequest.onBeforeRequest.removeListener(prepareStyles);
     chrome.webRequest.onHeadersReceived.removeListener(modifyHeaders);
     if (xhr || csp) {
-      const reqFilter = {
-        urls: ['<all_urls>'],
-        types: ['main_frame', 'sub_frame'],
-      };
-      chrome.webRequest.onBeforeRequest.addListener(prepareStyles, reqFilter);
+      // We unregistered it above so that the optional EXTRA_HEADERS is properly re-registered
       chrome.webRequest.onHeadersReceived.addListener(modifyHeaders, reqFilter, [
         'blocking',
         'responseHeaders',
         xhr && chrome.webRequest.OnHeadersReceivedOptions.EXTRA_HEADERS,
       ].filter(Boolean));
     }
-    if (enabled.xhr !== xhr) {
-      enabled.xhr = xhr;
-      toggleEarlyInjection();
+    if (!off) {
+      chrome.webRequest.onBeforeRequest.addListener(prepareStyles, reqFilter);
+      chrome.webNavigation.onCommitted.addListener(injectData, {url: [{urlPrefix: 'http'}]});
     }
-    enabled.csp = csp;
-  }
-
-  /** Runs content scripts earlier than document_start */
-  function toggleEarlyInjection() {
-    const api = chrome.declarativeContent;
-    if (!api) return;
-    api.onPageChanged.removeRules([idXHR], async () => {
-      if (enabled.xhr) {
-        api.onPageChanged.addRules([{
-          id: idXHR,
-          conditions: [
-            new api.PageStateMatcher({
-              pageUrl: {urlContains: '://'},
-            }),
-          ],
-          actions: [
-            new api.RequestContentScript({
-              js: chrome.runtime.getManifest().content_scripts[0].js,
-              allFrames: true,
-            }),
-          ],
-        }]);
-      }
-    });
+    state.csp = csp;
+    state.off = off;
+    state.xhr = xhr;
   }
 
   /** @param {chrome.webRequest.WebRequestBodyDetails} req */
   async function prepareStyles(req) {
     const sections = await API.styles.getSectionsByUrl(req.url);
     if (!isEmptyObj(sections)) {
-      stylesToPass[req.requestId] = !enabled.xhr || makeObjectUrl(sections);
-      setTimeout(cleanUp, 600e3, req.requestId);
+      stylesToPass[req.url] = JSON.stringify(sections);
+      setTimeout(cleanUp, 600e3, req.url);
     }
   }
 
-  function makeObjectUrl(sections) {
-    const blob = new Blob([JSON.stringify(sections)]);
+  function injectData(req) {
+    const str = stylesToPass[req.url];
+    if (str) {
+      chrome.tabs.executeScript(req.tabId, {
+        frameId: req.frameId,
+        runAt: 'document_start',
+        code: `(${data => {
+          if (self.INJECTED !== 1) { // storing data only if apply.js hasn't run yet
+            window[Symbol.for('styles')] = data;
+          }
+        }})(${str})`,
+      });
+    }
+  }
+
+  function makeObjectUrl(data) {
+    const blob = new Blob([data]);
     return URL.createObjectURL(blob).slice(blobUrlPrefix.length);
   }
 
   /** @param {chrome.webRequest.WebResponseHeadersDetails} req */
   function modifyHeaders(req) {
     const {responseHeaders} = req;
-    const id = stylesToPass[req.requestId];
-    if (!id) {
+    const str = stylesToPass[req.url];
+    if (!str) {
       return;
     }
-    if (enabled.xhr) {
+    if (state.xhr) {
       responseHeaders.push({
         name: 'Set-Cookie',
-        value: `${chrome.runtime.id}=${id}`,
+        value: `${chrome.runtime.id}=${makeObjectUrl(str)}`,
       });
     }
-    const csp = enabled.csp &&
+    const csp = state.csp &&
       responseHeaders.find(h => h.name.toLowerCase() === 'content-security-policy');
     if (csp) {
       patchCsp(csp);
     }
-    if (enabled.xhr || csp) {
+    if (state.xhr || csp) {
       return {responseHeaders};
     }
   }
