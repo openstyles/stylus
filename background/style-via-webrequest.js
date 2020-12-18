@@ -2,7 +2,6 @@
 
 define(async require => {
   const {API} = require('/js/msg');
-  const {isEmptyObj} = require('/js/polyfill');
   const prefs = require('/js/prefs');
 
   const idCSP = 'patchCsp';
@@ -10,12 +9,12 @@ define(async require => {
   const idXHR = 'styleViaXhr';
   const rxHOST = /^('none'|(https?:\/\/)?[^']+?[^:'])$/; // strips CSP sources covered by *
   const blobUrlPrefix = 'blob:' + chrome.runtime.getURL('/');
+  /** @type {Object<string,StylesToPass>} */
   const stylesToPass = {};
   const state = {};
 
-  await prefs.initializing;
-  prefs.subscribe([idXHR, idOFF, idCSP], toggle);
   toggle();
+  prefs.subscribe([idXHR, idOFF, idCSP], toggle);
 
   function toggle() {
     const off = prefs.get(idOFF);
@@ -51,14 +50,15 @@ define(async require => {
   /** @param {chrome.webRequest.WebRequestBodyDetails} req */
   async function prepareStyles(req) {
     const sections = await API.styles.getSectionsByUrl(req.url);
-    if (!isEmptyObj(sections)) {
-      stylesToPass[req.url] = JSON.stringify(sections);
-      setTimeout(cleanUp, 600e3, req.url);
-    }
+    stylesToPass[req2key(req)] = /** @namespace StylesToPass */ {
+      blobId: '',
+      str: JSON.stringify(sections),
+      timer: setTimeout(cleanUp, 600e3, req),
+    };
   }
 
   function injectData(req) {
-    const str = stylesToPass[req.url];
+    const {str} = stylesToPass[req2key(req)] || {};
     if (str) {
       chrome.tabs.executeScript(req.tabId, {
         frameId: req.frameId,
@@ -69,25 +69,23 @@ define(async require => {
           }
         }})(${str})`,
       });
+      if (!state.xhr) cleanUp(req);
     }
-  }
-
-  function makeObjectUrl(data) {
-    const blob = new Blob([data]);
-    return URL.createObjectURL(blob).slice(blobUrlPrefix.length);
   }
 
   /** @param {chrome.webRequest.WebResponseHeadersDetails} req */
   function modifyHeaders(req) {
     const {responseHeaders} = req;
-    const str = stylesToPass[req.url];
-    if (!str) {
+    const data = stylesToPass[req2key(req)];
+    if (!data || data.str === '{}') {
+      cleanUp(req);
       return;
     }
     if (state.xhr) {
+      data.blobId = URL.createObjectURL(new Blob([data.str])).slice(blobUrlPrefix.length);
       responseHeaders.push({
         name: 'Set-Cookie',
-        value: `${chrome.runtime.id}=${makeObjectUrl(str)}`,
+        value: `${chrome.runtime.id}=${data.blobId}`,
       });
     }
     const csp = state.csp &&
@@ -132,9 +130,19 @@ define(async require => {
     }
   }
 
-  function cleanUp(key) {
-    const blobId = stylesToPass[key];
-    delete stylesToPass[key];
-    if (blobId) URL.revokeObjectURL(blobUrlPrefix + blobId);
+  function cleanUp(req) {
+    const key = req2key(req);
+    const data = stylesToPass[key];
+    if (data) {
+      delete stylesToPass[key];
+      clearTimeout(data.timer);
+      if (data.blobId) {
+        URL.revokeObjectURL(blobUrlPrefix + data.blobId);
+      }
+    }
+  }
+
+  function req2key(req) {
+    return req.tabId + ':' + req.frameId;
   }
 });
