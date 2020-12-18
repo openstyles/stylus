@@ -370,7 +370,7 @@
     "description": "Label for the button to enable a style"
   },
   "excludeStyleByDomainLabel": {
-    "message": "Exclude the current domain"
+    "message": "Exclude the current host"
   },
   "excludeStyleByUrlLabel": {
     "message": "Exclude the current URL"
