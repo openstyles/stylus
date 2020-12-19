@@ -66,12 +66,13 @@ define(async require => {
   }
 
   function injectData(req) {
-    const {str} = stylesToPass[req2key(req)] || {};
-    if (str) {
+    const data = stylesToPass[req2key(req)];
+    if (data && !data.injected) {
+      data.injected = true;
       chrome.tabs.executeScript(req.tabId, {
         frameId: req.frameId,
         runAt: 'document_start',
-        code: `(${injectedCode})(${str})`,
+        code: `(${injectedCode})(${data.str})`,
       });
       if (!state.xhr) cleanUp(req);
     }
