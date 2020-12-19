@@ -5,6 +5,7 @@ define(require => {
   const {API, msg} = require('/js/msg');
   const styleManager = require('./style-manager');
   require('./background-api');
+  require('./style-via-webrequest');
 
   // These are loaded conditionally.
   // Each item uses `require` individually so IDE can jump to the source and track usage.
@@ -15,8 +16,6 @@ define(require => {
       require(['./browser-cmd-hotkeys']),
     !FIREFOX &&
       require(['./content-scripts']),
-    !FIREFOX &&
-      require(['./style-via-webrequest']),
     chrome.contextMenus &&
       require(['./context-menus']),
     styleManager.ready,

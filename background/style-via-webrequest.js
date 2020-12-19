@@ -2,6 +2,7 @@
 
 define(async require => {
   const {API} = require('/js/msg');
+  const {CHROME} = require('/js/toolbox');
   const prefs = require('/js/prefs');
 
   const idCSP = 'patchCsp';
@@ -12,6 +13,11 @@ define(async require => {
   /** @type {Object<string,StylesToPass>} */
   const stylesToPass = {};
   const state = {};
+  const injectedCode = CHROME && `${data => {
+    if (self.INJECTED !== 1) { // storing data only if apply.js hasn't run yet
+      window[Symbol.for('styles')] = data;
+    }
+  }}`;
 
   toggle();
   prefs.subscribe([idXHR, idOFF, idCSP], toggle);
@@ -38,8 +44,10 @@ define(async require => {
         xhr && chrome.webRequest.OnHeadersReceivedOptions.EXTRA_HEADERS,
       ].filter(Boolean));
     }
-    if (!off) {
+    if (CHROME ? !off : xhr || csp) {
       chrome.webRequest.onBeforeRequest.addListener(prepareStyles, reqFilter);
+    }
+    if (CHROME && !off) {
       chrome.webNavigation.onCommitted.addListener(injectData, {url: [{urlPrefix: 'http'}]});
     }
     state.csp = csp;
@@ -63,11 +71,7 @@ define(async require => {
       chrome.tabs.executeScript(req.tabId, {
         frameId: req.frameId,
         runAt: 'document_start',
-        code: `(${data => {
-          if (self.INJECTED !== 1) { // storing data only if apply.js hasn't run yet
-            window[Symbol.for('styles')] = data;
-          }
-        }})(${str})`,
+        code: `(${injectedCode})(${str})`,
       });
       if (!state.xhr) cleanUp(req);
     }
