@@ -58,18 +58,27 @@ define(require => {
     if (STYLE_VIA_API) {
       await API.styleViaAPI({method: 'styleApply'});
     } else {
-      const SYM = Symbol.for('styles');
+      const SYM_ID = 'styles';
+      const SYM = Symbol.for(SYM_ID);
       const styles =
         window[SYM] ||
-        chrome.app && !chrome.tabs && getStylesViaXhr() ||
+        (IS_FRAME && location.href === 'about:blank'
+          ? getParentStyles(SYM_ID)
+          : chrome.app && !chrome.tabs && getStylesViaXhr()) ||
         await API.styles.getSectionsByUrl(getMatchUrl(), null, true);
-      delete window[SYM];
+      window[SYM] = styles;
       if (styles.disableAll) {
         delete styles.disableAll;
         styleInjector.toggle(false);
       }
       await styleInjector.apply(styles);
     }
+  }
+
+  function getParentStyles(id) {
+    try {
+      return parent[parent.Symbol.for(id)];
+    } catch (e) {}
   }
 
   function getStylesViaXhr() {
