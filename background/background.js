@@ -48,16 +48,20 @@ Object.assign(API, {
      }} params
    * @returns {Promise<chrome.tabs.Tab>}
    */
-  openEditor(params) {
+  async openEditor(params) {
     const u = new URL(chrome.runtime.getURL('edit.html'));
     u.search = new URLSearchParams(params);
-    return openURL({
+    const wnd = prefs.get('openEditInWindow');
+    const wndPos = wnd && prefs.get('windowPosition');
+    const wndBase = wnd && prefs.get('openEditInWindow.popup') ? {type: 'popup'} : {};
+    const ffBug = wnd && FIREFOX; // https://bugzil.la/1271047
+    const tab = await openURL({
       url: `${u}`,
       currentWindow: null,
-      newWindow: prefs.get('openEditInWindow') && Object.assign({},
-        prefs.get('openEditInWindow.popup') && {type: 'popup'},
-        prefs.get('windowPosition')),
+      newWindow: Object.assign(wndBase, !ffBug && wndPos),
     });
+    if (ffBug) await browser.windows.update(tab.windowId, wndPos);
+    return tab;
   },
 
   /** @returns {Promise<chrome.tabs.Tab>} */
