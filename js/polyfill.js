@@ -1,7 +1,10 @@
 'use strict';
 
-// eslint-disable-next-line no-unused-expressions
-self.INJECTED !== 1 && (() => {
+(() => {
+  /* Chrome reinjects content script when documentElement is replaced so we ignore it
+   by checking against a literal `1`, not just `if (truthy)`, because <html id="INJECTED">
+   is exposed per HTML spec as a global `window.INJECTED` */
+  if (window.INJECTED === 1) return;
 
   //#region for content scripts and our extension pages
 
@@ -65,6 +68,35 @@ self.INJECTED !== 1 && (() => {
   if (!chrome.tabs) return;
 
   //#region for our extension pages
+
+  window.require = async function require(urls, cb) {
+    const promises = [];
+    const all = [];
+    const toLoad = [];
+    for (let url of Array.isArray(urls) ? urls : [urls]) {
+      const isCss = url.endsWith('.css');
+      const tag = isCss ? 'link' : 'script';
+      const attr = isCss ? 'href' : 'src';
+      if (!isCss && !url.endsWith('.js')) url += '.js';
+      if (url.startsWith('/')) url = url.slice(1);
+      let el = document.head.querySelector(`${tag}[${attr}$="${url}"]`);
+      if (!el) {
+        el = document.createElement(tag);
+        toLoad.push(el);
+        promises.push(new Promise((resolve, reject) => {
+          el.onload = resolve;
+          el.onerror = reject;
+          el[attr] = url;
+          if (isCss) el.rel = 'stylesheet';
+        }).catch(console.warn));
+      }
+      all.push(el);
+    }
+    if (toLoad.length) document.head.append(...toLoad);
+    if (promises.length) await Promise.all(promises);
+    if (cb) cb(...all);
+    return all[0];
+  };
 
   if (!(new URLSearchParams({foo: 1})).get('foo')) {
     // TODO: remove when minimum_chrome_version >= 61

@@ -1,21 +1,15 @@
-/* global
-  $
-  cmFactory
-  debounce
-  DocFuncMapper
-  editor
-  initBeautifyButton
-  linter
-  prefs
-  regExpTester
-  t
-  trimCommentLabel
-  tryRegExp
-*/
+/* global $ */// dom.js
+/* global MozDocMapper trimCommentLabel */// util.js
+/* global cmFactory */
+/* global debounce tryRegExp */// toolbox.js
+/* global editor */
+/* global initBeautifyButton */// beautify.js
+/* global linterMan */
+/* global prefs */
+/* global t */// localization.js
 'use strict';
 
 /* exported createSection */
-
 /**
  * @param {StyleSection} originalSection
  * @param {function():number} genId
@@ -43,7 +37,7 @@ function createSection(originalSection, genId, si) {
 
   const appliesToContainer = $('.applies-to-list', el);
   const appliesTo = [];
-  DocFuncMapper.forEachProp(originalSection, (type, value) =>
+  MozDocMapper.forEachProp(originalSection, (type, value) =>
     insertApplyAfter({type, value}));
   if (!appliesTo.length) {
     insertApplyAfter({all: true});
@@ -64,10 +58,10 @@ function createSection(originalSection, genId, si) {
     appliesTo,
     getModel() {
       const items = appliesTo.map(a => !a.all && [a.type, a.value]);
-      return DocFuncMapper.toSection(items, {code: cm.getValue()});
+      return MozDocMapper.toSection(items, {code: cm.getValue()});
     },
     remove() {
-      linter.disableForEditor(cm);
+      linterMan.disableForEditor(cm);
       el.classList.add('removed');
       removed = true;
       appliesTo.forEach(a => a.remove());
@@ -79,7 +73,7 @@ function createSection(originalSection, genId, si) {
       cmFactory.destroy(cm);
     },
     restore() {
-      linter.enableForEditor(cm);
+      linterMan.enableForEditor(cm);
       el.classList.remove('removed');
       removed = false;
       appliesTo.forEach(a => a.restore());
@@ -102,7 +96,7 @@ function createSection(originalSection, genId, si) {
     },
   };
 
-  prefs.subscribe('editor.toc.expanded', updateTocPrefToggled, {now: true});
+  prefs.subscribe('editor.toc.expanded', updateTocPrefToggled, {runNow: true});
 
   return section;
 
@@ -120,11 +114,8 @@ function createSection(originalSection, genId, si) {
       emitSectionChange('code');
     });
     cm.display.wrapper.on('keydown', event => handleKeydown(cm, event), true);
-    $('.test-regexp', el).onclick = () => {
-      regExpTester.toggle();
-      updateRegexpTester();
-    };
-    initBeautifyButton($('.beautify-section', el), () => [cm]);
+    $('.test-regexp', el).onclick = () => updateRegexpTester(true);
+    initBeautifyButton($('.beautify-section', el), [cm]);
   }
 
   function handleKeydown(cm, event) {
@@ -165,15 +156,22 @@ function createSection(originalSection, genId, si) {
     }
   }
 
-  function updateRegexpTester() {
+  async function updateRegexpTester(toggle) {
+    const isLoaded = typeof regexpTester === 'object';
+    if (toggle && !isLoaded) {
+      await require(['/edit/regexp-tester']); /* global regexpTester */
+    }
+    if (toggle != null && isLoaded) {
+      regexpTester.toggle(toggle);
+    }
     const regexps = appliesTo.filter(a => a.type === 'regexp')
       .map(a => a.value);
     if (regexps.length) {
       el.classList.add('has-regexp');
-      regExpTester.update(regexps);
+      if (isLoaded) regexpTester.update(regexps);
     } else {
       el.classList.remove('has-regexp');
-      regExpTester.toggle(false);
+      if (isLoaded) regexpTester.toggle(false);
     }
   }
 
@@ -211,7 +209,7 @@ function createSection(originalSection, genId, si) {
 
   function updateTocPrefToggled(key, val) {
     changeListeners[val ? 'add' : 'delete'](updateTocEntryLazy);
-    el.onOff(val, 'focusin', updateTocFocus);
+    (val ? el.on : el.off).call(el, 'focusin', updateTocFocus);
     if (val) {
       updateTocEntry();
       if (el.contains(document.activeElement)) {

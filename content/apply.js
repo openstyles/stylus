@@ -1,21 +1,22 @@
-/* global msg API prefs createStyleInjector */
+/* global API msg */// msg.js
+/* global StyleInjector */
+/* global prefs */
 'use strict';
 
-// Chrome reruns content script when documentElement is replaced.
-// Note, we're checking against a literal `1`, not just `if (truthy)`,
-// because <html id="INJECTED"> is exposed per HTML spec as a global variable and `window.INJECTED`.
+(() => {
+  if (window.INJECTED === 1) return;
 
-// eslint-disable-next-line no-unused-expressions
-self.INJECTED !== 1 && (() => {
-  self.INJECTED = 1;
-
-  let IS_TAB = !chrome.tabs || location.pathname !== '/popup.html';
-  const IS_FRAME = window !== parent;
-  const STYLE_VIA_API = !chrome.app && document instanceof XMLDocument;
-  const styleInjector = createStyleInjector({
+  let hasStyles = false;
+  let isTab = !chrome.tabs || location.pathname !== '/popup.html';
+  const isFrame = window !== parent;
+  const isFrameAboutBlank = isFrame && location.href === 'about:blank';
+  const isUnstylable = !chrome.app && document instanceof XMLDocument;
+  const styleInjector = StyleInjector({
     compare: (a, b) => a.id - b.id,
     onUpdate: onInjectorUpdate,
   });
+  // dynamic about: and javascript: iframes don't have a URL yet so we'll use their parent
+  const matchUrl = isFrameAboutBlank && tryCatch(() => parent.location.href) || location.href;
 
   // save it now because chrome.runtime will be unavailable in the orphaned script
   const orphanEventId = chrome.runtime.id;
@@ -25,16 +26,16 @@ self.INJECTED !== 1 && (() => {
 
   /** @type chrome.runtime.Port */
   let port;
-  let lazyBadge = IS_FRAME;
+  let lazyBadge = isFrame;
   let parentDomain;
 
   // Declare all vars before init() or it'll throw due to "temporal dead zone" of const/let
-  const initializing = init();
+  const ready = init();
 
   // the popup needs a check as it's not a tab but can be opened in a tab manually for whatever reason
-  if (!IS_TAB) {
+  if (!isTab) {
     chrome.tabs.getCurrent(tab => {
-      IS_TAB = Boolean(tab);
+      isTab = Boolean(tab);
       if (tab && styleInjector.list.length) updateCount();
     });
   }
@@ -50,103 +51,97 @@ self.INJECTED !== 1 && (() => {
     if (!isOrphaned) {
       updateCount();
       const onOff = prefs[styleInjector.list.length ? 'subscribe' : 'unsubscribe'];
-      onOff(['disableAll'], updateDisableAll);
-      if (IS_FRAME) {
+      onOff('disableAll', updateDisableAll);
+      if (isFrame) {
         updateExposeIframes();
-        onOff(['exposeIframes'], updateExposeIframes);
+        onOff('exposeIframes', updateExposeIframes);
       }
     }
   }
 
   async function init() {
-    if (STYLE_VIA_API) {
+    if (isUnstylable) {
       await API.styleViaAPI({method: 'styleApply'});
     } else {
-      const styles = chrome.app && !chrome.tabs && getStylesViaXhr() ||
-        await API.styles.getSectionsByUrl(getMatchUrl(), null, true);
-      if (styles.disableAll) {
-        delete styles.disableAll;
-        styleInjector.toggle(false);
+      const SYM_ID = 'styles';
+      const SYM = Symbol.for(SYM_ID);
+      const styles =
+        window[SYM] ||
+        (isFrameAboutBlank
+          ? tryCatch(() => parent[parent.Symbol.for(SYM_ID)])
+          : chrome.app && !chrome.tabs && tryCatch(getStylesViaXhr)) ||
+        await API.styles.getSectionsByUrl(matchUrl, null, true);
+      hasStyles = !styles.disableAll;
+      if (hasStyles) {
+        window[SYM] = styles;
+        await styleInjector.apply(styles);
+      } else {
+        delete window[SYM];
+        prefs.subscribe('disableAll', updateDisableAll);
       }
-      await styleInjector.apply(styles);
     }
   }
 
+  /** Must be executed inside try/catch */
   function getStylesViaXhr() {
-    try {
-      const blobId = document.cookie.split(chrome.runtime.id + '=')[1].split(';')[0];
-      const url = 'blob:' + chrome.runtime.getURL(blobId);
-      document.cookie = `${chrome.runtime.id}=1; max-age=0`; // remove our cookie
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', url, false); // synchronous
-      xhr.send();
-      URL.revokeObjectURL(url);
-      return JSON.parse(xhr.response);
-    } catch (e) {}
-  }
-
-  function getMatchUrl() {
-    let matchUrl = location.href;
-    if (!chrome.tabs && !matchUrl.match(/^(http|file|chrome|ftp)/)) {
-      // dynamic about: and javascript: iframes don't have an URL yet
-      // so we'll try the parent frame which is guaranteed to have a real URL
-      try {
-        if (IS_FRAME) {
-          matchUrl = parent.location.href;
-        }
-      } catch (e) {}
-    }
-    return matchUrl;
+    const blobId = document.cookie.split(chrome.runtime.id + '=')[1].split(';')[0];
+    const url = 'blob:' + chrome.runtime.getURL(blobId);
+    document.cookie = `${chrome.runtime.id}=1; max-age=0`; // remove our cookie
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url, false); // synchronous
+    xhr.send();
+    URL.revokeObjectURL(url);
+    return JSON.parse(xhr.response);
   }
 
   function applyOnMessage(request) {
-    if (STYLE_VIA_API) {
-      if (request.method === 'urlChanged') {
+    const {method} = request;
+    if (isUnstylable) {
+      if (method === 'urlChanged') {
         request.method = 'styleReplaceAll';
       }
-      if (/^(style|updateCount)/.test(request.method)) {
+      if (/^(style|updateCount)/.test(method)) {
         API.styleViaAPI(request);
         return;
       }
     }
 
-    switch (request.method) {
+    const {style} = request;
+    switch (method) {
       case 'ping':
         return true;
 
       case 'styleDeleted':
-        styleInjector.remove(request.style.id);
+        styleInjector.remove(style.id);
         break;
 
       case 'styleUpdated':
-        if (request.style.enabled) {
-          API.styles.getSectionsByUrl(getMatchUrl(), request.style.id)
-            .then(sections => {
-              if (!sections[request.style.id]) {
-                styleInjector.remove(request.style.id);
-              } else {
-                styleInjector.apply(sections);
-              }
-            });
+        if (style.enabled) {
+          API.styles.getSectionsByUrl(matchUrl, style.id).then(sections =>
+            sections[style.id]
+              ? styleInjector.apply(sections)
+              : styleInjector.remove(style.id));
         } else {
-          styleInjector.remove(request.style.id);
+          styleInjector.remove(style.id);
         }
         break;
 
       case 'styleAdded':
-        if (request.style.enabled) {
-          API.styles.getSectionsByUrl(getMatchUrl(), request.style.id)
+        if (style.enabled) {
+          API.styles.getSectionsByUrl(matchUrl, style.id)
             .then(styleInjector.apply);
         }
         break;
 
       case 'urlChanged':
-        API.styles.getSectionsByUrl(getMatchUrl())
-          .then(styleInjector.replace);
+        API.styles.getSectionsByUrl(matchUrl).then(sections => {
+          hasStyles = true;
+          styleInjector.replace(sections);
+        });
         break;
 
       case 'backgroundReady':
-        initializing.catch(err =>
+        ready.catch(err =>
           msg.isIgnorableError(err)
             ? init()
             : console.error(err));
@@ -159,8 +154,10 @@ self.INJECTED !== 1 && (() => {
   }
 
   function updateDisableAll(key, disableAll) {
-    if (STYLE_VIA_API) {
+    if (isUnstylable) {
       API.styleViaAPI({method: 'prefChanged', prefs: {disableAll}});
+    } else if (!hasStyles && !disableAll) {
+      init();
     } else {
       styleInjector.toggle(!disableAll);
     }
@@ -182,8 +179,8 @@ self.INJECTED !== 1 && (() => {
   }
 
   function updateCount() {
-    if (!IS_TAB) return;
-    if (IS_FRAME) {
+    if (!isTab) return;
+    if (isFrame) {
       if (!port && styleInjector.list.length) {
         port = chrome.runtime.connect({name: 'iframe'});
       } else if (port && !styleInjector.list.length) {
@@ -191,23 +188,25 @@ self.INJECTED !== 1 && (() => {
       }
       if (lazyBadge && performance.now() > 1000) lazyBadge = false;
     }
-    (STYLE_VIA_API ?
+    (isUnstylable ?
       API.styleViaAPI({method: 'updateCount'}) :
       API.updateIconBadge(styleInjector.list.map(style => style.id), {lazyBadge})
     ).catch(msg.ignoreError);
   }
 
-  function orphanCheck() {
+  function tryCatch(func, ...args) {
     try {
-      if (chrome.i18n.getUILanguage()) return;
+      return func(...args);
     } catch (e) {}
+  }
+
+  function orphanCheck() {
+    if (tryCatch(() => chrome.i18n.getUILanguage())) return;
     // In Chrome content script is orphaned on an extension update/reload
     // so we need to detach event listeners
     window.removeEventListener(orphanEventId, orphanCheck, true);
     isOrphaned = true;
     styleInjector.clear();
-    try {
-      msg.off(applyOnMessage);
-    } catch (e) {}
+    tryCatch(msg.off, applyOnMessage);
   }
 })();

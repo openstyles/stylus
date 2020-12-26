@@ -1,4 +1,4 @@
-/* global cloneInto msg API */
+/* global API msg */// msg.js
 'use strict';
 
 // eslint-disable-next-line no-unused-expressions
@@ -13,13 +13,6 @@
   document.addEventListener('stylishUpdateChrome', onClick);
 
   msg.on(onMessage);
-
-  onDOMready().then(() => {
-    window.postMessage({
-      direction: 'from-content-script',
-      message: 'StylishInstalled',
-    }, '*');
-  });
 
   let currentMd5;
   const md5Url = getMeta('stylish-md5-url') || `https://update.userstyles.org/${styleId}.md5`;
@@ -119,7 +112,7 @@
     if (typeof cloneInto !== 'undefined') {
       // Firefox requires explicit cloning, however USO can't process our messages anyway
       // because USO tries to use a global "event" variable deprecated in Firefox
-      detail = cloneInto({detail}, document);
+      detail = cloneInto({detail}, document); /* global cloneInto */
     } else {
       detail = {detail};
     }
@@ -172,7 +165,7 @@
       });
   }
 
-  function saveStyleCode(message, name, addProps = {}) {
+  async function saveStyleCode(message, name, addProps = {}) {
     const isNew = message === 'styleInstall';
     const needsConfirmation = isNew || !saveStyleCode.confirmed;
     if (needsConfirmation && !confirm(chrome.i18n.getMessage(message, [name]))) {
@@ -180,22 +173,19 @@
     }
     saveStyleCode.confirmed = true;
     enableUpdateButton(false);
-    return getStyleJson().then(json => {
-      if (!json) {
-        prompt(chrome.i18n.getMessage('styleInstallFailed', ''),
-          'https://github.com/openstyles/stylus/issues/195');
-        return;
-      }
-      // Update originalMd5 since USO changed it (2018-11-11) to NOT match the current md5
-      return API.styles.install(Object.assign(json, addProps, {originalMd5: currentMd5}))
-        .then(style => {
-          if (!isNew && style.updateUrl.includes('?')) {
-            enableUpdateButton(true);
-          } else {
-            sendEvent({type: 'styleInstalledChrome'});
-          }
-        });
-    });
+    const json = await getStyleJson();
+    if (!json) {
+      prompt(chrome.i18n.getMessage('styleInstallFailed', ''),
+        'https://github.com/openstyles/stylus/issues/195');
+      return;
+    }
+    // Update originalMd5 since USO changed it (2018-11-11) to NOT match the current md5
+    const style = await API.styles.install(Object.assign(json, addProps, {originalMd5: currentMd5}));
+    if (!isNew && style.updateUrl.includes('?')) {
+      enableUpdateButton(true);
+    } else {
+      sendEvent({type: 'styleInstalledChrome'});
+    }
 
     function enableUpdateButton(state) {
       const important = s => s.replace(/;/g, '!important;');
@@ -218,11 +208,11 @@
     return e ? e.getAttribute('href') : null;
   }
 
-  async function getResource(url, type = 'text') {
+  async function getResource(url, opts) {
     try {
       return url.startsWith('#')
         ? document.getElementById(url.slice(1)).textContent
-        : await (await fetch(url))[type];
+        : await API.download(url, opts);
     } catch (error) {
       alert('Error\n' + error.message);
       return Promise.reject(error);
@@ -231,32 +221,19 @@
 
   // USO providing md5Url as "https://update.update.userstyles.org/#####.md5"
   // instead of "https://update.userstyles.org/#####.md5"
-  function tryFixMd5(style) {
-    if (style && style.md5Url && style.md5Url.includes('update.update')) {
-      style.md5Url = style.md5Url.replace('update.update', 'update');
-    }
-    return style;
-  }
-
-  function getStyleJson() {
-    return getResource(getStyleURL(), 'json')
-      .then(style => {
-        if (!style || !Array.isArray(style.sections) || style.sections.length) {
-          return style;
-        }
-        const codeElement = document.getElementById('stylish-code');
-        if (codeElement && !codeElement.textContent.trim()) {
-          return style;
-        }
-        return getResource(getMeta('stylish-update-url'))
-          .then(code => API.worker.parseMozFormat({code}))
-          .then(result => {
-            style.sections = result.sections;
-            return style;
-          });
-      })
-      .then(tryFixMd5)
-      .catch(() => null);
+  async function getStyleJson() {
+    try {
+      const style = await getResource(getStyleURL(), {responseType: 'json'});
+      const codeElement = document.getElementById('stylish-code');
+      if (!style || !Array.isArray(style.sections) || style.sections.length ||
+          codeElement && !codeElement.textContent.trim()) {
+        return style;
+      }
+      const code = await getResource(getMeta('stylish-update-url'));
+      style.sections = (await API.worker.parseMozFormat({code})).sections;
+      if (style.md5Url) style.md5Url = style.md5Url.replace('update.update', 'update');
+      return style;
+    } catch (e) {}
   }
 
   /**
@@ -290,7 +267,7 @@
   function onDOMready() {
     return document.readyState !== 'loading'
       ? Promise.resolve()
-      : new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve, {once: true}));
+      : new Promise(resolve => window.addEventListener('load', resolve, {once: true}));
   }
 
   function openSettings(countdown = 10e3) {
@@ -329,6 +306,7 @@
 
 function inPageContext(eventId) {
   document.currentScript.remove();
+  window.isInstalled = true;
   const origMethods = {
     json: Response.prototype.json,
     byId: document.getElementById,

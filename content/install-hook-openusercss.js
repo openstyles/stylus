@@ -1,4 +1,4 @@
-/* global API */
+/* global API */// msg.js
 'use strict';
 
 (() => {
@@ -55,7 +55,7 @@
     window.addEventListener('message', installedHandler);
   };
 
-  const doHandshake = () => {
+  const doHandshake = event => {
     // This is a representation of features that Stylus is capable of
     const implementedFeatures = [
       'install-usercss',
@@ -106,7 +106,7 @@
     && event.data.type === 'ouc-handshake-question'
     && allowedOrigins.includes(event.origin)
     ) {
-      doHandshake();
+      doHandshake(event);
     }
   };
 

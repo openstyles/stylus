@@ -1,71 +1,61 @@
+/* global API */// msg.js
+/* global URLS deepEqual isEmptyObj tryJSONparse */// toolbox.js
+/* global changeQueue */// manage.js
+/* global chromeSync */// storage-util.js
+/* global prefs */
+/* global t */// localization.js
 /* global
   $
   $$
   $create
   animateElement
-  API
-  bulkChangeQueue
-  CHROME
-  chromeSync
-  deepEqual
-  messageBox
-  onDOMready
-  prefs
+  messageBoxProxy
   scrollElementIntoView
-  styleJSONseemsValid
-  styleSectionsEqual
-  t
-  tryJSONparse
-*/
+*/// dom.js
 'use strict';
 
-const STYLISH_DUMP_FILE_EXT = '.txt';
-const STYLUS_BACKUP_FILE_EXT = '.json';
+$('#file-all-styles').onclick = exportToFile;
+$('#unfile-all-styles').onclick = () => importFromFile({fileTypeFilter: '.json'});
 
-onDOMready().then(() => {
-  $('#file-all-styles').onclick = () => exportToFile();
-  $('#unfile-all-styles').onclick = () => importFromFile({fileTypeFilter: STYLUS_BACKUP_FILE_EXT});
-
-  Object.assign(document.body, {
-    ondragover(event) {
-      const hasFiles = event.dataTransfer.types.includes('Files');
-      event.dataTransfer.dropEffect = hasFiles || event.target.type === 'search' ? 'copy' : 'none';
-      this.classList.toggle('dropzone', hasFiles);
-      if (hasFiles) {
-        event.preventDefault();
-        clearTimeout(this.fadeoutTimer);
-        this.classList.remove('fadeout');
-      }
-    },
-    ondragend() {
-      animateElement(this, 'fadeout', 'dropzone');
-    },
-    ondragleave(event) {
-      try {
-        // in Firefox event.target could be XUL browser and hence there is no permission to access it
-        if (event.target === this) {
-          this.ondragend();
-        }
-      } catch (e) {
+Object.assign(document.body, {
+  ondragover(event) {
+    const hasFiles = event.dataTransfer.types.includes('Files');
+    event.dataTransfer.dropEffect = hasFiles || event.target.type === 'search' ? 'copy' : 'none';
+    this.classList.toggle('dropzone', hasFiles);
+    if (hasFiles) {
+      event.preventDefault();
+      this.classList.remove('fadeout');
+    }
+  },
+  ondragend() {
+    animateElement(this, 'fadeout', 'dropzone');
+  },
+  ondragleave(event) {
+    try {
+      // in Firefox event.target could be XUL browser and hence there is no permission to access it
+      if (event.target === this) {
         this.ondragend();
       }
-    },
-    ondrop(event) {
-      if (event.dataTransfer.files.length) {
-        event.preventDefault();
-        if ($('#only-updates input').checked) {
-          $('#only-updates input').click();
-        }
-        importFromFile({file: event.dataTransfer.files[0]});
+    } catch (e) {
+      this.ondragend();
+    }
+  },
+  ondrop(event) {
+    if (event.dataTransfer.files.length) {
+      event.preventDefault();
+      if ($('#only-updates input').checked) {
+        $('#only-updates input').click();
       }
-      /* Run import first for a while, then run fadeout which is very CPU-intensive in Chrome */
-      setTimeout(() => this.ondragend(), 250);
-    },
-  });
+      importFromFile({file: event.dataTransfer.files[0]});
+    }
+    /* Run import first for a while, then run fadeout which is very CPU-intensive in Chrome */
+    setTimeout(() => this.ondragend(), 250);
+  },
 });
 
 function importFromFile({fileTypeFilter, file} = {}) {
-  return new Promise(resolve => {
+  return new Promise(async resolve => {
+    await require(['/js/storage-util']);
     const fileInput = document.createElement('input');
     if (file) {
       readFile();
@@ -73,7 +63,7 @@ function importFromFile({fileTypeFilter, file} = {}) {
     }
     fileInput.style.display = 'none';
     fileInput.type = 'file';
-    fileInput.accept = fileTypeFilter || STYLISH_DUMP_FILE_EXT;
+    fileInput.accept = fileTypeFilter || '.txt';
     fileInput.acceptCharset = 'utf-8';
 
     document.body.appendChild(fileInput);
@@ -85,7 +75,7 @@ function importFromFile({fileTypeFilter, file} = {}) {
       if (file || fileInput.value !== fileInput.initialValue) {
         file = file || fileInput.files[0];
         if (file.size > 100e6) {
-          messageBox.alert("100MB backup? I don't believe you.");
+          messageBoxProxy.alert("100MB backup? I don't believe you.");
           resolve();
           return;
         }
@@ -93,9 +83,9 @@ function importFromFile({fileTypeFilter, file} = {}) {
         fReader.onloadend = event => {
           fileInput.remove();
           const text = event.target.result;
-          const maybeUsercss = !/^\s*\[/.test(text) && /==UserStyle==/i.test(text);
+          const maybeUsercss = !/^\s*\[/.test(text) && URLS.rxMETA.test(text);
           if (maybeUsercss) {
-            messageBox.alert(t('dragDropUsercssTabstrip'));
+            messageBoxProxy.alert(t('dragDropUsercssTabstrip'));
           } else {
             importFromString(text).then(resolve);
           }
@@ -106,8 +96,8 @@ function importFromFile({fileTypeFilter, file} = {}) {
   });
 }
 
-
 async function importFromString(jsonString) {
+  await require(['/js/sections-util']); /* global styleJSONseemsValid styleSectionsEqual */
   const json = tryJSONparse(jsonString);
   const oldStyles = Array.isArray(json) && json.length ? await API.styles.getAll() : [];
   const oldStylesById = new Map(oldStyles.map(style => [style.id, style]));
@@ -124,8 +114,8 @@ async function importFromString(jsonString) {
     invalid: {names: [], legend: 'importReportLegendInvalid'},
   };
   await Promise.all(json.map(analyze));
-  bulkChangeQueue.length = 0;
-  bulkChangeQueue.time = performance.now();
+  changeQueue.length = 0;
+  changeQueue.time = performance.now();
   (await API.styles.importMany(items))
     .forEach((style, i) => updateStats(style, infos[i]));
   return done();
@@ -166,9 +156,9 @@ async function importFromString(jsonString) {
   }
 
   async function analyzeStorage(storage) {
-    analyzePrefs(storage[prefs.STORAGE_KEY], Object.keys(prefs.defaults), prefs.values, true);
+    analyzePrefs(storage[prefs.STORAGE_KEY], prefs.knownKeys, prefs.values, true);
     delete storage[prefs.STORAGE_KEY];
-    if (Object.keys(storage).length) {
+    if (!isEmptyObj(storage)) {
       analyzePrefs(storage, Object.values(chromeSync.LZ_KEY), await chromeSync.getLZValues());
     }
   }
@@ -214,7 +204,7 @@ async function importFromString(jsonString) {
     const numChanged = entries.reduce((sum, [, val]) =>
       sum + (val.dirty ? val.names.length : 0), 0);
     const report = entries.map(renderStats).filter(Boolean);
-    messageBox({
+    messageBoxProxy.show({
       title: t('importReportTitle'),
       contents: $create('#import', report.length ? report : t('importReportUnchanged')),
       buttons: [t('confirmClose'), numChanged && t('undo')],
@@ -254,11 +244,6 @@ async function importFromString(jsonString) {
   }
 
   async function importOptions() {
-    // Must acquire the permission before setting the pref
-    if (CHROME && !chrome.declarativeContent &&
-        stats.options.names.find(_ => _.name === 'styleViaXhr' && _.isValid && _.val)) {
-      await browser.permissions.request({permissions: ['declarativeContent']});
-    }
     const oldStorage = await chromeSync.get();
     for (const {name, val, isValid, isPref} of stats.options.names) {
       if (isValid) {
@@ -298,7 +283,7 @@ async function importFromString(jsonString) {
     }
     // taskUI is superfast and updates style list only in this page,
     // which should account for 99.99999999% of cases, supposedly
-    return tasks.then(() => messageBox({
+    return tasks.then(() => messageBoxProxy.show({
       title: t('importReportUndoneTitle'),
       contents: newIds.length + ' ' + t('importReportUndone'),
       buttons: [t('confirmClose')],
@@ -332,8 +317,8 @@ async function importFromString(jsonString) {
   }
 }
 
-
 async function exportToFile() {
+  await require(['/js/storage-util']);
   const data = [
     Object.assign({
       [prefs.STORAGE_KEY]: prefs.values,
@@ -352,6 +337,6 @@ async function exportToFile() {
     const dd = ('0' + today.getDate()).substr(-2);
     const mm = ('0' + (today.getMonth() + 1)).substr(-2);
     const yyyy = today.getFullYear();
-    return `stylus-${yyyy}-${mm}-${dd}${STYLUS_BACKUP_FILE_EXT}`;
+    return `stylus-${yyyy}-${mm}-${dd}.json`;
   }
 }

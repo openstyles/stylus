@@ -1,15 +1,16 @@
-/* global messageBox ENTRY_ID_PREFIX newUI filtersSelector filterAndAppend
-  sorter $ $$ $create API onDOMready scrollElementIntoView t chromeLocal */
-/* exported handleUpdateInstalled */
+/* global $ $$ $create messageBoxProxy scrollElementIntoView */// dom.js
+/* global $entry */// render.js
+/* global API */// msg.js
+/* global filterAndAppend filtersSelector */// filters.js
+/* global newUI */// manage.js
+/* global sorter */
+/* global t */// localization.js
 'use strict';
 
-onDOMready().then(() => {
-  $('#check-all-updates').onclick = checkUpdateAll;
-  $('#check-all-updates-force').onclick = checkUpdateAll;
-  $('#apply-all-updates').onclick = applyUpdateAll;
-  $('#update-history').onclick = showUpdateHistory;
-});
-
+$('#check-all-updates').onclick = checkUpdateAll;
+$('#check-all-updates-force').onclick = checkUpdateAll;
+$('#apply-all-updates').onclick = applyUpdateAll;
+$('#update-history').onclick = showUpdateHistory;
 
 function applyUpdateAll() {
   const btnApply = $('#apply-all-updates');
@@ -25,7 +26,6 @@ function applyUpdateAll() {
     button.click();
   });
 }
-
 
 function checkUpdateAll() {
   document.body.classList.add('update-in-progress');
@@ -93,7 +93,6 @@ function checkUpdateAll() {
   }
 }
 
-
 function checkUpdate(entry, {single} = {}) {
   $('.update-note', entry).textContent = t('checkingForUpdate');
   $('.check-update', entry).title = '';
@@ -108,10 +107,9 @@ function checkUpdate(entry, {single} = {}) {
   entry.classList.add('checking-update');
 }
 
-
 function reportUpdateState({updated, style, error, STATES}) {
   const isCheckAll = document.body.classList.contains('update-in-progress');
-  const entry = $(ENTRY_ID_PREFIX + style.id);
+  const entry = $entry(style);
   const newClasses = new Map([
     /*
      When a style is updated/installed, handleUpdateInstalled() clears "updatable"
@@ -163,7 +161,7 @@ function reportUpdateState({updated, style, error, STATES}) {
     if (error === STATES.SAME_CODE) {
       for (const view of chrome.extension.getViews({type: 'tab'})) {
         if (view.location.pathname === location.pathname) {
-          const entry = view.$(ENTRY_ID_PREFIX + style.id);
+          const entry = $entry(style, view.document);
           if (entry) entry.styleMeta.originalDigest = style.originalDigest;
         }
       }
@@ -178,10 +176,10 @@ function reportUpdateState({updated, style, error, STATES}) {
   // 2. remove falsy newClasses
   // 3. keep existing classes otherwise
   const classes = new Map([...entry.classList.values()].map(cls => [cls, true]));
-  for (const [cls, newState] of newClasses.entries()) {
+  for (const [cls, newState] of newClasses) {
     classes.set(cls, newState);
   }
-  const className = [...classes.entries()]
+  const className = [...classes]
     .map(([cls, state]) => state && cls)
     .filter(Boolean)
     .join(' ');
@@ -195,7 +193,6 @@ function reportUpdateState({updated, style, error, STATES}) {
     renderUpdatesOnlyFilter();
   }
 }
-
 
 function renderUpdatesOnlyFilter({show, check} = {}) {
   const numUpdatable = $$('.can-update').length;
@@ -213,59 +210,61 @@ function renderUpdatesOnlyFilter({show, check} = {}) {
   btnApply.dataset.value = numUpdatable;
 }
 
-
-function showUpdateHistory(event) {
+async function showUpdateHistory(event) {
   event.preventDefault();
   const log = $create('.update-history-log');
-  let logText, scroller, toggler;
+  let scroller, toggler;
   let deleted = false;
-  Promise.all([
+  await require(['/js/storage-util']); /* global chromeLocal */
+  const [lines, states] = await Promise.all([
     chromeLocal.getValue('updateLog'),
     API.updater.getStates(),
-  ]).then(([lines = [], states]) => {
-    logText = lines.join('\n');
-    messageBox({
-      title: t('updateCheckHistory'),
-      contents: log,
-      blockScroll: true,
-      buttons: [
-        t('confirmOK'),
-        logText && {textContent: t('confirmDelete'), onclick: deleteHistory},
-      ],
-      onshow: logText && (() => {
-        scroller = $('#message-box-contents');
-        scroller.tabIndex = 0;
-        setTimeout(() => scroller.focus());
-        scrollToBottom();
+  ]);
+  const logText = lines.join('\n');
+  messageBoxProxy.show({
+    title: t('updateCheckHistory'),
+    contents: log,
+    blockScroll: true,
+    buttons: [
+      t('confirmOK'),
+      logText && {textContent: t('confirmDelete'), onclick: deleteHistory},
+    ],
+    onshow: logText && (() => {
+      scroller = $('#message-box-contents');
+      scroller.tabIndex = 0;
+      setTimeout(() => scroller.focus());
+      scrollToBottom();
 
-        $('#message-box-buttons button').insertAdjacentElement('afterend',
-          // TODO: add a global class for our labels
-          // TODO: add a <template> or a common function to create such controls
-          $create('label', {style: 'position: relative; padding-left: 16px;'}, [
-            toggler =
+      $('#message-box-buttons button').insertAdjacentElement('afterend',
+        // TODO: add a global class for our labels
+        // TODO: add a <template> or a common function to create such controls
+        $create('label', {style: 'position: relative; padding-left: 16px;'}, [
+          toggler =
             $create('input', {type: 'checkbox', checked: true, onchange: toggleSkipped}),
-            $create('SVG:svg.svg-icon.checked',
-              $create('SVG:use', {'xlink:href': '#svg-icon-checked'})),
-            t('manageOnlyUpdates'),
-          ]));
+          $create('SVG:svg.svg-icon.checked',
+            $create('SVG:use', {'xlink:href': '#svg-icon-checked'})),
+          t('manageOnlyUpdates'),
+        ]));
 
-        toggler.rxRemoveNOP = new RegExp(
-          '^[^#]*(' +
-          Object.keys(states)
-            .filter(k => k.startsWith('SAME_'))
-            .map(k => states[k])
-            .join('|') +
-          ').*\r?\n', 'gm');
-        toggler.onchange();
-      }),
-    });
+      toggler.rxRemoveNOP = new RegExp(
+        '^[^#]*(' +
+        Object.keys(states)
+          .filter(k => k.startsWith('SAME_'))
+          .map(k => states[k])
+          .join('|') +
+        ').*\r?\n', 'gm');
+      toggler.onchange();
+    }),
   });
+
   function scrollToBottom() {
     scroller.scrollTop = 1e9;
   }
+
   function calcScrollRatio() {
     return (scroller.scrollTop + scroller.clientHeight) / scroller.scrollHeight;
   }
+
   function toggleSkipped() {
     if (deleted) {
       return;
@@ -276,6 +275,7 @@ function showUpdateHistory(event) {
       scroller.scrollTop = scrollRatio * scroller.scrollHeight - scroller.clientHeight;
     }
   }
+
   function deleteHistory() {
     if (deleted) {
       chromeLocal.setValue('updateLog', logText.split('\n'));
@@ -290,7 +290,7 @@ function showUpdateHistory(event) {
   }
 }
 
-
+/* exported handleUpdateInstalled */
 function handleUpdateInstalled(entry, reason) {
   const isNew = reason === 'install';
   const note = t(isNew ? 'installButtonInstalled' : 'updateCompleted');

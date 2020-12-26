@@ -1,24 +1,16 @@
-/* global
-  $
-  $create
-  CodeMirror
-  colorMimicry
-  messageBox
-  MozSectionFinder
-  msg
-  prefs
-  regExpTester
-  t
-  tryCatch
-*/
+/* global $ $create messageBoxProxy */// dom.js
+/* global CodeMirror */
+/* global MozSectionFinder */
+/* global colorMimicry */
+/* global editor */
+/* global msg */
+/* global prefs */
+/* global t */// localization.js
+/* global tryCatch */// toolbox.js
 'use strict';
 
 /* exported MozSectionWidget */
-function MozSectionWidget(
-  cm,
-  finder = MozSectionFinder(cm),
-  onDirectChange = () => 0
-) {
+function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
   let TPL, EVENTS, CLICK_ROUTE;
   const KEY = 'MozSectionWidget';
   const C_CONTAINER = '.applies-to';
@@ -36,7 +28,9 @@ function MozSectionWidget(
   const {cmpPos} = CodeMirror;
   let enabled = false;
   let funcHeight = 0;
+  /** @type {HTMLStyleElement} */
   let actualStyle;
+
   return {
     toggle(enable) {
       if (Boolean(enable) !== enabled) {
@@ -71,7 +65,7 @@ function MozSectionWidget(
       '.remove-applies-to'(elItem, func) {
         const funcs = getFuncsFor(elItem);
         if (funcs.length < 2) {
-          messageBox({
+          messageBoxProxy.show({
             contents: t('appliesRemoveError'),
             buttons: [t('confirmClose')],
           });
@@ -110,7 +104,7 @@ function MozSectionWidget(
         if (part === 'value' && func === getFuncsFor(el)[0]) {
           const sec = getSectionFor(el);
           sec.tocEntry.target = el.value;
-          if (!sec.tocEntry.label) onDirectChange([sec]);
+          if (!sec.tocEntry.label) editor.updateToc([sec]);
         }
         cm.replaceRange(toDoubleslash(el.value), pos.from, pos.to, finder.IGNORE_ORIGIN);
       },
@@ -176,13 +170,13 @@ function MozSectionWidget(
     const MIN_LUMA = .05;
     const MIN_LUMA_DIFF = .4;
     const color = {
-      wrapper: colorMimicry.get(cm.display.wrapper),
-      gutter: colorMimicry.get(cm.display.gutters, {
+      wrapper: colorMimicry(cm.display.wrapper),
+      gutter: colorMimicry(cm.display.gutters, {
         bg: 'backgroundColor',
         border: 'borderRightColor',
       }),
-      line: colorMimicry.get('.CodeMirror-linenumber', null, cm.display.lineDiv),
-      comment: colorMimicry.get('span.cm-comment', null, cm.display.lineDiv),
+      line: colorMimicry('.CodeMirror-linenumber', null, cm.display.lineDiv),
+      comment: colorMimicry('span.cm-comment', null, cm.display.lineDiv),
     };
     const hasBorder =
       color.gutter.style.borderRightWidth !== '0px' &&
@@ -421,10 +415,12 @@ function MozSectionWidget(
     f.value.clear();
   }
 
-  function showRegExpTester(el) {
+  async function showRegExpTester(el) {
+    /* global regexpTester */
+    await require(['/edit/regexp-tester']);
     const reFuncs = getFuncsFor(el).filter(f => f.typeText === 'regexp');
-    regExpTester.toggle(true);
-    regExpTester.update(reFuncs.map(f => fromDoubleslash(f.value[KEY].value)));
+    regexpTester.toggle(true);
+    regexpTester.update(reFuncs.map(f => fromDoubleslash(f.value[KEY].value)));
   }
 
   function fromDoubleslash(s) {

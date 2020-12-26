@@ -1,13 +1,11 @@
-/* global
-  $
-  CodeMirror
-  prefs
-  t
-*/
-
+/* global $ */// dom.js
+/* global CodeMirror */
+/* global editor */
+/* global prefs */
+/* global t */// localization.js
 'use strict';
 
-(function () {
+(() => {
   // CodeMirror miserably fails on keyMap='' so let's ensure it's not
   if (!prefs.get('editor.keyMap')) {
     prefs.reset('editor.keyMap');
@@ -43,53 +41,55 @@
   Object.assign(CodeMirror.defaults, defaults, prefs.get('editor.options'));
 
   // Adding hotkeys to some keymaps except 'basic' which is primitive by design
-  const KM = CodeMirror.keyMap;
-  const extras = Object.values(CodeMirror.defaults.extraKeys);
-  if (!extras.includes('jumpToLine')) {
-    KM.sublime['Ctrl-G'] = 'jumpToLine';
-    KM.emacsy['Ctrl-G'] = 'jumpToLine';
-    KM.pcDefault['Ctrl-J'] = 'jumpToLine';
-    KM.macDefault['Cmd-J'] = 'jumpToLine';
-  }
-  if (!extras.includes('autocomplete')) {
-    // will be used by 'sublime' on PC via fallthrough
-    KM.pcDefault['Ctrl-Space'] = 'autocomplete';
-    // OSX uses Ctrl-Space and Cmd-Space for something else
-    KM.macDefault['Alt-Space'] = 'autocomplete';
-    // copied from 'emacs' keymap
-    KM.emacsy['Alt-/'] = 'autocomplete';
-    // 'vim' and 'emacs' define their own autocomplete hotkeys
-  }
-  if (!extras.includes('blockComment')) {
-    KM.sublime['Shift-Ctrl-/'] = 'commentSelection';
-  }
-  if (navigator.appVersion.includes('Windows')) {
-    // 'pcDefault' keymap on Windows should have F3/Shift-F3/Ctrl-R
-    if (!extras.includes('findNext')) KM.pcDefault['F3'] = 'findNext';
-    if (!extras.includes('findPrev')) KM.pcDefault['Shift-F3'] = 'findPrev';
-    if (!extras.includes('replace')) KM.pcDefault['Ctrl-R'] = 'replace';
-    // try to remap non-interceptable (Shift-)Ctrl-N/T/W hotkeys
-    // Note: modifier order in CodeMirror is S-C-A
-    for (const char of ['N', 'T', 'W']) {
-      for (const remap of [
-        {from: 'Ctrl-', to: ['Alt-', 'Ctrl-Alt-']},
-        {from: 'Shift-Ctrl-', to: ['Ctrl-Alt-', 'Shift-Ctrl-Alt-']},
-      ]) {
-        const oldKey = remap.from + char;
-        for (const km of Object.values(KM)) {
-          const command = km[oldKey];
-          if (!command) continue;
-          for (const newMod of remap.to) {
-            const newKey = newMod + char;
-            if (newKey in km) continue;
-            km[newKey] = command;
-            delete km[oldKey];
-            break;
+  require(Object.values(typeof editor === 'object' && editor.lazyKeymaps || {}), () => {
+    const KM = CodeMirror.keyMap;
+    const extras = Object.values(CodeMirror.defaults.extraKeys);
+    if (!extras.includes('jumpToLine')) {
+      KM.sublime['Ctrl-G'] = 'jumpToLine';
+      KM.emacsy['Ctrl-G'] = 'jumpToLine';
+      KM.pcDefault['Ctrl-J'] = 'jumpToLine';
+      KM.macDefault['Cmd-J'] = 'jumpToLine';
+    }
+    if (!extras.includes('autocomplete')) {
+      // will be used by 'sublime' on PC via fallthrough
+      KM.pcDefault['Ctrl-Space'] = 'autocomplete';
+      // OSX uses Ctrl-Space and Cmd-Space for something else
+      KM.macDefault['Alt-Space'] = 'autocomplete';
+      // copied from 'emacs' keymap
+      KM.emacsy['Alt-/'] = 'autocomplete';
+      // 'vim' and 'emacs' define their own autocomplete hotkeys
+    }
+    if (!extras.includes('blockComment')) {
+      KM.sublime['Shift-Ctrl-/'] = 'commentSelection';
+    }
+    if (navigator.appVersion.includes('Windows')) {
+      // 'pcDefault' keymap on Windows should have F3/Shift-F3/Ctrl-R
+      if (!extras.includes('findNext')) KM.pcDefault['F3'] = 'findNext';
+      if (!extras.includes('findPrev')) KM.pcDefault['Shift-F3'] = 'findPrev';
+      if (!extras.includes('replace')) KM.pcDefault['Ctrl-R'] = 'replace';
+      // try to remap non-interceptable (Shift-)Ctrl-N/T/W hotkeys
+      // Note: modifier order in CodeMirror is S-C-A
+      for (const char of ['N', 'T', 'W']) {
+        for (const remap of [
+          {from: 'Ctrl-', to: ['Alt-', 'Ctrl-Alt-']},
+          {from: 'Shift-Ctrl-', to: ['Ctrl-Alt-', 'Shift-Ctrl-Alt-']},
+        ]) {
+          const oldKey = remap.from + char;
+          for (const km of Object.values(KM)) {
+            const command = km[oldKey];
+            if (!command) continue;
+            for (const newMod of remap.to) {
+              const newKey = newMod + char;
+              if (newKey in km) continue;
+              km[newKey] = command;
+              delete km[oldKey];
+              break;
+            }
           }
         }
       }
     }
-  }
+  });
 
   const cssMime = CodeMirror.mimeModes['text/css'];
   Object.assign(cssMime.propertyKeywords, {
@@ -142,12 +142,16 @@
     jumpToPos(pos, end = pos) {
       const {curOp} = this;
       if (!curOp) this.startOperation();
-      const coords = this.cursorCoords(pos, 'window');
-      const b = this.display.wrapper.getBoundingClientRect();
-      if (coords.top < Math.max(0, b.top + this.defaultTextHeight() * 2) ||
-          coords.bottom > Math.min(window.innerHeight, b.bottom - 100)) {
-        this.scrollIntoView(pos, b.height / 2);
+      const y = this.cursorCoords(pos, 'window').top;
+      const rect = this.display.wrapper.getBoundingClientRect();
+      // case 1) outside of CM viewport or too close to edge so tell CM to render a new viewport
+      if (y < rect.top + 50 || y > rect.bottom - 100) {
+        this.scrollIntoView(pos, rect.height / 2);
+      // case 2) inside CM viewport but outside of window viewport so just scroll the window
+      } else if (y < 0 || y > innerHeight) {
+        editor.scrollToEditor(this);
       }
+      // Using prototype since our bookmark patch sets cm.setSelection to jumpToPos
       CodeMirror.prototype.setSelection.call(this, pos, end);
       if (!curOp) this.endOperation();
     },

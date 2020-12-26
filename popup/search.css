@@ -1,0 +1,377 @@
+/* IMPORTANT!
+   This file is loaded dynamically when the inline search is invoked.
+   So don't put main popup's stuff here. */
+
+body.search-results-shown {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#search-results:not([data-empty]):before {
+  background-image: linear-gradient(transparent, rgba(0, 0, 0, .3) 200px);
+  content: "";
+  top: -50px;
+  left: -1000px;
+  right: -1000px;
+  bottom: -12px;
+  position: absolute;
+  pointer-events: none;
+  animation: fadein 1s;
+  animation-fill-mode: both;
+}
+
+#search-results {
+  position: relative;
+  margin-top: -1em;
+}
+
+#search-results-error {
+  background-color: rgba(255, 0, 0, 0.4);
+  font-weight: bold;
+  padding: 5px;
+  text-align: center;
+  margin: 0 0 var(--outer-padding);
+}
+
+#search-results-list {
+  position: relative;
+  min-height: 224px;
+}
+
+.search-result,
+.search-result-empty {
+  --pad: 8px;
+  position: relative;
+  padding: var(--pad) var(--pad) 21px;
+  min-height: 160px;
+}
+
+.search-result {
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, .75);
+  border-radius: 4px;
+  border: 1px solid #555;
+  margin-bottom: 24px;
+  background-color: #eee;
+}
+
+.search-result:hover {
+  border-color: #000;
+  background-color: #fff;
+}
+
+#search-results .lds-spinner {
+  transform: scale(.5);
+  filter: invert(1) drop-shadow(1px 1px 3px #000);
+}
+
+#search-results .search-result-empty .lds-spinner {
+  filter: opacity(.2);
+}
+
+.search-result-screenshot {
+  height: 140px;
+  width: 100%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.search-result-title {
+  margin-bottom: .5em;
+  display: block;
+  color: #555;
+  overflow-wrap: break-word;
+}
+
+.search-result-title span {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.search-result:hover .search-result-title {
+  color: initial;
+}
+
+.search-result-info {
+  position: relative;
+}
+
+.search-result[data-installed] .search-result-status {
+  top: 0;
+  left: 0;
+  right: 0;
+  line-height: 18px;
+  text-align: center;
+  position: absolute;
+  background-color: hsla(180, 100%, 27%, .75);
+  color: #fff;
+  transition: background-color .5s;
+  pointer-events: none;
+}
+
+.search-result-screenshot:hover ~ .search-result-status {
+  background-color: hsla(180, 100%, 27%, 1);
+}
+
+.search-result-actions {
+  bottom: 20px;
+  text-align: center;
+  z-index: 10;
+  position: absolute;
+  width: 100%;
+}
+
+.search-result:not([data-installed]) .search-result-actions {
+  opacity: 0;
+  transition: opacity .5s;
+}
+
+.search-result:not([data-installed]):hover .search-result-actions {
+  opacity: 1;
+}
+
+.search-result-actions button {
+  box-shadow: 2px 2px 20px #000;
+  white-space: nowrap;
+  margin: 3px;
+}
+
+.search-result-meta {
+  background-color: hsla(0, 0%, 93%, 0.75);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  bottom: 0;
+  position: absolute;
+  width: 100%;
+  line-height: 16px;
+  margin: 0;
+  padding-bottom: 3px;
+}
+
+.search-result:hover .search-result-meta {
+  background-color: hsla(0, 0%, 100%, 0.75);
+}
+
+.search-result-meta dt {
+  display: none;
+}
+
+.search-result-meta dd {
+  margin: 0;
+}
+
+.search-result-meta [data-type="author"] {
+  max-width: 30%;
+}
+
+.search-result-meta [data-type="author"] a {
+  color: inherit;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.search-result-meta [data-type="rating"] dd {
+  text-align: center;
+  font-weight: bold;
+}
+
+.search-result-meta [data-type="rating"][data-class="good"] dd {
+  color: darkgreen;
+}
+
+.search-result-meta [data-type="rating"][data-class="okay"] dd {
+  color: darkgreen;
+}
+
+.search-result-meta [data-type="rating"][data-class="bad"] dd {
+  color: darkred;
+}
+
+.search-result-meta [data-type="rating"][data-class="none"] dd {
+}
+
+.search-result-meta [data-type="weekly"],
+.search-result-meta [data-type="total"] {
+  text-align: right;
+}
+
+.search-result-meta [data-type="weekly"] dd,
+.search-result-meta [data-type="total"] dd {
+  font-weight: bold;
+}
+
+.search-result-description {
+  padding: 0;
+  font-size: 90%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: absolute;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.not-matching-explainer {
+  padding: var(--pad);
+  margin: calc(-1 * var(--pad)) calc(-1 * var(--pad)) var(--pad);
+  border-bottom: 2px solid hsla(25, 100%, 60%, .5);
+  background-color: hsla(25, 100%, 60%, .2);
+  cursor: help;
+}
+
+.search-results-nav {
+  flex-direction: row;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.search-results-nav[data-type="top"] {
+  padding-top: 1em;
+  margin-bottom: 1em;
+}
+
+.search-results-nav[data-type="bottom"] {
+  margin-top: -1em;
+  margin-bottom: 1em;
+}
+
+#search-results .search-results-nav button {
+  background: none;
+  border: none;
+  padding: 0 1rem;
+  margin: 0 .5rem;
+  font-size: 150%;
+  line-height: 24px;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+#search-results .search-results-nav button:disabled {
+  cursor: auto;
+  opacity: .25;
+  pointer-events: none;
+}
+
+#search-results .search-results-nav button:not(:disabled):hover {
+  text-shadow: 0 1px 4px rgba(0, 0, 0, .5);
+}
+
+#search-params {
+  display: flex;
+  position: relative;
+  margin-top: -.5rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+#search-params > * {
+  margin-top: .5rem;
+}
+
+#search-query {
+  min-width: 3em;
+  margin-right: .5em;
+  flex: 1 1 0;
+}
+
+/* spinner: https://github.com/loadingio/css-spinner */
+.lds-spinner {
+  -moz-user-select: none;
+  user-select: none;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 200px; /* don't change! use "transform: scale(.75)" */
+  height: 200px; /* don't change! use "transform: scale(.75)" */
+  margin: auto;
+  animation: lds-spinner 1s reverse;
+  animation-fill-mode: both;
+}
+
+@keyframes lds-spinner {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.lds-spinner div {
+  left: 94px;
+  top: 23px;
+  position: absolute;
+  animation: lds-spinner linear 1s infinite;
+  animation-direction: reverse;
+  background: currentColor;
+  width: 12px;
+  height: 34px;
+  border-radius: 20%;
+  transform-origin: 6px 77px;
+}
+
+.lds-spinner div:nth-child(1) {
+  transform: rotate(0deg);
+  animation-delay: -0.916666666666667s;
+}
+
+.lds-spinner div:nth-child(2) {
+  transform: rotate(30deg);
+  animation-delay: -0.833333333333333s;
+}
+
+.lds-spinner div:nth-child(3) {
+  transform: rotate(60deg);
+  animation-delay: -0.75s;
+}
+
+.lds-spinner div:nth-child(4) {
+  transform: rotate(90deg);
+  animation-delay: -0.666666666666667s;
+}
+
+.lds-spinner div:nth-child(5) {
+  transform: rotate(120deg);
+  animation-delay: -0.583333333333333s;
+}
+
+.lds-spinner div:nth-child(6) {
+  transform: rotate(150deg);
+  animation-delay: -0.5s;
+}
+
+.lds-spinner div:nth-child(7) {
+  transform: rotate(180deg);
+  animation-delay: -0.416666666666667s;
+}
+
+.lds-spinner div:nth-child(8) {
+  transform: rotate(210deg);
+  animation-delay: -0.333333333333333s;
+}
+
+.lds-spinner div:nth-child(9) {
+  transform: rotate(240deg);
+  animation-delay: -0.25s;
+}
+
+.lds-spinner div:nth-child(10) {
+  transform: rotate(270deg);
+  animation-delay: -0.166666666666667s;
+}
+
+.lds-spinner div:nth-child(11) {
+  transform: rotate(300deg);
+  animation-delay: -0.083333333333333s;
+}
+
+.lds-spinner div:nth-child(12) {
+  transform: rotate(330deg);
+  animation-delay: 0s;
+}

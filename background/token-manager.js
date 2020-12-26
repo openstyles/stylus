@@ -1,8 +1,9 @@
-/* global chromeLocal webextLaunchWebAuthFlow FIREFOX */
-/* exported tokenManager */
+/* global FIREFOX */// toolbox.js
+/* global chromeLocal */// storage-util.js
 'use strict';
 
-const tokenManager = (() => {
+/* exported tokenMan */
+const tokenMan = (() => {
   const AUTH = {
     dropbox: {
       flow: 'token',
@@ -50,64 +51,58 @@ const tokenManager = (() => {
   };
   const NETWORK_LATENCY = 30; // seconds
 
-  return {getToken, revokeToken, getClientId, buildKeys};
+  return {
 
-  function getClientId(name) {
-    return AUTH[name].clientId;
-  }
+    buildKeys(name) {
+      const k = {
+        TOKEN: `secure/token/${name}/token`,
+        EXPIRE: `secure/token/${name}/expire`,
+        REFRESH: `secure/token/${name}/refresh`,
+      };
+      k.LIST = Object.values(k);
+      return k;
+    },
 
-  function buildKeys(name) {
-    const k = {
-      TOKEN: `secure/token/${name}/token`,
-      EXPIRE: `secure/token/${name}/expire`,
-      REFRESH: `secure/token/${name}/refresh`,
-    };
-    k.LIST = Object.values(k);
-    return k;
-  }
+    getClientId(name) {
+      return AUTH[name].clientId;
+    },
 
-  function getToken(name, interactive) {
-    const k = buildKeys(name);
-    return chromeLocal.get(k.LIST)
-      .then(obj => {
-        if (!obj[k.TOKEN]) {
-          return authUser(name, k, interactive);
-        }
+    async getToken(name, interactive) {
+      const k = tokenMan.buildKeys(name);
+      const obj = await chromeLocal.get(k.LIST);
+      if (obj[k.TOKEN]) {
         if (!obj[k.EXPIRE] || Date.now() < obj[k.EXPIRE]) {
           return obj[k.TOKEN];
         }
         if (obj[k.REFRESH]) {
-          return refreshToken(name, k, obj)
-            .catch(err => {
-              if (err.code === 401) {
-                return authUser(name, k, interactive);
-              }
-              throw err;
-            });
+          try {
+            return await refreshToken(name, k, obj);
+          } catch (err) {
+            if (err.code !== 401) throw err;
+          }
         }
-        return authUser(name, k, interactive);
-      });
-  }
-
-  async function revokeToken(name) {
-    const provider = AUTH[name];
-    const k = buildKeys(name);
-    if (provider.revoke) {
-      try {
-        const token = await chromeLocal.getValue(k.TOKEN);
-        if (token) {
-          await provider.revoke(token);
-        }
-      } catch (e) {
-        console.error(e);
       }
-    }
-    await chromeLocal.remove(k.LIST);
-  }
+      return authUser(name, k, interactive);
+    },
 
-  function refreshToken(name, k, obj) {
+    async revokeToken(name) {
+      const provider = AUTH[name];
+      const k = tokenMan.buildKeys(name);
+      if (provider.revoke) {
+        try {
+          const token = await chromeLocal.getValue(k.TOKEN);
+          if (token) await provider.revoke(token);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      await chromeLocal.remove(k.LIST);
+    },
+  };
+
+  async function refreshToken(name, k, obj) {
     if (!obj[k.REFRESH]) {
-      return Promise.reject(new Error('no refresh token'));
+      throw new Error('No refresh token');
     }
     const provider = AUTH[name];
     const body = {
@@ -119,17 +114,17 @@ const tokenManager = (() => {
     if (provider.clientSecret) {
       body.client_secret = provider.clientSecret;
     }
-    return postQuery(provider.tokenURL, body)
-      .then(result => {
-        if (!result.refresh_token) {
-          // reuse old refresh token
-          result.refresh_token = obj[k.REFRESH];
-        }
-        return handleTokenResult(result, k);
-      });
+    const result = await postQuery(provider.tokenURL, body);
+    if (!result.refresh_token) {
+      // reuse old refresh token
+      result.refresh_token = obj[k.REFRESH];
+    }
+    return handleTokenResult(result, k);
   }
 
-  function authUser(name, k, interactive = false) {
+  async function authUser(name, k, interactive = false) {
+    await require(['/vendor/webext-launch-web-auth-flow/webext-launch-web-auth-flow.min']);
+    /* global webextLaunchWebAuthFlow */
     const provider = AUTH[name];
     const state = Math.random().toFixed(8).slice(2);
     const query = {
@@ -145,52 +140,54 @@ const tokenManager = (() => {
       Object.assign(query, provider.authQuery);
     }
     const url = `${provider.authURL}?${new URLSearchParams(query)}`;
-    return webextLaunchWebAuthFlow({
+    const finalUrl = await webextLaunchWebAuthFlow({
       url,
       interactive,
       redirect_uri: query.redirect_uri,
-    })
-      .then(url => {
-        const params = new URLSearchParams(
-          provider.flow === 'token' ?
-            new URL(url).hash.slice(1) :
-            new URL(url).search.slice(1)
-        );
-        if (params.get('state') !== state) {
-          throw new Error(`unexpected state: ${params.get('state')}, expected: ${state}`);
-        }
-        if (provider.flow === 'token') {
-          const obj = {};
-          for (const [key, value] of params.entries()) {
-            obj[key] = value;
-          }
-          return obj;
-        }
-        const code = params.get('code');
-        const body = {
-          code,
-          grant_type: 'authorization_code',
-          client_id: provider.clientId,
-          redirect_uri: query.redirect_uri,
-        };
-        if (provider.clientSecret) {
-          body.client_secret = provider.clientSecret;
-        }
-        return postQuery(provider.tokenURL, body);
-      })
-      .then(result => handleTokenResult(result, k));
+    });
+    const params = new URLSearchParams(
+      provider.flow === 'token' ?
+        new URL(finalUrl).hash.slice(1) :
+        new URL(finalUrl).search.slice(1)
+    );
+    if (params.get('state') !== state) {
+      throw new Error(`Unexpected state: ${params.get('state')}, expected: ${state}`);
+    }
+    let result;
+    if (provider.flow === 'token') {
+      const obj = {};
+      for (const [key, value] of params) {
+        obj[key] = value;
+      }
+      result = obj;
+    } else {
+      const code = params.get('code');
+      const body = {
+        code,
+        grant_type: 'authorization_code',
+        client_id: provider.clientId,
+        redirect_uri: query.redirect_uri,
+      };
+      if (provider.clientSecret) {
+        body.client_secret = provider.clientSecret;
+      }
+      result = await postQuery(provider.tokenURL, body);
+    }
+    return handleTokenResult(result, k);
   }
 
-  function handleTokenResult(result, k) {
-    return chromeLocal.set({
+  async function handleTokenResult(result, k) {
+    await chromeLocal.set({
       [k.TOKEN]: result.access_token,
-      [k.EXPIRE]: result.expires_in ? Date.now() + (Number(result.expires_in) - NETWORK_LATENCY) * 1000 : undefined,
+      [k.EXPIRE]: result.expires_in
+        ? Date.now() + (result.expires_in - NETWORK_LATENCY) * 1000
+        : undefined,
       [k.REFRESH]: result.refresh_token,
-    })
-      .then(() => result.access_token);
+    });
+    return result.access_token;
   }
 
-  function postQuery(url, body) {
+  async function postQuery(url, body) {
     const options = {
       method: 'POST',
       headers: {
@@ -198,17 +195,13 @@ const tokenManager = (() => {
       },
       body: body ? new URLSearchParams(body) : null,
     };
-    return fetch(url, options)
-      .then(r => {
-        if (r.ok) {
-          return r.json();
-        }
-        return r.text()
-          .then(body => {
-            const err = new Error(`failed to fetch (${r.status}): ${body}`);
-            err.code = r.status;
-            throw err;
-          });
-      });
+    const r = await fetch(url, options);
+    if (r.ok) {
+      return r.json();
+    }
+    const text = await r.text();
+    const err = new Error(`Failed to fetch (${r.status}): ${text}`);
+    err.code = r.status;
+    throw err;
   }
 })();

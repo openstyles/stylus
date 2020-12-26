@@ -1,4 +1,2 @@
 vendor/
-vendor-overwrites/*
-!vendor-overwrites/colorpicker
-!vendor-overwrites/csslint
+vendor-overwrites/

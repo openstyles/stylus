@@ -1,36 +1,26 @@
-/* global
-  $
-  $$
-  $create
-  API
-  chromeSync
-  cmFactory
-  CodeMirror
-  createLivePreview
-  createMetaCompiler
-  debounce
-  editor
-  linter
-  messageBox
-  MozSectionFinder
-  MozSectionWidget
-  prefs
-  sectionsToMozFormat
-  sessionStore
-  t
-*/
-
+/* global $ $$remove $create $isTextInput messageBoxProxy */// dom.js
+/* global API */// msg.js
+/* global CodeMirror */
+/* global MozDocMapper */// util.js
+/* global MozSectionFinder */
+/* global MozSectionWidget */
+/* global URLS debounce sessionStore */// toolbox.js
+/* global chromeSync */// storage-util.js
+/* global cmFactory */
+/* global editor */
+/* global linterMan */
+/* global prefs */
+/* global t */// localization.js
 'use strict';
 
 /* exported SourceEditor */
-
 function SourceEditor() {
-  const {style, dirty} = editor;
+  const {style, /** @type DirtyReporter */dirty} = editor;
   let savedGeneration;
   let placeholderName = '';
   let prevMode = NaN;
 
-  $$.remove('.sectioned-only');
+  $$remove('.sectioned-only');
   $('#header').on('wheel', headerOnScroll);
   $('#sections').textContent = '';
   $('#sections').appendChild($create('.single-editor'));
@@ -39,16 +29,26 @@ function SourceEditor() {
 
   const cm = cmFactory.create($('.single-editor'));
   const sectionFinder = MozSectionFinder(cm);
-  const sectionWidget = MozSectionWidget(cm, sectionFinder, editor.updateToc);
-  const livePreview = createLivePreview(preprocess, style.id);
-  /** @namespace SourceEditor */
+  const sectionWidget = MozSectionWidget(cm, sectionFinder);
+  editor.livePreview.init(preprocess, style.id);
+  createMetaCompiler(meta => {
+    style.usercssData = meta;
+    style.name = meta.name;
+    style.url = meta.homepageURL || style.installationUrl;
+    updateMeta();
+  });
+  updateMeta();
+  cm.setValue(style.sourceCode);
+
+  /** @namespace Editor */
   Object.assign(editor, {
     sections: sectionFinder.sections,
     replaceStyle,
+    updateLivePreview,
+    closestVisible: () => cm,
     getEditors: () => [cm],
-    scrollToEditor: () => {},
     getEditorTitle: () => '',
-    save,
+    getSearchableInputs: () => [],
     prevEditor: nextPrevSection.bind(null, -1),
     nextEditor: nextPrevSection.bind(null, 1),
     jumpToEditor(i) {
@@ -58,23 +58,37 @@ function SourceEditor() {
         cm.jumpToPos(sec.start);
       }
     },
-    closestVisible: () => cm,
-    getSearchableInputs: () => [],
-    updateLivePreview,
+    async save() {
+      if (!dirty.isDirty()) return;
+      const sourceCode = cm.getValue();
+      try {
+        const {customName, enabled, id} = style;
+        if (!id &&
+          (await API.usercss.build({sourceCode, checkDup: true, metaOnly: true})).dup) {
+          messageBoxProxy.alert(t('usercssAvoidOverwriting'), 'danger', t('genericError'));
+        } else {
+          await replaceStyle(
+            await API.usercss.editSave({customName, enabled, id, sourceCode}));
+        }
+      } catch (err) {
+        const i = err.index;
+        const isNameEmpty = i > 0 &&
+          err.code === 'missingValue' &&
+          sourceCode.slice(sourceCode.lastIndexOf('\n', i - 1), i).trim().endsWith('@name');
+        return isNameEmpty
+          ? saveTemplate(sourceCode)
+          : showSaveError(err);
+      }
+    },
+    scrollToEditor: () => {},
   });
-  createMetaCompiler(cm, meta => {
-    style.usercssData = meta;
-    style.name = meta.name;
-    style.url = meta.homepageURL || style.installationUrl;
-    updateMeta();
-  });
-  updateMeta();
-  cm.setValue(style.sourceCode);
+
   prefs.subscribeMany({
     'editor.linter': updateLinterSwitch,
     'editor.appliesToLineWidget': (k, val) => sectionWidget.toggle(val),
     'editor.toc.expanded': (k, val) => sectionFinder.onOff(editor.updateToc, val),
-  }, {now: true});
+  }, {runNow: true});
+
   editor.applyScrollInfo(cm);
   cm.clearHistory();
   cm.markClean();
@@ -88,31 +102,29 @@ function SourceEditor() {
     const mode = getModeName();
     if (mode === prevMode) return;
     prevMode = mode;
-    linter.run();
+    linterMan.run();
     updateLinterSwitch();
   });
-  setTimeout(linter.enableForEditor, 0, cm);
-  if (!$.isTextInput(document.activeElement)) {
+  setTimeout(linterMan.enableForEditor, 0, cm);
+  if (!$isTextInput(document.activeElement)) {
     cm.focus();
   }
 
-  function preprocess(style) {
-    return API.usercss.build({
+  async function preprocess(style) {
+    const {style: newStyle} = await API.usercss.build({
       styleId: style.id,
       sourceCode: style.sourceCode,
       assignVars: true,
-    })
-      .then(({style: newStyle}) => {
-        delete newStyle.enabled;
-        return Object.assign(style, newStyle);
-      });
+    });
+    delete newStyle.enabled;
+    return Object.assign(style, newStyle);
   }
 
   function updateLivePreview() {
     if (!style.id) {
       return;
     }
-    livePreview.update(Object.assign({}, style, {sourceCode: cm.getValue()}));
+    editor.livePreview.update(Object.assign({}, style, {sourceCode: cm.getValue()}));
   }
 
   function updateLinterSwitch() {
@@ -140,10 +152,10 @@ function SourceEditor() {
   async function setupNewStyle(style) {
     style.sections[0].code = ' '.repeat(prefs.get('editor.tabSize')) +
       `/* ${t('usercssReplaceTemplateSectionBody')} */`;
-    let section = sectionsToMozFormat(style);
+    let section = MozDocMapper.styleToCss(style);
     if (!section.includes('@-moz-document')) {
       style.sections[0].domains = ['example.com'];
-      section = sectionsToMozFormat(style);
+      section = MozDocMapper.styleToCss(style);
     }
     const DEFAULT_CODE = `
       /* ==UserStyle==
@@ -199,7 +211,7 @@ function SourceEditor() {
       return;
     }
 
-    Promise.resolve(messageBox.confirm(t('styleUpdateDiscardChanges'))).then(ok => {
+    Promise.resolve(messageBoxProxy.confirm(t('styleUpdateDiscardChanges'))).then(ok => {
       if (!ok) return;
       updateEnvironment();
       if (!sameCode) {
@@ -223,77 +235,29 @@ function SourceEditor() {
       Object.assign(style, newStyle);
       $('#preview-label').classList.remove('hidden');
       updateMeta();
-      livePreview.show(Boolean(style.id));
+      editor.livePreview.toggle(Boolean(style.id));
     }
   }
 
-  function save() {
-    if (!dirty.isDirty()) return;
-    const code = cm.getValue();
-    return ensureUniqueStyle(code)
-      .then(() => API.usercss.editSave({
-        id: style.id,
-        enabled: style.enabled,
-        sourceCode: code,
-        customName: style.customName,
-      }))
-      .then(replaceStyle)
-      .catch(err => {
-        if (err.handled) return;
-        const contents = Array.isArray(err) ?
-          $create('pre', err.join('\n')) :
-          [err.message || String(err)];
-        if (Number.isInteger(err.index)) {
-          const pos = cm.posFromIndex(err.index);
-          const meta = drawLinePointer(pos);
-
-          // save template
-          if (err.code === 'missingValue' && meta.includes('@name')) {
-            const key = chromeSync.LZ_KEY.usercssTemplate;
-            messageBox.confirm(t('usercssReplaceTemplateConfirmation')).then(ok => ok &&
-              chromeSync.setLZValue(key, code)
-                .then(() => chromeSync.getLZValue(key))
-                .then(saved => saved !== code && messageBox.alert(t('syncStorageErrorSaving'))));
-            return;
-          }
-          contents[0] += ` (line ${pos.line + 1} col ${pos.ch + 1})`;
-          contents.push($create('pre', meta));
-        }
-        messageBox.alert(contents, 'pre');
-      });
+  async function saveTemplate(code) {
+    if (await messageBoxProxy.confirm(t('usercssReplaceTemplateConfirmation'))) {
+      const key = chromeSync.LZ_KEY.usercssTemplate;
+      await chromeSync.setLZValue(key, code);
+      if (await chromeSync.getLZValue(key) !== code) {
+        messageBoxProxy.alert(t('syncStorageErrorSaving'));
+      }
+    }
   }
 
-  function ensureUniqueStyle(code) {
-    return style.id ? Promise.resolve() :
-      API.usercss.build({
-        sourceCode: code,
-        checkDup: true,
-        metaOnly: true,
-      }).then(({dup}) => {
-        if (dup) {
-          messageBox.alert(t('usercssAvoidOverwriting'), 'danger', t('genericError'));
-          return Promise.reject({handled: true});
-        }
-      });
-  }
-
-  function drawLinePointer(pos) {
-    const SIZE = 60;
-    const line = cm.getLine(pos.line);
-    const numTabs = pos.ch + 1 - line.slice(0, pos.ch + 1).replace(/\t/g, '').length;
-    const pointer = ' '.repeat(pos.ch) + '^';
-    const start = Math.max(Math.min(pos.ch - SIZE / 2, line.length - SIZE), 0);
-    const end = Math.min(Math.max(pos.ch + SIZE / 2, SIZE), line.length);
-    const leftPad = start !== 0 ? '...' : '';
-    const rightPad = end !== line.length ? '...' : '';
-    return (
-      leftPad +
-      line.slice(start, end).replace(/\t/g, ' '.repeat(cm.options.tabSize)) +
-      rightPad +
-      '\n' +
-      ' '.repeat(leftPad.length + numTabs * cm.options.tabSize) +
-      pointer.slice(start, end)
-    );
+  function showSaveError(err) {
+    err = Array.isArray(err) ? err : [err];
+    const text = err.map(e => e.message || e).join('\n');
+    const points = err.map(e =>
+      e.index >= 0 && cm.posFromIndex(e.index) || // usercss meta parser
+      e.offset >= 0 && {line: e.line - 1, ch: e.col - 1} // csslint code parser
+    ).filter(Boolean);
+    cm.setSelections(points.map(p => ({anchor: p, head: p})));
+    messageBoxProxy.alert($create('pre', text), 'pre');
   }
 
   function nextPrevSection(dir) {
@@ -333,5 +297,37 @@ function SourceEditor() {
     if (!mode) return '';
     return (mode.name || mode || '') +
            (mode.helperType || '');
+  }
+
+  function createMetaCompiler(onUpdated) {
+    let meta = null;
+    let metaIndex = null;
+    let cache = [];
+    linterMan.register(async (text, options, _cm) => {
+      if (_cm !== cm) {
+        return;
+      }
+      const match = text.match(URLS.rxMETA);
+      if (!match) {
+        return [];
+      }
+      if (match[0] === meta && match.index === metaIndex) {
+        return cache;
+      }
+      const {metadata, errors} = await linterMan.worker.metalint(match[0]);
+      if (errors.every(err => err.code === 'unknownMeta')) {
+        onUpdated(metadata);
+      }
+      cache = errors.map(err => ({
+        from: cm.posFromIndex((err.index || 0) + match.index),
+        to: cm.posFromIndex((err.index || 0) + match.index),
+        message: err.code && t(`meta_${err.code}`, err.args, false) || err.message,
+        severity: err.code === 'unknownMeta' ? 'warning' : 'error',
+        rule: err.code,
+      }));
+      meta = match[0];
+      metaIndex = match.index;
+      return cache;
+    });
   }
 }

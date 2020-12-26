@@ -1,25 +1,25 @@
+/* global API msg */// msg.js
+/* global prefs */
+/* global t */// localization.js
 /* global
   $
   $$
   $create
   $createLink
-  API
-  capitalize
-  CHROME
-  CHROME_HAS_BORDER_BUG
-  enforceInputRange
-  FIREFOX
   getEventKeyName
-  ignoreChromeError
-  messageBox
-  msg
-  openURL
-  OPERA
-  prefs
+  messageBoxProxy
   setupLivePrefs
-  t
+*/// dom.js
+/* global
+  CHROME
+  CHROME_POPUP_BORDER_BUG
+  FIREFOX
+  OPERA
   URLS
-*/
+  capitalize
+  ignoreChromeError
+  openURL
+*/// toolbox.js
 'use strict';
 
 setupLivePrefs();
@@ -27,7 +27,7 @@ setupRadioButtons();
 $$('input[min], input[max]').forEach(enforceInputRange);
 setTimeout(splitLongTooltips);
 
-if (CHROME_HAS_BORDER_BUG) {
+if (CHROME_POPUP_BORDER_BUG) {
   const borderOption = $('.chrome-no-popup-border');
   if (borderOption) {
     borderOption.classList.remove('chrome-no-popup-border');
@@ -49,24 +49,6 @@ if (!FIREFOX && !OPERA && CHROME < 66) {
 
 if (FIREFOX && 'update' in (chrome.commands || {})) {
   $('[data-cmd="open-keyboard"]').classList.remove('chromium-only');
-  msg.onExtension(msg => {
-    if (msg.method === 'optionsCustomizeHotkeys') {
-      customizeHotkeys();
-    }
-  });
-}
-
-if (CHROME && !chrome.declarativeContent) {
-  // Show the option as disabled until the permission is actually granted
-  const el = $('#styleViaXhr');
-  prefs.initializing.then(() => {
-    el.checked = false;
-  });
-  el.on('click', () => {
-    if (el.checked) {
-      chrome.permissions.request({permissions: ['declarativeContent']}, ignoreChromeError);
-    }
-  });
 }
 
 // actions
@@ -102,13 +84,13 @@ document.onclick = e => {
 
     case 'reset':
       $$('input')
-        .filter(input => input.id in prefs.defaults)
+        .filter(input => prefs.knownKeys.includes(input.id))
         .forEach(input => prefs.reset(input.id));
       break;
 
     case 'note': {
       e.preventDefault();
-      messageBox({
+      messageBoxProxy.show({
         className: 'note',
         contents: target.dataset.title,
         buttons: [t('confirmClose')],
@@ -125,7 +107,7 @@ document.onclick = e => {
   const elSyncNow = $('.sync-options .sync-now');
   const elStatus = $('.sync-options .sync-status');
   const elLogin = $('.sync-options .sync-login');
-  /** @type {API.sync.Status} */
+  /** @type {Sync.Status} */
   let status = {};
   msg.onExtension(e => {
     if (e.method === 'syncStatusUpdate') {
@@ -143,7 +125,7 @@ document.onclick = e => {
     [elLogin, API.sync.login],
   ]) {
     btn.on('click', e => {
-      if (getEventKeyName(e) === 'L') {
+      if (getEventKeyName(e) === 'MouseL') {
         fn();
       }
     });
@@ -155,8 +137,9 @@ document.onclick = e => {
   }
 
   function updateButtons() {
-    const isConnected = status.state === 'connected';
-    const isDisconnected = status.state === 'disconnected';
+    const {state, STATES} = status;
+    const isConnected = state === STATES.connected;
+    const isDisconnected = state === STATES.disconnected;
     if (status.currentDriveName) {
       elCloud.value = status.currentDriveName;
     }
@@ -173,18 +156,17 @@ document.onclick = e => {
   }
 
   function getStatusText() {
-    // chrome.i18n.getMessage is used instead of t() because calculated ids may be absent
     let res;
     if (status.syncing) {
       const {phase, loaded, total} = status.progress || {};
       res = phase
-        ? chrome.i18n.getMessage(`optionsSyncStatus${capitalize(phase)}`, [loaded + 1, total]) ||
+        ? t(`optionsSyncStatus${capitalize(phase)}`, [loaded + 1, total], false) ||
           `${phase} ${loaded} / ${total}`
         : t('optionsSyncStatusSyncing');
     } else {
-      const {state, errorMessage} = status;
-      res = (state === 'connected' || state === 'disconnected') && errorMessage ||
-        chrome.i18n.getMessage(`optionsSyncStatus${capitalize(state)}`) || state;
+      const {state, errorMessage, STATES} = status;
+      res = (state === STATES.connected || state === STATES.disconnected) && errorMessage ||
+        t(`optionsSyncStatus${capitalize(state)}`, null, false) || state;
     }
     return res;
   }
@@ -268,7 +250,7 @@ function customizeHotkeys() {
     ['styleDisableAll', 'disableAllStyles'],
   ]);
 
-  messageBox({
+  messageBoxProxy.show({
     title: t('shortcutsNote'),
     contents: [
       $create('table',
@@ -319,8 +301,24 @@ function customizeHotkeys() {
   }
 }
 
+function enforceInputRange(element) {
+  const min = Number(element.min);
+  const max = Number(element.max);
+  const doNotify = () => element.dispatchEvent(new Event('change', {bubbles: true}));
+  const onChange = ({type}) => {
+    if (type === 'input' && element.checkValidity()) {
+      doNotify();
+    } else if (type === 'change' && !element.checkValidity()) {
+      element.value = Math.max(min, Math.min(max, Number(element.value)));
+      doNotify();
+    }
+  };
+  element.on('change', onChange);
+  element.on('input', onChange);
+}
+
 window.onkeydown = event => {
-  if (event.key === 'Escape') {
+  if (getEventKeyName(event) === 'Escape') {
     top.dispatchEvent(new CustomEvent('closeOptions'));
   }
 };

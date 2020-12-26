@@ -1,14 +1,15 @@
-/* global chromeLocal workerUtil createChromeStorageDB */
-/* exported db */
-/*
-Initialize a database. There are some problems using IndexedDB in Firefox:
-https://www.reddit.com/r/firefox/comments/74wttb/note_to_firefox_webextension_developers_who_use/
-
-Some of them are fixed in FF59:
-https://www.reddit.com/r/firefox/comments/7ijuaq/firefox_59_webextensions_can_use_indexeddb_when/
-*/
+/* global chromeLocal */// storage-util.js
+/* global cloneError */// worker-util.js
 'use strict';
 
+/*
+ Initialize a database. There are some problems using IndexedDB in Firefox:
+ https://www.reddit.com/r/firefox/comments/74wttb/note_to_firefox_webextension_developers_who_use/
+ Some of them are fixed in FF59:
+ https://www.reddit.com/r/firefox/comments/7ijuaq/firefox_59_webextensions_can_use_indexeddb_when/
+*/
+
+/* exported db */
 const db = (() => {
   const DATABASE = 'stylish';
   const STORE = 'styles';
@@ -44,13 +45,14 @@ const db = (() => {
     await dbExecIndexedDB('delete', e.id); // throws if `e` or id is null
   }
 
-  function useChromeStorage(err) {
+  async function useChromeStorage(err) {
     chromeLocal.setValue(FALLBACK, true);
     if (err) {
-      chromeLocal.setValue(FALLBACK + 'Reason', workerUtil.cloneError(err));
+      chromeLocal.setValue(FALLBACK + 'Reason', cloneError(err));
       console.warn('Failed to access indexedDB. Switched to storage API.', err);
     }
-    return createChromeStorageDB().exec;
+    await require(['/background/db-chrome-storage']); /* global createChromeStorageDB */
+    return createChromeStorageDB();
   }
 
   async function dbExecIndexedDB(method, ...args) {

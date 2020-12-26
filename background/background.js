@@ -1,42 +1,43 @@
+/* global API msg */// msg.js
+/* global addAPI bgReady */// common.js
+/* global createWorker */// worker-util.js
+/* global prefs */
+/* global styleMan */
+/* global syncMan */
+/* global updateMan */
+/* global usercssMan */
 /* global
-  activateTab
-  API
-  chromeLocal
-  findExistingTab
   FIREFOX
+  URLS
+  activateTab
+  download
+  findExistingTab
   getActiveTab
   isTabReplaceable
-  msg
   openURL
-  prefs
-  semverCompare
-  URLS
-  workerUtil
-*/
+*/ // toolbox.js
 'use strict';
 
 //#region API
 
-Object.assign(API, {
+addAPI(/** @namespace API */ {
 
-  /** @type {ApiWorker} */
-  worker: workerUtil.createWorker({
-    url: '/background/background-worker.js',
-  }),
+  styles: styleMan,
+  sync: syncMan,
+  updater: updateMan,
+  usercss: usercssMan,
+  /** @type {BackgroundWorker} */
+  worker: createWorker({url: '/background/background-worker'}),
+
+  download(url, opts) {
+    return typeof url === 'string' && url.startsWith(URLS.uso) &&
+      this.sender.url.startsWith(URLS.uso) &&
+      download(url, opts || {});
+  },
 
   /** @returns {string} */
   getTabUrlPrefix() {
-    const {url} = this.sender.tab;
-    if (url.startsWith(URLS.ownOrigin)) {
-      return 'stylus';
-    }
-    return url.match(/^([\w-]+:\/+[^/#]+)/)[1];
-  },
-
-  /** @returns {Prefs} */
-  getPrefs: () => prefs.values,
-  setPref(key, value) {
-    prefs.set(key, value);
+    return this.sender.tab.url.match(/^([\w-]+:\/+[^/#]+)/)[1];
   },
 
   /**
@@ -118,65 +119,63 @@ Object.assign(API, {
         }));
     }
   },
+
+  prefs: {
+    getValues: () => prefs.__values, // will be deepCopy'd by apiHandler
+    set: prefs.set,
+  },
 });
 
 //#endregion
-//#region browserCommands
+//#region Events
 
 const browserCommands = {
   openManage: () => API.openManage(),
   openOptions: () => API.openManage({options: true}),
+  reload: () => chrome.runtime.reload(),
   styleDisableAll(info) {
     prefs.set('disableAll', info ? info.checked : !prefs.get('disableAll'));
   },
-  reload: () => chrome.runtime.reload(),
 };
+
 if (chrome.commands) {
-  chrome.commands.onCommand.addListener(command => browserCommands[command]());
-}
-if (FIREFOX && browser.commands && browser.commands.update) {
-  // register hotkeys in FF
-  const hotkeyPrefs = Object.keys(prefs.defaults).filter(k => k.startsWith('hotkey.'));
-  prefs.subscribe(hotkeyPrefs, (name, value) => {
-    try {
-      name = name.split('.')[1];
-      if (value.trim()) {
-        browser.commands.update({name, shortcut: value});
-      } else {
-        browser.commands.reset(name);
-      }
-    } catch (e) {}
-  });
+  chrome.commands.onCommand.addListener(id => browserCommands[id]());
 }
 
-//#endregion
-//#region Init
+chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
+  if (reason === 'update') {
+    const [a, b, c] = (previousVersion || '').split('.');
+    if (a <= 1 && b <= 5 && c <= 13) { // 1.5.13
+      require(['/background/remove-unused-storage']);
+    }
+  }
+});
 
 msg.on((msg, sender) => {
   if (msg.method === 'invokeAPI') {
-    const fn = msg.path.reduce((res, name) => res && res[name], API);
-    if (!fn) throw new Error(`Unknown API.${msg.path.join('.')}`);
-    const res = fn.apply({msg, sender}, msg.args);
+    let res = msg.path.reduce((res, name) => res && res[name], API);
+    if (!res) throw new Error(`Unknown API.${msg.path.join('.')}`);
+    res = res.apply({msg, sender}, msg.args);
     return res === undefined ? null : res;
   }
 });
 
-chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
-  if (reason !== 'update') return;
-  if (semverCompare(previousVersion, '1.5.13') <= 0) {
-    // Removing unused stuff
-    // TODO: delete this entire block by the middle of 2021
-    try {
-      localStorage.clear();
-    } catch (e) {}
-    setTimeout(async () => {
-      const del = Object.keys(await chromeLocal.get())
-        .filter(key => key.startsWith('usoSearchCache'));
-      if (del.length) chromeLocal.remove(del);
-    }, 15e3);
-  }
-});
-
-msg.broadcast({method: 'backgroundReady'});
-
 //#endregion
+
+Promise.all([
+  bgReady.styles,
+  /* These are loaded conditionally.
+     Each item uses `require` individually so IDE can jump to the source and track usage. */
+  FIREFOX &&
+    require(['/background/style-via-api']),
+  FIREFOX && ((browser.commands || {}).update) &&
+    require(['/background/browser-cmd-hotkeys']),
+  !FIREFOX &&
+    require(['/background/content-scripts']),
+  chrome.contextMenus &&
+    require(['/background/context-menus']),
+]).then(() => {
+  bgReady._resolveAll();
+  msg.isBgReady = true;
+  msg.broadcast({method: 'backgroundReady'});
+});

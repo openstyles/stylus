@@ -1,4 +1,4 @@
-/* global API */
+/* global API */// msg.js
 'use strict';
 
 // onCommitted may fire twice

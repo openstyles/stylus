@@ -5,9 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title i18n-text-append="optionsHeading">Stylus </title>
   <link rel="stylesheet" href="global.css">
-  <link rel="stylesheet" href="options/options.css">
-  <link rel="stylesheet" href="options/onoffswitch.css">
-  <link rel="stylesheet" href="msgbox/msgbox.css">
 
   <style id="firefox-transitions-bug-suppressor">
     /* restrict to FF */
@@ -20,15 +17,17 @@
   </style>
 
   <script src="js/polyfill.js"></script>
-  <script src="js/dom.js"></script>
-  <script src="js/messaging.js"></script>
+  <script src="js/toolbox.js"></script>
   <script src="js/msg.js"></script>
   <script src="js/localization.js"></script>
   <script src="js/prefs.js"></script>
-  <script src="js/storage-util.js" async></script>
-  <script src="msgbox/msgbox.js" async></script>
+  <script src="js/dom.js"></script>
+
   <script src="content/style-injector.js"></script>
   <script src="content/apply.js"></script>
+
+  <link rel="stylesheet" href="options/onoffswitch.css">
+  <link rel="stylesheet" href="options/options.css">
 </head>
 
 <body id="stylus-options">

@@ -1,16 +1,10 @@
-/* global
-  browserCommands
-  CHROME
-  FIREFOX
-  ignoreChromeError
-  msg
-  prefs
-  URLS
-*/
+/* global browserCommands */// background.js
+/* global msg */
+/* global prefs */
+/* global CHROME FIREFOX URLS ignoreChromeError */// toolbox.js
 'use strict';
 
-// eslint-disable-next-line no-unused-expressions
-chrome.contextMenus && (() => {
+(() => {
   const contextMenus = {
     'show-badge': {
       title: 'menuShowBadge',
@@ -52,13 +46,13 @@ chrome.contextMenus && (() => {
       /(Vivaldi|Safari)\/[\d.]+$/.test(navigator.userAgent) &&
       // skip forks with Flash as those are likely to have the menu e.g. CentBrowser
       !Array.from(navigator.plugins).some(p => p.name === 'Shockwave Flash')) {
-    prefs.defaults['editor.contextDelete'] = true;
+    prefs.__defaults['editor.contextDelete'] = true;
   }
 
   const keys = Object.keys(contextMenus);
   prefs.subscribe(keys.filter(id => typeof prefs.defaults[id] === 'boolean'),
     CHROME >= 62 && CHROME <= 64 ? toggleCheckmarkBugged : toggleCheckmark);
-  prefs.subscribe(keys.filter(id => contextMenus[id].presentIf && id in prefs.defaults),
+  prefs.subscribe(keys.filter(id => contextMenus[id].presentIf && prefs.knownKeys.includes(id)),
     togglePresence);
 
   createContextMenus(keys);

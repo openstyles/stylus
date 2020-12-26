@@ -1,9 +1,6 @@
-/* global
-  CodeMirror
-  debounce
-  deepEqual
-  trimCommentLabel
- */
+/* global CodeMirror */
+/* global debounce deepEqual */// toolbox.js
+/* global trimCommentLabel */// util.js
 'use strict';
 
 /* exported MozSectionFinder */
@@ -26,7 +23,7 @@ function MozSectionFinder(cm) {
   /** @type {CodeMirror.Pos} */
   let updTo;
 
-  const MozSectionFinder = {
+  const finder = {
     IGNORE_ORIGIN: KEY,
     EQ_SKIP_KEYS: [
       'mark',
@@ -45,10 +42,11 @@ function MozSectionFinder(cm) {
         const NOP = () => 0;
         data = {fn: NOP};
         keptAlive.set(id, data);
-        MozSectionFinder.on(NOP);
+        finder.on(NOP);
       }
       data.timer = setTimeout(id => keptAlive.delete(id), ms, id);
     },
+
     on(fn) {
       const {listeners} = getState();
       const needsInit = !listeners.size;
@@ -58,6 +56,7 @@ function MozSectionFinder(cm) {
         update();
       }
     },
+
     off(fn) {
       const {listeners, sections} = getState();
       if (listeners.size) {
@@ -69,15 +68,16 @@ function MozSectionFinder(cm) {
         }
       }
     },
+
     onOff(fn, enable) {
-      MozSectionFinder[enable ? 'on' : 'off'](fn);
+      finder[enable ? 'on' : 'off'](fn);
     },
+
     /** @param {MozSection} [section] */
     updatePositions(section) {
       (section ? [section] : getState().sections).forEach(setPositionFromMark);
     },
   };
-  return MozSectionFinder;
 
   /** @returns {MozSectionCmState} */
   function getState() {
@@ -97,7 +97,7 @@ function MozSectionFinder(cm) {
     if (!updFrom) updFrom = {line: Infinity, ch: 0};
     if (!updTo) updTo = {line: -1, ch: 0};
     for (const c of changes) {
-      if (c.origin !== MozSectionFinder.IGNORE_ORIGIN) {
+      if (c.origin !== finder.IGNORE_ORIGIN) {
         updFrom = minPos(c.from, updFrom);
         updTo = maxPos(CodeMirror.changeEnd(c), updTo);
       }
@@ -387,11 +387,13 @@ function MozSectionFinder(cm) {
 
   /** @this {MozSectionFunc[]} new functions */
   function isSameFunc(func, i) {
-    return deepEqual(func, this[i], MozSectionFinder.EQ_SKIP_KEYS);
+    return deepEqual(func, this[i], finder.EQ_SKIP_KEYS);
   }
-}
 
-/** @typedef CodeMirror.Pos
- * @property {number} line
- * @property {number} ch
- */
+  /** @typedef CodeMirror.Pos
+   * @property {number} line
+   * @property {number} ch
+   */
+
+  return finder;
+}

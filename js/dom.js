@@ -1,138 +1,200 @@
+/* global debounce */// toolbox.js
 /* global prefs */
-/* exported scrollElementIntoView animateElement enforceInputRange $createLink
-  setupLivePrefs moveFocus */
 'use strict';
 
-if (!/^Win\d+/.test(navigator.platform)) {
-  document.documentElement.classList.add('non-windows');
-}
+/* exported
+  $$remove
+  $createLink
+  $isTextInput
+  animateElement
+  getEventKeyName
+  messageBoxProxy
+  moveFocus
+  scrollElementIntoView
+  setupLivePrefs
+*/
 
 Object.assign(EventTarget.prototype, {
   on: addEventListener,
   off: removeEventListener,
-  /** args: [el:EventTarget, type:string, fn:function, ?opts] */
-  onOff(enable, ...args) {
-    (enable ? addEventListener : removeEventListener).apply(this, args);
+});
+
+//#region Exports
+
+// Makes the focus outline appear on keyboard tabbing, but not on mouse clicks.
+const focusAccessibility = {
+  // last event's focusedViaClick
+  lastFocusedViaClick: false,
+  // to avoid a full layout recalc due to changes on body/root
+  // we modify the closest focusable element (like input or button or anything with tabindex=0)
+  closest(el) {
+    let labelSeen;
+    for (; el; el = el.parentElement) {
+      if (el.localName === 'label' && el.control && !labelSeen) {
+        el = el.control;
+        labelSeen = true;
+      }
+      if (el.tabIndex >= 0) return el;
+    }
+  },
+};
+
+/**
+ * Autoloads message-box.js
+ * @alias messageBox
+ */
+window.messageBoxProxy = new Proxy({}, {
+  get(_, name) {
+    return async (...args) => {
+      await require([
+        '/js/dlg/message-box', /* global messageBox */
+        '/js/dlg/message-box.css',
+      ]);
+      window.messageBoxProxy = messageBox;
+      return messageBox[name](...args);
+    };
   },
 });
 
-$.isTextInput = (el = {}) =>
-  el.localName === 'textarea' ||
-  el.localName === 'input' && /^(text|search|number)$/.test(el.type);
+function $(selector, base = document) {
+  // we have ids with . like #manage.onlyEnabled which looks like #id.class
+  // so since getElementById is superfast we'll try it anyway
+  const byId = selector.startsWith('#') && document.getElementById(selector.slice(1));
+  return byId || base.querySelector(selector);
+}
 
-$.remove = (selector, base = document) => {
+function $$(selector, base = document) {
+  return [...base.querySelectorAll(selector)];
+}
+
+function $isTextInput(el = {}) {
+  return el.localName === 'textarea' ||
+    el.localName === 'input' && /^(text|search|number)$/.test(el.type);
+}
+
+function $remove(selector, base = document) {
   const el = selector && typeof selector === 'string' ? $(selector, base) : selector;
   if (el) {
     el.remove();
   }
-};
+}
 
-$$.remove = (selector, base = document) => {
+function $$remove(selector, base = document) {
   for (const el of base.querySelectorAll(selector)) {
     el.remove();
   }
-};
+}
 
-{
-  // display a full text tooltip on buttons with ellipsis overflow and no inherent title
-  const addTooltipsToEllipsized = () => {
-    for (const btn of document.getElementsByTagName('button')) {
-      if (btn.title && !btn.titleIsForEllipsis) {
-        continue;
+/*
+ $create('tag#id.class.class', ?[children])
+ $create('tag#id.class.class', ?textContentOrChildNode)
+ $create('tag#id.class.class', {properties}, ?[children])
+ $create('tag#id.class.class', {properties}, ?textContentOrChildNode)
+ tag is 'div' by default, #id and .class are optional
+
+ $create([children])
+
+ $create({propertiesAndOptions})
+ $create({propertiesAndOptions}, ?[children])
+ tag:              string, default 'div'
+ appendChild:      element/string or an array of elements/strings
+ dataset:          object
+ any DOM property: assigned as is
+
+ tag may include namespace like 'ns:tag'
+ */
+function $create(selector = 'div', properties, children) {
+  let ns, tag, opt;
+  if (typeof selector === 'string') {
+    if (Array.isArray(properties) ||
+        properties instanceof Node ||
+        typeof properties !== 'object') {
+      opt = {};
+      children = properties;
+    } else {
+      opt = properties || {};
+      children = children || opt.appendChild;
+    }
+    const idStart = (selector.indexOf('#') + 1 || selector.length + 1) - 1;
+    const classStart = (selector.indexOf('.') + 1 || selector.length + 1) - 1;
+    const id = selector.slice(idStart + 1, classStart);
+    if (id) {
+      opt.id = id;
+    }
+    const cls = selector.slice(classStart + 1);
+    if (cls) {
+      opt[selector.includes(':') ? 'class' : 'className'] =
+        cls.includes('.') ? cls.replace(/\./g, ' ') : cls;
+    }
+    tag = selector.slice(0, Math.min(idStart, classStart));
+  } else if (Array.isArray(selector)) {
+    tag = 'div';
+    opt = {};
+    children = selector;
+  } else {
+    opt = selector;
+    tag = opt.tag;
+    children = opt.appendChild || properties;
+  }
+  if (tag && tag.includes(':')) {
+    [ns, tag] = tag.split(':');
+    if (ns === 'SVG' || ns === 'svg') {
+      ns = 'http://www.w3.org/2000/svg';
+    }
+  }
+  const element = ns ? document.createElementNS(ns, tag) :
+    tag === 'fragment' ? document.createDocumentFragment() :
+      document.createElement(tag || 'div');
+  for (const child of Array.isArray(children) ? children : [children]) {
+    if (child) {
+      element.appendChild(child instanceof Node ? child : document.createTextNode(child));
+    }
+  }
+  for (const [key, val] of Object.entries(opt)) {
+    switch (key) {
+      case 'dataset':
+        Object.assign(element.dataset, val);
+        break;
+      case 'attributes':
+        Object.entries(val).forEach(attr => element.setAttribute(...attr));
+        break;
+      case 'style': {
+        const t = typeof val;
+        if (t === 'string') element.style.cssText = val;
+        if (t === 'object') Object.assign(element.style, val);
+        break;
       }
-      const width = btn.offsetWidth;
-      if (!width || btn.preresizeClientWidth === width) {
-        continue;
-      }
-      btn.preresizeClientWidth = width;
-      if (btn.scrollWidth > width) {
-        const text = btn.textContent;
-        btn.title = text.includes('\u00AD') ? text.replace(/\u00AD/g, '') : text;
-        btn.titleIsForEllipsis = true;
-      } else if (btn.title) {
-        btn.title = '';
+      case 'tag':
+      case 'appendChild':
+        break;
+      default: {
+        if (ns) {
+          const i = key.indexOf(':') + 1;
+          const attrNS = i && `http://www.w3.org/1999/${key.slice(0, i - 1)}`;
+          element.setAttributeNS(attrNS || null, key, val);
+        } else {
+          element[key] = val;
+        }
       }
     }
+  }
+  return element;
+}
+
+function $createLink(href = '', content) {
+  const opt = {
+    tag: 'a',
+    target: '_blank',
+    rel: 'noopener',
   };
-  // enqueue after DOMContentLoaded/load events
-  setTimeout(addTooltipsToEllipsized, 500);
-  // throttle on continuous resizing
-  let timer;
-  window.on('resize', () => {
-    clearTimeout(timer);
-    timer = setTimeout(addTooltipsToEllipsized, 100);
-  });
+  if (typeof href === 'object') {
+    Object.assign(opt, href);
+  } else {
+    opt.href = href;
+  }
+  opt.appendChild = opt.appendChild || content;
+  return $create(opt);
 }
-
-onDOMready().then(() => {
-  $.remove('#firefox-transitions-bug-suppressor');
-  initCollapsibles();
-  focusAccessibility();
-  if (!chrome.app && chrome.windows && typeof prefs !== 'undefined') {
-    // add favicon in Firefox
-    prefs.initializing.then(() => {
-      const iconset = ['', 'light/'][prefs.get('iconset')] || '';
-      for (const size of [38, 32, 19, 16]) {
-        document.head.appendChild($create('link', {
-          rel: 'icon',
-          href: `/images/icon/${iconset}${size}.png`,
-          sizes: size + 'x' + size,
-        }));
-      }
-    });
-  }
-});
-
-// set language for CSS :lang and [FF-only] hyphenation
-document.documentElement.setAttribute('lang', chrome.i18n.getUILanguage());
-// avoid adding # to the page URL when clicking dummy links
-document.on('click', e => {
-  if (e.target.closest('a[href="#"]')) {
-    e.preventDefault();
-  }
-});
-// update inputs on mousewheel when focused
-document.on('wheel', event => {
-  const el = document.activeElement;
-  if (!el || el !== event.target && !el.contains(event.target)) {
-    return;
-  }
-  const isSelect = el.tagName === 'SELECT';
-  if (isSelect || el.tagName === 'INPUT' && el.type === 'range') {
-    const key = isSelect ? 'selectedIndex' : 'valueAsNumber';
-    const old = el[key];
-    const rawVal = old + Math.sign(event.deltaY) * (el.step || 1);
-    el[key] = Math.max(el.min || 0, Math.min(el.max || el.length - 1, rawVal));
-    if (el[key] !== old) {
-      el.dispatchEvent(new Event('change', {bubbles: true}));
-    }
-    event.preventDefault();
-  }
-  event.stopImmediatePropagation();
-}, {
-  capture: true,
-  passive: false,
-});
-
-function onDOMready() {
-  return document.readyState !== 'loading'
-    ? Promise.resolve()
-    : new Promise(resolve => document.on('DOMContentLoaded', resolve, {once: true}));
-}
-
-
-function scrollElementIntoView(element, {invalidMarginRatio = 0} = {}) {
-  // align to the top/bottom of the visible area if wasn't visible
-  if (!element.parentNode) return;
-  const {top, height} = element.getBoundingClientRect();
-  const {top: parentTop, bottom: parentBottom} = element.parentNode.getBoundingClientRect();
-  const windowHeight = window.innerHeight;
-  if (top < Math.max(parentTop, windowHeight * invalidMarginRatio) ||
-      top > Math.min(parentBottom, windowHeight) - height - windowHeight * invalidMarginRatio) {
-    window.scrollBy(0, top - windowHeight / 2 + height);
-  }
-}
-
 
 /**
  * @param {HTMLElement} el
@@ -162,234 +224,19 @@ function animateElement(el, cls = 'highlight', ...removeExtraClasses) {
   });
 }
 
-
-function enforceInputRange(element) {
-  const min = Number(element.min);
-  const max = Number(element.max);
-  const doNotify = () => element.dispatchEvent(new Event('change', {bubbles: true}));
-  const onChange = ({type}) => {
-    if (type === 'input' && element.checkValidity()) {
-      doNotify();
-    } else if (type === 'change' && !element.checkValidity()) {
-      element.value = Math.max(min, Math.min(max, Number(element.value)));
-      doNotify();
-    }
-  };
-  element.on('change', onChange);
-  element.on('input', onChange);
-}
-
-
-function $(selector, base = document) {
-  // we have ids with . like #manage.onlyEnabled which looks like #id.class
-  // so since getElementById is superfast we'll try it anyway
-  const byId = selector.startsWith('#') && document.getElementById(selector.slice(1));
-  return byId || base.querySelector(selector);
-}
-
-
-function $$(selector, base = document) {
-  return [...base.querySelectorAll(selector)];
-}
-
-
-function $create(selector = 'div', properties, children) {
-/*
-  $create('tag#id.class.class', ?[children])
-  $create('tag#id.class.class', ?textContentOrChildNode)
-  $create('tag#id.class.class', {properties}, ?[children])
-  $create('tag#id.class.class', {properties}, ?textContentOrChildNode)
-           tag is 'div' by default, #id and .class are optional
-
-  $create([children])
-
-  $create({propertiesAndOptions})
-  $create({propertiesAndOptions}, ?[children])
-           tag:              string, default 'div'
-           appendChild:      element/string or an array of elements/strings
-           dataset:          object
-           any DOM property: assigned as is
-
-  tag may include namespace like 'ns:tag'
-*/
-  let ns, tag, opt;
-
-  if (typeof selector === 'string') {
-    if (Array.isArray(properties) ||
-        properties instanceof Node ||
-        typeof properties !== 'object') {
-      opt = {};
-      children = properties;
-    } else {
-      opt = properties || {};
-      children = children || opt.appendChild;
-    }
-    const idStart = (selector.indexOf('#') + 1 || selector.length + 1) - 1;
-    const classStart = (selector.indexOf('.') + 1 || selector.length + 1) - 1;
-    const id = selector.slice(idStart + 1, classStart);
-    if (id) {
-      opt.id = id;
-    }
-    const cls = selector.slice(classStart + 1);
-    if (cls) {
-      opt[selector.includes(':') ? 'class' : 'className'] =
-        cls.includes('.') ? cls.replace(/\./g, ' ') : cls;
-    }
-    tag = selector.slice(0, Math.min(idStart, classStart));
-
-  } else if (Array.isArray(selector)) {
-    tag = 'div';
-    opt = {};
-    children = selector;
-
-  } else {
-    opt = selector;
-    tag = opt.tag;
-    delete opt.tag;
-    children = opt.appendChild || properties;
-    delete opt.appendChild;
-  }
-
-  if (tag && tag.includes(':')) {
-    ([ns, tag] = tag.split(':'));
-  }
-
-  const element = ns
-    ? document.createElementNS(ns === 'SVG' || ns === 'svg' ? 'http://www.w3.org/2000/svg' : ns, tag)
-    : tag === 'fragment'
-      ? document.createDocumentFragment()
-      : document.createElement(tag || 'div');
-
-  for (const child of Array.isArray(children) ? children : [children]) {
-    if (child) {
-      element.appendChild(child instanceof Node ? child : document.createTextNode(child));
-    }
-  }
-
-  if (opt.dataset) {
-    Object.assign(element.dataset, opt.dataset);
-    delete opt.dataset;
-  }
-
-  if (opt.attributes) {
-    for (const attr in opt.attributes) {
-      element.setAttribute(attr, opt.attributes[attr]);
-    }
-    delete opt.attributes;
-  }
-
-  if (opt.style) {
-    if (typeof opt.style === 'string') element.style.cssText = opt.style;
-    if (typeof opt.style === 'object') Object.assign(element.style, opt.style);
-    delete opt.style;
-  }
-
-  if (ns) {
-    for (const attr in opt) {
-      const i = attr.indexOf(':') + 1;
-      const attrNS = i && `http://www.w3.org/1999/${attr.slice(0, i - 1)}`;
-      element.setAttributeNS(attrNS || null, attr, opt[attr]);
-    }
-  } else {
-    Object.assign(element, opt);
-  }
-
-  return element;
-}
-
-
-function $createLink(href = '', content) {
-  const opt = {
-    tag: 'a',
-    target: '_blank',
-    rel: 'noopener',
-  };
-  if (typeof href === 'object') {
-    Object.assign(opt, href);
-  } else {
-    opt.href = href;
-  }
-  opt.appendChild = opt.appendChild || content;
-  return $create(opt);
-}
-
-
-// makes <details> with [data-pref] save/restore their state
-function initCollapsibles({bindClickOn = 'h2'} = {}) {
-  const prefMap = {};
-  const elements = $$('details[data-pref]');
-  if (!elements.length) {
-    return;
-  }
-
-  for (const el of elements) {
-    const key = el.dataset.pref;
-    prefMap[key] = el;
-    el.open = prefs.get(key);
-    (bindClickOn && $(bindClickOn, el) || el).on('click', onClick);
-  }
-
-  prefs.subscribe(Object.keys(prefMap), (key, value) => {
-    const el = prefMap[key];
-    if (el.open !== value) {
-      el.open = value;
-    }
-  });
-
-  function onClick(event) {
-    if (event.target.closest('.intercepts-click')) {
-      event.preventDefault();
-    } else {
-      setTimeout(saveState, 0, event.target.closest('details'));
-    }
-  }
-
-  function saveState(el) {
-    if (!el.matches('.compact-layout .ignore-pref-if-compact')) {
-      prefs.set(el.dataset.pref, el.open);
-    }
-  }
-}
-
-// Makes the focus outline appear on keyboard tabbing, but not on mouse clicks.
-function focusAccessibility() {
-  // last event's focusedViaClick
-  focusAccessibility.lastFocusedViaClick = false;
-  // to avoid a full layout recalc due to changes on body/root
-  // we modify the closest focusable element (like input or button or anything with tabindex=0)
-  focusAccessibility.closest = el => {
-    let labelSeen;
-    for (; el; el = el.parentElement) {
-      if (el.localName === 'label' && el.control && !labelSeen) {
-        el = el.control;
-        labelSeen = true;
-      }
-      if (el.tabIndex >= 0) return el;
-    }
-  };
-  // suppress outline on click
-  window.on('mousedown', ({target}) => {
-    const el = focusAccessibility.closest(target);
-    if (el) {
-      focusAccessibility.lastFocusedViaClick = true;
-      if (el.dataset.focusedViaClick === undefined) {
-        el.dataset.focusedViaClick = '';
-      }
-    }
-  }, {passive: true});
-  // keep outline on Tab or Shift-Tab key
-  window.on('keydown', event => {
-    if (event.key === 'Tab' && !event.ctrlKey && !event.altKey && !event.metaKey) {
-      focusAccessibility.lastFocusedViaClick = false;
-      setTimeout(() => {
-        let el = document.activeElement;
-        if (el) {
-          el = el.closest('[data-focused-via-click]');
-          if (el) delete el.dataset.focusedViaClick;
-        }
-      });
-    }
-  }, {passive: true});
+function getEventKeyName(e, letterAsCode) {
+  const mods =
+    (e.shiftKey ? 'Shift-' : '') +
+    (e.ctrlKey ? 'Ctrl-' : '') +
+    (e.altKey ? 'Alt-' : '') +
+    (e.metaKey ? 'Meta-' : '');
+  return `${
+    mods === e.key + '-' ? '' : mods
+  }${
+    e.key
+      ? e.key.length === 1 && letterAsCode ? e.code : e.key
+      : 'Mouse' + ('LMR'[e.button] || e.button)
+  }`;
 }
 
 /**
@@ -417,74 +264,237 @@ function moveFocus(rootElement, step) {
   }
 }
 
-// Accepts an array of pref names (values are fetched via prefs.get)
-// and establishes a two-way connection between the document elements and the actual prefs
-function setupLivePrefs(
-  IDs = Object.getOwnPropertyNames(prefs.defaults)
-    .filter(id => $('#' + id))
-) {
-  for (const id of IDs) {
-    const element = $('#' + id);
-    updateElement({id, element, force: true});
-    element.on('change', onChange);
+function onDOMready() {
+  return document.readyState !== 'loading'
+    ? Promise.resolve()
+    : new Promise(resolve => document.on('DOMContentLoaded', resolve, {once: true}));
+}
+
+function scrollElementIntoView(element, {invalidMarginRatio = 0} = {}) {
+  // align to the top/bottom of the visible area if wasn't visible
+  if (!element.parentNode) return;
+  const {top, height} = element.getBoundingClientRect();
+  const {top: parentTop, bottom: parentBottom} = element.parentNode.getBoundingClientRect();
+  const windowHeight = window.innerHeight;
+  if (top < Math.max(parentTop, windowHeight * invalidMarginRatio) ||
+      top > Math.min(parentBottom, windowHeight) - height - windowHeight * invalidMarginRatio) {
+    window.scrollBy(0, top - windowHeight / 2 + height);
   }
-  prefs.subscribe(IDs, (id, value) => updateElement({id, value}));
+}
+
+/**
+ * Accepts an array of pref names (values are fetched via prefs.get)
+ * and establishes a two-way connection between the document elements and the actual prefs
+ */
+function setupLivePrefs(ids = prefs.knownKeys.filter(id => $('#' + id))) {
+  let forceUpdate = true;
+  prefs.subscribe(ids, updateElement, {runNow: true});
+  forceUpdate = false;
+  ids.forEach(id => $('#' + id).on('change', onChange));
 
   function onChange() {
-    const value = getInputValue(this);
-    if (prefs.get(this.id) !== value) {
-      prefs.set(this.id, value);
-    }
+    prefs.set(this.id, this[getPropName(this)]);
   }
-  function updateElement({
-    id,
-    value = prefs.get(id),
-    element = $('#' + id),
-    force,
-  }) {
-    if (!element) {
-      prefs.unsubscribe(IDs, updateElement);
-      return;
-    }
-    setInputValue(element, value, force);
+
+  function getPropName(el) {
+    return el.type === 'checkbox' ? 'checked'
+      : el.type === 'number' ? 'valueAsNumber' :
+        'value';
   }
-  function getInputValue(input) {
-    if (input.type === 'checkbox') {
-      return input.checked;
-    }
-    if (input.type === 'number') {
-      return Number(input.value);
-    }
-    return input.value;
-  }
-  function setInputValue(input, value, force = false) {
-    if (force || getInputValue(input) !== value) {
-      if (input.type === 'checkbox') {
-        input.checked = value;
-      } else {
-        input.value = value;
+
+  function updateElement(id, value) {
+    const el = $('#' + id);
+    if (el) {
+      const prop = getPropName(el);
+      if (el[prop] !== value || forceUpdate) {
+        el[prop] = value;
+        el.dispatchEvent(new Event('change', {bubbles: true}));
       }
-      input.dispatchEvent(new Event('change', {bubbles: true, cancelable: true}));
+    } else {
+      prefs.unsubscribe(ids, updateElement);
     }
   }
 }
 
-/* exported getEventKeyName */
 /**
- * @param {KeyboardEvent|MouseEvent} e
- * @param {boolean} [letterAsCode] - use locale-independent KeyA..KeyZ for single-letter chars
+ * @param {string} selector - beware of $ quirks with `#dotted.id` that won't work with $$
+ * @param {Object} [opt]
+ * @param {function(HTMLElement, HTMLElement[]):boolean} [opt.recur] - called on each match
+   with (firstMatchingElement, allMatchingElements) parameters until stopOnDomReady,
+   you can also return `false` to disconnect the observer
+ * @param {boolean} [opt.stopOnDomReady] - stop observing on DOM ready
+ * @returns {Promise<HTMLElement>} - resolves on first match
  */
-function getEventKeyName(e, letterAsCode) {
-  const mods =
-    (e.shiftKey ? 'Shift-' : '') +
-    (e.ctrlKey ? 'Ctrl-' : '') +
-    (e.altKey ? 'Alt-' : '') +
-    (e.metaKey ? 'Meta-' : '');
-  return `${
-    mods === e.key + '-' ? '' : mods
-  }${
-    e.key
-      ? e.key.length === 1 && letterAsCode ? e.code : e.key
-      : 'LMR'[e.button]
-  }`;
+function waitForSelector(selector, {recur, stopOnDomReady = true} = {}) {
+  let el = $(selector);
+  let elems, isResolved;
+  return el && (!recur || recur(el, (elems = $$(selector))) === false)
+    ? Promise.resolve(el)
+    : new Promise(resolve => {
+      const mo = new MutationObserver(() => {
+        if (!el) el = $(selector);
+        if (!el) return;
+        if (!recur ||
+            callRecur() === false ||
+            stopOnDomReady && document.readyState === 'complete') {
+          mo.disconnect();
+        }
+        if (!isResolved) {
+          isResolved = true;
+          resolve(el);
+        }
+      });
+      mo.observe(document, {childList: true, subtree: true});
+    });
+  function callRecur() {
+    const all = $$(selector); // simpler and faster than analyzing each node in `mutations`
+    const added = !elems ? all : all.filter(el => !elems.includes(el));
+    if (added.length) {
+      elems = all;
+      return recur(added[0], added);
+    }
+  }
 }
+
+//#endregion
+//#region Internals
+
+(() => {
+
+  const Collapsible = {
+    bindEvents(_, elems) {
+      const prefKeys = [];
+      for (const el of elems) {
+        prefKeys.push(el.dataset.pref);
+        ($('h2', el) || el).on('click', Collapsible.saveOnClick);
+      }
+      prefs.subscribe(prefKeys, Collapsible.updateOnPrefChange, {runNow: true});
+    },
+    canSave(el) {
+      return !el.matches('.compact-layout .ignore-pref-if-compact');
+    },
+    async saveOnClick(event) {
+      if (event.target.closest('.intercepts-click')) {
+        event.preventDefault();
+      } else {
+        const el = event.target.closest('details');
+        await new Promise(setTimeout);
+        if (Collapsible.canSave(el)) {
+          prefs.set(el.dataset.pref, el.open);
+        }
+      }
+    },
+    updateOnPrefChange(key, value) {
+      const el = $(`details[data-pref="${key}"]`);
+      if (el.open !== value && Collapsible.canSave(el)) {
+        el.open = value;
+      }
+    },
+  };
+
+  window.on('mousedown', suppressFocusRingOnClick, {passive: true});
+  window.on('keydown', keepFocusRingOnTabbing, {passive: true});
+
+  if (!/^Win\d+/.test(navigator.platform)) {
+    document.documentElement.classList.add('non-windows');
+  }
+  // set language for a) CSS :lang pseudo and b) hyphenation
+  document.documentElement.setAttribute('lang', chrome.i18n.getUILanguage());
+  document.on('click', keepAddressOnDummyClick);
+  document.on('wheel', changeFocusedInputOnWheel, {capture: true, passive: false});
+
+  Promise.resolve().then(async () => {
+    if (!chrome.app) addFaviconFF();
+    await prefs.ready;
+    waitForSelector('details[data-pref]', {recur: Collapsible.bindEvents});
+  });
+
+  onDOMready().then(() => {
+    $remove('#firefox-transitions-bug-suppressor');
+    debounce(addTooltipsToEllipsized, 500);
+    window.on('resize', () => debounce(addTooltipsToEllipsized, 100));
+  });
+
+  function addFaviconFF() {
+    const iconset = ['', 'light/'][prefs.get('iconset')] || '';
+    for (const size of [38, 32, 19, 16]) {
+      document.head.appendChild($create('link', {
+        rel: 'icon',
+        href: `/images/icon/${iconset}${size}.png`,
+        sizes: size + 'x' + size,
+      }));
+    }
+  }
+
+  function changeFocusedInputOnWheel(event) {
+    const el = document.activeElement;
+    if (!el || el !== event.target && !el.contains(event.target)) {
+      return;
+    }
+    const isSelect = el.tagName === 'SELECT';
+    if (isSelect || el.tagName === 'INPUT' && el.type === 'range') {
+      const key = isSelect ? 'selectedIndex' : 'valueAsNumber';
+      const old = el[key];
+      const rawVal = old + Math.sign(event.deltaY) * (el.step || 1);
+      el[key] = Math.max(el.min || 0, Math.min(el.max || el.length - 1, rawVal));
+      if (el[key] !== old) {
+        el.dispatchEvent(new Event('change', {bubbles: true}));
+      }
+      event.preventDefault();
+    }
+    event.stopImmediatePropagation();
+  }
+
+  /** Displays a full text tooltip on buttons with ellipsis overflow and no inherent title */
+  function addTooltipsToEllipsized() {
+    for (const btn of document.getElementsByTagName('button')) {
+      if (btn.title && !btn.titleIsForEllipsis) {
+        continue;
+      }
+      const width = btn.offsetWidth;
+      if (!width || btn.preresizeClientWidth === width) {
+        continue;
+      }
+      btn.preresizeClientWidth = width;
+      if (btn.scrollWidth > width) {
+        const text = btn.textContent;
+        btn.title = text.includes('\u00AD') ? text.replace(/\u00AD/g, '') : text;
+        btn.titleIsForEllipsis = true;
+      } else if (btn.title) {
+        btn.title = '';
+      }
+    }
+  }
+
+  function keepAddressOnDummyClick(e) {
+    // avoid adding # to the page URL when clicking dummy links
+    if (e.target.closest('a[href="#"]')) {
+      e.preventDefault();
+    }
+  }
+
+  function keepFocusRingOnTabbing(event) {
+    if (event.key === 'Tab' && !event.ctrlKey && !event.altKey && !event.metaKey) {
+      focusAccessibility.lastFocusedViaClick = false;
+      setTimeout(() => {
+        let el = document.activeElement;
+        if (el) {
+          el = el.closest('[data-focused-via-click]');
+          if (el) delete el.dataset.focusedViaClick;
+        }
+      });
+    }
+  }
+
+  function suppressFocusRingOnClick({target}) {
+    const el = focusAccessibility.closest(target);
+    if (el) {
+      focusAccessibility.lastFocusedViaClick = true;
+      if (el.dataset.focusedViaClick === undefined) {
+        el.dataset.focusedViaClick = '';
+      }
+    }
+  }
+})();
+
+//#endregion
