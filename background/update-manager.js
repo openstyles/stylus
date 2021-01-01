@@ -1,7 +1,7 @@
 /* global API */// msg.js
+/* global URLS debounce download ignoreChromeError */// toolbox.js
 /* global calcStyleDigest styleJSONseemsValid styleSectionsEqual */ // sections-util.js
 /* global chromeLocal */// storage-util.js
-/* global debounce download ignoreChromeError */// toolbox.js
 /* global prefs */
 'use strict';
 
@@ -150,18 +150,24 @@ const updateMan = (() => {
 
     async function updateUsercss() {
       // TODO: when sourceCode is > 100kB use http range request(s) for version check
-      const text = await tryDownload(style.updateUrl);
+      const url = style.updateUrl;
+      const metaUrl = URLS.extractGreasyForkInstallUrl(url) &&
+        url.replace(/\.user\.css$/, '.meta.css');
+      const text = await tryDownload(metaUrl || url);
       const json = await API.usercss.buildMeta({sourceCode: text});
       await require(['/vendor/semver-bundle/semver']); /* global semverCompare */
       const delta = semverCompare(json.usercssData.version, ucd.version);
       if (!delta && !ignoreDigest) {
         // re-install is invalid in a soft upgrade
-        const sameCode = text === style.sourceCode;
+        const sameCode = !metaUrl && text === style.sourceCode;
         return Promise.reject(sameCode ? STATES.SAME_CODE : STATES.SAME_VERSION);
       }
       if (delta < 0) {
         // downgrade is always invalid
         return Promise.reject(STATES.ERROR_VERSION);
+      }
+      if (metaUrl) {
+        json.sourceCode = await tryDownload(url);
       }
       return API.usercss.buildCode(json);
     }
