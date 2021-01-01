@@ -37,7 +37,7 @@ self.parserlib = (() => {
     'all': 'initial | inherit | unset',
     'alignment-adjust': 'auto | baseline | before-edge | text-before-edge | middle | central | ' +
       'after-edge | text-after-edge | ideographic | alphabetic | hanging | ' +
-      'mathematical | <percentage> | <length>',
+      'mathematical | <length-pct>',
     'alignment-baseline': 'auto | baseline | use-script | before-edge | text-before-edge | ' +
       'after-edge | text-after-edge | central | middle | ideographic | alphabetic | ' +
       'hanging | mathematical',
@@ -117,7 +117,7 @@ self.parserlib = (() => {
     'background-position-y': '[ center | [ top | bottom ]? <length-pct>? ]#',
     'background-repeat': '<repeat-style>#',
     'background-size': '<bg-size>#',
-    'baseline-shift': 'baseline | sub | super | <percentage> | <length>',
+    'baseline-shift': 'baseline | sub | super | <length-pct>',
     'behavior': 1,
     'binding': 1,
     'bleed': '<length>',
@@ -126,10 +126,6 @@ self.parserlib = (() => {
     'bookmark-level': 'none | <integer>',
     'bookmark-state': 'open | closed',
     'bookmark-target': 'none | <uri>',
-    'border-bottom-left-radius': '<x-one-radius>',
-    'border-bottom-right-radius': '<x-one-radius>',
-    'border-top-left-radius': '<x-one-radius>',
-    'border-top-right-radius': '<x-one-radius>',
     'border-boundary': 'none | parent | display',
     'border-collapse': 'collapse | separate',
     'border-image': '[ none | <image> ] || <border-image-slice> ' +
@@ -140,8 +136,18 @@ self.parserlib = (() => {
     'border-image-slice': '<border-image-slice>',
     'border-image-source': '<image> | none',
     'border-image-width': '<border-image-width>',
-    'border-radius': '<border-radius>',
     'border-spacing': '<length>{1,2}',
+
+    'border-bottom-left-radius': '<length-pct>{1,2}',
+    'border-bottom-right-radius': '<length-pct>{1,2}',
+    'border-end-end-radius': '<length-pct>{1,2}',
+    'border-end-start-radius': '<length-pct>{1,2}',
+    'border-radius': '<border-radius>',
+    'border-start-end-radius': '<length-pct>{1,2}',
+    'border-start-start-radius': '<length-pct>{1,2}',
+    'border-top-left-radius': '<length-pct>{1,2}',
+    'border-top-right-radius': '<length-pct>{1,2}',
+
     'bottom': '<width>',
     'box-decoration-break': 'slice | clone',
     'box-shadow': '<box-shadow>',
@@ -217,12 +223,12 @@ self.parserlib = (() => {
     'dominant-baseline': 'auto | use-script | no-change | reset-size | ideographic | alphabetic | ' +
       'hanging | mathematical | central | middle | text-after-edge | text-before-edge',
     'drop-initial-after-adjust': 'central | middle | after-edge | text-after-edge | ideographic | ' +
-      'alphabetic | mathematical | <percentage> | <length>',
+      'alphabetic | mathematical | <length-pct>',
     'drop-initial-after-align': 'baseline | use-script | before-edge | text-before-edge | ' +
       'after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | ' +
       'mathematical',
     'drop-initial-before-adjust': 'before-edge | text-before-edge | central | middle | ' +
-      'hanging | mathematical | <percentage> | <length>',
+      'hanging | mathematical | <length-pct>',
     'drop-initial-before-align': 'caps-height | baseline | use-script | before-edge | ' +
       'text-before-edge | after-edge | text-after-edge | central | middle | ideographic | ' +
       'alphabetic | hanging | mathematical',
@@ -411,6 +417,7 @@ self.parserlib = (() => {
     'overflow': '<overflow>{1,2}',
     'overflow-anchor': 'auto | none',
     'overflow-block': '<overflow>',
+    'overflow-clip-margin': '<nonnegative-len>',
     'overflow-inline': '<overflow>',
     'overflow-style': 1,
     'overflow-wrap': 'normal | break-word | anywhere',
@@ -521,12 +528,12 @@ self.parserlib = (() => {
     'string-set': 1,
     'stroke': '<paint>',
     'stroke-dasharray': 'none | <dasharray>',
-    'stroke-dashoffset': '<percentage> | <length>',
+    'stroke-dashoffset': '<length-pct> | <number>',
     'stroke-linecap': 'butt | round | square',
-    'stroke-linejoin': 'miter | round | bevel',
-    'stroke-miterlimit': '<miterlimit>',
+    'stroke-linejoin': 'miter | miter-clip | round | bevel | arcs',
+    'stroke-miterlimit': '<nonnegative-num>',
     'stroke-opacity': '<opacity-value>',
-    'stroke-width': '<percentage> | <length>',
+    'stroke-width': '<length-pct> | <number>',
 
     'table-layout': 'auto | fixed',
     'tab-size': '<number> | <length>',
@@ -577,7 +584,7 @@ self.parserlib = (() => {
     'user-select': 'auto | text | none | contain | all',
 
     'vertical-align': 'auto | use-script | baseline | sub | super | top | text-top | ' +
-      'central | middle | bottom | text-bottom | <percentage> | <length>',
+      'central | middle | bottom | text-bottom | <length-pct>',
     'visibility': 'visible | hidden | collapse',
     'voice-balance': 1,
     'voice-duration': 1,
@@ -761,9 +768,12 @@ self.parserlib = (() => {
         !p.expr.parts.length ||
         p.expr.parts.every(VTSimple['<ident-for-grid>'], VTSimple)
       ),
-    '<miterlimit>': p => p.type === 'number' && p.value >= 1 || p.isCalc,
+    '<nonnegative-len>': p =>
+      p.value >= 0 && vtIsLength(p) || p.isCalc,
     '<nonnegative-len-pct>': p =>
       p.value >= 0 && (p.type === 'percentage' || vtIsLength(p)) || p.isCalc,
+    '<nonnegative-num>': p =>
+      p.value >= 0 && p.type === 'number' || p.isCalc,
     '<nonnegative-num-pct>': p =>
       p.value >= 0 && (p.type === 'number' || p.type === 'percentage') || p.isCalc,
     //eslint-disable-next-line no-use-before-define
@@ -850,7 +860,7 @@ self.parserlib = (() => {
     '<cubic-bezier-timing-function>': 'ease | ease-in | ease-out | ease-in-out | ' +
       'cubic-bezier( <number>#{4} )',
     '<dasharray>': Matcher =>
-      Matcher.parse('<nonnegative-len-pct>')
+      Matcher.parse('<nonnegative-len-pct> | <nonnegative-num>')
         .braces(1, Infinity, '#', Matcher.parse(',').braces(0, 1, '?')),
     '<display-listitem>': '<display-outside>? && [ flow | flow-root ]? && list-item',
     '<explicit-track-list>': '[ <line-names>? <track-size> ]+ <line-names>?',
@@ -912,9 +922,7 @@ self.parserlib = (() => {
     '<justify-self>': 'auto | normal | stretch | <baseline-position> | <overflow-position>? ' +
       '[ <self-position> | left | right ]',
     '<overscroll>': 'contain | none | auto',
-    '<paint>': 'none | child | child( <integer> ) | <color> | ' +
-      '<uri> [ none | currentColor | <color> ]? | ' +
-      'context-fill | context-stroke',
+    '<paint>': 'none | <color> | <uri> [ none | <color> ]? | context-fill | context-stroke',
     // Because our `alt` combinator is ordered, we need to test these
     // in order from longest possible match to shortest.
     '<position>':
@@ -965,7 +973,6 @@ self.parserlib = (() => {
     '<width-height>': '<length-pct> | min-content | max-content | ' +
       'fit-content | fit-content( <length-pct> ) | -moz-available | -webkit-fill-available',
     '<will-change>': 'auto | <animateable-feature>#',
-    '<x-one-radius>': '<length-pct>{1,2}',
   };
 
   //#endregion
@@ -2346,7 +2353,7 @@ self.parserlib = (() => {
 
   /** @param {PropertyValuePart} p */
   function vtIsLength(p) {
-    return p.text === '0' || p.type === 'length' || p.type === 'number' || p.isCalc;
+    return p.text === '0' || p.type === 'length' || p.isCalc;
   }
 
   /**
