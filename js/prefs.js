@@ -1,11 +1,21 @@
-/* global msg API */
-/* global deepCopy debounce */ // not used in content scripts
+/* global API msg */// msg.js
+/* global debounce deepMerge */// toolbox.js - not used in content scripts
 'use strict';
 
-// eslint-disable-next-line no-unused-expressions
-window.INJECTED !== 1 && (() => {
+(() => {
+  if (window.INJECTED === 1) return;
+
   const STORAGE_KEY = 'settings';
-  const clone = msg.isBg ? deepCopy : (val => JSON.parse(JSON.stringify(val)));
+  const clone = typeof deepMerge === 'function'
+    ? deepMerge
+    : val =>
+      typeof val === 'object' && val
+        ? JSON.parse(JSON.stringify(val))
+        : val;
+  /**
+   * @type PrefsValues
+   * @namespace PrefsValues
+   */
   const defaults = {
     'openEditInWindow': false,      // new editor opens in a own browser window
     'openEditInWindow.popup': false, // new editor opens in a simplified browser window without omnibox
@@ -112,34 +122,53 @@ window.INJECTED !== 1 && (() => {
 
     'updateInterval': 24,           // user-style automatic update interval, hours (0 = disable)
   };
+  const knownKeys = Object.keys(defaults);
+  /** @type {PrefsValues} */
   const values = clone(defaults);
   const onChange = {
     any: new Set(),
     specific: {},
   };
-  // getPrefs may fail on browser startup in the active tab as it loads before the background script
-  const initializing = (msg.isBg ? readStorage() : API.getPrefs().catch(readStorage))
-    .then(setAll);
+  // API fails in the active tab during Chrome startup as it loads the tab before bg
+  /** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
+  let ready = (msg.isBg ? readStorage() : API.prefs.getValues().catch(readStorage))
+    .then(data => {
+      setAll(data);
+      ready = true;
+    });
 
   chrome.storage.onChanged.addListener(async (changes, area) => {
     const data = area === 'sync' && changes[STORAGE_KEY];
     if (data) {
-      await initializing;
+      if (ready.then) await ready;
       setAll(data.newValue);
     }
   });
 
-  // This direct assignment allows IDEs to provide correct autocomplete for methods
   const prefs = window.prefs = {
+
     STORAGE_KEY,
-    initializing,
-    defaults,
+    knownKeys,
+    ready,
+    /** @type {PrefsValues} */
+    defaults: new Proxy({}, {
+      get: (_, key) => clone(defaults[key]),
+    }),
+    /** @type {PrefsValues} */
     get values() {
-      return deepCopy(values);
+      return clone(values);
     },
+
+    __defaults: defaults, // direct reference, be careful!
+    __values: values, // direct reference, be careful!
+
     get(key) {
-      return isKnown(key) && values[key];
+      const res = values[key];
+      if (res !== undefined || isKnown(key)) {
+        return clone(res);
+      }
     },
+
     set(key, val, isSynced) {
       if (!isKnown(key)) return;
       const oldValue = values[key];
@@ -155,36 +184,45 @@ window.INJECTED !== 1 && (() => {
         emitChange(key, val, isSynced);
       }
     },
+
     reset(key) {
       prefs.set(key, clone(defaults[key]));
     },
+
     /**
      * @param {?string|string[]} keys - pref ids or a falsy value to subscribe to everything
-     * @param {function(key:string, value:any)} fn
+     * @param {function(key:string?, value:any?)} fn
      * @param {Object} [opts]
-     * @param {boolean} [opts.now] - when truthy, the listener is called immediately:
+     * @param {boolean} [opts.runNow] - when truthy, the listener is called immediately:
      *   1) if `keys` is an array of keys, each `key` will be fired separately with a real `value`
      *   2) if `keys` is falsy, no key/value will be provided
      */
-    subscribe(keys, fn, {now} = {}) {
+    async subscribe(keys, fn, {runNow} = {}) {
+      const toRun = [];
       if (keys) {
         for (const key of Array.isArray(keys) ? keys : [keys]) {
           if (!isKnown(key)) continue;
           const listeners = onChange.specific[key] ||
             (onChange.specific[key] = new Set());
           listeners.add(fn);
-          if (now) fn(key, values[key]);
+          if (runNow) toRun.push({fn, key});
         }
       } else {
         onChange.any.add(fn);
-        if (now) fn();
+        if (runNow) toRun.push({fn});
+      }
+      if (toRun.length) {
+        if (ready.then) await ready;
+        toRun.forEach(({fn, key}) => fn(key, values[key]));
       }
     },
+
     subscribeMany(data, opts) {
       for (const [k, fn] of Object.entries(data)) {
         prefs.subscribe(k, fn, opts);
       }
     },
+
     unsubscribe(keys, fn) {
       if (keys) {
         for (const key of keys) {
@@ -203,7 +241,7 @@ window.INJECTED !== 1 && (() => {
   };
 
   function isKnown(key) {
-    const res = defaults.hasOwnProperty(key);
+    const res = knownKeys.includes(key);
     if (!res) console.warn('Unknown preference "%s"', key);
     return res;
   }
@@ -228,14 +266,13 @@ window.INJECTED !== 1 && (() => {
       if (msg.isBg) {
         debounce(updateStorage);
       } else {
-        API.setPref(key, value);
+        API.prefs.set(key, value);
       }
     }
   }
 
-  function readStorage() {
-    return browser.storage.sync.get(STORAGE_KEY)
-      .then(data => data[STORAGE_KEY]);
+  async function readStorage() {
+    return (await browser.storage.sync.get(STORAGE_KEY))[STORAGE_KEY];
   }
 
   function updateStorage() {

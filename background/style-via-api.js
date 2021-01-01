@@ -1,7 +1,14 @@
-/* global API_METHODS styleManager CHROME prefs */
+/* global API */// msg.js
+/* global addAPI */// common.js
+/* global isEmptyObj */// toolbox.js
+/* global prefs */
 'use strict';
 
-API_METHODS.styleViaAPI = !CHROME && (() => {
+/**
+ * Uses chrome.tabs.insertCSS
+ */
+
+(() => {
   const ACTIONS = {
     styleApply,
     styleDeleted,
@@ -11,25 +18,25 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
     prefChanged,
     updateCount,
   };
-  const NOP = Promise.resolve(new Error('NOP'));
+  const NOP = new Error('NOP');
   const onError = () => {};
-
   /* <tabId>: Object
        <frameId>: Object
          url: String, non-enumerable
          <styleId>: Array of strings
            section code */
   const cache = new Map();
-
   let observingTabs = false;
 
-  return function (request) {
-    const action = ACTIONS[request.method];
-    return !action ? NOP :
-      action(request, this.sender)
-        .catch(onError)
-        .then(maybeToggleObserver);
-  };
+  addAPI(/** @namespace API */ {
+    async styleViaAPI(request) {
+      try {
+        const fn = ACTIONS[request.method];
+        return fn ? fn(request, this.sender) : NOP;
+      } catch (e) {}
+      maybeToggleObserver();
+    },
+  });
 
   function updateCount(request, sender) {
     const {tab, frameId} = sender;
@@ -37,7 +44,7 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
       throw new Error('we do not count styles for frames');
     }
     const {frameStyles} = getCachedData(tab.id, frameId);
-    API_METHODS.updateIconBadge.call({sender}, Object.keys(frameStyles));
+    API.updateIconBadge.call({sender}, Object.keys(frameStyles));
   }
 
   function styleApply({id = null, ignoreUrlCheck = false}, {tab, frameId, url}) {
@@ -48,7 +55,7 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
     if (id === null && !ignoreUrlCheck && frameStyles.url === url) {
       return NOP;
     }
-    return styleManager.getSectionsByUrl(url, id).then(sections => {
+    return API.styles.getSectionsByUrl(url, id).then(sections => {
       const tasks = [];
       for (const section of Object.values(sections)) {
         const styleId = section.id;
@@ -125,7 +132,7 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
       }
       const {tab, frameId} = sender;
       const {tabFrames, frameStyles} = getCachedData(tab.id, frameId);
-      if (isEmpty(frameStyles)) {
+      if (isEmptyObj(frameStyles)) {
         return NOP;
       }
       removeFrameIfEmpty(tab.id, frameId, tabFrames, {});
@@ -162,7 +169,7 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
     const tabFrames = cache.get(tabId);
     if (tabFrames && frameId in tabFrames) {
       delete tabFrames[frameId];
-      if (isEmpty(tabFrames)) {
+      if (isEmptyObj(tabFrames)) {
         onTabRemoved(tabId);
       }
     }
@@ -178,9 +185,9 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
   }
 
   function removeFrameIfEmpty(tabId, frameId, tabFrames, frameStyles) {
-    if (isEmpty(frameStyles)) {
+    if (isEmptyObj(frameStyles)) {
       delete tabFrames[frameId];
-      if (isEmpty(tabFrames)) {
+      if (isEmptyObj(tabFrames)) {
         cache.delete(tabId);
       }
       return true;
@@ -222,12 +229,5 @@ API_METHODS.styleViaAPI = !CHROME && (() => {
   function removeCSS(tabId, frameId, code) {
     return browser.tabs.removeCSS(tabId, {frameId, code, matchAboutBlank: true})
       .catch(onError);
-  }
-
-  function isEmpty(obj) {
-    for (const k in obj) {
-      return false;
-    }
-    return true;
   }
 })();

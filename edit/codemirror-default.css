@@ -16,9 +16,6 @@
   /* Not using the ring-color hack as it became ugly in new Chrome */
   outline: none !important;
 }
-.CodeMirror-lint-mark-warning {
-  background: none;
-}
 .CodeMirror-dialog {
   animation: highlight 3s cubic-bezier(.18, .02, 0, .94);
 }

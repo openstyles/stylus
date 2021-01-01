@@ -1,15 +1,17 @@
 'use strict';
 
-function t(key, params) {
+//#region Exports
+
+function t(key, params, strict = true) {
   const s = chrome.i18n.getMessage(key, params);
-  if (!s) throw `Missing string "${key}"`;
+  if (!s && strict) throw `Missing string "${key}"`;
   return s;
 }
 
 Object.assign(t, {
   template: {},
-  DOMParser: new DOMParser(),
-  ALLOWED_TAGS: 'a,b,code,i,sub,sup,wbr'.split(','),
+  parser: new DOMParser(),
+  ALLOWED_TAGS: ['a', 'b', 'code', 'i', 'sub', 'sup', 'wbr'],
   RX_WORD_BREAK: new RegExp([
     '(',
     /[\d\w\u007B-\uFFFF]{10}/,
@@ -103,7 +105,7 @@ Object.assign(t, {
   },
 
   createHtml(str, trusted) {
-    const root = t.DOMParser.parseFromString(str, 'text/html').body;
+    const root = t.parser.parseFromString(str, 'text/html').body;
     if (!trusted) {
       t.sanitizeHtml(root);
     } else if (str.includes('i18n-')) {
@@ -156,6 +158,9 @@ Object.assign(t, {
   },
 });
 
+//#endregion
+//#region Internals
+
 (() => {
   const observer = new MutationObserver(process);
   let observing = false;
@@ -187,3 +192,5 @@ Object.assign(t, {
     }
   }
 })();
+
+//#endregion

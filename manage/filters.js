@@ -1,5 +1,11 @@
-/* global installed messageBox sorter $ $$ $create t debounce prefs API router */
-/* exported filterAndAppend */
+/* global $ $$ $create messageBoxProxy */// dom.js
+/* global API */
+/* global debounce */// toolbox.js
+/* global installed */// manage.js
+/* global prefs */
+/* global router */
+/* global sorter */
+/* global t */// localization.js
 'use strict';
 
 const filtersSelector = {
@@ -9,32 +15,18 @@ const filtersSelector = {
   numTotal: 0,
 };
 
-let initialized = false;
+let filtersInitialized = false;
 
 router.watch({search: ['search', 'searchMode']}, ([search, mode]) => {
   $('#search').value = search || '';
   if (mode) $('#searchMode').value = mode;
-  if (!initialized) {
+  if (!filtersInitialized) {
     initFilters();
-    initialized = true;
+    filtersInitialized = true;
   } else {
     searchStyles();
   }
 });
-
-HTMLSelectElement.prototype.adjustWidth = function () {
-  const sel = this.selectedOptions[0];
-  if (!sel) return;
-  const wOld = parseFloat(this.style.width);
-  const opts = [...this];
-  opts.forEach(opt => opt !== sel && opt.remove());
-  this.style.width = '';
-  requestAnimationFrame(() => {
-    const w = this.offsetWidth;
-    if (w && wOld !== w) this.style.width = w + 'px';
-    this.append(...opts);
-  });
-};
 
 function initFilters() {
   $('#search').oninput = $('#searchMode').oninput = function (e) {
@@ -43,7 +35,7 @@ function initFilters() {
 
   $('#search-help').onclick = event => {
     event.preventDefault();
-    messageBox({
+    messageBoxProxy.show({
       className: 'help-text',
       title: t('search'),
       contents:
@@ -91,10 +83,6 @@ function initFilters() {
       slaveData.filter = filter;
       slaveData.filterHide = valueMap.get(!value);
       debounce(filterOnChange, 0, event);
-      // avoid triggering MutationObserver during page load
-      if (document.readyState === 'complete') {
-        el.adjustWidth();
-      }
     };
     el.onchange({target: el});
   });
@@ -120,7 +108,7 @@ function initFilters() {
       }
       if (value !== undefined) {
         el.lastValue = value;
-        if (el.id in prefs.defaults) {
+        if (prefs.knownKeys.includes(el.id)) {
           prefs.set(el.id, false);
         }
       }
@@ -129,17 +117,8 @@ function initFilters() {
     router.updateSearch('search', '');
   };
 
-  // Adjust width after selects are visible
-  prefs.subscribe(['manage.filters.expanded'], () => {
-    const el = $('#filters');
-    if (el.open) {
-      $$('.filter-selection select', el).forEach(select => select.adjustWidth());
-    }
-  });
-
   filterOnChange({forceRefilter: true});
 }
-
 
 function filterOnChange({target: el, forceRefilter, alreadySearched}) {
   const getValue = el => (el.type === 'checkbox' ? el.checked : el.value.trim());
@@ -168,9 +147,7 @@ function filterOnChange({target: el, forceRefilter, alreadySearched}) {
   }
 }
 
-/**
- * @returns {Promise} resolves on async search
- */
+/* exported filterAndAppend */
 function filterAndAppend({entry, container}) {
   if (!container) {
     container = [entry];
@@ -185,10 +162,9 @@ function filterAndAppend({entry, container}) {
 /**
  * @returns {Promise} resolves on async search
  */
-function reapplyFilter(container = installed, alreadySearched) {
+async function reapplyFilter(container = installed, alreadySearched) {
   if (!alreadySearched && $('#search').value.trim()) {
-    return searchStyles({immediately: true, container})
-      .then(() => reapplyFilter(container, true));
+    await searchStyles({immediately: true, container});
   }
   // A: show
   let toHide = [];
@@ -201,7 +177,7 @@ function reapplyFilter(container = installed, alreadySearched) {
   // showStyles() is building the page and no filters are active
   if (toUnhide instanceof DocumentFragment) {
     installed.appendChild(toUnhide);
-    return Promise.resolve();
+    return;
   }
   // filtering needed or a single-element job from handleUpdate()
   for (const entry of toUnhide.children || toUnhide) {
@@ -218,7 +194,7 @@ function reapplyFilter(container = installed, alreadySearched) {
   }
   if (!toHide.length) {
     showFiltersStats();
-    return Promise.resolve();
+    return;
   }
   for (const entry of toHide) {
     entry.classList.add('hidden');
@@ -229,14 +205,14 @@ function reapplyFilter(container = installed, alreadySearched) {
   if (container instanceof DocumentFragment) {
     installed.appendChild(container);
     showFiltersStats();
-    return Promise.resolve();
+    return;
   }
   // single-element job from handleEvent(): add the last wraith
   if (toHide.length === 1 && toHide[0].parentElement !== installed) {
     installed.appendChild(toHide[0]);
   }
   showFiltersStats();
-  return Promise.resolve();
+  return;
 
   /***************************************/
 
@@ -259,12 +235,11 @@ function reapplyFilter(container = installed, alreadySearched) {
   }
 }
 
-
 function showFiltersStats() {
   const active = filtersSelector.hide !== '';
   $('#filters summary').classList.toggle('active', active);
   $('#reset-filters').disabled = !active;
-  const numTotal = installed.children.length;
+  const numTotal = installed.childElementCount;
   const numHidden = installed.getElementsByClassName('entry hidden').length;
   const numShown = numTotal - numHidden;
   if (filtersSelector.numShown !== numShown ||
@@ -276,7 +251,6 @@ function showFiltersStats() {
       !numShown && numTotal && filtersSelector.hide);
   }
 }
-
 
 async function searchStyles({immediately, container} = {}) {
   const el = $('#search');
@@ -297,7 +271,7 @@ async function searchStyles({immediately, container} = {}) {
   const entries = container && container.children || container || all;
   const idsToSearch = entries !== all && [...entries].map(el => el.styleId);
   const ids = entries[0]
-    ? await API.searchDB({query, mode, ids: idsToSearch})
+    ? await API.styles.searchDB({query, mode, ids: idsToSearch})
     : [];
   let needsRefilter = false;
   for (const entry of entries) {

@@ -23,42 +23,32 @@
     "identity",
     "<all_urls>"
   ],
-  "optional_permissions": [
-    "declarativeContent"
-  ],
   "background": {
     "scripts": [
       "js/polyfill.js",
-      "js/messaging.js",
+      "js/toolbox.js",
       "js/msg.js",
+      "js/prefs.js",
       "js/storage-util.js",
       "js/sections-util.js",
       "js/worker-util.js",
-      "js/prefs.js",
-      "js/script-loader.js",
-      "js/usercss.js",
-      "js/cache.js",
-      "vendor/semver-bundle/semver.js",
-      "vendor/db-to-cloud/db-to-cloud.min.js",
-      "vendor/webext-launch-web-auth-flow/webext-launch-web-auth-flow.min.js",
-      "background/token-manager.js",
-      "background/sync.js",
-      "background/content-scripts.js",
-      "background/db-chrome-storage.js",
+
+      "background/common.js",
+
       "background/db.js",
-      "background/style-manager.js",
-      "background/navigator-util.js",
-      "background/icon-util.js",
-      "background/tab-manager.js",
       "background/icon-manager.js",
-      "background/background.js",
-      "background/usercss-helper.js",
-      "background/usercss-install-helper.js",
-      "background/style-via-api.js",
+      "background/navigation-manager.js",
+      "background/style-search-db.js",
       "background/style-via-webrequest.js",
-      "background/search-db.js",
-      "background/update.js",
-      "background/openusercss-api.js"
+      "background/sync-manager.js",
+      "background/tab-manager.js",
+      "background/token-manager.js",
+      "background/update-manager.js",
+      "background/usercss-install-helper.js",
+      "background/usercss-manager.js",
+
+      "background/style-manager.js",
+      "background/background.js"
     ]
   },
   "commands": {

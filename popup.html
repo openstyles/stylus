@@ -180,33 +180,19 @@
 
   <script src="js/polyfill.js"></script>
   <script src="js/msg.js"></script>
-  <script src="js/messaging.js"></script>
-  <script src="popup/popup-preinit.js"></script>
+  <script src="js/toolbox.js"></script>
 
+  <script src="popup/preinit.js"></script>
+
+  <script src="js/prefs.js"></script>
   <script src="js/dom.js"></script>
   <script src="js/localization.js"></script>
-  <script src="js/prefs.js"></script>
+
   <script src="content/style-injector.js"></script>
   <script src="content/apply.js"></script>
 
-  <!-- async hack to load auxiliary stylesheets later so they don't delay the UI -->
-  <link rel="stylesheet" href="vendor-overwrites/colorpicker/colorpicker.css" media="print">
-  <link rel="stylesheet" href="msgbox/msgbox.css" media="print">
-  <link rel="stylesheet" href="manage/config-dialog.css" media="print">
-  <link rel="stylesheet" href="popup/search-results.css" media="print">
   <link rel="stylesheet" href="options/onoffswitch.css">
   <link rel="stylesheet" href="popup/popup.css">
-
-  <script src="popup/popup.js"></script>
-  <script src="popup/search-results.js"></script>
-  <script src="popup/hotkeys.js"></script>
-
-  <script src="js/script-loader.js" async></script>
-  <script src="js/storage-util.js" async></script>
-  <script src="vendor-overwrites/colorpicker/colorconverter.js" async></script>
-  <script src="vendor-overwrites/colorpicker/colorpicker.js" async></script>
-  <script src="msgbox/msgbox.js" async></script>
-  <script src="manage/config-dialog.js" async></script>
 </head>
 
 <body id="stylus-popup">
@@ -292,6 +278,10 @@
     <div id="search-results-list"></div>
     <div class="search-results-nav" data-type="bottom"></div>
   </div>
+
+  <!-- Here we can use the above elements before DOMContentLoaded -->
+  <script src="popup/events.js"></script>
+  <script src="popup/popup.js"></script>
 
   <svg xmlns="http://www.w3.org/2000/svg" style="display: none !important;">
     <symbol id="svg-icon-checked" viewBox="0 0 1000 1000">

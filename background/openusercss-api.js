@@ -1,4 +1,7 @@
+/* global addAPI */// common.js
 'use strict';
+
+/* CURRENTLY UNUSED */
 
 (() => {
   // begin:nanographql - Tiny graphQL client library
@@ -25,10 +28,9 @@
   // end:nanographql
 
   const api = 'https://api.openusercss.org';
-  const doQuery = ({id}, queryString) => {
+  const doQuery = async ({id}, queryString) => {
     const query = gql(queryString);
-
-    return fetch(api, {
+    return (await fetch(api, {
       method: 'POST',
       headers: new Headers({
         'Content-Type': 'application/json',
@@ -36,11 +38,10 @@
       body: query({
         id,
       }),
-    })
-    .then(res => res.json());
+    })).json();
   };
 
-  window.API_METHODS = Object.assign(window.API_METHODS || {}, {
+  addAPI(/** @namespace- API */ { // TODO: remove "-" when this is implemented
     /**
      *   This function can be used to retrieve a theme object from the
      *   GraphQL API, set above

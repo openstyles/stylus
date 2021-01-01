@@ -1,7 +1,10 @@
-/* eslint no-eq-null: 0, eqeqeq: [2, "smart"] */
-/* global createCache db calcStyleDigest db tryRegExp styleCodeEmpty styleSectionGlobal
-  getStyleWithNoCode msg prefs sync URLS */
-/* exported styleManager */
+/* global API msg */// msg.js
+/* global URLS stringAsRegExp tryRegExp */// toolbox.js
+/* global bgReady compareRevision */// common.js
+/* global calcStyleDigest styleCodeEmpty styleSectionGlobal */// sections-util.js
+/* global db */
+/* global prefs */
+/* global tabMan */
 'use strict';
 
 /*
@@ -10,339 +13,287 @@ is added/updated, it broadcast a message to content script and the content
 script would try to fetch the new code.
 
 The live preview feature relies on `runtime.connect` and `port.onDisconnect`
-to cleanup the temporary code. See /edit/live-preview.js.
+to cleanup the temporary code. See livePreview in /edit.
 */
 
-/** @type {styleManager} */
-const styleManager = (() => {
-  const preparing = prepare();
+const styleMan = (() => {
 
-  /* styleId => {
-    data: styleData,
-    preview: styleData,
-    appliesTo: Set<url>
-  } */
-  const styles = new Map();
+  //#region Declarations
+
+  /** @typedef {{
+    style: StyleObj
+    preview?: StyleObj
+    appliesTo: Set<string>
+  }} StyleMapData */
+  /** @type {Map<number,StyleMapData>} */
+  const dataMap = new Map();
   const uuidIndex = new Map();
-
-  /* url => {
-    maybeMatch: Set<styleId>,
-    sections: Object<styleId => {
-      id: styleId,
-      code: Array<String>
-    }>
-  } */
+  /** @typedef {Object<styleId,{id: number, code: string[]}>} StyleSectionsToApply */
+  /** @type {Map<string,{maybeMatch: Set<styleId>, sections: StyleSectionsToApply}>} */
   const cachedStyleForUrl = createCache({
-    onDeleted: (url, cache) => {
+    onDeleted(url, cache) {
       for (const section of Object.values(cache.sections)) {
-        const style = styles.get(section.id);
-        if (style) {
-          style.appliesTo.delete(url);
-        }
+        const data = id2data(section.id);
+        if (data) data.appliesTo.delete(url);
       }
     },
   });
-
   const BAD_MATCHER = {test: () => false};
   const compileRe = createCompiler(text => `^(${text})$`);
   const compileSloppyRe = createCompiler(text => `^${text}$`);
   const compileExclusion = createCompiler(buildExclusion);
+  const MISSING_PROPS = {
+    name: style => `ID: ${style.id}`,
+    _id: () => uuidv4(),
+    _rev: () => Date.now(),
+  };
+  const DELETE_IF_NULL = ['id', 'customName'];
+  /** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
+  let ready = init();
 
-  const DUMMY_URL = {
-    hash: '',
-    host: '',
-    hostname: '',
-    href: '',
-    origin: '',
-    password: '',
-    pathname: '',
-    port: '',
-    protocol: '',
-    search: '',
-    searchParams: new URLSearchParams(),
-    username: '',
+  chrome.runtime.onConnect.addListener(handleLivePreview);
+
+  //#endregion
+  //#region Exports
+
+  return {
+
+    /** @returns {Promise<number>} style id */
+    async delete(id, reason) {
+      if (ready.then) await ready;
+      const data = id2data(id);
+      await db.exec('delete', id);
+      if (reason !== 'sync') {
+        API.sync.delete(data.style._id, Date.now());
+      }
+      for (const url of data.appliesTo) {
+        const cache = cachedStyleForUrl.get(url);
+        if (cache) delete cache.sections[id];
+      }
+      dataMap.delete(id);
+      uuidIndex.delete(data.style._id);
+      await msg.broadcast({
+        method: 'styleDeleted',
+        style: {id},
+      });
+      return id;
+    },
+
+    /** @returns {Promise<number>} style id */
+    async deleteByUUID(_id, rev) {
+      if (ready.then) await ready;
+      const id = uuidIndex.get(_id);
+      const oldDoc = id && id2style(id);
+      if (oldDoc && compareRevision(oldDoc._rev, rev) <= 0) {
+        // FIXME: does it make sense to set reason to 'sync' in deleteByUUID?
+        return styleMan.delete(id, 'sync');
+      }
+    },
+
+    /** @returns {Promise<StyleObj>} */
+    async editSave(style) {
+      if (ready.then) await ready;
+      style = mergeWithMapped(style);
+      style.updateDate = Date.now();
+      return handleSave(await saveStyle(style), 'editSave');
+    },
+
+    /** @returns {Promise<?StyleObj>} */
+    async find(filter) {
+      if (ready.then) await ready;
+      const filterEntries = Object.entries(filter);
+      for (const {style} of dataMap.values()) {
+        if (filterEntries.every(([key, val]) => style[key] === val)) {
+          return style;
+        }
+      }
+      return null;
+    },
+
+    /** @returns {Promise<StyleObj[]>} */
+    async getAll() {
+      if (ready.then) await ready;
+      return Array.from(dataMap.values(), data2style);
+    },
+
+    /** @returns {Promise<StyleObj>} */
+    async getByUUID(uuid) {
+      if (ready.then) await ready;
+      return id2style(uuidIndex.get(uuid));
+    },
+
+    /** @returns {Promise<StyleSectionsToApply>} */
+    async getSectionsByUrl(url, id, isInitialApply) {
+      if (ready.then) await ready;
+      if (isInitialApply && prefs.get('disableAll')) {
+        return {disableAll: true};
+      }
+      /* Chrome hides text frament from location.href of the page e.g. #:~:text=foo
+         so we'll use the real URL reported by webNavigation API */
+      const {tab, frameId} = this && this.sender || {};
+      url = tab && tabMan.get(tab.id, 'url', frameId) || url;
+      let cache = cachedStyleForUrl.get(url);
+      if (!cache) {
+        cache = {
+          sections: {},
+          maybeMatch: new Set(),
+        };
+        buildCache(cache, url, dataMap.values());
+        cachedStyleForUrl.set(url, cache);
+      } else if (cache.maybeMatch.size) {
+        buildCache(cache, url, Array.from(cache.maybeMatch, id2data).filter(Boolean));
+      }
+      return id
+        ? cache.sections[id] ? {[id]: cache.sections[id]} : {}
+        : cache.sections;
+    },
+
+    /** @returns {Promise<StyleObj>} */
+    async get(id) {
+      if (ready.then) await ready;
+      return id2style(id);
+    },
+
+    /** @returns {Promise<StylesByUrlResult[]>} */
+    async getByUrl(url, id = null) {
+      if (ready.then) await ready;
+      // FIXME: do we want to cache this? Who would like to open popup rapidly
+      // or search the DB with the same URL?
+      const result = [];
+      const styles = id
+        ? [id2style(id)].filter(Boolean)
+        : Array.from(dataMap.values(), data2style);
+      const query = createMatchQuery(url);
+      for (const style of styles) {
+        let excluded = false;
+        let sloppy = false;
+        let sectionMatched = false;
+        const match = urlMatchStyle(query, style);
+        // TODO: enable this when the function starts returning false
+        // if (match === false) {
+        // continue;
+        // }
+        if (match === 'excluded') {
+          excluded = true;
+        }
+        for (const section of style.sections) {
+          if (styleSectionGlobal(section) && styleCodeEmpty(section.code)) {
+            continue;
+          }
+          const match = urlMatchSection(query, section);
+          if (match) {
+            if (match === 'sloppy') {
+              sloppy = true;
+            }
+            sectionMatched = true;
+            break;
+          }
+        }
+        if (sectionMatched) {
+          result.push(/** @namespace StylesByUrlResult */ {style, excluded, sloppy});
+        }
+      }
+      return result;
+    },
+
+    /** @returns {Promise<StyleObj[]>} */
+    async importMany(items) {
+      if (ready.then) await ready;
+      items.forEach(beforeSave);
+      const events = await db.exec('putMany', items);
+      return Promise.all(items.map((item, i) => {
+        afterSave(item, events[i]);
+        return handleSave(item, 'import');
+      }));
+    },
+
+    /** @returns {Promise<StyleObj>} */
+    async import(data) {
+      if (ready.then) await ready;
+      return handleSave(await saveStyle(data), 'import');
+    },
+
+    /** @returns {Promise<StyleObj>} */
+    async install(style, reason = null) {
+      if (ready.then) await ready;
+      reason = reason || dataMap.has(style.id) ? 'update' : 'install';
+      style = mergeWithMapped(style);
+      const url = !style.url && style.updateUrl && (
+        URLS.extractUsoArchiveInstallUrl(style.updateUrl) ||
+        URLS.extractGreasyForkInstallUrl(style.updateUrl)
+      );
+      if (url) style.url = style.installationUrl = url;
+      style.originalDigest = await calcStyleDigest(style);
+      // FIXME: update updateDate? what about usercss config?
+      return handleSave(await saveStyle(style), reason);
+    },
+
+    /** @returns {Promise<?StyleObj>} */
+    async putByUUID(doc) {
+      if (ready.then) await ready;
+      const id = uuidIndex.get(doc._id);
+      if (id) {
+        doc.id = id;
+      } else {
+        delete doc.id;
+      }
+      const oldDoc = id && id2style(id);
+      let diff = -1;
+      if (oldDoc) {
+        diff = compareRevision(oldDoc._rev, doc._rev);
+        if (diff > 0) {
+          API.sync.put(oldDoc._id, oldDoc._rev);
+          return;
+        }
+      }
+      if (diff < 0) {
+        doc.id = await db.exec('put', doc);
+        uuidIndex.set(doc._id, doc.id);
+        return handleSave(doc, 'sync');
+      }
+    },
+
+    /** @returns {Promise<number>} style id */
+    async toggle(id, enabled) {
+      if (ready.then) await ready;
+      const style = Object.assign({}, id2style(id), {enabled});
+      handleSave(await saveStyle(style), 'toggle', false);
+      return id;
+    },
+
+    // using bind() to skip step-into when debugging
+
+    /** @returns {Promise<StyleObj>} */
+    addExclusion: addIncludeExclude.bind(null, 'exclusions'),
+    /** @returns {Promise<StyleObj>} */
+    addInclusion: addIncludeExclude.bind(null, 'inclusions'),
+    /** @returns {Promise<?StyleObj>} */
+    removeExclusion: removeIncludeExclude.bind(null, 'exclusions'),
+    /** @returns {Promise<?StyleObj>} */
+    removeInclusion: removeIncludeExclude.bind(null, 'inclusions'),
   };
 
-  const DELETE_IF_NULL = ['id', 'customName'];
+  //#endregion
+  //#region Implementation
 
-  handleLivePreviewConnections();
-
-  return Object.assign(/** @namespace styleManager */{
-    compareRevision,
-  }, ensurePrepared(/** @namespace styleManager */{
-    get,
-    getByUUID,
-    getSectionsByUrl,
-    putByUUID,
-    installStyle,
-    deleteStyle,
-    deleteByUUID,
-    editSave,
-    findStyle,
-    importStyle,
-    importMany,
-    toggleStyle,
-    getAllStyles, // used by import-export
-    getStylesByUrl, // used by popup
-    styleExists,
-    addExclusion,
-    removeExclusion,
-    addInclusion,
-    removeInclusion,
-  }));
-
-  function handleLivePreviewConnections() {
-    chrome.runtime.onConnect.addListener(port => {
-      if (port.name !== 'livePreview') {
-        return;
-      }
-      let id;
-      port.onMessage.addListener(data => {
-        if (!id) {
-          id = data.id;
-        }
-        const style = styles.get(id);
-        style.preview = data;
-        broadcastStyleUpdated(style.preview, 'editPreview');
-      });
-      port.onDisconnect.addListener(() => {
-        port = null;
-        if (id) {
-          const style = styles.get(id);
-          if (!style) {
-            // maybe deleted
-            return;
-          }
-          style.preview = null;
-          broadcastStyleUpdated(style.data, 'editPreviewEnd');
-        }
-      });
-    });
+  /** @returns {StyleMapData} */
+  function id2data(id) {
+    return dataMap.get(id);
   }
 
-  function escapeRegExp(text) {
-    // https://github.com/lodash/lodash/blob/0843bd46ef805dd03c0c8d804630804f3ba0ca3c/lodash.js#L152
-    return text.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
+  /** @returns {?StyleObj} */
+  function id2style(id) {
+    return (dataMap.get(id) || {}).style;
   }
 
-  function get(id, noCode = false) {
-    const data = styles.get(id).data;
-    return noCode ? getStyleWithNoCode(data) : data;
+  /** @returns {?StyleObj} */
+  function data2style(data) {
+    return data && data.style;
   }
 
-  function getByUUID(uuid) {
-    const id = uuidIndex.get(uuid);
-    if (id) {
-      return get(id);
-    }
-  }
-
-  function getAllStyles() {
-    return [...styles.values()].map(s => s.data);
-  }
-
-  function compareRevision(rev1, rev2) {
-    return rev1 - rev2;
-  }
-
-  function putByUUID(doc) {
-    const id = uuidIndex.get(doc._id);
-    if (id) {
-      doc.id = id;
-    } else {
-      delete doc.id;
-    }
-    const oldDoc = id && styles.has(id) && styles.get(id).data;
-    let diff = -1;
-    if (oldDoc) {
-      diff = compareRevision(oldDoc._rev, doc._rev);
-      if (diff > 0) {
-        sync.put(oldDoc._id, oldDoc._rev);
-        return;
-      }
-    }
-    if (diff < 0) {
-      return db.exec('put', doc)
-        .then(event => {
-          doc.id = event.target.result;
-          uuidIndex.set(doc._id, doc.id);
-          return handleSave(doc, 'sync');
-        });
-    }
-  }
-
-  function toggleStyle(id, enabled) {
-    const style = styles.get(id);
-    const data = Object.assign({}, style.data, {enabled});
-    return saveStyle(data)
-      .then(newData => handleSave(newData, 'toggle', false))
-      .then(() => id);
-  }
-
-  // used by install-hook-userstyles.js
-  function findStyle(filter, noCode = false) {
-    for (const style of styles.values()) {
-      if (filterMatch(filter, style.data)) {
-        return noCode ? getStyleWithNoCode(style.data) : style.data;
-      }
-    }
-    return null;
-  }
-
-  function styleExists(filter) {
-    return [...styles.values()].some(s => filterMatch(filter, s.data));
-  }
-
-  function filterMatch(filter, target) {
-    for (const key of Object.keys(filter)) {
-      if (filter[key] !== target[key]) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  function importStyle(data) {
-    // FIXME: is it a good idea to save the data directly?
-    return saveStyle(data)
-      .then(newData => handleSave(newData, 'import'));
-  }
-
-  function importMany(items) {
-    items.forEach(beforeSave);
-    return db.exec('putMany', items)
-      .then(events => {
-        for (let i = 0; i < items.length; i++) {
-          afterSave(items[i], events[i].target.result);
-        }
-        return Promise.all(items.map(i => handleSave(i, 'import')));
-      });
-  }
-
-  function installStyle(data, reason = null) {
-    const style = styles.get(data.id);
-    if (!style) {
-      data = Object.assign(createNewStyle(), data);
-    } else {
-      data = Object.assign({}, style.data, data);
-    }
-    if (!reason) {
-      reason = style ? 'update' : 'install';
-    }
-    let url = !data.url && data.updateUrl;
-    if (url) {
-      const usoId = URLS.extractUsoArchiveId(url);
-      url = usoId && `${URLS.usoArchive}?style=${usoId}` ||
-            URLS.extractGreasyForkId(url) && url.match(/^.*?\/\d+/)[0];
-      if (url) data.url = data.installationUrl = url;
-    }
-    // FIXME: update updateDate? what about usercss config?
-    return calcStyleDigest(data)
-      .then(digest => {
-        data.originalDigest = digest;
-        return saveStyle(data);
-      })
-      .then(newData => handleSave(newData, reason));
-  }
-
-  function editSave(data) {
-    const style = styles.get(data.id);
-    if (style) {
-      data = Object.assign({}, style.data, data);
-    } else {
-      data = Object.assign(createNewStyle(), data);
-    }
-    data.updateDate = Date.now();
-    return saveStyle(data)
-      .then(newData => handleSave(newData, 'editSave'));
-  }
-
-  function addIncludeExclude(id, rule, type) {
-    const data = Object.assign({}, styles.get(id).data);
-    if (!data[type]) {
-      data[type] = [];
-    }
-    if (data[type].includes(rule)) {
-      throw new Error('The rule already exists');
-    }
-    data[type] = data[type].concat([rule]);
-    return saveStyle(data)
-      .then(newData => handleSave(newData, 'styleSettings'));
-  }
-
-  function removeIncludeExclude(id, rule, type) {
-    const data = Object.assign({}, styles.get(id).data);
-    if (!data[type]) {
-      return;
-    }
-    if (!data[type].includes(rule)) {
-      return;
-    }
-    data[type] = data[type].filter(r => r !== rule);
-    return saveStyle(data)
-      .then(newData => handleSave(newData, 'styleSettings'));
-  }
-
-  function addExclusion(id, rule) {
-    return addIncludeExclude(id, rule, 'exclusions');
-  }
-
-  function removeExclusion(id, rule) {
-    return removeIncludeExclude(id, rule, 'exclusions');
-  }
-
-  function addInclusion(id, rule) {
-    return addIncludeExclude(id, rule, 'inclusions');
-  }
-
-  function removeInclusion(id, rule) {
-    return removeIncludeExclude(id, rule, 'inclusions');
-  }
-
-  function deleteStyle(id, reason) {
-    const style = styles.get(id);
-    const rev = Date.now();
-    return db.exec('delete', id)
-      .then(() => {
-        if (reason !== 'sync') {
-          sync.delete(style.data._id, rev);
-        }
-        for (const url of style.appliesTo) {
-          const cache = cachedStyleForUrl.get(url);
-          if (cache) {
-            delete cache.sections[id];
-          }
-        }
-        styles.delete(id);
-        uuidIndex.delete(style.data._id);
-        return msg.broadcast({
-          method: 'styleDeleted',
-          style: {id},
-        });
-      })
-      .then(() => id);
-  }
-
-  function deleteByUUID(_id, rev) {
-    const id = uuidIndex.get(_id);
-    const oldDoc = id && styles.has(id) && styles.get(id).data;
-    if (oldDoc && compareRevision(oldDoc._rev, rev) <= 0) {
-      // FIXME: does it make sense to set reason to 'sync' in deleteByUUID?
-      return deleteStyle(id, 'sync');
-    }
-  }
-
-  function ensurePrepared(methods) {
-    const prepared = {};
-    for (const [name, fn] of Object.entries(methods)) {
-      prepared[name] = (...args) =>
-        preparing.then(() => fn(...args));
-    }
-    return prepared;
-  }
-
+  /** @returns {StyleObj} */
   function createNewStyle() {
-    return {
+    return /** @namespace StyleObj */ {
       enabled: true,
       updateUrl: null,
       md5Url: null,
@@ -352,43 +303,101 @@ const styleManager = (() => {
     };
   }
 
-  function broadcastStyleUpdated(data, reason, method = 'styleUpdated', codeIsUpdated = true) {
-    const style = styles.get(data.id);
+  /** @returns {void} */
+  function storeInMap(style) {
+    dataMap.set(style.id, {
+      style,
+      appliesTo: new Set(),
+    });
+  }
+
+  /** @returns {StyleObj} */
+  function mergeWithMapped(style) {
+    return Object.assign({},
+      id2style(style.id) || createNewStyle(),
+      style);
+  }
+
+  function handleLivePreview(port) {
+    if (port.name !== 'livePreview') {
+      return;
+    }
+    let id;
+    port.onMessage.addListener(style => {
+      if (!id) id = style.id;
+      const data = id2data(id);
+      data.preview = style;
+      broadcastStyleUpdated(style, 'editPreview');
+    });
+    port.onDisconnect.addListener(() => {
+      port = null;
+      if (id) {
+        const data = id2data(id);
+        if (data) {
+          data.preview = null;
+          broadcastStyleUpdated(data.style, 'editPreviewEnd');
+        }
+      }
+    });
+  }
+
+  async function addIncludeExclude(type, id, rule) {
+    if (ready.then) await ready;
+    const style = Object.assign({}, id2style(id));
+    const list = style[type] || (style[type] = []);
+    if (list.includes(rule)) {
+      throw new Error('The rule already exists');
+    }
+    style[type] = list.concat([rule]);
+    return handleSave(await saveStyle(style), 'styleSettings');
+  }
+
+  async function removeIncludeExclude(type, id, rule) {
+    if (ready.then) await ready;
+    const style = Object.assign({}, id2style(id));
+    const list = style[type];
+    if (!list || !list.includes(rule)) {
+      return;
+    }
+    style[type] = list.filter(r => r !== rule);
+    return handleSave(await saveStyle(style), 'styleSettings');
+  }
+
+  function broadcastStyleUpdated(style, reason, method = 'styleUpdated', codeIsUpdated = true) {
+    const {id} = style;
+    const data = id2data(id);
     const excluded = new Set();
     const updated = new Set();
     for (const [url, cache] of cachedStyleForUrl.entries()) {
-      if (!style.appliesTo.has(url)) {
-        cache.maybeMatch.add(data.id);
+      if (!data.appliesTo.has(url)) {
+        cache.maybeMatch.add(id);
         continue;
       }
-      const code = getAppliedCode(createMatchQuery(url), data);
-      if (!code) {
-        excluded.add(url);
-        delete cache.sections[data.id];
-      } else {
+      const code = getAppliedCode(createMatchQuery(url), style);
+      if (code) {
         updated.add(url);
-        cache.sections[data.id] = {
-          id: data.id,
-          code,
-        };
+        cache.sections[id] = {id, code};
+      } else {
+        excluded.add(url);
+        delete cache.sections[id];
       }
     }
-    style.appliesTo = updated;
+    data.appliesTo = updated;
     return msg.broadcast({
       method,
-      style: {
-        id: data.id,
-        md5Url: data.md5Url,
-        enabled: data.enabled,
-      },
       reason,
       codeIsUpdated,
+      style: {
+        id,
+        md5Url: style.md5Url,
+        enabled: style.enabled,
+      },
     });
   }
 
   function beforeSave(style) {
     if (!style.name) {
-      throw new Error('style name is empty');
+      throw new Error('Style name is empty');
     }
     for (const key of DELETE_IF_NULL) {
       if (style[key] == null) {
@@ -407,114 +416,29 @@ const styleManager = (() => {
       style.id = newId;
     }
     uuidIndex.set(style._id, style.id);
-    sync.put(style._id, style._rev);
+    API.sync.put(style._id, style._rev);
   }
 
-  function saveStyle(style) {
+  async function saveStyle(style) {
     beforeSave(style);
-    return db.exec('put', style)
-      .then(event => {
-        afterSave(style, event.target.result);
-        return style;
-      });
+    const newId = await db.exec('put', style);
+    afterSave(style, newId);
+    return style;
   }
 
-  function handleSave(data, reason, codeIsUpdated) {
-    const style = styles.get(data.id);
-    let method;
-    if (!style) {
-      styles.set(data.id, {
-        appliesTo: new Set(),
-        data,
-      });
-      method = 'styleAdded';
+  function handleSave(style, reason, codeIsUpdated) {
+    const data = id2data(style.id);
+    const method = data ? 'styleUpdated' : 'styleAdded';
+    if (!data) {
+      storeInMap(style);
     } else {
-      style.data = data;
-      method = 'styleUpdated';
+      data.style = style;
     }
-    broadcastStyleUpdated(data, reason, method, codeIsUpdated);
-    return data;
+    broadcastStyleUpdated(style, reason, method, codeIsUpdated);
+    return style;
   }
 
   // get styles matching a URL, including sloppy regexps and excluded items.
-  function getStylesByUrl(url, id = null) {
-    // FIXME: do we want to cache this? Who would like to open popup rapidly
-    // or search the DB with the same URL?
-    const result = [];
-    const datas = !id ? [...styles.values()].map(s => s.data) :
-      styles.has(id) ? [styles.get(id).data] : [];
-    const query = createMatchQuery(url);
-    for (const data of datas) {
-      let excluded = false;
-      let sloppy = false;
-      let sectionMatched = false;
-      const match = urlMatchStyle(query, data);
-      // TODO: enable this when the function starts returning false
-      // if (match === false) {
-        // continue;
-      // }
-      if (match === 'excluded') {
-        excluded = true;
-      }
-      for (const section of data.sections) {
-        if (styleSectionGlobal(section) && styleCodeEmpty(section.code)) {
-          continue;
-        }
-        const match = urlMatchSection(query, section);
-        if (match) {
-          if (match === 'sloppy') {
-            sloppy = true;
-          }
-          sectionMatched = true;
-          break;
-        }
-      }
-      if (sectionMatched) {
-        result.push({data, excluded, sloppy});
-      }
-    }
-    return result;
-  }
-
-  function getSectionsByUrl(url, id, isInitialApply) {
-    let cache = cachedStyleForUrl.get(url);
-    if (!cache) {
-      cache = {
-        sections: {},
-        maybeMatch: new Set(),
-      };
-      buildCache(styles.values());
-      cachedStyleForUrl.set(url, cache);
-    } else if (cache.maybeMatch.size) {
-      buildCache(
-        [...cache.maybeMatch]
-          .filter(i => styles.has(i))
-          .map(i => styles.get(i))
-      );
-    }
-    const res = id
-      ? cache.sections[id] ? {[id]: cache.sections[id]} : {}
-      : cache.sections;
-    // Avoiding flicker of needlessly applied styles by providing both styles & pref in one API call
-    return isInitialApply && prefs.get('disableAll')
-      ? Object.assign({disableAll: true}, res)
-      : res;
-
-    function buildCache(styleList) {
-      const query = createMatchQuery(url);
-      for (const {appliesTo, data, preview} of styleList) {
-        const code = getAppliedCode(query, preview || data);
-        if (code) {
-          cache.sections[data.id] = {
-            id: data.id,
-            code,
-          };
-          appliesTo.add(url);
-        }
-      }
-    }
-  }
-
   function getAppliedCode(query, data) {
     if (urlMatchStyle(query, data) !== true) {
       return;
@@ -528,60 +452,47 @@ const styleManager = (() => {
     return code.length && code;
   }
 
-  function prepare() {
-    const ADD_MISSING_PROPS = {
-      name: style => `ID: ${style.id}`,
-      _id: () => uuidv4(),
-      _rev: () => Date.now(),
-    };
-
-    return db.exec('getAll')
-      .then(event => event.target.result || [])
-      .then(styleList => {
-        // setup missing _id, _rev
-        const updated = [];
-        for (const style of styleList) {
-          if (addMissingProperties(style)) {
-            updated.push(style);
-          }
-        }
-        if (updated.length) {
-          return db.exec('putMany', updated)
-            .then(() => styleList);
-        }
-        return styleList;
-      })
-      .then(styleList => {
-        for (const style of styleList) {
-          fixUsoMd5Issue(style);
-          styles.set(style.id, {
-            appliesTo: new Set(),
-            data: style,
-          });
-          uuidIndex.set(style._id, style.id);
-        }
-      });
-
-    function addMissingProperties(style) {
-      let touched = false;
-      for (const key in ADD_MISSING_PROPS) {
-        if (!style[key]) {
-          style[key] = ADD_MISSING_PROPS[key](style);
-          touched = true;
-        }
-      }
-      // upgrade the old way of customizing local names
-      const {originalName} = style;
-      if (originalName) {
-        touched = true;
-        if (originalName !== style.name) {
-          style.customName = style.name;
-          style.name = originalName;
-        }
-        delete style.originalName;
-      }
-      return touched;
+  async function init() {
+    const styles = await db.exec('getAll') || [];
+    const updated = styles.filter(style =>
+      addMissingProps(style) +
+      addCustomName(style));
+    if (updated.length) {
+      await db.exec('putMany', updated);
     }
+    for (const style of styles) {
+      fixUsoMd5Issue(style);
+      storeInMap(style);
+      uuidIndex.set(style._id, style.id);
+    }
+    ready = true;
+    bgReady._resolveStyles();
+  }
+
+  function addMissingProps(style) {
+    let res = 0;
+    for (const key in MISSING_PROPS) {
+      if (!style[key]) {
+        style[key] = MISSING_PROPS[key](style);
+        res = 1;
+      }
+    }
+    return res;
+  }
+
+  /** Upgrades the old way of customizing local names */
+  function addCustomName(style) {
+    let res = 0;
+    const {originalName} = style;
+    if (originalName) {
+      res = 1;
+      if (originalName !== style.name) {
+        style.customName = style.name;
+        style.name = originalName;
+      }
+      delete style.originalName;
+    }
+    return res;
   }
 
   function urlMatchStyle(query, style) {
@@ -652,7 +563,8 @@ const styleManager = (() => {
   }
 
   function compileGlob(text) {
-    return escapeRegExp(text).replace(/\\\\\\\*|\\\*/g, m => m.length > 2 ? m : '.*');
+    return stringAsRegExp(text, '', true)
+      .replace(/\\\\\\\*|\\\*/g, m => m.length > 2 ? m : '.*');
   }
 
   function buildExclusion(text) {
@@ -706,11 +618,36 @@ const styleManager = (() => {
     };
   }
 
+  function buildCache(cache, url, styleList) {
+    const query = createMatchQuery(url);
+    for (const {style, appliesTo, preview} of styleList) {
+      const code = getAppliedCode(query, preview || style);
+      if (code) {
+        const id = style.id;
+        cache.sections[id] = {id, code};
+        appliesTo.add(url);
+      }
+    }
+  }
+
   function createURL(url) {
     try {
       return new URL(url);
     } catch (err) {
-      return DUMMY_URL;
+      return {
+        hash: '',
+        host: '',
+        hostname: '',
+        href: '',
+        origin: '',
+        password: '',
+        pathname: '',
+        port: '',
+        protocol: '',
+        search: '',
+        searchParams: new URLSearchParams(),
+        username: '',
+      };
     }
   }
 
@@ -726,4 +663,67 @@ const styleManager = (() => {
   function hex4dashed(num, i) {
     return (num + 0x10000).toString(16).slice(-4) + (i >= 1 && i <= 4 ? '-' : '');
   }
+
+  //#endregion
 })();
+
+/** Creates a FIFO limit-size map. */
+function createCache({size = 1000, onDeleted} = {}) {
+  const map = new Map();
+  const buffer = Array(size);
+  let index = 0;
+  let lastIndex = 0;
+  return {
+    get(id) {
+      const item = map.get(id);
+      return item && item.data;
+    },
+    set(id, data) {
+      if (map.size === size) {
+        // full
+        map.delete(buffer[lastIndex].id);
+        if (onDeleted) {
+          onDeleted(buffer[lastIndex].id, buffer[lastIndex].data);
+        }
+        lastIndex = (lastIndex + 1) % size;
+      }
+      const item = {id, data, index};
+      map.set(id, item);
+      buffer[index] = item;
+      index = (index + 1) % size;
+    },
+    delete(id) {
+      const item = map.get(id);
+      if (!item) {
+        return false;
+      }
+      map.delete(item.id);
+      const lastItem = buffer[lastIndex];
+      lastItem.index = item.index;
+      buffer[item.index] = lastItem;
+      lastIndex = (lastIndex + 1) % size;
+      if (onDeleted) {
+        onDeleted(item.id, item.data);
+      }
+      return true;
+    },
+    clear() {
+      map.clear();
+      index = lastIndex = 0;
+    },
+    has: id => map.has(id),
+    *entries() {
+      for (const [id, item] of map) {
+        yield [id, item.data];
+      }
+    },
+    *values() {
+      for (const item of map.values()) {
+        yield item.data;
+      }
+    },
+    get size() {
+      return map.size;
+    },
+  };
+}

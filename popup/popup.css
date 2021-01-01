@@ -112,6 +112,10 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
   cursor: pointer;
   margin-right: .5em;
 }
+#find-styles-inline-group label {
+  position: relative;
+  padding-left: 16px;
+}
 
 .checker {
   display: inline;

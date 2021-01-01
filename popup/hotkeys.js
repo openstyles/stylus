@@ -1,35 +1,26 @@
-/* global $ $$ API debounce $create t */
+/* global $ $$ $create */// dom.js
+/* global API */// msg.js
+/* global debounce */// toolbox.js
+/* global t */// localization.js
 'use strict';
 
-/* exported hotkeys */
 const hotkeys = (() => {
   const entries = document.getElementsByClassName('entry');
-  let togglablesShown;
-  let togglables;
-  let enabled = false;
-  let ready = false;
+  let togglablesShown = true;
+  let togglables = getTogglables();
+  let enabled;
 
-  window.addEventListener('showStyles:done', () => {
-    togglablesShown = true;
-    togglables = getTogglables();
-    ready = true;
-    setState(true);
-    initHotkeyInfo();
-  }, {once: true});
+  window.on('resize', adjustInfoPosition);
+  initHotkeyInfo();
 
-  window.addEventListener('resize', adjustInfoPosition);
-
-  return {setState};
-
-  function setState(newState = !enabled) {
-    if (!ready) {
-      throw new Error('hotkeys no ready');
-    }
-    if (newState !== enabled) {
-      window[`${newState ? 'add' : 'remove'}EventListener`]('keydown', onKeyDown);
-      enabled = newState;
-    }
-  }
+  return {
+    setState(newState = !enabled) {
+      if (!newState !== !enabled) {
+        window[newState ? 'on' : 'off']('keydown', onKeyDown);
+        enabled = newState;
+      }
+    },
+  };
 
   function onKeyDown(event) {
     if (event.ctrlKey || event.altKey || event.metaKey || !enabled ||
@@ -89,7 +80,7 @@ const hotkeys = (() => {
       if (!match && $('input', entry).checked !== enable || entry.classList.contains(match)) {
         results.push(entry.id);
         task = task
-          .then(() => API.toggleStyle(entry.styleId, enable))
+          .then(() => API.styles.toggle(entry.styleId, enable))
           .then(() => {
             entry.classList.toggle('enabled', enable);
             entry.classList.toggle('disabled', !enable);
@@ -116,11 +107,11 @@ const hotkeys = (() => {
       delete container.dataset.active;
       document.body.style.height = '';
       container.title = title;
-      window.addEventListener('resize', adjustInfoPosition);
+      window.on('resize', adjustInfoPosition);
     }
 
     function open() {
-      window.removeEventListener('resize', adjustInfoPosition);
+      window.off('resize', adjustInfoPosition);
       debounce.unregister(adjustInfoPosition);
       title = container.title;
       container.title = '';
@@ -173,3 +164,5 @@ const hotkeys = (() => {
     }
   }
 })();
+
+hotkeys.setState(true);

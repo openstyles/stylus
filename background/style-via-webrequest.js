@@ -1,101 +1,103 @@
-/* global API CHROME prefs */
+/* global API */// msg.js
+/* global CHROME */// toolbox.js
+/* global prefs */
 'use strict';
 
-// eslint-disable-next-line no-unused-expressions
-CHROME && (async () => {
+(() => {
   const idCSP = 'patchCsp';
   const idOFF = 'disableAll';
   const idXHR = 'styleViaXhr';
   const rxHOST = /^('none'|(https?:\/\/)?[^']+?[^:'])$/; // strips CSP sources covered by *
   const blobUrlPrefix = 'blob:' + chrome.runtime.getURL('/');
+  /** @type {Object<string,StylesToPass>} */
   const stylesToPass = {};
-  const enabled = {};
+  const state = {};
+  const injectedCode = CHROME && `${data => {
+    if (self.INJECTED !== 1) { // storing data only if apply.js hasn't run yet
+      window[Symbol.for('styles')] = data;
+    }
+  }}`;
 
-  await prefs.initializing;
-  prefs.subscribe([idXHR, idOFF, idCSP], toggle, {now: true});
+  toggle();
+  prefs.subscribe([idXHR, idOFF, idCSP], toggle);
 
   function toggle() {
-    const csp = prefs.get(idCSP) && !prefs.get(idOFF);
-    const xhr = prefs.get(idXHR) && !prefs.get(idOFF) && Boolean(chrome.declarativeContent);
-    if (xhr === enabled.xhr && csp === enabled.csp) {
+    const off = prefs.get(idOFF);
+    const csp = prefs.get(idCSP) && !off;
+    const xhr = prefs.get(idXHR) && !off;
+    if (xhr === state.xhr && csp === state.csp && off === state.off) {
       return;
     }
-    // Need to unregister first so that the optional EXTRA_HEADERS is properly registered
+    const reqFilter = {
+      urls: ['*://*/*'],
+      types: ['main_frame', 'sub_frame'],
+    };
+    chrome.webNavigation.onCommitted.removeListener(injectData);
     chrome.webRequest.onBeforeRequest.removeListener(prepareStyles);
     chrome.webRequest.onHeadersReceived.removeListener(modifyHeaders);
     if (xhr || csp) {
-      const reqFilter = {
-        urls: ['<all_urls>'],
-        types: ['main_frame', 'sub_frame'],
-      };
-      chrome.webRequest.onBeforeRequest.addListener(prepareStyles, reqFilter);
+      // We unregistered it above so that the optional EXTRA_HEADERS is properly re-registered
       chrome.webRequest.onHeadersReceived.addListener(modifyHeaders, reqFilter, [
         'blocking',
         'responseHeaders',
         xhr && chrome.webRequest.OnHeadersReceivedOptions.EXTRA_HEADERS,
       ].filter(Boolean));
     }
-    if (enabled.xhr !== xhr) {
-      enabled.xhr = xhr;
-      toggleEarlyInjection();
+    if (CHROME ? !off : xhr || csp) {
+      chrome.webRequest.onBeforeRequest.addListener(prepareStyles, reqFilter);
     }
-    enabled.csp = csp;
-  }
-
-  /** Runs content scripts earlier than document_start */
-  function toggleEarlyInjection() {
-    const api = chrome.declarativeContent;
-    if (!api) return;
-    api.onPageChanged.removeRules([idXHR], async () => {
-      if (enabled.xhr) {
-        api.onPageChanged.addRules([{
-          id: idXHR,
-          conditions: [
-            new api.PageStateMatcher({
-              pageUrl: {urlContains: '://'},
-            }),
-          ],
-          actions: [
-            new api.RequestContentScript({
-              js: chrome.runtime.getManifest().content_scripts[0].js,
-              allFrames: true,
-            }),
-          ],
-        }]);
-      }
-    });
+    if (CHROME && !off) {
+      chrome.webNavigation.onCommitted.addListener(injectData, {url: [{urlPrefix: 'http'}]});
+    }
+    state.csp = csp;
+    state.off = off;
+    state.xhr = xhr;
   }
 
   /** @param {chrome.webRequest.WebRequestBodyDetails} req */
-  function prepareStyles(req) {
-    API.getSectionsByUrl(req.url).then(sections => {
-      if (Object.keys(sections).length) {
-        stylesToPass[req.requestId] = !enabled.xhr ? true :
-          URL.createObjectURL(new Blob([JSON.stringify(sections)])).slice(blobUrlPrefix.length);
-        setTimeout(cleanUp, 600e3, req.requestId);
-      }
-    });
+  async function prepareStyles(req) {
+    const sections = await API.styles.getSectionsByUrl(req.url);
+    stylesToPass[req2key(req)] = /** @namespace StylesToPass */ {
+      blobId: '',
+      str: JSON.stringify(sections),
+      timer: setTimeout(cleanUp, 600e3, req),
+    };
+  }
+
+  function injectData(req) {
+    const data = stylesToPass[req2key(req)];
+    if (data && !data.injected) {
+      data.injected = true;
+      chrome.tabs.executeScript(req.tabId, {
+        frameId: req.frameId,
+        runAt: 'document_start',
+        code: `(${injectedCode})(${data.str})`,
+      });
+      if (!state.xhr) cleanUp(req);
+    }
   }
 
   /** @param {chrome.webRequest.WebResponseHeadersDetails} req */
   function modifyHeaders(req) {
     const {responseHeaders} = req;
-    const id = stylesToPass[req.requestId];
-    if (!id) {
+    const data = stylesToPass[req2key(req)];
+    if (!data || data.str === '{}') {
+      cleanUp(req);
       return;
     }
-    if (enabled.xhr) {
+    if (state.xhr) {
+      data.blobId = URL.createObjectURL(new Blob([data.str])).slice(blobUrlPrefix.length);
       responseHeaders.push({
         name: 'Set-Cookie',
-        value: `${chrome.runtime.id}=${id}`,
+        value: `${chrome.runtime.id}=${data.blobId}`,
       });
     }
-    const csp = enabled.csp &&
+    const csp = state.csp &&
       responseHeaders.find(h => h.name.toLowerCase() === 'content-security-policy');
     if (csp) {
       patchCsp(csp);
     }
-    if (enabled.xhr || csp) {
+    if (state.xhr || csp) {
       return {responseHeaders};
     }
   }
@@ -111,7 +113,7 @@ CHROME && (async () => {
     patchCspSrc(src, 'img-src', 'data:', '*');
     patchCspSrc(src, 'font-src', 'data:', '*');
     // Allow our DOM styles
-    patchCspSrc(src, 'style-src', '\'unsafe-inline\'');
+    patchCspSrc(src, 'style-src', "'unsafe-inline'");
     // Allow our XHR cookies in CSP sandbox (known case: raw github urls)
     if (src.sandbox && !src.sandbox.includes('allow-same-origin')) {
       src.sandbox.push('allow-same-origin');
@@ -132,9 +134,19 @@ CHROME && (async () => {
     }
   }
 
-  function cleanUp(key) {
-    const blobId = stylesToPass[key];
-    delete stylesToPass[key];
-    if (blobId) URL.revokeObjectURL(blobUrlPrefix + blobId);
+  function cleanUp(req) {
+    const key = req2key(req);
+    const data = stylesToPass[key];
+    if (data) {
+      delete stylesToPass[key];
+      clearTimeout(data.timer);
+      if (data.blobId) {
+        URL.revokeObjectURL(blobUrlPrefix + data.blobId);
+      }
+    }
+  }
+
+  function req2key(req) {
+    return req.tabId + ':' + req.frameId;
   }
 })();

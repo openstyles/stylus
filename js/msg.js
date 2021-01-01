@@ -1,8 +1,9 @@
-/* global deepCopy getOwnTab URLS */ // not used in content scripts
+/* global URLS deepCopy deepMerge getOwnTab */// toolbox.js - not used in content scripts
 'use strict';
 
-// eslint-disable-next-line no-unused-expressions
-window.INJECTED !== 1 && (() => {
+(() => {
+  if (window.INJECTED === 1) return;
+
   const TARGETS = Object.assign(Object.create(null), {
     all: ['both', 'tab', 'extension'],
     extension: ['both', 'extension'],
@@ -21,38 +22,12 @@ window.INJECTED !== 1 && (() => {
     extension: new Set(),
   };
 
-  let bg = chrome.extension.getBackgroundPage && chrome.extension.getBackgroundPage();
-  const isBg = bg === window;
-  if (!isBg && (!bg || !bg.document || bg.document.readyState === 'loading')) {
-    bg = null;
-  }
+  // TODO: maybe move into polyfill.js and hook addListener to wrap/unwrap automatically
+  chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
-  // TODO: maybe move into polyfill.js and hook addListener + sendMessage so they wrap/unwrap automatically
-  const wrapData = data => ({
-    data,
-  });
-  const wrapError = error => ({
-    error: Object.assign({
-      message: error.message || `${error}`,
-      stack: error.stack,
-    }, error), // passing custom properties e.g. `error.index`
-  });
-  const unwrapResponse = ({data, error} = {error: {message: ERR_NO_RECEIVER}}) =>
-    error
-      ? Promise.reject(Object.assign(new Error(error.message), error))
-      : data;
-  chrome.runtime.onMessage.addListener(({data, target}, sender, sendResponse) => {
-    const res = window.msg._execute(TARGETS[target] || TARGETS.all, data, sender);
-    if (res instanceof Promise) {
-      res.then(wrapData, wrapError).then(sendResponse);
-      return true;
-    }
-    if (res !== undefined) sendResponse(wrapData(res));
-  });
-
-  // This direct assignment allows IDEs to provide autocomplete for msg methods automatically
   const msg = window.msg = {
-    isBg,
+
+    isBg: getExtBg() === window,
 
     async broadcast(data) {
       const requests = [msg.send(data, 'both').catch(msg.ignoreError)];
@@ -73,8 +48,8 @@ window.INJECTED !== 1 && (() => {
     },
 
     isIgnorableError(err) {
-      const msg = `${err && err.message || err}`;
-      return msg.includes(ERR_NO_RECEIVER) || msg.includes(ERR_PORT_CLOSED);
+      const text = `${err && err.message || err}`;
+      return text.includes(ERR_NO_RECEIVER) || text.includes(ERR_PORT_CLOSED);
     },
 
     ignoreError(err) {
@@ -113,6 +88,11 @@ window.INJECTED !== 1 && (() => {
 
     _execute(types, ...args) {
       let result;
+      if (!(args[0] instanceof Object)) {
+        /* Data from other windows must be deep-copied to allow for GC in Chrome and
+           merely survive in FF as it kills cross-window objects when their tab is closed. */
+        args = args.map(deepCopy);
+      }
       for (const type of types) {
         for (const fn of handler[type]) {
           let res;
@@ -130,27 +110,64 @@ window.INJECTED !== 1 && (() => {
     },
   };
 
-  window.API = new Proxy({}, {
-    get(target, name) {
-      // using a named function for convenience when debugging
-      return async function invokeAPI(...args) {
-        if (!bg && chrome.tabs) {
-          bg = await browser.runtime.getBackgroundPage().catch(() => {});
-        }
-        const message = {method: 'invokeAPI', name, args};
-        // content scripts and probably private tabs
-        if (!bg) {
-          return msg.send(message);
-        }
-        // in FF, the object would become a dead object when the window
-        // is closed, so we have to clone the object into background.
-        const res = bg.msg._execute(TARGETS.extension, bg.deepCopy(message), {
-          frameId: 0, // false in case of our Options frame but we really want to fetch styles early
-          tab: NEEDS_TAB_IN_SENDER.includes(name) && await getOwnTab(),
-          url: location.href,
-        });
-        return deepCopy(await res);
-      };
+  function getExtBg() {
+    const fn = chrome.extension.getBackgroundPage;
+    const bg = fn && fn();
+    return bg === window || bg && bg.msg && bg.msg.isBgReady ? bg : null;
+  }
+
+  function onRuntimeMessage({data, target}, sender, sendResponse) {
+    const res = msg._execute(TARGETS[target] || TARGETS.all, data, sender);
+    if (res instanceof Promise) {
+      res.then(wrapData, wrapError).then(sendResponse);
+      return true;
+    }
+    if (res !== undefined) sendResponse(wrapData(res));
+  }
+
+  function wrapData(data) {
+    return {data};
+  }
+
+  function wrapError(error) {
+    return {
+      error: Object.assign({
+        message: error.message || `${error}`,
+        stack: error.stack,
+      }, error), // passing custom properties e.g. `error.index`
+    };
+  }
+
+  function unwrapResponse({data, error} = {error: {message: ERR_NO_RECEIVER}}) {
+    return error
+      ? Promise.reject(Object.assign(new Error(error.message), error))
+      : data;
+  }
+
+  const apiHandler = !msg.isBg && {
+    get({path}, name) {
+      const fn = () => {};
+      fn.path = [...path, name];
+      return new Proxy(fn, apiHandler);
     },
-  });
+    async apply({path}, thisObj, args) {
+      const bg = getExtBg() ||
+        chrome.tabs && await browser.runtime.getBackgroundPage().catch(() => {});
+      const message = {method: 'invokeAPI', path, args};
+      let res;
+      // content scripts, probably private tabs, and our extension tab during Chrome startup
+      if (!bg) {
+        res = msg.send(message);
+      } else {
+        res = deepMerge(await bg.msg._execute(TARGETS.extension, message, {
+          frameId: 0, // false in case of our Options frame but we really want to fetch styles early
+          tab: NEEDS_TAB_IN_SENDER.includes(path.join('.')) && await getOwnTab(),
+          url: location.href,
+        }));
+      }
+      return res;
+    },
+  };
+  /** @type {API} */
+  window.API = msg.isBg ? {} : new Proxy({path: []}, apiHandler);
 })();

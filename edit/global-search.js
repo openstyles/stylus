@@ -1,21 +1,14 @@
-/* global
-  $
-  $$
-  $create
-  chromeLocal
-  CodeMirror
-  colorMimicry
-  debounce
-  editor
-  focusAccessibility
-  onDOMready
-  stringAsRegExp
-  t
-  tryRegExp
-*/
+/* global $ $$ $create $remove focusAccessibility */// dom.js
+/* global CodeMirror */
+/* global chromeLocal */// storage-util.js
+/* global colorMimicry */
+/* global debounce stringAsRegExp tryRegExp */// toolbox.js
+/* global editor */
+/* global t */// localization.js
 'use strict';
 
-onDOMready().then(() => {
+(() => {
+  require(['/edit/global-search.css']);
 
   //region Constants and state
 
@@ -138,13 +131,13 @@ onDOMready().then(() => {
     },
     onfocusout() {
       if (!state.dialog.contains(document.activeElement)) {
-        state.dialog.addEventListener('focusin', EVENTS.onfocusin);
-        state.dialog.removeEventListener('focusout', EVENTS.onfocusout);
+        state.dialog.on('focusin', EVENTS.onfocusin);
+        state.dialog.off('focusout', EVENTS.onfocusout);
       }
     },
     onfocusin() {
-      state.dialog.addEventListener('focusout', EVENTS.onfocusout);
-      state.dialog.removeEventListener('focusin', EVENTS.onfocusin);
+      state.dialog.on('focusout', EVENTS.onfocusout);
+      state.dialog.off('focusin', EVENTS.onfocusin);
       trimUndoHistory();
       enableUndoButton(state.undoHistory.length);
       if (state.find) doSearch({canAdvance: false});
@@ -189,7 +182,6 @@ onDOMready().then(() => {
 
   Object.assign(CodeMirror.commands, COMMANDS);
   readStorage();
-  return;
 
   //region Find
 
@@ -577,7 +569,7 @@ onDOMready().then(() => {
 
     const dialog = state.dialog = t.template.searchReplaceDialog.cloneNode(true);
     Object.assign(dialog, DIALOG_PROPS.dialog);
-    dialog.addEventListener('focusout', EVENTS.onfocusout);
+    dialog.on('focusout', EVENTS.onfocusout);
     dialog.dataset.type = type;
     dialog.style.pointerEvents = 'auto';
 
@@ -590,9 +582,9 @@ onDOMready().then(() => {
     state.tally = $('[data-type="tally"]', dialog);
 
     const colors = {
-      body: colorMimicry.get(document.body, {bg: 'backgroundColor'}),
-      input: colorMimicry.get($('input:not(:disabled)'), {bg: 'backgroundColor'}),
-      icon: colorMimicry.get($$('svg.info')[1], {fill: 'fill'}),
+      body: colorMimicry(document.body, {bg: 'backgroundColor'}),
+      input: colorMimicry($('input:not(:disabled)'), {bg: 'backgroundColor'}),
+      icon: colorMimicry($$('svg.info')[1], {fill: 'fill'}),
     };
     document.documentElement.appendChild(
       $(DIALOG_STYLE_SELECTOR) ||
@@ -652,7 +644,7 @@ onDOMready().then(() => {
 
   function destroyDialog({restoreFocus = false} = {}) {
     state.input = null;
-    $.remove(DIALOG_SELECTOR);
+    $remove(DIALOG_SELECTOR);
     debounce.unregister(doSearch);
     makeTargetVisible(null);
     if (restoreFocus) {
@@ -795,7 +787,6 @@ onDOMready().then(() => {
     });
     if (!cm.curOp) cm.startOperation();
     if (!state.firstRun) {
-      editor.scrollToEditor(cm);
       cm.jumpToPos(pos.from, pos.to);
     }
     // focus or expose as the current search target
@@ -960,4 +951,4 @@ onDOMready().then(() => {
   }
 
   //endregion
-});
+})();

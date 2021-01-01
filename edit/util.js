@@ -1,178 +1,109 @@
-/* global
-  $create
-  CodeMirror
-  prefs
-*/
+/* global $ $create getEventKeyName messageBoxProxy moveFocus */// dom.js
+/* global CodeMirror */
+/* global debounce */// toolbox.js
+/* global editor */
+/* global prefs */
+/* global t */// localization.js
 'use strict';
 
-/* exported DirtyReporter */
-class DirtyReporter {
-  constructor() {
-    this._dirty = new Map();
-    this._onchange = new Set();
-  }
+const helpPopup = {
 
-  add(obj, value) {
-    const wasDirty = this.isDirty();
-    const saved = this._dirty.get(obj);
-    if (!saved) {
-      this._dirty.set(obj, {type: 'add', newValue: value});
-    } else if (saved.type === 'remove') {
-      if (saved.savedValue === value) {
-        this._dirty.delete(obj);
-      } else {
-        saved.newValue = value;
-        saved.type = 'modify';
-      }
+  show(title = '', body) {
+    const div = $('#help-popup');
+    const contents = $('.contents', div);
+    div.className = '';
+    contents.textContent = '';
+    if (body) {
+      contents.appendChild(typeof body === 'string' ? t.HTML(body) : body);
     }
-    this.notifyChange(wasDirty);
-  }
-
-  remove(obj, value) {
-    const wasDirty = this.isDirty();
-    const saved = this._dirty.get(obj);
-    if (!saved) {
-      this._dirty.set(obj, {type: 'remove', savedValue: value});
-    } else if (saved.type === 'add') {
-      this._dirty.delete(obj);
-    } else if (saved.type === 'modify') {
-      saved.type = 'remove';
-    }
-    this.notifyChange(wasDirty);
-  }
-
-  modify(obj, oldValue, newValue) {
-    const wasDirty = this.isDirty();
-    const saved = this._dirty.get(obj);
-    if (!saved) {
-      if (oldValue !== newValue) {
-        this._dirty.set(obj, {type: 'modify', savedValue: oldValue, newValue});
-      }
-    } else if (saved.type === 'modify') {
-      if (saved.savedValue === newValue) {
-        this._dirty.delete(obj);
-      } else {
-        saved.newValue = newValue;
-      }
-    } else if (saved.type === 'add') {
-      saved.newValue = newValue;
-    }
-    this.notifyChange(wasDirty);
-  }
-
-  clear(obj) {
-    const wasDirty = this.isDirty();
-    if (obj === undefined) {
-      this._dirty.clear();
-    } else {
-      this._dirty.delete(obj);
-    }
-    this.notifyChange(wasDirty);
-  }
-
-  isDirty() {
-    return this._dirty.size > 0;
-  }
-
-  onChange(cb, add = true) {
-    this._onchange[add ? 'add' : 'delete'](cb);
-  }
-
-  notifyChange(wasDirty) {
-    if (wasDirty !== this.isDirty()) {
-      this._onchange.forEach(cb => cb());
-    }
-  }
-
-  has(key) {
-    return this._dirty.has(key);
-  }
-}
-
-/* exported DocFuncMapper */
-const DocFuncMapper = {
-  TO_CSS: {
-    urls: 'url',
-    urlPrefixes: 'url-prefix',
-    domains: 'domain',
-    regexps: 'regexp',
+    $('.title', div).textContent = title;
+    $('.dismiss', div).onclick = helpPopup.close;
+    window.on('keydown', helpPopup.close, true);
+    // reset any inline styles
+    div.style = 'display: block';
+    helpPopup.originalFocus = document.activeElement;
+    return div;
   },
-  FROM_CSS: {
-    'url': 'urls',
-    'url-prefix': 'urlPrefixes',
-    'domain': 'domains',
-    'regexp': 'regexps',
-  },
-  /**
-   * @param {Object} section
-   * @param {function(func:string, value:string)} fn
-   */
-  forEachProp(section, fn) {
-    for (const [propName, func] of Object.entries(DocFuncMapper.TO_CSS)) {
-      const props = section[propName];
-      if (props) props.forEach(value => fn(func, value));
+
+  close(event) {
+    const canClose =
+      !event ||
+      event.type === 'click' || (
+        getEventKeyName(event) === 'Escape' &&
+        !$('.CodeMirror-hints, #message-box') && (
+          !document.activeElement ||
+          !document.activeElement.closest('#search-replace-dialog') &&
+          document.activeElement.matches(':not(input), .can-close-on-esc')
+        )
+      );
+    const div = $('#help-popup');
+    if (!canClose || !div) {
+      return;
     }
-  },
-  /**
-   * @param {Array<?[type,value]>} funcItems
-   * @param {?Object} [section]
-   * @returns {Object} section
-   */
-  toSection(funcItems, section = {}) {
-    for (const item of funcItems) {
-      const [func, value] = item || [];
-      const propName = DocFuncMapper.FROM_CSS[func];
-      if (propName) {
-        const props = section[propName] || (section[propName] = []);
-        if (Array.isArray(value)) props.push(...value);
-        else props.push(value);
-      }
+    if (event && div.codebox && !div.codebox.options.readOnly && !div.codebox.isClean()) {
+      setTimeout(async () => {
+        const ok = await messageBoxProxy.confirm(t('confirmDiscardChanges'));
+        return ok && helpPopup.close();
+      });
+      return;
     }
-    return section;
+    if (div.contains(document.activeElement) && helpPopup.originalFocus) {
+      helpPopup.originalFocus.focus();
+    }
+    const contents = $('.contents', div);
+    div.style.display = '';
+    contents.textContent = '';
+    window.off('keydown', helpPopup.close, true);
+    window.dispatchEvent(new Event('closeHelp'));
   },
 };
 
-/* exported sectionsToMozFormat */
-function sectionsToMozFormat(style) {
-  return style.sections.map(section => {
-    const cssFuncs = [];
-    DocFuncMapper.forEachProp(section, (type, value) =>
-      cssFuncs.push(`${type}("${value.replace(/\\/g, '\\\\')}")`));
-    return cssFuncs.length ?
-      `@-moz-document ${cssFuncs.join(', ')} {\n${section.code}\n}` :
-      section.code;
-  }).join('\n\n');
-}
+// reroute handling to nearest editor when keypress resolves to one of these commands
+Object.assign(rerouteHotkeys, {
+  commands: [
+    'beautify',
+    'colorpicker',
+    'find',
+    'findNext',
+    'findPrev',
+    'jumpToLine',
+    'nextEditor',
+    'prevEditor',
+    'replace',
+    'replaceAll',
+    'save',
+    'toggleEditorFocus',
+    'toggleStyle',
+  ],
 
-/* exported trimCommentLabel */
-function trimCommentLabel(str, limit = 1000) {
-  // stripping /*** foo ***/ to foo
-  return clipString(str.replace(/^[!-/:;=\s]*|[-#$&(+,./:;<=>\s*]*$/g, ''), limit);
-}
+  toggle(enable) {
+    document[enable ? 'on' : 'off']('keydown', rerouteHotkeys.handler);
+  },
 
-/* exported clipString */
+  handler(event) {
+    const keyName = CodeMirror.keyName(event);
+    if (!keyName) {
+      return;
+    }
+    const rerouteCommand = name => {
+      if (rerouteHotkeys.commands.includes(name)) {
+        CodeMirror.commands[name](editor.closestVisible(event.target));
+        return true;
+      }
+    };
+    if (CodeMirror.lookupKey(keyName, CodeMirror.defaults.keyMap, rerouteCommand) === 'handled' ||
+        CodeMirror.lookupKey(keyName, CodeMirror.defaults.extraKeys, rerouteCommand) === 'handled') {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  },
+});
+
 function clipString(str, limit = 100) {
   return str.length <= limit ? str : str.substr(0, limit) + '...';
 }
 
-/* exported memoize */
-function memoize(fn) {
-  let cached = false;
-  let result;
-  return (...args) => {
-    if (!cached) {
-      result = fn(...args);
-      cached = true;
-    }
-    return result;
-  };
-}
-
 /* exported createHotkeyInput */
-/**
- * @param {!string} prefId
- * @param {?function(isEnter:boolean)} onDone
- */
 function createHotkeyInput(prefId, onDone = () => {}) {
   return $create('input', {
     type: 'search',
@@ -216,4 +147,60 @@ function createHotkeyInput(prefId, onDone = () => {}) {
       event.preventDefault();
     },
   });
+}
+
+function rerouteHotkeys(enable, immediately) {
+  if (immediately) {
+    rerouteHotkeys.toggle(enable);
+  } else {
+    debounce(rerouteHotkeys.toggle, 0, enable);
+  }
+}
+
+/* exported showCodeMirrorPopup */
+function showCodeMirrorPopup(title, html, options) {
+  const popup = helpPopup.show(title, html);
+  popup.classList.add('big');
+
+  let cm = popup.codebox = CodeMirror($('.contents', popup), Object.assign({
+    mode: 'css',
+    lineNumbers: true,
+    lineWrapping: prefs.get('editor.lineWrapping'),
+    foldGutter: true,
+    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'],
+    matchBrackets: true,
+    styleActiveLine: true,
+    theme: prefs.get('editor.theme'),
+    keyMap: prefs.get('editor.keyMap'),
+  }, options));
+  cm.focus();
+  rerouteHotkeys(false);
+
+  document.documentElement.style.pointerEvents = 'none';
+  popup.style.pointerEvents = 'auto';
+
+  const onKeyDown = event => {
+    if (event.key === 'Tab' && !event.ctrlKey && !event.altKey && !event.metaKey) {
+      const search = $('#search-replace-dialog');
+      const area = search && search.contains(document.activeElement) ? search : popup;
+      moveFocus(area, event.shiftKey ? -1 : 1);
+      event.preventDefault();
+    }
+  };
+  window.on('keydown', onKeyDown, true);
+
+  window.on('closeHelp', () => {
+    window.off('keydown', onKeyDown, true);
+    document.documentElement.style.removeProperty('pointer-events');
+    rerouteHotkeys(true);
+    cm = popup.codebox = null;
+  }, {once: true});
+
+  return popup;
+}
+
+/* exported trimCommentLabel */
+function trimCommentLabel(str, limit = 1000) {
+  // stripping /*** foo ***/ to foo
+  return clipString(str.replace(/^[!-/:;=\s]*|[-#$&(+,./:;<=>\s*]*$/g, ''), limit);
 }

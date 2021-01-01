@@ -161,10 +161,3 @@ function generateList(list) {
     return `* ${src}`;
   }).join('\n');
 }
-
-// Rename CodeMirror$1 -> CodeMirror for development purposes
-// FIXME: is this a workaround for old version of codemirror?
-// function renameCodeMirrorVariable(filePath) {
-  // const file = fs.readFileSync(filePath, 'utf8');
-  // fs.writeFileSync(filePath, file.replace(/CodeMirror\$1/g, 'CodeMirror'));
-// }

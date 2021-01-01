@@ -1,45 +1,30 @@
-/* global
-  $
-  $$
-  $create
-  API
-  clipString
-  CodeMirror
-  createLivePreview
-  createSection
-  debounce
-  editor
-  FIREFOX
-  ignoreChromeError
-  linter
-  messageBox
-  prefs
-  rerouteHotkeys
-  sectionsToMozFormat
-  sessionStore
-  showCodeMirrorPopup
-  showHelp
-  t
-*/
+/* global $ $$ $create $remove messageBoxProxy */// dom.js
+/* global API */// msg.js
+/* global CodeMirror */
+/* global FIREFOX URLS debounce ignoreChromeError sessionStore */// toolbox.js
+/* global MozDocMapper clipString helpPopup rerouteHotkeys showCodeMirrorPopup */// util.js
+/* global createSection */// sections-editor-section.js
+/* global editor */
+/* global linterMan */
+/* global prefs */
+/* global t */// localization.js
 'use strict';
 
 /* exported SectionsEditor */
-
 function SectionsEditor() {
-  const {style, dirty} = editor;
+  const {style, /** @type DirtyReporter */dirty} = editor;
   const container = $('#sections');
   /** @type {EditorSection[]} */
   const sections = [];
   const xo = window.IntersectionObserver &&
     new IntersectionObserver(refreshOnViewListener, {rootMargin: '100%'});
-  const livePreview = createLivePreview(null, style.id);
-
   let INC_ID = 0; // an increment id that is used by various object to track the order
   let sectionOrder = '';
   let headerOffset; // in compact mode the header is at the top so it reduces the available height
 
-  container.classList.add('section-editor');
   updateHeader();
+  editor.livePreview.init(null, style.id);
+  container.classList.add('section-editor');
   $('#to-mozilla').on('click', showMozillaFormat);
   $('#to-mozilla-help').on('click', showToMozillaHelp);
   $('#from-mozilla').on('click', () => showMozillaFormatImport());
@@ -50,7 +35,7 @@ function SectionsEditor() {
       .forEach(e => e.on('mousedown', toggleContextMenuDelete));
   }
 
-  /** @namespace SectionsEditor */
+  /** @namespace Editor */
   Object.assign(editor, {
 
     sections,
@@ -95,7 +80,7 @@ function SectionsEditor() {
       dirty.clear('name');
       // FIXME: avoid recreating all editors?
       if (codeIsUpdated !== false) {
-        await initSections(newStyle.sections, {replace: true, pristine: true});
+        await initSections(newStyle.sections, {replace: true});
       }
       Object.assign(style, newStyle);
       updateHeader();
@@ -105,7 +90,7 @@ function SectionsEditor() {
         history.replaceState({}, document.title, 'edit.html?id=' + style.id);
         $('#heading').textContent = t('editStyleHeading');
       }
-      livePreview.show(Boolean(style.id));
+      editor.livePreview.toggle(Boolean(style.id));
       updateLivePreview();
     },
 
@@ -117,29 +102,24 @@ function SectionsEditor() {
       if (!validate(newStyle)) {
         return;
       }
-      newStyle = await API.editSave(newStyle);
+      newStyle = await API.styles.editSave(newStyle);
       destroyRemovedSections();
       sessionStore.justEditedStyleId = newStyle.id;
       editor.replaceStyle(newStyle, false);
     },
 
     scrollToEditor(cm) {
-      const section = sections.find(s => s.cm === cm).el;
-      const bounds = section.getBoundingClientRect();
-      if (
-        (bounds.bottom > window.innerHeight && bounds.top > 0) ||
-        (bounds.top < 0 && bounds.bottom < window.innerHeight)
-      ) {
-        if (bounds.top < 0) {
-          window.scrollBy(0, bounds.top - 1);
-        } else {
-          window.scrollBy(0, bounds.bottom - window.innerHeight + 1);
-        }
+      const {el} = sections.find(s => s.cm === cm);
+      const r = el.getBoundingClientRect();
+      const h = window.innerHeight;
+      if (r.bottom > h && r.top > 0 ||
+          r.bottom < h && r.top < 0) {
+        window.scrollBy(0, (r.top + r.bottom - h) / 2 | 0);
       }
     },
   });
 
-  editor.ready = initSections(style.sections, {pristine: true});
+  editor.ready = initSections(style.sections);
 
   /** @param {EditorSection} section */
   function fitToContent(section) {
@@ -156,7 +136,7 @@ function SectionsEditor() {
         return;
       }
       if (headerOffset == null) {
-        headerOffset = container.getBoundingClientRect().top;
+        headerOffset = container.getBoundingClientRect().top + scrollY | 0;
       }
       contentHeight += 9; // border & resize grip
       cm.off('update', resize);
@@ -194,13 +174,13 @@ function SectionsEditor() {
         progressElement.title = progress + '%';
       });
     } else {
-      $.remove(progressElement);
+      $remove(progressElement);
     }
   }
 
   function showToMozillaHelp(event) {
     event.preventDefault();
-    showHelp(t('styleMozillaFormatHeading'), t('styleToMozillaFormatHelp'));
+    helpPopup.show(t('styleMozillaFormatHeading'), t('styleToMozillaFormatHelp'));
   }
 
   /**
@@ -336,7 +316,7 @@ function SectionsEditor() {
 
   function showMozillaFormat() {
     const popup = showCodeMirrorPopup(t('styleToMozillaFormatTitle'), '', {readOnly: true});
-    popup.codebox.setValue(sectionsToMozFormat(getModel()));
+    popup.codebox.setValue(MozDocMapper.styleToCss(getModel()));
     popup.codebox.execCommand('selectAll');
   }
 
@@ -378,22 +358,21 @@ function SectionsEditor() {
       lockPageUI(true);
       try {
         const code = popup.codebox.getValue().trim();
-        if (!/==userstyle==/i.test(code) ||
+        if (!URLS.rxMETA.test(code) ||
             !await getPreprocessor(code) ||
-            await messageBox.confirm(
+            await messageBoxProxy.confirm(
               t('importPreprocessor'), 'pre-line',
               t('importPreprocessorTitle'))
         ) {
-          const {sections, errors} = await API.parseCss({code});
-          // shouldn't happen but just in case
-          if (!sections.length || errors.length) {
-            throw errors;
+          const {sections, errors} = await API.worker.parseMozFormat({code});
+          if (!sections.length || errors.some(e => !e.recoverable)) {
+            await Promise.reject(errors);
           }
           await initSections(sections, {
             replace: replaceOldStyle,
             focusOn: replaceOldStyle ? 0 : false,
           });
-          $('.dismiss').dispatchEvent(new Event('click'));
+          helpPopup.close();
         }
       } catch (err) {
         showError(err);
@@ -403,7 +382,7 @@ function SectionsEditor() {
 
     async function getPreprocessor(code) {
       try {
-        return (await API.buildUsercssMeta({sourceCode: code})).usercssData.preprocessor;
+        return (await API.usercss.buildMeta({sourceCode: code})).usercssData.preprocessor;
       } catch (e) {}
     }
 
@@ -417,10 +396,12 @@ function SectionsEditor() {
     }
 
     function showError(errors) {
-      messageBox({
+      messageBoxProxy.show({
         className: 'center danger',
         title: t('styleFromMozillaFormatError'),
-        contents: $create('pre', Array.isArray(errors) ? errors.join('\n') : errors),
+        contents: $create('pre',
+          (Array.isArray(errors) ? errors : [errors])
+            .map(e => e.message || e).join('\n')),
         buttons: [t('confirmClose')],
       });
     }
@@ -432,7 +413,7 @@ function SectionsEditor() {
     sectionOrder = validSections.map(s => s.id).join(',');
     dirty.modify('sectionOrder', oldOrder, sectionOrder);
     container.dataset.sectionCount = validSections.length;
-    linter.refreshReport();
+    linterMan.refreshReport();
     editor.updateToc();
   }
 
@@ -445,7 +426,7 @@ function SectionsEditor() {
 
   function validate() {
     if (!$('#name').reportValidity()) {
-      messageBox.alert(t('styleMissingName'));
+      messageBoxProxy.alert(t('styleMissingName'));
       return false;
     }
     for (const section of sections) {
@@ -454,7 +435,7 @@ function SectionsEditor() {
           continue;
         }
         if (!apply.valueEl.reportValidity()) {
-          messageBox.alert(t('styleBadRegexp'));
+          messageBoxProxy.alert(t('styleBadRegexp'));
           return false;
         }
       }
@@ -486,13 +467,12 @@ function SectionsEditor() {
   }
 
   function updateLivePreviewNow() {
-    livePreview.update(getModel());
+    editor.livePreview.update(getModel());
   }
 
   async function initSections(src, {
     focusOn = 0,
     replace = false,
-    pristine = false,
   } = {}) {
     if (replace) {
       sections.forEach(s => s.remove(true));
@@ -504,6 +484,8 @@ function SectionsEditor() {
       si.scrollY2 = si.scrollY + window.innerHeight;
       container.style.height = si.scrollY2 + 'px';
       scrollTo(0, si.scrollY);
+      // only restore focus if it's the first CM to avoid derpy quirks
+      focusOn = si.cms[0].focus && 0;
       rerouteHotkeys(true);
     } else {
       si = null;
@@ -523,8 +505,8 @@ function SectionsEditor() {
       if (si) forceRefresh = y < si.scrollY2 && (y += si.cms[i].parentHeight) > si.scrollY;
       insertSectionAfter(src[i], null, forceRefresh, si && si.cms[i]);
       setGlobalProgress(i, src.length);
-      if (pristine) dirty.clear();
-      if (i === focusOn && !si) sections[i].cm.focus();
+      dirty.clear();
+      if (i === focusOn) sections[i].cm.focus();
     }
     if (!si) requestAnimationFrame(fitToAvailableSpace);
     container.style.removeProperty('height');
@@ -626,7 +608,7 @@ function SectionsEditor() {
   /** @param {EditorSection} section */
   function registerEvents(section) {
     const {el, cm} = section;
-    $('.applies-to-help', el).onclick = () => showHelp(t('appliesLabel'), t('appliesHelp'));
+    $('.applies-to-help', el).onclick = () => helpPopup.show(t('appliesLabel'), t('appliesHelp'));
     $('.remove-section', el).onclick = () => removeSection(section);
     $('.add-section', el).onclick = () => insertSectionAfter(undefined, section);
     $('.clone-section', el).onclick = () => insertSectionAfter(section.getModel(), section);
@@ -642,8 +624,8 @@ function SectionsEditor() {
   function maybeImportOnPaste(cm, event) {
     const text = event.clipboardData.getData('text') || '';
     if (/@-moz-document/i.test(text) &&
-      /@-moz-document\s+(url|url-prefix|domain|regexp)\(/i
-        .test(text.replace(/\/\*([^*]|\*(?!\/))*(\*\/|$)/g, ''))
+        /@-moz-document\s+(url|url-prefix|domain|regexp)\(/i
+          .test(text.replace(/\/\*([^*]|\*(?!\/))*(\*\/|$)/g, ''))
     ) {
       event.preventDefault();
       showMozillaFormatImport(text);
@@ -652,7 +634,7 @@ function SectionsEditor() {
 
   function refreshOnView(cm, {code, force} = {}) {
     if (code) {
-      linter.enableForEditor(cm, code);
+      linterMan.enableForEditor(cm, code);
     }
     if (force || !xo) {
       refreshOnViewNow(cm);
@@ -678,7 +660,7 @@ function SectionsEditor() {
   }
 
   async function refreshOnViewNow(cm) {
-    linter.enableForEditor(cm);
+    linterMan.enableForEditor(cm);
     cm.refresh();
   }
 

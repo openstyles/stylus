@@ -1,24 +1,29 @@
-/* global parserlib */
-/* exported parseMozFormat */
 'use strict';
 
+require([
+  '/js/csslint/parserlib', /* global parserlib */
+  '/js/sections-util', /* global MozDocMapper */
+]);
+
+/* exported extractSections */
 /**
  * Extracts @-moz-document blocks into sections and the code between them into global sections.
  * Puts the global comments into the following section to minimize the amount of global sections.
  * Doesn't move the comment with ==UserStyle== inside.
- * @param {string} code
- * @param {number} styleId - used to preserve parserCache on subsequent runs over the same style
+ * @param {Object} _
+ * @param {string} _.code
+ * @param {boolean} [_.fast] - uses topDocOnly option to extract sections as text
+ * @param {number} [_.styleId] - used to preserve parserCache on subsequent runs over the same style
  * @returns {{sections: Array, errors: Array}}
+ * @property {?number} lastStyleId
  */
-function parseMozFormat({code, styleId}) {
-  const CssToProperty = {
-    'url':        'urls',
-    'url-prefix': 'urlPrefixes',
-    'domain':     'domains',
-    'regexp':     'regexps',
-  };
+function extractSections({code, styleId, fast = true}) {
   const hasSingleEscapes = /([^\\]|^)\\([^\\]|$)/;
-  const parser = new parserlib.css.Parser({starHack: true, skipValidation: true});
+  const parser = new parserlib.css.Parser({
+    starHack: true,
+    skipValidation: true,
+    topDocOnly: fast,
+  });
   const sectionStack = [{code: '', start: 0}];
   const errors = [];
   const sections = [];
@@ -34,7 +39,6 @@ function parseMozFormat({code, styleId}) {
     };
     // move last comment before @-moz-document inside the section
     if (!lastCmt.includes('AGENT_SHEET') &&
-        !lastCmt.includes('==') &&
         !/==userstyle==/i.test(lastCmt)) {
       if (lastCmt) {
         section.code = lastCmt + '\n';
@@ -48,12 +52,12 @@ function parseMozFormat({code, styleId}) {
       lastSection.code = '';
     }
     for (const {name, expr, uri} of e.functions) {
-      const aType = CssToProperty[name.toLowerCase()];
+      const aType = MozDocMapper.FROM_CSS[name.toLowerCase()];
       const p0 = expr && expr.parts[0];
       if (p0 && aType === 'regexps') {
         const s = p0.text;
         if (hasSingleEscapes.test(p0.text)) {
-          const isQuoted = (s.startsWith('"') || s.startsWith("'")) && s.endsWith(s[0]);
+          const isQuoted = /^['"]/.test(s) && s.endsWith(s[0]);
           p0.value = isQuoted ? s.slice(1, -1) : s;
         }
       }
@@ -78,17 +82,24 @@ function parseMozFormat({code, styleId}) {
   });
 
   parser.addListener('error', e => {
-    errors.push(`${e.line}:${e.col} ${e.message.replace(/ at line \d.+$/, '')}`);
+    errors.push(e);
   });
 
   try {
     parser.parse(mozStyle, {
-      reuseCache: !parseMozFormat.styleId || styleId === parseMozFormat.styleId,
+      reuseCache: !extractSections.lastStyleId || styleId === extractSections.lastStyleId,
     });
   } catch (e) {
-    errors.push(e.message);
+    errors.push(e);
   }
-  parseMozFormat.styleId = styleId;
+  for (const err of errors) {
+    for (const [k, v] of Object.entries(err)) {
+      if (typeof v === 'object') delete err[k];
+    }
+    err.message = `${err.line}:${err.col} ${err.message}`;
+  }
+  extractSections.lastStyleId = styleId;
+
   return {sections, errors};
 
   function doAddSection(section) {

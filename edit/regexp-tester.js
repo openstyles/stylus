@@ -1,80 +1,57 @@
-/* global
-  $
-  $create
-  openURL
-  showHelp
-  t
-  tryRegExp
-  URLS
-*/
-/* exported regExpTester */
+/* global $create */// dom.js
+/* global URLS openURL tryRegExp */// toolbox.js
+/* global helpPopup */// util.js
+/* global t */// localization.js
 'use strict';
 
-const regExpTester = (() => {
+const regexpTester = (() => {
   const GET_FAVICON_URL = 'https://www.google.com/s2/favicons?domain=';
   const OWN_ICON = chrome.runtime.getManifest().icons['16'];
   const cachedRegexps = new Map();
   let currentRegexps = [];
-  let isInit = false;
+  let isWatching = false;
+  let isShown = false;
 
-  function init() {
-    isInit = true;
-    chrome.tabs.onUpdated.addListener(onTabUpdate);
-  }
+  window.on('closeHelp', () => regexpTester.toggle(false));
 
-  function uninit() {
-    chrome.tabs.onUpdated.removeListener(onTabUpdate);
-    isInit = false;
-  }
+  return {
 
-  function onTabUpdate(tabId, info) {
-    if (info.url) {
-      update();
-    }
-  }
-
-  function isShown() {
-    return Boolean($('.regexp-report'));
-  }
-
-  function toggle(state = !isShown()) {
-    if (state && !isShown()) {
-      if (!isInit) {
-        init();
+    toggle(state = !isShown) {
+      if (state && !isShown) {
+        if (!isWatching) {
+          isWatching = true;
+          chrome.tabs.onUpdated.addListener(onTabUpdate);
+        }
+        helpPopup.show('', $create('.regexp-report'));
+        isShown = true;
+      } else if (!state && isShown) {
+        unwatch();
+        helpPopup.close();
+        isShown = false;
       }
-      showHelp('', $create('.regexp-report'));
-    } else if (!state && isShown()) {
-      if (isInit) {
-        uninit();
-      }
-      // TODO: need a closeHelp function
-      $('#help-popup .dismiss').onclick();
-    }
-  }
+    },
 
-  function update(newRegexps) {
-    if (!isShown()) {
-      if (isInit) {
-        uninit();
+    async update(newRegexps) {
+      if (!isShown) {
+        unwatch();
+        return;
       }
-      return;
-    }
-    if (newRegexps) {
-      currentRegexps = newRegexps;
-    }
-    const regexps = currentRegexps.map(text => {
-      const rxData = Object.assign({text}, cachedRegexps.get(text));
-      if (!rxData.urls) {
-        cachedRegexps.set(text, Object.assign(rxData, {
-          // imitate buggy Stylish-for-chrome
-          rx: tryRegExp('^' + text + '$'),
-          urls: new Map(),
-        }));
+      if (newRegexps) {
+        currentRegexps = newRegexps;
       }
-      return rxData;
-    });
-    const getMatchInfo = m => m && {text: m[0], pos: m.index};
-    browser.tabs.query({}).then(tabs => {
+      const regexps = currentRegexps.map(text => {
+        const rxData = Object.assign({text}, cachedRegexps.get(text));
+        if (!rxData.urls) {
+          cachedRegexps.set(text, Object.assign(rxData, {
+            // imitate buggy Stylish-for-chrome
+            rx: tryRegExp('^' + text + '$'),
+            urls: new Map(),
+          }));
+        }
+        return rxData;
+      });
+      const getMatchInfo = m => m && {text: m[0], pos: m.index};
+      const tabs = await browser.tabs.query({});
       const supported = tabs.map(tab => tab.pendingUrl || tab.url).filter(URLS.supported);
       const unique = [...new Set(supported).values()];
       for (const rxData of regexps) {
@@ -92,10 +69,12 @@ const regExpTester = (() => {
       }
       const stats = {
         full: {data: [], label: t('styleRegexpTestFull')},
-        partial: {data: [], label: [
-          t('styleRegexpTestPartial'),
-          t.template.regexpTestPartial.cloneNode(true),
-        ]},
+        partial: {
+          data: [], label: [
+            t('styleRegexpTestPartial'),
+            t.template.regexpTestPartial.cloneNode(true),
+          ],
+        },
         none: {data: [], label: t('styleRegexpTestNone')},
         invalid: {data: [], label: t('styleRegexpTestInvalid')},
       };
@@ -167,7 +146,7 @@ const regExpTester = (() => {
           }
         }
       }
-      showHelp(t('styleRegexpTestTitle'), report);
+      helpPopup.show(t('styleRegexpTestTitle'), report);
       report.onclick = onClick;
 
       const note = $create('p.regexp-report-note',
@@ -176,25 +155,36 @@ const regExpTester = (() => {
           .map(s => (s.startsWith('\\') ? $create('code', s) : s)));
       report.appendChild(note);
       adjustNote(report, note);
-    });
+    },
+  };
 
-    function onClick(event) {
-      const a = event.target.closest('a');
-      if (a) {
-        event.preventDefault();
-        openURL({
-          url: a.href && a.getAttribute('href') !== '#' && a.href || a.textContent,
-          currentWindow: null,
-        });
-      } else if (event.target.closest('details')) {
-        setTimeout(adjustNote);
-      }
-    }
+  function adjustNote(report, note) {
+    report.style.paddingBottom = note.offsetHeight + 'px';
+  }
 
-    function adjustNote(report, note) {
-      report.style.paddingBottom = note.offsetHeight + 'px';
+  function onClick(event) {
+    const a = event.target.closest('a');
+    if (a) {
+      event.preventDefault();
+      openURL({
+        url: a.href && a.getAttribute('href') !== '#' && a.href || a.textContent,
+        currentWindow: null,
+      });
+    } else if (event.target.closest('details')) {
+      setTimeout(adjustNote);
     }
   }
 
-  return {toggle, update};
+  function onTabUpdate(tabId, info) {
+    if (info.url) {
+      regexpTester.update();
+    }
+  }
+
+  function unwatch() {
+    if (isWatching) {
+      chrome.tabs.onUpdated.removeListener(onTabUpdate);
+      isWatching = false;
+    }
+  }
 })();
