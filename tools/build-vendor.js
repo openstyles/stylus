@@ -68,6 +68,7 @@ const files = {
 main().catch(console.error);
 
 async function main() {
+  fse.emptyDirSync('vendor');
   for (const pkg in files) {
     console.log('\x1b[32m%s\x1b[0m', `Building ${pkg}...`);
     // other files
