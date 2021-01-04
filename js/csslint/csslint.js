@@ -344,6 +344,102 @@ CSSLint.Util = {
     }
     if (property) parser.addListener('property', property);
   },
+
+  registerShorthandEvents(parser, {property, endRule}) {
+    const {shorthands, shorthandsFor} = CSSLint.Util;
+    let props, inRule;
+    parser.addListener('startrule', onStartRule);
+    parser.addListener('startfontface', onStartRule);
+    parser.addListener('property', onProperty);
+    parser.addListener('endrule', onEndRule);
+    parser.addListener('endfontface', onEndRule);
+    function onStartRule() {
+      inRule = true;
+      props = null;
+    }
+    function onProperty(event) {
+      if (!inRule) return;
+      const name = event.property.text.toLowerCase();
+      const sh = shorthandsFor[name];
+      if (sh) {
+        if (!props) props = {};
+        (props[sh] || (props[sh] = {}))[name] = event;
+      } else if (property && props && name in shorthands) {
+        property(event, props, name);
+      }
+    }
+    function onEndRule(event) {
+      inRule = false;
+      if (endRule && props) {
+        endRule(event, props);
+      }
+    }
+  },
+
+  get shorthands() {
+    const WSC = 'width|style|color';
+    const TBLR = 'top|bottom|left|right';
+    const shorthands = Object.create(null);
+    const shorthandsFor = Object.create(null);
+    for (const [sh, pattern, ...args] of [
+      ['animation', '%-1',
+        'name|duration|timing-function|delay|iteration-count|direction|fill-mode|play-state'],
+      ['background', '%-1', 'image|size|position|repeat|origin|clip|attachment|color'],
+      ['border', '%-1-2', TBLR, WSC],
+      ['border-top', '%-1', WSC],
+      ['border-left', '%-1', WSC],
+      ['border-right', '%-1', WSC],
+      ['border-bottom', '%-1', WSC],
+      ['border-block-end', '%-1', WSC],
+      ['border-block-start', '%-1', WSC],
+      ['border-image', '%-1', 'source|slice|width|outset|repeat'],
+      ['border-inline-end', '%-1', WSC],
+      ['border-inline-start', '%-1', WSC],
+      ['border-radius', 'border-1-2-radius', 'top|bottom', 'left|right'],
+      ['border-color', 'border-1-color', TBLR],
+      ['border-style', 'border-1-style', TBLR],
+      ['border-width', 'border-1-width', TBLR],
+      ['column-rule', '%-1', WSC],
+      ['columns', 'column-1', 'width|count'],
+      ['flex', '%-1', 'grow|shrink|basis'],
+      ['flex-flow', 'flex-1', 'direction|wrap'],
+      ['font', '%-style|%-variant|%-weight|%-stretch|%-size|%-family|line-height'],
+      ['grid', '%-1',
+        'template-rows|template-columns|template-areas|' +
+        'auto-rows|auto-columns|auto-flow|column-gap|row-gap'],
+      ['grid-area', 'grid-1-2', 'row|column', 'start|end'],
+      ['grid-column', '%-1', 'start|end'],
+      ['grid-gap', 'grid-1-gap', 'row|column'],
+      ['grid-row', '%-1', 'start|end'],
+      ['grid-template', '%-1', 'columns|rows|areas'],
+      ['list-style', 'list-1', 'type|position|image'],
+      ['margin', '%-1', TBLR],
+      ['mask', '%-1', 'image|mode|position|size|repeat|origin|clip|composite'],
+      ['outline', '%-1', WSC],
+      ['padding', '%-1', TBLR],
+      ['text-decoration', '%-1', 'color|style|line'],
+      ['text-emphasis', '%-1', 'style|color'],
+      ['transition', '%-1', 'delay|duration|property|timing-function'],
+    ]) {
+      let res = pattern.replace(/%/g, sh);
+      args.forEach((arg, i) => {
+        res = arg.replace(/[^|]+/g, res.replace(new RegExp(`${i + 1}`, 'g'), '$$&'));
+      });
+      (shorthands[sh] = res.split('|')).forEach(r => {
+        shorthandsFor[r] = sh;
+      });
+    }
+    Object.defineProperties(CSSLint.Util, {
+      shorthands: {value: shorthands},
+      shorthandsFor: {value: shorthandsFor},
+    });
+    return shorthands;
+  },
+
+  get shorthandsFor() {
+    return CSSLint.Util.shorthandsFor ||
+      CSSLint.Util.shorthands && CSSLint.Util.shorthandsFor;
+  },
 };
 
 //endregion
@@ -1428,50 +1524,39 @@ CSSLint.addRule({
   browsers: 'All',
 
   init(parser, reporter) {
-    const propertiesToCheck = {};
-    const mapping = {
-      margin:  ['margin-top', 'margin-bottom', 'margin-left', 'margin-right'],
-      padding: ['padding-top', 'padding-bottom', 'padding-left', 'padding-right'],
-    };
-    let properties;
-    let started = 0;
+    const {shorthands} = CSSLint.Util;
+    CSSLint.Util.registerShorthandEvents(parser, {
+      endRule: (event, props) => {
+        for (const [sh, events] of Object.entries(props)) {
+          const names = Object.keys(events);
+          if (names.length === shorthands[sh].length) {
+            const msg = `'${sh}' shorthand can replace '${names.join("' + '")}'`;
+            names.forEach(n => reporter.report(msg, events[n].line, events[n].col, this));
+          }
+        }
+      },
+    });
+  },
+});
 
-    for (const short in mapping) {
-      for (const full of mapping[short]) {
-        propertiesToCheck[full] = short;
-      }
-    }
+CSSLint.addRule({
+  id: 'shorthand-overrides',
+  name: 'Avoid shorthands that override individual properties',
+  desc: 'Avoid shorthands like `background: foo` that follow individual properties ' +
+    'like `background-image: bar` thus overriding them',
+  browsers: 'All',
 
-    const startRule = () => {
-      started = 1;
-      properties = {};
-    };
-
-    const property = event => {
-      if (!started) return;
-      const name = event.property.toString().toLowerCase();
-      if (name in propertiesToCheck) {
-        properties[name] = 1;
-      }
-    };
-
-    const endRule = event => {
-      started = 0;
-      for (const short in mapping) {
-        const fullList = mapping[short];
-        const total = fullList.reduce((sum = 0, name) => sum + (properties[name] ? 1 : 0));
-        if (total === fullList.length) {
-          reporter.report(`The properties ${fullList.join(', ')} can be replaced by ${short}.`,
+  init(parser, reporter) {
+    CSSLint.Util.registerShorthandEvents(parser, {
+      property: (event, props, name) => {
+        const ovr = props[name];
+        if (ovr) {
+          delete props[name];
+          reporter.report(`'${event.property}' overrides '${Object.keys(ovr).join("', '")}' above.`,
             event.line, event.col, this);
         }
-      }
-    };
-
-    parser.addListener('startrule', startRule);
-    parser.addListener('startfontface', startRule);
-    parser.addListener('property', property);
-    parser.addListener('endrule', endRule);
-    parser.addListener('endfontface', endRule);
+      },
+    });
   },
 });
 
