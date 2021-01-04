@@ -198,17 +198,19 @@ linterMan.DEFAULTS = {
     stylelint: {
       validMode: () => true,
       getConfig: config => ({
-        syntax: 'sugarss',
         rules: Object.assign({}, DEFAULTS.stylelint.rules, config && config.rules),
       }),
-      async lint(text, config, mode) {
-        const raw = await worker.stylelint(text, config);
+      async lint(code, config, mode) {
+        const isLess = mode === 'text/x-less';
+        const isStylus = mode === 'stylus';
+        const syntax = isLess ? 'less' : isStylus ? 'sugarss' : 'css';
+        const raw = await worker.stylelint({code, config, syntax});
         if (!raw) {
           return [];
         }
         // Hiding the errors about "//" comments as we're preprocessing only when saving/applying
         // and we can't just pre-remove the comments since "//" may be inside a string token
-        const slashCommentAllowed = mode === 'text/x-less' || mode === 'stylus';
+        const slashCommentAllowed = isLess || isStylus;
         const res = [];
         for (const w of raw.warnings) {
           const msg = w.text.match(/^(?:Unexpected\s+)?(.*?)\s*\([^()]+\)$|$/)[1] || w.text;

@@ -48,7 +48,7 @@ const files = {
     'dist/semver.js → semver.js',
   ],
   'stylelint-bundle': [
-    'stylelint-bundle.min.js',
+    'dist/stylelint-bundle.min.js → stylelint-bundle.min.js',
     'https://github.com/stylelint/stylelint/raw/{VERSION}/LICENSE → LICENSE',
   ],
   'stylus-lang-bundle': [

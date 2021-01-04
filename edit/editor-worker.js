@@ -2,7 +2,9 @@
 'use strict';
 
 (() => {
-  const {require} = self; // self.require will be overwritten by StyleLint
+  const hasCurlyBraceError = warning =>
+    warning.text === 'Unnecessary curly bracket (CssSyntaxError)';
+  let sugarssFallback;
 
   /** @namespace EditorWorker */
   createWorkerApi({
@@ -31,11 +33,26 @@
       return result;
     },
 
-    async stylelint(code, config) {
-      require(['/vendor/stylelint-bundle/stylelint-bundle.min']);
-      const {results: [res]} = await self.require('stylelint').lint({code, config});
-      delete res._postcssResult; // huge and unused
-      return res;
+    async stylelint(opts) {
+      require(['/vendor/stylelint-bundle/stylelint-bundle.min']); /* global stylelint */
+      try {
+        let res;
+        let pass = 0;
+        /* sugarss is used for stylus-lang by default,
+           but it fails on normal css syntax so we retry in css mode. */
+        const isSugarSS = opts.syntax === 'sugarss';
+        if (sugarssFallback && isSugarSS) opts.syntax = sugarssFallback;
+        while (
+          ++pass <= 2 &&
+          (res = (await stylelint.lint(opts)).results[0]) &&
+          isSugarSS && res.warnings.some(hasCurlyBraceError)
+        ) sugarssFallback = opts.syntax = 'css';
+        delete res._postcssResult; // huge and unused
+        return res;
+      } catch (e) {
+        delete e.postcssNode; // huge, unused, non-transferable
+        throw e;
+      }
     },
   });
 
@@ -59,8 +76,8 @@
       const options = {};
       const rxPossible = /\bpossible:("(?:[^"]*?)"|\[(?:[^\]]*?)\]|\{(?:[^}]*?)\})/g;
       const rxString = /"([-\w\s]{3,}?)"/g;
-      for (const [id, rule] of Object.entries(self.require('stylelint').rules)) {
-        const ruleCode = `${rule}`;
+      for (const [id, rule] of Object.entries(stylelint.rules)) {
+        const ruleCode = `${rule()}`;
         const sets = [];
         let m, mStr;
         while ((m = rxPossible.exec(ruleCode))) {

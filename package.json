@@ -12,7 +12,7 @@
     "less-bundle": "github:openstyles/less-bundle#v0.1.0",
     "lz-string-unsafe": "^1.4.4-fork-1",
     "semver-bundle": "^0.1.1",
-    "stylelint-bundle": "^8.0.0",
+    "stylelint-bundle": "^13.8.0",
     "stylus-lang-bundle": "github:openstyles/stylus-lang-bundle#v0.54.7",
     "usercss-meta": "^0.10.0",
     "webext-launch-web-auth-flow": "^0.1.0"
