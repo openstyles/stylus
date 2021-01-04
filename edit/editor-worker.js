@@ -84,9 +84,7 @@
             sets.push(set);
           }
         }
-        if (sets.length) {
-          options[id] = sets;
-        }
+        options[id] = sets;
       }
       return options;
     },
