@@ -1,4 +1,4 @@
-/* global $ $create messageBoxProxy */// dom.js
+/* global $ $create messageBoxProxy waitForSheet */// dom.js
 /* global API msg */// msg.js
 /* global CodeMirror */
 /* global SectionsEditor */
@@ -16,7 +16,7 @@
 //#region init
 
 baseInit.ready.then(async () => {
-  await new Promise(requestAnimationFrame);
+  await waitForSheet();
   (editor.isUsercss ? SourceEditor : SectionsEditor)();
   await editor.ready;
   editor.ready = true;

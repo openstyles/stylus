@@ -13,6 +13,7 @@
   animateElement
   setupLivePrefs
   waitForSelector
+  waitForSheet
 */// dom.js
 'use strict';
 
@@ -94,7 +95,9 @@ newUI.renderClass();
     }}`);
 
   if (!VIVALDI) {
-    fitSelectBoxesIn($('#filters'));
+    waitForSheet().then(() => {
+      fitSelectBoxesIn($('#filters'));
+    });
   }
   if (CHROME >= 80 && CHROME <= 88) {
     // Wrong checkboxes are randomly checked after going back in history, https://crbug.com/1138598
