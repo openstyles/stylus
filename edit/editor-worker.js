@@ -43,7 +43,7 @@
 
     csslint() {
       require(['/js/csslint/csslint']);
-      return CSSLint.getRules().map(rule => {
+      return CSSLint.getRuleList().map(rule => {
         const output = {};
         for (const [key, value] of Object.entries(rule)) {
           if (typeof value !== 'function') {

@@ -4666,6 +4666,7 @@ self.parserlib = (() => {
       SyntaxUnit,
       EventTarget,
       TokenStreamBase,
+      rxVendorPrefix,
     },
     cache: parserCache,
   };
