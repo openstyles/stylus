@@ -361,11 +361,11 @@ function createResizeGrip(cm) {
   const resizeGrip = t.template.resizeGrip.cloneNode(true);
   wrapper.appendChild(resizeGrip);
   let lastClickTime = 0;
-  let initHeight;
-  let initY;
+  let lastHeight;
+  let lastY;
   resizeGrip.onmousedown = event => {
-    initHeight = wrapper.offsetHeight;
-    initY = event.pageY;
+    lastHeight = wrapper.offsetHeight;
+    lastY = event.clientY;
     if (event.button !== 0) {
       return;
     }
@@ -387,9 +387,11 @@ function createResizeGrip(cm) {
     document.on('mouseup', resizeStop);
 
     function resize(e) {
-      const height = Math.max(minHeight, initHeight + e.pageY - initY);
-      if (height !== wrapper.offsetHeight) {
+      const height = Math.max(minHeight, lastHeight + e.clientY - lastY);
+      if (height !== lastHeight) {
         cm.setSize(null, height);
+        lastHeight = height;
+        lastY = e.clientY;
       }
     }
 
