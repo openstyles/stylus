@@ -358,7 +358,7 @@ function showStyles(styles = [], matchUrlIds) {
     }
     setTimeout(getFaviconSrc);
     if (sessionStore.justEditedStyleId) {
-      highlightEditedStyle();
+      setTimeout(highlightEditedStyle); // delaying to avoid forced layout
     } else if ('scrollY' in (history.state || {})) {
       setTimeout(window.scrollTo, 0, 0, history.state.scrollY);
     }
