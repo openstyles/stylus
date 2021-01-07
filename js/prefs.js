@@ -177,7 +177,6 @@
         if (type === 'string') val = String(val);
         if (type === 'number') val = Number(val) || 0;
         if (type === 'boolean') val = val === 'true' || val !== 'false' && Boolean(val);
-        // 'true' and 'false' strings are used by manage.html in `.invert` elements
       }
       if (val !== oldValue && !simpleDeepEqual(val, oldValue)) {
         values[key] = val;

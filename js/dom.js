@@ -303,11 +303,18 @@ function setupLivePrefs(ids = prefs.knownKeys.filter(id => $('#' + id))) {
         'value';
   }
 
+  function isSame(el, propName, value) {
+    return el[propName] === value ||
+      typeof value === 'boolean' &&
+      el.tagName === 'SELECT' &&
+      el[propName] === `${value}`;
+  }
+
   function updateElement(id, value) {
     const el = $('#' + id);
     if (el) {
       const prop = getPropName(el);
-      if (el[prop] !== value || forceUpdate) {
+      if (!isSame(el, prop, value) || forceUpdate) {
         el[prop] = value;
         el.dispatchEvent(new Event('change', {bubbles: true}));
       }
