@@ -1,4 +1,5 @@
 /* global CodeMirror */
+/* global cmFactory */
 /* global debounce */// toolbox.js
 /* global editor */
 /* global prefs */
@@ -19,16 +20,19 @@
   const originalHelper = CodeMirror.hint.css || (() => {});
   let cssProps, cssMedia;
 
-  CodeMirror.defineOption('autocompleteOnTyping', prefs.get('editor.autocompleteOnTyping'),
-    (cm, value) => {
-      cm[value ? 'on' : 'off']('changes', autocompleteOnTyping);
-      cm[value ? 'on' : 'off']('pick', autocompletePicked);
-    });
+  const aot = prefs.get('editor.autocompleteOnTyping');
+  CodeMirror.defineOption('autocompleteOnTyping', aot, aotToggled);
+  if (aot) cmFactory.globalSetOption('autocompleteOnTyping', true);
 
   CodeMirror.registerHelper('hint', 'css', helper);
   CodeMirror.registerHelper('hint', 'stylus', helper);
 
   tokenHooks['/'] = tokenizeUsoVariables;
+
+  function aotToggled(cm, value) {
+    cm[value ? 'on' : 'off']('changes', autocompleteOnTyping);
+    cm[value ? 'on' : 'off']('pick', autocompletePicked);
+  }
 
   function helper(cm) {
     const pos = cm.getCursor();
@@ -87,11 +91,15 @@
 
       case '-': // --variable
       case '(': // var(
-        list = str.startsWith('--') || testAt(rxVAR, ch - 4, text)
+        list = str.startsWith('--') || testAt(rxVAR, ch - 5, text)
           ? findAllCssVars(cm, left)
           : [];
-        prev += str.startsWith('(');
-        leftLC = left;
+        if (str.startsWith('(')) {
+          prev++;
+          leftLC = left.slice(1);
+        } else {
+          leftLC = left;
+        }
         break;
 
       case '/': // USO vars
