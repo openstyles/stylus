@@ -229,7 +229,7 @@ function fitSelectBox(...elems) {
   const data = [];
   for (const el of elems) {
     const sel = el.selectedOptions[0];
-    if (!sel) return;
+    if (!sel) continue;
     const oldWidth = parseFloat(el.style.width);
     const text = [];
     data.push({el, text, oldWidth});
@@ -237,15 +237,13 @@ function fitSelectBox(...elems) {
       text.push(elOpt.textContent);
       if (elOpt !== sel) elOpt.textContent = '';
     }
-    el.style.width = '';
+    el.style.width = 'min-content';
   }
-  requestAnimationFrame(() => {
-    for (const {el, text, oldWidth} of data) {
-      const w = el.offsetWidth;
-      if (w && oldWidth !== w) el.style.width = w + 'px';
-      text.forEach((t, i) => (el[i].textContent = t));
-    }
-  });
+  for (const {el, text, oldWidth} of data) {
+    const w = el.offsetWidth;
+    if (w && oldWidth !== w) el.style.width = w + 'px';
+    text.forEach((t, i) => (el.options[i].textContent = t));
+  }
 }
 
 /* exported fitSelectBoxesIn */
