@@ -31,6 +31,9 @@ baseInit.ready.then(async () => {
   // enabling after init to prevent flash of validation failure on an empty name
   $('#name').required = !editor.isUsercss;
   $('#save-button').onclick = editor.save;
+  // editor.toc.expanded pref isn't saved in compact-layout so prefs.subscribe won't work
+  $('#sections-list').on('click', () => $('.compact-layout') && setTimeout(editor.updateToc),
+    {once: true});
   $('#toc').onclick = e =>
     editor.jumpToEditor([...$('#toc').children].indexOf(e.target));
   $('#keyMap-help').onclick = () =>
@@ -114,8 +117,6 @@ window.on('beforeunload', e => {
 
 (() => {
   const toc = [];
-  let tocElem;
-
   const {dirty} = editor;
   let {style} = editor;
   let wasDirty = false;
@@ -174,16 +175,19 @@ window.on('beforeunload', e => {
     },
 
     updateToc(added = editor.sections) {
-      if (!prefs.get('editor.toc.expanded')) return;
-      if (!tocElem) tocElem = $('#toc');
+      if (!toc.el) {
+        toc.el = $('#toc');
+        toc.elDetails = toc.el.closest('details');
+      }
+      if (!toc.elDetails.open) return;
       const {sections} = editor;
       const first = sections.indexOf(added[0]);
-      const elFirst = tocElem.children[first];
+      const elFirst = toc.el.children[first];
       if (first >= 0 && (!added.focus || !elFirst)) {
         for (let el = elFirst, i = first; i < sections.length; i++) {
           const entry = sections[i].tocEntry;
           if (!deepEqual(entry, toc[i])) {
-            if (!el) el = tocElem.appendChild($create('li', {tabIndex: 0}));
+            if (!el) el = toc.el.appendChild($create('li', {tabIndex: 0}));
             el.tabIndex = entry.removed ? -1 : 0;
             toc[i] = Object.assign({}, entry);
             const s = el.textContent = clipString(entry.label) || (
@@ -196,13 +200,13 @@ window.on('beforeunload', e => {
         }
       }
       while (toc.length > sections.length) {
-        tocElem.lastElementChild.remove();
+        toc.el.lastElementChild.remove();
         toc.length--;
       }
       if (added.focus) {
         const cls = 'current';
-        const old = $('.' + cls, tocElem);
-        const el = elFirst || tocElem.children[first];
+        const old = $('.' + cls, toc.el);
+        const el = elFirst || toc.el.children[first];
         if (old && old !== el) old.classList.remove(cls);
         el.classList.add(cls);
       }
