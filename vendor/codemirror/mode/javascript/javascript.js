@@ -640,8 +640,6 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
       return cont(expect("variable"), maybetypeOrIn, expect("]"), typeprop)
     } else if (type == "(") {
       return pass(functiondecl, typeprop)
-    } else if (!type.match(/[;\}\)\],]/)) {
-      return cont()
     }
   }
   function typearg(type, value) {
@@ -932,10 +930,9 @@ CodeMirror.defineMIME("text/ecmascript", "javascript");
 CodeMirror.defineMIME("application/javascript", "javascript");
 CodeMirror.defineMIME("application/x-javascript", "javascript");
 CodeMirror.defineMIME("application/ecmascript", "javascript");
-CodeMirror.defineMIME("application/json", { name: "javascript", json: true });
-CodeMirror.defineMIME("application/x-json", { name: "javascript", json: true });
-CodeMirror.defineMIME("application/manifest+json", { name: "javascript", json: true })
-CodeMirror.defineMIME("application/ld+json", { name: "javascript", jsonld: true });
+CodeMirror.defineMIME("application/json", {name: "javascript", json: true});
+CodeMirror.defineMIME("application/x-json", {name: "javascript", json: true});
+CodeMirror.defineMIME("application/ld+json", {name: "javascript", jsonld: true});
 CodeMirror.defineMIME("text/typescript", { name: "javascript", typescript: true });
 CodeMirror.defineMIME("application/typescript", { name: "javascript", typescript: true });
 

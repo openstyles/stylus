@@ -1,4 +1,4 @@
-## codemirror v5.59.1
+## codemirror v5.59.0
 
 Following files are copied from npm (node_modules):
 
