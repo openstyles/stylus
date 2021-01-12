@@ -93,6 +93,7 @@ window.on('beforeunload', e => {
   sessionStore['editorScrollInfo' + editor.style.id] = JSON.stringify({
     scrollY: window.scrollY,
     cms: editor.getEditors().map(cm => /** @namespace EditorScrollInfo */({
+      bookmarks: (cm.state.sublimeBookmarks || []).map(b => b.find()),
       focus: cm.hasFocus(),
       height: cm.display.wrapper.style.height.replace('100vh', ''),
       parentHeight: cm.display.wrapper.parentElement.offsetHeight,
@@ -136,9 +137,11 @@ window.on('beforeunload', e => {
 
     applyScrollInfo(cm, si = (editor.scrollInfo.cms || [])[0]) {
       if (si && si.sel) {
+        const bmOpts = {sublimeBookmark: true, clearWhenEmpty: false}; // copied from sublime.js
         cm.operation(() => {
           cm.setSelections(...si.sel, {scroll: false});
           cm.scrollIntoView(cm.getCursor(), si.parentHeight / 2);
+          cm.state.sublimeBookmarks = si.bookmarks.map(b => cm.markText(b.from, b.to, bmOpts));
         });
       }
     },
