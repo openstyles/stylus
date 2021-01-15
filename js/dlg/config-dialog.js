@@ -15,6 +15,7 @@ async function configDialog(style) {
     '/js/color/color-picker',
     '/js/color/color-picker.css',
     '/js/dlg/config-dialog.css',
+    '/options/onoffswitch.css',
   ]);
 
   const AUTOSAVE_DELAY = 500;

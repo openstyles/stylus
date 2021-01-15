@@ -29,33 +29,16 @@ const newUI = {
   enabled: null, // the global option should come first
   favicons: null,
   faviconsGray: null,
-  sliders: null,
   targets: null,
 };
 // ...add utility functions
 Object.assign(newUI, {
   ids: Object.keys(newUI),
-  prefKeyForId: id =>
-    id === 'sliders' ? `ui.${id}` :
-      id === 'enabled' ? 'manage.newUI' :
-        `manage.newUI.${id}`,
+  prefKeyForId: id => `manage.newUI.${id}`.replace(/\.enabled$/, ''),
   renderClass: () => {
     const cl = document.documentElement.classList;
     cl.toggle('newUI', newUI.enabled);
     cl.toggle('oldUI', !newUI.enabled);
-  },
-  tpl: {
-    getToggle() {
-      return t.template[newUI.sliders ? 'toggleSlider' : 'toggleChecker'].cloneNode(true);
-    },
-    getEntry() {
-      const tpl = t.template[newUI.enabled ? 'styleNewUI' : 'style'].cloneNode(true);
-      if (newUI.enabled) {
-        const slot = $('toggle', tpl);
-        slot.parentElement.replaceChild(newUI.tpl.getToggle(), slot);
-      }
-      return tpl;
-    },
   },
 });
 // ...read the actual values

@@ -118,8 +118,6 @@
 
     'popupWidth': 246,              // popup width in pixels
 
-    'ui.sliders': true,             // use sliders instead of checkboxes for style entries
-
     'updateInterval': 24,           // user-style automatic update interval, hours (0 = disable)
   };
   const knownKeys = Object.keys(defaults);

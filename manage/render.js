@@ -47,7 +47,7 @@ function createAgeText(el, style) {
 function createStyleElement({style, name: nameLC}) {
   // query the sub-elements just once, then reuse the references
   if ((elementParts || {}).newUI !== newUI.enabled) {
-    const entry = newUI.tpl.getEntry();
+    const entry = t.template[newUI.enabled ? 'styleNewUI' : 'style'].cloneNode(true);
     elementParts = {
       newUI: newUI.enabled,
       entry,
@@ -383,7 +383,6 @@ function switchUI({styleOnly} = {}) {
   Object.assign(newUI, current);
   newUI.renderClass();
 
-  installed.classList.toggle('has-sliders', newUI.enabled && newUI.sliders);
   installed.classList.toggle('has-favicons', newUI.enabled && newUI.favicons);
   installed.classList.toggle('favicons-grayed', newUI.enabled && newUI.faviconsGray);
   if (installed.style.getPropertyValue('--num-targets') !== `${newUI.targets}`) {
@@ -400,15 +399,6 @@ function switchUI({styleOnly} = {}) {
     installed.textContent = '';
     API.styles.getAll().then(showStyles);
     return;
-  }
-  if (changed.sliders && newUI.enabled) {
-    const dst = newUI.tpl.getToggle();
-    const dstChecker = $('input', dst);
-    for (const entry of installed.children) {
-      const src = $('.checkmate, .onoffswitch', entry);
-      dstChecker.checked = entry.classList.contains('enabled');
-      src.parentElement.replaceChild(dst.cloneNode(true), src);
-    }
   }
   if (changed.targets) {
     for (const entry of installed.children) {

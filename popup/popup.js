@@ -23,7 +23,6 @@ const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrI
 
 preinit.then(({frames, styles, url}) => {
   tabURL = url;
-  toggleUiSliders();
   initPopup(frames);
   if (styles[0]) {
     showStyles(styles);
@@ -78,14 +77,6 @@ function toggleSideBorders(_key, state) {
   } else if (style.cssText) {
     style.borderLeft = style.borderRight = '';
   }
-}
-
-function toggleUiSliders() {
-  const sliders = prefs.get('ui.sliders');
-  const slot = $('toggle', t.template.style);
-  const toggle = t.template[sliders ? 'toggleSlider' : 'toggleChecker'];
-  slot.parentElement.replaceChild(toggle.cloneNode(true), slot);
-  document.body.classList.toggle('has-sliders', sliders);
 }
 
 /** @param {chrome.webNavigation.GetAllFrameResultDetails[]} frames */

@@ -4,11 +4,6 @@
   --hotkey-margin: 16px;
 }
 
-.has-sliders {
-  --inner-padding: 20px;
-  --slider-width: 18px;
-}
-
 html, body {
   height: min-content;
   max-height: 600px;
@@ -244,16 +239,6 @@ html[style] .entry-content {
   overflow: hidden;
   align-items: center;
   padding-right: 5px;
-}
-
-.entry .onoffswitch {
-  padding: 0 0 0 6px;
-}
-.entry .onoffswitch input {
-  pointer-events: none;
-}
-.style-name:hover .onoffswitch span {
-  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, .8);
 }
 
 .entry:nth-child(even) {

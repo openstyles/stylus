@@ -1,13 +1,8 @@
 :root {
   --header-width: 280px;
-  --slider-width: 21px;
   --name-padding-left: 20px;
   --name-padding-right: 40px;
   --actions-width: 75px;
-}
-
-.has-sliders {
-  --name-padding-left: 46px;
 }
 
 body {
@@ -1046,10 +1041,6 @@ a:hover {
     --name-padding-left: 34px;
   }
 
-  .has-sliders {
-    --name-padding-left: 44px;
-  }
-
   body {
     display: table;
   }
@@ -1071,11 +1062,6 @@ a:hover {
 
   #installed {
     table-layout: fixed;
-  }
-
-  .entry .onoffswitch {
-    --slider-width: 20px;
-    padding-left: 14px;
   }
 
   .newUI .entry .actions {
