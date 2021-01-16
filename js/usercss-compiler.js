@@ -45,7 +45,7 @@ const BUILDERS = Object.assign(Object.create(null), {
   },
 
   uso: {
-    async pre(source, vars) {
+    pre(source, vars) {
       require(['/js/color/color-converter']); /* global colorConverter */
       const pool = new Map();
       return doReplace(source);
@@ -99,26 +99,24 @@ const BUILDERS = Object.assign(Object.create(null), {
 });
 
 /* exported compileUsercss */
+/**
+ * @param {string} preprocessor
+ * @param {string} code
+ * @param {Object} [vars] - WARNING: each var's `value` will be overwritten
+   (not a problem currently as this code runs in a worker so `vars` is just a copy)
+ * @returns {Promise<{sections, errors}>}
+ */
 async function compileUsercss(preprocessor, code, vars) {
   let builder = BUILDERS[preprocessor];
   if (!builder) {
     builder = BUILDERS.default;
     if (preprocessor != null) console.warn(`Unknown preprocessor "${preprocessor}"`);
   }
-  // simplify vars by merging `va.default` to `va.value`, so BUILDER don't
-  // need to test each va's default value.
-  vars = Object.entries(vars || {}).reduce((output, [key, va]) => {
-    // TODO: handle customized image
-    const prop = va.value == null ? 'default' : 'value';
-    const value =
-      /^(select|dropdown|image)$/.test(va.type) ?
-        va.options.find(o => o.name === va[prop]).value :
-      /^(number|range)$/.test(va.type) && va.units ?
-        va[prop] + va.units :
-        va[prop];
-    output[key] = Object.assign({}, va, {value});
-    return output;
-  }, {});
+  if (vars) {
+    simplifyUsercssVars(vars);
+  } else {
+    vars = {};
+  }
   if (builder.pre) {
     code = await builder.pre(code, vars);
   }
@@ -128,4 +126,27 @@ async function compileUsercss(preprocessor, code, vars) {
     builder.post(res.sections, vars);
   }
   return res;
+}
+
+/**
+ * Adds units and sets `null` values to their defaults
+ * WARNING: the old value is overwritten
+ */
+function simplifyUsercssVars(vars) {
+  for (const va of Object.values(vars)) {
+    let value = va.value != null ? va.value : va.default;
+    switch (va.type) {
+      case 'select':
+      case 'dropdown':
+      case 'image':
+        // TODO: handle customized image
+        value = va.options.find(o => o.name === value).value;
+        break;
+      case 'number':
+      case 'range':
+        value += va.units || '';
+        break;
+    }
+    va.value = value;
+  }
 }
