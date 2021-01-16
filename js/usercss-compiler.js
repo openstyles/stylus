@@ -37,7 +37,10 @@ const BUILDERS = Object.assign(Object.create(null), {
       }
       require(['/vendor/less-bundle/less.min']); /* global less */
       const varDefs = Object.keys(vars).map(key => `@${key}:${vars[key].value};\n`).join('');
-      return (await less.render(varDefs + source)).css;
+      const res = await less.render(varDefs + source, {
+        math: 'parens-division',
+      });
+      return res.css;
     },
   },
 
