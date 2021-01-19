@@ -1,5 +1,5 @@
 /* global API */// msg.js
-/* global CHROME */// toolbox.js
+/* global CHROME ignoreChromeError */// toolbox.js
 /* global prefs */
 'use strict';
 
@@ -72,7 +72,7 @@
         frameId: req.frameId,
         runAt: 'document_start',
         code: `(${injectedCode})(${data.str})`,
-      });
+      }, ignoreChromeError);
       if (!state.xhr) cleanUp(req);
     }
   }
