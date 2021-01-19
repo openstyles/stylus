@@ -59,7 +59,7 @@ addAPI(/** @namespace API */ {
     const tab = await openURL({
       url: `${u}`,
       currentWindow: null,
-      newWindow: Object.assign(wndBase, !ffBug && wndPos),
+      newWindow: wnd && Object.assign(wndBase, !ffBug && wndPos),
     });
     if (ffBug) await browser.windows.update(tab.windowId, wndPos);
     return tab;
