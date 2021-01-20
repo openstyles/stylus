@@ -6,7 +6,7 @@
   "repository": "openstyles/stylus",
   "author": "Stylus Team",
   "dependencies": {
-    "codemirror": "5.59.0",
+    "codemirror": "5.59.2",
     "db-to-cloud": "^0.4.5",
     "jsonlint": "^1.6.3",
     "less-bundle": "github:openstyles/less-bundle#v0.1.0",
