@@ -116,9 +116,7 @@
     } else {
       detail = {detail};
     }
-    onDOMready().then(() => {
-      document.dispatchEvent(new CustomEvent(type, detail));
-    });
+    document.dispatchEvent(new CustomEvent(type, detail));
   }
 
   function onClick(event) {
@@ -267,7 +265,7 @@
   function onDOMready() {
     return document.readyState !== 'loading'
       ? Promise.resolve()
-      : new Promise(resolve => window.addEventListener('load', resolve, {once: true}));
+      : new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve, {once: true}));
   }
 
   function openSettings(countdown = 10e3) {
@@ -329,13 +327,33 @@ function inPageContext(eventId) {
       Response.prototype.json = origMethods.json;
       const images = new Map();
       for (const ss of json.style_settings) {
-        const value = vars.get('ik-' + ss.install_key);
-        if (value && ss.setting_type === 'image' && ss.style_setting_options) {
+        let value = vars.get('ik-' + ss.install_key);
+        if (!value || !(ss.style_setting_options || [])[0]) {
+          continue;
+        }
+        if (value.startsWith('ik-')) {
+          value = value.replace(/^ik-/, '');
+          const def = ss.style_setting_options.find(item => item.default);
+          if (!def || def.install_key !== value) {
+            if (def) def.default = false;
+            for (const item of ss.style_setting_options) {
+              if (item.install_key === value) {
+                item.default = true;
+                break;
+              }
+            }
+          }
+        } else if (ss.setting_type === 'image') {
           let isListed;
           for (const opt of ss.style_setting_options) {
             isListed |= opt.default = (opt.value === value);
           }
           images.set(ss.install_key, {url: value, isListed});
+        } else {
+          const item = ss.style_setting_options[0];
+          if (item.value !== value && item.install_key === 'placeholder') {
+            item.value = value;
+          }
         }
       }
       if (images.size) {
