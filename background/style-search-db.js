@@ -1,5 +1,5 @@
 /* global API */// msg.js
-/* global URLS debounce stringAsRegExp tryRegExp */// toolbox.js
+/* global RX_META debounce stringAsRegExp tryRegExp */// toolbox.js
 /* global addAPI */// common.js
 'use strict';
 
@@ -10,12 +10,12 @@
 
   const extractMeta = style =>
     style.usercssData
-      ? (style.sourceCode.match(URLS.rxMETA) || [''])[0]
+      ? (style.sourceCode.match(RX_META) || [''])[0]
       : null;
 
   const stripMeta = style =>
     style.usercssData
-      ? style.sourceCode.replace(URLS.rxMETA, '')
+      ? style.sourceCode.replace(RX_META, '')
       : null;
 
   const MODES = Object.assign(Object.create(null), {

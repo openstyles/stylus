@@ -140,7 +140,12 @@ function simplifyUsercssVars(vars) {
       case 'dropdown':
       case 'image':
         // TODO: handle customized image
-        value = va.options.find(o => o.name === value).value;
+        for (const opt of va.options) {
+          if (opt.name === value) {
+            value = opt.value;
+            break;
+          }
+        }
         break;
       case 'number':
       case 'range':

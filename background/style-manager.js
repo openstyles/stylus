@@ -47,7 +47,7 @@ const styleMan = (() => {
     _id: () => uuidv4(),
     _rev: () => Date.now(),
   };
-  const DELETE_IF_NULL = ['id', 'customName'];
+  const DELETE_IF_NULL = ['id', 'customName', 'md5Url', 'originalMd5'];
   /** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
   let ready = init();
 

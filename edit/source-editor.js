@@ -4,7 +4,7 @@
 /* global MozDocMapper */// util.js
 /* global MozSectionFinder */
 /* global MozSectionWidget */
-/* global URLS debounce sessionStore */// toolbox.js
+/* global RX_META debounce sessionStore */// toolbox.js
 /* global chromeSync */// storage-util.js
 /* global cmFactory */
 /* global editor */
@@ -307,7 +307,7 @@ function SourceEditor() {
       if (_cm !== cm) {
         return;
       }
-      const match = text.match(URLS.rxMETA);
+      const match = text.match(RX_META);
       if (!match) {
         return [];
       }

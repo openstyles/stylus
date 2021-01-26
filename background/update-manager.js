@@ -1,7 +1,8 @@
 /* global API */// msg.js
-/* global URLS debounce download ignoreChromeError */// toolbox.js
+/* global RX_META URLS debounce download ignoreChromeError */// toolbox.js
 /* global calcStyleDigest styleJSONseemsValid styleSectionsEqual */ // sections-util.js
 /* global chromeLocal */// storage-util.js
+/* global db */
 /* global prefs */
 'use strict';
 
@@ -21,7 +22,14 @@ const updateMan = (() => {
     ERROR_JSON:    'error: JSON is invalid',
     ERROR_VERSION: 'error: version is older than installed style',
   };
-
+  const RH_ETAG = {responseHeaders: ['etag']}; // a hashsum of file contents
+  const RX_DATE2VER = new RegExp([
+    /^(\d{4})/,
+    /(1(?:0|[12](?=\d\d))?|[2-9])/, // in ambiguous cases like yyyy123 the month will be 1
+    /([1-2][0-9]?|3[0-1]?|[4-9])/,
+    /\.(0|1[0-9]?|2[0-3]?|[3-9])/,
+    /\.(0|[1-5][0-9]?|[6-9])$/,
+  ].map(rx => rx.source).join(''));
   const ALARM_NAME = 'scheduledUpdate';
   const MIN_INTERVAL_MS = 60e3;
   const RETRY_ERRORS = [
@@ -96,13 +104,14 @@ const updateMan = (() => {
    'ignoreDigest' option is set on the second manual individual update check on the manage page.
    */
   async function checkStyle(opts) {
+    let {id} = opts;
     const {
-      id,
       style = await API.styles.get(id),
       ignoreDigest,
       port,
       save,
     } = opts;
+    if (!id) id = style.id;
     const ucd = style.usercssData;
     let res, state;
     try {
@@ -119,7 +128,7 @@ const updateMan = (() => {
       res = {error, style, STATES};
       state = `${STATES.SKIPPED} (${error})`;
     }
-    log(`${state} #${style.id} ${style.customName || style.name}`);
+    log(`${state} #${id} ${style.customName || style.name}`);
     if (port) port.postMessage(res);
     return res;
 
@@ -132,6 +141,11 @@ const updateMan = (() => {
     }
 
     async function updateUSO() {
+      const url = URLS.makeUsoArchiveCodeUrl(style.md5Url.match(/\d+/)[0]);
+      const req = await tryDownload(url, RH_ETAG).catch(() => null);
+      if (req) {
+        return updateToUSOArchive(url, req);
+      }
       const md5 = await tryDownload(style.md5Url);
       if (!md5 || md5.length !== 32) {
         return Promise.reject(STATES.ERROR_MD5);
@@ -148,33 +162,82 @@ const updateMan = (() => {
       return json;
     }
 
-    async function updateUsercss() {
-      // TODO: when sourceCode is > 100kB use http range request(s) for version check
-      const url = style.updateUrl;
-      const metaUrl = URLS.extractGreasyForkInstallUrl(url) &&
-        url.replace(/\.user\.css$/, '.meta.css');
-      const text = await tryDownload(metaUrl || url);
-      const json = await API.usercss.buildMeta({sourceCode: text});
-      await require(['/vendor/semver-bundle/semver']); /* global semverCompare */
-      const delta = semverCompare(json.usercssData.version, ucd.version);
-      if (!delta && !ignoreDigest) {
-        // re-install is invalid in a soft upgrade
-        const sameCode = !metaUrl && text === style.sourceCode;
-        return Promise.reject(sameCode ? STATES.SAME_CODE : STATES.SAME_VERSION);
+    async function updateToUSOArchive(url, req) {
+      // UserCSS metadata may be embedded in the original USO style so let's use its updateURL
+      const [meta2] = req.response.replace(RX_META, '').match(RX_META) || [];
+      if (meta2 && meta2.includes('@updateURL')) {
+        const {updateUrl} = await API.usercss.buildMeta({sourceCode: meta2}).catch(() => ({}));
+        if (updateUrl) {
+          url = updateUrl;
+          req = await tryDownload(url, RH_ETAG);
+        }
       }
-      if (delta < 0) {
-        // downgrade is always invalid
-        return Promise.reject(STATES.ERROR_VERSION);
-      }
-      if (metaUrl) {
-        json.sourceCode = await tryDownload(url);
+      const json = await API.usercss.buildMeta({
+        id,
+        etag: req.headers.etag,
+        md5Url: null,
+        originalMd5: null,
+        sourceCode: req.response,
+        updateUrl: url,
+        url: URLS.extractUsoArchiveInstallUrl(url),
+      });
+      const varUrlValues = style.updateUrl.split('?')[1];
+      const varData = json.usercssData.vars;
+      if (varUrlValues && varData) {
+        const IK = 'ik-';
+        const IK_LEN = IK.length;
+        for (let [key, val] of new URLSearchParams(varUrlValues)) {
+          if (!key.startsWith(IK)) continue;
+          key = key.slice(IK_LEN);
+          const varDef = varData[key];
+          if (!varDef) continue;
+          if (varDef.options) {
+            let sel = val.startsWith(IK) && getVarOptByName(varDef, val.slice(IK_LEN));
+            if (!sel) {
+              key += '-custom';
+              sel = getVarOptByName(varDef, key + '-dropdown');
+              if (sel) varData[key].value = val;
+            }
+            if (sel) varDef.value = sel.name;
+          } else {
+            varDef.value = val;
+          }
+        }
       }
       return API.usercss.buildCode(json);
     }
 
+    async function updateUsercss() {
+      if (style.etag && style.etag === await downloadEtag()) {
+        return Promise.reject(STATES.SAME_CODE);
+      }
+      // TODO: when sourceCode is > 100kB use http range request(s) for version check
+      const {headers: {etag}, response} = await tryDownload(style.updateUrl, RH_ETAG);
+      const json = await API.usercss.buildMeta({sourceCode: response, etag});
+      await require(['/vendor/semver-bundle/semver']); /* global semverCompare */
+      const delta = semverCompare(json.usercssData.version, ucd.version);
+      let err;
+      if (!delta && !ignoreDigest) {
+        // re-install is invalid in a soft upgrade
+        err = response === style.sourceCode ? STATES.SAME_CODE : STATES.SAME_VERSION;
+      }
+      if (delta < 0) {
+        // downgrade is always invalid
+        err = STATES.ERROR_VERSION;
+      }
+      if (err && etag && !style.etag) {
+        // first check of ETAG, gonna write it directly to DB as it's too trivial to sync or announce
+        style.etag = etag;
+        await db.exec('put', style);
+      }
+      return err
+        ? Promise.reject(err)
+        : API.usercss.buildCode(json);
+    }
+
     async function maybeSave(json) {
-      json.id = style.id;
-      json.updateDate = Date.now();
+      json.id = id;
+      json.updateDate = getDateFromVer(json) || Date.now();
       // keep current state
       delete json.customName;
       delete json.enabled;
@@ -205,6 +268,25 @@ const updateMan = (() => {
         retryDelay *= 1.25;
         await new Promise(resolve => setTimeout(resolve, retryDelay));
       }
+    }
+
+    async function downloadEtag() {
+      const opts = Object.assign({method: 'head'}, RH_ETAG);
+      const req = await tryDownload(style.updateUrl, opts);
+      return req.headers.etag;
+    }
+
+    function getDateFromVer(style) {
+      const m = style.updateUrl.startsWith(URLS.usoArchiveRaw) &&
+        style.usercssData.version.match(RX_DATE2VER);
+      if (m) {
+        m[2]--; // month is 0-based in `Date` constructor
+        return new Date(...m.slice(1)).getTime();
+      }
+    }
+
+    function getVarOptByName(varDef, name) {
+      return varDef.options.find(o => o.name === name);
     }
   }
 

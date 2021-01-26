@@ -1,5 +1,5 @@
 /* global API */// msg.js
-/* global URLS deepCopy download */// toolbox.js
+/* global RX_META deepCopy download */// toolbox.js
 'use strict';
 
 const usercssMan = {
@@ -15,7 +15,7 @@ const usercssMan = {
   async assignVars(style, oldStyle) {
     const meta = style.usercssData;
     const vars = meta.vars;
-    const oldVars = oldStyle.usercssData.vars;
+    const oldVars = (oldStyle.usercssData || {}).vars;
     if (vars && oldVars) {
       // The type of var might be changed during the update. Set value to null if the value is invalid.
       for (const [key, v] of Object.entries(vars)) {
@@ -51,7 +51,7 @@ const usercssMan = {
 
   async buildCode(style) {
     const {sourceCode: code, usercssData: {vars, preprocessor}} = style;
-    const match = code.match(URLS.rxMETA);
+    const match = code.match(RX_META);
     const i = match.index;
     const j = i + match[0].length;
     const codeNoMeta = code.slice(0, i) + blankOut(code, i, j) + code.slice(j);
@@ -74,7 +74,7 @@ const usercssMan = {
       enabled: true,
       sections: [],
     }, style);
-    const match = code.match(URLS.rxMETA);
+    const match = code.match(RX_META);
     if (!match) {
       return Promise.reject(new Error('Could not find metadata.'));
     }

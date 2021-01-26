@@ -1,4 +1,4 @@
-/* global URLS download openURL */// toolbox.js
+/* global RX_META URLS download openURL */// toolbox.js
 /* global addAPI bgReady */// common.js
 /* global tabMan */// msg.js
 'use strict';
@@ -85,7 +85,7 @@ bgReady.all.then(() => {
         !oldUrl.startsWith(URLS.installUsercss)) {
       const inTab = url.startsWith('file:') && !chrome.app;
       const code = await (inTab ? loadFromFile : loadFromUrl)(tabId, url);
-      if (!/^\s*</.test(code) && URLS.rxMETA.test(code)) {
+      if (!/^\s*</.test(code) && RX_META.test(code)) {
         openInstallerPage(tabId, url, {code, inTab});
       }
     }

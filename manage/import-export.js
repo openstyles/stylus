@@ -1,5 +1,5 @@
 /* global API */// msg.js
-/* global URLS deepEqual isEmptyObj tryJSONparse */// toolbox.js
+/* global RX_META deepEqual isEmptyObj tryJSONparse */// toolbox.js
 /* global changeQueue */// manage.js
 /* global chromeSync */// storage-util.js
 /* global prefs */
@@ -83,7 +83,7 @@ function importFromFile({fileTypeFilter, file} = {}) {
         fReader.onloadend = event => {
           fileInput.remove();
           const text = event.target.result;
-          const maybeUsercss = !/^\s*\[/.test(text) && URLS.rxMETA.test(text);
+          const maybeUsercss = !/^\s*\[/.test(text) && RX_META.test(text);
           if (maybeUsercss) {
             messageBoxProxy.alert(t('dragDropUsercssTabstrip'));
           } else {
