@@ -409,7 +409,7 @@
     result.pingbackTimer = setTimeout(download, PINGBACK_DELAY,
       `${URLS.uso}styles/install/${id}?source=stylish-ch`);
 
-    const updateUrl = `${URLS.usoArchiveRaw}usercss/${id}.user.css`;
+    const updateUrl = URLS.makeUsoArchiveCodeUrl(id);
     try {
       const sourceCode = await download(updateUrl);
       const style = await API.usercss.install({sourceCode, updateUrl});

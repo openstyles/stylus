@@ -1,7 +1,7 @@
 /* global $ $$ $create $remove messageBoxProxy */// dom.js
 /* global API */// msg.js
 /* global CodeMirror */
-/* global FIREFOX URLS debounce ignoreChromeError sessionStore */// toolbox.js
+/* global FIREFOX RX_META debounce ignoreChromeError sessionStore */// toolbox.js
 /* global MozDocMapper clipString helpPopup rerouteHotkeys showCodeMirrorPopup */// util.js
 /* global createSection */// sections-editor-section.js
 /* global editor */
@@ -360,7 +360,7 @@ function SectionsEditor() {
       lockPageUI(true);
       try {
         const code = popup.codebox.getValue().trim();
-        if (!URLS.rxMETA.test(code) ||
+        if (!RX_META.test(code) ||
             !await getPreprocessor(code) ||
             await messageBoxProxy.confirm(
               t('importPreprocessor'), 'pre-line',

@@ -2,6 +2,7 @@
 
 /* exported
   CHROME_POPUP_BORDER_BUG
+  RX_META
   capitalize
   closeCurrentTab
   deepEqual
@@ -71,8 +72,6 @@ const URLS = {
   // TODO: remove when "minimum_chrome_version": "61" or higher
   chromeProtectsNTP: CHROME >= 61,
 
-  rxMETA: /\/\*!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i,
-
   uso: 'https://userstyles.org/',
   usoJson: 'https://userstyles.org/styles/chrome/',
 
@@ -86,6 +85,7 @@ const URLS = {
     const id = URLS.extractUsoArchiveId(url);
     return id ? `${URLS.usoArchive}?style=${id}` : '';
   },
+  makeUsoArchiveCodeUrl: id => `${URLS.usoArchiveRaw}usercss/${id}.user.css`,
 
   extractGreasyForkInstallUrl: url =>
     /^(https:\/\/(?:greasy|sleazy)fork\.org\/scripts\/\d+)[^/]*\/code\/[^/]*\.user\.css$|$/.exec(url)[1],
@@ -98,6 +98,8 @@ const URLS = {
     !URLS.chromeProtectsNTP && url.startsWith('chrome://newtab/')
   ),
 };
+
+const RX_META = /\/\*!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i;
 
 if (FIREFOX || OPERA || VIVALDI) {
   document.documentElement.classList.add(
@@ -358,10 +360,11 @@ const sessionStore = new Proxy({}, {
  * @param {Object} params
  * @param {String} [params.method]
  * @param {String|Object} [params.body]
- * @param {String} [params.responseType] arraybuffer, blob, document, json, text
+ * @param {'arraybuffer'|'blob'|'document'|'json'|'text'} [params.responseType]
  * @param {Number} [params.requiredStatusCode] resolved when matches, otherwise rejected
  * @param {Number} [params.timeout] ms
  * @param {Object} [params.headers] {name: value}
+ * @param {string[]} [params.responseHeaders]
  * @returns {Promise}
  */
 function download(url, {
@@ -372,6 +375,7 @@ function download(url, {
   timeout = 60e3, // connection timeout, USO is that bad
   loadTimeout = 2 * 60e3, // data transfer timeout (counted from the first remote response)
   headers,
+  responseHeaders,
 } = {}) {
   /* USO can't handle POST requests for style json and XHR/fetch can't handle super long URL
    * so we need to collapse all long variables and expand them in the response */
@@ -404,10 +408,20 @@ function download(url, {
         timer = loadTimeout && setTimeout(onTimeout, loadTimeout);
       }
     };
-    xhr.onload = () =>
-      xhr.status === requiredStatusCode || !requiredStatusCode || u.protocol === 'file:'
-        ? resolve(expandUsoVars(xhr.response))
-        : reject(xhr.status);
+    xhr.onload = () => {
+      if (xhr.status === requiredStatusCode || !requiredStatusCode || u.protocol === 'file:') {
+        const response = expandUsoVars(xhr.response);
+        if (responseHeaders) {
+          const headers = {};
+          for (const h of responseHeaders) headers[h] = xhr.getResponseHeader(h);
+          resolve({headers, response});
+        } else {
+          resolve(response);
+        }
+      } else {
+        reject(xhr.status);
+      }
+    };
     xhr.onerror = () => reject(xhr.status);
     xhr.onloadend = () => clearTimeout(timer);
     xhr.responseType = responseType;
