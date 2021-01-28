@@ -1,6 +1,6 @@
 /* global $ $$ animateElement scrollElementIntoView */// dom.js
 /* global API */// msg.js
-/* global debounce isEmptyObj sessionStore */// toolbox.js
+/* global URLS debounce isEmptyObj sessionStore */// toolbox.js
 /* global filterAndAppend */// filters.js
 /* global installed newUI */// manage.js
 /* global prefs */
@@ -83,6 +83,11 @@ function createStyleElement({style, name: nameLC}) {
   parts.homepage.href = parts.homepage.title = style.url || '';
   parts.infoVer.textContent = ud ? ud.version : '';
   parts.infoVer.dataset.value = ud ? ud.version : '';
+  if (`${style.updateUrl}`.startsWith(URLS.usoArchiveRaw)) {
+    parts.infoVer.dataset.isDate = '';
+  } else {
+    delete parts.infoVer.dataset.isDate;
+  }
   if (newUI.enabled) {
     createAgeText(parts.infoAge, style);
   } else {

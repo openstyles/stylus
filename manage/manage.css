@@ -361,6 +361,7 @@ a:hover {
   padding-left: .5em;
   font-weight: normal;
 }
+.newUI .style-info[data-type=version][data-is-date],
 .newUI .style-info[data-type=version][data-value=""],
 .newUI .style-info[data-type=version][data-value="1.0.0"] {
   display: none;
