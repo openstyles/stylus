@@ -1,4 +1,4 @@
-/* global CHROME FIREFOX URLS ignoreChromeError */// toolbox.js
+/* global CHROME FIREFOX URLS deepEqual ignoreChromeError */// toolbox.js
 /* global bgReady */// common.js
 /* global msg */
 'use strict';
@@ -6,6 +6,7 @@
 /* exported navMan */
 const navMan = (() => {
   const listeners = new Set();
+  let prevData = {};
 
   chrome.webNavigation.onCommitted.addListener(onNavigation.bind('committed'));
   chrome.webNavigation.onHistoryStateUpdated.addListener(onFakeNavigation.bind('history'));
@@ -20,6 +21,10 @@ const navMan = (() => {
 
   /** @this {string} type */
   async function onNavigation(data) {
+    if (CHROME && data.timeStamp === prevData.timeStamp && deepEqual(data, prevData)) {
+      return; // Chrome bug: listener is called twice with identical data
+    }
+    prevData = data;
     if (CHROME &&
         URLS.chromeProtectsNTP &&
         data.url.startsWith('https://www.google.') &&
