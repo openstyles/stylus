@@ -371,6 +371,7 @@ function SectionsEditor() {
           await initSections(sections, {
             replace: replaceOldStyle,
             focusOn: replaceOldStyle ? 0 : false,
+            keepDirty: true,
           });
           helpPopup.close();
         }
@@ -473,6 +474,7 @@ function SectionsEditor() {
   async function initSections(src, {
     focusOn = 0,
     replace = false,
+    keepDirty = false, // used by import
   } = {}) {
     if (replace) {
       sections.forEach(s => s.remove(true));
@@ -505,7 +507,7 @@ function SectionsEditor() {
       if (si) forceRefresh = y < si.scrollY2 && (y += si.cms[i].parentHeight) > si.scrollY;
       insertSectionAfter(src[i], null, forceRefresh, si && si.cms[i]);
       setGlobalProgress(i, src.length);
-      dirty.clear();
+      if (!keepDirty) dirty.clear();
       if (i === focusOn) sections[i].cm.focus();
     }
     if (!si) requestAnimationFrame(fitToAvailableSpace);
