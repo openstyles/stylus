@@ -101,6 +101,7 @@ self.parserlib = (() => {
       'push-button | hyperlink | radio | radio-button | checkbox | menu-item | tab | menu | ' +
       'menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | ' +
       'outline-tree | range | field | combo-box | signature | password | normal',
+    'aspect-ratio': 'auto || [ <nonnegative-num> / <nonnegative-num> ]',
     'azimuth': '<azimuth>',
 
     'backdrop-filter': '<filter-function-list> | none',
@@ -182,6 +183,7 @@ self.parserlib = (() => {
     'clip-path': '<clip-source> | <clip-path> | none',
     'clip-rule': 'nonzero | evenodd',
     'color': '<color>',
+    'color-adjust': 'economy | exact',
     'color-interpolation': 'auto | sRGB | linearRGB',
     'color-interpolation-filters': 'auto | sRGB | linearRGB',
     'color-profile': 1,
@@ -284,6 +286,7 @@ self.parserlib = (() => {
     'font-variant-position': 'normal | sub | super',
     'font-variation-settings': 'normal | [ <string> <number> ]#',
     'font-weight': '<font-weight>',
+    'forced-color-adjust': 'auto | none',
     '-ms-flex-align': 1,
     '-ms-flex-order': 1,
     '-ms-flex-pack': 1,
@@ -681,7 +684,6 @@ self.parserlib = (() => {
     dpcm: 'resolution',
     dppx: 'resolution',
     x:    'resolution',
-    ar:   'dimension',
   };
   // Sticky `y` flag must be used in expressions used with peekTest and readMatch
   const rxIdentStart = /[-\\_a-zA-Z\u00A0-\uFFFF]/u;
@@ -703,7 +705,6 @@ self.parserlib = (() => {
       !/^(unset|initial|inherit|will-change|auto|scroll-position|contents)$/i.test(p),
     '<angle>': p => p.type === 'angle' || p.isCalc,
     '<angle-or-0>': p => p.text === '0' || p.type === 'angle' || p.isCalc,
-    '<aspect-ratio>': p => p.units && lowerCmp(p.units, 'ar'),
     '<attr>': vtIsAttr,
     '<attachment>': 'scroll | fixed | local',
     '<bg-image>': '<image> | none',
@@ -806,7 +807,7 @@ self.parserlib = (() => {
 
   const VTComplex = {
     '<align-content>': 'normal | <baseline-position> | <content-distribution> | ' +
-      '<aspect-ratio> <content-distribution>? | <overflow-position>? <content-position>',
+      '<overflow-position>? <content-position>',
     '<align-self>':
       'auto | normal | stretch | <baseline-position> | <overflow-position>? <self-position>',
     '<auto-repeat>':
@@ -917,7 +918,7 @@ self.parserlib = (() => {
     '<grid-template-rows>': '<grid-template-columns>',
     '<hsl-color>': '[ <number> | <angle> ] <percentage>{2} [ / <nonnegative-num-pct> ]? | ' +
       '[ <number> | <angle> ] , <percentage>#{2} [ , <nonnegative-num-pct> ]?',
-    '<justify-content>': 'normal | <content-distribution> | <aspect-ratio> <content-distribution>? | ' +
+    '<justify-content>': 'normal | <content-distribution> | ' +
       '<overflow-position>? [ <content-position> | left | right ]',
     '<justify-self>': 'auto | normal | stretch | <baseline-position> | <overflow-position>? ' +
       '[ <self-position> | left | right ]',
