@@ -1,6 +1,5 @@
 /* global $ $create getEventKeyName messageBoxProxy moveFocus */// dom.js
 /* global CodeMirror */
-/* global debounce */// toolbox.js
 /* global editor */
 /* global prefs */
 /* global t */// localization.js
@@ -59,7 +58,7 @@ const helpPopup = {
 };
 
 // reroute handling to nearest editor when keypress resolves to one of these commands
-Object.assign(rerouteHotkeys, {
+const rerouteHotkeys = {
   commands: [
     'beautify',
     'colorpicker',
@@ -97,7 +96,7 @@ Object.assign(rerouteHotkeys, {
       event.stopPropagation();
     }
   },
-});
+};
 
 function clipString(str, limit = 100) {
   return str.length <= limit ? str : str.substr(0, limit) + '...';
@@ -149,14 +148,6 @@ function createHotkeyInput(prefId, onDone = () => {}) {
   });
 }
 
-function rerouteHotkeys(enable, immediately) {
-  if (immediately) {
-    rerouteHotkeys.toggle(enable);
-  } else {
-    debounce(rerouteHotkeys.toggle, 0, enable);
-  }
-}
-
 /* exported showCodeMirrorPopup */
 function showCodeMirrorPopup(title, html, options) {
   const popup = helpPopup.show(title, html);
@@ -174,7 +165,6 @@ function showCodeMirrorPopup(title, html, options) {
     keyMap: prefs.get('editor.keyMap'),
   }, options));
   cm.focus();
-  rerouteHotkeys(false);
 
   document.documentElement.style.pointerEvents = 'none';
   popup.style.pointerEvents = 'auto';
@@ -192,7 +182,6 @@ function showCodeMirrorPopup(title, html, options) {
   window.on('closeHelp', () => {
     window.off('keydown', onKeyDown, true);
     document.documentElement.style.removeProperty('pointer-events');
-    rerouteHotkeys(true);
     cm = popup.codebox = null;
   }, {once: true});
 

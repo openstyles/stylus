@@ -21,19 +21,7 @@
 
     create(place, options) {
       const cm = CodeMirror(place, options);
-      const {wrapper} = cm.display;
       cm.lastActive = 0;
-      cm.on('blur', () => {
-        rerouteHotkeys(true);
-        setTimeout(() => {
-          wrapper.classList.toggle('CodeMirror-active', wrapper.contains(document.activeElement));
-        });
-      });
-      cm.on('focus', () => {
-        rerouteHotkeys(false);
-        wrapper.classList.add('CodeMirror-active');
-        cm.lastActive = Date.now();
-      });
       cms.add(cm);
       return cm;
     },
@@ -51,6 +39,23 @@
       }
     },
   };
+
+  const onCmFocus = cm => {
+    rerouteHotkeys.toggle(false);
+    cm.display.wrapper.classList.add('CodeMirror-active');
+    cm.lastActive = Date.now();
+  };
+  const onCmBlur = cm => {
+    rerouteHotkeys.toggle(true);
+    setTimeout(() => {
+      const {wrapper} = cm.display;
+      wrapper.classList.toggle('CodeMirror-active', wrapper.contains(document.activeElement));
+    });
+  };
+  CodeMirror.defineInitHook(cm => {
+    cm.on('focus', onCmFocus);
+    cm.on('blur', onCmBlur);
+  });
 
   const handledPrefs = {
     'editor.colorpicker'() {}, // handled in colorpicker-helper.js

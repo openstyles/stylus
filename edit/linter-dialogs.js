@@ -1,7 +1,7 @@
 /* global $ $create $createLink messageBoxProxy */// dom.js
 /* global chromeSync */// storage-util.js
 /* global editor */
-/* global helpPopup rerouteHotkeys showCodeMirrorPopup */// util.js
+/* global helpPopup showCodeMirrorPopup */// util.js
 /* global linterMan */
 /* global t */// localization.js
 /* global tryJSONparse */// toolbox.js
@@ -62,7 +62,6 @@
     cm.focus();
     cm.on('changes', updateConfigButtons);
     updateConfigButtons();
-    rerouteHotkeys(false);
     window.on('closeHelp', onConfigClose, {once: true});
   };
 
@@ -160,7 +159,6 @@
   }
 
   function onConfigClose() {
-    rerouteHotkeys(true);
     cm = null;
   }
 
