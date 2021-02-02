@@ -23,6 +23,7 @@ function SectionsEditor() {
   let headerOffset; // in compact mode the header is at the top so it reduces the available height
 
   updateHeader();
+  rerouteHotkeys.toggle(true); // enabled initially because we don't always focus a CodeMirror
   editor.livePreview.init(null, style.id);
   container.classList.add('section-editor');
   $('#to-mozilla').on('click', showMozillaFormat);
@@ -53,7 +54,8 @@ function SectionsEditor() {
     },
 
     getSearchableInputs(cm) {
-      return sections.find(s => s.cm === cm).appliesTo.map(a => a.valueEl).filter(Boolean);
+      const sec = sections.find(s => s.cm === cm);
+      return sec ? sec.appliesTo.map(a => a.valueEl).filter(Boolean) : [];
     },
 
     jumpToEditor(i) {
@@ -488,7 +490,6 @@ function SectionsEditor() {
       scrollTo(0, si.scrollY);
       // only restore focus if it's the first CM to avoid derpy quirks
       focusOn = si.cms[0].focus && 0;
-      rerouteHotkeys(true);
     } else {
       si = null;
     }
