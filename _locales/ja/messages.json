@@ -654,7 +654,7 @@
     "description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
   },
   "manageFaviconsGray": {
-    "message": "グレー表示",
+    "message": "ファビコンをグレー表示",
     "description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
   },
   "manageFaviconsHelp": {
@@ -977,6 +977,14 @@
     "message": "新しいスタイルを usercss として作成します",
     "description": ""
   },
+  "optionsAdvancedPatchCsp": {
+    "message": "スタイルのアセットを許可するために<code>CSP</code>にパッチを当てる",
+    "description": ""
+  },
+  "optionsAdvancedPatchCspNote": {
+    "message": "厳格な<code>CSP</code>(<code>Content-Security-Policy</code>)を持つサイトで、ロードできない画像やフォントを含んだスタイルの場合に、これを有効にします。\n\nこの設定を有効にすると、<code>CSP</code>の制限をゆるめて、必要なコンテンツのロードを許可します。このオプションは、潜在的なセキュリティへの影響を理解し、許可しているコンテンツを監視する責任を持つことができる上級ユーザーのみを対象としています。 詳細については、CSSベースの攻撃に関する資料をお読みください。\n\nまた、インストールされている別の拡張機能が最初にネットワークの応答を変更した場合、この特別な設定が有効になるとは限らないことに注意してください。",
+    "description": ""
+  },
   "optionsAdvancedStyleViaXhr": {
     "message": "即時更新モード",
     "description": ""
@@ -1158,7 +1166,7 @@
     "description": "The error message to show when stylus failed to parse usercss"
   },
   "popupAutoResort": {
-    "message": "ポップアップのスタイルをソートして表示",
+    "message": "ポップアップ内のスタイルをソートして表示",
     "description": "Label for the checkbox controlling popup resorting."
   },
   "popupBorders": {
@@ -1186,7 +1194,7 @@
     "description": "Tooltip for menu button in popup."
   },
   "popupOpenEditInPopup": {
-    "message": "(アドレスバーのない)シンプルなウィンドウを使用",
+    "message": "（アドレスバーのない）シンプルなウィンドウを使用",
     "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
   },
   "popupOpenEditInWindow": {
@@ -1269,6 +1277,14 @@
     "message": "該当するスタイルはありません。",
     "description": "Error text in the popup when inline search didn't find any site-specific styles"
   },
+  "searchResultNotMatching": {
+    "message": "スタイルはインストールされますが、現在のサイトのURLには適用されません。",
+    "description": ""
+  },
+  "searchResultNotMatchingNote": {
+    "message": "このユーザースタイルの作者に、URLの追加について確認してみてください。\nあなた自身が、管理画面でこのスタイルを開いて編集することは可能です。\nしかし、このスタイルの自動更新は無効になることに注意してください。",
+    "description": ""
+  },
   "searchResultRating": {
     "message": "評価",
     "description": "Text for label that shows the search result's rating"
@@ -1281,13 +1297,29 @@
     "message": "週間インストール数",
     "description": "Text for label that shows the number of times a search result was installed during last week"
   },
-  "searchStyles": {
-    "message": "コンテンツの検索",
-    "description": "Label for the search filter textbox on the Manage styles page"
+  "searchStylesAll": {
+    "message": "すべて",
+    "description": "Option for `find styles` scope selector in the manager."
+  },
+  "searchStylesCode": {
+    "message": "CSSコード",
+    "description": "Option for `find styles` scope selector in the manager."
   },
   "searchStylesHelp": {
-    "message": "</> キーで検索欄に移動します。\n文字列検索 : 名前、コード、適用先のURL/サイト名を検索します。3文字より短い単語は無視されます。\nURL検索 : 検索文字列の前に <url:> を付けてください。例.  <url:https://github.com/openstyles/stylus>\n正規表現検索 : 検索文字列にスラッシュとフラグを含めてください。例. </body.*?\\ba\\b/simguy>\n正確な文字列検索 : 検索文字列をダブルクォートで囲んでください。例. <\".header ~ div\">",
+    "message": "</> または <Ctrl-F> キーで検索欄に移動します。\nデフォルトモードは、空白で区切られたすべての単語を任意の順番で探す文字列検索です。\n正確な文字列検索 : 検索文字列をダブルクォートで囲んでください。例. <\".header ~ div\">\n正規表現検索 : 検索文字列にスラッシュとフラグを含めてください。例. </body.*?\\ba\\b/i>\nスコープセレクタで「URLによる」を選択 : 指定されたURLに適用されるスタイルを見つけます。例. https://www.example.org/\nスコープセレクタで「メタデータ」を選択 : 名前、「適用先」指定子、インストールURL、アップデートURL、そして usercss スタイルのメタデータブロック全体を検索します。",
     "description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
+  },
+  "searchStylesMatchUrl": {
+    "message": "URLによる",
+    "description": "Option for `find styles` scope selector in the manager. See searchMatchUrlHint for more info."
+  },
+  "searchStylesMeta": {
+    "message": "メタデータ",
+    "description": "Option for `find styles` scope selector in the manager."
+  },
+  "searchStylesName": {
+    "message": "名前",
+    "description": "Option for `find styles` scope selector in the manager."
   },
   "sectionAdd": {
     "message": "他のセクションを追加",
@@ -1613,7 +1645,7 @@
     "description": ""
   },
   "usercssReplaceTemplateName": {
-    "message": "@name を空にすると、デフォルト・テンプレートを置き換えます",
+    "message": "@name が指定されていません",
     "description": "The text shown after @name when creating a new Usercss style"
   },
   "usercssReplaceTemplateSectionBody": {

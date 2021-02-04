@@ -4,7 +4,7 @@
     "description": "Label for the button to go to the add style page"
   },
   "addStyleTitle": {
-    "message": "Agregar un estilo",
+    "message": "Añadir estilo",
     "description": "Title of the page for adding styles"
   },
   "alphaChannel": {
@@ -12,7 +12,7 @@
     "description": "Label of color's opacity"
   },
   "appliesAdd": {
-    "message": "Agregar",
+    "message": "Añadir",
     "description": "Label for the button to add an 'applies' entry"
   },
   "appliesDisplay": {
@@ -81,7 +81,7 @@
     "description": "Label for the style author"
   },
   "backupButtons": {
-    "message": "Copia de seguridad",
+    "message": "Respaldo",
     "description": "Heading for backup"
   },
   "backupMessage": {
@@ -109,7 +109,7 @@
     "description": "Text to display when checking a style for an update"
   },
   "clickToUninstall": {
-    "message": "Haga clic para desinstalar",
+    "message": "Haz clic para desinstalar",
     "description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
   },
   "cm_autoCloseBrackets": {
@@ -149,7 +149,7 @@
     "description": "Label for the drop-down list controlling the automatic highlighting of current word/selection occurrences in the style editor."
   },
   "cm_matchHighlightSelection": {
-    "message": "Sólo selección",
+    "message": "Solo selección",
     "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
   },
   "cm_matchHighlightToken": {
@@ -157,7 +157,7 @@
     "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of the word/token under cursor even if nothing is selected"
   },
   "cm_resizeGripHint": {
-    "message": "Doble-clic para maximizar/restaurar la altura",
+    "message": "Doble clic para maximizar/restaurar la altura",
     "description": "Tooltip for the resize grip in style editor"
   },
   "cm_selectByTokens": {
@@ -165,7 +165,7 @@
     "description": "Label for the checkbox in the editor."
   },
   "cm_selectByTokensTooltip": {
-    "message": "Ejemplos de tokens: .foo-bar-2 #aabbcc 0.32 !important\nCuando está desactivado: se seleccionan las palabras delimitadas por puntos.",
+    "message": "Ejemplos de tokens: .foo-bar-2 #aabbcc 0.32 !important\nCuando está deshabilitado: se seleccionan las palabras delimitadas por puntos.",
     "description": ""
   },
   "cm_smartIndent": {
@@ -248,6 +248,15 @@
     "message": "Copiar al portapapeles",
     "description": "Tooltip for elements which can be copied"
   },
+  "dateAbbrYear": {
+    "message": "$value$a",
+    "description": "Year suffix in a short relative date, for example: 8y",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
   "dateInstalled": {
     "message": "Fecha de instalación",
     "description": "Option text for the user to sort the style by install date"
@@ -257,7 +266,7 @@
     "description": "Option text for the user to sort the style by last update date"
   },
   "dbError": {
-    "message": "Ocurrió un error con la base de datos de Stylus. ¿Desea visitar una página web con posibles soluciones?",
+    "message": "Ocurrió un error con la base de datos de Stylus. ¿Deseas visitar una página web con posibles soluciones?",
     "description": "Prompt when a DB error is encountered"
   },
   "defaultTheme": {
@@ -265,7 +274,7 @@
     "description": "Default CodeMirror CSS theme option on the edit style page"
   },
   "deleteStyleConfirm": {
-    "message": "¿Confirma que quiere eliminar este estilo?",
+    "message": "¿Estás seguro de que quieres eliminar este estilo?",
     "description": "Confirmation before deleting a style"
   },
   "deleteStyleLabel": {
@@ -273,7 +282,7 @@
     "description": "Label for the button to delete a style"
   },
   "description": {
-    "message": "Rediseñe la web con Stylus, un administrador de estilos de usuario. Stylus le permite instalar fácilmente temas y coberturas para muchos sitios populares.",
+    "message": "Rediseña la web con Stylus, un administrador de estilos de usuario. Stylus te permite instalar fácilmente temas y coberturas para muchos sitios populares.",
     "description": "Extension description"
   },
   "disableAllStyles": {
@@ -281,11 +290,11 @@
     "description": "Label for the checkbox that turns all enabled styles off."
   },
   "disableStyleLabel": {
-    "message": "Desactivar",
+    "message": "Deshabilitar",
     "description": "Label for the button to disable a style"
   },
   "dragDropMessage": {
-    "message": "Deje caer su archivo de copia de seguridad en cualquier lugar de esta página para importarlo.",
+    "message": "Arrastra tu archivo de respaldo en cualquier lugar de esta página para importar.",
     "description": "Drag'n'drop message"
   },
   "editDeleteText": {
@@ -314,7 +323,7 @@
     }
   },
   "enableStyleLabel": {
-    "message": "Activar",
+    "message": "Habilitar",
     "description": "Label for the button to enable a style"
   },
   "excludeStyleByDomainLabel": {
@@ -382,7 +391,7 @@
     "description": "Text for a checkbox that displays search results within the Stylus popup."
   },
   "genericAdd": {
-    "message": "Agregar",
+    "message": "Añadir",
     "description": "Used in various places for an action that adds something"
   },
   "genericClone": {
@@ -390,7 +399,7 @@
     "description": "Used in various places for an action that clones something"
   },
   "genericDisabledLabel": {
-    "message": "Desactivado",
+    "message": "Deshabilitado",
     "description": "Used in various lists/options to indicate that something is disabled"
   },
   "genericEnabledLabel": {
@@ -434,7 +443,7 @@
     "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
   },
   "helpKeyMapHotkey": {
-    "message": "Pulse un atajo",
+    "message": "Pulsa un atajo de teclado",
     "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
   },
   "importAppendLabel": {
@@ -458,7 +467,7 @@
     "description": "Label for the button to import and overwrite current style"
   },
   "importReportLegendAdded": {
-    "message": "agregados",
+    "message": "añadido",
     "description": "Text after the number of styles added in the report shown after importing styles"
   },
   "importReportLegendIdentical": {
@@ -556,7 +565,7 @@
     }
   },
   "linterCSSLintSettings": {
-    "message": "(Establezca la regla como: 0 = deshabilitada; 1 = advertencia; 2 = error)",
+    "message": "(Establecer regla como: 0 = deshabilitada; 1 = advertencia; 2 = error)",
     "description": "CSSLint rule config values"
   },
   "linterConfigPopupTitle": {
@@ -569,7 +578,7 @@
     }
   },
   "linterConfigTooltip": {
-    "message": "Pulse para configurar este deshilvanador (linter)",
+    "message": "Haz clic para configurar este linter",
     "description": "Icon tooltip to indicate that it opens a popup with the selected linter configuration"
   },
   "linterInvalidConfigError": {
@@ -642,19 +651,19 @@
     "description": "Label for the checkbox that toggles the new UI on manage page"
   },
   "manageOnlyDisabled": {
-    "message": "Sólo estilos deshabilitados",
+    "message": "Solo estilos deshabilitados",
     "description": "Checkbox to show only disabled styles"
   },
   "manageOnlyEnabled": {
-    "message": "Sólo estilos activos",
+    "message": "Solo estilos habilitados",
     "description": "Checkbox to show only enabled styles"
   },
   "manageOnlyExternal": {
-    "message": "Sólo estilos externos",
+    "message": "Solo estilos externos",
     "description": "Checkbox to show only externally installed styles i.e. updatable"
   },
   "manageOnlyLocal": {
-    "message": "Sólo estilos creados localmente",
+    "message": "Solo estilos creados localmente",
     "description": "Checkbox to show only locally created styles i.e. non-updatable"
   },
   "manageOnlyLocalTooltip": {
@@ -662,15 +671,15 @@
     "description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
   },
   "manageOnlyNonUsercss": {
-    "message": "Sólo estilos no-Usercss",
+    "message": "Solo estilos no UserCSS",
     "description": "Checkbox to show only non-Usercss (standard) styles"
   },
   "manageOnlyUpdates": {
-    "message": "Sólo con actualizaciones o problemas",
+    "message": "Solo con actualizaciones o problemas",
     "description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
   },
   "manageOnlyUsercss": {
-    "message": "Sólo estilos Usercss",
+    "message": "Solo estilos UserCSS",
     "description": "Checkbox to show only Usercss styles"
   },
   "menuShowBadge": {
@@ -897,6 +906,10 @@
     "message": "No hay estilos instalados para este sitio.",
     "description": "Text displayed when no styles are installed for the current site"
   },
+  "numberedLine": {
+    "message": "Línea:",
+    "description": "Will be followed by one or more line numbers in the editor."
+  },
   "openManage": {
     "message": "Administrar",
     "description": "Link to open the manage page."
@@ -918,7 +931,7 @@
     "description": ""
   },
   "optionsAdvancedContextDelete": {
-    "message": "Agregar 'Eliminar' al menú contextual del editor",
+    "message": "Añadir 'Eliminar' al menú contextual del editor",
     "description": ""
   },
   "optionsAdvancedExposeIframes": {
@@ -930,7 +943,7 @@
     "description": ""
   },
   "optionsBadgeDisabled": {
-    "message": "Color de fondo cuando está desactivado",
+    "message": "Color de fondo cuando está deshabilitado",
     "description": ""
   },
   "optionsBadgeNormal": {
@@ -998,11 +1011,11 @@
     "description": "Subheading for options section on manage page."
   },
   "optionsUpdateImportNote": {
-    "message": "Al importar copias de seguridad de estilos desde una versión antigua o desde Stylish, realice una única búsqueda manual de actualizaciones en el administrador de estilos para asegurarse de que todos los estilos están actualizados.",
+    "message": "Al importar los respaldos de estilos desde una versión antigua o desde Stylish, comprueba una vez las actualizaciones manualmente en el administrador de estilos para asegurarte de que todos los estilos estén actualizados.",
     "description": ""
   },
   "optionsUpdateInterval": {
-    "message": "Intervalo de actualización automática en horas (especifique 0 para deshabilitar)",
+    "message": "Intervalo de actualización automática en horas (especificar 0 para deshabilitar)",
     "description": ""
   },
   "optionsSyncConnect": {
@@ -1078,7 +1091,7 @@
     "description": "NOTE1: preserve < and > symbols so that <hotkey> is styled as a key.\nNOTE2: the last line is displayed as a text of the link to the wiki page.\nNOTE3: this is the list of hotkeys displayed after clicking the right edge of the extension popup."
   },
   "popupHotkeysTooltip": {
-    "message": "Pulse para ver teclas de atajo disponibles.",
+    "message": "Haz clic para ver los atajos de teclado disponibles",
     "description": "Tooltip displayed when hovering the right edge of the extension popup"
   },
   "popupManageTooltip": {
@@ -1112,6 +1125,10 @@
   "previewTooltip": {
     "message": "Aplica temporalmente los cambios sin guardar.\nGuarde el estilo para que los cambios sean permanentes.",
     "description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+  },
+  "reload": {
+    "message": "Recargar extensión Stylus",
+    "description": "Context menu reload"
   },
   "replace": {
     "message": "Reemplazar",
@@ -1157,6 +1174,10 @@
     "message": "No se encontraron estilos para este sitio.",
     "description": "Error text in the popup when inline search didn't find any site-specific styles"
   },
+  "searchResultNotMatchingNote": {
+    "message": "Intenta pedir al autor de este estilo de usuario que añada la URL.\n\nTambién puedes abrir el estilo en el administrador y editarlo tú mismo,\npero ten en cuenta que deshabilita las actualizaciones automáticas de\neste estilo.",
+    "description": ""
+  },
   "searchResultRating": {
     "message": "Valoración",
     "description": "Text for label that shows the search result's rating"
@@ -1169,16 +1190,8 @@
     "message": "Instalaciones semanales",
     "description": "Text for label that shows the number of times a search result was installed during last week"
   },
-  "searchStyles": {
-    "message": "Buscar contenidos",
-    "description": "Label for the search filter textbox on the Manage styles page"
-  },
-  "searchStylesHelp": {
-    "message": "La tecla </> pone el foco en el campo de búsqueda.\nTexto simple: Busque por nombre, código, URL de la página principal, y sitios a los que se apllica. Las palabras con menos de 3 letras son ignoradas.\nURL coincidente: Prefije la búsqueda con <url:>, ej. <url:https://github.com/openstyles/stylus>\nExpresiones regulares: Incluya barras e indicadores, ej.. </body.*?\\ba\\b/simguy>\nPalabras exactas: Ponga la consulta entre comillas dobles, ej.. <\".header ~ div\">",
-    "description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
-  },
   "sectionAdd": {
-    "message": "Agregar otra sección",
+    "message": "Añadir otra sección",
     "description": "Label for the button to add a section"
   },
   "sectionCode": {
@@ -1250,7 +1263,7 @@
     "description": "Label for cancel button for style editing"
   },
   "styleChangesNotSaved": {
-    "message": "Ha realizado cambios en este estilo sin guardarlos.",
+    "message": "Has realizado cambios en este estilo sin guardarlos.",
     "description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
   },
   "styleEnabledLabel": {
@@ -1363,7 +1376,7 @@
     "description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
   },
   "styleUpdate": {
-    "message": "¿Confirma que quiere actualizar «$stylename$»?",
+    "message": "¿Estás seguro de que quieres actualizar '$stylename$'?",
     "description": "Confirmation when updating a style",
     "placeholders": {
       "stylename": {
@@ -1412,11 +1425,11 @@
     "description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
   },
   "unreachableAMOHintOldFF": {
-    "message": "Sólo Firefox 59 y posteriores se pueden configurar para permitir que WebExtensions añada elementos de estilo en sitios protegidos-por-CSP (política de seguridad de contenidos) como este.",
+    "message": "Solo Firefox 59 y posteriores se pueden configurar para permitir que WebExtensions añada elementos de estilo en sitios protegidos por CSP (política de seguridad de contenido) como este.",
     "description": "Note in the popup when opened on addons.mozilla.org in Firefox < 59"
   },
   "unreachableContentScript": {
-    "message": "No se pudo comunicar con la página. Pruebe a recargar la pestaña.",
+    "message": "No se pudo comunicar con la página. Prueba recargando la pestaña.",
     "description": "Note in the toolbar popup usually on file:// URLs after [re]loading Stylus"
   },
   "unreachableFileHint": {

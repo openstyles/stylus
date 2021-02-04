@@ -1130,7 +1130,7 @@
     "description": "The error message to show when stylus failed to parse usercss"
   },
   "popupAutoResort": {
-    "message": "Курортные стили в всплывающем окне после переключения",
+    "message": "Сортировать стили после переключения",
     "description": "Label for the checkbox controlling popup resorting."
   },
   "popupBorders": {
@@ -1240,14 +1240,6 @@
   "searchResultWeeklyCount": {
     "message": "Загрузок за неделю",
     "description": "Text for label that shows the number of times a search result was installed during last week"
-  },
-  "searchStyles": {
-    "message": "Искать по содержимому",
-    "description": "Label for the search filter textbox on the Manage styles page"
-  },
-  "searchStylesHelp": {
-    "message": "Клавиша </> переходит к строке поиска.\nОбычный поиск: ищет в имени, тексте, адресе установки, целевых сайтах. Слова короче трех символов игнорируются.\nСтили для сайта: укажите <url:> перед полным адресом сайта, т.е. <url:https://github.com/openstyles/stylus>\nРегулярки: заключите в слэши, добавьте флаги, т.е. </body.*?\\ba\\b/simguy>\nТочный поиск: заключите в двойные кавычки, т.е. <\".header ~ div\">",
-    "description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
   },
   "sectionAdd": {
     "message": "Добавить раздел",

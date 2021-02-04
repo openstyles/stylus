@@ -665,10 +665,6 @@
     "message": "Haftalık kurulum sayısı",
     "description": "Text for label that shows the number of times a search result was installed during last week"
   },
-  "searchStyles": {
-    "message": "İçerikleri ara",
-    "description": "Label for the search filter textbox on the Manage styles page"
-  },
   "sectionAdd": {
     "message": "Başka bölüm ekle",
     "description": "Label for the button to add a section"

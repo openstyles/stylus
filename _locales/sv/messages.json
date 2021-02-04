@@ -29,11 +29,11 @@
     "description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
   },
   "appliesDomainOption": {
-    "message": "URL:er på domänen",
+    "message": "Webbadresser på domänen",
     "description": "Option to make the style apply to the entered string as a domain"
   },
   "appliesHelp": {
-    "message": "Använd 'Tillämpad för' alternativet för att begränsa vilka URL:er koden i denna sektion gäller för.",
+    "message": "Använd 'Tillämpad för' alternativet för att begränsa vilka webbadresser koden i denna sektion gäller för.",
     "description": "Help text for 'applies to' section"
   },
   "appliesLabel": {
@@ -49,7 +49,7 @@
     "description": "A warning that applies-to information won't show properly with minified CSS"
   },
   "appliesRegexpOption": {
-    "message": "URL:er som matchar regexp:en",
+    "message": "Webbadresser som matchar regexp:en",
     "description": "Option to make the style apply to the entered string as a regular expression"
   },
   "appliesRemove": {
@@ -68,12 +68,16 @@
     "message": "Allt",
     "description": "Text displayed for styles that apply to all sites"
   },
+  "appliesUrlOption": {
+    "message": "Webbadress",
+    "description": "Option to make the style apply to the entered string as a URL"
+  },
   "appliesUrlPrefixOption": {
-    "message": "URL:er som börjar på",
+    "message": "Webbadresser som börjar på",
     "description": "Option to make the style apply to the entered string as a URL prefix"
   },
   "applyAllUpdates": {
-    "message": "Verkställ alla uppdateringar",
+    "message": "Tillämpa alla uppdateringar",
     "description": "Label for the button to apply all detected updates"
   },
   "author": {
@@ -97,11 +101,11 @@
     "description": "Label for the button to check all styles for updates"
   },
   "checkAllUpdatesForce": {
-    "message": "Kolla igen, jag redigerade inte några stilar!",
+    "message": "Kontrollera igen, jag redigerade inte några stilar!",
     "description": "Label for the button to apply all detected updates"
   },
   "checkForUpdate": {
-    "message": "Leta efter uppdatering",
+    "message": "Sök efter uppdatering",
     "description": "Label for the button to check a single style for an update"
   },
   "checkingForUpdate": {
@@ -125,15 +129,15 @@
     "description": "Label for the checkbox in the style editor."
   },
   "cm_colorpicker": {
-    "message": "Färgväljare för CSS färger",
+    "message": "Färgväljare för CSS-färger",
     "description": "Label for the checkbox controlling colorpicker option for the style editor."
   },
   "cm_indentWithTabs": {
-    "message": "Använd tabbar med smart indrag",
+    "message": "Använd tabbar med smarta indrag",
     "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
   },
   "cm_keyMap": {
-    "message": "Nyckelkarta",
+    "message": "Tangentkarta",
     "description": "Label for the drop-down list controlling the keymap for the style editor."
   },
   "cm_lineWrapping": {
@@ -165,7 +169,7 @@
     "description": ""
   },
   "cm_smartIndent": {
-    "message": "Använd smart indrag",
+    "message": "Använd smarta indrag",
     "description": "Label for the checkbox controlling smart indentation option for the style editor."
   },
   "cm_tabSize": {
@@ -177,7 +181,7 @@
     "description": "Label for the style editor's CSS theme."
   },
   "colorpickerSwitchFormatTooltip": {
-    "message": "Växla format: HEX -> RGB -> HSL.\nSkift-klicka för att vända riktningen.\nÄven via PgUp (PageUp), PgDn (PageDown) nycklar.",
+    "message": "Växla format: HEX -> RGB -> HSL.\nSkift-klicka för att vända riktningen.\nÄven via PgUp (PageUp), PgDn (PageDown) tangenter.",
     "description": "Tooltip for the switch button in the color picker popup in the style editor."
   },
   "colorpickerTooltip": {
@@ -269,7 +273,7 @@
     "description": "Label for the button to delete a style"
   },
   "description": {
-    "message": "Style:a om webben med Stylus, en användarstils-hanterare. Stylus låter dig enkelt installera teman och skal för många populära sidor.",
+    "message": "Designa om webben med Stylus, en användarstilshanterare. Stylus låter dig enkelt installera teman och skal för många populära webbplatser.",
     "description": "Extension description"
   },
   "disableAllStyles": {
@@ -293,7 +297,7 @@
     "description": "Go to line or line:column on Ctrl-G in style code editor"
   },
   "editStyleHeading": {
-    "message": "Ändra i Stil",
+    "message": "Ändra stil",
     "description": "Title of the page for editing styles"
   },
   "editStyleLabel": {
@@ -301,7 +305,7 @@
     "description": "Label for the button to go to the edit style page"
   },
   "editStyleTitle": {
-    "message": "Ändra i Stil $stylename$",
+    "message": "Ändra stilen $stylename$",
     "description": "Title of the page for editing styles",
     "placeholders": {
       "stylename": {
@@ -362,7 +366,7 @@
     "description": "Text for a link that gets a list of styles for the current site"
   },
   "findStylesForSite": {
-    "message": "Hitta fler stilar för denna sida",
+    "message": "Hitta fler stilar för denna webbplats",
     "description": "Text for a link that gets a list of styles for the current site"
   },
   "findStylesInlineTooltip": {
@@ -430,16 +434,20 @@
     "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
   },
   "importAppendLabel": {
-    "message": "Lägg till i stil",
+    "message": "Lägg till i stilen",
     "description": "Label for the button to import a style and append to the existing sections"
   },
   "importAppendTooltip": {
-    "message": "Lägg till den importerad stilen i aktuell stil",
+    "message": "Lägg till den importerade stilen i aktuell stil",
     "description": "Tooltip for the button to import a style and append to the existing sections"
   },
   "importLabel": {
     "message": "Importera",
     "description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+  },
+  "importPreprocessorTitle": {
+    "message": "Potentiellt problem på grund av @preprocessor",
+    "description": ""
   },
   "importReplaceLabel": {
     "message": "Ersätt stil",
@@ -470,7 +478,7 @@
     "description": "Text after the number of styles with updated meta info like name/url in the report shown after importing styles"
   },
   "importReportTitle": {
-    "message": "Importerat stilar",
+    "message": "Importerade stilar",
     "description": "Title of the report shown after importing styles"
   },
   "importReportUnchanged": {
@@ -610,7 +618,7 @@
     "description": "Label for filters container"
   },
   "manageHeading": {
-    "message": "Installerade Stilar",
+    "message": "Installerade stilar",
     "description": "Heading for the manage page"
   },
   "manageMaxTargets": {
@@ -642,11 +650,11 @@
     "description": "Checkbox to show only locally created styles i.e. non-updatable"
   },
   "manageOnlyLocalTooltip": {
-    "message": "(stilarna som inte är installerade via en userstyles.org sida)",
+    "message": "(stilen som inte är installerade via en userstyles.org-sida)",
     "description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
   },
   "manageOnlyNonUsercss": {
-    "message": "Endast icke-Usercss stilar",
+    "message": "Endast icke-Usercss-stilar",
     "description": "Checkbox to show only non-Usercss (standard) styles"
   },
   "manageOnlyUpdates": {
@@ -654,7 +662,7 @@
     "description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
   },
   "manageOnlyUsercss": {
-    "message": "Endast Usercss stilar",
+    "message": "Endast Usercss-stilar",
     "description": "Checkbox to show only Usercss styles"
   },
   "menuShowBadge": {
@@ -787,7 +795,7 @@
     "description": "Error displayed when the value of @var select is invalid"
   },
   "meta_invalidURLProtocol": {
-    "message": "Ogiltigt URL-protokoll. Endast http och https är tillåtna: $protocol$",
+    "message": "Ogiltigt webbadressprotokoll. Endast http och https är tillåtna: $protocol$",
     "description": "Error displayed when the protocol of the URL is invalid",
     "placeholders": {
       "protocol": {
@@ -816,11 +824,33 @@
     "message": "Förvänta dig ett ord",
     "description": "Error displayed when the value is expected to be a word"
   },
+  "meta_missingChar": {
+    "message": "Förvänta tecken: $chars$",
+    "description": "Error displayed when the value is expected to be some characters",
+    "placeholders": {
+      "chars": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_missingEOT": {
+    "message": "Förvänta EOT-data",
+    "description": "Error displayed when the value is expected to be an EOT list"
+  },
   "meta_missingMandatory": {
     "message": "Obligatoriska metadata saknas: $keys$",
     "description": "Error displayed when mandatory keys are missing",
     "placeholders": {
       "keys": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownJSONLiteral": {
+    "message": "Ogiltig JSON: $literal$ är inte en giltig JSON-bokstav",
+    "description": "Error displayed when JSON value is invalid",
+    "placeholders": {
+      "literal": {
         "content": "$1"
       }
     }
@@ -856,12 +886,20 @@
     }
   },
   "noStylesForSite": {
-    "message": "Inga stilar installerade för denna sida.",
+    "message": "Inga stilar installerade för denna webbplats.",
     "description": "Text displayed when no styles are installed for the current site"
   },
+  "numberedLine": {
+    "message": "Rad:",
+    "description": "Will be followed by one or more line numbers in the editor."
+  },
   "openManage": {
-    "message": "Hantera installerade stilar",
+    "message": "Hantera",
     "description": "Link to open the manage page."
+  },
+  "openOptions": {
+    "message": "Alternativ",
+    "description": "Go to Options UI"
   },
   "openStylesManager": {
     "message": "Öppna stilhanteraren",
@@ -915,10 +953,6 @@
     "message": "Ikon i verktygsfältet",
     "description": ""
   },
-  "optionsCustomizePopup": {
-    "message": "Poppupp",
-    "description": ""
-  },
   "optionsCustomizeUpdate": {
     "message": "Uppdateringar",
     "description": ""
@@ -932,11 +966,11 @@
     "description": "Heading for options section on manage page."
   },
   "optionsIconDark": {
-    "message": "Mörk webbläsare teman",
+    "message": "Mörka webbläsarteman",
     "description": ""
   },
   "optionsIconLight": {
-    "message": "Ljus webbläsare teman",
+    "message": "Ljusa webbläsarteman",
     "description": ""
   },
   "optionsOpen": {
@@ -948,7 +982,7 @@
     "description": ""
   },
   "optionsPopupWidth": {
-    "message": "Poppuppbredd (i pixlar)",
+    "message": "Bredd på popup (i pixlar)",
     "description": ""
   },
   "optionsReset": {
@@ -964,7 +998,7 @@
     "description": "Subheading for options section on manage page."
   },
   "optionsUpdateImportNote": {
-    "message": "När du importerar säkerhetskopior av stil från gammal version eller från Stylish, gör en engångskontroll för uppdateringar manuellt i styles-hanteraren för att säkerställa att alla stilar uppdateras.",
+    "message": "När du importerar säkerhetskopior av stilar från gammal version eller från Stylish, gör en engångskontroll för uppdateringar manuellt i stilhanteraren för att säkerställa att alla stilar uppdateras.",
     "description": ""
   },
   "optionsUpdateInterval": {
@@ -1032,11 +1066,11 @@
     "description": ""
   },
   "parseUsercssError": {
-    "message": "Stylus misslyckades med att tolka usercss:",
+    "message": "Stylus misslyckades med att tolka Usercss:",
     "description": "The error message to show when stylus failed to parse usercss"
   },
   "popupAutoResort": {
-    "message": "Sortera om stilar i poppupp efter växling",
+    "message": "Sortera om format i popup efter växling",
     "description": "Label for the checkbox controlling popup resorting."
   },
   "popupBorders": {
@@ -1068,11 +1102,11 @@
     "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
   },
   "popupStylesFirst": {
-    "message": "Lista stilar före kommandon i verktygsfältets knappmeny",
+    "message": "Stilar före kommandon",
     "description": "Label for the checkbox controlling section order in the popup."
   },
   "prefShowBadge": {
-    "message": "Visa antalet aktiva stilar för den nuvarande sidan på verktygsfältsikonen",
+    "message": "Antalet aktiva stilar för den nuvarande webbplatsen",
     "description": "Label for the checkbox controlling toolbar badge text."
   },
   "previewLabel": {
@@ -1080,7 +1114,7 @@
     "description": "Label for the checkbox in style editor to enable live preview while editing."
   },
   "previewTooltip": {
-    "message": "Tillfälligt tillämpar ändringarna utan att spara.\nSpara stilen för att göra ändringarna permanenta.",
+    "message": "Tillämpar tillfälligt ändringarna utan att spara.\nSpara stilen för att göra ändringarna permanenta.",
     "description": "Tooltip for the checkbox in style editor to enable live preview while editing."
   },
   "replace": {
@@ -1127,6 +1161,10 @@
     "message": "Inga stilar hittades för denna webbplats.",
     "description": "Error text in the popup when inline search didn't find any site-specific styles"
   },
+  "searchResultNotMatching": {
+    "message": "Formatet är installerat men den gäller inte den aktuella webbadressen.",
+    "description": ""
+  },
   "searchResultRating": {
     "message": "Betyg",
     "description": "Text for label that shows the search result's rating"
@@ -1139,9 +1177,21 @@
     "message": "Installationer veckovis",
     "description": "Text for label that shows the number of times a search result was installed during last week"
   },
-  "searchStyles": {
-    "message": "Sök innehåll",
-    "description": "Label for the search filter textbox on the Manage styles page"
+  "searchStylesAll": {
+    "message": "Alla",
+    "description": "Option for `find styles` scope selector in the manager."
+  },
+  "searchStylesCode": {
+    "message": "CSS-kod",
+    "description": "Option for `find styles` scope selector in the manager."
+  },
+  "searchStylesMatchUrl": {
+    "message": "Efter webbadress",
+    "description": "Option for `find styles` scope selector in the manager. See searchMatchUrlHint for more info."
+  },
+  "searchStylesName": {
+    "message": "Namn",
+    "description": "Option for `find styles` scope selector in the manager."
   },
   "sectionAdd": {
     "message": "Lägg till ytterligare en sektion",
@@ -1199,6 +1249,10 @@
     "message": "Försköna",
     "description": "Label for the CSS-beautifier button on the edit style page"
   },
+  "styleBeautifyHint": {
+    "message": "Tips: högerklicka på knappen \"Försköna\" eller använd tangentbordsgenvägen som definieras nedan för att försköna utan att visa denna panel",
+    "description": "Hint shown inside the CSS-beautifier panel"
+  },
   "styleBeautifyPreserveNewlines": {
     "message": "Bevara nya rader",
     "description": "CSS-beautifier option"
@@ -1220,7 +1274,7 @@
     "description": "Label for the import error"
   },
   "styleFromMozillaFormatPrompt": {
-    "message": "Klistra in koden i Mozilla-formatet",
+    "message": "Klistra in Mozilla-formatkoden",
     "description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
   },
   "styleInstall": {
@@ -1273,7 +1327,7 @@
     "description": ""
   },
   "styleRegexpPartialExplanation": {
-    "message": "Denna stil använder delvis matchande regexps i strid med <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @dokumentspecifikation</a> som kräver en fullständig webbadressmatchning. De berörda CSS-sektionerna tillämpades inte på sidan. Den här stilen skapades förmodligen i Stylish-for-Chrome som felaktigt kontrollerar  'regexp()'-regler sedan den allra första versionen (känt fel).",
+    "message": "Denna stil använder delvis matchande regexps i strid med <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @dokumentspecifikation</a> som kräver en fullständig webbadressmatchning. De berörda CSS-sektionerna tillämpades inte på sidan. Denna stil skapades förmodligen i Stylish-for-Chrome som felaktigt kontrollerar 'regexp()'-regler sedan den allra första versionen (känt fel).",
     "description": ""
   },
   "styleRegexpProblemTooltip": {
@@ -1309,7 +1363,7 @@
     "description": "Label for save button for style editing"
   },
   "styleToMozillaFormatHelp": {
-    "message": "Mozilla-formatet av koden fungerar i Stylish till Firefox samt vid uppladdandet till userstyles.org.",
+    "message": "Mozilla-formatet av koden kan skickas till userstyle.org och användas med klassikern Stylish för Firefox",
     "description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
   },
   "styleToMozillaFormatTitle": {
@@ -1386,7 +1440,7 @@
     "description": "Text that displays when an update all check completed and no updates are available"
   },
   "updateAllCheckSucceededSomeEdited": {
-    "message": "Vissa uppdaterbara stilar kontrollerades inte för att undvika att förlora eventuella lokala redigeringar. Uppdateringar kan tvingas genom att kontrollera individuellt, eller genom att köra en annan check för alla stilar (lokala redigeringar kommer att skrivas över).",
+    "message": "Vissa uppdaterbara stilar kontrollerades inte för att undvika att förlora eventuella lokala redigeringar. Uppdateringar kan tvingas genom att kontrollera individuellt, eller genom att köra en annan kontroll för alla stilar (lokala redigeringar kommer att skrivas över).",
     "description": "Text that displays when an update all check completed and no updates are available"
   },
   "updateCheckFailBadResponseCode": {
@@ -1447,7 +1501,7 @@
     "description": "Placeholder text for the empty name input field when creating a new Usercss style"
   },
   "usercssReplaceTemplateConfirmation": {
-    "message": "Ersätt standardmallen för nya användar CSS-format med den aktuella koden?",
+    "message": "Ersätt standardmallen för nya Usercss-stilar med den aktuella koden?",
     "description": ""
   },
   "usercssReplaceTemplateName": {
@@ -1467,11 +1521,15 @@
     "description": "Label for toolbar pop-up that precedes the links to write a new style"
   },
   "writeStyleForURL": {
-    "message": "denna URL",
+    "message": "denna webbadress",
     "description": "Text for link in toolbar pop-up to write a new style for the current URL"
   },
   "syncDropboxStyles": {
     "message": "Dropbox exportering",
+    "description": ""
+  },
+  "syncDropboxDeprecated": {
+    "message": "Import/export av Dropbox ersätts av en mer avancerad synkronisering av format på sidan med alternativ.",
     "description": ""
   },
   "retrieveDropboxSync": {
@@ -1499,7 +1557,7 @@
     "description": ""
   },
   "gettingStyles": {
-    "message": "Hämtar alla stilar...",
+    "message": "Hämtar alla format...",
     "description": ""
   },
   "zipStyles": {
@@ -1511,7 +1569,7 @@
     "description": ""
   },
   "readingStyles": {
-    "message": "Läsar stilar...",
+    "message": "Läsar format...",
     "description": ""
   },
   "uploadingFile": {

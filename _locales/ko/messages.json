@@ -1237,13 +1237,13 @@
     "message": "주간 설치 수",
     "description": "Text for label that shows the number of times a search result was installed during last week"
   },
-  "searchStyles": {
-    "message": "검색 내용",
-    "description": "Label for the search filter textbox on the Manage styles page"
+  "searchStylesCode": {
+    "message": "CSS 코드",
+    "description": "Option for `find styles` scope selector in the manager."
   },
-  "searchStylesHelp": {
-    "message": "</> 키를 누르면 검색 상자로 포커스가 이동합니다.\n일반 텍스트: 이름, 코드, 홈페이지 및 적용 대상 URL을 대상으로 검색합니다. 3 글자 미만의 단어는 무시됩니다.\n전체 URL에 일치하는 스타일: <url:> 접두사를 붙여서 검색하세요. 예시: <url:https://github.com/openstyles/stylus>\n정규 표현식: 슬래시 및 플래그를 포함하세요. 예시: </body.*?\\ba\\b/simguy>\n단어와 정확히 일치: 쿼리를 큰따옴표로 묶으세요. 예시:  <\".header ~ div\">",
-    "description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
+  "searchStylesMeta": {
+    "message": "메타데이터",
+    "description": "Option for `find styles` scope selector in the manager."
   },
   "sectionAdd": {
     "message": "섹션 추가",
@@ -1260,6 +1260,10 @@
   "sectionRestore": {
     "message": "제거된 섹션 복구",
     "description": "Label for the button to restore a removed section"
+  },
+  "sections": {
+    "message": "섹션",
+    "description": "Header for the table of contents block listing style section names in the left panel of the classic editor"
   },
   "shortcuts": {
     "message": "단축키",

@@ -877,14 +877,6 @@
     "message": "Instalações semanais",
     "description": "Text for label that shows the number of times a search result was installed during last week"
   },
-  "searchStyles": {
-    "message": "Pesquisar conteúdos",
-    "description": "Label for the search filter textbox on the Manage styles page"
-  },
-  "searchStylesHelp": {
-    "message": "A tecla </> foca o campo de pesquisa.\nTexto simples: pesquisa dentro do nome, código, URL da homepage e aplica-se a sites . Palavras com menos de 3 letras são ignoradas.\nEstilos que correspondem a um URL completo: prefixe a pesquisa com<url:>, e.g.  <url:https://github.com/openstyles/stylus>\nExpressões regulares: inclua barras e sinalizadores, e.g. </body.*?\\ba\\b/simguy>\nPalavras exatas: envolva a consulta entre aspas duplas, e.g. <\". header ~ div\">",
-    "description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
-  },
   "sectionAdd": {
     "message": "Adicionar outra secção",
     "description": "Label for the button to add a section"

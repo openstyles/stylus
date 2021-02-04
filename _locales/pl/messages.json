@@ -264,6 +264,42 @@
     "message": "Przestań używać niestandardowej nazwy, przełącz na własną nazwę stylu",
     "description": "Tooltip of 'x' button shown in editor when changing the name input of a) styles updated from a URL i.e. not locally created, b) UserCSS styles"
   },
+  "dateAbbrDay": {
+    "message": "$value$d.",
+    "description": "Day suffix in a short relative date, for example: 8d",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrHour": {
+    "message": "$value$g.",
+    "description": "Hour suffix in a short relative date, for example: 8h",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrMonth": {
+    "message": "$value$mies.",
+    "description": "Month suffix in a short relative date, for example: 8m",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrYear": {
+    "message": "$value$r.",
+    "description": "Year suffix in a short relative date, for example: 8y",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
   "dateInstalled": {
     "message": "Data zainstalowania",
     "description": "Option text for the user to sort the style by install date"
@@ -981,6 +1017,14 @@
     "message": "Napisz nowy styl jako usercss",
     "description": ""
   },
+  "optionsAdvancedPatchCsp": {
+    "message": "Załataj <code>CSP</code>, aby zezwolić na zasoby stylu",
+    "description": ""
+  },
+  "optionsAdvancedPatchCspNote": {
+    "message": "Włącz tę opcję, jeśli style zawierają obrazy lub czcionki, które nie ładują się w witrynach ze ścisłym<code>CSP</code> (<code>Content-Security-Policy</code>).\n\nWłączenie tego ustawienia złagodzi ograniczenia <code>CSP</code>, umożliwiając załadowanie podstawowej zawartości stylu. Ta opcja jest przeznaczona tylko dla zaawansowanych użytkowników, którzy rozumieją potencjalne konsekwencje dla bezpieczeństwa i przyjmują odpowiedzialność za monitorowanie treści, na które zezwalają. Przeczytaj o atakach opartych na CSS, aby uzyskać więcej informacji.\n\nNależy również pamiętać, że to szczególne ustawienie nie jest gwarantowane, jeśli inne zainstalowane rozszerzenie zmodyfikuje najpierw odpowiedź sieci.",
+    "description": ""
+  },
   "optionsAdvancedStyleViaXhr": {
     "message": "Tryb natychmiastowego wstrzyknięcia",
     "description": ""
@@ -1273,6 +1317,14 @@
     "message": "Nie znaleziono stylów dla tej witryny.",
     "description": "Error text in the popup when inline search didn't find any site-specific styles"
   },
+  "searchResultNotMatching": {
+    "message": "Styl jest zainstalowany, ale nie ma zastosowania do bieżącego adresu URL witryny.",
+    "description": ""
+  },
+  "searchResultNotMatchingNote": {
+    "message": "Poproś autora tego stylu użytkownika o dodanie adresu URL.\n\nMożesz także otworzyć styl w menedżerze i samodzielnie go edytować,\nale pamiętaj, że wyłącza to automatyczne aktualizacje tego stylu.",
+    "description": ""
+  },
   "searchResultRating": {
     "message": "Ocena",
     "description": "Text for label that shows the search result's rating"
@@ -1285,13 +1337,29 @@
     "message": "Tygodniowa liczba instalacji",
     "description": "Text for label that shows the number of times a search result was installed during last week"
   },
-  "searchStyles": {
-    "message": "Szukaj treści",
-    "description": "Label for the search filter textbox on the Manage styles page"
+  "searchStylesAll": {
+    "message": "Wszystkie",
+    "description": "Option for `find styles` scope selector in the manager."
+  },
+  "searchStylesCode": {
+    "message": "Kod CSS",
+    "description": "Option for `find styles` scope selector in the manager."
   },
   "searchStylesHelp": {
-    "message": "Klawisz </> uaktywnia pole wyszukiwania.\nZwykły tekst: szukaj w nazwie, kodzie, adresie URL strony głównej oraz stosownych witrynach. Słowa zawierające mniej niż 3 litery są ignorowane.\nStyle pasujące do pełnego adresu URL: szukaj przy pomocy przedrostka <url:>, np. <url:https://github.com/openstyles/stylus>\nWyrażenia regularne: umieść ukośniki i flagi, np. </body.*?\\ba\\b/simguy>\nDokładne słowa: zawiń zapytanie w podwójny cudzysłów, np. <\".header ~ div\">",
+    "message": "Klawisz </> lub <Ctrl-F> uaktywnia pole wyszukiwania.\nTryb domyślny to wyszukiwanie zwykłego tekstu dla wszystkich terminów oddzielonych spacjami w dowolnej kolejności.\nDokładne słowa: zawiń zapytanie w podwójne cudzysłowy, np. <\".header ~ div\">\nWyrażenia regularne: uwzględnij ukośniki i flagi, np. </body.*?\\ba\\b/i>\n\"Według adresu URL\" w selektorze zakresu: znajduje style, które mają zastosowanie do w pełni określonego adresu URL, np. https://www.example.org/\n\"Metadane\" w selektorze zakresu: wyszukuje w nazwach, specyfikatorach „dotyczy”, adresie URL instalacji, adresie URL aktualizacji i całym bloku metadanych dla stylów usercss.",
     "description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
+  },
+  "searchStylesMatchUrl": {
+    "message": "Według adresu URL",
+    "description": "Option for `find styles` scope selector in the manager. See searchMatchUrlHint for more info."
+  },
+  "searchStylesMeta": {
+    "message": "Metadane",
+    "description": "Option for `find styles` scope selector in the manager."
+  },
+  "searchStylesName": {
+    "message": "Nazwa",
+    "description": "Option for `find styles` scope selector in the manager."
   },
   "sectionAdd": {
     "message": "Dodaj następną sekcję",

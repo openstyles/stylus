@@ -1,6 +1,6 @@
 {
   "addStyleLabel": {
-    "message": "Gravar novo estilo",
+    "message": "Escrever novo estilo",
     "description": "Label for the button to go to the add style page"
   },
   "addStyleTitle": {
@@ -132,6 +132,18 @@
     "message": "Quebra de linha",
     "description": "Label for the checkbox controlling word wrap option for the style editor."
   },
+  "cm_linter": {
+    "message": "Linter CSS",
+    "description": "Select the linter to check for CSS issues"
+  },
+  "cm_matchHighlightSelection": {
+    "message": "Somente seleção",
+    "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
+  },
+  "cm_matchHighlightToken": {
+    "message": "Token sob cursor",
+    "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of the word/token under cursor even if nothing is selected"
+  },
   "cm_resizeGripHint": {
     "message": "Duplo clique para maximizar/restaurar a altura",
     "description": "Tooltip for the resize grip in style editor"
@@ -147,6 +159,22 @@
   "cm_theme": {
     "message": "Tema",
     "description": "Label for the style editor's CSS theme."
+  },
+  "colorpickerPaletteHint": {
+    "message": "Clique com o botão direito em uma amostra para percorrer suas linhas de código",
+    "description": ""
+  },
+  "colorpickerSwitchFormatTooltip": {
+    "message": "Inverter formatos: HEX -> RGB -> HSL.\nShift-click para inverter a direção.\nTambém por meio das teclas PgUp (PageUp), PgDn (PageDown).",
+    "description": "Tooltip for the switch button in the color picker popup in the style editor."
+  },
+  "colorpickerTooltip": {
+    "message": "Abrir seletor de cores",
+    "description": "Tooltip for the colored squares shown before CSS colors in the style editor."
+  },
+  "configOnChangeTooltip": {
+    "message": "Salvar e aplicar mudanças automaticamente",
+    "description": ""
   },
   "configureStyle": {
     "message": "Configurar",
@@ -200,6 +228,23 @@
     "message": "Copiar para a área de transferência",
     "description": "Tooltip for elements which can be copied"
   },
+  "customNameHint": {
+    "message": "Digite um nome personalizado para renomear o estilo na UI sem quebrar suas atualizações",
+    "description": ""
+  },
+  "customNameResetHint": {
+    "message": "Deixar de usar o nome personalizado, usar o próprio nome do estilo",
+    "description": "Tooltip of 'x' button shown in editor when changing the name input of a) styles updated from a URL i.e. not locally created, b) UserCSS styles"
+  },
+  "dateAbbrYear": {
+    "message": "$value$a",
+    "description": "Year suffix in a short relative date, for example: 8y",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
   "dateInstalled": {
     "message": "Data instalada ",
     "description": "Option text for the user to sort the style by install date"
@@ -207,6 +252,10 @@
   "dateUpdated": {
     "message": "Data atualizada",
     "description": "Option text for the user to sort the style by last update date"
+  },
+  "dbError": {
+    "message": "Não foi possível usar a base de dados do Stylus. Deseja visitar uma página da web com possíveis soluções?",
+    "description": "Prompt when a DB error is encountered"
   },
   "defaultTheme": {
     "message": "padrão",
@@ -221,7 +270,7 @@
     "description": "Label for the button to delete a style"
   },
   "description": {
-    "message": "Mude o estilo da web com o Stylus, um gerenciador de estilos do usuário. O Stylus permite instalar facilmente temas e skins para Google, Facebook, YouTube, Orkut e muitos, muitos outros sites.",
+    "message": "Mude o estilo da web com o Stylus, um gerenciador de estilos do usuário. O Stylus permite instalar facilmente temas e skins para vários sites populares.",
     "description": "Extension description"
   },
   "disableAllStyles": {
@@ -231,6 +280,18 @@
   "disableStyleLabel": {
     "message": "Desativar",
     "description": "Label for the button to disable a style"
+  },
+  "dragDropMessage": {
+    "message": "Arraste seu arquivo de backup em qualquer lugar nessa página para importá-lo.",
+    "description": "Drag'n'drop message"
+  },
+  "dragDropUsercssTabstrip": {
+    "message": "Para instalar o arquivo, solte-o na linha das abas (a área onde os títulos das abas são mostrados).",
+    "description": "Message popup shown when erroneously dropping a usercss file into the manager page"
+  },
+  "editDeleteText": {
+    "message": "Apagar",
+    "description": "Label for the context menu item in the editor to delete selected text"
   },
   "editGotoLine": {
     "message": "Ir para linha (ou linha:coluna)",
@@ -257,21 +318,129 @@
     "message": "Ativar",
     "description": "Label for the button to enable a style"
   },
+  "excludeStyleByDomainLabel": {
+    "message": "Excluir o domínio atual",
+    "description": ""
+  },
+  "excludeStyleByUrlLabel": {
+    "message": "Excluir a URL atual",
+    "description": ""
+  },
   "exportLabel": {
     "message": "Exportar ",
     "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+  },
+  "externalFeedback": {
+    "message": "Comentários",
+    "description": "Label for the external link to send feedback for the style"
+  },
+  "externalHomepage": {
+    "message": "Página inicial",
+    "description": "Label for the external link to style's homepage"
+  },
+  "externalLink": {
+    "message": "Link externo",
+    "description": "Label for external links"
+  },
+  "externalSupport": {
+    "message": "Suporte",
+    "description": "Label for the external link to style's support site"
+  },
+  "externalUsercssDocument": {
+    "message": "Documentação do UserCSS",
+    "description": "Label for the external link to usercss documentation"
+  },
+  "filteredStyles": {
+    "message": "$numShown$ mostrados de $numTotal$ total",
+    "description": "TL note - make this message short",
+    "placeholders": {
+      "numTotal": {
+        "content": "$2"
+      },
+      "numShown": {
+        "content": "$1"
+      }
+    }
+  },
+  "filteredStylesAllHidden": {
+    "message": "Filtros aplicados não correspondem a nenhum estilo",
+    "description": "Text shown when no styles match currently applied filter in the style manager"
+  },
+  "findStyles": {
+    "message": "Encontrar estilos",
+    "description": "Text for a link that gets a list of styles for the current site"
   },
   "findStylesForSite": {
     "message": "Procurar mais estilos para este site",
     "description": "Text for a link that gets a list of styles for the current site"
   },
+  "findStylesInline": {
+    "message": "Em linha",
+    "description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
+  },
+  "findStylesInlineTooltip": {
+    "message": "Mostrar resultados dentro dessa janela",
+    "description": "Text for a checkbox that displays search results within the Stylus popup."
+  },
+  "genericAdd": {
+    "message": "Adicionar",
+    "description": "Used in various places for an action that adds something"
+  },
+  "genericClone": {
+    "message": "Clonar",
+    "description": "Used in various places for an action that clones something"
+  },
   "genericDisabledLabel": {
     "message": "Desativado",
     "description": "Used in various lists/options to indicate that something is disabled"
   },
+  "genericEnabledLabel": {
+    "message": "Ativado",
+    "description": "Used in various lists/options to indicate that something is enabled"
+  },
+  "genericError": {
+    "message": "Erro",
+    "description": "Used in various places to indicate some error occurred."
+  },
+  "genericHistoryLabel": {
+    "message": "Histórico",
+    "description": "Used in various places to show a history log of something"
+  },
+  "genericNext": {
+    "message": "Próximo",
+    "description": "Used in various places to select/perform the next step/action"
+  },
+  "genericPrevious": {
+    "message": "Anterior",
+    "description": "Used in various places to select/perform the previous step/action"
+  },
+  "genericResetLabel": {
+    "message": "Redefinir",
+    "description": "Used in various parts of UI to indicate that something may be reset to its original state"
+  },
+  "genericSavedMessage": {
+    "message": "Salvo",
+    "description": "Used in various parts of the UI to indicate that something was saved"
+  },
+  "genericTitle": {
+    "message": "Título",
+    "description": "Used in various parts of the UI to indicate the title of something"
+  },
+  "genericUnknown": {
+    "message": "Desconhecido",
+    "description": "Used in various parts of the UI to indicate if something is unknown (e.g. an unknown date)"
+  },
   "helpAlt": {
     "message": "Ajuda",
     "description": "Alternate text for help buttons"
+  },
+  "helpKeyMapCommand": {
+    "message": "Digite um comando aqui",
+    "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+  },
+  "helpKeyMapHotkey": {
+    "message": "Pressione uma tecla de atalho",
+    "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
   },
   "hostDisabled": {
     "message": "Este hospedeiro foi desabilitado devido a um bug na versão atual que o navegador utilizado se encontra",
@@ -289,25 +458,177 @@
     "message": "Importar",
     "description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
   },
+  "importPreprocessor": {
+    "message": "Estilos com <code>@preprocessor</code> não irão funcionar no modo clássico. Você pode trocar o editor para o modo UserCSS: 1) abre o gerenciador de estilos, 2) ative a caixa \"como UserCSS\", 3) clique \"Escrever novo estilo\"\n\nDeseja importar mesmo assim?",
+    "description": ""
+  },
+  "importPreprocessorTitle": {
+    "message": "Possível problema causado pelo @preprocessor",
+    "description": ""
+  },
   "importReplaceLabel": {
     "message": "Sobrescrever estilo",
     "description": "Label for the button to import and overwrite current style"
+  },
+  "importReplaceTooltip": {
+    "message": "Descartar conteúdo do estilo atual e sobrescreve-lo com o estilo importado",
+    "description": "Label for the button to import and overwrite current style"
+  },
+  "importReportLegendAdded": {
+    "message": "adicionado",
+    "description": "Text after the number of styles added in the report shown after importing styles"
+  },
+  "importReportLegendIdentical": {
+    "message": "idênticos pulados",
+    "description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
+  },
+  "importReportLegendInvalid": {
+    "message": "inválidos pulados",
+    "description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
+  },
+  "importReportLegendUpdatedBoth": {
+    "message": "tiveram o meta e código atualizados",
+    "description": "Text after the number of styles updated entirely in the report shown after importing styles"
+  },
+  "importReportLegendUpdatedCode": {
+    "message": "código atualizado",
+    "description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"
+  },
+  "importReportLegendUpdatedMeta": {
+    "message": "tiveram o meta atualizados",
+    "description": "Text after the number of styles with updated meta info like name/url in the report shown after importing styles"
+  },
+  "importReportTitle": {
+    "message": "Importação de estilos finalizada",
+    "description": "Title of the report shown after importing styles"
   },
   "importReportUnchanged": {
     "message": "Nada foi alterado.",
     "description": "Message in the report shown after importing styles"
   },
+  "importReportUndone": {
+    "message": "estilos foram revertidos",
+    "description": "Text after the number of styles reverted in the message box shown after undoing the import of styles"
+  },
+  "importReportUndoneTitle": {
+    "message": "A importação foi desfeita",
+    "description": "Title of the message box shown after undoing the import of styles"
+  },
+  "installButton": {
+    "message": "Instalar estilo",
+    "description": "Label for install button"
+  },
+  "installButtonInstalled": {
+    "message": "Estilo instalado",
+    "description": "Text displayed when the style is successfully installed"
+  },
+  "installButtonReinstall": {
+    "message": "Reinstalar estilo",
+    "description": "Label for reinstall button"
+  },
+  "installButtonUpdate": {
+    "message": "Atualizar estilo",
+    "description": "Label for update button"
+  },
   "installUpdate": {
     "message": "Instalar atualização",
     "description": "Label for the button to install an update for a single style"
+  },
+  "installUpdateFrom": {
+    "message": "Atualmente, o estilo é atualizado de $url$",
+    "description": "Label to describe where the style gets update",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "installUpdateFromLabel": {
+    "message": "Verificar se há atualizações",
+    "description": "Label for the checkbox to save current URL for update check"
+  },
+  "license": {
+    "message": "Licensa",
+    "description": "Label for the license"
+  },
+  "linkGetHelp": {
+    "message": "Buscar ajuda",
+    "description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
+  },
+  "linkGetStyles": {
+    "message": "Obter estilos",
+    "description": "Help link text on the manage page e.g. https://userstyles.org"
   },
   "linkTranslate": {
     "message": "Traduzir",
     "description": "Transifex link text on the manage page"
   },
+  "linterCSSLintIncompatible": {
+    "message": "CSSLint não suporta o pré-processador $preprocessorname$",
+    "description": "The label to display when the preprocessor isn't compatible with CSSLint",
+    "placeholders": {
+      "preprocessorname": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterCSSLintSettings": {
+    "message": "(Definir regra como: 0 = desativado; 1 = aviso; 2 = erro)",
+    "description": "CSSLint rule config values"
+  },
+  "linterConfigPopupTitle": {
+    "message": "Configurar regras do $linter$",
+    "description": "Stylelint or CSSLint popup header",
+    "placeholders": {
+      "linter": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterConfigTooltip": {
+    "message": "Clique para configurar esse linter",
+    "description": "Icon tooltip to indicate that it opens a popup with the selected linter configuration"
+  },
+  "linterInvalidConfigError": {
+    "message": "Não foi possível salvar devido às seguintes configurações inválidas:",
+    "description": "Invalid linter config will show a message followed by a list of invalid entries"
+  },
+  "linterIssues": {
+    "message": "Problemas",
+    "description": "Label for the CSS linter issues block on the style edit page"
+  },
+  "linterIssuesHelp": {
+    "message": "Esses problemas foram encontrados por $link$:",
+    "description": "Help popup message for the selected CSS linter issues block on the style edit page",
+    "placeholders": {
+      "link": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterJSONError": {
+    "message": "Formato JSON inválido",
+    "description": "Setting linter config with invalid JSON"
+  },
+  "linterResetMessage": {
+    "message": "Para desfazer redefinições acidentais, pressione Ctrl-Z (ou Cmd-Z) na caixa de texto",
+    "description": "Reset button tooltip to inform user on how to undo an accidental reset"
+  },
+  "linterRulesLink": {
+    "message": "Ver uma lista completa de regras",
+    "description": "Stylelint or CSSLint rules label added immediately before a link"
+  },
+  "liveReloadError": {
+    "message": "Não foi possível assistir o arquivo",
+    "description": "The label of live-reload error"
+  },
   "manageHeading": {
     "message": "Estilos instalados",
     "description": "Heading for the manage page"
+  },
+  "manageNewStyleAsUsercss": {
+    "message": "como UserCSS",
+    "description": "VERY SHORT label for the checkbox next to the 'Write new style' button in the style manager"
   },
   "manageOnlyDisabled": {
     "message": "Somente estilos desativados",
@@ -316,6 +637,14 @@
   "manageOnlyEnabled": {
     "message": "Apenas estilos habilitados",
     "description": "Checkbox to show only enabled styles"
+  },
+  "manageOnlyNonUsercss": {
+    "message": "Apenas estilos sem UserCSS",
+    "description": "Checkbox to show only non-Usercss (standard) styles"
+  },
+  "manageOnlyUsercss": {
+    "message": "Apenas estilos com UserCSS",
+    "description": "Checkbox to show only Usercss styles"
   },
   "meta_invalidRange": {
     "message": "@var inválido $type$: valor deve ser um número ou um vetor",
@@ -395,6 +724,10 @@
   },
   "optionsActions": {
     "message": "Ações",
+    "description": ""
+  },
+  "optionsAdvancedNewStyleAsUsercss": {
+    "message": "Escrever novo estilo como UserCSS",
     "description": ""
   },
   "optionsBadgeDisabled": {
@@ -477,6 +810,10 @@
     "message": "Desconectado",
     "description": ""
   },
+  "parseUsercssError": {
+    "message": "Não foi possível analisar o UserCSS:",
+    "description": "The error message to show when stylus failed to parse usercss"
+  },
   "prefShowBadge": {
     "message": "Número de estilos ativos para o site atual",
     "description": "Label for the checkbox controlling toolbar badge text."
@@ -508,10 +845,6 @@
   "searchRegexp": {
     "message": "Use a sintaxe /re/ para busca por regexp",
     "description": "Label after the search input field in the editor shown on Ctrl-F"
-  },
-  "searchStyles": {
-    "message": "Buscar conteúdos",
-    "description": "Label for the search filter textbox on the Manage styles page"
   },
   "sectionAdd": {
     "message": "Adicionar outra seção",
@@ -635,6 +968,10 @@
   "updatesCurrentlyInstalled": {
     "message": "Updates instalados:",
     "description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
+  },
+  "usercssReplaceTemplateConfirmation": {
+    "message": "Substituir o template padrão por novos estilos com UserCSS com o código atual?",
+    "description": ""
   },
   "usercssReplaceTemplateName": {
     "message": "@nome vazio substitui o template padrão",
