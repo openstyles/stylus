@@ -1083,14 +1083,6 @@
     "message": "Paigaldus nädalas",
     "description": "Text for label that shows the number of times a search result was installed during last week"
   },
-  "searchStyles": {
-    "message": "Otsi sisu",
-    "description": "Label for the search filter textbox on the Manage styles page"
-  },
-  "searchStylesHelp": {
-    "message": "</> klahv fokuseerib otsinguvälja.\nLihttekst: otsi nimest, koodist, kodulehe URList ja rakendatavatest saitidest. Sõnu alla 3 tähemärgi ignoreeritakse.\nVastav URL: kasuta otsingus eesliidet <url:>, nt <url:https://github.com/openstyles/stylus>\nRegulaaravaldised sisaldavad kaldkriipse ja lippe, nt </body.*?\\ba\\b/simguy>\nTäpsed sõnad: kirjuta väljendi ümber jutumärgid, nt <\".header ~ div\">",
-    "description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
-  },
   "sectionAdd": {
     "message": "Lisa uus jaotis",
     "description": "Label for the button to add a section"

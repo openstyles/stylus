@@ -260,6 +260,24 @@
     "message": "Geen aangepaste naam meer gebruiken, wisselen naar eigen naam van de stijl",
     "description": "Tooltip of 'x' button shown in editor when changing the name input of a) styles updated from a URL i.e. not locally created, b) UserCSS styles"
   },
+  "dateAbbrHour": {
+    "message": "$value$u",
+    "description": "Hour suffix in a short relative date, for example: 8h",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrYear": {
+    "message": "$value$j",
+    "description": "Year suffix in a short relative date, for example: 8y",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
   "dateInstalled": {
     "message": "Installatiedatum",
     "description": "Option text for the user to sort the style by install date"
@@ -965,6 +983,14 @@
     "message": "Nieuwe stijl schrijven als usercss",
     "description": ""
   },
+  "optionsAdvancedPatchCsp": {
+    "message": "<code>CSP</code> corrigeren om stijlmiddelen toe te staan",
+    "description": ""
+  },
+  "optionsAdvancedPatchCspNote": {
+    "message": "Schakel dit in als stijlen afbeeldingen of lettertypen bevatten die niet worden geladen op websites met een streng <code>CSP</code> (<code>inhoudsbeveiligingsbeleid</code>).\n\nHet inschakelen van deze instelling versoepelt <code>CSP</code>-restricties, waardoor essentiële stijlinhoud kan worden geladen. Deze optie is alleen bedoeld voor gevorderde gebruikers die de mogelijke gevolgen op beveiligingsgebied begrijpen, en die de verantwoordelijkheid voor het monitoren van de toegestane inhoud accepteren. Lees meer over CSS-gebaseerde aanvallen voor meer informatie.\n\nHoud er ook rekening mee dat deze specifieke instelling geen garantie geeft op een goede werking als een andere geïnstalleerde extensie eerst het netwerkantwoord aanpast.",
+    "description": ""
+  },
   "optionsAdvancedStyleViaXhr": {
     "message": "Directe-injectiemodus",
     "description": ""
@@ -1253,6 +1279,14 @@
     "message": "Geen stijlen voor deze website gevonden.",
     "description": "Error text in the popup when inline search didn't find any site-specific styles"
   },
+  "searchResultNotMatching": {
+    "message": "De stijl is geïnstalleerd, maar wordt niet op de huidige website-URL toegepast.",
+    "description": ""
+  },
+  "searchResultNotMatchingNote": {
+    "message": "Probeer de maker van deze gebruikersstijl te vragen de URL toe te voegen.\n\nU kunt de stijl ook in de beheerder openen en deze zelf bewerken,\nmaar pas op dat dit automatische updates voor deze stijl uitschakelt.",
+    "description": ""
+  },
   "searchResultRating": {
     "message": "Waardering",
     "description": "Text for label that shows the search result's rating"
@@ -1265,13 +1299,29 @@
     "message": "Wekelijks aantal installaties",
     "description": "Text for label that shows the number of times a search result was installed during last week"
   },
-  "searchStyles": {
-    "message": "Inhoud doorzoeken",
-    "description": "Label for the search filter textbox on the Manage styles page"
+  "searchStylesAll": {
+    "message": "Alles",
+    "description": "Option for `find styles` scope selector in the manager."
+  },
+  "searchStylesCode": {
+    "message": "CSS-code",
+    "description": "Option for `find styles` scope selector in the manager."
   },
   "searchStylesHelp": {
-    "message": "</>-toets legt de focus in het zoekvak.\nPlatte tekst: zoeken in de naam, code, website-URL en de websites waarop het wordt toegepast. Woorden met minder dan 3 letters worden genegeerd.\nStijlen die met een volledige URL overeenkomen: begin de zoekopdracht met <url:>, bv. <url:https://github.com/openstyles/stylus>\nReguliere expressies: voeg schuine strepen en vlaggen toe, bv. </body.*?\\ba\\b/simguy>\nExacte woorden: gebruik dubbele aanhalingstekens in de zoekterm, bv. <\".header ~ div\">",
+    "message": "</> of de toets <Ctrl-F> legt de focus op het zoekveld.\nDe standaardmodus is zoeken naar platte tekst op alle door spaties gescheiden termen in willekeurige volgorde.\nExacte woorden: zet de zoekopdracht tussen dubbele (rechte) aanhalingstekens, bv. <\".header ~ div\">.\nReguliere expressies: inclusief schuine strepen en vlaggen, bv. </body.*?\\ba\\b/i>.\n'Op URL' in de scopekiezer: vindt stijlen die op een volledig opgegeven URL van toepassing zijn, zoals https://www.example.org/.\n'Metagegevens' in de scopekiezer: zoekt in namen, 'van toepassing op'-aanduidingen, installatie-URL, update-URL, en het volledige metagegevensblok voor usercss-stijlen.",
     "description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
+  },
+  "searchStylesMatchUrl": {
+    "message": "Op URL",
+    "description": "Option for `find styles` scope selector in the manager. See searchMatchUrlHint for more info."
+  },
+  "searchStylesMeta": {
+    "message": "Metagegevens",
+    "description": "Option for `find styles` scope selector in the manager."
+  },
+  "searchStylesName": {
+    "message": "Naam",
+    "description": "Option for `find styles` scope selector in the manager."
   },
   "sectionAdd": {
     "message": "Nog een sectie toevoegen",

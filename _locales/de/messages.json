@@ -961,6 +961,14 @@
     "message": "Schreibe neuen Style als UserCSS",
     "description": ""
   },
+  "optionsAdvancedPatchCsp": {
+    "message": "<code>CSP</code>abändern, um externe Ressourcen zu erlauben",
+    "description": ""
+  },
+  "optionsAdvancedPatchCspNote": {
+    "message": "Aktivieren, wenn Styles Bilder oder Schriftarten enthalten, die aufgrund strenger <code>CSP</code> (<code>Content-Security-Policy</code>) Regeln mancher Seiten nicht laden.\n\nDas Aktivieren wird <code>CSP</code>Beschränkungen lockern, um für den Style erforderliche Ressourcen zu laden. Diese Option ist für fortgeschrittene Benutzer gedacht, die sich den möglichen Sicherheitsrisiken bewusst sind und die die Verantwortung dafür tragen, die nachgeladenen Inhalte selbst zu überwachen. Informiere dich über \"CSS-basierte Angriffe\" um mehr zu erfahren.\n\nBeachte außerdem, dass diese Option nicht garantiert funktioniert, falls eine andere installierte Erweiterung die Netzwerkantwort (CSP-header) zuerst abändert.",
+    "description": ""
+  },
   "optionsAdvancedStyleViaXhr": {
     "message": "Style unverzüglich einfügen",
     "description": ""
@@ -1245,6 +1253,14 @@
     "message": "Keine Styles für diese Seite gefunden.",
     "description": "Error text in the popup when inline search didn't find any site-specific styles"
   },
+  "searchResultNotMatching": {
+    "message": "Der Style wurde installiert, gilt aber nicht für die aktuelle URL.",
+    "description": ""
+  },
+  "searchResultNotMatchingNote": {
+    "message": "Frage den Autor des Styles, ob er die URL hinzufügt.\n\nDu kannst den Style auch selbst bearbeiten,\naber dann werden automatische Updates für diesen Style deaktiviert.",
+    "description": ""
+  },
   "searchResultRating": {
     "message": "Bewertung",
     "description": "Text for label that shows the search result's rating"
@@ -1257,13 +1273,25 @@
     "message": "Wöchentliche Installationen",
     "description": "Text for label that shows the number of times a search result was installed during last week"
   },
-  "searchStyles": {
-    "message": "Inhalte durchsuchen",
-    "description": "Label for the search filter textbox on the Manage styles page"
+  "searchStylesAll": {
+    "message": "Alles",
+    "description": "Option for `find styles` scope selector in the manager."
+  },
+  "searchStylesCode": {
+    "message": "CSS Code",
+    "description": "Option for `find styles` scope selector in the manager."
   },
   "searchStylesHelp": {
-    "message": "Die </>-Taste (Numpad) fokussiert das Suchfeld.\nEinfacher Text: Sucht im Namen, Quelltext, Homepage und anvisierten URLs. Wörter mit weniger als 3 Buchstaben werden ignoriert.\nStyles, die auf eine URL passen: Stelle der Suche <url:> voran, z.B. <url:https://github.com/openstyles/stylus>\nRegExp: Nutze Slash und Flags, z.B. </body.*?\\ba\\b/simguy>\nSuche nach genauem Ausdruck: Anführungszeichen verwenden, z.B. <\".header ~ div\"> ",
+    "message": "Die </>-Taste (Numpad) oder <Ctrl-F> fokussieren das Suchfeld.\nEinfacher Text: Sucht mit Leerzeichen getrennte Wörter in beliebiger Reihenfolge.\nSuche nach genauem Ausdruck: Anführungszeichen verwenden, z.B. <\".header ~ div\">\nRegExp: Nutze Schrägstrich und Flags, z.B. </body.*?\\ba\\b/i>\nStyles, die auf eine URL passen: Aktiviere \"Nach URL\" und suche nach einer vollständigen URL, z.B. https://www.example.org/\nMetadaten: Aktiviere das Kontrollkästchen für Metadaten, um in Namen, \"Gilt für\" Feldern, Installations-URL, Update-URL und dem gesamten Metadatenblock in UserCSS Styles zu suchen.",
     "description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
+  },
+  "searchStylesMatchUrl": {
+    "message": "Nach URL",
+    "description": "Option for `find styles` scope selector in the manager. See searchMatchUrlHint for more info."
+  },
+  "searchStylesMeta": {
+    "message": "Metadaten",
+    "description": "Option for `find styles` scope selector in the manager."
   },
   "sectionAdd": {
     "message": "Weiteren Bereich hinzufügen",

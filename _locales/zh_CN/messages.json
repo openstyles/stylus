@@ -12,7 +12,7 @@
     "description": "Label of color's opacity"
   },
   "appliesAdd": {
-    "message": "添加",
+    "message": "添加部分",
     "description": "Label for the button to add an 'applies' entry"
   },
   "appliesDisplay": {
@@ -33,7 +33,7 @@
     "description": "Option to make the style apply to the entered string as a domain"
   },
   "appliesHelp": {
-    "message": "<URL> :  具体链接，额外匹配#hash，反之不行\n<前缀> :  url-prefix，以前缀开头的链接\n<域名> :  domain，也匹配旗下子域名\n<正则> :  RegExp，隐形附加<^> <$> 无需转义/ (导出导入时会自动CSS转义符\\\\)\n提示:  不支持 * 通配符, 黑名单排除可在Stylus-Popup里的 ⠇操作",
+    "message": "〔URL〕⠅ 具体网址, 额外匹配到URL#hash，但反之不行。\n〔前缀〕⠅ url-prefix  以此为起始开头的任何链接。\n〔域名〕⠅ domain   匹配该域名及旗下子域名及其任何链接。\n〔正则〕⠅ RegExp\n　　　　　1) Stylus会隐形附加 开始与结束的正则元数据,  故只能为完整匹配模式, 故在用懒惰正则要注意这点;\n　　　　　2) 可不转义 / 符号(导出导入时会自动CSS转义符转换)\n\n⚠匹配时要注意iframe框架URL⚔地址栏URL是不同。\nØ 内置的正则测试工具不能测试iframe的URL\nØ 不支持 * 通配符.\n⚠黑名单排除用正则或Popup列表的⠇菜单操作.\n详见github.com/openstyles/stylus/wiki/Writing-styles",
     "description": "Help text for 'applies to' section"
   },
   "appliesLabel": {
@@ -41,7 +41,7 @@
     "description": "Label for 'applies to' fields on the edit/add screen"
   },
   "appliesLineWidgetLabel": {
-    "message": "显示 应用于 控件",
+    "message": "显示应用于部件",
     "description": "Label for the checkbox to display applies-to information in the single editor"
   },
   "appliesLineWidgetWarning": {
@@ -67,6 +67,10 @@
   "appliesToEverything": {
     "message": "所有页面",
     "description": "Text displayed for styles that apply to all sites"
+  },
+  "appliesUrlOption": {
+    "message": "URL ",
+    "description": "Option to make the style apply to the entered string as a URL"
   },
   "appliesUrlPrefixOption": {
     "message": "前缀",
@@ -165,7 +169,7 @@
     "description": "Label for the checkbox in the editor."
   },
   "cm_selectByTokensTooltip": {
-    "message": "token字段示例：.foo-bar-2\nON： 按CSS语法全选中\nOFF：按\\w+常规语法分开选中 foo、bar、2\n⚠ Sublime映射下配合<Ctrl+D>不选中token",
+    "message": "token字段示例   .foo-bar-2\nON： 按CSS语法 双击全选中\nOFF：按\\w+常规语法 双击分别选中 foo、bar、2\n技巧: Sublime键盘映射下配合Ctrl+D来\\w+常规选中",
     "description": ""
   },
   "cm_smartIndent": {
@@ -263,6 +267,42 @@
   "customNameResetHint": {
     "message": "切换为样式的原始名称",
     "description": "Tooltip of 'x' button shown in editor when changing the name input of a) styles updated from a URL i.e. not locally created, b) UserCSS styles"
+  },
+  "dateAbbrDay": {
+    "message": "$value$天前",
+    "description": "Day suffix in a short relative date, for example: 8d",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrHour": {
+    "message": "$value$时前",
+    "description": "Hour suffix in a short relative date, for example: 8h",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrMonth": {
+    "message": "$value$月前",
+    "description": "Month suffix in a short relative date, for example: 8m",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrYear": {
+    "message": "$value$年前",
+    "description": "Year suffix in a short relative date, for example: 8y",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
   },
   "dateInstalled": {
     "message": "安装日期",
@@ -714,7 +754,7 @@
     "description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
   },
   "manageOnlyUsercss": {
-    "message": "只显示 仅UserCSS",
+    "message": "只显示   UserCSS",
     "description": "Checkbox to show only Usercss styles"
   },
   "manageTitle": {
@@ -974,23 +1014,31 @@
     "description": ""
   },
   "optionsAdvancedExposeIframes": {
-    "message": "给 iframe 注入 stylus-iframe=\"域名\"",
+    "message": "给 iframe 注入 stylus-iframe=\"父域名\"",
     "description": ""
   },
   "optionsAdvancedExposeIframesNote": {
-    "message": "给每个iframe内嵌框架的html标签注入 stylus-iframe=\"域名hostname\" 的属性(值)，\n用途: 用作iframe选择器, 一键确定 iframe 父页面 的唯一选择器.\n示例 html[stylus-iframe] 或 html[stylus-iframe$=\"twitter.com\"] h1 {...}\n详见源码：github.com/openstyles/stylus/blob/master/content/apply.js#L270",
+    "message": "给每个iframe框架的html注入window.top父域名的内联属性(值)\n即 html[stylus-iframe=\"hostname\"] \n\n用途: 确定或排除 iframe选择器以避免伤及无辜.\nhtml:not([stylus-iframe]) {...}\nhtml[stylus-iframe] 或 html[stylus-iframe$=\"twitter.com\"] h1 {...}\n\ngithub.com/openstyles/stylus/blob/master/content/apply.js#L270",
     "description": "Add attribute to iframe; make sure to include the double $$ in the css example, or the `$=` will be omitted in the displayed text."
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "将新样式的格式设为UserCSS",
     "description": ""
   },
+  "optionsAdvancedPatchCsp": {
+    "message": "启用<code>CSP</code>补丁以使样式资源生效",
+    "description": ""
+  },
+  "optionsAdvancedPatchCspNote": {
+    "message": "如果在带有严格<code>CSP</code>（<code>Content-Security-Policy</code>）的网站上无法加载样式中包含的图像或字体，请启用此补丁选项。 \n\n启用此补丁选项将会放宽<code>CSP</code>限制，从而允许加载基本样式内容。⚠此选项仅适用于了解潜在安全隐患的高级用户, 并自行承担负责监视其被允许的内容。请阅读有关基于CSS攻击的更多信息以做决定。\n\n另请注意，如果另一个已安装的扩展首先修改了网络响应，则不能保证此特定选项一定会生效。",
+    "description": ""
+  },
   "optionsAdvancedStyleViaXhr": {
-    "message": "即时注入模式",
+    "message": "XHR即时注入模式",
     "description": ""
   },
   "optionsAdvancedStyleViaXhrNote": {
-    "message": "如果在浏览时遇到样式闪烁（FOUC）、特别是在深色主题下会更明显，可尝试启用此功能。\n\n技术上的原因是 Chrome内核通常以 无意义的尝试 来延迟扩展的异步通信，以提高页面加载速度，这可能会导致样式慢了半拍才被应用。\n为了避免这种情况，且由于谷歌也没有提供Web扩展的样式同步的API接口，因此Stylus提供了此选项来变相实现, 利用 “已弃用的” XMLHttpRequest 这个同步API来获取适用的样式。 它几乎是没有任何副作用，因为样式请求在几毫秒内就OK, 而网页仍在从服务器下载中.\n有关FOUC报告,你可以查看此讨论https://crbug.com/853986\n\n尽管如此，但 Chrome 仍旧会在DevTools的 <Console> 中显示警告。 可以手动搞定: 右键单击警告并将其隐藏，将防止再次显示警告。",
+    "message": "如果在网站加载时常看到一闪而过的样式闪烁晃眼(术语叫FOUC) 、特别是在深色主题下会感知得更明显，请启用此选项。\n\n技术上的原因是 Chrome内核通常以 无意义的尝试 来延迟扩展的异步通信，以提高页面加载速度，这可能会导致样式慢了半拍才被应用。\n为了避免这种情况，且由于谷歌也没有提供Web扩展的样式同步的API接口，因此Stylus提供了此选项来变相实现, 利用 “已弃用的” XMLHttpRequest 这个同步API来获取适用的样式。 它几乎没有任何副作用，因为样式请求在几毫秒内就OK了, 而网页此时仍在从服务器下载中.\n有关FOUC报告,你可以查看此讨论https://crbug.com/853986\n\n尽管如此，但 Chrome DevTools 仍会在 Console 中显示警告。 不过也可以手动搞定: 右键单击警告并将其隐藏，将防止再次显示警告。",
     "description": ""
   },
   "optionsBadgeDisabled": {
@@ -1018,7 +1066,7 @@
     "description": ""
   },
   "optionsCustomizePopup": {
-    "message": "Stylus-Popup",
+    "message": "Popup ",
     "description": ""
   },
   "optionsCustomizeUpdate": {
@@ -1050,7 +1098,7 @@
     "description": ""
   },
   "optionsPopupWidth": {
-    "message": "Popup 宽度（px）",
+    "message": "Popup 弹框总宽度（px）",
     "description": ""
   },
   "optionsReset": {
@@ -1178,7 +1226,7 @@
     "description": ""
   },
   "popupHotkeysInfo": {
-    "message": "<1>-<9>, <0>,  按第1-10个来开关\n<A>-<Z>     按英文首字母来开关\n<Shift>附加:  打开编辑器\n<Numpad +>      ON  全部列表\n<Numpad –>      OFF 全部列表\n<Numpad *> 或 <`>~ - 仅针对弹出时的初始ON列表,\n    它只会ON/OFF初始ON列表, 故:\n   <Numpad –> <Numpad *>  能快速恢复初始状态.\n\n更多信息见Wiki",
+    "message": "<1>-<9>, <0>   按第1 - 10个列表 来ON/OFF\n<A>-<Z>     按英文首字母 来ON/OFF\n附加<Shift>:   打开对应列表的编辑器\n<Numpad +>      ON  全部列表\n<Numpad –>      OFF 全部列表\n<Numpad *> 或 <`>   仅针对Popup弹出时的初始ON列表, 它只会ON/OFF初始ON列表, 故:\n   <Numpad –> <Numpad *>  能快速恢复初始状态.\n               更多信息见Wiki",
     "description": "NOTE1: preserve < and > symbols so that <hotkey> is styled as a key.\nNOTE2: the last line is displayed as a text of the link to the wiki page.\nNOTE3: this is the list of hotkeys displayed after clicking the right edge of the extension popup."
   },
   "popupHotkeysTooltip": {
@@ -1194,7 +1242,7 @@
     "description": "Tooltip for menu button in popup."
   },
   "popupOpenEditInPopup": {
-    "message": "使用无地址栏的简洁新窗口来打开",
+    "message": "使用简易编辑器窗口（无omnibox栏）",
     "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
   },
   "popupOpenEditInWindow": {
@@ -1202,7 +1250,7 @@
     "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
   },
   "popupOpenEditInWindowTooltip": {
-    "message": "此选项不用管. 因为它会动态跟随且记住\n编辑器标签页的拖出/拖入的状态. 即:\n拖出单独窗口时, ON 该选项.\n拖入合并窗口时, OFF该选项.",
+    "message": "此选项可不管,只因它能动态跟随记忆\n编辑器标签页的拖出/拖入的状态 即:\n拖出单独窗口时, ON 该选项.\n拖入合并窗口时, OFF该选项.\n\"简易编辑器窗口\" 只在新窗口才简易简洁",
     "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
   },
   "popupStylesFirst": {
@@ -1277,6 +1325,14 @@
     "message": "没有找到与此页面相关的样式。",
     "description": "Error text in the popup when inline search didn't find any site-specific styles"
   },
+  "searchResultNotMatching": {
+    "message": "样式已安装但不适于当前URL",
+    "description": ""
+  },
+  "searchResultNotMatchingNote": {
+    "message": "尝试请求该用户样式的作者添加URL。\n\n您也可以在管理器中打开样式并自己编辑，\n但请注意，它会禁用此样式的自动更新。",
+    "description": ""
+  },
   "searchResultRating": {
     "message": "评价",
     "description": "Text for label that shows the search result's rating"
@@ -1289,16 +1345,32 @@
     "message": "本周安装次数",
     "description": "Text for label that shows the number of times a search result was installed during last week"
   },
-  "searchStyles": {
-    "message": "搜索",
-    "description": "Label for the search filter textbox on the Manage styles page"
+  "searchStylesAll": {
+    "message": "全部",
+    "description": "Option for `find styles` scope selector in the manager."
+  },
+  "searchStylesCode": {
+    "message": "代码",
+    "description": "Option for `find styles` scope selector in the manager."
   },
   "searchStylesHelp": {
-    "message": "<Ctrl+F> 或 </>   聚焦搜索框   <Esc> 清空搜索框\n焦点在页面时, 也支持样式名的首字母索引!\n\n文本搜索： 样式名、代码、主页、适用于\n<url:>    搜索应用于该URL前缀的样式，例如\n<url:https://github.com/openstyles/stylus>\n正则搜索：js语法 用 / / 包裹及正则属性标记    </body.*?\\ba\\b/simguy>\n精确搜索：用双引号包裹(跟网页搜索一样) 如 <\"head ~ div\">",
+    "message": "<Ctrl-F> 或 </>   聚焦搜索框;  　　 <Esc> 清空搜索框\n焦点在页面时, 也支持样式名的英文首字母索引。\n\n●搜索语法:\n空格隔开 : \"且\" 同时包含,不分顺序。\n   要用 \"或\" 包含, 请使用正则 /A|B/\n\"精确搜索\" ：用双引号包裹(跟网页搜索一样) 如 <\"head ~ div\">\n/正则搜索/ ：js语法 用 / / 包裹及正则属性标记 如</body.*?\\ba\\b/i>\n\n●搜索范围选择器\n`元数据` (默认)： 含 样式名称、应用于、安装/更新URL、以及UserCSS中的整个元数据块(即==UserStyle==那些) 但不包括代码里的注释内容\n\n`按URL`： 查找适用于完全指定URL的样式，如 http://www.example.org/",
     "description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
   },
+  "searchStylesMatchUrl": {
+    "message": "URL",
+    "description": "Option for `find styles` scope selector in the manager. See searchMatchUrlHint for more info."
+  },
+  "searchStylesMeta": {
+    "message": "元数据",
+    "description": "Option for `find styles` scope selector in the manager."
+  },
+  "searchStylesName": {
+    "message": "名称",
+    "description": "Option for `find styles` scope selector in the manager."
+  },
   "sectionAdd": {
-    "message": "添加部分",
+    "message": "添加新部分",
     "description": "Label for the button to add a section"
   },
   "sectionCode": {
@@ -1346,7 +1418,7 @@
     "description": "Text added to option group to indicate a block of options that apply a title descending (Z to A) sort"
   },
   "sortStylesHelp": {
-    "message": "默认用「标题升序」排序（A - Z）\n反之,  「标题降序」则是（Z - A）\n还有很多其它排序方式，可以通过多个条件进行排序。\n你也可以想象，在对一个多列的表格进行排序，并且选择可能带有（+）号的一组条件或单个条件进行排序。\n例如，若设为 \"启用（优先）+ 标题\"，将会把所有已启用的项目都排列在顶部，然后再以标题升序排列 （A - Z）的顺序应用到以启用和未启用的项目。",
+    "message": "默认用「标题升序」(A - Z) 、「标题降序」则反之 (Z - A) \n「安装日期」 不等同于 样式的本地🆔 排序\n还有很多其它排序方式，可以通过多个条件进行排序。\n你也可以想象，在对一个多列的表格进行排序，并且选择可能带有（+）号的一组条件或单个条件进行排序。\n例如，若设为 \"启用（优先）+ 标题\"，将会把所有已启用的项目都排列在顶部，然后再以标题升序排列 （A - Z）的顺序应用到以启用和未启用的项目。",
     "description": "Text in the minihelp displayed when clicking (i) icon to the right of the sort input field on the Manage styles page"
   },
   "sortStylesHelpTitle": {

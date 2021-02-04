@@ -264,6 +264,42 @@
     "message": "停止使用自訂的名稱，切換到樣式自己的名稱",
     "description": "Tooltip of 'x' button shown in editor when changing the name input of a) styles updated from a URL i.e. not locally created, b) UserCSS styles"
   },
+  "dateAbbrDay": {
+    "message": "$value$天",
+    "description": "Day suffix in a short relative date, for example: 8d",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrHour": {
+    "message": "$value$小時",
+    "description": "Hour suffix in a short relative date, for example: 8h",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrMonth": {
+    "message": "$value$月",
+    "description": "Month suffix in a short relative date, for example: 8m",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrYear": {
+    "message": "$value$年",
+    "description": "Year suffix in a short relative date, for example: 8y",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
   "dateInstalled": {
     "message": "安裝日期",
     "description": "Option text for the user to sort the style by install date"
@@ -981,6 +1017,14 @@
     "message": "以 usercss 編寫新樣式",
     "description": ""
   },
+  "optionsAdvancedPatchCsp": {
+    "message": "修補 <code>CSP</code> 以允許樣式資源",
+    "description": ""
+  },
+  "optionsAdvancedPatchCspNote": {
+    "message": "如果樣式包含無法在有嚴格 <code>CSP</code>（<code>內容安全策略</code>）的網站上載入的圖片或字型，請啟用此選項。\n\n啟用此設定將會放寬 <code>CSP</code> 限制，允許基本的樣式內容載入。此選項僅適用於了解潛在的安全問題，且接受監視其允許內容責任的進階使用者。閱讀關於以 CSS 為基礎的攻擊來取得更多資訊。\n\n另外請注意，如果已經有另一個已安裝的附加元件先修改了網路回應，則無法保證此設定可起作用。",
+    "description": ""
+  },
   "optionsAdvancedStyleViaXhr": {
     "message": "即時注入模式",
     "description": ""
@@ -1273,6 +1317,14 @@
     "message": "找不到此頁面相關的樣式",
     "description": "Error text in the popup when inline search didn't find any site-specific styles"
   },
+  "searchResultNotMatching": {
+    "message": "樣式已安裝，但不會套用到目前網站的 URL。",
+    "description": ""
+  },
+  "searchResultNotMatchingNote": {
+    "message": "嘗試要求此使用者樣式的作者新增 URL。\n\n您也可以在管理程式中開啟樣式，然後自行編輯，\n但請注意，這樣做會停用此樣式的自動更新。",
+    "description": ""
+  },
   "searchResultRating": {
     "message": "評價",
     "description": "Text for label that shows the search result's rating"
@@ -1285,13 +1337,29 @@
     "message": "每週安裝",
     "description": "Text for label that shows the number of times a search result was installed during last week"
   },
-  "searchStyles": {
-    "message": "搜尋內容",
-    "description": "Label for the search filter textbox on the Manage styles page"
+  "searchStylesAll": {
+    "message": "全部",
+    "description": "Option for `find styles` scope selector in the manager."
+  },
+  "searchStylesCode": {
+    "message": "CSS 程式碼",
+    "description": "Option for `find styles` scope selector in the manager."
   },
   "searchStylesHelp": {
-    "message": "</> 鍵讓焦點置於搜尋欄。\n純文字：搜尋名稱、程式碼、首頁 URL與其適用的網頁。少於 3 個字母的單字會被忽略。\n符合完整 URL 的樣式：使用前綴搜尋 <url:>，例如 <url:https://github.com/openstyles/stylus>\n正規表達式：包含斜線與旗標，例如 </body.*?\\ba\\b/simguy>\n精確字詞：用英文雙引號包裝查詢，例如 <\".header ~ div\">",
+    "message": "</> 或 <Ctrl-F> 鍵可將焦點置於搜尋欄。\n預設的模式為純文字搜尋，以任意順序搜尋所有以空格分隔的詞語。\n精確字詞：將字詞以雙引號包起來，例如 <\".header ~ div\">\n正規表達式：包含斜線與標誌，如 </body.*?\\ba\\b/i>\n範圍選擇器中的「按 URL」：尋找適用於完全指定 URL 的樣式，如 https://www.example.org/\n範圍選擇器中的「詮釋資料」：搜尋名稱、「套用至」說明、安裝 URL、更新 URL 與整個 usercss 樣式的詮釋資料區塊。",
     "description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
+  },
+  "searchStylesMatchUrl": {
+    "message": "按 URL",
+    "description": "Option for `find styles` scope selector in the manager. See searchMatchUrlHint for more info."
+  },
+  "searchStylesMeta": {
+    "message": "詮釋資料",
+    "description": "Option for `find styles` scope selector in the manager."
+  },
+  "searchStylesName": {
+    "message": "名稱",
+    "description": "Option for `find styles` scope selector in the manager."
   },
   "sectionAdd": {
     "message": "再加入一個樣式段",

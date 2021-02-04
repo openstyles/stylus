@@ -1205,14 +1205,6 @@
     "message": "Heti telepítések",
     "description": "Text for label that shows the number of times a search result was installed during last week"
   },
-  "searchStyles": {
-    "message": "Tartalom keresése",
-    "description": "Label for the search filter textbox on the Manage styles page"
-  },
-  "searchStylesHelp": {
-    "message": "A </> billentyűvel a keresési mezőre ugrasz.\nSima szöveg: keresés a névben, kódban, honlap URL-ben és érvényes oldalakban. A 3 betűnél kevesebb szavak figyelmen kívül vannak hagyva.\nIlleszkedő URL: kezdd a keresést „<url:>”-lel, pl. <url:https://github.com/openstyles/stylus>\nReguláris kifejezések: ide tartoznak a per-jelek és a flagek, pl. </body.*?\\ba\\b/simguy>\nPontos szavak: írj idézőjeleket a keresési kifejezés köré, pl. <\".header ~ div\">",
-    "description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
-  },
   "sectionAdd": {
     "message": "Új szakasz hozzáadása",
     "description": "Label for the button to add a section"

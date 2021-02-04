@@ -286,10 +286,6 @@
     "message": "Користи /re/ синтаксу за претрагу  регуларним изразом",
     "description": "Label after the search input field in the editor shown on Ctrl-F"
   },
-  "searchStyles": {
-    "message": "Претражи садржај",
-    "description": "Label for the search filter textbox on the Manage styles page"
-  },
   "sectionAdd": {
     "message": "Додај нови одељак",
     "description": "Label for the button to add a section"
