@@ -65,11 +65,15 @@
     } else {
       const SYM_ID = 'styles';
       const SYM = Symbol.for(SYM_ID);
+      const parentStyles = isFrameAboutBlank &&
+        tryCatch(() => parent[parent.Symbol.for(SYM_ID)]);
       const styles =
         window[SYM] ||
-        (isFrameAboutBlank
-          ? tryCatch(() => parent[parent.Symbol.for(SYM_ID)])
-          : chrome.app && !chrome.tabs && tryCatch(getStylesViaXhr)) ||
+        /* about:blank iframes are often used by sites for file upload or background tasks
+         * and they may break if unexpected DOM stuff is present at `load` event
+         * so we'll add the styles in the next tick */
+        parentStyles && await new Promise(requestAnimationFrame) && parentStyles ||
+        chrome.app && !chrome.tabs && tryCatch(getStylesViaXhr) ||
         await API.styles.getSectionsByUrl(matchUrl, null, true);
       hasStyles = !styles.disableAll;
       if (hasStyles) {
