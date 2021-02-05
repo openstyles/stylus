@@ -73,7 +73,7 @@
          * and they may break if unexpected DOM stuff is present at `load` event
          * so we'll add the styles in the next tick */
         parentStyles && await new Promise(requestAnimationFrame) && parentStyles ||
-        chrome.app && !chrome.tabs && tryCatch(getStylesViaXhr) ||
+        !isFrameAboutBlank && chrome.app && !chrome.tabs && tryCatch(getStylesViaXhr) ||
         await API.styles.getSectionsByUrl(matchUrl, null, true);
       hasStyles = !styles.disableAll;
       if (hasStyles) {
