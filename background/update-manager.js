@@ -237,11 +237,11 @@ const updateMan = (() => {
 
     async function maybeSave(json) {
       json.id = id;
-      json.updateDate = getDateFromVer(json) || Date.now();
       // keep current state
       delete json.customName;
       delete json.enabled;
       const newStyle = Object.assign({}, style, json);
+      newStyle.updateDate = getDateFromVer(newStyle) || Date.now();
       // update digest even if save === false as there might be just a space added etc.
       if (!ucd && styleSectionsEqual(json, style)) {
         style.originalDigest = (await API.styles.install(newStyle)).originalDigest;
