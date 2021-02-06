@@ -17,12 +17,9 @@
   let popup;
 
   linterMan.showLintConfig = async () => {
-    linter = $('#editor.linter').value;
+    linter = await getLinter();
     if (!linter) {
       return;
-    }
-    if (!RULES[linter]) {
-      linterMan.worker.getRules(linter).then(res => (RULES[linter] = res));
     }
     await require([
       '/vendor/codemirror/mode/javascript/javascript',
@@ -66,16 +63,14 @@
   };
 
   linterMan.showLintHelp = async () => {
-    // FIXME: implement a linterChooser?
-    const linter = $('#editor.linter').value;
+    const linter = await getLinter();
     const baseUrl = linter === 'stylelint'
       ? 'https://stylelint.io/user-guide/rules/'
-      // some CSSLint rules do not have a url
-      : 'https://github.com/CSSLint/csslint/issues/535';
+      : '';
     let headerLink, template;
     if (linter === 'csslint') {
       headerLink = $createLink('https://github.com/CSSLint/csslint/wiki/Rules', 'CSSLint');
-      template = ({rule: ruleID}) => {
+      template = ruleID => {
         const rule = RULES.csslint.find(rule => rule.id === ruleID);
         return rule &&
           $create('li', [
@@ -105,6 +100,14 @@
       depth++;
     }
     return depth;
+  }
+
+  async function getLinter() {
+    const val = $('#editor.linter').value;
+    if (val && !RULES[val]) {
+      RULES[val] = await linterMan.worker.getRules(val);
+    }
+    return val;
   }
 
   function hint(cm) {
