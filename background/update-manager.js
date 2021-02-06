@@ -213,8 +213,13 @@ const updateMan = (() => {
       }
       // TODO: when sourceCode is > 100kB use http range request(s) for version check
       const {headers: {etag}, response} = await tryDownload(style.updateUrl, RH_ETAG);
-      const json = await API.usercss.buildMeta({sourceCode: response, etag});
-      await require(['/vendor/semver-bundle/semver']); /* global semverCompare */
+      /* There's a bug? in Chrome which occurs only in a packaged crx:
+       * DOM script for semver fires 'load' event before the script actually runs.
+       * Since the conditions for the bug are rare we'll simply load in parallel */
+      const [json] = await Promise.all([
+        API.usercss.buildMeta({sourceCode: response, etag}),
+        require(['/vendor/semver-bundle/semver']), /* global semverCompare */
+      ]);
       const delta = semverCompare(json.usercssData.version, ucd.version);
       let err;
       if (!delta && !ignoreDigest) {
