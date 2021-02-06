@@ -58,8 +58,8 @@ const iconMan = (() => {
 
   return {
     /** Calling with no params clears the override */
-    overrideBadge({text = '', color = ''} = {}) {
-      if (badgeOvr.text === text && badgeOvr.color === color) {
+    overrideBadge({text = '', color = '', title = ''} = {}) {
+      if (badgeOvr.text === text) {
         return;
       }
       badgeOvr.text = text;
@@ -73,9 +73,7 @@ const iconMan = (() => {
           refreshIconBadgeText(tabId);
         }
       }
-      chrome.browserAction.setTitle({
-        title: text ? chrome.i18n.getMessage('syncErrorRelogin') : '',
-      }, ignoreChromeError);
+      chrome.browserAction.setTitle({title});
     },
   };
 
