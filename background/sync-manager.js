@@ -1,6 +1,7 @@
 /* global API msg */// msg.js
 /* global chromeLocal */// storage-util.js
 /* global compareRevision */// common.js
+/* global iconMan */
 /* global prefs */
 /* global tokenMan */
 'use strict';
@@ -99,8 +100,10 @@ const syncMan = (() => {
         }
         await syncMan.syncNow();
         status.errorMessage = null;
+        iconMan.overrideBadge();
       } catch (err) {
         status.errorMessage = err.message;
+        iconMan.overrideBadge({text: 'x', color: '#F00'});
         // FIXME: should we move this logic to options.js?
         if (!fromPref) {
           console.error(err);
