@@ -151,7 +151,8 @@ a:hover {
 }
 
 .svg-icon.config {
-  transform: scale(.8);
+  width: 16px;
+  height: 16px;
 }
 
 .homepage {
