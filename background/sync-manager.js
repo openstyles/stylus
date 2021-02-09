@@ -64,18 +64,18 @@ const syncMan = (() => {
     },
 
     async login(name = prefs.get('sync.enabled')) {
+      // FIXME: it doesn't really make sense to wait pref after getting the pref value
       if (ready.then) await ready;
+      await tokenMan.revokeToken(name);
       try {
         await tokenMan.getToken(name, true);
+        status.login = true;
       } catch (err) {
-        if (/Authorization page could not be loaded/i.test(err.message)) {
-          // FIXME: Chrome always fails at the first login so we try again
-          await tokenMan.getToken(name);
-        }
+        status.login = false;
         throw err;
+      } finally {
+        emitStatusChange();
       }
-      status.login = true;
-      emitStatusChange();
     },
 
     async put(...args) {
@@ -91,26 +91,24 @@ const syncMan = (() => {
       if (currentDrive) return;
       currentDrive = getDrive(name);
       ctrl.use(currentDrive);
+
       status.state = STATES.connecting;
       status.currentDriveName = currentDrive.name;
-      status.login = true;
       emitStatusChange();
-      try {
-        if (!fromPref) {
-          await syncMan.login(name).catch(handle401Error);
-        }
-        await syncMan.syncNow();
-        status.errorMessage = null;
-        lastError = null;
-      } catch (err) {
-        status.errorMessage = err.message;
-        lastError = err;
-        // FIXME: should we move this logic to options.js?
-        if (!fromPref) {
+
+      if (!fromPref) {
+        try {
+          await syncMan.login(name);
+        } catch (err) {
           console.error(err);
+          status.errorMessage = err.message;
+          lastError = err;
+          emitStatusChange();
           return syncMan.stop();
         }
       }
+
+      await syncMan.syncNow(name);
       prefs.set('sync.enabled', name);
       status.state = STATES.connected;
       schedule(SYNC_INTERVAL);
@@ -124,7 +122,7 @@ const syncMan = (() => {
       status.state = STATES.disconnecting;
       emitStatusChange();
       try {
-        await ctrl.stop();
+        await ctrl.uninit();
         await tokenMan.revokeToken(currentDrive.name);
         await chromeLocal.remove(STORAGE_KEY + currentDrive.name);
       } catch (e) {}
@@ -138,14 +136,19 @@ const syncMan = (() => {
 
     async syncNow() {
       if (ready.then) await ready;
-      if (!currentDrive) throw new Error('cannot sync when disconnected');
+      if (!currentDrive || !status.login) throw new Error('cannot sync when disconnected');
       try {
-        await (ctrl.isInit() ? ctrl.syncNow() : ctrl.start()).catch(handle401Error);
+        await ctrl.init();
+        await ctrl.syncNow();
         status.errorMessage = null;
         lastError = null;
       } catch (err) {
         status.errorMessage = err.message;
         lastError = err;
+
+        if (isGrantError(err)) {
+          status.login = false;
+        }
       }
       emitStatusChange();
     },
@@ -190,21 +193,6 @@ const syncMan = (() => {
         return chromeLocal.setValue(STORAGE_KEY + drive.name, state);
       },
     });
-  }
-
-  async function handle401Error(err) {
-    let authError = false;
-    if (err.code === 401) {
-      await tokenMan.revokeToken(currentDrive.name).catch(console.error);
-      authError = true;
-    } else if (/User interaction required|Requires user interaction/i.test(err.message)) {
-      authError = true;
-    }
-    if (authError) {
-      status.login = false;
-      emitStatusChange();
-    }
-    return Promise.reject(err);
   }
 
   function emitStatusChange() {

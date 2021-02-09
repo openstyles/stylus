@@ -75,12 +75,11 @@ const tokenMan = (() => {
           return obj[k.TOKEN];
         }
         if (obj[k.REFRESH]) {
-          try {
-            return await refreshToken(name, k, obj);
-          } catch (err) {
-            if (err.code !== 401) throw err;
-          }
+          return refreshToken(name, k, obj);
         }
+      }
+      if (!interactive) {
+        throw new Error(`Invalid token: ${name}`);
       }
       return authUser(name, k, interactive);
     },
