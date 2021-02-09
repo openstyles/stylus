@@ -63,9 +63,9 @@ const syncMan = (() => {
       return status;
     },
 
-    async login(name = prefs.get('sync.enabled')) {
-      // FIXME: it doesn't really make sense to wait pref after getting the pref value
+    async login(name) {
       if (ready.then) await ready;
+      if (!name) name = prefs.get('sync.enabled');
       await tokenMan.revokeToken(name);
       try {
         await tokenMan.getToken(name, true);
