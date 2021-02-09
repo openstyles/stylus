@@ -67,13 +67,15 @@ const iconMan = (() => {
       refreshIconBadgeColor();
       setBadgeText({text});
       for (const tabId of tabMan.list()) {
-        if (badgeOvr) {
+        if (text) {
           setBadgeText({tabId, text});
         } else {
           refreshIconBadgeText(tabId);
         }
       }
-      chrome.browserAction.setTitle({title});
+      chrome.browserAction.setTitle({
+        title: title && chrome.i18n.getMessage(title) || title || '',
+      });
     },
   };
 

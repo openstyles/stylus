@@ -209,22 +209,7 @@ const syncMan = (() => {
 
   function emitStatusChange() {
     msg.broadcastExtension({method: 'syncStatusUpdate', status});
-
-    if (status.state !== STATES.connected || !lastError || isNetworkError(lastError)) {
-      iconMan.overrideBadge({});
-    } else if (isGrantError(lastError)) {
-      iconMan.overrideBadge({
-        text: 'x',
-        color: '#F00',
-        title: chrome.i18n.getMessage('syncErrorRelogin'),
-      });
-    } else {
-      iconMan.overrideBadge({
-        text: 'x',
-        color: '#F00',
-        title: chrome.i18n.getMessage('syncError'),
-      });
-    }
+    iconMan.overrideBadge(getErrorBadge());
   }
 
   function isNetworkError(err) {
@@ -235,6 +220,16 @@ const syncMan = (() => {
     if (err.code === 401) return true;
     if (err.code === 400 && /invalid_grant/.test(err.message)) return true;
     return false;
+  }
+
+  function getErrorBadge() {
+    if (status.state === STATES.connected && lastError && !isNetworkError(lastError)) {
+      return {
+        text: 'x',
+        color: '#F00',
+        title: isGrantError(lastError) ? 'syncErrorRelogin' : 'syncError',
+      };
+    }
   }
 
   function getDrive(name) {
