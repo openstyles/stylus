@@ -88,6 +88,7 @@ const syncMan = (() => {
     async start(name, fromPref = false) {
       if (ready.then) await ready;
       if (!ctrl) await initController();
+
       if (currentDrive) return;
       currentDrive = getDrive(name);
       ctrl.use(currentDrive);
@@ -96,7 +97,9 @@ const syncMan = (() => {
       status.currentDriveName = currentDrive.name;
       emitStatusChange();
 
-      if (!fromPref) {
+      if (fromPref) {
+        status.login = true;
+      } else {
         try {
           await syncMan.login(name);
         } catch (err) {
@@ -107,6 +110,8 @@ const syncMan = (() => {
           return syncMan.stop();
         }
       }
+
+      await ctrl.init();
 
       await syncMan.syncNow(name);
       prefs.set('sync.enabled', name);
@@ -136,9 +141,11 @@ const syncMan = (() => {
 
     async syncNow() {
       if (ready.then) await ready;
-      if (!currentDrive || !status.login) throw new Error('cannot sync when disconnected');
+      if (!currentDrive || !status.login) {
+        console.warn('cannot sync when disconnected');
+        return;
+      }
       try {
-        await ctrl.init();
         await ctrl.syncNow();
         status.errorMessage = null;
         lastError = null;
@@ -198,20 +205,22 @@ const syncMan = (() => {
   function emitStatusChange() {
     msg.broadcastExtension({method: 'syncStatusUpdate', status});
 
-    if (status.state !== STATES.connected || !lastError || isNetworkError(lastError)) {
+    if (status.state !== STATES.connected) {
       iconMan.overrideBadge({});
-    } else if (isGrantError(lastError)) {
+    } else if (!status.login) {
       iconMan.overrideBadge({
         text: 'x',
         color: '#F00',
         title: chrome.i18n.getMessage('syncErrorRelogin'),
       });
-    } else {
+    } else if (lastError && !isNetworkError(lastError)) {
       iconMan.overrideBadge({
         text: 'x',
         color: '#F00',
         title: chrome.i18n.getMessage('syncError'),
       });
+    } else {
+      iconMan.overrideBadge({});
     }
   }
 

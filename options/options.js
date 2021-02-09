@@ -147,7 +147,7 @@ document.onclick = e => {
       [elCloud, isDisconnected],
       [elStart, isDisconnected && elCloud.value !== 'none'],
       [elStop, isConnected && !status.syncing],
-      [elSyncNow, isConnected && !status.syncing],
+      [elSyncNow, isConnected && !status.syncing && status.login],
     ]) {
       el.disabled = !enable;
     }
@@ -156,19 +156,22 @@ document.onclick = e => {
   }
 
   function getStatusText() {
-    let res;
     if (status.syncing) {
       const {phase, loaded, total} = status.progress || {};
-      res = phase
+      return phase
         ? t(`optionsSyncStatus${capitalize(phase)}`, [loaded + 1, total], false) ||
           `${phase} ${loaded} / ${total}`
         : t('optionsSyncStatusSyncing');
-    } else {
-      const {state, errorMessage, STATES} = status;
-      res = (state === STATES.connected || state === STATES.disconnected) && errorMessage ||
-        t(`optionsSyncStatus${capitalize(state)}`, null, false) || state;
     }
-    return res;
+
+    const {state, errorMessage, STATES} = status;
+    if (errorMessage && (state === STATES.connected || state === STATES.disconnected)) {
+      return errorMessage;
+    }
+    if (state === STATES.connected && !status.login) {
+      return t('optionsSyncStatusRelogin');
+    }
+    return t(`optionsSyncStatus${capitalize(state)}`, null, false) || state;
   }
 })();
 
