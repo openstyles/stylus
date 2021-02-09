@@ -5,10 +5,12 @@
 /* global CHROME FIREFOX VIVALDI debounce ignoreChromeError */// toolbox.js
 'use strict';
 
-(() => {
+/* exported iconMan */
+const iconMan = (() => {
   const ICON_SIZES = FIREFOX || CHROME >= 55 && !VIVALDI ? [16, 32] : [19, 38];
   const staleBadges = new Set();
   const imageDataCache = new Map();
+  const badgeOvr = {color: '', text: ''};
   // https://github.com/openstyles/stylus/issues/335
   let hasCanvas = loadImage(`/images/icon/${ICON_SIZES[0]}.png`)
     .then(({data}) => (hasCanvas = data.some(b => b !== 255)));
@@ -54,6 +56,27 @@
     ], () => debounce(refreshAllIcons), {runNow: true});
   });
 
+  return {
+    /** Calling with no params clears the override */
+    overrideBadge({text = '', color = '', title = ''} = {}) {
+      if (badgeOvr.text === text) {
+        return;
+      }
+      badgeOvr.text = text;
+      badgeOvr.color = color;
+      refreshIconBadgeColor();
+      setBadgeText({text});
+      for (const tabId of tabMan.list()) {
+        if (badgeOvr) {
+          setBadgeText({tabId, text});
+        } else {
+          refreshIconBadgeText(tabId);
+        }
+      }
+      chrome.browserAction.setTitle({title});
+    },
+  };
+
   function onPortDisconnected({sender}) {
     if (tabMan.get(sender.tab.id, 'styleIds')) {
       API.updateIconBadge.call({sender}, [], {lazyBadge: true});
@@ -61,6 +84,7 @@
   }
 
   function refreshIconBadgeText(tabId) {
+    if (badgeOvr.text) return;
     const text = prefs.get('show-badge') ? `${getStyleCount(tabId)}` : '';
     setBadgeText({tabId, text});
   }
@@ -133,9 +157,9 @@
   }
 
   function refreshIconBadgeColor() {
-    const color = prefs.get(prefs.get('disableAll') ? 'badgeDisabled' : 'badgeNormal');
     setBadgeBackgroundColor({
-      color,
+      color: badgeOvr.color ||
+        prefs.get(prefs.get('disableAll') ? 'badgeDisabled' : 'badgeNormal'),
     });
   }
 

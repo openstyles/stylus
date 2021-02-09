@@ -1,6 +1,7 @@
 /* global API msg */// msg.js
 /* global chromeLocal */// storage-util.js
 /* global compareRevision */// common.js
+/* global iconMan */
 /* global prefs */
 /* global tokenMan */
 'use strict';
@@ -26,6 +27,7 @@ const syncMan = (() => {
     errorMessage: null,
     login: false,
   };
+  let lastError = null;
   let ctrl;
   let currentDrive;
   /** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
@@ -99,8 +101,10 @@ const syncMan = (() => {
         }
         await syncMan.syncNow();
         status.errorMessage = null;
+        lastError = null;
       } catch (err) {
         status.errorMessage = err.message;
+        lastError = err;
         // FIXME: should we move this logic to options.js?
         if (!fromPref) {
           console.error(err);
@@ -138,8 +142,10 @@ const syncMan = (() => {
       try {
         await (ctrl.isInit() ? ctrl.syncNow() : ctrl.start()).catch(handle401Error);
         status.errorMessage = null;
+        lastError = null;
       } catch (err) {
         status.errorMessage = err.message;
+        lastError = err;
       }
       emitStatusChange();
     },
@@ -187,14 +193,14 @@ const syncMan = (() => {
   }
 
   async function handle401Error(err) {
-    let emit;
+    let authError = false;
     if (err.code === 401) {
       await tokenMan.revokeToken(currentDrive.name).catch(console.error);
-      emit = true;
+      authError = true;
     } else if (/User interaction required|Requires user interaction/i.test(err.message)) {
-      emit = true;
+      authError = true;
     }
-    if (emit) {
+    if (authError) {
       status.login = false;
       emitStatusChange();
     }
@@ -203,6 +209,32 @@ const syncMan = (() => {
 
   function emitStatusChange() {
     msg.broadcastExtension({method: 'syncStatusUpdate', status});
+
+    if (status.state !== STATES.connected || !lastError || isNetworkError(lastError)) {
+      iconMan.overrideBadge({});
+    } else if (isGrantError(lastError)) {
+      iconMan.overrideBadge({
+        text: 'x',
+        color: '#F00',
+        title: chrome.i18n.getMessage('syncErrorRelogin'),
+      });
+    } else {
+      iconMan.overrideBadge({
+        text: 'x',
+        color: '#F00',
+        title: chrome.i18n.getMessage('syncError'),
+      });
+    }
+  }
+
+  function isNetworkError(err) {
+    return err.name === 'TypeError' && /networkerror|failed to fetch/i.test(err.message);
+  }
+
+  function isGrantError(err) {
+    if (err.code === 401) return true;
+    if (err.code === 400 && /invalid_grant/.test(err.message)) return true;
+    return false;
   }
 
   function getDrive(name) {

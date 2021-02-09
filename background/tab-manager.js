@@ -53,6 +53,7 @@ const tabMan = (() => {
       }
     },
 
+    /** @returns {IterableIterator<number>} */
     list() {
       return cache.keys();
     },
