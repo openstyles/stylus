@@ -1,4 +1,4 @@
-## db-to-cloud v0.4.5
+## db-to-cloud v0.5.0
 
 Following files are copied from npm (node_modules):
 
