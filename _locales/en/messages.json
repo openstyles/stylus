@@ -1530,6 +1530,10 @@
     "message": "The value cannot be saved. Try reducing the amount of text.",
     "description": "Displayed when trying to save an excessively big value via storage.sync API"
   },
+  "syncError": {
+    "message": "Sync failed",
+    "description": "Tooltip for the toolbar icon"
+  },
   "syncErrorRelogin": {
     "message": "Sync failed.\nTry to re-login in Stylus options:\nclick 'disconnect' first, then 'connect'.",
     "description": "Tooltip for the toolbar icon"
