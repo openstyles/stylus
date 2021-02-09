@@ -729,6 +729,12 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 #help-popup .rules {
   padding: 0 15px;
 }
+#help-popup .rules li {
+  padding-top: .5em;
+}
+#help-popup .rules p {
+  margin: .25em 0;
+}
 #help-popup button {
   margin-right: 3px;
 }

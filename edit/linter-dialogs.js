@@ -74,9 +74,9 @@
         const rule = RULES.csslint.find(rule => rule.id === ruleID);
         return rule &&
           $create('li', [
-            $create('b', $createLink(rule.url || baseUrl, rule.name)),
-            $create('br'),
-            rule.desc,
+            $create('b', ruleID + ': '),
+            rule.url ? $createLink(`"${rule.url}"`, rule.name) : $create('span', `"${rule.name}"`),
+            $create('p', rule.desc),
           ]);
       };
     } else {
@@ -91,6 +91,7 @@
       $create([
         header[0], headerLink, header[1],
         $create('ul.rules', [...activeRules].map(template)),
+        $create('button', {onclick: linterMan.showLintConfig}, t('configureStyle')),
       ]));
   };
 
