@@ -823,6 +823,11 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 #message-box.center.lint-config #message-box-contents {
   text-align: left;
 }
+#help-popup .active-linter-rule {
+  font-weight: bold;
+  text-decoration: underline;
+  background-color: rgba(128, 128, 128, .2);
+}
 
 /************ CSS beautifier ************/
 .beautify-options {
