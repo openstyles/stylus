@@ -154,7 +154,7 @@ const Events = {
     };
     window.on('keydown', box._onkeydown);
     moveFocus(box, 0);
-    Events.hideModal(oldBox);
+    if (oldBox) Events.hideModal(oldBox);
   },
 
   async toggleState(event) {
