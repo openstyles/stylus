@@ -223,7 +223,12 @@ const syncMan = (() => {
       return {
         text: 'x',
         color: '#F00',
-        title: !status.login ? 'syncErrorRelogin' : 'syncError',
+        title: !status.login ? 'syncErrorRelogin' : `${
+          chrome.i18n.getMessage('syncError')
+        }\n---------------------\n${
+          // splitting to limit each line length
+          lastError.message.replace(/.{60,}?\s(?=.{30,})/g, '$&\n')
+        }`,
       };
     }
   }
