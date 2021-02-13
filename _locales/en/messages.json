@@ -1142,7 +1142,7 @@
     "message": "Disconnected"
   },
   "optionsSyncStatusRelogin": {
-    "message": "Session is expired. Please login again."
+    "message": "Session expired, please login again."
   },
   "paginationCurrent": {
     "message": "Current page",
