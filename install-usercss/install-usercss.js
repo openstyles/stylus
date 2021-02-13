@@ -14,7 +14,6 @@ let installedDup;
 let liveReload;
 let tabId;
 
-window.on('resize', adjustCodeHeight);
 // "History back" in Firefox (for now) restores the old DOM including the messagebox,
 // which stays after installing since we don't want to wait for the fadeout animation before resolving.
 document.on('visibilitychange', () => {
@@ -81,6 +80,7 @@ setTimeout(() => {
     colorpicker: true,
     theme,
   });
+  window.on('resize', adjustCodeHeight);
   if (error) {
     showBuildError(error);
   }

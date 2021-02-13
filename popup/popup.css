@@ -291,8 +291,8 @@ html[style*="border"] .entry:nth-child(11):before {
 }
 
 .svg-icon.config {
-  height: 14px;
-  width: 14px;
+  height: 16px;
+  width: 16px;
 }
 
 a.configure[target="_blank"] .svg-icon.config {
