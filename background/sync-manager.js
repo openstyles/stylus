@@ -63,19 +63,19 @@ const syncMan = (() => {
       return status;
     },
 
-    async login(name = prefs.get('sync.enabled')) {
+    async login(name) {
       if (ready.then) await ready;
+      if (!name) name = prefs.get('sync.enabled');
+      await tokenMan.revokeToken(name);
       try {
         await tokenMan.getToken(name, true);
+        status.login = true;
       } catch (err) {
-        if (/Authorization page could not be loaded/i.test(err.message)) {
-          // FIXME: Chrome always fails at the first login so we try again
-          await tokenMan.getToken(name);
-        }
+        status.login = false;
         throw err;
+      } finally {
+        emitStatusChange();
       }
-      status.login = true;
-      emitStatusChange();
     },
 
     async put(...args) {
@@ -88,29 +88,32 @@ const syncMan = (() => {
     async start(name, fromPref = false) {
       if (ready.then) await ready;
       if (!ctrl) await initController();
+
       if (currentDrive) return;
       currentDrive = getDrive(name);
       ctrl.use(currentDrive);
+
       status.state = STATES.connecting;
       status.currentDriveName = currentDrive.name;
-      status.login = true;
       emitStatusChange();
-      try {
-        if (!fromPref) {
-          await syncMan.login(name).catch(handle401Error);
-        }
-        await syncMan.syncNow();
-        status.errorMessage = null;
-        lastError = null;
-      } catch (err) {
-        status.errorMessage = err.message;
-        lastError = err;
-        // FIXME: should we move this logic to options.js?
-        if (!fromPref) {
+
+      if (fromPref) {
+        status.login = true;
+      } else {
+        try {
+          await syncMan.login(name);
+        } catch (err) {
           console.error(err);
+          status.errorMessage = err.message;
+          lastError = err;
+          emitStatusChange();
           return syncMan.stop();
         }
       }
+
+      await ctrl.init();
+
+      await syncMan.syncNow(name);
       prefs.set('sync.enabled', name);
       status.state = STATES.connected;
       schedule(SYNC_INTERVAL);
@@ -124,7 +127,7 @@ const syncMan = (() => {
       status.state = STATES.disconnecting;
       emitStatusChange();
       try {
-        await ctrl.stop();
+        await ctrl.uninit();
         await tokenMan.revokeToken(currentDrive.name);
         await chromeLocal.remove(STORAGE_KEY + currentDrive.name);
       } catch (e) {}
@@ -138,14 +141,21 @@ const syncMan = (() => {
 
     async syncNow() {
       if (ready.then) await ready;
-      if (!currentDrive) throw new Error('cannot sync when disconnected');
+      if (!currentDrive || !status.login) {
+        console.warn('cannot sync when disconnected');
+        return;
+      }
       try {
-        await (ctrl.isInit() ? ctrl.syncNow() : ctrl.start()).catch(handle401Error);
+        await ctrl.syncNow();
         status.errorMessage = null;
         lastError = null;
       } catch (err) {
         status.errorMessage = err.message;
         lastError = err;
+
+        if (isGrantError(err)) {
+          status.login = false;
+        }
       }
       emitStatusChange();
     },
@@ -192,21 +202,6 @@ const syncMan = (() => {
     });
   }
 
-  async function handle401Error(err) {
-    let authError = false;
-    if (err.code === 401) {
-      await tokenMan.revokeToken(currentDrive.name).catch(console.error);
-      authError = true;
-    } else if (/User interaction required|Requires user interaction/i.test(err.message)) {
-      authError = true;
-    }
-    if (authError) {
-      status.login = false;
-      emitStatusChange();
-    }
-    return Promise.reject(err);
-  }
-
   function emitStatusChange() {
     msg.broadcastExtension({method: 'syncStatusUpdate', status});
     iconMan.overrideBadge(getErrorBadge());
@@ -223,11 +218,17 @@ const syncMan = (() => {
   }
 
   function getErrorBadge() {
-    if (status.state === STATES.connected && lastError && !isNetworkError(lastError)) {
+    if (status.state === STATES.connected &&
+        (!status.login || lastError && !isNetworkError(lastError))) {
       return {
         text: 'x',
         color: '#F00',
-        title: isGrantError(lastError) ? 'syncErrorRelogin' : 'syncError',
+        title: !status.login ? 'syncErrorRelogin' : `${
+          chrome.i18n.getMessage('syncError')
+        }\n---------------------\n${
+          // splitting to limit each line length
+          lastError.message.replace(/.{60,}?\s(?=.{30,})/g, '$&\n')
+        }`,
       };
     }
   }

@@ -398,12 +398,10 @@ html:not(.firefox):not(.opera) #updates {
 }
 
 .sync-status {
+  width: 0; /* together with flex-grow makes it reuse the current width */
   flex-grow: 1;
   padding-right: 8px;
   box-sizing: border-box;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 .sync-status::first-letter {
   text-transform: uppercase;

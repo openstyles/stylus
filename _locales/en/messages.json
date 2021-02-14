@@ -1141,6 +1141,9 @@
   "optionsSyncStatusDisconnected": {
     "message": "Disconnected"
   },
+  "optionsSyncStatusRelogin": {
+    "message": "Session expired, please login again."
+  },
   "paginationCurrent": {
     "message": "Current page",
     "description": "Tooltip for the current page index in search results"
