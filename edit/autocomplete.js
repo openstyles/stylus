@@ -149,12 +149,13 @@
   }
 
   function initCssProps() {
-    cssProps = addSuffix(cssMime.propertyKeywords).sort();
+    cssProps = addSuffix(cssMime.propertyKeywords);
     cssMedia = [].concat(...Object.entries(cssMime).map(getMediaKeys).filter(Boolean)).sort();
   }
 
   function addSuffix(obj, suffix = ': ') {
-    return Object.keys(obj).map(k => k + suffix);
+    // Sorting first, otherwise "foo-bar:" would precede "foo:"
+    return Object.keys(obj).sort().map(k => k + suffix);
   }
 
   function getMediaKeys([k, v]) {
