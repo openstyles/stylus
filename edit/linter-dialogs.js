@@ -57,6 +57,21 @@
       ]));
     cm = popup.codebox;
     cm.focus();
+    const rulesStr = getActiveRules().join('|');
+    if (rulesStr) {
+      const rx = new RegExp(`"(${rulesStr})"\\s*:`);
+      let line = 0;
+      cm.startOperation();
+      cm.eachLine(({text}) => {
+        const m = rx.exec(text);
+        if (m) {
+          const ch = m.index + 1;
+          cm.markText({line, ch}, {line, ch: ch + m[1].length}, {className: 'active-linter-rule'});
+        }
+        ++line;
+      });
+      cm.endOperation();
+    }
     cm.on('changes', updateConfigButtons);
     updateConfigButtons();
     window.on('closeHelp', onConfigClose, {once: true});
@@ -74,9 +89,9 @@
         const rule = RULES.csslint.find(rule => rule.id === ruleID);
         return rule &&
           $create('li', [
-            $create('b', $createLink(rule.url || baseUrl, rule.name)),
-            $create('br'),
-            rule.desc,
+            $create('b', ruleID + ': '),
+            rule.url ? $createLink(`"${rule.url}"`, rule.name) : $create('span', `"${rule.name}"`),
+            $create('p', rule.desc),
           ]);
       };
     } else {
@@ -86,13 +101,19 @@
           rule === 'CssSyntaxError' ? rule : $createLink(baseUrl + rule, rule));
     }
     const header = t('linterIssuesHelp', '\x01').split('\x01');
-    const activeRules = new Set([...linterMan.getIssues()].map(issue => issue.rule));
     helpPopup.show(t('linterIssues'),
       $create([
         header[0], headerLink, header[1],
-        $create('ul.rules', [...activeRules].map(template)),
+        $create('ul.rules', getActiveRules().map(template)),
+        $create('button', {onclick: linterMan.showLintConfig}, t('configureStyle')),
       ]));
   };
+
+  function getActiveRules() {
+    const all = [...linterMan.getIssues()].map(issue => issue.rule);
+    const uniq = new Set(all);
+    return [...uniq];
+  }
 
   function getLexicalDepth(lexicalState) {
     let depth = 0;
