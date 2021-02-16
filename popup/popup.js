@@ -15,6 +15,7 @@
 'use strict';
 
 let tabURL;
+let isBlocked;
 
 /** @type Element */
 const installed = $('#installed');
@@ -285,6 +286,7 @@ function sortStyles(entries) {
 function showStyles(frameResults) {
   const entries = new Map();
   frameResults.forEach(({styles = [], url}, index) => {
+    if (isBlocked && !index) return;
     styles.forEach(style => {
       const {id} = style;
       if (!entries.has(id)) {
@@ -421,7 +423,8 @@ function handleDelete(id) {
   }
 }
 
-function blockPopup(isBlocked = true) {
+function blockPopup(val = true) {
+  isBlocked = val;
   document.body.classList.toggle('blocked', isBlocked);
   if (isBlocked) {
     document.body.prepend(t.template.unavailableInfo);
