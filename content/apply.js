@@ -6,7 +6,12 @@
 (() => {
   if (window.INJECTED === 1) return;
 
+  /** true -> when the page styles are received,
+   * false -> when disableAll mode is on at start, the styles won't be sent
+   * so while disableAll lasts we can ignore messages about style updates because
+   * the tab will explicitly ask for all styles in bulk when disableAll mode ends */
   let hasStyles = false;
+  let isDisabled = false;
   let isTab = !chrome.tabs || location.pathname !== '/popup.html';
   const isFrame = window !== parent;
   const isFrameAboutBlank = isFrame && location.href === 'about:blank';
@@ -75,7 +80,8 @@
         parentStyles && await new Promise(requestAnimationFrame) && parentStyles ||
         !isFrameAboutBlank && chrome.app && !chrome.tabs && tryCatch(getStylesViaXhr) ||
         await API.styles.getSectionsByUrl(matchUrl, null, true);
-      hasStyles = !styles.disableAll;
+      isDisabled = styles.disableAll;
+      hasStyles = !isDisabled;
       if (hasStyles) {
         window[SYM] = styles;
         await styleInjector.apply(styles);
@@ -121,6 +127,7 @@
         break;
 
       case 'styleUpdated':
+        if (!hasStyles && isDisabled) break;
         if (style.enabled) {
           API.styles.getSectionsByUrl(matchUrl, style.id).then(sections =>
             sections[style.id]
@@ -132,6 +139,7 @@
         break;
 
       case 'styleAdded':
+        if (!hasStyles && isDisabled) break;
         if (style.enabled) {
           API.styles.getSectionsByUrl(matchUrl, style.id)
             .then(styleInjector.apply);
@@ -139,6 +147,7 @@
         break;
 
       case 'urlChanged':
+        if (!hasStyles && isDisabled) break;
         API.styles.getSectionsByUrl(matchUrl).then(sections => {
           hasStyles = true;
           styleInjector.replace(sections);
@@ -159,6 +168,7 @@
   }
 
   function updateDisableAll(key, disableAll) {
+    isDisabled = disableAll;
     if (isUnstylable) {
       API.styleViaAPI({method: 'prefChanged', prefs: {disableAll}});
     } else if (!hasStyles && !disableAll) {
