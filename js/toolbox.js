@@ -18,6 +18,7 @@
   stringAsRegExp
   tryCatch
   tryRegExp
+  waitForTabUrl
 */
 
 const CHROME = Boolean(chrome.app) && parseInt(navigator.userAgent.match(/Chrom\w+\/(\d+)|$/)[1]);
@@ -467,6 +468,20 @@ async function closeCurrentTab() {
   // https://bugzil.la/1409375
   const tab = await getOwnTab();
   if (tab) chrome.tabs.remove(tab.id);
+}
+
+function waitForTabUrl(tab) {
+  return new Promise(resolve => {
+    browser.tabs.onUpdated.addListener(...[
+      function onUpdated(tabId, info, updatedTab) {
+        if (info.url && tabId === tab.id) {
+          browser.tabs.onUpdated.removeListener(onUpdated);
+          resolve(updatedTab);
+        }
+      },
+      ...'UpdateFilter' in browser.tabs ? [{tabId: tab.id}] : [], // FF only
+    ]);
+  });
 }
 
 function capitalize(s) {
