@@ -83,6 +83,7 @@
         delete window[SYM];
         prefs.subscribe('disableAll', updateDisableAll);
       }
+      styleInjector.toggle(hasStyles);
     }
   }
 
