@@ -6,7 +6,7 @@
   "repository": "openstyles/stylus",
   "author": "Stylus Team",
   "dependencies": {
-    "codemirror": "5.59.2",
+    "codemirror": "5.59.3",
     "db-to-cloud": "^0.6.0",
     "jsonlint": "^1.6.3",
     "less-bundle": "github:openstyles/less-bundle#v0.1.0",
@@ -15,17 +15,17 @@
     "stylelint-bundle": "^13.8.0",
     "stylus-lang-bundle": "github:openstyles/stylus-lang-bundle#v0.54.7",
     "usercss-meta": "^0.10.0",
-    "webext-launch-web-auth-flow": "^0.1.0"
+    "webext-launch-web-auth-flow": "^0.1.1"
   },
   "devDependencies": {
     "archiver": "^4.0.1",
     "endent": "^1.4.0",
-    "eslint": "^7.16.0",
+    "eslint": "^7.20.0",
     "fs-extra": "^9.0.0",
     "make-fetch-happen": "^8.0.7",
     "sync-version": "^1.0.1",
     "tiny-glob": "^0.2.6",
-    "web-ext": "^5.4.1",
+    "web-ext": "^5.5.0",
     "webext-tx-fix": "^0.3.3"
   },
   "scripts": {
