@@ -1,5 +1,5 @@
 /* global API */// msg.js
-/* global URLS */// toolbox.js
+/* global URLS waitForTabUrl */// toolbox.js
 'use strict';
 
 const ABOUT_BLANK = 'about:blank';
@@ -7,7 +7,7 @@ const ABOUT_BLANK = 'about:blank';
 const preinit = (async () => {
   let [tab] = await browser.tabs.query({currentWindow: true, active: true});
   if (!chrome.app && tab.status === 'loading' && tab.url === ABOUT_BLANK) {
-    tab = await waitForTabUrlFF(tab);
+    tab = await waitForTabUrl(tab);
   }
   const frames = sortTabFrames(await browser.webNavigation.getAllFrames({tabId: tab.id}));
   let url = tab.pendingUrl || tab.url || ''; // new Chrome uses pendingUrl while connecting
@@ -59,19 +59,4 @@ function sortTabFrames(frames) {
     urls.add(f.url);
   }
   return sortedFrames;
-}
-
-function waitForTabUrlFF(tab) {
-  return new Promise(resolve => {
-    browser.tabs.onUpdated.addListener(...[
-      function onUpdated(tabId, info, updatedTab) {
-        if (info.url && tabId === tab.id) {
-          browser.tabs.onUpdated.removeListener(onUpdated);
-          resolve(updatedTab);
-        }
-      },
-      ...'UpdateFilter' in browser.tabs ? [{tabId: tab.id}] : [],
-      // TODO: remove both spreads and tabId check when strict_min_version >= 61
-    ]);
-  });
 }

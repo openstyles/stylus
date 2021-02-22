@@ -1,4 +1,4 @@
-/* global FIREFOX */// toolbox.js
+/* global FIREFOX getActiveTab waitForTabUrl */// toolbox.js
 /* global chromeLocal */// storage-util.js
 'use strict';
 
@@ -50,6 +50,8 @@ const tokenMan = (() => {
     },
   };
   const NETWORK_LATENCY = 30; // seconds
+
+  let alwaysUseTab = FIREFOX ? false : null;
 
   return {
 
@@ -138,11 +140,20 @@ const tokenMan = (() => {
     if (provider.authQuery) {
       Object.assign(query, provider.authQuery);
     }
+    if (alwaysUseTab == null) {
+      alwaysUseTab = await detectVivaldiWebRequestBug();
+    }
     const url = `${provider.authURL}?${new URLSearchParams(query)}`;
     const finalUrl = await webextLaunchWebAuthFlow({
       url,
+      alwaysUseTab,
       interactive,
       redirect_uri: query.redirect_uri,
+      windowOptions: {
+        state: 'normal',
+        width: Math.min(screen.width - 100, 800),
+        height: Math.min(screen.height - 100, 800),
+      },
     });
     const params = new URLSearchParams(
       provider.flow === 'token' ?
@@ -202,5 +213,29 @@ const tokenMan = (() => {
     const err = new Error(`Failed to fetch (${r.status}): ${text}`);
     err.code = r.status;
     throw err;
+  }
+
+  async function detectVivaldiWebRequestBug() {
+    // Workaround for https://github.com/openstyles/stylus/issues/1182
+    // Note that modern Vivaldi isn't exposed in `navigator.userAgent` but it adds `extData` to tabs
+    const anyTab = await getActiveTab() || (await browser.tabs.query({}))[0];
+    if (anyTab && !anyTab.extData) {
+      return false;
+    }
+    let bugged = true;
+    const TEST_URL = chrome.runtime.getURL('manifest.json');
+    const check = ({url}) => {
+      bugged = url !== TEST_URL;
+    };
+    chrome.webRequest.onBeforeRequest.addListener(check, {urls: [TEST_URL], types: ['main_frame']});
+    const {tabs: [tab]} = await browser.windows.create({
+      type: 'popup',
+      state: 'minimized',
+      url: TEST_URL,
+    });
+    await waitForTabUrl(tab);
+    chrome.windows.remove(tab.windowId);
+    chrome.webRequest.onBeforeRequest.removeListener(check);
+    return bugged;
   }
 })();
