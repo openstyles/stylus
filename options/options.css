@@ -229,6 +229,7 @@ input[type="color"] {
   margin: 0;
   border-top: 1px solid #999;
   border-bottom: none;
+  min-height: min-content; /* workaround for old Chrome ~70 bug when the window height is small */
 }
 
 #actions button {
