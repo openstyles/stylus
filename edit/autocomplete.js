@@ -120,8 +120,9 @@
             /^(top|documentTypes|atBlock)/.test(getTokenState())) {
           end++;
           list = docFuncs;
+          break;
         }
-        break;
+        // fallthrough to `default`
 
       default:
         // properties and media features
