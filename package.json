@@ -25,13 +25,12 @@
     "make-fetch-happen": "^8.0.7",
     "sync-version": "^1.0.1",
     "tiny-glob": "^0.2.6",
-    "web-ext": "^5.5.0",
-    "webext-tx-fix": "^0.3.3"
+    "web-ext": "^5.5.0"
   },
   "scripts": {
     "lint": "eslint \"**/*.js\" --cache",
     "test": "npm run lint",
-    "update-locales": "tx pull --all && webext-tx-fix",
+    "update-locales": "tx pull --all && node tools/fix-transifex.js",
     "update-transifex": "tx push -s",
     "build-vendor": "node tools/build-vendor",
     "zip": "node tools/zip.js",
