@@ -21,6 +21,7 @@ function SectionsEditor() {
   let INC_ID = 0; // an increment id that is used by various object to track the order
   let sectionOrder = '';
   let headerOffset; // in compact mode the header is at the top so it reduces the available height
+  let cmExtrasHeight; // resize grip + borders
 
   updateHeader();
   rerouteHotkeys.toggle(true); // enabled initially because we don't always focus a CodeMirror
@@ -138,13 +139,17 @@ function SectionsEditor() {
         return;
       }
       if (headerOffset == null) {
-        headerOffset = container.getBoundingClientRect().top + scrollY | 0;
+        headerOffset = Math.ceil(container.getBoundingClientRect().top + scrollY);
       }
-      contentHeight += 9; // border & resize grip
+      if (cmExtrasHeight == null) {
+        cmExtrasHeight = $('.resize-grip', wrapper).offsetHeight + // grip
+          wrapper.offsetHeight - wrapper.clientHeight; // borders
+      }
+      contentHeight += cmExtrasHeight;
       cm.off('update', resize);
       const cmHeight = wrapper.offsetHeight;
       const appliesToHeight = Math.min(section.el.offsetHeight - cmHeight, window.innerHeight / 2);
-      const maxHeight = (window.innerHeight - headerOffset) - appliesToHeight;
+      const maxHeight = Math.floor(window.innerHeight - headerOffset - appliesToHeight);
       const fit = Math.min(contentHeight, maxHeight);
       if (Math.abs(fit - cmHeight) > 1) {
         cm.setSize(null, fit);
