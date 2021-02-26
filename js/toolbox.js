@@ -21,7 +21,7 @@
   waitForTabUrl
 */
 
-const CHROME = Boolean(chrome.app) && parseInt(navigator.userAgent.match(/Chrom\w+\/(\d+)|$/)[1]);
+const CHROME = Boolean(chrome.app) && Number(navigator.userAgent.match(/Chrom\w+\/(\d+)|$/)[1]);
 const OPERA = Boolean(chrome.app) && parseFloat(navigator.userAgent.match(/\bOPR\/(\d+\.\d+)|$/)[1]);
 const VIVALDI = Boolean(chrome.app) && navigator.userAgent.includes('Vivaldi');
 let FIREFOX = !chrome.app && parseFloat(navigator.userAgent.match(/\bFirefox\/(\d+\.\d+)|$/)[1]);
@@ -81,7 +81,7 @@ const URLS = {
   extractUsoArchiveId: url =>
     url &&
     url.startsWith(URLS.usoArchiveRaw) &&
-    parseInt(url.match(/\/(\d+)\.user\.css|$/)[1]),
+    Number(url.match(/\/(\d+)\.user\.css|$/)[1]),
   extractUsoArchiveInstallUrl: url => {
     const id = URLS.extractUsoArchiveId(url);
     return id ? `${URLS.usoArchive}?style=${id}` : '';

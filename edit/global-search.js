@@ -678,7 +678,7 @@
       el.style.width = newWidth + 'px';
     }
     const numLines = el.value.split('\n').length;
-    if (numLines !== parseInt(el.rows)) {
+    if (numLines !== Number(el.rows)) {
       el.rows = numLines;
     }
     el.style.overflowX = el.scrollWidth > el.clientWidth ? '' : 'hidden';

@@ -203,7 +203,7 @@ rules:
   prefer-const: [1, {destructuring: all, ignoreReadBeforeAssign: true}]
   quote-props: [0]
   quotes: [1, single, avoid-escape]
-  radix: [2, as-needed]
+  radix: [2, always]
   require-jsdoc: [0]
   require-yield: [2]
   semi-spacing: [2, {before: false, after: true}]

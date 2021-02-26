@@ -2,7 +2,7 @@
 
 /**
  Copied from https://github.com/violentmonkey/violentmonkey/blob/master/src/common/util.js
- A couple of trivial changes: switched to Math.sign, removed the default radix from parseInt
+ and switched to Math.sign
  */
 
 /* exported compareVersion */
@@ -35,7 +35,7 @@ function compareVersionChunk(ver1, ver2, isSemverMode) {
         ? a - b
         : a > b || a < b && -1;
     } else {
-      delta = (parseInt(a) || 0) - (parseInt(b) || 0);
+      delta = (parseInt(a, 10) || 0) - (parseInt(b, 10) || 0);
     }
   }
   return delta || isSemverMode && (len1 - len2);

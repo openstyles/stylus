@@ -517,7 +517,7 @@
   }
 
   function calcUsoId({md5Url: m, updateUrl}) {
-    return parseInt(m && m.match(/\d+|$/)[0]) ||
+    return Number(m && m.match(/\d+|$/)[0]) ||
            URLS.extractUsoArchiveId(updateUrl);
   }
 
