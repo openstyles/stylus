@@ -725,12 +725,7 @@
     }
   },
   "meta_invalidVersion": {
-    "message": "无效的版本号. 值与 SemVer 规则不匹配: $version$",
-    "placeholders": {
-      "version": {
-        "content": "$1"
-      }
-    }
+    "message": "无效的版本号"
   },
   "meta_invalidWord": {
     "message": "需要一个单词"

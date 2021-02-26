@@ -56,7 +56,7 @@ setTimeout(() => {
     '/vendor/codemirror/addon/selection/active-line',
     '/vendor/codemirror/lib/codemirror.css',
     '/vendor/codemirror/addon/fold/foldgutter.css',
-    '/vendor/semver-bundle/semver', /* global semverCompare */
+    '/js/cmpver', /* global compareVersion */
     '/js/sections-util', /* global styleCodeEmpty */
     '/js/color/color-converter',
     '/edit/codemirror-default.css',
@@ -89,7 +89,7 @@ setTimeout(() => {
   }
   const data = style.usercssData;
   const dupData = dup && dup.usercssData;
-  const versionTest = dup && semverCompare(data.version, dupData.version);
+  const versionTest = dup && compareVersion(data.version, dupData.version);
 
   updateMeta(style, dup);
 
@@ -144,7 +144,7 @@ function updateMeta(style, dup = installedDup) {
   installedDup = dup;
   const data = style.usercssData;
   const dupData = dup && dup.usercssData;
-  const versionTest = dup && semverCompare(data.version, dupData.version);
+  const versionTest = dup && compareVersion(data.version, dupData.version);
 
   cm.setPreprocessor(data.preprocessor);
 

@@ -44,9 +44,6 @@ const files = {
   'lz-string-unsafe': [
     'lz-string-unsafe.min.js',
   ],
-  'semver-bundle': [
-    'dist/semver.js → semver.js',
-  ],
   'stylelint-bundle': [
     'dist/stylelint-bundle.min.js → stylelint-bundle.min.js',
     'https://github.com/stylelint/stylelint/raw/{VERSION}/LICENSE → LICENSE',

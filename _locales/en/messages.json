@@ -916,12 +916,7 @@
     "description": "Error displayed when the protocol of the URL is invalid"
   },
   "meta_invalidVersion": {
-    "message": "Invalid version number. The value doesn't match SemVer pattern: $version$",
-    "placeholders": {
-      "version": {
-        "content": "$1"
-      }
-    },
+    "message": "Invalid version number",
     "description": "Error displayed when @version is invalid"
   },
   "meta_invalidWord": {

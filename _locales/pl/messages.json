@@ -719,12 +719,7 @@
     }
   },
   "meta_invalidVersion": {
-    "message": "Nieprawidłowy numer wersji. Wartość nie pasuje do wzorca SemVer: $version$",
-    "placeholders": {
-      "version": {
-        "content": "$1"
-      }
-    }
+    "message": "Nieprawidłowy numer wersji"
   },
   "meta_invalidWord": {
     "message": "Spodziewane słowo"

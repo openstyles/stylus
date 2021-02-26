@@ -669,12 +669,7 @@
     }
   },
   "meta_invalidVersion": {
-    "message": "Numéro de version invalide. La valeur ne correspond pas au motif SemVer : $version$",
-    "placeholders": {
-      "version": {
-        "content": "$1"
-      }
-    }
+    "message": "Numéro de version invalide"
   },
   "meta_invalidWord": {
     "message": "Mot attendu"

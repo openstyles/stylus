@@ -672,12 +672,7 @@
     }
   },
   "meta_invalidVersion": {
-    "message": "유효하지 않은 버전 숫자입니다. $version$은(는) 유의적 버전 패턴과 일치하지 않습니다.",
-    "placeholders": {
-      "version": {
-        "content": "$1"
-      }
-    }
+    "message": "유효하지 않은 버전 숫자입니다"
   },
   "meta_invalidWord": {
     "message": "단어를 입력하세요"

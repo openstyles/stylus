@@ -648,12 +648,7 @@
     }
   },
   "meta_invalidVersion": {
-    "message": "Ogiltigt versionsnummer. Värdet matchar inte SemVer-mönstret: $version$",
-    "placeholders": {
-      "version": {
-        "content": "$1"
-      }
-    }
+    "message": "Ogiltigt versionsnummer"
   },
   "meta_invalidWord": {
     "message": "Förvänta dig ett ord"

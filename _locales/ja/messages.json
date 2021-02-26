@@ -684,12 +684,7 @@
     }
   },
   "meta_invalidVersion": {
-    "message": "不正なバージョン番号。値がバージョン番号のパターンに合っていません: $version$",
-    "placeholders": {
-      "version": {
-        "content": "$1"
-      }
-    }
+    "message": "不正なバージョン番号"
   },
   "meta_invalidWord": {
     "message": "単語を入力してください"

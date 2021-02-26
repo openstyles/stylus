@@ -2,6 +2,7 @@
 /* global RX_META URLS debounce download ignoreChromeError */// toolbox.js
 /* global calcStyleDigest styleJSONseemsValid styleSectionsEqual */ // sections-util.js
 /* global chromeLocal */// storage-util.js
+/* global compareVersion */// cmpver.js
 /* global db */
 /* global prefs */
 'use strict';
@@ -25,10 +26,10 @@ const updateMan = (() => {
   const RH_ETAG = {responseHeaders: ['etag']}; // a hashsum of file contents
   const RX_DATE2VER = new RegExp([
     /^(\d{4})/,
-    /(1(?:0|[12](?=\d\d))?|[2-9])/, // in ambiguous cases like yyyy123 the month will be 1
-    /([1-2][0-9]?|3[0-1]?|[4-9])/,
-    /\.(0|1[0-9]?|2[0-3]?|[3-9])/,
-    /\.(0|[1-5][0-9]?|[6-9])$/,
+    /(0[1-9]|1(?:0|[12](?=\d\d))?|[2-9])/, // in ambiguous cases like yyyy123 the month will be 1
+    /(0[1-9]|[1-2][0-9]?|3[0-1]?|[4-9])/,
+    /\.([01][0-9]?|2[0-3]?|[3-9])/,
+    /\.([0-5][0-9]?|[6-9])$/,
   ].map(rx => rx.source).join(''));
   const ALARM_NAME = 'scheduledUpdate';
   const MIN_INTERVAL_MS = 60e3;
@@ -213,14 +214,8 @@ const updateMan = (() => {
       }
       // TODO: when sourceCode is > 100kB use http range request(s) for version check
       const {headers: {etag}, response} = await tryDownload(style.updateUrl, RH_ETAG);
-      /* There's a bug? in Chrome which occurs only in a packaged crx:
-       * DOM script for semver fires 'load' event before the script actually runs.
-       * Since the conditions for the bug are rare we'll simply load in parallel */
-      const [json] = await Promise.all([
-        API.usercss.buildMeta({sourceCode: response, etag}),
-        require(['/vendor/semver-bundle/semver']), /* global semverCompare */
-      ]);
-      const delta = semverCompare(json.usercssData.version, ucd.version);
+      const json = await API.usercss.buildMeta({sourceCode: response, etag});
+      const delta = compareVersion(json.usercssData.version, ucd.version);
       let err;
       if (!delta && !ignoreDigest) {
         // re-install is invalid in a soft upgrade

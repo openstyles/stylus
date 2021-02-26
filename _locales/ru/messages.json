@@ -675,12 +675,7 @@
     }
   },
   "meta_invalidVersion": {
-    "message": "Неверный номер версии. Значение не соответствует шаблону SemVer: $version$",
-    "placeholders": {
-      "version": {
-        "content": "$1"
-      }
-    }
+    "message": "Неверный номер версии"
   },
   "meta_invalidWord": {
     "message": "Ожидание слова"

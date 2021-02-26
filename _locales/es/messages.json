@@ -662,12 +662,7 @@
     }
   },
   "meta_invalidVersion": {
-    "message": "Número de versión no válido. El valor no coincide con el patrón SemVer: $version$",
-    "placeholders": {
-      "version": {
-        "content": "$1"
-      }
-    }
+    "message": "Número de versión no válido"
   },
   "meta_invalidWord": {
     "message": "Se espera una palabra"

@@ -691,12 +691,7 @@
     }
   },
   "meta_invalidVersion": {
-    "message": "Ongeldig versienummer. De waarde komt niet overeen met het SemVer-patroon:$version$",
-    "placeholders": {
-      "version": {
-        "content": "$1"
-      }
-    }
+    "message": "Ongeldig versienummer"
   },
   "meta_invalidWord": {
     "message": "Woord verwacht"

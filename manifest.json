@@ -32,6 +32,7 @@
       "js/storage-util.js",
       "js/sections-util.js",
       "js/worker-util.js",
+      "js/cmpver.js",
 
       "background/common.js",
 

@@ -672,12 +672,7 @@
     }
   },
   "meta_invalidVersion": {
-    "message": "Ungültige Versionsnummer: Der Wert entspricht nicht dem SemVer Schema: $version$",
-    "placeholders": {
-      "version": {
-        "content": "$1"
-      }
-    }
+    "message": "Ungültige Versionsnummer"
   },
   "meta_invalidWord": {
     "message": "Erwarte ein Wort"

@@ -5,6 +5,12 @@ const metaParser = (() => {
   require(['/vendor/usercss-meta/usercss-meta.min']); /* global usercssMeta */
   const {createParser, ParseError} = usercssMeta;
   const PREPROCESSORS = new Set(['default', 'uso', 'stylus', 'less']);
+  /** Relaxed semver:
+   * dot-separated digits sequence e.g. 1 or 1.2 or 1.2.3.4.5
+   * optional pre-release chunk: "-" followed by dot-separated word characters, "-"
+   * optional build chunk: "+" followed by dot-separated word characters, "-"
+   */
+  const RX_VER = /^\d+(\.\d+)*(?:-(\w[-\w]*(\.[-\w]+)*))?(?:\+(\w[-\w]*(\.[-\w]+)*))?$/;
   const options = {
     validateKey: {
       preprocessor: state => {
@@ -12,6 +18,15 @@ const metaParser = (() => {
           throw new ParseError({
             code: 'unknownPreprocessor',
             args: [state.value],
+            index: state.valueIndex,
+          });
+        }
+      },
+      version: state => {
+        if (!RX_VER.test(state.value)) {
+          throw new ParseError({
+            code: 'invalidVersion',
+            message: 'Invalid @version',
             index: state.valueIndex,
           });
         }

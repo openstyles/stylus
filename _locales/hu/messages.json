@@ -654,12 +654,7 @@
     }
   },
   "meta_invalidVersion": {
-    "message": "Érvénytelen verziószám. Az érték nem illeszkedik a SemVer mintájához: $version$",
-    "placeholders": {
-      "version": {
-        "content": "$1"
-      }
-    }
+    "message": "Érvénytelen verziószám"
   },
   "meta_invalidWord": {
     "message": "Várt elem: szó"

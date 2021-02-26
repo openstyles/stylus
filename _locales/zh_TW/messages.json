@@ -719,12 +719,7 @@
     }
   },
   "meta_invalidVersion": {
-    "message": "無效的版本號。值不符合 SemVer 模式：$version$",
-    "placeholders": {
-      "version": {
-        "content": "$1"
-      }
-    }
+    "message": "無效的版本號"
   },
   "meta_invalidWord": {
     "message": "預期為單字"
