@@ -202,7 +202,7 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
         color: ${fore};
       }
       ${C_CONTAINER} input,
-      ${C_CONTAINER} button,
+      ${C_CONTAINER} button:not(.fake),
       ${C_CONTAINER} select {
         background: rgba(255, 255, 255, ${
           Math.max(MIN_LUMA, Math.pow(Math.max(0, color.gutter.bgLuma - MIN_LUMA * 2), 2)).toFixed(2)

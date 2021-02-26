@@ -1,6 +1,6 @@
 /* global $ $$ $remove animateElement getEventKeyName moveFocus */// dom.js
 /* global API */// msg.js
-/* global getActiveTab tryJSONparse */// toolbox.js
+/* global getActiveTab */// toolbox.js
 /* global resortEntries tabURL */// popup.js
 /* global t */// localization.js
 'use strict';
@@ -95,12 +95,6 @@ const Events = {
       event.preventDefault();
       return;
     }
-    // prevent the popup being opened in a background tab
-    // when an irrelevant link was accidentally clicked
-    if (el.closest('a')) {
-      event.preventDefault();
-      return;
-    }
   },
 
   name(event) {
@@ -126,7 +120,7 @@ const Events = {
     await API.openURL({
       url: this.href || this.dataset.href,
       index: (await getActiveTab()).index + 1,
-      message: tryJSONparse(this.dataset.sendMessage),
+      message: this._sendMessage,
     });
     window.close();
   },

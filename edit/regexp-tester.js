@@ -96,12 +96,12 @@ const regexpTester = (() => {
             : GET_FAVICON_URL + new URL(url).hostname;
           const icon = $create('img', {src: faviconUrl});
           if (match.text.length === url.length) {
-            full.push($create('a', {href: '#'}, [
+            full.push($create('button.fake', [
               icon,
               url,
             ]));
           } else {
-            partial.push($create('a', {href: '#'}, [
+            partial.push($create('button.fake', [
               icon,
               url.substr(0, match.pos),
               $create('mark', match.text),
@@ -154,24 +154,18 @@ const regexpTester = (() => {
           .split(/(\\+)/)
           .map(s => (s.startsWith('\\') ? $create('code', s) : s)));
       report.appendChild(note);
-      adjustNote(report, note);
+      report.style.paddingBottom = note.offsetHeight + 'px';
     },
   };
 
-  function adjustNote(report, note) {
-    report.style.paddingBottom = note.offsetHeight + 'px';
-  }
-
   function onClick(event) {
-    const a = event.target.closest('a');
+    const a = event.target.closest('a, button');
     if (a) {
       event.preventDefault();
       openURL({
-        url: a.href && a.getAttribute('href') !== '#' && a.href || a.textContent,
+        url: a.href || a.textContent,
         currentWindow: null,
       });
-    } else if (event.target.closest('details')) {
-      setTimeout(adjustNote);
     }
   }
 
