@@ -422,7 +422,6 @@ async function waitForSheet({
   }
   // set language for a) CSS :lang pseudo and b) hyphenation
   document.documentElement.setAttribute('lang', chrome.i18n.getUILanguage());
-  document.on('click', keepAddressOnDummyClick);
   document.on('wheel', changeFocusedInputOnWheel, {capture: true, passive: false});
 
   Promise.resolve().then(async () => {
@@ -485,13 +484,6 @@ async function waitForSheet({
       } else if (btn.title) {
         btn.title = '';
       }
-    }
-  }
-
-  function keepAddressOnDummyClick(e) {
-    // avoid adding # to the page URL when clicking dummy links
-    if (e.target.closest('a[href="#"]')) {
-      e.preventDefault();
     }
   }
 

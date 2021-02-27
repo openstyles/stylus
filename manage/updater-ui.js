@@ -216,7 +216,7 @@ async function showUpdateHistory(event) {
   let scroller, toggler;
   let deleted = false;
   await require(['/js/storage-util']); /* global chromeLocal */
-  const [lines, states] = await Promise.all([
+  const [lines = [], states] = await Promise.all([
     chromeLocal.getValue('updateLog'),
     API.updater.getStates(),
   ]);

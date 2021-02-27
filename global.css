@@ -15,7 +15,7 @@ body:lang(zh-HK) {
   font-family: Arial, 'Microsoft JhengHei UI', 'Microsoft JhengHei', system-ui, sans-serif;
 }
 
-button {
+button:not(.fake) {
   -webkit-appearance: none;
   -moz-appearance: none;
   user-select: none;
@@ -35,12 +35,12 @@ button {
   transition: background-color .25s, border-color .25s;
 }
 
-button:not(:disabled):hover {
+button:not(.fake):not(:disabled):hover {
   background-color: hsl(0, 0%, 95%);
   border-color: hsl(0, 0%, 52%);
 }
 
-button:active {
+button:not(.fake):active {
   background-color: hsl(0, 0%, 95%);
   border-color: hsl(0, 0%, 52%);
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAeCAYAAADtlXTHAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QwJARIWJNZvuQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAMElEQVQI12NoaGgIZmJgYPjLxMDA8I+JgYHhP5z1Dy7xH5X7jxQCzWQ0A9DEILYBABm5HtJk2jPHAAAAAElFTkSuQmCC');
@@ -48,8 +48,20 @@ button:active {
   background-size: 100% 100%;
 }
 
+.fake { /* must be a single simple selector so its specificity loses to anything declared afterwards */
+  all: unset;
+  cursor: pointer;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+.fake[hidden] {
+  display: none;
+}
+
 /* For some odd reason these hovers appear lighter than all other button hovers in every browser */
-#message-box-buttons button:not(:disabled):hover {
+#message-box-buttons button:not(.fake):not(:disabled):hover {
   background-color: hsl(0, 0%, 90%);
   border-color: hsl(0, 0%, 50%);
 }
@@ -274,12 +286,12 @@ input[type="number"][data-focused-via-click]:focus {
   }
 
 /* Firefox cannot handle fractions in font-size */
-  .firefox button:not(.install) {
+  .firefox button:not(.fake):not(.install) {
     line-height: 13px;
     padding: 3px 7px;
   }
 
-  .firefox.moz-appearance-bug button:not(.install) {
+  .firefox.moz-appearance-bug button:not(.fake):not(.install) {
     padding: 2px 4px;
   }
 }

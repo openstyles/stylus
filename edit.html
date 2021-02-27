@@ -86,21 +86,21 @@
         </div>
         <div class="applies-value-wrapper">
           <input name="applies-value" class="applies-value style-contributor" spellcheck="false">
-          <a class="remove-applies-to" href="#" i18n-text="appliesRemove" i18n-title="appliesRemove">
+          <button class="remove-applies-to fake" i18n-text="appliesRemove" i18n-title="appliesRemove">
             <svg class="svg-icon remove"><use xlink:href="#svg-icon-minus"/></svg>
-          </a>
-          <a class="add-applies-to" href="#" i18n-text="appliesAdd" i18n-title="appliesAdd">
+          </button>
+          <button class="add-applies-to fake" i18n-text="appliesAdd" i18n-title="appliesAdd">
             <svg class="svg-icon add"><use xlink:href="#svg-icon-plus"/></svg>
-          </a>
+          </button>
         </div>
       </li>
     </template>
 
     <template data-id="appliesToEverything">
       <li class="applies-to-everything" i18n-text="appliesToEverything">
-        <a class="add-applies-to" i18n-text="appliesAdd" i18n-title="appliesAdd" href="#">
+        <button class="add-applies-to fake" i18n-text="appliesAdd" i18n-title="appliesAdd">
           <svg class="svg-icon add"><use xlink:href="#svg-icon-plus"/></svg>
-        </a>
+        </button>
       </li>
     </template>
 
@@ -113,9 +113,9 @@
         <label i18n-text="sectionCode" class="code-label"></label>
         <div class="applies-to">
           <label i18n-text="appliesLabel">
-            <a href="#" class="svg-inline-wrapper applies-to-help" tabindex="0">
+            <button class="svg-inline-wrapper applies-to-help fake">
               <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
-            </a>
+            </button>
           </label>
           <ul class="applies-to-list"></ul>
         </div>
@@ -136,16 +136,16 @@
         <div data-type="main">
           <div data-type="content"></div>
           <div data-type="actions">
-            <a data-action="case" i18n-title="searchCaseSensitive" href="#" tabindex="0">Aa</a>
-            <a data-action="prev" i18n-title="genericPrevious" href="#" data-hotkey-tooltip="findPrev" tabindex="0">
+            <button data-action="case" i18n-title="searchCaseSensitive" class="fake">Aa</button>
+            <button data-action="prev" i18n-title="genericPrevious" data-hotkey-tooltip="findPrev" class="fake">
               <svg class="svg-icon" style="transform: rotate(180deg)"><use xlink:href="#svg-icon-v"/></svg>
-            </a>
-            <a data-action="next" i18n-title="genericNext" href="#" data-hotkey-tooltip="findNext" tabindex="0">
+            </button>
+            <button data-action="next" i18n-title="genericNext" data-hotkey-tooltip="findNext" class="fake">
               <svg class="svg-icon"><use xlink:href="#svg-icon-v"/></svg>
-            </a>
-            <a data-action="close" i18n-title="confirmClose" href="#" data-hotkey-tooltip="=Esc" tabindex="0">
+            </button>
+            <button data-action="close" i18n-title="confirmClose" data-hotkey-tooltip="=Esc" class="fake">
               <svg class="svg-icon dismiss"><use xlink:href="#svg-icon-close"/></svg>
-            </a>
+            </button>
           </div>
         </div>
         <div data-type="status">
@@ -257,12 +257,12 @@
       <section id="basic-info">
         <div id="basic-info-name">
           <input id="name" class="style-contributor" spellcheck="false">
-          <a id="reset-name" href="#" i18n-title="customNameResetHint" tabindex="0" hidden>
+          <button id="reset-name" i18n-title="customNameResetHint" class="fake" hidden>
             <svg class="svg-icon" viewBox="0 0 20 20">
               <polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5
                                5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10 "/>
             </svg>
-          </a>
+          </button>
           <a id="url" target="_blank"><svg class="svg-icon"><use xlink:href="#svg-icon-external-link"/></svg></a>
         </div>
         <div id="basic-info-enabled">
@@ -289,10 +289,10 @@
         <div id="mozilla-format-buttons" class="sectioned-only">
           <button id="from-mozilla" i18n-text="importLabel"></button>
           <button id="to-mozilla" i18n-text="exportLabel"></button>
-          <a id="to-mozilla-help" class="svg-inline-wrapper" href="#" tabindex="0"
+          <button id="to-mozilla-help" class="svg-inline-wrapper fake"
              i18n-title="styleMozillaFormatHeading">
             <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
-          </a>
+          </button>
         </div>
       </section>
       <div id="details-wrapper">
@@ -342,9 +342,9 @@
                   <input id="editor.colorpicker" type="checkbox">
                   <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
                 </label>
-                <a id="colorpicker-settings" href="#" class="svg-inline-wrapper" i18n-title="shortcutsNote" tabindex="0">
+                <button id="colorpicker-settings" class="svg-inline-wrapper fake" i18n-title="shortcutsNote">
                   <svg class="svg-icon settings"><use xlink:href="#svg-icon-config"/></svg>
-                </a>
+                </button>
               </div>
               <div class="option usercss-only">
                 <label i18n-text="appliesLineWidgetLabel" i18n-title="appliesLineWidgetWarning">
@@ -364,9 +364,9 @@
                   <select id="editor.keyMap"></select>
                   <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
                 </div>
-                <a id="keyMap-help" href="#" class="svg-inline-wrapper" tabindex="0">
+                <button id="keyMap-help" class="svg-inline-wrapper fake">
                   <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
-                </a>
+                </button>
               </div>
               <div class="option aligned">
                 <label id="theme-label" for="editor.theme" i18n-text="cm_theme"></label>
@@ -396,9 +396,9 @@
                     </select>
                     <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
                   </div>
-                <a id="linter-settings" href="#" class="svg-inline-wrapper" i18n-title="linterConfigTooltip" tabindex="0">
+                <button id="linter-settings" class="svg-inline-wrapper fake" i18n-title="linterConfigTooltip">
                   <svg class="svg-icon settings"><use xlink:href="#svg-icon-config"/></svg>
-                </a>
+                </button>
               </div>
             </div>
           </div>
@@ -410,9 +410,9 @@
         <details id="lint" data-pref="editor.lint.expanded" class="hidden-unless-compact ignore-pref-if-compact">
           <summary>
             <h2 i18n-text="linterIssues">: <span id="issue-count"></span>
-              <a id="lint-help" href="#" class="svg-inline-wrapper intercepts-click" tabindex="0">
+              <button id="lint-help" class="svg-inline-wrapper intercepts-click fake">
                 <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
-              </a>
+              </button>
             </h2>
           </summary>
           <div class="lint-scroll-container">

@@ -178,12 +178,10 @@ function initUnreachable(isStore) {
     const note = (FIREFOX < 59 ? t('unreachableAMOHintOldFF') : t('unreachableAMOHint')) +
                  (FIREFOX < 60 ? '' : '\n' + t('unreachableAMOHintNewFF'));
     const renderToken = s => s[0] === '<'
-      ? $create('a', {
+      ? $create('button.fake', {
         textContent: s.slice(1, -1),
         onclick: Events.copyContent,
-        href: '#',
         className: 'copy',
-        tabIndex: 0,
         title: t('copy'),
       })
       : s;
@@ -324,9 +322,7 @@ function createStyleElement(style) {
     Object.assign($('input', entry), {
       onclick: Events.toggleState,
     });
-    const editLink = $('.style-edit-link', entry);
-    Object.assign(editLink, {
-      href: editLink.getAttribute('href') + style.id,
+    Object.assign($('.style-edit-link', entry), {
       onclick: e => Events.openEditor(e, {id: style.id}),
     });
     const styleName = $('.style-name', entry);
@@ -343,7 +339,7 @@ function createStyleElement(style) {
         config.href = style.url;
         config.target = '_blank';
         config.title = t('configureStyleOnHomepage');
-        config.dataset.sendMessage = JSON.stringify({method: 'openSettings'});
+        config._sendMessage = {method: 'openSettings'};
         $('use', config).attributes['xlink:href'].nodeValue = '#svg-icon-config-uso';
       } else {
         config.classList.add('hidden');

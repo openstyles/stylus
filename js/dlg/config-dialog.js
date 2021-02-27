@@ -71,7 +71,7 @@ async function configDialog(style) {
   }
 
   function onshow(box) {
-    $('button', box).insertAdjacentElement('afterend',
+    $('#message-box-buttons button').after(
       $create('label#config-autosave-wrapper', {
         title: t('configOnChangeTooltip'),
       }, [
@@ -215,7 +215,7 @@ async function configDialog(style) {
 
   function buildConfigForm() {
     let resetter =
-      $create('a.config-reset-icon', {href: '#'}, [
+      $create('button.fake.config-reset-icon', [
         $create('SVG:svg.svg-icon', {viewBox: '0 0 20 20'}, [
           $create('SVG:title', t('genericResetLabel')),
           $create('SVG:polygon', {
@@ -230,9 +230,8 @@ async function configDialog(style) {
         case 'color':
           children = [
             $create('.colorview-swatch.config-value', [
-              va.input = $create('a.color-swatch', {
+              va.input = $create('button.fake.color-swatch', {
                 va,
-                href: '#',
                 onclick: showColorpicker,
               }),
             ]),
