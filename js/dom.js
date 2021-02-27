@@ -3,9 +3,10 @@
 'use strict';
 
 /* exported
-  $$remove
   $createLink
   $isTextInput
+  $remove
+  $$remove
   animateElement
   getEventKeyName
   messageBoxProxy
@@ -431,10 +432,12 @@ async function waitForSheet({
   });
 
   onDOMready().then(() => {
-    $remove('#firefox-transitions-bug-suppressor');
     debounce(addTooltipsToEllipsized, 500);
     window.on('resize', () => debounce(addTooltipsToEllipsized, 100));
   });
+
+  // Using `load` event as we need transition bug suppressor active until everything loads
+  window.on('load', () => $('link[href^="global.css"]').sheet.deleteRule(0), {once: true});
 
   function addFaviconFF() {
     const iconset = ['', 'light/'][prefs.get('iconset')] || '';

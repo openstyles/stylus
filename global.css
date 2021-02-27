@@ -1,3 +1,9 @@
+html#stylus #stylus-manage #header *:not(#\0) {
+  /* This suppresses transitions on page open.
+   * Keeping it here at the top of the file for faster processing in dom.js.
+   * Using an increased specificity to override sane selectors in user styles */
+  transition: none !important;
+}
 body {
   font: normal 12px Arial, system-ui, sans-serif;
 }

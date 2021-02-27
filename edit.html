@@ -4,18 +4,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link href="global.css" rel="stylesheet">
-
-    <style id="firefox-transitions-bug-suppressor">
-      /* restrict to FF */
-      @supports (-moz-appearance:none) {
-        /* increased specificity to override sane selectors in user styles */
-        html#stylus.firefox #stylus-edit #header *,
-        html#stylus.firefox #stylus-edit #sections * {
-          transition: none !important;
-        }
-      }
-    </style>
-
     <link id="cm-theme" rel="stylesheet">
 
     <script src="js/polyfill.js"></script>
