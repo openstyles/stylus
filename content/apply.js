@@ -20,8 +20,9 @@
     compare: (a, b) => a.id - b.id,
     onUpdate: onInjectorUpdate,
   });
-  // dynamic about: and javascript: iframes don't have a URL yet so we'll use their parent
-  const matchUrl = isFrameAboutBlank && tryCatch(() => parent.location.href) || location.href;
+  // dynamic iframes don't have a URL yet so we'll use their parent's URL (hash isn't inherited)
+  let matchUrl = isFrameAboutBlank && tryCatch(() => parent.location.href.split('#')[0]) ||
+    location.href;
 
   // save it now because chrome.runtime will be unavailable in the orphaned script
   const orphanEventId = chrome.runtime.id;
@@ -33,6 +34,20 @@
   let port;
   let lazyBadge = isFrame;
   let parentDomain;
+
+  /* about:blank iframes are often used by sites for file upload or background tasks
+   * and they may break if unexpected DOM stuff is present at `load` event
+   * so we'll add the styles only if the iframe becomes visible */
+  const {IntersectionObserver} = window;
+  /** @type IntersectionObserver */
+  let xo;
+  if (IntersectionObserver) {
+    window[Symbol.for('xo')] = (el, cb) => {
+      if (!xo) xo = new IntersectionObserver(onIntersect, {rootMargin: '100%'});
+      el.cb = cb;
+      xo.observe(el);
+    };
+  }
 
   // Declare all vars before init() or it'll throw due to "temporal dead zone" of const/let
   const ready = init();
@@ -74,10 +89,7 @@
         tryCatch(() => parent[parent.Symbol.for(SYM_ID)]);
       const styles =
         window[SYM] ||
-        /* about:blank iframes are often used by sites for file upload or background tasks
-         * and they may break if unexpected DOM stuff is present at `load` event
-         * so we'll add the styles in the next tick */
-        parentStyles && await new Promise(requestAnimationFrame) && parentStyles ||
+        parentStyles && await new Promise(onFrameElementInView) && parentStyles ||
         !isFrameAboutBlank && chrome.app && !chrome.tabs && tryCatch(getStylesViaXhr) ||
         await API.styles.getSectionsByUrl(matchUrl, null, true);
       isDisabled = styles.disableAll;
@@ -147,7 +159,8 @@
         break;
 
       case 'urlChanged':
-        if (!hasStyles && isDisabled) break;
+        if (!hasStyles && isDisabled || matchUrl === request.url) break;
+        matchUrl = request.url;
         API.styles.getSectionsByUrl(matchUrl).then(sections => {
           hasStyles = true;
           styleInjector.replace(sections);
@@ -207,6 +220,24 @@
       API.styleViaAPI({method: 'updateCount'}) :
       API.updateIconBadge(styleInjector.list.map(style => style.id), {lazyBadge})
     ).catch(msg.ignoreError);
+  }
+
+  function onFrameElementInView(cb) {
+    if (IntersectionObserver) {
+      parent[parent.Symbol.for('xo')](frameElement, cb);
+    } else {
+      requestAnimationFrame(cb);
+    }
+  }
+
+  /** @param {IntersectionObserverEntry[]} entries */
+  function onIntersect(entries) {
+    for (const e of entries) {
+      if (e.isIntersecting) {
+        xo.unobserve(e.target);
+        tryCatch(e.target.cb);
+      }
+    }
   }
 
   function tryCatch(func, ...args) {

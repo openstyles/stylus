@@ -42,8 +42,9 @@ const navMan = (() => {
 
   /** @this {string} type */
   function onFakeNavigation(data) {
+    const {url, frameId} = data;
     onNavigation.call(this, data);
-    msg.sendTab(data.tabId, {method: 'urlChanged'}, {frameId: data.frameId})
+    msg.sendTab(data.tabId, {method: 'urlChanged', url}, {frameId})
       .catch(msg.ignoreError);
   }
 })();
