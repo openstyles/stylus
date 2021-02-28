@@ -208,7 +208,10 @@ const syncMan = (() => {
   }
 
   function isNetworkError(err) {
-    return err.name === 'TypeError' && /networkerror|failed to fetch/i.test(err.message);
+    return (
+      err.name === 'TypeError' && /networkerror|failed to fetch/i.test(err.message) ||
+      err.code === 502
+    );
   }
 
   function isGrantError(err) {
