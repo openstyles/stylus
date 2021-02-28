@@ -1,6 +1,6 @@
 html#stylus #stylus-manage #header *:not(#\0) {
   /* This suppresses transitions on page open.
-   * Keeping it here at the top of the file for faster processing in dom.js.
+   * WARNING! Must be the first rule here so dom.js can simply call deleteRule for index 0.
    * Using an increased specificity to override sane selectors in user styles */
   transition: none !important;
 }
