@@ -36,6 +36,7 @@
   border-radius: 12px;
   background-color: #E0E0E0;
   box-shadow: inset 2px 2px 4px rgba(0,0,0,0.1);
+  pointer-events: none; /* this is just a non-clickable decoration, only `input` is clickable */
 }
 
 .onoffswitch span::before {
