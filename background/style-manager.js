@@ -1,5 +1,5 @@
 /* global API msg */// msg.js
-/* global URLS stringAsRegExp tryRegExp */// toolbox.js
+/* global CHROME URLS stringAsRegExp tryRegExp */// toolbox.js
 /* global bgReady compareRevision */// common.js
 /* global calcStyleDigest styleCodeEmpty styleSectionGlobal */// sections-util.js
 /* global db */
@@ -128,10 +128,13 @@ const styleMan = (() => {
       if (isInitialApply && prefs.get('disableAll')) {
         return {disableAll: true};
       }
-      /* Chrome hides text frament from location.href of the page e.g. #:~:text=foo
-         so we'll use the real URL reported by webNavigation API */
-      const {tab, frameId} = this && this.sender || {};
-      url = tab && tabMan.get(tab.id, 'url', frameId) || url;
+      if (CHROME && this && this.sender) {
+        /* Chrome hides text frament from location.href of the page e.g. #:~:text=foo
+           so we'll use the real URL reported by webNavigation API.
+           TODO: if FF will do the same, this won't work as is: FF reports onCommitted too late */
+        const {tab, frameId} = this.sender;
+        url = tab && tabMan.get(tab.id, 'url', frameId) || url;
+      }
       let cache = cachedStyleForUrl.get(url);
       if (!cache) {
         cache = {
