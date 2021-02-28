@@ -1,3 +1,9 @@
+html#stylus #stylus-manage #header *:not(#\0) {
+  /* This suppresses transitions on page open.
+   * WARNING! Must be the first rule here so dom.js can simply call deleteRule for index 0.
+   * Using an increased specificity to override sane selectors in user styles */
+  transition: none !important;
+}
 body {
   font: normal 12px Arial, system-ui, sans-serif;
 }

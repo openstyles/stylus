@@ -6,16 +6,6 @@
   <title i18n-text-append="optionsHeading">Stylus </title>
   <link rel="stylesheet" href="global.css">
 
-  <style id="firefox-transitions-bug-suppressor">
-    /* restrict to FF */
-    @supports (-moz-appearance:none) {
-      /* increased specificity to override sane selectors in user styles */
-      html#stylus.firefox #options *, #stylus #notes * {
-        transition: none !important;
-      }
-    }
-  </style>
-
   <script src="js/polyfill.js"></script>
   <script src="js/toolbox.js"></script>
   <script src="js/msg.js"></script>
