@@ -47,52 +47,48 @@ const BUILDERS = Object.assign(Object.create(null), {
   uso: {
     pre(source, vars) {
       require(['/js/color/color-converter']); /* global colorConverter */
-      const pool = new Map();
+      const pool = Object.create(null);
       return doReplace(source);
 
-      function getValue(name, rgbName) {
-        if (!vars.hasOwnProperty(name)) {
-          if (name.endsWith('-rgb')) {
-            return getValue(name.slice(0, -4), name);
+      function doReplace(text) {
+        return text.replace(/(\/\*\[\[([\w-]+)]]\*\/)([0-9a-f]{2}(?=\W))?/gi, (_, cmt, name, alpha) => {
+          const key = alpha ? name + '[A]' : name;
+          let val = pool[key];
+          if (val === undefined) {
+            val = pool[key] = getValue(name, null, alpha);
           }
-          return null;
+          return (val != null ? val : cmt) + (alpha || '');
+        });
+      }
+
+      function getValue(name, isUsoRgb, alpha) {
+        const v = vars[name];
+        if (!v) {
+          return name.endsWith('-rgb')
+            ? getValue(name.slice(0, -4), true)
+            : null;
         }
-        const {type, value} = vars[name];
-        switch (type) {
-          case 'color': {
-            let color = pool.get(rgbName || name);
-            if (color == null) {
-              color = colorConverter.parse(value);
-              if (color) {
-                if (color.type === 'hsl') {
-                  color = colorConverter.HSVtoRGB(colorConverter.HSLtoHSV(color));
-                }
-                const {r, g, b} = color;
-                color = rgbName
-                  ? `${r}, ${g}, ${b}`
-                  : `#${(0x1000000 + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
-              }
-              // the pool stores `false` for bad colors to differentiate from a yet unknown color
-              pool.set(rgbName || name, color || false);
+        let {value} = v;
+        switch (v.type) {
+          case 'color':
+            value = colorConverter.parse(value) || null;
+            if (value) {
+              /* `alpha` is present or `value` is opaque: #rrggbb
+               * `isUsoRgb`: r, g, b -- transparency is usually handled via a separate var
+               * `value` is transparent: rgba(r, g, b, a) -- for pre-66 Chrome
+               * TODO: when minimum_chrome_version >= 66 try to keep `value` intact */
+              if (alpha) delete value.a;
+              const isRgb = isUsoRgb || value.type === 'rgb' || value.a > 0 && value.a < 1;
+              const usoMode = isUsoRgb || !isRgb;
+              value = colorConverter.format(value, isRgb ? 'rgb' : 'hex', undefined, usoMode);
             }
-            return color || null;
-          }
+            return value;
           case 'dropdown':
-          case 'select': // prevent infinite recursion
-            pool.set(name, '');
+          case 'select':
+            pool[name] = ''; // prevent infinite recursion
             return doReplace(value);
         }
         return value;
-      }
-
-      function doReplace(text) {
-        return text.replace(/\/\*\[\[([\w-]+)\]\]\*\//g, (match, name) => {
-          if (!pool.has(name)) {
-            const value = getValue(name);
-            pool.set(name, value === null ? match : value);
-          }
-          return pool.get(name);
-        });
       }
     },
   },

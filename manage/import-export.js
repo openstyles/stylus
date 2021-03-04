@@ -278,7 +278,7 @@ async function importFromString(jsonString) {
       tasks = tasks.then(() => API.styles.delete(id));
       const oldStyle = oldStylesById.get(id);
       if (oldStyle) {
-        tasks = tasks.then(() => API.styles.import(oldStyle));
+        tasks = tasks.then(() => API.styles.importMany([oldStyle]));
       }
     }
     // taskUI is superfast and updates style list only in this page,

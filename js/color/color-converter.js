@@ -16,29 +16,27 @@ const colorConverter = (() => {
     // NAMED_COLORS is added below
   };
 
-  function format(color = '', type = color.type, hexUppercase) {
+  function format(color = '', type = color.type, hexUppercase, usoMode) {
     if (!color || !type) return typeof color === 'string' ? color : '';
-    const a = formatAlpha(color.a);
-    const hasA = Boolean(a);
-    if (type === 'rgb' && color.type === 'hsl') {
+    const {a} = color;
+    let aStr = formatAlpha(a);
+    if (aStr) aStr = ', ' + aStr;
+    if (type !== 'hsl' && color.type === 'hsl') {
       color = HSVtoRGB(HSLtoHSV(color));
     }
     const {r, g, b, h, s, l} = color;
     switch (type) {
       case 'hex': {
-        const rgbStr = (0x1000000 + (r << 16) + (g << 8) + (b | 0)).toString(16).slice(1);
-        const aStr = hasA ? (0x100 + Math.round(a * 255)).toString(16).slice(1) : '';
-        const hexStr = `#${rgbStr + aStr}`.replace(/^#(.)\1(.)\2(.)\3(?:(.)\4)?$/, '#$1$2$3$4');
-        return hexUppercase ? hexStr.toUpperCase() : hexStr.toLowerCase();
+        let res = '#' + hex2(r) + hex2(g) + hex2(b) + (aStr ? hex2(Math.round(a * 255)) : '');
+        if (!usoMode) res = res.replace(/^#(.)\1(.)\2(.)\3(?:(.)\4)?$/, '#$1$2$3$4');
+        return hexUppercase ? res.toUpperCase() : res;
       }
-      case 'rgb':
-        return hasA ?
-          `rgba(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)}, ${a})` :
-          `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+      case 'rgb': {
+        const rgb = [r, g, b].map(Math.round).join(', ');
+        return usoMode ? rgb : `rgb${aStr ? 'a' : ''}(${rgb}${aStr})`;
+      }
       case 'hsl':
-        return hasA ?
-          `hsla(${h}, ${s}%, ${l}%, ${a})` :
-          `hsl(${h}, ${s}%, ${l}%)`;
+        return `hsl${aStr ? 'a' : ''}(${h}, ${s}%, ${l}%${aStr})`;
     }
   }
 
@@ -214,6 +212,10 @@ const colorConverter = (() => {
   function snapToInt(num) {
     const int = Math.round(num);
     return Math.abs(int - num) < 1e-3 ? int : num;
+  }
+
+  function hex2(val) {
+    return (val < 16 ? '0' : '') + (val >> 0).toString(16);
   }
 })();
 
