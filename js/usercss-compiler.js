@@ -73,12 +73,13 @@ const BUILDERS = Object.assign(Object.create(null), {
           case 'color':
             value = colorConverter.parse(value) || null;
             if (value) {
-              /* `alpha` is present or `value` is opaque: #rrggbb
-               * `isUsoRgb`: r, g, b -- transparency is usually handled via a separate var
-               * `value` is transparent: rgba(r, g, b, a) -- for pre-66 Chrome
+              /* #rrggbb - inline alpha is present; an opaque hsl/a; #rrggbb originally
+               * rgba(r, g, b, a) - transparency <1 is present (Chrome pre-66 compatibility)
+               * rgb(r, g, b) - if color is rgb/a with a=1, note: r/g/b will be rounded
+               * r, g, b - if the var has `-rgb` suffix per USO specification
                * TODO: when minimum_chrome_version >= 66 try to keep `value` intact */
               if (alpha) delete value.a;
-              const isRgb = isUsoRgb || value.type === 'rgb' || value.a > 0 && value.a < 1;
+              const isRgb = isUsoRgb || value.type === 'rgb' || value.a != null && value.a !== 1;
               const usoMode = isUsoRgb || !isRgb;
               value = colorConverter.format(value, isRgb ? 'rgb' : 'hex', undefined, usoMode);
             }
