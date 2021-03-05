@@ -5,6 +5,7 @@
 /* global db */
 /* global prefs */
 /* global tabMan */
+/* global usercssMan */
 'use strict';
 
 /*
@@ -202,18 +203,17 @@ const styleMan = (() => {
     /** @returns {Promise<StyleObj[]>} */
     async importMany(items) {
       if (ready.then) await ready;
-      items.forEach(beforeSave);
+      for (const style of items) {
+        beforeSave(style);
+        if (style.sourceCode && style.usercssData) {
+          await usercssMan.buildCode(style);
+        }
+      }
       const events = await db.exec('putMany', items);
       return Promise.all(items.map((item, i) => {
         afterSave(item, events[i]);
         return handleSave(item, 'import');
       }));
-    },
-
-    /** @returns {Promise<StyleObj>} */
-    async import(data) {
-      if (ready.then) await ready;
-      return handleSave(await saveStyle(data), 'import');
     },
 
     /** @returns {Promise<StyleObj>} */
