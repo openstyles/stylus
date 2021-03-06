@@ -45,11 +45,6 @@ a:hover {
   color: #666;
 }
 
-.svg-icon {
-  fill: #666;
-  transition: fill .5s;
-}
-
 a:hover .svg-icon,
 .svg-icon:hover {
   fill: #000;

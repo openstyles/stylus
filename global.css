@@ -89,6 +89,30 @@ input[type=search] {
   border: 1px solid hsl(0, 0%, 66%);
 }
 
+.svg-icon {
+  cursor: pointer;
+  vertical-align: middle;
+  transition: fill .5s;
+  width: 20px;
+  height: 20px;
+  fill: #666;
+}
+
+.svg-icon:hover {
+  fill: #000;
+}
+
+.svg-icon.info {
+  width: 14px;
+  height: 16px;
+  margin-left: .5ex;
+}
+
+.svg-icon.config {
+  width: 16px;
+  height: 16px;
+}
+
 .svg-icon.checked {
   position: absolute;
   height: 8px;

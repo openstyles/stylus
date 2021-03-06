@@ -131,30 +131,6 @@ a:hover {
   border-top: none;
 }
 
-.svg-icon {
-  cursor: pointer;
-  vertical-align: middle;
-  transition: fill .5s;
-  width: 20px;
-  height: 20px;
-  fill: #666;
-}
-
-.svg-icon:hover {
-  fill: #000;
-}
-
-.svg-icon.info {
-  width: 14px;
-  height: 16px;
-  margin-left: .5ex;
-}
-
-.svg-icon.config {
-  width: 16px;
-  height: 16px;
-}
-
 .homepage {
   margin-left: 0.25em;
   margin-right: 0.1em;

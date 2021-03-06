@@ -166,9 +166,6 @@ label {
 }
 
 .svg-icon {
-  cursor: pointer;
-  vertical-align: middle;
-  transition: fill .5s;
   width: 16px;
   height: 16px;
 }

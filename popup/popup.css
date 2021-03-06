@@ -476,10 +476,8 @@ a.configure[target="_blank"] .svg-icon.config {
 
 .svg-icon {
   pointer-events: none;
-  transition: fill .5s;
   width: 14px;
   height: 16px;
-  fill: #666;
 }
 
 a:hover .svg-icon {
