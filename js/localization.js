@@ -153,7 +153,7 @@ Object.assign(t, {
       const now = new Date();
       const newDate = new Date(Number(date) || date);
       const needsYear = newDate.getYear() !== now.getYear();
-      const needsWeekDay = now - newDate <= 7 * 24 * 3600e3;
+      const needsWeekDay = needsTime && (now - newDate <= 7 * 24 * 3600e3);
       const intlKey = `_intl${needsWeekDay ? 'W' : ''}${needsYear ? 'Y' : ''}${needsTime ? 'HM' : ''}`;
       const intl = t[intlKey] ||
         (t[intlKey] = new Intl.DateTimeFormat([chrome.i18n.getUILanguage(), 'en'], {
