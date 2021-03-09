@@ -28,11 +28,11 @@
   },
   "scripts": {
     "lint": "eslint \"**/*.js\" --cache",
-    "test": "npm run lint",
+    "test": "node tools/test.js && npm run lint",
     "update-locales": "tx pull --all && node tools/fix-transifex.js",
     "update-transifex": "tx push -s",
     "build-vendor": "node tools/build-vendor",
-    "zip": "node tools/zip.js",
+    "zip": "npm test && node tools/zip.js",
     "start": "web-ext run",
     "start-chrome": "web-ext run -t chromium",
     "preversion": "npm test",
