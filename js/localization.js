@@ -140,17 +140,31 @@ Object.assign(t, {
     }
   },
 
-  formatDate(date) {
+  _intl: null,
+  _intlY: null,
+  _intlYHM: null,
+  _intlWYHM: null,
+
+  formatDate(date, needsTime) {
     if (!date) {
       return '';
     }
     try {
+      const now = new Date();
       const newDate = new Date(Number(date) || date);
-      const string = newDate.toLocaleDateString([chrome.i18n.getUILanguage(), 'en'], {
-        day: '2-digit',
-        month: 'short',
-        year: newDate.getYear() === new Date().getYear() ? undefined : '2-digit',
-      });
+      const needsYear = newDate.getYear() !== now.getYear();
+      const needsWeekDay = now - newDate <= 7 * 24 * 3600e3;
+      const intlKey = `_intl${needsWeekDay ? 'W' : ''}${needsYear ? 'Y' : ''}${needsTime ? 'HM' : ''}`;
+      const intl = t[intlKey] ||
+        (t[intlKey] = new Intl.DateTimeFormat([chrome.i18n.getUILanguage(), 'en'], {
+          day: 'numeric',
+          month: 'short',
+          year: needsYear ? '2-digit' : undefined,
+          hour: needsTime ? 'numeric' : undefined,
+          minute: needsTime ? '2-digit' : undefined,
+          weekday: needsWeekDay ? 'long' : undefined,
+        }));
+      const string = intl.format(newDate);
       return string === 'Invalid Date' ? '' : string;
     } catch (e) {
       return '';

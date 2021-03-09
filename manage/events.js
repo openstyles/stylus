@@ -23,8 +23,8 @@ const Events = {
     const style = link.closest('.entry').styleMeta;
     const ucd = style.usercssData;
     link.title =
-      `${t('dateInstalled')}: ${t.formatDate(style.installDate) || '—'}\n` +
-      `${t('dateUpdated')}: ${t.formatDate(style.updateDate) || '—'}\n` +
+      `${t('dateInstalled')}: ${t.formatDate(style.installDate, true) || '—'}\n` +
+      `${t('dateUpdated')}: ${t.formatDate(style.updateDate, true) || '—'}\n` +
       (ucd ? `UserCSS, v.${ucd.version}` : '');
   },
 
