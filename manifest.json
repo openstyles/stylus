@@ -23,6 +23,10 @@
     "identity",
     "<all_urls>"
   ],
+  "options_ui": {
+    "page": "manage.html",
+    "open_in_tab": true
+  },
   "background": {
     "scripts": [
       "js/polyfill.js",
