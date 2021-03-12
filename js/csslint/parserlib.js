@@ -4175,10 +4175,12 @@ self.parserlib = (() => {
       if (asText) {
         return text;
       }
+      const m = rxVendorPrefix.exec(name) || [];
       return SyntaxUnit.addFuncInfo(
         new SyntaxUnit(text, start, 'function', {
           expr,
-          name,
+          name: m[2] || name,
+          prefix: m[1] || '',
           tokenType: Tokens.FUNCTION,
         }));
     }
