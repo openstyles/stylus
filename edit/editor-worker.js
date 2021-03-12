@@ -29,6 +29,7 @@
           let last = '';
           const uniq = [];
           const words = describeProp(v)
+            .replace(/\(.*?\)/g, '(')
             .replace('<named-color>', namedColors)
             .split(rxNonWord)
             .sort(comparator);

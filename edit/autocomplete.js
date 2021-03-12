@@ -152,7 +152,7 @@
           if (prop) {
             if (/[^-\w]/.test(leftLC)) {
               prev += execAt(/[\s:()]*/y, prev, text)[0].length;
-              leftLC = '';
+              leftLC = leftLC.replace(/^\s*:?\s*/, '');
             }
             if (!cssPropsValues) cssPropsValues = await linterMan.worker.getCssPropsValues();
             list = [...new Set([...cssPropsValues[prop] || [], ...cssGlobalValues])];
