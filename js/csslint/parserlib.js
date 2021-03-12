@@ -34,7 +34,7 @@ self.parserlib = (() => {
     'align-items': 'normal | stretch | <baseline-position> | [ <overflow-position>? <self-position> ]',
     'align-content': '<align-content>',
     'align-self': '<align-self>',
-    'all': 'initial | inherit | unset',
+    'all': 'initial | inherit | revert | unset',
     'alignment-adjust': 'auto | baseline | before-edge | text-before-edge | middle | central | ' +
       'after-edge | text-after-edge | ideographic | alphabetic | hanging | ' +
       'mathematical | <length-pct>',
@@ -745,9 +745,9 @@ self.parserlib = (() => {
       'emoji | math | fangsong | ui-serif | ui-sans-serif | ui-monospace | ui-rounded',
     '<geometry-box>': '<shape-box> | fill-box | stroke-box | view-box',
     '<glyph-angle>': p => p.type === 'angle' && p.units === 'deg',
-    '<gradient>': p =>
-      p.type === 'function' &&
-      /^(?:-(?:webkit|moz|ms|o)-)?(?:repeating-)?(?:radial-|linear-|conic-)?gradient/i.test(p),
+    '<gradient>': 'radial-gradient() | linear-gradient() | conic-gradient() | gradient() | ' +
+      'repeating-radial-gradient() | repeating-linear-gradient() | repeating-conic-gradient() | ' +
+      'repeating-gradient()',
     '<hex-color>': p => p.tokenType === Tokens.HASH, //eslint-disable-line no-use-before-define
     '<icccolor>': 'cielab() | cielch() | cielchab() | icc-color() | icc-named-color()',
     '<ident>': vtIsIdent,
@@ -4647,6 +4647,7 @@ self.parserlib = (() => {
       Colors,
       Combinator,
       Parser,
+      Properties,
       PropertyName,
       PropertyValue,
       PropertyValuePart,
@@ -4662,12 +4663,13 @@ self.parserlib = (() => {
       ValidationError,
     },
     util: {
+      EventTarget,
       StringReader,
       SyntaxError,
       SyntaxUnit,
-      EventTarget,
       TokenStreamBase,
       rxVendorPrefix,
+      describeProp: vtExplode,
     },
     cache: parserCache,
   };

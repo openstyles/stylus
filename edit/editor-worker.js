@@ -16,6 +16,31 @@
         .map(m => Object.assign(m, {rule: {id: m.rule.id}}));
     },
 
+    getCssPropsValues() {
+      require(['/js/csslint/parserlib']); /* global parserlib */
+      const {css: {Colors, Properties}, util: {describeProp}} = parserlib;
+      const namedColors = Object.keys(Colors).join(' ');
+      const rxNonWord = /(?:<.+?>|[^-\w<(]+\d*)+/g;
+      const res = {};
+      // moving vendor-prefixed props to the end
+      const comparator = (a, b) => a[0] === '-' && b[0] !== '-' ? 1 : a < b ? -1 : a > b;
+      for (const [k, v] of Object.entries(Properties)) {
+        if (typeof v === 'string') {
+          let last = '';
+          const uniq = [];
+          const words = describeProp(v)
+            .replace('<named-color>', namedColors)
+            .split(rxNonWord)
+            .sort(comparator);
+          for (const word of words) {
+            if (word !== last) uniq.push(last = word);
+          }
+          if (uniq.length) res[k] = uniq;
+        }
+      }
+      return res;
+    },
+
     getRules(linter) {
       return ruleRetriever[linter](); // eslint-disable-line no-use-before-define
     },

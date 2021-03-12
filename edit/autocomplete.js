@@ -2,6 +2,7 @@
 /* global cmFactory */
 /* global debounce */// toolbox.js
 /* global editor */
+/* global linterMan */
 /* global prefs */
 'use strict';
 
@@ -14,11 +15,17 @@
   const rxVAR = /(^|[^-.\w\u0080-\uFFFF])var\(/iyu;
   const rxCONSUME = /([-\w]*\s*:\s?)?/yu;
   const cssMime = CodeMirror.mimeModes['text/css'];
+  const cssGlobalValues = [
+    'inherit',
+    'initial',
+    'revert',
+    'unset',
+  ];
   const docFuncs = addSuffix(cssMime.documentTypes, '(');
   const {tokenHooks} = cssMime;
   const originalCommentHook = tokenHooks['/'];
   const originalHelper = CodeMirror.hint.css || (() => {});
-  let cssProps, cssMedia;
+  let cssMedia, cssProps, cssPropsValues;
 
   const aot = prefs.get('editor.autocompleteOnTyping');
   CodeMirror.defineOption('autocompleteOnTyping', aot, aotToggled);
@@ -34,7 +41,7 @@
     cm[value ? 'on' : 'off']('pick', autocompletePicked);
   }
 
-  function helper(cm) {
+  async function helper(cm) {
     const pos = cm.getCursor();
     const {line, ch} = pos;
     const {styles, text} = cm.getLineHandle(line);
@@ -64,7 +71,7 @@
     const str = text.slice(prev, end);
     const left = text.slice(prev, ch).trim();
     let leftLC = left.toLowerCase();
-    let list = [];
+    let list;
     switch (leftLC[0]) {
 
       case '!':
@@ -136,7 +143,23 @@
           list = state === 'atBlock_parens' ? cssMedia : cssProps;
           end -= /\W$/u.test(str); // e.g. don't consume ) when inside ()
           end += execAt(rxCONSUME, end, text)[0].length;
-        } else {
+
+        } else if (getTokenState() === 'prop') {
+          while (i > 0 && !/^prop(erty)?\b/.test(styles[i + 1])) i -= 2;
+          const propEnd = styles[i];
+          while (i > 0 && /^prop(erty)?\b/.test(styles[i + 1])) i -= 2;
+          const prop = text.slice(styles[i] || 0, propEnd).match(/([-\w]+)?$/u)[1];
+          if (prop) {
+            if (/[^-\w]/.test(leftLC)) {
+              prev += execAt(/[\s:()]*/y, prev, text)[0].length;
+              leftLC = '';
+            }
+            if (!cssPropsValues) cssPropsValues = await linterMan.worker.getCssPropsValues();
+            list = [...new Set([...cssPropsValues[prop] || [], ...cssGlobalValues])];
+            end = prev + execAt(/(\s*[-a-z(]+)?/y, prev, text)[0].length;
+          }
+        }
+        if (!list) {
           return isStylusLang
             ? CodeMirror.hint.fromList(cm, {words: CodeMirror.hintWords.stylus})
             : originalHelper(cm);
