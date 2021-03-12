@@ -1590,14 +1590,6 @@
     "message": "To allow access open <about:config>, right-click the list, click 'New', then 'Boolean', paste <privacy.resistFingerprinting.block_mozAddonManager> and click OK, <true>, OK, reload the <addons.mozilla.org> page.",
     "description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
   },
-  "unreachableAMOHintNewFF": {
-    "message": "In Firefox 60 and newer you'll also have to remove AMO domain from <extensions.webextensions.restrictedDomains> in <about:config>.",
-    "description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
-  },
-  "unreachableAMOHintOldFF": {
-    "message": "Only Firefox 59 and newer can be configured to allow WebExtensions to add style elements on CSP-protected sites such as this one.",
-    "description": "Note in the popup when opened on addons.mozilla.org in Firefox < 59"
-  },
   "unreachableContentScript": {
     "message": "Could not communicate with the page. Try reloading the tab.",
     "description": "Note in the toolbar popup usually on file:// URLs after [re]loading Stylus"
@@ -1605,6 +1597,14 @@
   "unreachableFileHint": {
     "message": "Stylus can access file:// URLs only if you enable the corresponding checkbox for Stylus extension on chrome://extensions page.",
     "description": "Note in the toolbar popup for file:// URLs"
+  },
+  "unreachableMozSiteHint": {
+    "message": "In Firefox 60 and newer you need to remove this domain from <extensions.webextensions.restrictedDomains> in <about:config>.",
+    "description": "Note in the popup when opened on a restricted mozilla site in Firefox >= 60"
+  },
+  "unreachableMozSiteHintOldFF": {
+    "message": "Only Firefox 59 and newer can be configured to allow WebExtensions to add style elements on CSP-protected sites such as this one.",
+    "description": "Note in the popup when opened on a restricted mozilla site in Firefox < 59"
   },
   "unzipStyles": {
     "message": "Unzipping styles..."

@@ -173,15 +173,16 @@ function initUnreachable(isStore) {
   if (!FIREFOX) {
     // Chrome "Allow access to file URLs" in chrome://extensions message
     info.appendChild($create('p', t('unreachableFileHint')));
-  } else if (isStore) {
+  } else {
     $('label', info).textContent = t('unreachableAMO');
-    const note = (FIREFOX < 59 ? t('unreachableAMOHintOldFF') : t('unreachableAMOHint')) +
-                 (FIREFOX < 60 ? '' : '\n' + t('unreachableAMOHintNewFF'));
+    const note = [
+      isStore && t(FIREFOX >= 59 ? 'unreachableAMOHint' : 'unreachableMozSiteHintOldFF'),
+      FIREFOX >= 60 && t('unreachableMozSiteHint'),
+    ].filter(Boolean).join('\n');
     const renderToken = s => s[0] === '<'
-      ? $create('button.fake', {
+      ? $create('button.fake.copy', {
         textContent: s.slice(1, -1),
         onclick: Events.copyContent,
-        className: 'copy',
         title: t('copy'),
       })
       : s;

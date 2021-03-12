@@ -781,6 +781,7 @@ body.blocked .actions > .main-controls {
 .blocked-info {
   hyphens: none;
   word-wrap: break-word;
+  overflow-wrap: anywhere;
   line-height: 16px;
   position: relative;
 }
@@ -801,8 +802,8 @@ body.blocked .actions > .main-controls {
 .blocked-info .copy {
   cursor: pointer;
   transition: all .1s;
-  border-bottom: 1px dotted #000;
-  text-decoration: none;
+  text-decoration: underline;
+  text-decoration-style: dotted;
   font-weight: bold;
 }
 
@@ -820,8 +821,8 @@ body.blocked .actions > .main-controls {
   position: absolute;
   display: none;
   top: 0;
-  left: calc(var(--outer-padding) * -1);
-  right: calc(var(--outer-padding) * -1);
+  left: 0;
+  right: 0;
   font-weight: bold;
   font-size: 13px;
   text-align: center;
