@@ -19,23 +19,25 @@
     getCssPropsValues() {
       require(['/js/csslint/parserlib']); /* global parserlib */
       const {css: {Colors, Properties}, util: {describeProp}} = parserlib;
-      const namedColors = Object.keys(Colors).join(' ');
+      const namedColors = Object.keys(Colors);
       const rxNonWord = /(?:<.+?>|[^-\w<(]+\d*)+/g;
       const res = {};
       // moving vendor-prefixed props to the end
-      const comparator = (a, b) => a[0] === '-' && b[0] !== '-' ? 1 : a < b ? -1 : a > b;
+      const cmp = (a, b) => a[0] === '-' && b[0] !== '-' ? 1 : a < b ? -1 : a > b;
       for (const [k, v] of Object.entries(Properties)) {
         if (typeof v === 'string') {
           let last = '';
           const uniq = [];
-          const words = describeProp(v)
-            .replace(/\(.*?\)/g, '(')
-            .replace('<named-color>', namedColors)
-            .split(rxNonWord)
-            .sort(comparator);
-          for (const word of words) {
-            if (word !== last) uniq.push(last = word);
+          // strip definitions of function arguments
+          const desc = describeProp(v).replace(/([-\w]+)\(.*?\)/g, 'z-$1');
+          const descNoColors = desc.replace(/<named-color>/g, '');
+          // add a prefix to functions to group them at the end
+          const words = descNoColors.split(rxNonWord).sort(cmp);
+          for (let w of words) {
+            if (w.startsWith('z-')) w = w.slice(2) + '(';
+            if (w !== last) uniq.push(last = w);
           }
+          if (desc !== descNoColors) uniq.push(...namedColors);
           if (uniq.length) res[k] = uniq;
         }
       }

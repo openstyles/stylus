@@ -778,7 +778,7 @@ self.parserlib = (() => {
     '<nonnegative-num-pct>': p =>
       p.value >= 0 && (p.type === 'number' || p.type === 'percentage') || p.isCalc,
     //eslint-disable-next-line no-use-before-define
-    '<named-color>': p => p.text in Colors || lower(p.text) in Colors,
+    '<named-color>': p => p.text in Colors || ColorsLC.has(lower(p.text)),
     '<number>': p => p.type === 'number' || p.isCalc,
     '<number-pct>': p => p.type === 'number' || p.type === 'percentage' || p.isCalc,
     '<opacity-value>': p => p.type === 'number' && p.value >= 0 && p.value <= 1 || p.isCalc,
@@ -979,7 +979,12 @@ self.parserlib = (() => {
   //#endregion
   //#region Colors
 
-  const Colors = {
+  const Colors = Object.assign(Object.create(null), {
+    // 'currentColor' color keyword
+    // https://www.w3.org/TR/css3-color/#currentcolor
+    currentColor:         '',
+    transparent:          '#0000',
+
     aliceblue:            '#f0f8ff',
     antiquewhite:         '#faebd7',
     aqua:                 '#00ffff',
@@ -1128,56 +1133,49 @@ self.parserlib = (() => {
     whitesmoke:           '#f5f5f5',
     yellow:               '#ffff00',
     yellowgreen:          '#9acd32',
-    // 'currentColor' color keyword
-    // https://www.w3.org/TR/css3-color/#currentcolor
-    currentcolor:         '',
-    transparent:          '#0000',
 
-    // CSS2 system colors
-    // https://www.w3.org/TR/css3-color/#css2-system
-    activeborder: '',
-    activecaption: '',
-    appworkspace: '',
-    background: '',
-    buttonface: '',
-    buttonhighlight: '',
-    buttonshadow: '',
-    buttontext: '',
-    captiontext: '',
-    graytext: '',
-    greytext: '',
-    highlight: '',
-    highlighttext: '',
-    inactiveborder: '',
-    inactivecaption: '',
-    inactivecaptiontext: '',
-    infobackground: '',
-    infotext: '',
-    menu: '',
-    menutext: '',
-    scrollbar: '',
-    threeddarkshadow: '',
-    threedface: '',
-    threedhighlight: '',
-    threedlightshadow: '',
-    threedshadow: '',
-    window: '',
-    windowframe: '',
-    windowtext: '',
-
-    // CSS4 system colors, only additions to the above
-    // https://drafts.csswg.org/css-color-4/#css-system-colors
-    activetext: '',
-    buttonborder: '',
-    canvas: '',
-    canvastext: '',
-    field: '',
-    fieldtext: '',
-    linktext: '',
-    mark: '',
-    marktext: '',
-    visitedtext: '',
-  };
+    // old = CSS2 system colors: https://www.w3.org/TR/css3-color/#css2-system
+    // new = CSS4 system colors: https://drafts.csswg.org/css-color-4/#css-system-colors
+    ActiveBorder: '',
+    ActiveCaption: '',
+    ActiveText: '', // new
+    AppWorkspace: '',
+    Background: '',
+    ButtonBorder: '', // new
+    ButtonFace: '', // old+new
+    ButtonHighlight: '',
+    ButtonShadow: '',
+    ButtonText: '', // old+new
+    Canvas: '', // new
+    CanvasText: '', // new
+    CaptionText: '',
+    Field: '', // new
+    FieldText: '', // new
+    GrayText: '', // old+new
+    Highlight: '', // old+new
+    HighlightText: '', // old+new
+    InactiveBorder: '',
+    InactiveCaption: '',
+    InactiveCaptionText: '',
+    InfoBackground: '',
+    InfoText: '',
+    LinkText: '', // new
+    Mark: '', // new
+    MarkText: '', // new
+    Menu: '',
+    MenuText: '',
+    Scrollbar: '',
+    ThreeDDarkShadow: '',
+    ThreeDFace: '',
+    ThreeDHighlight: '',
+    ThreeDLightShadow: '',
+    ThreeDShadow: '',
+    VisitedText: '', // new
+    Window: '',
+    WindowFrame: '',
+    WindowText: '',
+  });
+  const ColorsLC = new Set(Object.keys(Colors).map(lower));
 
   //#endregion
   //#region Tokens
