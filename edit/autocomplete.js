@@ -27,19 +27,19 @@
   const originalHelper = CodeMirror.hint.css || (() => {});
   let cssMedia, cssProps, cssPropsValues;
 
-  const aot = prefs.get('editor.autocompleteOnTyping');
-  CodeMirror.defineOption('autocompleteOnTyping', aot, aotToggled);
-  if (aot) cmFactory.globalSetOption('autocompleteOnTyping', true);
+  const AOT_ID = 'autocompleteOnTyping';
+  const AOT_PREF_ID = 'editor.' + AOT_ID;
+  const aot = prefs.get(AOT_PREF_ID);
+  CodeMirror.defineOption(AOT_ID, aot, (cm, value) => {
+    cm[value ? 'on' : 'off']('changes', autocompleteOnTyping);
+    cm[value ? 'on' : 'off']('pick', autocompletePicked);
+  });
+  prefs.subscribe(AOT_PREF_ID, (key, val) => cmFactory.globalSetOption(AOT_ID, val), {runNow: aot});
 
   CodeMirror.registerHelper('hint', 'css', helper);
   CodeMirror.registerHelper('hint', 'stylus', helper);
 
   tokenHooks['/'] = tokenizeUsoVariables;
-
-  function aotToggled(cm, value) {
-    cm[value ? 'on' : 'off']('changes', autocompleteOnTyping);
-    cm[value ? 'on' : 'off']('pick', autocompletePicked);
-  }
 
   async function helper(cm) {
     const pos = cm.getCursor();
