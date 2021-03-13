@@ -132,8 +132,28 @@
         // fallthrough to `default`
 
       default:
+        // property values
+        if (isStylusLang || getTokenState() === 'prop') {
+          while (i > 0 && !/^prop(erty)?\b/.test(styles[i + 1])) i -= 2;
+          const propEnd = styles[i];
+          let prop;
+          if (propEnd > text.lastIndexOf(';', ch - 1)) {
+            while (i > 0 && /^prop(erty)?\b/.test(styles[i + 1])) i -= 2;
+            prop = text.slice(styles[i] || 0, propEnd).match(/([-\w]+)?$/u)[1];
+          }
+          if (prop) {
+            if (/[^-\w]/.test(leftLC)) {
+              prev += execAt(/[\s:()]*/y, prev, text)[0].length;
+              leftLC = leftLC.replace(/^[^\w\s]\s*/, '');
+            }
+            if (!cssPropsValues) cssPropsValues = await linterMan.worker.getCssPropsValues();
+            list = [...new Set([...cssPropsValues[prop] || [], ...cssGlobalValues])];
+            end = prev + execAt(/(\s*[-a-z(]+)?/y, prev, text)[0].length;
+          }
+        }
         // properties and media features
-        if (/^(prop(erty|\?)|atom|error)/.test(type) &&
+        if (!list &&
+            /^(prop(erty|\?)|atom|error)/.test(type) &&
             /^(block|atBlock_parens|maybeprop)/.test(getTokenState())) {
           if (!cssProps) initCssProps();
           if (type === 'prop?') {
@@ -144,20 +164,6 @@
           end -= /\W$/u.test(str); // e.g. don't consume ) when inside ()
           end += execAt(rxCONSUME, end, text)[0].length;
 
-        } else if (getTokenState() === 'prop') {
-          while (i > 0 && !/^prop(erty)?\b/.test(styles[i + 1])) i -= 2;
-          const propEnd = styles[i];
-          while (i > 0 && /^prop(erty)?\b/.test(styles[i + 1])) i -= 2;
-          const prop = text.slice(styles[i] || 0, propEnd).match(/([-\w]+)?$/u)[1];
-          if (prop) {
-            if (/[^-\w]/.test(leftLC)) {
-              prev += execAt(/[\s:()]*/y, prev, text)[0].length;
-              leftLC = leftLC.replace(/^\s*:?\s*/, '');
-            }
-            if (!cssPropsValues) cssPropsValues = await linterMan.worker.getCssPropsValues();
-            list = [...new Set([...cssPropsValues[prop] || [], ...cssGlobalValues])];
-            end = prev + execAt(/(\s*[-a-z(]+)?/y, prev, text)[0].length;
-          }
         }
         if (!list) {
           return isStylusLang
