@@ -34,7 +34,7 @@ self.parserlib = (() => {
     'align-items': 'normal | stretch | <baseline-position> | [ <overflow-position>? <self-position> ]',
     'align-content': '<align-content>',
     'align-self': '<align-self>',
-    'all': 'initial | inherit | unset',
+    'all': 'initial | inherit | revert | unset',
     'alignment-adjust': 'auto | baseline | before-edge | text-before-edge | middle | central | ' +
       'after-edge | text-after-edge | ideographic | alphabetic | hanging | ' +
       'mathematical | <length-pct>',
@@ -745,9 +745,9 @@ self.parserlib = (() => {
       'emoji | math | fangsong | ui-serif | ui-sans-serif | ui-monospace | ui-rounded',
     '<geometry-box>': '<shape-box> | fill-box | stroke-box | view-box',
     '<glyph-angle>': p => p.type === 'angle' && p.units === 'deg',
-    '<gradient>': p =>
-      p.type === 'function' &&
-      /^(?:-(?:webkit|moz|ms|o)-)?(?:repeating-)?(?:radial-|linear-|conic-)?gradient/i.test(p),
+    '<gradient>': 'radial-gradient() | linear-gradient() | conic-gradient() | gradient() | ' +
+      'repeating-radial-gradient() | repeating-linear-gradient() | repeating-conic-gradient() | ' +
+      'repeating-gradient()',
     '<hex-color>': p => p.tokenType === Tokens.HASH, //eslint-disable-line no-use-before-define
     '<icccolor>': 'cielab() | cielch() | cielchab() | icc-color() | icc-named-color()',
     '<ident>': vtIsIdent,
@@ -778,7 +778,7 @@ self.parserlib = (() => {
     '<nonnegative-num-pct>': p =>
       p.value >= 0 && (p.type === 'number' || p.type === 'percentage') || p.isCalc,
     //eslint-disable-next-line no-use-before-define
-    '<named-color>': p => p.text in Colors || lower(p.text) in Colors,
+    '<named-color>': p => p.text in Colors || ColorsLC.has(lower(p.text)),
     '<number>': p => p.type === 'number' || p.isCalc,
     '<number-pct>': p => p.type === 'number' || p.type === 'percentage' || p.isCalc,
     '<opacity-value>': p => p.type === 'number' && p.value >= 0 && p.value <= 1 || p.isCalc,
@@ -979,7 +979,12 @@ self.parserlib = (() => {
   //#endregion
   //#region Colors
 
-  const Colors = {
+  const Colors = Object.assign(Object.create(null), {
+    // 'currentColor' color keyword
+    // https://www.w3.org/TR/css3-color/#currentcolor
+    currentColor:         '',
+    transparent:          '#0000',
+
     aliceblue:            '#f0f8ff',
     antiquewhite:         '#faebd7',
     aqua:                 '#00ffff',
@@ -1128,56 +1133,49 @@ self.parserlib = (() => {
     whitesmoke:           '#f5f5f5',
     yellow:               '#ffff00',
     yellowgreen:          '#9acd32',
-    // 'currentColor' color keyword
-    // https://www.w3.org/TR/css3-color/#currentcolor
-    currentcolor:         '',
-    transparent:          '#0000',
 
-    // CSS2 system colors
-    // https://www.w3.org/TR/css3-color/#css2-system
-    activeborder: '',
-    activecaption: '',
-    appworkspace: '',
-    background: '',
-    buttonface: '',
-    buttonhighlight: '',
-    buttonshadow: '',
-    buttontext: '',
-    captiontext: '',
-    graytext: '',
-    greytext: '',
-    highlight: '',
-    highlighttext: '',
-    inactiveborder: '',
-    inactivecaption: '',
-    inactivecaptiontext: '',
-    infobackground: '',
-    infotext: '',
-    menu: '',
-    menutext: '',
-    scrollbar: '',
-    threeddarkshadow: '',
-    threedface: '',
-    threedhighlight: '',
-    threedlightshadow: '',
-    threedshadow: '',
-    window: '',
-    windowframe: '',
-    windowtext: '',
-
-    // CSS4 system colors, only additions to the above
-    // https://drafts.csswg.org/css-color-4/#css-system-colors
-    activetext: '',
-    buttonborder: '',
-    canvas: '',
-    canvastext: '',
-    field: '',
-    fieldtext: '',
-    linktext: '',
-    mark: '',
-    marktext: '',
-    visitedtext: '',
-  };
+    // old = CSS2 system colors: https://www.w3.org/TR/css3-color/#css2-system
+    // new = CSS4 system colors: https://drafts.csswg.org/css-color-4/#css-system-colors
+    ActiveBorder: '',
+    ActiveCaption: '',
+    ActiveText: '', // new
+    AppWorkspace: '',
+    Background: '',
+    ButtonBorder: '', // new
+    ButtonFace: '', // old+new
+    ButtonHighlight: '',
+    ButtonShadow: '',
+    ButtonText: '', // old+new
+    Canvas: '', // new
+    CanvasText: '', // new
+    CaptionText: '',
+    Field: '', // new
+    FieldText: '', // new
+    GrayText: '', // old+new
+    Highlight: '', // old+new
+    HighlightText: '', // old+new
+    InactiveBorder: '',
+    InactiveCaption: '',
+    InactiveCaptionText: '',
+    InfoBackground: '',
+    InfoText: '',
+    LinkText: '', // new
+    Mark: '', // new
+    MarkText: '', // new
+    Menu: '',
+    MenuText: '',
+    Scrollbar: '',
+    ThreeDDarkShadow: '',
+    ThreeDFace: '',
+    ThreeDHighlight: '',
+    ThreeDLightShadow: '',
+    ThreeDShadow: '',
+    VisitedText: '', // new
+    Window: '',
+    WindowFrame: '',
+    WindowText: '',
+  });
+  const ColorsLC = new Set(Object.keys(Colors).map(lower));
 
   //#endregion
   //#region Tokens
@@ -4175,10 +4173,12 @@ self.parserlib = (() => {
       if (asText) {
         return text;
       }
+      const m = rxVendorPrefix.exec(name) || [];
       return SyntaxUnit.addFuncInfo(
         new SyntaxUnit(text, start, 'function', {
           expr,
-          name,
+          name: m[2] || name,
+          prefix: m[1] || '',
           tokenType: Tokens.FUNCTION,
         }));
     }
@@ -4647,6 +4647,7 @@ self.parserlib = (() => {
       Colors,
       Combinator,
       Parser,
+      Properties,
       PropertyName,
       PropertyValue,
       PropertyValuePart,
@@ -4662,12 +4663,13 @@ self.parserlib = (() => {
       ValidationError,
     },
     util: {
+      EventTarget,
       StringReader,
       SyntaxError,
       SyntaxUnit,
-      EventTarget,
       TokenStreamBase,
       rxVendorPrefix,
+      describeProp: vtExplode,
     },
     cache: parserCache,
   };

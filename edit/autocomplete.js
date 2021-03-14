@@ -2,6 +2,7 @@
 /* global cmFactory */
 /* global debounce */// toolbox.js
 /* global editor */
+/* global linterMan */
 /* global prefs */
 'use strict';
 
@@ -11,30 +12,37 @@
   const USO_VAR = 'uso-variable';
   const USO_VALID_VAR = 'variable-3 ' + USO_VAR;
   const USO_INVALID_VAR = 'error ' + USO_VAR;
+  const rxPROP = /^(prop(erty)?|variable-2)\b/;
   const rxVAR = /(^|[^-.\w\u0080-\uFFFF])var\(/iyu;
   const rxCONSUME = /([-\w]*\s*:\s?)?/yu;
   const cssMime = CodeMirror.mimeModes['text/css'];
+  const cssGlobalValues = [
+    'inherit',
+    'initial',
+    'revert',
+    'unset',
+  ];
   const docFuncs = addSuffix(cssMime.documentTypes, '(');
   const {tokenHooks} = cssMime;
   const originalCommentHook = tokenHooks['/'];
   const originalHelper = CodeMirror.hint.css || (() => {});
-  let cssProps, cssMedia;
+  let cssMedia, cssProps, cssPropsValues;
 
-  const aot = prefs.get('editor.autocompleteOnTyping');
-  CodeMirror.defineOption('autocompleteOnTyping', aot, aotToggled);
-  if (aot) cmFactory.globalSetOption('autocompleteOnTyping', true);
+  const AOT_ID = 'autocompleteOnTyping';
+  const AOT_PREF_ID = 'editor.' + AOT_ID;
+  const aot = prefs.get(AOT_PREF_ID);
+  CodeMirror.defineOption(AOT_ID, aot, (cm, value) => {
+    cm[value ? 'on' : 'off']('changes', autocompleteOnTyping);
+    cm[value ? 'on' : 'off']('pick', autocompletePicked);
+  });
+  prefs.subscribe(AOT_PREF_ID, (key, val) => cmFactory.globalSetOption(AOT_ID, val), {runNow: aot});
 
   CodeMirror.registerHelper('hint', 'css', helper);
   CodeMirror.registerHelper('hint', 'stylus', helper);
 
   tokenHooks['/'] = tokenizeUsoVariables;
 
-  function aotToggled(cm, value) {
-    cm[value ? 'on' : 'off']('changes', autocompleteOnTyping);
-    cm[value ? 'on' : 'off']('pick', autocompletePicked);
-  }
-
-  function helper(cm) {
+  async function helper(cm) {
     const pos = cm.getCursor();
     const {line, ch} = pos;
     const {styles, text} = cm.getLineHandle(line);
@@ -64,7 +72,7 @@
     const str = text.slice(prev, end);
     const left = text.slice(prev, ch).trim();
     let leftLC = left.toLowerCase();
-    let list = [];
+    let list;
     switch (leftLC[0]) {
 
       case '!':
@@ -125,8 +133,29 @@
         // fallthrough to `default`
 
       default:
+        // property values
+        if (isStylusLang || getTokenState() === 'prop') {
+          while (i > 0 && !rxPROP.test(styles[i + 1])) i -= 2;
+          const propEnd = styles[i];
+          let prop;
+          if (propEnd > text.lastIndexOf(';', ch - 1)) {
+            while (i > 0 && rxPROP.test(styles[i + 1])) i -= 2;
+            prop = text.slice(styles[i] || 0, propEnd).match(/([-\w]+)?$/u)[1];
+          }
+          if (prop) {
+            if (/[^-\w]/.test(leftLC)) {
+              prev += execAt(/[\s:()]*/y, prev, text)[0].length;
+              leftLC = leftLC.replace(/^[^\w\s]\s*/, '');
+            }
+            if (prop.startsWith('--')) prop = 'color'; // assuming 90% of variables are colors
+            if (!cssPropsValues) cssPropsValues = await linterMan.worker.getCssPropsValues();
+            list = [...new Set([...cssPropsValues[prop] || [], ...cssGlobalValues])];
+            end = prev + execAt(/(\s*[-a-z(]+)?/y, prev, text)[0].length;
+          }
+        }
         // properties and media features
-        if (/^(prop(erty|\?)|atom|error)/.test(type) &&
+        if (!list &&
+            /^(prop(erty|\?)|atom|error)/.test(type) &&
             /^(block|atBlock_parens|maybeprop)/.test(getTokenState())) {
           if (!cssProps) initCssProps();
           if (type === 'prop?') {
@@ -136,7 +165,9 @@
           list = state === 'atBlock_parens' ? cssMedia : cssProps;
           end -= /\W$/u.test(str); // e.g. don't consume ) when inside ()
           end += execAt(rxCONSUME, end, text)[0].length;
-        } else {
+
+        }
+        if (!list) {
           return isStylusLang
             ? CodeMirror.hint.fromList(cm, {words: CodeMirror.hintWords.stylus})
             : originalHelper(cm);
