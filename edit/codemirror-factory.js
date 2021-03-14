@@ -40,6 +40,8 @@
     },
   };
 
+  // focus and blur
+
   const onCmFocus = cm => {
     rerouteHotkeys.toggle(false);
     cm.display.wrapper.classList.add('CodeMirror-active');
@@ -57,34 +59,50 @@
     cm.on('blur', onCmBlur);
   });
 
-  const handledPrefs = {
-    'editor.colorpicker'() {}, // handled in colorpicker-helper.js
-    async 'editor.theme'(key, value) {
-      let el2;
-      const el = $('#cm-theme');
-      if (value === 'default') {
-        el.href = '';
-      } else {
-        const path = `/vendor/codemirror/theme/${value}.css`;
-        if (el.href !== location.origin + path) {
-          // avoid flicker: wait for the second stylesheet to load, then apply the theme
-          el2 = await require([path]);
-        }
-      }
-      cmFactory.globalSetOption('theme', value);
-      if (el2) {
-        el.remove();
-        el2.id = el.id;
-      }
-    },
-  };
-  const pref2opt = k => k.slice('editor.'.length);
-  const mirroredPrefs = prefs.knownKeys.filter(k =>
-    !handledPrefs[k] &&
+  // propagated preferences
+
+  const prefToCmOpt = k =>
     k.startsWith('editor.') &&
-    Object.hasOwnProperty.call(CodeMirror.defaults, pref2opt(k)));
-  prefs.subscribe(mirroredPrefs, (k, val) => cmFactory.globalSetOption(pref2opt(k), val));
-  prefs.subscribeMany(handledPrefs);
+    k.slice('editor.'.length);
+  const prefKeys = prefs.knownKeys.filter(k =>
+    k !== 'editor.colorpicker' && // handled in colorpicker-helper.js
+    prefToCmOpt(k) in CodeMirror.defaults);
+  const {insertTab, insertSoftTab} = CodeMirror.commands;
+
+  for (const [key, fn] of Object.entries({
+    'editor.tabSize'(cm, value) {
+      cm.setOption('indentUnit', Number(value));
+    },
+    'editor.indentWithTabs'(cm, value) {
+      CodeMirror.commands.insertTab = value ? insertTab : insertSoftTab;
+    },
+    'editor.matchHighlight'(cm, value) {
+      const showToken = value === 'token' && /[#.\-\w]/;
+      const opt = (showToken || value === 'selection') && {
+        showToken,
+        annotateScrollbar: true,
+        onUpdate: updateMatchHighlightCount,
+      };
+      cm.setOption('highlightSelectionMatches', opt || null);
+    },
+    'editor.selectByTokens'(cm, value) {
+      cm.setOption('configureMouse', value ? configureMouseFn : null);
+    },
+  })) {
+    CodeMirror.defineOption(prefToCmOpt(key), prefs.get(key), fn);
+    prefKeys.push(key);
+  }
+
+  prefs.subscribe(prefKeys, (key, val) => {
+    const name = prefToCmOpt(key);
+    if (name === 'theme') {
+      loadCmTheme(val);
+    } else {
+      cmFactory.globalSetOption(name, val);
+    }
+  });
+
+  // lazy propagation
 
   lazyOpt = window.IntersectionObserver && {
     names: ['theme', 'lineWrapping'],
@@ -160,29 +178,24 @@
   //#endregion
   //#region CM option handlers
 
-  const {insertTab, insertSoftTab} = CodeMirror.commands;
-  Object.entries({
-    tabSize(cm, value) {
-      cm.setOption('indentUnit', Number(value));
-    },
-    indentWithTabs(cm, value) {
-      CodeMirror.commands.insertTab = value ? insertTab : insertSoftTab;
-    },
-    matchHighlight(cm, value) {
-      const showToken = value === 'token' && /[#.\-\w]/;
-      const opt = (showToken || value === 'selection') && {
-        showToken,
-        annotateScrollbar: true,
-        onUpdate: updateMatchHighlightCount,
-      };
-      cm.setOption('highlightSelectionMatches', opt || null);
-    },
-    selectByTokens(cm, value) {
-      cm.setOption('configureMouse', value ? configureMouseFn : null);
-    },
-  }).forEach(([name, fn]) => {
-    CodeMirror.defineOption(name, prefs.get('editor.' + name), fn);
-  });
+  async function loadCmTheme(name) {
+    let el2;
+    const el = $('#cm-theme');
+    if (name === 'default') {
+      el.href = '';
+    } else {
+      const path = `/vendor/codemirror/theme/${name}.css`;
+      if (el.href !== location.origin + path) {
+        // avoid flicker: wait for the second stylesheet to load, then apply the theme
+        el2 = await require([path]);
+      }
+    }
+    cmFactory.globalSetOption('theme', name);
+    if (el2) {
+      el.remove();
+      el2.id = el.id;
+    }
+  }
 
   function updateMatchHighlightCount(cm, state) {
     cm.display.wrapper.dataset.matchHighlightCount = state.matchesonscroll.matches.length;
