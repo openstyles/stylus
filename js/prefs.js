@@ -197,7 +197,8 @@
     async subscribe(keys, fn, {runNow} = {}) {
       const toRun = [];
       if (keys) {
-        for (const key of Array.isArray(keys) ? keys : [keys]) {
+        const uniqKeys = new Set(Array.isArray(keys) ? keys : [keys]);
+        for (const key of uniqKeys) {
           if (!isKnown(key)) continue;
           const listeners = onChange.specific[key] ||
             (onChange.specific[key] = new Set());
