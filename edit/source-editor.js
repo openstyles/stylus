@@ -63,13 +63,14 @@ function SourceEditor() {
       const sourceCode = cm.getValue();
       try {
         const {customName, enabled, id} = style;
-        if (!id &&
-          (await API.usercss.build({sourceCode, checkDup: true, metaOnly: true})).dup) {
+        let res = !id && await API.usercss.build({sourceCode, checkDup: true, metaOnly: true});
+        if (res && res.dup) {
           messageBoxProxy.alert(t('usercssAvoidOverwriting'), 'danger', t('genericError'));
         } else {
-          await replaceStyle(
-            await API.usercss.editSave({customName, enabled, id, sourceCode}));
+          res = await API.usercss.editSave({customName, enabled, id, sourceCode});
+          await replaceStyle(res.style);
         }
+        showLog(res);
       } catch (err) {
         const i = err.index;
         const isNameEmpty = i > 0 &&
@@ -111,13 +112,20 @@ function SourceEditor() {
   }
 
   async function preprocess(style) {
-    const {style: newStyle} = await API.usercss.build({
+    const res = await API.usercss.build({
       styleId: style.id,
       sourceCode: style.sourceCode,
       assignVars: true,
     });
-    delete newStyle.enabled;
-    return Object.assign(style, newStyle);
+    showLog(res);
+    delete res.style.enabled;
+    return Object.assign(style, res.style);
+  }
+
+  /** Shows the console.log output from the background worker stored in `log` property */
+  function showLog(data) {
+    if (data.log) data.log.forEach(args => console.log(...args));
+    return data;
   }
 
   function updateLivePreview() {

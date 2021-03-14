@@ -1,5 +1,7 @@
 'use strict';
 
+let builderChain = Promise.resolve();
+
 const BUILDERS = Object.assign(Object.create(null), {
 
   default: {
@@ -114,13 +116,24 @@ async function compileUsercss(preprocessor, code, vars) {
   } else {
     vars = {};
   }
+  const log = [];
   if (builder.pre) {
-    code = await builder.pre(code, vars);
+    // another compileUsercss may(?) become active while this one is awaited so let's chain
+    builderChain = builderChain.catch(() => {}).then(async () => {
+      const logFn = console.log;
+      console.log = (...args) => log.push(args);
+      code = await builder.pre(code, vars);
+      console.log = logFn;
+    });
+    await builderChain;
   }
   require(['/js/moz-parser']); /* global extractSections */
   const res = extractSections({code});
   if (builder.post) {
     builder.post(res.sections, vars);
+  }
+  if (log.length) {
+    res.log = log;
   }
   return res;
 }

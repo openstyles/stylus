@@ -40,13 +40,15 @@ const usercssMan = {
     const style = await usercssMan.buildMeta({sourceCode});
     const dup = (checkDup || assignVars) &&
       await usercssMan.find(styleId ? {id: styleId} : style);
+    let log;
     if (!metaOnly) {
       if (vars || assignVars) {
         await usercssMan.assignVars(style, vars ? {usercssData: {vars}} : dup);
       }
       await usercssMan.buildCode(style);
+      log = style.log; // extracting the non-enumerable prop, otherwise it won't survive messaging
     }
-    return {style, dup};
+    return {style, dup, log};
   },
 
   async buildCode(style) {
@@ -55,12 +57,14 @@ const usercssMan = {
     const i = match.index;
     const j = i + match[0].length;
     const codeNoMeta = code.slice(0, i) + blankOut(code, i, j) + code.slice(j);
-    const {sections, errors} = await API.worker.compileUsercss(preprocessor, codeNoMeta, vars);
+    const {sections, errors, log} = await API.worker.compileUsercss(preprocessor, codeNoMeta, vars);
     const recoverable = errors.every(e => e.recoverable);
     if (!sections.length || !recoverable) {
       throw !recoverable ? errors : 'Style does not contain any actual CSS to apply.';
     }
     style.sections = sections;
+    // adding a non-enumerable prop so it won't be written to storage
+    if (log) Object.defineProperty(style, 'log', {value: log});
     return style;
   },
 
@@ -111,7 +115,11 @@ const usercssMan = {
   },
 
   async editSave(style) {
-    return API.styles.editSave(await usercssMan.parse(style));
+    style = await usercssMan.parse(style);
+    return {
+      log: style.log, // extracting the non-enumerable prop, otherwise it won't survive messaging
+      style: await API.styles.editSave(style),
+    };
   },
 
   async find(styleOrData) {
