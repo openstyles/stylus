@@ -12,6 +12,7 @@
   const USO_VAR = 'uso-variable';
   const USO_VALID_VAR = 'variable-3 ' + USO_VAR;
   const USO_INVALID_VAR = 'error ' + USO_VAR;
+  const rxPROP = /^(prop(erty)?|variable-2)\b/;
   const rxVAR = /(^|[^-.\w\u0080-\uFFFF])var\(/iyu;
   const rxCONSUME = /([-\w]*\s*:\s?)?/yu;
   const cssMime = CodeMirror.mimeModes['text/css'];
@@ -134,11 +135,11 @@
       default:
         // property values
         if (isStylusLang || getTokenState() === 'prop') {
-          while (i > 0 && !/^prop(erty)?\b/.test(styles[i + 1])) i -= 2;
+          while (i > 0 && !rxPROP.test(styles[i + 1])) i -= 2;
           const propEnd = styles[i];
           let prop;
           if (propEnd > text.lastIndexOf(';', ch - 1)) {
-            while (i > 0 && /^prop(erty)?\b/.test(styles[i + 1])) i -= 2;
+            while (i > 0 && rxPROP.test(styles[i + 1])) i -= 2;
             prop = text.slice(styles[i] || 0, propEnd).match(/([-\w]+)?$/u)[1];
           }
           if (prop) {
@@ -146,6 +147,7 @@
               prev += execAt(/[\s:()]*/y, prev, text)[0].length;
               leftLC = leftLC.replace(/^[^\w\s]\s*/, '');
             }
+            if (prop.startsWith('--')) prop = 'color'; // assuming 90% of variables are colors
             if (!cssPropsValues) cssPropsValues = await linterMan.worker.getCssPropsValues();
             list = [...new Set([...cssPropsValues[prop] || [], ...cssGlobalValues])];
             end = prev + execAt(/(\s*[-a-z(]+)?/y, prev, text)[0].length;
