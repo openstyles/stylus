@@ -215,7 +215,7 @@ async function configDialog(style) {
 
   function buildConfigForm() {
     let resetter =
-      $create('button.fake.config-reset-icon', [
+      $create('a.config-reset-icon', {tabIndex: 0}, [
         $create('SVG:svg.svg-icon', {viewBox: '0 0 20 20'}, [
           $create('SVG:title', t('genericResetLabel')),
           $create('SVG:polygon', {
@@ -230,8 +230,9 @@ async function configDialog(style) {
         case 'color':
           children = [
             $create('.colorview-swatch.config-value', [
-              va.input = $create('button.fake.color-swatch', {
+              va.input = $create('a.color-swatch', {
                 va,
+                tabIndex: 0,
                 onclick: showColorpicker,
               }),
             ]),

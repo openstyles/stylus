@@ -53,18 +53,18 @@
         </a>
       </h2>
       <p class="actions">
-        <a target="_blank" class="homepage"></a>
-        <button class="delete fake" i18n-title="deleteStyleLabel">
+        <a target="_blank" class="homepage" tabindex="0"></a>
+        <a class="delete" i18n-title="deleteStyleLabel" tabindex="0">
           <svg class="svg-icon" viewBox="0 0 20 20">
             <polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5
                              5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10 "/>
           </svg>
-        </button>
+        </a>
       </p>
       <p class="style-info" data-type="age"></p>
       <div class="applies-to">
         <div class="targets"></div>
-        <button class="expander fake">...</button>
+        <a class="expander" tabindex="0">...</a>
       </div>
     </div>
   </template>
@@ -83,27 +83,27 @@
   </template>
 
   <template data-id="configureIcon">
-    <button class="configure-usercss fake" i18n-title="configureStyle">
+    <a class="configure-usercss" i18n-title="configureStyle" tabindex="0">
       <svg class="svg-icon config"><use xlink:href="#svg-icon-config"></use></svg>
-    </button>
+    </a>
   </template>
 
   <template data-id="updaterIcons">
     <span class="updater-icons">
-      <button class="check-update fake" i18n-title="checkForUpdate">
+      <a class="check-update" i18n-title="checkForUpdate" tabindex="0">
         <svg class="svg-icon" viewBox="0 0 20 20">
           <path d="M18,16.6l-3.1-3.1c0.5-0.7,0.9-1.5,1-2.5h-2.1c-0.4,1.7-2,3-3.9,3c-0.8,0-1.6-0.3-2.3-0.7
                    L10,11H6.1H4.1H4v6l2.3-2.3c1,0.8,2.3,1.3,3.7,1.3c1.3,0,2.5-0.4,3.5-1.1l3.1,3.1L18,16.6z"/>
           <path d="M10,6c0.8,0,1.6,0.3,2.3,0.7L10,9h3.9h2.1H16V3l-2.3,2.3C12.7,4.5,11.4,4,10,4
                    C7,4,4.6,6.2,4.1,9h2.1C6.6,7.3,8.1,6,10,6z"/>
         </svg>
-      </button>
-      <button class="update fake" i18n-title="installUpdate">
+      </a>
+      <a class="update" i18n-title="installUpdate" tabindex="0">
         <svg class="svg-icon" viewBox="0 0 20 20">
           <polygon points="16,8 12,8 12,3 8,3 8,8 4,8 10,14 "/>
           <rect shape-rendering="crispEdges" x="4" y="15" width="12" height="2"/>
         </svg>
-      </button>
+      </a>
       <span class="up-to-date" i18n-title="updateCheckSucceededNoUpdate">
         <svg class="svg-icon" viewBox="0 0 20 20">
           <polygon points="15.83 4.75 8.76 11.82 5.2 8.26 3.51 9.95 8.76 15.19 17.52 6.43 15.83 4.75"/>
@@ -168,13 +168,13 @@
           <h2 i18n-text="manageFilters">:
             <div class="filter-stats-wrapper">
               <span id="filters-stats"></span>
-              <button id="reset-filters" class="fake">
+              <a id="reset-filters" tabindex="0">
                 <svg class="svg-icon" viewBox="0 0 20 20">
                   <title i18n-text="genericResetLabel"></title>
                   <polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5
                                    5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10 "/>
                 </svg>
-              </button>
+              </a>
             </div>
           </h2>
         </summary>
@@ -257,9 +257,9 @@
             </select>
             <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
           </div>
-          <button id="search-help" class="fake">
+          <a id="search-help" tabindex="0">
             <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
-          </button>
+          </a>
         </div>
 
       </details>
@@ -269,9 +269,9 @@
           <select id="manage.newUI.sort"></select>
           <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
         </div>
-        <button id="sorter-help" class="fake">
+        <a id="sorter-help" tabindex="0">
           <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
-        </button>
+        </a>
       </div>
     </div>
 
@@ -282,11 +282,11 @@
           <button id="check-all-updates" i18n-text="checkAllUpdates">
             <span id="update-progress"></span>
           </button>
-          <button id="update-history" i18n-title="genericHistoryLabel" class="fake">
+          <a id="update-history" i18n-title="genericHistoryLabel" tabindex="0">
             <svg class="svg-icon" viewBox="0 0 20 20" i18n-alt="helpAlt">
               <path d="M13,7H7V6h6Zm6,6.5A5.5,5.5,0,0,1,8.61,16H4V3H16V8.61A5.5,5.5,0,0,1,19,13.5ZM8,14c0-.16,0-.84,0-1H7V12H8.21a5.46,5.46,0,0,1,.39-1H7V10H9.26a5.55,5.55,0,0,1,1.09-1H7V8h7V5H6v9Zm10-.5A4.5,4.5,0,1,0,13.5,18,4.5,4.5,0,0,0,18,13.5ZM14,13V10H13v4h4V13Z"/>
             </svg>
-          </button>
+          </a>
         </div>
 
         <div id="update-all">

@@ -96,12 +96,12 @@ const regexpTester = (() => {
             : GET_FAVICON_URL + new URL(url).hostname;
           const icon = $create('img', {src: faviconUrl});
           if (match.text.length === url.length) {
-            full.push($create('button.fake', [
+            full.push($create('a', {tabIndex: 0}, [
               icon,
               url,
             ]));
           } else {
-            partial.push($create('button.fake', [
+            partial.push($create('a', {tabIndex: 0}, [
               icon,
               url.substr(0, match.pos),
               $create('mark', match.text),

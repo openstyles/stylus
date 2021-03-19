@@ -180,9 +180,10 @@ function initUnreachable(isStore) {
       FIREFOX >= 60 && t('unreachableMozSiteHint'),
     ].filter(Boolean).join('\n');
     const renderToken = s => s[0] === '<'
-      ? $create('button.fake.copy', {
+      ? $create('a.copy', {
         textContent: s.slice(1, -1),
         onclick: Events.copyContent,
+        tabIndex: 0,
         title: t('copy'),
       })
       : s;

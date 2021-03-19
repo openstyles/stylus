@@ -423,6 +423,7 @@ async function waitForSheet({
   }
   // set language for a) CSS :lang pseudo and b) hyphenation
   document.documentElement.setAttribute('lang', chrome.i18n.getUILanguage());
+  document.on('keypress', clickDummyLinkOnEnter);
   document.on('wheel', changeFocusedInputOnWheel, {capture: true, passive: false});
 
   Promise.resolve().then(async () => {
@@ -487,6 +488,14 @@ async function waitForSheet({
       } else if (btn.title) {
         btn.title = '';
       }
+    }
+  }
+
+  function clickDummyLinkOnEnter(e) {
+    if (getEventKeyName(e) === 'Enter') {
+      const a = e.target.closest('a');
+      const isDummy = a && !a.href && a.tabIndex === 0;
+      if (isDummy) a.dispatchEvent(new MouseEvent('click', {bubbles: true}));
     }
   }
 
