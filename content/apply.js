@@ -252,7 +252,7 @@
     // so we need to detach event listeners
     window.removeEventListener(orphanEventId, orphanCheck, true);
     isOrphaned = true;
-    styleInjector.clear();
+    setTimeout(styleInjector.clear, 1000); // avoiding FOUC
     tryCatch(msg.off, applyOnMessage);
   }
 })();
