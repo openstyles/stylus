@@ -70,7 +70,9 @@
               if (found) {
                 const target = $('.' + TARGET_CLASS);
                 const cm = target.CodeMirror;
-                (cm || target).focus();
+                /* Since this runs in `keydown` event we have to delay focusing
+                 * to prevent CodeMirror from seeing and handling the key */
+                setTimeout(() => (cm || target).focus());
                 if (cm) {
                   const {from, to} = cm.state.search.searchPos;
                   cm.jumpToPos(from, to);
