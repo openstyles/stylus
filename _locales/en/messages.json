@@ -1275,10 +1275,6 @@
     "message": "Also search global styles",
     "description": "Checkbox label in the popup's inline style search, shown when the text to search is entered"
   },
-  "searchUserStylesWorld": {
-    "message": "Search in Userstyles world",
-    "description": "Checkbox label in the popup's inline style search, shown when the text to search is entered"
-  },
   "searchNumberOfResults": {
     "message": "Number of matches",
     "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"

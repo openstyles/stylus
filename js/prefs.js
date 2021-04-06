@@ -37,7 +37,6 @@
     'popup.autoResort': false,      // auto resort styles after toggling
     'popup.borders': false,         // add white borders on the sides
     'popup.findStylesInline': true, // use the inline style search
-    'popup.searchUserStylesWorld': false, // use userstyles world instead of uso-archive for inline searching.
 
     'manage.onlyEnabled': false,    // display only enabled styles
     'manage.onlyLocal': false,      // display only styles created locally
