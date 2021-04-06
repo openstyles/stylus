@@ -226,6 +226,10 @@ const styleMan = (() => {
         URLS.extractGreasyForkInstallUrl(style.updateUrl)
       );
       if (url) style.url = style.installationUrl = url;
+      if (style.initialUrl) {
+        style.installationUrl = URLS.extractUSwInstallUrl(style.initialUrl);
+        delete style.initialUrl;
+      }
       style.originalDigest = await calcStyleDigest(style);
       // FIXME: update updateDate? what about usercss config?
       return handleSave(await saveStyle(style), reason);

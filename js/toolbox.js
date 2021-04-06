@@ -78,6 +78,10 @@ const URLS = {
 
   usoArchive: 'https://33kk.github.io/uso-archive/',
   usoArchiveRaw: 'https://raw.githubusercontent.com/33kk/uso-archive/flomaster/data/',
+
+  usw: 'https://userstyles.world/',
+  uswSearch: 'https://userstyles.world/api/search/',
+
   extractUsoArchiveId: url =>
     url &&
     url.startsWith(URLS.usoArchiveRaw) &&
@@ -90,6 +94,16 @@ const URLS = {
 
   extractGreasyForkInstallUrl: url =>
     /^(https:\/\/(?:greasy|sleazy)fork\.org\/scripts\/\d+)[^/]*\/code\/[^/]*\.user\.css$|$/.exec(url)[1],
+
+  extractUSwId: url =>
+    url &&
+    url.startsWith(URLS.usw) &&
+    Number(url.match(/\/(\d+)\.user\.css|$/)[1]),
+  extractUSwInstallUrl: url => {
+    const id = URLS.extractUSwId(url);
+    return id ? `${URLS.usw}style/${id}` : '';
+  },
+  makeUSwArchiveCodeUrl: id => `${URLS.usw}api/style/${id}.user.css`,
 
   supported: url => (
     url.startsWith('http') ||
@@ -411,13 +425,14 @@ function download(url, {
     };
     xhr.onload = () => {
       if (xhr.status === requiredStatusCode || !requiredStatusCode || u.protocol === 'file:') {
+        const isUSWSearch = url.startsWith(URLS.uswSearch);
         const response = expandUsoVars(xhr.response);
         if (responseHeaders) {
           const headers = {};
           for (const h of responseHeaders) headers[h] = xhr.getResponseHeader(h);
           resolve({headers, response});
         } else {
-          resolve(response);
+          resolve(isUSWSearch ? response.data : response);
         }
       } else {
         reject(xhr.status);

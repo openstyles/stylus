@@ -39,8 +39,23 @@
   let results;
   /** @type IndexEntry[] */
   let index;
+  /**
+   * @typedef USWIndexEntry
+   * @prop {Number} id - id
+   * @prop {string} name - name
+   * @prop {string} username -  authorName
+   * @prop {string} description -  description
+   * @prop {string} preview -   screenshot
+   */
+  /**
+   * @type {Object.<string, USWIndexEntry[]>}
+   */
+  const USWIndex = {};
+  /** @type USWIndexEntry[] */
+  let USWResults = [];
   let category = '';
   let searchGlobals = $('#search-globals').checked;
+  let searchUserStylesWorld = $('#search-usw').checked;
   /** @type string[] */
   let query = [];
   /** @type 'n' | 'u' | 't' | 'w' | 'r'  */
@@ -82,23 +97,36 @@
       searchGlobals = this.checked;
       ready = ready.then(start);
     };
-    $('#search-query').oninput = function () {
-      query = [];
-      const text = this.value.trim().toLocaleLowerCase();
-      const thisYear = new Date().getFullYear();
-      for (let re = /"(.+?)"|(\S+)/g, m; (m = re.exec(text));) {
-        const n = Number(m[2]);
-        query.push(n >= 2000 && n <= thisYear ? n : m[1] || m[2]);
-      }
-      if (category === STYLUS_CATEGORY && !query.includes('stylus')) {
-        query.push('stylus');
-      }
+    $('#search-usw').checked = prefs.get('popup.searchUserStylesWorld');
+    $('#search-usw').onchange = function () {
+      searchUserStylesWorld = this.checked;
+      prefs.set('popup.searchUserStylesWorld', searchUserStylesWorld);
       ready = ready.then(start);
     };
+    $('#search-query').oninput = function () {
+      debounce(ev => {
+        query = [];
+        const text = ev.value.trim().toLocaleLowerCase();
+        const thisYear = new Date().getFullYear();
+        for (let re = /"(.+?)"|(\S+)/g, m; (m = re.exec(text));) {
+          const n = Number(m[2]);
+          query.push(n >= 2000 && n <= thisYear ? n : m[1] || m[2]);
+        }
+        if (category === STYLUS_CATEGORY && !query.includes('stylus')) {
+          query.push('stylus');
+        }
+        ready = ready.then(start);
+      }, 750, this);
+    };
+
     $('#search-order').value = order;
     $('#search-order').onchange = function () {
       order = this.value;
-      results.sort(comparator);
+      if (searchUserStylesWorld) {
+        USWResults.sort(comparator);
+      } else {
+        results.sort(comparator);
+      }
       render();
     };
     dom.list = $('#search-results-list');
@@ -132,19 +160,35 @@
 
     window.on('styleDeleted', ({detail: {style: {id}}}) => {
       restoreScrollPosition();
-      const result = results.find(r => r.installedStyleId === id);
-      if (result) {
-        clearTimeout(result.pingbackTimer);
-        renderActionButtons(result.i, -1);
+      if (searchUserStylesWorld) {
+        const result = USWResults.find(r => r.id === id);
+        if (result) {
+          clearTimeout(result.pingbackTimer);
+          renderActionButtons(result.id, -1);
+        }
+      } else {
+        const result = results.find(r => r.installedStyleId === id);
+        if (result) {
+          clearTimeout(result.pingbackTimer);
+          renderActionButtons(result.i, -1);
+        }
       }
     });
 
     window.on('styleAdded', async ({detail: {style}}) => {
       restoreScrollPosition();
-      const usoId = calcUsoId(style) ||
-                    calcUsoId(await API.styles.get(style.id));
-      if (usoId && results.find(r => r.i === usoId)) {
-        renderActionButtons(usoId, style.id);
+      if (searchUserStylesWorld) {
+        const uswId = calcUSwId(style) ||
+                      calcUSwId(await API.styles.get(style.id));
+        if (uswId && USWResults.find(r => r.id === uswId)) {
+          renderActionButtons(uswId, style.id);
+        }
+      } else {
+        const usoId = calcUsoId(style) ||
+                      calcUsoId(await API.styles.get(style.id));
+        if (usoId && results.find(r => r.i === usoId)) {
+          renderActionButtons(usoId, style.id);
+        }
       }
     });
   }
@@ -181,19 +225,27 @@
     show(dom.container);
     show(dom.list);
     hide(dom.error);
-    results = [];
     try {
-      for (let retry = 0; !results.length && retry <= 2; retry++) {
-        results = await search({retry});
+      let resultsMap = [];
+      for (let retry = 0; !resultsMap.length && retry <= 2; retry++) {
+        resultsMap = await search({retry, searchUserStylesWorld});
       }
-      if (results.length) {
+      if (resultsMap.length) {
         const installedStyles = await API.styles.getAll();
-        const allUsoIds = new Set(installedStyles.map(calcUsoId));
-        results = results.filter(r => !allUsoIds.has(r.i));
+        if (searchUserStylesWorld) {
+          const allUSwIds = new Set(installedStyles.map(calcUSwId));
+          USWResults = resultsMap.filter(r => !allUSwIds.has(r.id));
+        } else {
+          const allUsoIds = new Set(installedStyles.map(calcUsoId));
+          results = resultsMap.filter(r => !allUsoIds.has(r.i));
+        }
+      } else {
+        USWResults = [];
+        results = [];
       }
       render();
-      (results.length ? show : hide)(dom.list);
-      if (!results.length && !$('#search-query').value) {
+      ((searchUserStylesWorld ? USWResults : results).length ? show : hide)(dom.list);
+      if (!(searchUserStylesWorld ? USWResults : results).length) {
         error(t('searchResultNoneFound'));
       }
     } catch (reason) {
@@ -202,7 +254,8 @@
   }
 
   function render() {
-    totalPages = Math.ceil(results.length / PAGE_LENGTH);
+    const correctResults = searchUserStylesWorld ? USWResults : results;
+    totalPages = Math.ceil(correctResults.length / PAGE_LENGTH);
     displayedPage = Math.min(displayedPage, totalPages) || 1;
     let start = (displayedPage - 1) * PAGE_LENGTH;
     const end = displayedPage * PAGE_LENGTH;
@@ -211,15 +264,17 @@
     // keep rendered elements with ids in the range of interest
     while (
       plantAt < PAGE_LENGTH &&
-      slot && slot.id === 'search-result-' + (results[start] || {}).i
+      slot && slot.id === 'search-result-' + (correctResults[start] || {}).i
     ) {
       slot = slot.nextElementSibling;
       plantAt++;
       start++;
     }
     // add new elements
-    while (start < Math.min(end, results.length)) {
-      const entry = createSearchResultNode(results[start++]);
+    while (start < Math.min(end, correctResults.length)) {
+      const entry = searchUserStylesWorld
+      ? createSearchUSWResultNode(correctResults[start++])
+      : createSearchResultNode(correctResults[start++]);
       if (slot) {
         dom.list.replaceChild(entry, slot);
         slot = entry.nextElementSibling;
@@ -229,13 +284,13 @@
       plantAt++;
     }
     // remove extraneous elements
-    const pageLen = end > results.length &&
-      results.length % PAGE_LENGTH ||
-      Math.min(results.length, PAGE_LENGTH);
+    const pageLen = end > correctResults.length &&
+    correctResults.length % PAGE_LENGTH ||
+      Math.min(correctResults.length, PAGE_LENGTH);
     while (dom.list.children.length > pageLen) {
       dom.list.lastElementChild.remove();
     }
-    if (results.length && 'empty' in dom.container.dataset) {
+    if (correctResults.length && 'empty' in dom.container.dataset) {
       delete dom.container.dataset.empty;
     }
     if (scrollToFirstResult && (!FIREFOX || FIREFOX >= 55)) {
@@ -318,6 +373,42 @@
     return entry;
   }
 
+  /**
+   * @param {USWIndexEntry} result
+   * @returns {Node}
+   */
+  function createSearchUSWResultNode(result) {
+    const entry = t.template.searchResult.cloneNode(true);
+    const {
+      id,
+      name,
+      preview,
+      username,
+    } = entry._result = result;
+    entry.id = RESULT_ID_PREFIX + id;
+      // title
+    Object.assign($('.search-result-title', entry), {
+      onclick: Events.openURLandHide,
+      href: `${URLS.usw}style/${id}`,
+    });
+    $('.search-result-title span', entry).textContent =
+        t.breakWord(name.length < 300 ? name : name.slice(0, 300) + '...');
+      // screenshot
+    Object.assign($('.search-result-screenshot', entry), {
+      src: preview,
+      onerror: fixScreenshot,
+    });
+      // author
+    Object.assign($('[data-type="author"] a', entry), {
+      textContent: username,
+      title: username,
+      href: `${URLS.usw}user/${encodeURIComponent(username).replace(/%20/g, '+')}`,
+      onclick: Events.openURLandHide,
+    });
+    renderActionButtons(entry);
+    return entry;
+  }
+
   function formatNumber(num) {
     return (
       num > 1e9 ? (num / 1e9).toFixed(1) + 'B' :
@@ -369,11 +460,11 @@
       }
     }
     Object.assign($('.search-result-screenshot', entry), {
-      onclick: isInstalled ? uninstall : install,
+      onclick: isInstalled ? uninstall : searchUserStylesWorld ? uswInstall : install,
       title: isInstalled ? '' : t('installButton'),
     });
     $('.search-result-uninstall', entry).onclick = uninstall;
-    $('.search-result-install', entry).onclick = install;
+    $('.search-result-install', entry).onclick = searchUserStylesWorld ? uswInstall : install;
   }
 
   function renderFullInfo(entry, style) {
@@ -416,6 +507,30 @@
       renderFullInfo(entry, style);
     } catch (reason) {
       error(`Error while downloading usoID:${id}\nReason: ${reason}`);
+    }
+    $remove('.lds-spinner', entry);
+    installButton.disabled = false;
+    entry.style.pointerEvents = '';
+  }
+
+  async function uswInstall() {
+    const entry = this.closest('.search-result');
+    const result = /** @type IndexEntry */ entry._result;
+    const {id} = result;
+    const installButton = $('.search-result-install', entry);
+
+    showSpinner(entry);
+    saveScrollPosition(entry);
+    installButton.disabled = true;
+    entry.style.setProperty('pointer-events', 'none', 'important');
+
+    const updateUrl = URLS.makeUSwArchiveCodeUrl(id);
+    try {
+      const sourceCode = await download(updateUrl);
+      const style = await API.usercss.install({sourceCode, updateUrl, initialUrl: updateUrl});
+      renderFullInfo(entry, style);
+    } catch (reason) {
+      error(`Error while downloading uswID:${id}\nReason: ${reason}`);
     }
     $remove('.lds-spinner', entry);
     installButton.disabled = false;
@@ -476,10 +591,24 @@
     return index;
   }
 
-  async function search({retry} = {}) {
+  async function searchUSW() {
+    const timer = setTimeout(showSpinner, BUSY_DELAY, dom.list);
+    const USWQuery = query.join(' ');
+    if (!USWQuery) {
+      return;
+    }
+    USWIndex[USWQuery] = (await download(URLS.uswSearch + USWQuery, {responseType: 'json'}));
+    clearTimeout(timer);
+    $remove(':scope > .lds-spinner', dom.list);
+    return USWIndex[USWQuery];
+  }
+
+  async function search({retry, searchUserStylesWorld} = {}) {
     return retry && !calcCategory({retry})
-      ? []
-      : (index || await fetchIndex()).filter(isResultMatching).sort(comparator);
+    ? []
+    : searchUserStylesWorld
+    ? (USWIndex[query.join(' ')] || await searchUSW() || []).sort(comparator)
+    : (index || await fetchIndex()).filter(isResultMatching).sort(comparator);
   }
 
   function isResultMatching(res) {
@@ -519,6 +648,10 @@
   function calcUsoId({md5Url: m, updateUrl}) {
     return Number(m && m.match(/\d+|$/)[0]) ||
            URLS.extractUsoArchiveId(updateUrl);
+  }
+
+  function calcUSwId({installationUrl}) {
+    return installationUrl ? installationUrl.match(/\d+|$/)[0] : 0;
   }
 
   function calcHaystack(res) {
