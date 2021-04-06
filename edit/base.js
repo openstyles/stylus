@@ -95,13 +95,18 @@ const baseInit = (() => {
   /** Preloads the theme so CodeMirror can use the correct metrics in its first render */
   async function loadTheme() {
     const theme = prefs.get('editor.theme');
+    if (!CODEMIRROR_THEMES.includes(theme)) {
+      prefs.set('editor.theme', 'default');
+      return;
+    }
     if (theme !== 'default') {
       const el = $('#cm-theme');
       const el2 = await require([`/vendor/codemirror/theme/${theme}.css`]);
       el2.id = el.id;
       el.remove();
-      if (!el2.sheet) {
-        prefs.set('editor.theme', 'default');
+      // FF containers take more time to load CSS
+      for (let retry = 0; !el2.sheet && ++retry <= 10;) {
+        await new Promise(requestAnimationFrame);
       }
     }
   }
