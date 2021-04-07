@@ -291,7 +291,7 @@
 
     // Note to Tophf, we send a direct image link over shotName, as we are currently not
     // hosting any images. Which soon will be different.
-    const isDirectImageLink = /(.jpg|.webp|.avif|.jpeg|.png)$/g.match(shotName);
+    const isDirectImageLink = /(.jpg|.webp|.avif|.jpeg|.png)$/g.test(shotName);
     const auto = URLS.uso + `auto_style_screenshots/${id}${USO_AUTO_PIC_SUFFIX}`;
     Object.assign($('.search-result-screenshot', entry), {
       src: isDirectImageLink ? shotName
@@ -407,7 +407,7 @@
   async function install() {
     const entry = this.closest('.search-result');
     const result = /** @type IndexEntry */ entry._result;
-    const {i: id} = result;
+    const {i: id, isUsw} = result;
     const installButton = $('.search-result-install', entry);
 
     showSpinner(entry);
@@ -418,10 +418,7 @@
     result.pingbackTimer = setTimeout(download, PINGBACK_DELAY,
       `${URLS.uso}styles/install/${id}?source=stylish-ch`);
 
-    // Any recommendation how to detect USw here?
-    // the `uw` was purely for this situation to make sure if we need
-    // create a USw url or an Uso-Archive url.
-    const updateUrl = URLS.makeUsoArchiveCodeUrl(id);
+    const updateUrl = isUsw ? URLS.makeUswCodeUrl(id) : URLS.makeUsoArchiveCodeUrl(id);
 
     try {
       const sourceCode = await download(updateUrl);
@@ -488,6 +485,9 @@
         index = index.concat(res.filter(res => res.f === 'uso'));
       }).catch(() => {}),
       download(USW_INDEX_URL, {responseType: 'json'}).then(res => {
+        res.data.map(style => {
+          style.isUsw = true;
+        });
         index = index.concat(res.data);
       }).catch(() => {}),
     ]);

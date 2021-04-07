@@ -102,7 +102,7 @@ const URLS = {
     const id = URLS.extractUSwId(url);
     return id ? `${URLS.usw}style/${id}` : '';
   },
-  makeUSwArchiveCodeUrl: id => `${URLS.usw}api/style/${id}.user.css`,
+  makeUswCodeUrl: id => `${URLS.usw}api/style/${id}.user.css`,
 
   supported: url => (
     url.startsWith('http') ||
