@@ -5,11 +5,11 @@ if (typeof window.oldCode !== 'string') {
   window.oldCode = (document.querySelector('body > pre') || document.body).textContent;
   chrome.runtime.onConnect.addListener(port => {
     if (port.name !== 'downloadSelf') return;
-    port.onMessage.addListener(async ({id, force}) => {
+    port.onMessage.addListener(async ({id, force, timer}) => {
       const msg = {id};
       try {
         const code = await (await fetch(location.href, {mode: 'same-origin'})).text();
-        if (code !== window.oldCode || force) {
+        if ((code !== window.oldCode || force) || !(timer && code === window.oldCode)) {
           msg.code = window.oldCode = code;
         }
       } catch (error) {
