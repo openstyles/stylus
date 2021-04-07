@@ -414,7 +414,7 @@
     saveScrollPosition(entry);
     installButton.disabled = true;
     entry.style.setProperty('pointer-events', 'none', 'important');
-    // FIXME: move this to  background page and create an API like installUSOStyle
+    // FIXME: move this to background page and create an API like installUSOStyle
     result.pingbackTimer = setTimeout(download, PINGBACK_DELAY,
       `${URLS.uso}styles/install/${id}?source=stylish-ch`);
 
@@ -485,10 +485,10 @@
         index = index.concat(res.filter(res => res.f === 'uso'));
       }).catch(() => {}),
       download(USW_INDEX_URL, {responseType: 'json'}).then(res => {
-        res.data.map(style => {
+        for (const style of res.data) {
           style.isUsw = true;
-        });
-        index = index.concat(res.data);
+          index.push(style);
+        }
       }).catch(() => {}),
     ]);
     clearTimeout(timer);
