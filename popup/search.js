@@ -12,6 +12,7 @@
 
   const RESULT_ID_PREFIX = 'search-result-';
   const INDEX_URL = URLS.usoArchiveRaw + 'search-index.json';
+  const USW_INDEX_URL = URLS.usw + 'api/index/uso-format';
   const STYLUS_CATEGORY = 'chrome-extension';
   const PAGE_LENGTH = 10;
   // update USO style install counter if the style isn't uninstalled immediately
@@ -33,8 +34,7 @@
    * @prop {Number} ai -  authorId
    * @prop {string} an -  authorName
    * @prop {string} sn -  screenshotName
-   * @prop {boolean} sa -  screenshotArchived
-   * @prop {bolean} uw - is USw style
+   * @prop {boolean} sa -  screenshotArchivedis
    */
   /** @type IndexEntry[] */
   let results;
@@ -141,17 +141,15 @@
       }
     });
 
+    function calcId(style) {
+      return calcUsoId(style) || calcUswId(style);
+    }
+
     window.on('styleAdded', async ({detail: {style}}) => {
       restoreScrollPosition();
-      let usoOrUSwId = calcUsoId(style) ||
-                       calcUSwId(style);
-      if (usoOrUSwId) {
-        const styleAPI = await API.styles.get(style.id);
-        usoOrUSwId = calcUsoId(styleAPI) ||
-                     calcUSwId(styleAPI);
-      }
-      if (usoOrUSwId && results.find(r => r.id === usoOrUSwId)) {
-        renderActionButtons(usoOrUSwId, style.id);
+      const supportedId = calcId(style) || calcId(await API.styles.get(style.id));
+      if (supportedId && results.find(r => r.id === supportedId)) {
+        renderActionButtons(supportedId, style.id);
       }
     });
   }
@@ -193,10 +191,10 @@
       for (let retry = 0; !results.length && retry <= 2; retry++) {
         results = await search({retry});
       }
-      if (results.length) {
+      if (!results.length && !$('#search-query').value) {
         const installedStyles = await API.styles.getAll();
-        const allUsoOrUSwIds = new Set(installedStyles.map(calcUsoId || calcUSwId));
-        results = results.filter(r => !allUsoOrUSwIds.has(r.i));
+        const allSupportedIds = new Set(installedStyles.map(calcUsoId || calcUswId));
+        results = results.filter(r => !allSupportedIds.has(r.i));
       }
       render();
       (results.length ? show : hide)(dom.list);
@@ -237,7 +235,7 @@
     }
     // remove extraneous elements
     const pageLen = end > results.length &&
-    results.length % PAGE_LENGTH ||
+      results.length % PAGE_LENGTH ||
       Math.min(results.length, PAGE_LENGTH);
     while (dom.list.children.length > pageLen) {
       dom.list.lastElementChild.remove();
@@ -281,7 +279,6 @@
       an: author,
       sa: shotArchived,
       sn: shotName,
-      uw: isUSwStyle,
     } = entry._result = result;
     entry.id = RESULT_ID_PREFIX + id;
     // title
@@ -291,10 +288,13 @@
     });
     $('.search-result-title span', entry).textContent =
       t.breakWord(name.length < 300 ? name : name.slice(0, 300) + '...');
-    // screenshot
-    const auto = !isUSwStyle ? URLS.uso + `auto_style_screenshots/${id}${USO_AUTO_PIC_SUFFIX}` : '';
+
+    // Note to Tophf, we send a direct image link over shotName, as we are currently not
+    // hosting any images. Which soon will be different.
+    const isDirectImageLink = /(.jpg|.webp|.avif|.jpeg|.png)$/g.match(shotName);
+    const auto = URLS.uso + `auto_style_screenshots/${id}${USO_AUTO_PIC_SUFFIX}`;
     Object.assign($('.search-result-screenshot', entry), {
-      src: isUSwStyle ? shotName
+      src: isDirectImageLink ? shotName
       : shotName && !shotName.endsWith(USO_AUTO_PIC_SUFFIX)
         ? `${shotArchived ? URLS.usoArchiveRaw : URLS.uso + 'style_'}screenshots/${shotName}`
         : auto,
@@ -407,7 +407,7 @@
   async function install() {
     const entry = this.closest('.search-result');
     const result = /** @type IndexEntry */ entry._result;
-    const {i: id, uw: isUSwStyle} = result;
+    const {i: id} = result;
     const installButton = $('.search-result-install', entry);
 
     showSpinner(entry);
@@ -415,16 +415,17 @@
     installButton.disabled = true;
     entry.style.setProperty('pointer-events', 'none', 'important');
     // FIXME: move this to  background page and create an API like installUSOStyle
-    if (!isUSwStyle) {
-      result.pingbackTimer = setTimeout(download, PINGBACK_DELAY,
-        `${URLS.uso}styles/install/${id}?source=stylish-ch`);
-    }
+    result.pingbackTimer = setTimeout(download, PINGBACK_DELAY,
+      `${URLS.uso}styles/install/${id}?source=stylish-ch`);
 
-    const updateUrl = isUSwStyle ? URLS.makeUSwCodeUrl(id) : URLS.makeUsoArchiveCodeUrl(id);
+    // Any recommendation how to detect USw here?
+    // the `uw` was purely for this situation to make sure if we need
+    // create a USw url or an Uso-Archive url.
+    const updateUrl = URLS.makeUsoArchiveCodeUrl(id);
 
     try {
       const sourceCode = await download(updateUrl);
-      const style = await API.usercss.install({sourceCode, updateUrl, initialUrl: isUSwStyle ? updateUrl : null});
+      const style = await API.usercss.install({sourceCode, updateUrl});
       renderFullInfo(entry, style);
     } catch (reason) {
       error(`Error while downloading usoID:${id}\nReason: ${reason}`);
@@ -481,9 +482,15 @@
 
   async function fetchIndex() {
     const timer = setTimeout(showSpinner, BUSY_DELAY, dom.list);
-    index = (await download(INDEX_URL, {responseType: 'json'}))
-      .filter(res => res.f === 'uso');
-    index = [...index, ...(await download(URLS.uswIndex + 'uso-format', {responseType: 'json'}))];
+    index = [];
+    await Promise.all([
+      download(INDEX_URL, {responseType: 'json'}).then(res => {
+        index = index.concat(res.filter(res => res.f === 'uso'));
+      }).catch(() => {}),
+      download(USW_INDEX_URL, {responseType: 'json'}).then(res => {
+        index = index.concat(res.data);
+      }).catch(() => {}),
+    ]);
     clearTimeout(timer);
     $remove(':scope > .lds-spinner', dom.list);
     return index;
@@ -534,10 +541,8 @@
            URLS.extractUsoArchiveId(updateUrl);
   }
 
-  function calcUSwId({installationUrl}) {
-    return installationUrl ? Number(installationUrl.startsWith(URLS.usw)
-    && installationUrl.match(/\d+|$/)[0])
-    : 0;
+  function calcUswId({installationUrl}) {
+    return URLS.extractUSwId(installationUrl) || 0;
   }
 
   function calcHaystack(res) {

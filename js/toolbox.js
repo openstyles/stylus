@@ -80,7 +80,6 @@ const URLS = {
   usoArchiveRaw: 'https://raw.githubusercontent.com/33kk/uso-archive/flomaster/data/',
 
   usw: 'https://userstyles.world/',
-  uswIndex: 'https://userstyles.world/api/index/',
 
   extractUsoArchiveId: url =>
     url &&
@@ -425,14 +424,13 @@ function download(url, {
     };
     xhr.onload = () => {
       if (xhr.status === requiredStatusCode || !requiredStatusCode || u.protocol === 'file:') {
-        const isUSWIndex = url.startsWith(URLS.uswIndex);
         const response = expandUsoVars(xhr.response);
         if (responseHeaders) {
           const headers = {};
           for (const h of responseHeaders) headers[h] = xhr.getResponseHeader(h);
           resolve({headers, response});
         } else {
-          resolve(isUSWIndex ? response.data : response);
+          resolve(response);
         }
       } else {
         reject(xhr.status);

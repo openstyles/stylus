@@ -223,13 +223,11 @@ const styleMan = (() => {
       style = mergeWithMapped(style);
       const url = !style.url && style.updateUrl && (
         URLS.extractUsoArchiveInstallUrl(style.updateUrl) ||
-        URLS.extractGreasyForkInstallUrl(style.updateUrl)
+        URLS.extractGreasyForkInstallUrl(style.updateUrl) ||
+        URLS.extractUSwInstallUrl(style.updateUrl)
+        // Vednoc, time to proxy updateUrl's as this code is now broken.
       );
       if (url) style.url = style.installationUrl = url;
-      if (style.initialUrl) {
-        style.installationUrl = URLS.extractUSwInstallUrl(style.initialUrl);
-        delete style.initialUrl;
-      }
       style.originalDigest = await calcStyleDigest(style);
       // FIXME: update updateDate? what about usercss config?
       return handleSave(await saveStyle(style), reason);

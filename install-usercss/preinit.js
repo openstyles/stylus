@@ -81,7 +81,6 @@ const preinit = (() => {
           value: API.usercss.buildCode(data.style).then(style => style.sections),
           configurable: true,
         });
-        data.style.initialUrl = initialUrl;
         return data;
       } catch (error) {
         return {error, sourceCode};
