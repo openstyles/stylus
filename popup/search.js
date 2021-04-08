@@ -20,6 +20,7 @@
   const BUSY_DELAY = .5e3;
   const USO_AUTO_PIC_SUFFIX = '-after.png';
   const BLANK_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+  const RX_IMAGE_URL = /\.(jpe?g|webp|avif|png|gif)([#?].*)?$/i;
   const dom = {};
   /**
    * @typedef IndexEntry
@@ -34,7 +35,7 @@
    * @prop {Number} ai -  authorId
    * @prop {string} an -  authorName
    * @prop {string} sn -  screenshotName
-   * @prop {boolean} sa -  screenshotArchivedis
+   * @prop {boolean} sa -  screenshotArchived
    */
   /** @type IndexEntry[] */
   let results;
@@ -96,7 +97,6 @@
       }
       ready = ready.then(start);
     };
-
     $('#search-order').value = order;
     $('#search-order').onchange = function () {
       order = this.value;
@@ -141,15 +141,11 @@
       }
     });
 
-    function calcId(style) {
-      return calcUsoId(style) || calcUswId(style);
-    }
-
     window.on('styleAdded', async ({detail: {style}}) => {
       restoreScrollPosition();
-      const supportedId = calcId(style) || calcId(await API.styles.get(style.id));
-      if (supportedId && results.find(r => r.id === supportedId)) {
-        renderActionButtons(supportedId, style.id);
+      const id = calcId(style) || calcId(await API.styles.get(style.id));
+      if (id && results.find(r => r.id === id)) {
+        renderActionButtons(id, style.id);
       }
     });
   }
@@ -191,14 +187,14 @@
       for (let retry = 0; !results.length && retry <= 2; retry++) {
         results = await search({retry});
       }
-      if (!results.length && !$('#search-query').value) {
+      if (!results.length) {
         const installedStyles = await API.styles.getAll();
         const allSupportedIds = new Set(installedStyles.map(calcUsoId || calcUswId));
         results = results.filter(r => !allSupportedIds.has(r.i));
       }
       render();
       (results.length ? show : hide)(dom.list);
-      if (!results.length) {
+      if (!results.length && !$('#search-query').value) {
         error(t('searchResultNoneFound'));
       }
     } catch (reason) {
@@ -279,6 +275,7 @@
       an: author,
       sa: shotArchived,
       sn: shotName,
+      isUsw,
     } = entry._result = result;
     entry.id = RESULT_ID_PREFIX + id;
     // title
@@ -288,19 +285,20 @@
     });
     $('.search-result-title span', entry).textContent =
       t.breakWord(name.length < 300 ? name : name.slice(0, 300) + '...');
-
-    // Note to Tophf, we send a direct image link over shotName, as we are currently not
-    // hosting any images. Which soon will be different.
-    const isDirectImageLink = /(.jpg|.webp|.avif|.jpeg|.png)$/g.test(shotName);
-    const auto = URLS.uso + `auto_style_screenshots/${id}${USO_AUTO_PIC_SUFFIX}`;
-    Object.assign($('.search-result-screenshot', entry), {
-      src: isDirectImageLink ? shotName
-      : shotName && !shotName.endsWith(USO_AUTO_PIC_SUFFIX)
-        ? `${shotArchived ? URLS.usoArchiveRaw : URLS.uso + 'style_'}screenshots/${shotName}`
-        : auto,
-      _src: auto,
-      onerror: fixScreenshot,
-    });
+    // screenshot
+    const elShot = $('.search-result-screenshot', entry);
+    if (isUsw) {
+      elShot.src = /^https?:/i.test(shotName) ? shotName : BLANK_PIXEL;
+    } else {
+      const auto = URLS.uso + `auto_style_screenshots/${id}${USO_AUTO_PIC_SUFFIX}`;
+      Object.assign(elShot, {
+        src: shotName && !shotName.endsWith(USO_AUTO_PIC_SUFFIX)
+          ? `${shotArchived ? URLS.usoArchiveRaw : URLS.uso + 'style_'}screenshots/${shotName}`
+          : auto,
+        _src: auto,
+        onerror: fixScreenshot,
+      });
+    }
     // author
     Object.assign($('[data-type="author"] a', entry), {
       textContent: author,
@@ -543,6 +541,10 @@
 
   function calcUswId({installationUrl}) {
     return URLS.extractUSwId(installationUrl) || 0;
+  }
+
+  function calcId(style) {
+    return calcUsoId(style) || calcUswId(style);
   }
 
   function calcHaystack(res) {
