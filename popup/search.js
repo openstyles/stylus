@@ -20,7 +20,6 @@
   const BUSY_DELAY = .5e3;
   const USO_AUTO_PIC_SUFFIX = '-after.png';
   const BLANK_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
-  const RX_IMAGE_URL = /\.(jpe?g|webp|avif|png|gif)([#?].*)?$/i;
   const dom = {};
   /**
    * @typedef IndexEntry
