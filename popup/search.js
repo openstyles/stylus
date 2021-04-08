@@ -411,9 +411,11 @@
     saveScrollPosition(entry);
     installButton.disabled = true;
     entry.style.setProperty('pointer-events', 'none', 'important');
-    // FIXME: move this to background page and create an API like installUSOStyle
-    result.pingbackTimer = setTimeout(download, PINGBACK_DELAY,
-      `${URLS.uso}styles/install/${id}?source=stylish-ch`);
+    if (!isUsw) {
+      // FIXME: move this to background page and create an API like installUSOStyle
+      result.pingbackTimer = setTimeout(download, PINGBACK_DELAY,
+        `${URLS.uso}styles/install/${id}?source=stylish-ch`);
+    }
 
     const updateUrl = isUsw ? URLS.makeUswCodeUrl(id) : URLS.makeUsoArchiveCodeUrl(id);
 
