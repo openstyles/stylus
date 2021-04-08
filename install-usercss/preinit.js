@@ -19,7 +19,7 @@ const preinit = (() => {
       .catch(getData);
   } else {
     getData = PortDownloader();
-    firstGet = getData({timer: false});
+    firstGet = getData({force: true});
   }
 
   function DirectDownloader() {
