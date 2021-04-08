@@ -186,7 +186,7 @@
       for (let retry = 0; !results.length && retry <= 2; retry++) {
         results = await search({retry});
       }
-      if (!results.length) {
+      if (results.length) {
         const installedStyles = await API.styles.getAll();
         const allSupportedIds = new Set(installedStyles.map(calcUsoId || calcUswId));
         results = results.filter(r => !allSupportedIds.has(r.i));
