@@ -225,7 +225,6 @@ const styleMan = (() => {
         URLS.extractUsoArchiveInstallUrl(style.updateUrl) ||
         URLS.extractGreasyForkInstallUrl(style.updateUrl) ||
         URLS.extractUSwInstallUrl(style.updateUrl)
-        // Vednoc, time to proxy updateUrl's as this code is now broken.
       );
       if (url) style.url = style.installationUrl = url;
       style.originalDigest = await calcStyleDigest(style);
