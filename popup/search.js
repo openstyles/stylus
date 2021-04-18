@@ -48,8 +48,7 @@
   let searchGlobals = $('#search-globals').checked;
   /** @type string[] */
   let query = [];
-  /** @type 'n' | 'u' | 't' | 'w' | 'r'  */
-  let order = 't';
+  let order = prefs.get('popup.findSort');
   let scrollToFirstResult = true;
   let displayedPage = 1;
   let totalPages = 1;
@@ -103,6 +102,7 @@
     $('#search-order').value = order;
     $('#search-order').onchange = function () {
       order = this.value;
+      prefs.set('popup.findSort', order);
       results.sort(comparator);
       render();
     };
