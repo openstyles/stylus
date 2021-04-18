@@ -143,7 +143,7 @@
     window.on('styleAdded', async ({detail: {style}}) => {
       restoreScrollPosition();
       const id = calcId(style) || calcId(await API.styles.get(style.id));
-      if (id && results.find(r => r.id === id)) {
+      if (id && results.find(r => r.i === id)) {
         renderActionButtons(id, style.id);
       }
     });
@@ -188,7 +188,7 @@
       }
       if (results.length) {
         const installedStyles = await API.styles.getAll();
-        const allSupportedIds = new Set(installedStyles.map(calcUsoId || calcUswId));
+        const allSupportedIds = new Set(installedStyles.map(calcId));
         results = results.filter(r => !allSupportedIds.has(r.i));
       }
       render();
@@ -543,8 +543,8 @@
            URLS.extractUsoArchiveId(updateUrl);
   }
 
-  function calcUswId({installationUrl}) {
-    return URLS.extractUSwId(installationUrl) || 0;
+  function calcUswId({updateUrl}) {
+    return URLS.extractUSwId(updateUrl) || 0;
   }
 
   function calcId(style) {
