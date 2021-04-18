@@ -13,6 +13,10 @@
   const RESULT_ID_PREFIX = 'search-result-';
   const INDEX_URL = URLS.usoArchiveRaw + 'search-index.json';
   const USW_INDEX_URL = URLS.usw + 'api/index/uso-format';
+  const USW_ICON = $create('img', {
+    src: `${URLS.usw}favicon.ico`,
+    title: URLS.usw,
+  });
   const STYLUS_CATEGORY = 'chrome-extension';
   const PAGE_LENGTH = 10;
   // update USO style install counter if the style isn't uninstalled immediately
@@ -283,6 +287,7 @@
       href: isUsw ? `${URLS.usw}style/${id}` :
         `${URLS.usoArchive}?category=${category}&style=${id}`,
     });
+    if (isUsw) $('.search-result-title', entry).prepend(USW_ICON.cloneNode(true));
     $('.search-result-title span', entry).textContent =
       t.breakWord(name.length < 300 ? name : name.slice(0, 300) + '...');
     // screenshot
