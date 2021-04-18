@@ -280,7 +280,8 @@
     // title
     Object.assign($('.search-result-title', entry), {
       onclick: Events.openURLandHide,
-      href: URLS.usoArchive + `?category=${category}&style=${id}`,
+      href: isUsw ? `${URLS.usw}style/${id}` :
+        `${URLS.usoArchive}?category=${category}&style=${id}`,
     });
     $('.search-result-title span', entry).textContent =
       t.breakWord(name.length < 300 ? name : name.slice(0, 300) + '...');
@@ -299,10 +300,12 @@
       });
     }
     // author
+    const eAuthor = encodeURIComponent(author);
     Object.assign($('[data-type="author"] a', entry), {
       textContent: author,
       title: author,
-      href: URLS.usoArchive + '?author=' + encodeURIComponent(author).replace(/%20/g, '+'),
+      href: isUsw ? `${URLS.usw}user/${eAuthor}` :
+        `${URLS.usoArchive}?author=${eAuthor.replace(/%20/g, '+')}`,
       onclick: Events.openURLandHide,
     });
     // rating
