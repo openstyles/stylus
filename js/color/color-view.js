@@ -585,7 +585,22 @@
     if (palette.size > 1 || nums && nums.length > 1) {
       const old = new Map((options.popup.palette || []).map(el => [el.__color, el]));
       for (const [color, data] of palette) {
-        res.push(old.get(color) || makePaletteSwatch(color, data, options.popup.paletteLine));
+        const str = data.join(', ');
+        let el = old.get(color);
+        if (!el) {
+          el = document.createElement('div');
+          el.__color = color; // also used in color-picker.js
+          el.className = COLORVIEW_SWATCH_CLASS;
+          el.style.setProperty(`--${COLORVIEW_SWATCH_CLASS}`, color);
+        }
+        if (el.__str !== str) {
+          el.__str = str;
+          // break down long lists: 10 per line
+          el.title = `${color}\n${options.popup.paletteLine} ${
+            str.length > 50 ? str.replace(/([^,]+,\s){10}/g, '$&\n') : str
+          }`;
+        }
+        res.push(el);
       }
       res.push(Object.assign(document.createElement('span'), {
         className: 'colorpicker-palette-hint',
@@ -594,17 +609,6 @@
       }));
     }
     return res;
-  }
-
-  function makePaletteSwatch(color, nums, label) {
-    const s = nums.join(', ');
-    const el = document.createElement('div');
-    el.className = COLORVIEW_SWATCH_CLASS;
-    el.style.cssText = COLORVIEW_SWATCH_CSS + color;
-    // break down long lists: 10 per line
-    el.title = `${color}\n${label} ${s.length > 50 ? s.replace(/([^,]+,\s){10}/g, '$&\n') : s}`;
-    el.__color = color;
-    return el;
   }
 
   function paletteCallback(el) {

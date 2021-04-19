@@ -1,7 +1,6 @@
-html#stylus #header *:not(#\0) {
-  /* This suppresses transitions on page open.
-   * WARNING! Must be the first rule here so dom.js can simply call deleteRule for index 0.
-   * Using an increased specificity to override sane selectors in user styles */
+html#stylus #header *:not(#\0transition-suppressor) {
+  /* This suppresses a bug in all? browsers: they apply transitions during page load.
+   * Using an increased specificity to override sane selectors in user styles. */
   transition: none !important;
 }
 body {
