@@ -1,6 +1,8 @@
 # Privacy Policy
 
-No data or personal information is collected by Stylus.
+Unlike other similar extensions, we don't find you to be all that interesting. Your questionable browsing history should remain between you and the NSA. Stylus collects nothing. Period.
+
+Again, **no data or personal information is collected by Stylus**.
 
 ## Contact
 
