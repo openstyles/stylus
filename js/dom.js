@@ -437,8 +437,16 @@ async function waitForSheet({
     window.on('resize', () => debounce(addTooltipsToEllipsized, 100));
   });
 
-  // Using `load` event as we need transition bug suppressor active until everything loads
-  window.on('load', () => $('link[href^="global.css"]').sheet.deleteRule(0), {once: true});
+  window.on('load', () => {
+    const {sheet} = $('link[href^="global.css"]');
+    for (let i = 0, rule; (rule = sheet.cssRules[i]); i++) {
+      // Not using \0 in the id as it's converted to \xFFFD, probably a bug
+      if (/#.transition-suppressor/.test(rule.selectorText)) {
+        sheet.deleteRule(i);
+        break;
+      }
+    }
+  }, {once: true});
 
   function addFaviconFF() {
     const iconset = ['', 'light/'][prefs.get('iconset')] || '';
