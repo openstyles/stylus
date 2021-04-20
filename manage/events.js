@@ -87,6 +87,7 @@ const Events = {
   async external(event) {
     // Not handling Shift-click - the built-in 'open in a new window' command
     if (getEventKeyName(event) !== 'Shift-MouseL') {
+      event.preventDefault(); // Prevent FF from double-handling the event
       const {index} = await getOwnTab();
       openURL({
         url: event.target.closest('a').href,
