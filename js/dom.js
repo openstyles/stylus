@@ -440,8 +440,7 @@ async function waitForSheet({
   window.on('load', () => {
     const {sheet} = $('link[href^="global.css"]');
     for (let i = 0, rule; (rule = sheet.cssRules[i]); i++) {
-      // Not using \0 in the id as it's converted to \xFFFD, probably a bug
-      if (/#.transition-suppressor/.test(rule.selectorText)) {
+      if (/#\\1\s?transition-suppressor/.test(rule.selectorText)) {
         sheet.deleteRule(i);
         break;
       }

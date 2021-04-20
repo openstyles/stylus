@@ -1,6 +1,7 @@
-html#stylus #header *:not(#\0transition-suppressor) {
+html#stylus #header *:not(#\1transition-suppressor) {
   /* This suppresses a bug in all? browsers: they apply transitions during page load.
-   * Using an increased specificity to override sane selectors in user styles. */
+   * Using an increased specificity to override sane selectors in user styles.
+   * Using \1 to simplify js code because \0 is converted to \xFFFD per spec. */
   transition: none !important;
 }
 body {

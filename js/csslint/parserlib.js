@@ -3014,8 +3014,14 @@ self.parserlib = (() => {
     }
 
     readEscape() {
-      const cp = this._reader.readMatch(/[0-9a-f]{1,6}\b\s*/iy);
-      return cp ? String.fromCodePoint(parseInt(cp, 16)) : this._reader.read();
+      let res = this._reader.readMatch(/[0-9a-f]{1,6}\s?/iy);
+      if (res) {
+        res = parseInt(res, 16);
+        res = String.fromCodePoint(res && res <= 0x10FFFF ? res : 0xFFFD);
+      } else {
+        res = this._reader.read();
+      }
+      return res;
     }
 
     /**
