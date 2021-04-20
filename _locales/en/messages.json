@@ -630,6 +630,10 @@
     "message": "Translate",
     "description": "Transifex link text on the manage page"
   },
+  "linkUSW": {
+    "message": "Upload and discover styles on userstyles.world",
+    "description": "Link text for https://userstyles.world/ on the manage page"
+  },
   "linterCSSLintIncompatible": {
     "message": "CSSLint doesn't support $preprocessorname$ preprocessor",
     "placeholders": {

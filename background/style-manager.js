@@ -223,7 +223,8 @@ const styleMan = (() => {
       style = mergeWithMapped(style);
       const url = !style.url && style.updateUrl && (
         URLS.extractUsoArchiveInstallUrl(style.updateUrl) ||
-        URLS.extractGreasyForkInstallUrl(style.updateUrl)
+        URLS.extractGreasyForkInstallUrl(style.updateUrl) ||
+        URLS.extractUSwInstallUrl(style.updateUrl)
       );
       if (url) style.url = style.installationUrl = url;
       style.originalDigest = await calcStyleDigest(style);

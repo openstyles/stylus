@@ -12,6 +12,11 @@
 
   const RESULT_ID_PREFIX = 'search-result-';
   const INDEX_URL = URLS.usoArchiveRaw + 'search-index.json';
+  const USW_INDEX_URL = URLS.usw + 'api/index/uso-format';
+  const USW_ICON = $create('img', {
+    src: `${URLS.usw}favicon.ico`,
+    title: URLS.usw,
+  });
   const STYLUS_CATEGORY = 'chrome-extension';
   const PAGE_LENGTH = 10;
   // update USO style install counter if the style isn't uninstalled immediately
@@ -43,8 +48,7 @@
   let searchGlobals = $('#search-globals').checked;
   /** @type string[] */
   let query = [];
-  /** @type 'n' | 'u' | 't' | 'w' | 'r'  */
-  let order = 't';
+  let order = prefs.get('popup.findSort');
   let scrollToFirstResult = true;
   let displayedPage = 1;
   let totalPages = 1;
@@ -98,6 +102,7 @@
     $('#search-order').value = order;
     $('#search-order').onchange = function () {
       order = this.value;
+      prefs.set('popup.findSort', order);
       results.sort(comparator);
       render();
     };
@@ -141,10 +146,9 @@
 
     window.on('styleAdded', async ({detail: {style}}) => {
       restoreScrollPosition();
-      const usoId = calcUsoId(style) ||
-                    calcUsoId(await API.styles.get(style.id));
-      if (usoId && results.find(r => r.i === usoId)) {
-        renderActionButtons(usoId, style.id);
+      const id = calcId(style) || calcId(await API.styles.get(style.id));
+      if (id && results.find(r => r.i === id)) {
+        renderActionButtons(id, style.id);
       }
     });
   }
@@ -181,15 +185,15 @@
     show(dom.container);
     show(dom.list);
     hide(dom.error);
-    results = [];
     try {
+      results = [];
       for (let retry = 0; !results.length && retry <= 2; retry++) {
         results = await search({retry});
       }
       if (results.length) {
         const installedStyles = await API.styles.getAll();
-        const allUsoIds = new Set(installedStyles.map(calcUsoId));
-        results = results.filter(r => !allUsoIds.has(r.i));
+        const allSupportedIds = new Set(installedStyles.map(calcId));
+        results = results.filter(r => !allSupportedIds.has(r.i));
       }
       render();
       (results.length ? show : hide)(dom.list);
@@ -274,29 +278,39 @@
       an: author,
       sa: shotArchived,
       sn: shotName,
+      isUsw,
     } = entry._result = result;
     entry.id = RESULT_ID_PREFIX + id;
     // title
     Object.assign($('.search-result-title', entry), {
       onclick: Events.openURLandHide,
-      href: URLS.usoArchive + `?category=${category}&style=${id}`,
+      href: isUsw ? `${URLS.usw}style/${id}` :
+        `${URLS.usoArchive}?category=${category}&style=${id}`,
     });
+    if (isUsw) $('.search-result-title', entry).prepend(USW_ICON.cloneNode(true));
     $('.search-result-title span', entry).textContent =
       t.breakWord(name.length < 300 ? name : name.slice(0, 300) + '...');
     // screenshot
-    const auto = URLS.uso + `auto_style_screenshots/${id}${USO_AUTO_PIC_SUFFIX}`;
-    Object.assign($('.search-result-screenshot', entry), {
-      src: shotName && !shotName.endsWith(USO_AUTO_PIC_SUFFIX)
-        ? `${shotArchived ? URLS.usoArchiveRaw : URLS.uso + 'style_'}screenshots/${shotName}`
-        : auto,
-      _src: auto,
-      onerror: fixScreenshot,
-    });
+    const elShot = $('.search-result-screenshot', entry);
+    if (isUsw) {
+      elShot.src = /^https?:/i.test(shotName) ? shotName : BLANK_PIXEL;
+    } else {
+      const auto = URLS.uso + `auto_style_screenshots/${id}${USO_AUTO_PIC_SUFFIX}`;
+      Object.assign(elShot, {
+        src: shotName && !shotName.endsWith(USO_AUTO_PIC_SUFFIX)
+          ? `${shotArchived ? URLS.usoArchiveRaw : URLS.uso + 'style_'}screenshots/${shotName}`
+          : auto,
+        _src: auto,
+        onerror: fixScreenshot,
+      });
+    }
     // author
+    const eAuthor = encodeURIComponent(author);
     Object.assign($('[data-type="author"] a', entry), {
       textContent: author,
       title: author,
-      href: URLS.usoArchive + '?author=' + encodeURIComponent(author).replace(/%20/g, '+'),
+      href: isUsw ? `${URLS.usw}user/${eAuthor}` :
+        `${URLS.usoArchive}?author=${eAuthor.replace(/%20/g, '+')}`,
       onclick: Events.openURLandHide,
     });
     // rating
@@ -398,18 +412,21 @@
   async function install() {
     const entry = this.closest('.search-result');
     const result = /** @type IndexEntry */ entry._result;
-    const {i: id} = result;
+    const {i: id, isUsw} = result;
     const installButton = $('.search-result-install', entry);
 
     showSpinner(entry);
     saveScrollPosition(entry);
     installButton.disabled = true;
     entry.style.setProperty('pointer-events', 'none', 'important');
-    // FIXME: move this to background page and create an API like installUSOStyle
-    result.pingbackTimer = setTimeout(download, PINGBACK_DELAY,
-      `${URLS.uso}styles/install/${id}?source=stylish-ch`);
+    if (!isUsw) {
+      // FIXME: move this to background page and create an API like installUSOStyle
+      result.pingbackTimer = setTimeout(download, PINGBACK_DELAY,
+        `${URLS.uso}styles/install/${id}?source=stylish-ch`);
+    }
 
-    const updateUrl = URLS.makeUsoArchiveCodeUrl(id);
+    const updateUrl = isUsw ? URLS.makeUswCodeUrl(id) : URLS.makeUsoArchiveCodeUrl(id);
+
     try {
       const sourceCode = await download(updateUrl);
       const style = await API.usercss.install({sourceCode, updateUrl});
@@ -469,8 +486,18 @@
 
   async function fetchIndex() {
     const timer = setTimeout(showSpinner, BUSY_DELAY, dom.list);
-    index = (await download(INDEX_URL, {responseType: 'json'}))
-      .filter(res => res.f === 'uso');
+    index = [];
+    await Promise.all([
+      download(INDEX_URL, {responseType: 'json'}).then(res => {
+        index = index.concat(res.filter(res => res.f === 'uso'));
+      }).catch(() => {}),
+      download(USW_INDEX_URL, {responseType: 'json'}).then(res => {
+        for (const style of res.data) {
+          style.isUsw = true;
+          index.push(style);
+        }
+      }).catch(() => {}),
+    ]);
     clearTimeout(timer);
     $remove(':scope > .lds-spinner', dom.list);
     return index;
@@ -519,6 +546,14 @@
   function calcUsoId({md5Url: m, updateUrl}) {
     return Number(m && m.match(/\d+|$/)[0]) ||
            URLS.extractUsoArchiveId(updateUrl);
+  }
+
+  function calcUswId({updateUrl}) {
+    return URLS.extractUSwId(updateUrl) || 0;
+  }
+
+  function calcId(style) {
+    return calcUsoId(style) || calcUswId(style);
   }
 
   function calcHaystack(res) {

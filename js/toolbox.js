@@ -78,6 +78,9 @@ const URLS = {
 
   usoArchive: 'https://33kk.github.io/uso-archive/',
   usoArchiveRaw: 'https://raw.githubusercontent.com/33kk/uso-archive/flomaster/data/',
+
+  usw: 'https://userstyles.world/',
+
   extractUsoArchiveId: url =>
     url &&
     url.startsWith(URLS.usoArchiveRaw) &&
@@ -90,6 +93,16 @@ const URLS = {
 
   extractGreasyForkInstallUrl: url =>
     /^(https:\/\/(?:greasy|sleazy)fork\.org\/scripts\/\d+)[^/]*\/code\/[^/]*\.user\.css$|$/.exec(url)[1],
+
+  extractUSwId: url =>
+    url &&
+    url.startsWith(URLS.usw) &&
+    Number(url.match(/\/(\d+)\.user\.css|$/)[1]),
+  extractUSwInstallUrl: url => {
+    const id = URLS.extractUSwId(url);
+    return id ? `${URLS.usw}style/${id}` : '';
+  },
+  makeUswCodeUrl: id => `${URLS.usw}api/style/${id}.user.css`,
 
   supported: url => (
     url.startsWith('http') ||
