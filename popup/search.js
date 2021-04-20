@@ -514,10 +514,10 @@
     const {c} = res;
     return (
       c === category ||
-      category !== STYLUS_CATEGORY && (
-        searchGlobals &&
-        c === 'global' &&
-        (query.length || calcHaystack(res)._nLC.includes(category))
+      (category === STYLUS_CATEGORY
+        ? c === 'stylus' // USW
+        : c === 'global' && searchGlobals &&
+          (query.length || calcHaystack(res)._nLC.includes(category))
       )
     ) && (
       !query.length || // to skip calling calcHaystack
