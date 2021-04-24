@@ -24,6 +24,10 @@ const editor = {
   dirty: DirtyReporter(),
   isUsercss: false,
   isWindowed: false,
+  lazyKeymaps: {
+    emacs: '/vendor/codemirror/keymap/emacs',
+    vim: '/vendor/codemirror/keymap/vim',
+  },
   livePreview: null,
   /** @type {'customName'|'name'} */
   nameTarget: 'name',
@@ -43,10 +47,6 @@ const editor = {
 //#region pre-init
 
 const baseInit = (() => {
-  const lazyKeymaps = {
-    emacs: '/vendor/codemirror/keymap/emacs',
-    vim: '/vendor/codemirror/keymap/vim',
-  };
   const domReady = waitForSelector('#sections');
 
   return {
@@ -65,8 +65,8 @@ const baseInit = (() => {
   /** Preloads vim/emacs keymap only if it's the active one, otherwise will load later */
   function loadKeymaps() {
     const km = prefs.get('editor.keyMap');
-    return /emacs/i.test(km) && require([lazyKeymaps.emacs]) ||
-      /vim/i.test(km) && require([lazyKeymaps.vim]);
+    return /emacs/i.test(km) && require([editor.lazyKeymaps.emacs]) ||
+      /vim/i.test(km) && require([editor.lazyKeymaps.vim]);
   }
 
   async function loadStyle() {
@@ -83,7 +83,6 @@ const baseInit = (() => {
     };
     // switching the mode here to show the correct page ASAP, usually before DOMContentLoaded
     editor.isUsercss = Boolean(style.usercssData || !style.id && prefs.get('newStyleAsUsercss'));
-    editor.lazyKeymaps = lazyKeymaps;
     editor.style = style;
     editor.updateTitle(false);
     document.documentElement.classList.toggle('usercss', editor.isUsercss);
