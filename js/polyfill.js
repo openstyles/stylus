@@ -69,6 +69,7 @@
 
   //#region for our extension pages
 
+  const reqPromise = {};
   window.require = async function require(urls, cb) {
     const promises = [];
     const all = [];
@@ -83,13 +84,14 @@
       if (!el) {
         el = document.createElement(tag);
         toLoad.push(el);
-        promises.push(new Promise((resolve, reject) => {
+        reqPromise[url] = new Promise((resolve, reject) => {
           el.onload = resolve;
           el.onerror = reject;
           el[attr] = url;
           if (isCss) el.rel = 'stylesheet';
-        }).catch(console.warn));
+        }).catch(console.warn);
       }
+      promises.push(reqPromise[url]);
       all.push(el);
     }
     if (toLoad.length) document.head.append(...toLoad);
