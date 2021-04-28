@@ -131,6 +131,7 @@ linterMan.DEFAULTS = {
     'duplicate-properties': 1,
     'empty-rules': 1,
     'errors': 1,
+    'globals-in-document': 1,
     'known-properties': 1,
     'selector-newline': 1,
     'shorthand-overrides': 1,

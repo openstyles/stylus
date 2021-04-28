@@ -3439,30 +3439,15 @@ self.parserlib = (() => {
     _stylesheet() {
       const stream = this._tokenStream;
       this.fire('startstylesheet');
-      this._skipCruft();
-      for (const [type, fn, max = Infinity] of [
-        [Tokens.CHARSET_SYM, this._charset, 1],
-        [Tokens.IMPORT_SYM, this._import],
-        [Tokens.NAMESPACE_SYM, this._namespace],
-      ]) {
-        for (let i = 0; i++ < max && stream.peek() === type;) {
-          fn.call(this, stream.get(true));
-          this._skipCruft();
-        }
-      }
+      this._sheetGlobals();
       const {topDocOnly} = this.options;
       const allowedActions = topDocOnly ? Parser.ACTIONS.topDoc : Parser.ACTIONS.stylesheet;
       for (let tt, token; (tt = (token = stream.get(true)).type); this._skipCruft()) {
         try {
-          let action = allowedActions.get(tt);
+          const action = allowedActions.get(tt);
           if (action) {
             action.call(this, token);
             continue;
-          }
-          action = Parser.ACTIONS.stylesheetMisplaced.get(tt);
-          if (action) {
-            action.call(this, token, true);
-            throw new SyntaxError(Tokens[tt].text + ' not allowed here.', token);
           }
           if (topDocOnly) {
             stream.readDeclValue({stopOn: '{}'});
@@ -3489,25 +3474,40 @@ self.parserlib = (() => {
       this.fire('endstylesheet');
     }
 
-    _charset(start, misplaced) {
+    _sheetGlobals() {
+      const stream = this._tokenStream;
+      this._skipCruft();
+      for (const [type, fn, max = Infinity] of [
+        [Tokens.CHARSET_SYM, this._charset, 1],
+        [Tokens.IMPORT_SYM, this._import],
+        [Tokens.NAMESPACE_SYM, this._namespace],
+      ]) {
+        for (let i = 0; i++ < max && stream.peek() === type;) {
+          fn.call(this, stream.get(true));
+          this._skipCruft();
+        }
+      }
+    }
+
+    _charset(start) {
       const stream = this._tokenStream;
       const charset = stream.mustMatch(Tokens.STRING).value;
       stream.mustMatch(Tokens.SEMICOLON);
-      if (!misplaced) this.fire({type: 'charset', charset}, start);
+      this.fire({type: 'charset', charset}, start);
     }
 
-    _import(start, misplaced) {
+    _import(start) {
       const stream = this._tokenStream;
       const token = stream.mustMatch(TT.stringUri);
       const uri = token.uri || token.value.replace(/^["']|["']$/g, '');
       this._ws();
       const media = this._mediaQueryList();
       stream.mustMatch(Tokens.SEMICOLON);
-      if (!misplaced) this.fire({type: 'import', media, uri}, start);
+      this.fire({type: 'import', media, uri}, start);
       this._ws();
     }
 
-    _namespace(start, misplaced) {
+    _namespace(start) {
       const stream = this._tokenStream;
       this._ws();
       const prefix = stream.match(Tokens.IDENT).value;
@@ -3515,16 +3515,16 @@ self.parserlib = (() => {
       const token = stream.mustMatch(TT.stringUri);
       const uri = token.uri || token.value.replace(/^["']|["']$/g, '');
       stream.mustMatch(Tokens.SEMICOLON);
-      if (!misplaced) this.fire({type: 'namespace', prefix, uri}, start);
+      this.fire({type: 'namespace', prefix, uri}, start);
       this._ws();
     }
 
-    _supports(start, misplaced) {
+    _supports(start) {
       const stream = this._tokenStream;
       this._ws();
       this._supportsCondition();
       stream.mustMatch(Tokens.LBRACE);
-      if (!misplaced) this.fire('startsupports', start);
+      this.fire('startsupports', start);
       this._ws();
       for (;; stream.skipComment()) {
         const action = Parser.ACTIONS.supports.get(stream.peek());
@@ -3535,7 +3535,7 @@ self.parserlib = (() => {
         }
       }
       stream.mustMatch(Tokens.RBRACE);
-      if (!misplaced) this.fire('endsupports');
+      this.fire('endsupports');
       this._ws();
     }
 
@@ -3747,6 +3747,9 @@ self.parserlib = (() => {
       if (this.options.topDocOnly) {
         stream.readDeclValue({stopOn: '}'});
       } else {
+        /* We allow @import and such inside document sections because the final generated CSS for
+         * a given page may be valid e.g. if this section is the first one that matched the URL */
+        this._sheetGlobals();
         this._ws();
         let action;
         do action = Parser.ACTIONS.document.get(stream.peek());
@@ -4526,12 +4529,6 @@ self.parserlib = (() => {
       symViewport,
       symUnknown,
       [Tokens.S, Parser.prototype._ws],
-    ]),
-
-    stylesheetMisplaced: new Map([
-      [Tokens.CHARSET_SYM, Parser.prototype._charset],
-      [Tokens.IMPORT_SYM, Parser.prototype._import],
-      [Tokens.NAMESPACE_SYM, Parser.prototype._namespace],
     ]),
 
     topDoc: new Map([

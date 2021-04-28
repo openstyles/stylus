@@ -1003,6 +1003,26 @@ CSSLint.addRule['font-sizes'] = [{
   });
 }];
 
+CSSLint.addRule['globals-in-document'] = [{
+  name: 'Warn about global @ rules inside @-moz-document',
+  desc: 'Warn about @import, @charset, @namespace inside @-moz-document',
+  browsers: 'All',
+}, (rule, parser, reporter) => {
+  let level = 0;
+  let index = 0;
+  parser.addListener('startdocument', () => level++);
+  parser.addListener('enddocument', () => level-- * index++);
+  const check = event => {
+    if (level && index) {
+      reporter.report(`A nested @${event.type} is valid only if this @-moz-document section ` +
+        'is the first one matched for any given URL.', event, rule);
+    }
+  };
+  parser.addListener('import', check);
+  parser.addListener('charset', check);
+  parser.addListener('namespace', check);
+}];
+
 CSSLint.addRule['gradients'] = [{
   name: 'Require all gradient definitions',
   desc: 'When using a vendor-prefixed gradient, make sure to use them all.',
