@@ -89,6 +89,12 @@
       "run_at": "document_start",
       "all_frames": false,
       "js": ["content/install-hook-openusercss.js"]
+    },
+    {
+      "matches": ["https://userstyles.world/style/*"],
+      "run_at": "document_start",
+      "all_frames": false,
+      "js": ["content/install-hook-userstylesworld.js"]
     }
   ],
   "browser_action": {
