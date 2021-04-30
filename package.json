@@ -28,6 +28,7 @@
   },
   "scripts": {
     "lint": "eslint \"**/*.js\" --cache",
+    "code-style": "eslint \"**/*.js\" --fix --cache",
     "test": "node tools/test.js && npm run lint",
     "update-locales": "tx pull --all && node tools/fix-transifex.js",
     "update-transifex": "tx push -s",
