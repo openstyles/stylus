@@ -78,7 +78,7 @@ bgReady.all.then(() => {
     });
   }, {
     url: [
-      {hostEquals: 'userstyles.world', urlMatches: '/style/\\d+[^/]*/[a-z-0-9]+$'},
+      {hostEquals: 'userstyles.world'},
     ],
   });
   /*

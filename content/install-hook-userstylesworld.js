@@ -3,12 +3,18 @@
 (() => {
   const allowedOrigin = 'https://userstyles.world';
 
+  const sendPostMessage = message => {
+    if (allowedOrigin === location.origin) {
+      window.postMessage(message, location.origin);
+    }
+  };
+
   const onPageLoaded = event => {
     if (event.data
-    && event.data.type === 'usw-remove-stylus-button'
+    && event.data.type === 'usw-ready'
     && allowedOrigin === event.origin
     ) {
-      document.querySelector('a#stylus').remove();
+      sendPostMessage({type: 'usw-remove-stylus-button'});
     }
   };
 
