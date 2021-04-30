@@ -1,40 +1,16 @@
 'use strict';
 
 (() => {
-  function watchForStylusButton() {
-    // Use 1 function so we won't have duplicate code around.
-    const stylusQuery = () => document.querySelector('a#stylus');
+  const allowedOrigin = 'https://userstyles.world';
 
-    if (!stylusQuery()) {
-      const stylusButtonObserver = new MutationObserver(() => {
-        if (stylusQuery()) {
-          stylusButtonObserver.disconnect();
-          stylusQuery().remove();
-        }
-      });
-      stylusButtonObserver.observe(document.body, {childList: true, subtree: true});
-    } else {
-      stylusQuery().remove();
+  const onPageLoaded = event => {
+    if (event.data
+    && event.data.type === 'usw-remove-stylus-button'
+    && allowedOrigin === event.origin
+    ) {
+      document.querySelector('a#stylus').remove();
     }
-  }
+  };
 
-  // Some trickery to make sure that the DOM is ready(document.body/document.head).
-  // And can possibly observe it for a stylus button.
-
-  function isDOMReady() {
-    return document.readyState === 'complete' || document.readyState === 'interactive';
-  }
-
-  if (!isDOMReady()) {
-    const onReadyStateChange = () => {
-      if (isDOMReady()) {
-        document.removeEventListener('readystatechange', onReadyStateChange);
-        watchForStylusButton();
-      }
-    };
-    document.addEventListener('readystatechange', onReadyStateChange);
-  } else {
-    watchForStylusButton();
-  }
-
+  window.addEventListener('message', onPageLoaded);
 })();
