@@ -1,19 +1,18 @@
-/* global API */// msg.js
 'use strict';
 
 (() => {
   function watchForStylusButton() {
     // Use 1 function so we won't have duplicate code around.
-    const stylusQuery = () => document.querySelector("a#stylus");
+    const stylusQuery = () => document.querySelector('a#stylus');
 
     if (!stylusQuery()) {
-        const stylusButtonObserver = new MutationObserver(() => {
-          if (stylusQuery()) {
-              stylusButtonObserver.disconnect();
-              stylusQuery().remove();
-            }
-        });
-        stylusButtonObserver.observe(document.body, {childList: true, subtree: true});
+      const stylusButtonObserver = new MutationObserver(() => {
+        if (stylusQuery()) {
+          stylusButtonObserver.disconnect();
+          stylusQuery().remove();
+        }
+      });
+      stylusButtonObserver.observe(document.body, {childList: true, subtree: true});
     } else {
       stylusQuery().remove();
     }
@@ -37,5 +36,5 @@
   } else {
     watchForStylusButton();
   }
-  
-})()
+
+})();
