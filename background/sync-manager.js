@@ -28,6 +28,7 @@ const syncMan = (() => {
     login: false,
   };
   let lastError = null;
+  let lastInterval = Math.random();
   let ctrl;
   let currentDrive;
   /** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
@@ -40,9 +41,14 @@ const syncMan = (() => {
       {runNow: true});
   });
 
-  chrome.alarms.onAlarm.addListener(info => {
-    if (info.name === 'syncNow') {
-      syncMan.syncNow();
+  chrome.alarms.onAlarm.addListener(async ({name}) => {
+    if (name === 'syncNow') {
+      await syncMan.syncNow();
+      /* We want to fire the alarm once per SYNC_INTERVAL at a random point within the range,
+       * so the new delay includes the leftover portion from the last range. */
+      const r = Math.random();
+      schedule(SYNC_DELAY + SYNC_INTERVAL * (1 - lastInterval + r));
+      lastInterval = r;
     }
   });
 
@@ -248,7 +254,6 @@ const syncMan = (() => {
   function schedule(delay = SYNC_DELAY) {
     chrome.alarms.create('syncNow', {
       delayInMinutes: delay,
-      periodInMinutes: SYNC_INTERVAL,
     });
   }
 
