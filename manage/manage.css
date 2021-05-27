@@ -119,6 +119,7 @@ a:hover {
   padding-left: var(--header-width);
   box-sizing: border-box;
   width: 100%;
+  align-self: start;
 }
 
 .entry {
