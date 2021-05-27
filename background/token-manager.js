@@ -1,4 +1,4 @@
-/* global FIREFOX getActiveTab waitForTabUrl */// toolbox.js
+/* global FIREFOX getActiveTab waitForTabUrl URLS */// toolbox.js
 /* global chromeLocal */// storage-util.js
 'use strict';
 
@@ -47,6 +47,14 @@ const tokenMan = (() => {
         'https://clngdbkpkpeebahjckkjfobafhncgmne.chromiumapp.org/' :
         'https://' + location.hostname + '.chromiumapp.org/',
       scopes: ['Files.ReadWrite.AppFolder', 'offline_access'],
+    },
+    userstylesworld: {
+      flow: 'code',
+      clientId: 'publicccc_client',
+      clientSecret: 'secreettUwU', // Don't judege.
+      authURL: URLS.usw + 'api/oauth/authorize_style',
+      tokenURL: URLS.usw + 'api/oauth/access_token',
+      redirect_uri: 'https://gusted.xyz/callback_helper/',
     },
   };
   const NETWORK_LATENCY = 30; // seconds
@@ -177,6 +185,7 @@ const tokenMan = (() => {
         grant_type: 'authorization_code',
         client_id: provider.clientId,
         redirect_uri: query.redirect_uri,
+        state,
       };
       if (provider.clientSecret) {
         body.client_secret = provider.clientSecret;

@@ -42,6 +42,8 @@ baseInit.ready.then(async () => {
     require(['/edit/linter-dialogs'], () => linterMan.showLintConfig());
   $('#lint-help').onclick = () =>
     require(['/edit/linter-dialogs'], () => linterMan.showLintHelp());
+  $('#debug-button').onclick = () =>
+    require(['/edit/usw-debug'], () => linkToUSW()); /* global linkToUSW */
   require([
     '/edit/autocomplete',
     '/edit/global-search',

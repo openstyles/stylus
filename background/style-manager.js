@@ -6,6 +6,7 @@
 /* global prefs */
 /* global tabMan */
 /* global usercssMan */
+/* global tokenMan */
 'use strict';
 
 /*
@@ -53,6 +54,9 @@ const styleMan = (() => {
   let ready = init();
 
   chrome.runtime.onConnect.addListener(handleLivePreview);
+
+  chrome.runtime.onConnect.addListener(handleLinkingUSW);
+
 
   //#endregion
   //#region Exports
@@ -342,6 +346,19 @@ const styleMan = (() => {
           broadcastStyleUpdated(data.style, 'editPreviewEnd');
         }
       }
+    });
+  }
+
+  function handleLinkingUSW(port) {
+    if (port.name !== 'link-style-usw') {
+      return;
+    }
+    port.onMessage.addListener(async style => {
+      if (!style.id) {
+        return;
+      }
+      const result = await tokenMan.getToken('userstylesworld', true);
+      console.log(result);
     });
   }
 
