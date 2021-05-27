@@ -11,8 +11,8 @@
   debounce
   getOwnTab
   sessionStore
-  tryCatch
   tryJSONparse
+  tryURL
 */// toolbox.js
 'use strict';
 
@@ -74,7 +74,7 @@ const baseInit = (() => {
     const id = Number(params.get('id'));
     const style = id && await API.styles.get(id) || {
       name: params.get('domain') ||
-        tryCatch(() => new URL(params.get('url-prefix')).hostname) ||
+        tryURL(params.get('url-prefix')).hostname ||
         '',
       enabled: true,
       sections: [

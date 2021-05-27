@@ -18,6 +18,7 @@
   stringAsRegExp
   tryCatch
   tryRegExp
+  tryURL
   waitForTabUrl
 */
 
@@ -150,13 +151,13 @@ function urlToMatchPattern(url, ignoreSearch) {
 }
 
 async function findExistingTab({url, currentWindow, ignoreHash = true, ignoreSearch = false}) {
-  url = new URL(url);
+  url = tryURL(url);
   const tabs = await browser.tabs.query({
     url: urlToMatchPattern(url, ignoreSearch),
     currentWindow,
   });
   return tabs.find(tab => {
-    const tabUrl = new URL(tab.pendingUrl || tab.url);
+    const tabUrl = tryURL(tab.pendingUrl || tab.url);
     return tabUrl.protocol === url.protocol &&
       tabUrl.username === url.username &&
       tabUrl.password === url.password &&
@@ -280,6 +281,29 @@ function tryJSONparse(jsonString) {
   try {
     return JSON.parse(jsonString);
   } catch (e) {}
+}
+
+function tryURL(
+  url,
+  fallback = {
+    hash: '',
+    host: '',
+    hostname: '',
+    href: '',
+    origin: '',
+    password: '',
+    pathname: '',
+    port: '',
+    protocol: '',
+    search: '',
+    searchParams: new URLSearchParams(),
+    username: '',
+  }) {
+  try {
+    return new URL(url);
+  } catch (e) {
+    return fallback;
+  }
 }
 
 function debounce(fn, delay, ...args) {

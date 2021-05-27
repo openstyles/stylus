@@ -1,5 +1,5 @@
 /* global API msg */// msg.js
-/* global CHROME URLS stringAsRegExp tryRegExp */// toolbox.js
+/* global CHROME URLS stringAsRegExp tryRegExp tryURL */// toolbox.js
 /* global bgReady compareRevision */// common.js
 /* global calcStyleDigest styleCodeEmpty styleSectionGlobal */// sections-util.js
 /* global db */
@@ -607,14 +607,14 @@ const styleMan = (() => {
       },
       get urlWithoutParams() {
         if (!urlWithoutParams) {
-          const u = createURL(url);
+          const u = tryURL(url);
           urlWithoutParams = u.origin + u.pathname;
         }
         return urlWithoutParams;
       },
       get domain() {
         if (!domain) {
-          const u = createURL(url);
+          const u = tryURL(url);
           domain = u.hostname;
         }
         return domain;
@@ -631,27 +631,6 @@ const styleMan = (() => {
         cache.sections[id] = {id, code};
         appliesTo.add(url);
       }
-    }
-  }
-
-  function createURL(url) {
-    try {
-      return new URL(url);
-    } catch (err) {
-      return {
-        hash: '',
-        host: '',
-        hostname: '',
-        href: '',
-        origin: '',
-        password: '',
-        pathname: '',
-        port: '',
-        protocol: '',
-        search: '',
-        searchParams: new URLSearchParams(),
-        username: '',
-      };
     }
   }
 
