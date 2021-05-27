@@ -12,8 +12,6 @@
   activateTab
   download
   findExistingTab
-  getActiveTab
-  isTabReplaceable
   openURL
 */ // toolbox.js
 'use strict';
@@ -74,7 +72,7 @@ addAPI(/** @namespace API */ {
     if (options) {
       url += '#stylus-options';
     }
-    let tab = await findExistingTab({
+    const tab = await findExistingTab({
       url,
       currentWindow: null,
       ignoreHash: true,
@@ -87,10 +85,7 @@ addAPI(/** @namespace API */ {
       }
       return tab;
     }
-    tab = await getActiveTab();
-    return isTabReplaceable(tab, url)
-      ? activateTab(tab, {url})
-      : browser.tabs.create({url}).then(activateTab); // activateTab unminimizes the window
+    return openURL({url, ignoreExisting: true}).then(activateTab); // activateTab unminimizes the window
   },
 
   /**

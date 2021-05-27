@@ -179,6 +179,7 @@ async function findExistingTab({url, currentWindow, ignoreHash = true, ignoreSea
  * @param {Boolean} [_.active=true] `true` to activate the tab
  * @param {Boolean|null} [_.currentWindow=true] `null` to check all windows
  * @param {chrome.windows.CreateData} [_.newWindow] creates a new window with these params if specified
+ * @param {boolean} [_.ignoreExisting] specify to skip findExistingTab
  * @returns {Promise<chrome.tabs.Tab>} Promise -> opened/activated tab
  */
 async function openURL({
@@ -188,11 +189,12 @@ async function openURL({
   active = true,
   currentWindow = true,
   newWindow,
+  ignoreExisting,
 }) {
   if (!url.includes('://')) {
     url = chrome.runtime.getURL(url);
   }
-  let tab = await findExistingTab({url, currentWindow});
+  let tab = !ignoreExisting && await findExistingTab({url, currentWindow});
   if (tab) {
     return activateTab(tab, {
       index,
