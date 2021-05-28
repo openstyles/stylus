@@ -65,9 +65,9 @@ const tokenMan = (() => {
 
     buildKeys(name, styleId) {
       const k = {
-        TOKEN: `secure/token/${name}/${styleId ? `${styleId}/`: ''}token`,
-        EXPIRE: `secure/token/${name}/${styleId ? `${styleId}/`: ''}expire`,
-        REFRESH: `secure/token/${name}/${styleId ? `${styleId}/`: ''}refresh`,
+        TOKEN: `secure/token/${name}/${styleId ? `${styleId}/` : ''}token`,
+        EXPIRE: `secure/token/${name}/${styleId ? `${styleId}/` : ''}expire`,
+        REFRESH: `secure/token/${name}/${styleId ? `${styleId}/` : ''}refresh`,
       };
       k.LIST = Object.values(k);
       return k;

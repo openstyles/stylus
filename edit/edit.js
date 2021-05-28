@@ -54,13 +54,14 @@ msg.onExtension(request => {
   const {style} = request;
   switch (request.method) {
     case 'styleUpdated':
-      if (editor.style.id === style.id)
+      if (editor.style.id === style.id) {
         if (!['editPreview', 'editPreviewEnd', 'editSave', 'config'].includes(request.reason)) {
-        Promise.resolve(request.codeIsUpdated === false ? style : API.styles.get(style.id))
-          .then(newStyle => editor.replaceStyle(newStyle, request.codeIsUpdated));
-      }
-      if (request.reason === 'updateLinking') {
-        console.log(editor.style._uswToken)
+          Promise.resolve(request.codeIsUpdated === false ? style : API.styles.get(style.id))
+            .then(newStyle => editor.replaceStyle(newStyle, request.codeIsUpdated));
+        }
+        if (request.reason === 'updateLinking') {
+          console.log(editor.style._uswToken);
+        }
       }
       break;
     case 'styleDeleted':

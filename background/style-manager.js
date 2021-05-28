@@ -48,7 +48,7 @@ const styleMan = (() => {
     name: style => `ID: ${style.id}`,
     _id: () => uuidv4(),
     _rev: () => Date.now(),
-    _uswToken: () => "",
+    _uswToken: () => '',
   };
   const DELETE_IF_NULL = ['id', 'customName', 'md5Url', 'originalMd5'];
   /** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
@@ -358,9 +358,9 @@ const styleMan = (() => {
       if (!style.id) {
         return;
       }
-      const result_token = await tokenMan.getToken('userstylesworld', true, style.id);
-      style._uswToken = result_token;
-      await saveStyle(style)
+      const resultToken = await tokenMan.getToken('userstylesworld', true, style.id);
+      style._uswToken = resultToken;
+      await saveStyle(style);
       broadcastStyleUpdated(style, 'updateLinking');
     });
   }
