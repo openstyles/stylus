@@ -63,11 +63,11 @@ const tokenMan = (() => {
 
   return {
 
-    buildKeys(name) {
+    buildKeys(name, styleId) {
       const k = {
-        TOKEN: `secure/token/${name}/token`,
-        EXPIRE: `secure/token/${name}/expire`,
-        REFRESH: `secure/token/${name}/refresh`,
+        TOKEN: `secure/token/${name}/${styleId ? `${styleId}/`: ''}token`,
+        EXPIRE: `secure/token/${name}/${styleId ? `${styleId}/`: ''}expire`,
+        REFRESH: `secure/token/${name}/${styleId ? `${styleId}/`: ''}refresh`,
       };
       k.LIST = Object.values(k);
       return k;
@@ -77,8 +77,8 @@ const tokenMan = (() => {
       return AUTH[name].clientId;
     },
 
-    async getToken(name, interactive) {
-      const k = tokenMan.buildKeys(name);
+    async getToken(name, interactive, styleId) {
+      const k = tokenMan.buildKeys(name, styleId);
       const obj = await chromeLocal.get(k.LIST);
       if (obj[k.TOKEN]) {
         if (!obj[k.EXPIRE] || Date.now() < obj[k.EXPIRE]) {
