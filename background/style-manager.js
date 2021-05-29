@@ -7,6 +7,7 @@
 /* global tabMan */
 /* global usercssMan */
 /* global tokenMan */
+/* global retrieveStyleInformation uploadStyle */// usw-api.js
 'use strict';
 
 /*
@@ -48,7 +49,7 @@ const styleMan = (() => {
     name: style => `ID: ${style.id}`,
     _id: () => uuidv4(),
     _rev: () => Date.now(),
-    _uswToken: () => '',
+    _usw: () => ({}),
   };
   const DELETE_IF_NULL = ['id', 'customName', 'md5Url', 'originalMd5'];
   /** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
@@ -361,15 +362,26 @@ const styleMan = (() => {
       }
       switch (reason) {
         case 'link':
-          style._uswToken = await tokenMan.getToken('userstylesworld', true, style.id);
+          style._usw = {
+            token: await tokenMan.getToken('userstylesworld', true, style.id),
+          };
+          for (const [k, v] of Object.entries(await retrieveStyleInformation(style._usw.token))) {
+            style._usw[k] = v;
+          }
           handleSave(await saveStyle(style), 'success-linking', true);
           break;
 
         case 'revoke':
           await tokenMan.revokeToken('userstylesworld', style.id);
-          style._uswToken = '';
+          style._usw = {};
           handleSave(await saveStyle(style), 'success-revoke', true);
           break;
+
+        case 'upload':
+          if (!style._usw.token) {
+            return;
+          }
+          uploadStyle(style._usw.token, style);
       }
     });
   }
@@ -449,7 +461,7 @@ const styleMan = (() => {
       style.id = newId;
     }
     uuidIndex.set(style._id, style.id);
-    API.sync.put(style._id, style._rev, style._uswToken);
+    API.sync.put(style._id, style._rev, style._usw);
   }
 
   async function saveStyle(style) {

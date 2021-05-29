@@ -392,14 +392,16 @@
             </div>
           </div>
         </details>
-        <details id="linking">
+        <details id="linking" data-pref="editor.toc.expanded" class="ignore-pref-if-compact">
           <summary><h2 i18n-text="linking"></h2></summary>
           <div id="pre-linking">
             <button id="link-style">Link style</button>
           </div>
           <div id="after-linking">
-            <p>This style has been linked.</p>
-            <button id="revoke-style">Revoke linking</button>
+            <div>
+              <button id="upload-style">Upload style</button>
+              <button id="revoke-style">Revoke linking</button>
+            </div>
           </div>
         </details>
         <details id="sections-list" data-pref="editor.toc.expanded" class="ignore-pref-if-compact">

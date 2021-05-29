@@ -1,4 +1,4 @@
-/* global $ */// dom.js
+/* global $ $create $remove */// dom.js
 /* global editor */
 
 'use strict';
@@ -28,13 +28,28 @@ function revokeLinking() {
   uswPort.postMessage({reason: 'revoke', data: editor.style});
 }
 
+/* exported uploadStyle */
+function uploadStyle() {
+  connectToPort();
+  const data = Object.assign(editor.style, {sourceCode: editor.getEditors()[0].getValue()});
+  uswPort.postMessage({reason: 'upload', data});
+}
+
 
 /* exported updateUI */
 function updateUI(useStyle) {
   const style = useStyle || editor.style;
-  if (style._uswToken) {
-    $('#after-linking').style = '';
+  if (style._usw && style._usw.token) {
+    const afterLinking = $('#after-linking');
+    afterLinking.style = '';
     $('#pre-linking').style = 'display: none;';
+
+    const linkInformation = $create('div', {id: 'link-info'}, [
+      $create('p', `Style name: ${style._usw.name}`),
+      $create('p', `Description: ${style._usw.description}`),
+    ]);
+    $remove('#link-info');
+    afterLinking.insertBefore(linkInformation, afterLinking.firstChild);
   } else {
     $('#after-linking').style = 'display: none;';
     $('#pre-linking').style = '';

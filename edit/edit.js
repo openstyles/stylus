@@ -11,7 +11,7 @@
 /* global linterMan */
 /* global prefs */
 /* global t */// localization.js
-/* global updateUI, linkToUSW revokeLinking */// usw-linking.js
+/* global updateUI linkToUSW revokeLinking uploadStyle */// usw-linking.js
 'use strict';
 
 //#region init
@@ -46,6 +46,7 @@ baseInit.ready.then(async () => {
     require(['/edit/linter-dialogs'], () => linterMan.showLintHelp());
   $('#link-style').onclick = () => linkToUSW();
   $('#revoke-style').onclick = () => revokeLinking();
+  $('#upload-style').onclick = () => uploadStyle();
   require([
     '/edit/autocomplete',
     '/edit/global-search',
@@ -64,7 +65,6 @@ msg.onExtension(request => {
 
               if (['success-linking', 'success-revoke'].includes(request.reason)) {
                 updateUI(newStyle);
-                console.log(editor.style._uswToken);
               }
             });
         }
