@@ -59,6 +59,7 @@
     <script src="edit/source-editor.js"></script>
     <script src="edit/sections-editor-section.js"></script>
     <script src="edit/sections-editor.js"></script>
+    <script src="edit/usw-linking.js"></script>
     <script src="edit/edit.js"></script>
 
     <template data-id="appliesTo">
@@ -391,12 +392,19 @@
             </div>
           </div>
         </details>
+        <details id="linking">
+          <summary><h2 i18n-text="linking"></h2></summary>
+          <div id="pre-linking">
+            <button id="link-style">Link style</button>
+          </div>
+          <div id="after-linking">
+            <p>This style has been linked.</p>
+            <button id="revoke-style">Revoke linking</button>
+          </div>
+        </details>
         <details id="sections-list" data-pref="editor.toc.expanded" class="ignore-pref-if-compact">
           <summary><h2 i18n-text="sections"></h2></summary>
           <ol id="toc"></ol>
-        </details>
-        <details id="debug">
-          <button id="debug-button">Link style</button>
         </details>
         <details id="lint" data-pref="editor.lint.expanded" class="hidden-unless-compact ignore-pref-if-compact">
           <summary>

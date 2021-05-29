@@ -11,6 +11,7 @@
 /* global linterMan */
 /* global prefs */
 /* global t */// localization.js
+/* global updateUI, linkToUSW revokeLinking */// usw-linking.js
 'use strict';
 
 //#region init
@@ -18,6 +19,7 @@
 baseInit.ready.then(async () => {
   await waitForSheet();
   (editor.isUsercss ? SourceEditor : SectionsEditor)();
+  updateUI();
   await editor.ready;
   editor.ready = true;
   editor.dirty.onChange(editor.updateDirty);
@@ -42,8 +44,8 @@ baseInit.ready.then(async () => {
     require(['/edit/linter-dialogs'], () => linterMan.showLintConfig());
   $('#lint-help').onclick = () =>
     require(['/edit/linter-dialogs'], () => linterMan.showLintHelp());
-  $('#debug-button').onclick = () =>
-    require(['/edit/usw-debug'], () => linkToUSW()); /* global linkToUSW */
+  $('#link-style').onclick = () => linkToUSW();
+  $('#revoke-style').onclick = () => revokeLinking();
   require([
     '/edit/autocomplete',
     '/edit/global-search',
@@ -57,10 +59,14 @@ msg.onExtension(request => {
       if (editor.style.id === style.id) {
         if (!['editPreview', 'editPreviewEnd', 'editSave', 'config'].includes(request.reason)) {
           Promise.resolve(request.codeIsUpdated === false ? style : API.styles.get(style.id))
-            .then(newStyle => editor.replaceStyle(newStyle, request.codeIsUpdated));
-        }
-        if (request.reason === 'updateLinking') {
-          console.log(editor.style._uswToken);
+            .then(newStyle => {
+              editor.replaceStyle(newStyle, request.codeIsUpdated);
+
+              if (['success-linking', 'success-revoke'].includes(request.reason)) {
+                updateUI(newStyle);
+                console.log(editor.style._uswToken);
+              }
+            });
         }
       }
       break;

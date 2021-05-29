@@ -1365,6 +1365,10 @@
     "message": "Sections",
     "description": "Header for the table of contents block listing style section names in the left panel of the classic editor"
   },
+  "linking": {
+    "message": "Linking",
+    "description": "Header for the section to link the style with other services."
+  },
   "shortcuts": {
     "message": "Shortcuts",
     "description": "Go to shortcut configuration"

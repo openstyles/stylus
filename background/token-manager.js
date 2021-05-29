@@ -94,9 +94,9 @@ const tokenMan = (() => {
       return authUser(name, k, interactive);
     },
 
-    async revokeToken(name) {
+    async revokeToken(name, styleId) {
       const provider = AUTH[name];
-      const k = tokenMan.buildKeys(name);
+      const k = tokenMan.buildKeys(name, styleId);
       if (provider.revoke) {
         try {
           const token = await chromeLocal.getValue(k.TOKEN);

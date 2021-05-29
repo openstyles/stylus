@@ -354,14 +354,23 @@ const styleMan = (() => {
     if (port.name !== 'link-style-usw') {
       return;
     }
-    port.onMessage.addListener(async style => {
+    port.onMessage.addListener(async incData => {
+      const {data: style, reason} = incData;
       if (!style.id) {
         return;
       }
-      const resultToken = await tokenMan.getToken('userstylesworld', true, style.id);
-      style._uswToken = resultToken;
-      await saveStyle(style);
-      broadcastStyleUpdated(style, 'updateLinking');
+      switch (reason) {
+        case 'link':
+          style._uswToken = await tokenMan.getToken('userstylesworld', true, style.id);
+          handleSave(await saveStyle(style), 'success-linking', true);
+          break;
+
+        case 'revoke':
+          await tokenMan.revokeToken('userstylesworld', style.id);
+          style._uswToken = '';
+          handleSave(await saveStyle(style), 'success-revoke', true);
+          break;
+      }
     });
   }
 
