@@ -1366,8 +1366,20 @@
     "description": "Header for the table of contents block listing style section names in the left panel of the classic editor"
   },
   "linking": {
-    "message": "Linking",
-    "description": "Header for the section to link the style with other services."
+    "message": "UserStyles.world integration",
+    "description": "Header for the section to link the style with userStyles.world"
+  },
+  "linkStyle": {
+    "message": "Link Style",
+    "description": "Link the current style with userstyles.world"
+  },
+  "uploadStyle": {
+    "message": "Upload Style",
+    "description": "Upload the current style to userstyles.world"
+  },
+  "revokeLink": {
+    "message": "Revoke Link",
+    "description": "Revoke current link of style with userstyles.world"
   },
   "shortcuts": {
     "message": "Shortcuts",

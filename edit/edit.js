@@ -45,7 +45,7 @@ baseInit.ready.then(async () => {
   $('#lint-help').onclick = () =>
     require(['/edit/linter-dialogs'], () => linterMan.showLintHelp());
   $('#link-style').onclick = () => linkToUSW();
-  $('#revoke-style').onclick = () => revokeLinking();
+  $('#revoke-link').onclick = () => revokeLinking();
   $('#upload-style').onclick = () => uploadStyle();
   require([
     '/edit/autocomplete',

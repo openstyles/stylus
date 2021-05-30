@@ -56,9 +56,7 @@ const styleMan = (() => {
   let ready = init();
 
   chrome.runtime.onConnect.addListener(handleLivePreview);
-
   chrome.runtime.onConnect.addListener(handleLinkingUSW);
-
 
   //#endregion
   //#region Exports
@@ -381,7 +379,8 @@ const styleMan = (() => {
           if (!style._usw.token) {
             return;
           }
-          uploadStyle(style._usw.token, style);
+          uploadStyle(style);
+          break;
       }
     });
   }

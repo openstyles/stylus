@@ -14,11 +14,11 @@ async function retrieveStyleInformation(token) {
 }
 
 /* exported uploadStyle */
-async function uploadStyle(token, style) {
+async function uploadStyle(style) {
   return (await (await fetch(`${URLS.usw}api/style/${style._usw.id}`, {
     method: 'POST',
     headers: new Headers({
-      'Authorization': `Bearer ${token}`,
+      'Authorization': `Bearer ${style._usw.token}`,
       'Content-Type': 'application/json',
     }),
     body: JSON.stringify({
