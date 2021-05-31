@@ -132,7 +132,7 @@ const iconMan = (() => {
 
   // Caches imageData for icon paths
   async function loadImage(url) {
-    const {OffscreenCanvas} = self.createImageBitmap && self || {};
+    const {OffscreenCanvas} = !FIREFOX && self.createImageBitmap && self || {};
     const img = OffscreenCanvas
       ? await createImageBitmap(await (await fetch(url)).blob())
       : await new Promise((resolve, reject) =>
