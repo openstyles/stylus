@@ -52,7 +52,6 @@ const tokenMan = (() => {
       flow: 'code',
       clientId: 'zeDmKhJIfJqULtcrGMsWaxRtWHEimKgS',
       clientSecret: 'wqHsvTuThQmXmDiVvOpZxPwSIbyycNFImpAOTxjaIRqDbsXcTOqrymMJKsOMuibFaij' +
-      'ZZAkVYTDbLkQuYFKqgpMsMlFlgwQOYHvHFbgxQHDTwwdOroYhOwFuekCwXUlk',
       authURL: URLS.usw + 'api/oauth/authorize_style',
       tokenURL: URLS.usw + 'api/oauth/access_token',
       redirect_uri: 'https://gusted.xyz/callback_helper/',
@@ -78,8 +77,8 @@ const tokenMan = (() => {
       return AUTH[name].clientId;
     },
 
-    async getToken(name, interactive, styleId) {
-      const k = tokenMan.buildKeys(name, styleId);
+    async getToken(name, interactive, style) {
+      const k = tokenMan.buildKeys(name, style.id);
       const obj = await chromeLocal.get(k.LIST);
       if (obj[k.TOKEN]) {
         if (!obj[k.EXPIRE] || Date.now() < obj[k.EXPIRE]) {
@@ -92,7 +91,11 @@ const tokenMan = (() => {
       if (!interactive) {
         throw new Error(`Invalid token: ${name}`);
       }
-      return authUser(name, k, interactive);
+      const styleInformation = name === 'userstylesworld' ? JSON.stringify({
+        'code': style.sourceCode,
+        'name': style.name,
+      }) : null;
+      return authUser(name, k, interactive, styleInformation);
     },
 
     async revokeToken(name, styleId) {
@@ -132,7 +135,7 @@ const tokenMan = (() => {
     return handleTokenResult(result, k);
   }
 
-  async function authUser(name, k, interactive = false) {
+  async function authUser(name, k, interactive = false, styleInformation = null) {
     await require(['/vendor/webext-launch-web-auth-flow/webext-launch-web-auth-flow.min']);
     /* global webextLaunchWebAuthFlow */
     const provider = AUTH[name];
@@ -143,6 +146,9 @@ const tokenMan = (() => {
       redirect_uri: provider.redirect_uri || chrome.identity.getRedirectURL(),
       state,
     };
+    if (styleInformation) {
+      query['styleInfo'] = styleInformation;
+    }
     if (provider.scopes) {
       query.scope = provider.scopes.join(' ');
     }

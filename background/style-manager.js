@@ -361,7 +361,7 @@ const styleMan = (() => {
       switch (reason) {
         case 'link':
           style._usw = {
-            token: await tokenMan.getToken('userstylesworld', true, style.id),
+            token: await tokenMan.getToken('userstylesworld', true, style),
           };
           for (const [k, v] of Object.entries(await retrieveStyleInformation(style._usw.token))) {
             style._usw[k] = v;

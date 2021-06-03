@@ -18,7 +18,8 @@ function connectToPort() {
 function linkToUSW() {
   connectToPort();
 
-  uswPort.postMessage({reason: 'link', data: editor.style});
+  const data = Object.assign(editor.style, {sourceCode: editor.getEditors()[0].getValue()});
+  uswPort.postMessage({reason: 'link', data});
 }
 
 /* exported revokeLinking */
