@@ -52,6 +52,7 @@ const tokenMan = (() => {
       flow: 'code',
       clientId: 'zeDmKhJIfJqULtcrGMsWaxRtWHEimKgS',
       clientSecret: 'wqHsvTuThQmXmDiVvOpZxPwSIbyycNFImpAOTxjaIRqDbsXcTOqrymMJKsOMuibFaij' +
+        'ZZAkVYTDbLkQuYFKqgpMsMlFlgwQOYHvHFbgxQHDTwwdOroYhOwFuekCwXUlk',
       authURL: URLS.usw + 'api/oauth/authorize_style',
       tokenURL: URLS.usw + 'api/oauth/access_token',
       redirect_uri: 'https://gusted.xyz/callback_helper/',
