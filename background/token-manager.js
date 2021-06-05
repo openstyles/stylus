@@ -92,11 +92,8 @@ const tokenMan = (() => {
       if (!interactive) {
         throw new Error(`Invalid token: ${name}`);
       }
-      const styleInformation = name === 'userstylesworld' ? JSON.stringify({
-        'code': style.sourceCode,
-        'name': style.name,
-      }) : null;
-      return authUser(name, k, interactive, styleInformation);
+      const accessToken = authUser(name, k, interactive);
+      return accessToken;
     },
 
     async revokeToken(name, styleId) {
@@ -136,7 +133,7 @@ const tokenMan = (() => {
     return handleTokenResult(result, k);
   }
 
-  async function authUser(name, k, interactive = false, styleInformation = null) {
+  async function authUser(name, k, interactive = false) {
     await require(['/vendor/webext-launch-web-auth-flow/webext-launch-web-auth-flow.min']);
     /* global webextLaunchWebAuthFlow */
     const provider = AUTH[name];
@@ -147,9 +144,6 @@ const tokenMan = (() => {
       redirect_uri: provider.redirect_uri || chrome.identity.getRedirectURL(),
       state,
     };
-    if (styleInformation) {
-      query['styleInfo'] = styleInformation;
-    }
     if (provider.scopes) {
       query.scope = provider.scopes.join(' ');
     }

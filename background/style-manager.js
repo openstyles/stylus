@@ -360,9 +360,12 @@ const styleMan = (() => {
       }
       switch (reason) {
         case 'link':
+          style._linking = true;
+          saveStyle(style);
           style._usw = {
             token: await tokenMan.getToken('userstylesworld', true, style),
           };
+          delete style._linking;
           for (const [k, v] of Object.entries(await retrieveStyleInformation(style._usw.token))) {
             style._usw[k] = v;
           }
