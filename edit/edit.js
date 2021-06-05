@@ -11,7 +11,7 @@
 /* global linterMan */
 /* global prefs */
 /* global t */// localization.js
-/* global updateUI linkToUSW revokeLinking uploadStyle */// usw-linking.js
+/* global updateUI revokeLinking publishStyle */// usw-integration.js
 'use strict';
 
 //#region init
@@ -44,9 +44,8 @@ baseInit.ready.then(async () => {
     require(['/edit/linter-dialogs'], () => linterMan.showLintConfig());
   $('#lint-help').onclick = () =>
     require(['/edit/linter-dialogs'], () => linterMan.showLintHelp());
-  $('#link-style').onclick = () => linkToUSW();
   $('#revoke-link').onclick = () => revokeLinking();
-  $('#upload-style').onclick = () => uploadStyle();
+  $('#publish-style').onclick = () => publishStyle();
   require([
     '/edit/autocomplete',
     '/edit/global-search',
@@ -63,7 +62,7 @@ msg.onExtension(request => {
             .then(newStyle => {
               editor.replaceStyle(newStyle, request.codeIsUpdated);
 
-              if (['success-linking', 'success-revoke'].includes(request.reason)) {
+              if (['success-publishing', 'success-revoke'].includes(request.reason)) {
                 updateUI(newStyle);
               }
             });

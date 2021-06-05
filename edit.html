@@ -59,7 +59,7 @@
     <script src="edit/source-editor.js"></script>
     <script src="edit/sections-editor-section.js"></script>
     <script src="edit/sections-editor.js"></script>
-    <script src="edit/usw-linking.js"></script>
+    <script src="edit/usw-integration.js"></script>
     <script src="edit/edit.js"></script>
 
     <template data-id="appliesTo">
@@ -392,16 +392,11 @@
             </div>
           </div>
         </details>
-        <details id="linking" data-pref="editor.toc.expanded" class="ignore-pref-if-compact">
-          <summary><h2 i18n-text="linking"></h2></summary>
-          <div id="pre-linking">
-            <button id="link-style" i18n-text="linkStyle"></button>
-          </div>
-          <div id="after-linking">
-            <div>
-              <button id="upload-style" i18n-text="uploadStyle"></button>
-              <button id="revoke-link" i18n-text="revokeLink"></button>
-            </div>
+        <details id="integration" data-pref="editor.toc.expanded" class="ignore-pref-if-compact">
+          <summary><h2 i18n-text="integration"></h2></summary>
+          <div>
+            <button id="publish-style" i18n-text="uploadStyle"></button>
+            <button id="revoke-link" i18n-text="revokeLink"></button>
           </div>
         </details>
         <details id="sections-list" data-pref="editor.toc.expanded" class="ignore-pref-if-compact">

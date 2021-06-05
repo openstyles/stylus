@@ -14,13 +14,6 @@ function connectToPort() {
   }
 }
 
-/* exported linkToUSW */
-function linkToUSW() {
-  connectToPort();
-
-  const data = Object.assign(editor.style, {sourceCode: editor.getEditors()[0].getValue()});
-  uswPort.postMessage({reason: 'link', data});
-}
 
 /* exported revokeLinking */
 function revokeLinking() {
@@ -29,11 +22,11 @@ function revokeLinking() {
   uswPort.postMessage({reason: 'revoke', data: editor.style});
 }
 
-/* exported uploadStyle */
-function uploadStyle() {
+/* exported publishStyle */
+function publishStyle() {
   connectToPort();
   const data = Object.assign(editor.style, {sourceCode: editor.getEditors()[0].getValue()});
-  uswPort.postMessage({reason: 'upload', data});
+  uswPort.postMessage({reason: 'publish', data});
 }
 
 
@@ -41,18 +34,16 @@ function uploadStyle() {
 function updateUI(useStyle) {
   const style = useStyle || editor.style;
   if (style._usw && style._usw.token) {
-    const afterLinking = $('#after-linking');
-    afterLinking.style = '';
-    $('#pre-linking').style = 'display: none;';
+    $('#revoke-link').style = '';
 
     const linkInformation = $create('div', {id: 'link-info'}, [
       $create('p', `Style name: ${style._usw.name}`),
       $create('p', `Description: ${style._usw.description}`),
     ]);
     $remove('#link-info');
-    afterLinking.insertBefore(linkInformation, afterLinking.firstChild);
+    $('#integration').insertBefore(linkInformation, $('#integration').firstChild);
   } else {
-    $('#after-linking').style = 'display: none;';
-    $('#pre-linking').style = '';
+    $('#revoke-link').style = 'display: none;';
+    $remove('#link-info');
   }
 }

@@ -56,7 +56,7 @@ const styleMan = (() => {
   let ready = init();
 
   chrome.runtime.onConnect.addListener(handleLivePreview);
-  chrome.runtime.onConnect.addListener(handleLinkingUSW);
+  chrome.runtime.onConnect.addListener(handlePublishingUSW);
 
   //#endregion
   //#region Exports
@@ -349,7 +349,7 @@ const styleMan = (() => {
     });
   }
 
-  function handleLinkingUSW(port) {
+  function handlePublishingUSW(port) {
     if (port.name !== 'link-style-usw') {
       return;
     }
@@ -359,28 +359,32 @@ const styleMan = (() => {
         return;
       }
       switch (reason) {
-        case 'link':
-          style._linking = true;
-          saveStyle(style);
-          style._usw = {
-            token: await tokenMan.getToken('userstylesworld', true, style),
-          };
-          delete style._linking;
-          for (const [k, v] of Object.entries(await retrieveStyleInformation(style._usw.token))) {
-            style._usw[k] = v;
-          }
-          handleSave(await saveStyle(style), 'success-linking', true);
-          break;
-
         case 'revoke':
           await tokenMan.revokeToken('userstylesworld', style.id);
           style._usw = {};
           handleSave(await saveStyle(style), 'success-revoke', true);
           break;
 
-        case 'upload':
-          if (!style._usw.token) {
-            return;
+        case 'publish':
+          if (!style._usw || !style._usw.token) {
+            style._linking = true;
+            await saveStyle(style);
+            const data = id2data(style.id);
+            if (!data) {
+              storeInMap(style);
+            } else {
+              data.style = style;
+            }
+
+            style._usw = {
+              token: await tokenMan.getToken('userstylesworld', true, style),
+            };
+
+            delete style._linking;
+            for (const [k, v] of Object.entries(await retrieveStyleInformation(style._usw.token))) {
+              style._usw[k] = v;
+            }
+            handleSave(await saveStyle(style), 'success-publishing', true);
           }
           uploadStyle(style);
           break;
