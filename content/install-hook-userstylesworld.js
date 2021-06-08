@@ -17,7 +17,7 @@
     ) {
       sendPostMessage({type: 'usw-remove-stylus-button'});
 
-      if (window.location.pathname === '/api/oauth/authorize_style/new') {
+      if (location.pathname === '/api/oauth/authorize_style/new') {
         API.styles.find({_linking: true}).then(style => {
           console.log(style);
           sendPostMessage({type: 'usw-fill-new-style', data: style});
