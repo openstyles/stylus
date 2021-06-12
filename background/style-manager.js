@@ -367,15 +367,17 @@ const styleMan = (() => {
 
         case 'publish':
           if (!style._usw || !style._usw.token) {
-            style._linking = true;
-            await saveStyle(style);
-            const data = id2data(style.id);
-            if (!data) {
-              storeInMap(style);
-            } else {
-              data.style = style;
+            // Ensures just the style does have the _linking property as `true`.
+            for (const {style: someStyle} of dataMap.values()) {
+              if (someStyle._id === style._id) {
+                someStyle._linking = true;
+                someStyle.sourceCode = style.sourceCode;
+              } else {
+                delete someStyle._linking;
+                delete someStyle.sourceCode;
+              }
+              handleSave(await saveStyle(someStyle), null, null, false);
             }
-
             style._usw = {
               token: await tokenMan.getToken('userstylesworld', true, style),
             };
@@ -477,7 +479,7 @@ const styleMan = (() => {
     return style;
   }
 
-  function handleSave(style, reason, codeIsUpdated) {
+  function handleSave(style, reason, codeIsUpdated, broadcast = true) {
     const data = id2data(style.id);
     const method = data ? 'styleUpdated' : 'styleAdded';
     if (!data) {
@@ -485,7 +487,7 @@ const styleMan = (() => {
     } else {
       data.style = style;
     }
-    broadcastStyleUpdated(style, reason, method, codeIsUpdated);
+    if (broadcast) broadcastStyleUpdated(style, reason, method, codeIsUpdated);
     return style;
   }
 
