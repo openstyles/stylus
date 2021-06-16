@@ -43,6 +43,13 @@ const styleMan = (() => {
   const compileRe = createCompiler(text => `^(${text})$`);
   const compileSloppyRe = createCompiler(text => `^${text}$`);
   const compileExclusion = createCompiler(buildExclusion);
+  const uuidv4 = crypto.randomUUID ? crypto.randomUUID.bind(crypto) : (() => {
+    const seeds = crypto.getRandomValues(new Uint16Array(8));
+    // 00001111-2222-M333-N444-555566667777
+    seeds[3] = seeds[3] & 0x0FFF | 0x4000; // UUID version 4, M = 4
+    seeds[4] = seeds[4] & 0x3FFF | 0x8000; // UUID variant 1, N = 8..0xB
+    return Array.from(seeds, hex4dashed).join('');
+  });
   const MISSING_PROPS = {
     name: style => `ID: ${style.id}`,
     _id: () => uuidv4(),
@@ -632,14 +639,6 @@ const styleMan = (() => {
         appliesTo.add(url);
       }
     }
-  }
-
-  function uuidv4() {
-    const seeds = crypto.getRandomValues(new Uint16Array(8));
-    // 00001111-2222-M333-N444-555566667777
-    seeds[3] = seeds[3] & 0x0FFF | 0x4000; // UUID version 4, M = 4
-    seeds[4] = seeds[4] & 0x3FFF | 0x8000; // UUID variant 1, N = 8..0xB
-    return Array.from(seeds, hex4dashed).join('');
   }
 
   /** uuidv4 helper: converts to a 4-digit hex string and adds "-" at required positions */
