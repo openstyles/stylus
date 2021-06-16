@@ -372,9 +372,12 @@ const styleMan = (() => {
               if (someStyle._id === style._id) {
                 someStyle._linking = true;
                 someStyle.sourceCode = style.sourceCode;
+                const {metadata} = await API.worker.parseUsercssMeta(style.sourceCode);
+                someStyle.metadata = metadata;
               } else {
                 delete someStyle._linking;
                 delete someStyle.sourceCode;
+                delete someStyle.metadata;
               }
               handleSave(await saveStyle(someStyle), null, null, false);
             }
@@ -383,6 +386,8 @@ const styleMan = (() => {
             };
 
             delete style._linking;
+            delete style.sourceCode;
+            delete style.metadata;
             for (const [k, v] of Object.entries(await retrieveStyleInformation(style._usw.token))) {
               style._usw[k] = v;
             }
