@@ -264,7 +264,20 @@
   const BM_CLS = 'gutter-bookmark';
   const BM_BRAND = 'sublimeBookmark';
   const BM_CLICKER = 'CodeMirror-linenumbers';
-  const {markText} = CodeMirror.prototype;
+  const BM_DATA = Symbol('data');
+  // TODO: revisit when https://github.com/codemirror/CodeMirror/issues/6716 is fixed
+  const tmProto = CodeMirror.TextMarker.prototype;
+  const tmProtoOvr = {};
+  for (const k of ['clear', 'attachLine', 'detachLine']) {
+    tmProtoOvr[k] = function (line) {
+      const {cm} = this.doc;
+      const withOp = !cm.curOp;
+      if (withOp) cm.startOperation();
+      tmProto[k].apply(this, arguments);
+      cm.curOp.ownsGroup.delayedCallbacks.push(toggleMark.bind(this, this.lines[0], line));
+      if (withOp) cm.endOperation();
+    };
+  }
   for (const name of ['prevBookmark', 'nextBookmark']) {
     const cmdFn = CodeMirror.commands[name];
     CodeMirror.commands[name] = cm => {
@@ -276,29 +289,9 @@
   CodeMirror.defineInitHook(cm => {
     cm.on('gutterClick', onGutterClick);
     cm.on('gutterContextMenu', onGutterContextMenu);
+    cm.on('markerAdded', onMarkAdded);
   });
   // TODO: reimplement bookmarking so next/prev order is decided solely by the line numbers
-  Object.assign(CodeMirror.prototype, {
-    markText() {
-      const marker = markText.apply(this, arguments);
-      if (marker[BM_BRAND]) {
-        this.doc.addLineClass(marker.lines[0], 'gutter', BM_CLS);
-        marker.clear = clearMarker;
-      }
-      return marker;
-    },
-  });
-
-  function clearMarker() {
-    const line = this.lines[0];
-    const spans = line.markedSpans;
-    delete this.clear; // removing our patch from the instance...
-    this.clear(); // ...and using the original prototype
-    if (!spans || spans.some(span => span.marker[BM_BRAND])) {
-      this.doc.removeLineClass(line, 'gutter', BM_CLS);
-    }
-  }
-
   function onGutterClick(cm, line, name, e) {
     switch (name === BM_CLICKER && e.button) {
       case 0: {
@@ -314,11 +307,25 @@
         break;
     }
   }
-
   function onGutterContextMenu(cm, line, name, e) {
     if (name === BM_CLICKER) {
       cm.execCommand(e.ctrlKey ? 'prevBookmark' : 'nextBookmark');
       e.preventDefault();
+    }
+  }
+  function onMarkAdded(cm, mark) {
+    if (mark[BM_BRAND]) {
+      // CM bug workaround to keep the mark at line start when the above line is removed
+      mark.inclusiveRight = true;
+      Object.assign(mark, tmProtoOvr);
+      toggleMark.call(mark, true, mark[BM_DATA] = mark.lines[0]);
+    }
+  }
+  function toggleMark(state, line = this[BM_DATA]) {
+    this.doc[state ? 'addLineClass' : 'removeLineClass'](line, 'gutter', BM_CLS);
+    if (state) {
+      const bms = this.doc.cm.state.sublimeBookmarks;
+      if (!bms.includes(this)) bms.push(this);
     }
   }
 
