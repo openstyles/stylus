@@ -1370,11 +1370,11 @@
     "description": "Header for the section to link the style with userStyles.world"
   },
   "uploadStyle": {
-    "message": "Publish Style",
+    "message": "Publish style",
     "description": "Publish the current style to userstyles.world"
   },
   "revokeLink": {
-    "message": "Revoke Link",
+    "message": "Revoke link",
     "description": "Revoke current link of style with userstyles.world"
   },
   "shortcuts": {
