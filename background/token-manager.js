@@ -1,4 +1,4 @@
-/* global FIREFOX getActiveTab waitForTabUrl */// toolbox.js
+/* global FIREFOX getActiveTab waitForTabUrl URLS */// toolbox.js
 /* global chromeLocal */// storage-util.js
 'use strict';
 
@@ -48,6 +48,15 @@ const tokenMan = (() => {
         'https://' + location.hostname + '.chromiumapp.org/',
       scopes: ['Files.ReadWrite.AppFolder', 'offline_access'],
     },
+    userstylesworld: {
+      flow: 'code',
+      clientId: 'zeDmKhJIfJqULtcrGMsWaxRtWHEimKgS',
+      clientSecret: 'wqHsvTuThQmXmDiVvOpZxPwSIbyycNFImpAOTxjaIRqDbsXcTOqrymMJKsOMuibFaij' +
+        'ZZAkVYTDbLkQuYFKqgpMsMlFlgwQOYHvHFbgxQHDTwwdOroYhOwFuekCwXUlk',
+      authURL: URLS.usw + 'api/oauth/authorize_style',
+      tokenURL: URLS.usw + 'api/oauth/access_token',
+      redirect_uri: 'https://gusted.xyz/callback_helper/',
+    },
   };
   const NETWORK_LATENCY = 30; // seconds
 
@@ -55,11 +64,11 @@ const tokenMan = (() => {
 
   return {
 
-    buildKeys(name) {
+    buildKeys(name, styleId) {
       const k = {
-        TOKEN: `secure/token/${name}/token`,
-        EXPIRE: `secure/token/${name}/expire`,
-        REFRESH: `secure/token/${name}/refresh`,
+        TOKEN: `secure/token/${name}/${styleId ? `${styleId}/` : ''}token`,
+        EXPIRE: `secure/token/${name}/${styleId ? `${styleId}/` : ''}expire`,
+        REFRESH: `secure/token/${name}/${styleId ? `${styleId}/` : ''}refresh`,
       };
       k.LIST = Object.values(k);
       return k;
@@ -69,8 +78,8 @@ const tokenMan = (() => {
       return AUTH[name].clientId;
     },
 
-    async getToken(name, interactive) {
-      const k = tokenMan.buildKeys(name);
+    async getToken(name, interactive, style) {
+      const k = tokenMan.buildKeys(name, style.id);
       const obj = await chromeLocal.get(k.LIST);
       if (obj[k.TOKEN]) {
         if (!obj[k.EXPIRE] || Date.now() < obj[k.EXPIRE]) {
@@ -83,12 +92,13 @@ const tokenMan = (() => {
       if (!interactive) {
         throw new Error(`Invalid token: ${name}`);
       }
-      return authUser(name, k, interactive);
+      const accessToken = authUser(name, k, interactive);
+      return accessToken;
     },
 
-    async revokeToken(name) {
+    async revokeToken(name, styleId) {
       const provider = AUTH[name];
-      const k = tokenMan.buildKeys(name);
+      const k = tokenMan.buildKeys(name, styleId);
       if (provider.revoke) {
         try {
           const token = await chromeLocal.getValue(k.TOKEN);
@@ -177,6 +187,7 @@ const tokenMan = (() => {
         grant_type: 'authorization_code',
         client_id: provider.clientId,
         redirect_uri: query.redirect_uri,
+        state,
       };
       if (provider.clientSecret) {
         body.client_secret = provider.clientSecret;

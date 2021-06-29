@@ -6,6 +6,8 @@
 /* global prefs */
 /* global tabMan */
 /* global usercssMan */
+/* global tokenMan */
+/* global retrieveStyleInformation uploadStyle */// usw-api.js
 'use strict';
 
 /*
@@ -54,12 +56,14 @@ const styleMan = (() => {
     name: style => `ID: ${style.id}`,
     _id: () => uuidv4(),
     _rev: () => Date.now(),
+    _usw: () => ({}),
   };
   const DELETE_IF_NULL = ['id', 'customName', 'md5Url', 'originalMd5'];
   /** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
   let ready = init();
 
   chrome.runtime.onConnect.addListener(handleLivePreview);
+  chrome.runtime.onConnect.addListener(handlePublishingUSW);
 
   //#endregion
   //#region Exports
@@ -352,6 +356,56 @@ const styleMan = (() => {
     });
   }
 
+  function handlePublishingUSW(port) {
+    if (port.name !== 'link-style-usw') {
+      return;
+    }
+    port.onMessage.addListener(async incData => {
+      const {data: style, reason} = incData;
+      if (!style.id) {
+        return;
+      }
+      switch (reason) {
+        case 'revoke':
+          await tokenMan.revokeToken('userstylesworld', style.id);
+          style._usw = {};
+          handleSave(await saveStyle(style), 'success-revoke', true);
+          break;
+
+        case 'publish':
+          if (!style._usw || !style._usw.token) {
+            // Ensures just the style does have the _isUswLinked property as `true`.
+            for (const {style: someStyle} of dataMap.values()) {
+              if (someStyle._id === style._id) {
+                someStyle._isUswLinked = true;
+                someStyle.sourceCode = style.sourceCode;
+                const {metadata} = await API.worker.parseUsercssMeta(style.sourceCode);
+                someStyle.metadata = metadata;
+              } else {
+                delete someStyle._isUswLinked;
+                delete someStyle.sourceCode;
+                delete someStyle.metadata;
+              }
+              handleSave(await saveStyle(someStyle), null, null, false);
+            }
+            style._usw = {
+              token: await tokenMan.getToken('userstylesworld', true, style),
+            };
+
+            delete style._isUswLinked;
+            delete style.sourceCode;
+            delete style.metadata;
+            for (const [k, v] of Object.entries(await retrieveStyleInformation(style._usw.token))) {
+              style._usw[k] = v;
+            }
+            handleSave(await saveStyle(style), 'success-publishing', true);
+          }
+          uploadStyle(style);
+          break;
+      }
+    });
+  }
+
   async function addIncludeExclude(type, id, rule) {
     if (ready.then) await ready;
     const style = Object.assign({}, id2style(id));
@@ -427,7 +481,7 @@ const styleMan = (() => {
       style.id = newId;
     }
     uuidIndex.set(style._id, style.id);
-    API.sync.put(style._id, style._rev);
+    API.sync.put(style._id, style._rev, style._usw);
   }
 
   async function saveStyle(style) {
@@ -437,7 +491,7 @@ const styleMan = (() => {
     return style;
   }
 
-  function handleSave(style, reason, codeIsUpdated) {
+  function handleSave(style, reason, codeIsUpdated, broadcast = true) {
     const data = id2data(style.id);
     const method = data ? 'styleUpdated' : 'styleAdded';
     if (!data) {
@@ -445,7 +499,7 @@ const styleMan = (() => {
     } else {
       data.style = style;
     }
-    broadcastStyleUpdated(style, reason, method, codeIsUpdated);
+    if (broadcast) broadcastStyleUpdated(style, reason, method, codeIsUpdated);
     return style;
   }
 

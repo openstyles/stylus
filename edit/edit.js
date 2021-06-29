@@ -11,6 +11,7 @@
 /* global linterMan */
 /* global prefs */
 /* global t */// localization.js
+/* global updateUI revokeLinking publishStyle */// usw-integration.js
 'use strict';
 
 //#region init
@@ -18,6 +19,7 @@
 baseInit.ready.then(async () => {
   await waitForSheet();
   (editor.isUsercss ? SourceEditor : SectionsEditor)();
+  updateUI();
   await editor.ready;
   editor.ready = true;
   editor.dirty.onChange(editor.updateDirty);
@@ -42,6 +44,8 @@ baseInit.ready.then(async () => {
     require(['/edit/linter-dialogs'], () => linterMan.showLintConfig());
   $('#lint-help').onclick = () =>
     require(['/edit/linter-dialogs'], () => linterMan.showLintHelp());
+  $('#revoke-link').onclick = () => revokeLinking();
+  $('#publish-style').onclick = () => publishStyle();
   require([
     '/edit/autocomplete',
     '/edit/global-search',
@@ -52,10 +56,17 @@ msg.onExtension(request => {
   const {style} = request;
   switch (request.method) {
     case 'styleUpdated':
-      if (editor.style.id === style.id &&
-        !['editPreview', 'editPreviewEnd', 'editSave', 'config'].includes(request.reason)) {
-        Promise.resolve(request.codeIsUpdated === false ? style : API.styles.get(style.id))
-          .then(newStyle => editor.replaceStyle(newStyle, request.codeIsUpdated));
+      if (editor.style.id === style.id) {
+        if (!['editPreview', 'editPreviewEnd', 'editSave', 'config'].includes(request.reason)) {
+          Promise.resolve(request.codeIsUpdated === false ? style : API.styles.get(style.id))
+            .then(newStyle => {
+              editor.replaceStyle(newStyle, request.codeIsUpdated);
+
+              if (['success-publishing', 'success-revoke'].includes(request.reason)) {
+                updateUI(newStyle);
+              }
+            });
+        }
       }
       break;
     case 'styleDeleted':
