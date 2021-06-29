@@ -21,6 +21,10 @@ body {
   background-color: #fff;
 }
 
+.firefox button {
+  transition: none; /* FF borks subpixel AA during transitions in popup */
+}
+
 body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
   padding-left: var(--outer-padding);
   padding-right: var(--outer-padding);
