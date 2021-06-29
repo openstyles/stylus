@@ -11,6 +11,7 @@ const syncMan = (() => {
 
   const SYNC_DELAY = 1; // minutes
   const SYNC_INTERVAL = 30; // minutes
+  const SYNC_LOCK_RETRIES = 10; // number of retries before the error is reported for scheduled sync
   const STATES = Object.freeze({
     connected: 'connected',
     connecting: 'connecting',
@@ -26,9 +27,9 @@ const syncMan = (() => {
     currentDriveName: null,
     errorMessage: null,
     login: false,
+    lockRetries: 0,
   };
   let lastError = null;
-  let lastInterval = Math.random();
   let ctrl;
   let currentDrive;
   /** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
@@ -43,12 +44,9 @@ const syncMan = (() => {
 
   chrome.alarms.onAlarm.addListener(async ({name}) => {
     if (name === 'syncNow') {
-      await syncMan.syncNow();
-      /* We want to fire the alarm once per SYNC_INTERVAL at a random point within the range,
-       * so the new delay includes the leftover portion from the last range. */
-      const r = Math.random();
-      schedule(SYNC_DELAY + SYNC_INTERVAL * (1 - lastInterval + r));
-      lastInterval = r;
+      await syncMan.syncNow({isScheduled: true});
+      const retrying = status.lockRetries / SYNC_LOCK_RETRIES * Math.random();
+      schedule(SYNC_DELAY + SYNC_INTERVAL * (retrying || 1));
     }
   });
 
@@ -145,7 +143,7 @@ const syncMan = (() => {
       emitStatusChange();
     },
 
-    async syncNow() {
+    async syncNow({isScheduled} = {}) {
       if (ready.then) await ready;
       if (!currentDrive || !status.login) {
         console.warn('cannot sync when disconnected');
@@ -158,11 +156,16 @@ const syncMan = (() => {
       } catch (err) {
         status.errorMessage = err.message;
         lastError = err;
-
+        if (isScheduled &&
+            err.code === 409 &&
+            ++status.lockRetries <= SYNC_LOCK_RETRIES) {
+          return;
+        }
         if (isGrantError(err)) {
           status.login = false;
         }
       }
+      status.lockRetries = 0;
       emitStatusChange();
     },
   };
@@ -253,7 +256,7 @@ const syncMan = (() => {
 
   function schedule(delay = SYNC_DELAY) {
     chrome.alarms.create('syncNow', {
-      delayInMinutes: delay,
+      delayInMinutes: delay, // fractional values are supported
     });
   }
 
