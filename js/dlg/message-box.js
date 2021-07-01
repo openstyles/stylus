@@ -199,7 +199,6 @@ messageBox.show = async ({
     }
   }
 
-
   function removeSelf() {
     messageBox.element.remove();
     messageBox.element = null;
