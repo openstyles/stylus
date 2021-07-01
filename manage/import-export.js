@@ -209,6 +209,7 @@ async function importFromString(jsonString) {
       contents: $create('#import', report.length ? report : t('importReportUnchanged')),
       buttons: [t('confirmClose'), numChanged && t('undo')],
       onshow: bindClick,
+      className: 'center',
     })
       .then(({button}) => {
         if (button === 1) {
