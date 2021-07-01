@@ -107,7 +107,6 @@ messageBox.show = async ({
         scrollTo(messageBox._blockScroll.x, messageBox._blockScroll.y);
       },
       mouseDown(event) {
-        event.preventDefault();
         clickX = event.clientX;
         clickY = event.clientY;
         const element = $('#message-box > div');
@@ -183,7 +182,7 @@ messageBox.show = async ({
   function bindElementLiseners() {
     const messageBoxHeader = $('#message-box-title');
     if (messageBoxHeader) {
-      messageBoxHeader.on('mousedown', messageBox.listeners.mouseDown);
+      messageBoxHeader.on('mousedown', messageBox.listeners.mouseDown, {passive: true});
     }
   }
 
