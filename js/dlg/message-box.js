@@ -109,6 +109,7 @@ messageBox.show = async ({
       mouseDown(event) {
         clickX = event.clientX;
         clickY = event.clientY;
+
         const element = $('#message-box > div');
         positionX = element.offsetLeft;
         positionY = element.offsetTop;
@@ -121,8 +122,8 @@ messageBox.show = async ({
         if (dragging) {
           const x = positionX + event.clientX - clickX;
           const y = positionY + event.clientY - clickY;
-          const element = $('#message-box > div');
 
+          const element = $('#message-box > div');
           element.style.left = x + 'px';
           element.style.top = y + 'px';
         }
@@ -174,7 +175,6 @@ messageBox.show = async ({
       window.on('scroll', messageBox.listeners.scroll, {passive: false});
     }
     window.on('keydown', messageBox.listeners.key, true);
-
     window.on('mouseup', messageBox.listeners.mouseUp, {passive: true});
     window.on('mousemove', messageBox.listeners.mouseMove, {passive: true});
   }
@@ -189,7 +189,6 @@ messageBox.show = async ({
   function unbindGlobalListeners() {
     window.off('keydown', messageBox.listeners.key, true);
     window.off('scroll', messageBox.listeners.scroll);
-
     window.off('mouseup', messageBox.listeners.mouseUp);
     window.off('mousemove', messageBox.listeners.mouseMove);
 
