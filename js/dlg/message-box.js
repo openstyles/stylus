@@ -134,8 +134,7 @@ messageBox.show = async ({
         offsetX = x;
         offsetY = y;
 
-        const element = $('#message-box > div');
-        element.style.transform = `translateX(${x}px) translateY(${y}px)`;
+        $('#message-box > div').style.transform = `translateX(${x}px) translateY(${y}px)`;
       },
     };
   }
