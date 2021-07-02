@@ -29,6 +29,7 @@
   background-color: white;
   box-shadow: 5px 5px 50px rgba(0, 0, 0, 0.225);
   z-index: 9999991;
+  cursor: move;
   -moz-user-select: text;
 }
 
