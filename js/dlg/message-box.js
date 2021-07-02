@@ -204,11 +204,7 @@ messageBox.show = async ({
     window.off('scroll', messageBox.listeners.scroll);
     window.off('mouseup', messageBox.listeners.mouseUp);
     window.off('mousemove', messageBox.listeners.mouseMove);
-
-    const messageBoxHeader = $('#message-box-title');
-    if (messageBoxHeader) {
-      messageBoxHeader.off('mousedown', messageBox.listeners.mouseDown);
-    }
+    $('#message-box-title').off('mousedown', messageBox.listeners.mouseDown);
   }
 
   function removeSelf() {
