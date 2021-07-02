@@ -70,8 +70,9 @@ messageBox.show = async ({
 
   function initOwnListeners() {
     let listening = false;
+    let offsetX = 0;
+    let offsetY = 0;
     let clickX, clickY;
-    let positionX, positionY;
     messageBox.listeners = {
       closeIcon() {
         resolveWith({button: -1});
@@ -115,20 +116,8 @@ messageBox.show = async ({
           window.on('mousemove', messageBox.listeners.mouseMove, {passive: true});
           listening = true;
         }
-        clickX = event.clientX;
-        clickY = event.clientY;
-
-        const element = $('#message-box > div');
-        // Due to how transform and translate work we cannot rely
-        // on the offsets and must fallback to getBoundingClientRect
-        if (element.classList.contains('dragged')) {
-          const bounds = element.getBoundingClientRect();
-          positionX = bounds.left;
-          positionY = bounds.top;
-        } else {
-          positionX = element.offsetLeft;
-          positionY = element.offsetTop;
-        }
+        clickX = event.clientX - offsetX;
+        clickY = event.clientY - offsetY;
       },
       mouseUp(event) {
         if (event.button !== 0) {
@@ -139,12 +128,14 @@ messageBox.show = async ({
         listening = false;
       },
       mouseMove(event) {
-        const x = positionX + event.clientX - clickX;
-        const y = positionY + event.clientY - clickY;
+        const x = event.clientX - clickX;
+        const y = event.clientY - clickY;
+
+        offsetX = x;
+        offsetY = y;
 
         const element = $('#message-box > div');
         element.style.transform = `translateX(${x}px) translateY(${y}px)`;
-        element.classList.add('dragged');
       },
     };
   }
