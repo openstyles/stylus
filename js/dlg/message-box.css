@@ -29,7 +29,6 @@
   background-color: white;
   box-shadow: 5px 5px 50px rgba(0, 0, 0, 0.225);
   z-index: 9999991;
-  cursor: move;
   -moz-user-select: text;
 }
 
@@ -73,6 +72,7 @@
   position: relative;
   min-height: 42px;
   box-sizing: border-box;
+  cursor: move;
   user-select: none;
   -moz-user-select: none;
 }
