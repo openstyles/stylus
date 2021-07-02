@@ -53,8 +53,8 @@ const tokenMan = (() => {
       clientId: 'zeDmKhJIfJqULtcrGMsWaxRtWHEimKgS',
       clientSecret: 'wqHsvTuThQmXmDiVvOpZxPwSIbyycNFImpAOTxjaIRqDbsXcTOqrymMJKsOMuibFaij' +
         'ZZAkVYTDbLkQuYFKqgpMsMlFlgwQOYHvHFbgxQHDTwwdOroYhOwFuekCwXUlk',
-      authURL: URLS.usw + 'api/oauth/authorize_style',
-      tokenURL: URLS.usw + 'api/oauth/access_token',
+      authURL: URLS.usw + 'api/oauth/style/link',
+      tokenURL: URLS.usw + 'api/oauth/token',
       redirect_uri: 'https://gusted.xyz/callback_helper/',
     },
   };
