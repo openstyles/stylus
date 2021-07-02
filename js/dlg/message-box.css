@@ -17,8 +17,6 @@
 }
 
 #message-box > div {
-  top: 3rem;
-  right: 3rem;
   min-width: 10rem;
   max-width: 50vw;
   min-height: 5rem;
@@ -30,6 +28,11 @@
   box-shadow: 5px 5px 50px rgba(0, 0, 0, 0.225);
   z-index: 9999991;
   -moz-user-select: text;
+}
+
+#message-box > div:not(.dragged) {
+  top: 3rem;
+  right: 3rem;
 }
 
 #message-box.fadeout {
