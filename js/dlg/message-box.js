@@ -68,6 +68,10 @@ messageBox.show = async ({
     messageBox._resolve = resolve;
   });
 
+  function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+  }
+
   function initOwnListeners() {
     let listening = false;
     let offsetX = 0;
@@ -134,7 +138,9 @@ messageBox.show = async ({
         offsetX = x;
         offsetY = y;
 
-        $('#message-box > div').style.transform = `translateX(${x}px) translateY(${y}px)`;
+        $('#message-box > div').style.transform =
+          `translateX(${clamp(x, -30, 30)}px) 
+          translateY(${clamp(y, -30, 30)}px)`;
       },
     };
   }
