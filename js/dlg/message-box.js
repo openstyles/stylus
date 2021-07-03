@@ -132,15 +132,15 @@ messageBox.show = async ({
         listening = false;
       },
       mouseMove(event) {
-        const x = event.clientX - clickX;
-        const y = event.clientY - clickY;
+        const x = clamp(event.clientX, 30, innerWidth - 30) - clickX;
+        const y = clamp(event.clientY, 30, innerHeight - 30) - clickY;
 
         offsetX = x;
         offsetY = y;
 
         $('#message-box > div').style.transform =
-          `translateX(${clamp(x, -30, 30)}px) 
-          translateY(${clamp(y, -30, 30)}px)`;
+          `translateX(${x}px) 
+          translateY(${y}px)`;
       },
     };
   }
