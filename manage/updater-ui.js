@@ -224,6 +224,7 @@ async function showUpdateHistory(event) {
   messageBoxProxy.show({
     title: t('updateCheckHistory'),
     contents: log,
+    className: 'center',
     blockScroll: true,
     buttons: [
       t('confirmOK'),
