@@ -378,12 +378,18 @@ const styleMan = (() => {
             for (const {style: someStyle} of dataMap.values()) {
               if (someStyle._id === style._id) {
                 someStyle._isUswLinked = true;
-                someStyle.sourceCode = style.sourceCode;
-                const {metadata} = await API.worker.parseUsercssMeta(style.sourceCode);
+                someStyle.originialValue = style.sourceCode;
+                let metadata = {};
+                try {
+                  const {metadata: tmpMetadata} = await API.worker.parseUsercssMeta(style.sourceCode);
+                  metadata = tmpMetadata;
+                } catch (err) {
+                  console.log(err);
+                }
                 someStyle.metadata = metadata;
               } else {
                 delete someStyle._isUswLinked;
-                delete someStyle.sourceCode;
+                delete someStyle.originialValue;
                 delete someStyle.metadata;
               }
               handleSave(await saveStyle(someStyle), null, null, false);
@@ -393,7 +399,7 @@ const styleMan = (() => {
             };
 
             delete style._isUswLinked;
-            delete style.sourceCode;
+            delete style.originialValue;
             delete style.metadata;
             for (const [k, v] of Object.entries(await retrieveStyleInformation(style._usw.token))) {
               style._usw[k] = v;

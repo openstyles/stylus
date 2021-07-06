@@ -19,6 +19,7 @@
 
       if (location.pathname === '/api/oauth/style/new') {
         API.styles.find({_isUswLinked: true}).then(style => {
+          style.sourceCode = style.originialValue;
           sendPostMessage({type: 'usw-fill-new-style', data: style});
         });
       }
