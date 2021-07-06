@@ -72,6 +72,9 @@
   position: relative;
   min-height: 42px;
   box-sizing: border-box;
+  cursor: move;
+  user-select: none;
+  -moz-user-select: none;
 }
 
 #message-box-title::before {

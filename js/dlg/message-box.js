@@ -43,6 +43,7 @@ messageBox.show = async ({
   bindGlobalListeners();
   createElement();
   document.body.appendChild(messageBox.element);
+  bindElementLiseners();
 
   messageBox._originalFocus = document.activeElement;
   // focus the first focusable child but skip the first external link which is usually `feedback`
@@ -67,7 +68,15 @@ messageBox.show = async ({
     messageBox._resolve = resolve;
   });
 
+  function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+  }
+
   function initOwnListeners() {
+    let listening = false;
+    let offsetX = 0;
+    let offsetY = 0;
+    let clickX, clickY;
     messageBox.listeners = {
       closeIcon() {
         resolveWith({button: -1});
@@ -101,6 +110,37 @@ messageBox.show = async ({
       },
       scroll() {
         scrollTo(messageBox._blockScroll.x, messageBox._blockScroll.y);
+      },
+      mouseDown(event) {
+        if (event.button !== 0) {
+          return;
+        }
+        if (!listening) {
+          window.on('mouseup', messageBox.listeners.mouseUp, {passive: true});
+          window.on('mousemove', messageBox.listeners.mouseMove, {passive: true});
+          listening = true;
+        }
+        clickX = event.clientX - offsetX;
+        clickY = event.clientY - offsetY;
+      },
+      mouseUp(event) {
+        if (event.button !== 0) {
+          return;
+        }
+        window.off('mouseup', messageBox.listeners.mouseUp);
+        window.off('mousemove', messageBox.listeners.mouseMove);
+        listening = false;
+      },
+      mouseMove(event) {
+        const x = clamp(event.clientX, 30, innerWidth - 30) - clickX;
+        const y = clamp(event.clientY, 30, innerHeight - 30) - clickY;
+
+        offsetX = x;
+        offsetY = y;
+
+        $('#message-box > div').style.transform =
+          `translateX(${x}px) 
+          translateY(${y}px)`;
       },
     };
   }
@@ -151,9 +191,16 @@ messageBox.show = async ({
     window.on('keydown', messageBox.listeners.key, true);
   }
 
+  function bindElementLiseners() {
+    $('#message-box-title').on('mousedown', messageBox.listeners.mouseDown, {passive: true});
+  }
+
   function unbindGlobalListeners() {
     window.off('keydown', messageBox.listeners.key, true);
     window.off('scroll', messageBox.listeners.scroll);
+    window.off('mouseup', messageBox.listeners.mouseUp);
+    window.off('mousemove', messageBox.listeners.mouseMove);
+    $('#message-box-title').off('mousedown', messageBox.listeners.mouseDown);
   }
 
   function removeSelf() {
