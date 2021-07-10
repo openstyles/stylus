@@ -78,8 +78,8 @@ const tokenMan = (() => {
       return AUTH[name].clientId;
     },
 
-    async getToken(name, interactive, style) {
-      const k = tokenMan.buildKeys(name, style.id);
+    async getToken(name, interactive, styleId) {
+      const k = tokenMan.buildKeys(name, styleId);
       const obj = await chromeLocal.get(k.LIST);
       if (obj[k.TOKEN]) {
         if (!obj[k.EXPIRE] || Date.now() < obj[k.EXPIRE]) {

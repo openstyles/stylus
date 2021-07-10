@@ -395,7 +395,7 @@ const styleMan = (() => {
               handleSave(await saveStyle(someStyle), null, null, false);
             }
             style._usw = {
-              token: await tokenMan.getToken('userstylesworld', true, style),
+              token: await tokenMan.getToken('userstylesworld', true, style.id),
             };
 
             delete style._isUswLinked;
