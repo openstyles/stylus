@@ -1,4 +1,4 @@
-/* global FIREFOX debounce */// toolbox.js
+/* global FIREFOX WINDOWS debounce */// toolbox.js
 /* global prefs */
 'use strict';
 
@@ -418,9 +418,7 @@ async function waitForSheet({
   window.on('mousedown', suppressFocusRingOnClick, {passive: true});
   window.on('keydown', keepFocusRingOnTabbing, {passive: true});
 
-  if (!/^Win\d+/.test(navigator.platform)) {
-    document.documentElement.classList.add('non-windows');
-  }
+  document.documentElement.classList.toggle('non-windows', !WINDOWS);
   // set language for a) CSS :lang pseudo and b) hyphenation
   document.documentElement.setAttribute('lang', chrome.i18n.getUILanguage());
   document.on('keypress', clickDummyLinkOnEnter);

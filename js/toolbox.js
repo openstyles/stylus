@@ -2,7 +2,9 @@
 
 /* exported
   CHROME_POPUP_BORDER_BUG
+  MOBILE
   RX_META
+  WINDOWS
   capitalize
   closeCurrentTab
   deepEqual
@@ -22,10 +24,37 @@
   waitForTabUrl
 */
 
-const CHROME = Boolean(chrome.app) && Number(navigator.userAgent.match(/Chrom\w+\/(\d+)|$/)[1]);
-const OPERA = Boolean(chrome.app) && parseFloat(navigator.userAgent.match(/\bOPR\/(\d+\.\d+)|$/)[1]);
-const VIVALDI = Boolean(chrome.app) && navigator.userAgent.includes('Vivaldi');
-let FIREFOX = !chrome.app && parseFloat(navigator.userAgent.match(/\bFirefox\/(\d+\.\d+)|$/)[1]);
+let {
+  CHROME = false,
+  OPERA = false,
+  VIVALDI = false,
+  FIREFOX = false,
+  Windows: WINDOWS = false,
+  mobile: MOBILE = false,
+  // New Vivaldi doesn't expose itself via `brands` or UA, only via `extData` on a Tab object.
+} = (() => {
+  const MAP = {
+    OPR: 'OPERA',
+    Chromium: 'CHROME',
+    'Google Chrome': 'CHROME',
+  };
+  const uaData = navigator.userAgentData || {
+    // Accessing `userAgent` shows a warning in devtools.
+    brands: navigator.userAgent.match(/\b(\w+)\/(\d+\.\d+)/g)
+      .map(s => s.split('/'))
+      .map(([brand, version]) => ({brand, version})),
+    mobile: navigator.userAgent.includes('Android'),
+  };
+  const res = {
+    mobile: uaData.mobile,
+    // Vivaldi bug: no `platform` in uaData
+    [uaData.platform || navigator.userAgent.match(/\((\S+)|$/)[1]]: true,
+  };
+  for (const {brand, version} of uaData.brands) {
+    res[MAP[brand] || brand.toUpperCase()] = Number(version);
+  }
+  return res;
+})();
 
 // see PR #781
 const CHROME_POPUP_BORDER_BUG = CHROME >= 62 && CHROME <= 74;

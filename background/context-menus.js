@@ -1,7 +1,7 @@
 /* global browserCommands */// background.js
 /* global msg */
 /* global prefs */
-/* global CHROME FIREFOX URLS ignoreChromeError */// toolbox.js
+/* global CHROME URLS ignoreChromeError */// toolbox.js
 'use strict';
 
 (() => {
@@ -28,7 +28,7 @@
       click: browserCommands.reload,
     },
     'editor.contextDelete': {
-      presentIf: () => !FIREFOX && prefs.get('editor.contextDelete'),
+      presentIf: () => CHROME && prefs.get('editor.contextDelete'),
       title: 'editDeleteText',
       type: 'normal',
       contexts: ['editable'],
@@ -40,14 +40,7 @@
     },
   };
 
-  // "Delete" item in context menu for browsers that don't have it
-  if (CHROME &&
-      // looking at the end of UA string
-      /(Vivaldi|Safari)\/[\d.]+$/.test(navigator.userAgent) &&
-      // skip forks with Flash as those are likely to have the menu e.g. CentBrowser
-      !Array.from(navigator.plugins).some(p => p.name === 'Shockwave Flash')) {
-    prefs.__defaults['editor.contextDelete'] = true;
-  }
+  prefs.__defaults['editor.contextDelete'] = Boolean(CHROME);
 
   const keys = Object.keys(contextMenus);
   prefs.subscribe(keys.filter(id => typeof prefs.defaults[id] === 'boolean'),
