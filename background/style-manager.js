@@ -369,7 +369,7 @@ const styleMan = (() => {
         case 'revoke':
           await tokenMan.revokeToken('userstylesworld', style.id);
           style._usw = {};
-          handleSave(await saveStyle(style), 'success-revoke', true);
+          handleSave(await saveStyle(style), 'success-revoke', true, true);
           break;
 
         case 'publish':
@@ -404,7 +404,7 @@ const styleMan = (() => {
             for (const [k, v] of Object.entries(await retrieveStyleInformation(style._usw.token))) {
               style._usw[k] = v;
             }
-            handleSave(await saveStyle(style), 'success-publishing', true);
+            handleSave(await saveStyle(style), 'success-publishing', true, true);
           }
           uploadStyle(style);
           break;
