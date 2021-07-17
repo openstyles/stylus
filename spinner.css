@@ -1,0 +1,98 @@
+/* spinner: https://github.com/loadingio/css-spinner */
+.lds-spinner {
+  -moz-user-select: none;
+  user-select: none;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 200px; /* don't change! use "transform: scale(.75)" */
+  height: 200px; /* don't change! use "transform: scale(.75)" */
+  margin: auto;
+  animation: lds-spinner 1s reverse;
+  animation-fill-mode: both;
+}
+
+@keyframes lds-spinner {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.lds-spinner div {
+  left: 94px;
+  top: 23px;
+  position: absolute;
+  animation: lds-spinner linear 1s infinite;
+  animation-direction: reverse;
+  background: currentColor;
+  width: 12px;
+  height: 34px;
+  border-radius: 20%;
+  transform-origin: 6px 77px;
+}
+
+.lds-spinner div:nth-child(1) {
+  transform: rotate(0deg);
+  animation-delay: -0.916666666666667s;
+}
+
+.lds-spinner div:nth-child(2) {
+  transform: rotate(30deg);
+  animation-delay: -0.833333333333333s;
+}
+
+.lds-spinner div:nth-child(3) {
+  transform: rotate(60deg);
+  animation-delay: -0.75s;
+}
+
+.lds-spinner div:nth-child(4) {
+  transform: rotate(90deg);
+  animation-delay: -0.666666666666667s;
+}
+
+.lds-spinner div:nth-child(5) {
+  transform: rotate(120deg);
+  animation-delay: -0.583333333333333s;
+}
+
+.lds-spinner div:nth-child(6) {
+  transform: rotate(150deg);
+  animation-delay: -0.5s;
+}
+
+.lds-spinner div:nth-child(7) {
+  transform: rotate(180deg);
+  animation-delay: -0.416666666666667s;
+}
+
+.lds-spinner div:nth-child(8) {
+  transform: rotate(210deg);
+  animation-delay: -0.333333333333333s;
+}
+
+.lds-spinner div:nth-child(9) {
+  transform: rotate(240deg);
+  animation-delay: -0.25s;
+}
+
+.lds-spinner div:nth-child(10) {
+  transform: rotate(270deg);
+  animation-delay: -0.166666666666667s;
+}
+
+.lds-spinner div:nth-child(11) {
+  transform: rotate(300deg);
+  animation-delay: -0.083333333333333s;
+}
+
+.lds-spinner div:nth-child(12) {
+  transform: rotate(330deg);
+  animation-delay: 0s;
+}

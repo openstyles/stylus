@@ -22,7 +22,7 @@ document.on('visibilitychange', () => {
 });
 
 setTimeout(() => {
-  if (!installed) {
+  if (!cm) {
     $('#header').appendChild($create('.lds-spinner',
       new Array(12).fill($create('div')).map(e => e.cloneNode())));
   }

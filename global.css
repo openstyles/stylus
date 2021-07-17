@@ -236,6 +236,11 @@ select[disabled] + .select-arrow {
   fill: hsl(0, 0%, 50%);
 }
 
+summary {
+  -moz-user-select: none;
+  user-select: none;
+}
+
 /* global stuff we use everywhere */
 .hidden {
   display: none !important;
