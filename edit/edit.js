@@ -66,7 +66,8 @@ msg.onExtension(request => {
                 updateUI(newStyle);
               }
               if (request.reason === 'publishing-failed') {
-                messageBoxProxy.alert(`UserStyles.world returned error: ${newStyle._usw.publishingError}`);
+                messageBoxProxy.alert(newStyle._usw.publishingError, 'pre',
+                  'UserStyles.world: ' + t('genericError'));
               }
             });
         }
