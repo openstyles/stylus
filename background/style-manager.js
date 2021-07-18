@@ -372,7 +372,7 @@ const styleMan = (() => {
           handleSave(await saveStyle(style), {reason: 'success-revoke', codeIsUpdated: true});
           break;
 
-        case 'publish':
+        case 'publish': {
           if (!style._usw || !style._usw.token) {
             // Ensures just the style does have the _isUswLinked property as `true`.
             for (const {style: someStyle} of dataMap.values()) {
@@ -406,8 +406,15 @@ const styleMan = (() => {
             }
             handleSave(await saveStyle(style), {reason: 'success-publishing', codeIsUpdated: true});
           }
-          uploadStyle(style);
+
+          const returnResult = await uploadStyle(style);
+          // USw prefix errors with `Error:`.
+          if (returnResult.startsWith('Error:')) {
+            style._usw.publishingError = returnResult;
+            handleSave(await saveStyle(style), {reason: 'publishing-failed', codeIsUpdated: true});
+          }
           break;
+        }
       }
     });
   }
