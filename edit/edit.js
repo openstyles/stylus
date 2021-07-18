@@ -65,6 +65,9 @@ msg.onExtension(request => {
               if (['success-publishing', 'success-revoke'].includes(request.reason)) {
                 updateUI(newStyle);
               }
+              if (request.reason === 'publishing-failed') {
+                messageBoxProxy.alert(`UserStyles.world returned error: ${newStyle._usw.publishingError}`);
+              }
             });
         }
       }
