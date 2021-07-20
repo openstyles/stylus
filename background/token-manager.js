@@ -92,7 +92,7 @@ const tokenMan = (() => {
       if (!interactive) {
         throw new Error(`Invalid token: ${name}`);
       }
-      const accessToken = authUser(name, k, interactive);
+      const accessToken = authUser(name, k, interactive, styleId ? {vendor_data: styleId} : {});
       return accessToken;
     },
 
@@ -133,17 +133,17 @@ const tokenMan = (() => {
     return handleTokenResult(result, k);
   }
 
-  async function authUser(name, k, interactive = false) {
+  async function authUser(name, k, interactive = false, extraQuery = {}) {
     await require(['/vendor/webext-launch-web-auth-flow/webext-launch-web-auth-flow.min']);
     /* global webextLaunchWebAuthFlow */
     const provider = AUTH[name];
     const state = Math.random().toFixed(8).slice(2);
-    const query = {
+    const query = Object.assign(extraQuery, {
       response_type: provider.flow,
       client_id: provider.clientId,
       redirect_uri: provider.redirect_uri || chrome.identity.getRedirectURL(),
       state,
-    };
+    });
     if (provider.scopes) {
       query.scope = provider.scopes.join(' ');
     }

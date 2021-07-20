@@ -374,10 +374,8 @@ const styleMan = (() => {
 
         case 'publish': {
           if (!style._usw || !style._usw.token) {
-            // Ensures just the style does have the _isUswLinked property as `true`.
             for (const {style: someStyle} of dataMap.values()) {
               if (someStyle._id === style._id) {
-                someStyle._isUswLinked = true;
                 someStyle.tmpSourceCode = style.sourceCode;
                 let metadata = {};
                 try {
@@ -388,7 +386,6 @@ const styleMan = (() => {
                 }
                 someStyle.metadata = metadata;
               } else {
-                delete someStyle._isUswLinked;
                 delete someStyle.tmpSourceCode;
                 delete someStyle.metadata;
               }
@@ -398,7 +395,6 @@ const styleMan = (() => {
               token: await tokenMan.getToken('userstylesworld', true, style.id),
             };
 
-            delete style._isUswLinked;
             delete style.tmpSourceCode;
             delete style.metadata;
             for (const [k, v] of Object.entries(await retrieveStyleInformation(style._usw.token))) {
