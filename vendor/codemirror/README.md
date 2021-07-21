@@ -1,4 +1,4 @@
-## codemirror v5.61.0
+## codemirror v5.62.0
 
 Following files are copied from npm (node_modules):
 
@@ -34,6 +34,7 @@ Following files are copied from npm (node_modules):
 * mode\stylus
 * theme\3024-day.css
 * theme\3024-night.css
+* theme\abbott.css
 * theme\abcdef.css
 * theme\ambiance-mobile.css
 * theme\ambiance.css
@@ -57,6 +58,7 @@ Following files are copied from npm (node_modules):
 * theme\icecoder.css
 * theme\idea.css
 * theme\isotope.css
+* theme\juejin.css
 * theme\lesser-dark.css
 * theme\liquibyte.css
 * theme\lucario.css

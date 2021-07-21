@@ -5,6 +5,7 @@
 const CODEMIRROR_THEMES = [
   '3024-day',
   '3024-night',
+  'abbott',
   'abcdef',
   'ambiance',
   'ambiance-mobile',
@@ -28,6 +29,7 @@ const CODEMIRROR_THEMES = [
   'icecoder',
   'idea',
   'isotope',
+  'juejin',
   'lesser-dark',
   'liquibyte',
   'lucario',
