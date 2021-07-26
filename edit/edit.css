@@ -1,5 +1,4 @@
 :root {
-  --header-narrow-min-height: 12em;
   --fixed-padding: unset;
 }
 
@@ -1090,9 +1089,6 @@ body.linter-disabled .hidden-unless-compact {
   #sections > :not(.single-editor) {
     margin: 0 .5rem;
     padding: .5rem 0;
-  }
-  .usercss .CodeMirror-scroll {
-    max-height: calc(100vh - var(--header-narrow-min-height));
   }
   .usercss #options:not([open]) ~ #lint.hidden ~ #footer,
   .usercss #lint:not([open]) + #footer {
