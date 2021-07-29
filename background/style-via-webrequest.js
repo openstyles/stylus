@@ -112,8 +112,8 @@
     // Allow style assets
     patchCspSrc(src, 'img-src', 'data:', '*');
     patchCspSrc(src, 'font-src', 'data:', '*');
-    // Allow our DOM styles
-    patchCspSrc(src, 'style-src', "'unsafe-inline'");
+    // Allow our DOM styles, allow @import from any URL
+    patchCspSrc(src, 'style-src', "'unsafe-inline'", '*');
     // Allow our XHR cookies in CSP sandbox (known case: raw github urls)
     if (src.sandbox && !src.sandbox.includes('allow-same-origin')) {
       src.sandbox.push('allow-same-origin');
