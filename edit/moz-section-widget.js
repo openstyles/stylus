@@ -286,6 +286,13 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
         above: true,
         height,
       });
+      widget.on('redraw', () => {
+        const value = cm.display.barWidth + 'px';
+        if (widget[KEY] !== value) {
+          widget[KEY] = value;
+          node.style.setProperty('--cm-bar-width', value);
+        }
+      });
     }
     if (!funcHeight) {
       funcHeight = node.offsetHeight / (sec.funcs.length || 1);
