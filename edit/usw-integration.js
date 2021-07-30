@@ -36,15 +36,16 @@
     }
     const code = editor.getValue();
     const isDiff = code !== prevCode;
-    prevCode = code;
     const res = isDiff ? await API.usw.publish(id, code) : t('importReportUnchanged');
     const title = `${new Date().toLocaleString()}\n${res}`;
-    $(PROGRESS).append(.../^Error:/.test(res) && [
+    const failed = /^Error:/.test(res);
+    $(PROGRESS).append(...failed && [
       $create('div.error', {title}, res),
       $create('div', t('publishReconnect')),
     ] || [
       $create(`span.${isDiff ? 'success' : 'unchanged'}`, {title}),
     ]);
+    if (!failed) prevCode = code;
   }
 
   async function disconnect() {
@@ -61,7 +62,7 @@
     }
     const elUrl = $('#usw-url');
     elUrl.href = `${URLS.usw}${usw.id ? `style/${usw.id}` : ''}`;
-    elUrl.textContent = elUrl.textContent.replace(/#\d+/, '').replace(elUrl.hostname, '$&' + (usw.id ? `#${usw.id}` : ''));
+    elUrl.textContent = t('publishUsw').replace(/<(.+)>/, `$1${usw.id ? `#${usw.id}` : ''}`);
   }
 
   //#endregion

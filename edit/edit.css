@@ -298,8 +298,9 @@ input:invalid {
 #publish a:visited {
   margin-top: .75em;
 }
-#publish[data-connected] h2:first-letter {
-  color: darkcyan;
+#publish[data-connected] summary::marker,
+#publish[data-connected] h2 {
+  color: hsl(180, 100%, 20%);
 }
 #publish:not([data-connected]) #usw-link-info,
 #publish:not([data-connected]) #usw-disconnect {
