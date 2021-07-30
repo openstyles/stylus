@@ -50,6 +50,7 @@
 
   async function disconnect() {
     await API.usw.revoke(editor.style.id);
+    prevCode = null; // to allow the next publishStyle to upload style
   }
 
   function updateUI(style = editor.style) {
