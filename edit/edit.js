@@ -24,7 +24,6 @@ baseInit.ready.then(async () => {
   editor.ready = true;
   editor.dirty.onChange(editor.updateDirty);
 
-  prefs.subscribe('editor.toc.expanded', (k, val) => val && editor.updateToc(), {runNow: true});
   prefs.subscribe('editor.linter', (key, value) => {
     document.body.classList.toggle('linter-disabled', value === '');
     linterMan.run();
@@ -33,9 +32,14 @@ baseInit.ready.then(async () => {
   // enabling after init to prevent flash of validation failure on an empty name
   $('#name').required = !editor.isUsercss;
   $('#save-button').onclick = editor.save;
+
+  const elSec = $('#sections-list');
   // editor.toc.expanded pref isn't saved in compact-layout so prefs.subscribe won't work
-  $('#sections-list').on('click', () => $('.compact-layout') && setTimeout(editor.updateToc),
-    {once: true});
+  if (elSec.open) editor.updateToc();
+  // and we also toggle `open` directly in other places e.g. in detectLayout()
+  new MutationObserver(() => elSec.open && editor.updateToc())
+    .observe(elSec, {attributes: true, attributeFilter: ['open']});
+
   $('#toc').onclick = e =>
     editor.jumpToEditor([...$('#toc').children].indexOf(e.target));
   $('#keyMap-help').onclick = () =>
