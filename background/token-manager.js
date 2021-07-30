@@ -169,8 +169,8 @@ const tokenMan = (() => {
         height,
       }, wnd.state !== 'minimized' && {
         // Center the popup to the current window
-        top: wnd.top + (wnd.height - width) / 2,
-        left: wnd.left + (wnd.width - width) / 2,
+        top: Math.ceil(wnd.top + (wnd.height - width) / 2),
+        left: Math.ceil(wnd.left + (wnd.width - width) / 2),
       }),
     });
     const params = new URLSearchParams(
