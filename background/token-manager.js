@@ -64,11 +64,12 @@ const tokenMan = (() => {
 
   return {
 
-    buildKeys(name, styleId) {
+    buildKeys(name, hooks) {
+      const prefix = `secure/token/${hooks ? hooks.keyName(name) : name}/`;
       const k = {
-        TOKEN: `secure/token/${name}/${styleId ? `${styleId}/` : ''}token`,
-        EXPIRE: `secure/token/${name}/${styleId ? `${styleId}/` : ''}expire`,
-        REFRESH: `secure/token/${name}/${styleId ? `${styleId}/` : ''}refresh`,
+        TOKEN: `${prefix}token`,
+        EXPIRE: `${prefix}expire`,
+        REFRESH: `${prefix}refresh`,
       };
       k.LIST = Object.values(k);
       return k;
@@ -78,8 +79,8 @@ const tokenMan = (() => {
       return AUTH[name].clientId;
     },
 
-    async getToken(name, interactive, styleId) {
-      const k = tokenMan.buildKeys(name, styleId);
+    async getToken(name, interactive, hooks) {
+      const k = tokenMan.buildKeys(name, hooks);
       const obj = await chromeLocal.get(k.LIST);
       if (obj[k.TOKEN]) {
         if (!obj[k.EXPIRE] || Date.now() < obj[k.EXPIRE]) {
@@ -92,13 +93,12 @@ const tokenMan = (() => {
       if (!interactive) {
         throw new Error(`Invalid token: ${name}`);
       }
-      const accessToken = authUser(name, k, interactive, styleId ? {vendor_data: styleId} : {});
-      return accessToken;
+      return authUser(k, name, interactive, hooks);
     },
 
-    async revokeToken(name, styleId) {
+    async revokeToken(name, hooks) {
       const provider = AUTH[name];
-      const k = tokenMan.buildKeys(name, styleId);
+      const k = tokenMan.buildKeys(name, hooks);
       if (provider.revoke) {
         try {
           const token = await chromeLocal.getValue(k.TOKEN);
@@ -133,17 +133,17 @@ const tokenMan = (() => {
     return handleTokenResult(result, k);
   }
 
-  async function authUser(name, k, interactive = false, extraQuery = {}) {
+  async function authUser(keys, name, interactive = false, hooks = null) {
     await require(['/vendor/webext-launch-web-auth-flow/webext-launch-web-auth-flow.min']);
     /* global webextLaunchWebAuthFlow */
     const provider = AUTH[name];
     const state = Math.random().toFixed(8).slice(2);
-    const query = Object.assign(extraQuery, {
+    const query = {
       response_type: provider.flow,
       client_id: provider.clientId,
       redirect_uri: provider.redirect_uri || chrome.identity.getRedirectURL(),
       state,
-    });
+    };
     if (provider.scopes) {
       query.scope = provider.scopes.join(' ');
     }
@@ -153,17 +153,25 @@ const tokenMan = (() => {
     if (alwaysUseTab == null) {
       alwaysUseTab = await detectVivaldiWebRequestBug();
     }
+    if (hooks) hooks.query(query);
     const url = `${provider.authURL}?${new URLSearchParams(query)}`;
+    const width = Math.min(screen.availWidth - 100, 800);
+    const height = Math.min(screen.availHeight - 100, 800);
+    const wnd = await browser.windows.getLastFocused();
     const finalUrl = await webextLaunchWebAuthFlow({
       url,
       alwaysUseTab,
       interactive,
       redirect_uri: query.redirect_uri,
-      windowOptions: {
+      windowOptions: Object.assign({
         state: 'normal',
-        width: Math.min(screen.width - 100, 800),
-        height: Math.min(screen.height - 100, 800),
-      },
+        width,
+        height,
+      }, wnd.state !== 'minimized' && {
+        // Center the popup to the current window
+        top: Math.ceil(wnd.top + (wnd.height - width) / 2),
+        left: Math.ceil(wnd.left + (wnd.width - width) / 2),
+      }),
     });
     const params = new URLSearchParams(
       provider.flow === 'token' ?
@@ -194,7 +202,7 @@ const tokenMan = (() => {
       }
       result = await postQuery(provider.tokenURL, body);
     }
-    return handleTokenResult(result, k);
+    return handleTokenResult(result, keys);
   }
 
   async function handleTokenResult(result, k) {

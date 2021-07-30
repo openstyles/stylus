@@ -25,7 +25,7 @@ function SectionsEditor() {
 
   updateHeader();
   rerouteHotkeys.toggle(true); // enabled initially because we don't always focus a CodeMirror
-  editor.livePreview.init(null, style.id);
+  editor.livePreview.init();
   container.classList.add('section-editor');
   $('#to-mozilla').on('click', showMozillaFormat);
   $('#to-mozilla-help').on('click', showToMozillaHelp);
@@ -52,6 +52,11 @@ function SectionsEditor() {
     getEditorTitle(cm) {
       const index = editor.getEditors().indexOf(cm);
       return `${t('sectionCode')} ${index + 1}`;
+    },
+
+    getValue(asObject) {
+      const st = getModel();
+      return asObject ? st : MozDocMapper.styleToCss(st);
     },
 
     getSearchableInputs(cm) {
@@ -86,14 +91,13 @@ function SectionsEditor() {
         await initSections(newStyle.sections, {replace: true});
       }
       Object.assign(style, newStyle);
+      editor.onStyleUpdated();
       updateHeader();
       dirty.clear();
       // Go from new style URL to edit style URL
-      if (location.href.indexOf('id=') === -1 && style.id) {
-        history.replaceState({}, document.title, 'edit.html?id=' + style.id);
-        $('#heading').textContent = t('editStyleHeading');
+      if (style.id && !/[&?]id=/.test(location.search)) {
+        history.replaceState({}, document.title, `${location.pathname}?id=${style.id}`);
       }
-      editor.livePreview.toggle(Boolean(style.id));
       updateLivePreview();
     },
 
@@ -323,7 +327,7 @@ function SectionsEditor() {
 
   function showMozillaFormat() {
     const popup = showCodeMirrorPopup(t('styleToMozillaFormatTitle'), '', {readOnly: true});
-    popup.codebox.setValue(MozDocMapper.styleToCss(getModel()));
+    popup.codebox.setValue(editor.getValue());
     popup.codebox.execCommand('selectAll');
   }
 
@@ -425,7 +429,7 @@ function SectionsEditor() {
     editor.updateToc();
   }
 
-  /** @returns {Style} */
+  /** @returns {StyleObj} */
   function getModel() {
     return Object.assign({}, style, {
       sections: sections.filter(s => !s.removed).map(s => s.getModel()),

@@ -30,7 +30,7 @@ function SourceEditor() {
   const cm = cmFactory.create($('.single-editor'));
   const sectionFinder = MozSectionFinder(cm);
   const sectionWidget = MozSectionWidget(cm, sectionFinder);
-  editor.livePreview.init(preprocess, style.id);
+  editor.livePreview.init(preprocess);
   createMetaCompiler(meta => {
     style.usercssData = meta;
     style.name = meta.name;
@@ -48,6 +48,7 @@ function SourceEditor() {
     closestVisible: () => cm,
     getEditors: () => [cm],
     getEditorTitle: () => '',
+    getValue: () => cm.getValue(),
     getSearchableInputs: () => [],
     prevEditor: nextPrevSection.bind(null, -1),
     nextEditor: nextPrevSection.bind(null, 1),
@@ -241,9 +242,8 @@ function SourceEditor() {
       }
       sessionStore.justEditedStyleId = newStyle.id;
       Object.assign(style, newStyle);
-      $('#preview-label').classList.remove('hidden');
+      editor.onStyleUpdated();
       updateMeta();
-      editor.livePreview.toggle(Boolean(style.id));
     }
   }
 

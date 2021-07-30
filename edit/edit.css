@@ -7,6 +7,14 @@ body {
   font: 12px arial,sans-serif;
 }
 
+a {
+  color: #000;
+  transition: color .5s;
+}
+a:hover {
+  color: #666;
+}
+
 #global-progress {
   position: fixed;
   height: 4px;
@@ -24,10 +32,17 @@ body {
   opacity: 1;
 }
 
+html.is-new-style #preview-label,
+html.is-new-style #publish,
 .hidden {
   display: none !important;
 }
-
+html.is-new-style #heading::after {
+  content: attr(data-add);
+}
+html:not(.is-new-style) #heading::after {
+  content: attr(data-edit);
+}
 
 /************ embedded popup for simple-window editor ************/
 #popup-iframe {
@@ -215,7 +230,9 @@ input:invalid {
   margin-left: -13px;
   cursor: pointer;
 }
-
+#header summary + * {
+  padding: .5rem 0;
+}
 #header summary h2 {
   display: inline-block;
   border-bottom: 1px dotted transparent;
@@ -225,9 +242,6 @@ input:invalid {
   padding-left: 13px; /* clicking directly on details-marker doesn't set pref so we cover it with h2 */
 }
 
-#options-wrapper {
-  padding: .5rem 0;
-}
 #header summary:hover h2 {
   border-color: #bbb;
 }
@@ -244,6 +258,7 @@ input:invalid {
 
 #header details {
   margin-top: .5rem;
+  max-width: 100%;
 }
 
 #actions > * {
@@ -275,6 +290,81 @@ input:invalid {
 }
 #lint:not([open]) h2 {
   margin-bottom: 0;
+}
+
+#publish > div > * {
+  margin-top: .75em;
+}
+#publish a:visited {
+  margin-top: .75em;
+}
+#publish[data-connected] summary::marker,
+#publish[data-connected] h2 {
+  color: hsl(180, 100%, 20%);
+}
+#publish:not([data-connected]) #usw-link-info,
+#publish:not([data-connected]) #usw-disconnect {
+  display: none;
+}
+#publish[data-connected] #usw-publish-style::after {
+  content: attr(data-push);
+}
+#publish:not([data-connected]) #usw-publish-style::after {
+  content: attr(data-publish);
+}
+#usw-link-info dl {
+  margin: 0;
+  display: flex;
+}
+#usw-link-info dt {
+  flex-shrink: 0;
+}
+#usw-link-info dt::after {
+  content: ":"
+}
+#usw-link-info dt,
+#usw-link-info dd {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#usw-link-info dd {
+  margin-left: .5em;
+}
+#usw-link-info dd[data-usw="name"] {
+  font-weight: bold;
+}
+#usw-progress {
+  position: relative;
+  vertical-align: top;
+}
+#usw-progress .success,
+#usw-progress .unchanged {
+  font-size: 150%;
+  font-weight: bold;
+  position: absolute;
+  margin-left: .25em;
+}
+#usw-progress .success {
+  margin-top: -.25em;
+}
+#usw-progress .success::after {
+  content: '\2713'; /* checkmark */
+}
+#usw-progress .unchanged::after {
+  content: '=';
+}
+#usw-progress .error {
+  display: block;
+  margin-top: .5em;
+  color: red;
+}
+#usw-progress .error + div {
+  font-size: smaller;
+}
+#usw-progress .lds-spinner {
+  transform: scale(0.125);
+  transform-origin: 0 10px;
 }
 /* options */
 #options [type="number"] {
@@ -739,7 +829,6 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 #lint {
   overflow: hidden;
   margin: .5rem -1rem 0;
-  min-height: 30px;
   padding: 0;
   box-sizing: border-box;
   display: flex;
@@ -758,7 +847,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   text-indent: -2px;
 }
 #lint > .lint-scroll-container {
-  margin: 34px 10px 0;
+  margin: 1rem 10px 0;
   position: absolute;
   top: 0;
   bottom: 0;
@@ -954,7 +1043,7 @@ body.linter-disabled .hidden-unless-compact {
     position: inherit;
     border-right: none;
     border-bottom: 1px dashed #AAA;
-    padding: 0;
+    padding: .5rem 1rem .5rem .5rem;
   }
   .fixed-header {
     padding-top: var(--fixed-padding);
@@ -972,24 +1061,30 @@ body.linter-disabled .hidden-unless-compact {
   .fixed-header #options {
     display: none !important;
   }
+  #header summary + *,
+  #lint > .lint-scroll-container {
+    margin-left: 1rem;
+    padding: .25rem 0 .5rem;
+  }
   #actions {
     display: flex;
     flex-wrap: wrap;
     white-space: nowrap;
-    padding: 0 1rem;
     margin: 0;
     box-sizing: border-box;
   }
   #header input[type="checkbox"] {
     vertical-align: middle;
   }
+  #header details {
+    margin: 0;
+  }
   #heading,
   h2 {
     display: none;
   }
   #basic-info {
-    padding: .5rem 1rem;
-    margin: 0;
+    margin-bottom: .5rem;
     box-sizing: border-box;
     display: flex;
     flex-wrap: wrap;
@@ -1006,22 +1101,17 @@ body.linter-disabled .hidden-unless-compact {
   #options-wrapper {
     display: flex;
     flex-wrap: wrap;
-    padding: .5rem 1rem  0;
     box-sizing: border-box;
-  }
-  #toc {
-    padding: .5rem 1rem;
   }
   #details-wrapper {
     flex-direction: row;
     flex-wrap: wrap;
-    padding-bottom: .25rem;
   }
-  #options {
+  #options[open] {
     width: 100%;
   }
   #sections-list[open] {
-    height: 102px;
+    max-height: 102px;
   }
   #sections-list[open] #toc {
     max-height: 60px;
@@ -1029,12 +1119,15 @@ body.linter-disabled .hidden-unless-compact {
   }
   #sections-list,
   #lint {
-    width: 50%;
+    max-width: 50%;
   }
   .options-column {
     flex-grow: 1;
     padding-right: .5rem;
     box-sizing: border-box;
+  }
+  .options-column > .usercss-only {
+    margin-bottom: 0;
   }
   #options-wrapper .options-column:nth-child(2) {
     margin-top: 0;
@@ -1054,8 +1147,9 @@ body.linter-disabled .hidden-unless-compact {
     margin-left: 0;
     padding-left: 4px;
   }
-  #options h2 {
-    margin: 0 0 .5em;
+  #header summary h2 {
+    margin: 0;
+    padding: 0;
   }
   .option label {
     margin: 0;
@@ -1069,7 +1163,8 @@ body.linter-disabled .hidden-unless-compact {
     top: 0.2rem;
   }
   #lint > .lint-scroll-container {
-    margin: 26px 1rem 0;
+    padding-top: 0;
+    margin-right: 0;
   }
   #lint {
     padding: 0;

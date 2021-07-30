@@ -1,4 +1,4 @@
-/* global $ $$ $create $remove */// dom.js
+/* global $ $$ $create $remove showSpinner */// dom.js
 /* global $entry tabURL */// popup.js
 /* global API */// msg.js
 /* global Events */
@@ -151,13 +151,6 @@
         renderActionButtons(id, style.id);
       }
     });
-  }
-
-
-  function showSpinner(parent) {
-    parent = parent instanceof Node ? parent : $(parent);
-    parent.appendChild($create('.lds-spinner',
-      new Array(12).fill($create('div')).map(e => e.cloneNode())));
   }
 
   function next() {

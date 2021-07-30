@@ -13,6 +13,8 @@
   moveFocus
   scrollElementIntoView
   setupLivePrefs
+  showSpinner
+  toggleDataset
   waitForSheet
 */
 
@@ -322,6 +324,22 @@ function setupLivePrefs(ids = prefs.knownKeys.filter(id => $('#' + id))) {
     } else {
       prefs.unsubscribe(ids, updateElement);
     }
+  }
+}
+
+/** @param {string|Node} parent - selector or DOM node */
+async function showSpinner(parent) {
+  await require(['/spinner.css']);
+  parent = parent instanceof Node ? parent : $(parent);
+  parent.appendChild($create('.lds-spinner',
+    new Array(12).fill($create('div')).map(e => e.cloneNode())));
+}
+
+function toggleDataset(el, prop, state) {
+  if (state) {
+    el.dataset[prop] = '';
+  } else {
+    delete el.dataset[prop];
   }
 }
 
