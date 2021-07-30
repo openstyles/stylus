@@ -2,48 +2,42 @@
 'use strict';
 
 (() => {
-  const allowedOrigin = 'https://userstyles.world';
+  const ORIGIN = 'https://userstyles.world';
+  const HANDLERS = Object.assign(Object.create(null), {
 
-  const sendPostMessage = message => {
-    if (allowedOrigin === location.origin) {
-      window.postMessage(message, location.origin);
-    }
-  };
+    async 'usw-ready'() {
+      send({type: 'usw-remove-stylus-button'});
+      if (location.pathname === '/api/oauth/style/new') {
+        const styleId = Number(new URLSearchParams(location.search).get('vendor_data'));
+        const data = await API.data.pop('usw' + styleId);
+        send({type: 'usw-fill-new-style', data});
+      }
+    },
 
-  const onPageLoaded = event => {
-    if (event.data
-    && allowedOrigin === event.origin
-    ) {
-      switch (event.data.type) {
-        case 'usw-ready': {
-          sendPostMessage({type: 'usw-remove-stylus-button'});
-
-          if (location.pathname === '/api/oauth/style/new') {
-            const styleId = Number(new URLSearchParams(location.search).get('vendor_data'));
-            API.data.pop('usw' + styleId).then(data => {
-              sendPostMessage({type: 'usw-fill-new-style', data});
-            });
-          }
-          break;
-        }
-        case 'usw-style-info-request': {
-          switch (event.data.requestType) {
-            case 'installed': {
-              API.styles.find({updateUrl: `https://userstyles.world/api/style/${event.data.styleID}.user.css`})
-                .then(style => {
-                  sendPostMessage({
-                    type: 'usw-style-info-response',
-                    data: {installed: Boolean(style), requestType: 'installed'},
-                  });
-                });
-              break;
-            }
-          }
+    async 'usw-style-info-request'(data) {
+      switch (data.requestType) {
+        case 'installed': {
+          const updateUrl = `${ORIGIN}/api/style/${data.styleID}.user.css`;
+          const style = await API.styles.find({updateUrl});
+          send({
+            type: 'usw-style-info-response',
+            data: {installed: Boolean(style), requestType: 'installed'},
+          });
           break;
         }
       }
-    }
-  };
+    },
+  });
 
-  window.addEventListener('message', onPageLoaded);
+  window.addEventListener('message', ({data, source}) => {
+    // Accepting events only from this page.
+    if (data && source === window) {
+      const fn = HANDLERS[data.type];
+      if (fn) fn(data);
+    }
+  });
+
+  function send(msg) {
+    window.postMessage(msg, ORIGIN);
+  }
 })();
