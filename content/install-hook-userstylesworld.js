@@ -30,7 +30,7 @@
   });
 
   window.addEventListener('message', ({data, source, origin}) => {
-    // Some browser don't reveal `source` to extensions e.g. Firefox
+    // Some browsers don't reveal `source` to extensions e.g. Firefox
     if (data && (source ? source === window : origin === ORIGIN)) {
       const fn = HANDLERS[data.type];
       if (fn) fn(data);
