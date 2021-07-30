@@ -12,8 +12,6 @@ const regexpTester = (() => {
   let isWatching = false;
   let isShown = false;
 
-  window.on('closeHelp', () => regexpTester.toggle(false));
-
   return {
 
     toggle(state = !isShown) {
@@ -23,6 +21,7 @@ const regexpTester = (() => {
           chrome.tabs.onUpdated.addListener(onTabUpdate);
         }
         helpPopup.show('', $create('.regexp-report'));
+        window.on('closeHelp', () => regexpTester.toggle(false), {once: true});
         isShown = true;
       } else if (!state && isShown) {
         unwatch();
