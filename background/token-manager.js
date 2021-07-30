@@ -155,16 +155,23 @@ const tokenMan = (() => {
     }
     if (hooks) hooks.query(query);
     const url = `${provider.authURL}?${new URLSearchParams(query)}`;
+    const width = Math.min(screen.availWidth - 100, 800);
+    const height = Math.min(screen.availHeight - 100, 800);
+    const wnd = await browser.windows.getLastFocused();
     const finalUrl = await webextLaunchWebAuthFlow({
       url,
       alwaysUseTab,
       interactive,
       redirect_uri: query.redirect_uri,
-      windowOptions: {
+      windowOptions: Object.assign({
         state: 'normal',
-        width: Math.min(screen.width - 100, 800),
-        height: Math.min(screen.height - 100, 800),
-      },
+        width,
+        height,
+      }, wnd.state !== 'minimized' && {
+        // Center the popup to the current window
+        top: wnd.top + (wnd.height - width) / 2,
+        left: wnd.left + (wnd.width - width) / 2,
+      }),
     });
     const params = new URLSearchParams(
       provider.flow === 'token' ?
