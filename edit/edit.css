@@ -256,7 +256,7 @@ input:invalid {
   flex-grow: 1;
 }
 
-#header details {
+#header details[open] + details[open] {
   margin-top: .5rem;
 }
 
@@ -827,7 +827,8 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 /************ lint ************/
 #lint {
   overflow: hidden;
-  margin: .5rem -1rem 0;
+  margin-left: -1rem;
+  margin-right: -1rem;
   padding: 0;
   box-sizing: border-box;
   display: flex;
