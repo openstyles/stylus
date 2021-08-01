@@ -326,13 +326,17 @@ function SourceEditor() {
       if (errors.every(err => err.code === 'unknownMeta')) {
         onUpdated(metadata);
       }
-      cache = errors.map(err => ({
-        from: cm.posFromIndex((err.index || 0) + match.index),
-        to: cm.posFromIndex((err.index || 0) + match.index),
-        message: err.code && t(`meta_${err.code}`, err.args, false) || err.message,
-        severity: err.code === 'unknownMeta' ? 'warning' : 'error',
-        rule: err.code,
-      }));
+      cache = errors.map(({code, index, args, message}) => {
+        const isUnknownMeta = code === 'unknownMeta';
+        const typo = isUnknownMeta && args.length === 2 ? 'Typo' : '';
+        return ({
+          from: cm.posFromIndex((index || 0) + match.index),
+          to: cm.posFromIndex((index || 0) + match.index),
+          message: code && t(`meta_${code}${typo}`, args, false) || message,
+          severity: isUnknownMeta ? 'warning' : 'error',
+          rule: code,
+        });
+      });
       meta = match[0];
       metaIndex = match.index;
       return cache;

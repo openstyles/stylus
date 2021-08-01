@@ -970,6 +970,18 @@
     },
     "description": "Error displayed when unknown metadata is parsed"
   },
+  "meta_unknownMetaTypo": {
+    "message": "Maybe @$keyOk$? Unknown metadata: @$keyErr$",
+    "placeholders": {
+      "keyErr": {
+        "content": "$1"
+      },
+      "keyOk": {
+        "content": "$2"
+      }
+    },
+    "description": "Try translating it so that at least the first placeholder is visible in our narrow panel. This is the error displayed when an unknown metadata key was sufficiently similar to a known one to consider it a typo."
+  },
   "meta_unknownPreprocessor": {
     "message": "Unknown @preprocessor: $preprocessor$",
     "placeholders": {
