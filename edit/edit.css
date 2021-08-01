@@ -258,7 +258,6 @@ input:invalid {
 
 #header details {
   margin-top: .5rem;
-  max-width: 100%;
 }
 
 #actions > * {
@@ -1117,8 +1116,7 @@ body.linter-disabled .hidden-unless-compact {
     max-height: 60px;
     overflow-y: auto;
   }
-  #sections-list,
-  #lint {
+  #header details:not(#options) {
     max-width: 50%;
   }
   .options-column {
