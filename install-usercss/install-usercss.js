@@ -1,6 +1,6 @@
-/* global $ $create $createLink $$remove */
+/* global $ $create $createLink $$remove showSpinner */// dom.js
 /* global API */// msg.js
-/* global closeCurrentTab */// toolbox.js
+/* global closeCurrentTab deepEqual */// toolbox.js
 /* global messageBox */
 /* global prefs */
 /* global preinit */
@@ -13,20 +13,16 @@ let installed;
 let installedDup;
 let liveReload;
 let tabId;
+let vars;
 
 // "History back" in Firefox (for now) restores the old DOM including the messagebox,
 // which stays after installing since we don't want to wait for the fadeout animation before resolving.
 document.on('visibilitychange', () => {
-  if (messageBox.element) messageBox.element.remove();
+  $$remove('#message-box:not(.config-dialog)');
   if (installed) liveReload.onToggled();
 });
 
-setTimeout(() => {
-  if (!cm) {
-    $('#header').appendChild($create('.lds-spinner',
-      new Array(12).fill($create('div')).map(e => e.cloneNode())));
-  }
-}, 200);
+setTimeout(() => !cm && showSpinner($('#header')), 200);
 
 /*
  * Preinit starts to download as early as possible,
@@ -187,11 +183,29 @@ function updateMeta(style, dup = installedDup) {
     $('.external-link').appendChild(externalLink);
   }
 
+  Object.assign($('.configure-usercss'), {
+    hidden: !data.vars,
+    onclick: openConfigDialog,
+  });
+  if (!data.vars) {
+    $$remove('#message-box.config-dialog');
+  } else if (!deepEqual(data.vars, vars)) {
+    vars = data.vars;
+    // Use the user-customized vars from the installed style
+    for (const [dk, dv] of Object.entries(dup && dupData.vars || {})) {
+      const v = vars[dk];
+      if (v && v.type === dv.type) {
+        v.value = dv.value;
+      }
+    }
+    openConfigDialog();
+  }
+
   $('#header').dataset.arrivedFast = performance.now() < 500;
   $('#header').classList.add('meta-init');
   $('#header').classList.remove('meta-init-error');
-  setTimeout(() => $$remove('.lds-spinner'), 1000);
 
+  setTimeout(() => $$remove('.lds-spinner'), 1000);
   showError('');
   requestAnimationFrame(adjustCodeHeight);
 
@@ -232,6 +246,11 @@ function updateMeta(style, dup = installedDup) {
           )
         )),
       ]));
+  }
+
+  async function openConfigDialog() {
+    await require(['/js/dlg/config-dialog']); /* global configDialog */
+    configDialog(style);
   }
 }
 

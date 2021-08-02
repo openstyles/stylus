@@ -28,8 +28,9 @@ async function configDialog(style) {
   let varsInitial = getInitialValues(varsHash);
 
   const elements = [];
-  const colorpicker = window.colorpicker();
-  const isPopup = location.href.includes('popup.html');
+  const isInstaller = location.pathname.startsWith('/install-usercss.html');
+  const isPopup = location.pathname.startsWith('/popup.html');
+  const colorpicker = ((window.CodeMirror || {}).prototype || window).colorpicker();
   const buttons = {};
 
   buildConfigForm();
@@ -122,7 +123,7 @@ async function configDialog(style) {
     buttons.close.textContent = t(someDirty ? 'confirmCancel' : 'confirmClose');
   }
 
-  async function save({anyChangeIsDirty = false} = {}, bgStyle) {
+  async function save({anyChangeIsDirty = false} = {}) {
     for (let delay = 1; saving && delay < 1000; delay *= 2) {
       await new Promise(resolve => setTimeout(resolve, delay));
     }
@@ -132,15 +133,13 @@ async function configDialog(style) {
     if (!vars.some(va => va.dirty || anyChangeIsDirty && va.value !== va.savedValue)) {
       return;
     }
-    if (!bgStyle) {
-      bgStyle = await API.styles.get(style.id).catch(() => ({}));
-    }
+    const bgStyle = !isInstaller && await API.styles.get(style.id).catch(() => ({}));
     style = style.sections ? Object.assign({}, style) : style;
     style.enabled = true;
     style.sourceCode = null;
     style.sections = null;
     const styleVars = style.usercssData.vars;
-    const bgVars = (bgStyle.usercssData || {}).vars || {};
+    const bgVars = isInstaller ? styleVars : (bgStyle.usercssData || {}).vars || {};
     const invalid = [];
     let numValid = 0;
     for (const va of vars) {
@@ -184,7 +183,7 @@ async function configDialog(style) {
     }
     saving = true;
     try {
-      const newVars = await API.usercss.configVars(style.id, style.usercssData.vars);
+      const newVars = isInstaller ? styleVars : await API.usercss.configVars(style.id, styleVars);
       varsInitial = getInitialValues(newVars);
       vars.forEach(va => onchange({target: va.input, justSaved: true}));
       renderValues();

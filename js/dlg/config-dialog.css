@@ -2,12 +2,12 @@
   --onoffswitch-width: 60px;
 }
 
-#stylus-manage .config-dialog #message-box-contents {
-  padding: 2em 16px;
+.config-dialog {
+  --pad: 16px;
 }
 
-#stylus-popup .config-dialog #message-box-contents {
-  padding: 8px 16px;
+.config-dialog #message-box-contents {
+  padding: var(--pad);
 }
 
 #stylus-popup .config-dialog > div {
@@ -33,7 +33,7 @@
   display: flex;
   padding: .75em 0;
   align-items: center;
-  margin-right: -16px; /* for .config-reset-icon */
+  margin-right: calc(-1 * var(--pad)); /* for .config-reset-icon */
 }
 
 .config-body .select-resizer {
@@ -120,14 +120,14 @@
 }
 
 .config-reset-icon {
-  height: 16px;
+  height: var(--pad);
 }
 
 .config-reset-icon .svg-icon {
   cursor: pointer;
   fill: #aaa;
-  width: 16px;
-  height: 16px;
+  width: var(--pad);
+  height: var(--pad);
   padding: 0 1px;
   box-sizing: border-box;
   flex-shrink: 0;
@@ -139,7 +139,7 @@
 
 #config-autosave-wrapper {
   position: relative;
-  padding: 0 0 0 16px;
+  padding: 0 0 0 var(--pad);
   display: inline-flex;
 }
 
