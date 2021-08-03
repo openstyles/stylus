@@ -31,6 +31,7 @@ self.parserlib = (() => {
   //#region Properties
 
   const Properties = {
+    'accent-color': 'auto | <color>',
     'align-items': 'normal | stretch | <baseline-position> | [ <overflow-position>? <self-position> ]',
     'align-content': '<align-content>',
     'align-self': '<align-self>',
