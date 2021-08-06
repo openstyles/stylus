@@ -223,8 +223,8 @@ async function showUpdateHistory(event) {
   const logText = lines.join('\n');
   messageBoxProxy.show({
     title: t('updateCheckHistory'),
+    className: 'center-dialog',
     contents: log,
-    className: 'center',
     blockScroll: true,
     buttons: [
       t('confirmOK'),

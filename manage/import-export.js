@@ -206,10 +206,10 @@ async function importFromString(jsonString) {
     const report = entries.map(renderStats).filter(Boolean);
     messageBoxProxy.show({
       title: t('importReportTitle'),
+      className: 'center-dialog',
       contents: $create('#import', report.length ? report : t('importReportUnchanged')),
       buttons: [t('confirmClose'), numChanged && t('undo')],
       onshow: bindClick,
-      className: 'center',
     })
       .then(({button}) => {
         if (button === 1) {
