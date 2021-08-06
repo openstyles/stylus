@@ -85,7 +85,10 @@ function createBeautifyUI(scope, options) {
       ]),
       $create('p.beautify-hint', [
         $create('span', t('styleBeautifyHint') + '\u00A0'),
-        createHotkeyInput('editor.beautify.hotkey', () => moveFocus($('#help-popup'), 0)),
+        createHotkeyInput('editor.beautify.hotkey', {
+          buttons: false,
+          onDone: () => moveFocus($('#help-popup'), 0),
+        }),
       ]),
       $create('.buttons', [
         $create('button', {

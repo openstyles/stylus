@@ -361,13 +361,13 @@ editor.livePreview = (() => {
 
   $('#colorpicker-settings').onclick = function (event) {
     event.preventDefault();
-    const input = createHotkeyInput('editor.colorpicker.hotkey', () => helpPopup.close());
+    const input = createHotkeyInput('editor.colorpicker.hotkey', {onDone: () => helpPopup.close()});
     const popup = helpPopup.show(t('helpKeyMapHotkey'), input);
     const bounds = this.getBoundingClientRect();
     popup.style.left = bounds.right + 10 + 'px';
     popup.style.top = bounds.top - popup.clientHeight / 2 + 'px';
     popup.style.right = 'auto';
-    input.focus();
+    $('input', popup).focus();
   };
 
   function invokeColorpicker(cm) {

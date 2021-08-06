@@ -103,49 +103,69 @@ function clipString(str, limit = 100) {
 }
 
 /* exported createHotkeyInput */
-function createHotkeyInput(prefId, onDone = () => {}) {
-  return $create('input', {
-    type: 'search',
+function createHotkeyInput(prefId, {buttons = true, onDone}) {
+  const RX_ERR = new RegExp('^(' + [
+    /Space/,
+    /(Shift-)?./, // a single character
+    /(?=.)(Shift-?|Ctrl-?|Control-?|Alt-?|Meta-?)*(Escape|Tab|Page(Up|Down)|Arrow(Up|Down|Left|Right)|Home|End)?/,
+  ].map(r => r.source || r).join('|') + ')$', 'i');
+  const initialValue = prefs.get(prefId);
+  const input = $create('input', {
     spellcheck: false,
-    value: prefs.get(prefId),
-    onkeydown(event) {
-      const key = CodeMirror.keyName(event);
-      if (key === 'Tab' || key === 'Shift-Tab') {
-        return;
-      }
-      event.preventDefault();
-      event.stopPropagation();
-      switch (key) {
-        case 'Enter':
-          if (this.checkValidity()) onDone(true);
-          return;
-        case 'Esc':
-          onDone(false);
-          return;
-        default:
-          // disallow: [Shift?] characters, modifiers-only, [modifiers?] + Esc, Tab, nav keys
-          if (!key || new RegExp('^(' + [
-            '(Back)?Space',
-            '(Shift-)?.', // a single character
-            '(Shift-?|Ctrl-?|Alt-?|Cmd-?){0,2}(|Esc|Tab|(Page)?(Up|Down)|Left|Right|Home|End|Insert|Delete)',
-          ].join('|') + ')$', 'i').test(key)) {
-            this.value = key || this.value;
-            this.setCustomValidity('Not allowed');
-            return;
-          }
-      }
-      this.value = key;
-      this.setCustomValidity('');
-      prefs.set(prefId, key);
-    },
-    oninput() {
-      // fired on pressing "x" to clear the field
-      prefs.set(prefId, '');
-    },
-    onpaste(event) {
-      event.preventDefault();
-    },
+    onpaste: e => onkeydown(e, e.clipboardData.getData('text')),
+    onkeydown,
   });
+  buttons = buttons && [
+    ['confirmOK', 'Enter'],
+    ['undo', initialValue],
+    ['genericResetLabel', ''],
+  ].map(([label, val]) =>
+    $create('button', {onclick: e => onkeydown(e, val)}, t(label)));
+  const [btnOk, btnUndo, btnReset] = buttons || [];
+  onkeydown(null, initialValue);
+  return buttons
+    ? $create('fragment', [input, $create('.buttons', buttons)])
+    : input;
+
+  function onkeydown(e, key) {
+    let newValue;
+    if (e && e.type === 'keydown') {
+      key = getEventKeyName(e);
+    }
+    switch (e && key) {
+      case 'Tab':
+      case 'Shift-Tab':
+        return;
+      case 'BackSpace':
+      case 'Delete':
+        newValue = '';
+        break;
+      case 'Enter':
+        if (input.checkValidity() && onDone) onDone();
+        break;
+      case 'Escape':
+        if (onDone) onDone();
+        break;
+      default:
+        newValue = key.replace(/\b.$/, c => c.toUpperCase());
+    }
+    if (newValue != null) {
+      const error = RX_ERR.test(newValue) ? t('genericError') : '';
+      if (e && !error) prefs.set(prefId, newValue);
+      input.setCustomValidity(error);
+      input.value = newValue;
+      input.focus();
+      if (buttons) {
+        btnOk.disabled = Boolean(error);
+        btnUndo.disabled = newValue === initialValue;
+        btnReset.disabled = !newValue;
+      }
+    }
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }
 }
 
 /* exported showCodeMirrorPopup */
