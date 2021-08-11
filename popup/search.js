@@ -284,9 +284,23 @@
     $('.search-result-title span', entry).textContent =
       t.breakWord(name.length < 300 ? name : name.slice(0, 300) + '...');
     // screenshot
-    const elShot = $('.search-result-screenshot', entry);
+    const elShot = $('.search-result-screenshot-default', entry);
     if (isUsw) {
-      elShot.src = /^https?:/i.test(shotName) ? shotName : BLANK_PIXEL;
+      if (/^https?:/i.test(shotName)) {
+        elShot.src = shotName;
+        // USw has by default a screenshot of the style in webp format.
+        // But for compatability reasons always deliver the jpg format.
+        // Webp format is more efficient and thus is preffered to be used.
+        // When supported.
+        const webpElShot = $create('source', {
+          type: 'image/webp',
+          srcset: shotName.replace(/\.jpg$/, '.webp'),
+        });
+        const pictureEl = $('.search-result-screenshot', entry);
+        pictureEl.insertBefore(webpElShot, pictureEl.firstChild);
+      } else {
+        elShot.src = BLANK_PIXEL;
+      }
     } else {
       const auto = URLS.uso + `auto_style_screenshots/${id}${USO_AUTO_PIC_SUFFIX}`;
       Object.assign(elShot, {
