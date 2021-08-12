@@ -278,7 +278,7 @@
       ai: authorId,
       an: author,
       sa: shotArchived,
-      sn: shotName,
+      sn: shot,
       isUsw,
     } = entry._result = result;
     entry.id = RESULT_ID_PREFIX + id;
@@ -293,14 +293,14 @@
     // screenshot
     const elShot = $('.search-result-screenshot', entry);
     if (isUsw) {
-      elShot.src = !/^https?:/i.test(shotName) ? BLANK_PIXEL :
-        imgType !== '.jpg' ? shotName.replace(/\.jpg$/, imgType) :
-          shotName;
+      elShot.src = !/^https?:/i.test(shot) ? BLANK_PIXEL :
+        imgType !== '.jpg' ? shot.replace(/\.jpg$/, imgType) :
+          shot;
     } else {
       const auto = URLS.uso + `auto_style_screenshots/${id}${USO_AUTO_PIC_SUFFIX}`;
       Object.assign(elShot, {
-        src: shotName && !shotName.endsWith(USO_AUTO_PIC_SUFFIX)
-          ? `${shotArchived ? URLS.usoArchiveRaw[0] : URLS.uso + 'style_'}screenshots/${shotName}`
+        src: shot && !shot.endsWith(USO_AUTO_PIC_SUFFIX)
+          ? `${shotArchived ? URLS.usoArchiveRaw[0] : URLS.uso + 'style_'}screenshots/${shot}`
           : auto,
         _src: auto,
         onerror: fixScreenshot,
@@ -310,9 +310,8 @@
     Object.assign($('[data-type="author"] a', entry), {
       textContent: author,
       title: author,
-      href: isUsw
-        ? `${URLS.usw}user/${encodeURIComponent(author)}`
-        : `${URLS.usoArchive}browse/styles/?search=%40${authorId}`,
+      href: isUsw ? `${URLS.usw}user/${encodeURIComponent(author)}` :
+        `${URLS.usoArchive}browse/styles/?search=%40${authorId}`,
       onclick: Events.openURLandHide,
     });
     // rating
