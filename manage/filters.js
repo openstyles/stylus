@@ -36,7 +36,7 @@ function initFilters() {
   $('#search-help').onclick = event => {
     event.preventDefault();
     messageBoxProxy.show({
-      className: 'help-text',
+      className: 'help-text center-dialog',
       title: t('search'),
       contents:
         $create('ul',

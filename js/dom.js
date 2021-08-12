@@ -555,7 +555,7 @@ async function waitForSheet({
     if (el) {
       event.preventDefault();
       window.messageBoxProxy.show({
-        className: 'note',
+        className: 'note center-dialog',
         contents: el.dataset.title || el.title,
         buttons: [t('confirmClose')],
       });

@@ -189,7 +189,7 @@ const sorter = (() => {
   async function showHelp(event) {
     event.preventDefault();
     messageBoxProxy.show({
-      className: 'help-text',
+      className: 'help-text center-dialog',
       title: t('sortStylesHelpTitle'),
       contents:
         $create('div',
