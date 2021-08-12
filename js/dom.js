@@ -1,5 +1,6 @@
 /* global FIREFOX debounce */// toolbox.js
 /* global prefs */
+/* global t */// localization.js
 'use strict';
 
 /* exported
@@ -259,7 +260,7 @@ function moveFocus(rootElement, step) {
   const activeIndex = step ? Math.max(step < 0 ? 0 : -1, elements.indexOf(activeEl)) : -1;
   const num = elements.length;
   if (!step) step = 1;
-  for (let i = 1; i < num; i++) {
+  for (let i = 1; i <= num; i++) {
     const el = elements[(activeIndex + i * step + num) % num];
     if (!el.disabled && el.tabIndex >= 0) {
       el.focus();
@@ -443,6 +444,7 @@ async function waitForSheet({
   document.documentElement.setAttribute('lang', chrome.i18n.getUILanguage());
   document.on('keypress', clickDummyLinkOnEnter);
   document.on('wheel', changeFocusedInputOnWheel, {capture: true, passive: false});
+  document.on('click', showTooltipNote);
 
   Promise.resolve().then(async () => {
     if (!chrome.app) addFaviconFF();
@@ -451,6 +453,7 @@ async function waitForSheet({
   });
 
   onDOMready().then(() => {
+    splitLongTooltips();
     debounce(addTooltipsToEllipsized, 500);
     window.on('resize', () => debounce(addTooltipsToEllipsized, 100));
   });
@@ -544,6 +547,34 @@ async function waitForSheet({
       if (el.dataset.focusedViaClick === undefined) {
         el.dataset.focusedViaClick = '';
       }
+    }
+  }
+
+  function showTooltipNote(event) {
+    const el = event.target.closest('[data-cmd=note]');
+    if (el) {
+      event.preventDefault();
+      window.messageBoxProxy.show({
+        className: 'note center-dialog',
+        contents: el.dataset.title || el.title,
+        buttons: [t('confirmClose')],
+      });
+    }
+  }
+
+  function splitLongTooltips() {
+    for (const el of $$('[title]')) {
+      el.dataset.title = el.title;
+      el.title = el.title.replace(/<\/?\w+>/g, ''); // strip html tags
+      if (el.title.length < 50) {
+        continue;
+      }
+      const newTitle = el.title
+        .split('\n')
+        .map(s => s.replace(/([^.][.。?!]|.{50,60},)\s+/g, '$1\n'))
+        .map(s => s.replace(/(.{50,80}(?=.{40,}))\s+/g, '$1\n'))
+        .join('\n');
+      if (newTitle !== el.title) el.title = newTitle;
     }
   }
 })();

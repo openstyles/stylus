@@ -54,6 +54,13 @@
   let totalPages = 1;
   let ready;
 
+  let imgType = '.jpg';
+  // detect WebP support
+  $create('img', {
+    src: 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA=',
+    onload: () => (imgType = '.webp'),
+  });
+
   const $class = sel => (sel instanceof Node ? sel : $(sel)).classList;
   const show = sel => $class(sel).remove('hidden');
   const hide = sel => $class(sel).add('hidden');
@@ -301,7 +308,9 @@
     // screenshot
     const elShot = $('.search-result-screenshot', entry);
     if (isUsw) {
-      elShot.src = /^https?:/i.test(shotName) ? shotName : BLANK_PIXEL;
+      elShot.src = !/^https?:/i.test(shotName) ? BLANK_PIXEL :
+        imgType !== '.jpg' ? shotName.replace(/\.jpg$/, imgType) :
+          shotName;
     } else {
       const auto = URLS.uso + `auto_style_screenshots/${id}${USO_AUTO_PIC_SUFFIX}`;
       Object.assign(elShot, {
@@ -432,6 +441,7 @@
     saveScrollPosition(entry);
     installButton.disabled = true;
     entry.style.setProperty('pointer-events', 'none', 'important');
+    delete entry.dataset.error;
     if (!isUsw) {
       // FIXME: move this to background page and create an API like installUSOStyle
       result.pingbackTimer = setTimeout(download, PINGBACK_DELAY,
@@ -445,7 +455,8 @@
       const style = await API.usercss.install({sourceCode, updateUrl});
       renderFullInfo(entry, style);
     } catch (reason) {
-      error(`Error while downloading usoID:${id}\nReason: ${reason}`);
+      entry.dataset.error = `${t('genericError')}: ${reason}`;
+      entry.scrollIntoView({behavior: 'smooth', block: 'nearest'});
     }
     $remove('.lds-spinner', entry);
     installButton.disabled = false;

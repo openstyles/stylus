@@ -432,31 +432,15 @@ a:hover {
 #manage-text {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
   padding-top: .35rem;
 }
-
+#manage-text > * {
+  display: flex;
+  align-items: center;
+}
 #manage-text > :not(:last-child):after {
   content: "|";
   margin: 0 .5em;
-}
-
-#link-usw {
-  display: flex;
-  align-items: center;
-  margin-top: .5em;
-}
-
-#link-usw img {
-  max-width: 2.5em;
-  max-height: 2.5em;
-  margin-right: .75em;
-  filter: grayscale(1);
-  transition: filter .5s;
-}
-
-#link-usw:hover img {
-  filter: none;
 }
 
 .newUI .entry .svg-icon.checked,

@@ -40,10 +40,9 @@ messageBox.show = async ({
 }) => {
   await require(['/js/dlg/message-box.css']);
   if (!messageBox.listeners) initOwnListeners();
-  bindGlobalListeners();
   createElement();
+  bindGlobalListeners();
   document.body.appendChild(messageBox.element);
-  bindElementLiseners();
 
   messageBox._originalFocus = document.activeElement;
   // focus the first focusable child but skip the first external link which is usually `feedback`
@@ -53,6 +52,9 @@ messageBox.show = async ({
   // suppress focus outline when invoked via click
   if (focusAccessibility.lastFocusedViaClick && document.activeElement) {
     document.activeElement.dataset.focusedViaClick = '';
+  }
+  if (document.activeElement === messageBox._originalFocus) {
+    document.body.focus();
   }
 
   if (typeof onshow === 'function') {
@@ -132,15 +134,9 @@ messageBox.show = async ({
         listening = false;
       },
       mouseMove(event) {
-        const x = clamp(event.clientX, 30, innerWidth - 30) - clickX;
-        const y = clamp(event.clientY, 30, innerHeight - 30) - clickY;
-
-        offsetX = x;
-        offsetY = y;
-
-        $('#message-box > div').style.transform =
-          `translateX(${x}px) 
-          translateY(${y}px)`;
+        offsetX = clamp(event.clientX, 30, innerWidth - 30) - clickX;
+        offsetY = clamp(event.clientY, 30, innerHeight - 30) - clickY;
+        messageBox.element.firstChild.style.transform = `translate(${offsetX}px,${offsetY}px)`;
       },
     };
   }
@@ -164,7 +160,7 @@ messageBox.show = async ({
     messageBox.element =
       $create({id, className}, [
         $create([
-          $create(`#${id}-title`, title),
+          $create(`#${id}-title`, {onmousedown: messageBox.listeners.mouseDown}, title),
           $create(`#${id}-close-icon`, {onclick: messageBox.listeners.closeIcon},
             $create('SVG:svg.svg-icon', {viewBox: '0 0 20 20'},
               $create('SVG:path', {d: 'M11.69,10l4.55,4.55-1.69,1.69L10,11.69,' +
@@ -191,16 +187,11 @@ messageBox.show = async ({
     window.on('keydown', messageBox.listeners.key, true);
   }
 
-  function bindElementLiseners() {
-    $('#message-box-title').on('mousedown', messageBox.listeners.mouseDown, {passive: true});
-  }
-
   function unbindGlobalListeners() {
     window.off('keydown', messageBox.listeners.key, true);
     window.off('scroll', messageBox.listeners.scroll);
     window.off('mouseup', messageBox.listeners.mouseUp);
     window.off('mousemove', messageBox.listeners.mouseMove);
-    $('#message-box-title').off('mousedown', messageBox.listeners.mouseDown);
   }
 
   function removeSelf() {

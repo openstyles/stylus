@@ -305,6 +305,20 @@ label {
   animation: none;
 }
 
+.configure-usercss .svg-icon.config {
+  width: 20px;
+  height: 20px;
+  margin-top: -3px;
+}
+#message-box.config-dialog {
+  width: 0;
+  height: 0;
+  background: none;
+}
+#message-box.config-dialog > div {
+  box-shadow: 5px 5px 50px rgba(0, 0, 0, 0.75); /* copied from message-box.css + darkened the color */
+}
+
 /************ reponsive layouts ************/
 
 @media (max-width: 850px) {
@@ -416,6 +430,10 @@ label {
   .install {
     flex-shrink: 0;
     margin-right: 1em;
+  }
+  #message-box.config-dialog > div {
+    top: auto;
+    bottom: 3rem;
   }
 }
 
