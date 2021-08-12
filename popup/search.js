@@ -54,6 +54,13 @@
   let totalPages = 1;
   let ready;
 
+  let imgType = '.jpg';
+  // detect WebP support
+  $create('img', {
+    src: 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA=',
+    onload: () => (imgType = '.webp'),
+  });
+
   const $class = sel => (sel instanceof Node ? sel : $(sel)).classList;
   const show = sel => $class(sel).remove('hidden');
   const hide = sel => $class(sel).add('hidden');
@@ -287,17 +294,11 @@
     const elShot = $('.search-result-screenshot-default', entry);
     if (isUsw) {
       if (/^https?:/i.test(shotName)) {
-        elShot.src = shotName;
-        // USw has by default a screenshot of the style in webp format.
-        // But for compatability reasons always deliver the jpg format.
-        // Webp format is more efficient and thus is preffered to be used.
-        // When supported.
-        const webpElShot = $create('source', {
-          type: 'image/webp',
-          srcset: shotName.replace(/\.jpg$/, '.webp'),
-        });
-        const pictureEl = $('.search-result-screenshot', entry);
-        pictureEl.insertBefore(webpElShot, pictureEl.firstChild);
+        if (imgType !== '.jpg') {
+          elShot.src = shotName.replace(/\.jpg$/, imgType);
+        } else {
+          elShot.src = shotName;
+        }
       } else {
         elShot.src = BLANK_PIXEL;
       }
