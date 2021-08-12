@@ -228,22 +228,26 @@ body.search-results-shown {
   cursor: help;
 }
 
-[data-error] {
-  border: var(--pad) solid red;
+[data-error],
+[data-error]:hover {
+  border: calc(var(--pad) / 2) solid red;
   border-radius: var(--pad);
-  padding: 0;
+  padding: calc(var(--pad) / 2);
+  background: hsl(0, 90%, 80%);
 }
 [data-error]::after {
   content: attr(data-error);
   display: block;
-  background: red;
-  color: yellow;
+  color: hsl(0, 100%, 8%);
   font-weight: bold;
   padding-top: var(--pad);
   hyphens: auto;
 }
 [data-error] .search-result-description {
   display: none;
+}
+[data-error] .search-result-meta {
+  background: hsla(0, 100%, 90%, .80);
 }
 
 .search-results-nav {
