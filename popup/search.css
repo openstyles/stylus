@@ -229,6 +229,28 @@ search-result-meta [data-type="rating"][data-class="none"] dd {
   cursor: help;
 }
 
+[data-error],
+[data-error]:hover {
+  border: calc(var(--pad) / 2) solid red;
+  border-radius: var(--pad);
+  padding: calc(var(--pad) / 2);
+  background: hsl(0, 90%, 85%);
+}
+[data-error]::after {
+  content: attr(data-error);
+  display: block;
+  color: hsl(0, 100%, 8%);
+  font-weight: bold;
+  padding-top: var(--pad);
+  hyphens: auto;
+}
+[data-error] .search-result-description {
+  display: none;
+}
+[data-error] .search-result-meta {
+  background: hsla(0, 100%, 90%, .80);
+}
+
 .search-results-nav {
   flex-direction: row;
   text-align: center;
