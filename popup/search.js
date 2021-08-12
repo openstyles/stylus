@@ -64,7 +64,6 @@
   const $class = sel => (sel instanceof Node ? sel : $(sel)).classList;
   const show = sel => $class(sel).remove('hidden');
   const hide = sel => $class(sel).add('hidden');
-  const makeUsoArchiveAuthorUrl = a => `${URLS.usoArchive}browse/styles/?search=%40${a}`;
 
   Object.assign(Events, {
     /**
@@ -84,21 +83,6 @@
       init();
       calcCategory();
       ready = start();
-    },
-
-    usoArchive: {
-      async openAuthor(event) {
-        event.preventDefault();
-        await Events.usoArchive.prefetchAuthorId.call(this);
-        Events.openURLandHide.call(this, event);
-      },
-      async prefetchAuthorId() {
-        return this._fetch || (
-          this._fetch = fetch(`${URLS.usoArchiveRaw[0]}styles/${this._id}.json`)
-            .then(r => r.json())
-            .then(json => (this.href = makeUsoArchiveAuthorUrl(json.info.author.id)))
-        );
-      },
     },
   });
 
@@ -291,6 +275,7 @@
       u: updateTime,
       w: weeklyInstalls,
       t: totalInstalls,
+      ai: authorId,
       an: author,
       sa: shotArchived,
       sn: shotName,
@@ -322,18 +307,13 @@
       });
     }
     // author
-    const eAuthor = encodeURIComponent(author);
     Object.assign($('[data-type="author"] a', entry), {
       textContent: author,
       title: author,
-    }, isUsw ? {
-      href: `${URLS.usw}user/${eAuthor}`,
+      href: isUsw
+        ? `${URLS.usw}user/${encodeURIComponent(author)}`
+        : `${URLS.usoArchive}browse/styles/?search=%40${authorId}`,
       onclick: Events.openURLandHide,
-    } : {
-      _id: id,
-      href: makeUsoArchiveAuthorUrl(eAuthor),
-      onclick: Events.usoArchive.openAuthor,
-      onmousedown: Events.usoArchive.prefetchAuthorId,
     });
     // rating
     $('[data-type="rating"]', entry).dataset.class =
