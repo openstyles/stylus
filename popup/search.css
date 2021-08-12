@@ -76,8 +76,9 @@ body.search-results-shown {
 }
 
 .search-result-title {
+  display: flex;
+  align-items: center;
   margin-bottom: .5em;
-  display: block;
   color: #555;
   overflow-wrap: break-word;
 }
