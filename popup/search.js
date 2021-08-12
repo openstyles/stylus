@@ -11,7 +11,7 @@
   require(['/popup/search.css']);
 
   const RESULT_ID_PREFIX = 'search-result-';
-  const INDEX_URL = URLS.usoArchiveRaw + 'search-index.json';
+  const INDEX_URL = URLS.usoArchiveRaw[0] + 'search-index.json';
   const USW_INDEX_URL = URLS.usw + 'api/index/uso-format';
   const USW_ICON = $create('img', {
     src: `${URLS.usw}favicon.ico`,
@@ -275,17 +275,17 @@
       u: updateTime,
       w: weeklyInstalls,
       t: totalInstalls,
+      ai: authorId,
       an: author,
       sa: shotArchived,
-      sn: shotName,
+      sn: shot,
       isUsw,
     } = entry._result = result;
     entry.id = RESULT_ID_PREFIX + id;
     // title
     Object.assign($('.search-result-title', entry), {
       onclick: Events.openURLandHide,
-      href: isUsw ? `${URLS.usw}style/${id}` :
-        `${URLS.usoArchive}?category=${category}&style=${id}`,
+      href: `${isUsw ? URLS.usw : URLS.usoArchive}style/${id}`,
     });
     if (isUsw) $('.search-result-title', entry).prepend(USW_ICON.cloneNode(true));
     $('.search-result-title span', entry).textContent =
@@ -293,26 +293,25 @@
     // screenshot
     const elShot = $('.search-result-screenshot', entry);
     if (isUsw) {
-      elShot.src = !/^https?:/i.test(shotName) ? BLANK_PIXEL :
-        imgType !== '.jpg' ? shotName.replace(/\.jpg$/, imgType) :
-          shotName;
+      elShot.src = !/^https?:/i.test(shot) ? BLANK_PIXEL :
+        imgType !== '.jpg' ? shot.replace(/\.jpg$/, imgType) :
+          shot;
     } else {
       const auto = URLS.uso + `auto_style_screenshots/${id}${USO_AUTO_PIC_SUFFIX}`;
       Object.assign(elShot, {
-        src: shotName && !shotName.endsWith(USO_AUTO_PIC_SUFFIX)
-          ? `${shotArchived ? URLS.usoArchiveRaw : URLS.uso + 'style_'}screenshots/${shotName}`
+        src: shot && !shot.endsWith(USO_AUTO_PIC_SUFFIX)
+          ? `${shotArchived ? URLS.usoArchiveRaw[0] : URLS.uso + 'style_'}screenshots/${shot}`
           : auto,
         _src: auto,
         onerror: fixScreenshot,
       });
     }
     // author
-    const eAuthor = encodeURIComponent(author);
     Object.assign($('[data-type="author"] a', entry), {
       textContent: author,
       title: author,
-      href: isUsw ? `${URLS.usw}user/${eAuthor}` :
-        `${URLS.usoArchive}?author=${eAuthor.replace(/%20/g, '+')}`,
+      href: isUsw ? `${URLS.usw}user/${encodeURIComponent(author)}` :
+        `${URLS.usoArchive}browse/styles?search=%40${authorId}`,
       onclick: Events.openURLandHide,
     });
     // rating

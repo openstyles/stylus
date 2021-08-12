@@ -83,7 +83,7 @@ function createStyleElement({style, name: nameLC}) {
   parts.homepage.href = parts.homepage.title = style.url || '';
   parts.infoVer.textContent = ud ? ud.version : '';
   parts.infoVer.dataset.value = ud ? ud.version : '';
-  if (`${style.updateUrl}`.startsWith(URLS.usoArchiveRaw)) {
+  if (URLS.extractUsoArchiveId(style.updateUrl)) {
     parts.infoVer.dataset.isDate = '';
   } else {
     delete parts.infoVer.dataset.isDate;
