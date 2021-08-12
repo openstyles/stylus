@@ -11,7 +11,7 @@
   require(['/popup/search.css']);
 
   const RESULT_ID_PREFIX = 'search-result-';
-  const INDEX_URL = URLS.usoArchiveRaw + 'search-index.json';
+  const INDEX_URL = URLS.usoArchiveRaw[0] + 'search-index.json';
   const USW_INDEX_URL = URLS.usw + 'api/index/uso-format';
   const USW_ICON = $create('img', {
     src: `${URLS.usw}favicon.ico`,
@@ -57,6 +57,7 @@
   const $class = sel => (sel instanceof Node ? sel : $(sel)).classList;
   const show = sel => $class(sel).remove('hidden');
   const hide = sel => $class(sel).add('hidden');
+  const makeUsoArchiveAuthorUrl = a => `${URLS.usoArchive}browse/styles/?search=%40${a}`;
 
   Object.assign(Events, {
     /**
@@ -76,6 +77,22 @@
       init();
       calcCategory();
       ready = start();
+    },
+
+    usoArchive: {
+      async openAuthor(event) {
+        event.preventDefault();
+        await Events.usoArchive.prefetchAuthorId.call(this);
+        Events.openURLandHide.call(this, event);
+      },
+      async prefetchAuthorId() {
+        return this._fetch || (this._fetch = new Promise(async resolve => {
+          const url = `${URLS.usoArchiveRaw[0]}styles/${this._id}.json`;
+          const json = await (await fetch(url)).json();
+          this.href = makeUsoArchiveAuthorUrl(json.info.author.id);
+          resolve();
+        }));
+      },
     },
   });
 
@@ -277,8 +294,7 @@
     // title
     Object.assign($('.search-result-title', entry), {
       onclick: Events.openURLandHide,
-      href: isUsw ? `${URLS.usw}style/${id}` :
-        `${URLS.usoArchive}?category=${category}&style=${id}`,
+      href: `${isUsw ? URLS.usw : URLS.usoArchive}style/${id}`,
     });
     if (isUsw) $('.search-result-title', entry).prepend(USW_ICON.cloneNode(true));
     $('.search-result-title span', entry).textContent =
@@ -291,7 +307,7 @@
       const auto = URLS.uso + `auto_style_screenshots/${id}${USO_AUTO_PIC_SUFFIX}`;
       Object.assign(elShot, {
         src: shotName && !shotName.endsWith(USO_AUTO_PIC_SUFFIX)
-          ? `${shotArchived ? URLS.usoArchiveRaw : URLS.uso + 'style_'}screenshots/${shotName}`
+          ? `${shotArchived ? URLS.usoArchiveRaw[0] : URLS.uso + 'style_'}screenshots/${shotName}`
           : auto,
         _src: auto,
         onerror: fixScreenshot,
@@ -302,9 +318,14 @@
     Object.assign($('[data-type="author"] a', entry), {
       textContent: author,
       title: author,
-      href: isUsw ? `${URLS.usw}user/${eAuthor}` :
-        `${URLS.usoArchive}?author=${eAuthor.replace(/%20/g, '+')}`,
+    }, isUsw ? {
+      href: `${URLS.usw}user/${eAuthor}`,
       onclick: Events.openURLandHide,
+    } : {
+      _id: id,
+      href: makeUsoArchiveAuthorUrl(eAuthor),
+      onclick: Events.usoArchive.openAuthor,
+      onmousedown: Events.usoArchive.prefetchAuthorId,
     });
     // rating
     $('[data-type="rating"]', entry).dataset.class =

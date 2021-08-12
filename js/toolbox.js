@@ -77,20 +77,23 @@ const URLS = {
   uso: 'https://userstyles.org/',
   usoJson: 'https://userstyles.org/styles/chrome/',
 
-  usoArchive: 'https://33kk.github.io/uso-archive/',
-  usoArchiveRaw: 'https://raw.githubusercontent.com/33kk/uso-archive/flomaster/data/',
+  usoArchive: 'https://uso.kkx.one/',
+  usoArchiveRaw: [
+    'https://cdn.jsdelivr.net/gh/33kk/uso-archive@flomaster/data/',
+    'https://raw.githubusercontent.com/33kk/uso-archive/flomaster/data/',
+  ],
 
   usw: 'https://userstyles.world/',
 
   extractUsoArchiveId: url =>
     url &&
-    url.startsWith(URLS.usoArchiveRaw) &&
+    URLS.usoArchiveRaw.some(u => url.startsWith(u)) &&
     Number(url.match(/\/(\d+)\.user\.css|$/)[1]),
   extractUsoArchiveInstallUrl: url => {
     const id = URLS.extractUsoArchiveId(url);
-    return id ? `${URLS.usoArchive}?style=${id}` : '';
+    return id ? `${URLS.usoArchive}/style/${id}` : '';
   },
-  makeUsoArchiveCodeUrl: id => `${URLS.usoArchiveRaw}usercss/${id}.user.css`,
+  makeUsoArchiveCodeUrl: id => `${URLS.usoArchiveRaw[0]}usercss/${id}.user.css`,
 
   extractGreasyForkInstallUrl: url =>
     /^(https:\/\/(?:greasy|sleazy)fork\.org\/scripts\/\d+)[^/]*\/code\/[^/]*\.user\.css$|$/.exec(url)[1],

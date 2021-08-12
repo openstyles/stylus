@@ -277,7 +277,7 @@ const updateMan = (() => {
     }
 
     function getDateFromVer(style) {
-      const m = style.updateUrl.startsWith(URLS.usoArchiveRaw) &&
+      const m = URLS.extractUsoArchiveId(style.updateUrl) &&
         style.usercssData.version.match(RX_DATE2VER);
       if (m) {
         m[2]--; // month is 0-based in `Date` constructor
