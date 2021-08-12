@@ -68,7 +68,7 @@ body.search-results-shown {
   filter: opacity(.2);
 }
 
-.search-result-screenshot > * {
+.search-result-screenshot {
   height: 140px;
   width: 100%;
   object-fit: cover;
@@ -82,7 +82,7 @@ body.search-results-shown {
   overflow-wrap: break-word;
 }
 
-.search-result-title picture {
+.search-result-title img {
   width: 20px;
   height: 20px;
   margin: -6px 4px -6px 0;

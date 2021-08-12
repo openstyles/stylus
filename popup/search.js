@@ -291,7 +291,7 @@
     $('.search-result-title span', entry).textContent =
       t.breakWord(name.length < 300 ? name : name.slice(0, 300) + '...');
     // screenshot
-    const elShot = $('.search-result-screenshot-default', entry);
+    const elShot = $('.search-result-screenshot', entry);
     if (isUsw) {
       elShot.src = !/^https?:/i.test(shotName) ? BLANK_PIXEL :
         imgType !== '.jpg' ? shotName.replace(/\.jpg$/, imgType) :
