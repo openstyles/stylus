@@ -86,12 +86,11 @@
         Events.openURLandHide.call(this, event);
       },
       async prefetchAuthorId() {
-        return this._fetch || (this._fetch = new Promise(async resolve => {
-          const url = `${URLS.usoArchiveRaw[0]}styles/${this._id}.json`;
-          const json = await (await fetch(url)).json();
-          this.href = makeUsoArchiveAuthorUrl(json.info.author.id);
-          resolve();
-        }));
+        return this._fetch || (
+          this._fetch = fetch(`${URLS.usoArchiveRaw[0]}styles/${this._id}.json`)
+            .then(r => r.json())
+            .then(json => (this.href = makeUsoArchiveAuthorUrl(json.info.author.id)))
+        );
       },
     },
   });
