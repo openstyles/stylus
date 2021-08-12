@@ -54,6 +54,13 @@
   let totalPages = 1;
   let ready;
 
+  let imgType = '.jpg';
+  // detect WebP support
+  $create('img', {
+    src: 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA=',
+    onload: () => (imgType = '.webp'),
+  });
+
   const $class = sel => (sel instanceof Node ? sel : $(sel)).classList;
   const show = sel => $class(sel).remove('hidden');
   const hide = sel => $class(sel).add('hidden');
@@ -286,7 +293,9 @@
     // screenshot
     const elShot = $('.search-result-screenshot', entry);
     if (isUsw) {
-      elShot.src = /^https?:/i.test(shotName) ? shotName : BLANK_PIXEL;
+      elShot.src = !/^https?:/i.test(shotName) ? BLANK_PIXEL :
+        imgType !== '.jpg' ? shotName.replace(/\.jpg$/, imgType) :
+          shotName;
     } else {
       const auto = URLS.uso + `auto_style_screenshots/${id}${USO_AUTO_PIC_SUFFIX}`;
       Object.assign(elShot, {
