@@ -311,7 +311,7 @@
       textContent: author,
       title: author,
       href: isUsw ? `${URLS.usw}user/${encodeURIComponent(author)}` :
-        `${URLS.usoArchive}browse/styles/?search=%40${authorId}`,
+        `${URLS.usoArchive}browse/styles?search=%40${authorId}`,
       onclick: Events.openURLandHide,
     });
     // rating
