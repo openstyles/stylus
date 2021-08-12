@@ -293,15 +293,7 @@
     // screenshot
     const elShot = $('.search-result-screenshot-default', entry);
     if (isUsw) {
-      if (/^https?:/i.test(shotName)) {
-        if (imgType !== '.jpg') {
-          elShot.src = shotName.replace(/\.jpg$/, imgType);
-        } else {
-          elShot.src = shotName;
-        }
-      } else {
-        elShot.src = BLANK_PIXEL;
-      }
+      elShot.src = /^https?:/i.test(shotName) ? imgType !== '.jpg' ? shotName.replace(/\.jpg$/, imgType) : shotName : BLANK_PIXEL;
     } else {
       const auto = URLS.uso + `auto_style_screenshots/${id}${USO_AUTO_PIC_SUFFIX}`;
       Object.assign(elShot, {
