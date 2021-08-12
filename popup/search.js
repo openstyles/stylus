@@ -293,7 +293,9 @@
     // screenshot
     const elShot = $('.search-result-screenshot-default', entry);
     if (isUsw) {
-      elShot.src = /^https?:/i.test(shotName) ? imgType !== '.jpg' ? shotName.replace(/\.jpg$/, imgType) : shotName : BLANK_PIXEL;
+      elShot.src = !/^https?:/i.test(shotName) ? BLANK_PIXEL :
+        imgType !== '.jpg' ? shotName.replace(/\.jpg$/, imgType) :
+          shotName;
     } else {
       const auto = URLS.uso + `auto_style_screenshots/${id}${USO_AUTO_PIC_SUFFIX}`;
       Object.assign(elShot, {
