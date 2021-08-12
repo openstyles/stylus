@@ -11,8 +11,11 @@ const iconMan = (() => {
   const staleBadges = new Set();
   const imageDataCache = new Map();
   const badgeOvr = {color: '', text: ''};
+  const FIREFOX_ANDROID = FIREFOX && navigator.userAgent.includes('Android');
+
   // https://github.com/openstyles/stylus/issues/335
-  let hasCanvas = loadImage(`/images/icon/${ICON_SIZES[0]}.png`)
+  // https://github.com/openstyles/stylus/issues/1287
+  let hasCanvas = FIREFOX_ANDROID ? false : loadImage(`/images/icon/${ICON_SIZES[0]}.png`)
     .then(({data}) => (hasCanvas = data.some(b => b !== 255)));
 
   addAPI(/** @namespace API */ {
