@@ -233,7 +233,7 @@ body.search-results-shown {
   border: calc(var(--pad) / 2) solid red;
   border-radius: var(--pad);
   padding: calc(var(--pad) / 2);
-  background: hsl(0, 90%, 80%);
+  background: hsl(0, 90%, 85%);
 }
 [data-error]::after {
   content: attr(data-error);
