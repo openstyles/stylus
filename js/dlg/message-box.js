@@ -53,6 +53,9 @@ messageBox.show = async ({
   if (focusAccessibility.lastFocusedViaClick && document.activeElement) {
     document.activeElement.dataset.focusedViaClick = '';
   }
+  if (document.activeElement === messageBox._originalFocus) {
+    document.body.focus();
+  }
 
   if (typeof onshow === 'function') {
     onshow(messageBox.element);

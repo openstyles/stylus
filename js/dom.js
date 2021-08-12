@@ -260,7 +260,7 @@ function moveFocus(rootElement, step) {
   const activeIndex = step ? Math.max(step < 0 ? 0 : -1, elements.indexOf(activeEl)) : -1;
   const num = elements.length;
   if (!step) step = 1;
-  for (let i = 1; i < num; i++) {
+  for (let i = 1; i <= num; i++) {
     const el = elements[(activeIndex + i * step + num) % num];
     if (!el.disabled && el.tabIndex >= 0) {
       el.focus();
