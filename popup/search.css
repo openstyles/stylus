@@ -196,6 +196,10 @@ body.search-results-shown {
   color: darkred;
 }
 
+/* Keeping an empty rule so customizers can easily tweak it */
+search-result-meta [data-type="rating"][data-class="none"] dd {
+}
+
 .search-result-meta [data-type="weekly"],
 .search-result-meta [data-type="total"] {
   text-align: right;
