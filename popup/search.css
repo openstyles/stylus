@@ -228,6 +228,24 @@ body.search-results-shown {
   cursor: help;
 }
 
+[data-error] {
+  border: var(--pad) solid red;
+  border-radius: var(--pad);
+  padding: 0;
+}
+[data-error]::after {
+  content: attr(data-error);
+  display: block;
+  background: red;
+  color: yellow;
+  font-weight: bold;
+  padding-top: var(--pad);
+  hyphens: auto;
+}
+[data-error] .search-result-description {
+  display: none;
+}
+
 .search-results-nav {
   flex-direction: row;
   text-align: center;

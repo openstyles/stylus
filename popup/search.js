@@ -412,6 +412,7 @@
     saveScrollPosition(entry);
     installButton.disabled = true;
     entry.style.setProperty('pointer-events', 'none', 'important');
+    delete entry.dataset.error;
     if (!isUsw) {
       // FIXME: move this to background page and create an API like installUSOStyle
       result.pingbackTimer = setTimeout(download, PINGBACK_DELAY,
@@ -425,7 +426,8 @@
       const style = await API.usercss.install({sourceCode, updateUrl});
       renderFullInfo(entry, style);
     } catch (reason) {
-      error(`Error while downloading usoID:${id}\nReason: ${reason}`);
+      entry.dataset.error = `${t('genericError')}: ${reason}`;
+      entry.scrollIntoView({behavior: 'smooth', block: 'nearest'});
     }
     $remove('.lds-spinner', entry);
     installButton.disabled = false;
