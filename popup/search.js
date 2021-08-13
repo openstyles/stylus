@@ -10,7 +10,8 @@
 (() => {
   require(['/popup/search.css']);
 
-  const RESULT_ID_PREFIX = 'search-result-';
+  const RESULT_ID_PREFIX = t.template.searchResult.className + '-';
+  const RESULT_SEL = '.' + t.template.searchResult.className;
   const INDEX_URL = URLS.usoArchiveRaw[0] + 'search-index.json';
   const USW_INDEX_URL = URLS.usw + 'api/index/uso-format';
   const USW_ICON = $create('img', {
@@ -39,6 +40,11 @@
    * @prop {string} an -  authorName
    * @prop {string} sn -  screenshotName
    * @prop {boolean} sa -  screenshotArchived
+   * --------------------- Stylus' internally added extras
+   * @prop {boolean} isUsw
+   * @prop {boolean} installed
+   * @prop {number} installedStyleId
+   * @prop {number} pingbackTimer
    */
   /** @type IndexEntry[] */
   let results;
@@ -61,9 +67,14 @@
     onload: () => (imgType = '.webp'),
   });
 
-  const $class = sel => (sel instanceof Node ? sel : $(sel)).classList;
-  const show = sel => $class(sel).remove('hidden');
-  const hide = sel => $class(sel).add('hidden');
+  /** @returns {{result: IndexEntry, entry: HTMLElement}} */
+  const $resultEntry = el => {
+    const entry = el.closest(RESULT_SEL);
+    return {entry, result: entry && entry._result};
+  };
+  const $classList = sel => (sel instanceof Node ? sel : $(sel)).classList;
+  const show = sel => $classList(sel).remove('hidden');
+  const hide = sel => $classList(sel).add('hidden');
 
   Object.assign(Events, {
     /**
@@ -215,7 +226,7 @@
     // keep rendered elements with ids in the range of interest
     while (
       plantAt < PAGE_LENGTH &&
-      slot && slot.id === 'search-result-' + (results[start] || {}).i
+      slot && slot.id === RESULT_ID_PREFIX + (results[start] || {}).i
     ) {
       slot = slot.nextElementSibling;
       plantAt++;
@@ -390,7 +401,10 @@
     });
     $('.search-result-uninstall', entry).onclick = uninstall;
     $('.search-result-install', entry).onclick = install;
-    $('.search-result-customize', entry).onclick = configure;
+    Object.assign($('.search-result-customize', entry), {
+      onclick: configure,
+      disabled: notMatching,
+    });
     toggleDataset(entry, 'installed', isInstalled);
   }
 
@@ -408,16 +422,13 @@
     toggleDataset(entry, 'customizable', vars);
   }
 
-  /** @this HTMLButtonElement */
   function configure() {
-    const el = $entry(this.closest('.search-result')._result.installedStyleId);
-    const btn = el && $('.configure', el);
-    if (btn) btn.click();
+    const styleEntry = $entry($resultEntry(this).result.installedStyleId);
+    Events.configure.call(this, {target: styleEntry});
   }
 
   async function install() {
-    const entry = this.closest('.search-result');
-    const result = /** @type IndexEntry */ entry._result;
+    const {entry, result} = $resultEntry(this);
     const {i: id, isUsw} = result;
     const installButton = $('.search-result-install', entry);
 
@@ -448,9 +459,9 @@
   }
 
   function uninstall() {
-    const entry = this.closest('.search-result');
+    const {entry, result} = $resultEntry(this);
     saveScrollPosition(entry);
-    API.styles.delete(entry._result.installedStyleId);
+    API.styles.delete(result.installedStyleId);
   }
 
   function saveScrollPosition(entry) {

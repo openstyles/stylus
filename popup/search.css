@@ -151,8 +151,12 @@ body.search-results-shown {
 }
 .search-result-install,
 .search-result-uninstall,
+.search-result:not([data-installed]) .search-result-customize,
 .search-result:not([data-customizable]) .search-result-customize {
   display: none;
+}
+.search-result.not-matching .search-result-customize {
+  opacity: .5;
 }
 
 .search-result-meta {
