@@ -11,6 +11,7 @@ const iconMan = (() => {
   const staleBadges = new Set();
   const imageDataCache = new Map();
   const badgeOvr = {color: '', text: ''};
+  // Fenix currently doesn't seems to correctly use custom ImageData
   const FIREFOX_ANDROID = FIREFOX && navigator.userAgent.includes('Android');
 
   // https://github.com/openstyles/stylus/issues/335
