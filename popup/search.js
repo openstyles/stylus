@@ -1,4 +1,4 @@
-/* global $ $$ $create $remove showSpinner */// dom.js
+/* global $ $$ $create $remove showSpinner toggleDataset */// dom.js
 /* global $entry tabURL */// popup.js
 /* global API */// msg.js
 /* global Events */
@@ -10,7 +10,8 @@
 (() => {
   require(['/popup/search.css']);
 
-  const RESULT_ID_PREFIX = 'search-result-';
+  const RESULT_ID_PREFIX = t.template.searchResult.className + '-';
+  const RESULT_SEL = '.' + t.template.searchResult.className;
   const INDEX_URL = URLS.usoArchiveRaw[0] + 'search-index.json';
   const USW_INDEX_URL = URLS.usw + 'api/index/uso-format';
   const USW_ICON = $create('img', {
@@ -39,6 +40,11 @@
    * @prop {string} an -  authorName
    * @prop {string} sn -  screenshotName
    * @prop {boolean} sa -  screenshotArchived
+   * --------------------- Stylus' internally added extras
+   * @prop {boolean} isUsw
+   * @prop {boolean} installed
+   * @prop {number} installedStyleId
+   * @prop {number} pingbackTimer
    */
   /** @type IndexEntry[] */
   let results;
@@ -61,9 +67,14 @@
     onload: () => (imgType = '.webp'),
   });
 
-  const $class = sel => (sel instanceof Node ? sel : $(sel)).classList;
-  const show = sel => $class(sel).remove('hidden');
-  const hide = sel => $class(sel).add('hidden');
+  /** @returns {{result: IndexEntry, entry: HTMLElement}} */
+  const $resultEntry = el => {
+    const entry = el.closest(RESULT_SEL);
+    return {entry, result: entry && entry._result};
+  };
+  const $classList = sel => (sel instanceof Node ? sel : $(sel)).classList;
+  const show = sel => $classList(sel).remove('hidden');
+  const hide = sel => $classList(sel).add('hidden');
 
   Object.assign(Events, {
     /**
@@ -215,7 +226,7 @@
     // keep rendered elements with ids in the range of interest
     while (
       plantAt < PAGE_LENGTH &&
-      slot && slot.id === 'search-result-' + (results[start] || {}).i
+      slot && slot.id === RESULT_ID_PREFIX + (results[start] || {}).i
     ) {
       slot = slot.nextElementSibling;
       plantAt++;
@@ -292,19 +303,22 @@
       t.breakWord(name.length < 300 ? name : name.slice(0, 300) + '...');
     // screenshot
     const elShot = $('.search-result-screenshot', entry);
+    let shotSrc;
     if (isUsw) {
-      elShot.src = !/^https?:/i.test(shot) ? BLANK_PIXEL :
-        imgType !== '.jpg' ? shot.replace(/\.jpg$/, imgType) :
-          shot;
+      shotSrc = /^https?:/i.test(shot) && shot.replace(/\.jpg$/, imgType);
     } else {
-      const auto = URLS.uso + `auto_style_screenshots/${id}${USO_AUTO_PIC_SUFFIX}`;
-      Object.assign(elShot, {
-        src: shot && !shot.endsWith(USO_AUTO_PIC_SUFFIX)
-          ? `${shotArchived ? URLS.usoArchiveRaw[0] : URLS.uso + 'style_'}screenshots/${shot}`
-          : auto,
-        _src: auto,
-        onerror: fixScreenshot,
-      });
+      elShot._src = URLS.uso + `auto_style_screenshots/${id}${USO_AUTO_PIC_SUFFIX}`;
+      shotSrc = shot && !shot.endsWith(USO_AUTO_PIC_SUFFIX)
+        ? `${shotArchived ? URLS.usoArchiveRaw[0] : URLS.uso + 'style_'}screenshots/${shot}`
+        : elShot._src;
+    }
+    if (shotSrc) {
+      elShot._entry = entry;
+      elShot.src = shotSrc;
+      elShot.onerror = fixScreenshot;
+    } else {
+      elShot.src = BLANK_PIXEL;
+      entry.dataset.noImage = '';
     }
     // author
     Object.assign($('[data-type="author"] a', entry), {
@@ -350,8 +364,10 @@
       this.src = _src;
       delete this._src;
     } else {
-      this.src = BLANK_PIXEL;
       this.onerror = null;
+      this.src = BLANK_PIXEL;
+      this._entry.dataset.noImage = '';
+      renderActionButtons(this._entry);
     }
   }
 
@@ -366,14 +382,10 @@
       result.installedStyleId = installedId;
     }
     const isInstalled = result.installed;
-    if (isInstalled && !('installed' in entry.dataset)) {
-      entry.dataset.installed = '';
-      $('.search-result-status', entry).textContent = t('clickToUninstall');
-    } else if (!isInstalled && 'installed' in entry.dataset) {
-      delete entry.dataset.installed;
-      $('.search-result-status', entry).textContent = '';
-      hide('.search-result-customize', entry);
-    }
+    const status = $('.search-result-status', entry).textContent =
+      isInstalled ? t('clickToUninstall') :
+        entry.dataset.noImage != null ? t('installButton') :
+          '';
     const notMatching = installedId > 0 && !$entry(installedId);
     if (notMatching !== entry.classList.contains('not-matching')) {
       entry.classList.toggle('not-matching');
@@ -385,10 +397,15 @@
     }
     Object.assign($('.search-result-screenshot', entry), {
       onclick: isInstalled ? uninstall : install,
-      title: isInstalled ? '' : t('installButton'),
+      title: status ? '' : t('installButton'),
     });
     $('.search-result-uninstall', entry).onclick = uninstall;
     $('.search-result-install', entry).onclick = install;
+    Object.assign($('.search-result-customize', entry), {
+      onclick: configure,
+      disabled: notMatching,
+    });
+    toggleDataset(entry, 'installed', isInstalled);
   }
 
   function renderFullInfo(entry, style) {
@@ -402,17 +419,16 @@
       textContent: description,
       title: description,
     });
-    // config button
-    if (vars) {
-      const btn = $('.search-result-customize', entry);
-      btn.onclick = () => $('.configure', $entry(style)).click();
-      show(btn);
-    }
+    toggleDataset(entry, 'customizable', vars);
+  }
+
+  function configure() {
+    const styleEntry = $entry($resultEntry(this).result.installedStyleId);
+    Events.configure.call(this, {target: styleEntry});
   }
 
   async function install() {
-    const entry = this.closest('.search-result');
-    const result = /** @type IndexEntry */ entry._result;
+    const {entry, result} = $resultEntry(this);
     const {i: id, isUsw} = result;
     const installButton = $('.search-result-install', entry);
 
@@ -443,9 +459,9 @@
   }
 
   function uninstall() {
-    const entry = this.closest('.search-result');
+    const {entry, result} = $resultEntry(this);
     saveScrollPosition(entry);
-    API.styles.delete(entry._result.installedStyleId);
+    API.styles.delete(result.installedStyleId);
   }
 
   function saveScrollPosition(entry) {
