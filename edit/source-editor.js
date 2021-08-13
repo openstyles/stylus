@@ -69,6 +69,7 @@ function SourceEditor() {
           messageBoxProxy.alert(t('usercssAvoidOverwriting'), 'danger', t('genericError'));
         } else {
           res = await API.usercss.editSave({customName, enabled, id, sourceCode});
+          // Awaiting inside `try` so that exceptions go to our `catch`
           await replaceStyle(res.style);
         }
         showLog(res);
