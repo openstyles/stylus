@@ -1050,12 +1050,6 @@
   "unreachableAMOHint": {
     "message": "Ligipääsu lubamiseks ava <about:config>, parem-klõpsa nimekirjal, vali 'Uus', seejärel 'Tõeväärtus', kleebi <privacy.resistFingerprinting.block_mozAddonManager> ja klõpsa Sobib, <true>, Sobib, laadi leht <addons.mozilla.org> uuesti."
   },
-  "unreachableAMOHintNewFF": {
-    "message": "Firefox 60-s ja uuemas pead ka lehel <about:config> eelistusest <extensions.webextensions.restrictedDomains> eemaldama AMO domeeni."
-  },
-  "unreachableAMOHintOldFF": {
-    "message": "Ainult Firefox 59 ja uuem on võimalik seadistada lubama WebExtensionsil lisada stiilielemente CSP-kaitstud saitidele nagu see."
-  },
   "unreachableContentScript": {
     "message": "Lehega ei saanud ühendust. Proovi kaart uuesti laadida."
   },

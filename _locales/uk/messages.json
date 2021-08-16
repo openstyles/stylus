@@ -1,0 +1,234 @@
+{
+  "InaccessibleFileHint": {
+    "message": "Stylus не може отримати доступ до деяких типів файлів (наприклад, файли PDF і JSON)."
+  },
+  "addStyleLabel": {
+    "message": "Написати новий стиль"
+  },
+  "addStyleTitle": {
+    "message": "Додати стиль"
+  },
+  "alphaChannel": {
+    "message": "Прозорість"
+  },
+  "appliesAdd": {
+    "message": "Додати"
+  },
+  "appliesDisplay": {
+    "message": "Застосувати до $applies$",
+    "placeholders": {
+      "applies": {
+        "content": "$1"
+      }
+    }
+  },
+  "appliesDisplayTruncatedSuffix": {
+    "message": "та інші"
+  },
+  "appliesDomainOption": {
+    "message": "URL в домені"
+  },
+  "appliesHelp": {
+    "message": "Щоб вказати, до яких URL відноситься код в цьому розділі, скористайтеся параметром \"Застосувати до\"."
+  },
+  "appliesLabel": {
+    "message": "Застосувати до"
+  },
+  "appliesLineWidgetLabel": {
+    "message": "Показати цільові сайти секцій"
+  },
+  "appliesRemove": {
+    "message": "Видалити"
+  },
+  "appliesRemoveError": {
+    "message": "Не можна видалити останній елемент"
+  },
+  "appliesSpecify": {
+    "message": "Вказати"
+  },
+  "appliesToEverything": {
+    "message": "Все"
+  },
+  "appliesUrlPrefixOption": {
+    "message": "URL, що починаються з "
+  },
+  "applyAllUpdates": {
+    "message": "Застосувати всі оновлення"
+  },
+  "author": {
+    "message": "Автор"
+  },
+  "backupButtons": {
+    "message": "Резервне копіювання"
+  },
+  "backupMessage": {
+    "message": "Виберіть файл або перетягніть на цю сторінку."
+  },
+  "bckpInstStyles": {
+    "message": "Експорт стилів"
+  },
+  "checkingForUpdate": {
+    "message": "Перевірка ... "
+  },
+  "clickToUninstall": {
+    "message": "Натисніть, щоб видалити "
+  },
+  "cm_selectByTokensTooltip": {
+    "message": "Приклади токенов: .foo-бар-2 #aabbcc 0,32 !important\nЯкщо вимкнено: вибираються слова, розділені розділовими знаками."
+  },
+  "confirmCancel": {
+    "message": "Скасувати "
+  },
+  "confirmDelete": {
+    "message": "Видалити "
+  },
+  "confirmNo": {
+    "message": "Ні"
+  },
+  "confirmSave": {
+    "message": "Зберегти"
+  },
+  "confirmStop": {
+    "message": "Зупинити"
+  },
+  "confirmYes": {
+    "message": "Так"
+  },
+  "deleteStyleLabel": {
+    "message": "Видалити"
+  },
+  "disableStyleLabel": {
+    "message": "Вимкнути"
+  },
+  "findStyles": {
+    "message": "Знайти стилі"
+  },
+  "findStylesForSite": {
+    "message": "Знайти більше стилів для цього сайту"
+  },
+  "findStylesInline": {
+    "message": "і показати тут"
+  },
+  "findStylesInlineTooltip": {
+    "message": "Показувати знайдені стилі в цьому вікні."
+  },
+  "genericAdd": {
+    "message": "Додати"
+  },
+  "genericDescription": {
+    "message": "Опис"
+  },
+  "genericDisabledLabel": {
+    "message": "Відключено"
+  },
+  "genericEnabledLabel": {
+    "message": "Увімкнено"
+  },
+  "genericError": {
+    "message": "Помилка"
+  },
+  "genericHistoryLabel": {
+    "message": "Історія"
+  },
+  "genericNext": {
+    "message": "Наступний "
+  },
+  "genericPrevious": {
+    "message": "Попередній"
+  },
+  "genericResetLabel": {
+    "message": "Скинути"
+  },
+  "genericSavedMessage": {
+    "message": "Збережено"
+  },
+  "genericTitle": {
+    "message": "Ім'я"
+  },
+  "genericUnknown": {
+    "message": "Невідомо"
+  },
+  "gettingStyles": {
+    "message": "Отримання всіх стилів ..."
+  },
+  "helpAlt": {
+    "message": "Довідка"
+  },
+  "helpKeyMapCommand": {
+    "message": "Введіть ім'я команди"
+  },
+  "helpKeyMapHotkey": {
+    "message": "Натисніть клавішу"
+  },
+  "hostDisabled": {
+    "message": "Цей хост вимкнено через помилку в поточній версії браузера, що використовується"
+  },
+  "importLabel": {
+    "message": "Імпорт"
+  },
+  "importReplaceLabel": {
+    "message": "Замінити стиль"
+  },
+  "importReportLegendIdentical": {
+    "message": "ідентичні пропущені"
+  },
+  "importReportLegendInvalid": {
+    "message": "недісних пропущено"
+  },
+  "importReportTitle": {
+    "message": "Імпорт стилів закінчено"
+  },
+  "manageFavicons": {
+    "message": "Піктограми для цільових сайтів"
+  },
+  "manageNewUI": {
+    "message": "Новий інтерфейс"
+  },
+  "meta_unknownJSONLiteral": {
+    "message": "Невірний JSON: $literal$не є дійсним літералом JSON",
+    "placeholders": {
+      "literal": {
+        "content": "$1"
+      }
+    }
+  },
+  "openManage": {
+    "message": "Менеджер"
+  },
+  "optionsReset": {
+    "message": "Скидання налаштувань до значень за замовчуванням"
+  },
+  "optionsResetButton": {
+    "message": "Скинути параметри"
+  },
+  "optionsSubheading": {
+    "message": "Додатково"
+  },
+  "optionsSyncLogin": {
+    "message": "Логін"
+  },
+  "retrieveBckp": {
+    "message": "Імпорт стилів"
+  },
+  "sectionCode": {
+    "message": "Код"
+  },
+  "sections": {
+    "message": "Розділи"
+  },
+  "styleBeautify": {
+    "message": "Облагородити"
+  },
+  "styleCancelEditLabel": {
+    "message": "Всі стилі"
+  },
+  "syncErrorRelogin": {
+    "message": "Помилка синхронізації.\nСпробуйте повторно ввійти в налаштування Stylus:\nнатисніть спочатку «від’єднати», а потім «підключити». "
+  },
+  "toggleStyle": {
+    "message": "Включити/виключити стиль"
+  },
+  "zipStyles": {
+    "message": "Запаковування стилів ... "
+  }
+}

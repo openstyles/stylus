@@ -1,4 +1,7 @@
 {
+  "InaccessibleFileHint": {
+    "message": "Stylus لا يستطيع الوصول الى بعض انواع الملفات ( ملفات pdf و json )"
+  },
   "addStyleLabel": {
     "message": "كتابة نمط جديد"
   },
@@ -17,7 +20,7 @@
     }
   },
   "appliesDisplayTruncatedSuffix": {
-    "message": "والمزيد"
+    "message": "و المزيد"
   },
   "appliesDomainOption": {
     "message": "عناوين URL في النطاق"

@@ -355,6 +355,9 @@
   "genericClone": {
     "message": "複製"
   },
+  "genericDescription": {
+    "message": "描述"
+  },
   "genericDisabledLabel": {
     "message": "已停用"
   },
@@ -483,8 +486,17 @@
   "linkGetHelp": {
     "message": "取得協助"
   },
+  "linkGetShareStyles": {
+    "message": "取得並分享樣式"
+  },
+  "linkGetShareStylesInfo": {
+    "message": "新的由社群經營的 userstyles.world 網站是由 userstyle 作者建立的，目的是取代 userstyles.org，該網站在過去一年中緩慢且反應遲鈍，許多作者都因此停止更新他們的樣式。"
+  },
   "linkGetStyles": {
     "message": "取得樣式"
+  },
+  "linkGetStylesInfo": {
+    "message": "此封存網站由 userstyle 社群成員為了備份緩慢且無回應的 userstyles.org 所建立。封存大概每一天會更新一次內容。"
   },
   "linkTranslate": {
     "message": "翻譯"
@@ -759,6 +771,17 @@
       }
     }
   },
+  "meta_unknownMetaTypo": {
+    "message": "也許是 @$keyOk$？未知的詮釋資料：@$keyErr$",
+    "placeholders": {
+      "keyErr": {
+        "content": "$1"
+      },
+      "keyOk": {
+        "content": "$2"
+      }
+    }
+  },
   "meta_unknownPreprocessor": {
     "message": "未知的 @preprocessor：$preprocessor$",
     "placeholders": {
@@ -1007,6 +1030,24 @@
   "previewTooltip": {
     "message": "不儲存而暫時套用變更。\n儲存樣式以永久變更。"
   },
+  "publish": {
+    "message": "發布"
+  },
+  "publishPush": {
+    "message": "推送更新"
+  },
+  "publishReconnect": {
+    "message": "嘗試斷線後再次發布"
+  },
+  "publishRetry": {
+    "message": "Stylus 仍在嘗試發布此樣式，但如果您沒有看到身份驗證活動或彈出式視窗。立刻重試？"
+  },
+  "publishStyle": {
+    "message": "發布樣式"
+  },
+  "publishUsw": {
+    "message": "使用 <userstyles.world>"
+  },
   "readingStyles": {
     "message": "正在讀取樣式……"
   },
@@ -1196,6 +1237,9 @@
   "styleMozillaFormatHeading": {
     "message": "Mozilla格式"
   },
+  "styleName": {
+    "message": "樣式名稱"
+  },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "因為不正確的 'regexp()' 使用導致未套用"
   },
@@ -1285,17 +1329,17 @@
   "unreachableAMOHint": {
     "message": "要允許存取，開啟 <about:config>，在清單上點選右鍵，點選「新增」，然後再點選「布林」，貼上 <privacy.resistFingerprinting.block_mozAddonManager> 並點選確定→<true>→確定，然後重新整理 <addons.mozilla.org> 頁面。"
   },
-  "unreachableAMOHintNewFF": {
-    "message": "在 Firefox 60 或更新的版本中，您也必須將 AMO 的網域從 <about:config> 中的 <extensions.webextensions.restrictedDomains> 移除。"
-  },
-  "unreachableAMOHintOldFF": {
-    "message": "僅 Firefox 59 或更新版本才能讓您設定允許 WebExtensions 在如同這個一樣的有 CSP 保護的頁面上新增樣式元素。"
-  },
   "unreachableContentScript": {
     "message": "無法與頁面通訊。嘗試重新載入分頁。"
   },
   "unreachableFileHint": {
     "message": "Stylus 僅在您於 chrome://extensions 啟用了 Stylus 擴充套件中對應的勾選框時才能存取 file:// 的 URL。"
+  },
+  "unreachableMozSiteHint": {
+    "message": "在 Firefox 60 或更新版本上，您必須將此網域從位於 <about:config> 的 <extensions.webextensions.restrictedDomains> 設定值中刪除。"
+  },
+  "unreachableMozSiteHintOldFF": {
+    "message": "僅 Firefox 59 或更新版本上可以設定為允許 WebExtension 在受 CSP 保護的網站（例如此網站）上新增樣式。"
   },
   "unzipStyles": {
     "message": "正在解壓縮樣式……"

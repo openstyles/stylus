@@ -330,6 +330,9 @@
   "genericClone": {
     "message": "Dupliceren"
   },
+  "genericDescription": {
+    "message": "Omschrijving"
+  },
   "genericDisabledLabel": {
     "message": "Uitgeschakeld"
   },
@@ -458,8 +461,17 @@
   "linkGetHelp": {
     "message": "Hulp verkrijgen"
   },
+  "linkGetShareStyles": {
+    "message": "Stijlen verkrijgen en delen"
+  },
+  "linkGetShareStylesInfo": {
+    "message": "De nieuwe door de gemeenschap mogelijk gemaakte website userstyles.world is gemaakt door schrijvers van gebruikersstijlen ter vervanging van userstyles.org, dat het afgelopen jaar zó traag was en slecht reageerde dat veel schrijvers hun stijlen niet meer hebben bijgewerkt."
+  },
   "linkGetStyles": {
     "message": "Stijlen verkrijgen"
+  },
+  "linkGetStylesInfo": {
+    "message": "Deze archiefwebsite is gemaakt door een lid van de gemeenschap van gebruikersstijlen als back-up van de trage en niet-reagerende website userstyles.org. Het archief werkt de inhoud ervan ongeveer eenmaal per dag bij."
   },
   "linkTranslate": {
     "message": "Vertalen"
@@ -731,6 +743,17 @@
       }
     }
   },
+  "meta_unknownMetaTypo": {
+    "message": "Wellicht @$keyOk$? Onbekende metagegevens: @$keyErr$",
+    "placeholders": {
+      "keyErr": {
+        "content": "$1"
+      },
+      "keyOk": {
+        "content": "$2"
+      }
+    }
+  },
   "meta_unknownPreprocessor": {
     "message": "Onbekende @preprocessor: $preprocessor$",
     "placeholders": {
@@ -976,6 +999,24 @@
   "previewTooltip": {
     "message": "Past de wijzigingen tijdelijk toe zonder deze op te slaan.\nSla de stijl op om de wijzigingen permanent te maken."
   },
+  "publish": {
+    "message": "Publiceren"
+  },
+  "publishPush": {
+    "message": "Update indienen"
+  },
+  "publishReconnect": {
+    "message": "Probeer de verbinding te verbreken en dan opnieuw te publiceren"
+  },
+  "publishRetry": {
+    "message": "Stylus probeert deze stijl nog steeds te publiceren, maar u kunt het opnieuw proberen als u geen authenticatieactiviteit of pop-ups ziet. Nu opnieuw proberen?"
+  },
+  "publishStyle": {
+    "message": "Stijl publiceren"
+  },
+  "publishUsw": {
+    "message": "Op <userstyles.world>"
+  },
   "readingStyles": {
     "message": "Stijlen lezen..."
   },
@@ -1162,6 +1203,9 @@
   "styleMozillaFormatHeading": {
     "message": "Mozilla-opmaak"
   },
+  "styleName": {
+    "message": "Stijlnaam"
+  },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "Stijl is niet toegepast vanwege onjuist gebruik van ‘regexp()’"
   },
@@ -1251,17 +1295,17 @@
   "unreachableAMOHint": {
     "message": "Toestemming verlenen: open <about:config>, klik met de rechtermuisknop op de lijst, klik op ‘Nieuw’ -> ‘Boolean’ en plak <privacy.resistFingerprinting.block_mozAddonManager>. Klik daarna op OK -> <true> -> OK en vernieuw de pagina <addons.mozilla.org>."
   },
-  "unreachableAMOHintNewFF": {
-    "message": "In Firefox 60 en hoger moet u ook het AMO-domein uit <extensions.webextensions.restrictedDomains> verwijderen in <about:config>."
-  },
-  "unreachableAMOHintOldFF": {
-    "message": "Alleen Firefox 59 en hoger kunnen worden geconfigureerd om WebExtensions stijlelementen te laten toevoegen op door CSP beveiligde websites zoals deze."
-  },
   "unreachableContentScript": {
     "message": "Kon niet met de pagina communiceren. Probeer het tabblad te vernieuwen."
   },
   "unreachableFileHint": {
     "message": "Stylus kan URL’s die met file:// beginnen alleen benaderen als u het selectievakje hiervoor op de pagina chrome://extensions aanvinkt."
+  },
+  "unreachableMozSiteHint": {
+    "message": "In Firefox 60 en hoger moet u ook het AMO-domein uit <extensions.webextensions.restrictedDomains> verwijderen in <about:config>."
+  },
+  "unreachableMozSiteHintOldFF": {
+    "message": "Alleen Firefox 59 en hoger kunnen worden geconfigureerd om WebExtensions stijlelementen te laten toevoegen op door CSP beveiligde websites zoals deze."
   },
   "unzipStyles": {
     "message": "Stijlen uitpakken..."

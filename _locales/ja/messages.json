@@ -317,6 +317,9 @@
   "genericClone": {
     "message": "複製"
   },
+  "genericDescription": {
+    "message": "記述"
+  },
   "genericDisabledLabel": {
     "message": "無効化"
   },
@@ -445,8 +448,17 @@
   "linkGetHelp": {
     "message": "ヘルプ"
   },
+  "linkGetShareStyles": {
+    "message": "スタイルを取得し共有する"
+  },
+  "linkGetShareStylesInfo": {
+    "message": "新しいコミュニティ主導の userstyles.world サイトが、ユーザースタイルの作者達によって、既存の userstyles.org を置き換えるために作成されました。userstyle.org はこの1年の間、かなり遅くて応答性が悪くなっていたため、多くの作者がスタイルの更新をやめていました。"
+  },
   "linkGetStyles": {
     "message": "スタイルを取得"
+  },
+  "linkGetStylesInfo": {
+    "message": "このアーカイブサイトは、ユーザースタイルのコミュニティメンバーにより、遅くて応答性の悪い userstyles.org のバックアップ用として作成されました。アーカイブの内容は、おおよそ1日1回更新されます。"
   },
   "linkStylusWiki": {
     "message": "ウィキ"
@@ -724,6 +736,17 @@
       }
     }
   },
+  "meta_unknownMetaTypo": {
+    "message": "@$keyOk$の誤り? 不明なメタデータ: @$keyErr$",
+    "placeholders": {
+      "keyErr": {
+        "content": "$1"
+      },
+      "keyOk": {
+        "content": "$2"
+      }
+    }
+  },
   "meta_unknownPreprocessor": {
     "message": "不明な @preprocessor: $preprocessor$",
     "placeholders": {
@@ -972,6 +995,24 @@
   "previewTooltip": {
     "message": "変更を保存しないで一時的に適用します。\n変更を確定する場合には、スタイルを保存してください。"
   },
+  "publish": {
+    "message": "公開"
+  },
+  "publishPush": {
+    "message": "変更を送信"
+  },
+  "publishReconnect": {
+    "message": "切断して再度公開を試みる"
+  },
+  "publishRetry": {
+    "message": "Stylusはスタイルの公開を試みていますが、もし認証確認やポップアップが表示されない場合は、リトライすることができます。すぐにリトライしますか?"
+  },
+  "publishStyle": {
+    "message": "スタイルを公開"
+  },
+  "publishUsw": {
+    "message": "<userstyles.world> の使用"
+  },
   "readingStyles": {
     "message": "スタイルを読み込み中..."
   },
@@ -1158,6 +1199,9 @@
   "styleMissingName": {
     "message": "名前を入力してください"
   },
+  "styleName": {
+    "message": "スタイル名"
+  },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "'regexp()' の誤った使用のためスタイルを適用できませんでした"
   },
@@ -1247,17 +1291,17 @@
   "unreachableAMOHint": {
     "message": "アクセスを許可するには、<about:config> を開き、リストを右クリックして「新規作成」－「真偽値」をクリックし、<privacy.resistFingerprinting.block_mozAddonManager> を貼り付けてOKをクリックし、<true> を選択してOKをクリックし、その後、<addons.mozilla.org> ページをリロードしてください。"
   },
-  "unreachableAMOHintNewFF": {
-    "message": "Firefox 60 以降では、<about:config>の<extensions.webextensions.restrictedDomains>からAMOのドメインを削除する必要があるかもしれません。"
-  },
-  "unreachableAMOHintOldFF": {
-    "message": "Firefox 59 以降のみが、「WebExtensionがこのようなCSPプロテクトされたサイトにスタイル要素を追加すること」を許可する設定を行えます。"
-  },
   "unreachableContentScript": {
     "message": "ページと通信できませんでした。タブを再読み込みしてみてください。"
   },
   "unreachableFileHint": {
     "message": "chrome://extensions ページでStylus拡張機能の当該チェックボックスを有効にした場合にのみ、Stylusは file:// URLにアクセスできます。"
+  },
+  "unreachableMozSiteHint": {
+    "message": "Firefox 60 以降では、<about:config>内の<extensions.webextensions.restrictedDomains>から、このドメインを削除する必要があります。"
+  },
+  "unreachableMozSiteHintOldFF": {
+    "message": "このようなCSPで保護されたサイトへのスタイル要素の追加を、Web拡張機能に許可するためには、Firefox 59 以降が必要です。"
   },
   "unzipStyles": {
     "message": "スタイルをZip解凍中..."

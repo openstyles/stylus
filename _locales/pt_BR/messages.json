@@ -1,4 +1,7 @@
 {
+  "InaccessibleFileHint": {
+    "message": "Stylus não pode acessar alguns tipos de arquivos (ex: arquivos pdf e json)."
+  },
   "addStyleLabel": {
     "message": "Escrever novo estilo"
   },
@@ -97,11 +100,17 @@
   "cm_indentWithTabs": {
     "message": "Usar tabs com indentação inteligente"
   },
+  "cm_keyMap": {
+    "message": "Mapeamentos de teclado"
+  },
   "cm_lineWrapping": {
     "message": "Quebra de linha"
   },
   "cm_linter": {
     "message": "Linter CSS"
+  },
+  "cm_matchHighlight": {
+    "message": "Destaque"
   },
   "cm_matchHighlightSelection": {
     "message": "Somente seleção"
@@ -118,6 +127,9 @@
   "cm_smartIndent": {
     "message": "Usar indentação inteligente"
   },
+  "cm_tabSize": {
+    "message": "Tamanho da guia"
+  },
   "cm_theme": {
     "message": "Tema"
   },
@@ -129,6 +141,9 @@
   },
   "colorpickerTooltip": {
     "message": "Abrir seletor de cores"
+  },
+  "configOnChange": {
+    "message": "ao alterar"
   },
   "configOnChangeTooltip": {
     "message": "Salvar e aplicar mudanças automaticamente"
@@ -488,6 +503,15 @@
   },
   "liveReloadError": {
     "message": "Não foi possível assistir o arquivo"
+  },
+  "liveReloadInstallHint": {
+    "message": "Mantenha esta guia aberta para atualizar automaticamente o estilo sob mudanças externas."
+  },
+  "liveReloadInstallHintFF": {
+    "message": "Mantenha juntamente esta guia e a guia original abertas para atualizar automaticamente o estilo sob mudanças externas."
+  },
+  "manageFilters": {
+    "message": "Filtros"
   },
   "manageHeading": {
     "message": "Estilos instalados"

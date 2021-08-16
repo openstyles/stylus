@@ -909,9 +909,6 @@
   "unreachableAMOHint": {
     "message": "Povolení přístupu: přejděte na <about:config>, pravým myšidlem zvolte „Nový“, dále „Boolean“, zadejte kód <privacy.resistFingerprinting.block_mozAddonManager> a potvrďte, <true>, OK, načtěte stránku <addons.mozilla.org>."
   },
-  "unreachableAMOHintOldFF": {
-    "message": "Pouze Firefox 59 a novější může být nakonfigurován tak, aby rozšíření typu WebExtensions mohla přidávat styly na stránky chráněné CSP (Content Security Policy) – jako je tato."
-  },
   "unreachableContentScript": {
     "message": "Se stránkou nelze komunikovat. Zkuste znovu načíst list."
   },

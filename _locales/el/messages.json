@@ -1,4 +1,7 @@
 {
+  "InaccessibleFileHint": {
+    "message": "Το Stylus δεν έχει πρόσβαση σε κάποια αρχεία (π.χ. τα αρχεία PDF και JSON)"
+  },
   "addStyleLabel": {
     "message": "Γράψτε νέο στυλ"
   },

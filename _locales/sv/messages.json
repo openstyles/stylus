@@ -1129,12 +1129,6 @@
   "unreachableAMOHint": {
     "message": "För att tillåta åtkomst öppna <about:config>, högerklicka på listan, klicka på \"Ny\", sedan \"Boolean\", klistra in <privacy.resistFingerprinting.block_mozAddonManager> och klicka på OK, <true>, OK, uppdatera <addons.mozilla.org>-sidan."
   },
-  "unreachableAMOHintNewFF": {
-    "message": "I Firefox 60 och senare måste du också ta bort AMO-domän från <extensions.webextensions.restrictedDomains> i <about:config>."
-  },
-  "unreachableAMOHintOldFF": {
-    "message": "Endast Firefox 59 och nyare kan konfigureras för att tillåta WebExtensions att lägga till stilelement på CSP-skyddade webbplatser som den här."
-  },
   "unreachableContentScript": {
     "message": "Kunde inte kommunicera med sidan. Uppdatera fliken."
   },

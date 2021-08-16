@@ -807,7 +807,7 @@
     "message": "Connecter"
   },
   "optionsSyncDisconnect": {
-    "message": "Disconnecter"
+    "message": "Déconnecter"
   },
   "optionsSyncLogin": {
     "message": "Se connecter"
@@ -822,10 +822,10 @@
     "message": "Connection..."
   },
   "optionsSyncStatusDisconnected": {
-    "message": "Disconnecté"
+    "message": "Déconnecté"
   },
   "optionsSyncStatusDisconnecting": {
-    "message": "Disconnection..."
+    "message": "Déconnexion..."
   },
   "optionsSyncStatusPull": {
     "message": "Récupération du style  $loaded$de $total$",
@@ -1153,12 +1153,6 @@
   },
   "unreachableAMOHint": {
     "message": "Pour autoriser l’accès, ouvrir <about:config>, clic-droit sur la liste, cliquez sur « Nouvelle » puis « Valeur booléenne », coller <privacy.resistFingerprinting.block_mozAddonManager> et cliquer sur OK, <true>, OK, et rechargez la page <addons.mozilla.org>."
-  },
-  "unreachableAMOHintNewFF": {
-    "message": "Pour Firefox 60 et suivants, vous devez également supprimer le domaine AMO de <extensions.webextensions.restrictedDomains> dans <about:config>."
-  },
-  "unreachableAMOHintOldFF": {
-    "message": "Seul Firefox 59 et supérieur peut être configuré pour autoriser les WebExtensions à ajouter des éléments de style sur des sites protégés par CSP comme celui-ci."
   },
   "unreachableContentScript": {
     "message": "Impossible de communiquer avec la page. Essayez de recharger l’onglet."

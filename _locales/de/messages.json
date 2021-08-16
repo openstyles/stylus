@@ -308,6 +308,9 @@
   "genericClone": {
     "message": "Kopieren"
   },
+  "genericDescription": {
+    "message": "Beschreibung"
+  },
   "genericDisabledLabel": {
     "message": "Deaktiviert"
   },
@@ -436,8 +439,17 @@
   "linkGetHelp": {
     "message": "Hilfeseite anzeigen"
   },
+  "linkGetShareStyles": {
+    "message": "Styles finden und teilen"
+  },
+  "linkGetShareStylesInfo": {
+    "message": "Die neue, von der Community betriebene Website userstyles.world wurde von Userstyle-Autoren erstellt, um userstyles.org zu ersetzen. Dieses war im letzten Jahr so langsam und unzuverlässig geworden, dass viele Autoren ihre Styles nicht mehr aktualisierten."
+  },
   "linkGetStyles": {
     "message": "Styles beziehen"
+  },
+  "linkGetStylesInfo": {
+    "message": "Diese Archivseite wurde von einem Nutzer der Userstyle Community erstellt, um eine Sicherungskopie des langsamen und unzuverlässigen userstyles.org bereitzustellen. Die Inhalte werden ungefähr einmal am Tag aktualisiert."
   },
   "linkTranslate": {
     "message": "Übersetzen"
@@ -712,6 +724,17 @@
       }
     }
   },
+  "meta_unknownMetaTypo": {
+    "message": "Vielleicht @$keyOk$? Unbekannte Metadaten: @$keyErr$",
+    "placeholders": {
+      "keyErr": {
+        "content": "$1"
+      },
+      "keyOk": {
+        "content": "$2"
+      }
+    }
+  },
   "meta_unknownPreprocessor": {
     "message": "Unbekannter @preprocessor: $preprocessor$",
     "placeholders": {
@@ -954,6 +977,24 @@
   "previewTooltip": {
     "message": "Übernimmt die Änderungen nur vorübergehend.\nSpeichere den Style, um die Änderungen dauerhaft anzuwenden."
   },
+  "publish": {
+    "message": "Veröffentlichen"
+  },
+  "publishPush": {
+    "message": "Erneut veröffentlichen"
+  },
+  "publishReconnect": {
+    "message": "Versuche, die Verbindung zu trennen; dann erneut veröffentlichen"
+  },
+  "publishRetry": {
+    "message": "Stylus versucht noch, den Style zu veröffentlichen, aber du kannst es erneut versuchen, wenn du keine Aktivität oder Popups siehst. Jetzt neu versuchen?"
+  },
+  "publishStyle": {
+    "message": "Style veröffentlichen"
+  },
+  "publishUsw": {
+    "message": "Via <userstyles.world>"
+  },
   "readingStyles": {
     "message": "Lese Styles..."
   },
@@ -1131,6 +1172,9 @@
   "styleMissingName": {
     "message": "Bitte Namen eingeben"
   },
+  "styleName": {
+    "message": "Stylename"
+  },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "Der Style wurde aufgrund ungültiger RegExp nicht angewandt."
   },
@@ -1217,17 +1261,17 @@
   "unreachableAMOHint": {
     "message": "Um den Zugriff zu erlauben, öffne <about:config>, rechtsklicke in die Liste, klicke \"Neu\", dann \"Boolean\", füge <privacy.resistFingerprinting.block_mozAddonManager> ein und klicke OK, <true>, OK, lade <addons.mozilla.org> neu."
   },
-  "unreachableAMOHintNewFF": {
-    "message": "In Firefox 60 und neuer muss auch die addons.mozilla.org domain von <extensions.webextensions.restrictedDomains> in <about:config> entfernt werden."
-  },
-  "unreachableAMOHintOldFF": {
-    "message": "Nur in Firefox 59 und neuer ist es möglich, WebExtenstions den Zugriff auf CSP-geschützte Seiten wie dieser zu erlauben."
-  },
   "unreachableContentScript": {
     "message": "Konnte nicht mit der Seite kommunizieren. Bitte versuchen Sie, die Seite erneut zu laden."
   },
   "unreachableFileHint": {
     "message": "Stylus kann nur auf das file:// Protokoll in der URL zugreifen, wenn dies in den Einstellungen der Erweiterung unter chrome://extensions festgelegt wurde."
+  },
+  "unreachableMozSiteHint": {
+    "message": "In Firefox 60 oder neuer muss diese Domain von <extensions.webextensions.restrictedDomains> in <about:config> entfernt werden."
+  },
+  "unreachableMozSiteHintOldFF": {
+    "message": "Erst ab Firefox 59 können WebExtensions Style-Elemente auf CSP-geschützten Seiten wie dieser hinzufügen."
   },
   "unzipStyles": {
     "message": "Entpacke Styles..."

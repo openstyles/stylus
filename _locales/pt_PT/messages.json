@@ -846,12 +846,6 @@
   "unreachableAMOHint": {
     "message": "Para permitir o acesso abra<about:config>,clique com o botão direito na lista, clique em \"Novo\", depois em \"Booleano\", cole <privacy.resistFingerprinting.block_mozAddonManager> e clique em OK,<true>,OK, recarregue a página <addons.mozilla.org>."
   },
-  "unreachableAMOHintNewFF": {
-    "message": "No Firefox 60 e mais recente, você também terá que remover o domínio AMO de <extensions.webextensions.restrictedDomains> em <about:config>."
-  },
-  "unreachableAMOHintOldFF": {
-    "message": "Somente o Firefox 59 e o mais recente podem ser configurados para permitir que WebExtensions incluam elementos de estilo em sites protegidos por CSP como este."
-  },
   "unreachableContentScript": {
     "message": "Não foi possível comunicar com a página. Tente recarregar o separador."
   },

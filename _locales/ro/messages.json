@@ -783,12 +783,6 @@
   "unreachableAMOHint": {
     "message": "Pentru a permite accesul deschideți <about:config>, right-click pe listă, click 'New', apoi 'Boolean', paste <privacy.resistFingerprinting.block_mozAddonManager> și click OK, <true>, OK, reâncărcați pagina <addons.mozilla.org>."
   },
-  "unreachableAMOHintNewFF": {
-    "message": "În Firefox 60+ va trebui sa fie șters domain-ul AMO din <extensions.webextensions.restrictedDomains> din <about:config>."
-  },
-  "unreachableAMOHintOldFF": {
-    "message": "Doar Firefox 59 sau mai nou poate fi configurat să permită WebExtension-urilor să adauge elemente la site-uri CSP-protected precum acesta."
-  },
   "unreachableContentScript": {
     "message": "Nu s-a putut comunica cu pagina. Reîncărcați tabul."
   },

@@ -1276,12 +1276,6 @@
   "unreachableAMOHint": {
     "message": "若要允许存取，打开 <about:config>，在列表上单击右键，点击新增，然后再点击 'Boolean'，粘贴 <privacy.resistFingerprinting.block_mozAddonManager> 并点击确定 -> <true> -> 确定，然后重新刷新 <addons.mozilla.org> 页面。"
   },
-  "unreachableAMOHintNewFF": {
-    "message": "在 Firefox 60 及其更新版本中，你必须从 <extensions.webextensions.restrictedDomains> 中删除 AMO 域<about:config>"
-  },
-  "unreachableAMOHintOldFF": {
-    "message": "仅 Firefox 59 或更新的版本才能让你设置 WebExtensions 在例如这样一个有 CSP 保护的页面上新增样式。"
-  },
   "unreachableContentScript": {
     "message": "无法介入到此页面"
   },

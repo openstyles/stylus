@@ -355,6 +355,9 @@
   "genericClone": {
     "message": "Sklonuj"
   },
+  "genericDescription": {
+    "message": "Opis"
+  },
   "genericDisabledLabel": {
     "message": "Wyłączone"
   },
@@ -483,8 +486,17 @@
   "linkGetHelp": {
     "message": "Uzyskaj pomoc"
   },
+  "linkGetShareStyles": {
+    "message": "Pobieraj i udostępniaj style"
+  },
+  "linkGetShareStylesInfo": {
+    "message": "Nowa witryna userstyles.world jest tworzona przez autorów stylów użytkownika w celu zastąpienia userstyles.org, która przez ostatni rok była tak powolna i nieodpowiadająca, że wielu autorów przestało aktualizować swoje style."
+  },
   "linkGetStyles": {
     "message": "Pobierz style"
+  },
+  "linkGetStylesInfo": {
+    "message": "Ta witryna archiwum została utworzona przez członka społeczności stylów użytkownika, aby wykonać kopię zapasową powolnej i nieodpowiadającej userstyles.org. Archiwum aktualizuje swoją zawartość mniej więcej raz dziennie."
   },
   "linkTranslate": {
     "message": "Tłumacz"
@@ -759,6 +771,17 @@
       }
     }
   },
+  "meta_unknownMetaTypo": {
+    "message": "Może @$keyOk$? Nieznane metadane: @$keyErr$",
+    "placeholders": {
+      "keyErr": {
+        "content": "$1"
+      },
+      "keyOk": {
+        "content": "$2"
+      }
+    }
+  },
   "meta_unknownPreprocessor": {
     "message": "Nieznany @preprocessor: $preprocessor$",
     "placeholders": {
@@ -1007,6 +1030,24 @@
   "previewTooltip": {
     "message": "Tymczasowo stosuje zmiany bez zapisywania.\nZapisz styl, aby zmiany stały się trwałe."
   },
+  "publish": {
+    "message": "Opublikuj"
+  },
+  "publishPush": {
+    "message": "Prześlij aktualizację"
+  },
+  "publishReconnect": {
+    "message": "Spróbuj się rozłączyć, a następnie opublikuj ponownie"
+  },
+  "publishRetry": {
+    "message": "Stylus nadal próbuje opublikować ten styl, ale możesz spróbować ponownie, jeśli nie widzisz żadnych działań związanych z uwierzytelnianiem ani wyskakujących okienek. Ponowić teraz?"
+  },
+  "publishStyle": {
+    "message": "Opublikuj styl"
+  },
+  "publishUsw": {
+    "message": "Używanie <userstyles.world>"
+  },
   "readingStyles": {
     "message": "Odczytywanie stylów..."
   },
@@ -1196,6 +1237,9 @@
   "styleMozillaFormatHeading": {
     "message": "Format Mozilla"
   },
+  "styleName": {
+    "message": "Nazwa stylu"
+  },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "Styl nie został zastosowany z powodu nieprawidłowego użycia 'regexp()'"
   },
@@ -1285,17 +1329,17 @@
   "unreachableAMOHint": {
     "message": "Aby umożliwić dostęp, otwórz <about:config>, kliknij listę prawym przyciskiem myszy, kliknij 'Dodaj ustawienie typu', następnie 'Wartość logiczna (Boolean)', wklej <privacy.resistFingerprinting.block_mozAddonManager> i kliknij OK, <true>, OK, przeładuj stronę <addons.mozilla.org>."
   },
-  "unreachableAMOHintNewFF": {
-    "message": "W Firefox 60 lub nowszym będziesz musiał również usunąć domenę AMO z <extensions.webextensions.restrictedDomains> w <about:config>."
-  },
-  "unreachableAMOHintOldFF": {
-    "message": "Tylko Firefox 59 i nowsze wersje mogą zostać skonfigurowane, aby umożliwić rozszerzeniom WebExtension dodawanie elementów stylu na stronach chronionych przez CSP takich jak ta."
-  },
   "unreachableContentScript": {
     "message": "Nie można połączyć się ze stroną. Spróbuj przeładować kartę."
   },
   "unreachableFileHint": {
     "message": "Stylus może uzyskać dostęp do adresów URL file:// tylko po włączeniu odpowiedniego pola wyboru rozszerzenia Stylus na stronie chrome://extensions."
+  },
+  "unreachableMozSiteHint": {
+    "message": "W Firefox 60 i nowszych musisz usunąć tę domenę z <extensions.webextensions.restrictedDomains> w <about:config>."
+  },
+  "unreachableMozSiteHintOldFF": {
+    "message": "Tylko Firefox 59 i nowsze mogą być skonfigurowane tak, aby zezwalały WebExtensions na dodawanie elementów stylu w witrynach chronionych przez CSP, takich jak ta."
   },
   "unzipStyles": {
     "message": "Wypakowanie stylów..."

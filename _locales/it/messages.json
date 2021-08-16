@@ -751,9 +751,6 @@
   "unreachableAMO": {
     "message": "Firefox proibisce l'accesso al sito."
   },
-  "unreachableAMOHintOldFF": {
-    "message": "Solo Firefox 59 e successivi possono essere configurati per consentire alle WebExtensions di aggiungere elementi degli stili su siti CSP-protected come questo."
-  },
   "unreachableContentScript": {
     "message": "Impossibile comunicare con la pagina. Prova a ricaricare la scheda."
   },

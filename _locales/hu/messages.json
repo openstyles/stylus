@@ -1145,12 +1145,6 @@
   "unreachableAMOHint": {
     "message": "Az elérés engedélyezéséhez nyisd meg az <about:config>-ot, kattints jobb egérgombbal, majd „Új”, „Logikai”, és illeszd be, hogy <privacy.resistFingerprinting.block_mozAddonManager>, és kattints az OK-ra,<true> OK, és töltsd újra az oldalt!"
   },
-  "unreachableAMOHintNewFF": {
-    "message": "A Firefox 60-ban vagy annál újabb verzióban az AMO doménjét is el kell távolítanod a <about:config>-ban levő <extensions.webextensions.restrictedDomains>-ból."
-  },
-  "unreachableAMOHintOldFF": {
-    "message": "Csak a Firefox 59 vagy annál újabb állítható be az ilyen CSP-védett oldalak stílusának átszabása WebExtensions kiegészítőkön keresztül."
-  },
   "unreachableContentScript": {
     "message": "Nem sikerült az oldallal történő kommunikáció. Próbáld meg újratölteni az oldalt!"
   },

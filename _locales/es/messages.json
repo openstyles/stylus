@@ -92,7 +92,7 @@
     "message": "Cerrar automáticamente corchetes y comillas"
   },
   "cm_autoCloseBracketsTooltip": {
-    "message": "Añade automáticamente un equivalente de cierre al escribir uno de apertura de ()[]{}''\"\""
+    "message": "Añadir automáticamente un equivalente de cierre al escribir uno de apertura de ()[]{}''\"\""
   },
   "cm_autocompleteOnTyping": {
     "message": "Autocompletar al escribir"
@@ -138,6 +138,9 @@
   },
   "cm_theme": {
     "message": "Temas"
+  },
+  "colorpickerPaletteHint": {
+    "message": "Haz clic con el botón derecho en una muestra para mostrar las líneas de código fuente"
   },
   "colorpickerSwitchFormatTooltip": {
     "message": "Alternar formatos: HEX -> RGB -> HSL.\nMayús+Clic para invertir la dirección.\nTambién con las teclas RePág (Retroceso de página), AvPág (Avance de página)."
@@ -196,6 +199,12 @@
   "copy": {
     "message": "Copiar al portapapeles"
   },
+  "customNameHint": {
+    "message": "Ingresa un nombre personalizado aquí para cambiar el nombre de estilo del diseño sin romper sus actualizaciones"
+  },
+  "customNameResetHint": {
+    "message": "Dejar de usar el nombre personalizado, cambiar al nombre del estilo"
+  },
   "dateAbbrYear": {
     "message": "$value$a",
     "placeholders": {
@@ -233,6 +242,9 @@
   },
   "dragDropMessage": {
     "message": "Arrastra tu archivo de respaldo en cualquier lugar de esta página para importar."
+  },
+  "dragDropUsercssTabstrip": {
+    "message": "Para instalar el archivo, suéltalo en la barra de pestañas (el área donde se muestran los títulos de las pestañas)."
   },
   "editDeleteText": {
     "message": "Eliminar"
@@ -282,7 +294,7 @@
     "message": "Asistencia"
   },
   "externalUsercssDocument": {
-    "message": "Documentación para Usercss"
+    "message": "Documentación para UserCSS"
   },
   "filteredStyles": {
     "message": "$numShown$ mostrados de $numTotal$ en total",
@@ -315,6 +327,9 @@
   },
   "genericClone": {
     "message": "Clonar"
+  },
+  "genericDescription": {
+    "message": "Descripción"
   },
   "genericDisabledLabel": {
     "message": "Deshabilitado"
@@ -355,6 +370,9 @@
   "helpKeyMapHotkey": {
     "message": "Pulsa un atajo de teclado"
   },
+  "hostDisabled": {
+    "message": "Este host ha sido deshabilitado debido a un error en la versión actual del navegador que se está utilizando."
+  },
   "importAppendLabel": {
     "message": "Adicionar al estilo"
   },
@@ -363,6 +381,12 @@
   },
   "importLabel": {
     "message": "Importar"
+  },
+  "importPreprocessor": {
+    "message": "Los estilos con <code>@preprocessor</code> no funcionarán en el modo clásico. Puedes cambiar el editor para usar el modo UserCSS: 1) Abre el administrador de estilos. 2) Activa la casilla «como UserCSS». 3) Haz clic en «Escribir un estilo nuevo»\n\n¿Quieres importarlo de todos modos?"
+  },
+  "importPreprocessorTitle": {
+    "message": "Problema potencial debido a @preprocessor"
   },
   "importReplaceLabel": {
     "message": "Sobrescribir estilo"
@@ -486,6 +510,12 @@
   "liveReloadError": {
     "message": "Se ha producido un error al visualizar el archivo"
   },
+  "liveReloadInstallHint": {
+    "message": "Mantener esta pestaña abierta para actualizar automáticamente el estilo a los cambios externos."
+  },
+  "liveReloadInstallHintFF": {
+    "message": "Mantener tanto esta pestaña como la pestaña original abiertas para actualizar automáticamente el estilo a los cambios externos."
+  },
   "liveReloadLabel": {
     "message": "Recarga en tiempo real"
   },
@@ -508,7 +538,7 @@
     "message": "Número de elementos 'Se aplica a'"
   },
   "manageNewStyleAsUsercss": {
-    "message": "como Usercss"
+    "message": "como UserCSS"
   },
   "manageNewUI": {
     "message": "Nuevo diseño de la administración"
@@ -702,6 +732,17 @@
       }
     }
   },
+  "meta_unknownMetaTypo": {
+    "message": "¿Querías decir @$keyOk$? Metadatos desconocidos: @$keyErr$",
+    "placeholders": {
+      "keyErr": {
+        "content": "$1"
+      },
+      "keyOk": {
+        "content": "$2"
+      }
+    }
+  },
   "meta_unknownPreprocessor": {
     "message": "@preprocessor desconocido: $preprocessor$",
     "placeholders": {
@@ -751,8 +792,23 @@
   "optionsAdvancedExposeIframes": {
     "message": "Visualizar marcos integrados (iframes) a través de HTML[stylus-iframe]"
   },
+  "optionsAdvancedExposeIframesNote": {
+    "message": "Muestra el dominio del sitio principal en cada iframe.\nPermite escribir código CSS específico para iframes, como en el ejemplo siguiente:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
+  },
   "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Escribir nuevo estilo como usercss"
+    "message": "Escribir nuevo estilo como UserCSS"
+  },
+  "optionsAdvancedPatchCsp": {
+    "message": "Cambiar <code>CSP</code> para permitir recursos de estilos"
+  },
+  "optionsAdvancedPatchCspNote": {
+    "message": "Activa esta opción si los estilos contienen imágenes o fuentes que no se cargan en un sitio con una configuración estricta de <code>CSP</code> (<code>Política de seguridad de contenido</code>).\n\nAl activar esta opción, se reducen las restricciones de <code>CSP</code> para que puedan cargarse los contenidos de estilo necesarios. Esta opción va dirigida únicamente a usuarios avanzados que comprenden las posibles implicaciones de seguridad y aceptan la responsabilidad de supervisar el contenido que permiten que se cargue. Antes de usar esta opción, obtén más información sobre los ataques basados en CSS.\n\nAdemás, puede que esta opción específica no se aplique si otra extensión modifica antes la respuesta de red."
+  },
+  "optionsAdvancedStyleViaXhr": {
+    "message": "Modo de inserción instantánea"
+  },
+  "optionsAdvancedStyleViaXhrNote": {
+    "message": "Activa esta opción si aparecen y desaparecen rápidamente contenidos sin estilo al cargarse páginas (el efecto es más visible con temas oscuros).\n\nLa explicación técnica es que Chrome/Chromium pospone la comunicación asincrónica de las extensiones. Esta función intenta mejorar la velocidad de carga de las páginas, aunque no siempre es efectiva y puede causar que los estilos se apliquen con retraso. Para evitar este problema (ya que las extensiones del tipo WebExtensions no pueden usar una API sincrónica), Stylus ofrece esta opción para usar la API web XMLHttpRequest  sincrónica (en desuso) para obtener los estilos correspondientes. No debería causar problemas, ya que la petición se completa en solo unos milisegundos, mientras se carga la página del servidor.\n\nDe todos modos, Chromium mostrará una advertencia en la consola de herramientas de desarrollador. Para evitar que se muestren este tipo de advertencias en el futuro, haz clic con el botón derecho sobre una advertencia y selecciona la opción para ocultarla."
   },
   "optionsBadgeDisabled": {
     "message": "Color de fondo cuando está deshabilitado"
@@ -774,6 +830,9 @@
   },
   "optionsCustomizePopup": {
     "message": "Ventana emergente"
+  },
+  "optionsCustomizeSync": {
+    "message": "Sincronizar con la nube"
   },
   "optionsCustomizeUpdate": {
     "message": "Actualizaciones"
@@ -802,6 +861,9 @@
   "optionsResetButton": {
     "message": "Restablecer opciones"
   },
+  "optionsStylusThemes": {
+    "message": "Buscar un tema de Stylus"
+  },
   "optionsSubheading": {
     "message": "Más opciones"
   },
@@ -812,7 +874,7 @@
     "message": "Desconectar"
   },
   "optionsSyncLogin": {
-    "message": "Iniciar Sesión"
+    "message": "Iniciar sesión"
   },
   "optionsSyncNone": {
     "message": "Ninguno"
@@ -828,6 +890,31 @@
   },
   "optionsSyncStatusDisconnecting": {
     "message": "Desconectando..."
+  },
+  "optionsSyncStatusPull": {
+    "message": "Obteniendo estilo $loaded$ de $total$",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusPush": {
+    "message": "Publicando estilo $loaded$ de $total$",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusRelogin": {
+    "message": "La sesión ha expirado, por favor inicia sesión de nuevo."
   },
   "optionsSyncStatusSyncing": {
     "message": "Sincronizando..."
@@ -860,7 +947,10 @@
     "message": "Páginas totales"
   },
   "parseUsercssError": {
-    "message": "Stylus no pudo interpretar el usercss:"
+    "message": "Stylus no pudo interpretar el UserCSS:"
+  },
+  "popupAutoResort": {
+    "message": "Al activar esta opción, se muestran los estilos en una ventana emergente"
   },
   "popupBorders": {
     "message": "Añadir bordes blancos en los laterales"
@@ -880,6 +970,9 @@
   "popupMenuButtonTooltip": {
     "message": "Acciones"
   },
+  "popupOpenEditInPopup": {
+    "message": "Usar ventana simple (en lugar de la barra de direcciones)"
+  },
   "popupOpenEditInWindow": {
     "message": "Abrir editor en una nueva ventana"
   },
@@ -897,6 +990,24 @@
   },
   "previewTooltip": {
     "message": "Aplica temporalmente los cambios sin guardar.\nGuarde el estilo para que los cambios sean permanentes."
+  },
+  "publish": {
+    "message": "Publicar"
+  },
+  "publishPush": {
+    "message": "Publicar actualización"
+  },
+  "publishReconnect": {
+    "message": "Prueba a desconectar y, después, vuelve a publicar"
+  },
+  "publishRetry": {
+    "message": "Stylus aún está intentando publicar este estilo. Puedes volver a intentarlo si no ves mensajes emergentes ni actividad de autenticación. ¿Quieres intentarlo de nuevo?"
+  },
+  "publishStyle": {
+    "message": "Publicar estilo"
+  },
+  "publishUsw": {
+    "message": "Usando <userstyles.world>"
   },
   "readingStyles": {
     "message": "Leyendo los estilos..."
@@ -943,6 +1054,9 @@
   "searchResultNoneFound": {
     "message": "No se encontraron estilos para este sitio."
   },
+  "searchResultNotMatching": {
+    "message": "El estilo se ha instalado, pero no es válido para la URL del sitio actual."
+  },
   "searchResultNotMatchingNote": {
     "message": "Intenta pedir al autor de este estilo de usuario que añada la URL.\n\nTambién puedes abrir el estilo en el administrador y editarlo tú mismo,\npero ten en cuenta que deshabilita las actualizaciones automáticas de\neste estilo."
   },
@@ -955,8 +1069,20 @@
   "searchResultWeeklyCount": {
     "message": "Instalaciones semanales"
   },
+  "searchStyleQueryHint": {
+    "message": "La búsqueda de nombres de estilo no distingue mayúsculas de minúsculas:\nalgunas palabras: todas las palabras en cualquier orden\n\"una frase\": esta frase exacta (sin comillas)\n2020: al escribir un año, se muestran estilos que se actualizaron ese año"
+  },
+  "searchStylesAll": {
+    "message": "Todos"
+  },
   "searchStylesCode": {
     "message": "Código CSS"
+  },
+  "searchStylesHelp": {
+    "message": "Al pulsar </> o <Ctrl-F>, se coloca el cursor en el campo de búsqueda .\nEl modo predeterminado es la búsqueda de texto sin formato de todos los términos separados por espacios en cualquier orden.\nPalabras exactas: escribe la consulta entre comillas dobles. Ejemplo: <\".header ~ div\">\nExpresiones regulares: se incluyen barras y marcas. Ejemplo:  </body.*?\\ba\\b/i>)\n«Por URL» en el selector de ámbito: busca los estilos que se aplican en una URL completa especificada. Ejemplo: https://www.example.org/\n«Metadatos» en el selector de ámbito: busca en nombres, especificadores de «se aplica a», URL de instalación, URL de actualización y todo el bloque de metadatos para estilos de UserCSS."
+  },
+  "searchStylesMatchUrl": {
+    "message": "Por URL"
   },
   "searchStylesMeta": {
     "message": "Metadatos"
@@ -1012,6 +1138,9 @@
   "styleBeautify": {
     "message": "Formatear"
   },
+  "styleBeautifyHint": {
+    "message": "Sugerencia: Haz clic con el botón derecho en el botón «Formatear» o usa el método abreviado de teclado que se indica a continuación para dar formato al texto sin mostrar este panel"
+  },
   "styleBeautifyIndentConditional": {
     "message": "Sangrar @media, @supports"
   },
@@ -1064,10 +1193,13 @@
     }
   },
   "styleMissingName": {
-    "message": "Introduzca un nombre"
+    "message": "Ingresa un nombre"
   },
   "styleMozillaFormatHeading": {
     "message": "Formato Mozilla"
+  },
+  "styleName": {
+    "message": "Nombre del estilo"
   },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "El estilo no se aplicó debido a su uso incorrecto de 'regexp()'"
@@ -1126,10 +1258,19 @@
     "message": "Stylus no funciona en páginas como esta."
   },
   "stylusUnavailableForURLdetails": {
-    "message": "Como medida de seguridad, el navegador impide que las extensiones afecten a sus páginas incorporadas(como chrome://version, la página de pestaña nueva a partir de Chrome 61, about:addons, etc.), así como a las páginas de otras extensiones. Cada navegador también restringe el acceso a su propia galería de extensiones (como Chrome Web Store o AMO)."
+    "message": "Como medida de seguridad, el navegador impide que las extensiones afecten a sus páginas incorporadas (como chrome://version, la página de pestaña nueva a partir de Chrome 61, about:addons, etc.), así como a las páginas de otras extensiones. Cada navegador también restringe el acceso a su propia galería de extensiones (como Chrome Web Store o AMO)."
+  },
+  "syncDropboxDeprecated": {
+    "message": "La importación/exportación de Dropbox se reemplaza por una sincronización de estilo más avanzado en la página de opciones."
   },
   "syncDropboxStyles": {
     "message": "Exportar a Dropbox"
+  },
+  "syncError": {
+    "message": "No se pudo sincronizar"
+  },
+  "syncErrorRelogin": {
+    "message": "No se pudo sincronizar.\nIntenta volver a iniciar sesión en las opciones de Stylus:\nprimero haz clic en 'desconectar', y luego en 'conectar'."
   },
   "syncStorageErrorSaving": {
     "message": "El valor no se puede guardar. Trate de reducir la longitud del texto."
@@ -1149,17 +1290,17 @@
   "unreachableAMOHint": {
     "message": "Para permitir el acceso abra <about:config>, haga clic secundario en la lista, pulse 'Nuevo', luego 'Booleano', pegue <privacy.resistFingerprinting.block_mozAddonManager> y pulse Aceptar, <true>, Aceptar, y recargue la página <addons.mozilla.org>."
   },
-  "unreachableAMOHintNewFF": {
-    "message": "En Firefox 60 y versiones posteriores también deberá eliminar el dominio AMO de <extensions.webextensions.restrictedDomains> en <about:config>."
-  },
-  "unreachableAMOHintOldFF": {
-    "message": "Solo Firefox 59 y posteriores se pueden configurar para permitir que WebExtensions añada elementos de estilo en sitios protegidos por CSP (política de seguridad de contenido) como este."
-  },
   "unreachableContentScript": {
     "message": "No se pudo comunicar con la página. Prueba recargando la pestaña."
   },
   "unreachableFileHint": {
     "message": "Stylus puede acceder a las URLs file:// sólo si activa la casilla correspondiente para la extensión Stylus en la página chrome://extensions."
+  },
+  "unreachableMozSiteHint": {
+    "message": "En Firefox 60 y versiones posteriores, quita este dominio de <extensions.webextensions.restrictedDomains> en <about:config>."
+  },
+  "unreachableMozSiteHintOldFF": {
+    "message": "Se necesita Firefox 59 y versiones posteriores para que las extensiones del tipo WebExtensions agreguen elementos de estilo en sitios protegidos mediante CSP como este."
   },
   "unzipStyles": {
     "message": "Descomprimiendo los estilos..."
@@ -1209,7 +1350,7 @@
     "message": "Subiendo el archivo...."
   },
   "usercssAvoidOverwriting": {
-    "message": "Por favor, cambie el valor de @name o @namespace para no sobrescribir un estilo existente."
+    "message": "Por favor, cambia el valor de @name o @namespace para no sobrescribir un estilo existente."
   },
   "usercssConfigIncomplete": {
     "message": "El estilo se actualizó o borró después de que se mostrara el cuadro de diálogo de configuración. Estas variables no se guardaron para evitar corromper los metadatos del estilo:"
@@ -1218,7 +1359,7 @@
     "message": "Especifique @name en el código"
   },
   "usercssReplaceTemplateConfirmation": {
-    "message": "¿Reemplazar con el código actual la plantilla predeterminada para nuevos estilos Usercss?"
+    "message": "¿Reemplazar con el código actual la plantilla predeterminada para nuevos estilos UserCSS?"
   },
   "usercssReplaceTemplateName": {
     "message": "@name vacío reemplaza la plantilla predeterminada"
