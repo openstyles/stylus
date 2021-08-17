@@ -79,7 +79,7 @@ const linterMan = (() => {
   function getCachedAnnotations(code, opt, cm) {
     const results = cms.get(cm);
     cms.set(cm, null);
-    cm.options.lint.getAnnotations = getAnnotations;
+    cm.state.lint.options.getAnnotations = getAnnotations;
     return results;
   }
 
