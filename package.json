@@ -5,8 +5,11 @@
   "license": "GPL-3.0-only",
   "repository": "openstyles/stylus",
   "author": "Stylus Team",
+  "dependenciesNotes": {
+    "codemirror": "WARNING! Always use an exact version and test it for a while before releasing"
+  },
   "dependencies": {
-    "codemirror": "5.62.2",
+    "codemirror": "5.62.3",
     "db-to-cloud": "^0.6.0",
     "jsonlint": "^1.6.3",
     "less-bundle": "github:openstyles/less-bundle#v0.1.0",
