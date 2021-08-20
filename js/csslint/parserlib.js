@@ -2408,9 +2408,6 @@ self.parserlib = (() => {
       }
       return;
     }
-    if (hasVarParts(value)) {
-      return;
-    }
     const prop = lower(name);
     let known = validationCache.get(prop);
     if (known && known.has(value.text)) {
@@ -2422,6 +2419,9 @@ self.parserlib = (() => {
     }
     if (!spec) {
       throw new ValidationError(`Unknown property '${name}'.`, value);
+    }
+    if (hasVarParts(value)) {
+      return;
     }
     // Property-specific validation.
     const expr = new PropertyValueIterator(value);
