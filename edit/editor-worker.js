@@ -18,7 +18,10 @@
 
     getCssPropsValues() {
       require(['/js/csslint/parserlib']); /* global parserlib */
-      const {css: {Colors, Properties}, util: {describeProp}} = parserlib;
+      const {
+        css: {Colors, GlobalKeywords, Properties},
+        util: {describeProp},
+      } = parserlib;
       const namedColors = Object.keys(Colors);
       const rxNonWord = /(?:<.+?>|[^-\w<(]+\d*)+/g;
       const res = {};
@@ -41,7 +44,7 @@
           if (uniq.length) res[k] = uniq;
         }
       }
-      return res;
+      return {own: res, global: GlobalKeywords};
     },
 
     getRules(linter) {

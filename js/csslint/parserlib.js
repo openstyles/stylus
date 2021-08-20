@@ -30,12 +30,18 @@ self.parserlib = (() => {
 
   //#region Properties
 
+  // Global keywords that can be set for any property are conveniently listed in `all` prop:
+  // https://drafts.csswg.org/css-cascade/#all-shorthand
+  const GlobalKeywords = ['initial', 'inherit', 'revert', 'unset'];
+  const isGlobalKeyword = RegExp.prototype.test.bind(
+    new RegExp(`^(${GlobalKeywords.join('|')})$`, 'i'));
+
   const Properties = {
     'accent-color': 'auto | <color>',
     'align-items': 'normal | stretch | <baseline-position> | [ <overflow-position>? <self-position> ]',
     'align-content': '<align-content>',
     'align-self': '<align-self>',
-    'all': 'initial | inherit | revert | unset',
+    'all': GlobalKeywords.join(' | '),
     'alignment-adjust': 'auto | baseline | before-edge | text-before-edge | middle | central | ' +
       'after-edge | text-after-edge | ideographic | alphabetic | hanging | ' +
       'mathematical | <length-pct>',
@@ -702,8 +708,8 @@ self.parserlib = (() => {
   const VTSimple = {
     '<absolute-size>': 'xx-small | x-small | small | medium | large | x-large | xx-large',
     '<animateable-feature>': 'scroll-position | contents | <animateable-feature-name>',
-    '<animateable-feature-name>': p => vtIsIdent(p) &&
-      !/^(unset|initial|inherit|will-change|auto|scroll-position|contents)$/i.test(p),
+    '<animateable-feature-name>': p => vtIsIdent(p) && !isGlobalKeyword(p) &&
+      !/^(will-change|auto|scroll-position|contents)$/i.test(p),
     '<angle>': p => p.type === 'angle' || p.isCalc,
     '<angle-or-0>': p => p.text === '0' || p.type === 'angle' || p.isCalc,
     '<attr>': vtIsAttr,
@@ -752,8 +758,8 @@ self.parserlib = (() => {
     '<hex-color>': p => p.tokenType === Tokens.HASH, //eslint-disable-line no-use-before-define
     '<icccolor>': 'cielab() | cielch() | cielchab() | icc-color() | icc-named-color()',
     '<ident>': vtIsIdent,
-    '<ident-for-grid>': p => vtIsIdent(p) &&
-      !/^(span|auto|initial|inherit|unset|default)$/i.test(p.value),
+    '<ident-for-grid>': p => vtIsIdent(p) && !isGlobalKeyword(p.value) &&
+      !/^(span|auto|default)$/i.test(p.value),
     '<ident-not-generic-family>': p => vtIsIdent(p) && !VTSimple['<generic-family>'](p),
     '<ident-not-none>': p => vtIsIdent(p) && !lowerCmp(p.value, 'none'),
     '<image>': '<uri> | <gradient> | cross-fade()',
@@ -793,8 +799,8 @@ self.parserlib = (() => {
     '<shape-box>': '<box> | margin-box',
     '<single-animation-direction>': 'normal | reverse | alternate | alternate-reverse',
     '<single-animation-fill-mode>': 'none | forwards | backwards | both',
-    '<single-animation-name>': p => vtIsIdent(p) &&
-      /^(?!(none|unset|initial|inherit)$)-?[a-z_][-a-z0-9_]+$/i.test(p),
+    '<single-animation-name>': p => vtIsIdent(p) && !isGlobalKeyword(p) &&
+      /^-?[a-z_][-a-z0-9_]+$/i.test(p),
     '<string>': p => p.type === 'string',
     '<text-align>': 'start | end | left | right | center | justify | match-parent',
     '<text-decoration-style>': 'solid | double | dotted | dashed | wavy',
@@ -2395,10 +2401,8 @@ self.parserlib = (() => {
 
   const validationCache = new Map();
 
-  function validateProperty(property, value) {
-    // Global keywords that can be set for any property are conveniently listed in `all` prop:
-    // https://drafts.csswg.org/css-cascade/#all-shorthand
-    if (/^(inherit|initial|unset|revert)$/i.test(value.parts[0])) {
+  function validateProperty(name, property, value) {
+    if (isGlobalKeyword(value.parts[0])) {
       if (value.parts.length > 1) {
         throwEndExpected(value.parts[1], true);
       }
@@ -2407,7 +2411,7 @@ self.parserlib = (() => {
     if (hasVarParts(value)) {
       return;
     }
-    const prop = lower(property);
+    const prop = lower(name);
     let known = validationCache.get(prop);
     if (known && known.has(value.text)) {
       return;
@@ -2417,7 +2421,7 @@ self.parserlib = (() => {
       return;
     }
     if (!spec) {
-      throw new ValidationError(`Unknown property '${property}'.`, value);
+      throw new ValidationError(`Unknown property '${name}'.`, value);
     }
     // Property-specific validation.
     const expr = new PropertyValueIterator(value);
@@ -4066,7 +4070,7 @@ self.parserlib = (() => {
             this.options.underscoreHack && property.hack === '_'
               ? property.text
               : property.toString();
-          validateProperty(name, value);
+          validateProperty(name, property, value);
         } catch (ex) {
           if (!(ex instanceof ValidationError)) {
             ex.message = ex.stack;
@@ -4650,14 +4654,15 @@ self.parserlib = (() => {
     css: {
       Colors,
       Combinator,
+      GlobalKeywords,
+      Matcher,
+      MediaFeature,
+      MediaQuery,
       Parser,
       Properties,
       PropertyName,
       PropertyValue,
       PropertyValuePart,
-      Matcher,
-      MediaFeature,
-      MediaQuery,
       Selector,
       SelectorPart,
       SelectorSubPart,

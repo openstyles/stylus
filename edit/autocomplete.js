@@ -16,17 +16,11 @@
   const rxVAR = /(^|[^-.\w\u0080-\uFFFF])var\(/iyu;
   const rxCONSUME = /([-\w]*\s*:\s?)?/yu;
   const cssMime = CodeMirror.mimeModes['text/css'];
-  const cssGlobalValues = [
-    'inherit',
-    'initial',
-    'revert',
-    'unset',
-  ];
   const docFuncs = addSuffix(cssMime.documentTypes, '(');
   const {tokenHooks} = cssMime;
   const originalCommentHook = tokenHooks['/'];
   const originalHelper = CodeMirror.hint.css || (() => {});
-  let cssMedia, cssProps, cssPropsValues;
+  let cssMedia, cssProps, cssValues;
 
   const AOT_ID = 'autocompleteOnTyping';
   const AOT_PREF_ID = 'editor.' + AOT_ID;
@@ -148,8 +142,8 @@
               leftLC = leftLC.replace(/^[^\w\s]\s*/, '');
             }
             if (prop.startsWith('--')) prop = 'color'; // assuming 90% of variables are colors
-            if (!cssPropsValues) cssPropsValues = await linterMan.worker.getCssPropsValues();
-            list = [...new Set([...cssPropsValues[prop] || [], ...cssGlobalValues])];
+            if (!cssValues) cssValues = await linterMan.worker.getCssPropsValues();
+            list = [...new Set([...cssValues.own[prop] || [], ...cssValues.global])];
             end = prev + execAt(/(\s*[-a-z(]+)?/y, prev, text)[0].length;
           }
         }
