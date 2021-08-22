@@ -91,7 +91,7 @@ const URLS = {
     Number(url.match(/\/(\d+)\.user\.css|$/)[1]),
   extractUsoArchiveInstallUrl: url => {
     const id = URLS.extractUsoArchiveId(url);
-    return id ? `${URLS.usoArchive}/style/${id}` : '';
+    return id ? `${URLS.usoArchive}style/${id}` : '';
   },
   makeUsoArchiveCodeUrl: id => `${URLS.usoArchiveRaw[0]}usercss/${id}.user.css`,
 

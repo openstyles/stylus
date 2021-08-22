@@ -473,7 +473,7 @@ const styleMan = (() => {
 
   async function init() {
     const styles = await db.exec('getAll') || [];
-    const updated = styles.filter(fixOldStyleProps);
+    const updated = styles.filter(fixKnownProblems);
     if (updated.length) {
       await db.exec('putMany', updated);
     }
@@ -486,7 +486,7 @@ const styleMan = (() => {
     bgReady._resolveStyles();
   }
 
-  function fixOldStyleProps(style) {
+  function fixKnownProblems(style) {
     let res = 0;
     for (const key in MISSING_PROPS) {
       if (!style[key]) {
@@ -503,6 +503,15 @@ const styleMan = (() => {
       }
       delete style.originalName;
       res = 1;
+    }
+    /* wrong homepage url in 1.5.20-1.5.21 due to commit 1e5f118d */
+    for (const key of ['url', 'installationUrl']) {
+      const url = style[key];
+      const fixedUrl = url && url.replace(/([^:]\/)\//, '$1');
+      if (fixedUrl !== url) {
+        res = 1;
+        style[key] = fixedUrl;
+      }
     }
     return res;
   }
