@@ -1,6 +1,6 @@
 /* global $ $create $createLink $$remove showSpinner */// dom.js
 /* global API */// msg.js
-/* global closeCurrentTab deepEqual */// toolbox.js
+/* global deepEqual */// toolbox.js
 /* global messageBox */
 /* global prefs */
 /* global preinit */
@@ -301,17 +301,9 @@ function install(style) {
 
   updateMeta(style);
 
-  if (!liveReload.enabled && !prefs.get('openEditInWindow')) {
-    location.href = '/edit.html?id=' + style.id;
-  } else {
-    API.openEditor({id: style.id});
-    if (!liveReload.enabled) {
-      if (tabId < 0 && history.length > 1) {
-        history.back();
-      } else {
-        closeCurrentTab();
-      }
-    }
+  if (!liveReload.enabled) {
+    sessionStorage.justEditedStyleId = style.id;
+    location.href = '/manage.html';
   }
 }
 
