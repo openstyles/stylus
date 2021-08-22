@@ -84,12 +84,6 @@
       "run_at": "document_start",
       "all_frames": true,
       "js": ["content/install-hook-userstyles.js"]
-    },
-    {
-      "matches": ["https://openusercss.org/*", "https://openusercss.com/*"],
-      "run_at": "document_start",
-      "all_frames": false,
-      "js": ["content/install-hook-openusercss.js"]
     }
   ],
   "browser_action": {
