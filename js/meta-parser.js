@@ -36,7 +36,7 @@ const metaParser = (() => {
             index: state.valueIndex,
           });
         }
-        state.value = colorConverter.format(color, 'rgb');
+        state.value = colorConverter.format(color);
       },
     },
   };
