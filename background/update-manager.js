@@ -164,14 +164,10 @@ const updateMan = (() => {
     }
 
     async function updateToUSOArchive(url, req) {
-      // UserCSS metadata may be embedded in the original USO style so let's use its updateURL
-      const [meta2] = req.response.replace(RX_META, '').match(RX_META) || [];
-      if (meta2 && meta2.includes('@updateURL')) {
-        const {updateUrl} = await API.usercss.buildMeta({sourceCode: meta2}).catch(() => ({}));
-        if (updateUrl) {
-          url = updateUrl;
-          req = await tryDownload(url, RH_ETAG);
-        }
+      const m2 = getUsoEmbeddedMeta(req.response);
+      if (m2) {
+        url = (await m2).updateUrl;
+        req = await tryDownload(url, RH_ETAG);
       }
       const json = await API.usercss.buildMeta({
         id,
@@ -209,13 +205,21 @@ const updateMan = (() => {
     }
 
     async function updateUsercss() {
-      if (style.etag && style.etag === await downloadEtag()) {
+      let oldVer = ucd.version;
+      let {etag: oldEtag, updateUrl} = style;
+      let m2 = URLS.extractUsoArchiveId(updateUrl) && getUsoEmbeddedMeta();
+      if (m2 && (m2 = await m2).updateUrl) {
+        updateUrl = m2.updateUrl;
+        oldVer = m2.usercssData.version || '0';
+        oldEtag = '';
+      }
+      if (oldEtag && oldEtag === await downloadEtag()) {
         return Promise.reject(STATES.SAME_CODE);
       }
       // TODO: when sourceCode is > 100kB use http range request(s) for version check
-      const {headers: {etag}, response} = await tryDownload(style.updateUrl, RH_ETAG);
-      const json = await API.usercss.buildMeta({sourceCode: response, etag});
-      const delta = compareVersion(json.usercssData.version, ucd.version);
+      const {headers: {etag}, response} = await tryDownload(updateUrl, RH_ETAG);
+      const json = await API.usercss.buildMeta({sourceCode: response, etag, updateUrl});
+      const delta = compareVersion(json.usercssData.version, oldVer);
       let err;
       if (!delta && !ignoreDigest) {
         // re-install is invalid in a soft upgrade
@@ -283,6 +287,12 @@ const updateMan = (() => {
         m[2]--; // month is 0-based in `Date` constructor
         return new Date(...m.slice(1)).getTime();
       }
+    }
+
+    /** UserCSS metadata may be embedded in the original USO style so let's use its updateURL */
+    function getUsoEmbeddedMeta(code = style.sourceCode) {
+      const m = code.includes('@updateURL') && code.replace(RX_META, '').match(RX_META);
+      return m && API.usercss.buildMeta({sourceCode: m[0]}).catch(() => null);
     }
 
     function getVarOptByName(varDef, name) {
