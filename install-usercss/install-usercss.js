@@ -300,11 +300,6 @@ function install(style) {
     t('installUpdateFrom', style.updateUrl) : '';
 
   updateMeta(style);
-
-  if (!liveReload.enabled) {
-    sessionStorage.justEditedStyleId = style.id;
-    location.href = '/manage.html';
-  }
 }
 
 async function getAppliesTo(style) {
