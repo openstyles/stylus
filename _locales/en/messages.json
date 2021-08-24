@@ -585,7 +585,7 @@
     "description": "Label for install button"
   },
   "installButtonInstalled": {
-    "message": "Style installed",
+    "message": "Style is installed",
     "description": "Text displayed when the style is successfully installed"
   },
   "installButtonReinstall": {
