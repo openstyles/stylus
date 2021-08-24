@@ -1341,6 +1341,7 @@ self.parserlib = (() => {
     identString: [
       Tokens.IDENT,
       Tokens.STRING,
+      Tokens.USO_VAR,
     ],
     LParenBracket: [
       Tokens.LPAREN,
@@ -1395,6 +1396,7 @@ self.parserlib = (() => {
     stringUri: [
       Tokens.STRING,
       Tokens.URI,
+      Tokens.USO_VAR,
     ],
     term: [
       Tokens.NUMBER,
@@ -2636,7 +2638,7 @@ self.parserlib = (() => {
 
     /**
      * @param {Number|Number[]} tokenTypes
-     * @param {Boolean} [skipCruftBefore=true] - skip comments/uso-vars/whitespace before matching
+     * @param {Boolean} [skipCruftBefore=true] - skip comments/whitespace before matching
      * @returns {Object} token
      */
     mustMatch(tokenTypes, skipCruftBefore = true) {
@@ -2648,16 +2650,17 @@ self.parserlib = (() => {
 
     /**
      * @param {Boolean} [skipWS] - skip whitespace too
+     * @param {Boolean} [skipUsoVar] - skip USO_VAR too
      */
-    skipComment(skipWS) {
+    skipComment(skipWS, skipUsoVar) {
       const tt = this.LT(1, true).type;
       if (skipWS && tt === Tokens.S ||
-          tt === Tokens.USO_VAR ||
+          skipUsoVar && tt === Tokens.USO_VAR ||
           tt === Tokens.COMMENT ||
           tt == null && this._ltIndex === this._ltAhead && (
             skipWS && this._reader.readMatch(/\s+/y),
             this._reader.peekTest(/\/\*/y))) {
-        while (this.match(TT.usoS)) { /*NOP*/ }
+        while (this.match(skipUsoVar ? TT.usoS : Tokens.S)) { /*NOP*/ }
       }
     }
 
@@ -3811,7 +3814,7 @@ self.parserlib = (() => {
       const stream = this._tokenStream;
       let braceOpened;
       try {
-        stream.skipComment();
+        stream.skipComment(undefined, true);
         if (parserCache.findBlock()) {
           return true;
         }
@@ -4275,7 +4278,7 @@ self.parserlib = (() => {
 
     _keyframes(start) {
       const stream = this._tokenStream;
-      const prefix = /^@-([^-]+)-/.test(start.value) ? RegExp.$1 : '';
+      const prefix = rxVendorPrefix.test(start.value) ? RegExp.$1 : '';
       this._ws();
       const name = this._keyframeName();
       stream.mustMatch(Tokens.LBRACE);
