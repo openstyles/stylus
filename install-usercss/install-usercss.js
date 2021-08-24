@@ -1,6 +1,6 @@
 /* global $ $create $createLink $$remove showSpinner */// dom.js
 /* global API */// msg.js
-/* global deepEqual */// toolbox.js
+/* global closeCurrentTab deepEqual */// toolbox.js
 /* global messageBox */
 /* global prefs */
 /* global preinit */
@@ -208,6 +208,7 @@ function updateMeta(style, dup = installedDup) {
   setTimeout(() => $$remove('.lds-spinner'), 1000);
   showError('');
   requestAnimationFrame(adjustCodeHeight);
+  if (dup) enablePostActions();
 
   function makeAuthor(text) {
     const match = text.match(/^(.+?)(?:\s+<(.+?)>)?(?:\s+\((.+?)\))?$/);
@@ -298,8 +299,26 @@ function install(style) {
   $('.set-update-url input[type=checkbox]').disabled = true;
   $('.set-update-url').title = style.updateUrl ?
     t('installUpdateFrom', style.updateUrl) : '';
-
+  enablePostActions();
   updateMeta(style);
+}
+
+function enablePostActions() {
+  const {id} = installed || installedDup;
+  sessionStorage.justEditedStyleId = id;
+  $('h2.installed').hidden = !installed;
+  $('.installed-actions').hidden = false;
+  $('.installed-actions a[href*="edit.html"]').search = `?id=${id}`;
+  $('#delete').onclick = async () => {
+    if (await messageBox.confirm(t('deleteStyleConfirm'), 'danger center', t('confirmDelete'))) {
+      await API.styles.delete(id);
+      if (tabId < 0 && history.length > 1) {
+        history.back();
+      } else {
+        closeCurrentTab();
+      }
+    }
+  };
 }
 
 async function getAppliesTo(style) {

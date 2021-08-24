@@ -33,7 +33,7 @@
           <small class="meta-version"></small>
         </h1>
         <div class="actions">
-          <h2 class="installed" i18n-text="installButtonInstalled"></h2>
+          <h2 hidden class="installed" i18n-text="installButtonInstalled"></h2>
           <button class="install" i18n-text="installButton"></button>
           <a class="configure-usercss" i18n-title="configureStyle" tabindex="0">
             <svg class="svg-icon config"><use xlink:href="#svg-icon-config"></use></svg>
@@ -50,6 +50,11 @@
             <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
             <span i18n-text="liveReloadLabel"></span>
           </label>
+          <p hidden class="installed-actions">
+            <a href="manage.html" tabindex="0"><button i18n-text="openManage"></button></a>
+            <a href="edit.html?id=" tabindex="0"><button i18n-text="editStyleLabel"></button></a>
+            <a id="delete" tabindex="0"><button i18n-text="deleteStyleLabel"></button></a>
+          </p>
         </div>
         <p class="meta-description"></p>
         <div>
