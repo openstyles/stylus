@@ -213,16 +213,21 @@ h1 small {
   filter: hue-rotate(-18deg) brightness(.7) contrast(2);
 }
 
-.install.installed,
-h2.installed {
+.install.installed {
   display: none;
 }
 
 h2.installed.active {
   display: inline-block;
   font-weight: bold;
-  margin-bottom: 1ex;
   margin-top: 0;
+  color: darkcyan;
+}
+h2.installed.active ~ .configure-usercss svg {
+  fill: hsl(180, 100%, 20%);
+}
+h2.installed.active ~ .configure-usercss:hover svg {
+  fill: hsl(180, 100%, 30%);
 }
 
 .actions label input {
