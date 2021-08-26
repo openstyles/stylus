@@ -251,7 +251,7 @@ self.parserlib = (() => {
     'fill': '<paint>',
     'fill-opacity': '<opacity-value>',
     'fill-rule': 'nonzero | evenodd',
-    'filter': '<filter-function-list> | none',
+    'filter': '<filter-function-list> | <ie-function> | none',
     'fit': 'fill | hidden | meet | slice',
     'fit-position': 1,
     'flex': '<flex-shorthand>',
@@ -762,6 +762,7 @@ self.parserlib = (() => {
       !/^(span|auto|default)$/i.test(p.value),
     '<ident-not-generic-family>': p => vtIsIdent(p) && !VTSimple['<generic-family>'](p),
     '<ident-not-none>': p => vtIsIdent(p) && !lowerCmp(p.value, 'none'),
+    '<ie-function>': p => p.tokenType === Tokens.IE_FUNCTION, //eslint-disable-line no-use-before-define
     '<image>': '<uri> | <gradient> | cross-fade()',
     '<inflexible-breadth>': '<length-pct> | min-content | max-content | auto',
     '<integer>': p => p.isInt || p.isCalc,
@@ -4157,8 +4158,9 @@ self.parserlib = (() => {
         }
         return new PropertyValuePart(token);
       };
-      if (this.options.ieFilters && stream.peek() === Tokens.IE_FUNCTION) {
-        return finalize(this._ieFunction());
+      const next = this.options.ieFilters && stream.LT(1);
+      if (next && next.type === Tokens.IE_FUNCTION) {
+        return finalize(next, this._ieFunction());
       }
       // see if it's a simple block
       if (stream.match(inFunction ? TT.LParenBracketBrace : TT.LParenBracket)) {
@@ -4230,36 +4232,25 @@ self.parserlib = (() => {
 
     _ieFunction() {
       const stream = this._tokenStream;
-      let functionText = null;
-      let lt;
+      const text = [];
       // IE function can begin like a regular function, too
       if (stream.match([Tokens.IE_FUNCTION, Tokens.FUNCTION])) {
-        functionText = stream._token.value;
+        text.push(stream._token.value);
         do {
-          if (this._ws()) {
-            functionText += stream._token.value;
-          }
-          // might be second time in the loop
-          if (stream.LA(0) === Tokens.COMMA) {
-            functionText += stream._token.value;
-          }
-          stream.match(Tokens.IDENT);
-          functionText += stream._token.value;
-          stream.match(Tokens.EQUALS);
-          functionText += stream._token.value;
-          // functionText += this._term();
-          lt = stream.peek();
-          while (lt !== Tokens.COMMA && lt !== Tokens.S && lt !== Tokens.RPAREN) {
-            stream.get();
-            functionText += stream._token.value;
-            lt = stream.peek();
+          text.push(
+            stream._token.value === ',' ? ',' : '', // subsequent loops
+            this._ws(),
+            stream.match(Tokens.IDENT).value || '',
+            stream.match(Tokens.EQUALS).value || '');
+          // functionText.push(this._term());
+          while (!/^([,)]|\s+)$/.test(stream.LT(1).value)) {
+            text.push(stream.get(true).value);
           }
         } while (stream.match([Tokens.COMMA, Tokens.S]));
-        stream.match(Tokens.RPAREN);
-        functionText += ')';
+        text.push(stream.match(Tokens.RPAREN).value);
         this._ws();
       }
-      return functionText;
+      return fastJoin(text) || null;
     }
 
     _hexcolor() {
