@@ -513,7 +513,7 @@ CSSLint.addRule['box-model'] = [{
         if (!properties[size]) continue;
         for (const prop of sizeProps[size]) {
           if (prop !== 'padding' || !properties[prop]) continue;
-          const {value: {parts}, line, col} = properties[prop].value;
+          const {value: {parts}, line, col} = properties[prop];
           if (parts.length !== 2 || Number(parts[0].value) !== 0) {
             reporter.report(
               `Using ${size} with ${prop} can sometimes make elements larger than you expect.`,
@@ -1071,8 +1071,8 @@ CSSLint.addRule['ids'] = [{
       const cnt =
         sel.parts.reduce((sum = 0, {type, modifiers}) =>
           type === parser.SELECTOR_PART_TYPE
-            ? modifiers.reduce(sum, mod => sum + (mod.type === 'id'))
-            : sum);
+            ? modifiers.reduce((sum, mod) => sum + (mod.type === 'id'), 0)
+            : sum, 0);
       if (cnt) {
         reporter.report(`Id in selector${cnt > 1 ? '!'.repeat(cnt) : '.'}`, sel, rule);
       }
