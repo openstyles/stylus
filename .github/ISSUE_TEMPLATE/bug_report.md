@@ -14,9 +14,9 @@ assignees: ''
 <!--
   Thank you for taking the time to create a report about a bug.
   Ensure that there are no other existing reports for this bug.
-  Please check if the issue is resolved after a restart of the browsers.
-  Additionally you could check if the issue persist in a new browser profile.
-  Also, remember to fill out every section on this report and remove any that are not needed.
+  Please check if the issue is resolved after a restart of the browser.
+  Additionally, you should check if the issue persists in a new browser profile.
+  Remember to fill out every section on this report and remove any that are not needed.
   Finally, place a brief description in the title of this report.
 -->
 
