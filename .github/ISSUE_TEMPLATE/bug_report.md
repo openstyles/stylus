@@ -20,19 +20,19 @@ assignees: ''
 
 # Bug Report
 
-## Bug Description
-<!-- Provide a clear and concise description, that allow us to properly troubleshoot this bug. -->
+### Bug Description
+<!-- Provide a clear and concise description, which will allow us to properly troubleshoot this bug. -->
 
-## Screenshots
+### Screenshots
 <!-- If applicable, add screenshots to help explain this bug. -->
 
-## CSS Code
+### CSS Code
 <!--
     If the bug is related to (user)CSS or the editor, 
-    please post the code(with a service like pastebin) in this bug report. 
+    please post the code (with a service like pastebin) in this bug report. 
 -->
 
-## System Information
+### System Information
 <!--
   Specify the browser name and version as well as the Stylus version you are using.
   Please do an online search for help if you are not familiar with how to get this information.
@@ -42,5 +42,5 @@ assignees: ''
 - Browser: <!-- e.g. Chrome 91, Firefox 90, Edge 91, Safari 14 -->
 - Stylus Version: <!-- e.g. 1.5.21 -->
 
-## Additional Context
+### Additional Context
 <!-- Provide any additional information about this bug. -->
