@@ -269,7 +269,7 @@ function objectDiff(first, second, path = '') {
       ) {
         diff.push({path, key, values: [a, b], type: 'changed'});
       }
-    } else if (typeof a === 'object' && typeof b === 'object') {
+    } else if (a && b && typeof a === 'object' && typeof b === 'object') {
       diff.push(...objectDiff(a, b, path + key + '.'));
     } else {
       diff.push({path, key, values: [a, b], type: 'changed'});
