@@ -458,7 +458,7 @@
     "message": "Zainstaluj styl"
   },
   "installButtonInstalled": {
-    "message": "Styl zainstalowano"
+    "message": "Styl jest zainstalowany"
   },
   "installButtonReinstall": {
     "message": "Przeinstaluj styl"

@@ -411,7 +411,7 @@
     "message": "Style installieren"
   },
   "installButtonInstalled": {
-    "message": "Style installiert"
+    "message": "Style erfolgreich installiert"
   },
   "installButtonReinstall": {
     "message": "Style neu installieren"

@@ -811,7 +811,7 @@
     "message": "行："
   },
   "openManage": {
-    "message": "管理器"
+    "message": "管理样式"
   },
   "openOptions": {
     "message": "选项"
@@ -889,7 +889,7 @@
     "message": "打开"
   },
   "optionsOpenManager": {
-    "message": "管理器"
+    "message": "管理样式"
   },
   "optionsPopupWidth": {
     "message": "Popup 弹框总宽度（px）"

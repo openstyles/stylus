@@ -420,7 +420,7 @@
     "message": "インストール"
   },
   "installButtonInstalled": {
-    "message": "インストール済み"
+    "message": "スタイルがインストールされています"
   },
   "installButtonReinstall": {
     "message": "再インストール"
