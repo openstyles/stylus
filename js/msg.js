@@ -108,6 +108,8 @@
       }
       return result;
     },
+
+    _onRuntimeMessage: onRuntimeMessage,
   };
 
   function getExtBg() {

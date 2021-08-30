@@ -16,6 +16,20 @@
   <script src="content/style-injector.js"></script>
   <script src="content/apply.js"></script>
 
+  <template data-id="externals.allowedExtensionIdsItem">
+    <li>
+      <div class="ext-messaging-value-wrapper">
+        <input data-pref-name="externals.allowedExtensionIds" spellcheck="false">
+        <a class="remove-item" i18n-text="optionsExtMessagingRemove" i18-title="optionsExtMessagingRemove" tabindex="0">
+          <svg class="svg-icon remove"><use xlink:href="#svg-icon-minus"/></svg>
+        </a>
+        <a class="add-item" i18n-text="optionsExtMessagingAdd" i18-title="optionsExtMessagingAdd" tabindex="0">
+          <svg class="svg-icon add"><use xlink:href="#svg-icon-plus"/></svg>
+        </a>
+      </div>
+    </li>
+  </template>
+
   <link rel="stylesheet" href="options/onoffswitch.css">
   <link rel="stylesheet" href="options/options.css">
 </head>
@@ -275,6 +289,15 @@
         </div>
       </div>
 
+      <div class="block ext-messaging-options">
+        <h1 i18n-text="optionsExtMessaging"></h1>
+        <div class="items">
+          <div class="label" i18n-text="optionsExtMessagingNote"></div>
+          <ul data-pref-name="externals.allowedExtensionIds">
+          </ul>
+        </div>
+      </div>
+
     </div>
 
     <div class="block" id="actions">
@@ -297,6 +320,14 @@
 
     <symbol id="svg-icon-select-arrow" viewBox="0 0 1792 1792">
       <path fill-rule="evenodd" d="M1408 704q0 26-19 45l-448 448q-19 19-45 19t-45-19l-448-448q-19-19-19-45t19-45 45-19h896q26 0 45 19t19 45z"/>
+    </symbol>
+
+    <symbol id="svg-icon-plus" viewBox="0 0 8 8">
+      <path fill-rule="evenodd" d="M3 0v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2z"/>
+    </symbol>
+
+    <symbol id="svg-icon-minus" viewBox="0 0 8 8">
+      <path fill-rule="evenodd" d="M0 3v2h8v-2h-8z"/>
     </symbol>
   </svg>
 

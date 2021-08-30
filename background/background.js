@@ -163,6 +163,17 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   }
 });
 
+prefs.subscribe('externals.allowedExtensionIds', (id, value) => {
+  /* global onMessageExternal */// ext-msg.js
+  if (value.length > 0) {
+    require(['/background/ext-msg'], () => {
+      chrome.runtime.onMessageExternal.addListener(onMessageExternal);
+    });
+  } else if (window.onMessageExternal) {
+    chrome.runtime.onMessageExternal.removeListener(onMessageExternal);
+  }
+}, {runNow: true});
+
 msg.on((msg, sender) => {
   if (msg.method === 'invokeAPI') {
     let res = msg.path.reduce((res, name) => res && res[name], API);

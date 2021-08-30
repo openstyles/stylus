@@ -24,6 +24,7 @@
 
 setupLivePrefs();
 setupRadioButtons();
+setupLists();
 $$('input[min], input[max]').forEach(enforceInputRange);
 
 if (CHROME_POPUP_BORDER_BUG) {
@@ -217,6 +218,81 @@ function setupRadioButtons() {
   prefs.subscribe(Object.keys(sets), (key, value) => {
     sets[key][value].checked = true;
   });
+}
+
+function setupLists() {
+  const uls = {};
+  const onChange = function () {
+    let newValue = getValues(this.dataset.prefName);
+    if (!simpleEquals(newValue, prefs.get(this.dataset.prefName))) {
+      prefs.set(this.dataset.prefName, newValue);
+    }
+  };
+
+  for (const ul of $$('ul[data-pref-name]')) {
+    const prefName = ul.dataset.prefName;
+    uls[prefName] = ul;
+    recreateList(prefName, prefs.get(prefName));
+  }
+
+  prefs.subscribe(Object.keys(uls), (key, value) => {
+    if (!simpleEquals(getValues(key), value)) {
+      recreateList(key, value);
+    }
+  });
+
+  function simpleEquals(ary1, ary2) {
+    if (ary1.length !== ary2.length) {
+      return false;
+    }
+    for (let i = 0; i < ary1.length; i++) {
+      if (ary1[i] !== ary2[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function getValues(prefName) {
+    return $$(`input[data-pref-name="${prefName}"]`, uls[prefName]).reduce(
+      (result, input) => {
+        if (input.value.trim() !== '') {
+          result.push(input.value.trim());
+        }
+        return result;
+      }, []);
+  }
+
+  function recreateList(prefName, prefValue) {
+    const ul = $(`ul[data-pref-name="${prefName}"]`);
+    if (prefValue.length == 0) {
+      ul.replaceChildren(createItem(prefName));
+    } else {
+      ul.replaceChildren(...prefValue.map(value => createItem(prefName, value)));
+    }
+  }
+
+  function createItem(prefName, value = '') {
+    const it = t.template[`${prefName}Item`].cloneNode(true);
+    const input = $('input[data-pref-name]', it);
+    input.value = value;
+    input.on('change', onChange);
+
+    $('.add-item', it).on('click', () => {
+      it.parentElement.insertBefore(createItem(prefName), it.nextElementSibling);
+    });
+    $('.remove-item', it).on('click', () => {
+      const input = $('input[data-pref-name]', it);
+      if (it.parentElement.childElementCount == 1) {
+        input.value = ''; // doesn't trigger onChange?
+      } else {
+        it.remove();
+      }
+      onChange.call(input);
+    });
+
+    return it;
+  }
 }
 
 function customizeHotkeys() {

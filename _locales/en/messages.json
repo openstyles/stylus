@@ -1092,6 +1092,20 @@
   "optionsCustomizeUpdate": {
     "message": "Updates"
   },
+  "optionsExtMessaging": {
+    "message": "External control"
+  },
+  "optionsExtMessagingNote": {
+    "message": "You can give access to Stylus to other extensions. These extensions will get full power over your styles. For advanced users only, you are left on your own to figure everything out. No backwards compatibility guaranteed. Input extension IDs, not names."
+  },
+  "optionsExtMessagingAdd": {
+    "message": "Add",
+    "description": "Label for the button to add an external messaging extension"
+  },
+  "optionsExtMessagingRemove": {
+    "message": "Remove",
+    "description": "Label for the button to remove an external messaging extension"
+  },
   "optionsHeading": {
     "message": "Options",
     "description": "Heading for options section on manage page."

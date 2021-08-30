@@ -27,6 +27,8 @@
     'styleViaXhr': false,           // early style injection to avoid FOUC
     'patchCsp': false,              // add data: and popular image hosting sites to strict CSP
 
+    'externals.allowedExtensionIds': [], // extensions allowed to message Stylus
+
     // checkbox in style config dialog
     'config.autosave': true,
 
