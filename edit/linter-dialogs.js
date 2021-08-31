@@ -90,7 +90,7 @@
         return rule &&
           $create('li', [
             $create('b', ruleID + ': '),
-            rule.url ? $createLink(`"${rule.url}"`, rule.name) : $create('span', `"${rule.name}"`),
+            rule.url ? $createLink(rule.url, rule.name) : $create('span', `"${rule.name}"`),
             $create('p', rule.desc),
           ]);
       };
