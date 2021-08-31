@@ -1144,6 +1144,137 @@ CSSLint.addRule['known-properties'] = [{
   });
 }];
 
+CSSLint.addRule['known-pseudos'] = [{
+  name: 'Require use of known pseudo selectors except when vendor-prefixed',
+  url: 'https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors/Pseudo-classes_and_pseudo-elements',
+  browsers: 'All',
+  _data: {
+    // 1 = requires ":"
+    // 2 = requires "::"
+    // 1+2 = allows both ":" and "::"
+    // 4 = requires "("
+    // 8 = allows both "(" and bare name
+    'active': 1,
+    'after': 1 + 2,
+    'any-link': 1,
+    'autofill': 1,
+    'backdrop': 2,
+    'before': 1 + 2,
+    'blank': 1,
+    'checked': 1,
+    'cue': 2,
+    'cue-region': 2,
+    'current': 1 + 8,
+    'default': 1,
+    'defined': 1,
+    'dir': 1 + 4,
+    'disabled': 1,
+    'drop': 1,
+    'empty': 1,
+    'enabled': 1,
+    'file-selector-button': 2,
+    'first': 1,
+    'first-child': 1,
+    'first-letter': 1 + 2,
+    'first-line': 1 + 2,
+    'first-of-type': 1,
+    'focus': 1,
+    'focus-visible': 1,
+    'focus-within': 1,
+    'fullscreen': 1,
+    'future': 1,
+    'grammar-error': 2,
+    'has': 1 + 4,
+    'host': 1 + 8,
+    'host-context': 1 + 4,
+    'hover': 1,
+    'in-range': 1,
+    'indeterminate': 1,
+    'invalid': 1,
+    'is': 1 + 4,
+    'lang': 1 + 4,
+    'last-child': 1,
+    'last-of-type': 1,
+    'left': 1,
+    'link': 1,
+    'local-link': 1,
+    'marker': 2,
+    'not': 1 + 4,
+    'nth-child': 1 + 4,
+    'nth-col': 1 + 4,
+    'nth-last-child': 1 + 4,
+    'nth-last-col': 1 + 4,
+    'nth-last-of-type': 1 + 4,
+    'nth-of-type': 1 + 4,
+    'only-child': 1,
+    'only-of-type': 1,
+    'optional': 1,
+    'out-of-range': 1,
+    'part': 2 + 4,
+    'past': 1,
+    'paused': 1,
+    'picture-in-picture': 1,
+    'placeholder': 2,
+    'placeholder-shown': 1,
+    'playing': 1,
+    'read-only': 1,
+    'read-write': 1,
+    'required': 1,
+    'right': 1,
+    'root': 1,
+    'scope': 1,
+    'selection': 2,
+    'slotted': 2 + 4,
+    'spelling-error': 2,
+    'state': 1 + 4,
+    'target': 1,
+    'target-text': 2,
+    'target-within': 1,
+    'user-invalid': 1,
+    'valid': 1,
+    'visited': 1,
+    'where': 1 + 4,
+    // used with ::-webkit-scrollbar selectors
+    'decrement': 1,
+    'horizontal': 1,
+    'increment': 1,
+    'single-button': 1,
+    'vertical': 1,
+  },
+}, (rule, parser, reporter) => {
+  const definitions = rule._data;
+  const rxColons = /^:+/;
+  const rxPseudoVendorPrefix = /^(::?)-(webkit|moz|ms|o)-/i;
+  const {lower} = parserlib.util;
+  const checkSelector = ({parts}) => {
+    let text;
+    for (const {modifiers} of parts || []) {
+      if (!modifiers) continue;
+      for (const mod of modifiers) {
+        if (mod.type === 'pseudo' && !rxPseudoVendorPrefix.test(text = mod.text)) {
+          const i = text.indexOf('(');
+          const colons = text.match(rxColons)[0].length;
+          const def = definitions[lower(text.slice(colons, i < 0 ? 99 : i))];
+          for (const err of !def ? ['Unknown pseudo'] : [
+            colons > 1
+              ? !(def & 2) && 'Must use : in'
+              : !(def & 1) && 'Must use :: in',
+            i < 0
+              ? (def & 4) && 'Must use ( after'
+              : !(def & (4 + 8)) && 'Unexpected ( in',
+          ]) {
+            if (err) reporter.report(`${err} ${i < 0 ? text : text.slice(0, i + 1)}`, mod, rule);
+          }
+        } else if (mod.args) {
+          mod.args.forEach(checkSelector);
+        }
+      }
+    }
+  };
+  parser.addListener('startrule', e => e.selectors.forEach(checkSelector));
+  parser.addListener('supportsSelector', e => checkSelector(e.selector));
+}];
+
 CSSLint.addRule['order-alphabetical'] = [{
   name: 'Alphabetical order',
   desc: 'Assure properties are in alphabetical order',

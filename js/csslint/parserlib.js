@@ -3582,7 +3582,8 @@ self.parserlib = (() => {
         }
       } else if (stream.match(Tokens.FUNCTION, ['selector('])) {
         this._ws();
-        this._selector();
+        const selector = this._selector();
+        this.fire({type: 'supportsSelector', selector}, selector);
         stream.mustMatch(Tokens.RPAREN);
       } else {
         this._supportsDecl();
@@ -4671,6 +4672,9 @@ self.parserlib = (() => {
       SyntaxError,
       SyntaxUnit,
       TokenStreamBase,
+      fastJoin,
+      isPseudoElement,
+      lower,
       rxVendorPrefix,
       describeProp: vtExplode,
     },
