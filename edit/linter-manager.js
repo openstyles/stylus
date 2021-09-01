@@ -133,6 +133,7 @@ linterMan.DEFAULTS = {
     'errors': 1,
     'globals-in-document': 1,
     'known-properties': 1,
+    'known-pseudos': 1,
     'selector-newline': 1,
     'shorthand-overrides': 1,
     'simple-not': 1,
