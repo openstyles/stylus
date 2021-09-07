@@ -329,7 +329,7 @@ function SourceEditor() {
       }
       cache = errors.map(({code, index, args, message}) => {
         const isUnknownMeta = code === 'unknownMeta';
-        const typo = isUnknownMeta && args.length === 2 ? 'Typo' : '';
+        const typo = isUnknownMeta && args[1] ? 'Typo' : ''; // args[1] may be present but undefined
         return ({
           from: cm.posFromIndex((index || 0) + match.index),
           to: cm.posFromIndex((index || 0) + match.index),
