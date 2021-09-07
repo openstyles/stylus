@@ -44,7 +44,7 @@ self.parserlib = (() => {
     'all': GlobalKeywords.join(' | '),
     'alignment-adjust': 'auto | baseline | before-edge | text-before-edge | middle | central | ' +
       'after-edge | text-after-edge | ideographic | alphabetic | hanging | ' +
-      'mathematical | <length-pct>',
+      'mathematical | <len-pct>',
     'alignment-baseline': 'auto | baseline | use-script | before-edge | text-before-edge | ' +
       'after-edge | text-after-edge | central | middle | ideographic | alphabetic | ' +
       'hanging | mathematical',
@@ -108,7 +108,7 @@ self.parserlib = (() => {
       'push-button | hyperlink | radio | radio-button | checkbox | menu-item | tab | menu | ' +
       'menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | ' +
       'outline-tree | range | field | combo-box | signature | password | normal',
-    'aspect-ratio': 'auto || [ <nonnegative-num> / <nonnegative-num> ]',
+    'aspect-ratio': 'auto || [ <num0+> / <num0+> ]',
     'azimuth': '<azimuth>',
 
     'backdrop-filter': '<filter-function-list> | none',
@@ -121,11 +121,11 @@ self.parserlib = (() => {
     'background-image': '<bg-image>#',
     'background-origin': '<box>#',
     'background-position': '<bg-position>#',
-    'background-position-x': '[ center | [ left | right ]? <length-pct>? ]#',
-    'background-position-y': '[ center | [ top | bottom ]? <length-pct>? ]#',
+    'background-position-x': '[ center | [ left | right ]? <len-pct>? ]#',
+    'background-position-y': '[ center | [ top | bottom ]? <len-pct>? ]#',
     'background-repeat': '<repeat-style>#',
     'background-size': '<bg-size>#',
-    'baseline-shift': 'baseline | sub | super | <length-pct>',
+    'baseline-shift': 'baseline | sub | super | <len-pct>',
     'behavior': 1,
     'binding': 1,
     'bleed': '<length>',
@@ -146,15 +146,15 @@ self.parserlib = (() => {
     'border-image-width': '<border-image-width>',
     'border-spacing': '<length>{1,2}',
 
-    'border-bottom-left-radius': '<length-pct>{1,2}',
-    'border-bottom-right-radius': '<length-pct>{1,2}',
-    'border-end-end-radius': '<length-pct>{1,2}',
-    'border-end-start-radius': '<length-pct>{1,2}',
+    'border-bottom-left-radius': '<len-pct>{1,2}',
+    'border-bottom-right-radius': '<len-pct>{1,2}',
+    'border-end-end-radius': '<len-pct>{1,2}',
+    'border-end-start-radius': '<len-pct>{1,2}',
     'border-radius': '<border-radius>',
-    'border-start-end-radius': '<length-pct>{1,2}',
-    'border-start-start-radius': '<length-pct>{1,2}',
-    'border-top-left-radius': '<length-pct>{1,2}',
-    'border-top-right-radius': '<length-pct>{1,2}',
+    'border-start-end-radius': '<len-pct>{1,2}',
+    'border-start-start-radius': '<len-pct>{1,2}',
+    'border-top-left-radius': '<len-pct>{1,2}',
+    'border-top-right-radius': '<len-pct>{1,2}',
 
     'bottom': '<width>',
     'box-decoration-break': 'slice | clone',
@@ -232,16 +232,16 @@ self.parserlib = (() => {
     'dominant-baseline': 'auto | use-script | no-change | reset-size | ideographic | alphabetic | ' +
       'hanging | mathematical | central | middle | text-after-edge | text-before-edge',
     'drop-initial-after-adjust': 'central | middle | after-edge | text-after-edge | ideographic | ' +
-      'alphabetic | mathematical | <length-pct>',
+      'alphabetic | mathematical | <len-pct>',
     'drop-initial-after-align': 'baseline | use-script | before-edge | text-before-edge | ' +
       'after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | ' +
       'mathematical',
     'drop-initial-before-adjust': 'before-edge | text-before-edge | central | middle | ' +
-      'hanging | mathematical | <length-pct>',
+      'hanging | mathematical | <len-pct>',
     'drop-initial-before-align': 'caps-height | baseline | use-script | before-edge | ' +
       'text-before-edge | after-edge | text-after-edge | central | middle | ideographic | ' +
       'alphabetic | hanging | mathematical',
-    'drop-initial-size': 'auto | line | <length-pct>',
+    'drop-initial-size': 'auto | line | <len-pct>',
     'drop-initial-value': '<integer>',
 
     'elevation': '<angle> | below | level | above | higher | lower',
@@ -267,7 +267,7 @@ self.parserlib = (() => {
     'flood-opacity': '<opacity-value>',
     // matching no-pct first because Matcher doesn't retry for a longer match in nested definitions
     'font': '<font-short-tweak-no-pct>? <font-short-core> | ' +
-      '[ <font-short-tweak-no-pct> || <percentage> ]? <font-short-core> | ' +
+      '[ <font-short-tweak-no-pct> || <pct> ]? <font-short-core> | ' +
       'caption | icon | menu | message-box | small-caption | status-bar',
     'font-family': '<font-family>',
     'font-feature-settings': '<feature-tag-value># | normal',
@@ -283,7 +283,7 @@ self.parserlib = (() => {
     'font-synthesis-style': 'auto | none',
     'font-synthesis-weight': 'auto | none',
     'font-synthesis-small-caps': 'auto | none',
-    'font-variant': '<font-variant> | normal | none',
+    'font-variant': '<font-variant>',
     'font-variant-alternates': '<font-variant-alternates> | normal',
     'font-variant-caps': '<font-variant-caps> | normal',
     'font-variant-east-asian': '<font-variant-east-asian> | normal',
@@ -401,10 +401,10 @@ self.parserlib = (() => {
     'max-width': 'none | <width-height>',
     'min-height': 'auto | <width-height>',
     'min-width': 'auto | <width-height>',
-    'max-block-size': '<length-pct> | none',
-    'max-inline-size': '<length-pct> | none',
-    'min-block-size': '<length-pct>',
-    'min-inline-size': '<length-pct>',
+    'max-block-size': '<len-pct> | none',
+    'max-inline-size': '<len-pct> | none',
+    'min-block-size': '<len-pct>',
+    'min-inline-size': '<len-pct>',
     'mix-blend-mode': '<blend-mode>',
     'move-to': 1,
 
@@ -416,7 +416,7 @@ self.parserlib = (() => {
 
     'object-fit': 'fill | contain | cover | none | scale-down',
     'object-position': '<position>',
-    'opacity': '<opacity-value> | <percentage>',
+    'opacity': '<opacity-value> | <pct>',
     'order': '<integer>',
     'orphans': '<integer>',
     'outline': '[ <color> | invert ] || [ auto | <border-style> ] || <border-width>',
@@ -427,7 +427,7 @@ self.parserlib = (() => {
     'overflow': '<overflow>{1,2}',
     'overflow-anchor': 'auto | none',
     'overflow-block': '<overflow>',
-    'overflow-clip-margin': '<nonnegative-len>',
+    'overflow-clip-margin': '<len0+>',
     'overflow-inline': '<overflow>',
     'overflow-style': 1,
     'overflow-wrap': 'normal | break-word | anywhere',
@@ -439,17 +439,17 @@ self.parserlib = (() => {
     'overscroll-behavior-x': '<overscroll>',
     'overscroll-behavior-y': '<overscroll>',
 
-    'padding': '<nonnegative-len-pct>{1,4}',
-    'padding-block': '<nonnegative-len-pct>{1,2}',
-    'padding-block-end': '<nonnegative-len-pct>',
-    'padding-block-start': '<nonnegative-len-pct>',
-    'padding-bottom': '<nonnegative-len-pct>',
-    'padding-inline': '<nonnegative-len-pct>{1,2}',
-    'padding-inline-end': '<nonnegative-len-pct>',
-    'padding-inline-start': '<nonnegative-len-pct>',
-    'padding-left': '<nonnegative-len-pct>',
-    'padding-right': '<nonnegative-len-pct>',
-    'padding-top': '<nonnegative-len-pct>',
+    'padding': '<len-pct0+>{1,4}',
+    'padding-block': '<len-pct0+>{1,2}',
+    'padding-block-end': '<len-pct0+>',
+    'padding-block-start': '<len-pct0+>',
+    'padding-bottom': '<len-pct0+>',
+    'padding-inline': '<len-pct0+>{1,2}',
+    'padding-inline-end': '<len-pct0+>',
+    'padding-inline-start': '<len-pct0+>',
+    'padding-left': '<len-pct0+>',
+    'padding-right': '<len-pct0+>',
+    'padding-top': '<len-pct0+>',
     'page': 1,
     'page-break-after': 'auto | always | avoid | left | right | recto | verso',
     'page-break-before': 'auto | always | avoid | left | right | recto | verso',
@@ -531,19 +531,18 @@ self.parserlib = (() => {
     'speak-numeral': 'digits | continuous',
     'speak-punctuation': 'code | none',
     'speech-rate': 1,
-    'src': 1,
     'stop-color': 1,
     'stop-opacity': '<opacity-value>',
     'stress': 1,
     'string-set': 1,
     'stroke': '<paint>',
     'stroke-dasharray': 'none | <dasharray>',
-    'stroke-dashoffset': '<length-pct> | <number>',
+    'stroke-dashoffset': '<len-pct> | <number>',
     'stroke-linecap': 'butt | round | square',
     'stroke-linejoin': 'miter | miter-clip | round | bevel | arcs',
-    'stroke-miterlimit': '<nonnegative-num>',
+    'stroke-miterlimit': '<num0+>',
     'stroke-opacity': '<opacity-value>',
-    'stroke-width': '<length-pct> | <number>',
+    'stroke-width': '<len-pct> | <number>',
 
     'table-layout': 'auto | fixed',
     'tab-size': '<number> | <length>',
@@ -565,7 +564,7 @@ self.parserlib = (() => {
     'text-emphasis-style': '<text-emphasis-style>',
     'text-emphasis-position': '[ over | under ] && [ right | left ]?',
     'text-height': 1,
-    'text-indent': '<length-pct> && hanging? && each-line?',
+    'text-indent': '<len-pct> && hanging? && each-line?',
     'text-justify': 'auto | none | inter-word | inter-character',
     'text-outline': 1,
     'text-overflow': 'clip | ellipsis',
@@ -586,7 +585,7 @@ self.parserlib = (() => {
     'transition-duration': '<time>#',
     'transition-property': 'none | [ all | <ident> ]#',
     'transition-timing-function': '<single-timing-function>#',
-    'translate': 'none | <length-pct> [ <length-pct> <length>? ]?',
+    'translate': 'none | <len-pct> [ <len-pct> <length>? ]?',
 
     'unicode-range': '<unicode-range>#',
     'unicode-bidi': 'normal | embed | isolate | bidi-override | isolate-override | plaintext',
@@ -594,7 +593,7 @@ self.parserlib = (() => {
     'user-select': 'auto | text | none | contain | all',
 
     'vertical-align': 'auto | use-script | baseline | sub | super | top | text-top | ' +
-      'central | middle | bottom | text-bottom | <length-pct>',
+      'central | middle | bottom | text-bottom | <len-pct>',
     'visibility': 'visible | hidden | collapse',
     'voice-balance': 1,
     'voice-duration': 1,
@@ -618,7 +617,7 @@ self.parserlib = (() => {
       'lr-tb | rl-tb | tb-rl | bt-rl | tb-lr | bt-lr | lr-bt | rl-bt | lr | rl | tb',
 
     'z-index': '<integer> | auto',
-    'zoom': '<number> | <percentage> | normal',
+    'zoom': '<number> | <pct> | normal',
 
     // nonstandard https://compat.spec.whatwg.org/
     '-webkit-box-reflect': '[ above | below | right | left ]? <length>? <image>?',
@@ -626,6 +625,26 @@ self.parserlib = (() => {
     '-webkit-text-stroke': '<border-width> || <color>',
     '-webkit-text-stroke-color': '<color>',
     '-webkit-text-stroke-width': '<border-width>',
+  };
+
+  const ScopedProperties = {
+    '@font-face': Object.assign({
+      'ascent-override': '[ normal | <pct0+> ]{1,2}',
+      'descent-override': '[ normal | <pct0+> ]{1,2}',
+      'font-display': 'auto | block | swap | fallback | optional',
+      'font-stretch': 'auto | <font-stretch>{1,2}',
+      'font-style': 'auto | normal | italic | oblique <angle>{0,2}',
+      'font-weight': 'auto | [ normal | bold | <num1-1000> ]{1,2}',
+      'line-gap-override': '[ normal | <pct0+> ]{1,2}',
+      'size-adjust': '<pct0+>',
+      'src': '[ url() [ format( <string># ) ]? | local( <family-name> ) ]#',
+    }, ...[
+      'font-family',
+      'font-size',
+      'font-variant',
+      'font-variation-settings',
+      'unicode-range',
+    ].map(p => ({[p]: Properties[p]}))),
   };
 
   for (const [k, reps] of Object.entries({
@@ -723,7 +742,7 @@ self.parserlib = (() => {
     '<border-width>': '<length> | thin | medium | thick',
     '<box>': 'padding-box | border-box | content-box',
     '<clip-source>': '<uri>',
-    '<column-gap>': 'normal | <length-pct>',
+    '<column-gap>': 'normal | <len-pct>',
     '<content-distribution>': 'space-between | space-around | space-evenly | stretch',
     '<content-position>': 'center | start | end | flex-start | flex-end',
     '<display-box>': 'contents | none',
@@ -740,14 +759,14 @@ self.parserlib = (() => {
     '<flex-grow>': '<number>',
     '<flex-shrink>': '<number>',
     '<flex-wrap>': 'nowrap | wrap | wrap-reverse',
-    '<font-size>': '<absolute-size> | <relative-size> | <length-pct>',
-    '<font-stretch>': '<font-stretch-named> | <percentage>',
+    '<font-size>': '<absolute-size> | <relative-size> | <len-pct0+>',
+    '<font-stretch>': '<font-stretch-named> | <pct>',
     '<font-stretch-named>': 'normal | ultra-condensed | extra-condensed | condensed | ' +
       'semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded',
     '<font-variant-caps>':
       'small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps',
     '<font-variant-css21>': 'normal | small-caps',
-    '<font-weight>': 'normal | bold | bolder | lighter | <number>',
+    '<font-weight>': 'normal | bold | bolder | lighter | <num1-1000>',
     '<generic-family>': 'serif | sans-serif | cursive | fantasy | monospace | system-ui | ' +
       'emoji | math | fangsong | ui-serif | ui-sans-serif | ui-monospace | ui-rounded',
     '<geometry-box>': '<shape-box> | fill-box | stroke-box | view-box',
@@ -764,12 +783,16 @@ self.parserlib = (() => {
     '<ident-not-none>': p => vtIsIdent(p) && !lowerCmp(p.value, 'none'),
     '<ie-function>': p => p.tokenType === Tokens.IE_FUNCTION, //eslint-disable-line no-use-before-define
     '<image>': '<uri> | <gradient> | cross-fade()',
-    '<inflexible-breadth>': '<length-pct> | min-content | max-content | auto',
+    '<inflexible-breadth>': '<len-pct> | min-content | max-content | auto',
     '<integer>': p => p.isInt || p.isCalc,
     '<length>': vtIsLength,
-    '<length-pct>': p => vtIsLength(p) || vtIsPct(p),
+    '<len0+>': p =>
+      p.value >= 0 && vtIsLength(p) || p.isCalc,
+    '<len-pct>': p => vtIsLength(p) || vtIsPct(p),
+    '<len-pct0+>': p =>
+      p.value >= 0 && (p.type === 'percentage' || vtIsLength(p)) || p.isCalc,
     '<line>': p => p.isInt,
-    '<line-height>': '<number> | <length-pct> | normal',
+    '<line-height>': '<number> | <len-pct> | normal',
     '<line-names>': p =>
       p.tokenType === Tokens.LBRACKET && // eslint-disable-line no-use-before-define
       p.text.endsWith(']') && (
@@ -777,23 +800,22 @@ self.parserlib = (() => {
         !p.expr.parts.length ||
         p.expr.parts.every(VTSimple['<ident-for-grid>'], VTSimple)
       ),
-    '<nonnegative-len>': p =>
-      p.value >= 0 && vtIsLength(p) || p.isCalc,
-    '<nonnegative-len-pct>': p =>
-      p.value >= 0 && (p.type === 'percentage' || vtIsLength(p)) || p.isCalc,
-    '<nonnegative-num>': p =>
-      p.value >= 0 && p.type === 'number' || p.isCalc,
-    '<nonnegative-num-pct>': p =>
-      p.value >= 0 && (p.type === 'number' || p.type === 'percentage') || p.isCalc,
     //eslint-disable-next-line no-use-before-define
     '<named-color>': p => p.text in Colors || ColorsLC.has(lower(p.text)),
     '<number>': p => p.type === 'number' || p.isCalc,
-    '<number-pct>': p => p.type === 'number' || p.type === 'percentage' || p.isCalc,
+    '<num0+>': p =>
+      p.value >= 0 && p.type === 'number' || p.isCalc,
+    '<num1-1000>': p => (p.type === 'number' && p.value >= 1 && p.value <= 1000) || p.isCalc,
+    '<num-pct>': p => p.type === 'number' || p.type === 'percentage' || p.isCalc,
+    '<num-pct0+>': p =>
+      p.value >= 0 && (p.type === 'number' || p.type === 'percentage') || p.isCalc,
     '<opacity-value>': p => p.type === 'number' && p.value >= 0 && p.value <= 1 || p.isCalc,
     '<overflow>': 'visible | hidden | clip | scroll | auto',
     '<overflow-position>': 'unsafe | safe',
-    '<percentage>': vtIsPct,
-    '<positive-integer>': p => p.isInt && p.value > 0 || p.isCalc,
+    '<pct>': vtIsPct,
+    '<pct0+>': p =>
+      p.value >= 0 && p.type === 'percentage' || p.isCalc,
+    '<integer1+>': p => p.isInt && p.value > 0 || p.isCalc,
     '<relative-size>': 'smaller | larger',
     '<row-gap>': '<column-gap>',
     '<self-position>': 'center | start | end | self-start | self-end | flex-start | flex-end',
@@ -806,7 +828,7 @@ self.parserlib = (() => {
     '<text-align>': 'start | end | left | right | center | justify | match-parent',
     '<text-decoration-style>': 'solid | double | dotted | dashed | wavy',
     '<time>': p => p.type === 'time',
-    '<track-breadth>': '<length-pct> | <flex> | min-content | max-content | auto',
+    '<track-breadth>': '<len-pct> | <flex> | min-content | max-content | auto',
     '<unicode-range>': p => /^U\+[0-9a-f?]{1,6}(-[0-9a-f?]{1,6})?\s*$/i.test(p),
     '<unit>': p => p.text === '%' || p in UNITS || lower(p) in UNITS,
     '<uri>': p => p.type === 'uri',
@@ -828,32 +850,32 @@ self.parserlib = (() => {
       'right | far-right | right-side ] || behind ] | leftwards | rightwards',
     '<baseline-position>': '[ first | last ]? baseline',
     '<basic-shape>':
-      'inset( <length-pct>{1,4} [ round <border-radius> ]? ) | ' +
-      'circle( [ <length-pct> | closest-side | farthest-side ]? [ at <position> ]? ) | ' +
-      'ellipse( [ [ <length-pct> | closest-side | farthest-side ]{2} ]? [ at <position> ]? ) | ' +
+      'inset( <len-pct>{1,4} [ round <border-radius> ]? ) | ' +
+      'circle( [ <len-pct> | closest-side | farthest-side ]? [ at <position> ]? ) | ' +
+      'ellipse( [ [ <len-pct> | closest-side | farthest-side ]{2} ]? [ at <position> ]? ) | ' +
       'path( [ [ nonzero | evenodd ] , ]? <string> ) | ' +
-      'polygon( [ [ nonzero | evenodd | inherit ] , ]? [ <length-pct> <length-pct> ]# )',
+      'polygon( [ [ nonzero | evenodd | inherit ] , ]? [ <len-pct> <len-pct> ]# )',
     '<bg-layer>':
       '<bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <box>{1,2}',
     '<bg-position>':
-      '[ center | [ left | right ] <length-pct>? ] && [ center | [ top | bottom ] <length-pct>? ] | ' +
-      '[ left | center | right | <length-pct> ] [ top | center | bottom | <length-pct> ] | ' +
-      '[ left | center | right | top | bottom | <length-pct> ]',
-    '<bg-size>': '[ <length-pct> | auto ]{1,2} | cover | contain',
+      '[ center | [ left | right ] <len-pct>? ] && [ center | [ top | bottom ] <len-pct>? ] | ' +
+      '[ left | center | right | <len-pct> ] [ top | center | bottom | <len-pct> ] | ' +
+      '[ left | center | right | top | bottom | <len-pct> ]',
+    '<bg-size>': '[ <len-pct> | auto ]{1,2} | cover | contain',
     '<border-image-outset>': '[ <length> | <number> ]{1,4}',
     '<border-image-repeat>': '[ stretch | repeat | round | space ]{1,2}',
     '<border-image-slice>': Matcher =>
-      // [<number> | <percentage>]{1,4} && fill?
+      // [<number> | <pct>]{1,4} && fill?
       // but 'fill' can appear between any of the numbers
       Matcher.many(
         [true],
-        Matcher.parse('<nonnegative-num-pct>'),
-        Matcher.parse('<nonnegative-num-pct>'),
-        Matcher.parse('<nonnegative-num-pct>'),
-        Matcher.parse('<nonnegative-num-pct>'),
+        Matcher.parse('<num-pct0+>'),
+        Matcher.parse('<num-pct0+>'),
+        Matcher.parse('<num-pct0+>'),
+        Matcher.parse('<num-pct0+>'),
         'fill'),
-    '<border-image-width>': '[ <length-pct> | <number> | auto ]{1,4}',
-    '<border-radius>': '<nonnegative-len-pct>{1,4} [ / <nonnegative-len-pct>{1,4} ]?',
+    '<border-image-width>': '[ <len-pct> | <number> | auto ]{1,4}',
+    '<border-radius>': '<len-pct0+>{1,4} [ / <len-pct0+>{1,4} ]?',
     '<border-shorthand>': '<border-width> || <border-style> || <color>',
     '<box-shadow>': 'none | <shadow>#',
     '<clip-path>': '<basic-shape> || <geometry-box>',
@@ -869,7 +891,7 @@ self.parserlib = (() => {
     '<cubic-bezier-timing-function>': 'ease | ease-in | ease-out | ease-in-out | ' +
       'cubic-bezier( <number>#{4} )',
     '<dasharray>': Matcher =>
-      Matcher.parse('<nonnegative-len-pct> | <nonnegative-num>')
+      Matcher.parse('<len-pct0+> | <num0+>')
         .braces(1, Infinity, '#', Matcher.parse(',').braces(0, 1, '?')),
     '<display-listitem>': '<display-outside>? && [ flow | flow-root ]? && list-item',
     '<explicit-track-list>': '[ <line-names>? <track-size> ]+ <line-names>?',
@@ -878,23 +900,23 @@ self.parserlib = (() => {
     // Value may be omitted in which case the default is used
     '<filter-function>':
       'blur( <length>? ) | ' +
-      'brightness( <number-pct>? ) | ' +
-      'contrast( <number-pct>? ) | ' +
+      'brightness( <num-pct>? ) | ' +
+      'contrast( <num-pct>? ) | ' +
       'drop-shadow( [ <length>{2,3} && <color>? ]? ) | ' +
-      'grayscale( <number-pct>? ) | ' +
+      'grayscale( <num-pct>? ) | ' +
       'hue-rotate( <angle-or-0>? ) | ' +
-      'invert( <number-pct>? ) | ' +
-      'opacity( <number-pct>? ) | ' +
-      'saturate( <number-pct>? ) | ' +
-      'sepia( <number-pct>? )',
+      'invert( <num-pct>? ) | ' +
+      'opacity( <num-pct>? ) | ' +
+      'saturate( <num-pct>? ) | ' +
+      'sepia( <num-pct>? )',
     '<filter-function-list>': '[ <filter-function> | <uri> ]+',
     '<final-bg-layer>': '<color> || <bg-image> || <bg-position> [ / <bg-size> ]? || ' +
       '<repeat-style> || <attachment> || <box>{1,2}',
     '<fixed-repeat>':
-      'repeat( [ <positive-integer> ] , [ <line-names>? <fixed-size> ]+ <line-names>? )',
-    '<fixed-size>': '<length-pct> | ' +
-      'minmax( <length-pct> , <track-breadth> ) | ' +
-      'minmax( <inflexible-breadth> , <length-pct> )',
+      'repeat( [ <integer1+> ] , [ <line-names>? <fixed-size> ]+ <line-names>? )',
+    '<fixed-size>': '<len-pct> | ' +
+      'minmax( <len-pct> , <track-breadth> ) | ' +
+      'minmax( <inflexible-breadth> , <len-pct> )',
     '<flex-shorthand>': 'none | [ <flex-grow> <flex-shrink>? || <flex-basis> ]',
     '<font-family>': '[ <generic-family> | <family-name> ]#',
     '<font-style>': 'normal | italic | oblique <angle>?',
@@ -913,8 +935,9 @@ self.parserlib = (() => {
       'ordinal || slashed-zero',
     '<font-variant-east-asian>': '[ jis78 | jis83 | jis90 | jis04 | simplified | traditional ] || ' +
       '[ full-width | proportional-width ] || ruby',
-    '<font-variant>': '<font-variant-ligatures> || <font-variant-alternates> || <font-variant-caps> || ' +
-      '<font-variant-numeric> || <font-variant-east-asian>',
+    '<font-variant>': 'normal | none | [ ' +
+      '<font-variant-ligatures> || <font-variant-alternates> || ' +
+      '<font-variant-caps> || <font-variant-numeric> || <font-variant-east-asian> ]',
     '<grid-auto-columns>': '<track-size>+',
     '<grid-auto-rows>': '<track-size>+',
     '<grid-line>': 'auto | [ <integer> && <ident-for-grid>? ] | <ident-for-grid> | ' +
@@ -924,8 +947,8 @@ self.parserlib = (() => {
       '[ / <explicit-track-list> ]?',
     '<grid-template-columns>': 'none | <track-list> | <auto-track-list>',
     '<grid-template-rows>': '<grid-template-columns>',
-    '<hsl-color>': '[ <number> | <angle> ] <percentage>{2} [ / <nonnegative-num-pct> ]? | ' +
-      '[ <number> | <angle> ] , <percentage>#{2} [ , <nonnegative-num-pct> ]?',
+    '<hsl-color>': '[ <number> | <angle> ] <pct>{2} [ / <num-pct0+> ]? | ' +
+      '[ <number> | <angle> ] , <pct>#{2} [ , <num-pct0+> ]?',
     '<justify-content>': 'normal | <content-distribution> | ' +
       '<overflow-position>? [ <content-position> | left | right ]',
     '<justify-self>': 'auto | normal | stretch | <baseline-position> | <overflow-position>? ' +
@@ -935,14 +958,14 @@ self.parserlib = (() => {
     // Because our `alt` combinator is ordered, we need to test these
     // in order from longest possible match to shortest.
     '<position>':
-      '[ [ left | right ] <length-pct> ] && [ [ top | bottom ] <length-percentagepct ] | ' +
-      '[ left | center | right | <length-pct> ] ' +
-      '[ top | center | bottom | <length-pct> ]? | ' +
+      '[ [ left | right ] <len-pct> ] && [ [ top | bottom ] <len-pct> ] | ' +
+      '[ left | center | right | <len-pct> ] ' +
+      '[ top | center | bottom | <len-pct> ]? | ' +
       '[ left | center | right ] || [ top | center | bottom ]',
     '<repeat-style>': 'repeat-x | repeat-y | [ repeat | space | round | no-repeat ]{1,2}',
     '<rgb-color>':
-      '[ <number>{3} | <percentage>{3} ] [ / <nonnegative-num-pct> ]? | ' +
-      '[ <number>#{3} | <percentage>#{3} ] [ , <nonnegative-num-pct> ]?',
+      '[ <number>{3} | <pct>{3} ] [ / <num-pct0+> ]? | ' +
+      '[ <number>#{3} | <pct>#{3} ] [ , <num-pct0+> ]?',
     '<shadow>': 'inset? && [ <length>{2,4} && <color>? ]',
     '<single-timing-function>':
       'linear | <cubic-bezier-timing-function> | <step-timing-function> | frames( <integer> )',
@@ -953,9 +976,9 @@ self.parserlib = (() => {
       '[ [ filled | open ] || [ dot | circle | double-circle | triangle | sesame ] ] | ' +
       '<string>',
     '<track-list>': '[ <line-names>? [ <track-size> | <track-repeat> ] ]+ <line-names>?',
-    '<track-repeat>': 'repeat( [ <positive-integer> ] , [ <line-names>? <track-size> ]+ <line-names>? )',
+    '<track-repeat>': 'repeat( [ <integer1+> ] , [ <line-names>? <track-size> ]+ <line-names>? )',
     '<track-size>': '<track-breadth> | minmax( <inflexible-breadth> , <track-breadth> ) | ' +
-      'fit-content( <length-pct> )',
+      'fit-content( <len-pct> )',
     '<transform-function>':
       'matrix( <number>#{6} ) | ' +
       'matrix3d( <number>#{16} ) | ' +
@@ -969,18 +992,18 @@ self.parserlib = (() => {
       'skew( <angle-or-0> [ , <angle-or-0> ]? ) | ' +
       'skewX( <angle-or-0> ) | ' +
       'skewY( <angle-or-0> ) | ' +
-      'translate( <length-pct> [ , <length-pct> ]? ) | ' +
-      'translate3d( <length-pct>#{2} , <length> ) | ' +
-      'translateX( <length-pct> ) | ' +
-      'translateY( <length-pct> ) | ' +
+      'translate( <len-pct> [ , <len-pct> ]? ) | ' +
+      'translate3d( <len-pct>#{2} , <length> ) | ' +
+      'translateX( <len-pct> ) | ' +
+      'translateY( <len-pct> ) | ' +
       'translateZ( <length> )',
-    '<transform-origin>': '[ left | center | right | <length-pct> ] ' +
-      '[ top | center | bottom | <length-pct> ] <length>? | ' +
-      '[ left | center | right | top | bottom | <length-pct> ] | ' +
+    '<transform-origin>': '[ left | center | right | <len-pct> ] ' +
+      '[ top | center | bottom | <len-pct> ] <length>? | ' +
+      '[ left | center | right | top | bottom | <len-pct> ] | ' +
       '[ [ center | left | right ] && [ center | top | bottom ] ] <length>?',
     '<transition>': '[ none | [ all | <ident> ]# ] || <time> || <single-timing-function> || <time>',
-    '<width-height>': '<length-pct> | min-content | max-content | ' +
-      'fit-content | fit-content( <length-pct> ) | -moz-available | -webkit-fill-available',
+    '<width-height>': '<len-pct> | min-content | max-content | ' +
+      'fit-content | fit-content( <len-pct> ) | -moz-available | -webkit-fill-available',
     '<will-change>': 'auto | <animateable-feature>#',
   };
 
@@ -1559,7 +1582,8 @@ self.parserlib = (() => {
      * @return {?boolean}
      */
     match(e) {
-      return e.popMark(this.matchFunc(e.mark()));
+      e._marks.push(e._i);
+      return e.popMark(this.matchFunc(e));
     }
 
     braces(min, max, marker, sep) {
@@ -1886,7 +1910,7 @@ self.parserlib = (() => {
         eat(' )');
         return Matcher.func(fn, m);
       } else {
-        m = Matcher.fromType(eat(/[^\s?*+#{]+/y));
+        m = Matcher.fromType(eat(/<[^>]+>|[^\s?*+#{]+/y));
       }
       reader.mark();
       let hash;
@@ -2381,7 +2405,7 @@ self.parserlib = (() => {
         continue;
       }
       if (arg.endsWith('()') &&
-          part.tokenType === Tokens.FUNCTION &&
+          part.name &&
           part.name.length === arg.length - 2 &&
           lowerCmp(part.name, arg.slice(0, -2))) {
         return true;
@@ -2404,7 +2428,7 @@ self.parserlib = (() => {
 
   const validationCache = new Map();
 
-  function validateProperty(name, property, value) {
+  function validateProperty(name, property, value, Props = Properties) {
     if (isGlobalKeyword(value.parts[0])) {
       if (value.parts.length > 1) {
         throwEndExpected(value.parts[1], true);
@@ -2412,18 +2436,19 @@ self.parserlib = (() => {
       return;
     }
     const prop = lower(name);
-    let known = validationCache.get(prop);
-    if (known && known.has(value.text)) {
-      return;
-    }
-    const spec = Properties[prop] || rxVendorPrefix.test(prop) && Properties[RegExp.$2];
+    const spec = Props[prop] || rxVendorPrefix.test(prop) && Props[RegExp.$2];
     if (typeof spec === 'number' || !spec && prop.startsWith('-')) {
       return;
     }
     if (!spec) {
-      throw new ValidationError(`Unknown property '${name}'.`, value);
+      const problem = Props === Properties || !Properties[prop] ? 'Unknown' : 'Misplaced';
+      throw new ValidationError(`${problem} property '${name}'.`, value);
     }
     if (hasVarParts(value)) {
+      return;
+    }
+    let known = validationCache.get(prop);
+    if (known && known.has(value.text)) {
       return;
     }
     // Property-specific validation.
@@ -3716,7 +3741,7 @@ self.parserlib = (() => {
     _fontFace(start) {
       this.fire('startfontface', start);
       this._ws();
-      this._readDeclarations();
+      this._readDeclarations({Props: ScopedProperties['@font-face']});
       this.fire('endfontface');
     }
 
@@ -4051,7 +4076,7 @@ self.parserlib = (() => {
       return Object.assign(new SelectorSubPart(fastJoin(value), 'not', start), {args});
     }
 
-    _declaration(consumeSemicolon) {
+    _declaration(consumeSemicolon, Props) {
       const stream = this._tokenStream;
       const property = this._property();
       if (!property) {
@@ -4075,7 +4100,7 @@ self.parserlib = (() => {
             this.options.underscoreHack && property.hack === '_'
               ? property.text
               : property.toString();
-          validateProperty(name, property, value);
+          validateProperty(name, property, value, Props);
         } catch (ex) {
           if (!(ex instanceof ValidationError)) {
             ex.message = ex.stack;
@@ -4334,19 +4359,22 @@ self.parserlib = (() => {
     }
 
     /**
-     * @param {Object} [params]
-     * @param {Boolean} [params.checkStart=true] - check for the left brace at the beginning.
-     * @param {Boolean} [params.readMargins=false] - check for margin patterns.
-     * @param {Boolean} [params.stopAfterBrace=false] - stop after the final } without consuming whitespace
+     * @param {{}} [_]
+     * @param {Boolean} [_.checkStart] - check for the left brace at the beginning.
+     * @param {Boolean} [_.readMargins] - check for margin patterns.
+     * @param {Boolean} [_.stopAfterBrace] - stop after the final } without consuming whitespace
+     * @param {{}} [_.Props] - definitions of valid properties
      */
     _readDeclarations({
       checkStart = true,
       readMargins = false,
       stopAfterBrace = false,
+      Props,
     } = {}) {
       const stream = this._tokenStream;
       if (checkStart) stream.mustMatch(Tokens.LBRACE);
-      for (let next, tt; (tt = (next = stream.get(true)).type) !== Tokens.RBRACE;) {
+      let next, tt;
+      while ((next = stream.get(true)).value !== '}' && (tt = next.type)) {
         try {
           // Pre-check to avoid calling _ws too much as it's wasteful
           if (tt === Tokens.S ||
@@ -4357,17 +4385,18 @@ self.parserlib = (() => {
           }
           if (tt === Tokens.SEMICOLON ||
               readMargins && this._margin() ||
-              (tt && stream.unget(), this._declaration(true)) ||
-              (next = stream.LT(1)).type === Tokens.SEMICOLON) {
+              (tt && stream.unget(), this._declaration(true, Props)) ||
+              (next = stream.LT(1)).value === ';' ||
+              this._ws(next, true)) {
             continue;
           }
-          stream.mustMatch(Tokens.RBRACE);
-          if (!stopAfterBrace) this._ws();
           break;
         } catch (ex) {
           this._readDeclarationsRecovery(ex, arguments[0]);
         }
       }
+      if (next.value !== '}') stream.mustMatch(Tokens.RBRACE);
+      if (!stopAfterBrace) this._ws();
     }
 
     _readDeclarationsRecovery(ex) {
@@ -4658,6 +4687,7 @@ self.parserlib = (() => {
       PropertyName,
       PropertyValue,
       PropertyValuePart,
+      ScopedProperties,
       Selector,
       SelectorPart,
       SelectorSubPart,
