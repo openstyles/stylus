@@ -91,7 +91,7 @@ async function initPopup(frames) {
   setupLivePrefs();
 
   Object.assign($('#find-styles-link'), {
-    href: URLS.usoArchive,
+    href: URLS.usoArchive + 'browse/styles',
     async onclick(e) {
       e.preventDefault();
       await require(['/popup/search']);

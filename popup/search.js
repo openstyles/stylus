@@ -85,7 +85,11 @@
       if (!prefs.get('popup.findStylesInline') || dom.container) {
         // use a less specific category if the inline search wasn't used yet
         if (!category) calcCategory({retry: 1});
-        a.search = new URLSearchParams({category, search: $('#search-query').value});
+        const search = [
+          category ? '#' + category : '',
+          $('#search-query').value,
+        ].filter(Boolean).join(' ');
+        a.search = search ? 'search=' + encodeURIComponent(search) : '';
         Events.openURLandHide.call(a, event);
         return;
       }
