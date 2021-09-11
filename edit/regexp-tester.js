@@ -135,8 +135,7 @@ const regexpTester = (() => {
             block.appendChild(
               $create('details', {open: true}, [
                 $create('summary', text),
-                // 3rd level: tab urls
-                ...urls,
+                $create('div', urls),
               ]));
           } else {
             // type is none or invalid

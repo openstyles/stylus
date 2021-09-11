@@ -675,7 +675,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   margin-left: 1rem;
   word-break: break-all;
 }
-.regexp-report details:not(:last-child) {
+.regexp-report details {
   margin-bottom: 1rem;
 }
 .regexp-report summary {
@@ -698,6 +698,10 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   margin-left: 2rem;
   margin-top: .5rem;
 }
+.regexp-report details div {
+  max-height: calc(100vh - 15rem);
+  overflow-y: auto;
+}
 .regexp-report .svg-icon {
   position: absolute;
   margin-top: -1px;
@@ -714,14 +718,13 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 .regexp-report details a img {
   width: 16px;
   max-height: 16px;
-  position: absolute;
-  margin-left: -20px;
-  margin-top: -1px;
+  vertical-align: middle;
+  margin-right: .5em;
 }
 .regexp-report-note {
   color: #999;
   position: absolute;
-  margin: 0 0.5rem 0 0;
+  bottom: 0;
   hyphens: auto;
 }
 /************ help popup ************/
