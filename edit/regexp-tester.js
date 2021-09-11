@@ -18,7 +18,8 @@ const regexpTester = (() => {
       if (state && !isShown) {
         if (!isWatching) {
           isWatching = true;
-          chrome.tabs.onUpdated.addListener(onTabUpdate);
+          chrome.tabs.onRemoved.addListener(onTabRemoved);
+          chrome.tabs.onUpdated.addListener(onTabUpdated);
         }
         helpPopup.show('', $create('.regexp-report'));
         window.on('closeHelp', () => regexpTester.toggle(false), {once: true});
@@ -167,7 +168,11 @@ const regexpTester = (() => {
     }
   }
 
-  function onTabUpdate(tabId, info) {
+  function onTabRemoved() {
+    regexpTester.update();
+  }
+
+  function onTabUpdated(tabId, info) {
     if (info.url) {
       regexpTester.update();
     }
@@ -175,7 +180,8 @@ const regexpTester = (() => {
 
   function unwatch() {
     if (isWatching) {
-      chrome.tabs.onUpdated.removeListener(onTabUpdate);
+      chrome.tabs.onRemoved.removeListener(onTabRemoved);
+      chrome.tabs.onUpdated.removeListener(onTabUpdated);
       isWatching = false;
     }
   }
