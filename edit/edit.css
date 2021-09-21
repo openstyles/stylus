@@ -4,6 +4,7 @@
 
 body {
   margin: 0;
+  height: 100vh;
   font: 12px arial,sans-serif;
 }
 
@@ -1170,6 +1171,10 @@ body.linter-disabled .hidden-unless-compact {
   #sections > :not(.single-editor) {
     margin: 0 .5rem;
     padding: .5rem 0;
+  }
+  .single-editor {
+    overflow: hidden;
+    flex: 1;
   }
   .usercss #options:not([open]) ~ #lint.hidden ~ #footer,
   .usercss #lint:not([open]) + #footer {
