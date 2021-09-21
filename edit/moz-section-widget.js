@@ -129,7 +129,7 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
       update(finder.sections, []);
     }
     finder.on(update);
-    requestAnimationFrame(updateWidgetStyle);
+    updateWidgetStyle(); // updating in this paint frame to avoid FOUC for dark themes
     cm.display.wrapper.style.setProperty('--cm-bar-width', cm.display.barWidth + 'px');
   }
 
