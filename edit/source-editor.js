@@ -57,6 +57,7 @@ function SourceEditor() {
       if (sec) {
         sectionFinder.updatePositions(sec);
         cm.jumpToPos(sec.start);
+        cm.focus();
       }
     },
     async save() {
