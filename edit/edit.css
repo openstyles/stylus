@@ -962,13 +962,6 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 }
 
 /************ single editor **************/
-.usercss body {
-  display: flex;
-  height: 100vh;
-  flex-direction: column;
-  justify-items: normal;
-}
-
 .usercss .CodeMirror-focused {
   box-shadow: none;
 }
@@ -991,13 +984,9 @@ body.linter-disabled .hidden-unless-compact {
   margin-top: .75rem;
 }
 
-.single-editor {
-  height: 100%;
-}
-
 .single-editor .CodeMirror {
   width: 100%;
-  height: auto;
+  height: 100vh; /* WARNING! Don't use 100% as it's dead slow */
   border: none;
   outline: none;
 }
@@ -1009,11 +998,6 @@ body.linter-disabled .hidden-unless-compact {
 
 #footer a:hover {
   color: #666;
-}
-
-.usercss.firefox #sections,
-.usercss.firefox .CodeMirror {
-  height: 100%;
 }
 
 /************ line widget *************/
