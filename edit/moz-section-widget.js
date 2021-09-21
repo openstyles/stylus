@@ -130,6 +130,7 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
     }
     finder.on(update);
     requestAnimationFrame(updateWidgetStyle);
+    cm.display.wrapper.style.setProperty('--cm-bar-width', cm.display.barWidth + 'px');
   }
 
   function destroy() {

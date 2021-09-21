@@ -589,6 +589,9 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   align-items: flex-start;
   min-height: 30px;
   flex-wrap: wrap;
+  background-color: #f7f7f7; /* .CodeMirror-gutters */
+  border: solid #bbb;
+  border-width: 1px 0;
 }
 .applies-to.error {
   background-color: #f002;
