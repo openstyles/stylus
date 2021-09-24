@@ -140,11 +140,10 @@ async function initPopup(frames) {
   }
 
   frames.forEach(createWriterElement);
-  if (frames.length > 1) {
-    const el = $('#write-for-frames');
-    el.hidden = false;
-    el.onclick = () => el.classList.toggle('expanded');
-  }
+  Object.assign($('#write-for-frames'), {
+    onclick: e => e.currentTarget.classList.toggle('expanded'),
+    hidden: frames.length < 2 || !$('.match .match:not(.dupe)'),
+  });
 
   const isStore = tabURL.startsWith(URLS.browserWebStore);
   if (isStore && !FIREFOX) {
