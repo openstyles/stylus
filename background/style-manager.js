@@ -142,12 +142,12 @@ const styleMan = (() => {
       if (isInitialApply && prefs.get('disableAll')) {
         return {disableAll: true};
       }
-      if (CHROME && this && this.sender) {
+      const sender = CHROME && this && this.sender || {};
+      if (sender.frameId === 0) {
         /* Chrome hides text frament from location.href of the page e.g. #:~:text=foo
            so we'll use the real URL reported by webNavigation API.
            TODO: if FF will do the same, this won't work as is: FF reports onCommitted too late */
-        const {tab, frameId} = this.sender;
-        url = tab && tabMan.get(tab.id, 'url', frameId) || url;
+        url = tabMan.get(sender.tab.id, 'url', 0) || url;
       }
       let cache = cachedStyleForUrl.get(url);
       if (!cache) {
