@@ -39,12 +39,13 @@
    * and they may break if unexpected DOM stuff is present at `load` event
    * so we'll add the styles only if the iframe becomes visible */
   const {IntersectionObserver} = window;
+  const xoEventId = `${Math.random()}`;
   /** @type IntersectionObserver */
   let xo;
   if (IntersectionObserver) {
     window[Symbol.for('xo')] = (el, cb) => {
       if (!xo) xo = new IntersectionObserver(onIntersect, {rootMargin: '100%'});
-      el.cb = cb;
+      el.addEventListener(xoEventId, cb, {once: true});
       xo.observe(el);
     };
   }
@@ -235,7 +236,7 @@
     for (const e of entries) {
       if (e.isIntersecting) {
         xo.unobserve(e.target);
-        tryCatch(e.target.cb);
+        e.target.dispatchEvent(new Event(xoEventId));
       }
     }
   }
