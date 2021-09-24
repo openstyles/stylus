@@ -167,6 +167,12 @@
         $('format-change', [
           $formatChangeButton = $('format-change-button', {onclick: setFromFormatElement}, '↔'),
         ]),
+        window.EyeDropper &&
+        $('dropper', {
+          tag: 'img',
+          onclick: () => new window.EyeDropper().open().then(r => setFromColor(r.sRGBHex), () => 0),
+          srcset: '/images/eyedropper/16px.png, /images/eyedropper/32px.png 2x',
+        }),
       ]),
       $palette = $('palette', {
         onclick: onPaletteClicked,

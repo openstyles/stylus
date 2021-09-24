@@ -377,6 +377,15 @@
   color: var(--label-color-hover);
 }
 
+.colorpicker-dropper {
+  position: absolute;
+  right: 7px;
+  bottom: 4px;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
 .colorpicker-palette:not(:empty) {
   --swatch-size: 16px;
   margin: 0 var(--margin) var(--margin);
