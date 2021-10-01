@@ -9,7 +9,7 @@
     "codemirror": "WARNING! Always use an exact version and test it for a while before releasing"
   },
   "dependencies": {
-    "codemirror": "5.62.3",
+    "codemirror": "5.63.1",
     "db-to-cloud": "^0.6.0",
     "jsonlint": "^1.6.3",
     "less-bundle": "github:openstyles/less-bundle#v0.1.0",

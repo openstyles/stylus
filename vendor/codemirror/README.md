@@ -1,4 +1,4 @@
-## codemirror v5.62.3
+## codemirror v5.63.1
 
 Following files are copied from npm (node_modules):
 
@@ -27,6 +27,7 @@ Following files are copied from npm (node_modules):
 * keymap\emacs.js
 * keymap\sublime.js
 * keymap\vim.js
+* lib\#codemirror.js#
 * lib\codemirror.css
 * lib\codemirror.js
 * mode\css
