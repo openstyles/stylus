@@ -321,7 +321,7 @@
     "message": "支持"
   },
   "externalUsercssDocument": {
-    "message": "UserCSS 外部文档"
+    "message": "UserCSS 文档"
   },
   "filteredStyles": {
     "message": "共 $numTotal$ 个，已显示 $numShown$ 个",
@@ -601,13 +601,13 @@
     "message": "只显示非 UserCSS 样式"
   },
   "manageOnlyUpdates": {
-    "message": "只显示可更新或无法更新的样式"
+    "message": "只显示已更新或更新时有问题的样式"
   },
   "manageOnlyUsercss": {
     "message": "只显示 UserCSS 样式"
   },
   "menuShowBadge": {
-    "message": "计数器角标"
+    "message": "显示计数器角标"
   },
   "meta_invalidCheckboxDefault": {
     "message": "无效 @var 复选框：赋值必须为 0 或 1 "
@@ -1022,7 +1022,7 @@
     "message": "样式列表置顶"
   },
   "prefShowBadge": {
-    "message": "计数器角标 (或图标右键)"
+    "message": "在当前网站生效的样式数量"
   },
   "previewLabel": {
     "message": "实时预览"
@@ -1118,7 +1118,7 @@
     "message": "代码"
   },
   "searchStylesHelp": {
-    "message": "</> 或 <Ctrl-F> 以聚焦到搜索栏；<Esc> 清空搜索框\n焦点在页面时, 也支持样式名的英文首字母索引。\n默认纯文本搜索，可按任何顺序搜索所有以空格分隔的术语。\n精确搜索：使用双引号包裹住想要搜索的内容，例如 <\"head ~ div\">\n正则表达式：包括斜杠和标记，例如 </body.*?\\ba\\b/i>\n搜索范围选择器中的 「匹配 URL」：查找适用于已指定 URL 的样式，例如 https://www.example.org/\n搜索范围选择器中的 「元数据」：含 样式名称、应用于、安装/更新URL、以及 UserCSS 中的整个元数据块（即==UserStyle==那些）但不包括代码里的注释内容。"
+    "message": "</> 或 <Ctrl-F> 以定位到搜索框；<Esc> 清空搜索框\n焦点在页面时, 也支持样式名的英文首字母索引。\n默认纯文本搜索，可按任何顺序搜索所有以空格分隔的术语。\n精确搜索：使用双引号包裹住想要搜索的内容，例如 <\"head ~ div\">\n正则表达式：包括斜杠和标记，例如 </body.*?\\ba\\b/i>\n搜索范围选择器中的 「匹配 URL」：查找适用于已指定 URL 的样式，例如 https://www.example.org/\n搜索范围选择器中的 「元数据」：含 样式名称、应用于、安装/更新URL、以及 UserCSS 中的整个元数据块（即==UserStyle==那些）但不包括代码里的注释内容。"
   },
   "searchStylesMatchUrl": {
     "message": "URL"
