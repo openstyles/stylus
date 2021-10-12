@@ -4501,7 +4501,7 @@
   function onScrollWheel(cm, e) {
     var delta = wheelEventDelta(e), dx = delta.x, dy = delta.y;
     var pixelsPerUnit = wheelPixelsPerUnit;
-    if (event.deltaMode === 0) {
+    if (e.deltaMode === 0) {
       dx = e.deltaX;
       dy = e.deltaY;
       pixelsPerUnit = 1;
@@ -8235,7 +8235,7 @@
   }
 
   function hiddenTextarea() {
-    var te = elt("textarea", null, null, "position: absolute; bottom: -1em; padding: 0; width: 1px; height: 1em; outline: none");
+    var te = elt("textarea", null, null, "position: absolute; bottom: -1em; padding: 0; width: 1px; height: 1em; min-height: 1em; outline: none");
     var div = elt("div", [te], null, "overflow: hidden; position: relative; width: 3px; height: 0px;");
     // The textarea is kept positioned near the cursor to prevent the
     // fact that it'll be scrolled into view on input from scrolling
@@ -9832,7 +9832,7 @@
 
   addLegacyProps(CodeMirror);
 
-  CodeMirror.version = "5.63.1";
+  CodeMirror.version = "5.63.3";
 
   return CodeMirror;
 
