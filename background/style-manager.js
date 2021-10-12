@@ -512,13 +512,16 @@ const styleMan = (() => {
       res = style.md5Url = url.replace('update.update.userstyles', 'update.userstyles');
     }
     /* Default homepage URL for external styles installed from a known distro */
-    if ((url = style.updateUrl) && (url =
-      URLS.extractGreasyForkInstallUrl(url) ||
-      URLS.extractUsoArchiveInstallUrl(url) ||
-      URLS.extractUSwInstallUrl(url)
-    )) {
+    if (
+      (!style.url || !style.installationUrl) &&
+      (url = style.updateUrl) &&
+      (url = URLS.extractGreasyForkInstallUrl(url) ||
+        URLS.extractUsoArchiveInstallUrl(url) ||
+        URLS.extractUSwInstallUrl(url)
+      )
+    ) {
       if (!style.url) res = style.url = url;
-      if (style.installationUrl !== url) res = style.installationUrl = url;
+      if (!style.installationUrl) res = style.installationUrl = url;
     }
     return Boolean(res);
   }
