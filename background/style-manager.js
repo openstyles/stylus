@@ -234,12 +234,6 @@ const styleMan = (() => {
       if (ready.then) await ready;
       reason = reason || dataMap.has(style.id) ? 'update' : 'install';
       style = mergeWithMapped(style);
-      const url = !style.url && style.updateUrl && (
-        URLS.extractUsoArchiveInstallUrl(style.updateUrl) ||
-        URLS.extractGreasyForkInstallUrl(style.updateUrl) ||
-        URLS.extractUSwInstallUrl(style.updateUrl)
-      );
-      if (url) style.url = style.installationUrl = url;
       style.originalDigest = await calcStyleDigest(style);
       // FIXME: update updateDate? what about usercss config?
       return saveStyle(style, {reason});
@@ -427,7 +421,7 @@ const styleMan = (() => {
       style._id = uuidv4();
     }
     style._rev = Date.now();
-    fixUsoMd5Issue(style);
+    fixKnownProblems(style);
   }
 
   function afterSave(style, newId) {
@@ -478,7 +472,6 @@ const styleMan = (() => {
       await db.exec('putMany', updated);
     }
     for (const style of styles) {
-      fixUsoMd5Issue(style);
       storeInMap(style);
       uuidIndex.set(style._id, style.id);
     }
@@ -513,7 +506,21 @@ const styleMan = (() => {
         style[key] = fixedUrl;
       }
     }
-    return res;
+    let url;
+    /* USO bug, duplicate "update" subdomain, see #523 */
+    if ((url = style.md5Url) && url.includes('update.update.userstyles')) {
+      res = style.md5Url = url.replace('update.update.userstyles', 'update.userstyles');
+    }
+    /* Default homepage URL for external styles installed from a known distro */
+    if ((url = style.updateUrl) && (url =
+      URLS.extractGreasyForkInstallUrl(url) ||
+      URLS.extractUsoArchiveInstallUrl(url) ||
+      URLS.extractUSwInstallUrl(url)
+    )) {
+      if (!style.url) res = style.url = url;
+      if (style.installationUrl !== url) res = style.installationUrl = url;
+    }
+    return Boolean(res);
   }
 
   function urlMatchStyle(query, style) {
@@ -600,14 +607,6 @@ const styleMan = (() => {
       (match[2] ? '(?:[\\w.]+\\.)?' : '') +
       compileGlob(match[3]) +
       '$';
-  }
-
-  // The md5Url provided by USO includes a duplicate "update" subdomain (see #523),
-  // This fixes any already installed styles containing this error
-  function fixUsoMd5Issue(style) {
-    if (style && style.md5Url && style.md5Url.includes('update.update.userstyles')) {
-      style.md5Url = style.md5Url.replace('update.update.userstyles', 'update.userstyles');
-    }
   }
 
   function createMatchQuery(url) {
