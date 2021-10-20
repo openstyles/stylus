@@ -73,7 +73,7 @@
   // https://bugzilla.mozilla.org/show_bug.cgi?id=1561546
   // https://bugs.chromium.org/p/chromium/issues/detail?id=968651
   const media = window.matchMedia('(prefers-color-scheme: dark)');
-  media.addListener(() => API.updateSystemPreferDark().catch(console.error));
+  media.addListener(() => API.colorScheme.updateSystemPreferDark().catch(console.error));
 
   function onInjectorUpdate() {
     if (!isOrphaned) {
