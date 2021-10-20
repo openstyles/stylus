@@ -309,6 +309,7 @@ function install(style) {
   $('.set-update-url input[type=checkbox]').disabled = true;
   $('.set-update-url').title = style.updateUrl ?
     t('installUpdateFrom', style.updateUrl) : '';
+  $('.set-prefer-scheme select').disabled = true;
   enablePostActions();
   updateMeta(style);
 }
