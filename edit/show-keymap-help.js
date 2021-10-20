@@ -1,17 +1,18 @@
-/* global CodeMirror showHelp onDOMready $ $$ $create template t
-  prefs stringAsRegExp */
+/* global $$ $create */// dom.js
+/* global CodeMirror */
+/* global helpPopup */// util.js
+/* global prefs */
+/* global stringAsRegExp */// toolbox.js
+/* global t */// localization.js
 'use strict';
 
-onDOMready().then(() => {
-  $('#keyMap-help').addEventListener('click', showKeyMapHelp);
-});
-
-function showKeyMapHelp() {
+/* exported showKeymapHelp */
+function showKeymapHelp() {
   const keyMap = mergeKeyMaps({}, prefs.get('editor.keyMap'), CodeMirror.defaults.extraKeys);
   const keyMapSorted = Object.keys(keyMap)
     .map(key => ({key, cmd: keyMap[key]}))
     .sort((a, b) => (a.cmd < b.cmd || (a.cmd === b.cmd && a.key < b.key) ? -1 : 1));
-  const table = template.keymapHelp.cloneNode(true);
+  const table = t.template.keymapHelp.cloneNode(true);
   const tBody = table.tBodies[0];
   const row = tBody.rows[0];
   const cellA = row.children[0];
@@ -23,17 +24,19 @@ function showKeyMapHelp() {
     tBody.appendChild(row.cloneNode(true));
   }
 
-  showHelp(t('cm_keyMap') + ': ' + prefs.get('editor.keyMap'), table);
+  helpPopup.show(t('cm_keyMap') + ': ' + prefs.get('editor.keyMap'), table);
 
   const inputs = $$('input', table);
-  inputs[0].addEventListener('keydown', hotkeyHandler);
+  inputs[0].on('keydown', hotkeyHandler);
   inputs[1].focus();
 
   table.oninput = filterTable;
 
   function hotkeyHandler(event) {
     const keyName = CodeMirror.keyName(event);
-    if (keyName === 'Esc' || keyName === 'Tab' || keyName === 'Shift-Tab') {
+    if (keyName === 'Esc' ||
+        keyName === 'Tab' ||
+        keyName === 'Shift-Tab') {
       return;
     }
     event.preventDefault();
@@ -81,6 +84,7 @@ function showKeyMapHelp() {
       }
     }
   }
+
   function mergeKeyMaps(merged, ...more) {
     more.forEach(keyMap => {
       if (typeof keyMap === 'string') {
@@ -93,7 +97,7 @@ function showKeyMapHelp() {
           if (typeof cmd === 'function') {
             // for 'emacs' keymap: provide at least something meaningful (hotkeys and the function body)
             // for 'vim*' keymaps: almost nothing as it doesn't rely on CM keymap mechanism
-            cmd = cmd.toString().replace(/^function.*?\{[\s\r\n]*([\s\S]+?)[\s\r\n]*\}$/, '$1');
+            cmd = cmd.toString().replace(/^function.*?{[\s\r\n]*([\s\S]+?)[\s\r\n]*}$/, '$1');
             merged[key] = cmd.length <= 200 ? cmd : cmd.substr(0, 200) + '...';
           } else {
             merged[key] = cmd;

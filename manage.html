@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html id="stylus">
 
 <head>
@@ -5,23 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title i18n-text="manageTitle"></title>
   <link rel="stylesheet" href="global.css">
-  <link rel="stylesheet" href="manage/manage.css">
-  <link rel="stylesheet" href="manage/config-dialog.css">
-  <link rel="stylesheet" href="msgbox/msgbox.css">
-  <link rel="stylesheet" href="options/onoffswitch.css">
-  <link rel="stylesheet" href="vendor-overwrites/colorpicker/colorpicker.css">
-
-  <style id="style-overrides"></style>
-
-  <style id="firefox-transitions-bug-suppressor">
-    /* restrict to FF */
-    @supports (-moz-appearance:none) {
-      /* increased specificity to override sane selectors in user styles */
-      html#stylus.firefox #stylus-manage #header * {
-        transition: none !important;
-      }
-    }
-  </style>
 
   <!-- Notes:
     * Chrome doesn't garbage-collect (or even leaks) SVG <symbol> referenced via <use> so we'll embed the code directly
@@ -32,7 +16,10 @@
   <template data-id="style">
     <div class="entry">
       <h2 class="style-name">
-        <a class="style-name-link"></a>
+        <a class="style-name-link">
+          &nbsp;
+          <span class="style-info" data-type="version"></span>
+        </a>
         <a target="_blank" class="homepage"></a>
       </h2>
       <p class="applies-to">
@@ -54,27 +41,31 @@
     </div>
   </template>
 
-  <template data-id="styleCompact">
+  <template data-id="styleNewUI">
     <div class="entry">
       <h2 class="style-name">
-      <div class="checkmate">
-        <input class="checker" type="checkbox" i18n-title="toggleStyle">
-        <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-      </div>
-        <a class="style-name-link"></a>
+        <div class="checkmate">
+          <input class="checker" type="checkbox" i18n-title="toggleStyle">
+          <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+        </div>
+        <a class="style-name-link">
+          &nbsp;
+          <span class="style-info" data-type="version"></span>
+        </a>
       </h2>
       <p class="actions">
         <a target="_blank" class="homepage" tabindex="0"></a>
-        <a href="#" class="delete" i18n-title="deleteStyleLabel" tabindex="0">
+        <a class="delete" i18n-title="deleteStyleLabel" tabindex="0">
           <svg class="svg-icon" viewBox="0 0 20 20">
             <polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5
                              5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10 "/>
           </svg>
         </a>
       </p>
+      <p class="style-info" data-type="age"></p>
       <div class="applies-to">
         <div class="targets"></div>
-        <a href="#" class="expander" tabindex="0">...</a>
+        <a class="expander" tabindex="0">...</a>
       </div>
     </div>
   </template>
@@ -93,14 +84,14 @@
   </template>
 
   <template data-id="configureIcon">
-    <a href="#" class="configure-usercss" i18n-title="configureStyle" tabindex="0">
+    <a class="configure-usercss" i18n-title="configureStyle" tabindex="0">
       <svg class="svg-icon config"><use xlink:href="#svg-icon-config"></use></svg>
     </a>
   </template>
 
   <template data-id="updaterIcons">
     <span class="updater-icons">
-      <a href="#" class="check-update" i18n-title="checkForUpdate" tabindex="0">
+      <a class="check-update" i18n-title="checkForUpdate" tabindex="0">
         <svg class="svg-icon" viewBox="0 0 20 20">
           <path d="M18,16.6l-3.1-3.1c0.5-0.7,0.9-1.5,1-2.5h-2.1c-0.4,1.7-2,3-3.9,3c-0.8,0-1.6-0.3-2.3-0.7
                    L10,11H6.1H4.1H4v6l2.3-2.3c1,0.8,2.3,1.3,3.7,1.3c1.3,0,2.5-0.4,3.5-1.1l3.1,3.1L18,16.6z"/>
@@ -108,7 +99,7 @@
                    C7,4,4.6,6.2,4.1,9h2.1C6.6,7.3,8.1,6,10,6z"/>
         </svg>
       </a>
-      <a href="#" class="update" i18n-title="installUpdate" tabindex="0">
+      <a class="update" i18n-title="installUpdate" tabindex="0">
         <svg class="svg-icon" viewBox="0 0 20 20">
           <polygon points="16,8 12,8 12,3 8,3 8,8 4,8 10,14 "/>
           <rect shape-rendering="crispEdges" x="4" y="15" width="12" height="2"/>
@@ -147,28 +138,23 @@
   </template>
 
   <script src="js/polyfill.js"></script>
-  <script src="js/dom.js"></script>
-  <script src="js/messaging.js"></script>
   <script src="js/msg.js"></script>
+  <script src="js/toolbox.js"></script>
   <script src="js/prefs.js"></script>
+  <script src="js/dom.js"></script>
+  <script src="js/localization.js"></script>
   <script src="js/router.js"></script>
+
   <script src="content/style-injector.js"></script>
   <script src="content/apply.js"></script>
-  <script src="js/localization.js"></script>
+
+  <script src="manage/events.js"></script>
   <script src="manage/filters.js"></script>
-  <script src="manage/sort.js"></script>
+  <script src="manage/render.js"></script>
+  <script src="manage/sorter.js"></script>
   <script src="manage/manage.js"></script>
 
-  <script src="vendor-overwrites/colorpicker/colorconverter.js"></script>
-  <script src="vendor-overwrites/colorpicker/colorpicker.js"></script>
-  <script src="manage/config-dialog.js"></script>
-  <script src="manage/updater-ui.js"></script>
-  <script src="manage/object-diff.js"></script>
-  <script src="manage/import-export.js"></script>
-  <script src="manage/incremental-search.js"></script>
-  <script src="msgbox/msgbox.js"></script>
-  <script src="js/sections-util.js"></script>
-  <script src="js/storage-util.js"></script>
+  <link rel="stylesheet" href="manage/manage.css">
 </head>
 
 <body id="stylus-manage" i18n-dragndrop-hint="dragDropMessage">
@@ -183,7 +169,7 @@
           <h2 i18n-text="manageFilters">:
             <div class="filter-stats-wrapper">
               <span id="filters-stats"></span>
-              <a id="reset-filters" href="#" tabindex="0">
+              <a id="reset-filters" tabindex="0">
                 <svg class="svg-icon" viewBox="0 0 20 20">
                   <title i18n-text="genericResetLabel"></title>
                   <polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5
@@ -204,7 +190,7 @@
             </div>
           </label>
           <div class="select-resizer">
-            <select id="manage.onlyEnabled.invert">
+            <select id="manage.onlyEnabled.invert" class="fit-width">
               <option i18n-text="manageOnlyEnabled" value="false"></option>
               <option i18n-text="manageOnlyDisabled" value="true"></option>
             </select>
@@ -222,7 +208,7 @@
             </div>
           </label>
           <div class="select-resizer">
-            <select id="manage.onlyLocal.invert" i18n-title="manageOnlyLocalTooltip">
+            <select id="manage.onlyLocal.invert" i18n-title="manageOnlyLocalTooltip" class="fit-width">
               <option i18n-text="manageOnlyLocal" value="false"></option>
               <option i18n-text="manageOnlyExternal" value="true"></option>
             </select>
@@ -240,7 +226,7 @@
             </div>
           </label>
           <div class="select-resizer">
-            <select id="manage.onlyUsercss.invert">
+            <select id="manage.onlyUsercss.invert" class="fit-width">
               <option i18n-text="manageOnlyUsercss" value="false"></option>
               <option i18n-text="manageOnlyNonUsercss" value="true"></option>
             </select>
@@ -259,10 +245,20 @@
         </label>
 
         <div id="search-wrapper">
-          <input id="search" type="search" i18n-placeholder="searchStyles" spellcheck="false"
+          <input id="search" type="search" i18n-placeholder="search" spellcheck="false"
                  data-filter=":not(.not-matching)"
                  data-filter-hide=".not-matching">
-          <a href="#" id="search-help" tabindex="0">
+          <div class="select-wrapper">
+            <select id="searchMode" class="fit-width">
+              <option i18n-text="searchStylesName" value="name"></option>
+              <option i18n-text="searchStylesMeta" value="meta" selected></option>
+              <option i18n-text="searchStylesCode" value="code"></option>
+              <option i18n-text="searchStylesMatchUrl" value="url"></option>
+              <option i18n-text="searchStylesAll" value="all"></option>
+            </select>
+            <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+          </div>
+          <a id="search-help" tabindex="0">
             <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
           </a>
         </div>
@@ -274,7 +270,7 @@
           <select id="manage.newUI.sort"></select>
           <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
         </div>
-        <a href="#" id="sorter-help" tabindex="0">
+        <a id="sorter-help" tabindex="0">
           <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
         </a>
       </div>
@@ -284,8 +280,10 @@
       <details id="actions" data-pref="manage.actions.expanded">
         <summary><h2 i18n-text="optionsActions"></h2></summary>
         <div id="update-check">
-          <button id="check-all-updates" i18n-text="checkAllUpdates"><span id="update-progress"></span></button>
-          <a href="#" id="update-history" i18n-title="genericHistoryLabel" tabindex="0">
+          <button id="check-all-updates" i18n-text="checkAllUpdates">
+            <span id="update-progress"></span>
+          </button>
+          <a id="update-history" i18n-title="genericHistoryLabel" tabindex="0">
             <svg class="svg-icon" viewBox="0 0 20 20" i18n-alt="helpAlt">
               <path d="M13,7H7V6h6Zm6,6.5A5.5,5.5,0,0,1,8.61,16H4V3H16V8.61A5.5,5.5,0,0,1,19,13.5ZM8,14c0-.16,0-.84,0-1H7V12H8.21a5.46,5.46,0,0,1,.39-1H7V10H9.26a5.55,5.55,0,0,1,1.09-1H7V8h7V5H6v9Zm10-.5A4.5,4.5,0,1,0,13.5,18,4.5,4.5,0,0,0,18,13.5ZM14,13V10H13v4h4V13Z"/>
             </svg>
@@ -308,8 +306,7 @@
             <span i18n-text="manageNewStyleAsUsercss" i18n-title="optionsAdvancedNewStyleAsUsercss"></span>
             <a id="usercss-wiki"
                href="https://github.com/openstyles/stylus/wiki/Usercss"
-               i18n-title="externalUsercssDocument"
-               tabindex="0">
+               i18n-title="externalUsercssDocument">
               <svg class="svg-icon" viewBox="0 0 20 20">
                 <path d="M4,4h5v2H6v8h8v-3h2v5H4V4z M11,3h6v6l-2-2l-4,4L9,9l4-4L11,3z"/>
               </svg>
@@ -333,7 +330,18 @@
       </details>
 
       <div id="manage-text">
-        <span><a href="https://userstyles.org" target="_blank" i18n-text="linkGetStyles"></a></span>
+        <span>
+          <a href="https://userstyles.world/explore" target="_blank" i18n-text="linkGetShareStyles"></a>
+          <a tabindex="0" i18n-title="linkGetShareStylesInfo" data-cmd="note">
+            <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+          </a>
+        </span>
+        <span>
+          <a href="https://uso.kkx.one/browse/styles" target="_blank" i18n-text="linkGetStyles"></a>
+          <a tabindex="0" i18n-title="linkGetStylesInfo" data-cmd="note">
+            <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+          </a>
+        </span>
         <span><a href="https://add0n.com/stylus.html#features" target="_blank" i18n-text="linkGetHelp"></a></span>
         <span><a href="https://github.com/openstyles/stylus/wiki" target="_blank" i18n-text="linkStylusWiki"></a></span>
         <span><a href="https://www.transifex.com/github-7/Stylus" target="_blank" i18n-text="linkTranslate"></a></span>
@@ -355,12 +363,11 @@
   </symbol>
 
   <symbol id="svg-icon-help" viewBox="0 0 14 16">
-    <title i18n-text="helpAlt"></title>
     <path fill-rule="evenodd" d="M6.3 5.69a.942.942 0 0 1-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 0 1-.7.3c-.28 0-.52-.11-.7-.3zM8 7.99c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V7.98v.01zM7 2.3c-3.14 0-5.7 2.54-5.7 5.68 0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 .98c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z"></path>
   </symbol>
 
-  <symbol id="svg-icon-config" viewBox="0 0 14 14">
-    <path d="M6.2,0C5.8,0,5.4,0.4,5.4,0.8v0.7C5,1.7,4.6,1.8,4.3,2L3.8,1.5C3.6,1.4,3.4,1.3,3.2,1.3S2.7,1.4,2.6,1.5L1.5,2.6c-0.3,0.3-0.3,0.9,0,1.2L2,4.3C1.8,4.6,1.7,5,1.5,5.4H0.8C0.4,5.4,0,5.8,0,6.2v1.5c0,0.5,0.4,0.8,0.8,0.8h0.7C1.7,9,1.8,9.4,2,9.7l-0.5,0.5c-0.3,0.3-0.3,0.8,0,1.2l1.1,1.1c0.3,0.3,0.9,0.3,1.2,0L4.3,12c0.4,0.2,0.8,0.4,1.2,0.5v0.7c0,0.5,0.4,0.8,0.8,0.8h1.5c0.5,0,0.8-0.4,0.8-0.8v-0.7C9,12.3,9.4,12.2,9.7,12l0.5,0.5c0.3,0.3,0.9,0.3,1.2,0l1.1-1.1c0.3-0.3,0.3-0.8,0-1.2L12,9.7c0.2-0.4,0.4-0.8,0.5-1.2h0.7c0.5,0,0.8-0.4,0.8-0.8V6.2c0-0.5-0.4-0.8-0.8-0.8h-0.7C12.3,5,12.2,4.6,12,4.3l0.5-0.5c0.3-0.3,0.3-0.9,0-1.2l-1.1-1.1c-0.2-0.2-0.4-0.2-0.6-0.2s-0.4,0.1-0.6,0.2L9.7,2C9.4,1.8,9,1.7,8.6,1.5V0.8C8.6,0.4,8.2,0,7.8,0L6.2,0z M6.8,0.8h0.4c0.2,0,0.4,0.2,0.4,0.4v1.2c0.8,0.1,1.6,0.4,2.3,0.9l0.8-0.8c0.2-0.2,0.4-0.2,0.6,0l0.3,0.3c0.2,0.2,0.2,0.4,0,0.6l-0.8,0.8c0.5,0.7,0.8,1.4,0.9,2.3h1.2c0.2,0,0.4,0.2,0.4,0.4v0.4c0,0.2-0.2,0.4-0.4,0.4h-1.2c-0.1,0.8-0.4,1.6-0.9,2.3l0.8,0.8c0.2,0.2,0.2,0.4,0,0.6l-0.3,0.3c-0.2,0.2-0.4,0.2-0.6,0l-0.8-0.8c-0.7,0.5-1.4,0.8-2.3,0.9v1.2c0,0.2-0.2,0.4-0.4,0.4H6.8c-0.2,0-0.4-0.2-0.4-0.4v-1.2c-0.8-0.1-1.6-0.4-2.3-0.9l-0.8,0.8c-0.2,0.2-0.4,0.2-0.6,0l-0.3-0.3c-0.2-0.2-0.2-0.4,0-0.6l0.8-0.8C2.8,9.2,2.5,8.4,2.4,7.6H1.2C1,7.6,0.8,7.4,0.8,7.2V6.8c0-0.2,0.2-0.4,0.4-0.4h1.2c0.1-0.8,0.4-1.6,0.9-2.3L2.5,3.3c-0.2-0.2-0.2-0.4,0-0.6l0.3-0.3c0.2-0.2,0.4-0.2,0.6,0l0.8,0.8c0.7-0.5,1.4-0.8,2.3-0.9V1.2C6.4,1,6.6,0.8,6.8,0.8L6.8,0.8z M7,3.6C5.1,3.6,3.6,5.1,3.6,7c0,0,0,0,0,0c0,1.9,1.5,3.4,3.4,3.4c1.9,0,3.4-1.5,3.4-3.4C10.4,5.1,8.9,3.6,7,3.6C7,3.6,7,3.6,7,3.6z M7,4.8c1.2,0,2.2,1,2.2,2.2c0,1.2-1,2.2-2.2,2.2c-1.2,0-2.2-1-2.2-2.2C4.8,5.8,5.8,4.8,7,4.8z"/>
+  <symbol id="svg-icon-config" viewBox="0 0 16 16">
+    <path d="M13.3,12.8l1.5-2.6l-2.2-1.5c0-0.2,0.1-0.5,0.1-0.7c0-0.2,0-0.5-0.1-0.7l2.2-1.5l-1.5-2.6l-2.4,1.2 c-0.4-0.3-0.8-0.5-1.2-0.7L9.5,1h-3L6.3,3.7C5.9,3.8,5.5,4.1,5.1,4.4L2.7,3.2L1.2,5.8l2.2,1.5c0,0.2-0.1,0.5-0.1,0.7 c0,0.2,0,0.5,0.1,0.7l-2.2,1.5l1.5,2.6l2.4-1.2c0.4,0.3,0.8,0.5,1.2,0.7L6.5,15h3l0.2-2.7c0.4-0.2,0.8-0.4,1.2-0.7L13.3,12.8z  M8,10.3c-1.3,0-2.3-1-2.3-2.3c0-1.3,1-2.3,2.3-2.3c1.3,0,2.3,1,2.3,2.3C10.3,9.3,9.3,10.3,8,10.3z"/>
   </symbol>
 </svg>
 

@@ -1,23 +1,18 @@
 {
   "addStyleLabel": {
-    "message": "Yeni stil oluşturun",
-    "description": "Label for the button to go to the add style page"
+    "message": "Yeni stil oluşturun"
   },
   "addStyleTitle": {
-    "message": "Stil Ekleyin",
-    "description": "Title of the page for adding styles"
+    "message": "Stil Ekleyin"
   },
   "alphaChannel": {
-    "message": "Opaklık",
-    "description": "Label of color's opacity"
+    "message": "Opaklık"
   },
   "appliesAdd": {
-    "message": "Ekleyin",
-    "description": "Label for the button to add an 'applies' entry"
+    "message": "Ekleyin"
   },
   "appliesDisplay": {
     "message": "Şuraya uygulanır: $applies$",
-    "description": "Text on the manage screen to describe what the style applies to",
     "placeholders": {
       "applies": {
         "content": "$1"
@@ -25,284 +20,220 @@
     }
   },
   "appliesDisplayTruncatedSuffix": {
-    "message": "ve diğerleri",
-    "description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
+    "message": "ve diğerleri"
   },
   "appliesDomainOption": {
-    "message": "Alan adındaki URLler",
-    "description": "Option to make the style apply to the entered string as a domain"
+    "message": "Alan adındaki URLler"
   },
   "appliesHelp": {
-    "message": "Bu bölümdeki kodun hangi URLlere uygulanacağını sınırlamak için 'Şuraya uygulanır' denetimlerini kullanın.",
-    "description": "Help text for 'applies to' section"
+    "message": "Bu bölümdeki kodun hangi URLlere uygulanacağını sınırlamak için 'Şuraya uygulanır' denetimlerini kullanın."
   },
   "appliesLabel": {
-    "message": "Şuraya uygulanır",
-    "description": "Label for 'applies to' fields on the edit/add screen"
+    "message": "Şuraya uygulanır"
   },
   "appliesLineWidgetWarning": {
-    "message": "Küçültülmüş CSS ile çalışmaz",
-    "description": "A warning that applies-to information won't show properly with minified CSS"
+    "message": "Küçültülmüş CSS ile çalışmaz"
   },
   "appliesRegexpOption": {
-    "message": "regexp ile eşleşen URL'ler",
-    "description": "Option to make the style apply to the entered string as a regular expression"
+    "message": "regexp ile eşleşen URL'ler"
   },
   "appliesRemove": {
-    "message": "Kaldır",
-    "description": "Label for the button to remove an 'applies' entry"
+    "message": "Kaldır"
   },
   "appliesSpecify": {
-    "message": "Belirt",
-    "description": "Label for the button to make a style apply only to specific sites"
+    "message": "Belirt"
   },
   "appliesToEverything": {
-    "message": "Her şey",
-    "description": "Text displayed for styles that apply to all sites"
+    "message": "Her şey"
   },
   "appliesUrlPrefixOption": {
-    "message": "Şununla başlayan URL'ler:",
-    "description": "Option to make the style apply to the entered string as a URL prefix"
+    "message": "Şununla başlayan URL'ler:"
   },
   "applyAllUpdates": {
-    "message": "Tüm güncellemeleri uygula",
-    "description": "Label for the button to apply all detected updates"
+    "message": "Tüm güncellemeleri uygula"
   },
   "author": {
-    "message": "Yazar",
-    "description": "Label for the style author"
+    "message": "Yazar"
   },
   "backupButtons": {
-    "message": "Yedek",
-    "description": "Heading for backup"
+    "message": "Yedek"
   },
   "backupMessage": {
-    "message": "Bir dosya seçin veya bu sayfaya sürükleyip bırakın.",
-    "description": "Message for backup"
+    "message": "Bir dosya seçin veya bu sayfaya sürükleyip bırakın."
   },
   "bckpInstStyles": {
-    "message": "Dışa aktar",
-    "description": ""
+    "message": "Dışa aktar"
   },
   "checkAllUpdates": {
-    "message": "Tüm stiller için güncellemeleri denetle",
-    "description": "Label for the button to check all styles for updates"
+    "message": "Tüm stiller için güncellemeleri denetle"
   },
   "checkAllUpdatesForce": {
-    "message": "Tekrar kontrol et, herhangi bir stil düzenlemedim!",
-    "description": "Label for the button to apply all detected updates"
+    "message": "Tekrar kontrol et, herhangi bir stil düzenlemedim!"
   },
   "checkForUpdate": {
-    "message": "Güncellemeleri denetle",
-    "description": "Label for the button to check a single style for an update"
+    "message": "Güncellemeleri denetle"
   },
   "checkingForUpdate": {
-    "message": "Kontrol ediliyor...",
-    "description": "Text to display when checking a style for an update"
+    "message": "Kontrol ediliyor..."
   },
   "clickToUninstall": {
-    "message": "Kaldırmak için tıklayın",
-    "description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
+    "message": "Kaldırmak için tıklayın"
   },
   "cm_autoCloseBrackets": {
-    "message": "Parantezleri ve tırnak işaretlerini otomatik olarak kapat",
-    "description": "Label for the checkbox in the style editor."
+    "message": "Parantezleri ve tırnak işaretlerini otomatik olarak kapat"
   },
   "cm_autoCloseBracketsTooltip": {
-    "message": "()[]{}''\"\" Açılışlarından birini yazarken otomatik olarak bir kapanış çifti ekleyin",
-    "description": "Label for the checkbox in the style editor."
+    "message": "()[]{}''\"\" Açılışlarından birini yazarken otomatik olarak bir kapanış çifti ekleyin"
   },
   "cm_autocompleteOnTyping": {
-    "message": "Yazarken tamamla",
-    "description": "Label for the checkbox in the style editor."
+    "message": "Yazarken tamamla"
   },
   "cm_colorpicker": {
-    "message": "CSS renk seçicileri",
-    "description": "Label for the checkbox controlling colorpicker option for the style editor."
+    "message": "CSS renk seçicileri"
   },
   "cm_indentWithTabs": {
-    "message": "Akıllı girintili tab kullan",
-    "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
+    "message": "Akıllı girintili tab kullan"
   },
   "cm_keyMap": {
-    "message": "Tuşeşlem",
-    "description": "Label for the drop-down list controlling the keymap for the style editor."
+    "message": "Tuşeşlem"
   },
   "cm_lineWrapping": {
-    "message": "Kelime kaydırma",
-    "description": "Label for the checkbox controlling word wrap option for the style editor."
+    "message": "Kelime kaydırma"
   },
   "cm_matchHighlight": {
-    "message": "Vurgulama",
-    "description": "Label for the drop-down list controlling the automatic highlighting of current word/selection occurrences in the style editor."
+    "message": "Vurgulama"
   },
   "cm_matchHighlightSelection": {
-    "message": "Yalnızca seçim",
-    "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
+    "message": "Yalnızca seçim"
   },
   "cm_matchHighlightToken": {
-    "message": "İmleç altındaki token",
-    "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of the word/token under cursor even if nothing is selected"
+    "message": "İmleç altındaki token"
   },
   "cm_resizeGripHint": {
-    "message": "Yüksekliği en üst düzeye çıkarmak/geri yüklemek için çift tıklayın",
-    "description": "Tooltip for the resize grip in style editor"
+    "message": "Yüksekliği en üst düzeye çıkarmak/geri yüklemek için çift tıklayın"
   },
   "cm_selectByTokens": {
-    "message": "Çift tıklamak tokenleri seçer",
-    "description": "Label for the checkbox in the editor."
+    "message": "Çift tıklamak tokenleri seçer"
   },
   "cm_selectByTokensTooltip": {
-    "message": "Token örnekleri: .foo-bar-2 #aabbcc 0.32 !important\nDevre dışı bırakıldığında: noktalama işareti ile ayrılmış kelimeler seçilir.",
-    "description": ""
+    "message": "Token örnekleri: .foo-bar-2 #aabbcc 0.32 !important\nDevre dışı bırakıldığında: noktalama işareti ile ayrılmış kelimeler seçilir."
   },
   "cm_smartIndent": {
-    "message": "Akıllı girinti kullanma",
-    "description": "Label for the checkbox controlling smart indentation option for the style editor."
+    "message": "Akıllı girinti kullanma"
   },
   "cm_tabSize": {
-    "message": "Tab büyüklüğü",
-    "description": "Label for the text box controlling tab size option for the style editor."
+    "message": "Tab büyüklüğü"
   },
   "cm_theme": {
-    "message": "Tema",
-    "description": "Label for the style editor's CSS theme."
+    "message": "Tema"
   },
   "colorpickerSwitchFormatTooltip": {
-    "message": "Format değişimleri: HEX -> RGB -> HSL.\nYönü ters çevirmek için Shift tuşunu basılı tutup tıklatın.\nAyrıca PgUp (PageUp), PgDn (PageDown) tuşları ile.",
-    "description": "Tooltip for the switch button in the color picker popup in the style editor."
+    "message": "Format değişimleri: HEX -> RGB -> HSL.\nYönü ters çevirmek için Shift tuşunu basılı tutup tıklatın.\nAyrıca PgUp (PageUp), PgDn (PageDown) tuşları ile."
   },
   "colorpickerTooltip": {
-    "message": "Renk seçiciyi aç",
-    "description": "Tooltip for the colored squares shown before CSS colors in the style editor."
+    "message": "Renk seçiciyi aç"
   },
   "configOnChange": {
-    "message": "değişiklikte",
-    "description": "VERY SHORT label for the checkbox in style config dialog after the save button - when enabled the changes in the dialog are saved and applied automatically without the need to press the Save button"
+    "message": "değişiklikte"
   },
   "configOnChangeTooltip": {
-    "message": "Otomatik kaydetme ve değişiklikleri otomatik olarak uygulama",
-    "description": ""
+    "message": "Otomatik kaydetme ve değişiklikleri otomatik olarak uygulama"
   },
   "configureStyle": {
-    "message": "Yapılandır",
-    "description": "Label for the button to configure usercss userstyle"
+    "message": "Yapılandır"
   },
   "configureStyleOnHomepage": {
-    "message": "Ana sayfada yapılandır",
-    "description": "Label for the button to configure userstyles.org userstyle"
+    "message": "Ana sayfada yapılandır"
   },
   "confirmCancel": {
-    "message": "İptal",
-    "description": ""
+    "message": "İptal"
   },
   "confirmClose": {
-    "message": "Kapat",
-    "description": "'Close' button in a confirm dialog"
+    "message": "Kapat"
   },
   "confirmDefault": {
-    "message": "Öntanımlıyı kullan",
-    "description": "'Set to default' button in a confirm dialog"
+    "message": "Öntanımlıyı kullan"
   },
   "confirmDelete": {
-    "message": "Sil",
-    "description": ""
+    "message": "Sil"
   },
   "confirmDiscardChanges": {
-    "message": "Değişiklikleri iptal et?",
-    "description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
+    "message": "Değişiklikleri iptal et?"
   },
   "confirmNo": {
-    "message": "Hayır",
-    "description": "'No' button in a confirm dialog"
+    "message": "Hayır"
   },
   "confirmOK": {
-    "message": "Tamam",
-    "description": ""
+    "message": "Tamam"
   },
   "confirmSave": {
-    "message": "Kaydet",
-    "description": "'Save' button in a confirm dialog"
+    "message": "Kaydet"
   },
   "confirmStop": {
-    "message": "Dur",
-    "description": "'Stop' button in a confirm dialog"
+    "message": "Dur"
   },
   "confirmYes": {
-    "message": "Evet",
-    "description": "'Yes' button in a confirm dialog"
+    "message": "Evet"
+  },
+  "connectingDropbox": {
+    "message": "Dropbox'a bağlanıyor..."
+  },
+  "connectingDropboxNotAllowed": {
+    "message": "Dropbox'a bağlanmak yalnızca doğrudan web mağazasından yüklenen uygulamalarda kullanılabilir"
   },
   "copied": {
-    "message": "Kopyalandı",
-    "description": "Message shown when content has been copied to the clipboard"
+    "message": "Kopyalandı"
   },
   "copy": {
-    "message": "Kopyala",
-    "description": "Tooltip for elements which can be copied"
+    "message": "Kopyala"
   },
   "dateInstalled": {
-    "message": "Kurulum tarihi",
-    "description": "Option text for the user to sort the style by install date"
+    "message": "Kurulum tarihi"
   },
   "dateUpdated": {
-    "message": "Güncelleme tarihi",
-    "description": "Option text for the user to sort the style by last update date"
+    "message": "Güncelleme tarihi"
   },
   "dbError": {
-    "message": "Stylus veritabanı kullanılırken bir hata oluştu. Olası çözümler içeren bir web sayfasını ziyaret etmek ister misiniz?",
-    "description": "Prompt when a DB error is encountered"
+    "message": "Stylus veritabanı kullanılırken bir hata oluştu. Olası çözümler içeren bir web sayfasını ziyaret etmek ister misiniz?"
   },
   "defaultTheme": {
-    "message": "öntanımlı",
-    "description": "Default CodeMirror CSS theme option on the edit style page"
+    "message": "öntanımlı"
   },
   "deleteStyleConfirm": {
-    "message": "Bu stili silmek istediğinizden emin misiniz?",
-    "description": "Confirmation before deleting a style"
+    "message": "Bu stili silmek istediğinizden emin misiniz?"
   },
   "deleteStyleLabel": {
-    "message": "Sil",
-    "description": "Label for the button to delete a style"
+    "message": "Sil"
   },
   "description": {
-    "message": "Kullanıcı stil yöneticisi Stylus ile Web'in stilini yenileyin. Stylus Google, Facebook, YouTube, Orkut ve diğer pek çok site için temalar ve görünüm yüklemenize imkân tanır.",
-    "description": "Extension description"
+    "message": "Kullanıcı stil yöneticisi Stylus ile Web'in stilini yenileyin. Stylus Google, Facebook, YouTube, Orkut ve diğer pek çok site için temalar ve görünüm yüklemenize imkân tanır."
   },
   "disableAllStyles": {
-    "message": "Tüm stilleri kapat",
-    "description": "Label for the checkbox that turns all enabled styles off."
+    "message": "Tüm stilleri kapat"
   },
   "disableStyleLabel": {
-    "message": "Devre dışı bırak",
-    "description": "Label for the button to disable a style"
+    "message": "Devre dışı bırak"
   },
   "dragDropMessage": {
-    "message": "İçe aktarmak için yedek dosyanızı bu sayfada herhangi bir yere bırakın.",
-    "description": "Drag'n'drop message"
+    "message": "İçe aktarmak için yedek dosyanızı bu sayfada herhangi bir yere bırakın."
   },
   "dragDropUsercssTabstrip": {
-    "message": "Dosyayı yüklemek için sekme şeridine (sekme başlıklarının gösterildiği alan) bırakın.",
-    "description": "Message popup shown when erroneously dropping a usercss file into the manager page"
+    "message": "Dosyayı yüklemek için sekme şeridine (sekme başlıklarının gösterildiği alan) bırakın."
   },
   "editDeleteText": {
-    "message": "Sil",
-    "description": "Label for the context menu item in the editor to delete selected text"
+    "message": "Sil"
   },
   "editGotoLine": {
-    "message": "Satıra git (veya satır:sütun)",
-    "description": "Go to line or line:column on Ctrl-G in style code editor"
+    "message": "Satıra git (veya satır:sütun)"
   },
   "editStyleHeading": {
-    "message": "Stili Düzenle",
-    "description": "Title of the page for editing styles"
+    "message": "Stili Düzenle"
   },
   "editStyleLabel": {
-    "message": "Düzenle",
-    "description": "Label for the button to go to the edit style page"
+    "message": "Düzenle"
   },
   "editStyleTitle": {
     "message": "$stylename$ Stilini Düzenleyin",
-    "description": "Title of the page for editing styles",
     "placeholders": {
       "stylename": {
         "content": "$1"
@@ -310,420 +241,411 @@
     }
   },
   "enableStyleLabel": {
-    "message": "Etkinleştir",
-    "description": "Label for the button to enable a style"
+    "message": "Etkinleştir"
   },
   "excludeStyleByDomainLabel": {
-    "message": "Mevcut alan adını hariç tut",
-    "description": ""
+    "message": "Mevcut alan adını hariç tut"
   },
   "excludeStyleByUrlLabel": {
-    "message": "Mevcut URL'yi hariç tut",
-    "description": ""
+    "message": "Mevcut URL'yi hariç tut"
   },
   "exportLabel": {
-    "message": "Dışa aktar",
-    "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+    "message": "Dışa aktar"
+  },
+  "exportSavedSuccess": {
+    "message": "Dosya başarıyla kaydedildi"
   },
   "externalFeedback": {
-    "message": "Geribildirim",
-    "description": "Label for the external link to send feedback for the style"
+    "message": "Geribildirim"
   },
   "externalHomepage": {
-    "message": "Anasayfa",
-    "description": "Label for the external link to style's homepage"
+    "message": "Anasayfa"
   },
   "externalLink": {
-    "message": "Harici bağlantı",
-    "description": "Label for external links"
+    "message": "Harici bağlantı"
   },
   "externalSupport": {
-    "message": "Destek",
-    "description": "Label for the external link to style's support site"
+    "message": "Destek"
   },
   "externalUsercssDocument": {
-    "message": "Usercss belgeleri",
-    "description": "Label for the external link to usercss documentation"
+    "message": "Usercss belgeleri"
   },
   "filteredStyles": {
     "message": "Toplam $numTotal$ gösterilen $numShown$",
-    "description": "TL note - make this message short",
     "placeholders": {
-      "numTotal": {
-        "content": "$2"
-      },
       "numShown": {
         "content": "$1"
+      },
+      "numTotal": {
+        "content": "$2"
       }
     }
   },
   "filteredStylesAllHidden": {
-    "message": "Şu anda uygulanan filtreler hiçbir stille eşleşmiyor",
-    "description": "Text shown when no styles match currently applied filter in the style manager"
+    "message": "Şu anda uygulanan filtreler hiçbir stille eşleşmiyor"
   },
   "findStyles": {
-    "message": "Stil bul",
-    "description": "Text for a link that gets a list of styles for the current site"
+    "message": "Stil bul"
   },
   "findStylesForSite": {
-    "message": "Bu site için başka stiller bul",
-    "description": "Text for a link that gets a list of styles for the current site"
+    "message": "Bu site için başka stiller bul"
   },
   "findStylesInline": {
-    "message": "Hizada",
-    "description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
+    "message": "Hizada"
   },
   "findStylesInlineTooltip": {
-    "message": "Arama sonuçlarını bu pencerede görüntüleyin.",
-    "description": "Text for a checkbox that displays search results within the Stylus popup."
+    "message": "Arama sonuçlarını bu pencerede görüntüleyin."
   },
   "genericAdd": {
-    "message": "Ekle",
-    "description": "Used in various places for an action that adds something"
+    "message": "Ekle"
   },
   "genericClone": {
-    "message": "Klon",
-    "description": "Used in various places for an action that clones something"
+    "message": "Klon"
   },
   "genericDisabledLabel": {
-    "message": "Devre dışı",
-    "description": "Used in various lists/options to indicate that something is disabled"
+    "message": "Devre dışı"
   },
   "genericEnabledLabel": {
-    "message": "Etkin",
-    "description": "Used in various lists/options to indicate that something is enabled"
+    "message": "Etkin"
   },
   "genericError": {
-    "message": "Hata",
-    "description": "Used in various places to indicate some error occurred."
+    "message": "Hata"
   },
   "genericHistoryLabel": {
-    "message": "Geçmiş",
-    "description": "Used in various places to show a history log of something"
+    "message": "Geçmiş"
   },
   "genericNext": {
-    "message": "Sonraki",
-    "description": "Used in various places to select/perform the next step/action"
+    "message": "Sonraki"
   },
   "genericPrevious": {
-    "message": "Önceki",
-    "description": "Used in various places to select/perform the previous step/action"
+    "message": "Önceki"
   },
   "genericResetLabel": {
-    "message": "Yenile",
-    "description": "Used in various parts of UI to indicate that something may be reset to its original state"
+    "message": "Yenile"
   },
   "genericSavedMessage": {
-    "message": "Kaydedildi",
-    "description": "Used in various parts of the UI to indicate that something was saved"
+    "message": "Kaydedildi"
   },
   "genericTitle": {
-    "message": "Başlık",
-    "description": "Used in various parts of the UI to indicate the title of something"
+    "message": "Başlık"
   },
   "genericUnknown": {
-    "message": "Bilinmiyor",
-    "description": "Used in various parts of the UI to indicate if something is unknown (e.g. an unknown date)"
+    "message": "Bilinmiyor"
+  },
+  "gettingStyles": {
+    "message": "Tüm stiller alınıyor..."
   },
   "helpAlt": {
-    "message": "Yardım",
-    "description": "Alternate text for help buttons"
+    "message": "Yardım"
   },
   "helpKeyMapCommand": {
-    "message": "Bir komut adı yazın",
-    "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+    "message": "Bir komut adı yazın"
   },
   "helpKeyMapHotkey": {
-    "message": "Bir kısayol tuşuna basın",
-    "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+    "message": "Bir kısayol tuşuna basın"
   },
   "hostDisabled": {
-    "message": "Bu ana bilgisayar, kullanılan tarayıcının mevcut sürümündeki bir hata nedeniyle devre dışı bırakıldı",
-    "description": "Tooltip for cloud host disabled"
+    "message": "Bu ana bilgisayar, kullanılan tarayıcının mevcut sürümündeki bir hata nedeniyle devre dışı bırakıldı"
   },
   "importAppendLabel": {
-    "message": "Stile ekle",
-    "description": "Label for the button to import a style and append to the existing sections"
+    "message": "Stile ekle"
   },
   "importAppendTooltip": {
-    "message": "İçe aktarılan stili geçerli stile ekleme",
-    "description": "Tooltip for the button to import a style and append to the existing sections"
+    "message": "İçe aktarılan stili geçerli stile ekleme"
   },
   "importLabel": {
-    "message": "İçe aktar",
-    "description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+    "message": "İçe aktar"
   },
   "importReplaceLabel": {
-    "message": "Stilin üzerine yaz",
-    "description": "Label for the button to import and overwrite current style"
+    "message": "Stilin üzerine yaz"
   },
   "importReplaceTooltip": {
-    "message": "Geçerli stilin içeriğini atın ve içe aktarılan stil ile üzerine yazın",
-    "description": "Label for the button to import and overwrite current style"
+    "message": "Geçerli stilin içeriğini atın ve içe aktarılan stil ile üzerine yazın"
   },
   "importReportLegendAdded": {
-    "message": "eklendi",
-    "description": "Text after the number of styles added in the report shown after importing styles"
+    "message": "eklendi"
+  },
+  "importReportLegendIdentical": {
+    "message": "Özdeş olan atlandı"
+  },
+  "importReportLegendInvalid": {
+    "message": "geçersiz olan atlandı"
   },
   "importReportLegendUpdatedBoth": {
-    "message": "hem meta bilgi hem de kod güncellendi",
-    "description": "Text after the number of styles updated entirely in the report shown after importing styles"
+    "message": "hem meta bilgi hem de kod güncellendi"
   },
   "importReportLegendUpdatedCode": {
-    "message": "güncellenmiş kod",
-    "description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"
+    "message": "güncellenmiş kod"
+  },
+  "importReportTitle": {
+    "message": "Stillerin içeri aktarılması tamamlandı."
+  },
+  "importReportUnchanged": {
+    "message": "Hiçbir şey değiştirilmedi."
+  },
+  "importReportUndone": {
+    "message": "stiller geri çevrildi"
   },
   "importReportUndoneTitle": {
-    "message": "İçe aktarma geri alındı",
-    "description": "Title of the message box shown after undoing the import of styles"
+    "message": "İçe aktarma geri alındı"
   },
   "installButton": {
-    "message": "Stil kur",
-    "description": "Label for install button"
+    "message": "Stil kur"
   },
   "installButtonInstalled": {
-    "message": "Stil kuruldu",
-    "description": "Text displayed when the style is successfully installed"
+    "message": "Stil kuruldu"
   },
   "installButtonReinstall": {
-    "message": "Stili yeniden kur",
-    "description": "Label for reinstall button"
+    "message": "Stili yeniden kur"
   },
   "installButtonUpdate": {
-    "message": "Stili güncelle",
-    "description": "Label for update button"
+    "message": "Stili güncelle"
   },
   "installUpdate": {
-    "message": "Güncellemeyi yükle",
-    "description": "Label for the button to install an update for a single style"
+    "message": "Güncellemeyi yükle"
   },
   "installUpdateFromLabel": {
-    "message": "Güncellemeleri denetle",
-    "description": "Label for the checkbox to save current URL for update check"
+    "message": "Güncellemeleri denetle"
   },
   "license": {
-    "message": "Lisans",
-    "description": "Label for the license"
+    "message": "Lisans"
   },
   "linkGetHelp": {
-    "message": "Destek al",
-    "description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
+    "message": "Destek al"
   },
   "linkStylusWiki": {
-    "message": "Viki",
-    "description": "Wiki link text on the manage page e.g. https://github.com/openstyles/stylus/wiki"
+    "message": "Viki"
   },
   "linkTranslate": {
-    "message": "Çevir",
-    "description": "Transifex link text on the manage page"
+    "message": "Çevir"
   },
   "linterIssues": {
-    "message": "Sorunlar",
-    "description": "Label for the CSS linter issues block on the style edit page"
+    "message": "Sorunlar"
+  },
+  "manageFaviconsGray": {
+    "message": "Gri renkte"
+  },
+  "manageFaviconsHelp": {
+    "message": "Stylus harici bir servis kullanır https://www.google.com/s2/favicons"
   },
   "manageFilters": {
-    "message": "Filtreler",
-    "description": "Label for filters container"
+    "message": "Filtreler"
   },
   "manageHeading": {
-    "message": "Yüklü Stiller",
-    "description": "Heading for the manage page"
+    "message": "Yüklü Stiller"
+  },
+  "manageMaxTargets": {
+    "message": "Uygulanan ögelerin sayısı"
+  },
+  "manageNewUI": {
+    "message": "Yeni yönetim ara yüzü düzeni"
   },
   "manageOnlyEnabled": {
-    "message": "Yalnızca etkin stiller",
-    "description": "Checkbox to show only enabled styles"
+    "message": "Yalnızca etkin stiller"
+  },
+  "manageOnlyLocal": {
+    "message": "Yalnızca yerelde oluşturulmuş stiller"
+  },
+  "manageOnlyLocalTooltip": {
+    "message": "Stiller, bir userstyles.org sayfası üzerinden yülenmemiş."
+  },
+  "manageOnlyUpdates": {
+    "message": "Sadece güncellemeler ya da sorunlar ile"
   },
   "menuShowBadge": {
-    "message": "Etkin stil sayısını göster",
-    "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+    "message": "Etkin stil sayısını göster"
+  },
+  "noFileToImport": {
+    "message": "Stillerinizi içe aktarmak için önce dışa aktarmanız gerekir."
   },
   "noStylesForSite": {
-    "message": "Bu site için hiçbir stil yüklenmedi.",
-    "description": "Text displayed when no styles are installed for the current site"
+    "message": "Bu site için hiçbir stil yüklenmedi."
   },
   "openManage": {
-    "message": "Yüklü stilleri yönet",
-    "description": "Link to open the manage page."
+    "message": "Yüklü stilleri yönet"
   },
   "openStylesManager": {
-    "message": "Stil yöneticisini aç",
-    "description": "Label for the style maanger opener in the browser action context menu."
+    "message": "Stil yöneticisini aç"
   },
   "optionsActions": {
-    "message": "İşlemler",
-    "description": ""
+    "message": "İşlemler"
+  },
+  "optionsAdvanced": {
+    "message": "Gelişmiş"
+  },
+  "optionsAdvancedContextDelete": {
+    "message": "Editör bağlam menüsüne 'Sil' seçeneği ekle"
+  },
+  "optionsAdvancedExposeIframes": {
+    "message": "HTML[stylus-iframe] vasıtasıyla iframe'leri gösterin"
   },
   "optionsBadgeDisabled": {
-    "message": "Etkin değilken arkaplan rengi",
-    "description": ""
+    "message": "Etkin değilken arkaplan rengi"
   },
   "optionsBadgeNormal": {
-    "message": "Arkaplan rengi",
-    "description": ""
+    "message": "Arkaplan rengi"
   },
   "optionsCheck": {
-    "message": "Stilleri güncelle",
-    "description": ""
+    "message": "Stilleri güncelle"
+  },
+  "optionsCheckUpdate": {
+    "message": "Uygun tüm güncellemeleri kontrol et ve yükle."
+  },
+  "optionsCustomizePopup": {
+    "message": "Açılır pencere"
+  },
+  "optionsCustomizeUpdate": {
+    "message": "Güncellemeler"
   },
   "optionsHeading": {
-    "message": "Seçenekler",
-    "description": "Heading for options section on manage page."
+    "message": "Seçenekler"
   },
   "optionsOpen": {
-    "message": "Aç",
-    "description": ""
+    "message": "Aç"
   },
   "optionsOpenManager": {
-    "message": "Stilleri yönet",
-    "description": ""
+    "message": "Stilleri yönet"
+  },
+  "optionsPopupWidth": {
+    "message": "Popup genişliği (piksel cinsinden)"
+  },
+  "optionsReset": {
+    "message": "Ayarları varsayılanlara sıfırla."
+  },
+  "optionsResetButton": {
+    "message": "Sıfırlama seçenekleri"
   },
   "optionsSubheading": {
-    "message": "Daha Fazla Seçenek",
-    "description": "Subheading for options section on manage page."
+    "message": "Daha Fazla Seçenek"
   },
   "optionsSyncConnect": {
-    "message": "Bağlan",
-    "description": ""
+    "message": "Bağlan"
   },
   "optionsSyncDisconnect": {
-    "message": "Bağlantıyı kes",
-    "description": ""
+    "message": "Bağlantıyı kes"
   },
   "optionsSyncLogin": {
-    "message": "Giriş yap",
-    "description": ""
-  },
-  "optionsSyncStatusConnecting": {
-    "message": "Bağlanılıyor...",
-    "description": ""
+    "message": "Giriş yap"
   },
   "optionsSyncStatusConnected": {
-    "message": "Bağlandı",
-    "description": ""
+    "message": "Bağlandı"
   },
-  "optionsSyncStatusDisconnecting": {
-    "message": "Bağlantı kesiliyor...",
-    "description": ""
+  "optionsSyncStatusConnecting": {
+    "message": "Bağlanılıyor..."
   },
   "optionsSyncStatusDisconnected": {
-    "message": "Bağlantı kesildi",
-    "description": ""
+    "message": "Bağlantı kesildi"
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "Bağlantı kesiliyor..."
+  },
+  "optionsUpdateImportNote": {
+    "message": "Eski versiyonlardan ya da Stylish'ten stil yedeklerini içeri aktarırken, hepsinin güncel olduğundan emin olmak için stil yöneticisinden bir defa elle güncelleme kontrolü yapın"
+  },
+  "optionsUpdateInterval": {
+    "message": "Saat cinsinden kullanıcı stili otomatik güncelleme aralığı (devre dışı bırakmak için 0 yazın) "
+  },
+  "overwriteFileExport": {
+    "message": "Mevcut bir dosyanın üzerine yazmak istiyor musunuz?"
   },
   "paginationCurrent": {
-    "message": "Şimdiki sayfa",
-    "description": "Tooltip for the current page index in search results"
+    "message": "Şimdiki sayfa"
   },
   "paginationEstimated": {
-    "message": "Tahmini sayfa sayısı",
-    "description": "Tooltip for the total page count in search results"
+    "message": "Tahmini sayfa sayısı"
   },
   "paginationNext": {
-    "message": "Sonraki sayfa",
-    "description": "Tooltip for the '->' (next page) button in search results"
+    "message": "Sonraki sayfa"
   },
   "paginationPrevious": {
-    "message": "Önceki sayfa",
-    "description": "Tooltip for the '<-' button in search results"
+    "message": "Önceki sayfa"
   },
   "paginationTotal": {
-    "message": "Toplam sayfa",
-    "description": ""
+    "message": "Toplam sayfa"
+  },
+  "prefShowBadge": {
+    "message": "Şu an açık olan site için aktif olan stil sayısı"
   },
   "previewLabel": {
-    "message": "Canlı önizleme",
-    "description": "Label for the checkbox in style editor to enable live preview while editing."
+    "message": "Canlı önizleme"
+  },
+  "readingStyles": {
+    "message": "Stiller okunuyor..."
   },
   "replace": {
-    "message": "Değiştir",
-    "description": "Label before the replace input field in the editor shown on Ctrl-H"
+    "message": "Değiştir"
   },
   "replaceAll": {
-    "message": "Hepsini değiştir",
-    "description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
+    "message": "Hepsini değiştir"
   },
   "replaceWith": {
-    "message": "Şununla değiştir",
-    "description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
+    "message": "Şununla değiştir"
   },
   "retrieveBckp": {
-    "message": "Stilleri içe aktar",
-    "description": ""
+    "message": "Stilleri içe aktar"
+  },
+  "retrieveDropboxSync": {
+    "message": "Dropbox'a aktar"
   },
   "search": {
-    "message": "Ara",
-    "description": "Label before the search input field in the editor shown on Ctrl-F"
+    "message": "Ara"
+  },
+  "searchRegexp": {
+    "message": "Regexp araması için /re/ sözdizimini (syntax) kullanın."
   },
   "searchResultInstallCount": {
-    "message": "Toplam kurulum sayısı",
-    "description": "Text for label that shows the number of times a search result was installed"
+    "message": "Toplam kurulum sayısı"
   },
   "searchResultNoneFound": {
-    "message": "Bu site için stil bulunamadı.",
-    "description": "Error text in the popup when inline search didn't find any site-specific styles"
+    "message": "Bu site için stil bulunamadı."
   },
   "searchResultWeeklyCount": {
-    "message": "Haftalık kurulum sayısı",
-    "description": "Text for label that shows the number of times a search result was installed during last week"
-  },
-  "searchStyles": {
-    "message": "İçerikleri ara",
-    "description": "Label for the search filter textbox on the Manage styles page"
+    "message": "Haftalık kurulum sayısı"
   },
   "sectionAdd": {
-    "message": "Başka bölüm ekle",
-    "description": "Label for the button to add a section"
+    "message": "Başka bölüm ekle"
   },
   "sectionCode": {
-    "message": "Kod",
-    "description": "Label for the code for a section"
+    "message": "Kod"
   },
   "sectionRemove": {
-    "message": "Bölümü kaldır",
-    "description": "Label for the button to remove a section"
+    "message": "Bölümü kaldır"
   },
   "shortcuts": {
-    "message": "Kısayollar",
-    "description": "Go to shortcut configuration"
+    "message": "Kısayollar"
   },
   "shortcutsNote": {
-    "message": "Klavye kısayolları tanımla",
-    "description": ""
+    "message": "Klavye kısayolları tanımla"
   },
   "sortDateNewestFirst": {
-    "message": "önce en yeniler",
-    "description": "Text added to indicate that sorting a date would add the newest entries at the top"
+    "message": "önce en yeniler"
   },
   "sortDateOldestFirst": {
-    "message": "önce en eskiler",
-    "description": "Text added to indicate that sorting a date would add the oldest entries at the top"
+    "message": "önce en eskiler"
   },
   "sortStylesHelpTitle": {
-    "message": "İçeriği sırala",
-    "description": "Label for the sort info popup on the Manage styles page"
+    "message": "İçeriği sırala"
+  },
+  "styleBadRegexp": {
+    "message": "Regexp geçerli değil."
   },
   "styleBeautify": {
-    "message": "Güzelleştir",
-    "description": "Label for the CSS-beautifier button on the edit style page"
+    "message": "Güzelleştir"
   },
   "styleCancelEditLabel": {
-    "message": "Yönetim sayfasına dön",
-    "description": "Label for cancel button for style editing"
+    "message": "Yönetim sayfasına dön"
   },
   "styleChangesNotSaved": {
-    "message": "Bu stilde yaptığınız, kaydedilmemiş değişiklikler var.",
-    "description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
+    "message": "Bu stilde yaptığınız, kaydedilmemiş değişiklikler var."
   },
   "styleEnabledLabel": {
-    "message": "Etkin",
-    "description": "Label for the enabled state of styles"
+    "message": "Etkin"
   },
   "styleFromMozillaFormatPrompt": {
-    "message": "Mozilla biçemiyle yazılmış kodu yapıştır",
-    "description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
+    "message": "Mozilla biçemiyle yazılmış kodu yapıştır"
   },
   "styleInstall": {
     "message": "'$stylename$' Stylus'e yüklensin mi?",
-    "description": "Confirmation when installing a style",
     "placeholders": {
       "stylename": {
         "content": "$1"
@@ -731,28 +653,46 @@
     }
   },
   "styleMissingName": {
-    "message": "Bir ad girin",
-    "description": "Error displayed when user saves without providing a name"
+    "message": "Bir ad girin"
   },
   "styleMozillaFormatHeading": {
-    "message": "Mozilla Biçemi",
-    "description": "Heading for the section with buttons to import/export Mozilla format of the style"
+    "message": "Mozilla Biçemi"
+  },
+  "styleRegexpInvalidExplanation": {
+    "message": "Hiç derlenemeyen bazı 'regexp ()' kuralları."
+  },
+  "styleRegexpProblemTooltip": {
+    "message": "'Regexp ()' yanlış kullanımı nedeniyle uygulanmayan bölüm sayısı"
+  },
+  "styleRegexpTestButton": {
+    "message": "RegExp testi"
+  },
+  "styleRegexpTestFull": {
+    "message": "Eşleşen sekmeler"
+  },
+  "styleRegexpTestInvalid": {
+    "message": "Geçersiz regexp'ler atlandı"
+  },
+  "styleRegexpTestNone": {
+    "message": "Eşleşen sekme yok"
+  },
+  "styleRegexpTestPartial": {
+    "message": "Tam olarak eşleşmediğinden atlandı"
+  },
+  "styleRegexpTestTitle": {
+    "message": "Eşleşen açık sekmelerin listesi (sekmesine gitmek için URL'ye tıklayın)"
   },
   "styleSaveLabel": {
-    "message": "Kaydet",
-    "description": "Label for save button for style editing"
+    "message": "Kaydet"
   },
   "styleToMozillaFormatHelp": {
-    "message": "Kodun Mozilla biçimi, Firefox için Stylish ile kullanılabilir ve userstyles.org sitesine gönderilebilir.",
-    "description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
+    "message": "Kodun Mozilla biçimi, Firefox için Stylish ile kullanılabilir ve userstyles.org sitesine gönderilebilir."
   },
   "styleToMozillaFormatTitle": {
-    "message": "Mozilla biçeminde bir stil",
-    "description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
+    "message": "Mozilla biçeminde bir stil"
   },
   "styleUpdate": {
     "message": "\";$stylename$\" stilini güncelleştirmek istiyor musunuz?",
-    "description": "Confirmation when updating a style",
     "placeholders": {
       "stylename": {
         "content": "$1"
@@ -760,20 +700,40 @@
     }
   },
   "stylusUnavailableForURL": {
-    "message": "Stylus bunun gibi sayfalarda çalışmaz.",
-    "description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
+    "message": "Stylus bunun gibi sayfalarda çalışmaz."
+  },
+  "stylusUnavailableForURLdetails": {
+    "message": "Bir güvenlik önlemi olarak tarayıcı eklentilerin, kendinin yerleşik sayfalarını (chrome://version, Chrome 61'den itibaren standart yeni sekme sayfası, about: addons vb.) ve diğer uzantı sayfalarını etkilemesini engeller. Ayrıca her tarayıcı kendi uzantı galerisine (Chrome Web Mağazası veya AMO gibi) erişimi de kısıtlar. "
+  },
+  "syncDropboxDeprecated": {
+    "message": "Dropbox içe/dışa aktarma, seçenekler sayfasında daha gelişmiş bir stil senkronizasyonu ile değiştirilir."
+  },
+  "syncDropboxStyles": {
+    "message": "Dropbox'tan aktar"
+  },
+  "toggleStyle": {
+    "message": "Stili değiştir"
   },
   "undo": {
-    "message": "Geri al",
-    "description": "Button label"
+    "message": "Geri al"
+  },
+  "undoGlobal": {
+    "message": "Tüm bölümlerde geri alma işlemi uygula."
+  },
+  "unreachableContentScript": {
+    "message": "Sayfayla iletişim kurulamadı. Sekmeyi yeniden yüklemeyi deneyin."
+  },
+  "unreachableFileHint": {
+    "message": "Stylus, eğer siz Stylus chrome://extensions sayfasından ilgili onay kutusunu işaretlerseniz file:// adreslerine erişebilir."
+  },
+  "unzipStyles": {
+    "message": "Stiller açılıyor..."
   },
   "updateAllCheckSucceededNoUpdate": {
-    "message": "Güncelleme bulunamadı.",
-    "description": "Text that displays when an update all check completed and no updates are available"
+    "message": "Güncelleme bulunamadı."
   },
   "updateCheckFailBadResponseCode": {
     "message": "Güncellenemedi: sunucu yanıt olarak $code$ kodunu gönderdi.",
-    "description": "Text that displays when an update check failed because the response code indicates an error",
     "placeholders": {
       "code": {
         "content": "$1"
@@ -781,115 +741,63 @@
     }
   },
   "updateCheckFailServerUnreachable": {
-    "message": "Güncellenemedi: sunucuya erişilemiyor.",
-    "description": "Text that displays when an update check failed because the update server is unreachable"
+    "message": "Güncellenemedi: sunucuya erişilemiyor."
   },
   "updateCheckHistory": {
-    "message": "Güncelleme kontrolü geçmişi",
-    "description": ""
+    "message": "Güncelleme kontrolü geçmişi"
+  },
+  "updateCheckManualUpdateForce": {
+    "message": "Güncellemeyi kur (yerel düzenlemelerin üzerine yazılacak)"
+  },
+  "updateCheckManualUpdateHint": {
+    "message": "Bir güncellemeyi zorla yapmak yerel düzenlemelerin üstüne yazacaktır."
+  },
+  "updateCheckSkippedLocallyEdited": {
+    "message": "Bu stil yerel olarak düzenlendi."
   },
   "updateCheckSkippedMaybeLocallyEdited": {
-    "message": "Bu stil yerel olarak düzenlenmiş olabilir.",
-    "description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
+    "message": "Bu stil yerel olarak düzenlenmiş olabilir."
   },
   "updateCheckSucceededNoUpdate": {
-    "message": "Stil güncel.",
-    "description": "Text that displays when an update check completed and no update is available"
+    "message": "Stil güncel."
   },
   "updateCompleted": {
-    "message": "Güncelleme tamamlandı.",
-    "description": "Text that displays when an update completed"
+    "message": "Güncelleme tamamlandı."
   },
   "updatesCurrentlyInstalled": {
-    "message": "Kurulan güncellemeler:",
-    "description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
-  },
-  "usercssAvoidOverwriting": {
-    "message": "Mevcut bir stilin üzerine yazmaktan kaçınmak için lütfen @name veya @ ad alanının değerini değiştirin.",
-    "description": "Shown in a message box when attempting to save a new Usercss style that would overwrite an existing one."
-  },
-  "usercssConfigIncomplete": {
-    "message": "Stil, yapılandırma iletişim kutusu gösterildikten sonra güncellendi veya silindi. Bu değişkenler, stilin meta verilerini bozmamak için kaydedilmedi:",
-    "description": ""
-  },
-  "usercssEditorNamePlaceholder": {
-    "message": "Kodda @name belirtin",
-    "description": "Placeholder text for the empty name input field when creating a new Usercss style"
-  },
-  "usercssReplaceTemplateConfirmation": {
-    "message": "Yeni Usercss stilleri için varsayılan şablonu geçerli kodla değiştir?",
-    "description": ""
-  },
-  "usercssReplaceTemplateName": {
-    "message": "Boş @name, varsayılan şablonun yerini alır",
-    "description": "The text shown after @name when creating a new Usercss style"
-  },
-  "usercssReplaceTemplateSectionBody": {
-    "message": "Kodu buraya ekle...",
-    "description": "The code placeholder comment in a new style created by clicking 'Write style' in the popup"
-  },
-  "versionInvalidOlder": {
-    "message": "Sürüm, kurulu stillerden daha eski.",
-    "description": "Displayed when the version of style is older than the installed one"
-  },
-  "writeStyleFor": {
-    "message": "Şunun için stil yaz:",
-    "description": "Label for toolbar pop-up that precedes the links to write a new style"
-  },
-  "writeStyleForURL": {
-    "message": "bu URL",
-    "description": "Text for link in toolbar pop-up to write a new style for the current URL"
-  },
-  "syncDropboxStyles": {
-    "message": "Dropbox'tan aktar",
-    "description": ""
-  },
-  "syncDropboxDeprecated": {
-    "message": "Dropbox içe/dışa aktarma, seçenekler sayfasında daha gelişmiş bir stil senkronizasyonu ile değiştirilir.",
-    "description": ""
-  },
-  "retrieveDropboxSync": {
-    "message": "Dropbox'a aktar",
-    "description": ""
-  },
-  "overwriteFileExport": {
-    "message": "Mevcut bir dosyanın üzerine yazmak istiyor musunuz?",
-    "description": ""
-  },
-  "exportSavedSuccess": {
-    "message": "Dosya başarıyla kaydedildi",
-    "description": ""
-  },
-  "noFileToImport": {
-    "message": "Stillerinizi içe aktarmak için önce dışa aktarmanız gerekir.",
-    "description": ""
-  },
-  "connectingDropbox": {
-    "message": "Dropbox'a bağlanıyor...",
-    "description": ""
-  },
-  "connectingDropboxNotAllowed": {
-    "message": "Dropbox'a bağlanmak yalnızca doğrudan web mağazasından yüklenen uygulamalarda kullanılabilir",
-    "description": ""
-  },
-  "gettingStyles": {
-    "message": "Tüm stiller alınıyor...",
-    "description": ""
-  },
-  "zipStyles": {
-    "message": "Stiller sıkıştırılıyor...",
-    "description": ""
-  },
-  "unzipStyles": {
-    "message": "Stiller açılıyor...",
-    "description": ""
-  },
-  "readingStyles": {
-    "message": "Stiller okunuyor...",
-    "description": ""
+    "message": "Kurulan güncellemeler:"
   },
   "uploadingFile": {
-    "message": "Dosya Yükleniyor...",
-    "description": ""
+    "message": "Dosya Yükleniyor..."
+  },
+  "usercssAvoidOverwriting": {
+    "message": "Mevcut bir stilin üzerine yazmaktan kaçınmak için lütfen @name veya @ ad alanının değerini değiştirin."
+  },
+  "usercssConfigIncomplete": {
+    "message": "Stil, yapılandırma iletişim kutusu gösterildikten sonra güncellendi veya silindi. Bu değişkenler, stilin meta verilerini bozmamak için kaydedilmedi:"
+  },
+  "usercssEditorNamePlaceholder": {
+    "message": "Kodda @name belirtin"
+  },
+  "usercssReplaceTemplateConfirmation": {
+    "message": "Yeni Usercss stilleri için varsayılan şablonu geçerli kodla değiştir?"
+  },
+  "usercssReplaceTemplateName": {
+    "message": "Boş @name, varsayılan şablonun yerini alır"
+  },
+  "usercssReplaceTemplateSectionBody": {
+    "message": "Kodu buraya ekle..."
+  },
+  "versionInvalidOlder": {
+    "message": "Sürüm, kurulu stillerden daha eski."
+  },
+  "writeStyleFor": {
+    "message": "Şunun için stil yaz:"
+  },
+  "writeStyleForURL": {
+    "message": "bu URL"
+  },
+  "zipStyles": {
+    "message": "Stiller sıkıştırılıyor..."
   }
 }

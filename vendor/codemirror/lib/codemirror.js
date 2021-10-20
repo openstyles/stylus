@@ -32,7 +32,7 @@
   var mac_geMountainLion = /Mac OS X 1\d\D([8-9]|\d\d)\D/.test(userAgent);
   var phantom = /PhantomJS/.test(userAgent);
 
-  var ios = !edge && /AppleWebKit/.test(userAgent) && /Mobile\/\w+/.test(userAgent);
+  var ios = safari && (/Mobile\/\w+/.test(userAgent) || navigator.maxTouchPoints > 2);
   var android = /Android/.test(userAgent);
   // This is woefully incomplete. Suggestions for alternative methods welcome.
   var mobile = ios || android || /webOS|BlackBerry|Opera Mini|Opera Mobi|IEMobile/i.test(userAgent);
@@ -1311,6 +1311,7 @@
       if (span.marker == marker) { return span }
     } }
   }
+
   // Remove a span from an array, returning undefined if no spans are
   // left (we don't store arrays for lines without spans).
   function removeMarkedSpan(spans, span) {
@@ -1319,9 +1320,16 @@
       { if (spans[i] != span) { (r || (r = [])).push(spans[i]); } }
     return r
   }
+
   // Add a span to a line.
-  function addMarkedSpan(line, span) {
-    line.markedSpans = line.markedSpans ? line.markedSpans.concat([span]) : [span];
+  function addMarkedSpan(line, span, op) {
+    var inThisOp = op && window.WeakSet && (op.markedSpans || (op.markedSpans = new WeakSet));
+    if (inThisOp && inThisOp.has(line.markedSpans)) {
+      line.markedSpans.push(span);
+    } else {
+      line.markedSpans = line.markedSpans ? line.markedSpans.concat([span]) : [span];
+      if (inThisOp) { inThisOp.add(line.markedSpans); }
+    }
     span.marker.attachLine(line);
   }
 
@@ -2186,6 +2194,7 @@
     if (cm.options.lineNumbers || markers) {
       var wrap$1 = ensureLineWrapped(lineView);
       var gutterWrap = lineView.gutter = elt("div", null, "CodeMirror-gutter-wrapper", ("left: " + (cm.options.fixedGutter ? dims.fixedPos : -dims.gutterTotalWidth) + "px"));
+      gutterWrap.setAttribute("aria-hidden", "true");
       cm.display.input.setUneditable(gutterWrap);
       wrap$1.insertBefore(gutterWrap, lineView.text);
       if (lineView.line.gutterClass)
@@ -3163,6 +3172,13 @@
     cursor.style.top = pos.top + "px";
     cursor.style.height = Math.max(0, pos.bottom - pos.top) * cm.options.cursorHeight + "px";
 
+    if (/\bcm-fat-cursor\b/.test(cm.getWrapperElement().className)) {
+      var charPos = charCoords(cm, head, "div", null, null);
+      if (charPos.right - charPos.left > 0) {
+        cursor.style.width = (charPos.right - charPos.left) + "px";
+      }
+    }
+
     if (pos.other) {
       // Secondary cursor, shown when on a 'jump' in bi-directional text
       var otherCursor = output.appendChild(elt("div", "\u00a0", "CodeMirror-cursor CodeMirror-secondarycursor"));
@@ -3285,19 +3301,22 @@
   }
 
   function ensureFocus(cm) {
-    if (!cm.state.focused) { cm.display.input.focus(); onFocus(cm); }
+    if (!cm.hasFocus()) {
+      cm.display.input.focus();
+      if (!cm.state.focused) { onFocus(cm); }
+    }
   }
 
   function delayBlurEvent(cm) {
     cm.state.delayingBlurEvent = true;
     setTimeout(function () { if (cm.state.delayingBlurEvent) {
       cm.state.delayingBlurEvent = false;
-      onBlur(cm);
+      if (cm.state.focused) { onBlur(cm); }
     } }, 100);
   }
 
   function onFocus(cm, e) {
-    if (cm.state.delayingBlurEvent) { cm.state.delayingBlurEvent = false; }
+    if (cm.state.delayingBlurEvent && !cm.state.draggingText) { cm.state.delayingBlurEvent = false; }
 
     if (cm.options.readOnly == "nocursor") { return }
     if (!cm.state.focused) {
@@ -3332,10 +3351,14 @@
   function updateHeightsInViewport(cm) {
     var display = cm.display;
     var prevBottom = display.lineDiv.offsetTop;
+    var viewTop = Math.max(0, display.scroller.getBoundingClientRect().top);
+    var oldHeight = display.lineDiv.getBoundingClientRect().top;
+    var mustScroll = 0;
     for (var i = 0; i < display.view.length; i++) {
       var cur = display.view[i], wrapping = cm.options.lineWrapping;
       var height = (void 0), width = 0;
       if (cur.hidden) { continue }
+      oldHeight += cur.line.height;
       if (ie && ie_version < 8) {
         var bot = cur.node.offsetTop + cur.node.offsetHeight;
         height = bot - prevBottom;
@@ -3350,6 +3373,7 @@
       }
       var diff = cur.line.height - height;
       if (diff > .005 || diff < -.005) {
+        if (oldHeight < viewTop) { mustScroll -= diff; }
         updateLineHeight(cur.line, height);
         updateWidgetHeight(cur.line);
         if (cur.rest) { for (var j = 0; j < cur.rest.length; j++)
@@ -3364,6 +3388,7 @@
         }
       }
     }
+    if (Math.abs(mustScroll) > 2) { display.scroller.scrollTop += mustScroll; }
   }
 
   // Read and store the height of line widgets associated with the
@@ -3427,8 +3452,8 @@
       // Set pos and end to the cursor positions around the character pos sticks to
       // If pos.sticky == "before", that is around pos.ch - 1, otherwise around pos.ch
       // If pos == Pos(_, 0, "before"), pos and end are unchanged
-      pos = pos.ch ? Pos(pos.line, pos.sticky == "before" ? pos.ch - 1 : pos.ch, "after") : pos;
       end = pos.sticky == "before" ? Pos(pos.line, pos.ch + 1, "before") : pos;
+      pos = pos.ch ? Pos(pos.line, pos.sticky == "before" ? pos.ch - 1 : pos.ch, "after") : pos;
     }
     for (var limit = 0; limit < 5; limit++) {
       var changed = false;
@@ -3479,14 +3504,15 @@
       if (newTop != screentop) { result.scrollTop = newTop; }
     }
 
-    var screenleft = cm.curOp && cm.curOp.scrollLeft != null ? cm.curOp.scrollLeft : display.scroller.scrollLeft;
-    var screenw = displayWidth(cm) - (cm.options.fixedGutter ? display.gutters.offsetWidth : 0);
+    var gutterSpace = cm.options.fixedGutter ? 0 : display.gutters.offsetWidth;
+    var screenleft = cm.curOp && cm.curOp.scrollLeft != null ? cm.curOp.scrollLeft : display.scroller.scrollLeft - gutterSpace;
+    var screenw = displayWidth(cm) - display.gutters.offsetWidth;
     var tooWide = rect.right - rect.left > screenw;
     if (tooWide) { rect.right = rect.left + screenw; }
     if (rect.left < 10)
       { result.scrollLeft = 0; }
     else if (rect.left < screenleft)
-      { result.scrollLeft = Math.max(0, rect.left - (tooWide ? 0 : 10)); }
+      { result.scrollLeft = Math.max(0, rect.left + gutterSpace - (tooWide ? 0 : 10)); }
     else if (rect.right > screenw + screenleft - 3)
       { result.scrollLeft = rect.right + (tooWide ? 0 : 10) - screenw; }
     return result
@@ -3778,7 +3804,8 @@
       scrollLeft: null, scrollTop: null, // Intermediate scroll position, not pushed to DOM yet
       scrollToPos: null,       // Used to scroll to a specific position
       focus: false,
-      id: ++nextOpId           // Unique ID
+      id: ++nextOpId,          // Unique ID
+      markArrays: null         // Used by addMarkedSpan
     };
     pushOperation(cm.curOp);
   }
@@ -4231,6 +4258,8 @@
   function updateGutterSpace(display) {
     var width = display.gutters.offsetWidth;
     display.sizer.style.marginLeft = width + "px";
+    // Send an event to consumers responding to changes in gutter width.
+    signalLater(display, "gutterChanged", display);
   }
 
   function setDocumentHeight(cm, measure) {
@@ -4370,6 +4399,10 @@
     // The element in which the editor lives.
     d.wrapper = elt("div", [d.scrollbarFiller, d.gutterFiller, d.scroller], "CodeMirror");
 
+    // This attribute is respected by automatic translation systems such as Google Translate,
+    // and may also be respected by tools used by human translators.
+    d.wrapper.setAttribute('translate', 'no');
+
     // Work around IE7 z-index bug (not perfect, hence IE7 not really being supported)
     if (ie && ie_version < 8) { d.gutters.style.zIndex = -1; d.scroller.style.paddingRight = 0; }
     if (!webkit && !(gecko && mobile)) { d.scroller.draggable = true; }
@@ -4467,6 +4500,12 @@
 
   function onScrollWheel(cm, e) {
     var delta = wheelEventDelta(e), dx = delta.x, dy = delta.y;
+    var pixelsPerUnit = wheelPixelsPerUnit;
+    if (e.deltaMode === 0) {
+      dx = e.deltaX;
+      dy = e.deltaY;
+      pixelsPerUnit = 1;
+    }
 
     var display = cm.display, scroll = display.scroller;
     // Quit if there's nothing to scroll here
@@ -4495,10 +4534,10 @@
     // estimated pixels/delta value, we just handle horizontal
     // scrolling entirely here. It'll be slightly off from native, but
     // better than glitching out.
-    if (dx && !gecko && !presto && wheelPixelsPerUnit != null) {
+    if (dx && !gecko && !presto && pixelsPerUnit != null) {
       if (dy && canScrollY)
-        { updateScrollTop(cm, Math.max(0, scroll.scrollTop + dy * wheelPixelsPerUnit)); }
-      setScrollLeft(cm, Math.max(0, scroll.scrollLeft + dx * wheelPixelsPerUnit));
+        { updateScrollTop(cm, Math.max(0, scroll.scrollTop + dy * pixelsPerUnit)); }
+      setScrollLeft(cm, Math.max(0, scroll.scrollLeft + dx * pixelsPerUnit));
       // Only prevent default scrolling if vertical scrolling is
       // actually possible. Otherwise, it causes vertical scroll
       // jitter on OSX trackpads when deltaX is small and deltaY
@@ -4511,15 +4550,15 @@
 
     // 'Project' the visible viewport to cover the area that is being
     // scrolled into view (if we know enough to estimate it).
-    if (dy && wheelPixelsPerUnit != null) {
-      var pixels = dy * wheelPixelsPerUnit;
+    if (dy && pixelsPerUnit != null) {
+      var pixels = dy * pixelsPerUnit;
       var top = cm.doc.scrollTop, bot = top + display.wrapper.clientHeight;
       if (pixels < 0) { top = Math.max(0, top + pixels - 50); }
       else { bot = Math.min(cm.doc.height, bot + pixels + 50); }
       updateDisplaySimple(cm, {top: top, bottom: bot});
     }
 
-    if (wheelSamples < 20) {
+    if (wheelSamples < 20 && e.deltaMode !== 0) {
       if (display.wheelStartX == null) {
         display.wheelStartX = scroll.scrollLeft; display.wheelStartY = scroll.scrollTop;
         display.wheelDX = dx; display.wheelDY = dy;
@@ -4778,6 +4817,7 @@
     estimateLineHeights(cm);
     loadMode(cm);
     setDirectionClass(cm);
+    cm.options.direction = doc.direction;
     if (!cm.options.lineWrapping) { findMaxLine(cm); }
     cm.options.mode = doc.modeOption;
     regChange(cm);
@@ -4794,19 +4834,19 @@
     });
   }
 
-  function History(startGen) {
+  function History(prev) {
     // Arrays of change events and selections. Doing something adds an
     // event to done and clears undo. Undoing moves events from done
     // to undone, redoing moves them in the other direction.
     this.done = []; this.undone = [];
-    this.undoDepth = Infinity;
+    this.undoDepth = prev ? prev.undoDepth : Infinity;
     // Used to track when changes can be merged into a single undo
     // event
     this.lastModTime = this.lastSelTime = 0;
     this.lastOp = this.lastSelOp = null;
     this.lastOrigin = this.lastSelOrigin = null;
     // Used by the isClean() method
-    this.generation = this.maxGeneration = startGen || 1;
+    this.generation = this.maxGeneration = prev ? prev.maxGeneration : 1;
   }
 
   // Create a history change event from an updateDoc-style change
@@ -5111,7 +5151,7 @@
       (cmp(sel.primary().head, doc.sel.primary().head) < 0 ? -1 : 1);
     setSelectionInner(doc, skipAtomicInSelection(doc, sel, bias, true));
 
-    if (!(options && options.scroll === false) && doc.cm)
+    if (!(options && options.scroll === false) && doc.cm && doc.cm.getOption("readOnly") != "nocursor")
       { ensureCursorVisible(doc.cm); }
   }
 
@@ -5768,7 +5808,7 @@
     changeLine(doc, handle, "widget", function (line) {
       var widgets = line.widgets || (line.widgets = []);
       if (widget.insertAt == null) { widgets.push(widget); }
-      else { widgets.splice(Math.min(widgets.length - 1, Math.max(0, widget.insertAt)), 0, widget); }
+      else { widgets.splice(Math.min(widgets.length, Math.max(0, widget.insertAt)), 0, widget); }
       widget.line = line;
       if (cm && !lineIsHidden(doc, line)) {
         var aboveVisible = heightAtLine(line) < doc.scrollTop;
@@ -5954,7 +5994,7 @@
       if (marker.collapsed && curLine != from.line) { updateLineHeight(line, 0); }
       addMarkedSpan(line, new MarkedSpan(marker,
                                          curLine == from.line ? from.ch : null,
-                                         curLine == to.line ? to.ch : null));
+                                         curLine == to.line ? to.ch : null), doc.cm && doc.cm.curOp);
       ++curLine;
     });
     // lineIsHidden depends on the presence of the spans, so needs a second pass
@@ -6126,6 +6166,7 @@
     getRange: function(from, to, lineSep) {
       var lines = getBetween(this, clipPos(this, from), clipPos(this, to));
       if (lineSep === false) { return lines }
+      if (lineSep === '') { return lines.join('') }
       return lines.join(lineSep || this.lineSeparator())
     },
 
@@ -6177,7 +6218,7 @@
       var out = [];
       for (var i = 0; i < ranges.length; i++)
         { out[i] = new Range(clipPos(this, ranges[i].anchor),
-                           clipPos(this, ranges[i].head)); }
+                           clipPos(this, ranges[i].head || ranges[i].anchor)); }
       if (primary == null) { primary = Math.min(ranges.length - 1, this.sel.primIndex); }
       setSelection(this, normalizeSelection(this.cm, out, primary), options);
     }),
@@ -6240,7 +6281,7 @@
     clearHistory: function() {
       var this$1 = this;
 
-      this.history = new History(this.history.maxGeneration);
+      this.history = new History(this.history);
       linkedDocs(this, function (doc) { return doc.history = this$1.history; }, true);
     },
 
@@ -6261,7 +6302,7 @@
               undone: copyHistoryArray(this.history.undone)}
     },
     setHistory: function(histData) {
-      var hist = this.history = new History(this.history.maxGeneration);
+      var hist = this.history = new History(this.history);
       hist.done = copyHistoryArray(histData.done.slice(0), null, true);
       hist.undone = copyHistoryArray(histData.undone.slice(0), null, true);
     },
@@ -6680,10 +6721,9 @@
   // Very basic readline/emacs-style bindings, which are standard on Mac.
   keyMap.emacsy = {
     "Ctrl-F": "goCharRight", "Ctrl-B": "goCharLeft", "Ctrl-P": "goLineUp", "Ctrl-N": "goLineDown",
-    "Alt-F": "goWordRight", "Alt-B": "goWordLeft", "Ctrl-A": "goLineStart", "Ctrl-E": "goLineEnd",
-    "Ctrl-V": "goPageDown", "Shift-Ctrl-V": "goPageUp", "Ctrl-D": "delCharAfter", "Ctrl-H": "delCharBefore",
-    "Alt-D": "delWordAfter", "Alt-Backspace": "delWordBefore", "Ctrl-K": "killLine", "Ctrl-T": "transposeChars",
-    "Ctrl-O": "openLine"
+    "Ctrl-A": "goLineStart", "Ctrl-E": "goLineEnd", "Ctrl-V": "goPageDown", "Shift-Ctrl-V": "goPageUp",
+    "Ctrl-D": "delCharAfter", "Ctrl-H": "delCharBefore", "Alt-Backspace": "delWordBefore", "Ctrl-K": "killLine",
+    "Ctrl-T": "transposeChars", "Ctrl-O": "openLine"
   };
   keyMap.macDefault = {
     "Cmd-A": "selectAll", "Cmd-D": "deleteLine", "Cmd-Z": "undo", "Shift-Cmd-Z": "redo", "Cmd-Y": "redo",
@@ -7377,6 +7417,10 @@
     var dragEnd = operation(cm, function (e) {
       if (webkit) { display.scroller.draggable = false; }
       cm.state.draggingText = false;
+      if (cm.state.delayingBlurEvent) {
+        if (cm.hasFocus()) { cm.state.delayingBlurEvent = false; }
+        else { delayBlurEvent(cm); }
+      }
       off(display.wrapper.ownerDocument, "mouseup", dragEnd);
       off(display.wrapper.ownerDocument, "mousemove", mouseMove);
       off(display.scroller, "dragstart", dragStart);
@@ -7400,15 +7444,15 @@
     if (webkit) { display.scroller.draggable = true; }
     cm.state.draggingText = dragEnd;
     dragEnd.copy = !behavior.moveOnDrag;
-    // IE's approach to draggable
-    if (display.scroller.dragDrop) { display.scroller.dragDrop(); }
     on(display.wrapper.ownerDocument, "mouseup", dragEnd);
     on(display.wrapper.ownerDocument, "mousemove", mouseMove);
     on(display.scroller, "dragstart", dragStart);
     on(display.scroller, "drop", dragEnd);
 
-    delayBlurEvent(cm);
+    cm.state.delayingBlurEvent = true;
     setTimeout(function () { return display.input.focus(); }, 20);
+    // IE's approach to draggable
+    if (display.scroller.dragDrop) { display.scroller.dragDrop(); }
   }
 
   function rangeForUnit(cm, pos, unit) {
@@ -7421,6 +7465,7 @@
 
   // Normal selection, as opposed to text dragging.
   function leftButtonSelect(cm, event, start, behavior) {
+    if (ie) { delayBlurEvent(cm); }
     var display = cm.display, doc = cm.doc;
     e_preventDefault(event);
 
@@ -7699,7 +7744,7 @@
       for (var i = newBreaks.length - 1; i >= 0; i--)
         { replaceRange(cm.doc, val, newBreaks[i], Pos(newBreaks[i].line, newBreaks[i].ch + val.length)); }
     });
-    option("specialChars", /[\u0000-\u001f\u007f-\u009f\u00ad\u061c\u200b-\u200c\u200e\u200f\u2028\u2029\ufeff\ufff9-\ufffc]/g, function (cm, val, old) {
+    option("specialChars", /[\u0000-\u001f\u007f-\u009f\u00ad\u061c\u200b\u200e\u200f\u2028\u2029\ufeff\ufff9-\ufffc]/g, function (cm, val, old) {
       cm.state.specialChars = new RegExp(val.source + (val.test("\t") ? "" : "|\t"), "g");
       if (old != Init) { cm.refresh(); }
     });
@@ -8190,7 +8235,7 @@
   }
 
   function hiddenTextarea() {
-    var te = elt("textarea", null, null, "position: absolute; bottom: -1em; padding: 0; width: 1px; height: 1em; outline: none");
+    var te = elt("textarea", null, null, "position: absolute; bottom: -1em; padding: 0; width: 1px; height: 1em; min-height: 1em; outline: none");
     var div = elt("div", [te], null, "overflow: hidden; position: relative; width: 3px; height: 0px;");
     // The textarea is kept positioned near the cursor to prevent the
     // fact that it'll be scrolled into view on input from scrolling
@@ -8666,10 +8711,13 @@
     function moveOnce(boundToLine) {
       var next;
       if (unit == "codepoint") {
-        var ch = lineObj.text.charCodeAt(pos.ch + (unit > 0 ? 0 : -1));
-        if (isNaN(ch)) { next = null; }
-        else { next = new Pos(pos.line, Math.max(0, Math.min(lineObj.text.length, pos.ch + dir * (ch >= 0xD800 && ch < 0xDC00 ? 2 : 1))),
-                            -dir); }
+        var ch = lineObj.text.charCodeAt(pos.ch + (dir > 0 ? 0 : -1));
+        if (isNaN(ch)) {
+          next = null;
+        } else {
+          var astral = dir > 0 ? ch >= 0xD800 && ch < 0xDC00 : ch >= 0xDC00 && ch < 0xDFFF;
+          next = new Pos(pos.line, Math.max(0, Math.min(lineObj.text.length, pos.ch + dir * (astral ? 2 : 1))), -dir);
+        }
       } else if (visually) {
         next = moveVisually(doc.cm, lineObj, pos, dir);
       } else {
@@ -8754,6 +8802,7 @@
 
     var input = this, cm = input.cm;
     var div = input.div = display.lineDiv;
+    div.contentEditable = true;
     disableBrowserMagic(div, cm.options.spellcheck, cm.options.autocorrect, cm.options.autocapitalize);
 
     function belongsToInput(e) {
@@ -8820,7 +8869,7 @@
       var kludge = hiddenTextarea(), te = kludge.firstChild;
       cm.display.lineSpace.insertBefore(kludge, cm.display.lineSpace.firstChild);
       te.value = lastCopied.text.join("\n");
-      var hadFocus = document.activeElement;
+      var hadFocus = activeElt();
       selectInput(te);
       setTimeout(function () {
         cm.display.lineSpace.removeChild(kludge);
@@ -8843,7 +8892,7 @@
 
   ContentEditableInput.prototype.prepareSelection = function () {
     var result = prepareSelection(this.cm, false);
-    result.focus = document.activeElement == this.div;
+    result.focus = activeElt() == this.div;
     return result
   };
 
@@ -8939,7 +8988,7 @@
 
   ContentEditableInput.prototype.focus = function () {
     if (this.cm.options.readOnly != "nocursor") {
-      if (!this.selectionInEditor() || document.activeElement != this.div)
+      if (!this.selectionInEditor() || activeElt() != this.div)
         { this.showSelection(this.prepareSelection(), true); }
       this.div.focus();
     }
@@ -8950,9 +8999,11 @@
   ContentEditableInput.prototype.supportsTouch = function () { return true };
 
   ContentEditableInput.prototype.receivedFocus = function () {
+      var this$1 = this;
+
     var input = this;
     if (this.selectionInEditor())
-      { this.pollSelection(); }
+      { setTimeout(function () { return this$1.pollSelection(); }, 20); }
     else
       { runInOp(this.cm, function () { return input.cm.curOp.selectionChanged = true; }); }
 
@@ -9781,7 +9832,7 @@
 
   addLegacyProps(CodeMirror);
 
-  CodeMirror.version = "5.58.0";
+  CodeMirror.version = "5.63.3";
 
   return CodeMirror;
 

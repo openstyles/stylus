@@ -10,7 +10,7 @@
 .onoffswitch input {
   -webkit-appearance: none;
   -moz-appearance: none;
-  pointer-events: none;
+  cursor: pointer;
   position: absolute;
   top: -8px;
   bottom: -10px;
@@ -29,7 +29,6 @@
 .onoffswitch span {
   display: block;
   overflow: hidden;
-  cursor: pointer;
   height: 12px;
   padding: 0;
   line-height: 12px;
@@ -37,6 +36,7 @@
   border-radius: 12px;
   background-color: #E0E0E0;
   box-shadow: inset 2px 2px 4px rgba(0,0,0,0.1);
+  pointer-events: none; /* this is just a non-clickable decoration, only `input` is clickable */
 }
 
 .onoffswitch span::before {

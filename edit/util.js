@@ -1,187 +1,215 @@
-/* global CodeMirror $create prefs */
-/* exported dirtyReporter memoize clipString sectionsToMozFormat createHotkeyInput */
+/* global $ $create getEventKeyName messageBoxProxy moveFocus */// dom.js
+/* global CodeMirror */
+/* global editor */
+/* global prefs */
+/* global t */// localization.js
 'use strict';
 
-function dirtyReporter() {
-  const dirty = new Map();
-  const onchanges = [];
+const helpPopup = {
 
-  function add(obj, value) {
-    const saved = dirty.get(obj);
-    if (!saved) {
-      dirty.set(obj, {type: 'add', newValue: value});
-    } else if (saved.type === 'remove') {
-      if (saved.savedValue === value) {
-        dirty.delete(obj);
-      } else {
-        saved.newValue = value;
-        saved.type = 'modify';
+  show(title = '', body) {
+    const div = $('#help-popup');
+    const contents = $('.contents', div);
+    div.className = '';
+    contents.textContent = '';
+    if (body) {
+      contents.appendChild(typeof body === 'string' ? t.HTML(body) : body);
+    }
+    $('.title', div).textContent = title;
+    $('.dismiss', div).onclick = helpPopup.close;
+    window.on('keydown', helpPopup.close, true);
+    // reset any inline styles
+    div.style = 'display: block';
+    helpPopup.originalFocus = document.activeElement;
+    return div;
+  },
+
+  close(event) {
+    const canClose =
+      !event ||
+      event.type === 'click' || (
+        getEventKeyName(event) === 'Escape' &&
+        !$('.CodeMirror-hints, #message-box') && (
+          !document.activeElement ||
+          !document.activeElement.closest('#search-replace-dialog') &&
+          document.activeElement.matches(':not(input), .can-close-on-esc')
+        )
+      );
+    const div = $('#help-popup');
+    if (!canClose || !div) {
+      return;
+    }
+    if (event && div.codebox && !div.codebox.options.readOnly && !div.codebox.isClean()) {
+      setTimeout(async () => {
+        const ok = await messageBoxProxy.confirm(t('confirmDiscardChanges'));
+        return ok && helpPopup.close();
+      });
+      return;
+    }
+    if (div.contains(document.activeElement) && helpPopup.originalFocus) {
+      helpPopup.originalFocus.focus();
+    }
+    const contents = $('.contents', div);
+    div.style.display = '';
+    contents.textContent = '';
+    window.off('keydown', helpPopup.close, true);
+    window.dispatchEvent(new Event('closeHelp'));
+  },
+};
+
+// reroute handling to nearest editor when keypress resolves to one of these commands
+const rerouteHotkeys = {
+  commands: [
+    'beautify',
+    'colorpicker',
+    'find',
+    'findNext',
+    'findPrev',
+    'jumpToLine',
+    'nextEditor',
+    'prevEditor',
+    'replace',
+    'replaceAll',
+    'save',
+    'toggleEditorFocus',
+    'toggleStyle',
+  ],
+
+  toggle(enable) {
+    document[enable ? 'on' : 'off']('keydown', rerouteHotkeys.handler);
+  },
+
+  handler(event) {
+    const keyName = CodeMirror.keyName(event);
+    if (!keyName) {
+      return;
+    }
+    const rerouteCommand = name => {
+      if (rerouteHotkeys.commands.includes(name)) {
+        CodeMirror.commands[name](editor.closestVisible(event.target));
+        return true;
       }
-    }
-  }
-
-  function remove(obj, value) {
-    const saved = dirty.get(obj);
-    if (!saved) {
-      dirty.set(obj, {type: 'remove', savedValue: value});
-    } else if (saved.type === 'add') {
-      dirty.delete(obj);
-    } else if (saved.type === 'modify') {
-      saved.type = 'remove';
-    }
-  }
-
-  function modify(obj, oldValue, newValue) {
-    const saved = dirty.get(obj);
-    if (!saved) {
-      if (oldValue !== newValue) {
-        dirty.set(obj, {type: 'modify', savedValue: oldValue, newValue});
-      }
-    } else if (saved.type === 'modify') {
-      if (saved.savedValue === newValue) {
-        dirty.delete(obj);
-      } else {
-        saved.newValue = newValue;
-      }
-    } else if (saved.type === 'add') {
-      saved.newValue = newValue;
-    }
-  }
-
-  function clear(obj) {
-    if (obj === undefined) {
-      dirty.clear();
-    } else {
-      dirty.delete(obj);
-    }
-  }
-
-  function isDirty() {
-    return dirty.size > 0;
-  }
-
-  function onChange(cb) {
-    // make sure the callback doesn't throw
-    onchanges.push(cb);
-  }
-
-  function wrap(obj) {
-    for (const key of ['add', 'remove', 'modify', 'clear']) {
-      obj[key] = trackChange(obj[key]);
-    }
-    return obj;
-  }
-
-  function emitChange() {
-    for (const cb of onchanges) {
-      cb();
-    }
-  }
-
-  function trackChange(fn) {
-    return function () {
-      const dirty = isDirty();
-      const result = fn.apply(null, arguments);
-      if (dirty !== isDirty()) {
-        emitChange();
-      }
-      return result;
     };
-  }
-
-  function has(key) {
-    return dirty.has(key);
-  }
-
-  return wrap({add, remove, modify, clear, isDirty, onChange, has});
-}
-
-
-function sectionsToMozFormat(style) {
-  const propertyToCss = {
-    urls:        'url',
-    urlPrefixes: 'url-prefix',
-    domains:     'domain',
-    regexps:     'regexp',
-  };
-  return style.sections.map(section => {
-    let cssMds = [];
-    for (const i in propertyToCss) {
-      if (section[i]) {
-        cssMds = cssMds.concat(section[i].map(v =>
-          propertyToCss[i] + '("' + v.replace(/\\/g, '\\\\') + '")'
-        ));
-      }
+    if (CodeMirror.lookupKey(keyName, CodeMirror.defaults.keyMap, rerouteCommand) === 'handled' ||
+        CodeMirror.lookupKey(keyName, CodeMirror.defaults.extraKeys, rerouteCommand) === 'handled') {
+      event.preventDefault();
+      event.stopPropagation();
     }
-    return cssMds.length ?
-      '@-moz-document ' + cssMds.join(', ') + ' {\n' + section.code + '\n}' :
-      section.code;
-  }).join('\n\n');
-}
-
+  },
+};
 
 function clipString(str, limit = 100) {
   return str.length <= limit ? str : str.substr(0, limit) + '...';
 }
 
-// this is a decorator. Cache the first call
-function memoize(fn) {
-  let cached = false;
-  let result;
-  return (...args) => {
-    if (!cached) {
-      result = fn(...args);
-      cached = true;
+/* exported createHotkeyInput */
+function createHotkeyInput(prefId, {buttons = true, onDone}) {
+  const RX_ERR = new RegExp('^(' + [
+    /Space/,
+    /(Shift-)?./, // a single character
+    /(?=.)(Shift-?|Ctrl-?|Control-?|Alt-?|Meta-?)*(Escape|Tab|Page(Up|Down)|Arrow(Up|Down|Left|Right)|Home|End)?/,
+  ].map(r => r.source || r).join('|') + ')$', 'i');
+  const initialValue = prefs.get(prefId);
+  const input = $create('input', {
+    spellcheck: false,
+    onpaste: e => onkeydown(e, e.clipboardData.getData('text')),
+    onkeydown,
+  });
+  buttons = buttons && [
+    ['confirmOK', 'Enter'],
+    ['undo', initialValue],
+    ['genericResetLabel', ''],
+  ].map(([label, val]) =>
+    $create('button', {onclick: e => onkeydown(e, val)}, t(label)));
+  const [btnOk, btnUndo, btnReset] = buttons || [];
+  onkeydown(null, initialValue);
+  return buttons
+    ? $create('fragment', [input, $create('.buttons', buttons)])
+    : input;
+
+  function onkeydown(e, key) {
+    let newValue;
+    if (e && e.type === 'keydown') {
+      key = getEventKeyName(e);
     }
-    return result;
-  };
+    switch (e && key) {
+      case 'Tab':
+      case 'Shift-Tab':
+        return;
+      case 'BackSpace':
+      case 'Delete':
+        newValue = '';
+        break;
+      case 'Enter':
+        if (input.checkValidity() && onDone) onDone();
+        break;
+      case 'Escape':
+        if (onDone) onDone();
+        break;
+      default:
+        newValue = key.replace(/\b.$/, c => c.toUpperCase());
+    }
+    if (newValue != null) {
+      const error = RX_ERR.test(newValue) ? t('genericError') : '';
+      if (e && !error) prefs.set(prefId, newValue);
+      input.setCustomValidity(error);
+      input.value = newValue;
+      input.focus();
+      if (buttons) {
+        btnOk.disabled = Boolean(error);
+        btnUndo.disabled = newValue === initialValue;
+        btnReset.disabled = !newValue;
+      }
+    }
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }
 }
 
-/**
- * @param {!string} prefId
- * @param {?function(isEnter:boolean)} onDone
- */
-function createHotkeyInput(prefId, onDone = () => {}) {
-  return $create('input', {
-    type: 'search',
-    spellcheck: false,
-    value: prefs.get(prefId),
-    onkeydown(event) {
-      const key = CodeMirror.keyName(event);
-      if (key === 'Tab' || key === 'Shift-Tab') {
-        return;
-      }
-      event.preventDefault();
-      event.stopPropagation();
-      switch (key) {
-        case 'Enter':
-          if (this.checkValidity()) onDone(true);
-          return;
-        case 'Esc':
-          onDone(false);
-          return;
-        default:
-          // disallow: [Shift?] characters, modifiers-only, [modifiers?] + Esc, Tab, nav keys
-          if (!key || new RegExp('^(' + [
-            '(Back)?Space',
-            '(Shift-)?.', // a single character
-            '(Shift-?|Ctrl-?|Alt-?|Cmd-?){0,2}(|Esc|Tab|(Page)?(Up|Down)|Left|Right|Home|End|Insert|Delete)',
-          ].join('|') + ')$', 'i').test(key)) {
-            this.value = key || this.value;
-            this.setCustomValidity('Not allowed');
-            return;
-          }
-      }
-      this.value = key;
-      this.setCustomValidity('');
-      prefs.set(prefId, key);
-    },
-    oninput() {
-      // fired on pressing "x" to clear the field
-      prefs.set(prefId, '');
-    },
-    onpaste(event) {
+/* exported showCodeMirrorPopup */
+function showCodeMirrorPopup(title, html, options) {
+  const popup = helpPopup.show(title, html);
+  popup.classList.add('big');
+
+  let cm = popup.codebox = CodeMirror($('.contents', popup), Object.assign({
+    mode: 'css',
+    lineNumbers: true,
+    lineWrapping: prefs.get('editor.lineWrapping'),
+    foldGutter: true,
+    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'],
+    matchBrackets: true,
+    styleActiveLine: true,
+    theme: prefs.get('editor.theme'),
+    keyMap: prefs.get('editor.keyMap'),
+  }, options));
+  cm.focus();
+
+  document.documentElement.style.pointerEvents = 'none';
+  popup.style.pointerEvents = 'auto';
+
+  const onKeyDown = event => {
+    if (event.key === 'Tab' && !event.ctrlKey && !event.altKey && !event.metaKey) {
+      const search = $('#search-replace-dialog');
+      const area = search && search.contains(document.activeElement) ? search : popup;
+      moveFocus(area, event.shiftKey ? -1 : 1);
       event.preventDefault();
     }
-  });
+  };
+  window.on('keydown', onKeyDown, true);
+
+  window.on('closeHelp', () => {
+    window.off('keydown', onKeyDown, true);
+    document.documentElement.style.removeProperty('pointer-events');
+    cm = popup.codebox = null;
+  }, {once: true});
+
+  return popup;
+}
+
+/* exported trimCommentLabel */
+function trimCommentLabel(str, limit = 1000) {
+  // stripping /*** foo ***/ to foo
+  return clipString(str.replace(/^[!-/:;=\s]*|[-#$&(+,./:;<=>\s*]*$/g, ''), limit);
 }

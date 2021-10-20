@@ -1,23 +1,21 @@
 {
+  "InaccessibleFileHint": {
+    "message": "A Stylus nem tud bizonyos fájltípusokhoz hozzáférni (pl. PDF- & JSON-fájlokhoz)"
+  },
   "addStyleLabel": {
-    "message": "Új stílus írása",
-    "description": "Label for the button to go to the add style page"
+    "message": "Új stílus írása"
   },
   "addStyleTitle": {
-    "message": "Stílus hozzáadása",
-    "description": "Title of the page for adding styles"
+    "message": "Stílus hozzáadása"
   },
   "alphaChannel": {
-    "message": "Átlátszatlanság",
-    "description": "Label of color's opacity"
+    "message": "Átlátszatlanság"
   },
   "appliesAdd": {
-    "message": "Hozzáadás",
-    "description": "Label for the button to add an 'applies' entry"
+    "message": "Hozzáadás"
   },
   "appliesDisplay": {
     "message": "Érvényes erre:$applies$",
-    "description": "Text on the manage screen to describe what the style applies to",
     "placeholders": {
       "applies": {
         "content": "$1"
@@ -25,284 +23,220 @@
     }
   },
   "appliesDisplayTruncatedSuffix": {
-    "message": "és ennél is több",
-    "description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
+    "message": "és ennél is több"
   },
   "appliesDomainOption": {
-    "message": "URL-ek a tartományban",
-    "description": "Option to make the style apply to the entered string as a domain"
+    "message": "URL-ek a tartományban"
   },
   "appliesHelp": {
-    "message": "Az \"Érvényes erre\" beállítással korlártozható, hogy milyen URL-ekre vonatkozik az itt lévő kód.",
-    "description": "Help text for 'applies to' section"
+    "message": "Az \"Érvényes erre\" beállítással korlártozható, hogy milyen URL-ekre vonatkozik az itt lévő kód."
   },
   "appliesLabel": {
-    "message": "Érvényes erre",
-    "description": "Label for 'applies to' fields on the edit/add screen"
+    "message": "Érvényes erre"
   },
   "appliesLineWidgetLabel": {
-    "message": "Információ arról, hogy mire érvényes",
-    "description": "Label for the checkbox to display applies-to information in the single editor"
+    "message": "Információ arról, hogy mire érvényes"
   },
   "appliesLineWidgetWarning": {
-    "message": "Nem működik minimalizált CSS-sel",
-    "description": "A warning that applies-to information won't show properly with minified CSS"
+    "message": "Nem működik minimalizált CSS-sel"
   },
   "appliesRegexpOption": {
-    "message": "Reguláris kifejezésre (regexp) illeszkedő URL-ek",
-    "description": "Option to make the style apply to the entered string as a regular expression"
+    "message": "Reguláris kifejezésre (regexp) illeszkedő URL-ek"
   },
   "appliesRemove": {
-    "message": "Eltávolítás",
-    "description": "Label for the button to remove an 'applies' entry"
+    "message": "Eltávolítás"
   },
   "appliesRemoveError": {
-    "message": "Nem lehet eltávolítani az utolsó 'érvényes erre' bejegyzést",
-    "description": "Error displayed when the last 'applies' is going to be removed"
+    "message": "Nem lehet eltávolítani az utolsó 'érvényes erre' bejegyzést"
   },
   "appliesSpecify": {
-    "message": "Szűkítés",
-    "description": "Label for the button to make a style apply only to specific sites"
+    "message": "Szűkítés"
   },
   "appliesToEverything": {
-    "message": "Minden",
-    "description": "Text displayed for styles that apply to all sites"
+    "message": "Minden"
   },
   "appliesUrlPrefixOption": {
-    "message": "URL-ek adott kezdettel",
-    "description": "Option to make the style apply to the entered string as a URL prefix"
+    "message": "URL-ek adott kezdettel"
   },
   "applyAllUpdates": {
-    "message": "Minden módosítás alkalmazása",
-    "description": "Label for the button to apply all detected updates"
+    "message": "Minden módosítás alkalmazása"
   },
   "author": {
-    "message": "Szerző",
-    "description": "Label for the style author"
+    "message": "Szerző"
   },
   "backupButtons": {
-    "message": "Biztonsági mentés",
-    "description": "Heading for backup"
+    "message": "Biztonsági mentés"
   },
   "backupMessage": {
-    "message": "Válassz ki egy fájlt vagy húzd erre az oldalra!",
-    "description": "Message for backup"
+    "message": "Válassz ki egy fájlt vagy húzd erre az oldalra!"
   },
   "bckpInstStyles": {
-    "message": "Stílusok exportálása",
-    "description": ""
+    "message": "Stílusok exportálása"
   },
   "checkAllUpdates": {
-    "message": "Összes stílus frissítésének ellenőrzése",
-    "description": "Label for the button to check all styles for updates"
+    "message": "Összes stílus frissítésének ellenőrzése"
   },
   "checkAllUpdatesForce": {
-    "message": "Ellenőrizd újra, nem módosítottam egy stílust sem!",
-    "description": "Label for the button to apply all detected updates"
+    "message": "Ellenőrizd újra, nem módosítottam egy stílust sem!"
   },
   "checkForUpdate": {
-    "message": "Frissítések ellenőrzése",
-    "description": "Label for the button to check a single style for an update"
+    "message": "Frissítések ellenőrzése"
   },
   "checkingForUpdate": {
-    "message": "Ellenőrzés...",
-    "description": "Text to display when checking a style for an update"
+    "message": "Ellenőrzés..."
   },
   "clickToUninstall": {
-    "message": "Kattints az eltávolításhoz",
-    "description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
+    "message": "Kattints az eltávolításhoz"
   },
   "cm_autoCloseBrackets": {
-    "message": "Zárójelek és idézőjelek automatikus bezárása",
-    "description": "Label for the checkbox in the style editor."
+    "message": "Zárójelek és idézőjelek automatikus bezárása"
   },
   "cm_autoCloseBracketsTooltip": {
-    "message": "Nyitó '([{'zárójel gépelésekor lezáró ')]}' zárójel automatikus hozzáadása",
-    "description": "Label for the checkbox in the style editor."
+    "message": "Nyitó '([{'zárójel gépelésekor lezáró ')]}' zárójel automatikus hozzáadása"
   },
   "cm_autocompleteOnTyping": {
-    "message": "Automatikus kiegészítés gépeléskor",
-    "description": "Label for the checkbox in the style editor."
+    "message": "Automatikus kiegészítés gépeléskor"
   },
   "cm_colorpicker": {
-    "message": "Színválasztó CSS-színekhez",
-    "description": "Label for the checkbox controlling colorpicker option for the style editor."
+    "message": "Színválasztó CSS-színekhez"
   },
   "cm_indentWithTabs": {
-    "message": "Tabulátorok használata intelligens behúzásra",
-    "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
+    "message": "Tabulátorok használata intelligens behúzásra"
   },
   "cm_keyMap": {
-    "message": "Billentyűműveletek",
-    "description": "Label for the drop-down list controlling the keymap for the style editor."
+    "message": "Billentyűműveletek"
   },
   "cm_lineWrapping": {
-    "message": "Automatikus sortörés",
-    "description": "Label for the checkbox controlling word wrap option for the style editor."
+    "message": "Automatikus sortörés"
   },
   "cm_matchHighlight": {
-    "message": "Kijelölés",
-    "description": "Label for the drop-down list controlling the automatic highlighting of current word/selection occurrences in the style editor."
+    "message": "Kijelölés"
   },
   "cm_matchHighlightSelection": {
-    "message": "Csak kiválasztás",
-    "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
+    "message": "Csak kiválasztás"
   },
   "cm_matchHighlightToken": {
-    "message": "Kurzor alatti kifejezés",
-    "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of the word/token under cursor even if nothing is selected"
+    "message": "Kurzor alatti kifejezés"
   },
   "cm_resizeGripHint": {
-    "message": "Kattints duplán a magasság maximalizálásához/visszaállításához",
-    "description": "Tooltip for the resize grip in style editor"
+    "message": "Kattints duplán a magasság maximalizálásához/visszaállításához"
   },
   "cm_selectByTokens": {
-    "message": "Kifejezések kijelölése dupla kattintással",
-    "description": "Label for the checkbox in the editor."
+    "message": "Kifejezések kijelölése dupla kattintással"
   },
   "cm_selectByTokensTooltip": {
-    "message": "Példák kifejezésekre: .valami-2 #aabbcc 0.32 !important\nAmikor ki van kapcsolva: a központosítással elválasztott szavak ki lesznek jelölve.",
-    "description": ""
+    "message": "Példák kifejezésekre: .valami-2 #aabbcc 0.32 !important\nAmikor ki van kapcsolva: a központosítással elválasztott szavak ki lesznek jelölve."
   },
   "cm_smartIndent": {
-    "message": "Intelligens behúzás",
-    "description": "Label for the checkbox controlling smart indentation option for the style editor."
+    "message": "Intelligens behúzás"
   },
   "cm_tabSize": {
-    "message": "Tabulátorméret",
-    "description": "Label for the text box controlling tab size option for the style editor."
+    "message": "Tabulátorméret"
   },
   "cm_theme": {
-    "message": "Téma",
-    "description": "Label for the style editor's CSS theme."
+    "message": "Téma"
   },
   "colorpickerSwitchFormatTooltip": {
-    "message": "Formátumváltás: HEX -> RGB -> HSL.\nShift-kattintás megfordítja az irányt.\nA PgUp (PageUp) és PgDn (PageDown) billentyűkkel is lehet váltani.",
-    "description": "Tooltip for the switch button in the color picker popup in the style editor."
+    "message": "Formátumváltás: HEX -> RGB -> HSL.\nShift-kattintás megfordítja az irányt.\nA PgUp (PageUp) és PgDn (PageDown) billentyűkkel is lehet váltani."
   },
   "colorpickerTooltip": {
-    "message": "Színválasztó megnyitása",
-    "description": "Tooltip for the colored squares shown before CSS colors in the style editor."
+    "message": "Színválasztó megnyitása"
   },
   "configOnChange": {
-    "message": "változtatáskor",
-    "description": "VERY SHORT label for the checkbox in style config dialog after the save button - when enabled the changes in the dialog are saved and applied automatically without the need to press the Save button"
+    "message": "változtatáskor"
   },
   "configOnChangeTooltip": {
-    "message": "Automatikus mentés és alkalmazás",
-    "description": ""
+    "message": "Automatikus mentés és alkalmazás"
   },
   "configureStyle": {
-    "message": "Konfigurálás",
-    "description": "Label for the button to configure usercss userstyle"
+    "message": "Konfigurálás"
   },
   "configureStyleOnHomepage": {
-    "message": "Beállítás a honlapon",
-    "description": "Label for the button to configure userstyles.org userstyle"
+    "message": "Beállítás a honlapon"
   },
   "confirmCancel": {
-    "message": "Mégsem",
-    "description": ""
+    "message": "Mégsem"
   },
   "confirmClose": {
-    "message": "Bezárás",
-    "description": "'Close' button in a confirm dialog"
+    "message": "Bezárás"
   },
   "confirmDefault": {
-    "message": "Alapértelmezés használata",
-    "description": "'Set to default' button in a confirm dialog"
+    "message": "Alapértelmezés használata"
   },
   "confirmDelete": {
-    "message": "Törlés",
-    "description": ""
+    "message": "Törlés"
   },
   "confirmDiscardChanges": {
-    "message": "Elveted a változásokat?",
-    "description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
+    "message": "Elveted a változásokat?"
   },
   "confirmNo": {
-    "message": "Nem",
-    "description": "'No' button in a confirm dialog"
+    "message": "Nem"
   },
   "confirmSave": {
-    "message": "Mentés",
-    "description": "'Save' button in a confirm dialog"
+    "message": "Mentés"
   },
   "confirmStop": {
-    "message": "Állj",
-    "description": "'Stop' button in a confirm dialog"
+    "message": "Állj"
   },
   "confirmYes": {
-    "message": "Igen",
-    "description": "'Yes' button in a confirm dialog"
+    "message": "Igen"
+  },
+  "connectingDropbox": {
+    "message": "Kapcsolódás Dropboxhoz..."
+  },
+  "connectingDropboxNotAllowed": {
+    "message": "Dropboxhoz csak közvetlenül a web-boltból telepített alkalmazásból lehet kapcsolódni."
   },
   "copied": {
-    "message": "Vágólapra másolva",
-    "description": "Message shown when content has been copied to the clipboard"
+    "message": "Vágólapra másolva"
   },
   "copy": {
-    "message": "Másolás vágólapra",
-    "description": "Tooltip for elements which can be copied"
+    "message": "Másolás vágólapra"
   },
   "dateInstalled": {
-    "message": "Telepítés dátuma",
-    "description": "Option text for the user to sort the style by install date"
+    "message": "Telepítés dátuma"
   },
   "dateUpdated": {
-    "message": "Frissítés dátuma",
-    "description": "Option text for the user to sort the style by last update date"
+    "message": "Frissítés dátuma"
   },
   "dbError": {
-    "message": "Hiba történt a Stylus adatbázisának használatakor. Szeretnéd meglátogatni a lehetséges megoldásokat tartalmazó weboldalt?",
-    "description": "Prompt when a DB error is encountered"
+    "message": "Hiba történt a Stylus adatbázisának használatakor. Szeretnéd meglátogatni a lehetséges megoldásokat tartalmazó weboldalt?"
   },
   "defaultTheme": {
-    "message": "alapértelmezett",
-    "description": "Default CodeMirror CSS theme option on the edit style page"
+    "message": "alapértelmezett"
   },
   "deleteStyleConfirm": {
-    "message": "Biztos, hogy törölni akarod ezt a stílust?",
-    "description": "Confirmation before deleting a style"
+    "message": "Biztos, hogy törölni akarod ezt a stílust?"
   },
   "deleteStyleLabel": {
-    "message": "Törlés",
-    "description": "Label for the button to delete a style"
+    "message": "Törlés"
   },
   "description": {
-    "message": "Tervezd újra a webet a Stylus stíluskezelővel. A Stylus lehetővé teszi a témák és egyéni külsők egyszerű telepítését sok népszerű oldalhoz.",
-    "description": "Extension description"
+    "message": "Tervezd újra a webet a Stylus stíluskezelővel. A Stylus lehetővé teszi a témák és egyéni külsők egyszerű telepítését sok népszerű oldalhoz."
   },
   "disableAllStyles": {
-    "message": "Összes stílus kikapcsolása",
-    "description": "Label for the checkbox that turns all enabled styles off."
+    "message": "Összes stílus kikapcsolása"
   },
   "disableStyleLabel": {
-    "message": "Letiltás",
-    "description": "Label for the button to disable a style"
+    "message": "Letiltás"
   },
   "dragDropMessage": {
-    "message": "Ejtsd a biztonsági másolat fájlt bárhova erre az oldalra az importáláshoz!",
-    "description": "Drag'n'drop message"
+    "message": "Ejtsd a biztonsági másolat fájlt bárhova erre az oldalra az importáláshoz!"
   },
   "editDeleteText": {
-    "message": "Törlés",
-    "description": "Label for the context menu item in the editor to delete selected text"
+    "message": "Törlés"
   },
   "editGotoLine": {
-    "message": "Sorra (vagy sor:oszlopra) ugrás",
-    "description": "Go to line or line:column on Ctrl-G in style code editor"
+    "message": "Sorra (vagy sor:oszlopra) ugrás"
   },
   "editStyleHeading": {
-    "message": "Stílus szerkesztése",
-    "description": "Title of the page for editing styles"
+    "message": "Stílus szerkesztése"
   },
   "editStyleLabel": {
-    "message": "Szerkesztés",
-    "description": "Label for the button to go to the edit style page"
+    "message": "Szerkesztés"
   },
   "editStyleTitle": {
     "message": "A(z) $stylename$ stílus szerkesztése",
-    "description": "Title of the page for editing styles",
     "placeholders": {
       "stylename": {
         "content": "$1"
@@ -310,216 +244,171 @@
     }
   },
   "enableStyleLabel": {
-    "message": "Engedélyezés",
-    "description": "Label for the button to enable a style"
+    "message": "Engedélyezés"
   },
   "excludeStyleByDomainLabel": {
-    "message": "Aktuális tartományt kivéve",
-    "description": ""
+    "message": "Aktuális tartományt kivéve"
   },
   "excludeStyleByUrlLabel": {
-    "message": "Aktuális URL-t kivéve",
-    "description": ""
+    "message": "Aktuális URL-t kivéve"
   },
   "exportLabel": {
-    "message": "Exportálás",
-    "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+    "message": "Exportálás"
+  },
+  "exportSavedSuccess": {
+    "message": "A fájl sikeresen elmentve."
   },
   "externalFeedback": {
-    "message": "Visszajelzés",
-    "description": "Label for the external link to send feedback for the style"
+    "message": "Visszajelzés"
   },
   "externalHomepage": {
-    "message": "Kezdőoldal",
-    "description": "Label for the external link to style's homepage"
+    "message": "Kezdőoldal"
   },
   "externalLink": {
-    "message": "Külső hivatkozás",
-    "description": "Label for external links"
+    "message": "Külső hivatkozás"
   },
   "externalSupport": {
-    "message": "Támogatás",
-    "description": "Label for the external link to style's support site"
+    "message": "Támogatás"
   },
   "externalUsercssDocument": {
-    "message": "Usercss dokumentáció",
-    "description": "Label for the external link to usercss documentation"
+    "message": "Usercss dokumentáció"
   },
   "filteredStyles": {
     "message": "$numShown$ mutatva $numTotal$-ból/-ből",
-    "description": "TL note - make this message short",
     "placeholders": {
-      "numTotal": {
-        "content": "$2"
-      },
       "numShown": {
         "content": "$1"
+      },
+      "numTotal": {
+        "content": "$2"
       }
     }
   },
   "filteredStylesAllHidden": {
-    "message": "Nincs illeszkedés a jelenleg alkalmazott szűrőkre",
-    "description": "Text shown when no styles match currently applied filter in the style manager"
+    "message": "Nincs illeszkedés a jelenleg alkalmazott szűrőkre"
   },
   "findStyles": {
-    "message": "Stílusok keresése",
-    "description": "Text for a link that gets a list of styles for the current site"
+    "message": "Stílusok keresése"
   },
   "findStylesForSite": {
-    "message": "További stílusok keresése ehhez az oldalhoz",
-    "description": "Text for a link that gets a list of styles for the current site"
+    "message": "További stílusok keresése ehhez az oldalhoz"
   },
   "findStylesInline": {
-    "message": "Helyben",
-    "description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
+    "message": "Helyben"
   },
   "findStylesInlineTooltip": {
-    "message": "Keresési eredmények megjelenítése ebben az ablakban.",
-    "description": "Text for a checkbox that displays search results within the Stylus popup."
+    "message": "Keresési eredmények megjelenítése ebben az ablakban."
   },
   "genericAdd": {
-    "message": "Hozzáadás",
-    "description": "Used in various places for an action that adds something"
+    "message": "Hozzáadás"
   },
   "genericClone": {
-    "message": "Klónozás",
-    "description": "Used in various places for an action that clones something"
+    "message": "Klónozás"
   },
   "genericDisabledLabel": {
-    "message": "Letiltott",
-    "description": "Used in various lists/options to indicate that something is disabled"
+    "message": "Letiltott"
   },
   "genericEnabledLabel": {
-    "message": "Engedélyezve",
-    "description": "Used in various lists/options to indicate that something is enabled"
+    "message": "Engedélyezve"
   },
   "genericError": {
-    "message": "Hiba",
-    "description": "Used in various places to indicate some error occurred."
+    "message": "Hiba"
   },
   "genericHistoryLabel": {
-    "message": "Előzmények",
-    "description": "Used in various places to show a history log of something"
+    "message": "Előzmények"
   },
   "genericNext": {
-    "message": "Következő",
-    "description": "Used in various places to select/perform the next step/action"
+    "message": "Következő"
   },
   "genericPrevious": {
-    "message": "Előző",
-    "description": "Used in various places to select/perform the previous step/action"
+    "message": "Előző"
   },
   "genericResetLabel": {
-    "message": "VIsszaállítás",
-    "description": "Used in various parts of UI to indicate that something may be reset to its original state"
+    "message": "VIsszaállítás"
   },
   "genericSavedMessage": {
-    "message": "Mentve",
-    "description": "Used in various parts of the UI to indicate that something was saved"
+    "message": "Mentve"
   },
   "genericTitle": {
-    "message": "Cím",
-    "description": "Used in various parts of the UI to indicate the title of something"
+    "message": "Cím"
   },
   "genericUnknown": {
-    "message": "Ismeretlen",
-    "description": "Used in various parts of the UI to indicate if something is unknown (e.g. an unknown date)"
+    "message": "Ismeretlen"
+  },
+  "gettingStyles": {
+    "message": "Minden stílus fogadása..."
   },
   "helpAlt": {
-    "message": "Segítség",
-    "description": "Alternate text for help buttons"
+    "message": "Segítség"
   },
   "helpKeyMapCommand": {
-    "message": "Írj be egy parancsot",
-    "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+    "message": "Írj be egy parancsot"
   },
   "helpKeyMapHotkey": {
-    "message": "Gyorsbillentyű",
-    "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+    "message": "Gyorsbillentyű"
   },
   "importAppendLabel": {
-    "message": "Hozzáfűzés stílushoz",
-    "description": "Label for the button to import a style and append to the existing sections"
+    "message": "Hozzáfűzés stílushoz"
   },
   "importAppendTooltip": {
-    "message": "Az importált stílus hozzáadása a jelenlegi stílushoz",
-    "description": "Tooltip for the button to import a style and append to the existing sections"
+    "message": "Az importált stílus hozzáadása a jelenlegi stílushoz"
   },
   "importLabel": {
-    "message": "Importálás",
-    "description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+    "message": "Importálás"
   },
   "importReplaceLabel": {
-    "message": "Stílus felülírása",
-    "description": "Label for the button to import and overwrite current style"
+    "message": "Stílus felülírása"
   },
   "importReplaceTooltip": {
-    "message": "A jelenlegi stílus tartalmának elvetése és annak felülírása az importált stílussal",
-    "description": "Label for the button to import and overwrite current style"
+    "message": "A jelenlegi stílus tartalmának elvetése és annak felülírása az importált stílussal"
   },
   "importReportLegendAdded": {
-    "message": "hozzáadva",
-    "description": "Text after the number of styles added in the report shown after importing styles"
+    "message": "hozzáadva"
   },
   "importReportLegendIdentical": {
-    "message": "kihagyott egyezések",
-    "description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
+    "message": "kihagyott egyezések"
   },
   "importReportLegendInvalid": {
-    "message": "kihagyott érvénytelen",
-    "description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
+    "message": "kihagyott érvénytelen"
   },
   "importReportLegendUpdatedBoth": {
-    "message": "metainformáció és kód frissítve",
-    "description": "Text after the number of styles updated entirely in the report shown after importing styles"
+    "message": "metainformáció és kód frissítve"
   },
   "importReportLegendUpdatedCode": {
-    "message": "frissített kód",
-    "description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"
+    "message": "frissített kód"
   },
   "importReportLegendUpdatedMeta": {
-    "message": "metainfó frissítve",
-    "description": "Text after the number of styles with updated meta info like name/url in the report shown after importing styles"
+    "message": "metainfó frissítve"
   },
   "importReportTitle": {
-    "message": "A stílusok importálása befejeződött.",
-    "description": "Title of the report shown after importing styles"
+    "message": "A stílusok importálása befejeződött."
   },
   "importReportUnchanged": {
-    "message": "Nincs változás.",
-    "description": "Message in the report shown after importing styles"
+    "message": "Nincs változás."
   },
   "importReportUndone": {
-    "message": "stílusok visszavonva",
-    "description": "Text after the number of styles reverted in the message box shown after undoing the import of styles"
+    "message": "stílusok visszavonva"
   },
   "importReportUndoneTitle": {
-    "message": "Az importálás vissza lett vonva",
-    "description": "Title of the message box shown after undoing the import of styles"
+    "message": "Az importálás vissza lett vonva"
   },
   "installButton": {
-    "message": "Stílus telepítése",
-    "description": "Label for install button"
+    "message": "Stílus telepítése"
   },
   "installButtonInstalled": {
-    "message": "Stílus telepítve",
-    "description": "Text displayed when the style is successfully installed"
+    "message": "Stílus telepítve"
   },
   "installButtonReinstall": {
-    "message": "Stílus újratelepítése",
-    "description": "Label for reinstall button"
+    "message": "Stílus újratelepítése"
   },
   "installButtonUpdate": {
-    "message": "Stílus frissítése",
-    "description": "Label for update button"
+    "message": "Stílus frissítése"
   },
   "installUpdate": {
-    "message": "Frissítés telepítése",
-    "description": "Label for the button to install an update for a single style"
+    "message": "Frissítés telepítése"
   },
   "installUpdateFrom": {
     "message": "A stílus jelenleg innen frissül: $url$",
-    "description": "Label to describe where the style gets update",
     "placeholders": {
       "url": {
         "content": "$1"
@@ -527,28 +416,22 @@
     }
   },
   "installUpdateFromLabel": {
-    "message": "Frissítések keresése",
-    "description": "Label for the checkbox to save current URL for update check"
+    "message": "Frissítések keresése"
   },
   "license": {
-    "message": "Licenc",
-    "description": "Label for the license"
+    "message": "Licenc"
   },
   "linkGetHelp": {
-    "message": "Segítség kérése",
-    "description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
+    "message": "Segítség kérése"
   },
   "linkGetStyles": {
-    "message": "Szerezz be stílusokat",
-    "description": "Help link text on the manage page e.g. https://userstyles.org"
+    "message": "Szerezz be stílusokat"
   },
   "linkTranslate": {
-    "message": "Fordítás",
-    "description": "Transifex link text on the manage page"
+    "message": "Fordítás"
   },
   "linterCSSLintIncompatible": {
     "message": "A CSSLint nem támogatja a(z) $preprocessorname$ nevű előfeldolgozót",
-    "description": "The label to display when the preprocessor isn't compatible with CSSLint",
     "placeholders": {
       "preprocessorname": {
         "content": "$1"
@@ -556,12 +439,10 @@
     }
   },
   "linterCSSLintSettings": {
-    "message": "(Szabály megadása: 0 = letiltva; 1 = figyelmeztetés; 2 = hiba)",
-    "description": "CSSLint rule config values"
+    "message": "(Szabály megadása: 0 = letiltva; 1 = figyelmeztetés; 2 = hiba)"
   },
   "linterConfigPopupTitle": {
     "message": "$linter$ szabály beállítása",
-    "description": "Stylelint or CSSLint popup header",
     "placeholders": {
       "linter": {
         "content": "$1"
@@ -569,20 +450,16 @@
     }
   },
   "linterConfigTooltip": {
-    "message": "Linter beállítása",
-    "description": "Icon tooltip to indicate that it opens a popup with the selected linter configuration"
+    "message": "Linter beállítása"
   },
   "linterInvalidConfigError": {
-    "message": "Nincs mentve a következő érvénytelen beállítások miatt:",
-    "description": "Invalid linter config will show a message followed by a list of invalid entries"
+    "message": "Nincs mentve a következő érvénytelen beállítások miatt:"
   },
   "linterIssues": {
-    "message": "Problémák",
-    "description": "Label for the CSS linter issues block on the style edit page"
+    "message": "Problémák"
   },
   "linterIssuesHelp": {
     "message": "$link$a következő hibákat találta:",
-    "description": "Help popup message for the selected CSS linter issues block on the style edit page",
     "placeholders": {
       "link": {
         "content": "$1"
@@ -590,136 +467,87 @@
     }
   },
   "linterJSONError": {
-    "message": "Érvénytelen JSON-formátum",
-    "description": "Setting linter config with invalid JSON"
+    "message": "Érvénytelen JSON-formátum"
   },
   "linterResetMessage": {
-    "message": "Egy véletlen visszaállítás visszavonásához nyomj Ctrl-Z-t (vagy Cmd-Z) a szövegdobozon belül)",
-    "description": "Reset button tooltip to inform user on how to undo an accidental reset"
+    "message": "Egy véletlen visszaállítás visszavonásához nyomj Ctrl-Z-t (vagy Cmd-Z) a szövegdobozon belül)"
   },
   "linterRulesLink": {
-    "message": "Összes szabály listája",
-    "description": "Stylelint or CSSLint rules label added immediately before a link"
+    "message": "Összes szabály listája"
   },
   "liveReloadError": {
-    "message": "Hiba történt a fájl figyelése közben",
-    "description": "The label of live-reload error"
+    "message": "Hiba történt a fájl figyelése közben"
   },
   "liveReloadLabel": {
-    "message": "Valós idejű újratöltés",
-    "description": "The label of live-reload feature"
+    "message": "Valós idejű újratöltés"
   },
   "manageFavicons": {
-    "message": "Faviconok az 'Érvényes erre' oszlopban",
-    "description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+    "message": "Faviconok az 'Érvényes erre' oszlopban"
   },
   "manageFaviconsGray": {
-    "message": "Megjelenítés szürkítve",
-    "description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
+    "message": "Megjelenítés szürkítve"
   },
   "manageFaviconsHelp": {
-    "message": "A Stylus külső szolgáltatást használ (https://www.google.com/s2/favicons)",
-    "description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+    "message": "A Stylus külső szolgáltatást használ (https://www.google.com/s2/favicons)"
   },
   "manageFilters": {
-    "message": "Szűrők",
-    "description": "Label for filters container"
+    "message": "Szűrők"
   },
   "manageHeading": {
-    "message": "Telepített stílusok",
-    "description": "Heading for the manage page"
+    "message": "Telepített stílusok"
   },
   "manageMaxTargets": {
-    "message": "'Érvényes erre' elemek kijelzendő száma",
-    "description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
+    "message": "'Érvényes erre' elemek kijelzendő száma"
   },
   "manageNewStyleAsUsercss": {
-    "message": "Usercss-ként",
-    "description": "VERY SHORT label for the checkbox next to the 'Write new style' button in the style manager"
+    "message": "Usercss-ként"
   },
   "manageNewUI": {
-    "message": "Új kezelői felület",
-    "description": "Label for the checkbox that toggles the new UI on manage page"
+    "message": "Új kezelői felület"
   },
   "manageOnlyDisabled": {
-    "message": "Csak a letiltott stílusok",
-    "description": "Checkbox to show only disabled styles"
+    "message": "Csak a letiltott stílusok"
   },
   "manageOnlyEnabled": {
-    "message": "Csak a telepített stílusok",
-    "description": "Checkbox to show only enabled styles"
+    "message": "Csak a telepített stílusok"
   },
   "manageOnlyExternal": {
-    "message": "Csak külső stílusok",
-    "description": "Checkbox to show only externally installed styles i.e. updatable"
+    "message": "Csak külső stílusok"
   },
   "manageOnlyLocal": {
-    "message": "Csak helyileg létrehozott stílusok",
-    "description": "Checkbox to show only locally created styles i.e. non-updatable"
+    "message": "Csak helyileg létrehozott stílusok"
   },
   "manageOnlyLocalTooltip": {
-    "message": "(a stílusok nem a userstyles.org egyik oldaláról települtek)",
-    "description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
+    "message": "(a stílusok nem a userstyles.org egyik oldaláról települtek)"
   },
   "manageOnlyNonUsercss": {
-    "message": "Csak nem Usercss stílusok",
-    "description": "Checkbox to show only non-Usercss (standard) styles"
+    "message": "Csak nem Usercss stílusok"
   },
   "manageOnlyUpdates": {
-    "message": "Csak a frissíthetők vagy problémásak",
-    "description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
+    "message": "Csak a frissíthetők vagy problémásak"
   },
   "manageOnlyUsercss": {
-    "message": "Csak Usercss stílusok",
-    "description": "Checkbox to show only Usercss styles"
+    "message": "Csak Usercss stílusok"
   },
   "menuShowBadge": {
-    "message": "Aktív stílusok számlálójának mutatása",
-    "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+    "message": "Aktív stílusok számlálójának mutatása"
   },
   "meta_invalidCheckboxDefault": {
-    "message": "Érvénytelen jelölő négyzet @var: az érték csak 0 vagy 1 lehet",
-    "description": "Error displayed when the value of @var checkbox is invalid"
+    "message": "Érvénytelen jelölő négyzet @var: az érték csak 0 vagy 1 lehet"
   },
   "meta_invalidColor": {
     "message": "Érvénytelen szín @var: a(z) $color$ nem szín",
-    "description": "Error displayed when the value of @var color is invalid",
     "placeholders": {
       "color": {
         "content": "$1"
       }
     }
   },
+  "meta_invalidNumber": {
+    "message": "Várt elem: szám"
+  },
   "meta_invalidRange": {
     "message": "Érvénytelen változó @var (típus: $type$): az érték csak szám vagy tömb lehet",
-    "description": "Error displayed when the value of @var range or @var number is invalid",
-    "placeholders": {
-      "type": {
-        "content": "$1"
-      }
-    }
-  },
-  "meta_invalidRangeMultipleUnits": {
-    "message": "Érvénytelen változó @var (típus: $type$): többféle egység van megadva",
-    "description": "Error displayed when the value of @var range or @var number is invalid",
-    "placeholders": {
-      "type": {
-        "content": "$1"
-      }
-    }
-  },
-  "meta_invalidRangeTooManyValues": {
-    "message": "Érvénytelen változó @var (típus: $type$): a tömb túl sok elemet tartalmaz",
-    "description": "Error displayed when the value of @var range or @var number is invalid",
-    "placeholders": {
-      "type": {
-        "content": "$1"
-      }
-    }
-  },
-  "meta_invalidRangeValue": {
-    "message": "Érvénytelen változó @var (típus: $type$): csak szám, karakterlánc vagy null típusú elem lehet a tömbben",
-    "description": "Error displayed when the value of @var range or @var number is invalid",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -728,16 +556,6 @@
   },
   "meta_invalidRangeDefault": {
     "message": "Érvénytelen változó @var (típus: $type$): az alapértelmezett értéke null",
-    "description": "Error displayed when the value of @var range or @var number is invalid",
-    "placeholders": {
-      "type": {
-        "content": "$1"
-      }
-    }
-  },
-  "meta_invalidRangeMin": {
-    "message": "Érvénytelen változó @var (típus: $type$): az alapértelmezett érték kisebb, mint a minimum",
-    "description": "Error displayed when the value of @var range or @var number is invalid",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -746,7 +564,22 @@
   },
   "meta_invalidRangeMax": {
     "message": "Érvénytelen változó @var (típus: $type$): az alapértelmezett érték nagyobb, mint a maximum",
-    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMin": {
+    "message": "Érvénytelen változó @var (típus: $type$): az alapértelmezett érték kisebb, mint a minimum",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMultipleUnits": {
+    "message": "Érvénytelen változó @var (típus: $type$): többféle egység van megadva",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -755,7 +588,14 @@
   },
   "meta_invalidRangeStep": {
     "message": "Érvénytelen változó @var (típus: $type$): az alapértelmezett érték nem a lépésköz többszöröse",
-    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeTooManyValues": {
+    "message": "Érvénytelen változó @var (típus: $type$): a tömb túl sok elemet tartalmaz",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -764,7 +604,6 @@
   },
   "meta_invalidRangeUnits": {
     "message": "Érvénytelen változó @var (típus: $type$): a(z) '$units$' nem érvényes egység",
-    "description": "Error displayed when the value of @var range or @var number is invalid",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -774,37 +613,40 @@
       }
     }
   },
-  "meta_invalidSelect": {
-    "message": "Érvénytelen kiválasztó lista @var: az alapértelmezett érték tömb vagy objektum lehet csak",
-    "description": "Error displayed when the value of @var select is invalid"
+  "meta_invalidRangeValue": {
+    "message": "Érvénytelen változó @var (típus: $type$): csak szám, karakterlánc vagy null típusú elem lehet a tömbben",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
   },
-  "meta_invalidSelectValue": {
-    "message": "Érvénytelen kiválasztó lista @var: a tömbön/objektumon belüli érték csak karakterlánc lehet",
-    "description": "Error displayed when the value of @var select is invalid"
+  "meta_invalidSelect": {
+    "message": "Érvénytelen kiválasztó lista @var: az alapértelmezett érték tömb vagy objektum lehet csak"
   },
   "meta_invalidSelectEmptyOptions": {
-    "message": "Érvénytelen kiválasztó lista @var: a lista üres",
-    "description": "Error displayed when the value of @var select is invalid"
+    "message": "Érvénytelen kiválasztó lista @var: a lista üres"
   },
   "meta_invalidSelectLabel": {
-    "message": "Érvénytelen kiválasztó lista @var: a listaelem címkéje üres",
-    "description": "Error displayed when the value of @var select is invalid"
+    "message": "Érvénytelen kiválasztó lista @var: a listaelem címkéje üres"
   },
   "meta_invalidSelectMultipleDefaults": {
-    "message": "Érvénytelen kiválasztó lista @var: egynél több alapértelmezett elem van megadva",
-    "description": "Error displayed when the value of @var select is invalid"
+    "message": "Érvénytelen kiválasztó lista @var: egynél több alapértelmezett elem van megadva"
   },
   "meta_invalidSelectNameDuplicated": {
-    "message": "Érvénytelen kiválasztó lista @var: egy listaelem kétszer szerepel",
-    "description": "Error displayed when the value of @var select is invalid"
+    "message": "Érvénytelen kiválasztó lista @var: egy listaelem kétszer szerepel"
+  },
+  "meta_invalidSelectValue": {
+    "message": "Érvénytelen kiválasztó lista @var: a tömbön/objektumon belüli érték csak karakterlánc lehet"
   },
   "meta_invalidSelectValueMismatch": {
-    "message": "Érvénytelen kiválasztó lista @var: az érték nem található a listaelemek között",
-    "description": "Error displayed when the value of @var select is invalid"
+    "message": "Érvénytelen kiválasztó lista @var: az érték nem található a listaelemek között"
+  },
+  "meta_invalidString": {
+    "message": "Várt elem: idézőjelek közti karakterlánc"
   },
   "meta_invalidURLProtocol": {
     "message": "Érvénytelen URL-protokoll. Csak 'http' vagy 'https' engedett: $protocol$",
-    "description": "Error displayed when the protocol of the URL is invalid",
     "placeholders": {
       "protocol": {
         "content": "$1"
@@ -812,29 +654,13 @@
     }
   },
   "meta_invalidVersion": {
-    "message": "Érvénytelen verziószám. Az érték nem illeszkedik a SemVer mintájához: $version$",
-    "description": "Error displayed when @version is invalid",
-    "placeholders": {
-      "version": {
-        "content": "$1"
-      }
-    }
-  },
-  "meta_invalidNumber": {
-    "message": "Várt elem: szám",
-    "description": "Error displayed when the value is expected to be a number"
-  },
-  "meta_invalidString": {
-    "message": "Várt elem: idézőjelek közti karakterlánc",
-    "description": "Error displayed when the value is expected to be a quoted string"
+    "message": "Érvénytelen verziószám"
   },
   "meta_invalidWord": {
-    "message": "Várt elem: szó",
-    "description": "Error displayed when the value is expected to be a word"
+    "message": "Várt elem: szó"
   },
   "meta_missingChar": {
     "message": "Várt karakterek: $chars$",
-    "description": "Error displayed when the value is expected to be some characters",
     "placeholders": {
       "chars": {
         "content": "$1"
@@ -842,12 +668,10 @@
     }
   },
   "meta_missingEOT": {
-    "message": "Várt elem: EOT-adat",
-    "description": "Error displayed when the value is expected to be an EOT list"
+    "message": "Várt elem: EOT-adat"
   },
   "meta_missingMandatory": {
     "message": "Kötelező metaadat hiányzik: $keys$",
-    "description": "Error displayed when mandatory keys are missing",
     "placeholders": {
       "keys": {
         "content": "$1"
@@ -856,7 +680,6 @@
   },
   "meta_unknownJSONLiteral": {
     "message": "Érvénytelen JSON: a(z) $literal$ nem érvényes JSON-karakterlánc (literális)",
-    "description": "Error displayed when JSON value is invalid",
     "placeholders": {
       "literal": {
         "content": "$1"
@@ -865,16 +688,22 @@
   },
   "meta_unknownMeta": {
     "message": "Ismeretlen metaadat: $key$",
-    "description": "Error displayed when unknown metadata is parsed",
     "placeholders": {
       "key": {
         "content": "$1"
       }
     }
   },
+  "meta_unknownPreprocessor": {
+    "message": "Ismeretlen @preprocesszor (előfeldolgozó): $preprocessor$",
+    "placeholders": {
+      "preprocessor": {
+        "content": "$1"
+      }
+    }
+  },
   "meta_unknownVarType": {
     "message": "Ismeretlen @$varkey$ változó, típus: $vartype$",
-    "description": "Error displayed when unknown variable type is parsed",
     "placeholders": {
       "varkey": {
         "content": "$1"
@@ -884,154 +713,116 @@
       }
     }
   },
-  "meta_unknownPreprocessor": {
-    "message": "Ismeretlen @preprocesszor (előfeldolgozó): $preprocessor$",
-    "description": "Error displayed when unknown @preprocessor is parsed",
-    "placeholders": {
-      "preprocessor": {
-        "content": "$1"
-      }
-    }
+  "noFileToImport": {
+    "message": "A stílusok importálásához előbb exportálni kell őket."
   },
   "noStylesForSite": {
-    "message": "Nincs telepítve stílus ehhez az oldalhoz.",
-    "description": "Text displayed when no styles are installed for the current site"
+    "message": "Nincs telepítve stílus ehhez az oldalhoz."
   },
   "openManage": {
-    "message": "Kezelés",
-    "description": "Link to open the manage page."
+    "message": "Kezelés"
   },
   "openStylesManager": {
-    "message": "Stíluskezelő megnyitása",
-    "description": "Label for the style maanger opener in the browser action context menu."
+    "message": "Stíluskezelő megnyitása"
   },
   "optionsActions": {
-    "message": "Műveletek",
-    "description": ""
+    "message": "Műveletek"
   },
   "optionsAdvanced": {
-    "message": "Haladó",
-    "description": ""
+    "message": "Haladó"
   },
   "optionsAdvancedContextDelete": {
-    "message": "'Törlés' parancs a szerkesztő helyi menüjében",
-    "description": ""
+    "message": "'Törlés' parancs a szerkesztő helyi menüjében"
   },
   "optionsAdvancedExposeIframes": {
-    "message": "iframe-ek kitevése HTML[stylus-iframe]-en keresztül",
-    "description": ""
+    "message": "iframe-ek kitevése HTML[stylus-iframe]-en keresztül"
   },
   "optionsAdvancedExposeIframesNote": {
-    "message": "Az oldal felső tartományának jelölése minden iframe-ben.\nLehetővé teszi az iframe-specifikus CSS írását, mint pl.:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }",
-    "description": "Add attribute to iframe; make sure to include the double $$ in the css example, or the `$=` will be omitted in the displayed text."
+    "message": "Az oldal felső tartományának jelölése minden iframe-ben.\nLehetővé teszi az iframe-specifikus CSS írását, mint pl.:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
   },
   "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Új stílus írása usercss-ként",
-    "description": ""
+    "message": "Új stílus írása usercss-ként"
   },
   "optionsBadgeDisabled": {
-    "message": "Háttérszín, amikor le van tiltva",
-    "description": ""
+    "message": "Háttérszín, amikor le van tiltva"
   },
   "optionsBadgeNormal": {
-    "message": "Háttérszín",
-    "description": ""
+    "message": "Háttérszín"
   },
   "optionsCheck": {
-    "message": "Stílusok frissítése",
-    "description": ""
+    "message": "Stílusok frissítése"
   },
   "optionsCheckUpdate": {
-    "message": "Az összes frissítés ellenőrzése és telepítése",
-    "description": ""
+    "message": "Az összes frissítés ellenőrzése és telepítése"
   },
   "optionsCustomizeBadge": {
-    "message": "Ikon képe az eszköztáron",
-    "description": ""
+    "message": "Ikon képe az eszköztáron"
   },
   "optionsCustomizeIcon": {
-    "message": "Eszköztárikon",
-    "description": ""
+    "message": "Eszköztárikon"
   },
   "optionsCustomizePopup": {
-    "message": "Felugró ablak",
-    "description": ""
-  },
-  "optionsCustomizeUpdate": {
-    "message": "Frissítések",
-    "description": ""
+    "message": "Felugró ablak"
   },
   "optionsCustomizeSync": {
-    "message": "Szinkronizálás felhővel",
-    "description": ""
+    "message": "Szinkronizálás felhővel"
+  },
+  "optionsCustomizeUpdate": {
+    "message": "Frissítések"
   },
   "optionsHeading": {
-    "message": "Beállítások",
-    "description": "Heading for options section on manage page."
+    "message": "Beállítások"
   },
   "optionsIconDark": {
-    "message": "Sötét böngészőtémák",
-    "description": ""
+    "message": "Sötét böngészőtémák"
   },
   "optionsIconLight": {
-    "message": "Világos böngészőtémák",
-    "description": ""
+    "message": "Világos böngészőtémák"
   },
   "optionsOpen": {
-    "message": "Megnyitás",
-    "description": ""
+    "message": "Megnyitás"
   },
   "optionsOpenManager": {
-    "message": "Stílusok kezelése",
-    "description": ""
+    "message": "Stílusok kezelése"
   },
   "optionsPopupWidth": {
-    "message": "Felugró ablak szélessége (pixelben)",
-    "description": ""
+    "message": "Felugró ablak szélessége (pixelben)"
   },
   "optionsReset": {
-    "message": "Beállítások visszaállítása alapértelmezett értékre",
-    "description": ""
+    "message": "Beállítások visszaállítása alapértelmezett értékre"
   },
   "optionsResetButton": {
-    "message": "Alapértelmezés visszaállítása",
-    "description": ""
+    "message": "Alapértelmezés visszaállítása"
   },
   "optionsSubheading": {
-    "message": "További beállítások",
-    "description": "Subheading for options section on manage page."
-  },
-  "optionsUpdateImportNote": {
-    "message": "Amikor régebbi verzióból vagy a Stylishból importálsz stílusokat, egyszer manuálisan frissítsd a stílusokat a stíluskezelőben, hogy megbizonyosodj afelől, hogy mindegyik frissítve van!",
-    "description": ""
-  },
-  "optionsUpdateInterval": {
-    "message": "Felhasználói stílus automatikus frissítési időköze órában (0=kikapcsolva)",
-    "description": ""
-  },
-  "optionsSyncNone": {
-    "message": "Nincs",
-    "description": ""
+    "message": "További beállítások"
   },
   "optionsSyncConnect": {
-    "message": "Kapcsolódás",
-    "description": ""
+    "message": "Kapcsolódás"
   },
   "optionsSyncDisconnect": {
-    "message": "Kapcsolat bontása",
-    "description": ""
-  },
-  "optionsSyncSyncNow": {
-    "message": "Szinkronizálás most",
-    "description": ""
+    "message": "Kapcsolat bontása"
   },
   "optionsSyncLogin": {
-    "message": "Bejelentkezés",
-    "description": ""
+    "message": "Bejelentkezés"
+  },
+  "optionsSyncNone": {
+    "message": "Nincs"
+  },
+  "optionsSyncStatusConnected": {
+    "message": "Kapcsolódva"
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "Kapcsolódás..."
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "Nincs kapcsolat"
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "Kapcsolat bontása..."
   },
   "optionsSyncStatusPull": {
     "message": "Stílusok helyi frissítése (pull): $loaded$/$total$",
-    "description": "",
     "placeholders": {
       "loaded": {
         "content": "$1"
@@ -1043,7 +834,6 @@
   },
   "optionsSyncStatusPush": {
     "message": "Stílusok távoli frissítése (push): $loaded$/$total$",
-    "description": "",
     "placeholders": {
       "loaded": {
         "content": "$1"
@@ -1054,256 +844,193 @@
     }
   },
   "optionsSyncStatusSyncing": {
-    "message": "Szinkronizálás...",
-    "description": ""
+    "message": "Szinkronizálás..."
   },
-  "optionsSyncStatusConnecting": {
-    "message": "Kapcsolódás...",
-    "description": ""
+  "optionsSyncSyncNow": {
+    "message": "Szinkronizálás most"
   },
-  "optionsSyncStatusConnected": {
-    "message": "Kapcsolódva",
-    "description": ""
+  "optionsUpdateImportNote": {
+    "message": "Amikor régebbi verzióból vagy a Stylishból importálsz stílusokat, egyszer manuálisan frissítsd a stílusokat a stíluskezelőben, hogy megbizonyosodj afelől, hogy mindegyik frissítve van!"
   },
-  "optionsSyncStatusDisconnecting": {
-    "message": "Kapcsolat bontása...",
-    "description": ""
+  "optionsUpdateInterval": {
+    "message": "Felhasználói stílus automatikus frissítési időköze órában (0=kikapcsolva)"
   },
-  "optionsSyncStatusDisconnected": {
-    "message": "Nincs kapcsolat",
-    "description": ""
+  "overwriteFileExport": {
+    "message": "Felülírjuk a létező fájlt?"
   },
   "paginationCurrent": {
-    "message": "Jelenlegi oldal",
-    "description": "Tooltip for the current page index in search results"
+    "message": "Jelenlegi oldal"
   },
   "paginationEstimated": {
-    "message": "Becsült oldalak száma",
-    "description": "Tooltip for the total page count in search results"
+    "message": "Becsült oldalak száma"
   },
   "paginationNext": {
-    "message": "Következő oldal",
-    "description": "Tooltip for the '->' (next page) button in search results"
+    "message": "Következő oldal"
   },
   "paginationPrevious": {
-    "message": "Előző oldal",
-    "description": "Tooltip for the '<-' button in search results"
+    "message": "Előző oldal"
   },
   "paginationTotal": {
-    "message": "Összes oldal",
-    "description": ""
+    "message": "Összes oldal"
   },
   "parseUsercssError": {
-    "message": "A Stylus nem tudta elemezni a usercss-t",
-    "description": "The error message to show when stylus failed to parse usercss"
+    "message": "A Stylus nem tudta elemezni a usercss-t"
   },
   "popupAutoResort": {
-    "message": "Stílusok újrarendezése a felugró ablakban átkapcsoláskor",
-    "description": "Label for the checkbox controlling popup resorting."
+    "message": "Stílusok újrarendezése a felugró ablakban átkapcsoláskor"
   },
   "popupBorders": {
-    "message": "Fehér szegély az oldalakon",
-    "description": ""
+    "message": "Fehér szegély az oldalakon"
   },
   "popupBordersTooltip": {
-    "message": "Hasznos az új Chrome sötét témáinál, mert nem színezi át az oldalszegélyeket",
-    "description": ""
+    "message": "Hasznos az új Chrome sötét témáinál, mert nem színezi át az oldalszegélyeket"
   },
   "popupHotkeysInfo": {
-    "message": "<1>-<9>, <0>, a numpaden is - be-/kikapcsolja az n-nedik stílust (a 0 10-et jelent)\n<A>-<Z> az adott betűvel kezdődő első stílust kapcsolja be/ki \n<Shift> kapcsolgatás helyett megnyitja a szerkesztőt\n<Numpad +> listázott stílusokat engedélyez\n<Numpad –> listázott stílusokat tilt le\n<Numpad *> és <`> (fordított félidézőjel) - kezdeti állapotban engedélyezett stílusokat kapcsol; nem vonatkozik azokra a stílusokra, amiket később engedélyeztél, mialatt a felugró ablakocska nyitva volt, hogy vissza tudd állítani a kezdeti kiválasztást tesztelés után: egyszerűen tilts le mindent, majd pl. <Numpad –> vagy <Numpad *>\nTovábbi információ a wikiben",
-    "description": "NOTE1: preserve < and > symbols so that <hotkey> is styled as a key.\nNOTE2: the last line is displayed as a text of the link to the wiki page.\nNOTE3: this is the list of hotkeys displayed after clicking the right edge of the extension popup."
+    "message": "<1>-<9>, <0>, a numpaden is - be-/kikapcsolja az n-nedik stílust (a 0 10-et jelent)\n<A>-<Z> az adott betűvel kezdődő első stílust kapcsolja be/ki \n<Shift> kapcsolgatás helyett megnyitja a szerkesztőt\n<Numpad +> listázott stílusokat engedélyez\n<Numpad –> listázott stílusokat tilt le\n<Numpad *> és <`> (fordított félidézőjel) - kezdeti állapotban engedélyezett stílusokat kapcsol; nem vonatkozik azokra a stílusokra, amiket később engedélyeztél, mialatt a felugró ablakocska nyitva volt, hogy vissza tudd állítani a kezdeti kiválasztást tesztelés után: egyszerűen tilts le mindent, majd pl. <Numpad –> vagy <Numpad *>\nTovábbi információ a wikiben"
   },
   "popupHotkeysTooltip": {
-    "message": "Elérhető gyorsbillentyűk megtekintése",
-    "description": "Tooltip displayed when hovering the right edge of the extension popup"
+    "message": "Elérhető gyorsbillentyűk megtekintése"
   },
   "popupManageTooltip": {
-    "message": "Shift+kattintás vagy jobb kattintás: a stíluskezelő megnyitása a jelenlegi oldalra érvényes stílusokkal",
-    "description": "Tooltip for the 'Manage' button in the popup."
+    "message": "Shift+kattintás vagy jobb kattintás: a stíluskezelő megnyitása a jelenlegi oldalra érvényes stílusokkal"
   },
   "popupMenuButtonTooltip": {
-    "message": "Műveletmenü",
-    "description": "Tooltip for menu button in popup."
+    "message": "Műveletmenü"
   },
   "popupOpenEditInWindow": {
-    "message": "Szerkesztő megnyitása új ablakban",
-    "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+    "message": "Szerkesztő megnyitása új ablakban"
   },
   "popupOpenEditInWindowTooltip": {
-    "message": "A fül a böngésző ablakától történő leválasztásával is engedélyezhető, és letiltható a fül egy másik ablakhoz való hozzácsatolásával.",
-    "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+    "message": "A fül a böngésző ablakától történő leválasztásával is engedélyezhető, és letiltható a fül egy másik ablakhoz való hozzácsatolásával."
   },
   "popupStylesFirst": {
-    "message": "Stílusnevek a parancsok előtt",
-    "description": "Label for the checkbox controlling section order in the popup."
+    "message": "Stílusnevek a parancsok előtt"
   },
   "prefShowBadge": {
-    "message": "A jelenlegi oldalon aktív stílusok száma",
-    "description": "Label for the checkbox controlling toolbar badge text."
+    "message": "A jelenlegi oldalon aktív stílusok száma"
   },
   "previewLabel": {
-    "message": "Valós idejű előnézet",
-    "description": "Label for the checkbox in style editor to enable live preview while editing."
+    "message": "Valós idejű előnézet"
   },
   "previewTooltip": {
-    "message": "Átmenetileg alkalmazza a változtatásokat mentés nélkül.\nMentsd a stílust, hogy a változtatások véglegesek legyenek!",
-    "description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+    "message": "Átmenetileg alkalmazza a változtatásokat mentés nélkül.\nMentsd a stílust, hogy a változtatások véglegesek legyenek!"
+  },
+  "readingStyles": {
+    "message": "Stílusok olvasása..."
   },
   "replace": {
-    "message": "Csere",
-    "description": "Label before the replace input field in the editor shown on Ctrl-H"
+    "message": "Csere"
   },
   "replaceAll": {
-    "message": "Az összes cseréje",
-    "description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
+    "message": "Az összes cseréje"
   },
   "replaceWith": {
-    "message": "Csere a következővel",
-    "description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
+    "message": "Csere a következővel"
   },
   "retrieveBckp": {
-    "message": "Stílusok importálása",
-    "description": ""
+    "message": "Stílusok importálása"
+  },
+  "retrieveDropboxSync": {
+    "message": "Importálás Dropboxból"
   },
   "search": {
-    "message": "Keresés",
-    "description": "Label before the search input field in the editor shown on Ctrl-F"
+    "message": "Keresés"
   },
   "searchCaseSensitive": {
-    "message": "Kis- és nagybetű megkülönböztetése",
-    "description": "Tooltip for the 'Aa' icon that enables case-sensitive search in the editor shown on Ctrl-F"
+    "message": "Kis- és nagybetű megkülönböztetése"
   },
   "searchNumberOfResults": {
-    "message": "Illeszkedések száma",
-    "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+    "message": "Illeszkedések száma"
   },
   "searchNumberOfResults2": {
-    "message": "Illeszkedések száma a kódban és célértékek",
-    "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+    "message": "Illeszkedések száma a kódban és célértékek"
   },
   "searchRegexp": {
-    "message": "Használd a /re/ szintaxist a regexp kereséshez",
-    "description": "Label after the search input field in the editor shown on Ctrl-F"
+    "message": "Használd a /re/ szintaxist a regexp kereséshez"
   },
   "searchResultInstallCount": {
-    "message": "Összes telepítés",
-    "description": "Text for label that shows the number of times a search result was installed"
+    "message": "Összes telepítés"
   },
   "searchResultNoneFound": {
-    "message": "Nem találhatók stílusok ehhez az oldalhoz.",
-    "description": "Error text in the popup when inline search didn't find any site-specific styles"
+    "message": "Nem találhatók stílusok ehhez az oldalhoz."
   },
   "searchResultRating": {
-    "message": "Értékelés",
-    "description": "Text for label that shows the search result's rating"
+    "message": "Értékelés"
   },
   "searchResultUpdated": {
-    "message": "Frissítve",
-    "description": "Text for label that shows the search result's last update date"
+    "message": "Frissítve"
   },
   "searchResultWeeklyCount": {
-    "message": "Heti telepítések",
-    "description": "Text for label that shows the number of times a search result was installed during last week"
-  },
-  "searchStyles": {
-    "message": "Tartalom keresése",
-    "description": "Label for the search filter textbox on the Manage styles page"
-  },
-  "searchStylesHelp": {
-    "message": "A </> billentyűvel a keresési mezőre ugrasz.\nSima szöveg: keresés a névben, kódban, honlap URL-ben és érvényes oldalakban. A 3 betűnél kevesebb szavak figyelmen kívül vannak hagyva.\nIlleszkedő URL: kezdd a keresést „<url:>”-lel, pl. <url:https://github.com/openstyles/stylus>\nReguláris kifejezések: ide tartoznak a per-jelek és a flagek, pl. </body.*?\\ba\\b/simguy>\nPontos szavak: írj idézőjeleket a keresési kifejezés köré, pl. <\".header ~ div\">",
-    "description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
+    "message": "Heti telepítések"
   },
   "sectionAdd": {
-    "message": "Új szakasz hozzáadása",
-    "description": "Label for the button to add a section"
+    "message": "Új szakasz hozzáadása"
   },
   "sectionCode": {
-    "message": "Kód",
-    "description": "Label for the code for a section"
+    "message": "Kód"
   },
   "sectionRemove": {
-    "message": "Szekció eltávolítása",
-    "description": "Label for the button to remove a section"
+    "message": "Szekció eltávolítása"
   },
   "sectionRestore": {
-    "message": "Eltávolított szekció visszaállítása",
-    "description": "Label for the button to restore a removed section"
+    "message": "Eltávolított szekció visszaállítása"
   },
   "shortcuts": {
-    "message": "Gyorsbillentyűk",
-    "description": "Go to shortcut configuration"
+    "message": "Gyorsbillentyűk"
   },
   "shortcutsNote": {
-    "message": "Gyorsbillentyűk megadása",
-    "description": ""
+    "message": "Gyorsbillentyűk megadása"
   },
   "sortDateNewestFirst": {
-    "message": "újabb elöl",
-    "description": "Text added to indicate that sorting a date would add the newest entries at the top"
+    "message": "újabb elöl"
   },
   "sortDateOldestFirst": {
-    "message": "régebbi elöl",
-    "description": "Text added to indicate that sorting a date would add the oldest entries at the top"
+    "message": "régebbi elöl"
   },
   "sortLabel": {
-    "message": "Telepített stílusok sorbarendezésének módja",
-    "description": "Title on the sort select to indicate it is used for sorting entries"
+    "message": "Telepített stílusok sorbarendezésének módja"
   },
   "sortLabelTitleAsc": {
-    "message": "Cím - növekvő sorrend",
-    "description": "Text added to option group to indicate a block of options that apply a title ascending (A to Z) sort"
+    "message": "Cím - növekvő sorrend"
   },
   "sortLabelTitleDesc": {
-    "message": "Cím - csökkenő sorrend",
-    "description": "Text added to option group to indicate a block of options that apply a title descending (Z to A) sort"
+    "message": "Cím - csökkenő sorrend"
   },
   "sortStylesHelp": {
-    "message": "A legördülő menüben válaszhatjuk ki, hogyan szeretnénk sorbarendezni a telepített stílusok bejegyzéseit. Az alapértelmezett beállítás a bejegyzések címei szerinti növekvő (A-tól Z-ig) sorrend. A „Cím - csökkenő sorrend” csoportban megadott rendezési módok csökkenő (Z-től A-ig) sorrendben  rendezik a címeket.\nEgyéb beállításokkal több szempont alapján is rendezhetők a bejegyzések. Tekintsünk erre úgy, mint egy többoszlopos, rendezhető táblázatra, amelyben minden egyes (a plusz jelek között) kiválasztott kategória egy oszlopot vagy egy csoportot jelképez.\nPéldául, ha az van beállítva, hogy „Engedélyezve (első) + Cím”, az engedélyezett bejegyzések kerülnek a lista tetejére, majd az engedélyezett és a letiltott bejegyzések címei külön-külön, növekvő (A-tól Z-ig) sorrendben jelennek meg.",
-    "description": "Text in the minihelp displayed when clicking (i) icon to the right of the sort input field on the Manage styles page"
+    "message": "A legördülő menüben válaszhatjuk ki, hogyan szeretnénk sorbarendezni a telepített stílusok bejegyzéseit. Az alapértelmezett beállítás a bejegyzések címei szerinti növekvő (A-tól Z-ig) sorrend. A „Cím - csökkenő sorrend” csoportban megadott rendezési módok csökkenő (Z-től A-ig) sorrendben  rendezik a címeket.\nEgyéb beállításokkal több szempont alapján is rendezhetők a bejegyzések. Tekintsünk erre úgy, mint egy többoszlopos, rendezhető táblázatra, amelyben minden egyes (a plusz jelek között) kiválasztott kategória egy oszlopot vagy egy csoportot jelképez.\nPéldául, ha az van beállítva, hogy „Engedélyezve (első) + Cím”, az engedélyezett bejegyzések kerülnek a lista tetejére, majd az engedélyezett és a letiltott bejegyzések címei külön-külön, növekvő (A-tól Z-ig) sorrendben jelennek meg."
   },
   "sortStylesHelpTitle": {
-    "message": "Tartalom rendezése",
-    "description": "Label for the sort info popup on the Manage styles page"
+    "message": "Tartalom rendezése"
   },
   "styleBadRegexp": {
-    "message": "Érvénytelen reguláris kifejezés.",
-    "description": "Validation message for a bad regexp in a style"
+    "message": "Érvénytelen reguláris kifejezés."
   },
   "styleBeautify": {
-    "message": "Csinosít",
-    "description": "Label for the CSS-beautifier button on the edit style page"
+    "message": "Csinosít"
   },
   "styleBeautifyIndentConditional": {
-    "message": "@media, @supports behúzása",
-    "description": "CSS-beautifier option"
+    "message": "@media, @supports behúzása"
   },
   "styleBeautifyPreserveNewlines": {
-    "message": "Új sorok megtartása",
-    "description": "CSS-beautifier option"
+    "message": "Új sorok megtartása"
   },
   "styleCancelEditLabel": {
-    "message": "Vissza a kezeléshez",
-    "description": "Label for cancel button for style editing"
+    "message": "Vissza a kezeléshez"
   },
   "styleChangesNotSaved": {
-    "message": "Nem mentetted a stílusban lévő változásokat.",
-    "description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
+    "message": "Nem mentetted a stílusban lévő változásokat."
   },
   "styleEnabledLabel": {
-    "message": "Engedélyezve",
-    "description": "Label for the enabled state of styles"
+    "message": "Engedélyezve"
   },
   "styleFromMozillaFormatError": {
-    "message": "Nem sikerült importálni Mozilla formátumból",
-    "description": "Label for the import error"
+    "message": "Nem sikerült importálni Mozilla formátumból"
   },
   "styleFromMozillaFormatPrompt": {
-    "message": "Mozilla formátumú kód beillesztése",
-    "description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
+    "message": "Mozilla formátumú kód beillesztése"
   },
   "styleInstall": {
     "message": "Telepíted a(z) „$stylename$” nevű stílust a Stylusba?",
-    "description": "Confirmation when installing a style",
     "placeholders": {
       "stylename": {
         "content": "$1"
@@ -1312,7 +1039,6 @@
   },
   "styleInstallFailed": {
     "message": "A stílus telepítése nem sikerült!\n$error$",
-    "description": "Warning when installation failed",
     "placeholders": {
       "error": {
         "content": "$1"
@@ -1321,86 +1047,68 @@
   },
   "styleInstallOverwrite": {
     "message": "„$stylename$” már telepítve van. Felülírod?\nVerzió: $oldVersion$ -> $newVersion$",
-    "description": "Confirmation when re-installing a style",
     "placeholders": {
-      "stylename": {
-        "content": "$1"
-      },
       "newVersion": {
         "content": "$3"
       },
       "oldVersion": {
         "content": "$2"
+      },
+      "stylename": {
+        "content": "$1"
       }
     }
   },
   "styleMissingName": {
-    "message": "Írj be egy nevet!",
-    "description": "Error displayed when user saves without providing a name"
+    "message": "Írj be egy nevet!"
   },
   "styleMozillaFormatHeading": {
-    "message": "Mozilla-formátum",
-    "description": "Heading for the section with buttons to import/export Mozilla format of the style"
+    "message": "Mozilla-formátum"
   },
   "styleNotAppliedRegexpProblemTooltip": {
-    "message": "A stílus nem lett alkalmazva a „regexp()” helytelen használata miatt",
-    "description": "Tooltip in the popup for styles that were not applied at all"
+    "message": "A stílus nem lett alkalmazva a „regexp()” helytelen használata miatt"
   },
   "styleRegexpInvalidExplanation": {
-    "message": "Néhány „regexp()” szabály nem lefordítható.",
-    "description": ""
+    "message": "Néhány „regexp()” szabály nem lefordítható."
   },
   "styleRegexpPartialExplanation": {
-    "message": "A stílus olyan részlegesen illeszkedő reguláris kifejezéseket használ, amelyek sértik a<a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4@dokumentumspecifikációt</a>, amely megköveteli az URL teljes illeszkedését. Az érintett CSS-szekciók nem kerültek alkalmazásra az oldalon. A stílus valószínűleg a Stylish-for-Chrome  kiegészítőben készült, amely helytelenül ellenőrzi a „regexp()” szabályokat a legelső verziótól fogva (ismert hiba).",
-    "description": ""
+    "message": "A stílus olyan részlegesen illeszkedő reguláris kifejezéseket használ, amelyek sértik a<a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4@dokumentumspecifikációt</a>, amely megköveteli az URL teljes illeszkedését. Az érintett CSS-szekciók nem kerültek alkalmazásra az oldalon. A stílus valószínűleg a Stylish-for-Chrome  kiegészítőben készült, amely helytelenül ellenőrzi a „regexp()” szabályokat a legelső verziótól fogva (ismert hiba)."
   },
   "styleRegexpProblemTooltip": {
-    "message": "A nem alkalmazott szeckiók száma helytelen 'regexp()' használat miatt",
-    "description": "Tooltip in the popup for styles that were applied only partially"
+    "message": "A nem alkalmazott szeckiók száma helytelen 'regexp()' használat miatt"
   },
   "styleRegexpTestButton": {
-    "message": "RegExp tesztelése",
-    "description": "RegExp test button label in the editor shown when applies-to list has a regexp value"
+    "message": "RegExp tesztelése"
   },
   "styleRegexpTestFull": {
-    "message": "Illeszkedő fülek",
-    "description": "RegExp test report: label for the fully matching expressions"
+    "message": "Illeszkedő fülek"
   },
   "styleRegexpTestInvalid": {
-    "message": "Kihagyott, érvénytelen reguláris kifejezések",
-    "description": "RegExp test report: label for the invalid expressions"
+    "message": "Kihagyott, érvénytelen reguláris kifejezések"
   },
   "styleRegexpTestNone": {
-    "message": "Nincs illeszkedő fül",
-    "description": "RegExp test report: label for expressions that didn't match any tabs"
+    "message": "Nincs illeszkedő fül"
   },
   "styleRegexpTestNote": {
-    "message": "Megjegyzés: használj egy \\-jelet speciális karakterek elrejtéséhez a regexp beviteli mezőben, amely automatikusan két \\-jellé (\\\\) lesz alakítva a CSS stíluskódban idézett karakterláncokban.",
-    "description": "RegExp test report: a note displayed at the bottom of the dialog"
+    "message": "Megjegyzés: használj egy \\-jelet speciális karakterek elrejtéséhez a regexp beviteli mezőben, amely automatikusan két \\-jellé (\\\\) lesz alakítva a CSS stíluskódban idézett karakterláncokban."
   },
   "styleRegexpTestPartial": {
-    "message": "Nincs teljes egyezés, így ki vagy hagyva",
-    "description": "RegExp test report: label for the partially matching expressions"
+    "message": "Nincs teljes egyezés, így ki vagy hagyva"
   },
   "styleRegexpTestTitle": {
-    "message": "Illeszkedő megnyitott fülek megjelenítése (kattints az URL-re az arra a fülre való ugráshoz)",
-    "description": "RegExp test report: title of the report"
+    "message": "Illeszkedő megnyitott fülek megjelenítése (kattints az URL-re az arra a fülre való ugráshoz)"
   },
   "styleSaveLabel": {
-    "message": "Mentés",
-    "description": "Label for save button for style editing"
+    "message": "Mentés"
   },
   "styleToMozillaFormatHelp": {
-    "message": "A Mozilla formátumú kódot beküldheted a userstyles.org-ra és használhatod a klasszikus Stylish Firefoxkiegészítővel.",
-    "description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
+    "message": "A Mozilla formátumú kódot beküldheted a userstyles.org-ra és használhatod a klasszikus Stylish Firefoxkiegészítővel."
   },
   "styleToMozillaFormatTitle": {
-    "message": "Mozilla formátumú stílus",
-    "description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
+    "message": "Mozilla formátumú stílus"
   },
   "styleUpdate": {
     "message": "Biztos, hogy frissíteni akarod a(z) „$stylename$” stílust?",
-    "description": "Confirmation when updating a style",
     "placeholders": {
       "stylename": {
         "content": "$1"
@@ -1408,72 +1116,52 @@
     }
   },
   "styleUpdateDiscardChanges": {
-    "message": "A stílus módosítva lett a szerkesztőn kívül. Szeretnéd újratölteni?",
-    "description": "Confirmation to update the style in the editor"
+    "message": "A stílus módosítva lett a szerkesztőn kívül. Szeretnéd újratölteni?"
   },
   "stylusUnavailableForURL": {
-    "message": "A Stylus nem működik az ilyen oldalakon.",
-    "description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
+    "message": "A Stylus nem működik az ilyen oldalakon."
   },
   "stylusUnavailableForURLdetails": {
-    "message": "Biztonsági okokból a böngésző megtiltja, hogy a kiegészítők változtatásokat tegyenek a beépített oldalain (pl. chrome://verzió, a Chrome 61 alapértelmezett „új lap” oldala, about:addons és így tovább) valamint más kiterjesztések oldalain. Ezen kívül mindegyik böngésző korlátozza a saját kiegészítőgalériájának elérését (pl. Chrome webáruház vagy a Mozilla kiegészítők oldala)",
-    "description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
+    "message": "Biztonsági okokból a böngésző megtiltja, hogy a kiegészítők változtatásokat tegyenek a beépített oldalain (pl. chrome://verzió, a Chrome 61 alapértelmezett „új lap” oldala, about:addons és így tovább) valamint más kiterjesztések oldalain. Ezen kívül mindegyik böngésző korlátozza a saját kiegészítőgalériájának elérését (pl. Chrome webáruház vagy a Mozilla kiegészítők oldala)"
+  },
+  "syncDropboxStyles": {
+    "message": "Exportálás Dropboxba"
   },
   "syncStorageErrorSaving": {
-    "message": "Az értéket nem lehet menteni. Próbáld meg csökkenteni a szövegmennyiséget!",
-    "description": "Displayed when trying to save an excessively big value via storage.sync API"
+    "message": "Az értéket nem lehet menteni. Próbáld meg csökkenteni a szövegmennyiséget!"
   },
   "toggleStyle": {
-    "message": "Stílus be-/kikapcsolása",
-    "description": "Label for the checkbox to enable/disable a style"
+    "message": "Stílus be-/kikapcsolása"
   },
   "undo": {
-    "message": "Visszavonás",
-    "description": "Button label"
+    "message": "Visszavonás"
   },
   "undoGlobal": {
-    "message": "Visszavonás mindegyik szekcióban",
-    "description": "CSS-beautify global Undo button label"
+    "message": "Visszavonás mindegyik szekcióban"
   },
   "unreachableAMO": {
-    "message": "A Firefox megtiltja ennek az oldalnak az elérését.",
-    "description": "Note in the popup displayed when opened on addons.mozilla.org"
+    "message": "A Firefox megtiltja ennek az oldalnak az elérését."
   },
   "unreachableAMOHint": {
-    "message": "Az elérés engedélyezéséhez nyisd meg az <about:config>-ot, kattints jobb egérgombbal, majd „Új”, „Logikai”, és illeszd be, hogy <privacy.resistFingerprinting.block_mozAddonManager>, és kattints az OK-ra,<true> OK, és töltsd újra az oldalt!",
-    "description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
-  },
-  "unreachableAMOHintNewFF": {
-    "message": "A Firefox 60-ban vagy annál újabb verzióban az AMO doménjét is el kell távolítanod a <about:config>-ban levő <extensions.webextensions.restrictedDomains>-ból.",
-    "description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
-  },
-  "unreachableAMOHintOldFF": {
-    "message": "Csak a Firefox 59 vagy annál újabb állítható be az ilyen CSP-védett oldalak stílusának átszabása WebExtensions kiegészítőkön keresztül.",
-    "description": "Note in the popup when opened on addons.mozilla.org in Firefox < 59"
+    "message": "Az elérés engedélyezéséhez nyisd meg az <about:config>-ot, kattints jobb egérgombbal, majd „Új”, „Logikai”, és illeszd be, hogy <privacy.resistFingerprinting.block_mozAddonManager>, és kattints az OK-ra,<true> OK, és töltsd újra az oldalt!"
   },
   "unreachableContentScript": {
-    "message": "Nem sikerült az oldallal történő kommunikáció. Próbáld meg újratölteni az oldalt!",
-    "description": "Note in the toolbar popup usually on file:// URLs after [re]loading Stylus"
+    "message": "Nem sikerült az oldallal történő kommunikáció. Próbáld meg újratölteni az oldalt!"
   },
   "unreachableFileHint": {
-    "message": "A Stylus csak akkor képes hozzáférni a file:// URL-ekhez, ha engedélyezed az erre vonatkozó beállítást a Stylus kiegészítőre a chrome://extensions oldalon.",
-    "description": "Note in the toolbar popup for file:// URLs"
+    "message": "A Stylus csak akkor képes hozzáférni a file:// URL-ekhez, ha engedélyezed az erre vonatkozó beállítást a Stylus kiegészítőre a chrome://extensions oldalon."
   },
-  "InaccessibleFileHint": {
-    "message": "A Stylus nem tud bizonyos fájltípusokhoz hozzáférni (pl. PDF- & JSON-fájlokhoz)",
-    "description": "Note in the toolbar popup for some file types that cannot be accessed"
+  "unzipStyles": {
+    "message": "Stílusok kibontása..."
   },
   "updateAllCheckSucceededNoUpdate": {
-    "message": "Nem találhatók frissítések.",
-    "description": "Text that displays when an update all check completed and no updates are available"
+    "message": "Nem találhatók frissítések."
   },
   "updateAllCheckSucceededSomeEdited": {
-    "message": "Egyes frissíthető stílusok nem lettek ellenőrizve, nehogy elvesszenek a helyi változtatások. A frissítéseket lehet erőltetni egyéni ellenőrzéssel külön-külön vagy az összes stílus ismételt ellenőrzésével (ez felülírja a helyi módosításokat).",
-    "description": "Text that displays when an update all check completed and no updates are available"
+    "message": "Egyes frissíthető stílusok nem lettek ellenőrizve, nehogy elvesszenek a helyi változtatások. A frissítéseket lehet erőltetni egyéni ellenőrzéssel külön-külön vagy az összes stílus ismételt ellenőrzésével (ez felülírja a helyi módosításokat)."
   },
   "updateCheckFailBadResponseCode": {
     "message": "Sikertelen frissítés: a szerver $code$kóddal válaszolt.",
-    "description": "Text that displays when an update check failed because the response code indicates an error",
     "placeholders": {
       "code": {
         "content": "$1"
@@ -1481,123 +1169,63 @@
     }
   },
   "updateCheckFailServerUnreachable": {
-    "message": "Sikertelen frissítés: nem érhető el a szerver.",
-    "description": "Text that displays when an update check failed because the update server is unreachable"
+    "message": "Sikertelen frissítés: nem érhető el a szerver."
   },
   "updateCheckHistory": {
-    "message": "Frissítések ellenőrzésének előzményei",
-    "description": ""
+    "message": "Frissítések ellenőrzésének előzményei"
   },
   "updateCheckManualUpdateForce": {
-    "message": "Frissítés telepítése (a helyi módosítások felül lesznek írva)",
-    "description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
+    "message": "Frissítés telepítése (a helyi módosítások felül lesznek írva)"
   },
   "updateCheckManualUpdateHint": {
-    "message": "Egy frissítés erőltetése minden helyi szerkesztést felül fog írni.",
-    "description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
+    "message": "Egy frissítés erőltetése minden helyi szerkesztést felül fog írni."
   },
   "updateCheckSkippedLocallyEdited": {
-    "message": "Ez a stílus helyileg lett szerkesztve.",
-    "description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
+    "message": "Ez a stílus helyileg lett szerkesztve."
   },
   "updateCheckSkippedMaybeLocallyEdited": {
-    "message": "Lehet, hogy ezt a stílust helyileg szerkesztették",
-    "description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
+    "message": "Lehet, hogy ezt a stílust helyileg szerkesztették"
   },
   "updateCheckSucceededNoUpdate": {
-    "message": "A stílus legfrissebb verziója van telepítve.",
-    "description": "Text that displays when an update check completed and no update is available"
+    "message": "A stílus legfrissebb verziója van telepítve."
   },
   "updateCompleted": {
-    "message": "A frissítés befejeződött.",
-    "description": "Text that displays when an update completed"
+    "message": "A frissítés befejeződött."
   },
   "updatesCurrentlyInstalled": {
-    "message": "Frissítve:",
-    "description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
-  },
-  "usercssAvoidOverwriting": {
-    "message": "Kérlek, módosítsd a @name vagy a @namespace értékét, nehogy felül legyen írva az egyik létező stílus!",
-    "description": "Shown in a message box when attempting to save a new Usercss style that would overwrite an existing one."
-  },
-  "usercssConfigIncomplete": {
-    "message": "A stílust frissítették vagy törölték, miután a beállítóablak megjelent. Ezek a változók nem kerültek mentésre, nehogy megsérüljön a stílus metaadata:",
-    "description": ""
-  },
-  "usercssEditorNamePlaceholder": {
-    "message": "Adj meg egy @name-et a kódban",
-    "description": "Placeholder text for the empty name input field when creating a new Usercss style"
-  },
-  "usercssReplaceTemplateConfirmation": {
-    "message": "Le legyen cserélve az alapértelmezett sablon az új Usercss stílusokhoz a jelenlegi kóddal?",
-    "description": ""
-  },
-  "usercssReplaceTemplateName": {
-    "message": "Az üres @name lecseréli az alapértelmezett sablont",
-    "description": "The text shown after @name when creating a new Usercss style"
-  },
-  "usercssReplaceTemplateSectionBody": {
-    "message": "Írj kódot ide…",
-    "description": "The code placeholder comment in a new style created by clicking 'Write style' in the popup"
-  },
-  "versionInvalidOlder": {
-    "message": "A verzió régebb a telepített stílusnál",
-    "description": "Displayed when the version of style is older than the installed one"
-  },
-  "writeStyleFor": {
-    "message": "Stílus írása a következőhöz:",
-    "description": "Label for toolbar pop-up that precedes the links to write a new style"
-  },
-  "writeStyleForURL": {
-    "message": "ehhez az URL-hez",
-    "description": "Text for link in toolbar pop-up to write a new style for the current URL"
-  },
-  "syncDropboxStyles": {
-    "message": "Exportálás Dropboxba",
-    "description": ""
-  },
-  "retrieveDropboxSync": {
-    "message": "Importálás Dropboxból",
-    "description": ""
-  },
-  "overwriteFileExport": {
-    "message": "Felülírjuk a létező fájlt?",
-    "description": ""
-  },
-  "exportSavedSuccess": {
-    "message": "A fájl sikeresen elmentve.",
-    "description": ""
-  },
-  "noFileToImport": {
-    "message": "A stílusok importálásához előbb exportálni kell őket.",
-    "description": ""
-  },
-  "connectingDropbox": {
-    "message": "Kapcsolódás Dropboxhoz...",
-    "description": ""
-  },
-  "connectingDropboxNotAllowed": {
-    "message": "Dropboxhoz csak közvetlenül a web-boltból telepített alkalmazásból lehet kapcsolódni.",
-    "description": ""
-  },
-  "gettingStyles": {
-    "message": "Minden stílus fogadása...",
-    "description": ""
-  },
-  "zipStyles": {
-    "message": "Stílusok tömörítése...",
-    "description": ""
-  },
-  "unzipStyles": {
-    "message": "Stílusok kibontása...",
-    "description": ""
-  },
-  "readingStyles": {
-    "message": "Stílusok olvasása...",
-    "description": ""
+    "message": "Frissítve:"
   },
   "uploadingFile": {
-    "message": "Fájl feltöltése...",
-    "description": ""
+    "message": "Fájl feltöltése..."
+  },
+  "usercssAvoidOverwriting": {
+    "message": "Kérlek, módosítsd a @name vagy a @namespace értékét, nehogy felül legyen írva az egyik létező stílus!"
+  },
+  "usercssConfigIncomplete": {
+    "message": "A stílust frissítették vagy törölték, miután a beállítóablak megjelent. Ezek a változók nem kerültek mentésre, nehogy megsérüljön a stílus metaadata:"
+  },
+  "usercssEditorNamePlaceholder": {
+    "message": "Adj meg egy @name-et a kódban"
+  },
+  "usercssReplaceTemplateConfirmation": {
+    "message": "Le legyen cserélve az alapértelmezett sablon az új Usercss stílusokhoz a jelenlegi kóddal?"
+  },
+  "usercssReplaceTemplateName": {
+    "message": "Az üres @name lecseréli az alapértelmezett sablont"
+  },
+  "usercssReplaceTemplateSectionBody": {
+    "message": "Írj kódot ide…"
+  },
+  "versionInvalidOlder": {
+    "message": "A verzió régebb a telepített stílusnál"
+  },
+  "writeStyleFor": {
+    "message": "Stílus írása a következőhöz:"
+  },
+  "writeStyleForURL": {
+    "message": "ehhez az URL-hez"
+  },
+  "zipStyles": {
+    "message": "Stílusok tömörítése..."
   }
 }

@@ -1,42 +1,41 @@
 {
   "name": "Stylus",
-  "version": "1.5.13",
+  "version": "1.5.22",
   "description": "Redesign the web with Stylus, a user styles manager",
   "license": "GPL-3.0-only",
   "repository": "openstyles/stylus",
   "author": "Stylus Team",
+  "dependenciesNotes": {
+    "codemirror": "WARNING! Always use an exact version and test it for a while before releasing"
+  },
   "dependencies": {
-    "codemirror": "^5.58.0",
-    "db-to-cloud": "^0.4.5",
+    "codemirror": "5.63.3",
+    "db-to-cloud": "^0.6.0",
     "jsonlint": "^1.6.3",
     "less-bundle": "github:openstyles/less-bundle#v0.1.0",
     "lz-string-unsafe": "^1.4.4-fork-1",
-    "semver-bundle": "^0.1.1",
-    "stylelint-bundle": "^8.0.0",
-    "stylus-lang-bundle": "^0.54.5",
-    "usercss-meta": "^0.9.0",
-    "uuid": "^8.1.0",
-    "webext-launch-web-auth-flow": "^0.1.0"
+    "stylelint-bundle": "^13.8.0",
+    "stylus-lang-bundle": "github:openstyles/stylus-lang-bundle#v0.54.7",
+    "usercss-meta": "^0.12.0",
+    "webext-launch-web-auth-flow": "^0.1.1"
   },
   "devDependencies": {
     "archiver": "^4.0.1",
     "endent": "^1.4.0",
-    "eslint": "^7.1.0",
+    "eslint": "^7.20.0",
     "fs-extra": "^9.0.0",
     "make-fetch-happen": "^8.0.7",
-    "shx": "^0.3.2",
     "sync-version": "^1.0.1",
     "tiny-glob": "^0.2.6",
-    "web-ext": "^4.2.0",
-    "webext-tx-fix": "^0.3.3"
+    "web-ext": "^5.5.0"
   },
   "scripts": {
     "lint": "eslint \"**/*.js\" --cache",
-    "test": "npm run lint",
-    "update-locales": "tx pull --all && webext-tx-fix",
+    "test": "node tools/test.js && npm run lint",
+    "update-locales": "tx pull --all && node tools/fix-transifex.js",
     "update-transifex": "tx push -s",
-    "build-vendor": "shx rm -rf vendor/* && node tools/build-vendor",
-    "zip": "node tools/zip.js",
+    "build-vendor": "node tools/build-vendor",
+    "zip": "npm test && node tools/zip.js",
     "start": "web-ext run",
     "start-chrome": "web-ext run -t chromium",
     "preversion": "npm test",

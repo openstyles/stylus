@@ -1,7 +1,6 @@
 body {
   overflow: hidden;
   margin: 0;
-  font: 12px arial, sans-serif;
   background: white;
 }
 
@@ -14,20 +13,9 @@ a:hover {
   color: #666;
 }
 
-img.icon,
-.svg-icon {
+img.icon {
   height: 1.4em;
   vertical-align: middle;
-}
-
-.svg-icon {
-  margin-left: 2px;
-  fill: #000;
-  transition: fill .5s;
-}
-
-a:hover .svg-icon {
-  fill: #666;
 }
 
 input:disabled + span {
@@ -225,16 +213,21 @@ h1 small {
   filter: hue-rotate(-18deg) brightness(.7) contrast(2);
 }
 
-.install.installed,
-h2.installed {
+.install.installed {
   display: none;
 }
 
 h2.installed.active {
   display: inline-block;
   font-weight: bold;
-  margin-bottom: 1ex;
   margin-top: 0;
+  color: darkcyan;
+}
+h2.installed.active ~ .configure-usercss svg {
+  fill: hsl(180, 100%, 20%);
+}
+h2.installed.active ~ .configure-usercss:hover svg {
+  fill: hsl(180, 100%, 30%);
 }
 
 .actions label input {
@@ -304,106 +297,35 @@ li {
   user-select: auto;
 }
 
-/* FIXME: why do we want to give all labels a padding? */
+#header.meta-init[data-arrived-fast="true"] > * {
+  transition-duration: .1s;
+}
+
 label {
+  /* FIXME: why do we want to give all labels a padding? */
   padding-left: 16px;
   position: relative;
 }
-/* spinner: https://github.com/loadingio/css-spinner */
 
-@keyframes lds-spinner {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
 .lds-spinner {
-  position: absolute;
-  width: 200px;
-  height: 200px;
   top: 50px;
-  left: 0;
-  right: 0;
-  margin: auto;
   opacity: .2;
   transition: opacity .5s;
+  animation: none;
 }
-.lds-spinner div {
-  left: 94px;
-  top: 23px;
-  position: absolute;
-  animation: lds-spinner linear 1s infinite;
-  background: currentColor;
-  width: 12px;
-  height: 34px;
-  border-radius: 20%;
-  transform-origin: 6px 77px;
+
+.configure-usercss .svg-icon.config {
+  width: 20px;
+  height: 20px;
+  margin-top: -3px;
 }
-.lds-spinner div:nth-child(1) {
-  transform: rotate(0deg);
-  animation-delay: -0.916666666666667s;
+#message-box.config-dialog {
+  width: 0;
+  height: 0;
+  background: none;
 }
-.lds-spinner div:nth-child(2) {
-  transform: rotate(30deg);
-  animation-delay: -0.833333333333333s;
-}
-.lds-spinner div:nth-child(3) {
-  transform: rotate(60deg);
-  animation-delay: -0.75s;
-}
-.lds-spinner div:nth-child(4) {
-  transform: rotate(90deg);
-  animation-delay: -0.666666666666667s;
-}
-.lds-spinner div:nth-child(5) {
-  transform: rotate(120deg);
-  animation-delay: -0.583333333333333s;
-}
-.lds-spinner div:nth-child(6) {
-  transform: rotate(150deg);
-  animation-delay: -0.5s;
-}
-.lds-spinner div:nth-child(7) {
-  transform: rotate(180deg);
-  animation-delay: -0.416666666666667s;
-}
-.lds-spinner div:nth-child(8) {
-  transform: rotate(210deg);
-  animation-delay: -0.333333333333333s;
-}
-.lds-spinner div:nth-child(9) {
-  transform: rotate(240deg);
-  animation-delay: -0.25s;
-}
-.lds-spinner div:nth-child(10) {
-  transform: rotate(270deg);
-  animation-delay: -0.166666666666667s;
-}
-.lds-spinner div:nth-child(11) {
-  transform: rotate(300deg);
-  animation-delay: -0.083333333333333s;
-}
-.lds-spinner div:nth-child(12) {
-  transform: rotate(330deg);
-  animation-delay: 0s;
-}
-@-webkit-keyframes load3 {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-@keyframes load3 {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+#message-box.config-dialog > div {
+  box-shadow: 5px 5px 50px rgba(0, 0, 0, 0.75); /* copied from message-box.css + darkened the color */
 }
 
 /************ reponsive layouts ************/
@@ -517,6 +439,10 @@ label {
   .install {
     flex-shrink: 0;
     margin-right: 1em;
+  }
+  #message-box.config-dialog > div {
+    top: auto;
+    bottom: 3rem;
   }
 }
 

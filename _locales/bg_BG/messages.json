@@ -1,19 +1,15 @@
 {
   "addStyleLabel": {
-    "message": "Напиши нов стил",
-    "description": "Label for the button to go to the add style page"
+    "message": "Напиши нов стил"
   },
   "addStyleTitle": {
-    "message": "Добави стил",
-    "description": "Title of the page for adding styles"
+    "message": "Добави стил"
   },
   "appliesAdd": {
-    "message": "Добави",
-    "description": "Label for the button to add an 'applies' entry"
+    "message": "Добави"
   },
   "appliesDisplay": {
     "message": "Прилага се към: $applies$",
-    "description": "Text on the manage screen to describe what the style applies to",
     "placeholders": {
       "applies": {
         "content": "$1"
@@ -21,136 +17,103 @@
     }
   },
   "appliesDisplayTruncatedSuffix": {
-    "message": "и още",
-    "description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
+    "message": "и още"
   },
   "appliesDomainOption": {
-    "message": "URLи на домейна",
-    "description": "Option to make the style apply to the entered string as a domain"
+    "message": "URLи на домейна"
   },
   "appliesHelp": {
-    "message": "Използвайте \"Прилага се към\", за да ограничете адресите, за които ще работи кодът в тази секция.",
-    "description": "Help text for 'applies to' section"
+    "message": "Използвайте \"Прилага се към\", за да ограничете адресите, за които ще работи кодът в тази секция."
   },
   "appliesLabel": {
-    "message": "Прилага се към",
-    "description": "Label for 'applies to' fields on the edit/add screen"
+    "message": "Прилага се към"
   },
   "appliesRegexpOption": {
-    "message": "Адреси, съвпадащи с regexp",
-    "description": "Option to make the style apply to the entered string as a regular expression"
+    "message": "Адреси, съвпадащи с regexp"
   },
   "appliesRemove": {
-    "message": "Премахни",
-    "description": "Label for the button to remove an 'applies' entry"
+    "message": "Премахни"
   },
   "appliesSpecify": {
-    "message": "Уточни",
-    "description": "Label for the button to make a style apply only to specific sites"
+    "message": "Уточни"
   },
   "appliesToEverything": {
-    "message": "Всички",
-    "description": "Text displayed for styles that apply to all sites"
+    "message": "Всички"
   },
   "appliesUrlPrefixOption": {
-    "message": "URL започващи с",
-    "description": "Option to make the style apply to the entered string as a URL prefix"
+    "message": "URL започващи с"
   },
   "applyAllUpdates": {
-    "message": "Приложи всички промени",
-    "description": "Label for the button to apply all detected updates"
+    "message": "Приложи всички промени"
   },
   "checkAllUpdates": {
-    "message": "Провери всички стилове за обновления",
-    "description": "Label for the button to check all styles for updates"
+    "message": "Провери всички стилове за обновления"
   },
   "checkForUpdate": {
-    "message": "Провери за обновление",
-    "description": "Label for the button to check a single style for an update"
+    "message": "Провери за обновление"
   },
   "checkingForUpdate": {
-    "message": "Проверявам...",
-    "description": "Text to display when checking a style for an update"
+    "message": "Проверявам..."
   },
   "cm_indentWithTabs": {
-    "message": "Използвай табулация с умно отместване",
-    "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
+    "message": "Използвай табулация с умно отместване"
   },
   "cm_keyMap": {
-    "message": "Клавишни комбинации",
-    "description": "Label for the drop-down list controlling the keymap for the style editor."
+    "message": "Клавишни комбинации"
   },
   "cm_lineWrapping": {
-    "message": "Автоматично пренасяне",
-    "description": "Label for the checkbox controlling word wrap option for the style editor."
+    "message": "Автоматично пренасяне"
   },
   "cm_smartIndent": {
-    "message": "Използвай умно отместване",
-    "description": "Label for the checkbox controlling smart indentation option for the style editor."
+    "message": "Използвай умно отместване"
   },
   "cm_tabSize": {
-    "message": "Размер на табулацията",
-    "description": "Label for the text box controlling tab size option for the style editor."
+    "message": "Размер на табулацията"
   },
   "cm_theme": {
-    "message": "Тема",
-    "description": "Label for the style editor's CSS theme."
+    "message": "Тема"
   },
   "confirmNo": {
-    "message": "Не",
-    "description": "'No' button in a confirm dialog"
+    "message": "Не"
   },
   "confirmStop": {
-    "message": "Спри",
-    "description": "'Stop' button in a confirm dialog"
+    "message": "Спри"
   },
   "confirmYes": {
-    "message": "Да",
-    "description": "'Yes' button in a confirm dialog"
+    "message": "Да"
   },
   "dbError": {
-    "message": "Грешка в базата данни на Stylus. Желаеш ли да посетиш уебстраницата с възможни решения?",
-    "description": "Prompt when a DB error is encountered"
+    "message": "Грешка в базата данни на Stylus. Желаеш ли да посетиш уебстраницата с възможни решения?"
   },
   "defaultTheme": {
-    "message": "по подразбиране",
-    "description": "Default CodeMirror CSS theme option on the edit style page"
+    "message": "по подразбиране"
   },
   "deleteStyleConfirm": {
-    "message": "Наистина ли искаш да изтриеш този стил?",
-    "description": "Confirmation before deleting a style"
+    "message": "Наистина ли искаш да изтриеш този стил?"
   },
   "deleteStyleLabel": {
-    "message": "Изтрий",
-    "description": "Label for the button to delete a style"
+    "message": "Изтрий"
   },
   "description": {
-    "message": "Промени уеба със Stylus, мениджър на потребителски стилове. Stylus ти позволява лесно да инсталираш теми и скинове за много популярни сайтове.",
-    "description": "Extension description"
+    "message": "Промени уеба със Stylus, мениджър на потребителски стилове. Stylus ти позволява лесно да инсталираш теми и скинове за много популярни сайтове."
   },
   "disableAllStyles": {
-    "message": "Изключи всички стилове",
-    "description": "Label for the checkbox that turns all enabled styles off."
+    "message": "Изключи всички стилове"
   },
   "disableStyleLabel": {
-    "message": "Забрани",
-    "description": "Label for the button to disable a style"
+    "message": "Забрани"
   },
   "editGotoLine": {
-    "message": "Иди на ред (или ред:кол)",
-    "description": "Go to line or line:column on Ctrl-G in style code editor"
+    "message": "Иди на ред (или ред:кол)"
   },
   "editStyleHeading": {
-    "message": "Промени стила",
-    "description": "Title of the page for editing styles"
+    "message": "Промени стила"
   },
   "editStyleLabel": {
-    "message": "Редактирай",
-    "description": "Label for the button to go to the edit style page"
+    "message": "Редактирай"
   },
   "editStyleTitle": {
     "message": "Редактирай стил $stylename$",
-    "description": "Title of the page for editing styles",
     "placeholders": {
       "stylename": {
         "content": "$1"
@@ -158,68 +121,52 @@
     }
   },
   "enableStyleLabel": {
-    "message": "Разреши",
-    "description": "Label for the button to enable a style"
+    "message": "Разреши"
   },
   "exportLabel": {
-    "message": "Експорт",
-    "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+    "message": "Експорт"
   },
   "helpAlt": {
-    "message": "Помощ",
-    "description": "Alternate text for help buttons"
+    "message": "Помощ"
   },
   "helpKeyMapCommand": {
-    "message": "Напиши име на команда",
-    "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+    "message": "Напиши име на команда"
   },
   "helpKeyMapHotkey": {
-    "message": "Натисни клавишна комбинация",
-    "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+    "message": "Натисни клавишна комбинация"
   },
   "importAppendLabel": {
-    "message": "Добави към стил",
-    "description": "Label for the button to import a style and append to the existing sections"
+    "message": "Добави към стил"
   },
   "importAppendTooltip": {
-    "message": "Добави импортирания стил към текущия",
-    "description": "Tooltip for the button to import a style and append to the existing sections"
+    "message": "Добави импортирания стил към текущия"
   },
   "importLabel": {
-    "message": "Импорт",
-    "description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+    "message": "Импорт"
   },
   "importReplaceLabel": {
-    "message": "Презапиши стила",
-    "description": "Label for the button to import and overwrite current style"
+    "message": "Презапиши стила"
   },
   "importReplaceTooltip": {
-    "message": "Презапишете съдържанието на текущия стил с импортирания",
-    "description": "Label for the button to import and overwrite current style"
+    "message": "Презапишете съдържанието на текущия стил с импортирания"
   },
   "installButton": {
-    "message": "Инсталирай стил",
-    "description": "Label for install button"
+    "message": "Инсталирай стил"
   },
   "installButtonInstalled": {
-    "message": "Стилът е инсталиран",
-    "description": "Text displayed when the style is successfully installed"
+    "message": "Стилът е инсталиран"
   },
   "installButtonReinstall": {
-    "message": "Преинсталирай стила",
-    "description": "Label for reinstall button"
+    "message": "Преинсталирай стила"
   },
   "installButtonUpdate": {
-    "message": "Обнови стила",
-    "description": "Label for update button"
+    "message": "Обнови стила"
   },
   "installUpdate": {
-    "message": "Инсталирай обновление",
-    "description": "Label for the button to install an update for a single style"
+    "message": "Инсталирай обновление"
   },
   "installUpdateFrom": {
     "message": "В момента стилът се обновява от $url$",
-    "description": "Label to describe where the style gets update",
     "placeholders": {
       "url": {
         "content": "$1"
@@ -227,28 +174,22 @@
     }
   },
   "installUpdateFromLabel": {
-    "message": "Провери за обновления",
-    "description": "Label for the checkbox to save current URL for update check"
+    "message": "Провери за обновления"
   },
   "license": {
-    "message": "Лиценз",
-    "description": "Label for the license"
+    "message": "Лиценз"
   },
   "linkGetHelp": {
-    "message": "Получете помощ",
-    "description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
+    "message": "Получете помощ"
   },
   "linkGetStyles": {
-    "message": "Вземете стилове",
-    "description": "Help link text on the manage page e.g. https://userstyles.org"
+    "message": "Вземете стилове"
   },
   "linkTranslate": {
-    "message": "Преведете",
-    "description": "Transifex link text on the manage page"
+    "message": "Преведете"
   },
   "linterCSSLintIncompatible": {
     "message": "CSSLint не поддържа $preprocessorname$ preprocessor",
-    "description": "The label to display when the preprocessor isn't compatible with CSSLint",
     "placeholders": {
       "preprocessorname": {
         "content": "$1"
@@ -256,12 +197,10 @@
     }
   },
   "linterCSSLintSettings": {
-    "message": "(Укажете правилата: 0 = забранен; 1 = предупреждения; 2 = грешки)",
-    "description": "CSSLint rule config values"
+    "message": "(Укажете правилата: 0 = забранен; 1 = предупреждения; 2 = грешки)"
   },
   "linterConfigPopupTitle": {
     "message": "Настройте конфигурация за $linter$ правила",
-    "description": "Stylelint or CSSLint popup header",
     "placeholders": {
       "linter": {
         "content": "$1"
@@ -269,20 +208,16 @@
     }
   },
   "linterConfigTooltip": {
-    "message": "Щракнете, за да конфигурирате този linter",
-    "description": "Icon tooltip to indicate that it opens a popup with the selected linter configuration"
+    "message": "Щракнете, за да конфигурирате този linter"
   },
   "linterInvalidConfigError": {
-    "message": "Не е записано заради тези неправилни настройки",
-    "description": "Invalid linter config will show a message followed by a list of invalid entries"
+    "message": "Не е записано заради тези неправилни настройки"
   },
   "linterIssues": {
-    "message": "Проблеми",
-    "description": "Label for the CSS linter issues block on the style edit page"
+    "message": "Проблеми"
   },
   "linterIssuesHelp": {
     "message": "Тези проблеми бяха намерени от $link$:",
-    "description": "Help popup message for the selected CSS linter issues block on the style edit page",
     "placeholders": {
       "link": {
         "content": "$1"
@@ -290,71 +225,54 @@
     }
   },
   "linterJSONError": {
-    "message": "Невалиден JSON формат",
-    "description": "Setting linter config with invalid JSON"
+    "message": "Невалиден JSON формат"
   },
   "linterResetMessage": {
-    "message": "За да върнете погрешно нулиране, натиснете Ctrl-Z (или Cmd-Z) в текстовия прозорец",
-    "description": "Reset button tooltip to inform user on how to undo an accidental reset"
+    "message": "За да върнете погрешно нулиране, натиснете Ctrl-Z (или Cmd-Z) в текстовия прозорец"
   },
   "linterRulesLink": {
-    "message": "Вижте пълния списък с правила",
-    "description": "Stylelint or CSSLint rules label added immediately before a link"
+    "message": "Вижте пълния списък с правила"
   },
   "liveReloadError": {
-    "message": "Получи се грешка докато наблюдавахме файла",
-    "description": "The label of live-reload error"
+    "message": "Получи се грешка докато наблюдавахме файла"
   },
   "liveReloadLabel": {
-    "message": "Преглед на живо",
-    "description": "The label of live-reload feature"
+    "message": "Преглед на живо"
   },
   "manageFilters": {
-    "message": "Филтри",
-    "description": "Label for filters container"
+    "message": "Филтри"
   },
   "manageHeading": {
-    "message": "Инсталирани стилове",
-    "description": "Heading for the manage page"
+    "message": "Инсталирани стилове"
   },
   "manageNewStyleAsUsercss": {
-    "message": "като Потребителскиcss",
-    "description": "VERY SHORT label for the checkbox next to the 'Write new style' button in the style manager"
+    "message": "като Потребителскиcss"
   },
   "manageNewUI": {
-    "message": "Нова подредба на UI",
-    "description": "Label for the checkbox that toggles the new UI on manage page"
+    "message": "Нова подредба на UI"
   },
   "manageOnlyDisabled": {
-    "message": "Само забранените стилове",
-    "description": "Checkbox to show only disabled styles"
+    "message": "Само забранените стилове"
   },
   "manageOnlyEnabled": {
-    "message": "Само разрешените стилове",
-    "description": "Checkbox to show only enabled styles"
+    "message": "Само разрешените стилове"
   },
   "manageOnlyExternal": {
-    "message": "Само външните стилове",
-    "description": "Checkbox to show only externally installed styles i.e. updatable"
+    "message": "Само външните стилове"
   },
   "manageOnlyLocal": {
-    "message": "Само локалните стилове",
-    "description": "Checkbox to show only locally created styles i.e. non-updatable"
+    "message": "Само локалните стилове"
   },
   "manageOnlyLocalTooltip": {
-    "message": "(стиловете не инсталирани чрез страницата на userstyles.org)",
-    "description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
+    "message": "(стиловете не инсталирани чрез страницата на userstyles.org)"
   },
   "manageOnlyNonUsercss": {
-    "message": "Само не-Потребителскитеcss стилове",
-    "description": "Checkbox to show only non-Usercss (standard) styles"
+    "message": "Само не-Потребителскитеcss стилове"
   },
   "manageOnlyUpdates": {
-    "message": "Само с обновления или проблеми",
-    "description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
+    "message": "Само с обновления или проблеми"
   },
   "manageOnlyUsercss": {
-    "message": "Само Потребителскиcss стилове",
-    "description": "Checkbox to show only Usercss styles"
+    "message": "Само Потребителскиcss стилове"
   }
 }

@@ -1,14 +1,15 @@
-/* global chromeLocal workerUtil createChromeStorageDB */
-/* exported db */
-/*
-Initialize a database. There are some problems using IndexedDB in Firefox:
-https://www.reddit.com/r/firefox/comments/74wttb/note_to_firefox_webextension_developers_who_use/
-
-Some of them are fixed in FF59:
-https://www.reddit.com/r/firefox/comments/7ijuaq/firefox_59_webextensions_can_use_indexeddb_when/
-*/
+/* global chromeLocal */// storage-util.js
+/* global cloneError */// worker-util.js
 'use strict';
 
+/*
+ Initialize a database. There are some problems using IndexedDB in Firefox:
+ https://www.reddit.com/r/firefox/comments/74wttb/note_to_firefox_webextension_developers_who_use/
+ Some of them are fixed in FF59:
+ https://www.reddit.com/r/firefox/comments/7ijuaq/firefox_59_webextensions_can_use_indexeddb_when/
+*/
+
+/* exported db */
 const db = (() => {
   const DATABASE = 'stylish';
   const STORE = 'styles';
@@ -24,52 +25,34 @@ const db = (() => {
   async function tryUsingIndexedDB() {
     // we use chrome.storage.local fallback if IndexedDB doesn't save data,
     // which, once detected on the first run, is remembered in chrome.storage.local
-    // for reliablility and in localStorage for fast synchronous access
-    // (FF may block localStorage depending on its privacy options)
-    // note that it may throw when accessing the variable
-    // https://github.com/openstyles/stylus/issues/615
+    // note that accessing indexedDB may throw, https://github.com/openstyles/stylus/issues/615
     if (typeof indexedDB === 'undefined') {
       throw new Error('indexedDB is undefined');
     }
-    switch (await getFallback()) {
+    switch (await chromeLocal.getValue(FALLBACK)) {
       case true: throw null;
       case false: break;
       default: await testDB();
     }
-    return useIndexedDB();
-  }
-
-  async function getFallback() {
-    return localStorage[FALLBACK] === 'true' ? true :
-      localStorage[FALLBACK] === 'false' ? false :
-        chromeLocal.getValue(FALLBACK);
+    chromeLocal.setValue(FALLBACK, false);
+    return dbExecIndexedDB;
   }
 
   async function testDB() {
-    let e = await dbExecIndexedDB('getAllKeys', IDBKeyRange.lowerBound(1), 1);
-    // throws if result is null
-    e = e.target.result[0];
     const id = `${performance.now()}.${Math.random()}.${Date.now()}`;
     await dbExecIndexedDB('put', {id});
-    e = await dbExecIndexedDB('get', id);
-    // throws if result or id is null
-    await dbExecIndexedDB('delete', e.target.result.id);
+    const e = await dbExecIndexedDB('get', id);
+    await dbExecIndexedDB('delete', e.id); // throws if `e` or id is null
   }
 
-  function useChromeStorage(err) {
+  async function useChromeStorage(err) {
     chromeLocal.setValue(FALLBACK, true);
     if (err) {
-      chromeLocal.setValue(FALLBACK + 'Reason', workerUtil.cloneError(err));
+      chromeLocal.setValue(FALLBACK + 'Reason', cloneError(err));
       console.warn('Failed to access indexedDB. Switched to storage API.', err);
     }
-    localStorage[FALLBACK] = 'true';
-    return createChromeStorageDB().exec;
-  }
-
-  function useIndexedDB() {
-    chromeLocal.setValue(FALLBACK, false);
-    localStorage[FALLBACK] = 'false';
-    return dbExecIndexedDB;
+    await require(['/background/db-chrome-storage']); /* global createChromeStorageDB */
+    return createChromeStorageDB();
   }
 
   async function dbExecIndexedDB(method, ...args) {
@@ -81,8 +64,9 @@ const db = (() => {
 
   function storeRequest(store, method, ...args) {
     return new Promise((resolve, reject) => {
+      /** @type {IDBRequest} */
       const request = store[method](...args);
-      request.onsuccess = resolve;
+      request.onsuccess = () => resolve(request.result);
       request.onerror = reject;
     });
   }

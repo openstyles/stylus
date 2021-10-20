@@ -1,4 +1,4 @@
-/* global cloneInto msg API */
+/* global API msg */// msg.js
 'use strict';
 
 // eslint-disable-next-line no-unused-expressions
@@ -14,17 +14,10 @@
 
   msg.on(onMessage);
 
-  onDOMready().then(() => {
-    window.postMessage({
-      direction: 'from-content-script',
-      message: 'StylishInstalled',
-    }, '*');
-  });
-
   let currentMd5;
   const md5Url = getMeta('stylish-md5-url') || `https://update.userstyles.org/${styleId}.md5`;
   Promise.all([
-    API.findStyle({md5Url}),
+    API.styles.find({md5Url}),
     getResource(md5Url),
     onDOMready(),
   ]).then(checkUpdatability);
@@ -85,7 +78,7 @@
         const observer = new MutationObserver(check);
         observer.observe(document.documentElement, {
           childList: true,
-          subtree: true
+          subtree: true,
         });
         check();
 
@@ -105,7 +98,7 @@
             ? 'styleCanBeUpdatedChrome'
             : 'styleAlreadyInstalledChrome',
           detail: {
-            updateUrl: installedStyle.updateUrl
+            updateUrl: installedStyle.updateUrl,
           },
         });
       });
@@ -119,13 +112,11 @@
     if (typeof cloneInto !== 'undefined') {
       // Firefox requires explicit cloning, however USO can't process our messages anyway
       // because USO tries to use a global "event" variable deprecated in Firefox
-      detail = cloneInto({detail}, document);
+      detail = cloneInto({detail}, document); /* global cloneInto */
     } else {
       detail = {detail};
     }
-    onDOMready().then(() => {
-      document.dispatchEvent(new CustomEvent(type, detail));
-    });
+    document.dispatchEvent(new CustomEvent(type, detail));
   }
 
   function onClick(event) {
@@ -154,9 +145,9 @@
 
   function doInstall() {
     let oldStyle;
-    return API.findStyle({
-      md5Url: getMeta('stylish-md5-url') || location.href
-    }, true)
+    return API.styles.find({
+      md5Url: getMeta('stylish-md5-url') || location.href,
+    })
       .then(_oldStyle => {
         oldStyle = _oldStyle;
         return oldStyle ?
@@ -172,7 +163,7 @@
       });
   }
 
-  function saveStyleCode(message, name, addProps = {}) {
+  async function saveStyleCode(message, name, addProps = {}) {
     const isNew = message === 'styleInstall';
     const needsConfirmation = isNew || !saveStyleCode.confirmed;
     if (needsConfirmation && !confirm(chrome.i18n.getMessage(message, [name]))) {
@@ -180,22 +171,19 @@
     }
     saveStyleCode.confirmed = true;
     enableUpdateButton(false);
-    return getStyleJson().then(json => {
-      if (!json) {
-        prompt(chrome.i18n.getMessage('styleInstallFailed', ''),
-          'https://github.com/openstyles/stylus/issues/195');
-        return;
-      }
-      // Update originalMd5 since USO changed it (2018-11-11) to NOT match the current md5
-      return API.installStyle(Object.assign(json, addProps, {originalMd5: currentMd5}))
-        .then(style => {
-          if (!isNew && style.updateUrl.includes('?')) {
-            enableUpdateButton(true);
-          } else {
-            sendEvent({type: 'styleInstalledChrome'});
-          }
-        });
-    });
+    const json = await getStyleJson();
+    if (!json) {
+      prompt(chrome.i18n.getMessage('styleInstallFailed', ''),
+        'https://github.com/openstyles/stylus/issues/195');
+      return;
+    }
+    // Update originalMd5 since USO changed it (2018-11-11) to NOT match the current md5
+    const style = await API.styles.install(Object.assign(json, addProps, {originalMd5: currentMd5}));
+    if (!isNew && style.updateUrl.includes('?')) {
+      enableUpdateButton(true);
+    } else {
+      sendEvent({type: 'styleInstalledChrome'});
+    }
 
     function enableUpdateButton(state) {
       const important = s => s.replace(/;/g, '!important;');
@@ -218,86 +206,59 @@
     return e ? e.getAttribute('href') : null;
   }
 
-  function getResource(url, options) {
-    if (url.startsWith('#')) {
-      return Promise.resolve(document.getElementById(url.slice(1)).textContent);
+  async function getResource(url, opts) {
+    try {
+      return url.startsWith('#')
+        ? document.getElementById(url.slice(1)).textContent
+        : await API.download(url, opts);
+    } catch (error) {
+      alert('Error\n' + error.message);
+      return Promise.reject(error);
     }
-    return API.download(Object.assign({
-      url,
-      timeout: 60e3,
-      // USO can't handle POST requests for style json
-      body: null,
-    }, options))
-      .catch(error => {
-        alert('Error' + (error ? '\n' + error : ''));
-        throw error;
-      });
   }
 
   // USO providing md5Url as "https://update.update.userstyles.org/#####.md5"
   // instead of "https://update.userstyles.org/#####.md5"
-  function tryFixMd5(style) {
-    if (style && style.md5Url && style.md5Url.includes('update.update')) {
-      style.md5Url = style.md5Url.replace('update.update', 'update');
-    }
-    return style;
-  }
-
-  function getStyleJson() {
-    return getResource(getStyleURL(), {responseType: 'json'})
-      .then(style => {
-        if (!style || !Array.isArray(style.sections) || style.sections.length) {
-          return style;
-        }
-        const codeElement = document.getElementById('stylish-code');
-        if (codeElement && !codeElement.textContent.trim()) {
-          return style;
-        }
-        return getResource(getMeta('stylish-update-url'))
-          .then(code => API.parseCss({code}))
-          .then(result => {
-            style.sections = result.sections;
-            return style;
-          });
-      })
-      .then(tryFixMd5)
-      .catch(() => null);
-  }
-
-  function styleSectionsEqual({sections: a}, {sections: b}) {
-    if (!a || !b) {
-      return undefined;
-    }
-    if (a.length !== b.length) {
-      return false;
-    }
-    // order of sections should be identical to account for the case of multiple
-    // sections matching the same URL because the order of rules is part of cascading
-    return a.every((sectionA, index) => propertiesEqual(sectionA, b[index]));
-
-    function propertiesEqual(secA, secB) {
-      for (const name of ['urlPrefixes', 'urls', 'domains', 'regexps']) {
-        if (!equalOrEmpty(secA[name], secB[name], 'every', arrayMirrors)) {
-          return false;
-        }
+  async function getStyleJson() {
+    try {
+      const style = await getResource(getStyleURL(), {responseType: 'json'});
+      const codeElement = document.getElementById('stylish-code');
+      if (!style || !Array.isArray(style.sections) || style.sections.length ||
+          codeElement && !codeElement.textContent.trim()) {
+        return style;
       }
-      return equalOrEmpty(secA.code, secB.code, 'substr', (a, b) => a === b);
-    }
+      const code = await getResource(getMeta('stylish-update-url'));
+      style.sections = (await API.worker.parseMozFormat({code})).sections;
+      if (style.md5Url) style.md5Url = style.md5Url.replace('update.update', 'update');
+      return style;
+    } catch (e) {}
+  }
 
-    function equalOrEmpty(a, b, telltale, comparator) {
-      const typeA = a && typeof a[telltale] === 'function';
-      const typeB = b && typeof b[telltale] === 'function';
-      return (
-        (a === null || a === undefined || (typeA && !a.length)) &&
-        (b === null || b === undefined || (typeB && !b.length))
-      ) || typeA && typeB && a.length === b.length && comparator(a, b);
+  /**
+   * The sections are checked in successive order because it matters when many sections
+   * match the same URL and they have rules with the same CSS specificity
+   * @param {Object} a - first style object
+   * @param {Object} b - second style object
+   * @returns {?boolean}
+   */
+  function styleSectionsEqual({sections: a}, {sections: b}) {
+    const targets = ['urls', 'urlPrefixes', 'domains', 'regexps'];
+    return a && b && a.length === b.length && a.every(sameSection);
+    function sameSection(secA, i) {
+      return equalOrEmpty(secA.code, b[i].code, 'string', (a, b) => a === b) &&
+        targets.every(target => equalOrEmpty(secA[target], b[i][target], 'array', arrayMirrors));
     }
-
-    function arrayMirrors(array1, array2) {
-      return (
-        array1.every(el => array2.includes(el)) &&
-        array2.every(el => array1.includes(el))
-      );
+    function equalOrEmpty(a, b, type, comparator) {
+      const typeA = type === 'array' ? Array.isArray(a) : typeof a === type;
+      const typeB = type === 'array' ? Array.isArray(b) : typeof b === type;
+      return typeA && typeB && comparator(a, b) ||
+        (a == null || typeA && !a.length) &&
+        (b == null || typeB && !b.length);
+    }
+    function arrayMirrors(a, b) {
+      return a.length === b.length &&
+        a.every(el => b.includes(el)) &&
+        b.every(el => a.includes(el));
     }
   }
 
@@ -343,6 +304,7 @@
 
 function inPageContext(eventId) {
   document.currentScript.remove();
+  window.isInstalled = true;
   const origMethods = {
     json: Response.prototype.json,
     byId: document.getElementById,
@@ -365,13 +327,33 @@ function inPageContext(eventId) {
       Response.prototype.json = origMethods.json;
       const images = new Map();
       for (const ss of json.style_settings) {
-        const value = vars.get('ik-' + ss.install_key);
-        if (value && ss.setting_type === 'image' && ss.style_setting_options) {
+        let value = vars.get('ik-' + ss.install_key);
+        if (!value || !(ss.style_setting_options || [])[0]) {
+          continue;
+        }
+        if (value.startsWith('ik-')) {
+          value = value.replace(/^ik-/, '');
+          const def = ss.style_setting_options.find(item => item.default);
+          if (!def || def.install_key !== value) {
+            if (def) def.default = false;
+            for (const item of ss.style_setting_options) {
+              if (item.install_key === value) {
+                item.default = true;
+                break;
+              }
+            }
+          }
+        } else if (ss.setting_type === 'image') {
           let isListed;
           for (const opt of ss.style_setting_options) {
             isListed |= opt.default = (opt.value === value);
           }
           images.set(ss.install_key, {url: value, isListed});
+        } else {
+          const item = ss.style_setting_options[0];
+          if (item.value !== value && item.install_key === 'placeholder') {
+            item.value = value;
+          }
         }
       }
       if (images.size) {

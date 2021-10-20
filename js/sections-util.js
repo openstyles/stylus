@@ -1,11 +1,77 @@
-/* exported styleSectionsEqual styleCodeEmpty styleSectionGlobal calcStyleDigest styleJSONseemsValid */
 'use strict';
+
+/* exported
+  calcStyleDigest
+  MozDocMapper
+  styleCodeEmpty
+  styleJSONseemsValid
+  styleSectionGlobal
+  styleSectionsEqual
+*/
+
+const MozDocMapper = {
+  TO_CSS: {
+    urls: 'url',
+    urlPrefixes: 'url-prefix',
+    domains: 'domain',
+    regexps: 'regexp',
+  },
+  FROM_CSS: {
+    'url': 'urls',
+    'url-prefix': 'urlPrefixes',
+    'domain': 'domains',
+    'regexp': 'regexps',
+  },
+  /**
+   * @param {Object} section
+   * @param {function(func:string, value:string)} fn
+   */
+  forEachProp(section, fn) {
+    for (const [propName, func] of Object.entries(MozDocMapper.TO_CSS)) {
+      const props = section[propName];
+      if (props) props.forEach(value => fn(func, value));
+    }
+  },
+  /**
+   * @param {Array<?[type,value]>} funcItems
+   * @param {?Object} [section]
+   * @returns {Object} section
+   */
+  toSection(funcItems, section = {}) {
+    for (const item of funcItems) {
+      const [func, value] = item || [];
+      const propName = MozDocMapper.FROM_CSS[func];
+      if (propName) {
+        const props = section[propName] || (section[propName] = []);
+        if (Array.isArray(value)) props.push(...value);
+        else props.push(value);
+      }
+    }
+    return section;
+  },
+  /**
+   * @param {StyleObj} style
+   * @returns {string}
+   */
+  styleToCss(style) {
+    const res = [];
+    for (const section of style.sections) {
+      const funcs = [];
+      MozDocMapper.forEachProp(section, (type, value) =>
+        funcs.push(`${type}("${value.replace(/[\\"]/g, '\\$&')}")`));
+      res.push(funcs.length
+        ? `@-moz-document ${funcs.join(', ')} {\n${section.code}\n}`
+        : section.code);
+    }
+    return res.join('\n\n');
+  },
+};
 
 function styleCodeEmpty(code) {
   if (!code) {
     return true;
   }
-  const rx = /\s+|\/\*[\s\S]*?\*\/|@namespace[^;]+;|@charset[^;]+;/giy;
+  const rx = /\s+|\/\*([^*]|\*(?!\/))*(\*\/|$)|@namespace[^;]+;|@charset[^;]+;/giyu;
   while (rx.exec(code)) {
     if (rx.lastIndex === code.length) {
       return true;
@@ -17,101 +83,60 @@ function styleCodeEmpty(code) {
 /** Checks if section is global i.e. has no targets at all */
 function styleSectionGlobal(section) {
   return (!section.regexps || !section.regexps.length) &&
-         (!section.urlPrefixes || !section.urlPrefixes.length) &&
-         (!section.urls || !section.urls.length) &&
-         (!section.domains || !section.domains.length);
+    (!section.urlPrefixes || !section.urlPrefixes.length) &&
+    (!section.urls || !section.urls.length) &&
+    (!section.domains || !section.domains.length);
 }
 
 /**
- * @param {Style} a - first style object
- * @param {Style} b - second style object
- * @param {Object} options
- * @param {Boolean=} options.ignoreCode -
- *        true used by invalidateCache to determine if cached filters should be cleared
- * @param {Boolean=} options.checkSource -
- *        true used by update check to compare the server response
- *        instead of sections that depend on @preprocessor
- * @returns {Boolean|undefined}
+ * The sections are checked in successive order because it matters when many sections
+ * match the same URL and they have rules with the same CSS specificity
+ * @param {Object} a - first style object
+ * @param {Object} b - second style object
+ * @returns {?boolean}
  */
-function styleSectionsEqual(a, b, {ignoreCode, checkSource} = {}) {
-  if (checkSource &&
-      typeof a.sourceCode === 'string' &&
-      typeof b.sourceCode === 'string') {
-    return a.sourceCode === b.sourceCode;
+function styleSectionsEqual({sections: a}, {sections: b}) {
+  const targets = ['urls', 'urlPrefixes', 'domains', 'regexps'];
+  return a && b && a.length === b.length && a.every(sameSection);
+  function sameSection(secA, i) {
+    return equalOrEmpty(secA.code, b[i].code, 'string', (a, b) => a === b) &&
+      targets.every(target => equalOrEmpty(secA[target], b[i][target], 'array', arrayMirrors));
   }
-  a = a.sections;
-  b = b.sections;
-  if (!a || !b) {
-    return undefined;
+  function equalOrEmpty(a, b, type, comparator) {
+    const typeA = type === 'array' ? Array.isArray(a) : typeof a === type;
+    const typeB = type === 'array' ? Array.isArray(b) : typeof b === type;
+    return typeA && typeB && comparator(a, b) ||
+      (a == null || typeA && !a.length) &&
+      (b == null || typeB && !b.length);
   }
-  if (a.length !== b.length) {
-    return false;
-  }
-  // order of sections should be identical to account for the case of multiple
-  // sections matching the same URL because the order of rules is part of cascading
-  return a.every((sectionA, index) => propertiesEqual(sectionA, b[index]));
-
-  function propertiesEqual(secA, secB) {
-    for (const name of ['urlPrefixes', 'urls', 'domains', 'regexps']) {
-      if (!equalOrEmpty(secA[name], secB[name], 'every', arrayMirrors)) {
-        return false;
-      }
-    }
-    return ignoreCode || equalOrEmpty(secA.code, secB.code, 'substr', (a, b) => a === b);
-  }
-
-  function equalOrEmpty(a, b, telltale, comparator) {
-    const typeA = a && typeof a[telltale] === 'function';
-    const typeB = b && typeof b[telltale] === 'function';
-    return (
-      (a === null || a === undefined || (typeA && !a.length)) &&
-      (b === null || b === undefined || (typeB && !b.length))
-    ) || typeA && typeB && a.length === b.length && comparator(a, b);
-  }
-
-  function arrayMirrors(array1, array2) {
-    return (
-      array1.every(el => array2.includes(el)) &&
-      array2.every(el => array1.includes(el))
-    );
+  function arrayMirrors(a, b) {
+    return a.length === b.length &&
+      a.every(el => b.includes(el)) &&
+      b.every(el => a.includes(el));
   }
 }
 
-function normalizeStyleSections({sections}) {
+async function calcStyleDigest(style) {
   // retain known properties in an arbitrarily predefined order
-  return (sections || []).map(section => ({
-    code: section.code || '',
-    urls: section.urls || [],
-    urlPrefixes: section.urlPrefixes || [],
-    domains: section.domains || [],
-    regexps: section.regexps || [],
-  }));
-}
-
-function calcStyleDigest(style) {
-  const jsonString = style.usercssData ?
-    style.sourceCode : JSON.stringify(normalizeStyleSections(style));
-  const text = new TextEncoder('utf-8').encode(jsonString);
-  return crypto.subtle.digest('SHA-1', text).then(hex);
-
-  function hex(buffer) {
-    const parts = [];
-    const PAD8 = '00000000';
-    const view = new DataView(buffer);
-    for (let i = 0; i < view.byteLength; i += 4) {
-      parts.push((PAD8 + view.getUint32(i).toString(16)).slice(-8));
-    }
-    return parts.join('');
-  }
+  const src = style.usercssData
+    ? style.sourceCode
+    // retain known properties in an arbitrarily predefined order
+    : JSON.stringify((style.sections || []).map(section => /** @namespace StyleSection */({
+      code: section.code || '',
+      urls: section.urls || [],
+      urlPrefixes: section.urlPrefixes || [],
+      domains: section.domains || [],
+      regexps: section.regexps || [],
+    })));
+  const srcBytes = new TextEncoder().encode(src);
+  const res = await crypto.subtle.digest('SHA-1', srcBytes);
+  return Array.from(new Uint8Array(res), b => (0x100 + b).toString(16).slice(1)).join('');
 }
 
 function styleJSONseemsValid(json) {
   return json
-    && json.name
+    && typeof json.name == 'string'
     && json.name.trim()
     && Array.isArray(json.sections)
-    && json.sections
-    && json.sections.length
-    && typeof json.sections.every === 'function'
-    && typeof json.sections[0].code === 'string';
+    && typeof (json.sections[0] || {}).code === 'string';
 }

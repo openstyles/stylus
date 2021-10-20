@@ -1,19 +1,21 @@
 {
+  "InaccessibleFileHint": {
+    "message": "Το Stylus δεν έχει πρόσβαση σε κάποια αρχεία (π.χ. τα αρχεία PDF και JSON)"
+  },
   "addStyleLabel": {
-    "message": "Γράψτε νέο στυλ",
-    "description": "Label for the button to go to the add style page"
+    "message": "Γράψτε νέο στυλ"
   },
   "addStyleTitle": {
-    "message": "Προσθήκη στυλ",
-    "description": "Title of the page for adding styles"
+    "message": "Προσθήκη στυλ"
+  },
+  "alphaChannel": {
+    "message": "Αδιαφάνεια"
   },
   "appliesAdd": {
-    "message": "Προσθήκη",
-    "description": "Label for the button to add an 'applies' entry"
+    "message": "Προσθήκη"
   },
   "appliesDisplay": {
     "message": "Ισχύει για: $applies$",
-    "description": "Text on the manage screen to describe what the style applies to",
     "placeholders": {
       "applies": {
         "content": "$1"
@@ -21,112 +23,231 @@
     }
   },
   "appliesDisplayTruncatedSuffix": {
-    "message": "και πολλά άλλα",
-    "description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
+    "message": "και πολλά άλλα"
   },
   "appliesDomainOption": {
-    "message": "URL στον τομέα",
-    "description": "Option to make the style apply to the entered string as a domain"
+    "message": "URL στον τομέα"
   },
   "appliesHelp": {
-    "message": "Χρησιμοποιήστε το \"Ισχύει για\" έλεγχοι ώστε να περιοριστουν ποιες διευθύνσεις τον κώδικα σε αυτό το τμήμα να εφαρμόζονται.",
-    "description": "Help text for 'applies to' section"
+    "message": "Χρησιμοποιήστε το \"Ισχύει για\" έλεγχοι ώστε να περιοριστουν ποιες διευθύνσεις τον κώδικα σε αυτό το τμήμα να εφαρμόζονται."
   },
   "appliesLabel": {
-    "message": "Ισχύει για",
-    "description": "Label for 'applies to' fields on the edit/add screen"
+    "message": "Ισχύει για"
+  },
+  "appliesLineWidgetWarning": {
+    "message": "Δε λειτουργεί με minified CSS."
   },
   "appliesRegexpOption": {
-    "message": "Διευθύνσεις URL που ταιριάζουν με την κανονική έκφραση",
-    "description": "Option to make the style apply to the entered string as a regular expression"
+    "message": "Διευθύνσεις URL που ταιριάζουν με την κανονική έκφραση"
   },
   "appliesRemove": {
-    "message": "Αφαίρεση",
-    "description": "Label for the button to remove an 'applies' entry"
+    "message": "Αφαίρεση"
   },
   "appliesSpecify": {
-    "message": "Καθορισμός",
-    "description": "Label for the button to make a style apply only to specific sites"
+    "message": "Καθορισμός"
   },
   "appliesToEverything": {
-    "message": "Τα πάντα",
-    "description": "Text displayed for styles that apply to all sites"
+    "message": "Τα πάντα"
+  },
+  "appliesUrlOption": {
+    "message": "διεύθυνση URL"
   },
   "appliesUrlPrefixOption": {
-    "message": "Διευθύνσεις URL που αρχίζουν με",
-    "description": "Option to make the style apply to the entered string as a URL prefix"
+    "message": "Διευθύνσεις URL που αρχίζουν με"
   },
   "applyAllUpdates": {
-    "message": "Εφαρμογή όλων των ενημερώσεων",
-    "description": "Label for the button to apply all detected updates"
+    "message": "Εφαρμογή όλων των ενημερώσεων"
+  },
+  "author": {
+    "message": "Συντάκτης"
+  },
+  "backupButtons": {
+    "message": "Δημιουργήστε αντίγραφο ασφαλείας"
+  },
+  "backupMessage": {
+    "message": "Επιλέξτε ένα αρχείο ή σύρετέ το σε αυτήν τη σελίδα"
+  },
+  "bckpInstStyles": {
+    "message": "Εξαγωγή στυλ"
   },
   "checkAllUpdates": {
-    "message": "Έλεγχος όλων των στυλ για ενημερώσεις",
-    "description": "Label for the button to check all styles for updates"
+    "message": "Έλεγχος όλων των στυλ για ενημερώσεις"
+  },
+  "checkAllUpdatesForce": {
+    "message": "Ελέγξτε πάλι, δεν επεξεργάστηκα κανένα στυλ!"
   },
   "checkForUpdate": {
-    "message": "Έλεγχος για ενημερώσεις",
-    "description": "Label for the button to check a single style for an update"
+    "message": "Έλεγχος για ενημερώσεις"
   },
   "checkingForUpdate": {
-    "message": "Έλεγχος...",
-    "description": "Text to display when checking a style for an update"
+    "message": "Έλεγχος..."
+  },
+  "clickToUninstall": {
+    "message": "Πατήστε για απεγκατάσταση"
+  },
+  "cm_autoCloseBrackets": {
+    "message": "Αυτόματο κλείσιμο παρενθέσεων και εισαγωγικών"
+  },
+  "cm_autocompleteOnTyping": {
+    "message": "Αυτόματη συμπλήρωση καθώς πληκτρολογείτε"
   },
   "cm_indentWithTabs": {
-    "message": "Χρήση καρτελών με έξυπνη εσοχή",
-    "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
+    "message": "Χρήση καρτελών με έξυπνη εσοχή"
+  },
+  "cm_keyMap": {
+    "message": "Συντομεύσεις πληκτρολογίου"
   },
   "cm_lineWrapping": {
-    "message": "Αναδίπλωση λέξεων",
-    "description": "Label for the checkbox controlling word wrap option for the style editor."
+    "message": "Αναδίπλωση λέξεων"
+  },
+  "cm_matchHighlight": {
+    "message": "Υπογράμμιση"
+  },
+  "cm_matchHighlightSelection": {
+    "message": "Μόνο επιλογή"
+  },
+  "cm_resizeGripHint": {
+    "message": "Διπλό κλικ για μεγιστοποίηση/επαναφορά ύψους"
   },
   "cm_smartIndent": {
-    "message": "Χρήση έξυπνης εσοχής",
-    "description": "Label for the checkbox controlling smart indentation option for the style editor."
+    "message": "Χρήση έξυπνης εσοχής"
   },
   "cm_tabSize": {
-    "message": "Μέγεθος καρτέλας",
-    "description": "Label for the text box controlling tab size option for the style editor."
+    "message": "Μέγεθος καρτέλας"
+  },
+  "cm_theme": {
+    "message": "Θέμα"
+  },
+  "configOnChange": {
+    "message": "στην αλλαγή"
+  },
+  "configOnChangeTooltip": {
+    "message": "Αυτόματη αποθήκευση και εφαρμογή αλλαγών"
+  },
+  "configureStyle": {
+    "message": "Ρυθμίσεις"
+  },
+  "configureStyleOnHomepage": {
+    "message": "Ρυθμίσεις στην ιστοσελίδα"
+  },
+  "confirmCancel": {
+    "message": "Άκυρο"
+  },
+  "confirmClose": {
+    "message": "Κλείσιμο"
+  },
+  "confirmDefault": {
+    "message": "Χρήση προεπιλογής"
+  },
+  "confirmDelete": {
+    "message": "Διαγραφή"
+  },
+  "confirmDiscardChanges": {
+    "message": "Απόρριψη αλλαγών;"
+  },
+  "confirmNo": {
+    "message": "Όχι"
+  },
+  "confirmOK": {
+    "message": "ΟΚ"
+  },
+  "confirmSave": {
+    "message": "Αποθήκευση"
+  },
+  "confirmYes": {
+    "message": "Ναι"
+  },
+  "connectingDropbox": {
+    "message": "Σύνδεση με το Dropbox..."
+  },
+  "connectingDropboxNotAllowed": {
+    "message": "Η σύνδεση με το Dropbox είναι διαθέσιμη μόνο σε εφαρμογές εγκατεστημένες απευθείας από το κατάστημα ιστού webstore"
+  },
+  "copied": {
+    "message": "Αντιγράφηκε στο πρόχειρο"
+  },
+  "copy": {
+    "message": "Αντιγραφή στο πρόχειρο"
+  },
+  "dateAbbrDay": {
+    "message": "$value$μ",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrHour": {
+    "message": "$value$ω",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrMonth": {
+    "message": "$value$λ",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrYear": {
+    "message": "$value$χ",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateInstalled": {
+    "message": "Ημερομηνία εγκατάστασης"
+  },
+  "dateUpdated": {
+    "message": "Ημερομηνία ενημέρωσης"
   },
   "dbError": {
-    "message": "Παρουσιάστηκε σφάλμα χρησιμοποιώντας την κομψή βάση δεδομένων. Θα θέλατε να επισκεφθείτε μια ιστοσελίδα με πιθανές λύσεις;",
-    "description": "Prompt when a DB error is encountered"
+    "message": "Παρουσιάστηκε σφάλμα χρησιμοποιώντας την κομψή βάση δεδομένων. Θα θέλατε να επισκεφθείτε μια ιστοσελίδα με πιθανές λύσεις;"
+  },
+  "defaultTheme": {
+    "message": "προεπιλογή"
   },
   "deleteStyleConfirm": {
-    "message": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το στυλ;",
-    "description": "Confirmation before deleting a style"
+    "message": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το στυλ;"
   },
   "deleteStyleLabel": {
-    "message": "Διαγραφή",
-    "description": "Label for the button to delete a style"
+    "message": "Διαγραφή"
   },
   "description": {
-    "message": "Επαναπροσδιορίση του διαδίκτυου με το  Stylus, έναν διαχειριστή στυλ. Το Stylus σας επιτρέπει να εγκαταστήσετε εύκολα themes και skins για πολλές δημοφιλείς ιστοσελίδες.",
-    "description": "Extension description"
+    "message": "Επαναπροσδιορίση του διαδίκτυου με το  Stylus, έναν διαχειριστή στυλ. Το Stylus σας επιτρέπει να εγκαταστήσετε εύκολα themes και skins για πολλές δημοφιλείς ιστοσελίδες."
   },
   "disableAllStyles": {
-    "message": "Απενεργοποιηση ολων των στυλ",
-    "description": "Label for the checkbox that turns all enabled styles off."
+    "message": "Απενεργοποιηση ολων των στυλ"
   },
   "disableStyleLabel": {
-    "message": "Απενεργοποίηση",
-    "description": "Label for the button to disable a style"
+    "message": "Απενεργοποίηση"
+  },
+  "dragDropMessage": {
+    "message": "Αποθέστε το αντίγραφο ασφαλείας σας οπουδήποτε σε αυτήν τη σελίδα για εισαγωγή."
+  },
+  "dragDropUsercssTabstrip": {
+    "message": "Για να εγκαταστήσετε το αρχείο, αποθέστε το στη λωρίδα καρτελών (την περιοχή όπου εμφανίζονται οι τίτλοι καρτελών)."
+  },
+  "editDeleteText": {
+    "message": "Διαγραφή"
   },
   "editGotoLine": {
-    "message": "Μετάβαση στη γραμμή (ή line:col)",
-    "description": "Go to line or line:column on Ctrl-G in style code editor"
+    "message": "Μετάβαση στη γραμμή (ή line:col)"
   },
   "editStyleHeading": {
-    "message": "Επεξεργασία Στυλ",
-    "description": "Title of the page for editing styles"
+    "message": "Επεξεργασία Στυλ"
   },
   "editStyleLabel": {
-    "message": "Επεξεργασία",
-    "description": "Label for the button to go to the edit style page"
+    "message": "Επεξεργασία"
   },
   "editStyleTitle": {
     "message": "Επεξεργασία του στυλ $stylename$",
-    "description": "Title of the page for editing styles",
     "placeholders": {
       "stylename": {
         "content": "$1"
@@ -134,92 +255,393 @@
     }
   },
   "enableStyleLabel": {
-    "message": "Ενεργοποίηση",
-    "description": "Label for the button to enable a style"
+    "message": "Ενεργοποίηση"
+  },
+  "excludeStyleByDomainLabel": {
+    "message": "Εξαίρεση του τρέχοντος τομέα"
+  },
+  "excludeStyleByUrlLabel": {
+    "message": "Εξαίρεση του τρέχοντος URL"
+  },
+  "exportLabel": {
+    "message": "Εξαγωγή"
+  },
+  "exportSavedSuccess": {
+    "message": "Το αρχείο αποθηκεύτηκε επιτυχώς."
+  },
+  "externalFeedback": {
+    "message": "Σχόλια"
+  },
+  "externalHomepage": {
+    "message": "Αρχική σελίδα"
+  },
+  "externalLink": {
+    "message": "Εξωτερική σύνδεση"
+  },
+  "externalSupport": {
+    "message": "Υποστήριξη"
+  },
+  "externalUsercssDocument": {
+    "message": "Τεκμηρίωση για Usercss"
+  },
+  "filteredStyles": {
+    "message": "Βλέπετε $numShown$ από 2$numTotal$ συνολικά",
+    "placeholders": {
+      "numShown": {
+        "content": "$1"
+      },
+      "numTotal": {
+        "content": "$2"
+      }
+    }
+  },
+  "filteredStylesAllHidden": {
+    "message": "Τα φίλτρα που εφαρμόζονται αυτήν τη στιγμή δεν ταιριάζουν με κανένα στυλ"
+  },
+  "findStyles": {
+    "message": "Εύρεση στυλ"
   },
   "findStylesForSite": {
-    "message": "Αναζήτηση περισσότερων στυλ για αυτή την ιστοσελίδα",
-    "description": "Text for a link that gets a list of styles for the current site"
+    "message": "Αναζήτηση περισσότερων στυλ για αυτή την ιστοσελίδα"
+  },
+  "genericAdd": {
+    "message": "Προσθήκη"
+  },
+  "genericClone": {
+    "message": "Δημιουργία αντιγράφου"
+  },
+  "genericDisabledLabel": {
+    "message": "Απενεργοποιημένο"
+  },
+  "genericEnabledLabel": {
+    "message": "Ενεργοποιημένο"
+  },
+  "genericError": {
+    "message": "Σφάλμα"
+  },
+  "genericHistoryLabel": {
+    "message": "Ιστορικό"
+  },
+  "genericNext": {
+    "message": "Επόμενο"
+  },
+  "genericPrevious": {
+    "message": "Προηγούμενο"
+  },
+  "genericResetLabel": {
+    "message": "Επαναφορά"
+  },
+  "genericSavedMessage": {
+    "message": "Αποθηκεύτηκε"
+  },
+  "genericTitle": {
+    "message": "Τίτλος"
+  },
+  "genericUnknown": {
+    "message": "Άγνωστο"
+  },
+  "gettingStyles": {
+    "message": "Λήψη όλων των στυλ..."
   },
   "helpAlt": {
-    "message": "Βοήθεια",
-    "description": "Alternate text for help buttons"
+    "message": "Βοήθεια"
+  },
+  "helpKeyMapCommand": {
+    "message": "Πληκτρολογήστε μια εντολή"
+  },
+  "helpKeyMapHotkey": {
+    "message": "Πληκτρολογήστε ένα hotkey"
+  },
+  "importLabel": {
+    "message": "Εισαγωγή"
+  },
+  "importReplaceLabel": {
+    "message": "Αντικατάσταση στυλ"
+  },
+  "importReportLegendAdded": {
+    "message": "προστέθηκαν"
+  },
+  "importReportLegendUpdatedCode": {
+    "message": "ενημερωμένος κώδικας"
+  },
+  "importReportTitle": {
+    "message": "Η εισαγωγή στυλ τελείωσε"
+  },
+  "importReportUnchanged": {
+    "message": "Τίποτα δεν άλλαξε"
+  },
+  "importReportUndoneTitle": {
+    "message": "Η εισαγωγή έχει αναιρεθεί"
+  },
+  "installButton": {
+    "message": "Εγκατάσταση στυλ"
+  },
+  "installButtonInstalled": {
+    "message": "Το στυλ έχει εγκατασταθεί."
+  },
+  "installButtonReinstall": {
+    "message": "Επανεγκατάσταση στυλ"
+  },
+  "installButtonUpdate": {
+    "message": "Ενημέρωση στυλ"
   },
   "installUpdate": {
-    "message": "Εγκατάσταση ενημέρωσης",
-    "description": "Label for the button to install an update for a single style"
+    "message": "Εγκατάσταση ενημέρωσης"
+  },
+  "installUpdateFromLabel": {
+    "message": "Έλεγχος για ενημερώσεις"
+  },
+  "license": {
+    "message": "Άδεια χρήσης"
+  },
+  "linkGetHelp": {
+    "message": "Βοήθεια"
+  },
+  "linkGetStyles": {
+    "message": "Λήψη στυλ"
+  },
+  "linkTranslate": {
+    "message": "Μετάφραση"
+  },
+  "linterConfigTooltip": {
+    "message": "Πατήστε εδώ για να ρυθμίσετε το linter"
+  },
+  "linterIssues": {
+    "message": "Ζητήματα"
+  },
+  "linterJSONError": {
+    "message": "Μη έγκυρη μορφή JSON"
+  },
+  "linterResetMessage": {
+    "message": "Για αναίρεση μιας κατά λάθος επαναφοράς, πατήστε Ctrl-Z (ή Cmd-Z) στο πλαίσιο κειμένου"
+  },
+  "manageFaviconsHelp": {
+    "message": "Το Stylus χρησιμοποιεί μία εξωτερική υπηρεσία https://www.google.com/s2/favicons"
   },
   "manageFilters": {
-    "message": "Φίλτρα",
-    "description": "Label for filters container"
+    "message": "Φίλτρα"
   },
   "manageHeading": {
-    "message": "Εγκατεστημένα Στυλ",
-    "description": "Heading for the manage page"
+    "message": "Εγκατεστημένα Στυλ"
+  },
+  "manageNewUI": {
+    "message": "Νέα διαχείριση διάταξης UI"
+  },
+  "manageOnlyDisabled": {
+    "message": "Μόνο απενεργοποιημένα στυλ"
   },
   "manageOnlyEnabled": {
-    "message": "Μόνο ενεργοποιημένα στυλ",
-    "description": "Checkbox to show only enabled styles"
+    "message": "Μόνο ενεργοποιημένα στυλ"
+  },
+  "manageOnlyExternal": {
+    "message": "Μόνο στυλ από άλλες ιστοσελίδες"
+  },
+  "manageOnlyLocal": {
+    "message": "Μόνο στυλ δημιουργημένα τοπικά"
   },
   "manageTitle": {
-    "message": "Κομψή",
-    "description": "Title for the manage page"
+    "message": "Κομψή"
   },
   "menuShowBadge": {
-    "message": "Εμφάνιση ενεργους καταμέτρησης στυλ",
-    "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+    "message": "Εμφάνιση ενεργους καταμέτρησης στυλ"
+  },
+  "noFileToImport": {
+    "message": "Για να εισάγετε τα στυλ σας, πρέπει πρώτα να τα εξάγετε."
   },
   "noStylesForSite": {
-    "message": "Δεν υπάρχουν εγκατεστημένα στυλ για αυτή την ιστοσελίδα.",
-    "description": "Text displayed when no styles are installed for the current site"
+    "message": "Δεν υπάρχουν εγκατεστημένα στυλ για αυτή την ιστοσελίδα."
   },
   "openManage": {
-    "message": "Διαχείριση εγκατεστημένων στυλ",
-    "description": "Link to open the manage page."
+    "message": "Διαχείριση εγκατεστημένων στυλ"
+  },
+  "openOptions": {
+    "message": "Επιλογές"
+  },
+  "openStylesManager": {
+    "message": "Άνοιγμα διαχείρισης στυλ"
+  },
+  "optionsActions": {
+    "message": "Ενέργειες"
+  },
+  "optionsAdvanced": {
+    "message": "Για προχωρημένους"
+  },
+  "optionsAdvancedContextDelete": {
+    "message": "Προσθήκη του 'Delete' στο μενού περιβάλλοντος του προγράμματος επεξεργασίας"
+  },
+  "optionsBadgeDisabled": {
+    "message": "Χρώμα φόντου όταν είναι απενεργοποιημένο"
+  },
+  "optionsBadgeNormal": {
+    "message": "Χρώμα υποβάθρου"
+  },
+  "optionsCheck": {
+    "message": "Ενημέρωση στυλ"
+  },
+  "optionsCheckUpdate": {
+    "message": "Έλεγχος και εγκατάσταση διαθέσιμων ενημερώσεων"
+  },
+  "optionsCustomizeBadge": {
+    "message": "Σήμα στο εικονίδιο της γραμμής εργαλείων"
+  },
+  "optionsCustomizePopup": {
+    "message": "Αναδυόμενο παράθυρο"
+  },
+  "optionsCustomizeUpdate": {
+    "message": "Ενημερώσεις"
   },
   "optionsHeading": {
-    "message": "Επιλογές",
-    "description": "Heading for options section on manage page."
+    "message": "Επιλογές"
+  },
+  "optionsIconDark": {
+    "message": "Σκούρο θέμα φυλλομετρητή"
+  },
+  "optionsOpen": {
+    "message": "Άνοιγμα"
+  },
+  "optionsOpenManager": {
+    "message": "Διαχείριση στυλ"
+  },
+  "optionsPopupWidth": {
+    "message": "Πλάτος αναδυόμενου παραθύρου (σε pixels)"
+  },
+  "optionsReset": {
+    "message": "Επαναφορά ρυθμίσεων στις προεπιλεγμένες"
+  },
+  "optionsResetButton": {
+    "message": "Επαναφορά επιλογών"
+  },
+  "optionsSubheading": {
+    "message": "Περισσότερες επιλογές"
+  },
+  "optionsSyncConnect": {
+    "message": "Σύνδεση"
+  },
+  "optionsSyncDisconnect": {
+    "message": "Αποσύνδεση"
+  },
+  "optionsSyncStatusConnected": {
+    "message": "Συνδεδεμένο"
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "Σύνδεση..."
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "Αποσυνδέθηκε"
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "Αποσύνδεση..."
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "Συγχρονισμός ..."
+  },
+  "optionsSyncSyncNow": {
+    "message": "Συγχρονισμός τώρα"
+  },
+  "optionsUpdateInterval": {
+    "message": "Διάστημα αυτόματης ενημέρωσης των στυλ σε ώρες (0 για απενεργοποίηση)"
+  },
+  "paginationNext": {
+    "message": "Επόμενη σελίδα"
+  },
+  "paginationPrevious": {
+    "message": "Προηγούμενη σελίδα"
+  },
+  "popupBordersTooltip": {
+    "message": "Χρήσιμο για σκούρα θέματα στο καινούριο Chrome, καθώς δε βάφει πλέον τα ακριανά περιθώρια."
+  },
+  "popupOpenEditInPopup": {
+    "message": "Χρήση ενός απλού παραθύρου (χωρίς omnibox)"
+  },
+  "popupOpenEditInWindow": {
+    "message": "Άνοιγμα επεξαργαστή σε νέο παράθυρο"
   },
   "popupStylesFirst": {
-    "message": "Στυλ λίστας πριν των εντολών στο μενού του κουμπιού γραμμής εργαλείων",
-    "description": "Label for the checkbox controlling section order in the popup."
+    "message": "Στυλ λίστας πριν των εντολών στο μενού του κουμπιού γραμμής εργαλείων"
   },
   "prefShowBadge": {
-    "message": "Εμφάνιση αριθμού των στυλ που δραστηριοποιούνται για την τρέχουσα τοποθεσία στην μπάρα εργαλείων",
-    "description": "Label for the checkbox controlling toolbar badge text."
+    "message": "Εμφάνιση αριθμού των στυλ που δραστηριοποιούνται για την τρέχουσα τοποθεσία στην μπάρα εργαλείων"
+  },
+  "readingStyles": {
+    "message": "Ανάγνωση στυλ..."
+  },
+  "replace": {
+    "message": "Αντικατάσταση"
+  },
+  "replaceAll": {
+    "message": "Αντικατάσταση όλων"
+  },
+  "replaceWith": {
+    "message": "Αντικατάσταση με"
+  },
+  "retrieveBckp": {
+    "message": "Εισαγωγή στυλ"
+  },
+  "retrieveDropboxSync": {
+    "message": "Εισαγωγή από το Dropbox"
+  },
+  "search": {
+    "message": "Αναζήτηση"
+  },
+  "searchGlobalStyles": {
+    "message": "Επίσης, αναζητήστε καθολικά στυλ"
+  },
+  "searchRegexp": {
+    "message": "Χρησιμοποιήστε τη σύνταξη /re/ για αναζήτηση με regexp."
+  },
+  "searchResultInstallCount": {
+    "message": "Συνολικός αριθμός εγκαταστάσεων"
+  },
+  "searchResultUpdated": {
+    "message": "Ενημερωμένο"
+  },
+  "searchResultWeeklyCount": {
+    "message": "Εβδομαδιαίος αριθμός εγκαταστάσεων"
+  },
+  "searchStylesName": {
+    "message": "Όνομα"
   },
   "sectionAdd": {
-    "message": "Προσθήκη ένος άλλου τμήματος",
-    "description": "Label for the button to add a section"
+    "message": "Προσθήκη ένος άλλου τμήματος"
   },
   "sectionCode": {
-    "message": "Κώδικας",
-    "description": "Label for the code for a section"
+    "message": "Κώδικας"
   },
   "sectionRemove": {
-    "message": "Αφαίρεση ενότητας",
-    "description": "Label for the button to remove a section"
+    "message": "Αφαίρεση ενότητας"
+  },
+  "shortcuts": {
+    "message": "Συντομεύσεις"
+  },
+  "sortDateNewestFirst": {
+    "message": "πιο πρόσφατα πρώτα"
+  },
+  "sortDateOldestFirst": {
+    "message": "πιο παλιά πρώτα"
   },
   "styleBadRegexp": {
-    "message": "Το Regexp δεν είναι έγκυρο.",
-    "description": "Validation message for a bad regexp in a style"
+    "message": "Το Regexp δεν είναι έγκυρο."
+  },
+  "styleBeautify": {
+    "message": "Ωραιοποίηση"
+  },
+  "styleBeautifyIndentConditional": {
+    "message": "Διόρθωση εσοχής για @media και @supports"
+  },
+  "styleBeautifyPreserveNewlines": {
+    "message": "Διατήρηση νέων γραμμών (newlines)"
   },
   "styleCancelEditLabel": {
-    "message": "Πίσω στη διαχείριση",
-    "description": "Label for cancel button for style editing"
+    "message": "Πίσω στη διαχείριση"
   },
   "styleChangesNotSaved": {
-    "message": "Έχετε κάνει αλλαγές σε αυτό το ύφος χωρίς αποθήκευση.",
-    "description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
+    "message": "Έχετε κάνει αλλαγές σε αυτό το ύφος χωρίς αποθήκευση."
   },
   "styleEnabledLabel": {
-    "message": "Ενεργοποιημένη",
-    "description": "Label for the enabled state of styles"
+    "message": "Ενεργοποιημένη"
   },
   "styleInstall": {
     "message": "Εγκατάσταση του '$stylename$' στο Stylus;",
-    "description": "Confirmation when installing a style",
     "placeholders": {
       "stylename": {
         "content": "$1"
@@ -227,20 +649,19 @@
     }
   },
   "styleMissingName": {
-    "message": "Εισάγετε ένα όνομα",
-    "description": "Error displayed when user saves without providing a name"
+    "message": "Εισάγετε ένα όνομα"
+  },
+  "styleRegexpTestNone": {
+    "message": "Δε βρέθηκαν καρτέλες που αντιστοιχούν."
   },
   "styleSaveLabel": {
-    "message": "Αποθήκευση",
-    "description": "Label for save button for style editing"
+    "message": "Αποθήκευση"
   },
   "styleToMozillaFormatHelp": {
-    "message": "Η μορφή του Mozilla κώδικα μπορεί να χρησιμοποιηθεί με το Stylish για το Firefox και μπορεί να υποβληθεί στο userstyles.org.",
-    "description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
+    "message": "Η μορφή του Mozilla κώδικα μπορεί να χρησιμοποιηθεί με το Stylish για το Firefox και μπορεί να υποβληθεί στο userstyles.org."
   },
   "styleUpdate": {
     "message": "Είστε σίγουροι ότι θέλετε να ενημερώσετε το '$stylename$';",
-    "description": "Confirmation when updating a style",
     "placeholders": {
       "stylename": {
         "content": "$1"
@@ -248,16 +669,43 @@
     }
   },
   "stylusUnavailableForURL": {
-    "message": "To Stylus δεν λειτουργεί σε σελίδες όπως αυτή.",
-    "description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
+    "message": "To Stylus δεν λειτουργεί σε σελίδες όπως αυτή."
+  },
+  "stylusUnavailableForURLdetails": {
+    "message": "Ως μέτρο ασφαλείας, ο φυλλομετρητής απαγορεύει στα πρόσθετα να επέμβουν στις built-in σελίδες του (όπως π.χ. chrome://version, η σελίδα νέας καρτέλας από το Chrome 61 και μετά, about:addons, κλπ.), καθώς και τις σελίδες άλλωων προσθέτων. Επιπλέον, κάθε φυλλομετρητής περιορίζει την πρόσβαση στο κατάστημα προσθέτων (όπως το Chrome Web Store ή το AMO)."
+  },
+  "syncDropboxStyles": {
+    "message": "Εξαγωγή από το Dropbox"
+  },
+  "syncError": {
+    "message": "Ο συγχρονισμός απέτυχε"
+  },
+  "syncErrorRelogin": {
+    "message": "Ο συγχρονισμός απέτυχε.\nΠροσπαθήστε να συνδεθείτε ξανά στις επιλογές Stylus:\nκάντε κλικ στο 'αποσύνδεση' πρώτα και μετά στο 'σύνδεση'."
+  },
+  "toggleStyle": {
+    "message": "Αλλαγή στυλ"
+  },
+  "undo": {
+    "message": "Αναίρεση"
+  },
+  "undoGlobal": {
+    "message": "Αναίρεση όλων των ενεργειών"
+  },
+  "unreachableFileHint": {
+    "message": "Το Stylus έχει πρόσβαση στις file:// διευθύνσεις URL μόνο αν έχετε επιλέξει το αντίστοιχο πλαίσιο ελέγχου για το πρόσθετο Stylus στη σελίδα chrome://extensions."
+  },
+  "unzipStyles": {
+    "message": "Αποσυμπίεση στυλ..."
   },
   "updateAllCheckSucceededNoUpdate": {
-    "message": "Όλα τα στυλ είναι ενημερωμένα.",
-    "description": "Text that displays when an update all check completed and no updates are available"
+    "message": "Όλα τα στυλ είναι ενημερωμένα."
+  },
+  "updateAllCheckSucceededSomeEdited": {
+    "message": "Δεν έχει γίνει έλεγχος ενημερώσεων για κάποια στυλ, για να αποφευχθεί η πιθανότητα απώλειας τοπικών επεξεργασιών. Οι ενημερώσεις μπορούν να εξαναγκαστούν ελέγχοντας το κάθε στυλ ξεχωριστά ή ελέγχοντας πάλι όλα τα στυλ (τοπικές επεξεργασίες θα αντικατασταθούν)"
   },
   "updateCheckFailBadResponseCode": {
     "message": "Αποτυχία ενημέρωσης: ο διακομιστής ανταποκρίθηκε με κωδικό $code$.",
-    "description": "Text that displays when an update check failed because the response code indicates an error",
     "placeholders": {
       "code": {
         "content": "$1"
@@ -265,23 +713,39 @@
     }
   },
   "updateCheckFailServerUnreachable": {
-    "message": "Αποτυχία ενημέρωσης: απρόσιτος διακομιστής.",
-    "description": "Text that displays when an update check failed because the update server is unreachable"
+    "message": "Αποτυχία ενημέρωσης: απρόσιτος διακομιστής."
+  },
+  "updateCheckSkippedLocallyEdited": {
+    "message": "Το στυλ επεξεργάστηκε τοπικά στον υπολογιστή σας."
+  },
+  "updateCheckSkippedMaybeLocallyEdited": {
+    "message": "Το στυλ αυτό μπορεί να έχει επεξεργαστεί τοπικά στον υπολογιστή σας."
   },
   "updateCheckSucceededNoUpdate": {
-    "message": "Το στυλ είναι ενημερωμένο.",
-    "description": "Text that displays when an update check completed and no update is available"
+    "message": "Το στυλ είναι ενημερωμένο."
   },
   "updateCompleted": {
-    "message": "Η ενημέρωση ολοκληρώθηκε.",
-    "description": "Text that displays when an update completed"
+    "message": "Η ενημέρωση ολοκληρώθηκε."
+  },
+  "updatesCurrentlyInstalled": {
+    "message": "Ενημερώσεις που εγκαταστάθηκαν"
+  },
+  "uploadingFile": {
+    "message": "Μεταφόρτωση αρχείου..."
+  },
+  "usercssEditorNamePlaceholder": {
+    "message": "Καθορίστε το @name στον κώδικα"
+  },
+  "versionInvalidOlder": {
+    "message": "Η έκδοση αυτή είναι παλαιότερη από αυτήν που είναι ήδη εγκατεστημένη."
   },
   "writeStyleFor": {
-    "message": "Γράψτε νέο στυλ για:",
-    "description": "Label for toolbar pop-up that precedes the links to write a new style"
+    "message": "Γράψτε νέο στυλ για:"
   },
   "writeStyleForURL": {
-    "message": "αυτή την διεύθυνση URL",
-    "description": "Text for link in toolbar pop-up to write a new style for the current URL"
+    "message": "αυτή την διεύθυνση URL"
+  },
+  "zipStyles": {
+    "message": "Συμπίεση στυλ..."
   }
 }

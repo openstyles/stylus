@@ -1,14 +1,31 @@
-/* global messageBox msg setupLivePrefs enforceInputRange
-  $ $$ $create $createLink
-  FIREFOX OPERA CHROME URLS openURL prefs t API ignoreChromeError
-  CHROME_HAS_BORDER_BUG capitalize */
+/* global API msg */// msg.js
+/* global prefs */
+/* global t */// localization.js
+/* global
+  $
+  $$
+  $create
+  $createLink
+  getEventKeyName
+  messageBoxProxy
+  setupLivePrefs
+*/// dom.js
+/* global
+  CHROME
+  CHROME_POPUP_BORDER_BUG
+  FIREFOX
+  OPERA
+  URLS
+  capitalize
+  ignoreChromeError
+  openURL
+*/// toolbox.js
 'use strict';
 
 setupLivePrefs();
 $$('input[min], input[max]').forEach(enforceInputRange);
-setTimeout(splitLongTooltips);
 
-if (CHROME_HAS_BORDER_BUG) {
+if (CHROME_POPUP_BORDER_BUG) {
   const borderOption = $('.chrome-no-popup-border');
   if (borderOption) {
     borderOption.classList.remove('chrome-no-popup-border');
@@ -30,32 +47,6 @@ if (!FIREFOX && !OPERA && CHROME < 66) {
 
 if (FIREFOX && 'update' in (chrome.commands || {})) {
   $('[data-cmd="open-keyboard"]').classList.remove('chromium-only');
-  msg.onExtension(msg => {
-    if (msg.method === 'optionsCustomizeHotkeys') {
-      customizeHotkeys();
-    }
-  });
-}
-
-if (CHROME) {
-  // Show the option as disabled until the permission is actually granted
-  const el = $('#styleViaXhr');
-  el.addEventListener('click', () => {
-    if (el.checked && !chrome.declarativeContent) {
-      chrome.permissions.request({permissions: ['declarativeContent']}, ok => {
-        if (chrome.runtime.lastError || !ok) {
-          el.checked = false;
-        }
-      });
-    }
-  });
-  if (!chrome.declarativeContent) {
-    prefs.initializing.then(() => {
-      if (prefs.get('styleViaXhr')) {
-        el.checked = false;
-      }
-    });
-  }
 }
 
 // actions
@@ -91,101 +82,86 @@ document.onclick = e => {
 
     case 'reset':
       $$('input')
-        .filter(input => input.id in prefs.defaults)
+        .filter(input => prefs.knownKeys.includes(input.id))
         .forEach(input => prefs.reset(input.id));
       break;
-
-    case 'note': {
-      e.preventDefault();
-      messageBox({
-        className: 'note',
-        contents: target.dataset.title,
-        buttons: [t('confirmClose')],
-      });
-    }
   }
 };
 
 // sync to cloud
 (() => {
-  const cloud = document.querySelector('.sync-options .cloud-name');
-  const connectButton = document.querySelector('.sync-options .connect');
-  const disconnectButton = document.querySelector('.sync-options .disconnect');
-  const syncButton = document.querySelector('.sync-options .sync-now');
-  const statusText = document.querySelector('.sync-options .sync-status');
-  const loginButton = document.querySelector('.sync-options .sync-login');
-
+  const elCloud = $('.sync-options .cloud-name');
+  const elStart = $('.sync-options .connect');
+  const elStop = $('.sync-options .disconnect');
+  const elSyncNow = $('.sync-options .sync-now');
+  const elStatus = $('.sync-options .sync-status');
+  const elLogin = $('.sync-options .sync-login');
+  /** @type {Sync.Status} */
   let status = {};
-
   msg.onExtension(e => {
     if (e.method === 'syncStatusUpdate') {
-      status = e.status;
-      updateButtons();
+      setStatus(e.status);
     }
   });
+  API.sync.getStatus()
+    .then(setStatus);
 
-  API.getSyncStatus()
-    .then(_status => {
-      status = _status;
-      updateButtons();
+  elCloud.on('change', updateButtons);
+  for (const [btn, fn] of [
+    [elStart, () => API.sync.start(elCloud.value)],
+    [elStop, API.sync.stop],
+    [elSyncNow, API.sync.syncNow],
+    [elLogin, API.sync.login],
+  ]) {
+    btn.on('click', e => {
+      if (getEventKeyName(e) === 'MouseL') {
+        fn();
+      }
     });
-
-  function validClick(e) {
-    return e.button === 0 && !e.ctrl && !e.alt && !e.shift;
   }
 
-  cloud.addEventListener('change', updateButtons);
+  function setStatus(newStatus) {
+    status = newStatus;
+    updateButtons();
+  }
 
   function updateButtons() {
+    const {state, STATES} = status;
+    const isConnected = state === STATES.connected;
+    const isDisconnected = state === STATES.disconnected;
     if (status.currentDriveName) {
-      cloud.value = status.currentDriveName;
+      elCloud.value = status.currentDriveName;
     }
-    cloud.disabled = status.state !== 'disconnected';
-    connectButton.disabled = status.state !== 'disconnected' || cloud.value === 'none';
-    disconnectButton.disabled = status.state !== 'connected' || status.syncing;
-    syncButton.disabled = status.state !== 'connected' || status.syncing;
-    statusText.textContent = getStatusText();
-    loginButton.style.display = status.state === 'connected' && !status.login ? '' : 'none';
+    for (const [el, enable] of [
+      [elCloud, isDisconnected],
+      [elStart, isDisconnected && elCloud.value !== 'none'],
+      [elStop, isConnected && !status.syncing],
+      [elSyncNow, isConnected && !status.syncing && status.login],
+    ]) {
+      el.disabled = !enable;
+    }
+    elStatus.textContent = getStatusText();
+    elLogin.hidden = !isConnected || status.login;
   }
 
   function getStatusText() {
     if (status.syncing) {
-      if (status.progress) {
-        const {phase, loaded, total} = status.progress;
-        return chrome.i18n.getMessage(`optionsSyncStatus${capitalize(phase)}`, [loaded + 1, total]) ||
-          `${phase} ${loaded} / ${total}`;
-      }
-      return chrome.i18n.getMessage('optionsSyncStatusSyncing') || 'syncing';
+      const {phase, loaded, total} = status.progress || {};
+      return phase
+        ? t(`optionsSyncStatus${capitalize(phase)}`, [loaded + 1, total], false) ||
+          `${phase} ${loaded} / ${total}`
+        : t('optionsSyncStatusSyncing');
     }
-    if ((status.state === 'connected' || status.state === 'disconnected') && status.errorMessage) {
-      return status.errorMessage;
+
+    const {state, errorMessage, STATES} = status;
+    if (errorMessage && (state === STATES.connected || state === STATES.disconnected)) {
+      return errorMessage;
     }
-    return chrome.i18n.getMessage(`optionsSyncStatus${capitalize(status.state)}`) || status.state;
+    if (state === STATES.connected && !status.login) {
+      return t('optionsSyncStatusRelogin');
+    }
+    return t(`optionsSyncStatus${capitalize(state)}`, null, false) || state;
   }
-
-  connectButton.addEventListener('click', e => {
-    if (validClick(e)) {
-      API.syncStart(cloud.value).catch(console.error);
-    }
-  });
-
-  disconnectButton.addEventListener('click', e => {
-    if (validClick(e)) {
-      API.syncStop().catch(console.error);
-    }
-  });
-
-  syncButton.addEventListener('click', e => {
-    if (validClick(e)) {
-      API.syncNow().catch(console.error);
-    }
-  });
-
-  loginButton.addEventListener('click', e => {
-    if (validClick(e)) {
-      API.syncLogin().catch(console.error);
-    }
-  });
 })();
 
 function checkUpdates() {
@@ -200,7 +176,7 @@ function checkUpdates() {
     chrome.runtime.onConnect.removeListener(onConnect);
   });
 
-  API.updateCheckAll({observe: true});
+  API.updater.checkAllStyles({observe: true});
 
   function observer(info) {
     if ('count' in info) {
@@ -219,23 +195,6 @@ function checkUpdates() {
   }
 }
 
-function splitLongTooltips() {
-  for (const el of $$('[title]')) {
-    if (el.title.length < 50) {
-      continue;
-    }
-    const newTitle = el.title
-      .split('\n')
-      .map(s => s.replace(/([^.][.。?!]|.{50,60},)\s+/g, '$1\n'))
-      .map(s => s.replace(/(.{50,80}(?=.{40,}))\s+/g, '$1\n'))
-      .join('\n');
-    if (newTitle !== el.title) {
-      el.dataset.title = el.title;
-      el.title = newTitle;
-    }
-  }
-}
-
 function customizeHotkeys() {
   // command name -> i18n id
   const hotkeys = new Map([
@@ -244,7 +203,7 @@ function customizeHotkeys() {
     ['styleDisableAll', 'disableAllStyles'],
   ]);
 
-  messageBox({
+  messageBoxProxy.show({
     title: t('shortcutsNote'),
     contents: [
       $create('table',
@@ -295,8 +254,24 @@ function customizeHotkeys() {
   }
 }
 
+function enforceInputRange(element) {
+  const min = Number(element.min);
+  const max = Number(element.max);
+  const doNotify = () => element.dispatchEvent(new Event('change', {bubbles: true}));
+  const onChange = ({type}) => {
+    if (type === 'input' && element.checkValidity()) {
+      doNotify();
+    } else if (type === 'change' && !element.checkValidity()) {
+      element.value = Math.max(min, Math.min(max, Number(element.value)));
+      doNotify();
+    }
+  };
+  element.on('change', onChange);
+  element.on('input', onChange);
+}
+
 window.onkeydown = event => {
-  if (event.key === 'Escape') {
+  if (getEventKeyName(event) === 'Escape') {
     top.dispatchEvent(new CustomEvent('closeOptions'));
   }
 };

@@ -1,0 +1,210 @@
+:root {
+  --onoffswitch-width: 60px;
+}
+
+.config-dialog {
+  --pad: 16px;
+}
+
+.config-dialog #message-box-contents {
+  padding: var(--pad);
+}
+
+#stylus-popup .config-dialog > div {
+  position: relative;
+}
+
+#stylus-popup .config-body label {
+  padding: .5em 0;
+}
+
+.config-heading {
+  top: -1em;
+  position: relative;
+  text-align: right;
+  font-size: 0.9em;
+}
+
+#stylus-popup .config-heading {
+  top: -.25em;
+}
+
+.config-body label {
+  display: flex;
+  padding: .75em 0;
+  align-items: center;
+  margin-right: calc(-1 * var(--pad)); /* for .config-reset-icon */
+}
+
+.config-body .select-resizer {
+  position: static;
+}
+
+.config-body label:first-child {
+  padding-top: 0;
+}
+
+.config-body label:last-child {
+  padding-bottom: 0;
+}
+
+.config-body label:not(:first-child) {
+  border-top: 1px dotted #ccc;
+}
+
+.config-body .dirty {
+  font-style: italic;
+}
+
+.config-body .dirty:after {
+  content: "*";
+  position: absolute;
+  left: 6px;
+}
+
+.config-body input,
+.config-body select,
+.config-body .onoffswitch {
+  width: var(--onoffswitch-width);
+  margin: 0;
+  height: 22px;
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+
+.config-body input[type="text"],
+.config-body .select-resizer,
+.config-body select {
+  width: auto;
+  min-width: var(--onoffswitch-width);
+  max-width: 124px;
+  left: auto;
+  position: relative;
+}
+
+.config-body .onoffswitch {
+  height: auto;
+  margin: calc((2em - 12px) / 2) 0;
+  flex-grow: 0;
+}
+
+.config-body input[type="text"] {
+  padding-left: 0.25em;
+}
+
+.config-name {
+  flex-grow: 1;
+  margin-right: 1em;
+}
+
+.config-value {
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.config-value:not(.onoffswitch):not(.select-resizer) > :not(:last-child) {
+  margin-right: 4px;
+}
+
+.current-value {
+  padding: 2px 4px;
+  margin-right: 4px;
+ }
+
+.config-number span, .config-range span {
+  line-height: 22px;
+}
+
+.config-body label:not(.nondefault) .config-reset-icon {
+  visibility: hidden;
+}
+
+.config-reset-icon {
+  height: var(--pad);
+}
+
+.config-reset-icon .svg-icon {
+  cursor: pointer;
+  fill: #aaa;
+  width: var(--pad);
+  height: var(--pad);
+  padding: 0 1px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.config-reset-icon:hover .svg-icon {
+  fill: #666;
+}
+
+#config-autosave-wrapper {
+  position: relative;
+  padding: 0 0 0 var(--pad);
+  display: inline-flex;
+}
+
+#message-box-buttons {
+  position: relative;
+}
+
+.config-error {
+  position: absolute;
+  z-index: 99;
+  left: 0;
+  right: 0;
+  bottom: -1rem;
+  padding: 0 .75rem;
+  line-height: 24px;
+  height: 24px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  background-color: red;
+  color: white;
+  font-weight: bold;
+  text-shadow: 0.5px 0.5px 6px #400;
+  animation: fadein .5s;
+}
+
+#message-box .colorview-swatch {
+  padding: 0;
+  box-sizing: content-box;
+}
+
+#message-box .colorview-swatch,
+#message-box .colorview-swatch::before,
+#message-box .colorview-swatch::after,
+.color-swatch {
+  width: var(--onoffswitch-width);
+  height: 20px;
+  left: 0;
+  margin: 0;
+  border: 1px solid transparent;
+  box-sizing: content-box;
+  background-position: unset;
+}
+
+.color-swatch {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 1px solid gray;
+  cursor: pointer;
+  opacity: 1;
+  z-index: 2;
+}
+
+.colorpicker-popup {
+  z-index: 2147483647 !important;
+  border: none !important;
+  box-shadow: 3px 3px 50px rgba(0,0,0,.5) !important;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

@@ -1,15 +1,21 @@
-/* global msg ignoreChromeError URLS */
-/* exported contentScripts */
+/* global bgReady */// common.js
+/* global msg */
+/* global URLS ignoreChromeError */// toolbox.js
 'use strict';
 
-const contentScripts = (() => {
+/*
+ Reinject content scripts when the extension is reloaded/updated.
+ Not used in Firefox as it reinjects automatically.
+ */
+
+bgReady.all.then(() => {
   const NTP = 'chrome://newtab/';
   const ALL_URLS = '<all_urls>';
   const SCRIPTS = chrome.runtime.getManifest().content_scripts;
   // expand * as .*?
   const wildcardAsRegExp = (s, flags) => new RegExp(
-      s.replace(/[{}()[\]/\\.+?^$:=!|]/g, '\\$&')
-        .replace(/\*/g, '.*?'), flags);
+    s.replace(/[{}()[\]/\\.+?^$:=!|]/g, '\\$&')
+      .replace(/\*/g, '.*?'), flags);
   for (const cs of SCRIPTS) {
     cs.matches = cs.matches.map(m => (
       m === ALL_URLS ? m : wildcardAsRegExp(m)
@@ -18,21 +24,7 @@ const contentScripts = (() => {
   const busyTabs = new Set();
   let busyTabsTimer;
 
-  // expose version on greasyfork/sleazyfork 1) info page and 2) code page
-  const urlMatches = '/scripts/\\d+[^/]*(/code)?([?#].*)?$';
-  chrome.webNavigation.onCommitted.addListener(({tabId}) => {
-    chrome.tabs.executeScript(tabId, {
-      file: '/content/install-hook-greasyfork.js',
-      runAt: 'document_start',
-    });
-  }, {
-    url: [
-      {hostEquals: 'greasyfork.org', urlMatches},
-      {hostEquals: 'sleazyfork.org', urlMatches},
-    ]
-  });
-
-  return {injectToTab, injectToAllTabs};
+  setTimeout(injectToAllTabs);
 
   function injectToTab({url, tabId, frameId = null}) {
     for (const script of SCRIPTS) {
@@ -57,7 +49,7 @@ const contentScripts = (() => {
         const options = {
           runAt: script.run_at,
           allFrames: script.all_frames,
-          matchAboutBlank: script.match_about_blank
+          matchAboutBlank: script.match_about_blank,
         };
         if (frameId !== null) {
           options.allFrames = false;
@@ -80,7 +72,7 @@ const contentScripts = (() => {
         } else {
           injectToTab({
             url: tab.pendingUrl || tab.url,
-            tabId: tab.id
+            tabId: tab.id,
           });
         }
       }
@@ -122,4 +114,4 @@ const contentScripts = (() => {
   function onBusyTabRemoved(tabId) {
     trackBusyTab(tabId, false);
   }
-})();
+});

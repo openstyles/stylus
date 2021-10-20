@@ -1,258 +1,173 @@
-/* global promisifyChrome deepCopy */
-// deepCopy is only used if the script is executed in extension pages.
+/* global URLS deepCopy deepMerge getOwnTab */// toolbox.js - not used in content scripts
 'use strict';
 
-self.msg = self.INJECTED === 1 ? self.msg : (() => {
-  promisifyChrome({
-    runtime: ['sendMessage'],
-    tabs: ['sendMessage', 'query'],
+(() => {
+  if (window.INJECTED === 1) return;
+
+  const TARGETS = Object.assign(Object.create(null), {
+    all: ['both', 'tab', 'extension'],
+    extension: ['both', 'extension'],
+    tab: ['both', 'tab'],
   });
-  const isBg = chrome.extension.getBackgroundPage && chrome.extension.getBackgroundPage() === window;
-  if (isBg) {
-    window._msg = {
-      handler: null,
-      clone: deepCopy
-    };
-  }
-  const bgReady = getBg();
-  const EXTENSION_URL = chrome.runtime.getURL('');
-  let handler;
-  const RX_NO_RECEIVER = /Receiving end does not exist/;
-  // typo in Chrome 49
-  const RX_PORT_CLOSED = /The message port closed before a res?ponse was received/;
-  return {
-    send,
-    sendTab,
-    sendBg,
-    broadcast,
-    broadcastTab,
-    broadcastExtension,
-    ignoreError,
-    on,
-    onTab,
-    onExtension,
-    off,
-    RX_NO_RECEIVER,
-    RX_PORT_CLOSED,
-    isBg,
+  const NEEDS_TAB_IN_SENDER = [
+    'getTabUrlPrefix',
+    'updateIconBadge',
+    'styleViaAPI',
+  ];
+  const ERR_NO_RECEIVER = 'Receiving end does not exist';
+  const ERR_PORT_CLOSED = 'The message port closed before';
+  const handler = {
+    both: new Set(),
+    tab: new Set(),
+    extension: new Set(),
   };
 
-  function getBg() {
-    if (isBg) {
-      return Promise.resolve(window);
-    }
-    // try using extension.getBackgroundPage because runtime.getBackgroundPage is too slow
-    // https://github.com/openstyles/stylus/issues/771
-    if (chrome.extension.getBackgroundPage) {
-      const bg = chrome.extension.getBackgroundPage();
-      if (bg && bg.document && bg.document.readyState !== 'loading') {
-        return Promise.resolve(bg);
-      }
-    }
-    if (chrome.runtime.getBackgroundPage) {
-      promisifyChrome({
-        runtime: ['getBackgroundPage'],
-      });
-      return browser.runtime.getBackgroundPage().catch(() => null);
-    }
-    return Promise.resolve(null);
-  }
+  // TODO: maybe move into polyfill.js and hook addListener to wrap/unwrap automatically
+  chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
-  function send(data, target = 'extension') {
-    const message = {data, target};
-    return browser.runtime.sendMessage(message).then(unwrapData);
-  }
+  const msg = window.msg = {
 
-  function sendTab(tabId, data, options, target = 'tab') {
-    return browser.tabs.sendMessage(tabId, {data, target}, options)
-      .then(unwrapData);
-  }
+    isBg: getExtBg() === window,
 
-  function sendBg(data) {
-    return bgReady.then(bg => {
-      if (bg) {
-        if (!bg._msg.handler) {
-          throw new Error('there is no bg handler');
+    async broadcast(data) {
+      const requests = [msg.send(data, 'both').catch(msg.ignoreError)];
+      for (const tab of await browser.tabs.query({})) {
+        const url = tab.pendingUrl || tab.url;
+        if (!tab.discarded &&
+            !url.startsWith(URLS.ownOrigin) &&
+            URLS.supported(url)) {
+          requests[tab.active ? 'unshift' : 'push'](
+            msg.sendTab(tab.id, data, null, 'both').catch(msg.ignoreError));
         }
-        const handlers = bg._msg.handler.extension.concat(bg._msg.handler.both);
-        // in FF, the object would become a dead object when the window
-        // is closed, so we have to clone the object into background.
-        return Promise.resolve(executeCallbacks(handlers, bg._msg.clone(data), {url: location.href}))
-          .then(deepCopy);
       }
-      return send(data);
-    });
-  }
+      return Promise.all(requests);
+    },
 
-  function ignoreError(err) {
-    if (err.message && (
-      RX_NO_RECEIVER.test(err.message) ||
-      RX_PORT_CLOSED.test(err.message)
-    )) {
-      return;
-    }
-    console.warn(err);
-  }
+    broadcastExtension(...args) {
+      return msg.send(...args).catch(msg.ignoreError);
+    },
 
-  function broadcast(data, filter) {
-    return Promise.all([
-      send(data, 'both').catch(ignoreError),
-      broadcastTab(data, filter, null, true, 'both')
-    ]);
-  }
+    isIgnorableError(err) {
+      const text = `${err && err.message || err}`;
+      return text.includes(ERR_NO_RECEIVER) || text.includes(ERR_PORT_CLOSED);
+    },
 
-  function broadcastTab(data, filter, options, ignoreExtension = false, target = 'tab') {
-    return browser.tabs.query({})
-      // TODO: send to activated tabs first?
-      .then(tabs => {
-        const requests = [];
-        for (const tab of tabs) {
-          const tabUrl = tab.pendingUrl || tab.url;
-          const isExtension = tabUrl.startsWith(EXTENSION_URL);
-          if (
-            tab.discarded ||
-            // FIXME: use `URLS.supported`?
-            !/^(http|ftp|file)/.test(tabUrl) &&
-            !tabUrl.startsWith('chrome://newtab/') &&
-            !isExtension ||
-            isExtension && ignoreExtension ||
-            filter && !filter(tab)
-          ) {
-            continue;
+    ignoreError(err) {
+      if (!msg.isIgnorableError(err)) {
+        console.warn(err);
+      }
+    },
+
+    on(fn) {
+      handler.both.add(fn);
+    },
+
+    onTab(fn) {
+      handler.tab.add(fn);
+    },
+
+    onExtension(fn) {
+      handler.extension.add(fn);
+    },
+
+    off(fn) {
+      for (const type of TARGETS.all) {
+        handler[type].delete(fn);
+      }
+    },
+
+    send(data, target = 'extension') {
+      return browser.runtime.sendMessage({data, target})
+        .then(unwrapResponse);
+    },
+
+    sendTab(tabId, data, options, target = 'tab') {
+      return browser.tabs.sendMessage(tabId, {data, target}, options)
+        .then(unwrapResponse);
+    },
+
+    _execute(types, ...args) {
+      let result;
+      if (!(args[0] instanceof Object)) {
+        /* Data from other windows must be deep-copied to allow for GC in Chrome and
+           merely survive in FF as it kills cross-window objects when their tab is closed. */
+        args = args.map(deepCopy);
+      }
+      for (const type of types) {
+        for (const fn of handler[type]) {
+          let res;
+          try {
+            res = fn(...args);
+          } catch (err) {
+            res = Promise.reject(err);
           }
-          const dataObj = typeof data === 'function' ? data(tab) : data;
-          if (!dataObj) {
-            continue;
-          }
-          const message = {data: dataObj, target};
-          if (tab && tab.id) {
-            requests.push(
-              browser.tabs.sendMessage(tab.id, message, options)
-                .then(unwrapData)
-                .catch(ignoreError)
-            );
+          if (res !== undefined && result === undefined) {
+            result = res;
           }
         }
-        return Promise.all(requests);
-      });
-  }
-
-  function broadcastExtension(...args) {
-    return send(...args).catch(ignoreError);
-  }
-
-  function on(fn) {
-    initHandler();
-    handler.both.push(fn);
-  }
-
-  function onTab(fn) {
-    initHandler();
-    handler.tab.push(fn);
-  }
-
-  function onExtension(fn) {
-    initHandler();
-    handler.extension.push(fn);
-  }
-
-  function off(fn) {
-    for (const type of ['both', 'tab', 'extension']) {
-      const index = handler[type].indexOf(fn);
-      if (index >= 0) {
-        handler[type].splice(index, 1);
       }
-    }
+      return result;
+    },
+  };
+
+  function getExtBg() {
+    const fn = chrome.extension.getBackgroundPage;
+    const bg = fn && fn();
+    return bg === window || bg && bg.msg && bg.msg.isBgReady ? bg : null;
   }
 
-  function initHandler() {
-    if (handler) {
-      return;
+  function onRuntimeMessage({data, target}, sender, sendResponse) {
+    const res = msg._execute(TARGETS[target] || TARGETS.all, data, sender);
+    if (res instanceof Promise) {
+      res.then(wrapData, wrapError).then(sendResponse);
+      return true;
     }
-    handler = {
-      both: [],
-      tab: [],
-      extension: []
+    if (res !== undefined) sendResponse(wrapData(res));
+  }
+
+  function wrapData(data) {
+    return {data};
+  }
+
+  function wrapError(error) {
+    return {
+      error: Object.assign({
+        message: error.message || `${error}`,
+        stack: error.stack,
+      }, error), // passing custom properties e.g. `error.index`
     };
-    if (isBg) {
-      window._msg.handler = handler;
-    }
-    chrome.runtime.onMessage.addListener(handleMessage);
   }
 
-  function executeCallbacks(callbacks, ...args) {
-    let result;
-    for (const fn of callbacks) {
-      const data = withPromiseError(fn, ...args);
-      if (data !== undefined && result === undefined) {
-        result = data;
+  function unwrapResponse({data, error} = {error: {message: ERR_NO_RECEIVER}}) {
+    return error
+      ? Promise.reject(Object.assign(new Error(error.message), error))
+      : data;
+  }
+
+  const apiHandler = !msg.isBg && {
+    get({path}, name) {
+      const fn = () => {};
+      fn.path = [...path, name];
+      return new Proxy(fn, apiHandler);
+    },
+    async apply({path}, thisObj, args) {
+      const bg = getExtBg() ||
+        chrome.tabs && await browser.runtime.getBackgroundPage().catch(() => {});
+      const message = {method: 'invokeAPI', path, args};
+      let res;
+      // content scripts, probably private tabs, and our extension tab during Chrome startup
+      if (!bg) {
+        res = msg.send(message);
+      } else {
+        res = deepMerge(await bg.msg._execute(TARGETS.extension, message, {
+          frameId: 0, // false in case of our Options frame but we really want to fetch styles early
+          tab: NEEDS_TAB_IN_SENDER.includes(path.join('.')) && await getOwnTab(),
+          url: location.href,
+        }));
       }
-    }
-    return result;
-  }
-
-  function handleMessage(message, sender, sendResponse) {
-    const handlers = message.target === 'tab' ?
-      handler.tab.concat(handler.both) : message.target === 'extension' ?
-      handler.extension.concat(handler.both) :
-      handler.both.concat(handler.extension, handler.tab);
-    if (!handlers.length) {
-      return;
-    }
-    const result = executeCallbacks(handlers, message.data, sender);
-    if (result === undefined) {
-      return;
-    }
-    Promise.resolve(result)
-      .then(
-        data => ({
-          error: false,
-          data
-        }),
-        err => ({
-          error: true,
-          data: Object.assign({
-            message: err.message || String(err),
-            // FIXME: do we want to pass the entire stack?
-            stack: err.stack
-          }, err) // this allows us to pass custom properties e.g. `err.index`
-        })
-      )
-      .then(sendResponse);
-    return true;
-  }
-
-  function withPromiseError(fn, ...args) {
-    try {
-      return fn(...args);
-    } catch (err) {
-      return Promise.reject(err);
-    }
-  }
-
-  // {type, error, data, id}
-  function unwrapData(result) {
-    if (result === undefined) {
-      throw new Error('Receiving end does not exist');
-    }
-    if (result.error) {
-      throw Object.assign(new Error(result.data.message), result.data);
-    }
-    return result.data;
-  }
+      return res;
+    },
+  };
+  /** @type {API} */
+  window.API = msg.isBg ? {} : new Proxy({path: []}, apiHandler);
 })();
-
-self.API = self.INJECTED === 1 ? self.API : new Proxy({
-  // Handlers for these methods need sender.tab.id which is set by `send` as it uses messaging,
-  // unlike `sendBg` which invokes the background page directly in our own extension tabs
-  getTabUrlPrefix: true,
-  updateIconBadge: true,
-  styleViaAPI: true,
-}, {
-  get: (target, name) =>
-    (...args) => Promise.resolve(self.msg[target[name] ? 'send' : 'sendBg']({
-      method: 'invokeAPI',
-      name,
-      args
-    }))
-});

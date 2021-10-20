@@ -1,86 +1,201 @@
-/* global CodeMirror loadScript rerouteHotkeys prefs $ debounce $create */
-/* exported cmFactory */
+/* global $ */// dom.js
+/* global CodeMirror */
+/* global editor */
+/* global prefs */
+/* global rerouteHotkeys */// util.js
 'use strict';
+
 /*
-All cm instances created by this module are collected so we can broadcast prefs
-settings to them. You should `cmFactory.destroy(cm)` to unregister the listener
-when the instance is not used anymore.
+  All cm instances created by this module are collected so we can broadcast prefs
+  settings to them. You should `cmFactory.destroy(cm)` to unregister the listener
+  when the instance is not used anymore.
 */
-const cmFactory = (() => {
-  const editors = new Set();
-  // used by `indentWithTabs` option
-  const INSERT_TAB_COMMAND = CodeMirror.commands.insertTab;
-  const INSERT_SOFT_TAB_COMMAND = CodeMirror.commands.insertSoftTab;
 
-  CodeMirror.defineOption('tabSize', prefs.get('editor.tabSize'), (cm, value) => {
-    cm.setOption('indentUnit', Number(value));
-  });
+(() => {
+  //#region Factory
 
-  CodeMirror.defineOption('indentWithTabs', prefs.get('editor.indentWithTabs'), (cm, value) => {
-    CodeMirror.commands.insertTab = value ?
-      INSERT_TAB_COMMAND :
-      INSERT_SOFT_TAB_COMMAND;
-  });
+  const cms = new Set();
+  let lazyOpt;
 
-  CodeMirror.defineOption('autocompleteOnTyping', prefs.get('editor.autocompleteOnTyping'), (cm, value) => {
-    const onOff = value ? 'on' : 'off';
-    cm[onOff]('changes', autocompleteOnTyping);
-    cm[onOff]('pick', autocompletePicked);
-  });
+  const cmFactory = window.cmFactory = {
 
-  CodeMirror.defineOption('matchHighlight', prefs.get('editor.matchHighlight'), (cm, value) => {
-    if (value === 'token') {
-      cm.setOption('highlightSelectionMatches', {
-        showToken: /[#.\-\w]/,
-        annotateScrollbar: true,
-        onUpdate: updateMatchHighlightCount
-      });
-    } else if (value === 'selection') {
-      cm.setOption('highlightSelectionMatches', {
-        showToken: false,
-        annotateScrollbar: true,
-        onUpdate: updateMatchHighlightCount
-      });
-    } else {
-      cm.setOption('highlightSelectionMatches', null);
-    }
-  });
+    create(place, options) {
+      const cm = CodeMirror(place, options);
+      cm.lastActive = 0;
+      cms.add(cm);
+      return cm;
+    },
 
-  CodeMirror.defineOption('selectByTokens', prefs.get('editor.selectByTokens'), (cm, value) => {
-    cm.setOption('configureMouse', value ? configureMouseFn : null);
-  });
+    destroy(cm) {
+      cms.delete(cm);
+    },
 
-  prefs.subscribe(null, (key, value) => {
-    const option = key.replace(/^editor\./, '');
-    if (!option) {
-      console.error('no "cm_option"', key);
-      return;
-    }
-    // FIXME: this is implemented in `colorpicker-helper.js`.
-    if (option === 'colorpicker') {
-      return;
-    }
-    if (option === 'theme') {
-      const themeLink = $('#cm-theme');
-      // use non-localized 'default' internally
-      if (value === 'default') {
-        themeLink.href = '';
+    globalSetOption(key, value) {
+      CodeMirror.defaults[key] = value;
+      if (cms.size > 4 && lazyOpt && lazyOpt.names.includes(key)) {
+        lazyOpt.set(key, value);
       } else {
-        const url = chrome.runtime.getURL('vendor/codemirror/theme/' + value + '.css');
-        if (themeLink.href !== url) {
-          // avoid flicker: wait for the second stylesheet to load, then apply the theme
-          return loadScript(url, true).then(([newThemeLink]) => {
-            setOption(option, value);
-            themeLink.remove();
-            newThemeLink.id = 'cm-theme';
-          });
+        cms.forEach(cm => cm.setOption(key, value));
+      }
+    },
+  };
+
+  // focus and blur
+
+  const onCmFocus = cm => {
+    rerouteHotkeys.toggle(false);
+    cm.display.wrapper.classList.add('CodeMirror-active');
+    cm.lastActive = Date.now();
+  };
+  const onCmBlur = cm => {
+    rerouteHotkeys.toggle(true);
+    setTimeout(() => {
+      const {wrapper} = cm.display;
+      wrapper.classList.toggle('CodeMirror-active', wrapper.contains(document.activeElement));
+    });
+  };
+  CodeMirror.defineInitHook(cm => {
+    cm.on('focus', onCmFocus);
+    cm.on('blur', onCmBlur);
+  });
+
+  // propagated preferences
+
+  const prefToCmOpt = k =>
+    k.startsWith('editor.') &&
+    k.slice('editor.'.length);
+  const prefKeys = prefs.knownKeys.filter(k =>
+    k !== 'editor.colorpicker' && // handled in colorpicker-helper.js
+    prefToCmOpt(k) in CodeMirror.defaults);
+  const {insertTab, insertSoftTab} = CodeMirror.commands;
+
+  for (const [key, fn] of Object.entries({
+    'editor.tabSize'(cm, value) {
+      cm.setOption('indentUnit', Number(value));
+    },
+    'editor.indentWithTabs'(cm, value) {
+      CodeMirror.commands.insertTab = value ? insertTab : insertSoftTab;
+    },
+    'editor.matchHighlight'(cm, value) {
+      const showToken = value === 'token' && /[#.\-\w]/;
+      const opt = (showToken || value === 'selection') && {
+        showToken,
+        annotateScrollbar: true,
+        onUpdate: updateMatchHighlightCount,
+      };
+      cm.setOption('highlightSelectionMatches', opt || null);
+    },
+    'editor.selectByTokens'(cm, value) {
+      cm.setOption('configureMouse', value ? configureMouseFn : null);
+    },
+  })) {
+    CodeMirror.defineOption(prefToCmOpt(key), prefs.get(key), fn);
+    prefKeys.push(key);
+  }
+
+  prefs.subscribe(prefKeys, (key, val) => {
+    const name = prefToCmOpt(key);
+    if (name === 'theme') {
+      loadCmTheme(val);
+    } else {
+      cmFactory.globalSetOption(name, val);
+    }
+  });
+
+  // lazy propagation
+
+  lazyOpt = window.IntersectionObserver && {
+    names: ['theme', 'lineWrapping'],
+    set(key, value) {
+      const {observer, queue} = lazyOpt;
+      for (const cm of cms) {
+        let opts = queue.get(cm);
+        if (!opts) queue.set(cm, opts = {});
+        opts[key] = value;
+        observer.observe(cm.display.wrapper);
+      }
+    },
+    setNow({cm, data}) {
+      cm.operation(() => data.forEach(kv => cm.setOption(...kv)));
+    },
+    onView(entries) {
+      const {queue, observer} = lazyOpt;
+      const delayed = [];
+      for (const e of entries) {
+        const r = e.isIntersecting && e.intersectionRect;
+        if (!r) continue;
+        const cm = e.target.CodeMirror;
+        const data = Object.entries(queue.get(cm) || {});
+        queue.delete(cm);
+        observer.unobserve(e.target);
+        if (!data.every(([key, val]) => cm.getOption(key) === val)) {
+          if (r.bottom > 0 && r.top < window.innerHeight) {
+            lazyOpt.setNow({cm, data});
+          } else {
+            delayed.push({cm, data});
+          }
         }
       }
-    }
-    // broadcast option
-    setOption(option, value);
+      if (delayed.length) {
+        setTimeout(() => delayed.forEach(lazyOpt.setNow));
+      }
+    },
+    get observer() {
+      if (!lazyOpt._observer) {
+        // must exceed refreshOnView's 100%
+        lazyOpt._observer = new IntersectionObserver(lazyOpt.onView, {rootMargin: '150%'});
+        lazyOpt.queue = new WeakMap();
+      }
+      return lazyOpt._observer;
+    },
+  };
+
+  //#endregion
+  //#region Commands
+
+  Object.assign(CodeMirror.commands, {
+    commentSelection(cm) {
+      cm.blockComment(cm.getCursor('from'), cm.getCursor('to'), {fullLines: false});
+    },
+    toggleEditorFocus(cm) {
+      if (!cm) return;
+      if (cm.hasFocus()) {
+        setTimeout(() => cm.display.input.blur());
+      } else {
+        cm.focus();
+      }
+    },
   });
-  return {create, destroy, setOption};
+  for (const cmd of [
+    'nextEditor',
+    'prevEditor',
+    'save',
+    'toggleStyle',
+  ]) {
+    CodeMirror.commands[cmd] = (...args) => editor[cmd](...args);
+  }
+
+  //#endregion
+  //#region CM option handlers
+
+  async function loadCmTheme(name) {
+    let el2;
+    const el = $('#cm-theme');
+    if (name === 'default') {
+      el.href = '';
+    } else {
+      const path = `/vendor/codemirror/theme/${name}.css`;
+      if (el.href !== location.origin + path) {
+        // avoid flicker: wait for the second stylesheet to load, then apply the theme
+        el2 = await require([path]);
+      }
+    }
+    cmFactory.globalSetOption('theme', name);
+    if (el2) {
+      el.remove();
+      el2.id = el.id;
+    }
+  }
 
   function updateMatchHighlightCount(cm, state) {
     cm.display.wrapper.dataset.matchHighlightCount = state.matchesonscroll.matches.length;
@@ -143,151 +258,76 @@ const cmFactory = (() => {
     };
   }
 
-  function autocompleteOnTyping(cm, [info], debounced) {
-    const lastLine = info.text[info.text.length - 1];
-    if (
-      cm.state.completionActive ||
-      info.origin && !info.origin.includes('input') ||
-      !lastLine
-    ) {
-      return;
-    }
-    if (cm.state.autocompletePicked) {
-      cm.state.autocompletePicked = false;
-      return;
-    }
-    if (!debounced) {
-      debounce(autocompleteOnTyping, 100, cm, [info], true);
-      return;
-    }
-    if (lastLine.match(/[-a-z!]+$/i)) {
-      cm.state.autocompletePicked = false;
-      cm.options.hintOptions.completeSingle = false;
-      cm.execCommand('autocomplete');
-      setTimeout(() => {
-        cm.options.hintOptions.completeSingle = true;
-      });
-    }
+  //#endregion
+  //#region Bookmarks
+
+  const BM_CLS = 'gutter-bookmark';
+  const BM_BRAND = 'sublimeBookmark';
+  const BM_CLICKER = 'CodeMirror-linenumbers';
+  const BM_DATA = Symbol('data');
+  // TODO: revisit when https://github.com/codemirror/CodeMirror/issues/6716 is fixed
+  const tmProto = CodeMirror.TextMarker.prototype;
+  const tmProtoOvr = {};
+  for (const k of ['clear', 'attachLine', 'detachLine']) {
+    tmProtoOvr[k] = function (line) {
+      const {cm} = this.doc;
+      const withOp = !cm.curOp;
+      if (withOp) cm.startOperation();
+      tmProto[k].apply(this, arguments);
+      cm.curOp.ownsGroup.delayedCallbacks.push(toggleMark.bind(this, this.lines[0], line));
+      if (withOp) cm.endOperation();
+    };
   }
-
-  function autocompletePicked(cm) {
-    cm.state.autocompletePicked = true;
+  for (const name of ['prevBookmark', 'nextBookmark']) {
+    const cmdFn = CodeMirror.commands[name];
+    CodeMirror.commands[name] = cm => {
+      cm.setSelection = cm.jumpToPos;
+      cmdFn(cm);
+      delete cm.setSelection;
+    };
   }
-
-  function destroy(cm) {
-    editors.delete(cm);
-  }
-
-  function create(init, options) {
-    const cm = CodeMirror(init, options);
-    cm.lastActive = 0;
-    const wrapper = cm.display.wrapper;
-    cm.on('blur', () => {
-      rerouteHotkeys(true);
-      setTimeout(() => {
-        wrapper.classList.toggle('CodeMirror-active', wrapper.contains(document.activeElement));
-      });
-    });
-    cm.on('focus', () => {
-      rerouteHotkeys(false);
-      wrapper.classList.add('CodeMirror-active');
-      cm.lastActive = Date.now();
-    });
-    editors.add(cm);
-    return cm;
-  }
-
-  function getLastActivated() {
-    let result;
-    for (const cm of editors) {
-      if (!result || result.lastActive < cm.lastActive) {
-        result = cm;
-      }
-    }
-    return result;
-  }
-
-  function setOption(key, value) {
-    CodeMirror.defaults[key] = value;
-    if (editors.size > 4 && (key === 'theme' || key === 'lineWrapping')) {
-      throttleSetOption({key, value, index: 0});
-      return;
-    }
-    for (const cm of editors) {
-      cm.setOption(key, value);
-    }
-  }
-
-  function throttleSetOption({
-    key,
-    value,
-    index,
-    timeStart = performance.now(),
-    editorsCopy = [...editors],
-    cmStart = getLastActivated(),
-    progress,
-  }) {
-    if (index === 0) {
-      if (!cmStart) {
-        return;
-      }
-      cmStart.setOption(key, value);
-    }
-
-    const THROTTLE_AFTER_MS = 100;
-    const THROTTLE_SHOW_PROGRESS_AFTER_MS = 100;
-
-    const t0 = performance.now();
-    const total = editorsCopy.length;
-    while (index < total) {
-      const cm = editorsCopy[index++];
-      if (cm === cmStart || !editors.has(cm)) {
-        continue;
-      }
-      cm.setOption(key, value);
-      if (performance.now() - t0 > THROTTLE_AFTER_MS) {
+  CodeMirror.defineInitHook(cm => {
+    cm.on('gutterClick', onGutterClick);
+    cm.on('gutterContextMenu', onGutterContextMenu);
+    cm.on('markerAdded', onMarkAdded);
+  });
+  // TODO: reimplement bookmarking so next/prev order is decided solely by the line numbers
+  function onGutterClick(cm, line, name, e) {
+    switch (name === BM_CLICKER && e.button) {
+      case 0: {
+        // main button: toggle
+        const [mark] = cm.findMarks({line, ch: 0}, {line, ch: 1e9}, m => m[BM_BRAND]);
+        cm.setCursor(mark ? mark.find(-1) : {line, ch: 0});
+        cm.execCommand('toggleBookmark');
         break;
       }
+      case 1:
+        // middle button: select all marks
+        cm.execCommand('selectBookmarks');
+        break;
     }
-    if (index >= total) {
-      $.remove(progress);
-      return;
-    }
-    if (!progress &&
-        index < total / 2 &&
-        t0 - timeStart > THROTTLE_SHOW_PROGRESS_AFTER_MS) {
-      let option = $('#editor.' + key);
-      if (option) {
-        if (option.type === 'checkbox') {
-          option = (option.labels || [])[0] || option.nextElementSibling || option;
-        }
-        progress = document.body.appendChild(
-          $create('.set-option-progress', {targetElement: option}));
-      }
-    }
-    if (progress) {
-      const optionBounds = progress.targetElement.getBoundingClientRect();
-      const bounds = {
-        top: optionBounds.top + window.scrollY + 1,
-        left: optionBounds.left + window.scrollX + 1,
-        width: (optionBounds.width - 2) * index / total | 0,
-        height: optionBounds.height - 2,
-      };
-      const style = progress.style;
-      for (const prop in bounds) {
-        if (bounds[prop] !== parseFloat(style[prop])) {
-          style[prop] = bounds[prop] + 'px';
-        }
-      }
-    }
-    setTimeout(throttleSetOption, 0, {
-      key,
-      value,
-      index,
-      timeStart,
-      cmStart,
-      editorsCopy,
-      progress,
-    });
   }
+  function onGutterContextMenu(cm, line, name, e) {
+    if (name === BM_CLICKER) {
+      cm.execCommand(e.ctrlKey ? 'prevBookmark' : 'nextBookmark');
+      e.preventDefault();
+    }
+  }
+  function onMarkAdded(cm, mark) {
+    if (mark[BM_BRAND]) {
+      // CM bug workaround to keep the mark at line start when the above line is removed
+      mark.inclusiveRight = true;
+      Object.assign(mark, tmProtoOvr);
+      toggleMark.call(mark, true, mark[BM_DATA] = mark.lines[0]);
+    }
+  }
+  function toggleMark(state, line = this[BM_DATA]) {
+    this.doc[state ? 'addLineClass' : 'removeLineClass'](line, 'gutter', BM_CLS);
+    if (state) {
+      const bms = this.doc.cm.state.sublimeBookmarks;
+      if (!bms.includes(this)) bms.push(this);
+    }
+  }
+
+  //#endregion
 })();

@@ -183,7 +183,8 @@
 
 /*********** CM search highlight restyling, which shouldn't need color variables ****************/
 body.find-open .search-target-editor {
-  outline-color: darkorange !important;
+  box-shadow: 0 0 0 1px hsl(33, 100%, 50%), 0 0 3px hsla(33, 100%, 50%, .4);
+  /* same as our global.css focus rule */
 }
 
 body.find-open .cm-searching {

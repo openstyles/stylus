@@ -1,11 +1,7 @@
 :root {
-  --header-width: 280px;
-  --checkbox-width: 24px;
-  --name-padding-left: 40px;
-  --name-padding-right: 40px;
-  --actions-width: 75px;
-  --onoffswitch-width: 60px;
+  --inner-padding: 18px; /* checkbox + gap */
   --outer-padding: 9px;
+  --hotkey-margin: 16px;
 }
 
 html, body {
@@ -25,9 +21,13 @@ body {
   background-color: #fff;
 }
 
+.firefox button {
+  transition: none; /* FF borks subpixel AA during transitions in popup */
+}
+
 body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
-  margin-left: var(--outer-padding);
-  margin-right: var(--outer-padding);
+  padding-left: var(--outer-padding);
+  padding-right: var(--outer-padding);
 }
 
 .firefox .chromium-only {
@@ -35,12 +35,12 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
 }
 /************ checkbox ************/
 
-.style-name:hover input[type="checkbox"]:checked {
+.style-name:hover .checker:checked {
   border-color: hsl(0, 0%, 32%);
   background-color: hsl(0, 0%, 82%);
 }
 
-.style-name:hover input[type="checkbox"] {
+.style-name:hover .checker {
   border-color: hsl(0, 0%, 32%);
   background-color: hsl(0, 0%, 82%);
 }
@@ -96,20 +96,24 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
 }
 
 #disable-all-wrapper .main-controls label {
-  padding-left: 16px;
+  padding-left: var(--inner-padding);
   position: relative;
   transition: color .25s;
   font-size: 12px;
 }
 
 #no-styles {
-  padding: 4px var(--outer-padding) 6px;
+  padding: 6px var(--outer-padding);
   font-weight: bold;
 }
 
 #find-styles-link {
   cursor: pointer;
   margin-right: .5em;
+}
+#find-styles-inline-group label {
+  position: relative;
+  padding-left: 16px;
 }
 
 .checker {
@@ -126,7 +130,7 @@ a:hover {
 }
 
 .actions > .main-controls {
-  padding-left: 16px;
+  padding-left: var(--inner-padding);
 }
 
 .main-controls {
@@ -140,8 +144,6 @@ body.blocked > DIV {
 
 #installed {
   border-bottom: 1px solid black;
-  padding-bottom: 2px;
-  padding-top: 2px;
   max-height: 445px;
   overflow-y: auto;
   counter-reset: style-number;
@@ -178,7 +180,7 @@ body.blocked > DIV {
 }
 
 html[style] .entry-content {
-  padding: 0 16px 0 0;
+  padding: 0 var(--hotkey-margin) 0 0;
 }
 
 #no-styles.entry {
@@ -199,7 +201,7 @@ html[style] .entry-content {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding-left: 26px;
+  padding-left: calc(var(--outer-padding) + var(--inner-padding));
   position: relative;
 }
 
@@ -219,6 +221,19 @@ html[style] .entry-content {
 
 .entry .style-name:hover::before {
   opacity: 1;
+}
+
+.entry.disabled .style-name,
+.entry.disabled .svg-icon {
+  font-weight: normal;
+  color: #888;
+  fill: #aaa;
+}
+.entry.disabled:hover .svg-icon {
+    fill: #666;
+}
+.entry.disabled:hover a:hover .svg-icon {
+    fill: #000;
 }
 
 .entry .main-controls {
@@ -261,7 +276,7 @@ html[style*="border"] .entry:nth-child(11):before {
 
 .entry .actions > * {
   height: 26px;
-  width: 18px;
+  width: var(--inner-padding);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -280,8 +295,8 @@ html[style*="border"] .entry:nth-child(11):before {
 }
 
 .svg-icon.config {
-  height: 14px;
-  width: 14px;
+  height: 16px;
+  width: 16px;
 }
 
 a.configure[target="_blank"] .svg-icon.config {
@@ -296,7 +311,9 @@ a.configure[target="_blank"] .svg-icon.config {
   opacity: .2;
   transition: opacity .5s ease-in-out .25s, color .5s ease-in-out .25s;
 }
-
+.not-applied .style-name {
+  opacity: .5;
+}
 .not-applied:hover .checker,
 .not-applied:hover .style-name,
 .not-applied:hover .actions > * {
@@ -463,10 +480,8 @@ a.configure[target="_blank"] .svg-icon.config {
 
 .svg-icon {
   pointer-events: none;
-  transition: fill .5s;
   width: 14px;
   height: 16px;
-  fill: #666;
 }
 
 a:hover .svg-icon {
@@ -490,7 +505,7 @@ body > .actions {
   vertical-align: middle;
 }
 
-body.blocked #installed > *,
+body.blocked #installed > :not(.frame),
 body.blocked .actions > .main-controls {
   display: none;
 }
@@ -705,11 +720,6 @@ body.blocked .actions > .main-controls {
   display: flex;
 }
 
-#confirm[data-display=true] + #installed .menu[data-display=true] {
-  opacity: 0;
-  pointer-events: none;
-}
-
 #confirm > div {
   width: 80%;
   max-height: 80%;
@@ -764,7 +774,7 @@ body.blocked .actions > .main-controls {
   margin: 0 .25em .25em 0;
 }
 
-.unreachable .entry {
+.unreachable .entry:not(.frame) {
   opacity: .25;
 }
 
@@ -775,6 +785,7 @@ body.blocked .actions > .main-controls {
 .blocked-info {
   hyphens: none;
   word-wrap: break-word;
+  overflow-wrap: anywhere;
   line-height: 16px;
   position: relative;
 }
@@ -795,8 +806,8 @@ body.blocked .actions > .main-controls {
 .blocked-info .copy {
   cursor: pointer;
   transition: all .1s;
-  border-bottom: 1px dotted #000;
-  text-decoration: none;
+  text-decoration: underline;
+  text-decoration-style: dotted;
   font-weight: bold;
 }
 
@@ -814,8 +825,8 @@ body.blocked .actions > .main-controls {
   position: absolute;
   display: none;
   top: 0;
-  left: calc(var(--outer-padding) * -1);
-  right: calc(var(--outer-padding) * -1);
+  left: 0;
+  right: 0;
   font-weight: bold;
   font-size: 13px;
   text-align: center;
@@ -845,7 +856,7 @@ body.blocked .actions > .main-controls {
   top: 0;
   right: 0;
   bottom: 0;
-  width: 16px;
+  width: var(--hotkey-margin);
   cursor: help;
   margin: 0;
   padding: 0;

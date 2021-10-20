@@ -1,23 +1,18 @@
 {
   "addStyleLabel": {
-    "message": "Escrever novo estilo",
-    "description": "Label for the button to go to the add style page"
+    "message": "Escrever novo estilo"
   },
   "addStyleTitle": {
-    "message": "Adicionar estilo",
-    "description": "Title of the page for adding styles"
+    "message": "Adicionar estilo"
   },
   "alphaChannel": {
-    "message": "Opacidade",
-    "description": "Label of color's opacity"
+    "message": "Opacidade"
   },
   "appliesAdd": {
-    "message": "Adicionar",
-    "description": "Label for the button to add an 'applies' entry"
+    "message": "Adicionar"
   },
   "appliesDisplay": {
     "message": "Aplica-se a: $applies$",
-    "description": "Text on the manage screen to describe what the style applies to",
     "placeholders": {
       "applies": {
         "content": "$1"
@@ -25,276 +20,208 @@
     }
   },
   "appliesDisplayTruncatedSuffix": {
-    "message": "e mais",
-    "description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
+    "message": "e mais"
   },
   "appliesDomainOption": {
-    "message": "URLs no domínio",
-    "description": "Option to make the style apply to the entered string as a domain"
+    "message": "URLs no domínio"
   },
   "appliesHelp": {
-    "message": "Use os controlos \"Aplica-se a\" para limitar a que URLs o código nesta secção se aplica.",
-    "description": "Help text for 'applies to' section"
+    "message": "Use os controlos \"Aplica-se a\" para limitar a que URLs o código nesta secção se aplica."
   },
   "appliesLabel": {
-    "message": "Aplica-se a",
-    "description": "Label for 'applies to' fields on the edit/add screen"
+    "message": "Aplica-se a"
   },
   "appliesLineWidgetLabel": {
-    "message": "Apresentar \"Aplica-se a\" info",
-    "description": "Label for the checkbox to display applies-to information in the single editor"
+    "message": "Apresentar \"Aplica-se a\" info"
   },
   "appliesLineWidgetWarning": {
-    "message": "Não funciona com CSS minificado",
-    "description": "A warning that applies-to information won't show properly with minified CSS"
+    "message": "Não funciona com CSS minificado"
   },
   "appliesRegexpOption": {
-    "message": "URLs correspondentes ao regexp",
-    "description": "Option to make the style apply to the entered string as a regular expression"
+    "message": "URLs correspondentes ao regexp"
   },
   "appliesRemove": {
-    "message": "Remover",
-    "description": "Label for the button to remove an 'applies' entry"
+    "message": "Remover"
   },
   "appliesRemoveError": {
-    "message": "Não é possível remover a última 'aplica-se a' entrada",
-    "description": "Error displayed when the last 'applies' is going to be removed"
+    "message": "Não é possível remover a última 'aplica-se a' entrada"
   },
   "appliesSpecify": {
-    "message": "Especificar",
-    "description": "Label for the button to make a style apply only to specific sites"
+    "message": "Especificar"
   },
   "appliesToEverything": {
-    "message": "Tudo",
-    "description": "Text displayed for styles that apply to all sites"
+    "message": "Tudo"
   },
   "appliesUrlPrefixOption": {
-    "message": "URLs a começar com",
-    "description": "Option to make the style apply to the entered string as a URL prefix"
+    "message": "URLs a começar com"
   },
   "applyAllUpdates": {
-    "message": "Aplicar todas as atualizações",
-    "description": "Label for the button to apply all detected updates"
+    "message": "Aplicar todas as atualizações"
   },
   "author": {
-    "message": "Autor",
-    "description": "Label for the style author"
+    "message": "Autor"
   },
   "backupButtons": {
-    "message": "Cópia de segurança",
-    "description": "Heading for backup"
+    "message": "Cópia de segurança"
   },
   "backupMessage": {
-    "message": "Selecione um ficheiro ou arraste e solte-o nesta página.",
-    "description": "Message for backup"
+    "message": "Selecione um ficheiro ou arraste e solte-o nesta página."
   },
   "bckpInstStyles": {
-    "message": "Exportar estilos",
-    "description": ""
+    "message": "Exportar estilos"
   },
   "checkAllUpdates": {
-    "message": "Verificar todos os estilos por atualizações",
-    "description": "Label for the button to check all styles for updates"
+    "message": "Verificar todos os estilos por atualizações"
   },
   "checkAllUpdatesForce": {
-    "message": "Verifique outra vez, eu não editei nenhum estilo!",
-    "description": "Label for the button to apply all detected updates"
+    "message": "Verifique outra vez, eu não editei nenhum estilo!"
   },
   "checkForUpdate": {
-    "message": "Procurar atualizações",
-    "description": "Label for the button to check a single style for an update"
+    "message": "Procurar atualizações"
   },
   "checkingForUpdate": {
-    "message": "A verificar...",
-    "description": "Text to display when checking a style for an update"
+    "message": "A verificar..."
   },
   "clickToUninstall": {
-    "message": "Clique para desinstalar",
-    "description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
+    "message": "Clique para desinstalar"
   },
   "cm_autoCloseBrackets": {
-    "message": "Auto-fechar colchetes e aspas",
-    "description": "Label for the checkbox in the style editor."
+    "message": "Auto-fechar colchetes e aspas"
   },
   "cm_autoCloseBracketsTooltip": {
-    "message": "Adicionar automaticamente um par para fechar ao escrever um () [] {} '' \"\" de abertura",
-    "description": "Label for the checkbox in the style editor."
+    "message": "Adicionar automaticamente um par para fechar ao escrever um () [] {} '' \"\" de abertura"
   },
   "cm_autocompleteOnTyping": {
-    "message": "Conclusão automática em datilografar ",
-    "description": "Label for the checkbox in the style editor."
+    "message": "Conclusão automática em datilografar "
   },
   "cm_colorpicker": {
-    "message": "Selecionador de cores para cores CSS",
-    "description": "Label for the checkbox controlling colorpicker option for the style editor."
+    "message": "Selecionador de cores para cores CSS"
   },
   "cm_indentWithTabs": {
-    "message": "Usar tabulação com indentação inteligente",
-    "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
+    "message": "Usar tabulação com indentação inteligente"
   },
   "cm_keyMap": {
-    "message": "Mapa de teclado",
-    "description": "Label for the drop-down list controlling the keymap for the style editor."
+    "message": "Mapa de teclado"
   },
   "cm_lineWrapping": {
-    "message": "Moldar o texto",
-    "description": "Label for the checkbox controlling word wrap option for the style editor."
+    "message": "Moldar o texto"
   },
   "cm_matchHighlight": {
-    "message": "Realçar",
-    "description": "Label for the drop-down list controlling the automatic highlighting of current word/selection occurrences in the style editor."
+    "message": "Realçar"
   },
   "cm_matchHighlightSelection": {
-    "message": "Apenas a seleção",
-    "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
+    "message": "Apenas a seleção"
   },
   "cm_matchHighlightToken": {
-    "message": "Token embaixo do cursor",
-    "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of the word/token under cursor even if nothing is selected"
+    "message": "Token embaixo do cursor"
   },
   "cm_resizeGripHint": {
-    "message": "Duplo-clique para maximizar/restaurar a altura",
-    "description": "Tooltip for the resize grip in style editor"
+    "message": "Duplo-clique para maximizar/restaurar a altura"
   },
   "cm_selectByTokens": {
-    "message": "O duplo-clique seleciona os tokens",
-    "description": "Label for the checkbox in the editor."
+    "message": "O duplo-clique seleciona os tokens"
   },
   "cm_selectByTokensTooltip": {
-    "message": "Exemplos de tokens: .foo-bar-2 #aabbcc 0.32 !Important\nQuando desativado: as palavras delimitadas por pontuação são selecionadas.",
-    "description": ""
+    "message": "Exemplos de tokens: .foo-bar-2 #aabbcc 0.32 !Important\nQuando desativado: as palavras delimitadas por pontuação são selecionadas."
   },
   "cm_smartIndent": {
-    "message": "Use indentação inteligente",
-    "description": "Label for the checkbox controlling smart indentation option for the style editor."
+    "message": "Use indentação inteligente"
   },
   "cm_tabSize": {
-    "message": "Tamanho da tabulação",
-    "description": "Label for the text box controlling tab size option for the style editor."
+    "message": "Tamanho da tabulação"
   },
   "cm_theme": {
-    "message": "Tema",
-    "description": "Label for the style editor's CSS theme."
+    "message": "Tema"
   },
   "colorpickerSwitchFormatTooltip": {
-    "message": "Mudar formatos: HEX -> RGB -> HSL.\nShift-clique para inverter a direção.\nTambém através das teclas PgUp (PageUp), PgDn (PageDown).",
-    "description": "Tooltip for the switch button in the color picker popup in the style editor."
+    "message": "Mudar formatos: HEX -> RGB -> HSL.\nShift-clique para inverter a direção.\nTambém através das teclas PgUp (PageUp), PgDn (PageDown)."
   },
   "colorpickerTooltip": {
-    "message": "Abrir o selecionador de cores",
-    "description": "Tooltip for the colored squares shown before CSS colors in the style editor."
+    "message": "Abrir o selecionador de cores"
   },
   "configOnChange": {
-    "message": "em mudança",
-    "description": "VERY SHORT label for the checkbox in style config dialog after the save button - when enabled the changes in the dialog are saved and applied automatically without the need to press the Save button"
+    "message": "em mudança"
   },
   "configOnChangeTooltip": {
-    "message": "Auto-guarda e aplicar alterações automaticamente",
-    "description": ""
+    "message": "Auto-guarda e aplicar alterações automaticamente"
   },
   "configureStyle": {
-    "message": "Configurar",
-    "description": "Label for the button to configure usercss userstyle"
+    "message": "Configurar"
   },
   "configureStyleOnHomepage": {
-    "message": "Configurar na homepage",
-    "description": "Label for the button to configure userstyles.org userstyle"
+    "message": "Configurar na homepage"
   },
   "confirmCancel": {
-    "message": "Cancelar",
-    "description": ""
+    "message": "Cancelar"
   },
   "confirmClose": {
-    "message": "Fechar",
-    "description": "'Close' button in a confirm dialog"
+    "message": "Fechar"
   },
   "confirmDefault": {
-    "message": "Use predefinição",
-    "description": "'Set to default' button in a confirm dialog"
+    "message": "Use predefinição"
   },
   "confirmDelete": {
-    "message": "Apagar",
-    "description": ""
+    "message": "Apagar"
   },
   "confirmDiscardChanges": {
-    "message": "Descartar as alterações?",
-    "description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
+    "message": "Descartar as alterações?"
   },
   "confirmNo": {
-    "message": "Não",
-    "description": "'No' button in a confirm dialog"
+    "message": "Não"
   },
   "confirmSave": {
-    "message": "Guardar",
-    "description": "'Save' button in a confirm dialog"
+    "message": "Guardar"
   },
   "confirmStop": {
-    "message": "Parar",
-    "description": "'Stop' button in a confirm dialog"
+    "message": "Parar"
   },
   "confirmYes": {
-    "message": "Sim",
-    "description": "'Yes' button in a confirm dialog"
+    "message": "Sim"
   },
   "dateInstalled": {
-    "message": "Data de instalação",
-    "description": "Option text for the user to sort the style by install date"
+    "message": "Data de instalação"
   },
   "dateUpdated": {
-    "message": "Data da atualização",
-    "description": "Option text for the user to sort the style by last update date"
+    "message": "Data da atualização"
   },
   "dbError": {
-    "message": "Ocorreu um erro ao usar a base de dados do Stylus. Gostaria de visitar uma página web com soluções possíveis?",
-    "description": "Prompt when a DB error is encountered"
+    "message": "Ocorreu um erro ao usar a base de dados do Stylus. Gostaria de visitar uma página web com soluções possíveis?"
   },
   "defaultTheme": {
-    "message": "predefinição",
-    "description": "Default CodeMirror CSS theme option on the edit style page"
+    "message": "predefinição"
   },
   "deleteStyleConfirm": {
-    "message": "Tem a certeza que quer apagar este estilo?",
-    "description": "Confirmation before deleting a style"
+    "message": "Tem a certeza que quer apagar este estilo?"
   },
   "deleteStyleLabel": {
-    "message": "Apagar",
-    "description": "Label for the button to delete a style"
+    "message": "Apagar"
   },
   "description": {
-    "message": "Reestruturar a web com o Stylus, um gestor de estilos do utilizador. O Stylus permite-te instalar facilmente temas e skins para muitos sites populares.",
-    "description": "Extension description"
+    "message": "Reestruturar a web com o Stylus, um gestor de estilos do utilizador. O Stylus permite-te instalar facilmente temas e skins para muitos sites populares."
   },
   "disableAllStyles": {
-    "message": "Desligar todos os estilos",
-    "description": "Label for the checkbox that turns all enabled styles off."
+    "message": "Desligar todos os estilos"
   },
   "disableStyleLabel": {
-    "message": "Desativar",
-    "description": "Label for the button to disable a style"
+    "message": "Desativar"
   },
   "dragDropMessage": {
-    "message": "Solte o ficheiro da sua cópia de segurança em qualquer sítio nesta página para importar.",
-    "description": "Drag'n'drop message"
+    "message": "Solte o ficheiro da sua cópia de segurança em qualquer sítio nesta página para importar."
   },
   "editDeleteText": {
-    "message": "Eliminar",
-    "description": "Label for the context menu item in the editor to delete selected text"
+    "message": "Eliminar"
   },
   "editGotoLine": {
-    "message": "Ir para a linha (ou linha:col)",
-    "description": "Go to line or line:column on Ctrl-G in style code editor"
+    "message": "Ir para a linha (ou linha:col)"
   },
   "editStyleHeading": {
-    "message": "Editar Estilo",
-    "description": "Title of the page for editing styles"
+    "message": "Editar Estilo"
   },
   "editStyleLabel": {
-    "message": "Editar",
-    "description": "Label for the button to go to the edit style page"
+    "message": "Editar"
   },
   "editStyleTitle": {
     "message": "Editar Estilo $stylename$",
-    "description": "Title of the page for editing styles",
     "placeholders": {
       "stylename": {
         "content": "$1"
@@ -302,196 +229,150 @@
     }
   },
   "enableStyleLabel": {
-    "message": "Ativar",
-    "description": "Label for the button to enable a style"
+    "message": "Ativar"
   },
   "exportLabel": {
-    "message": "Exportar",
-    "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+    "message": "Exportar"
   },
   "externalLink": {
-    "message": "Hiperligação externa",
-    "description": "Label for external links"
+    "message": "Hiperligação externa"
   },
   "externalSupport": {
-    "message": "Suporte",
-    "description": "Label for the external link to style's support site"
+    "message": "Suporte"
   },
   "externalUsercssDocument": {
-    "message": "Documentação para Usercss",
-    "description": "Label for the external link to usercss documentation"
+    "message": "Documentação para Usercss"
   },
   "filteredStyles": {
     "message": "$numShown$ apresentado(s) de $numTotal$total",
-    "description": "TL note - make this message short",
     "placeholders": {
-      "numTotal": {
-        "content": "$2"
-      },
       "numShown": {
         "content": "$1"
+      },
+      "numTotal": {
+        "content": "$2"
       }
     }
   },
   "filteredStylesAllHidden": {
-    "message": "Os filtros aplicados atualmente não correspondem a estilos",
-    "description": "Text shown when no styles match currently applied filter in the style manager"
+    "message": "Os filtros aplicados atualmente não correspondem a estilos"
   },
   "findStyles": {
-    "message": "Localizar estilos",
-    "description": "Text for a link that gets a list of styles for the current site"
+    "message": "Localizar estilos"
   },
   "findStylesForSite": {
-    "message": "Encontrar mais estilos para este site",
-    "description": "Text for a link that gets a list of styles for the current site"
+    "message": "Encontrar mais estilos para este site"
   },
   "findStylesInline": {
-    "message": "inline",
-    "description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
+    "message": "inline"
   },
   "findStylesInlineTooltip": {
-    "message": "Exibir os resultados da pesquisa dentro desta janela.",
-    "description": "Text for a checkbox that displays search results within the Stylus popup."
+    "message": "Exibir os resultados da pesquisa dentro desta janela."
   },
   "genericAdd": {
-    "message": "Adicionar",
-    "description": "Used in various places for an action that adds something"
+    "message": "Adicionar"
   },
   "genericDisabledLabel": {
-    "message": "Desativado",
-    "description": "Used in various lists/options to indicate that something is disabled"
+    "message": "Desativado"
   },
   "genericEnabledLabel": {
-    "message": "Habilitado",
-    "description": "Used in various lists/options to indicate that something is enabled"
+    "message": "Habilitado"
   },
   "genericError": {
-    "message": "Erro",
-    "description": "Used in various places to indicate some error occurred."
+    "message": "Erro"
   },
   "genericHistoryLabel": {
-    "message": "Histórico",
-    "description": "Used in various places to show a history log of something"
+    "message": "Histórico"
   },
   "genericNext": {
-    "message": "Próximo",
-    "description": "Used in various places to select/perform the next step/action"
+    "message": "Próximo"
   },
   "genericPrevious": {
-    "message": "Anterior",
-    "description": "Used in various places to select/perform the previous step/action"
+    "message": "Anterior"
   },
   "genericResetLabel": {
-    "message": "Repor",
-    "description": "Used in various parts of UI to indicate that something may be reset to its original state"
+    "message": "Repor"
   },
   "genericSavedMessage": {
-    "message": "Guardado",
-    "description": "Used in various parts of the UI to indicate that something was saved"
+    "message": "Guardado"
   },
   "genericTitle": {
-    "message": "Título",
-    "description": "Used in various parts of the UI to indicate the title of something"
+    "message": "Título"
   },
   "genericUnknown": {
-    "message": "Desconhecido",
-    "description": "Used in various parts of the UI to indicate if something is unknown (e.g. an unknown date)"
+    "message": "Desconhecido"
   },
   "helpAlt": {
-    "message": "Ajuda",
-    "description": "Alternate text for help buttons"
+    "message": "Ajuda"
   },
   "helpKeyMapCommand": {
-    "message": "Escreva um nome de comando",
-    "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+    "message": "Escreva um nome de comando"
   },
   "helpKeyMapHotkey": {
-    "message": "Prima uma tecla de atalho",
-    "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+    "message": "Prima uma tecla de atalho"
   },
   "importAppendLabel": {
-    "message": "Acrescentar ao estilo",
-    "description": "Label for the button to import a style and append to the existing sections"
+    "message": "Acrescentar ao estilo"
   },
   "importAppendTooltip": {
-    "message": "Acrescentar o estilo importado ao estilo atual",
-    "description": "Tooltip for the button to import a style and append to the existing sections"
+    "message": "Acrescentar o estilo importado ao estilo atual"
   },
   "importLabel": {
-    "message": "Importar",
-    "description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+    "message": "Importar"
   },
   "importReplaceLabel": {
-    "message": "Sobrescrever estilo",
-    "description": "Label for the button to import and overwrite current style"
+    "message": "Sobrescrever estilo"
   },
   "importReplaceTooltip": {
-    "message": "Rejeitar conteúdos do estilo atual e sobrescrever com o estilo importado",
-    "description": "Label for the button to import and overwrite current style"
+    "message": "Rejeitar conteúdos do estilo atual e sobrescrever com o estilo importado"
   },
   "importReportLegendAdded": {
-    "message": "adicionado",
-    "description": "Text after the number of styles added in the report shown after importing styles"
+    "message": "adicionado"
   },
   "importReportLegendIdentical": {
-    "message": "idênticos excluídos",
-    "description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
+    "message": "idênticos excluídos"
   },
   "importReportLegendInvalid": {
-    "message": "inválido(s) ignorado(s)",
-    "description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
+    "message": "inválido(s) ignorado(s)"
   },
   "importReportLegendUpdatedBoth": {
-    "message": "meta info e código atualizados",
-    "description": "Text after the number of styles updated entirely in the report shown after importing styles"
+    "message": "meta info e código atualizados"
   },
   "importReportLegendUpdatedCode": {
-    "message": "código atualizado",
-    "description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"
+    "message": "código atualizado"
   },
   "importReportLegendUpdatedMeta": {
-    "message": "meta info atualizada",
-    "description": "Text after the number of styles with updated meta info like name/url in the report shown after importing styles"
+    "message": "meta info atualizada"
   },
   "importReportTitle": {
-    "message": "Importação de estilos finalizada",
-    "description": "Title of the report shown after importing styles"
+    "message": "Importação de estilos finalizada"
   },
   "importReportUnchanged": {
-    "message": "Nada foi alterado.",
-    "description": "Message in the report shown after importing styles"
+    "message": "Nada foi alterado."
   },
   "importReportUndone": {
-    "message": "os estilos foram revertidos",
-    "description": "Text after the number of styles reverted in the message box shown after undoing the import of styles"
+    "message": "os estilos foram revertidos"
   },
   "importReportUndoneTitle": {
-    "message": "A Importação foi anulada",
-    "description": "Title of the message box shown after undoing the import of styles"
+    "message": "A Importação foi anulada"
   },
   "installButton": {
-    "message": "Instalar estilo",
-    "description": "Label for install button"
+    "message": "Instalar estilo"
   },
   "installButtonInstalled": {
-    "message": "Estilo instalado",
-    "description": "Text displayed when the style is successfully installed"
+    "message": "Estilo instalado"
   },
   "installButtonReinstall": {
-    "message": "Reinstale o estilo",
-    "description": "Label for reinstall button"
+    "message": "Reinstale o estilo"
   },
   "installButtonUpdate": {
-    "message": "Atualizar o estilo",
-    "description": "Label for update button"
+    "message": "Atualizar o estilo"
   },
   "installUpdate": {
-    "message": "Instalar atualização",
-    "description": "Label for the button to install an update for a single style"
+    "message": "Instalar atualização"
   },
   "installUpdateFrom": {
     "message": "Atualmente o estilo é atualizado a partir de $url$",
-    "description": "Label to describe where the style gets update",
     "placeholders": {
       "url": {
         "content": "$1"
@@ -499,28 +380,22 @@
     }
   },
   "installUpdateFromLabel": {
-    "message": "Procurar atualizações",
-    "description": "Label for the checkbox to save current URL for update check"
+    "message": "Procurar atualizações"
   },
   "license": {
-    "message": "Licença",
-    "description": "Label for the license"
+    "message": "Licença"
   },
   "linkGetHelp": {
-    "message": "Obter ajuda",
-    "description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
+    "message": "Obter ajuda"
   },
   "linkGetStyles": {
-    "message": "Obter estilos",
-    "description": "Help link text on the manage page e.g. https://userstyles.org"
+    "message": "Obter estilos"
   },
   "linkTranslate": {
-    "message": "Traduzir",
-    "description": "Transifex link text on the manage page"
+    "message": "Traduzir"
   },
   "linterCSSLintIncompatible": {
     "message": "O CSSLint não suporta $preprocessorname$pré-processador",
-    "description": "The label to display when the preprocessor isn't compatible with CSSLint",
     "placeholders": {
       "preprocessorname": {
         "content": "$1"
@@ -528,12 +403,10 @@
     }
   },
   "linterCSSLintSettings": {
-    "message": "(Definir a regra como : 0 = desabilitado; 1 = aviso ; 2 = erro)",
-    "description": "CSSLint rule config values"
+    "message": "(Definir a regra como : 0 = desabilitado; 1 = aviso ; 2 = erro)"
   },
   "linterConfigPopupTitle": {
     "message": "Definir as regras de configuração para $linter$",
-    "description": "Stylelint or CSSLint popup header",
     "placeholders": {
       "linter": {
         "content": "$1"
@@ -541,20 +414,16 @@
     }
   },
   "linterConfigTooltip": {
-    "message": "Clique para configurar este linter",
-    "description": "Icon tooltip to indicate that it opens a popup with the selected linter configuration"
+    "message": "Clique para configurar este linter"
   },
   "linterInvalidConfigError": {
-    "message": "Não foi guardado devido a estas configurações inválidas:",
-    "description": "Invalid linter config will show a message followed by a list of invalid entries"
+    "message": "Não foi guardado devido a estas configurações inválidas:"
   },
   "linterIssues": {
-    "message": "Problemas",
-    "description": "Label for the CSS linter issues block on the style edit page"
+    "message": "Problemas"
   },
   "linterIssuesHelp": {
     "message": "Estes problemas foram encontradas por$link$:",
-    "description": "Help popup message for the selected CSS linter issues block on the style edit page",
     "placeholders": {
       "link": {
         "content": "$1"
@@ -562,420 +431,310 @@
     }
   },
   "linterJSONError": {
-    "message": "Formato JSON inválido",
-    "description": "Setting linter config with invalid JSON"
+    "message": "Formato JSON inválido"
   },
   "linterResetMessage": {
-    "message": "Para anular a redefinição acidental, prima Ctrl-Z (ou Cmd-Z) na caixa de texto",
-    "description": "Reset button tooltip to inform user on how to undo an accidental reset"
+    "message": "Para anular a redefinição acidental, prima Ctrl-Z (ou Cmd-Z) na caixa de texto"
   },
   "linterRulesLink": {
-    "message": "Veja uma lista completa de regras",
-    "description": "Stylelint or CSSLint rules label added immediately before a link"
+    "message": "Veja uma lista completa de regras"
   },
   "liveReloadError": {
-    "message": "Ocorreu um erro ao vigiar o arquivo",
-    "description": "The label of live-reload error"
+    "message": "Ocorreu um erro ao vigiar o arquivo"
   },
   "liveReloadLabel": {
-    "message": "Recarregamento dinâmico",
-    "description": "The label of live-reload feature"
+    "message": "Recarregamento dinâmico"
   },
   "manageFavicons": {
-    "message": "Favicons em colunas de aplica-se a",
-    "description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+    "message": "Favicons em colunas de aplica-se a"
   },
   "manageFaviconsGray": {
-    "message": "Acinzentado(s)",
-    "description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
+    "message": "Acinzentado(s)"
   },
   "manageFaviconsHelp": {
-    "message": "O Stylus usa um serviço externo https://www.google.com/s2/favicons",
-    "description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+    "message": "O Stylus usa um serviço externo https://www.google.com/s2/favicons"
   },
   "manageFilters": {
-    "message": "Filtros",
-    "description": "Label for filters container"
+    "message": "Filtros"
   },
   "manageHeading": {
-    "message": "Estilos Instalados",
-    "description": "Heading for the manage page"
+    "message": "Estilos Instalados"
   },
   "manageMaxTargets": {
-    "message": "Número de aplica-se a itens",
-    "description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
+    "message": "Número de aplica-se a itens"
   },
   "manageNewStyleAsUsercss": {
-    "message": "como Usercss",
-    "description": "VERY SHORT label for the checkbox next to the 'Write new style' button in the style manager"
+    "message": "como Usercss"
   },
   "manageNewUI": {
-    "message": "Nova interface do gestor",
-    "description": "Label for the checkbox that toggles the new UI on manage page"
+    "message": "Nova interface do gestor"
   },
   "manageOnlyDisabled": {
-    "message": "Apenas estilos desativados",
-    "description": "Checkbox to show only disabled styles"
+    "message": "Apenas estilos desativados"
   },
   "manageOnlyEnabled": {
-    "message": "Apenas estilos ativados",
-    "description": "Checkbox to show only enabled styles"
+    "message": "Apenas estilos ativados"
   },
   "manageOnlyExternal": {
-    "message": "Apenas estilos externos",
-    "description": "Checkbox to show only externally installed styles i.e. updatable"
+    "message": "Apenas estilos externos"
   },
   "manageOnlyLocal": {
-    "message": "Apenas estilos criados localmente",
-    "description": "Checkbox to show only locally created styles i.e. non-updatable"
+    "message": "Apenas estilos criados localmente"
   },
   "manageOnlyLocalTooltip": {
-    "message": "(os estilos não instalados através de uma página userstyles.org)",
-    "description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
+    "message": "(os estilos não instalados através de uma página userstyles.org)"
   },
   "manageOnlyNonUsercss": {
-    "message": "Apenas estilos não-Usercss",
-    "description": "Checkbox to show only non-Usercss (standard) styles"
+    "message": "Apenas estilos não-Usercss"
   },
   "manageOnlyUpdates": {
-    "message": "Apenas com atualizações ou problemas",
-    "description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
+    "message": "Apenas com atualizações ou problemas"
   },
   "manageOnlyUsercss": {
-    "message": "Apenas estilos Usercss",
-    "description": "Checkbox to show only Usercss styles"
+    "message": "Apenas estilos Usercss"
   },
   "menuShowBadge": {
-    "message": "Mostrar a contagem de estilos ativados",
-    "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+    "message": "Mostrar a contagem de estilos ativados"
   },
   "noStylesForSite": {
-    "message": "Nenhum estilo instalado para este site.",
-    "description": "Text displayed when no styles are installed for the current site"
+    "message": "Nenhum estilo instalado para este site."
   },
   "openManage": {
-    "message": "Gerir",
-    "description": "Link to open the manage page."
+    "message": "Gerir"
   },
   "openStylesManager": {
-    "message": "Abrir gestor de estilos",
-    "description": "Label for the style maanger opener in the browser action context menu."
+    "message": "Abrir gestor de estilos"
   },
   "optionsActions": {
-    "message": "Ações",
-    "description": ""
+    "message": "Ações"
   },
   "optionsAdvanced": {
-    "message": "Avançadas",
-    "description": ""
+    "message": "Avançadas"
   },
   "optionsAdvancedContextDelete": {
-    "message": "Adicionar 'Eliminar' no menu de contexto do editor",
-    "description": ""
+    "message": "Adicionar 'Eliminar' no menu de contexto do editor"
   },
   "optionsAdvancedExposeIframes": {
-    "message": "Expor iframes via HTML[stylus-iframe]",
-    "description": ""
+    "message": "Expor iframes via HTML[stylus-iframe]"
   },
   "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Escrever novo estilo como usercss",
-    "description": ""
+    "message": "Escrever novo estilo como usercss"
   },
   "optionsBadgeDisabled": {
-    "message": "Cor de fundo quando desativado",
-    "description": ""
+    "message": "Cor de fundo quando desativado"
   },
   "optionsBadgeNormal": {
-    "message": "Cor de fundo",
-    "description": ""
+    "message": "Cor de fundo"
   },
   "optionsCheck": {
-    "message": "Atualizar estilos",
-    "description": ""
+    "message": "Atualizar estilos"
   },
   "optionsCheckUpdate": {
-    "message": "Procurar para e instalar todas as atualizações disponíveis",
-    "description": ""
+    "message": "Procurar para e instalar todas as atualizações disponíveis"
   },
   "optionsCustomizeBadge": {
-    "message": "Distintivo no ícone da barra de ferramentas",
-    "description": ""
+    "message": "Distintivo no ícone da barra de ferramentas"
   },
   "optionsCustomizeIcon": {
-    "message": "Ícone da barra de ferramentas",
-    "description": ""
+    "message": "Ícone da barra de ferramentas"
   },
   "optionsCustomizeUpdate": {
-    "message": "Atualizações",
-    "description": ""
+    "message": "Atualizações"
   },
   "optionsHeading": {
-    "message": "Opções",
-    "description": "Heading for options section on manage page."
+    "message": "Opções"
   },
   "optionsIconDark": {
-    "message": "Temas escuros do browser",
-    "description": ""
+    "message": "Temas escuros do browser"
   },
   "optionsIconLight": {
-    "message": "Temas claros do browser",
-    "description": ""
+    "message": "Temas claros do browser"
   },
   "optionsOpen": {
-    "message": "Abrir",
-    "description": ""
+    "message": "Abrir"
   },
   "optionsOpenManager": {
-    "message": "Gerir estilos",
-    "description": ""
+    "message": "Gerir estilos"
   },
   "optionsPopupWidth": {
-    "message": "Popup largura (em pixeis)",
-    "description": ""
+    "message": "Popup largura (em pixeis)"
   },
   "optionsReset": {
-    "message": "Restabelecer as opções aos valores predefinidos",
-    "description": ""
+    "message": "Restabelecer as opções aos valores predefinidos"
   },
   "optionsResetButton": {
-    "message": "Restabelecer opções",
-    "description": ""
+    "message": "Restabelecer opções"
   },
   "optionsSubheading": {
-    "message": "Mais Opções",
-    "description": "Subheading for options section on manage page."
+    "message": "Mais Opções"
   },
   "optionsUpdateImportNote": {
-    "message": "Ao importar uma cópia de segurança de estilo da versão antiga ou do Stylish, faça uma verificação única de atualizações manualmente no gestor de estilos para garantir que todos os estilos sejam atualizados.",
-    "description": ""
+    "message": "Ao importar uma cópia de segurança de estilo da versão antiga ou do Stylish, faça uma verificação única de atualizações manualmente no gestor de estilos para garantir que todos os estilos sejam atualizados."
   },
   "optionsUpdateInterval": {
-    "message": "Intervalo de atualização automática do estilo de usuário em horas (especifique 0 para desativar)",
-    "description": ""
+    "message": "Intervalo de atualização automática do estilo de usuário em horas (especifique 0 para desativar)"
   },
   "paginationCurrent": {
-    "message": "Pagina atual",
-    "description": "Tooltip for the current page index in search results"
+    "message": "Pagina atual"
   },
   "paginationEstimated": {
-    "message": "Número estimado de páginas",
-    "description": "Tooltip for the total page count in search results"
+    "message": "Número estimado de páginas"
   },
   "paginationNext": {
-    "message": "Próxima página",
-    "description": "Tooltip for the '->' (next page) button in search results"
+    "message": "Próxima página"
   },
   "paginationPrevious": {
-    "message": "Pagina anterior",
-    "description": "Tooltip for the '<-' button in search results"
+    "message": "Pagina anterior"
   },
   "paginationTotal": {
-    "message": "Páginas totais",
-    "description": ""
+    "message": "Páginas totais"
   },
   "parseUsercssError": {
-    "message": "O Stylus falhou ao analisar o usercss:",
-    "description": "The error message to show when stylus failed to parse usercss"
+    "message": "O Stylus falhou ao analisar o usercss:"
   },
   "popupBorders": {
-    "message": "Adicionar margens laterais brancas ",
-    "description": ""
+    "message": "Adicionar margens laterais brancas "
   },
   "popupBordersTooltip": {
-    "message": "Útil para temas escuros no novo Chrome, já que não pinta mais as margens laterais",
-    "description": ""
+    "message": "Útil para temas escuros no novo Chrome, já que não pinta mais as margens laterais"
   },
   "popupHotkeysInfo": {
-    "message": "<1>- <9>,<0>, também no teclado numérico - alterna o Nth estilo (0 é 10)\n<A>- <Z>alterna o primeiro estilo com um nome que começa com a letra\n<Shift>abre o editor em vez de alternar\n<Numpad +>ativa estilos listados\n<Numpad –>desativa estilos listados\n<Numpad *>e <`> (backtick) - alterna os estilos inicialmente ativados; não se aplica a estilos habilitados subsequentemente enquanto o popup está aberto, para que você possa restaurar a seleção inicial depois de testar o material: basta desabilitar todos e, em seguida, alternar, i.e. <Numpad –><Numpad *>\nMais informações no wiki",
-    "description": "NOTE1: preserve < and > symbols so that <hotkey> is styled as a key.\nNOTE2: the last line is displayed as a text of the link to the wiki page.\nNOTE3: this is the list of hotkeys displayed after clicking the right edge of the extension popup."
+    "message": "<1>- <9>,<0>, também no teclado numérico - alterna o Nth estilo (0 é 10)\n<A>- <Z>alterna o primeiro estilo com um nome que começa com a letra\n<Shift>abre o editor em vez de alternar\n<Numpad +>ativa estilos listados\n<Numpad –>desativa estilos listados\n<Numpad *>e <`> (backtick) - alterna os estilos inicialmente ativados; não se aplica a estilos habilitados subsequentemente enquanto o popup está aberto, para que você possa restaurar a seleção inicial depois de testar o material: basta desabilitar todos e, em seguida, alternar, i.e. <Numpad –><Numpad *>\nMais informações no wiki"
   },
   "popupHotkeysTooltip": {
-    "message": "Clique para ver as teclas de atalho disponíveis",
-    "description": "Tooltip displayed when hovering the right edge of the extension popup"
+    "message": "Clique para ver as teclas de atalho disponíveis"
   },
   "popupManageTooltip": {
-    "message": "Shift-clique ou clique com o botão direito abre o gestor com estilos aplicáveis ao site atual",
-    "description": "Tooltip for the 'Manage' button in the popup."
+    "message": "Shift-clique ou clique com o botão direito abre o gestor com estilos aplicáveis ao site atual"
   },
   "popupOpenEditInWindow": {
-    "message": "Abra o editor em uma nova janela",
-    "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+    "message": "Abra o editor em uma nova janela"
   },
   "popupOpenEditInWindowTooltip": {
-    "message": "Também ativado ao desanexar o separador do editor de uma janela do browser, e desativado por anexar um separador único do editor a outra janela.",
-    "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+    "message": "Também ativado ao desanexar o separador do editor de uma janela do browser, e desativado por anexar um separador único do editor a outra janela."
   },
   "popupStylesFirst": {
-    "message": "Estilos antes de comandos",
-    "description": "Label for the checkbox controlling section order in the popup."
+    "message": "Estilos antes de comandos"
   },
   "prefShowBadge": {
-    "message": "Número de estilos ativadas para o site atual",
-    "description": "Label for the checkbox controlling toolbar badge text."
+    "message": "Número de estilos ativadas para o site atual"
   },
   "previewLabel": {
-    "message": "Pré-visualização dinâmica",
-    "description": "Label for the checkbox in style editor to enable live preview while editing."
+    "message": "Pré-visualização dinâmica"
   },
   "previewTooltip": {
-    "message": "Temporariamente aplica as alterações sem guardar.\nGuarde o estilo para tornar as alterações permanentes.",
-    "description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+    "message": "Temporariamente aplica as alterações sem guardar.\nGuarde o estilo para tornar as alterações permanentes."
   },
   "replace": {
-    "message": "Substituir",
-    "description": "Label before the replace input field in the editor shown on Ctrl-H"
+    "message": "Substituir"
   },
   "replaceAll": {
-    "message": "Substituir todos",
-    "description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
+    "message": "Substituir todos"
   },
   "replaceWith": {
-    "message": "Substituir com",
-    "description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
+    "message": "Substituir com"
   },
   "retrieveBckp": {
-    "message": "Importar estilos",
-    "description": ""
+    "message": "Importar estilos"
   },
   "search": {
-    "message": "Pesquisar",
-    "description": "Label before the search input field in the editor shown on Ctrl-F"
+    "message": "Pesquisar"
   },
   "searchCaseSensitive": {
-    "message": "Sensível a maiúsculas e minúsculas",
-    "description": "Tooltip for the 'Aa' icon that enables case-sensitive search in the editor shown on Ctrl-F"
+    "message": "Sensível a maiúsculas e minúsculas"
   },
   "searchNumberOfResults": {
-    "message": "Número de correspondências",
-    "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+    "message": "Número de correspondências"
   },
   "searchNumberOfResults2": {
-    "message": "Número de correspondências no código e aplica-se a valores",
-    "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+    "message": "Número de correspondências no código e aplica-se a valores"
   },
   "searchRegexp": {
-    "message": "Usa a sintaxe /re/ para pesquisas regexp",
-    "description": "Label after the search input field in the editor shown on Ctrl-F"
+    "message": "Usa a sintaxe /re/ para pesquisas regexp"
   },
   "searchResultInstallCount": {
-    "message": "Instalações totais",
-    "description": "Text for label that shows the number of times a search result was installed"
+    "message": "Instalações totais"
   },
   "searchResultNoneFound": {
-    "message": "Nenhum estilo encontrado para este site.",
-    "description": "Error text in the popup when inline search didn't find any site-specific styles"
+    "message": "Nenhum estilo encontrado para este site."
   },
   "searchResultRating": {
-    "message": "Classificação",
-    "description": "Text for label that shows the search result's rating"
+    "message": "Classificação"
   },
   "searchResultUpdated": {
-    "message": "Atualizado",
-    "description": "Text for label that shows the search result's last update date"
+    "message": "Atualizado"
   },
   "searchResultWeeklyCount": {
-    "message": "Instalações semanais",
-    "description": "Text for label that shows the number of times a search result was installed during last week"
-  },
-  "searchStyles": {
-    "message": "Pesquisar conteúdos",
-    "description": "Label for the search filter textbox on the Manage styles page"
-  },
-  "searchStylesHelp": {
-    "message": "A tecla </> foca o campo de pesquisa.\nTexto simples: pesquisa dentro do nome, código, URL da homepage e aplica-se a sites . Palavras com menos de 3 letras são ignoradas.\nEstilos que correspondem a um URL completo: prefixe a pesquisa com<url:>, e.g.  <url:https://github.com/openstyles/stylus>\nExpressões regulares: inclua barras e sinalizadores, e.g. </body.*?\\ba\\b/simguy>\nPalavras exatas: envolva a consulta entre aspas duplas, e.g. <\". header ~ div\">",
-    "description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
+    "message": "Instalações semanais"
   },
   "sectionAdd": {
-    "message": "Adicionar outra secção",
-    "description": "Label for the button to add a section"
+    "message": "Adicionar outra secção"
   },
   "sectionCode": {
-    "message": "Código",
-    "description": "Label for the code for a section"
+    "message": "Código"
   },
   "sectionRemove": {
-    "message": "Remover secção",
-    "description": "Label for the button to remove a section"
+    "message": "Remover secção"
   },
   "sectionRestore": {
-    "message": "Restaurar secção removida",
-    "description": "Label for the button to restore a removed section"
+    "message": "Restaurar secção removida"
   },
   "shortcuts": {
-    "message": "Atalhos",
-    "description": "Go to shortcut configuration"
+    "message": "Atalhos"
   },
   "shortcutsNote": {
-    "message": "Definir atalhos de teclado",
-    "description": ""
+    "message": "Definir atalhos de teclado"
   },
   "sortDateNewestFirst": {
-    "message": "mais recente primeiro",
-    "description": "Text added to indicate that sorting a date would add the newest entries at the top"
+    "message": "mais recente primeiro"
   },
   "sortDateOldestFirst": {
-    "message": "mais antigos primeiro",
-    "description": "Text added to indicate that sorting a date would add the oldest entries at the top"
+    "message": "mais antigos primeiro"
   },
   "sortLabel": {
-    "message": "Selecione uma ordenação para aplicar aos estilos instalados",
-    "description": "Title on the sort select to indicate it is used for sorting entries"
+    "message": "Selecione uma ordenação para aplicar aos estilos instalados"
   },
   "sortLabelTitleAsc": {
-    "message": "Título Ascendente",
-    "description": "Text added to option group to indicate a block of options that apply a title ascending (A to Z) sort"
+    "message": "Título Ascendente"
   },
   "sortLabelTitleDesc": {
-    "message": "Título Descendente",
-    "description": "Text added to option group to indicate a block of options that apply a title descending (Z to A) sort"
+    "message": "Título Descendente"
   },
   "sortStylesHelp": {
-    "message": "Escolha o tipo de ordenação a ser aplicado às entradas instaladas na lista suspensa de ordenação. A configuração predefinida aplica uma ordem crescente (A a Z) aos títulos de entrada. As ordenações dentro do grupo \"Título Decrescente\" aplicarão uma classificação decrescente (Z a A) ao título. Existem outras predefinições que permitirão classificar as entradas por vários critérios. Pense sobre isso como ordenar uma tabela com várias colunas e cada categoria em cada seleção (entre os sinais de mais) representa uma coluna ou grupo. Por exemplo, se a configuração for \"Ativado (primeiro) + Título\", as entradas serão ordenadas de modo que todas as entradas ativadas sejam classificadas no topo da lista, então uma classificação crescente de título de entrada (A a Z) será aplicada a ambas as entradas ativadas e desativadas separadamente.",
-    "description": "Text in the minihelp displayed when clicking (i) icon to the right of the sort input field on the Manage styles page"
+    "message": "Escolha o tipo de ordenação a ser aplicado às entradas instaladas na lista suspensa de ordenação. A configuração predefinida aplica uma ordem crescente (A a Z) aos títulos de entrada. As ordenações dentro do grupo \"Título Decrescente\" aplicarão uma classificação decrescente (Z a A) ao título. Existem outras predefinições que permitirão classificar as entradas por vários critérios. Pense sobre isso como ordenar uma tabela com várias colunas e cada categoria em cada seleção (entre os sinais de mais) representa uma coluna ou grupo. Por exemplo, se a configuração for \"Ativado (primeiro) + Título\", as entradas serão ordenadas de modo que todas as entradas ativadas sejam classificadas no topo da lista, então uma classificação crescente de título de entrada (A a Z) será aplicada a ambas as entradas ativadas e desativadas separadamente."
   },
   "sortStylesHelpTitle": {
-    "message": "Ordenar conteúdos",
-    "description": "Label for the sort info popup on the Manage styles page"
+    "message": "Ordenar conteúdos"
   },
   "styleBadRegexp": {
-    "message": "Regexp é inválido",
-    "description": "Validation message for a bad regexp in a style"
+    "message": "Regexp é inválido"
   },
   "styleBeautify": {
-    "message": "Embelezar",
-    "description": "Label for the CSS-beautifier button on the edit style page"
+    "message": "Embelezar"
   },
   "styleBeautifyIndentConditional": {
-    "message": "Indentar @media, @supports",
-    "description": "CSS-beautifier option"
+    "message": "Indentar @media, @supports"
   },
   "styleBeautifyPreserveNewlines": {
-    "message": "Preserve novas linhas",
-    "description": "CSS-beautifier option"
+    "message": "Preserve novas linhas"
   },
   "styleCancelEditLabel": {
-    "message": "Voltar para gerir",
-    "description": "Label for cancel button for style editing"
+    "message": "Voltar para gerir"
   },
   "styleChangesNotSaved": {
-    "message": "Fizeste alterações a este estilo sem as guardar.",
-    "description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
+    "message": "Fizeste alterações a este estilo sem as guardar."
   },
   "styleEnabledLabel": {
-    "message": "Ativado",
-    "description": "Label for the enabled state of styles"
+    "message": "Ativado"
   },
   "styleFromMozillaFormatError": {
-    "message": "Falha ao importar do formato Mozilla",
-    "description": "Label for the import error"
+    "message": "Falha ao importar do formato Mozilla"
   },
   "styleFromMozillaFormatPrompt": {
-    "message": "Colar o código formato-Mozilla",
-    "description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
+    "message": "Colar o código formato-Mozilla"
   },
   "styleInstall": {
     "message": "Instalar '$stylename$' no Stylus?",
-    "description": "Confirmation when installing a style",
     "placeholders": {
       "stylename": {
         "content": "$1"
@@ -984,7 +743,6 @@
   },
   "styleInstallFailed": {
     "message": "Falha ao instalar o estilo de usuário!\n$error$",
-    "description": "Warning when installation failed",
     "placeholders": {
       "error": {
         "content": "$1"
@@ -993,86 +751,68 @@
   },
   "styleInstallOverwrite": {
     "message": "$stylename$já está instalado. Substituir?\nVersão:$oldVersion$-> $newVersion$",
-    "description": "Confirmation when re-installing a style",
     "placeholders": {
-      "stylename": {
-        "content": "$1"
-      },
       "newVersion": {
         "content": "$3"
       },
       "oldVersion": {
         "content": "$2"
+      },
+      "stylename": {
+        "content": "$1"
       }
     }
   },
   "styleMissingName": {
-    "message": "Introduzir um nome",
-    "description": "Error displayed when user saves without providing a name"
+    "message": "Introduzir um nome"
   },
   "styleMozillaFormatHeading": {
-    "message": "Formato Mozilla",
-    "description": "Heading for the section with buttons to import/export Mozilla format of the style"
+    "message": "Formato Mozilla"
   },
   "styleNotAppliedRegexpProblemTooltip": {
-    "message": "O estilo não foi aplicado devido ao uso incorreto de 'regexp ()'",
-    "description": "Tooltip in the popup for styles that were not applied at all"
+    "message": "O estilo não foi aplicado devido ao uso incorreto de 'regexp ()'"
   },
   "styleRegexpInvalidExplanation": {
-    "message": "Algumas regras de 'regexp()' que não puderam ser compiladas.",
-    "description": ""
+    "message": "Algumas regras de 'regexp()' que não puderam ser compiladas."
   },
   "styleRegexpPartialExplanation": {
-    "message": "Este estilo usa regexps parcialmente correspondentes em violação da <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document specification</a> que requer um URL correspondente inteiro. As secções de CSS afetadas não foram aplicadas nesta página. Este estilo foi provavelmente criado no Stylish-for-Chrome o qual verifica incorretamente as regras 'regexp()' desde a primeira versão (bug conhecido).",
-    "description": ""
+    "message": "Este estilo usa regexps parcialmente correspondentes em violação da <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document specification</a> que requer um URL correspondente inteiro. As secções de CSS afetadas não foram aplicadas nesta página. Este estilo foi provavelmente criado no Stylish-for-Chrome o qual verifica incorretamente as regras 'regexp()' desde a primeira versão (bug conhecido)."
   },
   "styleRegexpProblemTooltip": {
-    "message": "Número de secções não aplicadas devido ao uso incorreto de 'regexp ()'",
-    "description": "Tooltip in the popup for styles that were applied only partially"
+    "message": "Número de secções não aplicadas devido ao uso incorreto de 'regexp ()'"
   },
   "styleRegexpTestButton": {
-    "message": "Testar RegExp",
-    "description": "RegExp test button label in the editor shown when applies-to list has a regexp value"
+    "message": "Testar RegExp"
   },
   "styleRegexpTestFull": {
-    "message": "Separadores correspondentes",
-    "description": "RegExp test report: label for the fully matching expressions"
+    "message": "Separadores correspondentes"
   },
   "styleRegexpTestInvalid": {
-    "message": "Regexps inválidos ignorados",
-    "description": "RegExp test report: label for the invalid expressions"
+    "message": "Regexps inválidos ignorados"
   },
   "styleRegexpTestNone": {
-    "message": "Nenhum separador correspondente",
-    "description": "RegExp test report: label for expressions that didn't match any tabs"
+    "message": "Nenhum separador correspondente"
   },
   "styleRegexpTestNote": {
-    "message": "Nota: use um único \\ para escapar no campo de entrada regexp, que será automaticamente convertido para \\\\ no código de estilo conforme especificação para strings entre aspas em CSS.",
-    "description": "RegExp test report: a note displayed at the bottom of the dialog"
+    "message": "Nota: use um único \\ para escapar no campo de entrada regexp, que será automaticamente convertido para \\\\ no código de estilo conforme especificação para strings entre aspas em CSS."
   },
   "styleRegexpTestPartial": {
-    "message": "Não corresponde totalmente, portanto ignorado",
-    "description": "RegExp test report: label for the partially matching expressions"
+    "message": "Não corresponde totalmente, portanto ignorado"
   },
   "styleRegexpTestTitle": {
-    "message": "Lista de separadores correspondentes abertos (clique no URL para focar no separador)",
-    "description": "RegExp test report: title of the report"
+    "message": "Lista de separadores correspondentes abertos (clique no URL para focar no separador)"
   },
   "styleSaveLabel": {
-    "message": "Guardar",
-    "description": "Label for save button for style editing"
+    "message": "Guardar"
   },
   "styleToMozillaFormatHelp": {
-    "message": "O formato Mozilla do código pode ser submetido aouserstyles.org e usado com o clássico Stylish para o Firefox",
-    "description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
+    "message": "O formato Mozilla do código pode ser submetido aouserstyles.org e usado com o clássico Stylish para o Firefox"
   },
   "styleToMozillaFormatTitle": {
-    "message": "Estilo no formato Mozilla",
-    "description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
+    "message": "Estilo no formato Mozilla"
   },
   "styleUpdate": {
     "message": "Tem a certeza que quer atualizar '$stylename$'?",
-    "description": "Confirmation when updating a style",
     "placeholders": {
       "stylename": {
         "content": "$1"
@@ -1080,68 +820,46 @@
     }
   },
   "styleUpdateDiscardChanges": {
-    "message": "O estilo é alterado fora do editor. Gostaria de recarregar o estilo?",
-    "description": "Confirmation to update the style in the editor"
+    "message": "O estilo é alterado fora do editor. Gostaria de recarregar o estilo?"
   },
   "stylusUnavailableForURL": {
-    "message": "O Stylus não funciona em páginas como esta.",
-    "description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
+    "message": "O Stylus não funciona em páginas como esta."
   },
   "stylusUnavailableForURLdetails": {
-    "message": "Como precaução de segurança, o browser proíbe extensões de afetar as páginas embutidas (como chrome://version, a página de novo separador predefinido no Chrome 61, about:addons, e assim sucessivamente) tal como páginas de outras extensões. Cada browser também restringe acesso à sua própria galeria de extensões (como Chrome Web Store ou AMO)",
-    "description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
+    "message": "Como precaução de segurança, o browser proíbe extensões de afetar as páginas embutidas (como chrome://version, a página de novo separador predefinido no Chrome 61, about:addons, e assim sucessivamente) tal como páginas de outras extensões. Cada browser também restringe acesso à sua própria galeria de extensões (como Chrome Web Store ou AMO)"
   },
   "syncStorageErrorSaving": {
-    "message": "O valor não pode ser guardado. Tente reduzir a quantidade de texto.",
-    "description": "Displayed when trying to save an excessively big value via storage.sync API"
+    "message": "O valor não pode ser guardado. Tente reduzir a quantidade de texto."
   },
   "toggleStyle": {
-    "message": "Alternar estilo",
-    "description": "Label for the checkbox to enable/disable a style"
+    "message": "Alternar estilo"
   },
   "undo": {
-    "message": "Anular",
-    "description": "Button label"
+    "message": "Anular"
   },
   "undoGlobal": {
-    "message": "Anular em todas as secções",
-    "description": "CSS-beautify global Undo button label"
+    "message": "Anular em todas as secções"
   },
   "unreachableAMO": {
-    "message": "O Firefox proíbe o acesso ao site.",
-    "description": "Note in the popup displayed when opened on addons.mozilla.org"
+    "message": "O Firefox proíbe o acesso ao site."
   },
   "unreachableAMOHint": {
-    "message": "Para permitir o acesso abra<about:config>,clique com o botão direito na lista, clique em \"Novo\", depois em \"Booleano\", cole <privacy.resistFingerprinting.block_mozAddonManager> e clique em OK,<true>,OK, recarregue a página <addons.mozilla.org>.",
-    "description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
-  },
-  "unreachableAMOHintNewFF": {
-    "message": "No Firefox 60 e mais recente, você também terá que remover o domínio AMO de <extensions.webextensions.restrictedDomains> em <about:config>.",
-    "description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
-  },
-  "unreachableAMOHintOldFF": {
-    "message": "Somente o Firefox 59 e o mais recente podem ser configurados para permitir que WebExtensions incluam elementos de estilo em sites protegidos por CSP como este.",
-    "description": "Note in the popup when opened on addons.mozilla.org in Firefox < 59"
+    "message": "Para permitir o acesso abra<about:config>,clique com o botão direito na lista, clique em \"Novo\", depois em \"Booleano\", cole <privacy.resistFingerprinting.block_mozAddonManager> e clique em OK,<true>,OK, recarregue a página <addons.mozilla.org>."
   },
   "unreachableContentScript": {
-    "message": "Não foi possível comunicar com a página. Tente recarregar o separador.",
-    "description": "Note in the toolbar popup usually on file:// URLs after [re]loading Stylus"
+    "message": "Não foi possível comunicar com a página. Tente recarregar o separador."
   },
   "unreachableFileHint": {
-    "message": "O Stylus pode aceder URLs file:// apenas se ativar a checkbox correspondente para a extensão Stylus na página chrome://extensions",
-    "description": "Note in the toolbar popup for file:// URLs"
+    "message": "O Stylus pode aceder URLs file:// apenas se ativar a checkbox correspondente para a extensão Stylus na página chrome://extensions"
   },
   "updateAllCheckSucceededNoUpdate": {
-    "message": "Nenhuma atualização encontrada.",
-    "description": "Text that displays when an update all check completed and no updates are available"
+    "message": "Nenhuma atualização encontrada."
   },
   "updateAllCheckSucceededSomeEdited": {
-    "message": "Alguns estilos que podem ser atualizados não foram verificados para evitar perder possíveis edições locais. As atualizações podem ser forçadas ao verificar individualmente, ou fazendo outra verificação para todos os estilos (edições locais vão ser sobrescrevidas)",
-    "description": "Text that displays when an update all check completed and no updates are available"
+    "message": "Alguns estilos que podem ser atualizados não foram verificados para evitar perder possíveis edições locais. As atualizações podem ser forçadas ao verificar individualmente, ou fazendo outra verificação para todos os estilos (edições locais vão ser sobrescrevidas)"
   },
   "updateCheckFailBadResponseCode": {
     "message": "A atualização falhou: o servidor respondeu com o código $code$.",
-    "description": "Text that displays when an update check failed because the response code indicates an error",
     "placeholders": {
       "code": {
         "content": "$1"
@@ -1149,75 +867,57 @@
     }
   },
   "updateCheckFailServerUnreachable": {
-    "message": "A atualização falhou: servidor inacessível.",
-    "description": "Text that displays when an update check failed because the update server is unreachable"
+    "message": "A atualização falhou: servidor inacessível."
   },
   "updateCheckHistory": {
-    "message": "Histórico de verificação de atualizações",
-    "description": ""
+    "message": "Histórico de verificação de atualizações"
   },
   "updateCheckManualUpdateForce": {
-    "message": "Instalar atualização (edições locais vão ser sobrescritas)",
-    "description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
+    "message": "Instalar atualização (edições locais vão ser sobrescritas)"
   },
   "updateCheckManualUpdateHint": {
-    "message": "Forçando uma atualização vai substituir qualquer edição local.",
-    "description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
+    "message": "Forçando uma atualização vai substituir qualquer edição local."
   },
   "updateCheckSkippedLocallyEdited": {
-    "message": "Este estilo foi editado localmente.",
-    "description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
+    "message": "Este estilo foi editado localmente."
   },
   "updateCheckSkippedMaybeLocallyEdited": {
-    "message": "Este estilo pode ter sido editado localmente",
-    "description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
+    "message": "Este estilo pode ter sido editado localmente"
   },
   "updateCheckSucceededNoUpdate": {
-    "message": "O estilo está atualizado.",
-    "description": "Text that displays when an update check completed and no update is available"
+    "message": "O estilo está atualizado."
   },
   "updateCompleted": {
-    "message": "Atualização completa.",
-    "description": "Text that displays when an update completed"
+    "message": "Atualização completa."
   },
   "updatesCurrentlyInstalled": {
-    "message": "Atualizações instaladas:",
-    "description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
+    "message": "Atualizações instaladas:"
   },
   "usercssAvoidOverwriting": {
-    "message": "Por favor modifique o valor de @name ou @namespace para evitar sobrescrever um estilo existente.",
-    "description": "Shown in a message box when attempting to save a new Usercss style that would overwrite an existing one."
+    "message": "Por favor modifique o valor de @name ou @namespace para evitar sobrescrever um estilo existente."
   },
   "usercssConfigIncomplete": {
-    "message": "O estilo foi atualizado ou eliminado após a exibição do diálogo de configuração. Essas variáveis não foram guardadas para evitar corromper os metadados do estilo:",
-    "description": ""
+    "message": "O estilo foi atualizado ou eliminado após a exibição do diálogo de configuração. Essas variáveis não foram guardadas para evitar corromper os metadados do estilo:"
   },
   "usercssEditorNamePlaceholder": {
-    "message": "Especificar @name no código",
-    "description": "Placeholder text for the empty name input field when creating a new Usercss style"
+    "message": "Especificar @name no código"
   },
   "usercssReplaceTemplateConfirmation": {
-    "message": "Substituir o modelo predefinido para novos estilos de Usercss com o código atual?",
-    "description": ""
+    "message": "Substituir o modelo predefinido para novos estilos de Usercss com o código atual?"
   },
   "usercssReplaceTemplateName": {
-    "message": "@name vazio substitui o modelo predefinido",
-    "description": "The text shown after @name when creating a new Usercss style"
+    "message": "@name vazio substitui o modelo predefinido"
   },
   "usercssReplaceTemplateSectionBody": {
-    "message": "Insira o código aqui...",
-    "description": "The code placeholder comment in a new style created by clicking 'Write style' in the popup"
+    "message": "Insira o código aqui..."
   },
   "versionInvalidOlder": {
-    "message": "A versão é mais antiga que o estilo instalado.",
-    "description": "Displayed when the version of style is older than the installed one"
+    "message": "A versão é mais antiga que o estilo instalado."
   },
   "writeStyleFor": {
-    "message": "Escrever estilo para:",
-    "description": "Label for toolbar pop-up that precedes the links to write a new style"
+    "message": "Escrever estilo para:"
   },
   "writeStyleForURL": {
-    "message": "este URL",
-    "description": "Text for link in toolbar pop-up to write a new style for the current URL"
+    "message": "este URL"
   }
 }

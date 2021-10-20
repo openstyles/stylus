@@ -1,19 +1,15 @@
 {
   "addStyleTitle": {
-    "message": "Engadir Estilo",
-    "description": "Title of the page for adding styles"
+    "message": "Engadir Estilo"
   },
   "alphaChannel": {
-    "message": "Opacidade",
-    "description": "Label of color's opacity"
+    "message": "Opacidade"
   },
   "appliesAdd": {
-    "message": "Engadir",
-    "description": "Label for the button to add an 'applies' entry"
+    "message": "Engadir"
   },
   "appliesDisplay": {
     "message": "Aplica a: $applies$",
-    "description": "Text on the manage screen to describe what the style applies to",
     "placeholders": {
       "applies": {
         "content": "$1"
@@ -21,47 +17,36 @@
     }
   },
   "appliesDisplayTruncatedSuffix": {
-    "message": "e mais",
-    "description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
+    "message": "e mais"
   },
   "appliesDomainOption": {
-    "message": "URLs no dominio",
-    "description": "Option to make the style apply to the entered string as a domain"
+    "message": "URLs no dominio"
   },
   "appliesLabel": {
-    "message": "Aplica para",
-    "description": "Label for 'applies to' fields on the edit/add screen"
+    "message": "Aplica para"
   },
   "appliesLineWidgetWarning": {
-    "message": "Non funciona con CSS minificado",
-    "description": "A warning that applies-to information won't show properly with minified CSS"
+    "message": "Non funciona con CSS minificado"
   },
   "appliesRegexpOption": {
-    "message": "URLs que concorden co regexp",
-    "description": "Option to make the style apply to the entered string as a regular expression"
+    "message": "URLs que concorden co regexp"
   },
   "appliesRemove": {
-    "message": "Suprimir",
-    "description": "Label for the button to remove an 'applies' entry"
+    "message": "Suprimir"
   },
   "appliesSpecify": {
-    "message": "Especificar",
-    "description": "Label for the button to make a style apply only to specific sites"
+    "message": "Especificar"
   },
   "appliesToEverything": {
-    "message": "Todo",
-    "description": "Text displayed for styles that apply to all sites"
+    "message": "Todo"
   },
   "appliesUrlPrefixOption": {
-    "message": "URLs que comecen por",
-    "description": "Option to make the style apply to the entered string as a URL prefix"
+    "message": "URLs que comecen por"
   },
   "applyAllUpdates": {
-    "message": "Aplicar tódalas actualizacións",
-    "description": "Label for the button to apply all detected updates"
+    "message": "Aplicar tódalas actualizacións"
   },
   "author": {
-    "message": "Autor",
-    "description": "Label for the style author"
+    "message": "Autor"
   }
 }

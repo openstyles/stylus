@@ -1,23 +1,21 @@
 {
+  "InaccessibleFileHint": {
+    "message": "Stylus는 일부 파일 형식(예: pdf, json 파일 등)에 접근할 수 없습니다."
+  },
   "addStyleLabel": {
-    "message": "새 스타일 작성",
-    "description": "Label for the button to go to the add style page"
+    "message": "새 스타일 작성"
   },
   "addStyleTitle": {
-    "message": "스타일 추가",
-    "description": "Title of the page for adding styles"
+    "message": "스타일 추가"
   },
   "alphaChannel": {
-    "message": "투명도",
-    "description": "Label of color's opacity"
+    "message": "투명도"
   },
   "appliesAdd": {
-    "message": "추가",
-    "description": "Label for the button to add an 'applies' entry"
+    "message": "추가"
   },
   "appliesDisplay": {
     "message": "적용 대상: $applies$",
-    "description": "Text on the manage screen to describe what the style applies to",
     "placeholders": {
       "applies": {
         "content": "$1"
@@ -25,292 +23,232 @@
     }
   },
   "appliesDisplayTruncatedSuffix": {
-    "message": "그 이상",
-    "description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
+    "message": "그 이상"
   },
   "appliesDomainOption": {
-    "message": "URL의 도메인이 다음과 같음",
-    "description": "Option to make the style apply to the entered string as a domain"
+    "message": "URL의 도메인이 다음과 같음"
   },
   "appliesHelp": {
-    "message": "'적용 대상'은 이 섹션에 작성한 스타일을 어느 URL에 적용할지 정합니다",
-    "description": "Help text for 'applies to' section"
+    "message": "'적용 대상'은 이 섹션에 작성한 스타일을 어느 URL에 적용할지 정합니다"
   },
   "appliesLabel": {
-    "message": "적용 대상",
-    "description": "Label for 'applies to' fields on the edit/add screen"
+    "message": "적용 대상"
   },
   "appliesLineWidgetLabel": {
-    "message": "'적용 대상' 정보 표시",
-    "description": "Label for the checkbox to display applies-to information in the single editor"
+    "message": "'적용 대상' 정보 표시"
   },
   "appliesLineWidgetWarning": {
-    "message": "경량화(Minify) 된 CSS에선 작동하지 않습니다.",
-    "description": "A warning that applies-to information won't show properly with minified CSS"
+    "message": "경량화(Minify) 된 CSS에선 작동하지 않습니다."
   },
   "appliesRegexpOption": {
-    "message": "URL이 다음 정규 표현식과 일치함",
-    "description": "Option to make the style apply to the entered string as a regular expression"
+    "message": "URL이 다음 정규 표현식과 일치함"
   },
   "appliesRemove": {
-    "message": "제거",
-    "description": "Label for the button to remove an 'applies' entry"
+    "message": "제거"
   },
   "appliesRemoveError": {
-    "message": "마지막 '적용 대상' 항목은 제거할 수 없습니다",
-    "description": "Error displayed when the last 'applies' is going to be removed"
+    "message": "마지막 '적용 대상' 항목은 제거할 수 없습니다"
   },
   "appliesSpecify": {
-    "message": "개별 지정",
-    "description": "Label for the button to make a style apply only to specific sites"
+    "message": "개별 지정"
   },
   "appliesToEverything": {
-    "message": "전부",
-    "description": "Text displayed for styles that apply to all sites"
+    "message": "전부"
   },
   "appliesUrlPrefixOption": {
-    "message": "URL의 앞부분이 다음과 같음",
-    "description": "Option to make the style apply to the entered string as a URL prefix"
+    "message": "URL의 앞부분이 다음과 같음"
   },
   "applyAllUpdates": {
-    "message": "모든 업데이트 적용",
-    "description": "Label for the button to apply all detected updates"
+    "message": "모든 업데이트 적용"
   },
   "author": {
-    "message": "작성자",
-    "description": "Label for the style author"
+    "message": "작성자"
   },
   "backupButtons": {
-    "message": "백업",
-    "description": "Heading for backup"
+    "message": "백업"
   },
   "backupMessage": {
-    "message": "파일을 선택하거나, 이 페이지로 파일을 드래그앤드롭하세요.",
-    "description": "Message for backup"
+    "message": "파일을 선택하거나, 이 페이지로 파일을 드래그앤드롭하세요."
   },
   "bckpInstStyles": {
-    "message": "스타일 내보내기",
-    "description": ""
+    "message": "스타일 내보내기"
   },
   "checkAllUpdates": {
-    "message": "모든 스타일 업데이트 확인",
-    "description": "Label for the button to check all styles for updates"
+    "message": "모든 스타일 업데이트 확인"
   },
   "checkAllUpdatesForce": {
-    "message": "한 번 더 확인해보세요. 아직 아무것도 수정하지 않았답니다!",
-    "description": "Label for the button to apply all detected updates"
+    "message": "한 번 더 확인해보세요. 아직 아무것도 수정하지 않았답니다!"
   },
   "checkForUpdate": {
-    "message": "업데이트 확인",
-    "description": "Label for the button to check a single style for an update"
+    "message": "업데이트 확인"
   },
   "checkingForUpdate": {
-    "message": "확인 중...",
-    "description": "Text to display when checking a style for an update"
+    "message": "확인 중..."
   },
   "clickToUninstall": {
-    "message": "클릭하여 제거",
-    "description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
+    "message": "클릭하여 제거"
   },
   "cm_autoCloseBrackets": {
-    "message": "괄호 및 따옴표 자동으로 닫기",
-    "description": "Label for the checkbox in the style editor."
+    "message": "괄호 및 따옴표 자동으로 닫기"
   },
   "cm_autoCloseBracketsTooltip": {
-    "message": "()[]''\"\"의 여는 기호를 입력할 시, 닫는 기호를 자동으로 추가합니다",
-    "description": "Label for the checkbox in the style editor."
+    "message": "()[]''\"\"의 여는 기호를 입력할 시, 닫는 기호를 자동으로 추가합니다"
   },
   "cm_autocompleteOnTyping": {
-    "message": "타이핑 자동완성",
-    "description": "Label for the checkbox in the style editor."
+    "message": "타이핑 자동완성"
   },
   "cm_colorpicker": {
-    "message": "CSS 색상에 Colorpicker(색상 선택기) 표시",
-    "description": "Label for the checkbox controlling colorpicker option for the style editor."
+    "message": "CSS 색상에 Colorpicker(색상 선택기) 표시"
   },
   "cm_indentWithTabs": {
-    "message": "자동 들여쓰기 시 탭 사용",
-    "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
+    "message": "자동 들여쓰기 시 탭 사용"
   },
   "cm_keyMap": {
-    "message": "키 매핑",
-    "description": "Label for the drop-down list controlling the keymap for the style editor."
+    "message": "키 매핑"
   },
   "cm_lineWrapping": {
-    "message": "자동 줄바끔",
-    "description": "Label for the checkbox controlling word wrap option for the style editor."
+    "message": "자동 줄바끔"
   },
   "cm_matchHighlight": {
-    "message": "하이라이트",
-    "description": "Label for the drop-down list controlling the automatic highlighting of current word/selection occurrences in the style editor."
+    "message": "하이라이트"
   },
   "cm_matchHighlightSelection": {
-    "message": "선택된 것만",
-    "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
+    "message": "선택된 것만"
   },
   "cm_matchHighlightToken": {
-    "message": "커서 위치의 토큰",
-    "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of the word/token under cursor even if nothing is selected"
+    "message": "커서 위치의 토큰"
   },
   "cm_resizeGripHint": {
-    "message": "더블 클릭으로 높이 최대화/이전 높이로 복구할 수 있습니다",
-    "description": "Tooltip for the resize grip in style editor"
+    "message": "더블 클릭으로 높이 최대화/이전 높이로 복구할 수 있습니다"
   },
   "cm_selectByTokens": {
-    "message": "더블 클릭으로 토큰 선택",
-    "description": "Label for the checkbox in the editor."
+    "message": "더블 클릭으로 토큰 선택"
   },
   "cm_selectByTokensTooltip": {
-    "message": "토큰 예시: .foo-bar-2 #aabbcc 0.32 !important\n비활성화 시: 문장 부호로 구분된 단어 선택",
-    "description": ""
+    "message": "토큰 예시: .foo-bar-2 #aabbcc 0.32 !important\n비활성화 시: 문장 부호로 구분된 단어 선택"
   },
   "cm_smartIndent": {
-    "message": "자동 들여쓰기",
-    "description": "Label for the checkbox controlling smart indentation option for the style editor."
+    "message": "자동 들여쓰기"
   },
   "cm_tabSize": {
-    "message": "탭 크기",
-    "description": "Label for the text box controlling tab size option for the style editor."
+    "message": "탭 크기"
   },
   "cm_theme": {
-    "message": "테마",
-    "description": "Label for the style editor's CSS theme."
+    "message": "테마"
   },
   "colorpickerSwitchFormatTooltip": {
-    "message": "16 진수-> RGB -> HSL 순서로 형식을 변환합니다.\nShift+클릭을 이용해 역순으로 변환할 수 있습니다.\nPgUp(PageUp), PgDn(PageDown) 키도 사용 가능합니다.",
-    "description": "Tooltip for the switch button in the color picker popup in the style editor."
+    "message": "16 진수-> RGB -> HSL 순서로 형식을 변환합니다.\nShift+클릭을 이용해 역순으로 변환할 수 있습니다.\nPgUp(PageUp), PgDn(PageDown) 키도 사용 가능합니다."
   },
   "colorpickerTooltip": {
-    "message": "색상 선택기 열기",
-    "description": "Tooltip for the colored squares shown before CSS colors in the style editor."
+    "message": "색상 선택기 열기"
   },
   "configOnChange": {
-    "message": "변경 시",
-    "description": "VERY SHORT label for the checkbox in style config dialog after the save button - when enabled the changes in the dialog are saved and applied automatically without the need to press the Save button"
+    "message": "변경 시"
   },
   "configOnChangeTooltip": {
-    "message": "자동으로 변경 사항 저장 및 적용",
-    "description": ""
+    "message": "자동으로 변경 사항 저장 및 적용"
   },
   "configureStyle": {
-    "message": "설정",
-    "description": "Label for the button to configure usercss userstyle"
+    "message": "설정"
   },
   "configureStyleOnHomepage": {
-    "message": "홈페이지에서 설정",
-    "description": "Label for the button to configure userstyles.org userstyle"
+    "message": "홈페이지에서 설정"
   },
   "confirmCancel": {
-    "message": "취소",
-    "description": ""
+    "message": "취소"
   },
   "confirmClose": {
-    "message": "닫기",
-    "description": "'Close' button in a confirm dialog"
+    "message": "닫기"
   },
   "confirmDefault": {
-    "message": "기본값 사용",
-    "description": "'Set to default' button in a confirm dialog"
+    "message": "기본값 사용"
   },
   "confirmDelete": {
-    "message": "삭제",
-    "description": ""
+    "message": "삭제"
   },
   "confirmDiscardChanges": {
-    "message": "변경 사항을 무시하시겠습니까?",
-    "description": "Generic label or title displayed when trying to close something (not a style) with unsaved changes"
+    "message": "변경 사항을 무시하시겠습니까?"
   },
   "confirmNo": {
-    "message": "아니오",
-    "description": "'No' button in a confirm dialog"
+    "message": "아니오"
   },
   "confirmOK": {
-    "message": "확인",
-    "description": ""
+    "message": "확인"
   },
   "confirmSave": {
-    "message": "저장",
-    "description": "'Save' button in a confirm dialog"
+    "message": "저장"
   },
   "confirmStop": {
-    "message": "중지",
-    "description": "'Stop' button in a confirm dialog"
+    "message": "중지"
   },
   "confirmYes": {
-    "message": "예",
-    "description": "'Yes' button in a confirm dialog"
+    "message": "예"
+  },
+  "connectingDropbox": {
+    "message": "Dropbox 연결 중..."
+  },
+  "connectingDropboxNotAllowed": {
+    "message": "Dropbox 연결은 웹 스토어에서 직접 설치한 앱에서만 가능합니다."
   },
   "copied": {
-    "message": "클립보드에 복사됨",
-    "description": "Message shown when content has been copied to the clipboard"
+    "message": "클립보드에 복사됨"
   },
   "copy": {
-    "message": "클립보드에 복사",
-    "description": "Tooltip for elements which can be copied"
+    "message": "클립보드에 복사"
+  },
+  "customNameHint": {
+    "message": "사용자 정의 이름을 여기에 입력하여 업데이트 중단 없이 UI에서 스타일의 이름을 바꾸세요"
+  },
+  "customNameResetHint": {
+    "message": "사용자 정의 이름의 사용을 중단하고, 스타일의 자체 이름으로 전환하세요"
   },
   "dateInstalled": {
-    "message": "설치된 날짜",
-    "description": "Option text for the user to sort the style by install date"
+    "message": "설치된 날짜"
   },
   "dateUpdated": {
-    "message": "변경된 날짜",
-    "description": "Option text for the user to sort the style by last update date"
+    "message": "변경된 날짜"
   },
   "dbError": {
-    "message": "Stylus 데이터베이스를 사용하던 중 오류가 발생했습니다. 해결 방법 안내 웹페이지를 여시겠습니까?",
-    "description": "Prompt when a DB error is encountered"
+    "message": "Stylus 데이터베이스를 사용하던 중 오류가 발생했습니다. 해결 방법 안내 웹페이지를 여시겠습니까?"
   },
   "defaultTheme": {
-    "message": "기본",
-    "description": "Default CodeMirror CSS theme option on the edit style page"
+    "message": "기본"
   },
   "deleteStyleConfirm": {
-    "message": "이 스타일을 정말 삭제하시겠습니까?",
-    "description": "Confirmation before deleting a style"
+    "message": "이 스타일을 정말 삭제하시겠습니까?"
   },
   "deleteStyleLabel": {
-    "message": "삭제",
-    "description": "Label for the button to delete a style"
+    "message": "삭제"
   },
   "description": {
-    "message": "Stylus로 웹페이지를 새롭게 디자인해보세요. 유명한 사이트의 테마, 스킨도 간단하게 설치할 수 있는 사용자 스타일 관리자입니다.",
-    "description": "Extension description"
+    "message": "Stylus로 웹페이지를 새롭게 디자인해보세요. 유명한 사이트의 테마, 스킨도 간단하게 설치할 수 있는 사용자 스타일 관리자입니다."
   },
   "disableAllStyles": {
-    "message": "모든 스타일 비활성화",
-    "description": "Label for the checkbox that turns all enabled styles off."
+    "message": "모든 스타일 비활성화"
   },
   "disableStyleLabel": {
-    "message": "비활성화",
-    "description": "Label for the button to disable a style"
+    "message": "비활성화"
   },
   "dragDropMessage": {
-    "message": "이 페이지 아무 곳에나 백업 파일을 놓으세요.",
-    "description": "Drag'n'drop message"
+    "message": "이 페이지 아무 곳에나 백업 파일을 놓으세요."
   },
   "dragDropUsercssTabstrip": {
-    "message": "파일을 설치하려면, 파일을 탭 표시줄(탭 제목이 표시되는 영역)에 놓으세요.",
-    "description": "Message popup shown when erroneously dropping a usercss file into the manager page"
+    "message": "파일을 설치하려면, 파일을 탭 표시줄(탭 제목이 표시되는 영역)에 놓으세요."
   },
   "editDeleteText": {
-    "message": "삭제",
-    "description": "Label for the context menu item in the editor to delete selected text"
+    "message": "삭제"
   },
   "editGotoLine": {
-    "message": "줄 이동",
-    "description": "Go to line or line:column on Ctrl-G in style code editor"
+    "message": "줄 이동"
   },
   "editStyleHeading": {
-    "message": "스타일 수정",
-    "description": "Title of the page for editing styles"
+    "message": "스타일 수정"
   },
   "editStyleLabel": {
-    "message": "수정",
-    "description": "Label for the button to go to the edit style page"
+    "message": "수정"
   },
   "editStyleTitle": {
     "message": " $stylename$ 스타일 수정",
-    "description": "Title of the page for editing styles",
     "placeholders": {
       "stylename": {
         "content": "$1"
@@ -318,220 +256,180 @@
     }
   },
   "enableStyleLabel": {
-    "message": "활성화",
-    "description": "Label for the button to enable a style"
+    "message": "활성화"
   },
   "excludeStyleByDomainLabel": {
-    "message": "현재 도메인 제외",
-    "description": ""
+    "message": "현재 도메인 제외"
   },
   "excludeStyleByUrlLabel": {
-    "message": "현재 URL 제외",
-    "description": ""
+    "message": "현재 URL 제외"
   },
   "exportLabel": {
-    "message": "내보내기",
-    "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+    "message": "내보내기"
+  },
+  "exportSavedSuccess": {
+    "message": "파일 저장에 성공했습니다."
   },
   "externalFeedback": {
-    "message": "피드백",
-    "description": "Label for the external link to send feedback for the style"
+    "message": "피드백"
   },
   "externalHomepage": {
-    "message": "홈페이지",
-    "description": "Label for the external link to style's homepage"
+    "message": "홈페이지"
   },
   "externalLink": {
-    "message": "외부 링크",
-    "description": "Label for external links"
+    "message": "외부 링크"
   },
   "externalSupport": {
-    "message": "지원",
-    "description": "Label for the external link to style's support site"
+    "message": "지원"
   },
   "externalUsercssDocument": {
-    "message": "Usercss 안내 문서",
-    "description": "Label for the external link to usercss documentation"
+    "message": "Usercss 안내 문서"
   },
   "filteredStyles": {
     "message": "$numTotal$개 중 $numShown$개 표시",
-    "description": "TL note - make this message short",
     "placeholders": {
-      "numTotal": {
-        "content": "$2"
-      },
       "numShown": {
         "content": "$1"
+      },
+      "numTotal": {
+        "content": "$2"
       }
     }
   },
   "filteredStylesAllHidden": {
-    "message": "현재 적용된 필터와 일치하는 스타일이 없습니다",
-    "description": "Text shown when no styles match currently applied filter in the style manager"
+    "message": "현재 적용된 필터와 일치하는 스타일이 없습니다"
   },
   "findStyles": {
-    "message": "스타일 찾기",
-    "description": "Text for a link that gets a list of styles for the current site"
+    "message": "스타일 찾기"
   },
   "findStylesForSite": {
-    "message": "현재 사이트에 맞는 스타일 찾기",
-    "description": "Text for a link that gets a list of styles for the current site"
+    "message": "현재 사이트에 맞는 스타일 찾기"
   },
   "findStylesInline": {
-    "message": "팝업창 내에서",
-    "description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
+    "message": "팝업창 내에서"
   },
   "findStylesInlineTooltip": {
-    "message": "이 창에서 검색 결과 표시",
-    "description": "Text for a checkbox that displays search results within the Stylus popup."
+    "message": "이 창에서 검색 결과 표시"
   },
   "genericAdd": {
-    "message": "추가",
-    "description": "Used in various places for an action that adds something"
+    "message": "추가"
   },
   "genericClone": {
-    "message": "복제",
-    "description": "Used in various places for an action that clones something"
+    "message": "복제"
   },
   "genericDisabledLabel": {
-    "message": "비활성화됨",
-    "description": "Used in various lists/options to indicate that something is disabled"
+    "message": "비활성화됨"
   },
   "genericEnabledLabel": {
-    "message": "활성화됨",
-    "description": "Used in various lists/options to indicate that something is enabled"
+    "message": "활성화됨"
   },
   "genericError": {
-    "message": "에러",
-    "description": "Used in various places to indicate some error occurred."
+    "message": "에러"
   },
   "genericHistoryLabel": {
-    "message": "기록",
-    "description": "Used in various places to show a history log of something"
+    "message": "기록"
   },
   "genericNext": {
-    "message": "다음",
-    "description": "Used in various places to select/perform the next step/action"
+    "message": "다음"
   },
   "genericPrevious": {
-    "message": "이전",
-    "description": "Used in various places to select/perform the previous step/action"
+    "message": "이전"
   },
   "genericResetLabel": {
-    "message": "초기화",
-    "description": "Used in various parts of UI to indicate that something may be reset to its original state"
+    "message": "초기화"
   },
   "genericSavedMessage": {
-    "message": "저장됨",
-    "description": "Used in various parts of the UI to indicate that something was saved"
+    "message": "저장됨"
   },
   "genericTitle": {
-    "message": "제목",
-    "description": "Used in various parts of the UI to indicate the title of something"
+    "message": "제목"
   },
   "genericUnknown": {
-    "message": "알 수 없음",
-    "description": "Used in various parts of the UI to indicate if something is unknown (e.g. an unknown date)"
+    "message": "알 수 없음"
+  },
+  "gettingStyles": {
+    "message": "모든 스타일 가져오는 중..."
   },
   "helpAlt": {
-    "message": "도움말",
-    "description": "Alternate text for help buttons"
+    "message": "도움말"
   },
   "helpKeyMapCommand": {
-    "message": "명령어를 입력하세요",
-    "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+    "message": "명령어를 입력하세요"
   },
   "helpKeyMapHotkey": {
-    "message": "단축키를 입력하세요",
-    "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+    "message": "단축키를 입력하세요"
   },
   "hostDisabled": {
-    "message": "이 호스트는 현재 사용 중인 브라우저 버전의 버그로 인해 비활성화되었습니다",
-    "description": "Tooltip for cloud host disabled"
+    "message": "이 호스트는 현재 사용 중인 브라우저 버전의 버그로 인해 비활성화되었습니다"
   },
   "importAppendLabel": {
-    "message": "스타일에 추가",
-    "description": "Label for the button to import a style and append to the existing sections"
+    "message": "스타일에 추가"
   },
   "importAppendTooltip": {
-    "message": "가져온 스타일을 현재 스타일에 추가",
-    "description": "Tooltip for the button to import a style and append to the existing sections"
+    "message": "가져온 스타일을 현재 스타일에 추가"
   },
   "importLabel": {
-    "message": "가져오기",
-    "description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+    "message": "가져오기"
+  },
+  "importPreprocessor": {
+    "message": "<code>@preprocessor</code>가 있는 스타일은 고전 모드에서 동작하지 않을 것입니다. Usercss 모드로 편집기를 전환할 수 있습니다: 1) 스타일 관리자 열기, 2) “Usercss로” 확인란 활성화하기, 3) “새 스타일 쓰기”\n\n지금 바로 가져오기?"
+  },
+  "importPreprocessorTitle": {
+    "message": "@preprocessor로 인한 잠재적 문제가 있습니다"
   },
   "importReplaceLabel": {
-    "message": "스타일 덮어쓰기",
-    "description": "Label for the button to import and overwrite current style"
+    "message": "스타일 덮어쓰기"
   },
   "importReplaceTooltip": {
-    "message": "현재 스타일을 버리고, 가져온 스타일로 덮어씁니다.",
-    "description": "Label for the button to import and overwrite current style"
+    "message": "현재 스타일을 버리고, 가져온 스타일로 덮어씁니다."
   },
   "importReportLegendAdded": {
-    "message": "추가됨",
-    "description": "Text after the number of styles added in the report shown after importing styles"
+    "message": "추가됨"
   },
   "importReportLegendIdentical": {
-    "message": "중복 생략됨",
-    "description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
+    "message": "중복 생략됨"
   },
   "importReportLegendInvalid": {
-    "message": "유효하지 않아 생략됨",
-    "description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
+    "message": "유효하지 않아 생략됨"
   },
   "importReportLegendUpdatedBoth": {
-    "message": "메타데이터, 코드 모두 업데이트됨",
-    "description": "Text after the number of styles updated entirely in the report shown after importing styles"
+    "message": "메타데이터, 코드 모두 업데이트됨"
   },
   "importReportLegendUpdatedCode": {
-    "message": "코드가 업데이트됨",
-    "description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"
+    "message": "코드가 업데이트됨"
   },
   "importReportLegendUpdatedMeta": {
-    "message": "메타데이터 업데이트됨",
-    "description": "Text after the number of styles with updated meta info like name/url in the report shown after importing styles"
+    "message": "메타데이터 업데이트됨"
   },
   "importReportTitle": {
-    "message": "스타일 가져오기 완료",
-    "description": "Title of the report shown after importing styles"
+    "message": "스타일 가져오기 완료"
   },
   "importReportUnchanged": {
-    "message": "변경사항 없음",
-    "description": "Message in the report shown after importing styles"
+    "message": "변경사항 없음"
   },
   "importReportUndone": {
-    "message": "스타일 되돌려짐",
-    "description": "Text after the number of styles reverted in the message box shown after undoing the import of styles"
+    "message": "스타일 되돌려짐"
   },
   "importReportUndoneTitle": {
-    "message": "가져오기가 취소되었습니다.",
-    "description": "Title of the message box shown after undoing the import of styles"
+    "message": "가져오기가 취소되었습니다."
   },
   "installButton": {
-    "message": "스타일 설치",
-    "description": "Label for install button"
+    "message": "스타일 설치"
   },
   "installButtonInstalled": {
-    "message": "스타일 설치됨",
-    "description": "Text displayed when the style is successfully installed"
+    "message": "스타일 설치됨"
   },
   "installButtonReinstall": {
-    "message": "스타일 재설치",
-    "description": "Label for reinstall button"
+    "message": "스타일 재설치"
   },
   "installButtonUpdate": {
-    "message": "스타일 업데이트",
-    "description": "Label for update button"
+    "message": "스타일 업데이트"
   },
   "installUpdate": {
-    "message": "업데이트 설치",
-    "description": "Label for the button to install an update for a single style"
+    "message": "업데이트 설치"
   },
   "installUpdateFrom": {
     "message": "현재 스타일은 $url$에서 업데이트되었습니다",
-    "description": "Label to describe where the style gets update",
     "placeholders": {
       "url": {
         "content": "$1"
@@ -539,32 +437,25 @@
     }
   },
   "installUpdateFromLabel": {
-    "message": "업데이트 확인",
-    "description": "Label for the checkbox to save current URL for update check"
+    "message": "업데이트 확인"
   },
   "license": {
-    "message": "라이센스",
-    "description": "Label for the license"
+    "message": "라이센스"
   },
   "linkGetHelp": {
-    "message": "도움말",
-    "description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
+    "message": "도움말"
   },
   "linkGetStyles": {
-    "message": "스타일 찾기",
-    "description": "Help link text on the manage page e.g. https://userstyles.org"
+    "message": "스타일 찾기"
   },
   "linkStylusWiki": {
-    "message": "위키",
-    "description": "Wiki link text on the manage page e.g. https://github.com/openstyles/stylus/wiki"
+    "message": "위키"
   },
   "linkTranslate": {
-    "message": "번역",
-    "description": "Transifex link text on the manage page"
+    "message": "번역"
   },
   "linterCSSLintIncompatible": {
     "message": "CSSLint는 $preprocessorname$ 전처리기를 지원하지 않습니다.",
-    "description": "The label to display when the preprocessor isn't compatible with CSSLint",
     "placeholders": {
       "preprocessorname": {
         "content": "$1"
@@ -572,12 +463,10 @@
     }
   },
   "linterCSSLintSettings": {
-    "message": "(규칙 설정: 0 = 비활성화, 1 = 경고(warning), 2 = 에러)",
-    "description": "CSSLint rule config values"
+    "message": "(규칙 설정: 0 = 비활성화, 1 = 경고(warning), 2 = 에러)"
   },
   "linterConfigPopupTitle": {
     "message": "$linter$ 규칙 설정",
-    "description": "Stylelint or CSSLint popup header",
     "placeholders": {
       "linter": {
         "content": "$1"
@@ -585,20 +474,16 @@
     }
   },
   "linterConfigTooltip": {
-    "message": "현재 Linter를 설정하려면 클릭하세요",
-    "description": "Icon tooltip to indicate that it opens a popup with the selected linter configuration"
+    "message": "현재 Linter를 설정하려면 클릭하세요"
   },
   "linterInvalidConfigError": {
-    "message": "유효하지 않은 설정으로 인해 저장할 수 없음:",
-    "description": "Invalid linter config will show a message followed by a list of invalid entries"
+    "message": "유효하지 않은 설정으로 인해 저장할 수 없음:"
   },
   "linterIssues": {
-    "message": "문제점",
-    "description": "Label for the CSS linter issues block on the style edit page"
+    "message": "문제점"
   },
   "linterIssuesHelp": {
     "message": "이 문제점은 $link$에 의해 발견됨:",
-    "description": "Help popup message for the selected CSS linter issues block on the style edit page",
     "placeholders": {
       "link": {
         "content": "$1"
@@ -606,144 +491,93 @@
     }
   },
   "linterJSONError": {
-    "message": "유효하지 않은 JSON 형식입니다",
-    "description": "Setting linter config with invalid JSON"
+    "message": "유효하지 않은 JSON 형식입니다"
   },
   "linterResetMessage": {
-    "message": "실수로 초기화한 경우, 텍스트 박스 내에서 Ctrl+Z (혹은 Cmd+Z)를 눌러 취소할 수 있습니다",
-    "description": "Reset button tooltip to inform user on how to undo an accidental reset"
+    "message": "실수로 초기화한 경우, 텍스트 박스 내에서 Ctrl+Z (혹은 Cmd+Z)를 눌러 취소할 수 있습니다"
   },
   "linterRulesLink": {
-    "message": "전체 규칙 목록 보기",
-    "description": "Stylelint or CSSLint rules label added immediately before a link"
+    "message": "전체 규칙 목록 보기"
   },
   "liveReloadError": {
-    "message": "파일을 주시하는 동안 오류가 발생함",
-    "description": "The label of live-reload error"
+    "message": "파일을 주시하는 동안 오류가 발생함"
   },
   "liveReloadInstallHint": {
-    "message": "외부 요인으로 인한 변경 시 스타일을 자동으로 업데이트하려면 이 탭을 열어두세요.",
-    "description": "The label of live-reload feature"
+    "message": "외부 요인으로 인한 변경 시 스타일을 자동으로 업데이트하려면 이 탭을 열어두세요."
   },
   "liveReloadInstallHintFF": {
-    "message": "외부 요인으로 인한 변경 시 스타일을 자동으로 업데이트하려면 이 탭과 원래 탭을 모두 열어두세요.",
-    "description": "The extra hint of live-reload feature shown only for file:// URLs in Firefox"
+    "message": "외부 요인으로 인한 변경 시 스타일을 자동으로 업데이트하려면 이 탭과 원래 탭을 모두 열어두세요."
   },
   "liveReloadLabel": {
-    "message": "실시간 리로드",
-    "description": "The label of live-reload feature"
+    "message": "실시간 리로드"
   },
   "manageFavicons": {
-    "message": "적용 대상 열에 Favicon(사이트 아이콘) 표시",
-    "description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+    "message": "적용 대상 열에 Favicon(사이트 아이콘) 표시"
   },
   "manageFaviconsGray": {
-    "message": "회색으로 표시",
-    "description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
+    "message": "회색으로 표시"
   },
   "manageFaviconsHelp": {
-    "message": "Stylus는 https://www.google.com/s2/favicons 외부 서비스를 이용합니다",
-    "description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+    "message": "Stylus는 https://www.google.com/s2/favicons 외부 서비스를 이용합니다"
   },
   "manageFilters": {
-    "message": "필터",
-    "description": "Label for filters container"
+    "message": "필터"
   },
   "manageHeading": {
-    "message": "설치한 스타일 목록",
-    "description": "Heading for the manage page"
+    "message": "설치한 스타일 목록"
   },
   "manageMaxTargets": {
-    "message": "적용 대상 항목 수",
-    "description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
+    "message": "적용 대상 항목 수"
   },
   "manageNewStyleAsUsercss": {
-    "message": "Usercss로 작성",
-    "description": "VERY SHORT label for the checkbox next to the 'Write new style' button in the style manager"
+    "message": "Usercss로 작성"
   },
   "manageNewUI": {
-    "message": "새로운 관리 페이지 UI 레이아웃",
-    "description": "Label for the checkbox that toggles the new UI on manage page"
+    "message": "새로운 관리 페이지 UI 레이아웃"
   },
   "manageOnlyDisabled": {
-    "message": "비활성화된 스타일만",
-    "description": "Checkbox to show only disabled styles"
+    "message": "비활성화된 스타일만"
   },
   "manageOnlyEnabled": {
-    "message": "활성화된 스타일만",
-    "description": "Checkbox to show only enabled styles"
+    "message": "활성화된 스타일만"
   },
   "manageOnlyExternal": {
-    "message": "외부에서 설치한 스타일만",
-    "description": "Checkbox to show only externally installed styles i.e. updatable"
+    "message": "외부에서 설치한 스타일만"
   },
   "manageOnlyLocal": {
-    "message": "로컬에서 생성한 스타일만",
-    "description": "Checkbox to show only locally created styles i.e. non-updatable"
+    "message": "로컬에서 생성한 스타일만"
   },
   "manageOnlyLocalTooltip": {
-    "message": "(userstyles.org 페이지에서 설치하지 않은 스타일)",
-    "description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
+    "message": "(userstyles.org 페이지에서 설치하지 않은 스타일)"
   },
   "manageOnlyNonUsercss": {
-    "message": "Usercss가 아닌 스타일만",
-    "description": "Checkbox to show only non-Usercss (standard) styles"
+    "message": "Usercss가 아닌 스타일만"
   },
   "manageOnlyUpdates": {
-    "message": "업데이트 혹은 문제점이 있는 것만",
-    "description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
+    "message": "업데이트 혹은 문제점이 있는 것만"
   },
   "manageOnlyUsercss": {
-    "message": "Usercss 스타일만",
-    "description": "Checkbox to show only Usercss styles"
+    "message": "Usercss 스타일만"
   },
   "menuShowBadge": {
-    "message": "활성화된 스타일 개수 표시",
-    "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+    "message": "활성화된 스타일 개수 표시"
   },
   "meta_invalidCheckboxDefault": {
-    "message": "@var 체크박스가 유효하지 않습니다. 값은 0, 1중 하나여야 합니다.",
-    "description": "Error displayed when the value of @var checkbox is invalid"
+    "message": "@var 체크박스가 유효하지 않습니다. 값은 0, 1중 하나여야 합니다."
   },
   "meta_invalidColor": {
     "message": "@var 색상이 유효하지 않습니다. $color$은(는) 색상이 아닙니다.",
-    "description": "Error displayed when the value of @var color is invalid",
     "placeholders": {
       "color": {
         "content": "$1"
       }
     }
   },
+  "meta_invalidNumber": {
+    "message": "숫자를 입력하세요"
+  },
   "meta_invalidRange": {
     "message": "@var $type$이(가) 유효하지 않습니다. 값은 숫자나 배열이어야 합니다.",
-    "description": "Error displayed when the value of @var range or @var number is invalid",
-    "placeholders": {
-      "type": {
-        "content": "$1"
-      }
-    }
-  },
-  "meta_invalidRangeMultipleUnits": {
-    "message": "@var $type$이(가) 유효하지 않습니다. 구성단위가 여러 개 정의되었습니다.",
-    "description": "Error displayed when the value of @var range or @var number is invalid",
-    "placeholders": {
-      "type": {
-        "content": "$1"
-      }
-    }
-  },
-  "meta_invalidRangeTooManyValues": {
-    "message": "@var $type$이(가) 유효하지 않습니다. 배열의 요소가 너무 많습니다.",
-    "description": "Error displayed when the value of @var range or @var number is invalid",
-    "placeholders": {
-      "type": {
-        "content": "$1"
-      }
-    }
-  },
-  "meta_invalidRangeValue": {
-    "message": "@var $type$이(가) 유효하지 않습니다. 배열 요소는 숫자, 문자열, null 중 하나여야 합니다.",
-    "description": "Error displayed when the value of @var range or @var number is invalid",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -752,16 +586,6 @@
   },
   "meta_invalidRangeDefault": {
     "message": "@var $type$이(가) 유효하지 않습니다. 기본 값이 null입니다.",
-    "description": "Error displayed when the value of @var range or @var number is invalid",
-    "placeholders": {
-      "type": {
-        "content": "$1"
-      }
-    }
-  },
-  "meta_invalidRangeMin": {
-    "message": "@var $type$이(가) 유효하지 않습니다. 기본값이 최솟값보다 작습니다.",
-    "description": "Error displayed when the value of @var range or @var number is invalid",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -770,7 +594,22 @@
   },
   "meta_invalidRangeMax": {
     "message": "@var $type$이(가) 유효하지 않습니다. 기본값이 최댓값보다 큽니다.",
-    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMin": {
+    "message": "@var $type$이(가) 유효하지 않습니다. 기본값이 최솟값보다 작습니다.",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMultipleUnits": {
+    "message": "@var $type$이(가) 유효하지 않습니다. 구성단위가 여러 개 정의되었습니다.",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -779,7 +618,14 @@
   },
   "meta_invalidRangeStep": {
     "message": "@var $type$이(가) 유효하지 않습니다. 기본값이 단계의 변수가 아닙니다.",
-    "description": "Error displayed when the value of @var range or @var number is invalid",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeTooManyValues": {
+    "message": "@var $type$이(가) 유효하지 않습니다. 배열의 요소가 너무 많습니다.",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -788,7 +634,6 @@
   },
   "meta_invalidRangeUnits": {
     "message": "@var $type$이(가) 유효하지 않습니다. '$units$'은(는) 유효한 구성단위가 아닙니다.",
-    "description": "Error displayed when the value of @var range or @var number is invalid",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -798,37 +643,40 @@
       }
     }
   },
-  "meta_invalidSelect": {
-    "message": "유효하지 않은 @var 선택입니다. 기본 값은 배열이나 오브젝트여야 합니다.",
-    "description": "Error displayed when the value of @var select is invalid"
+  "meta_invalidRangeValue": {
+    "message": "@var $type$이(가) 유효하지 않습니다. 배열 요소는 숫자, 문자열, null 중 하나여야 합니다.",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
   },
-  "meta_invalidSelectValue": {
-    "message": "유효하지 않은 @var 선택입니다. 배열, 오브젝트 내 값은 문자열이어야 합니다.",
-    "description": "Error displayed when the value of @var select is invalid"
+  "meta_invalidSelect": {
+    "message": "유효하지 않은 @var 선택입니다. 기본 값은 배열이나 오브젝트여야 합니다."
   },
   "meta_invalidSelectEmptyOptions": {
-    "message": "유효하지 않은 @var 선택입니다. 옵션 목록이 비었습니다.",
-    "description": "Error displayed when the value of @var select is invalid"
+    "message": "유효하지 않은 @var 선택입니다. 옵션 목록이 비었습니다."
   },
   "meta_invalidSelectLabel": {
-    "message": "유효하지 않은 @var 선택입니다. 옵션 라벨이 비었습니다.",
-    "description": "Error displayed when the value of @var select is invalid"
+    "message": "유효하지 않은 @var 선택입니다. 옵션 라벨이 비었습니다."
   },
   "meta_invalidSelectMultipleDefaults": {
-    "message": "유효하지 않은 @var 선택입니다. 기본 옵션이 여러 번 정의되었습니다.",
-    "description": "Error displayed when the value of @var select is invalid"
+    "message": "유효하지 않은 @var 선택입니다. 기본 옵션이 여러 번 정의되었습니다."
   },
   "meta_invalidSelectNameDuplicated": {
-    "message": "유효하지 않은 @var 선택입니다. 옵션명이 중복되었습니다.",
-    "description": "Error displayed when the value of @var select is invalid"
+    "message": "유효하지 않은 @var 선택입니다. 옵션명이 중복되었습니다."
+  },
+  "meta_invalidSelectValue": {
+    "message": "유효하지 않은 @var 선택입니다. 배열, 오브젝트 내 값은 문자열이어야 합니다."
   },
   "meta_invalidSelectValueMismatch": {
-    "message": "유효하지 않은 @var 선택입니다. 옵션 목록에 값이 존재하지 않습니다.",
-    "description": "Error displayed when the value of @var select is invalid"
+    "message": "유효하지 않은 @var 선택입니다. 옵션 목록에 값이 존재하지 않습니다."
+  },
+  "meta_invalidString": {
+    "message": "따옴표로 묶인 문자열을 입력하세요"
   },
   "meta_invalidURLProtocol": {
     "message": "$protocol$은(는) 유효하지 않은 URL 프로토콜입니다. http, https만 허용됩니다.",
-    "description": "Error displayed when the protocol of the URL is invalid",
     "placeholders": {
       "protocol": {
         "content": "$1"
@@ -836,29 +684,13 @@
     }
   },
   "meta_invalidVersion": {
-    "message": "유효하지 않은 버전 숫자입니다. $version$은(는) 유의적 버전 패턴과 일치하지 않습니다.",
-    "description": "Error displayed when @version is invalid",
-    "placeholders": {
-      "version": {
-        "content": "$1"
-      }
-    }
-  },
-  "meta_invalidNumber": {
-    "message": "숫자를 입력하세요",
-    "description": "Error displayed when the value is expected to be a number"
-  },
-  "meta_invalidString": {
-    "message": "따옴표로 묶인 문자열을 입력하세요",
-    "description": "Error displayed when the value is expected to be a quoted string"
+    "message": "유효하지 않은 버전 숫자입니다"
   },
   "meta_invalidWord": {
-    "message": "단어를 입력하세요",
-    "description": "Error displayed when the value is expected to be a word"
+    "message": "단어를 입력하세요"
   },
   "meta_missingChar": {
     "message": "$chars$ 문자를 입력하세요",
-    "description": "Error displayed when the value is expected to be some characters",
     "placeholders": {
       "chars": {
         "content": "$1"
@@ -866,12 +698,10 @@
     }
   },
   "meta_missingEOT": {
-    "message": "EOT 데이터를 입력하세요",
-    "description": "Error displayed when the value is expected to be an EOT list"
+    "message": "EOT 데이터를 입력하세요"
   },
   "meta_missingMandatory": {
     "message": "필수 메타 데이터인 $keys$이(가) 누락되었습니다",
-    "description": "Error displayed when mandatory keys are missing",
     "placeholders": {
       "keys": {
         "content": "$1"
@@ -880,7 +710,6 @@
   },
   "meta_unknownJSONLiteral": {
     "message": "유효하지 않은 JSON입니다. $literal$은(는) 유효한 JSON 리터럴이 아닙니다.",
-    "description": "Error displayed when JSON value is invalid",
     "placeholders": {
       "literal": {
         "content": "$1"
@@ -889,16 +718,22 @@
   },
   "meta_unknownMeta": {
     "message": "알 수 없는 메타데이터 $key$",
-    "description": "Error displayed when unknown metadata is parsed",
     "placeholders": {
       "key": {
         "content": "$1"
       }
     }
   },
+  "meta_unknownPreprocessor": {
+    "message": "알 수 없는 @preprocessor $preprocessor$",
+    "placeholders": {
+      "preprocessor": {
+        "content": "$1"
+      }
+    }
+  },
   "meta_unknownVarType": {
     "message": "알 수 없는 @$varkey$ 타입: $vartype$",
-    "description": "Error displayed when unknown variable type is parsed",
     "placeholders": {
       "varkey": {
         "content": "$1"
@@ -908,158 +743,131 @@
       }
     }
   },
-  "meta_unknownPreprocessor": {
-    "message": "알 수 없는 @preprocessor $preprocessor$",
-    "description": "Error displayed when unknown @preprocessor is parsed",
-    "placeholders": {
-      "preprocessor": {
-        "content": "$1"
-      }
-    }
+  "noFileToImport": {
+    "message": "스타일을 가져오려면, 먼저 내보내야 합니다."
   },
   "noStylesForSite": {
-    "message": "현재 사이트에 설치한 스타일이 없습니다.",
-    "description": "Text displayed when no styles are installed for the current site"
+    "message": "현재 사이트에 설치한 스타일이 없습니다."
+  },
+  "numberedLine": {
+    "message": "행:"
   },
   "openManage": {
-    "message": "관리",
-    "description": "Link to open the manage page."
+    "message": "관리"
   },
   "openOptions": {
-    "message": "옵션",
-    "description": "Go to Options UI"
+    "message": "옵션"
   },
   "openStylesManager": {
-    "message": "스타일 관리자 열기",
-    "description": "Label for the style maanger opener in the browser action context menu."
+    "message": "스타일 관리자 열기"
   },
   "optionsActions": {
-    "message": "동작",
-    "description": ""
+    "message": "동작"
   },
   "optionsAdvanced": {
-    "message": "고급",
-    "description": ""
+    "message": "고급"
   },
   "optionsAdvancedContextDelete": {
-    "message": "편집기 컨텍스트 메뉴에 '삭제' 추가",
-    "description": ""
+    "message": "편집기 컨텍스트 메뉴에 '삭제' 추가"
   },
   "optionsAdvancedExposeIframes": {
-    "message": "iframe을 HTML[stylus-iframe]으로 노출",
-    "description": ""
+    "message": "iframe을 HTML[stylus-iframe]으로 노출"
   },
   "optionsAdvancedExposeIframesNote": {
-    "message": "최상위 사이트 도메인을 각 iframe에 노출합니다.\n다음과 같이 iframe용 CSS를 작성할 수 있습니다:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }",
-    "description": "Add attribute to iframe; make sure to include the double $$ in the css example, or the `$=` will be omitted in the displayed text."
+    "message": "최상위 사이트 도메인을 각 iframe에 노출합니다.\n다음과 같이 iframe용 CSS를 작성할 수 있습니다:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
   },
   "optionsAdvancedNewStyleAsUsercss": {
-    "message": "새로운 스타일을 Usercss로 작성",
-    "description": ""
+    "message": "새로운 스타일을 Usercss로 작성"
+  },
+  "optionsAdvancedPatchCsp": {
+    "message": "스타일 자원을 허용하도록 <code>CSP</code>패치하기"
+  },
+  "optionsAdvancedStyleViaXhr": {
+    "message": "즉시 주입 모드"
   },
   "optionsBadgeDisabled": {
-    "message": "비활성화 시의 배경 색",
-    "description": ""
+    "message": "비활성화 시의 배경 색"
   },
   "optionsBadgeNormal": {
-    "message": "배경 색",
-    "description": ""
+    "message": "배경 색"
   },
   "optionsCheck": {
-    "message": "스타일 업데이트",
-    "description": ""
+    "message": "스타일 업데이트"
   },
   "optionsCheckUpdate": {
-    "message": "사용 가능한 모든 업데이트 확인 및 설치",
-    "description": ""
+    "message": "사용 가능한 모든 업데이트 확인 및 설치"
   },
   "optionsCustomizeBadge": {
-    "message": "툴바 아이콘 뱃지",
-    "description": ""
+    "message": "툴바 아이콘 뱃지"
   },
   "optionsCustomizeIcon": {
-    "message": "툴바 아이콘",
-    "description": ""
+    "message": "툴바 아이콘"
   },
   "optionsCustomizePopup": {
-    "message": "팝업",
-    "description": ""
-  },
-  "optionsCustomizeUpdate": {
-    "message": "업데이트",
-    "description": ""
+    "message": "팝업"
   },
   "optionsCustomizeSync": {
-    "message": "클라우드에 동기화",
-    "description": ""
+    "message": "클라우드에 동기화"
+  },
+  "optionsCustomizeUpdate": {
+    "message": "업데이트"
   },
   "optionsHeading": {
-    "message": "옵션",
-    "description": "Heading for options section on manage page."
+    "message": "옵션"
   },
   "optionsIconDark": {
-    "message": "어두운 브라우저 테마",
-    "description": ""
+    "message": "어두운 브라우저 테마"
   },
   "optionsIconLight": {
-    "message": "밝은 브라우저 테마",
-    "description": ""
+    "message": "밝은 브라우저 테마"
   },
   "optionsOpen": {
-    "message": "열기",
-    "description": ""
+    "message": "열기"
   },
   "optionsOpenManager": {
-    "message": "스타일 관리",
-    "description": ""
+    "message": "스타일 관리"
   },
   "optionsPopupWidth": {
-    "message": "팝업 너비 (픽셀 단위)",
-    "description": ""
+    "message": "팝업 너비 (픽셀 단위)"
   },
   "optionsReset": {
-    "message": "기본 값으로 설정 초기화",
-    "description": ""
+    "message": "기본 값으로 설정 초기화"
   },
   "optionsResetButton": {
-    "message": "설정 초기화",
-    "description": ""
+    "message": "설정 초기화"
+  },
+  "optionsStylusThemes": {
+    "message": "스타일러스 UI 테마 찾기"
   },
   "optionsSubheading": {
-    "message": "추가 옵션",
-    "description": "Subheading for options section on manage page."
-  },
-  "optionsUpdateImportNote": {
-    "message": "Stylish나 구버전 스타일 백업을 가져왔을 경우, 스타일들을 최신 버전으로 유지하려면 스타일 매니저에서 한 번씩 수동으로 업데이트 검사를 진행해 주세요.",
-    "description": ""
-  },
-  "optionsUpdateInterval": {
-    "message": "Userstyle 자동 업데이트 간격 (시간 단위, 0일시 업데이트하지 않음)",
-    "description": ""
-  },
-  "optionsSyncNone": {
-    "message": "없음",
-    "description": ""
+    "message": "추가 옵션"
   },
   "optionsSyncConnect": {
-    "message": "연결",
-    "description": ""
+    "message": "연결"
   },
   "optionsSyncDisconnect": {
-    "message": "연결 끊기",
-    "description": ""
-  },
-  "optionsSyncSyncNow": {
-    "message": "지금 동기화",
-    "description": ""
+    "message": "연결 끊기"
   },
   "optionsSyncLogin": {
-    "message": "로그인",
-    "description": ""
+    "message": "로그인"
+  },
+  "optionsSyncNone": {
+    "message": "없음"
+  },
+  "optionsSyncStatusConnected": {
+    "message": "연결됨"
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "연결 중..."
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "연결 끊김"
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "연결 끊는 중..."
   },
   "optionsSyncStatusPull": {
     "message": "스타일 다운로드 중 ($loaded$/$total$)",
-    "description": "",
     "placeholders": {
       "loaded": {
         "content": "$1"
@@ -1071,7 +879,6 @@
   },
   "optionsSyncStatusPush": {
     "message": "스타일 업로드 중 ($loaded$/$total$)",
-    "description": "",
     "placeholders": {
       "loaded": {
         "content": "$1"
@@ -1081,257 +888,230 @@
       }
     }
   },
+  "optionsSyncStatusRelogin": {
+    "message": "세션의 유효기간이 지났습니다. 다시 로그인하기 바랍니다."
+  },
   "optionsSyncStatusSyncing": {
-    "message": "동기화 중...",
-    "description": ""
+    "message": "동기화 중..."
   },
-  "optionsSyncStatusConnecting": {
-    "message": "연결 중...",
-    "description": ""
+  "optionsSyncSyncNow": {
+    "message": "지금 동기화"
   },
-  "optionsSyncStatusConnected": {
-    "message": "연결됨",
-    "description": ""
+  "optionsUpdateImportNote": {
+    "message": "Stylish나 구버전 스타일 백업을 가져왔을 경우, 스타일들을 최신 버전으로 유지하려면 스타일 매니저에서 한 번씩 수동으로 업데이트 검사를 진행해 주세요."
   },
-  "optionsSyncStatusDisconnecting": {
-    "message": "연결 끊는 중...",
-    "description": ""
+  "optionsUpdateInterval": {
+    "message": "Userstyle 자동 업데이트 간격 (시간 단위, 0일시 업데이트하지 않음)"
   },
-  "optionsSyncStatusDisconnected": {
-    "message": "연결 끊김",
-    "description": ""
+  "overwriteFileExport": {
+    "message": "기존 파일을 덮어쓰시겠습니까?"
   },
   "paginationCurrent": {
-    "message": "현재 페이지",
-    "description": "Tooltip for the current page index in search results"
+    "message": "현재 페이지"
   },
   "paginationEstimated": {
-    "message": "예상 페이지 수",
-    "description": "Tooltip for the total page count in search results"
+    "message": "예상 페이지 수"
   },
   "paginationNext": {
-    "message": "다음 페이지",
-    "description": "Tooltip for the '->' (next page) button in search results"
+    "message": "다음 페이지"
   },
   "paginationPrevious": {
-    "message": "이전 페이지",
-    "description": "Tooltip for the '<-' button in search results"
+    "message": "이전 페이지"
   },
   "paginationTotal": {
-    "message": "총 페이지 수",
-    "description": ""
+    "message": "총 페이지 수"
   },
   "parseUsercssError": {
-    "message": "Stylus가 Usercss 데이터를 해석하는데 실패했습니다:",
-    "description": "The error message to show when stylus failed to parse usercss"
+    "message": "Stylus가 Usercss 데이터를 해석하는데 실패했습니다:"
   },
   "popupAutoResort": {
-    "message": "팝업 내에서 스타일 토글 시 재정렬",
-    "description": "Label for the checkbox controlling popup resorting."
+    "message": "팝업 내에서 스타일 토글 시 재정렬"
   },
   "popupBorders": {
-    "message": "양옆에 흰색 테두리 추가",
-    "description": ""
+    "message": "양옆에 흰색 테두리 추가"
   },
   "popupBordersTooltip": {
-    "message": "측면 테두리를 칠하지 않으므로 새로운 Chrome의 다크 테마에서 유용합니다",
-    "description": ""
+    "message": "측면 테두리를 칠하지 않으므로 새로운 Chrome의 다크 테마에서 유용합니다"
   },
   "popupHotkeysInfo": {
-    "message": "<1>-<9>,<0> (숫자패드 포함) - N번째 스타일 토글 (0은 10)\n<A>-<Z> 해당 글자로 시작하는 첫 번째 스타일 토글\n<Shift> 토글 대신 편집기 열기\n<Numpad +> 나열된 스타일 활성화\n<Numpad –> 나열된 스타일 비활성화\n<Numpad *>, <`> (백틱) - 처음에 활성화한 스타일을 토글합니다. 팝업이 열려 있는 동안에는 나중에 활성화한 스타일에 적용되지 않습니다. 따라서 검사 후 초기 선택 항목을 복원할 수 있습니다. 간단하게, 모두 비활성화한 다음 <Numpad –> <Numpad *>로 다시 전환하세요.\n자세한 내용은 위키를 참고 바랍니다",
-    "description": "NOTE1: preserve < and > symbols so that <hotkey> is styled as a key.\nNOTE2: the last line is displayed as a text of the link to the wiki page.\nNOTE3: this is the list of hotkeys displayed after clicking the right edge of the extension popup."
+    "message": "<1>-<9>,<0> (숫자패드 포함) - N번째 스타일 토글 (0은 10)\n<A>-<Z> 해당 글자로 시작하는 첫 번째 스타일 토글\n<Shift> 토글 대신 편집기 열기\n<Numpad +> 나열된 스타일 활성화\n<Numpad –> 나열된 스타일 비활성화\n<Numpad *>, <`> (백틱) - 처음에 활성화한 스타일을 토글합니다. 팝업이 열려 있는 동안에는 나중에 활성화한 스타일에 적용되지 않습니다. 따라서 검사 후 초기 선택 항목을 복원할 수 있습니다. 간단하게, 모두 비활성화한 다음 <Numpad –> <Numpad *>로 다시 전환하세요.\n자세한 내용은 위키를 참고 바랍니다"
   },
   "popupHotkeysTooltip": {
-    "message": "사용 가능한 단축키를 확인하려면 클릭하세요",
-    "description": "Tooltip displayed when hovering the right edge of the extension popup"
+    "message": "사용 가능한 단축키를 확인하려면 클릭하세요"
   },
   "popupManageTooltip": {
-    "message": "Shift+클릭이나 우클릭으로 스타일 관리자를 열면 현재 사이트에 적용 가능한 스타일들이 표시됩니다.",
-    "description": "Tooltip for the 'Manage' button in the popup."
+    "message": "Shift+클릭이나 우클릭으로 스타일 관리자를 열면 현재 사이트에 적용 가능한 스타일들이 표시됩니다."
   },
   "popupMenuButtonTooltip": {
-    "message": "상호작용 메뉴",
-    "description": "Tooltip for menu button in popup."
+    "message": "상호작용 메뉴"
+  },
+  "popupOpenEditInPopup": {
+    "message": "단순 윈도우(옴니상자 없음) 사용하기"
   },
   "popupOpenEditInWindow": {
-    "message": "새 창에서 편집기 열기",
-    "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+    "message": "새 창에서 편집기 열기"
   },
   "popupOpenEditInWindowTooltip": {
-    "message": "이 옵션은 편집기가 열린 탭을 브라우저 창에서 분리함으로써 활성화할 수도 있습니다.\n편집기 탭만 다른 브라우저 창으로 합치면 비활성화됩니다.",
-    "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+    "message": "이 옵션은 편집기가 열린 탭을 브라우저 창에서 분리함으로써 활성화할 수도 있습니다.\n편집기 탭만 다른 브라우저 창으로 합치면 비활성화됩니다."
   },
   "popupStylesFirst": {
-    "message": "스타일 목록을 커맨드 버튼 상단에 표시",
-    "description": "Label for the checkbox controlling section order in the popup."
+    "message": "스타일 목록을 커맨드 버튼 상단에 표시"
   },
   "prefShowBadge": {
-    "message": "현재 사이트에서 활성화된 스타일 개수",
-    "description": "Label for the checkbox controlling toolbar badge text."
+    "message": "현재 사이트에서 활성화된 스타일 개수"
   },
   "previewLabel": {
-    "message": "실시간 미리보기",
-    "description": "Label for the checkbox in style editor to enable live preview while editing."
+    "message": "실시간 미리보기"
   },
   "previewTooltip": {
-    "message": "변경 사항은 저장되지 않고 일시적으로 적용됩니다.\n영구적으로 변경하려면 스타일을 저장하세요.",
-    "description": "Tooltip for the checkbox in style editor to enable live preview while editing."
+    "message": "변경 사항은 저장되지 않고 일시적으로 적용됩니다.\n영구적으로 변경하려면 스타일을 저장하세요."
+  },
+  "readingStyles": {
+    "message": "스타일 읽어들이는 중..."
   },
   "reload": {
-    "message": "Stylus 확장 프로그램 리로드",
-    "description": "Context menu reload"
+    "message": "Stylus 확장 프로그램 리로드"
   },
   "replace": {
-    "message": "바꾸기",
-    "description": "Label before the replace input field in the editor shown on Ctrl-H"
+    "message": "바꾸기"
   },
   "replaceAll": {
-    "message": "모두 바꾸기",
-    "description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
+    "message": "모두 바꾸기"
   },
   "replaceWith": {
-    "message": "바꿀 내용",
-    "description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
+    "message": "바꿀 내용"
   },
   "retrieveBckp": {
-    "message": "스타일 가져오기",
-    "description": ""
+    "message": "스타일 가져오기"
+  },
+  "retrieveDropboxSync": {
+    "message": "Dropbox 가져오기"
   },
   "search": {
-    "message": "검색",
-    "description": "Label before the search input field in the editor shown on Ctrl-F"
+    "message": "검색"
   },
   "searchCaseSensitive": {
-    "message": "대소문자 구분",
-    "description": "Tooltip for the 'Aa' icon that enables case-sensitive search in the editor shown on Ctrl-F"
+    "message": "대소문자 구분"
+  },
+  "searchGlobalStyles": {
+    "message": "전역 스타일도 검색하기"
   },
   "searchNumberOfResults": {
-    "message": "일치하는 개수",
-    "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+    "message": "일치하는 개수"
   },
   "searchNumberOfResults2": {
-    "message": "코드 및 적용 대상 값 내에서 일치하는 개수",
-    "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
+    "message": "코드 및 적용 대상 값 내에서 일치하는 개수"
   },
   "searchRegexp": {
-    "message": "정규 표현식 검색은 /re/ 문법을 사용합니다",
-    "description": "Label after the search input field in the editor shown on Ctrl-F"
+    "message": "정규 표현식 검색은 /re/ 문법을 사용합니다"
   },
   "searchResultInstallCount": {
-    "message": "총 설치 수",
-    "description": "Text for label that shows the number of times a search result was installed"
+    "message": "총 설치 수"
   },
   "searchResultNoneFound": {
-    "message": "이 사이트에 맞는 스타일을 찾지 못했습니다.",
-    "description": "Error text in the popup when inline search didn't find any site-specific styles"
+    "message": "이 사이트에 맞는 스타일을 찾지 못했습니다."
+  },
+  "searchResultNotMatching": {
+    "message": "스타일을 설치했지만 현 사이트 URL에는 적용하지 않습니다."
+  },
+  "searchResultNotMatchingNote": {
+    "message": "이 userstyle 작성자에게 URL을 넣어달라고 요청합니다.\n\n관리자에서 스타일을 열고 직접 편집할 수도 있지만,\n이 스타일의 자동 업데이트를 활성 해제할 수도 있으니 주의하세요."
   },
   "searchResultRating": {
-    "message": "평가",
-    "description": "Text for label that shows the search result's rating"
+    "message": "평가"
   },
   "searchResultUpdated": {
-    "message": "업데이트됨",
-    "description": "Text for label that shows the search result's last update date"
+    "message": "업데이트됨"
   },
   "searchResultWeeklyCount": {
-    "message": "주간 설치 수",
-    "description": "Text for label that shows the number of times a search result was installed during last week"
+    "message": "주간 설치 수"
   },
-  "searchStyles": {
-    "message": "검색 내용",
-    "description": "Label for the search filter textbox on the Manage styles page"
+  "searchStylesAll": {
+    "message": "모두"
   },
-  "searchStylesHelp": {
-    "message": "</> 키를 누르면 검색 상자로 포커스가 이동합니다.\n일반 텍스트: 이름, 코드, 홈페이지 및 적용 대상 URL을 대상으로 검색합니다. 3 글자 미만의 단어는 무시됩니다.\n전체 URL에 일치하는 스타일: <url:> 접두사를 붙여서 검색하세요. 예시: <url:https://github.com/openstyles/stylus>\n정규 표현식: 슬래시 및 플래그를 포함하세요. 예시: </body.*?\\ba\\b/simguy>\n단어와 정확히 일치: 쿼리를 큰따옴표로 묶으세요. 예시:  <\".header ~ div\">",
-    "description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
+  "searchStylesCode": {
+    "message": "CSS 코드"
+  },
+  "searchStylesMatchUrl": {
+    "message": "URL별"
+  },
+  "searchStylesMeta": {
+    "message": "메타데이터"
+  },
+  "searchStylesName": {
+    "message": "이름"
   },
   "sectionAdd": {
-    "message": "섹션 추가",
-    "description": "Label for the button to add a section"
+    "message": "섹션 추가"
   },
   "sectionCode": {
-    "message": "코드",
-    "description": "Label for the code for a section"
+    "message": "코드"
   },
   "sectionRemove": {
-    "message": "섹션 제거",
-    "description": "Label for the button to remove a section"
+    "message": "섹션 제거"
   },
   "sectionRestore": {
-    "message": "제거된 섹션 복구",
-    "description": "Label for the button to restore a removed section"
+    "message": "제거된 섹션 복구"
+  },
+  "sections": {
+    "message": "섹션"
   },
   "shortcuts": {
-    "message": "단축키",
-    "description": "Go to shortcut configuration"
+    "message": "단축키"
   },
   "shortcutsNote": {
-    "message": "키보드 단축키 정의",
-    "description": ""
+    "message": "키보드 단축키 정의"
   },
   "sortDateNewestFirst": {
-    "message": "최신 순으로",
-    "description": "Text added to indicate that sorting a date would add the newest entries at the top"
+    "message": "최신 순으로"
   },
   "sortDateOldestFirst": {
-    "message": "오래된 순으로",
-    "description": "Text added to indicate that sorting a date would add the oldest entries at the top"
+    "message": "오래된 순으로"
   },
   "sortLabel": {
-    "message": "설치한 스타일들을 어떻게 정렬할지 선택합니다",
-    "description": "Title on the sort select to indicate it is used for sorting entries"
+    "message": "설치한 스타일들을 어떻게 정렬할지 선택합니다"
   },
   "sortLabelTitleAsc": {
-    "message": "제목 오름차순",
-    "description": "Text added to option group to indicate a block of options that apply a title ascending (A to Z) sort"
+    "message": "제목 오름차순"
   },
   "sortLabelTitleDesc": {
-    "message": "제목 내림차순",
-    "description": "Text added to option group to indicate a block of options that apply a title descending (Z to A) sort"
+    "message": "제목 내림차순"
   },
   "sortStylesHelp": {
-    "message": "설치한 스타일들을 정렬할 방식을 드롭 다운 목록에서 선택합니다. 기본 설정은 각 제목을 오름차순(A to Z)으로 정렬하고, \"제목 내림차순\" 을 선택 시 내림차순(Z to A)으로 정렬합니다.\n여러 기준에 따라 항목을 정렬할 수 있는 다른 사전 설정도 있습니다. 여러 개의 열이 있는 테이블을 정렬하고, 각 선택 옵션 내의 카테고리들이(+ 기호 사이) 열 또는 그룹을 나타낸다고 생각해보세요.\n예를 들어, 설정이 \"활성화됨 (first) + 제목\"인 경우, 모든 활성화된 항목이 목록의 맨 위에 정렬되도록 정렬된 후, Entry 제목 오름차순 정렬(A to Z)이 활성화된 항목과 비활성화된 항목 모두에 별도로 적용됩니다.",
-    "description": "Text in the minihelp displayed when clicking (i) icon to the right of the sort input field on the Manage styles page"
+    "message": "설치한 스타일들을 정렬할 방식을 드롭 다운 목록에서 선택합니다. 기본 설정은 각 제목을 오름차순(A to Z)으로 정렬하고, \"제목 내림차순\" 을 선택 시 내림차순(Z to A)으로 정렬합니다.\n여러 기준에 따라 항목을 정렬할 수 있는 다른 사전 설정도 있습니다. 여러 개의 열이 있는 테이블을 정렬하고, 각 선택 옵션 내의 카테고리들이(+ 기호 사이) 열 또는 그룹을 나타낸다고 생각해보세요.\n예를 들어, 설정이 \"활성화됨 (first) + 제목\"인 경우, 모든 활성화된 항목이 목록의 맨 위에 정렬되도록 정렬된 후, Entry 제목 오름차순 정렬(A to Z)이 활성화된 항목과 비활성화된 항목 모두에 별도로 적용됩니다."
   },
   "sortStylesHelpTitle": {
-    "message": "내용 정렬",
-    "description": "Label for the sort info popup on the Manage styles page"
+    "message": "내용 정렬"
   },
   "styleBadRegexp": {
-    "message": "유효하지 않은 정규 표현식입니다.",
-    "description": "Validation message for a bad regexp in a style"
+    "message": "유효하지 않은 정규 표현식입니다."
+  },
+  "styleBeautifyHint": {
+    "message": "힌트: “Beautify” 버튼을 우클릭 하거나 아래 지정한 키보드 단축키를 사용하면 이 패널을 숨기면서 “Beautify”를 활성화 합니다"
   },
   "styleBeautifyIndentConditional": {
-    "message": "@media, @supports 들여쓰기",
-    "description": "CSS-beautifier option"
+    "message": "@media, @supports 들여쓰기"
   },
   "styleBeautifyPreserveNewlines": {
-    "message": "개행 문자 유지",
-    "description": "CSS-beautifier option"
+    "message": "개행 문자 유지"
   },
   "styleCancelEditLabel": {
-    "message": "관리 페이지로 돌아가기",
-    "description": "Label for cancel button for style editing"
+    "message": "관리 페이지로 돌아가기"
   },
   "styleChangesNotSaved": {
-    "message": "스타일의 변경 사항을 저장하지 않았습니다.",
-    "description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
+    "message": "스타일의 변경 사항을 저장하지 않았습니다."
   },
   "styleEnabledLabel": {
-    "message": "활성화됨",
-    "description": "Label for the enabled state of styles"
+    "message": "활성화됨"
   },
   "styleFromMozillaFormatError": {
-    "message": "Mozilla 형식 데이터를 가져오는데 실패했습니다",
-    "description": "Label for the import error"
+    "message": "Mozilla 형식 데이터를 가져오는데 실패했습니다"
   },
   "styleFromMozillaFormatPrompt": {
-    "message": "Mozilla 형식의 코드를 붙여넣으세요",
-    "description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
+    "message": "Mozilla 형식의 코드를 붙여넣으세요"
   },
   "styleInstall": {
     "message": "Stylus에 '$stylename$'을(를) 설치하시겠습니까?",
-    "description": "Confirmation when installing a style",
     "placeholders": {
       "stylename": {
         "content": "$1"
@@ -1340,7 +1120,6 @@
   },
   "styleInstallFailed": {
     "message": "userstyle 설치에 실패했습니다.\n$error$",
-    "description": "Warning when installation failed",
     "placeholders": {
       "error": {
         "content": "$1"
@@ -1349,86 +1128,68 @@
   },
   "styleInstallOverwrite": {
     "message": "'$stylename$'은(는) 이미 설치되어 있습니다. 덮어쓰시겠습니까?\n버전: $oldVersion$ -> $newVersion$",
-    "description": "Confirmation when re-installing a style",
     "placeholders": {
-      "stylename": {
-        "content": "$1"
-      },
       "newVersion": {
         "content": "$3"
       },
       "oldVersion": {
         "content": "$2"
+      },
+      "stylename": {
+        "content": "$1"
       }
     }
   },
   "styleMissingName": {
-    "message": "이름을 입력하세요",
-    "description": "Error displayed when user saves without providing a name"
+    "message": "이름을 입력하세요"
   },
   "styleMozillaFormatHeading": {
-    "message": "Mozilla 형식",
-    "description": "Heading for the section with buttons to import/export Mozilla format of the style"
+    "message": "Mozilla 형식"
   },
   "styleNotAppliedRegexpProblemTooltip": {
-    "message": "잘못된 'regexp()'의 사용으로 인해 스타일을 적용할 수 없습니다",
-    "description": "Tooltip in the popup for styles that were not applied at all"
+    "message": "잘못된 'regexp()'의 사용으로 인해 스타일을 적용할 수 없습니다"
   },
   "styleRegexpInvalidExplanation": {
-    "message": "일부 `regexp()` 규칙은 컴파일할 수 없습니다.",
-    "description": ""
+    "message": "일부 `regexp()` 규칙은 컴파일할 수 없습니다."
   },
   "styleRegexpPartialExplanation": {
-    "message": "이 스타일은 부분 일치 정규 표현식을 사용합니다. <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document 사양</a>은 전체 URL 일치를 사용할 것을 강제하고 있으므로, 해당 CSS 섹션은 페이지에 적용되지 않았습니다. 이 스타일은 초기부터 `regexp()` 규칙을 바르게 확인하지 않는 것으로 알려진 Stylish-for-Chrome에서 생성되었을 것으로 추정됩니다.",
-    "description": ""
+    "message": "이 스타일은 부분 일치 정규 표현식을 사용합니다. <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document 사양</a>은 전체 URL 일치를 사용할 것을 강제하고 있으므로, 해당 CSS 섹션은 페이지에 적용되지 않았습니다. 이 스타일은 초기부터 `regexp()` 규칙을 바르게 확인하지 않는 것으로 알려진 Stylish-for-Chrome에서 생성되었을 것으로 추정됩니다."
   },
   "styleRegexpProblemTooltip": {
-    "message": "잘못된 'regexp()' 사용으로 인해 몇몇 섹션을 적용할 수 없습니다.",
-    "description": "Tooltip in the popup for styles that were applied only partially"
+    "message": "잘못된 'regexp()' 사용으로 인해 몇몇 섹션을 적용할 수 없습니다."
   },
   "styleRegexpTestButton": {
-    "message": "정규 표현식 테스트",
-    "description": "RegExp test button label in the editor shown when applies-to list has a regexp value"
+    "message": "정규 표현식 테스트"
   },
   "styleRegexpTestFull": {
-    "message": "일치하는 탭 목록",
-    "description": "RegExp test report: label for the fully matching expressions"
+    "message": "일치하는 탭 목록"
   },
   "styleRegexpTestInvalid": {
-    "message": "유효하지 않은 정규 표현식 생략됨",
-    "description": "RegExp test report: label for the invalid expressions"
+    "message": "유효하지 않은 정규 표현식 생략됨"
   },
   "styleRegexpTestNone": {
-    "message": "일치하는 탭 없음",
-    "description": "RegExp test report: label for expressions that didn't match any tabs"
+    "message": "일치하는 탭 없음"
   },
   "styleRegexpTestNote": {
-    "message": "참고: 정규 표현식 입력 필드에서 이스케이프 처리는 단일 \\ 를 사용하세요. CSS에서 따옴표로 묶인 문자열의 사양에 따라 스타일 코드에서 자동으로 \\\\ 로 변환됩니다. ",
-    "description": "RegExp test report: a note displayed at the bottom of the dialog"
+    "message": "참고: 정규 표현식 입력 필드에서 이스케이프 처리는 단일 \\ 를 사용하세요. CSS에서 따옴표로 묶인 문자열의 사양에 따라 스타일 코드에서 자동으로 \\\\ 로 변환됩니다. "
   },
   "styleRegexpTestPartial": {
-    "message": "완전히 일치하지는 않으므로 생략됨",
-    "description": "RegExp test report: label for the partially matching expressions"
+    "message": "완전히 일치하지는 않으므로 생략됨"
   },
   "styleRegexpTestTitle": {
-    "message": "열린 탭 중 일치하는 목록 (URL 클릭 시 해당 탭으로 이동)",
-    "description": "RegExp test report: title of the report"
+    "message": "열린 탭 중 일치하는 목록 (URL 클릭 시 해당 탭으로 이동)"
   },
   "styleSaveLabel": {
-    "message": "저장",
-    "description": "Label for save button for style editing"
+    "message": "저장"
   },
   "styleToMozillaFormatHelp": {
-    "message": "Mozilla 형식 코드는 userstyles.org에 올리거나 기존 Firefox용 Stylish에 사용할 수 있습니다",
-    "description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
+    "message": "Mozilla 형식 코드는 userstyles.org에 올리거나 기존 Firefox용 Stylish에 사용할 수 있습니다"
   },
   "styleToMozillaFormatTitle": {
-    "message": "Mozilla 형식으로 변환한 스타일",
-    "description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
+    "message": "Mozilla 형식으로 변환한 스타일"
   },
   "styleUpdate": {
     "message": "'$stylename$'을(를) 정말 수정하시겠습니까?",
-    "description": "Confirmation when updating a style",
     "placeholders": {
       "stylename": {
         "content": "$1"
@@ -1436,72 +1197,58 @@
     }
   },
   "styleUpdateDiscardChanges": {
-    "message": "이 스타일은 편집기 외부에서 변경되었습니다. 스타일을 다시 로딩하시겠습니까?",
-    "description": "Confirmation to update the style in the editor"
+    "message": "이 스타일은 편집기 외부에서 변경되었습니다. 스타일을 다시 로딩하시겠습니까?"
   },
   "stylusUnavailableForURL": {
-    "message": "Stylus는 이러한 페이지에서는 작동할 수 없습니다.",
-    "description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
+    "message": "Stylus는 이러한 페이지에서는 작동할 수 없습니다."
   },
   "stylusUnavailableForURLdetails": {
-    "message": "브라우저 보안 상의 이유로, 확장 프로그램은 브라우저 내장 페이지(chrome://version, Chrome 61의 표준 새 탭 페이지, about:addons 등)나 타 확장 프로그램의 페이지에 영향을 미칠 수 없습니다. 각 브라우저의 확장 프로그램 스토어(Chrome 웹 스토어, AMO 등) 접근 또한 마찬가지입니다.",
-    "description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
+    "message": "브라우저 보안 상의 이유로, 확장 프로그램은 브라우저 내장 페이지(chrome://version, Chrome 61의 표준 새 탭 페이지, about:addons 등)나 타 확장 프로그램의 페이지에 영향을 미칠 수 없습니다. 각 브라우저의 확장 프로그램 스토어(Chrome 웹 스토어, AMO 등) 접근 또한 마찬가지입니다."
+  },
+  "syncDropboxDeprecated": {
+    "message": "Dropbox 가져오기/내보내기는 옵션 페이지의 더 발전된 스타일 동기화 기능으로 대체되었습니다."
+  },
+  "syncDropboxStyles": {
+    "message": "Dropbox 내보내기"
+  },
+  "syncError": {
+    "message": "동기화를 실패했습니다"
   },
   "syncStorageErrorSaving": {
-    "message": "값을 저장할 수 없습니다. 텍스트의 양을 줄이세요.",
-    "description": "Displayed when trying to save an excessively big value via storage.sync API"
+    "message": "값을 저장할 수 없습니다. 텍스트의 양을 줄이세요."
   },
   "toggleStyle": {
-    "message": "스타일 토글",
-    "description": "Label for the checkbox to enable/disable a style"
+    "message": "스타일 토글"
   },
   "undo": {
-    "message": "취소",
-    "description": "Button label"
+    "message": "취소"
   },
   "undoGlobal": {
-    "message": "모든 섹션에서 실행 취소",
-    "description": "CSS-beautify global Undo button label"
+    "message": "모든 섹션에서 실행 취소"
   },
   "unreachableAMO": {
-    "message": "Firefox가 해당 사이트의 접근을 금지했습니다.",
-    "description": "Note in the popup displayed when opened on addons.mozilla.org"
+    "message": "Firefox가 해당 사이트의 접근을 금지했습니다."
   },
   "unreachableAMOHint": {
-    "message": "접근을 허용하려면 <about:config>를 열고, 목록을 우클릭 한 후, '새로 만들기'를 클릭하고, '불린값'을 선택하고, <privacy.resistFingerprinting.block_mozAddonManager> 을 붙여 넣고 확인을 누르고, <true>, 확인 후 <addons.mozilla.org> 페이지를 새로 고침하세요.",
-    "description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
-  },
-  "unreachableAMOHintNewFF": {
-    "message": "Firefox 60 이상 버전에서는 <about:config>내의 <extensions.webextensions.restrictedDomains> 에서 AMO 도메인을 제거해야 합니다.",
-    "description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
-  },
-  "unreachableAMOHintOldFF": {
-    "message": "Firefox 59 버전 이상에서만 이처럼 CSP 보호 정책이 적용된 사이트에 웹 확장 기능으로 스타일 요소를 추가할 수 있도록 설정 가능합니다.",
-    "description": "Note in the popup when opened on addons.mozilla.org in Firefox < 59"
+    "message": "접근을 허용하려면 <about:config>를 열고, 목록을 우클릭 한 후, '새로 만들기'를 클릭하고, '불린값'을 선택하고, <privacy.resistFingerprinting.block_mozAddonManager> 을 붙여 넣고 확인을 누르고, <true>, 확인 후 <addons.mozilla.org> 페이지를 새로 고침하세요."
   },
   "unreachableContentScript": {
-    "message": "페이지와 통신할 수 없습니다. 탭을 다시 로딩(새로 고침) 해보세요.",
-    "description": "Note in the toolbar popup usually on file:// URLs after [re]loading Stylus"
+    "message": "페이지와 통신할 수 없습니다. 탭을 다시 로딩(새로 고침) 해보세요."
   },
   "unreachableFileHint": {
-    "message": "Stylus가 file:// URL에 접근할 수 있도록 하려면 chrome://extensions 페이지에서 파일 URL에 대한 액세스를 허용해야 합니다.",
-    "description": "Note in the toolbar popup for file:// URLs"
+    "message": "Stylus가 file:// URL에 접근할 수 있도록 하려면 chrome://extensions 페이지에서 파일 URL에 대한 액세스를 허용해야 합니다."
   },
-  "InaccessibleFileHint": {
-    "message": "Stylus는 일부 파일 형식(예: pdf, json 파일 등)에 접근할 수 없습니다.",
-    "description": "Note in the toolbar popup for some file types that cannot be accessed"
+  "unzipStyles": {
+    "message": "스타일 압축 푸는 중..."
   },
   "updateAllCheckSucceededNoUpdate": {
-    "message": "이용 가능한 업데이트가 없습니다.",
-    "description": "Text that displays when an update all check completed and no updates are available"
+    "message": "이용 가능한 업데이트가 없습니다."
   },
   "updateAllCheckSucceededSomeEdited": {
-    "message": "로컬 수정 사항이 사라지는 것을 방지하기 위해, 일부 업데이트 가능한 스타일이 선택에서 누락되었을 수 있습니다. 이를 강제로 업데이트하려면 각각을 직접 선택하거나, 다른 전체 스타일 검사(따로 수정한 사항은 덮어씌워집니다)를 시행하세요.",
-    "description": "Text that displays when an update all check completed and no updates are available"
+    "message": "로컬 수정 사항이 사라지는 것을 방지하기 위해, 일부 업데이트 가능한 스타일이 선택에서 누락되었을 수 있습니다. 이를 강제로 업데이트하려면 각각을 직접 선택하거나, 다른 전체 스타일 검사(따로 수정한 사항은 덮어씌워집니다)를 시행하세요."
   },
   "updateCheckFailBadResponseCode": {
     "message": "업데이트 실패. 서버의 응답 에러코드는 $code$입니다.",
-    "description": "Text that displays when an update check failed because the response code indicates an error",
     "placeholders": {
       "code": {
         "content": "$1"
@@ -1509,127 +1256,63 @@
     }
   },
   "updateCheckFailServerUnreachable": {
-    "message": "업데이트 실패. 서버와 연결할 수 없습니다.",
-    "description": "Text that displays when an update check failed because the update server is unreachable"
+    "message": "업데이트 실패. 서버와 연결할 수 없습니다."
   },
   "updateCheckHistory": {
-    "message": "업데이트 검사 기록",
-    "description": ""
+    "message": "업데이트 검사 기록"
   },
   "updateCheckManualUpdateForce": {
-    "message": "업데이트 설치 (로컬 수정 사항은 덮어씌워집니다)",
-    "description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
+    "message": "업데이트 설치 (로컬 수정 사항은 덮어씌워집니다)"
   },
   "updateCheckManualUpdateHint": {
-    "message": "로컬 수정 사항을 무시하고 업데이트를 덮어씌웁니다.",
-    "description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
+    "message": "로컬 수정 사항을 무시하고 업데이트를 덮어씌웁니다."
   },
   "updateCheckSkippedLocallyEdited": {
-    "message": "이 스타일은 로컬에서 수정되었습니다.",
-    "description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
+    "message": "이 스타일은 로컬에서 수정되었습니다."
   },
   "updateCheckSkippedMaybeLocallyEdited": {
-    "message": "이 스타일은 로컬에서 수정되었을 수 있습니다.",
-    "description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
+    "message": "이 스타일은 로컬에서 수정되었을 수 있습니다."
   },
   "updateCheckSucceededNoUpdate": {
-    "message": "스타일이 최신 상태입니다.",
-    "description": "Text that displays when an update check completed and no update is available"
+    "message": "스타일이 최신 상태입니다."
   },
   "updateCompleted": {
-    "message": "업데이트가 완료됐습니다.",
-    "description": "Text that displays when an update completed"
+    "message": "업데이트가 완료됐습니다."
   },
   "updatesCurrentlyInstalled": {
-    "message": "설치된 업데이트:",
-    "description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
-  },
-  "usercssAvoidOverwriting": {
-    "message": "기존에 존재하는 스타일이 덮어씌워지는 것을 방지하려면 @name이나 @namespace 값을 변경하세요.",
-    "description": "Shown in a message box when attempting to save a new Usercss style that would overwrite an existing one."
-  },
-  "usercssConfigIncomplete": {
-    "message": "설정 대화상자가 열리고 나서 스타일이 수정되거나 삭제되었습니다. 스타일의 메타 데이터와 충돌이 일어나는 것을 방지하기 위해, 현재 변수들은 저장되지 않습니다:",
-    "description": ""
-  },
-  "usercssEditorNamePlaceholder": {
-    "message": "코드에 @name을 지정하세요",
-    "description": "Placeholder text for the empty name input field when creating a new Usercss style"
-  },
-  "usercssReplaceTemplateConfirmation": {
-    "message": "현재 코드로 새 Usercss 스타일의 기본 템플릿을 대체하시겠습니까?",
-    "description": ""
-  },
-  "usercssReplaceTemplateName": {
-    "message": "@name을 비우면 기본 템플릿이 대체됩니다.",
-    "description": "The text shown after @name when creating a new Usercss style"
-  },
-  "usercssReplaceTemplateSectionBody": {
-    "message": "코드를 여기 입력하세요",
-    "description": "The code placeholder comment in a new style created by clicking 'Write style' in the popup"
-  },
-  "versionInvalidOlder": {
-    "message": "설치되어 있는 스타일이 더 높은 버전입니다.",
-    "description": "Displayed when the version of style is older than the installed one"
-  },
-  "writeStyleFor": {
-    "message": "스타일 작성 대상:",
-    "description": "Label for toolbar pop-up that precedes the links to write a new style"
-  },
-  "writeStyleForURL": {
-    "message": "현재 URL",
-    "description": "Text for link in toolbar pop-up to write a new style for the current URL"
-  },
-  "syncDropboxStyles": {
-    "message": "Dropbox 내보내기",
-    "description": ""
-  },
-  "syncDropboxDeprecated": {
-    "message": "Dropbox 가져오기/내보내기는 옵션 페이지의 더 발전된 스타일 동기화 기능으로 대체되었습니다.",
-    "description": ""
-  },
-  "retrieveDropboxSync": {
-    "message": "Dropbox 가져오기",
-    "description": ""
-  },
-  "overwriteFileExport": {
-    "message": "기존 파일을 덮어쓰시겠습니까?",
-    "description": ""
-  },
-  "exportSavedSuccess": {
-    "message": "파일 저장에 성공했습니다.",
-    "description": ""
-  },
-  "noFileToImport": {
-    "message": "스타일을 가져오려면, 먼저 내보내야 합니다.",
-    "description": ""
-  },
-  "connectingDropbox": {
-    "message": "Dropbox 연결 중...",
-    "description": ""
-  },
-  "connectingDropboxNotAllowed": {
-    "message": "Dropbox 연결은 웹 스토어에서 직접 설치한 앱에서만 가능합니다.",
-    "description": ""
-  },
-  "gettingStyles": {
-    "message": "모든 스타일 가져오는 중...",
-    "description": ""
-  },
-  "zipStyles": {
-    "message": "스타일 압축 중...",
-    "description": ""
-  },
-  "unzipStyles": {
-    "message": "스타일 압축 푸는 중...",
-    "description": ""
-  },
-  "readingStyles": {
-    "message": "스타일 읽어들이는 중...",
-    "description": ""
+    "message": "설치된 업데이트:"
   },
   "uploadingFile": {
-    "message": "파일 업로드 중...",
-    "description": ""
+    "message": "파일 업로드 중..."
+  },
+  "usercssAvoidOverwriting": {
+    "message": "기존에 존재하는 스타일이 덮어씌워지는 것을 방지하려면 @name이나 @namespace 값을 변경하세요."
+  },
+  "usercssConfigIncomplete": {
+    "message": "설정 대화상자가 열리고 나서 스타일이 수정되거나 삭제되었습니다. 스타일의 메타 데이터와 충돌이 일어나는 것을 방지하기 위해, 현재 변수들은 저장되지 않습니다:"
+  },
+  "usercssEditorNamePlaceholder": {
+    "message": "코드에 @name을 지정하세요"
+  },
+  "usercssReplaceTemplateConfirmation": {
+    "message": "현재 코드로 새 Usercss 스타일의 기본 템플릿을 대체하시겠습니까?"
+  },
+  "usercssReplaceTemplateName": {
+    "message": "@name을 비우면 기본 템플릿이 대체됩니다."
+  },
+  "usercssReplaceTemplateSectionBody": {
+    "message": "코드를 여기 입력하세요"
+  },
+  "versionInvalidOlder": {
+    "message": "설치되어 있는 스타일이 더 높은 버전입니다."
+  },
+  "writeStyleFor": {
+    "message": "스타일 작성 대상:"
+  },
+  "writeStyleForURL": {
+    "message": "현재 URL"
+  },
+  "zipStyles": {
+    "message": "스타일 압축 중..."
   }
 }

@@ -1,3 +1,9 @@
+html#stylus #header *:not(#\1transition-suppressor) {
+  /* This suppresses a bug in all? browsers: they apply transitions during page load.
+   * Using an increased specificity to override sane selectors in user styles.
+   * Using \1 to simplify js code because \0 is converted to \xFFFD per spec. */
+  transition: none !important;
+}
 body {
   font: normal 12px Arial, system-ui, sans-serif;
 }
@@ -71,6 +77,30 @@ input[type=search] {
   border: 1px solid hsl(0, 0%, 66%);
 }
 
+.svg-icon {
+  cursor: pointer;
+  vertical-align: middle;
+  transition: fill .5s;
+  width: 20px;
+  height: 20px;
+  fill: #666;
+}
+
+.svg-icon:hover {
+  fill: #000;
+}
+
+.svg-icon.info {
+  width: 14px;
+  height: 16px;
+  margin-left: .5ex;
+}
+
+.svg-icon.config {
+  width: 16px;
+  height: 16px;
+}
+
 .svg-icon.checked {
   position: absolute;
   height: 8px;
@@ -142,6 +172,7 @@ select {
   transition: color .5s;
 }
 
+.select-wrapper,
 .select-resizer {
   display: inline-flex!important;
   cursor: default;
@@ -205,6 +236,11 @@ select[disabled] + .select-arrow {
   fill: hsl(0, 0%, 50%);
 }
 
+summary {
+  -moz-user-select: none;
+  user-select: none;
+}
+
 /* global stuff we use everywhere */
 .hidden {
   display: none !important;
@@ -212,8 +248,12 @@ select[disabled] + .select-arrow {
 
 :focus,
 .CodeMirror-focused,
-[data-focused-via-click] input[type="text"]:focus,
-[data-focused-via-click] input[type="number"]:focus {
+/* Allowing click outline on text/search inputs and textareas */
+textarea[data-focused-via-click]:focus,
+input:not([type])[data-focused-via-click]:focus, /* same as "text" */
+input[type="text"][data-focused-via-click]:focus,
+input[type="search"][data-focused-via-click]:focus,
+input[type="number"][data-focused-via-click]:focus {
   /* Using box-shadow instead of the ugly outline in new Chrome */
   outline: none;
   box-shadow: 0 0 0 1px hsl(180, 100%, 38%), 0 0 3px hsla(180, 100%, 60%, .5);

@@ -21,12 +21,9 @@ Stylus is a fork of Stylish for Chrome, also compatible with Firefox as a WebExt
 
 ## Screenshots
 
-![Style manager](https://user-images.githubusercontent.com/1310400/34453460-214eaa5c-ed67-11e7-843b-d8960b71db6e.png)
-![Style editor](https://user-images.githubusercontent.com/1310400/34459585-3932cd94-ee05-11e7-9a1b-679522dddfb3.png)
-![Popup config for usercss](https://user-images.githubusercontent.com/1310400/34453462-218a589a-ed67-11e7-9040-7d0469eeadc3.png)
-![Popup inline search](https://user-images.githubusercontent.com/1310400/34453463-21a44368-ed67-11e7-93b2-e1c8f5aac868.png)
-![Style manager config for usercss](https://user-images.githubusercontent.com/1310400/34453464-21bdaf9c-ed67-11e7-8517-62d2f02e1918.png)
-![Options](https://user-images.githubusercontent.com/1310400/34453461-216aee4c-ed67-11e7-92db-ea21c1da5826.png)
+Manager | Editor | Popup search | Popup config | Manager config | Options
+-|-|-|-|-|-
+![Style manager](https://user-images.githubusercontent.com/1310400/34453460-214eaa5c-ed67-11e7-843b-d8960b71db6e.png) | ![Style editor](https://user-images.githubusercontent.com/1310400/34459585-3932cd94-ee05-11e7-9a1b-679522dddfb3.png) | ![Popup inline search](https://user-images.githubusercontent.com/1310400/34453463-21a44368-ed67-11e7-93b2-e1c8f5aac868.png) | ![Popup config for usercss](https://user-images.githubusercontent.com/1310400/34453462-218a589a-ed67-11e7-9040-7d0469eeadc3.png) | ![Style manager config for usercss](https://user-images.githubusercontent.com/1310400/34453464-21bdaf9c-ed67-11e7-8517-62d2f02e1918.png) | ![Options](https://user-images.githubusercontent.com/1310400/34453461-216aee4c-ed67-11e7-92db-ea21c1da5826.png)
 
 ## Help
 
@@ -47,15 +44,15 @@ See our [contributing](./.github/CONTRIBUTING.md) page for more details.
 
 ## License
 
-Inherited code from the original [Stylish](https://github.com/stylish-userstyles/stylish/):  
+Inherited code from the original [Stylish](https://github.com/stylish-userstyles/stylish/):
 
 Copyright &copy; 2005-2014 [Jason Barnabe](jason.barnabe@gmail.com)
 
-Current Stylus:  
+Current Stylus:
 
 Copyright &copy; 2017-2019 [Stylus Team](https://github.com/openstyles/stylus/graphs/contributors)
 
-**[GNU GPLv3](./LICENSE)**  
+**[GNU GPLv3](./LICENSE)**
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

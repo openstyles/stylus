@@ -1,8 +1,14 @@
-/* global CodeMirror focusAccessibility colorMimicry editor chromeLocal
-  onDOMready $ $$ $create t debounce tryRegExp stringAsRegExp template */
+/* global $ $$ $create $remove focusAccessibility toggleDataset */// dom.js
+/* global CodeMirror */
+/* global chromeLocal */// storage-util.js
+/* global colorMimicry */
+/* global debounce stringAsRegExp tryRegExp */// toolbox.js
+/* global editor */
+/* global t */// localization.js
 'use strict';
 
-onDOMready().then(() => {
+(() => {
+  require(['/edit/global-search.css']);
 
   //region Constants and state
 
@@ -10,7 +16,6 @@ onDOMready().then(() => {
   const ANNOTATE_SCROLLBAR_DELAY = 350;
   const ANNOTATE_SCROLLBAR_OPTIONS = {maxMatches: 10e3};
   const STORAGE_UPDATE_DELAY = 500;
-  const SCROLL_REVEAL_MIN_PX = 50;
 
   const DIALOG_SELECTOR = '#search-replace-dialog';
   const DIALOG_STYLE_SELECTOR = '#search-replace-dialog-style';
@@ -22,6 +27,7 @@ onDOMready().then(() => {
   const RX_MAYBE_REGEXP = /^\s*\/(.+?)\/([simguy]*)\s*$/;
 
   const state = {
+    firstRun: true,
     // used for case-sensitive matching directly
     find: '',
     // used when /re/ is detected or for case-insensitive matching
@@ -64,10 +70,12 @@ onDOMready().then(() => {
               if (found) {
                 const target = $('.' + TARGET_CLASS);
                 const cm = target.CodeMirror;
-                (cm || target).focus();
+                /* Since this runs in `keydown` event we have to delay focusing
+                 * to prevent CodeMirror from seeing and handling the key */
+                setTimeout(() => (cm || target).focus());
                 if (cm) {
-                  const pos = cm.state.search.searchPos;
-                  cm.setSelection(pos.from, pos.to);
+                  const {from, to} = cm.state.search.searchPos;
+                  cm.jumpToPos(from, to);
                 }
               }
               destroyDialog({restoreFocus: !found});
@@ -78,7 +86,7 @@ onDOMready().then(() => {
             doReplace();
             return;
         }
-        return !event.target.closest(focusAccessibility.ELEMENTS.join(','));
+        return !focusAccessibility.closest(event.target);
       },
       'Esc': () => {
         destroyDialog({restoreFocus: true});
@@ -99,7 +107,7 @@ onDOMready().then(() => {
         state.lastFind = '';
         toggleDataset(this, 'enabled', !state.icase);
         doSearch({canAdvance: false});
-      }
+      },
     },
   };
 
@@ -125,17 +133,17 @@ onDOMready().then(() => {
     },
     onfocusout() {
       if (!state.dialog.contains(document.activeElement)) {
-        state.dialog.addEventListener('focusin', EVENTS.onfocusin);
-        state.dialog.removeEventListener('focusout', EVENTS.onfocusout);
+        state.dialog.on('focusin', EVENTS.onfocusin);
+        state.dialog.off('focusout', EVENTS.onfocusout);
       }
     },
     onfocusin() {
-      state.dialog.addEventListener('focusout', EVENTS.onfocusout);
-      state.dialog.removeEventListener('focusin', EVENTS.onfocusin);
+      state.dialog.on('focusout', EVENTS.onfocusout);
+      state.dialog.off('focusin', EVENTS.onfocusin);
       trimUndoHistory();
       enableUndoButton(state.undoHistory.length);
       if (state.find) doSearch({canAdvance: false});
-    }
+    },
   };
 
   const DIALOG_PROPS = {
@@ -151,7 +159,7 @@ onDOMready().then(() => {
         state.replace = this.value;
         adjustTextareaSize(this);
         debounce(writeStorage, STORAGE_UPDATE_DELAY);
-      }
+      },
     },
   };
 
@@ -168,7 +176,7 @@ onDOMready().then(() => {
     replace(cm) {
       state.reverse = false;
       focusDialog('replace', cm);
-    }
+    },
   };
   COMMANDS.replaceAll = COMMANDS.replace;
 
@@ -176,7 +184,6 @@ onDOMready().then(() => {
 
   Object.assign(CodeMirror.commands, COMMANDS);
   readStorage();
-  return;
 
   //region Find
 
@@ -241,6 +248,7 @@ onDOMready().then(() => {
     } else {
       showTally(0, 0);
     }
+    state.firstRun = false;
     return found;
   }
 
@@ -559,15 +567,16 @@ onDOMready().then(() => {
 
   function createDialog(type) {
     state.originalFocus = document.activeElement;
+    state.firstRun = true;
 
-    const dialog = state.dialog = template.searchReplaceDialog.cloneNode(true);
+    const dialog = state.dialog = t.template.searchReplaceDialog.cloneNode(true);
     Object.assign(dialog, DIALOG_PROPS.dialog);
-    dialog.addEventListener('focusout', EVENTS.onfocusout);
+    dialog.on('focusout', EVENTS.onfocusout);
     dialog.dataset.type = type;
     dialog.style.pointerEvents = 'auto';
 
     const content = $('[data-type="content"]', dialog);
-    content.parentNode.replaceChild(template[type].cloneNode(true), content);
+    content.parentNode.replaceChild(t.template[type].cloneNode(true), content);
 
     createInput(0, 'input', state.find);
     createInput(1, 'input2', state.replace);
@@ -575,9 +584,9 @@ onDOMready().then(() => {
     state.tally = $('[data-type="tally"]', dialog);
 
     const colors = {
-      body: colorMimicry.get(document.body, {bg: 'backgroundColor'}),
-      input: colorMimicry.get($('input:not(:disabled)'), {bg: 'backgroundColor'}),
-      icon: colorMimicry.get($$('svg.info')[1], {fill: 'fill'}),
+      body: colorMimicry(document.body, {bg: 'backgroundColor'}),
+      input: colorMimicry($('input:not(:disabled)'), {bg: 'backgroundColor'}),
+      icon: colorMimicry($$('svg.info')[1], {fill: 'fill'}),
     };
     document.documentElement.appendChild(
       $(DIALOG_STYLE_SELECTOR) ||
@@ -630,14 +639,14 @@ onDOMready().then(() => {
     input.value = value;
     Object.assign(input, DIALOG_PROPS[name]);
 
-    input.parentElement.appendChild(template.clearSearch.cloneNode(true));
+    input.parentElement.appendChild(t.template.clearSearch.cloneNode(true));
     $('[data-action]', input.parentElement)._input = input;
   }
 
 
   function destroyDialog({restoreFocus = false} = {}) {
     state.input = null;
-    $.remove(DIALOG_SELECTOR);
+    $remove(DIALOG_SELECTOR);
     debounce.unregister(doSearch);
     makeTargetVisible(null);
     if (restoreFocus) {
@@ -671,7 +680,7 @@ onDOMready().then(() => {
       el.style.width = newWidth + 'px';
     }
     const numLines = el.value.split('\n').length;
-    if (numLines !== parseInt(el.rows)) {
+    if (numLines !== Number(el.rows)) {
       el.rows = numLines;
     }
     el.style.overflowX = el.scrollWidth > el.clientWidth ? '' : 'hidden';
@@ -766,25 +775,22 @@ onDOMready().then(() => {
 
   // scrolls the editor to reveal the match
   function makeMatchVisible(cm, searchCursor) {
-    const canFocus = !state.dialog || !state.dialog.contains(document.activeElement);
+    const canFocus = !state.firstRun && (!state.dialog || !state.dialog.contains(document.activeElement));
     state.cm = cm;
-
     // scroll within the editor
+    const pos = searchCursor.pos;
     Object.assign(getStateSafe(cm), {
       cursorPos: {
         from: cm.getCursor('from'),
         to: cm.getCursor('to'),
       },
-      searchPos: searchCursor.pos,
+      searchPos: pos,
       unclosedOp: !cm.curOp,
     });
     if (!cm.curOp) cm.startOperation();
-    if (canFocus) cm.setSelection(searchCursor.pos.from, searchCursor.pos.to);
-    cm.scrollIntoView(searchCursor.pos, SCROLL_REVEAL_MIN_PX);
-
-    // scroll to the editor itself
-    editor.scrollToEditor(cm);
-
+    if (!state.firstRun) {
+      cm.jumpToPos(pos.from, pos.to);
+    }
     // focus or expose as the current search target
     clearMarker();
     if (canFocus) {
@@ -793,7 +799,6 @@ onDOMready().then(() => {
     } else {
       makeTargetVisible(cm.display.wrapper);
       // mark the match
-      const pos = searchCursor.pos;
       state.marker = cm.state.search.marker = cm.markText(pos.from, pos.to, {
         className: MATCH_CLASS,
         clearOnEnter: true,
@@ -871,15 +876,6 @@ onDOMready().then(() => {
   }
 
 
-  function toggleDataset(el, prop, state) {
-    if (state) {
-      el.dataset[prop] = '';
-    } else {
-      delete el.dataset[prop];
-    }
-  }
-
-
   function saveWindowScrollPos() {
     state.scrollX = window.scrollX;
     state.scrollY = window.scrollY;
@@ -900,7 +896,9 @@ onDOMready().then(() => {
 
   // produces [i, i+1, i-1, i+2, i-2, i+3, i-3, ...]
   function radiateArray(arr, focalIndex) {
-    const result = [arr[focalIndex]];
+    const focus = arr[focalIndex];
+    if (!focus) return arr;
+    const result = [focus];
     const len = arr.length;
     for (let i = 1; i < len; i++) {
       if (focalIndex + i < len) {
@@ -946,4 +944,4 @@ onDOMready().then(() => {
   }
 
   //endregion
-});
+})();

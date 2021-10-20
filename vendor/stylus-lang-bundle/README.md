@@ -1,5 +1,5 @@
-## stylus-lang-bundle v0.54.5
+## stylus-lang-bundle v0.54.7
 
 Following files are copied from npm (node_modules):
 
-* stylus.min.js
+* stylus-renderer.min.js: dist\stylus-renderer.min.js

@@ -1,19 +1,15 @@
 {
   "addStyleLabel": {
-    "message": "Писане на нов стил",
-    "description": "Label for the button to go to the add style page"
+    "message": "Писане на нов стил"
   },
   "addStyleTitle": {
-    "message": "Добавяне на стил",
-    "description": "Title of the page for adding styles"
+    "message": "Добавяне на стил"
   },
   "appliesAdd": {
-    "message": "Добавяне",
-    "description": "Label for the button to add an 'applies' entry"
+    "message": "Добавяне"
   },
   "appliesDisplay": {
     "message": "Приложимо за: $applies$",
-    "description": "Text on the manage screen to describe what the style applies to",
     "placeholders": {
       "applies": {
         "content": "$1"
@@ -21,196 +17,148 @@
     }
   },
   "appliesDisplayTruncatedSuffix": {
-    "message": "и още",
-    "description": "Text added to appliesDisplay when there are more sites for the style than are displayed"
+    "message": "и още"
   },
   "appliesDomainOption": {
-    "message": "Адреси на домейна",
-    "description": "Option to make the style apply to the entered string as a domain"
+    "message": "Адреси на домейна"
   },
   "appliesHelp": {
-    "message": "Използвайте 'Приложимо за', за да ограничите адресите, за които се отнася кода в отдела.",
-    "description": "Help text for 'applies to' section"
+    "message": "Използвайте 'Приложимо за', за да ограничите адресите, за които се отнася кода в отдела."
   },
   "appliesLabel": {
-    "message": "Приложимо за",
-    "description": "Label for 'applies to' fields on the edit/add screen"
+    "message": "Приложимо за"
   },
   "appliesRegexpOption": {
-    "message": "Адреси, съвпадащи с регулярен израз",
-    "description": "Option to make the style apply to the entered string as a regular expression"
+    "message": "Адреси, съвпадащи с регулярен израз"
   },
   "appliesRemove": {
-    "message": "Премахване",
-    "description": "Label for the button to remove an 'applies' entry"
+    "message": "Премахване"
   },
   "appliesSpecify": {
-    "message": "Уточняване",
-    "description": "Label for the button to make a style apply only to specific sites"
+    "message": "Уточняване"
   },
   "appliesToEverything": {
-    "message": "Всичко",
-    "description": "Text displayed for styles that apply to all sites"
+    "message": "Всичко"
   },
   "appliesUrlOption": {
-    "message": "Адрес",
-    "description": "Option to make the style apply to the entered string as a URL"
+    "message": "Адрес"
   },
   "appliesUrlPrefixOption": {
-    "message": "Адреси, започващи с",
-    "description": "Option to make the style apply to the entered string as a URL prefix"
+    "message": "Адреси, започващи с"
   },
   "applyAllUpdates": {
-    "message": "Прилагане на всички обновления",
-    "description": "Label for the button to apply all detected updates"
+    "message": "Прилагане на всички обновления"
   },
   "backupButtons": {
-    "message": "Резервни копия",
-    "description": "Heading for backup"
+    "message": "Резервни копия"
   },
   "backupMessage": {
-    "message": "Изберете файл или го влачете до страницата.",
-    "description": "Message for backup"
+    "message": "Изберете файл или го влачете до страницата."
   },
   "bckpInstStyles": {
-    "message": "Изнасяне на стилове",
-    "description": ""
+    "message": "Изнасяне на стилове"
   },
   "checkAllUpdates": {
-    "message": "Проверка на всички стилове за обновления",
-    "description": "Label for the button to check all styles for updates"
+    "message": "Проверка на всички стилове за обновления"
   },
   "checkAllUpdatesForce": {
-    "message": "Повторна проверка",
-    "description": "Label for the button to apply all detected updates"
+    "message": "Повторна проверка"
   },
   "checkForUpdate": {
-    "message": "Проверка за обновления",
-    "description": "Label for the button to check a single style for an update"
+    "message": "Проверка за обновления"
   },
   "checkingForUpdate": {
-    "message": "Проверяване...",
-    "description": "Text to display when checking a style for an update"
+    "message": "Проверяване..."
   },
   "cm_autocompleteOnTyping": {
-    "message": "Автоматично завършване при въвеждане",
-    "description": "Label for the checkbox in the style editor."
+    "message": "Автоматично завършване при въвеждане"
   },
   "cm_indentWithTabs": {
-    "message": "Подпрозорци с умен отстъп",
-    "description": "Label for the checkbox controlling tabs with smart indentation option for the style editor."
+    "message": "Подпрозорци с умен отстъп"
   },
   "cm_keyMap": {
-    "message": "Клавиши",
-    "description": "Label for the drop-down list controlling the keymap for the style editor."
+    "message": "Клавиши"
   },
   "cm_lineWrapping": {
-    "message": "Пренасяне",
-    "description": "Label for the checkbox controlling word wrap option for the style editor."
+    "message": "Пренасяне"
   },
   "cm_matchHighlight": {
-    "message": "Осветяване",
-    "description": "Label for the drop-down list controlling the automatic highlighting of current word/selection occurrences in the style editor."
+    "message": "Осветяване"
   },
   "cm_matchHighlightSelection": {
-    "message": "Само избраното",
-    "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of currently selected text"
+    "message": "Само избраното"
   },
   "cm_matchHighlightToken": {
-    "message": "Низа под показалеца",
-    "description": "Style editor's 'highglight' drop-down list option: highlight the occurrences of the word/token under cursor even if nothing is selected"
+    "message": "Низа под показалеца"
   },
   "cm_resizeGripHint": {
-    "message": "Щракнете два пъти за възстановяване/увеличаване на височината",
-    "description": "Tooltip for the resize grip in style editor"
+    "message": "Щракнете два пъти за възстановяване/увеличаване на височината"
   },
   "cm_smartIndent": {
-    "message": "Умен отстъп",
-    "description": "Label for the checkbox controlling smart indentation option for the style editor."
+    "message": "Умен отстъп"
   },
   "cm_tabSize": {
-    "message": "Табулация",
-    "description": "Label for the text box controlling tab size option for the style editor."
+    "message": "Табулация"
   },
   "cm_theme": {
-    "message": "Тема",
-    "description": "Label for the style editor's CSS theme."
+    "message": "Тема"
   },
   "confirmCancel": {
-    "message": "Отказ",
-    "description": ""
+    "message": "Отказ"
   },
   "confirmDelete": {
-    "message": "Изтриване",
-    "description": ""
+    "message": "Изтриване"
   },
   "confirmNo": {
-    "message": "Не",
-    "description": "'No' button in a confirm dialog"
+    "message": "Не"
   },
   "confirmOK": {
-    "message": "Добре",
-    "description": ""
+    "message": "Добре"
   },
   "confirmStop": {
-    "message": "Спиране",
-    "description": "'Stop' button in a confirm dialog"
+    "message": "Спиране"
   },
   "confirmYes": {
-    "message": "Да",
-    "description": "'Yes' button in a confirm dialog"
+    "message": "Да"
   },
   "dbError": {
-    "message": "Възникна грешка с базата от данни. Искате ли да посетите страницата с възможни решения?",
-    "description": "Prompt when a DB error is encountered"
+    "message": "Възникна грешка с базата от данни. Искате ли да посетите страницата с възможни решения?"
   },
   "defaultTheme": {
-    "message": "по подразбиране",
-    "description": "Default CodeMirror CSS theme option on the edit style page"
+    "message": "по подразбиране"
   },
   "deleteStyleConfirm": {
-    "message": "Сигурни ли сте, че искате да изтриете стила?",
-    "description": "Confirmation before deleting a style"
+    "message": "Сигурни ли сте, че искате да изтриете стила?"
   },
   "deleteStyleLabel": {
-    "message": "Изтриване",
-    "description": "Label for the button to delete a style"
+    "message": "Изтриване"
   },
   "description": {
-    "message": "Пресъздайте стила на Мрежата със Стайлус, разширението за стилове. То ви позволява лесно да инсталиране теми за много сайтове.",
-    "description": "Extension description"
+    "message": "Пресъздайте стила на Мрежата със Стайлус, разширението за стилове. То ви позволява лесно да инсталиране теми за много сайтове."
   },
   "disableAllStyles": {
-    "message": "Изключване на всички стилове",
-    "description": "Label for the checkbox that turns all enabled styles off."
+    "message": "Изключване на всички стилове"
   },
   "disableStyleLabel": {
-    "message": "Изключване",
-    "description": "Label for the button to disable a style"
+    "message": "Изключване"
   },
   "dragDropMessage": {
-    "message": "Пуснете резервното копие където и да е по страницата, за да го внесете.",
-    "description": "Drag'n'drop message"
+    "message": "Пуснете резервното копие където и да е по страницата, за да го внесете."
   },
   "editDeleteText": {
-    "message": "Изтриване",
-    "description": "Label for the context menu item in the editor to delete selected text"
+    "message": "Изтриване"
   },
   "editGotoLine": {
-    "message": "Отиване на ред",
-    "description": "Go to line or line:column on Ctrl-G in style code editor"
+    "message": "Отиване на ред"
   },
   "editStyleHeading": {
-    "message": "Редактиране на стила",
-    "description": "Title of the page for editing styles"
+    "message": "Редактиране на стила"
   },
   "editStyleLabel": {
-    "message": "Редактиране",
-    "description": "Label for the button to go to the edit style page"
+    "message": "Редактиране"
   },
   "editStyleTitle": {
     "message": "Редактиране на стила $stylename$",
-    "description": "Title of the page for editing styles",
     "placeholders": {
       "stylename": {
         "content": "$1"
@@ -218,116 +166,88 @@
     }
   },
   "enableStyleLabel": {
-    "message": "Включване",
-    "description": "Label for the button to enable a style"
+    "message": "Включване"
   },
   "exportLabel": {
-    "message": "Изнасяне",
-    "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+    "message": "Изнасяне"
   },
   "findStylesForSite": {
-    "message": "Още стилове за този сайт",
-    "description": "Text for a link that gets a list of styles for the current site"
+    "message": "Още стилове за този сайт"
   },
   "genericDisabledLabel": {
-    "message": "Изключено",
-    "description": "Used in various lists/options to indicate that something is disabled"
+    "message": "Изключено"
   },
   "genericHistoryLabel": {
-    "message": "Хронология",
-    "description": "Used in various places to show a history log of something"
+    "message": "Хронология"
   },
   "helpAlt": {
-    "message": "Помощ",
-    "description": "Alternate text for help buttons"
+    "message": "Помощ"
   },
   "helpKeyMapCommand": {
-    "message": "Въведете име",
-    "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+    "message": "Въведете име"
   },
   "helpKeyMapHotkey": {
-    "message": "Натиснете клавиш",
-    "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
+    "message": "Натиснете клавиш"
   },
   "importAppendLabel": {
-    "message": "Прибавяне към стила",
-    "description": "Label for the button to import a style and append to the existing sections"
+    "message": "Прибавяне към стила"
   },
   "importAppendTooltip": {
-    "message": "Прибавяне на внесения стил към текущия",
-    "description": "Tooltip for the button to import a style and append to the existing sections"
+    "message": "Прибавяне на внесения стил към текущия"
   },
   "importLabel": {
-    "message": "Внасяне",
-    "description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+    "message": "Внасяне"
   },
   "importReplaceLabel": {
-    "message": "Презаписване на стила",
-    "description": "Label for the button to import and overwrite current style"
+    "message": "Презаписване на стила"
   },
   "importReplaceTooltip": {
-    "message": "Презаписване на съдържанието на текщия стил с това от внесения",
-    "description": "Label for the button to import and overwrite current style"
+    "message": "Презаписване на съдържанието на текщия стил с това от внесения"
   },
   "importReportLegendAdded": {
-    "message": "добавени",
-    "description": "Text after the number of styles added in the report shown after importing styles"
+    "message": "добавени"
   },
   "importReportLegendIdentical": {
-    "message": "пропуснати еднакви",
-    "description": "Text after the number of styles skipped due to being identical to the already installed ones in the report shown after importing styles"
+    "message": "пропуснати еднакви"
   },
   "importReportLegendInvalid": {
-    "message": "пропуснати невалидни",
-    "description": "Text after the number of styles skipped due to being invalid (not a Stylus/Stylish backup file probably) in the report shown after importing styles"
+    "message": "пропуснати невалидни"
   },
   "importReportLegendUpdatedBoth": {
-    "message": "с обновени код и метаданни",
-    "description": "Text after the number of styles updated entirely in the report shown after importing styles"
+    "message": "с обновени код и метаданни"
   },
   "importReportLegendUpdatedCode": {
-    "message": "с обновен код",
-    "description": "Text after the number of styles with updated code (meta info is unchanged) in the report shown after importing styles"
+    "message": "с обновен код"
   },
   "importReportLegendUpdatedMeta": {
-    "message": "с обновени метаданни",
-    "description": "Text after the number of styles with updated meta info like name/url in the report shown after importing styles"
+    "message": "с обновени метаданни"
   },
   "importReportTitle": {
-    "message": "Внасянето на стилове завърши",
-    "description": "Title of the report shown after importing styles"
+    "message": "Внасянето на стилове завърши"
   },
   "importReportUnchanged": {
-    "message": "Нищо не беше променено.",
-    "description": "Message in the report shown after importing styles"
+    "message": "Нищо не беше променено."
   },
   "importReportUndone": {
-    "message": "върнати стила",
-    "description": "Text after the number of styles reverted in the message box shown after undoing the import of styles"
+    "message": "върнати стила"
   },
   "importReportUndoneTitle": {
-    "message": "Внасянето беше отменено",
-    "description": "Title of the message box shown after undoing the import of styles"
+    "message": "Внасянето беше отменено"
   },
   "installUpdate": {
-    "message": "Инсталиране на обновлението",
-    "description": "Label for the button to install an update for a single style"
+    "message": "Инсталиране на обновлението"
   },
   "linkGetHelp": {
-    "message": "Помощ",
-    "description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
+    "message": "Помощ"
   },
   "linkGetStyles": {
-    "message": "Вземете стилове",
-    "description": "Help link text on the manage page e.g. https://userstyles.org"
+    "message": "Вземете стилове"
   },
   "linterIssues": {
-    "message": "Проблеми",
-    "description": "Label for the CSS linter issues block on the style edit page"
+    "message": "Проблеми"
   },
   "linterIssuesHelp": {
     "message": "Проблеми, намерени от $link$ при следните правила:",
-    "description": "Help popup message for the selected CSS linter issues block on the style edit page",
     "placeholders": {
       "link": {
         "content": "$1"
@@ -335,244 +255,181 @@
     }
   },
   "manageFavicons": {
-    "message": "Иконки на приложимите сайтовете",
-    "description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+    "message": "Иконки на приложимите сайтовете"
   },
   "manageFaviconsGray": {
-    "message": "Сиви",
-    "description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
+    "message": "Сиви"
   },
   "manageFaviconsHelp": {
-    "message": "Разширението използва външна услуга https://www.google.com/s2/favicons",
-    "description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+    "message": "Разширението използва външна услуга https://www.google.com/s2/favicons"
   },
   "manageFilters": {
-    "message": "Филтри",
-    "description": "Label for filters container"
+    "message": "Филтри"
   },
   "manageHeading": {
-    "message": "Инсталирани стилове",
-    "description": "Heading for the manage page"
+    "message": "Инсталирани стилове"
   },
   "manageMaxTargets": {
-    "message": "Брой на видимите приложими адреси",
-    "description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
+    "message": "Брой на видимите приложими адреси"
   },
   "manageNewUI": {
-    "message": "Нов интерфейс за управление",
-    "description": "Label for the checkbox that toggles the new UI on manage page"
+    "message": "Нов интерфейс за управление"
   },
   "manageOnlyEnabled": {
-    "message": "Само включените стилове",
-    "description": "Checkbox to show only enabled styles"
+    "message": "Само включените стилове"
   },
   "manageOnlyLocal": {
-    "message": "Само местно създадените стилове",
-    "description": "Checkbox to show only locally created styles i.e. non-updatable"
+    "message": "Само местно създадените стилове"
   },
   "manageOnlyLocalTooltip": {
-    "message": "(стиловете, които не са инсталирани през userstyles.org)",
-    "description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
+    "message": "(стиловете, които не са инсталирани през userstyles.org)"
   },
   "manageOnlyUpdates": {
-    "message": "Само стилове с обновления или проблеми",
-    "description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
+    "message": "Само стилове с обновления или проблеми"
   },
   "manageTitle": {
-    "message": "Стилове",
-    "description": "Title for the manage page"
+    "message": "Стилове"
   },
   "menuShowBadge": {
-    "message": "Брой на активните стилове",
-    "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."
+    "message": "Брой на активните стилове"
   },
   "noStylesForSite": {
-    "message": "Няма инсталирани стилове за сайта.",
-    "description": "Text displayed when no styles are installed for the current site"
+    "message": "Няма инсталирани стилове за сайта."
   },
   "openManage": {
-    "message": "Управление",
-    "description": "Link to open the manage page."
+    "message": "Управление"
   },
   "openStylesManager": {
-    "message": "Управление на стиловете",
-    "description": "Label for the style maanger opener in the browser action context menu."
+    "message": "Управление на стиловете"
   },
   "optionsActions": {
-    "message": "Действия",
-    "description": ""
+    "message": "Действия"
   },
   "optionsAdvanced": {
-    "message": "Разширени",
-    "description": ""
+    "message": "Разширени"
   },
   "optionsAdvancedContextDelete": {
-    "message": "Добавяне на 'Изтриване' в контекстното меню на редактора",
-    "description": ""
+    "message": "Добавяне на 'Изтриване' в контекстното меню на редактора"
   },
   "optionsAdvancedExposeIframes": {
-    "message": "Разкриване на 'iframes' чрез HTML[stylus-iframe]",
-    "description": ""
+    "message": "Разкриване на 'iframes' чрез HTML[stylus-iframe]"
   },
   "optionsBadgeDisabled": {
-    "message": "Цвят на фона, когато е изключено",
-    "description": ""
+    "message": "Цвят на фона, когато е изключено"
   },
   "optionsBadgeNormal": {
-    "message": "Цвят на фона",
-    "description": ""
+    "message": "Цвят на фона"
   },
   "optionsCheck": {
-    "message": "Обновяване на стиловете",
-    "description": ""
+    "message": "Обновяване на стиловете"
   },
   "optionsCheckUpdate": {
-    "message": "Проверка и инсталиране на наличните обновления",
-    "description": ""
+    "message": "Проверка и инсталиране на наличните обновления"
   },
   "optionsCustomizeBadge": {
-    "message": "Значка на иконката на лентата",
-    "description": ""
+    "message": "Значка на иконката на лентата"
   },
   "optionsCustomizeIcon": {
-    "message": "Иконка на лентата със сечива",
-    "description": ""
+    "message": "Иконка на лентата със сечива"
   },
   "optionsCustomizePopup": {
-    "message": "Падащ прозорец",
-    "description": ""
+    "message": "Падащ прозорец"
   },
   "optionsCustomizeUpdate": {
-    "message": "Обновления",
-    "description": ""
+    "message": "Обновления"
   },
   "optionsHeading": {
-    "message": "Настройки",
-    "description": "Heading for options section on manage page."
+    "message": "Настройки"
   },
   "optionsIconDark": {
-    "message": "Тъмни теми",
-    "description": ""
+    "message": "Тъмни теми"
   },
   "optionsIconLight": {
-    "message": "Светли теми",
-    "description": ""
+    "message": "Светли теми"
   },
   "optionsOpen": {
-    "message": "Отваряне",
-    "description": ""
+    "message": "Отваряне"
   },
   "optionsOpenManager": {
-    "message": "Управление на стиловете",
-    "description": ""
+    "message": "Управление на стиловете"
   },
   "optionsPopupWidth": {
-    "message": "Ширина на падащия прозорец (в пиксели)",
-    "description": ""
+    "message": "Ширина на падащия прозорец (в пиксели)"
   },
   "optionsReset": {
-    "message": "Зануляване на настройки на първоначалните стойности",
-    "description": ""
+    "message": "Зануляване на настройки на първоначалните стойности"
   },
   "optionsResetButton": {
-    "message": "Зануляване на настройките",
-    "description": ""
+    "message": "Зануляване на настройките"
   },
   "optionsSubheading": {
-    "message": "Още настройки",
-    "description": "Subheading for options section on manage page."
+    "message": "Още настройки"
   },
   "optionsUpdateImportNote": {
-    "message": "При внасянето на резервни копия от стари версии или от Стайлиш направете ръчна проверка за обновления, за да сте сигурни, че стиловете са актуални.",
-    "description": ""
+    "message": "При внасянето на резервни копия от стари версии или от Стайлиш направете ръчна проверка за обновления, за да сте сигурни, че стиловете са актуални."
   },
   "popupStylesFirst": {
-    "message": "Стилове преди командите",
-    "description": "Label for the checkbox controlling section order in the popup."
+    "message": "Стилове преди командите"
   },
   "prefShowBadge": {
-    "message": "Брой на активните стилове за текущия сайт",
-    "description": "Label for the checkbox controlling toolbar badge text."
+    "message": "Брой на активните стилове за текущия сайт"
   },
   "replace": {
-    "message": "Заместване",
-    "description": "Label before the replace input field in the editor shown on Ctrl-H"
+    "message": "Заместване"
   },
   "replaceAll": {
-    "message": "Заместване на всички",
-    "description": "Label before the replace input field in the editor shown on 'replaceAll' hotkey"
+    "message": "Заместване на всички"
   },
   "replaceWith": {
-    "message": "Заместване с",
-    "description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
+    "message": "Заместване с"
   },
   "retrieveBckp": {
-    "message": "Внасяне на стилове",
-    "description": ""
+    "message": "Внасяне на стилове"
   },
   "search": {
-    "message": "Търсене",
-    "description": "Label before the search input field in the editor shown on Ctrl-F"
+    "message": "Търсене"
   },
   "searchRegexp": {
-    "message": "Използвайте синтаксиса /re/ за търсене с регулярни изрази",
-    "description": "Label after the search input field in the editor shown on Ctrl-F"
-  },
-  "searchStyles": {
-    "message": "Търсене на съдържанието",
-    "description": "Label for the search filter textbox on the Manage styles page"
+    "message": "Използвайте синтаксиса /re/ за търсене с регулярни изрази"
   },
   "sectionAdd": {
-    "message": "Добавяне на друг отдел",
-    "description": "Label for the button to add a section"
+    "message": "Добавяне на друг отдел"
   },
   "sectionCode": {
-    "message": "Код",
-    "description": "Label for the code for a section"
+    "message": "Код"
   },
   "sectionRemove": {
-    "message": "Премахване на отдела",
-    "description": "Label for the button to remove a section"
+    "message": "Премахване на отдела"
   },
   "shortcuts": {
-    "message": "Клавишни комбинации",
-    "description": "Go to shortcut configuration"
+    "message": "Клавишни комбинации"
   },
   "shortcutsNote": {
-    "message": "Задаване на клавишни комбинации",
-    "description": ""
+    "message": "Задаване на клавишни комбинации"
   },
   "styleBadRegexp": {
-    "message": "Регулярният израз не е правилен.",
-    "description": "Validation message for a bad regexp in a style"
+    "message": "Регулярният израз не е правилен."
   },
   "styleBeautify": {
-    "message": "Разкрасяване",
-    "description": "Label for the CSS-beautifier button on the edit style page"
+    "message": "Разкрасяване"
   },
   "styleBeautifyIndentConditional": {
-    "message": "Отстъп на @media, @supports",
-    "description": "CSS-beautifier option"
+    "message": "Отстъп на @media, @supports"
   },
   "styleCancelEditLabel": {
-    "message": "Назад към стиловете",
-    "description": "Label for cancel button for style editing"
+    "message": "Назад към стиловете"
   },
   "styleChangesNotSaved": {
-    "message": "Направили сте промени по стила без да ги запазите.",
-    "description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
+    "message": "Направили сте промени по стила без да ги запазите."
   },
   "styleEnabledLabel": {
-    "message": "Включено",
-    "description": "Label for the enabled state of styles"
+    "message": "Включено"
   },
   "styleFromMozillaFormatPrompt": {
-    "message": "Поставете кода във формат на Мозила",
-    "description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
+    "message": "Поставете кода във формат на Мозила"
   },
   "styleInstall": {
     "message": "Да се инсталира ли '$stylename$'?",
-    "description": "Confirmation when installing a style",
     "placeholders": {
       "stylename": {
         "content": "$1"
@@ -580,68 +437,52 @@
     }
   },
   "styleMissingName": {
-    "message": "Въведете име",
-    "description": "Error displayed when user saves without providing a name"
+    "message": "Въведете име"
   },
   "styleMozillaFormatHeading": {
-    "message": "Формат на Мозила",
-    "description": "Heading for the section with buttons to import/export Mozilla format of the style"
+    "message": "Формат на Мозила"
   },
   "styleNotAppliedRegexpProblemTooltip": {
-    "message": "Стилът не е приложен поради неправилно използване на регулярни изрази",
-    "description": "Tooltip in the popup for styles that were not applied at all"
+    "message": "Стилът не е приложен поради неправилно използване на регулярни изрази"
   },
   "styleRegexpInvalidExplanation": {
-    "message": "Има правила на регулярни изрази, които не могат да бъдат компилирани.",
-    "description": ""
+    "message": "Има правила на регулярни изрази, които не могат да бъдат компилирани."
   },
   "styleRegexpPartialExplanation": {
-    "message": "Стилът използва частично съвпадащи регулярни изрази и нарушава <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>Спецификацията @document</a>, която изисква пълно съвпадение на адреса. Засегнатите отдели не са приложени. Стилът вероятно е създаден в Stylish-for-Chrome, което неправилно проверява правилата на 'regexp()' още от първата версия (познат дефект).",
-    "description": ""
+    "message": "Стилът използва частично съвпадащи регулярни изрази и нарушава <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>Спецификацията @document</a>, която изисква пълно съвпадение на адреса. Засегнатите отдели не са приложени. Стилът вероятно е създаден в Stylish-for-Chrome, което неправилно проверява правилата на 'regexp()' още от първата версия (познат дефект)."
   },
   "styleRegexpProblemTooltip": {
-    "message": "Брой на неприложените отдели поради неправилно използване на регулярни изрази",
-    "description": "Tooltip in the popup for styles that were applied only partially"
+    "message": "Брой на неприложените отдели поради неправилно използване на регулярни изрази"
   },
   "styleRegexpTestButton": {
-    "message": "Тест на регулярния израз",
-    "description": "RegExp test button label in the editor shown when applies-to list has a regexp value"
+    "message": "Тест на регулярния израз"
   },
   "styleRegexpTestFull": {
-    "message": "Съвпадащи подпрозорци",
-    "description": "RegExp test report: label for the fully matching expressions"
+    "message": "Съвпадащи подпрозорци"
   },
   "styleRegexpTestInvalid": {
-    "message": "Неправилните регулярни изрази са пропуснати",
-    "description": "RegExp test report: label for the invalid expressions"
+    "message": "Неправилните регулярни изрази са пропуснати"
   },
   "styleRegexpTestNone": {
-    "message": "Няма съвпадащи подпрозорци",
-    "description": "RegExp test report: label for expressions that didn't match any tabs"
+    "message": "Няма съвпадащи подпрозорци"
   },
   "styleRegexpTestPartial": {
-    "message": "Не съвпада напълно, затова е пропуснато",
-    "description": "RegExp test report: label for the partially matching expressions"
+    "message": "Не съвпада напълно, затова е пропуснато"
   },
   "styleRegexpTestTitle": {
-    "message": "Списък със съвпадащи отворени подпрозорци (щракнете на адреса, за да се фокусира на подпрозореца)",
-    "description": "RegExp test report: title of the report"
+    "message": "Списък със съвпадащи отворени подпрозорци (щракнете на адреса, за да се фокусира на подпрозореца)"
   },
   "styleSaveLabel": {
-    "message": "Запазване",
-    "description": "Label for save button for style editing"
+    "message": "Запазване"
   },
   "styleToMozillaFormatHelp": {
-    "message": "Форматът на Мозила може да се подаде в userstyles.org и да се използва със Стайлиш (Stylish)",
-    "description": "Help info for the Mozilla format header section that converts the code to/from Mozilla format"
+    "message": "Форматът на Мозила може да се подаде в userstyles.org и да се използва със Стайлиш (Stylish)"
   },
   "styleToMozillaFormatTitle": {
-    "message": "Стил във формат на Мозила",
-    "description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
+    "message": "Стил във формат на Мозила"
   },
   "styleUpdate": {
     "message": "Сигурни ли сте, че искате да обновите '$stylename$'?",
-    "description": "Confirmation when updating a style",
     "placeholders": {
       "stylename": {
         "content": "$1"
@@ -649,44 +490,34 @@
     }
   },
   "stylusUnavailableForURL": {
-    "message": "Разширението не работи на такива страници.",
-    "description": "Note in the toolbar pop-up when on a URL Stylus can't affect"
+    "message": "Разширението не работи на такива страници."
   },
   "stylusUnavailableForURLdetails": {
-    "message": "Като предпазна мярка, четецът забранява на разширенията да влияят на вградените страници (например chrome://version, about:addons, стандартната страница от Хром 61 и други), както и на страниците на други разширения. Достъпът до магазина с добавки на всеки четец също е ограничен.",
-    "description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
+    "message": "Като предпазна мярка, четецът забранява на разширенията да влияят на вградените страници (например chrome://version, about:addons, стандартната страница от Хром 61 и други), както и на страниците на други разширения. Достъпът до магазина с добавки на всеки четец също е ограничен."
   },
   "toggleStyle": {
-    "message": "Превключване на стила",
-    "description": "Label for the checkbox to enable/disable a style"
+    "message": "Превключване на стила"
   },
   "undo": {
-    "message": "Отмяна",
-    "description": "Button label"
+    "message": "Отмяна"
   },
   "undoGlobal": {
-    "message": "Отмяна във всички отдели",
-    "description": "CSS-beautify global Undo button label"
+    "message": "Отмяна във всички отдели"
   },
   "unreachableContentScript": {
-    "message": "Няма връзка със страницата. Презаредете подпрозореца.",
-    "description": "Note in the toolbar popup usually on file:// URLs after [re]loading Stylus"
+    "message": "Няма връзка със страницата. Презаредете подпрозореца."
   },
   "unreachableFileHint": {
-    "message": "Разширението ще има достъп до адреси от типа file:// само ако включите съответната отметка на страницата chrome://extensions.",
-    "description": "Note in the toolbar popup for file:// URLs"
+    "message": "Разширението ще има достъп до адреси от типа file:// само ако включите съответната отметка на страницата chrome://extensions."
   },
   "updateAllCheckSucceededNoUpdate": {
-    "message": "Няма намерени обновления.",
-    "description": "Text that displays when an update all check completed and no updates are available"
+    "message": "Няма намерени обновления."
   },
   "updateAllCheckSucceededSomeEdited": {
-    "message": "Някои от стиловете не са проверени, за да не се загубят местните редакции. Обновленията могат да бъдат принудени с индивидуална проверка или с пускането на още една проверка за всички (местните промени ще бъдат презаписани).",
-    "description": "Text that displays when an update all check completed and no updates are available"
+    "message": "Някои от стиловете не са проверени, за да не се загубят местните редакции. Обновленията могат да бъдат принудени с индивидуална проверка или с пускането на още една проверка за всички (местните промени ще бъдат презаписани)."
   },
   "updateCheckFailBadResponseCode": {
     "message": "Неуспешно обновяване: сървърът отговори с код $code$.",
-    "description": "Text that displays when an update check failed because the response code indicates an error",
     "placeholders": {
       "code": {
         "content": "$1"
@@ -694,47 +525,36 @@
     }
   },
   "updateCheckFailServerUnreachable": {
-    "message": "Неуспешно обновяване: няма връзка със сървъра.",
-    "description": "Text that displays when an update check failed because the update server is unreachable"
+    "message": "Неуспешно обновяване: няма връзка със сървъра."
   },
   "updateCheckHistory": {
-    "message": "Хронология на проверките",
-    "description": ""
+    "message": "Хронология на проверките"
   },
   "updateCheckManualUpdateForce": {
-    "message": "Инсталиране на обновлението (местните редакции ще бъдат презаписани)",
-    "description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
+    "message": "Инсталиране на обновлението (местните редакции ще бъдат презаписани)"
   },
   "updateCheckManualUpdateHint": {
-    "message": "Принудителното обновяване ще презапише местните редакции.",
-    "description": "Additional text displayed when an update check skipped updating the style to avoid losing local modifications"
+    "message": "Принудителното обновяване ще презапише местните редакции."
   },
   "updateCheckSkippedLocallyEdited": {
-    "message": "Стилът е бил местно редактиран.",
-    "description": "Text that displays when an update check skipped updating the style to avoid losing local modifications"
+    "message": "Стилът е бил местно редактиран."
   },
   "updateCheckSkippedMaybeLocallyEdited": {
-    "message": "Стилът може да е бил местно редактиран.",
-    "description": "Text that displays when an update check skipped updating the style to avoid losing possible local modifications"
+    "message": "Стилът може да е бил местно редактиран."
   },
   "updateCheckSucceededNoUpdate": {
-    "message": "Стилът е обновен.",
-    "description": "Text that displays when an update check completed and no update is available"
+    "message": "Стилът е обновен."
   },
   "updateCompleted": {
-    "message": "Обновяването е завършено.",
-    "description": "Text that displays when an update completed"
+    "message": "Обновяването е завършено."
   },
   "updatesCurrentlyInstalled": {
-    "message": "Инсталирани обновления:",
-    "description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
+    "message": "Инсталирани обновления:"
   },
   "writeStyleFor": {
-    "message": "Писане на стил за: ",
-    "description": "Label for toolbar pop-up that precedes the links to write a new style"
+    "message": "Писане на стил за: "
   },
   "writeStyleForURL": {
-    "message": "този адрес",
-    "description": "Text for link in toolbar pop-up to write a new style for the current URL"
+    "message": "този адрес"
   }
 }

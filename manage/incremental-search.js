@@ -1,8 +1,15 @@
-/* global installed onDOMready $create debounce $ scrollElementIntoView
-  animateElement */
+/* global debounce */// toolbox.js
+/* global installed */// manage.js
+/* global
+  $
+  $create
+  $isTextInput
+  animateElement
+  scrollElementIntoView
+*/// dom.js
 'use strict';
 
-onDOMready().then(() => {
+(() => {
   let prevText, focusedLink, focusedEntry;
   let prevTime = performance.now();
   let focusedName = '';
@@ -12,17 +19,19 @@ onDOMready().then(() => {
     oninput: incrementalSearch,
   });
   replaceInlineStyle({
+    opacity: '0',
     position: 'absolute',
     color: 'transparent',
     border: '1px solid hsla(180, 100%, 100%, .5)',
-    top: '-1000px',
+    margin: '-1px -2px',
     overflow: 'hidden',
     resize: 'none',
     'background-color': 'hsla(180, 100%, 100%, .2)',
+    'box-sizing': 'content-box',
     'pointer-events': 'none',
   });
   document.body.appendChild(input);
-  window.addEventListener('keydown', maybeRefocus, true);
+  window.on('keydown', maybeRefocus, true);
 
   function incrementalSearch({key}, immediately) {
     if (!immediately) {
@@ -43,11 +52,13 @@ onDOMready().then(() => {
       if (direction > 0) {
         rotated = entries.slice(focusedIndex + 1).concat(entries.slice(0, focusedIndex + 1));
       } else if (direction < 0) {
-        rotated = entries.slice(0, focusedIndex).reverse().concat(entries.slice(focusedIndex).reverse());
+        rotated = entries.slice(0, focusedIndex).reverse()
+          .concat(entries.slice(focusedIndex).reverse());
       }
     }
     let found;
     for (const entry of rotated || entries) {
+      if (entry.classList.contains('hidden')) continue;
       const name = entry.styleNameLowerCase;
       const pos = name.indexOf(text);
       if (pos === 0) {
@@ -66,8 +77,13 @@ onDOMready().then(() => {
       focusedLink = $('.style-name-link', found);
       focusedName = found.styleNameLowerCase;
       scrollElementIntoView(found, {invalidMarginRatio: .25});
-      animateElement(found, {className: 'highlight-quick'});
-      resizeTo(focusedLink);
+      animateElement(found, 'highlight-quick');
+      replaceInlineStyle({
+        width: focusedLink.offsetWidth + 'px',
+        height: focusedLink.offsetHeight + 'px',
+        opacity: '1',
+      });
+      focusedLink.prepend(input);
       return true;
     }
   }
@@ -76,7 +92,7 @@ onDOMready().then(() => {
     if (event.altKey || event.metaKey || $('#message-box')) {
       return;
     }
-    const inTextInput = $.isTextLikeInput(event.target);
+    const inTextInput = $isTextInput(event.target);
     const {key, code, ctrlKey: ctrl} = event;
     // `code` is independent of the current keyboard language
     if ((code === 'KeyF' && ctrl && !event.shiftKey) ||
@@ -86,17 +102,21 @@ onDOMready().then(() => {
       $('#search').focus();
       return;
     }
-    if (ctrl || inTextInput ||
-        key === ' ' && !input.value /* Space or Shift-Space is for page down/up */) {
+    if (ctrl || inTextInput && event.target !== input) {
       return;
     }
     const time = performance.now();
     if (key.length === 1) {
-      input.focus();
       if (time - prevTime > 1000) {
         input.value = '';
       }
-      prevTime = time;
+      // Space or Shift-Space is for page down/up
+      if (key === ' ' && !input.value) {
+        input.blur();
+      } else {
+        input.focus();
+        prevTime = time;
+      }
     } else
     if (key === 'Enter' && focusedLink) {
       focusedLink.dispatchEvent(new MouseEvent('click', {bubbles: true}));
@@ -111,20 +131,9 @@ onDOMready().then(() => {
     }
   }
 
-  function resizeTo(el) {
-    const bounds = el.getBoundingClientRect();
-    const base = document.scrollingElement;
-    replaceInlineStyle({
-      left: bounds.left - 2 + base.scrollLeft + 'px',
-      top: bounds.top - 1 + base.scrollTop + 'px',
-      width: bounds.width + 4 + 'px',
-      height: bounds.height + 2 + 'px',
-    });
-  }
-
   function replaceInlineStyle(css) {
     for (const prop in css) {
       input.style.setProperty(prop, css[prop], 'important');
     }
   }
-});
+})();

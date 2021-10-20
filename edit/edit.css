@@ -1,10 +1,19 @@
 :root {
-  --header-narrow-min-height: 12em;
+  --fixed-padding: unset;
 }
 
 body {
   margin: 0;
+  height: 100vh;
   font: 12px arial,sans-serif;
+}
+
+a {
+  color: #000;
+  transition: color .5s;
+}
+a:hover {
+  color: #666;
 }
 
 #global-progress {
@@ -18,15 +27,52 @@ body {
   z-index: 2147483647;
   opacity: 0;
   transition: opacity 2s;
+  contain: strict;
 }
 #global-progress[title] {
   opacity: 1;
 }
 
+html.is-new-style #preview-label,
+html.is-new-style #publish,
 .hidden {
   display: none !important;
 }
+html.is-new-style #heading::after {
+  content: attr(data-add);
+}
+html:not(.is-new-style) #heading::after {
+  content: attr(data-edit);
+}
 
+/************ embedded popup for simple-window editor ************/
+#popup-iframe {
+  max-height: 600px;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 1001;
+  border: none;
+  background: #fff;
+  box-shadow: 0 0 30px #000;
+}
+#popup-iframe:not([data-loaded]) {
+  opacity: 0;
+}
+#popup-button {
+  position: fixed;
+  right: 7px;
+  top: 11px;
+  z-index: 1000;
+  cursor: pointer;
+  transition: filter .25s;
+}
+#popup-button:hover {
+  filter: drop-shadow(0 0 3px hsl(180, 70%, 50%));
+}
+.usercss body:not(.compact-layout) #popup-button {
+  right: 24px;
+}
 /************ checkbox & select************/
 .options-column > div[class="option"] {
   margin-bottom: 4px;
@@ -135,9 +181,6 @@ label {
 }
 
 .svg-icon {
-  cursor: pointer;
-  vertical-align: middle;
-  transition: fill .5s;
   width: 16px;
   height: 16px;
 }
@@ -145,9 +188,6 @@ label {
   margin-left: .2rem;
   display: inline-block;
   vertical-align: middle;
-}
-#mozilla-format-heading .svg-inline-wrapper {
-  margin-left: 0;
 }
 #colorpicker-settings.svg-inline-wrapper {
   margin: -2px 0 0 .1rem;
@@ -190,10 +230,10 @@ input:invalid {
   align-items: center;
   margin-left: -13px;
   cursor: pointer;
-  margin-top: .5rem;
-  margin-bottom: .5rem;
 }
-
+#header summary + * {
+  padding: .5rem 0;
+}
 #header summary h2 {
   display: inline-block;
   border-bottom: 1px dotted transparent;
@@ -211,18 +251,25 @@ input:invalid {
   margin-top: -3px;
 }
 
+#details-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+#header details[open] + details[open] {
+  margin-top: .5rem;
+}
+
 #actions > * {
   display: inline-flex;
   flex-wrap: wrap;
 }
 
-#mozilla-format-container {
-  flex-direction: column;
-}
-
 #mozilla-format-buttons {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 #actions > div > a {
@@ -244,6 +291,81 @@ input:invalid {
 #lint:not([open]) h2 {
   margin-bottom: 0;
 }
+
+#publish > div > * {
+  margin-top: .75em;
+}
+#publish a:visited {
+  margin-top: .75em;
+}
+#publish[data-connected] summary::marker,
+#publish[data-connected] h2 {
+  color: hsl(180, 100%, 20%);
+}
+#publish:not([data-connected]) #usw-link-info,
+#publish:not([data-connected]) #usw-disconnect {
+  display: none;
+}
+#publish[data-connected] #usw-publish-style::after {
+  content: attr(data-push);
+}
+#publish:not([data-connected]) #usw-publish-style::after {
+  content: attr(data-publish);
+}
+#usw-link-info dl {
+  margin: 0;
+  display: flex;
+}
+#usw-link-info dt {
+  flex-shrink: 0;
+}
+#usw-link-info dt::after {
+  content: ":"
+}
+#usw-link-info dt,
+#usw-link-info dd {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#usw-link-info dd {
+  margin-left: .5em;
+}
+#usw-link-info dd[data-usw="name"] {
+  font-weight: bold;
+}
+#usw-progress {
+  position: relative;
+  vertical-align: top;
+}
+#usw-progress .success,
+#usw-progress .unchanged {
+  font-size: 150%;
+  font-weight: bold;
+  position: absolute;
+  margin-left: .25em;
+}
+#usw-progress .success {
+  margin-top: -.25em;
+}
+#usw-progress .success::after {
+  content: '\2713'; /* checkmark */
+}
+#usw-progress .unchanged::after {
+  content: '=';
+}
+#usw-progress .error {
+  display: block;
+  margin-top: .5em;
+  color: red;
+}
+#usw-progress .error + div {
+  font-size: smaller;
+}
+#usw-progress .lds-spinner {
+  transform: scale(0.125);
+  transform-origin: 0 10px;
+}
 /* options */
 #options [type="number"] {
   width: 3.5em;
@@ -253,12 +375,6 @@ input:invalid {
 #options .option.aligned > label {
   padding: .1rem .25rem 0 0;
   vertical-align: middle;
-}
-.set-option-progress {
-  position: absolute;
-  background-color: currentColor;
-  content: "";
-  opacity: .15;
 }
 /* footer */
 .usercss #footer {
@@ -272,6 +388,7 @@ input:invalid {
 /************ section editor ***********/
 .CodeMirror-vscrollbar,
 .CodeMirror-hscrollbar {
+  box-shadow: none !important;
   pointer-events: auto !important; /* FF bug */
 }
 .section-editor .section {
@@ -304,7 +421,10 @@ input:invalid {
 #sections {
   counter-reset: codebox;
 }
-#sections > .section > label {
+#sections > .section:not(.removed) > label {
+  padding: 0 0 4px 0;
+  display: inline-block;
+  font-size: 13px;
   animation: 2s highlight;
   animation-play-state: paused;
   animation-direction: reverse;
@@ -312,8 +432,40 @@ input:invalid {
 }
 #sections > .section > label::after {
   counter-increment: codebox;
-  content: counter(codebox);
+  content: counter(codebox) ": " attr(data-text);
   margin-left: 0.25rem;
+}
+.single-editor .applies-to > label::before {
+  content: attr(data-index) ":";
+  margin-right: 0.25rem;
+}
+.code-label[data-text] {
+  font-weight: bold;
+}
+#toc {
+  counter-reset: codelabel;
+  margin: 0;
+  padding: .5rem 0;
+}
+#toc li {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+#toc li.current:not(:only-child) {
+  font-weight: bold;
+}
+#toc li[tabindex="-1"] {
+  opacity: .25;
+  pointer-events: none;
+}
+#toc li:hover {
+  background-color: hsla(180, 50%, 36%, .2);
+}
+#toc li[tabindex="0"]::before {
+  counter-increment: codelabel;
+  content: counter(codelabel) ": ";
 }
 .section:only-of-type .move-section-up,
 .section:only-of-type .move-section-down {
@@ -384,7 +536,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .cm-matchhighlight,
 body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-highlight-scrollbar {
   animation: none;
 }
-@-webkit-keyframes highlight {
+@keyframes highlight {
   from {
     background-color: #ff9;
   }
@@ -437,6 +589,13 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   align-items: flex-start;
   min-height: 30px;
   flex-wrap: wrap;
+  background-color: #f7f7f7; /* .CodeMirror-gutters */
+  border: solid #bbb;
+  border-width: 1px 0;
+}
+.applies-to.error {
+  background-color: #f002;
+  border-color: #f008;
 }
 .applies-to label {
   display: flex;
@@ -520,7 +679,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   margin-left: 1rem;
   word-break: break-all;
 }
-.regexp-report details:not(:last-child) {
+.regexp-report details {
   margin-bottom: 1rem;
 }
 .regexp-report summary {
@@ -543,6 +702,10 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   margin-left: 2rem;
   margin-top: .5rem;
 }
+.regexp-report details div {
+  max-height: calc(100vh - 15rem);
+  overflow-y: auto;
+}
 .regexp-report .svg-icon {
   position: absolute;
   margin-top: -1px;
@@ -559,14 +722,13 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 .regexp-report details a img {
   width: 16px;
   max-height: 16px;
-  position: absolute;
-  margin-left: -20px;
-  margin-top: -1px;
+  vertical-align: middle;
+  margin-right: .5em;
 }
 .regexp-report-note {
   color: #999;
   position: absolute;
-  margin: 0 0.5rem 0 0;
+  bottom: 0;
   hyphens: auto;
 }
 /************ help popup ************/
@@ -617,9 +779,12 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 #help-popup .CodeMirror {
   margin: 3px;
 }
-
+#help-popup .keymap-list input[type="search"] {
+  margin: 0 0 2px;
+}
 .keymap-list {
   font-size: 12px;
+  padding: 0 3px 0 0;
   border-spacing: 0;
   word-break: break-all;
 }
@@ -637,6 +802,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 
 #help-popup .buttons {
   text-align: center;
+  margin-top: .75em;
 }
 .non-windows #help-popup .buttons {
   direction: rtl;
@@ -656,15 +822,21 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 #help-popup .rules {
   padding: 0 15px;
 }
-#help-popup button {
-  margin-right: 3px;
+#help-popup .rules li {
+  padding-top: .5em;
+}
+#help-popup .rules p {
+  margin: .25em 0;
+}
+#help-popup .buttons button:nth-child(n + 2) {
+  margin-left: .5em;
 }
 
 /************ lint ************/
 #lint {
   overflow: hidden;
-  margin: .5rem -1rem 0;
-  min-height: 30px;
+  margin-left: -1rem;
+  margin-right: -1rem;
   padding: 0;
   box-sizing: border-box;
   display: flex;
@@ -677,13 +849,13 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   padding-left: 4px;
 }
 #lint[open]:not(.hidden-unless-compact) {
-  min-height: 130px;
+  min-height: 102px;
 }
 #lint summary h2 {
-  margin-left: -16px;
+  text-indent: -2px;
 }
 #lint > .lint-scroll-container {
-  margin: 42px 1rem 0;
+  margin: 1rem 10px 0;
   position: absolute;
   top: 0;
   bottom: 0;
@@ -721,7 +893,10 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   cursor: pointer;
 }
 #lint tr:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: hsla(180, 50%, 36%, .2);
+}
+#lint td {
+  padding: 0;
 }
 #lint td[role="severity"] {
   font-size: 0;
@@ -729,7 +904,6 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 }
 #lint td[role="line"], #lint td[role="sep"] {
   text-align: right;
-  padding-right: 0;
 }
 #lint td[role="col"] {
   text-align: left;
@@ -741,6 +915,11 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 }
 #message-box.center.lint-config #message-box-contents {
   text-align: left;
+}
+#help-popup .active-linter-rule {
+  font-weight: bold;
+  text-decoration: underline;
+  background-color: rgba(128, 128, 128, .2);
 }
 
 /************ CSS beautifier ************/
@@ -787,20 +966,12 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 }
 
 /************ single editor **************/
-.usercss body {
-  display: flex;
-  height: 100vh;
-  flex-direction: column;
-  justify-items: normal;
-}
-
 .usercss .CodeMirror-focused {
   box-shadow: none;
 }
 
 html:not(.usercss) .usercss-only,
-.usercss #mozilla-format-container,
-.usercss #sections > h2 {
+.usercss .sectioned-only {
   display: none !important; /* hide during page init */
 }
 
@@ -817,13 +988,9 @@ body.linter-disabled .hidden-unless-compact {
   margin-top: .75rem;
 }
 
-.single-editor {
-  height: 100%;
-}
-
 .single-editor .CodeMirror {
   width: 100%;
-  height: auto;
+  height: 100vh; /* WARNING! Don't use 100% as it's dead slow */
   border: none;
   outline: none;
 }
@@ -837,24 +1004,14 @@ body.linter-disabled .hidden-unless-compact {
   color: #666;
 }
 
-.usercss.firefox #sections,
-.usercss.firefox .CodeMirror {
-  height: 100%;
-}
-
 /************ line widget *************/
 .CodeMirror-linewidget .applies-to {
   margin: 1em 0;
-  padding: .75rem .75rem .25rem;
-  padding-right: calc(1em + 20px);
+  padding: .75rem calc(.25rem + var(--cm-bar-width, 0)) .25rem .75rem;
 }
 
 .CodeMirror-linewidget .applies-to li {
   margin: 0;
-}
-
-.CodeMirror-linewidget .applies-to li + li {
-  margin-top: 0.35rem;
 }
 
 .CodeMirror-linewidget .applies-to li[data-type="regexp"] .test-regexp {
@@ -878,10 +1035,10 @@ body.linter-disabled .hidden-unless-compact {
     position: inherit;
     border-right: none;
     border-bottom: 1px dashed #AAA;
-    padding: 0;
+    padding: .5rem 1rem .5rem .5rem;
   }
   .fixed-header {
-    padding-top: 40px;
+    padding-top: var(--fixed-padding);
   }
   .fixed-header #header {
     min-height: 40px;
@@ -889,30 +1046,37 @@ body.linter-disabled .hidden-unless-compact {
     top: 0;
     left: 0;
     right: 0;
-    padding: 8px 0 0;
+    padding: 0;
     background-color: #fff;
   }
-  .fixed-header #header > *:not(#lint) {
+  .fixed-header #header > *:not(#details-wrapper),
+  .fixed-header #options {
     display: none !important;
+  }
+  #header summary + *,
+  #lint > .lint-scroll-container {
+    margin-left: 1rem;
+    padding: .25rem 0 .5rem;
   }
   #actions {
     display: flex;
     flex-wrap: wrap;
     white-space: nowrap;
-    padding: 0 1rem;
     margin: 0;
     box-sizing: border-box;
   }
   #header input[type="checkbox"] {
     vertical-align: middle;
   }
+  #header details {
+    margin: 0;
+  }
   #heading,
   h2 {
     display: none;
   }
   #basic-info {
-    padding: .5rem 1rem;
-    margin: 0;
+    margin-bottom: .5rem;
     box-sizing: border-box;
     display: flex;
     flex-wrap: wrap;
@@ -929,13 +1093,32 @@ body.linter-disabled .hidden-unless-compact {
   #options-wrapper {
     display: flex;
     flex-wrap: wrap;
-    padding: 0 1rem  .5rem;
     box-sizing: border-box;
+  }
+  #details-wrapper {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  #options[open] {
+    width: 100%;
+  }
+  #sections-list[open] {
+    max-height: 102px;
+  }
+  #sections-list[open] #toc {
+    max-height: 60px;
+    overflow-y: auto;
+  }
+  #header details:not(#options) {
+    max-width: 50%;
   }
   .options-column {
     flex-grow: 1;
     padding-right: .5rem;
     box-sizing: border-box;
+  }
+  .options-column > .usercss-only {
+    margin-bottom: 0;
   }
   #options-wrapper .options-column:nth-child(2) {
     margin-top: 0;
@@ -951,12 +1134,13 @@ body.linter-disabled .hidden-unless-compact {
     position: static;
     margin-bottom:  0;
   }
-  #options summary {
+  #header summary {
     margin-left: 0;
     padding-left: 4px;
   }
-  #options h2 {
-    margin: 0 0 .5em;
+  #header summary h2 {
+    margin: 0;
+    padding: 0;
   }
   .option label {
     margin: 0;
@@ -970,15 +1154,12 @@ body.linter-disabled .hidden-unless-compact {
     top: 0.2rem;
   }
   #lint > .lint-scroll-container {
-    margin: 32px 1rem 0;
-    bottom: 6px;
+    padding-top: 0;
+    margin-right: 0;
   }
   #lint {
     padding: 0;
-    margin: 1rem 0 0;
-  }
-  #lint > summary {
-    margin-top: 0;
+    margin: .5rem 0 0;
   }
   #lint:not([open]) + #footer {
     margin: .25em 0 -1em .25em;
@@ -994,8 +1175,9 @@ body.linter-disabled .hidden-unless-compact {
     margin: 0 .5rem;
     padding: .5rem 0;
   }
-  .usercss .CodeMirror-scroll {
-    max-height: calc(100vh - var(--header-narrow-min-height));
+  .single-editor {
+    overflow: hidden;
+    flex: 1;
   }
   .usercss #options:not([open]) ~ #lint.hidden ~ #footer,
   .usercss #lint:not([open]) + #footer {

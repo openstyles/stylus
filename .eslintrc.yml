@@ -8,6 +8,9 @@ env:
   es6: true
   webextensions: true
 
+globals:
+  require: readonly # in polyfill.js
+
 rules:
   accessor-pairs: [2]
   array-bracket-spacing: [2, never]
@@ -19,7 +22,7 @@ rules:
   brace-style: [2, 1tbs, {allowSingleLine: false}]
   camelcase: [2, {properties: never}]
   class-methods-use-this: [2]
-  comma-dangle: [0]
+  comma-dangle: [2, {arrays: always-multiline, objects: always-multiline}]
   comma-spacing: [2, {before: false, after: true}]
   comma-style: [2, last]
   complexity: [0]
@@ -42,7 +45,15 @@ rules:
   id-blacklist: [0]
   id-length: [0]
   id-match: [0]
-  indent-legacy: [2, 2, {VariableDeclarator: 0, SwitchCase: 1}]
+  indent: [2, 2, {
+    SwitchCase: 1,
+    ignoreComments: true,
+    ignoredNodes: [
+      "TemplateLiteral > *",
+      "ConditionalExpression",
+      "ForStatement"
+    ]
+  }]
   jsx-quotes: [0]
   key-spacing: [0]
   keyword-spacing: [2]
@@ -86,7 +97,7 @@ rules:
   no-empty: [2, {allowEmptyCatch: true}]
   no-eq-null: [0]
   no-eval: [2]
-  no-ex-assign: [2]
+  no-ex-assign: [0]
   no-extend-native: [2]
   no-extra-bind: [2]
   no-extra-boolean-cast: [2]
@@ -136,6 +147,9 @@ rules:
   no-proto: [2]
   no-redeclare: [2]
   no-regex-spaces: [2]
+  no-restricted-globals: [2, name, event]
+    # `name` and `event` (in Chrome) are built-in globals
+    # but we don't use these globals so it's most likely a mistake/typo
   no-restricted-imports: [0]
   no-restricted-modules: [2, domain, freelist, smalloc, sys]
   no-restricted-syntax: [2, WithStatement]
@@ -163,7 +177,7 @@ rules:
   no-unreachable: [2]
   no-unsafe-finally: [2]
   no-unsafe-negation: [2]
-  no-unused-expressions: [1]
+  no-unused-expressions: [2]
   no-unused-labels: [0]
   no-unused-vars: [2, {args: after-used}]
   no-use-before-define: [2, nofunc]
@@ -189,7 +203,7 @@ rules:
   prefer-const: [1, {destructuring: all, ignoreReadBeforeAssign: true}]
   quote-props: [0]
   quotes: [1, single, avoid-escape]
-  radix: [2, as-needed]
+  radix: [2, always]
   require-jsdoc: [0]
   require-yield: [2]
   semi-spacing: [2, {before: false, after: true}]
@@ -220,3 +234,7 @@ overrides:
       webextensions: false
     parserOptions:
       ecmaVersion: 2017
+
+  - files: ["**/*worker*.js"]
+    env:
+      worker: true

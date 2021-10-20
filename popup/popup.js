@@ -1,56 +1,51 @@
-/* global configDialog hotkeys msg
-  getActiveTab CHROME FIREFOX URLS API onDOMready $ $$ prefs
-  setupLivePrefs template t $create animateElement
-  tryJSONparse CHROME_HAS_BORDER_BUG capitalize */
-
+/* global $ $$ $create setupLivePrefs */// dom.js
+/* global ABOUT_BLANK getStyleDataMerged preinit */// preinit.js
+/* global API msg */// msg.js
+/* global Events */
+/* global prefs */
+/* global t */// localization.js
+/* global
+  CHROME
+  CHROME_POPUP_BORDER_BUG
+  FIREFOX
+  URLS
+  capitalize
+  getActiveTab
+  isEmptyObj
+*/// toolbox.js
 'use strict';
 
-/** @type Element */
-let installed;
-/** @type string */
 let tabURL;
-const handleEvent = {};
+let isBlocked;
 
-const ABOUT_BLANK = 'about:blank';
+/** @type Element */
+const installed = $('#installed');
 const ENTRY_ID_PREFIX_RAW = 'style-';
+const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrId}`);
 
-$.entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrId}`);
-
-if (CHROME >= 66 && CHROME <= 69) { // Chrome 66-69 adds a gap, https://crbug.com/821143
-  document.head.appendChild($create('style', 'html { overflow: overlay }'));
-}
-
-toggleSideBorders();
-
-initTabUrls()
-  .then(frames =>
-    Promise.all([
-      onDOMready().then(() => initPopup(frames)),
-      ...frames
-        .filter(f => f.url && !f.isDupe)
-        .map(({url}) => getStyleDataMerged(url).then(styles => ({styles, url}))),
-    ]))
-  .then(([, ...results]) => {
-    if (results[0]) {
-      showStyles(results);
-    } else {
-      // unsupported URL;
-      $('#popup-manage-button').removeAttribute('title');
-    }
-  })
-  .catch(console.error);
+preinit.then(({frames, styles, url}) => {
+  tabURL = url;
+  initPopup(frames);
+  if (styles[0]) {
+    showStyles(styles);
+  } else {
+    // unsupported URL;
+    $('#popup-manage-button').removeAttribute('title');
+  }
+});
 
 msg.onExtension(onRuntimeMessage);
 
-prefs.subscribe(['popup.stylesFirst'], (key, stylesFirst) => {
+prefs.subscribe('popup.stylesFirst', (key, stylesFirst) => {
   const actions = $('body > .actions');
   const before = stylesFirst ? actions : actions.nextSibling;
   document.body.insertBefore(installed, before);
 });
-prefs.subscribe(['popupWidth'], (key, value) => setPopupWidth(value));
-
-if (CHROME_HAS_BORDER_BUG) {
-  prefs.subscribe(['popup.borders'], (key, value) => toggleSideBorders(value));
+if (CHROME_POPUP_BORDER_BUG) {
+  prefs.subscribe('popup.borders', toggleSideBorders, {runNow: true});
+}
+if (CHROME >= 66 && CHROME <= 69) { // Chrome 66-69 adds a gap, https://crbug.com/821143
+  document.head.appendChild($create('style', 'html { overflow: overlay }'));
 }
 
 function onRuntimeMessage(msg) {
@@ -69,17 +64,15 @@ function onRuntimeMessage(msg) {
   ready.then(() => dispatchEvent(new CustomEvent(msg.method, {detail: msg})));
 }
 
-
-function setPopupWidth(width = prefs.get('popupWidth')) {
+function setPopupWidth(_key, width) {
   document.body.style.width =
     Math.max(200, Math.min(800, width)) + 'px';
 }
 
-
-function toggleSideBorders(state = prefs.get('popup.borders')) {
+function toggleSideBorders(_key, state) {
   // runs before <body> is parsed
   const style = document.documentElement.style;
-  if (CHROME_HAS_BORDER_BUG && state) {
+  if (state) {
     style.cssText +=
       'border-left: 2px solid white !important;' +
       'border-right: 2px solid white !important;';
@@ -88,35 +81,9 @@ function toggleSideBorders(state = prefs.get('popup.borders')) {
   }
 }
 
-function initTabUrls() {
-  return getActiveTab()
-    .then((tab = {}) =>
-      FIREFOX && tab.status === 'loading' && tab.url === ABOUT_BLANK
-        ? waitForTabUrlFF(tab)
-        : tab)
-    .then(tab => new Promise(resolve =>
-      chrome.webNavigation.getAllFrames({tabId: tab.id}, frames =>
-        resolve({frames, tab}))))
-    .then(({frames, tab}) => {
-      let url = tab.pendingUrl || tab.url || ''; // new Chrome uses pendingUrl while connecting
-      frames = sortTabFrames(frames);
-      if (url === 'chrome://newtab/' && !URLS.chromeProtectsNTP) {
-        url = frames[0].url || '';
-      }
-      if (!URLS.supported(url)) {
-        url = '';
-        frames.length = 1;
-      }
-      tabURL = frames[0].url = url;
-      return frames;
-    });
-}
-
 /** @param {chrome.webNavigation.GetAllFrameResultDetails[]} frames */
-function initPopup(frames) {
-  installed = $('#installed');
-
-  setPopupWidth();
+async function initPopup(frames) {
+  prefs.subscribe('popupWidth', setPopupWidth, {runNow: true});
 
   // action buttons
   $('#disableAll').onchange = function () {
@@ -124,10 +91,18 @@ function initPopup(frames) {
   };
   setupLivePrefs();
 
+  Object.assign($('#find-styles-link'), {
+    href: URLS.usoArchive + 'browse/styles',
+    async onclick(e) {
+      e.preventDefault();
+      await require(['/popup/search']);
+      Events.searchOnClick(this, e);
+    },
+  });
+
   Object.assign($('#popup-manage-button'), {
-    onclick: handleEvent.openManager,
-    onmouseup: handleEvent.openManager,
-    oncontextmenu: handleEvent.openManager,
+    onclick: Events.openManager,
+    oncontextmenu: Events.openManager,
   });
 
   $('#popup-options-button').onclick = () => {
@@ -135,12 +110,29 @@ function initPopup(frames) {
     window.close();
   };
 
-  $('#popup-wiki-button').onclick = handleEvent.openURLandHide;
+  $('#popup-wiki-button').onclick = Events.openURLandHide;
+
+  $('#confirm').onclick = function (e) {
+    const {id} = this.dataset;
+    switch (e.target.dataset.cmd) {
+      case 'ok':
+        Events.hideModal(this, {animate: true});
+        API.styles.delete(Number(id));
+        break;
+      case 'cancel':
+        Events.showModal($('.menu', $entry(id)), '.menu-close');
+        break;
+    }
+  };
 
   if (!prefs.get('popup.stylesFirst')) {
     document.body.insertBefore(
       $('body > .actions'),
       installed);
+  }
+
+  for (const el of $$('link[media=print]')) {
+    el.removeAttribute('media');
   }
 
   if (!tabURL) {
@@ -149,58 +141,62 @@ function initPopup(frames) {
   }
 
   frames.forEach(createWriterElement);
-  if (frames.length > 1) {
-    const el = $('#write-for-frames');
-    el.hidden = false;
-    el.onclick = () => el.classList.toggle('expanded');
+  Object.assign($('#write-for-frames'), {
+    onclick: e => e.currentTarget.classList.toggle('expanded'),
+    hidden: frames.length < 2 || !$('.match .match:not(.dupe)'),
+  });
+
+  const isStore = tabURL.startsWith(URLS.browserWebStore);
+  if (isStore && !FIREFOX) {
+    blockPopup();
+    return;
   }
 
-  getActiveTab().then(function ping(tab, retryCountdown = 10) {
-    msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0})
-      .catch(() => false)
-      .then(pong => {
-        if (pong) {
-          return;
-        }
-        // FF and some Chrome forks (e.g. CentBrowser) implement tab-on-demand
-        // so we'll wait a bit to handle popup being invoked right after switching
-        if (retryCountdown > 0 && (
-            tab.status !== 'complete' ||
-            FIREFOX && tab.url === ABOUT_BLANK)) {
-          setTimeout(ping, 100, tab, --retryCountdown);
-          return;
-        }
-        const info = template.unreachableInfo;
-        if (!FIREFOX) {
-          // Chrome "Allow access to file URLs" in chrome://extensions message
-          info.appendChild($create('p', t('unreachableFileHint')));
-        }
-        if (FIREFOX && tabURL.startsWith(URLS.browserWebStore)) {
-          $('label', info).textContent = t('unreachableAMO');
-          const note = (FIREFOX < 59 ? t('unreachableAMOHintOldFF') : t('unreachableAMOHint')) +
-                       (FIREFOX < 60 ? '' : '\n' + t('unreachableAMOHintNewFF'));
-          const renderToken = s => s[0] === '<'
-            ? $create('a', {
-              textContent: s.slice(1, -1),
-              onclick: handleEvent.copyContent,
-              href: '#',
-              className: 'copy',
-              tabIndex: 0,
-              title: t('copy'),
-            })
-            : s;
-          const renderLine = line => $create('p', line.split(/(<.*?>)/).map(renderToken));
-          const noteNode = $create('fragment', note.split('\n').map(renderLine));
-          info.appendChild(noteNode);
-        }
-        // Inaccessible locally hosted file type, e.g. JSON, PDF, etc.
-        if (tabURL.length - tabURL.lastIndexOf('.') <= 5) {
-          info.appendChild($create('p', t('InaccessibleFileHint')));
-        }
-        document.body.classList.add('unreachable');
-        document.body.insertBefore(info, document.body.firstChild);
-      });
-  });
+  for (let retryCountdown = 10; retryCountdown-- > 0;) {
+    const tab = await getActiveTab();
+    if (await msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0}).catch(() => {})) {
+      return;
+    }
+    if (tab.status === 'complete' && (!FIREFOX || tab.url !== ABOUT_BLANK)) {
+      break;
+    }
+    // FF and some Chrome forks (e.g. CentBrowser) implement tab-on-demand
+    // so we'll wait a bit to handle popup being invoked right after switching
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+
+  initUnreachable(isStore);
+}
+
+function initUnreachable(isStore) {
+  const info = t.template.unreachableInfo;
+  if (!FIREFOX) {
+    // Chrome "Allow access to file URLs" in chrome://extensions message
+    info.appendChild($create('p', t('unreachableFileHint')));
+  } else {
+    $('label', info).textContent = t('unreachableAMO');
+    const note = [
+      isStore && t(FIREFOX >= 59 ? 'unreachableAMOHint' : 'unreachableMozSiteHintOldFF'),
+      FIREFOX >= 60 && t('unreachableMozSiteHint'),
+    ].filter(Boolean).join('\n');
+    const renderToken = s => s[0] === '<'
+      ? $create('a.copy', {
+        textContent: s.slice(1, -1),
+        onclick: Events.copyContent,
+        tabIndex: 0,
+        title: t('copy'),
+      })
+      : s;
+    const renderLine = line => $create('p', line.split(/(<.*?>)/).map(renderToken));
+    const noteNode = $create('fragment', note.split('\n').map(renderLine));
+    info.appendChild(noteNode);
+  }
+  // Inaccessible locally hosted file type, e.g. JSON, PDF, etc.
+  if (tabURL.length - tabURL.lastIndexOf('.') <= 5) {
+    info.appendChild($create('p', t('InaccessibleFileHint')));
+  }
+  document.body.classList.add('unreachable');
+  document.body.insertBefore(info, document.body.firstChild);
 }
 
 /** @param {chrome.webNavigation.GetAllFrameResultDetails} frame */
@@ -209,7 +205,7 @@ function createWriterElement(frame) {
   const targets = $create('span');
 
   // For this URL
-  const urlLink = template.writeStyle.cloneNode(true);
+  const urlLink = t.template.writeStyle.cloneNode(true);
   const isAboutBlank = url === ABOUT_BLANK;
   Object.assign(urlLink, {
     href: 'edit.html?url-prefix=' + encodeURIComponent(url),
@@ -220,7 +216,7 @@ function createWriterElement(frame) {
       : frameId
         ? isAboutBlank ? url : 'URL'
         : t('writeStyleForURL').replace(/ /g, '\u00a0'), // this&nbsp;URL
-    onclick: e => handleEvent.openEditor(e, {'url-prefix': url}),
+    onclick: e => Events.openEditor(e, {'url-prefix': url}),
   });
   if (prefs.get('popup.breadcrumbs')) {
     urlLink.onmouseenter =
@@ -238,12 +234,12 @@ function createWriterElement(frame) {
     if (domains.length > 1 && numParts === 1) {
       continue;
     }
-    const domainLink = template.writeStyle.cloneNode(true);
+    const domainLink = t.template.writeStyle.cloneNode(true);
     Object.assign(domainLink, {
       href: 'edit.html?domain=' + encodeURIComponent(domain),
       textContent: numParts > 2 ? domain.split('.')[0] : domain,
       title: `domain("${domain}")`,
-      onclick: e => handleEvent.openEditor(e, {domain}),
+      onclick: e => Events.openEditor(e, {domain}),
     });
     domainLink.setAttribute('subdomain', numParts > 1 ? 'true' : '');
     targets.appendChild(domainLink);
@@ -279,32 +275,6 @@ function getDomains(url) {
   return domains;
 }
 
-/** @param {chrome.webNavigation.GetAllFrameResultDetails[]} frames */
-function sortTabFrames(frames) {
-  const unknown = new Map(frames.map(f => [f.frameId, f]));
-  const known = new Map([[0, unknown.get(0) || {frameId: 0, url: ''}]]);
-  unknown.delete(0);
-  let lastSize = 0;
-  while (unknown.size !== lastSize) {
-    for (const [frameId, f] of unknown) {
-      if (known.has(f.parentFrameId)) {
-        unknown.delete(frameId);
-        if (!f.errorOccurred) known.set(frameId, f);
-        if (f.url === ABOUT_BLANK) f.url = known.get(f.parentFrameId).url;
-      }
-    }
-    lastSize = unknown.size; // guard against an infinite loop due to a weird frame structure
-  }
-  const sortedFrames = [...known.values(), ...unknown.values()];
-  const urls = new Set([ABOUT_BLANK]);
-  for (const f of sortedFrames) {
-    if (!f.url) f.url = '';
-    f.isDupe = urls.has(f.url);
-    urls.add(f.url);
-  }
-  return sortedFrames;
-}
-
 function sortStyles(entries) {
   const enabledFirst = prefs.get('popup.enabledFirst');
   return entries.sort(({styleMeta: a}, {styleMeta: b}) =>
@@ -316,6 +286,7 @@ function sortStyles(entries) {
 function showStyles(frameResults) {
   const entries = new Map();
   frameResults.forEach(({styles = [], url}, index) => {
+    if (isBlocked && !index) return;
     styles.forEach(style => {
       const {id} = style;
       if (!entries.has(id)) {
@@ -327,9 +298,9 @@ function showStyles(frameResults) {
   if (entries.size) {
     resortEntries([...entries.values()]);
   } else {
-    installed.appendChild(template.noStyles);
+    installed.appendChild(t.template.noStyles);
   }
-  window.dispatchEvent(new Event('showStyles:done'));
+  require(['/popup/hotkeys']);
 }
 
 function resortEntries(entries) {
@@ -340,72 +311,64 @@ function resortEntries(entries) {
 }
 
 function createStyleElement(style) {
-  let entry = $.entry(style);
+  let entry = $entry(style);
   if (!entry) {
-    entry = template.style.cloneNode(true);
-    entry.setAttribute('style-id', style.id);
+    entry = t.template.style.cloneNode(true);
     Object.assign(entry, {
       id: ENTRY_ID_PREFIX_RAW + style.id,
       styleId: style.id,
       styleIsUsercss: Boolean(style.usercssData),
-      onmousedown: handleEvent.maybeEdit,
-      styleMeta: style
+      onmousedown: Events.maybeEdit,
+      styleMeta: style,
     });
-    const checkbox = $('.checker', entry);
-    Object.assign(checkbox, {
-      id: ENTRY_ID_PREFIX_RAW + style.id,
-      // title: t('exclusionsPopupTip'),
-      onclick: handleEvent.toggle,
-      // oncontextmenu: handleEvent.openExcludeMenu
+    Object.assign($('input', entry), {
+      onclick: Events.toggleState,
     });
-    const editLink = $('.style-edit-link', entry);
-    Object.assign(editLink, {
-      href: editLink.getAttribute('href') + style.id,
-      onclick: e => handleEvent.openEditor(e, {id: style.id}),
+    Object.assign($('.style-edit-link', entry), {
+      onclick: e => Events.openEditor(e, {id: style.id}),
     });
     const styleName = $('.style-name', entry);
     Object.assign(styleName, {
       htmlFor: ENTRY_ID_PREFIX_RAW + style.id,
-      onclick: handleEvent.name,
+      onclick: Events.name,
     });
-    styleName.checkbox = checkbox;
     styleName.appendChild(document.createTextNode(' '));
 
     const config = $('.configure', entry);
-    config.onclick = handleEvent.configure;
+    config.onclick = Events.configure;
     if (!style.usercssData) {
       if (style.updateUrl && style.updateUrl.includes('?') && style.url) {
         config.href = style.url;
         config.target = '_blank';
         config.title = t('configureStyleOnHomepage');
-        config.dataset.sendMessage = JSON.stringify({method: 'openSettings'});
+        config._sendMessage = {method: 'openSettings'};
         $('use', config).attributes['xlink:href'].nodeValue = '#svg-icon-config-uso';
       } else {
         config.classList.add('hidden');
       }
-    } else if (Object.keys(style.usercssData.vars || {}).length === 0) {
+    } else if (isEmptyObj(style.usercssData.vars)) {
       config.classList.add('hidden');
     }
 
-    $('.delete', entry).onclick = handleEvent.delete;
+    $('.delete', entry).onclick = Events.delete;
 
-    const indicator = template.regexpProblemIndicator.cloneNode(true);
+    const indicator = t.template.regexpProblemIndicator.cloneNode(true);
     indicator.appendChild(document.createTextNode('!'));
-    indicator.onclick = handleEvent.indicator;
+    indicator.onclick = Events.indicator;
     $('.main-controls', entry).appendChild(indicator);
 
-    $('.menu-button', entry).onclick = handleEvent.toggleMenu;
-    $('.menu-close', entry).onclick = handleEvent.toggleMenu;
+    $('.menu-button', entry).onclick = Events.toggleMenu;
+    $('.menu-close', entry).onclick = Events.toggleMenu;
 
-    $('.exclude-by-domain-checkbox', entry).onchange = e => handleEvent.toggleExclude(e, 'domain');
-    $('.exclude-by-url-checkbox', entry).onchange = e => handleEvent.toggleExclude(e, 'url');
+    $('.exclude-by-domain-checkbox', entry).onchange = e => Events.toggleExclude(e, 'domain');
+    $('.exclude-by-url-checkbox', entry).onchange = e => Events.toggleExclude(e, 'url');
   }
 
   style = Object.assign(entry.styleMeta, style);
 
   entry.classList.toggle('disabled', !style.enabled);
   entry.classList.toggle('enabled', style.enabled);
-  $('.checker', entry).checked = style.enabled;
+  $('input', entry).checked = style.enabled;
 
   const styleName = $('.style-name', entry);
   styleName.lastChild.textContent = style.customName || style.name;
@@ -420,264 +383,26 @@ function createStyleElement(style) {
   entry.classList.toggle('not-applied', style.excluded || style.sloppy || style.excludedScheme);
   entry.classList.toggle('regexp-partial', style.sloppy);
 
-  $('.exclude-by-domain-checkbox', entry).checked = styleExcluded(style, 'domain');
-  $('.exclude-by-url-checkbox', entry).checked = styleExcluded(style, 'url');
+  $('.exclude-by-domain-checkbox', entry).checked = Events.isStyleExcluded(style, 'domain');
+  $('.exclude-by-url-checkbox', entry).checked = Events.isStyleExcluded(style, 'url');
 
-  $('.exclude-by-domain', entry).title = getExcludeRule('domain');
-  $('.exclude-by-url', entry).title = getExcludeRule('url');
+  $('.exclude-by-domain', entry).title = Events.getExcludeRule('domain');
+  $('.exclude-by-url', entry).title = Events.getExcludeRule('url');
 
   const {frameUrl} = style;
   if (frameUrl) {
     const sel = 'span.frame-url';
     const frameEl = $(sel, entry) || styleName.insertBefore($create(sel), styleName.lastChild);
     frameEl.title = frameUrl;
+    frameEl.onmousedown = Events.maybeEdit;
   }
   entry.classList.toggle('frame', Boolean(frameUrl));
 
   return entry;
 }
 
-function styleExcluded({exclusions}, type) {
-  if (!exclusions) {
-    return false;
-  }
-  const rule = getExcludeRule(type);
-  return exclusions.includes(rule);
-}
-
-function getExcludeRule(type) {
-  const u = new URL(tabURL);
-  if (type === 'domain') {
-    return u.origin + '/*';
-  }
-  // current page
-  return escapeGlob(u.origin + u.pathname);
-}
-
-function escapeGlob(text) {
-  return text.replace(/\*/g, '\\*');
-}
-
-Object.assign(handleEvent, {
-
-  getClickedStyleId(event) {
-    return (handleEvent.getClickedStyleElement(event) || {}).styleId;
-  },
-
-  getClickedStyleElement(event) {
-    return event.target.closest('.entry');
-  },
-
-  name(event) {
-    this.checkbox.dispatchEvent(new MouseEvent('click'));
-    event.preventDefault();
-  },
-
-  toggle(event) {
-    // when fired on checkbox, prevent the parent label from seeing the event, see #501
-    event.stopPropagation();
-    API
-      .toggleStyle(handleEvent.getClickedStyleId(event), this.checked)
-      .then(() => resortEntries());
-  },
-
-  toggleExclude(event, type) {
-    const entry = handleEvent.getClickedStyleElement(event);
-    if (event.target.checked) {
-      API.addExclusion(entry.styleMeta.id, getExcludeRule(type));
-    } else {
-      API.removeExclusion(entry.styleMeta.id, getExcludeRule(type));
-    }
-  },
-
-  toggleMenu(event) {
-    const entry = handleEvent.getClickedStyleElement(event);
-    const menu = $('.menu', entry);
-    const menuActive = $('.menu[data-display=true]');
-    if (menuActive) {
-      // fade-out style menu
-      animateElement(menu, {
-        className: 'lights-on',
-        onComplete: () => (menu.dataset.display = false),
-      });
-      window.onkeydown = null;
-    } else {
-      $('.menu-title', entry).textContent = $('.style-name', entry).textContent;
-      menu.dataset.display = true;
-      menu.style.cssText = '';
-      window.onkeydown = event => {
-        const close = $('.menu-close', entry);
-        const checkbox = $('.exclude-by-domain-checkbox', entry);
-        if (document.activeElement === close && (event.key === 'Tab') && !event.shiftKey) {
-          event.preventDefault();
-          checkbox.focus();
-        }
-        if (document.activeElement === checkbox && (event.key === 'Tab') && event.shiftKey) {
-          event.preventDefault();
-          close.focus();
-        }
-        if (event.key === 'Escape') {
-          event.preventDefault();
-          close.click();
-        }
-      };
-    }
-    event.preventDefault();
-  },
-
-  delete(event) {
-    const entry = handleEvent.getClickedStyleElement(event);
-    const id = entry.styleId;
-    const box = $('#confirm');
-    const menu = $('.menu', entry);
-    const cancel = $('[data-cmd="cancel"]', box);
-    const affirm = $('[data-cmd="ok"]', box);
-    box.dataset.display = true;
-    box.style.cssText = '';
-    $('b', box).textContent = $('.style-name', entry).textContent;
-    affirm.focus();
-    affirm.onclick = () => confirm(true);
-    cancel.onclick = () => confirm(false);
-    window.onkeydown = event => {
-      const close = $('.menu-close', entry);
-      const checkbox = $('.exclude-by-domain-checkbox', entry);
-      const confirmActive = $('#confirm[data-display="true"]');
-      const {key} = event;
-      if (document.activeElement === cancel && (key === 'Tab')) {
-        event.preventDefault();
-        affirm.focus();
-      }
-      if (document.activeElement === close && (key === 'Tab') && !event.shiftKey) {
-        event.preventDefault();
-        checkbox.focus();
-      }
-      if (document.activeElement === checkbox && (key === 'Tab') && event.shiftKey) {
-        event.preventDefault();
-        close.focus();
-      }
-      if (key === 'Escape') {
-        event.preventDefault();
-        if (confirmActive) {
-          box.dataset.display = false;
-          menu.focus();
-        } else {
-          close.click();
-        }
-      }
-    };
-    function confirm(ok) {
-      if (ok) {
-        // fade-out deletion confirmation dialog
-        animateElement(box, {
-          className: 'lights-on',
-          onComplete: () => (box.dataset.display = false),
-        });
-        window.onkeydown = null;
-        API.deleteStyle(id);
-      } else {
-        box.dataset.display = false;
-        menu.focus();
-      }
-    }
-  },
-
-  configure(event) {
-    const {styleId, styleIsUsercss} = handleEvent.getClickedStyleElement(event);
-    if (styleIsUsercss) {
-      API.getStyle(styleId, true).then(style => {
-        hotkeys.setState(false);
-        configDialog(style).then(() => {
-          hotkeys.setState(true);
-        });
-      });
-    } else {
-      handleEvent.openURLandHide.call(this, event);
-    }
-  },
-
-  indicator(event) {
-    const entry = handleEvent.getClickedStyleElement(event);
-    const info = template.regexpProblemExplanation.cloneNode(true);
-    $.remove('#' + info.id);
-    $$('a', info).forEach(el => (el.onclick = handleEvent.openURLandHide));
-    $$('button', info).forEach(el => (el.onclick = handleEvent.closeExplanation));
-    entry.appendChild(info);
-  },
-
-  closeExplanation() {
-    $('#regexp-explanation').remove();
-  },
-
-  openEditor(event, options) {
-    event.preventDefault();
-    API.openEditor(options);
-    window.close();
-  },
-
-  maybeEdit(event) {
-    if (!(
-      event.button === 0 && (event.ctrlKey || event.metaKey) ||
-      event.button === 1 ||
-      event.button === 2)) {
-      return;
-    }
-    // open an editor on middleclick
-    if (event.target.matches('.entry, .style-name, .style-edit-link')) {
-      this.onmouseup = () => $('.style-edit-link', this).click();
-      this.oncontextmenu = event => event.preventDefault();
-      event.preventDefault();
-      return;
-    }
-    // prevent the popup being opened in a background tab
-    // when an irrelevant link was accidentally clicked
-    if (event.target.closest('a')) {
-      event.preventDefault();
-      return;
-    }
-  },
-
-  openURLandHide(event) {
-    event.preventDefault();
-    getActiveTab()
-      .then(activeTab => API.openURL({
-        url: this.href || this.dataset.href,
-        index: activeTab.index + 1,
-        message: tryJSONparse(this.dataset.sendMessage),
-      }))
-      .then(window.close);
-  },
-
-  openManager(event) {
-    if (event.button === 2 && !tabURL) return;
-    event.preventDefault();
-    if (!this.eventHandled) {
-      // FIXME: this only works if popup is closed
-      this.eventHandled = true;
-      API.openManage({
-        search: tabURL && (event.shiftKey || event.button === 2) ?
-          `url:${tabURL}` : null
-      });
-      window.close();
-    }
-  },
-
-  copyContent(event) {
-    event.preventDefault();
-    const target = document.activeElement;
-    const message = $('.copy-message');
-    navigator.clipboard.writeText(target.textContent);
-    target.classList.add('copied');
-    message.classList.add('show-message');
-    setTimeout(() => {
-      target.classList.remove('copied');
-      message.classList.remove('show-message');
-    }, 1000);
-  },
-});
-
-
 async function handleUpdate({style, reason}) {
-  if (reason !== 'toggle' || !$.entry(style)) {
+  if (reason !== 'toggle' || !$entry(style)) {
     style = await getStyleDataMerged(tabURL, style.id);
     if (!style) return;
   }
@@ -689,44 +414,21 @@ async function handleUpdate({style, reason}) {
   resortEntries();
 }
 
-
 function handleDelete(id) {
-  const el = $.entry(id);
+  const el = $entry(id);
   if (el) {
     el.remove();
-    if (!$('.entry')) installed.appendChild(template.noStyles);
+    if (!$('.entry')) installed.appendChild(t.template.noStyles);
   }
 }
 
-function waitForTabUrlFF(tab) {
-  return new Promise(resolve => {
-    browser.tabs.onUpdated.addListener(...[
-      function onUpdated(tabId, info, updatedTab) {
-        if (info.url && tabId === tab.id) {
-          chrome.tabs.onUpdated.removeListener(onUpdated);
-          resolve(updatedTab);
-        }
-      },
-      ...'UpdateFilter' in browser.tabs ? [{tabId: tab.id}] : [],
-      // TODO: remove both spreads and tabId check when strict_min_version >= 61
-    ]);
-  });
-}
-
-/* Merges the extra props from API into style data.
- * When `id` is specified returns a single object otherwise an array */
-async function getStyleDataMerged(url, id) {
-  const styles = (await API.getStylesByUrl(url, id))
-    .map(r => Object.assign(r.data, r));
-  return id ? styles[0] : styles;
-}
-
-function blockPopup(isBlocked = true) {
+function blockPopup(val = true) {
+  isBlocked = val;
   document.body.classList.toggle('blocked', isBlocked);
   if (isBlocked) {
-    document.body.prepend(template.unavailableInfo);
+    document.body.prepend(t.template.unavailableInfo);
   } else {
-    template.unavailableInfo.remove();
-    template.noStyles.remove();
+    t.template.unavailableInfo.remove();
+    t.template.noStyles.remove();
   }
 }

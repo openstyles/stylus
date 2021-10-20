@@ -1,95 +1,141 @@
-/* global
-  createAppliesToLineWidget messageBox
-  sectionsToMozFormat
-  createMetaCompiler linter createLivePreview cmFactory $ $create API prefs t
-  chromeSync */
-/* exported createSourceEditor */
+/* global $ $$remove $create $isTextInput messageBoxProxy */// dom.js
+/* global API */// msg.js
+/* global CodeMirror */
+/* global MozDocMapper */// util.js
+/* global MozSectionFinder */
+/* global MozSectionWidget */
+/* global RX_META debounce sessionStore */// toolbox.js
+/* global chromeSync */// storage-util.js
+/* global cmFactory */
+/* global editor */
+/* global linterMan */
+/* global prefs */
+/* global t */// localization.js
 'use strict';
 
-function createSourceEditor(editorBase) {
-  const {style, dirty} = editorBase;
-
+/* exported SourceEditor */
+function SourceEditor() {
+  const {style, /** @type DirtyReporter */dirty} = editor;
+  let savedGeneration;
   let placeholderName = '';
+  let prevMode = NaN;
 
-  $('#mozilla-format-container').remove();
-  $('#header').addEventListener('wheel', headerOnScroll);
+  $$remove('.sectioned-only');
+  $('#header').on('wheel', headerOnScroll);
   $('#sections').textContent = '';
   $('#sections').appendChild($create('.single-editor'));
 
-  // normalize style
   if (!style.id) setupNewStyle(style);
 
-  const cm = cmFactory.create($('.single-editor'), {
-    value: style.sourceCode,
-  });
-  let savedGeneration = cm.changeGeneration();
-
-  const livePreview = createLivePreview(preprocess);
-  livePreview.show(Boolean(style.id));
-
-  cm.on('changes', () => {
-    dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
-    updateLivePreview();
-  });
-
-  cm.operation(initAppliesToLineWidget);
-
-  const metaCompiler = createMetaCompiler(cm);
-  metaCompiler.onUpdated(meta => {
+  const cm = cmFactory.create($('.single-editor'));
+  const sectionFinder = MozSectionFinder(cm);
+  const sectionWidget = MozSectionWidget(cm, sectionFinder);
+  editor.livePreview.init(preprocess);
+  createMetaCompiler(meta => {
     style.usercssData = meta;
     style.name = meta.name;
     style.url = meta.homepageURL || style.installationUrl;
     updateMeta();
   });
+  updateMeta();
+  cm.setValue(style.sourceCode);
 
-  updateMeta().then(() => {
-
-    linter.enableForEditor(cm);
-
-    let prevMode = NaN;
-    cm.on('optionChange', (cm, option) => {
-      if (option !== 'mode') return;
-      const mode = getModeName();
-      if (mode === prevMode) return;
-      prevMode = mode;
-      linter.run();
-      updateLinterSwitch();
-    });
-
-    $('#editor.linter').addEventListener('change', updateLinterSwitch);
-    updateLinterSwitch();
-
-    setTimeout(() => {
-      if ((document.activeElement || {}).localName !== 'input') {
+  /** @namespace Editor */
+  Object.assign(editor, {
+    sections: sectionFinder.sections,
+    replaceStyle,
+    updateLivePreview,
+    closestVisible: () => cm,
+    getEditors: () => [cm],
+    getEditorTitle: () => '',
+    getValue: () => cm.getValue(),
+    getSearchableInputs: () => [],
+    prevEditor: nextPrevSection.bind(null, -1),
+    nextEditor: nextPrevSection.bind(null, 1),
+    jumpToEditor(i) {
+      const sec = sectionFinder.sections[i];
+      if (sec) {
+        sectionFinder.updatePositions(sec);
+        cm.jumpToPos(sec.start);
         cm.focus();
       }
-    });
+    },
+    async save() {
+      if (!dirty.isDirty()) return;
+      const sourceCode = cm.getValue();
+      try {
+        const {customName, enabled, id} = style;
+        let res = !id && await API.usercss.build({sourceCode, checkDup: true, metaOnly: true});
+        if (res && res.dup) {
+          messageBoxProxy.alert(t('usercssAvoidOverwriting'), 'danger', t('genericError'));
+        } else {
+          res = await API.usercss.editSave({customName, enabled, id, sourceCode});
+          // Awaiting inside `try` so that exceptions go to our `catch`
+          await replaceStyle(res.style);
+        }
+        showLog(res);
+      } catch (err) {
+        const i = err.index;
+        const isNameEmpty = i > 0 &&
+          err.code === 'missingValue' &&
+          sourceCode.slice(sourceCode.lastIndexOf('\n', i - 1), i).trim().endsWith('@name');
+        return isNameEmpty
+          ? saveTemplate(sourceCode)
+          : showSaveError(err);
+      }
+    },
+    scrollToEditor: () => {},
   });
 
-  function preprocess(style) {
-    return API.buildUsercss({
+  prefs.subscribeMany({
+    'editor.linter': updateLinterSwitch,
+    'editor.appliesToLineWidget': (k, val) => sectionWidget.toggle(val),
+    'editor.toc.expanded': (k, val) => sectionFinder.onOff(editor.updateToc, val),
+  }, {runNow: true});
+
+  editor.applyScrollInfo(cm);
+  cm.clearHistory();
+  cm.markClean();
+  savedGeneration = cm.changeGeneration();
+  cm.on('changes', () => {
+    dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
+    debounce(updateLivePreview, editor.previewDelay);
+  });
+  cm.on('optionChange', (cm, option) => {
+    if (option !== 'mode') return;
+    const mode = getModeName();
+    if (mode === prevMode) return;
+    prevMode = mode;
+    linterMan.run();
+    updateLinterSwitch();
+  });
+  setTimeout(linterMan.enableForEditor, 0, cm);
+  if (!$isTextInput(document.activeElement)) {
+    cm.focus();
+  }
+
+  async function preprocess(style) {
+    const res = await API.usercss.build({
       styleId: style.id,
       sourceCode: style.sourceCode,
-      assignVars: true
-    })
-      .then(({style: newStyle}) => {
-        delete newStyle.enabled;
-        return Object.assign(style, newStyle);
-      });
+      assignVars: true,
+    });
+    showLog(res);
+    delete res.style.enabled;
+    return Object.assign(style, res.style);
+  }
+
+  /** Shows the console.log output from the background worker stored in `log` property */
+  function showLog(data) {
+    if (data.log) data.log.forEach(args => console.log(...args));
+    return data;
   }
 
   function updateLivePreview() {
     if (!style.id) {
       return;
     }
-    livePreview.update(Object.assign({}, style, {sourceCode: cm.getValue()}));
-  }
-
-  function initAppliesToLineWidget() {
-    const PREF_NAME = 'editor.appliesToLineWidget';
-    const widget = createAppliesToLineWidget(cm);
-    widget.toggle(prefs.get(PREF_NAME));
-    prefs.subscribe([PREF_NAME], (key, value) => widget.toggle(value));
+    editor.livePreview.update(Object.assign({}, style, {sourceCode: cm.getValue()}));
   }
 
   function updateLinterSwitch() {
@@ -117,10 +163,10 @@ function createSourceEditor(editorBase) {
   async function setupNewStyle(style) {
     style.sections[0].code = ' '.repeat(prefs.get('editor.tabSize')) +
       `/* ${t('usercssReplaceTemplateSectionBody')} */`;
-    let section = sectionsToMozFormat(style);
+    let section = MozDocMapper.styleToCss(style);
     if (!section.includes('@-moz-document')) {
       style.sections[0].domains = ['example.com'];
-      section = sectionsToMozFormat(style);
+      section = MozDocMapper.styleToCss(style);
     }
     const DEFAULT_CODE = `
       /* ==UserStyle==
@@ -136,7 +182,7 @@ function createSourceEditor(editorBase) {
     style.sourceCode = '';
 
     placeholderName = `${style.name || t('usercssReplaceTemplateName')} - ${new Date().toLocaleString()}`;
-    let code = await chromeSync.getLZValue('usercssTemplate');
+    let code = await chromeSync.getLZValue(chromeSync.LZ_KEY.usercssTemplate);
     code = code || DEFAULT_CODE;
     code = code.replace(/@name(\s*)(?=[\r\n])/, (str, space) =>
       `${str}${space ? '' : ' '}${placeholderName}`);
@@ -158,8 +204,8 @@ function createSourceEditor(editorBase) {
     }
     $('#enabled').checked = style.enabled;
     $('#url').href = style.url;
-    editorBase.updateName();
-    return cm.setPreprocessor((style.usercssData || {}).preprocessor);
+    editor.updateName();
+    cm.setPreprocessor((style.usercssData || {}).preprocessor);
   }
 
   function replaceStyle(newStyle, codeIsUpdated) {
@@ -176,7 +222,7 @@ function createSourceEditor(editorBase) {
       return;
     }
 
-    Promise.resolve(messageBox.confirm(t('styleUpdateDiscardChanges'))).then(ok => {
+    Promise.resolve(messageBoxProxy.confirm(t('styleUpdateDiscardChanges'))).then(ok => {
       if (!ok) return;
       updateEnvironment();
       if (!sameCode) {
@@ -196,144 +242,48 @@ function createSourceEditor(editorBase) {
       if (style.id !== newStyle.id) {
         history.replaceState({}, '', `?id=${newStyle.id}`);
       }
-      sessionStorage.justEditedStyleId = newStyle.id;
+      sessionStore.justEditedStyleId = newStyle.id;
       Object.assign(style, newStyle);
-      $('#preview-label').classList.remove('hidden');
+      editor.onStyleUpdated();
       updateMeta();
-      livePreview.show(Boolean(style.id));
     }
   }
 
-  function save() {
-    if (!dirty.isDirty()) return;
-    const code = cm.getValue();
-    return ensureUniqueStyle(code)
-      .then(() => API.editSaveUsercss({
-        id: style.id,
-        enabled: style.enabled,
-        sourceCode: code,
-        customName: style.customName,
-      }))
-      .then(replaceStyle)
-      .catch(err => {
-        if (err.handled) return;
-        const contents = Array.isArray(err) ?
-          $create('pre', err.join('\n')) :
-          [err.message || String(err)];
-        if (Number.isInteger(err.index)) {
-          const pos = cm.posFromIndex(err.index);
-          const meta = drawLinePointer(pos);
-
-          // save template
-          if (err.code === 'missingValue' && meta.includes('@name')) {
-            messageBox.confirm(t('usercssReplaceTemplateConfirmation')).then(ok => ok &&
-              chromeSync.setLZValue('usercssTemplate', code)
-                .then(() => chromeSync.getLZValue('usercssTemplate'))
-                .then(saved => saved !== code && messageBox.alert(t('syncStorageErrorSaving'))));
-            return;
-          }
-          contents[0] += ` (line ${pos.line + 1} col ${pos.ch + 1})`;
-          contents.push($create('pre', meta));
-        }
-        messageBox.alert(contents, 'pre');
-      });
-  }
-
-  function ensureUniqueStyle(code) {
-    return style.id ? Promise.resolve() :
-      API.buildUsercss({
-        sourceCode: code,
-        checkDup: true,
-        metaOnly: true,
-      }).then(({dup}) => {
-        if (dup) {
-          messageBox.alert(t('usercssAvoidOverwriting'), 'danger', t('genericError'));
-          return Promise.reject({handled: true});
-        }
-      });
-  }
-
-  function drawLinePointer(pos) {
-    const SIZE = 60;
-    const line = cm.getLine(pos.line);
-    const numTabs = pos.ch + 1 - line.slice(0, pos.ch + 1).replace(/\t/g, '').length;
-    const pointer = ' '.repeat(pos.ch) + '^';
-    const start = Math.max(Math.min(pos.ch - SIZE / 2, line.length - SIZE), 0);
-    const end = Math.min(Math.max(pos.ch + SIZE / 2, SIZE), line.length);
-    const leftPad = start !== 0 ? '...' : '';
-    const rightPad = end !== line.length ? '...' : '';
-    return (
-      leftPad +
-      line.slice(start, end).replace(/\t/g, ' '.repeat(cm.options.tabSize)) +
-      rightPad +
-      '\n' +
-      ' '.repeat(leftPad.length + numTabs * cm.options.tabSize) +
-      pointer.slice(start, end)
-    );
-  }
-
-  function nextPrevMozDocument(cm, dir) {
-    const MOZ_DOC = '@-moz-document';
-    const cursor = cm.getCursor();
-    const usePrevLine = dir < 0 && cursor.ch <= MOZ_DOC.length;
-    let line = cursor.line + (usePrevLine ? -1 : 0);
-    let start = usePrevLine ? 1e9 : cursor.ch + (dir > 0 ? 1 : -MOZ_DOC.length);
-    let found;
-    if (dir > 0) {
-      cm.doc.iter(cursor.line, cm.doc.size, goFind);
-      if (!found && cursor.line > 0) {
-        line = 0;
-        cm.doc.iter(0, cursor.line + 1, goFind);
-      }
-    } else {
-      let handle, parentLines;
-      let passesRemain = line < cm.doc.size - 1 ? 2 : 1;
-      let stopAtLine = 0;
-      while (passesRemain--) {
-        let indexInParent = 0;
-        while (line >= stopAtLine) {
-          if (!indexInParent--) {
-            handle = cm.getLineHandle(line);
-            parentLines = handle.parent.lines;
-            indexInParent = parentLines.indexOf(handle);
-          } else {
-            handle = parentLines[indexInParent];
-          }
-          if (goFind(handle)) {
-            return true;
-          }
-        }
-        line = cm.doc.size - 1;
-        stopAtLine = cursor.line;
+  async function saveTemplate(code) {
+    if (await messageBoxProxy.confirm(t('usercssReplaceTemplateConfirmation'))) {
+      const key = chromeSync.LZ_KEY.usercssTemplate;
+      await chromeSync.setLZValue(key, code);
+      if (await chromeSync.getLZValue(key) !== code) {
+        messageBoxProxy.alert(t('syncStorageErrorSaving'));
       }
     }
-    function goFind({text}) {
-      // use the initial 'start' on cursor row...
-      let ch = start;
-      // ...and reset it for the rest
-      start = dir > 0 ? 0 : 1e9;
-      while (true) {
-        // indexOf is 1000x faster than toLowerCase().indexOf() so we're trying it first
-        ch = dir > 0 ? text.indexOf('@-', ch) : text.lastIndexOf('@-', ch);
-        if (ch < 0) {
-          line += dir;
-          return;
-        }
-        if (text.substr(ch, MOZ_DOC.length).toLowerCase() === MOZ_DOC &&
-            cm.getTokenTypeAt({line, ch: ch + 1}) === 'def') {
-          break;
-        }
-        ch += dir * 3;
-      }
-      cm.setCursor(line, ch);
-      if (cm.cursorCoords().bottom > cm.display.scroller.clientHeight - 100) {
-        const margin = Math.min(100, cm.display.scroller.clientHeight / 4);
-        line += prefs.get('editor.appliesToLineWidget') ? 1 : 0;
-        cm.scrollIntoView({line, ch}, margin);
-      }
-      found = true;
-      return true;
+  }
+
+  function showSaveError(err) {
+    err = Array.isArray(err) ? err : [err];
+    const text = err.map(e => e.message || e).join('\n');
+    const points = err.map(e =>
+      e.index >= 0 && cm.posFromIndex(e.index) || // usercss meta parser
+      e.offset >= 0 && {line: e.line - 1, ch: e.col - 1} // csslint code parser
+    ).filter(Boolean);
+    cm.setSelections(points.map(p => ({anchor: p, head: p})));
+    messageBoxProxy.alert($create('pre', text), 'pre');
+  }
+
+  function nextPrevSection(dir) {
+    // ensure the data is ready in case the user wants to jump around a lot in a large style
+    sectionFinder.keepAliveFor(nextPrevSection, 10e3);
+    sectionFinder.updatePositions();
+    const {sections} = sectionFinder;
+    const num = sections.length;
+    if (!num) return;
+    dir = dir < 0 ? -1 : 0;
+    const pos = cm.getCursor();
+    let i = sections.findIndex(sec => CodeMirror.cmpPos(sec.start, pos) > Math.min(dir, 0));
+    if (i < 0 && (!dir || CodeMirror.cmpPos(sections[num - 1].start, pos) < 0)) {
+      i = 0;
     }
+    cm.jumpToPos(sections[(i + dir + num) % num].start);
   }
 
   function headerOnScroll({target, deltaY, deltaMode, shiftKey}) {
@@ -359,17 +309,39 @@ function createSourceEditor(editorBase) {
            (mode.helperType || '');
   }
 
-  return Object.assign({}, editorBase, {
-    ready: Promise.resolve(),
-    replaceStyle,
-    getEditors: () => [cm],
-    scrollToEditor: () => {},
-    getEditorTitle: () => '',
-    save,
-    prevEditor: cm => nextPrevMozDocument(cm, -1),
-    nextEditor: cm => nextPrevMozDocument(cm, 1),
-    closestVisible: () => cm,
-    getSearchableInputs: () => [],
-    updateLivePreview,
-  });
+  function createMetaCompiler(onUpdated) {
+    let meta = null;
+    let metaIndex = null;
+    let cache = [];
+    linterMan.register(async (text, options, _cm) => {
+      if (_cm !== cm) {
+        return;
+      }
+      const match = text.match(RX_META);
+      if (!match) {
+        return [];
+      }
+      if (match[0] === meta && match.index === metaIndex) {
+        return cache;
+      }
+      const {metadata, errors} = await linterMan.worker.metalint(match[0]);
+      if (errors.every(err => err.code === 'unknownMeta')) {
+        onUpdated(metadata);
+      }
+      cache = errors.map(({code, index, args, message}) => {
+        const isUnknownMeta = code === 'unknownMeta';
+        const typo = isUnknownMeta && args[1] ? 'Typo' : ''; // args[1] may be present but undefined
+        return ({
+          from: cm.posFromIndex((index || 0) + match.index),
+          to: cm.posFromIndex((index || 0) + match.index),
+          message: code && t(`meta_${code}${typo}`, args, false) || message,
+          severity: isUnknownMeta ? 'warning' : 'error',
+          rule: code,
+        });
+      });
+      meta = match[0];
+      metaIndex = match.index;
+      return cache;
+    });
+  }
 }

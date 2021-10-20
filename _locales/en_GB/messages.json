@@ -1,67 +1,51 @@
 {
   "appliesRemoveError": {
-    "message": "Cannot remove last 'applies to' entry",
-    "description": "Error displayed when the last 'applies' is going to be removed"
+    "message": "Cannot remove last 'applies to' entry"
   },
   "checkAllUpdatesForce": {
-    "message": "Check again—I didn't edit any styles!",
-    "description": "Label for the button to apply all detected updates"
+    "message": "Check again—I didn't edit any styles!"
   },
   "cm_autoCloseBrackets": {
-    "message": "Auto-close brackets and quotes",
-    "description": "Label for the checkbox in the style editor."
+    "message": "Auto-close brackets and quotes"
   },
   "cm_colorpicker": {
-    "message": "Colour pickers for CSS colours",
-    "description": "Label for the checkbox controlling colorpicker option for the style editor."
+    "message": "Colour pickers for CSS colours"
   },
   "cm_resizeGripHint": {
-    "message": "Double-click to maximise/restore the height",
-    "description": "Tooltip for the resize grip in style editor"
+    "message": "Double-click to maximise/restore the height"
   },
   "colorpickerTooltip": {
-    "message": "Open colour picker",
-    "description": "Tooltip for the colored squares shown before CSS colors in the style editor."
+    "message": "Open colour picker"
   },
   "description": {
-    "message": "Redesign the web with Stylus, a user-style manager. Stylus allows you to easily install themes and skins for many popular sites.",
-    "description": "Extension description"
+    "message": "Redesign the web with Stylus, a user-style manager. Stylus allows you to easily install themes and skins for many popular sites."
   },
   "editGotoLine": {
-    "message": "Go to line (or line:col)",
-    "description": "Go to line or line:column on Ctrl-G in style code editor"
+    "message": "Go to line (or line:col)"
   },
   "editStyleHeading": {
-    "message": "Edit style",
-    "description": "Title of the page for editing styles"
+    "message": "Edit style"
   },
   "license": {
-    "message": "Licence",
-    "description": "Label for the license"
+    "message": "Licence"
   },
   "manageFaviconsGray": {
-    "message": "Greyed out",
-    "description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
+    "message": "Greyed out"
   },
   "optionsBadgeDisabled": {
-    "message": "Background colour when disabled",
-    "description": ""
+    "message": "Background colour when disabled"
   },
   "optionsBadgeNormal": {
-    "message": "Background colour",
-    "description": ""
+    "message": "Background colour"
   },
   "optionsUpdateImportNote": {
-    "message": "When importing style backups from an old version or from Stylish, do a one-time check for updates manually in the styles manager to ensure all styles are updated.",
-    "description": ""
+    "message": "When importing style backups from an old version or from Stylish, do a one-time check for updates manually in the styles manager to ensure all styles are updated."
   },
   "optionsUpdateInterval": {
-    "message": "Userstyle auto-update interval in hours (specify 0 to disable)",
-    "description": ""
+    "message": "Userstyle auto-update interval in hours (specify 0 to disable)"
   },
   "styleInstallFailed": {
     "message": "Failed to install userstyle\n$error$",
-    "description": "Warning when installation failed",
     "placeholders": {
       "error": {
         "content": "$1"
@@ -69,15 +53,12 @@
     }
   },
   "styleRegexpPartialExplanation": {
-    "message": "This style uses partially matching regexps in violation of <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document specification</a> which requires a full URL match. The affected CSS sections were not applied to the page. This style was probably created in Stylish-for-Chrome, which incorrectly checks 'regexp()' rules since the very first version (known bug).",
-    "description": ""
+    "message": "This style uses partially matching regexps in violation of <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document specification</a> which requires a full URL match. The affected CSS sections were not applied to the page. This style was probably created in Stylish-for-Chrome, which incorrectly checks 'regexp()' rules since the very first version (known bug)."
   },
   "styleUpdateDiscardChanges": {
-    "message": "The style has been changed outside the editor. Would you like to reload the style?",
-    "description": "Confirmation to update the style in the editor"
+    "message": "The style has been changed outside the editor. Would you like to reload the style?"
   },
   "usercssConfigIncomplete": {
-    "message": "The style was updated or deleted after the configuration dialogue was shown. These variables were not saved to avoid corrupting the style's metadata:",
-    "description": ""
+    "message": "The style was updated or deleted after the configuration dialogue was shown. These variables were not saved to avoid corrupting the style's metadata:"
   }
 }

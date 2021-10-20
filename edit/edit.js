@@ -1,337 +1,118 @@
-/* global CodeMirror onDOMready prefs setupLivePrefs $ $$ $create t tHTML
-  createSourceEditor sessionStorageHash getOwnTab FIREFOX API tryCatch
-  closeCurrentTab messageBox debounce
-  initBeautifyButton ignoreChromeError dirtyReporter linter
-  moveFocus msg createSectionsEditor rerouteHotkeys CODEMIRROR_THEMES */
-/* exported showCodeMirrorPopup editorWorker toggleContextMenuDelete */
+/* global $ $create messageBoxProxy waitForSheet */// dom.js
+/* global API msg */// msg.js
+/* global CodeMirror */
+/* global SectionsEditor */
+/* global SourceEditor */
+/* global baseInit */
+/* global clipString createHotkeyInput helpPopup */// util.js
+/* global closeCurrentTab deepEqual sessionStore tryJSONparse */// toolbox.js
+/* global cmFactory */
+/* global editor */
+/* global linterMan */
+/* global prefs */
+/* global t */// localization.js
 'use strict';
 
-let saveSizeOnClose;
+//#region init
 
-// direct & reverse mapping of @-moz-document keywords and internal property names
-const propertyToCss = {urls: 'url', urlPrefixes: 'url-prefix', domains: 'domain', regexps: 'regexp'};
-const CssToProperty = Object.entries(propertyToCss)
-  .reduce((o, v) => {
-    o[v[1]] = v[0];
-    return o;
-  }, {});
-
-let editor;
-
-let scrollPointTimer;
-
-document.addEventListener('visibilitychange', beforeUnload);
-window.addEventListener('beforeunload', beforeUnload);
-msg.onExtension(onRuntimeMessage);
-
-lazyInit();
-
-(async function init() {
-  const [style] = await Promise.all([
-    initStyleData(),
-    onDOMready(),
-    prefs.initializing.then(() => new Promise(resolve => {
-      const theme = prefs.get('editor.theme');
-      const el = $('#cm-theme');
-      if (theme === 'default') {
-        resolve();
-      } else {
-        // preload the theme so CodeMirror can use the correct metrics
-        el.href = `vendor/codemirror/theme/${theme}.css`;
-        el.addEventListener('load', resolve, {once: true});
-      }
-    })),
-  ]);
-  const usercss = isUsercss(style);
-  const dirty = dirtyReporter();
-  let wasDirty = false;
-  let nameTarget;
-
-  prefs.subscribe(['editor.linter'], updateLinter);
-  prefs.subscribe(['editor.keyMap'], showHotkeyInTooltip);
-  addEventListener('showHotkeyInTooltip', showHotkeyInTooltip);
-  showHotkeyInTooltip();
-  buildThemeElement();
-  buildKeymapElement();
-  setupLivePrefs();
-  initNameArea();
-  initBeautifyButton($('#beautify'), () => editor.getEditors());
-  initResizeListener();
-  detectLayout();
-  updateTitle();
-
-  $('#heading').textContent = t(style.id ? 'editStyleHeading' : 'addStyleTitle');
-  $('#preview-label').classList.toggle('hidden', !style.id);
-
-  editor = (usercss ? createSourceEditor : createSectionsEditor)({
-    style,
-    dirty,
-    updateName,
-    toggleStyle,
-  });
-  dirty.onChange(updateDirty);
+baseInit.ready.then(async () => {
+  await waitForSheet();
+  (editor.isUsercss ? SourceEditor : SectionsEditor)();
   await editor.ready;
+  editor.ready = true;
+  editor.dirty.onChange(editor.updateDirty);
+
+  prefs.subscribe('editor.linter', (key, value) => {
+    document.body.classList.toggle('linter-disabled', value === '');
+    linterMan.run();
+  });
 
   // enabling after init to prevent flash of validation failure on an empty name
-  $('#name').required = !usercss;
+  $('#name').required = !editor.isUsercss;
   $('#save-button').onclick = editor.save;
 
-  function initNameArea() {
-    const nameEl = $('#name');
-    const resetEl = $('#reset-name');
-    const isCustomName = style.updateUrl || usercss;
-    nameTarget = isCustomName ? 'customName' : 'name';
-    nameEl.placeholder = t(usercss ? 'usercssEditorNamePlaceholder' : 'styleMissingName');
-    nameEl.title = isCustomName ? t('customNameHint') : '';
-    nameEl.addEventListener('input', () => {
-      updateName(true);
-      resetEl.hidden = false;
-    });
-    resetEl.hidden = !style.customName;
-    resetEl.onclick = () => {
-      const style = editor.style;
-      nameEl.focus();
-      nameEl.select();
-      // trying to make it undoable via Ctrl-Z
-      if (!document.execCommand('insertText', false, style.name)) {
-        nameEl.value = style.name;
-        updateName(true);
-      }
-      style.customName = null; // to delete it from db
-      resetEl.hidden = true;
-    };
-    const enabledEl = $('#enabled');
-    enabledEl.onchange = () => updateEnabledness(enabledEl.checked);
-  }
+  const elSec = $('#sections-list');
+  // editor.toc.expanded pref isn't saved in compact-layout so prefs.subscribe won't work
+  if (elSec.open) editor.updateToc();
+  // and we also toggle `open` directly in other places e.g. in detectLayout()
+  new MutationObserver(() => elSec.open && editor.updateToc())
+    .observe(elSec, {attributes: true, attributeFilter: ['open']});
 
-  function findKeyForCommand(command, map) {
-    if (typeof map === 'string') map = CodeMirror.keyMap[map];
-    let key = Object.keys(map).find(k => map[k] === command);
-    if (key) {
-      return key;
-    }
-    for (const ft of Array.isArray(map.fallthrough) ? map.fallthrough : [map.fallthrough]) {
-      key = ft && findKeyForCommand(command, ft);
-      if (key) {
-        return key;
-      }
-    }
-    return '';
-  }
+  $('#toc').onclick = e =>
+    editor.jumpToEditor([...$('#toc').children].indexOf(e.target));
+  $('#keyMap-help').onclick = () =>
+    require(['/edit/show-keymap-help'], () => showKeymapHelp()); /* global showKeymapHelp */
+  $('#linter-settings').onclick = () =>
+    require(['/edit/linter-dialogs'], () => linterMan.showLintConfig());
+  $('#lint-help').onclick = () =>
+    require(['/edit/linter-dialogs'], () => linterMan.showLintHelp());
+  require([
+    '/edit/autocomplete',
+    '/edit/global-search',
+  ]);
+});
 
-  function buildThemeElement() {
-    CODEMIRROR_THEMES.unshift(chrome.i18n.getMessage('defaultTheme'));
-    $('#editor.theme').append(...CODEMIRROR_THEMES.map(s => $create('option', s)));
-    // move the theme after built-in CSS so that its same-specificity selectors win
-    document.head.appendChild($('#cm-theme'));
-  }
+//#endregion
+//#region events
 
-  function buildKeymapElement() {
-    // move 'pc' or 'mac' prefix to the end of the displayed label
-    const maps = Object.keys(CodeMirror.keyMap)
-      .map(name => ({
-        value: name,
-        name: name.replace(/^(pc|mac)(.+)/, (s, arch, baseName) =>
-          baseName.toLowerCase() + '-' + (arch === 'mac' ? 'Mac' : 'PC')),
-      }))
-      .sort((a, b) => a.name < b.name && -1 || a.name > b.name && 1);
+const IGNORE_UPDATE_REASONS = [
+  'editPreview',
+  'editPreviewEnd',
+  'editSave',
+  'config',
+];
 
-    const fragment = document.createDocumentFragment();
-    let bin = fragment;
-    let groupName;
-    // group suffixed maps in <optgroup>
-    maps.forEach(({value, name}, i) => {
-      groupName = !name.includes('-') ? name : groupName;
-      const groupWithNext = maps[i + 1] && maps[i + 1].name.startsWith(groupName);
-      if (groupWithNext) {
-        if (bin === fragment) {
-          bin = fragment.appendChild($create('optgroup', {label: name.split('-')[0]}));
-        }
-      }
-      const el = bin.appendChild($create('option', {value}, name));
-      if (value === prefs.defaults['editor.keyMap']) {
-        el.dataset.default = '';
-        el.title = t('defaultTheme');
-      }
-      if (!groupWithNext) bin = fragment;
-    });
-    $('#editor.keyMap').appendChild(fragment);
-  }
-
-  function showHotkeyInTooltip(_, mapName = prefs.get('editor.keyMap')) {
-    const extraKeys = CodeMirror.defaults.extraKeys;
-    for (const el of $$('[data-hotkey-tooltip]')) {
-      if (el._hotkeyTooltipKeyMap !== mapName) {
-        el._hotkeyTooltipKeyMap = mapName;
-        const title = el._hotkeyTooltipTitle = el._hotkeyTooltipTitle || el.title;
-        const cmd = el.dataset.hotkeyTooltip;
-        const key = cmd[0] === '=' ? cmd.slice(1) :
-          findKeyForCommand(cmd, mapName) ||
-          extraKeys && findKeyForCommand(cmd, extraKeys);
-        const newTitle = title + (title && key ? '\n' : '') + (key || '');
-        if (el.title !== newTitle) el.title = newTitle;
-      }
-    }
-  }
-
-  function initResizeListener() {
-    const {onBoundsChanged} = chrome.windows || {};
-    if (onBoundsChanged) {
-      // * movement is reported even if the window wasn't resized
-      // * fired just once when done so debounce is not needed
-      onBoundsChanged.addListener(wnd => {
-        // getting the current window id as it may change if the user attached/detached the tab
-        chrome.windows.getCurrent(ownWnd => {
-          if (wnd.id === ownWnd.id) rememberWindowSize();
-        });
-      });
-    }
-    window.addEventListener('resize', () => {
-      if (!onBoundsChanged) debounce(rememberWindowSize, 100);
-      detectLayout();
-    });
-  }
-
-  function toggleStyle() {
-    $('#enabled').checked = !style.enabled;
-    updateEnabledness(!style.enabled);
-  }
-
-  function updateDirty() {
-    const isDirty = dirty.isDirty();
-    if (wasDirty !== isDirty) {
-      wasDirty = isDirty;
-      document.body.classList.toggle('dirty', isDirty);
-      $('#save-button').disabled = !isDirty;
-    }
-    updateTitle();
-  }
-
-  function updateEnabledness(enabled) {
-    dirty.modify('enabled', style.enabled, enabled);
-    style.enabled = enabled;
-    editor.updateLivePreview();
-  }
-
-  function updateName(isUserInput) {
-    if (!editor) return;
-    if (isUserInput) {
-      const {value} = $('#name');
-      dirty.modify('name', style[nameTarget] || style.name, value);
-      style[nameTarget] = value;
-    }
-    updateTitle({});
-  }
-
-  function updateTitle() {
-    document.title = `${dirty.isDirty() ? '* ' : ''}${style.customName || style.name}`;
-  }
-
-  function updateLinter(key, value) {
-    $('body').classList.toggle('linter-disabled', value === '');
-    linter.run();
-  }
-})();
-
-/* Stuff not needed for the main init so we can let it run at its own tempo */
-async function lazyInit() {
-  const ownTabId = (await getOwnTab()).id;
-  // use browser history back when 'back to manage' is clicked
-  if (sessionStorageHash('manageStylesHistory').value[ownTabId] === location.href) {
-    onDOMready().then(() => {
-      $('#cancel-button').onclick = event => {
-        event.stopPropagation();
-        event.preventDefault();
-        history.back();
-      };
-    });
-  }
-  // no windows on android
-  if (!chrome.windows) {
-    return;
-  }
-  const tabs = await browser.tabs.query({currentWindow: true});
-  const windowId = tabs[0].windowId;
-  if (prefs.get('openEditInWindow')) {
-    if (
-      /true/.test(sessionStorage.saveSizeOnClose) &&
-      'left' in prefs.get('windowPosition', {}) &&
-      !isWindowMaximized()
-    ) {
-      // window was reopened via Ctrl-Shift-T etc.
-      chrome.windows.update(windowId, prefs.get('windowPosition'));
-    }
-    if (tabs.length === 1 && window.history.length === 1) {
-      chrome.windows.getAll(windows => {
-        if (windows.length > 1) {
-          sessionStorageHash('saveSizeOnClose').set(windowId, true);
-          saveSizeOnClose = true;
-        }
-      });
-    } else {
-      saveSizeOnClose = sessionStorageHash('saveSizeOnClose').value[windowId];
-    }
-  }
-  chrome.tabs.onAttached.addListener((tabId, info) => {
-    if (tabId !== ownTabId) {
-      return;
-    }
-    if (info.newPosition !== 0) {
-      prefs.set('openEditInWindow', false);
-      return;
-    }
-    chrome.windows.get(info.newWindowId, {populate: true}, win => {
-      // If there's only one tab in this window, it's been dragged to new window
-      const openEditInWindow = win.tabs.length === 1;
-      if (openEditInWindow && FIREFOX) {
-        // FF-only because Chrome retardedly resets the size during dragging
-        chrome.windows.update(info.newWindowId, prefs.get('windowPosition'));
-      }
-      prefs.set('openEditInWindow', openEditInWindow);
-    });
-  });
-}
-
-function onRuntimeMessage(request) {
+msg.onExtension(request => {
+  const {style} = request;
   switch (request.method) {
     case 'styleUpdated':
-      if (
-        editor.style.id === request.style.id &&
-        !['editPreview', 'editPreviewEnd', 'editSave', 'config']
-          .includes(request.reason)
-      ) {
-        Promise.resolve(
-          request.codeIsUpdated === false ?
-            request.style : API.getStyle(request.style.id)
-        )
-          .then(newStyle => {
-            editor.replaceStyle(newStyle, request.codeIsUpdated);
-          });
+      if (editor.style.id === style.id && !IGNORE_UPDATE_REASONS.includes(request.reason)) {
+        Promise.resolve(request.codeIsUpdated === false ? style : API.styles.get(style.id))
+          .then(newStyle => editor.replaceStyle(newStyle, request.codeIsUpdated));
       }
       break;
     case 'styleDeleted':
-      if (editor.style.id === request.style.id) {
-        document.removeEventListener('visibilitychange', beforeUnload);
-        document.removeEventListener('beforeunload', beforeUnload);
+      if (editor.style.id === style.id) {
         closeCurrentTab();
-        break;
       }
       break;
     case 'editDeleteText':
       document.execCommand('delete');
       break;
   }
-}
+});
 
-/**
- * Invoked for 'visibilitychange' event by default.
- * Invoked for 'beforeunload' event when the style is modified and unsaved.
- * See https://developers.google.com/web/updates/2018/07/page-lifecycle-api#legacy-lifecycle-apis-to-avoid
- *   > Never add a beforeunload listener unconditionally or use it as an end-of-session signal.
- *   > Only add it when a user has unsaved work, and remove it as soon as that work has been saved.
- */
-function beforeUnload(e) {
-  if (saveSizeOnClose) rememberWindowSize();
+window.on('beforeunload', e => {
+  let pos;
+  if (editor.isWindowed &&
+      document.visibilityState === 'visible' &&
+      prefs.get('openEditInWindow') &&
+      ( // only if not maximized
+        screenX > 0 || outerWidth < screen.availWidth ||
+        screenY > 0 || outerHeight < screen.availHeight ||
+        screenX <= -10 || outerWidth >= screen.availWidth + 10 ||
+        screenY <= -10 || outerHeight >= screen.availHeight + 10
+      )
+  ) {
+    pos = {
+      left: screenX,
+      top: screenY,
+      width: outerWidth,
+      height: outerHeight,
+    };
+    prefs.set('windowPosition', pos);
+  }
+  sessionStore.windowPos = JSON.stringify(pos || {});
+  sessionStore['editorScrollInfo' + editor.style.id] = JSON.stringify({
+    scrollY: window.scrollY,
+    cms: editor.getEditors().map(cm => /** @namespace EditorScrollInfo */({
+      bookmarks: (cm.state.sublimeBookmarks || []).map(b => b.find()),
+      focus: cm.hasFocus(),
+      height: cm.display.wrapper.style.height.replace('100vh', ''),
+      parentHeight: cm.display.wrapper.parentElement.offsetHeight,
+      sel: cm.isClean() && [cm.doc.sel.ranges, cm.doc.sel.primIndex],
+    })),
+  });
   const activeElement = document.activeElement;
   if (activeElement) {
     // blurring triggers 'change' or 'input' event if needed
@@ -339,249 +120,259 @@ function beforeUnload(e) {
     // refocus if unloading was canceled
     setTimeout(() => activeElement.focus());
   }
-  if (editor && editor.dirty.isDirty()) {
+  if (editor.dirty.isDirty()) {
     // neither confirm() nor custom messages work in modern browsers but just in case
     e.returnValue = t('styleChangesNotSaved');
   }
-}
+});
 
-function isUsercss(style) {
-  return (
-    style.usercssData ||
-    !style.id && prefs.get('newStyleAsUsercss')
-  );
-}
+//#endregion
+//#region editor methods
 
-function initStyleData() {
-  const params = new URLSearchParams(location.search);
-  const id = Number(params.get('id'));
-  const createEmptyStyle = () => ({
-    name: params.get('domain') ||
-          tryCatch(() => new URL(params.get('url-prefix')).hostname) ||
-          '',
-    enabled: true,
-    sections: [
-      Object.assign({code: ''},
-        ...Object.keys(CssToProperty)
-          .map(name => ({
-            [CssToProperty[name]]: params.get(name) && [params.get(name)] || []
-          }))
-      )
-    ],
-  });
-  return fetchStyle()
-    .then(style => {
-      if (style.id) sessionStorage.justEditedStyleId = style.id;
-      // we set "usercss" class on <html> when <body> is empty
-      // so there'll be no flickering of the elements that depend on it
-      if (isUsercss(style)) {
-        document.documentElement.classList.add('usercss');
-      }
-      // strip URL parameters when invoked for a non-existent id
-      if (!style.id) {
-        history.replaceState({}, document.title, location.pathname);
-      }
-      return style;
-    });
+(() => {
+  const toc = [];
+  const {dirty} = editor;
+  let {style} = editor;
+  let wasDirty = false;
 
-  function fetchStyle() {
-    if (id) {
-      return API.getStyle(id);
-    }
-    return Promise.resolve(createEmptyStyle());
-  }
-}
-
-function showHelp(title = '', body) {
-  const div = $('#help-popup');
-  div.className = '';
-
-  const contents = $('.contents', div);
-  contents.textContent = '';
-  if (body) {
-    contents.appendChild(typeof body === 'string' ? tHTML(body) : body);
-  }
-
-  $('.title', div).textContent = title;
-
-  showHelp.close = showHelp.close || (event => {
-    const canClose =
-      !event ||
-      event.type === 'click' ||
-      (
-        event.key === 'Escape' &&
-        !event.altKey && !event.ctrlKey && !event.shiftKey && !event.metaKey &&
-        !$('.CodeMirror-hints, #message-box') &&
-        (
-          !document.activeElement ||
-          !document.activeElement.closest('#search-replace-dialog') &&
-          document.activeElement.matches(':not(input), .can-close-on-esc')
-        )
-      );
-    if (!canClose) {
-      return;
-    }
-    if (event && div.codebox && !div.codebox.options.readOnly && !div.codebox.isClean()) {
-      setTimeout(() => {
-        messageBox.confirm(t('confirmDiscardChanges'))
-          .then(ok => ok && showHelp.close());
-      });
-      return;
-    }
-    if (div.contains(document.activeElement) && showHelp.originalFocus) {
-      showHelp.originalFocus.focus();
-    }
-    div.style.display = '';
-    contents.textContent = '';
-    clearTimeout(contents.timer);
-    window.removeEventListener('keydown', showHelp.close, true);
-    window.dispatchEvent(new Event('closeHelp'));
+  Object.defineProperties(editor, {
+    scrollInfo: {
+      get: () => style.id && tryJSONparse(sessionStore['editorScrollInfo' + style.id]) || {},
+    },
+    style: {
+      get: () => style,
+      set: val => (style = val),
+    },
   });
 
-  window.addEventListener('keydown', showHelp.close, true);
-  $('.dismiss', div).onclick = showHelp.close;
+  /** @namespace Editor */
+  Object.assign(editor, {
 
-  // reset any inline styles
-  div.style = 'display: block';
+    applyScrollInfo(cm, si = (editor.scrollInfo.cms || [])[0]) {
+      if (si && si.sel) {
+        const bmOpts = {sublimeBookmark: true, clearWhenEmpty: false}; // copied from sublime.js
+        cm.operation(() => {
+          cm.setSelections(...si.sel, {scroll: false});
+          cm.scrollIntoView(cm.getCursor(), si.parentHeight / 2);
+          cm.state.sublimeBookmarks = si.bookmarks.map(b => cm.markText(b.from, b.to, bmOpts));
+        });
+      }
+    },
 
-  showHelp.originalFocus = document.activeElement;
-  return div;
-}
+    toggleStyle() {
+      $('#enabled').checked = !style.enabled;
+      editor.updateEnabledness(!style.enabled);
+    },
 
-function showCodeMirrorPopup(title, html, options) {
-  const popup = showHelp(title, html);
-  popup.classList.add('big');
+    updateDirty() {
+      const isDirty = dirty.isDirty();
+      if (wasDirty !== isDirty) {
+        wasDirty = isDirty;
+        document.body.classList.toggle('dirty', isDirty);
+        $('#save-button').disabled = !isDirty;
+      }
+      editor.updateTitle();
+    },
 
-  let cm = popup.codebox = CodeMirror($('.contents', popup), Object.assign({
-    mode: 'css',
-    lineNumbers: true,
-    lineWrapping: prefs.get('editor.lineWrapping'),
-    foldGutter: true,
-    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'],
-    matchBrackets: true,
-    styleActiveLine: true,
-    theme: prefs.get('editor.theme'),
-    keyMap: prefs.get('editor.keyMap')
-  }, options));
-  cm.focus();
-  rerouteHotkeys(false);
+    updateEnabledness(enabled) {
+      dirty.modify('enabled', style.enabled, enabled);
+      style.enabled = enabled;
+      editor.updateLivePreview();
+    },
 
-  document.documentElement.style.pointerEvents = 'none';
-  popup.style.pointerEvents = 'auto';
+    updateName(isUserInput) {
+      if (!editor) return;
+      if (isUserInput) {
+        const {value} = $('#name');
+        dirty.modify('name', style[editor.nameTarget] || style.name, value);
+        style[editor.nameTarget] = value;
+      }
+      editor.updateTitle();
+    },
 
-  const onKeyDown = event => {
-    if (event.key === 'Tab' && !event.ctrlKey && !event.altKey && !event.metaKey) {
-      const search = $('#search-replace-dialog');
-      const area = search && search.contains(document.activeElement) ? search : popup;
-      moveFocus(area, event.shiftKey ? -1 : 1);
-      event.preventDefault();
-    }
-  };
-  window.addEventListener('keydown', onKeyDown, true);
-
-  window.addEventListener('closeHelp', () => {
-    window.removeEventListener('keydown', onKeyDown, true);
-    document.documentElement.style.removeProperty('pointer-events');
-    rerouteHotkeys(true);
-    cm = popup.codebox = null;
-  }, {once: true});
-
-  return popup;
-}
-
-function rememberWindowSize() {
-  if (
-    document.visibilityState === 'visible' &&
-    prefs.get('openEditInWindow') &&
-    !isWindowMaximized()
-  ) {
-    prefs.set('windowPosition', {
-      left: window.screenX,
-      top: window.screenY,
-      width: window.outerWidth,
-      height: window.outerHeight,
-    });
-  }
-}
-
-function fixedHeader() {
-  const scrollPoint = $('#header').clientHeight - 40;
-  const linterEnabled = prefs.get('editor.linter') !== '';
-  if (window.scrollY >= scrollPoint && !$('.fixed-header') && linterEnabled) {
-    $('body').classList.add('fixed-header');
-  } else if (window.scrollY < 40 && linterEnabled) {
-    $('body').classList.remove('fixed-header');
-  }
-}
-
-function detectLayout() {
-  const body = $('body');
-  const options = $('#options');
-  const lint = $('#lint');
-  const compact = window.innerWidth <= 850;
-  const shortViewportLinter = window.innerHeight < 692;
-  const shortViewportNoLinter = window.innerHeight < 554;
-  const linterEnabled = prefs.get('editor.linter') !== '';
-  if (compact) {
-    body.classList.add('compact-layout');
-    options.removeAttribute('open');
-    options.classList.add('ignore-pref');
-    lint.removeAttribute('open');
-    lint.classList.add('ignore-pref');
-    if (!$('.usercss')) {
-      clearTimeout(scrollPointTimer);
-      scrollPointTimer = setTimeout(() => {
-        const scrollPoint = $('#header').clientHeight - 40;
-        if (window.scrollY >= scrollPoint && !$('.fixed-header') && linterEnabled) {
-          body.classList.add('fixed-header');
+    updateToc(added = editor.sections) {
+      if (!toc.el) {
+        toc.el = $('#toc');
+        toc.elDetails = toc.el.closest('details');
+      }
+      if (!toc.elDetails.open) return;
+      const {sections} = editor;
+      const first = sections.indexOf(added[0]);
+      const elFirst = toc.el.children[first];
+      if (first >= 0 && (!added.focus || !elFirst)) {
+        for (let el = elFirst, i = first; i < sections.length; i++) {
+          const entry = sections[i].tocEntry;
+          if (!deepEqual(entry, toc[i])) {
+            if (!el) el = toc.el.appendChild($create('li', {tabIndex: 0}));
+            el.tabIndex = entry.removed ? -1 : 0;
+            toc[i] = Object.assign({}, entry);
+            const s = el.textContent = clipString(entry.label) || (
+              entry.target == null
+                ? t('appliesToEverything')
+                : clipString(entry.target) + (entry.numTargets > 1 ? ', ...' : ''));
+            if (s.length > 30) el.title = s;
+          }
+          el = el.nextElementSibling;
         }
-      }, 250);
-      window.addEventListener('scroll', fixedHeader, {passive: true});
-    }
-  } else {
-    body.classList.remove('compact-layout');
-    body.classList.remove('fixed-header');
-    window.removeEventListener('scroll', fixedHeader);
-    if (shortViewportLinter && linterEnabled || shortViewportNoLinter && !linterEnabled) {
-      options.removeAttribute('open');
-      options.classList.add('ignore-pref');
-      if (prefs.get('editor.lint.expanded')) {
-        lint.setAttribute('open', '');
       }
+      while (toc.length > sections.length) {
+        toc.el.lastElementChild.remove();
+        toc.length--;
+      }
+      if (added.focus) {
+        const cls = 'current';
+        const old = $('.' + cls, toc.el);
+        const el = elFirst || toc.el.children[first];
+        if (old && old !== el) old.classList.remove(cls);
+        el.classList.add(cls);
+      }
+    },
+  });
+})();
+
+//#endregion
+//#region editor livePreview
+
+editor.livePreview = (() => {
+  let data;
+  let port;
+  let preprocess;
+  let enabled = prefs.get('editor.livePreview');
+
+  prefs.subscribe('editor.livePreview', (key, value) => {
+    if (!value) {
+      if (port) {
+        port.disconnect();
+        port = null;
+      }
+    } else if (data && data.id && (data.enabled || editor.dirty.has('enabled'))) {
+      createPreviewer();
+      updatePreviewer(data);
+    }
+    enabled = value;
+  });
+
+  return {
+
+    /**
+     * @param {Function} [fn] - preprocessor
+     */
+    init(fn) {
+      preprocess = fn;
+    },
+
+    update(newData) {
+      data = newData;
+      if (!port) {
+        if (!data.id || !data.enabled || !enabled) {
+          return;
+        }
+        createPreviewer();
+      }
+      updatePreviewer(data);
+    },
+  };
+
+  function createPreviewer() {
+    port = chrome.runtime.connect({name: 'livePreview'});
+    port.onDisconnect.addListener(err => {
+      throw err;
+    });
+  }
+
+  async function updatePreviewer(data) {
+    const errorContainer = $('#preview-errors');
+    try {
+      port.postMessage(preprocess ? await preprocess(data) : data);
+      errorContainer.classList.add('hidden');
+    } catch (err) {
+      if (Array.isArray(err)) {
+        err = err.join('\n');
+      } else if (err && err.index != null) {
+        // FIXME: this would fail if editors[0].getValue() !== data.sourceCode
+        const pos = editor.getEditors()[0].posFromIndex(err.index);
+        err.message = `${pos.line}:${pos.ch} ${err.message || err}`;
+      }
+      errorContainer.classList.remove('hidden');
+      errorContainer.onclick = () => {
+        messageBoxProxy.alert(err.message || `${err}`, 'pre');
+      };
+    }
+  }
+})();
+
+//#endregion
+//#region colorpickerHelper
+
+(async function colorpickerHelper() {
+  prefs.subscribe('editor.colorpicker.hotkey', (id, hotkey) => {
+    CodeMirror.commands.colorpicker = invokeColorpicker;
+    const extraKeys = CodeMirror.defaults.extraKeys;
+    for (const key in extraKeys) {
+      if (extraKeys[key] === 'colorpicker') {
+        delete extraKeys[key];
+        break;
+      }
+    }
+    if (hotkey) {
+      extraKeys[hotkey] = 'colorpicker';
+    }
+  });
+
+  prefs.subscribe('editor.colorpicker', (id, enabled) => {
+    const defaults = CodeMirror.defaults;
+    const keyName = prefs.get('editor.colorpicker.hotkey');
+    defaults.colorpicker = enabled;
+    if (enabled) {
+      if (keyName) {
+        CodeMirror.commands.colorpicker = invokeColorpicker;
+        defaults.extraKeys = defaults.extraKeys || {};
+        defaults.extraKeys[keyName] = 'colorpicker';
+      }
+      defaults.colorpicker = {
+        tooltip: t('colorpickerTooltip'),
+        popup: {
+          tooltipForSwitcher: t('colorpickerSwitchFormatTooltip'),
+          paletteLine: t('numberedLine'),
+          paletteHint: t('colorpickerPaletteHint'),
+          hexUppercase: prefs.get('editor.colorpicker.hexUppercase'),
+          embedderCallback: state => {
+            ['hexUppercase', 'color']
+              .filter(name => state[name] !== prefs.get('editor.colorpicker.' + name))
+              .forEach(name => prefs.set('editor.colorpicker.' + name, state[name]));
+          },
+          get maxHeight() {
+            return prefs.get('editor.colorpicker.maxHeight');
+          },
+          set maxHeight(h) {
+            prefs.set('editor.colorpicker.maxHeight', h);
+          },
+        },
+      };
     } else {
-      options.classList.remove('ignore-pref');
-      lint.classList.remove('ignore-pref');
-      if (prefs.get('editor.options.expanded')) {
-        options.setAttribute('open', '');
-      }
-      if (prefs.get('editor.lint.expanded')) {
-        lint.setAttribute('open', '');
+      if (defaults.extraKeys) {
+        delete defaults.extraKeys[keyName];
       }
     }
+    cmFactory.globalSetOption('colorpicker', defaults.colorpicker);
+  }, {runNow: true});
+
+  await baseInit.domReady;
+
+  $('#colorpicker-settings').onclick = function (event) {
+    event.preventDefault();
+    const input = createHotkeyInput('editor.colorpicker.hotkey', {onDone: () => helpPopup.close()});
+    const popup = helpPopup.show(t('helpKeyMapHotkey'), input);
+    const bounds = this.getBoundingClientRect();
+    popup.style.left = bounds.right + 10 + 'px';
+    popup.style.top = bounds.top - popup.clientHeight / 2 + 'px';
+    popup.style.right = 'auto';
+    $('input', popup).focus();
+  };
+
+  function invokeColorpicker(cm) {
+    cm.state.colorpicker.openPopup(prefs.get('editor.colorpicker.color'));
   }
-}
+})();
 
-function isWindowMaximized() {
-  return (
-    window.screenX <= 0 &&
-    window.screenY <= 0 &&
-    window.outerWidth >= screen.availWidth &&
-    window.outerHeight >= screen.availHeight &&
-
-    window.screenX > -10 &&
-    window.screenY > -10 &&
-    window.outerWidth < screen.availWidth + 10 &&
-    window.outerHeight < screen.availHeight + 10
-  );
-}
-
-function toggleContextMenuDelete(event) {
-  if (chrome.contextMenus && event.button === 2 && prefs.get('editor.contextDelete')) {
-    chrome.contextMenus.update('editor.contextDelete', {
-      enabled: Boolean(
-        this.selectionStart !== this.selectionEnd ||
-        this.somethingSelected && this.somethingSelected()
-      ),
-    }, ignoreChromeError);
-  }
-}
+//#endregion

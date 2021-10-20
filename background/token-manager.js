@@ -1,12 +1,9 @@
-/* global chromeLocal promisifyChrome webextLaunchWebAuthFlow FIREFOX */
-/* exported tokenManager */
+/* global FIREFOX getActiveTab waitForTabUrl URLS */// toolbox.js
+/* global chromeLocal */// storage-util.js
 'use strict';
 
-const tokenManager = (() => {
-  promisifyChrome({
-    'windows': ['create', 'update', 'remove'],
-    'tabs': ['create', 'update', 'remove']
-  });
+/* exported tokenMan */
+const tokenMan = (() => {
   const AUTH = {
     dropbox: {
       flow: 'token',
@@ -17,9 +14,9 @@ const tokenManager = (() => {
         fetch('https://api.dropboxapi.com/2/auth/token/revoke', {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        })
+            'Authorization': `Bearer ${token}`,
+          },
+        }),
     },
     google: {
       flow: 'code',
@@ -31,14 +28,14 @@ const tokenManager = (() => {
         // tokens for multiple machines.
         // https://stackoverflow.com/q/18519185
         access_type: 'offline',
-        prompt: 'consent'
+        prompt: 'consent',
       },
       tokenURL: 'https://oauth2.googleapis.com/token',
       scopes: ['https://www.googleapis.com/auth/drive.appdata'],
       revoke: token => {
         const params = {token};
         return postQuery(`https://accounts.google.com/o/oauth2/revoke?${new URLSearchParams(params)}`);
-      }
+      },
     },
     onedrive: {
       flow: 'code',
@@ -49,102 +46,103 @@ const tokenManager = (() => {
       redirect_uri: FIREFOX ?
         'https://clngdbkpkpeebahjckkjfobafhncgmne.chromiumapp.org/' :
         'https://' + location.hostname + '.chromiumapp.org/',
-      scopes: ['Files.ReadWrite.AppFolder', 'offline_access']
-    }
+      scopes: ['Files.ReadWrite.AppFolder', 'offline_access'],
+    },
+    userstylesworld: {
+      flow: 'code',
+      clientId: 'zeDmKhJIfJqULtcrGMsWaxRtWHEimKgS',
+      clientSecret: 'wqHsvTuThQmXmDiVvOpZxPwSIbyycNFImpAOTxjaIRqDbsXcTOqrymMJKsOMuibFaij' +
+        'ZZAkVYTDbLkQuYFKqgpMsMlFlgwQOYHvHFbgxQHDTwwdOroYhOwFuekCwXUlk',
+      authURL: URLS.usw + 'api/oauth/style/link',
+      tokenURL: URLS.usw + 'api/oauth/token',
+      redirect_uri: 'https://gusted.xyz/callback_helper/',
+    },
   };
   const NETWORK_LATENCY = 30; // seconds
 
-  return {getToken, revokeToken, getClientId, buildKeys};
+  let alwaysUseTab = FIREFOX ? false : null;
 
-  function getClientId(name) {
-    return AUTH[name].clientId;
-  }
+  return {
 
-  function buildKeys(name) {
-    const k = {
-      TOKEN: `secure/token/${name}/token`,
-      EXPIRE: `secure/token/${name}/expire`,
-      REFRESH: `secure/token/${name}/refresh`,
-    };
-    k.LIST = Object.values(k);
-    return k;
-  }
+    buildKeys(name, hooks) {
+      const prefix = `secure/token/${hooks ? hooks.keyName(name) : name}/`;
+      const k = {
+        TOKEN: `${prefix}token`,
+        EXPIRE: `${prefix}expire`,
+        REFRESH: `${prefix}refresh`,
+      };
+      k.LIST = Object.values(k);
+      return k;
+    },
 
-  function getToken(name, interactive) {
-    const k = buildKeys(name);
-    return chromeLocal.get(k.LIST)
-      .then(obj => {
-        if (!obj[k.TOKEN]) {
-          return authUser(name, k, interactive);
-        }
+    getClientId(name) {
+      return AUTH[name].clientId;
+    },
+
+    async getToken(name, interactive, hooks) {
+      const k = tokenMan.buildKeys(name, hooks);
+      const obj = await chromeLocal.get(k.LIST);
+      if (obj[k.TOKEN]) {
         if (!obj[k.EXPIRE] || Date.now() < obj[k.EXPIRE]) {
           return obj[k.TOKEN];
         }
         if (obj[k.REFRESH]) {
-          return refreshToken(name, k, obj)
-            .catch(err => {
-              if (err.code === 401) {
-                return authUser(name, k, interactive);
-              }
-              throw err;
-            });
+          return refreshToken(name, k, obj);
         }
-        return authUser(name, k, interactive);
-      });
-  }
-
-  function revokeToken(name) {
-    const provider = AUTH[name];
-    const k = buildKeys(name);
-    return revoke()
-      .then(() => chromeLocal.remove(k.LIST));
-
-    function revoke() {
-      if (!provider.revoke) {
-        return Promise.resolve();
       }
-      return chromeLocal.get(k.TOKEN)
-        .then(obj => {
-          if (obj[k.TOKEN]) {
-            return provider.revoke(obj[k.TOKEN]);
-          }
-        })
-        .catch(console.error);
-    }
-  }
+      if (!interactive) {
+        throw new Error(`Invalid token: ${name}`);
+      }
+      return authUser(k, name, interactive, hooks);
+    },
 
-  function refreshToken(name, k, obj) {
+    async revokeToken(name, hooks) {
+      const provider = AUTH[name];
+      const k = tokenMan.buildKeys(name, hooks);
+      if (provider.revoke) {
+        try {
+          const token = await chromeLocal.getValue(k.TOKEN);
+          if (token) await provider.revoke(token);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      await chromeLocal.remove(k.LIST);
+    },
+  };
+
+  async function refreshToken(name, k, obj) {
     if (!obj[k.REFRESH]) {
-      return Promise.reject(new Error('no refresh token'));
+      throw new Error('No refresh token');
     }
     const provider = AUTH[name];
     const body = {
       client_id: provider.clientId,
       refresh_token: obj[k.REFRESH],
       grant_type: 'refresh_token',
-      scope: provider.scopes.join(' ')
+      scope: provider.scopes.join(' '),
     };
     if (provider.clientSecret) {
       body.client_secret = provider.clientSecret;
     }
-    return postQuery(provider.tokenURL, body)
-      .then(result => {
-        if (!result.refresh_token) {
-          // reuse old refresh token
-          result.refresh_token = obj[k.REFRESH];
-        }
-        return handleTokenResult(result, k);
-      });
+    const result = await postQuery(provider.tokenURL, body);
+    if (!result.refresh_token) {
+      // reuse old refresh token
+      result.refresh_token = obj[k.REFRESH];
+    }
+    return handleTokenResult(result, k);
   }
 
-  function authUser(name, k, interactive = false) {
+  async function authUser(keys, name, interactive = false, hooks = null) {
+    await require(['/vendor/webext-launch-web-auth-flow/webext-launch-web-auth-flow.min']);
+    /* global webextLaunchWebAuthFlow */
     const provider = AUTH[name];
     const state = Math.random().toFixed(8).slice(2);
     const query = {
       response_type: provider.flow,
       client_id: provider.clientId,
       redirect_uri: provider.redirect_uri || chrome.identity.getRedirectURL(),
-      state
+      state,
     };
     if (provider.scopes) {
       query.scope = provider.scopes.join(' ');
@@ -152,71 +150,111 @@ const tokenManager = (() => {
     if (provider.authQuery) {
       Object.assign(query, provider.authQuery);
     }
+    if (alwaysUseTab == null) {
+      alwaysUseTab = await detectVivaldiWebRequestBug();
+    }
+    if (hooks) hooks.query(query);
     const url = `${provider.authURL}?${new URLSearchParams(query)}`;
-    return webextLaunchWebAuthFlow({
+    const width = Math.min(screen.availWidth - 100, 800);
+    const height = Math.min(screen.availHeight - 100, 800);
+    const wnd = await browser.windows.getLastFocused();
+    const finalUrl = await webextLaunchWebAuthFlow({
       url,
+      alwaysUseTab,
       interactive,
-      redirect_uri: query.redirect_uri
-    })
-      .then(url => {
-        const params = new URLSearchParams(
-          provider.flow === 'token' ?
-            new URL(url).hash.slice(1) :
-            new URL(url).search.slice(1)
-        );
-        if (params.get('state') !== state) {
-          throw new Error(`unexpected state: ${params.get('state')}, expected: ${state}`);
-        }
-        if (provider.flow === 'token') {
-          const obj = {};
-          for (const [key, value] of params.entries()) {
-            obj[key] = value;
-          }
-          return obj;
-        }
-        const code = params.get('code');
-        const body = {
-          code,
-          grant_type: 'authorization_code',
-          client_id: provider.clientId,
-          redirect_uri: query.redirect_uri
-        };
-        if (provider.clientSecret) {
-          body.client_secret = provider.clientSecret;
-        }
-        return postQuery(provider.tokenURL, body);
-      })
-      .then(result => handleTokenResult(result, k));
+      redirect_uri: query.redirect_uri,
+      windowOptions: Object.assign({
+        state: 'normal',
+        width,
+        height,
+      }, wnd.state !== 'minimized' && {
+        // Center the popup to the current window
+        top: Math.ceil(wnd.top + (wnd.height - width) / 2),
+        left: Math.ceil(wnd.left + (wnd.width - width) / 2),
+      }),
+    });
+    const params = new URLSearchParams(
+      provider.flow === 'token' ?
+        new URL(finalUrl).hash.slice(1) :
+        new URL(finalUrl).search.slice(1)
+    );
+    if (params.get('state') !== state) {
+      throw new Error(`Unexpected state: ${params.get('state')}, expected: ${state}`);
+    }
+    let result;
+    if (provider.flow === 'token') {
+      const obj = {};
+      for (const [key, value] of params) {
+        obj[key] = value;
+      }
+      result = obj;
+    } else {
+      const code = params.get('code');
+      const body = {
+        code,
+        grant_type: 'authorization_code',
+        client_id: provider.clientId,
+        redirect_uri: query.redirect_uri,
+        state,
+      };
+      if (provider.clientSecret) {
+        body.client_secret = provider.clientSecret;
+      }
+      result = await postQuery(provider.tokenURL, body);
+    }
+    return handleTokenResult(result, keys);
   }
 
-  function handleTokenResult(result, k) {
-    return chromeLocal.set({
+  async function handleTokenResult(result, k) {
+    await chromeLocal.set({
       [k.TOKEN]: result.access_token,
-      [k.EXPIRE]: result.expires_in ? Date.now() + (Number(result.expires_in) - NETWORK_LATENCY) * 1000 : undefined,
-      [k.REFRESH]: result.refresh_token
-    })
-      .then(() => result.access_token);
+      [k.EXPIRE]: result.expires_in
+        ? Date.now() + (result.expires_in - NETWORK_LATENCY) * 1000
+        : undefined,
+      [k.REFRESH]: result.refresh_token,
+    });
+    return result.access_token;
   }
 
-  function postQuery(url, body) {
+  async function postQuery(url, body) {
     const options = {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: body ? new URLSearchParams(body) : null,
     };
-    return fetch(url, options)
-      .then(r => {
-        if (r.ok) {
-          return r.json();
-        }
-        return r.text()
-          .then(body => {
-            const err = new Error(`failed to fetch (${r.status}): ${body}`);
-            err.code = r.status;
-            throw err;
-          });
-      });
+    const r = await fetch(url, options);
+    if (r.ok) {
+      return r.json();
+    }
+    const text = await r.text();
+    const err = new Error(`Failed to fetch (${r.status}): ${text}`);
+    err.code = r.status;
+    throw err;
+  }
+
+  async function detectVivaldiWebRequestBug() {
+    // Workaround for https://github.com/openstyles/stylus/issues/1182
+    // Note that modern Vivaldi isn't exposed in `navigator.userAgent` but it adds `extData` to tabs
+    const anyTab = await getActiveTab() || (await browser.tabs.query({}))[0];
+    if (anyTab && !anyTab.extData) {
+      return false;
+    }
+    let bugged = true;
+    const TEST_URL = chrome.runtime.getURL('manifest.json');
+    const check = ({url}) => {
+      bugged = url !== TEST_URL;
+    };
+    chrome.webRequest.onBeforeRequest.addListener(check, {urls: [TEST_URL], types: ['main_frame']});
+    const {tabs: [tab]} = await browser.windows.create({
+      type: 'popup',
+      state: 'minimized',
+      url: TEST_URL,
+    });
+    await waitForTabUrl(tab);
+    chrome.windows.remove(tab.windowId);
+    chrome.webRequest.onBeforeRequest.removeListener(check);
+    return bugged;
   }
 })();

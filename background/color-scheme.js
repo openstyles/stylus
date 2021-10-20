@@ -36,7 +36,7 @@ const colorScheme = (() => {
     }
     chrome.alarms.create(key, {
       when: date.getTime(),
-      periodInMinutes: 24 * 60
+      periodInMinutes: 24 * 60,
     });
   }
 
