@@ -458,7 +458,7 @@ self.parserlib = (() => {
     'pause': 1,
     'pause-after': 1,
     'pause-before': 1,
-    'perspective': 'none | <length>',
+    'perspective': 'none | <len0+>',
     'perspective-origin': '<position>',
     'phonemes': 1,
     'pitch': 1,
@@ -492,7 +492,7 @@ self.parserlib = (() => {
     'ruby-position': 1,
     'ruby-span': 1,
 
-    'scale': 'none | <number>{1,3}',
+    'scale': 'none | <num-pct>{1,3}',
 
     'scroll-behavior': 'auto | smooth',
     'scroll-margin': '<length>{1,4}',
@@ -579,7 +579,7 @@ self.parserlib = (() => {
     'transform': 'none | <transform-function>+',
     'transform-box': 'border-box | fill-box | view-box',
     'transform-origin': '<transform-origin>',
-    'transform-style': 'auto | flat | preserve-3d',
+    'transform-style': 'flat | preserve-3d',
     'transition': '<transition>#',
     'transition-delay': '<time>#',
     'transition-duration': '<time>#',
@@ -982,17 +982,21 @@ self.parserlib = (() => {
     '<transform-function>':
       'matrix( <number>#{6} ) | ' +
       'matrix3d( <number>#{16} ) | ' +
+      'perspective( <len0+> | none ) | ' +
       'rotate( <angle-or-0> ) | ' +
       'rotate3d( <number>#{3} , <angle-or-0> ) | ' +
-      'scale( <number> [ , <number> ]? ) | ' +
-      'scale3d( <number>#{3} ) | ' +
-      'scaleX( <number> ) | ' +
-      'scaleY( <number> ) | ' +
-      'scaleZ( <number> ) | ' +
+      'rotateX( <angle-or-0> ) | ' +
+      'rotateY( <angle-or-0> ) | ' +
+      'rotateZ( <angle-or-0> ) | ' +
+      'scale( [ <num-pct> ]#{1,2} ) | ' +
+      'scale3d( <num-pct>#{3} ) | ' +
+      'scaleX( <num-pct> ) | ' +
+      'scaleY( <num-pct> ) | ' +
+      'scaleZ( <num-pct> ) | ' +
       'skew( <angle-or-0> [ , <angle-or-0> ]? ) | ' +
       'skewX( <angle-or-0> ) | ' +
       'skewY( <angle-or-0> ) | ' +
-      'translate( <len-pct> [ , <len-pct> ]? ) | ' +
+      'translate( <len-pct>#{1,2} ) | ' +
       'translate3d( <len-pct>#{2} , <length> ) | ' +
       'translateX( <len-pct> ) | ' +
       'translateY( <len-pct> ) | ' +
