@@ -988,9 +988,18 @@ body.linter-disabled .hidden-unless-compact {
   margin-top: .75rem;
 }
 
+.single-editor {
+  position: relative;
+  height: 100%;
+}
 .single-editor .CodeMirror {
-  width: 100%;
-  height: 100vh; /* WARNING! Don't use 100% as it's dead slow */
+/* WARNING! If you change this or .single-editor make sure editor opens huge styles like GitHub Dark instantly */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: auto;
   border: none;
   outline: none;
 }
@@ -1038,10 +1047,11 @@ body.linter-disabled .hidden-unless-compact {
     padding: .5rem 1rem .5rem .5rem;
   }
   .fixed-header {
+    --fixed-height: 40px;
     padding-top: var(--fixed-padding);
   }
   .fixed-header #header {
-    min-height: 40px;
+    min-height: var(--fixed-height);
     position: fixed;
     top: 0;
     left: 0;
@@ -1052,6 +1062,9 @@ body.linter-disabled .hidden-unless-compact {
   .fixed-header #header > *:not(#details-wrapper),
   .fixed-header #options {
     display: none !important;
+  }
+  .fixed-header #details-wrapper {
+    padding-top: calc((var(--fixed-height) - 1.2rem) / 2); /* 1.2 is the normal line height */
   }
   #header summary + *,
   #lint > .lint-scroll-container {
