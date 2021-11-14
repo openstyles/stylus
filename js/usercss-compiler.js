@@ -12,7 +12,7 @@ const BUILDERS = Object.assign(Object.create(null), {
       varDef = ':root {\n' + varDef + '}\n';
       for (const section of sections) {
         if (!styleCodeEmpty(section.code)) {
-          section.code = varDef + section.code;
+          spliceCssAfterGlobals(section, varDef, styleCodeEmpty.lastIndex);
         }
       }
     },
@@ -164,4 +164,24 @@ function simplifyUsercssVars(vars) {
     }
     va.value = value;
   }
+}
+
+function spliceCssAfterGlobals(section, newText, after) {
+  const {code} = section;
+  const RX_IMPORT = /@import\s/gi;
+  RX_IMPORT.lastIndex = after;
+  if (RX_IMPORT.test(code)) {
+    require(['/js/csslint/parserlib']); /* global parserlib */
+    const parser = new parserlib.css.Parser();
+    parser._tokenStream = new parserlib.css.TokenStream(code);
+    parser._sheetGlobals();
+    const {col, line, offset} = parser._tokenStream._token;
+    // normalizing newlines in non-usercss to match line:col from parserlib
+    if ((code.indexOf('\r') + 1 || 1e99) - 1 < offset) {
+      after = col + code.split('\n', line).reduce((len, s) => len + s.length + 1, 0);
+    } else {
+      after = offset + 1;
+    }
+  }
+  section.code = (after ? code.slice(0, after) + '\n' : '') + newText + code.slice(after);
 }

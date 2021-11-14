@@ -4678,6 +4678,7 @@ self.parserlib = (() => {
   //#endregion
   //#region PUBLIC API
 
+  /** @namespace parserlib */
   return {
     css: {
       Colors,

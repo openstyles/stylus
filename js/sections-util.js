@@ -71,12 +71,15 @@ function styleCodeEmpty(code) {
   if (!code) {
     return true;
   }
+  let lastIndex = 0;
   const rx = /\s+|\/\*([^*]|\*(?!\/))*(\*\/|$)|@namespace[^;]+;|@charset[^;]+;/giyu;
   while (rx.exec(code)) {
-    if (rx.lastIndex === code.length) {
+    lastIndex = rx.lastIndex;
+    if (lastIndex === code.length) {
       return true;
     }
   }
+  styleCodeEmpty.lastIndex = lastIndex;
   return false;
 }
 
