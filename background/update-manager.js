@@ -223,7 +223,9 @@ const updateMan = (() => {
       let err;
       if (!delta && !ignoreDigest) {
         // re-install is invalid in a soft upgrade
-        err = response === style.sourceCode ? STATES.SAME_CODE : STATES.SAME_VERSION;
+        err = response === style.sourceCode
+          ? STATES.SAME_CODE
+          : !URLS.isLocalhost(updateUrl) && STATES.SAME_VERSION;
       }
       if (delta < 0) {
         // downgrade is always invalid

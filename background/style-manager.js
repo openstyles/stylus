@@ -1,5 +1,5 @@
 /* global API msg */// msg.js
-/* global CHROME URLS stringAsRegExp tryRegExp tryURL */// toolbox.js
+/* global CHROME URLS isEmptyObj stringAsRegExp tryRegExp tryURL */// toolbox.js
 /* global bgReady compareRevision */// common.js
 /* global calcStyleDigest styleCodeEmpty styleSectionGlobal */// sections-util.js
 /* global db */
@@ -480,7 +480,7 @@ const styleMan = (() => {
 
   async function init() {
     const styles = await db.exec('getAll') || [];
-    const updated = styles.filter(fixKnownProblems);
+    const updated = await Promise.all(styles.map(fixKnownProblems).filter(Boolean));
     if (updated.length) {
       await db.exec('putMany', updated);
     }
@@ -492,7 +492,7 @@ const styleMan = (() => {
     bgReady._resolveStyles();
   }
 
-  function fixKnownProblems(style) {
+  function fixKnownProblems(style, initIndex, initArray) {
     let res = 0;
     for (const key in MISSING_PROPS) {
       if (!style[key]) {
@@ -536,7 +536,17 @@ const styleMan = (() => {
       if (!style.url) res = style.url = url;
       if (!style.installationUrl) res = style.installationUrl = url;
     }
-    return Boolean(res);
+    /* @import must precede `vars` that we add at beginning */
+    if (
+      initArray &&
+      !isEmptyObj((style.usercssData || {}).vars) &&
+      style.sections.some(({code}) =>
+        code.startsWith(':root {\n  --') &&
+        /@import\s/i.test(code))
+    ) {
+      return usercssMan.buildCode(style);
+    }
+    return res && style;
   }
 
   function urlMatchStyle(query, style) {

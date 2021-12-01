@@ -1,6 +1,6 @@
 /* global $ $create $createLink $$remove showSpinner */// dom.js
 /* global API */// msg.js
-/* global closeCurrentTab deepEqual */// toolbox.js
+/* global URLS closeCurrentTab deepEqual */// toolbox.js
 /* global messageBox */
 /* global prefs */
 /* global preinit */
@@ -61,12 +61,18 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
     '/js/color/color-view',
   ]));
 
-  ({tabId, initialUrl} = await preinit);
+  ({tabId, initialUrl} = preinit);
   liveReload = initLiveReload();
 
-  const {dup, style, error, sourceCode} = await preinit.ready;
+  const [
+    {dup, style, error, sourceCode},
+    hasFileAccess,
+  ] = await Promise.all([
+    preinit.ready,
+    API.data.get('hasFileAccess'),
+  ]);
   if (!style && sourceCode == null) {
-    messageBox.alert(isNaN(error) ? error : 'HTTP Error ' + error, 'pre');
+    messageBox.alert(isNaN(error) ? `${error}` : 'HTTP Error ' + error, 'pre');
     return;
   }
   await scriptsReady;
@@ -118,7 +124,7 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
     checker.checked = true;
     // there is no way to "unset" updateUrl, you can only overwrite it.
     checker.disabled = true;
-  } else if (updateUrl.protocol !== 'file:') {
+  } else if (updateUrl.protocol !== 'file:' || hasFileAccess) {
     checker.checked = true;
     style.updateUrl = updateUrl.href;
   }
@@ -136,7 +142,7 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
   };
   preferScheme.onchange();
 
-  if (initialUrl.startsWith('file:')) {
+  if (URLS.isLocalhost(initialUrl)) {
     $('.live-reload input').onchange = liveReload.onToggled;
   } else {
     $('.live-reload').remove();

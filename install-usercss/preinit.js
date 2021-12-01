@@ -25,7 +25,10 @@ const preinit = (() => {
   function DirectDownloader() {
     let oldCode = null;
     return async () => {
-      const code = await download(initialUrl);
+      const code = await download(initialUrl, {
+        // Disabling cache on http://localhost otherwise the recheck delay gets too big
+        headers: {'Cache-Control': 'no-cache, no-store'},
+      });
       if (oldCode !== code) {
         oldCode = code;
         return code;

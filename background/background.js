@@ -177,6 +177,8 @@ msg.on((msg, sender) => {
 //#endregion
 
 Promise.all([
+  browser.extension.isAllowedFileSchemeAccess()
+    .then(res => API.data.set('hasFileAccess', res)),
   bgReady.styles,
   /* These are loaded conditionally.
      Each item uses `require` individually so IDE can jump to the source and track usage. */
