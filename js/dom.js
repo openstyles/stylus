@@ -291,39 +291,64 @@ function scrollElementIntoView(element, {invalidMarginRatio = 0} = {}) {
  * Accepts an array of pref names (values are fetched via prefs.get)
  * and establishes a two-way connection between the document elements and the actual prefs
  */
-function setupLivePrefs(ids = prefs.knownKeys.filter(id => $('#' + id))) {
+function setupLivePrefs(ids = prefs.knownKeys.filter(id => $(`#${CSS.escape(id)}, [name=${CSS.escape(id)}]`))) {
   let forceUpdate = true;
   prefs.subscribe(ids, updateElement, {runNow: true});
   forceUpdate = false;
-  ids.forEach(id => $('#' + id).on('change', onChange));
+
+  for (const id of ids) {
+    const elements = $$(`#${CSS.escape(id)}, [name=${CSS.escape(id)}]`);
+    for (const element of elements) {
+      element.addEventListener('change', onChange);
+    }
+  }
 
   function onChange() {
-    prefs.set(this.id, this[getPropName(this)]);
+    if (!this.checkValidity()) {
+      return;
+    }
+    if (this.type === 'radio' && !this.checked) {
+      return;
+    }
+    prefs.set(this.id || this.name, getValue(this));
   }
 
-  function getPropName(el) {
-    return el.type === 'checkbox' ? 'checked'
-      : el.type === 'number' ? 'valueAsNumber' :
-        'value';
+  function getValue(el) {
+    const type = el.dataset.valueType || el.type;
+    return type === 'checkbox' ? el.checked :
+      // https://stackoverflow.com/questions/18062069/why-does-valueasnumber-return-nan-as-a-value
+      // valueAsNumber is not applicable for input[text/radio] or select
+      type === 'number' ? Number(el.value) :
+      el.value;
   }
 
-  function isSame(el, propName, value) {
-    return el[propName] === value ||
+  function isSame(el, oldValue, value) {
+    return oldValue === value ||
       typeof value === 'boolean' &&
       el.tagName === 'SELECT' &&
-      el[propName] === `${value}`;
+      oldValue === `${value}` ||
+      el.type === 'radio' && (oldValue === value) === el.checked;
   }
 
   function updateElement(id, value) {
-    const el = $('#' + id);
-    if (el) {
-      const prop = getPropName(el);
-      if (!isSame(el, prop, value) || forceUpdate) {
-        el[prop] = value;
+    const els = $$(`#${CSS.escape(id)}, [name=${CSS.escape(id)}]`);
+    if (!els.length) {
+      // FIXME: why do we unsub all ids when a single id is missing from the page
+      prefs.unsubscribe(ids, updateElement);
+      return;
+    }
+    for (const el of els) {
+      const oldValue = getValue(el);
+      if (!isSame(el, oldValue, value) || forceUpdate) {
+        if (el.type === 'radio') {
+          el.checked = value === oldValue;
+        } else if (el.type === 'checkbox') {
+          el.checked = value;
+        } else {
+          el.value = value;
+        }
         el.dispatchEvent(new Event('change', {bubbles: true}));
       }
-    } else {
-      prefs.unsubscribe(ids, updateElement);
     }
   }
 }

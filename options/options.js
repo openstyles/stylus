@@ -23,7 +23,6 @@
 'use strict';
 
 setupLivePrefs();
-setupRadioButtons();
 $$('input[min], input[max]').forEach(enforceInputRange);
 
 if (CHROME_POPUP_BORDER_BUG) {
@@ -194,29 +193,6 @@ function checkUpdates() {
     $('#update-progress').style.width = Math.round(checked / total * maxWidth) + 'px';
     $('#updates-installed').dataset.value = updated || '';
   }
-}
-
-function setupRadioButtons() {
-  const sets = {};
-  const onChange = function () {
-    const newValue = sets[this.name].indexOf(this);
-    if (newValue >= 0 && prefs.get(this.name) !== newValue) {
-      prefs.set(this.name, newValue);
-    }
-  };
-  // group all radio-inputs by name="prefName" attribute
-  for (const el of $$('input[type="radio"][name]')) {
-    (sets[el.name] = sets[el.name] || []).push(el);
-    el.on('change', onChange);
-  }
-  // select the input corresponding to the actual pref value
-  for (const name in sets) {
-    sets[name][prefs.get(name)].checked = true;
-  }
-  // listen to pref changes and update the values
-  prefs.subscribe(Object.keys(sets), (key, value) => {
-    sets[key][value].checked = true;
-  });
 }
 
 function customizeHotkeys() {

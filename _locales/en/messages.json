@@ -596,6 +596,18 @@
     "message": "Update style",
     "description": "Label for update button"
   },
+  "installPreferSchemeLabel": {
+    "message": "The style should be applied:"
+  },
+  "installPreferSchemeNone": {
+    "message": "Always"
+  },
+  "installPreferSchemeDark": {
+    "message": "In Dark Mode"
+  },
+  "installPreferSchemeLight": {
+    "message": "In Light Mode"
+  },
   "installUpdate": {
     "message": "Install update",
     "description": "Label for the button to install an update for a single style"
@@ -1052,6 +1064,18 @@
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Write new style as usercss"
+  },
+  "optionsAdvancedAutoSwitchScheme": {
+    "message": "Toggle Light/Dark Mode styles automatically"
+  },
+  "optionsAdvancedAutoSwitchSchemeNever": {
+    "message": "Never"
+  },
+  "optionsAdvancedAutoSwitchSchemeBySystem": {
+    "message": "By system preference"
+  },
+  "optionsAdvancedAutoSwitchSchemeByTime": {
+    "message": "By night time:"
   },
   "optionsAdvancedPatchCsp": {
     "message": "Patch <code>CSP</code> to allow style assets"
@@ -1532,6 +1556,12 @@
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "Style was not applied due to its incorrect usage of 'regexp()'",
     "description": "Tooltip in the popup for styles that were not applied at all"
+  },
+  "styleNotAppliedSchemeDark": {
+    "message": "This style is only applied in Dark Mode"
+  },
+  "styleNotAppliedSchemeLight": {
+    "message": "This style is only applied in Light Mode"
   },
   "styleRegexpInvalidExplanation": {
     "message": "Some 'regexp()' rules that could not be compiled at all."

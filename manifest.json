@@ -37,6 +37,7 @@
       "background/common.js",
 
       "background/db.js",
+      "background/color-scheme.js",
       "background/icon-manager.js",
       "background/navigation-manager.js",
       "background/style-search-db.js",

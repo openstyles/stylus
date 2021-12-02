@@ -135,6 +135,13 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
   $('.set-update-url p').textContent = updateUrl.href.length < 300 ? updateUrl.href :
     updateUrl.href.slice(0, 300) + '...';
 
+  // set prefer scheme
+  const preferScheme = $('.set-prefer-scheme select');
+  preferScheme.onchange = () => {
+    style.preferScheme = preferScheme.value;
+  };
+  preferScheme.onchange();
+
   if (URLS.isLocalhost(initialUrl)) {
     $('.live-reload input').onchange = liveReload.onToggled;
   } else {
@@ -167,6 +174,9 @@ function updateMeta(style, dup = installedDup) {
   $('.meta-name').textContent = data.name;
   $('.meta-version').textContent = data.version;
   $('.meta-description').textContent = data.description;
+  $('.set-prefer-scheme select').value =
+    style.preferScheme === 'dark' ? 'dark' :
+    style.preferScheme === 'light' ? 'light' : 'none';
 
   if (data.author) {
     $('.meta-author').parentNode.style.display = '';
@@ -305,6 +315,7 @@ function install(style) {
   $('.set-update-url input[type=checkbox]').disabled = true;
   $('.set-update-url').title = style.updateUrl ?
     t('installUpdateFrom', style.updateUrl) : '';
+  $('.set-prefer-scheme select').disabled = true;
   enablePostActions();
   updateMeta(style);
 }

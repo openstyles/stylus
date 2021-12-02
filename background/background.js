@@ -15,6 +15,7 @@
   findExistingTab
   openURL
 */ // toolbox.js
+/* global colorScheme */ // color-scheme.js
 'use strict';
 
 //#region API
@@ -41,6 +42,7 @@ addAPI(/** @namespace API */ {
   updater: updateMan,
   usercss: usercssMan,
   usw: uswApi,
+  colorScheme,
   /** @type {BackgroundWorker} */
   worker: createWorker({url: '/background/background-worker'}),
 

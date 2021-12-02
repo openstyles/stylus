@@ -6,6 +6,7 @@
 /* global prefs */
 /* global tabMan */
 /* global usercssMan */
+/* global colorScheme */
 'use strict';
 
 /*
@@ -61,6 +62,14 @@ const styleMan = (() => {
   let ready = init();
 
   chrome.runtime.onConnect.addListener(handleLivePreview);
+  // function handleColorScheme() {
+  colorScheme.onChange(() => {
+    for (const {style: data} of dataMap.values()) {
+      if (data.preferScheme === 'dark' || data.preferScheme === 'light') {
+        broadcastStyleUpdated(data, 'colorScheme', undefined, false);
+      }
+    }
+  });
 
   //#endregion
   //#region Exports
@@ -183,6 +192,7 @@ const styleMan = (() => {
       const query = createMatchQuery(url);
       for (const style of styles) {
         let excluded = false;
+        let excludedScheme = false;
         let sloppy = false;
         let sectionMatched = false;
         const match = urlMatchStyle(query, style);
@@ -192,6 +202,9 @@ const styleMan = (() => {
         // }
         if (match === 'excluded') {
           excluded = true;
+        }
+        if (match === 'excludedScheme') {
+          excludedScheme = true;
         }
         for (const section of style.sections) {
           if (styleSectionGlobal(section) && styleCodeEmpty(section.code)) {
@@ -207,7 +220,7 @@ const styleMan = (() => {
           }
         }
         if (sectionMatched) {
-          result.push(/** @namespace StylesByUrlResult */ {style, excluded, sloppy});
+          result.push(/** @namespace StylesByUrlResult */ {style, excluded, sloppy, excludedScheme});
         }
       }
       return result;
@@ -545,6 +558,9 @@ const styleMan = (() => {
     }
     if (!style.enabled) {
       return 'disabled';
+    }
+    if (!colorScheme.shouldIncludeStyle(style)) {
+      return 'excludedScheme';
     }
     return true;
   }
