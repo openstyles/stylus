@@ -105,11 +105,11 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
   $('button.install').onclick = () => {
     (!dup ?
       Promise.resolve(true) :
-      messageBox.confirm(t('styleInstallOverwrite', [
+      messageBox.confirm($create('span', t('styleInstallOverwrite', [
         data.name + (dup.customName ? ` (${dup.customName})` : ''),
         dupData.version,
         data.version,
-      ]))
+      ])))
     ).then(ok => ok &&
       API.usercss.install(style)
         .then(install)
