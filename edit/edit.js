@@ -11,6 +11,7 @@
 /* global linterMan */
 /* global prefs */
 /* global t */// localization.js
+/* global StyleSettings */// settings.js
 'use strict';
 
 //#region init
@@ -18,6 +19,7 @@
 baseInit.ready.then(async () => {
   await waitForSheet();
   (editor.isUsercss ? SourceEditor : SectionsEditor)();
+  StyleSettings(editor);
   await editor.ready;
   editor.ready = true;
   editor.dirty.onChange(editor.updateDirty);
@@ -59,7 +61,8 @@ const IGNORE_UPDATE_REASONS = [
   'editPreview',
   'editPreviewEnd',
   'editSave',
-  'config',
+  // https://github.com/openstyles/stylus/issues/807 is closed without fix
+  // 'config,
 ];
 
 msg.onExtension(request => {
@@ -68,7 +71,10 @@ msg.onExtension(request => {
     case 'styleUpdated':
       if (editor.style.id === style.id && !IGNORE_UPDATE_REASONS.includes(request.reason)) {
         Promise.resolve(request.codeIsUpdated === false ? style : API.styles.get(style.id))
-          .then(newStyle => editor.replaceStyle(newStyle, request.codeIsUpdated));
+          .then(newStyle => {
+            editor.replaceStyle(newStyle, request.codeIsUpdated);
+            editor.emit('styleChange', newStyle, request.reason);
+          });
       }
       break;
     case 'styleDeleted':

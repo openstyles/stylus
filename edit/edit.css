@@ -105,8 +105,11 @@ label {
 #header h1 {
   margin-top: 0;
 }
-#sections {
+.main {
   padding-left: 280px;
+  height: 100%;
+}
+#sections {
   min-height: 0;
   height: 100%;
 }

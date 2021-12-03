@@ -1,0 +1,31 @@
+.style-settings {
+  padding: 0.7rem 1.7rem;
+  border: 0;
+  margin: 0;
+}
+.form-group {
+  display: block;
+  margin: .6em 0;
+  padding: 0;
+}
+.form-label {
+  display: inline-block;
+  margin: .3em 0;
+}
+[disabled] .form-label {
+  opacity: 0.4;
+}
+.form-group input[type=text],
+.form-group input[type=number],
+.form-group select {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+.rule-table {
+  display: grid;
+  grid-template-columns: minmax(min-content, 1fr) min-content;
+  grid-gap: .3em;
+  margin: .3em 0;
+}
+

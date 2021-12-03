@@ -297,6 +297,13 @@ const styleMan = (() => {
     removeExclusion: removeIncludeExclude.bind(null, 'exclusions'),
     /** @returns {Promise<?StyleObj>} */
     removeInclusion: removeIncludeExclude.bind(null, 'inclusions'),
+
+    async config(id, prop, value) {
+      if (ready.then) await ready;
+      const style = Object.assign({}, id2style(id));
+      style[prop] = value;
+      return saveStyle(style, {reason: 'config', codeIsUpdated: false});
+    },
   };
 
   //#endregion

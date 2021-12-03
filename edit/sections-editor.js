@@ -111,6 +111,9 @@ function SectionsEditor() {
       }
       newStyle = await API.styles.editSave(newStyle);
       destroyRemovedSections();
+      if (!style.id) {
+        editor.emit('styleChange', newStyle, 'new');
+      }
       sessionStore.justEditedStyleId = newStyle.id;
       editor.replaceStyle(newStyle, false);
     },

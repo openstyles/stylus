@@ -71,6 +71,9 @@ function SourceEditor() {
         } else {
           res = await API.usercss.editSave({customName, enabled, id, sourceCode});
           // Awaiting inside `try` so that exceptions go to our `catch`
+          if (!id) {
+            editor.emit('styleChange', res.style, 'new');
+          }
           await replaceStyle(res.style);
         }
         showLog(res);
