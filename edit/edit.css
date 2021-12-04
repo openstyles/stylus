@@ -1180,12 +1180,15 @@ body.linter-disabled .hidden-unless-compact {
   #lint:not([open]) + #footer {
     margin: .25em 0 -1em .25em;
   }
-  #sections {
+  .main {
     height: unset !important;
     padding-left: 0;
     display: flex;
     flex-direction: column;
     flex: 1;
+  }
+  .tab-bar {
+    margin-top: var(--fixed-height);
   }
   #sections > :not(.single-editor) {
     margin: 0 .5rem;
