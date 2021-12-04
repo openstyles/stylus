@@ -8,7 +8,7 @@ function StyleSettings(editor) {
   const inputs = [
     createInput('.style-update-url input', () => style.updateUrl || '',
       e => API.styles.config(style.id, 'updateUrl', e.target.value)),
-    createInput('.style-prefer-scheme select', () => style.preferScheme || 'none',
+    createRadio('.style-prefer-scheme input', () => style.preferScheme || 'none',
       e => API.styles.config(style.id, 'preferScheme', e.target.value)),
     createInput('.style-priority input', () => style.priority || 0,
       e => API.styles.config(style.id, 'priority', e.target.valueAsNumber)),
@@ -26,6 +26,26 @@ function StyleSettings(editor) {
     style = newStyle;
     document.querySelector('.style-settings').disabled = false;
     inputs.forEach(i => i.update());
+  }
+
+  function createRadio(selector, getter, setter) {
+    const els = document.querySelectorAll(selector);
+    for (const el of els) {
+      el.addEventListener('change', e => {
+        if (el.checked) {
+          setter(e);
+        }
+      });
+    }
+    return {
+      update() {
+        for (const el of els) {
+          if (el.value === getter()) {
+            el.checked = true;
+          }
+        }
+      },
+    };
   }
 
   function createInput(selector, getter, setter) {

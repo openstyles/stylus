@@ -453,15 +453,22 @@
             <span class="form-label" i18n-text="styleUpdateUrlLabel"></span>
             <input type="text">
           </label>
-          <label class="form-group style-prefer-scheme">
+          <div class="form-group style-prefer-scheme radio-group">
             <!-- FIXME: should we use a different message from install page? -->
             <span class="form-label" i18n-text="installPreferSchemeLabel"></span>
-            <select>
-              <option value="none" i18n-text="installPreferSchemeNone"></option>
-              <option value="dark" i18n-text="installPreferSchemeDark"></option>
-              <option value="light" i18n-text="installPreferSchemeLight"></option>
-            </select>
-          </label>
+            <label class="radio-item">
+              <input type="radio" name="preferScheme" value="none">
+              <span class="radio-label" i18n-text="installPreferSchemeNone"></span>
+            </label>
+            <label class="radio-item">
+              <input type="radio" name="preferScheme" value="dark">
+              <span class="radio-label" i18n-text="installPreferSchemeDark"></span>
+            </label>
+            <label class="radio-item">
+              <input type="radio" name="preferScheme" value="light">
+              <span class="radio-label" i18n-text="installPreferSchemeLight"></span>
+            </label>
+          </div>
           <div class="form-group style-include">
             <div class="form-label" i18n-text="styleIncludeLabel"></div>
             <div class="rule-table"></div>
