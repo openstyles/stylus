@@ -1650,19 +1650,19 @@
     "message": "Dark/Light mode"
   },
   "styleIncludeLabel": {
-    "message": "User defined inclusion"
+    "message": "Custom included sites"
   },
   "styleIncludeNewLabel": {
-    "message": "Add new inclusion rule"
+    "message": "Add new inclusion"
   },
   "styleIncludeDeleteLabel": {
     "message": "Delete"
   },
   "styleExcludeLabel": {
-    "message": "User defined exclusion"
+    "message": "Custom excluded sites"
   },
   "styleExcludeNewLabel": {
-    "message": "Add new exclusion rule"
+    "message": "Add new exclusion"
   },
   "stylePriorityLabel": {
     "message": "Priority"
