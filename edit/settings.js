@@ -69,6 +69,7 @@ function StyleSettings(editor) {
       if (!style[type]) {
         style[type] = [];
       }
+      container.dataset.length = style[type].length;
       style[type].forEach((rule, i) => {
         const input = document.createElement('input');
         input.value = rule;

@@ -26,7 +26,10 @@
   display: grid;
   grid-template-columns: minmax(min-content, 1fr) min-content;
   grid-gap: .3em;
-  margin: .3em 0;
+  margin: 0 0 .3em 0;
+}
+[data-length="0"] .rule-table {
+  margin: 0;
 }
 .radio-group .form-label {
   display: block;
