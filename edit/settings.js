@@ -1,4 +1,4 @@
-/* global API */
+/* global API t */
 /* exported StyleSettings */
 'use strict';
 
@@ -79,7 +79,7 @@ function StyleSettings(editor) {
         table.append(input);
 
         const delButton = document.createElement('button');
-        delButton.textContent = 'x';
+        delButton.textContent = t('styleIncludeDeleteLabel');
         delButton.addEventListener('click', () => {
           style[type].splice(i, 1);
           API.styles.config(style.id, type, style[type]);

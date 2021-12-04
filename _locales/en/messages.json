@@ -1655,6 +1655,9 @@
   "styleIncludeNewLabel": {
     "message": "Add new inclusion rule"
   },
+  "styleIncludeDeleteLabel": {
+    "message": "Delete"
+  },
   "styleExcludeLabel": {
     "message": "User defined exclusion"
   },
