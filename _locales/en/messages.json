@@ -1664,9 +1664,6 @@
   "styleExcludeNewLabel": {
     "message": "Add new exclusion"
   },
-  "stylePriorityLabel": {
-    "message": "Priority"
-  },
   "syncDropboxDeprecated": {
     "message": "Dropbox import/export is replaced by a more advanced style sync in the options page."
   },

@@ -10,8 +10,6 @@ function StyleSettings(editor) {
       e => API.styles.config(style.id, 'updateUrl', e.target.value)),
     createRadio('.style-prefer-scheme input', () => style.preferScheme || 'none',
       e => API.styles.config(style.id, 'preferScheme', e.target.value)),
-    createInput('.style-priority input', () => style.priority || 0,
-      e => API.styles.config(style.id, 'priority', e.target.valueAsNumber)),
     createRuleTable(document.querySelector('.style-include'), 'inclusions'),
     createRuleTable(document.querySelector('.style-exclude'), 'exclusions'),
   ];
