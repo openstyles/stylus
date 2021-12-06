@@ -17,19 +17,11 @@
 }
 .form-group input[type=text],
 .form-group input[type=number],
-.form-group select {
+.form-group select,
+.form-group textarea {
   display: block;
   width: 100%;
   box-sizing: border-box;
-}
-.rule-table {
-  display: grid;
-  grid-template-columns: minmax(min-content, 1fr) min-content;
-  grid-gap: .3em;
-  margin: 0 0 .3em 0;
-}
-[data-length="0"] .rule-table {
-  margin: 0;
 }
 .radio-group .form-label {
   display: block;
@@ -46,4 +38,8 @@
 }
 [disabled] .radio-label {
   opacity: 0.4;
+}
+.style-include textarea,
+.style-exclude textarea {
+  height: 12em;
 }

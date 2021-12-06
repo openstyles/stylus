@@ -116,6 +116,28 @@ function SourceEditor() {
   if (!$isTextInput(document.activeElement)) {
     cm.focus();
   }
+  editor.on('styleChange', async (newStyle, reason) => {
+    if (reason === 'new') return;
+    if (reason === 'config') {
+      newStyle = await API.styles.get(newStyle.id);
+      delete newStyle.sourceCode;
+      delete newStyle.name;
+      Object.assign(style, newStyle);
+      updateLivePreview();
+      return;
+    }
+    if (reason === 'toggle') {
+      if (dirty.isDirty()) {
+        editor.toggleStyle(newStyle.enabled);
+      } else {
+        style.enabled = newStyle.enabled;
+      }
+      updateMeta();
+      updateLivePreview();
+      return;
+    }
+    replaceStyle(await API.styles.get(newStyle.id));
+  });
 
   async function preprocess(style) {
     const res = await API.usercss.build({
@@ -211,14 +233,12 @@ function SourceEditor() {
     cm.setPreprocessor((style.usercssData || {}).preprocessor);
   }
 
-  function replaceStyle(newStyle, codeIsUpdated) {
+  function replaceStyle(newStyle) {
     dirty.clear('name');
     const sameCode = newStyle.sourceCode === cm.getValue();
     if (sameCode) {
       savedGeneration = cm.changeGeneration();
       dirty.clear('sourceGeneration');
-    }
-    if (codeIsUpdated === false || sameCode) {
       updateEnvironment();
       dirty.clear('enabled');
       updateLivePreview();

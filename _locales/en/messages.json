@@ -1652,17 +1652,8 @@
   "styleIncludeLabel": {
     "message": "Custom included sites"
   },
-  "styleIncludeNewLabel": {
-    "message": "Add new inclusion"
-  },
-  "styleIncludeDeleteLabel": {
-    "message": "Delete"
-  },
   "styleExcludeLabel": {
     "message": "Custom excluded sites"
-  },
-  "styleExcludeNewLabel": {
-    "message": "Add new exclusion"
   },
   "syncDropboxDeprecated": {
     "message": "Dropbox import/export is replaced by a more advanced style sync in the options page."

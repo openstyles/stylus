@@ -1,5 +1,5 @@
 /* global $ $create messageBoxProxy waitForSheet */// dom.js
-/* global API msg */// msg.js
+/* global msg */// msg.js
 /* global CodeMirror */
 /* global SectionsEditor */
 /* global SourceEditor */
@@ -70,11 +70,7 @@ msg.onExtension(request => {
   switch (request.method) {
     case 'styleUpdated':
       if (editor.style.id === style.id && !IGNORE_UPDATE_REASONS.includes(request.reason)) {
-        Promise.resolve(request.codeIsUpdated === false ? style : API.styles.get(style.id))
-          .then(newStyle => {
-            editor.replaceStyle(newStyle, request.codeIsUpdated);
-            editor.emit('styleChange', newStyle, request.reason);
-          });
+        editor.emit('styleChange', request.style, request.reason, request.codeIsUpdated);
       }
       break;
     case 'styleDeleted':
@@ -165,9 +161,9 @@ window.on('beforeunload', e => {
       }
     },
 
-    toggleStyle() {
-      $('#enabled').checked = !style.enabled;
-      editor.updateEnabledness(!style.enabled);
+    toggleStyle(enabled = style.enabled) {
+      $('#enabled').checked = enabled;
+      editor.updateEnabledness(enabled);
     },
 
     updateDirty() {

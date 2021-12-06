@@ -84,16 +84,13 @@ function SectionsEditor() {
         : null;
     },
 
-    async replaceStyle(newStyle, codeIsUpdated) {
-      dirty.clear('name');
+    async replaceStyle(newStyle) {
+      dirty.clear();
       // FIXME: avoid recreating all editors?
-      if (codeIsUpdated !== false) {
-        await initSections(newStyle.sections, {replace: true});
-      }
+      await initSections(newStyle.sections, {replace: true});
       Object.assign(style, newStyle);
       editor.onStyleUpdated();
       updateHeader();
-      dirty.clear();
       // Go from new style URL to edit style URL
       if (style.id && !/[&?]id=/.test(location.search)) {
         history.replaceState({}, document.title, `${location.pathname}?id=${style.id}`);
@@ -130,6 +127,28 @@ function SectionsEditor() {
   });
 
   editor.ready = initSections(style.sections);
+
+  editor.on('styleChange', async (newStyle, reason) => {
+    if (reason === 'new') return; // nothing is new for us
+    if (reason === 'toggle') {
+      if (!dirty.isDirty()) {
+        Object.assign(style, newStyle);
+        updateHeader();
+      }
+      updateLivePreview();
+      return;
+    }
+    if (reason === 'config') {
+      newStyle = await API.styles.get(newStyle.id);
+      delete newStyle.sections;
+      delete newStyle.name;
+      delete newStyle.enabled;
+      Object.assign(style, newStyle);
+      updateLivePreview();
+      return;
+    }
+    editor.replaceStyle(await API.styles.get(newStyle.id));
+  });
 
   /** @param {EditorSection} section */
   function fitToContent(section) {

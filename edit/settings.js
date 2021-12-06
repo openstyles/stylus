@@ -1,4 +1,4 @@
-/* global API t */
+/* global API */
 /* exported StyleSettings */
 'use strict';
 
@@ -10,13 +10,20 @@ function StyleSettings(editor) {
       e => API.styles.config(style.id, 'updateUrl', e.target.value)),
     createRadio('.style-prefer-scheme input', () => style.preferScheme || 'none',
       e => API.styles.config(style.id, 'preferScheme', e.target.value)),
-    createRuleTable(document.querySelector('.style-include'), 'inclusions'),
-    createRuleTable(document.querySelector('.style-exclude'), 'exclusions'),
+    createInput('.style-include textarea', () => (style.inclusions || []).join('\n'),
+      e => API.styles.config(style.id, 'inclusions', textToList(e.target.value))),
+    createInput('.style-exclude textarea', () => (style.exclusions || []).join('\n'),
+      e => API.styles.config(style.id, 'exclusions', textToList(e.target.value))),
   ];
 
   update(style);
 
   editor.on('styleChange', update);
+
+  function textToList(text) {
+    const list = text.split(/\s*\r?\n\s*/g);
+    return list.filter(Boolean);
+  }
 
   function update(newStyle, reason) {
     if (!newStyle.id) return;
@@ -54,47 +61,5 @@ function StyleSettings(editor) {
         el.value = getter();
       },
     };
-  }
-
-  function createRuleTable(container, type) {
-    const table = container.querySelector('.rule-table');
-    container.querySelector('.add-rule').addEventListener('click', addRule);
-    return {update};
-
-    function update() {
-      // TODO: don't recreate everything
-      table.innerHTML = '';
-      if (!style[type]) {
-        style[type] = [];
-      }
-      container.dataset.length = style[type].length;
-      style[type].forEach((rule, i) => {
-        const input = document.createElement('input');
-        input.value = rule;
-        input.addEventListener('change', () => {
-          style[type][i] = input.value;
-          API.styles.config(style.id, type, style[type]);
-        });
-        table.append(input);
-
-        const delButton = document.createElement('button');
-        delButton.textContent = t('styleIncludeDeleteLabel');
-        delButton.addEventListener('click', () => {
-          style[type].splice(i, 1);
-          API.styles.config(style.id, type, style[type]);
-          update();
-        });
-        table.append(delButton);
-      });
-    }
-
-    function addRule() {
-      if (!style[type]) {
-        style[type] = [];
-      }
-      style[type].push('');
-      API.styles.config(style.id, type, style[type]);
-      update();
-    }
   }
 }

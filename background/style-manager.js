@@ -382,7 +382,7 @@ const styleMan = (() => {
       throw new Error('The rule already exists');
     }
     style[type] = list.concat([rule]);
-    return saveStyle(style, {reason: 'styleSettings'});
+    return saveStyle(style, {reason: 'config'});
   }
 
   async function removeIncludeExclude(type, id, rule) {
@@ -393,7 +393,7 @@ const styleMan = (() => {
       return;
     }
     style[type] = list.filter(r => r !== rule);
-    return saveStyle(style, {reason: 'styleSettings'});
+    return saveStyle(style, {reason: 'config'});
   }
 
   function broadcastStyleUpdated(style, reason, method = 'styleUpdated', codeIsUpdated = true) {
