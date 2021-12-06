@@ -128,18 +128,18 @@ function SectionsEditor() {
 
   editor.ready = initSections(style.sections);
 
-  editor.on('styleChange', async (newStyle, reason) => {
-    if (reason === 'new') return; // nothing is new for us
-    if (reason === 'toggle') {
-      if (!dirty.isDirty()) {
-        Object.assign(style, newStyle);
-        updateHeader();
-      }
-      updateLivePreview();
-      return;
+  editor.on('styleToggled', newStyle => {
+    if (!dirty.isDirty()) {
+      Object.assign(style, newStyle);
+    } else {
+      editor.toggleStyle(newStyle.enabled);
     }
+    updateHeader();
+    updateLivePreview();
+  });
+  editor.on('styleChange', (newStyle, reason) => {
+    if (reason === 'new') return; // nothing is new for us
     if (reason === 'config') {
-      newStyle = await API.styles.get(newStyle.id);
       delete newStyle.sections;
       delete newStyle.name;
       delete newStyle.enabled;
@@ -147,7 +147,7 @@ function SectionsEditor() {
       updateLivePreview();
       return;
     }
-    editor.replaceStyle(await API.styles.get(newStyle.id));
+    editor.replaceStyle(newStyle);
   });
 
   /** @param {EditorSection} section */

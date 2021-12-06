@@ -116,27 +116,25 @@ function SourceEditor() {
   if (!$isTextInput(document.activeElement)) {
     cm.focus();
   }
-  editor.on('styleChange', async (newStyle, reason) => {
+  editor.on('styleToggled', newStyle => {
+    if (dirty.isDirty()) {
+      editor.toggleStyle(newStyle.enabled);
+    } else {
+      style.enabled = newStyle.enabled;
+    }
+    updateMeta();
+    updateLivePreview();
+  });
+  editor.on('styleChange', (newStyle, reason) => {
     if (reason === 'new') return;
     if (reason === 'config') {
-      newStyle = await API.styles.get(newStyle.id);
       delete newStyle.sourceCode;
       delete newStyle.name;
       Object.assign(style, newStyle);
       updateLivePreview();
       return;
     }
-    if (reason === 'toggle') {
-      if (dirty.isDirty()) {
-        editor.toggleStyle(newStyle.enabled);
-      } else {
-        style.enabled = newStyle.enabled;
-      }
-      updateMeta();
-      updateLivePreview();
-      return;
-    }
-    replaceStyle(await API.styles.get(newStyle.id));
+    replaceStyle(newStyle);
   });
 
   async function preprocess(style) {

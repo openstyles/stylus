@@ -1,5 +1,5 @@
 /* global $ $create messageBoxProxy waitForSheet */// dom.js
-/* global msg */// msg.js
+/* global msg API */// msg.js
 /* global CodeMirror */
 /* global SectionsEditor */
 /* global SourceEditor */
@@ -70,7 +70,14 @@ msg.onExtension(request => {
   switch (request.method) {
     case 'styleUpdated':
       if (editor.style.id === style.id && !IGNORE_UPDATE_REASONS.includes(request.reason)) {
-        editor.emit('styleChange', request.style, request.reason, request.codeIsUpdated);
+        if (request.reason === 'toggle') {
+          editor.emit('styleToggled', request.style);
+        } else {
+          API.styles.get(request.style.id)
+            .then(style => {
+              editor.emit('styleChange', style, request.reason);
+            });
+        }
       }
       break;
     case 'styleDeleted':
