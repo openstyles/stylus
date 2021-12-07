@@ -193,6 +193,7 @@ const styleMan = (() => {
       for (const style of styles) {
         let excluded = false;
         let excludedScheme = false;
+        let included = false;
         let sloppy = false;
         let sectionMatched = false;
         const match = urlMatchStyle(query, style);
@@ -200,6 +201,9 @@ const styleMan = (() => {
         // if (match === false) {
         // continue;
         // }
+        if (match === 'included') {
+          included = true;
+        }
         if (match === 'excluded') {
           excluded = true;
         }
@@ -219,8 +223,9 @@ const styleMan = (() => {
             break;
           }
         }
-        if (sectionMatched) {
-          result.push(/** @namespace StylesByUrlResult */ {style, excluded, sloppy, excludedScheme});
+        if (sectionMatched || included) {
+          result.push(/** @namespace StylesByUrlResult */ {
+            style, excluded, sloppy, excludedScheme, sectionMatched, included});
         }
       }
       return result;
@@ -472,7 +477,12 @@ const styleMan = (() => {
 
   // get styles matching a URL, including sloppy regexps and excluded items.
   function getAppliedCode(query, data) {
-    if (urlMatchStyle(query, data) !== true) {
+    const result = urlMatchStyle(query, data);
+    if (result === 'included') {
+      // return all sections
+      return data.sections.map(s => s.code);
+    }
+    if (result !== true) {
       return;
     }
     const code = [];
@@ -567,6 +577,12 @@ const styleMan = (() => {
     }
     if (!colorScheme.shouldIncludeStyle(style)) {
       return 'excludedScheme';
+    }
+    if (
+      style.inclusions &&
+      style.inclusions.some(r => compileExclusion(r).test(query.urlWithoutParams))
+    ) {
+      return 'included';
     }
     return true;
   }
