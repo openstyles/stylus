@@ -283,7 +283,7 @@ const styleMan = (() => {
     async toggle(id, enabled) {
       if (ready.then) await ready;
       const style = Object.assign({}, id2style(id), {enabled});
-      await saveStyle(style, {reason: 'toggle', codeIsUpdated: false});
+      await saveStyle(style, {reason: 'toggle'});
       return id;
     },
 
@@ -297,6 +297,13 @@ const styleMan = (() => {
     removeExclusion: removeIncludeExclude.bind(null, 'exclusions'),
     /** @returns {Promise<?StyleObj>} */
     removeInclusion: removeIncludeExclude.bind(null, 'inclusions'),
+
+    async config(id, prop, value) {
+      if (ready.then) await ready;
+      const style = Object.assign({}, id2style(id));
+      style[prop] = value;
+      return saveStyle(style, {reason: 'config'});
+    },
   };
 
   //#endregion
@@ -375,7 +382,7 @@ const styleMan = (() => {
       throw new Error('The rule already exists');
     }
     style[type] = list.concat([rule]);
-    return saveStyle(style, {reason: 'styleSettings'});
+    return saveStyle(style, {reason: 'config'});
   }
 
   async function removeIncludeExclude(type, id, rule) {
@@ -386,10 +393,10 @@ const styleMan = (() => {
       return;
     }
     style[type] = list.filter(r => r !== rule);
-    return saveStyle(style, {reason: 'styleSettings'});
+    return saveStyle(style, {reason: 'config'});
   }
 
-  function broadcastStyleUpdated(style, reason, method = 'styleUpdated', codeIsUpdated = true) {
+  function broadcastStyleUpdated(style, reason, method = 'styleUpdated') {
     const {id} = style;
     const data = id2data(id);
     const excluded = new Set();
@@ -412,7 +419,6 @@ const styleMan = (() => {
     return msg.broadcast({
       method,
       reason,
-      codeIsUpdated,
       style: {
         id,
         md5Url: style.md5Url,
@@ -452,7 +458,7 @@ const styleMan = (() => {
     return handleSave(style, handlingOptions);
   }
 
-  function handleSave(style, {reason, codeIsUpdated, broadcast = true}) {
+  function handleSave(style, {reason, broadcast = true}) {
     const data = id2data(style.id);
     const method = data ? 'styleUpdated' : 'styleAdded';
     if (!data) {
@@ -460,7 +466,7 @@ const styleMan = (() => {
     } else {
       data.style = style;
     }
-    if (broadcast) broadcastStyleUpdated(style, reason, method, codeIsUpdated);
+    if (broadcast) broadcastStyleUpdated(style, reason, method);
     return style;
   }
 

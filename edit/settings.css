@@ -1,0 +1,45 @@
+.style-settings {
+  padding: 0.7rem 1.7rem;
+  border: 0;
+  margin: 0;
+}
+.form-group {
+  display: block;
+  margin: .6em 0;
+  padding: 0;
+}
+.form-label {
+  display: inline-block;
+  margin: .3em 0;
+}
+[disabled] .form-label {
+  opacity: 0.4;
+}
+.form-group input[type=text],
+.form-group input[type=number],
+.form-group select,
+.form-group textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+.radio-group .form-label {
+  display: block;
+}
+.radio-item {
+  display: flex;
+  margin: 0.3em 0 .3em;
+  padding: 0;
+  align-items: center;
+  width: max-content;
+}
+.radio-item input {
+  margin: 0 0.6em 0 0;
+}
+[disabled] .radio-label {
+  opacity: 0.4;
+}
+.style-include textarea,
+.style-exclude textarea {
+  height: 12em;
+}

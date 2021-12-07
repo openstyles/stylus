@@ -70,6 +70,9 @@ function SourceEditor() {
           messageBoxProxy.alert(t('usercssAvoidOverwriting'), 'danger', t('genericError'));
         } else {
           res = await API.usercss.editSave({customName, enabled, id, sourceCode});
+          if (!id) {
+            editor.emit('styleChange', res.style, 'new');
+          }
           // Awaiting inside `try` so that exceptions go to our `catch`
           await replaceStyle(res.style);
         }
@@ -113,6 +116,26 @@ function SourceEditor() {
   if (!$isTextInput(document.activeElement)) {
     cm.focus();
   }
+  editor.on('styleToggled', newStyle => {
+    if (dirty.isDirty()) {
+      editor.toggleStyle(newStyle.enabled);
+    } else {
+      style.enabled = newStyle.enabled;
+    }
+    updateMeta();
+    updateLivePreview();
+  });
+  editor.on('styleChange', (newStyle, reason) => {
+    if (reason === 'new') return;
+    if (reason === 'config') {
+      delete newStyle.sourceCode;
+      delete newStyle.name;
+      Object.assign(style, newStyle);
+      updateLivePreview();
+      return;
+    }
+    replaceStyle(newStyle);
+  });
 
   async function preprocess(style) {
     const res = await API.usercss.build({
@@ -208,14 +231,12 @@ function SourceEditor() {
     cm.setPreprocessor((style.usercssData || {}).preprocessor);
   }
 
-  function replaceStyle(newStyle, codeIsUpdated) {
+  function replaceStyle(newStyle) {
     dirty.clear('name');
     const sameCode = newStyle.sourceCode === cm.getValue();
     if (sameCode) {
       savedGeneration = cm.changeGeneration();
       dirty.clear('sourceGeneration');
-    }
-    if (codeIsUpdated === false || sameCode) {
       updateEnvironment();
       dirty.clear('enabled');
       updateLivePreview();

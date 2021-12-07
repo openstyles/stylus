@@ -1,5 +1,5 @@
 /* global $ $create messageBoxProxy waitForSheet */// dom.js
-/* global API msg */// msg.js
+/* global msg API */// msg.js
 /* global CodeMirror */
 /* global SectionsEditor */
 /* global SourceEditor */
@@ -11,6 +11,7 @@
 /* global linterMan */
 /* global prefs */
 /* global t */// localization.js
+/* global StyleSettings */// settings.js
 'use strict';
 
 //#region init
@@ -18,6 +19,7 @@
 baseInit.ready.then(async () => {
   await waitForSheet();
   (editor.isUsercss ? SourceEditor : SectionsEditor)();
+  StyleSettings(editor);
   await editor.ready;
   editor.ready = true;
   editor.dirty.onChange(editor.updateDirty);
@@ -59,7 +61,8 @@ const IGNORE_UPDATE_REASONS = [
   'editPreview',
   'editPreviewEnd',
   'editSave',
-  'config',
+  // https://github.com/openstyles/stylus/issues/807 is closed without fix
+  // 'config,
 ];
 
 msg.onExtension(request => {
@@ -67,8 +70,14 @@ msg.onExtension(request => {
   switch (request.method) {
     case 'styleUpdated':
       if (editor.style.id === style.id && !IGNORE_UPDATE_REASONS.includes(request.reason)) {
-        Promise.resolve(request.codeIsUpdated === false ? style : API.styles.get(style.id))
-          .then(newStyle => editor.replaceStyle(newStyle, request.codeIsUpdated));
+        if (request.reason === 'toggle') {
+          editor.emit('styleToggled', request.style);
+        } else {
+          API.styles.get(request.style.id)
+            .then(style => {
+              editor.emit('styleChange', style, request.reason);
+            });
+        }
       }
       break;
     case 'styleDeleted':
@@ -159,9 +168,9 @@ window.on('beforeunload', e => {
       }
     },
 
-    toggleStyle() {
-      $('#enabled').checked = !style.enabled;
-      editor.updateEnabledness(!style.enabled);
+    toggleStyle(enabled = style.enabled) {
+      $('#enabled').checked = enabled;
+      editor.updateEnabledness(enabled);
     },
 
     updateDirty() {

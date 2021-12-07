@@ -14,13 +14,14 @@
   tryJSONparse
   tryURL
 */// toolbox.js
+/* global EventEmitter */
 'use strict';
 
 /**
  * @type Editor
  * @namespace Editor
  */
-const editor = {
+const editor = Object.assign(EventEmitter(), {
   style: null,
   dirty: DirtyReporter(),
   isUsercss: false,
@@ -47,7 +48,7 @@ const editor = {
       customName || name || t('styleMissingName')
     } - Stylus`; // the suffix enables external utilities to process our windows e.g. pin on top
   },
-};
+});
 
 //#region pre-init
 
