@@ -48,7 +48,7 @@ function StyleSettings(editor) {
         el.rows = (list.length || 1) + 1;
         return text;
       },
-      () => API.styles.config(style.id, type, textToList(el))
+      () => API.styles.config(style.id, type, textToList(el.value))
     );
   }
 
