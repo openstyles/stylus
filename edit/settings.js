@@ -1,4 +1,5 @@
-/* global API */
+/* global $ $$ */// dom.js
+/* global API */// msg.js
 /* exported StyleSettings */
 'use strict';
 
@@ -10,10 +11,10 @@ function StyleSettings(editor) {
       e => API.styles.config(style.id, 'updateUrl', e.target.value)),
     createRadio('.style-prefer-scheme input', () => style.preferScheme || 'none',
       e => API.styles.config(style.id, 'preferScheme', e.target.value)),
-    createInput('.style-include textarea', () => (style.inclusions || []).join('\n'),
-      e => API.styles.config(style.id, 'inclusions', textToList(e.target.value))),
-    createInput('.style-exclude textarea', () => (style.exclusions || []).join('\n'),
-      e => API.styles.config(style.id, 'exclusions', textToList(e.target.value))),
+    ...[
+      ['.style-include', 'inclusions'],
+      ['.style-exclude', 'exclusions'],
+    ].map(createArea),
   ];
 
   update(style);
@@ -29,12 +30,30 @@ function StyleSettings(editor) {
     if (!newStyle.id) return;
     if (reason === 'editSave' || reason === 'config') return;
     style = newStyle;
-    document.querySelector('.style-settings').disabled = false;
+    $('.style-settings').disabled = false;
     inputs.forEach(i => i.update());
   }
 
+  function createArea([parentSel, type]) {
+    const sel = parentSel + ' textarea';
+    const el = $(sel);
+    el.on('input', () => {
+      const val = el.value;
+      el.rows = val.match(/^/gm).length + !val.endsWith('\n');
+    });
+    return createInput(sel,
+      () => {
+        const list = style[type] || [];
+        const text = list.join('\n');
+        el.rows = (list.length || 1) + 1;
+        return text;
+      },
+      () => API.styles.config(style.id, type, textToList(el))
+    );
+  }
+
   function createRadio(selector, getter, setter) {
-    const els = document.querySelectorAll(selector);
+    const els = $$(selector);
     for (const el of els) {
       el.addEventListener('change', e => {
         if (el.checked) {
@@ -54,7 +73,7 @@ function StyleSettings(editor) {
   }
 
   function createInput(selector, getter, setter) {
-    const el = document.querySelector(selector);
+    const el = $(selector);
     el.addEventListener('change', setter);
     return {
       update() {
