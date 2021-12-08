@@ -220,6 +220,7 @@ const syncMan = (() => {
   function isGrantError(err) {
     if (err.code === 401) return true;
     if (err.code === 400 && /invalid_grant/.test(err.message)) return true;
+    if (err.name === 'TokenError') return true;
     return false;
   }
 

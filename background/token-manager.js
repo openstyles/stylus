@@ -63,6 +63,17 @@ const tokenMan = (() => {
 
   let alwaysUseTab = FIREFOX ? false : null;
 
+  class TokenError extends Error {
+    constructor(provider, message) {
+      super(`[${provider}] ${message}`);
+      this.name = 'TokenError';
+      this.provider = provider;
+      if (Error.captureStackTrace) {
+        Error.captureStackTrace(this, TokenError);
+      }
+    }
+  }
+
   return {
 
     buildKeys(name, hooks) {
@@ -111,17 +122,6 @@ const tokenMan = (() => {
       await chromeLocal.remove(k.LIST);
     },
   };
-
-  class TokenError extends Error {
-    constructor(provider, message) {
-      super(`[${provider}] ${message}`);
-      this.name = 'TokenError';
-      this.provider = provider;
-      if (Error.captureStackTrace) {
-        Error.captureStackTrace(this, TokenError);
-      }
-    }
-  }
 
   async function refreshToken(name, k, obj) {
     if (!obj[k.REFRESH]) {
