@@ -154,6 +154,7 @@ const syncMan = (() => {
         status.errorMessage = null;
         lastError = null;
       } catch (err) {
+        err.message = translateErrorMessage(err);
         status.errorMessage = err.message;
         lastError = err;
         if (isScheduled &&
@@ -208,6 +209,7 @@ const syncMan = (() => {
       setState(drive, state) {
         return chromeLocal.setValue(STORAGE_KEY + drive.name, state);
       },
+      retryMaxAttempts: 0,
     });
   }
 
@@ -258,6 +260,13 @@ const syncMan = (() => {
     chrome.alarms.create('syncNow', {
       delayInMinutes: delay, // fractional values are supported
     });
+  }
+
+  function translateErrorMessage(err) {
+    if (err.name === 'LockError') {
+      return browser.i18n.getMessage('syncErrorLock', new Date(err.expire).toLocaleString([], {timeStyle: 'short'}));
+    }
+    return err.message || String(err);
   }
 
   //#endregion
