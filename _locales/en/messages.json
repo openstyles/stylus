@@ -1670,7 +1670,7 @@
     "description": "Tooltip for the toolbar icon"
   },
   "syncErrorLock": {
-    "message": "The database is already in used. The lock will expire at $TIME$",
+    "message": "The database is already in use. The lock will expire at $TIME$",
     "placeholders": {
       "time": {
         "content": "$1"
