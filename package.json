@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "codemirror": "5.63.3",
-    "db-to-cloud": "^0.6.0",
+    "db-to-cloud": "^0.7.0",
     "jsonlint": "^1.6.3",
     "less-bundle": "github:openstyles/less-bundle#v0.1.0",
     "lz-string-unsafe": "^1.4.4-fork-1",
