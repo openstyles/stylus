@@ -111,7 +111,10 @@ document.onclick = e => {
     [elStart, () => API.sync.start(elCloud.value)],
     [elStop, API.sync.stop],
     [elSyncNow, API.sync.syncNow],
-    [elLogin, API.sync.login],
+    [elLogin, async () => {
+      await API.sync.login();
+      await API.sync.syncNow();
+    }],
   ]) {
     btn.on('click', e => {
       if (getEventKeyName(e) === 'MouseL') {
