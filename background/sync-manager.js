@@ -11,7 +11,6 @@ const syncMan = (() => {
 
   const SYNC_DELAY = 1; // minutes
   const SYNC_INTERVAL = 30; // minutes
-  const SYNC_LOCK_RETRIES = 10; // number of retries before the error is reported for scheduled sync
   const STATES = Object.freeze({
     connected: 'connected',
     connecting: 'connecting',
@@ -27,7 +26,6 @@ const syncMan = (() => {
     currentDriveName: null,
     errorMessage: null,
     login: false,
-    lockRetries: 0,
   };
   let lastError = null;
   let ctrl;
@@ -44,9 +42,7 @@ const syncMan = (() => {
 
   chrome.alarms.onAlarm.addListener(async ({name}) => {
     if (name === 'syncNow') {
-      await syncMan.syncNow({isScheduled: true});
-      const retrying = status.lockRetries / SYNC_LOCK_RETRIES * Math.random();
-      schedule(SYNC_DELAY + SYNC_INTERVAL * (retrying || 1));
+      await syncMan.syncNow();
     }
   });
 
@@ -143,7 +139,7 @@ const syncMan = (() => {
       emitStatusChange();
     },
 
-    async syncNow({isScheduled} = {}) {
+    async syncNow() {
       if (ready.then) await ready;
       if (!currentDrive || !status.login) {
         console.warn('cannot sync when disconnected');
@@ -157,16 +153,10 @@ const syncMan = (() => {
         err.message = translateErrorMessage(err);
         status.errorMessage = err.message;
         lastError = err;
-        if (isScheduled &&
-            err.code === 409 &&
-            ++status.lockRetries <= SYNC_LOCK_RETRIES) {
-          return;
-        }
         if (isGrantError(err)) {
           status.login = false;
         }
       }
-      status.lockRetries = 0;
       emitStatusChange();
     },
   };
@@ -209,7 +199,9 @@ const syncMan = (() => {
       setState(drive, state) {
         return chromeLocal.setValue(STORAGE_KEY + drive.name, state);
       },
-      retryMaxAttempts: 0,
+      retryMaxAttempts: 10,
+      retryExp: 1.2,
+      retryDelay: 6,
     });
   }
 
@@ -259,6 +251,7 @@ const syncMan = (() => {
   function schedule(delay = SYNC_DELAY) {
     chrome.alarms.create('syncNow', {
       delayInMinutes: delay, // fractional values are supported
+      periodInMinutes: SYNC_INTERVAL,
     });
   }
 
