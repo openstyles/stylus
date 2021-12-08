@@ -1669,6 +1669,14 @@
     "message": "Sync failed.\nTry to re-login in Stylus options:\nclick 'disconnect' first, then 'connect'.",
     "description": "Tooltip for the toolbar icon"
   },
+  "syncErrorLock": {
+    "message": "The database is already in use. The lock will expire at $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
   "syncStorageErrorSaving": {
     "message": "The value cannot be saved. Try reducing the amount of text.",
     "description": "Displayed when trying to save an excessively big value via storage.sync API"
