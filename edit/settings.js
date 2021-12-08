@@ -28,7 +28,7 @@ function StyleSettings(editor) {
 
   function update(newStyle, reason) {
     if (!newStyle.id) return;
-    if (reason === 'editSave' || reason === 'config') return;
+    if (reason === 'editSave') return;
     style = newStyle;
     $('.style-settings').disabled = false;
     inputs.forEach(i => i.update());

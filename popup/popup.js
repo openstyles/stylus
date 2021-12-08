@@ -380,6 +380,7 @@ function createStyleElement(style) {
       '';
   });
 
+  entry.classList.toggle('force-applied', style.included);
   entry.classList.toggle('not-applied', style.excluded || style.sloppy || style.excludedScheme);
   entry.classList.toggle('regexp-partial', style.sloppy);
 
