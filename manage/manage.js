@@ -112,7 +112,7 @@ router.watch(
   {hash: '#stylus-execution-order'},
   Embed(() => $create('iframe', {
     id: 'stylus-execution-order',
-    src: '/execution-order.html',
+    src: '/execution-order/execution-order.html',
   }))
 );
 
