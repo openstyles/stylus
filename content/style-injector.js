@@ -78,6 +78,8 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
       _addRemoveElements(enable);
       if (enable) _toggleObservers(true);
     },
+
+    sort: _sort,
   };
 
   function _add(style) {

@@ -56,6 +56,9 @@
       return NOP;
     }
     return API.styles.getSectionsByUrl(url, id).then(sections => {
+      if (sections.cfg) {
+        delete sections.cfg;
+      }
       const tasks = [];
       for (const section of Object.values(sections)) {
         const styleId = section.id;

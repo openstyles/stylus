@@ -126,6 +126,8 @@
     'popupWidth': 246,              // popup width in pixels
 
     'updateInterval': 24,           // user-style automatic update interval, hours (0 = disable)
+
+    'styles.order': [],
   };
   const knownKeys = Object.keys(defaults);
   /** @type {PrefsValues} */
