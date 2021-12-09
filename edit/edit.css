@@ -77,16 +77,16 @@ html:not(.is-new-style) #heading::after {
 .options-column > div[class="option"] {
   margin-bottom: 4px;
 }
-
 .options-column > .usercss-only {
   margin-bottom: .75rem;
 }
-
 label {
   padding-left: 16px;
   position: relative;
 }
-
+input[type="checkbox"] {
+  vertical-align: middle;
+}
 /************ header ************/
 #header {
   width: 280px;
@@ -380,6 +380,9 @@ input:invalid {
   vertical-align: middle;
 }
 /* footer */
+#footer {
+  display: none;
+}
 .usercss #footer {
   display: block;
   margin-top: 1em;
@@ -1037,96 +1040,102 @@ body.linter-disabled .hidden-unless-compact {
 /************ reponsive layouts ************/
 @media(max-width: 850px) {
   body {
-    display: flex;
-    flex-direction: column;
+    height: auto;
   }
   #header {
-    flex: 0 1 auto;
-    height: unset;
-    width: unset;
-    position: inherit;
-    border-right: none;
-    border-bottom: 1px dashed #AAA;
-    padding: .5rem 1rem .5rem .5rem;
+    display: contents;
+    position: static;
   }
-  .fixed-header {
-    --fixed-height: 40px;
-    padding-top: var(--fixed-padding);
-  }
-  .fixed-header #header {
-    min-height: var(--fixed-height);
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    padding: 0;
-    background-color: #fff;
-  }
-  .fixed-header #header > *:not(#details-wrapper),
-  .fixed-header #options {
-    display: none !important;
-  }
-  .fixed-header #details-wrapper {
-    padding-top: calc((var(--fixed-height) - 1.2rem) / 2); /* 1.2 is the normal line height */
-  }
-  #header summary + *,
-  #lint > .lint-scroll-container {
-    margin-left: 1rem;
-    padding: .25rem 0 .5rem;
-  }
-  #actions {
-    display: flex;
-    flex-wrap: wrap;
-    white-space: nowrap;
-    margin: 0;
-    box-sizing: border-box;
-  }
-  #header input[type="checkbox"] {
-    vertical-align: middle;
-  }
-  #header details {
-    margin: 0;
-  }
+
   #heading,
   h2 {
     display: none;
   }
+
   #basic-info {
-    margin-bottom: .5rem;
+    margin: .5rem;
     box-sizing: border-box;
     display: flex;
     flex-wrap: wrap;
   }
-  #basic-info > *:first-child {
+  #basic-info > :first-child {
     flex-grow: 1;
   }
-  #basic-info > *:not(:last-child) {
+  #basic-info > :not(:last-child) {
     margin-right: 0.8rem;
   }
   #basic-info #name {
     flex-grow: 1;
   }
+
+  #actions {
+    margin: .5rem;
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+  }
+  #actions a,
+  #actions div a,  /* FIXME: remove a>button */
+  #actions button {
+    margin: 0;
+  }
+  #actions > div {
+    display: contents;
+  }
+
+  #details-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -0.5rem 0 0;
+    padding: .5rem .5rem 0;
+    gap: .5rem;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 5;
+    border-bottom: 1px dashed rgb(170, 170, 170);
+    flex-direction: row;
+  }
+  #details-wrapper > details {
+    margin-bottom: .5rem;
+  }
+  #details-wrapper::after {
+    content: "";
+    display: block;
+    height: 48px;
+    position: absolute;
+    bottom: -48px;
+    left: 0;
+    width: 100%;
+    box-shadow: 0 3rem 3rem -4.2rem inset;
+    pointer-events: none;
+  }
+  #header details[open] + details[open] {
+    margin-top: 0;
+  }
+  #header details:not(#options) {
+    max-width: 50%;
+  }
+  #header summary {
+    margin-left: 0;
+    padding-left: 4px;
+  }
+  #header summary h2 {
+    margin: 0;
+    padding: 0;
+  }
+  #header summary + * {
+    margin-left: 1rem;
+    padding: .25rem 0 0;
+  }
+
   #options-wrapper {
     display: flex;
     flex-wrap: wrap;
     box-sizing: border-box;
   }
-  #details-wrapper {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
   #options[open] {
     width: 100%;
-  }
-  #sections-list[open] {
-    max-height: 102px;
-  }
-  #sections-list[open] #toc {
-    max-height: 60px;
-    overflow-y: auto;
-  }
-  #header details:not(#options) {
-    max-width: 50%;
   }
   .options-column {
     flex-grow: 1;
@@ -1146,18 +1155,6 @@ body.linter-disabled .hidden-unless-compact {
   #options:not([open]) + #lint:not([open]) {
     margin-top: 0;
   }
-  #lint summary {
-    position: static;
-    margin-bottom:  0;
-  }
-  #header summary {
-    margin-left: 0;
-    padding-left: 4px;
-  }
-  #header summary h2 {
-    margin: 0;
-    padding: 0;
-  }
   .option label {
     margin: 0;
   }
@@ -1169,27 +1166,41 @@ body.linter-disabled .hidden-unless-compact {
     position: relative;
     top: 0.2rem;
   }
+
+  #sections-list[open] {
+    max-height: 102px;
+  }
+  #sections-list[open] #toc {
+    max-height: 60px;
+    overflow-y: auto;
+  }
+
+  #header #lint.hidden {
+    display: block!important;
+  }
+  #header #lint {
+    margin: 0;
+    min-height: 0;
+  }
+  #header #lint[open] > :not(summary) {
+    display: none;
+  }
   #lint > .lint-scroll-container {
     padding-top: 0;
     margin-right: 0;
   }
-  #lint {
-    padding: 0;
-    margin: .5rem 0 0;
-  }
   #lint:not([open]) + #footer {
     margin: .25em 0 -1em .25em;
   }
+
   .main {
-    height: unset !important;
+    height: auto;
     padding-left: 0;
     display: flex;
     flex-direction: column;
     flex: 1;
   }
-  .tab-bar {
-    margin-top: var(--fixed-height);
-  }
+
   #sections > :not(.single-editor) {
     margin: 0 .5rem;
     padding: .5rem 0;
@@ -1198,10 +1209,25 @@ body.linter-disabled .hidden-unless-compact {
     overflow: hidden;
     flex: 1;
   }
-  .usercss #options:not([open]) ~ #lint.hidden ~ #footer,
-  .usercss #lint:not([open]) + #footer {
-    margin-top: -.25em;
+
+  .usercss body {
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
   }
+  .usercss #header {
+    display: block;
+    width: auto;
+    height: auto;
+    padding: 0;
+  }
+  .usercss #details-wrapper::after {
+    display: none;
+  }
+  .usercss #footer {
+    display: none;
+  }
+
   #help-popup.big[style="display: block;"],
   #help-popup[style="display: block;"] {
     width: max-content;
