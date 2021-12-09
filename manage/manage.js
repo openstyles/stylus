@@ -61,6 +61,7 @@ newUI.renderClass();
   installed.on('mouseover', Events.lazyAddEntryTitle, {passive: true});
   installed.on('mouseout', Events.lazyAddEntryTitle, {passive: true});
   $('#manage-options-button').onclick = () => router.updateHash('#stylus-options');
+  $('#execution-order-button').onclick = () => router.updateHash('#stylus-execution-order');
   $('#sync-styles').onclick = () => router.updateHash('#stylus-options');
   $$('#header a[href^="http"]').forEach(a => (a.onclick = Events.external));
   document.on('visibilitychange', handleVisibilityChange);
@@ -100,7 +101,20 @@ newUI.renderClass();
 
 msg.onExtension(onRuntimeMessage);
 window.on('closeOptions', () => router.updateHash(''));
-router.watch({hash: '#stylus-options'}, toggleEmbeddedOptions);
+router.watch(
+  {hash: '#stylus-options'},
+  Embed(() => $create('iframe', {
+    id: 'stylus-embedded-options',
+    src: '/options.html',
+  }))
+);
+router.watch(
+  {hash: '#stylus-execution-order'},
+  Embed(() => $create('iframe', {
+    id: 'stylus-execution-order',
+    src: '/execution-order.html',
+  }))
+);
 
 function onRuntimeMessage(msg) {
   switch (msg.method) {
@@ -123,17 +137,22 @@ function onRuntimeMessage(msg) {
   setTimeout(sorter.updateStripes, 0, {onlyWhenColumnsChanged: true});
 }
 
-async function toggleEmbeddedOptions(state) {
-  const el = $('#stylus-embedded-options') ||
-    state && document.documentElement.appendChild($create('iframe', {
-      id: 'stylus-embedded-options',
-      src: '/options.html',
-    }));
-  if (state) {
-    el.focus();
-  } else if (el) {
-    el.contentDocument.body.classList.add('scaleout');
-    await animateElement(el, 'fadeout');
-    el.remove();
-  }
+function Embed(El) {
+  let el;
+  return async state => {
+    if (!state && !el) return;
+    if (!el) el = El();
+    if (state) {
+      if (!el.offsetParent) {
+        document.body.append(el);
+      }
+      el.focus();
+    } else {
+      if (el.contentDocument) {
+        el.contentDocument.body.classList.add('scaleout');
+      }
+      await animateElement(el, 'fadeout');
+      el.remove();
+    }
+  };
 }
