@@ -980,6 +980,18 @@ a:hover {
   animation: fadeout .25s ease-in-out;
 }
 
+#stylus-execution-order {
+  position: fixed;
+  height: 100%;
+  border: 0;
+  right: 0;
+  max-width: 400px;
+  width: 90%;
+}
+#stylus-execution-order.fadeout {
+  animation: slideout .25s ease-in-out;
+}
+
 .settings-column {
   margin-top: 1rem;
 }
@@ -999,6 +1011,14 @@ a:hover {
   }
   to {
     opacity: 0;
+  }
+}
+@keyframes slideout {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
   }
 }
 
@@ -1165,3 +1185,4 @@ a:hover {
     margin-left: -2px;
   }
 }
+

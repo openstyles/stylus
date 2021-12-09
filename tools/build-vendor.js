@@ -61,8 +61,8 @@ const files = {
     'dist/webext-launch-web-auth-flow.min.js → webext-launch-web-auth-flow.min.js',
   ],
   'slipjs': [
-    'slip.js'
-  ]
+    'slip.js',
+  ],
 };
 
 main().catch(console.error);

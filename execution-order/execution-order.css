@@ -1,0 +1,57 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+#main {
+  display: grid;
+  grid-template-columns: min-content minmax(0, 1fr);
+  height: 100vh;
+}
+#main.ready {
+  animation: slidein .25s ease-in-out;
+}
+.closer {
+  max-height: 100vh;
+}
+.closer::after {
+  content: "\bb";
+}
+ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  overflow-y: auto;
+}
+li {
+  position: relative;
+  user-select: none;
+  border: 1px solid;
+  padding: 0.3em 0;
+  background: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis
+}
+li:not(:first-child) {
+  margin-top: -1px;
+}
+.dragger::before {
+  content: "\2261"
+}
+.dragger {
+  padding: 0.6em;
+  cursor: grab;
+}
+.slip-reordering,
+.slip-reordering .dragger {
+  cursor: grabbing;
+}
+@keyframes slidein {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}

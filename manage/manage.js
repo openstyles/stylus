@@ -139,20 +139,21 @@ function onRuntimeMessage(msg) {
 
 function Embed(El) {
   let el;
-  return async state => {
-    if (!state && !el) return;
-    if (!el) el = El();
+  return toggle;
+  async function toggle(state) {
     if (state) {
+      if (!el) el = El();
       if (!el.offsetParent) {
         document.body.append(el);
       }
       el.focus();
     } else {
+      if (!el || !el.offsetParent) return;
       if (el.contentDocument) {
         el.contentDocument.body.classList.add('scaleout');
       }
       await animateElement(el, 'fadeout');
       el.remove();
     }
-  };
+  }
 }
