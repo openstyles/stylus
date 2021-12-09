@@ -32,10 +32,11 @@ const tokenMan = (() => {
       },
       tokenURL: 'https://oauth2.googleapis.com/token',
       scopes: ['https://www.googleapis.com/auth/drive.appdata'],
-      revoke: token => {
-        const params = {token};
-        return postQuery(`https://accounts.google.com/o/oauth2/revoke?${new URLSearchParams(params)}`);
-      },
+      // FIXME: https://github.com/openstyles/stylus/issues/1248
+      // revoke: token => {
+        // const params = {token};
+        // return postQuery(`https://accounts.google.com/o/oauth2/revoke?${new URLSearchParams(params)}`);
+      // },
     },
     onedrive: {
       flow: 'code',
@@ -61,6 +62,17 @@ const tokenMan = (() => {
   const NETWORK_LATENCY = 30; // seconds
 
   let alwaysUseTab = FIREFOX ? false : null;
+
+  class TokenError extends Error {
+    constructor(provider, message) {
+      super(`[${provider}] ${message}`);
+      this.name = 'TokenError';
+      this.provider = provider;
+      if (Error.captureStackTrace) {
+        Error.captureStackTrace(this, TokenError);
+      }
+    }
+  }
 
   return {
 
@@ -91,7 +103,7 @@ const tokenMan = (() => {
         }
       }
       if (!interactive) {
-        throw new Error(`Invalid token: ${name}`);
+        throw new TokenError(name, 'Token is missing');
       }
       return authUser(k, name, interactive, hooks);
     },
@@ -113,7 +125,7 @@ const tokenMan = (() => {
 
   async function refreshToken(name, k, obj) {
     if (!obj[k.REFRESH]) {
-      throw new Error('No refresh token');
+      throw new TokenError(name, 'No refresh token');
     }
     const provider = AUTH[name];
     const body = {
@@ -179,7 +191,7 @@ const tokenMan = (() => {
         new URL(finalUrl).search.slice(1)
     );
     if (params.get('state') !== state) {
-      throw new Error(`Unexpected state: ${params.get('state')}, expected: ${state}`);
+      throw new TokenError(name, `Unexpected state: ${params.get('state')}, expected: ${state}`);
     }
     let result;
     if (provider.flow === 'token') {

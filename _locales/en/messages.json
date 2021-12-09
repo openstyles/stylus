@@ -1666,7 +1666,7 @@
     "description": "Tooltip for the toolbar icon"
   },
   "syncErrorRelogin": {
-    "message": "Sync failed.\nTry to re-login in Stylus options:\nclick 'disconnect' first, then 'connect'.",
+    "message": "Sync failed. You have been logged out.\nTry to re-login in Stylus options.",
     "description": "Tooltip for the toolbar icon"
   },
   "syncErrorLock": {
