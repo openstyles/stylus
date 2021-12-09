@@ -93,7 +93,7 @@ const syncMan = (() => {
 
     async getDriveOptions(driveName) {
       const key = `secure/sync/driveOptions/${driveName}`;
-      return chromeSync.getValue(key) || {};
+      return await chromeSync.getValue(key) || {};
     },
 
     async start(name, fromPref = false) {
