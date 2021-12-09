@@ -1,5 +1,5 @@
 /* global API msg */// msg.js
-/* global chromeLocal */// storage-util.js
+/* global chromeLocal chromeSync */// storage-util.js
 /* global compareRevision */// common.js
 /* global iconMan */
 /* global prefs */
@@ -88,15 +88,12 @@ const syncMan = (() => {
 
     async setDriveOptions(driveName, options) {
       const key = `secure/sync/driveOptions/${driveName}`;
-      await browser.storage.sync.set({
-        [key]: options,
-      });
+      await chromeSync.setValue(key, options);
     },
 
     async getDriveOptions(driveName) {
       const key = `secure/sync/driveOptions/${driveName}`;
-      const r = await browser.storage.sync.get(key);
-      return r[key] || {};
+      return chromeSync.getValue(key) || {};
     },
 
     async start(name, fromPref = false) {
