@@ -437,6 +437,11 @@ input[type="radio"].radio:checked::after {
 .sync-status::first-letter {
   text-transform: uppercase;
 }
+.sync-options .drive-options {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
 
 .sync-options .actions button {
   margin-top: .5em;

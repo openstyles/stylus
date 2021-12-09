@@ -96,6 +96,7 @@ document.onclick = e => {
   const elSyncNow = $('.sync-options .sync-now');
   const elStatus = $('.sync-options .sync-status');
   const elLogin = $('.sync-options .sync-login');
+  const elDriveOptions = $('.sync-options .drive-options');
   /** @type {Sync.Status} */
   let status = {};
   msg.onExtension(e => {
@@ -108,7 +109,10 @@ document.onclick = e => {
 
   elCloud.on('change', updateButtons);
   for (const [btn, fn] of [
-    [elStart, () => API.sync.start(elCloud.value)],
+    [elStart, async () => {
+      await API.sync.setDriveOptions(elCloud.value, getDriveOptions());
+      await API.sync.start(elCloud.value);
+    }],
     [elStop, API.sync.stop],
     [elSyncNow, API.sync.syncNow],
     [elLogin, async () => {
@@ -123,12 +127,26 @@ document.onclick = e => {
     });
   }
 
+  function getDriveOptions() {
+    const result = {};
+    for (const el of $$(`[data-drive=${elCloud.value}] [data-option]`)) {
+      result[el.dataset.option] = el.value;
+    }
+    return result;
+  }
+
+  function setDriveOptions(options) {
+    for (const el of $$(`[data-drive=${elCloud.value}] [data-option]`)) {
+      el.value = options[el.dataset.option] || '';
+    }
+  }
+
   function setStatus(newStatus) {
     status = newStatus;
     updateButtons();
   }
 
-  function updateButtons() {
+  async function updateButtons() {
     const {state, STATES} = status;
     const isConnected = state === STATES.connected;
     const isDisconnected = state === STATES.disconnected;
@@ -137,6 +155,7 @@ document.onclick = e => {
     }
     for (const [el, enable] of [
       [elCloud, isDisconnected],
+      [elDriveOptions, isDisconnected],
       [elStart, isDisconnected && elCloud.value !== 'none'],
       [elStop, isConnected && !status.syncing],
       [elSyncNow, isConnected && !status.syncing && status.login],
@@ -145,6 +164,10 @@ document.onclick = e => {
     }
     elStatus.textContent = getStatusText();
     elLogin.hidden = !isConnected || status.login;
+    for (const el of elDriveOptions.children) {
+      el.hidden = el.dataset.drive !== elCloud.value;
+    }
+    setDriveOptions(await API.sync.getDriveOptions(elCloud.value));
   }
 
   function getStatusText() {
