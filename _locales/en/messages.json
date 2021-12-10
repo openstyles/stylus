@@ -735,7 +735,7 @@
     "description": "The label of live-reload feature"
   },
   "manageExecutionOrder": {
-    "message": "Change execution order"
+    "message": "Injection order"
   },
   "manageFavicons": {
     "message": "Favicons in applies-to column",
