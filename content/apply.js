@@ -187,9 +187,7 @@
         if (!hasStyles && isDisabled || matchUrl === request.url) break;
         matchUrl = request.url;
         API.styles.getSectionsByUrl(matchUrl).then(sections => {
-          if (sections.cfg) {
-            delete sections.cfg;
-          }
+          delete sections.cfg;
           hasStyles = true;
           styleInjector.replace(sections);
         });
