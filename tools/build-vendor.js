@@ -60,8 +60,8 @@ const files = {
   'webext-launch-web-auth-flow': [
     'dist/webext-launch-web-auth-flow.min.js → webext-launch-web-auth-flow.min.js',
   ],
-  'slipjs': [
-    'slip.js',
+  '@eight04/draggable-list': [
+    'dist/draggable-list.iife.js',
   ],
 };
 

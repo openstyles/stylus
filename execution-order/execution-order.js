@@ -1,4 +1,4 @@
-/* global Slip */
+/* global DraggableList */
 /* global prefs */
 /* global API */
 'use strict';
@@ -7,19 +7,18 @@
   const list = (await getOrderedStyles()).map(createLi);
   const ol = document.querySelector('#style-list');
   ol.append(...list.map(l => l.el));
-  ol.addEventListener('slip:beforeswipe', e => e.preventDefault());
-  ol.addEventListener('slip:beforewait', e => {
-    if (browser.windows) {
-      e.preventDefault();
-    }
+  ol.addEventListener('d:dragmove', e => {
+    e.detail.origin.dataTransfer.dropEffect = 'move';
+    e.detail.dragTarget.style.transform = `translateY(${e.detail.currentPos.y - e.detail.startPos.y}px)`;
+    console.log(e.detail.origin.pageY, e.detail.origin.screenY);
   });
-  ol.addEventListener('slip:reorder', e => {
+  ol.addEventListener('d:dragend', e => {
     const [item] = list.splice(e.detail.originalIndex, 1);
     list.splice(e.detail.spliceIndex, 0, item);
-    ol.insertBefore(e.target, e.detail.insertBefore);
+    ol.insertBefore(e.detail.dragTarget, e.detail.insertBefore);
     prefs.set('styles.order', list.map(l => l.style._id));
   });
-  new Slip(ol);
+  new DraggableList(ol);
   document.querySelector('#main').classList.add('ready');
 
   document.querySelector('.closer').addEventListener('click', () => {

@@ -36,7 +36,14 @@ li {
   cursor: grab;
 }
 li:not(:first-child) {
-  margin-top: -1px;
+  /* margin-top: -1px; */
+}
+.draggable-list-dragging li {
+  transition: transform .25s ease-in-out;
+  z-index: 1;
+}
+li.draggable-list-target {
+  transition: none;
 }
 .dragger::before {
   content: "\2261"
