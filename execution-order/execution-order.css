@@ -26,12 +26,14 @@ ol {
 li {
   position: relative;
   user-select: none;
-  border: 1px solid;
+  border: 1px solid silver;
+  border-left: 0;
   padding: 0.3em 0;
   background: white;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis
+  text-overflow: ellipsis;
+  cursor: grab;
 }
 li:not(:first-child) {
   margin-top: -1px;
@@ -41,7 +43,6 @@ li:not(:first-child) {
 }
 .dragger {
   padding: 0.6em;
-  cursor: grab;
 }
 .slip-reordering,
 .slip-reordering .dragger {

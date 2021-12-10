@@ -9,7 +9,7 @@
   ol.append(...list.map(l => l.el));
   ol.addEventListener('slip:beforeswipe', e => e.preventDefault());
   ol.addEventListener('slip:beforewait', e => {
-    if (e.target.classList.contains('dragger')) {
+    if (browser.windows) {
       e.preventDefault();
     }
   });
