@@ -143,12 +143,12 @@ function Embed(El) {
   async function toggle(state) {
     if (state) {
       if (!el) el = El();
-      if (!el.offsetParent) {
+      if (!el.parentNode) {
         document.body.append(el);
       }
       el.focus();
     } else {
-      if (!el || !el.offsetParent) return;
+      if (!el || !el.parentNode) return;
       if (el.contentDocument) {
         el.contentDocument.body.classList.add('scaleout');
       }
