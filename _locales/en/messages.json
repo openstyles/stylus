@@ -1200,6 +1200,15 @@
       }
     }
   },
+  "optionsSyncUsername": {
+    "message": "Username"
+  },
+  "optionsSyncPassword": {
+    "message": "Password"
+  },
+  "optionsSyncUrl": {
+    "message": "URL"
+  },
   "optionsSyncStatusRelogin": {
     "message": "Session expired, please login again."
   },

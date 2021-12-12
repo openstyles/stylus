@@ -163,7 +163,7 @@ label > :first-child {
 }
 
 label:not([disabled]),
-label:not([disabled]) :not([type="number"]) {
+label:not([disabled]) :not([type="number"]):not([type="text"]):not([type="password"]) {
   cursor: pointer;
 }
 
@@ -437,7 +437,25 @@ input[type="radio"].radio:checked::after {
 .sync-status::first-letter {
   text-transform: uppercase;
 }
-
+.sync-options .drive-options {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.drive-options > :not([hidden]) {
+  display: table;
+  width: 100%;
+}
+.drive-options > * > label {
+  display: table-row;
+}
+.drive-options > * > label > * {
+  display: table-cell;
+}
+.drive-options > * input {
+  width: 100%;
+  box-sizing: border-box;
+}
 .sync-options .actions button {
   margin-top: .5em;
 }

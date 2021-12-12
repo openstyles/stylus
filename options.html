@@ -199,10 +199,27 @@
                 <option value="dropbox">Dropbox</option>
                 <option value="google">Google Drive</option>
                 <option value="onedrive">OneDrive</option>
+                <option value="webdav">WebDAV</option>
               </select>
               <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
             </div>
           </div>
+          <fieldset class="drive-options">
+            <div class="webdav-options" data-drive="webdav">
+              <label class="url">
+                <span i18n-text="optionsSyncUrl"></span>
+                <input type="text" data-option="url">
+              </label>
+              <label class="username">
+                <span i18n-text="optionsSyncUsername"></span>
+                <input type="text" data-option="username">
+              </label>
+              <label class="password">
+                <span i18n-text="optionsSyncPassword"></span>
+                <input type="password" data-option="password">
+              </label>
+            </div>
+          </fieldset>
           <div class="actions">
             <button type="button" class="connect" i18n-text="optionsSyncConnect"></button>
             <button type="button" class="disconnect" i18n-text="optionsSyncDisconnect"></button>

@@ -1,5 +1,5 @@
 /* global API msg */// msg.js
-/* global chromeLocal */// storage-util.js
+/* global chromeLocal chromeSync */// storage-util.js
 /* global compareRevision */// common.js
 /* global iconMan */
 /* global prefs */
@@ -18,6 +18,7 @@ const syncMan = (() => {
     disconnecting: 'disconnecting',
   });
   const STORAGE_KEY = 'sync/state/';
+  const NO_LOGIN = ['webdav'];
   const status = /** @namespace SyncManager.Status */ {
     STATES,
     state: STATES.disconnected,
@@ -85,19 +86,29 @@ const syncMan = (() => {
       return ctrl.put(...args);
     },
 
+    async setDriveOptions(driveName, options) {
+      const key = `secure/sync/driveOptions/${driveName}`;
+      await chromeSync.setValue(key, options);
+    },
+
+    async getDriveOptions(driveName) {
+      const key = `secure/sync/driveOptions/${driveName}`;
+      return await chromeSync.getValue(key) || {};
+    },
+
     async start(name, fromPref = false) {
       if (ready.then) await ready;
       if (!ctrl) await initController();
 
       if (currentDrive) return;
-      currentDrive = getDrive(name);
+      currentDrive = await getDrive(name);
       ctrl.use(currentDrive);
 
       status.state = STATES.connecting;
       status.currentDriveName = currentDrive.name;
       emitStatusChange();
 
-      if (fromPref) {
+      if (fromPref || NO_LOGIN.includes(currentDrive.name)) {
         status.login = true;
       } else {
         try {
@@ -240,11 +251,11 @@ const syncMan = (() => {
     }
   }
 
-  function getDrive(name) {
-    if (name === 'dropbox' || name === 'google' || name === 'onedrive') {
-      return dbToCloud.drive[name]({
-        getAccessToken: () => tokenMan.getToken(name),
-      });
+  async function getDrive(name) {
+    if (name === 'dropbox' || name === 'google' || name === 'onedrive' || name === 'webdav') {
+      const options = await syncMan.getDriveOptions(name);
+      options.getAccessToken = () => tokenMan.getToken(name);
+      return dbToCloud.drive[name](options);
     }
     throw new Error(`unknown cloud name: ${name}`);
   }
