@@ -61,7 +61,7 @@ const files = {
     'dist/webext-launch-web-auth-flow.min.js → webext-launch-web-auth-flow.min.js',
   ],
   '@eight04/draggable-list': [
-    'dist/draggable-list.iife.js',
+    'dist/draggable-list.iife.min.js',
   ],
 };
 

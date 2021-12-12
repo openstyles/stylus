@@ -22,6 +22,7 @@ ol {
   padding: 0;
   font-size: 16px;
   overflow-y: auto;
+  background: rgba(255, 2555, 255, 0.7)
 }
 li {
   position: relative;
@@ -33,7 +34,7 @@ li {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  cursor: grab;
+  cursor: move;
 }
 li:not(:first-child) {
   /* margin-top: -1px; */
@@ -44,16 +45,14 @@ li:not(:first-child) {
 }
 li.draggable-list-target {
   transition: none;
+  z-index: 100;
+  position: relative;
 }
 .dragger::before {
   content: "\2261"
 }
 .dragger {
   padding: 0.6em;
-}
-.slip-reordering,
-.slip-reordering .dragger {
-  cursor: grabbing;
 }
 @keyframes slidein {
   from {

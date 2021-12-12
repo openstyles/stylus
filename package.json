@@ -9,7 +9,7 @@
     "codemirror": "WARNING! Always use an exact version and test it for a while before releasing"
   },
   "dependencies": {
-    "@eight04/draggable-list": "^0.2.0",
+    "@eight04/draggable-list": "^0.3.0",
     "codemirror": "5.63.3",
     "db-to-cloud": "^0.7.0",
     "jsonlint": "^1.6.3",

@@ -6,11 +6,16 @@
 (async () => {
   const list = (await getOrderedStyles()).map(createLi);
   const ol = document.querySelector('#style-list');
+  let maxTranslateY;
   ol.append(...list.map(l => l.el));
+  ol.addEventListener('d:dragstart', e => {
+    e.detail.origin.dataTransfer.setDragImage(new Image(), 0, 0);
+    maxTranslateY = ol.scrollHeight - e.detail.dragTarget.offsetHeight - e.detail.dragTarget.offsetTop;
+  });
   ol.addEventListener('d:dragmove', e => {
     e.detail.origin.dataTransfer.dropEffect = 'move';
-    e.detail.dragTarget.style.transform = `translateY(${e.detail.currentPos.y - e.detail.startPos.y}px)`;
-    console.log(e.detail.origin.pageY, e.detail.origin.screenY);
+    const y = Math.min(e.detail.currentPos.y - e.detail.startPos.y, maxTranslateY);
+    e.detail.dragTarget.style.transform = `translateY(${y}px)`;
   });
   ol.addEventListener('d:dragend', e => {
     const [item] = list.splice(e.detail.originalIndex, 1);
@@ -18,7 +23,7 @@
     ol.insertBefore(e.detail.dragTarget, e.detail.insertBefore);
     prefs.set('styles.order', list.map(l => l.style._id));
   });
-  new DraggableList(ol);
+  new DraggableList(ol, {scrollContainer: ol});
   document.querySelector('#main').classList.add('ready');
 
   document.querySelector('.closer').addEventListener('click', () => {
