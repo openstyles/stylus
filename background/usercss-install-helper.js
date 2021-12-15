@@ -86,7 +86,7 @@ bgReady.all.then(() => {
       const inTab = url.startsWith('file:') && !chrome.app;
       const code = await (inTab ? loadFromFile : loadFromUrl)(tabId, url);
       if (!/^\s*</.test(code) && RX_META.test(code)) {
-        openInstallerPage(tabId, url, {code, inTab});
+        await openInstallerPage(tabId, url, {code, inTab});
       }
     }
   }
@@ -96,7 +96,7 @@ bgReady.all.then(() => {
     const u = new URL(url);
     const m = maybeDistro[u.hostname];
     if (!m || m.rx.test(u.pathname)) {
-      openInstallerPage(tabId, url, {});
+      openInstallerPage(tabId, url, {}).catch(console.error);
       // Silently suppress navigation.
       // Don't redirect to the install URL as it'll flash the text!
       return {redirectUrl: 'javascript:void 0'}; // eslint-disable-line no-script-url
