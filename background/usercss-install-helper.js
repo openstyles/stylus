@@ -106,7 +106,7 @@ bgReady.all.then(() => {
   async function openInstallerPage(tabId, url, {code, inTab} = {}) {
     const newUrl = `${URLS.installUsercss}?updateUrl=${encodeURIComponent(url)}`;
     if (inTab) {
-      const tab = browser.tabs.get(tabId);
+      const tab = await browser.tabs.get(tabId);
       return openURL({
         url: `${newUrl}&tabId=${tabId}`,
         active: tab.active,
