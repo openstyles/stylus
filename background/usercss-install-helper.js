@@ -120,7 +120,8 @@ bgReady.all.then(() => {
     try {
       await browser.tabs.update(tabId, {url: newUrl});
     } catch (err) {
-      // FIXME: https://github.com/openstyles/stylus/issues/1367
+      // FIXME: remove this when kiwi supports tabs.update
+      // https://github.com/openstyles/stylus/issues/1367
       if (/Tabs cannot be edited right now/i.test(err.message)) {
         return browser.tabs.create({url: newUrl});
       }
