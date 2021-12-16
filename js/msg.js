@@ -139,12 +139,13 @@
   }
 
   function unwrapResponseFactory(name) {
+    // Saving the local callstack before making an async call
     return unwrapResponse.bind(null, new Error(`Callstack before invoking msg.${name}:`));
   }
 
   function unwrapResponse(localErr, {data, error} = {error: {message: ERR_NO_RECEIVER}}) {
     return error
-      ? Promise.reject(Object.assign(localErr, error, {
+      ? Promise.reject(Object.assign(localErr, error, error.stack && {
         stack: `${error.stack}\n${localErr.stack}`,
       }))
       : data;
@@ -164,6 +165,7 @@
       if (!bg) {
         return msg.send(message);
       }
+      // Saving the local callstack before making an async call
       const err = new Error(`Callstack before invoking API.${path.join('.')}:`);
       try {
         return deepMerge(await bg.msg._execute(TARGETS.extension, message, {
@@ -171,9 +173,9 @@
           tab: NEEDS_TAB_IN_SENDER.includes(path.join('.')) && await getOwnTab(),
           url: location.href,
         }));
-      } catch (bgError) {
-        err.stack = `${bgError.stack}\n${err.stack}`;
-        err.message = bgError.message;
+      } catch (bgErr) {
+        if (bgErr.stack) err.stack = `${bgErr.stack}\n${err.stack}`;
+        err.message = bgErr.message || `${bgErr}`;
         // Not using `throw` to avoid pausing debugger when it's configured to pause on exceptions
         return Promise.reject(err);
       }

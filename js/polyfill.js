@@ -24,6 +24,7 @@
     const promisify = function (fn, ...args) {
       let res;
       let resolve, reject;
+      // Saving the local callstack before making an async call
       const err = new Error();
       try {
         args.push((...results) => {
