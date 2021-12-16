@@ -86,7 +86,7 @@ bgReady.all.then(() => {
       const inTab = url.startsWith('file:') && !chrome.app;
       const code = await (inTab ? loadFromFile : loadFromUrl)(tabId, url);
       if (!/^\s*</.test(code) && RX_META.test(code)) {
-        openInstallerPage(tabId, url, {code, inTab});
+        await openInstallerPage(tabId, url, {code, inTab});
       }
     }
   }
@@ -99,25 +99,33 @@ bgReady.all.then(() => {
       openInstallerPage(tabId, url, {});
       // Silently suppress navigation.
       // Don't redirect to the install URL as it'll flash the text!
-      return {redirectUrl: 'javascript:void 0'}; // eslint-disable-line no-script-url
+      return {cancel: true};
     }
   }
 
-  function openInstallerPage(tabId, url, {code, inTab} = {}) {
+  async function openInstallerPage(tabId, url, {code, inTab} = {}) {
     const newUrl = `${URLS.installUsercss}?updateUrl=${encodeURIComponent(url)}`;
     if (inTab) {
-      browser.tabs.get(tabId).then(tab =>
-        openURL({
-          url: `${newUrl}&tabId=${tabId}`,
-          active: tab.active,
-          index: tab.index + 1,
-          openerTabId: tabId,
-          currentWindow: null,
-        }));
-    } else {
-      const timer = setTimeout(clearInstallCode, 10e3, url);
-      installCodeCache[url] = {code, timer};
-      chrome.tabs.update(tabId, {url: newUrl});
+      const tab = await browser.tabs.get(tabId);
+      return openURL({
+        url: `${newUrl}&tabId=${tabId}`,
+        active: tab.active,
+        index: tab.index + 1,
+        openerTabId: tabId,
+        currentWindow: null,
+      });
+    }
+    const timer = setTimeout(clearInstallCode, 10e3, url);
+    installCodeCache[url] = {code, timer};
+    try {
+      await browser.tabs.update(tabId, {url: newUrl});
+    } catch (err) {
+      // FIXME: remove this when kiwi supports tabs.update
+      // https://github.com/openstyles/stylus/issues/1367
+      if (/Tabs cannot be edited right now/i.test(err.message)) {
+        return browser.tabs.create({url: newUrl});
+      }
+      throw err;
     }
   }
 
