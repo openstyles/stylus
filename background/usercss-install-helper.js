@@ -96,7 +96,7 @@ bgReady.all.then(() => {
     const u = new URL(url);
     const m = maybeDistro[u.hostname];
     if (!m || m.rx.test(u.pathname)) {
-      openInstallerPage(tabId, url, {}).catch(console.error);
+      openInstallerPage(tabId, url, {});
       // Silently suppress navigation.
       // Don't redirect to the install URL as it'll flash the text!
       return {cancel: true};
