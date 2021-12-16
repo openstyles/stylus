@@ -78,12 +78,12 @@
 
     send(data, target = 'extension') {
       return browser.runtime.sendMessage({data, target})
-        .then(unwrapResponse);
+        .then(unwrapResponseFactory('send'));
     },
 
     sendTab(tabId, data, options, target = 'tab') {
       return browser.tabs.sendMessage(tabId, {data, target}, options)
-        .then(unwrapResponse);
+        .then(unwrapResponseFactory('sendTab'));
     },
 
     _execute(types, ...args) {
@@ -138,9 +138,15 @@
     };
   }
 
-  function unwrapResponse({data, error} = {error: {message: ERR_NO_RECEIVER}}) {
+  function unwrapResponseFactory(name) {
+    return unwrapResponse.bind(null, new Error(`Callstack before invoking msg.${name}:`));
+  }
+
+  function unwrapResponse(localErr, {data, error} = {error: {message: ERR_NO_RECEIVER}}) {
     return error
-      ? Promise.reject(Object.assign(new Error(error.message), error))
+      ? Promise.reject(Object.assign(localErr, error, {
+        stack: `${error.stack}\n${localErr.stack}`,
+      }))
       : data;
   }
 
@@ -154,18 +160,23 @@
       const bg = getExtBg() ||
         chrome.tabs && await browser.runtime.getBackgroundPage().catch(() => {});
       const message = {method: 'invokeAPI', path, args};
-      let res;
       // content scripts, probably private tabs, and our extension tab during Chrome startup
       if (!bg) {
-        res = msg.send(message);
-      } else {
-        res = deepMerge(await bg.msg._execute(TARGETS.extension, message, {
+        return msg.send(message);
+      }
+      const err = new Error(`Callstack before invoking API.${path.join('.')}:`);
+      try {
+        return deepMerge(await bg.msg._execute(TARGETS.extension, message, {
           frameId: 0, // false in case of our Options frame but we really want to fetch styles early
           tab: NEEDS_TAB_IN_SENDER.includes(path.join('.')) && await getOwnTab(),
           url: location.href,
         }));
+      } catch (bgError) {
+        err.stack = `${bgError.stack}\n${err.stack}`;
+        err.message = bgError.message;
+        // Not using `throw` to avoid pausing debugger when it's configured to pause on exceptions
+        return Promise.reject(err);
       }
-      return res;
     },
   };
   /** @type {API} */
