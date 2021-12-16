@@ -161,24 +161,18 @@
       const bg = getExtBg() ||
         chrome.tabs && await browser.runtime.getBackgroundPage().catch(() => {});
       const message = {method: 'invokeAPI', path, args};
+      let res;
       // content scripts, probably private tabs, and our extension tab during Chrome startup
       if (!bg) {
-        return msg.send(message);
-      }
-      // Saving the local callstack before making an async call
-      const err = new Error(`Callstack before invoking API.${path.join('.')}:`);
-      try {
-        return deepMerge(await bg.msg._execute(TARGETS.extension, message, {
+        res = msg.send(message);
+      } else {
+        res = deepMerge(await bg.msg._execute(TARGETS.extension, message, {
           frameId: 0, // false in case of our Options frame but we really want to fetch styles early
           tab: NEEDS_TAB_IN_SENDER.includes(path.join('.')) && await getOwnTab(),
           url: location.href,
         }));
-      } catch (bgErr) {
-        if (bgErr.stack) err.stack = `${bgErr.stack}\n${err.stack}`;
-        err.message = bgErr.message || `${bgErr}`;
-        // Not using `throw` to avoid pausing debugger when it's configured to pause on exceptions
-        return Promise.reject(err);
       }
+      return res;
     },
   };
   /** @type {API} */
