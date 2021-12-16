@@ -4,6 +4,5 @@ pull_locales_login.rb
 node_modules/
 yarn.lock
 *.zip
-*.log
 .eslintcache
 .transifexrc
