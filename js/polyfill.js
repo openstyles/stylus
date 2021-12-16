@@ -23,14 +23,21 @@
     };
     const promisify = function (fn, ...args) {
       let res;
+      let resolve, reject;
+      // Saving the local callstack before making an async call
+      const err = new Error();
       try {
-        let resolve, reject;
-        /* Some callbacks have 2 parameters so we're resolving as an array in that case.
-           For example, chrome.runtime.requestUpdateCheck and chrome.webRequest.onAuthRequired */
-        args.push((...results) =>
-          chrome.runtime.lastError ?
-            reject(new Error(chrome.runtime.lastError.message)) :
-            resolve(results.length <= 1 ? results[0] : results));
+        args.push((...results) => {
+          const {lastError} = chrome.runtime;
+          if (lastError) {
+            err.message = lastError.message;
+            reject(err);
+          } else {
+            /* Some callbacks have 2 parameters so we're resolving as an array in that case.
+               For example, chrome.runtime.requestUpdateCheck and chrome.webRequest.onAuthRequired */
+            resolve(results.length <= 1 ? results[0] : results);
+          }
+        });
         fn.apply(this, args);
         res = new Promise((...rr) => ([resolve, reject] = rr));
       } catch (err) {
