@@ -7,9 +7,9 @@
 
 body {
   margin: 0;
-  /* Firefox: fill the entire page for drag'n'drop to work */
+  /* Fill the entire viewport to enable json import via drag'n'drop */
   display: flex;
-  height: 100%;
+  height: 100vh;
 }
 
 #header:lang(ja) h1 {
