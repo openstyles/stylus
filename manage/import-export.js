@@ -129,7 +129,7 @@ async function importFromString(jsonString) {
       typeof item !== 'object' || (
         isEmptyObj(item.usercssData)
           ? !styleJSONseemsValid(item)
-          : !/==userstyle==/i.test(item.sourceCode)
+          : !item.sourceCode || typeof item.sourceCode !== 'string'
       )
     ) {
       stats.invalid.names.push(`#${index}: ${limitString(item && item.name || '')}`);
