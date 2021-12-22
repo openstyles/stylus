@@ -124,7 +124,14 @@ async function importFromString(jsonString) {
     if (item && !item.id && item[prefs.STORAGE_KEY]) {
       return analyzeStorage(item);
     }
-    if (typeof item !== 'object' || !styleJSONseemsValid(item)) {
+    if (
+      !item ||
+      typeof item !== 'object' || (
+        isEmptyObj(item.usercssData)
+          ? !styleJSONseemsValid(item)
+          : !/==userstyle==/i.test(item.sourceCode)
+      )
+    ) {
       stats.invalid.names.push(`#${index}: ${limitString(item && item.name || '')}`);
       return;
     }
@@ -324,7 +331,7 @@ async function exportToFile() {
     Object.assign({
       [prefs.STORAGE_KEY]: prefs.values,
     }, await chromeSync.getLZValues()),
-    ...await API.styles.getAll(),
+    ...(await API.styles.getAll()).map(cleanupStyle),
   ];
   const text = JSON.stringify(data, null, '  ');
   const type = 'application/json';
@@ -333,6 +340,17 @@ async function exportToFile() {
     download: generateFileName(),
     type,
   }).dispatchEvent(new MouseEvent('click'));
+  /** strip `sections`, `null` and empty objects */
+  function cleanupStyle(s) {
+    s = Object.assign({}, s);
+    if (s.usercssData) delete s.sections;
+    for (const [key, val] of Object.entries(s)) {
+      if (typeof val === 'object' && isEmptyObj(val)) {
+        delete s[key];
+      }
+    }
+    return s;
+  }
   function generateFileName() {
     const today = new Date();
     const dd = ('0' + today.getDate()).substr(-2);
