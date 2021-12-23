@@ -392,7 +392,7 @@
     "message": "Exclude the current URL"
   },
   "exportDeduplicate": {
-    "message": "Shift-click or Right-click will export a smaller file for UserCSS styles.\nSuch styles are importable only in Stylus 1.5.23 or newer.",
+    "message": "Shift-click or Right-click will export a smaller file for UserCSS styles.\nSuch styles can be imported only in Stylus 1.5.23 or newer.",
     "description": "Tooltip for the button to export all styles in the 'manage' page"
   },
   "exportLabel": {
