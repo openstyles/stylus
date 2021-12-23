@@ -341,15 +341,16 @@ async function exportToFile() {
     type,
   }).dispatchEvent(new MouseEvent('click'));
   /** strip `sections`, `null` and empty objects */
-  function cleanupStyle(s) {
-    s = Object.assign({}, s);
-    if (s.usercssData) delete s.sections;
-    for (const [key, val] of Object.entries(s)) {
-      if (typeof val === 'object' && isEmptyObj(val)) {
-        delete s[key];
+  function cleanupStyle(style) {
+    const copy = {};
+    for (const [key, val] of Object.entries(style)) {
+      if (key === 'sections'
+          ? !style.usercssData
+          : typeof val !== 'object' || !isEmptyObj(val)) {
+        copy[key] = val;
       }
     }
-    return s;
+    return copy;
   }
   function generateFileName() {
     const today = new Date();
