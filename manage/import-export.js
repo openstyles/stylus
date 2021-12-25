@@ -350,9 +350,10 @@ async function exportToFile(e) {
   /** Stripping `sections`, `null` and empty objects */
   function cleanupStyle(style) {
     const copy = {};
-    for (const [key, val] of Object.entries(style)) {
+    for (let [key, val] of Object.entries(style)) {
       if (key === 'sections'
-          ? !style.usercssData
+          // Keeping dummy `sections` for compatibility with older Stylus
+          ? !style.usercssData || (val = [{code: ''}])
           : typeof val !== 'object' || !isEmptyObj(val)) {
         copy[key] = val;
       }
