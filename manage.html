@@ -320,8 +320,13 @@
 
     <div class="settings-column">
       <details id="backup" data-pref="manage.backup.expanded">
-        <summary><h2 id="backup-title" i18n-text="backupButtons"></h2></summary>
-        <span id="backup-message" i18n-text="backupMessage"></span>
+        <summary>
+          <h2 id="backup-title" i18n-text="backupButtons">
+            <a tabindex="0" i18n-title="backupMessage" data-cmd="note">
+              <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+            </a>
+          </h2>
+        </summary>
         <div id="backup-buttons">
           <button id="file-all-styles" i18n-text="exportLabel"></button>
           <button id="unfile-all-styles" i18n-text="importLabel"></button>

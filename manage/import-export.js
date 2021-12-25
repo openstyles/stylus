@@ -15,6 +15,7 @@
 'use strict';
 
 $('#file-all-styles').onclick = exportToFile;
+$('#file-all-styles').oncontextmenu = exportToFile;
 $('#unfile-all-styles').onclick = () => importFromFile({fileTypeFilter: '.json'});
 
 Object.assign(document.body, {
@@ -333,8 +334,11 @@ async function importFromString(jsonString) {
   }
 }
 
-async function exportToFile() {
+/** @param {MouseEvent} e */
+async function exportToFile(e) {
+  e.preventDefault();
   await require(['/js/storage-util']);
+  const keepDupSections = e.type === 'contextmenu' || e.shiftKey;
   const data = [
     Object.assign({
       [prefs.STORAGE_KEY]: prefs.values,
@@ -353,8 +357,9 @@ async function exportToFile() {
     const copy = {};
     for (let [key, val] of Object.entries(style)) {
       if (key === 'sections'
-          // Keeping dummy `sections` for compatibility with older Stylus
-          ? !style.usercssData || (val = [{code: ''}])
+        // Keeping dummy `sections` for compatibility with older Stylus
+        // even in deduped backup so the user can resave/reconfigure the style to rebuild it.
+          ? !style.usercssData || keepDupSections || (val = [{code: ''}])
           : typeof val !== 'object' || !isEmptyObj(val)) {
         copy[key] = val;
       }

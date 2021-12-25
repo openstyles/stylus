@@ -93,8 +93,8 @@
     "description": "Heading for backup"
   },
   "backupMessage": {
-    "message": "Select a file or drag and drop to this page.",
-    "description": "Message for backup"
+    "message": "To import the backup file, drag'n'drop it into this page or click the Import button.\n\nTo export a compatible backup for Stylus older than 1.5.18, right-click or shift-click the Export button.",
+    "description": "Text for Backup section's (i) in the manager"
   },
   "bckpInstStyles": {
     "message": "Export styles"

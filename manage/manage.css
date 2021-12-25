@@ -262,7 +262,6 @@ a:hover {
 #backup-buttons {
   display: flex;
   flex-wrap: wrap;
-  margin-top: .5rem;
 }
 
 #backup-buttons button {
@@ -300,9 +299,12 @@ a:hover {
   margin-top: .1em;
   margin-bottom: .1em;
 }
-
 #header summary:hover h2 {
   border-color: #bbb;
+}
+#header summary h2 [data-cmd="note"] {
+  display: flex;
+  align-items: center;
 }
 
 /* compact layout */
