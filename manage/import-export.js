@@ -151,8 +151,8 @@ async function importFromString(jsonString) {
       item.id = byName.id;
       oldStyle = byName;
     }
-    const metaEqual = oldStyle && deepEqual(oldStyle, item, ['sections', '_rev']);
-    const codeEqual = oldStyle && styleSectionsEqual(oldStyle, item);
+    const metaEqual = oldStyle && deepEqual(oldStyle, item, ['sections', 'sourceCode', '_rev']);
+    const codeEqual = oldStyle && sameCode(oldStyle, item);
     if (metaEqual && codeEqual) {
       stats.unchanged.names.push(oldStyle.name);
       stats.unchanged.ids.push(oldStyle.id);
@@ -177,6 +177,14 @@ async function importFromString(jsonString) {
         stats.options.names.push({name: key, val, isValid, isPref});
       }
     }
+  }
+
+  function sameCode(oldStyle, newStyle) {
+    const d1 = oldStyle.usercssData;
+    const d2 = newStyle.usercssData;
+    return !d1 + !d2
+      ? styleSectionsEqual(oldStyle, newStyle)
+      : oldStyle.sourceCode === newStyle.sourceCode && deepEqual(d1.vars, d2.vars);
   }
 
   function sameStyle(oldStyle, newStyle) {
