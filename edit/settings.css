@@ -1,4 +1,4 @@
-.compact-layout #help-popup[data-type="styleSettings"] {
+.compact-layout #help-popup.style-settings-popup {
   width: 90%;
 }
 .style-settings {

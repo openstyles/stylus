@@ -27,7 +27,7 @@ function StyleSettings() {
       $create('button', {onclick: helpPopup.close}, t('confirmClose')),
     ]),
   ]));
-  $('#help-popup').dataset.type = 'styleSettings';
+  $('#help-popup').className = 'style-settings-popup';
   moveFocus(ui, 0);
 
   function textToList(text) {
