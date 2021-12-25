@@ -1,11 +1,14 @@
-/* global $ $$ */// dom.js
+/* global $ $$ $create moveFocus */// dom.js
 /* global API */// msg.js
+/* global editor */
+/* global helpPopup */// util.js
+/* global t */// localization.js
 /* exported StyleSettings */
 'use strict';
 
-function StyleSettings(editor) {
+function StyleSettings() {
   let {style} = editor;
-
+  const ui = t.template.styleSettings.cloneNode(true);
   const inputs = [
     createInput('.style-update-url input', () => style.updateUrl || '',
       e => API.styles.config(style.id, 'updateUrl', e.target.value)),
@@ -16,10 +19,16 @@ function StyleSettings(editor) {
       ['.style-exclude', 'exclusions'],
     ].map(createArea),
   ];
-
   update(style);
-
-  editor.on('styleChange', update);
+  editor.on('styleUpdated', update);
+  helpPopup.show(t('editorSettingLabel'), $create([
+    ui,
+    $create('.buttons', [
+      $create('button', {onclick: helpPopup.close}, t('confirmClose')),
+    ]),
+  ]));
+  $('#help-popup').dataset.type = 'styleSettings';
+  moveFocus(ui, 0);
 
   function textToList(text) {
     const list = text.split(/\s*\r?\n\s*/g);
@@ -30,13 +39,12 @@ function StyleSettings(editor) {
     if (!newStyle.id) return;
     if (reason === 'editSave') return;
     style = newStyle;
-    $('.style-settings').disabled = false;
     inputs.forEach(i => i.update());
   }
 
   function createArea([parentSel, type]) {
     const sel = parentSel + ' textarea';
-    const el = $(sel);
+    const el = $(sel, ui);
     el.on('input', () => {
       const val = el.value;
       el.rows = val.match(/^/gm).length + !val.endsWith('\n');
@@ -53,7 +61,7 @@ function StyleSettings(editor) {
   }
 
   function createRadio(selector, getter, setter) {
-    const els = $$(selector);
+    const els = $$(selector, ui);
     for (const el of els) {
       el.addEventListener('change', e => {
         if (el.checked) {
@@ -73,7 +81,7 @@ function StyleSettings(editor) {
   }
 
   function createInput(selector, getter, setter) {
-    const el = $(selector);
+    const el = $(selector, ui);
     el.addEventListener('change', setter);
     return {
       update() {

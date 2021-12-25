@@ -89,7 +89,7 @@ function SectionsEditor() {
       // FIXME: avoid recreating all editors?
       await initSections(newStyle.sections, {replace: true});
       Object.assign(style, newStyle);
-      editor.onStyleUpdated();
+      editor.updateClass();
       updateHeader();
       // Go from new style URL to edit style URL
       if (style.id && !/[&?]id=/.test(location.search)) {
@@ -109,7 +109,7 @@ function SectionsEditor() {
       newStyle = await API.styles.editSave(newStyle);
       destroyRemovedSections();
       if (!style.id) {
-        editor.emit('styleChange', newStyle, 'new');
+        editor.emit('styleUpdated', newStyle, 'new');
       }
       sessionStore.justEditedStyleId = newStyle.id;
       editor.replaceStyle(newStyle, false);
@@ -136,18 +136,6 @@ function SectionsEditor() {
     }
     updateHeader();
     updateLivePreview();
-  });
-  editor.on('styleChange', (newStyle, reason) => {
-    if (reason === 'new') return; // nothing is new for us
-    if (reason === 'config') {
-      delete newStyle.sections;
-      delete newStyle.name;
-      delete newStyle.enabled;
-      Object.assign(style, newStyle);
-      updateLivePreview();
-      return;
-    }
-    editor.replaceStyle(newStyle);
   });
 
   /** @param {EditorSection} section */

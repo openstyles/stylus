@@ -1,3 +1,6 @@
+.compact-layout #help-popup[data-type="styleSettings"] {
+  width: 90%;
+}
 .style-settings {
   padding: 0.7rem 1.7rem;
   border: 0;
@@ -41,6 +44,10 @@
 }
 .style-settings textarea {
   resize: vertical;
+  min-width: 33vw;
   min-height: 2.5em;
   max-height: 50vh;
+}
+.style-settings textarea:not(:placeholder-shown) {
+  min-width: 50vw;
 }

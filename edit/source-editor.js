@@ -71,7 +71,7 @@ function SourceEditor() {
         } else {
           res = await API.usercss.editSave({customName, enabled, id, sourceCode});
           if (!id) {
-            editor.emit('styleChange', res.style, 'new');
+            editor.emit('styleUpdated', res.style, 'new');
           }
           // Awaiting inside `try` so that exceptions go to our `catch`
           await replaceStyle(res.style);
@@ -124,17 +124,6 @@ function SourceEditor() {
     }
     updateMeta();
     updateLivePreview();
-  });
-  editor.on('styleChange', (newStyle, reason) => {
-    if (reason === 'new') return;
-    if (reason === 'config') {
-      delete newStyle.sourceCode;
-      delete newStyle.name;
-      Object.assign(style, newStyle);
-      updateLivePreview();
-      return;
-    }
-    replaceStyle(newStyle);
   });
 
   async function preprocess(style) {
@@ -265,7 +254,7 @@ function SourceEditor() {
       }
       sessionStore.justEditedStyleId = newStyle.id;
       Object.assign(style, newStyle);
-      editor.onStyleUpdated();
+      editor.updateClass();
       updateMeta();
     }
   }

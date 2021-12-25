@@ -1,5 +1,5 @@
 /* global $ $create messageBoxProxy waitForSheet */// dom.js
-/* global msg API */// msg.js
+/* global API msg */// msg.js
 /* global CodeMirror */
 /* global SectionsEditor */
 /* global SourceEditor */
@@ -11,7 +11,6 @@
 /* global linterMan */
 /* global prefs */
 /* global t */// localization.js
-/* global StyleSettings */// settings.js
 'use strict';
 
 //#region init
@@ -19,7 +18,6 @@
 baseInit.ready.then(async () => {
   await waitForSheet();
   (editor.isUsercss ? SourceEditor : SectionsEditor)();
-  StyleSettings(editor);
   await editor.ready;
   editor.ready = true;
   editor.dirty.onChange(editor.updateDirty);
@@ -32,6 +30,7 @@ baseInit.ready.then(async () => {
   // enabling after init to prevent flash of validation failure on an empty name
   $('#name').required = !editor.isUsercss;
   $('#save-button').onclick = editor.save;
+  $('#cancel-button').onclick = editor.cancel;
 
   const elSec = $('#sections-list');
   // editor.toc.expanded pref isn't saved in compact-layout so prefs.subscribe won't work
@@ -48,6 +47,11 @@ baseInit.ready.then(async () => {
     require(['/edit/linter-dialogs'], () => linterMan.showLintConfig());
   $('#lint-help').onclick = () =>
     require(['/edit/linter-dialogs'], () => linterMan.showLintHelp());
+  $('#style-cfg-btn').onclick = () => require([
+    '/edit/settings.css',
+    '/edit/settings', /* global StyleSettings */
+  ], () => StyleSettings());
+
   require([
     '/edit/autocomplete',
     '/edit/global-search',
@@ -75,7 +79,7 @@ msg.onExtension(request => {
         } else {
           API.styles.get(request.style.id)
             .then(style => {
-              editor.emit('styleChange', style, request.reason);
+              editor.emit('styleUpdated', style, request.reason);
             });
         }
       }
@@ -168,7 +172,7 @@ window.on('beforeunload', e => {
       }
     },
 
-    toggleStyle(enabled = style.enabled) {
+    toggleStyle(enabled = !style.enabled) {
       $('#enabled').checked = enabled;
       editor.updateEnabledness(enabled);
     },

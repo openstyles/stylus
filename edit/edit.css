@@ -105,11 +105,8 @@ label {
 #header h1 {
   margin-top: 0;
 }
-.main {
-  padding-left: 280px;
-  height: 100%;
-}
 #sections {
+  padding-left: 280px;
   min-height: 0;
   height: 100%;
 }
@@ -282,10 +279,6 @@ input:invalid {
 #actions button,
 #actions > div > a {
   margin: 0 .2rem .5rem 0;
-}
-
-#actions #cancel-button {
-  margin: 0;
 }
 
 #options:not([open]) + #lint h2 {
@@ -768,11 +761,6 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   max-height: calc(100vh - 8rem);
   overflow-y: auto;
 }
-#help-popup .settings {
-  min-width: 500px;
-  min-height: 200px;
-  max-width: 48vw;
-}
 #help-popup .dismiss {
   position: absolute;
   right: 4px;
@@ -1180,15 +1168,12 @@ body.linter-disabled .hidden-unless-compact {
   #lint:not([open]) + #footer {
     margin: .25em 0 -1em .25em;
   }
-  .main {
+  #sections {
     height: unset !important;
     padding-left: 0;
     display: flex;
     flex-direction: column;
     flex: 1;
-  }
-  .tab-bar {
-    margin-top: var(--fixed-height);
   }
   #sections > :not(.single-editor) {
     margin: 0 .5rem;
