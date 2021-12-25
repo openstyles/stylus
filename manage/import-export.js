@@ -14,10 +14,7 @@
 */// dom.js
 'use strict';
 
-Object.assign($('#file-all-styles'), {
-  onclick: exportToFile,
-  oncontextmenu: exportToFile,
-});
+$('#file-all-styles').onclick = exportToFile;
 $('#unfile-all-styles').onclick = () => importFromFile({fileTypeFilter: '.json'});
 
 Object.assign(document.body, {
@@ -328,17 +325,13 @@ async function importFromString(jsonString) {
   }
 }
 
-/** @param {MouseEvent} e */
-async function exportToFile(e) {
-  e.preventDefault();
+async function exportToFile() {
   await require(['/js/storage-util']);
-  const shouldClean = e.shiftKey || e.button === 2;
-  const styles = await API.styles.getAll();
   const data = [
     Object.assign({
       [prefs.STORAGE_KEY]: prefs.values,
     }, await chromeSync.getLZValues()),
-    ...shouldClean ? styles.map(cleanupStyle) : styles,
+    ...(await API.styles.getAll()).map(cleanupStyle),
   ];
   const text = JSON.stringify(data, null, '  ');
   const type = 'application/json';
@@ -347,7 +340,7 @@ async function exportToFile(e) {
     download: generateFileName(),
     type,
   }).dispatchEvent(new MouseEvent('click'));
-  /** Stripping `sections`, `null` and empty objects */
+  /** strip `sections`, `null` and empty objects */
   function cleanupStyle(style) {
     const copy = {};
     for (let [key, val] of Object.entries(style)) {
