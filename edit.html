@@ -214,11 +214,11 @@
     </template>
 
     <template data-id="keymapHelp">
-      <table class="keymap-list">
+      <table class="keymap-list can-close-on-esc">
         <thead>
           <tr>
-            <th><input i18n-placeholder="helpKeyMapHotkey" type="search" class="can-close-on-esc"></th>
-            <th><input i18n-placeholder="helpKeyMapCommand" type="search" class="can-close-on-esc" spellcheck="false"></th>
+            <th><input i18n-placeholder="helpKeyMapHotkey" type="search"></th>
+            <th><input i18n-placeholder="helpKeyMapCommand" type="search"></th>
           </tr>
         </thead>
         <tbody>
@@ -231,7 +231,7 @@
     </template>
 
     <template data-id="styleSettings">
-      <fieldset class="style-settings" disabled>
+      <fieldset class="style-settings can-close-on-esc">
         <!-- <label class="style-origin">
           <span class="form-label" i18n-text="styleOriginLabel"></span>
           <input id="styleOrigin" type="text">

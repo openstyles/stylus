@@ -31,8 +31,10 @@ const helpPopup = {
         getEventKeyName(event) === 'Escape' &&
         !$('.CodeMirror-hints, #message-box') && (
           !document.activeElement ||
-          !document.activeElement.closest('#search-replace-dialog') &&
-          document.activeElement.matches(':not(input), .can-close-on-esc')
+          !document.activeElement.closest('#search-replace-dialog') && (
+            document.activeElement.tagName !== 'INPUT' ||
+            document.activeElement.closest('.can-close-on-esc')
+          )
         )
       );
     const div = $('#help-popup');
