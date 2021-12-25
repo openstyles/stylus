@@ -124,7 +124,14 @@ async function importFromString(jsonString) {
     if (item && !item.id && item[prefs.STORAGE_KEY]) {
       return analyzeStorage(item);
     }
-    if (typeof item !== 'object' || !styleJSONseemsValid(item)) {
+    if (
+      !item ||
+      typeof item !== 'object' || (
+        isEmptyObj(item.usercssData)
+          ? !styleJSONseemsValid(item)
+          : typeof item.sourceCode !== 'string'
+      )
+    ) {
       stats.invalid.names.push(`#${index}: ${limitString(item && item.name || '')}`);
       return;
     }
@@ -144,8 +151,8 @@ async function importFromString(jsonString) {
       item.id = byName.id;
       oldStyle = byName;
     }
-    const metaEqual = oldStyle && deepEqual(oldStyle, item, ['sections', '_rev']);
-    const codeEqual = oldStyle && styleSectionsEqual(oldStyle, item);
+    const metaEqual = oldStyle && deepEqual(oldStyle, item, ['sections', 'sourceCode', '_rev']);
+    const codeEqual = oldStyle && sameCode(oldStyle, item);
     if (metaEqual && codeEqual) {
       stats.unchanged.names.push(oldStyle.name);
       stats.unchanged.ids.push(oldStyle.id);
@@ -170,6 +177,14 @@ async function importFromString(jsonString) {
         stats.options.names.push({name: key, val, isValid, isPref});
       }
     }
+  }
+
+  function sameCode(oldStyle, newStyle) {
+    const d1 = oldStyle.usercssData;
+    const d2 = newStyle.usercssData;
+    return !d1 + !d2
+      ? styleSectionsEqual(oldStyle, newStyle)
+      : oldStyle.sourceCode === newStyle.sourceCode && deepEqual(d1.vars, d2.vars);
   }
 
   function sameStyle(oldStyle, newStyle) {
@@ -324,7 +339,7 @@ async function exportToFile() {
     Object.assign({
       [prefs.STORAGE_KEY]: prefs.values,
     }, await chromeSync.getLZValues()),
-    ...await API.styles.getAll(),
+    ...(await API.styles.getAll()).map(cleanupStyle),
   ];
   const text = JSON.stringify(data, null, '  ');
   const type = 'application/json';
@@ -333,6 +348,19 @@ async function exportToFile() {
     download: generateFileName(),
     type,
   }).dispatchEvent(new MouseEvent('click'));
+  /** strip `sections`, `null` and empty objects */
+  function cleanupStyle(style) {
+    const copy = {};
+    for (let [key, val] of Object.entries(style)) {
+      if (key === 'sections'
+          // Keeping dummy `sections` for compatibility with older Stylus
+          ? !style.usercssData || (val = [{code: ''}])
+          : typeof val !== 'object' || !isEmptyObj(val)) {
+        copy[key] = val;
+      }
+    }
+    return copy;
+  }
   function generateFileName() {
     const today = new Date();
     const dd = ('0' + today.getDate()).substr(-2);
