@@ -119,10 +119,9 @@ function createBeautifyUI(scope, options) {
 
   $('.beautify-options').onchange = ({target}) => {
     const value = target.type === 'checkbox' ? target.checked : target.selectedIndex > 0;
+    const elLine = target.closest('[newline]');
+    if (elLine) elLine.setAttribute('newline', value);
     prefs.set('editor.beautify', Object.assign(options, {[target.dataset.option]: value}));
-    if (target.parentNode.hasAttribute('newline')) {
-      target.parentNode.setAttribute('newline', value.toString());
-    }
     beautify(scope, false);
   };
 
