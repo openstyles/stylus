@@ -27,8 +27,9 @@ function StyleSettings() {
       $create('button', {onclick: helpPopup.close}, t('confirmClose')),
       createInfo({title: t('autosaveNotice')}),
     ]),
-  ]));
-  $('#help-popup').className = 'style-settings-popup';
+  ]), {
+    className: 'style-settings-popup',
+  });
   moveFocus(ui, 0);
 
   function textToList(text) {

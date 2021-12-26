@@ -113,9 +113,10 @@ function createBeautifyUI(scope, options) {
           },
         }, t(scope.length === 1 ? 'undo' : 'undoGlobal')),
       ]),
-    ]));
-
-  $('#help-popup').className = 'wide';
+    ]),
+    {
+      className: 'wide',
+    });
 
   $('.beautify-options').onchange = ({target}) => {
     const value = target.type === 'checkbox' ? target.checked : target.selectedIndex > 0;
