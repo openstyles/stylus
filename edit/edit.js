@@ -96,6 +96,7 @@ window.on('beforeunload', e => {
   if (editor.isWindowed &&
       document.visibilityState === 'visible' &&
       prefs.get('openEditInWindow') &&
+      screenX !== -32000 && // Chrome uses this value for minimized windows
       ( // only if not maximized
         screenX > 0 || outerWidth < screen.availWidth ||
         screenY > 0 || outerHeight < screen.availHeight ||
