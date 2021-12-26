@@ -729,6 +729,9 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 }
 /************ help popup ************/
 #help-popup {
+  --pad-x: 1.5rem;
+  --pad-y: 1rem;
+  --pad-y2: calc(var(--pad-y) / 1.5);
   top: 3rem;
   right: 3rem;
   max-width: 50vw;
@@ -736,7 +739,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   display: none;
   background-color: white;
   box-shadow: 3px 3px 30px rgba(0, 0, 0, 0.5);
-  padding: 0.5rem;
+  padding: var(--pad-y) var(--pad-x) 0;
   z-index: 99;
 }
 #help-popup.big,
@@ -754,17 +757,19 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 #help-popup .title {
   font-weight: bold;
   background-color: rgba(0,0,0,0.05);
-  margin: -0.5rem -0.5rem 0.5rem;
-  padding: .5rem 32px .5rem .5rem;
+  margin: calc(-1 * var(--pad-y)) calc(-1 * var(--pad-x)) 0;
+  padding: var(--pad-y2) var(--pad-x);
 }
 #help-popup .contents {
   max-height: calc(100vh - 8rem);
   overflow-y: auto;
+  padding: var(--pad-y) 0;
 }
 #help-popup .dismiss {
   position: absolute;
-  right: 4px;
-  top: .5em;
+  right: 0;
+  top: 0;
+  padding: var(--pad-y2) .5em;
 }
 #help-popup input[type="search"],
 #help-popup .CodeMirror {
@@ -795,7 +800,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: .75em;
+  margin: var(--pad-y2) 0 calc(var(--pad-y2) - var(--pad-y)) 0;
 }
 .non-windows #help-popup .buttons {
   direction: rtl;
