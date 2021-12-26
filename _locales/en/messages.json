@@ -88,6 +88,9 @@
     "message": "Author",
     "description": "Label for the style author"
   },
+  "autosaveNotice": {
+    "message": "Changes are saved automatically"
+  },
   "backupButtons": {
     "message": "Backup",
     "description": "Heading for backup"

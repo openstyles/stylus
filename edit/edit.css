@@ -792,12 +792,14 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 }
 
 #help-popup .buttons {
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-top: .75em;
 }
 .non-windows #help-popup .buttons {
   direction: rtl;
-  text-align: right;
+  justify-content: start;
 }
 #help-popup button[name^="import"] {
   line-height: 1.5rem;
@@ -819,8 +821,8 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 #help-popup .rules p {
   margin: .25em 0;
 }
-#help-popup .buttons button:nth-child(n + 2) {
-  margin-left: .5em;
+#help-popup .buttons > :nth-child(n + 2) {
+  margin-inline: .5em 0;
 }
 
 /************ lint ************/
