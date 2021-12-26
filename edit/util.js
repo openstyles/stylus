@@ -28,6 +28,7 @@ const helpPopup = {
     window.on('keydown', helpPopup.close, true);
     div.style.display = 'block';
     helpPopup.originalFocus = document.activeElement;
+    helpPopup.div = div;
     return div;
   },
 
@@ -44,7 +45,7 @@ const helpPopup = {
           )
         )
       );
-    const div = $('#help-popup');
+    const {div} = helpPopup;
     if (!canClose || !div) {
       return;
     }

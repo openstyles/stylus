@@ -65,7 +65,7 @@ function beautifyEditor(cm, options, ui) {
     window.scrollTo(scrollX, scrollY);
     cm.beautifyChange[cm.changeGeneration()] = true;
     if (ui) {
-      $('#help-popup button[role="close"]').disabled = false;
+      $('button[role="close"]', helpPopup.div).disabled = false;
     }
   }
 }
@@ -87,7 +87,7 @@ function createBeautifyUI(scope, options) {
         $create('span', t('styleBeautifyHint') + '\u00A0'),
         createHotkeyInput('editor.beautify.hotkey', {
           buttons: false,
-          onDone: () => moveFocus($('#help-popup'), 0),
+          onDone: () => moveFocus(helpPopup.div, 0),
         }),
       ]),
       $create('.buttons', [
