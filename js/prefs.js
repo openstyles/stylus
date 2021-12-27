@@ -99,6 +99,7 @@
 
     'editor.appliesToLineWidget': true, // show applies-to line widget on the editor
     'editor.livePreview': true,
+    'editor.headerWidth': 280,
 
     // show CSS colors as clickable colored rectangles
     'editor.colorpicker': true,

@@ -55,6 +55,7 @@ baseInit.ready.then(async () => {
   require([
     '/edit/autocomplete',
     '/edit/global-search',
+    '/edit/header-resizer',
   ]);
 });
 

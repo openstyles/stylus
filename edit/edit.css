@@ -1,11 +1,24 @@
 :root {
   --fixed-padding: unset;
+  --header-width: 280px;
 }
 
 body {
   margin: 0;
   height: 100vh;
   font: 12px arial,sans-serif;
+}
+body.resizing-h {
+  cursor: e-resize;
+}
+body.resizing-v {
+  cursor: n-resize;
+}
+body.resizing-h > *,
+body.resizing-v > * {
+  pointer-events: none;
+  -moz-user-select: none;
+  user-select: none;
 }
 
 a {
@@ -90,13 +103,12 @@ label {
 
 /************ header ************/
 #header {
-  width: 280px;
+  width: var(--header-width);
   height: 100vh;
   overflow: auto;
   position: fixed;
   top: 0;
   padding: 1rem;
-  border-right: 1px dashed #AAA;
   box-shadow: 0 0 3rem -1.2rem black;
   box-sizing: border-box;
   z-index: 10;
@@ -107,7 +119,7 @@ label {
   margin-top: 0;
 }
 #sections {
-  padding-left: 280px;
+  padding-left: var(--header-width);
   min-height: 0;
   height: 100%;
 }
@@ -122,6 +134,30 @@ label {
   display: table-cell;
   margin-top: 0.1rem;
   min-height: 1.4rem;
+}
+#header-resizer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 6px;
+  cursor: e-resize;
+  border-width: 0 1px;
+  border-style: solid;
+  color: #8888;
+  border-color: currentColor;
+  pointer-events: auto;
+}
+#header-resizer:active {
+  border-color: #888;
+}
+#header-resizer::after {
+  content: '';
+  position: absolute;
+  border-right: 2px dotted currentColor;
+  left: 2px;
+  width: 0;
+  height: 100%;
 }
 
 /* basic info */
@@ -745,7 +781,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 }
 #help-popup.big {
   box-shadow: rgba(0, 0, 0, 0.45) 0px 0px 0px 100000px !important;
-  left: calc(280px - 3rem);
+  left: calc(var(--header-width) - 3rem);
 }
 #help-popup.big .CodeMirror {
   min-height: 2rem;
@@ -1054,6 +1090,7 @@ body.linter-disabled .hidden-unless-compact {
     padding: 0;
     background-color: #fff;
   }
+  #header-resizer,
   .fixed-header #header > *:not(#details-wrapper),
   .fixed-header #options {
     display: none !important;
