@@ -381,8 +381,8 @@
   "editorCodeLabel": {
     "message": "Code"
   },
-  "editorSettingLabel": {
-    "message": "Settings"
+  "editorSettings": {
+    "message": "Editor settings"
   },
   "enableStyleLabel": {
     "message": "Enable",
@@ -1452,6 +1452,10 @@
     "message": "Sections",
     "description": "Header for the table of contents block listing style section names in the left panel of the classic editor"
   },
+  "settings": {
+    "message": "Settings",
+    "description": "Generic label/title for settings"
+  },
   "shortcuts": {
     "message": "Shortcuts",
     "description": "Go to shortcut configuration"
@@ -1622,6 +1626,10 @@
   "styleSaveLabel": {
     "message": "Save",
     "description": "Label for save button for style editing"
+  },
+  "styleSettings": {
+    "message": "Style settings",
+    "description": "Label/title for style settings dialog"
   },
   "styleToMozillaFormatHelp": {
     "message": "The Mozilla format of the code can be submitted to userstyles.org and used with the classic Stylish for Firefox",

@@ -21,7 +21,7 @@ function StyleSettings() {
   ];
   update(style);
   editor.on('styleUpdated', update);
-  helpPopup.show(t('editorSettingLabel'), $create([
+  helpPopup.show(t('styleSettings'), $create([
     ui,
     $create('.buttons', [
       $create('button', {
