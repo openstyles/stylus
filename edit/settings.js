@@ -24,8 +24,10 @@ function StyleSettings() {
   helpPopup.show(t('editorSettingLabel'), $create([
     ui,
     $create('.buttons', [
-      $create('button', {onclick: helpPopup.close}, t('confirmClose')),
-      createInfo({title: t('autosaveNotice')}),
+      $create('button', {
+        onclick: helpPopup.close,
+        title: t('autosaveNotice'),
+      }, t('confirmClose')),
     ]),
   ]), {
     className: 'style-settings-popup',
@@ -80,13 +82,6 @@ function StyleSettings() {
         }
       },
     };
-  }
-
-  function createInfo(props) {
-    const info = $('.svg-icon.info').closest('a').cloneNode(true);
-    info.id = '';
-    info.dataset.cmd = 'note';
-    return Object.assign(info, props);
   }
 
   function createInput(selector, getter, setter) {
