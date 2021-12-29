@@ -110,7 +110,7 @@ async function handleExternalUpdate({style, reason}) {
   } else {
     await editor.replaceStyle(style);
   }
-  editor.updateSettings();
+  window.dispatchEvent(new Event('styleSettings'));
 }
 
 window.on('beforeunload', e => {

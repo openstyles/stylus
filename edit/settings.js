@@ -8,8 +8,9 @@
 'use strict';
 
 function StyleSettings() {
+  const ssId = 'styleSettings';
   const AUTOSAVE_DELAY = 500; // same as config-dialog.js
-  const ui = t.template.styleSettings.cloneNode(true);
+  const ui = t.template[ssId].cloneNode(true);
   const elAuto = $('[id="config.autosave"]', ui);
   const elSave = $('#ss-save', ui);
   const pendingSetters = new Map();
@@ -22,10 +23,10 @@ function StyleSettings() {
     initArea('inclusions'),
     initArea('exclusions'),
   ];
-  (editor.updateSettings = () => {
-    updaters.forEach(fn => fn());
-  })();
-  helpPopup.show(t('styleSettings'), ui, {
+  update();
+  window.on(ssId, update);
+  window.on('closeHelp', () => window.off(ssId, update), {once: true});
+  helpPopup.show(t(ssId), ui, {
     className: 'style-settings-popup',
   });
   elSave.onclick = save;
@@ -81,11 +82,16 @@ function StyleSettings() {
 
   function save() {
     pendingSetters.forEach((fn, el) => fn(el.value));
+    pendingSetters.clear();
     helpPopup.div.classList.remove('dirty');
     elSave.disabled = true;
   }
 
   function textToList(text) {
     return text.split(/\n/).map(s => s.trim()).filter(Boolean);
+  }
+
+  function update() {
+    updaters.forEach(fn => fn());
   }
 }
