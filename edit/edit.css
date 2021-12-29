@@ -411,10 +411,6 @@ input:invalid {
 .edit-actions button {
   margin-right: .2rem;
 }
-.dirty > label::before {
-  content: "*";
-  font-weight: bold;
-}
 #sections {
   counter-reset: codebox;
 }

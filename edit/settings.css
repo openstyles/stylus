@@ -1,3 +1,6 @@
+#help-popup.style-settings-popup.dirty .title::after {
+  content: ' *';
+}
 .compact-layout #help-popup.style-settings-popup {
   width: 90%;
 }
@@ -6,47 +9,28 @@
   border: 0;
   margin: 0;
 }
+.style-settings > * {
+  display: block;
+  margin: 1rem 0;
+  padding: 0;
+}
 .style-settings > :first-child {
   margin-top: 0;
 }
 .style-settings > :last-child {
   margin-bottom: 0;
 }
-.form-group {
-  display: block;
-  margin: .6em 0;
-  padding: 0;
+.style-settings input[type=radio] {
+  margin-left: -.5em; /* compensate for label's 16px margin in edit.css */
 }
-.form-label {
-  display: inline-block;
-  margin: .3em 0;
-}
-[disabled] .form-label {
-  opacity: 0.4;
-}
-.form-group input[type=text],
-.form-group input[type=number],
-.form-group select,
-.form-group textarea {
+.style-settings input[type=text],
+.style-settings input[type=number],
+.style-settings select,
+.style-settings textarea {
   display: block;
   width: 100%;
+  margin-top: .25em;
   box-sizing: border-box;
-}
-.radio-group .form-label {
-  display: block;
-}
-.radio-item {
-  display: flex;
-  margin: 0.3em 0 .3em;
-  padding: 0;
-  align-items: center;
-  width: max-content;
-}
-.radio-item input {
-  margin: 0 0.6em 0 0;
-}
-[disabled] .radio-label {
-  opacity: 0.4;
 }
 .style-settings textarea {
   resize: vertical;
