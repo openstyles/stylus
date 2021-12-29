@@ -7,20 +7,28 @@
 
 const helpPopup = {
 
-  show(title = '', body) {
+  /**
+   * @param {string} title - plain text
+   * @param {string|Node} body - Node, html or plain text
+   * @param {Node} [props] - DOM props for the popup element
+   * @returns {Element} the popup
+   */
+  show(title = '', body, props) {
     const div = $('#help-popup');
     const contents = $('.contents', div);
+    div.style = '';
     div.className = '';
     contents.textContent = '';
+    Object.assign(div, props);
     if (body) {
       contents.appendChild(typeof body === 'string' ? t.HTML(body) : body);
     }
     $('.title', div).textContent = title;
     $('.dismiss', div).onclick = helpPopup.close;
     window.on('keydown', helpPopup.close, true);
-    // reset any inline styles
-    div.style = 'display: block';
+    div.style.display = 'block';
     helpPopup.originalFocus = document.activeElement;
+    helpPopup.div = div;
     return div;
   },
 
@@ -31,11 +39,13 @@ const helpPopup = {
         getEventKeyName(event) === 'Escape' &&
         !$('.CodeMirror-hints, #message-box') && (
           !document.activeElement ||
-          !document.activeElement.closest('#search-replace-dialog') &&
-          document.activeElement.matches(':not(input), .can-close-on-esc')
+          !document.activeElement.closest('#search-replace-dialog') && (
+            document.activeElement.tagName !== 'INPUT' ||
+            document.activeElement.closest('.can-close-on-esc')
+          )
         )
       );
-    const div = $('#help-popup');
+    const {div} = helpPopup;
     if (!canClose || !div) {
       return;
     }
@@ -170,8 +180,7 @@ function createHotkeyInput(prefId, {buttons = true, onDone}) {
 
 /* exported showCodeMirrorPopup */
 function showCodeMirrorPopup(title, html, options) {
-  const popup = helpPopup.show(title, html);
-  popup.classList.add('big');
+  const popup = helpPopup.show(title, html, {className: 'big'});
 
   let cm = popup.codebox = CodeMirror($('.contents', popup), Object.assign({
     mode: 'css',

@@ -65,7 +65,7 @@ function beautifyEditor(cm, options, ui) {
     window.scrollTo(scrollX, scrollY);
     cm.beautifyChange[cm.changeGeneration()] = true;
     if (ui) {
-      $('#help-popup button[role="close"]').disabled = false;
+      $('button[role="close"]', helpPopup.div).disabled = false;
     }
   }
 }
@@ -87,7 +87,7 @@ function createBeautifyUI(scope, options) {
         $create('span', t('styleBeautifyHint') + '\u00A0'),
         createHotkeyInput('editor.beautify.hotkey', {
           buttons: false,
-          onDone: () => moveFocus($('#help-popup'), 0),
+          onDone: () => moveFocus(helpPopup.div, 0),
         }),
       ]),
       $create('.buttons', [
@@ -113,9 +113,10 @@ function createBeautifyUI(scope, options) {
           },
         }, t(scope.length === 1 ? 'undo' : 'undoGlobal')),
       ]),
-    ]));
-
-  $('#help-popup').className = 'wide';
+    ]),
+    {
+      className: 'wide',
+    });
 
   $('.beautify-options').onchange = ({target}) => {
     const value = target.type === 'checkbox' ? target.checked : target.selectedIndex > 0;

@@ -17,7 +17,6 @@
     <script src="content/apply.js"></script>
 
     <script src="js/sections-util.js"></script>
-    <script src="js/event-emitter.js"></script>
     <script src="edit/codemirror-themes.js"></script> <!-- must precede base.js -->
     <script src="edit/base.js"></script>
 
@@ -62,7 +61,6 @@
     <script src="edit/sections-editor-section.js"></script>
     <script src="edit/sections-editor.js"></script>
     <script src="edit/usw-integration.js"></script>
-    <script src="edit/settings.js"></script>
     <script src="edit/edit.js"></script>
 
     <template data-id="appliesTo">
@@ -216,11 +214,11 @@
     </template>
 
     <template data-id="keymapHelp">
-      <table class="keymap-list">
+      <table class="keymap-list can-close-on-esc">
         <thead>
           <tr>
-            <th><input i18n-placeholder="helpKeyMapHotkey" type="search" class="can-close-on-esc"></th>
-            <th><input i18n-placeholder="helpKeyMapCommand" type="search" class="can-close-on-esc" spellcheck="false"></th>
+            <th><input i18n-placeholder="helpKeyMapHotkey" type="search"></th>
+            <th><input i18n-placeholder="helpKeyMapCommand" type="search"></th>
           </tr>
         </thead>
         <tbody>
@@ -232,6 +230,44 @@
       </table>
     </template>
 
+    <template data-id="styleSettings">
+      <div>
+        <fieldset class="style-settings can-close-on-esc">
+          <label i18n-text="styleUpdateUrlLabel">
+            <input id="ss-update-url" type="text">
+          </label>
+          <div>
+            <div i18n-text="installPreferSchemeLabel"></div>
+            <label i18n-text-append="installPreferSchemeNone">
+              <input name="ss-scheme" type="radio" value="none">
+            </label>
+            <label i18n-text-append="installPreferSchemeDark">
+              <input name="ss-scheme" type="radio" value="dark">
+            </label>
+            <label i18n-text-append="installPreferSchemeLight">
+              <input name="ss-scheme" type="radio" value="light">
+            </label>
+          </div>
+          <label i18n-text="styleIncludeLabel">
+            <textarea id="ss-inclusions" spellcheck="false"
+                      placeholder="*://site1.com/*&#10;*://site2.com/*"></textarea>
+          </label>
+          <label i18n-text="styleExcludeLabel">
+            <textarea id="ss-exclusions" spellcheck="false"
+                      placeholder="*://site1.com/*&#10;*://site2.com/*"></textarea>
+          </label>
+        </fieldset>
+        <div class="buttons">
+          <button id="ss-save" i18n-text="confirmSave" disabled></button>
+          <label i18n-title="configOnChangeTooltip" i18n-text-append="configOnChange">
+            <input id="config.autosave" type="checkbox">
+            <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+          </label>
+          <button id="ss-close" i18n-text="confirmClose"></button>
+        </div>
+      </div>
+    </template>
+
     <link href="vendor/codemirror/lib/codemirror.css" rel="stylesheet">
     <link href="vendor/codemirror/addon/dialog/dialog.css" rel="stylesheet">
     <link href="vendor/codemirror/addon/fold/foldgutter.css" rel="stylesheet">
@@ -241,8 +277,6 @@
     <link href="js/color/color-picker.css" rel="stylesheet">
     <link href="edit/codemirror-default.css" rel="stylesheet">
     <link href="edit/edit.css" rel="stylesheet">
-    <link rel="stylesheet" href="edit/tab.css">
-    <link rel="stylesheet" href="edit/settings.css">
   </head>
 
   <body id="stylus-edit">
@@ -278,7 +312,8 @@
         <div>
           <button id="save-button" i18n-text="styleSaveLabel" data-hotkey-tooltip="save" disabled></button>
           <button id="beautify" i18n-text="styleBeautify"></button>
-          <a href="manage.html" tabindex="-1"><button id="cancel-button" i18n-text="styleCancelEditLabel"></button></a>
+          <button id="style-settings-btn" i18n-text="settings"></button>
+          <button id="cancel-button" i18n-title="styleCancelEditLabel">↩</button>
         </div>
         <div id="mozilla-format-buttons" class="sectioned-only">
           <button id="from-mozilla" i18n-text="importLabel"></button>
@@ -291,7 +326,7 @@
       </section>
       <div id="details-wrapper">
         <details id="options" data-pref="editor.options.expanded" class="ignore-pref-if-compact">
-          <summary><h2 id="options-heading" i18n-text="optionsHeading"></h2></summary>
+          <summary><h2 id="options-heading" i18n-text="editorSettings"></h2></summary>
           <div id="options-wrapper">
             <div class="options-column">
               <div class="option">
@@ -437,53 +472,7 @@
            target="_blank"></a>
       </div>
     </div>
-    <div class="main tab-container">
-      <div class="tab-bar">
-        <div class="tab-bar-item active" i18n-text="editorCodeLabel"></div>
-        <div class="tab-bar-item" i18n-text="editorSettingLabel"></div>
-      </div>
-      <div class="tab-panel">
-        <section id="sections" class="active"></section>
-        <fieldset class="style-settings" disabled>
-          <!-- <label class="style-origin">
-            <span class="form-label" i18n-text="styleOriginLabel"></span>
-            <input id="styleOrigin" type="text">
-          </label> -->
-          <label class="form-group style-update-url">
-            <span class="form-label" i18n-text="styleUpdateUrlLabel"></span>
-            <input type="text">
-          </label>
-          <div class="form-group style-prefer-scheme radio-group">
-            <!-- FIXME: should we use a different message from install page? -->
-            <span class="form-label" i18n-text="installPreferSchemeLabel"></span>
-            <label class="radio-item">
-              <input type="radio" name="preferScheme" value="none">
-              <span class="radio-label" i18n-text="installPreferSchemeNone"></span>
-            </label>
-            <label class="radio-item">
-              <input type="radio" name="preferScheme" value="dark">
-              <span class="radio-label" i18n-text="installPreferSchemeDark"></span>
-            </label>
-            <label class="radio-item">
-              <input type="radio" name="preferScheme" value="light">
-              <span class="radio-label" i18n-text="installPreferSchemeLight"></span>
-            </label>
-          </div>
-          <label class="form-group style-include">
-            <span class="form-label" i18n-text="styleIncludeLabel"></span>
-            <textarea spellcheck="false" placeholder="*://site1.com/*&#10;*://site2.com/*"></textarea>
-          </label>
-          <label class="form-group style-exclude">
-            <span class="form-label" i18n-text="styleExcludeLabel"></span>
-            <textarea spellcheck="false" placeholder="*://site1.com/*&#10;*://site2.com/*"></textarea>
-          </label>
-          <!-- <label class="style-always-important">
-            <input type="checkbox">
-            <span class="form-label" i18n-text="styleAlwaysImportantLabel"></span>
-          </label> -->
-        </fieldset>
-      </div>
-    </div>
+    <section id="sections"></section>
     <div id="help-popup">
       <div class="title"></div><svg id="sections-help" class="svg-icon dismiss"><use xlink:href="#svg-icon-close"/></svg>
       <div class="contents"></div>
@@ -528,6 +517,5 @@
       </symbol>
 
     </svg>
-    <script src="edit/tab.js"></script>
   </body>
 </html>

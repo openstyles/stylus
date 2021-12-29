@@ -23,7 +23,7 @@ function SectionsEditor() {
   let headerOffset; // in compact mode the header is at the top so it reduces the available height
   let cmExtrasHeight; // resize grip + borders
 
-  updateHeader();
+  updateMeta();
   rerouteHotkeys.toggle(true); // enabled initially because we don't always focus a CodeMirror
   editor.livePreview.init();
   container.classList.add('section-editor');
@@ -44,6 +44,7 @@ function SectionsEditor() {
 
     closestVisible,
     updateLivePreview,
+    updateMeta,
 
     getEditors() {
       return sections.filter(s => !s.removed).map(s => s.cm);
@@ -89,8 +90,8 @@ function SectionsEditor() {
       // FIXME: avoid recreating all editors?
       await initSections(newStyle.sections, {replace: true});
       Object.assign(style, newStyle);
-      editor.onStyleUpdated();
-      updateHeader();
+      editor.updateClass();
+      updateMeta();
       // Go from new style URL to edit style URL
       if (style.id && !/[&?]id=/.test(location.search)) {
         history.replaceState({}, document.title, `${location.pathname}?id=${style.id}`);
@@ -108,9 +109,6 @@ function SectionsEditor() {
       }
       newStyle = await API.styles.editSave(newStyle);
       destroyRemovedSections();
-      if (!style.id) {
-        editor.emit('styleChange', newStyle, 'new');
-      }
       sessionStore.justEditedStyleId = newStyle.id;
       editor.replaceStyle(newStyle, false);
     },
@@ -127,28 +125,6 @@ function SectionsEditor() {
   });
 
   editor.ready = initSections(style.sections);
-
-  editor.on('styleToggled', newStyle => {
-    if (!dirty.isDirty()) {
-      Object.assign(style, newStyle);
-    } else {
-      editor.toggleStyle(newStyle.enabled);
-    }
-    updateHeader();
-    updateLivePreview();
-  });
-  editor.on('styleChange', (newStyle, reason) => {
-    if (reason === 'new') return; // nothing is new for us
-    if (reason === 'config') {
-      delete newStyle.sections;
-      delete newStyle.name;
-      delete newStyle.enabled;
-      Object.assign(style, newStyle);
-      updateLivePreview();
-      return;
-    }
-    editor.replaceStyle(newStyle);
-  });
 
   /** @param {EditorSection} section */
   function fitToContent(section) {
@@ -489,7 +465,7 @@ function SectionsEditor() {
     }
   }
 
-  function updateHeader() {
+  function updateMeta() {
     $('#name').value = style.customName || style.name || '';
     $('#enabled').checked = style.enabled !== false;
     $('#url').href = style.url || '';

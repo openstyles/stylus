@@ -14,14 +14,13 @@
   tryJSONparse
   tryURL
 */// toolbox.js
-/* global EventEmitter */
 'use strict';
 
 /**
  * @type Editor
  * @namespace Editor
  */
-const editor = Object.assign(EventEmitter(), {
+const editor = {
   style: null,
   dirty: DirtyReporter(),
   isUsercss: false,
@@ -36,7 +35,9 @@ const editor = Object.assign(EventEmitter(), {
   previewDelay: 200, // Chrome devtools uses 200
   scrollInfo: null,
 
-  onStyleUpdated() {
+  cancel: () => location.assign('/manage.html'),
+
+  updateClass() {
     document.documentElement.classList.toggle('is-new-style', !editor.style.id);
   },
 
@@ -48,7 +49,7 @@ const editor = Object.assign(EventEmitter(), {
       customName || name || t('styleMissingName')
     } - Stylus`; // the suffix enables external utilities to process our windows e.g. pin on top
   },
-});
+};
 
 //#region pre-init
 
@@ -90,7 +91,7 @@ const baseInit = (() => {
     // switching the mode here to show the correct page ASAP, usually before DOMContentLoaded
     editor.isUsercss = Boolean(style.usercssData || !style.id && prefs.get('newStyleAsUsercss'));
     editor.style = style;
-    editor.onStyleUpdated();
+    editor.updateClass();
     editor.updateTitle(false);
     document.documentElement.classList.toggle('usercss', editor.isUsercss);
     sessionStore.justEditedStyleId = style.id || '';
@@ -292,16 +293,10 @@ baseInit.ready.then(() => {
     }
   }
 
-  getOwnTab().then(async tab => {
+  getOwnTab().then(tab => {
     ownTabId = tab.id;
-    // use browser history back when 'back to manage' is clicked
     if (sessionStore['manageStylesHistory' + ownTabId] === location.href) {
-      await baseInit.domReady;
-      $('#cancel-button').onclick = event => {
-        event.stopPropagation();
-        event.preventDefault();
-        history.back();
-      };
+      editor.cancel = () => history.back();
     }
   });
 
