@@ -23,7 +23,7 @@ function SectionsEditor() {
   let headerOffset; // in compact mode the header is at the top so it reduces the available height
   let cmExtrasHeight; // resize grip + borders
 
-  updateHeader();
+  updateMeta();
   rerouteHotkeys.toggle(true); // enabled initially because we don't always focus a CodeMirror
   editor.livePreview.init();
   container.classList.add('section-editor');
@@ -44,6 +44,7 @@ function SectionsEditor() {
 
     closestVisible,
     updateLivePreview,
+    updateMeta,
 
     getEditors() {
       return sections.filter(s => !s.removed).map(s => s.cm);
@@ -90,7 +91,7 @@ function SectionsEditor() {
       await initSections(newStyle.sections, {replace: true});
       Object.assign(style, newStyle);
       editor.updateClass();
-      updateHeader();
+      updateMeta();
       // Go from new style URL to edit style URL
       if (style.id && !/[&?]id=/.test(location.search)) {
         history.replaceState({}, document.title, `${location.pathname}?id=${style.id}`);
@@ -108,9 +109,6 @@ function SectionsEditor() {
       }
       newStyle = await API.styles.editSave(newStyle);
       destroyRemovedSections();
-      if (!style.id) {
-        editor.emit('styleUpdated', newStyle, 'new');
-      }
       sessionStore.justEditedStyleId = newStyle.id;
       editor.replaceStyle(newStyle, false);
     },
@@ -127,16 +125,6 @@ function SectionsEditor() {
   });
 
   editor.ready = initSections(style.sections);
-
-  editor.on('styleToggled', newStyle => {
-    if (!dirty.isDirty()) {
-      Object.assign(style, newStyle);
-    } else {
-      editor.toggleStyle(newStyle.enabled);
-    }
-    updateHeader();
-    updateLivePreview();
-  });
 
   /** @param {EditorSection} section */
   function fitToContent(section) {
@@ -477,7 +465,7 @@ function SectionsEditor() {
     }
   }
 
-  function updateHeader() {
+  function updateMeta() {
     $('#name').value = style.customName || style.name || '';
     $('#enabled').checked = style.enabled !== false;
     $('#url').href = style.url || '';

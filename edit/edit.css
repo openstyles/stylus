@@ -34,6 +34,7 @@ a:hover {
 }
 
 html.is-new-style #preview-label,
+html.is-new-style #style-cfg-btn,
 html.is-new-style #publish,
 .hidden {
   display: none !important;

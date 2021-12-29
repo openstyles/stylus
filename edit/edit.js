@@ -74,14 +74,7 @@ msg.onExtension(request => {
   switch (request.method) {
     case 'styleUpdated':
       if (editor.style.id === style.id && !IGNORE_UPDATE_REASONS.includes(request.reason)) {
-        if (request.reason === 'toggle') {
-          editor.emit('styleToggled', request.style);
-        } else {
-          API.styles.get(request.style.id)
-            .then(style => {
-              editor.emit('styleUpdated', style, request.reason);
-            });
-        }
+        handleExternalUpdate(request);
       }
       break;
     case 'styleDeleted':
@@ -94,6 +87,31 @@ msg.onExtension(request => {
       break;
   }
 });
+
+async function handleExternalUpdate({style, reason}) {
+  if (reason === 'toggle') {
+    if (editor.dirty.isDirty()) {
+      editor.toggleStyle(style.enabled);
+    } else {
+      Object.assign(editor.style, style);
+    }
+    editor.updateMeta();
+    editor.updateLivePreview();
+    return;
+  }
+  style = await API.styles.get(style.id);
+  if (reason === 'config') {
+    delete style.sourceCode;
+    delete style.sections;
+    delete style.name;
+    delete style.enabled;
+    Object.assign(editor.style, style);
+    editor.updateLivePreview();
+  } else {
+    await editor.replaceStyle(style);
+  }
+  editor.updateSettings();
+}
 
 window.on('beforeunload', e => {
   let pos;

@@ -11,7 +11,6 @@
   debounce
   getOwnTab
   sessionStore
-  tryCatch
   tryJSONparse
   tryURL
 */// toolbox.js
@@ -24,7 +23,6 @@
 const editor = {
   style: null,
   dirty: DirtyReporter(),
-  events: {},
   isUsercss: false,
   isWindowed: false,
   lazyKeymaps: {
@@ -39,18 +37,6 @@ const editor = {
 
   cancel: () => location.assign('/manage.html'),
 
-  emit(name, ...args) {
-    for (const fn of editor.events[name] || []) {
-      tryCatch(fn, ...args);
-    }
-  },
-
-  on(name, fn) {
-    (editor.events[name] || (
-      editor.events[name] = new Set()
-    )).add(fn);
-  },
-
   updateClass() {
     document.documentElement.classList.toggle('is-new-style', !editor.style.id);
   },
@@ -64,19 +50,6 @@ const editor = {
     } - Stylus`; // the suffix enables external utilities to process our windows e.g. pin on top
   },
 };
-
-editor.on('styleUpdated', (newStyle, reason) => {
-  if (reason === 'config') {
-    delete newStyle.sourceCode;
-    delete newStyle.sections;
-    delete newStyle.name;
-    delete newStyle.enabled;
-    Object.assign(editor.style, newStyle);
-    editor.updateLivePreview();
-  } else if (reason !== 'new') {
-    editor.replaceStyle(newStyle);
-  }
-});
 
 //#region pre-init
 

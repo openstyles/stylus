@@ -45,6 +45,7 @@ function SourceEditor() {
     sections: sectionFinder.sections,
     replaceStyle,
     updateLivePreview,
+    updateMeta,
     closestVisible: () => cm,
     getEditors: () => [cm],
     getEditorTitle: () => '',
@@ -70,9 +71,6 @@ function SourceEditor() {
           messageBoxProxy.alert(t('usercssAvoidOverwriting'), 'danger', t('genericError'));
         } else {
           res = await API.usercss.editSave({customName, enabled, id, sourceCode});
-          if (!id) {
-            editor.emit('styleUpdated', res.style, 'new');
-          }
           // Awaiting inside `try` so that exceptions go to our `catch`
           await replaceStyle(res.style);
         }
@@ -116,15 +114,6 @@ function SourceEditor() {
   if (!$isTextInput(document.activeElement)) {
     cm.focus();
   }
-  editor.on('styleToggled', newStyle => {
-    if (dirty.isDirty()) {
-      editor.toggleStyle(newStyle.enabled);
-    } else {
-      style.enabled = newStyle.enabled;
-    }
-    updateMeta();
-    updateLivePreview();
-  });
 
   async function preprocess(style) {
     const res = await API.usercss.build({
@@ -220,7 +209,7 @@ function SourceEditor() {
     cm.setPreprocessor((style.usercssData || {}).preprocessor);
   }
 
-  function replaceStyle(newStyle) {
+  async function replaceStyle(newStyle) {
     dirty.clear('name');
     const sameCode = newStyle.sourceCode === cm.getValue();
     if (sameCode) {
@@ -232,8 +221,8 @@ function SourceEditor() {
       return;
     }
 
-    Promise.resolve(messageBoxProxy.confirm(t('styleUpdateDiscardChanges'))).then(ok => {
-      if (!ok) return;
+    // TODO: also confirm in sections-editor?
+    if (await messageBoxProxy.confirm(t('styleUpdateDiscardChanges'))) {
       updateEnvironment();
       if (!sameCode) {
         const cursor = cm.getCursor();
@@ -246,7 +235,7 @@ function SourceEditor() {
         updateLivePreview();
       }
       dirty.clear();
-    });
+    }
 
     function updateEnvironment() {
       if (style.id !== newStyle.id) {

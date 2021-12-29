@@ -7,7 +7,7 @@
 'use strict';
 
 function StyleSettings() {
-  let {style} = editor;
+  const {style} = editor;
   const ui = t.template.styleSettings.cloneNode(true);
   const inputs = [
     createInput('.style-update-url input', () => style.updateUrl || '',
@@ -19,8 +19,9 @@ function StyleSettings() {
       ['.style-exclude', 'exclusions'],
     ].map(createArea),
   ];
-  update(style);
-  editor.on('styleUpdated', update);
+  (editor.updateSettings = () => {
+    inputs.forEach(i => i.update());
+  })();
   helpPopup.show(t('styleSettings'), $create([
     ui,
     $create('.buttons', [
@@ -37,13 +38,6 @@ function StyleSettings() {
   function textToList(text) {
     const list = text.split(/\s*\r?\n\s*/g);
     return list.filter(Boolean);
-  }
-
-  function update(newStyle, reason) {
-    if (!newStyle.id) return;
-    if (reason === 'editSave') return;
-    style = newStyle;
-    inputs.forEach(i => i.update());
   }
 
   function createArea([parentSel, type]) {
