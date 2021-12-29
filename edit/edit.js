@@ -47,7 +47,7 @@ baseInit.ready.then(async () => {
     require(['/edit/linter-dialogs'], () => linterMan.showLintConfig());
   $('#lint-help').onclick = () =>
     require(['/edit/linter-dialogs'], () => linterMan.showLintHelp());
-  $('#style-cfg-btn').onclick = () => require([
+  $('#style-settings-btn').onclick = () => require([
     '/edit/settings.css',
     '/edit/settings', /* global StyleSettings */
   ], () => StyleSettings());
