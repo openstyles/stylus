@@ -8,13 +8,13 @@
 'use strict';
 
 function StyleSettings() {
-  const ssId = 'styleSettings';
   const AUTOSAVE_DELAY = 500; // same as config-dialog.js
-  const ui = t.template[ssId].cloneNode(true);
+  const SS_ID = 'styleSettings';
+  const {style} = editor;
+  const ui = t.template[SS_ID].cloneNode(true);
   const elAuto = $('[id="config.autosave"]', ui);
   const elSave = $('#ss-save', ui);
   const pendingSetters = new Map();
-  const {style} = editor;
   const updaters = [
     initInput('#ss-update-url', () => style.updateUrl || '',
       val => API.styles.config(style.id, 'updateUrl', val)),
@@ -24,9 +24,9 @@ function StyleSettings() {
     initArea('exclusions'),
   ];
   update();
-  window.on(ssId, update);
-  window.on('closeHelp', () => window.off(ssId, update), {once: true});
-  helpPopup.show(t(ssId), ui, {
+  window.on(SS_ID, update);
+  window.on('closeHelp', () => window.off(SS_ID, update), {once: true});
+  helpPopup.show(t(SS_ID), ui, {
     className: 'style-settings-popup',
   });
   elSave.onclick = save;
