@@ -21,7 +21,7 @@
     const [item] = list.splice(e.detail.originalIndex, 1);
     list.splice(e.detail.spliceIndex, 0, item);
     ol.insertBefore(e.detail.dragTarget, e.detail.insertBefore);
-    prefs.set('styles.order', list.map(l => l.style._id));
+    prefs.set('injectionOrder', list.map(l => l.style._id));
   });
   new DraggableList(ol, {scrollContainer: ol});
   document.querySelector('#main').classList.add('ready');
@@ -49,7 +49,7 @@
       uuidIndex.set(s._id, s);
     }
     const orderedStyles = [];
-    for (const uid of prefs.get('styles.order')) {
+    for (const uid of prefs.get('injectionOrder')) {
       const s = uuidIndex.get(uid);
       if (s) {
         uuidIndex.delete(uid);

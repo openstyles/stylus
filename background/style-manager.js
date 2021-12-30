@@ -72,7 +72,7 @@ const styleMan = (() => {
     }
   });
 
-  prefs.subscribe(['styles.order'], (key, value) => {
+  prefs.subscribe(['injectionOrder'], (key, value) => {
     order = {};
     value.forEach((uid, i) => {
       const id = uuidIndex.get(uid);

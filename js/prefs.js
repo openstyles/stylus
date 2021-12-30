@@ -127,7 +127,7 @@
 
     'updateInterval': 24,           // user-style automatic update interval, hours (0 = disable)
 
-    'styles.order': [],
+    'injectionOrder': [],
   };
   const knownKeys = Object.keys(defaults);
   /** @type {PrefsValues} */
