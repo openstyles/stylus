@@ -1,40 +1,51 @@
 /* global $ $$ */// dom.js
 /* global editor */
+/* global debounce */// toolbox.js
 /* global prefs */
 'use strict';
 
 (function HeaderResizer() {
   const PREF_ID = 'editor.headerWidth';
   const el = $('#header-resizer');
-  let curW, offset;
+  let curW, offset, active;
   prefs.subscribe(PREF_ID, (key, val) => {
-    rememberCurWidth();
-    setWidth(val);
+    if (!active && val !== curW) {
+      getCurWidth();
+      setWidth(val);
+    }
   });
   el.onmousedown = e => {
     if (e.button) return;
-    rememberCurWidth();
+    getCurWidth();
     offset = curW - e.clientX;
+    active = true;
     document.body.classList.add('resizing-h');
     document.on('mousemove', resize);
     document.on('mouseup', resizeStop);
   };
 
-  function rememberCurWidth() {
-    curW = $('#header').offsetWidth;
+  function getCurWidth() {
+    curW = parseFloat(document.documentElement.style.getPropertyValue('--header-width'))
+      || $('#header').offsetWidth;
   }
 
   function resize({clientX: x}) {
-    prefs.set(PREF_ID, setWidth(offset + x));
+    if (setWidth(offset + x)) {
+      debounce(save, 250);
+    }
   }
 
   function resizeStop() {
     document.off('mouseup', resizeStop);
     document.off('mousemove', resize);
     document.body.classList.remove('resizing-h');
+    active = false;
   }
 
-  /** @returns {number|void} new width in case it's different, otherwise void */
+  function save() {
+    prefs.set(PREF_ID, curW);
+  }
+
   function setWidth(w) {
     const delta = (w = editor.updateHeaderWidth(w)) - curW;
     if (delta) {
@@ -42,7 +53,7 @@
       for (const el of $$('.CodeMirror-linewidget[style*="width:"]')) {
         el.style.width = parseFloat(el.style.width) - delta + 'px';
       }
+      return true;
     }
-    return w;
   }
 })();
