@@ -2,16 +2,11 @@ html, body {
   margin: 0;
   padding: 0;
 }
-#main {
-  display: grid;
-  grid-template-columns: min-content minmax(0, 1fr);
-  height: 100vh;
-}
 #main.ready {
   animation: slidein .25s ease-in-out;
 }
 .closer {
-  max-height: 100vh;
+  display: none;
 }
 .closer::after {
   content: "\bb";
@@ -28,7 +23,6 @@ li {
   position: relative;
   user-select: none;
   border: 1px solid silver;
-  border-left: 0;
   padding: 0.3em 0;
   background: white;
   white-space: nowrap;

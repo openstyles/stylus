@@ -14,6 +14,7 @@
   setupLivePrefs
   waitForSelector
   waitForSheet
+  messageBoxProxy
 */// dom.js
 'use strict';
 
@@ -110,7 +111,7 @@ router.watch(
 );
 router.watch(
   {hash: '#stylus-execution-order'},
-  Embed(() => $create('iframe', {
+  EmbedDialog(() => $create('iframe', {
     id: 'stylus-execution-order',
     src: '/execution-order/execution-order.html',
   }))
@@ -135,6 +136,31 @@ function onRuntimeMessage(msg) {
       return;
   }
   setTimeout(sorter.updateStripes, 0, {onlyWhenColumnsChanged: true});
+}
+
+function EmbedDialog(El) {
+  let shown = false;
+  return toggle;
+
+  function toggle(state) {
+    if (state && !shown) {
+      messageBoxProxy.show({
+        title: t('manageExecutionOrder'),
+        contents: El(),
+        className: 'execution-order-dialog center-dialog',
+        blockScroll: true,
+      })
+        .then(() => {
+          shown = false;
+          router.updateHash('');
+        });
+      shown = true;
+    } else if (!state && shown) {
+      // FIXME: close the dialog
+      // messageBoxProxy.close();
+      shown = false;
+    }
+  }
 }
 
 function Embed(El) {

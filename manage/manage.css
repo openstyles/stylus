@@ -980,14 +980,13 @@ a:hover {
   animation: fadeout .25s ease-in-out;
 }
 
+.execution-order-dialog > div {
+  height: 100%;
+}
 #stylus-execution-order {
-  position: fixed;
-  height: 100vh;
+  display: block;
   border: 0;
-  top: 0;
-  right: 0;
-  max-width: 400px;
-  width: 90%;
+  height: 100%;
 }
 #stylus-execution-order.fadeout {
   animation: slideout .25s ease-in-out;
