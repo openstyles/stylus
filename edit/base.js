@@ -41,12 +41,6 @@ const editor = {
     document.documentElement.classList.toggle('is-new-style', !editor.style.id);
   },
 
-  updateHeaderWidth(w) {
-    w = Math.round(Math.max(200, Math.min(innerWidth / 2, w)));
-    document.documentElement.style.setProperty('--header-width', w + 'px');
-    return w;
-  },
-
   updateTitle(isDirty = editor.dirty.isDirty()) {
     const {customName, name} = editor.style;
     document.title = `${
@@ -71,7 +65,6 @@ const baseInit = (() => {
         Promise.all([
           loadTheme(),
           loadKeymaps(),
-          editor.updateHeaderWidth(prefs.get('editor.headerWidth')),
         ])),
     ]),
   };

@@ -1,5 +1,4 @@
 :root {
-  --header-width: 280px;
   --name-padding-left: 20px;
   --name-padding-right: 40px;
   --actions-width: 75px;
@@ -52,7 +51,6 @@ a:hover {
   position: fixed;
   top: 0;
   padding: 1rem;
-  border-right: 1px dashed #AAA;
   box-shadow: 0 0 50px -18px black;
   overflow: auto;
   box-sizing: border-box;

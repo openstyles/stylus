@@ -1,14 +1,13 @@
-/* global $ $$ */// dom.js
-/* global editor */
+/* global $ $$ dom */// dom.js
 /* global debounce */// toolbox.js
 /* global prefs */
 'use strict';
 
-(function HeaderResizer() {
-  const PREF_ID = 'editor.headerWidth';
+(() => {
+  const HR = dom.headerResizer;
   const el = $('#header-resizer');
   let curW, offset, active;
-  prefs.subscribe(PREF_ID, (key, val) => {
+  prefs.subscribe(HR.prefId, (key, val) => {
     if (!active && val !== curW) {
       getCurWidth();
       setWidth(val);
@@ -43,11 +42,11 @@
   }
 
   function save() {
-    prefs.set(PREF_ID, curW);
+    prefs.set(HR.prefId, curW);
   }
 
   function setWidth(w) {
-    const delta = (w = editor.updateHeaderWidth(w)) - curW;
+    const delta = (w = HR.setDomProp(w)) - curW;
     if (delta) {
       curW = w;
       for (const el of $$('.CodeMirror-linewidget[style*="width:"]')) {

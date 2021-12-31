@@ -265,6 +265,48 @@ input[type="number"][data-focused-via-click]:focus {
   box-shadow: none;
 }
 
+/* header resizer */
+:root {
+  --header-width: 280px;
+}
+#header-resizer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 6px;
+  cursor: e-resize;
+  border-width: 0 1px;
+  border-style: solid;
+  color: #8888;
+  border-color: currentColor;
+  pointer-events: auto;
+}
+#header-resizer:active {
+  border-color: #888;
+}
+#header-resizer::after {
+  content: '';
+  position: absolute;
+  border-right: 2px dotted currentColor;
+  left: 2px;
+  width: 0;
+  height: 100%;
+}
+body.resizing-h {
+  cursor: e-resize;
+}
+body.resizing-v {
+  cursor: n-resize;
+}
+body.resizing-h > *,
+body.resizing-v > * {
+  pointer-events: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+/* header resizer - end */
+
 @supports (-moz-appearance: none) {
   .moz-appearance-bug .svg-icon.checked,
   .moz-appearance-bug .onoffswitch input,
@@ -316,5 +358,11 @@ input[type="number"][data-focused-via-click]:focus {
 
   .firefox.moz-appearance-bug button:not(.install) {
     padding: 2px 4px;
+  }
+}
+
+@media (max-width: 850px) {
+  #header-resizer {
+    display: none !important;
   }
 }
