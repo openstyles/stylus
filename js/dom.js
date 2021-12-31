@@ -12,6 +12,7 @@
   getEventKeyName
   messageBoxProxy
   moveFocus
+  onDOMready
   scrollElementIntoView
   setupLivePrefs
   showSpinner
