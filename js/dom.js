@@ -471,18 +471,20 @@ const dom = {};
   }
   // set language for a) CSS :lang pseudo and b) hyphenation
   elHtml.setAttribute('lang', chrome.i18n.getUILanguage());
-  // set header width and export stuff via `dom.headerResizer`
-  if (/^.(edit|manage|install)/.test(location.pathname)) {
-    const prefId = `${RegExp.$1 === 'edit' ? 'editor' : RegExp.$1}.headerWidth`;
-    const HR = dom.headerResizer = {
-      prefId,
-      setDomProp(width) {
-        width = Math.round(Math.max(200, Math.min(innerWidth / 2, width)));
+  // set up header width resizer
+  const HW = 'headerWidth.';
+  const HWprefId = HW + location.pathname.match(/^.(\w*)/)[1];
+  if (prefs.knownKeys.includes(HWprefId)) {
+    Object.assign(dom, {
+      HW,
+      HWprefId,
+      setHWProp(width) {
+        width = Math.round(Math.max(200, Math.min(innerWidth / 2, Number(width) || 0)));
         elHtml.style.setProperty('--header-width', width + 'px');
         return width;
       },
-    };
-    prefs.ready.then(() => HR.setDomProp(prefs.get(prefId)));
+    });
+    prefs.ready.then(() => dom.setHWProp(prefs.get(HWprefId)));
     lazyScripts.push('/js/header-resizer');
   }
   // add favicon in FF

@@ -504,6 +504,10 @@
   "gettingStyles": {
     "message": "Getting all styles..."
   },
+  "headerResizerHint": {
+    "message": "Holding Shift key dragging will set the new size in all UI pages",
+    "description": "Tooltip for the header panel resizer"
+  },
   "helpAlt": {
     "message": "Help",
     "description": "Alternate text for help buttons"

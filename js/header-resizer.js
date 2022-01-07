@@ -4,16 +4,14 @@
 'use strict';
 
 (() => {
-  const HR = dom.headerResizer;
-  const el = $('#header-resizer');
   let curW, offset, active;
-  prefs.subscribe(HR.prefId, (key, val) => {
+  prefs.subscribe(dom.HWprefId, (key, val) => {
     if (!active && val !== curW) {
       getCurWidth();
       setWidth(val);
     }
   });
-  el.onmousedown = e => {
+  $('#header-resizer').onmousedown = e => {
     if (e.button) return;
     getCurWidth();
     offset = curW - e.clientX;
@@ -28,9 +26,10 @@
       || $('#header').offsetWidth;
   }
 
-  function resize({clientX: x}) {
-    if (setWidth(offset + x)) {
-      debounce(save, 250);
+  /** @param {MouseEvent} e */
+  function resize(e) {
+    if (setWidth(offset + e.clientX)) {
+      debounce(save, 250, e.shiftKey);
     }
   }
 
@@ -41,12 +40,18 @@
     active = false;
   }
 
-  function save() {
-    prefs.set(HR.prefId, curW);
+  function save(all) {
+    if (all) {
+      for (const k of prefs.knownKeys) {
+        if (k.startsWith(dom.HW)) prefs.set(k, curW);
+      }
+    } else {
+      prefs.set(dom.HWprefId, curW);
+    }
   }
 
   function setWidth(w) {
-    const delta = (w = HR.setDomProp(w)) - curW;
+    const delta = (w = dom.setHWProp(w)) - curW;
     if (delta) {
       curW = w;
       for (const el of $$('.CodeMirror-linewidget[style*="width:"]')) {
