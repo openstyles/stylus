@@ -108,9 +108,8 @@ function SectionsEditor() {
         return;
       }
       newStyle = await API.styles.editSave(newStyle);
-      destroyRemovedSections();
       sessionStore.justEditedStyleId = newStyle.id;
-      editor.replaceStyle(newStyle, false);
+      dirty.clear();
     },
 
     scrollToEditor(cm) {
@@ -451,18 +450,6 @@ function SectionsEditor() {
       }
     }
     return true;
-  }
-
-  function destroyRemovedSections() {
-    for (let i = 0; i < sections.length;) {
-      if (!sections[i].removed) {
-        i++;
-        continue;
-      }
-      sections[i].destroy();
-      sections[i].el.remove();
-      sections.splice(i, 1);
-    }
   }
 
   function updateMeta() {
