@@ -1,7 +1,7 @@
 /* global $ $$ $create $remove messageBoxProxy */// dom.js
 /* global API */// msg.js
 /* global CodeMirror */
-/* global FIREFOX RX_META debounce ignoreChromeError sessionStore */// toolbox.js
+/* global FIREFOX RX_META debounce ignoreChromeError */// toolbox.js
 /* global MozDocMapper clipString helpPopup rerouteHotkeys showCodeMirrorPopup */// util.js
 /* global createSection */// sections-editor-section.js
 /* global editor */
@@ -96,13 +96,7 @@ function SectionsEditor() {
       if (!sameCode) {
         await initSections(newStyle.sections, {replace: true});
       }
-      Object.assign(style, newStyle);
-      editor.updateClass();
-      updateMeta();
-      // Go from new style URL to edit style URL
-      if (style.id && !/[&?]id=/.test(location.search)) {
-        history.replaceState({}, document.title, `${location.pathname}?id=${style.id}`);
-      }
+      editor.useSavedStyle(newStyle);
       updateLivePreview();
     },
 
@@ -112,8 +106,8 @@ function SectionsEditor() {
         return;
       }
       newStyle = await API.styles.editSave(newStyle);
-      sessionStore.justEditedStyleId = newStyle.id;
       dirty.clear();
+      editor.useSavedStyle(newStyle);
     },
 
     scrollToEditor(cm) {

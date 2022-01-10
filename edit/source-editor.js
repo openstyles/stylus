@@ -4,7 +4,7 @@
 /* global MozDocMapper */// util.js
 /* global MozSectionFinder */
 /* global MozSectionWidget */
-/* global RX_META debounce sessionStore */// toolbox.js
+/* global RX_META debounce */// toolbox.js
 /* global chromeSync */// storage-util.js
 /* global cmFactory */
 /* global editor */
@@ -214,14 +214,14 @@ function SourceEditor() {
     if (sameCode) {
       savedGeneration = cm.changeGeneration();
       dirty.clear('sourceGeneration');
-      updateEnvironment();
+      editor.useSavedStyle(newStyle);
       dirty.clear('enabled');
       updateLivePreview();
       return;
     }
 
     if (await messageBoxProxy.confirm(t('styleUpdateDiscardChanges'))) {
-      updateEnvironment();
+      editor.useSavedStyle(newStyle);
       if (!sameCode) {
         const cursor = cm.getCursor();
         cm.setValue(style.sourceCode);
@@ -233,16 +233,6 @@ function SourceEditor() {
         updateLivePreview();
       }
       dirty.clear();
-    }
-
-    function updateEnvironment() {
-      if (style.id !== newStyle.id) {
-        history.replaceState({}, '', `?id=${newStyle.id}`);
-      }
-      sessionStore.justEditedStyleId = newStyle.id;
-      Object.assign(style, newStyle);
-      editor.updateClass();
-      updateMeta();
     }
   }
 
