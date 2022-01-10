@@ -7,6 +7,7 @@
 /* global editor */
 /* global linterMan */
 /* global prefs */
+/* global styleSectionsEqual */ // sections-util.js
 /* global t */// localization.js
 'use strict';
 
@@ -86,9 +87,15 @@ function SectionsEditor() {
     },
 
     async replaceStyle(newStyle) {
+      const sameCode = styleSectionsEqual(newStyle, getModel());
+      if (!sameCode && !await messageBoxProxy.confirm(t('styleUpdateDiscardChanges'))) {
+        return;
+      }
       dirty.clear();
       // FIXME: avoid recreating all editors?
-      await initSections(newStyle.sections, {replace: true});
+      if (!sameCode) {
+        await initSections(newStyle.sections, {replace: true});
+      }
       Object.assign(style, newStyle);
       editor.updateClass();
       updateMeta();
@@ -99,10 +106,7 @@ function SectionsEditor() {
       updateLivePreview();
     },
 
-    async save() {
-      if (!dirty.isDirty()) {
-        return;
-      }
+    async saveImpl() {
       let newStyle = getModel();
       if (!validate(newStyle)) {
         return;

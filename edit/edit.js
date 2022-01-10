@@ -61,19 +61,11 @@ baseInit.ready.then(async () => {
 //#endregion
 //#region events
 
-const IGNORE_UPDATE_REASONS = [
-  'editPreview',
-  'editPreviewEnd',
-  'editSave',
-  // https://github.com/openstyles/stylus/issues/807 is closed without fix
-  // 'config,
-];
-
 msg.onExtension(request => {
   const {style} = request;
   switch (request.method) {
     case 'styleUpdated':
-      if (editor.style.id === style.id && !IGNORE_UPDATE_REASONS.includes(request.reason)) {
+      if (editor.style.id === style.id) {
         handleExternalUpdate(request);
       }
       break;
@@ -89,6 +81,14 @@ msg.onExtension(request => {
 });
 
 async function handleExternalUpdate({style, reason}) {
+  if (reason === 'editPreview' ||
+      reason === 'editPreviewEnd') {
+    return;
+  }
+  if (reason === 'editSave' && editor.saving) {
+    editor.saving = false;
+    return;
+  }
   if (reason === 'toggle') {
     if (editor.dirty.isDirty()) {
       editor.toggleStyle(style.enabled);
@@ -188,6 +188,13 @@ window.on('beforeunload', e => {
           cm.scrollIntoView(cm.getCursor(), si.parentHeight / 2);
           cm.state.sublimeBookmarks = si.bookmarks.map(b => cm.markText(b.from, b.to, bmOpts));
         });
+      }
+    },
+
+    async save() {
+      if (dirty.isDirty()) {
+        editor.saving = true;
+        await editor.saveImpl();
       }
     },
 
