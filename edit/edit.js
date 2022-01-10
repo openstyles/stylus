@@ -266,6 +266,16 @@ window.on('beforeunload', e => {
         el.classList.add(cls);
       }
     },
+
+    useSavedStyle(newStyle) {
+      if (style.id !== newStyle.id) {
+        history.replaceState({}, '', `?id=${newStyle.id}`);
+      }
+      sessionStore.justEditedStyleId = newStyle.id;
+      Object.assign(style, newStyle);
+      editor.updateClass();
+      editor.updateMeta();
+    },
   });
 })();
 
