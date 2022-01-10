@@ -33,6 +33,7 @@ const editor = {
   /** @type {'customName'|'name'} */
   nameTarget: 'name',
   previewDelay: 200, // Chrome devtools uses 200
+  saving: false,
   scrollInfo: null,
 
   cancel: () => location.assign('/manage.html'),

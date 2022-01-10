@@ -7,6 +7,7 @@
 /* global editor */
 /* global linterMan */
 /* global prefs */
+/* global styleSectionsEqual */ // sections-util.js
 /* global t */// localization.js
 'use strict';
 
@@ -86,9 +87,15 @@ function SectionsEditor() {
     },
 
     async replaceStyle(newStyle) {
+      const sameCode = styleSectionsEqual(newStyle, getModel());
+      if (!sameCode && !await messageBoxProxy.confirm(t('styleUpdateDiscardChanges'))) {
+        return;
+      }
       dirty.clear();
       // FIXME: avoid recreating all editors?
-      await initSections(newStyle.sections, {replace: true});
+      if (!sameCode) {
+        await initSections(newStyle.sections, {replace: true});
+      }
       Object.assign(style, newStyle);
       editor.updateClass();
       updateMeta();
@@ -99,18 +106,14 @@ function SectionsEditor() {
       updateLivePreview();
     },
 
-    async save() {
-      if (!dirty.isDirty()) {
-        return;
-      }
+    async saveImpl() {
       let newStyle = getModel();
       if (!validate(newStyle)) {
         return;
       }
       newStyle = await API.styles.editSave(newStyle);
-      destroyRemovedSections();
       sessionStore.justEditedStyleId = newStyle.id;
-      editor.replaceStyle(newStyle, false);
+      dirty.clear();
     },
 
     scrollToEditor(cm) {
@@ -451,18 +454,6 @@ function SectionsEditor() {
       }
     }
     return true;
-  }
-
-  function destroyRemovedSections() {
-    for (let i = 0; i < sections.length;) {
-      if (!sections[i].removed) {
-        i++;
-        continue;
-      }
-      sections[i].destroy();
-      sections[i].el.remove();
-      sections.splice(i, 1);
-    }
   }
 
   function updateMeta() {

@@ -61,8 +61,7 @@ function SourceEditor() {
         cm.focus();
       }
     },
-    async save() {
-      if (!dirty.isDirty()) return;
+    async saveImpl() {
       const sourceCode = cm.getValue();
       try {
         const {customName, enabled, id} = style;
@@ -221,7 +220,6 @@ function SourceEditor() {
       return;
     }
 
-    // TODO: also confirm in sections-editor?
     if (await messageBoxProxy.confirm(t('styleUpdateDiscardChanges'))) {
       updateEnvironment();
       if (!sameCode) {
