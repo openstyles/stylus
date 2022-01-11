@@ -1654,9 +1654,6 @@
     "message": "As a security precaution, the browser prohibits extensions from affecting its built-in pages (like chrome://version, the standard new tab page as of Chrome 61, about:addons, and so on) as well as other extensions' pages. Each browser also restricts access to its own extensions gallery (like Chrome Web Store or AMO).",
     "description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
   },
-  "styleOriginLabel": {
-    "message": "Style origin"
-  },
   "styleUpdateUrlLabel": {
     "message": "Update URL"
   },
