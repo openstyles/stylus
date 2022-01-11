@@ -4127,8 +4127,8 @@ self.parserlib = (() => {
       this.fire(event, property);
       if (consumeSemicolon) {
         while (stream.match(TT.semiS)) {/*NOP*/}
+        this._ws();
       }
-      this._ws();
       return true;
     }
 
@@ -4392,7 +4392,7 @@ self.parserlib = (() => {
               readMargins && this._margin() ||
               (tt && stream.unget(), this._declaration(true, Props)) ||
               (next = stream.LT(1)).value === ';' ||
-              this._ws(next, true)) {
+              this._ws(null, true)) {
             continue;
           }
           break;
