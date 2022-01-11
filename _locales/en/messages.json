@@ -375,9 +375,6 @@
     },
     "description": "Title of the page for editing styles"
   },
-  "editorCodeLabel": {
-    "message": "Code"
-  },
   "editorSettings": {
     "message": "Editor settings"
   },
