@@ -71,7 +71,7 @@
     "message": "Kopia zapasowa"
   },
   "backupMessage": {
-    "message": "Wybierz plik lub przeciągnij i upuść go na tę stronę."
+    "message": "Aby zaimportować plik kopii zapasowej, przeciągnij go i upuść na tej stronie lub kliknij przycisk Importuj.\n\nAby wyeksportować kompatybilną kopię zapasową Stylusa w wersji starszej niż 1.5.18, kliknij prawym przyciskiem myszy lub kliknij z wciśniętym klawiszem Shift przycisk Eksportuj."
   },
   "bckpInstStyles": {
     "message": "Eksportuj style"
@@ -293,6 +293,9 @@
       }
     }
   },
+  "editorSettings": {
+    "message": "Ustawienia edytora"
+  },
   "enableStyleLabel": {
     "message": "Włącz"
   },
@@ -341,7 +344,7 @@
     "message": "Znajdź style"
   },
   "findStylesForSite": {
-    "message": "Znajdź więcej stylów dla tej strony"
+    "message": "Znajdź więcej stylów dla tej witryny"
   },
   "findStylesInline": {
     "message": "Wstawka"
@@ -465,6 +468,18 @@
   },
   "installButtonUpdate": {
     "message": "Zaktualizuj styl"
+  },
+  "installPreferSchemeDark": {
+    "message": "W trybie ciemnym"
+  },
+  "installPreferSchemeLabel": {
+    "message": "Należy stosować styl:"
+  },
+  "installPreferSchemeLight": {
+    "message": "W trybie jasnym"
+  },
+  "installPreferSchemeNone": {
+    "message": "Zawsze"
   },
   "installUpdate": {
     "message": "Zainstaluj aktualizację"
@@ -825,6 +840,18 @@
   "optionsAdvanced": {
     "message": "Zaawansowane"
   },
+  "optionsAdvancedAutoSwitchScheme": {
+    "message": "Automatycznie przełączaj style trybu jasnego/ciemnego"
+  },
+  "optionsAdvancedAutoSwitchSchemeBySystem": {
+    "message": "Według preferencji systemowych"
+  },
+  "optionsAdvancedAutoSwitchSchemeByTime": {
+    "message": "W nocy:"
+  },
+  "optionsAdvancedAutoSwitchSchemeNever": {
+    "message": "Nigdy"
+  },
   "optionsAdvancedContextDelete": {
     "message": "Dodaj 'Usuń' do menu kontekstowego edytora"
   },
@@ -918,6 +945,9 @@
   "optionsSyncNone": {
     "message": "Brak"
   },
+  "optionsSyncPassword": {
+    "message": "Hasło"
+  },
   "optionsSyncStatusConnected": {
     "message": "Połączono"
   },
@@ -960,6 +990,12 @@
   },
   "optionsSyncSyncNow": {
     "message": "Synchronizuj teraz"
+  },
+  "optionsSyncUrl": {
+    "message": "Adres URL"
+  },
+  "optionsSyncUsername": {
+    "message": "Nazwa użytkownika"
   },
   "optionsUpdateImportNote": {
     "message": "Podczas importowania kopii zapasowych stylu ze starej wersji lub ze Stylish jednorazowo sprawdź aktualizacje ręcznie w menedżerze stylów, aby upewnić się, że wszystkie style są zaktualizowane."
@@ -1144,6 +1180,9 @@
   "sections": {
     "message": "Sekcje"
   },
+  "settings": {
+    "message": "Ustawienia"
+  },
   "shortcuts": {
     "message": "Skróty"
   },
@@ -1195,11 +1234,17 @@
   "styleEnabledLabel": {
     "message": "Włączony"
   },
+  "styleExcludeLabel": {
+    "message": "Niestandardowe wykluczone witryny"
+  },
   "styleFromMozillaFormatError": {
     "message": "Nie udało się zaimportować z formatu Mozilla"
   },
   "styleFromMozillaFormatPrompt": {
     "message": "Wprowadź kod w formacie Mozilla"
+  },
+  "styleIncludeLabel": {
+    "message": "Niestandardowe uwzględnione witryny"
   },
   "styleInstall": {
     "message": "Zainstalować '$stylename$' do Stylusa?",
@@ -1243,6 +1288,15 @@
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "Styl nie został zastosowany z powodu nieprawidłowego użycia 'regexp()'"
   },
+  "styleNotAppliedSchemeDark": {
+    "message": "Ten styl jest stosowany tylko w trybie ciemnym"
+  },
+  "styleNotAppliedSchemeLight": {
+    "message": "Ten styl jest stosowany tylko w trybie jasnym"
+  },
+  "stylePreferSchemeLabel": {
+    "message": "Tryb ciemny/jasny"
+  },
   "styleRegexpInvalidExplanation": {
     "message": "Niektóre reguły 'regexp()', których nie można było w ogóle skompilować."
   },
@@ -1276,6 +1330,9 @@
   "styleSaveLabel": {
     "message": "Zapisz"
   },
+  "styleSettings": {
+    "message": "Ustawienia stylu"
+  },
   "styleToMozillaFormatHelp": {
     "message": "Kod w formacie Mozilla może być przesłany do userstyles.org i użyty z klasycznym dodatkiem Stylish dla Firefoksa"
   },
@@ -1293,6 +1350,9 @@
   "styleUpdateDiscardChanges": {
     "message": "Styl zmieniono poza edytorem. Czy chcesz przeładować styl?"
   },
+  "styleUpdateUrlLabel": {
+    "message": "Adres URL aktualizacji"
+  },
   "stylusUnavailableForURL": {
     "message": "Stylus nie działa na takich stronach."
   },
@@ -1308,8 +1368,16 @@
   "syncError": {
     "message": "Synchronizacja nie powiodła się"
   },
+  "syncErrorLock": {
+    "message": "Baza danych jest już w użyciu. Blokada wygaśnie o $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
   "syncErrorRelogin": {
-    "message": "Synchronizacja nie powiodła się.\nSpróbuj ponownie zalogować się w opcjach Stylusa:\nkliknij najpierw 'rozłącz' , następnie 'połącz'."
+    "message": "Synchronizacja nie powiodła się. Wylogowano.\nSpróbuj ponownie zalogować się w opcjach Stylusa."
   },
   "syncStorageErrorSaving": {
     "message": "Nie można zapisać wartości. Spróbuj zmniejszyć ilość tekstu."

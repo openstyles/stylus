@@ -71,7 +71,7 @@
     "message": "备份"
   },
   "backupMessage": {
-    "message": "选择备份文件，或将 JSON 备份文件拖放到本页面，即可导入备份。"
+    "message": "选择/拖拽 JSON 备份文件到本页面来导入备份。\n\n若要导出 Stylus V1.5.18 之前的兼容备份，请右击或Shift+左击「导出」按钮。"
   },
   "bckpInstStyles": {
     "message": "导出所有样式"
@@ -293,6 +293,9 @@
       }
     }
   },
+  "editorSettings": {
+    "message": "编辑器设置"
+  },
   "enableStyleLabel": {
     "message": "启用"
   },
@@ -465,6 +468,18 @@
   },
   "installButtonUpdate": {
     "message": "更新样式"
+  },
+  "installPreferSchemeDark": {
+    "message": "深色模式"
+  },
+  "installPreferSchemeLabel": {
+    "message": "此样式将在以下模式中应用："
+  },
+  "installPreferSchemeLight": {
+    "message": "浅色模式"
+  },
+  "installPreferSchemeNone": {
+    "message": "始终"
   },
   "installUpdate": {
     "message": "安装更新"
@@ -825,6 +840,18 @@
   "optionsAdvanced": {
     "message": "高级设置"
   },
+  "optionsAdvancedAutoSwitchScheme": {
+    "message": "自动切换深色/浅色模式样式"
+  },
+  "optionsAdvancedAutoSwitchSchemeBySystem": {
+    "message": "按系统偏好设置"
+  },
+  "optionsAdvancedAutoSwitchSchemeByTime": {
+    "message": "按夜间时间"
+  },
+  "optionsAdvancedAutoSwitchSchemeNever": {
+    "message": "从不"
+  },
   "optionsAdvancedContextDelete": {
     "message": "向编辑器右键菜单添加“删除”"
   },
@@ -918,6 +945,9 @@
   "optionsSyncNone": {
     "message": "无"
   },
+  "optionsSyncPassword": {
+    "message": "密码"
+  },
   "optionsSyncStatusConnected": {
     "message": "已连接"
   },
@@ -960,6 +990,9 @@
   },
   "optionsSyncSyncNow": {
     "message": "现在同步"
+  },
+  "optionsSyncUsername": {
+    "message": "用户名"
   },
   "optionsUpdateImportNote": {
     "message": "从旧版本的 Stylus 或 Stylish 中导入样式备份时，请在样式管理器中手动检测升级一次，以确保所有样式都可更新到最新版本。"
@@ -1088,7 +1121,7 @@
     "message": "/regex/  用 / 包裹语法来正则搜索"
   },
   "searchResultInstallCount": {
-    "message": "总的安装次数"
+    "message": "总安装次数"
   },
   "searchResultNoneFound": {
     "message": "没有找到与此页面相关的样式。"
@@ -1144,6 +1177,9 @@
   "sections": {
     "message": "章节"
   },
+  "settings": {
+    "message": "设置"
+  },
   "shortcuts": {
     "message": "快捷键"
   },
@@ -1195,11 +1231,17 @@
   "styleEnabledLabel": {
     "message": "启用"
   },
+  "styleExcludeLabel": {
+    "message": "自定义排除网站"
+  },
   "styleFromMozillaFormatError": {
     "message": "导入 Mozilla 格式失败"
   },
   "styleFromMozillaFormatPrompt": {
     "message": "粘贴 Mozilla 格式代码"
+  },
+  "styleIncludeLabel": {
+    "message": "自定义包括网站"
   },
   "styleInstall": {
     "message": "要将“$stylename$”安装到 Stylus 中吗？",
@@ -1243,6 +1285,15 @@
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "正则表达式错误，样式无法正常运行"
   },
+  "styleNotAppliedSchemeDark": {
+    "message": "此样式仅在深色模式下应用"
+  },
+  "styleNotAppliedSchemeLight": {
+    "message": "此样式仅在浅色模式下应用"
+  },
+  "stylePreferSchemeLabel": {
+    "message": "深色/浅色模式"
+  },
   "styleRegexpInvalidExplanation": {
     "message": "部分正则表达式无法生效。"
   },
@@ -1276,6 +1327,9 @@
   "styleSaveLabel": {
     "message": "保存"
   },
+  "styleSettings": {
+    "message": "样式设置"
+  },
   "styleToMozillaFormatHelp": {
     "message": "导入 FireFox 格式即 @-moz-document ...的 CSS 代码后，会自动转换成 Stylus 使用的分段式 CSS 代码。\n反过来，分段式的 CSS 也可以导出为 FireFox 格式。\n需要注意的是，如果你要向 userstyles.org 提交你的代码，则必须使用 FireFox 格式。\n\n导入快捷键: 剪贴板含有 @-moz-document ....代码,则可以直接在编辑器里 Ctrl+V 会自动弹出导入对话框"
   },
@@ -1293,6 +1347,9 @@
   "styleUpdateDiscardChanges": {
     "message": "样式已经在编辑器外被修改。需要重新加载样式吗？"
   },
+  "styleUpdateUrlLabel": {
+    "message": "更新 URL"
+  },
   "stylusUnavailableForURL": {
     "message": "Stylus 无法介入到此类页面"
   },
@@ -1308,8 +1365,16 @@
   "syncError": {
     "message": "同步失败"
   },
+  "syncErrorLock": {
+    "message": "数据库已在使用中。锁定将在 $TIME$ 过期",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
   "syncErrorRelogin": {
-    "message": "同步失败\n请尝试在 Stylus 选项里重新登录\n先点击「断开连接」，再点击「连接」。"
+    "message": "同步失败。你已退出登录。\n请尝试在 Stylus 选项里重新登录。"
   },
   "syncStorageErrorSaving": {
     "message": "不能保存该值，请尝试减少文本数量。"

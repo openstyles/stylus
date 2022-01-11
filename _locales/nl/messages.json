@@ -68,7 +68,7 @@
     "message": "Back-up"
   },
   "backupMessage": {
-    "message": "Selecteer een bestand of sleep het naar deze pagina."
+    "message": "Sleep het back-upbestand naar deze pagina of klik op de knop Importeren om het te importeren.\n\nRechtsklik of shift-klik op de knop Exporteren om een compatibele back-up voor Stylus ouder dan 1.5.18 te exporteren."
   },
   "bckpInstStyles": {
     "message": "Stijlen exporteren"
@@ -274,6 +274,9 @@
       }
     }
   },
+  "editorSettings": {
+    "message": "Editor-instellingen"
+  },
   "enableStyleLabel": {
     "message": "Inschakelen"
   },
@@ -440,6 +443,18 @@
   },
   "installButtonUpdate": {
     "message": "Stijl bijwerken"
+  },
+  "installPreferSchemeDark": {
+    "message": "In Donkere modus"
+  },
+  "installPreferSchemeLabel": {
+    "message": "De stijl wordt toegepast:"
+  },
+  "installPreferSchemeLight": {
+    "message": "In Lichte modus"
+  },
+  "installPreferSchemeNone": {
+    "message": "Altijd"
   },
   "installUpdate": {
     "message": "Update installeren"
@@ -797,6 +812,18 @@
   "optionsAdvanced": {
     "message": "Geavanceerd"
   },
+  "optionsAdvancedAutoSwitchScheme": {
+    "message": "Lichte-/Donkere-modusstijlen automatisch in-/uitschakelen"
+  },
+  "optionsAdvancedAutoSwitchSchemeBySystem": {
+    "message": "Systeemvoorkeur volgen"
+  },
+  "optionsAdvancedAutoSwitchSchemeByTime": {
+    "message": "Door nachttijd:"
+  },
+  "optionsAdvancedAutoSwitchSchemeNever": {
+    "message": "Nooit"
+  },
   "optionsAdvancedContextDelete": {
     "message": "‘Verwijderen’ toevoegen in contextmenu van editor"
   },
@@ -887,6 +914,9 @@
   "optionsSyncNone": {
     "message": "Geen"
   },
+  "optionsSyncPassword": {
+    "message": "Wachtwoord"
+  },
   "optionsSyncStatusConnected": {
     "message": "Gekoppeld"
   },
@@ -929,6 +959,9 @@
   },
   "optionsSyncSyncNow": {
     "message": "Nu synchroniseren"
+  },
+  "optionsSyncUsername": {
+    "message": "Gebruikersnaam"
   },
   "optionsUpdateImportNote": {
     "message": "Als u stijlen vanuit een oudere versie of vanuit Stylish importeert, controleer dan eenmalig op updates in de stijlbeheerder om er zeker van te zijn dat alle stijlen zijn bijgewerkt."
@@ -1110,6 +1143,9 @@
   "sections": {
     "message": "Secties"
   },
+  "settings": {
+    "message": "Instellingen"
+  },
   "shortcuts": {
     "message": "Sneltoetsen"
   },
@@ -1161,11 +1197,17 @@
   "styleEnabledLabel": {
     "message": "Ingeschakeld"
   },
+  "styleExcludeLabel": {
+    "message": "Eigen uitgesloten websites"
+  },
   "styleFromMozillaFormatError": {
     "message": "Importeren vanuit Mozilla-opmaak mislukt"
   },
   "styleFromMozillaFormatPrompt": {
     "message": "Plak de code in Mozilla-opmaak"
+  },
+  "styleIncludeLabel": {
+    "message": "Eigen opgenomen websites"
   },
   "styleInstall": {
     "message": "‘$stylename$’ installeren in Stylus?",
@@ -1209,6 +1251,15 @@
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "Stijl is niet toegepast vanwege onjuist gebruik van ‘regexp()’"
   },
+  "styleNotAppliedSchemeDark": {
+    "message": "Deze stijl wordt alleen in Donkere modus toegepast"
+  },
+  "styleNotAppliedSchemeLight": {
+    "message": "Deze stijl wordt alleen in Lichte modus toegepast"
+  },
+  "stylePreferSchemeLabel": {
+    "message": "Donkere/Lichte modus"
+  },
   "styleRegexpInvalidExplanation": {
     "message": "Sommige ‘regexp()’-regels konden niet worden gecompileerd."
   },
@@ -1242,6 +1293,9 @@
   "styleSaveLabel": {
     "message": "Opslaan"
   },
+  "styleSettings": {
+    "message": "Stijlinstellingen"
+  },
   "styleToMozillaFormatHelp": {
     "message": "De Mozilla-opmaak van de code kan bij userstyles.org worden ingediend en met het klassieke Stylish voor Firefox worden gebruikt."
   },
@@ -1259,6 +1313,9 @@
   "styleUpdateDiscardChanges": {
     "message": "Deze stijl is buiten de editor om gewijzigd. Wilt u de stijl opnieuw laden?"
   },
+  "styleUpdateUrlLabel": {
+    "message": "Update-URL"
+  },
   "stylusUnavailableForURL": {
     "message": "Stylus werkt niet op pagina’s als deze."
   },
@@ -1274,8 +1331,16 @@
   "syncError": {
     "message": "Synchronisatie mislukt"
   },
+  "syncErrorLock": {
+    "message": "De database is al in gebruik. De vergrendeling vervalt om $TIME$.",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
   "syncErrorRelogin": {
-    "message": "Synchronisatie mislukt.\nProbeer u opnieuw aan te melden in de Stylus-opties:\nklik eerst op ‘ontkoppelen’, daarna op ‘koppelen’."
+    "message": "Synchronisatie mislukt. U bent afgemeld.\nProbeer u opnieuw aan te melden in de Stylus-opties."
   },
   "syncStorageErrorSaving": {
     "message": "De waarde kan niet worden opgeslagen. Probeer de hoeveelheid tekst te verminderen."

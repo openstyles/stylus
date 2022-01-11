@@ -70,9 +70,6 @@
   "backupButtons": {
     "message": "Säkerhetskopiera"
   },
-  "backupMessage": {
-    "message": "Välj en fil eller dra och släpp till den här sidan."
-  },
   "bckpInstStyles": {
     "message": "Exportera stilar"
   },

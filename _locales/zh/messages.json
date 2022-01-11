@@ -70,9 +70,6 @@
   "backupButtons": {
     "message": "备份"
   },
-  "backupMessage": {
-    "message": "拖拽JSON备份文件到本页面也可导入。"
-  },
   "bckpInstStyles": {
     "message": "导出所有样式"
   },
@@ -596,9 +593,6 @@
   },
   "manageOnlyUsercss": {
     "message": "只显示   UserCSS"
-  },
-  "manageTitle": {
-    "message": "Stylus管理器"
   },
   "menuShowBadge": {
     "message": "计数器角标"

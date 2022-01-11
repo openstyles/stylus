@@ -58,9 +58,6 @@
   "backupButtons": {
     "message": "Yedek"
   },
-  "backupMessage": {
-    "message": "Bir dosya seçin veya bu sayfaya sürükleyip bırakın."
-  },
   "bckpInstStyles": {
     "message": "Dışa aktar"
   },

@@ -64,9 +64,6 @@
   "author": {
     "message": "Autor"
   },
-  "backupMessage": {
-    "message": "Selecione um arquivo ou arraste e solte nessa página."
-  },
   "bckpInstStyles": {
     "message": "Exportar estilos"
   },

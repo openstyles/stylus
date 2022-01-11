@@ -68,7 +68,7 @@
     "message": "Datensicherung"
   },
   "backupMessage": {
-    "message": "Wähle eine Datei aus oder ziehe die Datei auf diese Seite. (Drag and Drop)"
+    "message": "Um die Backupdatei zu importieren, ziehe sie in diese Seite oder klicke auf die Import-Schaltfläche.\n\nZum Exportieren einer mit Stylus 1.5.18 (und älter) kompatiblen Backupdatei, rechtsklicke oder Shift-klicke auf die Export-Schaltfläche."
   },
   "bckpInstStyles": {
     "message": "Styles exportieren"
@@ -252,6 +252,9 @@
       }
     }
   },
+  "editorSettings": {
+    "message": "Editor Einstellungen"
+  },
   "enableStyleLabel": {
     "message": "Aktivieren"
   },
@@ -418,6 +421,18 @@
   },
   "installButtonUpdate": {
     "message": "Style updaten"
+  },
+  "installPreferSchemeDark": {
+    "message": "Im dunklen Modus"
+  },
+  "installPreferSchemeLabel": {
+    "message": "Der Style wird aktiviert:"
+  },
+  "installPreferSchemeLight": {
+    "message": "Im hellen Modus"
+  },
+  "installPreferSchemeNone": {
+    "message": "Immer"
   },
   "installUpdate": {
     "message": "Update installieren"
@@ -778,6 +793,18 @@
   "optionsAdvanced": {
     "message": "Erweitert"
   },
+  "optionsAdvancedAutoSwitchScheme": {
+    "message": "Hellen/Dunklen Modus automatisch umschalten"
+  },
+  "optionsAdvancedAutoSwitchSchemeBySystem": {
+    "message": "Nach Systemeinstellung"
+  },
+  "optionsAdvancedAutoSwitchSchemeByTime": {
+    "message": "Bei Nacht:"
+  },
+  "optionsAdvancedAutoSwitchSchemeNever": {
+    "message": "Nie"
+  },
   "optionsAdvancedContextDelete": {
     "message": "\"Löschen\" im Editor-Kontextmenü hinzufügen"
   },
@@ -791,7 +818,7 @@
     "message": "Schreibe neuen Style als UserCSS"
   },
   "optionsAdvancedPatchCsp": {
-    "message": "<code>CSP</code>abändern, um externe Ressourcen zu erlauben"
+    "message": "<code>CSP</code> abändern, um externe Ressourcen zu erlauben"
   },
   "optionsAdvancedPatchCspNote": {
     "message": "Aktivieren, wenn Styles Bilder oder Schriftarten enthalten, die aufgrund strenger <code>CSP</code> (<code>Content-Security-Policy</code>) Regeln mancher Seiten nicht laden.\n\nDas Aktivieren wird <code>CSP</code>Beschränkungen lockern, um für den Style erforderliche Ressourcen zu laden. Diese Option ist für fortgeschrittene Benutzer gedacht, die sich den möglichen Sicherheitsrisiken bewusst sind und die die Verantwortung dafür tragen, die nachgeladenen Inhalte selbst zu überwachen. Informiere dich über \"CSS-basierte Angriffe\" um mehr zu erfahren.\n\nBeachte außerdem, dass diese Option nicht garantiert funktioniert, falls eine andere installierte Erweiterung die Netzwerkantwort (CSP-header) zuerst abändert."
@@ -865,6 +892,9 @@
   "optionsSyncNone": {
     "message": "Nichts"
   },
+  "optionsSyncPassword": {
+    "message": "Passwort"
+  },
   "optionsSyncStatusConnected": {
     "message": "Verbunden"
   },
@@ -907,6 +937,9 @@
   },
   "optionsSyncSyncNow": {
     "message": "Jetzt synchronisieren"
+  },
+  "optionsSyncUsername": {
+    "message": "Benutzername"
   },
   "optionsUpdateImportNote": {
     "message": "Nach dem Importieren von Styles aus einer alten Version oder von Stylish ist eine einmalige manuelle Updatesuche in der Verwaltung nötig. Dies stellt sicher, dass alle Styles auf dem aktuellsten Stand sind."
@@ -1082,6 +1115,9 @@
   "sections": {
     "message": "Bereiche"
   },
+  "settings": {
+    "message": "Einstellungen"
+  },
   "shortcuts": {
     "message": "Tastenkürzel"
   },
@@ -1133,11 +1169,17 @@
   "styleEnabledLabel": {
     "message": "Aktiviert"
   },
+  "styleExcludeLabel": {
+    "message": "Benutzerdefinierte ausgeschlossene URLs"
+  },
   "styleFromMozillaFormatError": {
     "message": "Import vom Mozilla Format fehlgeschlagen"
   },
   "styleFromMozillaFormatPrompt": {
     "message": "Mozilla-Format Code einfügen"
+  },
+  "styleIncludeLabel": {
+    "message": "Benutzerdefinierte Ziel-URLs"
   },
   "styleInstall": {
     "message": "\"$stylename$\" mit Stylus installieren?",
@@ -1178,6 +1220,15 @@
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "Der Style wurde aufgrund ungültiger RegExp nicht angewandt."
   },
+  "styleNotAppliedSchemeDark": {
+    "message": "Der Style wird nur im dunklen Modus angewendet"
+  },
+  "styleNotAppliedSchemeLight": {
+    "message": "Der Style wird nur im hellen Modus angewendet"
+  },
+  "stylePreferSchemeLabel": {
+    "message": "Dunkler/Heller Modus"
+  },
   "styleRegexpInvalidExplanation": {
     "message": "Einige RegExp konnten nicht kompiliert werden."
   },
@@ -1211,6 +1262,9 @@
   "styleSaveLabel": {
     "message": "Speichern"
   },
+  "styleSettings": {
+    "message": "Style Einstellungen"
+  },
   "styleToMozillaFormatHelp": {
     "message": "Das Mozilla-Format des Codes kann mit Stylish für Firefox verwendet werden und bei userstyles.org eingereicht werden."
   },
@@ -1240,8 +1294,16 @@
   "syncError": {
     "message": "Synchronisation fehlgeschlagen"
   },
+  "syncErrorLock": {
+    "message": "Die Datenbank wird bereits verwendet. Die Sperre wird um $TIME$ aufgehoben.",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
   "syncErrorRelogin": {
-    "message": "Synchronisation fehlgeschlagen.\nVersuche, dich in den Optionen neu einzuloggen:\nKlicke erst \"Trennen\", dann \"Verbinden\"."
+    "message": "Synchronisation erfolglos. Du wurdest ausgeloggt.\nVersuche, dich in den Stylus Einstellungen wieder einzuloggen."
   },
   "syncStorageErrorSaving": {
     "message": "Der Wert kann nicht gespeichert werden. Versuche, die Textmenge zu reduzieren."

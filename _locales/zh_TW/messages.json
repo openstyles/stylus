@@ -71,7 +71,7 @@
     "message": "備份"
   },
   "backupMessage": {
-    "message": "選取檔案並拖曳到此頁面。"
+    "message": "要匯入備份檔案，請將其拖曳至此頁面或點擊匯入按鈕。\n\n要匯出相容於比 1.5.18 還舊的 Stylus 版本的備份，請右鍵點擊或按住 Shift 然後點擊匯出按鈕。"
   },
   "bckpInstStyles": {
     "message": "匯出樣式"
@@ -293,6 +293,9 @@
       }
     }
   },
+  "editorSettings": {
+    "message": "編輯器設定"
+  },
   "enableStyleLabel": {
     "message": "啟用"
   },
@@ -465,6 +468,18 @@
   },
   "installButtonUpdate": {
     "message": "更新樣式"
+  },
+  "installPreferSchemeDark": {
+    "message": "在深色模式"
+  },
+  "installPreferSchemeLabel": {
+    "message": "應該套用的樣式："
+  },
+  "installPreferSchemeLight": {
+    "message": "在淺色模式"
+  },
+  "installPreferSchemeNone": {
+    "message": "一律"
   },
   "installUpdate": {
     "message": "安裝更新"
@@ -825,6 +840,18 @@
   "optionsAdvanced": {
     "message": "進階"
   },
+  "optionsAdvancedAutoSwitchScheme": {
+    "message": "自動切換淺色／深色模式樣式"
+  },
+  "optionsAdvancedAutoSwitchSchemeBySystem": {
+    "message": "按系統偏好設定"
+  },
+  "optionsAdvancedAutoSwitchSchemeByTime": {
+    "message": "到夜間："
+  },
+  "optionsAdvancedAutoSwitchSchemeNever": {
+    "message": "從不"
+  },
   "optionsAdvancedContextDelete": {
     "message": "在編輯器的右鍵選單中加入「刪除」"
   },
@@ -918,6 +945,9 @@
   "optionsSyncNone": {
     "message": "無"
   },
+  "optionsSyncPassword": {
+    "message": "密碼"
+  },
   "optionsSyncStatusConnected": {
     "message": "已連線"
   },
@@ -960,6 +990,9 @@
   },
   "optionsSyncSyncNow": {
     "message": "立刻同步"
+  },
+  "optionsSyncUsername": {
+    "message": "使用者名稱"
   },
   "optionsUpdateImportNote": {
     "message": "當從舊版本或是從 Stylish 匯入樣式備份時，在樣式管理員中手動進行一次更新檢查，以確保所有樣式都被更新。"
@@ -1144,6 +1177,9 @@
   "sections": {
     "message": "樣式段"
   },
+  "settings": {
+    "message": "設定"
+  },
   "shortcuts": {
     "message": "快速鍵"
   },
@@ -1195,11 +1231,17 @@
   "styleEnabledLabel": {
     "message": "已啟用"
   },
+  "styleExcludeLabel": {
+    "message": "自訂排除網站"
+  },
   "styleFromMozillaFormatError": {
     "message": "從 Mozilla 格式匯入失敗"
   },
   "styleFromMozillaFormatPrompt": {
     "message": "貼上 Mozilla 格式代碼"
+  },
+  "styleIncludeLabel": {
+    "message": "自訂包含網站"
   },
   "styleInstall": {
     "message": "安裝 '$stylename$' 到 Stylus ？",
@@ -1243,6 +1285,15 @@
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "因為不正確的 'regexp()' 使用導致未套用"
   },
+  "styleNotAppliedSchemeDark": {
+    "message": "此樣式僅於深色模式中套用"
+  },
+  "styleNotAppliedSchemeLight": {
+    "message": "此樣式僅於淺色模式中套用"
+  },
+  "stylePreferSchemeLabel": {
+    "message": "深色／淺色模式"
+  },
   "styleRegexpInvalidExplanation": {
     "message": "部份 'regexp()' 規則可能不再能被編譯。"
   },
@@ -1276,6 +1327,9 @@
   "styleSaveLabel": {
     "message": "儲存"
   },
+  "styleSettings": {
+    "message": "樣式設定"
+  },
   "styleToMozillaFormatHelp": {
     "message": "Mozilla格式的樣式代碼能在火狐版Stylus使用，也可以提交至 userstyles.org 。"
   },
@@ -1293,6 +1347,9 @@
   "styleUpdateDiscardChanges": {
     "message": "樣式已在編輯器外變更。您想要重新載入樣式嗎？"
   },
+  "styleUpdateUrlLabel": {
+    "message": "更新 URL"
+  },
   "stylusUnavailableForURL": {
     "message": "Stylus 不能在諸如此類的網頁上生效。"
   },
@@ -1308,8 +1365,16 @@
   "syncError": {
     "message": "同步失敗"
   },
+  "syncErrorLock": {
+    "message": "資料庫已在使用中。鎖將於 $TIME$ 過期",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
   "syncErrorRelogin": {
-    "message": "同步失敗。\n重是在 Stylus 選項重新登入：\n先點擊「斷線」，然後「連線」。"
+    "message": "同步失敗。您已被登出。\n嘗試在 Stylus 選項中重新登入。"
   },
   "syncStorageErrorSaving": {
     "message": "無法儲存值。嘗試減少文字量。"
