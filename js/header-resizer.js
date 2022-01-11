@@ -40,13 +40,13 @@
     active = false;
   }
 
-  function save(all) {
-    if (all) {
+  function save(perPage) {
+    if (perPage) {
+      prefs.set(dom.HWprefId, curW);
+    } else {
       for (const k of prefs.knownKeys) {
         if (k.startsWith(dom.HW)) prefs.set(k, curW);
       }
-    } else {
-      prefs.set(dom.HWprefId, curW);
     }
   }
 

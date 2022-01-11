@@ -505,7 +505,7 @@
     "message": "Getting all styles..."
   },
   "headerResizerHint": {
-    "message": "Holding Shift key while dragging will set the new size in all UI pages",
+    "message": "Hold Shift to resize only in this type of UI, i.e. editor, manager, installer",
     "description": "Tooltip for the header panel resizer"
   },
   "helpAlt": {
