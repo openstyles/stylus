@@ -1,46 +1,32 @@
 /* global $ $$ dom */// dom.js
-/* global debounce */// toolbox.js
 /* global prefs */
 'use strict';
 
 (() => {
-  let curW, offset, active;
-  prefs.subscribe(dom.HWprefId, (key, val) => {
-    if (!active && val !== curW) {
-      getCurWidth();
-      setWidth(val);
-    }
-  });
+  let curW = $('#header').offsetWidth;
+  let offset, perPage;
+  prefs.subscribe(dom.HWprefId, (key, val) => setWidth(val));
   $('#header-resizer').onmousedown = e => {
     if (e.button) return;
-    getCurWidth();
     offset = curW - e.clientX;
-    active = true;
+    perPage = e.shiftKey;
     document.body.classList.add('resizing-h');
     document.on('mousemove', resize);
     document.on('mouseup', resizeStop);
   };
 
-  function getCurWidth() {
-    curW = parseFloat(document.documentElement.style.getPropertyValue('--header-width'))
-      || $('#header').offsetWidth;
-  }
-
-  /** @param {MouseEvent} e */
   function resize(e) {
-    if (setWidth(offset + e.clientX)) {
-      debounce(save, 250, e.shiftKey);
-    }
+    setWidth(offset + e.clientX);
   }
 
   function resizeStop() {
     document.off('mouseup', resizeStop);
     document.off('mousemove', resize);
     document.body.classList.remove('resizing-h');
-    active = false;
+    save();
   }
 
-  function save(perPage) {
+  function save() {
     if (perPage) {
       prefs.set(dom.HWprefId, curW);
     } else {
@@ -57,7 +43,6 @@
       for (const el of $$('.CodeMirror-linewidget[style*="width:"]')) {
         el.style.width = parseFloat(el.style.width) - delta + 'px';
       }
-      return true;
     }
   }
 })();

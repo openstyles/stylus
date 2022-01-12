@@ -479,7 +479,7 @@ const dom = {};
       HW,
       HWprefId,
       setHWProp(width) {
-        width = Math.round(Math.max(200, Math.min(innerWidth / 2, Number(width) || 0)));
+        width = Math.round(Math.max(200, Math.min(innerWidth / 3, Number(width) || 0)));
         elHtml.style.setProperty('--header-width', width + 'px');
         return width;
       },
