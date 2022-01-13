@@ -138,7 +138,10 @@ function onRuntimeMessage(msg) {
   setTimeout(sorter.updateStripes, 0, {onlyWhenColumnsChanged: true});
 }
 
-function EmbedDialog(El) {
+/**
+ * @param {function():Node|string} create
+ */
+function EmbedDialog(create) {
   let shown = false;
   return toggle;
 
@@ -146,7 +149,7 @@ function EmbedDialog(El) {
     if (state && !shown) {
       messageBoxProxy.show({
         title: t('styleInjectionOrder'),
-        contents: El(),
+        contents: create(),
         className: 'injection-order-dialog center-dialog',
         blockScroll: true,
       })
@@ -163,12 +166,15 @@ function EmbedDialog(El) {
   }
 }
 
-function Embed(El) {
+/**
+ * @param {function():Node|string} create
+ */
+function Embed(create) {
   let el;
   return toggle;
   async function toggle(state) {
     if (state) {
-      if (!el) el = El();
+      if (!el) el = create();
       if (!el.parentNode) {
         document.body.append(el);
       }
