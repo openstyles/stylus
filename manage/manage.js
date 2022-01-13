@@ -11,7 +11,6 @@
   $$
   $create
   animateElement
-  messageBoxProxy
   setupLivePrefs
   waitForSelector
   waitForSheet
@@ -142,20 +141,16 @@ async function toggleEmbeddedOptions(state) {
 }
 
 async function toggleInjectionOrder(state) {
-  const sel = 'iframe#injection-order';
-  const shown = $(sel);
+  const shown = $('.injection-order');
   if (state && !shown) {
-    await messageBoxProxy.show({
-      title: t('styleInjectionOrder'),
-      contents: $create(sel, {
-        src: '/injection-order/injection-order.html',
-      }),
-      className: 'injection-order-dialog center-dialog',
-      blockScroll: true,
-      buttons: [t('confirmClose')],
-    });
+    await require([
+      '/vendor/@eight04/draggable-list/dist/draggable-list.iife.min.js',
+      '/injection-order/injection-order.css',
+      '/injection-order/injection-order', /* global InjectionOrder */
+    ]);
+    await InjectionOrder();
     router.updateHash('');
   } else if (!state && shown) {
-    await messageBoxProxy.close();
+    await InjectionOrder(false);
   }
 }

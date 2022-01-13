@@ -1,40 +1,56 @@
-html, body {
-  margin: 0;
+#message-box.injection-order > div {
+  height: 100%;
+  width: 40em;
+  max-width: 80vw;
+}
+#message-box.injection-order #message-box-contents {
   padding: 0;
+  overflow: hidden;
 }
-ol {
-  list-style: none;
-  margin: 0;
-  padding: .75rem 0;
-  font-size: 16px;
+.injection-order header {
+  padding: 1rem 1rem 0;
+  content: attr(data-hint);
+}
+.injection-order ol {
+  height: 100%;
+  padding: 0;
+  font-size: 14px;
   overflow-y: auto;
-  background: rgba(255, 2555, 255, 0.7)
 }
-li {
-  position: relative;
+.injection-order a {
+  display: block;
   user-select: none;
   padding: 0.3em .5em;
-  background: white;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   cursor: move;
+  color: #000;
+  text-decoration: none;
 }
-li:not(:first-child) {
+.injection-order a.enabled {
+  font-weight: bold;
+}
+.injection-order a:active {
+  background: white;
+}
+.injection-order a:hover {
+  text-decoration: underline;
+}
+.injection-order a:not(:first-child) {
   border-top: 1px solid rgba(128, 128, 128, .25);
 }
-.draggable-list-dragging li {
+.injection-order a::before {
+  content: "\2261";
+  padding: 0.6em;
+  font-weight: normal;
+}
+.injection-order .draggable-list-dragging a {
   transition: transform .25s ease-in-out;
   z-index: 1;
 }
-li.draggable-list-target {
+.injection-order a.draggable-list-target {
   transition: none;
   z-index: 100;
   position: relative;
-}
-.dragger::before {
-  content: "\2261"
-}
-.dragger {
-  padding: 0.6em;
 }

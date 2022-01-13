@@ -1,33 +1,46 @@
-/* global $ $create */// dom.js
+/* global $create messageBoxProxy */// dom.js
 /* global API */// msg.js
 /* global DraggableList */
 /* global prefs */
+/* global t */// localization.js
 'use strict';
 
-(async () => {
-  const list = (await getOrderedStyles()).map(style => ({
-    el: $create('li', [$create('span.dragger'), style.name]),
-    style,
-  }));
-  const ol = $('#style-list');
+/* exported InjectionOrder */
+async function InjectionOrder(show = true) {
+  if (!show) {
+    return messageBoxProxy.close();
+  }
+  const entries = (await getOrderedStyles()).map(makeEntry);
+  const ol = $create('ol');
   let maxTranslateY;
-  ol.append(...list.map(l => l.el));
-  ol.on('d:dragstart', e => {
-    e.detail.origin.dataTransfer.setDragImage(new Image(), 0, 0);
-    maxTranslateY = ol.scrollHeight - e.detail.dragTarget.offsetHeight - e.detail.dragTarget.offsetTop;
+  ol.append(...entries.map(l => l.el));
+  ol.on('d:dragstart', ({detail: d}) => {
+    d.origin.dataTransfer.setDragImage(new Image(), 0, 0);
+    maxTranslateY = ol.scrollHeight - d.dragTarget.offsetHeight - d.dragTarget.offsetTop;
   });
-  ol.on('d:dragmove', e => {
-    e.detail.origin.dataTransfer.dropEffect = 'move';
-    const y = Math.min(e.detail.currentPos.y - e.detail.startPos.y, maxTranslateY);
-    e.detail.dragTarget.style.transform = `translateY(${y}px)`;
+  ol.on('d:dragmove', ({detail: d}) => {
+    d.origin.dataTransfer.dropEffect = 'move';
+    const y = Math.min(d.currentPos.y - d.startPos.y, maxTranslateY);
+    d.dragTarget.style.transform = `translateY(${y}px)`;
   });
-  ol.on('d:dragend', e => {
-    const [item] = list.splice(e.detail.originalIndex, 1);
-    list.splice(e.detail.spliceIndex, 0, item);
-    ol.insertBefore(e.detail.dragTarget, e.detail.insertBefore);
-    prefs.set('injectionOrder', list.map(l => l.style._id));
+  ol.on('d:dragend', ({detail: d}) => {
+    const [item] = entries.splice(d.originalIndex, 1);
+    entries.splice(d.spliceIndex, 0, item);
+    ol.insertBefore(d.dragTarget, d.insertBefore);
+    prefs.set('injectionOrder', entries.map(l => l.style._id));
   });
   new DraggableList(ol, {scrollContainer: ol});
+
+  await messageBoxProxy.show({
+    title: t('styleInjectionOrder'),
+    contents: $create('fragment', [
+      $create('header', t('styleInjectionOrderHint')),
+      ol,
+    ]),
+    className: 'injection-order center-dialog',
+    blockScroll: true,
+    buttons: [t('confirmClose')],
+  });
 
   async function getOrderedStyles() {
     const [styles] = await Promise.all([
@@ -44,7 +57,6 @@
       const s = uuidIndex.get(uid);
       if (s) {
         uuidIndex.delete(uid);
-
         orderedStyles.push(s);
         styleSet.delete(s);
       }
@@ -52,4 +64,15 @@
     orderedStyles.push(...styleSet);
     return orderedStyles;
   }
-})();
+
+  function makeEntry(style) {
+    return {
+      style,
+      el: $create('a', {
+        className: style.enabled ? 'enabled' : '',
+        href: '/edit.html?id=' + style.id,
+        target: '_blank',
+      }, style.name),
+    };
+  }
+}
