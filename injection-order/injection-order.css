@@ -1,21 +1,27 @@
 #message-box.injection-order > div {
   height: 100%;
-  width: 40em;
   max-width: 80vw;
 }
 #message-box.injection-order #message-box-contents {
   padding: 0;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  --border: 1px solid rgba(128, 128, 128, .25);
 }
 .injection-order header {
-  padding: 1rem 1rem 0;
-  content: attr(data-hint);
+  padding: 1rem;
+  width: 0;
+  min-width: 100%;
+  box-sizing: border-box;
 }
 .injection-order ol {
   height: 100%;
   padding: 0;
+  margin: 0;
   font-size: 14px;
   overflow-y: auto;
+  border-top: var(--border);
 }
 .injection-order a {
   display: block;
@@ -37,7 +43,7 @@
   text-decoration: underline;
 }
 .injection-order a:not(:first-child) {
-  border-top: 1px solid rgba(128, 128, 128, .25);
+  border-top: var(--border);
 }
 .injection-order a::before {
   content: "\2261";
