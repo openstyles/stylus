@@ -173,6 +173,21 @@
   right: auto;
 }
 
+#message-box.injection-order-dialog > div {
+  height: 100%;
+  width: 40em;
+  max-width: 80vw;
+}
+#message-box.injection-order-dialog #message-box-contents {
+  padding: 0;
+}
+#injection-order {
+  display: block;
+  border: 0;
+  height: 100%;
+  width: 100%;
+}
+
 @keyframes fadein {
   from {
     opacity: 0;

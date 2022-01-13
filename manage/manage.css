@@ -980,18 +980,6 @@ a:hover {
   animation: fadeout .25s ease-in-out;
 }
 
-.injection-order-dialog > div {
-  height: 100%;
-}
-#injection-order {
-  display: block;
-  border: 0;
-  height: 100%;
-}
-#injection-order.fadeout {
-  animation: slideout .25s ease-in-out;
-}
-
 .settings-column {
   margin-top: 1rem;
 }
@@ -1011,14 +999,6 @@ a:hover {
   }
   to {
     opacity: 0;
-  }
-}
-@keyframes slideout {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(100%);
   }
 }
 
