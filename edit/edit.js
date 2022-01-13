@@ -1,5 +1,5 @@
 /* global $ $create messageBoxProxy waitForSheet */// dom.js
-/* global msg API */// msg.js
+/* global API msg */// msg.js
 /* global CodeMirror */
 /* global SectionsEditor */
 /* global SourceEditor */
@@ -11,7 +11,6 @@
 /* global linterMan */
 /* global prefs */
 /* global t */// localization.js
-/* global StyleSettings */// settings.js
 'use strict';
 
 //#region init
@@ -19,7 +18,6 @@
 baseInit.ready.then(async () => {
   await waitForSheet();
   (editor.isUsercss ? SourceEditor : SectionsEditor)();
-  StyleSettings(editor);
   await editor.ready;
   editor.ready = true;
   editor.dirty.onChange(editor.updateDirty);
@@ -32,6 +30,7 @@ baseInit.ready.then(async () => {
   // enabling after init to prevent flash of validation failure on an empty name
   $('#name').required = !editor.isUsercss;
   $('#save-button').onclick = editor.save;
+  $('#cancel-button').onclick = editor.cancel;
 
   const elSec = $('#sections-list');
   // editor.toc.expanded pref isn't saved in compact-layout so prefs.subscribe won't work
@@ -48,6 +47,11 @@ baseInit.ready.then(async () => {
     require(['/edit/linter-dialogs'], () => linterMan.showLintConfig());
   $('#lint-help').onclick = () =>
     require(['/edit/linter-dialogs'], () => linterMan.showLintHelp());
+  $('#style-settings-btn').onclick = () => require([
+    '/edit/settings.css',
+    '/edit/settings', /* global StyleSettings */
+  ], () => StyleSettings());
+
   require([
     '/edit/autocomplete',
     '/edit/global-search',
@@ -57,27 +61,12 @@ baseInit.ready.then(async () => {
 //#endregion
 //#region events
 
-const IGNORE_UPDATE_REASONS = [
-  'editPreview',
-  'editPreviewEnd',
-  'editSave',
-  // https://github.com/openstyles/stylus/issues/807 is closed without fix
-  // 'config,
-];
-
 msg.onExtension(request => {
   const {style} = request;
   switch (request.method) {
     case 'styleUpdated':
-      if (editor.style.id === style.id && !IGNORE_UPDATE_REASONS.includes(request.reason)) {
-        if (request.reason === 'toggle') {
-          editor.emit('styleToggled', request.style);
-        } else {
-          API.styles.get(request.style.id)
-            .then(style => {
-              editor.emit('styleChange', style, request.reason);
-            });
-        }
+      if (editor.style.id === style.id) {
+        handleExternalUpdate(request);
       }
       break;
     case 'styleDeleted':
@@ -91,11 +80,45 @@ msg.onExtension(request => {
   }
 });
 
+async function handleExternalUpdate({style, reason}) {
+  if (reason === 'editPreview' ||
+      reason === 'editPreviewEnd') {
+    return;
+  }
+  if (reason === 'editSave' && editor.saving) {
+    editor.saving = false;
+    return;
+  }
+  if (reason === 'toggle') {
+    if (editor.dirty.isDirty()) {
+      editor.toggleStyle(style.enabled);
+    } else {
+      Object.assign(editor.style, style);
+    }
+    editor.updateMeta();
+    editor.updateLivePreview();
+    return;
+  }
+  style = await API.styles.get(style.id);
+  if (reason === 'config') {
+    delete style.sourceCode;
+    delete style.sections;
+    delete style.name;
+    delete style.enabled;
+    Object.assign(editor.style, style);
+    editor.updateLivePreview();
+  } else {
+    await editor.replaceStyle(style);
+  }
+  window.dispatchEvent(new Event('styleSettings'));
+}
+
 window.on('beforeunload', e => {
   let pos;
   if (editor.isWindowed &&
       document.visibilityState === 'visible' &&
       prefs.get('openEditInWindow') &&
+      screenX !== -32000 && // Chrome uses this value for minimized windows
       ( // only if not maximized
         screenX > 0 || outerWidth < screen.availWidth ||
         screenY > 0 || outerHeight < screen.availHeight ||
@@ -168,7 +191,14 @@ window.on('beforeunload', e => {
       }
     },
 
-    toggleStyle(enabled = style.enabled) {
+    async save() {
+      if (dirty.isDirty()) {
+        editor.saving = true;
+        await editor.saveImpl();
+      }
+    },
+
+    toggleStyle(enabled = !style.enabled) {
       $('#enabled').checked = enabled;
       editor.updateEnabledness(enabled);
     },
@@ -235,6 +265,16 @@ window.on('beforeunload', e => {
         if (old && old !== el) old.classList.remove(cls);
         el.classList.add(cls);
       }
+    },
+
+    useSavedStyle(newStyle) {
+      if (style.id !== newStyle.id) {
+        history.replaceState({}, '', `?id=${newStyle.id}`);
+      }
+      sessionStore.justEditedStyleId = newStyle.id;
+      Object.assign(style, newStyle);
+      editor.updateClass();
+      editor.updateMeta();
     },
   });
 })();

@@ -67,9 +67,6 @@
   "backupButtons": {
     "message": "Biztonsági mentés"
   },
-  "backupMessage": {
-    "message": "Válassz ki egy fájlt vagy húzd erre az oldalra!"
-  },
   "bckpInstStyles": {
     "message": "Stílusok exportálása"
   },

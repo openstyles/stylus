@@ -67,9 +67,6 @@
   "backupButtons": {
     "message": "Sauvegarde"
   },
-  "backupMessage": {
-    "message": "Sélectionner un fichier ou le glisser-déposer sur cette page"
-  },
   "bckpInstStyles": {
     "message": "Exporter des styles"
   },
@@ -198,6 +195,28 @@
   },
   "copy": {
     "message": "Copier dans le presse-papier"
+  },
+  "customNameHint": {
+    "message": "Entrez un nom personnalisé ici pour renommer le style dans l'IU sans casser les mises à jour"
+  },
+  "customNameResetHint": {
+    "message": "Arrête d'utiliser le nom personnalisé, change vers le propre nom du style"
+  },
+  "dateAbbrDay": {
+    "message": "$value$j",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrYear": {
+    "message": "$value$a",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
   },
   "dateInstalled": {
     "message": "Date d'installation"
@@ -365,6 +384,12 @@
   "importLabel": {
     "message": "Importer"
   },
+  "importPreprocessor": {
+    "message": "Les styles avec un <code>@preprocessor</code> ne fonctionnera pas en mode classique. Vous pouvez changer l'éditeur en mode Usercss : 1) Ouvrez le gestionnaire de styles, 2) Activer l'option \"en tant que Usercss\", 3) Cliquez \"écrire un nouveau style\"\n\nImporter de toute façon ?"
+  },
+  "importPreprocessorTitle": {
+    "message": "Problème potentiel à cause de @preprocessor"
+  },
   "importReplaceLabel": {
     "message": "Remplacer le style"
   },
@@ -433,8 +458,17 @@
   "linkGetHelp": {
     "message": "Consulter l'aide"
   },
+  "linkGetShareStyles": {
+    "message": "Obtenir et partager les styles"
+  },
+  "linkGetShareStylesInfo": {
+    "message": "Le nouveau userstyles.world géré par la communauté est créé par les auteurs d'userstyles dans le but de remplacer userstyles.org, qui a été tellement lent et inconscient durant l'année dernière que beaucoup d'auteurs ont arrêté de mettre à jour leurs styles."
+  },
   "linkGetStyles": {
     "message": "Obtenir des styles"
+  },
+  "linkGetStylesInfo": {
+    "message": "Ce site d'archive à été créé par un membre de la communauté userstyle pour archiver le lent et inconscient site userstyles.org. Cette archive est mise à jour approximativement chaque jour."
   },
   "linkTranslate": {
     "message": "Traduire"
@@ -709,6 +743,17 @@
       }
     }
   },
+  "meta_unknownMetaTypo": {
+    "message": "Peut-être @$keyOk$? Métadonnée inconnue: @$keyErr$",
+    "placeholders": {
+      "keyErr": {
+        "content": "$1"
+      },
+      "keyOk": {
+        "content": "$2"
+      }
+    }
+  },
   "meta_unknownPreprocessor": {
     "message": "@preprocessor inconnu: $preprocessor$",
     "placeholders": {
@@ -734,6 +779,9 @@
   "noStylesForSite": {
     "message": "Aucun style n'est installé pour ce site."
   },
+  "numberedLine": {
+    "message": "Ligne :"
+  },
   "openManage": {
     "message": "Gestion"
   },
@@ -754,6 +802,15 @@
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Écrire un nouveau style en tant que usercss"
+  },
+  "optionsAdvancedPatchCsp": {
+    "message": "Corrige <code>CSP</code> pour permettre les ressources de style"
+  },
+  "optionsAdvancedPatchCspNote": {
+    "message": "Activez cela si les styles comportent des images ou des polices qui échoue à charger sur les sites avec une politique de sécurité de contenus stricte <code>CSP</code> (<code>Content-Security-Policy</code>).\n\nActiver cette option permettra d'alléger les restrictions du <code>CSP</code>, permettant les styles essentiels de charger. Cette option n'est entendue que pour les utilisateurs expérimentés qui comprennent les potentielles implications de sécurité que cela introduit, et accepte la responsabilité de surveiller le contenu qu'ils autorisent. Veuillez lire les attaques basé sur le CSS pour plus d’information.\n\nAussi sachez, que cette option en particulier n'est pas garanti de fonctionner si une autre extension modifie la réponse réseau avant."
+  },
+  "optionsAdvancedStyleViaXhr": {
+    "message": "Mode d'injection instantanée"
   },
   "optionsBadgeDisabled": {
     "message": "Couleur d'arrière plan si désactivé"
@@ -799,6 +856,9 @@
   },
   "optionsResetButton": {
     "message": "Ré-initialiser les options"
+  },
+  "optionsStylusThemes": {
+    "message": "Trouver un thème d'interface de Stylus"
   },
   "optionsSubheading": {
     "message": "Plus de paramètres"
@@ -848,6 +908,9 @@
         "content": "$2"
       }
     }
+  },
+  "optionsSyncStatusRelogin": {
+    "message": "Session expirée, veuillez vous reconnecter à nouveau."
   },
   "optionsSyncStatusSyncing": {
     "message": "Synchronisation..."
@@ -903,6 +966,9 @@
   "popupMenuButtonTooltip": {
     "message": "Actions"
   },
+  "popupOpenEditInPopup": {
+    "message": "Utiliser une simple fenêtre (pas d'omnibox)"
+  },
   "popupOpenEditInWindow": {
     "message": "Ouvrir l'éditeur dans une nouvelle fenêtre"
   },
@@ -920,6 +986,21 @@
   },
   "previewTooltip": {
     "message": "Applique temporairement les changements sans sauvegarder.\nSauvegarde le style pour rendre les changements permanents."
+  },
+  "publish": {
+    "message": "Publier"
+  },
+  "publishPush": {
+    "message": "Pousser la mise à jour"
+  },
+  "publishReconnect": {
+    "message": "Essayez de vous déconnecter et de publier à nouveau"
+  },
+  "publishStyle": {
+    "message": "Publier le style"
+  },
+  "publishUsw": {
+    "message": "Utiliser <userstyles.world>"
   },
   "readingStyles": {
     "message": "Lecture des styles…"
@@ -948,6 +1029,9 @@
   "searchCaseSensitive": {
     "message": "Sensible à la casse"
   },
+  "searchGlobalStyles": {
+    "message": "Chercher aussi des styles globaux."
+  },
   "searchNumberOfResults": {
     "message": "Nombre de correspondances"
   },
@@ -963,6 +1047,12 @@
   "searchResultNoneFound": {
     "message": "Aucun style trouvé pour ce site"
   },
+  "searchResultNotMatching": {
+    "message": "Ce style est installé mais il ne s'applique pas au lien du site actuel."
+  },
+  "searchResultNotMatchingNote": {
+    "message": "Essaye de demander l’auteur  pour ajouter le lien l'URL.\n\nVous pouvez aussi ouvrir le style dans le gestionnaire et l'éditer soit-même,\nmais soyez avertis que cela désactive les mises à jour automatiques pour ce style."
+  },
   "searchResultRating": {
     "message": "Note"
   },
@@ -971,6 +1061,21 @@
   },
   "searchResultWeeklyCount": {
     "message": "Installations hebdomadaires"
+  },
+  "searchStylesAll": {
+    "message": "Tout"
+  },
+  "searchStylesCode": {
+    "message": "Code CSS"
+  },
+  "searchStylesMatchUrl": {
+    "message": "Par lien"
+  },
+  "searchStylesMeta": {
+    "message": "Meta-données"
+  },
+  "searchStylesName": {
+    "message": "Nom"
   },
   "sectionAdd": {
     "message": "Ajouter une section"
@@ -1013,6 +1118,9 @@
   },
   "styleBeautify": {
     "message": "Embellir "
+  },
+  "styleBeautifyHint": {
+    "message": "Astuce : Cliquez-droit le bouton \"Beautify\" ou utilisez le raccourci clavier définit ci-dessous pour beautify sans montrer le panneau."
   },
   "styleBeautifyIndentConditional": {
     "message": "Indenter @media, @supports"
@@ -1070,6 +1178,9 @@
   },
   "styleMozillaFormatHeading": {
     "message": "Format Mozilla"
+  },
+  "styleName": {
+    "message": "Nom du style"
   },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "Le style n'a pu s'appliquer en raison d'une utilisation erronée de 'regexp()'"
@@ -1136,6 +1247,9 @@
   "syncDropboxStyles": {
     "message": "Exporter vers Dropbox"
   },
+  "syncError": {
+    "message": "Synchronisation échouée"
+  },
   "syncStorageErrorSaving": {
     "message": "La valeur ne peut pas être sauvegardée. Essayez de réduire la quantité de texte."
   },
@@ -1159,6 +1273,12 @@
   },
   "unreachableFileHint": {
     "message": "Stylus peut accéder aux URL file:// uniquement si vous cochez la case correspondante pour l’extension Stylus sur la page chrome://extensions."
+  },
+  "unreachableMozSiteHint": {
+    "message": "Dans Firefox 60 et plus récent vous devez retirer ce domaine de <extensions.webextensions.restrictedDomains> dans <about:config>."
+  },
+  "unreachableMozSiteHintOldFF": {
+    "message": "Seulement dans Firefox 59 et plus récent que les extensions-web peuvent être configurés pour autoriser de rajouter des éléments de style sur les sites protégés CSP comme celui-ci."
   },
   "unzipStyles": {
     "message": "Décompression des styles…"

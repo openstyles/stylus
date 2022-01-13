@@ -52,9 +52,6 @@
   "backupButtons": {
     "message": "Резервни копия"
   },
-  "backupMessage": {
-    "message": "Изберете файл или го влачете до страницата."
-  },
   "bckpInstStyles": {
     "message": "Изнасяне на стилове"
   },

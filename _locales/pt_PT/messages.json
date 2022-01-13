@@ -64,9 +64,6 @@
   "backupButtons": {
     "message": "Cópia de segurança"
   },
-  "backupMessage": {
-    "message": "Selecione um ficheiro ou arraste e solte-o nesta página."
-  },
   "bckpInstStyles": {
     "message": "Exportar estilos"
   },

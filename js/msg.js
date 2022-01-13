@@ -78,12 +78,12 @@
 
     send(data, target = 'extension') {
       return browser.runtime.sendMessage({data, target})
-        .then(unwrapResponse);
+        .then(unwrapResponseFactory('send'));
     },
 
     sendTab(tabId, data, options, target = 'tab') {
       return browser.tabs.sendMessage(tabId, {data, target}, options)
-        .then(unwrapResponse);
+        .then(unwrapResponseFactory('sendTab'));
     },
 
     _execute(types, ...args) {
@@ -138,9 +138,16 @@
     };
   }
 
-  function unwrapResponse({data, error} = {error: {message: ERR_NO_RECEIVER}}) {
+  function unwrapResponseFactory(name) {
+    // Saving the local callstack before making an async call
+    return unwrapResponse.bind(null, new Error(`Callstack before invoking msg.${name}:`));
+  }
+
+  function unwrapResponse(localErr, {data, error} = {error: {message: ERR_NO_RECEIVER}}) {
     return error
-      ? Promise.reject(Object.assign(new Error(error.message), error))
+      ? Promise.reject(Object.assign(localErr, error, error.stack && {
+        stack: `${error.stack}\n${localErr.stack}`,
+      }))
       : data;
   }
 

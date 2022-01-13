@@ -73,6 +73,20 @@ addAPI(/** @namespace API */ {
     const wndPos = wnd && prefs.get('windowPosition');
     const wndBase = wnd && prefs.get('openEditInWindow.popup') ? {type: 'popup'} : {};
     const ffBug = wnd && FIREFOX; // https://bugzil.la/1271047
+    if (wndPos) {
+      const {left, top, width, height} = wndPos;
+      const r = left + width;
+      const b = top + height;
+      const peek = 32;
+      if (isNaN(r) || r < peek || left > screen.availWidth - peek || width < 100) {
+        delete wndPos.left;
+        delete wndPos.width;
+      }
+      if (isNaN(b) || b < peek || top > screen.availHeight - peek || height < 100) {
+        delete wndPos.top;
+        delete wndPos.height;
+      }
+    }
     const tab = await openURL({
       url: `${u}`,
       currentWindow: null,

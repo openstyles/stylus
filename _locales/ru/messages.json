@@ -68,7 +68,7 @@
     "message": "Резервное копирование"
   },
   "backupMessage": {
-    "message": "Нажмите «Импорт», чтобы выбрать файл или просто перетащите его на эту страницу"
+    "message": "Чтобы импортировать архив стилей, перетащите файл в эту страницу или нажмите кнопку Импорт.\n\nЧтобы экспортировать совместимый архив для старого Stylus ранее чем 1.5.18, кликните на кнопку Экспорт правой кнопкой мыши или с нажатой клавишей Shift."
   },
   "bckpInstStyles": {
     "message": "Экспорт стилей"
@@ -293,6 +293,9 @@
       }
     }
   },
+  "editorSettings": {
+    "message": "Настройки редактирования"
+  },
   "enableStyleLabel": {
     "message": "Включить"
   },
@@ -466,6 +469,18 @@
   "installButtonUpdate": {
     "message": "Обновить стиль"
   },
+  "installPreferSchemeDark": {
+    "message": "В ночном режиме"
+  },
+  "installPreferSchemeLabel": {
+    "message": "Когда применять стиль:"
+  },
+  "installPreferSchemeLight": {
+    "message": "В дневном режиме"
+  },
+  "installPreferSchemeNone": {
+    "message": "Всегда"
+  },
   "installUpdate": {
     "message": "Установить обновление"
   },
@@ -486,8 +501,17 @@
   "linkGetHelp": {
     "message": "Помощь"
   },
+  "linkGetShareStyles": {
+    "message": "Поиск/публикация стилей"
+  },
+  "linkGetShareStylesInfo": {
+    "message": "Новый сайт userstyles.world, созданный и развиваемый сообществом энтузиастов и авторов пользовательских стилей с целью заменить userstyles.org, который стал таким медленным и зависающим за последний год, что многие авторы перестали обновлять свои стили."
+  },
   "linkGetStyles": {
     "message": "Скачать стили"
+  },
+  "linkGetStylesInfo": {
+    "message": "Архивный сайт от одного энтузиаста и автора пользовательских стилей, зеркальная копия userstyles.org, ныне медленного и зависающего. Архив обновляется примерно раз в день."
   },
   "linkStylusWiki": {
     "message": "Вики"
@@ -819,6 +843,18 @@
   "optionsAdvanced": {
     "message": "Другое"
   },
+  "optionsAdvancedAutoSwitchScheme": {
+    "message": "Автоматически переключать дневные/ночные стили"
+  },
+  "optionsAdvancedAutoSwitchSchemeBySystem": {
+    "message": "По настройке операционной системы"
+  },
+  "optionsAdvancedAutoSwitchSchemeByTime": {
+    "message": "В ночное время:"
+  },
+  "optionsAdvancedAutoSwitchSchemeNever": {
+    "message": "Никогда"
+  },
   "optionsAdvancedContextDelete": {
     "message": "Показывать команду \"Удалить\" в контекстном меню редактора"
   },
@@ -912,6 +948,9 @@
   "optionsSyncNone": {
     "message": "Ничего"
   },
+  "optionsSyncPassword": {
+    "message": "Пароль"
+  },
   "optionsSyncStatusConnected": {
     "message": "Подключено"
   },
@@ -954,6 +993,12 @@
   },
   "optionsSyncSyncNow": {
     "message": "Синхронизировать"
+  },
+  "optionsSyncUrl": {
+    "message": "URL адрес"
+  },
+  "optionsSyncUsername": {
+    "message": "Имя"
   },
   "optionsUpdateImportNote": {
     "message": "После импорта базы стилей из старой версии или из Stylish запустите проверку на обновления из менеджера стилей, чтобы удостовериться в обновлении всех стилей."
@@ -1138,6 +1183,9 @@
   "sections": {
     "message": "Разделы"
   },
+  "settings": {
+    "message": "Настройки"
+  },
   "shortcuts": {
     "message": "Клавиши"
   },
@@ -1189,11 +1237,17 @@
   "styleEnabledLabel": {
     "message": "Включено"
   },
+  "styleExcludeLabel": {
+    "message": "Личный список исключенных сайтов"
+  },
   "styleFromMozillaFormatError": {
     "message": "Ошибка импорта формата Mozilla"
   },
   "styleFromMozillaFormatPrompt": {
     "message": "Вставьте содержимое стиля в формате Mozilla"
+  },
+  "styleIncludeLabel": {
+    "message": "Личный список включенных сайтов"
   },
   "styleInstall": {
     "message": "Установить \"$stylename$\" в Stylus?",
@@ -1237,6 +1291,15 @@
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "Стиль не был применён из-за некорректного regexp()"
   },
+  "styleNotAppliedSchemeDark": {
+    "message": "Стиль активен только в ночном режиме"
+  },
+  "styleNotAppliedSchemeLight": {
+    "message": "Стиль активен только в дневном режиме"
+  },
+  "stylePreferSchemeLabel": {
+    "message": "Ночной/дневной режим"
+  },
   "styleRegexpInvalidExplanation": {
     "message": "Некоторые 'regexp()' выражения не удалось скомпилировать."
   },
@@ -1270,6 +1333,9 @@
   "styleSaveLabel": {
     "message": "Сохранить"
   },
+  "styleSettings": {
+    "message": "Настройки стиля"
+  },
   "styleToMozillaFormatHelp": {
     "message": "Формат кода Mozilla можно отправлять на сайт userstyles.org и использовать в дополнении Stylish для Firefox."
   },
@@ -1287,6 +1353,9 @@
   "styleUpdateDiscardChanges": {
     "message": "Стиль был изменён вне редактора. Перезагрузить?"
   },
+  "styleUpdateUrlLabel": {
+    "message": "URL адрес обновлений"
+  },
   "stylusUnavailableForURL": {
     "message": "Такие адреса не поддерживаются."
   },
@@ -1302,8 +1371,16 @@
   "syncError": {
     "message": "Сбой синхронизации"
   },
+  "syncErrorLock": {
+    "message": "Хранилище данных уже занято. Доступ закрыт до $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
   "syncErrorRelogin": {
-    "message": "Синхронизация не удалась.\nПопробуйте повторно войти в систему в опциях Stylus:\nсначала нажмите \"отсоединить\", затем \"подключить\"."
+    "message": "Ошибка синхронизации. Произведен выход из учетной записи.\n\nПопробуйте подключиться еще раз в настройках Stylus."
   },
   "syncStorageErrorSaving": {
     "message": "Ошибка сохранения. Попробуйте уменьшить количество текста."

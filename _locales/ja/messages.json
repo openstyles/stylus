@@ -68,7 +68,7 @@
     "message": "バックアップ"
   },
   "backupMessage": {
-    "message": "ファイルを選択するか、このページにドラッグ＆ドロップしてください。"
+    "message": "バックアップファイルをインポートする場合、このページにドラッグ&ドロップするか、インポートボタンをクリックしてください。\nまた、Stylus 1.5.18 より古い形式でバックアップしたい場合は、エクスポートボタンを 右クリック もしくは shift-クリック してください。"
   },
   "bckpInstStyles": {
     "message": "スタイルをエクスポート"
@@ -255,6 +255,9 @@
       }
     }
   },
+  "editorSettings": {
+    "message": "エディタ設定"
+  },
   "enableStyleLabel": {
     "message": "有効化"
   },
@@ -427,6 +430,18 @@
   },
   "installButtonUpdate": {
     "message": "更新"
+  },
+  "installPreferSchemeDark": {
+    "message": "ダークモード時"
+  },
+  "installPreferSchemeLabel": {
+    "message": "適用するスタイル:"
+  },
+  "installPreferSchemeLight": {
+    "message": "ライトモード時"
+  },
+  "installPreferSchemeNone": {
+    "message": "常時"
   },
   "installUpdate": {
     "message": "更新をインストール"
@@ -790,6 +805,18 @@
   "optionsAdvanced": {
     "message": "上級者向け"
   },
+  "optionsAdvancedAutoSwitchScheme": {
+    "message": "ライト/ダークモードのスタイルを自動で切り替える"
+  },
+  "optionsAdvancedAutoSwitchSchemeBySystem": {
+    "message": "システム設定による"
+  },
+  "optionsAdvancedAutoSwitchSchemeByTime": {
+    "message": "夜間時間による"
+  },
+  "optionsAdvancedAutoSwitchSchemeNever": {
+    "message": "なし"
+  },
   "optionsAdvancedContextDelete": {
     "message": "エディタのコンテキストメニューに「削除」を追加する"
   },
@@ -883,6 +910,9 @@
   "optionsSyncNone": {
     "message": "未選択"
   },
+  "optionsSyncPassword": {
+    "message": "パスワード"
+  },
   "optionsSyncStatusConnected": {
     "message": "接続状態"
   },
@@ -925,6 +955,9 @@
   },
   "optionsSyncSyncNow": {
     "message": "すぐに同期"
+  },
+  "optionsSyncUsername": {
+    "message": "ユーザ名"
   },
   "optionsUpdateImportNote": {
     "message": "旧バージョンまたはStylishからスタイルのバックアップをインポートする場合は、スタイルマネージャで一度手動で更新チェックを行い、すべてのスタイルが確実に更新されるようにしてください。"
@@ -1109,6 +1142,9 @@
   "sections": {
     "message": "セクション"
   },
+  "settings": {
+    "message": "設定"
+  },
   "shortcuts": {
     "message": "ショートカット"
   },
@@ -1160,11 +1196,17 @@
   "styleEnabledLabel": {
     "message": "有効"
   },
+  "styleExcludeLabel": {
+    "message": "含めないサイトを設定"
+  },
   "styleFromMozillaFormatError": {
     "message": "Mozilla形式のインポートに失敗しました"
   },
   "styleFromMozillaFormatPrompt": {
     "message": "Mozilla形式のコードを貼り付ける"
+  },
+  "styleIncludeLabel": {
+    "message": "含めるサイトを設定"
   },
   "styleInstall": {
     "message": "「$stylename$」を Stylus にインストールしますか？",
@@ -1205,6 +1247,15 @@
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "'regexp()' の誤った使用のためスタイルを適用できませんでした"
   },
+  "styleNotAppliedSchemeDark": {
+    "message": "スタイルはダークモード時のみ適用されます"
+  },
+  "styleNotAppliedSchemeLight": {
+    "message": "スタイルはライトモード時のみ適用されます"
+  },
+  "stylePreferSchemeLabel": {
+    "message": "暗い/明るい モード"
+  },
   "styleRegexpInvalidExplanation": {
     "message": "いくつかの 'regexp()' のルールはコンパイルできませんでした"
   },
@@ -1238,6 +1289,9 @@
   "styleSaveLabel": {
     "message": "保存"
   },
+  "styleSettings": {
+    "message": "スタイル設定"
+  },
   "styleToMozillaFormatHelp": {
     "message": "Mozilla形式のコードは、userstyles.org に投稿することができ、また従来の Stylish for Firefox でも使用できます"
   },
@@ -1255,6 +1309,9 @@
   "styleUpdateDiscardChanges": {
     "message": "このスタイルはエディタの外部で変更されました。このスタイルをリロードしますか？"
   },
+  "styleUpdateUrlLabel": {
+    "message": "更新URL"
+  },
   "stylusUnavailableForURL": {
     "message": "このページではStylusは動作しません。"
   },
@@ -1270,8 +1327,16 @@
   "syncError": {
     "message": "同期に失敗"
   },
+  "syncErrorLock": {
+    "message": "データベースが使用中です。\nロック状態は$TIME$に解除されます。",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
   "syncErrorRelogin": {
-    "message": "同期に失敗しました。\nStylusのオプション画面で、再ログインしてください :\n（「切断」をクリック後、「接続」をクリック）"
+    "message": "同期に失敗しました。ログアウトした可能性があります。\nStylusのオプション画面で再ログインしてください。"
   },
   "syncStorageErrorSaving": {
     "message": "値を保存できません。テキストの量を減らしてください。"

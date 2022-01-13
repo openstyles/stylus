@@ -34,6 +34,7 @@ a:hover {
 }
 
 html.is-new-style #preview-label,
+html.is-new-style #style-settings-btn,
 html.is-new-style #publish,
 .hidden {
   display: none !important;
@@ -89,13 +90,12 @@ label {
 
 /************ header ************/
 #header {
-  width: 280px;
+  width: var(--header-width);
   height: 100vh;
   overflow: auto;
   position: fixed;
   top: 0;
   padding: 1rem;
-  border-right: 1px dashed #AAA;
   box-shadow: 0 0 3rem -1.2rem black;
   box-sizing: border-box;
   z-index: 10;
@@ -105,11 +105,8 @@ label {
 #header h1 {
   margin-top: 0;
 }
-.main {
-  padding-left: 280px;
-  height: 100%;
-}
 #sections {
+  padding-left: var(--header-width);
   min-height: 0;
   height: 100%;
 }
@@ -284,10 +281,6 @@ input:invalid {
   margin: 0 .2rem .5rem 0;
 }
 
-#actions #cancel-button {
-  margin: 0;
-}
-
 #options:not([open]) + #lint h2 {
   margin-top: 0;
 }
@@ -416,10 +409,6 @@ input:invalid {
 }
 .edit-actions button {
   margin-right: .2rem;
-}
-.dirty > label::before {
-  content: "*";
-  font-weight: bold;
 }
 #sections {
   counter-reset: codebox;
@@ -736,6 +725,9 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 }
 /************ help popup ************/
 #help-popup {
+  --pad-x: 1.5rem;
+  --pad-y: 1rem;
+  --pad-y2: calc(var(--pad-y) / 1.5);
   top: 3rem;
   right: 3rem;
   max-width: 50vw;
@@ -743,7 +735,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   display: none;
   background-color: white;
   box-shadow: 3px 3px 30px rgba(0, 0, 0, 0.5);
-  padding: 0.5rem;
+  padding: var(--pad-y) var(--pad-x) 0;
   z-index: 99;
 }
 #help-popup.big,
@@ -752,7 +744,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 }
 #help-popup.big {
   box-shadow: rgba(0, 0, 0, 0.45) 0px 0px 0px 100000px !important;
-  left: calc(280px - 3rem);
+  left: calc(var(--header-width) - 3rem);
 }
 #help-popup.big .CodeMirror {
   min-height: 2rem;
@@ -761,22 +753,19 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 #help-popup .title {
   font-weight: bold;
   background-color: rgba(0,0,0,0.05);
-  margin: -0.5rem -0.5rem 0.5rem;
-  padding: .5rem 32px .5rem .5rem;
+  margin: calc(-1 * var(--pad-y)) calc(-1 * var(--pad-x)) 0;
+  padding: var(--pad-y2) var(--pad-x);
 }
 #help-popup .contents {
   max-height: calc(100vh - 8rem);
   overflow-y: auto;
-}
-#help-popup .settings {
-  min-width: 500px;
-  min-height: 200px;
-  max-width: 48vw;
+  padding: var(--pad-y) 0;
 }
 #help-popup .dismiss {
   position: absolute;
-  right: 4px;
-  top: .5em;
+  right: 0;
+  top: 0;
+  padding: var(--pad-y2) .5em;
 }
 #help-popup input[type="search"],
 #help-popup .CodeMirror {
@@ -804,12 +793,14 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 }
 
 #help-popup .buttons {
-  text-align: center;
-  margin-top: .75em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: var(--pad-y2) 0 calc(var(--pad-y2) - var(--pad-y)) 0;
 }
 .non-windows #help-popup .buttons {
   direction: rtl;
-  text-align: right;
+  justify-content: start;
 }
 #help-popup button[name^="import"] {
   line-height: 1.5rem;
@@ -831,8 +822,8 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 #help-popup .rules p {
   margin: .25em 0;
 }
-#help-popup .buttons button:nth-child(n + 2) {
-  margin-left: .5em;
+#help-popup .buttons > :nth-child(n + 2) {
+  margin-inline: .5em 0;
 }
 
 /************ lint ************/
@@ -1180,15 +1171,12 @@ body.linter-disabled .hidden-unless-compact {
   #lint:not([open]) + #footer {
     margin: .25em 0 -1em .25em;
   }
-  .main {
+  #sections {
     height: unset !important;
     padding-left: 0;
     display: flex;
     flex-direction: column;
     flex: 1;
-  }
-  .tab-bar {
-    margin-top: var(--fixed-height);
   }
   #sections > :not(.single-editor) {
     margin: 0 .5rem;

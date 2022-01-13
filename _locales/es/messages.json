@@ -67,9 +67,6 @@
   "backupButtons": {
     "message": "Respaldo"
   },
-  "backupMessage": {
-    "message": "Al exportar hará una copia de respaldo de TODOS los estilos instalados. Para restaurar una copia de respaldo, importe el archivo o arrástrelo a esta página."
-  },
   "bckpInstStyles": {
     "message": "Exportar estilos"
   },
@@ -1268,9 +1265,6 @@
   },
   "syncError": {
     "message": "No se pudo sincronizar"
-  },
-  "syncErrorRelogin": {
-    "message": "No se pudo sincronizar.\nIntenta volver a iniciar sesión en las opciones de Stylus:\nprimero haz clic en 'desconectar', y luego en 'conectar'."
   },
   "syncStorageErrorSaving": {
     "message": "El valor no se puede guardar. Trate de reducir la longitud del texto."

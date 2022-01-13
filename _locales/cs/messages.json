@@ -67,9 +67,6 @@
   "backupButtons": {
     "message": "Zálohovat"
   },
-  "backupMessage": {
-    "message": "Vyberte soubor nebo ho přetáhněte na tuto stránku."
-  },
   "bckpInstStyles": {
     "message": "Exportovat styly"
   },

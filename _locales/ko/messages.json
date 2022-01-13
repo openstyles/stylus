@@ -67,9 +67,6 @@
   "backupButtons": {
     "message": "백업"
   },
-  "backupMessage": {
-    "message": "파일을 선택하거나, 이 페이지로 파일을 드래그앤드롭하세요."
-  },
   "bckpInstStyles": {
     "message": "스타일 내보내기"
   },
@@ -135,6 +132,9 @@
   },
   "cm_theme": {
     "message": "테마"
+  },
+  "colorpickerPaletteHint": {
+    "message": "견본을 우클릭하여 소스 코드와 번갈아 가며 확인"
   },
   "colorpickerSwitchFormatTooltip": {
     "message": "16 진수-> RGB -> HSL 순서로 형식을 변환합니다.\nShift+클릭을 이용해 역순으로 변환할 수 있습니다.\nPgUp(PageUp), PgDn(PageDown) 키도 사용 가능합니다."
@@ -317,6 +317,9 @@
   "genericClone": {
     "message": "복제"
   },
+  "genericDescription": {
+    "message": "설명"
+  },
   "genericDisabledLabel": {
     "message": "비활성화됨"
   },
@@ -445,8 +448,17 @@
   "linkGetHelp": {
     "message": "도움말"
   },
+  "linkGetShareStyles": {
+    "message": "스타일 주고받기"
+  },
+  "linkGetShareStylesInfo": {
+    "message": "커뮤니티에 의해 새롭게 운영되는 userstyles.world 사이트는 userstyle 투고자들이 userstyle.org를 대체하기 위해 만들었습니다. userstyle.org는 지난 몇 년간 많은 투고자들이 스타일을 업데이트하는 것을 멈춰서 느리고 둔감해졌습니다."
+  },
   "linkGetStyles": {
     "message": "스타일 찾기"
+  },
+  "linkGetStylesInfo": {
+    "message": "본 아카이브 사이트는 느리고 응답이 늦는 userstyles.org를 백업하기 위해 Userstyle 커뮤니티 회원에 의해 제작되었습니다. 하루에 약 한 번 아카이브 내 콘텐츠가 갱신됩니다."
   },
   "linkStylusWiki": {
     "message": "위키"
@@ -724,6 +736,17 @@
       }
     }
   },
+  "meta_unknownMetaTypo": {
+    "message": "혹시 @$keyOk$입니까? 알 수 없는 메타데이터: @$keyErr$",
+    "placeholders": {
+      "keyErr": {
+        "content": "$1"
+      },
+      "keyOk": {
+        "content": "$2"
+      }
+    }
+  },
   "meta_unknownPreprocessor": {
     "message": "알 수 없는 @preprocessor $preprocessor$",
     "placeholders": {
@@ -782,8 +805,14 @@
   "optionsAdvancedPatchCsp": {
     "message": "스타일 자원을 허용하도록 <code>CSP</code>패치하기"
   },
+  "optionsAdvancedPatchCspNote": {
+    "message": "엄격한 <code>콘텐츠 보안 정책</code>(<code>Content-Security-Policy; CSP</code>)이 적용된 사이트에서 사진이나 글꼴이 포함된 스타일을 불러올 수 없는 경우 이 설정을 켜십시오.\n\n설정을 켜면 <code>CSP</code> 제한이 풀려, 필수적인 스타일 콘텐츠를 불러올 수 있도록 합니다. 이 설정은 잠재적인 보안 영향을 이해하고, 콘텐츠 모니터링 허용 시 발생하는 문제에 대한 책임을 질 수 있는 사용자에게만 권장됩니다. 자세한 정보를 알고 싶다면 CSS 기반 공격에 대해 알아 보십시오.\n\n또, 이 설정은 설치된 다른 확장 프로그램이 네트워크 응답을 먼저 수정하는 경우 작동하지 않을 수도 있으므로 이 점에 유의하십시오."
+  },
   "optionsAdvancedStyleViaXhr": {
     "message": "즉시 주입 모드"
+  },
+  "optionsAdvancedStyleViaXhrNote": {
+    "message": "만약 브라우징 도중 스타일이 적용되지 않은 콘텐츠가 깜빡거리며 나오는 경우(FOUC), 특히 다크 테마를 사용하는 중 눈에 두드러지게 깜빡이는 경우 이 설정을 켜십시오.\n\n기술적으로 Chrome/Chromium이 확장 프로그램과의 비동기 통신을 미루기 때문에 발생하는 문제이며, 페이지를 더 빨리 불러오려는 시도이지만 보통은 무의미하고 스타일이 늦게 적용되도록 하는 요인으로 작용합니다. 확장 프로그램에는 이를 회피하기 위한 동기형 API가 제공되지 않으므로, Stylus는 \"비권장\" 상태인 동기형 XMLHttpRquest 웹 API를 사용하여 스타일을 가져오는 설정을 제공합니다. 페이지를 서버에서 내려받는 몇 밀리초 내에 이런 과정이 끝나므로 로드 속도에는 악영향이 없습니다.\n\n그럼에도 불구하고 Chromium 브라우저에서는 개발자 도구의 콘솔에 경고를 출력할 것입니다. 경고를 우클릭하여 숨기면 이후에는 경고가 표시되지 않습니다."
   },
   "optionsBadgeDisabled": {
     "message": "비활성화 시의 배경 색"
@@ -966,6 +995,24 @@
   "previewTooltip": {
     "message": "변경 사항은 저장되지 않고 일시적으로 적용됩니다.\n영구적으로 변경하려면 스타일을 저장하세요."
   },
+  "publish": {
+    "message": "배포"
+  },
+  "publishPush": {
+    "message": "업데이트 푸시"
+  },
+  "publishReconnect": {
+    "message": "연결을 해제한 뒤 배포를 다시 시도해보세요"
+  },
+  "publishRetry": {
+    "message": "Stylus에서는 계속 이 스타일을 배포하려고 하고 있습니다. 하지만 인증 창이 뜨지 않는 경우 다시 시도할 수 있습니다. 지금 다시 시도하시겠습니까?"
+  },
+  "publishStyle": {
+    "message": "스타일 배포"
+  },
+  "publishUsw": {
+    "message": "<userstyles.world> 사용"
+  },
   "readingStyles": {
     "message": "스타일 읽어들이는 중..."
   },
@@ -1026,11 +1073,17 @@
   "searchResultWeeklyCount": {
     "message": "주간 설치 수"
   },
+  "searchStyleQueryHint": {
+    "message": "대소문자와 무관하게 스타일 이름을 검색하십시오:\n이런 검색어 - 순서에 무관하게 모든 단어가 포함하기만 하면 스타일을 불러옴\n\"이런 검색어\" - 따옴표 속 정확한 문장을 포함하는 스타일을 불러옴\n2020 - 해당 연도, 여기서는 2020년에 갱신된 스타일을 불러옴"
+  },
   "searchStylesAll": {
     "message": "모두"
   },
   "searchStylesCode": {
     "message": "CSS 코드"
+  },
+  "searchStylesHelp": {
+    "message": "</> 또는 <Ctrl-F> 키를 누르면 검색창에 포커스합니다.\nDefault mode is plain text search for all space-separated terms in any order.\n정확한 단어 검색: 검색어를 큰따옴표로 감쌉니다. 예: <\".header ~ div\">\n정규표현식: 빗금 및 플래그 문자를 포함합니다. 예: </body.*?\\ba\\b/i>\nURL로 찾기: 완전히 특정된 URL에 적용되는 스타일을 검색합니다. 예: https://www.example.org/\n메타데이터로 찾기: 이름, \"적용 대상\" 지정자, 설치 URL, 업데이트 URL 등 usercss 스타일의 모든 메타데이터 블록을 기반으로 검색합니다."
   },
   "searchStylesMatchUrl": {
     "message": "URL별"
@@ -1146,6 +1199,9 @@
   "styleMozillaFormatHeading": {
     "message": "Mozilla 형식"
   },
+  "styleName": {
+    "message": "스타일 이름"
+  },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "잘못된 'regexp()'의 사용으로 인해 스타일을 적용할 수 없습니다"
   },
@@ -1237,6 +1293,12 @@
   },
   "unreachableFileHint": {
     "message": "Stylus가 file:// URL에 접근할 수 있도록 하려면 chrome://extensions 페이지에서 파일 URL에 대한 액세스를 허용해야 합니다."
+  },
+  "unreachableMozSiteHint": {
+    "message": "Firefox 60 이후의 버전에서는 <about:config> 내의 <extensions.webextensions.restrictedDomains>에서 이 도메인을 제거해야 합니다. "
+  },
+  "unreachableMozSiteHintOldFF": {
+    "message": "Firefox 59 버전 이상에서만 이처럼 CSP 보호 정책이 적용된 사이트에 웹 확장 기능으로 스타일 요소를 추가할 수 있도록 설정 가능합니다."
   },
   "unzipStyles": {
     "message": "스타일 압축 푸는 중..."

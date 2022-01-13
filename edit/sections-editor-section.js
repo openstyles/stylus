@@ -381,8 +381,7 @@ function createResizeGrip(cm) {
       cm.display.lineDiv.offsetParent.offsetTop +
       /* borders */
       wrapper.offsetHeight - wrapper.clientHeight;
-    wrapper.style.pointerEvents = 'none';
-    document.body.style.cursor = 's-resize';
+    document.body.classList.add('resizing-v');
     document.on('mousemove', resize);
     document.on('mouseup', resizeStop);
 
@@ -398,8 +397,7 @@ function createResizeGrip(cm) {
     function resizeStop() {
       document.off('mouseup', resizeStop);
       document.off('mousemove', resize);
-      wrapper.style.pointerEvents = '';
-      document.body.style.cursor = '';
+      document.body.classList.remove('resizing-v');
     }
   };
 

@@ -61,9 +61,6 @@
   "backupButtons": {
     "message": "Резервне копіювання"
   },
-  "backupMessage": {
-    "message": "Виберіть файл або перетягніть на цю сторінку."
-  },
   "bckpInstStyles": {
     "message": "Експорт стилів"
   },
@@ -178,8 +175,20 @@
   "importReportTitle": {
     "message": "Імпорт стилів закінчено"
   },
+  "installPreferSchemeNone": {
+    "message": "Завжди"
+  },
+  "installUpdate": {
+    "message": "Встановити оновлення"
+  },
   "manageFavicons": {
     "message": "Піктограми для цільових сайтів"
+  },
+  "manageFilters": {
+    "message": "Фільтри"
+  },
+  "manageHeading": {
+    "message": "Встановити Styles"
   },
   "manageNewUI": {
     "message": "Новий інтерфейс"
@@ -195,6 +204,12 @@
   "openManage": {
     "message": "Менеджер"
   },
+  "openOptions": {
+    "message": "Налаштування"
+  },
+  "optionsAdvancedAutoSwitchSchemeNever": {
+    "message": "Ніколи"
+  },
   "optionsReset": {
     "message": "Скидання налаштувань до значень за замовчуванням"
   },
@@ -207,8 +222,32 @@
   "optionsSyncLogin": {
     "message": "Логін"
   },
+  "paginationNext": {
+    "message": "Наступна сторінка"
+  },
+  "paginationPrevious": {
+    "message": "Попередня сторінка"
+  },
+  "replace": {
+    "message": "Замінити"
+  },
+  "replaceAll": {
+    "message": "Замінити все"
+  },
   "retrieveBckp": {
     "message": "Імпорт стилів"
+  },
+  "search": {
+    "message": "Пошук"
+  },
+  "searchStylesAll": {
+    "message": "Усі"
+  },
+  "searchStylesCode": {
+    "message": "CSS код"
+  },
+  "searchStylesName": {
+    "message": "Назва"
   },
   "sectionCode": {
     "message": "Код"
@@ -222,11 +261,20 @@
   "styleCancelEditLabel": {
     "message": "Всі стилі"
   },
-  "syncErrorRelogin": {
-    "message": "Помилка синхронізації.\nСпробуйте повторно ввійти в налаштування Stylus:\nнатисніть спочатку «від’єднати», а потім «підключити». "
+  "stylePreferSchemeLabel": {
+    "message": "Темна/Світла тема"
+  },
+  "styleSaveLabel": {
+    "message": "Зберегти"
   },
   "toggleStyle": {
     "message": "Включити/виключити стиль"
+  },
+  "writeStyleFor": {
+    "message": "Створити стиль для:"
+  },
+  "writeStyleForURL": {
+    "message": "цей URL"
   },
   "zipStyles": {
     "message": "Запаковування стилів ... "

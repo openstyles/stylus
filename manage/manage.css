@@ -1,5 +1,4 @@
 :root {
-  --header-width: 280px;
   --name-padding-left: 20px;
   --name-padding-right: 40px;
   --actions-width: 75px;
@@ -7,9 +6,9 @@
 
 body {
   margin: 0;
-  /* Firefox: fill the entire page for drag'n'drop to work */
+  /* Fill the entire viewport to enable json import via drag'n'drop */
   display: flex;
-  height: 100%;
+  height: 100vh;
 }
 
 #header:lang(ja) h1 {
@@ -52,7 +51,6 @@ a:hover {
   position: fixed;
   top: 0;
   padding: 1rem;
-  border-right: 1px dashed #AAA;
   box-shadow: 0 0 50px -18px black;
   overflow: auto;
   box-sizing: border-box;
@@ -262,7 +260,6 @@ a:hover {
 #backup-buttons {
   display: flex;
   flex-wrap: wrap;
-  margin-top: .5rem;
 }
 
 #backup-buttons button {
@@ -300,9 +297,12 @@ a:hover {
   margin-top: .1em;
   margin-bottom: .1em;
 }
-
 #header summary:hover h2 {
   border-color: #bbb;
+}
+#header summary h2 [data-cmd="note"] {
+  display: flex;
+  align-items: center;
 }
 
 /* compact layout */

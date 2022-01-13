@@ -195,7 +195,7 @@ self.parserlib = (() => {
     'color-interpolation-filters': 'auto | sRGB | linearRGB',
     'color-profile': 1,
     'color-rendering': 'auto | optimizeSpeed | optimizeQuality',
-    'color-scheme': 'normal | [ light | dark ]+',
+    'color-scheme': 'normal | [ light | dark | <ident> ]+ && only?',
     'column-count': '<integer> | auto',
     'column-fill': 'auto | balance',
     'column-gap': '<column-gap>',
@@ -522,6 +522,7 @@ self.parserlib = (() => {
     'scroll-snap-type': 'none | [ x | y | block | inline | both ] [ mandatory | proximity ]?',
 
     'scrollbar-color': 'auto | dark | light | <color>{2}',
+    'scrollbar-gutter': 'auto | [ [ stable | always ] && both-edges? && force? ] || match-parent',
     'scrollbar-width': 'auto | thin | none',
     'shape-inside': 'auto | outside-shape | [ <basic-shape> || shape-box ] | <image> | display',
     'shape-rendering': 'auto | optimizeSpeed | crispEdges | geometricPrecision',
@@ -983,12 +984,12 @@ self.parserlib = (() => {
       'matrix( <number>#{6} ) | ' +
       'matrix3d( <number>#{16} ) | ' +
       'perspective( <len0+> | none ) | ' +
-      'rotate( <angle-or-0> ) | ' +
+      'rotate( <angle-or-0> | none ) | ' +
       'rotate3d( <number>#{3} , <angle-or-0> ) | ' +
       'rotateX( <angle-or-0> ) | ' +
       'rotateY( <angle-or-0> ) | ' +
       'rotateZ( <angle-or-0> ) | ' +
-      'scale( [ <num-pct> ]#{1,2} ) | ' +
+      'scale( [ <num-pct> ]#{1,2} | none ) | ' +
       'scale3d( <num-pct>#{3} ) | ' +
       'scaleX( <num-pct> ) | ' +
       'scaleY( <num-pct> ) | ' +
@@ -996,7 +997,7 @@ self.parserlib = (() => {
       'skew( <angle-or-0> [ , <angle-or-0> ]? ) | ' +
       'skewX( <angle-or-0> ) | ' +
       'skewY( <angle-or-0> ) | ' +
-      'translate( <len-pct>#{1,2} ) | ' +
+      'translate( <len-pct>#{1,2} | none ) | ' +
       'translate3d( <len-pct>#{2} , <length> ) | ' +
       'translateX( <len-pct> ) | ' +
       'translateY( <len-pct> ) | ' +
@@ -4126,8 +4127,8 @@ self.parserlib = (() => {
       this.fire(event, property);
       if (consumeSemicolon) {
         while (stream.match(TT.semiS)) {/*NOP*/}
+        this._ws();
       }
-      this._ws();
       return true;
     }
 
@@ -4391,7 +4392,7 @@ self.parserlib = (() => {
               readMargins && this._margin() ||
               (tt && stream.unget(), this._declaration(true, Props)) ||
               (next = stream.LT(1)).value === ';' ||
-              this._ws(next, true)) {
+              this._ws(null, true)) {
             continue;
           }
           break;

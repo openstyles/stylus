@@ -123,6 +123,12 @@
     'badgeDisabled': '#8B0000',     // badge background color when disabled
     'badgeNormal': '#006666',       // badge background color
 
+    /* Using separate values instead of a single {} to ensure type control.
+     * Sub-key is the first word in the html's file name. */
+    'headerWidth.edit': 280,
+    'headerWidth.install': 280,
+    'headerWidth.manage': 280,
+
     'popupWidth': 246,              // popup width in pixels
 
     'updateInterval': 24,           // user-style automatic update interval, hours (0 = disable)
