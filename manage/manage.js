@@ -11,10 +11,10 @@
   $$
   $create
   animateElement
+  messageBoxProxy
   setupLivePrefs
   waitForSelector
   waitForSheet
-  messageBoxProxy
 */// dom.js
 'use strict';
 
