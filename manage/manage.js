@@ -159,8 +159,7 @@ function EmbedDialog(create) {
         });
       shown = true;
     } else if (!state && shown) {
-      // FIXME: close the dialog
-      // messageBoxProxy.close();
+      messageBoxProxy.close();
       shown = false;
     }
   }
