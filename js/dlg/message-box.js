@@ -59,7 +59,8 @@ messageBox.show = async ({
 
   messageBox._originalFocus = document.activeElement;
   // focus the first focusable child but skip the first external link which is usually `feedback`
-  if ((moveFocus(messageBox.element, 0) || {}).target === '_blank') {
+  if ((moveFocus(messageBox.element, 0) || {}).target === '_blank' &&
+      /config-dialog/.test(className)) {
     moveFocus(messageBox.element, 1);
   }
   // suppress focus outline when invoked via click
