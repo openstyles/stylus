@@ -17,7 +17,7 @@
 }
 .injection-order ol {
   height: 100%;
-  padding: 0;
+  padding: 1px 0 0; /* 1px for keyboard-focused element's outline */
   margin: 0;
   font-size: 14px;
   overflow-y: auto;
