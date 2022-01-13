@@ -19,6 +19,7 @@ async function InjectionOrder(show = true) {
     maxTranslateY = ol.scrollHeight - d.dragTarget.offsetHeight - d.dragTarget.offsetTop;
   });
   ol.on('d:dragmove', ({detail: d}) => {
+    d.origin.stopPropagation(); // preserves dropEffect
     d.origin.dataTransfer.dropEffect = 'move';
     const y = Math.min(d.currentPos.y - d.startPos.y, maxTranslateY);
     d.dragTarget.style.transform = `translateY(${y}px)`;
@@ -29,7 +30,7 @@ async function InjectionOrder(show = true) {
     ol.insertBefore(d.dragTarget, d.insertBefore);
     prefs.set('injectionOrder', entries.map(l => l.style._id));
   });
-  new DraggableList(ol, {scrollContainer: ol});
+  DraggableList(ol, {scrollContainer: ol});
 
   await messageBoxProxy.show({
     title: t('styleInjectionOrder'),

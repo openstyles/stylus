@@ -19,20 +19,19 @@
 }
 .injection-order a {
   display: block;
+  color: #000;
+  text-decoration: none;
+  transition: transform .25s ease-in-out;
+  z-index: 1;
   user-select: none;
   padding: 0.3em .5em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   cursor: move;
-  color: #000;
-  text-decoration: none;
 }
 .injection-order a.enabled {
   font-weight: bold;
-}
-.injection-order a:active {
-  background: white;
 }
 .injection-order a:hover {
   text-decoration: underline;
@@ -45,12 +44,9 @@
   padding: 0.6em;
   font-weight: normal;
 }
-.injection-order .draggable-list-dragging a {
-  transition: transform .25s ease-in-out;
-  z-index: 1;
-}
-.injection-order a.draggable-list-target {
+.injection-order .draggable-list-target {
+  position: relative;
+  background: lightcyan;
   transition: none;
   z-index: 100;
-  position: relative;
 }
