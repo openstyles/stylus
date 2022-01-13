@@ -983,12 +983,12 @@ a:hover {
 .injection-order-dialog > div {
   height: 100%;
 }
-#stylus-injection-order {
+#injection-order {
   display: block;
   border: 0;
   height: 100%;
 }
-#stylus-injection-order.fadeout {
+#injection-order.fadeout {
   animation: slideout .25s ease-in-out;
 }
 

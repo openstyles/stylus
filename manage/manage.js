@@ -62,7 +62,7 @@ newUI.renderClass();
   installed.on('mouseover', Events.lazyAddEntryTitle, {passive: true});
   installed.on('mouseout', Events.lazyAddEntryTitle, {passive: true});
   $('#manage-options-button').onclick = () => router.updateHash('#stylus-options');
-  $('#injection-order-button').onclick = () => router.updateHash('#stylus-injection-order');
+  $('#injection-order-button').onclick = () => router.updateHash('#injection-order');
   $('#sync-styles').onclick = () => router.updateHash('#stylus-options');
   $$('#header a[href^="http"]').forEach(a => (a.onclick = Events.external));
   document.on('visibilitychange', handleVisibilityChange);
@@ -110,9 +110,9 @@ router.watch(
   }))
 );
 router.watch(
-  {hash: '#stylus-injection-order'},
+  {hash: '#injection-order'},
   EmbedDialog(() => $create('iframe', {
-    id: 'stylus-injection-order',
+    id: 'injection-order',
     src: '/injection-order/injection-order.html',
   }))
 );
