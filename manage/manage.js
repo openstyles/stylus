@@ -102,20 +102,8 @@ newUI.renderClass();
 
 msg.onExtension(onRuntimeMessage);
 window.on('closeOptions', () => router.updateHash(''));
-router.watch(
-  {hash: '#stylus-options'},
-  Embed(() => $create('iframe', {
-    id: 'stylus-embedded-options',
-    src: '/options.html',
-  }))
-);
-router.watch(
-  {hash: '#injection-order'},
-  EmbedDialog(() => $create('iframe', {
-    id: 'injection-order',
-    src: '/injection-order/injection-order.html',
-  }))
-);
+router.watch({hash: '#stylus-options'}, toggleEmbeddedOptions);
+router.watch({hash: '#injection-order'}, toggleInjectionOrder);
 
 function onRuntimeMessage(msg) {
   switch (msg.method) {
@@ -138,53 +126,36 @@ function onRuntimeMessage(msg) {
   setTimeout(sorter.updateStripes, 0, {onlyWhenColumnsChanged: true});
 }
 
-/**
- * @param {function():Node|string} create
- */
-function EmbedDialog(create) {
-  let shown = false;
-  return toggle;
-
-  function toggle(state) {
-    if (state && !shown) {
-      messageBoxProxy.show({
-        title: t('styleInjectionOrder'),
-        contents: create(),
-        className: 'injection-order-dialog center-dialog',
-        blockScroll: true,
-      })
-        .then(() => {
-          shown = false;
-          router.updateHash('');
-        });
-      shown = true;
-    } else if (!state && shown) {
-      messageBoxProxy.close();
-      shown = false;
-    }
+async function toggleEmbeddedOptions(state) {
+  const el = $('#stylus-embedded-options') ||
+    state && document.documentElement.appendChild($create('iframe', {
+      id: 'stylus-embedded-options',
+      src: '/options.html',
+    }));
+  if (state) {
+    el.focus();
+  } else if (el) {
+    el.contentDocument.body.classList.add('scaleout');
+    await animateElement(el, 'fadeout');
+    el.remove();
   }
 }
 
-/**
- * @param {function():Node|string} create
- */
-function Embed(create) {
-  let el;
-  return toggle;
-  async function toggle(state) {
-    if (state) {
-      if (!el) el = create();
-      if (!el.parentNode) {
-        document.body.append(el);
-      }
-      el.focus();
-    } else {
-      if (!el || !el.parentNode) return;
-      if (el.contentDocument) {
-        el.contentDocument.body.classList.add('scaleout');
-      }
-      await animateElement(el, 'fadeout');
-      el.remove();
-    }
+async function toggleInjectionOrder(state) {
+  const sel = 'iframe#injection-order';
+  const shown = $(sel);
+  if (state && !shown) {
+    await messageBoxProxy.show({
+      title: t('styleInjectionOrder'),
+      contents: $create(sel, {
+        src: '/injection-order/injection-order.html',
+      }),
+      className: 'injection-order-dialog center-dialog',
+      blockScroll: true,
+      buttons: [t('confirmClose')],
+    });
+    router.updateHash('');
+  } else if (!state && shown) {
+    await messageBoxProxy.close();
   }
 }
