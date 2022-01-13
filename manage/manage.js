@@ -62,7 +62,7 @@ newUI.renderClass();
   installed.on('mouseover', Events.lazyAddEntryTitle, {passive: true});
   installed.on('mouseout', Events.lazyAddEntryTitle, {passive: true});
   $('#manage-options-button').onclick = () => router.updateHash('#stylus-options');
-  $('#execution-order-button').onclick = () => router.updateHash('#stylus-execution-order');
+  $('#injection-order-button').onclick = () => router.updateHash('#stylus-injection-order');
   $('#sync-styles').onclick = () => router.updateHash('#stylus-options');
   $$('#header a[href^="http"]').forEach(a => (a.onclick = Events.external));
   document.on('visibilitychange', handleVisibilityChange);
@@ -110,10 +110,10 @@ router.watch(
   }))
 );
 router.watch(
-  {hash: '#stylus-execution-order'},
+  {hash: '#stylus-injection-order'},
   EmbedDialog(() => $create('iframe', {
-    id: 'stylus-execution-order',
-    src: '/execution-order/execution-order.html',
+    id: 'stylus-injection-order',
+    src: '/injection-order/injection-order.html',
   }))
 );
 
@@ -145,9 +145,9 @@ function EmbedDialog(El) {
   function toggle(state) {
     if (state && !shown) {
       messageBoxProxy.show({
-        title: t('manageExecutionOrder'),
+        title: t('styleInjectionOrder'),
         contents: El(),
-        className: 'execution-order-dialog center-dialog',
+        className: 'injection-order-dialog center-dialog',
         blockScroll: true,
       })
         .then(() => {

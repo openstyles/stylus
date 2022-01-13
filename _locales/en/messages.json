@@ -735,9 +735,6 @@
     "message": "Live reload",
     "description": "The label of live-reload feature"
   },
-  "manageExecutionOrder": {
-    "message": "Injection order"
-  },
   "manageFavicons": {
     "message": "Favicons in applies-to column",
     "description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
@@ -1669,6 +1666,9 @@
   },
   "styleIncludeLabel": {
     "message": "Custom included sites"
+  },
+  "styleInjectionOrder": {
+    "message": "Style injection order"
   },
   "styleExcludeLabel": {
     "message": "Custom excluded sites"

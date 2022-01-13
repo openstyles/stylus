@@ -980,15 +980,15 @@ a:hover {
   animation: fadeout .25s ease-in-out;
 }
 
-.execution-order-dialog > div {
+.injection-order-dialog > div {
   height: 100%;
 }
-#stylus-execution-order {
+#stylus-injection-order {
   display: block;
   border: 0;
   height: 100%;
 }
-#stylus-execution-order.fadeout {
+#stylus-injection-order.fadeout {
   animation: slideout .25s ease-in-out;
 }
 
