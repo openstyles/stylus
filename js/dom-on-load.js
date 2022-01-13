@@ -15,7 +15,7 @@
   window.on('click', showTooltipNote);
   window.on('resize', () => debounce(addTooltipsToEllipsized, 100));
   // Removing transition-suppressor rule
-  const {sheet} = $('link[href^="global.css"]');
+  const {sheet} = $('link[href$="global.css"]');
   for (let i = 0, rule; (rule = sheet.cssRules[i]); i++) {
     if (/#\\1\s?transition-suppressor/.test(rule.selectorText)) {
       sheet.deleteRule(i);
