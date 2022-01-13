@@ -29,10 +29,9 @@ input:disabled + span {
 
 #header,
 .warnings {
-  flex: 0 0 280px;
+  flex: 0 0 var(--header-width);
   box-sizing: border-box;
   padding: 1rem;
-  border-right: 1px dashed #aaa;
   box-shadow: 0 0 50px -18px black;
   overflow-wrap: break-word;
   overflow-y: auto;

@@ -501,6 +501,10 @@
   "gettingStyles": {
     "message": "Getting all styles..."
   },
+  "headerResizerHint": {
+    "message": "Hold Shift to resize only in this type of UI, i.e. editor, manager, installer",
+    "description": "Tooltip for the header panel resizer"
+  },
   "helpAlt": {
     "message": "Help",
     "description": "Alternate text for help buttons"

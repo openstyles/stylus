@@ -90,13 +90,12 @@ label {
 
 /************ header ************/
 #header {
-  width: 280px;
+  width: var(--header-width);
   height: 100vh;
   overflow: auto;
   position: fixed;
   top: 0;
   padding: 1rem;
-  border-right: 1px dashed #AAA;
   box-shadow: 0 0 3rem -1.2rem black;
   box-sizing: border-box;
   z-index: 10;
@@ -107,7 +106,7 @@ label {
   margin-top: 0;
 }
 #sections {
-  padding-left: 280px;
+  padding-left: var(--header-width);
   min-height: 0;
   height: 100%;
 }
@@ -745,7 +744,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 }
 #help-popup.big {
   box-shadow: rgba(0, 0, 0, 0.45) 0px 0px 0px 100000px !important;
-  left: calc(280px - 3rem);
+  left: calc(var(--header-width) - 3rem);
 }
 #help-popup.big .CodeMirror {
   min-height: 2rem;
