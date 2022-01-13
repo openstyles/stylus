@@ -16,7 +16,7 @@ async function InjectionOrder(show = true) {
   ol.append(...entries.map(l => l.el));
   ol.on('d:dragstart', ({detail: d}) => {
     d.origin.dataTransfer.setDragImage(new Image(), 0, 0);
-    maxTranslateY = ol.scrollHeight - d.dragTarget.offsetHeight - d.dragTarget.offsetTop;
+    maxTranslateY = ol.scrollHeight + ol.offsetTop - d.dragTarget.offsetHeight - d.dragTarget.offsetTop;
   });
   ol.on('d:dragmove', ({detail: d}) => {
     d.origin.stopPropagation(); // preserves dropEffect
