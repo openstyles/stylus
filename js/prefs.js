@@ -17,6 +17,7 @@
    * @namespace PrefsValues
    */
   const defaults = {
+    // TODO: sort everything aphabetically
     'openEditInWindow': false,      // new editor opens in a own browser window
     'openEditInWindow.popup': false, // new editor opens in a simplified browser window without omnibox
     'windowPosition': {},           // detached window position
