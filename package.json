@@ -9,6 +9,7 @@
     "codemirror": "WARNING! Always use an exact version and test it for a while before releasing"
   },
   "dependencies": {
+    "@eight04/draggable-list": "^0.3.0",
     "codemirror": "5.63.3",
     "db-to-cloud": "^0.7.0",
     "jsonlint": "^1.6.3",
@@ -21,12 +22,11 @@
   },
   "devDependencies": {
     "archiver": "^4.0.1",
-    "endent": "^1.4.0",
     "eslint": "^7.20.0",
     "fs-extra": "^9.0.0",
-    "make-fetch-happen": "^8.0.7",
+    "glob": "^7.2.0",
+    "node-fetch": "^2.6.6",
     "sync-version": "^1.0.1",
-    "tiny-glob": "^0.2.6",
     "web-ext": "^6.5.0"
   },
   "scripts": {

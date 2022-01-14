@@ -59,6 +59,7 @@ const styleMan = (() => {
   const DELETE_IF_NULL = ['id', 'customName', 'md5Url', 'originalMd5'];
   /** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
   let ready = init();
+  let order = {};
 
   chrome.runtime.onConnect.addListener(handleLivePreview);
   // function handleColorScheme() {
@@ -68,6 +69,17 @@ const styleMan = (() => {
         broadcastStyleUpdated(data, 'colorScheme', undefined, false);
       }
     }
+  });
+
+  prefs.subscribe(['injectionOrder'], (key, value) => {
+    order = {};
+    value.forEach((uid, i) => {
+      const id = uuidIndex.get(uid);
+      if (id) {
+        order[id] = i;
+      }
+    });
+    msg.broadcast({method: 'styleSort', order});
   });
 
   //#endregion
@@ -148,7 +160,11 @@ const styleMan = (() => {
     async getSectionsByUrl(url, id, isInitialApply) {
       if (ready.then) await ready;
       if (isInitialApply && prefs.get('disableAll')) {
-        return {disableAll: true};
+        return {
+          cfg: {
+            disableAll: true,
+          },
+        };
       }
       const sender = CHROME && this && this.sender || {};
       if (sender.frameId === 0) {
@@ -170,7 +186,7 @@ const styleMan = (() => {
       }
       return id
         ? cache.sections[id] ? {[id]: cache.sections[id]} : {}
-        : cache.sections;
+        : Object.assign({cfg: {order}}, cache.sections);
     },
 
     /** @returns {Promise<StyleObj>} */

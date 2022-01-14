@@ -13,11 +13,19 @@
   let hasStyles = false;
   let isDisabled = false;
   let isTab = !chrome.tabs || location.pathname !== '/popup.html';
+  let order = {};
   const isFrame = window !== parent;
   const isFrameAboutBlank = isFrame && location.href === 'about:blank';
   const isUnstylable = !chrome.app && document instanceof XMLDocument;
   const styleInjector = StyleInjector({
-    compare: (a, b) => a.id - b.id,
+    compare: (a, b) => {
+      const ia = order[a.id];
+      const ib = order[b.id];
+      if (ia === ib) return 0;
+      if (ia == null) return 1;
+      if (ib == null) return -1;
+      return ia - ib;
+    },
     onUpdate: onInjectorUpdate,
   });
   // dynamic iframes don't have a URL yet so we'll use their parent's URL (hash isn't inherited)
@@ -100,7 +108,11 @@
         parentStyles && await new Promise(onFrameElementInView) && parentStyles ||
         !isFrameAboutBlank && chrome.app && !chrome.tabs && tryCatch(getStylesViaXhr) ||
         await API.styles.getSectionsByUrl(matchUrl, null, true);
-      isDisabled = styles.disableAll;
+      if (styles.cfg) {
+        isDisabled = styles.cfg.disableAll;
+        order = styles.cfg.order || {};
+        delete styles.cfg;
+      }
       hasStyles = !isDisabled;
       if (hasStyles) {
         window[SYM] = styles;
@@ -166,10 +178,16 @@
         }
         break;
 
+      case 'styleSort':
+        order = request.order;
+        styleInjector.sort();
+        break;
+
       case 'urlChanged':
         if (!hasStyles && isDisabled || matchUrl === request.url) break;
         matchUrl = request.url;
         API.styles.getSectionsByUrl(matchUrl).then(sections => {
+          delete sections.cfg;
           hasStyles = true;
           styleInjector.replace(sections);
         });

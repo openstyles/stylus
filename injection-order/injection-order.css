@@ -1,0 +1,58 @@
+#message-box.injection-order > div {
+  height: 100%;
+  max-width: 80vw;
+}
+#message-box.injection-order #message-box-contents {
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  --border: 1px solid rgba(128, 128, 128, .25);
+}
+.injection-order header {
+  padding: 1rem;
+  width: 0;
+  min-width: 100%;
+  box-sizing: border-box;
+}
+.injection-order ol {
+  height: 100%;
+  padding: 1px 0 0; /* 1px for keyboard-focused element's outline */
+  margin: 0;
+  font-size: 14px;
+  overflow-y: auto;
+  border-top: var(--border);
+}
+.injection-order a {
+  display: block;
+  color: #000;
+  text-decoration: none;
+  transition: transform .25s ease-in-out;
+  z-index: 1;
+  user-select: none;
+  padding: 0.3em .5em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: move;
+}
+.injection-order a.enabled {
+  font-weight: bold;
+}
+.injection-order a:hover {
+  text-decoration: underline;
+}
+.injection-order a:not(:first-child) {
+  border-top: var(--border);
+}
+.injection-order a::before {
+  content: "\2261";
+  padding: 0.6em;
+  font-weight: normal;
+}
+.injection-order .draggable-list-target {
+  position: relative;
+  background: lightcyan;
+  transition: none;
+  z-index: 100;
+}

@@ -17,6 +17,7 @@
    * @namespace PrefsValues
    */
   const defaults = {
+    // TODO: sort everything aphabetically
     'openEditInWindow': false,      // new editor opens in a own browser window
     'openEditInWindow.popup': false, // new editor opens in a simplified browser window without omnibox
     'windowPosition': {},           // detached window position
@@ -132,6 +133,8 @@
     'popupWidth': 246,              // popup width in pixels
 
     'updateInterval': 24,           // user-style automatic update interval, hours (0 = disable)
+
+    'injectionOrder': [],
   };
   const knownKeys = Object.keys(defaults);
   /** @type {PrefsValues} */

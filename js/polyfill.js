@@ -86,7 +86,7 @@
       const tag = isCss ? 'link' : 'script';
       const attr = isCss ? 'href' : 'src';
       if (!isCss && !url.endsWith('.js')) url += '.js';
-      if (url.startsWith('/')) url = url.slice(1);
+      if (url[0] === '/' && location.pathname.indexOf('/', 1) < 0) url = url.slice(1);
       let el = document.head.querySelector(`${tag}[${attr}$="${url}"]`);
       if (!el) {
         el = document.createElement(tag);

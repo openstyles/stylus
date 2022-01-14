@@ -1,14 +1,16 @@
-/* eslint-env node */
 'use strict';
+
+const fetch = require('node-fetch');
+const fs = require('fs');
+const fse = require('fs-extra');
+const glob = require('glob').sync;
 const path = require('path');
 
-const endent = require('endent');
-const fetch = require('make-fetch-happen');
-const fse = require('fs-extra');
-const glob = require('tiny-glob');
+const KEEP_DIRECTORIES = null;
 
 const files = {
   'codemirror': [
+    KEEP_DIRECTORIES,
     'addon/comment/comment.js',
     'addon/dialog',
     'addon/edit/closebrackets.js',
@@ -35,30 +37,33 @@ const files = {
     'theme/*',
   ],
   'jsonlint': [
-    'lib/jsonlint.js → jsonlint.js',
-    'README.md → LICENSE',
+    'lib/jsonlint.js',
+    'README.md -> LICENSE',
   ],
   'less-bundle': [
-    'dist/less.min.js → less.min.js',
+    'dist/less.min.js',
   ],
   'lz-string-unsafe': [
     'lz-string-unsafe.min.js',
   ],
   'stylelint-bundle': [
-    'dist/stylelint-bundle.min.js → stylelint-bundle.min.js',
-    'https://github.com/stylelint/stylelint/raw/{VERSION}/LICENSE → LICENSE',
+    'dist/stylelint-bundle.min.js',
+    'https://github.com/stylelint/stylelint/raw/{VERSION}/LICENSE',
   ],
   'stylus-lang-bundle': [
-    'dist/stylus-renderer.min.js → stylus-renderer.min.js',
+    'dist/stylus-renderer.min.js',
   ],
   'usercss-meta': [
-    'dist/usercss-meta.min.js → usercss-meta.min.js',
+    'dist/usercss-meta.min.js',
   ],
   'db-to-cloud': [
-    'dist/db-to-cloud.min.js → db-to-cloud.min.js',
+    'dist/db-to-cloud.min.js',
   ],
   'webext-launch-web-auth-flow': [
-    'dist/webext-launch-web-auth-flow.min.js → webext-launch-web-auth-flow.min.js',
+    'dist/webext-launch-web-auth-flow.min.js',
+  ],
+  '@eight04/draggable-list': [
+    'dist/draggable-list.iife.min.js',
   ],
 };
 
@@ -66,96 +71,97 @@ main().catch(console.error);
 
 async function main() {
   fse.emptyDirSync('vendor');
-  for (const pkg in files) {
-    console.log('\x1b[32m%s\x1b[0m', `Building ${pkg}...`);
-    // other files
-    const [fetched, copied] = await buildFiles(pkg, files[pkg]);
-    // README
-    await fse.outputFile(`vendor/${pkg}/README.md`, generateReadme(pkg, fetched, copied));
-    // LICENSE
-    await copyLicense(pkg);
-  }
-  console.log('\x1b[32m%s\x1b[0m', 'updating codemirror themes list...');
-  await fse.outputFile('edit/codemirror-themes.js', await generateThemeList());
+  await Promise.all(Object.keys(files).map(async pkg => {
+    console.log(`Building ${pkg}...`);
+    const pkgName = getFileName(pkg);
+    const flatPkg = pkg === pkgName || files[pkgName]
+      ? pkg.replace(/\//g, '-')
+      : pkgName;
+    const res = await buildFiles(pkg, flatPkg, files[pkg]);
+    buildLicense(pkg, flatPkg);
+    buildReadme(pkg, flatPkg, res);
+  }));
+  console.log('Building CodeMirror theme list...');
+  buildThemeList();
 }
 
-async function generateThemeList() {
-  const themes = (await fse.readdir('vendor/codemirror/theme'))
-    .filter(name => name.endsWith('.css'))
-    .map(name => name.replace('.css', ''))
-    .sort();
-  return endent`
+async function buildFiles(pkg, flatPkg, patterns) {
+  const keepDirs = patterns.includes(KEEP_DIRECTORIES);
+  let fetched = '';
+  let copied = '';
+  for (let pattern of patterns) {
+    if (pattern === KEEP_DIRECTORIES) continue;
+    pattern = pattern.replace('{VERSION}', require(`${pkg}/package.json`).version);
+    const [src, dest = !keepDirs && getFileName(src)] = pattern.split(/\s*->\s*/);
+    if (/^https?:/.test(src)) {
+      fse.outputFileSync(`vendor/${flatPkg}/${dest}`, await (await fetch(src)).text());
+      fetched += `* ${dest}: ${src}\n`;
+    } else {
+      const files = glob(`node_modules/${pkg}/${src}`);
+      if (!files.length) {
+        throw new Error(`Pattern ${src} matches no files`);
+      }
+      for (const file of files) {
+        fse.copySync(file, dest
+          ? `vendor/${flatPkg}/${dest}`
+          : `vendor/${path.relative('node_modules', file).replace(pkg + '/', flatPkg + '/')}`);
+        const relSrc = path.relative(`node_modules/${pkg}`, file).replace(/\\/g, '/');
+        copied += dest && dest !== relSrc
+          ? `* ${dest}: ${
+            keepDirs || getFileName(dest) !== getFileName(relSrc)
+              ? relSrc
+              : relSrc.replace(/[^/]+$/, '*')
+          }\n`
+          : `* ${relSrc}\n`;
+      }
+    }
+  }
+  return {fetched, copied};
+}
+
+function buildLicense(pkg, flatPkg) {
+  const LICENSE = `vendor/${flatPkg}/LICENSE`;
+  if (!fs.existsSync(LICENSE)) {
+    const [src] = glob(`node_modules/${pkg}/LICEN[SC]E*`);
+    if (!src) throw new Error(`Cannot find license file for ${pkg}`);
+    fse.copySync(src, LICENSE);
+  }
+}
+
+function buildReadme(pkg, flatPkg, {fetched, copied}) {
+  const {name, version} = require(`${pkg}/package.json`);
+  fse.outputFileSync(`vendor/${flatPkg}/README.md`, [
+    `## ${name} v${version}`,
+    fetched && `Files downloaded from URL:\n${fetched}`,
+    copied && `Files copied from NPM (node_modules):\n${copied}`,
+  ].filter(Boolean).join('\n\n'));
+}
+
+function buildThemeList() {
+  fse.outputFileSync('edit/codemirror-themes.js', deindent(`\
     /* Do not edit. This file is auto-generated by build-vendor.js */
     'use strict';
 
     /* exported CODEMIRROR_THEMES */
     const CODEMIRROR_THEMES = [
     ${
-      themes.map(t => `  '${t.replace(/'/g, '\\$&')}',\n`).join('')
-    }];
-  ` + '\n';
-}
-
-async function copyLicense(pkg) {
-  try {
-    await fse.access(`vendor/${pkg}/LICENSE`);
-    return;
-  } catch (err) {
-    // pass
-  }
-  for (const file of await glob(`node_modules/${pkg}/LICEN[SC]E*`)) {
-    await fse.copy(file, `vendor/${pkg}/LICENSE`);
-    return;
-  }
-  throw new Error(`cannot find license file for ${pkg}`);
-}
-
-async function buildFiles(pkg, patterns) {
-  const fetchedFiles = [];
-  const copiedFiles = [];
-  for (let pattern of patterns) {
-    pattern = pattern.replace('{VERSION}', require(`${pkg}/package.json`).version);
-    const [src, dest] = pattern.split(/\s*→\s*/);
-    if (src.startsWith('http')) {
-      const content = await (await fetch(src)).text();
-      await fse.outputFile(`vendor/${pkg}/${dest}`, content);
-      fetchedFiles.push([src, dest]);
-    } else {
-      let dirty = false;
-      for (const file of await glob(`node_modules/${pkg}/${src}`)) {
-        if (dest) {
-          await fse.copy(file, `vendor/${pkg}/${dest}`);
-        } else {
-          await fse.copy(file, path.join('vendor', path.relative('node_modules', file)));
-        }
-        copiedFiles.push([path.relative(`node_modules/${pkg}`, file), dest]);
-        dirty = true;
-      }
-      if (!dirty) {
-        throw new Error(`Pattern ${src} matches no files`);
-      }
+    fs.readdirSync('vendor/codemirror/theme')
+      .filter(name => name.endsWith('.css'))
+      .map(name => name.replace('.css', ''))
+      .sort()
+      .map(t => `  '${t.replace(/'/g, '\\$&')}',`).join('\n')
     }
-  }
-  return [fetchedFiles, copiedFiles];
+    ];
+    `));
 }
 
-function generateReadme(lib, fetched, copied) {
-  const pkg = require(`${lib}/package.json`);
-  let txt = `## ${pkg.name} v${pkg.version}\n\n`;
-  if (fetched.length) {
-    txt += `Following files are downloaded from HTTP:\n\n${generateList(fetched)}\n\n`;
-  }
-  if (copied.length) {
-    txt += `Following files are copied from npm (node_modules):\n\n${generateList(copied)}\n`;
-  }
-  return txt;
+function deindent(str) {
+  const indent = str.match(/^\s*/)[0];
+  return indent
+    ? str.replace(new RegExp('^' + indent, 'gm'), '')
+    : str;
 }
 
-function generateList(list) {
-  return list.map(([src, dest]) => {
-    if (dest) {
-      return `* ${dest}: ${src}`;
-    }
-    return `* ${src}`;
-  }).join('\n');
+function getFileName(path) {
+  return path.split('/').pop();
 }

@@ -12,6 +12,19 @@ window.messageBox = {
   _resolve: null,
 };
 
+messageBox.close = async isAnimated => {
+  window.off('keydown', messageBox.listeners.key, true);
+  window.off('scroll', messageBox.listeners.scroll);
+  window.off('mouseup', messageBox.listeners.mouseUp);
+  window.off('mousemove', messageBox.listeners.mouseMove);
+  if (isAnimated) {
+    await animateElement(messageBox.element, 'fadeout');
+  }
+  messageBox.element.remove();
+  messageBox.element = null;
+  messageBox._resolve = null;
+};
+
 /**
  * @param {Object} params
  * @param {String} params.title
@@ -46,7 +59,8 @@ messageBox.show = async ({
 
   messageBox._originalFocus = document.activeElement;
   // focus the first focusable child but skip the first external link which is usually `feedback`
-  if ((moveFocus(messageBox.element, 0) || {}).target === '_blank') {
+  if ((moveFocus(messageBox.element, 0) || {}).target === '_blank' &&
+      /config-dialog/.test(className)) {
     moveFocus(messageBox.element, 1);
   }
   // suppress focus outline when invoked via click
@@ -143,9 +157,7 @@ messageBox.show = async ({
 
   function resolveWith(value) {
     setTimeout(messageBox._resolve, 0, value);
-    unbindGlobalListeners();
-    animateElement(messageBox.element, 'fadeout')
-      .then(removeSelf);
+    messageBox.close(true);
     if (messageBox.element.contains(document.activeElement)) {
       messageBox._originalFocus.focus();
     }
@@ -153,8 +165,7 @@ messageBox.show = async ({
 
   function createElement() {
     if (messageBox.element) {
-      unbindGlobalListeners();
-      removeSelf();
+      messageBox.close();
     }
     const id = 'message-box';
     messageBox.element =
@@ -185,19 +196,6 @@ messageBox.show = async ({
       window.on('scroll', messageBox.listeners.scroll, {passive: false});
     }
     window.on('keydown', messageBox.listeners.key, true);
-  }
-
-  function unbindGlobalListeners() {
-    window.off('keydown', messageBox.listeners.key, true);
-    window.off('scroll', messageBox.listeners.scroll);
-    window.off('mouseup', messageBox.listeners.mouseUp);
-    window.off('mousemove', messageBox.listeners.mouseMove);
-  }
-
-  function removeSelf() {
-    messageBox.element.remove();
-    messageBox.element = null;
-    messageBox._resolve = null;
   }
 };
 

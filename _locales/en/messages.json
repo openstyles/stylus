@@ -1667,6 +1667,14 @@
   "styleIncludeLabel": {
     "message": "Custom included sites"
   },
+  "styleInjectionOrder": {
+    "message": "Style injection order",
+    "description": "Tooltip for the button in the manager to open the dialog and also the title of this dialog"
+  },
+  "styleInjectionOrderHint": {
+    "message": "Drag'n'drop a style to change its position. Styles are injected sequentially in the order shown below so a style further down the list can override the earlier styles.",
+    "description": "Hint in the injection order dialog in the manager"
+  },
   "styleExcludeLabel": {
     "message": "Custom excluded sites"
   },

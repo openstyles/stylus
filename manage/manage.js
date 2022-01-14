@@ -61,6 +61,7 @@ newUI.renderClass();
   installed.on('mouseover', Events.lazyAddEntryTitle, {passive: true});
   installed.on('mouseout', Events.lazyAddEntryTitle, {passive: true});
   $('#manage-options-button').onclick = () => router.updateHash('#stylus-options');
+  $('#injection-order-button').onclick = () => router.updateHash('#injection-order');
   $('#sync-styles').onclick = () => router.updateHash('#stylus-options');
   $$('#header a[href^="http"]').forEach(a => (a.onclick = Events.external));
   document.on('visibilitychange', handleVisibilityChange);
@@ -101,6 +102,7 @@ newUI.renderClass();
 msg.onExtension(onRuntimeMessage);
 window.on('closeOptions', () => router.updateHash(''));
 router.watch({hash: '#stylus-options'}, toggleEmbeddedOptions);
+router.watch({hash: '#injection-order'}, toggleInjectionOrder);
 
 function onRuntimeMessage(msg) {
   switch (msg.method) {
@@ -135,5 +137,20 @@ async function toggleEmbeddedOptions(state) {
     el.contentDocument.body.classList.add('scaleout');
     await animateElement(el, 'fadeout');
     el.remove();
+  }
+}
+
+async function toggleInjectionOrder(state) {
+  const shown = $('.injection-order');
+  if (state && !shown) {
+    await require([
+      '/vendor/draggable-list/draggable-list.iife.min.js',
+      '/injection-order/injection-order.css',
+      '/injection-order/injection-order', /* global InjectionOrder */
+    ]);
+    await InjectionOrder();
+    router.updateHash('');
+  } else if (!state && shown) {
+    await InjectionOrder(false);
   }
 }
