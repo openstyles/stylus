@@ -105,14 +105,7 @@ async function buildFiles(pkg, flatPkg, patterns) {
         fse.copySync(file, dest
           ? `vendor/${flatPkg}/${dest}`
           : `vendor/${path.relative('node_modules', file).replace(pkg + '/', flatPkg + '/')}`);
-        const relSrc = path.relative(`node_modules/${pkg}`, file).replace(/\\/g, '/');
-        copied += dest && dest !== relSrc
-          ? `* ${dest}: ${
-            keepDirs || getFileName(dest) !== getFileName(relSrc)
-              ? relSrc
-              : relSrc.replace(/[^/]+$/, '*')
-          }\n`
-          : `* ${relSrc}\n`;
+        copied += `* ${reportFile(pkg, file, dest)}\n`;
       }
     }
   }
@@ -164,4 +157,15 @@ function deindent(str) {
 
 function getFileName(path) {
   return path.split('/').pop();
+}
+
+function reportFile(pkg, file, dest) {
+  file = path.relative(`node_modules/${pkg}`, file).replace(/\\/g, '/');
+  if (!dest || dest === file) {
+    return file;
+  }
+  if (file.includes('/') && getFileName(dest) === getFileName(file)) {
+    file = file.replace(/[^/]+$/, '*');
+  }
+  return `${dest}: ${file}`;
 }
