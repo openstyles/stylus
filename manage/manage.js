@@ -144,7 +144,7 @@ async function toggleInjectionOrder(state) {
   const shown = $('.injection-order');
   if (state && !shown) {
     await require([
-      '/vendor/@eight04/draggable-list/dist/draggable-list.iife.min.js',
+      '/vendor/draggable-list/draggable-list.iife.min.js',
       '/injection-order/injection-order.css',
       '/injection-order/injection-order', /* global InjectionOrder */
     ]);

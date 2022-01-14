@@ -1,6 +1,5 @@
 ## jsonlint v1.6.3
 
-Following files are copied from npm (node_modules):
-
-* jsonlint.js: lib\jsonlint.js
+Files copied from NPM (node_modules):
+* jsonlint.js: lib/*
 * LICENSE: README.md
