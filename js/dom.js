@@ -479,7 +479,9 @@ const dom = {};
       HW,
       HWprefId,
       setHWProp(width) {
-        width = Math.round(Math.max(200, Math.min(innerWidth / 3, Number(width) || 0)));
+        // If this is a small window on a big monitor the user can maximize it later
+        const max = (innerWidth < 850 ? screen.availWidth : innerWidth) / 3;
+        width = Math.round(Math.max(200, Math.min(max, Number(width) || 0)));
         elHtml.style.setProperty('--header-width', width + 'px');
         return width;
       },
