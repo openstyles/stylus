@@ -440,7 +440,7 @@ function download(url, {
   const usoVars = [];
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    const u = new URL(collapseUsoVars(url));
+    const u = new URL(collapseUsoVars(url), location);
     const onTimeout = () => {
       xhr.abort();
       reject(new Error('Timeout fetching ' + u.href));

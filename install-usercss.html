@@ -11,12 +11,11 @@
   <script src="js/polyfill.js"></script>
   <script src="js/msg.js"></script>
   <script src="js/toolbox.js"></script>
-
-  <script src="install-usercss/preinit.js"></script>
-
   <script src="js/prefs.js"></script>
   <script src="js/dom.js"></script>
   <script src="js/localization.js"></script>
+
+  <script src="install-usercss/preinit.js"></script>
 
   <script src="content/style-injector.js"></script>
   <script src="content/apply.js"></script>
@@ -25,66 +24,59 @@
   <link href="install-usercss/install-usercss.css" rel="stylesheet">
 </head>
 <body id="stylus-install-usercss">
-  <div class="container">
-    <div id="header">
-      <div id="header-content-wrapper">
-        <h1>
-          <span class="meta-name"></span>
-          <small class="meta-version"></small>
-        </h1>
-        <div class="actions">
-          <h2 hidden class="installed" i18n-text="installButtonInstalled"></h2>
-          <button class="install" i18n-text="installButton"></button>
-          <a class="configure-usercss" i18n-title="configureStyle" tabindex="0">
-            <svg class="svg-icon config"><use xlink:href="#svg-icon-config"></use></svg>
-          </a>
-          <p id="live-reload-install-hint" hidden></p>
-          <label class="set-update-url">
-            <input type="checkbox">
-            <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-            <span i18n-text="installUpdateFromLabel"></span>
-            <p></p>
-          </label>
-          <label class="live-reload">
-            <input type="checkbox">
-            <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-            <span i18n-text="liveReloadLabel"></span>
-          </label>
-          <label class="set-prefer-scheme">
-            <span i18n-text="installPreferSchemeLabel"></span>
-            <select>
-              <option value="none" i18n-text="installPreferSchemeNone"></option>
-              <option value="dark" i18n-text="installPreferSchemeDark"></option>
-              <option value="light" i18n-text="installPreferSchemeLight"></option>
-            </select>
-          </label>
-          <p hidden class="installed-actions">
-            <a href="manage.html" tabindex="0"><button i18n-text="openManage"></button></a>
-            <a href="edit.html?id=" tabindex="0"><button i18n-text="editStyleLabel"></button></a>
-            <a id="delete" tabindex="0"><button i18n-text="deleteStyleLabel"></button></a>
-          </p>
-        </div>
-        <p class="meta-description"></p>
-        <div>
-          <h3 i18n-text="author"></h3>
-          <span class="meta-author"></span>
-        </div>
-        <div>
-          <h3 i18n-text="license"></h3>
-          <span class="meta-license"></span>
-        </div>
-        <div class="external-link"></div>
-        <div id="applies-to-wrapper">
-          <h3 i18n-text="appliesLabel"></h3>
-          <ul class="applies-to">
-          </ul>
+  <div id="header">
+    <div id="header-contents">
+      <h1 class="w100">
+        <span class="meta-name"></span>
+        <small class="meta-version"></small>
+      </h1>
+      <div id="install-wrapper">
+        <h2 class="install-show" i18n-text="installButtonInstalled"></h2>
+        <button class="install install-hide" i18n-text="installButton"></button>
+        <a class="configure-usercss" i18n-title="configureStyle" tabindex="0">
+          <svg class="svg-icon config"><use xlink:href="#svg-icon-config"></use></svg>
+        </a>
+        <div class="install-show w100-full">
+          <a href="manage.html"><button i18n-text="openManage"></button></a>
+          <a id="edit" href="edit.html?id="><button i18n-text="editStyleLabel"></button></a>
+          <a id="delete" tabindex="0"><button i18n-text="deleteStyleLabel"></button></a>
         </div>
       </div>
-      <div id="header-resizer" i18n-title="headerResizerHint"></div>
+      <div id="ss-scheme" class="install-dim"></div>
+      <div class="set-update-url w100 checkbox-wrapper install-disable">
+        <label>
+          <input type="checkbox">
+          <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+          <span i18n-text="installUpdateFromLabel"></span>
+        </label>
+        <p></p>
+      </div>
+      <label class="live-reload checkbox-wrapper">
+        <input type="checkbox">
+        <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+        <span i18n-text="liveReloadLabel"></span>
+      </label>
+      <div id="live-reload-install-hint" class="w100" hidden></div>
+      <div class="meta-description w100 hide-empty"></div>
+      <div>
+        <h3 i18n-text="author"></h3>
+        <span class="meta-author"></span>
+      </div>
+      <div>
+        <h3 i18n-text="license"></h3>
+        <span class="meta-license"></span>
+      </div>
+      <div class="external-link hide-empty"></div>
+      <div class="w100">
+        <h3 i18n-text="appliesLabel"></h3>
+        <ul class="applies-to">
+        </ul>
+      </div>
     </div>
-    <div class="main">
-      <div class="warnings"></div>
-    </div>
+    <div id="header-resizer" i18n-title="headerResizerHint"></div>
+  </div>
+  <div class="main">
+    <div class="warnings"></div>
   </div>
 
   <svg xmlns="http://www.w3.org/2000/svg" style="display: none !important;">
