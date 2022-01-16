@@ -5,20 +5,20 @@ html#stylus #header *:not(#\1transition-suppressor) {
   transition: none !important;
 }
 body {
-  font: normal 12px Arial, system-ui, sans-serif;
+  font: normal .75rem sans-serif;
 }
 
 body:lang(ja) {
-  font-family: Arial, 'Meiryo UI', 'MS Gothic', system-ui, sans-serif;
+  font-family: sans-serif, 'Meiryo UI', 'MS Gothic', system-ui;
 }
 
 body:lang(zh-CN) {
-  font-family: Arial, 'Microsoft YaHei UI', 'Microsoft YaHei', system-ui, sans-serif;
+  font-family: sans-serif, 'Microsoft YaHei UI', 'Microsoft YaHei', system-ui;
 }
 
 body:lang(zh-TW),
 body:lang(zh-HK) {
-  font-family: Arial, 'Microsoft JhengHei UI', 'Microsoft JhengHei', system-ui, sans-serif;
+  font-family: sans-serif, 'Microsoft JhengHei UI', 'Microsoft JhengHei', system-ui;
 }
 
 button {
