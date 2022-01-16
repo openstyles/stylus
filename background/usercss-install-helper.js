@@ -74,6 +74,10 @@ bgReady.all.then(() => {
     ) && download(url);
   }
 
+  function makeInstallerUrl(url) {
+    return `${URLS.installUsercss}?updateUrl=${encodeURIComponent(url)}`;
+  }
+
   function makeUsercssGlobs(host, path) {
     return '%css,%css?*,%styl,%styl?*'.replace(/%/g, `*://${host}${path}.user.`).split(',');
   }
@@ -82,7 +86,7 @@ bgReady.all.then(() => {
     if (url.includes('.user.') &&
         /^(https?|file|ftps?):/.test(url) &&
         /\.user\.(css|styl)$/.test(url.split(/[#?]/, 1)[0]) &&
-        !oldUrl.startsWith(URLS.installUsercss)) {
+        !oldUrl.startsWith(makeInstallerUrl(url))) {
       const inTab = url.startsWith('file:') && !chrome.app;
       const code = await (inTab ? loadFromFile : loadFromUrl)(tabId, url);
       if (!/^\s*</.test(code) && RX_META.test(code)) {
@@ -104,7 +108,7 @@ bgReady.all.then(() => {
   }
 
   async function openInstallerPage(tabId, url, {code, inTab} = {}) {
-    const newUrl = `${URLS.installUsercss}?updateUrl=${encodeURIComponent(url)}`;
+    const newUrl = makeInstallerUrl(url);
     if (inTab) {
       const tab = await browser.tabs.get(tabId);
       return openURL({
