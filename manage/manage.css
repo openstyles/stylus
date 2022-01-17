@@ -281,18 +281,18 @@ a:hover {
   margin-left: -13px;
   cursor: pointer;
 }
-
 #header #filters summary {
-  margin: 0 0 -2px -13px;
+  margin-bottom: -2px;
 }
 
 #header #filters summary h2 {
-  margin-left: -4px;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 #header summary h2 {
-  display: inline-flex;
-  flex-wrap: wrap;
+  display: inline;
   border-bottom: 1px dotted transparent;
   margin-top: .1em;
   margin-bottom: .1em;
@@ -301,8 +301,9 @@ a:hover {
   border-color: #bbb;
 }
 #header summary h2 [data-cmd="note"] {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  vertical-align: middle;
 }
 
 /* compact layout */
@@ -828,6 +829,8 @@ a:hover {
 #search-wrapper, #sort-wrapper {
   display: flex;
   align-items: center;
+}
+#search-wrapper {
   margin-bottom: .5rem;
 }
 #searchMode {
@@ -1052,7 +1055,8 @@ a:hover {
   #search-wrapper,
   #sort-wrapper,
   #header summary {
-    max-width: 247px;
+    min-width: 10em;
+    max-width: 50vw;
   }
 
   #message-box > div {
@@ -1060,10 +1064,6 @@ a:hover {
     right: 0!important;
     margin-left: auto;
     margin-right: auto;
-  }
-
-  .filter-selection {
-    max-width: 226px;
   }
 
   #header {
@@ -1080,7 +1080,7 @@ a:hover {
     display: flex;
     flex-wrap: wrap;
     width: 100%;
-    padding: .5rem 0 1rem;
+    padding: 0 0 1rem;
   }
 
   #manage-settings > .settings-column {
@@ -1097,8 +1097,6 @@ a:hover {
   }
 
   #header h1,
-  #header h2,
-  #header h3,
   #backup-message {
     display: none;
   }
