@@ -290,26 +290,24 @@ function tryJSONparse(jsonString) {
   } catch (e) {}
 }
 
-function tryURL(
-  url,
-  fallback = {
-    hash: '',
-    host: '',
-    hostname: '',
-    href: '',
-    origin: '',
-    password: '',
-    pathname: '',
-    port: '',
-    protocol: '',
-    search: '',
-    searchParams: new URLSearchParams(),
-    username: '',
-  }) {
+function tryURL(url) {
   try {
     return new URL(url);
   } catch (e) {
-    return fallback;
+    return {
+      hash: '',
+      host: '',
+      hostname: '',
+      href: '',
+      origin: '',
+      password: '',
+      pathname: '',
+      port: '',
+      protocol: '',
+      search: '',
+      searchParams: new URLSearchParams(),
+      username: '',
+    };
   }
 }
 
