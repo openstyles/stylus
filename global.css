@@ -5,20 +5,7 @@ html#stylus #header *:not(#\1transition-suppressor) {
   transition: none !important;
 }
 body {
-  font: normal .75rem sans-serif;
-}
-
-body:lang(ja) {
-  font-family: sans-serif, 'Meiryo UI', 'MS Gothic', system-ui;
-}
-
-body:lang(zh-CN) {
-  font-family: sans-serif, 'Microsoft YaHei UI', 'Microsoft YaHei', system-ui;
-}
-
-body:lang(zh-TW),
-body:lang(zh-HK) {
-  font-family: sans-serif, 'Microsoft JhengHei UI', 'Microsoft JhengHei', system-ui;
+  font: normal 12px sans-serif;
 }
 
 button {
