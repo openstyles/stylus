@@ -38,7 +38,7 @@ input:disabled + span {
 #header {
   --child-gap: 1rem;
 }
-#header-contents > :nth-last-child(n + 3) {
+#header-contents > :nth-last-child(n + 2) {
   margin-bottom: var(--child-gap);
 }
 #header.meta-init-error {

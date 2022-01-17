@@ -120,12 +120,13 @@ Object.assign(t, {
   },
 
   async fetchTemplate(url, name) {
-    return t.template[name] || download(url, {responseType: 'document'}).then(doc => {
-      const el = doc.body.firstElementChild;
+    let el = t.template[name];
+    if (!el) {
+      el = (await download(url, {responseType: 'document'})).body.firstElementChild;
       t.NodeList(el.getElementsByTagName('*'));
       t.template[name] = el;
-      return el;
-    });
+    }
+    return el;
   },
 
   sanitizeHtml(root) {
