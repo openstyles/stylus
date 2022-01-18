@@ -260,23 +260,13 @@ input:invalid {
   margin-top: .5rem;
 }
 
-#actions > * {
-  display: inline-flex;
-  flex-wrap: wrap;
-}
-
-#mozilla-format-buttons {
+#actions .buttons {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
 }
 
-#actions > div > a {
-  height: min-content;
-}
-
-#actions button,
-#actions > div > a {
+#actions .buttons > * {
   margin: 0 .2rem .5rem 0;
 }
 
@@ -1065,11 +1055,7 @@ body.linter-disabled .hidden-unless-compact {
     padding: .25rem 0 .5rem;
   }
   #actions {
-    display: flex;
-    flex-wrap: wrap;
     white-space: nowrap;
-    margin: 0;
-    box-sizing: border-box;
   }
   #header input[type="checkbox"] {
     vertical-align: middle;

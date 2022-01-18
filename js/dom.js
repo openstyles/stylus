@@ -31,6 +31,8 @@ Object.assign(EventTarget.prototype, {
 const focusAccessibility = {
   // last event's focusedViaClick
   lastFocusedViaClick: false,
+  get: el => el && el.dataset.focusedViaClick != null,
+  toggle: (el, state) => el && toggleDataset(el, 'focusedViaClick', state),
   // to avoid a full layout recalc due to changes on body/root
   // we modify the closest focusable element (like input or button or anything with tabindex=0)
   closest(el) {

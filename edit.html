@@ -271,13 +271,16 @@
         </div>
       </section>
       <section id="actions">
-        <div>
-          <button id="save-button" i18n-text="styleSaveLabel" data-hotkey-tooltip="save" disabled></button>
+        <div class="buttons">
+          <div class="split-btn">
+            <button id="save-button" i18n-text="styleSaveLabel" data-hotkey-tooltip="save" disabled></button
+            ><button class="split-btn-pedal usercss-only" i18n-menu-tpl="saveAsTemplate"></button>
+          </div>
           <button id="beautify" i18n-text="styleBeautify"></button>
           <button id="style-settings-btn" i18n-text="settings"></button>
           <button id="cancel-button" i18n-title="styleCancelEditLabel">↩</button>
         </div>
-        <div id="mozilla-format-buttons" class="sectioned-only">
+        <div id="mozilla-format-buttons" class="buttons sectioned-only">
           <button id="from-mozilla" i18n-text="importLabel"></button>
           <button id="to-mozilla" i18n-text="exportLabel"></button>
           <a id="to-mozilla-help" class="svg-inline-wrapper" tabindex="0"
@@ -391,9 +394,6 @@
                   <svg class="svg-icon settings"><use xlink:href="#svg-icon-config"/></svg>
                 </a>
               </div>
-            </div>
-            <div class="options-column usercss-only">
-              <button i18n-text="saveAsTemplate"></button>
             </div>
           </div>
         </details>

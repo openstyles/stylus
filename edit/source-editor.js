@@ -23,7 +23,7 @@ function SourceEditor() {
   $('#header').on('wheel', headerOnScroll);
   $('#sections').textContent = '';
   $('#sections').appendChild($create('.single-editor'));
-  $('[i18n-text="saveAsTemplate"]').onclick = saveTemplate;
+  $('#save-button').onauxclick = e => e.detail === 'tpl' && saveTemplate();
 
   const cm = cmFactory.create($('.single-editor'));
   const sectionFinder = MozSectionFinder(cm);
