@@ -6,7 +6,6 @@ html#stylus #header *:not(#\1transition-suppressor) {
 }
 :root {
   --family: Arial, "Helvetica Neue", Helvetica, system-ui, sans-serif;
-  --bg: #fff;
 }
 body {
   font: normal 12px var(--family);
