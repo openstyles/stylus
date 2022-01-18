@@ -73,7 +73,6 @@ Object.assign(t, {
         if (toInsert) {
           node.insertBefore(toInsert, before || null);
         }
-        node.removeAttribute(name);
       }
     }
   },

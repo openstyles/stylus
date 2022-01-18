@@ -17,20 +17,19 @@
 function SourceEditor() {
   const {style, /** @type DirtyReporter */dirty} = editor;
   let savedGeneration;
-  let placeholderName = '';
   let prevMode = NaN;
 
   $$remove('.sectioned-only');
   $('#header').on('wheel', headerOnScroll);
   $('#sections').textContent = '';
   $('#sections').appendChild($create('.single-editor'));
-
-  if (!style.id) setupNewStyle(style);
+  $('[i18n-text="saveAsTemplate"]').onclick = saveTemplate;
 
   const cm = cmFactory.create($('.single-editor'));
   const sectionFinder = MozSectionFinder(cm);
   const sectionWidget = MozSectionWidget(cm, sectionFinder);
   editor.livePreview.init(preprocess);
+  if (!style.id) setupNewStyle();
   createMetaCompiler(meta => {
     style.usercssData = meta;
     style.name = meta.name;
@@ -75,13 +74,7 @@ function SourceEditor() {
         }
         showLog(res);
       } catch (err) {
-        const i = err.index;
-        const isNameEmpty = i > 0 &&
-          err.code === 'missingValue' &&
-          sourceCode.slice(sourceCode.lastIndexOf('\n', i - 1), i).trim().endsWith('@name');
-        return isNameEmpty
-          ? saveTemplate(sourceCode)
-          : showSaveError(err);
+        showSaveError(err);
       }
     },
     scrollToEditor: () => {},
@@ -160,7 +153,7 @@ function SourceEditor() {
     return name;
   }
 
-  async function setupNewStyle(style) {
+  function setupNewStyle() {
     style.sections[0].code = ' '.repeat(prefs.get('editor.tabSize')) +
       `/* ${t('usercssReplaceTemplateSectionBody')} */`;
     let section = MozDocMapper.styleToCss(style);
@@ -177,17 +170,11 @@ function SourceEditor() {
       @author         Me
       ==/UserStyle== */
     `.replace(/^\s+/gm, '');
-
-    dirty.clear('sourceGeneration');
-    style.sourceCode = '';
-
-    placeholderName = `${style.name || t('usercssReplaceTemplateName')} - ${new Date().toLocaleString()}`;
-    let code = await chromeSync.getLZValue(chromeSync.LZ_KEY.usercssTemplate);
-    code = code || DEFAULT_CODE;
-    code = code.replace(/@name(\s*)(?=[\r\n])/, (str, space) =>
-      `${str}${space ? '' : ' '}${placeholderName}`);
+    style.name = [style.name, new Date().toLocaleString()].filter(Boolean).join(' - ');
     // strip the last dummy section if any, add an empty line followed by the section
-    style.sourceCode = code.replace(/\s*@-moz-document[^{]*{[^}]*}\s*$|\s+$/g, '') + '\n\n' + section;
+    style.sourceCode = (editor.template || DEFAULT_CODE)
+      .replace(/(@name)(?:([\t\x20]+).*|\n)/, (_, k, space) => `${k}${space || ' '}${style.name}`)
+      .replace(/\s*@-moz-document[^{]*{[^}]*}\s*$|\s+$/g, '') + '\n\n' + section;
     cm.startOperation();
     cm.setValue(style.sourceCode);
     cm.clearHistory();
@@ -199,9 +186,7 @@ function SourceEditor() {
 
   function updateMeta() {
     const name = style.customName || style.name;
-    if (name !== placeholderName) {
-      $('#name').value = name;
-    }
+    $('#name').value = name;
     $('#enabled').checked = style.enabled;
     $('#url').href = style.url;
     editor.updateName();
@@ -236,9 +221,10 @@ function SourceEditor() {
     }
   }
 
-  async function saveTemplate(code) {
+  async function saveTemplate() {
     if (await messageBoxProxy.confirm(t('usercssReplaceTemplateConfirmation'))) {
       const key = chromeSync.LZ_KEY.usercssTemplate;
+      const code = cm.getValue();
       await chromeSync.setLZValue(key, code);
       if (await chromeSync.getLZValue(key) !== code) {
         messageBoxProxy.alert(t('syncStorageErrorSaving'));
