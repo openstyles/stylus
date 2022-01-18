@@ -1,4 +1,4 @@
-/* global $ $create $createLink $$remove showSpinner */// dom.js
+/* global $$ $ $create $createLink $$remove showSpinner */// dom.js
 /* global API */// msg.js
 /* global URLS closeCurrentTab deepEqual */// toolbox.js
 /* global messageBox */
@@ -6,6 +6,9 @@
 /* global preinit */
 /* global t */// localization.js
 'use strict';
+
+const CFG_SEL = '#message-box.config-dialog';
+let cfgShown = true;
 
 let cm;
 let initialUrl;
@@ -44,6 +47,7 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
     '/vendor/codemirror/keymap/emacs',
     '/vendor/codemirror/keymap/vim', // TODO: load conditionally
     '/vendor/codemirror/mode/css/css',
+    '/vendor/codemirror/mode/stylus/stylus',
     '/vendor/codemirror/addon/search/searchcursor',
     '/vendor/codemirror/addon/fold/foldcode',
     '/vendor/codemirror/addon/fold/foldgutter',
@@ -63,6 +67,7 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
 
   ({tabId, initialUrl} = preinit);
   liveReload = initLiveReload();
+  preinit.tpl.then(el => $('#ss-scheme').append(...$('[id=ss-scheme]', el).children));
 
   const [
     {dup, style, error, sourceCode},
@@ -97,12 +102,10 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
 
   // update UI
   if (versionTest < 0) {
-    $('.actions').parentNode.insertBefore(
-      $create('.warning', t('versionInvalidOlder')),
-      $('.actions')
-    );
+    $('h1').after($create('.warning', t('versionInvalidOlder')));
   }
   $('button.install').onclick = () => {
+    shouldShowConfig();
     (!dup ?
       Promise.resolve(true) :
       messageBox.confirm($create('span', t('styleInstallOverwrite', [
@@ -136,11 +139,9 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
     updateUrl.href.slice(0, 300) + '...';
 
   // set prefer scheme
-  const preferScheme = $('.set-prefer-scheme select');
-  preferScheme.onchange = () => {
-    style.preferScheme = preferScheme.value;
+  $('#ss-scheme').onchange = e => {
+    style.preferScheme = e.target.value;
   };
-  preferScheme.onchange();
 
   if (URLS.isLocalhost(initialUrl)) {
     $('.live-reload input').onchange = liveReload.onToggled;
@@ -170,41 +171,28 @@ function updateMeta(style, dup = installedDup) {
     !dup ? 'install' :
     versionTest > 0 ? 'update' :
     'reinstall');
-  $('.set-update-url').title = dup && dup.updateUrl && t('installUpdateFrom', dup.updateUrl) || '';
+  $('.set-update-url').title = dup && dup.updateUrl &&
+    (t('installUpdateFrom', dup.updateUrl) || '').replace(/\S+$/, '\n$&');
   $('.meta-name').textContent = data.name;
   $('.meta-version').textContent = data.version;
   $('.meta-description').textContent = data.description;
-  $('.set-prefer-scheme select').value =
-    style.preferScheme === 'dark' ? 'dark' :
-    style.preferScheme === 'light' ? 'light' : 'none';
+  $$('#ss-scheme input').forEach(el => {
+    el.checked = el.value === (style.preferScheme || 'none');
+  });
 
-  if (data.author) {
-    $('.meta-author').parentNode.style.display = '';
-    $('.meta-author').textContent = '';
-    $('.meta-author').appendChild(makeAuthor(data.author));
-  } else {
-    $('.meta-author').parentNode.style.display = 'none';
-  }
-
-  $('.meta-license').parentNode.style.display = data.license ? '' : 'none';
-  $('.meta-license').textContent = data.license;
-
-  $('.applies-to').textContent = '';
+  replaceChildren($('.meta-author'), makeAuthor(data.author), true);
+  replaceChildren($('.meta-license'), data.license, true);
+  replaceChildren($('.external-link'), makeExternalLink());
   getAppliesTo(style).then(list =>
-    $('.applies-to').append(...list.map(s => $create('li', s))));
-
-  $('.external-link').textContent = '';
-  const externalLink = makeExternalLink();
-  if (externalLink) {
-    $('.external-link').appendChild(externalLink);
-  }
+    replaceChildren($('.applies-to'), list.map(s => $create('li', s))));
 
   Object.assign($('.configure-usercss'), {
     hidden: !data.vars,
     onclick: openConfigDialog,
   });
   if (!data.vars) {
-    $$remove('#message-box.config-dialog');
+    cfgShown = false;
+    $$remove(CFG_SEL);
   } else if (!deepEqual(data.vars, vars)) {
     vars = data.vars;
     // Use the user-customized vars from the installed style
@@ -214,6 +202,8 @@ function updateMeta(style, dup = installedDup) {
         v.value = dv.value;
       }
     }
+  }
+  if (shouldShowConfig()) {
     openConfigDialog();
   }
 
@@ -227,26 +217,26 @@ function updateMeta(style, dup = installedDup) {
   if (dup) enablePostActions();
 
   function makeAuthor(text) {
-    const match = text.match(/^(.+?)(?:\s+<(.+?)>)?(?:\s+\((.+?)\))?$/);
+    const match = text && text.match(/^(.+?)(?:\s+<(.+?)>)?(?:\s+\((.+?)\))?$/);
     if (!match) {
-      return document.createTextNode(text);
+      return text;
     }
     const [, name, email, url] = match;
-    const frag = document.createDocumentFragment();
+    const elems = [];
     if (email) {
-      frag.appendChild($createLink(`mailto:${email}`, name));
+      elems.push($createLink(`mailto:${email}`, name));
     } else {
-      frag.appendChild($create('span', name));
+      elems.push($create('span', name));
     }
     if (url) {
-      frag.appendChild($createLink(url,
+      elems.push($createLink(url,
         $create('SVG:svg.svg-icon', {viewBox: '0 0 20 20'},
           $create('SVG:path', {
             d: 'M4,4h5v2H6v8h8v-3h2v5H4V4z M11,3h6v6l-2-2l-4,4L9,9l4-4L11,3z',
           }))
       ));
     }
-    return frag;
+    return elems;
   }
 
   function makeExternalLink() {
@@ -274,7 +264,7 @@ function updateMeta(style, dup = installedDup) {
 function showError(err) {
   $('.warnings').textContent = '';
   $('.warnings').classList.toggle('visible', Boolean(err));
-  $('.container').classList.toggle('has-warnings', Boolean(err));
+  document.body.classList.toggle('has-warnings', Boolean(err));
   err = Array.isArray(err) ? err : [err];
   if (err[0]) {
     let i;
@@ -310,12 +300,11 @@ function install(style) {
   $$remove('.warning');
   $('button.install').disabled = true;
   $('button.install').classList.add('installed');
-  $('#live-reload-install-hint').classList.toggle('hidden', !liveReload.enabled);
-  $('h2.installed').classList.add('active');
-  $('.set-update-url input[type=checkbox]').disabled = true;
+  $('#live-reload-install-hint').hidden = !liveReload.enabled;
   $('.set-update-url').title = style.updateUrl ?
     t('installUpdateFrom', style.updateUrl) : '';
-  $('.set-prefer-scheme select').disabled = true;
+  $$('.install-disable input').forEach(el => (el.disabled = true));
+  document.body.classList.add('installed');
   enablePostActions();
   updateMeta(style);
 }
@@ -323,9 +312,7 @@ function install(style) {
 function enablePostActions() {
   const {id} = installed || installedDup;
   sessionStorage.justEditedStyleId = id;
-  $('h2.installed').hidden = !installed;
-  $('.installed-actions').hidden = false;
-  $('.installed-actions a[href*="edit.html"]').search = `?id=${id}`;
+  $('#edit').search = `?id=${id}`;
   $('#delete').onclick = async () => {
     if (await messageBox.confirm(t('deleteStyleConfirm'), 'danger center', t('confirmDelete'))) {
       await API.styles.delete(id);
@@ -433,4 +420,17 @@ function initLiveReload() {
         .catch(showError);
     });
   }
+}
+
+function shouldShowConfig() {
+  // TODO: rewrite message-box to support multiple instances or find an existing tiny library
+  const prev = cfgShown;
+  cfgShown = $(CFG_SEL) != null;
+  return prev && !cfgShown;
+}
+
+function replaceChildren(el, children, toggleParent) {
+  if (el.firstChild) el.textContent = '';
+  if (children) el.append(...Array.isArray(children) ? children : [children]);
+  if (toggleParent) el.parentNode.hidden = !el.firstChild;
 }

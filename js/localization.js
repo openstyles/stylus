@@ -1,3 +1,4 @@
+/* global download */// toolbox.js
 'use strict';
 
 //#region Exports
@@ -116,6 +117,16 @@ Object.assign(t, {
       bin.appendChild(root.firstChild);
     }
     return bin;
+  },
+
+  async fetchTemplate(url, name) {
+    let el = t.template[name];
+    if (!el) {
+      el = (await download(url, {responseType: 'document'})).body.firstElementChild;
+      t.NodeList(el.getElementsByTagName('*'));
+      t.template[name] = el;
+    }
+    return el;
   },
 
   sanitizeHtml(root) {
