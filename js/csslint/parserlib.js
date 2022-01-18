@@ -4381,18 +4381,10 @@ self.parserlib = (() => {
       let next, tt;
       while ((next = stream.get(true)).value !== '}' && (tt = next.type)) {
         try {
-          // Pre-check to avoid calling _ws too much as it's wasteful
-          if (tt === Tokens.S ||
-              tt === Tokens.COMMENT ||
-              tt === Tokens.USO_VAR) {
-            this._ws(next, true);
-            tt = 0;
-          }
           if (tt === Tokens.SEMICOLON ||
+              this._ws(next, true) ||
               readMargins && this._margin() ||
-              (tt && stream.unget(), this._declaration(true, Props)) ||
-              (next = stream.LT(1)).value === ';' ||
-              this._ws(null, true)) {
+              (stream.unget(), this._declaration(true, Props))) {
             continue;
           }
           break;
@@ -4427,6 +4419,14 @@ self.parserlib = (() => {
     }
 
     _ws(start, skipUsoVar) {
+      const tt = start && start.type;
+      if (tt && !(
+        tt === Tokens.S ||
+        tt === Tokens.COMMENT ||
+        tt === Tokens.USO_VAR && skipUsoVar
+      )) {
+        return '';
+      }
       const stream = this._tokenStream;
       const tokens = skipUsoVar ? TT.usoS : Tokens.S;
       let ws = start ? start.value : '';
