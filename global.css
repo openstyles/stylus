@@ -4,8 +4,21 @@ html#stylus #header *:not(#\1transition-suppressor) {
    * Using \1 to simplify js code because \0 is converted to \xFFFD per spec. */
   transition: none !important;
 }
+:root {
+  --family: Arial, "Helvetica Neue", Helvetica, system-ui, sans-serif;
+}
 body {
-  font: normal 12px sans-serif;
+  font: normal 12px var(--family);
+}
+body:lang(ja) {
+  font-family: Arial, 'Meiryo UI', 'MS Gothic', system-ui, sans-serif;
+}
+body:lang(zh-CN) {
+  font-family: Arial, 'Microsoft YaHei UI', 'Microsoft YaHei', system-ui, sans-serif;
+}
+body:lang(zh-TW),
+body:lang(zh-HK) {
+  font-family: Arial, 'Microsoft JhengHei UI', 'Microsoft JhengHei', system-ui, sans-serif;
 }
 
 button {

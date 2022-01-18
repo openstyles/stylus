@@ -962,7 +962,7 @@ a:hover {
 }
 
 #manage\.newUI\.sort {
-  font-family: 'sorticon', sans-serif;
+  font-family: 'sorticon', var(--family);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
