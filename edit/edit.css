@@ -967,7 +967,7 @@ body.linter-disabled .hidden-unless-compact {
   margin-top: 0;
 }
 
-#options-wrapper .options-column:nth-child(n + 2) {
+#options-wrapper .options-column:nth-child(2) {
   margin-top: .75rem;
 }
 
@@ -1112,7 +1112,7 @@ body.linter-disabled .hidden-unless-compact {
   .options-column > .usercss-only {
     margin-bottom: 0;
   }
-  #options-wrapper .options-column:nth-child(n + 2) {
+  #options-wrapper .options-column:nth-child(2) {
     margin-top: 0;
   }
   #options:not([open]),
