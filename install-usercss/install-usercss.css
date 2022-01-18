@@ -119,8 +119,6 @@ h1 {
 }
 
 .install {
-  font-family: Arial, "DejaVu Sans", Verdana, Geneva, sans-serif;
-  font-size: 14px;
   background-color: hsl(0, 0%, 33%);
   color: #eee;
   border-radius: 4px;
