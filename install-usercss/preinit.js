@@ -1,5 +1,6 @@
 /* global API */// msg.js
 /* global closeCurrentTab download */// toolbox.js
+/* global t */// localization.js
 'use strict';
 
 /* exported preinit */
@@ -89,5 +90,7 @@ const preinit = (() => {
         return {error, sourceCode};
       }
     })(),
+
+    tpl: t.fetchTemplate('/edit/settings.html', 'styleSettings'),
   };
 })();

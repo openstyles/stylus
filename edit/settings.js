@@ -7,9 +7,10 @@
 /* exported StyleSettings */
 'use strict';
 
-function StyleSettings() {
+async function StyleSettings() {
   const AUTOSAVE_DELAY = 500; // same as config-dialog.js
   const SS_ID = 'styleSettings';
+  await t.fetchTemplate('/edit/settings.html', SS_ID);
   const {style} = editor;
   const ui = t.template[SS_ID].cloneNode(true);
   const elAuto = $('[id="config.autosave"]', ui);
