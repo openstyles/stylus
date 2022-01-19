@@ -41,7 +41,6 @@
    * @prop {string} sn -  screenshotName
    * @prop {boolean} sa -  screenshotArchived
    * --------------------- Stylus' internally added extras
-   * @prop {boolean} isUsw
    * @prop {boolean} installed
    * @prop {number} installedStyleId
    * @prop {number} pingbackTimer
@@ -294,21 +293,21 @@
       an: author,
       sa: shotArchived,
       sn: shot,
-      isUsw,
+      f: fmt,
     } = entry._result = result;
     entry.id = RESULT_ID_PREFIX + id;
     // title
     Object.assign($('.search-result-title', entry), {
       onclick: Events.openURLandHide,
-      href: `${isUsw ? URLS.usw : URLS.usoArchive}style/${id}`,
+      href: `${fmt ? URLS.usoArchive : URLS.usw}style/${id}`,
     });
-    if (isUsw) $('.search-result-title', entry).prepend(USW_ICON.cloneNode(true));
+    if (!fmt) $('.search-result-title', entry).prepend(USW_ICON.cloneNode(true));
     $('.search-result-title span', entry).textContent =
       t.breakWord(name.length < 300 ? name : name.slice(0, 300) + '...');
     // screenshot
     const elShot = $('.search-result-screenshot', entry);
     let shotSrc;
-    if (isUsw) {
+    if (!fmt) {
       shotSrc = /^https?:/i.test(shot) && shot.replace(/\.jpg$/, imgType);
     } else {
       elShot._src = URLS.uso + `auto_style_screenshots/${id}${USO_AUTO_PIC_SUFFIX}`;
@@ -328,7 +327,7 @@
     Object.assign($('[data-type="author"] a', entry), {
       textContent: author,
       title: author,
-      href: isUsw ? `${URLS.usw}user/${encodeURIComponent(author)}` :
+      href: !fmt ? `${URLS.usw}user/${encodeURIComponent(author)}` :
         `${URLS.usoArchive}browse/styles?search=%40${authorId}`,
       onclick: Events.openURLandHide,
     });
@@ -433,7 +432,7 @@
 
   async function install() {
     const {entry, result} = $resultEntry(this);
-    const {i: id, isUsw} = result;
+    const {i: id, f: fmt} = result;
     const installButton = $('.search-result-install', entry);
 
     showSpinner(entry);
@@ -441,13 +440,13 @@
     installButton.disabled = true;
     entry.style.setProperty('pointer-events', 'none', 'important');
     delete entry.dataset.error;
-    if (!isUsw) {
+    if (fmt) {
       // FIXME: move this to background page and create an API like installUSOStyle
       result.pingbackTimer = setTimeout(download, PINGBACK_DELAY,
         `${URLS.uso}styles/install/${id}?source=stylish-ch`);
     }
 
-    const updateUrl = isUsw ? URLS.makeUswCodeUrl(id) : URLS.makeUsoArchiveCodeUrl(id);
+    const updateUrl = fmt ? URLS.makeUsoArchiveCodeUrl(id) : URLS.makeUswCodeUrl(id);
 
     try {
       const sourceCode = await download(updateUrl);
@@ -509,18 +508,15 @@
 
   async function fetchIndex() {
     const timer = setTimeout(showSpinner, BUSY_DELAY, dom.list);
-    index = [];
-    await Promise.all([
-      download(INDEX_URL, {responseType: 'json'}).then(res => {
-        index = index.concat(res.filter(res => res.f === 'uso'));
-      }).catch(() => {}),
-      download(USW_INDEX_URL, {responseType: 'json'}).then(res => {
-        for (const style of res.data) {
-          style.isUsw = true;
-          index.push(style);
-        }
-      }).catch(() => {}),
-    ]);
+    await Promise.race([
+      [INDEX_URL, json => json.filter(entry => entry.f === 'uso')],
+      [USW_INDEX_URL, json => json.data],
+    ].map(([url, transform]) =>
+      download(url, {responseType: 'json'}).then(res => {
+        res = transform(res);
+        index = index ? index.concat(res) : res;
+        if (index !== res) start();
+      })));
     clearTimeout(timer);
     $remove(':scope > .lds-spinner', dom.list);
     return index;
