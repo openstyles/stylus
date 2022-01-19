@@ -64,11 +64,11 @@ window.messageBoxProxy = new Proxy({}, {
   },
 });
 
-function $(selector, base = document) {
+function $(selector, base) {
   // we have ids with . like #manage.onlyEnabled which looks like #id.class
   // so since getElementById is superfast we'll try it anyway
-  const byId = selector.startsWith('#') && document.getElementById(selector.slice(1));
-  return byId || base.querySelector(selector);
+  const byId = !base && selector.startsWith('#') && document.getElementById(selector.slice(1));
+  return byId || (base || document).querySelector(selector);
 }
 
 function $$(selector, base = document) {

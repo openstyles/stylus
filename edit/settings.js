@@ -13,7 +13,7 @@ async function StyleSettings() {
   await t.fetchTemplate('/edit/settings.html', SS_ID);
   const {style} = editor;
   const ui = t.template[SS_ID].cloneNode(true);
-  const elAuto = $('[id="config.autosave"]', ui);
+  const elAuto = $('#config\\.autosave', ui);
   const elSave = $('#ss-save', ui);
   const pendingSetters = new Map();
   const updaters = [
