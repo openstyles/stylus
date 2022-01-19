@@ -1,5 +1,5 @@
 /* global API */// msg.js
-/* global RX_META URLS debounce download ignoreChromeError */// toolbox.js
+/* global RX_META URLS debounce deepMerge download ignoreChromeError */// toolbox.js
 /* global calcStyleDigest styleJSONseemsValid styleSectionsEqual */ // sections-util.js
 /* global chromeLocal */// storage-util.js
 /* global compareVersion */// cmpver.js
@@ -264,6 +264,7 @@ const updateMan = (() => {
       let {retryDelay = 1000} = opts;
       while (true) {
         try {
+          params = deepMerge(params || {}, {headers: {'Cache-Control': 'no-cache'}});
           return await download(url, params);
         } catch (code) {
           if (!RETRY_ERRORS.includes(code) ||
