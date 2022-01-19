@@ -1,8 +1,11 @@
 <div>
   <fieldset class="style-settings can-close-on-esc">
-    <label i18n-text="styleUpdateUrlLabel">
-      <input id="ss-update-url" type="text">
-    </label>
+    <div class="rel">
+      <input id="ss-updatable" type="checkbox">
+      <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+      <label i18n-text="installUpdateFromLabel" for="ss-updatable"></label>
+      <input id="ss-update-url" type="url" class="w100" i18n-placeholder="styleUpdateUrlLabel">
+    </div>
     <div id="ss-scheme">
       <div i18n-text="installPreferSchemeLabel"></div>
       <label i18n-text-append="installPreferSchemeNone">
@@ -16,11 +19,11 @@
       </label>
     </div>
     <label i18n-text="styleIncludeLabel">
-      <textarea id="ss-inclusions" spellcheck="false"
+      <textarea id="ss-inclusions" spellcheck="false" class="w100"
                 placeholder="*://site1.com/*&#10;*://site2.com/*"></textarea>
     </label>
     <label i18n-text="styleExcludeLabel">
-      <textarea id="ss-exclusions" spellcheck="false"
+      <textarea id="ss-exclusions" spellcheck="false" class="w100"
                 placeholder="*://site1.com/*&#10;*://site2.com/*"></textarea>
     </label>
   </fieldset>

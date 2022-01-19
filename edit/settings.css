@@ -23,10 +23,13 @@
 .style-settings input[type=radio] {
   margin-left: -.5em; /* compensate for label's 16px margin in edit.css */
 }
-.style-settings input[type=text],
-.style-settings input[type=number],
-.style-settings select,
-.style-settings textarea {
+.style-settings input:disabled ~ label {
+  opacity: .5;
+}
+.style-settings .rel {
+  position: relative;
+}
+.style-settings .w100 {
   display: block;
   width: 100%;
   margin-top: .25em;
