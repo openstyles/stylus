@@ -63,7 +63,7 @@ const updateMan = (() => {
     checkingAll = true;
     const port = observe && chrome.runtime.connect({name: 'updater'});
     const styles = (await API.styles.getAll())
-      .filter(style => style.updateUrl);
+      .filter(style => style.updateUrl && style.updatable !== false);
     if (port) port.postMessage({count: styles.length});
     log('');
     log(`${save ? 'Scheduled' : 'Manual'} update check for ${styles.length} styles`);
