@@ -2047,6 +2047,7 @@ self.parserlib = (() => {
       this.name = this.constructor.name;
       this.col = pos.col;
       this.line = pos.line;
+      this.offset = pos.offset;
       this.message = message;
     }
   }
@@ -2056,6 +2057,7 @@ self.parserlib = (() => {
       super();
       this.col = pos.col;
       this.line = pos.line;
+      this.offset = pos.offset;
       this.message = message;
     }
   }
@@ -3462,7 +3464,7 @@ self.parserlib = (() => {
      * @param {string|Object} event
      * @param {parserlib.Token|SyntaxUnit} [token=this._tokenStream._token] - sets the position
      */
-    fire(event, token = this._tokenStream._token) {
+    fire(event, token = event.offset != null ? event : this._tokenStream._token) {
       if (typeof event === 'string') {
         event = {type: event};
       }

@@ -137,7 +137,6 @@ function reportUpdateState({updated, style, error, STATES}) {
       error === STATES.SAME_VERSION
     );
     const edited = error === STATES.EDITED || error === STATES.MAYBE_EDITED;
-    entry.dataset.error = error;
     if (!error) {
       error = t('updateCheckFailServerUnreachable') + '\n' + style.updateUrl;
     } else if (typeof error === 'number') {
@@ -149,7 +148,13 @@ function reportUpdateState({updated, style, error, STATES}) {
     } else if (typeof error === 'object' && error.message) {
       // UserCSS meta errors provide an object
       error = error.message;
+    } else if (Array.isArray(error)) {
+      // UserCSS build error
+      error = error.map(e => `${e.message || e}${
+        e.context ? '\n' + e.context.replace(/^/gm, '\t') : '' // indenting source text
+      }`).join('\n');
     }
+    entry.dataset.error = error;
     const message = same ? t('updateCheckSucceededNoUpdate') : error;
     newClasses.set('no-update', true);
     newClasses.set('update-problem', !same);

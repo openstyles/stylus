@@ -78,17 +78,17 @@ const updateMan = (() => {
 
   /**
    * @param {{
-      id?: number
-      style?: StyleObj
-      port?: chrome.runtime.Port
-      save?: boolean = true
-      ignoreDigest?: boolean
+      id?: number,
+      style?: StyleObj,
+      port?: chrome.runtime.Port,
+      save?: boolean,
+      ignoreDigest?: boolean,
     }} opts
    * @returns {{
-      style: StyleObj
-      updated?: boolean
-      error?: any
-      STATES: UpdaterStates
+      style: StyleObj,
+      updated?: boolean,
+      error?: any,
+      STATES: UpdaterStates,
      }}
 
    Original style digests are calculated in these cases:
@@ -127,7 +127,7 @@ const updateMan = (() => {
         err && err.message ||
         err;
       res = {error, style, STATES};
-      state = `${STATES.SKIPPED} (${error})`;
+      state = `${STATES.SKIPPED} (${Array.isArray(err) ? err[0].message : error})`;
     }
     log(`${state} #${id} ${style.customName || style.name}`);
     if (port) port.postMessage(res);
