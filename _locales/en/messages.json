@@ -392,6 +392,9 @@
     "message": "Export",
     "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
   },
+  "exportCompatible": {
+    "message": "Export (compatible mode)"
+  },
   "exportSavedSuccess": {
     "message": "File saved with success"
   },
@@ -1268,6 +1271,10 @@
   "popupHotkeysTooltip": {
     "message": "Click to see available hotkeys",
     "description": "Tooltip displayed when hovering the right edge of the extension popup"
+  },
+  "popupManageSiteStyles": {
+    "message": "Manage site styles",
+    "description": "Item in the dropdown menu for the 'Manage' button in the popup that opens manager with styles applicable for current site."
   },
   "popupManageTooltip": {
     "message": "Shift-click or right-click opens manager with styles applicable for current site",

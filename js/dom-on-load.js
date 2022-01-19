@@ -85,20 +85,31 @@
     }
   }
 
+  /**
+   * @param {PointerEvent} [event] - absent when self-invoked to hide the menu
+   */
   function splitMenu(event) {
     const prevMenu = $(SPLIT_BTN_MENU);
     const prevPedal = (prevMenu || {}).previousElementSibling;
-    const pedal = event.target.closest('.split-btn-pedal');
-    const entry = prevMenu && event.target.closest(SPLIT_BTN_MENU + '>*');
-    if (prevMenu) prevMenu.remove();
-    if (prevPedal) prevPedal.classList.remove('active');
+    const pedal = event && event.target.closest('.split-btn-pedal');
+    const entry = event && prevMenu && event.target.closest(SPLIT_BTN_MENU + '>*');
+    if (prevMenu) {
+      prevMenu.remove();
+      prevPedal.classList.remove('active');
+      window.off('keydown', splitMenuEscape);
+    }
     if (pedal && pedal !== prevPedal) {
       const menu = $create(SPLIT_BTN_MENU,
         Array.from(pedal.attributes, ({name, value}) =>
           name.startsWith('menu-') &&
           $create('a', {tabIndex: 0, __cmd: name.split('-').pop()}, value)
         ));
-      menu.on('focusout', e => e.target === menu && splitMenu(e));
+      window.on('keydown', splitMenuEscape);
+      menu.on('focusout', e => {
+        if (!menu.contains(e.relatedTarget)) {
+          setTimeout(splitMenu);
+        }
+      });
       pedal.classList.toggle('active');
       pedal.after(menu);
       moveFocus(menu, 0);
@@ -109,6 +120,13 @@
         detail: entry.__cmd,
         bubbles: true,
       }));
+    }
+  }
+
+  function splitMenuEscape(e) {
+    if (getEventKeyName(e) === 'Escape') {
+      e.preventDefault();
+      splitMenu();
     }
   }
 

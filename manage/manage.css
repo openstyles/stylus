@@ -262,7 +262,7 @@ a:hover {
   flex-wrap: wrap;
 }
 
-#backup-buttons button {
+#backup-buttons > * {
   margin: 0 .2rem .5rem 0;
 }
 

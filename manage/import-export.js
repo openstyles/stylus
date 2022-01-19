@@ -14,8 +14,11 @@
 */// dom.js
 'use strict';
 
-$('#file-all-styles').onclick = exportToFile;
-$('#file-all-styles').oncontextmenu = exportToFile;
+Object.assign($('#file-all-styles'), {
+  onclick: exportToFile,
+  oncontextmenu: exportToFile,
+  onauxclick: exportToFile,
+});
 $('#unfile-all-styles').onclick = () => importFromFile({fileTypeFilter: '.json'});
 
 Object.assign(document.body, {
@@ -336,9 +339,12 @@ async function importFromString(jsonString) {
 
 /** @param {MouseEvent} e */
 async function exportToFile(e) {
+  if (e.type === 'auxclick' && !e.detail) {
+    return;
+  }
   e.preventDefault();
   await require(['/js/storage-util']);
-  const keepDupSections = e.type === 'contextmenu' || e.shiftKey;
+  const keepDupSections = e.type === 'contextmenu' || e.shiftKey || e.detail === 'compat';
   const data = [
     Object.assign({
       [prefs.STORAGE_KEY]: prefs.values,

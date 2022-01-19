@@ -110,7 +110,7 @@ const Events = {
 
   async openManager(event) {
     event.preventDefault();
-    const isSearch = tabURL && (event.shiftKey || event.button === 2);
+    const isSearch = tabURL && (event.shiftKey || event.button === 2 || event.detail === 'site');
     await API.openManage(isSearch ? {search: tabURL, searchMode: 'url'} : {});
     window.close();
   },

@@ -315,6 +315,7 @@ body.resizing-v > * {
   margin-left: -1px !important;
   padding-left: .2em !important;
   padding-right: .2em !important;
+  min-width: 0 !important;
 }
 .split-btn-pedal::after {
   content: '\25BC'; /* down triangle */
@@ -382,12 +383,6 @@ body.resizing-v > * {
     background: #fff;
     border: 1px solid hsl(0, 0%, 66%);
     padding: 4px;
-  }
-
-/* Firefox cannot handle fractions in font-size */
-  .firefox button:not(.install) {
-    line-height: 13px;
-    padding: 3px 7px;
   }
 
   .firefox.moz-appearance-bug button:not(.install) {
