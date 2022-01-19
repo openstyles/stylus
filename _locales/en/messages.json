@@ -1352,6 +1352,9 @@
   "retrieveDropboxSync": {
     "message": "Dropbox Import"
   },
+  "saveAsTemplate": {
+    "message": "Save as template"
+  },
   "search": {
     "message": "Search",
     "description": "Label before the search input field in the editor shown on Ctrl-F"
@@ -1811,10 +1814,6 @@
   },
   "usercssReplaceTemplateConfirmation": {
     "message": "Replace the default template for new Usercss styles with the current code?"
-  },
-  "usercssReplaceTemplateName": {
-    "message": "Empty @name replaces the default template",
-    "description": "The text shown after @name when creating a new Usercss style"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "Insert code here...",

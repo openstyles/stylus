@@ -1,4 +1,4 @@
-/* global $ $$ focusAccessibility getEventKeyName */// dom.js
+/* global $$ $ $create focusAccessibility getEventKeyName moveFocus */// dom.js
 /* global debounce */// toolbox.js
 /* global t */// localization.js
 'use strict';
@@ -6,13 +6,14 @@
 /** DOM housekeeping after a page finished loading */
 
 (() => {
+  const SPLIT_BTN_MENU = '.split-btn-menu';
   splitLongTooltips();
   addTooltipsToEllipsized();
   window.on('mousedown', suppressFocusRingOnClick, {passive: true});
   window.on('keydown', keepFocusRingOnTabbing, {passive: true});
   window.on('keypress', clickDummyLinkOnEnter);
   window.on('wheel', changeFocusedInputOnWheel, {capture: true, passive: false});
-  window.on('click', showTooltipNote);
+  window.on('click', e => splitMenu(e) || showTooltipNote(e));
   window.on('resize', () => debounce(addTooltipsToEllipsized, 100));
   // Removing transition-suppressor rule
   const {sheet} = $('link[href$="global.css"]');
@@ -78,9 +79,36 @@
         let el = document.activeElement;
         if (el) {
           el = el.closest('[data-focused-via-click]');
-          if (el) delete el.dataset.focusedViaClick;
+          focusAccessibility.toggle(el, false);
         }
       });
+    }
+  }
+
+  function splitMenu(event) {
+    const prevMenu = $(SPLIT_BTN_MENU);
+    const prevPedal = (prevMenu || {}).previousElementSibling;
+    const pedal = event.target.closest('.split-btn-pedal');
+    const entry = prevMenu && event.target.closest(SPLIT_BTN_MENU + '>*');
+    if (prevMenu) prevMenu.remove();
+    if (prevPedal) prevPedal.classList.remove('active');
+    if (pedal && pedal !== prevPedal) {
+      const menu = $create(SPLIT_BTN_MENU,
+        Array.from(pedal.attributes, ({name, value}) =>
+          name.startsWith('menu-') &&
+          $create('a', {tabIndex: 0, __cmd: name.split('-').pop()}, value)
+        ));
+      menu.on('focusout', e => e.target === menu && splitMenu(e));
+      pedal.classList.toggle('active');
+      pedal.after(menu);
+      moveFocus(menu, 0);
+      focusAccessibility.toggle(menu.firstChild, focusAccessibility.get(pedal));
+    }
+    if (entry) {
+      prevPedal.previousElementSibling.dispatchEvent(new CustomEvent('auxclick', {
+        detail: entry.__cmd,
+        bubbles: true,
+      }));
     }
   }
 
@@ -88,9 +116,7 @@
     const el = focusAccessibility.closest(target);
     if (el) {
       focusAccessibility.lastFocusedViaClick = true;
-      if (el.dataset.focusedViaClick === undefined) {
-        el.dataset.focusedViaClick = '';
-      }
+      focusAccessibility.toggle(el, true);
     }
   }
 

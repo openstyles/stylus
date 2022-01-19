@@ -33,6 +33,7 @@ button {
   border: 1px solid hsl(0, 0%, 62%);
   font: inherit;
   font-size: 13px;
+  line-height: 1.2;
   color: #000;
   background-color: hsl(0, 0%, 100%);
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAeCAYAAADtlXTHAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QwGBBwIHvKt6QAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAL0lEQVQI12NoaGgQZ2JgYGBkYmBgYGZiYGBggrMY4VxsYsyoskQQCB2MWAxAMhkADVECDhlW9CoAAAAASUVORK5CYII=');
@@ -306,6 +307,39 @@ body.resizing-v > * {
   user-select: none;
 }
 /* header resizer - end */
+
+.split-btn {
+  position: relative;
+}
+.split-btn-pedal {
+  margin-left: -1px !important;
+  padding-left: .2em !important;
+  padding-right: .2em !important;
+}
+.split-btn-pedal::after {
+  content: '\25BC'; /* down triangle */
+  font-size: 90%;
+}
+.split-btn-pedal.active {
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, .2);
+}
+.split-btn-menu {
+  background: #fff;
+  position: absolute;
+  box-shadow: 2px 3px 7px rgba(0, 0, 0, .5);
+  border: 1px solid hsl(180deg, 50%, 50%);
+  white-space: nowrap;
+  cursor: pointer;
+  padding: .25em 0;
+}
+.split-btn-menu > * {
+  padding: .5em 1em;
+  display: block;
+}
+.split-btn-menu > :hover {
+  background-color: hsla(180deg, 50%, 50%, .25);
+  color: #000;
+}
 
 @supports (-moz-appearance: none) {
   .moz-appearance-bug .svg-icon.checked,
