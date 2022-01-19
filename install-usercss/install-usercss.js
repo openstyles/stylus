@@ -67,7 +67,7 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
 
   ({tabId, initialUrl} = preinit);
   liveReload = initLiveReload();
-  preinit.tpl.then(el => $('#ss-scheme').append(...$('[id=ss-scheme]', el).children));
+  preinit.tpl.then(el => $('#ss-scheme').append(...$('#ss-scheme', el).children));
 
   const [
     {dup, style, error, sourceCode},
