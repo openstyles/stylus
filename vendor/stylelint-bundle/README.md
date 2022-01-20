@@ -1,7 +1,7 @@
-## stylelint-bundle v13.8.0
+## stylelint-bundle v14.2.0
 
 Files downloaded from URL:
-* LICENSE: https://github.com/stylelint/stylelint/raw/13.8.0/LICENSE
+* LICENSE: https://github.com/stylelint/stylelint/raw/14.2.0/LICENSE
 
 
 Files copied from NPM (node_modules):

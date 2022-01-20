@@ -10,12 +10,12 @@
   },
   "dependencies": {
     "@eight04/draggable-list": "^0.3.0",
-    "codemirror": "5.63.3",
+    "codemirror": "5.65.1",
     "db-to-cloud": "^0.7.0",
     "jsonlint": "^1.6.3",
     "less-bundle": "github:openstyles/less-bundle#v0.1.0",
     "lz-string-unsafe": "^1.4.4-fork-1",
-    "stylelint-bundle": "^13.8.0",
+    "stylelint-bundle": "^14.2.0",
     "stylus-lang-bundle": "github:openstyles/stylus-lang-bundle#v0.54.7",
     "usercss-meta": "^0.12.0",
     "webext-launch-web-auth-flow": "^0.1.1"

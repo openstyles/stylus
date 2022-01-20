@@ -65,6 +65,8 @@
     },
 
     async stylelint(opts) {
+      // Removing an unused API that spits a warning in Chrome console due to stylelint's isBuffer
+      delete self.SharedArrayBuffer;
       require(['/vendor/stylelint-bundle/stylelint-bundle.min']); /* global stylelint */
       try {
         let res;
