@@ -14,7 +14,7 @@
   const draft = await API.drafts.get(draftId);
   if (draft && draft.isUsercss === editor.isUsercss) {
     const date = makeRelativeDate(draft.date);
-    if (await messageBoxProxy.confirm(t('draftAction'), 'danger pre-line', t('draftTitle', date))) {
+    if (await messageBoxProxy.confirm(t('draftAction'), 'danger', t('draftTitle', date))) {
       await editor.replaceStyle(draft.style, draft);
     } else {
       updateDraft(false);
