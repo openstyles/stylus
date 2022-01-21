@@ -1,5 +1,5 @@
 /* global $$ $ $create focusAccessibility getEventKeyName moveFocus */// dom.js
-/* global debounce */// toolbox.js
+/* global clamp debounce */// toolbox.js
 /* global t */// localization.js
 'use strict';
 
@@ -34,7 +34,7 @@
       const key = isSelect ? 'selectedIndex' : 'valueAsNumber';
       const old = el[key];
       const rawVal = old + Math.sign(event.deltaY) * (el.step || 1);
-      el[key] = Math.max(el.min || 0, Math.min(el.max || el.length - 1, rawVal));
+      el[key] = clamp(rawVal, el.min || 0, el.max || el.length - 1);
       if (el[key] !== old) {
         el.dispatchEvent(new Event('change', {bubbles: true}));
       }

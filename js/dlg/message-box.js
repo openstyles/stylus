@@ -1,4 +1,5 @@
 /* global $ $create animateElement focusAccessibility moveFocus */// dom.js
+/* global clamp */// toolbox.js
 /* global t */// localization.js
 'use strict';
 
@@ -83,10 +84,6 @@ messageBox.show = async ({
   return new Promise(resolve => {
     messageBox._resolve = resolve;
   });
-
-  function clamp(value, min, max) {
-    return Math.min(Math.max(value, min), max);
-  }
 
   function initOwnListeners() {
     let listening = false;

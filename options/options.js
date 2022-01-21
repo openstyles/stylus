@@ -17,6 +17,7 @@
   OPERA
   URLS
   capitalize
+  clamp
   ignoreChromeError
   openURL
 */// toolbox.js
@@ -288,7 +289,7 @@ function enforceInputRange(element) {
     if (type === 'input' && element.checkValidity()) {
       doNotify();
     } else if (type === 'change' && !element.checkValidity()) {
-      element.value = Math.max(min, Math.min(max, Number(element.value)));
+      element.value = clamp(Number(element.value), min, max);
       doNotify();
     }
   };
