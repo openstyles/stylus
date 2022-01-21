@@ -48,7 +48,13 @@ function SourceEditor() {
     closestVisible: () => cm,
     getEditors: () => [cm],
     getEditorTitle: () => '',
-    getValue: () => cm.getValue(),
+    getValue: asObject => asObject
+      ? {
+        customName: style.customName,
+        enabled: style.enabled,
+        sourceCode: cm.getValue(),
+      }
+      : cm.getValue(),
     getSearchableInputs: () => [],
     prevEditor: nextPrevSection.bind(null, -1),
     nextEditor: nextPrevSection.bind(null, 1),
@@ -193,7 +199,7 @@ function SourceEditor() {
     cm.setPreprocessor((style.usercssData || {}).preprocessor);
   }
 
-  async function replaceStyle(newStyle) {
+  async function replaceStyle(newStyle, draft) {
     dirty.clear('name');
     const sameCode = newStyle.sourceCode === cm.getValue();
     if (sameCode) {
@@ -205,19 +211,26 @@ function SourceEditor() {
       return;
     }
 
-    if (await messageBoxProxy.confirm(t('styleUpdateDiscardChanges'))) {
+    if (draft || await messageBoxProxy.confirm(t('styleUpdateDiscardChanges'))) {
       editor.useSavedStyle(newStyle);
       if (!sameCode) {
-        const cursor = cm.getCursor();
+        const si0 = draft && draft.si.cms[0];
+        const cursor = !si0 && cm.getCursor();
         cm.setValue(style.sourceCode);
-        cm.setCursor(cursor);
+        if (si0) {
+          editor.applyScrollInfo(cm, si0);
+        } else {
+          cm.setCursor(cursor);
+        }
         savedGeneration = cm.changeGeneration();
       }
       if (sameCode) {
         // the code is same but the environment is changed
         updateLivePreview();
       }
-      dirty.clear();
+      if (!draft) {
+        dirty.clear();
+      }
     }
   }
 

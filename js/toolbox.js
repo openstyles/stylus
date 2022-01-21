@@ -4,6 +4,7 @@
   CHROME_POPUP_BORDER_BUG
   RX_META
   capitalize
+  clamp
   closeCurrentTab
   deepEqual
   download
@@ -131,6 +132,10 @@ if (FIREFOX || OPERA || VIVALDI) {
 // FF57+ supports openerTabId, but not in Android
 // (detecting FF57 by the feature it added, not navigator.ua which may be spoofed in about:config)
 const openerTabIdSupported = (!FIREFOX || window.AbortController) && chrome.windows != null;
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
 
 function getOwnTab() {
   return browser.tabs.getCurrent();

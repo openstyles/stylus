@@ -106,6 +106,7 @@ const styleMan = (() => {
         // Must be called after the style is deleted from dataMap
         API.usw.revoke(id);
       }
+      API.drafts.delete(id);
       await msg.broadcast({
         method: 'styleDeleted',
         style: {id},
