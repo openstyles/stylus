@@ -477,6 +477,7 @@ function SectionsEditor() {
     keepDirty = false,
     si = editor.scrollInfo,
   } = {}) {
+    editor.ready = false;
     if (replace) {
       sections.forEach(s => s.remove(true));
       sections.length = 0;
@@ -514,6 +515,7 @@ function SectionsEditor() {
     }
     container.style.removeProperty('height');
     setGlobalProgress();
+    editor.ready = true;
   }
 
   /** @param {EditorSection} section */
