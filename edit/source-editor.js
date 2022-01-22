@@ -154,12 +154,11 @@ function SourceEditor() {
   }
 
   function setupNewStyle() {
-    style.sections[0].code = ' '.repeat(prefs.get('editor.tabSize')) +
-      `/* ${t('usercssReplaceTemplateSectionBody')} */`;
-    let section = MozDocMapper.styleToCss(style);
-    if (!section.includes('@-moz-document')) {
-      style.sections[0].domains = ['example.com'];
-      section = MozDocMapper.styleToCss(style);
+    const comment = `/* ${t('usercssReplaceTemplateSectionBody')} */`;
+    const sec0 = style.sections[0];
+    sec0.code = ' '.repeat(prefs.get('editor.tabSize')) + comment;
+    if (Object.keys(sec0).length === 1) { // the only key is 'code'
+      sec0.domains = ['example.com'];
     }
     const DEFAULT_CODE = `
       /* ==UserStyle==
@@ -171,10 +170,13 @@ function SourceEditor() {
       ==/UserStyle== */
     `.replace(/^\s+/gm, '');
     style.name = [style.name, new Date().toLocaleString()].filter(Boolean).join(' - ');
-    // strip the last dummy section if any, add an empty line followed by the section
     style.sourceCode = (editor.template || DEFAULT_CODE)
       .replace(/(@name)(?:([\t\x20]+).*|\n)/, (_, k, space) => `${k}${space || ' '}${style.name}`)
-      .replace(/\s*@-moz-document[^{]*{[^}]*}\s*$|\s+$/g, '') + '\n\n' + section;
+      .replace(/\s*@-moz-document[^{]*{([^}]*)}\s*$/g, // stripping dummy sections
+        (s, body) => body.trim() === comment ? '\n\n' : s)
+      .trim() +
+      '\n\n' +
+      MozDocMapper.styleToCss(style);
     cm.startOperation();
     cm.setValue(style.sourceCode);
     cm.clearHistory();
