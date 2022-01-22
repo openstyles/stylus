@@ -1366,6 +1366,9 @@
     "message": "Replace with",
     "description": "Label before the replace-with input field in the editor shown on Ctrl-H etc."
   },
+  "restoreTemplate": {
+    "message": "Restore the default template.\n\n(The currently open editor pages won't change.)"
+  },
   "retrieveBckp": {
     "message": "Import styles"
   },

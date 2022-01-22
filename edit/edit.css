@@ -267,7 +267,7 @@ input:invalid {
 }
 
 #actions .buttons > * {
-  margin: 0 .2rem .5rem 0;
+  margin: 0 .25rem .5rem 0;
 }
 
 #options:not([open]) + #lint h2 {
