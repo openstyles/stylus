@@ -98,7 +98,7 @@
       prevPedal.classList.remove('active');
       window.off('keydown', splitMenuEscape);
     }
-    if (pedal && pedal !== prevPedal) {
+    if (pedal) {
       const menu = $create(SPLIT_BTN_MENU,
         Array.from(pedal.attributes, ({name, value}) =>
           name.startsWith('menu-') &&
@@ -110,13 +110,14 @@
           setTimeout(splitMenu);
         }
       });
+      pedal.on('mousedown', e => e.preventDefault());
       pedal.classList.toggle('active');
       pedal.after(menu);
       moveFocus(menu, 0);
       focusAccessibility.toggle(menu.firstChild, focusAccessibility.get(pedal));
     }
     if (entry) {
-      prevPedal.previousElementSibling.dispatchEvent(new CustomEvent('auxclick', {
+      prevPedal.previousElementSibling.dispatchEvent(new CustomEvent('split-btn', {
         detail: entry.__cmd,
         bubbles: true,
       }));
