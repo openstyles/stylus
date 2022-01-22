@@ -105,7 +105,7 @@ const styleMan = (() => {
       if (ready.then) await ready;
       const data = id2data(id);
       const {style, appliesTo} = data;
-      await db.exec('delete', id);
+      db.styles.delete(id);
       if (reason !== 'sync') {
         API.sync.delete(style._id, Date.now());
       }
@@ -251,7 +251,7 @@ const styleMan = (() => {
           await usercssMan.buildCode(style);
         }
       }
-      const events = await db.exec('putMany', items);
+      const events = await db.styles.putMany(items);
       return Promise.all(items.map((item, i) =>
         handleSave(item, {reason: 'import'}, events[i])
       ));
@@ -437,7 +437,7 @@ const styleMan = (() => {
 
   async function saveStyle(style, handlingOptions) {
     beforeSave(style);
-    const newId = await db.exec('put', style);
+    const newId = await db.styles.put(style);
     return handleSave(style, handlingOptions, newId);
   }
 
@@ -477,10 +477,10 @@ const styleMan = (() => {
   }
 
   async function init() {
-    const styles = await db.exec('getAll') || [];
+    const styles = await db.styles.getAll() || [];
     const updated = await Promise.all(styles.map(fixKnownProblems).filter(Boolean));
     if (updated.length) {
-      await db.exec('putMany', updated);
+      await db.styles.putMany(updated);
     }
     styles.forEach(storeInMap);
     ready = true;

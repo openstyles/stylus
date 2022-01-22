@@ -234,7 +234,7 @@ const updateMan = (() => {
       if (err && etag && !style.etag) {
         // first check of ETAG, gonna write it directly to DB as it's too trivial to sync or announce
         style.etag = etag;
-        await db.exec('put', style);
+        await db.styles.put(style);
       }
       return err
         ? Promise.reject(err)

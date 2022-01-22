@@ -209,7 +209,7 @@ const syncMan = (() => {
           }
         }
         if (diff < 0) {
-          doc.id = await db.exec('put', doc);
+          doc.id = await db.styles.put(doc);
           uuidIndex.set(doc._id, doc.id);
           return styleUtil.handleSave(doc, {reason: 'sync'});
         }
