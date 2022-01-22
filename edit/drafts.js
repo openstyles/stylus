@@ -28,7 +28,7 @@
   prefs.subscribe('editor.autosaveDelay', (key, val) => {
     delay = clamp(val * 1000 | 0, 1000, 2 ** 32 - 1);
     const t = debounce.timers.get(updateDraft);
-    if (t != null) debounce(updateDraft, t);
+    if (t != null) debounce(updateDraft, t ? delay : 0);
   }, {runNow: true});
 
   function makeRelativeDate(date) {
