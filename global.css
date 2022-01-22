@@ -313,13 +313,25 @@ body.resizing-v > * {
 }
 .split-btn-pedal {
   margin-left: -1px !important;
-  padding-left: .2em !important;
-  padding-right: .2em !important;
+  padding-left: .25em !important;
+  padding-right: .25em !important;
   min-width: 0 !important;
 }
 .split-btn-pedal::after {
-  content: '\25BC'; /* down triangle */
-  font-size: 90%;
+  --side: 4px;
+  content: '';
+  border: var(--side) solid transparent;
+  display: inline-block;
+}
+.split-btn-pedal:not(.up)::after {
+  border-top: calc(var(--side) * 1.3) solid currentColor;
+  vertical-align: bottom;
+}
+.split-btn-pedal.up::after {
+  border-bottom: calc(var(--side) * 1.3) solid currentColor;
+  vertical-align: top;
+  position: relative;
+  top: 1px;
 }
 .split-btn-pedal.active {
   box-shadow: inset 0 0 100px rgba(0, 0, 0, .2);
