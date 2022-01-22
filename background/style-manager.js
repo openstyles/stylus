@@ -61,7 +61,13 @@ const styleMan = (() => {
   let ready = init();
   let order = {};
 
-  chrome.runtime.onConnect.addListener(handleLivePreview);
+  chrome.runtime.onConnect.addListener(port => {
+    if (port.name === 'livePreview') {
+      handleLivePreview(port);
+    } else if (port.name.startsWith('draft:')) {
+      handleDraft(port);
+    }
+  });
   // function handleColorScheme() {
   colorScheme.onChange(() => {
     for (const {style: data} of dataMap.values()) {
@@ -372,10 +378,12 @@ const styleMan = (() => {
       style);
   }
 
+  function handleDraft(port) {
+    const id = port.name.split(':').pop();
+    port.onDisconnect.addListener(() => API.drafts.delete(Number(id) || id));
+  }
+
   function handleLivePreview(port) {
-    if (port.name !== 'livePreview') {
-      return;
-    }
     let id;
     port.onMessage.addListener(style => {
       if (!id) id = style.id;

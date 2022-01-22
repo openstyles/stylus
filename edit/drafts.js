@@ -7,29 +7,33 @@
 'use strict';
 
 (async function AutosaveDrafts() {
-  const NEW = 'new';
+  const makeId = () => editor.style.id || 'new';
   let delay;
-  let draftId = editor.style.id || NEW;
+  let port;
+  connectPort();
 
-  const draft = await API.drafts.get(draftId);
+  const draft = await API.drafts.get(makeId());
   if (draft && draft.isUsercss === editor.isUsercss) {
     const date = makeRelativeDate(draft.date);
     if (await messageBoxProxy.confirm(t('draftAction'), 'danger', t('draftTitle', date))) {
       await editor.replaceStyle(draft.style, draft);
     } else {
-      updateDraft(false);
+      API.drafts.delete(makeId());
     }
   }
 
-  editor.dirty.onDataChange(isDirty => {
-    debounce(updateDraft, isDirty ? delay : 0);
-  });
+  editor.dirty.onChange(isDirty => isDirty ? connectPort() : port.disconnect());
+  editor.dirty.onDataChange(isDirty => debounce(updateDraft, isDirty ? delay : 0));
 
   prefs.subscribe('editor.autosaveDraft', (key, val) => {
     delay = clamp(val * 1000 | 0, 1000, 2 ** 32 - 1);
     const t = debounce.timers.get(updateDraft);
     if (t != null) debounce(updateDraft, t ? delay : 0);
   }, {runNow: true});
+
+  function connectPort() {
+    port = chrome.runtime.connect({name: 'draft:' + makeId()});
+  }
 
   function makeRelativeDate(date) {
     let delta = (Date.now() - date) / 1000;
@@ -53,18 +57,13 @@
   }
 
   function updateDraft(isDirty = editor.dirty.isDirty()) {
-    const newDraftId = editor.style.id || NEW;
-    if (isDirty) {
-      API.drafts.put({
-        date: Date.now(),
-        id: newDraftId,
-        isUsercss: editor.isUsercss,
-        style: editor.getValue(true),
-        si: editor.makeScrollInfo(),
-      });
-    } else {
-      API.drafts.delete(draftId); // the old id may have been 0 when a new style is saved now
-    }
-    draftId = newDraftId;
+    if (!isDirty) return;
+    API.drafts.put({
+      date: Date.now(),
+      id: makeId(),
+      isUsercss: editor.isUsercss,
+      style: editor.getValue(true),
+      si: editor.makeScrollInfo(),
+    });
   }
 })();
