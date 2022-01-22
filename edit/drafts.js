@@ -25,7 +25,7 @@
     debounce(updateDraft, isDirty ? delay : 0);
   });
 
-  prefs.subscribe('editor.autosaveDelay', (key, val) => {
+  prefs.subscribe('editor.autosaveDraft', (key, val) => {
     delay = clamp(val * 1000 | 0, 1000, 2 ** 32 - 1);
     const t = debounce.timers.get(updateDraft);
     if (t != null) debounce(updateDraft, t ? delay : 0);
