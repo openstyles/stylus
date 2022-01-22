@@ -16,6 +16,15 @@
 /* exported SourceEditor */
 function SourceEditor() {
   const {style, /** @type DirtyReporter */dirty} = editor;
+  const DEFAULT_TEMPLATE = `
+    /* ==UserStyle==
+    @name           ${''/* a trick to preserve the trailing spaces */}
+    @namespace      github.com/openstyles/stylus
+    @version        1.0.0
+    @description    A new userstyle
+    @author         Me
+    ==/UserStyle== */
+  `.replace(/^\s+/gm, '');
   let savedGeneration;
   let prevMode = NaN;
 
@@ -160,17 +169,8 @@ function SourceEditor() {
     if (Object.keys(sec0).length === 1) { // the only key is 'code'
       sec0.domains = ['example.com'];
     }
-    const DEFAULT_CODE = `
-      /* ==UserStyle==
-      @name           ${''/* a trick to preserve the trailing spaces */}
-      @namespace      github.com/openstyles/stylus
-      @version        1.0.0
-      @description    A new userstyle
-      @author         Me
-      ==/UserStyle== */
-    `.replace(/^\s+/gm, '');
     style.name = [style.name, new Date().toLocaleString()].filter(Boolean).join(' - ');
-    style.sourceCode = (editor.template || DEFAULT_CODE)
+    style.sourceCode = (editor.template || DEFAULT_TEMPLATE)
       .replace(/(@name)(?:([\t\x20]+).*|\n)/, (_, k, space) => `${k}${space || ' '}${style.name}`)
       .replace(/\s*@-moz-document[^{]*{([^}]*)}\s*$/g, // stripping dummy sections
         (s, body) => body.trim() === comment ? '\n\n' : s)
@@ -224,9 +224,17 @@ function SourceEditor() {
   }
 
   async function saveTemplate() {
-    if (await messageBoxProxy.confirm(t('usercssReplaceTemplateConfirmation'))) {
+    const res = await messageBoxProxy.show({
+      contents: t('usercssReplaceTemplateConfirmation'),
+      className: 'center',
+      buttons: [t('confirmYes'), t('confirmNo'), {
+        textContent: t('genericResetLabel'),
+        title: t('restoreTemplate'),
+      }],
+    });
+    if (res.enter || res.button !== 1) {
       const key = chromeSync.LZ_KEY.usercssTemplate;
-      const code = cm.getValue();
+      const code = res.button === 2 ? DEFAULT_TEMPLATE : cm.getValue();
       await chromeSync.setLZValue(key, code);
       if (await chromeSync.getLZValue(key) !== code) {
         messageBoxProxy.alert(t('syncStorageErrorSaving'));
