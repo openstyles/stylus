@@ -104,8 +104,7 @@ async function initPopup(frames) {
   Object.assign($('#popup-manage-button'), {
     onclick: Events.openManager,
     oncontextmenu: Events.openManager,
-    onauxclick: Events.openManager,
-  });
+  }).on('split-btn', Events.openManager);
 
   $('#popup-options-button').onclick = () => {
     API.openManage({options: true});
