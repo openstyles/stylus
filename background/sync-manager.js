@@ -36,7 +36,7 @@ const syncMan = (() => {
   let ctrl;
   let currentDrive;
   /** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
-  let ready = prefs.ready.then(async () => {
+  let ready = prefs.ready.then(() => {
     ready = true;
     prefs.subscribe('sync.enabled',
       (_, val) => val === 'none'
