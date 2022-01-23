@@ -1,6 +1,6 @@
 /* global API msg */// msg.js
 /* global CHROME URLS isEmptyObj stringAsRegExp tryRegExp tryURL */// toolbox.js
-/* global bgReady compareRevision */// common.js
+/* global bgReady createCache */// common.js
 /* global calcStyleDigest styleCodeEmpty styleSectionGlobal */// sections-util.js
 /* global db */
 /* global prefs */
@@ -18,7 +18,14 @@ The live preview feature relies on `runtime.connect` and `port.onDisconnect`
 to cleanup the temporary code. See livePreview in /edit.
 */
 
+const styleUtil = {};
+
 const styleMan = (() => {
+
+  Object.assign(styleUtil, {
+    id2style,
+    handleSave,
+  });
 
   //#region Declarations
 
@@ -29,7 +36,6 @@ const styleMan = (() => {
   }} StyleMapData */
   /** @type {Map<number,StyleMapData>} */
   const dataMap = new Map();
-  const uuidIndex = new Map();
   /** @typedef {Object<styleId,{id: number, code: string[]}>} StyleSectionsToApply */
   /** @type {Map<string,{maybeMatch: Set<styleId>, sections: StyleSectionsToApply}>} */
   const cachedStyleForUrl = createCache({
@@ -77,16 +83,17 @@ const styleMan = (() => {
     }
   });
 
-  prefs.subscribe(['injectionOrder'], (key, value) => {
-    order = {};
-    value.forEach((uid, i) => {
-      const id = uuidIndex.get(uid);
-      if (id) {
-        order[id] = i;
-      }
-    });
-    msg.broadcast({method: 'styleSort', order});
-  });
+  // TODO: will fix in subsequent commit
+  // prefs.subscribe(['injectionOrder'], (key, value) => {
+  //   order = {};
+  //   value.forEach((uid, i) => {
+  //     const id = uuidIndex.get(uid);
+  //     if (id) {
+  //       order[id] = i;
+  //     }
+  //   });
+  //   msg.broadcast({method: 'styleSort', order});
+  // });
 
   //#endregion
   //#region Exports
@@ -107,7 +114,6 @@ const styleMan = (() => {
         if (cache) delete cache.sections[id];
       }
       dataMap.delete(id);
-      uuidIndex.delete(style._id);
       if (style._usw && style._usw.token) {
         // Must be called after the style is deleted from dataMap
         API.usw.revoke(id);
@@ -118,17 +124,6 @@ const styleMan = (() => {
         style: {id},
       });
       return id;
-    },
-
-    /** @returns {Promise<number>} style id */
-    async deleteByUUID(_id, rev) {
-      if (ready.then) await ready;
-      const id = uuidIndex.get(_id);
-      const oldDoc = id && id2style(id);
-      if (oldDoc && compareRevision(oldDoc._rev, rev) <= 0) {
-        // FIXME: does it make sense to set reason to 'sync' in deleteByUUID?
-        return styleMan.delete(id, 'sync');
-      }
     },
 
     /** @returns {Promise<StyleObj>} */
@@ -155,12 +150,6 @@ const styleMan = (() => {
     async getAll() {
       if (ready.then) await ready;
       return Array.from(dataMap.values(), data2style);
-    },
-
-    /** @returns {Promise<StyleObj>} */
-    async getByUUID(uuid) {
-      if (ready.then) await ready;
-      return id2style(uuidIndex.get(uuid));
     },
 
     /** @returns {Promise<StyleSectionsToApply>} */
@@ -263,10 +252,9 @@ const styleMan = (() => {
         }
       }
       const events = await db.exec('putMany', items);
-      return Promise.all(items.map((item, i) => {
-        afterSave(item, events[i]);
-        return handleSave(item, {reason: 'import'});
-      }));
+      return Promise.all(items.map((item, i) =>
+        handleSave(item, {reason: 'import'}, events[i])
+      ));
     },
 
     /** @returns {Promise<StyleObj>} */
@@ -277,31 +265,6 @@ const styleMan = (() => {
       style.originalDigest = await calcStyleDigest(style);
       // FIXME: update updateDate? what about usercss config?
       return saveStyle(style, {reason});
-    },
-
-    /** @returns {Promise<?StyleObj>} */
-    async putByUUID(doc) {
-      if (ready.then) await ready;
-      const id = uuidIndex.get(doc._id);
-      if (id) {
-        doc.id = id;
-      } else {
-        delete doc.id;
-      }
-      const oldDoc = id && id2style(id);
-      let diff = -1;
-      if (oldDoc) {
-        diff = compareRevision(oldDoc._rev, doc._rev);
-        if (diff > 0) {
-          API.sync.put(oldDoc._id, oldDoc._rev);
-          return;
-        }
-      }
-      if (diff < 0) {
-        doc.id = await db.exec('put', doc);
-        uuidIndex.set(doc._id, doc.id);
-        return handleSave(doc, {reason: 'sync'});
-      }
     },
 
     save: saveStyle,
@@ -472,28 +435,23 @@ const styleMan = (() => {
     fixKnownProblems(style);
   }
 
-  function afterSave(style, newId) {
-    if (style.id == null) {
-      style.id = newId;
-    }
-    uuidIndex.set(style._id, style.id);
-    API.sync.put(style._id, style._rev);
-  }
-
   async function saveStyle(style, handlingOptions) {
     beforeSave(style);
     const newId = await db.exec('put', style);
-    afterSave(style, newId);
-    return handleSave(style, handlingOptions);
+    return handleSave(style, handlingOptions, newId);
   }
 
-  function handleSave(style, {reason, broadcast = true}) {
-    const data = id2data(style.id);
+  function handleSave(style, {reason, broadcast = true}, id = style.id) {
+    if (style.id == null) style.id = id;
+    const data = id2data(id);
     const method = data ? 'styleUpdated' : 'styleAdded';
     if (!data) {
       storeInMap(style);
     } else {
       data.style = style;
+    }
+    if (reason !== 'sync') {
+      API.sync.putStyle(style);
     }
     if (broadcast) broadcastStyleUpdated(style, reason, method);
     return style;
@@ -524,10 +482,7 @@ const styleMan = (() => {
     if (updated.length) {
       await db.exec('putMany', updated);
     }
-    for (const style of styles) {
-      storeInMap(style);
-      uuidIndex.set(style._id, style.id);
-    }
+    styles.forEach(storeInMap);
     ready = true;
     bgReady._resolveStyles();
   }
@@ -732,64 +687,3 @@ const styleMan = (() => {
 
   //#endregion
 })();
-
-/** Creates a FIFO limit-size map. */
-function createCache({size = 1000, onDeleted} = {}) {
-  const map = new Map();
-  const buffer = Array(size);
-  let index = 0;
-  let lastIndex = 0;
-  return {
-    get(id) {
-      const item = map.get(id);
-      return item && item.data;
-    },
-    set(id, data) {
-      if (map.size === size) {
-        // full
-        map.delete(buffer[lastIndex].id);
-        if (onDeleted) {
-          onDeleted(buffer[lastIndex].id, buffer[lastIndex].data);
-        }
-        lastIndex = (lastIndex + 1) % size;
-      }
-      const item = {id, data, index};
-      map.set(id, item);
-      buffer[index] = item;
-      index = (index + 1) % size;
-    },
-    delete(id) {
-      const item = map.get(id);
-      if (!item) {
-        return false;
-      }
-      map.delete(item.id);
-      const lastItem = buffer[lastIndex];
-      lastItem.index = item.index;
-      buffer[item.index] = lastItem;
-      lastIndex = (lastIndex + 1) % size;
-      if (onDeleted) {
-        onDeleted(item.id, item.data);
-      }
-      return true;
-    },
-    clear() {
-      map.clear();
-      index = lastIndex = 0;
-    },
-    has: id => map.has(id),
-    *entries() {
-      for (const [id, item] of map) {
-        yield [id, item.data];
-      }
-    },
-    *values() {
-      for (const item of map.values()) {
-        yield item.data;
-      }
-    },
-    get size() {
-      return map.size;
-    },
-  };
-}

@@ -1,8 +1,9 @@
 /* global API msg */// msg.js
 /* global chromeLocal chromeSync */// storage-util.js
-/* global compareRevision */// common.js
+/* global db */
 /* global iconMan */
 /* global prefs */
+/* global styleUtil */
 /* global tokenMan */
 'use strict';
 
@@ -28,11 +29,17 @@ const syncMan = (() => {
     errorMessage: null,
     login: false,
   };
+  const uuidIndex = new Map();
+  const uuid2style = uuid => styleUtil.id2style(uuidIndex.get(uuid));
+  const compareRevision = (rev1, rev2) => rev1 - rev2;
   let lastError = null;
   let ctrl;
   let currentDrive;
   /** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
-  let ready = prefs.ready.then(() => {
+  let ready = prefs.ready.then(async () => {
+    for (const {id, _id} of await API.styles.getAll()) {
+      uuidIndex.set(_id, id);
+    }
     ready = true;
     prefs.subscribe('sync.enabled',
       (_, val) => val === 'none'
@@ -52,11 +59,12 @@ const syncMan = (() => {
 
   return {
 
-    async delete(...args) {
+    async delete(_id, rev) {
       if (ready.then) await ready;
       if (!currentDrive) return;
       schedule();
-      return ctrl.delete(...args);
+      uuidIndex.delete(_id);
+      return ctrl.delete(_id, rev);
     },
 
     /** @returns {Promise<SyncManager.Status>} */
@@ -84,6 +92,11 @@ const syncMan = (() => {
       if (!currentDrive) return;
       schedule();
       return ctrl.put(...args);
+    },
+
+    putStyle({id, _id, _rev}) {
+      uuidIndex.set(_id, id);
+      return syncMan.put(_id, _rev);
     },
 
     async setDriveOptions(driveName, options) {
@@ -178,14 +191,37 @@ const syncMan = (() => {
   async function initController() {
     await require(['/vendor/db-to-cloud/db-to-cloud.min']); /* global dbToCloud */
     ctrl = dbToCloud.dbToCloud({
-      onGet(id) {
-        return API.styles.getByUUID(id);
+      onGet: uuid2style,
+      async onPut(doc) {
+        const id = uuidIndex.get(doc._id);
+        const oldDoc = uuid2style(doc._id);
+        if (id) {
+          doc.id = id;
+        } else {
+          delete doc.id;
+        }
+        let diff = -1;
+        if (oldDoc) {
+          diff = compareRevision(oldDoc._rev, doc._rev);
+          if (diff > 0) {
+            syncMan.put(oldDoc);
+            return;
+          }
+        }
+        if (diff < 0) {
+          doc.id = await db.exec('put', doc);
+          uuidIndex.set(doc._id, doc.id);
+          return styleUtil.handleSave(doc, {reason: 'sync'});
+        }
       },
-      onPut(doc) {
-        return API.styles.putByUUID(doc);
-      },
-      onDelete(id, rev) {
-        return API.styles.deleteByUUID(id, rev);
+      onDelete(_id, rev) {
+        const id = uuidIndex.get(_id);
+        const oldDoc = uuid2style(_id);
+        if (oldDoc && compareRevision(oldDoc._rev, rev) <= 0) {
+          // FIXME: does it make sense to set reason to 'sync' in deleteByUUID?
+          uuidIndex.delete(id);
+          return API.styles.delete(id, 'sync');
+        }
       },
       async onFirstSync() {
         for (const i of await API.styles.getAll()) {
