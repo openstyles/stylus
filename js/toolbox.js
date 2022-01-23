@@ -333,13 +333,13 @@ Object.assign(debounce, {
   },
 });
 
-function deepMerge(src, dst) {
+function deepMerge(src, dst, mergeArrays) {
   if (!src || typeof src !== 'object') {
     return src;
   }
   if (Array.isArray(src)) {
     // using `Array` that belongs to this `window`; not using Array.from as it's slower
-    if (!dst) dst = Array.prototype.map.call(src, deepCopy);
+    if (!dst || !mergeArrays) dst = Array.prototype.map.call(src, deepCopy);
     else for (const v of src) dst.push(deepMerge(v));
   } else {
     // using an explicit {} that belongs to this `window`
