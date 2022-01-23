@@ -1,6 +1,6 @@
 /* global API msg */// msg.js
-/* global CHROME URLS isEmptyObj stringAsRegExp tryRegExp tryURL */// toolbox.js
-/* global bgReady createCache */// common.js
+/* global CHROME URLS deepEqual isEmptyObj mapObj stringAsRegExp tryRegExp tryURL */// toolbox.js
+/* global bgReady createCache uuidIndex */// common.js
 /* global calcStyleDigest styleCodeEmpty styleSectionGlobal */// sections-util.js
 /* global db */
 /* global prefs */
@@ -20,6 +20,7 @@ to cleanup the temporary code. See livePreview in /edit.
 
 const styleUtil = {};
 
+/* exported styleMan */
 const styleMan = (() => {
 
   Object.assign(styleUtil, {
@@ -30,9 +31,9 @@ const styleMan = (() => {
   //#region Declarations
 
   /** @typedef {{
-    style: StyleObj
-    preview?: StyleObj
-    appliesTo: Set<string>
+    style: StyleObj,
+    preview?: StyleObj,
+    appliesTo: Set<string>,
   }} StyleMapData */
   /** @type {Map<number,StyleMapData>} */
   const dataMap = new Map();
@@ -63,9 +64,20 @@ const styleMan = (() => {
     _rev: () => Date.now(),
   };
   const DELETE_IF_NULL = ['id', 'customName', 'md5Url', 'originalMd5'];
+  const INJ_ORDER = 'injectionOrder';
+  const order = {main: {}, prio: {}};
+  const orderForDb = {
+    id: INJ_ORDER,
+    _id: `${chrome.runtime.id}-${INJ_ORDER}`,
+    get value() {
+      return mapObj(order, group => sortObjectKeysByValue(group, id2uuid));
+    },
+    set value(val) {
+      setOrderFromArray(val);
+    },
+  };
   /** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
   let ready = init();
-  let order = {};
 
   chrome.runtime.onConnect.addListener(port => {
     if (port.name === 'livePreview') {
@@ -83,18 +95,6 @@ const styleMan = (() => {
     }
   });
 
-  // TODO: will fix in subsequent commit
-  // prefs.subscribe(['injectionOrder'], (key, value) => {
-  //   order = {};
-  //   value.forEach((uid, i) => {
-  //     const id = uuidIndex.get(uid);
-  //     if (id) {
-  //       order[id] = i;
-  //     }
-  //   });
-  //   msg.broadcast({method: 'styleSort', order});
-  // });
-
   //#endregion
   //#region Exports
 
@@ -103,17 +103,17 @@ const styleMan = (() => {
     /** @returns {Promise<number>} style id */
     async delete(id, reason) {
       if (ready.then) await ready;
-      const data = id2data(id);
-      const {style, appliesTo} = data;
+      const {style, appliesTo} = dataMap.get(id);
+      const sync = reason !== 'sync';
       db.styles.delete(id);
-      if (reason !== 'sync') {
-        API.sync.delete(style._id, Date.now());
-      }
+      if (sync) API.sync.delete(style._id, Date.now());
       for (const url of appliesTo) {
         const cache = cachedStyleForUrl.get(url);
         if (cache) delete cache.sections[id];
       }
       dataMap.delete(id);
+      mapObj(order, val => delete val[id]);
+      setOrder(orderForDb.value, {sync});
       if (style._usw && style._usw.token) {
         // Must be called after the style is deleted from dataMap
         API.usw.revoke(id);
@@ -149,7 +149,21 @@ const styleMan = (() => {
     /** @returns {Promise<StyleObj[]>} */
     async getAll() {
       if (ready.then) await ready;
-      return Array.from(dataMap.values(), data2style);
+      return getAllAsArray();
+    },
+
+    /** @returns {Promise<Object<string,StyleObj[]>>}>} */
+    async getAllOrdered() {
+      if (ready.then) await ready;
+      const res = mapObj(order, group => sortObjectKeysByValue(group, id2style));
+      if (res.main.length + res.prio.length < dataMap.size) {
+        for (const {style} of dataMap.values()) {
+          if (!(style.id in order.main) && !(style.id in order.prio)) {
+            res.main.push(style);
+          }
+        }
+      }
+      return res;
     },
 
     /** @returns {Promise<StyleSectionsToApply>} */
@@ -199,7 +213,7 @@ const styleMan = (() => {
       const result = [];
       const styles = id
         ? [id2style(id)].filter(Boolean)
-        : Array.from(dataMap.values(), data2style);
+        : getAllAsArray();
       const query = createMatchQuery(url);
       for (const style of styles) {
         let excluded = false;
@@ -269,6 +283,13 @@ const styleMan = (() => {
 
     save: saveStyle,
 
+    async setOrder(val) {
+      if (ready.then) await ready;
+      return val &&
+        !deepEqual(val, order) &&
+        setOrder(val, {broadcast: true, sync: true});
+    },
+
     /** @returns {Promise<number>} style id */
     async toggle(id, enabled) {
       if (ready.then) await ready;
@@ -306,12 +327,12 @@ const styleMan = (() => {
 
   /** @returns {?StyleObj} */
   function id2style(id) {
-    return (dataMap.get(id) || {}).style;
+    return (dataMap.get(Number(id)) || {}).style;
   }
 
-  /** @returns {?StyleObj} */
-  function data2style(data) {
-    return data && data.style;
+  /** @returns {?string} */
+  function id2uuid(id) {
+    return (id2style(id) || {})._id;
   }
 
   /** @returns {StyleObj} */
@@ -332,6 +353,7 @@ const styleMan = (() => {
       style,
       appliesTo: new Set(),
     });
+    uuidIndex.set(style._id, style.id);
   }
 
   /** @returns {StyleObj} */
@@ -451,7 +473,7 @@ const styleMan = (() => {
       data.style = style;
     }
     if (reason !== 'sync') {
-      API.sync.putStyle(style);
+      API.sync.putDoc(style);
     }
     if (broadcast) broadcastStyleUpdated(style, reason, method);
     return style;
@@ -477,12 +499,18 @@ const styleMan = (() => {
   }
 
   async function init() {
+    const orderPromise = db.open(prefs.STORAGE_KEY).get(INJ_ORDER);
     const styles = await db.styles.getAll() || [];
     const updated = await Promise.all(styles.map(fixKnownProblems).filter(Boolean));
     if (updated.length) {
       await db.styles.putMany(updated);
     }
     styles.forEach(storeInMap);
+    Object.assign(orderForDb, await orderPromise);
+    API.sync.registerDoc(orderForDb, doc => {
+      Object.assign(orderForDb, doc);
+      setOrder();
+    });
     ready = true;
     bgReady._resolveStyles();
   }
@@ -680,9 +708,39 @@ const styleMan = (() => {
     }
   }
 
+  /** @returns {StyleObj[]} */
+  function getAllAsArray() {
+    return Array.from(dataMap.values(), v => v.style);
+  }
+
   /** uuidv4 helper: converts to a 4-digit hex string and adds "-" at required positions */
   function hex4dashed(num, i) {
     return (num + 0x10000).toString(16).slice(-4) + (i >= 1 && i <= 4 ? '-' : '');
+  }
+
+  async function setOrder(val, {broadcast, store = true, sync} = {}) {
+    if (val) {
+      setOrderFromArray(val);
+      orderForDb._rev = Date.now();
+    }
+    if (broadcast) msg.broadcast({method: 'styleSort', order});
+    if (store) await db.open(prefs.STORAGE_KEY).put(orderForDb);
+    if (sync) API.sync.putDoc(orderForDb);
+  }
+
+  function setOrderFromArray(newOrder) {
+    mapObj(order, (_, type) => {
+      const res = order[type] = {};
+      (newOrder && newOrder[type] || []).forEach((uid, i) => {
+        const id = uuidIndex.get(uid);
+        if (id) res[id] = i;
+      });
+    });
+  }
+
+  /** Since JS object's numeric keys are sorted in ascending order, we have to re-sort by value */
+  function sortObjectKeysByValue(obj, map) {
+    return Object.entries(obj).sort((a, b) => a[1] - b[1]).map(e => map(e[0]));
   }
 
   //#endregion

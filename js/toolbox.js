@@ -13,6 +13,7 @@
   getTab
   ignoreChromeError
   isEmptyObj
+  mapObj
   onTabReady
   openURL
   sessionStore
@@ -270,6 +271,24 @@ function isEmptyObj(obj) {
     }
   }
   return true;
+}
+
+/**
+ * @param {?Object} obj
+ * @param {function(val:?, key:string, obj:Object):T} [fn]
+ * @param {string[]} [keys]
+ * @returns {?Object<string,T>}
+ * @template T
+ */
+function mapObj(obj, fn, keys) {
+  if (!obj) return obj;
+  const res = {};
+  for (const k of keys || Object.keys(obj)) {
+    if (!keys || k in obj) {
+      res[k] = fn ? fn(obj[k], k, obj) : obj[k];
+    }
+  }
+  return res;
 }
 
 /**

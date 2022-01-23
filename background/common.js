@@ -9,8 +9,10 @@
   addAPI
   bgReady
   createCache
+  uuidIndex
 */
 
+const uuidIndex = new Map();
 const bgReady = {};
 bgReady.styles = new Promise(r => (bgReady._resolveStyles = r));
 bgReady.all = new Promise(r => (bgReady._resolveAll = r));
