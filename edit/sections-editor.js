@@ -86,15 +86,21 @@ function SectionsEditor() {
         : null;
     },
 
-    async replaceStyle(newStyle) {
+    async replaceStyle(newStyle, draft) {
       const sameCode = styleSectionsEqual(newStyle, getModel());
-      if (!sameCode && !await messageBoxProxy.confirm(t('styleUpdateDiscardChanges'))) {
+      if (!sameCode && !draft && !await messageBoxProxy.confirm(t('styleUpdateDiscardChanges'))) {
         return;
       }
-      dirty.clear();
+      if (!draft) {
+        dirty.clear();
+      }
       // FIXME: avoid recreating all editors?
       if (!sameCode) {
-        await initSections(newStyle.sections, {replace: true});
+        await initSections(newStyle.sections, {
+          keepDirty: draft,
+          replace: true,
+          si: draft && draft.si,
+        });
       }
       editor.useSavedStyle(newStyle);
       updateLivePreview();
@@ -468,14 +474,15 @@ function SectionsEditor() {
   async function initSections(src, {
     focusOn = 0,
     replace = false,
-    keepDirty = false, // used by import
+    keepDirty = false,
+    si = editor.scrollInfo,
   } = {}) {
+    editor.ready = false;
     if (replace) {
       sections.forEach(s => s.remove(true));
       sections.length = 0;
       container.textContent = '';
     }
-    let si = editor.scrollInfo;
     if (si && si.cms && si.cms.length === src.length) {
       si.scrollY2 = si.scrollY + window.innerHeight;
       container.style.height = si.scrollY2 + 'px';
@@ -503,9 +510,12 @@ function SectionsEditor() {
       if (!keepDirty) dirty.clear();
       if (i === focusOn) sections[i].cm.focus();
     }
-    if (!si) requestAnimationFrame(fitToAvailableSpace);
+    if (!si || si.cms.every(cm => !cm.height)) {
+      requestAnimationFrame(fitToAvailableSpace);
+    }
     container.style.removeProperty('height');
     setGlobalProgress();
+    editor.ready = true;
   }
 
   /** @param {EditorSection} section */

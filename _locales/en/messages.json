@@ -342,6 +342,19 @@
     "message": "Disable",
     "description": "Label for the button to disable a style"
   },
+  "draftTitle": {
+    "message": "Draft recovery, created $date$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    },
+    "description": "Title of the modal displayed in the editor when an unsaved draft is found, the $date$ looks like '1 hour ago' in user's current UI language"
+  },
+  "draftAction": {
+    "message": "Choose 'Yes' to load this draft or 'No' to discard it.",
+    "description": "Displayed in the editor after the browser/extension crashed"
+  },
   "dragDropMessage": {
     "message": "Drop your backup file anywhere on this page to import.",
     "description": "Drag'n'drop message"

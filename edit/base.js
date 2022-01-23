@@ -339,9 +339,15 @@ baseInit.ready.then(() => {
 function DirtyReporter() {
   const data = new Map();
   const listeners = new Set();
+  const dataListeners = new Set();
   const notifyChange = wasDirty => {
-    if (wasDirty !== (data.size > 0)) {
-      listeners.forEach(cb => cb());
+    const isDirty = data.size > 0;
+    const flipped = isDirty !== wasDirty;
+    if (flipped) {
+      listeners.forEach(cb => cb(isDirty));
+    }
+    if (flipped || isDirty) {
+      dataListeners.forEach(cb => cb(isDirty));
     }
   };
   /** @namespace DirtyReporter */
@@ -358,17 +364,19 @@ function DirtyReporter() {
           saved.newValue = value;
           saved.type = 'modify';
         }
+      } else {
+        return;
       }
       notifyChange(wasDirty);
     },
-    clear(obj) {
-      const wasDirty = data.size > 0;
-      if (obj === undefined) {
-        data.clear();
-      } else {
-        data.delete(obj);
+    clear(...objs) {
+      if (data.size && (
+        objs.length
+          ? objs.map(data.delete, data).includes(true)
+          : (data.clear(), true)
+      )) {
+        notifyChange(true);
       }
-      notifyChange(wasDirty);
     },
     has(key) {
       return data.has(key);
@@ -382,6 +390,8 @@ function DirtyReporter() {
       if (!saved) {
         if (oldValue !== newValue) {
           data.set(obj, {type: 'modify', savedValue: oldValue, newValue});
+        } else {
+          return;
         }
       } else if (saved.type === 'modify') {
         if (saved.savedValue === newValue) {
@@ -391,11 +401,16 @@ function DirtyReporter() {
         }
       } else if (saved.type === 'add') {
         saved.newValue = newValue;
+      } else {
+        return;
       }
       notifyChange(wasDirty);
     },
     onChange(cb, add = true) {
       listeners[add ? 'add' : 'delete'](cb);
+    },
+    onDataChange(cb, add = true) {
+      dataListeners[add ? 'add' : 'delete'](cb);
     },
     remove(obj, value) {
       const wasDirty = data.size > 0;
@@ -406,6 +421,8 @@ function DirtyReporter() {
         data.delete(obj);
       } else if (saved.type === 'modify') {
         saved.type = 'remove';
+      } else {
+        return;
       }
       notifyChange(wasDirty);
     },

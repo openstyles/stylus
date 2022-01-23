@@ -2,17 +2,15 @@
 'use strict';
 
 /* exported createChromeStorageDB */
-function createChromeStorageDB() {
+function createChromeStorageDB(PREFIX) {
   let INC;
 
-  const PREFIX = 'style-';
-  const METHODS = {
+  return {
 
     delete(id) {
       return chromeLocal.remove(PREFIX + id);
     },
 
-    // FIXME: we don't use this method at all. Should we remove this?
     get(id) {
       return chromeLocal.getValue(PREFIX + id);
     },
@@ -59,8 +57,4 @@ function createChromeStorageDB() {
       }
     }
   }
-
-  return function dbExecChromeStorage(method, ...args) {
-    return METHODS[method](...args);
-  };
 }

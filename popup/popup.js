@@ -10,6 +10,7 @@
   FIREFOX
   URLS
   capitalize
+  clamp
   getActiveTab
   isEmptyObj
 */// toolbox.js
@@ -66,7 +67,7 @@ function onRuntimeMessage(msg) {
 
 function setPopupWidth(_key, width) {
   document.body.style.width =
-    Math.max(200, Math.min(800, width)) + 'px';
+    clamp(width, 200, 800) + 'px';
 }
 
 function toggleSideBorders(_key, state) {

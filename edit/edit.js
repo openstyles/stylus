@@ -58,6 +58,7 @@ baseInit.ready.then(async () => {
 
   require([
     '/edit/autocomplete',
+    '/edit/drafts',
     '/edit/global-search',
   ]);
 });
@@ -139,16 +140,7 @@ window.on('beforeunload', e => {
     prefs.set('windowPosition', pos);
   }
   sessionStore.windowPos = JSON.stringify(pos || {});
-  sessionStore['editorScrollInfo' + editor.style.id] = JSON.stringify({
-    scrollY: window.scrollY,
-    cms: editor.getEditors().map(cm => /** @namespace EditorScrollInfo */({
-      bookmarks: (cm.state.sublimeBookmarks || []).map(b => b.find()),
-      focus: cm.hasFocus(),
-      height: cm.display.wrapper.style.height.replace('100vh', ''),
-      parentHeight: cm.display.wrapper.parentElement.offsetHeight,
-      sel: cm.isClean() && [cm.doc.sel.ranges, cm.doc.sel.primIndex],
-    })),
-  });
+  sessionStore['editorScrollInfo' + editor.style.id] = JSON.stringify(editor.makeScrollInfo());
   const activeElement = document.activeElement;
   if (activeElement) {
     // blurring triggers 'change' or 'input' event if needed
@@ -193,6 +185,19 @@ window.on('beforeunload', e => {
           cm.state.sublimeBookmarks = si.bookmarks.map(b => cm.markText(b.from, b.to, bmOpts));
         });
       }
+    },
+
+    makeScrollInfo() {
+      return {
+        scrollY: window.scrollY,
+        cms: editor.getEditors().map(cm => /** @namespace EditorScrollInfo */({
+          bookmarks: (cm.state.sublimeBookmarks || []).map(b => b.find()),
+          focus: cm.hasFocus(),
+          height: cm.display.wrapper.style.height.replace('100vh', ''),
+          parentHeight: cm.display.wrapper.parentElement.offsetHeight,
+          sel: [cm.doc.sel.ranges, cm.doc.sel.primIndex],
+        })),
+      };
     },
 
     async save() {

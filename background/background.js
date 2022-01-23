@@ -1,6 +1,7 @@
 /* global API msg */// msg.js
 /* global addAPI bgReady */// common.js
 /* global createWorker */// worker-util.js
+/* global db */
 /* global prefs */
 /* global styleMan */
 /* global syncMan */
@@ -36,6 +37,11 @@ addAPI(/** @namespace API */ {
       data[key] = val;
     },
   }))(),
+
+  /** @type IDBObjectStore */
+  drafts: new Proxy({}, {
+    get: (_, cmd) => (...args) => db.exec.call('drafts', cmd, ...args),
+  }),
 
   styles: styleMan,
   sync: syncMan,

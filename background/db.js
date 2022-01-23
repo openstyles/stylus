@@ -52,12 +52,18 @@ const db = (() => {
       console.warn('Failed to access indexedDB. Switched to storage API.', err);
     }
     await require(['/background/db-chrome-storage']); /* global createChromeStorageDB */
-    return createChromeStorageDB();
+    const BASES = {};
+    return function dbExecChromeStorage(method, ...args) {
+      const prefix = Object(this) instanceof String ? `${this}-` : 'style-';
+      const baseApi = BASES[prefix] || (BASES[prefix] = createChromeStorageDB(prefix));
+      return baseApi[method](...args);
+    };
   }
 
   async function dbExecIndexedDB(method, ...args) {
     const mode = method.startsWith('get') ? 'readonly' : 'readwrite';
-    const store = (await open()).transaction([STORE], mode).objectStore(STORE);
+    const dbName = Object(this) instanceof String ? `${this}` : DATABASE;
+    const store = (await open(dbName)).transaction([STORE], mode).objectStore(STORE);
     const fn = method === 'putMany' ? putMany : storeRequest;
     return fn(store, method, ...args);
   }
@@ -75,9 +81,9 @@ const db = (() => {
     return Promise.all(items.map(item => storeRequest(store, 'put', item)));
   }
 
-  function open() {
+  function open(name) {
     return new Promise((resolve, reject) => {
-      const request = indexedDB.open(DATABASE, 2);
+      const request = indexedDB.open(name, 2);
       request.onsuccess = () => resolve(request.result);
       request.onerror = reject;
       request.onupgradeneeded = create;

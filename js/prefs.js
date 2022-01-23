@@ -99,6 +99,7 @@
     'editor.selectByTokens': true,
 
     'editor.appliesToLineWidget': true, // show applies-to line widget on the editor
+    'editor.autosaveDraft': 10, // seconds
     'editor.livePreview': true,
 
     // show CSS colors as clickable colored rectangles
