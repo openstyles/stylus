@@ -197,30 +197,20 @@ const syncMan = (() => {
       },
       async onPut(doc) {
         const id = uuidIndex.get(doc._id);
-        const style = styleUtil.id2style(id);
-        const oldDoc = style || customDocs[id];
-        if (id) {
-          doc.id = id;
+        const oldCust = customDocs[id];
+        const oldDoc = oldCust || styleUtil.id2style(id);
+        const diff = oldDoc ? compareRevision(oldDoc._rev, doc._rev) : -1;
+        if (!diff) return;
+        if (diff > 0) {
+          syncMan.putDoc(oldDoc);
+        } else if (oldCust) {
+          customDocs[id] = doc;
         } else {
           delete doc.id;
-        }
-        let diff = -1;
-        if (oldDoc) {
-          diff = compareRevision(oldDoc._rev, doc._rev);
-          if (diff > 0) {
-            syncMan.putDoc(oldDoc);
-            return;
-          }
-        }
-        if (diff >= 0) {
-          return;
-        }
-        if (style) {
+          if (id) doc.id = id;
           doc.id = await db.styles.put(doc);
-          uuidIndex.set(doc._id, doc.id);
           return styleUtil.handleSave(doc, {reason: 'sync'});
         }
-        if (oldDoc) customDocs[id] = doc;
       },
       onDelete(_id, rev) {
         const id = uuidIndex.get(_id);
