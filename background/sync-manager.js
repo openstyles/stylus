@@ -220,7 +220,7 @@ const syncMan = (() => {
           uuidIndex.set(doc._id, doc.id);
           return styleUtil.handleSave(doc, {reason: 'sync'});
         }
-        if (oldDoc) oldDoc[id] = doc;
+        if (oldDoc) customDocs[id] = doc;
       },
       onDelete(_id, rev) {
         const id = uuidIndex.get(_id);
