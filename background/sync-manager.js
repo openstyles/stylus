@@ -58,9 +58,9 @@ const syncMan = (() => {
 
     async delete(_id, rev) {
       if (ready.then) await ready;
+      uuidIndex.delete(_id);
       if (!currentDrive) return;
       schedule();
-      uuidIndex.delete(_id);
       return ctrl.delete(_id, rev);
     },
 
