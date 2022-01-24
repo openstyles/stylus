@@ -1,5 +1,5 @@
 /* global API msg */// msg.js
-/* global uuidIndex */// common.js
+/* global bgReady uuidIndex */// common.js
 /* global chromeLocal chromeSync */// storage-util.js
 /* global db */
 /* global iconMan */
@@ -30,13 +30,12 @@ const syncMan = (() => {
     errorMessage: null,
     login: false,
   };
-  const customDocs = {};
   const compareRevision = (rev1, rev2) => rev1 - rev2;
   let lastError = null;
   let ctrl;
   let currentDrive;
   /** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
-  let ready = prefs.ready.then(() => {
+  let ready = bgReady.styles.then(() => {
     ready = true;
     prefs.subscribe('sync.enabled',
       (_, val) => val === 'none'
@@ -58,7 +57,6 @@ const syncMan = (() => {
 
     async delete(_id, rev) {
       if (ready.then) await ready;
-      uuidIndex.delete(_id);
       if (!currentDrive) return;
       schedule();
       return ctrl.delete(_id, rev);
@@ -84,20 +82,11 @@ const syncMan = (() => {
       }
     },
 
-    async putDoc({id, _id, _rev}) {
+    async putDoc({_id, _rev}) {
       if (ready.then) await ready;
-      uuidIndex.set(_id, id);
       if (!currentDrive) return;
       schedule();
       return ctrl.put(_id, _rev);
-    },
-
-    registerDoc(doc, setter) {
-      uuidIndex.set(doc._id, doc.id);
-      Object.defineProperty(customDocs, doc.id, {
-        get: () => doc,
-        set: setter,
-      });
     },
 
     async setDriveOptions(driveName, options) {
@@ -192,19 +181,17 @@ const syncMan = (() => {
   async function initController() {
     await require(['/vendor/db-to-cloud/db-to-cloud.min']); /* global dbToCloud */
     ctrl = dbToCloud.dbToCloud({
-      onGet(uuid) {
-        return styleUtil.id2style(uuidIndex.get(uuid));
-      },
+      onGet: styleUtil.uuid2style,
       async onPut(doc) {
         const id = uuidIndex.get(doc._id);
-        const oldCust = customDocs[id];
+        const oldCust = uuidIndex.custom[id];
         const oldDoc = oldCust || styleUtil.id2style(id);
         const diff = oldDoc ? compareRevision(oldDoc._rev, doc._rev) : -1;
         if (!diff) return;
         if (diff > 0) {
           syncMan.putDoc(oldDoc);
         } else if (oldCust) {
-          customDocs[id] = doc;
+          uuidIndex.custom[id] = doc;
         } else {
           delete doc.id;
           if (id) doc.id = id;
@@ -215,13 +202,12 @@ const syncMan = (() => {
       onDelete(_id, rev) {
         const id = uuidIndex.get(_id);
         const oldDoc = styleUtil.id2style(id);
-        if (oldDoc && compareRevision(oldDoc._rev, rev) <= 0) {
-          uuidIndex.delete(id);
-          return API.styles.delete(id, 'sync');
-        }
+        return oldDoc &&
+          compareRevision(oldDoc._rev, rev) <= 0 &&
+          API.styles.delete(id, 'sync');
       },
       async onFirstSync() {
-        for (const i of Object.values(customDocs).concat(await API.styles.getAll())) {
+        for (const i of Object.values(uuidIndex.custom).concat(await API.styles.getAll())) {
           ctrl.put(i._id, i._rev);
         }
       },
