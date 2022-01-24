@@ -55,11 +55,11 @@ const syncMan = (() => {
 
   return {
 
-    async delete(_id, rev) {
+    async delete(...args) {
       if (ready.then) await ready;
       if (!currentDrive) return;
       schedule();
-      return ctrl.delete(_id, rev);
+      return ctrl.delete(...args);
     },
 
     /** @returns {Promise<SyncManager.Status>} */
@@ -196,7 +196,7 @@ const syncMan = (() => {
           delete doc.id;
           if (id) doc.id = id;
           doc.id = await db.styles.put(doc);
-          return styleUtil.handleSave(doc, {reason: 'sync'});
+          await styleUtil.handleSave(doc, {reason: 'sync'});
         }
       },
       onDelete(_id, rev) {
