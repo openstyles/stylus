@@ -335,7 +335,7 @@ const styleMan = (() => {
     return (dataMap.get(Number(id)) || {}).style;
   }
 
-  /** @returns {?string} */
+  /** @returns {?StyleObj} */
   function uuid2style(uuid) {
     return id2style(uuidIndex.get(uuid));
   }
