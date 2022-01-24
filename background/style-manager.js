@@ -173,6 +173,8 @@ const styleMan = (() => {
       return res;
     },
 
+    getOrder: () => orderWrap.value,
+
     /** @returns {Promise<StyleSectionsToApply>} */
     async getSectionsByUrl(url, id, isInitialApply) {
       if (ready.then) await ready;

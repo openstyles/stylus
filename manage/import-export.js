@@ -105,6 +105,7 @@ async function importFromString(jsonString) {
   const oldStyles = Array.isArray(json) && json.length ? await API.styles.getAll() : [];
   const oldStylesById = new Map(oldStyles.map(style => [style.id, style]));
   const oldStylesByName = new Map(oldStyles.map(style => [style.name.trim(), style]));
+  const oldOrder = await API.styles.getOrder();
   const items = [];
   const infos = [];
   const stats = {
@@ -116,11 +117,14 @@ async function importFromString(jsonString) {
     codeOnly: {names: [], ids: [], legend: 'importReportLegendUpdatedCode', dirty: true},
     invalid: {names: [], legend: 'importReportLegendInvalid'},
   };
+  let order;
   await Promise.all(json.map(analyze));
   changeQueue.length = 0;
   changeQueue.time = performance.now();
   (await API.styles.importMany(items))
     .forEach((style, i) => updateStats(style, infos[i]));
+  // TODO: set each style's order during import on-the-fly
+  await API.styles.setOrder(order);
   return done();
 
   function analyze(item, index) {
@@ -168,6 +172,8 @@ async function importFromString(jsonString) {
   async function analyzeStorage(storage) {
     analyzePrefs(storage[prefs.STORAGE_KEY], prefs.knownKeys, prefs.values, true);
     delete storage[prefs.STORAGE_KEY];
+    order = storage.order;
+    delete storage.order;
     if (!isEmptyObj(storage)) {
       analyzePrefs(storage, Object.values(chromeSync.LZ_KEY), await chromeSync.getLZValues());
     }
@@ -285,7 +291,7 @@ async function importFromString(jsonString) {
     };
   }
 
-  function undo() {
+  async function undo() {
     const newIds = [
       ...stats.metaAndCode.ids,
       ...stats.metaOnly.ids,
@@ -293,6 +299,8 @@ async function importFromString(jsonString) {
       ...stats.added.ids,
     ];
     let tasks = Promise.resolve();
+    // TODO: delete all deletable at once
+    // TODO: import all importable at once
     for (const id of newIds) {
       tasks = tasks.then(() => API.styles.delete(id));
       const oldStyle = oldStylesById.get(id);
@@ -300,13 +308,13 @@ async function importFromString(jsonString) {
         tasks = tasks.then(() => API.styles.importMany([oldStyle]));
       }
     }
-    // taskUI is superfast and updates style list only in this page,
-    // which should account for 99.99999999% of cases, supposedly
-    return tasks.then(() => messageBoxProxy.show({
+    await tasks;
+    await API.styles.setOrder(oldOrder);
+    await messageBoxProxy.show({
       title: t('importReportUndoneTitle'),
       contents: newIds.length + ' ' + t('importReportUndone'),
       buttons: [t('confirmClose')],
-    }));
+    });
   }
 
   function bindClick() {
@@ -344,6 +352,7 @@ async function exportToFile(e) {
   const data = [
     Object.assign({
       [prefs.STORAGE_KEY]: prefs.values,
+      order: await API.styles.getOrder(),
     }, await chromeSync.getLZValues()),
     ...(await API.styles.getAll()).map(cleanupStyle),
   ];
