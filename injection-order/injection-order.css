@@ -65,29 +65,23 @@
   align-items: center;
   padding: 0 .5rem;
   cursor: pointer;
-  opacity: .33;
-  transition: .2s;
+  opacity: .5;
+  transition: .15s;
 }
 .injection-order-toggle::after {
-  content: '';
-  width: .75em;
-  height: .75em;
-  border-radius: 100%;
-  border: 2px solid currentColor;
+  content: '\2606';
+  font-size: 20px;
+  line-height: 1;
+  transition: .15s;
 }
 .injection-order-entry:hover .injection-order-toggle {
   opacity: 1;
 }
 [data-prio] .injection-order-toggle::after {
-  background-color: currentColor;
-  background-clip: content-box;
-  width: .5em;
-  height: .5em;
-  padding: 2px;
-  transition: .2s;
+  content: '\2605';
 }
 .injection-order-toggle:hover::after {
-  background-color: hsl(40, 80%, 50%);
+  color: hsl(30, 80%, 50%);
 }
 .injection-order [data-prio] header,
 .injection-order ol,
