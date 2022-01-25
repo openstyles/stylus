@@ -12,6 +12,18 @@ async function InjectionOrder(show = true) {
   const SEL_ENTRY = '.injection-order-entry';
   const groups = await API.styles.getAllOrdered();
   const ols = {};
+  const parts = {};
+  const entry = $create('li' + SEL_ENTRY, [
+    parts.name = $create('a', {
+      target: '_blank',
+      draggable: false,
+    }),
+    $create('a.injection-order-toggle', {
+      tabIndex: 0,
+      draggable: false,
+      title: t('styleInjectionImportance'),
+    }),
+  ]);
   await messageBoxProxy.show({
     title: t('styleInjectionOrder'),
     contents: $create('fragment', Object.entries(groups).map(makeList)),
@@ -21,17 +33,10 @@ async function InjectionOrder(show = true) {
   });
 
   function makeEntry(style) {
-    return $create('li' + SEL_ENTRY + (style.enabled ? '.enabled' : ''), [
-      $create('a', {
-        href: '/edit.html?id=' + style.id,
-        target: '_blank',
-        draggable: false,
-      }, style.name),
-      $create('a.injection-order-toggle', {
-        tabIndex: 0,
-        draggable: false,
-      }),
-    ]);
+    entry.classList.toggle('enabled', style.enabled);
+    parts.name.href = '/edit.html?id=' + style.id;
+    parts.name.textContent = style.name;
+    return entry.cloneNode(true);
   }
 
   function makeList([type, styles]) {
