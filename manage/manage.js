@@ -94,7 +94,6 @@ newUI.renderClass();
 
   window.on('load', () => require([
     '/manage/import-export',
-    '/manage/incremental-search.css',
     '/manage/incremental-search',
     '/manage/updater-ui',
   ]), {once: true});
