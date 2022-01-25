@@ -36,7 +36,9 @@ async function InjectionOrder(show = true) {
     entry.classList.toggle('enabled', style.enabled);
     parts.name.href = '/edit.html?id=' + style.id;
     parts.name.textContent = style.name;
-    return entry.cloneNode(true);
+    return Object.assign(entry.cloneNode(true), {
+      styleNameLowerCase: style.name.toLocaleLowerCase(),
+    });
   }
 
   function makeList([type, styles]) {

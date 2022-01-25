@@ -1,6 +1,7 @@
 /* global debounce */// toolbox.js
 /* global installed */// manage.js
 /* global
+  $$
   $
   $create
   $isTextInput
@@ -14,39 +15,35 @@
   let prevTime = performance.now();
   let focusedName = '';
   const input = $create('textarea', {
+    id: 'incremental-search',
     spellcheck: false,
     attributes: {tabindex: -1},
     oninput: incrementalSearch,
   });
   replaceInlineStyle({
     opacity: '0',
-    position: 'absolute',
-    color: 'transparent',
-    border: '1px solid hsla(180, 100%, 100%, .5)',
-    margin: '-1px -2px',
-    overflow: 'hidden',
-    resize: 'none',
-    'background-color': 'hsla(180, 100%, 100%, .2)',
-    'box-sizing': 'content-box',
-    'pointer-events': 'none',
   });
   document.body.appendChild(input);
   window.on('keydown', maybeRefocus, true);
 
-  function incrementalSearch({key}, immediately) {
+  function incrementalSearch(event, immediately) {
+    const {key} = event;
     if (!immediately) {
       debounce(incrementalSearch, 100, {}, true);
       return;
     }
     const direction = key === 'ArrowUp' ? -1 : key === 'ArrowDown' ? 1 : 0;
     const text = input.value.toLocaleLowerCase();
+    if (direction) {
+      event.preventDefault();
+    }
     if (!text.trim() || !direction && (text === prevText || focusedName.startsWith(text))) {
       prevText = text;
       return;
     }
     let textAtPos = 1e6;
     let rotated;
-    const entries = [...installed.children];
+    const entries = $('#message-box') ? $$('.injection-order-entry') : [...installed.children];
     const focusedIndex = entries.indexOf(focusedEntry);
     if (focusedIndex > 0) {
       if (direction > 0) {
@@ -74,7 +71,7 @@
     }
     if (found && found !== focusedEntry) {
       focusedEntry = found;
-      focusedLink = $('.style-name-link', found);
+      focusedLink = $('a', found);
       focusedName = found.styleNameLowerCase;
       scrollElementIntoView(found, {invalidMarginRatio: .25});
       animateElement(found, 'highlight-quick');
@@ -84,12 +81,17 @@
         opacity: '1',
       });
       focusedLink.prepend(input);
+      input.focus();
       return true;
     }
   }
 
   function maybeRefocus(event) {
-    if (event.altKey || event.metaKey || $('#message-box')) {
+    if (event.altKey || event.metaKey) {
+      return;
+    }
+    const modal = $('#message-box');
+    if (modal && !modal.classList.contains('injection-order')) {
       return;
     }
     const inTextInput = $isTextInput(event.target);
@@ -99,7 +101,7 @@
         (code === 'Slash' || key === '/') && !ctrl && !inTextInput) {
       // focus search field on "/" or Ctrl-F key
       event.preventDefault();
-      $('#search').focus();
+      if (!modal) $('#search').focus();
       return;
     }
     if (ctrl || inTextInput && event.target !== input) {

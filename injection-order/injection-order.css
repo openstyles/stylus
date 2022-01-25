@@ -2,6 +2,10 @@
   height: 100%;
   max-width: 80vw;
 }
+.injection-order #incremental-search {
+  transform: scaleY(.55);
+  transform-origin: top;
+}
 .injection-order #message-box-contents,
 .injection-order section {
   padding: 0;
@@ -19,7 +23,7 @@
   box-sizing: border-box;
 }
 .injection-order ol {
-  padding: 1px 0; /* 1px for keyboard-focused element's outline */
+  padding: 0;
   margin: 0;
   font-size: 14px;
   overflow-y: auto;
@@ -38,6 +42,8 @@
 .injection-order-entry {
   display: flex;
   justify-content: space-between;
+  position: relative; /* for incremental-search */
+  padding: 1px 1px 1px 1rem; /* keyboard focus outline */
   color: #000;
   transition: transform .25s ease-in-out;
   z-index: 1;
@@ -48,7 +54,7 @@
   cursor: move;
 }
 .injection-order-entry a[href] {
-  padding: .4em 0 .4em 1rem;
+  padding: .4em 0;
   cursor: inherit;
 }
 .injection-order-entry.enabled a[href] {

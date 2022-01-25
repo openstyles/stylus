@@ -1,0 +1,12 @@
+#incremental-search {
+  position: absolute;
+  color: transparent;
+  border: 1px solid hsla(180, 100%, 50%, .25);
+  margin: -1px -2px;
+  overflow: hidden;
+  resize: none;
+  background-color: hsla(180, 100%, 50%, .1);
+  box-sizing: content-box;
+  pointer-events: none;
+  z-index: 2147483647,
+}
