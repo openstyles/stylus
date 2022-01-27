@@ -113,13 +113,16 @@ a:hover {
 }
 
 #injection-order-button {
-  width: 27px; /* 19px icon's image + 2px border + 6px padding */
-  padding-left: 3px;
+  --w: 16px;
+  width: var(--w);
+  box-sizing: content-box;
   display: inline-flex;
   align-items: center;
 }
 #injection-order-button > svg {
   position: absolute;
+  width: var(--w);
+  height: var(--w);
 }
 
 #installed {
