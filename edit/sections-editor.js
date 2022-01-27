@@ -613,7 +613,6 @@ function SectionsEditor() {
   /** @param {EditorSection} section */
   function registerEvents(section) {
     const {el, cm} = section;
-    $('.applies-to-help', el).onclick = () => helpPopup.show(t('appliesLabel'), t('appliesHelp'));
     $('.remove-section', el).onclick = () => removeSection(section);
     $('.add-section', el).onclick = () => insertSectionAfter(undefined, section);
     $('.clone-section', el).onclick = () => insertSectionAfter(section.getModel(), section);

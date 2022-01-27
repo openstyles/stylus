@@ -6,6 +6,7 @@ html#stylus #header *:not(#\1transition-suppressor) {
 }
 :root {
   --family: Arial, "Helvetica Neue", Helvetica, system-ui, sans-serif;
+  --input-height: 22px;
 }
 body {
   font: normal 12px var(--family);
@@ -71,9 +72,9 @@ input:not([type]),
 input[type=search] {
   background: #fff;
   color: #000;
-  height: 22px;
-  min-height: 22px!important;
-  line-height: 22px;
+  height: var(--input-height);
+  min-height: var(--input-height)!important;
+  line-height: var(--input-height);
   padding: 0 3px;
   border: 1px solid hsl(0, 0%, 66%);
 }
@@ -164,7 +165,8 @@ label {
 select {
   -moz-appearance: none;
   -webkit-appearance: none;
-  height: 22px;
+  box-sizing: content-box;
+  height: var(--input-height);
   font: inherit;
   color: #000;
   background-color: transparent;
@@ -371,7 +373,7 @@ body.resizing-v > * {
 
   .firefox select {
     padding: 0 20px 0 2px;
-    line-height: 22px!important;
+    line-height: var(--input-height)!important;
   }
 
   svg {
