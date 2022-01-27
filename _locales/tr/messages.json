@@ -423,7 +423,7 @@
     "message": "Gri renkte"
   },
   "manageFaviconsHelp": {
-    "message": "Stylus harici bir servis kullanır https://www.google.com/s2/favicons"
+    "message": "Stylus harici bir servis kullanır https://icons.duckduckgo.com"
   },
   "manageFilters": {
     "message": "Filtreler"
@@ -778,9 +778,6 @@
   },
   "usercssReplaceTemplateConfirmation": {
     "message": "Yeni Usercss stilleri için varsayılan şablonu geçerli kodla değiştir?"
-  },
-  "usercssReplaceTemplateName": {
-    "message": "Boş @name, varsayılan şablonun yerini alır"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "Kodu buraya ekle..."

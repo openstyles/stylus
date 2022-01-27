@@ -167,7 +167,8 @@
         res = msg.send(message);
       } else {
         res = deepMerge(await bg.msg._execute(TARGETS.extension, message, {
-          frameId: 0, // false in case of our Options frame but we really want to fetch styles early
+          // Using a fake id for our Options frame as we want to fetch styles early
+          frameId: window === top ? 0 : 1,
           tab: NEEDS_TAB_IN_SENDER.includes(path.join('.')) && await getOwnTab(),
           url: location.href,
         }));

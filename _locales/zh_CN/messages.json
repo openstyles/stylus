@@ -580,7 +580,7 @@
     "message": "显示为灰色图标"
   },
   "manageFaviconsHelp": {
-    "message": "Stylus 使用外部服务 https://www.google.com/s2/favicons 来获取图标"
+    "message": "Stylus 使用外部服务 https://icons.duckduckgo.com 来获取图标"
   },
   "manageFilters": {
     "message": "过滤器"
@@ -1464,9 +1464,6 @@
   },
   "usercssReplaceTemplateConfirmation": {
     "message": "使用当前 UserStyle 代码替换为新的默认模板吗 ?"
-  },
-  "usercssReplaceTemplateName": {
-    "message": "@name 为空值 可设置新的默认模板"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "在此插入代码..."

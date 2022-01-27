@@ -78,7 +78,7 @@ if (self.WorkerGlobalScope) {
     const toLoad = (Array.isArray(urls) ? urls : [urls])
       .map(u => u.endsWith('.js') ? u : u + '.js')
       .filter(u => !loadedUrls.includes(u));
-    if (toLoad) {
+    if (toLoad.length) {
       loadedUrls.push(...toLoad);
       importScripts(...toLoad);
     }

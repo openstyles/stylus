@@ -449,7 +449,7 @@
     "message": "Acinzentado(s)"
   },
   "manageFaviconsHelp": {
-    "message": "O Stylus usa um serviço externo https://www.google.com/s2/favicons"
+    "message": "O Stylus usa um serviço externo https://icons.duckduckgo.com"
   },
   "manageFilters": {
     "message": "Filtros"
@@ -901,9 +901,6 @@
   },
   "usercssReplaceTemplateConfirmation": {
     "message": "Substituir o modelo predefinido para novos estilos de Usercss com o código atual?"
-  },
-  "usercssReplaceTemplateName": {
-    "message": "@name vazio substitui o modelo predefinido"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "Insira o código aqui..."

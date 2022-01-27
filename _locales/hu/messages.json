@@ -485,7 +485,7 @@
     "message": "Megjelenítés szürkítve"
   },
   "manageFaviconsHelp": {
-    "message": "A Stylus külső szolgáltatást használ (https://www.google.com/s2/favicons)"
+    "message": "A Stylus külső szolgáltatást használ (https://icons.duckduckgo.com)"
   },
   "manageFilters": {
     "message": "Szűrők"
@@ -1206,9 +1206,6 @@
   },
   "usercssReplaceTemplateConfirmation": {
     "message": "Le legyen cserélve az alapértelmezett sablon az új Usercss stílusokhoz a jelenlegi kóddal?"
-  },
-  "usercssReplaceTemplateName": {
-    "message": "Az üres @name lecseréli az alapértelmezett sablont"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "Írj kódot ide…"

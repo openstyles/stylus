@@ -10,7 +10,6 @@
 
 const ENTRY_ID_PREFIX_RAW = 'style-';
 const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps'];
-const GET_FAVICON_URL = 'https://www.google.com/s2/favicons?domain=';
 const OWN_ICON = chrome.runtime.getManifest().icons['16'];
 const AGES = [
   [24, 'h', t('dateAbbrHour', '\x01')],
@@ -203,7 +202,7 @@ function getFaviconSrc(container = installed) {
     if (!targetValue) continue;
     let favicon = '';
     if (type === 'domains') {
-      favicon = GET_FAVICON_URL + targetValue;
+      favicon = URLS.favicon(targetValue);
     } else if (targetValue.includes('chrome-extension:') || targetValue.includes('moz-extension:')) {
       favicon = OWN_ICON;
     } else if (type === 'regexps') {
@@ -211,10 +210,10 @@ function getFaviconSrc(container = installed) {
         .replace(regexpRemoveNegativeLookAhead, '')
         .replace(regexpReplaceExtraCharacters, '')
         .match(regexpMatchRegExp);
-      favicon = favicon ? GET_FAVICON_URL + favicon.shift() : '';
+      favicon = favicon ? URLS.favicon(favicon.shift()) : '';
     } else {
       favicon = targetValue.includes('://') && targetValue.match(regexpMatchDomain);
-      favicon = favicon ? GET_FAVICON_URL + favicon[1] : '';
+      favicon = favicon ? URLS.favicon(favicon[1]) : '';
     }
     if (favicon) {
       const img = target.children[0];

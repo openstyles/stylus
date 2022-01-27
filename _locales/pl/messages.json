@@ -580,7 +580,7 @@
     "message": "Wyszarzone"
   },
   "manageFaviconsHelp": {
-    "message": "Stylus korzysta z usługi zewnętrznej https://www.google.com/s2/favicons"
+    "message": "Stylus korzysta z usługi zewnętrznej https://icons.duckduckgo.com"
   },
   "manageFilters": {
     "message": "Filtry"
@@ -1467,9 +1467,6 @@
   },
   "usercssReplaceTemplateConfirmation": {
     "message": "Zastąpić domyślny szablon dla nowych stylów Usercss aktualnym kodem?"
-  },
-  "usercssReplaceTemplateName": {
-    "message": "Puste @name zastępuje szablon domyślny"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "Wstaw kod tutaj..."

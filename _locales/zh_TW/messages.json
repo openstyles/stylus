@@ -580,7 +580,7 @@
     "message": "灰階淡出"
   },
   "manageFaviconsHelp": {
-    "message": "Stylus 使用外部服務 https://www.google.com/s2/favicons"
+    "message": "Stylus 使用外部服務 https://icons.duckduckgo.com"
   },
   "manageFilters": {
     "message": "過濾器"
@@ -1464,9 +1464,6 @@
   },
   "usercssReplaceTemplateConfirmation": {
     "message": "為新的 Usercss 樣式取代預設的範本為目前的程式碼？"
-  },
-  "usercssReplaceTemplateName": {
-    "message": "清空 @name 取代目前範本"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "在此插入程式碼……"

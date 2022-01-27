@@ -410,7 +410,7 @@
     "message": "Hașurat"
   },
   "manageFaviconsHelp": {
-    "message": "Stylus folosește un serviciu extern https://www.google.com/s2/favicons"
+    "message": "Stylus folosește un serviciu extern https://icons.duckduckgo.com"
   },
   "manageFilters": {
     "message": "Filtre"
@@ -838,9 +838,6 @@
   },
   "usercssReplaceTemplateConfirmation": {
     "message": "Înlocuiți tema de bază a formatului Usercss cu acest cod?"
-  },
-  "usercssReplaceTemplateName": {
-    "message": "@name este gol și înlocuiețte valoarea de bază"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "Introduce cod aici..."

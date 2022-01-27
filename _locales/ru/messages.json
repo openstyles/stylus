@@ -583,7 +583,7 @@
     "message": "Обесцвечивать"
   },
   "manageFaviconsHelp": {
-    "message": "Используется сторонний сервис https://www.google.com/s2/favicons"
+    "message": "Используется сторонний сервис https://icons.duckduckgo.com"
   },
   "manageFilters": {
     "message": "Фильтры"
@@ -1470,9 +1470,6 @@
   },
   "usercssReplaceTemplateConfirmation": {
     "message": "Заменить шаблон по умолчанию для нового стиля в формате Usercss текущим кодом?"
-  },
-  "usercssReplaceTemplateName": {
-    "message": "Пустой @name заменяет шаблон по умолчанию"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "Место для CSS кода..."
