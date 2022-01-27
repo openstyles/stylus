@@ -14,7 +14,7 @@
   CHROME
   CHROME_POPUP_BORDER_BUG
   FIREFOX
-  OPERA
+  UA
   URLS
   capitalize
   clamp
@@ -34,7 +34,7 @@ if (CHROME_POPUP_BORDER_BUG) {
 }
 
 // collapse #advanced block in Chrome pre-66 (classic chrome://extensions UI)
-if (!FIREFOX && !OPERA && CHROME < 66) {
+if (!FIREFOX && !UA.opera && CHROME < 66) {
   const block = $('#advanced');
   $('h1', block).onclick = event => {
     event.preventDefault();

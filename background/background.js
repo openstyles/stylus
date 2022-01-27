@@ -10,6 +10,7 @@
 /* global uswApi */
 /* global
   FIREFOX
+  UA
   URLS
   activateTab
   download
@@ -177,6 +178,10 @@ if (chrome.commands) {
 }
 
 chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
+  if (reason === 'install') {
+    if (UA.mobile) prefs.set('manage.newUI', false);
+    if (UA.windows) prefs.set('editor.keyMap', 'sublime');
+  }
   if (reason === 'update') {
     const [a, b, c] = (previousVersion || '').split('.');
     if (a <= 1 && b <= 5 && c <= 13) { // 1.5.13

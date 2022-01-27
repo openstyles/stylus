@@ -1,5 +1,5 @@
 /* global API msg */// msg.js
-/* global CHROME VIVALDI debounce */// toolbox.js
+/* global CHROME UA debounce */// toolbox.js
 /* global Events handleBulkChange handleVisibilityChange */// events.js
 /* global fitSelectBoxesIn switchUI showStyles */// render.js
 /* global prefs */
@@ -78,7 +78,7 @@ newUI.renderClass();
     ].map(id => `--${id}:"${CSS.escape(t(id))}";`).join('')
     }}`);
 
-  if (!VIVALDI) {
+  if (!UA.vivaldi) {
     waitForSheet().then(() => {
       fitSelectBoxesIn($('#filters'));
     });

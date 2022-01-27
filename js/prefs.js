@@ -56,7 +56,7 @@
     'manage.backup.expanded': true,
     'manage.filters.expanded': true,
     // the new compact layout doesn't look good on Android yet
-    'manage.newUI': !navigator.appVersion.includes('Android'),
+    'manage.newUI': true,
     'manage.newUI.favicons': false, // show favicons for the sites in applies-to
     'manage.newUI.faviconsGray': true, // gray out favicons
     'manage.newUI.targets': 3,      // max number of applies-to targets visible: 0 = none
@@ -71,7 +71,7 @@
     'editor.smartIndent': true,     // 'smart' indent
     'editor.indentWithTabs': false, // smart indent with tabs
     'editor.tabSize': 4,            // tab width, in spaces
-    'editor.keyMap': navigator.appVersion.indexOf('Windows') > 0 ? 'sublime' : 'default',
+    'editor.keyMap': 'default',
     'editor.theme': 'default',      // CSS theme
     // CSS beautifier
     'editor.beautify': {

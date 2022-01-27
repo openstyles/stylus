@@ -1,4 +1,4 @@
-/* global FIREFOX */// toolbox.js
+/* global FIREFOX UA */// toolbox.js
 /* global prefs */
 'use strict';
 
@@ -468,9 +468,7 @@ const dom = {};
     '/js/dom-on-load',
   ];
   const elHtml = document.documentElement;
-  if (!/^Win\d+/.test(navigator.platform)) {
-    elHtml.classList.add('non-windows');
-  }
+  if (!UA.windows) elHtml.classList.add('non-windows');
   // set language for a) CSS :lang pseudo and b) hyphenation
   elHtml.setAttribute('lang', chrome.i18n.getUILanguage());
   // set up header width resizer

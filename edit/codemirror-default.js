@@ -1,5 +1,6 @@
 /* global $ */// dom.js
 /* global CodeMirror */
+/* global UA */// toolbox.js
 /* global editor */
 /* global prefs */
 /* global t */// localization.js
@@ -62,7 +63,7 @@
     if (!extras.includes('blockComment')) {
       KM.sublime['Shift-Ctrl-/'] = 'commentSelection';
     }
-    if (navigator.appVersion.includes('Windows')) {
+    if (UA.windows) {
       // 'pcDefault' keymap on Windows should have F3/Shift-F3/Ctrl-R
       if (!extras.includes('findNext')) KM.pcDefault['F3'] = 'findNext';
       if (!extras.includes('findPrev')) KM.pcDefault['Shift-F3'] = 'findPrev';
