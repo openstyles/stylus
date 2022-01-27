@@ -157,22 +157,16 @@ function createSection(originalSection, genId, si) {
   }
 
   async function updateRegexpTester(toggle) {
-    const isLoaded = typeof regexpTester === 'object';
-    if (toggle && !isLoaded) {
-      await require(['/edit/regexp-tester']); /* global regexpTester */
-    }
-    if (toggle != null && isLoaded) {
+    const isLoaded = typeof regexpTester === 'object' ||
+      toggle && await require(['/edit/regexp-tester']); /* global regexpTester */
+    if (toggle != null) {
       regexpTester.toggle(toggle);
     }
     const regexps = appliesTo.filter(a => a.type === 'regexp')
       .map(a => a.value);
-    if (regexps.length) {
-      el.classList.add('has-regexp');
-      if (isLoaded) regexpTester.update(regexps);
-    } else {
-      el.classList.remove('has-regexp');
-      if (isLoaded) regexpTester.toggle(false);
-    }
+    const hasRe = regexps.length > 0;
+    if (hasRe && isLoaded) regexpTester.update(regexps);
+    el.classList.toggle('has-regexp', hasRe);
   }
 
   function updateTocEntry(origin) {
