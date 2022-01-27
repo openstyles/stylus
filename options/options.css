@@ -120,14 +120,6 @@ a:hover .svg-icon,
   border-bottom: none;
 }
 
-.collapsed, .collapsible h1 {
-  cursor: pointer;
-}
-
-.collapsed .items {
-  display: none;
-}
-
 h1 {
   min-width: 30%;
   width: 30%;
@@ -273,84 +265,8 @@ input[type="color"] {
   display: none;
 }
 
-#advanced.collapsible.collapsed {
-  height: 30px;
-  padding: 0;
-  margin: 0;
-  justify-content: center;
-}
-
 html:not(.firefox):not(.opera) #updates {
   margin-bottom: 0;
-}
-
-#advanced.collapsible:not(.collapsed) {
-  margin-bottom: 0;
-}
-
-#advanced.collapsible:not(.collapsed) .collapsible-resizer,
-#advanced:not(.collapsible) .collapsible-resizer {
-  padding-right: 8px;
-  box-sizing: border-box;
-  min-width: 30%;
-  width: 30%;
-}
-
-#advanced.collapsible h1 {
-  width: unset;
-  padding: 0;
-  color: #333;
-  transition: color .5s;
-  display: inline-flex;
-  align-items: center;
-}
-
-#advanced:not(.collapsible) .collapsible-resizer h1 {
-  width: unset;
-  padding: 0;
-  display: inline-flex;
-}
-
-#advanced.collapsible:not(.collapsed) h1:hover {
-  color: #666;
-}
-
-#advanced.collapsible.collapsed h1 {
-  padding: 0;
-  color: #666;
-}
-
-#advanced.collapsible.collapsed:hover h1 {
-  color: #333;
-}
-
-.collapsible-resizer .svg-icon {
-  fill: #333;
-  transition: fill .5s;
-  height: 16px;
-  width: 16px;
-}
-
-#advanced.collapsible.collapsed .collapsible-resizer .svg-icon,
-#advanced.collapsible:not(.collapsed) .collapsible-resizer h1:hover .svg-icon {
-  fill: #666;
-}
-
-#advanced.collapsible.collapsed:hover .collapsible-resizer .svg-icon {
-  fill: #333;
-}
-
-#advanced.collapsible h1 .svg-icon {
-  margin-left: 2px;
-}
-
-#advanced.collapsible.collapsed .is-expanded,
-#advanced:not(.collapsible) .collapsible-resizer .svg-icon {
-  display: none;
-}
-
-#advanced.collapsible:not(.collapsed) .is-collapsed {
-  display: none;
 }
 
 .svg-inline-wrapper .svg-icon {
