@@ -470,7 +470,7 @@
     "message": "Zešednutí"
   },
   "manageFaviconsHelp": {
-    "message": "Stylus používá externí službu https://www.google.com/s2/favicons"
+    "message": "Stylus používá externí službu https://icons.duckduckgo.com"
   },
   "manageFilters": {
     "message": "Filtry"
@@ -970,9 +970,6 @@
   },
   "usercssReplaceTemplateConfirmation": {
     "message": "Nahradit výchozí šablonu pro nové Usercss styly aktuálním kódem?"
-  },
-  "usercssReplaceTemplateName": {
-    "message": "Prázdné @name nahrazuje výchozí šablonu"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "Sem vložte kód…"

@@ -533,7 +533,7 @@
     "message": "Ausgegraut"
   },
   "manageFaviconsHelp": {
-    "message": "Stylus nutzt hierzu den externen Dienst https://www.google.com/s2/favicons"
+    "message": "Stylus nutzt hierzu den externen Dienst https://icons.duckduckgo.com"
   },
   "manageFilters": {
     "message": "Filter"
@@ -1393,9 +1393,6 @@
   },
   "usercssReplaceTemplateConfirmation": {
     "message": "Ersetze das vorgegebene Template für neue UserCSS styles mit dem vorliegenden Code?"
-  },
-  "usercssReplaceTemplateName": {
-    "message": "Ein leeres @name ersetzt das vorgegebene Template"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "Quelltext hier eingeben..."

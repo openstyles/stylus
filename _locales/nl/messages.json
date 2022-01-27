@@ -555,7 +555,7 @@
     "message": "Niet beschikbaar"
   },
   "manageFaviconsHelp": {
-    "message": "Stylus gebruikt een externe dienst: https://www.google.com/s2/favicons"
+    "message": "Stylus gebruikt een externe dienst: https://icons.duckduckgo.com"
   },
   "manageHeading": {
     "message": "Geïnstalleerde stijlen"
@@ -1430,9 +1430,6 @@
   },
   "usercssReplaceTemplateConfirmation": {
     "message": "Wilt u de standaardsjabloon voor nieuwe Usercss-stijlen vervangen door de huidige code?"
-  },
-  "usercssReplaceTemplateName": {
-    "message": "Lege @name vervangt de standaardsjabloon"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "Voer hier code in..."

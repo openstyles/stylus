@@ -479,7 +479,7 @@
     "message": "Nedtonade"
   },
   "manageFaviconsHelp": {
-    "message": "Stylus använder en extern tjänst https://www.google.com/s2/favicons"
+    "message": "Stylus använder en extern tjänst https://icons.duckduckgo.com"
   },
   "manageFilters": {
     "message": "Filter"
@@ -1190,9 +1190,6 @@
   },
   "usercssReplaceTemplateConfirmation": {
     "message": "Ersätt standardmallen för nya Usercss-stilar med den aktuella koden?"
-  },
-  "usercssReplaceTemplateName": {
-    "message": "Tom @name ersätter standardmallen"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "Lägg in kod här..."

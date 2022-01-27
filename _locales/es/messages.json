@@ -523,7 +523,7 @@
     "message": "Atenuado"
   },
   "manageFaviconsHelp": {
-    "message": "Stylus usa un servicio externo https://www.google.com/s2/favicons"
+    "message": "Stylus usa un servicio externo https://icons.duckduckgo.com"
   },
   "manageFilters": {
     "message": "Filtros"
@@ -1354,9 +1354,6 @@
   },
   "usercssReplaceTemplateConfirmation": {
     "message": "¿Reemplazar con el código actual la plantilla predeterminada para nuevos estilos UserCSS?"
-  },
-  "usercssReplaceTemplateName": {
-    "message": "@name vacío reemplaza la plantilla predeterminada"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "Inserte el código aquí..."

@@ -530,7 +530,7 @@
     "message": "회색으로 표시"
   },
   "manageFaviconsHelp": {
-    "message": "Stylus는 https://www.google.com/s2/favicons 외부 서비스를 이용합니다"
+    "message": "Stylus는 https://icons.duckduckgo.com 외부 서비스를 이용합니다"
   },
   "manageFilters": {
     "message": "필터"
@@ -1358,9 +1358,6 @@
   },
   "usercssReplaceTemplateConfirmation": {
     "message": "현재 코드로 새 Usercss 스타일의 기본 템플릿을 대체하시겠습니까?"
-  },
-  "usercssReplaceTemplateName": {
-    "message": "@name을 비우면 기본 템플릿이 대체됩니다."
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "코드를 여기 입력하세요"

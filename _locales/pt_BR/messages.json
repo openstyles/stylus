@@ -805,9 +805,6 @@
   "usercssReplaceTemplateConfirmation": {
     "message": "Substituir o template padrão por novos estilos com UserCSS com o código atual?"
   },
-  "usercssReplaceTemplateName": {
-    "message": "@nome vazio substitui o template padrão"
-  },
   "usercssReplaceTemplateSectionBody": {
     "message": "Insira o código aqui..."
   },

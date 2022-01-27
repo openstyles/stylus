@@ -494,7 +494,7 @@
     "message": "Tee halliks"
   },
   "manageFaviconsHelp": {
-    "message": "Stylus kasutab välist teenust https://www.google.com/s2/favicons"
+    "message": "Stylus kasutab välist teenust https://icons.duckduckgo.com"
   },
   "manageFilters": {
     "message": "Filtrid"
@@ -1111,9 +1111,6 @@
   },
   "usercssReplaceTemplateConfirmation": {
     "message": "Asendad vaikimisi malli uutes kasutajacss stiilides praeguse koodiga?"
-  },
-  "usercssReplaceTemplateName": {
-    "message": "Tühi @name asendab vaikimisi malli"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "Sisesta kood siia..."

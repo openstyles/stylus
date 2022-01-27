@@ -71,6 +71,8 @@ const URLS = {
     'about:newtab',
   ],
 
+  favicon: host => `https://icons.duckduckgo.com/ip3/${host}.ico`,
+
   // Chrome 61.0.3161+ doesn't run content scripts on NTP https://crrev.com/2978953002/
   // TODO: remove when "minimum_chrome_version": "61" or higher
   chromeProtectsNTP: CHROME >= 61,

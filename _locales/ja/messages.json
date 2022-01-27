@@ -545,7 +545,7 @@
     "message": "ファビコンをグレー表示"
   },
   "manageFaviconsHelp": {
-    "message": "Stylusは外部サービスを使用します https://www.google.com/s2/favicons"
+    "message": "Stylusは外部サービスを使用します https://icons.duckduckgo.com"
   },
   "manageFilters": {
     "message": "フィルター"
@@ -1426,9 +1426,6 @@
   },
   "usercssReplaceTemplateConfirmation": {
     "message": "現在のコードで、新しいUsercssスタイルのデフォルト・テンプレートを置き換えますか？"
-  },
-  "usercssReplaceTemplateName": {
-    "message": "@name が指定されていません"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "ここにコードを挿入..."

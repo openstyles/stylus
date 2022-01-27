@@ -5,7 +5,6 @@
 'use strict';
 
 const regexpTester = (() => {
-  const GET_FAVICON_URL = 'https://www.google.com/s2/favicons?domain=';
   const OWN_ICON = chrome.runtime.getManifest().icons['16'];
   const cachedRegexps = new Map();
   let currentRegexps = [];
@@ -93,7 +92,7 @@ const regexpTester = (() => {
         for (const [url, match] of urls.entries()) {
           const faviconUrl = url.startsWith(URLS.ownOrigin)
             ? OWN_ICON
-            : GET_FAVICON_URL + new URL(url).hostname;
+            : URLS.favicon(new URL(url).hostname);
           const icon = $create('img', {src: faviconUrl});
           if (match.text.length === url.length) {
             full.push($create('a', {tabIndex: 0}, [

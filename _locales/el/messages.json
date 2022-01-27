@@ -413,7 +413,7 @@
     "message": "Για αναίρεση μιας κατά λάθος επαναφοράς, πατήστε Ctrl-Z (ή Cmd-Z) στο πλαίσιο κειμένου"
   },
   "manageFaviconsHelp": {
-    "message": "Το Stylus χρησιμοποιεί μία εξωτερική υπηρεσία https://www.google.com/s2/favicons"
+    "message": "Το Stylus χρησιμοποιεί μία εξωτερική υπηρεσία https://icons.duckduckgo.com"
   },
   "manageFilters": {
     "message": "Φίλτρα"
