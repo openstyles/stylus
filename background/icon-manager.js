@@ -2,17 +2,17 @@
 /* global addAPI bgReady */// common.js
 /* global prefs */
 /* global tabMan */
-/* global CHROME FIREFOX VIVALDI debounce ignoreChromeError */// toolbox.js
+/* global CHROME FIREFOX UA debounce ignoreChromeError */// toolbox.js
 'use strict';
 
 /* exported iconMan */
 const iconMan = (() => {
-  const ICON_SIZES = FIREFOX || CHROME >= 55 && !VIVALDI ? [16, 32] : [19, 38];
+  const ICON_SIZES = FIREFOX || CHROME && !UA.vivaldi ? [16, 32] : [19, 38];
   const staleBadges = new Set();
   const imageDataCache = new Map();
   const badgeOvr = {color: '', text: ''};
   // https://github.com/openstyles/stylus/issues/1287 Fenix can't use custom ImageData
-  const FIREFOX_ANDROID = FIREFOX && navigator.userAgent.includes('Android');
+  const FIREFOX_ANDROID = FIREFOX && UA.mobile;
 
   // https://github.com/openstyles/stylus/issues/335
   let hasCanvas = FIREFOX_ANDROID ? false : loadImage(`/images/icon/${ICON_SIZES[0]}.png`)

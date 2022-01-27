@@ -41,11 +41,7 @@
   };
 
   // "Delete" item in context menu for browsers that don't have it
-  if (CHROME &&
-      // looking at the end of UA string
-      /(Vivaldi|Safari)\/[\d.]+$/.test(navigator.userAgent) &&
-      // skip forks with Flash as those are likely to have the menu e.g. CentBrowser
-      !Array.from(navigator.plugins).some(p => p.name === 'Shockwave Flash')) {
+  if (CHROME) {
     prefs.__defaults['editor.contextDelete'] = true;
   }
 

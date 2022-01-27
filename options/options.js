@@ -11,10 +11,8 @@
   setupLivePrefs
 */// dom.js
 /* global
-  CHROME
   CHROME_POPUP_BORDER_BUG
   FIREFOX
-  OPERA
   URLS
   capitalize
   clamp
@@ -27,23 +25,7 @@ setupLivePrefs();
 $$('input[min], input[max]').forEach(enforceInputRange);
 
 if (CHROME_POPUP_BORDER_BUG) {
-  const borderOption = $('.chrome-no-popup-border');
-  if (borderOption) {
-    borderOption.classList.remove('chrome-no-popup-border');
-  }
-}
-
-// collapse #advanced block in Chrome pre-66 (classic chrome://extensions UI)
-if (!FIREFOX && !OPERA && CHROME < 66) {
-  const block = $('#advanced');
-  $('h1', block).onclick = event => {
-    event.preventDefault();
-    block.classList.toggle('collapsed');
-    const isCollapsed = block.classList.contains('collapsed');
-    const visibleToggle = $(isCollapsed ? '.is-collapsed' : '.is-expanded', block);
-    visibleToggle.focus();
-  };
-  block.classList.add('collapsible', 'collapsed');
+  $('.chrome-no-popup-border').classList.remove('chrome-no-popup-border');
 }
 
 if (FIREFOX && 'update' in (chrome.commands || {})) {

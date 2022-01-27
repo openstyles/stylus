@@ -3,6 +3,7 @@
 /* exported
   CHROME_POPUP_BORDER_BUG
   RX_META
+  UA
   capitalize
   clamp
   closeCurrentTab
@@ -24,10 +25,23 @@
   waitForTabUrl
 */
 
-const CHROME = Boolean(chrome.app) && Number(navigator.userAgent.match(/Chrom\w+\/(\d+)|$/)[1]);
-const OPERA = Boolean(chrome.app) && parseFloat(navigator.userAgent.match(/\bOPR\/(\d+\.\d+)|$/)[1]);
-const VIVALDI = Boolean(chrome.app) && navigator.userAgent.includes('Vivaldi');
-let FIREFOX = !chrome.app && parseFloat(navigator.userAgent.match(/\bFirefox\/(\d+\.\d+)|$/)[1]);
+let FIREFOX;
+const [CHROME, UA] = (() => {
+  const uad = navigator.userAgentData;
+  const ua = uad || navigator.userAgent;
+  const brands = uad ? uad.brands.map(_ => `${_.brand}/${_.version}`).join(' ') : ua;
+  const getVer = name => Number(brands.match(new RegExp(name + '\\w*/(\\d+)|$'))[1]) || false;
+  FIREFOX = !chrome.app && getVer('Firefox');
+  return [
+    getVer('Chrom'),
+    {
+      mobile: uad ? uad.mobile : /Android/.test(ua),
+      windows: /Windows/.test(uad ? uad.platform : ua),
+      opera: getVer('(Opera|OPR)'),
+      vivaldi: getVer('Vivaldi'),
+    },
+  ];
+})();
 
 // see PR #781
 const CHROME_POPUP_BORDER_BUG = CHROME >= 62 && CHROME <= 74;
@@ -48,7 +62,7 @@ const URLS = {
   ownOrigin: chrome.runtime.getURL(''),
 
   configureCommands:
-    OPERA ? 'opera://settings/configureCommands'
+    UA.opera ? 'opera://settings/configureCommands'
           : 'chrome://extensions/configureCommands',
 
   installUsercss: chrome.runtime.getURL('install-usercss.html'),
@@ -57,7 +71,7 @@ const URLS = {
   // https://cs.chromium.org/chromium/src/chrome/common/extensions/chrome_extensions_client.cc
   browserWebStore:
     FIREFOX ? 'https://addons.mozilla.org/' :
-    OPERA ? 'https://addons.opera.com/' :
+    UA.opera ? 'https://addons.opera.com/' :
       'https://chrome.google.com/webstore/',
 
   emptyTab: [
@@ -125,11 +139,11 @@ const URLS = {
 
 const RX_META = /\/\*!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i;
 
-if (FIREFOX || OPERA || VIVALDI) {
+if (FIREFOX || UA.opera || UA.vivaldi) {
   document.documentElement.classList.add(
     FIREFOX && 'firefox' ||
-    OPERA && 'opera' ||
-    VIVALDI && 'vivaldi');
+    UA.opera && 'opera' ||
+    UA.vivaldi && 'vivaldi');
 }
 
 // FF57+ supports openerTabId, but not in Android
