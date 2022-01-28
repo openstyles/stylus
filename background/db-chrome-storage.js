@@ -4,6 +4,8 @@
 /* exported createChromeStorageDB */
 function createChromeStorageDB(PREFIX) {
   let INC;
+  const isMain = !PREFIX;
+  if (!PREFIX) PREFIX = 'style-';
 
   return {
 
@@ -19,7 +21,9 @@ function createChromeStorageDB(PREFIX) {
       const all = await chromeLocal.get();
       if (!INC) prepareInc(all);
       return Object.entries(all)
-        .map(([key, val]) => key.startsWith(PREFIX) && Number(key.slice(PREFIX.length)) && val)
+        .map(([key, val]) => key.startsWith(PREFIX) &&
+          (!isMain || Number(key.slice(PREFIX.length))) &&
+          val)
         .filter(Boolean);
     },
 

@@ -1,7 +1,6 @@
 /* global $create messageBoxProxy */// dom.js
 /* global API */// msg.js
 /* global DraggableList */
-/* global prefs */
 /* global t */// localization.js
 'use strict';
 
@@ -10,70 +9,75 @@ async function InjectionOrder(show = true) {
   if (!show) {
     return messageBoxProxy.close();
   }
-  const entries = (await getOrderedStyles()).map(makeEntry);
-  const ol = $create('ol');
-  let maxTranslateY;
-  ol.append(...entries.map(l => l.el));
-  ol.on('d:dragstart', ({detail: d}) => {
-    d.origin.dataTransfer.setDragImage(new Image(), 0, 0);
-    maxTranslateY = ol.scrollHeight + ol.offsetTop - d.dragTarget.offsetHeight - d.dragTarget.offsetTop;
-  });
-  ol.on('d:dragmove', ({detail: d}) => {
-    d.origin.stopPropagation(); // preserves dropEffect
-    d.origin.dataTransfer.dropEffect = 'move';
-    const y = Math.min(d.currentPos.y - d.startPos.y, maxTranslateY);
-    d.dragTarget.style.transform = `translateY(${y}px)`;
-  });
-  ol.on('d:dragend', ({detail: d}) => {
-    const [item] = entries.splice(d.originalIndex, 1);
-    entries.splice(d.spliceIndex, 0, item);
-    ol.insertBefore(d.dragTarget, d.insertBefore);
-    prefs.set('injectionOrder', entries.map(l => l.style._id));
-  });
-  DraggableList(ol, {scrollContainer: ol});
-
+  const SEL_ENTRY = '.injection-order-entry';
+  const groups = await API.styles.getAllOrdered(['_id', 'id', 'name', 'enabled']);
+  const ols = {};
+  const parts = {};
+  const entry = $create('li' + SEL_ENTRY, [
+    parts.name = $create('a', {
+      target: '_blank',
+      draggable: false,
+    }),
+    $create('a.injection-order-toggle', {
+      tabIndex: 0,
+      draggable: false,
+      title: t('styleInjectionImportance'),
+    }),
+  ]);
   await messageBoxProxy.show({
     title: t('styleInjectionOrder'),
-    contents: $create('fragment', [
-      $create('header', t('styleInjectionOrderHint')),
-      ol,
-    ]),
+    contents: $create('fragment', Object.entries(groups).map(makeList)),
     className: 'injection-order center-dialog',
     blockScroll: true,
     buttons: [t('confirmClose')],
   });
 
-  async function getOrderedStyles() {
-    const [styles] = await Promise.all([
-      API.styles.getAll(),
-      prefs.ready,
-    ]);
-    const styleSet = new Set(styles);
-    const uuidIndex = new Map();
-    for (const s of styleSet) {
-      uuidIndex.set(s._id, s);
-    }
-    const orderedStyles = [];
-    for (const uid of prefs.get('injectionOrder')) {
-      const s = uuidIndex.get(uid);
-      if (s) {
-        uuidIndex.delete(uid);
-        orderedStyles.push(s);
-        styleSet.delete(s);
-      }
-    }
-    orderedStyles.push(...styleSet);
-    return orderedStyles;
+  function makeEntry(style) {
+    entry.classList.toggle('enabled', style.enabled);
+    parts.name.href = '/edit.html?id=' + style.id;
+    parts.name.textContent = style.name;
+    return Object.assign(entry.cloneNode(true), {
+      styleNameLowerCase: style.name.toLocaleLowerCase(),
+    });
   }
 
-  function makeEntry(style) {
-    return {
-      style,
-      el: $create('a', {
-        className: style.enabled ? 'enabled' : '',
-        href: '/edit.html?id=' + style.id,
-        target: '_blank',
-      }, style.name),
-    };
+  function makeList([type, styles]) {
+    const ids = groups[type] = styles.map(s => s._id);
+    const ol = ols[type] = $create('ol.scroller');
+    let maxTranslateY;
+    ol.append(...styles.map(makeEntry));
+    ol.on('d:dragstart', ({detail: d}) => {
+      d.origin.dataTransfer.setDragImage(new Image(), 0, 0);
+      maxTranslateY =
+        ol.scrollHeight + ol.offsetTop - d.dragTarget.offsetHeight - d.dragTarget.offsetTop;
+    });
+    ol.on('d:dragmove', ({detail: d}) => {
+      d.origin.stopPropagation(); // preserves dropEffect
+      d.origin.dataTransfer.dropEffect = 'move';
+      const y = Math.min(d.currentPos.y - d.startPos.y, maxTranslateY);
+      d.dragTarget.style.transform = `translateY(${y}px)`;
+    });
+    ol.on('d:dragend', ({detail: d}) => {
+      const [item] = ids.splice(d.originalIndex, 1);
+      ids.splice(d.spliceIndex, 0, item);
+      ol.insertBefore(d.dragTarget, d.insertBefore);
+      API.styles.setOrder(groups);
+    });
+    ol.on('click', e => {
+      if (e.target.closest('.injection-order-toggle')) {
+        const el = e.target.closest(SEL_ENTRY);
+        const i = [].indexOf.call(el.parentNode.children, el);
+        const [item] = ids.splice(i, 1);
+        const type2 = type === 'main' ? 'prio' : 'main';
+        groups[type2].push(item);
+        ols[type2].appendChild(el);
+        API.styles.setOrder(groups);
+      }
+    });
+    DraggableList(ol, {scrollContainer: ol});
+    return $create('section', {dataset: {[type]: ''}}, [
+      $create('header', t(`styleInjectionOrderHint${type === 'main' ? '' : '_' + type}`)),
+      ol,
+    ]);
   }
 }

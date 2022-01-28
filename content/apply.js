@@ -13,19 +13,16 @@
   let hasStyles = false;
   let isDisabled = false;
   let isTab = !chrome.tabs || location.pathname !== '/popup.html';
-  let order = {};
+  const order = {main: [], prio: []};
+  const calcOrder = ({id}) =>
+    (order.prio[id] || 0) * 1e6 ||
+    order.main[id] ||
+    id + .5e6; // no order = at the end of `main`
   const isFrame = window !== parent;
   const isFrameAboutBlank = isFrame && location.href === 'about:blank';
   const isUnstylable = !chrome.app && document instanceof XMLDocument;
   const styleInjector = StyleInjector({
-    compare: (a, b) => {
-      const ia = order[a.id];
-      const ib = order[b.id];
-      if (ia === ib) return 0;
-      if (ia == null) return 1;
-      if (ib == null) return -1;
-      return ia - ib;
-    },
+    compare: (a, b) => calcOrder(a) - calcOrder(b),
     onUpdate: onInjectorUpdate,
   });
   // dynamic iframes don't have a URL yet so we'll use their parent's URL (hash isn't inherited)
@@ -110,7 +107,7 @@
         await API.styles.getSectionsByUrl(matchUrl, null, true);
       if (styles.cfg) {
         isDisabled = styles.cfg.disableAll;
-        order = styles.cfg.order || {};
+        Object.assign(order, styles.cfg.order);
         delete styles.cfg;
       }
       hasStyles = !isDisabled;
@@ -179,7 +176,7 @@
         break;
 
       case 'styleSort':
-        order = request.order;
+        Object.assign(order, request.order);
         styleInjector.sort();
         break;
 

@@ -1,8 +1,10 @@
 /* global API msg */// msg.js
+/* global bgReady uuidIndex */// common.js
 /* global chromeLocal chromeSync */// storage-util.js
-/* global compareRevision */// common.js
+/* global db */
 /* global iconMan */
 /* global prefs */
+/* global styleUtil */
 /* global tokenMan */
 'use strict';
 
@@ -28,11 +30,12 @@ const syncMan = (() => {
     errorMessage: null,
     login: false,
   };
+  const compareRevision = (rev1, rev2) => rev1 - rev2;
   let lastError = null;
   let ctrl;
   let currentDrive;
   /** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
-  let ready = prefs.ready.then(() => {
+  let ready = bgReady.styles.then(() => {
     ready = true;
     prefs.subscribe('sync.enabled',
       (_, val) => val === 'none'
@@ -79,11 +82,11 @@ const syncMan = (() => {
       }
     },
 
-    async put(...args) {
+    async putDoc({_id, _rev}) {
       if (ready.then) await ready;
       if (!currentDrive) return;
       schedule();
-      return ctrl.put(...args);
+      return ctrl.put(_id, _rev);
     },
 
     async setDriveOptions(driveName, options) {
@@ -178,17 +181,33 @@ const syncMan = (() => {
   async function initController() {
     await require(['/vendor/db-to-cloud/db-to-cloud.min']); /* global dbToCloud */
     ctrl = dbToCloud.dbToCloud({
-      onGet(id) {
-        return API.styles.getByUUID(id);
+      onGet: styleUtil.uuid2style,
+      async onPut(doc) {
+        const id = uuidIndex.get(doc._id);
+        const oldCust = uuidIndex.custom[id];
+        const oldDoc = oldCust || styleUtil.id2style(id);
+        const diff = oldDoc ? compareRevision(oldDoc._rev, doc._rev) : -1;
+        if (!diff) return;
+        if (diff > 0) {
+          syncMan.putDoc(oldDoc);
+        } else if (oldCust) {
+          uuidIndex.custom[id] = doc;
+        } else {
+          delete doc.id;
+          if (id) doc.id = id;
+          doc.id = await db.styles.put(doc);
+          await styleUtil.handleSave(doc, {reason: 'sync'});
+        }
       },
-      onPut(doc) {
-        return API.styles.putByUUID(doc);
-      },
-      onDelete(id, rev) {
-        return API.styles.deleteByUUID(id, rev);
+      onDelete(_id, rev) {
+        const id = uuidIndex.get(_id);
+        const oldDoc = styleUtil.id2style(id);
+        return oldDoc &&
+          compareRevision(oldDoc._rev, rev) <= 0 &&
+          API.styles.delete(id, 'sync');
       },
       async onFirstSync() {
-        for (const i of await API.styles.getAll()) {
+        for (const i of Object.values(uuidIndex.custom).concat(await API.styles.getAll())) {
           ctrl.put(i._id, i._rev);
         }
       },

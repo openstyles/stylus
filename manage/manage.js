@@ -93,11 +93,11 @@ newUI.renderClass();
 
   showStyles(styles, ids);
 
-  require([
+  window.on('load', () => require([
     '/manage/import-export',
     '/manage/incremental-search',
     '/manage/updater-ui',
-  ]);
+  ]), {once: true});
 })();
 
 msg.onExtension(onRuntimeMessage);

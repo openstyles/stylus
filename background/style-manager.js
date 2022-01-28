@@ -1,6 +1,6 @@
 /* global API msg */// msg.js
-/* global CHROME URLS isEmptyObj stringAsRegExp tryRegExp tryURL */// toolbox.js
-/* global bgReady compareRevision */// common.js
+/* global CHROME URLS deepEqual isEmptyObj mapObj stringAsRegExp tryRegExp tryURL */// toolbox.js
+/* global bgReady createCache uuidIndex */// common.js
 /* global calcStyleDigest styleCodeEmpty styleSectionGlobal */// sections-util.js
 /* global db */
 /* global prefs */
@@ -18,18 +18,26 @@ The live preview feature relies on `runtime.connect` and `port.onDisconnect`
 to cleanup the temporary code. See livePreview in /edit.
 */
 
+const styleUtil = {};
+
+/* exported styleMan */
 const styleMan = (() => {
+
+  Object.assign(styleUtil, {
+    id2style,
+    handleSave,
+    uuid2style,
+  });
 
   //#region Declarations
 
   /** @typedef {{
-    style: StyleObj
-    preview?: StyleObj
-    appliesTo: Set<string>
+    style: StyleObj,
+    preview?: StyleObj,
+    appliesTo: Set<string>,
   }} StyleMapData */
   /** @type {Map<number,StyleMapData>} */
   const dataMap = new Map();
-  const uuidIndex = new Map();
   /** @typedef {Object<styleId,{id: number, code: string[]}>} StyleSectionsToApply */
   /** @type {Map<string,{maybeMatch: Set<styleId>, sections: StyleSectionsToApply}>} */
   const cachedStyleForUrl = createCache({
@@ -57,9 +65,17 @@ const styleMan = (() => {
     _rev: () => Date.now(),
   };
   const DELETE_IF_NULL = ['id', 'customName', 'md5Url', 'originalMd5'];
+  const INJ_ORDER = 'injectionOrder';
+  const order = {main: {}, prio: {}};
+  const orderWrap = {
+    id: INJ_ORDER,
+    value: mapObj(order, () => []),
+    _id: `${chrome.runtime.id}-${INJ_ORDER}`,
+    _rev: 0,
+  };
+  uuidIndex.addCustomId(orderWrap, {set: setOrder});
   /** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
   let ready = init();
-  let order = {};
 
   chrome.runtime.onConnect.addListener(port => {
     if (port.name === 'livePreview') {
@@ -77,17 +93,6 @@ const styleMan = (() => {
     }
   });
 
-  prefs.subscribe(['injectionOrder'], (key, value) => {
-    order = {};
-    value.forEach((uid, i) => {
-      const id = uuidIndex.get(uid);
-      if (id) {
-        order[id] = i;
-      }
-    });
-    msg.broadcast({method: 'styleSort', order});
-  });
-
   //#endregion
   //#region Exports
 
@@ -96,18 +101,23 @@ const styleMan = (() => {
     /** @returns {Promise<number>} style id */
     async delete(id, reason) {
       if (ready.then) await ready;
-      const data = id2data(id);
-      const {style, appliesTo} = data;
-      await db.exec('delete', id);
-      if (reason !== 'sync') {
-        API.sync.delete(style._id, Date.now());
-      }
+      const {style, appliesTo} = dataMap.get(id);
+      const sync = reason !== 'sync';
+      const uuid = style._id;
+      db.styles.delete(id);
+      if (sync) API.sync.delete(uuid, Date.now());
       for (const url of appliesTo) {
         const cache = cachedStyleForUrl.get(url);
         if (cache) delete cache.sections[id];
       }
       dataMap.delete(id);
-      uuidIndex.delete(style._id);
+      uuidIndex.delete(uuid);
+      mapObj(orderWrap.value, (group, type) => {
+        delete order[type][id];
+        const i = group.indexOf(uuid);
+        if (i >= 0) group.splice(i, 1);
+      });
+      setOrder(orderWrap, {calc: false});
       if (style._usw && style._usw.token) {
         // Must be called after the style is deleted from dataMap
         API.usw.revoke(id);
@@ -118,17 +128,6 @@ const styleMan = (() => {
         style: {id},
       });
       return id;
-    },
-
-    /** @returns {Promise<number>} style id */
-    async deleteByUUID(_id, rev) {
-      if (ready.then) await ready;
-      const id = uuidIndex.get(_id);
-      const oldDoc = id && id2style(id);
-      if (oldDoc && compareRevision(oldDoc._rev, rev) <= 0) {
-        // FIXME: does it make sense to set reason to 'sync' in deleteByUUID?
-        return styleMan.delete(id, 'sync');
-      }
     },
 
     /** @returns {Promise<StyleObj>} */
@@ -154,14 +153,26 @@ const styleMan = (() => {
     /** @returns {Promise<StyleObj[]>} */
     async getAll() {
       if (ready.then) await ready;
-      return Array.from(dataMap.values(), data2style);
+      return getAllAsArray();
     },
 
-    /** @returns {Promise<StyleObj>} */
-    async getByUUID(uuid) {
+    /** @returns {Promise<Object<string,StyleObj[]>>}>} */
+    async getAllOrdered(keys) {
       if (ready.then) await ready;
-      return id2style(uuidIndex.get(uuid));
+      const res = mapObj(orderWrap.value, group => group.map(uuid2style));
+      if (res.main.length + res.prio.length < dataMap.size) {
+        for (const {style} of dataMap.values()) {
+          if (!(style.id in order.main) && !(style.id in order.prio)) {
+            res.main.push(style);
+          }
+        }
+      }
+      return keys
+        ? mapObj(res, group => group.map(style => mapObj(style, null, keys)))
+        : res;
     },
+
+    getOrder: () => orderWrap.value,
 
     /** @returns {Promise<StyleSectionsToApply>} */
     async getSectionsByUrl(url, id, isInitialApply) {
@@ -210,7 +221,7 @@ const styleMan = (() => {
       const result = [];
       const styles = id
         ? [id2style(id)].filter(Boolean)
-        : Array.from(dataMap.values(), data2style);
+        : getAllAsArray();
       const query = createMatchQuery(url);
       for (const style of styles) {
         let excluded = false;
@@ -262,11 +273,10 @@ const styleMan = (() => {
           await usercssMan.buildCode(style);
         }
       }
-      const events = await db.exec('putMany', items);
-      return Promise.all(items.map((item, i) => {
-        afterSave(item, events[i]);
-        return handleSave(item, {reason: 'import'});
-      }));
+      const events = await db.styles.putMany(items);
+      return Promise.all(items.map((item, i) =>
+        handleSave(item, {reason: 'import'}, events[i])
+      ));
     },
 
     /** @returns {Promise<StyleObj>} */
@@ -279,32 +289,12 @@ const styleMan = (() => {
       return saveStyle(style, {reason});
     },
 
-    /** @returns {Promise<?StyleObj>} */
-    async putByUUID(doc) {
-      if (ready.then) await ready;
-      const id = uuidIndex.get(doc._id);
-      if (id) {
-        doc.id = id;
-      } else {
-        delete doc.id;
-      }
-      const oldDoc = id && id2style(id);
-      let diff = -1;
-      if (oldDoc) {
-        diff = compareRevision(oldDoc._rev, doc._rev);
-        if (diff > 0) {
-          API.sync.put(oldDoc._id, oldDoc._rev);
-          return;
-        }
-      }
-      if (diff < 0) {
-        doc.id = await db.exec('put', doc);
-        uuidIndex.set(doc._id, doc.id);
-        return handleSave(doc, {reason: 'sync'});
-      }
-    },
-
     save: saveStyle,
+
+    async setOrder(value) {
+      if (ready.then) await ready;
+      return setOrder({value}, {broadcast: true, sync: true});
+    },
 
     /** @returns {Promise<number>} style id */
     async toggle(id, enabled) {
@@ -343,12 +333,12 @@ const styleMan = (() => {
 
   /** @returns {?StyleObj} */
   function id2style(id) {
-    return (dataMap.get(id) || {}).style;
+    return (dataMap.get(Number(id)) || {}).style;
   }
 
   /** @returns {?StyleObj} */
-  function data2style(data) {
-    return data && data.style;
+  function uuid2style(uuid) {
+    return id2style(uuidIndex.get(uuid));
   }
 
   /** @returns {StyleObj} */
@@ -369,6 +359,7 @@ const styleMan = (() => {
       style,
       appliesTo: new Set(),
     });
+    uuidIndex.set(style._id, style.id);
   }
 
   /** @returns {StyleObj} */
@@ -472,28 +463,23 @@ const styleMan = (() => {
     fixKnownProblems(style);
   }
 
-  function afterSave(style, newId) {
-    if (style.id == null) {
-      style.id = newId;
-    }
-    uuidIndex.set(style._id, style.id);
-    API.sync.put(style._id, style._rev);
-  }
-
   async function saveStyle(style, handlingOptions) {
     beforeSave(style);
-    const newId = await db.exec('put', style);
-    afterSave(style, newId);
-    return handleSave(style, handlingOptions);
+    const newId = await db.styles.put(style);
+    return handleSave(style, handlingOptions, newId);
   }
 
-  function handleSave(style, {reason, broadcast = true}) {
-    const data = id2data(style.id);
+  function handleSave(style, {reason, broadcast = true}, id = style.id) {
+    if (style.id == null) style.id = id;
+    const data = id2data(id);
     const method = data ? 'styleUpdated' : 'styleAdded';
     if (!data) {
       storeInMap(style);
     } else {
       data.style = style;
+    }
+    if (reason !== 'sync') {
+      API.sync.putDoc(style);
     }
     if (broadcast) broadcastStyleUpdated(style, reason, method);
     return style;
@@ -519,15 +505,14 @@ const styleMan = (() => {
   }
 
   async function init() {
-    const styles = await db.exec('getAll') || [];
+    const orderPromise = API.prefsDb.get(INJ_ORDER);
+    const styles = await db.styles.getAll() || [];
     const updated = await Promise.all(styles.map(fixKnownProblems).filter(Boolean));
     if (updated.length) {
-      await db.exec('putMany', updated);
+      await db.styles.putMany(updated);
     }
-    for (const style of styles) {
-      storeInMap(style);
-      uuidIndex.set(style._id, style.id);
-    }
+    setOrder(await orderPromise, {store: false});
+    styles.forEach(storeInMap);
     ready = true;
     bgReady._resolveStyles();
   }
@@ -725,71 +710,40 @@ const styleMan = (() => {
     }
   }
 
+  /** @returns {StyleObj[]} */
+  function getAllAsArray() {
+    return Array.from(dataMap.values(), v => v.style);
+  }
+
   /** uuidv4 helper: converts to a 4-digit hex string and adds "-" at required positions */
   function hex4dashed(num, i) {
     return (num + 0x10000).toString(16).slice(-4) + (i >= 1 && i <= 4 ? '-' : '');
   }
 
+  async function setOrder(data, {broadcast, calc = true, store = true, sync} = {}) {
+    if (!data || !data.value || deepEqual(data.value, orderWrap.value)) {
+      return;
+    }
+    Object.assign(orderWrap, data, sync && {_rev: Date.now()});
+    if (calc) {
+      for (const [type, group] of Object.entries(data.value)) {
+        const dst = order[type] = {};
+        group.forEach((uuid, i) => {
+          const id = uuidIndex.get(uuid);
+          if (id) dst[id] = i;
+        });
+      }
+    }
+    if (broadcast) {
+      msg.broadcast({method: 'styleSort', order});
+    }
+    if (store) {
+      await API.prefsDb.put(orderWrap);
+    }
+    if (sync) {
+      API.sync.putDoc(orderWrap);
+    }
+  }
+
   //#endregion
 })();
-
-/** Creates a FIFO limit-size map. */
-function createCache({size = 1000, onDeleted} = {}) {
-  const map = new Map();
-  const buffer = Array(size);
-  let index = 0;
-  let lastIndex = 0;
-  return {
-    get(id) {
-      const item = map.get(id);
-      return item && item.data;
-    },
-    set(id, data) {
-      if (map.size === size) {
-        // full
-        map.delete(buffer[lastIndex].id);
-        if (onDeleted) {
-          onDeleted(buffer[lastIndex].id, buffer[lastIndex].data);
-        }
-        lastIndex = (lastIndex + 1) % size;
-      }
-      const item = {id, data, index};
-      map.set(id, item);
-      buffer[index] = item;
-      index = (index + 1) % size;
-    },
-    delete(id) {
-      const item = map.get(id);
-      if (!item) {
-        return false;
-      }
-      map.delete(item.id);
-      const lastItem = buffer[lastIndex];
-      lastItem.index = item.index;
-      buffer[item.index] = lastItem;
-      lastIndex = (lastIndex + 1) % size;
-      if (onDeleted) {
-        onDeleted(item.id, item.data);
-      }
-      return true;
-    },
-    clear() {
-      map.clear();
-      index = lastIndex = 0;
-    },
-    has: id => map.has(id),
-    *entries() {
-      for (const [id, item] of map) {
-        yield [id, item.data];
-      }
-    },
-    *values() {
-      for (const item of map.values()) {
-        yield item.data;
-      }
-    },
-    get size() {
-      return map.size;
-    },
-  };
-}

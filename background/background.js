@@ -39,11 +39,7 @@ addAPI(/** @namespace API */ {
     },
   }))(),
 
-  /** @type IDBObjectStore */
-  drafts: new Proxy({}, {
-    get: (_, cmd) => (...args) => db.exec.call('drafts', cmd, ...args),
-  }),
-
+  drafts: db.open('drafts'),
   styles: styleMan,
   sync: syncMan,
   updater: updateMan,

@@ -1,5 +1,7 @@
+/* global addAPI */// common.js
 /* global chromeLocal */// storage-util.js
 /* global cloneError */// worker-util.js
+/* global prefs */
 'use strict';
 
 /*
@@ -11,16 +13,29 @@
 
 /* exported db */
 const db = (() => {
-  const DATABASE = 'stylish';
-  const STORE = 'styles';
+  let exec = async (...args) => (
+    exec = await tryUsingIndexedDB().catch(useChromeStorage)
+  )(...args);
+  const DB = 'stylish';
   const FALLBACK = 'dbInChromeStorage';
-  const dbApi = {
-    async exec(...args) {
-      dbApi.exec = await tryUsingIndexedDB().catch(useChromeStorage);
-      return dbApi.exec(...args);
-    },
+  const getStoreName = dbName => dbName === DB ? 'styles' : 'data';
+  const proxies = {};
+  const proxyHandler = {
+    get: ({dbName}, cmd) => (...args) => exec(dbName, cmd, ...args),
   };
-  return dbApi;
+  /** @return {IDBObjectStore | {putMany: function(items:?[]):Promise<?[]>}} */
+  const getProxy = (dbName = DB) => proxies[dbName] || (
+    proxies[dbName] = new Proxy({dbName}, proxyHandler)
+  );
+  addAPI(/** @namespace API */ {
+    /** Storage for big items that may exceed 8kB limit of chrome.storage.sync.
+     * To make an item syncable register it with uuidIndex.addCustomId. */
+    prefsDb: getProxy(prefs.STORAGE_KEY),
+  });
+  return {
+    styles: getProxy(),
+    open: getProxy,
+  };
 
   async function tryUsingIndexedDB() {
     // we use chrome.storage.local fallback if IndexedDB doesn't save data,
@@ -40,9 +55,9 @@ const db = (() => {
 
   async function testDB() {
     const id = `${performance.now()}.${Math.random()}.${Date.now()}`;
-    await dbExecIndexedDB('put', {id});
-    const e = await dbExecIndexedDB('get', id);
-    await dbExecIndexedDB('delete', e.id); // throws if `e` or id is null
+    await dbExecIndexedDB(DB, 'put', {id});
+    const e = await dbExecIndexedDB(DB, 'get', id);
+    await dbExecIndexedDB(DB, 'delete', e.id); // throws if `e` or id is null
   }
 
   async function useChromeStorage(err) {
@@ -53,17 +68,17 @@ const db = (() => {
     }
     await require(['/background/db-chrome-storage']); /* global createChromeStorageDB */
     const BASES = {};
-    return function dbExecChromeStorage(method, ...args) {
-      const prefix = Object(this) instanceof String ? `${this}-` : 'style-';
-      const baseApi = BASES[prefix] || (BASES[prefix] = createChromeStorageDB(prefix));
-      return baseApi[method](...args);
-    };
+    return (dbName, method, ...args) => (
+      BASES[dbName] || (
+        BASES[dbName] = createChromeStorageDB(dbName !== DB && `${dbName}-`)
+      )
+    )[method](...args);
   }
 
-  async function dbExecIndexedDB(method, ...args) {
+  async function dbExecIndexedDB(dbName, method, ...args) {
     const mode = method.startsWith('get') ? 'readonly' : 'readwrite';
-    const dbName = Object(this) instanceof String ? `${this}` : DATABASE;
-    const store = (await open(dbName)).transaction([STORE], mode).objectStore(STORE);
+    const storeName = getStoreName(dbName);
+    const store = (await open(dbName)).transaction([storeName], mode).objectStore(storeName);
     const fn = method === 'putMany' ? putMany : storeRequest;
     return fn(store, method, ...args);
   }
@@ -92,7 +107,8 @@ const db = (() => {
 
   function create(event) {
     if (event.oldVersion === 0) {
-      event.target.result.createObjectStore(STORE, {
+      const idb = event.target.result;
+      idb.createObjectStore(getStoreName(idb.name), {
         keyPath: 'id',
         autoIncrement: true,
       });

@@ -278,6 +278,12 @@ function onDOMready() {
     : new Promise(resolve => document.on('DOMContentLoaded', resolve, {once: true}));
 }
 
+/**
+ * Scrolls `window` or the closest parent with `class="scroller"` if the element is not visible,
+ * centering the element in the view
+ * @param {HTMLElement} element
+ * @param {number} [invalidMarginRatio] - for example, 0.10 will center the element if it's in the top/bottom 10% of the scroller
+ */
 function scrollElementIntoView(element, {invalidMarginRatio = 0} = {}) {
   // align to the top/bottom of the visible area if wasn't visible
   if (!element.parentNode) return;
@@ -286,7 +292,8 @@ function scrollElementIntoView(element, {invalidMarginRatio = 0} = {}) {
   const windowHeight = window.innerHeight;
   if (top < Math.max(parentTop, windowHeight * invalidMarginRatio) ||
       top > Math.min(parentBottom, windowHeight) - height - windowHeight * invalidMarginRatio) {
-    window.scrollBy(0, top - windowHeight / 2 + height);
+    const scroller = element.closest('.scroller');
+    scroller.scrollBy(0, top - (scroller ? scroller.clientHeight : windowHeight) / 2 + height);
   }
 }
 

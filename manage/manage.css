@@ -112,6 +112,19 @@ a:hover {
   left: 2px;
 }
 
+#injection-order-button {
+  --w: 16px;
+  width: var(--w);
+  box-sizing: content-box;
+  display: inline-flex;
+  align-items: center;
+}
+#injection-order-button > svg {
+  position: absolute;
+  width: var(--w);
+  height: var(--w);
+}
+
 #installed {
   position: relative;
   padding-left: var(--header-width);

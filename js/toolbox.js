@@ -14,6 +14,7 @@
   getTab
   ignoreChromeError
   isEmptyObj
+  mapObj
   onTabReady
   openURL
   sessionStore
@@ -289,6 +290,24 @@ function isEmptyObj(obj) {
 }
 
 /**
+ * @param {?Object} obj
+ * @param {function(val:?, key:string, obj:Object):T} [fn]
+ * @param {string[]} [keys]
+ * @returns {?Object<string,T>}
+ * @template T
+ */
+function mapObj(obj, fn, keys) {
+  if (!obj) return obj;
+  const res = {};
+  for (const k of keys || Object.keys(obj)) {
+    if (!keys || k in obj) {
+      res[k] = fn ? fn(obj[k], k, obj) : obj[k];
+    }
+  }
+  return res;
+}
+
+/**
  * js engine can't optimize the entire function if it contains try-catch
  * so we should keep it isolated from normal code in a minimal wrapper
  * 2020 update: probably fixed at least in V8
@@ -349,13 +368,13 @@ Object.assign(debounce, {
   },
 });
 
-function deepMerge(src, dst) {
+function deepMerge(src, dst, mergeArrays) {
   if (!src || typeof src !== 'object') {
     return src;
   }
   if (Array.isArray(src)) {
     // using `Array` that belongs to this `window`; not using Array.from as it's slower
-    if (!dst) dst = Array.prototype.map.call(src, deepCopy);
+    if (!dst || !mergeArrays) dst = Array.prototype.map.call(src, deepCopy);
     else for (const v of src) dst.push(deepMerge(v));
   } else {
     // using an explicit {} that belongs to this `window`
