@@ -43,7 +43,7 @@ async function InjectionOrder(show = true) {
 
   function makeList([type, styles]) {
     const ids = groups[type] = styles.map(s => s._id);
-    const ol = ols[type] = $create('ol');
+    const ol = ols[type] = $create('ol.scroller');
     let maxTranslateY;
     ol.append(...styles.map(makeEntry));
     ol.on('d:dragstart', ({detail: d}) => {
