@@ -5,13 +5,6 @@
  * Common stuff that's loaded first so it's immediately available to all background scripts
  */
 
-/* exported
-  addAPI
-  bgReady
-  createCache
-  uuidIndex
-*/
-
 const bgReady = {};
 bgReady.styles = new Promise(r => (bgReady._resolveStyles = r));
 bgReady.all = new Promise(r => (bgReady._resolveAll = r));
@@ -26,6 +19,7 @@ const uuidIndex = Object.assign(new Map(), {
   },
 });
 
+/* exported addAPI */
 function addAPI(methods) {
   for (const [key, val] of Object.entries(methods)) {
     const old = API[key];
@@ -37,6 +31,7 @@ function addAPI(methods) {
   }
 }
 
+/* exported createCache */
 /** Creates a FIFO limit-size map. */
 function createCache({size = 1000, onDeleted} = {}) {
   const map = new Map();
