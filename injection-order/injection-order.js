@@ -10,7 +10,7 @@ async function InjectionOrder(show = true) {
     return messageBoxProxy.close();
   }
   const SEL_ENTRY = '.injection-order-entry';
-  const groups = await API.styles.getAllOrdered();
+  const groups = await API.styles.getAllOrdered(['_id', 'id', 'name', 'enabled']);
   const ols = {};
   const parts = {};
   const entry = $create('li' + SEL_ENTRY, [
