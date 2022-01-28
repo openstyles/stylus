@@ -3,11 +3,15 @@
 'use strict';
 
 const router = {
-  buffer: [],
+  buffer: (history.state || {}).buffer || [],
   watchers: [],
 
   getSearch(key) {
     return new URLSearchParams(location.search).get(key);
+  },
+
+  push(url, state = history.state) {
+    history.pushState(Object.assign({buffer: router.buffer}, state), null, url);
   },
 
   update(replace) {
@@ -53,7 +57,7 @@ const router = {
     if (!hash) {
       hash = ' ';
     }
-    history.pushState(history.state, null, hash);
+    router.push(hash);
     router.update();
   },
 
@@ -83,7 +87,7 @@ window.on('popstate', () => router.update());
 window.on('hashchange', () => router.update());
 msg.on(e => {
   if (e.method === 'pushState' && e.url !== location.href) {
-    history.pushState(history.state, null, e.url);
+    router.push(e.url);
     router.update();
     return true;
   }
