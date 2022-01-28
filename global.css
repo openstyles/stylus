@@ -256,6 +256,7 @@ summary {
 textarea[data-focused-via-click]:focus,
 input:not([type])[data-focused-via-click]:focus, /* same as "text" */
 input[type="text"][data-focused-via-click]:focus,
+input[type="url"][data-focused-via-click]:focus,
 input[type="search"][data-focused-via-click]:focus,
 input[type="number"][data-focused-via-click]:focus {
   /* Using box-shadow instead of the ugly outline in new Chrome */
