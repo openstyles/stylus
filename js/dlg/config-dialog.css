@@ -67,7 +67,7 @@
 .config-body .onoffswitch {
   width: var(--onoffswitch-width);
   margin: 0;
-  height: 22px;
+  height: var(--input-height);
   box-sizing: border-box;
   vertical-align: middle;
 }
@@ -112,7 +112,7 @@
  }
 
 .config-number span, .config-range span {
-  line-height: 22px;
+  line-height: var(--input-height);
 }
 
 .config-body label:not(.nondefault) .config-reset-icon {

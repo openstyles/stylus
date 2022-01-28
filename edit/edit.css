@@ -191,9 +191,6 @@ label {
 #colorpicker-settings.svg-inline-wrapper {
   margin: -2px 0 0 .1rem;
 }
-.svg-inline-wrapper.applies-to-help {
-  margin: 0 0 0 .25rem;
-}
 .aligned .svg-inline-wrapper {
   margin: -2px 0 0 .3rem;
 }
@@ -456,7 +453,7 @@ input:invalid {
   display: none;
 }
 .section .CodeMirror {
-  margin-bottom: .875rem;
+  margin-bottom: .5em;
   box-sizing: border-box;
 }
 /* deleted section */
@@ -475,19 +472,20 @@ input:invalid {
 .section.removed .CodeMirror {
   display: none;
 }
+.move-section-down:after,
 .move-section-up:after {
   content: "";
   display: block;
-  border-style: solid;
-  border-width: 0 .3em .5em .3em;
-  border-color: transparent transparent currentColor transparent;
+  border: var(--side) solid transparent;
+  --side: .4em;
+}
+.move-section-up:after {
+  border-bottom: calc(var(--side) * 1.3) solid currentColor;
+  margin: -50% 0 0 0;
 }
 .move-section-down:after {
-  content: "";
-  display: block;
-  border-style: solid;
-  border-width: .5em .3em 0 .3em;
-  border-color: currentColor transparent transparent transparent;
+  border-top: calc(var(--side) * 1.3) solid currentColor;
+  margin: 0 0 -60% 0;
 }
 /* code */
 .code {
@@ -579,12 +577,19 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   border-color: #f008;
 }
 .applies-to label {
-  display: flex;
+  font-size: 0;
   padding: 0;
-  height: 22px;
-  align-items: center;
-  margin: 0 .2em 0 0;
-  white-space: nowrap;
+  margin-left: -24px;
+  position: absolute;
+  line-height: var(--input-height);
+}
+.compact-layout .applies-to label {
+  display: none;
+}
+.compact-layout .applies-to[data-all] label {
+  position: static;
+  display: inline;
+  margin: 0 6px 0 -4px;
 }
 .applies-to ul {
   flex: auto;
@@ -597,16 +602,17 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   flex-wrap: wrap;
   list-style-type: none;
   align-items: center;
+  margin-bottom: .5em;
 }
 .applies-to li.applies-to-everything {
   align-items: unset;
-  line-height: 22px;
+  line-height: var(--input-height);
 }
 .applies-to li > input {
   min-height: 1.4rem;
 }
-.applies-to li:not(.applies-to-everything) > * {
-  margin: 0 .2rem .5rem 0;
+.applies-to .select-resizer {
+  margin-right: .5em;
 }
 .applies-to li .add-applies-to:first-child {
   margin-left: 1rem;
@@ -625,8 +631,8 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 .add-applies-to,
 .remove-applies-to {
   font-size: 0;
-  height: 22px;
-  width: 22px;
+  height: var(--input-height);
+  width: var(--input-height);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -812,7 +818,10 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   margin: .25em 0;
 }
 #help-popup .buttons > :nth-child(n + 2) {
-  margin-inline: .5em 0;
+  margin: 0 0 0 .5em;
+}
+.non-windows #help-popup .buttons > :nth-child(n + 2) {
+  margin: 0 .5em 0 0;
 }
 
 /************ lint ************/

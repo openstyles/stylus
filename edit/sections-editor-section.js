@@ -1,4 +1,4 @@
-/* global $ */// dom.js
+/* global $ toggleDataset */// dom.js
 /* global MozDocMapper trimCommentLabel */// util.js
 /* global cmFactory */
 /* global debounce tryRegExp */// toolbox.js
@@ -35,7 +35,8 @@ function createSection(originalSection, genId, si) {
 
   const changeListeners = new Set();
 
-  const appliesToContainer = $('.applies-to-list', el);
+  const appliesToContainer = $('.applies-to', el);
+  const appliesToList = $('.applies-to-list', el);
   const appliesTo = [];
   MozDocMapper.forEachProp(originalSection, (type, value) =>
     insertApplyAfter({type, value}));
@@ -234,7 +235,8 @@ function createSection(originalSection, genId, si) {
   function insertApplyAfter(init, base) {
     const apply = createApply(init);
     appliesTo.splice(base ? appliesTo.indexOf(base) + 1 : appliesTo.length, 0, apply);
-    appliesToContainer.insertBefore(apply.el, base ? base.el.nextSibling : null);
+    appliesToList.insertBefore(apply.el, base ? base.el.nextSibling : null);
+    toggleDataset(appliesToContainer, 'all', init.all);
     dirty.add(apply, apply);
     if (appliesTo.length > 1 && appliesTo[0].all) {
       removeApply(appliesTo[0]);
@@ -251,6 +253,7 @@ function createSection(originalSection, genId, si) {
     dirty.remove(apply, apply);
     if (!appliesTo.length) {
       insertApplyAfter({all: true});
+      toggleDataset(appliesToContainer, 'all', true);
     }
     emitSectionChange('apply');
   }
