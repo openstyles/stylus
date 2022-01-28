@@ -69,12 +69,14 @@ input {
 }
 
 input:not([type]),
+input[type=text],
 input[type=search] {
   background: #fff;
   color: #000;
   height: var(--input-height);
   min-height: var(--input-height)!important;
   line-height: var(--input-height);
+  box-sizing: border-box;
   padding: 0 3px;
   border: 1px solid hsl(0, 0%, 66%);
 }
@@ -165,7 +167,6 @@ label {
 select {
   -moz-appearance: none;
   -webkit-appearance: none;
-  box-sizing: content-box;
   height: var(--input-height);
   font: inherit;
   color: #000;
