@@ -818,7 +818,10 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   margin: .25em 0;
 }
 #help-popup .buttons > :nth-child(n + 2) {
-  margin-inline: .5em 0;
+  margin: 0 0 0 .5em;
+}
+.non-windows #help-popup .buttons > :nth-child(n + 2) {
+  margin: 0 .5em 0 0;
 }
 
 /************ lint ************/
