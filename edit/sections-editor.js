@@ -1,12 +1,11 @@
-/* global $ $$ $create $remove messageBoxProxy */// dom.js
+/* global $ $create $remove messageBoxProxy */// dom.js
 /* global API */// msg.js
 /* global CodeMirror */
-/* global FIREFOX RX_META debounce ignoreChromeError */// toolbox.js
+/* global RX_META debounce */// toolbox.js
 /* global MozDocMapper clipString helpPopup rerouteHotkeys showCodeMirrorPopup */// util.js
 /* global createSection */// sections-editor-section.js
 /* global editor */
 /* global linterMan */
-/* global prefs */
 /* global styleSectionsEqual */ // sections-util.js
 /* global t */// localization.js
 'use strict';
@@ -33,10 +32,6 @@ function SectionsEditor() {
   $('#from-mozilla').on('click', () => showMozillaFormatImport());
   document.on('wheel', scrollEntirePageOnCtrlShift, {passive: false});
   CodeMirror.defaults.extraKeys['Shift-Ctrl-Wheel'] = 'scrollWindow';
-  if (!FIREFOX) {
-    $$('input:not([type]), input[type=text], input[type=search], input[type=number]')
-      .forEach(e => e.on('mousedown', toggleContextMenuDelete));
-  }
 
   /** @namespace Editor */
   Object.assign(editor, {
@@ -621,9 +616,6 @@ function SectionsEditor() {
     $('.move-section-down', el).onclick = () => moveSectionDown(section);
     $('.restore-section', el).onclick = () => restoreSection(section);
     cm.on('paste', maybeImportOnPaste);
-    if (!FIREFOX) {
-      cm.on('mousedown', (cm, event) => toggleContextMenuDelete.call(cm, event));
-    }
   }
 
   function maybeImportOnPaste(cm, event) {
@@ -667,16 +659,5 @@ function SectionsEditor() {
   async function refreshOnViewNow(cm) {
     linterMan.enableForEditor(cm);
     cm.refresh();
-  }
-
-  function toggleContextMenuDelete(event) {
-    if (chrome.contextMenus && event.button === 2 && prefs.get('editor.contextDelete')) {
-      chrome.contextMenus.update('editor.contextDelete', {
-        enabled: Boolean(
-          this.selectionStart !== this.selectionEnd ||
-          this.somethingSelected && this.somethingSelected()
-        ),
-      }, ignoreChromeError);
-    }
   }
 }
