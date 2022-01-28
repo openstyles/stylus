@@ -253,7 +253,6 @@ function createSection(originalSection, genId, si) {
     dirty.remove(apply, apply);
     if (!appliesTo.length) {
       insertApplyAfter({all: true});
-      toggleDataset(appliesToContainer, 'all', true);
     }
     emitSectionChange('apply');
   }
