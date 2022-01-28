@@ -11,7 +11,7 @@ bgReady.all = new Promise(r => (bgReady._resolveAll = r));
 
 const uuidIndex = Object.assign(new Map(), {
   custom: {},
-  customize(obj, setter) {
+  addCustomId(obj, setter) {
     Object.defineProperty(uuidIndex.custom, obj.id, {
       get: () => obj,
       set: setter,
