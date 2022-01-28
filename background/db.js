@@ -18,24 +18,18 @@ const db = (() => {
   )(...args);
   const DB = 'stylish';
   const FALLBACK = 'dbInChromeStorage';
+  const getStoreName = dbName => dbName === DB ? 'styles' : 'data';
   const proxies = {};
   const proxyHandler = {
     get: ({dbName}, cmd) => (...args) => exec(dbName, cmd, ...args),
   };
-  const getProxy = (dbName = DB) =>
-    /** @type {IDBObjectStore | {putMany: function(items:?[]):Promise<?[]>}} */
-    proxies[dbName] || (
-      proxies[dbName] = new Proxy({dbName}, proxyHandler)
-    );
-  const getStoreName = dbName =>
-    dbName === DB
-      ? 'styles'
-      : 'data';
+  /** @return {IDBObjectStore | {putMany: function(items:?[]):Promise<?[]>}} */
+  const getProxy = (dbName = DB) => proxies[dbName] || (
+    proxies[dbName] = new Proxy({dbName}, proxyHandler)
+  );
   addAPI(/** @namespace API */ {
-    /**
-     * Storage for big items that may exceed 8kB limit of chrome.storage.sync.
-     * To make an item syncable register it with uuidIndex.addCustomId.
-     */
+    /** Storage for big items that may exceed 8kB limit of chrome.storage.sync.
+     * To make an item syncable register it with uuidIndex.addCustomId. */
     prefsDb: getProxy(prefs.STORAGE_KEY),
   });
   return {
