@@ -1,5 +1,7 @@
+/* global addAPI */// common.js
 /* global chromeLocal */// storage-util.js
 /* global cloneError */// worker-util.js
+/* global prefs */
 'use strict';
 
 /*
@@ -29,6 +31,13 @@ const db = (() => {
     dbName === DB
       ? 'styles'
       : 'data';
+  addAPI(/** @namespace API */ {
+    /**
+     * Storage for big items that may exceed 8kB limit of chrome.storage.sync.
+     * To make an item syncable register it with uuidIndex.addCustomId.
+     */
+    prefsDb: getProxy(prefs.STORAGE_KEY),
+  });
   return {
     styles: getProxy(),
     open: getProxy,

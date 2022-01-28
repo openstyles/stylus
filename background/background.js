@@ -155,12 +155,6 @@ addAPI(/** @namespace API */ {
     getValues: () => prefs.__values, // will be deepCopy'd by apiHandler
     set: prefs.set,
   },
-
-  /**
-   * Storage for big items that may exceed 8kB limit of chrome.storage.sync.
-   * To make an item syncable register it with uuidIndex.addCustomId.
-   */
-  prefsDb: db.open(prefs.STORAGE_KEY),
 });
 
 //#endregion
