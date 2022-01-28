@@ -453,7 +453,7 @@ input:invalid {
   display: none;
 }
 .section .CodeMirror {
-  margin-bottom: .875rem;
+  margin-bottom: .5em;
   box-sizing: border-box;
 }
 /* deleted section */
@@ -576,12 +576,20 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   background-color: #f002;
   border-color: #f008;
 }
-[i18n-text="appliesLabel"] {
+.applies-to label {
   font-size: 0;
   padding: 0;
   margin-left: -24px;
   position: absolute;
   line-height: var(--input-height);
+}
+.compact-layout .applies-to label {
+  display: none;
+}
+.compact-layout .applies-to[data-all] label {
+  position: static;
+  display: inline;
+  margin: 0 6px 0 -4px;
 }
 .applies-to ul {
   flex: auto;
