@@ -73,7 +73,7 @@ const styleMan = (() => {
     _id: `${chrome.runtime.id}-${INJ_ORDER}`,
     _rev: 0,
   };
-  uuidIndex.addCustomId(orderWrap, setOrder);
+  uuidIndex.addCustomId(orderWrap, {set: setOrder});
   /** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
   let ready = init();
 
@@ -505,7 +505,7 @@ const styleMan = (() => {
   }
 
   async function init() {
-    const orderPromise = db.open(prefs.STORAGE_KEY).get(INJ_ORDER);
+    const orderPromise = API.prefsDb.get(INJ_ORDER);
     const styles = await db.styles.getAll() || [];
     const updated = await Promise.all(styles.map(fixKnownProblems).filter(Boolean));
     if (updated.length) {
@@ -738,7 +738,7 @@ const styleMan = (() => {
       msg.broadcast({method: 'styleSort', order});
     }
     if (store) {
-      await db.open(prefs.STORAGE_KEY).put(orderWrap);
+      await API.prefsDb.put(orderWrap);
     }
     if (sync) {
       API.sync.putDoc(orderWrap);
