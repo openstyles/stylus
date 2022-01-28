@@ -79,9 +79,6 @@ msg.onExtension(request => {
         closeCurrentTab();
       }
       break;
-    case 'editDeleteText':
-      document.execCommand('delete');
-      break;
   }
 });
 

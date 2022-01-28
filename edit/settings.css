@@ -5,7 +5,7 @@
   width: 90%;
 }
 .style-settings {
-  padding: 0;
+  padding: 0 1px; /* for focus outline */
   border: 0;
   margin: 0;
 }

@@ -1,5 +1,6 @@
 /* global $$ $ $create focusAccessibility getEventKeyName moveFocus */// dom.js
 /* global clamp debounce */// toolbox.js
+/* global msg */
 /* global t */// localization.js
 'use strict';
 
@@ -15,6 +16,11 @@
   window.on('wheel', changeFocusedInputOnWheel, {capture: true, passive: false});
   window.on('click', e => splitMenu(e) || showTooltipNote(e));
   window.on('resize', () => debounce(addTooltipsToEllipsized, 100));
+  msg.onExtension(request => {
+    if (request.method === 'editDeleteText') {
+      document.execCommand('delete');
+    }
+  });
   // Removing transition-suppressor rule
   const {sheet} = $('link[href$="global.css"]');
   for (let i = 0, rule; (rule = sheet.cssRules[i]); i++) {

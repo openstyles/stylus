@@ -32,7 +32,7 @@
       title: 'editDeleteText',
       type: 'normal',
       contexts: ['editable'],
-      documentUrlPatterns: [URLS.ownOrigin + 'edit*'],
+      documentUrlPatterns: [URLS.ownOrigin + '*'],
       click: (info, tab) => {
         msg.sendTab(tab.id, {method: 'editDeleteText'}, undefined, 'extension')
           .catch(msg.ignoreError);
