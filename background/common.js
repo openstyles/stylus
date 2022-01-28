@@ -12,10 +12,19 @@
   uuidIndex
 */
 
-const uuidIndex = new Map();
 const bgReady = {};
 bgReady.styles = new Promise(r => (bgReady._resolveStyles = r));
 bgReady.all = new Promise(r => (bgReady._resolveAll = r));
+
+const uuidIndex = Object.assign(new Map(), {
+  custom: {},
+  customize(obj, setter) {
+    Object.defineProperty(uuidIndex.custom, obj.id, {
+      get: () => obj,
+      set: setter,
+    });
+  },
+});
 
 function addAPI(methods) {
   for (const [key, val] of Object.entries(methods)) {

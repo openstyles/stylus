@@ -73,10 +73,7 @@ const styleMan = (() => {
     _id: `${chrome.runtime.id}-${INJ_ORDER}`,
     _rev: 0,
   };
-  uuidIndex.custom = Object.defineProperty({}, INJ_ORDER, {
-    get: () => orderWrap,
-    set: setOrder,
-  });
+  uuidIndex.customize(orderWrap, setOrder);
   /** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
   let ready = init();
 
