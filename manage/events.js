@@ -225,23 +225,14 @@ async function handleUpdateForId(id, opts) {
 }
 
 /* exported handleVisibilityChange */
-function handleVisibilityChange() {
-  switch (document.visibilityState) {
-    // page restored without reloading via history navigation (currently only in FF)
-    // the catch here is that DOM may be outdated so we'll at least refresh the just edited style
-    // assuming other changes aren't important enough to justify making a complicated DOM sync
-    case 'visible': {
-      const id = sessionStore.justEditedStyleId;
-      if (id) {
-        handleUpdateForId(Number(id), {method: 'styleUpdated'});
-        delete sessionStore.justEditedStyleId;
-      }
-      break;
-    }
-    // going away
-    case 'hidden':
-      history.replaceState({scrollY: window.scrollY}, document.title);
-      break;
+function handleVisibilityChange(e) {
+  const id = Number(sessionStore.justEditedStyleId);
+  if (e.type === 'pageshow' && e.persisted && id) {
+    // TODO: update all elements in-place, not just the last edited style
+    handleUpdateForId(id, {method: 'styleUpdated'});
+    delete sessionStore.justEditedStyleId;
+  } else if (e.type === 'pagehide') {
+    history.replaceState({scrollY: window.scrollY}, document.title);
   }
 }
 
