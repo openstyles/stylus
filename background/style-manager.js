@@ -159,7 +159,7 @@ const styleMan = (() => {
     /** @returns {Promise<Object<string,StyleObj[]>>}>} */
     async getAllOrdered(keys) {
       if (ready.then) await ready;
-      const res = mapObj(orderWrap.value, group => group.map(uuid2style));
+      const res = mapObj(orderWrap.value, group => group.map(uuid2style).filter(Boolean));
       if (res.main.length + res.prio.length < dataMap.size) {
         for (const {style} of dataMap.values()) {
           if (!(style.id in order.main) && !(style.id in order.prio)) {
