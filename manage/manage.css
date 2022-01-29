@@ -666,7 +666,7 @@ a:hover {
   transition: opacity .5s, filter .5s;
   /* workaround for the buggy CSS filter: images in the hidden overflow are shown on Mac */
   backface-visibility: hidden;
-  display: none;
+  visibility: hidden;
 }
 
 .newUI .favicons-grayed .target img {
@@ -679,7 +679,7 @@ a:hover {
 }
 
 .newUI .has-favicons .target img[src] {
-  display: inline;
+  visibility: visible;
 }
 
 .newUI .entry:hover .target img {

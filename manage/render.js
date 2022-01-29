@@ -1,4 +1,4 @@
-/* global $ $$ animateElement scrollElementIntoView */// dom.js
+/* global $$ $ $create animateElement scrollElementIntoView */// dom.js
 /* global API */// msg.js
 /* global URLS debounce isEmptyObj sessionStore */// toolbox.js
 /* global filterAndAppend */// filters.js
@@ -10,13 +10,39 @@
 
 const ENTRY_ID_PREFIX_RAW = 'style-';
 const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps'];
-const OWN_ICON = chrome.runtime.getManifest().icons['16'];
+const OWN_ICON = chrome.runtime.getURL(chrome.runtime.getManifest().icons['16']);
 const AGES = [
   [24, 'h', t('dateAbbrHour', '\x01')],
   [30, 'd', t('dateAbbrDay', '\x01')],
   [12, 'm', t('dateAbbrMonth', '\x01')],
   [Infinity, 'y', t('dateAbbrYear', '\x01')],
 ];
+
+(() => {
+  const proto = HTMLImageElement.prototype;
+  if ('loading' in proto) return;
+  const pSrc = Object.getOwnPropertyDescriptor(proto, 'src');
+  const xo = new IntersectionObserver(entries => {
+    for (const e of entries) {
+      if (e.isIntersecting) {
+        const el = e.target;
+        pSrc.set.call(el, el.dataset.src);
+        xo.unobserve(el);
+        delete el.dataset.src;
+      }
+    }
+  });
+  Object.defineProperty(proto, 'src', Object.assign({}, pSrc, {
+    set(val) {
+      if (this.loading === 'lazy') {
+        this.dataset.src = val;
+        xo.observe(this);
+      } else {
+        pSrc.set.call(this, val);
+      }
+    },
+  }));
+})();
 
 let elementParts;
 
@@ -215,18 +241,13 @@ function getFaviconSrc(container = installed) {
       favicon = targetValue.includes('://') && targetValue.match(regexpMatchDomain);
       favicon = favicon ? URLS.favicon(favicon[1]) : '';
     }
-    if (favicon) {
-      const img = target.children[0];
-      if (!img || img.localName !== 'img') {
-        target.insertAdjacentElement('afterbegin', document.createElement('img'))
-          .dataset.src = favicon;
-      } else if ((img.dataset.src || img.src) !== favicon) {
-        img.src = '';
-        img.dataset.src = favicon;
-      }
+    if (!favicon) continue;
+    const img = $(':scope > img:first-child', target) ||
+      target.insertAdjacentElement('afterbegin', $create('img', {loading: 'lazy'}));
+    if ((img.dataset.src || img.src) !== favicon) {
+      img.src = favicon;
     }
   }
-  loadFavicons();
 }
 
 function fitSelectBox(...elems) {
@@ -281,37 +302,6 @@ function highlightEditedStyle() {
   }
 }
 
-function loadFavicons({all = false} = {}) {
-  if (!installed.firstElementChild) return;
-  let favicons = [];
-  if (all) {
-    favicons = $$('img[data-src]', installed);
-  } else {
-    const {left, top} = installed.firstElementChild.getBoundingClientRect();
-    const x = Math.max(0, left);
-    const y = Math.max(0, top);
-    const first = document.elementFromPoint(x, y);
-    if (!first) return requestAnimationFrame(loadFavicons.bind(null, ...arguments));
-    const lastOffset = first.offsetTop + window.innerHeight;
-    const numTargets = newUI.targets;
-    let entry = first && first.closest('.entry') || installed.children[0];
-    while (entry && entry.offsetTop <= lastOffset) {
-      favicons.push(...$$('img', entry).slice(0, numTargets).filter(img => img.dataset.src));
-      entry = entry.nextElementSibling;
-    }
-  }
-  let i = 0;
-  for (const img of favicons) {
-    img.src = img.dataset.src;
-    delete img.dataset.src;
-    // loading too many icons at once will block the page while the new layout is recalculated
-    if (++i > 100) break;
-  }
-  if ($('img[data-src]', installed)) {
-    debounce(loadFavicons, 1, {all: true});
-  }
-}
-
 /** Adding spaces so CSS can detect "bigness" of a value via amount of spaces at the beginning */
 function padLeft(val, width) {
   val = `${val}`;
@@ -354,11 +344,11 @@ function showStyles(styles = [], matchUrlIds) {
     filterAndAppend({container: renderBin}).then(sorter.updateStripes);
     if (index < sorted.length) {
       requestAnimationFrame(renderStyles);
-      if (firstRun) setTimeout(getFaviconSrc);
+      if (firstRun) getFaviconSrc();
       firstRun = false;
       return;
     }
-    setTimeout(getFaviconSrc);
+    getFaviconSrc();
     if (sessionStore.justEditedStyleId) {
       setTimeout(highlightEditedStyle); // delaying to avoid forced layout
     } else if ('scrollY' in (history.state || {})) {
