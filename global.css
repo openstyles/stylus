@@ -56,6 +56,10 @@ button:active {
   background-size: 100% 100%;
 }
 
+button .svg-icon {
+  cursor: auto;
+}
+
 /* For some odd reason these hovers appear lighter than all other button hovers in every browser */
 #message-box-buttons button:not(:disabled):hover {
   background-color: hsl(0, 0%, 90%);
