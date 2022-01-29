@@ -60,14 +60,9 @@
     const body = pw.document.body;
     pw.on('keydown', removePopupOnEsc);
     pw.close = removePopup;
-    if (pw.IntersectionObserver) {
-      new pw.IntersectionObserver(onIntersect).observe(body.appendChild(
-        $create('div', {style: {height: '1px', marginTop: '-1px'}})
-      ));
-    } else {
-      frame.dataset.loaded = '';
-      frame.height = body.scrollHeight;
-    }
+    new pw.IntersectionObserver(onIntersect).observe(body.appendChild(
+      $create('div', {style: {height: '1px', marginTop: '-1px'}})
+    ));
     new pw.MutationObserver(onMutation).observe(body, {
       attributes: true,
       attributeFilter: ['style'],

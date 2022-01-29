@@ -32,7 +32,7 @@
 
     globalSetOption(key, value) {
       CodeMirror.defaults[key] = value;
-      if (cms.size > 4 && lazyOpt && lazyOpt.names.includes(key)) {
+      if (cms.size > 4 && lazyOpt.names.includes(key)) {
         lazyOpt.set(key, value);
       } else {
         cms.forEach(cm => cm.setOption(key, value));
@@ -104,7 +104,7 @@
 
   // lazy propagation
 
-  lazyOpt = window.IntersectionObserver && {
+  lazyOpt = {
     names: ['theme', 'lineWrapping'],
     set(key, value) {
       const {observer, queue} = lazyOpt;

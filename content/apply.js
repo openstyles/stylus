@@ -43,17 +43,14 @@
   /* about:blank iframes are often used by sites for file upload or background tasks
    * and they may break if unexpected DOM stuff is present at `load` event
    * so we'll add the styles only if the iframe becomes visible */
-  const {IntersectionObserver} = window;
   const xoEventId = `${Math.random()}`;
   /** @type IntersectionObserver */
   let xo;
-  if (IntersectionObserver) {
-    window[Symbol.for('xo')] = (el, cb) => {
-      if (!xo) xo = new IntersectionObserver(onIntersect, {rootMargin: '100%'});
-      el.addEventListener(xoEventId, cb, {once: true});
-      xo.observe(el);
-    };
-  }
+  window[Symbol.for('xo')] = (el, cb) => {
+    if (!xo) xo = new IntersectionObserver(onIntersect, {rootMargin: '100%'});
+    el.addEventListener(xoEventId, cb, {once: true});
+    xo.observe(el);
+  };
 
   // Declare all vars before init() or it'll throw due to "temporal dead zone" of const/let
   const ready = init();
@@ -246,11 +243,7 @@
   }
 
   function onFrameElementInView(cb) {
-    if (IntersectionObserver) {
-      parent[parent.Symbol.for('xo')](frameElement, cb);
-    } else {
-      requestAnimationFrame(cb);
-    }
+    parent[parent.Symbol.for('xo')](frameElement, cb);
   }
 
   /** @param {IntersectionObserverEntry[]} entries */

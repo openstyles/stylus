@@ -176,12 +176,6 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
     if (UA.mobile) prefs.set('manage.newUI', false);
     if (UA.windows) prefs.set('editor.keyMap', 'sublime');
   }
-  if (reason === 'update') {
-    const [a, b, c] = (previousVersion || '').split('.');
-    if (a <= 1 && b <= 5 && c <= 13) { // 1.5.13
-      require(['/background/remove-unused-storage']);
-    }
-  }
   // TODO: remove this before 1.5.23 as it's only for a few users who installed git 26b75e77
   if (reason === 'update' && previousVersion === '1.5.22') {
     for (const dbName of ['drafts', prefs.STORAGE_KEY]) {

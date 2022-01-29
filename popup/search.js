@@ -256,7 +256,7 @@
     if (results.length && 'empty' in dom.container.dataset) {
       delete dom.container.dataset.empty;
     }
-    if (scrollToFirstResult && (!FIREFOX || FIREFOX >= 55)) {
+    if (scrollToFirstResult) {
       debounce(doScrollToFirstResult);
     }
     // navigation

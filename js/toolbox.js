@@ -46,15 +46,13 @@ const [CHROME, UA] = (() => {
 // see PR #781
 const CHROME_POPUP_BORDER_BUG = CHROME >= 62 && CHROME <= 74;
 
-if (!CHROME && !chrome.browserAction.openPopup) {
+if (FIREFOX && !chrome.browserAction.openPopup) {
   // in FF pre-57 legacy addons can override useragent so we assume the worst
   // until we know for sure in the async getBrowserInfo()
   // (browserAction.openPopup was added in 57)
-  FIREFOX = browser.runtime.getBrowserInfo ? 51 : 50;
-  // getBrowserInfo was added in FF 51
-  Promise.resolve(FIREFOX >= 51 ? browser.runtime.getBrowserInfo() : {version: 50}).then(info => {
+  FIREFOX = 55; // from strict_min_version
+  browser.runtime.getBrowserInfo().then(info => {
     FIREFOX = parseFloat(info.version);
-    document.documentElement.classList.add('moz-appearance-bug', FIREFOX && FIREFOX < 54);
   });
 }
 

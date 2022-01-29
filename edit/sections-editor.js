@@ -16,8 +16,7 @@ function SectionsEditor() {
   const container = $('#sections');
   /** @type {EditorSection[]} */
   const sections = [];
-  const xo = window.IntersectionObserver &&
-    new IntersectionObserver(refreshOnViewListener, {rootMargin: '100%'});
+  const xo = new IntersectionObserver(refreshOnViewListener, {rootMargin: '100%'});
   let INC_ID = 0; // an increment id that is used by various object to track the order
   let sectionOrder = '';
   let headerOffset; // in compact mode the header is at the top so it reduces the available height
@@ -632,7 +631,7 @@ function SectionsEditor() {
     if (code) {
       linterMan.enableForEditor(cm, code);
     }
-    if (force || !xo) {
+    if (force) {
       refreshOnViewNow(cm);
     } else {
       xo.observe(cm.display.wrapper);

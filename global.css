@@ -359,20 +359,6 @@ body.resizing-v > * {
 }
 
 @supports (-moz-appearance: none) {
-  .moz-appearance-bug .svg-icon.checked,
-  .moz-appearance-bug .onoffswitch input,
-  .moz-appearance-bug input[type="radio"]:after {
-    display: none !important;
-  }
-
-  .moz-appearance-bug input[type="checkbox"] {
-    -moz-appearance: checkbox !important;
-  }
-
-  .moz-appearance-bug input[type="radio"] {
-    -moz-appearance: radio !important;
-  }
-
   .firefox select {
     padding: 0 20px 0 2px;
     line-height: var(--input-height)!important;
@@ -399,10 +385,6 @@ body.resizing-v > * {
     background: #fff;
     border: 1px solid hsl(0, 0%, 66%);
     padding: 4px;
-  }
-
-  .firefox.moz-appearance-bug button:not(.install) {
-    padding: 2px 4px;
   }
 }
 
