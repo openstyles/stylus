@@ -668,8 +668,8 @@ body.blocked .actions > .main-controls {
   flex-direction: row;
   padding: var(--outer-padding) 1px;
 }
-#popup-options .split-btn {
-  display: flex;
+#popup-options .split-btn > :first-child {
+  width: calc(100% - 16px);
 }
 #popup-options button {
   white-space: nowrap;
@@ -686,9 +686,28 @@ body.blocked .actions > .main-controls {
   flex: 1 1 auto;
   min-width: 2em;
 }
-#popup-manage-button ~ .split-btn-menu {
+html:not(.styles-first) #popup-manage-button ~ .split-btn-menu {
   bottom: 0;
   transform: translateY(-20px); /* global button style: 13(font) * 1.2(line) + 4(pad) + 2(border) */
+}
+html:not(.styles-first) .split-btn-pedal::after {
+  border-top: var(--side) solid transparent;
+  border-bottom: calc(var(--side) * 1.3) solid currentColor;
+  vertical-align: top;
+  position: relative;
+  top: 1px;
+}
+.styles-first body,
+.styles-first #main-actions {
+  display: flex;
+  flex-direction: column;
+}
+.styles-first #installed,
+.styles-first #main-actions > :not(#popup-options) {
+  order: 1;
+}
+.styles-first #main-actions {
+  margin-top: 0;
 }
 
 /* confirm */
