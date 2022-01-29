@@ -1,7 +1,6 @@
 /* global API msg */// msg.js
 /* global addAPI bgReady */// common.js
 /* global createWorker */// worker-util.js
-/* global db */
 /* global prefs */
 /* global styleMan */
 /* global syncMan */
@@ -39,7 +38,6 @@ addAPI(/** @namespace API */ {
     },
   }))(),
 
-  drafts: db.open('drafts'),
   styles: styleMan,
   sync: syncMan,
   updater: updateMan,
@@ -182,6 +180,23 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
     const [a, b, c] = (previousVersion || '').split('.');
     if (a <= 1 && b <= 5 && c <= 13) { // 1.5.13
       require(['/background/remove-unused-storage']);
+    }
+  }
+  // TODO: remove this before 1.5.23 as it's only for a few users who installed git 26b75e77
+  if (reason === 'update' && previousVersion === '1.5.22') {
+    for (const dbName of ['drafts', prefs.STORAGE_KEY]) {
+      try {
+        indexedDB.open(dbName).onsuccess = async e => {
+          const idb = /** @type IDBDatabase */ e.target.result;
+          const ta = idb.objectStoreNames[0] === 'data' && idb.transaction(['data']);
+          if (ta && ta.objectStore('data').autoIncrement) {
+            ta.abort();
+            idb.close();
+            await new Promise(setTimeout);
+            indexedDB.deleteDatabase(dbName);
+          }
+        };
+      } catch (e) {}
     }
   }
 });

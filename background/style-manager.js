@@ -505,7 +505,7 @@ const styleMan = (() => {
   }
 
   async function init() {
-    const orderPromise = API.prefsDb.get(INJ_ORDER);
+    const orderPromise = API.prefsDb.get(orderWrap.id);
     const styles = await db.styles.getAll() || [];
     const updated = await Promise.all(styles.map(fixKnownProblems).filter(Boolean));
     if (updated.length) {
@@ -738,7 +738,7 @@ const styleMan = (() => {
       msg.broadcast({method: 'styleSort', order});
     }
     if (store) {
-      await API.prefsDb.put(orderWrap);
+      await API.prefsDb.put(orderWrap, orderWrap.id);
     }
     if (sync) {
       API.sync.putDoc(orderWrap);

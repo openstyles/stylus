@@ -18,23 +18,29 @@ const db = (() => {
   )(...args);
   const DB = 'stylish';
   const FALLBACK = 'dbInChromeStorage';
+  const ID_AS_KEY = {[DB]: true};
   const getStoreName = dbName => dbName === DB ? 'styles' : 'data';
   const proxies = {};
   const proxyHandler = {
     get: ({dbName}, cmd) => (...args) => exec(dbName, cmd, ...args),
   };
-  /** @return {IDBObjectStore | {putMany: function(items:?[]):Promise<?[]>}} */
-  const getProxy = (dbName = DB) => proxies[dbName] || (
-    proxies[dbName] = new Proxy({dbName}, proxyHandler)
+  /**
+   * @param {string} dbName
+   * @param {boolean} [idAsKey] - if true, only objects can be stored with a unique `id` property
+   * @return {IDBObjectStore | {putMany: function(items:?[]):Promise<?[]>}}
+   */
+  const getProxy = (dbName, idAsKey) => proxies[dbName] || (
+    (ID_AS_KEY[dbName] = idAsKey),
+    (proxies[dbName] = new Proxy({dbName}, proxyHandler))
   );
   addAPI(/** @namespace API */ {
+    drafts: getProxy('drafts'),
     /** Storage for big items that may exceed 8kB limit of chrome.storage.sync.
      * To make an item syncable register it with uuidIndex.addCustomId. */
     prefsDb: getProxy(prefs.STORAGE_KEY),
   });
   return {
-    styles: getProxy(),
-    open: getProxy,
+    styles: getProxy(DB, true),
   };
 
   async function tryUsingIndexedDB() {
@@ -108,10 +114,10 @@ const db = (() => {
   function create(event) {
     if (event.oldVersion === 0) {
       const idb = event.target.result;
-      idb.createObjectStore(getStoreName(idb.name), {
+      idb.createObjectStore(getStoreName(idb.name), ID_AS_KEY[idb.name] ? {
         keyPath: 'id',
         autoIncrement: true,
-      });
+      } : undefined);
     }
   }
 })();

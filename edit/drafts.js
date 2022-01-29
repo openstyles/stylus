@@ -60,10 +60,9 @@
     if (!isDirty) return;
     API.drafts.put({
       date: Date.now(),
-      id: makeId(),
       isUsercss: editor.isUsercss,
       style: editor.getValue(true),
       si: editor.makeScrollInfo(),
-    });
+    }, makeId());
   }
 })();
