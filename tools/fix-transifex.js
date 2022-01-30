@@ -60,7 +60,7 @@ function fixLngFile(lng) {
   if (resStr !== jsonStr) {
     let err;
     if (resStr === '{}') {
-      fs.rmdirSync(`${DIR}${lng}`, {recursive: true});
+      fs.rmSync(`${DIR}${lng}`, {recursive: true, force: true});
       err = 'no translations -> deleted';
     } else {
       fse.outputFileSync(makeFileName(lng), resStr + '\n');
