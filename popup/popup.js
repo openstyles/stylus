@@ -38,7 +38,7 @@ preinit.then(({frames, styles, url}) => {
 msg.onExtension(onRuntimeMessage);
 
 prefs.subscribe('popup.stylesFirst', (key, stylesFirst) => {
-  document.documentElement.classList.toggle('styles-first', stylesFirst);
+  document.documentElement.classList.toggle('styles-last', !stylesFirst);
 }, {runNow: true});
 if (CHROME_POPUP_BORDER_BUG) {
   prefs.subscribe('popup.borders', toggleSideBorders, {runNow: true});

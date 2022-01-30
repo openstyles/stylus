@@ -686,28 +686,32 @@ body.blocked .actions > .main-controls {
   flex: 1 1 auto;
   min-width: 2em;
 }
-html:not(.styles-first) #popup-manage-button ~ .split-btn-menu {
+html:not(.styles-last) #popup-manage-button ~ .split-btn-menu {
   bottom: 0;
   transform: translateY(-20px); /* global button style: 13(font) * 1.2(line) + 4(pad) + 2(border) */
 }
-html:not(.styles-first) .split-btn-pedal::after {
+html:not(.styles-last) .split-btn-pedal::after {
   border-top: var(--side) solid transparent;
   border-bottom: calc(var(--side) * 1.3) solid currentColor;
   vertical-align: top;
   position: relative;
   top: 1px;
 }
-.styles-first body,
-.styles-first #main-actions {
+.styles-last body,
+.styles-last #main-actions {
   display: flex;
   flex-direction: column;
 }
-.styles-first #installed,
-.styles-first #main-actions > :not(#popup-options) {
+.styles-last #installed,
+.styles-last #main-actions > :not(#popup-options) {
   order: 1;
+  flex: 1 0;
 }
-.styles-first #main-actions {
+.styles-last #main-actions {
   margin-top: 0;
+}
+.styles-last #search-results {
+  order: 2;
 }
 
 /* confirm */
