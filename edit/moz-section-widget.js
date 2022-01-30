@@ -43,7 +43,7 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
     enabled = true;
     TPL = {
       container:
-        $create('div' + C_CONTAINER, [
+        $create('div' + C_CONTAINER, {title: t('appliesHelp')}, [
           $create(C_LABEL, t('appliesLabel')),
           $create('ul' + C_LIST),
         ]),

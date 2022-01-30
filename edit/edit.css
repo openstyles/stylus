@@ -419,6 +419,7 @@ input:invalid {
 .single-editor .applies-to > label::before {
   content: attr(data-index) ":";
   margin-right: 0.25rem;
+  font-size: 12px;
 }
 .code-label[data-text] {
   font-weight: bold;
@@ -579,9 +580,11 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 .applies-to label {
   font-size: 0;
   padding: 0;
+  line-height: var(--input-height);
+}
+.section-editor .applies-to label {
   margin-left: -24px;
   position: absolute;
-  line-height: var(--input-height);
 }
 .compact-layout .applies-to label {
   display: none;
@@ -1010,15 +1013,9 @@ body.linter-disabled .hidden-unless-compact {
   margin: 1em 0;
   padding: .75rem calc(.25rem + var(--cm-bar-width, 0)) .25rem .75rem;
 }
-
-.CodeMirror-linewidget .applies-to li {
-  margin: 0;
-}
-
 .CodeMirror-linewidget .applies-to li[data-type="regexp"] .test-regexp {
   display: inline;
 }
-
 .CodeMirror-linewidget li.applies-to-everything {
   margin-left: 0.2rem;
 }
