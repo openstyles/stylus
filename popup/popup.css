@@ -713,6 +713,9 @@ html:not(.styles-last) .split-btn-pedal::after {
 .styles-last #search-results {
   order: 2;
 }
+.styles-last #installed {
+  border-top: 1px solid black;
+}
 
 /* confirm */
 
