@@ -38,10 +38,8 @@ preinit.then(({frames, styles, url}) => {
 msg.onExtension(onRuntimeMessage);
 
 prefs.subscribe('popup.stylesFirst', (key, stylesFirst) => {
-  const actions = $('body > .actions');
-  const before = stylesFirst ? actions : actions.nextSibling;
-  document.body.insertBefore(installed, before);
-});
+  document.documentElement.classList.toggle('styles-last', !stylesFirst);
+}, {runNow: true});
 if (CHROME_POPUP_BORDER_BUG) {
   prefs.subscribe('popup.borders', toggleSideBorders, {runNow: true});
 }
@@ -125,12 +123,6 @@ async function initPopup(frames) {
         break;
     }
   };
-
-  if (!prefs.get('popup.stylesFirst')) {
-    document.body.insertBefore(
-      $('body > .actions'),
-      installed);
-  }
 
   for (const el of $$('link[media=print]')) {
     el.removeAttribute('media');
