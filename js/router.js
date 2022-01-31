@@ -10,8 +10,10 @@ const router = {
     return new URLSearchParams(location.search).get(key);
   },
 
-  push(url, state = history.state) {
-    history.pushState(Object.assign({buffer: router.buffer}, state), null, url);
+  push(url) {
+    const state = history.state || {};
+    state.buffer = router.buffer;
+    history.pushState(state, null, url);
   },
 
   update(replace) {
