@@ -154,11 +154,6 @@ label > :first-child {
   transition: text-shadow .1s;
 }
 
-label:not([disabled]),
-label:not([disabled]) :not([type="number"]):not([type="text"]):not([type="password"]) {
-  cursor: pointer;
-}
-
 label:not([disabled]):hover > :first-child {
   text-shadow: 0 0 0.01px rgba(0, 0, 0, .25);
 }
@@ -232,7 +227,10 @@ input[type="color"] {
 [data-cmd="check-updates"] button {
   position: relative;
 }
-
+[data-cmd="note"] {
+  padding: .5em 1em .5em 0;
+  cursor: pointer;
+}
 .update-in-progress [data-cmd="check-updates"] {
   opacity: .5;
   pointer-events: none;

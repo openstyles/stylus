@@ -10,7 +10,7 @@
 .onoffswitch input {
   -webkit-appearance: none;
   -moz-appearance: none;
-  cursor: pointer;
+  cursor: default;
   position: absolute;
   top: -8px;
   bottom: -10px;
