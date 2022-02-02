@@ -14,7 +14,8 @@
   window.on('keydown', keepFocusRingOnTabbing, {passive: true});
   window.on('keypress', clickDummyLinkOnEnter);
   window.on('wheel', changeFocusedInputOnWheel, {capture: true, passive: false});
-  window.on('click', e => splitMenu(e) || showTooltipNote(e));
+  window.on('click', splitMenu);
+  window.on('click', showTooltipNote, true);
   window.on('resize', () => debounce(addTooltipsToEllipsized, 100));
   msg.onExtension(request => {
     if (request.method === 'editDeleteText') {
