@@ -44,9 +44,6 @@ const tokenMan = (() => {
       clientSecret: '9Pj=TpsrStq8K@1BiwB9PIWLppM:@s=w',
       authURL: 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
       tokenURL: 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
-      redirect_uri: FIREFOX ?
-        'https://clngdbkpkpeebahjckkjfobafhncgmne.chromiumapp.org/' :
-        'https://' + location.hostname + '.chromiumapp.org/',
       scopes: ['Files.ReadWrite.AppFolder', 'offline_access'],
     },
     userstylesworld: {
@@ -60,6 +57,7 @@ const tokenMan = (() => {
     },
   };
   const NETWORK_LATENCY = 30; // seconds
+  const DEFAULT_REDIRECT_URI = 'https://clngdbkpkpeebahjckkjfobafhncgmne.chromiumapp.org/';
 
   let alwaysUseTab = FIREFOX ? false : null;
 
@@ -153,7 +151,7 @@ const tokenMan = (() => {
     const query = {
       response_type: provider.flow,
       client_id: provider.clientId,
-      redirect_uri: provider.redirect_uri || chrome.identity.getRedirectURL(),
+      redirect_uri: provider.redirect_uri || DEFAULT_REDIRECT_URI,
       state,
     };
     if (provider.scopes) {
