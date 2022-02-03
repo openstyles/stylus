@@ -1243,6 +1243,7 @@ self.parserlib = (() => {
     FONT_FACE_SYM: {text: '@font-face'},
     IMPORT_SYM: {text: '@import'},
     KEYFRAMES_SYM: {text: ['@keyframes', '@-webkit-keyframes', '@-moz-keyframes', '@-o-keyframes']},
+    LAYER_SYM: {text: '@layer'},
     MEDIA_SYM: {text: '@media'},
     NAMESPACE_SYM: {text: '@namespace'},
     PAGE_SYM: {text: '@page'},
@@ -3442,6 +3443,8 @@ self.parserlib = (() => {
   //#endregion
   //#region Parser
 
+  const ParserRoute = {};
+
   class Parser extends EventTarget {
     /**
      * @param {Object} [options]
@@ -3477,15 +3480,53 @@ self.parserlib = (() => {
       super.fire(event);
     }
 
+    /**
+     * @layer <layer-name>#;
+     * @layer <layer-name>? { <stylesheet> };
+     */
+    _layer(start) {
+      const stream = this._tokenStream;
+      const ids = [];
+      let t, val;
+      do {
+        this._ws();
+        if ((t = stream.get(true)).type === Tokens.IDENT) {
+          ids.push(t.value);
+          this._ws();
+          t = stream.get(true);
+        }
+        if ((val = t.value) === '{') {
+          if (ids[1]) this.fire({type: 'error', message: '@layer block cannot have multiple ids'}, start);
+          this._layerBlock(start, true, ids[0]);
+          return;
+        }
+      } while (val === ',');
+      if (val !== ';') stream.mustMatch(Tokens.SEMICOLON);
+      this.fire({type: 'layer', ids}, start);
+      this._ws();
+    }
+
+    _layerBlock(start, inBlock, id) {
+      if (!inBlock) {
+        this._ws();
+        id = this._tokenStream.match(Tokens.IDENT);
+        this._tokenStream.mustMatch(Tokens.LBRACE);
+      }
+      this.fire({type: 'startlayer', id: id || null}, start);
+      this._rulesetBlock(start);
+      this.fire('endlayer');
+      this._ws();
+    }
+
     _stylesheet() {
       const stream = this._tokenStream;
       this.fire('startstylesheet');
       this._sheetGlobals();
       const {topDocOnly} = this.options;
-      const allowedActions = topDocOnly ? Parser.ACTIONS.topDoc : Parser.ACTIONS.stylesheet;
+      const allowedActions = topDocOnly ? ParserRoute.topDoc : ParserRoute.stylesheet;
       for (let tt, token; (tt = (token = stream.get(true)).type); this._skipCruft()) {
         try {
-          const action = allowedActions.get(tt);
+          const action = allowedActions[tt];
           if (action) {
             action.call(this, token);
             continue;
@@ -3520,6 +3561,7 @@ self.parserlib = (() => {
       this._skipCruft();
       for (const [type, fn, max = Infinity] of [
         [Tokens.CHARSET_SYM, this._charset, 1],
+        [Tokens.LAYER_SYM, this._layer],
         [Tokens.IMPORT_SYM, this._import],
         [Tokens.NAMESPACE_SYM, this._namespace],
       ]) {
@@ -3538,13 +3580,28 @@ self.parserlib = (() => {
     }
 
     _import(start) {
+      let t, layer;
       const stream = this._tokenStream;
-      const token = stream.mustMatch(TT.stringUri);
-      const uri = token.uri || token.value.replace(/^["']|["']$/g, '');
+      t = stream.mustMatch(TT.stringUri);
+      const uri = t.uri || t.value.replace(/^["']|["']$/g, '');
       this._ws();
+      t = stream.get(true);
+      if (/^layer(\()?$/i.test(t.value)) {
+        layer = RegExp.$1 ? stream.mustMatch(Tokens.IDENT) : '';
+        if (layer) stream.mustMatch(Tokens.RPAREN);
+        this._ws();
+        t = stream.get(true);
+      }
+      if (lowerCmp('supports(', t.value)) {
+        this._ws();
+        if (!this._declaration()) this._supportsCondition();
+        stream.mustMatch(Tokens.RPAREN);
+      } else {
+        stream.unget();
+      }
       const media = this._mediaQueryList();
       stream.mustMatch(Tokens.SEMICOLON);
-      this.fire({type: 'import', media, uri}, start);
+      this.fire({type: 'import', layer, media, uri}, start);
       this._ws();
     }
 
@@ -3566,16 +3623,7 @@ self.parserlib = (() => {
       this._supportsCondition();
       stream.mustMatch(Tokens.LBRACE);
       this.fire('startsupports', start);
-      this._ws();
-      for (;; stream.skipComment()) {
-        const action = Parser.ACTIONS.supports.get(stream.peek());
-        if (action) {
-          action.call(this, stream.get(true));
-        } else if (!this._ruleset()) {
-          break;
-        }
-      }
-      stream.mustMatch(Tokens.RBRACE);
+      this._rulesetBlock(start);
       this.fire('endsupports');
       this._ws();
     }
@@ -3642,11 +3690,7 @@ self.parserlib = (() => {
         type: 'startmedia',
         media: mediaList,
       }, start);
-      this._ws();
-      let action;
-      do action = Parser.ACTIONS.media.get(stream.peek());
-      while (action ? action.call(this, stream.get(true)) || true : this._ruleset());
-      stream.mustMatch(Tokens.RBRACE);
+      this._rulesetBlock(start);
       this.fire({
         type: 'endmedia',
         media: mediaList,
@@ -3788,16 +3832,13 @@ self.parserlib = (() => {
       this.fire({type: 'startdocument', functions, prefix}, start);
       if (this.options.topDocOnly) {
         stream.readDeclValue({stopOn: '}'});
+        stream.mustMatch(Tokens.RBRACE);
       } else {
         /* We allow @import and such inside document sections because the final generated CSS for
          * a given page may be valid e.g. if this section is the first one that matched the URL */
         this._sheetGlobals();
-        this._ws();
-        let action;
-        do action = Parser.ACTIONS.document.get(stream.peek());
-        while (action ? action.call(this, stream.get(true)) || true : this._ruleset());
+        this._rulesetBlock(start);
       }
-      stream.mustMatch(Tokens.RBRACE);
       this.fire({type: 'enddocument', functions, prefix});
       this._ws();
     }
@@ -3879,6 +3920,20 @@ self.parserlib = (() => {
       }
     }
 
+    /** @param {parserlib.Token} start */
+    _rulesetBlock(start) {
+      const stream = this._tokenStream;
+      const map = ParserRoute[start.type];
+      this._ws();
+      while (true) {
+        const fn = map[stream.LT(1).type];
+        if (fn) fn.call(this, stream.get(true));
+        else if (!this._ruleset()) break;
+        stream.skipComment();
+      }
+      stream.mustMatch(Tokens.RBRACE);
+    }
+
     _selectorsGroup() {
       const stream = this._tokenStream;
       const selectors = [];
@@ -3949,7 +4004,7 @@ self.parserlib = (() => {
       }
       while (true) {
         const token = stream.get(true);
-        const action = Parser.ACTIONS.simpleSelectorSequence.get(token.type);
+        const action = ParserRoute.simpleSelectorSequence[token.type];
         const component = action ? action.call(this, token) : (stream.unget(), 0);
         if (!component) break;
         modifiers.push(component);
@@ -4543,77 +4598,38 @@ self.parserlib = (() => {
   Object.assign(Parser.prototype, TYPES);
   Parser.prototype._readWhitespace = Parser.prototype._ws;
 
-  const symDocument = [Tokens.DOCUMENT_SYM, Parser.prototype._document];
-  const symDocMisplaced = [Tokens.DOCUMENT_SYM, Parser.prototype._documentMisplaced];
-  const symFontFace = [Tokens.FONT_FACE_SYM, Parser.prototype._fontFace];
-  const symKeyframes = [Tokens.KEYFRAMES_SYM, Parser.prototype._keyframes];
-  const symMedia = [Tokens.MEDIA_SYM, Parser.prototype._media];
-  const symPage = [Tokens.PAGE_SYM, Parser.prototype._page];
-  const symSupports = [Tokens.SUPPORTS_SYM, Parser.prototype._supports];
-  const symUnknown = [Tokens.UNKNOWN_SYM, Parser.prototype._unknownSym];
-  const symViewport = [Tokens.VIEWPORT_SYM, Parser.prototype._viewport];
-
-  Parser.ACTIONS = {
-
-    stylesheet: new Map([
-      symMedia,
-      symDocument,
-      symSupports,
-      symPage,
-      symFontFace,
-      symKeyframes,
-      symViewport,
-      symUnknown,
-      [Tokens.S, Parser.prototype._ws],
-    ]),
-
-    topDoc: new Map([
-      symDocument,
-      symUnknown,
-      [Tokens.S, Parser.prototype._ws],
-    ]),
-
-    document: new Map([
-      symMedia,
-      symDocMisplaced,
-      symSupports,
-      symPage,
-      symFontFace,
-      symViewport,
-      symKeyframes,
-      symUnknown,
-    ]),
-
-    supports: new Map([
-      symKeyframes,
-      symMedia,
-      symSupports,
-      symDocMisplaced,
-      symViewport,
-      symUnknown,
-    ]),
-
-    media: new Map([
-      symKeyframes,
-      symMedia,
-      symDocMisplaced,
-      symSupports,
-      symPage,
-      symFontFace,
-      symViewport,
-      symUnknown,
-    ]),
-
-    simpleSelectorSequence: new Map([
-      [Tokens.HASH, Parser.prototype._hash],
-      [Tokens.DOT, Parser.prototype._class],
-      [Tokens.LBRACKET, Parser.prototype._attrib],
-      [Tokens.COLON, Parser.prototype._pseudo],
-      [Tokens.IS, Parser.prototype._is],
-      [Tokens.ANY, Parser.prototype._is],
-      [Tokens.WHERE, Parser.prototype._is],
-      [Tokens.NOT, Parser.prototype._negation],
-    ]),
+  ParserRoute[Tokens.DOCUMENT_SYM] =
+  ParserRoute[Tokens.LAYER_SYM] =
+  ParserRoute[Tokens.MEDIA_SYM] =
+  ParserRoute[Tokens.SUPPORTS_SYM] = {
+    [Tokens.DOCUMENT_SYM]: Parser.prototype._documentMisplaced,
+    [Tokens.FONT_FACE_SYM]: Parser.prototype._fontFace,
+    [Tokens.KEYFRAMES_SYM]: Parser.prototype._keyframes,
+    [Tokens.LAYER_SYM]: Parser.prototype._layerBlock,
+    [Tokens.MEDIA_SYM]: Parser.prototype._media,
+    [Tokens.PAGE_SYM]: Parser.prototype._page,
+    [Tokens.SUPPORTS_SYM]: Parser.prototype._supports,
+    [Tokens.UNKNOWN_SYM]: Parser.prototype._unknownSym,
+    [Tokens.VIEWPORT_SYM]: Parser.prototype._viewport,
+  };
+  ParserRoute.stylesheet = Object.assign({}, ParserRoute[Tokens.DOCUMENT_SYM], {
+    [Tokens.DOCUMENT_SYM]: Parser.prototype._document,
+    [Tokens.S]: Parser.prototype._ws,
+  });
+  ParserRoute.topDoc = {
+    [Tokens.DOCUMENT_SYM]: Parser.prototype._document,
+    [Tokens.UNKNOWN_SYM]: Parser.prototype._unknownSym,
+    [Tokens.S]: Parser.prototype._ws,
+  };
+  ParserRoute.simpleSelectorSequence = {
+    [Tokens.HASH]: Parser.prototype._hash,
+    [Tokens.DOT]: Parser.prototype._class,
+    [Tokens.LBRACKET]: Parser.prototype._attrib,
+    [Tokens.COLON]: Parser.prototype._pseudo,
+    [Tokens.IS]: Parser.prototype._is,
+    [Tokens.ANY]: Parser.prototype._is,
+    [Tokens.WHERE]: Parser.prototype._is,
+    [Tokens.NOT]: Parser.prototype._negation,
   };
 
   //#endregion
