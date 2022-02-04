@@ -6,14 +6,7 @@
 /* global initBeautifyButton */// beautify.js
 /* global prefs */
 /* global t */// localization.js
-/* global
-  FIREFOX
-  debounce
-  getOwnTab
-  sessionStore
-  tryJSONparse
-  tryURL
-*/// toolbox.js
+/* global FIREFOX getOwnTab sessionStore tryJSONparse tryURL */// toolbox.js
 'use strict';
 
 /**
@@ -56,6 +49,13 @@ const editor = {
 
 const baseInit = (() => {
   const domReady = waitForSelector('#sections');
+  const mq = matchMedia('(max-width: 850px)');
+  (mq.onchange = e => {
+    document.documentElement.classList.toggle('compact-layout', e.matches);
+    for (const el of $$('details[data-pref]')) {
+      el.open = e.matches ? false : prefs.get(el.dataset.pref);
+    }
+  })(mq);
 
   return {
     domReady,
@@ -119,45 +119,6 @@ const baseInit = (() => {
     }
   }
 })();
-
-//#endregion
-//#region init layout/resize
-
-baseInit.domReady.then(() => {
-  let headerHeight;
-  detectLayout(true);
-  window.on('resize', () => detectLayout());
-
-  function detectLayout(now) {
-    const compact = window.innerWidth <= 850;
-    if (compact) {
-      document.body.classList.add('compact-layout');
-      if (!editor.isUsercss) {
-        if (now) fixedHeader();
-        else debounce(fixedHeader, 250);
-        window.on('scroll', fixedHeader, {passive: true});
-      }
-    } else {
-      document.body.classList.remove('compact-layout', 'fixed-header');
-      window.off('scroll', fixedHeader);
-    }
-    for (const el of $$('details[data-pref]')) {
-      el.open = compact ? false : prefs.get(el.dataset.pref);
-    }
-  }
-
-  function fixedHeader() {
-    const headerFixed = $('.fixed-header');
-    if (!headerFixed) headerHeight = $('#header').clientHeight;
-    const scrollPoint = headerHeight - 43;
-    if (window.scrollY >= scrollPoint && !headerFixed) {
-      $('body').style.setProperty('--fixed-padding', ` ${headerHeight}px`);
-      $('body').classList.add('fixed-header');
-    } else if (window.scrollY < scrollPoint && headerFixed) {
-      $('body').classList.remove('fixed-header');
-    }
-  }
-});
 
 //#endregion
 //#region init header

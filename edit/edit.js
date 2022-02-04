@@ -1,4 +1,4 @@
-/* global $ $create messageBoxProxy waitForSheet */// dom.js
+/* global $$ $ $create messageBoxProxy waitForSheet */// dom.js
 /* global API msg */// msg.js
 /* global CodeMirror */
 /* global SectionsEditor */
@@ -42,6 +42,19 @@ baseInit.ready.then(async () => {
   // and we also toggle `open` directly in other places e.g. in detectLayout()
   new MutationObserver(() => elSec.open && editor.updateToc())
     .observe(elSec, {attributes: true, attributeFilter: ['open']});
+
+  // Auto-update `data-open` attribute to the number of open details
+  {
+    const wrapper = $('#details-wrapper');
+    const details = $$('details', wrapper);
+    const ds = wrapper.dataset;
+    const update = () => {
+      ds.open = '.'.repeat(details.reduce((res, el) => res + (el.open ? 1 : 0), 0));
+    };
+    for (const el of details) {
+      new MutationObserver(update).observe(el, {attributes: true, attributeFilter: ['open']});
+    }
+  }
 
   $('#toc').onclick = e =>
     editor.jumpToEditor([...$('#toc').children].indexOf(e.target));

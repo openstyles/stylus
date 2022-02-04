@@ -312,7 +312,7 @@ linterMan.DEFAULTS = {
   function updateCount() {
     const issueCount = Array.from(tables.values())
       .reduce((sum, table) => sum + table.trs.length, 0);
-    $('#lint').classList.toggle('hidden-unless-compact', issueCount === 0);
+    $('#lint').hidden = !issueCount;
     $('#issue-count').textContent = issueCount;
   }
 

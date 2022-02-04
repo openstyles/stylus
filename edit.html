@@ -418,17 +418,15 @@
           <summary><h2 i18n-text="sections"></h2></summary>
           <ol id="toc"></ol>
         </details>
-        <details id="lint" data-pref="editor.lint.expanded" class="hidden-unless-compact ignore-pref-if-compact">
+        <details id="lint" data-pref="editor.lint.expanded" class="ignore-pref-if-compact" hidden>
           <summary>
-            <h2 i18n-text="linterIssues">: <span id="issue-count"></span>
+            <h2><span i18n-text="linterIssues"></span><span id="issue-count"></span>
               <a id="lint-help" class="svg-inline-wrapper intercepts-click" tabindex="0">
                 <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
               </a>
             </h2>
           </summary>
-          <div class="lint-scroll-container">
-            <div class="lint-report-container"></div>
-          </div>
+          <div class="lint-report-container"></div>
         </details>
       </div>
       <div id="header-resizer" i18n-title="headerResizerHint"></div>
