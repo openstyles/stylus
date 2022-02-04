@@ -562,6 +562,7 @@ self.parserlib = (() => {
       '[ objects || [ spaces | [ leading-spaces || trailing-spaces ] ] || edges || box-decoration ]',
     'text-decoration-style': '<text-decoration-style>',
     'text-emphasis': '<text-emphasis-style> || <color>',
+    'text-emphasis-color': '<color>',
     'text-emphasis-style': '<text-emphasis-style>',
     'text-emphasis-position': '[ over | under ] && [ right | left ]?',
     'text-height': 1,
