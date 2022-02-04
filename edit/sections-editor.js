@@ -46,8 +46,11 @@ function SectionsEditor() {
     },
 
     getEditorTitle(cm) {
-      const index = editor.getEditors().indexOf(cm);
-      return `${t('sectionCode')} ${index + 1}`;
+      const index = editor.getEditors().indexOf(cm) + 1;
+      return {
+        textContent: `#${index}`,
+        title: `${t('sectionCode')} ${index}`,
+      };
     },
 
     getValue(asObject) {

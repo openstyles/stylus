@@ -328,9 +328,13 @@ linterMan.DEFAULTS = {
   }
 
   function createTable(cm) {
-    const caption = $create('caption');
-    const tbody = $create('tbody');
-    const table = $create('table', [caption, tbody]);
+    const caption = $create('td.caption');
+    const tbody = $create('tbody.report');
+    const table = $create('table',
+      $create('tr', [
+        caption,
+        $create('td', tbody),
+      ]));
     const trs = [];
     return {
       element: table,
@@ -340,7 +344,7 @@ linterMan.DEFAULTS = {
     };
 
     function updateCaption() {
-      caption.textContent = editor.getEditorTitle(cm);
+      Object.assign(caption, editor.getEditorTitle(cm));
     }
 
     function updateAnnotations(lines) {

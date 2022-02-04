@@ -849,26 +849,29 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 #lint td[role="line"] {
   padding-left: 0.25rem;
 }
-#lint table:last-child {
-  margin-bottom: 0;
-}
-#lint table.empty {
+#lint .empty {
   display: none;
 }
-#lint caption:not(:empty) {
-  text-align: left;
+#lint .caption {
+  vertical-align: top;
+  line-height: 16px;
   font-weight: bold;
-  padding-bottom: 6px;
 }
-#lint tbody {
+#lint .report {
   font-size: 85%;
   cursor: pointer;
 }
-#lint tr:hover {
+.lint-report-container > :not(.empty) ~ :not(.empty) {
+  border-top: 1px dotted rgba(128, 128, 128, .5);
+  margin-top: .25em;
+  padding-top: .25em;
+}
+#lint .report tr:hover {
   background-color: hsla(180, 50%, 36%, .2);
 }
 #lint td {
   padding: 0;
+  line-height: 16px;
 }
 #lint td[role="severity"] {
   font-size: 0;
