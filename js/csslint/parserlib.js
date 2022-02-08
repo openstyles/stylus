@@ -522,7 +522,7 @@ self.parserlib = (() => {
     'scroll-snap-type': 'none | [ x | y | block | inline | both ] [ mandatory | proximity ]?',
 
     'scrollbar-color': 'auto | dark | light | <color>{2}',
-    'scrollbar-gutter': 'auto | [ [ stable | always ] && both-edges? && force? ] || match-parent',
+    'scrollbar-gutter': 'auto | stable && both-edges?',
     'scrollbar-width': 'auto | thin | none',
     'shape-inside': 'auto | outside-shape | [ <basic-shape> || shape-box ] | <image> | display',
     'shape-rendering': 'auto | optimizeSpeed | crispEdges | geometricPrecision',
@@ -683,36 +683,16 @@ self.parserlib = (() => {
     SELECTOR_PART_TYPE: 8,
     SELECTOR_SUB_PART_TYPE: 9,
   };
-  const UNITS = {
-    em:   'length',
-    rem:  'length',
-    ex:   'length',
-    px:   'length',
-    cm:   'length',
-    mm:   'length',
-    in:   'length',
-    pt:   'length',
-    pc:   'length',
-    ch:   'length',
-    vh:   'length',
-    vw:   'length',
-    vmax: 'length',
-    vmin: 'length',
-    fr:   'length',
-    q:    'length',
-    deg:  'angle',
-    rad:  'angle',
-    grad: 'angle',
-    turn: 'angle',
-    ms:   'time',
-    s:    'time',
-    hz:   'frequency',
-    khz:  'frequency',
-    dpi:  'resolution',
-    dpcm: 'resolution',
-    dppx: 'resolution',
-    x:    'resolution',
-  };
+  const UNITS = JSON.parse(`{${Object.entries({
+    angle: 'deg,grad,rad,turn',
+    frequency: 'hz,khz',
+    length: 'cap,ch,em,ex,ic,lh,rlh,rem,' +
+      'cm,mm,in,pc,pt,px,q,' +
+      'fr,' + // grids
+      'vb,vi,vh,vw,vmin,vmax'.replace(/\w+/g, '$&,d$&,l$&,s$&'),
+    resolution: 'dpcm,dpi,dppx,x',
+    time: 'ms,s',
+  }).map(([type, units]) => units.replace(/\w+/g, `"$&":"${type}"`)).join(',')}}`);
   // Sticky `y` flag must be used in expressions used with peekTest and readMatch
   const rxIdentStart = /[-\\_a-zA-Z\u00A0-\uFFFF]/u;
   const rxNameChar = /[-\\_\da-zA-Z\u00A0-\uFFFF]/u;
