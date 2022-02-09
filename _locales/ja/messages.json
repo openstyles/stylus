@@ -229,6 +229,17 @@
   "disableStyleLabel": {
     "message": "無効化"
   },
+  "draftAction": {
+    "message": "このデータをロードするならば「はい」を、破棄するならば「いいえ」を選択してください。"
+  },
+  "draftTitle": {
+    "message": "$date$に作成されたデータ",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
   "dragDropMessage": {
     "message": "このページの任意の場所にバックアップファイルをドロップしてインポートします。"
   },
@@ -266,6 +277,9 @@
   },
   "excludeStyleByUrlLabel": {
     "message": "現在のURLを除外"
+  },
+  "exportCompatible": {
+    "message": "エクスポート（互換モード）"
   },
   "exportLabel": {
     "message": "エクスポート"
@@ -355,6 +369,9 @@
   },
   "gettingStyles": {
     "message": "全スタイルを取得中..."
+  },
+  "headerResizerHint": {
+    "message": "この種のUI（エディタ、管理、インストーラ）の中では、Shiftを押しながらリサイズしてください"
   },
   "helpAlt": {
     "message": "ヘルプ"
@@ -1001,6 +1018,9 @@
   "popupHotkeysTooltip": {
     "message": "クリックすると使用可能なホットキーを表示します"
   },
+  "popupManageSiteStyles": {
+    "message": "サイトのスタイルを管理"
+  },
   "popupManageTooltip": {
     "message": "シフトを押しながらクリック または 右クリック で、現在のサイトに適用可能なスタイルの管理画面を開きます"
   },
@@ -1061,11 +1081,17 @@
   "replaceWith": {
     "message": "次に置換"
   },
+  "restoreTemplate": {
+    "message": "デフォルトのテンプレートに戻す。\n\n（現在エディタで開いているものは変化しません。）"
+  },
   "retrieveBckp": {
     "message": "スタイルをインポート"
   },
   "retrieveDropboxSync": {
     "message": "Dropboxからインポート"
+  },
+  "saveAsTemplate": {
+    "message": "テンプレートとして保存"
   },
   "search": {
     "message": "検索"
@@ -1207,6 +1233,18 @@
   },
   "styleIncludeLabel": {
     "message": "含めるサイトを設定"
+  },
+  "styleInjectionImportance": {
+    "message": "スタイルの重要度を設定/解除する"
+  },
+  "styleInjectionOrder": {
+    "message": "スタイルの適用順"
+  },
+  "styleInjectionOrderHint": {
+    "message": "ドラッグ&ドロップでスタイルの位置を変更できます。スタイルは表示の順番に適用されるため、リストのより下にあるスタイルは、上のものを上書きできます。"
+  },
+  "styleInjectionOrderHint_prio": {
+    "message": "以下に表示される重要なスタイルは、常に最後に挿入されるため、新しくインストールしたスタイルを上書きできます。スタイルをクリックして重要度を設定/解除してください。"
   },
   "styleInstall": {
     "message": "「$stylename$」を Stylus にインストールしますか？",

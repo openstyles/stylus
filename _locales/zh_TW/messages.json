@@ -267,6 +267,17 @@
   "disableStyleLabel": {
     "message": "停用"
   },
+  "draftAction": {
+    "message": "選擇「是」以載入此草稿，或「否」以放棄"
+  },
+  "draftTitle": {
+    "message": "還原草稿，已建立 $date$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
   "dragDropMessage": {
     "message": "將您的備份檔拖曳到此頁面的任何地方以匯入。"
   },
@@ -304,6 +315,9 @@
   },
   "excludeStyleByUrlLabel": {
     "message": "排除目前的 URL"
+  },
+  "exportCompatible": {
+    "message": "匯出（相容模式）"
   },
   "exportLabel": {
     "message": "匯出"
@@ -393,6 +407,9 @@
   },
   "gettingStyles": {
     "message": "正在取得所有樣式……"
+  },
+  "headerResizerHint": {
+    "message": "按住 Shift 以僅在此類型的 UI 中調整大小，例如編輯器、管理程式、安裝程式等"
   },
   "helpAlt": {
     "message": "說明"
@@ -1036,6 +1053,9 @@
   "popupHotkeysTooltip": {
     "message": "點選以檢視可用的快速鍵"
   },
+  "popupManageSiteStyles": {
+    "message": "管理網站樣式"
+  },
   "popupManageTooltip": {
     "message": "Shift + 點選或右鍵 + 點選以在管理員中開啟目前頁面可用的樣式"
   },
@@ -1096,11 +1116,17 @@
   "replaceWith": {
     "message": "取代為"
   },
+  "restoreTemplate": {
+    "message": "還原預設範本。\n\n（不會變更目前開啟的編輯器頁面。）"
+  },
   "retrieveBckp": {
     "message": "匯入樣式"
   },
   "retrieveDropboxSync": {
     "message": "Dropbox 匯入"
+  },
+  "saveAsTemplate": {
+    "message": "另存為範本"
   },
   "search": {
     "message": "搜尋"
@@ -1242,6 +1268,18 @@
   },
   "styleIncludeLabel": {
     "message": "自訂包含網站"
+  },
+  "styleInjectionImportance": {
+    "message": "切換樣式重要程度"
+  },
+  "styleInjectionOrder": {
+    "message": "樣式注入順序"
+  },
+  "styleInjectionOrderHint": {
+    "message": "拖曳樣式可變更其位置。樣式按下列順序注入，所以清單下方的樣式可覆寫較早樣式。"
+  },
+  "styleInjectionOrderHint_prio": {
+    "message": "下方列出的重要樣式一律最後注入，因此它們會覆寫新安裝的樣式。點擊樣式的標記以切換其重要程度。"
   },
   "styleInstall": {
     "message": "安裝 '$stylename$' 到 Stylus ？",
