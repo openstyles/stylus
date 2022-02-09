@@ -11,10 +11,12 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
   const ORDERED_TAGS = new Set(['head', 'body', 'frameset', 'style', 'link']);
   const docRewriteObserver = RewriteObserver(_sort);
   const docRootObserver = RootObserver(_sortIfNeeded);
+  const toSafeChar = c => String.fromCharCode(0xFF00 + c.charCodeAt(0) - 0x20);
   const list = [];
   const table = new Map();
   let isEnabled = true;
   let isTransitionPatched;
+  let exposeStyleName;
   // will store the original method refs because the page can override them
   let creationDoc, createElement, createElementNS;
 
@@ -83,7 +85,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
   };
 
   function _add(style) {
-    const el = style.el = _createStyle(style.id, style.code);
+    const el = style.el = _createStyle(style);
     const i = list.findIndex(item => compare(item, style) > 0);
     table.set(style.id, style);
     if (isEnabled) {
@@ -116,18 +118,18 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
         !styles.some(s => s.code.includes('transition'))) {
       return;
     }
-    const el = _createStyle(PATCH_ID, `
+    const el = _createStyle({id: PATCH_ID, code: `
       :root:not(#\\0):not(#\\0) * {
         transition: none !important;
       }
-    `);
+    `});
     document.documentElement.appendChild(el);
     // wait for the next paint to complete
     // note: requestAnimationFrame won't fire in inactive tabs
     requestAnimationFrame(() => setTimeout(() => el.remove()));
   }
 
-  function _createStyle(id, code = '') {
+  function _createStyle({id, code = '', name} = {}) {
     if (!creationDoc) _initCreationDoc();
     let el;
     if (document.documentElement instanceof SVGSVGElement) {
@@ -144,6 +146,11 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
       el.id = `${PREFIX}${id}`;
       const oldEl = document.getElementById(el.id);
       if (oldEl) oldEl.id += '-superseded-by-Stylus';
+    }
+    if (exposeStyleName && name) {
+      el.dataset.name = name;
+      name = encodeURIComponent(name.replace(/[#%/@:']/g, toSafeChar));
+      code += `\n/*# sourceURL=${chrome.runtime.getURL('')}${name}.user.css#${id} */`;
     }
     el.type = 'text/css';
     // SVG className is not a string, but an instance of SVGAnimatedString
@@ -224,9 +231,12 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
   }
 
   function _styleMapToArray(styleMap) {
-    return Object.values(styleMap).map(s => ({
-      id: s.id,
-      code: s.code.join(''),
+    ({exposeStyleName} = styleMap.cfg || {});
+    delete styleMap.cfg;
+    return Object.values(styleMap).map(({id, code, name}) => ({
+      id,
+      name,
+      code: code.join(''),
     }));
   }
 

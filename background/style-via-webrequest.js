@@ -1,5 +1,5 @@
 /* global API */// msg.js
-/* global CHROME ignoreChromeError */// toolbox.js
+/* global CHROME URLS ignoreChromeError */// toolbox.js
 /* global prefs */
 'use strict';
 
@@ -48,6 +48,12 @@
     }
     if (CHROME && !off) {
       chrome.webNavigation.onCommitted.addListener(injectData, {url: [{urlPrefix: 'http'}]});
+    }
+    if (CHROME) {
+      chrome.webRequest.onBeforeRequest.addListener(openNamedStyle, {
+        urls: [URLS.ownOrigin + '*.user.css'],
+        types: ['main_frame'],
+      }, ['blocking']);
     }
     state.csp = csp;
     state.off = off;
@@ -144,6 +150,12 @@
         URL.revokeObjectURL(blobUrlPrefix + data.blobId);
       }
     }
+  }
+
+  /** @param {chrome.webRequest.WebRequestBodyDetails} req */
+  function openNamedStyle(req) {
+    chrome.tabs.update(req.tabId, {url: 'edit.html?id=' + req.url.split('#')[1]});
+    return {cancel: true};
   }
 
   function req2key(req) {

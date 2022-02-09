@@ -24,6 +24,7 @@
     'show-badge': true,             // display text on popup menu icon
     'disableAll': false,            // boss key
     'exposeIframes': false,         // Add 'stylus-iframe' attribute to HTML element in all iframes
+    'exposeStyleName': false,       // Add style name to the style for better devtools experience
     'newStyleAsUsercss': false,     // create new style in usercss format
     'styleViaXhr': false,           // early style injection to avoid FOUC
     'patchCsp': false,              // add data: and popular image hosting sites to strict CSP
