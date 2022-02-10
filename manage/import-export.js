@@ -104,6 +104,7 @@ async function importFromString(jsonString) {
   const json = tryJSONparse(jsonString);
   const oldStyles = Array.isArray(json) && json.length ? await API.styles.getAll() : [];
   const oldStylesById = new Map(oldStyles.map(style => [style.id, style]));
+  const oldStylesByUuid = new Map(oldStyles.map(style => [style._id, style]));
   const oldStylesByName = new Map(oldStyles.map(style => [style.name.trim(), style]));
   const oldOrder = await API.styles.getOrder();
   const items = [];
@@ -144,10 +145,11 @@ async function importFromString(jsonString) {
     }
     item.name = item.name.trim();
     const byId = oldStylesById.get(item.id);
+    const byUuid = oldStylesByUuid.get(item._id);
     const byName = oldStylesByName.get(item.name);
     oldStylesByName.delete(item.name);
-    let oldStyle;
-    if (byId) {
+    let oldStyle = byUuid;
+    if (!oldStyle && byId) {
       if (sameStyle(byId, item)) {
         oldStyle = byId;
       } else {
