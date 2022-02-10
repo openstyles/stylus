@@ -184,6 +184,8 @@ const styleMan = (() => {
           },
         };
       }
+      // TODO: enable in FF when it supports sourceURL comment in style elements (also options.html)
+      const {exposeStyleName} = CHROME && prefs.__values;
       const sender = CHROME && this && this.sender || {};
       if (sender.frameId === 0) {
         /* Chrome hides text frament from location.href of the page e.g. #:~:text=foo
@@ -202,9 +204,9 @@ const styleMan = (() => {
       } else if (cache.maybeMatch.size) {
         buildCache(cache, url, Array.from(cache.maybeMatch, id2data).filter(Boolean));
       }
-      return id
-        ? cache.sections[id] ? {[id]: cache.sections[id]} : {}
-        : Object.assign({cfg: {order}}, cache.sections);
+      return Object.assign({cfg: {exposeStyleName, order}},
+        id ? mapObj(cache.sections, null, [id])
+          : cache.sections);
     },
 
     /** @returns {Promise<StyleObj>} */
@@ -429,7 +431,7 @@ const styleMan = (() => {
       const code = getAppliedCode(createMatchQuery(url), style);
       if (code) {
         updated.add(url);
-        cache.sections[id] = {id, code};
+        buildCacheEntry(cache, style, code);
       } else {
         excluded.add(url);
         delete cache.sections[id];
@@ -703,11 +705,18 @@ const styleMan = (() => {
     for (const {style, appliesTo, preview} of styleList) {
       const code = getAppliedCode(query, preview || style);
       if (code) {
-        const id = style.id;
-        cache.sections[id] = {id, code};
+        buildCacheEntry(cache, style, code);
         appliesTo.add(url);
       }
     }
+  }
+
+  function buildCacheEntry(cache, style, code = style.code) {
+    cache.sections[style.id] = {
+      code,
+      id: style.id,
+      name: style.customName || style.name,
+    };
   }
 
   /** @returns {StyleObj[]} */

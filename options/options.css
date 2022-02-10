@@ -105,6 +105,11 @@ a:hover .svg-icon,
 .chromium-only.chrome-no-popup-border {
   display: none;
 }
+label.chromium-only > :first-child::after {
+  content: '(Chrome)';
+  color: #888;
+  margin-left: .5ex;
+}
 
 .block {
   display: flex;
@@ -228,7 +233,7 @@ input[type="color"] {
   position: relative;
 }
 [data-cmd="note"] {
-  padding: .5em 1em .5em 0;
+  padding: .5em 0 .5em 0;
   cursor: pointer;
 }
 .update-in-progress [data-cmd="check-updates"] {

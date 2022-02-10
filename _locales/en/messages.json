@@ -1089,6 +1089,12 @@
     "message": "Exposes the top site domain in each iframe.\nEnables writing iframe-specific CSS like this:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }",
     "description": "Add attribute to iframe; make sure to include the double $$ in the css example, or the `$=` will be omitted in the displayed text."
   },
+  "optionsAdvancedExposeStyleName": {
+    "message": "Expose style name"
+  },
+  "optionsAdvancedExposeStyleNameNote": {
+    "message": "Exposes the style name in the page to facilitate debugging of styles in devtools. Please reload the tab(s) to apply the new setting."
+  },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Write new style as usercss"
   },

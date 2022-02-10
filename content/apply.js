@@ -105,7 +105,6 @@
       if (styles.cfg) {
         isDisabled = styles.cfg.disableAll;
         Object.assign(order, styles.cfg.order);
-        delete styles.cfg;
       }
       hasStyles = !isDisabled;
       if (hasStyles) {
@@ -181,7 +180,6 @@
         if (!hasStyles && isDisabled || matchUrl === request.url) break;
         matchUrl = request.url;
         API.styles.getSectionsByUrl(matchUrl).then(sections => {
-          delete sections.cfg;
           hasStyles = true;
           styleInjector.replace(sections);
         });
