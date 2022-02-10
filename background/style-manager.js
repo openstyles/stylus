@@ -184,7 +184,8 @@ const styleMan = (() => {
           },
         };
       }
-      const {exposeStyleName} = prefs.__values;
+      // TODO: enable in FF when it supports sourceURL comment in style elements (also options.html)
+      const {exposeStyleName} = CHROME && prefs.__values;
       const sender = CHROME && this && this.sender || {};
       if (sender.frameId === 0) {
         /* Chrome hides text frament from location.href of the page e.g. #:~:text=foo
