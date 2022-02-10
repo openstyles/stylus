@@ -1012,6 +1012,7 @@ body.linter-disabled .hidden-unless-compact {
 .CodeMirror-linewidget .applies-to {
   margin: 1em 0;
   padding: .75rem calc(.25rem + var(--cm-bar-width, 0)) .25rem .75rem;
+  font-family: var(--family);
 }
 .CodeMirror-linewidget .applies-to li[data-type="regexp"] .test-regexp {
   display: inline;

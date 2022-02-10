@@ -40,11 +40,12 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
   };
 
   function init() {
+    const hint = {title: t('appliesHelp')};
     enabled = true;
     TPL = {
       container:
-        $create('div' + C_CONTAINER, {title: t('appliesHelp')}, [
-          $create(C_LABEL, t('appliesLabel')),
+        $create('div' + C_CONTAINER, [
+          $create(C_LABEL, hint, t('appliesLabel')),
           $create('ul' + C_LIST),
         ]),
       listItem:
@@ -53,8 +54,9 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
         $create('li.applies-to-everything', t('appliesToEverything')),
     };
 
+    Object.assign($(C_TYPE, TPL.listItem), hint);
     $(C_VALUE, TPL.listItem).after(
-      $create('button.test-regexp', t('styleRegexpTestButton')));
+      $create('button.test-regexp', t('genericTest')));
 
     CLICK_ROUTE = {
       '.test-regexp': showRegExpTester,
@@ -203,7 +205,6 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
         color: ${fore};
       }
       ${C_CONTAINER} input,
-      ${C_CONTAINER} button,
       ${C_CONTAINER} select {
         background: rgba(255, 255, 255, ${
           Math.max(MIN_LUMA, Math.pow(Math.max(0, color.gutter.bgLuma - MIN_LUMA * 2), 2)).toFixed(2)
