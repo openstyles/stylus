@@ -8,6 +8,7 @@
 
 (() => {
   const SPLIT_BTN_MENU = '.split-btn-menu';
+  const tooltips = new WeakMap();
   splitLongTooltips();
   addTooltipsToEllipsized();
   window.on('mousedown', suppressFocusRingOnClick, {passive: true});
@@ -152,7 +153,7 @@
       event.preventDefault();
       window.messageBoxProxy.show({
         className: 'note center-dialog',
-        contents: el.dataset.title || el.title,
+        contents: tooltips.get(el) || el.title,
         buttons: [t('confirmClose')],
       });
     }
@@ -160,7 +161,7 @@
 
   function splitLongTooltips() {
     for (const el of $$('[title]')) {
-      el.dataset.title = el.title;
+      tooltips.set(el, el.title);
       el.title = el.title.replace(/<\/?\w+>/g, ''); // strip html tags
       if (el.title.length < 50) {
         continue;
