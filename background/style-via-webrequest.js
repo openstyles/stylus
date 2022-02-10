@@ -51,7 +51,7 @@
     }
     if (CHROME) {
       chrome.webRequest.onBeforeRequest.addListener(openNamedStyle, {
-        urls: [URLS.ownOrigin + '*.user.css'],
+        urls: [URLS.ownOrigin + 'virtual/*.css'],
         types: ['main_frame'],
       }, ['blocking']);
     }
