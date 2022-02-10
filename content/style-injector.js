@@ -150,7 +150,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     if (exposeStyleName && name) {
       el.dataset.name = name;
       name = encodeURIComponent(name.replace(/[#%/@:']/g, toSafeChar));
-      code += `\n/*# sourceURL=${chrome.runtime.getURL('')}virtual/${name}.css#${id} */`;
+      code += `\n/*# sourceURL=${chrome.runtime.getURL(name)}.user.css#${id} */`;
     }
     el.type = 'text/css';
     // SVG className is not a string, but an instance of SVGAnimatedString
