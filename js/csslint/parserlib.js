@@ -3478,24 +3478,15 @@ self.parserlib = (() => {
         }
         if ((val = t.value) === '{') {
           if (ids[1]) this.fire({type: 'error', message: '@layer block cannot have multiple ids'}, start);
-          this._layerBlock(start, true, ids[0]);
+          this.fire({type: 'startlayer', id: ids[0] || null}, start);
+          this._rulesetBlock(start);
+          this.fire('endlayer');
+          this._ws();
           return;
         }
       } while (val === ',');
       if (val !== ';') stream.mustMatch(Tokens.SEMICOLON);
       this.fire({type: 'layer', ids}, start);
-      this._ws();
-    }
-
-    _layerBlock(start, inBlock, id) {
-      if (!inBlock) {
-        this._ws();
-        id = this._tokenStream.match(Tokens.IDENT);
-        this._tokenStream.mustMatch(Tokens.LBRACE);
-      }
-      this.fire({type: 'startlayer', id: id || null}, start);
-      this._rulesetBlock(start);
-      this.fire('endlayer');
       this._ws();
     }
 
@@ -4586,7 +4577,7 @@ self.parserlib = (() => {
     [Tokens.DOCUMENT_SYM]: Parser.prototype._documentMisplaced,
     [Tokens.FONT_FACE_SYM]: Parser.prototype._fontFace,
     [Tokens.KEYFRAMES_SYM]: Parser.prototype._keyframes,
-    [Tokens.LAYER_SYM]: Parser.prototype._layerBlock,
+    [Tokens.LAYER_SYM]: Parser.prototype._layer,
     [Tokens.MEDIA_SYM]: Parser.prototype._media,
     [Tokens.PAGE_SYM]: Parser.prototype._page,
     [Tokens.SUPPORTS_SYM]: Parser.prototype._supports,
