@@ -13,6 +13,7 @@ Object.assign(t, {
   template: {},
   parser: new DOMParser(),
   ALLOWED_TAGS: ['a', 'b', 'code', 'i', 'sub', 'sup', 'wbr'],
+  PREFIX: 'i18n-',
   RX_WORD_BREAK: new RegExp([
     '(',
     /[\d\w\u007B-\uFFFF]{10}/,
@@ -33,10 +34,12 @@ Object.assign(t, {
   },
 
   NodeList(nodes) {
-    const PREFIX = 'i18n-';
+    if (nodes instanceof Node) {
+      nodes = [nodes, ...nodes.getElementsByTagName('*')];
+    }
     for (let n = nodes.length; --n >= 0;) {
       const node = nodes[n];
-      if (node.nodeType !== Node.ELEMENT_NODE) {
+      if (!node.localName) {
         continue;
       }
       if (node.localName === 'template') {
@@ -46,10 +49,10 @@ Object.assign(t, {
       for (let a = node.attributes.length; --a >= 0;) {
         const attr = node.attributes[a];
         const name = attr.nodeName;
-        if (!name.startsWith(PREFIX)) {
+        if (!name.startsWith(t.PREFIX)) {
           continue;
         }
-        const type = name.substr(PREFIX.length);
+        const type = name.substr(t.PREFIX.length);
         const value = t(attr.value);
         let toInsert, before;
         switch (type) {
@@ -73,6 +76,7 @@ Object.assign(t, {
         if (toInsert) {
           node.insertBefore(toInsert, before || null);
         }
+        node.removeAttribute(name);
       }
     }
   },
@@ -84,20 +88,16 @@ Object.assign(t, {
   },
 
   createTemplate(node) {
-    const elements = node.content.querySelectorAll('*');
-    t.NodeList(elements);
-    t.template[node.dataset.id] = elements[0];
+    const el = node.content.firstElementChild.cloneNode(true);
+    t.NodeList(el);
+    t.template[node.dataset.id] = el;
     // compress inter-tag whitespace to reduce number of DOM nodes by 25%
-    const walker = document.createTreeWalker(elements[0], NodeFilter.SHOW_TEXT);
-    const toRemove = [];
-    while (walker.nextNode()) {
-      const textNode = walker.currentNode;
-      if (!/[\xA0\S]/.test(textNode.nodeValue)) { // allow \xA0 to keep &nbsp;
-        toRemove.push(textNode);
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    for (let n; (n = walker.nextNode());) {
+      if (!/[\xA0\S]/.test(n.textContent)) { // allow \xA0 to keep &nbsp;
+        n.remove();
       }
     }
-    t.stopObserver();
-    toRemove.forEach(el => el.remove());
   },
 
   createText(str) {
@@ -109,7 +109,7 @@ Object.assign(t, {
     if (!trusted) {
       t.sanitizeHtml(root);
     } else if (str.includes('i18n-')) {
-      t.NodeList(root.getElementsByTagName('*'));
+      t.NodeList(root);
     }
     const bin = document.createDocumentFragment();
     while (root.firstChild) {
@@ -122,7 +122,7 @@ Object.assign(t, {
     let el = t.template[name];
     if (!el) {
       el = (await download(url, {responseType: 'document'})).body.firstElementChild;
-      t.NodeList(el.getElementsByTagName('*'));
+      t.NodeList(el);
       t.template[name] = el;
     }
     return el;
@@ -201,7 +201,7 @@ Object.assign(t, {
     t.stopObserver();
   }, {once: true});
 
-  t.NodeList(document.getElementsByTagName('*'));
+  t.NodeList(document);
   start();
 
   function process(mutations) {
