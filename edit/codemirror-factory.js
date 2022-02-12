@@ -48,8 +48,10 @@
     cm.lastActive = Date.now();
   };
   const onCmBlur = cm => {
-    rerouteHotkeys.toggle(true);
     setTimeout(() => {
+      /* Delaying to next tick to avoid double-processing of the currently processed keyboard event
+       * when it bubbles up from CodeMirror to `document` where the rerouter listens */
+      rerouteHotkeys.toggle(true);
       const {wrapper} = cm.display;
       wrapper.classList.toggle('CodeMirror-active', wrapper.contains(document.activeElement));
     });
