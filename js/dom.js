@@ -294,8 +294,8 @@ function scrollElementIntoView(element, {invalidMarginRatio = 0} = {}) {
   const windowHeight = window.innerHeight;
   if (top < Math.max(parentTop, windowHeight * invalidMarginRatio) ||
       top > Math.min(parentBottom, windowHeight) - height - windowHeight * invalidMarginRatio) {
-    const scroller = element.closest('.scroller');
-    scroller.scrollBy(0, top - (scroller ? scroller.clientHeight : windowHeight) / 2 + height);
+    const scroller = element.closest('.scroller') || window;
+    scroller.scrollBy(0, top - (scroller.clientHeight || windowHeight) / 2 + height);
   }
 }
 
