@@ -154,8 +154,10 @@
 
   /** @param {chrome.webRequest.WebRequestBodyDetails} req */
   function openNamedStyle(req) {
-    chrome.tabs.update(req.tabId, {url: 'edit.html?id=' + req.url.split('#')[1]});
-    return {cancel: true};
+    if (!req.url.includes('?')) { // skipping our usercss installer
+      chrome.tabs.update(req.tabId, {url: 'edit.html?id=' + req.url.split('#')[1]});
+      return {cancel: true};
+    }
   }
 
   function req2key(req) {
