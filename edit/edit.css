@@ -1,6 +1,7 @@
 :root {
   --pad: 1rem;
   --pad05: calc(0.5 * var(--pad));
+  --popup-button-width: 16px;
 }
 
 body {
@@ -1031,22 +1032,27 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   #header:not(.sticky) {
     position: static;
   }
-  #header {
+  #header:not(.sticky) {
     display: block;
+  }
+  #header {
     flex: 0 0 auto;
     height: unset;
     width: 100%;
+    overflow: visible;
     background: #fff;
     border-right: none;
     border-bottom: 1px dashed #AAA;
     padding: var(--pad05) var(--pad05) 0;
   }
   #header.sticky {
+    flex-direction: row;
     box-shadow: 0 0 3rem -.75rem black;
   }
   #header.sticky #basic-info,
   #header.sticky #mozilla-format-buttons,
   #header.sticky .buttons > button,
+  #header.sticky .split-btn-pedal,
   #heading,
   #header-sticker {
     top: 0;
@@ -1054,11 +1060,14 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
     position: absolute;
     visibility: hidden;
   }
+  .popup-window #details-wrapper {
+    margin-right: var(--popup-button-width);
+  }
   h2 {
     display: none;
   }
   #basic-info {
-    margin: 0 16px var(--pad05) 0; /* for popup icon in simple window */
+    margin: 0 var(--popup-button-width) var(--pad05) 0;
     box-sizing: border-box;
     display: flex;
     flex-wrap: wrap;
@@ -1086,14 +1095,35 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
     flex-direction: row;
     margin: .25em 0 var(--pad05);
   }
-  #details-wrapper details[open] {
-    max-height: 10vh;
-  }
   #details-wrapper[data-open^=".."] details {
     max-width: 50%;
   }
   #details-wrapper[data-open^="..."] {
     flex-wrap: wrap;
+  }
+  #details-wrapper details[open] {
+    margin-top: 0;
+    z-index: 1000;
+  }
+  #details-wrapper details[open]:focus-within {
+    z-index: 1001;
+  }
+  #details-wrapper details[open] > summary {
+    position: static;
+    margin-top: 0;
+  }
+  #details-wrapper details[open] > summary + * {
+    position: absolute;
+    overflow-y: auto;
+    max-height: 10vh;
+    background: #fff;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .3);
+    padding: var(--pad);
+  }
+  #sections-list[open] > #toc,
+  #lint[open] > .lint-report-container {
+    max-width: 50vw;
+    right: 0;
   }
   #options[open],
   #publish[open],

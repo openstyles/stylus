@@ -21,6 +21,7 @@
     onclick: embedPopup,
   });
   $root.appendChild(btn);
+  $root.classList.add('popup-window');
   baseInit.domReady.then(() => {
     document.body.appendChild(btn);
     // Adding a dummy command to show in keymap help popup

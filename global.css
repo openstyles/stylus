@@ -320,6 +320,7 @@ body.resizing-v > * {
 
 .split-btn {
   position: relative;
+  white-space: nowrap;
 }
 .split-btn-pedal {
   margin-left: -1px !important;
