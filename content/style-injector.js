@@ -9,8 +9,8 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
   const PATCH_ID = 'transition-patch';
   // styles are out of order if any of these elements is injected between them
   const ORDERED_TAGS = new Set(['head', 'body', 'frameset', 'style', 'link']);
-  const docRewriteObserver = RewriteObserver(_sort);
-  const docRootObserver = RootObserver(_sortIfNeeded);
+  const docRewriteObserver = RewriteObserver(sort);
+  const docRootObserver = RootObserver(sortIfNeeded);
   const toSafeChar = c => String.fromCharCode(0xFF00 + c.charCodeAt(0) - 0x20);
   const list = [];
   const table = new Map();
@@ -25,24 +25,24 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     list,
 
     async apply(styleMap) {
-      const styles = _styleMapToArray(styleMap);
+      const styles = styleMapToArray(styleMap);
       const value = !styles.length
         ? []
         : await docRootObserver.evade(() => {
           if (!isTransitionPatched && isEnabled) {
-            _applyTransitionPatch(styles);
+            applyTransitionPatch(styles);
           }
-          return styles.map(_addUpdate);
+          return styles.map(addUpdate);
         });
-      _emitUpdate();
+      emitUpdate();
       return value;
     },
 
     clear() {
-      _addRemoveElements(false);
+      addRemoveElements(false);
       list.length = 0;
       table.clear();
-      _emitUpdate();
+      emitUpdate();
     },
 
     clearOrphans() {
@@ -55,12 +55,12 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     },
 
     remove(id) {
-      _remove(id);
-      _emitUpdate();
+      remove(id);
+      emitUpdate();
     },
 
     replace(styleMap) {
-      const styles = _styleMapToArray(styleMap);
+      const styles = styleMapToArray(styleMap);
       const added = new Set(styles.map(s => s.id));
       const removed = [];
       for (const style of list) {
@@ -68,24 +68,24 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
           removed.push(style.id);
         }
       }
-      styles.forEach(_addUpdate);
-      removed.forEach(_remove);
-      _emitUpdate();
+      styles.forEach(addUpdate);
+      removed.forEach(remove);
+      emitUpdate();
     },
 
     toggle(enable) {
       if (isEnabled === enable) return;
       isEnabled = enable;
-      if (!enable) _toggleObservers(false);
-      _addRemoveElements(enable);
-      if (enable) _toggleObservers(true);
+      if (!enable) toggleObservers(false);
+      addRemoveElements(enable);
+      if (enable) toggleObservers(true);
     },
 
-    sort: _sort,
+    sort: sort,
   };
 
-  function _add(style) {
-    const el = style.el = _createStyle(style);
+  function add(style) {
+    const el = style.el = createStyle(style);
     const i = list.findIndex(item => compare(item, style) > 0);
     table.set(style.id, style);
     if (isEnabled) {
@@ -95,7 +95,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     return el;
   }
 
-  function _addRemoveElements(add) {
+  function addRemoveElements(add) {
     for (const {el} of list) {
       if (add) {
         document.documentElement.appendChild(el);
@@ -105,11 +105,11 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     }
   }
 
-  function _addUpdate(style) {
-    return table.has(style.id) ? _update(style) : _add(style);
+  function addUpdate(style) {
+    return table.has(style.id) ? update(style) : add(style);
   }
 
-  function _applyTransitionPatch(styles) {
+  function applyTransitionPatch(styles) {
     isTransitionPatched = true;
     // CSS transition bug workaround: since we insert styles asynchronously,
     // the browsers, especially Firefox, may apply all transitions on page load
@@ -118,7 +118,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
         !styles.some(s => s.code.includes('transition'))) {
       return;
     }
-    const el = _createStyle({id: PATCH_ID, code: `
+    const el = createStyle({id: PATCH_ID, code: `
       :root:not(#\\0):not(#\\0) * {
         transition: none !important;
       }
@@ -129,8 +129,9 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     requestAnimationFrame(() => setTimeout(() => el.remove()));
   }
 
-  function _createStyle({id, code = '', name} = {}) {
-    if (!creationDoc) _initCreationDoc();
+  function createStyle(style = {}) {
+    const {id} = style;
+    if (!creationDoc) initCreationDoc();
     let el;
     if (document.documentElement instanceof SVGSVGElement) {
       // SVG document style
@@ -147,26 +148,30 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
       const oldEl = document.getElementById(el.id);
       if (oldEl) oldEl.id += '-superseded-by-Stylus';
     }
+    el.type = 'text/css';
+    // SVG className is not a string, but an instance of SVGAnimatedString
+    el.classList.add('stylus');
+    setTextAndName(el, style);
+    return el;
+  }
+
+  function setTextAndName(el, {id, code = '', name}) {
     if (exposeStyleName && name) {
       el.dataset.name = name;
       name = encodeURIComponent(name.replace(/[#%/@:']/g, toSafeChar));
       code += `\n/*# sourceURL=${chrome.runtime.getURL(name)}.user.css#${id} */`;
     }
-    el.type = 'text/css';
-    // SVG className is not a string, but an instance of SVGAnimatedString
-    el.classList.add('stylus');
     el.textContent = code;
-    return el;
   }
 
-  function _toggleObservers(shouldStart) {
+  function toggleObservers(shouldStart) {
     const onOff = shouldStart && isEnabled ? 'start' : 'stop';
     docRewriteObserver[onOff]();
     docRootObserver[onOff]();
   }
 
-  function _emitUpdate() {
-    _toggleObservers(list.length);
+  function emitUpdate() {
+    toggleObservers(list.length);
     onUpdate();
   }
 
@@ -177,11 +182,11 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
   and since userAgent.navigator can be spoofed via about:config or devtools,
   we're checking for getPreventDefault that was removed in FF59
   */
-  function _initCreationDoc() {
+  function initCreationDoc() {
     creationDoc = !Event.prototype.getPreventDefault && document.wrappedJSObject;
     if (creationDoc) {
       ({createElement, createElementNS} = creationDoc);
-      const el = document.documentElement.appendChild(_createStyle());
+      const el = document.documentElement.appendChild(createStyle());
       const isApplied = el.sheet;
       el.remove();
       if (isApplied) return;
@@ -190,7 +195,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     ({createElement, createElementNS} = document);
   }
 
-  function _remove(id) {
+  function remove(id) {
     const style = table.get(id);
     if (!style) return;
     table.delete(id);
@@ -198,14 +203,14 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     style.el.remove();
   }
 
-  function _sort() {
+  function sort() {
     docRootObserver.evade(() => {
       list.sort(compare);
-      _addRemoveElements(true);
+      addRemoveElements(true);
     });
   }
 
-  function _sortIfNeeded() {
+  function sortIfNeeded() {
     let needsSort;
     let el = list.length && list[0].el;
     if (!el) {
@@ -226,13 +231,15 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
       // some styles are not injected to the document
       if (i < list.length) needsSort = true;
     }
-    if (needsSort) _sort();
+    if (needsSort) sort();
     return needsSort;
   }
 
-  function _styleMapToArray(styleMap) {
-    ({exposeStyleName} = styleMap.cfg || {});
-    delete styleMap.cfg;
+  function styleMapToArray(styleMap) {
+    if (styleMap.cfg) {
+      ({exposeStyleName} = styleMap.cfg);
+      delete styleMap.cfg;
+    }
     return Object.values(styleMap).map(({id, code, name}) => ({
       id,
       name,
@@ -240,11 +247,13 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     }));
   }
 
-  function _update({id, code}) {
+  function update(newStyle) {
+    const {id, code} = newStyle;
     const style = table.get(id);
-    if (style.code !== code) {
+    if (style.code !== code ||
+        style.name !== newStyle.name && exposeStyleName) {
       style.code = code;
-      style.el.textContent = code;
+      setTextAndName(style.el, newStyle);
     }
   }
 
@@ -253,14 +262,14 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     let root;
     let observing = false;
     let timer;
-    const observer = new MutationObserver(_check);
+    const observer = new MutationObserver(check);
     return {start, stop};
 
     function start() {
       if (observing) return;
       // detect dynamic iframes rewritten after creation by the embedder i.e. externally
       root = document.documentElement;
-      timer = setTimeout(_check);
+      timer = setTimeout(check);
       observer.observe(document, {childList: true});
       observing = true;
     }
@@ -272,7 +281,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
       observing = false;
     }
 
-    function _check() {
+    function check() {
       if (root !== document.documentElement) {
         root = document.documentElement;
         onChange();
@@ -302,7 +311,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     function evade(fn) {
       const restore = observing && start;
       stop();
-      return new Promise(resolve => _run(fn, resolve, _waitForRoot))
+      return new Promise(resolve => run(fn, resolve, waitForRoot))
         .then(restore);
     }
 
@@ -320,7 +329,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
       observing = false;
     }
 
-    function _run(fn, resolve, wait) {
+    function run(fn, resolve, wait) {
       if (document.documentElement) {
         resolve(fn());
         return true;
@@ -328,8 +337,8 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
       if (wait) wait(fn, resolve);
     }
 
-    function _waitForRoot(...args) {
-      new MutationObserver((_, observer) => _run(...args) && observer.disconnect())
+    function waitForRoot(...args) {
+      new MutationObserver((_, observer) => run(...args) && observer.disconnect())
         .observe(document, {childList: true});
     }
   }
