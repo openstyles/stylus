@@ -1,4 +1,4 @@
-/* global $ $create $remove messageBoxProxy */// dom.js
+/* global $ $create $remove $root messageBoxProxy */// dom.js
 /* global API */// msg.js
 /* global CodeMirror */
 /* global RX_META debounce */// toolbox.js
@@ -25,7 +25,6 @@ function SectionsEditor() {
   updateMeta();
   rerouteHotkeys.toggle(true); // enabled initially because we don't always focus a CodeMirror
   editor.livePreview.init();
-  container.classList.add('section-editor');
   $('#to-mozilla').on('click', showMozillaFormat);
   $('#to-mozilla-help').on('click', showToMozillaHelp);
   $('#from-mozilla').on('click', () => showMozillaFormatImport());
@@ -397,7 +396,7 @@ function SectionsEditor() {
     }
 
     function lockPageUI(locked) {
-      document.documentElement.style.pointerEvents = locked ? 'none' : '';
+      $root.style.pointerEvents = locked ? 'none' : '';
       if (popup.codebox) {
         popup.classList.toggle('ready', locked ? false : !popup.codebox.isBlank());
         popup.codebox.options.readOnly = locked;

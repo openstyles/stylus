@@ -1,4 +1,4 @@
-/* global $ $create messageBoxProxy */// dom.js
+/* global $ $create $root messageBoxProxy */// dom.js
 /* global CodeMirror */
 /* global MozSectionFinder */
 /* global colorMimicry */
@@ -218,7 +218,7 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
         transition: none;
       }
     `;
-    document.documentElement.appendChild(actualStyle);
+    $root.appendChild(actualStyle);
   }
 
   /**

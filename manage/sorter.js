@@ -1,4 +1,4 @@
-/* global $ $create messageBoxProxy onDOMready */// dom.js
+/* global $ $create $root messageBoxProxy onDOMready */// dom.js
 /* global installed */// manage.js
 /* global prefs */
 /* global t */// localization.js
@@ -172,11 +172,11 @@ const sorter = (() => {
 
   function updateColumnCount() {
     let newValue = 1;
-    for (let el = document.documentElement.lastElementChild;
+    for (let el = $root.lastElementChild;
          el.localName === 'style';
          el = el.previousElementSibling) {
       if (el.textContent.includes('--columns:')) {
-        newValue = Math.max(1, getComputedStyle(document.documentElement).getPropertyValue('--columns') | 0);
+        newValue = Math.max(1, getComputedStyle($root).getPropertyValue('--columns') | 0);
         break;
       }
     }
