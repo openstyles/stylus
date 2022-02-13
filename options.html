@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title i18n-text-append="optionsHeading">Stylus </title>
   <link rel="stylesheet" href="global.css">
+  <link href="global-dark.css" rel="stylesheet">
 
   <script src="js/polyfill.js"></script>
   <script src="js/toolbox.js"></script>
@@ -18,6 +19,7 @@
 
   <link rel="stylesheet" href="options/onoffswitch.css">
   <link rel="stylesheet" href="options/options.css">
+  <script src="js/dark-themer.js"></script> <!-- must be here to avoid FOUC -->
 </head>
 
 <body id="stylus-options">
@@ -42,6 +44,30 @@
           <div class="label">
             <a i18n-text="optionsStylusThemes" target="_blank"
                href="https://33kk.github.io/uso-archive/?category=chrome-extension&search=Stylus"></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <h1 i18n-text="stylePreferSchemeLabel"></h1>
+        <div class="items">
+          <div class="radio-group">
+            <span i18n-text="optionsAdvancedAutoSwitchScheme" class="radio-group-label"></span>
+            <label class="radio-group-item">
+              <input type="radio" value="never" name="schemeSwitcher.enabled" class="radio">
+              <span i18n-text="optionsAdvancedAutoSwitchSchemeNever"></span>
+            </label>
+            <label class="radio-group-item">
+              <input type="radio" value="system" name="schemeSwitcher.enabled" class="radio">
+              <span i18n-text="optionsAdvancedAutoSwitchSchemeBySystem"></span>
+            </label>
+            <label class="radio-group-item">
+              <input type="radio" value="time" name="schemeSwitcher.enabled" class="radio">
+              <span i18n-text="optionsAdvancedAutoSwitchSchemeByTime"></span>
+              <input type="time" required id="schemeSwitcher.nightStart">
+              ~
+              <input type="time" required id="schemeSwitcher.nightEnd">
+            </label>
           </div>
         </div>
       </div>
@@ -288,26 +314,6 @@
               <span></span>
             </span>
           </label>
-          <div class="radio-group">
-            <span i18n-text="optionsAdvancedAutoSwitchScheme" class="radio-group-label"></span>
-            <label class="radio-group-item">
-              <input type="radio" value="never" name="schemeSwitcher.enabled" class="radio">
-              <span i18n-text="optionsAdvancedAutoSwitchSchemeNever"></span>
-            </label>
-            <label class="radio-group-item">
-              <input type="radio" value="system" name="schemeSwitcher.enabled" class="radio">
-              <span i18n-text="optionsAdvancedAutoSwitchSchemeBySystem"></span>
-            </label>
-            <label class="radio-group-item">
-              <input type="radio" value="time" name="schemeSwitcher.enabled" class="radio">
-              <span>
-                <span i18n-text="optionsAdvancedAutoSwitchSchemeByTime"></span>
-                <input type="text" pattern="\d{2}:\d{2}" required id="schemeSwitcher.nightStart" class="input-sm">
-                ~
-                <input type="text" pattern="\d{2}:\d{2}" required id="schemeSwitcher.nightEnd" class="input-sm">
-              </span>
-            </label>
-          </div>
         </div>
       </div>
 

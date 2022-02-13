@@ -623,18 +623,6 @@
     "message": "Update style",
     "description": "Label for update button"
   },
-  "installPreferSchemeLabel": {
-    "message": "The style should be applied:"
-  },
-  "installPreferSchemeNone": {
-    "message": "Always"
-  },
-  "installPreferSchemeDark": {
-    "message": "In Dark Mode"
-  },
-  "installPreferSchemeLight": {
-    "message": "In Light Mode"
-  },
   "installUpdate": {
     "message": "Install update",
     "description": "Label for the button to install an update for a single style"
@@ -1322,6 +1310,27 @@
   "popupStylesFirst": {
     "message": "Styles before commands",
     "description": "Label for the checkbox controlling section order in the popup."
+  },
+  "preferScheme": {
+    "message": "Dark/Light mode preference:"
+  },
+  "preferSchemeDark": {
+    "message": "Dark"
+  },
+  "preferSchemeDarkOnly": {
+    "message": "Dark (strict)"
+  },
+  "preferSchemeLight": {
+    "message": "Light"
+  },
+  "preferSchemeLightOnly": {
+    "message": "Light (strict)"
+  },
+  "preferSchemeNone": {
+    "message": "None (always applied)"
+  },
+  "preferSchemeTip": {
+    "message": "The style will be applied in a matching Dark/Light global mode. For strict options, the mode being active is mandatory, so the style doesn't apply when the mode is 'Never'. For non-strict options, the style also applies when the user doesn't care i.e. the global mode is 'Never'."
   },
   "prefShowBadge": {
     "message": "Number of styles active for the current site",

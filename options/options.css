@@ -8,7 +8,6 @@ html {
 
 body {
   background: none;
-  margin: 0;
   font-family: "Helvetica Neue", Helvetica, sans-serif;
   font-size: 12px;
   display: flex;
@@ -16,7 +15,7 @@ body {
   width: auto;
   max-width: 800px;
   max-height: calc(100vh - 32px);
-  border: 1px solid #999;
+  border: 1px solid var(--c60);
   box-shadow: 0px 5px 15px 3px hsla(0, 0%, 0%, .35);
   animation: scalein .25s ease-in-out;
 }
@@ -26,7 +25,7 @@ body.scaleout {
 }
 
 #options {
-  background: #fff;
+  background: var(--bg);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -37,17 +36,17 @@ body.scaleout {
 }
 
 a {
-  color: #000;
+  color: var(--fg);
   transition: color .5s;
 }
 
 a:hover {
-  color: #666;
+  color: var(--c40);
 }
 
 a:hover .svg-icon,
 .svg-icon:hover {
-  fill: #000;
+  fill: var(--fg);
 }
 
 .svg-inline-wrapper .svg-icon {
@@ -55,12 +54,12 @@ a:hover .svg-icon,
 }
 
 #options-close-icon .svg-icon {
-  fill: #666;
+  fill: var(--c40);
   transition: fill .5s;
 }
 
 #options-close-icon:hover .svg-icon {
-  fill: #000;
+  fill: var(--fg);
 }
 
 #options-close-icon {
@@ -78,14 +77,14 @@ a:hover .svg-icon,
 
 #options-title {
   font-weight: bold;
-  background-color: rgb(145, 208, 198);
+  background-color: var(--accent-3);
   padding: .75rem 26px .75rem calc(30% + 4px);
   font-size: 22px;
   letter-spacing: .5px;
   position: relative;
   min-height: 42px;
   box-sizing: border-box;
-  border-bottom: 1px solid #999;
+  border-bottom: 1px solid var(--c40);
 }
 
 #options-title::before {
@@ -107,7 +106,7 @@ a:hover .svg-icon,
 }
 label.chromium-only > :first-child::after {
   content: '(Chrome)';
-  color: #888;
+  color: var(--c50);
   margin-left: .5ex;
 }
 
@@ -115,7 +114,7 @@ label.chromium-only > :first-child::after {
   display: flex;
   align-items: center;
   margin: 1em 0;
-  border-bottom: 1px dotted #ccc;
+  border-bottom: 1px dotted var(--c80);
   padding: 0 16px .75em;
   position: relative;
 }
@@ -215,7 +214,7 @@ input[type="color"] {
   white-space: nowrap;
   background-color: rgba(0, 0, 0, .05);
   margin: 0;
-  border-top: 1px solid #999;
+  border-top: 1px solid var(--c60);
   border-bottom: none;
   min-height: min-content; /* workaround for old Chrome ~70 bug when the window height is small */
 }
@@ -275,12 +274,12 @@ html:not(.firefox):not(.opera) #updates {
 .svg-inline-wrapper .svg-icon {
   width: 16px;
   height: 16px;
-  fill: #666;
+  fill: var(--c40);
   vertical-align: sub;
 }
 
 .svg-inline-wrapper:hover .svg-icon {
-  fill: #000;
+  fill: var(--fg);
 }
 
 #message-box.note {
@@ -296,55 +295,22 @@ html:not(.firefox):not(.opera) #updates {
   position: relative;
 }
 
-/* radio group */
 .radio-group-item {
   display: flex;
   align-items: center;
-  min-height: 1.5em;
+  line-height: 1.5;
 }
-.radio-group-item > input {
-  margin: 0 8px 0 0;
-  flex-grow: 0;
+.radio-group-item > input[type=radio] {
+  margin: 0 .5em 0 0;
+  flex: 0 0 auto;
 }
 .radio-group-label {
   display: block;
   margin: 0 0 .3em;
 }
-
-.input-sm {
-  width: 3em;
-}
-
-/* pixel perfect radio */
-input[type="radio"].radio::after {
-  position: absolute;
-  top: -1px;
-  right: -1px;
-  bottom: -1px;
-  left: -1px;
-  height: auto;
-  width: auto;
-  transform: scale(0);
-}
-input[type="radio"].radio:checked::after {
-  transform: scale(.65);
-}
-
-@keyframes fadeinout {
-  0%   { opacity: 0 }
-  10%  { opacity: 1 }
-  25%  { opacity: 1 }
-  100% { opacity: 0 }
-}
-
-@media (hover: none) {
-  .expanded-note {
-    font-size: 90%;
-    white-space: normal;
-    color: #666;
-    margin-top: .5em;
-    hyphens: auto;
-  }
+input[type=time] {
+  margin: 0 .5em;
+  max-width: 7em; /* TODO: remove when strict_min_version >= 57 */
 }
 
 .sync-status {

@@ -5,12 +5,11 @@
 }
 
 body {
-  margin: 0;
   height: 100vh;
 }
 
 a {
-  color: #000;
+  color: var(--fg);
   transition: color .5s;
 }
 a:hover {
@@ -55,8 +54,8 @@ html:not(.is-new-style) #heading::after {
   top: 0;
   z-index: 1001;
   border: none;
-  background: #fff;
-  box-shadow: 0 0 30px #000;
+  background: var(--bg);
+  box-shadow: 0 0 30px var(--fg);
 }
 #popup-iframe:not([data-loaded]) {
   opacity: 0;
@@ -97,7 +96,7 @@ label {
   position: fixed;
   top: 0;
   padding-top: var(--pad);
-  box-shadow: 0 0 3rem -1.2rem black;
+  box-shadow: 0 0 3rem -1.2rem #000;
   box-sizing: border-box;
   z-index: 10;
   display: flex;
@@ -173,7 +172,7 @@ label {
 
 #preview-errors {
   background-color: red;
-  color: white;
+  color: var(--bg);
   padding: 0 6px;
   border-radius: 9px;
   margin-left: -.5em;
@@ -206,12 +205,12 @@ label {
 .svg-icon:hover,
 .svg-icon.info,
 .svg-icon.settings {
-  fill: #666;
+  fill: var(--c40);
 }
 .svg-icon,
 .svg-icon.info:hover,
 .svg-icon.settings:hover {
-  fill: #000;
+  fill: var(--fg);
 }
 #options span .svg-icon {
   margin-top: -3px; /* inline info and config icons */
@@ -256,7 +255,7 @@ input:invalid {
   text-overflow: ellipsis;
 }
 #header summary:hover h2 {
-  border-color: #bbb;
+  border-color: var(--c70);
 }
 #header summary svg {
   margin-top: -3px;
@@ -385,7 +384,7 @@ input:invalid {
   padding: 1rem;
 }
 .sectioned .section:not(:first-child) {
-  border-top: 2px solid hsl(0, 0%, 80%);
+  border-top: 2px solid var(--c80);
 }
 .add-section:after {
   content: attr(short-text);
@@ -649,14 +648,14 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 .add-applies-to .svg-icon,
 .remove-applies-to .svg-icon {
   pointer-events: none;
-  fill: hsl(0, 0%, 60%);
+  fill: var(--c60);
   height: 12px;
   width: 12px;
 }
 .add-applies-to:hover .svg-icon,
 .remove-applies-to:hover .svg-icon {
   pointer-events: none;
-  fill: hsl(0, 0%, 0%);
+  fill: var(--fg);
 }
 .test-regexp {
   display: none;
@@ -688,7 +687,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   color: darkgreen;
 }
 .regexp-report details[data-type="partial"] {
-  color: darkgray;
+  color: var(--c65);
 }
 .regexp-report details[data-type="invalid"] {
   color: maroon;
@@ -721,7 +720,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   margin-right: .5em;
 }
 .regexp-report-note {
-  color: #999;
+  color: var(--c60);
   position: absolute;
   bottom: 0;
   hyphens: auto;
@@ -736,7 +735,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   max-width: 50vw;
   position: fixed;
   display: none;
-  background-color: white;
+  background-color: var(--bg);
   box-shadow: 3px 3px 30px rgba(0, 0, 0, 0.5);
   padding: var(--pad-y) var(--pad-x) 0;
   z-index: 99;
@@ -980,12 +979,12 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 }
 
 #footer a {
-  color: #333;
+  color: var(--c20);
   transition: color .5s;
 }
 
 #footer a:hover {
-  color: #666;
+  color: var(--c40);
 }
 
 /************ line widget *************/
@@ -1041,14 +1040,14 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
     height: unset;
     width: 100%;
     overflow: visible;
-    background: #fff;
+    background: var(--bg);
     border-right: none;
-    border-bottom: 1px dashed #AAA;
+    border-bottom: 1px dashed var(--c65);
     padding: var(--pad05) var(--pad05) 0;
   }
   #header.sticky {
     flex-direction: row;
-    box-shadow: 0 0 3rem -.75rem black;
+    box-shadow: 0 0 3rem -.75rem;
   }
   #header.sticky #basic-info,
   #header.sticky #mozilla-format-buttons,
@@ -1106,7 +1105,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
     position: absolute;
     overflow: hidden auto;
     max-height: var(--max-height, 10vh);
-    background: #fff;
+    background: var(--bg);
     box-shadow: 0 6px 20px rgba(0, 0, 0, .3);
     padding: var(--pad);
     margin-top: var(--pad05);

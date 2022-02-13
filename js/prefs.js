@@ -32,7 +32,7 @@
     // checkbox in style config dialog
     'config.autosave': true,
 
-    'schemeSwitcher.enabled': 'never',
+    'schemeSwitcher.enabled': 'system',
     'schemeSwitcher.nightStart': '18:00',
     'schemeSwitcher.nightEnd': '06:00',
 

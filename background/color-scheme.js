@@ -4,33 +4,45 @@
 'use strict';
 
 const colorScheme = (() => {
-  let systemPreferDark = false;
-  let timePreferDark = false;
   const changeListeners = new Set();
+  const kSTATE = 'schemeSwitcher.enabled';
+  const kSTART = 'schemeSwitcher.nightStart';
+  const kEND = 'schemeSwitcher.nightEnd';
+  const SCHEMES = ['dark', 'light', 'dark!', 'light!']; // ! = only if schemeSwitcher is enabled
+  const isDark = {never: null, system: false, time: false};
+  let isDarkNow = false;
 
-  const checkTime = ['schemeSwitcher.nightStart', 'schemeSwitcher.nightEnd'];
-  prefs.subscribe(checkTime, (key, value) => {
+  prefs.subscribe(kSTATE, () => emitChange());
+  prefs.subscribe([kSTART, kEND], (key, value) => {
     updateTimePreferDark();
     createAlarm(key, value);
-  });
-  checkTime.forEach(key => createAlarm(key, prefs.get(key)));
-
-  prefs.subscribe(['schemeSwitcher.enabled'], emitChange);
-
-  chrome.alarms.onAlarm.addListener(info => {
-    if (checkTime.includes(info.name)) {
+  }, {runNow: true});
+  chrome.alarms.onAlarm.addListener(({name}) => {
+    if (name === kSTART || name === kEND) {
       updateTimePreferDark();
     }
   });
 
-  updateSystemPreferDark();
-  updateTimePreferDark();
-
-  return {shouldIncludeStyle, onChange, updateSystemPreferDark};
+  return {
+    SCHEMES,
+    onChange(listener) {
+      changeListeners.add(listener);
+    },
+    shouldIncludeStyle({preferScheme: val}) {
+      return !SCHEMES.includes(val) ||
+        !val.endsWith('!') && prefs.get(kSTATE) === 'never' ||
+        val.startsWith('dark') === isDarkNow;
+    },
+    updateSystemPreferDark(val) {
+      emitChange('system', val);
+      return true;
+    },
+  };
 
   function createAlarm(key, value) {
     const date = new Date();
-    applyDate(date, value);
+    const [h, m] = value.split(':');
+    date.setHours(h, m, 0, 0);
     if (date.getTime() < Date.now()) {
       date.setDate(date.getDate() + 1);
     }
@@ -40,61 +52,29 @@ const colorScheme = (() => {
     });
   }
 
-  function shouldIncludeStyle(style) {
-    const isDark = style.preferScheme === 'dark';
-    const isLight = style.preferScheme === 'light';
-    if (!isDark && !isLight) {
-      return true;
-    }
-    const switcherState = prefs.get('schemeSwitcher.enabled');
-    if (switcherState === 'never') {
-      return true;
-    }
-    if (switcherState === 'system') {
-      return systemPreferDark && isDark ||
-        !systemPreferDark && isLight;
-    }
-    return timePreferDark && isDark ||
-      !timePreferDark && isLight;
-  }
-
-  function updateSystemPreferDark() {
-    const oldValue = systemPreferDark;
-    systemPreferDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (systemPreferDark !== oldValue) {
-      emitChange();
-    }
-    return true;
-  }
-
   function updateTimePreferDark() {
-    const oldValue = timePreferDark;
-    const date = new Date();
-    const now = date.getTime();
-    applyDate(date, prefs.get('schemeSwitcher.nightStart'));
-    const start = date.getTime();
-    applyDate(date, prefs.get('schemeSwitcher.nightEnd'));
-    const end = date.getTime();
-    timePreferDark = start > end ?
+    const now = Date.now() - new Date().setHours(0, 0, 0, 0);
+    const start = calcTime(kSTART);
+    const end = calcTime(kEND);
+    const val = start > end ?
       now >= start || now < end :
       now >= start && now < end;
-    if (timePreferDark !== oldValue) {
-      emitChange();
+    emitChange('time', val);
+  }
+
+  function calcTime(key) {
+    const [h, m] = prefs.get(key).split(':');
+    return (h * 3600 + m * 60) * 1000;
+  }
+
+  function emitChange(type, val) {
+    if (type) {
+      if (isDark[type] === val) return;
+      isDark[type] = val;
     }
-  }
-
-  function applyDate(date, time) {
-    const [h, m] = time.split(':').map(Number);
-    date.setHours(h, m, 0, 0);
-  }
-
-  function onChange(listener) {
-    changeListeners.add(listener);
-  }
-
-  function emitChange() {
+    isDarkNow = isDark[prefs.get(kSTATE)];
     for (const listener of changeListeners) {
-      listener();
+      listener(isDarkNow);
     }
   }
 })();

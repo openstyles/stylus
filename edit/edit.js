@@ -140,7 +140,6 @@ async function handleExternalUpdate({style, reason}) {
     delete style.name;
     delete style.enabled;
     Object.assign(editor.style, style);
-    editor.updateLivePreview();
   } else {
     await editor.replaceStyle(style);
   }

@@ -52,6 +52,12 @@
     xo.observe(el);
   };
 
+  // FIXME: move this to background page when following bugs are fixed:
+  // https://bugzil.la/1587723, https://crbug.com/968651
+  const mqDark = matchMedia('(prefers-color-scheme: dark)');
+  mqDark.onchange = e => API.colorScheme.updateSystemPreferDark(e.matches);
+  mqDark.onchange(mqDark);
+
   // Declare all vars before init() or it'll throw due to "temporal dead zone" of const/let
   const ready = init();
 
@@ -69,13 +75,6 @@
     window.dispatchEvent(new CustomEvent(orphanEventId));
     window.addEventListener(orphanEventId, orphanCheck, true);
   }
-
-  // detect media change in content script
-  // FIXME: move this to background page when following bugs are fixed:
-  // https://bugzilla.mozilla.org/show_bug.cgi?id=1561546
-  // https://bugs.chromium.org/p/chromium/issues/detail?id=968651
-  const media = window.matchMedia('(prefers-color-scheme: dark)');
-  media.addListener(() => API.colorScheme.updateSystemPreferDark().catch(console.error));
 
   function onInjectorUpdate() {
     if (!isOrphaned) {

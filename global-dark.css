@@ -1,0 +1,102 @@
+@media not screen, dark {
+  :root {
+    /* Comfortable dark themes don't use absolutes so the range is compressed */
+    --c00: hsl(0, 0%, 80%);
+    --c10: hsl(0, 0%, 73.5%);
+    --c20: hsl(0, 0%, 66%);
+    --c30: hsl(0, 0%, 59.5%);
+    --c40: hsl(0, 0%, 53%);
+    --c45: hsl(0, 0%, 49.75%);
+    --c50: hsl(0, 0%, 46.5%);
+    --c60: hsl(0, 0%, 40%);
+    --c65: hsl(0, 0%, 36.75%);
+    --c70: hsl(0, 0%, 33.5%);
+    --c75: hsl(0, 0%, 30.25%);
+    --c80: hsl(0, 0%, 27%);
+    --c85: hsl(0, 0%, 23.75%);
+    --c90: hsl(0, 0%, 20.5%);
+    --c95: hsl(0, 0%, 17.25%);
+    --c100: hsl(0, 0%, 14%);
+    /* min/max are exposed in case we want to use an overdrive color for emphasis */
+    --cmin: hsl(0, 0%, 100%);
+    --cmax: hsl(0, 0%, 0%);
+    --accent-1: hsl(180, 100%, 95%);
+    --accent-3: hsl(180, 30%, 18%);
+    --input-bg: var(--c95);
+  }
+  textarea,
+  input[type=url],
+  input[type=time] {
+    background-color: var(--input-bg);
+    color: var(--fg);
+  }
+  input::-webkit-inner-spin-button {
+    filter: invert(.8);
+  }
+  input[type=radio]:checked:after {
+    background-color: var(--fg);
+  }
+  input[type=time]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+  select {
+    background-color: var(--bg);
+  }
+  .onoffswitch {
+    --knob: var(--c50);
+  }
+  ::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+    background: var(--bg);
+  }
+  ::-webkit-scrollbar-button:single-button {
+    background: radial-gradient(circle at center, #333 40%, var(--bg) 40%);
+  }
+  ::-webkit-scrollbar-button:single-button:hover {
+    background: radial-gradient(circle at center, #444 40%, var(--bg) 40%);
+  }
+  ::-webkit-scrollbar-button:single-button:active {
+    background: radial-gradient(circle at center, #555 40%, var(--bg) 40%);
+  }
+  ::-webkit-scrollbar-track-piece {
+    background: #333;
+    border: 4px solid var(--bg);
+    border-radius: 8px;
+  }
+  ::-webkit-scrollbar-track-piece:hover {
+    background: #444;
+  }
+  ::-webkit-scrollbar-track-piece:active {
+    background: #555;
+  }
+  ::-webkit-scrollbar-thumb {
+    border: 3px solid var(--bg);
+    border-radius: 8px;
+    background: #555;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #666;
+  }
+  ::-webkit-scrollbar-thumb:active {
+    background: #777;
+  }
+  ::-webkit-resizer {
+    background: var(--input-bg) linear-gradient(-45deg,
+      transparent 3px, #888 3px,
+      #888 4px, transparent 4px,
+      transparent 6px, #888 6px,
+      #888 7px, transparent 7px) no-repeat;
+    border: 2px solid transparent;
+  }
+  :-webkit-autofill {
+    box-shadow: 0 0 0 1000px var(--input-bg) inset;
+    -webkit-text-fill-color: #fff;
+  }
+  @supports (-moz-appearance: none) {
+    /* Workarounds for FF bugs/quirks */
+    textarea {
+      border: 1px solid var(--c65);
+    }
+  }
+}

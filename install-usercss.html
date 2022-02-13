@@ -7,6 +7,7 @@
   <title>Loading...</title>
 
   <link href="global.css" rel="stylesheet">
+  <link href="global-dark.css" rel="stylesheet">
 
   <script src="js/polyfill.js"></script>
   <script src="js/msg.js"></script>
@@ -20,8 +21,47 @@
   <script src="content/style-injector.js"></script>
   <script src="content/apply.js"></script>
 
+  <template data-id="jumpToLine">
+    <span i18n-text="editGotoLine">: <input class="CodeMirror-jump-field" type="text"></span>
+  </template>
+
+  <script src="vendor/codemirror/lib/codemirror.js"></script>
+  <script src="vendor/codemirror/mode/css/css.js"></script>
+  <script src="vendor/codemirror/mode/stylus/stylus.js"></script>
+  <script src="vendor/codemirror/addon/dialog/dialog.js"></script>
+  <script src="vendor/codemirror/addon/edit/closebrackets.js"></script>
+  <script src="vendor/codemirror/addon/scroll/annotatescrollbar.js"></script>
+  <script src="vendor/codemirror/addon/search/searchcursor.js"></script>
+  <script src="vendor/codemirror/addon/search/matchesonscrollbar.js"></script>
+  <script src="vendor/codemirror/addon/comment/comment.js"></script>
+  <script src="vendor/codemirror/addon/selection/active-line.js"></script>
+  <script src="vendor/codemirror/addon/edit/matchbrackets.js"></script>
+  <script src="vendor/codemirror/addon/fold/foldcode.js"></script>
+  <script src="vendor/codemirror/addon/fold/foldgutter.js"></script>
+  <script src="vendor/codemirror/addon/fold/brace-fold.js"></script>
+  <script src="vendor/codemirror/addon/fold/indent-fold.js"></script>
+  <script src="vendor/codemirror/addon/fold/comment-fold.js"></script>
+  <script src="vendor/codemirror/addon/lint/lint.js"></script>
+  <script src="vendor/codemirror/addon/hint/show-hint.js"></script>
+  <script src="vendor/codemirror/addon/hint/css-hint.js"></script>
+  <script src="vendor/codemirror/keymap/sublime.js"></script>
+  <script src="vendor/codemirror/keymap/emacs.js"></script>
+  <script src="vendor/codemirror/keymap/vim.js"></script>
+  <script src="vendor-overwrites/codemirror-addon/match-highlighter.js"></script>
+  <script src="edit/codemirror-default.js"></script>
+  <script src="js/color/color-converter.js"></script>
+  <script src="js/color/color-view.js"></script>
+  <script src="js/sections-util.js"></script>
+  <script src="js/cmpver.js"></script>
+
+  <link href="vendor/codemirror/lib/codemirror.css" rel="stylesheet">
+  <link href="vendor/codemirror/addon/dialog/dialog.css" rel="stylesheet">
+  <link href="vendor/codemirror/addon/fold/foldgutter.css" rel="stylesheet">
+  <link href="vendor/codemirror/addon/search/matchesonscrollbar.css" rel="stylesheet">
+  <link href="edit/codemirror-default.css" rel="stylesheet">
   <link href="spinner.css" rel="stylesheet">
   <link href="install-usercss/install-usercss.css" rel="stylesheet">
+  <script src="js/dark-themer.js"></script> <!-- must be here to avoid FOUC -->
 </head>
 <body id="stylus-install-usercss">
   <div id="header">
@@ -80,6 +120,11 @@
   </div>
 
   <svg xmlns="http://www.w3.org/2000/svg" style="display: none !important;">
+    <symbol id="svg-icon-help" viewBox="0 0 14 16" i18n-alt="helpAlt">
+      <circle cx="7" cy="5" r="1"/>
+      <path d="M8,8c0-0.5-0.5-1-1-1H6C5.5,7,5,7.4,5,8h1v3c0,0.5,0.5,1,1,1h1c0.5,0,1-0.4,1-1H8V8z"/>
+      <path d="M7,1c3.9,0,7,3.1,7,7s-3.1,7-7,7s-7-3.1-7-7S3.1,1,7,1z M7,2.3C3.9,2.3,1.3,4.9,1.3,8s2.6,5.7,5.7,5.7s5.7-2.6,5.7-5.7S10.1,2.3,7,2.3C7,2.3,7,2.3,7,2.3z"/>
+    </symbol>
     <symbol id="svg-icon-checked" viewBox="0 0 1000 1000">
       <path fill-rule="evenodd" d="M983.2,184.3L853,69.8c-4-3.5-9.3-5.3-14.5-5c-5.3,0.4-10.3,2.8-13.8,6.8L352.3,609.2L184.4,386.9c-3.2-4.2-8-7-13.2-7.8c-5.3-0.8-10.6,0.6-14.9,3.9L18,487.5c-8.8,6.7-10.6,19.3-3.9,28.1L325,927.2c3.6,4.8,9.3,7.7,15.3,8c0.2,0,0.5,0,0.7,0c5.8,0,11.3-2.5,15.1-6.8L985,212.6C992.3,204.3,991.5,191.6,983.2,184.3z"/>
     </symbol>

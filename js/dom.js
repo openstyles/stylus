@@ -278,7 +278,7 @@ function moveFocus(rootElement, step) {
 function onDOMready() {
   return document.readyState !== 'loading'
     ? Promise.resolve()
-    : new Promise(resolve => document.on('DOMContentLoaded', resolve, {once: true}));
+    : new Promise(resolve => document.on('DOMContentLoaded', () => resolve(), {once: true}));
 }
 
 /**

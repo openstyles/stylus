@@ -84,11 +84,11 @@ const styleMan = (() => {
       handleDraft(port);
     }
   });
-  // function handleColorScheme() {
-  colorScheme.onChange(() => {
-    for (const {style: data} of dataMap.values()) {
-      if (data.preferScheme === 'dark' || data.preferScheme === 'light') {
-        broadcastStyleUpdated(data, 'colorScheme', undefined, false);
+  colorScheme.onChange(value => {
+    msg.broadcastExtension({method: 'colorScheme', value});
+    for (const {style} of dataMap.values()) {
+      if (colorScheme.SCHEMES.includes(style.preferScheme)) {
+        broadcastStyleUpdated(style, 'colorScheme');
       }
     }
   });
@@ -320,7 +320,8 @@ const styleMan = (() => {
     async config(id, prop, value) {
       if (ready.then) await ready;
       const style = Object.assign({}, id2style(id));
-      style[prop] = value;
+      const {preview = {}} = dataMap.get(id);
+      style[prop] = preview[prop] = value;
       return saveStyle(style, {reason: 'config'});
     },
   };

@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title i18n-text="manageTitle"></title>
   <link rel="stylesheet" href="global.css">
+  <link href="global-dark.css" rel="stylesheet">
 
   <!-- Notes:
     * Chrome doesn't garbage-collect (or even leaks) SVG <symbol> referenced via <use> so we'll embed the code directly
@@ -155,6 +156,7 @@
   <script src="manage/manage.js"></script>
 
   <link rel="stylesheet" href="manage/manage.css">
+  <script src="js/dark-themer.js"></script> <!-- must be here to avoid FOUC -->
 </head>
 
 <body id="stylus-manage" i18n-dragndrop-hint="dragDropMessage">
