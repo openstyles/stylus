@@ -379,11 +379,11 @@ input:invalid {
   box-shadow: none !important;
   pointer-events: auto !important; /* FF bug */
 }
-.section-editor .section {
+.sectioned .section {
   margin: 0 0.7rem;
   padding: 1rem;
 }
-.section-editor .section:not(:first-child) {
+.sectioned .section:not(:first-child) {
   border-top: 2px solid hsl(0, 0%, 80%);
 }
 .add-section:after {
@@ -419,10 +419,10 @@ input:invalid {
   content: counter(codebox) ": " attr(data-text);
   margin-left: 0.25rem;
 }
-.single-editor .applies-to {
+.usercss .applies-to {
   border-width: 1px 0;
 }
-.single-editor .applies-to > label::before {
+.usercss .applies-to > label::before {
   content: attr(data-index) ":";
   margin-right: 0.25rem;
   font-size: 12px;
@@ -586,7 +586,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   padding: 0;
   line-height: var(--input-height);
 }
-.section-editor .applies-to label {
+.sectioned .applies-to label {
   margin-left: -24px;
   position: absolute;
 }
@@ -948,7 +948,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   box-shadow: none;
 }
 
-html:not(.usercss) .usercss-only,
+.sectioned .usercss-only,
 .usercss .sectioned-only {
   display: none !important; /* hide during page init */
 }
@@ -1020,28 +1020,40 @@ html:not(.usercss) .usercss-only,
 
 /************ reponsive layouts ************/
 @media(max-width: 850px) {
-  html:not(.usercss) body {
+  .sectioned body {
     height: 100%;
   }
   .usercss body {
     display: flex;
     flex-direction: column;
   }
-  .usercss #header {
-    position: inherit;
+  .usercss #header,
+  #header:not(.sticky) {
+    position: static;
   }
   #header {
     display: block;
     flex: 0 0 auto;
     height: unset;
-    width: unset;
-    position: sticky;
+    width: 100%;
     background: #fff;
     border-right: none;
     border-bottom: 1px dashed #AAA;
     padding: var(--pad05) var(--pad05) 0;
   }
+  #header.sticky {
+    box-shadow: 0 0 3rem -.75rem black;
+  }
+  #header.sticky #basic-info,
+  #header.sticky #mozilla-format-buttons,
+  #header.sticky .buttons > button,
   #heading,
+  #header-sticker {
+    top: 0;
+    height: 1px;
+    position: absolute;
+    visibility: hidden;
+  }
   h2 {
     display: none;
   }
@@ -1092,7 +1104,6 @@ html:not(.usercss) .usercss-only,
   #sections {
     padding-left: 0;
   }
-  /* TODO: switch from .single-editor to the global .usercss */
   #sections > :not(.single-editor) {
     margin: 0 .5rem;
     padding: .5rem 0;

@@ -25,11 +25,7 @@ baseInit.ready.then(async () => {
   await editor.ready;
   editor.ready = true;
   editor.dirty.onChange(editor.updateDirty);
-
-  prefs.subscribe('editor.linter', (key, value) => {
-    document.body.classList.toggle('linter-disabled', value === '');
-    linterMan.run();
-  });
+  prefs.subscribe('editor.linter', () => linterMan.run());
 
   // enabling after init to prevent flash of validation failure on an empty name
   $('#name').required = !editor.isUsercss;
@@ -74,6 +70,34 @@ baseInit.ready.then(async () => {
     '/edit/drafts',
     '/edit/global-search',
   ]);
+}).then(() => {
+  // Set up mini-header on scroll
+  const {isUsercss} = editor;
+  const el = $create('#header-sticker');
+  const scroller = isUsercss ? $('.CodeMirror-scroll') : document.body;
+  const xo = new IntersectionObserver(onScrolled, {root: isUsercss ? scroller : document});
+  scroller.appendChild(el);
+  onCompactToggled(baseInit.mqCompact);
+  baseInit.mqCompact.on('change', onCompactToggled);
+
+  /** @param {MediaQueryList} mq */
+  function onCompactToggled(mq) {
+    for (const el of $$('details[data-pref]')) {
+      el.open = mq.matches ? false : prefs.get(el.dataset.pref);
+    }
+    if (mq.matches) {
+      xo.observe(el);
+    } else {
+      xo.disconnect();
+    }
+  }
+  /** @param {IntersectionObserverEntry[]} entries */
+  function onScrolled([e]) {
+    const h = $('#header');
+    const sticky = !e.isIntersecting;
+    if (!isUsercss) scroller.style.paddingTop = sticky ? h.offsetHeight + 'px' : '';
+    h.classList.toggle('sticky', sticky);
+  }
 });
 
 //#endregion

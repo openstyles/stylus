@@ -1,4 +1,4 @@
-/* global $ $$ $create setupLivePrefs waitForSelector */// dom.js
+/* global $ $$ $create $root setupLivePrefs waitForSelector */// dom.js
 /* global API */// msg.js
 /* global CODEMIRROR_THEMES */
 /* global CodeMirror */
@@ -32,7 +32,7 @@ const editor = {
   cancel: () => location.assign('/manage.html'),
 
   updateClass() {
-    document.documentElement.classList.toggle('is-new-style', !editor.style.id);
+    $root.classList.toggle('is-new-style', !editor.style.id);
   },
 
   updateTitle(isDirty = editor.dirty.isDirty()) {
@@ -49,16 +49,14 @@ const editor = {
 
 const baseInit = (() => {
   const domReady = waitForSelector('#sections');
-  const mq = matchMedia('(max-width: 850px)');
-  (mq.onchange = e => {
-    document.documentElement.classList.toggle('compact-layout', e.matches);
-    for (const el of $$('details[data-pref]')) {
-      el.open = e.matches ? false : prefs.get(el.dataset.pref);
-    }
-  })(mq);
+  const mqCompact = matchMedia('(max-width: 850px)');
+  const toggleCompact = mq => $root.classList.toggle('compact-layout', mq.matches);
+  mqCompact.on('change', toggleCompact);
+  toggleCompact(mqCompact);
 
   return {
     domReady,
+    mqCompact,
     ready: Promise.all([
       domReady,
       loadStyle(),
@@ -94,7 +92,7 @@ const baseInit = (() => {
     editor.style = style;
     editor.updateClass();
     editor.updateTitle(false);
-    document.documentElement.classList.toggle('usercss', editor.isUsercss);
+    $root.classList.add(editor.isUsercss ? 'usercss' : 'sectioned');
     sessionStore.justEditedStyleId = style.id || '';
     // no such style so let's clear the invalid URL parameters
     if (!style.id) history.replaceState({}, '', location.pathname);
