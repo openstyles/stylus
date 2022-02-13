@@ -1,7 +1,7 @@
 {
   "name": "Stylus",
   "version": "1.5.22",
-  "minimum_chrome_version": "56",
+  "minimum_chrome_version": "55",
   "description": "__MSG_description__",
   "homepage_url": "https://add0n.com/stylus.html",
   "manifest_version": 2,
