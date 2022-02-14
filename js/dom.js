@@ -27,6 +27,9 @@ Object.assign(EventTarget.prototype, {
 
 //#region Exports
 
+$.root = document.documentElement;
+$.rootCL = $.root.classList;
+
 // Makes the focus outline appear on keyboard tabbing, but not on mouse clicks.
 const focusAccessibility = {
   // last event's focusedViaClick
@@ -292,8 +295,8 @@ function scrollElementIntoView(element, {invalidMarginRatio = 0} = {}) {
   const windowHeight = window.innerHeight;
   if (top < Math.max(parentTop, windowHeight * invalidMarginRatio) ||
       top > Math.min(parentBottom, windowHeight) - height - windowHeight * invalidMarginRatio) {
-    const scroller = element.closest('.scroller');
-    scroller.scrollBy(0, top - (scroller ? scroller.clientHeight : windowHeight) / 2 + height);
+    const scroller = element.closest('.scroller') || window;
+    scroller.scrollBy(0, top - (scroller.clientHeight || windowHeight) / 2 + height);
   }
 }
 
@@ -474,10 +477,9 @@ const dom = {};
   const lazyScripts = [
     '/js/dom-on-load',
   ];
-  const elHtml = document.documentElement;
-  if (!UA.windows) elHtml.classList.add('non-windows');
+  if (!UA.windows) $.rootCL.add('non-windows');
   // set language for a) CSS :lang pseudo and b) hyphenation
-  elHtml.setAttribute('lang', chrome.i18n.getUILanguage());
+  $.root.setAttribute('lang', chrome.i18n.getUILanguage());
   // set up header width resizer
   const HW = 'headerWidth.';
   const HWprefId = HW + location.pathname.match(/^.(\w*)/)[1];
@@ -489,7 +491,7 @@ const dom = {};
         // If this is a small window on a big monitor the user can maximize it later
         const max = (innerWidth < 850 ? screen.availWidth : innerWidth) / 3;
         width = Math.round(Math.max(200, Math.min(max, Number(width) || 0)));
-        elHtml.style.setProperty('--header-width', width + 'px');
+        $.root.style.setProperty('--header-width', width + 'px');
         return width;
       },
     });

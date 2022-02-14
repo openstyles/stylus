@@ -20,7 +20,8 @@
     title: t('optionsCustomizePopup') + '\n' + POPUP_HOTKEY,
     onclick: embedPopup,
   });
-  document.documentElement.appendChild(btn);
+  $.root.appendChild(btn);
+  $.rootCL.add('popup-window');
   baseInit.domReady.then(() => {
     document.body.appendChild(btn);
     // Adding a dummy command to show in keymap help popup

@@ -1,5 +1,7 @@
 :root {
-  --fixed-padding: unset;
+  --pad: 1rem; /* Edge padding for modals/blocks/whatnot. TODO: reuse it in more places */
+  --pad05: calc(0.5 * var(--pad));
+  --popup-button-width: 16px;
 }
 
 body {
@@ -70,7 +72,7 @@ html:not(.is-new-style) #heading::after {
 #popup-button:hover {
   filter: drop-shadow(0 0 3px hsl(180, 70%, 50%));
 }
-.usercss body:not(.compact-layout) #popup-button {
+.usercss:not(.compact-layout) #popup-button {
   right: 24px;
 }
 /************ checkbox & select************/
@@ -91,10 +93,10 @@ label {
 #header {
   width: var(--header-width);
   height: 100vh;
-  overflow: auto;
+  overflow: hidden;
   position: fixed;
   top: 0;
-  padding: 1rem;
+  padding-top: var(--pad);
   box-shadow: 0 0 3rem -1.2rem black;
   box-sizing: border-box;
   z-index: 10;
@@ -222,56 +224,61 @@ input:invalid {
   margin-left: 0;
 }
 /* collapsibles */
+#header details {
+  margin-right: var(--header-resizer-width);
+}
+#header details[open] {
+  overflow-y: auto;
+  margin-top: calc(1.5*var(--pad));
+}
+#header details[open] summary {
+  position: absolute;
+  margin-top: calc(-1.5*var(--pad));
+}
 #header summary {
   align-items: center;
-  margin-left: -13px;
+  margin-left: .25em;
   cursor: pointer;
-}
-#header summary + * {
-  padding: .5rem 0;
+  white-space: nowrap;
 }
 #header summary h2 {
   display: inline-block;
   border-bottom: 1px dotted transparent;
-  margin-top: .1em;
-  margin-bottom: .1em;
-  margin-left: -13px;
+  margin: 0 0 0 -13px;
   padding-left: 13px; /* clicking directly on details-marker doesn't set pref so we cover it with h2 */
+  max-width: calc(var(--header-width) - 2*var(--pad));
+  vertical-align: middle;
 }
-
+#header summary h2,
+#header summary h2 > :first-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 #header summary:hover h2 {
   border-color: #bbb;
 }
-
 #header summary svg {
   margin-top: -3px;
 }
-
+#header details > :not(summary) {
+  margin: 0 0 0 var(--pad);
+  padding: calc(var(--pad)/4) 0;
+}
 #details-wrapper {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  overflow: hidden;
+  margin-top: var(--pad05);
 }
-
-#header details[open] + details[open] {
-  margin-top: .5rem;
-}
-
 #actions .buttons {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
 }
-
 #actions .buttons > * {
-  margin: 0 .25rem .5rem 0;
-}
-
-#options:not([open]) + #lint h2 {
-  margin-top: 0;
-}
-#lint:not([open]) h2 {
-  margin-bottom: 0;
+  margin: 0 .25rem var(--pad05) 0;
 }
 
 #publish > div > * {
@@ -373,11 +380,11 @@ input:invalid {
   box-shadow: none !important;
   pointer-events: auto !important; /* FF bug */
 }
-.section-editor .section {
+.sectioned .section {
   margin: 0 0.7rem;
   padding: 1rem;
 }
-.section-editor .section:not(:first-child) {
+.sectioned .section:not(:first-child) {
   border-top: 2px solid hsl(0, 0%, 80%);
 }
 .add-section:after {
@@ -413,10 +420,10 @@ input:invalid {
   content: counter(codebox) ": " attr(data-text);
   margin-left: 0.25rem;
 }
-.single-editor .applies-to {
+.usercss .applies-to {
   border-width: 1px 0;
 }
-.single-editor .applies-to > label::before {
+.usercss .applies-to > label::before {
   content: attr(data-index) ":";
   margin-right: 0.25rem;
   font-size: 12px;
@@ -426,8 +433,6 @@ input:invalid {
 }
 #toc {
   counter-reset: codelabel;
-  margin: 0;
-  padding: .5rem 0;
 }
 #toc li {
   white-space: nowrap;
@@ -582,7 +587,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   padding: 0;
   line-height: var(--input-height);
 }
-.section-editor .applies-to label {
+.sectioned .applies-to label {
   margin-left: -24px;
   position: absolute;
 }
@@ -829,42 +834,17 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 
 /************ lint ************/
 #lint {
-  overflow: hidden;
-  margin-left: -1rem;
-  margin-right: -1rem;
-  padding: 0;
-  box-sizing: border-box;
-  display: flex;
-  flex-grow: 1;
-  position: relative;
-}
-#lint > summary {
-  position: relative;
-  margin-left: 0;
-  padding-left: 4px;
-}
-#lint[open]:not(.hidden-unless-compact) {
-  min-height: 102px;
-}
-#lint summary h2 {
-  text-indent: -2px;
-}
-#lint > .lint-scroll-container {
-  margin: 1rem 10px 0;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  overflow-y: auto;
   overflow-x: hidden;
 }
+#lint summary h2 {
+  display: inline-flex;
+}
 #lint table {
-  font-size: 100%;
   border-spacing: 0;
-  margin-bottom: 1rem;
   line-height: 1.0;
   width: 100%;
+  font-size: 85%;
+  cursor: pointer;
 }
 #lint tr td:last-child {
   width: 100%;
@@ -872,26 +852,28 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 #lint td[role="line"] {
   padding-left: 0.25rem;
 }
-#lint table:last-child {
-  margin-bottom: 0;
+#lint .report {
+  display: flex;
 }
-#lint table.empty {
+#lint .empty {
   display: none;
 }
-#lint caption {
-  text-align: left;
+#lint .caption {
+  vertical-align: top;
+  line-height: 16px;
   font-weight: bold;
-  padding-bottom: 6px;
 }
-#lint tbody {
-  font-size: 85%;
-  cursor: pointer;
+#lint .report:not(.empty) ~ :not(.empty) {
+  border-top: 1px dotted rgba(128, 128, 128, .5);
+  margin-top: .25em;
+  padding-top: .25em;
 }
 #lint tr:hover {
   background-color: hsla(180, 50%, 36%, .2);
 }
 #lint td {
   padding: 0;
+  line-height: 16px;
 }
 #lint td[role="severity"] {
   font-size: 0;
@@ -907,6 +889,9 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 #lint td[role="message"] {
   text-align: left;
   white-space: nowrap;
+}
+#issue-count::before {
+  content: ':\A0';
 }
 #message-box.center.lint-config #message-box-contents {
   text-align: left;
@@ -965,14 +950,9 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   box-shadow: none;
 }
 
-html:not(.usercss) .usercss-only,
+.sectioned .usercss-only,
 .usercss .sectioned-only {
   display: none !important; /* hide during page init */
-}
-
-body:not(.compact-layout) .hidden-unless-compact,
-body.linter-disabled .hidden-unless-compact {
-  display: none !important;
 }
 
 #options:not([open]) + #lint {
@@ -1021,151 +1001,140 @@ body.linter-disabled .hidden-unless-compact {
   margin-left: 0.2rem;
 }
 
+/************ full-width only ************/
+/* TODO: maybe move more rules here so we don't need to reset them in @media(max-width: 850px) */
+@media (min-width: 851px) {
+  #header > :not(#details-wrapper):not(#header-resizer) {
+    margin-left: var(--pad);
+    margin-right: var(--pad);
+  }
+  #publish[open],
+  #header details:not([open]) {
+    flex: 0 0 auto;
+  }
+  #header details[open]:not(:last-child) {
+    margin-bottom: var(--pad05);
+  }
+  #header details:last-child {
+    padding-bottom: var(--pad);
+  }
+}
+
 /************ reponsive layouts ************/
 @media(max-width: 850px) {
-  body {
+  .sectioned body {
+    height: 100%;
+  }
+  .usercss body {
     display: flex;
     flex-direction: column;
   }
+  .usercss #header,
+  #header:not(.sticky) {
+    position: static;
+  }
+  #header:not(.sticky) {
+    display: block;
+  }
   #header {
-    flex: 0 1 auto;
+    flex: 0 0 auto;
     height: unset;
-    width: unset;
-    position: inherit;
+    width: 100%;
+    overflow: visible;
+    background: #fff;
     border-right: none;
     border-bottom: 1px dashed #AAA;
-    padding: .5rem 1rem .5rem .5rem;
+    padding: var(--pad05) var(--pad05) 0;
   }
-  .fixed-header {
-    --fixed-height: 40px;
-    padding-top: var(--fixed-padding);
+  #header.sticky {
+    flex-direction: row;
+    box-shadow: 0 0 3rem -.75rem black;
   }
-  .fixed-header #header {
-    min-height: var(--fixed-height);
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    padding: 0;
-    background-color: #fff;
-  }
-  .fixed-header #header > *:not(#details-wrapper),
-  .fixed-header #options {
-    display: none !important;
-  }
-  .fixed-header #details-wrapper {
-    padding-top: calc((var(--fixed-height) - 1.2rem) / 2); /* 1.2 is the normal line height */
-  }
-  #header summary + *,
-  #lint > .lint-scroll-container {
-    margin-left: 1rem;
-    padding: .25rem 0 .5rem;
-  }
-  #header input[type="checkbox"] {
-    vertical-align: middle;
-  }
-  #header details {
-    margin: 0;
-  }
+  #header.sticky #basic-info,
+  #header.sticky #mozilla-format-buttons,
+  #header.sticky .buttons > button,
+  #header.sticky .split-btn-pedal,
   #heading,
   h2 {
     display: none;
   }
+  .popup-window #details-wrapper {
+    margin-right: var(--popup-button-width);
+  }
   #basic-info {
-    margin-bottom: .5rem;
+    margin: 0 var(--popup-button-width) var(--pad05) 0;
     box-sizing: border-box;
     display: flex;
     flex-wrap: wrap;
   }
+  #basic-info #name,
   #basic-info > *:first-child {
     flex-grow: 1;
   }
   #basic-info > *:not(:last-child) {
     margin-right: 0.8rem;
   }
-  #basic-info #name {
-    flex-grow: 1;
+  #header details > :not(summary) {
+    margin-left: var(--pad05);
   }
-  #options-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    box-sizing: border-box;
+  #header h2 {
+    font-size: 14px;
+  }
+  #actions {
+    display: inline-block;
   }
   #details-wrapper {
+    display: inline-flex;
+    vertical-align: top;
+    max-width: 100%;
     flex-direction: row;
-    flex-wrap: wrap;
+    margin: .25em 0 var(--pad05);
   }
-  #options[open] {
-    width: 100%;
-  }
-  #sections-list[open] {
-    max-height: 102px;
-  }
-  #sections-list[open] #toc {
-    max-height: 60px;
-    overflow-y: auto;
-  }
-  #header details:not(#options) {
-    max-width: 50%;
-  }
-  .options-column {
-    flex-grow: 1;
-    padding-right: .5rem;
-    box-sizing: border-box;
-  }
-  .options-column > .usercss-only {
-    margin-bottom: 0;
-  }
-  #options-wrapper .options-column:nth-child(2) {
+  #details-wrapper details[open] {
     margin-top: 0;
+    z-index: 1000;
   }
-  #options:not([open]),
-  #lint:not([open]) {
-    overflow: initial;
+  #details-wrapper details[open]:hover,
+  #details-wrapper details[open]:focus-within {
+    z-index: 1001;
   }
-  #options:not([open]) + #lint:not([open]) {
-    margin-top: 0;
-  }
-  #lint summary {
+  #details-wrapper details[open] > summary {
     position: static;
-    margin-bottom:  0;
+    margin-top: 0;
   }
-  #header summary {
-    margin-left: 0;
-    padding-left: 4px;
+  #details-wrapper details[open] > summary + * {
+    position: absolute;
+    overflow: hidden auto;
+    max-height: var(--max-height, 10vh);
+    background: #fff;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .3);
+    padding: var(--pad);
+    margin-top: var(--pad05);
   }
-  #header summary h2 {
-    margin: 0;
-    padding: 0;
+  @media (max-height: 500px) {
+    #details-wrapper {
+      --max-height: 50px;
+    }
   }
-  .option label {
-    margin: 0;
+  #sections-list[open] > #toc {
+    left: 0;
+    margin-left: auto;
+    margin-right: auto;
+    width: min-content;
   }
-  #options [type="number"] {
-    text-align: left; /* workaround the column flow bug in webkit */
-    padding-left: 0.2rem;
+  #sections-list[open] > #toc,
+  #lint[open] > .lint-report-container {
+    max-width: 50vw;
+    right: 0;
   }
-  #options #tabSize-label {
-    position: relative;
-    top: 0.2rem;
-  }
-  #lint > .lint-scroll-container {
-    padding-top: 0;
-    margin-right: 0;
-  }
-  #lint {
-    padding: 0;
-    margin: .5rem 0 0;
-  }
-  #lint:not([open]) + #footer {
-    margin: .25em 0 -1em .25em;
+  #options[open],
+  #publish[open],
+  #lint:not([open]) {
+    flex: 0 0 auto;
+    overflow-x: hidden;
   }
   #sections {
-    height: unset !important;
     padding-left: 0;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
   }
   #sections > :not(.single-editor) {
     margin: 0 .5rem;
@@ -1174,10 +1143,6 @@ body.linter-disabled .hidden-unless-compact {
   .single-editor {
     overflow: hidden;
     flex: 1;
-  }
-  .usercss #options:not([open]) ~ #lint.hidden ~ #footer,
-  .usercss #lint:not([open]) + #footer {
-    margin-top: -.25em;
   }
   #help-popup.big[style="display: block;"],
   #help-popup[style="display: block;"] {

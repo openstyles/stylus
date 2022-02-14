@@ -195,7 +195,7 @@ function showCodeMirrorPopup(title, html, options) {
   }, options));
   cm.focus();
 
-  document.documentElement.style.pointerEvents = 'none';
+  $.root.style.pointerEvents = 'none';
   popup.style.pointerEvents = 'auto';
 
   const onKeyDown = event => {
@@ -210,7 +210,7 @@ function showCodeMirrorPopup(title, html, options) {
 
   window.on('closeHelp', () => {
     window.off('keydown', onKeyDown, true);
-    document.documentElement.style.removeProperty('pointer-events');
+    $.root.style.removeProperty('pointer-events');
     cm = popup.codebox = null;
   }, {once: true});
 

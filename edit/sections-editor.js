@@ -25,7 +25,6 @@ function SectionsEditor() {
   updateMeta();
   rerouteHotkeys.toggle(true); // enabled initially because we don't always focus a CodeMirror
   editor.livePreview.init();
-  container.classList.add('section-editor');
   $('#to-mozilla').on('click', showMozillaFormat);
   $('#to-mozilla-help').on('click', showToMozillaHelp);
   $('#from-mozilla').on('click', () => showMozillaFormatImport());
@@ -46,8 +45,11 @@ function SectionsEditor() {
     },
 
     getEditorTitle(cm) {
-      const index = editor.getEditors().indexOf(cm);
-      return `${t('sectionCode')} ${index + 1}`;
+      const index = editor.getEditors().indexOf(cm) + 1;
+      return {
+        textContent: `#${index}`,
+        title: `${t('sectionCode')} ${index}`,
+      };
     },
 
     getValue(asObject) {
@@ -394,7 +396,7 @@ function SectionsEditor() {
     }
 
     function lockPageUI(locked) {
-      document.documentElement.style.pointerEvents = locked ? 'none' : '';
+      $.root.style.pointerEvents = locked ? 'none' : '';
       if (popup.codebox) {
         popup.classList.toggle('ready', locked ? false : !popup.codebox.isBlank());
         popup.codebox.options.readOnly = locked;

@@ -218,7 +218,7 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
         transition: none;
       }
     `;
-    document.documentElement.appendChild(actualStyle);
+    $.root.appendChild(actualStyle);
   }
 
   /**

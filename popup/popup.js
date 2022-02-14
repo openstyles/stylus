@@ -38,7 +38,7 @@ preinit.then(({frames, styles, url}) => {
 msg.onExtension(onRuntimeMessage);
 
 prefs.subscribe('popup.stylesFirst', (key, stylesFirst) => {
-  document.documentElement.classList.toggle('styles-last', !stylesFirst);
+  $.rootCL.toggle('styles-last', !stylesFirst);
 }, {runNow: true});
 if (CHROME_POPUP_BORDER_BUG) {
   prefs.subscribe('popup.borders', toggleSideBorders, {runNow: true});
@@ -70,7 +70,7 @@ function setPopupWidth(_key, width) {
 
 function toggleSideBorders(_key, state) {
   // runs before <body> is parsed
-  const style = document.documentElement.style;
+  const style = $.root.style;
   if (state) {
     style.cssText +=
       'border-left: 2px solid white !important;' +

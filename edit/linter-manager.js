@@ -312,7 +312,7 @@ linterMan.DEFAULTS = {
   function updateCount() {
     const issueCount = Array.from(tables.values())
       .reduce((sum, table) => sum + table.trs.length, 0);
-    $('#lint').classList.toggle('hidden-unless-compact', issueCount === 0);
+    $('#lint').hidden = !issueCount;
     $('#issue-count').textContent = issueCount;
   }
 
@@ -328,19 +328,20 @@ linterMan.DEFAULTS = {
   }
 
   function createTable(cm) {
-    const caption = $create('caption');
-    const tbody = $create('tbody');
-    const table = $create('table', [caption, tbody]);
+    const caption = $create('.caption');
+    const table = $create('table');
+    const report = $create('.report', [caption, table]);
     const trs = [];
     return {
-      element: table,
+      element: report,
       trs,
       updateAnnotations,
       updateCaption,
     };
 
     function updateCaption() {
-      caption.textContent = editor.getEditorTitle(cm);
+      const t = editor.getEditorTitle(cm);
+      Object.assign(caption, typeof t == 'string' ? {textContent: t} : t);
     }
 
     function updateAnnotations(lines) {
@@ -352,20 +353,20 @@ linterMan.DEFAULTS = {
         } else {
           tr = createTr();
           trs.push(tr);
-          tbody.append(tr.element);
+          table.appendChild(tr.element);
         }
         tr.update(anno);
         i++;
       }
       if (i === 0) {
         trs.length = 0;
-        tbody.textContent = '';
+        table.textContent = '';
       } else {
         while (trs.length > i) {
           trs.pop().element.remove();
         }
       }
-      table.classList.toggle('empty', trs.length === 0);
+      report.classList.toggle('empty', !trs.length);
 
       function *getAnnotations() {
         for (const line of lines.filter(Boolean)) {

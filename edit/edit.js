@@ -1,4 +1,4 @@
-/* global $ $create messageBoxProxy waitForSheet */// dom.js
+/* global $$ $ $create messageBoxProxy waitForSheet */// dom.js
 /* global API msg */// msg.js
 /* global CodeMirror */
 /* global SectionsEditor */
@@ -25,11 +25,7 @@ baseInit.ready.then(async () => {
   await editor.ready;
   editor.ready = true;
   editor.dirty.onChange(editor.updateDirty);
-
-  prefs.subscribe('editor.linter', (key, value) => {
-    document.body.classList.toggle('linter-disabled', value === '');
-    linterMan.run();
-  });
+  prefs.subscribe('editor.linter', () => linterMan.run());
 
   // enabling after init to prevent flash of validation failure on an empty name
   $('#name').required = !editor.isUsercss;
@@ -61,6 +57,42 @@ baseInit.ready.then(async () => {
     '/edit/drafts',
     '/edit/global-search',
   ]);
+}).then(() => {
+  // Set up mini-header on scroll
+  const {isUsercss} = editor;
+  const el = $create({
+    style: `
+      top: 0;
+      height: 1px;
+      position: absolute;
+      visibility: hidden;
+    `.replace(/;/g, '!important;'),
+  });
+  const scroller = isUsercss ? $('.CodeMirror-scroll') : document.body;
+  const xoRoot = isUsercss ? scroller : undefined;
+  const xo = new IntersectionObserver(onScrolled, {root: xoRoot});
+  scroller.appendChild(el);
+  onCompactToggled(baseInit.mqCompact);
+  baseInit.mqCompact.on('change', onCompactToggled);
+
+  /** @param {MediaQueryList} mq */
+  function onCompactToggled(mq) {
+    for (const el of $$('details[data-pref]')) {
+      el.open = mq.matches ? false : prefs.get(el.dataset.pref);
+    }
+    if (mq.matches) {
+      xo.observe(el);
+    } else {
+      xo.disconnect();
+    }
+  }
+  /** @param {IntersectionObserverEntry[]} entries */
+  function onScrolled(entries) {
+    const h = $('#header');
+    const sticky = !entries.pop().isIntersecting;
+    if (!isUsercss) scroller.style.paddingTop = sticky ? h.offsetHeight + 'px' : '';
+    h.classList.toggle('sticky', sticky);
+  }
 });
 
 //#endregion

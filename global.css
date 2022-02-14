@@ -277,13 +277,15 @@ input[type="number"][data-focused-via-click]:focus {
 /* header resizer */
 :root {
   --header-width: 280px;
+  --header-resizer-width: 8px;
 }
 #header-resizer {
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
-  width: 6px;
+  width: var(--header-resizer-width);
+  box-sizing: border-box;
   cursor: e-resize;
   border-width: 0 1px;
   border-style: solid;
@@ -318,6 +320,7 @@ body.resizing-v > * {
 
 .split-btn {
   position: relative;
+  white-space: nowrap;
 }
 .split-btn-pedal {
   margin-left: -1px !important;

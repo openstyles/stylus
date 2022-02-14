@@ -54,7 +54,7 @@
 
     undoHistory: [],
 
-    searchInApplies: !document.documentElement.classList.contains('usercss'),
+    searchInApplies: !editor.isUsercss,
   };
 
   //endregion
@@ -588,7 +588,7 @@
       input: colorMimicry($('input:not(:disabled)'), {bg: 'backgroundColor'}),
       icon: colorMimicry($$('svg.info')[1], {fill: 'fill'}),
     };
-    document.documentElement.appendChild(
+    $.root.appendChild(
       $(DIALOG_STYLE_SELECTOR) ||
       $create('style' + DIALOG_STYLE_SELECTOR)
     ).textContent = `
