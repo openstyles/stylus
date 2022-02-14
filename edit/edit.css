@@ -1093,6 +1093,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
     margin-top: 0;
     z-index: 1000;
   }
+  #details-wrapper details[open]:hover,
   #details-wrapper details[open]:focus-within {
     z-index: 1001;
   }
@@ -1118,6 +1119,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
     left: 0;
     margin-left: auto;
     margin-right: auto;
+    width: min-content;
   }
   #sections-list[open] > #toc,
   #lint[open] > .lint-report-container {
