@@ -1054,17 +1054,11 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   #header.sticky .buttons > button,
   #header.sticky .split-btn-pedal,
   #heading,
-  #header-sticker {
-    top: 0;
-    height: 1px;
-    position: absolute;
-    visibility: hidden;
+  h2 {
+    display: none;
   }
   .popup-window #details-wrapper {
     margin-right: var(--popup-button-width);
-  }
-  h2 {
-    display: none;
   }
   #basic-info {
     margin: 0 var(--popup-button-width) var(--pad05) 0;

@@ -60,7 +60,14 @@ baseInit.ready.then(async () => {
 }).then(() => {
   // Set up mini-header on scroll
   const {isUsercss} = editor;
-  const el = $create('#header-sticker');
+  const el = $create({
+    style: `
+      top: 0;
+      height: 1px;
+      position: absolute;
+      visibility: hidden;
+    `.replace(/;/g, '!important;'),
+  });
   const scroller = isUsercss ? $('.CodeMirror-scroll') : document.body;
   const xoRoot = isUsercss ? scroller : undefined;
   const xo = new IntersectionObserver(onScrolled, {root: xoRoot});
