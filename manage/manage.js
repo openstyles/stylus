@@ -10,7 +10,6 @@
   $
   $$
   $create
-  $root
   animateElement
   setupLivePrefs
   waitForSelector
@@ -37,9 +36,8 @@ Object.assign(newUI, {
   ids: Object.keys(newUI),
   prefKeyForId: id => `manage.newUI.${id}`.replace(/\.enabled$/, ''),
   renderClass: () => {
-    const cl = $root.classList;
-    cl.toggle('newUI', newUI.enabled);
-    cl.toggle('oldUI', !newUI.enabled);
+    $.rootCL.toggle('newUI', newUI.enabled);
+    $.rootCL.toggle('oldUI', !newUI.enabled);
   },
 });
 // ...read the actual values
@@ -129,7 +127,7 @@ function onRuntimeMessage(msg) {
 
 async function toggleEmbeddedOptions(state) {
   const el = $('#stylus-embedded-options') ||
-    state && $root.appendChild($create('iframe', {
+    state && $.root.appendChild($create('iframe', {
       id: 'stylus-embedded-options',
       src: '/options.html',
     }));

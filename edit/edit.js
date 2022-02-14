@@ -39,19 +39,6 @@ baseInit.ready.then(async () => {
   new MutationObserver(() => elSec.open && editor.updateToc())
     .observe(elSec, {attributes: true, attributeFilter: ['open']});
 
-  // Auto-update `data-open` attribute to the number of open details
-  {
-    const wrapper = $('#details-wrapper');
-    const details = $$('details', wrapper);
-    const ds = wrapper.dataset;
-    const update = () => {
-      ds.open = '.'.repeat(details.reduce((res, el) => res + (el.open ? 1 : 0), 0));
-    };
-    for (const el of details) {
-      new MutationObserver(update).observe(el, {attributes: true, attributeFilter: ['open']});
-    }
-  }
-
   $('#toc').onclick = e =>
     editor.jumpToEditor([...$('#toc').children].indexOf(e.target));
   $('#keyMap-help').onclick = () =>
@@ -75,7 +62,8 @@ baseInit.ready.then(async () => {
   const {isUsercss} = editor;
   const el = $create('#header-sticker');
   const scroller = isUsercss ? $('.CodeMirror-scroll') : document.body;
-  const xo = new IntersectionObserver(onScrolled, {root: isUsercss ? scroller : document});
+  const xoRoot = isUsercss ? scroller : undefined;
+  const xo = new IntersectionObserver(onScrolled, {root: xoRoot});
   scroller.appendChild(el);
   onCompactToggled(baseInit.mqCompact);
   baseInit.mqCompact.on('change', onCompactToggled);
@@ -92,9 +80,9 @@ baseInit.ready.then(async () => {
     }
   }
   /** @param {IntersectionObserverEntry[]} entries */
-  function onScrolled([e]) {
+  function onScrolled(entries) {
     const h = $('#header');
-    const sticky = !e.isIntersecting;
+    const sticky = !entries.pop().isIntersecting;
     if (!isUsercss) scroller.style.paddingTop = sticky ? h.offsetHeight + 'px' : '';
     h.classList.toggle('sticky', sticky);
   }

@@ -1,4 +1,4 @@
-/* global $ $create $remove $root messageBoxProxy */// dom.js
+/* global $ $create $remove messageBoxProxy */// dom.js
 /* global API */// msg.js
 /* global CodeMirror */
 /* global RX_META debounce */// toolbox.js
@@ -396,7 +396,7 @@ function SectionsEditor() {
     }
 
     function lockPageUI(locked) {
-      $root.style.pointerEvents = locked ? 'none' : '';
+      $.root.style.pointerEvents = locked ? 'none' : '';
       if (popup.codebox) {
         popup.classList.toggle('ready', locked ? false : !popup.codebox.isBlank());
         popup.codebox.options.readOnly = locked;

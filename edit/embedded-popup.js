@@ -1,4 +1,4 @@
-/* global $ $create $remove $root getEventKeyName */// dom.js
+/* global $ $create $remove getEventKeyName */// dom.js
 /* global CodeMirror */
 /* global baseInit */// base.js
 /* global prefs */
@@ -20,8 +20,8 @@
     title: t('optionsCustomizePopup') + '\n' + POPUP_HOTKEY,
     onclick: embedPopup,
   });
-  $root.appendChild(btn);
-  $root.classList.add('popup-window');
+  $.root.appendChild(btn);
+  $.rootCL.add('popup-window');
   baseInit.domReady.then(() => {
     document.body.appendChild(btn);
     // Adding a dummy command to show in keymap help popup

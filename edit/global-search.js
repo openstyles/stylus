@@ -1,4 +1,4 @@
-/* global $ $$ $create $remove $root focusAccessibility toggleDataset */// dom.js
+/* global $ $$ $create $remove focusAccessibility toggleDataset */// dom.js
 /* global CodeMirror */
 /* global chromeLocal */// storage-util.js
 /* global colorMimicry */
@@ -588,7 +588,7 @@
       input: colorMimicry($('input:not(:disabled)'), {bg: 'backgroundColor'}),
       icon: colorMimicry($$('svg.info')[1], {fill: 'fill'}),
     };
-    $root.appendChild(
+    $.root.appendChild(
       $(DIALOG_STYLE_SELECTOR) ||
       $create('style' + DIALOG_STYLE_SELECTOR)
     ).textContent = `

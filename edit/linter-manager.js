@@ -344,7 +344,8 @@ linterMan.DEFAULTS = {
     };
 
     function updateCaption() {
-      Object.assign(caption, editor.getEditorTitle(cm));
+      const t = editor.getEditorTitle(cm);
+      Object.assign(caption, typeof t == 'string' ? {textContent: t} : t);
     }
 
     function updateAnnotations(lines) {

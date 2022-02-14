@@ -1,5 +1,5 @@
 :root {
-  --pad: 1rem;
+  --pad: 1rem; /* Edge padding for modals/blocks/whatnot. TODO: reuse it in more places */
   --pad05: calc(0.5 * var(--pad));
   --popup-button-width: 16px;
 }
@@ -1095,12 +1095,6 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
     flex-direction: row;
     margin: .25em 0 var(--pad05);
   }
-  #details-wrapper[data-open^=".."] details {
-    max-width: 50%;
-  }
-  #details-wrapper[data-open^="..."] {
-    flex-wrap: wrap;
-  }
   #details-wrapper details[open] {
     margin-top: 0;
     z-index: 1000;
@@ -1114,11 +1108,22 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   }
   #details-wrapper details[open] > summary + * {
     position: absolute;
-    overflow-y: auto;
-    max-height: 10vh;
+    overflow: hidden auto;
+    max-height: var(--max-height, 10vh);
     background: #fff;
     box-shadow: 0 6px 20px rgba(0, 0, 0, .3);
     padding: var(--pad);
+    margin-top: var(--pad05);
+  }
+  @media (max-height: 500px) {
+    #details-wrapper {
+      --max-height: 50px;
+    }
+  }
+  #sections-list[open] > #toc {
+    left: 0;
+    margin-left: auto;
+    margin-right: auto;
   }
   #sections-list[open] > #toc,
   #lint[open] > .lint-report-container {

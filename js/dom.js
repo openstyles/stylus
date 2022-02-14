@@ -27,7 +27,8 @@ Object.assign(EventTarget.prototype, {
 
 //#region Exports
 
-const $root = document.documentElement;
+$.root = document.documentElement;
+$.rootCL = $.root.classList;
 
 // Makes the focus outline appear on keyboard tabbing, but not on mouse clicks.
 const focusAccessibility = {
@@ -476,9 +477,9 @@ const dom = {};
   const lazyScripts = [
     '/js/dom-on-load',
   ];
-  if (!UA.windows) $root.classList.add('non-windows');
+  if (!UA.windows) $.rootCL.add('non-windows');
   // set language for a) CSS :lang pseudo and b) hyphenation
-  $root.setAttribute('lang', chrome.i18n.getUILanguage());
+  $.root.setAttribute('lang', chrome.i18n.getUILanguage());
   // set up header width resizer
   const HW = 'headerWidth.';
   const HWprefId = HW + location.pathname.match(/^.(\w*)/)[1];
@@ -490,7 +491,7 @@ const dom = {};
         // If this is a small window on a big monitor the user can maximize it later
         const max = (innerWidth < 850 ? screen.availWidth : innerWidth) / 3;
         width = Math.round(Math.max(200, Math.min(max, Number(width) || 0)));
-        $root.style.setProperty('--header-width', width + 'px');
+        $.root.style.setProperty('--header-width', width + 'px');
         return width;
       },
     });

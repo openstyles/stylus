@@ -1,4 +1,4 @@
-/* global $ $$ $create $root setupLivePrefs waitForSelector */// dom.js
+/* global $ $$ $create setupLivePrefs waitForSelector */// dom.js
 /* global API */// msg.js
 /* global CODEMIRROR_THEMES */
 /* global CodeMirror */
@@ -32,7 +32,7 @@ const editor = {
   cancel: () => location.assign('/manage.html'),
 
   updateClass() {
-    $root.classList.toggle('is-new-style', !editor.style.id);
+    $.rootCL.toggle('is-new-style', !editor.style.id);
   },
 
   updateTitle(isDirty = editor.dirty.isDirty()) {
@@ -50,7 +50,7 @@ const editor = {
 const baseInit = (() => {
   const domReady = waitForSelector('#sections');
   const mqCompact = matchMedia('(max-width: 850px)');
-  const toggleCompact = mq => $root.classList.toggle('compact-layout', mq.matches);
+  const toggleCompact = mq => $.rootCL.toggle('compact-layout', mq.matches);
   mqCompact.on('change', toggleCompact);
   toggleCompact(mqCompact);
 
@@ -92,7 +92,7 @@ const baseInit = (() => {
     editor.style = style;
     editor.updateClass();
     editor.updateTitle(false);
-    $root.classList.add(editor.isUsercss ? 'usercss' : 'sectioned');
+    $.rootCL.add(editor.isUsercss ? 'usercss' : 'sectioned');
     sessionStore.justEditedStyleId = style.id || '';
     // no such style so let's clear the invalid URL parameters
     if (!style.id) history.replaceState({}, '', location.pathname);

@@ -1,4 +1,4 @@
-/* global $ $create $root getEventKeyName messageBoxProxy moveFocus */// dom.js
+/* global $ $create getEventKeyName messageBoxProxy moveFocus */// dom.js
 /* global CodeMirror */
 /* global editor */
 /* global prefs */
@@ -195,7 +195,7 @@ function showCodeMirrorPopup(title, html, options) {
   }, options));
   cm.focus();
 
-  $root.style.pointerEvents = 'none';
+  $.root.style.pointerEvents = 'none';
   popup.style.pointerEvents = 'auto';
 
   const onKeyDown = event => {
@@ -210,7 +210,7 @@ function showCodeMirrorPopup(title, html, options) {
 
   window.on('closeHelp', () => {
     window.off('keydown', onKeyDown, true);
-    $root.style.removeProperty('pointer-events');
+    $.root.style.removeProperty('pointer-events');
     cm = popup.codebox = null;
   }, {once: true});
 
