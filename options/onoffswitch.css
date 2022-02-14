@@ -5,7 +5,6 @@
   margin: 1ex 0;
   -moz-user-select: none;
   user-select: none;
-  --knob: var(--c95);
 }
 
 .onoffswitch input {
@@ -46,7 +45,7 @@
   width: 18px;
   height: 18px;
   margin: -3px;
-  background: var(--knob);
+  background: var(--knob, var(--c95));
   position: absolute;
   top: 0;
   bottom: 0;
