@@ -328,16 +328,12 @@ linterMan.DEFAULTS = {
   }
 
   function createTable(cm) {
-    const caption = $create('td.caption');
-    const tbody = $create('tbody.report');
-    const table = $create('table',
-      $create('tr', [
-        caption,
-        $create('td', tbody),
-      ]));
+    const caption = $create('.caption');
+    const table = $create('table');
+    const report = $create('.report', [caption, table]);
     const trs = [];
     return {
-      element: table,
+      element: report,
       trs,
       updateAnnotations,
       updateCaption,
@@ -357,20 +353,20 @@ linterMan.DEFAULTS = {
         } else {
           tr = createTr();
           trs.push(tr);
-          tbody.append(tr.element);
+          table.appendChild(tr.element);
         }
         tr.update(anno);
         i++;
       }
       if (i === 0) {
         trs.length = 0;
-        tbody.textContent = '';
+        table.textContent = '';
       } else {
         while (trs.length > i) {
           trs.pop().element.remove();
         }
       }
-      table.classList.toggle('empty', trs.length === 0);
+      report.classList.toggle('empty', !trs.length);
 
       function *getAnnotations() {
         for (const line of lines.filter(Boolean)) {

@@ -843,12 +843,17 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   border-spacing: 0;
   line-height: 1.0;
   width: 100%;
+  font-size: 85%;
+  cursor: pointer;
 }
 #lint tr td:last-child {
   width: 100%;
 }
 #lint td[role="line"] {
   padding-left: 0.25rem;
+}
+#lint .report {
+  display: flex;
 }
 #lint .empty {
   display: none;
@@ -858,16 +863,12 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   line-height: 16px;
   font-weight: bold;
 }
-#lint .report {
-  font-size: 85%;
-  cursor: pointer;
-}
-.lint-report-container > :not(.empty) ~ :not(.empty) {
+#lint .report:not(.empty) ~ :not(.empty) {
   border-top: 1px dotted rgba(128, 128, 128, .5);
   margin-top: .25em;
   padding-top: .25em;
 }
-#lint .report tr:hover {
+#lint tr:hover {
   background-color: hsla(180, 50%, 36%, .2);
 }
 #lint td {
