@@ -264,6 +264,7 @@
     // In Chrome content script is orphaned on an extension update/reload
     // so we need to detach event listeners
     window.removeEventListener(orphanEventId, orphanCheck, true);
+    mqDark.onchange = null;
     isOrphaned = true;
     setTimeout(styleInjector.clear, 1000); // avoiding FOUC
     tryCatch(msg.off, applyOnMessage);
