@@ -120,6 +120,7 @@
 
     'sync.enabled': 'none',
 
+    'iconsetAuto': true,
     'iconset': 0,                   // 0 = dark-themed icon
                                     // 1 = light-themed icon
 

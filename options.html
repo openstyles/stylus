@@ -53,10 +53,10 @@
         <div class="items">
           <div class="radio-group">
             <label class="radio-group-item" i18n-text-append="preferSchemeDark">
-              <input type="radio" value="light" name="schemeSwitcher.enabled" class="radio">
+              <input type="radio" value="dark" name="schemeSwitcher.enabled" class="radio">
             </label>
             <label class="radio-group-item" i18n-text-append="preferSchemeLight">
-              <input type="radio" value="dark" name="schemeSwitcher.enabled" class="radio">
+              <input type="radio" value="light" name="schemeSwitcher.enabled" class="radio">
             </label>
             <label class="radio-group-item" i18n-text-append="optionsAdvancedAutoSwitchSchemeBySystem">
               <input type="radio" value="system" name="schemeSwitcher.enabled" class="radio">
@@ -78,6 +78,13 @@
       <div class="block">
         <h1 i18n-text="optionsCustomizeIcon"></h1>
         <div class="items">
+          <label>
+            <span i18n-text="optionsIconAuto"></span>
+            <span class="onoffswitch">
+              <input type="checkbox" id="iconsetAuto" class="slider">
+              <span></span>
+            </span>
+          </label>
           <label>
             <span i18n-text="optionsIconDark"></span>
             <div class="iconset">

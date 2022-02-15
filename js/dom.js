@@ -500,11 +500,10 @@ const dom = {};
   }
   // add favicon in FF
   if (FIREFOX) {
-    const iconset = ['', 'light/'][prefs.get('iconset')] || '';
     for (const size of [38, 32, 19, 16]) {
       document.head.appendChild($create('link', {
         rel: 'icon',
-        href: `/images/icon/${iconset}${size}.png`,
+        href: `/images/icon/${size}.png`,
         sizes: size + 'x' + size,
       }));
     }
