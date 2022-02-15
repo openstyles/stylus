@@ -1,4 +1,4 @@
-@media not screen, dark {
+@media (prefers-color-scheme: dark) {
   :root {
     /* Comfortable dark themes don't use absolutes so the range is compressed */
     --c00: hsl(0, 0%, 80%);

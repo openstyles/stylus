@@ -45,7 +45,12 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
   }
   ({tabId, initialUrl} = preinit);
   liveReload = initLiveReload();
-  preinit.tpl.then(el => $('#ss-scheme').append(...$('#ss-scheme', el).children));
+  preinit.tpl.then(el => {
+    $('#ss-scheme').append(...$('#ss-scheme', el).children);
+    prefs.subscribe('schemeSwitcher.enabled', (_, val) => {
+      $('#ss-scheme-off').hidden = val !== 'never';
+    }, {runNow: true});
+  });
 
   const [
     {dup, style, error, sourceCode},

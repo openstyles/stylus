@@ -8,9 +8,7 @@
     </div>
     <div id="ss-scheme">
       <div i18n-text="preferScheme">
-        <a tabindex="0" data-cmd="note" i18n-title="preferSchemeTip">
-          <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
-        </a>
+        <div><small id="ss-scheme-off" i18n-text="preferSchemeAlways" hidden></small></div>
       </div>
       <label i18n-text-append="preferSchemeNone" class="ss-radio">
         <input name="ss-scheme" type="radio" value="none">
@@ -18,14 +16,8 @@
       <label i18n-text-append="preferSchemeDark" class="ss-radio">
         <input name="ss-scheme" type="radio" value="dark">
       </label>
-      <label i18n-text-append="preferSchemeDarkOnly" class="ss-radio">
-        <input name="ss-scheme" type="radio" value="dark!">
-      </label>
       <label i18n-text-append="preferSchemeLight" class="ss-radio">
         <input name="ss-scheme" type="radio" value="light">
-      </label>
-      <label i18n-text-append="preferSchemeLightOnly" class="ss-radio">
-        <input name="ss-scheme" type="radio" value="light!">
       </label>
     </div>
     <label i18n-text="styleIncludeLabel">

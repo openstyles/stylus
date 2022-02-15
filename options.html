@@ -52,14 +52,14 @@
         <h1 i18n-text="stylePreferSchemeLabel"></h1>
         <div class="items">
           <div class="radio-group">
-            <span i18n-text="optionsAdvancedAutoSwitchScheme" class="radio-group-label"></span>
-            <label class="radio-group-item">
-              <input type="radio" value="never" name="schemeSwitcher.enabled" class="radio">
-              <span i18n-text="optionsAdvancedAutoSwitchSchemeNever"></span>
+            <label class="radio-group-item" i18n-text-append="preferSchemeDark">
+              <input type="radio" value="light" name="schemeSwitcher.enabled" class="radio">
             </label>
-            <label class="radio-group-item">
+            <label class="radio-group-item" i18n-text-append="preferSchemeLight">
+              <input type="radio" value="dark" name="schemeSwitcher.enabled" class="radio">
+            </label>
+            <label class="radio-group-item" i18n-text-append="optionsAdvancedAutoSwitchSchemeBySystem">
               <input type="radio" value="system" name="schemeSwitcher.enabled" class="radio">
-              <span i18n-text="optionsAdvancedAutoSwitchSchemeBySystem"></span>
             </label>
             <label class="radio-group-item">
               <input type="radio" value="time" name="schemeSwitcher.enabled" class="radio">
@@ -67,6 +67,9 @@
               <input type="time" required id="schemeSwitcher.nightStart">
               ~
               <input type="time" required id="schemeSwitcher.nightEnd">
+            </label>
+            <label class="radio-group-item" i18n-text-append="optionsAdvancedAutoSwitchSchemeNever">
+              <input type="radio" value="never" name="schemeSwitcher.enabled" class="radio">
             </label>
           </div>
         </div>

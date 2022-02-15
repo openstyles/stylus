@@ -1086,11 +1086,8 @@
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Write new style as usercss"
   },
-  "optionsAdvancedAutoSwitchScheme": {
-    "message": "Toggle Light/Dark Mode styles automatically"
-  },
   "optionsAdvancedAutoSwitchSchemeNever": {
-    "message": "Never"
+    "message": "Disabled. The dark/light setting in styles is ignored."
   },
   "optionsAdvancedAutoSwitchSchemeBySystem": {
     "message": "By system preference"
@@ -1312,25 +1309,19 @@
     "description": "Label for the checkbox controlling section order in the popup."
   },
   "preferScheme": {
-    "message": "Dark/Light mode preference:"
+    "message": "Dark/Light mode preference"
+  },
+  "preferSchemeAlways": {
+    "message": "Currently ignored (the style always applies) because the global Dark/Light mode is disabled"
   },
   "preferSchemeDark": {
     "message": "Dark"
   },
-  "preferSchemeDarkOnly": {
-    "message": "Dark (strict)"
-  },
   "preferSchemeLight": {
     "message": "Light"
   },
-  "preferSchemeLightOnly": {
-    "message": "Light (strict)"
-  },
   "preferSchemeNone": {
     "message": "None (always applied)"
-  },
-  "preferSchemeTip": {
-    "message": "The style will be applied in a matching Dark/Light global mode. For strict options, the mode being active is mandatory, so the style doesn't apply when the mode is 'Never'. For non-strict options, the style also applies when the user doesn't care i.e. the global mode is 'Never'."
   },
   "prefShowBadge": {
     "message": "Number of styles active for the current site",

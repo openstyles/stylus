@@ -8,11 +8,17 @@ const colorScheme = (() => {
   const kSTATE = 'schemeSwitcher.enabled';
   const kSTART = 'schemeSwitcher.nightStart';
   const kEND = 'schemeSwitcher.nightEnd';
-  const SCHEMES = ['dark', 'light', 'dark!', 'light!']; // ! = only if schemeSwitcher is enabled
-  const isDark = {never: null, system: false, time: false};
+  const SCHEMES = ['dark', 'light'];
+  const isDark = {
+    never: null,
+    dark: true,
+    light: false,
+    system: false,
+    time: false,
+  };
   let isDarkNow = false;
 
-  prefs.subscribe(kSTATE, () => emitChange());
+  prefs.subscribe(kSTATE, () => update());
   prefs.subscribe([kSTART, kEND], (key, value) => {
     updateTimePreferDark();
     createAlarm(key, value);
@@ -28,16 +34,24 @@ const colorScheme = (() => {
     onChange(listener) {
       changeListeners.add(listener);
     },
-    shouldIncludeStyle({preferScheme: val}) {
-      return !SCHEMES.includes(val) ||
-        !val.endsWith('!') && prefs.get(kSTATE) === 'never' ||
-        val.startsWith('dark') === isDarkNow;
+    /** @param {StyleObj | 'darkUI'} val - the string is used by the built-in dark themer */
+    shouldIncludeStyle(val) {
+      return val === 'darkUI'
+        ? isDarkNow
+        : prefs.get(kSTATE) === 'never' ||
+          !SCHEMES.includes(val = val.preferScheme) ||
+          isDarkNow === (val === 'dark');
     },
     updateSystemPreferDark(val) {
-      emitChange('system', val);
+      update('system', val);
       return true;
     },
   };
+
+  function calcTime(key) {
+    const [h, m] = prefs.get(key).split(':');
+    return (h * 3600 + m * 60) * 1000;
+  }
 
   function createAlarm(key, value) {
     const date = new Date();
@@ -59,22 +73,20 @@ const colorScheme = (() => {
     const val = start > end ?
       now >= start || now < end :
       now >= start && now < end;
-    emitChange('time', val);
+    update('time', val);
   }
 
-  function calcTime(key) {
-    const [h, m] = prefs.get(key).split(':');
-    return (h * 3600 + m * 60) * 1000;
-  }
-
-  function emitChange(type, val) {
+  function update(type, val) {
     if (type) {
       if (isDark[type] === val) return;
       isDark[type] = val;
     }
-    isDarkNow = isDark[prefs.get(kSTATE)];
-    for (const listener of changeListeners) {
-      listener(isDarkNow);
+    val = isDark[prefs.get(kSTATE)];
+    if (isDarkNow !== val) {
+      isDarkNow = val;
+      for (const listener of changeListeners) {
+        listener(isDarkNow);
+      }
     }
   }
 })();

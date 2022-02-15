@@ -85,7 +85,7 @@
   background: linear-gradient(0deg, hsla(180, 100%, 30%, .75) 2px, hsla(180, 100%, 30%, .2) 2px);
 }
 
-@media not screen, dark {
+@media (prefers-color-scheme: dark) {
   .CodeMirror-dialog {
     background-color: #333;
   }
@@ -127,7 +127,7 @@
   .cm-s-default .cm-operator { color: #d2c057 }
   .cm-s-default .cm-string { color: #f28b54 }
   .cm-s-default .cm-variable { color: #d9d9d9 }
-  .cm-s-default .cm-variable-2 { color: #05a }
+  .cm-s-default .cm-variable-2 { color: #72b9ff }
   .cm-s-default .cm-variable-3 { color: #9bbbdc }
 
   @keyframes highlight {
