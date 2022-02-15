@@ -18,7 +18,7 @@ function colorMimicry(el, targets, dummyContainer = document.body) {
   let numTotal = 0;
   const rootStyle = getStyle(document.documentElement);
   for (const k in targets) {
-    const base = {r: 255, g: 255, b: 255, a: 1};
+    const base = {r: 0, g: 0, b: 0, a: 0};
     blend(base, rootStyle[targets[k]]);
     colors[k] = base;
     numTotal++;
@@ -45,6 +45,10 @@ function colorMimicry(el, targets, dummyContainer = document.body) {
     el.remove();
   }
   for (const k in targets) {
+    const c = colors[k];
+    if (!isOpaque(c)) {
+      blend(colors[k] = {r: 255, g: 255, b: 255, a: 1}, c);
+    }
     const {r, g, b, a} = colors[k];
     colors[k] = `rgba(${r}, ${g}, ${b}, ${a})`;
     // https://www.w3.org/TR/AERT#color-contrast
@@ -69,7 +73,7 @@ function colorMimicry(el, targets, dummyContainer = document.body) {
       base.b = Math.round(b * q1 + base.b * q2);
       base.a = mixedA;
     }
-    return Math.abs(base.a - 1) < 1e-3;
+    return isOpaque(base);
   }
 
   // speed-up for sequential invocations within the same event loop cycle
@@ -85,5 +89,9 @@ function colorMimicry(el, targets, dummyContainer = document.body) {
 
   function clearCache() {
     styleCache.clear();
+  }
+
+  function isOpaque({a}) {
+    return Math.abs(a - 1) < 1e-3;
   }
 }
