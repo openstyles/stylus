@@ -1175,3 +1175,8 @@ a:hover {
   }
 }
 
+@media screen and (prefers-color-scheme: dark), dark {
+  .filter-selection select:not(:focus) {
+    background-color: transparent;
+  }
+}

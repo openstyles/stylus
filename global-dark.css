@@ -30,12 +30,6 @@
     background-color: var(--input-bg);
     color: var(--fg);
   }
-  .filter-selection label + div select {
-    transition: none;
-  }
-  .filter-selection select:not(:focus):not(:hover) {
-    background-color: transparent;
-  }
   input::-webkit-inner-spin-button {
     filter: invert(.8);
   }
