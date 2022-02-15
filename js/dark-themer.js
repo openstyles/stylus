@@ -1,3 +1,4 @@
+/* global $ */// dom.js
 /* global API msg */// msg.js
 'use strict';
 
@@ -20,6 +21,7 @@ API.colorScheme.shouldIncludeStyle('darkUI').then(val => {
     }
   });
   function toggleDarkStyles() {
+    $.root.dataset.uiTheme = isDark ? 'dark' : 'light';
     for (const sheet of document.styleSheets) {
       for (const {media: m} of sheet.cssRules) {
         if (m && m[1] === 'dark' && (m[0] === 'screen') !== isDark) {
