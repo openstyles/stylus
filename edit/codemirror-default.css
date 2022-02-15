@@ -85,7 +85,7 @@
   background: linear-gradient(0deg, hsla(180, 100%, 30%, .75) 2px, hsla(180, 100%, 30%, .2) 2px);
 }
 
-@media (prefers-color-scheme: dark) {
+@media screen and (prefers-color-scheme: dark), dark {
   .CodeMirror-dialog {
     background-color: #333;
   }
