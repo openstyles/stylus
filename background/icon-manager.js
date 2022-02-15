@@ -1,5 +1,6 @@
 /* global API */// msg.js
 /* global addAPI bgReady */// common.js
+/* global colorScheme */
 /* global prefs */
 /* global tabMan */
 /* global CHROME FIREFOX UA debounce ignoreChromeError */// toolbox.js
@@ -13,7 +14,7 @@ const iconMan = (() => {
   const badgeOvr = {color: '', text: ''};
   // https://github.com/openstyles/stylus/issues/1287 Fenix can't use custom ImageData
   const FIREFOX_ANDROID = FIREFOX && UA.mobile;
-
+  let isDark;
   // https://github.com/openstyles/stylus/issues/335
   let hasCanvas = FIREFOX_ANDROID ? false : loadImage(`/images/icon/${ICON_SIZES[0]}.png`)
     .then(({data}) => (hasCanvas = data.some(b => b !== 255)));
@@ -37,13 +38,17 @@ const iconMan = (() => {
   chrome.webNavigation.onCommitted.addListener(({tabId, frameId}) => {
     if (!frameId) tabMan.set(tabId, 'styleIds', undefined);
   });
-
   chrome.runtime.onConnect.addListener(port => {
     if (port.name === 'iframe') {
       port.onDisconnect.addListener(onPortDisconnected);
     }
   });
-
+  colorScheme.onChange(val => {
+    isDark = val;
+    if (prefs.get('iconsetAuto')) {
+      debounce(refreshAllIcons);
+    }
+  });
   bgReady.all.then(() => {
     prefs.subscribe([
       'disableAll',
@@ -55,6 +60,7 @@ const iconMan = (() => {
     ], () => debounce(refreshAllIconsBadgeText), {runNow: true});
     prefs.subscribe([
       'disableAll',
+      'iconsetAuto',
       'iconset',
     ], () => debounce(refreshAllIcons), {runNow: true});
   });
@@ -95,7 +101,12 @@ const iconMan = (() => {
   }
 
   function getIconName(hasStyles = false) {
-    const iconset = prefs.get('iconset') === 1 ? 'light/' : '';
+    const iconset = (
+      prefs.get('iconsetAuto') && isDark != null
+        ? !isDark
+        : prefs.get('iconset')
+    ) ? 'light/'
+      : '';
     const postfix = prefs.get('disableAll') ? 'x' : !hasStyles ? 'w' : '';
     return `${iconset}$SIZE$${postfix}`;
   }

@@ -1139,7 +1139,7 @@
     "description": "Heading for options section on manage page."
   },
   "optionsIconAuto": {
-    "message": "Match the Dark/Light mode automatically"
+    "message": "Match the Dark/Light mode"
   },
   "optionsIconDark": {
     "message": "Dark browser themes"
