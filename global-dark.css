@@ -1,4 +1,4 @@
-@media (prefers-color-scheme: dark) {
+@media screen and (prefers-color-scheme: dark), dark {
   :root {
     /* Comfortable dark themes don't use absolutes so the range is compressed */
     --c00: hsl(0, 0%, 80%);
@@ -30,6 +30,12 @@
     background-color: var(--input-bg);
     color: var(--fg);
   }
+  .filter-selection label + div select {
+    transition: none;
+  }
+  .filter-selection select:not(:focus):not(:hover) {
+    background-color: transparent;
+  }
   input::-webkit-inner-spin-button {
     filter: invert(.8);
   }
@@ -45,19 +51,75 @@
   .onoffswitch {
     --knob: var(--c50);
   }
+  .CodeMirror-scrollbar-filler,
+  .CodeMirror-gutter-filler {
+    background-color: var(--bg) !important;
+    border: 0;
+  }
   ::-webkit-scrollbar {
     width: 14px;
     height: 14px;
     background: var(--bg);
   }
+  ::-webkit-scrollbar-corner {
+    background: var(--bg);
+    border: 0;
+  }
+  /* buttons */
   ::-webkit-scrollbar-button:single-button {
-    background: radial-gradient(circle at center, #333 40%, var(--bg) 40%);
+    height: 14px;
+    width: 14px;
+    background-size: 10px;
+    background-position: 2px 4px;
+    background-repeat: no-repeat;
   }
-  ::-webkit-scrollbar-button:single-button:hover {
-    background: radial-gradient(circle at center, #444 40%, var(--bg) 40%);
+  ::-webkit-scrollbar-button:horizontal:single-button {
+    background-position: 4px 2px;
   }
-  ::-webkit-scrollbar-button:single-button:active {
-    background: radial-gradient(circle at center, #555 40%, var(--bg) 40%);
+  /* up */
+  ::-webkit-scrollbar-button:single-button:vertical:decrement {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='hsl(0, 0%, 35%)'><polygon points='50,00 0,50 100,50'/></svg>");
+  }
+  ::-webkit-scrollbar-button:single-button:vertical:decrement:hover {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='hsl(0, 0%, 45%)'><polygon points='50,00 0,50 100,50'/></svg>");
+  }
+  ::-webkit-scrollbar-button:single-button:vertical:decrement:active {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='hsl(0, 0%, 55%)'><polygon points='50,00 0,50 100,50'/></svg>");
+  }
+  /* down */
+  ::-webkit-scrollbar-button:single-button:vertical:increment {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='hsl(0, 0%, 35%)'><polygon points='0,0 100,0 50,50'/></svg>");
+  }
+  ::-webkit-scrollbar-button:single-button:vertical:increment:hover {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='hsl(0, 0%, 45%)'><polygon points='0,0 100,0 50,50'/></svg>");
+  }
+  ::-webkit-scrollbar-button:single-button:vertical:increment:active {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='hsl(0, 0%, 55%)'><polygon points='0,0 100,0 50,50'/></svg>");
+  }
+  /* left */
+  ::-webkit-scrollbar-button:single-button:horizontal:decrement {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='hsl(0, 0%, 35%)'><polygon points='0,50 50,100 50,0'/></svg>");
+  }
+  ::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='hsl(0, 0%, 45%)'><polygon points='0,50 50,100 50,0'/></svg>");
+  }
+  ::-webkit-scrollbar-button:single-button:horizontal:decrement:active {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='hsl(0, 0%, 55%)'><polygon points='0,50 50,100 50,0'/></svg>");
+  }
+  /* right */
+  ::-webkit-scrollbar-button:single-button:horizontal:increment {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='hsl(0, 0%, 35%)'><polygon points='0,0 0,100 50,50'/></svg>");
+  }
+  ::-webkit-scrollbar-button:single-button:horizontal:increment:hover {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='hsl(0, 0%, 45%)'><polygon points='0,0 0,100 50,50'/></svg>");
+  }
+  ::-webkit-scrollbar-button:single-button:horizontal:increment:active {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='hsl(0, 0%, 55%)'><polygon points='0,0 0,100 50,50'/></svg>");
+  }
+  ::-webkit-scrollbar-track-piece {
+    background: #333;
+    border: 4px solid var(--bg);
+    border-radius: 8px;
   }
   ::-webkit-scrollbar-track-piece {
     background: #333;

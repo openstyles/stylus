@@ -108,6 +108,9 @@
     /* TODO: remove this when strict_min_version >= 62 */
     background: #444;
   }
+  .cm-s-default div.CodeMirror-cursor {
+    border-left: 1px solid #fff;
+  }
   /* Using Chromium's dark devtools colors */
   .cm-s-default .cm-atom,
   .cm-s-default .cm-number { color: #a1f7b5 }
