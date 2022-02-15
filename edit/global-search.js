@@ -607,10 +607,10 @@
       }
       #search-replace-dialog[data-type="replace"] button:hover svg,
       #search-replace-dialog svg:hover {
-        fill: inherit;
+        fill: var(--cmin);
       }
       #search-replace-dialog [data-action="case"]:hover {
-        color: inherit;
+        color: var(--cmin);
       }
       #search-replace-dialog [data-action="clear"] {
         background-color: ${colors.input.bg.replace(/[^,]+$/, '') + '.75)'};

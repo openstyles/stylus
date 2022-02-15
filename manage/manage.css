@@ -455,11 +455,6 @@ a:hover {
   margin: 0 .5em;
 }
 
-.newUI .entry .svg-icon.checked,
-.newUI .entry:hover .svg-icon.checked {
-  fill: var(--fg);
-}
-
 .newUI .entry input[type="checkbox"]:not(.slider) {
   pointer-events: all;
 }
@@ -526,6 +521,9 @@ a:hover {
   fill: var(--c40);
 }
 
+button .svg-icon,
+.newUI .entry .svg-icon.checked,
+.newUI .entry:hover .svg-icon.checked,
 .newUI .entry:hover .svg-icon:hover {
   fill: var(--fg);
 }
