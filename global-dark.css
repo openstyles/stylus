@@ -121,11 +121,6 @@
     border: 4px solid var(--bg);
     border-radius: 8px;
   }
-  ::-webkit-scrollbar-track-piece {
-    background: #333;
-    border: 4px solid var(--bg);
-    border-radius: 8px;
-  }
   ::-webkit-scrollbar-track-piece:hover {
     background: #444;
   }
