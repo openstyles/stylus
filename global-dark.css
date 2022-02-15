@@ -121,20 +121,19 @@
     background: #555;
   }
   ::-webkit-scrollbar-thumb {
-    border: 2px solid;
-    background: #555;
+    background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1' fill='%23505050'><rect width='1' height='1'/></svg>") 2px 2px no-repeat;
   }
   ::-webkit-scrollbar-thumb:horizontal {
-    border-color: var(--bg) #333;
+    background-size: 100% 13px;
   }
   ::-webkit-scrollbar-thumb:vertical {
-    border-color: #333 var(--bg);
+    background-size: 13px 100%;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #666;
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1' fill='%23585858'><rect width='1' height='1'/></svg>");
   }
   ::-webkit-scrollbar-thumb:active {
-    background: #777;
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1' fill='%23666'><rect width='1' height='1'/></svg>");
   }
   ::-webkit-resizer {
     background: var(--input-bg) linear-gradient(-45deg,
