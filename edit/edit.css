@@ -754,7 +754,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 }
 #help-popup .title {
   font-weight: bold;
-  background-color: rgba(0,0,0,0.05);
+  background-color: rgba(128, 128, 128, .15);
   margin: calc(-1 * var(--pad-y)) calc(-1 * var(--pad-x)) 0;
   padding: var(--pad-y2) var(--pad-x);
 }
