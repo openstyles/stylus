@@ -230,8 +230,14 @@ html[style] .entry-content {
   padding-right: 5px;
 }
 
-.entry:nth-child(even) {
-  background-color: rgba(0, 0, 0, 0.05);
+[data-ui-theme="light"] .zebra .entry:nth-child(even),
+[data-ui-theme="light"] .reverse-zebra .entry:nth-child(odd) {
+  background-color: hsla(0, 0%, 50%, 0.1);
+}
+
+[data-ui-theme="dark"] .zebra .entry:nth-child(even),
+[data-ui-theme="dark"] .reverse-zebra .entry:nth-child(odd) {
+  background-color: hsla(0, 0%, 50%, 0.05);
 }
 
 .entry:nth-child(-n+10):before,
