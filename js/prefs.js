@@ -120,7 +120,7 @@
 
     'sync.enabled': 'none',
 
-    'iconset': 0,                   // 0 = dark-themed icon
+    'iconset': -1,                  // 0 = dark-themed icon
                                     // 1 = light-themed icon
                                     // -1 = match dark/light mode
     'badgeDisabled': '#8B0000',     // badge background color when disabled
