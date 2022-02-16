@@ -60,13 +60,14 @@ const sorter = (() => {
     'disabled,desc, title,desc',
     'disabled,desc, usercss,asc, title,desc',
   ];
-
   const splitRegex = /\s*,\s*/;
+  const ID = 'manage.newUI.sort';
+  const getPref = () => prefs.get(ID) || prefs.__defaults[ID];
 
   let columns = 1;
 
   onDOMready().then(() => {
-    prefs.subscribe('manage.newUI.sort', sorter.update);
+    prefs.subscribe(ID, sorter.update);
     $('#sorter-help').onclick = showHelp;
     addOptions();
     updateColumnCount();
@@ -112,13 +113,13 @@ const sorter = (() => {
     });
     renderBin.appendChild(container);
     select.appendChild(renderBin);
-    select.value = prefs.get('manage.newUI.sort');
+    select.value = getPref();
   }
 
   return {
 
     sort({styles}) {
-      const sortBy = prefs.get('manage.newUI.sort').split(splitRegex);
+      const sortBy = getPref().split(splitRegex);
       const len = sortBy.length;
       return styles.sort((a, b) => {
         let types, direction;
