@@ -45,7 +45,7 @@ const iconMan = (() => {
   });
   colorScheme.onChange(val => {
     isDark = val;
-    if (prefs.get('iconsetAuto')) {
+    if (prefs.get('iconset') === -1) {
       debounce(refreshAllIcons);
     }
   });
@@ -60,7 +60,6 @@ const iconMan = (() => {
     ], () => debounce(refreshAllIconsBadgeText), {runNow: true});
     prefs.subscribe([
       'disableAll',
-      'iconsetAuto',
       'iconset',
     ], () => debounce(refreshAllIcons), {runNow: true});
   });
@@ -101,14 +100,10 @@ const iconMan = (() => {
   }
 
   function getIconName(hasStyles = false) {
-    const iconset = (
-      prefs.get('iconsetAuto') && isDark != null
-        ? !isDark
-        : prefs.get('iconset')
-    ) ? 'light/'
-      : '';
+    const i = prefs.get('iconset');
+    const prefix = i === 0 || i === -1 && isDark ? '' : 'light/';
     const postfix = prefs.get('disableAll') ? 'x' : !hasStyles ? 'w' : '';
-    return `${iconset}$SIZE$${postfix}`;
+    return `${prefix}$SIZE$${postfix}`;
   }
 
   function refreshIcon(tabId, force = false) {

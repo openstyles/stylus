@@ -196,14 +196,25 @@ input[type="color"] {
 
 .iconset {
   display: flex;
+  align-items: center;
 }
-
 .iconset input {
   display: block;
 }
-
 .iconset input[type="radio"] {
   margin: 2px 4px 0 0;
+}
+.iconset-auto {
+  width: 48px;
+}
+.iconset-auto::after {
+  content: '?';
+  background: var(--accent-1);
+  color: var(--bg);
+  padding: 1px 4px;
+  border-radius: 50%;
+  line-height: 1;
+  font-weight: bold;
 }
 
 #actions {
