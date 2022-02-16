@@ -153,11 +153,12 @@ label,
 }
 
 label > :first-child {
-  margin-right: 8px;
-  flex-grow: 1;
   transition: text-shadow .1s;
 }
-
+.items:not(.no-stretch) label > :first-child {
+  margin-right: 8px;
+  flex-grow: 1;
+}
 label:not([disabled]):hover > :first-child {
   text-shadow: 0 0 0.01px rgba(0, 0, 0, .25);
 }
@@ -194,27 +195,14 @@ input[type="color"] {
   height: 2em;
 }
 
-.iconset {
-  display: flex;
-  align-items: center;
+input[type=time] {
+  margin: 0 .5em;
+  max-width: 7em; /* TODO: remove when strict_min_version >= 57 */
 }
-.iconset input {
-  display: block;
-}
-.iconset input[type="radio"] {
-  margin: 2px 4px 0 0;
-}
-.iconset-auto {
-  width: 48px;
-}
-.iconset-auto::after {
-  content: '?';
-  background: var(--accent-1);
-  color: var(--bg);
-  padding: 1px 4px;
-  border-radius: 50%;
-  line-height: 1;
-  font-weight: bold;
+
+input[type=radio] {
+  margin-top: 0;
+  vertical-align: text-top;
 }
 
 #actions {
@@ -304,24 +292,6 @@ html:not(.firefox):not(.opera) #updates {
   top: unset;
   right: unset;
   position: relative;
-}
-
-.radio-group-item {
-  display: flex;
-  align-items: center;
-  line-height: 1.5;
-}
-.radio-group-item > input[type=radio] {
-  margin: 0 .5em 0 0;
-  flex: 0 0 auto;
-}
-.radio-group-label {
-  display: block;
-  margin: 0 0 .3em;
-}
-input[type=time] {
-  margin: 0 .5em;
-  max-width: 7em; /* TODO: remove when strict_min_version >= 57 */
 }
 
 .sync-status {
