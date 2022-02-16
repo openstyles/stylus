@@ -304,28 +304,17 @@ function scrollElementIntoView(element, {invalidMarginRatio = 0} = {}) {
  * Accepts an array of pref names (values are fetched via prefs.get)
  * and establishes a two-way connection between the document elements and the actual prefs
  */
-function setupLivePrefs(ids = prefs.knownKeys.filter(id => $(`#${CSS.escape(id)}, [name=${CSS.escape(id)}]`))) {
+function setupLivePrefs(ids) {
   let forceUpdate = true;
+  // getElementsByTagName is cached so it's much faster than calling querySelector for each id
+  ids = ids ? [...ids] : prefs.knownKeys.filter(id => id in document.getElementsByTagName('*'));
   prefs.subscribe(ids, updateElement, {runNow: true});
   forceUpdate = false;
-
-  for (const id of ids) {
-    const elements = $$(`#${CSS.escape(id)}, [name=${CSS.escape(id)}]`);
-    for (const element of elements) {
-      element.addEventListener('change', onChange);
-    }
-  }
-
   function onChange() {
-    if (!this.checkValidity()) {
-      return;
+    if (this.checkValidity() && (this.type !== 'radio' || this.checked)) {
+      prefs.set(this.id || this.name, getValue(this));
     }
-    if (this.type === 'radio' && !this.checked) {
-      return;
-    }
-    prefs.set(this.id || this.name, getValue(this));
   }
-
   function getValue(el) {
     const type = el.dataset.valueType || el.type;
     return type === 'checkbox' ? el.checked :
@@ -334,20 +323,16 @@ function setupLivePrefs(ids = prefs.knownKeys.filter(id => $(`#${CSS.escape(id)}
       type === 'number' ? Number(el.value) :
       el.value;
   }
-
   function isSame(el, oldValue, value) {
-    return oldValue === value ||
-      typeof value === 'boolean' &&
-      el.tagName === 'SELECT' &&
-      oldValue === `${value}` ||
-      el.type === 'radio' && (oldValue === value) === el.checked;
+    return el.type === 'radio' ? el.checked === (oldValue === value) :
+      el.localName === 'select' && typeof value === 'boolean' && oldValue === `${value}` ||
+      oldValue === value;
   }
-
   function updateElement(id, value) {
-    const els = $$(`#${CSS.escape(id)}, [name=${CSS.escape(id)}]`);
+    const byId = document.getElementById(id);
+    const els = byId ? [byId] : document.getElementsByName(id);
     if (!els.length) {
-      // FIXME: why do we unsub all ids when a single id is missing from the page
-      prefs.unsubscribe(ids, updateElement);
+      prefs.unsubscribe(id, updateElement);
       return;
     }
     for (const el of els) {
@@ -361,6 +346,7 @@ function setupLivePrefs(ids = prefs.knownKeys.filter(id => $(`#${CSS.escape(id)}
           el.value = value;
         }
         el.dispatchEvent(new Event('change', {bubbles: true}));
+        if (forceUpdate) el.on('change', onChange);
       }
     }
   }
