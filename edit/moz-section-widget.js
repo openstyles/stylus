@@ -158,6 +158,7 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
     }
     if (msg.style || msg.styles ||
         msg.prefs && 'disableAll' in msg.prefs ||
+        msg.method === 'colorScheme' ||
         msg.method === 'styleDeleted') {
       requestAnimationFrame(updateWidgetStyle);
     }

@@ -1,18 +1,16 @@
 body {
   overflow: hidden;
-  margin: 0;
-  background: white;
   display: flex;
   height: 100vh;
 }
 
 a {
-  color: #000;
+  color: var(--fg);
   transition: color .5s;
 }
 
 a:hover {
-  color: #666;
+  color: var(--c40);
 }
 
 img.icon {
@@ -21,7 +19,7 @@ img.icon {
 }
 
 input:disabled + span {
-  color: rgb(128, 128, 128);
+  color: var(--c50);
 }
 
 #header,
@@ -54,7 +52,7 @@ input:disabled + span {
   flex-basis: auto;
   background: #ffe2e2;
   border-right: none;
-  border-bottom: 1px dashed #aaa;
+  border-bottom: 1px dashed var(--c65);
 }
 
 .has-warnings .warnings {
@@ -143,7 +141,7 @@ h1 {
 
 .install:hover:not(:disabled) {
   background-color: hsl(0, 0%, 38%);
-  color: #fff;
+  color: var(--bg);
   text-shadow: none;
 }
 
@@ -326,7 +324,7 @@ li {
     flex-direction: column;
   }
   #header {
-    border-bottom: 1px dashed #AAA;
+    border-bottom: 1px dashed var(--c65);
     min-height: 6rem;
     max-height: 40vh;
     resize: vertical;

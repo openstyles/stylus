@@ -32,7 +32,7 @@
     // checkbox in style config dialog
     'config.autosave': true,
 
-    'schemeSwitcher.enabled': 'never',
+    'schemeSwitcher.enabled': 'system',
     'schemeSwitcher.nightStart': '18:00',
     'schemeSwitcher.nightEnd': '06:00',
 
@@ -120,9 +120,9 @@
 
     'sync.enabled': 'none',
 
-    'iconset': 0,                   // 0 = dark-themed icon
+    'iconset': -1,                  // 0 = dark-themed icon
                                     // 1 = light-themed icon
-
+                                    // -1 = match dark/light mode
     'badgeDisabled': '#8B0000',     // badge background color when disabled
     'badgeNormal': '#006666',       // badge background color
 

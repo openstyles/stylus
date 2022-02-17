@@ -7,9 +7,35 @@ html#stylus #header *:not(#\1transition-suppressor) {
 :root {
   --family: Arial, "Helvetica Neue", Helvetica, system-ui, sans-serif;
   --input-height: 22px;
+  --cmin: hsl(0, 0%, 00%);
+  --c00: hsl(0, 0%, 00%);
+  --c10: hsl(0, 0%, 10%);
+  --c20: hsl(0, 0%, 20%);
+  --c30: hsl(0, 0%, 30%);
+  --c40: hsl(0, 0%, 40%);
+  --c45: hsl(0, 0%, 45%);
+  --c50: hsl(0, 0%, 50%);
+  --c60: hsl(0, 0%, 60%);
+  --c65: hsl(0, 0%, 65%);
+  --c70: hsl(0, 0%, 70%);
+  --c75: hsl(0, 0%, 75%);
+  --c80: hsl(0, 0%, 80%);
+  --c85: hsl(0, 0%, 85%);
+  --c90: hsl(0, 0%, 90%);
+  --c95: hsl(0, 0%, 95%);
+  --c100: hsl(0, 0%, 100%);
+  --cmax: hsl(0, 0%, 100%);
+  --bg: var(--c100);
+  --fg: var(--c00);
+  --accent-1: hsl(180, 100%, 15%);
+  --accent-2: hsl(180, 50%, 40%);
+  --accent-3: hsl(180, 40%, 69%);
 }
 body {
   font: normal 12px var(--family);
+  background-color: var(--bg);
+  color: var(--fg);
+  margin: 0;
 }
 body:lang(ja) {
   font-family: Arial, 'Meiryo UI', 'MS Gothic', system-ui, sans-serif;
@@ -31,12 +57,12 @@ button {
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 2px 7px;
-  border: 1px solid hsl(0, 0%, 62%);
+  border: 1px solid var(--c60);
   font: inherit;
   font-size: 13px;
   line-height: 1.2;
-  color: #000;
-  background-color: hsl(0, 0%, 100%);
+  color: var(--fg);
+  background-color: var(--bg);
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAeCAYAAADtlXTHAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QwGBBwIHvKt6QAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAL0lEQVQI12NoaGgQZ2JgYGBkYmBgYGZiYGBggrMY4VxsYsyoskQQCB2MWAxAMhkADVECDhlW9CoAAAAASUVORK5CYII=');
   background-repeat: repeat-x;
   background-size: 100% 100%;
@@ -44,13 +70,13 @@ button {
 }
 
 button:not(:disabled):hover {
-  background-color: hsl(0, 0%, 95%);
-  border-color: hsl(0, 0%, 52%);
+  background-color: var(--c95);
+  border-color: var(--c50);
 }
 
 button:active {
-  background-color: hsl(0, 0%, 95%);
-  border-color: hsl(0, 0%, 52%);
+  background-color: var(--c95);
+  border-color: var(--c50);
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAeCAYAAADtlXTHAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QwJARIWJNZvuQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAMElEQVQI12NoaGgIZmJgYPjLxMDA8I+JgYHhP5z1Dy7xH5X7jxQCzWQ0A9DEILYBABm5HtJk2jPHAAAAAElFTkSuQmCC');
   background-repeat: repeat-x;
   background-size: 100% 100%;
@@ -62,27 +88,28 @@ button .svg-icon {
 
 /* For some odd reason these hovers appear lighter than all other button hovers in every browser */
 #message-box-buttons button:not(:disabled):hover {
-  background-color: hsl(0, 0%, 90%);
-  border-color: hsl(0, 0%, 50%);
+  background-color: var(--c90);
+  border-color: var(--c50);
 }
 
 input {
   font: inherit;
-  border: 1px solid hsl(0, 0%, 66%);
+  border: 1px solid var(--c65);
   transition: border-color .1s, box-shadow .1s;
 }
 
 input:not([type]),
 input[type=text],
+input[type=number],
 input[type=search] {
-  background: #fff;
-  color: #000;
+  background: var(--bg);
+  color: var(--fg);
   height: var(--input-height);
   min-height: var(--input-height)!important;
   line-height: var(--input-height);
   box-sizing: border-box;
   padding: 0 3px;
-  border: 1px solid hsl(0, 0%, 66%);
+  border: 1px solid var(--c65);
 }
 
 .svg-icon {
@@ -91,11 +118,11 @@ input[type=search] {
   transition: fill .5s;
   width: 20px;
   height: 20px;
-  fill: #666;
+  fill: var(--c40);
 }
 
 .svg-icon:hover {
-  fill: #000;
+  fill: var(--fg);
 }
 
 .svg-icon.info {
@@ -114,7 +141,7 @@ input[type=search] {
   height: 8px;
   width: 8px;
   display: none;
-  fill: #000;
+  fill: var(--fg);
   margin: 2px 0 0 2px;
 }
 
@@ -129,7 +156,7 @@ input[type="checkbox"]:not(.slider) {
   position: absolute;
   left: 0;
   top: 0;
-  border: 1px solid hsl(0, 0%, 46%);
+  border: 1px solid var(--c45);
   height: 12px;
   width: 12px;
   display: inline-flex;
@@ -140,8 +167,8 @@ input[type="checkbox"]:not(.slider) {
 }
 
 input[type="checkbox"]:not(.slider):hover {
-  border-color: hsl(0, 0%, 32%);
-  background-color: hsl(0, 0%, 82%);
+  border-color: var(--c30);
+  background-color: var(--c80);
 }
 
 input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
@@ -153,15 +180,15 @@ input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
 
 input[type="checkbox"]:not(.slider):disabled {
   background-color: transparent;
-  border-color: hsl(0, 0%, 50%);
+  border-color: var(--c50);
 }
 
 input[type="checkbox"]:not(.slider):disabled + .svg-icon.checked {
-  fill: hsl(0, 0%, 50%);
+  fill: var(--c50);
 }
 
 input[type="checkbox"]:not(.slider):disabled + .svg-icon.checked + span {
-  color: hsl(0, 0%, 50%);
+  color: var(--c50);
 }
 
 label {
@@ -173,9 +200,9 @@ select {
   -webkit-appearance: none;
   height: var(--input-height);
   font: inherit;
-  color: #000;
+  color: var(--fg);
   background-color: transparent;
-  border: 1px solid hsl(0, 0%, 66%);
+  border: 1px solid var(--c65);
   padding: 0 20px 0 6px;
   transition: color .5s;
 }
@@ -193,7 +220,7 @@ select {
   display: inline-flex;
   height: 14px;
   width: 14px;
-  fill: #000;
+  fill: var(--fg);
   position: absolute;
   top: 4px;
   right: 4px;
@@ -203,9 +230,9 @@ select {
 input[type="radio"] {
   -webkit-appearance: none;
   -moz-appearance: none;
-  background: hsl(0, 0%, 88%);
+  background: var(--c90);
   border-radius: 50%;
-  border: 1px solid hsl(0, 0%, 60%);
+  border: 1px solid var(--c60);
   cursor: default;
   height: 13px;
   width: 13px;
@@ -227,7 +254,7 @@ input[type="radio"]:after {
 }
 
 input[type="radio"]:checked:after {
-  background-color: hsl(0, 0%, 30%);
+  background-color: var(--c30);
   transform: scale(1);
 }
 
@@ -241,7 +268,7 @@ select[disabled] > option {
 
 select:disabled + .select-arrow,
 select[disabled] + .select-arrow {
-  fill: hsl(0, 0%, 50%);
+  fill: var(--c50);
 }
 
 summary {
@@ -289,12 +316,12 @@ input[type="number"][data-focused-via-click]:focus {
   cursor: e-resize;
   border-width: 0 1px;
   border-style: solid;
-  color: #8888;
+  color: hsla(0, 0%, 50%, .5);
   border-color: currentColor;
   pointer-events: auto;
 }
 #header-resizer:active {
-  border-color: #888;
+  border-color: var(--c50);
 }
 #header-resizer::after {
   content: '';
@@ -340,13 +367,14 @@ body.resizing-v > * {
   box-shadow: inset 0 0 100px rgba(0, 0, 0, .2);
 }
 .split-btn-menu {
-  background: #fff;
+  background: var(--bg);
   position: absolute;
   box-shadow: 2px 3px 7px rgba(0, 0, 0, .5);
   border: 1px solid hsl(180deg, 50%, 50%);
   white-space: nowrap;
   cursor: pointer;
   padding: .25em 0;
+  z-index: 1000;
 }
 .split-btn-menu > * {
   padding: .5em 1em;
@@ -354,7 +382,7 @@ body.resizing-v > * {
 }
 .split-btn-menu > :hover {
   background-color: hsla(180deg, 50%, 50%, .25);
-  color: #000;
+  color: var(--fg);
 }
 
 @supports (-moz-appearance: none) {
@@ -370,9 +398,9 @@ body.resizing-v > * {
 /* We can customize everything about number inputs except arrows. They're horrible in Linux FF, so we'll hide them unless hovered or focused. */
   .firefox.non-windows input[type="number"] {
     -moz-appearance: textfield;
-    background: #fff;
-    color: #000;
-    border: 1px solid hsl(0, 0%, 66%);
+    background: var(--bg);
+    color: var(--fg);
+    border: 1px solid var(--c65);
   }
 
   .firefox.non-windows input[type="number"]:not(:disabled):hover,
@@ -381,8 +409,8 @@ body.resizing-v > * {
   }
 
   .firefox.non-windows input[type="color"] {
-    background: #fff;
-    border: 1px solid hsl(0, 0%, 66%);
+    background: var(--bg);
+    border: 1px solid var(--c65);
     padding: 4px;
   }
 }

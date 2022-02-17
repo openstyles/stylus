@@ -293,6 +293,9 @@ function showStyles(frameResults) {
   } else {
     installed.appendChild(t.template.noStyles);
   }
+  const zebra = $('.entry:last-child:nth-child(odd)') &&
+  !$('.styles-last') ? 'reverse-zebra' : 'zebra';
+  $('#installed').classList.add(`${zebra}`);
   require(['/popup/hotkeys']);
 }
 

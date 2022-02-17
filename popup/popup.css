@@ -11,12 +11,7 @@ html, body {
 
 body {
   width: 252px;
-  margin: 0;
-}
-
-.firefox body {
-  color: #000;
-  background-color: #fff;
+  overflow: hidden;
 }
 
 .firefox button {
@@ -33,14 +28,10 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
 }
 /************ checkbox ************/
 
-.style-name:hover .checker:checked {
-  border-color: hsl(0, 0%, 32%);
-  background-color: hsl(0, 0%, 82%);
-}
-
+.style-name:hover .checker:checked,
 .style-name:hover .checker {
-  border-color: hsl(0, 0%, 32%);
-  background-color: hsl(0, 0%, 82%);
+  border-color: var(--c30);
+  background-color: var(--c80);
 }
 
 #disable-all-wrapper input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
@@ -59,7 +50,7 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
 }
 
 #installed.disabled + .actions #disableAll:checked:hover + .svg-icon.checked {
-  fill: #fff;
+  fill: var(--bg);
 }
 
 #disableAll:hover {
@@ -119,12 +110,12 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
 }
 
 a {
-  color: #000;
+  color: var(--fg);
   transition: color .5s;
 }
 
 a:hover {
-  color: #666;
+  color: var(--c40);
 }
 
 .actions > .main-controls {
@@ -141,7 +132,7 @@ body.blocked > DIV {
 }
 
 #installed {
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid var(--c85);
   max-height: 445px;
   overflow-y: auto;
   counter-reset: style-number;
@@ -179,10 +170,6 @@ body.blocked > DIV {
 
 html[style] .entry-content {
   padding: 0 var(--hotkey-margin) 0 0;
-}
-
-#no-styles.entry {
-  padding: 0 14px;
 }
 
 .entry .actions {
@@ -224,14 +211,14 @@ html[style] .entry-content {
 .entry.disabled .style-name,
 .entry.disabled .svg-icon {
   font-weight: normal;
-  color: #888;
-  fill: #aaa;
+  color: var(--c50);
+  fill: var(--c65);
 }
 .entry.disabled:hover .svg-icon {
-    fill: #666;
+    fill: var(--c40);
 }
 .entry.disabled:hover a:hover .svg-icon {
-    fill: #000;
+    fill: var(--fg);
 }
 
 .entry .main-controls {
@@ -243,8 +230,14 @@ html[style] .entry-content {
   padding-right: 5px;
 }
 
-.entry:nth-child(even) {
-  background-color: rgba(0, 0, 0, 0.05);
+[data-ui-theme="light"] .zebra .entry:nth-child(even),
+[data-ui-theme="light"] .reverse-zebra .entry:nth-child(odd) {
+  background-color: hsla(0, 0%, 50%, 0.1);
+}
+
+[data-ui-theme="dark"] .zebra .entry:nth-child(even),
+[data-ui-theme="dark"] .reverse-zebra .entry:nth-child(odd) {
+  background-color: hsla(0, 0%, 50%, 0.05);
 }
 
 .entry:nth-child(-n+10):before,
@@ -254,7 +247,7 @@ html[style] .entry-content {
   position: absolute;
   top: .9ex;
   right: 5px;
-  color: #aaa;
+  color: var(--c65);
 }
 
 .entry:nth-child(11):before {
@@ -367,7 +360,7 @@ a.configure[target="_blank"] .svg-icon.config {
   display: flex;
   position: relative;
   flex-direction: column;
-  background-color: #fff;
+  background-color: var(--bg);
   border: solid 2px rgba(0, 0, 0, 0.5);
 }
 .menu-buttons-wrapper {
@@ -393,7 +386,7 @@ a.configure[target="_blank"] .svg-icon.config {
 }
 .entry .menu-item:hover,
 .entry .menu-item:active {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: var(--c95);
   transition: background-color .25s;
 }
 .entry .menu-icon {
@@ -445,16 +438,16 @@ a.configure[target="_blank"] .svg-icon.config {
 
 #regexp-explanation {
   position: fixed;
-  background-color: white;
+  background-color: var(--bg);
   top: 50%;
   transform: translateY(-50%);
   left: 0;
   right: 0;
   padding: .5rem;
   font-size: 90%;
-  border-top: 2px solid black;
-  border-bottom: 2px solid black;
-  box-shadow: 0 0 100px black;
+  border-top: 2px solid var(--fg);
+  border-bottom: 2px solid var(--fg);
+  box-shadow: 0 0 100px var(--fg);
   display: flex;
   flex-direction: column;
   z-index: 999999;
@@ -483,7 +476,7 @@ a.configure[target="_blank"] .svg-icon.config {
 }
 
 a:hover .svg-icon {
-  fill: #000;
+  fill: var(--fg);
 }
 
 body > .actions {
@@ -620,7 +613,7 @@ body.blocked .actions > .main-controls {
 }
 
 .breadcrumbs:hover a {
-  color: #bbb;
+  color: var(--c75);
   text-decoration: none
 }
 
@@ -714,7 +707,7 @@ html:not(.styles-last) .split-btn-pedal::after {
   order: 2;
 }
 .styles-last #installed {
-  border-top: 1px solid black;
+  border-top: 1px solid var(--fg);
 }
 
 /* confirm */
@@ -756,7 +749,7 @@ html:not(.styles-last) .split-btn-pedal::after {
   max-height: 80%;
   min-height: 6em;
   padding: 1em;
-  background-color: #fff;
+  background-color: var(--bg);
   display: flex;
   flex-direction: column;
   border: solid 2px rgba(0, 0, 0, 0.5);
@@ -780,7 +773,7 @@ html:not(.styles-last) .split-btn-pedal::after {
   max-height: 80%;
   min-height: 6em;
   padding: 1em;
-  background-color: #fff;
+  background-color: var(--bg);
   display: flex;
   flex-direction: column;
   border: solid 2px rgba(0, 0, 0, 0.5);
@@ -810,7 +803,7 @@ html:not(.styles-last) .split-btn-pedal::after {
 }
 
 .unreachable .blocked-info {
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid var(--fg);
 }
 
 .blocked-info {
@@ -843,12 +836,12 @@ html:not(.styles-last) .split-btn-pedal::after {
 }
 
 .blocked-info .copy:hover {
-  color: #000;
+  color: var(--fg);
 }
 
 .blocked-info .copy.copied {
   background: hsl(170, 40%, 80%);
-  color: #000;
+  color: var(--fg);
 }
 
 .copy-message {
@@ -863,7 +856,7 @@ html:not(.styles-last) .split-btn-pedal::after {
   text-align: center;
   padding: 4px 0;
   background: hsl(170, 40%, 80%);
-  color: #000;
+  color: var(--fg);
   z-index: 10;
 }
 
@@ -907,7 +900,7 @@ html:not(.styles-last) .split-btn-pedal::after {
   cursor: auto;
   display: flex;
   flex-direction: column;
-  border-left: 2px solid white;
+  border-left: 2px solid var(--bg);
   box-shadow: 0 0 90px rgba(0, 0, 0, .5);
   z-index: 5;
 }
@@ -921,8 +914,8 @@ html:not(.styles-last) .split-btn-pedal::after {
 
 #hotkey-info div {
   padding: 1em;
-  border-top: 1px solid #ddd;
-  background-color: white;
+  border-top: 1px solid var(--c85);
+  background-color: var(--bg);
 }
 
 #hotkey-info div:last-child {
@@ -940,10 +933,10 @@ html:not(.styles-last) .split-btn-pedal::after {
 
 #hotkey-info mark {
   display: inline-block;
-  background: linear-gradient(#ccc, #fff);
+  background: linear-gradient(var(--c80), var(--bg));
   padding: 1px 6px 0;
   margin: 2px;
-  border: 1px solid white;
+  border: 1px solid var(--bg);
   border-radius: 4px;
   box-shadow: 1px 1px 4px rgba(0, 0, 0, .3);
   font-weight: bold;

@@ -7,14 +7,16 @@
       <input id="ss-update-url" type="url" class="w100" i18n-placeholder="styleUpdateUrlLabel">
     </div>
     <div id="ss-scheme">
-      <div i18n-text="installPreferSchemeLabel"></div>
-      <label i18n-text-append="installPreferSchemeNone">
+      <div i18n-text="preferScheme">
+        <div><small id="ss-scheme-off" i18n-text="preferSchemeAlways" hidden></small></div>
+      </div>
+      <label i18n-text-append="preferSchemeNone" class="ss-radio">
         <input name="ss-scheme" type="radio" value="none">
       </label>
-      <label i18n-text-append="installPreferSchemeDark">
+      <label i18n-text-append="preferSchemeDark" class="ss-radio">
         <input name="ss-scheme" type="radio" value="dark">
       </label>
-      <label i18n-text-append="installPreferSchemeLight">
+      <label i18n-text-append="preferSchemeLight" class="ss-radio">
         <input name="ss-scheme" type="radio" value="light">
       </label>
     </div>

@@ -21,7 +21,7 @@
   margin-bottom: 0;
 }
 .style-settings input[type=radio] {
-  margin-left: -.5em; /* compensate for label's 16px margin in edit.css */
+  margin: 0 .3em 0 0;
 }
 .style-settings input:disabled ~ label {
   opacity: .5;
@@ -43,4 +43,13 @@
 }
 .style-settings textarea:not(:placeholder-shown) {
   min-width: 50vw;
+}
+.ss-radio {
+  display: inline-flex;
+  align-items: center;
+  line-height: 2;
+  padding: 0 .8em 0 0;
+}
+a[data-cmd=note] {
+  vertical-align: text-bottom;
 }

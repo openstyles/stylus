@@ -3,9 +3,7 @@
   --name-padding-right: 40px;
   --actions-width: 75px;
 }
-
 body {
-  margin: 0;
   /* Fill the entire viewport to enable json import via drag'n'drop */
   display: flex;
   height: 100vh;
@@ -37,12 +35,12 @@ body.all-styles-hidden-by-filters::after {
 }
 
 a, .disabled a:hover {
-  color: #000;
+  color: var(--fg);
   transition: color .5s;
 }
 
 a:hover {
-  color: #666;
+  color: var(--c40);
 }
 
 #header {
@@ -98,7 +96,7 @@ a:hover {
 }
 
 #add-style-as-usercss-wrapper:not(:hover) input:not(:checked) ~ a svg {
-  fill: #aaa;
+  fill: var(--c65);
 }
 
 #add-style-as-usercss-wrapper input {
@@ -136,7 +134,7 @@ a:hover {
 .entry {
   margin: 0;
   padding: 1.25em 2em;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--c85);
 }
 
 .entry:first-child {
@@ -225,7 +223,7 @@ a:hover {
   content: "UC";
   background-color: hsla(180, 35%, 50%, .35);
   padding: 2px 3px;
-  color: #000;
+  color: var(--fg);
 }
 .oldUI .disabled h2::after {
   content: var(--genericDisabledLabel);
@@ -244,8 +242,8 @@ a:hover {
 .disabled h2 .style-name-link,
 .disabled .applies-to,
 .newUI .disabled.entry .svg-icon {
-  color: #888;
-  fill: #c4c4c4;
+  color: var(--c50);
+  fill: var(--c80);
   font-weight: normal;
   transition: color .5s .1s, fill .5s .1s;
 }
@@ -311,7 +309,7 @@ a:hover {
   margin-bottom: .1em;
 }
 #header summary:hover h2 {
-  border-color: #bbb;
+  border-color: var(--c75);
 }
 #header summary h2 [data-cmd="note"] {
   display: inline-flex;
@@ -349,7 +347,7 @@ a:hover {
 }
 
 .style-info[data-type=version] {
-  color: #666;
+  color: var(--c40);
   padding-left: .5em;
   font-weight: normal;
 }
@@ -359,7 +357,7 @@ a:hover {
   display: none;
 }
 .newUI .entry .style-info[data-type=age] {
-  color: #999;
+  color: var(--c60);
   text-align: right;
   padding-right: 1em;
 }
@@ -457,11 +455,6 @@ a:hover {
   margin: 0 .5em;
 }
 
-.newUI .entry .svg-icon.checked,
-.newUI .entry:hover .svg-icon.checked {
-  fill: #000;
-}
-
 .newUI .entry input[type="checkbox"]:not(.slider) {
   pointer-events: all;
 }
@@ -486,7 +479,7 @@ a:hover {
 }
 
 .newUI .entry.enabled .style-name:hover .style-name-link {
-  color: hsla(180, 100%, 15%, 1);
+  color: var(--accent-1);
 }
 
 .newUI .style-name:after {
@@ -521,15 +514,18 @@ a:hover {
 }
 
 .newUI .entry .svg-icon {
-  fill: #999;
+  fill: var(--c60);
 }
 
 .newUI .entry:hover .svg-icon {
-  fill: #666;
+  fill: var(--c40);
 }
 
+button .svg-icon,
+.newUI .entry .svg-icon.checked,
+.newUI .entry:hover .svg-icon.checked,
 .newUI .entry:hover .svg-icon:hover {
-  fill: #000;
+  fill: var(--fg);
 }
 
 .newUI .checking-update .check-update {
@@ -823,7 +819,7 @@ a:hover {
 }
 
 #reset-filters svg {
-  fill: hsla(180, 50%, 27%, .5);
+  fill: var(--accent-2);
   width: 24px; /* widen the click area a bit */
   height: 20px;
   padding: 2px;
@@ -831,7 +827,7 @@ a:hover {
 }
 
 #reset-filters:hover svg {
-  fill: hsla(180, 50%, 27%, 1);
+  filter: brightness(1.2);
 }
 
 #filters summary:not(.active) #reset-filters,
@@ -866,12 +862,12 @@ a:hover {
 #search, #manage\.newUI\.sort {
   min-width: 4em; /* reduces the big default width */
   flex-grow: 1;
-  background: #fff;
+  background: var(--bg);
   height: 20px;
   box-sizing: border-box;
   padding: 3px 3px 3px 4px;
-  color: #000;
-  border: 1px solid hsl(0, 0%, 66%);
+  color: var(--fg);
+  border: 1px solid var(--c65);
 }
 
 #manage\.newUI\.sort {
@@ -1086,7 +1082,7 @@ a:hover {
     width: 100%;
     position: static;
     border-right: none;
-    border-bottom: 1px dashed #AAA;
+    border-bottom: 1px dashed var(--c65);
   }
 
   #manage-settings {
@@ -1177,3 +1173,8 @@ a:hover {
   }
 }
 
+@media screen and (prefers-color-scheme: dark), dark {
+  .filter-selection select:not(:focus) {
+    background-color: transparent;
+  }
+}

@@ -2,11 +2,12 @@
 /* global API */// msg.js
 /* global editor */
 /* global helpPopup */// util.js
+/* global prefs */
 /* global t */// localization.js
 /* global debounce tryURL */// toolbox.js
-/* exported StyleSettings */
 'use strict';
 
+/* exported StyleSettings */
 async function StyleSettings() {
   const AUTOSAVE_DELAY = 500; // same as config-dialog.js
   const SS_ID = 'styleSettings';
@@ -31,6 +32,9 @@ async function StyleSettings() {
     initArea('exclusions'),
   ];
   update();
+  prefs.subscribe('schemeSwitcher.enabled', (_, val) => {
+    $('#ss-scheme-off', ui).hidden = val !== 'never';
+  }, {runNow: true});
   window.on(SS_ID, update);
   window.on('closeHelp', () => window.off(SS_ID, update), {once: true});
   helpPopup.show(t(SS_ID), ui, {

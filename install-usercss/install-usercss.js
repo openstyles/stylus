@@ -1,9 +1,12 @@
 /* global $$ $ $create $createLink $$remove showSpinner */// dom.js
 /* global API */// msg.js
+/* global CodeMirror */
 /* global URLS closeCurrentTab deepEqual */// toolbox.js
+/* global compareVersion */// cmpver.js
 /* global messageBox */
 /* global prefs */
 /* global preinit */
+/* global styleCodeEmpty */// sections-util.js
 /* global t */// localization.js
 'use strict';
 
@@ -40,34 +43,14 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
   if (theme !== 'default') {
     require([`/vendor/codemirror/theme/${theme}.css`]); // not awaiting as it may be absent
   }
-  const scriptsReady = require([
-    '/vendor/codemirror/lib/codemirror', /* global CodeMirror */
-  ]).then(() => require([
-    '/vendor/codemirror/keymap/sublime',
-    '/vendor/codemirror/keymap/emacs',
-    '/vendor/codemirror/keymap/vim', // TODO: load conditionally
-    '/vendor/codemirror/mode/css/css',
-    '/vendor/codemirror/mode/stylus/stylus',
-    '/vendor/codemirror/addon/search/searchcursor',
-    '/vendor/codemirror/addon/fold/foldcode',
-    '/vendor/codemirror/addon/fold/foldgutter',
-    '/vendor/codemirror/addon/fold/brace-fold',
-    '/vendor/codemirror/addon/fold/indent-fold',
-    '/vendor/codemirror/addon/selection/active-line',
-    '/vendor/codemirror/lib/codemirror.css',
-    '/vendor/codemirror/addon/fold/foldgutter.css',
-    '/js/cmpver', /* global compareVersion */
-    '/js/sections-util', /* global styleCodeEmpty */
-    '/js/color/color-converter',
-    '/edit/codemirror-default.css',
-  ])).then(() => require([
-    '/edit/codemirror-default',
-    '/js/color/color-view',
-  ]));
-
   ({tabId, initialUrl} = preinit);
   liveReload = initLiveReload();
-  preinit.tpl.then(el => $('#ss-scheme').append(...$('#ss-scheme', el).children));
+  preinit.tpl.then(el => {
+    $('#ss-scheme').append(...$('#ss-scheme', el).children);
+    prefs.subscribe('schemeSwitcher.enabled', (_, val) => {
+      $('#ss-scheme-off').hidden = val !== 'never';
+    }, {runNow: true});
+  });
 
   const [
     {dup, style, error, sourceCode},
@@ -80,7 +63,6 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
     messageBox.alert(isNaN(error) ? `${error}` : 'HTTP Error ' + error, 'pre');
     return;
   }
-  await scriptsReady;
   cm = CodeMirror($('.main'), {
     value: sourceCode || style.sourceCode,
     readOnly: true,

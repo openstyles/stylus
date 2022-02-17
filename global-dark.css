@@ -1,0 +1,159 @@
+@media screen and (prefers-color-scheme: dark), dark {
+  :root {
+    /* Comfortable dark themes don't use absolutes so the range is compressed */
+    --c00: hsl(0, 0%, 80%);
+    --c10: hsl(0, 0%, 73.5%);
+    --c20: hsl(0, 0%, 66%);
+    --c30: hsl(0, 0%, 59.5%);
+    --c40: hsl(0, 0%, 53%);
+    --c45: hsl(0, 0%, 49.75%);
+    --c50: hsl(0, 0%, 46.5%);
+    --c60: hsl(0, 0%, 40%);
+    --c65: hsl(0, 0%, 36.75%);
+    --c70: hsl(0, 0%, 33.5%);
+    --c75: hsl(0, 0%, 30.25%);
+    --c80: hsl(0, 0%, 27%);
+    --c85: hsl(0, 0%, 23.75%);
+    --c90: hsl(0, 0%, 20.5%);
+    --c95: hsl(0, 0%, 17.25%);
+    --c100: hsl(0, 0%, 14%);
+    /* min/max are exposed in case we want to use an overdrive color for emphasis */
+    --cmin: hsl(0, 0%, 100%);
+    --cmax: hsl(0, 0%, 0%);
+    --accent-1: hsl(180, 100%, 95%);
+    --accent-3: hsl(180, 30%, 18%);
+    --input-bg: var(--c95);
+  }
+  textarea,
+  input[type=url],
+  input[type=time] {
+    background-color: var(--input-bg);
+    color: var(--fg);
+  }
+  input::-webkit-inner-spin-button {
+    filter: invert(.8);
+  }
+  input[type=radio]:checked:after {
+    background-color: var(--fg);
+  }
+  input[type=time]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+  select {
+    background-color: var(--bg);
+  }
+  .onoffswitch {
+    --knob: var(--c50);
+  }
+  .CodeMirror-scrollbar-filler,
+  .CodeMirror-gutter-filler {
+    background-color: var(--bg) !important;
+    border: 0;
+  }
+  ::-webkit-scrollbar {
+    width: 17px;
+    height: 17px;
+    background: var(--bg);
+  }
+  ::-webkit-scrollbar-corner {
+    background: var(--bg);
+    border: 0;
+  }
+  /* buttons */
+  ::-webkit-scrollbar-button:single-button {
+    height: 17px;
+    width: 17px;
+    background-size: 9px;
+    background-position: 4px 7px;
+    background-repeat: no-repeat;
+  }
+  ::-webkit-scrollbar-button:horizontal:single-button {
+    background-position: 7px 4px;
+  }
+  /* up */
+  ::-webkit-scrollbar-button:single-button:vertical:decrement {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 35%)'><polygon points='1,0 0,1 2,1'/></svg>");
+  }
+  ::-webkit-scrollbar-button:single-button:vertical:decrement:hover {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 45%)'><polygon points='1,0 0,1 2,1'/></svg>");
+  }
+  ::-webkit-scrollbar-button:single-button:vertical:decrement:active {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 55%)'><polygon points='1,0 0,1 2,1'/></svg>");
+  }
+  /* down */
+  ::-webkit-scrollbar-button:single-button:vertical:increment {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 35%)'><polygon points='0,0 2,0 1,1'/></svg>");
+  }
+  ::-webkit-scrollbar-button:single-button:vertical:increment:hover {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 45%)'><polygon points='0,0 2,0 1,1'/></svg>");
+  }
+  ::-webkit-scrollbar-button:single-button:vertical:increment:active {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 55%)'><polygon points='0,0 2,0 1,1'/></svg>");
+  }
+  /* left */
+  ::-webkit-scrollbar-button:single-button:horizontal:decrement {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 35%)'><polygon points='0,1 1,2 1,0'/></svg>");
+  }
+  ::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 45%)'><polygon points='0,1 1,2 1,0'/></svg>");
+  }
+  ::-webkit-scrollbar-button:single-button:horizontal:decrement:active {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 55%)'><polygon points='0,1 1,2 1,0'/></svg>");
+  }
+  /* right */
+  ::-webkit-scrollbar-button:single-button:horizontal:increment {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 35%)'><polygon points='0,0 0,2 1,1'/></svg>");
+  }
+  ::-webkit-scrollbar-button:single-button:horizontal:increment:hover {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 45%)'><polygon points='0,0 0,2 1,1'/></svg>");
+  }
+  ::-webkit-scrollbar-button:single-button:horizontal:increment:active {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 55%)'><polygon points='0,0 0,2 1,1'/></svg>");
+  }
+  ::-webkit-scrollbar-track-piece {
+    background: #333;
+    border: 1px solid var(--bg);
+  }
+  ::-webkit-scrollbar-track-piece:hover {
+    background: #444;
+  }
+  ::-webkit-scrollbar-track-piece:active {
+    background: #555;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1' fill='%23505050'><rect width='1' height='1'/></svg>") 2px 2px no-repeat;
+  }
+  ::-webkit-scrollbar-thumb:horizontal {
+    background-size: 100% 13px;
+  }
+  ::-webkit-scrollbar-thumb:vertical {
+    background-size: 13px 100%;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1' fill='%23585858'><rect width='1' height='1'/></svg>");
+  }
+  ::-webkit-scrollbar-thumb:active {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1' fill='%23666'><rect width='1' height='1'/></svg>");
+  }
+  ::-webkit-resizer {
+    background: var(--input-bg) linear-gradient(-45deg,
+      transparent 3px, #888 3px,
+      #888 4px, transparent 4px,
+      transparent 6px, #888 6px,
+      #888 7px, transparent 7px) no-repeat;
+    border: 2px solid transparent;
+  }
+  :-webkit-autofill {
+    box-shadow: 0 0 0 1000px var(--input-bg) inset;
+    -webkit-text-fill-color: #fff;
+  }
+  @supports (-moz-appearance: none) {
+    /* Workarounds for FF bugs/quirks */
+    textarea {
+      border: 1px solid var(--c65);
+    }
+    * {
+      scrollbar-color: var(--c75) var(--bg);
+    }
+  }
+}

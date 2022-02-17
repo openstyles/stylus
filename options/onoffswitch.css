@@ -32,9 +32,9 @@
   height: 12px;
   padding: 0;
   line-height: 12px;
-  border: 0 solid #E3E3E3;
+  border: 0 solid var(--c90);
   border-radius: 12px;
-  background-color: #E0E0E0;
+  background-color: var(--c85);
   box-shadow: inset 2px 2px 4px rgba(0,0,0,0.1);
   pointer-events: none; /* this is just a non-clickable decoration, only `input` is clickable */
 }
@@ -45,7 +45,7 @@
   width: 18px;
   height: 18px;
   margin: -3px;
-  background: #efefef;
+  background: var(--knob, var(--c95));
   position: absolute;
   top: 0;
   bottom: 0;
@@ -55,7 +55,7 @@
 }
 
 .onoffswitch input:checked + span {
-  background-color: #CAEBE3;
+  background-color: hsla(165, 45%, 50%, .3);
 }
 
 .onoffswitch input:checked + span, .onoffswitch input:checked + span::before {
