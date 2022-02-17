@@ -85,6 +85,10 @@ button:active {
 button .svg-icon {
   cursor: auto;
 }
+[data-ui-theme="light"] button .svg-icon {
+  /* Our svgs are pixel-aligned so the default #000 looks too strong */
+  fill: #333;
+}
 
 /* For some odd reason these hovers appear lighter than all other button hovers in every browser */
 #message-box-buttons button:not(:disabled):hover {
