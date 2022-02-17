@@ -88,20 +88,20 @@ Object.assign(t, {
       text.replace(t.RX_WORD_BREAK, '$&\u00AD');
   },
 
-  createTemplate(node) {
-    const frag = 'fragment' in node.dataset;
-    const el = frag ? node.content : node.content.firstElementChild;
-    t.NodeList(frag ? el.querySelectorAll('*') : el);
-    t.template[node.dataset.id] = el;
-    // Compress inter-tag whitespace to reduce DOM tree and avoid space between elements without flex
+  createTemplate(el) {
+    const {content} = el;
     const toRemove = [];
-    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    // Compress inter-tag whitespace to reduce DOM tree and avoid space between elements without flex
+    const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
     for (let n; (n = walker.nextNode());) {
-      if (!/[\xA0\S]/.test(n.textContent)) { // allow \xA0 to keep &nbsp;
+      if (!/[\xA0\S]/.test(n.textContent) ||  // allowing \xA0 so as to preserve &nbsp;
+          n.nodeType === Node.COMMENT_NODE) {
         toRemove.push(n);
       }
     }
     toRemove.forEach(n => n.remove());
+    t.NodeList(content.querySelectorAll('*'));
+    t.template[el.dataset.id] = content.childNodes.length > 1 ? content : content.childNodes[0];
   },
 
   createText(str) {
