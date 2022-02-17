@@ -305,11 +305,11 @@ function scrollElementIntoView(element, {invalidMarginRatio = 0} = {}) {
  * and establishes a two-way connection between the document elements and the actual prefs
  */
 function setupLivePrefs(ids) {
-  let forceUpdate = true;
+  let init = true;
   // getElementsByTagName is cached so it's much faster than calling querySelector for each id
   ids = ids ? [...ids] : prefs.knownKeys.filter(id => id in document.getElementsByTagName('*'));
   prefs.subscribe(ids, updateElement, {runNow: true});
-  forceUpdate = false;
+  init = false;
   function onChange() {
     if (this.checkValidity() && (this.type !== 'radio' || this.checked)) {
       prefs.set(this.id || this.name, getValue(this));
@@ -337,7 +337,7 @@ function setupLivePrefs(ids) {
     }
     for (const el of els) {
       const oldValue = getValue(el);
-      if (!isSame(el, oldValue, value) || forceUpdate) {
+      if (!isSame(el, oldValue, value)) {
         if (el.type === 'radio') {
           el.checked = value === oldValue;
         } else if (el.type === 'checkbox') {
@@ -346,8 +346,8 @@ function setupLivePrefs(ids) {
           el.value = value;
         }
         el.dispatchEvent(new Event('change', {bubbles: true}));
-        if (forceUpdate) el.on('change', onChange);
       }
+      if (init) el.on('change', onChange);
     }
   }
 }
