@@ -1163,7 +1163,7 @@
     "message": "Reset options"
   },
   "optionsStylusThemes": {
-    "message": "Find a Stylus UI theme"
+    "message": "Click Stylus icon in the browser toolbar on any Stylus page including this one, then click 'Find styles'"
   },
   "optionsSubheading": {
     "message": "More Options",
@@ -1499,6 +1499,9 @@
   },
   "shortcutsNote": {
     "message": "Define keyboard shortcuts"
+  },
+  "shortcutsNoteFF": {
+    "message": "In Firefox 66+ you can open the built-in shortcuts UI manually:\n1) right-click Stylus icon in the toolbar and choose 'Manage'\n(alternatively, open about:addons via the main menu or Ctrl-Shift-A),\n2) in the page that opens click the cog wheel icon in the top right corner,\n3) choose 'Manage extension shortcuts'.\n\nYou can also customize the shortcuts here."
   },
   "sortDateNewestFirst": {
     "message": "newest first",

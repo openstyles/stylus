@@ -43,6 +43,7 @@ Object.assign(t, {
         continue;
       }
       if (node.localName === 'template') {
+        node.remove();
         t.createTemplate(node);
         continue;
       }
@@ -88,16 +89,19 @@ Object.assign(t, {
   },
 
   createTemplate(node) {
-    const el = node.content.firstElementChild.cloneNode(true);
-    t.NodeList(el);
+    const frag = 'fragment' in node.dataset;
+    const el = frag ? node.content : node.content.firstElementChild;
+    t.NodeList(frag ? el.querySelectorAll('*') : el);
     t.template[node.dataset.id] = el;
-    // compress inter-tag whitespace to reduce number of DOM nodes by 25%
+    // Compress inter-tag whitespace to reduce DOM tree and avoid space between elements without flex
+    const toRemove = [];
     const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
     for (let n; (n = walker.nextNode());) {
       if (!/[\xA0\S]/.test(n.textContent)) { // allow \xA0 to keep &nbsp;
-        n.remove();
+        toRemove.push(n);
       }
     }
+    toRemove.forEach(n => n.remove());
   },
 
   createText(str) {

@@ -8,8 +8,6 @@ html {
 
 body {
   background: none;
-  font-family: "Helvetica Neue", Helvetica, sans-serif;
-  font-size: 12px;
   display: flex;
   flex-direction: column;
   width: auto;
@@ -184,12 +182,6 @@ input[type=number] {
   text-align: right;
 }
 
-input[type=number]:invalid,
-input[type=text]:invalid {
-  background-color: rgba(255, 0, 0, 0.1);
-  color: darkred;
-}
-
 input[type="color"] {
   box-sizing: border-box;
   height: 2em;
@@ -201,25 +193,16 @@ input[type=time] {
 }
 
 #actions {
-  justify-content: space-around;
-  align-items: stretch;
-  flex-wrap: wrap;
+  justify-content: center;
   padding: .5em 1em 1em;
-  white-space: nowrap;
   background-color: rgba(0, 0, 0, .05);
   margin: 0;
   border-top: 1px solid var(--c60);
   border-bottom: none;
-  min-height: min-content; /* workaround for old Chrome ~70 bug when the window height is small */
 }
 
 #actions button {
-  width: auto;
-  margin-top: .5em;
-}
-
-#actions button:not(:last-child) {
-  margin-right: 4px;
+  margin: .5em 1em 0 0;
 }
 
 [data-cmd="check-updates"] button {
@@ -228,41 +211,6 @@ input[type=time] {
 [data-cmd="note"] {
   padding: .5em 0 .5em 0;
   cursor: pointer;
-}
-.update-in-progress [data-cmd="check-updates"] {
-  opacity: .5;
-  pointer-events: none;
-}
-
-.update-in-progress #update-progress {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  background-color: currentColor;
-  content: "";
-  opacity: .35;
-}
-
-#updates-installed {
-  position: absolute;
-  font-size: 85%;
-  margin-top: 1px;
-}
-
-#updates-installed::after {
-  content: attr(data-value);
-  margin-left: .5ex;
-  font-weight: bold;
-}
-
-#updates-installed:not([data-value]),
-#updates-installed[data-value=""] {
-  display: none;
-}
-
-html:not(.firefox):not(.opera) #updates {
-  margin-bottom: 0;
 }
 
 .svg-inline-wrapper .svg-icon {
@@ -298,24 +246,27 @@ html:not(.firefox):not(.opera) #updates {
 .sync-status::first-letter {
   text-transform: uppercase;
 }
-.sync-options .drive-options {
-  margin: 0;
-  padding: 0;
-  border: 0;
+[data-drive="webdav"] {
+  width: 100%;
+  border-spacing: 0;
+  border-collapse: collapse;
 }
-.drive-options > :not([hidden]) {
-  display: table;
+[data-drive="webdav"] td:nth-child(1) {
+  padding: 1px .5em 1px 0;
+  max-width: 10em;
+  overflow-wrap: break-word;
+}
+[data-drive="webdav"] td:nth-child(2) {
+  padding: 1px 0;
   width: 100%;
 }
-.drive-options > * > label {
-  display: table-row;
-}
-.drive-options > * > label > * {
-  display: table-cell;
-}
-.drive-options > * input {
+[data-drive="webdav"] input {
   width: 100%;
   box-sizing: border-box;
+  line-height: 1.5;
+}
+.sync-options:not([data-enabled]) .actions {
+  display: none;
 }
 .sync-options .actions button {
   margin-top: .5em;

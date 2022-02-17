@@ -116,6 +116,11 @@ input[type=search] {
   border: 1px solid var(--c65);
 }
 
+input:invalid {
+  background-color: rgba(255, 0, 0, 0.1);
+  color: darkred;
+}
+
 .svg-icon {
   cursor: pointer;
   vertical-align: middle;
