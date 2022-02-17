@@ -200,11 +200,6 @@ input[type=time] {
   max-width: 7em; /* TODO: remove when strict_min_version >= 57 */
 }
 
-input[type=radio] {
-  margin-top: 0;
-  vertical-align: text-top;
-}
-
 #actions {
   justify-content: space-around;
   align-items: stretch;

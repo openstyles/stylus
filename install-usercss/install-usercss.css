@@ -382,9 +382,6 @@ li {
   #header {
     height: 100% !important; /* overrides user resize */
   }
-  #ss-scheme > label {
-    display: block;
-  }
   .w100-full {
     width: 100%;
     margin-top: var(--child-gap);

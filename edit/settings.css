@@ -20,9 +20,6 @@
 .style-settings > :last-child {
   margin-bottom: 0;
 }
-.style-settings input[type=radio] {
-  margin: 0 .3em 0 0;
-}
 .style-settings input:disabled ~ label {
   opacity: .5;
 }
@@ -44,10 +41,8 @@
 .style-settings textarea:not(:placeholder-shown) {
   min-width: 50vw;
 }
-.ss-radio {
+.style-settings .radio-wrapper {
   display: inline-flex;
-  align-items: center;
-  line-height: 2;
   padding: 0 .8em 0 0;
 }
 a[data-cmd=note] {

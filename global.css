@@ -237,8 +237,8 @@ input[type="radio"] {
   height: 13px;
   width: 13px;
   position: relative;
+  margin: 0 4px 1px 0;
 }
-
 input[type="radio"]:after {
   content: '';
   background-color: transparent;
@@ -252,10 +252,14 @@ input[type="radio"]:after {
   top: 2px;
   position: absolute;
 }
-
 input[type="radio"]:checked:after {
   background-color: var(--c30);
   transform: scale(1);
+}
+.radio-wrapper {
+  display: flex;
+  align-items: center;
+  line-height: 1.5;
 }
 
 /* restore disabled state dimming */
