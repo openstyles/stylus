@@ -19,15 +19,15 @@
           </label>
         </div>
         <div class="actions">
-          <a class="configure" i18n-title="configureStyle" tabindex="0">
+          <a class="configure" i18n="title:configureStyle" tabindex="0">
             <svg class="svg-icon config"><use xlink:href="#svg-icon-config"></use></svg>
           </a>
-          <a class="style-edit-link" href="edit.html" i18n-title="editStyleLabel">
+          <a class="style-edit-link" href="edit.html" i18n="title:editStyleLabel">
             <svg class="svg-icon edit" viewBox="0 0 14 16">
               <path fill-rule="evenodd" d="M0 12v3h3l8-8-3-3-8 8zm3 2H1v-2h1v1h1v1zm10.3-9.3L12 6 9 3l1.3-1.3a.996.996 0 0 1 1.41 0l1.59 1.59c.39.39.39 1.02 0 1.41z"/>
             </svg>
           </a>
-          <a class="menu-button" i18n-title="popupMenuButtonTooltip" tabindex="0">
+          <a class="menu-button" i18n="title:popupMenuButtonTooltip" tabindex="0">
             <svg class="svg-icon menu-button-icon" viewBox="0 0 3 16">
               <path fill-rule="evenodd" d="M0 2.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0zm0 5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0zM1.5 14a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
             </svg>
@@ -44,7 +44,7 @@
                 <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
               </div>
             </div>
-            <span i18n-text="excludeStyleByDomainLabel"></span>
+            <span i18n="excludeStyleByDomainLabel"></span>
           </label>
           <label class="menu-item exclude-by-url button">
             <div class="menu-icon">
@@ -53,11 +53,11 @@
                 <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
               </div>
             </div>
-            <span i18n-text="excludeStyleByUrlLabel"></span>
+            <span i18n="excludeStyleByUrlLabel"></span>
           </label>
           <div class="menu-buttons-wrapper">
-            <button class="delete" i18n-text="deleteStyleLabel"></button>
-            <button class="menu-close" i18n-text="confirmClose"></button>
+            <button class="delete" i18n="deleteStyleLabel"></button>
+            <button class="menu-close" i18n="confirmClose"></button>
           </div>
         </div>
       </div>
@@ -69,32 +69,32 @@
   </template>
 
   <template data-id="noStyles">
-    <div id="no-styles" i18n-text="noStylesForSite"></div>
+    <div id="no-styles" i18n="noStylesForSite"></div>
   </template>
 
   <template data-id="regexpProblemIndicator">
-    <div class="regexp-problem-indicator" i18n-title="styleRegexpProblemTooltip"></div>
+    <div class="regexp-problem-indicator" i18n="title:styleRegexpProblemTooltip"></div>
   </template>
 
   <template data-id="regexpProblemExplanation">
     <div id="regexp-explanation">
-      <div id="regexp-partial" i18n-html="styleRegexpPartialExplanation"></div>
-      <div id="regexp-invalid" i18n-text="styleRegexpInvalidExplanation"></div>
-      <button i18n-text="confirmOK"></button>
+      <div id="regexp-partial" i18n="html:styleRegexpPartialExplanation"></div>
+      <div id="regexp-invalid" i18n="styleRegexpInvalidExplanation"></div>
+      <button i18n="confirmOK"></button>
     </div>
   </template>
 
   <template data-id="unavailableInfo">
     <div class="blocked-info">
-      <label i18n-text="stylusUnavailableForURL"></label>
-      <p i18n-text="stylusUnavailableForURLdetails"></p>
+      <label i18n="stylusUnavailableForURL"></label>
+      <p i18n="stylusUnavailableForURLdetails"></p>
     </div>
   </template>
 
   <template data-id="unreachableInfo">
     <div class="blocked-info">
-      <div class="copy-message" i18n-text="copied"></div>
-      <label i18n-text="unreachableContentScript"></label>
+      <div class="copy-message" i18n="copied"></div>
+      <label i18n="unreachableContentScript"></label>
     </div>
   </template>
 
@@ -102,33 +102,33 @@
     <div class="search-result">
       <a class="search-result-title"><span></span></a>
       <div class="search-result-info">
-        <img class="search-result-screenshot" i18n-title="installButton">
+        <img class="search-result-screenshot" i18n="title:installButton">
         <div class="search-result-status"></div>
         <div class="search-result-actions">
-          <button class="search-result-install" i18n-text="installButton"></button>
-          <button class="search-result-uninstall" i18n-text="deleteStyleLabel"></button>
-          <button class="search-result-customize" i18n-text="configureStyle"></button>
+          <button class="search-result-install" i18n="installButton"></button>
+          <button class="search-result-uninstall" i18n="deleteStyleLabel"></button>
+          <button class="search-result-customize" i18n="configureStyle"></button>
         </div>
         <dl class="search-result-meta">
           <div data-type="author">
-            <dt i18n-text="author"></dt>
-            <dd><a target="_blank" i18n-title="author"></a></dd>
+            <dt i18n="author"></dt>
+            <dd><a target="_blank" i18n="title:author"></a></dd>
           </div>
           <div data-type="rating">
-            <dt i18n-text="searchResultRating"></dt>
-            <dd i18n-title="searchResultRating"></dd>
+            <dt i18n="searchResultRating"></dt>
+            <dd i18n="title:searchResultRating"></dd>
           </div>
           <div data-type="updated">
-            <dt i18n-text="searchResultUpdated"></dt>
-            <dd i18n-title="searchResultUpdated"><time></time></dd>
+            <dt i18n="searchResultUpdated"></dt>
+            <dd i18n="title:searchResultUpdated"><time></time></dd>
           </div>
           <div data-type="weekly">
-            <dt i18n-text="searchResultWeeklyCount"></dt>
-            <dd i18n-title="searchResultWeeklyCount"></dd>
+            <dt i18n="searchResultWeeklyCount"></dt>
+            <dd i18n="title:searchResultWeeklyCount"></dd>
           </div>
           <div data-type="total">
-            <dt i18n-text="searchResultInstallCount"></dt>
-            <dd i18n-title="searchResultInstallCount"></dd>
+            <dt i18n="searchResultInstallCount"></dt>
+            <dd i18n="title:searchResultInstallCount"></dd>
           </div>
         </dl>
         <div class="search-result-description"></div>
@@ -138,13 +138,13 @@
 
   <template data-id="searchNav">
     <div>
-      <button data-type="prev" i18n-title="paginationPrevious" disabled>◄</button>
+      <button data-type="prev" i18n="title:paginationPrevious" disabled>◄</button>
       <label>
-        <span data-type="page" i18n-title="paginationCurrent">-</span>
+        <span data-type="page" i18n="title:paginationCurrent">-</span>
         /
-        <span data-type="total" i18n-title="paginationEstimated">-</span>
+        <span data-type="total" i18n="title:paginationEstimated">-</span>
       </label>
-      <button data-type="next" i18n-title="paginationNext" disabled>►</button>
+      <button data-type="next" i18n="title:paginationNext" disabled>►</button>
     </div>
   </template>
 
@@ -154,8 +154,7 @@
 
   <template data-id="searchResultNotMatching">
     <p class="not-matching-explainer"
-       i18n-text="searchResultNotMatching"
-       i18n-title="searchResultNotMatchingNote"></p>
+       i18n="searchResultNotMatching, title:searchResultNotMatchingNote"></p>
   </template>
 
   <script src="js/polyfill.js"></script>
@@ -180,22 +179,22 @@
   <div id="confirm">
     <div>
       <b>Style's Name</b>
-      <span i18n-text="deleteStyleConfirm"></span>
+      <span i18n="deleteStyleConfirm"></span>
       <div>
-        <button i18n-text="confirmDelete" data-cmd="ok"></button>
-        <button i18n-text="confirmCancel" data-cmd="cancel"></button>
+        <button i18n="confirmDelete" data-cmd="ok"></button>
+        <button i18n="confirmCancel" data-cmd="cancel"></button>
       </div>
     </div>
   </div>
 
   <div id="installed">
-    <aside id="hotkey-info" i18n-title="popupHotkeysTooltip"></aside>
+    <aside id="hotkey-info" i18n="title:popupHotkeysTooltip"></aside>
   </div>
 
   <div class="actions" id="main-actions">
     <div id="disable-all-wrapper">
       <div class="main-controls">
-        <label id="disableAll-label" i18n-text="disableAllStyles">
+        <label id="disableAll-label" i18n="disableAllStyles">
           <input id="disableAll" type="checkbox">
           <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
         </label>
@@ -203,33 +202,32 @@
     </div>
     <div class="main-controls">
       <div id="find-styles">
-        <a id="find-styles-link" i18n-text="findStyles" i18n-title="findStylesForSite"
+        <a id="find-styles-link" i18n="findStyles, title:findStylesForSite"
            href="https://to.be.replaced.on.click/" target="_blank"></a>
         <span id="find-styles-inline-group">
-          <label i18n-title="findStylesInlineTooltip">
+          <label i18n="title:findStylesInlineTooltip">
             <input id="popup.findStylesInline" class="checker" type="checkbox">
             <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-            <span i18n-text="findStylesInline"></span>
+            <span i18n="findStylesInline"></span>
           </label>
         </span>
       </div>
       <div id="write-style">
         <a id="write-for-frames" title="&lsaquo;iframe&rsaquo;..." tabindex="0" hidden></a>
-        <span id="write-style-for" i18n-text="writeStyleFor"></span>
+        <span id="write-style-for" i18n="writeStyleFor"></span>
       </div>
     </div>
 
     <!-- Actions -->
     <div id="popup-options">
       <div class="split-btn">
-        <button id="popup-manage-button" i18n-text="openManage"
-                data-href="manage.html" i18n-title="popupManageTooltip"></button
-        ><button class="split-btn-pedal" i18n-menu-site="popupManageSiteStyles"></button>
+        <button id="popup-manage-button" i18n="openManage, title:popupManageTooltip"
+                data-href="manage.html"></button
+        ><button class="split-btn-pedal" i18n="menu-site:popupManageSiteStyles"></button>
       </div>
-      <button id="popup-options-button" i18n-text="openOptions"></button>
+      <button id="popup-options-button" i18n="openOptions"></button>
       <button id="popup-wiki-button"
-              i18n-text="linkStylusWiki"
-              i18n-title="linkGetHelp"
+              i18n="linkStylusWiki, title:linkGetHelp"
               data-href="https://github.com/openstyles/stylus/wiki"></button>
     </div>
   </div>
@@ -238,15 +236,14 @@
   <div id="search-results" class="hidden">
     <div class="search-results-nav" data-type="top"></div>
     <div id="search-params">
-      <input id="search-query" type="search" i18n-placeholder="search"
-             i18n-title="searchStyleQueryHint">
+      <input id="search-query" type="search" i18n="placeholder:search, title:searchStyleQueryHint">
       <div class="select-resizer">
-        <select id="search-order" i18n-title="sortStylesHelpTitle">
-          <option value="n" i18n-text="genericTitle">
-          <option value="u" i18n-text="searchResultUpdated">
-          <option value="t" i18n-text="searchResultInstallCount">
-          <option value="w" i18n-text="searchResultWeeklyCount">
-          <option value="r" i18n-text="searchResultRating">
+        <select id="search-order" i18n="title:sortStylesHelpTitle">
+          <option value="n" i18n="genericTitle">
+          <option value="u" i18n="searchResultUpdated">
+          <option value="t" i18n="searchResultInstallCount">
+          <option value="w" i18n="searchResultWeeklyCount">
+          <option value="r" i18n="searchResultRating">
         </select>
         <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
       </div>
@@ -255,7 +252,7 @@
           <input id="search-globals" type="checkbox" checked>
           <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
         </span>
-        <span i18n-text="searchGlobalStyles"></span>
+        <span i18n="searchGlobalStyles"></span>
       </label>
     </div>
     <div id="search-results-list"></div>
@@ -284,7 +281,7 @@
     </symbol>
 
     <symbol id="svg-icon-help" viewBox="0 0 14 16">
-      <title i18n-text="helpAlt"></title>
+      <title i18n="helpAlt"></title>
       <circle cx="7" cy="5" r="1"/>
       <path d="M8,8c0-0.5-0.5-1-1-1H6C5.5,7,5,7.4,5,8h1v3c0,0.5,0.5,1,1,1h1c0.5,0,1-0.4,1-1H8V8z"/>
       <path d="M7,1c3.9,0,7,3.1,7,7s-3.1,7-7,7s-7-3.1-7-7S3.1,1,7,1z M7,2.3C3.9,2.3,1.3,4.9,1.3,8s2.6,5.7,5.7,5.7s5.7-2.6,5.7-5.7S10.1,2.3,7,2.3C7,2.3,7,2.3,7,2.3z"/>

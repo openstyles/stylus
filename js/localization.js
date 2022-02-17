@@ -1,7 +1,14 @@
+/* global $$ waitForSelector */// dom.js
 /* global download */// toolbox.js
 'use strict';
 
-//#region Exports
+/**
+ * <tag i18n="id"> - like el.prepend() inserts the text as the first node
+ * <tag i18n="+id"> - like el.append() inserts the text as the last node
+ * <tag i18n="html:id"> - sets innerHTML (sanitized)
+ * <tag i18n="title: id"> - creates an attribute `title`, spaces are ignored
+ * <tag i18n="id, +id2, title:id3, placeholder:id4, data-foo:id5">
+ */
 
 function t(key, params, strict = true) {
   const s = chrome.i18n.getMessage(key, params);
@@ -11,9 +18,7 @@ function t(key, params, strict = true) {
 
 Object.assign(t, {
   template: {},
-  parser: new DOMParser(),
   ALLOWED_TAGS: ['a', 'b', 'code', 'i', 'sub', 'sup', 'wbr'],
-  PREFIX: 'i18n-',
   RX_WORD_BREAK: new RegExp([
     '(',
     /[\d\w\u007B-\uFFFF]{10}/,
@@ -24,6 +29,7 @@ Object.assign(t, {
     ')',
     /(?!\b|\s|$)/,
   ].map(rx => rx.source || rx).join(''), 'gu'),
+  SELECTOR: '[i18n], template',
 
   HTML(html) {
     return typeof html !== 'string'
@@ -35,35 +41,26 @@ Object.assign(t, {
 
   NodeList(nodes) {
     if (nodes instanceof Node) {
-      nodes = [nodes, ...nodes.getElementsByTagName('*')];
+      nodes = $$(t.SELECTOR, nodes).concat(nodes);
     }
-    for (let n = nodes.length; --n >= 0;) {
-      const node = nodes[n];
-      if (!node.localName) {
-        continue;
-      }
+    for (const node of nodes) {
+      if (!node.localName) continue;
       if (node.localName === 'template') {
-        node.remove();
         t.createTemplate(node);
         continue;
       }
-      for (let a = node.attributes.length; --a >= 0;) {
-        const attr = node.attributes[a];
-        const name = attr.nodeName;
-        if (!name.startsWith(t.PREFIX)) {
-          continue;
-        }
-        const type = name.substr(t.PREFIX.length);
-        const value = t(attr.value);
+      const attr = node.getAttribute('i18n');
+      if (!attr) continue;
+      for (const part of attr.split(',')) {
         let toInsert, before;
+        let [type, value] = part.trim().split(/\s*:\s*/);
+        if (!value) [type, value] = type.split(/(\w+)/);
+        value = t(value);
         switch (type) {
-          case 'word-break':
-            // we already know that: hasWordBreak
-            break;
-          case 'text':
+          case '':
             before = node.firstChild;
-            // fallthrough to text-append
-          case 'text-append':
+            // fallthrough
+          case '+':
             toInsert = t.createText(value);
             break;
           case 'html': {
@@ -73,12 +70,11 @@ Object.assign(t, {
           default:
             node.setAttribute(type, value);
         }
-        t.stopObserver();
         if (toInsert) {
           node.insertBefore(toInsert, before || null);
         }
-        node.removeAttribute(name);
       }
+      node.removeAttribute('i18n');
     }
   },
 
@@ -100,8 +96,11 @@ Object.assign(t, {
       }
     }
     toRemove.forEach(n => n.remove());
-    t.NodeList(content.querySelectorAll('*'));
-    t.template[el.dataset.id] = content.childNodes.length > 1 ? content : content.childNodes[0];
+    t.NodeList(content);
+    return (t.template[el.dataset.id] =
+      content.childNodes.length > 1
+        ? content
+        : content.childNodes[0]);
   },
 
   createText(str) {
@@ -109,28 +108,22 @@ Object.assign(t, {
   },
 
   createHtml(str, trusted) {
-    const root = t.parser.parseFromString(str, 'text/html').body;
+    const root = t.parse(str);
     if (!trusted) {
       t.sanitizeHtml(root);
-    } else if (str.includes('i18n-')) {
+    } else if (str.includes('i18n=')) {
       t.NodeList(root);
     }
-    const bin = document.createDocumentFragment();
-    while (root.firstChild) {
-      bin.appendChild(root.firstChild);
-    }
-    return bin;
+    return t.toFragment(root);
   },
 
-  async fetchTemplate(url, name) {
-    let el = t.template[name];
-    if (!el) {
-      el = (await download(url, {responseType: 'document'})).body.firstElementChild;
-      t.NodeList(el);
-      t.template[name] = el;
-    }
-    return el;
-  },
+  fetchTemplate: async (url, name) => t.template[name] ||
+    t.createTemplate({
+      content: t.toFragment(t.parse(await download(url))),
+      dataset: {id: name},
+    }),
+
+  parse: str => new DOMParser().parseFromString(str, 'text/html').body,
 
   sanitizeHtml(root) {
     const toRemove = [];
@@ -152,6 +145,13 @@ Object.assign(t, {
       const parent = n.parentNode;
       if (parent) parent.removeChild(n); // not using .remove() as there may be a non-element
     }
+  },
+
+  /** Moves child nodes to a new document fragment */
+  toFragment(el) {
+    const bin = document.createDocumentFragment();
+    for (let n; (n = el.firstChild);) bin.appendChild(n);
+    return bin;
   },
 
   _intl: null,
@@ -186,39 +186,4 @@ Object.assign(t, {
   },
 });
 
-//#endregion
-//#region Internals
-
-(() => {
-  const observer = new MutationObserver(process);
-  let observing = false;
-  Object.assign(t, {
-    stopObserver() {
-      if (observing) {
-        observing = false;
-        observer.disconnect();
-      }
-    },
-  });
-  document.addEventListener('DOMContentLoaded', () => {
-    process(observer.takeRecords());
-    t.stopObserver();
-  }, {once: true});
-
-  t.NodeList(document);
-  start();
-
-  function process(mutations) {
-    mutations.forEach(m => t.NodeList(m.addedNodes));
-    start();
-  }
-
-  function start() {
-    if (!observing) {
-      observing = true;
-      observer.observe(document, {subtree: true, childList: true});
-    }
-  }
-})();
-
-//#endregion
+waitForSelector(t.SELECTOR, {recur: t.NodeList});

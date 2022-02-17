@@ -4,15 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title i18n-text="manageTitle"></title>
+  <title i18n="manageTitle"></title>
   <link rel="stylesheet" href="global.css">
   <link href="global-dark.css" rel="stylesheet">
-
-  <!-- Notes:
-    * Chrome doesn't garbage-collect (or even leaks) SVG <symbol> referenced via <use> so we'll embed the code directly
-    * inter-tag whitespace in templates is automatically removed in localization.js
-    * i18n-anything attribute automatically creates "anything" attribute
-  -->
 
   <template data-id="style">
     <div class="entry">
@@ -24,19 +18,19 @@
         <a target="_blank" class="homepage"></a>
       </h2>
       <p class="applies-to">
-        <label i18n-text="appliesDisplay"></label>
+        <label i18n="appliesDisplay"></label>
         <span class="targets"></span>
       </p>
       <p class="actions">
         <a class="style-edit-link">
-          <button i18n-text="editStyleLabel" tabindex="-1"></button>
+          <button i18n="editStyleLabel" tabindex="-1"></button>
         </a>
-        <button class="enable" i18n-text="enableStyleLabel"></button>
-        <button class="disable" i18n-text="disableStyleLabel"></button>
-        <button class="delete" i18n-text="deleteStyleLabel"></button>
-        <button class="check-update" i18n-text="checkForUpdate"></button>
-        <button class="update" i18n-text="installUpdate"></button>
-        <button class="configure-usercss" i18n-text="configureStyle"></button>
+        <button class="enable" i18n="enableStyleLabel"></button>
+        <button class="disable" i18n="disableStyleLabel"></button>
+        <button class="delete" i18n="deleteStyleLabel"></button>
+        <button class="check-update" i18n="checkForUpdate"></button>
+        <button class="update" i18n="installUpdate"></button>
+        <button class="configure-usercss" i18n="configureStyle"></button>
         <span class="update-note"></span>
       </p>
     </div>
@@ -46,7 +40,7 @@
     <div class="entry">
       <h2 class="style-name">
         <div class="checkmate">
-          <input class="checker" type="checkbox" i18n-title="toggleStyle">
+          <input class="checker" type="checkbox" i18n="title:toggleStyle">
           <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
         </div>
         <a class="style-name-link">
@@ -56,7 +50,7 @@
       </h2>
       <p class="actions">
         <a target="_blank" class="homepage" tabindex="0"></a>
-        <a class="delete" i18n-title="deleteStyleLabel" tabindex="0">
+        <a class="delete" i18n="title:deleteStyleLabel" tabindex="0">
           <svg class="svg-icon" viewBox="0 0 20 20">
             <polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5
                              5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10 "/>
@@ -85,14 +79,14 @@
   </template>
 
   <template data-id="configureIcon">
-    <a class="configure-usercss" i18n-title="configureStyle" tabindex="0">
+    <a class="configure-usercss" i18n="title:configureStyle" tabindex="0">
       <svg class="svg-icon config"><use xlink:href="#svg-icon-config"></use></svg>
     </a>
   </template>
 
   <template data-id="updaterIcons">
     <span class="updater-icons">
-      <a class="check-update" i18n-title="checkForUpdate" tabindex="0">
+      <a class="check-update" i18n="title:checkForUpdate" tabindex="0">
         <svg class="svg-icon" viewBox="0 0 20 20">
           <path d="M18,16.6l-3.1-3.1c0.5-0.7,0.9-1.5,1-2.5h-2.1c-0.4,1.7-2,3-3.9,3c-0.8,0-1.6-0.3-2.3-0.7
                    L10,11H6.1H4.1H4v6l2.3-2.3c1,0.8,2.3,1.3,3.7,1.3c1.3,0,2.5-0.4,3.5-1.1l3.1,3.1L18,16.6z"/>
@@ -100,18 +94,18 @@
                    C7,4,4.6,6.2,4.1,9h2.1C6.6,7.3,8.1,6,10,6z"/>
         </svg>
       </a>
-      <a class="update" i18n-title="installUpdate" tabindex="0">
+      <a class="update" i18n="title:installUpdate" tabindex="0">
         <svg class="svg-icon" viewBox="0 0 20 20">
           <polygon points="16,8 12,8 12,3 8,3 8,8 4,8 10,14 "/>
           <rect shape-rendering="crispEdges" x="4" y="15" width="12" height="2"/>
         </svg>
       </a>
-      <span class="up-to-date" i18n-title="updateCheckSucceededNoUpdate">
+      <span class="up-to-date" i18n="title:updateCheckSucceededNoUpdate">
         <svg class="svg-icon" viewBox="0 0 20 20">
           <polygon points="15.83 4.75 8.76 11.82 5.2 8.26 3.51 9.95 8.76 15.19 17.52 6.43 15.83 4.75"/>
         </svg>
       </span>
-      <span class="updated" i18n-title="updateCompleted">
+      <span class="updated" i18n="title:updateCompleted">
         <svg class="svg-icon" viewBox="0 0 20 20">
           <polygon points="15.83 4.75 8.76 11.82 5.2 8.26 3.51 9.95 8.76 15.19 17.52 6.43 15.83 4.75"/>
         </svg>
@@ -129,12 +123,12 @@
   </template>
 
   <template data-id="appliesToEverything">
-    <span class="target" i18n-text="appliesToEverything"></span>
+    <span class="target" i18n="appliesToEverything"></span>
   </template>
 
   <template data-id="extraAppliesTo">
     <details class="applies-to-extra">
-      <summary class="applies-to-extra-expander" i18n-text="appliesDisplayTruncatedSuffix"></summary>
+      <summary class="applies-to-extra-expander" i18n="appliesDisplayTruncatedSuffix"></summary>
     </details>
   </template>
 
@@ -159,21 +153,21 @@
   <script src="js/dark-themer.js"></script> <!-- must be last in HEAD to avoid FOUC -->
 </head>
 
-<body id="stylus-manage" i18n-dragndrop-hint="dragDropMessage">
+<body id="stylus-manage" i18n="dragndrop-hint:dragDropMessage">
 
 <div id="header">
-  <h1 id="manage-heading" i18n-text="manageHeading"></h1>
+  <h1 id="manage-heading" i18n="manageHeading"></h1>
 
   <div id="manage-settings">
     <div class="settings-column">
       <details id="filters" data-pref="manage.filters.expanded">
         <summary>
-          <h2 i18n-text="manageFilters">:
+          <h2 i18n="manageFilters">:
             <div class="filter-stats-wrapper">
               <span id="filters-stats"></span>
               <a id="reset-filters" tabindex="0">
                 <svg class="svg-icon" viewBox="0 0 20 20">
-                  <title i18n-text="genericResetLabel"></title>
+                  <title i18n="genericResetLabel"></title>
                   <polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5
                                    5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10 "/>
                 </svg>
@@ -193,8 +187,8 @@
           </label>
           <div class="select-resizer">
             <select id="manage.onlyEnabled.invert" class="fit-width">
-              <option i18n-text="manageOnlyEnabled" value="false"></option>
-              <option i18n-text="manageOnlyDisabled" value="true"></option>
+              <option i18n="manageOnlyEnabled" value="false"></option>
+              <option i18n="manageOnlyDisabled" value="true"></option>
             </select>
             <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
           </div>
@@ -210,9 +204,9 @@
             </div>
           </label>
           <div class="select-resizer">
-            <select id="manage.onlyLocal.invert" i18n-title="manageOnlyLocalTooltip" class="fit-width">
-              <option i18n-text="manageOnlyLocal" value="false"></option>
-              <option i18n-text="manageOnlyExternal" value="true"></option>
+            <select id="manage.onlyLocal.invert" i18n="title:manageOnlyLocalTooltip" class="fit-width">
+              <option i18n="manageOnlyLocal" value="false"></option>
+              <option i18n="manageOnlyExternal" value="true"></option>
             </select>
             <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
           </div>
@@ -229,8 +223,8 @@
           </label>
           <div class="select-resizer">
             <select id="manage.onlyUsercss.invert" class="fit-width">
-              <option i18n-text="manageOnlyUsercss" value="false"></option>
-              <option i18n-text="manageOnlyNonUsercss" value="true"></option>
+              <option i18n="manageOnlyUsercss" value="false"></option>
+              <option i18n="manageOnlyNonUsercss" value="true"></option>
             </select>
             <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
           </div>
@@ -243,20 +237,20 @@
                                    .no-update:not(.update-problem),
                                    .updatable:not(.can-update):not(.update-problem):not(.update-done)">
           <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-          <span i18n-text="manageOnlyUpdates"></span>
+          <span i18n="manageOnlyUpdates"></span>
         </label>
 
         <div id="search-wrapper">
-          <input id="search" type="search" i18n-placeholder="search" spellcheck="false"
+          <input id="search" type="search" i18n="placeholder:search" spellcheck="false"
                  data-filter=":not(.not-matching)"
                  data-filter-hide=".not-matching">
           <div class="select-wrapper">
             <select id="searchMode" class="fit-width">
-              <option i18n-text="searchStylesName" value="name"></option>
-              <option i18n-text="searchStylesMeta" value="meta" selected></option>
-              <option i18n-text="searchStylesCode" value="code"></option>
-              <option i18n-text="searchStylesMatchUrl" value="url"></option>
-              <option i18n-text="searchStylesAll" value="all"></option>
+              <option i18n="searchStylesName" value="name"></option>
+              <option i18n="searchStylesMeta" value="meta" selected></option>
+              <option i18n="searchStylesCode" value="code"></option>
+              <option i18n="searchStylesMatchUrl" value="url"></option>
+              <option i18n="searchStylesAll" value="all"></option>
             </select>
             <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
           </div>
@@ -268,7 +262,7 @@
       </details>
 
       <div id="sort-wrapper">
-        <div class="sorter-selection" i18n-title="sortLabel">
+        <div class="sorter-selection" i18n="title:sortLabel">
           <select id="manage.newUI.sort"></select>
           <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
         </div>
@@ -280,43 +274,43 @@
 
     <div class="settings-column">
       <details id="actions" data-pref="manage.actions.expanded">
-        <summary><h2 i18n-text="optionsActions"></h2></summary>
+        <summary><h2 i18n="optionsActions"></h2></summary>
         <div id="update-check">
-          <button id="check-all-updates" i18n-text="checkAllUpdates">
+          <button id="check-all-updates" i18n="checkAllUpdates">
             <span id="update-progress"></span>
           </button>
-          <a id="update-history" i18n-title="genericHistoryLabel" tabindex="0">
-            <svg class="svg-icon" viewBox="0 0 20 20" i18n-alt="helpAlt">
+          <a id="update-history" i18n="title:genericHistoryLabel" tabindex="0">
+            <svg class="svg-icon" viewBox="0 0 20 20" i18n="alt:helpAlt">
               <path d="M13,7H7V6h6Zm6,6.5A5.5,5.5,0,0,1,8.61,16H4V3H16V8.61A5.5,5.5,0,0,1,19,13.5ZM8,14c0-.16,0-.84,0-1H7V12H8.21a5.46,5.46,0,0,1,.39-1H7V10H9.26a5.55,5.55,0,0,1,1.09-1H7V8h7V5H6v9Zm10-.5A4.5,4.5,0,1,0,13.5,18,4.5,4.5,0,0,0,18,13.5ZM14,13V10H13v4h4V13Z"/>
             </svg>
           </a>
         </div>
 
         <div id="update-all">
-          <button id="apply-all-updates" class="hidden" i18n-text="applyAllUpdates"></button>
-          <span id="update-all-no-updates" class="hidden" i18n-text="updateAllCheckSucceededNoUpdate"></span>
-          <button id="check-all-updates-force" class="hidden" i18n-text="checkAllUpdatesForce"></button>
+          <button id="apply-all-updates" class="hidden" i18n="applyAllUpdates"></button>
+          <span id="update-all-no-updates" class="hidden" i18n="updateAllCheckSucceededNoUpdate"></span>
+          <button id="check-all-updates-force" class="hidden" i18n="checkAllUpdatesForce"></button>
         </div>
 
         <div id="add-style-wrapper">
           <a href="edit.html">
-            <button id="add-style-label" i18n-text="addStyleLabel" tabindex="-1"></button>
+            <button id="add-style-label" i18n="addStyleLabel" tabindex="-1"></button>
           </a>
           <label id="add-style-as-usercss-wrapper">
             <input type="checkbox" id="newStyleAsUsercss">
             <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-            <span i18n-text="manageNewStyleAsUsercss" i18n-title="optionsAdvancedNewStyleAsUsercss"></span>
+            <span i18n="manageNewStyleAsUsercss, title:optionsAdvancedNewStyleAsUsercss"></span>
             <a id="usercss-wiki"
                href="https://github.com/openstyles/stylus/wiki/Usercss"
-               i18n-title="externalUsercssDocument">
+               i18n="title:externalUsercssDocument">
               <svg class="svg-icon" viewBox="0 0 20 20">
                 <path d="M4,4h5v2H6v8h8v-3h2v5H4V4z M11,3h6v6l-2-2l-4,4L9,9l4-4L11,3z"/>
               </svg>
             </a>
           </label>
         </div>
-        <button id="manage-options-button" i18n-text="openOptions"></button>
-        <button id="injection-order-button" i18n-title="styleInjectionOrder">
+        <button id="manage-options-button" i18n="openOptions"></button>
+        <button id="injection-order-button" i18n="title:styleInjectionOrder">
           <svg class="svg-icon"><use xlink:href="#svg-icon-reorder"/></svg>
           &nbsp;
         </button>
@@ -326,43 +320,43 @@
     <div class="settings-column">
       <details id="backup" data-pref="manage.backup.expanded">
         <summary>
-          <h2 id="backup-title" i18n-text="backupButtons"><!-- removing space
-            --><a tabindex="0" i18n-title="backupMessage" data-cmd="note">
+          <h2 id="backup-title" i18n="backupButtons"><!-- removing space
+            --><a tabindex="0" i18n="title:backupMessage" data-cmd="note">
               <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
             </a>
           </h2>
         </summary>
         <div id="backup-buttons">
           <div class="split-btn">
-            <button id="file-all-styles" i18n-text="exportLabel"></button
-            ><button class="split-btn-pedal" i18n-menu-compat="exportCompatible"></button>
+            <button id="file-all-styles" i18n="exportLabel"></button
+            ><button class="split-btn-pedal" i18n="menu-compat:exportCompatible"></button>
           </div>
-          <button id="unfile-all-styles" i18n-text="importLabel"></button>
-          <button id="sync-styles" i18n-text="optionsCustomizeSync"></button>
+          <button id="unfile-all-styles" i18n="importLabel"></button>
+          <button id="sync-styles" i18n="optionsCustomizeSync"></button>
         </div>
       </details>
 
       <div id="manage-text">
         <span>
-          <a href="https://userstyles.world/explore" target="_blank" i18n-text="linkGetShareStyles"></a>
-          <a tabindex="0" i18n-title="linkGetShareStylesInfo" data-cmd="note">
+          <a href="https://userstyles.world/explore" target="_blank" i18n="linkGetShareStyles"></a>
+          <a tabindex="0" i18n="title:linkGetShareStylesInfo" data-cmd="note">
             <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
           </a>
         </span>
         <span>
-          <a href="https://uso.kkx.one/browse/styles" target="_blank" i18n-text="linkGetStyles"></a>
-          <a tabindex="0" i18n-title="linkGetStylesInfo" data-cmd="note">
+          <a href="https://uso.kkx.one/browse/styles" target="_blank" i18n="linkGetStyles"></a>
+          <a tabindex="0" i18n="title:linkGetStylesInfo" data-cmd="note">
             <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
           </a>
         </span>
-        <span><a href="https://add0n.com/stylus.html#features" target="_blank" i18n-text="linkGetHelp"></a></span>
-        <span><a href="https://github.com/openstyles/stylus/wiki" target="_blank" i18n-text="linkStylusWiki"></a></span>
-        <span><a href="https://www.transifex.com/github-7/Stylus" target="_blank" i18n-text="linkTranslate"></a></span>
+        <span><a href="https://add0n.com/stylus.html#features" target="_blank" i18n="linkGetHelp"></a></span>
+        <span><a href="https://github.com/openstyles/stylus/wiki" target="_blank" i18n="linkStylusWiki"></a></span>
+        <span><a href="https://www.transifex.com/github-7/Stylus" target="_blank" i18n="linkTranslate"></a></span>
       </div>
     </div>
   </div>
 
-  <div id="header-resizer" i18n-title="headerResizerHint"></div>
+  <div id="header-resizer" i18n="title:headerResizerHint"></div>
 </div>
 
 <div id="installed"></div>

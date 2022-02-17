@@ -372,41 +372,44 @@ function toggleDataset(el, prop, state) {
 /**
  * @param {string} selector - beware of $ quirks with `#dotted.id` that won't work with $$
  * @param {Object} [opt]
- * @param {function(HTMLElement, HTMLElement[]):boolean} [opt.recur] - called on each match
-   with (firstMatchingElement, allMatchingElements) parameters until stopOnDomReady,
+ * @param {function(HTMLElement[]):boolean} [opt.recur] - called on each match until stopOnDomReady,
    you can also return `false` to disconnect the observer
  * @param {boolean} [opt.stopOnDomReady] - stop observing on DOM ready
  * @returns {Promise<HTMLElement>} - resolves on first match
  */
 function waitForSelector(selector, {recur, stopOnDomReady = true} = {}) {
   let el = $(selector);
-  let elems, isResolved;
-  return el && (!recur || recur(el, (elems = $$(selector))) === false)
+  let elems;
+  return el && (!recur || recur(elems = $$(selector)) === false)
     ? Promise.resolve(el)
     : new Promise(resolve => {
-      const mo = new MutationObserver(() => {
+      new MutationObserver((mutations, observer) => {
         if (!el) el = $(selector);
         if (!el) return;
         if (!recur ||
-            callRecur() === false ||
-            stopOnDomReady && document.readyState === 'complete') {
-          mo.disconnect();
+          callRecur(mutations) === false ||
+          stopOnDomReady && document.readyState === 'complete') {
+          observer.disconnect();
         }
-        if (!isResolved) {
-          isResolved = true;
+        if (resolve) {
           resolve(el);
+          resolve = null;
         }
-      });
-      mo.observe(document, {childList: true, subtree: true});
+      }).observe(document, {childList: true, subtree: true});
+      function isMatching(n) {
+        return n.tagName && (n.matches(selector) || n.firstElementChild && $(selector, n));
+      }
+      function callRecur([m0, m1]) {
+        if (m1 || (m0 = m0.addedNodes)[3] || [].some.call(m0, isMatching)) { // Skipping tiny records
+          const all = $$(selector); // Using one $$ call instead of ~100 calls for each node
+          const added = !elems ? all : all.filter(el => !elems.includes(el));
+          if (added.length) {
+            elems = all;
+            return recur(added);
+          }
+        }
+      }
     });
-  function callRecur() {
-    const all = $$(selector); // simpler and faster than analyzing each node in `mutations`
-    const added = !elems ? all : all.filter(el => !elems.includes(el));
-    if (added.length) {
-      elems = all;
-      return recur(added[0], added);
-    }
-  }
 }
 
 /**
@@ -431,7 +434,7 @@ const dom = {};
 (() => {
 
   const Collapsible = {
-    bindEvents(_, elems) {
+    bindEvents(elems) {
       const prefKeys = [];
       for (const el of elems) {
         prefKeys.push(el.dataset.pref);

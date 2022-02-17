@@ -68,19 +68,19 @@
       <li class="applies-to-item">
         <div class="select-resizer">
           <select name="applies-type" class="applies-type style-contributor">
-            <option value="url" i18n-text="appliesUrlOption"></option>
-            <option value="url-prefix" i18n-text="appliesUrlPrefixOption"></option>
-            <option value="domain" i18n-text="appliesDomainOption"></option>
-            <option value="regexp" i18n-text="appliesRegexpOption"></option>
+            <option value="url" i18n="appliesUrlOption"></option>
+            <option value="url-prefix" i18n="appliesUrlPrefixOption"></option>
+            <option value="domain" i18n="appliesDomainOption"></option>
+            <option value="regexp" i18n="appliesRegexpOption"></option>
           </select>
           <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
         </div>
         <div class="applies-value-wrapper">
           <input name="applies-value" class="applies-value style-contributor" spellcheck="false">
-          <a class="remove-applies-to" i18n-text="appliesRemove" i18n-title="appliesRemove" tabindex="0">
+          <a class="remove-applies-to" i18n="appliesRemove, title:appliesRemove" tabindex="0">
             <svg class="svg-icon remove"><use xlink:href="#svg-icon-minus"/></svg>
           </a>
-          <a class="add-applies-to" i18n-text="appliesAdd" i18n-title="appliesAdd" tabindex="0">
+          <a class="add-applies-to" i18n="appliesAdd, title:appliesAdd" tabindex="0">
             <svg class="svg-icon add"><use xlink:href="#svg-icon-plus"/></svg>
           </a>
         </div>
@@ -88,8 +88,8 @@
     </template>
 
     <template data-id="appliesToEverything">
-      <li class="applies-to-everything" i18n-text="appliesToEverything">
-        <a class="add-applies-to" i18n-text="appliesAdd" i18n-title="appliesAdd" tabindex="0">
+      <li class="applies-to-everything" i18n="appliesToEverything">
+        <a class="add-applies-to" i18n="appliesAdd, title:appliesAdd" tabindex="0">
           <svg class="svg-icon add"><use xlink:href="#svg-icon-plus"/></svg>
         </a>
       </li>
@@ -99,11 +99,11 @@
       <div class="section">
         <!-- not using DIV to make our CSS work for #sections > div:only-of-type .remove-section -->
         <p class="deleted-section">
-          <button class="restore-section" i18n-text="sectionRestore"></button>
+          <button class="restore-section" i18n="sectionRestore"></button>
         </p>
-        <label i18n-text="sectionCode" class="code-label"></label>
+        <label i18n="sectionCode" class="code-label"></label>
         <div class="applies-to">
-          <label i18n-text="appliesLabel" data-cmd="note" i18n-title="appliesHelp">
+          <label i18n="appliesLabel, title:appliesHelp" data-cmd="note">
             <a class="svg-inline-wrapper applies-to-help" tabindex="0">
               <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
             </a>
@@ -111,13 +111,13 @@
           <ul class="applies-to-list"></ul>
         </div>
         <div class="edit-actions">
-          <button class="remove-section" i18n-text="sectionRemove"></button>
-          <button class="add-section" i18n-long-text="sectionAdd" i18n-short-text="genericAdd"></button>
-          <button class="clone-section" i18n-text="genericClone"></button>
+          <button class="remove-section" i18n="sectionRemove"></button>
+          <button class="add-section" i18n="long-text:sectionAdd, short-text:genericAdd"></button>
+          <button class="clone-section" i18n="genericClone"></button>
           <button class="move-section-up"></button>
           <button class="move-section-down"></button>
-          <button class="beautify-section" i18n-text="styleBeautify"></button>
-          <button class="test-regexp" i18n-text="genericTest"></button>
+          <button class="beautify-section" i18n="styleBeautify"></button>
+          <button class="test-regexp" i18n="genericTest"></button>
         </div>
       </div>
     </template>
@@ -127,27 +127,27 @@
         <div data-type="main">
           <div data-type="content"></div>
           <div data-type="actions">
-            <a data-action="case" i18n-title="searchCaseSensitive" tabindex="0">Aa</a>
-            <a data-action="prev" i18n-title="genericPrevious" data-hotkey-tooltip="findPrev" tabindex="0">
+            <a data-action="case" i18n="title:searchCaseSensitive" tabindex="0">Aa</a>
+            <a data-action="prev" i18n="title:genericPrevious" data-hotkey-tooltip="findPrev" tabindex="0">
               <svg class="svg-icon" style="transform: rotate(180deg)"><use xlink:href="#svg-icon-v"/></svg>
             </a>
-            <a data-action="next" i18n-title="genericNext" data-hotkey-tooltip="findNext" tabindex="0">
+            <a data-action="next" i18n="title:genericNext" data-hotkey-tooltip="findNext" tabindex="0">
               <svg class="svg-icon"><use xlink:href="#svg-icon-v"/></svg>
             </a>
-            <a data-action="close" i18n-title="confirmClose" data-hotkey-tooltip="=Esc" tabindex="0">
+            <a data-action="close" i18n="title:confirmClose" data-hotkey-tooltip="=Esc" tabindex="0">
               <svg class="svg-icon dismiss"><use xlink:href="#svg-icon-close"/></svg>
             </a>
           </div>
         </div>
         <div data-type="status">
           <div class="CodeMirror-search-hint" i18n-text="searchRegexp"></div>
-          <div data-type="tally" i18n-title="searchNumberOfResults"></div>
+          <div data-type="tally" i18n="title:searchNumberOfResults"></div>
         </div>
       </div>
     </template>
 
     <template data-id="clearSearch">
-      <div data-type="hover" i18n-title="confirmDelete">
+      <div data-type="hover" i18n="title:confirmDelete">
         <svg data-action="clear" class="svg-icon"><use xlink:href="#svg-icon-close"></use></svg>
       </div>
     </template>
@@ -156,7 +156,7 @@
       <div data-type="content">
         <div data-type="input-wrapper">
           <textarea class="CodeMirror-search-field" rows="1" spellcheck="false" required
-                    i18n-placeholder="search"></textarea>
+                    i18n="placeholder:search"></textarea>
         </div>
       </div>
     </template>
@@ -165,36 +165,36 @@
       <div data-type="content">
         <div data-type="input-wrapper">
           <textarea data-type="replace-from"
-                    i18n-placeholder="replace"
+                    i18n="placeholder:replace"
                     class="CodeMirror-search-field" rows="1" required
                     spellcheck="false"></textarea>
         </div>
         <div data-type="input-wrapper">
           <textarea data-type="replace-to"
-                    i18n-placeholder="replaceWith"
+                    i18n="placeholder:replaceWith"
                     class="CodeMirror-search-field" rows="1" required
                     spellcheck="false"></textarea>
         </div>
-        <button data-action="replace" i18n-text="replace" disabled></button>
-        <button data-action="replaceAll" i18n-text="replaceAll" disabled></button>
-        <button data-action="undo" i18n-text="undo" disabled></button>
+        <button data-action="replace" i18n="replace" disabled></button>
+        <button data-action="replaceAll" i18n="replaceAll" disabled></button>
+        <button data-action="undo" i18n="undo" disabled></button>
         <!--
         Using a separate set of buttons because
         1. FF can display tooltips only when specified on the <button>, ignores the nested <title> in <svg>
         2. the icon doesn't fill the entire button area so tooltips aren't shown when the edges are hovered
         -->
-        <button class="hidden" data-action="replace" i18n-title="replace" disabled>
+        <button class="hidden" data-action="replace" i18n="title:replace" disabled>
           <svg class="svg-icon" viewBox="0 0 20 20">
             <polygon points="15.83 4.75 8.76 11.82 5.2 8.26 3.51 9.95 8.76 15.19 17.52 6.43 15.83 4.75"/>
           </svg>
         </button>
-        <button class="hidden" data-action="replaceAll" i18n-title="replaceAll" disabled>
+        <button class="hidden" data-action="replaceAll" i18n="title:replaceAll" disabled>
           <svg class="svg-icon" viewBox="0 0 20 20">
             <polygon points="15.8,1.8 8.8,8.8 5.2,5.3 3.5,6.9 8.8,12.2 17.5,3.4 "/>
             <polygon points="15.8,7.8 8.8,14.8 5.2,11.3 3.5,12.9 8.8,18.2 17.5,9.4 "/>
           </svg>
         </button>
-        <button class="hidden" data-action="undo" i18n-title="undo" disabled>
+        <button class="hidden" data-action="undo" i18n="title:undo" disabled>
           <svg class="svg-icon" viewBox="0 0 20 20">
             <path d="M11.3,5.5H8.7V1.4L1.9,6.5l6.8,5.1V7.5h2.6c1.8,0,3.2,1.4,3.2,3.2s-1.4,3.2-3.2,3.2H7.8v2h3.5c2.9,0,5.2-2.3,5.2-5.2S14.2,5.5,11.3,5.5z"/>
           </svg>
@@ -203,7 +203,7 @@
     </template>
 
     <template data-id="jumpToLine">
-      <span i18n-text="editGotoLine">: <input class="CodeMirror-jump-field" type="text"></span>
+      <span i18n="editGotoLine">: <input class="CodeMirror-jump-field" type="text"></span>
     </template>
 
     <template data-id="regexpTestPartial">
@@ -211,15 +211,15 @@
     </template>
 
     <template data-id="resizeGrip">
-      <div class="resize-grip" i18n-title="cm_resizeGripHint"></div>
+      <div class="resize-grip" i18n="title:cm_resizeGripHint"></div>
     </template>
 
     <template data-id="keymapHelp">
       <table class="keymap-list can-close-on-esc">
         <thead>
           <tr>
-            <th><input i18n-placeholder="helpKeyMapHotkey" type="search"></th>
-            <th><input i18n-placeholder="helpKeyMapCommand" type="search"></th>
+            <th><input i18n="placeholder:helpKeyMapHotkey" type="search"></th>
+            <th><input i18n="placeholder:helpKeyMapCommand" type="search"></th>
           </tr>
         </thead>
         <tbody>
@@ -245,11 +245,11 @@
 
   <body id="stylus-edit">
     <div id="header">
-      <h1 id="heading" i18n-data-edit="editStyleHeading" i18n-data-add="addStyleTitle"></h1>
+      <h1 id="heading" i18n="data-edit:editStyleHeading, data-add:addStyleTitle"></h1>
       <section id="basic-info">
         <div id="basic-info-name">
           <input id="name" class="style-contributor" spellcheck="false">
-          <a id="reset-name" i18n-title="customNameResetHint" tabindex="0" hidden>
+          <a id="reset-name" i18n="title:customNameResetHint" tabindex="0" hidden>
             <svg class="svg-icon" viewBox="0 0 20 20">
               <polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5
                                5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10 "/>
@@ -259,13 +259,12 @@
         </div>
         <div id="basic-info-enabled">
           <label id="enabled-label"
-                 i18n-text="styleEnabledLabel"
-                 i18n-title="toggleStyle"
+                 i18n="styleEnabledLabel, title:toggleStyle"
                  data-hotkey-tooltip="toggleStyle">
             <input type="checkbox" id="enabled" class="style-contributor">
             <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
           </label>
-          <label id="preview-label" i18n-text="previewLabel" i18n-title="previewTooltip">
+          <label id="preview-label" i18n="previewLabel, title:previewTooltip">
             <input type="checkbox" id="editor.livePreview">
             <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
           </label>
@@ -275,75 +274,74 @@
       <section id="actions">
         <div class="buttons">
           <div class="split-btn">
-            <button id="save-button" i18n-text="styleSaveLabel" data-hotkey-tooltip="save" disabled></button
-            ><button class="split-btn-pedal usercss-only" i18n-menu-tpl="saveAsTemplate"></button>
+            <button id="save-button" i18n="styleSaveLabel" data-hotkey-tooltip="save" disabled></button
+            ><button class="split-btn-pedal usercss-only" i18n="menu-tpl:saveAsTemplate"></button>
           </div>
-          <button id="beautify" i18n-text="styleBeautify"></button>
-          <button id="style-settings-btn" i18n-text="settings"></button>
-          <button id="cancel-button" i18n-title="styleCancelEditLabel">↩</button>
+          <button id="beautify" i18n="styleBeautify"></button>
+          <button id="style-settings-btn" i18n="settings"></button>
+          <button id="cancel-button" i18n="title:styleCancelEditLabel">↩</button>
         </div>
         <div id="mozilla-format-buttons" class="buttons sectioned-only">
-          <button id="from-mozilla" i18n-text="importLabel"></button>
-          <button id="to-mozilla" i18n-text="exportLabel"></button>
+          <button id="from-mozilla" i18n="importLabel"></button>
+          <button id="to-mozilla" i18n="exportLabel"></button>
           <a id="to-mozilla-help" class="svg-inline-wrapper" tabindex="0"
-             i18n-title="styleMozillaFormatHeading">
+             i18n="title:styleMozillaFormatHeading">
             <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
           </a>
         </div>
       </section>
       <div id="details-wrapper">
         <details id="options" data-pref="editor.options.expanded" class="ignore-pref-if-compact">
-          <summary><h2 id="options-heading" i18n-text="editorSettings"></h2></summary>
+          <summary><h2 id="options-heading" i18n="editorSettings"></h2></summary>
           <div id="options-wrapper">
             <div class="options-column">
               <div class="option">
-                <label id="lineWrapping-label" i18n-text="cm_lineWrapping">
+                <label id="lineWrapping-label" i18n="cm_lineWrapping">
                   <input id="editor.lineWrapping" type="checkbox">
                   <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
                 </label>
               </div>
               <div class="option">
-                <label id="smartIndent-label" i18n-text="cm_smartIndent">
+                <label id="smartIndent-label" i18n="cm_smartIndent">
                   <input id="editor.smartIndent" type="checkbox">
                   <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
                 </label>
               </div>
               <div class="option">
-                <label id="indentWithTabs-label" i18n-text="cm_indentWithTabs">
+                <label id="indentWithTabs-label" i18n="cm_indentWithTabs">
                   <input id="editor.indentWithTabs" type="checkbox">
                   <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
                 </label>
               </div>
               <div class="option">
-                <label i18n-text="cm_autoCloseBrackets" i18n-title="cm_autoCloseBracketsTooltip">
+                <label i18n="cm_autoCloseBrackets, title:cm_autoCloseBracketsTooltip">
                   <input id="editor.autoCloseBrackets" type="checkbox">
                   <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
                 </label>
               </div>
               <div class="option">
-                <label i18n-text="cm_autocompleteOnTyping">
+                <label i18n="cm_autocompleteOnTyping">
                   <input id="editor.autocompleteOnTyping" type="checkbox">
                   <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
                 </label>
               </div>
               <div class="option">
-                <label i18n-text="cm_selectByTokens"
-                       i18n-title="cm_selectByTokensTooltip">
+                <label i18n="cm_selectByTokens, title:cm_selectByTokensTooltip">
                   <input id="editor.selectByTokens" type="checkbox">
                   <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
                 </label>
               </div>
               <div class="option">
-                <label i18n-text="cm_colorpicker">
+                <label i18n="cm_colorpicker">
                   <input id="editor.colorpicker" type="checkbox">
                   <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
                 </label>
-                <a id="colorpicker-settings" class="svg-inline-wrapper" i18n-title="shortcutsNote" tabindex="0">
+                <a id="colorpicker-settings" class="svg-inline-wrapper" i18n="title:shortcutsNote" tabindex="0">
                   <svg class="svg-icon settings"><use xlink:href="#svg-icon-config"/></svg>
                 </a>
               </div>
               <div class="option usercss-only">
-                <label i18n-text="appliesLineWidgetLabel" i18n-title="appliesLineWidgetWarning">
+                <label i18n="appliesLineWidgetLabel, title:appliesLineWidgetWarning">
                   <input id="editor.appliesToLineWidget" type="checkbox">
                   <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
                 </label>
@@ -351,11 +349,11 @@
             </div>
             <div class="options-column">
               <div class="option aligned">
-                <label id="tabSize-label" for="editor.tabSize" i18n-text="cm_tabSize"></label>
+                <label id="tabSize-label" for="editor.tabSize" i18n="cm_tabSize"></label>
                 <input id="editor.tabSize" type="number" min="0">
               </div>
               <div class="option aligned">
-                <label id="keyMap-label" for="editor.keyMap" i18n-text="cm_keyMap"></label>
+                <label id="keyMap-label" for="editor.keyMap" i18n="cm_keyMap"></label>
                 <div class="select-resizer">
                   <select id="editor.keyMap"></select>
                   <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
@@ -365,34 +363,34 @@
                 </a>
               </div>
               <div class="option aligned">
-                <label id="theme-label" for="editor.theme" i18n-text="cm_theme"></label>
+                <label id="theme-label" for="editor.theme" i18n="cm_theme"></label>
                 <div class="select-resizer">
                   <select id="editor.theme"></select>
                   <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
                 </div>
               </div>
               <div class="option aligned">
-                <label id="highlight-label" for="editor.matchHighlight" i18n-text="cm_matchHighlight"></label>
+                <label id="highlight-label" for="editor.matchHighlight" i18n="cm_matchHighlight"></label>
                 <div class="select-resizer">
                   <select id="editor.matchHighlight">
-                    <option i18n-text="cm_matchHighlightToken" value="token">
-                    <option i18n-text="cm_matchHighlightSelection" value="selection">
-                    <option i18n-text="genericDisabledLabel" value="">
+                    <option i18n="cm_matchHighlightToken" value="token">
+                    <option i18n="cm_matchHighlightSelection" value="selection">
+                    <option i18n="genericDisabledLabel" value="">
                   </select>
                   <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
                 </div>
               </div>
               <div class="option aligned">
-                <label id="linter-label" for="editor.linter" i18n-text="cm_linter"></label>
+                <label id="linter-label" for="editor.linter" i18n="cm_linter"></label>
                   <div class="select-resizer">
                     <select id="editor.linter">
                       <option value="csslint" selected>CSSLint</option>
                       <option value="stylelint">Stylelint</option>
-                      <option value="" i18n-text="genericDisabledLabel"></option>
+                      <option value="" i18n="genericDisabledLabel"></option>
                     </select>
                     <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
                   </div>
-                <a id="linter-settings" class="svg-inline-wrapper" i18n-title="linterConfigTooltip" tabindex="0">
+                <a id="linter-settings" class="svg-inline-wrapper" i18n="title:linterConfigTooltip" tabindex="0">
                   <svg class="svg-icon settings"><use xlink:href="#svg-icon-config"/></svg>
                 </a>
               </div>
@@ -400,29 +398,28 @@
           </div>
         </details>
         <details id="publish" data-pref="editor.publish.expanded" class="ignore-pref-if-compact">
-          <summary><h2 i18n-text="publish"></h2></summary>
+          <summary><h2 i18n="publish"></h2></summary>
           <div>
             <a id="usw-url" href="https://userstyles.world" target="_blank">&nbsp;</a>
             <div id="usw-link-info">
-              <dl><dt i18n-text="styleName"></dt><dd data-usw="name"></dd></dl>
-              <dl><dt i18n-text="genericDescription"></dt><dd data-usw="description"></dd></dl>
+              <dl><dt i18n="styleName"></dt><dd data-usw="name"></dd></dl>
+              <dl><dt i18n="genericDescription"></dt><dd data-usw="description"></dd></dl>
             </div>
             <div>
               <button id="usw-publish-style"
-                      i18n-data-publish="publishStyle"
-                      i18n-data-push="publishPush"></button>
-              <button id="usw-disconnect" i18n-text="optionsSyncDisconnect"></button>
+                      i18n="data-publish:publishStyle, data-push:publishPush"></button>
+              <button id="usw-disconnect" i18n="optionsSyncDisconnect"></button>
               <span id="usw-progress"></span>
             </div>
           </div>
         </details>
         <details id="sections-list" data-pref="editor.toc.expanded" class="ignore-pref-if-compact">
-          <summary><h2 i18n-text="sections"></h2></summary>
+          <summary><h2 i18n="sections"></h2></summary>
           <ol id="toc"></ol>
         </details>
         <details id="lint" data-pref="editor.lint.expanded" class="ignore-pref-if-compact" hidden>
           <summary>
-            <h2><span i18n-text="linterIssues"></span><span id="issue-count"></span>
+            <h2><span i18n="linterIssues"></span><span id="issue-count"></span>
               <a id="lint-help" class="svg-inline-wrapper intercepts-click" tabindex="0">
                 <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
               </a>
@@ -431,10 +428,10 @@
           <div class="lint-report-container"></div>
         </details>
       </div>
-      <div id="header-resizer" i18n-title="headerResizerHint"></div>
+      <div id="header-resizer" i18n="title:headerResizerHint"></div>
       <div id="footer" class="hidden">
         <a href="https://github.com/openstyles/stylus/wiki/Usercss"
-           i18n-text="externalUsercssDocument"
+           i18n="externalUsercssDocument"
            target="_blank"></a>
       </div>
     </div>
@@ -450,7 +447,7 @@
         <path d="M0 0v8h8v-2h-1v1h-6v-6h1v-1h-2zm4 0l1.5 1.5-2.5 2.5 1 1 2.5-2.5 1.5 1.5v-4h-4z"></path>
       </symbol>
 
-      <symbol id="svg-icon-help" viewBox="0 0 14 16" i18n-alt="helpAlt">
+      <symbol id="svg-icon-help" viewBox="0 0 14 16" i18n="alt:helpAlt">
         <circle cx="7" cy="5" r="1"/>
         <path d="M8,8c0-0.5-0.5-1-1-1H6C5.5,7,5,7.4,5,8h1v3c0,0.5,0.5,1,1,1h1c0.5,0,1-0.4,1-1H8V8z"/>
         <path d="M7,1c3.9,0,7,3.1,7,7s-3.1,7-7,7s-7-3.1-7-7S3.1,1,7,1z M7,2.3C3.9,2.3,1.3,4.9,1.3,8s2.6,5.7,5.7,5.7s5.7-2.6,5.7-5.7S10.1,2.3,7,2.3C7,2.3,7,2.3,7,2.3z"/>
