@@ -242,9 +242,8 @@ async function showUpdateHistory(event) {
       scrollToBottom();
 
       $('#message-box-buttons button').insertAdjacentElement('afterend',
-        // TODO: add a global class for our labels
         // TODO: add a <template> or a common function to create such controls
-        $create('label', {style: 'position: relative; padding-left: 16px;'}, [
+        $create('label.checkbox-wrapper', [
           toggler =
             $create('input', {type: 'checkbox', checked: true, onchange: toggleSkipped}),
           $create('SVG:svg.svg-icon.checked',
