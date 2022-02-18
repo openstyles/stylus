@@ -276,13 +276,14 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
     let widget = old && old.widget;
     const height = Math.round(funcHeight * (sec.funcs.length || 1)) || undefined;
     const node = renderContainer(sec, widget);
-    if (widget) {
+    if (widget && widget.line.lineNo() === sec.start.line) {
       widget.node = node;
       if (height && height !== widget.height) {
         widget.height = height;
         widget.changed();
       }
     } else {
+      if (widget) widget.clear();
       widget = cm.addLineWidget(sec.start.line, node, {
         coverGutter: true,
         noHScroll: true,
