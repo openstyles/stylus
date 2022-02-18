@@ -24,7 +24,7 @@ API.colorScheme.shouldIncludeStyle('darkUI').then(val => {
     $.root.dataset.uiTheme = isDark ? 'dark' : 'light';
     for (const sheet of document.styleSheets) {
       for (const {media: m} of sheet.cssRules) {
-        if (m && m[1] === 'dark' && (m[0] === 'screen') !== isDark) {
+        if (m && m[1] === 'dark' && /screen/.test(m[0]) !== isDark) {
           m.mediaText = isDark ? 'screen,dark' : 'not all,dark';
         }
       }
