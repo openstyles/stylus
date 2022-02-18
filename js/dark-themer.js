@@ -12,6 +12,9 @@
  */
 
 API.colorScheme.shouldIncludeStyle('darkUI').then(val => {
+  const ON = 'screen';
+  const OFF = 'not all';
+  const map = {[ON]: true, [OFF]: false};
   let isDark = val;
   toggleDarkStyles();
   msg.onExtension(e => {
@@ -24,8 +27,8 @@ API.colorScheme.shouldIncludeStyle('darkUI').then(val => {
     $.root.dataset.uiTheme = isDark ? 'dark' : 'light';
     for (const sheet of document.styleSheets) {
       for (const {media: m} of sheet.cssRules) {
-        if (m && m[1] === 'dark' && /screen/.test(m[0]) !== isDark) {
-          m.mediaText = isDark ? 'screen,dark' : 'not all,dark';
+        if (m && m[1] === 'dark' && map[m[0]] !== isDark) {
+          m.mediaText = `${isDark ? ON : OFF},dark`;
         }
       }
     }
