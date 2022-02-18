@@ -928,7 +928,7 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 }
 .beautify-options select {
   border: none;
-  background: linear-gradient(90deg, rgba(0, 0, 0, .05) 18px, rgba(0, 0, 0, .02) 24px);
+  background: var(--c95);
   font-family: monospace;
   font-weight: bold;
   padding-left: 4px;

@@ -933,6 +933,7 @@ html:not(.styles-last) .split-btn-pedal::after {
 
 #hotkey-info mark {
   display: inline-block;
+  color: var(--fg);
   background: linear-gradient(var(--c80), var(--bg));
   padding: 1px 6px 0;
   margin: 2px;
