@@ -1,20 +1,11 @@
-/* global API msg */// msg.js
+/* global API */// msg.js
 /* global prefs */
 /* global t */// localization.js
-/* global
-  $
-  $$
-  $create
-  $createLink
-  getEventKeyName
-  messageBoxProxy
-  setupLivePrefs
-*/// dom.js
+/* global $ $$ getEventKeyName messageBoxProxy setupLivePrefs */// dom.js
 /* global
   CHROME_POPUP_BORDER_BUG
   FIREFOX
   URLS
-  capitalize
   clamp
   ignoreChromeError
   openURL
@@ -23,242 +14,61 @@
 
 setupLivePrefs();
 $$('input[min], input[max]').forEach(enforceInputRange);
-
 if (CHROME_POPUP_BORDER_BUG) {
   $('.chrome-no-popup-border').classList.remove('chrome-no-popup-border');
 }
-
 if (FIREFOX && 'update' in (chrome.commands || {})) {
-  $('[data-cmd="open-keyboard"]').classList.remove('chromium-only');
+  $('#shortcuts').classList.remove('chromium-only');
 }
-
 // actions
 $('#options-close-icon').onclick = () => {
   top.dispatchEvent(new CustomEvent('closeOptions'));
 };
-
-document.onclick = e => {
-  const target = e.target.closest('[data-cmd]');
-  if (!target) {
-    return;
+$('#manage').onclick = () => {
+  API.openManage();
+};
+$('#shortcuts').onclick = () => {
+  if (FIREFOX) {
+    customizeHotkeys();
+  } else {
+    openURL({url: URLS.configureCommands});
   }
-  // prevent double-triggering in case a sub-element was clicked
-  e.stopPropagation();
-
-  switch (target.dataset.cmd) {
-    case 'open-manage':
-      API.openManage();
-      break;
-
-    case 'check-updates':
-      checkUpdates();
-      break;
-
-    case 'open-keyboard':
-      if (FIREFOX) {
-        customizeHotkeys();
-      } else {
-        openURL({url: URLS.configureCommands});
+};
+$('#reset').onclick = async () => {
+  if (await messageBoxProxy.confirm(t('confirmDiscardChanges'))) {
+    for (const el of $$('input')) {
+      const id = el.id || el.name;
+      if (prefs.knownKeys.includes(id)) {
+        prefs.reset(id);
       }
-      e.preventDefault();
-      break;
-
-    case 'reset':
-      $$('input')
-        .filter(input => prefs.knownKeys.includes(input.id))
-        .forEach(input => prefs.reset(input.id));
-      break;
+    }
   }
 };
 
-// sync to cloud
-(() => {
-  const elCloud = $('.sync-options .cloud-name');
-  const elStart = $('.sync-options .connect');
-  const elStop = $('.sync-options .disconnect');
-  const elSyncNow = $('.sync-options .sync-now');
-  const elStatus = $('.sync-options .sync-status');
-  const elLogin = $('.sync-options .sync-login');
-  const elDriveOptions = $('.sync-options .drive-options');
-  /** @type {Sync.Status} */
-  let status = {};
-  msg.onExtension(e => {
-    if (e.method === 'syncStatusUpdate') {
-      setStatus(e.status);
-    }
-  });
-  API.sync.getStatus()
-    .then(setStatus);
-
-  elCloud.on('change', updateButtons);
-  for (const [btn, fn] of [
-    [elStart, async () => {
-      await API.sync.setDriveOptions(elCloud.value, getDriveOptions());
-      await API.sync.start(elCloud.value);
-    }],
-    [elStop, API.sync.stop],
-    [elSyncNow, API.sync.syncNow],
-    [elLogin, async () => {
-      await API.sync.login();
-      await API.sync.syncNow();
-    }],
-  ]) {
-    btn.on('click', e => {
-      if (getEventKeyName(e) === 'MouseL') {
-        fn();
-      }
-    });
-  }
-
-  function getDriveOptions() {
-    const result = {};
-    for (const el of $$(`[data-drive=${elCloud.value}] [data-option]`)) {
-      result[el.dataset.option] = el.value;
-    }
-    return result;
-  }
-
-  function setDriveOptions(options) {
-    for (const el of $$(`[data-drive=${elCloud.value}] [data-option]`)) {
-      el.value = options[el.dataset.option] || '';
-    }
-  }
-
-  function setStatus(newStatus) {
-    status = newStatus;
-    updateButtons();
-  }
-
-  async function updateButtons() {
-    const {state, STATES} = status;
-    const isConnected = state === STATES.connected;
-    const isDisconnected = state === STATES.disconnected;
-    if (status.currentDriveName) {
-      elCloud.value = status.currentDriveName;
-    }
-    for (const [el, enable] of [
-      [elCloud, isDisconnected],
-      [elDriveOptions, isDisconnected],
-      [elStart, isDisconnected && elCloud.value !== 'none'],
-      [elStop, isConnected && !status.syncing],
-      [elSyncNow, isConnected && !status.syncing && status.login],
-    ]) {
-      el.disabled = !enable;
-    }
-    elStatus.textContent = getStatusText();
-    elLogin.hidden = !isConnected || status.login;
-    for (const el of elDriveOptions.children) {
-      el.hidden = el.dataset.drive !== elCloud.value;
-    }
-    setDriveOptions(await API.sync.getDriveOptions(elCloud.value));
-  }
-
-  function getStatusText() {
-    if (status.syncing) {
-      const {phase, loaded, total} = status.progress || {};
-      return phase
-        ? t(`optionsSyncStatus${capitalize(phase)}`, [loaded + 1, total], false) ||
-          `${phase} ${loaded} / ${total}`
-        : t('optionsSyncStatusSyncing');
-    }
-
-    const {state, errorMessage, STATES} = status;
-    if (errorMessage && (state === STATES.connected || state === STATES.disconnected)) {
-      return errorMessage;
-    }
-    if (state === STATES.connected && !status.login) {
-      return t('optionsSyncStatusRelogin');
-    }
-    return t(`optionsSyncStatus${capitalize(state)}`, null, false) || state;
-  }
-})();
-
-function checkUpdates() {
-  let total = 0;
-  let checked = 0;
-  let updated = 0;
-  const maxWidth = $('#update-progress').parentElement.clientWidth;
-
-  chrome.runtime.onConnect.addListener(function onConnect(port) {
-    if (port.name !== 'updater') return;
-    port.onMessage.addListener(observer);
-    chrome.runtime.onConnect.removeListener(onConnect);
-  });
-
-  API.updater.checkAllStyles({observe: true});
-
-  function observer(info) {
-    if ('count' in info) {
-      total = info.count;
-      document.body.classList.add('update-in-progress');
-    } else if (info.updated) {
-      updated++;
-      checked++;
-    } else if (info.error) {
-      checked++;
-    } else if (info.done) {
-      document.body.classList.remove('update-in-progress');
-    }
-    $('#update-progress').style.width = Math.round(checked / total * maxWidth) + 'px';
-    $('#updates-installed').dataset.value = updated || '';
-  }
-}
-
 function customizeHotkeys() {
-  // command name -> i18n id
-  const hotkeys = new Map([
-    ['_execute_browser_action', 'optionsCustomizePopup'],
-    ['openManage', 'openManage'],
-    ['styleDisableAll', 'disableAllStyles'],
-  ]);
-
   messageBoxProxy.show({
     title: t('shortcutsNote'),
-    contents: [
-      $create('table',
-        [...hotkeys.entries()].map(([cmd, i18n]) =>
-          $create('tr', [
-            $create('td', t(i18n)),
-            $create('td',
-              $create('input', {
-                id: 'hotkey.' + cmd,
-                type: 'search',
-                //placeholder: t('helpKeyMapHotkey'),
-              })),
-          ]))),
-    ],
-    className: 'center',
+    contents: t.template.shortcutsFF.cloneNode(true),
+    className: 'center-dialog pre-line',
     buttons: [t('confirmClose')],
     onshow(box) {
-      const ids = [];
-      for (const cmd of hotkeys.keys()) {
-        const id = 'hotkey.' + cmd;
-        ids.push(id);
-        $('#' + id).oninput = onInput;
-      }
-      setupLivePrefs(ids);
-      $('button', box).insertAdjacentElement('beforebegin',
-        $createLink(
-          'https://developer.mozilla.org/Add-ons/WebExtensions/manifest.json/commands#Key_combinations',
-          t('helpAlt')));
+      box.oninput = onInput;
+      setupLivePrefs($$('input', box).map(el => el.id));
     },
   });
-
-  function onInput() {
-    const name = this.id.split('.')[1];
-    const shortcut = this.value.trim();
+  async function onInput({target: el}) {
+    const name = el.id.split('.')[1];
+    const shortcut = el.value.trim();
     if (!shortcut) {
       browser.commands.reset(name).catch(ignoreChromeError);
-      this.setCustomValidity('');
+      el.setCustomValidity('');
       return;
     }
     try {
-      browser.commands.update({name, shortcut}).then(
-        () => this.setCustomValidity(''),
-        err => this.setCustomValidity(err)
-      );
+      await browser.commands.update({name, shortcut});
+      el.setCustomValidity('');
     } catch (err) {
-      this.setCustomValidity(err);
+      el.setCustomValidity(err);
     }
   }
 }
