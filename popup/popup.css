@@ -496,6 +496,7 @@ body > .actions {
   vertical-align: middle;
 }
 
+body.blocked #popup-manage-button + .split-btn-pedal,
 body.blocked #installed > :not(.frame),
 body.blocked .actions > .main-controls {
   display: none;
@@ -663,6 +664,9 @@ body.blocked .actions > .main-controls {
 }
 #popup-options .split-btn > :first-child {
   width: calc(100% - 16px);
+}
+.blocked #popup-options .split-btn > :first-child {
+  width: 100%;
 }
 #popup-options button {
   white-space: nowrap;
