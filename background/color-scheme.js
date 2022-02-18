@@ -34,13 +34,12 @@ const colorScheme = (() => {
     onChange(listener) {
       changeListeners.add(listener);
     },
-    /** @param {StyleObj | 'darkUI'} val - the string is used by the built-in dark themer */
-    shouldIncludeStyle(val) {
-      return val === 'darkUI'
-        ? isDarkNow
-        : prefs.get(kSTATE) === 'never' ||
-          !SCHEMES.includes(val = val.preferScheme) ||
-          isDarkNow === (val === 'dark');
+    isDark: () => isDarkNow,
+    /** @param {StyleObj} _ */
+    shouldIncludeStyle({preferScheme: ps}) {
+      return prefs.get(kSTATE) === 'never' ||
+        !SCHEMES.includes(ps) ||
+        isDarkNow === (ps === 'dark');
     },
     updateSystemPreferDark(val) {
       update('system', val);

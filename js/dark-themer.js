@@ -11,11 +11,10 @@
  * and not even a problem in the most popular case of using system dark/light mode.
  */
 
-API.colorScheme.shouldIncludeStyle('darkUI').then(val => {
+API.colorScheme.isDark().then(isDark => {
   const ON = 'screen';
   const OFF = 'not all';
   const map = {[ON]: true, [OFF]: false};
-  let isDark = val;
   toggleDarkStyles();
   msg.onExtension(e => {
     if (e.method === 'colorScheme') {
