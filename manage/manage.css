@@ -954,7 +954,7 @@ button .svg-icon,
   margin: .5em 1.25em 0;
 }
 
-.update-history-log {
+.update-history {
   font-size: 11px;
   white-space: pre;
   overflow-x: hidden;
@@ -976,7 +976,7 @@ button .svg-icon,
   -moz-osx-font-smoothing: grayscale;
 }
 
-#stylus-embedded-options {
+.stylus-options {
   position: fixed;
   top: 0;
   left: 0;
@@ -988,7 +988,7 @@ button .svg-icon,
   animation: fadein .25s ease-in-out;
 }
 
-#stylus-embedded-options.fadeout {
+.stylus-options.fadeout {
   animation: fadeout .25s ease-in-out;
 }
 

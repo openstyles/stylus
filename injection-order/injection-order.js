@@ -5,7 +5,7 @@
 'use strict';
 
 /* exported InjectionOrder */
-async function InjectionOrder(show = true) {
+async function InjectionOrder(show, el, selector) {
   if (!show) {
     return messageBoxProxy.close();
   }
@@ -27,7 +27,7 @@ async function InjectionOrder(show = true) {
   await messageBoxProxy.show({
     title: t('styleInjectionOrder'),
     contents: $create('fragment', Object.entries(groups).map(makeList)),
-    className: 'injection-order center-dialog',
+    className: 'center-dialog ' + selector.slice(1),
     blockScroll: true,
     buttons: [t('confirmClose')],
   });

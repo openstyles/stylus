@@ -10,7 +10,6 @@
 $('#check-all-updates').onclick = checkUpdateAll;
 $('#check-all-updates-force').onclick = checkUpdateAll;
 $('#apply-all-updates').onclick = applyUpdateAll;
-$('#update-history').onclick = showUpdateHistory;
 
 function applyUpdateAll() {
   const btnApply = $('#apply-all-updates');
@@ -215,9 +214,12 @@ function renderUpdatesOnlyFilter({show, check} = {}) {
   btnApply.dataset.value = numUpdatable;
 }
 
-async function showUpdateHistory(event) {
-  event.preventDefault();
-  const log = $create('.update-history-log');
+/* exported showUpdateHistory */
+async function showUpdateHistory(show, el, selector) {
+  if (!show) {
+    return messageBoxProxy.close();
+  }
+  const log = $create(selector);
   let scroller, toggler;
   let deleted = false;
   await require(['/js/storage-util']); /* global chromeLocal */

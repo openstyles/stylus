@@ -50,9 +50,19 @@ newUI.renderClass();
   installed.on('click', Events.entryClicked);
   installed.on('mouseover', Events.lazyAddEntryTitle, {passive: true});
   installed.on('mouseout', Events.lazyAddEntryTitle, {passive: true});
-  $('#manage-options-button').onclick = () => router.updateHash('#stylus-options');
-  $('#injection-order-button').onclick = () => router.updateHash('#injection-order');
-  $('#sync-styles').onclick = () => router.updateHash('#stylus-options');
+  $('#sync-styles').onclick =
+  $('#manage-options-button').onclick =
+    router.makeToggle('stylus-options', toggleEmbeddedOptions);
+  $('#injection-order-button').onclick =
+    router.makeToggle('injection-order', (...args) => InjectionOrder(...args), [
+      '/vendor/draggable-list/draggable-list.iife.min.js',
+      '/injection-order/injection-order.css',
+      '/injection-order/injection-order', /* global InjectionOrder */
+    ]);
+  $('#update-history-button').onclick =
+    router.makeToggle('update-history', (...args) => showUpdateHistory(...args), [
+      '/manage/updater-ui', /* global showUpdateHistory */
+    ]);
   $$('#header a[href^="http"]').forEach(a => (a.onclick = Events.external));
   window.on('pageshow', handleVisibilityChange);
   window.on('pagehide', handleVisibilityChange);
@@ -91,8 +101,6 @@ newUI.renderClass();
 
 msg.onExtension(onRuntimeMessage);
 window.on('closeOptions', () => router.updateHash(''));
-router.watch({hash: '#stylus-options'}, toggleEmbeddedOptions);
-router.watch({hash: '#injection-order'}, toggleInjectionOrder);
 
 function onRuntimeMessage(msg) {
   switch (msg.method) {
@@ -115,32 +123,13 @@ function onRuntimeMessage(msg) {
   setTimeout(sorter.updateStripes, 0, {onlyWhenColumnsChanged: true});
 }
 
-async function toggleEmbeddedOptions(state) {
-  const el = $('#stylus-embedded-options') ||
-    state && $.root.appendChild($create('iframe', {
-      id: 'stylus-embedded-options',
-      src: '/options.html',
-    }));
-  if (state) {
-    el.focus();
-  } else if (el) {
+async function toggleEmbeddedOptions(show, el, selector) {
+  if (show) {
+    $.root.appendChild($create('iframe' + selector, {src: '/options.html'}))
+      .focus();
+  } else {
     el.contentDocument.body.classList.add('scaleout');
     await animateElement(el, 'fadeout');
     el.remove();
-  }
-}
-
-async function toggleInjectionOrder(state) {
-  const shown = $('.injection-order');
-  if (state && !shown) {
-    await require([
-      '/vendor/draggable-list/draggable-list.iife.min.js',
-      '/injection-order/injection-order.css',
-      '/injection-order/injection-order', /* global InjectionOrder */
-    ]);
-    await InjectionOrder();
-    router.updateHash('');
-  } else if (!state && shown) {
-    await InjectionOrder(false);
   }
 }

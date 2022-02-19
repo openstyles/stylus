@@ -1,3 +1,4 @@
+/* global $ */// dom.js
 /* global deepEqual */// toolbox.js
 /* global msg */
 'use strict';
@@ -8,6 +9,18 @@ const router = {
 
   getSearch(key) {
     return new URLSearchParams(location.search).get(key);
+  },
+
+  makeToggle(hashId, showHide, deps) {
+    const hash = '#' + hashId;
+    const selector = '.' + hash.slice(1);
+    router.watch({hash}, async state => {
+      const el = $(selector);
+      if (!state === !el) return;
+      if (state && deps) await require(deps);
+      await showHide(state, el, selector);
+    });
+    return router.updateHash.bind(router, hash);
   },
 
   push(url) {
