@@ -164,9 +164,9 @@ const updateMan = (() => {
     }
 
     async function updateToUSOArchive(url, req) {
-      const m2 = getUsoEmbeddedMeta(req.response);
+      const m2 = await getUsoEmbeddedMeta(req.response);
       if (m2) {
-        url = (await m2).updateUrl;
+        url = m2.updateUrl;
         req = await tryDownload(url, RH_ETAG);
       }
       const json = await API.usercss.buildMeta({
@@ -207,8 +207,8 @@ const updateMan = (() => {
     async function updateUsercss() {
       let oldVer = ucd.version;
       let {etag: oldEtag, updateUrl} = style;
-      let m2 = URLS.extractUsoArchiveId(updateUrl) && getUsoEmbeddedMeta();
-      if (m2 && (m2 = await m2).updateUrl) {
+      const m2 = URLS.extractUsoArchiveId(updateUrl) && await getUsoEmbeddedMeta();
+      if (m2 && m2.updateUrl) {
         updateUrl = m2.updateUrl;
         oldVer = m2.usercssData.version || '0';
         oldEtag = '';
