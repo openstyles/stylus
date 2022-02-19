@@ -96,14 +96,6 @@ a:hover {
   color: var(--c40);
 }
 
-.actions > .main-controls {
-  padding-left: var(--inner-padding);
-}
-
-.main-controls {
-  display: table-cell;
-}
-
 body > DIV:last-of-type,
 body.blocked > DIV {
   border-bottom: none;
@@ -454,7 +446,7 @@ a:hover .svg-icon {
 
 body.blocked #popup-manage-button + .split-btn-pedal,
 body.blocked #installed > :not(.frame),
-body.blocked .actions > .main-controls {
+body.blocked #main-actions > :not(#disableAll-label) {
   display: none;
 }
 
