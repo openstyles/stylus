@@ -111,17 +111,17 @@
     background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 55%)'><polygon points='0,0 0,2 1,1'/></svg>");
   }
   ::-webkit-scrollbar-track-piece {
-    background: #333;
+    background: hsl(0, 0%, 17%);
     border: 1px solid var(--bg);
   }
   ::-webkit-scrollbar-track-piece:hover {
-    background: #444;
+    background: hsl(0, 0%, 20%);
   }
   ::-webkit-scrollbar-track-piece:active {
-    background: #555;
+    background: hsl(0, 0%, 25%);
   }
   ::-webkit-scrollbar-thumb {
-    background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1' fill='%23505050'><rect width='1' height='1'/></svg>") 2px 2px no-repeat;
+    background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1' fill='hsl(0, 0%, 30%)'><rect width='1' height='1'/></svg>") 2px 2px no-repeat;
   }
   ::-webkit-scrollbar-thumb:horizontal {
     background-size: 100% 13px;
@@ -130,10 +130,10 @@
     background-size: 13px 100%;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1' fill='%23585858'><rect width='1' height='1'/></svg>");
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1' fill='hsl(0, 0%, 33%)'><rect width='1' height='1'/></svg>");
   }
   ::-webkit-scrollbar-thumb:active {
-    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1' fill='%23666'><rect width='1' height='1'/></svg>");
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1' fill='hsl(0, 0%, 40%)'><rect width='1' height='1'/></svg>");
   }
   ::-webkit-resizer {
     background: var(--input-bg) linear-gradient(-45deg,
