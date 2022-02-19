@@ -222,6 +222,6 @@ Promise.all([
     require(['/background/context-menus']),
 ]).then(() => {
   bgReady._resolveAll();
-  msg.isBgReady = true;
+  msg.ready = true;
   msg.broadcast({method: 'backgroundReady'});
 });

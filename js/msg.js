@@ -16,6 +16,8 @@
   ];
   const ERR_NO_RECEIVER = 'Receiving end does not exist';
   const ERR_PORT_CLOSED = 'The message port closed before';
+  const NULL_RESPONSE = {error: {message: ERR_NO_RECEIVER}};
+  const STACK = 'Callstack before invoking msg.';
   const handler = {
     both: new Set(),
     tab: new Set(),
@@ -76,14 +78,14 @@
       }
     },
 
-    send(data, target = 'extension') {
-      return browser.runtime.sendMessage({data, target})
-        .then(unwrapResponseFactory('send'));
+    async send(data, target = 'extension') {
+      const err = new Error(`${STACK}send:`); // Saving callstack prior to `await`
+      return unwrap(err, await browser.runtime.sendMessage({data, target}));
     },
 
-    sendTab(tabId, data, options, target = 'tab') {
-      return browser.tabs.sendMessage(tabId, {data, target}, options)
-        .then(unwrapResponseFactory('sendTab'));
+    async sendTab(tabId, data, options, target = 'tab') {
+      const err = new Error(`${STACK}sendTab:`); // Saving callstack prior to `await`
+      return unwrap(err, await browser.tabs.sendMessage(tabId, {data, target}, options));
     },
 
     _execute(types, ...args) {
@@ -113,7 +115,7 @@
   function getExtBg() {
     const fn = chrome.extension.getBackgroundPage;
     const bg = fn && fn();
-    return bg === window || bg && bg.msg && bg.msg.isBgReady ? bg : null;
+    return bg === window || bg && (bg.msg || {}).ready ? bg : null;
   }
 
   function onRuntimeMessage({data, target}, sender, sendResponse) {
@@ -138,12 +140,7 @@
     };
   }
 
-  function unwrapResponseFactory(name) {
-    // Saving the local callstack before making an async call
-    return unwrapResponse.bind(null, new Error(`Callstack before invoking msg.${name}:`));
-  }
-
-  function unwrapResponse(localErr, {data, error} = {error: {message: ERR_NO_RECEIVER}}) {
+  function unwrap(localErr, {data, error} = NULL_RESPONSE) {
     return error
       ? Promise.reject(Object.assign(localErr, error, error.stack && {
         stack: `${error.stack}\n${localErr.stack}`,
@@ -163,7 +160,7 @@
       const message = {method: 'invokeAPI', path, args};
       let res;
       // content scripts, probably private tabs, and our extension tab during Chrome startup
-      if (!bg) {
+      if (!bg || !bg.msg || !bg.msg.ready && await bg.bgReady.all && false) {
         res = msg.send(message);
       } else {
         res = deepMerge(await bg.msg._execute(TARGETS.extension, message, {

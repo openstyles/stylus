@@ -5,7 +5,7 @@
  * Common stuff that's loaded first so it's immediately available to all background scripts
  */
 
-const bgReady = {};
+window.bgReady = {}; /* global bgReady */
 bgReady.styles = new Promise(r => (bgReady._resolveStyles = r));
 bgReady.all = new Promise(r => (bgReady._resolveAll = r));
 

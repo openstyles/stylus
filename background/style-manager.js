@@ -75,7 +75,7 @@ const styleMan = (() => {
   };
   uuidIndex.addCustomId(orderWrap, {set: setOrder});
   /** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
-  let ready = init();
+  let ready = Promise.all([init(), prefs.ready]);
 
   chrome.runtime.onConnect.addListener(port => {
     if (port.name === 'livePreview') {
