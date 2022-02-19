@@ -42,6 +42,3 @@
   display: inline-flex;
   padding: 0 .8em 0 0;
 }
-a[data-cmd=note] {
-  vertical-align: text-bottom;
-}
