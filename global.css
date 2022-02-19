@@ -203,6 +203,10 @@ input[type="checkbox"]:not(.slider):disabled + .svg-icon.checked + span {
 label {
   transition: color .1s;
 }
+.checkbox-wrapper {
+  padding-left: 16px;
+  position: relative;
+}
 
 select {
   -moz-appearance: none;

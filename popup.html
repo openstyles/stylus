@@ -192,44 +192,35 @@
   </div>
 
   <div class="actions" id="main-actions">
-    <div id="disable-all-wrapper">
-      <div class="main-controls">
-        <label id="disableAll-label" i18n="disableAllStyles">
-          <input id="disableAll" type="checkbox">
-          <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-        </label>
-      </div>
+    <label id="disableAll-label" i18n="disableAllStyles">
+      <input id="disableAll" type="checkbox">
+      <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+    </label>
+    <div id="find-styles">
+      <a id="find-styles-link" i18n="findStyles, title:findStylesForSite"
+         href="https://to.be.replaced.on.click/" target="_blank"></a>
+      <label id="find-styles-inline-group" class="checkbox-wrapper" i18n="title:findStylesInlineTooltip">
+        <input id="popup.findStylesInline" class="checker" type="checkbox">
+        <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+        <span i18n="findStylesInline"></span>
+      </label>
     </div>
-    <div class="main-controls">
-      <div id="find-styles">
-        <a id="find-styles-link" i18n="findStyles, title:findStylesForSite"
-           href="https://to.be.replaced.on.click/" target="_blank"></a>
-        <span id="find-styles-inline-group">
-          <label i18n="title:findStylesInlineTooltip">
-            <input id="popup.findStylesInline" class="checker" type="checkbox">
-            <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-            <span i18n="findStylesInline"></span>
-          </label>
-        </span>
-      </div>
-      <div id="write-style">
-        <a id="write-for-frames" title="&lsaquo;iframe&rsaquo;..." tabindex="0" hidden></a>
-        <span id="write-style-for" i18n="writeStyleFor"></span>
-      </div>
+    <div id="write-style">
+      <a id="write-for-frames" title="&lsaquo;iframe&rsaquo;..." tabindex="0" hidden></a>
+      <span id="write-style-for" i18n="writeStyleFor"></span>
     </div>
+  </div>
 
-    <!-- Actions -->
-    <div id="popup-options">
-      <div class="split-btn">
-        <button id="popup-manage-button" i18n="openManage, title:popupManageTooltip"
-                data-href="manage.html"></button
-        ><button class="split-btn-pedal" i18n="menu-site:popupManageSiteStyles"></button>
-      </div>
-      <button id="popup-options-button" i18n="openOptions"></button>
-      <button id="popup-wiki-button"
-              i18n="linkStylusWiki, title:linkGetHelp"
-              data-href="https://github.com/openstyles/stylus/wiki"></button>
+  <div id="popup-options">
+    <div class="split-btn">
+      <button id="popup-manage-button" i18n="openManage, title:popupManageTooltip"
+              data-href="manage.html"></button
+      ><button class="split-btn-pedal" i18n="menu-site:popupManageSiteStyles"></button>
     </div>
+    <button id="popup-options-button" i18n="openOptions"></button>
+    <button id="popup-wiki-button"
+            i18n="linkStylusWiki, title:linkGetHelp"
+            data-href="https://github.com/openstyles/stylus/wiki"></button>
   </div>
 
   <div id="search-results-error" class="hidden"></div>

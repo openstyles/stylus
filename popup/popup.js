@@ -86,7 +86,7 @@ async function initPopup(frames) {
 
   // action buttons
   $('#disableAll').onchange = function () {
-    installed.classList.toggle('disabled', this.checked);
+    $.rootCL.toggle('all-disabled', this.checked);
   };
   setupLivePrefs();
 

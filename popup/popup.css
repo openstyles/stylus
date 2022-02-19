@@ -2,6 +2,10 @@
   --inner-padding: 18px; /* checkbox + gap */
   --outer-padding: 9px;
   --hotkey-margin: 16px;
+  --red1: hsl(0, 70%, 45%);
+}
+[data-ui-theme="dark"] {
+  --red1: hsl(0, 85%, 65%);
 }
 
 html, body {
@@ -26,69 +30,33 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
 .firefox .chromium-only {
   display: none;
 }
-/************ checkbox ************/
 
-.style-name:hover .checker:checked,
-.style-name:hover .checker {
-  border-color: var(--c30);
-  background-color: var(--c80);
-}
-
-#disable-all-wrapper input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
-  position: absolute;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-}
-
-#installed.disabled + .actions #disableAll:checked + .svg-icon.checked {
-  fill: hsl(0, 68%, 42%);
-}
-
-#installed.disabled + .actions #disableAll:checked {
-  border-color: hsl(0, 68%, 50%);
-}
-
-#installed.disabled + .actions #disableAll:checked:hover + .svg-icon.checked {
-  fill: var(--bg);
-}
-
-#disableAll:hover {
-  border-color: hsl(0, 68%, 50%);
-  background-color: hsl(20, 70%, 75%);
-}
-
-#disableAll-label:hover {
-  color: hsl(0, 68%, 42%);
-}
-
-#installed.disabled + .actions #disableAll:checked:hover {
-  border-color: hsl(0, 50%, 56%);
-  background-color: hsl(0, 50%, 56%);
-}
-
-#installed .style-name .checker,
-#installed .style-name .svg-icon.checked {
-  position: absolute;
-  top: 7px;
-  left: var(--outer-padding);
-  pointer-events: none;
-}
-
-#disable-all-wrapper {
-  padding: 0.3em 0 0.6em;
-}
-
-#disable-all-wrapper .main-controls {
-  display: flex;
+#main-actions {
+  /* raise the actions above the hotkey-info */
   position: relative;
+  z-index: 4;
 }
-
-#disable-all-wrapper .main-controls label {
+#main-actions > * {
+  margin-top: .75em;
   padding-left: var(--inner-padding);
+  display: block;
+}
+
+#disableAll {
+  /*left: calc(-1 * var(--inner-padding));*/
+}
+#disableAll-label {
   position: relative;
-  transition: color .25s;
-  font-size: 12px;
+}
+.all-disabled #disableAll {
+  border-color: var(--red1);
+}
+.all-disabled #disableAll-label {
+  font-weight: bold;
+  color: var(--red1);
+}
+.all-disabled #disableAll-label .svg-icon {
+  fill: var(--red1);
 }
 
 #no-styles {
@@ -100,9 +68,19 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
   cursor: pointer;
   margin-right: .5em;
 }
-#find-styles-inline-group label {
-  position: relative;
-  padding-left: 16px;
+
+.style-name:hover .checker:checked,
+.style-name:hover .checker {
+  border-color: var(--c30);
+  background-color: var(--c80);
+}
+
+#installed .style-name .checker,
+#installed .style-name .svg-icon.checked {
+  position: absolute;
+  top: 7px;
+  left: var(--outer-padding);
+  pointer-events: none;
 }
 
 .checker {
@@ -139,13 +117,8 @@ body.blocked > DIV {
   position: relative;
 }
 
-#installed.disabled .style-name {
+.all-disabled .style-name {
   text-decoration: line-through;
-}
-
-#installed.disabled + .actions #disableAll-label {
-  font-weight: bold;
-  color: firebrick;
 }
 
 #installed .actions {
@@ -312,7 +285,7 @@ a.configure[target="_blank"] .svg-icon.config {
 }
 
 .not-applied:hover .style-name {
-  color: darkred;
+  color: var(--red1);
 }
 
 .frame-url::before {
@@ -477,23 +450,6 @@ a.configure[target="_blank"] .svg-icon.config {
 
 a:hover .svg-icon {
   fill: var(--fg);
-}
-
-body > .actions {
-  margin-top: 0.5em;
-  /* raise the actions above the hotkey-info */
-  position: relative;
-  z-index: 4;
-}
-
-.actions > div:not(:last-child):not(#disable-all-wrapper),
-.actions > .main-controls > div:not(:last-child) {
-  margin-bottom: 0.75em;
-}
-
-.actions input,
-.actions label {
-  vertical-align: middle;
 }
 
 body.blocked #popup-manage-button + .split-btn-pedal,
@@ -911,7 +867,7 @@ html:not(.styles-last) .split-btn-pedal::after {
 
 #hotkey-info div:first-child {
   flex-grow: 1;
-  padding: 0 1em;
+  padding: 0 1em 1em;
   font-size: 11px;
   overflow-y: auto;
 }
