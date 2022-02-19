@@ -42,7 +42,7 @@ html.is-new-style #publish,
 html.is-new-style #heading::after {
   content: attr(data-add);
 }
-html:not(.is-new-style) #heading::after {
+html:not(.is-new-style) #heading::before {
   content: attr(data-edit);
 }
 
@@ -802,8 +802,6 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
 }
 #help-popup button[name^="import"] {
   line-height: 1.5rem;
-  padding: 0 0.5rem;
-  margin: 0.5rem 0 0 0.5rem;
   pointer-events: none;
   opacity: 0.5;
 }

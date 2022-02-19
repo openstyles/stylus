@@ -12,7 +12,6 @@
   getEventKeyName
   messageBoxProxy
   moveFocus
-  onDOMready
   scrollElementIntoView
   setupLivePrefs
   showSpinner
@@ -273,12 +272,6 @@ function moveFocus(rootElement, step) {
       return activeEl !== el && el;
     }
   }
-}
-
-function onDOMready() {
-  return document.readyState !== 'loading'
-    ? Promise.resolve()
-    : new Promise(resolve => document.on('DOMContentLoaded', () => resolve(), {once: true}));
 }
 
 /**

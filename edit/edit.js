@@ -16,6 +16,8 @@
 
 //#region init
 
+document.body.appendChild(t.template.body);
+
 baseInit.ready.then(async () => {
   [editor.template] = await Promise.all([
     editor.isUsercss && !editor.style.id && chromeSync.getLZValue(chromeSync.LZ_KEY.usercssTemplate),

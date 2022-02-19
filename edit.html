@@ -62,7 +62,6 @@
     <script src="edit/sections-editor-section.js"></script>
     <script src="edit/sections-editor.js"></script>
     <script src="edit/usw-integration.js"></script>
-    <script src="edit/edit.js"></script>
 
     <template data-id="appliesTo">
       <li class="applies-to-item">
@@ -239,13 +238,16 @@
     <link href="vendor/codemirror/addon/search/matchesonscrollbar.css" rel="stylesheet">
     <link href="js/color/color-picker.css" rel="stylesheet">
     <link href="edit/codemirror-default.css" rel="stylesheet">
-    <link href="edit/edit.css" rel="stylesheet">
-    <script src="js/dark-themer.js"></script> <!-- must be last in HEAD to avoid FOUC -->
-  </head>
 
-  <body id="stylus-edit">
+  <template data-id="body"> <!-- https://crbug.com/1288447 -->
     <div id="header">
-      <h1 id="heading" i18n="data-edit:editStyleHeading, data-add:addStyleTitle"></h1>
+      <h1 id="heading" i18n="data-edit:editStyleHeading, data-add:addStyleTitle">
+        <a class="usercss-only"
+           href="https://github.com/openstyles/stylus/wiki/Usercss"
+           i18n="title:externalUsercssDocument" target="_blank">
+          <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+        </a>
+      </h1>
       <section id="basic-info">
         <div id="basic-info-name">
           <input id="name" class="style-contributor" spellcheck="false">
@@ -474,13 +476,21 @@
       </symbol>
 
       <symbol id="svg-icon-plus" viewBox="0 0 8 8">
-        <path fill-rule="evenodd" d="M3 0v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2z"/>
+        <path d="M3 0v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2z"/>
       </symbol>
 
       <symbol id="svg-icon-minus" viewBox="0 0 8 8">
-        <path fill-rule="evenodd" d="M0 3v2h8v-2h-8z"/>
+        <path d="M0 3v2h8v-2h-8z"/>
       </symbol>
 
     </svg>
+  </template>
+
+  <link href="edit/edit.css" rel="stylesheet">
+  <script src="js/dark-themer.js"></script> <!-- must be last in HEAD to avoid FOUC -->
+</head>
+
+<body id="stylus-edit">
+<script src="edit/edit.js"></script>
   </body>
 </html>

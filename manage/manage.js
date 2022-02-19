@@ -17,6 +17,8 @@
 */// dom.js
 'use strict';
 
+document.body.appendChild(t.template.body);
+
 /** @type {HTMLElement} */
 let installed;
 
@@ -66,6 +68,7 @@ newUI.renderClass();
   window.on('pageshow', handleVisibilityChange);
   window.on('pagehide', handleVisibilityChange);
   setupLivePrefs();
+  sorter.init();
   router.update();
   prefs.subscribe(newUI.ids.map(newUI.prefKeyForId), () => switchUI());
   switchUI({styleOnly: true});

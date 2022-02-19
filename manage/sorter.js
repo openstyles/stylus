@@ -1,4 +1,4 @@
-/* global $ $create messageBoxProxy onDOMready */// dom.js
+/* global $ $create messageBoxProxy */// dom.js
 /* global installed */// manage.js
 /* global prefs */
 /* global t */// localization.js
@@ -66,16 +66,16 @@ const sorter = (() => {
 
   let columns = 1;
 
-  onDOMready().then(() => {
+  function init() {
     prefs.subscribe(ID, sorter.update);
     $('#sorter-help').onclick = showHelp;
     addOptions();
     updateColumnCount();
-  });
+  }
 
   function addOptions() {
     let container;
-    const select = $('#manage.newUI.sort');
+    const select = $('#' + ID);
     const renderBin = document.createDocumentFragment();
     const option = $create('option');
     const optgroup = $create('optgroup');
@@ -117,6 +117,8 @@ const sorter = (() => {
   }
 
   return {
+
+    init,
 
     sort({styles}) {
       const sortBy = getPref().split(splitRegex);
