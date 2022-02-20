@@ -202,7 +202,7 @@ function createWriterElement(frame) {
     title: `url-prefix("${url}")`,
     tabIndex: isAboutBlank ? -1 : 0,
     textContent: prefs.get('popup.breadcrumbs.usePath')
-      ? new URL(url).pathname.slice(1)
+      ? t.breakWord(new URL(url).pathname.slice(1))
       : frameId
         ? isAboutBlank ? url : 'URL'
         : t('writeStyleForURL').replace(/ /g, '\u00a0'), // this&nbsp;URL
@@ -227,7 +227,7 @@ function createWriterElement(frame) {
     const domainLink = t.template.writeStyle.cloneNode(true);
     Object.assign(domainLink, {
       href: 'edit.html?domain=' + encodeURIComponent(domain),
-      textContent: numParts > 2 ? domain.split('.')[0] : domain,
+      textContent: t.breakWord(numParts > 2 ? domain.split('.')[0] : domain),
       title: `domain("${domain}")`,
       onclick: e => Events.openEditor(e, {domain}),
     });

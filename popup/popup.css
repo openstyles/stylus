@@ -465,10 +465,6 @@ a:hover .svg-icon {
   margin-left: .6ex
 }
 
-.write-style-link::before {
-  content: "\00ad"; /* "soft" hyphen */
-}
-
 .about-blank > .breadcrumbs {
   pointer-events: none;
 }
