@@ -42,7 +42,6 @@
     'popup.stylesFirst': true,      // display enabled styles before disabled styles
     'popup.autoResort': false,      // auto resort styles after toggling
     'popup.borders': false,         // add white borders on the sides
-    'popup.findStylesInline': true, // use the inline style search
     /** @type {'n' | 'u' | 't' | 'w' | 'r'} see IndexEntry */
     'popup.findSort': 'u',          // the inline style search sort order
 

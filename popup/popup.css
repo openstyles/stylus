@@ -64,11 +64,6 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
   font-weight: bold;
 }
 
-#find-styles-link {
-  cursor: pointer;
-  margin-right: .5em;
-}
-
 .style-name:hover .checker:checked,
 .style-name:hover .checker {
   border-color: var(--c30);
@@ -613,7 +608,7 @@ body.blocked #main-actions > :not(#disableAll-label) {
 #popup-options .split-btn > :first-child {
   width: calc(100% - 16px);
 }
-.blocked #popup-options .split-btn > :first-child {
+.blocked #popup-options > * > :first-child {
   width: 100%;
 }
 #popup-options button {
@@ -626,12 +621,30 @@ body.blocked #main-actions > :not(#disableAll-label) {
   margin-right: 4px;
 }
 #popup-options > *,
-#popup-manage-button {
+#popup-options .split-btn > :first-child {
   /* several languages have labels of wildly different lengths so we try to maintain the proportion */
   flex: 1 1 auto;
   min-width: 2em;
 }
-html:not(.styles-last) #popup-manage-button ~ .split-btn-menu {
+.blocked #find-split,
+.blocked #options-btn svg,
+body:not(.blocked) #popup-options a[href*="wiki"] {
+  display: none;
+}
+#options-btn::after {
+  content: '\A0';
+}
+.blocked #options-btn::after {
+  content: attr(title);
+}
+#options-btn svg {
+  left: 0;
+  right: 0;
+  margin: auto;
+  fill: transparent;
+  stroke: currentColor;
+}
+html:not(.styles-last) #popup-options .split-btn-menu {
   bottom: 0;
   transform: translateY(-20px); /* global button style: 13(font) * 1.2(line) + 4(pad) + 2(border) */
 }

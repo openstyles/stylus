@@ -297,6 +297,12 @@ summary {
 .hidden {
   display: none !important;
 }
+.rel {
+  position: relative;
+}
+.abs {
+  position: absolute;
+}
 
 :focus,
 .CodeMirror-focused,

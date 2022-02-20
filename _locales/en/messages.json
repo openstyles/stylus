@@ -451,18 +451,6 @@
     "message": "Find styles",
     "description": "Text for a link that gets a list of styles for the current site"
   },
-  "findStylesForSite": {
-    "message": "Find more styles for this site",
-    "description": "Text for a link that gets a list of styles for the current site"
-  },
-  "findStylesInline": {
-    "message": "Inline",
-    "description": "Text for a checkbox that opens search results 'inline' (within the Stylus popup window)"
-  },
-  "findStylesInlineTooltip": {
-    "message": "Display search results inside this window.",
-    "description": "Text for a checkbox that displays search results within the Stylus popup."
-  },
   "genericAdd": {
     "message": "Add",
     "description": "Used in various places for an action that adds something"

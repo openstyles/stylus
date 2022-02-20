@@ -90,26 +90,23 @@ async function initPopup(frames) {
   };
   setupLivePrefs();
 
-  Object.assign($('#find-styles-link'), {
-    href: URLS.usoArchive + 'browse/styles',
-    async onclick(e) {
-      e.preventDefault();
-      await require(['/popup/search']);
-      Events.searchOnClick(this, e);
-    },
-  });
+  const elFind = $('#find-styles-btn');
+  elFind.onclick = async e => {
+    elFind.disabled = e.type === 'click';
+    await require(['/popup/search']);
+    Events.searchSite(e);
+  };
+  elFind.on('split-btn', elFind.onclick);
 
   Object.assign($('#popup-manage-button'), {
     onclick: Events.openManager,
     oncontextmenu: Events.openManager,
   }).on('split-btn', Events.openManager);
 
-  $('#popup-options-button').onclick = () => {
+  $('#options-btn').onclick = () => {
     API.openManage({options: true});
     window.close();
   };
-
-  $('#popup-wiki-button').onclick = Events.openURLandHide;
 
   $('#confirm').onclick = function (e) {
     const {id} = this.dataset;

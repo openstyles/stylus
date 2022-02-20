@@ -23,9 +23,6 @@
 .style-settings input:disabled ~ label {
   opacity: .5;
 }
-.style-settings .rel {
-  position: relative;
-}
 .style-settings .w100 {
   display: block;
   width: 100%;

@@ -2,7 +2,7 @@
 /* global $entry tabURL */// popup.js
 /* global API */// msg.js
 /* global Events */
-/* global FIREFOX URLS debounce download tryCatch */// toolbox.js
+/* global FIREFOX URLS debounce download tryURL */// toolbox.js
 /* global prefs */
 /* global t */// localization.js
 'use strict';
@@ -75,104 +75,98 @@
   const show = sel => $classList(sel).remove('hidden');
   const hide = sel => $classList(sel).add('hidden');
 
-  Object.assign(Events, {
-    /**
-     * @param {HTMLAnchorElement} a
-     * @param {Event} event
-     */
-    searchOnClick(a, event) {
-      if (!prefs.get('popup.findStylesInline') || dom.container) {
-        // use a less specific category if the inline search wasn't used yet
-        if (!category) calcCategory({retry: 1});
-        const search = [
-          category ? '#' + category : '',
-          $('#search-query').value,
-        ].filter(Boolean).join(' ');
-        a.search = search ? 'search=' + encodeURIComponent(search) : '';
-        Events.openURLandHide.call(a, event);
-        return;
-      }
-      a.textContent = a.title;
-      a.title = '';
-      init();
-      calcCategory();
-      ready = start();
-    },
+  Events.searchSite = event => {
+    // use a less specific category if the inline search wasn't used yet
+    if (!category) calcCategory({retry: 1});
+    const add = (prefix, str) => str ? prefix + str : '';
+    const where = event.detail;
+    const q = encodeURIComponent($('#search-query').value.trim());
+    const catQ = category + add('+', q);
+    const href =
+      where === 'uso' &&
+        `${URLS.uso}styles/browse${q ? `?search_terms=${catQ}` : `/${category}`}` ||
+      where === 'usoa' &&
+        `${URLS.usoArchive}browse/styles?search=%23${catQ}` ||
+      where === 'usw' &&
+        `${URLS.usw}search?q=${catQ}` ||
+      where === 'gf' &&
+        'https://greasyfork.org/' + ($.root.lang.split('-')[0] || 'en') +
+        `/scripts/by-site/${tryURL(tabURL).hostname}?language=css${add('&q=', q)}`;
+    Events.openURLandHide.call({href}, event);
+  };
+
+  $('#search-globals').onchange = function () {
+    searchGlobals = this.checked;
+    ready = ready.then(start);
+  };
+  $('#search-query').oninput = function () {
+    query = [];
+    const text = this.value.trim().toLocaleLowerCase();
+    const thisYear = new Date().getFullYear();
+    for (let re = /"(.+?)"|(\S+)/g, m; (m = re.exec(text));) {
+      const n = Number(m[2]);
+      query.push(n >= 2000 && n <= thisYear ? n : m[1] || m[2]);
+    }
+    if (category === STYLUS_CATEGORY && !query.includes('stylus')) {
+      query.push('stylus');
+    }
+    ready = ready.then(start);
+  };
+  $('#search-order').value = order;
+  $('#search-order').onchange = function () {
+    order = this.value;
+    prefs.set('popup.findSort', order);
+    results.sort(comparator);
+    render();
+  };
+  dom.list = $('#search-results-list');
+  dom.container = $('#search-results');
+  dom.container.dataset.empty = '';
+  dom.error = $('#search-results-error');
+  dom.nav = {};
+  const navOnClick = {prev, next};
+  for (const place of ['top', 'bottom']) {
+    const nav = $(`.search-results-nav[data-type="${place}"]`);
+    nav.appendChild(t.template.searchNav.cloneNode(true));
+    dom.nav[place] = nav;
+    for (const child of $$('[data-type]', nav)) {
+      const type = child.dataset.type;
+      child.onclick = navOnClick[type];
+      nav['_' + type] = child;
+    }
+  }
+
+  if (FIREFOX) {
+    let lastShift;
+    window.on('resize', () => {
+      const scrollbarWidth = window.innerWidth - document.scrollingElement.clientWidth;
+      const shift = document.body.getBoundingClientRect().left;
+      if (!scrollbarWidth || shift === lastShift) return;
+      lastShift = shift;
+      document.body.style.setProperty('padding',
+        `0 ${scrollbarWidth + shift}px 0 ${-shift}px`, 'important');
+    }, {passive: true});
+  }
+
+  window.on('styleDeleted', ({detail: {style: {id}}}) => {
+    restoreScrollPosition();
+    const result = results.find(r => r.installedStyleId === id);
+    if (result) {
+      clearTimeout(result.pingbackTimer);
+      renderActionButtons(result.i, -1);
+    }
   });
 
-  function init() {
-    setTimeout(() => document.body.classList.add('search-results-shown'));
-    hide('#find-styles-inline-group');
-    $('#search-globals').onchange = function () {
-      searchGlobals = this.checked;
-      ready = ready.then(start);
-    };
-    $('#search-query').oninput = function () {
-      query = [];
-      const text = this.value.trim().toLocaleLowerCase();
-      const thisYear = new Date().getFullYear();
-      for (let re = /"(.+?)"|(\S+)/g, m; (m = re.exec(text));) {
-        const n = Number(m[2]);
-        query.push(n >= 2000 && n <= thisYear ? n : m[1] || m[2]);
-      }
-      if (category === STYLUS_CATEGORY && !query.includes('stylus')) {
-        query.push('stylus');
-      }
-      ready = ready.then(start);
-    };
-    $('#search-order').value = order;
-    $('#search-order').onchange = function () {
-      order = this.value;
-      prefs.set('popup.findSort', order);
-      results.sort(comparator);
-      render();
-    };
-    dom.list = $('#search-results-list');
-    dom.container = $('#search-results');
-    dom.container.dataset.empty = '';
-    dom.error = $('#search-results-error');
-    dom.nav = {};
-    const navOnClick = {prev, next};
-    for (const place of ['top', 'bottom']) {
-      const nav = $(`.search-results-nav[data-type="${place}"]`);
-      nav.appendChild(t.template.searchNav.cloneNode(true));
-      dom.nav[place] = nav;
-      for (const child of $$('[data-type]', nav)) {
-        const type = child.dataset.type;
-        child.onclick = navOnClick[type];
-        nav['_' + type] = child;
-      }
+  window.on('styleAdded', async ({detail: {style}}) => {
+    restoreScrollPosition();
+    const id = calcId(style) || calcId(await API.styles.get(style.id));
+    if (id && results.find(r => r.i === id)) {
+      renderActionButtons(id, style.id);
     }
+  });
 
-    if (FIREFOX) {
-      let lastShift;
-      window.on('resize', () => {
-        const scrollbarWidth = window.innerWidth - document.scrollingElement.clientWidth;
-        const shift = document.body.getBoundingClientRect().left;
-        if (!scrollbarWidth || shift === lastShift) return;
-        lastShift = shift;
-        document.body.style.setProperty('padding',
-          `0 ${scrollbarWidth + shift}px 0 ${-shift}px`, 'important');
-      }, {passive: true});
-    }
-
-    window.on('styleDeleted', ({detail: {style: {id}}}) => {
-      restoreScrollPosition();
-      const result = results.find(r => r.installedStyleId === id);
-      if (result) {
-        clearTimeout(result.pingbackTimer);
-        renderActionButtons(result.i, -1);
-      }
-    });
-
-    window.on('styleAdded', async ({detail: {style}}) => {
-      restoreScrollPosition();
-      const id = calcId(style) || calcId(await API.styles.get(style.id));
-      if (id && results.find(r => r.i === id)) {
-        renderActionButtons(id, style.id);
-      }
-    });
-  }
+  calcCategory();
+  ready = start();
 
   function next() {
     displayedPage = Math.min(totalPages, displayedPage + 1);
@@ -196,9 +190,7 @@
   }
 
   async function start() {
-    show(dom.container);
-    show(dom.list);
-    hide(dom.error);
+    resetUI.timer = setTimeout(resetUI, 500);
     try {
       results = [];
       for (let retry = 0; !results.length && retry <= 2; retry++) {
@@ -217,6 +209,15 @@
     } catch (reason) {
       error(reason);
     }
+    clearTimeout(resetUI.timer);
+    resetUI();
+  }
+
+  function resetUI() {
+    document.body.classList.add('search-results-shown');
+    show(dom.container);
+    show(dom.list);
+    hide(dom.error);
   }
 
   function render() {
@@ -481,9 +482,9 @@
    * @returns {boolean} true if the category has actually changed
    */
   function calcCategory({retry} = {}) {
-    const u = tryCatch(() => new URL(tabURL));
+    const u = tryURL(tabURL);
     const old = category;
-    if (!u) {
+    if (!u.href) {
       // Invalid URL
       category = '';
     } else if (u.protocol === 'file:') {
