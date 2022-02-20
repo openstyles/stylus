@@ -31,7 +31,7 @@ const AGES = [
         delete el.dataset.src;
       }
     }
-  });
+  }, {rootMargin: '200px'});
   Object.defineProperty(proto, 'src', Object.assign({}, pSrc, {
     set(val) {
       if (this.loading === 'lazy') {
@@ -87,7 +87,6 @@ function createStyleElement({style, name: nameLC}) {
       infoVer: $('[data-type=version]', entry),
       appliesTo: $('.applies-to', entry),
       targets: $('.targets', entry),
-      expander: $('.expander', entry),
       decorations: {
         urlPrefixesAfter: '*',
         regexpsBefore: '/',

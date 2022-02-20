@@ -79,7 +79,7 @@ const Events = {
   expandTargets(event, entry) {
     if (!entry._allTargetsRendered) {
       createTargetsElement({entry, expanded: true});
-      setTimeout(getFaviconSrc, 0, entry);
+      getFaviconSrc(entry);
     }
     this.closest('.applies-to').classList.toggle('expanded');
   },
