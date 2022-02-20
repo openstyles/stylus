@@ -27,8 +27,11 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
   padding-right: var(--outer-padding);
 }
 
+body:not(.blocked) .if-blocked,
+.blocked .if-not-blocked,
+.blocked #installed > :not(.frame),
 .firefox .chromium-only {
-  display: none;
+  display: none !important;
 }
 
 #main-actions {
@@ -439,12 +442,6 @@ a:hover .svg-icon {
   fill: var(--fg);
 }
 
-body.blocked #popup-manage-button + .split-btn-pedal,
-body.blocked #installed > :not(.frame),
-body.blocked #main-actions > :not(#disableAll-label) {
-  display: none;
-}
-
 /* Never shown, but can be enabled with a style */
 
 .entry .actions > .enable,
@@ -601,9 +598,11 @@ body.blocked #main-actions > :not(#disableAll-label) {
 /* action buttons */
 
 #popup-options {
+  --btn-gap: 4px;
   display: flex;
   flex-direction: row;
   padding: var(--outer-padding) 1px;
+  margin-right: calc(-1 * var(--btn-gap));
 }
 #popup-options .split-btn > :first-child {
   width: calc(100% - 16px);
@@ -617,25 +616,14 @@ body.blocked #main-actions > :not(#disableAll-label) {
   text-overflow: ellipsis;
   padding: 2px 4px;
 }
-#popup-options > :nth-last-child(n + 2) {
-  margin-right: 4px;
+#popup-options > * {
+  margin-right: var(--btn-gap);
 }
 #popup-options > *,
 #popup-options .split-btn > :first-child {
   /* several languages have labels of wildly different lengths so we try to maintain the proportion */
   flex: 1 1 auto;
   min-width: 2em;
-}
-.blocked #find-split,
-.blocked #options-btn svg,
-body:not(.blocked) #popup-options a[href*="wiki"] {
-  display: none;
-}
-#options-btn::after {
-  content: '\A0';
-}
-.blocked #options-btn::after {
-  content: attr(title);
 }
 #options-btn svg {
   left: 0;

@@ -196,7 +196,7 @@
       <input id="disableAll" type="checkbox">
       <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
     </label>
-    <div id="write-style">
+    <div id="write-style" class="if-not-blocked">
       <a id="write-for-frames" title="&lsaquo;iframe&rsaquo;..." tabindex="0" hidden></a>
       <span id="write-style-for" i18n="writeStyleFor"></span>
     </div>
@@ -206,9 +206,9 @@
     <div class="split-btn" id="manage-split">
       <button id="popup-manage-button" i18n="openManage, title:popupManageTooltip"
               data-href="manage.html"></button
-      ><button class="split-btn-pedal" i18n="menu-site:popupManageSiteStyles"></button>
+      ><button class="if-not-blocked split-btn-pedal" i18n="menu-site:popupManageSiteStyles"></button>
     </div>
-    <div class="split-btn" id="find-split">
+    <div class="split-btn if-not-blocked" id="find-split">
       <button id="find-styles-btn" i18n="findStyles"></button
       ><button class="split-btn-pedal"
                menu-usoa="UserStyles Archive"
@@ -217,9 +217,11 @@
                menu-gf="GreasyFork"></button>
     </div>
     <button id="options-btn" i18n="title:openOptions" class="rel">
-      <svg class="svg-icon config abs"><use xlink:href="#svg-icon-config"></use></svg>
+      <svg class="if-not-blocked abs svg-icon config"><use xlink:href="#svg-icon-config"></use></svg>
+      <span class="if-not-blocked">&nbsp;</span>
+      <span class="if-blocked" i18n="openOptions"></span>
     </button>
-    <a href="https://github.com/openstyles/stylus/wiki" target="_blank">
+    <a class="if-blocked" href="https://github.com/openstyles/stylus/wiki" target="_blank">
       <button id="popup-wiki-button" i18n="linkStylusWiki, title:linkGetHelp"></button>
     </a>
   </div>
