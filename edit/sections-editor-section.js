@@ -23,7 +23,7 @@ function createSection(originalSection, genId, si) {
   const elLabel = $('.code-label', el);
   const cm = cmFactory.create(wrapper => {
     // making it tall during initial load so IntersectionObserver sees only one adjacent CM
-    if (editor.ready !== true) {
+    if (editor.loading) {
       wrapper.style.height = si ? si.height : '100vh';
     }
     elLabel.after(wrapper);

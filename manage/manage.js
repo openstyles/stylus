@@ -6,21 +6,12 @@
 /* global router */
 /* global sorter */
 /* global t */// localization.js
-/* global
-  $
-  $$
-  $create
-  animateElement
-  setupLivePrefs
-  waitForSelector
-  waitForSheet
-*/// dom.js
+/* global $ $$ $create animateElement setupLivePrefs */// dom.js
 'use strict';
 
 document.body.appendChild(t.template.body);
 
-/** @type {HTMLElement} */
-let installed;
+const installed = $('#installed');
 
 const changeQueue = [];
 changeQueue.THROTTLE = 100; // ms
@@ -50,14 +41,12 @@ newUI.renderClass();
 
 (async function init() {
   const query = router.getSearch('search');
-  const [styles, ids, el] = await Promise.all([
+  const [styles, ids] = await Promise.all([
     API.styles.getAll(),
     query && API.styles.searchDB({query, mode: router.getSearch('searchMode')}),
     // needed to avoid flicker due to an extra frame and layout shift
-    waitForSelector('#installed'),
     prefs.ready,
   ]);
-  installed = el;
   installed.on('click', Events.entryClicked);
   installed.on('mouseover', Events.lazyAddEntryTitle, {passive: true});
   installed.on('mouseout', Events.lazyAddEntryTitle, {passive: true});
@@ -82,9 +71,7 @@ newUI.renderClass();
     }}`);
 
   if (!UA.vivaldi) {
-    waitForSheet().then(() => {
-      fitSelectBoxesIn($('#filters'));
-    });
+    fitSelectBoxesIn($('#filters'));
   }
   if (CHROME >= 80 && CHROME <= 88) {
     // Wrong checkboxes are randomly checked after going back in history, https://crbug.com/1138598

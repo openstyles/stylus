@@ -142,9 +142,7 @@ function filterOnChange({target: el, forceRefilter, alreadySearched}) {
     hide: buildFilter(true),
     unhide: buildFilter(false),
   });
-  if (installed) {
-    reapplyFilter(installed, alreadySearched).then(sorter.updateStripes);
-  }
+  reapplyFilter(installed, alreadySearched).then(sorter.updateStripes);
 }
 
 /* exported filterAndAppend */

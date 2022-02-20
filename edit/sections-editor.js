@@ -123,7 +123,7 @@ function SectionsEditor() {
     },
   });
 
-  editor.ready = initSections(style.sections);
+  return initSections(style.sections);
 
   /** @param {EditorSection} section */
   function fitToContent(section) {
@@ -473,7 +473,7 @@ function SectionsEditor() {
     keepDirty = false,
     si = editor.scrollInfo,
   } = {}) {
-    editor.ready = false;
+    Object.assign(editor, /** @namespace Editor */ {loading: true});
     if (replace) {
       sections.forEach(s => s.remove(true));
       sections.length = 0;
@@ -511,7 +511,7 @@ function SectionsEditor() {
     }
     container.style.removeProperty('height');
     setGlobalProgress();
-    editor.ready = true;
+    editor.loading = false;
   }
 
   /** @param {EditorSection} section */

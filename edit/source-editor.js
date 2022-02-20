@@ -14,7 +14,7 @@
 'use strict';
 
 /* exported SourceEditor */
-function SourceEditor() {
+async function SourceEditor() {
   const {style, /** @type DirtyReporter */dirty} = editor;
   const DEFAULT_TEMPLATE = `
     /* ==UserStyle==
@@ -38,7 +38,7 @@ function SourceEditor() {
   const sectionFinder = MozSectionFinder(cm);
   const sectionWidget = MozSectionWidget(cm, sectionFinder);
   editor.livePreview.init(preprocess);
-  if (!style.id) setupNewStyle();
+  if (!style.id) setupNewStyle(await editor.template);
   createMetaCompiler(meta => {
     style.usercssData = meta;
     style.name = meta.name;
@@ -168,7 +168,7 @@ function SourceEditor() {
     return name;
   }
 
-  function setupNewStyle() {
+  function setupNewStyle(tpl) {
     const comment = `/* ${t('usercssReplaceTemplateSectionBody')} */`;
     const sec0 = style.sections[0];
     sec0.code = ' '.repeat(prefs.get('editor.tabSize')) + comment;
@@ -176,7 +176,7 @@ function SourceEditor() {
       sec0.domains = ['example.com'];
     }
     style.name = [style.name, new Date().toLocaleString()].filter(Boolean).join(' - ');
-    style.sourceCode = (editor.template || DEFAULT_TEMPLATE)
+    style.sourceCode = (tpl || DEFAULT_TEMPLATE)
       .replace(/(@name)(?:([\t\x20]+).*|\n)/, (_, k, space) => `${k}${space || ' '}${style.name}`)
       .replace(/\s*@-moz-document[^{]*{([^}]*)}\s*$/g, // stripping dummy sections
         (s, body) => body.trim() === comment ? '\n\n' : s)

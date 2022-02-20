@@ -16,7 +16,6 @@
   setupLivePrefs
   showSpinner
   toggleDataset
-  waitForSheet
 */
 
 Object.assign(EventTarget.prototype, {
@@ -403,20 +402,6 @@ function waitForSelector(selector, {recur, stopOnDomReady = true} = {}) {
         }
       }
     });
-}
-
-/**
- * Forcing layout while the main stylesheet is still loading breaks page appearance
- * so we'll wait until it loads (0-1 frames in Chrome, Firefox occasionally needs 2-3).
- */
-async function waitForSheet({
-  href = location.pathname.replace('.html', '.css'),
-  maxFrames = FIREFOX ? 10 : 1,
-} = {}) {
-  const el = $(`link[href$="${href}"]`);
-  for (let i = 0; i < maxFrames && !el.sheet; i++) {
-    await new Promise(requestAnimationFrame);
-  }
 }
 
 //#endregion

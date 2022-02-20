@@ -1,4 +1,4 @@
-/* global $$ $ $create messageBoxProxy waitForSheet */// dom.js
+/* global $$ $ $create messageBoxProxy */// dom.js
 /* global API msg */// msg.js
 /* global CodeMirror */
 /* global SectionsEditor */
@@ -17,11 +17,9 @@
 
 document.body.appendChild(t.template.body);
 
-baseInit.ready.then(async () => {
-  [editor.template] = await Promise.all([editor.template, waitForSheet()]);
-  (editor.isUsercss ? SourceEditor : SectionsEditor)();
-  await editor.ready;
-  editor.ready = true;
+EditorMethods();
+editor.livePreview = LivePreview();
+(editor.isUsercss ? SourceEditor : SectionsEditor)().then(() => {
   editor.dirty.onChange(editor.updateDirty);
   prefs.subscribe('editor.linter', () => linterMan.run());
 
@@ -55,7 +53,7 @@ baseInit.ready.then(async () => {
     '/edit/drafts',
     '/edit/global-search',
   ]);
-}).then(() => {
+
   // Set up mini-header on scroll
   const {isUsercss} = editor;
   const el = $create({
@@ -183,7 +181,7 @@ window.on('beforeunload', e => {
 //#endregion
 //#region editor methods
 
-(() => {
+function EditorMethods() {
   const toc = [];
   const {dirty} = editor;
   let {style} = editor;
@@ -312,12 +310,12 @@ window.on('beforeunload', e => {
       editor.updateMeta();
     },
   });
-})();
+}
 
 //#endregion
 //#region editor livePreview
 
-editor.livePreview = (() => {
+function LivePreview() {
   let data;
   let port;
   let preprocess;
@@ -383,7 +381,7 @@ editor.livePreview = (() => {
       };
     }
   }
-})();
+}
 
 //#endregion
 //#region colorpickerHelper
