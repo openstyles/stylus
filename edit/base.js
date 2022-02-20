@@ -3,6 +3,7 @@
 /* global CODEMIRROR_THEMES */
 /* global CodeMirror */
 /* global MozDocMapper */// sections-util.js
+/* global chromeSync */// storage-util.js
 /* global initBeautifyButton */// beautify.js
 /* global prefs */
 /* global t */// localization.js
@@ -77,8 +78,9 @@ const baseInit = (() => {
 
   async function loadStyle() {
     const params = new URLSearchParams(location.search);
-    const id = Number(params.get('id'));
+    let id = Number(params.get('id'));
     const style = id && await API.styles.get(id) || {
+      id: id = null, // resetting the non-existent id
       name: params.get('domain') ||
         tryURL(params.get('url-prefix')).hostname ||
         '',
@@ -88,14 +90,18 @@ const baseInit = (() => {
       ],
     };
     // switching the mode here to show the correct page ASAP, usually before DOMContentLoaded
-    editor.isUsercss = Boolean(style.usercssData || !style.id && prefs.get('newStyleAsUsercss'));
-    editor.style = style;
+    const isUC = Boolean(style.usercssData || !id && prefs.get('newStyleAsUsercss'));
+    Object.assign(editor, /** @namespace Editor */ {
+      style,
+      isUsercss: isUC,
+      template: isUC && !id && chromeSync.getLZValue(chromeSync.LZ_KEY.usercssTemplate), // promise
+    });
     editor.updateClass();
     editor.updateTitle(false);
-    $.rootCL.add(editor.isUsercss ? 'usercss' : 'sectioned');
-    sessionStore.justEditedStyleId = style.id || '';
+    $.rootCL.add(isUC ? 'usercss' : 'sectioned');
+    sessionStore.justEditedStyleId = id || '';
     // no such style so let's clear the invalid URL parameters
-    if (!style.id) history.replaceState({}, '', location.pathname);
+    if (!id) history.replaceState({}, '', location.pathname);
   }
 
   /** Preloads the theme so CodeMirror can use the correct metrics in its first render */

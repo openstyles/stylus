@@ -4,7 +4,6 @@
 /* global SectionsEditor */
 /* global SourceEditor */
 /* global baseInit */
-/* global chromeSync */// storage-util.js
 /* global clipString createHotkeyInput helpPopup */// util.js
 /* global closeCurrentTab deepEqual sessionStore tryJSONparse */// toolbox.js
 /* global cmFactory */
@@ -19,10 +18,7 @@
 document.body.appendChild(t.template.body);
 
 baseInit.ready.then(async () => {
-  [editor.template] = await Promise.all([
-    editor.isUsercss && !editor.style.id && chromeSync.getLZValue(chromeSync.LZ_KEY.usercssTemplate),
-    waitForSheet(),
-  ]);
+  [editor.template] = await Promise.all([editor.template, waitForSheet()]);
   (editor.isUsercss ? SourceEditor : SectionsEditor)();
   await editor.ready;
   editor.ready = true;
