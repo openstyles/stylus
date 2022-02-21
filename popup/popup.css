@@ -45,10 +45,8 @@ body:not(.blocked) .if-blocked,
   display: block;
 }
 
-#disableAll {
-  /*left: calc(-1 * var(--inner-padding));*/
-}
 #disableAll-label {
+  width: fit-content;
   position: relative;
 }
 .all-disabled #disableAll {
