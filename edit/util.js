@@ -29,35 +29,32 @@ const helpPopup = {
     div.style.display = 'block';
     helpPopup.originalFocus = document.activeElement;
     helpPopup.div = div;
+    moveFocus(div, 0);
     return div;
   },
 
   close(event) {
+    let el;
     const canClose =
       !event ||
-      event.type === 'click' || (
-        getEventKeyName(event) === 'Escape' &&
-        !$('.CodeMirror-hints, #message-box') && (
-          !document.activeElement ||
-          !document.activeElement.closest('#search-replace-dialog') && (
-            document.activeElement.tagName !== 'INPUT' ||
-            document.activeElement.closest('.can-close-on-esc')
-          )
-        )
+      event.type === 'click' ||
+      getEventKeyName(event) === 'Escape' && !$('.CodeMirror-hints, #message-box') && (
+        !(el = document.activeElement) ||
+        !el.closest('#search-replace-dialog')
       );
     const {div} = helpPopup;
     if (!canClose || !div) {
       return;
     }
-    if (event && div.codebox && !div.codebox.options.readOnly && !div.codebox.isClean()) {
+    if (event && (el = div.codebox) && !el.options.readOnly && !el.isClean()) {
       setTimeout(async () => {
         const ok = await messageBoxProxy.confirm(t('confirmDiscardChanges'));
         return ok && helpPopup.close();
       });
       return;
     }
-    if (div.contains(document.activeElement) && helpPopup.originalFocus) {
-      helpPopup.originalFocus.focus();
+    if (div.contains(document.activeElement) && (el = helpPopup.originalFocus)) {
+      el.focus();
     }
     const contents = $('.contents', div);
     div.style.display = '';

@@ -268,6 +268,8 @@ function moveFocus(rootElement, step) {
     const el = elements[(activeIndex + i * step + num) % num];
     if (!el.disabled && el.tabIndex >= 0) {
       el.focus();
+      // suppress focus outline when invoked via click
+      toggleDataset(el, 'focusedViaClick', focusAccessibility.lastFocusedViaClick);
       return activeEl !== el && el;
     }
   }

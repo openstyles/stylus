@@ -64,10 +64,6 @@ messageBox.show = async ({
       /config-dialog/.test(className)) {
     moveFocus(messageBox.element, 1);
   }
-  // suppress focus outline when invoked via click
-  if (focusAccessibility.lastFocusedViaClick && document.activeElement) {
-    document.activeElement.dataset.focusedViaClick = '';
-  }
   if (document.activeElement === messageBox._originalFocus) {
     document.body.focus();
   }
