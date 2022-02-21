@@ -77,6 +77,13 @@ const Events = {
   },
 
   expandTargets(event, entry) {
+    if (event.type === 'contextmenu') {
+      event.preventDefault();
+      const ex = '.expanded';
+      $$(`.has-more${$(ex, entry) ? ex : `:not(${ex})`} .expander`)
+        .forEach(el => el.click());
+      return;
+    }
     if (!entry._allTargetsRendered) {
       createTargetsElement({entry, expanded: true});
       getFaviconSrc(entry);
@@ -100,10 +107,11 @@ const Events = {
   entryClicked(event) {
     const target = event.target;
     const entry = target.closest('.entry');
-    for (const selector in Events.ENTRY_ROUTES) {
+    const routes = Events['ENTRY_ROUTES' + (event.type === 'contextmenu' ? '_CTX' : '')];
+    for (const selector in routes) {
       for (let el = target; el && el !== entry; el = el.parentElement) {
         if (el.matches(selector)) {
-          return Events.ENTRY_ROUTES[selector].call(el, event, entry);
+          return routes[selector].call(el, event, entry);
         }
       }
     }
@@ -145,6 +153,9 @@ Events.ENTRY_ROUTES = {
   '.delete': Events.delete,
   '.applies-to .expander': Events.expandTargets,
   '.configure-usercss': Events.config,
+};
+Events.ENTRY_ROUTES_CTX = {
+  '.applies-to .expander': Events.expandTargets,
 };
 
 /* exported handleBulkChange */

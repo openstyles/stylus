@@ -611,16 +611,13 @@ button .svg-icon,
   padding-top: .25rem;
   padding-bottom: .25rem;
 }
-
 .newUI .targets {
   overflow: hidden;
   max-height: calc(var(--num-targets) * 18px);
 }
-
 .newUI .applies-to.expanded .targets {
   max-height: none;
 }
-
 .newUI .target {
   display: block;
   overflow: hidden;
@@ -631,25 +628,23 @@ button .svg-icon,
   padding-right: 1rem;
   line-height: 18px;
 }
-
-.newUI .applies-to .expander {
-  margin: 0;
+.expander {
   cursor: pointer;
-  font-size: 3ex;
-  line-height: .5ex;
-  vertical-align: super;
-  letter-spacing: .1ex;
-  text-decoration: none;
+  position: absolute;
+  right: 4px;
 }
-
+.expander svg {
+  width: 16px;
+  height: 16px;
+  fill: var(--c50);
+}
+.expanded .expander {
+  transform: rotate(180deg);
+  transform-origin: 8px 8px;
+}
 .newUI .applies-to:not(.has-more) .expander {
   display: none;
 }
-
-.newUI .has-favicons .applies-to .expander {
-  margin-left: 20px;
-}
-
 .newUI .target:hover {
   background-color: inherit;
 }

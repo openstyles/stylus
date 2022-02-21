@@ -48,6 +48,7 @@ newUI.renderClass();
     prefs.ready,
   ]);
   installed.on('click', Events.entryClicked);
+  installed.on('contextmenu', Events.entryClicked);
   installed.on('mouseover', Events.lazyAddEntryTitle, {passive: true});
   installed.on('mouseout', Events.lazyAddEntryTitle, {passive: true});
   $('#sync-styles').onclick =
