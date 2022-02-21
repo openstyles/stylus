@@ -82,6 +82,7 @@ function createBeautifyUI(scope, options) {
         $createOption('}', 'newline_between_rules'),
         $createLabeledCheckbox('preserve_newlines', 'styleBeautifyPreserveNewlines'),
         $createLabeledCheckbox('indent_conditional', 'styleBeautifyIndentConditional'),
+        editor.isUsercss && $createLabeledCheckbox('indent_mozdoc', '', '... @-moz-document'),
       ]),
       $create('p.beautify-hint', [
         $create('span', t('styleBeautifyHint') + '\u00A0'),
@@ -148,7 +149,7 @@ function createBeautifyUI(scope, options) {
     );
   }
 
-  function $createLabeledCheckbox(optionName, i18nKey) {
+  function $createLabeledCheckbox(optionName, i18nKey, text) {
     return (
       $create('label', {style: 'display: block; clear: both;'}, [
         $create('input', {
@@ -158,7 +159,7 @@ function createBeautifyUI(scope, options) {
         }),
         $create('SVG:svg.svg-icon.checked',
           $create('SVG:use', {'xlink:href': '#svg-icon-checked'})),
-        t(i18nKey),
+        i18nKey ? t(i18nKey) : text,
       ])
     );
   }

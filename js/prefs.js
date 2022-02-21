@@ -84,6 +84,7 @@
       preserve_newlines: true,
       end_with_newline: false,
       indent_conditional: true,
+      indent_mozdoc: true,
     },
     'editor.beautify.hotkey': '',
     'editor.lintDelay': 300,        // lint gutter marker update delay, ms

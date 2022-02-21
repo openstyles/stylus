@@ -87,6 +87,7 @@
 
     var lineBreak = /\r\n|[\n\r\u2028\u2029]/;
     var allLineBreaks = new RegExp(lineBreak.source, 'g');
+    var MOZ_DOC = "@-moz-document";
 
     function css_beautify(source_text, options) {
         options = options || {};
@@ -108,6 +109,7 @@
             newline_between_rules = true,
             space_around_combinator = true,
             indent_conditional = true,
+            indent_mozdoc = true,
             newline_between_properties = true,
             newline_before_open_brace = false,
             newline_after_open_brace = true,
@@ -303,7 +305,7 @@
             newline_before_open_brace ? print.newLine() : print.singleSpace();
             output.push(ch);
             outputPosCol++;
-            if (!enteringConditionalGroup || indent_conditional) {
+            if (!enteringConditionalGroup || (variableOrRule === MOZ_DOC ? indent_mozdoc : indent_conditional)) {
                 indent();
             }
             if (!eatWhitespace(true)) {
@@ -439,7 +441,7 @@
                         nestedLevel += 1;
                         if (variableOrRule in css_beautify.CONDITIONAL_GROUP_RULE) {
                             enteringConditionalGroup = true;
-                            if (!indent_conditional) {
+                            if (variableOrRule === MOZ_DOC ? !indent_mozdoc : !indent_conditional) {
                                 nestedLevel--;
                             }
                         }
@@ -628,12 +630,12 @@
         // also in CONDITIONAL_GROUP_RULE below
         "@media": true,
         "@supports": true,
-        "@-moz-document": true
+        [MOZ_DOC]: true
     };
     css_beautify.CONDITIONAL_GROUP_RULE = {
         "@media": true,
         "@supports": true,
-        "@-moz-document": true
+        [MOZ_DOC]: true
     };
 
     /*global define */
