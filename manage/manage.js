@@ -32,6 +32,13 @@ Object.assign(newUI, {
     $.rootCL.toggle('newUI', newUI.enabled);
     $.rootCL.toggle('oldUI', !newUI.enabled);
   },
+  hasFavs: () => newUI.enabled && newUI.favicons,
+  badFavsKey: 'badFavs',
+  async readBadFavs() {
+    const key = newUI.badFavsKey;
+    const val = await API.prefsDb.get(key);
+    return (newUI[key] = Array.isArray(val) ? val : []);
+  },
 });
 // ...read the actual values
 for (const id of newUI.ids) {
@@ -44,7 +51,7 @@ newUI.renderClass();
   const [styles, ids] = await Promise.all([
     API.styles.getAll(),
     query && API.styles.searchDB({query, mode: router.getSearch('searchMode')}),
-    // needed to avoid flicker due to an extra frame and layout shift
+    newUI.hasFavs() && newUI.readBadFavs(),
     prefs.ready,
   ]);
   installed.on('click', Events.entryClicked);

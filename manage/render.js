@@ -1,6 +1,6 @@
 /* global $$ $ $create animateElement scrollElementIntoView */// dom.js
 /* global API */// msg.js
-/* global URLS debounce isEmptyObj sessionStore */// toolbox.js
+/* global URLS debounce getOwnTab isEmptyObj sessionStore stringAsRegExp */// toolbox.js
 /* global filterAndAppend */// filters.js
 /* global installed newUI */// manage.js
 /* global prefs */
@@ -45,6 +45,7 @@ const AGES = [
 })();
 
 let elementParts;
+let badFavs;
 
 function $entry(styleOrId, root = installed) {
   return $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrId}`, root);
@@ -214,20 +215,41 @@ function createTargetsElement({entry, expanded, style = entry.styleMeta}) {
   entry._numTargets = numTargets;
 }
 
-function getFaviconSrc(container = installed) {
-  if (!newUI.enabled || !newUI.favicons) return;
+async function getFaviconSrc(container = installed) {
+  if (!newUI.hasFavs()) return;
+  if (!badFavs) {
+    // API creates a new function each time so we save it for `debounce` which is keyed on function object
+    const {put} = API.prefsDb;
+    const key = newUI.badFavsKey;
+    const rxHost = new RegExp(`^${stringAsRegExp(URLS.favicon('\n'), '', true).replace('\n', '(.*)')}$`);
+    badFavs = newUI[key] || await newUI.readBadFavs();
+    const fn = e => {
+      const host = e.statusCode !== 200 && e.url.match(rxHost)[1];
+      if (host && !badFavs.includes(e)) {
+        badFavs.push(host);
+        debounce(put, 250, badFavs, key);
+      }
+    };
+    const filter = {
+      urls: [URLS.favicon('*')], // we assume there's no redirect
+      types: ['image'],
+      tabId: (await getOwnTab()).id,
+    };
+    chrome.webRequest.onCompleted.addListener(fn, filter); // works in Chrome
+    chrome.webRequest.onErrorOccurred.addListener(fn, filter); // works in FF
+  }
   const regexpRemoveNegativeLookAhead = /(\?!([^)]+\))|\(\?![\w(]+[^)]+[\w|)]+)/g;
   // replace extra characters & all but the first group entry "(abc|def|ghi)xyz" => abcxyz
   const regexpReplaceExtraCharacters = /[\\(]|((\|\w+)+\))/g;
   const regexpMatchRegExp = /[\w-]+[.(]+(com|org|co|net|im|io|edu|gov|biz|info|de|cn|uk|nl|eu|ru)\b/g;
-  const regexpMatchDomain = /^.*?:\/\/([^/]+)/;
+  const regexpMatchDomain = /^.*?:\/\/\W*([-.\w]+)/;
   for (const target of $$('.target', container)) {
     const type = target.dataset.type;
     const targetValue = target.textContent;
     if (!targetValue) continue;
     let favicon = '';
     if (type === 'domains') {
-      favicon = URLS.favicon(targetValue);
+      favicon = targetValue;
     } else if (targetValue.includes('chrome-extension:') || targetValue.includes('moz-extension:')) {
       favicon = OWN_ICON;
     } else if (type === 'regexps') {
@@ -235,12 +257,17 @@ function getFaviconSrc(container = installed) {
         .replace(regexpRemoveNegativeLookAhead, '')
         .replace(regexpReplaceExtraCharacters, '')
         .match(regexpMatchRegExp);
-      favicon = favicon ? URLS.favicon(favicon.shift()) : '';
-    } else {
-      favicon = targetValue.includes('://') && targetValue.match(regexpMatchDomain);
-      favicon = favicon ? URLS.favicon(favicon[1]) : '';
+      favicon = favicon ? favicon.shift() : '';
+    } else if (/^(f|ht)tps?:/.test(targetValue)) {
+      favicon = targetValue.match(regexpMatchDomain);
+      favicon = favicon ? favicon[1].replace(/\W+$/, '') : '';
     }
-    if (!favicon) continue;
+    if (!favicon || badFavs && badFavs.includes(favicon)) {
+      continue;
+    }
+    if (favicon !== OWN_ICON) {
+      favicon = URLS.favicon(favicon);
+    }
     const img = $(':scope > img:first-child', target) ||
       target.insertAdjacentElement('afterbegin', $create('img', {loading: 'lazy'}));
     if ((img.dataset.src || img.src) !== favicon) {
@@ -376,7 +403,7 @@ function switchUI({styleOnly} = {}) {
   Object.assign(newUI, current);
   newUI.renderClass();
 
-  installed.classList.toggle('has-favicons', newUI.enabled && newUI.favicons);
+  installed.classList.toggle('has-favicons', newUI.hasFavs());
   installed.classList.toggle('favicons-grayed', newUI.enabled && newUI.faviconsGray);
   if (installed.style.getPropertyValue('--num-targets') !== `${newUI.targets}`) {
     installed.style.setProperty('--num-targets', newUI.targets);
@@ -386,7 +413,7 @@ function switchUI({styleOnly} = {}) {
     return;
   }
 
-  const iconsEnabled = newUI.enabled && newUI.favicons;
+  const iconsEnabled = newUI.hasFavs();
   let iconsMissing = iconsEnabled && !$('.applies-to img');
   if (changed.enabled || (iconsMissing && !elementParts)) {
     installed.textContent = '';
