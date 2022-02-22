@@ -371,6 +371,7 @@ body.resizing-v > * {
 .split-btn {
   position: relative;
   white-space: nowrap;
+  --menu-pad: .5em;
 }
 .split-btn-pedal {
   margin-left: -1px !important;
@@ -386,7 +387,7 @@ body.resizing-v > * {
   border-top: calc(var(--side) * 1.3) solid currentColor;
   vertical-align: bottom;
 }
-.split-btn-pedal.active {
+.split-btn.active .split-btn-pedal {
   box-shadow: inset 0 0 100px rgba(0, 0, 0, .2);
 }
 .split-btn-menu {
@@ -400,7 +401,7 @@ body.resizing-v > * {
   z-index: 1000;
 }
 .split-btn-menu > * {
-  padding: .5em 1em;
+  padding: var(--menu-pad) 1em;
   display: block;
 }
 .split-btn-menu > :hover {

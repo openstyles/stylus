@@ -97,29 +97,31 @@
    * @param {PointerEvent} [event] - absent when self-invoked to hide the menu
    */
   function splitMenu(event) {
-    const prevMenu = $(SPLIT_BTN_MENU);
+    const prevMenu = $('.split-btn.active ' + SPLIT_BTN_MENU) || $(SPLIT_BTN_MENU);
     const prevPedal = (prevMenu || {}).previousElementSibling;
     const pedal = event && event.target.closest('.split-btn-pedal');
     const entry = event && prevMenu && event.target.closest(SPLIT_BTN_MENU + '>*');
     if (prevMenu) {
+      prevMenu.onfocusout = null;
       prevMenu.remove();
-      prevPedal.classList.remove('active');
+      prevPedal.parentElement.classList.remove('active');
       window.off('keydown', splitMenuEscape);
+      if (!event) prevPedal.focus();
     }
-    if (pedal) {
+    if (pedal && pedal !== prevPedal) {
       const menu = $create(SPLIT_BTN_MENU,
         Array.from(pedal.attributes, ({name, value}) =>
           name.startsWith('menu-') &&
           $create('a', {tabIndex: 0, __cmd: name.split('-').pop()}, value)
         ));
       window.on('keydown', splitMenuEscape);
-      menu.on('focusout', e => {
+      menu.onfocusout = e => {
         if (!menu.contains(e.relatedTarget)) {
           setTimeout(splitMenu);
         }
-      });
+      };
       pedal.on('mousedown', e => e.preventDefault());
-      pedal.classList.toggle('active');
+      pedal.parentElement.classList.toggle('active');
       pedal.after(menu);
       moveFocus(menu, 0);
       focusAccessibility.toggle(menu.firstChild, focusAccessibility.get(pedal));

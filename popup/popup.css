@@ -911,6 +911,12 @@ html:not(.styles-last) .split-btn-pedal::after {
   }
 }
 
+@media (max-height: 130px) {
+  #find-split {
+    --menu-pad: .25em;
+  }
+}
+
 /* Popup adjustments for common zoom levels */
 
 @media (-webkit-min-device-pixel-ratio: 1.05) {
