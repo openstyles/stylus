@@ -30,11 +30,9 @@ const db = (() => {
   };
   /**
    * @param {string} dbName
-   * @param {boolean} [idAsKey] - if true, only objects can be stored with a unique `id` property
    * @return {IDBObjectStore | {putMany: function(items:?[]):Promise<?[]>}}
    */
-  const getProxy = (dbName, idAsKey) => proxies[dbName] || (
-    (ID_AS_KEY[dbName] = idAsKey),
+  const getProxy = dbName => proxies[dbName] || (
     (proxies[dbName] = new Proxy({dbName}, proxyHandler))
   );
   addAPI(/** @namespace API */ {
@@ -44,7 +42,7 @@ const db = (() => {
     prefsDb: getProxy(prefs.STORAGE_KEY),
   });
   return {
-    styles: getProxy(DB, true),
+    styles: getProxy(DB),
   };
 
   async function cachedExec(dbName, cmd, a, b) {
