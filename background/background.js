@@ -119,6 +119,7 @@ addAPI(/** @namespace API */ {
       }
       return tab;
     }
+    API.prefsDb.get('badFavs'); // prime the cache to avoid flicker/delay when opening the page
     return openURL({url, ignoreExisting: true}).then(activateTab); // activateTab unminimizes the window
   },
 

@@ -1,6 +1,7 @@
 /* global addAPI */// common.js
 /* global chromeLocal */// storage-util.js
 /* global cloneError */// worker-util.js
+/* global deepCopy */// toolbox.js
 /* global prefs */
 'use strict';
 
@@ -20,9 +21,12 @@ const db = (() => {
   const FALLBACK = 'dbInChromeStorage';
   const ID_AS_KEY = {[DB]: true};
   const getStoreName = dbName => dbName === DB ? 'styles' : 'data';
+  const cache = {};
   const proxies = {};
   const proxyHandler = {
-    get: ({dbName}, cmd) => (...args) => exec(dbName, cmd, ...args),
+    get: ({dbName}, cmd) =>
+      (...args) =>
+        (dbName === DB ? exec : cachedExec)(dbName, cmd, ...args),
   };
   /**
    * @param {string} dbName
@@ -42,6 +46,19 @@ const db = (() => {
   return {
     styles: getProxy(DB, true),
   };
+
+  async function cachedExec(dbName, cmd, a, b) {
+    const hub = cache[dbName] || (cache[dbName] = {});
+    const res = cmd === 'get' && a in hub ? hub[a] : await exec(...arguments);
+    if (cmd === 'get') {
+      hub[a] = deepCopy(res);
+    } else if (cmd === 'put') {
+      hub[ID_AS_KEY[dbName] ? a.id : b] = deepCopy(a);
+    } else if (cmd === 'delete') {
+      delete hub[a];
+    }
+    return res;
+  }
 
   async function tryUsingIndexedDB() {
     // we use chrome.storage.local fallback if IndexedDB doesn't save data,
