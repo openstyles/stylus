@@ -480,9 +480,9 @@ const dom = {};
   prefs.ready.then(() => {
     waitForSelector('details[data-pref]', {recur: Collapsible.bindEvents});
   });
-  window.on('load', () => {
+  window.requestIdleCallback(() => {
     require(lazyScripts);
-  }, {once: true});
+  });
 })();
 
 //#endregion

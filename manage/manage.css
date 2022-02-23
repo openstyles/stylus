@@ -678,6 +678,18 @@ button .svg-icon,
   filter: none;
 }
 
+.newUI .target b::after {
+  content: '?';
+  margin-left: -20px;
+  position: absolute;
+  background: var(--c85);
+  width: 16px;
+  height: 16px;
+  text-align: center;
+  border-radius: 50%;
+  color: var(--bg);
+}
+
 /* Default, no update buttons */
 .updater-icons .update,
 .updater-icons .check-update {

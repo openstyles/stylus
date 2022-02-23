@@ -263,6 +263,7 @@ async function getFaviconSrc(container = installed) {
       favicon = favicon ? favicon[1].replace(/\W+$/, '') : '';
     }
     if (!favicon || badFavs && badFavs.includes(favicon)) {
+      if (!target.firstElementChild) target.prepend($create('b'));
       continue;
     }
     if (favicon !== OWN_ICON) {

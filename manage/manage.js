@@ -100,11 +100,11 @@ newUI.renderClass();
 
   showStyles(styles, ids);
 
-  window.on('load', () => require([
+  setTimeout(require, 0, [
     '/manage/import-export',
     '/manage/incremental-search',
     '/manage/updater-ui',
-  ]), {once: true});
+  ]);
 })();
 
 msg.onExtension(onRuntimeMessage);
