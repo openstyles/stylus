@@ -1352,8 +1352,8 @@
     "message": "Reading styles..."
   },
   "reload": {
-    "message": "Reload Stylus extension",
-    "description": "Context menu reload"
+    "message": "Reload",
+    "description": "Context menu to reload the extension when installed in developer mode"
   },
   "replace": {
     "message": "Replace",

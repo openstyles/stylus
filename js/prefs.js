@@ -96,7 +96,7 @@
     'editor.autoCloseBrackets': true,    // auto-add a closing pair when typing an opening one of ()[]{}''""
     'editor.autocompleteOnTyping': false, // show autocomplete dropdown on typing a word token
     // "Delete" item in context menu for browsers that don't have it
-    'editor.contextDelete': null,
+    'editor.contextDelete': false,
     'editor.selectByTokens': true,
 
     'editor.appliesToLineWidget': true, // show applies-to line widget on the editor

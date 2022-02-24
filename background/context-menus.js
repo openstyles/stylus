@@ -1,34 +1,34 @@
 /* global browserCommands */// background.js
 /* global msg */
 /* global prefs */
-/* global CHROME FIREFOX URLS ignoreChromeError */// toolbox.js
+/* global CHROME URLS ignoreChromeError */// toolbox.js
 'use strict';
 
-(() => {
-  const contextMenus = {
+chrome.management.getSelf(ext => {
+  const contextMenus = Object.assign({
     'show-badge': {
       title: 'menuShowBadge',
-      click: info => prefs.set(info.menuItemId, info.checked),
+      click: togglePref,
     },
     'disableAll': {
       title: 'disableAllStyles',
       click: browserCommands.styleDisableAll,
     },
     'open-manager': {
-      title: 'openStylesManager',
+      title: 'optionsOpenManager',
       click: browserCommands.openManage,
     },
     'open-options': {
       title: 'openOptions',
       click: browserCommands.openOptions,
     },
+  }, ext.installType === 'development' && {
     'reload': {
-      presentIf: async () => (await browser.management.getSelf()).installType === 'development',
       title: 'reload',
       click: browserCommands.reload,
     },
+  }, CHROME && {
     'editor.contextDelete': {
-      presentIf: () => !FIREFOX && prefs.get('editor.contextDelete'),
       title: 'editDeleteText',
       type: 'normal',
       contexts: ['editable'],
@@ -38,39 +38,24 @@
           .catch(msg.ignoreError);
       },
     },
-  };
+  });
 
-  // "Delete" item in context menu for browsers that don't have it
-  if (CHROME) {
-    prefs.__defaults['editor.contextDelete'] = true;
-  }
-
-  const keys = Object.keys(contextMenus);
-  prefs.subscribe(keys.filter(id => typeof prefs.defaults[id] === 'boolean'),
-    CHROME >= 62 && CHROME <= 64 ? toggleCheckmarkBugged : toggleCheckmark);
-  prefs.subscribe(keys.filter(id => contextMenus[id].presentIf && prefs.knownKeys.includes(id)),
-    togglePresence);
-
-  createContextMenus(keys);
-
+  createContextMenus(Object.keys(contextMenus));
   chrome.contextMenus.onClicked.addListener((info, tab) =>
     contextMenus[info.menuItemId].click(info, tab));
 
-  async function createContextMenus(ids) {
+  function createContextMenus(ids) {
     for (const id of ids) {
-      let item = contextMenus[id];
-      if (item.presentIf && !await item.presentIf()) {
-        continue;
-      }
-      item = Object.assign({id}, item);
-      delete item.presentIf;
+      const item = Object.assign({id, contexts: ['browser_action']}, contextMenus[id]);
       item.title = chrome.i18n.getMessage(item.title);
-      if (!item.type && typeof prefs.defaults[id] === 'boolean') {
-        item.type = 'checkbox';
-        item.checked = prefs.get(id);
-      }
-      if (!item.contexts) {
-        item.contexts = ['browser_action'];
+      if (typeof prefs.defaults[id] === 'boolean') {
+        if (item.type) {
+          prefs.subscribe(id, togglePresence);
+        } else {
+          item.type = 'checkbox';
+          item.checked = prefs.get(id);
+          prefs.subscribe(id, CHROME >= 62 && CHROME <= 64 ? toggleCheckmarkBugged : toggleCheckmark);
+        }
       }
       delete item.click;
       chrome.contextMenus.create(item, ignoreChromeError);
@@ -87,6 +72,11 @@
     createContextMenus([id]);
   }
 
+  /** @param {chrome.contextMenus.OnClickData} info */
+  function togglePref(info) {
+    prefs.set(info.menuItemId, info.checked);
+  }
+
   function togglePresence(id, checked) {
     if (checked) {
       createContextMenus([id]);
@@ -94,4 +84,4 @@
       chrome.contextMenus.remove(id, ignoreChromeError);
     }
   }
-})();
+});
