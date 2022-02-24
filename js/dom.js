@@ -381,8 +381,8 @@ function waitForSelector(selector, {recur, stopOnDomReady = true} = {}) {
         if (!el) el = $(selector);
         if (!el) return;
         if (!recur ||
-          callRecur(mutations) === false ||
-          stopOnDomReady && document.readyState === 'complete') {
+            callRecur(mutations) === false ||
+            stopOnDomReady && document.readyState === 'complete') {
           observer.disconnect();
         }
         if (resolve) {
@@ -394,7 +394,8 @@ function waitForSelector(selector, {recur, stopOnDomReady = true} = {}) {
         return n.tagName && (n.matches(selector) || n.firstElementChild && $(selector, n));
       }
       function callRecur([m0, m1]) {
-        if (m1 || (m0 = m0.addedNodes)[3] || [].some.call(m0, isMatching)) { // Skipping tiny records
+        // Checking addedNodes if only 1 MutationRecord to skip simple mutations quickly
+        if (m1 || (m0 = m0.addedNodes)[3] || [].some.call(m0, isMatching)) {
           const all = $$(selector); // Using one $$ call instead of ~100 calls for each node
           const added = !elems ? all : all.filter(el => !elems.includes(el));
           if (added.length) {
