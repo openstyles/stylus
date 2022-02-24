@@ -62,7 +62,7 @@ const sorter = (() => {
   ];
   const splitRegex = /\s*,\s*/;
   const ID = 'manage.newUI.sort';
-  const getPref = () => prefs.get(ID) || prefs.__defaults[ID];
+  const getPref = () => prefs.get(ID) || prefs.defaults[ID];
 
   let columns = 1;
 
