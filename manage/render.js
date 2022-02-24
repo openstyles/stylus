@@ -217,27 +217,7 @@ function createTargetsElement({entry, expanded, style = entry.styleMeta}) {
 
 async function getFaviconSrc(container = installed) {
   if (!newUI.hasFavs()) return;
-  if (!badFavs) {
-    // API creates a new function each time so we save it for `debounce` which is keyed on function object
-    const {put} = API.prefsDb;
-    const key = newUI.badFavsKey;
-    const rxHost = new RegExp(`^${stringAsRegExp(URLS.favicon('\n'), '', true).replace('\n', '(.*)')}$`);
-    badFavs = newUI[key] || await newUI.readBadFavs();
-    const fn = e => {
-      const host = e.statusCode !== 200 && e.url.match(rxHost)[1];
-      if (host && !badFavs.includes(e)) {
-        badFavs.push(host);
-        debounce(put, 250, badFavs, key);
-      }
-    };
-    const filter = {
-      urls: [URLS.favicon('*')], // we assume there's no redirect
-      types: ['image'],
-      tabId: (await getOwnTab()).id,
-    };
-    chrome.webRequest.onCompleted.addListener(fn, filter); // works in Chrome
-    chrome.webRequest.onErrorOccurred.addListener(fn, filter); // works in FF
-  }
+  if (!badFavs) await initBadFavs();
   const regexpRemoveNegativeLookAhead = /(\?!([^)]+\))|\(\?![\w(]+[^)]+[\w|)]+)/g;
   // replace extra characters & all but the first group entry "(abc|def|ghi)xyz" => abcxyz
   const regexpReplaceExtraCharacters = /[\\(]|((\|\w+)+\))/g;
@@ -275,6 +255,29 @@ async function getFaviconSrc(container = installed) {
       img.src = favicon;
     }
   }
+}
+
+async function initBadFavs() {
+  // API creates a new function each time so we save it for `debounce` which is keyed on function object
+  const {put} = API.prefsDb;
+  const key = newUI.badFavsKey;
+  const rxHost = new RegExp(
+    `^${stringAsRegExp(URLS.favicon('\n'), '', true).replace('\n', '(.*)')}$`);
+  badFavs = newUI[key] || await newUI.readBadFavs();
+  const fn = e => {
+    const host = e.statusCode !== 200 && e.url.match(rxHost)[1];
+    if (host && !badFavs.includes(host)) {
+      badFavs.push(host);
+      debounce(put, 250, badFavs, key);
+    }
+  };
+  const filter = {
+    urls: [URLS.favicon('*')], // we assume there's no redirect
+    types: ['image'],
+    tabId: (await getOwnTab()).id,
+  };
+  chrome.webRequest.onCompleted.addListener(fn, filter); // works in Chrome
+  chrome.webRequest.onErrorOccurred.addListener(fn, filter); // works in FF
 }
 
 function fitSelectBox(...elems) {
