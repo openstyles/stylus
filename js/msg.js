@@ -1,4 +1,4 @@
-/* global URLS deepCopy deepMerge getOwnTab */// toolbox.js - not used in content scripts
+/* global URLS deepCopy getOwnTab */// toolbox.js - not used in content scripts
 'use strict';
 
 (() => {
@@ -163,7 +163,7 @@
       if (!bg || !bg.msg || !bg.msg.ready && await bg.bgReady.all && false) {
         res = msg.send(message);
       } else {
-        res = deepMerge(await bg.msg._execute(TARGETS.extension, message, {
+        res = deepCopy(await bg.msg._execute(TARGETS.extension, message, {
           // Using a fake id for our Options frame as we want to fetch styles early
           frameId: window === top ? 0 : 1,
           tab: NEEDS_TAB_IN_SENDER.includes(path.join('.')) && await getOwnTab(),
