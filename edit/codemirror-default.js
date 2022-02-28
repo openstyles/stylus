@@ -26,7 +26,7 @@
     matchBrackets: true,
     hintOptions: {},
     lintReportDelay: prefs.get('editor.lintReportDelay'),
-    styleActiveLine: true,
+    styleActiveLine: {nonEmpty: true},
     theme: prefs.get('editor.theme'),
     keyMap: prefs.get('editor.keyMap'),
     extraKeys: Object.assign(CodeMirror.defaults.extraKeys || {}, {
