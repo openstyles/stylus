@@ -510,15 +510,6 @@ label {
 .resize-grip-enabled .CodeMirror-scrollbar-filler {
   bottom: 7px; /* make space for resize-grip */
 }
-body:not(.find-open) .cm-matchhighlight,
-body:not(.find-open) .CodeMirror-selection-highlight-scrollbar {
-  animation: fadein-match-highlighter 1s cubic-bezier(.97,.01,.42,.98);
-  animation-fill-mode: both;
-}
-body:not(.find-open) [data-match-highlight-count="1"] .cm-matchhighlight,
-body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-highlight-scrollbar {
-  animation: none;
-}
 @keyframes highlight {
   from {
     background-color: #ff9;
@@ -534,10 +525,6 @@ body:not(.find-open) [data-match-highlight-count="1"] .CodeMirror-selection-high
   to {
     opacity: 1;
   }
-}
-@keyframes fadein-match-highlighter {
-  from { background-color: transparent; }
-  to   { background-color: rgba(1, 151, 193, 0.1); }
 }
 .resize-grip {
   position: absolute;

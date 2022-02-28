@@ -83,6 +83,7 @@
       const opt = (showToken || value === 'selection') && {
         showToken,
         annotateScrollbar: true,
+        delay: 0,
         onUpdate: updateMatchHighlightCount,
       };
       cm.setOption('highlightSelectionMatches', opt || null);

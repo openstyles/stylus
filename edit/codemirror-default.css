@@ -75,6 +75,10 @@
 .CodeMirror-linenumber {
   cursor: pointer; /* for bookmarking */
 }
+.cm-matchhighlight,
+.CodeMirror-selection-highlight-scrollbar {
+  background: hsla(200, 100%, 50%, var(--match-hl-opacity, .1));
+}
 
 /* Custom stuff we add to CodeMirror */
 
@@ -86,6 +90,9 @@
 }
 
 @media screen and (prefers-color-scheme: dark), dark {
+  .CodeMirror {
+    --match-hl-opacity: .18;
+  }
   .CodeMirror-dialog {
     background-color: #333;
   }
