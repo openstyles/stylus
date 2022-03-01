@@ -55,10 +55,6 @@ a:hover {
   z-index: 9;
 }
 
-#update-all {
-  margin-bottom: .5rem;
-}
-
 #check-all-updates {
   max-width: calc(100% - 30px);
 }
@@ -69,8 +65,7 @@ a:hover {
 }
 
 #header h1 {
-  margin-top: 0;
-  margin-bottom: .3em;
+  margin: 0;
 }
 
 #actions {
@@ -94,8 +89,7 @@ a:hover {
 }
 #actions a:hover {
   color: var(--cmin);
-  border-color: var(--accent-3);
-  background-color: hsla(180, 100%, 30%, .2);
+  background-color: hsla(0, 0%, 50%, .2);
 }
 #actions svg {
   cursor: auto;
@@ -117,6 +111,34 @@ a:hover {
 #actions #manage-options-button svg {
   fill: transparent;
   stroke: var(--fg);
+}
+#actions-toggle:not([open]) {
+  position: absolute;
+  margin-top: 4px;
+}
+#actions-toggle:not([open]) h2 {
+  display: none;
+}
+#actions-toggle[open] + div {
+  display: block;
+  text-align: left;
+  --max-w: none;
+}
+#actions-toggle[open] + div > a {
+  display: block;
+  text-align: left;
+  border: none;
+  margin: 0 0 0 -4px;
+  padding: 1px 0 1px 4px;
+  border-radius: 0;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+#actions-toggle[open] + div > a::after {
+  content: attr(data-title);
+  margin-left: .5em;
+  vertical-align: middle;
 }
 
 #installed {

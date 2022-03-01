@@ -148,37 +148,6 @@
   <h1 id="manage-heading" i18n="manageHeading"></h1>
 
   <div id="manage-settings">
-    <div id="actions">
-      <a id="check-all-updates" i18n="title:checkAllUpdates" tabindex="0">
-        <svg class="svg-icon"><use xlink:href="#svg-icon-check-update"/></svg>
-        <span id="update-progress"></span>
-      </a>
-      <a id="update-history-button" i18n="title:genericHistoryLabel" tabindex="0">
-        <svg class="svg-icon" viewBox="0 0 20 20">
-          <path d="M13,7H7V6h6Zm6,6.5A5.5,5.5,0,0,1,8.61,16H4V3H16V8.61A5.5,5.5,0,0,1,19,13.5ZM8,14c0-.16,0-.84,0-1H7V12H8.21a5.46,5.46,0,0,1,.39-1H7V10H9.26a5.55,5.55,0,0,1,1.09-1H7V8h7V5H6v9Zm10-.5A4.5,4.5,0,1,0,13.5,18,4.5,4.5,0,0,0,18,13.5ZM14,13V10H13v4h4V13Z"/>
-        </svg>
-      </a>
-      <a id="manage-options-button" i18n="title:openOptions" tabindex="0">
-        <svg class="svg-icon"><use xlink:href="#svg-icon-config"/></svg>
-      </a>
-      <a id="injection-order-button" i18n="title:styleInjectionOrder" tabindex="0">
-        <svg class="svg-icon" viewBox="0 0 20 20">
-          <path d="M2,18h8v-6H2V18z M4,14h4v2H4V14z M2,7h8V1H2V7z M4,3h4v2H4V3z M15,13v3l-4-3.5L15,9v3h2V5h-6V4h7v9H15z M10,11H2v-1h8V11zM10,9H2V8h8V9z"/>
-        </svg>
-      </a>
-      <a href="edit.html?uc=0" i18n="title:addStyleLabel" tabindex="0">
-        <svg class="svg-icon"><use xlink:href="#svg-icon-add"/></svg>
-      </a>
-      <a href="edit.html?uc=1" id="write-usercss" i18n="title:optionsAdvancedNewStyleAsUsercss" tabindex="0">
-        <svg class="svg-icon"><use xlink:href="#svg-icon-add"/></svg>
-      </a>
-      <p id="update-all">
-        <button id="apply-all-updates" class="hidden" i18n="applyAllUpdates"></button>
-        <span id="update-all-no-updates" class="hidden" i18n="updateAllCheckSucceededNoUpdate"></span>
-        <button id="check-all-updates-force" class="hidden" i18n="checkAllUpdatesForce"></button>
-      </p>
-    </div>
-
     <div class="settings-column">
       <details id="filters" data-pref="manage.filters.expanded">
         <summary>
@@ -290,6 +259,42 @@
           <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
         </a>
       </div>
+    </div>
+
+    <div class="settings-column">
+      <details id="actions-toggle" data-pref="manage.actions.expanded">
+        <summary><h2 i18n="optionsActions"></h2></summary>
+      </details>
+      <div id="actions">
+        <a id="check-all-updates" i18n="title:checkAllUpdates" tabindex="0">
+          <svg class="svg-icon"><use xlink:href="#svg-icon-check-update"/></svg>
+          <span id="update-progress"></span>
+        </a>
+        <a id="update-history-button" i18n="title:updateCheckHistory" tabindex="0">
+          <svg class="svg-icon" viewBox="0 0 20 20">
+            <path d="M13,7H7V6h6Zm6,6.5A5.5,5.5,0,0,1,8.61,16H4V3H16V8.61A5.5,5.5,0,0,1,19,13.5ZM8,14c0-.16,0-.84,0-1H7V12H8.21a5.46,5.46,0,0,1,.39-1H7V10H9.26a5.55,5.55,0,0,1,1.09-1H7V8h7V5H6v9Zm10-.5A4.5,4.5,0,1,0,13.5,18,4.5,4.5,0,0,0,18,13.5ZM14,13V10H13v4h4V13Z"/>
+          </svg>
+        </a>
+        <a id="manage-options-button" i18n="title:openOptions" tabindex="0">
+          <svg class="svg-icon"><use xlink:href="#svg-icon-config"/></svg>
+        </a>
+        <a id="injection-order-button" i18n="title:styleInjectionOrder" tabindex="0">
+          <svg class="svg-icon" viewBox="0 0 20 20">
+            <path d="M2,18h8v-6H2V18z M4,14h4v2H4V14z M2,7h8V1H2V7z M4,3h4v2H4V3z M15,13v3l-4-3.5L15,9v3h2V5h-6V4h7v9H15z M10,11H2v-1h8V11zM10,9H2V8h8V9z"/>
+          </svg>
+        </a>
+        <a href="edit.html?uc=0" i18n="title:addStyleLabel" tabindex="0">
+          <svg class="svg-icon"><use xlink:href="#svg-icon-add"/></svg>
+        </a>
+        <a href="edit.html?uc=1" id="write-usercss" i18n="title:optionsAdvancedNewStyleAsUsercss" tabindex="0">
+          <svg class="svg-icon"><use xlink:href="#svg-icon-add"/></svg>
+        </a>
+      </div>
+      <p id="update-all">
+        <button id="apply-all-updates" class="hidden" i18n="applyAllUpdates"></button>
+        <span id="update-all-no-updates" class="hidden" i18n="updateAllCheckSucceededNoUpdate"></span>
+        <button id="check-all-updates-force" class="hidden" i18n="checkAllUpdatesForce"></button>
+      </p>
     </div>
 
     <div class="settings-column">

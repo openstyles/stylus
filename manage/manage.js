@@ -78,6 +78,7 @@ newUI.renderClass();
   sorter.init();
   router.update();
   prefs.subscribe(newUI.ids.map(newUI.prefKeyForId), () => switchUI());
+  prefs.subscribe('manage.actions.expanded', toggleActionTitles, {runNow: true});
   switchUI({styleOnly: true});
   // translate CSS manually
   document.styleSheets[0].insertRule(
@@ -105,6 +106,15 @@ newUI.renderClass();
     '/manage/incremental-search',
     '/manage/updater-ui',
   ]);
+
+  function toggleActionTitles(_, isOpen) {
+    const from = `${isOpen ? '' : 'data-'}title`;
+    const to = `${isOpen ? 'data-' : ''}title`;
+    for (const el of $$(`#actions [${from}]`)) {
+      el.setAttribute(to, el.getAttribute(from));
+      el.removeAttribute(from);
+    }
+  }
 })();
 
 msg.onExtension(onRuntimeMessage);
