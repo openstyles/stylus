@@ -412,38 +412,34 @@ function waitForSelector(selector, {recur, stopOnDomReady = true} = {}) {
 
 const dom = {};
 
-(() => {
-
-  const Collapsible = {
-    bindEvents(elems) {
-      const prefKeys = [];
+prefs.ready.then(() => {
+  waitForSelector('details[data-pref]', {
+    recur(elems) {
       for (const el of elems) {
-        prefKeys.push(el.dataset.pref);
-        ($('h2', el) || el).on('click', Collapsible.saveOnClick);
-      }
-      prefs.subscribe(prefKeys, Collapsible.updateOnPrefChange, {runNow: true});
-    },
-    canSave(el) {
-      return !el.matches('.compact-layout .ignore-pref-if-compact');
-    },
-    async saveOnClick(event) {
-      if (event.target.closest('.intercepts-click')) {
-        event.preventDefault();
-      } else {
-        const el = event.target.closest('details');
-        await new Promise(setTimeout);
-        if (Collapsible.canSave(el)) {
-          prefs.set(el.dataset.pref, el.open);
-        }
+        prefs.subscribe(el.dataset.pref, updateOnPrefChange, {runNow: true});
+        new MutationObserver(saveOnChange)
+          .observe(el, {attributes: true, attributeFilter: ['open']});
       }
     },
-    updateOnPrefChange(key, value) {
-      const el = $(`details[data-pref="${key}"]`);
-      if (el.open !== value && Collapsible.canSave(el)) {
-        el.open = value;
-      }
-    },
-  };
+  });
+  function canSave(el) {
+    return !el.matches('.compact-layout .ignore-pref-if-compact');
+  }
+  /** @param {MutationRecord[]} _ */
+  function saveOnChange([{target: el}]) {
+    if (canSave(el)) {
+      prefs.set(el.dataset.pref, el.open);
+    }
+  }
+  function updateOnPrefChange(key, value) {
+    const el = $(`details[data-pref="${key}"]`);
+    if (el.open !== value && canSave(el)) {
+      el.open = value;
+    }
+  }
+});
+
+(() => {
   const lazyScripts = [
     '/js/dom-on-load',
   ];
@@ -478,9 +474,6 @@ const dom = {};
       }));
     }
   }
-  prefs.ready.then(() => {
-    waitForSelector('details[data-pref]', {recur: Collapsible.bindEvents});
-  });
   window.requestIdleCallback(() => {
     require(lazyScripts);
   });
