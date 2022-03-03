@@ -11,14 +11,16 @@ const router = {
     return new URLSearchParams(location.search).get(key);
   },
 
+  /** When showing the UI, `showHide` function must resolve only when the UI is closed */
   makeToggle(hashId, showHide, deps) {
     const hash = '#' + hashId;
-    const selector = '.' + hash.slice(1);
+    const selector = '.' + hashId;
     router.watch({hash}, async state => {
       const el = $(selector);
       if (!state === !el) return;
       if (state && deps) await require(deps);
       await showHide(state, el, selector);
+      if (state) router.updateHash('');
     });
     return router.updateHash.bind(router, hash);
   },

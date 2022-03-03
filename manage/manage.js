@@ -108,7 +108,6 @@ newUI.renderClass();
 })();
 
 msg.onExtension(onRuntimeMessage);
-window.on('closeOptions', () => router.updateHash(''));
 
 function onRuntimeMessage(msg) {
   switch (msg.method) {
@@ -135,6 +134,7 @@ async function toggleEmbeddedOptions(show, el, selector) {
   if (show) {
     $.root.appendChild($create('iframe' + selector, {src: '/options.html'}))
       .focus();
+    await new Promise(resolve => window.on('closeOptions', resolve, {once: true}));
   } else {
     el.contentDocument.body.classList.add('scaleout');
     await animateElement(el, 'fadeout');
