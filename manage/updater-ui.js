@@ -228,7 +228,7 @@ async function showUpdateHistory(show, el, selector) {
     API.updater.getStates(),
   ]);
   const logText = lines.join('\n');
-  messageBoxProxy.show({
+  await messageBoxProxy.show({
     title: t('updateCheckHistory'),
     className: 'center-dialog',
     contents: log,
