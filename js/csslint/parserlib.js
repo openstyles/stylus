@@ -718,7 +718,7 @@ self.parserlib = (() => {
     '<bg-image>': '<image> | none',
     '<blend-mode>': 'normal | multiply | screen | overlay | darken | lighten | color-dodge | ' +
       'color-burn | hard-light | soft-light | difference | exclusion | hue | ' +
-      'saturation | color | luminosity',
+      'saturation | color | luminosity | plus-darker | plus-lighter',
     '<border-style>': 'none | ' +
       'hidden | dotted | dashed | solid | double | groove | ridge | inset | outset',
     '<border-width>': '<length> | thin | medium | thick',
