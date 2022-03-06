@@ -2,7 +2,7 @@
    This file is loaded dynamically when the inline search is invoked.
    So don't put main popup's stuff here. */
 
-body.search-results-shown {
+.search-results-shown body {
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -288,35 +288,39 @@ search-result-meta [data-type="rating"][data-class="none"] dd {
   flex-direction: row;
   text-align: center;
   word-break: keep-all;
+  line-height: 24px;
+  font-size: 16px;
 }
-
 .search-results-nav[data-type="top"] {
   padding-top: 1em;
   margin-bottom: 1em;
 }
-
 .search-results-nav[data-type="bottom"] {
   margin-top: -1em;
   margin-bottom: 1em;
 }
-
+.search-results-nav label {
+  vertical-align: middle;
+  -moz-user-select: none;
+  user-select: none;
+}
+.search-results-nav [data-type="page"] {
+  font-weight: bold;
+}
 #search-results .search-results-nav button {
   background: none;
   border: none;
-  padding: 0 1rem;
+  padding: 0 .5rem;
   margin: 0 .5rem;
-  font-size: 150%;
-  line-height: 24px;
+  font-size: 18px;
   vertical-align: middle;
   cursor: pointer;
 }
-
 #search-results .search-results-nav button:disabled {
   cursor: auto;
   opacity: .25;
   pointer-events: none;
 }
-
 #search-results .search-results-nav button:not(:disabled):hover {
   text-shadow: 0 1px 4px rgba(0, 0, 0, .5);
 }
@@ -337,4 +341,9 @@ search-result-meta [data-type="rating"][data-class="none"] dd {
   min-width: 3em;
   margin-right: .5em;
   flex: 1 1 0;
+}
+
+#search-years {
+  text-align: center;
+  width: 100%;
 }

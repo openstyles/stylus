@@ -3,17 +3,15 @@
   <div id="search-results" hidden>
     <div class="search-results-nav" data-type="top"></div>
     <div id="search-params">
+      <div id="search-years"><select></select> - <select></select></div>
       <input id="search-query" type="search" i18n="placeholder:search, title:searchStyleQueryHint">
-      <div class="select-resizer">
-        <select id="search-order" i18n="title:sortStylesHelpTitle">
-          <option value="n" i18n="genericTitle">
-          <option value="u" i18n="searchResultUpdated">
-          <option value="t" i18n="searchResultInstallCount">
-          <option value="w" i18n="searchResultWeeklyCount">
-          <option value="r" i18n="searchResultRating">
-        </select>
-        <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
-      </div>
+      <select id="search-order" i18n="title:sortStylesHelpTitle">
+        <option value="n" i18n="genericTitle">
+        <option value="u" i18n="searchResultUpdated">
+        <option value="t" i18n="searchResultInstallCount">
+        <option value="w" i18n="searchResultWeeklyCount">
+        <option value="r" i18n="searchResultRating">
+      </select>
       <label class="checkbox-wrapper" i18n="searchGlobalStyles">
         <input id="search-globals" type="checkbox" checked>
         <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
@@ -31,6 +29,7 @@
       <span data-type="page" i18n="title:paginationCurrent">-</span>
       /
       <span data-type="total" i18n="title:paginationEstimated">-</span>
+      (<span data-type="num"></span>)
     </label>
     <button data-type="next" i18n="title:paginationNext" disabled>►</button>
   </div>
