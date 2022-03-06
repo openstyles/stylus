@@ -91,7 +91,7 @@
         `${URLS.usw}search?q=${catQ}` ||
       where === 'gf' &&
         'https://greasyfork.org/' + ($.root.lang.split('-')[0] || 'en') +
-        `/scripts/by-site/${tryURL(tabURL).hostname}?language=css${add('&q=', q)}`;
+        `/scripts/by-site/${tryURL(tabURL).hostname.replace(/^www\./, '')}?language=css${add('&q=', q)}`;
     Events.openURLandHide.call({href}, event);
   };
 
