@@ -92,9 +92,10 @@ async function initPopup(frames) {
 
   const elFind = $('#find-styles-btn');
   elFind.onclick = async e => {
-    elFind.disabled = e.type === 'click';
+    const inline = e.type === 'click';
+    if (inline) elFind.disabled = true;
     await require(['/popup/search']);
-    Events.searchSite(e);
+    if (!inline) Events.searchSite(e);
   };
   elFind.on('split-btn', elFind.onclick);
 
