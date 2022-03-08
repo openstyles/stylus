@@ -1,8 +1,11 @@
-html#stylus #header *:not(#\1transition-suppressor) {
+@supports not (accent-color: red) {
   /* This suppresses a bug in all? browsers: they apply transitions during page load.
+   * It was fixed by crrev.com/886802 in Chrome 93, which we detect via `accent-color`.
    * Using an increased specificity to override sane selectors in user styles.
    * Using \1 to simplify js code because \0 is converted to \xFFFD per spec. */
-  transition: none !important;
+  html#stylus #header *:not(#\1transition-suppressor) {
+    transition: none !important;
+  }
 }
 :root {
   --family: Arial, "Helvetica Neue", Helvetica, system-ui, sans-serif;

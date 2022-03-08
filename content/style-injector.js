@@ -15,7 +15,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
   const list = [];
   const table = new Map();
   let isEnabled = true;
-  let isTransitionPatched;
+  let isTransitionPatched = chrome.app && CSS.supports('accent-color', 'red'); // Chrome 93
   let exposeStyleName;
   // will store the original method refs because the page can override them
   let creationDoc, createElement, createElementNS;

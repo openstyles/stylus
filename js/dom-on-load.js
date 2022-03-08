@@ -1,5 +1,5 @@
 /* global $$ $ $create focusAccessibility getEventKeyName moveFocus */// dom.js
-/* global clamp debounce */// toolbox.js
+/* global CHROME clamp debounce */// toolbox.js
 /* global msg */
 /* global t */// localization.js
 'use strict';
@@ -24,11 +24,13 @@
     }
   });
   // Removing transition-suppressor rule
-  const {sheet} = $('link[href$="global.css"]');
-  for (let i = 0, rule; (rule = sheet.cssRules[i]); i++) {
-    if (/#\\1\s?transition-suppressor/.test(rule.selectorText)) {
-      sheet.deleteRule(i);
-      break;
+  if (!CHROME || CHROME < 93) {
+    const {sheet} = $('link[href$="global.css"]');
+    for (let i = 0, rule; (rule = sheet.cssRules[i]); i++) {
+      if (/#\\1\s?transition-suppressor/.test(rule.cssText)) {
+        sheet.deleteRule(i);
+        break;
+      }
     }
   }
 
