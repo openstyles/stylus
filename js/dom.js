@@ -412,6 +412,10 @@ function waitForSelector(selector, {recur, stopOnDomReady = true} = {}) {
 
 const dom = {};
 
+prefs.subscribe('disableAll', (_, val) => {
+  $.rootCL.toggle('all-disabled', val);
+}, {runNow: true});
+
 prefs.ready.then(() => {
   waitForSelector('details[data-pref]', {
     recur(elems) {

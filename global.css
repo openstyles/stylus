@@ -33,6 +33,7 @@
   --accent-1: hsl(180, 100%, 15%);
   --accent-2: hsl(180, 50%, 40%);
   --accent-3: hsl(180, 40%, 69%);
+  --red1: hsl(0, 70%, 45%);
 }
 body {
   font: normal 12px var(--family);
@@ -305,6 +306,17 @@ summary {
 }
 .abs {
   position: absolute;
+}
+
+.all-disabled #disableAll {
+  border-color: var(--red1);
+}
+.all-disabled #disableAll-label {
+  font-weight: bold;
+  color: var(--red1);
+}
+.all-disabled #disableAll-label .svg-icon {
+  fill: currentColor;
 }
 
 :focus,
