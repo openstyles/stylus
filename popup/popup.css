@@ -57,7 +57,13 @@ body:not(.blocked) .if-blocked,
   color: var(--red1);
 }
 .all-disabled #disableAll-label .svg-icon {
-  fill: var(--red1);
+  fill: currentColor;
+}
+.all-disabled #installed:hover + #main-actions #disableAll-label {
+  animation: .5s blink-red infinite;
+}
+@keyframes blink-red {
+  50% { color: var(--fg); }
 }
 
 #no-styles {
