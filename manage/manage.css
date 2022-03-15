@@ -69,6 +69,11 @@ a:hover {
   text-align: left;
 }
 
+#disableAll-label:not([hidden]) {
+  display: block;
+  margin-top: 1rem;
+}
+
 #header h1 {
   margin-top: 0;
   margin-bottom: .3em;

@@ -36,7 +36,7 @@ body:not(.blocked) .if-blocked,
   z-index: 4;
 }
 #main-actions > * {
-  margin-top: .75em;
+  margin-top: var(--outer-padding);
   padding-left: var(--inner-padding);
   display: block;
 }
@@ -44,12 +44,6 @@ body:not(.blocked) .if-blocked,
 #disableAll-label {
   width: fit-content;
   position: relative;
-}
-.all-disabled #installed:hover + #main-actions #disableAll-label {
-  animation: .5s blink-red infinite;
-}
-@keyframes blink-red {
-  50% { color: var(--fg); }
 }
 
 #no-styles {
