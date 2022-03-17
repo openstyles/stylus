@@ -271,6 +271,9 @@
       }
     }
   },
+  "editorSettings": {
+    "message": "Paramètres de l’éditeur"
+  },
   "enableStyleLabel": {
     "message": "Activer"
   },
@@ -279,6 +282,9 @@
   },
   "excludeStyleByUrlLabel": {
     "message": "Exclure l’URL actuelle"
+  },
+  "exportCompatible": {
+    "message": "Export (mode de compatibilité)"
   },
   "exportLabel": {
     "message": "Exporter"
@@ -314,15 +320,6 @@
   },
   "findStyles": {
     "message": "Trouver des styles"
-  },
-  "findStylesForSite": {
-    "message": "Rechercher d'autres styles pour ce site"
-  },
-  "findStylesInline": {
-    "message": "Dans la popup"
-  },
-  "findStylesInlineTooltip": {
-    "message": "Affiche les résultats de recherche dans cette fenêtre"
   },
   "genericAdd": {
     "message": "Ajouter"
@@ -857,9 +854,6 @@
   "optionsResetButton": {
     "message": "Ré-initialiser les options"
   },
-  "optionsStylusThemes": {
-    "message": "Trouver un thème d'interface de Stylus"
-  },
   "optionsSubheading": {
     "message": "Plus de paramètres"
   },
@@ -874,6 +868,9 @@
   },
   "optionsSyncNone": {
     "message": "Aucun"
+  },
+  "optionsSyncPassword": {
+    "message": "Mot de passe"
   },
   "optionsSyncStatusConnected": {
     "message": "Connecté"
@@ -917,6 +914,9 @@
   },
   "optionsSyncSyncNow": {
     "message": "Synchroniser maintenant"
+  },
+  "optionsSyncUsername": {
+    "message": "Nom d’utilisateur"
   },
   "optionsUpdateImportNote": {
     "message": "Quand vous importez des sauvegardes de style d’une ancienne version ou de Stylish, faites une vérification manuellement pour vous assurez que tous les styles sont à jour."
@@ -1005,9 +1005,6 @@
   "readingStyles": {
     "message": "Lecture des styles…"
   },
-  "reload": {
-    "message": "Recharger l´extension Stylus"
-  },
   "replace": {
     "message": "Remplacer"
   },
@@ -1022,6 +1019,9 @@
   },
   "retrieveDropboxSync": {
     "message": "Importer depuis Dropbox"
+  },
+  "saveAsTemplate": {
+    "message": "Sauvegarder comme modèle"
   },
   "search": {
     "message": "Rechercher"
@@ -1085,6 +1085,9 @@
   },
   "sectionRestore": {
     "message": "Restaurer la section supprimée"
+  },
+  "settings": {
+    "message": "Paramètres"
   },
   "shortcuts": {
     "message": "Raccourcis"
@@ -1185,6 +1188,15 @@
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "Le style n'a pu s'appliquer en raison d'une utilisation erronée de 'regexp()'"
   },
+  "styleNotAppliedSchemeDark": {
+    "message": "Ce style est uniquement appliqué en mode sombre"
+  },
+  "styleNotAppliedSchemeLight": {
+    "message": "Ce style est uniquement appliqué en mode clair"
+  },
+  "stylePreferSchemeLabel": {
+    "message": "Mode clair/sombre"
+  },
   "styleRegexpInvalidExplanation": {
     "message": "Quelques règles 'regexp()' qui n’ont pas pu être compilées"
   },
@@ -1193,9 +1205,6 @@
   },
   "styleRegexpProblemTooltip": {
     "message": "Nombre de sections non appliquées à cause d’une utilisation incorrecte de 'regexp()'"
-  },
-  "styleRegexpTestButton": {
-    "message": "Test d’expression rationnelle"
   },
   "styleRegexpTestFull": {
     "message": "Onglets correspondants"
@@ -1218,6 +1227,9 @@
   "styleSaveLabel": {
     "message": "Enregistrer"
   },
+  "styleSettings": {
+    "message": "Paramètres du style"
+  },
   "styleToMozillaFormatHelp": {
     "message": "Le code au format Mozilla peut être utilisé dans Stylish for Firefox et envoyé à userstyles.org."
   },
@@ -1234,6 +1246,9 @@
   },
   "styleUpdateDiscardChanges": {
     "message": "Le style a été changé en dehors de l’éditeur. Voulez-vous recharger le style ?"
+  },
+  "styleUpdateUrlLabel": {
+    "message": "URL de mise à jour"
   },
   "stylusUnavailableForURL": {
     "message": "Stylus ne fonctionne pas sur les pages de ce genre"

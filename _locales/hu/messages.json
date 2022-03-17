@@ -287,15 +287,6 @@
   "findStyles": {
     "message": "Stílusok keresése"
   },
-  "findStylesForSite": {
-    "message": "További stílusok keresése ehhez az oldalhoz"
-  },
-  "findStylesInline": {
-    "message": "Helyben"
-  },
-  "findStylesInlineTooltip": {
-    "message": "Keresési eredmények megjelenítése ebben az ablakban."
-  },
   "genericAdd": {
     "message": "Hozzáadás"
   },
@@ -719,6 +710,9 @@
   "openManage": {
     "message": "Kezelés"
   },
+  "openOptions": {
+    "message": "Beállítások"
+  },
   "openStylesManager": {
     "message": "Stíluskezelő megnyitása"
   },
@@ -972,6 +966,9 @@
   "sectionRestore": {
     "message": "Eltávolított szekció visszaállítása"
   },
+  "sections": {
+    "message": "Szekciók"
+  },
   "shortcuts": {
     "message": "Gyorsbillentyűk"
   },
@@ -1074,9 +1071,6 @@
   "styleRegexpProblemTooltip": {
     "message": "A nem alkalmazott szeckiók száma helytelen 'regexp()' használat miatt"
   },
-  "styleRegexpTestButton": {
-    "message": "RegExp tesztelése"
-  },
   "styleRegexpTestFull": {
     "message": "Illeszkedő fülek"
   },
@@ -1147,6 +1141,9 @@
   },
   "unreachableFileHint": {
     "message": "A Stylus csak akkor képes hozzáférni a file:// URL-ekhez, ha engedélyezed az erre vonatkozó beállítást a Stylus kiegészítőre a chrome://extensions oldalon."
+  },
+  "unreachableMozSiteHintOldFF": {
+    "message": "Csak a Firefox 59 vagy annál újabb állítható be az ilyen CSP-védett oldalak stílusának átszabása WebExtensions kiegészítőkön keresztül."
   },
   "unzipStyles": {
     "message": "Stílusok kibontása..."

@@ -58,6 +58,12 @@
   "checkingForUpdate": {
     "message": "جارٍ البحث..."
   },
+  "confirmDelete": {
+    "message": "حذف"
+  },
+  "confirmSave": {
+    "message": "حفظ"
+  },
   "deleteStyleConfirm": {
     "message": "هل تريد بالتأكيد حذف هذا النمط؟"
   },
@@ -69,6 +75,9 @@
   },
   "disableStyleLabel": {
     "message": "تعطيل"
+  },
+  "editDeleteText": {
+    "message": "حذف"
   },
   "editStyleHeading": {
     "message": "تعديل النمط"
@@ -87,8 +96,11 @@
   "enableStyleLabel": {
     "message": "تمكين"
   },
-  "findStylesForSite": {
-    "message": "البحث عن المزيد من الأنماط لموقع الويب هذا"
+  "genericAdd": {
+    "message": "إضافة"
+  },
+  "genericEnabledLabel": {
+    "message": "ممكّن"
   },
   "helpAlt": {
     "message": "مساعدة"
@@ -105,6 +117,9 @@
   "openManage": {
     "message": "إدارة الأنماط المثبتة"
   },
+  "optionsSyncUrl": {
+    "message": "عنوان URL"
+  },
   "sectionAdd": {
     "message": "إضافة قسم آخر"
   },
@@ -113,6 +128,9 @@
   },
   "sectionRemove": {
     "message": "إزالة القسم"
+  },
+  "sections": {
+    "message": "الأقسام"
   },
   "styleCancelEditLabel": {
     "message": "رجوع للإدارة"

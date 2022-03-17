@@ -236,12 +236,6 @@
   "findStyles": {
     "message": "Trova stili"
   },
-  "findStylesForSite": {
-    "message": "Trova più stili per questo sito"
-  },
-  "findStylesInlineTooltip": {
-    "message": "Visualizza risultati in questa finestra."
-  },
   "genericAdd": {
     "message": "Aggiungi"
   },
@@ -396,9 +390,6 @@
   "liveReloadLabel": {
     "message": "Ricaricamento live"
   },
-  "manageFaviconsHelp": {
-    "message": "Stylus utilizza un servizio esterno https://icons.duckduckgo.com"
-  },
   "manageFilters": {
     "message": "Filtri"
   },
@@ -484,6 +475,9 @@
   },
   "openManage": {
     "message": "Gestisci gli stili installati"
+  },
+  "openOptions": {
+    "message": "Opzioni"
   },
   "openStylesManager": {
     "message": "Apri gestore stili"
@@ -623,6 +617,9 @@
   "sectionRemove": {
     "message": "Rimuovi sezione"
   },
+  "sections": {
+    "message": "Sezioni"
+  },
   "shortcuts": {
     "message": "Scorciatoie"
   },
@@ -710,9 +707,6 @@
   "styleRegexpProblemTooltip": {
     "message": "Numero di sezioni non applicato a causa dell'uso errato di 'regexp()'"
   },
-  "styleRegexpTestButton": {
-    "message": "Test RegExp"
-  },
   "styleRegexpTestInvalid": {
     "message": "Regexp invalida ignorata"
   },
@@ -750,6 +744,9 @@
   },
   "unreachableContentScript": {
     "message": "Impossibile comunicare con la pagina. Prova a ricaricare la scheda."
+  },
+  "unreachableMozSiteHintOldFF": {
+    "message": "Solo Firefox 59 e successivi possono essere configurati per consentire alle WebExtensions di aggiungere elementi degli stili su siti CSP-protected come questo."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Nessun aggiornamento trovato"

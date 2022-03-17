@@ -267,6 +267,17 @@
   "disableStyleLabel": {
     "message": "Wyłącz"
   },
+  "draftAction": {
+    "message": "Wybierz 'Tak', aby załadować tę wersję roboczą lub 'Nie', aby ją odrzucić."
+  },
+  "draftTitle": {
+    "message": "Odzyskiwanie wersji roboczej, utworzonej $date$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
   "dragDropMessage": {
     "message": "Upuść twój plik kopii zapasowej gdziekolwiek na tej stronie, aby zaimportować."
   },
@@ -304,6 +315,9 @@
   },
   "excludeStyleByUrlLabel": {
     "message": "Wyklucz bieżący adres URL"
+  },
+  "exportCompatible": {
+    "message": "Eksportuj (tryb kompatybilny)"
   },
   "exportLabel": {
     "message": "Eksportuj"
@@ -343,15 +357,6 @@
   "findStyles": {
     "message": "Znajdź style"
   },
-  "findStylesForSite": {
-    "message": "Znajdź więcej stylów dla tej witryny"
-  },
-  "findStylesInline": {
-    "message": "Wstawka"
-  },
-  "findStylesInlineTooltip": {
-    "message": "Wyświetlaj wyniki wyszukiwania w tym oknie."
-  },
   "genericAdd": {
     "message": "Dodaj"
   },
@@ -385,6 +390,9 @@
   "genericSavedMessage": {
     "message": "Zapisano"
   },
+  "genericTest": {
+    "message": "Testuj"
+  },
   "genericTitle": {
     "message": "Tytuł"
   },
@@ -393,6 +401,9 @@
   },
   "gettingStyles": {
     "message": "Uzyskiwanie wszystkich stylów..."
+  },
+  "headerResizerHint": {
+    "message": "Przytrzymaj Shift, aby zmienić rozmiar tylko w tego typu interfejsie, tj. edytorze, menedżerze, instalatorze"
   },
   "helpAlt": {
     "message": "Pomoc"
@@ -468,18 +479,6 @@
   },
   "installButtonUpdate": {
     "message": "Zaktualizuj styl"
-  },
-  "installPreferSchemeDark": {
-    "message": "W trybie ciemnym"
-  },
-  "installPreferSchemeLabel": {
-    "message": "Należy stosować styl:"
-  },
-  "installPreferSchemeLight": {
-    "message": "W trybie jasnym"
-  },
-  "installPreferSchemeNone": {
-    "message": "Zawsze"
   },
   "installUpdate": {
     "message": "Zainstaluj aktualizację"
@@ -840,9 +839,6 @@
   "optionsAdvanced": {
     "message": "Zaawansowane"
   },
-  "optionsAdvancedAutoSwitchScheme": {
-    "message": "Automatycznie przełączaj style trybu jasnego/ciemnego"
-  },
   "optionsAdvancedAutoSwitchSchemeBySystem": {
     "message": "Według preferencji systemowych"
   },
@@ -850,7 +846,7 @@
     "message": "W nocy:"
   },
   "optionsAdvancedAutoSwitchSchemeNever": {
-    "message": "Nigdy"
+    "message": "Wyłączone. Ustawienie ciemny/jasny w stylach jest ignorowane."
   },
   "optionsAdvancedContextDelete": {
     "message": "Dodaj 'Usuń' do menu kontekstowego edytora"
@@ -860,6 +856,12 @@
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "Odsłania domenę najwyższego poziomu w każdym elemencie iframe.\nWłącza pisanie CSS specyficznych dla iframe w taki sposób:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
+  },
+  "optionsAdvancedExposeStyleName": {
+    "message": "Eksponuj nazwę stylu"
+  },
+  "optionsAdvancedExposeStyleNameNote": {
+    "message": "Eksponuje nazwę stylu na stronie, aby ułatwić debugowanie stylów w narzędziach dla twórców witryn. Załaduj ponownie kartę(-y), aby zastosować nowe ustawienie."
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Napisz nowy styl jako usercss"
@@ -906,6 +908,9 @@
   "optionsHeading": {
     "message": "Opcje"
   },
+  "optionsIconAuto": {
+    "message": "Dopasuj tryb ciemny/jasny"
+  },
   "optionsIconDark": {
     "message": "Ciemne motywy przeglądarki"
   },
@@ -928,7 +933,7 @@
     "message": "Resetuj opcje"
   },
   "optionsStylusThemes": {
-    "message": "Znajdź motyw interfejsu Stylusa"
+    "message": "Kliknij ikonę Stylusa na pasku narzędzi przeglądarki na dowolnej stronie Stylusa, w tym tej, a następnie kliknij 'Znajdź style'"
   },
   "optionsSubheading": {
     "message": "Więcej opcji"
@@ -1039,6 +1044,9 @@
   "popupHotkeysTooltip": {
     "message": "Kliknij, aby zobaczyć dostępne skróty klawiszowe"
   },
+  "popupManageSiteStyles": {
+    "message": "Zarządzaj stylami witryny"
+  },
   "popupManageTooltip": {
     "message": "Shift + kliknięcie lub kliknięcie prawym przyciskiem otwiera menedżera ze stylami obowiązującymi dla bieżącej witryny"
   },
@@ -1059,6 +1067,21 @@
   },
   "prefShowBadge": {
     "message": "Liczba aktywnych stylów dla bieżącej witryny"
+  },
+  "preferScheme": {
+    "message": "Preferencje trybu ciemnego/jasnego"
+  },
+  "preferSchemeAlways": {
+    "message": "Obecnie ignorowane (styl zawsze obowiązuje), ponieważ globalny tryb ciemny/jasny jest wyłączony"
+  },
+  "preferSchemeDark": {
+    "message": "Ciemny"
+  },
+  "preferSchemeLight": {
+    "message": "Jasny"
+  },
+  "preferSchemeNone": {
+    "message": "Brak (zawsze stosowane)"
   },
   "previewLabel": {
     "message": "Podgląd na żywo"
@@ -1088,7 +1111,7 @@
     "message": "Odczytywanie stylów..."
   },
   "reload": {
-    "message": "Przeładuj rozszerzenie Stylus"
+    "message": "Przeładuj"
   },
   "replace": {
     "message": "Zamień"
@@ -1099,11 +1122,17 @@
   "replaceWith": {
     "message": "Zamień na"
   },
+  "restoreTemplate": {
+    "message": "Przywróć szablon domyślny.\n\n(Aktualnie otwarte strony edytora nie ulegną zmianie.)"
+  },
   "retrieveBckp": {
     "message": "Importuj style"
   },
   "retrieveDropboxSync": {
     "message": "Importuj z Dropboksa"
+  },
+  "saveAsTemplate": {
+    "message": "Zapisz jako szablon"
   },
   "search": {
     "message": "Szukaj"
@@ -1189,6 +1218,9 @@
   "shortcutsNote": {
     "message": "Zdefiniuj skróty klawiaturowe"
   },
+  "shortcutsNoteFF": {
+    "message": "W przeglądarce Firefox 66+ możesz ręcznie otworzyć interfejs wbudowanych skrótów:\n1) kliknij prawym przyciskiem myszy ikonę Stylusa na pasku narzędzi i wybierz 'Zarządzaj'\n(alternatywnie otwórz about:addon z menu głównego lub Ctrl-Shift-A),\n2) na stronie, która się otworzy, kliknij ikonę koła zębatego w prawym górnym rogu,\n3) wybierz 'Zarządzaj skrótami rozszerzeń'.\n\nMożesz także dostosować skróty tutaj."
+  },
   "sortDateNewestFirst": {
     "message": "najpierw najnowsze"
   },
@@ -1245,6 +1277,18 @@
   },
   "styleIncludeLabel": {
     "message": "Niestandardowe uwzględnione witryny"
+  },
+  "styleInjectionImportance": {
+    "message": "Przełącz ważność stylu"
+  },
+  "styleInjectionOrder": {
+    "message": "Kolejność wstrzykiwania stylów"
+  },
+  "styleInjectionOrderHint": {
+    "message": "Przeciągnij i upuść styl, aby zmienić jego pozycję. Style są wstrzykiwane sekwencyjnie w kolejności pokazanej poniżej, dzięki czemu styl znajdujący się dalej na liście może zastąpić wcześniejsze style."
+  },
+  "styleInjectionOrderHint_prio": {
+    "message": "Ważne style wymienione poniżej są zawsze wstrzykiwane jako ostatnie, dzięki czemu mogą zastąpić nowo zainstalowane style. Kliknij oznaczenie stylu, aby zmienić jego ważność."
   },
   "styleInstall": {
     "message": "Zainstalować '$stylename$' do Stylusa?",
@@ -1305,9 +1349,6 @@
   },
   "styleRegexpProblemTooltip": {
     "message": "Liczba sekcji, które nie zostały zastosowane z powodu nieprawidłowego użycia 'regexp()'"
-  },
-  "styleRegexpTestButton": {
-    "message": "Test RegExp"
   },
   "styleRegexpTestFull": {
     "message": "Dopasowane karty"

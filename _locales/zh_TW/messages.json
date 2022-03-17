@@ -357,15 +357,6 @@
   "findStyles": {
     "message": "尋找樣式"
   },
-  "findStylesForSite": {
-    "message": "查找更多適合此網站的樣式"
-  },
-  "findStylesInline": {
-    "message": "嵌入"
-  },
-  "findStylesInlineTooltip": {
-    "message": "在此視窗中顯示搜尋結果。"
-  },
   "genericAdd": {
     "message": "新增"
   },
@@ -398,6 +389,9 @@
   },
   "genericSavedMessage": {
     "message": "已儲存"
+  },
+  "genericTest": {
+    "message": "測試"
   },
   "genericTitle": {
     "message": "標題"
@@ -485,18 +479,6 @@
   },
   "installButtonUpdate": {
     "message": "更新樣式"
-  },
-  "installPreferSchemeDark": {
-    "message": "在深色模式"
-  },
-  "installPreferSchemeLabel": {
-    "message": "應該套用的樣式："
-  },
-  "installPreferSchemeLight": {
-    "message": "在淺色模式"
-  },
-  "installPreferSchemeNone": {
-    "message": "一律"
   },
   "installUpdate": {
     "message": "安裝更新"
@@ -857,9 +839,6 @@
   "optionsAdvanced": {
     "message": "進階"
   },
-  "optionsAdvancedAutoSwitchScheme": {
-    "message": "自動切換淺色／深色模式樣式"
-  },
   "optionsAdvancedAutoSwitchSchemeBySystem": {
     "message": "按系統偏好設定"
   },
@@ -867,7 +846,7 @@
     "message": "到夜間："
   },
   "optionsAdvancedAutoSwitchSchemeNever": {
-    "message": "從不"
+    "message": "已停用。樣式中的深色／淺色設定會被忽略。"
   },
   "optionsAdvancedContextDelete": {
     "message": "在編輯器的右鍵選單中加入「刪除」"
@@ -877,6 +856,12 @@
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "公開每個 iframe 中的頂級頁面網域。\n啟用編寫特別用於 iframe 的 CSS，如這個：\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
+  },
+  "optionsAdvancedExposeStyleName": {
+    "message": "發佈樣式名稱"
+  },
+  "optionsAdvancedExposeStyleNameNote": {
+    "message": "在頁面中發佈樣式名稱以方便在 devtools 中對樣式進行除錯。請重新載入分頁以套用新設定。"
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "以 usercss 編寫新樣式"
@@ -923,6 +908,9 @@
   "optionsHeading": {
     "message": "選項"
   },
+  "optionsIconAuto": {
+    "message": "符合深色／淺色模式"
+  },
   "optionsIconDark": {
     "message": "暗色瀏覽器主題"
   },
@@ -945,7 +933,7 @@
     "message": "重設選項"
   },
   "optionsStylusThemes": {
-    "message": "尋找 Sytlus UI 佈景主題"
+    "message": "點擊任何 Stylus 頁面（包含這個）的瀏覽器工具列中的 Stylus 圖示，然後點擊「尋找樣式」"
   },
   "optionsSubheading": {
     "message": "更多選項"
@@ -1077,6 +1065,21 @@
   "prefShowBadge": {
     "message": "在工具欄按鈕上顯示當前網站已生效的樣式表數目。"
   },
+  "preferScheme": {
+    "message": "深色／淺色模式偏好設定"
+  },
+  "preferSchemeAlways": {
+    "message": "目前被忽略（樣式一律套用），因為全域深色／淺色模式已被停用"
+  },
+  "preferSchemeDark": {
+    "message": "深色"
+  },
+  "preferSchemeLight": {
+    "message": "淺色"
+  },
+  "preferSchemeNone": {
+    "message": "無（一律套用）"
+  },
   "previewLabel": {
     "message": "即時預覽"
   },
@@ -1105,7 +1108,7 @@
     "message": "正在讀取樣式……"
   },
   "reload": {
-    "message": "重新載入 Stylus 附加元件"
+    "message": "重启"
   },
   "replace": {
     "message": "取代"
@@ -1211,6 +1214,9 @@
   },
   "shortcutsNote": {
     "message": "自訂鍵盤快速鍵"
+  },
+  "shortcutsNoteFF": {
+    "message": "在 Firefox 66 或更新的版本中，您可以手動開啟內建的快捷鍵使用者介面：\n1) 右鍵點擊工具列中的 Stylus 圖示並選擇「管理」\n（或是透過主選單或 Ctrl-Shift-A 開啟 about:addons），\n2) 在開啟的頁面中點擊右上角的齒輪圖示，\n3) 選擇「管理擴充套件快捷鍵」。\n\n您也可以在此自訂快捷鍵。"
   },
   "sortDateNewestFirst": {
     "message": "最新的優先"
@@ -1340,9 +1346,6 @@
   },
   "styleRegexpProblemTooltip": {
     "message": "因為不正確的 'regexp()' 使用導致未套用的樣式段數量"
-  },
-  "styleRegexpTestButton": {
-    "message": "正規表示式測試"
   },
   "styleRegexpTestFull": {
     "message": "符合的分頁"

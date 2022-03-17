@@ -267,6 +267,17 @@
   "disableStyleLabel": {
     "message": "Отключить"
   },
+  "draftAction": {
+    "message": "Выберите «Да» для загрузки черновика или «Нет», чтобы выкинуть его."
+  },
+  "draftTitle": {
+    "message": "Восстановление черновика, созданного $date$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
   "dragDropMessage": {
     "message": "Перетащите файл с резервной копией стилей в любое место этой страницы, чтобы импортировать его."
   },
@@ -304,6 +315,9 @@
   },
   "excludeStyleByUrlLabel": {
     "message": "Исключить текущий URL"
+  },
+  "exportCompatible": {
+    "message": "Экспорт (режим совместимости)"
   },
   "exportLabel": {
     "message": "Экспорт"
@@ -343,15 +357,6 @@
   "findStyles": {
     "message": "Найти стили"
   },
-  "findStylesForSite": {
-    "message": "Найти ещё стили для этого веб-сайта"
-  },
-  "findStylesInline": {
-    "message": "и показать здесь"
-  },
-  "findStylesInlineTooltip": {
-    "message": "Показывать найденные стили в этом окне."
-  },
   "genericAdd": {
     "message": "Добавить"
   },
@@ -385,6 +390,9 @@
   "genericSavedMessage": {
     "message": "Сохранено"
   },
+  "genericTest": {
+    "message": "Тест"
+  },
   "genericTitle": {
     "message": "Имя"
   },
@@ -393,6 +401,9 @@
   },
   "gettingStyles": {
     "message": "Получение всех стилей..."
+  },
+  "headerResizerHint": {
+    "message": "С клавишей Shift размер меняется только для такого же типа страниц, т.е. редактор, менеджер, установщик"
   },
   "helpAlt": {
     "message": "Справка"
@@ -468,18 +479,6 @@
   },
   "installButtonUpdate": {
     "message": "Обновить стиль"
-  },
-  "installPreferSchemeDark": {
-    "message": "В ночном режиме"
-  },
-  "installPreferSchemeLabel": {
-    "message": "Когда применять стиль:"
-  },
-  "installPreferSchemeLight": {
-    "message": "В дневном режиме"
-  },
-  "installPreferSchemeNone": {
-    "message": "Всегда"
   },
   "installUpdate": {
     "message": "Установить обновление"
@@ -843,9 +842,6 @@
   "optionsAdvanced": {
     "message": "Другое"
   },
-  "optionsAdvancedAutoSwitchScheme": {
-    "message": "Автоматически переключать дневные/ночные стили"
-  },
   "optionsAdvancedAutoSwitchSchemeBySystem": {
     "message": "По настройке операционной системы"
   },
@@ -853,7 +849,7 @@
     "message": "В ночное время:"
   },
   "optionsAdvancedAutoSwitchSchemeNever": {
-    "message": "Никогда"
+    "message": "Отключен. Настройка режима в стилях игнорируется."
   },
   "optionsAdvancedContextDelete": {
     "message": "Показывать команду \"Удалить\" в контекстном меню редактора"
@@ -863,6 +859,12 @@
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "Выставляет верхний домен сайта в каждом iframe.\nПозволяет писать iframe-specific CSS следующим образом:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
+  },
+  "optionsAdvancedExposeStyleName": {
+    "message": "Проставлять имя стиля"
+  },
+  "optionsAdvancedExposeStyleNameNote": {
+    "message": "Проставляет имя стиля внутри страницы чтобы облегчить отладку стилей в инструментах разработчика (devtools). Чтобы применить новую настройку пожалуйста обновите вкладку со страницей."
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Создавать стили в формате usercss"
@@ -909,6 +911,9 @@
   "optionsHeading": {
     "message": "Настройки"
   },
+  "optionsIconAuto": {
+    "message": "В соответствии с ночным/дневным режимом"
+  },
   "optionsIconDark": {
     "message": "Тёмный интерфейс браузера"
   },
@@ -931,7 +936,7 @@
     "message": "Сброс настроек"
   },
   "optionsStylusThemes": {
-    "message": "Найти тему интерфейса Stylus"
+    "message": "Нажмите иконку Stylus в верхней панели браузера на любой странице Stylus, в том числе и этой, затем нажмите «Найти стили»"
   },
   "optionsSubheading": {
     "message": "Дополнительно"
@@ -1042,6 +1047,9 @@
   "popupHotkeysTooltip": {
     "message": "Показать горячие клавиши"
   },
+  "popupManageSiteStyles": {
+    "message": "Управлять стилями сайта"
+  },
   "popupManageTooltip": {
     "message": "Shift-ЛКМ или ПКМ откроет менеджер с стилями только для этого сайта."
   },
@@ -1062,6 +1070,21 @@
   },
   "prefShowBadge": {
     "message": "Показывать количество активных стилей для открытого сайта"
+  },
+  "preferScheme": {
+    "message": "Ночной/дневной режим"
+  },
+  "preferSchemeAlways": {
+    "message": "Пока что игнорируется (стиль всегда включен), т.к. общий режим ночи/дня отключен"
+  },
+  "preferSchemeDark": {
+    "message": "Ночной"
+  },
+  "preferSchemeLight": {
+    "message": "Дневной"
+  },
+  "preferSchemeNone": {
+    "message": "Нет (всегда включен)"
   },
   "previewLabel": {
     "message": "Предпросмотр"
@@ -1090,9 +1113,6 @@
   "readingStyles": {
     "message": "Чтение стилей..."
   },
-  "reload": {
-    "message": "Перезагрузить расширение Stylus"
-  },
   "replace": {
     "message": "Заменить"
   },
@@ -1102,11 +1122,17 @@
   "replaceWith": {
     "message": "Заменить на"
   },
+  "restoreTemplate": {
+    "message": "Восстановить шаблон по-умолчанию.\n\n(Не влияет на уже открытые страницы редактирования)"
+  },
   "retrieveBckp": {
     "message": "Импорт стилей"
   },
   "retrieveDropboxSync": {
     "message": "Импорт Dropbox"
+  },
+  "saveAsTemplate": {
+    "message": "Сохранить как шаблон"
   },
   "search": {
     "message": "Поиск"
@@ -1192,6 +1218,9 @@
   "shortcutsNote": {
     "message": "Назначить клавишу"
   },
+  "shortcutsNoteFF": {
+    "message": "В Firefox 66+ вы можете открыть интерфейс клавиатурных сочетаний самостоятельно:\n1) правой кнопкой мыши на иконке Stylus в панели браузера, затем «Менеджер»\n(либо откройте about:addons из главного меню или нажмите Ctrl-Shift-A),\n2) на странице, которая откроется, нажмите иконку шестеренки в правом верхнем углу,\n3) выберите «Управление горячими клавишами расширений».\n\nТакже настроить клавиши можно и здесь."
+  },
   "sortDateNewestFirst": {
     "message": "новые сверху"
   },
@@ -1248,6 +1277,18 @@
   },
   "styleIncludeLabel": {
     "message": "Личный список включенных сайтов"
+  },
+  "styleInjectionImportance": {
+    "message": "Переключить важность стиля"
+  },
+  "styleInjectionOrder": {
+    "message": "Порядок применения стилей"
+  },
+  "styleInjectionOrderHint": {
+    "message": "Перетащите стиль для изменения его позиции. Стили применяются последовательно в нижеуказанном порядке, так что последующий стиль может изменить эффект предыдущих."
+  },
+  "styleInjectionOrderHint_prio": {
+    "message": "Важные стили всегда применяются после новоустановленных стилей, чтобы иметь «последнее слово». Для изменения важности стиля нажмите на его значок."
   },
   "styleInstall": {
     "message": "Установить \"$stylename$\" в Stylus?",
@@ -1308,9 +1349,6 @@
   },
   "styleRegexpProblemTooltip": {
     "message": "Кол-во пропущенных разделов из-за неправильного regexp()"
-  },
-  "styleRegexpTestButton": {
-    "message": "Тест регулярки"
   },
   "styleRegexpTestFull": {
     "message": "Соответствующие вкладки"

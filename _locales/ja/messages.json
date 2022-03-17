@@ -319,15 +319,6 @@
   "findStyles": {
     "message": "スタイルを検索"
   },
-  "findStylesForSite": {
-    "message": "このサイト用のスタイルを検索"
-  },
-  "findStylesInline": {
-    "message": "結果を下に表示"
-  },
-  "findStylesInlineTooltip": {
-    "message": "検索結果をこのウィンドウに表示"
-  },
   "genericAdd": {
     "message": "追加"
   },
@@ -360,6 +351,9 @@
   },
   "genericSavedMessage": {
     "message": "保存しました"
+  },
+  "genericTest": {
+    "message": "テスト"
   },
   "genericTitle": {
     "message": "タイトル"
@@ -447,18 +441,6 @@
   },
   "installButtonUpdate": {
     "message": "更新"
-  },
-  "installPreferSchemeDark": {
-    "message": "ダークモード時"
-  },
-  "installPreferSchemeLabel": {
-    "message": "適用するスタイル:"
-  },
-  "installPreferSchemeLight": {
-    "message": "ライトモード時"
-  },
-  "installPreferSchemeNone": {
-    "message": "常時"
   },
   "installUpdate": {
     "message": "更新をインストール"
@@ -822,9 +804,6 @@
   "optionsAdvanced": {
     "message": "上級者向け"
   },
-  "optionsAdvancedAutoSwitchScheme": {
-    "message": "ライト/ダークモードのスタイルを自動で切り替える"
-  },
   "optionsAdvancedAutoSwitchSchemeBySystem": {
     "message": "システム設定による"
   },
@@ -832,7 +811,7 @@
     "message": "夜間時間による"
   },
   "optionsAdvancedAutoSwitchSchemeNever": {
-    "message": "なし"
+    "message": "無効。スタイルの暗い/明るい設定は無視されます。"
   },
   "optionsAdvancedContextDelete": {
     "message": "エディタのコンテキストメニューに「削除」を追加する"
@@ -842,6 +821,12 @@
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "各iframeにトップサイトドメインを公開します。\n次のようにiframe用のCSSを書くことができるようになります:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
+  },
+  "optionsAdvancedExposeStyleName": {
+    "message": "スタイル名を公開"
+  },
+  "optionsAdvancedExposeStyleNameNote": {
+    "message": "開発ツールでスタイルのデバッグを容易にするため、ページ内にスタイル名を公開します。タブをリロードして新しい設定を適用してください。"
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "新しいスタイルを usercss として作成します"
@@ -888,6 +873,9 @@
   "optionsHeading": {
     "message": "オプション"
   },
+  "optionsIconAuto": {
+    "message": "暗い/明るいモード設定に合わせます"
+  },
   "optionsIconDark": {
     "message": "暗いブラウザのテーマ"
   },
@@ -910,7 +898,7 @@
     "message": "オプションをリセット"
   },
   "optionsStylusThemes": {
-    "message": "StylusのUIテーマを見つける"
+    "message": "このページを含む任意のStylusのページで、ブラウザのツールバー内のStylusアイコンをクリックして、「スタイルを見つける」をクリックします"
   },
   "optionsSubheading": {
     "message": "その他のオプション"
@@ -1042,6 +1030,21 @@
   "prefShowBadge": {
     "message": "現在のサイトで有効なスタイルの数を表示"
   },
+  "preferScheme": {
+    "message": "暗い/明るいモード設定"
+  },
+  "preferSchemeAlways": {
+    "message": "グローバルな暗い/明るいモード設定が無効になっているため、現在は無視されます（スタイルは常に適用されます）"
+  },
+  "preferSchemeDark": {
+    "message": "暗い"
+  },
+  "preferSchemeLight": {
+    "message": "明るい"
+  },
+  "preferSchemeNone": {
+    "message": "なし（常に適用）"
+  },
   "previewLabel": {
     "message": "自動プレビュー"
   },
@@ -1070,7 +1073,7 @@
     "message": "スタイルを読み込み中..."
   },
   "reload": {
-    "message": "Stylus拡張をリロードする"
+    "message": "リロード"
   },
   "replace": {
     "message": "置換"
@@ -1176,6 +1179,9 @@
   },
   "shortcutsNote": {
     "message": "キーボードショートカットを定義する"
+  },
+  "shortcutsNoteFF": {
+    "message": "Firefox 66+ では、ビルトインのショートカットUIを手動で開けます。\n（1）ツールバーのStylusアイコンを右クリックして、「管理」を選択します。\n（もしくは、メインメニューでabout:addonsを開くかCtrl-Shift-Aを押します）\n（2）開いたページの右上隅にある歯車のアイコンをクリックします。\n（3）「拡張機能のショートカットの管理」を選択します。\n\nまた、ショートカットをここで設定することもできます。"
   },
   "sortDateNewestFirst": {
     "message": "新しい順"
@@ -1302,9 +1308,6 @@
   },
   "styleRegexpProblemTooltip": {
     "message": "'regexp()' の誤った使用のためいくつかのセクションを適用できませんでした"
-  },
-  "styleRegexpTestButton": {
-    "message": "正規表現をテスト"
   },
   "styleRegexpTestFull": {
     "message": "一致するタブ"

@@ -267,11 +267,22 @@
   "disableStyleLabel": {
     "message": "禁用"
   },
+  "draftAction": {
+    "message": "选择“是”以加载此草稿，或“否”以丢弃它。"
+  },
+  "draftTitle": {
+    "message": "恢复 $date$ 个小时前的草稿",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
   "dragDropMessage": {
     "message": "把 JSON 备份文件拖放到该页面任意位置即可导入"
   },
   "dragDropUsercssTabstrip": {
-    "message": "要安装文件，就将其放在选项卡条（显示选项卡标题的区域）上。"
+    "message": "要安装文件，就将其放在标签页条（显示标签页标题的区域）上。"
   },
   "editDeleteText": {
     "message": "删除"
@@ -304,6 +315,9 @@
   },
   "excludeStyleByUrlLabel": {
     "message": "排除当前链接"
+  },
+  "exportCompatible": {
+    "message": "导出（兼容模式）"
   },
   "exportLabel": {
     "message": "导出"
@@ -343,15 +357,6 @@
   "findStyles": {
     "message": "查找更多样式"
   },
-  "findStylesForSite": {
-    "message": "查找适合此网站的更多样式"
-  },
-  "findStylesInline": {
-    "message": "嵌入到此页面"
-  },
-  "findStylesInlineTooltip": {
-    "message": "在此弹窗内显示搜索结果。"
-  },
   "genericAdd": {
     "message": "添加"
   },
@@ -385,6 +390,9 @@
   "genericSavedMessage": {
     "message": "已保存"
   },
+  "genericTest": {
+    "message": "测试"
+  },
   "genericTitle": {
     "message": "标题"
   },
@@ -393,6 +401,9 @@
   },
   "gettingStyles": {
     "message": "正在获取所有样式..."
+  },
+  "headerResizerHint": {
+    "message": "仅在此类 编辑器/管理器/安装器 UI , 按住 Shift 可调整大小"
   },
   "helpAlt": {
     "message": "帮助"
@@ -468,18 +479,6 @@
   },
   "installButtonUpdate": {
     "message": "更新样式"
-  },
-  "installPreferSchemeDark": {
-    "message": "深色模式"
-  },
-  "installPreferSchemeLabel": {
-    "message": "此样式将在以下模式中应用："
-  },
-  "installPreferSchemeLight": {
-    "message": "浅色模式"
-  },
-  "installPreferSchemeNone": {
-    "message": "始终"
   },
   "installUpdate": {
     "message": "安装更新"
@@ -565,10 +564,10 @@
     "message": "查看文件时发生错误"
   },
   "liveReloadInstallHint": {
-    "message": "保持此选项卡为打开状态，将在外部更改后自动更新样式。"
+    "message": "保持此标签页为打开状态，以便在外部更改时自动更新样式。"
   },
   "liveReloadInstallHintFF": {
-    "message": "保持此选项卡和原始选项卡处于打开状态，将在外部更改时自动重新更新样式。"
+    "message": "保持此标签页和原始标签页处于打开状态，以便在外部更改时自动更新样式。"
   },
   "liveReloadLabel": {
     "message": "动态刷新"
@@ -840,9 +839,6 @@
   "optionsAdvanced": {
     "message": "高级设置"
   },
-  "optionsAdvancedAutoSwitchScheme": {
-    "message": "自动切换深色/浅色模式样式"
-  },
   "optionsAdvancedAutoSwitchSchemeBySystem": {
     "message": "按系统偏好设置"
   },
@@ -850,7 +846,7 @@
     "message": "按夜间时间"
   },
   "optionsAdvancedAutoSwitchSchemeNever": {
-    "message": "从不"
+    "message": "已停用。樣式中的深色／淺色設定會被忽略。"
   },
   "optionsAdvancedContextDelete": {
     "message": "向编辑器右键菜单添加“删除”"
@@ -860,6 +856,12 @@
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "给每个iframe框架的html注入window.top父域名的内联属性(值)\n即 html[stylus-iframe=\"hostname\"] \n\n用途: 确定或排除 iframe选择器以避免伤及无辜.\nhtml:not([stylus-iframe]) {...}\nhtml[stylus-iframe] 或 html[stylus-iframe$=\"twitter.com\"] h1 {...}\n\ngithub.com/openstyles/stylus/blob/master/content/apply.js#L270"
+  },
+  "optionsAdvancedExposeStyleName": {
+    "message": "暴露样式名称"
+  },
+  "optionsAdvancedExposeStyleNameNote": {
+    "message": "在页面中暴露样式名称以方便在 DevTools 中调试样式。请重新加载标签页以应用新设置。"
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "将新样式的格式设为 UserCSS"
@@ -894,9 +896,6 @@
   "optionsCustomizeIcon": {
     "message": "工具栏图标风格"
   },
-  "optionsCustomizePopup": {
-    "message": "Popup "
-  },
   "optionsCustomizeSync": {
     "message": "同步到云端"
   },
@@ -905,6 +904,9 @@
   },
   "optionsHeading": {
     "message": "选项"
+  },
+  "optionsIconAuto": {
+    "message": "跟随深色／浅色模式"
   },
   "optionsIconDark": {
     "message": "高对比度暗色图标"
@@ -928,7 +930,7 @@
     "message": "恢复默认值"
   },
   "optionsStylusThemes": {
-    "message": "查找 Stylus UI 主题ᐝ"
+    "message": "點擊任何 Stylus 頁面（包含這個）的瀏覽器工具列中的 Stylus 圖示，然後點擊「尋找樣式」"
   },
   "optionsSubheading": {
     "message": "附加选项"
@@ -1031,10 +1033,13 @@
     "message": "对于新 Chrome 中的暗色主题很有用，因为它不再绘制边框"
   },
   "popupHotkeysInfo": {
-    "message": "<1>-<9>, <0>   按第1 - 10个列表 来ON/OFF\n<A>-<Z>     按英文首字母 来ON/OFF\n附加<Shift>:   打开对应列表的编辑器\n<Numpad +>      ON  全部列表\n<Numpad –>      OFF 全部列表\n<Numpad *> 或 <`>   仅针对Popup弹出时的初始ON列表, 它只会ON/OFF初始ON列表, 故:\n   <Numpad –> <Numpad *>  能快速恢复初始状态.\n               更多信息见Wiki"
+    "message": "<1>-<9>, <0> 开启/关闭第 N 个样式（0 就是 10）\n<A>-<Z> 开启/关闭相应英文首字母的首个样式\n附加 <Shift> 打开编辑器而不是开启/关闭\n<Numpad +> 启用列出的样式\n<Numpad –> 禁用列出的样式\n<Numpad *> 或 <`>（反引号）- 开启/关闭已启用的首个样式，当弹出菜单开启时不应用后来启用的样式，因此你可以在测试完成后恢复初始状态：简单地禁用所有样式，然后切换如 <Numpad –> <Numpad *>\n更多信息见 Wiki"
   },
   "popupHotkeysTooltip": {
     "message": "查看 Popup 快捷键"
+  },
+  "popupManageSiteStyles": {
+    "message": "管理网站样式"
   },
   "popupManageTooltip": {
     "message": "右键单击或 Shift + 左键单击可打开管理器并显示适用于当前网站的样式"
@@ -1056,6 +1061,21 @@
   },
   "prefShowBadge": {
     "message": "在当前网站生效的样式数量"
+  },
+  "preferScheme": {
+    "message": "深色／淺色模式偏好設定"
+  },
+  "preferSchemeAlways": {
+    "message": "目前被忽略（樣式一律套用），因為全域深色／淺色模式已被停用"
+  },
+  "preferSchemeDark": {
+    "message": "深色"
+  },
+  "preferSchemeLight": {
+    "message": "浅色"
+  },
+  "preferSchemeNone": {
+    "message": "無（一律套用）"
   },
   "previewLabel": {
     "message": "实时预览"
@@ -1085,7 +1105,7 @@
     "message": "正在读取样式..."
   },
   "reload": {
-    "message": "重启 Stylus"
+    "message": "重启"
   },
   "replace": {
     "message": "替换"
@@ -1096,11 +1116,17 @@
   "replaceWith": {
     "message": "替换为"
   },
+  "restoreTemplate": {
+    "message": "恢复默认模板。\n\n（不会改变当前打开的编辑器页面）"
+  },
   "retrieveBckp": {
     "message": "导入所有样式"
   },
   "retrieveDropboxSync": {
     "message": "从 Dropbox 导入"
+  },
+  "saveAsTemplate": {
+    "message": "另存为模板"
   },
   "search": {
     "message": "搜索"
@@ -1186,6 +1212,9 @@
   "shortcutsNote": {
     "message": "设置快捷键"
   },
+  "shortcutsNoteFF": {
+    "message": "在 Firefox 66 或更新的版本中，您可以手動開啟內建的快捷鍵使用者介面：\n1) 右鍵點擊工具列中的 Stylus 圖示並選擇「管理」\n（或是透過主選單或 Ctrl-Shift-A 開啟 about:addons），\n2) 在開啟的頁面中點擊右上角的齒輪圖示，\n3) 選擇「管理擴充套件快捷鍵」。\n\n您也可以在此自訂快捷鍵。"
+  },
   "sortDateNewestFirst": {
     "message": "最新的优先"
   },
@@ -1242,6 +1271,18 @@
   },
   "styleIncludeLabel": {
     "message": "自定义包括网站"
+  },
+  "styleInjectionImportance": {
+    "message": "切换样式的优先级"
+  },
+  "styleInjectionOrder": {
+    "message": "样式注入顺序"
+  },
+  "styleInjectionOrderHint": {
+    "message": "拖拽样式可更改排序。 样式按如下顺序注入，故列表下方样式可覆盖较早样式。"
+  },
+  "styleInjectionOrderHint_prio": {
+    "message": "下面列出的重要样式始终是最后注入的，因此它们可以覆盖任何新安装的样式。单击样式的标记以切换其重要性。"
   },
   "styleInstall": {
     "message": "要将“$stylename$”安装到 Stylus 中吗？",
@@ -1302,9 +1343,6 @@
   },
   "styleRegexpProblemTooltip": {
     "message": "多个部分代码无法正常处理正则表达式"
-  },
-  "styleRegexpTestButton": {
-    "message": "正则测试"
   },
   "styleRegexpTestFull": {
     "message": "匹配到标签页的正则"

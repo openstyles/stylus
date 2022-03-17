@@ -93,5 +93,8 @@
   },
   "cm_keyMap": {
     "message": "Tastegenveje"
+  },
+  "genericAdd": {
+    "message": "Tilføj"
   }
 }

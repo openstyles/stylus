@@ -112,6 +112,9 @@
   "confirmOK": {
     "message": "Добре"
   },
+  "confirmSave": {
+    "message": "Запазване"
+  },
   "confirmStop": {
     "message": "Спиране"
   },
@@ -168,11 +171,14 @@
   "exportLabel": {
     "message": "Изнасяне"
   },
-  "findStylesForSite": {
-    "message": "Още стилове за този сайт"
+  "genericAdd": {
+    "message": "Добавяне"
   },
   "genericDisabledLabel": {
     "message": "Изключено"
+  },
+  "genericEnabledLabel": {
+    "message": "Включено"
   },
   "genericHistoryLabel": {
     "message": "Хронология"
@@ -257,9 +263,6 @@
   "manageFaviconsGray": {
     "message": "Сиви"
   },
-  "manageFaviconsHelp": {
-    "message": "Разширението използва външна услуга https://icons.duckduckgo.com"
-  },
   "manageFilters": {
     "message": "Филтри"
   },
@@ -295,6 +298,9 @@
   },
   "openManage": {
     "message": "Управление"
+  },
+  "openOptions": {
+    "message": "Настройки"
   },
   "openStylesManager": {
     "message": "Управление на стиловете"
@@ -362,6 +368,9 @@
   "optionsSubheading": {
     "message": "Още настройки"
   },
+  "optionsSyncUrl": {
+    "message": "Адрес"
+  },
   "optionsUpdateImportNote": {
     "message": "При внасянето на резервни копия от стари версии или от Стайлиш направете ръчна проверка за обновления, за да сте сигурни, че стиловете са актуални."
   },
@@ -397,6 +406,9 @@
   },
   "sectionRemove": {
     "message": "Премахване на отдела"
+  },
+  "sections": {
+    "message": "Отдели"
   },
   "shortcuts": {
     "message": "Клавишни комбинации"
@@ -450,9 +462,6 @@
   },
   "styleRegexpProblemTooltip": {
     "message": "Брой на неприложените отдели поради неправилно използване на регулярни изрази"
-  },
-  "styleRegexpTestButton": {
-    "message": "Тест на регулярния израз"
   },
   "styleRegexpTestFull": {
     "message": "Съвпадащи подпрозорци"

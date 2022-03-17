@@ -22,6 +22,12 @@
   "appliesToEverything": {
     "message": "అన్నిటికీ"
   },
+  "confirmDelete": {
+    "message": "తొలగించు"
+  },
+  "confirmSave": {
+    "message": "భద్రపరచు"
+  },
   "deleteStyleConfirm": {
     "message": "మీరు నజంగానే ఈ శైలిని తొలగించాలనుకుంటున్నారా?"
   },
@@ -31,11 +37,17 @@
   "disableStyleLabel": {
     "message": "అచేతనించు"
   },
+  "editDeleteText": {
+    "message": "తొలగించు"
+  },
   "editStyleLabel": {
     "message": "మార్చు"
   },
   "enableStyleLabel": {
     "message": "చేతనించు"
+  },
+  "genericAdd": {
+    "message": "చేర్చు"
   },
   "helpAlt": {
     "message": "సహాయం"
@@ -45,6 +57,9 @@
   },
   "manageTitle": {
     "message": "స్టైలిష్"
+  },
+  "sections": {
+    "message": "విభాగాలు"
   },
   "styleSaveLabel": {
     "message": "భద్రపరచు"

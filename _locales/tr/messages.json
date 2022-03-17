@@ -284,15 +284,6 @@
   "findStyles": {
     "message": "Stil bul"
   },
-  "findStylesForSite": {
-    "message": "Bu site için başka stiller bul"
-  },
-  "findStylesInline": {
-    "message": "Hizada"
-  },
-  "findStylesInlineTooltip": {
-    "message": "Arama sonuçlarını bu pencerede görüntüleyin."
-  },
   "genericAdd": {
     "message": "Ekle"
   },
@@ -461,6 +452,9 @@
   "openManage": {
     "message": "Yüklü stilleri yönet"
   },
+  "openOptions": {
+    "message": "Seçenekler"
+  },
   "openStylesManager": {
     "message": "Stil yöneticisini aç"
   },
@@ -608,6 +602,9 @@
   "sectionRemove": {
     "message": "Bölümü kaldır"
   },
+  "sections": {
+    "message": "Bölümler"
+  },
   "shortcuts": {
     "message": "Kısayollar"
   },
@@ -660,9 +657,6 @@
   },
   "styleRegexpProblemTooltip": {
     "message": "'Regexp ()' yanlış kullanımı nedeniyle uygulanmayan bölüm sayısı"
-  },
-  "styleRegexpTestButton": {
-    "message": "RegExp testi"
   },
   "styleRegexpTestFull": {
     "message": "Eşleşen sekmeler"

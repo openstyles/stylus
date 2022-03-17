@@ -76,8 +76,14 @@
   "cm_theme": {
     "message": "Тема"
   },
+  "confirmDelete": {
+    "message": "Избриши"
+  },
   "confirmNo": {
     "message": "Не"
+  },
+  "confirmSave": {
+    "message": "Сачувај"
   },
   "confirmStop": {
     "message": "Заустави"
@@ -106,6 +112,9 @@
   "disableStyleLabel": {
     "message": "Онемогући"
   },
+  "editDeleteText": {
+    "message": "Избриши"
+  },
   "editGotoLine": {
     "message": "Иди на ред (или line:col)"
   },
@@ -129,8 +138,11 @@
   "exportLabel": {
     "message": "Извези"
   },
-  "findStylesForSite": {
-    "message": "Пронађи још стилова за овај сајт"
+  "genericAdd": {
+    "message": "Додај"
+  },
+  "genericEnabledLabel": {
+    "message": "Омогућено"
   },
   "helpAlt": {
     "message": "Помоћ"
@@ -194,8 +206,14 @@
   "openManage": {
     "message": "Управљај инсталираним стиловима"
   },
+  "openOptions": {
+    "message": "Опције"
+  },
   "optionsHeading": {
     "message": "Опције"
+  },
+  "optionsSyncUrl": {
+    "message": "УРЛ"
   },
   "popupStylesFirst": {
     "message": "Излистај стилове пре команди у менију дугмета на алатној траци"
@@ -226,6 +244,9 @@
   },
   "sectionRemove": {
     "message": "Уклони одељак"
+  },
+  "sections": {
+    "message": "Одељци"
   },
   "styleBadRegexp": {
     "message": "Регуларни израз је неисправан."

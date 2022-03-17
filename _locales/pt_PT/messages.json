@@ -1,4 +1,7 @@
 {
+  "InaccessibleFileHint": {
+    "message": "Stylus não pode acessar alguns tipos de arquivos (ex: arquivos pdf e json)."
+  },
   "addStyleLabel": {
     "message": "Escrever novo estilo"
   },
@@ -130,6 +133,9 @@
   "cm_theme": {
     "message": "Tema"
   },
+  "colorpickerPaletteHint": {
+    "message": "Clique com o botão direito em uma amostra para percorrer suas linhas de código"
+  },
   "colorpickerSwitchFormatTooltip": {
     "message": "Mudar formatos: HEX -> RGB -> HSL.\nShift-clique para inverter a direção.\nTambém através das teclas PgUp (PageUp), PgDn (PageDown)."
   },
@@ -175,6 +181,32 @@
   "confirmYes": {
     "message": "Sim"
   },
+  "connectingDropbox": {
+    "message": "Conectando ao Dropbox..."
+  },
+  "connectingDropboxNotAllowed": {
+    "message": "Conectar ao Dropbox somente é disponível em apps instalados diretamente da loja web"
+  },
+  "copied": {
+    "message": "Copiado para a área de transferência"
+  },
+  "copy": {
+    "message": "Copiar para a área de transferência"
+  },
+  "customNameHint": {
+    "message": "Digite um nome personalizado para renomear o estilo na UI sem quebrar suas atualizações"
+  },
+  "customNameResetHint": {
+    "message": "Deixar de usar o nome personalizado, usar o próprio nome do estilo"
+  },
+  "dateAbbrYear": {
+    "message": "$value$a",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
   "dateInstalled": {
     "message": "Data de instalação"
   },
@@ -205,6 +237,9 @@
   "dragDropMessage": {
     "message": "Solte o ficheiro da sua cópia de segurança em qualquer sítio nesta página para importar."
   },
+  "dragDropUsercssTabstrip": {
+    "message": "Para instalar o arquivo, solte-o na linha das abas (a área onde os títulos das abas são mostrados)."
+  },
   "editDeleteText": {
     "message": "Eliminar"
   },
@@ -228,8 +263,17 @@
   "enableStyleLabel": {
     "message": "Ativar"
   },
+  "excludeStyleByDomainLabel": {
+    "message": "Excluir o domínio atual"
+  },
+  "excludeStyleByUrlLabel": {
+    "message": "Excluir a URL atual"
+  },
   "exportLabel": {
     "message": "Exportar"
+  },
+  "exportSavedSuccess": {
+    "message": "Arquivo salvo com sucesso"
   },
   "externalLink": {
     "message": "Hiperligação externa"
@@ -256,15 +300,6 @@
   },
   "findStyles": {
     "message": "Localizar estilos"
-  },
-  "findStylesForSite": {
-    "message": "Encontrar mais estilos para este site"
-  },
-  "findStylesInline": {
-    "message": "inline"
-  },
-  "findStylesInlineTooltip": {
-    "message": "Exibir os resultados da pesquisa dentro desta janela."
   },
   "genericAdd": {
     "message": "Adicionar"
@@ -299,6 +334,9 @@
   "genericUnknown": {
     "message": "Desconhecido"
   },
+  "gettingStyles": {
+    "message": "Obtendo todos os estilos..."
+  },
   "helpAlt": {
     "message": "Ajuda"
   },
@@ -308,6 +346,9 @@
   "helpKeyMapHotkey": {
     "message": "Prima uma tecla de atalho"
   },
+  "hostDisabled": {
+    "message": "Este hospedeiro foi desabilitado devido a um bug na versão atual que o navegador utilizado se encontra"
+  },
   "importAppendLabel": {
     "message": "Acrescentar ao estilo"
   },
@@ -316,6 +357,12 @@
   },
   "importLabel": {
     "message": "Importar"
+  },
+  "importPreprocessor": {
+    "message": "Estilos com <code>@preprocessor</code> não irão funcionar no modo clássico. Você pode trocar o editor para o modo UserCSS: 1) abre o gerenciador de estilos, 2) ative a caixa \"como UserCSS\", 3) clique \"Escrever novo estilo\"\n\nDeseja importar mesmo assim?"
+  },
+  "importPreprocessorTitle": {
+    "message": "Possível problema causado pelo @preprocessor"
   },
   "importReplaceLabel": {
     "message": "Sobrescrever estilo"
@@ -439,6 +486,12 @@
   "liveReloadError": {
     "message": "Ocorreu um erro ao vigiar o arquivo"
   },
+  "liveReloadInstallHint": {
+    "message": "Mantenha esta guia aberta para atualizar automaticamente o estilo sob mudanças externas."
+  },
+  "liveReloadInstallHintFF": {
+    "message": "Mantenha juntamente esta guia e a guia original abertas para atualizar automaticamente o estilo sob mudanças externas."
+  },
   "liveReloadLabel": {
     "message": "Recarregamento dinâmico"
   },
@@ -493,11 +546,72 @@
   "menuShowBadge": {
     "message": "Mostrar a contagem de estilos ativados"
   },
+  "meta_invalidCheckboxDefault": {
+    "message": "Inválida @var checkbox: o valor deve ser 0 ou 1"
+  },
+  "meta_invalidNumber": {
+    "message": "Espera-se um número"
+  },
+  "meta_invalidRange": {
+    "message": "@var inválido $type$: valor deve ser um número ou um vetor",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidString": {
+    "message": "Espera-se um texto entre aspas"
+  },
+  "meta_invalidWord": {
+    "message": "Espera-se uma palavra"
+  },
+  "meta_missingChar": {
+    "message": "Caracteres esperados: $chars$",
+    "placeholders": {
+      "chars": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_missingMandatory": {
+    "message": "Metadata obrigatório não encontrado: $keys$",
+    "placeholders": {
+      "keys": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownMeta": {
+    "message": "Metadata desconhecido: $key$",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownVarType": {
+    "message": "Tipo desconhecido da variável @$varkey$: $vartype$",
+    "placeholders": {
+      "varkey": {
+        "content": "$1"
+      },
+      "vartype": {
+        "content": "$2"
+      }
+    }
+  },
+  "noFileToImport": {
+    "message": "Para importar seus estilos, você deve exportar primeiro."
+  },
   "noStylesForSite": {
     "message": "Nenhum estilo instalado para este site."
   },
   "openManage": {
     "message": "Gerir"
+  },
+  "openOptions": {
+    "message": "Opções"
   },
   "openStylesManager": {
     "message": "Abrir gestor de estilos"
@@ -535,6 +649,9 @@
   "optionsCustomizeIcon": {
     "message": "Ícone da barra de ferramentas"
   },
+  "optionsCustomizeSync": {
+    "message": "Sincronizar para a nuvem"
+  },
   "optionsCustomizeUpdate": {
     "message": "Atualizações"
   },
@@ -565,11 +682,41 @@
   "optionsSubheading": {
     "message": "Mais Opções"
   },
+  "optionsSyncConnect": {
+    "message": "Conectar"
+  },
+  "optionsSyncDisconnect": {
+    "message": "Desconectar"
+  },
+  "optionsSyncNone": {
+    "message": "Nenhum"
+  },
+  "optionsSyncStatusConnected": {
+    "message": "Conectado"
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "Conectando..."
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "Desconectado"
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "Desconectando..."
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "Sincronizando..."
+  },
+  "optionsSyncSyncNow": {
+    "message": "Sincronizar agora"
+  },
   "optionsUpdateImportNote": {
     "message": "Ao importar uma cópia de segurança de estilo da versão antiga ou do Stylish, faça uma verificação única de atualizações manualmente no gestor de estilos para garantir que todos os estilos sejam atualizados."
   },
   "optionsUpdateInterval": {
     "message": "Intervalo de atualização automática do estilo de usuário em horas (especifique 0 para desativar)"
+  },
+  "overwriteFileExport": {
+    "message": "Você gostaria de substituir um arquivo existente?"
   },
   "paginationCurrent": {
     "message": "Pagina atual"
@@ -622,6 +769,9 @@
   "previewTooltip": {
     "message": "Temporariamente aplica as alterações sem guardar.\nGuarde o estilo para tornar as alterações permanentes."
   },
+  "readingStyles": {
+    "message": "Lendo estilos..."
+  },
   "replace": {
     "message": "Substituir"
   },
@@ -633,6 +783,9 @@
   },
   "retrieveBckp": {
     "message": "Importar estilos"
+  },
+  "retrieveDropboxSync": {
+    "message": "Importar do Dropbox"
   },
   "search": {
     "message": "Pesquisar"
@@ -676,6 +829,9 @@
   "sectionRestore": {
     "message": "Restaurar secção removida"
   },
+  "sections": {
+    "message": "Secções"
+  },
   "shortcuts": {
     "message": "Atalhos"
   },
@@ -708,6 +864,9 @@
   },
   "styleBeautify": {
     "message": "Embelezar"
+  },
+  "styleBeautifyHint": {
+    "message": "Dica: clique com o botão direito no botão \"Embelezar\" ou use o atalho de teclado definido para embelezar sem mostrar esse painel"
   },
   "styleBeautifyIndentConditional": {
     "message": "Indentar @media, @supports"
@@ -778,9 +937,6 @@
   "styleRegexpProblemTooltip": {
     "message": "Número de secções não aplicadas devido ao uso incorreto de 'regexp ()'"
   },
-  "styleRegexpTestButton": {
-    "message": "Testar RegExp"
-  },
   "styleRegexpTestFull": {
     "message": "Separadores correspondentes"
   },
@@ -825,6 +981,9 @@
   "stylusUnavailableForURLdetails": {
     "message": "Como precaução de segurança, o browser proíbe extensões de afetar as páginas embutidas (como chrome://version, a página de novo separador predefinido no Chrome 61, about:addons, e assim sucessivamente) tal como páginas de outras extensões. Cada browser também restringe acesso à sua própria galeria de extensões (como Chrome Web Store ou AMO)"
   },
+  "syncDropboxStyles": {
+    "message": "Exportar para Dropbox"
+  },
   "syncStorageErrorSaving": {
     "message": "O valor não pode ser guardado. Tente reduzir a quantidade de texto."
   },
@@ -848,6 +1007,12 @@
   },
   "unreachableFileHint": {
     "message": "O Stylus pode aceder URLs file:// apenas se ativar a checkbox correspondente para a extensão Stylus na página chrome://extensions"
+  },
+  "unreachableMozSiteHintOldFF": {
+    "message": "Somente o Firefox 59 e o mais recente podem ser configurados para permitir que WebExtensions incluam elementos de estilo em sites protegidos por CSP como este."
+  },
+  "unzipStyles": {
+    "message": "Descompactando estilos..."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Nenhuma atualização encontrada."
@@ -890,6 +1055,9 @@
   "updatesCurrentlyInstalled": {
     "message": "Atualizações instaladas:"
   },
+  "uploadingFile": {
+    "message": "Enviando arquivo..."
+  },
   "usercssAvoidOverwriting": {
     "message": "Por favor modifique o valor de @name ou @namespace para evitar sobrescrever um estilo existente."
   },
@@ -913,5 +1081,8 @@
   },
   "writeStyleForURL": {
     "message": "este URL"
+  },
+  "zipStyles": {
+    "message": "Compactando estilos..."
   }
 }

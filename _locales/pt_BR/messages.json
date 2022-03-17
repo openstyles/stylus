@@ -121,6 +121,9 @@
   "cm_selectByTokens": {
     "message": "Clicar duas vezes seleciona tokens"
   },
+  "cm_selectByTokensTooltip": {
+    "message": "Exemplos de tokens: .foo-bar-2 #aabbcc 0.32 !Important\nQuando desativado: as palavras delimitadas por pontuação são selecionadas."
+  },
   "cm_smartIndent": {
     "message": "Usar indentação inteligente"
   },
@@ -303,15 +306,6 @@
   },
   "findStyles": {
     "message": "Encontrar estilos"
-  },
-  "findStylesForSite": {
-    "message": "Procurar mais estilos para este site"
-  },
-  "findStylesInline": {
-    "message": "Em linha"
-  },
-  "findStylesInlineTooltip": {
-    "message": "Mostrar resultados dentro dessa janela"
   },
   "genericAdd": {
     "message": "Adicionar"
@@ -507,14 +501,32 @@
   "liveReloadInstallHintFF": {
     "message": "Mantenha juntamente esta guia e a guia original abertas para atualizar automaticamente o estilo sob mudanças externas."
   },
+  "liveReloadLabel": {
+    "message": "Recarregamento dinâmico"
+  },
+  "manageFavicons": {
+    "message": "Favicons em colunas de aplica-se a"
+  },
+  "manageFaviconsGray": {
+    "message": "Acinzentado(s)"
+  },
+  "manageFaviconsHelp": {
+    "message": "O Stylus usa um serviço externo https://icons.duckduckgo.com"
+  },
   "manageFilters": {
     "message": "Filtros"
   },
   "manageHeading": {
     "message": "Estilos instalados"
   },
+  "manageMaxTargets": {
+    "message": "Número de aplica-se a itens"
+  },
   "manageNewStyleAsUsercss": {
     "message": "como UserCSS"
+  },
+  "manageNewUI": {
+    "message": "Nova interface do gestor"
   },
   "manageOnlyDisabled": {
     "message": "Somente estilos desativados"
@@ -522,11 +534,29 @@
   "manageOnlyEnabled": {
     "message": "Apenas estilos habilitados"
   },
+  "manageOnlyExternal": {
+    "message": "Apenas estilos externos"
+  },
+  "manageOnlyLocal": {
+    "message": "Apenas estilos criados localmente"
+  },
+  "manageOnlyLocalTooltip": {
+    "message": "(os estilos não instalados através de uma página userstyles.org)"
+  },
   "manageOnlyNonUsercss": {
     "message": "Apenas estilos sem UserCSS"
   },
+  "manageOnlyUpdates": {
+    "message": "Apenas com atualizações ou problemas"
+  },
   "manageOnlyUsercss": {
     "message": "Apenas estilos com UserCSS"
+  },
+  "menuShowBadge": {
+    "message": "Mostrar a contagem de estilos ativados"
+  },
+  "meta_invalidCheckboxDefault": {
+    "message": "Inválida @var checkbox: o valor deve ser 0 ou 1"
   },
   "meta_invalidNumber": {
     "message": "Espera-se um número"
@@ -598,6 +628,15 @@
   "optionsActions": {
     "message": "Ações"
   },
+  "optionsAdvanced": {
+    "message": "Avançadas"
+  },
+  "optionsAdvancedContextDelete": {
+    "message": "Adicionar 'Eliminar' no menu de contexto do editor"
+  },
+  "optionsAdvancedExposeIframes": {
+    "message": "Expor iframes via HTML[stylus-iframe]"
+  },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Escrever novo estilo como UserCSS"
   },
@@ -613,6 +652,12 @@
   "optionsCheckUpdate": {
     "message": "Verifique e instale todas as atualizações disponíveis"
   },
+  "optionsCustomizeBadge": {
+    "message": "Distintivo no ícone da barra de ferramentas"
+  },
+  "optionsCustomizeIcon": {
+    "message": "Ícone da barra de ferramentas"
+  },
   "optionsCustomizeSync": {
     "message": "Sincronizar para a nuvem"
   },
@@ -622,6 +667,12 @@
   "optionsHeading": {
     "message": "Opções"
   },
+  "optionsIconDark": {
+    "message": "Temas escuros do browser"
+  },
+  "optionsIconLight": {
+    "message": "Temas claros do browser"
+  },
   "optionsOpen": {
     "message": "Abrir"
   },
@@ -630,6 +681,12 @@
   },
   "optionsPopupWidth": {
     "message": "Largura do popup (em pixels)"
+  },
+  "optionsReset": {
+    "message": "Restabelecer as opções aos valores predefinidos"
+  },
+  "optionsResetButton": {
+    "message": "Restabelecer opções"
   },
   "optionsSubheading": {
     "message": "Mais Opções"
@@ -661,20 +718,68 @@
   "optionsSyncSyncNow": {
     "message": "Sincronizar agora"
   },
+  "optionsUpdateImportNote": {
+    "message": "Ao importar uma cópia de segurança de estilo da versão antiga ou do Stylish, faça uma verificação única de atualizações manualmente no gestor de estilos para garantir que todos os estilos sejam atualizados."
+  },
+  "optionsUpdateInterval": {
+    "message": "Intervalo de atualização automática do estilo de usuário em horas (especifique 0 para desativar)"
+  },
   "overwriteFileExport": {
     "message": "Você gostaria de substituir um arquivo existente?"
+  },
+  "paginationCurrent": {
+    "message": "Pagina atual"
+  },
+  "paginationEstimated": {
+    "message": "Número estimado de páginas"
+  },
+  "paginationNext": {
+    "message": "Próxima página"
+  },
+  "paginationPrevious": {
+    "message": "Pagina anterior"
+  },
+  "paginationTotal": {
+    "message": "Páginas totais"
   },
   "parseUsercssError": {
     "message": "Não foi possível analisar o UserCSS:"
   },
+  "popupBorders": {
+    "message": "Adicionar margens laterais brancas "
+  },
+  "popupBordersTooltip": {
+    "message": "Útil para temas escuros no novo Chrome, já que não pinta mais as margens laterais"
+  },
+  "popupHotkeysInfo": {
+    "message": "<1>- <9>,<0>, também no teclado numérico - alterna o Nth estilo (0 é 10)\n<A>- <Z>alterna o primeiro estilo com um nome que começa com a letra\n<Shift>abre o editor em vez de alternar\n<Numpad +>ativa estilos listados\n<Numpad –>desativa estilos listados\n<Numpad *>e <`> (backtick) - alterna os estilos inicialmente ativados; não se aplica a estilos habilitados subsequentemente enquanto o popup está aberto, para que você possa restaurar a seleção inicial depois de testar o material: basta desabilitar todos e, em seguida, alternar, i.e. <Numpad –><Numpad *>\nMais informações no wiki"
+  },
+  "popupHotkeysTooltip": {
+    "message": "Clique para ver as teclas de atalho disponíveis"
+  },
+  "popupManageTooltip": {
+    "message": "Shift-clique ou clique com o botão direito abre o gestor com estilos aplicáveis ao site atual"
+  },
+  "popupOpenEditInWindow": {
+    "message": "Abra o editor em uma nova janela"
+  },
+  "popupOpenEditInWindowTooltip": {
+    "message": "Também ativado ao desanexar o separador do editor de uma janela do browser, e desativado por anexar um separador único do editor a outra janela."
+  },
+  "popupStylesFirst": {
+    "message": "Estilos antes de comandos"
+  },
   "prefShowBadge": {
     "message": "Número de estilos ativos para o site atual"
   },
+  "previewLabel": {
+    "message": "Pré-visualização dinâmica"
+  },
+  "previewTooltip": {
+    "message": "Temporariamente aplica as alterações sem guardar.\nGuarde o estilo para tornar as alterações permanentes."
+  },
   "readingStyles": {
     "message": "Lendo estilos..."
-  },
-  "reload": {
-    "message": "Recarregar a extensão do Stylus"
   },
   "replace": {
     "message": "Substituir"
@@ -694,8 +799,32 @@
   "search": {
     "message": "Buscar"
   },
+  "searchCaseSensitive": {
+    "message": "Sensível a maiúsculas e minúsculas"
+  },
+  "searchNumberOfResults": {
+    "message": "Número de correspondências"
+  },
+  "searchNumberOfResults2": {
+    "message": "Número de correspondências no código e aplica-se a valores"
+  },
   "searchRegexp": {
     "message": "Use a sintaxe /re/ para busca por regexp"
+  },
+  "searchResultInstallCount": {
+    "message": "Instalações totais"
+  },
+  "searchResultNoneFound": {
+    "message": "Nenhum estilo encontrado para este site."
+  },
+  "searchResultRating": {
+    "message": "Classificação"
+  },
+  "searchResultUpdated": {
+    "message": "Atualizado"
+  },
+  "searchResultWeeklyCount": {
+    "message": "Instalações semanais"
   },
   "sectionAdd": {
     "message": "Adicionar outra seção"
@@ -706,8 +835,38 @@
   "sectionRemove": {
     "message": "Remover seção"
   },
+  "sectionRestore": {
+    "message": "Restaurar secção removida"
+  },
+  "sections": {
+    "message": "Seções"
+  },
   "shortcuts": {
     "message": "Atalhos"
+  },
+  "shortcutsNote": {
+    "message": "Definir atalhos de teclado"
+  },
+  "sortDateNewestFirst": {
+    "message": "mais recente primeiro"
+  },
+  "sortDateOldestFirst": {
+    "message": "mais antigos primeiro"
+  },
+  "sortLabel": {
+    "message": "Selecione uma ordenação para aplicar aos estilos instalados"
+  },
+  "sortLabelTitleAsc": {
+    "message": "Título Ascendente"
+  },
+  "sortLabelTitleDesc": {
+    "message": "Título Descendente"
+  },
+  "sortStylesHelp": {
+    "message": "Escolha o tipo de ordenação a ser aplicado às entradas instaladas na lista suspensa de ordenação. A configuração predefinida aplica uma ordem crescente (A a Z) aos títulos de entrada. As ordenações dentro do grupo \"Título Decrescente\" aplicarão uma classificação decrescente (Z a A) ao título. Existem outras predefinições que permitirão classificar as entradas por vários critérios. Pense sobre isso como ordenar uma tabela com várias colunas e cada categoria em cada seleção (entre os sinais de mais) representa uma coluna ou grupo. Por exemplo, se a configuração for \"Ativado (primeiro) + Título\", as entradas serão ordenadas de modo que todas as entradas ativadas sejam classificadas no topo da lista, então uma classificação crescente de título de entrada (A a Z) será aplicada a ambas as entradas ativadas e desativadas separadamente."
+  },
+  "sortStylesHelpTitle": {
+    "message": "Ordenar conteúdos"
   },
   "styleBadRegexp": {
     "message": "Expressão regular é inválida"
@@ -718,6 +877,12 @@
   "styleBeautifyHint": {
     "message": "Dica: clique com o botão direito no botão \"Embelezar\" ou use o atalho de teclado definido para embelezar sem mostrar esse painel"
   },
+  "styleBeautifyIndentConditional": {
+    "message": "Indentar @media, @supports"
+  },
+  "styleBeautifyPreserveNewlines": {
+    "message": "Preserve novas linhas"
+  },
   "styleCancelEditLabel": {
     "message": "Voltar ao gerenciamento"
   },
@@ -727,9 +892,37 @@
   "styleEnabledLabel": {
     "message": "Ativado"
   },
+  "styleFromMozillaFormatError": {
+    "message": "Falha ao importar do formato Mozilla"
+  },
+  "styleFromMozillaFormatPrompt": {
+    "message": "Colar o código formato-Mozilla"
+  },
   "styleInstall": {
     "message": "Instalar \"$stylename$\" no Stylus?",
     "placeholders": {
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleInstallFailed": {
+    "message": "Falha ao instalar o estilo de usuário!\n$error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleInstallOverwrite": {
+    "message": "$stylename$já está instalado. Substituir?\nVersão:$oldVersion$-> $newVersion$",
+    "placeholders": {
+      "newVersion": {
+        "content": "$3"
+      },
+      "oldVersion": {
+        "content": "$2"
+      },
       "stylename": {
         "content": "$1"
       }
@@ -741,11 +934,44 @@
   "styleMozillaFormatHeading": {
     "message": "Formato Mozilla"
   },
+  "styleNotAppliedRegexpProblemTooltip": {
+    "message": "O estilo não foi aplicado devido ao uso incorreto de 'regexp ()'"
+  },
+  "styleRegexpInvalidExplanation": {
+    "message": "Algumas regras de 'regexp()' que não puderam ser compiladas."
+  },
+  "styleRegexpPartialExplanation": {
+    "message": "Este estilo usa regexps parcialmente correspondentes em violação da <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>CSS4 @document specification</a> que requer um URL correspondente inteiro. As secções de CSS afetadas não foram aplicadas nesta página. Este estilo foi provavelmente criado no Stylish-for-Chrome o qual verifica incorretamente as regras 'regexp()' desde a primeira versão (bug conhecido)."
+  },
+  "styleRegexpProblemTooltip": {
+    "message": "Número de secções não aplicadas devido ao uso incorreto de 'regexp ()'"
+  },
+  "styleRegexpTestFull": {
+    "message": "Separadores correspondentes"
+  },
+  "styleRegexpTestInvalid": {
+    "message": "Regexps inválidos ignorados"
+  },
+  "styleRegexpTestNone": {
+    "message": "Nenhum separador correspondente"
+  },
+  "styleRegexpTestNote": {
+    "message": "Nota: use um único \\ para escapar no campo de entrada regexp, que será automaticamente convertido para \\\\ no código de estilo conforme especificação para strings entre aspas em CSS."
+  },
+  "styleRegexpTestPartial": {
+    "message": "Não corresponde totalmente, portanto ignorado"
+  },
+  "styleRegexpTestTitle": {
+    "message": "Lista de separadores correspondentes abertos (clique no URL para focar no separador)"
+  },
   "styleSaveLabel": {
     "message": "Salvar"
   },
   "styleToMozillaFormatHelp": {
     "message": "O formato Mozilla do código pode ser usado com o Stylish para Firefox e pode ser enviado para userstyles.org."
+  },
+  "styleToMozillaFormatTitle": {
+    "message": "Estilo no formato Mozilla"
   },
   "styleUpdate": {
     "message": "Você tem certeza que quer atualizar '$stylename$'?",
@@ -755,8 +981,23 @@
       }
     }
   },
+  "styleUpdateDiscardChanges": {
+    "message": "O estilo é alterado fora do editor. Gostaria de recarregar o estilo?"
+  },
+  "stylusUnavailableForURL": {
+    "message": "O Stylus não funciona em páginas como esta."
+  },
+  "stylusUnavailableForURLdetails": {
+    "message": "Como precaução de segurança, o browser proíbe extensões de afetar as páginas embutidas (como chrome://version, a página de novo separador predefinido no Chrome 61, about:addons, e assim sucessivamente) tal como páginas de outras extensões. Cada browser também restringe acesso à sua própria galeria de extensões (como Chrome Web Store ou AMO)"
+  },
   "syncDropboxStyles": {
     "message": "Exportar para Dropbox"
+  },
+  "syncStorageErrorSaving": {
+    "message": "O valor não pode ser guardado. Tente reduzir a quantidade de texto."
+  },
+  "toggleStyle": {
+    "message": "Alternar estilo"
   },
   "undo": {
     "message": "Desfazer"
@@ -764,11 +1005,29 @@
   "undoGlobal": {
     "message": "Desfazer todas as seções"
   },
+  "unreachableAMO": {
+    "message": "O Firefox proíbe o acesso ao site."
+  },
+  "unreachableAMOHint": {
+    "message": "Para permitir o acesso abra<about:config>,clique com o botão direito na lista, clique em \"Novo\", depois em \"Booleano\", cole <privacy.resistFingerprinting.block_mozAddonManager> e clique em OK,<true>,OK, recarregue a página <addons.mozilla.org>."
+  },
+  "unreachableContentScript": {
+    "message": "Não foi possível comunicar com a página. Tente recarregar o separador."
+  },
+  "unreachableFileHint": {
+    "message": "O Stylus pode aceder URLs file:// apenas se ativar a checkbox correspondente para a extensão Stylus na página chrome://extensions"
+  },
+  "unreachableMozSiteHintOldFF": {
+    "message": "Somente o Firefox 59 e o mais recente podem ser configurados para permitir que WebExtensions incluam elementos de estilo em sites protegidos por CSP como este."
+  },
   "unzipStyles": {
     "message": "Descompactando estilos..."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Nenhuma atualização encontrada."
+  },
+  "updateAllCheckSucceededSomeEdited": {
+    "message": "Alguns estilos que podem ser atualizados não foram verificados para evitar perder possíveis edições locais. As atualizações podem ser forçadas ao verificar individualmente, ou fazendo outra verificação para todos os estilos (edições locais vão ser sobrescrevidas)"
   },
   "updateCheckFailBadResponseCode": {
     "message": "A atualização falhou: o  servidor respondeu com código $code$.",
@@ -780,6 +1039,12 @@
   },
   "updateCheckFailServerUnreachable": {
     "message": "A atualização falhou: servidor inacessível."
+  },
+  "updateCheckHistory": {
+    "message": "Histórico de verificação de atualizações"
+  },
+  "updateCheckManualUpdateForce": {
+    "message": "Instalar atualização (edições locais vão ser sobrescritas)"
   },
   "updateCheckManualUpdateHint": {
     "message": "Forçar uma atualização irá sobrescrever qualquer alteração local."
@@ -801,6 +1066,15 @@
   },
   "uploadingFile": {
     "message": "Enviando arquivo..."
+  },
+  "usercssAvoidOverwriting": {
+    "message": "Por favor modifique o valor de @name ou @namespace para evitar sobrescrever um estilo existente."
+  },
+  "usercssConfigIncomplete": {
+    "message": "O estilo foi atualizado ou eliminado após a exibição do diálogo de configuração. Essas variáveis não foram guardadas para evitar corromper os metadados do estilo:"
+  },
+  "usercssEditorNamePlaceholder": {
+    "message": "Especificar @name no código"
   },
   "usercssReplaceTemplateConfirmation": {
     "message": "Substituir o template padrão por novos estilos com UserCSS com o código atual?"

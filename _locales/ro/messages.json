@@ -230,12 +230,6 @@
   "findStyles": {
     "message": "Găsiți teme"
   },
-  "findStylesForSite": {
-    "message": "Gasiți mai multe teme pentru acest site."
-  },
-  "findStylesInlineTooltip": {
-    "message": "Arătați rezultatele căutării în această pagină."
-  },
   "genericAdd": {
     "message": "Adaugă"
   },
@@ -451,11 +445,17 @@
   "menuShowBadge": {
     "message": "Afișați numărul temelor active"
   },
+  "meta_invalidCheckboxDefault": {
+    "message": "@var checkbox invalidă: valuarea trebuie să fie 0 sau 1"
+  },
   "noStylesForSite": {
     "message": "Nicio temă instalată pentru acest site."
   },
   "openManage": {
     "message": "Managerul"
+  },
+  "openOptions": {
+    "message": "Opțiuni"
   },
   "openStylesManager": {
     "message": "Deschideți managerul de teme"
@@ -622,6 +622,9 @@
   "sectionRestore": {
     "message": "Restaurează o secțiune ștearsă"
   },
+  "sections": {
+    "message": "Secțiuni"
+  },
   "shortcutsNote": {
     "message": "Creeați keyboard shortcuts"
   },
@@ -785,6 +788,9 @@
   },
   "unreachableFileHint": {
     "message": "Stylus poate accesa file:// URLs doar când este activată opțiunea respectivă din pagina cu setări chrome://extensions"
+  },
+  "unreachableMozSiteHintOldFF": {
+    "message": "Doar Firefox 59 sau mai nou poate fi configurat să permită WebExtension-urilor să adauge elemente la site-uri CSP-protected precum acesta."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Niciun update găsit."

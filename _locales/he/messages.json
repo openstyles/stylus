@@ -293,15 +293,6 @@
   "findStyles": {
     "message": "מצא עיצובים"
   },
-  "findStylesForSite": {
-    "message": "מצא סגנונות נוספים לאתר זה"
-  },
-  "findStylesInline": {
-    "message": "מוטבע"
-  },
-  "findStylesInlineTooltip": {
-    "message": "הצג תוצאות חיפוש בחלון זה."
-  },
   "genericAdd": {
     "message": "הוספה"
   },
@@ -492,9 +483,6 @@
   },
   "manageFaviconsGray": {
     "message": "האפרת האייקונים"
-  },
-  "manageFaviconsHelp": {
-    "message": "Stylus משתמש בשירות חיצוני https://icons.duckduckgo.com"
   },
   "manageFilters": {
     "message": "מסננים"
@@ -700,6 +688,9 @@
   "optionsSyncSyncNow": {
     "message": "סנכרן כעת"
   },
+  "optionsSyncUrl": {
+    "message": "כתובת אתר"
+  },
   "optionsUpdateImportNote": {
     "message": "בעת ייבוא גיבויים לסגנון מגרסה ישנה או מ־Stylish, בדוק באופן חד פעמי אם יש עדכונים באופן ידני במנהל הסגנונות כדי לוודא שכל הסגנונות מעודכנים."
   },
@@ -763,9 +754,6 @@
   "readingStyles": {
     "message": "קורא עיצובים..."
   },
-  "reload": {
-    "message": "טען מחדש את Stylus"
-  },
   "replace": {
     "message": "החלף"
   },
@@ -822,6 +810,9 @@
   },
   "sectionRestore": {
     "message": "שחזר סעיף שהוסר"
+  },
+  "sections": {
+    "message": "סעיפים"
   },
   "shortcuts": {
     "message": "קיצורי מקשים"
@@ -915,9 +906,6 @@
   },
   "styleRegexpProblemTooltip": {
     "message": "מספר המקטעים שלא הוחלו עקב שימוש שגוי ב־'regexp()'"
-  },
-  "styleRegexpTestButton": {
-    "message": "בדוק RegExp"
   },
   "styleRegexpTestFull": {
     "message": "כרטיסיות תואמות"

@@ -1136,7 +1136,7 @@
     "message": "Has realizado cambios en este estilo sin guardarlos."
   },
   "styleEnabledLabel": {
-    "message": "Activado"
+    "message": "Habilitado"
   },
   "styleFromMozillaFormatError": {
     "message": "No se pudo importar desde el formato Mozilla"

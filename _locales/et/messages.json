@@ -290,15 +290,6 @@
   "findStyles": {
     "message": "Leia stiile"
   },
-  "findStylesForSite": {
-    "message": "Leia sellele saidile veel stiile"
-  },
-  "findStylesInline": {
-    "message": "Aknasisene"
-  },
-  "findStylesInlineTooltip": {
-    "message": "Näita otsingu tulemusi selles aknas."
-  },
   "genericAdd": {
     "message": "Lisa"
   },
@@ -874,6 +865,9 @@
   "sectionRestore": {
     "message": "Taasta eemaldatud jaotis"
   },
+  "sections": {
+    "message": "Jaotised"
+  },
   "shortcuts": {
     "message": "Otseteed"
   },
@@ -976,9 +970,6 @@
   "styleRegexpProblemTooltip": {
     "message": "\"regexp()\" vale kasutuse tõttu rakendamata jaotiste arv"
   },
-  "styleRegexpTestButton": {
-    "message": "Regulaaravaldise katsetus"
-  },
   "styleRegexpTestFull": {
     "message": "Vastavad kaardid"
   },
@@ -1052,6 +1043,9 @@
   },
   "unreachableFileHint": {
     "message": "Stylus saab ligi pääseda file:// URLidele ainult siis, kui märgistad vastava kasti Stylus laiendusel chrome://extensions lehel"
+  },
+  "unreachableMozSiteHintOldFF": {
+    "message": "Ainult Firefox 59 ja uuem on võimalik seadistada lubama WebExtensionsil lisada stiilielemente CSP-kaitstud saitidele nagu see."
   },
   "unzipStyles": {
     "message": "Stiilide lahtipakkimine..."

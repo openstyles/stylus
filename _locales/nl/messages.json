@@ -248,6 +248,17 @@
   "disableStyleLabel": {
     "message": "Uitschakelen"
   },
+  "draftAction": {
+    "message": "Klik op ‘Ja’ om dit concept te laden, of op ‘Nee’ om het te verwerpen."
+  },
+  "draftTitle": {
+    "message": "Conceptherstel; gemaakt: $date$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
   "dragDropMessage": {
     "message": "Sleep uw back-upbestand naar deze pagina om het te importeren."
   },
@@ -286,6 +297,9 @@
   "excludeStyleByUrlLabel": {
     "message": "De huidige URL uitsluiten"
   },
+  "exportCompatible": {
+    "message": "Exporteren (compatibele modus)"
+  },
   "exportLabel": {
     "message": "Exporteren"
   },
@@ -321,12 +335,6 @@
   "findStyles": {
     "message": "Stijlen zoeken"
   },
-  "findStylesForSite": {
-    "message": "Meer stijlen voor deze website zoeken"
-  },
-  "findStylesInlineTooltip": {
-    "message": "Zoekresultaten binnen dit venster weergeven"
-  },
   "genericAdd": {
     "message": "Toevoegen"
   },
@@ -360,6 +368,9 @@
   "genericSavedMessage": {
     "message": "Opgeslagen"
   },
+  "genericTest": {
+    "message": "Testen"
+  },
   "genericTitle": {
     "message": "Titel"
   },
@@ -368,6 +379,9 @@
   },
   "gettingStyles": {
     "message": "Alle stijlen ophalen..."
+  },
+  "headerResizerHint": {
+    "message": "Houd Shift ingedrukt om alleen in dit type UI de grootte te wijzigen, m.a.w. editor, beheerder, installer"
   },
   "helpAlt": {
     "message": "Hulp"
@@ -443,18 +457,6 @@
   },
   "installButtonUpdate": {
     "message": "Stijl bijwerken"
-  },
-  "installPreferSchemeDark": {
-    "message": "In Donkere modus"
-  },
-  "installPreferSchemeLabel": {
-    "message": "De stijl wordt toegepast:"
-  },
-  "installPreferSchemeLight": {
-    "message": "In Lichte modus"
-  },
-  "installPreferSchemeNone": {
-    "message": "Altijd"
   },
   "installUpdate": {
     "message": "Update installeren"
@@ -812,9 +814,6 @@
   "optionsAdvanced": {
     "message": "Geavanceerd"
   },
-  "optionsAdvancedAutoSwitchScheme": {
-    "message": "Lichte-/Donkere-modusstijlen automatisch in-/uitschakelen"
-  },
   "optionsAdvancedAutoSwitchSchemeBySystem": {
     "message": "Systeemvoorkeur volgen"
   },
@@ -822,7 +821,7 @@
     "message": "Door nachttijd:"
   },
   "optionsAdvancedAutoSwitchSchemeNever": {
-    "message": "Nooit"
+    "message": "Uitgeschakeld. De instelling voor donker/licht in stijlen wordt genegeerd."
   },
   "optionsAdvancedContextDelete": {
     "message": "‘Verwijderen’ toevoegen in contextmenu van editor"
@@ -832,6 +831,12 @@
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "Legt het bovenliggende domein van de website bloot in elk iframe.\nSchakelt schrijven in voor iframe-specifieke CSS, zoals:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
+  },
+  "optionsAdvancedExposeStyleName": {
+    "message": "Stijlnaam tonen"
+  },
+  "optionsAdvancedExposeStyleNameNote": {
+    "message": "Toont de stijlnaam in de pagina om het opsporen van stijlfouten in devtools mogelijk te maken. Vernieuw de tabbladen om de nieuwe instelling toe te passen."
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Nieuwe stijl schrijven als usercss"
@@ -875,6 +880,9 @@
   "optionsHeading": {
     "message": "Opties"
   },
+  "optionsIconAuto": {
+    "message": "Volgens de Donkere/Lichte modus"
+  },
   "optionsIconDark": {
     "message": "Donkere browserthema’s"
   },
@@ -897,7 +905,7 @@
     "message": "Standaardwaarden"
   },
   "optionsStylusThemes": {
-    "message": "Een UI-thema voor Stylus zoeken"
+    "message": "Klik op een willekeurige Stylus-pagina (waaronder deze) op het Stylus-pictogram in de browserwerkbalk, en klik daarna op ‘Stijlen zoeken’."
   },
   "optionsSubheading": {
     "message": "Meer opties"
@@ -1005,6 +1013,9 @@
   "popupHotkeysTooltip": {
     "message": "Klik om beschikbare sneltoetsen te tonen"
   },
+  "popupManageSiteStyles": {
+    "message": "Websitestijlen beheren"
+  },
   "popupManageTooltip": {
     "message": "Shift-klik of rechtsklik opent de beheerder met stijlen die op de huidige website van toepassing zijn"
   },
@@ -1025,6 +1036,21 @@
   },
   "prefShowBadge": {
     "message": "Aantal actieve stijlen voor de huidige website"
+  },
+  "preferScheme": {
+    "message": "Voorkeur voor Donkere/Lichte modus"
+  },
+  "preferSchemeAlways": {
+    "message": "Momenteel genegeerd (de stijl is altijd van toepassing), omdat de globale Donkere/Lichte modus is uitgeschakeld"
+  },
+  "preferSchemeDark": {
+    "message": "Donker"
+  },
+  "preferSchemeLight": {
+    "message": "Licht"
+  },
+  "preferSchemeNone": {
+    "message": "Geen (altijd toegepast)"
   },
   "previewLabel": {
     "message": "Live-voorbeeld"
@@ -1054,7 +1080,7 @@
     "message": "Stijlen lezen..."
   },
   "reload": {
-    "message": "Stylus-extensie herladen"
+    "message": "Opnieuw laden"
   },
   "replace": {
     "message": "Vervangen"
@@ -1065,11 +1091,17 @@
   "replaceWith": {
     "message": "Vervangen door"
   },
+  "restoreTemplate": {
+    "message": "De standaardsjabloon herstellen.\n\n(De momenteel geopende editorpagina’s worden niet gewijzigd.)"
+  },
   "retrieveBckp": {
     "message": "Stijlen importeren"
   },
   "retrieveDropboxSync": {
     "message": "Dropbox - Importeren"
+  },
+  "saveAsTemplate": {
+    "message": "Opslaan als sjabloon"
   },
   "search": {
     "message": "Zoeken"
@@ -1152,6 +1184,9 @@
   "shortcutsNote": {
     "message": "Sneltoetsen definiëren"
   },
+  "shortcutsNoteFF": {
+    "message": "In Firefox 66+ kunt u de ingebouwde UI voor sneltoetsen handmatig openen:\n1) klik met rechts op het Stylus-pictogram in de werkbalk en kies ‘Extensie beheren’\n(als alternatief kunt u about:addons openen via het hoofdmenu of Ctrl-Shift-A),\n2) klik in de pagina die wordt geopend op het tandwielpictogram in de rechterbovenhoek,\n3) kies ‘Extensiesneltoetsen beheren’.\n\nHier kunt u ook de sneltoetsen aanpassen."
+  },
   "sortDateNewestFirst": {
     "message": "nieuwste eerst"
   },
@@ -1208,6 +1243,18 @@
   },
   "styleIncludeLabel": {
     "message": "Eigen opgenomen websites"
+  },
+  "styleInjectionImportance": {
+    "message": "Urgentie van stijl bepalen"
+  },
+  "styleInjectionOrder": {
+    "message": "Stijlinjectievolgorde"
+  },
+  "styleInjectionOrderHint": {
+    "message": "Versleep een stijl om de positie ervan te wijzigen. Stijlen worden geïnjecteerd op basis van de onderstaande volgorde, dus een stijl die lager op de lijst staat, kan de eerdere stijlen vervangen."
+  },
+  "styleInjectionOrderHint_prio": {
+    "message": "Belangrijke stijlen hieronder worden altijd als laatste geïnjecteerd, zodat ze eventuele pas geïnstalleerde stijlen kunnen vervangen. Klik op het sterpictogram van een stijl om de urgentie ervan te bepalen."
   },
   "styleInstall": {
     "message": "‘$stylename$’ installeren in Stylus?",
@@ -1268,9 +1315,6 @@
   },
   "styleRegexpProblemTooltip": {
     "message": "Aantal secties dat niet wordt toegepast vanwege onjuist gebruik van ‘regexp()’"
-  },
-  "styleRegexpTestButton": {
-    "message": "RegExp-test"
   },
   "styleRegexpTestFull": {
     "message": "Overeenkomende tabbladen"

@@ -272,15 +272,6 @@
   "findStyles": {
     "message": "Najít styly"
   },
-  "findStylesForSite": {
-    "message": "Najít styly pro tento web"
-  },
-  "findStylesInline": {
-    "message": "Zobrazit zde"
-  },
-  "findStylesInlineTooltip": {
-    "message": "Zobrazit výsledky vyhledávání v tomto okně."
-  },
   "genericAdd": {
     "message": "Přidat"
   },
@@ -514,6 +505,9 @@
   "menuShowBadge": {
     "message": "Zobrazit počet aktivních stylů"
   },
+  "meta_invalidCheckboxDefault": {
+    "message": "Neplatný @var checkbox: hodnota musí být 0 nebo 1"
+  },
   "meta_invalidNumber": {
     "message": "Očekáváno číslo"
   },
@@ -558,6 +552,9 @@
   },
   "openManage": {
     "message": "Spravovat"
+  },
+  "openOptions": {
+    "message": "Možnosti"
   },
   "openStylesManager": {
     "message": "Otevřít správce stylů"
@@ -627,6 +624,9 @@
   },
   "optionsSubheading": {
     "message": "Další možnosti"
+  },
+  "optionsSyncUrl": {
+    "message": "URL adresa"
   },
   "optionsUpdateImportNote": {
     "message": "Importujete-li zálohy stylů ze starší verze nebo z rozšíření Stylish, proveďte jednorázovou ruční kontrolu aktualizací ve správci stylů, aby byly všechny styly aktuální."
@@ -742,6 +742,9 @@
   "sectionRestore": {
     "message": "Obnovit odstraněnou sekci"
   },
+  "sections": {
+    "message": "Sekce"
+  },
   "shortcuts": {
     "message": "Zkratky"
   },
@@ -841,9 +844,6 @@
   "styleRegexpProblemTooltip": {
     "message": "Počet sekcí nepoužitých kvůli nesprávnému použití „regexp()“"
   },
-  "styleRegexpTestButton": {
-    "message": "Otestovat RegExp"
-  },
   "styleRegexpTestFull": {
     "message": "Odpovídající listy"
   },
@@ -911,6 +911,9 @@
   },
   "unreachableFileHint": {
     "message": "Stylus může přistupovat k file:// URL pouze při povolení odpovídající možnosti pro rozšíření Stylus ve správci chrome://extensions."
+  },
+  "unreachableMozSiteHintOldFF": {
+    "message": "Pouze Firefox 59 a novější může být nakonfigurován tak, aby rozšíření typu WebExtensions mohla přidávat styly na stránky chráněné CSP (Content Security Policy) – jako je tato."
   },
   "unzipStyles": {
     "message": "Rozbalování stylů…"

@@ -287,12 +287,6 @@
   "findStyles": {
     "message": "Hitta stilar"
   },
-  "findStylesForSite": {
-    "message": "Hitta fler stilar för denna webbplats"
-  },
-  "findStylesInlineTooltip": {
-    "message": "Visa sökresultat i det här fönstret."
-  },
   "genericAdd": {
     "message": "Lägg till"
   },
@@ -821,6 +815,9 @@
   "optionsSyncSyncNow": {
     "message": "Synkronisera nu"
   },
+  "optionsSyncUrl": {
+    "message": "Webbadress"
+  },
   "optionsUpdateImportNote": {
     "message": "När du importerar säkerhetskopior av stilar från gammal version eller från Stylish, gör en engångskontroll för uppdateringar manuellt i stilhanteraren för att säkerställa att alla stilar uppdateras."
   },
@@ -959,6 +956,9 @@
   "sectionRestore": {
     "message": "Återställ borttagen sektion"
   },
+  "sections": {
+    "message": "Sektioner"
+  },
   "shortcuts": {
     "message": "Genvägar"
   },
@@ -1058,9 +1058,6 @@
   "styleRegexpProblemTooltip": {
     "message": "Antal avsnitt som inte tillämpas på grund av felaktig användning av \"regexp()\""
   },
-  "styleRegexpTestButton": {
-    "message": "RegExp-test"
-  },
   "styleRegexpTestFull": {
     "message": "Matchande flikar"
   },
@@ -1131,6 +1128,9 @@
   },
   "unreachableFileHint": {
     "message": "Stylus kan endast komma åt fil:// webbadresser om du aktiverar motsvarande kryssruta för Stylus-tillägg på chrome://extensions-sidan."
+  },
+  "unreachableMozSiteHintOldFF": {
+    "message": "Endast Firefox 59 och nyare kan konfigureras för att tillåta WebExtensions att lägga till stilelement på CSP-skyddade webbplatser som den här."
   },
   "unzipStyles": {
     "message": "Packar upp stilar..."

@@ -97,17 +97,11 @@
   "disableStyleLabel": {
     "message": "Вимкнути"
   },
+  "editDeleteText": {
+    "message": "Видалити"
+  },
   "findStyles": {
     "message": "Знайти стилі"
-  },
-  "findStylesForSite": {
-    "message": "Знайти більше стилів для цього сайту"
-  },
-  "findStylesInline": {
-    "message": "і показати тут"
-  },
-  "findStylesInlineTooltip": {
-    "message": "Показувати знайдені стилі в цьому вікні."
   },
   "genericAdd": {
     "message": "Додати"
@@ -175,9 +169,6 @@
   "importReportTitle": {
     "message": "Імпорт стилів закінчено"
   },
-  "installPreferSchemeNone": {
-    "message": "Завжди"
-  },
   "installUpdate": {
     "message": "Встановити оновлення"
   },
@@ -191,7 +182,7 @@
     "message": "Встановити Styles"
   },
   "manageNewUI": {
-    "message": "Новий інтерфейс"
+    "message": "Новий макет інтерфейсу управління користувача"
   },
   "meta_unknownJSONLiteral": {
     "message": "Невірний JSON: $literal$не є дійсним літералом JSON",
@@ -202,13 +193,13 @@
     }
   },
   "openManage": {
-    "message": "Менеджер"
+    "message": "Керування"
   },
   "openOptions": {
     "message": "Налаштування"
   },
-  "optionsAdvancedAutoSwitchSchemeNever": {
-    "message": "Ніколи"
+  "optionsHeading": {
+    "message": "Налаштування"
   },
   "optionsReset": {
     "message": "Скидання налаштувань до значень за замовчуванням"
@@ -221,6 +212,9 @@
   },
   "optionsSyncLogin": {
     "message": "Логін"
+  },
+  "optionsSyncStatusRelogin": {
+    "message": "Сеанс закінчився, будь ласка, увійдіть ще раз."
   },
   "paginationNext": {
     "message": "Наступна сторінка"
@@ -246,6 +240,9 @@
   "searchStylesCode": {
     "message": "CSS код"
   },
+  "searchStylesHelp": {
+    "message": "</> або <Ctrl-F>клавіша фокусує поле пошуку.\nРежим за замовчуванням — це пошук у звичайному тексті для всіх термінів, розділених пробілами, у будь-якому порядку.\nТочні слова: оберніть запит у подвійні лапки, напр. <.header ~ div\">\nРегулярні вирази: включають косі риски та прапорці, напр.</body.*?\\ba\\b/i>\n«By URL» в селекторі області: знаходить стилі, які застосовуються до повністю вказаної URL-адреси, напр. https://www.example.org/\n\"Metadata\" в селектрі області: шукає в іменах, \"applies to\" специфікаторів, URL-адреси встановлення, URL-адресі оновлення та всьому блоку метаданих для стилів CSS користувача."
+  },
   "searchStylesName": {
     "message": "Назва"
   },
@@ -259,13 +256,19 @@
     "message": "Облагородити"
   },
   "styleCancelEditLabel": {
-    "message": "Всі стилі"
+    "message": "Повернутися до керування"
+  },
+  "styleEnabledLabel": {
+    "message": "Увімкнено"
   },
   "stylePreferSchemeLabel": {
     "message": "Темна/Світла тема"
   },
   "styleSaveLabel": {
     "message": "Зберегти"
+  },
+  "syncErrorRelogin": {
+    "message": "Помилка синхронізації. Ви вийшли із системи. \nСпробуйте повторно увійти до системи в налаштуваннях Stylus."
   },
   "toggleStyle": {
     "message": "Включити/виключити стиль"

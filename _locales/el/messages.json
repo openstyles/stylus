@@ -298,9 +298,6 @@
   "findStyles": {
     "message": "Εύρεση στυλ"
   },
-  "findStylesForSite": {
-    "message": "Αναζήτηση περισσότερων στυλ για αυτή την ιστοσελίδα"
-  },
   "genericAdd": {
     "message": "Προσθήκη"
   },
@@ -411,9 +408,6 @@
   },
   "linterResetMessage": {
     "message": "Για αναίρεση μιας κατά λάθος επαναφοράς, πατήστε Ctrl-Z (ή Cmd-Z) στο πλαίσιο κειμένου"
-  },
-  "manageFaviconsHelp": {
-    "message": "Το Stylus χρησιμοποιεί μία εξωτερική υπηρεσία https://icons.duckduckgo.com"
   },
   "manageFilters": {
     "message": "Φίλτρα"
@@ -535,6 +529,9 @@
   "optionsSyncSyncNow": {
     "message": "Συγχρονισμός τώρα"
   },
+  "optionsSyncUrl": {
+    "message": "διεύθυνση URL"
+  },
   "optionsUpdateInterval": {
     "message": "Διάστημα αυτόματης ενημέρωσης των στυλ σε ώρες (0 για απενεργοποίηση)"
   },
@@ -606,6 +603,9 @@
   },
   "sectionRemove": {
     "message": "Αφαίρεση ενότητας"
+  },
+  "sections": {
+    "message": "Ενότητες"
   },
   "shortcuts": {
     "message": "Συντομεύσεις"

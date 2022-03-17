@@ -52,6 +52,12 @@
   "checkingForUpdate": {
     "message": "Tarkistetaan..."
   },
+  "confirmDelete": {
+    "message": "Poista"
+  },
+  "confirmSave": {
+    "message": "Tallenna"
+  },
   "deleteStyleConfirm": {
     "message": "Oletko varma että haluat poistaa tämän tyylin?"
   },
@@ -63,6 +69,9 @@
   },
   "disableStyleLabel": {
     "message": "Poista Käytöstä"
+  },
+  "editDeleteText": {
+    "message": "Poista"
   },
   "editStyleHeading": {
     "message": "Muokkaa Tyyliä"
@@ -81,8 +90,11 @@
   "enableStyleLabel": {
     "message": "Aktivoi"
   },
-  "findStylesForSite": {
-    "message": "Hae lisää tyylejä tälle sivustolle"
+  "genericAdd": {
+    "message": "Lisää"
+  },
+  "genericEnabledLabel": {
+    "message": "Aktivoitu"
   },
   "helpAlt": {
     "message": "Apu"
@@ -116,6 +128,9 @@
   },
   "sectionRemove": {
     "message": "Poista osio"
+  },
+  "sections": {
+    "message": "Osiot"
   },
   "styleBadRegexp": {
     "message": "Regexp ei kelpaa."

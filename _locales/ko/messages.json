@@ -302,15 +302,6 @@
   "findStyles": {
     "message": "스타일 찾기"
   },
-  "findStylesForSite": {
-    "message": "현재 사이트에 맞는 스타일 찾기"
-  },
-  "findStylesInline": {
-    "message": "팝업창 내에서"
-  },
-  "findStylesInlineTooltip": {
-    "message": "이 창에서 검색 결과 표시"
-  },
   "genericAdd": {
     "message": "추가"
   },
@@ -865,9 +856,6 @@
   "optionsResetButton": {
     "message": "설정 초기화"
   },
-  "optionsStylusThemes": {
-    "message": "스타일러스 UI 테마 찾기"
-  },
   "optionsSubheading": {
     "message": "추가 옵션"
   },
@@ -1015,9 +1003,6 @@
   },
   "readingStyles": {
     "message": "스타일 읽어들이는 중..."
-  },
-  "reload": {
-    "message": "Stylus 확장 프로그램 리로드"
   },
   "replace": {
     "message": "바꾸기"
@@ -1213,9 +1198,6 @@
   },
   "styleRegexpProblemTooltip": {
     "message": "잘못된 'regexp()' 사용으로 인해 몇몇 섹션을 적용할 수 없습니다."
-  },
-  "styleRegexpTestButton": {
-    "message": "정규 표현식 테스트"
   },
   "styleRegexpTestFull": {
     "message": "일치하는 탭 목록"

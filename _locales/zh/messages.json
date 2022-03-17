@@ -70,6 +70,9 @@
   "backupButtons": {
     "message": "备份"
   },
+  "backupMessage": {
+    "message": "选择/拖拽 JSON 备份文件到本页面来导入备份。\n\n若要导出 Stylus V1.5.18 之前的兼容备份，请右击或Shift+左击「导出」按钮。"
+  },
   "bckpInstStyles": {
     "message": "导出所有样式"
   },
@@ -267,6 +270,17 @@
   "disableStyleLabel": {
     "message": "禁用"
   },
+  "draftAction": {
+    "message": "选择“是”以加载此草稿，或“否”以丢弃它。"
+  },
+  "draftTitle": {
+    "message": "恢复 $date$ 个小时前的草稿",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
   "dragDropMessage": {
     "message": "拖放JSON备份文件到管理器页面即可导入!"
   },
@@ -293,6 +307,9 @@
       }
     }
   },
+  "editorSettings": {
+    "message": "编辑器设置"
+  },
   "enableStyleLabel": {
     "message": "启用"
   },
@@ -301,6 +318,9 @@
   },
   "excludeStyleByUrlLabel": {
     "message": "排除当前链接"
+  },
+  "exportCompatible": {
+    "message": "导出（兼容模式）"
   },
   "exportLabel": {
     "message": "导出"
@@ -340,20 +360,14 @@
   "findStyles": {
     "message": "查找样式"
   },
-  "findStylesForSite": {
-    "message": "查找该域名的在线样式"
-  },
-  "findStylesInline": {
-    "message": "嵌入此页"
-  },
-  "findStylesInlineTooltip": {
-    "message": "将搜索结果嵌入到此页面显示"
-  },
   "genericAdd": {
     "message": "添加"
   },
   "genericClone": {
     "message": "创建副本"
+  },
+  "genericDescription": {
+    "message": "描述"
   },
   "genericDisabledLabel": {
     "message": "禁用"
@@ -379,6 +393,9 @@
   "genericSavedMessage": {
     "message": "已保存"
   },
+  "genericTest": {
+    "message": "测试"
+  },
   "genericTitle": {
     "message": "标题"
   },
@@ -387,6 +404,9 @@
   },
   "gettingStyles": {
     "message": "正在获取所有样式..."
+  },
+  "headerResizerHint": {
+    "message": "仅在此类 编辑器/管理器/安装器 UI , 按住 Shift 可调整大小"
   },
   "helpAlt": {
     "message": "帮助"
@@ -483,8 +503,17 @@
   "linkGetHelp": {
     "message": "帮助"
   },
+  "linkGetShareStyles": {
+    "message": "获取|分享 样式"
+  },
+  "linkGetShareStylesInfo": {
+    "message": "由社区驱动的新站点 userstyles.world 是由 userstyle 作者创建的，目的是取代 userstyles.org，该站点在过去一年中缓慢且反应迟钝，以至于许多作者停止更新他们的样式。"
+  },
   "linkGetStyles": {
     "message": "获取样式"
+  },
+  "linkGetStylesInfo": {
+    "message": "该存档站点由 userstyle 社区成员创建，约每天更新一次其内容，用于备份缓慢且无响应的 userstyles.org。 "
   },
   "linkTranslate": {
     "message": "翻译"
@@ -759,6 +788,17 @@
       }
     }
   },
+  "meta_unknownMetaTypo": {
+    "message": "可能的 @$keyOk$ ?   未知元数据 @$keyErr$",
+    "placeholders": {
+      "keyErr": {
+        "content": "$1"
+      },
+      "keyOk": {
+        "content": "$2"
+      }
+    }
+  },
   "meta_unknownPreprocessor": {
     "message": "未知的预处理器 @preprocessor：$preprocessor$",
     "placeholders": {
@@ -802,6 +842,15 @@
   "optionsAdvanced": {
     "message": "高级设置"
   },
+  "optionsAdvancedAutoSwitchSchemeBySystem": {
+    "message": "按系统偏好设置"
+  },
+  "optionsAdvancedAutoSwitchSchemeByTime": {
+    "message": "按夜间时间"
+  },
+  "optionsAdvancedAutoSwitchSchemeNever": {
+    "message": "已停用。樣式中的深色／淺色設定會被忽略。"
+  },
   "optionsAdvancedContextDelete": {
     "message": "向编辑器右键菜单添加“删除”"
   },
@@ -810,6 +859,12 @@
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "给每个iframe内嵌框架的html注入 stylus-iframe=\"父域名hostname\" 属性(值)，\n\n用途: 用作iframe选择器来一键确定 iframe 父窗(window.top) 页面 的唯一选择器.\n\n示例 html[stylus-iframe] 或 html[stylus-iframe$=\"twitter.com\"] h1 {...}\n\n详见源码：github.com/openstyles/stylus/blob/master/content/apply.js#L270"
+  },
+  "optionsAdvancedExposeStyleName": {
+    "message": "暴露样式名称"
+  },
+  "optionsAdvancedExposeStyleNameNote": {
+    "message": "在页面中暴露样式名称以方便在 DevTools 中调试样式。请重新加载标签页以应用新设置。"
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "将新样式的格式设为UserCSS"
@@ -856,6 +911,9 @@
   "optionsHeading": {
     "message": "选项"
   },
+  "optionsIconAuto": {
+    "message": "符合深色／淺色模式"
+  },
   "optionsIconDark": {
     "message": "高对比度暗色图标"
   },
@@ -878,7 +936,7 @@
     "message": "恢复默认值"
   },
   "optionsStylusThemes": {
-    "message": "查找 Stylus UI 主题ᐝ"
+    "message": "點擊任何 Stylus 頁面（包含這個）的瀏覽器工具列中的 Stylus 圖示，然後點擊「尋找樣式」"
   },
   "optionsSubheading": {
     "message": "附加选项"
@@ -894,6 +952,9 @@
   },
   "optionsSyncNone": {
     "message": "无"
+  },
+  "optionsSyncPassword": {
+    "message": "密码"
   },
   "optionsSyncStatusConnected": {
     "message": "已连接"
@@ -929,11 +990,20 @@
       }
     }
   },
+  "optionsSyncStatusRelogin": {
+    "message": "工作階段已過期，請再次登入。"
+  },
   "optionsSyncStatusSyncing": {
     "message": "同步中..."
   },
   "optionsSyncSyncNow": {
     "message": "现在同步"
+  },
+  "optionsSyncUrl": {
+    "message": "URL "
+  },
+  "optionsSyncUsername": {
+    "message": "用户名"
   },
   "optionsUpdateImportNote": {
     "message": "从旧版的 Stylus 或 Stylish 中导入备份样式时，\n请手动检测升级一次，以确保所有样式都可更新到最新版本。"
@@ -977,6 +1047,9 @@
   "popupHotkeysTooltip": {
     "message": "查看Popup列表快捷键"
   },
+  "popupManageSiteStyles": {
+    "message": "管理网站样式"
+  },
   "popupManageTooltip": {
     "message": "右击 || Shift+左击: 打开管理器且筛选当前URL(不含iframe)"
   },
@@ -998,17 +1071,50 @@
   "prefShowBadge": {
     "message": "计数器角标 (或图标右键)"
   },
+  "preferScheme": {
+    "message": "深色／淺色模式偏好設定"
+  },
+  "preferSchemeAlways": {
+    "message": "目前被忽略（樣式一律套用），因為全域深色／淺色模式已被停用"
+  },
+  "preferSchemeDark": {
+    "message": "深色"
+  },
+  "preferSchemeLight": {
+    "message": "淺色"
+  },
+  "preferSchemeNone": {
+    "message": "無（一律套用）"
+  },
   "previewLabel": {
     "message": "实时预览"
   },
   "previewTooltip": {
     "message": "无需保存即可临时预览样式效果"
   },
+  "publish": {
+    "message": "发布"
+  },
+  "publishPush": {
+    "message": "发布更新"
+  },
+  "publishReconnect": {
+    "message": "尝试断开连接然后再次发布"
+  },
+  "publishRetry": {
+    "message": "Stylus 仍在尝试发布此样式，但如果您没有看到身份验证活动或弹出窗口，您可以重试,  现在重试 ？"
+  },
+  "publishStyle": {
+    "message": "发布样式"
+  },
+  "publishUsw": {
+    "message": "使用 <userstyles.world>"
+  },
   "readingStyles": {
     "message": "正在读取样式..."
   },
   "reload": {
-    "message": "重启 Stylus"
+    "message": "重启"
   },
   "replace": {
     "message": "替换"
@@ -1019,11 +1125,17 @@
   "replaceWith": {
     "message": "替换为"
   },
+  "restoreTemplate": {
+    "message": "還原預設範本。\n\n（不會變更目前開啟的編輯器頁面。）"
+  },
   "retrieveBckp": {
     "message": "导入所有样式"
   },
   "retrieveDropboxSync": {
     "message": "从 Dropbox 导入"
+  },
+  "saveAsTemplate": {
+    "message": "另存为模板"
   },
   "search": {
     "message": "搜索"
@@ -1048,6 +1160,12 @@
   },
   "searchResultNoneFound": {
     "message": "没有找到与此页面相关的样式。"
+  },
+  "searchResultNotMatching": {
+    "message": "样式已安装但不适于当前 URL"
+  },
+  "searchResultNotMatchingNote": {
+    "message": "尝试请求该用户样式的作者添加 URL。\n\n您也可以在管理器中打开样式自己编辑，\n但请注意，这会禁用此样式的自动更新。"
   },
   "searchResultRating": {
     "message": "评价"
@@ -1094,11 +1212,17 @@
   "sections": {
     "message": "章节"
   },
+  "settings": {
+    "message": "设置"
+  },
   "shortcuts": {
     "message": "快捷键"
   },
   "shortcutsNote": {
     "message": "设置快捷键"
+  },
+  "shortcutsNoteFF": {
+    "message": "在 Firefox 66 或更新的版本中，您可以手動開啟內建的快捷鍵使用者介面：\n1) 右鍵點擊工具列中的 Stylus 圖示並選擇「管理」\n（或是透過主選單或 Ctrl-Shift-A 開啟 about:addons），\n2) 在開啟的頁面中點擊右上角的齒輪圖示，\n3) 選擇「管理擴充套件快捷鍵」。\n\n您也可以在此自訂快捷鍵。"
   },
   "sortDateNewestFirst": {
     "message": "最新的优先"
@@ -1145,11 +1269,29 @@
   "styleEnabledLabel": {
     "message": "启用"
   },
+  "styleExcludeLabel": {
+    "message": "自定义排除网站"
+  },
   "styleFromMozillaFormatError": {
     "message": "导入 Mozilla 格式失败"
   },
   "styleFromMozillaFormatPrompt": {
     "message": "粘贴 Mozilla 格式代码"
+  },
+  "styleIncludeLabel": {
+    "message": "自定义包括网站"
+  },
+  "styleInjectionImportance": {
+    "message": "切换样式的优先级"
+  },
+  "styleInjectionOrder": {
+    "message": "樣式注入順序"
+  },
+  "styleInjectionOrderHint": {
+    "message": "拖曳樣式可變更其位置。樣式按下列順序注入，所以清單下方的樣式可覆寫較早樣式。"
+  },
+  "styleInjectionOrderHint_prio": {
+    "message": "下面列出的重要样式始终是最后注入的，因此它们可以覆盖任何新安装的样式。单击样式的标记以切换其重要性。"
   },
   "styleInstall": {
     "message": "要将“$stylename$”安装到 Stylus 中吗？",
@@ -1187,8 +1329,20 @@
   "styleMozillaFormatHeading": {
     "message": "Mozilla 格式"
   },
+  "styleName": {
+    "message": "樣式名稱"
+  },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "正则表达式错误，样式无法正常运行"
+  },
+  "styleNotAppliedSchemeDark": {
+    "message": "此样式仅在深色模式下应用"
+  },
+  "styleNotAppliedSchemeLight": {
+    "message": "此样式仅在浅色模式下应用"
+  },
+  "stylePreferSchemeLabel": {
+    "message": "深色/浅色模式"
   },
   "styleRegexpInvalidExplanation": {
     "message": "部分正则表达式无法生效。"
@@ -1198,9 +1352,6 @@
   },
   "styleRegexpProblemTooltip": {
     "message": "多个部分代码无法正常处理正则表达式"
-  },
-  "styleRegexpTestButton": {
-    "message": "正则测试"
   },
   "styleRegexpTestFull": {
     "message": "匹配到标签页的正则"
@@ -1223,6 +1374,9 @@
   "styleSaveLabel": {
     "message": "保存"
   },
+  "styleSettings": {
+    "message": "样式设置"
+  },
   "styleToMozillaFormatHelp": {
     "message": "导入 FireFox 格式即 @-moz-document ...的 CSS 代码后，会自动转换成 Stylus 使用的分段式 CSS 代码。\n反过来，分段式的 CSS 也可以导出为 FireFox 格式。\n需要注意的是，如果你要向 userstyles.org 提交你的代码，则必须使用 FireFox 格式。\n\n导入快捷键: 剪贴板含有 @-moz-document ....代码,则可以直接在编辑器里 Ctrl+V 会自动弹出导入对话框"
   },
@@ -1240,6 +1394,9 @@
   "styleUpdateDiscardChanges": {
     "message": "样式已经在编辑器外被修改。需要重新加载样式吗？"
   },
+  "styleUpdateUrlLabel": {
+    "message": "更新 URL"
+  },
   "stylusUnavailableForURL": {
     "message": "Stylus 无法介入到此类页面"
   },
@@ -1251,6 +1408,20 @@
   },
   "syncDropboxStyles": {
     "message": "导出至 Dropbox"
+  },
+  "syncError": {
+    "message": "同步失敗"
+  },
+  "syncErrorLock": {
+    "message": "数据库已在使用中。锁定将在 $TIME$ 过期",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "syncErrorRelogin": {
+    "message": "同步失敗。您已被登出。\n嘗試在 Stylus 選項中重新登入。"
   },
   "syncStorageErrorSaving": {
     "message": "不能保存该值，请尝试减少文本数量。"
@@ -1275,6 +1446,12 @@
   },
   "unreachableFileHint": {
     "message": "! Stylus 无法介入到官方商店页面 !\n若是文件页面 或 小号无痕页面 请检查:\n1) 右键 - Stylus图标 并点击-\"管理扩展程序\"\n2) 勾选 - \"允许访问文件网址\" 以在 file:// 工作\n3) 勾选 - \"在无痕模式下启用\" 以在无痕页面和小号标签页工作 (有的浏览器带有小号功能、如CentBrowser)"
+  },
+  "unreachableMozSiteHint": {
+    "message": "在 Firefox ⩾60 版本里, 你需要在 <about:config> 里移除 extensions.webextensions.restrictedDomains"
+  },
+  "unreachableMozSiteHintOldFF": {
+    "message": "仅 Firefox 59 或更新的版本才能让你设置 WebExtensions 在例如这样一个有 CSP 保护的页面上新增样式。"
   },
   "unzipStyles": {
     "message": "正在解压样式..."

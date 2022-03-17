@@ -226,6 +226,17 @@
   "disableStyleLabel": {
     "message": "Deaktivieren"
   },
+  "draftAction": {
+    "message": "Wähle \"Ja\", um diesen Entwurf zu laden oder \"Nein\", um ihn zu verwerfen."
+  },
+  "draftTitle": {
+    "message": "Wiederherstellung ungespeicherter Entwürfe, erstellt vor $date$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
   "dragDropMessage": {
     "message": "Ziehe die Backup Datei zum importieren an irgendeinen Ort auf dieser Seite."
   },
@@ -264,6 +275,9 @@
   "excludeStyleByUrlLabel": {
     "message": "Aktuelle URL ausschließen"
   },
+  "exportCompatible": {
+    "message": "Exportieren (Kompatibilitätsmodus)"
+  },
   "exportLabel": {
     "message": "Exportieren"
   },
@@ -295,15 +309,6 @@
   },
   "findStyles": {
     "message": "Styles finden"
-  },
-  "findStylesForSite": {
-    "message": "Weitere Styles für diese Seite finden"
-  },
-  "findStylesInline": {
-    "message": "Ergebnisse hier anzeigen"
-  },
-  "findStylesInlineTooltip": {
-    "message": "Suchergebnisse in diesem Fenster anzeigen."
   },
   "genericAdd": {
     "message": "Hinzufügen"
@@ -346,6 +351,9 @@
   },
   "gettingStyles": {
     "message": "Empfange alle Styles..."
+  },
+  "headerResizerHint": {
+    "message": "Halte Shift gedrückt, um nur diese Art der Benutzeroberfläche (z.B. Editor, Manager, Installer) zu verändern"
   },
   "helpAlt": {
     "message": "Hilfe"
@@ -421,18 +429,6 @@
   },
   "installButtonUpdate": {
     "message": "Style updaten"
-  },
-  "installPreferSchemeDark": {
-    "message": "Im dunklen Modus"
-  },
-  "installPreferSchemeLabel": {
-    "message": "Der Style wird aktiviert:"
-  },
-  "installPreferSchemeLight": {
-    "message": "Im hellen Modus"
-  },
-  "installPreferSchemeNone": {
-    "message": "Immer"
   },
   "installUpdate": {
     "message": "Update installieren"
@@ -793,9 +789,6 @@
   "optionsAdvanced": {
     "message": "Erweitert"
   },
-  "optionsAdvancedAutoSwitchScheme": {
-    "message": "Hellen/Dunklen Modus automatisch umschalten"
-  },
   "optionsAdvancedAutoSwitchSchemeBySystem": {
     "message": "Nach Systemeinstellung"
   },
@@ -803,7 +796,7 @@
     "message": "Bei Nacht:"
   },
   "optionsAdvancedAutoSwitchSchemeNever": {
-    "message": "Nie"
+    "message": "Deaktiviert. Die hell / dunkel Einstellung in Styles wird ignoriert."
   },
   "optionsAdvancedContextDelete": {
     "message": "\"Löschen\" im Editor-Kontextmenü hinzufügen"
@@ -813,6 +806,12 @@
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "Style wirkt sich auch auf iframes der anvisierten (obersten) Domain aus.\nIframe-spezifisches CSS ist dann wie folgt möglich:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
+  },
+  "optionsAdvancedExposeStyleName": {
+    "message": "Stylename anzeigen"
+  },
+  "optionsAdvancedExposeStyleNameNote": {
+    "message": "Zeigt den Stylenamen auf der Seite an, um das Debuggen von Styles in den Devtools zu erleichtern. Bitte lade die Tabs neu, um die neue Einstellung zu übernehmen."
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Schreibe neuen Style als UserCSS"
@@ -853,6 +852,9 @@
   "optionsHeading": {
     "message": "Optionen"
   },
+  "optionsIconAuto": {
+    "message": "An Hell- / Dunkelmodus angleichen"
+  },
   "optionsIconDark": {
     "message": "Dunkle Browser-Themes"
   },
@@ -875,7 +877,7 @@
     "message": "Optionen zurücksetzen"
   },
   "optionsStylusThemes": {
-    "message": "Stylus UI-Theme suchen"
+    "message": "Klicke auf einer beliebigen Stylus Seite auf das Stylus-Symbol in der Werkzeugleiste des Browsers, dann klicke auf \"Styles finden\""
   },
   "optionsSubheading": {
     "message": "Mehr Optionen"
@@ -983,6 +985,9 @@
   "popupHotkeysTooltip": {
     "message": "Klicke, um Tastenkürzel zu sehen"
   },
+  "popupManageSiteStyles": {
+    "message": "Styles dieser Seite verwalten"
+  },
   "popupManageTooltip": {
     "message": "Shift+Klick oder Rechtsklick öffnet den Stylemanager mit Filter für Styles der aktuellen Seite"
   },
@@ -1003,6 +1008,21 @@
   },
   "prefShowBadge": {
     "message": "Anzahl der aktiven Styles auf der aktuellen Seite"
+  },
+  "preferScheme": {
+    "message": "Hell- / Dunkelmodus Vorrang"
+  },
+  "preferSchemeAlways": {
+    "message": "Derzeit ignoriert (Style wird immer angewendet), weil der allgemeine Hell- / Dunkelmodus nicht aktiv ist"
+  },
+  "preferSchemeDark": {
+    "message": "Dunkel"
+  },
+  "preferSchemeLight": {
+    "message": "Hell"
+  },
+  "preferSchemeNone": {
+    "message": "Keines (immer aktiv)"
   },
   "previewLabel": {
     "message": "Echtzeitvorschau"
@@ -1032,7 +1052,7 @@
     "message": "Lese Styles..."
   },
   "reload": {
-    "message": "Stylus Addon neu laden"
+    "message": "Neu laden"
   },
   "replace": {
     "message": "Ersetzen"
@@ -1043,8 +1063,14 @@
   "replaceWith": {
     "message": "Ersetzen durch"
   },
+  "restoreTemplate": {
+    "message": "Standard-Template wiederherstellen.\n\n(Die gerade geöffneten Editorseiten werden nicht verändert.)"
+  },
   "retrieveBckp": {
     "message": "Styles importieren"
+  },
+  "saveAsTemplate": {
+    "message": "Als Template speichern"
   },
   "search": {
     "message": "Suche"
@@ -1124,6 +1150,9 @@
   "shortcutsNote": {
     "message": "Eine Tastenkombination definieren"
   },
+  "shortcutsNoteFF": {
+    "message": "In Firefox 66+ kannst du die eingebaute Tastenkürzelverwaltung selbst öffnen:\n1) Rechtsklicke das Stylus-Symbol in der Werkzeugleiste und wähle \"Erweiterung verwalten\". Alternativ kannst du about:addons über das Hauptmenü oder per Tastenkürzel Strg-Umschalt-A öffnen.\n2) Klicke auf der geöffneten Seite (about:addons) auf das Zahnrad oben rechts.\n3) Wähle \"Tastenkombinationen von Erweiterungen verwalten\".\n\nHier kannst du alle Tastenkürzel individuell anpassen."
+  },
   "sortDateNewestFirst": {
     "message": "neueste zuerst"
   },
@@ -1181,6 +1210,18 @@
   "styleIncludeLabel": {
     "message": "Benutzerdefinierte Ziel-URLs"
   },
+  "styleInjectionImportance": {
+    "message": "Style als wichtig markieren"
+  },
+  "styleInjectionOrder": {
+    "message": "Applikationsreihenfolge der Styles"
+  },
+  "styleInjectionOrderHint": {
+    "message": "Ziehe den Style mit der Maus an die gewünschte Stelle, um die Applikationsreihenfolge zu ändern. Styles weiter unten können die oberen überschreiben."
+  },
+  "styleInjectionOrderHint_prio": {
+    "message": "Die unten als wichtig gekennzeichneten Styles werden immer zuletzt angewendet, sodass sie auch neu installierte Styles überschreiben können. Klicke auf das Zeichen des Styles, um die Wichtigkeit umzuschalten."
+  },
   "styleInstall": {
     "message": "\"$stylename$\" mit Stylus installieren?",
     "placeholders": {
@@ -1237,9 +1278,6 @@
   },
   "styleRegexpProblemTooltip": {
     "message": "Anzahl der Bereiche, welche aufgrund nicht korrekt verwendeter RegExp nicht angewendet wurden"
-  },
-  "styleRegexpTestButton": {
-    "message": "RegExp testen"
   },
   "styleRegexpTestFull": {
     "message": "Zutreffende Tabs"
