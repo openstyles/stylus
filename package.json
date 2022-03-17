@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@eight04/draggable-list": "^0.3.0",
-    "codemirror": "5.65.1",
+    "codemirror": "5.65.2",
     "db-to-cloud": "^0.7.0",
     "jsonlint": "^1.6.3",
     "less-bundle": "github:openstyles/less-bundle#v0.1.0",
