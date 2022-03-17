@@ -25,7 +25,7 @@
     "eslint": "^7.20.0",
     "fs-extra": "^9.0.0",
     "glob": "^7.2.0",
-    "node-fetch": "^2.6.6",
+    "node-fetch": "^2.6.7",
     "sync-version": "^1.0.1",
     "web-ext": "^6.5.0"
   },
