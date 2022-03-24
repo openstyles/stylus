@@ -1,6 +1,5 @@
 /* global $ $create $remove getEventKeyName */// dom.js
 /* global CodeMirror */
-/* global baseInit */// base.js
 /* global prefs */
 /* global t */// localization.js
 'use strict';
@@ -22,11 +21,11 @@
   });
   $.root.appendChild(btn);
   $.rootCL.add('popup-window');
-  baseInit.domReady.then(() => {
+  window.on('domReady', () => {
     document.body.appendChild(btn);
     // Adding a dummy command to show in keymap help popup
     CodeMirror.defaults.extraKeys[POPUP_HOTKEY] = 'openStylusPopup';
-  });
+  }, {once: true});
 
   prefs.subscribe('iconset', (_, val) => {
     const prefix = `images/icon/${val ? 'light/' : ''}`;

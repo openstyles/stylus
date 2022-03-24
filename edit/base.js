@@ -1,4 +1,4 @@
-/* global $ $$ $create setupLivePrefs waitForSelector */// dom.js
+/* global $$ $ $create messageBoxProxy setupLivePrefs */// dom.js
 /* global API */// msg.js
 /* global CODEMIRROR_THEMES */
 /* global CodeMirror */
@@ -19,11 +19,7 @@ const editor = {
   dirty: DirtyReporter(),
   isUsercss: false,
   isWindowed: false,
-  lazyKeymaps: {
-    emacs: '/vendor/codemirror/keymap/emacs',
-    vim: '/vendor/codemirror/keymap/vim',
-  },
-  livePreview: null,
+  livePreview: LivePreview(),
   /** @type {'customName'|'name'} */
   nameTarget: 'name',
   previewDelay: 200, // Chrome devtools uses 200
@@ -34,6 +30,15 @@ const editor = {
 
   updateClass() {
     $.rootCL.toggle('is-new-style', !editor.style.id);
+  },
+
+  updateTheme(name) {
+    if (!CODEMIRROR_THEMES[name]) {
+      name = 'default';
+      prefs.set('editor.theme', name);
+    }
+    $('#cm-theme').dataset.theme = name;
+    $('#cm-theme').textContent = CODEMIRROR_THEMES[name] || '';
   },
 
   updateTitle(isDirty = editor.dirty.isDirty()) {
@@ -48,34 +53,15 @@ const editor = {
 
 //#region pre-init
 
-const baseInit = (() => {
-  const domReady = waitForSelector('#sections');
+(() => {
   const mqCompact = matchMedia('(max-width: 850px)');
   const toggleCompact = mq => $.rootCL.toggle('compact-layout', mq.matches);
   mqCompact.on('change', toggleCompact);
   toggleCompact(mqCompact);
-
-  return {
-    domReady,
+  Object.assign(editor, /** @namespace Editor */ {
     mqCompact,
-    ready: Promise.all([
-      domReady,
-      loadStyle(),
-      prefs.ready.then(() =>
-        Promise.all([
-          loadTheme(),
-          loadKeymaps(),
-        ])),
-    ]),
-  };
-
-  /** Preloads vim/emacs keymap only if it's the active one, otherwise will load later */
-  function loadKeymaps() {
-    const km = prefs.get('editor.keyMap');
-    return /emacs/i.test(km) && require([editor.lazyKeymaps.emacs]) ||
-      /vim/i.test(km) && require([editor.lazyKeymaps.vim]);
-  }
-
+    styleReady: prefs.ready.then(loadStyle),
+  });
   async function loadStyle() {
     const params = new URLSearchParams(location.search);
     let id = Number(params.get('id'));
@@ -97,48 +83,30 @@ const baseInit = (() => {
       template: isUC && !id && chromeSync.getLZValue(chromeSync.LZ_KEY.usercssTemplate), // promise
     });
     editor.updateClass();
+    editor.updateTheme(prefs.get('editor.theme'));
     editor.updateTitle(false);
     $.rootCL.add(isUC ? 'usercss' : 'sectioned');
     sessionStore.justEditedStyleId = id || '';
     // no such style so let's clear the invalid URL parameters
     if (!id) history.replaceState({}, '', location.pathname);
   }
-
-  /** Preloads the theme so CodeMirror can use the correct metrics in its first render */
-  async function loadTheme() {
-    const theme = prefs.get('editor.theme');
-    if (!CODEMIRROR_THEMES.includes(theme)) {
-      prefs.set('editor.theme', 'default');
-      return;
-    }
-    if (theme !== 'default') {
-      const el = $('#cm-theme');
-      const el2 = await require([`/vendor/codemirror/theme/${theme}.css`]);
-      el2.id = el.id;
-      el.remove();
-      // FF containers take more time to load CSS
-      for (let retry = 0; !el2.sheet && ++retry <= 10;) {
-        await new Promise(requestAnimationFrame);
-      }
-    }
-  }
 })();
 
 //#endregion
 //#region init header
 
-baseInit.ready.then(() => {
+/* exported EditorHeader */
+function EditorHeader() {
   initBeautifyButton($('#beautify'));
   initKeymapElement();
   initNameArea();
   initThemeElement();
   setupLivePrefs();
 
-  require(Object.values(editor.lazyKeymaps), () => {
-    initKeymapElement();
+  window.on('load', () => {
     prefs.subscribe('editor.keyMap', showHotkeyInTooltip, {runNow: true});
     window.on('showHotkeyInTooltip', showHotkeyInTooltip);
-  });
+  }, {once: true});
 
   function findKeyForCommand(command, map) {
     if (typeof map === 'string') map = CodeMirror.keyMap[map];
@@ -186,7 +154,7 @@ baseInit.ready.then(() => {
   function initThemeElement() {
     $('#editor.theme').append(...[
       $create('option', {value: 'default'}, t('defaultTheme')),
-      ...CODEMIRROR_THEMES.map(s => $create('option', s)),
+      ...Object.keys(CODEMIRROR_THEMES).map(s => $create('option', s)),
     ]);
     // move the theme after built-in CSS so that its same-specificity selectors win
     document.head.appendChild($('#cm-theme'));
@@ -242,7 +210,7 @@ baseInit.ready.then(() => {
       }
     }
   }
-});
+}
 
 //#endregion
 //#region init windowed mode
@@ -392,6 +360,74 @@ function DirtyReporter() {
       notifyChange(wasDirty);
     },
   };
+}
+
+function LivePreview() {
+  let data;
+  let port;
+  let preprocess;
+  let enabled = prefs.get('editor.livePreview');
+
+  prefs.subscribe('editor.livePreview', (key, value) => {
+    if (!value) {
+      if (port) {
+        port.disconnect();
+        port = null;
+      }
+    } else if (data && data.id && (data.enabled || editor.dirty.has('enabled'))) {
+      createPreviewer();
+      updatePreviewer(data);
+    }
+    enabled = value;
+  });
+
+  return {
+
+    /**
+     * @param {Function} [fn] - preprocessor
+     */
+    init(fn) {
+      preprocess = fn;
+    },
+
+    update(newData) {
+      data = newData;
+      if (!port) {
+        if (!data.id || !data.enabled || !enabled) {
+          return;
+        }
+        createPreviewer();
+      }
+      updatePreviewer(data);
+    },
+  };
+
+  function createPreviewer() {
+    port = chrome.runtime.connect({name: 'livePreview'});
+    port.onDisconnect.addListener(err => {
+      throw err;
+    });
+  }
+
+  async function updatePreviewer(data) {
+    const errorContainer = $('#preview-errors');
+    try {
+      port.postMessage(preprocess ? await preprocess(data) : data);
+      errorContainer.classList.add('hidden');
+    } catch (err) {
+      if (Array.isArray(err)) {
+        err = err.join('\n');
+      } else if (err && err.index != null) {
+        // FIXME: this would fail if editors[0].getValue() !== data.sourceCode
+        const pos = editor.getEditors()[0].posFromIndex(err.index);
+        err.message = `${pos.line}:${pos.ch} ${err.message || err}`;
+      }
+      errorContainer.classList.remove('hidden');
+      errorContainer.onclick = () => {
+        messageBoxProxy.alert(err.message || `${err}`, 'pre');
+      };
+    }
+  }
 }
 
 //#endregion

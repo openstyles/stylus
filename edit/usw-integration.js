@@ -1,7 +1,6 @@
 /* global $ $create $remove messageBoxProxy showSpinner toggleDataset */// dom.js
 /* global API msg */// msg.js
 /* global URLS */// toolbox.js
-/* global baseInit */
 /* global editor */
 /* global t */// localization.js
 'use strict';
@@ -22,11 +21,11 @@
     }
   });
 
-  baseInit.ready.then(() => {
+  window.on('domReady', () => {
     updateUI();
     $('#usw-publish-style').onclick = disableWhileActive(publishStyle);
     $('#usw-disconnect').onclick = disableWhileActive(disconnect);
-  });
+  }, {once: true});
 
   async function publishStyle() {
     const {id} = editor.style;

@@ -4,9 +4,7 @@
 /* global colorMimicry */
 /* global editor */
 /* global msg */
-/* global prefs */
 /* global t */// localization.js
-/* global tryCatch */// toolbox.js
 'use strict';
 
 /* exported MozSectionWidget */
@@ -166,11 +164,6 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
 
   function updateWidgetStyle() {
     funcHeight = 0;
-    if (prefs.get('editor.theme') !== 'default' &&
-        !tryCatch(() => $('#cm-theme').sheet.cssRules)) {
-      requestAnimationFrame(updateWidgetStyle);
-      return;
-    }
     const MIN_LUMA = .05;
     const MIN_LUMA_DIFF = .4;
     const color = {

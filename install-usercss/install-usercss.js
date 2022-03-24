@@ -1,5 +1,6 @@
 /* global $$ $ $create $createLink $$remove showSpinner */// dom.js
 /* global API */// msg.js
+/* global CODEMIRROR_THEMES */
 /* global CodeMirror */
 /* global URLS closeCurrentTab deepEqual */// toolbox.js
 /* global compareVersion */// cmpver.js
@@ -41,7 +42,7 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
 (async function init() {
   const theme = prefs.get('editor.theme');
   if (theme !== 'default') {
-    require([`/vendor/codemirror/theme/${theme}.css`]); // not awaiting as it may be absent
+    document.head.append($create('style', CODEMIRROR_THEMES[theme] || ''));
   }
   ({tabId, initialUrl} = preinit);
   liveReload = initLiveReload();

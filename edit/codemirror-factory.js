@@ -1,4 +1,3 @@
-/* global $ */// dom.js
 /* global CodeMirror */
 /* global editor */
 /* global prefs */
@@ -97,12 +96,8 @@
   }
 
   prefs.subscribe(prefKeys, (key, val) => {
-    const name = prefToCmOpt(key);
-    if (name === 'theme') {
-      loadCmTheme(val);
-    } else {
-      cmFactory.globalSetOption(name, val);
-    }
+    if (key === 'editor.theme') editor.updateTheme(val);
+    cmFactory.globalSetOption(prefToCmOpt(key), val);
   });
 
   // lazy propagation
@@ -180,25 +175,6 @@
 
   //#endregion
   //#region CM option handlers
-
-  async function loadCmTheme(name) {
-    let el2;
-    const el = $('#cm-theme');
-    if (name === 'default') {
-      el.href = '';
-    } else {
-      const path = `/vendor/codemirror/theme/${name}.css`;
-      if (el.href !== location.origin + path) {
-        // avoid flicker: wait for the second stylesheet to load, then apply the theme
-        el2 = await require([path]);
-      }
-    }
-    cmFactory.globalSetOption('theme', name);
-    if (el2) {
-      el.remove();
-      el2.id = el.id;
-    }
-  }
 
   function updateMatchHighlightCount(cm, state) {
     cm.display.wrapper.dataset.matchHighlightCount = state.matchesonscroll.matches.length;

@@ -1,13 +1,12 @@
-/* global $$ $ $create messageBoxProxy */// dom.js
+/* global $$ $ $create */// dom.js
 /* global API msg */// msg.js
 /* global CodeMirror */
 /* global SectionsEditor */
 /* global SourceEditor */
-/* global baseInit */
 /* global clipString createHotkeyInput helpPopup */// util.js
 /* global closeCurrentTab deepEqual sessionStore tryJSONparse */// toolbox.js
 /* global cmFactory */
-/* global editor */
+/* global editor EditorHeader */// base.js
 /* global linterMan */
 /* global prefs */
 /* global t */// localization.js
@@ -18,8 +17,11 @@
 document.body.appendChild(t.template.body);
 
 EditorMethods();
-editor.livePreview = LivePreview();
-(editor.isUsercss ? SourceEditor : SectionsEditor)().then(() => {
+editor.styleReady.then(async () => {
+  EditorHeader();
+  dispatchEvent(new Event('domReady'));
+  await (editor.isUsercss ? SourceEditor : SectionsEditor)();
+
   editor.dirty.onChange(editor.updateDirty);
   prefs.subscribe('editor.linter', () => linterMan.run());
 
@@ -53,7 +55,9 @@ editor.livePreview = LivePreview();
     '/edit/drafts',
     '/edit/global-search',
   ]);
+});
 
+editor.styleReady.then(async () => {
   // Set up mini-header on scroll
   const {isUsercss} = editor;
   const el = $create({
@@ -68,8 +72,8 @@ editor.livePreview = LivePreview();
   const xoRoot = isUsercss ? scroller : undefined;
   const xo = new IntersectionObserver(onScrolled, {root: xoRoot});
   scroller.appendChild(el);
-  onCompactToggled(baseInit.mqCompact);
-  baseInit.mqCompact.on('change', onCompactToggled);
+  onCompactToggled(editor.mqCompact);
+  editor.mqCompact.on('change', onCompactToggled);
 
   /** @param {MediaQueryList} mq */
   function onCompactToggled(mq) {
@@ -313,77 +317,6 @@ function EditorMethods() {
 }
 
 //#endregion
-//#region editor livePreview
-
-function LivePreview() {
-  let data;
-  let port;
-  let preprocess;
-  let enabled = prefs.get('editor.livePreview');
-
-  prefs.subscribe('editor.livePreview', (key, value) => {
-    if (!value) {
-      if (port) {
-        port.disconnect();
-        port = null;
-      }
-    } else if (data && data.id && (data.enabled || editor.dirty.has('enabled'))) {
-      createPreviewer();
-      updatePreviewer(data);
-    }
-    enabled = value;
-  });
-
-  return {
-
-    /**
-     * @param {Function} [fn] - preprocessor
-     */
-    init(fn) {
-      preprocess = fn;
-    },
-
-    update(newData) {
-      data = newData;
-      if (!port) {
-        if (!data.id || !data.enabled || !enabled) {
-          return;
-        }
-        createPreviewer();
-      }
-      updatePreviewer(data);
-    },
-  };
-
-  function createPreviewer() {
-    port = chrome.runtime.connect({name: 'livePreview'});
-    port.onDisconnect.addListener(err => {
-      throw err;
-    });
-  }
-
-  async function updatePreviewer(data) {
-    const errorContainer = $('#preview-errors');
-    try {
-      port.postMessage(preprocess ? await preprocess(data) : data);
-      errorContainer.classList.add('hidden');
-    } catch (err) {
-      if (Array.isArray(err)) {
-        err = err.join('\n');
-      } else if (err && err.index != null) {
-        // FIXME: this would fail if editors[0].getValue() !== data.sourceCode
-        const pos = editor.getEditors()[0].posFromIndex(err.index);
-        err.message = `${pos.line}:${pos.ch} ${err.message || err}`;
-      }
-      errorContainer.classList.remove('hidden');
-      errorContainer.onclick = () => {
-        messageBoxProxy.alert(err.message || `${err}`, 'pre');
-      };
-    }
-  }
-}
-
-//#endregion
 //#region colorpickerHelper
 
 (async function colorpickerHelper() {
@@ -438,8 +371,6 @@ function LivePreview() {
     }
     cmFactory.globalSetOption('colorpicker', defaults.colorpicker);
   }, {runNow: true});
-
-  await baseInit.domReady;
 
   $('#colorpicker-settings').onclick = function (event) {
     event.preventDefault();

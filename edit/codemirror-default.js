@@ -42,7 +42,7 @@
   Object.assign(CodeMirror.defaults, defaults, prefs.get('editor.options'));
 
   // Adding hotkeys to some keymaps except 'basic' which is primitive by design
-  require(Object.values(typeof editor === 'object' && editor.lazyKeymaps || {}), () => {
+  {
     const KM = CodeMirror.keyMap;
     const extras = Object.values(CodeMirror.defaults.extraKeys);
     if (!extras.includes('jumpToLine')) {
@@ -90,7 +90,7 @@
         }
       }
     }
-  });
+  }
 
   Object.assign(CodeMirror.prototype, {
     /**
