@@ -368,6 +368,9 @@ function LivePreview() {
   let preprocess;
   let enabled = prefs.get('editor.livePreview');
 
+  const el = $('#preview-errors');
+  el.onclick = () => messageBoxProxy.alert(el.title, 'pre');
+
   prefs.subscribe('editor.livePreview', (key, value) => {
     if (!value) {
       if (port) {
@@ -410,10 +413,9 @@ function LivePreview() {
   }
 
   async function updatePreviewer(data) {
-    const errorContainer = $('#preview-errors');
     try {
       port.postMessage(preprocess ? await preprocess(data) : data);
-      errorContainer.classList.add('hidden');
+      el.hidden = true;
     } catch (err) {
       if (Array.isArray(err)) {
         err = err.join('\n');
@@ -422,10 +424,8 @@ function LivePreview() {
         const pos = editor.getEditors()[0].posFromIndex(err.index);
         err.message = `${pos.line}:${pos.ch} ${err.message || err}`;
       }
-      errorContainer.classList.remove('hidden');
-      errorContainer.onclick = () => {
-        messageBoxProxy.alert(err.message || `${err}`, 'pre');
-      };
+      el.title = err.message || `${err}`;
+      el.hidden = false;
     }
   }
 }

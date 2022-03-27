@@ -1030,13 +1030,29 @@ label {
     flex-direction: row;
     box-shadow: 0 0 3rem -.75rem;
   }
-  #header.sticky #basic-info,
+  #header.sticky #basic-info-name,
+  #header.sticky #basic-info-enabled > :not(#preview-errors),
   #header.sticky #mozilla-format-buttons,
   #header.sticky .buttons > button,
   #header.sticky .split-btn-pedal,
   #heading,
   h2 {
     display: none;
+  }
+  #preview-errors {
+    margin: -2px .75em 0 -.25em !important;
+  }
+  #header.sticky #basic-info {
+    margin: 0;
+  }
+  #header.sticky #preview-errors {
+    position: absolute;
+    top: var(--pad05);
+    right: var(--pad05);
+    margin: .25em 0 0 !important;
+  }
+  .popup-window #header.sticky #preview-errors {
+    right: calc(var(--pad05) + 24px);
   }
   .popup-window #details-wrapper {
     margin-right: var(--popup-button-width);
