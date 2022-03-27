@@ -363,13 +363,11 @@ function DirtyReporter() {
 }
 
 function LivePreview() {
+  let el;
   let data;
   let port;
   let preprocess;
   let enabled = prefs.get('editor.livePreview');
-
-  const el = $('#preview-errors');
-  el.onclick = () => messageBoxProxy.alert(el.title, 'pre');
 
   prefs.subscribe('editor.livePreview', (key, value) => {
     if (!value) {
@@ -410,6 +408,8 @@ function LivePreview() {
     port.onDisconnect.addListener(err => {
       throw err;
     });
+    el = $('#preview-errors');
+    el.onclick = () => messageBoxProxy.alert(el.title, 'pre');
   }
 
   async function updatePreviewer(data) {
