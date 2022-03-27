@@ -1086,6 +1086,7 @@ label {
     position: absolute;
     overflow: hidden auto;
     max-height: var(--max-height, 10vh);
+    max-width: calc(100vw - 2 * var(--pad));
     background: var(--bg);
     box-shadow: 0 6px 20px rgba(0, 0, 0, .3);
     padding: var(--pad);
@@ -1112,6 +1113,10 @@ label {
   #lint:not([open]) {
     flex: 0 0 auto;
     overflow-x: hidden;
+  }
+  #publish dd {
+    white-space: normal;
+    max-height: 1.25em;
   }
   #sections {
     padding-left: 0;
