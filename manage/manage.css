@@ -73,9 +73,7 @@ a:hover {
   margin-top: 0;
   margin-bottom: .3em;
 }
-.all-disabled h1 {
-  color: var(--red1);
-}
+
 #header a[href^="edit"] {
   text-decoration: none;
   margin-right: 8px;
