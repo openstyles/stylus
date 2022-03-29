@@ -71,11 +71,6 @@ newUI.renderClass();
     router.makeToggle('update-history', (...args) => showUpdateHistory(...args), [
       '/manage/updater-ui', /* global showUpdateHistory */
     ]);
-  if (prefs.get('disableAll')) {
-    $('#disableAll-label').hidden = false;
-  } else {
-    prefs.subscribe('disableAll', () => ($('#disableAll-label').hidden = false));
-  }
   $$('#header a[href^="http"]').forEach(a => (a.onclick = Events.external));
   window.on('pageshow', handleVisibilityChange);
   window.on('pagehide', handleVisibilityChange);

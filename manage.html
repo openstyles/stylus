@@ -154,6 +154,11 @@
 <div id="header">
   <h1 id="manage-heading" i18n="manageHeading"></h1>
 
+  <label id="disableAll-label" i18n="data-on:disableAllStyles, data-off:disableAllStylesOff">
+    <input id="disableAll" type="checkbox">
+    <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
+  </label>
+
   <div id="manage-settings">
     <div class="settings-column">
       <details id="filters" data-pref="manage.filters.expanded">
@@ -349,11 +354,6 @@
         <span><a href="https://github.com/openstyles/stylus/wiki" target="_blank" i18n="linkStylusWiki"></a></span>
         <span><a href="https://www.transifex.com/github-7/Stylus" target="_blank" i18n="linkTranslate"></a></span>
       </div>
-
-      <label id="disableAll-label" i18n="disableAllStyles" hidden>
-        <input id="disableAll" type="checkbox">
-        <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-      </label>
     </div>
   </div>
 

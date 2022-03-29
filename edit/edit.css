@@ -148,6 +148,7 @@ label {
   margin-top: 2px;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   line-height: 16px;
 }
 

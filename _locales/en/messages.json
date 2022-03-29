@@ -336,7 +336,11 @@
   },
   "disableAllStyles": {
     "message": "Turn all styles off",
-    "description": "Label for the checkbox that turns all enabled styles off."
+    "description": "Label for the checkbox that turns all styles off."
+  },
+  "disableAllStylesOff": {
+    "message": "Styles are turned off",
+    "description": "Label for the checkbox that turns all styles off when it's checked."
   },
   "disableStyleLabel": {
     "message": "Disable",

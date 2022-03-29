@@ -355,6 +355,7 @@ async function showSpinner(parent) {
 }
 
 function toggleDataset(el, prop, state) {
+  if (!el) return;
   const wasEnabled = el.dataset[prop] != null; // avoids mutating DOM unnecessarily
   if (state) {
     if (!wasEnabled) el.dataset[prop] = '';

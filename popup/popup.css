@@ -2,6 +2,10 @@
   --inner-padding: 18px; /* checkbox + gap */
   --outer-padding: 9px;
   --hotkey-margin: 16px;
+  --red1: hsl(0, 70%, 45%);
+}
+[data-ui-theme="dark"] {
+  --red1: hsl(0, 85%, 65%);
 }
 
 html, body {
@@ -36,7 +40,7 @@ body:not(.blocked) .if-blocked,
   z-index: 4;
 }
 #main-actions > * {
-  margin-top: var(--outer-padding);
+  margin-top: .75em;
   padding-left: var(--inner-padding);
   display: block;
 }
