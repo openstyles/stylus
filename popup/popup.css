@@ -55,8 +55,8 @@ body:not(.blocked) .if-blocked,
   font-weight: bold;
 }
 
-.style-name:hover .checker:checked,
-.style-name:hover .checker {
+label:hover .checker:checked,
+label:hover .checker {
   border-color: var(--c30);
   background-color: var(--c80);
 }
@@ -438,15 +438,23 @@ a:hover .svg-icon {
 }
 
 /* 'New style' links */
-
-#write-style {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+#write-as {
+  position: absolute;
+  left: var(--outer-padding);
 }
-
-#write-style-for {
-  margin-right: .6ex
+#newStyleAsUsercss {
+  position: static;
+}
+#newStyleAsUsercss ~ div {
+  font-weight: bold;
+  margin: -2px -1px 0;
+  padding-top: 1px;
+  text-align: center;
+  border-radius: 3px;
+}
+#newStyleAsUsercss:checked ~ div {
+  color: var(--bg);
+  background-color: var(--accent-2);
 }
 
 .write-style-link {
@@ -502,12 +510,12 @@ a:hover .svg-icon {
   display: none;
 }
 
-#write-for-frames {
-  position: absolute;
+#write-for-frames:not([hidden]) {
+  position: relative;
   width: 5px;
   height: 5px;
-  margin-left: -12px;
-  margin-top: 4px;
+  display: inline-block;
+  margin: 0 2px 2px;
   --dash: transparent 2px, currentColor 2px, currentColor 3px, transparent 3px;
   background: linear-gradient(var(--dash)), linear-gradient(90deg, var(--dash));
 }
