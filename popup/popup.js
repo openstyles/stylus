@@ -83,11 +83,6 @@ function toggleSideBorders(_key, state) {
 /** @param {chrome.webNavigation.GetAllFrameResultDetails[]} frames */
 async function initPopup(frames) {
   prefs.subscribe('popupWidth', setPopupWidth, {runNow: true});
-
-  // action buttons
-  $('#disableAll').onchange = function () {
-    $.rootCL.toggle('all-disabled', this.checked);
-  };
   setupLivePrefs();
 
   const elFind = $('#find-styles-btn');

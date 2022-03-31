@@ -1,6 +1,7 @@
 /* global $$ $ $create focusAccessibility getEventKeyName moveFocus */// dom.js
 /* global CHROME clamp debounce */// toolbox.js
 /* global msg */
+/* global prefs */
 /* global t */// localization.js
 'use strict';
 
@@ -33,6 +34,9 @@
       }
     }
   }
+  prefs.subscribe('disableAll', () => {
+    $('#disableAll-label').dataset.persist = ''; // avoids hiding if already shown
+  });
 
   function changeFocusedInputOnWheel(event) {
     const el = document.activeElement;

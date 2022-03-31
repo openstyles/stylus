@@ -355,6 +355,7 @@ async function showSpinner(parent) {
 }
 
 function toggleDataset(el, prop, state) {
+  if (!el) return;
   const wasEnabled = el.dataset[prop] != null; // avoids mutating DOM unnecessarily
   if (state) {
     if (!wasEnabled) el.dataset[prop] = '';
@@ -411,6 +412,10 @@ function waitForSelector(selector, {recur, stopOnDomReady = true} = {}) {
 //#region Internals
 
 const dom = {};
+
+prefs.subscribe('disableAll', (_, val) => {
+  $.rootCL.toggle('all-disabled', val);
+}, {runNow: true});
 
 prefs.ready.then(() => {
   waitForSelector('details[data-pref]', {

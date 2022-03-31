@@ -49,16 +49,6 @@ body:not(.blocked) .if-blocked,
   width: fit-content;
   position: relative;
 }
-.all-disabled #disableAll {
-  border-color: var(--red1);
-}
-.all-disabled #disableAll-label {
-  font-weight: bold;
-  color: var(--red1);
-}
-.all-disabled #disableAll-label .svg-icon {
-  fill: var(--red1);
-}
 
 #no-styles {
   padding: 6px var(--outer-padding);
