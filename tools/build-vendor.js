@@ -53,16 +53,16 @@ const files = {
     'dist/stylus-renderer.min.js',
   ],
   'usercss-meta': [
-    'dist/usercss-meta.min.js',
+    'dist/usercss-meta.js',
   ],
   'db-to-cloud': [
-    'dist/db-to-cloud.min.js',
+    'dist/db-to-cloud.js',
   ],
   'webext-launch-web-auth-flow': [
-    'dist/webext-launch-web-auth-flow.min.js',
+    'dist/webext-launch-web-auth-flow.js',
   ],
   '@eight04/draggable-list': [
-    'dist/draggable-list.iife.min.js',
+    'dist/draggable-list.iife.js',
   ],
 };
 
@@ -101,10 +101,18 @@ async function buildFiles(pkg, flatPkg, patterns) {
         throw new Error(`Pattern ${src} matches no files`);
       }
       for (const file of files) {
-        fse.copySync(file, dest
+        const destPath = dest
           ? `vendor/${flatPkg}/${dest}`
-          : `vendor/${path.relative('node_modules', file).replace(pkg + '/', flatPkg + '/')}`);
-        copied += `* ${reportFile(pkg, file, dest)}\n`;
+          : `vendor/${path.relative('node_modules', file).replace(pkg + '/', flatPkg + '/')}`;
+        const txt = file.endsWith('.js') && fs.readFileSync(file, 'utf8');
+        const txt2 = txt && txt.replace(/\n\/\/# sourceMappingURL=.*\s*$/, '\n');
+        const hasSM = txt && txt !== txt2;
+        if (hasSM) {
+          fse.outputFileSync(destPath, txt2);
+        } else {
+          fse.copySync(file, destPath);
+        }
+        copied += `* ${reportFile(pkg, file, dest)}${hasSM ? ' (removed sourceMappingURL)' : ''}\n`;
       }
     }
   }

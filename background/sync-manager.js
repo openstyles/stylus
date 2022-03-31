@@ -179,7 +179,7 @@ const syncMan = (() => {
   //#region Utils
 
   async function initController() {
-    await require(['/vendor/db-to-cloud/db-to-cloud.min']); /* global dbToCloud */
+    await require(['/vendor/db-to-cloud/db-to-cloud']); /* global dbToCloud */
     ctrl = dbToCloud.dbToCloud({
       onGet: styleUtil.uuid2style,
       async onPut(doc) {

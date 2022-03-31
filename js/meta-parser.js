@@ -2,7 +2,7 @@
 
 /* exported metaParser */
 const metaParser = (() => {
-  require(['/vendor/usercss-meta/usercss-meta.min']); /* global usercssMeta */
+  require(['/vendor/usercss-meta/usercss-meta']); /* global usercssMeta */
   const {createParser, ParseError} = usercssMeta;
   const PREPROCESSORS = new Set(['default', 'uso', 'stylus', 'less']);
   const options = {

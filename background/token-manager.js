@@ -144,7 +144,7 @@ const tokenMan = (() => {
   }
 
   async function authUser(keys, name, interactive = false, hooks = null) {
-    await require(['/vendor/webext-launch-web-auth-flow/webext-launch-web-auth-flow.min']);
+    await require(['/vendor/webext-launch-web-auth-flow/webext-launch-web-auth-flow']);
     /* global webextLaunchWebAuthFlow */
     const provider = AUTH[name];
     const state = Math.random().toFixed(8).slice(2);

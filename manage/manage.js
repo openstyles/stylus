@@ -63,7 +63,7 @@ newUI.renderClass();
     router.makeToggle('stylus-options', toggleEmbeddedOptions);
   $('#injection-order-button').onclick =
     router.makeToggle('injection-order', (...args) => InjectionOrder(...args), [
-      '/vendor/draggable-list/draggable-list.iife.min.js',
+      '/vendor/draggable-list/draggable-list.iife',
       '/injection-order/injection-order.css',
       '/injection-order/injection-order', /* global InjectionOrder */
     ]);
