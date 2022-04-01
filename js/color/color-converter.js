@@ -2,29 +2,82 @@
 
 const colorConverter = (() => {
 
+  const RXS_NUM = /\s*([+-]?(?:\d+\.?\d*|\d*\.\d+))(?:e[+-]?\d+)?/.source;
+  const RXS_NUM_ANGLE = `${RXS_NUM}(deg|g?rad|turn)?`;
+  const RX_COLOR = {
+    hex: /#([a-f\d]{3}(?:[a-f\d](?:[a-f\d]{2}){0,2})?)\b/iy,
+
+    hsl: new RegExp([
+      // num_or_angle, pct, pct [ , num_or_pct]?
+      `^(${RXS_NUM_ANGLE})\\s*,(${RXS_NUM}%\\s*(,|$)){2}(${RXS_NUM}%?)?\\s*$`,
+      // num_or_angle pct pct [ / num_or_pct]?
+      `^(${RXS_NUM_ANGLE})\\s+(${RXS_NUM}%\\s*(\\s|$)){2}(/${RXS_NUM}%?)?\\s*$`,
+    ].join('|'), 'iy'),
+
+    hwb: new RegExp(
+      // num|angle|none pct|none pct|none [ / num|pct|none ]?
+      `^(${RXS_NUM_ANGLE}|none)(\\s+(${RXS_NUM}%|none)){2}(\\s+|$)(/${RXS_NUM}%?|none)?\\s*$`,
+      'iy'),
+
+    rgb: new RegExp([
+      // num, num, num [ , num_or_pct]?
+      // pct, pct, pct [ , num_or_pct]?
+      `^((${RXS_NUM}\\s*(,|$)){3}|(${RXS_NUM}%\\s*(,|$)){3})(${RXS_NUM}%?)?\\s*$`,
+      // num num num [ / num_or_pct]?
+      // pct pct pct [ / num_or_pct]?
+      `^((${RXS_NUM}\\s*(\\s|$)){3}|(${RXS_NUM}%\\s*(\\s|$)){3})(/${RXS_NUM}%?)?\\s*$`,
+    ].join('|'), 'iy'),
+  };
+  const ANGLE_TO_DEG = {
+    grad: 360 / 400,
+    rad: 180 / Math.PI,
+    turn: 360,
+  };
+  const TO_HSV = {
+    hex: RGBtoHSV,
+    hsl: HSLtoHSV,
+    hwb: HWBtoHSV,
+    rgb: RGBtoHSV,
+  };
+  const FROM_HSV = {
+    hex: HSVtoRGB,
+    hsl: HSVtoHSL,
+    hwb: HSVtoHWB,
+    rgb: HSVtoRGB,
+  };
+  const guessType = c =>
+    'r' in c ? 'rgb' :
+      'w' in c ? 'hwb' :
+        'v' in c ? 'hsv' :
+          'l' in c ? 'hsl' :
+            undefined;
+
   return {
     parse,
     format,
     formatAlpha,
-    RGBtoHSV,
-    HSVtoRGB,
-    HSLtoHSV,
-    HSVtoHSL,
+    fromHSV: (color, type) => FROM_HSV[type](color),
+    toHSV: color => TO_HSV[color.type || 'rgb'](color),
+    constrain,
     constrainHue,
+    guessType,
     snapToInt,
+    testAt,
     ALPHA_DIGITS: 3,
+    RX_COLOR,
     // NAMED_COLORS is added below
   };
 
-  function format(color = '', type = color.type, hexUppercase, usoMode) {
+  function format(color = '', type = color.type, {hexUppercase, usoMode, round} = {}) {
     if (!color || !type) return typeof color === 'string' ? color : '';
-    const {a} = color;
-    let aStr = formatAlpha(a);
-    if (aStr) aStr = ', ' + aStr;
-    if (type !== 'hsl' && color.type === 'hsl') {
-      color = HSVtoRGB(HSLtoHSV(color));
-    }
-    const {r, g, b, h, s, l} = color;
+    const {a, type: src = guessType(color)} = color;
+    const aFmt = formatAlpha(a);
+    const aStr = aFmt ? ', ' + aFmt : '';
+    const srcConv = src === 'hex' ? 'rgb' : src;
+    const dstConv = type === 'hex' ? 'rgb' : type;
+    color = srcConv === dstConv ? color : FROM_HSV[dstConv](TO_HSV[srcConv](color));
+    round = round ? Math.round : v => v;
+    const {r, g, b, h, s, l, w} = color;
     switch (type) {
       case 'hex': {
         let res = '#' + hex2(r) + hex2(g) + hex2(b) + (aStr ? hex2(Math.round(a * 255)) : '');
@@ -36,51 +89,15 @@ const colorConverter = (() => {
         return usoMode ? rgb : `rgb${aStr ? 'a' : ''}(${rgb}${aStr})`;
       }
       case 'hsl':
-        return `hsl${aStr ? 'a' : ''}(${h}, ${s}%, ${l}%${aStr})`;
+        return `hsl${aStr ? 'a' : ''}(${round(h)}, ${round(s)}%, ${round(l)}%${aStr})`;
+      case 'hwb':
+        return `hwb(${round(h)} ${round(w)}% ${round(b)}%${aFmt ? ' / ' + aFmt : ''})`;
     }
-  }
-
-  // Copied from _hexcolor() in parserlib.js
-  function validateHex(color) {
-    return /^#[a-f\d]+$/i.test(color) && [4, 5, 7, 9].some(n => color.length === n);
-  }
-
-  function validateRGB(nums) {
-    const isPercentage = nums[0].endsWith('%');
-    const valid = isPercentage ? validatePercentage : validateNum;
-    return nums.slice(0, 3).every(valid);
-  }
-
-  function validatePercentage(s) {
-    if (!s.endsWith('%')) return false;
-    const n = Number(s.slice(0, -1));
-    return n >= 0 && n <= 100;
-  }
-
-  function validateNum(s) {
-    const n = Number(s);
-    return n >= 0 && n <= 255;
-  }
-
-  function validateHSL(nums) {
-    return validateAngle(nums[0]) && nums.slice(1, 3).every(validatePercentage);
-  }
-
-  function validateAngle(s) {
-    return /^-?(\d+|\d*\.\d+)(deg|grad|rad|turn)?$/i.test(s);
-  }
-
-  function validateAlpha(alpha) {
-    if (alpha.endsWith('%')) {
-      return validatePercentage(alpha);
-    }
-    const n = Number(alpha);
-    return n >= 0 && n <= 1;
   }
 
   function parse(str) {
     if (typeof str !== 'string') return;
-    str = str.trim();
+    str = str.trim().toLowerCase();
     if (!str) return;
 
     if (str[0] !== '#' && !str.includes('(')) {
@@ -90,47 +107,45 @@ const colorConverter = (() => {
     }
 
     if (str[0] === '#') {
-      if (!validateHex(str)) {
-        return null;
+      if (!testAt(RX_COLOR.hex, 0, str)) {
+        return;
       }
       str = str.slice(1);
       const [r, g, b, a = 255] = str.length <= 4 ?
         str.match(/(.)/g).map(c => parseInt(c + c, 16)) :
         str.match(/(..)/g).map(c => parseInt(c, 16));
-      return {type: 'hex', r, g, b, a: a === 255 ? undefined : a / 255};
+      return {
+        type: 'hex',
+        r,
+        g,
+        b,
+        a: a === 255 ? undefined : a / 255,
+      };
     }
 
-    const [, type, value] = str.match(/^(rgb|hsl)a?\((.*?)\)|$/i);
-    if (!type) return;
-
-    const comma = value.includes(',') && !value.includes('/');
-    const num = value.trim().split(comma ? /\s*,\s*/ : /\s+(?!\/)|\s*\/\s*/);
-    if (num.length < 3 || num.length > 4) return;
-    if (num[3] && !validateAlpha(num[3])) return null;
-
-    let a = !num[3] ? 1 : parseFloat(num[3]) / (num[3].endsWith('%') ? 100 : 1);
-    if (isNaN(a)) a = 1;
-
-    const first = num[0];
-    if (/rgb/i.test(type)) {
-      if (!validateRGB(num)) {
-        return null;
-      }
-      const k = first.endsWith('%') ? 2.55 : 1;
-      const [r, g, b] = num.map(s => Math.round(parseFloat(s) * k));
-      return {type: 'rgb', r, g, b, a};
-    } else {
-      if (!validateHSL(num)) {
-        return null;
-      }
-      let h = parseFloat(first);
-      if (first.endsWith('grad')) h *= 360 / 400;
-      else if (first.endsWith('rad')) h *= 180 / Math.PI;
-      else if (first.endsWith('turn')) h *= 360;
-      const s = parseFloat(num[1]);
-      const l = parseFloat(num[2]);
-      return {type: 'hsl', h, s, l, a};
+    const [, func, type = func, value] = str.match(/^((rgb|hsl)a?|hwb)\(\s*(.*?)\s*\)|$/);
+    if (!func || !testAt(RX_COLOR[type], 0, value)) {
+      return;
     }
+    const [s1, s2, s3, sA] = value.split(/\s*[,/]\s*|\s+/);
+    const a = isNaN(sA) ? 1 : constrain(0, 1, sA / (sA.endsWith('%') ? 100 : 1));
+
+    if (type === 'rgb') {
+      const k = s1.endsWith('%') ? 2.55 : 1;
+      return {
+        type,
+        r: constrain(0, 255, Math.round(s1 * k)),
+        g: constrain(0, 255, Math.round(s2 * k)),
+        b: constrain(0, 255, Math.round(s3 * k)),
+        a,
+      };
+    }
+    const h = constrainHue(parseFloat(s1) * (ANGLE_TO_DEG[s1.match(/\D*$/)[0]] || 1));
+    const n2 = constrain(0, 100, parseFloat(s2) || 0);
+    const n3 = constrain(0, 100, parseFloat(s3) || 0);
+    return type === 'hwb'
+      ? {type, h, w: n2, b: n3, a}
+      : {type, h, s: n2, l: n3, a};
   }
 
   function formatAlpha(a) {
@@ -164,8 +179,8 @@ const colorConverter = (() => {
     };
   }
 
-  function HSVtoRGB({h, s, v}) {
-    h = constrainHue(h) % 360;
+  function HSVtoRGB({h, s, v, a}) {
+    h = constrainHue(h);
     const C = s * v;
     const X = C * (1 - Math.abs((h / 60) % 2 - 1));
     const m = v - C;
@@ -180,8 +195,10 @@ const colorConverter = (() => {
       r: snapToInt(Math.round((r + m) * 255)),
       g: snapToInt(Math.round((g + m) * 255)),
       b: snapToInt(Math.round((b + m) * 255)),
+      a,
     };
   }
+
 
   function HSLtoHSV({h, s, l, a}) {
     const t = s * (l < 50 ? l : 100 - l) / 100;
@@ -193,14 +210,39 @@ const colorConverter = (() => {
     };
   }
 
-  function HSVtoHSL({h, s, v}) {
+  function HSVtoHSL({h, s, v, a}) {
     const l = (2 - s) * v / 2;
     const t = l < .5 ? l * 2 : 2 - l * 2;
     return {
-      h: Math.round(constrainHue(h)),
-      s: Math.round(t ? s * v / t * 100 : 0),
-      l: Math.round(l * 100),
+      h: constrainHue(h),
+      s: t ? s * v / t * 100 : 0,
+      l: l * 100,
+      a,
     };
+  }
+
+  function HWBtoHSV({h, w, b, a}) {
+    w = constrain(0, 100, w) / 100;
+    b = constrain(0, 100, b) / 100;
+    return {
+      h: constrainHue(h),
+      s: b === 1 ? 0 : 1 - w / (1 - b),
+      v: 1 - b,
+      a,
+    };
+  }
+
+  function HSVtoHWB({h, s, v, a}) {
+    return {
+      h: constrainHue(h),
+      w: (1 - s) * v * 100,
+      b: (1 - v) * 100,
+      a,
+    };
+  }
+
+  function constrain(min, max, value) {
+    return value < min ? min : value > max ? max : value;
   }
 
   function constrainHue(h) {
@@ -215,7 +257,13 @@ const colorConverter = (() => {
   }
 
   function hex2(val) {
-    return (val < 16 ? '0' : '') + (val >> 0).toString(16);
+    return (val < 16 ? '0' : '') + Math.round(val).toString(16);
+  }
+
+  function testAt(rx, index, text) {
+    if (!rx) return false;
+    rx.lastIndex = index;
+    return rx.test(text);
   }
 })();
 

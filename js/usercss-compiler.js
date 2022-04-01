@@ -83,7 +83,7 @@ const BUILDERS = Object.assign(Object.create(null), {
               if (alpha) delete value.a;
               const isRgb = isUsoRgb || value.type === 'rgb' || value.a != null && value.a !== 1;
               const usoMode = isUsoRgb || !isRgb;
-              value = colorConverter.format(value, isRgb ? 'rgb' : 'hex', undefined, usoMode);
+              value = colorConverter.format(value, isRgb ? 'rgb' : 'hex', {usoMode});
             }
             return value;
           case 'dropdown':

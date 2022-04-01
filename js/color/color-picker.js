@@ -3,6 +3,7 @@
 'use strict';
 
 (window.CodeMirror ? window.CodeMirror.prototype : window).colorpicker = function () {
+  const {constrain} = colorConverter;
   const cm = window.CodeMirror && this;
   const CSS_PREFIX = 'colorpicker-';
   const HUE_COLORS = [
@@ -40,8 +41,6 @@
   let /** @type {HTMLElement} */ $palette;
   const $inputGroups = {};
   const $inputs = {};
-  const $rgb = {};
-  const $hsl = {};
   const $hexLettercase = {};
 
   const allowInputFocus = !('ontouchstart' in document) || window.innerHeight > 800;
@@ -85,6 +84,21 @@
       return Object.assign(el, props);
     }
     const alphaPattern = /^\s*(0+\.?|0*\.\d+|0*1\.?|0*1\.0*)?\s*$/.source;
+    const nestedObj = (obj, key) => (obj[key] || (obj[key] = {}));
+    const makeNum = (type, channel, props, min, max) =>
+      $(['input-field', `${type}-${channel}`], [
+        (nestedObj($inputs, type)[channel] =
+          $('input', props || {tag: 'input', type: 'number', min, max, step: 1})),
+        $('title', channel.toUpperCase()),
+      ]);
+    const ColorGroup = (type, channels) => (
+      $inputGroups[type] = $(['input-group', type], [
+        ...Object.entries(channels).map(([k, v]) =>
+          makeNum(type, k, null, v[0], v[1])),
+        makeNum(type, 'a',
+          {tag: 'input', type: 'text', pattern: alphaPattern, spellcheck: false}),
+      ])
+    );
     $root = $('popup', {
       oninput: setFromInputs,
       onkeydown: setFromKeyboard,
@@ -128,42 +142,9 @@
             ]),
           ]),
         ]),
-        $inputGroups.rgb = $(['input-group', 'rgb'], [
-          $(['input-field', 'rgb-r'], [
-            $rgb.r = $('input', {tag: 'input', type: 'number', min: 0, max: 255, step: 1}),
-            $('title', 'R'),
-          ]),
-          $(['input-field', 'rgb-g'], [
-            $rgb.g = $('input', {tag: 'input', type: 'number', min: 0, max: 255, step: 1}),
-            $('title', 'G'),
-          ]),
-          $(['input-field', 'rgb-b'], [
-            $rgb.b = $('input', {tag: 'input', type: 'number', min: 0, max: 255, step: 1}),
-            $('title', 'B'),
-          ]),
-          $(['input-field', 'rgb-a'], [
-            $rgb.a = $('input', {tag: 'input', type: 'text', pattern: alphaPattern, spellcheck: false}),
-            $('title', 'A'),
-          ]),
-        ]),
-        $inputGroups.hsl = $(['input-group', 'hsl'], [
-          $(['input-field', 'hsl-h'], [
-            $hsl.h = $('input', {tag: 'input', type: 'number', step: 1}),
-            $('title', 'H'),
-          ]),
-          $(['input-field', 'hsl-s'], [
-            $hsl.s = $('input', {tag: 'input', type: 'number', min: 0, max: 100, step: 1}),
-            $('title', 'S'),
-          ]),
-          $(['input-field', 'hsl-l'], [
-            $hsl.l = $('input', {tag: 'input', type: 'number', min: 0, max: 100, step: 1}),
-            $('title', 'L'),
-          ]),
-          $(['input-field', 'hsl-a'], [
-            $hsl.a = $('input', {tag: 'input', type: 'text', pattern: alphaPattern, spellcheck: false}),
-            $('title', 'A'),
-          ]),
-        ]),
+        ColorGroup('rgb', {r: [0, 255], g: [0, 255], b: [0, 255]}),
+        ColorGroup('hsl', {h: [], s: [0, 100], l: [0, 100]}),
+        ColorGroup('hwb', {h: [], w: [0, 100], b: [0, 100]}),
         $('format-change', [
           $formatChangeButton = $('format-change-button', {onclick: setFromFormatElement}, '↔'),
         ]),
@@ -180,19 +161,26 @@
       }),
     ]);
 
-    $inputs.hex = [$hexCode];
-    $inputs.rgb = [$rgb.r, $rgb.g, $rgb.b, $rgb.a];
-    $inputs.hsl = [$hsl.h, $hsl.s, $hsl.l, $hsl.a];
-    const inputsToArray = inputs => inputs.map(el => parseFloat(el.value));
-    const inputsToHexString = () => $hexCode.value.trim();
-    const inputsToRGB = ([r, g, b, a] = inputsToArray($inputs.rgb)) => ({r, g, b, a, type: 'rgb'});
-    const inputsToHSL = ([h, s, l, a] = inputsToArray($inputs.hsl)) => ({h, s, l, a, type: 'hsl'});
-    Object.defineProperty($inputs.hex, 'color', {get: inputsToHexString});
-    Object.defineProperty($inputs.rgb, 'color', {get: inputsToRGB});
-    Object.defineProperty($inputs.hsl, 'color', {get: inputsToHSL});
-    Object.defineProperty($inputs, 'color', {get: () => $inputs[currentFormat].color});
+    const inputsToObj = type => {
+      const res = {type};
+      for (const [k, el] of Object.entries($inputs[type])) {
+        res[k] = parseFloat(el.value);
+      }
+      return res;
+    };
+    for (const [key, val] of Object.entries($inputs)) {
+      Object.defineProperty(val, 'color', {
+        get: inputsToObj.bind(null, key),
+      });
+    }
+    Object.defineProperty($inputs.hex = [$hexCode], 'color', {
+      get: () => $hexCode.value.trim(),
+    });
+    Object.defineProperty($inputs, 'color', {
+      get: () => $inputs[currentFormat].color,
+    });
     Object.defineProperty($inputs, 'colorString', {
-      get: () => currentFormat && colorConverter.format($inputs[currentFormat].color),
+      get: () => currentFormat && colorConverter.format($inputs[currentFormat].color, undefined, {round: true}),
     });
 
     HUE_COLORS.forEach(color => Object.assign(color, colorConverter.parse(color.hex)));
@@ -210,6 +198,7 @@
     HSV = {};
     currentFormat = '';
     options = PUBLIC_API.options = opt;
+    if (opt.round !== false) opt.round = true;
     prevFocusedElement = document.activeElement;
     userActivity = 0;
     lastOutputColor = opt.color || '';
@@ -246,33 +235,19 @@
   }
 
   function setColor(color) {
-    switch (typeof color) {
-      case 'string':
-        color = colorConverter.parse(color);
-        break;
-      case 'object': {
-        const {r, g, b, a} = color;
-        if (!isNaN(r) && !isNaN(g) && !isNaN(b)) {
-          color = {r, g, b, a, type: 'rgb'};
-          break;
-        }
-        const {h, s, l} = color;
-        if (!isNaN(h) && !isNaN(s) && !isNaN(l)) {
-          color = {h, s, l, a, type: 'hsl'};
-          break;
-        }
-      }
-      // fallthrough
-      default:
-        return false;
+    if (typeof color === 'string') {
+      color = colorConverter.parse(color);
+    } else if (typeof color === 'object' && color && !color.type) {
+      color = Object.assign({}, color, {type: colorConverter.guessType(color)});
     }
-    if (color) {
-      if (!initialized) {
-        init();
-      }
-      setFromColor(color);
+    if (!color || !color.type) {
+      return false;
     }
-    return Boolean(color);
+    if (!initialized) {
+      init();
+    }
+    setFromColor(color);
+    return true;
   }
 
   function getColor(type) {
@@ -280,9 +255,7 @@
       return;
     }
     readCurrentColorFromRamps();
-    const color = type === 'hsl' ?
-      colorConverter.HSVtoHSL(HSV) :
-      colorConverter.HSVtoRGB(HSV);
+    const color = colorConverter.fromHSV(HSV, type);
     return type ? colorToString(color, type) : color;
   }
 
@@ -341,7 +314,7 @@
   function setFromFormatElement({shiftKey}) {
     userActivity = performance.now();
     HSV.a = isNaN(HSV.a) ? 1 : HSV.a;
-    const formats = ['hex', 'rgb', 'hsl'];
+    const formats = Object.keys($inputGroups);
     const dir = shiftKey ? -1 : 1;
     const total = formats.length;
     if ($inputs.colorString === $inputs.prevColorString) {
@@ -362,7 +335,7 @@
 
   function setFromInputs(event) {
     userActivity = event ? performance.now() : userActivity;
-    if ($inputs[currentFormat].every(validateInput)) {
+    if (Object.values($inputs[currentFormat]).every(validateInput)) {
       setFromColor($inputs.color);
     }
   }
@@ -375,7 +348,7 @@
       case 'PageDown':
         if (!ctrl && !alt && !meta) {
           const el = document.activeElement;
-          const inputs = $inputs[currentFormat];
+          const inputs = Object.values($inputs[currentFormat]);
           const lastInput = inputs[inputs.length - 1];
           if (key === 'Tab' && shift && el === inputs[0]) {
             maybeFocus(lastInput);
@@ -424,8 +397,8 @@
       newValue = options.hexUppercase ? newValue.toUpperCase() : newValue.toLowerCase();
     } else if (!alt) {
       value = parseFloat(el.value);
-      const isHue = el === $inputs.hsl[0];
-      const isAlpha = el === $inputs[currentFormat][3];
+      const isHue = el.title === 'H';
+      const isAlpha = el === $inputs[currentFormat].a;
       const isRGB = currentFormat === 'rgb';
       const min = isHue ? -360 : 0;
       const max = isHue ? 360 : isAlpha ? 1 : isRGB ? 255 : 100;
@@ -446,7 +419,7 @@
   }
 
   function validateInput(el) {
-    const isAlpha = el === $inputs[currentFormat][3];
+    const isAlpha = el === $inputs[currentFormat].a;
     let isValid = (isAlpha || el.value.trim()) && el.checkValidity();
     if (!isAlpha && !isValid && currentFormat === 'rgb') {
       isValid = parseAs(el, parseInt);
@@ -464,9 +437,7 @@
   function setFromColor(color) {
     color = typeof color === 'string' ? colorConverter.parse(color) : color;
     color = color || colorConverter.parse('#f00');
-    const newHSV = color.type === 'hsl' ?
-      colorConverter.HSLtoHSV(color) :
-      colorConverter.RGBtoHSV(color);
+    const newHSV = colorConverter.toHSV(color);
     if (Object.entries(newHSV).every(([k, v]) => v === HSV[k] || Math.abs(v - HSV[k]) < 1e-3)) {
       return;
     }
@@ -488,7 +459,7 @@
       }
     }
     $inputGroups[format].dataset.active = '';
-    maybeFocus($inputs[format][0]);
+    maybeFocus(Object.values($inputs[format])[0]);
     currentFormat = format;
   }
 
@@ -510,25 +481,13 @@
   }
 
   function renderInputs() {
-    const rgb = colorConverter.HSVtoRGB(HSV);
-    switch (currentFormat) {
-      case 'hex':
-        rgb.a = HSV.a;
-        $hexCode.value = colorToString(rgb, 'hex');
-        break;
-      case 'rgb': {
-        $rgb.r.value = rgb.r;
-        $rgb.g.value = rgb.g;
-        $rgb.b.value = rgb.b;
-        $rgb.a.value = alphaToString() || 1;
-        break;
-      }
-      case 'hsl': {
-        const {h, s, l} = colorConverter.HSVtoHSL(HSV);
-        $hsl.h.value = h;
-        $hsl.s.value = s;
-        $hsl.l.value = l;
-        $hsl.a.value = alphaToString() || 1;
+    const rgb = colorConverter.fromHSV(HSV, 'rgb');
+    if (currentFormat === 'hex') {
+      $hexCode.value = colorToString(rgb, 'hex');
+    } else {
+      for (const [k, v] of Object.entries(colorConverter.fromHSV(HSV, currentFormat))) {
+        const el = $inputs[currentFormat][k];
+        if (el) el.value = k === 'a' ? alphaToString() || 1 : Math.round(v);
       }
     }
     $swatch.style.backgroundColor = colorToString(rgb, 'rgb');
@@ -704,7 +663,7 @@
     }
     if (
       userActivity &&
-      $inputs[currentFormat].every(el => el.checkValidity())
+      Object.values($inputs[currentFormat]).every(el => el.checkValidity())
     ) {
       lastOutputColor = colorString.replace(/\b0\./g, '.');
       if (isCallable) {
@@ -770,7 +729,7 @@
   //region Color conversion utilities
 
   function colorToString(color, type = currentFormat) {
-    return colorConverter.format(color, type, options.hexUppercase);
+    return colorConverter.format(color, type, options);
   }
 
   function alphaToString(a = HSV.a) {
@@ -778,9 +737,7 @@
   }
 
   function currentColorToString(format = currentFormat, alpha = HSV.a) {
-    const converted = format === 'hsl' ?
-      colorConverter.HSVtoHSL(HSV) :
-      colorConverter.HSVtoRGB(HSV);
+    const converted = colorConverter.fromHSV(HSV, format);
     converted.a = isNaN(alpha) || alpha === 1 ? undefined : alpha;
     return colorToString(converted, format);
   }
@@ -877,10 +834,6 @@
       cm && cm.display.lineDiv;
     const bgLuma = colorMimicry(el, {bg: 'backgroundColor'}).bgLuma;
     return bgLuma < .5 ? 'dark' : 'light';
-  }
-
-  function constrain(min, max, value) {
-    return value < min ? min : value > max ? max : value;
   }
 
   function parseAs(el, parser) {

@@ -8,50 +8,27 @@
   const COLORVIEW_CLASS = 'colorview';
   const COLORVIEW_SWATCH_CLASS = COLORVIEW_CLASS + '-swatch';
   const COLORVIEW_SWATCH_CSS = `--${COLORVIEW_SWATCH_CLASS}:`;
-
   const CLOSE_POPUP_EVENT = 'close-colorpicker-popup';
 
-  const RXS_NUM = /\s*([+-]?(?:\d+\.?\d*|\d*\.\d+))(?:e[+-]?\d+)?/.source;
-  const RX_COLOR = {
-    hex: /#(?:[a-f\d]{3}(?:[a-f\d](?:[a-f\d]{2}){0,2})?)\b/iy,
-
-    rgb: new RegExp([
-      // num, num, num [ , num_or_pct]?
-      // pct, pct, pct [ , num_or_pct]?
-      `^((${RXS_NUM}\\s*(,|$)){3}|(${RXS_NUM}%\\s*(,|$)){3})(${RXS_NUM}%?)?\\s*$`,
-      // num num num [ / num_or_pct]?
-      // pct pct pct [ / num_or_pct]?
-      `^((${RXS_NUM}\\s*(\\s|$)){3}|(${RXS_NUM}%\\s*(\\s|$)){3})(/${RXS_NUM}%?)?\\s*$`,
-    ].join('|'), 'iy'),
-
-    hsl: new RegExp([
-      // num_or_angle, pct, pct [ , num_or_pct]?
-      `^(${RXS_NUM}(|deg|g?rad|turn)\\s*),(${RXS_NUM}%\\s*(,|$)){2}(${RXS_NUM}%?)?\\s*$`,
-      // num_or_angle pct pct [ / num_or_pct]?
-      `^(${RXS_NUM}(|deg|g?rad|turn)\\s*)\\s(${RXS_NUM}%\\s*(\\s|$)){2}(/${RXS_NUM}%?)?\\s*$`,
-    ].join('|'), 'iy'),
-
-    unsupported: new RegExp([
-      !CSS.supports('color', '#abcd') && /#(.{4}){1,2}$/,
-      !CSS.supports('color', 'rgb(1e2,0,0)') && /\de/,
-      !CSS.supports('color', 'rgb(1.5,0,0)') && /^rgba?\((([^,]+,){0,2}[^,]*\.|(\s*\S+\s+){0,2}\S*\.)/,
-      !CSS.supports('color', 'rgb(1,2,3,.5)') && /[^a]\(([^,]+,){3}/,
-      !CSS.supports('color', 'rgb(1,2,3,50%)') && /\((([^,]+,){3}|(\s*\S+[\s/]+){3}).*?%/,
-      !CSS.supports('color', 'rgb(1 2 3 / 1)') && /^[^,]+$/,
-      !CSS.supports('color', 'hsl(1turn, 2%, 3%)') && /deg|g?rad|turn/,
-    ].filter(Boolean).map(rx => rx.source).join('|') || '^$', 'i'),
-  };
-  if (RX_COLOR.unsupported.source === '^$') {
-    RX_COLOR.unsupported = null;
-  }
+  const {RX_COLOR, testAt} = colorConverter;
+  const RX_UNSUPPORTED = (s => s && new RegExp(s))([
+    !CSS.supports('color', '#abcd') && /#(.{4}){1,2}$/,
+    !CSS.supports('color', 'hwb(1 0% 0%)') && /^hwb\(/,
+    !CSS.supports('color', 'rgb(1e2,0,0)') && /\de/,
+    !CSS.supports('color', 'rgb(1.5,0,0)') &&
+    /^rgba?\((([^,]+,){0,2}[^,]*\.|(\s*\S+\s+){0,2}\S*\.)/,
+    !CSS.supports('color', 'rgb(1,2,3,.5)') && /[^a]\(([^,]+,){3}/,
+    !CSS.supports('color', 'rgb(1,2,3,50%)') && /\((([^,]+,){3}|(\s*\S+[\s/]+){3}).*?%/,
+    !CSS.supports('color', 'rgb(1 2 3 / 1)') && /^[^,]+$/,
+    !CSS.supports('color', 'hsl(1turn, 2%, 3%)') && /deg|g?rad|turn/,
+  ].filter(Boolean).map(rx => rx.source).join('|'));
   const RX_DETECT = new RegExp('(^|[\\s(){}[\\]:,/"=])' +
     '(' +
       RX_COLOR.hex.source + '|' +
-      '(?:rgb|hsl)a?(?=\\()|(?:' + [...colorConverter.NAMED_COLORS.keys()].join('|') + ')' +
+      '(?:(?:rgb|hsl)a?|hwb)(?=\\()|(?:' + [...colorConverter.NAMED_COLORS.keys()].join('|') + ')' +
       '(?=[\\s;(){}[\\]/"!]|$)' +
     ')', 'gi');
-  const RX_DETECT_FUNC = /(rgb|hsl)a?\(/iy;
-
+  const RX_DETECT_FUNC = /((rgb|hsl)a?|hwb)\(/iy;
   const RX_COMMENT = /\/\*([^*]|\*(?!\/))*(\*\/|$)/g;
   const SPACE1K = ' '.repeat(1000);
 
@@ -439,7 +416,7 @@
 
     function getSafeColorValue() {
       if (isHex && color.length !== 5 && color.length !== 9) return color;
-      if (!RX_COLOR.unsupported || !RX_COLOR.unsupported.test(color)) return color;
+      if (!RX_UNSUPPORTED || !RX_UNSUPPORTED.test(color)) return color;
       const value = colorConverter.parse(color);
       return colorConverter.format(value, 'rgb');
     }
@@ -709,14 +686,6 @@
     document.body.appendChild(el);
     setTimeout(() => el.remove(), DURATION_SEC * 1000);
   }
-
-
-  function testAt(rx, index, text) {
-    if (!rx) return false;
-    rx.lastIndex = index;
-    return rx.test(text);
-  }
-
 
   function getStyleAtPos({
     line,
