@@ -647,6 +647,13 @@ self.parserlib = (() => {
       'font-variation-settings',
       'unicode-range',
     ].map(p => ({[p]: Properties[p]}))),
+
+    '@font-palette-values': Object.assign({
+      'base-palette': 'light | dark | <int0+>',
+      'override-colors': '[ <int0+> <color> ]#',
+    }, ...[
+      'font-family',
+    ].map(p => ({[p]: Properties[p]}))),
   };
 
   for (const [k, reps] of Object.entries({
@@ -767,6 +774,8 @@ self.parserlib = (() => {
     '<image>': '<uri> | <gradient> | cross-fade()',
     '<inflexible-breadth>': '<len-pct> | min-content | max-content | auto',
     '<integer>': p => p.isInt || p.isCalc,
+    '<int0+>': p => p.isInt && p.value >= 0 || p.isCalc,
+    '<int1+>': p => p.isInt && p.value > 0 || p.isCalc,
     '<length>': vtIsLength,
     '<len0+>': p =>
       p.value >= 0 && vtIsLength(p) || p.isCalc,
@@ -797,7 +806,6 @@ self.parserlib = (() => {
     '<pct>': vtIsPct,
     '<pct0+>': p =>
       p.value >= 0 && p.type === 'percentage' || p.isCalc,
-    '<integer1+>': p => p.isInt && p.value > 0 || p.isCalc,
     '<relative-size>': 'smaller | larger',
     '<row-gap>': '<column-gap>',
     '<self-position>': 'center | start | end | self-start | self-end | flex-start | flex-end',
@@ -862,7 +870,7 @@ self.parserlib = (() => {
     '<box-shadow>': 'none | <shadow>#',
     '<clip-path>': '<basic-shape> || <geometry-box>',
     '<color>': '<hex-color> | <named-color> | rgb( <rgb-color> ) | rgba( <rgb-color> ) | ' +
-      'hsl( <hsl-color> ) | hsla( <hsl-color> )',
+      'hsl( <hsl-color> ) | hsla( <hsl-color> ) | hwb( <hwb-color> )',
     '<content-list>':
       '[ <string> | <image> | <attr> | ' +
       'content( text | before | after | first-letter | marker ) | ' +
@@ -895,7 +903,7 @@ self.parserlib = (() => {
     '<final-bg-layer>': '<color> || <bg-image> || <bg-position> [ / <bg-size> ]? || ' +
       '<repeat-style> || <attachment> || <box>{1,2}',
     '<fixed-repeat>':
-      'repeat( [ <integer1+> ] , [ <line-names>? <fixed-size> ]+ <line-names>? )',
+      'repeat( [ <int1+> ] , [ <line-names>? <fixed-size> ]+ <line-names>? )',
     '<fixed-size>': '<len-pct> | ' +
       'minmax( <len-pct> , <track-breadth> ) | ' +
       'minmax( <inflexible-breadth> , <len-pct> )',
@@ -931,6 +939,7 @@ self.parserlib = (() => {
     '<grid-template-rows>': '<grid-template-columns>',
     '<hsl-color>': '[ <number> | <angle> ] <pct>{2} [ / <num-pct0+> ]? | ' +
       '[ <number> | <angle> ] , <pct>#{2} [ , <num-pct0+> ]?',
+    '<hwb-color>': '[ <number> | <angle> | none ] [ <pct> | none ] [ <pct> | none ] [ / [ <num-pct> | none ] ]?',
     '<justify-content>': 'normal | <content-distribution> | ' +
       '<overflow-position>? [ <content-position> | left | right ]',
     '<justify-self>': 'auto | normal | stretch | <baseline-position> | <overflow-position>? ' +
@@ -958,7 +967,7 @@ self.parserlib = (() => {
       '[ [ filled | open ] || [ dot | circle | double-circle | triangle | sesame ] ] | ' +
       '<string>',
     '<track-list>': '[ <line-names>? [ <track-size> | <track-repeat> ] ]+ <line-names>?',
-    '<track-repeat>': 'repeat( [ <integer1+> ] , [ <line-names>? <track-size> ]+ <line-names>? )',
+    '<track-repeat>': 'repeat( [ <int1+> ] , [ <line-names>? <track-size> ]+ <line-names>? )',
     '<track-size>': '<track-breadth> | minmax( <inflexible-breadth> , <track-breadth> ) | ' +
       'fit-content( <len-pct> )',
     '<transform-function>':
@@ -1222,6 +1231,7 @@ self.parserlib = (() => {
     CHARSET_SYM: {text: '@charset'},
     DOCUMENT_SYM: {text: ['@document', '@-moz-document']},
     FONT_FACE_SYM: {text: '@font-face'},
+    FONT_PALETTE_VALUES_SYM: {text: '@font-palette-values'},
     IMPORT_SYM: {text: '@import'},
     KEYFRAMES_SYM: {text: ['@keyframes', '@-webkit-keyframes', '@-moz-keyframes', '@-o-keyframes']},
     LAYER_SYM: {text: '@layer'},
@@ -2014,7 +2024,7 @@ self.parserlib = (() => {
      * @returns {SyntaxUnit}
      */
     static addFuncInfo(unit, {expr, name} = unit) {
-      const isColor = expr && expr.parts && /^(rgb|hsl)a?$/i.test(name);
+      const isColor = expr && expr.parts && /^((rgb|hsl)a?|hwb)$/i.test(name);
       if (isColor) unit.type = 'color';
       unit._isAttr =
         unit._isCalc =
@@ -3768,6 +3778,15 @@ self.parserlib = (() => {
       this.fire('endfontface');
     }
 
+    _fontPaletteValues(start) {
+      this.fire({
+        type: 'startfontpalettevalues',
+        id: this._tokenStream.mustMatch(Tokens.IDENT),
+      }, start);
+      this._readDeclarations({Props: ScopedProperties['@font-palette-values']});
+      this.fire('endfontpalettevalues');
+    }
+
     _viewport(start) {
       // only viewport-fit is allowed but we're reusing MediaQuery syntax unit,
       // and accept anything for the sake of simplicity since the spec isn't yet final:
@@ -4576,6 +4595,7 @@ self.parserlib = (() => {
   ParserRoute[Tokens.SUPPORTS_SYM] = {
     [Tokens.DOCUMENT_SYM]: Parser.prototype._documentMisplaced,
     [Tokens.FONT_FACE_SYM]: Parser.prototype._fontFace,
+    [Tokens.FONT_PALETTE_VALUES_SYM]: Parser.prototype._fontPaletteValues,
     [Tokens.KEYFRAMES_SYM]: Parser.prototype._keyframes,
     [Tokens.LAYER_SYM]: Parser.prototype._layer,
     [Tokens.MEDIA_SYM]: Parser.prototype._media,
