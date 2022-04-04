@@ -6,16 +6,9 @@
 /* global syncMan */
 /* global updateMan */
 /* global usercssMan */
+/* global usoApi */
 /* global uswApi */
-/* global
-  FIREFOX
-  UA
-  URLS
-  activateTab
-  download
-  findExistingTab
-  openURL
-*/ // toolbox.js
+/* global FIREFOX UA activateTab findExistingTab openURL */ // toolbox.js
 /* global colorScheme */ // color-scheme.js
 'use strict';
 
@@ -42,16 +35,11 @@ addAPI(/** @namespace API */ {
   sync: syncMan,
   updater: updateMan,
   usercss: usercssMan,
+  uso: usoApi,
   usw: uswApi,
   colorScheme,
   /** @type {BackgroundWorker} */
   worker: createWorker({url: '/background/background-worker'}),
-
-  download(url, opts) {
-    return typeof url === 'string' && url.startsWith(URLS.uso) &&
-      this.sender.url.startsWith(URLS.uso) &&
-      download(url, opts || {});
-  },
 
   /** @returns {string} */
   getTabUrlPrefix() {
