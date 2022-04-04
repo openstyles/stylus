@@ -70,6 +70,11 @@
   }
 
   msg.onTab(applyOnMessage);
+  window.addEventListener('pageshow', e => {
+    if (e.isTrusted && e.persisted) { // bfcache
+      updateCount();
+    }
+  });
 
   if (!chrome.tabs) {
     window.dispatchEvent(new CustomEvent(orphanEventId));
