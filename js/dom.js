@@ -243,7 +243,9 @@ function getEventKeyName(e, letterAsCode) {
     mods === e.key + '-' ? '' : mods
   }${
     e.key
-      ? e.key.length === 1 && letterAsCode ? e.code : e.key
+      ? !e.key[1] && letterAsCode ? e.code // KeyC
+        : e.key[1] ? e.key // Esc
+          : e.key.toUpperCase() // C, Shift-C (single letters we use uppercase for consistency)
       : 'Mouse' + ('LMR'[e.button] || e.button)
   }`;
 }
