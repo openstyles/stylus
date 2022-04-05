@@ -1,4 +1,4 @@
-/* global $$ waitForSelector */// dom.js
+/* global $$ $ waitForSelector */// dom.js
 /* global download */// toolbox.js
 'use strict';
 
@@ -117,13 +117,22 @@ Object.assign(t, {
     return t.toFragment(root);
   },
 
-  fetchTemplate: async (url, name) => t.template[name] ||
-    t.createTemplate({
-      content: t.toFragment(t.parse(await download(url))),
-      dataset: {id: name},
-    }),
+  fetchTemplate: async (url, name) => {
+    let res = t.template[name];
+    if (!res) {
+      res = t.parse(await download(url), '*');
+      if (!$$('template', res).map(t.createTemplate).length) {
+        t.createTemplate({
+          content: t.toFragment($('body', res)),
+          dataset: {id: name},
+        });
+      }
+      res = t.template[name];
+    }
+    return res;
+  },
 
-  parse: str => new DOMParser().parseFromString(str, 'text/html').body,
+  parse: (str, pick = 'body') => $(pick, new DOMParser().parseFromString(str, 'text/html')),
 
   sanitizeHtml(root) {
     const toRemove = [];

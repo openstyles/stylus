@@ -1,4 +1,4 @@
-/* global $ $$ $create setupLivePrefs */// dom.js
+/* global $ $$ $create getEventKeyName setupLivePrefs */// dom.js
 /* global ABOUT_BLANK getStyleDataMerged preinit */// preinit.js
 /* global API msg */// msg.js
 /* global Events */
@@ -86,13 +86,30 @@ async function initPopup(frames) {
   setupLivePrefs();
 
   const elFind = $('#find-styles-btn');
-  elFind.onclick = async e => {
-    const inline = e.type === 'click';
-    if (inline) elFind.disabled = true;
-    await require(['/popup/search']);
-    if (!inline) Events.searchSite(e);
+  const elFindDeps = async () => {
+    if (!t.template.searchUI) {
+      document.body.append(await t.fetchTemplate('/popup/search.html', 'searchUI'));
+    }
+    await require([
+      '/popup/search.css',
+      '/popup/search',
+    ]);
   };
-  elFind.on('split-btn', elFind.onclick);
+  elFind.on('click', async () => {
+    elFind.disabled = true;
+    await elFindDeps();
+    Events.searchInline();
+  });
+  elFind.on('split-btn', async e => {
+    await elFindDeps();
+    Events.searchSite(e);
+  });
+  window.on('keydown', e => {
+    if (getEventKeyName(e) === 'Ctrl-F') {
+      e.preventDefault();
+      elFind.click();
+    }
+  });
 
   Object.assign($('#popup-manage-button'), {
     onclick: Events.openManager,

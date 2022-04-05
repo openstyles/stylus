@@ -8,8 +8,6 @@
 'use strict';
 
 (() => {
-  require(['/popup/search.css']);
-
   const RESULT_ID_PREFIX = t.template.searchResult.className + '-';
   const RESULT_SEL = '.' + t.template.searchResult.className;
   const INDEX_URL = URLS.usoArchiveRaw[0] + 'search-index.json';
@@ -71,10 +69,10 @@
     const entry = el.closest(RESULT_SEL);
     return {entry, result: entry && entry._result};
   };
-  const $classList = sel => (sel instanceof Node ? sel : $(sel)).classList;
-  const show = sel => $classList(sel).remove('hidden');
-  const hide = sel => $classList(sel).add('hidden');
-
+  Events.searchInline = () => {
+    calcCategory();
+    ready = start();
+  };
   Events.searchSite = event => {
     // use a less specific category if the inline search wasn't used yet
     if (!category) calcCategory({retry: 1});
@@ -94,7 +92,6 @@
         `/scripts/by-site/${tryURL(tabURL).hostname.replace(/^www\./, '')}?language=css${add('&q=', q)}`;
     Events.openURLandHide.call({href}, event);
   };
-
   $('#search-globals').onchange = function () {
     searchGlobals = this.checked;
     ready = ready.then(start);
@@ -165,9 +162,6 @@
     }
   });
 
-  calcCategory();
-  ready = start();
-
   function next() {
     displayedPage = Math.min(totalPages, displayedPage + 1);
     scrollToFirstResult = true;
@@ -182,15 +176,15 @@
 
   function error(reason) {
     dom.error.textContent = reason;
-    show(dom.error);
-    hide(dom.list);
+    dom.error.hidden = false;
+    dom.list.hidden = true;
     if (dom.error.getBoundingClientRect().bottom < 0) {
       dom.error.scrollIntoView({behavior: 'smooth', block: 'start'});
     }
   }
 
   async function start() {
-    resetUI.timer = setTimeout(resetUI, 500);
+    resetUI.timer = resetUI.timer || setTimeout(resetUI, 500);
     try {
       results = [];
       for (let retry = 0; !results.length && retry <= 2; retry++) {
@@ -202,22 +196,24 @@
         results = results.filter(r => !allSupportedIds.has(r.i));
       }
       render();
-      (results.length ? show : hide)(dom.list);
+      dom.list.hidden = !results.length;
       if (!results.length && !$('#search-query').value) {
         error(t('searchResultNoneFound'));
+      } else {
+        resetUI();
       }
     } catch (reason) {
       error(reason);
     }
     clearTimeout(resetUI.timer);
-    resetUI();
+    resetUI.timer = 0;
   }
 
   function resetUI() {
     document.body.classList.add('search-results-shown');
-    show(dom.container);
-    show(dom.list);
-    hide(dom.error);
+    dom.container.hidden = false;
+    dom.list.hidden = false;
+    dom.error.hidden = true;
   }
 
   function render() {

@@ -98,65 +98,6 @@
     </div>
   </template>
 
-  <template data-id="searchResult">
-    <div class="search-result">
-      <a class="search-result-title"><span></span></a>
-      <div class="search-result-info">
-        <img class="search-result-screenshot" i18n="title:installButton">
-        <div class="search-result-status"></div>
-        <div class="search-result-actions">
-          <button class="search-result-install" i18n="installButton"></button>
-          <button class="search-result-uninstall" i18n="deleteStyleLabel"></button>
-          <button class="search-result-customize" i18n="configureStyle"></button>
-        </div>
-        <dl class="search-result-meta">
-          <div data-type="author">
-            <dt i18n="author"></dt>
-            <dd><a target="_blank" i18n="title:author"></a></dd>
-          </div>
-          <div data-type="rating">
-            <dt i18n="searchResultRating"></dt>
-            <dd i18n="title:searchResultRating"></dd>
-          </div>
-          <div data-type="updated">
-            <dt i18n="searchResultUpdated"></dt>
-            <dd i18n="title:searchResultUpdated"><time></time></dd>
-          </div>
-          <div data-type="weekly">
-            <dt i18n="searchResultWeeklyCount"></dt>
-            <dd i18n="title:searchResultWeeklyCount"></dd>
-          </div>
-          <div data-type="total">
-            <dt i18n="searchResultInstallCount"></dt>
-            <dd i18n="title:searchResultInstallCount"></dd>
-          </div>
-        </dl>
-        <div class="search-result-description"></div>
-      </div>
-    </div>
-  </template>
-
-  <template data-id="searchNav">
-    <div>
-      <button data-type="prev" i18n="title:paginationPrevious" disabled>◄</button>
-      <label>
-        <span data-type="page" i18n="title:paginationCurrent">-</span>
-        /
-        <span data-type="total" i18n="title:paginationEstimated">-</span>
-      </label>
-      <button data-type="next" i18n="title:paginationNext" disabled>►</button>
-    </div>
-  </template>
-
-  <template data-id="emptySearchResult">
-    <div class="search-result-empty"></div>
-  </template>
-
-  <template data-id="searchResultNotMatching">
-    <p class="not-matching-explainer"
-       i18n="searchResultNotMatching, title:searchResultNotMatchingNote"></p>
-  </template>
-
   <script src="js/polyfill.js"></script>
   <script src="js/msg.js"></script>
   <script src="js/toolbox.js"></script>
@@ -214,7 +155,7 @@
       ><button class="if-not-blocked split-btn-pedal" i18n="menu-site:popupManageSiteStyles"></button>
     </div>
     <div class="split-btn if-not-blocked" id="find-split">
-      <button id="find-styles-btn" i18n="findStyles"></button
+      <button id="find-styles-btn" i18n="findStyles" title="Ctrl-F"></button
       ><button class="split-btn-pedal"
                menu-usoa="UserStyles Archive"
                menu-usw="UserStyles World"
@@ -229,33 +170,6 @@
     <a class="if-blocked" href="https://github.com/openstyles/stylus/wiki" target="_blank">
       <button id="popup-wiki-button" i18n="linkStylusWiki, title:linkGetHelp"></button>
     </a>
-  </div>
-
-  <div id="search-results-error" class="hidden"></div>
-  <div id="search-results" class="hidden">
-    <div class="search-results-nav" data-type="top"></div>
-    <div id="search-params">
-      <input id="search-query" type="search" i18n="placeholder:search, title:searchStyleQueryHint">
-      <div class="select-resizer">
-        <select id="search-order" i18n="title:sortStylesHelpTitle">
-          <option value="n" i18n="genericTitle">
-          <option value="u" i18n="searchResultUpdated">
-          <option value="t" i18n="searchResultInstallCount">
-          <option value="w" i18n="searchResultWeeklyCount">
-          <option value="r" i18n="searchResultRating">
-        </select>
-        <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
-      </div>
-      <label>
-        <span class="checkbox-container">
-          <input id="search-globals" type="checkbox" checked>
-          <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-        </span>
-        <span i18n="searchGlobalStyles"></span>
-      </label>
-    </div>
-    <div id="search-results-list"></div>
-    <div class="search-results-nav" data-type="bottom"></div>
   </div>
 
   <!-- Here we can use the above elements before DOMContentLoaded -->
