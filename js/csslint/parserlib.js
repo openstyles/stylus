@@ -335,7 +335,7 @@ self.parserlib = (() => {
     'icon': 1,
     'image-orientation': 'from-image | none | [ <angle> || flip ]',
     'image-rendering': 'auto | smooth | high-quality | crisp-edges | pixelated | ' +
-      'optimizeSpeed | optimizeQuality',
+      'optimizeSpeed | optimizeQuality | -webkit-optimize-contrast',
     'image-resolution': 1,
     'ime-mode': 'auto | normal | active | inactive | disabled',
     'inline-box-align': 'last | <integer>',
