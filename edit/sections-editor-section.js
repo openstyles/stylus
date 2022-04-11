@@ -241,6 +241,7 @@ function createSection(originalSection, genId, si) {
     if (appliesTo.length > 1 && appliesTo[0].all) {
       removeApply(appliesTo[0]);
     }
+    if (base) requestAnimationFrame(shrinkSectionBy1);
     emitSectionChange('apply');
     return apply;
   }
@@ -347,6 +348,15 @@ function createSection(originalSection, genId, si) {
       }
       dirty.add(`${dirtyPrefix}.type`, type);
       dirty.add(`${dirtyPrefix}.value`, value);
+    }
+  }
+
+  function shrinkSectionBy1() {
+    const cmEl = cm.display.wrapper;
+    const cmH = cmEl.offsetHeight;
+    const viewH = el.parentElement.offsetHeight;
+    if (el.offsetHeight > viewH && cmH > Math.min(viewH / 2, cm.display.sizer.offsetHeight + 30)) {
+      cmEl.style.height = (cmH - appliesToContainer.offsetHeight / (appliesTo.length || 1) | 0) + 'px';
     }
   }
 }
