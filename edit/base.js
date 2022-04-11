@@ -132,7 +132,7 @@ function EditorHeader() {
     nameEl.title = isCustomName ? t('customNameHint') : '';
     nameEl.on('input', () => {
       editor.updateName(true);
-      resetEl.hidden = false;
+      resetEl.hidden = !editor.style.customName;
     });
     resetEl.hidden = !editor.style.customName;
     resetEl.onclick = () => {
