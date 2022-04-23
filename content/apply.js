@@ -5,6 +5,7 @@
 
 (() => {
   if (window.INJECTED === 1) return;
+  window.INJECTED = 1;
 
   /** true -> when the page styles are received,
    * false -> when disableAll mode is on at start, the styles won't be sent
