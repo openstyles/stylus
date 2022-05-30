@@ -1,6 +1,9 @@
 {
+  "InaccessibleFileHint": {
+    "message": "Stylus non può accedere ad alcuni tipi di file (ad es. pdf & JSON)"
+  },
   "addStyleLabel": {
-    "message": "Scrivi nuovo stile"
+    "message": "Scrivi un nuovo stile"
   },
   "addStyleTitle": {
     "message": "Aggiungi stili"
@@ -57,6 +60,9 @@
   },
   "author": {
     "message": "Autore"
+  },
+  "backupMessage": {
+    "message": "Per importare il file di backup, selezionalo e rilascialo in questa pagina oppure utilizza il bottone Importa\n\nPer esportare un backup compatibile con Stylus versione 1.5.18 e oltre, selezionalo col tasto destro oppure shift-click il pulsante Esporta"
   },
   "bckpInstStyles": {
     "message": "Esporta stili"
@@ -121,6 +127,9 @@
   "cm_theme": {
     "message": "Tema"
   },
+  "colorpickerSwitchFormatTooltip": {
+    "message": "Cambia formato: HEX -> RGB -> HSL.\nShift-click per invertire la direzione.\nAnche con i tasti PgUp (PaginaSu), PgDn (PaginaGiù)."
+  },
   "colorpickerTooltip": {
     "message": "Apri selettore colore"
   },
@@ -156,6 +165,18 @@
   },
   "confirmYes": {
     "message": "Si"
+  },
+  "connectingDropboxNotAllowed": {
+    "message": "La connessione a Dropbox è disponibile soltanto nelle app installate direttamente dal webstore"
+  },
+  "copied": {
+    "message": "Copiato negli appunti"
+  },
+  "copy": {
+    "message": "Copia negli appunti"
+  },
+  "customNameHint": {
+    "message": "Inserisci qui un nome personalizzato per rinominare lo stile nell'interfaccia utente (UI) senza rompere i suoi aggiornamenti"
   },
   "dateInstalled": {
     "message": "Data installazione"

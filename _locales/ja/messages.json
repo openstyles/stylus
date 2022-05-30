@@ -226,6 +226,9 @@
   "disableAllStyles": {
     "message": "すべてのスタイルをオフにする"
   },
+  "disableAllStylesOff": {
+    "message": "全スタイルをOFFにする"
+  },
   "disableStyleLabel": {
     "message": "無効化"
   },

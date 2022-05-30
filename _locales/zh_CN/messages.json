@@ -264,6 +264,9 @@
   "disableAllStyles": {
     "message": "禁用所有样式"
   },
+  "disableAllStylesOff": {
+    "message": "样式已禁用"
+  },
   "disableStyleLabel": {
     "message": "禁用"
   },
@@ -846,7 +849,7 @@
     "message": "按夜间时间"
   },
   "optionsAdvancedAutoSwitchSchemeNever": {
-    "message": "已停用。樣式中的深色／淺色設定會被忽略。"
+    "message": "已停用。已忽略样式的深色／浅色模式设置。"
   },
   "optionsAdvancedContextDelete": {
     "message": "向编辑器右键菜单添加“删除”"
@@ -930,7 +933,7 @@
     "message": "恢复默认值"
   },
   "optionsStylusThemes": {
-    "message": "點擊任何 Stylus 頁面（包含這個）的瀏覽器工具列中的 Stylus 圖示，然後點擊「尋找樣式」"
+    "message": "在任意 Stylus 页面（包括这个）点击浏览器工具栏的 Stylus 图标，然后点击「寻找样式」"
   },
   "optionsSubheading": {
     "message": "附加选项"
@@ -1063,10 +1066,10 @@
     "message": "在当前网站生效的样式数量"
   },
   "preferScheme": {
-    "message": "深色／淺色模式偏好設定"
+    "message": "深色／浅色模式偏好设置"
   },
   "preferSchemeAlways": {
-    "message": "目前被忽略（樣式一律套用），因為全域深色／淺色模式已被停用"
+    "message": "目前已忽略（总是应用的样式），因为已停用全局深色／浅色模式。"
   },
   "preferSchemeDark": {
     "message": "深色"
@@ -1075,7 +1078,7 @@
     "message": "浅色"
   },
   "preferSchemeNone": {
-    "message": "無（一律套用）"
+    "message": "无（总是应用）"
   },
   "previewLabel": {
     "message": "实时预览"
@@ -1213,7 +1216,7 @@
     "message": "设置快捷键"
   },
   "shortcutsNoteFF": {
-    "message": "在 Firefox 66 或更新的版本中，您可以手動開啟內建的快捷鍵使用者介面：\n1) 右鍵點擊工具列中的 Stylus 圖示並選擇「管理」\n（或是透過主選單或 Ctrl-Shift-A 開啟 about:addons），\n2) 在開啟的頁面中點擊右上角的齒輪圖示，\n3) 選擇「管理擴充套件快捷鍵」。\n\n您也可以在此自訂快捷鍵。"
+    "message": "在 Firefox 66 及之后更新的版本中：\n1) 右键单击工具栏的的 Stylus 图标，选择「管理」\n（也可以通过主菜单或 Ctrl-Shift-A 打开 about:addons）；\n2) 在打开的页面点击右上角的齿轮图标；\n3) 选择「管理扩展快捷键」。\n\n您也可以在这自定义快捷键。"
   },
   "sortDateNewestFirst": {
     "message": "最新的优先"
@@ -1279,7 +1282,7 @@
     "message": "样式注入顺序"
   },
   "styleInjectionOrderHint": {
-    "message": "拖拽样式可更改排序。 样式按如下顺序注入，故列表下方样式可覆盖较早样式。"
+    "message": "拖拽样式可更改排序。样式会按如下顺序注入，所以在列表更下方样式可覆盖较前面的样式。"
   },
   "styleInjectionOrderHint_prio": {
     "message": "下面列出的重要样式始终是最后注入的，因此它们可以覆盖任何新安装的样式。单击样式的标记以切换其重要性。"
@@ -1333,7 +1336,7 @@
     "message": "此样式仅在浅色模式下应用"
   },
   "stylePreferSchemeLabel": {
-    "message": "深色/浅色模式"
+    "message": "深色／浅色模式"
   },
   "styleRegexpInvalidExplanation": {
     "message": "部分正则表达式无法生效。"

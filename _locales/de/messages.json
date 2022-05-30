@@ -223,6 +223,9 @@
   "disableAllStyles": {
     "message": "Alle Styles deaktivieren"
   },
+  "disableAllStylesOff": {
+    "message": "Styles sind ausgeschaltet"
+  },
   "disableStyleLabel": {
     "message": "Deaktivieren"
   },
@@ -1324,7 +1327,7 @@
     "message": "Stylus funktioniert nicht auf Seiten wie diesen."
   },
   "stylusUnavailableForURLdetails": {
-    "message": "Als Sicherheitsvorkehrung verbietet der Browser es Erweiterungen, seine eingebauten Seiten (wie chrome://version, dem neuen Standard-Tab ab Chrome 61, about:addons, usw.), sowie Seiten anderer Erweiterungen zu beeinflussen. Jeder Browser beschränkt auch den Zugriff auf seine eigene Erweiterungsgalerie (wie Chrome Web Store oder addons.mozilla.org)."
+    "message": "Als Sicherheitsvorkehrung verbietet der Browser es Erweiterungen, seine eigenen Seiten (wie z.B. chrome://version oder about:addons) und eigene Seiten anderer Erweiterungen zu verändern. Auch die jeweils browser-eigene Erweiterungsgalerie (wie Chrome Web Store oder addons.mozilla.org) kann nicht verändert werden."
   },
   "syncDropboxDeprecated": {
     "message": "Dropbox Import / Export wurde durch einen fortschrittlicheren Mechanismus auf der Optionsseite ersetzt."

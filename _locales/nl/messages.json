@@ -245,6 +245,9 @@
   "disableAllStyles": {
     "message": "Alle stijlen uitschakelen"
   },
+  "disableAllStylesOff": {
+    "message": "Stijlen zijn uitgeschakeld"
+  },
   "disableStyleLabel": {
     "message": "Uitschakelen"
   },

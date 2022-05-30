@@ -264,6 +264,9 @@
   "disableAllStyles": {
     "message": "停用所有樣式"
   },
+  "disableAllStylesOff": {
+    "message": "樣式已關閉"
+  },
   "disableStyleLabel": {
     "message": "停用"
   },

@@ -264,6 +264,9 @@
   "disableAllStyles": {
     "message": "Wyłącz wszystkie style"
   },
+  "disableAllStylesOff": {
+    "message": "Style są wyłączone"
+  },
   "disableStyleLabel": {
     "message": "Wyłącz"
   },
