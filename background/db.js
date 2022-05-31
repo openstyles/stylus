@@ -120,7 +120,7 @@ const db = (() => {
   function open(name) {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(name, 2);
-      request.onsuccess = () => resolve(request.result);
+      request.onsuccess = e => resolve(create(e));
       request.onerror = reject;
       request.onupgradeneeded = create;
     });
@@ -129,12 +129,22 @@ const db = (() => {
   function create(event) {
     /** @type IDBDatabase */
     const idb = event.target.result;
-    const sn = getStoreName(idb.name);
+    const dbName = idb.name;
+    const sn = getStoreName(dbName);
     if (!idb.objectStoreNames.contains(sn)) {
-      idb.createObjectStore(sn, ID_AS_KEY[idb.name] ? {
+      if (event.type === 'success') {
+        idb.close();
+        return new Promise(resolve => {
+          indexedDB.deleteDatabase(dbName).onsuccess = () => {
+            resolve(open(dbName));
+          };
+        });
+      }
+      idb.createObjectStore(sn, ID_AS_KEY[dbName] ? {
         keyPath: 'id',
         autoIncrement: true,
       } : undefined);
     }
+    return idb;
   }
 })();
