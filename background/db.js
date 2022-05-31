@@ -127,9 +127,11 @@ const db = (() => {
   }
 
   function create(event) {
-    if (event.oldVersion === 0) {
-      const idb = event.target.result;
-      idb.createObjectStore(getStoreName(idb.name), ID_AS_KEY[idb.name] ? {
+    /** @type IDBDatabase */
+    const idb = event.target.result;
+    const sn = getStoreName(idb.name);
+    if (!idb.objectStoreNames.contains(sn)) {
+      idb.createObjectStore(sn, ID_AS_KEY[idb.name] ? {
         keyPath: 'id',
         autoIncrement: true,
       } : undefined);
