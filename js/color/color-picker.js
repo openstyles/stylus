@@ -79,7 +79,7 @@
       }
       const el = document.createElement(props.tag || 'div');
       el.className = toArray(cls).map(c => c ? CSS_PREFIX + c : '').join(' ');
-      el.append(...toArray(children));
+      el.append(...toArray(children).filter(Boolean));
       if (props) delete props.tag;
       return Object.assign(el, props);
     }
