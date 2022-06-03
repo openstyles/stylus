@@ -150,10 +150,10 @@ messageBox.show = async ({
 
   function resolveWith(value) {
     setTimeout(messageBox._resolve, 0, value);
-    messageBox.close(true);
     if (messageBox.element.contains(document.activeElement)) {
       messageBox._originalFocus.focus();
     }
+    messageBox.close(true);
   }
 
   function createElement() {
