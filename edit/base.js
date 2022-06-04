@@ -236,7 +236,8 @@ function EditorHeader() {
 
   async function initWindowedMode() {
     chrome.tabs.onAttached.addListener(onTabAttached);
-    const isSimple = (await browser.windows.getCurrent()).type === 'popup';
+    // Chrome 96+ bug: the type is 'app' for a window that was restored via Ctrl-Shift-T
+    const isSimple = ['app', 'popup'].includes((await browser.windows.getCurrent()).type);
     if (isSimple) require(['/edit/embedded-popup']);
     editor.isWindowed = isSimple || (
       history.length === 1 &&
