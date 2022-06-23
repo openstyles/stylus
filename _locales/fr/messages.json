@@ -67,6 +67,9 @@
   "backupButtons": {
     "message": "Sauvegarde"
   },
+  "backupMessage": {
+    "message": "Pour importer le fichier de sauvegarder, glissez-déposez-le sur dans page ou cliquez sur le bouton Importer.\n\nPour export une sauvegarde compatible avec une version de Stylus plus ancienne que 1.5.18, effectuez un clic droit ou un appuie sur la touche Maj + clic sur le bouton Exporter."
+  },
   "bckpInstStyles": {
     "message": "Exporter des styles"
   },
@@ -242,8 +245,22 @@
   "disableAllStyles": {
     "message": "Désactiver tous les styles"
   },
+  "disableAllStylesOff": {
+    "message": "Les styles sont désactivés"
+  },
   "disableStyleLabel": {
     "message": "Désactiver"
+  },
+  "draftAction": {
+    "message": "Choisissez « Oui » pour charger ce brouillon ou « Non » pour l'abandonner."
+  },
+  "draftTitle": {
+    "message": "Sauvegarde du brouillon, créée $date$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
   },
   "dragDropMessage": {
     "message": "Glisser votre fichier de sauvegarde n’importe où sur cette page pour l’importer."
@@ -359,6 +376,9 @@
   },
   "gettingStyles": {
     "message": "Récupération de tous les styles…"
+  },
+  "headerResizerHint": {
+    "message": "Maintenir la touche Maj pour redimensionner uniquement dans ce type d'interface, par exemple, éditeur, gestionnaire, installateur"
   },
   "helpAlt": {
     "message": "Aide"
@@ -788,6 +808,15 @@
   "optionsAdvanced": {
     "message": "Avancé"
   },
+  "optionsAdvancedAutoSwitchSchemeBySystem": {
+    "message": "Par préférence système"
+  },
+  "optionsAdvancedAutoSwitchSchemeByTime": {
+    "message": "Par horaire nocturne :"
+  },
+  "optionsAdvancedAutoSwitchSchemeNever": {
+    "message": "Désactivé. Le paramètre clair/obscur dans les styles est ignoré."
+  },
   "optionsAdvancedContextDelete": {
     "message": "Ajouter « Supprimer » dans le menu contextuel de l’extension"
   },
@@ -796,6 +825,12 @@
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "Expose le domaine principal dans chaque iframe.\nPermet d’écrire du CSS spécifique aux iframe tel que :\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
+  },
+  "optionsAdvancedExposeStyleName": {
+    "message": "Afficher le nom du style"
+  },
+  "optionsAdvancedExposeStyleNameNote": {
+    "message": "Afficher le nom du style dans la page pour faciliter le débogage des styles dans les outils de développement. Veuillez recharger le ou les onglets pour appliquer ce nouveau paramètre."
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Écrire un nouveau style en tant que usercss"
@@ -981,6 +1016,15 @@
   "prefShowBadge": {
     "message": "Afficher le nombre de styles actifs pour le site actuel sur le boutton Stylus"
   },
+  "preferSchemeDark": {
+    "message": "Obscur"
+  },
+  "preferSchemeLight": {
+    "message": "Clair"
+  },
+  "preferSchemeNone": {
+    "message": "Aucun (quand appliqué)"
+  },
   "previewLabel": {
     "message": "Prévisualiser en direct"
   },
@@ -1004,6 +1048,9 @@
   },
   "readingStyles": {
     "message": "Lecture des styles…"
+  },
+  "reload": {
+    "message": "Recharger"
   },
   "replace": {
     "message": "Remplacer"
@@ -1140,6 +1187,9 @@
   "styleEnabledLabel": {
     "message": "Activé"
   },
+  "styleExcludeLabel": {
+    "message": "Personnalisation des sites exclus"
+  },
   "styleFromMozillaFormatError": {
     "message": "Échec de l'importation depuis le format Mozilla"
   },
@@ -1264,6 +1314,14 @@
   },
   "syncError": {
     "message": "Synchronisation échouée"
+  },
+  "syncErrorLock": {
+    "message": "Cette base de données est déjà utilisée. Le verrouillage expirera le $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
   },
   "syncStorageErrorSaving": {
     "message": "La valeur ne peut pas être sauvegardée. Essayez de réduire la quantité de texte."

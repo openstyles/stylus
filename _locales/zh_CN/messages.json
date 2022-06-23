@@ -12,7 +12,7 @@
     "message": "透明度"
   },
   "appliesAdd": {
-    "message": "添加部分"
+    "message": "添加"
   },
   "appliesDisplay": {
     "message": "应用于：$applies$",
@@ -35,7 +35,7 @@
     "message": "应用于："
   },
   "appliesLineWidgetLabel": {
-    "message": "显示应用于部件"
+    "message": "显示「应用于」信息"
   },
   "appliesLineWidgetWarning": {
     "message": "对经过压缩的 CSS 无效"
@@ -259,7 +259,7 @@
     "message": "删除"
   },
   "description": {
-    "message": "Stylus 是一个调整网页外观的用户样式管理器。它可让您轻松地为许多热门网站网站安装主题和皮肤。"
+    "message": "Stylus 是一个调整网页外观的用户样式管理器。它可以让您轻松为许多热门网站安装主题和皮肤。"
   },
   "disableAllStyles": {
     "message": "禁用所有样式"
@@ -344,7 +344,7 @@
     "message": "UserCSS 文档"
   },
   "filteredStyles": {
-    "message": "共 $numTotal$ 个，已显示 $numShown$ 个",
+    "message": "已显示 $numShown$ 个，共 $numTotal$ 个",
     "placeholders": {
       "numShown": {
         "content": "$1"
@@ -507,13 +507,13 @@
     "message": "获取|分享 样式"
   },
   "linkGetShareStylesInfo": {
-    "message": "由社区驱动的新站点 userstyles.world 是由 userstyle 作者创建的，目的是取代 userstyles.org，该站点在过去一年中缓慢且反应迟钝，以至于许多作者停止更新他们的样式。"
+    "message": "由社区驱动的新站点 userstyles.world 是用户样式的作者们创建的，目的是取代 userstyles.org。userstyles.org 在过去一年中运行缓慢且反应迟钝，以至于许多作者都不再更新他们的样式。"
   },
   "linkGetStyles": {
     "message": "获取样式"
   },
   "linkGetStylesInfo": {
-    "message": "该存档站点由 userstyle 社区成员创建，约每天更新一次其内容，用于备份缓慢且无响应的 userstyles.org。 "
+    "message": "该存档站点是一位用户样式社区的成员创建的，约每天更新一次其内容，用于备份运行缓慢且反应迟钝的 userstyles.org。"
   },
   "linkTranslate": {
     "message": "翻译"
@@ -576,7 +576,7 @@
     "message": "动态刷新"
   },
   "manageFavicons": {
-    "message": "显示 \"应用于\" 的favicon图标"
+    "message": "显示「应用于」列的网站图标（favicon）"
   },
   "manageFaviconsGray": {
     "message": "显示为灰色图标"
@@ -849,7 +849,7 @@
     "message": "按夜间时间"
   },
   "optionsAdvancedAutoSwitchSchemeNever": {
-    "message": "已停用。已忽略样式的深色／浅色模式设置。"
+    "message": "停用。忽略样式的深色／浅色模式设置。"
   },
   "optionsAdvancedContextDelete": {
     "message": "向编辑器右键菜单添加“删除”"
@@ -912,10 +912,10 @@
     "message": "跟随深色／浅色模式"
   },
   "optionsIconDark": {
-    "message": "高对比度暗色图标"
+    "message": "深色浏览器主题"
   },
   "optionsIconLight": {
-    "message": "低对比度亮色图标"
+    "message": "浅色浏览器主题"
   },
   "optionsOpen": {
     "message": "打开"
@@ -966,7 +966,7 @@
     "message": "正在断开连接..."
   },
   "optionsSyncStatusPull": {
-    "message": "正在获取样式  $loaded$ 中的  $total$",
+    "message": "正在拉取样式 $loaded$ / $total$",
     "placeholders": {
       "loaded": {
         "content": "$1"
@@ -977,7 +977,7 @@
     }
   },
   "optionsSyncStatusPush": {
-    "message": "正在上传样式  $loaded$ 中的  $total$",
+    "message": "正在推送样式 $loaded$ / $total$",
     "placeholders": {
       "loaded": {
         "content": "$1"
@@ -1090,7 +1090,7 @@
     "message": "发布"
   },
   "publishPush": {
-    "message": "发布更新"
+    "message": "推送更新"
   },
   "publishReconnect": {
     "message": "尝试断开连接然后再次发布"

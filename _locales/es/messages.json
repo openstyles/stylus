@@ -29,7 +29,7 @@
     "message": "URLs en el dominio"
   },
   "appliesHelp": {
-    "message": "Utilice los controles 'Se aplica a' para limitar a qué URLs se aplica el código de esta sección."
+    "message": "Utilice los controles 'Se aplica a' para limitar las URL a las que se aplica el código de esta sección."
   },
   "appliesLabel": {
     "message": "Se aplica a"
@@ -66,6 +66,9 @@
   },
   "backupButtons": {
     "message": "Respaldo"
+  },
+  "backupMessage": {
+    "message": "Para importar el archivo de copia de seguridad, arrástrelo a esta página o haga clic en el botón Importar.\n\nPara exportar una copia de seguridad compatible con Stylus anterior a la versión 1.5.18, haga clic en el triángulo del botón Exportar y pulse en Modo compatible."
   },
   "bckpInstStyles": {
     "message": "Exportar estilos"
@@ -125,7 +128,7 @@
     "message": "Al hacer doble clic se seleccionan los tokens"
   },
   "cm_selectByTokensTooltip": {
-    "message": "Ejemplos de tokens: .foo-bar-2 #aabbcc 0.32 !important\nCuando está deshabilitado: se seleccionan las palabras delimitadas por puntos."
+    "message": "Ejemplos de tokens: .foo-bar-2 #aabbcc 0.32 !important\nCuando está desactivado: se seleccionan las palabras delimitadas por puntos."
   },
   "cm_smartIndent": {
     "message": "Usar sangría inteligente"
@@ -137,7 +140,7 @@
     "message": "Temas"
   },
   "colorpickerPaletteHint": {
-    "message": "Haz clic con el botón derecho en una muestra para mostrar las líneas de código fuente"
+    "message": "Haga clic derecho en una muestra para desplazarse por las líneas del código fuente"
   },
   "colorpickerSwitchFormatTooltip": {
     "message": "Alternar formatos: HEX -> RGB -> HSL.\nMayús+Clic para invertir la dirección.\nTambién con las teclas RePág (Retroceso de página), AvPág (Avance de página)."
@@ -197,10 +200,10 @@
     "message": "Copiar al portapapeles"
   },
   "customNameHint": {
-    "message": "Ingresa un nombre personalizado aquí para cambiar el nombre de estilo del diseño sin romper sus actualizaciones"
+    "message": "Introduzca aquí un nombre personalizado para cambiar el nombre del estilo en la interfaz sin que se interrumpan sus actualizaciones"
   },
   "customNameResetHint": {
-    "message": "Dejar de usar el nombre personalizado, cambiar al nombre del estilo"
+    "message": "Dejar de usar el nombre personalizado, cambiar al nombre propio del estilo"
   },
   "dateAbbrYear": {
     "message": "$value$a",
@@ -217,13 +220,13 @@
     "message": "Fecha de actualización"
   },
   "dbError": {
-    "message": "Ocurrió un error con la base de datos de Stylus. ¿Deseas visitar una página web con posibles soluciones?"
+    "message": "Se ha producido un error al utilizar la base de datos de Stylus. ¿Desea visitar una página web con posibles soluciones?"
   },
   "defaultTheme": {
     "message": "predeterminado"
   },
   "deleteStyleConfirm": {
-    "message": "¿Estás seguro de que quieres eliminar este estilo?"
+    "message": "¿Está seguro que desea eliminar este estilo?"
   },
   "deleteStyleLabel": {
     "message": "Eliminar"
@@ -234,8 +237,22 @@
   "disableAllStyles": {
     "message": "Desactivar todos los estilos"
   },
+  "disableAllStylesOff": {
+    "message": "Los estilos están desactivados"
+  },
   "disableStyleLabel": {
-    "message": "Deshabilitar"
+    "message": "Desactivar"
+  },
+  "draftAction": {
+    "message": "Elija 'Sí' para cargar este proyecto o 'No' para descartarlo."
+  },
+  "draftTitle": {
+    "message": "Proyecto de recuperación, creado$date$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
   },
   "dragDropMessage": {
     "message": "Arrastra tu archivo de respaldo en cualquier lugar de esta página para importar."
@@ -263,14 +280,20 @@
       }
     }
   },
+  "editorSettings": {
+    "message": "Configuración del editor"
+  },
   "enableStyleLabel": {
-    "message": "Habilitar"
+    "message": "Activar"
   },
   "excludeStyleByDomainLabel": {
-    "message": "Excluir el dominio Actual"
+    "message": "Excluir el dominio actual"
   },
   "excludeStyleByUrlLabel": {
     "message": "Excluir la URL actual"
+  },
+  "exportCompatible": {
+    "message": "Exportar (modo compatible)"
   },
   "exportLabel": {
     "message": "Exportar"
@@ -305,7 +328,7 @@
     }
   },
   "filteredStylesAllHidden": {
-    "message": "Los filtros actualmente aplicados no coinciden con estilo alguno"
+    "message": "Los filtros aplicados actualmente no coinciden con ningún estilo"
   },
   "findStyles": {
     "message": "Buscar estilos"
@@ -320,10 +343,10 @@
     "message": "Descripción"
   },
   "genericDisabledLabel": {
-    "message": "Deshabilitado"
+    "message": "Desactivado"
   },
   "genericEnabledLabel": {
-    "message": "Habilitado"
+    "message": "Activado"
   },
   "genericHistoryLabel": {
     "message": "Historial"
@@ -340,6 +363,9 @@
   "genericSavedMessage": {
     "message": "Guardado"
   },
+  "genericTest": {
+    "message": "Prueba"
+  },
   "genericTitle": {
     "message": "Título"
   },
@@ -348,6 +374,9 @@
   },
   "gettingStyles": {
     "message": "Obteniendo todos los estilos..."
+  },
+  "headerResizerHint": {
+    "message": "Presione Mayúsculas para cambiar el tamaño solo en este tipo de interfaz. Por ejemplo Editor, Administrador, Instalador"
   },
   "helpAlt": {
     "message": "Ayuda"
@@ -359,7 +388,7 @@
     "message": "Pulsa un atajo de teclado"
   },
   "hostDisabled": {
-    "message": "Este host ha sido deshabilitado debido a un error en la versión actual del navegador que se está utilizando."
+    "message": "Este host ha sido desactivado debido a un error en la versión actual del navegador utilizado."
   },
   "importAppendLabel": {
     "message": "Adicionar al estilo"
@@ -371,10 +400,10 @@
     "message": "Importar"
   },
   "importPreprocessor": {
-    "message": "Los estilos con <code>@preprocessor</code> no funcionarán en el modo clásico. Puedes cambiar el editor para usar el modo UserCSS: 1) Abre el administrador de estilos. 2) Activa la casilla «como UserCSS». 3) Haz clic en «Escribir un estilo nuevo»\n\n¿Quieres importarlo de todos modos?"
+    "message": "Los estilos con <code>@preprocessor</code> no funcionarán en el modo clásico. Puedes cambiar el editor al modo Usercss: 1) Abre el administrador de estilos. 2) Activa la casilla 'como UserCSS'. 3) Haz clic en 'Escribir un estilo nuevo'\n\n¿Quieres importarlo de todos modos?"
   },
   "importPreprocessorTitle": {
-    "message": "Problema potencial debido a @preprocessor"
+    "message": "Posible problema debido a @preprocessor"
   },
   "importReplaceLabel": {
     "message": "Sobrescribir estilo"
@@ -444,8 +473,17 @@
   "linkGetHelp": {
     "message": "Obtener ayuda"
   },
+  "linkGetShareStyles": {
+    "message": "Obtener y compartir estilos"
+  },
+  "linkGetShareStylesInfo": {
+    "message": "El nuevo sitio userstyles.world, gestionado por la comunidad, ha sido creado por los creadores de usertyles para sustituir a userstyles.org, que ha sido muy lento y no ha respondido durante el último año, por lo que muchos creadores han dejado de actualizar sus estilos."
+  },
   "linkGetStyles": {
     "message": "Obtener estilos"
+  },
+  "linkGetStylesInfo": {
+    "message": "Este repositorio fue creado por un miembro de la comunidad userstyle para suplir el lento y disfuncional userstyles.org. El repositorio se actualiza aproximadamente una vez al día."
   },
   "linkTranslate": {
     "message": "Traducir"
@@ -459,7 +497,7 @@
     }
   },
   "linterCSSLintSettings": {
-    "message": "(Establecer regla como: 0 = deshabilitada; 1 = advertencia; 2 = error)"
+    "message": "(Establezca la regla como: 0 = desactivado; 1 = advertencia; 2 = error)"
   },
   "linterConfigPopupTitle": {
     "message": "Establecer configuración de $linter$ reglas",
@@ -532,10 +570,10 @@
     "message": "Nuevo diseño de la administración"
   },
   "manageOnlyDisabled": {
-    "message": "Solo estilos deshabilitados"
+    "message": "Solo estilos desactivados"
   },
   "manageOnlyEnabled": {
-    "message": "Solo estilos habilitados"
+    "message": "Solamente estilos activados"
   },
   "manageOnlyExternal": {
     "message": "Solo estilos externos"
@@ -774,6 +812,15 @@
   "optionsAdvanced": {
     "message": "Avanzado"
   },
+  "optionsAdvancedAutoSwitchSchemeBySystem": {
+    "message": "Por preferencia del sistema"
+  },
+  "optionsAdvancedAutoSwitchSchemeByTime": {
+    "message": "Por la noche:"
+  },
+  "optionsAdvancedAutoSwitchSchemeNever": {
+    "message": "Desactivado. Se ignora la configuración de oscuro/claro en los estilos."
+  },
   "optionsAdvancedContextDelete": {
     "message": "Añadir 'Eliminar' al menú contextual del editor"
   },
@@ -782,6 +829,12 @@
   },
   "optionsAdvancedExposeIframesNote": {
     "message": "Muestra el dominio del sitio principal en cada iframe.\nPermite escribir código CSS específico para iframes, como en el ejemplo siguiente:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
+  },
+  "optionsAdvancedExposeStyleName": {
+    "message": "Exponer el nombre del estilo"
+  },
+  "optionsAdvancedExposeStyleNameNote": {
+    "message": "Expone el nombre del estilo en la página para facilitar la depuración de los estilos en devtools. Recargue las pestañas para aplicar la nueva configuración."
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Escribir nuevo estilo como UserCSS"
@@ -799,7 +852,7 @@
     "message": "Activa esta opción si aparecen y desaparecen rápidamente contenidos sin estilo al cargarse páginas (el efecto es más visible con temas oscuros).\n\nLa explicación técnica es que Chrome/Chromium pospone la comunicación asincrónica de las extensiones. Esta función intenta mejorar la velocidad de carga de las páginas, aunque no siempre es efectiva y puede causar que los estilos se apliquen con retraso. Para evitar este problema (ya que las extensiones del tipo WebExtensions no pueden usar una API sincrónica), Stylus ofrece esta opción para usar la API web XMLHttpRequest  sincrónica (en desuso) para obtener los estilos correspondientes. No debería causar problemas, ya que la petición se completa en solo unos milisegundos, mientras se carga la página del servidor.\n\nDe todos modos, Chromium mostrará una advertencia en la consola de herramientas de desarrollador. Para evitar que se muestren este tipo de advertencias en el futuro, haz clic con el botón derecho sobre una advertencia y selecciona la opción para ocultarla."
   },
   "optionsBadgeDisabled": {
-    "message": "Color de fondo cuando está deshabilitado"
+    "message": "Color de fondo cuando se desactiva"
   },
   "optionsBadgeNormal": {
     "message": "Color de fondo"
@@ -828,6 +881,9 @@
   "optionsHeading": {
     "message": "Opciones"
   },
+  "optionsIconAuto": {
+    "message": "Adaptar el modo oscuro/claro"
+  },
   "optionsIconDark": {
     "message": "Temas de navegador oscuros"
   },
@@ -849,6 +905,9 @@
   "optionsResetButton": {
     "message": "Restablecer opciones"
   },
+  "optionsStylusThemes": {
+    "message": "Haga clic en el icono de Stylus en la barra de herramientas del navegador y luego haga clic en 'Buscar estilos'."
+  },
   "optionsSubheading": {
     "message": "Más opciones"
   },
@@ -863,6 +922,9 @@
   },
   "optionsSyncNone": {
     "message": "Ninguno"
+  },
+  "optionsSyncPassword": {
+    "message": "Contraseña"
   },
   "optionsSyncStatusConnected": {
     "message": "Conectado"
@@ -907,11 +969,14 @@
   "optionsSyncSyncNow": {
     "message": "Sincronizar ahora"
   },
+  "optionsSyncUsername": {
+    "message": "Usuario"
+  },
   "optionsUpdateImportNote": {
     "message": "Al importar los respaldos de estilos desde una versión antigua o desde Stylish, comprueba una vez las actualizaciones manualmente en el administrador de estilos para asegurarte de que todos los estilos estén actualizados."
   },
   "optionsUpdateInterval": {
-    "message": "Intervalo de actualización automática en horas (especificar 0 para deshabilitar)"
+    "message": "Intervalo de actualización automática del estilo en horas (escriba 0 para desactivar)"
   },
   "overwriteFileExport": {
     "message": "¿Desea sobrescribir un archivo existente?"
@@ -944,10 +1009,13 @@
     "message": "Útil para temas oscuros en el nuevo Chrome ya que no pinta los bordes laterales"
   },
   "popupHotkeysInfo": {
-    "message": "<1>-<9>, <0>, también en el teclado numérico - acciona el n-esimo estilo (0 es 10)\n<A>-<Z> acciona el primer estilo con un nombre que comienza con la letra\n<Shift> abre el editor en lugar de accionar\n<Numpad +> habilita los estilos listados\n<Numpad –> deshabilita los estilos listados\n<Numpad *> y <`> (acento grave) - acciona los estilos habilitados inicialmente; no se aplica a los estilos habilitados subsecuentemente mientras el cuadro emergente está abierto, así que puede restaurar la selección inicial tras probar el material: simplemente deshabilite todo, y luego accione, es decir <Numpad –> <Numpad *>\nMás información en el wiki"
+    "message": "<1>-<9>, <0>, también en el teclado numérico - acciona el enésimo estilo (0 es 10)\n<A>-<Z> acciona el primer estilo con un nombre que comienza con la letra\n<Shift> abre el editor en lugar de accionar\n<Numpad +> activa los estilos listados\n<Numpad –> desactiva los estilos listados\n<Numpad *> y < ` > (acento grave) - acciona los estilos inicialmente activados; no se aplica a los estilos posteriormente activados mientras la ventana emergente está abierta para que pueda restaurar la selección inicial después de probar las cosas: simplemente desactive todo, luego accione, por ejemplo <Numpad –> <Numpad *>\nMás información en la wiki"
   },
   "popupHotkeysTooltip": {
     "message": "Haz clic para ver los atajos de teclado disponibles"
+  },
+  "popupManageSiteStyles": {
+    "message": "Administrar estilos del sitio"
   },
   "popupManageTooltip": {
     "message": "Mayús+clic o clic secundario abre el administrador con estilos aplicables para el sitio actual."
@@ -962,13 +1030,28 @@
     "message": "Abrir editor en una nueva ventana"
   },
   "popupOpenEditInWindowTooltip": {
-    "message": "También se habilita al desacoplar la pestaña del editor de una ventana de navegador,\ny se deshabilita al acoplar una única pestaña de editor en otra ventana."
+    "message": "También se activa al desacoplar la pestaña del editor de una ventana del navegador,\ny se desactiva acoplando una única pestaña del editor en otra ventana."
   },
   "popupStylesFirst": {
     "message": "Estilos antes que las órdenes"
   },
   "prefShowBadge": {
     "message": "Número de estilos activos en el sitio actual"
+  },
+  "preferScheme": {
+    "message": "Preferencia de modo oscuro/claro"
+  },
+  "preferSchemeAlways": {
+    "message": "De momento se ignora (el estilo siempre se aplica) porque el modo global oscuro/claro está desactivado"
+  },
+  "preferSchemeDark": {
+    "message": "Oscuro"
+  },
+  "preferSchemeLight": {
+    "message": "Claro"
+  },
+  "preferSchemeNone": {
+    "message": "Ninguno (siempre aplicado)"
   },
   "previewLabel": {
     "message": "Vista previa en tiempo real"
@@ -997,6 +1080,9 @@
   "readingStyles": {
     "message": "Leyendo los estilos..."
   },
+  "reload": {
+    "message": "Recargar"
+  },
   "replace": {
     "message": "Reemplazar"
   },
@@ -1006,11 +1092,17 @@
   "replaceWith": {
     "message": "Reemplazar con"
   },
+  "restoreTemplate": {
+    "message": "Restaurar la plantilla predeterminada.\n\n(Las páginas del editor actualmente abiertas no cambiarán.)"
+  },
   "retrieveBckp": {
     "message": "Importar estilos"
   },
   "retrieveDropboxSync": {
     "message": "Importar desde Dropbox"
+  },
+  "saveAsTemplate": {
+    "message": "Guardar como plantilla"
   },
   "search": {
     "message": "Buscar"
@@ -1040,7 +1132,7 @@
     "message": "El estilo se ha instalado, pero no es válido para la URL del sitio actual."
   },
   "searchResultNotMatchingNote": {
-    "message": "Intenta pedir al autor de este estilo de usuario que añada la URL.\n\nTambién puedes abrir el estilo en el administrador y editarlo tú mismo,\npero ten en cuenta que deshabilita las actualizaciones automáticas de\neste estilo."
+    "message": "Pruebe solicitando al autor de este estilo que añada la URL.\n\nTambién puede abrir el estilo en el administrador y editarlo\nusted mismo, pero tenga en cuenta que esto desactiva las\nactualizaciones automáticas para este estilo."
   },
   "searchResultRating": {
     "message": "Valoración"
@@ -1087,11 +1179,17 @@
   "sections": {
     "message": "Secciones"
   },
+  "settings": {
+    "message": "Configuración"
+  },
   "shortcuts": {
     "message": "Atajos"
   },
   "shortcutsNote": {
     "message": "Defina atajos de teclado"
+  },
+  "shortcutsNoteFF": {
+    "message": "En Firefox 66+ puedes abrir manualmente la interfaz de atajos integrada:\n1) Clic derecho en el icono Stylus de la barra de herramientas y pulse 'Gestionar extensión'.\n(o bien, abra about:addons mediante el menú principal o Ctrl-Shift-A),\n2) En la página que se abre, haga clic en el icono de la rueda dentada en la esquina superior derecha,\n3) Elija 'Administrar atajos de extensiones'.\n\nTambién puede personalizar los accesos directos aquí."
   },
   "sortDateNewestFirst": {
     "message": "los más nuevos primero"
@@ -1109,7 +1207,7 @@
     "message": "Título descendentemente"
   },
   "sortStylesHelp": {
-    "message": "Escoja el tipo de orden a aplicar a las entradas instaladas desde el menú desplegable de ordenación. La configuración predeterminada aplica un orden ascendente (A a Z) a los títulos de las entradas. Las ordenaciones del grupo \"Título descendentemente\" aplicarán un orden descendente (Z a A) al título.\nHay otros preajustes que permitirán ordenar las entradas según múltiples criterios. Piense en esto como en ordenar una tabla con múltiples columnas, y en cada categoría en una selección (entre los signos más) representa una columna o grupo.\nPor ejemplo, si la configuración es \"Habilitados (primero) + Título\", las entradas se ordenarían de forma que las entradas habilitadas quedarían en la parte superior de la lista, luego se aplica un orden ascendente (A a Z) de títulos de las entradas tanto para las entradas habilitadas como las deshabilitadas de forma separada."
+    "message": "Elija el tipo de ordenamiento que desea aplicar a las entradas instaladas desde el menú desplegable de ordenamiento. La configuración predeterminada aplica un ordenamiento ascendente (de la A a la Z) a los títulos de las entradas. El ordenamiento dentro del grupo 'Título descendente' aplicará un ordenamiento descendente (de la Z a la A) al título.\nHay otros preajustes que permiten ordenar las entradas por múltiples criterios. Imagínese que es como ordenar una tabla con múltiples columnas y que cada categoría en una selección (entre los signos de suma) representa una columna, o un grupo.\nPor ejemplo, si la configuración es 'Activado (primero) + Título', las entradas se ordenarían de manera que todas las entradas activadas se sitúen al principio de la lista, y luego se aplica un ordenamiento ascendente del título de la entrada (de la A a la Z) a las entradas activadas y desactivadas por separado."
   },
   "sortStylesHelpTitle": {
     "message": "Ordenar contenidos"
@@ -1138,11 +1236,29 @@
   "styleEnabledLabel": {
     "message": "Activado"
   },
+  "styleExcludeLabel": {
+    "message": "Sitios excluidos personalizados"
+  },
   "styleFromMozillaFormatError": {
     "message": "No se pudo importar desde el formato Mozilla"
   },
   "styleFromMozillaFormatPrompt": {
     "message": "Pegue el código de formato Mozilla"
+  },
+  "styleIncludeLabel": {
+    "message": "Sitios incluidos personalizados"
+  },
+  "styleInjectionImportance": {
+    "message": "Alternar la importancia del estilo"
+  },
+  "styleInjectionOrder": {
+    "message": "Orden de inyección de estilo"
+  },
+  "styleInjectionOrderHint": {
+    "message": "Arrastre y suelte un estilo para cambiar su posición. Los estilos se inyectan secuencialmente en el orden que se muestra a continuación, por lo que un estilo que esté más abajo en la lista puede anular los estilos anteriores."
+  },
+  "styleInjectionOrderHint_prio": {
+    "message": "Los estilos importantes que se indican a continuación se inyectan siempre en último lugar para que puedan anular cualquier estilo recién instalado. Haga clic en la marca del estilo para cambiar su importancia."
   },
   "styleInstall": {
     "message": "¿Quiere instalar «$stylename$» en Stylus?",
@@ -1186,6 +1302,15 @@
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "El estilo no se aplicó debido a su uso incorrecto de 'regexp()'"
   },
+  "styleNotAppliedSchemeDark": {
+    "message": "Este estilo solo se aplica en el modo oscuro"
+  },
+  "styleNotAppliedSchemeLight": {
+    "message": "Este estilo solo se aplica en el modo claro"
+  },
+  "stylePreferSchemeLabel": {
+    "message": "Modo oscuro/claro"
+  },
   "styleRegexpInvalidExplanation": {
     "message": "Algunas reglas «regexp()» que no se pudieron compilar en absoluto."
   },
@@ -1216,6 +1341,9 @@
   "styleSaveLabel": {
     "message": "Guardar"
   },
+  "styleSettings": {
+    "message": "Configuración del estilo"
+  },
   "styleToMozillaFormatHelp": {
     "message": "El formato Mozilla del código se puede enviar a userstyles.org y usarse con el Stylish para Firefox clásico."
   },
@@ -1233,6 +1361,9 @@
   "styleUpdateDiscardChanges": {
     "message": "El estilo se ha modificado fuera del editor. ¿Desea recargar el estilo?"
   },
+  "styleUpdateUrlLabel": {
+    "message": "Actualizar URL"
+  },
   "stylusUnavailableForURL": {
     "message": "Stylus no funciona en páginas como esta."
   },
@@ -1247,6 +1378,17 @@
   },
   "syncError": {
     "message": "No se pudo sincronizar"
+  },
+  "syncErrorLock": {
+    "message": "La base de datos ya está en uso. El bloqueo expirará en $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "syncErrorRelogin": {
+    "message": "Sincronización fallida. Se ha cerrado la sesión.\nIntenta reiniciar la sesión en las opciones de Stylus."
   },
   "syncStorageErrorSaving": {
     "message": "El valor no se puede guardar. Trate de reducir la longitud del texto."
