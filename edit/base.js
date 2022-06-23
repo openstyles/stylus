@@ -419,7 +419,7 @@ function LivePreview() {
       el.hidden = true;
     } catch (err) {
       if (Array.isArray(err)) {
-        err = err.join('\n');
+        err = err.map(e => e.message || e).join('\n');
       } else if (err && err.index != null) {
         // FIXME: this would fail if editors[0].getValue() !== data.sourceCode
         const pos = editor.getEditors()[0].posFromIndex(err.index);
