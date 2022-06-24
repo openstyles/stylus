@@ -186,7 +186,7 @@ self.parserlib = (() => {
     'caret-color': 'auto | <color>',
     'caption-side': 'top | bottom | inline-start | inline-end',
     'clear': 'none | right | left | both | inline-start | inline-end',
-    'clip': 'rect( [ <length> | auto ]#{4} ) | auto',
+    'clip': '<rect> | auto',
     'clip-path': '<clip-source> | <clip-path> | none',
     'clip-rule': 'nonzero | evenodd',
     'color': '<color>',
@@ -415,7 +415,9 @@ self.parserlib = (() => {
     'nav-up': 1,
 
     'object-fit': 'fill | contain | cover | none | scale-down',
+    'object-overflow': 'clip | visible',
     'object-position': '<position>',
+    'object-view-box': 'none | <inset> | <rect> | <xywh>',
     'opacity': '<opacity-value> | <pct>',
     'order': '<integer>',
     'orphans': '<integer>',
@@ -427,7 +429,7 @@ self.parserlib = (() => {
     'overflow': '<overflow>{1,2}',
     'overflow-anchor': 'auto | none',
     'overflow-block': '<overflow>',
-    'overflow-clip-margin': '<len0+>',
+    'overflow-clip-margin': 'visual-box | <len0+>',
     'overflow-inline': '<overflow>',
     'overflow-style': 1,
     'overflow-wrap': 'normal | break-word | anywhere',
@@ -730,6 +732,7 @@ self.parserlib = (() => {
       'hidden | dotted | dashed | solid | double | groove | ridge | inset | outset',
     '<border-width>': '<length> | thin | medium | thick',
     '<box>': 'padding-box | border-box | content-box',
+    '<len-pct-side>': '<len-pct> | closest-side | farthest-side',
     '<clip-source>': '<uri>',
     '<column-gap>': 'normal | <len-pct>',
     '<content-distribution>': 'space-between | space-around | space-evenly | stretch',
@@ -773,6 +776,7 @@ self.parserlib = (() => {
     '<ie-function>': p => p.tokenType === Tokens.IE_FUNCTION, //eslint-disable-line no-use-before-define
     '<image>': '<uri> | <gradient> | cross-fade()',
     '<inflexible-breadth>': '<len-pct> | min-content | max-content | auto',
+    '<inset>': 'inset( <len-pct>{1,4} <border-radius-round>? )',
     '<integer>': p => p.isInt || p.isCalc,
     '<int0+>': p => p.isInt && p.value >= 0 || p.isCalc,
     '<int1+>': p => p.isInt && p.value > 0 || p.isCalc,
@@ -806,6 +810,7 @@ self.parserlib = (() => {
     '<pct>': vtIsPct,
     '<pct0+>': p =>
       p.value >= 0 && p.type === 'percentage' || p.isCalc,
+    '<rect>': 'rect( [ <length> | auto ]#{4} <border-radius-round>? )',
     '<relative-size>': 'smaller | larger',
     '<row-gap>': '<column-gap>',
     '<self-position>': 'center | start | end | self-start | self-end | flex-start | flex-end',
@@ -823,6 +828,7 @@ self.parserlib = (() => {
     '<unit>': p => p.text === '%' || p in UNITS || lower(p) in UNITS,
     '<uri>': p => p.type === 'uri',
     '<width>': p => vtIsLength(p) || vtIsPct(p) || lowerCmp(p.text, 'auto'),
+    '<xywh>': 'xywh( <len-pct>{2} <len-pct0+>{2} <border-radius-round>? )',
   };
 
   const VTComplex = {
@@ -840,9 +846,9 @@ self.parserlib = (() => {
       'right | far-right | right-side ] || behind ] | leftwards | rightwards',
     '<baseline-position>': '[ first | last ]? baseline',
     '<basic-shape>':
-      'inset( <len-pct>{1,4} [ round <border-radius> ]? ) | ' +
-      'circle( [ <len-pct> | closest-side | farthest-side ]? [ at <position> ]? ) | ' +
-      'ellipse( [ [ <len-pct> | closest-side | farthest-side ]{2} ]? [ at <position> ]? ) | ' +
+      '<inset> | ' +
+      'circle( <len-pct-side>? [ at <position> ]? ) | ' +
+      'ellipse( [ <len-pct-side>{2} ]? [ at <position> ]? ) | ' +
       'path( [ [ nonzero | evenodd ] , ]? <string> ) | ' +
       'polygon( [ [ nonzero | evenodd | inherit ] , ]? [ <len-pct> <len-pct> ]# )',
     '<bg-layer>':
@@ -866,6 +872,7 @@ self.parserlib = (() => {
         'fill'),
     '<border-image-width>': '[ <len-pct> | <number> | auto ]{1,4}',
     '<border-radius>': '<len-pct0+>{1,4} [ / <len-pct0+>{1,4} ]?',
+    '<border-radius-round>': 'round <border-radius>',
     '<border-shorthand>': '<border-width> || <border-style> || <color>',
     '<box-shadow>': 'none | <shadow>#',
     '<clip-path>': '<basic-shape> || <geometry-box>',
