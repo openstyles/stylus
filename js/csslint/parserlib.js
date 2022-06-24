@@ -1398,6 +1398,12 @@ self.parserlib = (() => {
       Tokens.RIGHTMIDDLE_SYM,
       Tokens.RIGHTBOTTOM_SYM,
     ],
+    mediaValue: [
+      Tokens.IDENT,
+      Tokens.NUMBER,
+      Tokens.DIMENSION,
+      Tokens.LENGTH,
+    ],
     op: [
       Tokens.SLASH,
       Tokens.COMMA,
@@ -3704,53 +3710,57 @@ self.parserlib = (() => {
     _mediaQuery() {
       const stream = this._tokenStream;
       const expressions = [];
+      const mod = stream.match(Tokens.IDENT, ['only', 'not']);
       let type = null;
-      const token = stream.match(Tokens.IDENT, ['only', 'not']);
-      const ident = token.value || null;
       this._ws();
       const next = stream.LT(1);
-      switch (next.type) {
-        case Tokens.IDENT:
-          type = this._mediaFeature();
-          break;
-        case Tokens.LPAREN:
-          expressions.push(this._mediaExpression());
-          break;
-        default:
-          return;
+      if (next.type === Tokens.IDENT) {
+        type = this._mediaFeature();
+      } else if (next.value === '(') {
+        expressions.push(this._mediaExpression({or: true}));
+      } else {
+        return;
       }
       this._ws();
-      while (stream.match(Tokens.IDENT)) {
-        if (lowerCmp(stream._token.value, 'and')) {
+      const c = stream.match(Tokens.IDENT).value;
+      if (c) {
+        if (lowerCmp(c, 'and') || !type && lowerCmp(c, 'or')) {
           this._ws();
           expressions.push(this._mediaExpression());
         } else {
-          stream.throwUnexpected(undefined, ["'and'"]);
+          stream.throwUnexpected(undefined, ["'and'", !type && "'or'"].filter(Boolean));
         }
       }
-      return new MediaQuery(ident, type, expressions, token || next);
+      return new MediaQuery(mod.value || null, type, expressions, mod || next);
     }
 
     _mediaExpression() {
       const stream = this._tokenStream;
-      let token;
-      let expression = null;
       stream.mustMatch(Tokens.LPAREN);
-      const feature = this._mediaFeature();
-      this._ws();
-      if (stream.match(Tokens.COLON)) {
+      const feature = this._mediaFeature(TT.mediaValue);
+      let b;
+      for (let pass = 0; ++pass <= 2;) {
         this._ws();
-        token = stream.LT(1);
-        expression = this._expression({calc: true});
+        b = stream.get(true).value;
+        if (/^[:=<>]$/.test(b)) {
+          const isRange = /[<>]/.test(b);
+          if (isRange) stream.match(Tokens.EQUALS);
+          this._ws();
+          b = this._expression({calc: true});
+          if (!isRange) break;
+        } else {
+          stream.unget();
+          b = null;
+          break;
+        }
       }
       stream.mustMatch(Tokens.RPAREN);
       this._ws();
-      return new MediaFeature(feature, expression ? new SyntaxUnit(expression, token) : null);
+      return new MediaFeature(feature); // TODO: construct the value properly
     }
 
-    _mediaFeature() {
-      this._tokenStream.mustMatch(Tokens.IDENT);
-      return SyntaxUnit.fromToken(this._tokenStream._token);
+    _mediaFeature(type = Tokens.IDENT) {
+      return SyntaxUnit.fromToken(this._tokenStream.mustMatch(type));
     }
 
     _page(start) {
