@@ -274,9 +274,19 @@ const syncMan = (() => {
     if (name === 'dropbox' || name === 'google' || name === 'onedrive' || name === 'webdav') {
       const options = await syncMan.getDriveOptions(name);
       options.getAccessToken = () => tokenMan.getToken(name);
+      options.fetch = name === 'webdav' ? fetchWebDAV.bind(options) : fetch;
       return dbToCloud.drive[name](options);
     }
     throw new Error(`unknown cloud name: ${name}`);
+  }
+
+  /** @this {Object} DriveOptions */
+  function fetchWebDAV(url, init = {}) {
+    init.credentials = 'omit'; // circumventing nextcloud CSRF token error
+    init.headers = Object.assign({}, init.headers, {
+      Authorization: `Basic ${btoa(`${this.username || ''}:${this.password || ''}`)}`,
+    });
+    return fetch(url, init);
   }
 
   function schedule(delay = SYNC_DELAY) {
