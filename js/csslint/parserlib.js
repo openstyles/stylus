@@ -3149,11 +3149,11 @@ self.parserlib = (() => {
 
     readUnknownSym() {
       const reader = this._reader;
-      const prelude = [];
+      let prelude = '';
       let block;
       while (true) {
-        if (reader.eof()) this.throwUnexpected();
-        const c = reader.peek();
+        let c = reader.peek();
+        if (!c) this.throwUnexpected();
         if (c === '{') {
           block = this.readDeclValue({stopOn: ''});
           break;
@@ -3161,10 +3161,12 @@ self.parserlib = (() => {
           reader.read();
           break;
         } else {
-          prelude.push(this.readDeclValue({omitComments: true, stopOn: ';{'}));
+          c = this.readDeclValue({omitComments: true, stopOn: ';{}'});
+          if (!c) break;
+          prelude += c;
         }
       }
-      return {prelude, block};
+      return {prelude: prelude.replace(/^\s+/, ''), block};
     }
   }
 
