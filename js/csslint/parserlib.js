@@ -732,7 +732,6 @@ self.parserlib = (() => {
       'hidden | dotted | dashed | solid | double | groove | ridge | inset | outset',
     '<border-width>': '<length> | thin | medium | thick',
     '<box>': 'padding-box | border-box | content-box',
-    '<len-pct-side>': '<len-pct> | closest-side | farthest-side',
     '<clip-source>': '<uri>',
     '<column-gap>': 'normal | <len-pct>',
     '<content-distribution>': 'space-between | space-around | space-evenly | stretch',
@@ -786,6 +785,7 @@ self.parserlib = (() => {
     '<len-pct>': p => vtIsLength(p) || vtIsPct(p),
     '<len-pct0+>': p =>
       p.value >= 0 && (p.type === 'percentage' || vtIsLength(p)) || p.isCalc,
+    '<len-pct-side>': '<len-pct> | closest-side | farthest-side',
     '<line>': p => p.isInt,
     '<line-height>': '<number> | <len-pct> | normal',
     '<line-names>': p =>
@@ -3719,7 +3719,7 @@ self.parserlib = (() => {
       if (next.type === Tokens.IDENT) {
         type = this._mediaFeature();
       } else if (next.value === '(') {
-        expressions.push(this._mediaExpression({or: true}));
+        expressions.push(this._mediaExpression());
       } else {
         return;
       }
