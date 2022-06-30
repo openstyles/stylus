@@ -1271,6 +1271,7 @@ self.parserlib = (() => {
     TILDE: {text: '~'},
     // modifier
     ANY: {text: ['any', '-webkit-any', '-moz-any']},
+    HAS: {},
     IS: {},
     NOT: {},
     WHERE: {},
@@ -2816,11 +2817,12 @@ self.parserlib = (() => {
         case '@':
           return this.atRuleToken(a, tok);
         case ':': {
-          const func = /[-niw]/i.test(b) &&
-            reader.readMatch(/(not|is|where|(-(moz|webkit)-)?any)\(/iy);
+          const func = /[-hniw]/i.test(b) &&
+            reader.readMatch(/(has|not|is|where|(-(moz|webkit)-)?any)\(/iy);
           if (func) {
             const first = b.toLowerCase();
             tok.type =
+              first === 'h' ? Tokens.HAS :
               first === 'n' ? Tokens.NOT :
               first === 'i' ? Tokens.IS :
               first === 'w' ? Tokens.WHERE : Tokens.ANY;
@@ -3944,11 +3946,11 @@ self.parserlib = (() => {
       stream.mustMatch(Tokens.RBRACE);
     }
 
-    _selectorsGroup() {
+    _selectorsGroup(relative) {
       const stream = this._tokenStream;
       const selectors = [];
       let comma;
-      for (let sel; (sel = this._selector());) {
+      for (let sel; (sel = this._selector(!sel && relative));) {
         selectors.push(sel);
         this._ws(null, true);
         comma = stream.match(Tokens.COMMA);
@@ -3959,16 +3961,18 @@ self.parserlib = (() => {
       return selectors.length ? selectors : null;
     }
 
-    _selector() {
+    _selector(relative) {
       const stream = this._tokenStream;
       const sel = [];
       let nextSel = null;
       let combinator = null;
-      nextSel = this._simpleSelectorSequence();
-      if (!nextSel) {
-        return null;
+      if (!relative || !TT.combinator.includes(stream.LT(1).type)) {
+        nextSel = this._simpleSelectorSequence();
+        if (!nextSel) {
+          return null;
+        }
+        sel.push(nextSel);
       }
-      sel.push(nextSel);
       while (true) {
         combinator = this._combinator();
         if (combinator) {
@@ -4132,7 +4136,7 @@ self.parserlib = (() => {
       const value =
         start.value +
         this._ws() +
-        (args = this._selectorsGroup()) +
+        (args = this._selectorsGroup(start.type === Tokens.HAS)) +
         this._ws() +
         this._tokenStream.mustMatch(Tokens.RPAREN).value;
       const type = lower(Tokens.name(start.type));
@@ -4638,6 +4642,7 @@ self.parserlib = (() => {
     [Tokens.LBRACKET]: Parser.prototype._attrib,
     [Tokens.COLON]: Parser.prototype._pseudo,
     [Tokens.IS]: Parser.prototype._is,
+    [Tokens.HAS]: Parser.prototype._is,
     [Tokens.ANY]: Parser.prototype._is,
     [Tokens.WHERE]: Parser.prototype._is,
     [Tokens.NOT]: Parser.prototype._negation,
