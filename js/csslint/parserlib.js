@@ -33,8 +33,13 @@ self.parserlib = (() => {
   // Global keywords that can be set for any property are conveniently listed in `all` prop:
   // https://drafts.csswg.org/css-cascade/#all-shorthand
   const GlobalKeywords = ['initial', 'inherit', 'revert', 'unset'];
-  const isGlobalKeyword = RegExp.prototype.test.bind(
-    new RegExp(`^(${GlobalKeywords.join('|')})$`, 'i'));
+  const rxGlobalKeyword = new RegExp(`^(${GlobalKeywords.join('|')})$`, 'i');
+  /** @param {string} [ex] |-separated exceptions
+   * @param {RegExp} [re] custom regexp check
+   * @param {function} [alt] alternative check */
+  const customIdentChecker = (ex, re, alt) =>
+    (re = new RegExp(`^(?!(default|${ex ? ex + '|' : ''}${GlobalKeywords.join('|')})$)${re ? re.source : ''}`, 'i')) &&
+    (p => p.tokenType === Tokens.IDENT && re.test(p.value) || (!alt || alt(p))); // eslint-disable-line no-use-before-define
 
   const Properties = {
     'accent-color': 'auto | <color>',
@@ -56,7 +61,7 @@ self.parserlib = (() => {
     'animation-duration': '<time>#',
     'animation-fill-mode': '<single-animation-fill-mode>#',
     'animation-iteration-count': '[ <number> | infinite ]#',
-    'animation-name': '[ none | <single-animation-name> ]#',
+    'animation-name': '[ none | <keyframes-name> ]#',
     'animation-play-state': '[ running | paused ]#',
     'animation-timing-function': '<single-timing-function>#',
     'appearance': 'none | auto',
@@ -718,8 +723,7 @@ self.parserlib = (() => {
   const VTSimple = {
     '<absolute-size>': 'xx-small | x-small | small | medium | large | x-large | xx-large',
     '<animateable-feature>': 'scroll-position | contents | <animateable-feature-name>',
-    '<animateable-feature-name>': p => vtIsIdent(p) && !isGlobalKeyword(p) &&
-      !/^(will-change|auto|scroll-position|contents)$/i.test(p),
+    '<animateable-feature-name>': customIdentChecker('will-change|auto|scroll-position|contents'),
     '<angle>': p => p.type === 'angle' || p.isCalc,
     '<angle-or-0>': p => p.text === '0' || p.type === 'angle' || p.isCalc,
     '<attr>': vtIsAttr,
@@ -768,8 +772,7 @@ self.parserlib = (() => {
     '<hex-color>': p => p.tokenType === Tokens.HASH, //eslint-disable-line no-use-before-define
     '<icccolor>': 'cielab() | cielch() | cielchab() | icc-color() | icc-named-color()',
     '<ident>': vtIsIdent,
-    '<ident-for-grid>': p => vtIsIdent(p) && !isGlobalKeyword(p.value) &&
-      !/^(span|auto|default)$/i.test(p.value),
+    '<ident-for-grid>': customIdentChecker('span|auto'),
     '<ident-not-generic-family>': p => vtIsIdent(p) && !VTSimple['<generic-family>'](p),
     '<ident-not-none>': p => vtIsIdent(p) && !lowerCmp(p.value, 'none'),
     '<ie-function>': p => p.tokenType === Tokens.IE_FUNCTION, //eslint-disable-line no-use-before-define
@@ -817,8 +820,7 @@ self.parserlib = (() => {
     '<shape-box>': '<box> | margin-box',
     '<single-animation-direction>': 'normal | reverse | alternate | alternate-reverse',
     '<single-animation-fill-mode>': 'none | forwards | backwards | both',
-    '<single-animation-name>': p => vtIsIdent(p) && !isGlobalKeyword(p) &&
-      /^-?[a-z_][-a-z0-9_]+$/i.test(p),
+    '<keyframes-name>': customIdentChecker('', /^-?[a-z_][-a-z0-9_]+$/, p => p.type === 'string'),
     '<string>': p => p.type === 'string',
     '<text-align>': 'start | end | left | right | center | justify | match-parent',
     '<text-decoration-style>': 'solid | double | dotted | dashed | wavy',
@@ -2442,7 +2444,7 @@ self.parserlib = (() => {
   const validationCache = new Map();
 
   function validateProperty(name, property, value, Props = Properties) {
-    if (isGlobalKeyword(value.parts[0])) {
+    if (rxGlobalKeyword.test(value.parts[0])) {
       if (value.parts.length > 1) {
         throwEndExpected(value.parts[1], true);
       }
