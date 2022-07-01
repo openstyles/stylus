@@ -4374,62 +4374,36 @@ self.parserlib = (() => {
     _keyframes(start) {
       const stream = this._tokenStream;
       const prefix = rxVendorPrefix.test(start.value) ? RegExp.$1 : '';
-      this._ws();
-      const name = this._keyframeName();
+      const name = SyntaxUnit.fromToken(stream.mustMatch(TT.identString));
       stream.mustMatch(Tokens.LBRACE);
       this.fire({type: 'startkeyframes', name, prefix}, start);
       // check for key
       while (true) {
         this._ws();
-        const tt = stream.peek();
-        if (tt !== Tokens.IDENT && tt !== Tokens.PERCENTAGE) break;
-        this._keyframeRule();
+        const keys = [this._key(true)];
+        if (!keys[0]) break;
+        while (stream.match(Tokens.COMMA)) {
+          this._ws();
+          keys.push(this._key());
+        }
+        this.fire({type: 'startkeyframerule', keys}, keys[0]);
+        this._readDeclarations();
+        this.fire({type: 'endkeyframerule', keys});
       }
       stream.mustMatch(Tokens.RBRACE);
       this.fire({type: 'endkeyframes', name, prefix});
       this._ws();
     }
 
-    _keyframeName() {
+    _key(optional) {
       const stream = this._tokenStream;
-      stream.mustMatch(TT.identString);
-      return SyntaxUnit.fromToken(stream._token);
-    }
-
-    _keyframeRule() {
-      const keys = this._keyList();
-      this.fire({type: 'startkeyframerule', keys}, keys[0]);
-      this._readDeclarations();
-      this.fire({type: 'endkeyframerule', keys});
-    }
-
-    _keyList() {
-      const stream = this._tokenStream;
-      const keyList = [];
-      // must be least one key
-      keyList.push(this._key());
-      this._ws();
-      while (stream.match(Tokens.COMMA)) {
+      const token = stream.match(Tokens.PERCENTAGE) || stream.match(Tokens.IDENT, ['from', 'to']);
+      if (token) {
         this._ws();
-        keyList.push(this._key());
-        this._ws();
+        return SyntaxUnit.fromToken(token);
+      } else if (!optional) {
+        stream.throwUnexpected(stream.LT(1), ['%', "'from'", "'to'"]);
       }
-      return keyList;
-    }
-
-    _key() {
-      const stream = this._tokenStream;
-      if (stream.match(Tokens.PERCENTAGE)) {
-        return SyntaxUnit.fromToken(stream._token);
-      }
-      if (stream.match(Tokens.IDENT)) {
-        if (/^(from|to)$/i.test(stream._token.value)) {
-          return SyntaxUnit.fromToken(stream._token);
-        }
-        stream.unget();
-      }
-      // if it gets here, there wasn't a valid token, so time to explode
-      stream.throwUnexpected(stream.LT(1), ['%', "'from'", "'to'"]);
     }
 
     _skipCruft() {
