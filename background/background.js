@@ -70,7 +70,7 @@ addAPI(/** @namespace API */ {
   async openEditor(params) {
     const u = new URL(chrome.runtime.getURL('edit.html'));
     u.search = new URLSearchParams(params);
-    const wnd = prefs.get('openEditInWindow');
+    const wnd = chrome.windows && prefs.get('openEditInWindow');
     const wndPos = wnd && prefs.get('windowPosition');
     const wndBase = wnd && prefs.get('openEditInWindow.popup') ? {type: 'popup'} : {};
     const ffBug = wnd && FIREFOX; // https://bugzil.la/1271047

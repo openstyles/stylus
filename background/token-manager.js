@@ -59,7 +59,7 @@ const tokenMan = (() => {
   const NETWORK_LATENCY = 30; // seconds
   const DEFAULT_REDIRECT_URI = 'https://clngdbkpkpeebahjckkjfobafhncgmne.chromiumapp.org/';
 
-  let alwaysUseTab = FIREFOX ? false : null;
+  let alwaysUseTab = !chrome.windows || (FIREFOX ? false : null);
 
   class TokenError extends Error {
     constructor(provider, message) {
@@ -167,13 +167,13 @@ const tokenMan = (() => {
     const url = `${provider.authURL}?${new URLSearchParams(query)}`;
     const width = Math.min(screen.availWidth - 100, 800);
     const height = Math.min(screen.availHeight - 100, 800);
-    const wnd = await browser.windows.getLastFocused();
+    const wnd = !alwaysUseTab && await browser.windows.getLastFocused();
     const finalUrl = await webextLaunchWebAuthFlow({
       url,
       alwaysUseTab,
       interactive,
       redirect_uri: query.redirect_uri,
-      windowOptions: Object.assign({
+      windowOptions: wnd && Object.assign({
         state: 'normal',
         width,
         height,
