@@ -198,7 +198,7 @@
       render();
       dom.list.hidden = !results.length;
       if (!results.length && !$('#search-query').value) {
-        error(t('searchResultNoneFound'));
+        if (index._ready) error(t('searchResultNoneFound'));
       } else {
         resetUI();
       }
@@ -505,15 +505,19 @@
 
   async function fetchIndex() {
     const timer = setTimeout(showSpinner, BUSY_DELAY, dom.list);
-    await Promise.race([
+    const jobs = [
       [INDEX_URL, json => json.filter(entry => entry.f === 'uso')],
       [USW_INDEX_URL, json => json.data],
-    ].map(([url, transform]) =>
-      download(url, {responseType: 'json'}).then(res => {
-        res = transform(res);
-        index = index ? index.concat(res) : res;
-        if (index !== res) start();
-      })));
+    ].map(async ([url, transform]) => {
+      const res = transform(await download(url, {responseType: 'json'}));
+      index = index ? index.concat(res) : res;
+      if (index !== res) ready = ready.then(start);
+    });
+    // TODO: use Promise.allSettled when "minimum_chrome_version" >= 76 and "strict_min_version" >= 71
+    Promise.all(jobs.map(j => j.catch(e => e))).then(() => {
+      index._ready = true;
+    });
+    await Promise.race(jobs);
     clearTimeout(timer);
     $remove(':scope > .lds-spinner', dom.list);
     return index;
