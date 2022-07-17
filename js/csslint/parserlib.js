@@ -39,7 +39,7 @@ self.parserlib = (() => {
    * @param {function} [alt] alternative check */
   const customIdentChecker = (ex, re, alt) =>
     (re = new RegExp(`^(?!(default|${ex ? ex + '|' : ''}${GlobalKeywords.join('|')})$)${re ? re.source : ''}`, 'i')) &&
-    (p => p.tokenType === Tokens.IDENT && re.test(p.value) || (!alt || alt(p))); // eslint-disable-line no-use-before-define
+    (p => p.tokenType === Tokens.IDENT && re.test(p.value) || alt && alt(p)); // eslint-disable-line no-use-before-define
 
   const Properties = {
     'accent-color': 'auto | <color>',
@@ -55,7 +55,7 @@ self.parserlib = (() => {
       'hanging | mathematical',
     'animation': '[ <time> || <single-timing-function> || <time> || [ infinite | <number> ] || ' +
       '<single-animation-direction> || <single-animation-fill-mode> || ' +
-      '[ running | paused ] || [ none | <ident> | <string> ] ]#',
+      '[ running | paused ] || [ none | <custom-ident> | <string> ] ]#',
     'animation-delay': '<time>#',
     'animation-direction': '<single-animation-direction>#',
     'animation-duration': '<time>#',
@@ -200,7 +200,7 @@ self.parserlib = (() => {
     'color-interpolation-filters': 'auto | sRGB | linearRGB',
     'color-profile': 1,
     'color-rendering': 'auto | optimizeSpeed | optimizeQuality',
-    'color-scheme': 'normal | [ light | dark | <ident> ]+ && only?',
+    'color-scheme': 'normal | [ light | dark | <custom-ident> ]+ && only?',
     'column-count': '<integer> | auto',
     'column-fill': 'auto | balance',
     'column-gap': '<column-gap>',
@@ -279,7 +279,7 @@ self.parserlib = (() => {
     'font-kerning': 'auto | normal | none',
     'font-language-override': 'normal | <string>',
     'font-optical-sizing': 'auto | none',
-    'font-palette': 'none | normal | light | dark | <ident>',
+    'font-palette': 'none | normal | light | dark | <custom-ident>',
     'font-size': '<font-size>',
     'font-size-adjust': '<number> | none',
     'font-stretch': '<font-stretch>',
@@ -592,7 +592,7 @@ self.parserlib = (() => {
     'transition': '<transition>#',
     'transition-delay': '<time>#',
     'transition-duration': '<time>#',
-    'transition-property': 'none | [ all | <ident> ]#',
+    'transition-property': 'none | [ all | <custom-ident> ]#',
     'transition-timing-function': '<single-timing-function>#',
     'translate': 'none | <len-pct> [ <len-pct> <length>? ]?',
 
@@ -740,6 +740,7 @@ self.parserlib = (() => {
     '<column-gap>': 'normal | <len-pct>',
     '<content-distribution>': 'space-between | space-around | space-evenly | stretch',
     '<content-position>': 'center | start | end | flex-start | flex-end',
+    '<custom-ident>': customIdentChecker(),
     '<display-box>': 'contents | none',
     '<display-inside>': 'flow | flow-root | table | flex | grid | ruby',
     '<display-internal>': 'table-row-group | table-header-group | table-footer-group | ' +
@@ -771,7 +772,6 @@ self.parserlib = (() => {
       'repeating-gradient()',
     '<hex-color>': p => p.tokenType === Tokens.HASH, //eslint-disable-line no-use-before-define
     '<icccolor>': 'cielab() | cielch() | cielchab() | icc-color() | icc-named-color()',
-    '<ident>': vtIsIdent,
     '<ident-for-grid>': customIdentChecker('span|auto'),
     '<ident-not-generic-family>': p => vtIsIdent(p) && !VTSimple['<generic-family>'](p),
     '<ident-not-none>': p => vtIsIdent(p) && !lowerCmp(p.value, 'none'),
@@ -894,7 +894,7 @@ self.parserlib = (() => {
         .braces(1, Infinity, '#', Matcher.parse(',').braces(0, 1, '?')),
     '<display-listitem>': '<display-outside>? && [ flow | flow-root ]? && list-item',
     '<explicit-track-list>': '[ <line-names>? <track-size> ]+ <line-names>?',
-    '<family-name>': '<string> | <ident-not-generic-family> <ident>*',
+    '<family-name>': '<string> | <ident-not-generic-family> <custom-ident>*',
     // https://drafts.fxtf.org/filter-effects/#supported-filter-functions
     // Value may be omitted in which case the default is used
     '<filter-function>':
@@ -1005,7 +1005,7 @@ self.parserlib = (() => {
       '[ top | center | bottom | <len-pct> ] <length>? | ' +
       '[ left | center | right | top | bottom | <len-pct> ] | ' +
       '[ [ center | left | right ] && [ center | top | bottom ] ] <length>?',
-    '<transition>': '[ none | [ all | <ident> ]# ] || <time> || <single-timing-function> || <time>',
+    '<transition>': '[ none | [ all | <custom-ident> ]# ] || <time> || <single-timing-function> || <time>',
     '<width-height>': '<len-pct> | min-content | max-content | ' +
       'fit-content | fit-content( <len-pct> ) | -moz-available | -webkit-fill-available',
     '<will-change>': 'auto | <animateable-feature>#',
@@ -3645,9 +3645,7 @@ self.parserlib = (() => {
 
     _supportsConditionInParens() {
       const stream = this._tokenStream;
-      const next = stream.LT(1);
-      if (next.type === Tokens.LPAREN) {
-        stream.get();
+      if (stream.match(Tokens.LPAREN)) {
         this._ws();
         const {type, value} = stream.LT(1);
         if (type === Tokens.IDENT) {
