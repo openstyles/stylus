@@ -213,6 +213,9 @@ self.parserlib = (() => {
     'columns': 1,
     'contain': 'none | strict | content | [ size || layout || style || paint ]',
     'contain-intrinsic-size': 'none | <length>{1,2}',
+    'container': '<container-name> [ / <container-type> ]?',
+    'container-name': '<container-name>',
+    'container-type': '<container-type>',
     'content': 'normal | none | <content-list> [ / <string> ]?',
     'content-visibility': 'visible | auto | hidden',
     'counter-increment': '<counter>',
@@ -880,6 +883,8 @@ self.parserlib = (() => {
     '<clip-path>': '<basic-shape> || <geometry-box>',
     '<color>': '<hex-color> | <named-color> | rgb( <rgb-color> ) | rgba( <rgb-color> ) | ' +
       'hsl( <hsl-color> ) | hsla( <hsl-color> ) | hwb( <hwb-color> )',
+    '<container-name>': 'none | <custom-ident>+',
+    '<container-type>': 'normal || [ size | inline-size ]',
     '<content-list>':
       '[ <string> | <image> | <attr> | ' +
       'content( text | before | after | first-letter | marker ) | ' +
@@ -1238,6 +1243,7 @@ self.parserlib = (() => {
     STRING: {},
     // at-keywords
     CHARSET_SYM: {text: '@charset'},
+    CONTAINER_SYM: {text: '@container'},
     DOCUMENT_SYM: {text: ['@document', '@-moz-document']},
     FONT_FACE_SYM: {text: '@font-face'},
     FONT_PALETTE_VALUES_SYM: {text: '@font-palette-values'},
@@ -3618,6 +3624,26 @@ self.parserlib = (() => {
       this._ws();
     }
 
+    _container(start) {
+      this._ws();
+      const stream = this._tokenStream;
+      const next = stream.get(true).value;
+      let name;
+      if (/^(\(|not)$/i.test(next)) {
+        stream.unget();
+      } else {
+        name = next;
+        stream.mustMatch(Tokens.S);
+      }
+      // TODO: write a proper condition parser
+      const condition = stream.readDeclValue({omitComments: true, stopOn: ';{}'});
+      stream.mustMatch(Tokens.LBRACE);
+      this.fire({type: 'startcontainer', name, condition}, start);
+      this._rulesetBlock(start);
+      this.fire('endcontainer');
+      this._ws();
+    }
+
     _supports(start) {
       const stream = this._tokenStream;
       this._ws();
@@ -4586,11 +4612,13 @@ self.parserlib = (() => {
   Object.assign(Parser.prototype, TYPES);
   Parser.prototype._readWhitespace = Parser.prototype._ws;
 
+  ParserRoute[Tokens.CONTAINER_SYM] = // we don't allow @document inside @container
   ParserRoute[Tokens.DOCUMENT_SYM] =
   ParserRoute[Tokens.LAYER_SYM] =
   ParserRoute[Tokens.MEDIA_SYM] =
   ParserRoute[Tokens.SUPPORTS_SYM] = {
     [Tokens.DOCUMENT_SYM]: Parser.prototype._documentMisplaced,
+    [Tokens.CONTAINER_SYM]: Parser.prototype._container,
     [Tokens.FONT_FACE_SYM]: Parser.prototype._fontFace,
     [Tokens.FONT_PALETTE_VALUES_SYM]: Parser.prototype._fontPaletteValues,
     [Tokens.KEYFRAMES_SYM]: Parser.prototype._keyframes,
