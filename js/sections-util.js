@@ -72,7 +72,7 @@ function styleCodeEmpty(code) {
     return true;
   }
   let lastIndex = 0;
-  const rx = /\s+|\/\*([^*]|\*(?!\/))*(\*\/|$)|@namespace[^;]+;|@charset[^;]+;/giyu;
+  const rx = /\s+|\/\*([^*]+|\*(?!\/))*(\*\/|$)|@namespace[^;]+;|@charset[^;]+;/giyu;
   while (rx.exec(code)) {
     lastIndex = rx.lastIndex;
     if (lastIndex === code.length) {

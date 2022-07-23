@@ -112,7 +112,7 @@ class Reporter {
 //eslint-disable-next-line no-var
 var CSSLint = (() => {
 
-  const RX_EMBEDDED = /\/\*\s*csslint\s+((?:[^*]|\*(?!\/))+?)\*\//ig;
+  const RX_EMBEDDED = /\/\*\s*csslint\s+((?:[^*]+|\*(?!\/))+?)\*\//ig;
   const EBMEDDED_RULE_VALUE_MAP = {
     // error
     'true': 2,

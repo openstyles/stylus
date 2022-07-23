@@ -3104,7 +3104,7 @@ self.parserlib = (() => {
     readComment(first) {
       return first +
              this._reader.readCount(2 - first.length) +
-             this._reader.readMatch(/([^*]|\*(?!\/))*(\*\/|$)/y);
+             this._reader.readMatch(/([^*]+|\*(?!\/))*(\*\/|$)/y);
     }
 
     /**

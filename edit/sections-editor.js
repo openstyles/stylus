@@ -622,7 +622,7 @@ function SectionsEditor() {
     const text = event.clipboardData.getData('text') || '';
     if (/@-moz-document/i.test(text) &&
         /@-moz-document\s+(url|url-prefix|domain|regexp)\(/i
-          .test(text.replace(/\/\*([^*]|\*(?!\/))*(\*\/|$)/g, ''))
+          .test(text.replace(/\/\*([^*]+|\*(?!\/))*(\*\/|$)/g, ''))
     ) {
       event.preventDefault();
       showMozillaFormatImport(text);

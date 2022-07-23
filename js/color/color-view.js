@@ -29,7 +29,7 @@
       '(?=[\\s;(){}[\\]/"!]|$)' +
     ')', 'gi');
   const RX_DETECT_FUNC = /((rgb|hsl)a?|hwb)\(/iy;
-  const RX_COMMENT = /\/\*([^*]|\*(?!\/))*(\*\/|$)/g;
+  const RX_COMMENT = /\/\*([^*]+|\*(?!\/))*(\*\/|$)/g;
   const SPACE1K = ' '.repeat(1000);
 
   // milliseconds to work on invisible colors per one run
