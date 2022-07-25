@@ -60,7 +60,7 @@
   mqDark.onchange(mqDark);
 
   // Declare all vars before init() or it'll throw due to "temporal dead zone" of const/let
-  const ready = init();
+  init();
 
   // the popup needs a check as it's not a tab but can be opened in a tab manually for whatever reason
   if (!isTab) {
@@ -188,13 +188,6 @@
           hasStyles = true;
           styleInjector.replace(sections);
         });
-        break;
-
-      case 'backgroundReady':
-        ready.catch(err =>
-          msg.isIgnorableError(err)
-            ? init()
-            : console.error(err));
         break;
 
       case 'updateCount':

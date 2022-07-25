@@ -23,6 +23,8 @@
     tab: new Set(),
     extension: new Set(),
   };
+  let bgReadySignal;
+  let bgReadying = new Promise(fn => (bgReadySignal = fn));
 
   // TODO: maybe move into polyfill.js and hook addListener to wrap/unwrap automatically
   chrome.runtime.onMessage.addListener(onRuntimeMessage);
@@ -119,6 +121,9 @@
   }
 
   function onRuntimeMessage({data, target}, sender, sendResponse) {
+    if (bgReadying && data && data.method === 'backgroundReady') {
+      bgReadySignal();
+    }
     const res = msg._execute(TARGETS[target] || TARGETS.all, data, sender);
     if (res instanceof Promise) {
       res.then(wrapData, wrapError).then(sendResponse);
@@ -148,6 +153,19 @@
       : data;
   }
 
+  async function sendRetry(m) {
+    try {
+      return await msg.send(m);
+    } catch (e) {
+      if (!bgReadying || !msg.isIgnorableError(e)) {
+        return Promise.reject(e);
+      }
+      await bgReadying;
+      bgReadying = bgReadySignal = null;
+      return msg.send(m);
+    }
+  }
+
   const apiHandler = !msg.isBg && {
     get({path}, name) {
       const fn = () => {};
@@ -161,7 +179,7 @@
       let res;
       // content scripts, probably private tabs, and our extension tab during Chrome startup
       if (!bg || !bg.msg || !bg.msg.ready && await bg.bgReady.all && false) {
-        res = msg.send(message);
+        res = bgReadying ? sendRetry(message) : msg.send(message);
       } else {
         res = deepCopy(await bg.msg._execute(TARGETS.extension, message, {
           // Using a fake id for our Options frame as we want to fetch styles early
