@@ -159,11 +159,8 @@ const updateMan = (() => {
       let json;
       try {
         json = await tryDownload(style.updateUrl, {responseType: 'json'});
-        const m = await getUsoEmbeddedMeta(json.css);
-        if (m) {
-          return updateUsercss(m);
-        }
-        json = (await API.uso.toUsercss(json)).style;
+        json = await updateUsercss(json.css) ||
+          (await API.uso.toUsercss(json)).style;
       } finally {
         usoSpooferStop();
       }
@@ -172,16 +169,17 @@ const updateMan = (() => {
       return json;
     }
 
-    async function updateUsercss(m2) {
+    async function updateUsercss(css) {
       let oldVer = ucd.version;
       let {etag: oldEtag, updateUrl} = style;
-      if (!m2) {
-        m2 = (md5Url || URLS.extractUsoArchiveId(updateUrl)) && await getUsoEmbeddedMeta();
-      }
+      const m2 = (css || URLS.extractUsoArchiveId(updateUrl)) &&
+        await getUsoEmbeddedMeta(css);
       if (m2 && m2.updateUrl) {
         updateUrl = m2.updateUrl;
         oldVer = m2.usercssData.version || '0';
         oldEtag = '';
+      } else if (css) {
+        return;
       }
       if (oldEtag && oldEtag === await downloadEtag()) {
         return Promise.reject(STATES.SAME_CODE);
