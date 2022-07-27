@@ -21,7 +21,7 @@ const usoApi = {
 @version      ${data.updated.replace(/-/g, '').replace(/[T:]/g, '.').slice(0, 14)}
 @description  ${descr.includes('\\') ? descr : descr.slice(1, -1)}
 @author       ${user && user.name || '?'}
-@license      ${makeLicense(data.license)}${vars ? '@preprocessor uso' + vars : ''}
+@license      ${makeLicense(data.license)}${vars ? '\n@preprocessor uso' + vars : ''}
 ==/UserStyle== */
 ${newKeys[0] ? useNewKeys(data.css) : data.css}`;
     const res = await usercssMan.build({sourceCode, metaOnly});
