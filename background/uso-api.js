@@ -1,3 +1,4 @@
+/* global stringAsRegExp */// toolbox.js
 /* global usercssMan */
 'use strict';
 
@@ -96,10 +97,7 @@ const usoApi = {
     }
 
     function useNewKeys(css) {
-      const rxsKeys = Object.keys(badKeys)
-        .join('\n')
-        .replace(/[{}()[\]\\.+*?^$|]/g, '\\$&')
-        .replace(/\n/g, '|');
+      const rxsKeys = stringAsRegExp(Object.keys(badKeys).join('\n'), '', true).replace(/\n/g, '|');
       const rxUsoVars = new RegExp(`(/\\*\\[\\[)(${rxsKeys})(?=]]\\*/)`, 'g');
       return css.replace(rxUsoVars, (s, a, key) => a + badKeys[key]);
     }
