@@ -9,21 +9,20 @@ const usoApi = {
    * https://github.com/33kk/uso-archive/blob/flomaster/lib/converters.js
    */
   async toUsercss(data, {metaOnly = true} = {}) {
-    const {user, style_settings: ss = []} = data;
     const badKeys = {};
     const newKeys = [];
     const descr = JSON.stringify(data.description.trim());
-    const vars = ss.map(makeVar).join('').replace(/\*\//g, '*\\/');
+    const vars = (data.style_settings || []).map(makeVar).join('');
     const sourceCode = `\
 /* ==UserStyle==
 @name         ${data.name}
 @namespace    USO Archive
 @version      ${data.updated.replace(/-/g, '').replace(/[T:]/g, '.').slice(0, 14)}
 @description  ${descr.includes('\\') ? descr : descr.slice(1, -1)}
-@author       ${user && user.name || '?'}
+@author       ${(data.user || {}).name || '?'}
 @license      ${makeLicense(data.license)}${vars ? '\n@preprocessor uso' + vars : ''}
-==/UserStyle== */
-${newKeys[0] ? useNewKeys(data.css) : data.css}`;
+`.replace(/\*\//g, '*\\/') +
+      `==/UserStyle== */\n${newKeys[0] ? useNewKeys(data.css) : data.css}`;
     const res = await usercssMan.build({sourceCode, metaOnly});
     return Object.assign(res, {badKeys, newKeys});
 
