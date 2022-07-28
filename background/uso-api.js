@@ -1,4 +1,4 @@
-/* global stringAsRegExp */// toolbox.js
+/* global URLS stringAsRegExp */// toolbox.js
 /* global usercssMan */
 'use strict';
 
@@ -102,3 +102,23 @@ const usoApi = {
     }
   },
 };
+
+(() => {
+  const timers = {};
+
+  usoApi.pingback = (usoId, delay) => {
+    clearTimeout(timers[usoId]);
+    delete timers[usoId];
+    if (delay > 0) {
+      return new Promise(resolve => {
+        timers[usoId] = setTimeout(ping, delay, usoId, resolve);
+      });
+    } else if (delay !== false) {
+      return ping(usoId);
+    }
+  };
+
+  function ping(id, resolve) {
+    return fetch(`${URLS.uso}styles/install/${id}?source=stylish-ch`).then(resolve);
+  }
+})();

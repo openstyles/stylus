@@ -41,7 +41,6 @@
    * --------------------- Stylus' internally added extras
    * @prop {boolean} installed
    * @prop {number} installedStyleId
-   * @prop {number} pingbackTimer
    */
   /** @type IndexEntry[] */
   let results;
@@ -149,7 +148,7 @@
     restoreScrollPosition();
     const result = results.find(r => r.installedStyleId === id);
     if (result) {
-      clearTimeout(result.pingbackTimer);
+      API.uso.pingback(result.i, false);
       renderActionButtons(result.i, -1);
     }
   });
@@ -437,11 +436,7 @@
     installButton.disabled = true;
     entry.style.setProperty('pointer-events', 'none', 'important');
     delete entry.dataset.error;
-    if (fmt) {
-      // FIXME: move this to background page and create an API like installUSOStyle
-      result.pingbackTimer = setTimeout(download, PINGBACK_DELAY,
-        `${URLS.uso}styles/install/${id}?source=stylish-ch`);
-    }
+    if (fmt) API.uso.pingback(id, PINGBACK_DELAY);
 
     const updateUrl = fmt ? URLS.makeUsoArchiveCodeUrl(id) : URLS.makeUswCodeUrl(id);
 

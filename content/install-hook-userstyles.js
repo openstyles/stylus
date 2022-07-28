@@ -2,7 +2,7 @@
 'use strict';
 
 // eslint-disable-next-line no-unused-expressions
-/^\/styles\/(\d+)(\/([^/]*))?([?#].*)?$/.test(location.pathname) && (() => {
+/^\/styles\/(\d+)(\/([^/]*))?([?#].*)?$/.test(location.pathname) && (async () => {
   if (window.INJECTED_USO === 1) return;
   window.INJECTED_USO = 1;
 
@@ -10,73 +10,74 @@
   const USO = 'https://userstyles.org';
   const apiUrl = `${USO}/api/v1/styles/${usoId}`;
   const md5Url = `https://update.userstyles.org/${usoId}.md5`;
+  const CLICK = {
+    customize: '.customize_button',
+    install: '#install_style_button',
+    uninstall: '#uninstall_style_button',
+    update: '#update_style_button',
+  };
+  const CLICK_SEL = Object.values(CLICK).join(',');
   const pageEventId = `${performance.now()}${Math.random()}`;
   const contentEventId = pageEventId + ':';
   const orphanEventId = chrome.runtime.id; // id won't be available in the orphaned script
   const $ = (sel, base = document) => base.querySelector(sel);
-  const wiretap = isOn => window[`${isOn ? 'add' : 'remove'}EventListener`](contentEventId, onPageEvent, true);
+  const toggleListener = (isOn, ...args) => (isOn ? addEventListener : removeEventListener)(...args);
+  const togglePageListener = isOn => toggleListener(isOn, contentEventId, onPageEvent, true);
 
   const mo = new MutationObserver(onMutation);
   const observeColors = isOn =>
     isOn ? mo.observe(document.body, {subtree: true, attributes: true, attributeFilter: ['value']})
       : mo.disconnect();
 
+  let style, dup, md5, pageData, badKeys;
+
+  runInPage(inPageContext, pageEventId, contentEventId, usoId, apiUrl);
   addEventListener(orphanEventId, orphanCheck, true);
   addEventListener('click', onClick, true);
-  addEventListener('change', onChange);
-  wiretap(true);
+  togglePageListener(true);
 
-  let oldStyle, pageData, style, md5, badKeys;
-  Promise.all([
+  [md5, dup] = await Promise.all([
     fetch(md5Url).then(r => r.text()),
-    API.styles.find({md5Url}),
+    API.styles.find({md5Url}, {installationUrl: `https://uso.kkx.one/style/${usoId}`})
+      .then(sendVarsToPage),
     document.body || new Promise(resolve => addEventListener('load', resolve, {once: true})),
-  ]).then(async res => {
-    md5 = res[0];
-    oldStyle = res[1] ||
-      await API.styles.find({installationUrl: `https://uso.kkx.one/style/${usoId}`}) ||
-      false;
-    const {updateUrl, originalMd5, id} = oldStyle;
-    sendEvent({
-      type: !id
-        ? 'styleCanBeInstalledChrome'
-        : /\?/.test(updateUrl) || originalMd5 && originalMd5 !== md5
-          ? 'styleCanBeUpdatedChrome'
-          : 'styleAlreadyInstalledChrome',
-      detail: updateUrl ? {updateUrl} : null,
-    });
-    observeColors(true);
-  });
+  ]);
 
-  {
-    const div = document.createElement('div');
-    const args = [pageEventId, contentEventId, usoId, apiUrl];
-    div.attachShadow({mode: 'closed'})
-      .appendChild(document.createElement('script'))
-      .textContent = `(${inPageContext})(${JSON.stringify(args).slice(1, -1)})`;
-    document.documentElement.appendChild(div).remove();
+  if (!dup.id) {
+    sendStylishEvent('styleCanBeInstalledChrome');
+  } else if (dup.originalMd5 && dup.originalMd5 !== md5 || !dup.usercssData || !dup.md5Url) {
+    // allow update if 1) changed, 2) is a classic USO style, 3) is from USO-archive
+    sendStylishEvent('styleCanBeUpdatedChrome');
+  } else {
+    sendStylishEvent('styleAlreadyInstalledChrome');
   }
 
   async function onClick(e) {
-    const el = e.target.closest('#install_style_button, #update_style_button, #uninstall_style_button');
+    const el = e.target.closest(CLICK_SEL);
     if (!el) return;
     el.disabled = true;
+    const {id} = dup;
     try {
-      const {id} = oldStyle;
-      if (el.id === 'uninstall_style_button') {
-        oldStyle = style = false;
+      if (el.matches(CLICK.uninstall)) {
+        dup = style = false;
         removeEventListener('change', onChange);
         await API.styles.delete(id);
         return;
       }
+      if (el.matches(CLICK.customize)) {
+        const isOn = dup && !$('#style-settings');
+        toggleListener(isOn, 'change', onChange);
+        observeColors(isOn);
+        return;
+      }
       e.stopPropagation();
       if (!style) await buildStyle();
-      style = oldStyle = await API.usercss.install(style, {
+      style = dup = await API.usercss.install(style, {
         dup: {id},
         vars: getPageVars(),
       });
-      sendEvent({type: 'styleInstalledChrome'});
-      fetch(getMeta('stylish-install-ping-url'));
+      sendStylishEvent('styleInstalledChrome');
+      API.uso.pingback(id);
     } catch (e) {
       alert(chrome.i18n.getMessage('styleInstallFailed', e.message || e));
     } finally {
@@ -85,14 +86,16 @@
   }
 
   function onChange({target: el}) {
-    if (oldStyle && el.matches('[name^="ik-"], [type=file]')) {
-      API.usercss.configVars(oldStyle.id, getPageVars());
+    if (dup && el.matches('[name^="ik-"], [type=file]')) {
+      API.usercss.configVars(dup.id, getPageVars());
     }
   }
 
   function onMutation(mutations) {
     for (const {target: el} of mutations) {
-      if (el.tagName === 'INPUT' && el.type === 'text' && /^ik-/.test(el.name) && /^#[\da-f]{6}$/.test(el.value)) {
+      if (el.style.display === 'none' &&
+        /^ik-/.test(el.name) &&
+        /^#[\da-f]{6}$/.test(el.value)) {
         onChange({target: el});
       }
     }
@@ -100,7 +103,7 @@
 
   function onPageEvent(e) {
     pageData = e.detail;
-    wiretap(false);
+    togglePageListener(false);
   }
 
   async function buildStyle() {
@@ -108,14 +111,14 @@
     ({style, badKeys} = await API.uso.toUsercss(pageData));
     Object.assign(style, {
       md5Url,
-      id: oldStyle.id,
+      id: dup.id,
       originalMd5: md5,
       updateUrl: apiUrl,
     });
   }
 
   function getPageVars() {
-    const {vars} = (style || oldStyle).usercssData;
+    const {vars} = (style || dup).usercssData;
     for (const el of document.querySelectorAll('[name^="ik-"]')) {
       const name = el.name.slice(3); // dropping "ik-"
       const ik = badKeys[name] || name;
@@ -128,7 +131,7 @@
           const el2 = $(`[type=${isFile ? 'file' : 'url'}]`, el.parentElement);
           const ikCust = `${ik}-custom`;
           v.value = `${ikCust}-dropdown`;
-          vars[ikCust].value = isFile ? getDataUriFromPage(el2) : el2.value;
+          vars[ikCust].value = isFile ? getFileUriFromPage(el2) : el2.value;
         } else {
           v.value = v.type === 'select' ? val.replace(/^ik-/, '') : val;
         }
@@ -137,22 +140,37 @@
     return vars;
   }
 
-  function getDataUriFromPage(el) {
-    wiretap(true);
-    dispatchEvent(new MouseEvent(pageEventId, {relatedTarget: el}));
+  function getFileUriFromPage(el) {
+    togglePageListener(true);
+    sendPageEvent(el);
     return pageData;
   }
 
-  function sendEvent(e) {
-    /* global cloneInto */// Firefox requires cloning
-    document.dispatchEvent(new CustomEvent(e.type,
-      typeof cloneInto === 'function' ? cloneInto(e, document) : e));
+  function runInPage(fn, ...args) {
+    const div = document.createElement('div');
+    div.attachShadow({mode: 'closed'})
+      .appendChild(document.createElement('script'))
+      .textContent = `(${fn})(${JSON.stringify(args).slice(1, -1)})`;
+    document.documentElement.appendChild(div).remove();
   }
 
-  function getMeta(name) {
-    const e = $(`link[rel="${name}"]`);
-    const url = e && e.getAttribute('href');
-    if (url) return url[0] === '#' ? $(url).textContent : url;
+  function sendPageEvent(data) {
+    dispatchEvent(data instanceof Node
+      ? new MouseEvent(pageEventId, {relatedTarget: data})
+      : new CustomEvent(pageEventId, {detail: data}));
+    //* global cloneInto */// WARNING! Firefox requires cloning of an object `detail`
+  }
+
+  function sendStylishEvent(type) {
+    document.dispatchEvent(new Event(type));
+  }
+
+  function sendVarsToPage(style) {
+    if (style) {
+      const vars = (style.usercssData || {}).vars || `${style.updateUrl}`.split('?')[1];
+      if (vars) sendPageEvent('vars:' + JSON.stringify(vars));
+    }
+    return style || false;
   }
 
   function orphanCheck() {
@@ -160,9 +178,9 @@
     removeEventListener(orphanEventId, orphanCheck, true);
     removeEventListener('click', onClick, true);
     removeEventListener('change', onChange);
-    dispatchEvent(new CustomEvent(pageEventId, {detail: 'quit'}));
+    sendPageEvent('quit');
     observeColors(false);
-    wiretap(false);
+    togglePageListener(false);
   }
 })();
 
@@ -174,7 +192,7 @@ function inPageContext(eventId, eventIdHost, styleId, apiUrl) {
   const {sendMessage} = CR;
   const RP = Response.prototype;
   const origJson = RP.json;
-  let done;
+  let done, vars;
   CR.sendMessage = function (id, msg, opts, cb = opts) {
     if (id === 'fjnbnpbmkenffdnngjfgmeleoegfcffe' &&
         msg && msg.type === 'deleteStyle' &&
@@ -191,20 +209,88 @@ function inPageContext(eventId, eventIdHost, styleId, apiUrl) {
         RP.json = origJson;
         done = true; // will be used if called by another script that saved our RP.json hook
         send(res);
+        setVars(res);
       }
     } catch (e) {}
     return res;
   };
-  addEventListener(eventId, function onCommand(e) {
+  addEventListener(eventId, onCommand, true);
+  function onCommand(e) {
     if (e.detail === 'quit') {
       removeEventListener(eventId, onCommand, true);
+      CR.sendMessage = sendMessage;
       RP.json = origJson;
       done = true;
+    } else if (/^vars:/.test(e.detail)) {
+      vars = JSON.parse(e.detail.slice(5));
     } else if (e.relatedTarget) {
       send(e.relatedTarget.uploadedData);
     }
-  }, true);
+  }
   function send(data) {
     dispatchEvent(new CustomEvent(eventIdHost, {__proto: null, detail: data}));
+  }
+  function setVars(json) {
+    const images = new Map();
+    const isNew = typeof vars === 'object';
+    const badKeys = {};
+    const newKeys = [];
+    const makeKey = ({install_key: key}) => {
+      let res = isNew ? badKeys[key] : key;
+      if (!res) {
+        res = key.replace(/[^-\w]/g, '-');
+        res += newKeys.includes(res) ? '-' : '';
+        if (key !== res) {
+          badKeys[key] = res;
+          newKeys.push(res);
+        }
+      }
+      return res;
+    };
+    if (!isNew) vars = new URLSearchParams(vars);
+    for (const ss of json.style_settings || []) {
+      const ik = makeKey(ss);
+      let value = isNew ? (vars[ik] || {}).value : vars.get('ik-' + ik);
+      if (value == null || !(ss.style_setting_options || [])[0]) {
+        continue;
+      }
+      if (ss.setting_type === 'image') {
+        let isListed;
+        for (const opt of ss.style_setting_options) {
+          isListed |= opt.default = (opt.value === value);
+        }
+        images.set(ik, {url: isNew && !isListed ? vars[`${ik}-custom`].value : value, isListed});
+      } else if (value.startsWith('ik-') || isNew && vars[ik].type === 'select') {
+        value = value.replace(/^ik-/, '');
+        const def = ss.style_setting_options.find(item => item.default);
+        if (!def || makeKey(def) !== value) {
+          if (def) def.default = false;
+          for (const item of ss.style_setting_options) {
+            if (makeKey(item) === value) {
+              item.default = true;
+              break;
+            }
+          }
+        }
+      } else {
+        const item = ss.style_setting_options[0];
+        if (item.value !== value && item.install_key === 'placeholder') {
+          item.value = value;
+        }
+      }
+    }
+    if (!images.size) return;
+    new MutationObserver((_, observer) => {
+      if (!document.getElementById('style-settings')) return;
+      observer.disconnect();
+      for (const [name, {url, isListed}] of images) {
+        const elRadio = document.querySelector(`input[name="ik-${name}"][value="user-url"]`);
+        const elUrl = elRadio && document.getElementById(elRadio.id.replace('url-choice', 'user-url'));
+        if (elUrl) {
+          elRadio.checked = !isListed;
+          elUrl.value = url;
+        }
+      }
+    }).observe(document, {childList: true, subtree: true});
   }
 }
