@@ -108,7 +108,7 @@
 
   async function buildStyle() {
     if (!pageData) pageData = await (await fetch(apiUrl)).json();
-    ({style, badKeys} = await API.uso.toUsercss(pageData));
+    ({style, badKeys} = await API.uso.toUsercss(pageData, {varsUrl: dup.updateUrl}));
     Object.assign(style, {
       md5Url,
       id: dup.id,

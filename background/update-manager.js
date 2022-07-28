@@ -115,7 +115,7 @@ const updateMan = (() => {
     } = opts;
     if (!id) id = style.id;
     const {md5Url} = style;
-    let ucd = style.usercssData;
+    let {usercssData: ucd, updateUrl} = style;
     let res, state;
     try {
       await checkIfEdited();
@@ -151,9 +151,11 @@ const updateMan = (() => {
       if (md5 === style.originalMd5 && style.originalDigest && !ignoreDigest) {
         return Promise.reject(STATES.SAME_MD5);
       }
+      let varsUrl = '';
       if (!ucd) {
-        ucd = true;
-        style.updateUrl = `${URLS.uso}api/v1/styles/${md5Url.match(/\/(\d+)/)[1]}`;
+        ucd = {};
+        varsUrl = updateUrl;
+        updateUrl = style.updateUrl = `${URLS.uso}api/v1/styles/${md5Url.match(/\/(\d+)/)[1]}`;
       }
       usoSpooferStart();
       let json;
@@ -161,6 +163,7 @@ const updateMan = (() => {
         json = await tryDownload(style.updateUrl, {responseType: 'json'});
         json = await updateUsercss(json.css) ||
           (await API.uso.toUsercss(json)).style;
+        if (varsUrl) await API.uso.useVarsUrl(json, varsUrl);
       } finally {
         usoSpooferStop();
       }
