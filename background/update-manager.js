@@ -23,6 +23,7 @@ const updateMan = (() => {
     ERROR_JSON:    'error: JSON is invalid',
     ERROR_VERSION: 'error: version is older than installed style',
   };
+  const USO_STYLES_API = `${URLS.uso}api/v1/styles/`;
   const RH_ETAG = {responseHeaders: ['etag']}; // a hashsum of file contents
   const RX_DATE2VER = new RegExp([
     /^(\d{4})/,
@@ -155,7 +156,7 @@ const updateMan = (() => {
       if (!ucd) {
         ucd = {};
         varsUrl = updateUrl;
-        updateUrl = style.updateUrl = `${URLS.uso}api/v1/styles/${md5Url.match(/\/(\d+)/)[1]}`;
+        updateUrl = style.updateUrl = `${USO_STYLES_API}${md5Url.match(/\/(\d+)/)[1]}`;
       }
       usoSpooferStart();
       let json;
@@ -321,7 +322,7 @@ const updateMan = (() => {
     if (++usoReferers === 1) {
       chrome.webRequest.onBeforeSendHeaders.addListener(
         usoSpoofer,
-        {types: ['xmlhttprequest'], urls: [URLS.uso + 'api/*']},
+        {types: ['xmlhttprequest'], urls: [USO_STYLES_API + '*']},
         ['blocking', 'requestHeaders', chrome.webRequest.OnBeforeSendHeadersOptions.EXTRA_HEADERS]
           .filter(Boolean));
     }
@@ -334,10 +335,14 @@ const updateMan = (() => {
     }
   }
 
-  function usoSpoofer({requestHeaders: hh}) {
-    const i = (hh.findIndex(h => /^referer$/i.test(h.name)) + 1 || hh.push({})) - 1;
-    hh[i].name = 'referer';
-    hh[i].value = URLS.uso;
-    return {requestHeaders: hh};
+  /** @param {chrome.webRequest.WebResponseHeadersDetails | browser.webRequest._OnBeforeSendHeadersDetails} info */
+  function usoSpoofer(info) {
+    if (info.tabId < 0 && URLS.ownOrigin.startsWith(info.initiator || info.originUrl || '')) {
+      const {requestHeaders: hh} = info;
+      const i = (hh.findIndex(h => /^referer$/i.test(h.name)) + 1 || hh.push({})) - 1;
+      hh[i].name = 'referer';
+      hh[i].value = URLS.uso;
+      return {requestHeaders: hh};
+    }
   }
 })();
