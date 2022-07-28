@@ -19,10 +19,10 @@ const usoApi = {
 @name         ${data.name}
 @namespace    USO Archive
 @version      ${data.updated.replace(/-/g, '').replace(/[T:]/g, '.').slice(0, 14)}
-@description  ${descr.includes('\\') ? descr : descr.slice(1, -1)}
+@description  ${/^"['`]|\\/.test(descr) ? descr : descr.slice(1, -1)}
 @author       ${(data.user || {}).name || '?'}
-@license      ${makeLicense(data.license)}${vars ? '\n@preprocessor uso' + vars : ''}
-`.replace(/\*\//g, '*\\/') +
+@license      ${makeLicense(data.license)}${vars ? '\n@preprocessor uso' + vars : ''}`
+      .replace(/\*\//g, '*\\/') +
       `==/UserStyle== */\n${newKeys[0] ? useNewKeys(data.css) : data.css}`;
     const res = await usercssMan.build({sourceCode, metaOnly});
     return Object.assign(res, {badKeys, newKeys});
@@ -60,8 +60,7 @@ const usoApi = {
             install_key: `${ikCust}-dropdown`,
             value: `/*[[${ikCust}]]*/`,
           });
-          suffix =
-            `\n@advanced text ${ikCust} ${label.slice(0, -1)} (Custom)" "https://foo.com/123.jpg"`;
+          suffix = `\n@advanced text ${ikCust} ${label.slice(0, -1)} (Custom)" "https://foo.com/123.jpg"`;
           type = 'dropdown';
         } // fallthrough
 
