@@ -161,8 +161,10 @@
         return Promise.reject(e);
       }
       await bgReadying;
-      bgReadying = bgReadySignal = null;
       return msg.send(m);
+    } finally {
+      // Assuming bg is ready if messaging succeeded
+      bgReadying = bgReadySignal = null;
     }
   }
 
