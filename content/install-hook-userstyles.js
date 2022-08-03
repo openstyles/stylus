@@ -94,8 +94,8 @@
   function onMutation(mutations) {
     for (const {target: el} of mutations) {
       if (el.style.display === 'none' &&
-        /^ik-/.test(el.name) &&
-        /^#[\da-f]{6}$/.test(el.value)) {
+          /^ik-/.test(el.name) &&
+          /^#[\da-f]{6}$/.test(el.value)) {
         onChange({target: el});
       }
     }
@@ -174,7 +174,7 @@
   }
 
   function orphanCheck() {
-    if (chrome.i18n) return true;
+    if (chrome.runtime.id) return true;
     removeEventListener(orphanEventId, orphanCheck, true);
     removeEventListener('click', onClick, true);
     removeEventListener('change', onChange);
@@ -185,42 +185,46 @@
 })();
 
 function inPageContext(eventId, eventIdHost, styleId, apiUrl) {
-  window.isInstalled = true;
   const {dispatchEvent, CustomEvent, removeEventListener} = window;
   const apply = Map.call.bind(Map.apply);
   const CR = chrome.runtime;
-  const {sendMessage} = CR;
+  const SEND = 'sendMessage';
   const RP = Response.prototype;
-  const origJson = RP.json;
-  let done, vars;
-  CR.sendMessage = function (id, msg, opts, cb = opts) {
-    if (id === 'fjnbnpbmkenffdnngjfgmeleoegfcffe' &&
+  const ORIG = {json: RP.json, [SEND]: CR[SEND]};
+  let done, orphaned, vars;
+  CR[SEND] = ovrSend;
+  RP.json = ovrJson;
+  window.isInstalled = true;
+  addEventListener(eventId, onCommand, true);
+  function ovrSend(id, msg, opts, cb = opts) {
+    if (!orphaned &&
+        id === 'fjnbnpbmkenffdnngjfgmeleoegfcffe' &&
         msg && msg.type === 'deleteStyle' &&
         typeof cb === 'function') {
       cb(true);
     } else {
-      return sendMessage(...arguments);
+      return ORIG[SEND](...arguments);
     }
-  };
-  RP.json = async function () {
-    const res = await apply(origJson, this, arguments);
+  }
+  async function ovrJson() {
+    const res = await apply(ORIG.json, this, arguments);
     try {
       if (!done && this.url === apiUrl) {
-        RP.json = origJson;
-        done = true; // will be used if called by another script that saved our RP.json hook
+        if (RP.json === ovrJson) RP.json = ORIG.json;
+        done = true;
         send(res);
         setVars(res);
       }
     } catch (e) {}
     return res;
-  };
-  addEventListener(eventId, onCommand, true);
+  }
   function onCommand(e) {
     if (e.detail === 'quit') {
       removeEventListener(eventId, onCommand, true);
-      CR.sendMessage = sendMessage;
-      RP.json = origJson;
-      done = true;
+      // We can restore the hooks only if another script didn't modify them
+      if (CR[SEND] === ovrSend) CR[SEND] = ovrSend;
+      if (RP.json === ovrJson) RP.json = ORIG.json;
+      done = orphaned = true;
     } else if (/^vars:/.test(e.detail)) {
       vars = JSON.parse(e.detail.slice(5));
     } else if (e.relatedTarget) {

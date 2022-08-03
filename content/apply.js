@@ -259,7 +259,7 @@
   }
 
   function orphanCheck() {
-    if (tryCatch(() => chrome.i18n.getUILanguage())) return;
+    if (chrome.runtime.id) return;
     // In Chrome content script is orphaned on an extension update/reload
     // so we need to detach event listeners
     window.removeEventListener(orphanEventId, orphanCheck, true);
