@@ -330,7 +330,7 @@ CSSLint.Util = {
   /** Gets the lower-cased text without vendor prefix */
   getPropName(prop) {
     return prop._propName ||
-      (prop._propName = prop.text.replace(parserlib.util.rxVendorPrefix, '').toLowerCase());
+      (prop._propName = prop.text.match(parserlib.util.rxVendorPrefix)[2].toLowerCase());
   },
 
   registerRuleEvents(parser, {start, property, end}) {
@@ -1327,14 +1327,13 @@ CSSLint.addRule['known-pseudos'] = [{
   const rx = /^(:+)(?:-(\w+)-)?([^(]+)(\()?/i;
   const allowsFunc = Func + FuncToo;
   const allowsPrefix = WK + Moz;
-  const {lower} = parserlib.util;
   const checkSelector = ({parts}) => {
     for (const {modifiers} of parts || []) {
       if (!modifiers) continue;
       for (const mod of modifiers) {
         if (mod.type === 'pseudo') {
           const {text} = mod;
-          const [all, colons, prefix, name, paren] = rx.exec(lower(text)) || 0;
+          const [all, colons, prefix, name, paren] = rx.exec(text.toLowerCase()) || 0;
           const defPrefixed = definitionsPrefixed[name];
           const def = definitions[name] || defPrefixed;
           for (const err of !def ? ['Unknown pseudo'] : [

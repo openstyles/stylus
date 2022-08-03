@@ -715,9 +715,8 @@ self.parserlib = (() => {
   const rxNameChar = /[-\\_\da-zA-Z\u00A0-\uFFFF]/u;
   const rxNameCharNoEsc = /[-_\da-zA-Z\u00A0-\uFFFF]+/yu; // must not match \\
   const rxUnquotedUrlCharNoEsc = /[-!#$%&*-[\]-~\u00A0-\uFFFF]+/yu; // must not match \\
-  const rxVendorPrefix = /^-(webkit|moz|ms|o)-(.+)/i;
+  const rxVendorPrefix = /^(?:-(webkit|moz|ms|o)-)?(.+)/i;
   const rxCalc = /^(?:-(webkit|moz|ms|o)-)?(calc|min|max|clamp)\(/i;
-  const lowercaseCache = new Map();
 
   //#endregion
   //#region ValidationTypes - definitions
@@ -777,7 +776,7 @@ self.parserlib = (() => {
     '<icccolor>': 'cielab() | cielch() | cielchab() | icc-color() | icc-named-color()',
     '<ident-for-grid>': customIdentChecker('span|auto'),
     '<ident-not-generic-family>': p => vtIsIdent(p) && !VTSimple['<generic-family>'](p),
-    '<ident-not-none>': p => vtIsIdent(p) && !lowerCmp(p.value, 'none'),
+    '<ident-not-none>': p => vtIsIdent(p) && !/^none$/i.test(p.value),
     '<ie-function>': p => p.tokenType === Tokens.IE_FUNCTION, //eslint-disable-line no-use-before-define
     '<image>': '<uri> | <gradient> | cross-fade()',
     '<inflexible-breadth>': '<len-pct> | min-content | max-content | auto',
@@ -802,7 +801,7 @@ self.parserlib = (() => {
         p.expr.parts.every(VTSimple['<ident-for-grid>'], VTSimple)
       ),
     //eslint-disable-next-line no-use-before-define
-    '<named-color>': p => p.text in Colors || ColorsLC.has(lower(p.text)),
+    '<named-color>': p => rxColors.test(p.text),
     '<number>': p => p.type === 'number' || p.isCalc,
     '<num0+>': p =>
       p.value >= 0 && p.type === 'number' || p.isCalc,
@@ -830,9 +829,9 @@ self.parserlib = (() => {
     '<time>': p => p.type === 'time',
     '<track-breadth>': '<len-pct> | <flex> | min-content | max-content | auto',
     '<unicode-range>': p => /^U\+[0-9a-f?]{1,6}(-[0-9a-f?]{1,6})?\s*$/i.test(p),
-    '<unit>': p => p.text === '%' || p in UNITS || lower(p) in UNITS,
+    '<unit>': ({text: t}) => t === '%' || t in UNITS || t.toLowerCase() in UNITS,
     '<uri>': p => p.type === 'uri',
-    '<width>': p => vtIsLength(p) || vtIsPct(p) || lowerCmp(p.text, 'auto'),
+    '<width>': p => /^(0|auto)$/i.test(p.text) || vtIsLength(p) || vtIsPct(p),
     '<xywh>': 'xywh( <len-pct>{2} <len-pct0+>{2} <border-radius-round>? )',
   };
 
@@ -1215,7 +1214,7 @@ self.parserlib = (() => {
     WindowFrame: '',
     WindowText: '',
   });
-  const ColorsLC = new Set(Object.keys(Colors).map(lower));
+  const rxColors = new RegExp(`^(${Object.keys(Colors).join('|')})$`, 'i');
 
   //#endregion
   //#region Tokens
@@ -2017,7 +2016,7 @@ self.parserlib = (() => {
     }
     get isAttr() {
       let res = this._isAttr;
-      if (res === 0) res = this._isAttr = lowerCmp(this.name, 'attr');
+      if (res === 0) res = this._isAttr = /^attr$/i.test(this.name);
       return res;
     }
     get isCalc() {
@@ -2031,8 +2030,9 @@ self.parserlib = (() => {
         const pp = this.expr && this.expr.parts;
         res = this._isVar = pp && pp.length > 0 && (
           (pp.length === 1 || pp[1].text === ',') && (
-            pp[0].type === 'custom-property' && lowerCmp(this.name, 'var') ||
-            pp[0].type === 'identifier' && lowerCmp(this.name, 'env')));
+            pp[0].type === 'custom-property' && /^var$/i.test(this.name) ||
+            pp[0].type === 'identifier' && /^env$/i.test(this.name)
+          ));
       }
       return res;
     }
@@ -2045,7 +2045,8 @@ self.parserlib = (() => {
      * @param {SyntaxUnit|parserlib.Token} token
      * @returns {SyntaxUnit}
      */
-    static addFuncInfo(unit, {expr, name} = unit) {
+    static addFuncInfo(unit, token = unit) {
+      const {expr, name} = token;
       const isColor = expr && expr.parts && /^((rgb|hsl)a?|hwb)$/i.test(name);
       if (isColor) unit.type = 'color';
       unit._isAttr =
@@ -2288,7 +2289,7 @@ self.parserlib = (() => {
             this.type = 'custom-property';
             this.value = value;
           } else {
-            const namedColor = Colors[value] || Colors[lower(value)];
+            const namedColor = Colors[value] || Colors[value.toLowerCase()];
             this.type = namedColor ? 'color' : 'identifier';
             this.value = namedColor || value;
           }
@@ -2433,7 +2434,7 @@ self.parserlib = (() => {
       }
       if ((text || part.text) === arg ||
           (text || part.text).length >= arg.length &&
-          lowerCmp(arg, text || (text = rxVendorPrefix.test(part.text) ? RegExp.$2 : part.text))) {
+          lowerCmp(arg, text || (text = part.text.match(rxVendorPrefix)[2]))) {
         return true;
       }
     }
@@ -2456,8 +2457,8 @@ self.parserlib = (() => {
       }
       return;
     }
-    const prop = lower(name);
-    const spec = Props[prop] || rxVendorPrefix.test(prop) && Props[RegExp.$2];
+    const prop = name.toLowerCase();
+    const spec = Props[prop.match(rxVendorPrefix)[2]];
     if (typeof spec === 'number' || !spec && prop.startsWith('-')) {
       return;
     }
@@ -2828,12 +2829,7 @@ self.parserlib = (() => {
           const func = /[-hniw]/i.test(b) &&
             reader.readMatch(/(has|not|is|where|(-(moz|webkit)-)?any)\(/iy);
           if (func) {
-            const first = b.toLowerCase();
-            tok.type =
-              first === 'h' ? Tokens.HAS :
-              first === 'n' ? Tokens.NOT :
-              first === 'i' ? Tokens.IS :
-              first === 'w' ? Tokens.WHERE : Tokens.ANY;
+            tok.type = Tokens[func.match(rxVendorPrefix)[2].slice(0, -1).toUpperCase()];
             tok.value += func;
           } else {
             tok.type = Tokens.COLON;
@@ -2869,7 +2865,7 @@ self.parserlib = (() => {
     atRuleToken(first, token) {
       this._reader.mark();
       let rule = first + this.readName();
-      let tt = Tokens.type(lower(rule));
+      let tt = Tokens.type(rule.toLowerCase());
       // if it's not valid, use the first character only and reset the reader
       if (tt === Tokens.CHAR || tt === Tokens.UNKNOWN) {
         if (rule.length > 1) {
@@ -2950,7 +2946,7 @@ self.parserlib = (() => {
       const c = reader.peek();
       if (rxIdentStart.test(c)) {
         units = this.readName(reader.read());
-        type = UNITS[units] || UNITS[lower(units)];
+        type = UNITS[units] || UNITS[units.toLowerCase()];
         tt = type && Tokens[type.toUpperCase()] ||
              type === 'frequency' && Tokens.FREQ ||
              Tokens.DIMENSION;
@@ -3675,7 +3671,7 @@ self.parserlib = (() => {
         this._ws();
         const {type, value} = stream.LT(1);
         if (type === Tokens.IDENT) {
-          if (lowerCmp(value, 'not')) {
+          if (/^not$/i.test(value)) {
             this._supportsCondition();
             stream.mustMatch(Tokens.RPAREN);
           } else {
@@ -3754,7 +3750,7 @@ self.parserlib = (() => {
       this._ws();
       const c = stream.match(Tokens.IDENT).value;
       if (c) {
-        if (lowerCmp(c, 'and') || !type && lowerCmp(c, 'or')) {
+        if (/^and$/i.test(c) || !type && /^or$/i.test(c)) {
           this._ws();
           expressions.push(this._mediaExpression());
         } else {
@@ -3797,7 +3793,7 @@ self.parserlib = (() => {
       const stream = this._tokenStream;
       this._ws();
       const id = stream.match(Tokens.IDENT).value || null;
-      if (id && lowerCmp(id, 'auto')) {
+      if (id && /^auto$/i.test(id)) {
         stream.throwUnexpected();
       }
       const pseudo = stream.match(Tokens.COLON)
@@ -4035,8 +4031,11 @@ self.parserlib = (() => {
       const start = stream.LT(1);
       const modifiers = [];
       const seq = [];
-      const ns = this._namespacePrefix(start.type);
-      const elementName = this._typeSelector(ns) || this._universal(ns);
+      const ns = this._namespacePrefix(start) || '';
+      const next = ns ? stream.LT(1) : start;
+      const elementName = (next.value === '*' || next.type === Tokens.IDENT)
+        ? this._typeSelector(ns, stream.get())
+        : '';
       if (elementName) {
         seq.push(elementName);
       } else if (ns) {
@@ -4054,21 +4053,9 @@ self.parserlib = (() => {
       return text && new SelectorPart(elementName, modifiers, text, start);
     }
 
-    _typeSelector(ns) {
-      const stream = this._tokenStream;
-      const nsSupplied = ns !== undefined;
-      if (!nsSupplied) ns = this._namespacePrefix();
-      const name = stream.match(Tokens.IDENT) &&
-        new SelectorSubPart(stream._token.value, 'elementName', stream._token);
-      if (!name) {
-        if (!nsSupplied && ns && ns.length > 0) stream.unget();
-        if (!nsSupplied && ns && ns.length > 1) stream.unget();
-        return null;
-      }
-      if (ns) {
-        name.text = ns + name.text;
-        name.col -= ns.length;
-      }
+    _typeSelector(ns, token) {
+      const name = new SelectorSubPart(ns + token.value, 'elementName', token);
+      name.col -= ns.length;
       return name;
     }
 
@@ -4083,17 +4070,12 @@ self.parserlib = (() => {
 
     _namespacePrefix(next) {
       const stream = this._tokenStream;
-      if (!next) next = stream.LA(1);
-      return next === Tokens.PIPE ? '|' :
-        (next === Tokens.IDENT || next === Tokens.STAR) && stream.LA(2) === Tokens.PIPE
+      const v = (next || (next = stream.LT(1))).value;
+      return v === '|' ? v :
+        (v === '*' || next.type === Tokens.IDENT) && stream.LT(2).value === '|'
           ? stream.get().value + stream.get().value
           : null;
     }
-
-    _universal(ns = this._namespacePrefix()) {
-      return `${ns || ''}${this._tokenStream.match(Tokens.STAR).value || ''}` || null;
-    }
-
     _attrib(start) {
       const stream = this._tokenStream;
       const value = [
@@ -4165,7 +4147,7 @@ self.parserlib = (() => {
         (args = this._selectorsGroup(start.type === Tokens.HAS)) +
         this._ws() +
         this._tokenStream.mustMatch(Tokens.RPAREN).value;
-      const type = lower(Tokens.name(start.type));
+      const type = Tokens.name(start.type).toLowerCase();
       return Object.assign(new SelectorSubPart(value, type, start), {args});
     }
 
@@ -4311,7 +4293,7 @@ self.parserlib = (() => {
       const start = stream._token;
       const name = start.value.slice(0, -1);
       this._ws();
-      const expr = this._expr(lower(name));
+      const expr = this._expr(name.toLowerCase());
       const ieFilter = this.options.ieFilters && stream.peek() === Tokens.EQUALS ?
         this._functionIeFilter() : '';
       const text = name + '(' + (expr || '') + ieFilter + ')';
@@ -4320,11 +4302,11 @@ self.parserlib = (() => {
       if (asText) {
         return text;
       }
-      const m = rxVendorPrefix.exec(name) || [];
+      const m = rxVendorPrefix.exec(name);
       return SyntaxUnit.addFuncInfo(
         new SyntaxUnit(text, start, 'function', {
           expr,
-          name: m[2] || name,
+          name: m[2],
           prefix: m[1] || '',
           tokenType: Tokens.FUNCTION,
         }));
@@ -4397,7 +4379,7 @@ self.parserlib = (() => {
 
     _keyframes(start) {
       const stream = this._tokenStream;
-      const prefix = rxVendorPrefix.test(start.value) ? RegExp.$1 : '';
+      const prefix = start.value.match(rxVendorPrefix)[1] || '';
       const name = SyntaxUnit.fromToken(stream.mustMatch(TT.identString));
       stream.mustMatch(Tokens.LBRACE);
       this.fire({type: 'startkeyframes', name, prefix}, start);
@@ -4677,22 +4659,13 @@ self.parserlib = (() => {
            /^:(first-(letter|line)|before|after)$/i.test(pseudo);
   }
 
-  function lower(text) {
-    if (typeof text !== 'string') text = `${text}`;
-    let result = lowercaseCache.get(text);
-    if (result) return result;
-    result = text.toLowerCase();
-    lowercaseCache.set(text, result);
-    return result;
-  }
-
   function lowerCmp(a, b) {
-    return a.length === b.length && (a === b || lower(a) === lower(b));
+    return a.length === b.length && (a === b || a.toLowerCase() === b.toLowerCase());
   }
 
   /** @this {String} */
   function lowerCmpThis(a) {
-    return a.length === this.length && (a === this || lower(a) === lower(this));
+    return a.length === this.length && (a === this || a.toLowerCase() === this.toLowerCase());
   }
 
   function parseString(str) {
@@ -4746,7 +4719,6 @@ self.parserlib = (() => {
       TokenStreamBase,
       fastJoin,
       isPseudoElement,
-      lower,
       rxVendorPrefix,
       describeProp: vtExplode,
     },
