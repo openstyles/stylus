@@ -12,10 +12,12 @@ const usercssMan = {
     name: null,
   }),
 
-  async assignVars(style, oldStyle) {
+  /** `src` is a style or vars */
+  async assignVars(style, src) {
     const meta = style.usercssData;
-    const vars = meta.vars;
-    const oldVars = (oldStyle.usercssData || {}).vars;
+    const meta2 = src.usercssData;
+    const {vars} = meta;
+    const oldVars = meta2 ? meta2.vars : src;
     if (vars && oldVars) {
       // The type of var might be changed during the update. Set value to null if the value is invalid.
       for (const [key, v] of Object.entries(vars)) {
@@ -43,7 +45,7 @@ const usercssMan = {
     let log;
     if (!metaOnly) {
       if (vars || assignVars) {
-        await usercssMan.assignVars(style, vars ? {usercssData: {vars}} : dup);
+        await usercssMan.assignVars(style, vars || dup);
       }
       await usercssMan.buildCode(style);
       log = style.log; // extracting the non-enumerable prop, otherwise it won't survive messaging
@@ -137,17 +139,18 @@ const usercssMan = {
     }
   },
 
-  async install(style) {
-    return API.styles.install(await usercssMan.parse(style));
+  async install(style, opts) {
+    return API.styles.install(await usercssMan.parse(style, opts));
   },
 
-  async parse(style) {
+  async parse(style, {dup, vars} = {}) {
     style = await usercssMan.buildMeta(style);
     // preserve style.vars during update
-    const dup = await usercssMan.find(style);
-    if (dup) {
+    if (dup || (dup = await usercssMan.find(style))) {
       style.id = dup.id;
-      await usercssMan.assignVars(style, dup);
+    }
+    if (vars || (vars = dup)) {
+      await usercssMan.assignVars(style, vars);
     }
     return usercssMan.buildCode(style);
   },

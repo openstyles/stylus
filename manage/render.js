@@ -108,7 +108,8 @@ function createStyleElement({style, name: nameLC}) {
   parts.homepage.href = parts.homepage.title = style.url || '';
   parts.infoVer.textContent = ud ? ud.version : '';
   parts.infoVer.dataset.value = ud ? ud.version : '';
-  if (URLS.extractUsoArchiveId(style.updateUrl)) {
+  // USO-raw and USO-archive version is a date for which we show the Age column
+  if (ud && (style.md5Url || URLS.extractUsoArchiveId(style.updateUrl))) {
     parts.infoVer.dataset.isDate = '';
   } else {
     delete parts.infoVer.dataset.isDate;

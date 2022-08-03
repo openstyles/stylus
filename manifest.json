@@ -48,6 +48,7 @@
       "background/update-manager.js",
       "background/usercss-install-helper.js",
       "background/usercss-manager.js",
+      "background/uso-api.js",
       "background/usw-api.js",
 
       "background/style-manager.js",

@@ -1,6 +1,6 @@
 /* global API */// msg.js
 /* global RX_META URLS debounce deepMerge download ignoreChromeError */// toolbox.js
-/* global calcStyleDigest styleJSONseemsValid styleSectionsEqual */ // sections-util.js
+/* global calcStyleDigest styleSectionsEqual */ // sections-util.js
 /* global chromeLocal */// storage-util.js
 /* global compareVersion */// cmpver.js
 /* global db */
@@ -23,6 +23,7 @@ const updateMan = (() => {
     ERROR_JSON:    'error: JSON is invalid',
     ERROR_VERSION: 'error: version is older than installed style',
   };
+  const USO_STYLES_API = `${URLS.uso}api/v1/styles/`;
   const RH_ETAG = {responseHeaders: ['etag']}; // a hashsum of file contents
   const RX_DATE2VER = new RegExp([
     /^(\d{4})/,
@@ -37,6 +38,7 @@ const updateMan = (() => {
     503, // service unavailable
     429, // too many requests
   ];
+  let usoReferers = 0;
   let lastUpdateTime;
   let checkingAll = false;
   let logQueue = [];
@@ -113,12 +115,13 @@ const updateMan = (() => {
       save,
     } = opts;
     if (!id) id = style.id;
-    const ucd = style.usercssData;
+    const {md5Url} = style;
+    let {usercssData: ucd, updateUrl} = style;
     let res, state;
     try {
       await checkIfEdited();
       res = {
-        style: await (ucd ? updateUsercss : updateUSO)().then(maybeSave),
+        style: await (ucd && !md5Url ? updateUsercss : updateUSO)().then(maybeSave),
         updated: true,
       };
       state = STATES.UPDATED;
@@ -142,76 +145,45 @@ const updateMan = (() => {
     }
 
     async function updateUSO() {
-      const url = URLS.makeUsoArchiveCodeUrl(style.md5Url.match(/\d+/)[0]);
-      const req = await tryDownload(url, RH_ETAG).catch(() => null);
-      if (req) {
-        return updateToUSOArchive(url, req);
-      }
-      const md5 = await tryDownload(style.md5Url);
+      const md5 = await tryDownload(md5Url);
       if (!md5 || md5.length !== 32) {
         return Promise.reject(STATES.ERROR_MD5);
       }
       if (md5 === style.originalMd5 && style.originalDigest && !ignoreDigest) {
         return Promise.reject(STATES.SAME_MD5);
       }
-      const json = await tryDownload(style.updateUrl, {responseType: 'json'});
-      if (!styleJSONseemsValid(json)) {
-        return Promise.reject(STATES.ERROR_JSON);
+      let varsUrl = '';
+      if (!ucd) {
+        ucd = {};
+        varsUrl = updateUrl;
+        updateUrl = style.updateUrl = `${USO_STYLES_API}${md5Url.match(/\/(\d+)/)[1]}`;
+      }
+      usoSpooferStart();
+      let json;
+      try {
+        json = await tryDownload(style.updateUrl, {responseType: 'json'});
+        json = await updateUsercss(json.css) ||
+          (await API.uso.toUsercss(json)).style;
+        if (varsUrl) await API.uso.useVarsUrl(json, varsUrl);
+      } finally {
+        usoSpooferStop();
       }
       // USO may not provide a correctly updated originalMd5 (#555)
       json.originalMd5 = md5;
       return json;
     }
 
-    async function updateToUSOArchive(url, req) {
-      const m2 = await getUsoEmbeddedMeta(req.response);
-      if (m2) {
-        url = m2.updateUrl;
-        req = await tryDownload(url, RH_ETAG);
-      }
-      const json = await API.usercss.buildMeta({
-        id,
-        etag: req.headers.etag,
-        md5Url: null,
-        originalMd5: null,
-        sourceCode: req.response,
-        updateUrl: url,
-        url: URLS.extractUsoArchiveInstallUrl(url),
-      });
-      const varUrlValues = style.updateUrl.split('?')[1];
-      const varData = json.usercssData.vars;
-      if (varUrlValues && varData) {
-        const IK = 'ik-';
-        const IK_LEN = IK.length;
-        for (let [key, val] of new URLSearchParams(varUrlValues)) {
-          if (!key.startsWith(IK)) continue;
-          key = key.slice(IK_LEN);
-          const varDef = varData[key];
-          if (!varDef) continue;
-          if (varDef.options) {
-            let sel = val.startsWith(IK) && getVarOptByName(varDef, val.slice(IK_LEN));
-            if (!sel) {
-              key += '-custom';
-              sel = getVarOptByName(varDef, key + '-dropdown');
-              if (sel) varData[key].value = val;
-            }
-            if (sel) varDef.value = sel.name;
-          } else {
-            varDef.value = val;
-          }
-        }
-      }
-      return API.usercss.buildCode(json);
-    }
-
-    async function updateUsercss() {
+    async function updateUsercss(css) {
       let oldVer = ucd.version;
       let {etag: oldEtag, updateUrl} = style;
-      const m2 = URLS.extractUsoArchiveId(updateUrl) && await getUsoEmbeddedMeta();
+      const m2 = (css || URLS.extractUsoArchiveId(updateUrl)) &&
+        await getUsoEmbeddedMeta(css);
       if (m2 && m2.updateUrl) {
         updateUrl = m2.updateUrl;
         oldVer = m2.usercssData.version || '0';
         oldEtag = '';
+      } else if (css) {
+        return;
       }
       if (oldEtag && oldEtag === await downloadEtag()) {
         return Promise.reject(STATES.SAME_CODE);
@@ -284,8 +256,7 @@ const updateMan = (() => {
     }
 
     function getDateFromVer(style) {
-      const m = URLS.extractUsoArchiveId(style.updateUrl) &&
-        style.usercssData.version.match(RX_DATE2VER);
+      const m = RX_DATE2VER.exec((style.usercssData || {}).version);
       if (m) {
         m[2]--; // month is 0-based in `Date` constructor
         return new Date(...m.slice(1)).getTime();
@@ -294,12 +265,9 @@ const updateMan = (() => {
 
     /** UserCSS metadata may be embedded in the original USO style so let's use its updateURL */
     function getUsoEmbeddedMeta(code = style.sourceCode) {
-      const m = code.includes('@updateURL') && code.replace(RX_META, '').match(RX_META);
+      const isRaw = arguments[0];
+      const m = code.includes('@updateURL') && (isRaw ? code : code.replace(RX_META, '')).match(RX_META);
       return m && API.usercss.buildMeta({sourceCode: m[0]}).catch(() => null);
-    }
-
-    function getVarOptByName(varDef, name) {
-      return varDef.options.find(o => o.name === name);
     }
   }
 
@@ -348,5 +316,33 @@ const updateMan = (() => {
     chromeLocal.setValue('updateLog', lines);
     logLastWriteTime = Date.now();
     logQueue = [];
+  }
+
+  function usoSpooferStart() {
+    if (++usoReferers === 1) {
+      chrome.webRequest.onBeforeSendHeaders.addListener(
+        usoSpoofer,
+        {types: ['xmlhttprequest'], urls: [USO_STYLES_API + '*']},
+        ['blocking', 'requestHeaders', chrome.webRequest.OnBeforeSendHeadersOptions.EXTRA_HEADERS]
+          .filter(Boolean));
+    }
+  }
+
+  function usoSpooferStop() {
+    if (--usoReferers <= 0) {
+      usoReferers = 0;
+      chrome.webRequest.onBeforeSendHeaders.removeListener(usoSpoofer);
+    }
+  }
+
+  /** @param {chrome.webRequest.WebResponseHeadersDetails | browser.webRequest._OnBeforeSendHeadersDetails} info */
+  function usoSpoofer(info) {
+    if (info.tabId < 0 && URLS.ownOrigin.startsWith(info.initiator || info.originUrl || '')) {
+      const {requestHeaders: hh} = info;
+      const i = (hh.findIndex(h => /^referer$/i.test(h.name)) + 1 || hh.push({})) - 1;
+      hh[i].name = 'referer';
+      hh[i].value = URLS.uso;
+      return {requestHeaders: hh};
+    }
   }
 })();
