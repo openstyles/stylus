@@ -1,8 +1,8 @@
-.DS_Store
-pull_locales_login.rb
-.vscode
-node_modules/
-yarn.lock
 *.zip
+.DS_Store
 .eslintcache
 .transifexrc
+.vscode
+desktop.ini
+node_modules/
+yarn.lock

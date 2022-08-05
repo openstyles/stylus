@@ -4,10 +4,14 @@
 const fs = require('fs');
 const archiver = require('archiver');
 
-function createZip() {
-  const fileName = 'stylus.zip';
+function createZip(suffix) {
+  const MANIFEST = 'manifest.json';
+  const fileName = `stylus-${suffix}.zip`;
   const ignore = [
+    MANIFEST,
     '.*', // dot files/folders (glob, not regexp)
+    'BUILD.md',
+    'node_modules', // may be a symlink in old node.js
     'node_modules/**',
     'tools/**',
     'package.json',
@@ -16,35 +20,34 @@ function createZip() {
     '*.zip',
     '*.map',
   ];
-
+  try {
+    ignore.push(...fs.readFileSync('.gitignore', 'utf8').split(/\r?\n/));
+  } catch (e) {}
+  const mj = JSON.parse(fs.readFileSync(MANIFEST, 'utf8'));
+  if (suffix === 'chrome') {
+    delete mj.applications;
+  } else {
+    delete mj.key;
+    mj.options_ui = {
+      /*
+       * Linking to dashboard, not to options, because this is aimed at users who removed the icon
+       * from the toolbar (they rarely use Stylus) so they visit about:addons instead.
+       */
+      page: 'manage.html',
+      open_in_tab: true,
+    };
+  }
   const file = fs.createWriteStream(fileName);
   const archive = archiver('zip');
-  return new Promise((resolve, reject) => {
-    archive.on('finish', () => {
-      resolve();
-    });
-    archive.on('warning', err => {
-      if (err.code === 'ENOENT') {
-        console.log('\x1b[33m%s\x1b[0m', 'Warning', err.message);
-      } else {
-        reject();
-        throw err;
-      }
-    });
-    archive.on('error', err => {
-      reject();
-      throw err;
-    });
-
-    archive.pipe(file);
-    archive.glob('**', {ignore});
-    archive.finalize();
-  });
+  archive.pipe(file);
+  archive.glob('**', {ignore});
+  archive.append(Buffer.from(JSON.stringify(mj, null, 2)), {name: MANIFEST});
+  return archive.finalize();
 }
 
 (async () => {
   try {
-    await createZip();
+    await Promise.all(['chrome', 'firefox'].map(createZip));
     console.log('\x1b[32m%s\x1b[0m', 'Stylus zip complete');
   } catch (err) {
     console.error(err);
