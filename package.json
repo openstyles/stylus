@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@eight04/draggable-list": "^0.3.0",
-    "codemirror": "5.65.6",
+    "codemirror": "5.65.7",
     "db-to-cloud": "^0.7.0",
     "jsonlint": "^1.6.3",
     "less-bundle": "github:openstyles/less-bundle#v0.1.0",
@@ -21,13 +21,13 @@
     "webext-launch-web-auth-flow": "^0.1.1"
   },
   "devDependencies": {
-    "archiver": "^4.0.1",
-    "eslint": "^7.20.0",
-    "fs-extra": "^9.0.0",
-    "glob": "^7.2.0",
+    "archiver": "^5.3.1",
+    "eslint": "^8.21.0",
+    "fs-extra": "^10.1.0",
+    "glob": "^8.0.3",
     "node-fetch": "^2.6.7",
     "sync-version": "^1.0.1",
-    "web-ext": "^6.5.0"
+    "web-ext": "^6.8.0"
   },
   "scripts": {
     "lint": "eslint \"**/*.js\" --cache",

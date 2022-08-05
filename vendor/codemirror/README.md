@@ -1,4 +1,4 @@
-## codemirror v5.65.6
+## codemirror v5.65.7
 
 Files copied from NPM (node_modules):
 * addon/comment/comment.js
