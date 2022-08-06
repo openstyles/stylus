@@ -47,7 +47,6 @@ const files = {
   ],
   'stylelint-bundle': [
     'dist/stylelint-bundle.min.js',
-    'https://github.com/stylelint/stylelint/raw/{VERSION}/LICENSE',
   ],
   'stylus-lang-bundle': [
     'dist/stylus-renderer.min.js',
