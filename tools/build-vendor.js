@@ -93,7 +93,9 @@ async function buildFiles(pkg, flatPkg, patterns) {
     pattern = pattern.replace('{VERSION}', require(`${pkg}/package.json`).version);
     const [src, dest = !keepDirs && getFileName(src)] = pattern.split(/\s*->\s*/);
     if (/^https?:/.test(src)) {
-      fse.outputFileSync(`vendor/${flatPkg}/${dest}`, await (await fetch(src)).text());
+      const req = await fetch(src);
+      if (req.status >= 400) throw new Error(`Network error ${req.status} for ${src}`);
+      fse.outputFileSync(`vendor/${flatPkg}/${dest}`, await req.text());
       fetched += `* ${dest}: ${src}\n`;
     } else {
       const files = glob(`node_modules/${pkg}/${src}`);
