@@ -15,7 +15,7 @@
     "jsonlint": "^1.6.3",
     "less-bundle": "github:openstyles/less-bundle#v0.1.0",
     "lz-string-unsafe": "^1.4.4-fork-1",
-    "stylelint-bundle": "^14.2.0",
+    "stylelint-bundle": "^14.9.1-fixup",
     "stylus-lang-bundle": "^0.58.1",
     "usercss-meta": "^0.12.0",
     "webext-launch-web-auth-flow": "^0.1.1"

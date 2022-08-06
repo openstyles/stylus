@@ -2,9 +2,7 @@
 'use strict';
 
 (() => {
-  const hasCurlyBraceError = warning =>
-    warning.text === 'Unnecessary curly bracket (CssSyntaxError)';
-  let sugarssFallback;
+  let sugarss = false;
 
   /** @namespace EditorWorker */
   createWorkerApi({
@@ -65,26 +63,33 @@
     },
 
     async stylelint(opts) {
-      // Removing an unused API that spits a warning in Chrome console due to stylelint's isBuffer
-      delete self.SharedArrayBuffer;
       require(['/vendor/stylelint-bundle/stylelint-bundle.min']); /* global stylelint */
-      try {
-        let res;
-        let pass = 0;
-        /* sugarss is used for stylus-lang by default,
-           but it fails on normal css syntax so we retry in css mode. */
-        const isSugarSS = opts.syntax === 'sugarss';
-        if (sugarssFallback && isSugarSS) opts.syntax = sugarssFallback;
-        while (
-          ++pass <= 2 &&
-          (res = (await stylelint.lint(opts)).results[0]) &&
-          isSugarSS && res.warnings.some(hasCurlyBraceError)
-        ) sugarssFallback = opts.syntax = 'css';
-        delete res._postcssResult; // huge and unused
-        return res;
-      } catch (e) {
-        delete e.postcssNode; // huge, unused, non-transferable
-        throw e;
+      // Stylus-lang allows a trailing ";" but sugarss doesn't, so we monkeypatch it
+      stylelint.SugarSSParser.prototype.checkSemicolon = tt => {
+        while (tt.length && tt[tt.length - 1][0] === ';') tt.pop();
+      };
+      for (const pass of opts.mode === 'stylus' ? [sugarss, !sugarss] : [-1]) {
+        /* We try sugarss (for indented stylus-lang), then css mode, switching them on failure,
+         * so that the succeeding syntax will be used next time first. */
+        opts.config.customSyntax = !pass ? 'sugarss' : '';
+        try {
+          const res = await stylelint.createLinter(opts)._lintSource(opts);
+          if (pass !== -1) sugarss = pass;
+          return collectStylelintResults(res, opts);
+        } catch (e) {
+          const fatal = pass === -1 ||
+            !pass && !/^CssSyntaxError:.+?Unnecessary curly bracket/.test(e.stack) ||
+            pass && !/^CssSyntaxError:.+?Unknown word[\s\S]*?\.decl\s/.test(e.stack);
+          if (fatal) {
+            return [{
+              from: {line: e.line - 1, ch: e.column - 1},
+              to: {line: e.line - 1, ch: e.column - 1},
+              message: e.reason,
+              severity: 'error',
+              rule: e.name,
+            }];
+          }
+        }
       }
     },
   });
@@ -139,4 +144,33 @@
       return options;
     },
   };
+
+  function collectStylelintResults({messages}, {mode}) {
+    /* We hide nonfatal "//" warnings since we lint with sugarss without applying @preprocessor.
+     * We can't easily pre-remove "//"  comments which may be inside strings, comments, url(), etc.
+     * And even if we did, it'd be wrong to hide potential bugs in stylus-lang like #1460 */
+    const slashCommentAllowed = mode === 'stylus' || mode === 'text/x-less';
+    const res = [];
+    for (const m of messages) {
+      if (/deprecation|invalidOption/.test(m.stylelintType)) {
+        continue;
+      }
+      const {rule} = m;
+      const msg = m.text.replace(/^Unexpected\s+/, '').replace(` (${rule})`, '');
+      if (slashCommentAllowed && (
+        rule === 'no-invalid-double-slash-comments' ||
+        rule === 'property-no-unknown' && msg.includes('"//"')
+      )) {
+        continue;
+      }
+      res.push({
+        from: {line: m.line - 1, ch: m.column - 1},
+        to: {line: m.endLine - 1, ch: m.endColumn - 1},
+        message: msg[0].toUpperCase() + msg.slice(1),
+        severity: m.severity,
+        rule,
+      });
+    }
+    return res;
+  }
 })();
