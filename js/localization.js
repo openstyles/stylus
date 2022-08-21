@@ -29,7 +29,7 @@ Object.assign(t, {
     ')',
     /(?!\b|\s|$)/,
   ].map(rx => rx.source || rx).join(''), 'gu'),
-  SELECTOR: '[i18n], template, select',
+  SELECTOR: '[i18n], template',
 
   HTML(html) {
     return typeof html !== 'string'
@@ -48,9 +48,6 @@ Object.assign(t, {
       if (node.localName === 'template') {
         t.createTemplate(node);
         continue;
-      }
-      if (node.localName === 'select' && (node.nextElementSibling || {}).localName !== 'svg') {
-        $.fancySelect(node);
       }
       const attr = node.getAttribute('i18n');
       if (!attr) continue;

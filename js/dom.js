@@ -27,17 +27,6 @@ Object.assign(EventTarget.prototype, {
 
 $.root = document.documentElement;
 $.rootCL = $.root.classList;
-$.dummies = {
-  select: $create('.select-resizer',
-    $create('SVG:svg.svg-icon.select-arrow',
-      $create('SVG:use', {'xlink:href': '#svg-icon-select-arrow'}))),
-};
-$.fancySelect = el => {
-  const res = $.dummies.select.cloneNode(true);
-  if (el.parentNode) el.replaceWith(res);
-  res.prepend(el);
-  return res;
-};
 
 // Makes the focus outline appear on keyboard tabbing, but not on mouse clicks.
 const focusAccessibility = {

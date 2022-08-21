@@ -255,10 +255,18 @@ async function configDialog(style) {
         case 'dropdown':
         case 'image':
           // TODO: a image picker input?
-          va.input = $create('select', {va, onchange: updateVarOnChange},
-            va.options.map(o => $create('option', {value: o.name}, o.label)));
-          children = [$.fancySelect(va.input)];
-          children[0].classList.add('config-value');
+          children = [
+            $create('.select-resizer.config-value', [
+              va.input = $create('select', {
+                va,
+                onchange: updateVarOnChange,
+              },
+              va.options.map(o =>
+                $create('option', {value: o.name}, o.label))),
+              $create('SVG:svg.svg-icon.select-arrow',
+                $create('SVG:use', {'xlink:href': '#svg-icon-select-arrow'})),
+            ]),
+          ];
           break;
 
         case 'range':
