@@ -149,7 +149,8 @@
     /* We hide nonfatal "//" warnings since we lint with sugarss without applying @preprocessor.
      * We can't easily pre-remove "//"  comments which may be inside strings, comments, url(), etc.
      * And even if we did, it'd be wrong to hide potential bugs in stylus-lang like #1460 */
-    const slashCommentAllowed = mode === 'stylus' || mode === 'text/x-less';
+    const isLess = mode === 'text/x-less';
+    const slashCommentAllowed = isLess || mode === 'stylus';
     const res = [];
     for (const m of messages) {
       if (/deprecation|invalidOption/.test(m.stylelintType)) {
@@ -160,7 +161,7 @@
       if (slashCommentAllowed && (
         rule === 'no-invalid-double-slash-comments' ||
         rule === 'property-no-unknown' && msg.includes('"//"')
-      )) {
+      ) || isLess && /^unknown at-rule "@[-\w]+:"/.test(msg) /* LESS variables */) {
         continue;
       }
       res.push({
