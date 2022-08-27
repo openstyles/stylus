@@ -26,6 +26,7 @@
       // moving vendor-prefixed props to the end
       const cmp = (a, b) => a[0] === '-' && b[0] !== '-' ? 1 : a < b ? -1 : a > b;
       for (const [k, v] of Object.entries(Properties)) {
+        res[k] = false;
         if (typeof v === 'string') {
           let last = '';
           const uniq = [];
@@ -42,7 +43,7 @@
           if (uniq.length) res[k] = uniq;
         }
       }
-      return {own: res, global: GlobalKeywords};
+      return {all: res, global: GlobalKeywords};
     },
 
     getRules(linter) {

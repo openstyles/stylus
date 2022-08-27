@@ -12,7 +12,7 @@
   const USO_VAR = 'uso-variable';
   const USO_VALID_VAR = 'variable-3 ' + USO_VAR;
   const USO_INVALID_VAR = 'error ' + USO_VAR;
-  const rxPROP = /^(prop(erty)?|variable-2)\b/;
+  const rxPROP = /^(prop(erty)?|variable-2|string-2)\b/;
   const rxVAR = /(^|[^-.\w\u0080-\uFFFF])var\(/iyu;
   const rxCONSUME = /([-\w]*\s*:\s?)?/yu;
   const cssMime = CodeMirror.mimeModes['text/css'];
@@ -142,8 +142,8 @@
               leftLC = leftLC.replace(/^[^\w\s]\s*/, '');
             }
             if (prop.startsWith('--')) prop = 'color'; // assuming 90% of variables are colors
-            if (!cssValues) cssValues = await linterMan.worker.getCssPropsValues();
-            list = [...new Set([...cssValues.own[prop] || [], ...cssValues.global])];
+            if (!cssProps) await initCssProps();
+            list = [...new Set([...cssValues.all[prop] || [], ...cssValues.global])];
             end = prev + execAt(/(\s*[-a-z(]+)?/y, prev, text)[0].length;
           }
         }
@@ -151,7 +151,7 @@
         if (!list &&
             /^(prop(erty|\?)|atom|error|tag)/.test(type) &&
             /^(block|atBlock_parens|maybeprop)/.test(getTokenState())) {
-          if (!cssProps) initCssProps();
+          if (!cssProps) await initCssProps();
           if (type === 'prop?') {
             prev += leftLC.length;
             leftLC = '';
@@ -174,8 +174,9 @@
     };
   }
 
-  function initCssProps() {
-    cssProps = addSuffix(cssMime.propertyKeywords);
+  async function initCssProps() {
+    cssValues = await linterMan.worker.getCssPropsValues();
+    cssProps = addSuffix(cssValues.all);
     cssMedia = [].concat(...Object.entries(cssMime).map(getMediaKeys).filter(Boolean)).sort();
   }
 
