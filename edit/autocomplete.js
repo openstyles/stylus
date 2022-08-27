@@ -149,7 +149,7 @@
         }
         // properties and media features
         if (!list &&
-            /^(prop(erty|\?)|atom|error)/.test(type) &&
+            /^(prop(erty|\?)|atom|error|tag)/.test(type) &&
             /^(block|atBlock_parens|maybeprop)/.test(getTokenState())) {
           if (!cssProps) initCssProps();
           if (type === 'prop?') {
