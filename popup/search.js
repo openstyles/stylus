@@ -2,7 +2,7 @@
 /* global $entry tabURL */// popup.js
 /* global API */// msg.js
 /* global Events */
-/* global FIREFOX URLS debounce download tryURL */// toolbox.js
+/* global FIREFOX URLS debounce download stringAsRegExp tryRegExp tryURL */// toolbox.js
 /* global prefs */
 /* global t */// localization.js
 'use strict';
@@ -17,7 +17,7 @@
     title: URLS.usw,
   });
   const STYLUS_CATEGORY = 'chrome-extension';
-  const PAGE_LENGTH = 10;
+  const PAGE_LENGTH = 100;
   // update USO style install counter if the style isn't uninstalled immediately
   const PINGBACK_DELAY = 5e3;
   const BUSY_DELAY = .5e3;
@@ -38,17 +38,20 @@
    * @prop {string} an -  authorName
    * @prop {string} sn -  screenshotName
    * @prop {boolean} sa -  screenshotArchived
-   * --------------------- Stylus' internally added extras
-   * @prop {boolean} installed
-   * @prop {number} installedStyleId
+   *
+   * @prop {boolean} _installed
+   * @prop {number} _installedStyleId
+   * @prop {number} _year
    */
   /** @type IndexEntry[] */
-  let results;
+  let results, resultsAllYears;
   /** @type IndexEntry[] */
   let index;
   let category = '';
+  /** @type RegExp */
+  let rxCategory;
   let searchGlobals = $('#search-globals').checked;
-  /** @type string[] */
+  /** @type {RegExp[]} */
   let query = [];
   let order = prefs.get('popup.findSort');
   let scrollToFirstResult = true;
@@ -97,16 +100,23 @@
   };
   $('#search-query').oninput = function () {
     query = [];
-    const text = this.value.trim().toLocaleLowerCase();
-    const thisYear = new Date().getFullYear();
-    for (let re = /"(.+?)"|(\S+)/g, m; (m = re.exec(text));) {
-      const n = Number(m[2]);
-      query.push(n >= 2000 && n <= thisYear ? n : m[1] || m[2]);
+    const text = this.value.trim();
+    for (let re = /(")(.+?)"|((\/)?(\S+?)(\/\w*)?)(?=\s|$)/g, m; (m = re.exec(text));) {
+      const [
+        all,
+        q, qt,
+        t, rx1 = '', rx, rx2 = '',
+      ] = m;
+      query.push(rx1 && rx2 && tryRegExp(rx, rx2.slice(1)) ||
+        stringAsRegExp(q ? qt : t, all === all.toLocaleLowerCase() ? 'i' : ''));
     }
-    if (category === STYLUS_CATEGORY && !query.includes('stylus')) {
-      query.push('stylus');
+    if (category === STYLUS_CATEGORY) {
+      query.push(/\bStylus\b/);
     }
     ready = ready.then(start);
+  };
+  $('#search-years').onchange = () => {
+    ready = ready.then(() => start({keepYears: true}));
   };
   $('#search-order').value = order;
   $('#search-order').onchange = function () {
@@ -146,7 +156,7 @@
 
   window.on('styleDeleted', ({detail: {style: {id}}}) => {
     restoreScrollPosition();
-    const result = results.find(r => r.installedStyleId === id);
+    const result = results.find(r => r._installedStyleId === id);
     if (result) {
       API.uso.pingback(result.i, false);
       renderActionButtons(result.i, -1);
@@ -178,11 +188,11 @@
     dom.error.hidden = false;
     dom.list.hidden = true;
     if (dom.error.getBoundingClientRect().bottom < 0) {
-      dom.error.scrollIntoView({behavior: 'smooth', block: 'start'});
+      dom.error.scrollIntoView(true);
     }
   }
 
-  async function start() {
+  async function start({keepYears} = {}) {
     resetUI.timer = resetUI.timer || setTimeout(resetUI, 500);
     try {
       results = [];
@@ -194,6 +204,8 @@
         const allSupportedIds = new Set(installedStyles.map(calcId));
         results = results.filter(r => !allSupportedIds.has(r.i));
       }
+      if (!keepYears) resultsAllYears = results;
+      renderYears();
       render();
       dom.list.hidden = !results.length;
       if (!results.length && !$('#search-query').value) {
@@ -201,6 +213,7 @@
       } else {
         resetUI();
       }
+      resetUI();
     } catch (reason) {
       error(reason);
     }
@@ -209,10 +222,42 @@
   }
 
   function resetUI() {
-    document.body.classList.add('search-results-shown');
+    $.rootCL.add('search-results-shown');
     dom.container.hidden = false;
     dom.list.hidden = false;
     dom.error.hidden = true;
+  }
+
+  function renderYears() {
+    const SCALE = 1000;
+    const BASE = new Date(0).getFullYear(); // 1970
+    const DAYS = 365.2425;
+    const DAY = 24 * 3600e3;
+    const YEAR = DAYS * DAY / SCALE;
+    const SAFETY = 1 / DAYS; // 1 day safety margin: recheck Jan 1 and Dec 31
+    const years = [];
+    for (const r of resultsAllYears) {
+      let y = r._year;
+      if (!y) {
+        y = r.u / YEAR + BASE;
+        r._year = y = Math.abs(y % 1 - 1) <= SAFETY
+          ? new Date(r.u * SCALE).getFullYear()
+          : y | 0;
+      }
+      years[y] = (years[y] || 0) + 1;
+    }
+    const texts = years.reduceRight((res, num, y) => res.push(`${y} (${num})`) && res, []);
+    const selects = $$('#search-years select');
+    selects.forEach((sel, selNum) => {
+      if (texts.length !== sel.length || texts.some((v, i) => v !== sel[i].text)) {
+        const {value} = sel;
+        sel.textContent = '';
+        sel.append(...texts.map(t => $create('option', {value: t.split(' ')[0]}, t)));
+        sel.value = value in years ? value : (sel[`${selNum ? 'first' : 'last'}Child`] || {}).value;
+      }
+    });
+    const [y1, y2] = selects.map(el => Number(el.value)).sort();
+    results = y1 ? resultsAllYears.filter(r => (r = r._year) >= y1 && r <= y2) : resultsAllYears;
   }
 
   function render() {
@@ -262,13 +307,14 @@
       nav._next.disabled = displayedPage >= totalPages;
       nav._page.textContent = displayedPage;
       nav._total.textContent = totalPages;
+      nav._num.textContent = results.length;
     }
   }
 
   function doScrollToFirstResult() {
     if (dom.container.scrollHeight > window.innerHeight * 2) {
       scrollToFirstResult = false;
-      dom.container.scrollIntoView({behavior: 'smooth', block: 'start'});
+      dom.container.scrollIntoView(true);
     }
   }
 
@@ -377,10 +423,10 @@
     if (!entry) return;
     const result = entry._result;
     if (typeof installedId === 'number') {
-      result.installed = installedId > 0;
-      result.installedStyleId = installedId;
+      result._installed = installedId > 0;
+      result._installedStyleId = installedId;
     }
-    const isInstalled = result.installed;
+    const isInstalled = result._installed;
     const status = $('.search-result-status', entry).textContent =
       isInstalled ? t('clickToUninstall') :
         entry.dataset.noImage != null ? t('installButton') :
@@ -422,7 +468,7 @@
   }
 
   function configure() {
-    const styleEntry = $entry($resultEntry(this).result.installedStyleId);
+    const styleEntry = $entry($resultEntry(this).result._installedStyleId);
     Events.configure.call(this, {target: styleEntry});
   }
 
@@ -456,7 +502,7 @@
   function uninstall() {
     const {entry, result} = $resultEntry(this);
     saveScrollPosition(entry);
-    API.styles.delete(result.installedStyleId);
+    API.styles.delete(result._installedStyleId);
   }
 
   function saveScrollPosition(entry) {
@@ -495,6 +541,7 @@
       );
       category = (keepThird && `${third}.` || '') + main + (keepTld || keepThird ? `.${tld}` : '');
     }
+    rxCategory = new RegExp(`\\b${stringAsRegExp(category, '', true)}\\b`, 'i');
     return category !== old;
   }
 
@@ -519,31 +566,29 @@
   }
 
   async function search({retry} = {}) {
-    return retry && !calcCategory({retry})
+    return retry && !query.length && !calcCategory({retry})
       ? []
       : (index || await fetchIndex()).filter(isResultMatching).sort(comparator);
   }
 
   function isResultMatching(res) {
-    // We're trying to call calcHaystack only when needed, not on all 100K items
     const {c} = res;
     return (
       c === category ||
       (category === STYLUS_CATEGORY
         ? c === 'stylus' // USW
         : c === 'global' && searchGlobals &&
-          (query.length || calcHaystack(res)._nLC.includes(category))
+          (query.length || rxCategory.test(res.n))
       )
-    ) && (
-      !query.length || // to skip calling calcHaystack
-      query.every(isInHaystack, calcHaystack(res))
-    );
+    ) && query.every(isInHaystack, res);
   }
 
-  /** @this {IndexEntry} haystack */
-  function isInHaystack(needle) {
-    return this._year === needle && this.c !== 'global' ||
-           this._nLC.includes(needle);
+  /**
+   * @this {IndexEntry} haystack
+   * @param {RegExp} q
+   */
+  function isInHaystack(q) {
+    return q.test(this.n);
   }
 
   /**
@@ -569,11 +614,5 @@
 
   function calcId(style) {
     return calcUsoId(style) || calcUswId(style);
-  }
-
-  function calcHaystack(res) {
-    if (!res._nLC) res._nLC = res.n.toLocaleLowerCase();
-    if (!res._year) res._year = new Date(res.u * 1000).getFullYear();
-    return res;
   }
 })();

@@ -1434,7 +1434,7 @@
     "description": "Text for label that shows the number of times a search result was installed during last week"
   },
   "searchStyleQueryHint": {
-    "message": "Search style names case-insensitively:\nsome words - all words in any order\n\"some phrase\" - this exact phrase without quotes\n2020 - a year like this also shows styles updated in 2020",
+    "message": "Search style names (case-sensitively if an uppercase letter is used):\nsome words - all these words in any order\n\"some phrase\" - this exact phrase without quotes\n/foo.*bar/i - regular expression without spaces (use \\s instead)",
     "description": "Tooltip shown for the text input in the popup's inline style finder"
   },
   "searchStylesAll": {

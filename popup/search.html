@@ -3,6 +3,17 @@
   <div id="search-results" hidden>
     <div class="search-results-nav" data-type="top"></div>
     <div id="search-params">
+      <div id="search-years">
+        <div class="select-resizer">
+          <select></select>
+          <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+        </div>
+        -
+        <div class="select-resizer">
+          <select></select>
+          <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
+        </div>
+      </div>
       <input id="search-query" type="search" i18n="placeholder:search, title:searchStyleQueryHint">
       <div class="select-resizer">
         <select id="search-order" i18n="title:sortStylesHelpTitle">
@@ -31,6 +42,7 @@
       <span data-type="page" i18n="title:paginationCurrent">-</span>
       /
       <span data-type="total" i18n="title:paginationEstimated">-</span>
+      (<span data-type="num"></span>)
     </label>
     <button data-type="next" i18n="title:paginationNext" disabled>►</button>
   </div>
