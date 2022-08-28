@@ -102,6 +102,7 @@
       const m = this.doc.mode;
       if (force || (m.helperType ? m.helperType !== pp : m.name !== name)) {
         this.setOption('mode', name);
+        this.doc.mode.lineComment = ''; // stylelint chokes on line comments a lot
       }
     },
     /** Superfast GC-friendly check that runs until the first non-space line */

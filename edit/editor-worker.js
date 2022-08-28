@@ -159,10 +159,8 @@
       }
       const {rule} = m;
       const msg = m.text.replace(/^Unexpected\s+/, '').replace(` (${rule})`, '');
-      if (slashCommentAllowed && (
-        rule === 'no-invalid-double-slash-comments' ||
-        rule === 'property-no-unknown' && msg.includes('"//"')
-      ) || isLess && /^unknown at-rule "@[-\w]+:"/.test(msg) /* LESS variables */) {
+      if (slashCommentAllowed && msg.includes('"//"') ||
+          isLess && /^unknown at-rule "@[-\w]+:"/.test(msg) /* LESS variables */) {
         continue;
       }
       res.push({
