@@ -41,6 +41,7 @@
     const {line, ch} = pos;
     const {styles, text} = cm.getLineHandle(line);
     const {style, index} = cm.getStyleAtPos({styles, pos: ch}) || {};
+    const isLessLang = cm.doc.mode.helperType === 'less';
     const isStylusLang = cm.doc.mode.name === 'stylus';
     const type = style && style.split(' ', 1)[0] || 'prop?';
     if (!type || type === 'comment' || type === 'string') {
@@ -86,6 +87,7 @@
           '@supports',
           '@viewport',
         ];
+        if (isLessLang) list = findAllCssVars(cm, left, '\\s*:').concat(list);
         break;
 
       case '#': // prevents autocomplete for #hex colors
@@ -196,13 +198,15 @@
       !style.startsWith(USO_VALID_VAR) && !style.startsWith(USO_INVALID_VAR);
   }
 
-  function findAllCssVars(cm, leftPart) {
+  function findAllCssVars(cm, leftPart, rightPart = '') {
     // simplified regex without CSS escapes
+    const [, prefixed, named] = leftPart.match(/^(--|@)?(\S)?/);
     const rx = new RegExp(
       '(?:^|[\\s/;{])(' +
-      (leftPart.startsWith('--') ? leftPart : '--') +
-      (leftPart.length <= 2 ? '[a-zA-Z_\u0080-\uFFFF]' : '') +
-      '[-0-9a-zA-Z_\u0080-\uFFFF]*)',
+      (prefixed ? leftPart : '--') +
+      (named ? '' : '[a-zA-Z_\u0080-\uFFFF]') +
+      '[-0-9a-zA-Z_\u0080-\uFFFF]*)' +
+      rightPart,
       'g');
     const list = new Set();
     cm.eachLine(({text}) => {
