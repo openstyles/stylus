@@ -1,7 +1,7 @@
 /* global API msg */// msg.js
 /* global CHROME URLS deepEqual isEmptyObj mapObj stringAsRegExp tryRegExp tryURL */// toolbox.js
 /* global bgReady createCache uuidIndex */// common.js
-/* global calcStyleDigest styleCodeEmpty styleSectionGlobal */// sections-util.js
+/* global calcStyleDigest styleCodeEmpty */// sections-util.js
 /* global db */
 /* global prefs */
 /* global tabMan */
@@ -74,6 +74,29 @@ const styleMan = (() => {
     _rev: 0,
   };
   uuidIndex.addCustomId(orderWrap, {set: setOrder});
+
+  class MatchQuery {
+    constructor(url) {
+      this.url = url;
+    }
+    get urlWithoutHash() {
+      return this._set('urlWithoutHash', this.url.split('#', 1)[0]);
+    }
+    get urlWithoutParams() {
+      return this._set('urlWithoutParams', this.url.split(/[?#]/, 1)[0]);
+    }
+    get domain() {
+      return this._set('domain', tryURL(this.url).hostname);
+    }
+    get isOwnPage() {
+      return this._set('isOwnPage', this.url.startsWith(URLS.ownOrigin));
+    }
+    _set(name, value) {
+      Object.defineProperty(this, name, {value});
+      return value;
+    }
+  }
+
   /** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
   let ready = Promise.all([init(), prefs.ready]);
 
@@ -226,7 +249,7 @@ const styleMan = (() => {
       const styles = id
         ? [id2style(id)].filter(Boolean)
         : getAllAsArray();
-      const query = createMatchQuery(url);
+      const query = new MatchQuery(url);
       for (const style of styles) {
         let excluded = false;
         let excludedScheme = false;
@@ -248,10 +271,7 @@ const styleMan = (() => {
           excludedScheme = true;
         }
         for (const section of style.sections) {
-          if (styleSectionGlobal(section) && styleCodeEmpty(section.code)) {
-            continue;
-          }
-          const match = urlMatchSection(query, section);
+          const match = urlMatchSection(query, section, true);
           if (match) {
             if (match === 'sloppy') {
               sloppy = true;
@@ -431,7 +451,7 @@ const styleMan = (() => {
         cache.maybeMatch.add(id);
         continue;
       }
-      const code = getAppliedCode(createMatchQuery(url), style);
+      const code = getAppliedCode(new MatchQuery(url), style);
       if (code) {
         updated.add(url);
         buildCacheEntry(cache, style, code);
@@ -601,27 +621,21 @@ const styleMan = (() => {
     return true;
   }
 
-  function urlMatchSection(query, section) {
+  function urlMatchSection(query, section, skipEmptyGlobal) {
+    let dd, ddL, pp, ppL, rr, rrL, uu, uuL;
     if (
-      section.domains &&
-      section.domains.some(d => d === query.domain || query.domain.endsWith(`.${d}`))
+      (dd = section.domains) && (ddL = dd.length) && dd.some(urlMatchDomain, query) ||
+      (pp = section.urlPrefixes) && (ppL = pp.length) && pp.some(urlMatchPrefix, query) ||
+      /* Per the specification the fragment portion is ignored in @-moz-document:
+         https://www.w3.org/TR/2012/WD-css3-conditional-20120911/#url-of-doc
+         but the spec is outdated and doesn't account for SPA sites,
+         so we only respect it for `url()` function */
+      (uu = section.urls) && (uuL = uu.length) && (
+        uu.includes(query.url) ||
+        uu.includes(query.urlWithoutHash)
+      ) ||
+      (rr = section.regexps) && (rrL = rr.length) && rr.some(urlMatchRegexp, query)
     ) {
-      return true;
-    }
-    if (section.urlPrefixes && section.urlPrefixes.some(p => p && query.url.startsWith(p))) {
-      return true;
-    }
-    // as per spec the fragment portion is ignored in @-moz-document:
-    // https://www.w3.org/TR/2012/WD-css3-conditional-20120911/#url-of-doc
-    // but the spec is outdated and doesn't account for SPA sites
-    // so we only respect it for `url()` function
-    if (section.urls && (
-      section.urls.includes(query.url) ||
-      section.urls.includes(query.urlWithoutHash)
-    )) {
-      return true;
-    }
-    if (section.regexps && section.regexps.some(r => compileRe(r).test(query.url))) {
       return true;
     }
     /*
@@ -630,11 +644,33 @@ const styleMan = (() => {
     We'll detect styles that abuse the bug by finding the sections that
     would have been applied by Stylish but not by us as we follow the spec.
     */
-    if (section.regexps && section.regexps.some(r => compileSloppyRe(r).test(query.url))) {
+    if (rrL && rr.some(urlMatchRegexpSloppy, query)) {
       return 'sloppy';
     }
     // TODO: check for invalid regexps?
-    return styleSectionGlobal(section);
+    return !rrL && !ppL && !uuL && !ddL &&
+      !query.isOwnPage && // We allow only intentionally targeted sections for own pages
+      (!skipEmptyGlobal || !styleCodeEmpty(section.code));
+  }
+  /** @this {MatchQuery} */
+  function urlMatchDomain(d) {
+    const _d = this.domain;
+    return d === _d ||
+      _d[_d.length - d.length - 1] === '.' && _d.endsWith(d);
+  }
+  /** @this {MatchQuery} */
+  function urlMatchPrefix(p) {
+    return p && this.url.startsWith(p);
+  }
+  /** @this {MatchQuery} */
+  function urlMatchRegexp(r) {
+    return (!this.isOwnPage || /\bextension\b/.test(r)) &&
+      compileRe(r).test(this.url);
+  }
+  /** @this {MatchQuery} */
+  function urlMatchRegexpSloppy(r) {
+    return (!this.isOwnPage || /\bextension\b/.test(r)) &&
+      compileSloppyRe(r).test(this.url);
   }
 
   function createCompiler(compile) {
@@ -674,37 +710,8 @@ const styleMan = (() => {
       '$';
   }
 
-  function createMatchQuery(url) {
-    let urlWithoutHash;
-    let urlWithoutParams;
-    let domain;
-    return {
-      url,
-      get urlWithoutHash() {
-        if (!urlWithoutHash) {
-          urlWithoutHash = url.split('#')[0];
-        }
-        return urlWithoutHash;
-      },
-      get urlWithoutParams() {
-        if (!urlWithoutParams) {
-          const u = tryURL(url);
-          urlWithoutParams = u.origin + u.pathname;
-        }
-        return urlWithoutParams;
-      },
-      get domain() {
-        if (!domain) {
-          const u = tryURL(url);
-          domain = u.hostname;
-        }
-        return domain;
-      },
-    };
-  }
-
   function buildCache(cache, url, styleList) {
-    const query = createMatchQuery(url);
+    const query = new MatchQuery(url);
     for (const {style, appliesTo, preview} of styleList) {
       const code = getAppliedCode(query, preview || style);
       if (code) {

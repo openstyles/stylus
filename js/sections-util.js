@@ -5,7 +5,6 @@
   MozDocMapper
   styleCodeEmpty
   styleJSONseemsValid
-  styleSectionGlobal
   styleSectionsEqual
 */
 
@@ -81,14 +80,6 @@ function styleCodeEmpty(code) {
   }
   styleCodeEmpty.lastIndex = lastIndex;
   return false;
-}
-
-/** Checks if section is global i.e. has no targets at all */
-function styleSectionGlobal(section) {
-  return (!section.regexps || !section.regexps.length) &&
-    (!section.urlPrefixes || !section.urlPrefixes.length) &&
-    (!section.urls || !section.urls.length) &&
-    (!section.domains || !section.domains.length);
 }
 
 /**
