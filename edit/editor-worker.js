@@ -79,8 +79,8 @@
           return collectStylelintResults(res, opts);
         } catch (e) {
           const fatal = pass === -1 ||
-            !pass && !/^CssSyntaxError:.+?Unnecessary curly bracket/.test(e.stack) ||
-            pass && !/^CssSyntaxError:.+?Unknown word[\s\S]*?\.decl\s/.test(e.stack);
+            !pass && !/^CssSyntaxError:.+?Unnecessary curly bracket/.test(e) ||
+            pass && !/^CssSyntaxError:.+?Unknown word[\s\S]*?\.decl\s/.test(`${e}${e.stack}`);
           if (fatal) {
             return [{
               from: {line: e.line - 1, ch: e.column - 1},
