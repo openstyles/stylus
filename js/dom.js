@@ -481,9 +481,7 @@ prefs.ready.then(() => {
       }));
     }
   }
-  window.requestIdleCallback(() => {
-    require(lazyScripts);
-  });
+  setTimeout(() => requestIdleCallback(() => require(lazyScripts)));
 })();
 
 //#endregion
