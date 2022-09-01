@@ -1170,9 +1170,6 @@
   "searchResultWeeklyCount": {
     "message": "本周安装次数"
   },
-  "searchStyleQueryHint": {
-    "message": "空格多词 -- 同时精确匹配(无需双引号)\n2020  --  也含更新日期的匹配结果\n大小写不敏感"
-  },
   "searchStylesAll": {
     "message": "全部"
   },
@@ -1392,7 +1389,7 @@
     "message": "更新 URL"
   },
   "stylusUnavailableForURL": {
-    "message": "Stylus 无法介入到此类页面"
+    "message": "Stylus 不能在此类页面上工作"
   },
   "stylusUnavailableForURLdetails": {
     "message": "出于安全考虑，浏览器禁止扩展程序影响其内置页面（例如 chrome://version，Chrome 61 后的标准新标签页，about:addons 等等）以及其他扩展程序的页面。每个浏览器也限制了对于自己扩展程序库的介入〔例如 Chrome 网上应用店、Firefox 附加组件（addons.mozilla.org）〕。"

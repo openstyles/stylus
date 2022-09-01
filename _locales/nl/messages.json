@@ -1146,7 +1146,7 @@
     "message": "Wekelijks aantal installaties"
   },
   "searchStyleQueryHint": {
-    "message": "Stijlnamen niet hoofdlettergevoelig doorzoeken:\nbepaalde woorden - alle woorden in willekeurige volgorde\n\"bepaalde woordgroep\" - deze exacte woordgroep zonder aanhalingstekens\n2020 - een jaar als dit toont ook stijlen die in 2020 zijn bijgewerkt"
+    "message": "Stijlnamen doorzoeken (hoofdlettergevoelig als een hoofdletter wordt gebruikt):\nenkele woorden - al deze woorden in willekeurige volgorde\n\"bepaalde woordgroep\" - deze exacte woordgroep zonder aanhalingstekens\n/foo.*bar/i - reguliere expressie zonder spaties (gebruik in plaats daarvan \\s)"
   },
   "searchStylesAll": {
     "message": "Alles"

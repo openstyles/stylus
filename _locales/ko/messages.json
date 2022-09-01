@@ -1058,9 +1058,6 @@
   "searchResultWeeklyCount": {
     "message": "주간 설치 수"
   },
-  "searchStyleQueryHint": {
-    "message": "대소문자와 무관하게 스타일 이름을 검색하십시오:\n이런 검색어 - 순서에 무관하게 모든 단어가 포함하기만 하면 스타일을 불러옴\n\"이런 검색어\" - 따옴표 속 정확한 문장을 포함하는 스타일을 불러옴\n2020 - 해당 연도, 여기서는 2020년에 갱신된 스타일을 불러옴"
-  },
   "searchStylesAll": {
     "message": "모두"
   },

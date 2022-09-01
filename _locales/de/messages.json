@@ -1115,7 +1115,7 @@
     "message": "Wöchentliche Installationen"
   },
   "searchStyleQueryHint": {
-    "message": "Stylenamen ohne Beachtung der Groß-/Kleinschreibung suchen:\nMehrere Suchworte - alle Wörter in beliebiger Reihenfolge\n\"Bestimmte Phrase\" - genau diese Phrase ohne Anführungszeichen\n2020 - zeigt auch Styles, die 2020 aktualisiert wurden"
+    "message": "Stylenamen durchsuchen (Groß-Kleinschreibung wird beachtet, sobald ein Großbuchstabe benutzt wird):\nHaus Baum Sonne - sucht nach allen Wörtern in beliebiger Reihenfolge\n\"Baum Haus\" - sucht exakt diesen Ausdruck (ohne Anführungszeichen)\n/foo.*bar/i - Regulärer Ausdruck ohne Leerzeichen (nutze stattdessen \\s)"
   },
   "searchStylesAll": {
     "message": "Alles"

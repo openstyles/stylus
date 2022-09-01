@@ -1177,7 +1177,7 @@
     "message": "Tygodniowa liczba instalacji"
   },
   "searchStyleQueryHint": {
-    "message": "Szukaj nazw stylów bez rozróżniania wielkości liter:\njakieś słowa - wszystkie słowa w dowolnej kolejności\n\"jakieś zdanie\" - dokładnie to zdanie bez cudzysłowów\n2020 - rok jak ten pokazuje również style zaktualizowane w 2020"
+    "message": "Szukaj nazwy stylów (z uwzględnieniem wielkości liter, jeśli używana jest wielka litera):\njakieś słowa – wszystkie te słowa w dowolnej kolejności\n\"jakaś fraza\" – ta fraza bez cudzysłowów\n/foo.*bar/i – wyrażenie regularne bez spacji (zamiast tego użyj \\s)"
   },
   "searchStylesAll": {
     "message": "Wszystkie"

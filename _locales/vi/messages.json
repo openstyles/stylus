@@ -1,0 +1,379 @@
+{
+  "InaccessibleFileHint": {
+    "message": "Stylus không thể truy cập một số kiểu tập tin (chẳng hạn như PDF và JSON)."
+  },
+  "addStyleLabel": {
+    "message": "Viết bảng định kiểu mới"
+  },
+  "addStyleTitle": {
+    "message": "Thêm bảng định kiểu"
+  },
+  "alphaChannel": {
+    "message": "Độ mờ"
+  },
+  "appliesAdd": {
+    "message": "Thêm"
+  },
+  "appliesDisplay": {
+    "message": "Áp dụng với: $applies$",
+    "placeholders": {
+      "applies": {
+        "content": "$1"
+      }
+    }
+  },
+  "appliesDisplayTruncatedSuffix": {
+    "message": "và một số khác"
+  },
+  "appliesDomainOption": {
+    "message": "Các địa chỉ thuộc tên miền này"
+  },
+  "appliesHelp": {
+    "message": "Dùng tuỳ chọn \"Áp dụng với\" để giới hạn các địa chỉ cho đoạn mã này"
+  },
+  "appliesLabel": {
+    "message": "Áp dụng với"
+  },
+  "appliesLineWidgetLabel": {
+    "message": "Hiển thị thông tin \"Áp dụng với\""
+  },
+  "appliesLineWidgetWarning": {
+    "message": "Không hoạt động với CSS tối giản"
+  },
+  "appliesRegexpOption": {
+    "message": "URL khớp với biểu thức chính quy"
+  },
+  "appliesRemove": {
+    "message": "Xoá"
+  },
+  "appliesRemoveError": {
+    "message": "Không thể xoá mục \"Áp dụng với\" cuối cùng"
+  },
+  "appliesSpecify": {
+    "message": "Chỉ định"
+  },
+  "appliesToEverything": {
+    "message": "Tất cả"
+  },
+  "appliesUrlPrefixOption": {
+    "message": "URL bắt đầu bằng"
+  },
+  "author": {
+    "message": "Tác giả"
+  },
+  "backupButtons": {
+    "message": "Sao lưu"
+  },
+  "backupMessage": {
+    "message": "Để nhập tập tin sao lưu, kéo và thả nó vào trang này hoặc nhấp vào nút Nhập.\n\nĐể xuất một bản sao lưu tương thích với Stylus trước phiên bản 1.5.18, nhấp chuột phải hoặc nhấn giữ Shift khi nhấp chuột trái vào nút Xuất."
+  },
+  "bckpInstStyles": {
+    "message": "Xuất bảng định kiểu"
+  },
+  "checkForUpdate": {
+    "message": "Kiểm tra bản cập nhật mới"
+  },
+  "checkingForUpdate": {
+    "message": "Đang kiểm tra..."
+  },
+  "clickToUninstall": {
+    "message": "Nhấp để huỷ kích hoạt"
+  },
+  "cm_autoCloseBrackets": {
+    "message": "Tự động đóng ngoặc và nháy"
+  },
+  "cm_autoCloseBracketsTooltip": {
+    "message": "Tự động thêm dấu đóng tương ứng khi nhập một trong các dấu (, [, {, ' và \"."
+  },
+  "cm_autocompleteOnTyping": {
+    "message": "Tự động hoàn thành"
+  },
+  "cm_colorpicker": {
+    "message": "Bộ chọn màu cho màu CSS"
+  },
+  "cm_indentWithTabs": {
+    "message": "Lùi đầu dòng thông minh bằng tab"
+  },
+  "cm_lineWrapping": {
+    "message": "Gập dòng dài"
+  },
+  "cm_linter": {
+    "message": "Trình phân tích cú pháp"
+  },
+  "cm_matchHighlight": {
+    "message": "Làm nổi"
+  },
+  "cm_matchHighlightSelection": {
+    "message": "Chỉ vùng được chọn"
+  },
+  "cm_matchHighlightToken": {
+    "message": "Token nằm dưới con trỏ văn bản"
+  },
+  "cm_selectByTokens": {
+    "message": "Nhấp đúp để chọn token"
+  },
+  "cm_selectByTokensTooltip": {
+    "message": "Ví dụ về token: .foo-bar-2 #aabbcc 0.32 !important\nKhi tắt: Chọn từ (phân tách bằng dấu câu)."
+  },
+  "cm_smartIndent": {
+    "message": "Lùi đầu dòng thông minh"
+  },
+  "cm_tabSize": {
+    "message": "Chiều rộng tab"
+  },
+  "cm_theme": {
+    "message": "Chủ đề"
+  },
+  "colorpickerSwitchFormatTooltip": {
+    "message": "Đổi định dạng: HEX → RGB → HSL.\nNhấn giữ phím Shift khi nhấp để đảo thứ tự.\nPhím tắt: PgUp và PgDn."
+  },
+  "colorpickerTooltip": {
+    "message": "Mở bộ chọn màu"
+  },
+  "configOnChange": {
+    "message": "khi thay đổi"
+  },
+  "configOnChangeTooltip": {
+    "message": "Tự động lưu và áp dụng"
+  },
+  "configureStyle": {
+    "message": "Thiết lập"
+  },
+  "configureStyleOnHomepage": {
+    "message": "Thiết lập trên trang chủ"
+  },
+  "confirmCancel": {
+    "message": "Huỷ"
+  },
+  "confirmClose": {
+    "message": "Đóng"
+  },
+  "confirmDefault": {
+    "message": "Dùng mặc định"
+  },
+  "confirmDelete": {
+    "message": "Xoá"
+  },
+  "confirmDiscardChanges": {
+    "message": "Huỷ thay đổi?"
+  },
+  "confirmNo": {
+    "message": "Không"
+  },
+  "confirmSave": {
+    "message": "Lưu"
+  },
+  "confirmStop": {
+    "message": "Dừng"
+  },
+  "confirmYes": {
+    "message": "Có"
+  },
+  "connectingDropbox": {
+    "message": "Đang kết nối với Dropbox..."
+  },
+  "connectingDropboxNotAllowed": {
+    "message": "Tính năng kết nối với Dropbox chỉ khả dụng khi cài ứng dụng trực tiếp từ cửa hàng web"
+  },
+  "copied": {
+    "message": "Đã chép vào khay nhớ tạm"
+  },
+  "copy": {
+    "message": "Chép vào khay nhớ tạm"
+  },
+  "dateAbbrDay": {
+    "message": "$value$ ngày",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrHour": {
+    "message": "$value$ giờ",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrMonth": {
+    "message": "$value$ tháng",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrYear": {
+    "message": "$value$ năm",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateInstalled": {
+    "message": "Ngày cài đặt"
+  },
+  "dateUpdated": {
+    "message": "Ngày cập nhật"
+  },
+  "defaultTheme": {
+    "message": "mặc định"
+  },
+  "deleteStyleConfirm": {
+    "message": "Bạn có chắc chắn muốn xoá bảng định kiểu này không?"
+  },
+  "deleteStyleLabel": {
+    "message": "Xoá"
+  },
+  "disableAllStyles": {
+    "message": "Tắt tất cả bảng định kiểu"
+  },
+  "disableAllStylesOff": {
+    "message": "Bật tất cả bảng định kiểu"
+  },
+  "disableStyleLabel": {
+    "message": "Vô hiệu hoá"
+  },
+  "draftAction": {
+    "message": "Chọn \"Có\" để tải bản nháp hoặc \"Không\" để xoá nó đi."
+  },
+  "editDeleteText": {
+    "message": "Xoá"
+  },
+  "editGotoLine": {
+    "message": "Đi đến dòng (hoặc dòng:cột)"
+  },
+  "editStyleHeading": {
+    "message": "Sửa bảng định kiểu"
+  },
+  "editStyleLabel": {
+    "message": "Sửa"
+  },
+  "editStyleTitle": {
+    "message": "Sửa bảng định kiểu $stylename$",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "editorSettings": {
+    "message": "Cài đặt trình soạn thảo"
+  },
+  "enableStyleLabel": {
+    "message": "Kích hoạt"
+  },
+  "exportCompatible": {
+    "message": "Xuất (chế độ tương thích)"
+  },
+  "exportLabel": {
+    "message": "Xuất"
+  },
+  "exportSavedSuccess": {
+    "message": "Lưu thành công"
+  },
+  "externalFeedback": {
+    "message": "Phản hồi"
+  },
+  "externalHomepage": {
+    "message": "Trang chủ"
+  },
+  "externalLink": {
+    "message": "Liên kết ngoài"
+  },
+  "externalSupport": {
+    "message": "Ủng hộ"
+  },
+  "genericAdd": {
+    "message": "Thêm"
+  },
+  "genericDescription": {
+    "message": "Mô tả"
+  },
+  "genericDisabledLabel": {
+    "message": "Vô hiệu hoá"
+  },
+  "genericEnabledLabel": {
+    "message": "Kích hoạt"
+  },
+  "genericError": {
+    "message": "Lỗi"
+  },
+  "genericHistoryLabel": {
+    "message": "Lịch sử"
+  },
+  "genericNext": {
+    "message": "Sau"
+  },
+  "genericPrevious": {
+    "message": "Trước"
+  },
+  "genericResetLabel": {
+    "message": "Đặt lại"
+  },
+  "genericSavedMessage": {
+    "message": "Đã lưu"
+  },
+  "genericTest": {
+    "message": "Thứ"
+  },
+  "genericTitle": {
+    "message": "Tiêu đề"
+  },
+  "genericUnknown": {
+    "message": "Không xác định"
+  },
+  "helpAlt": {
+    "message": "Trợ giúp"
+  },
+  "importLabel": {
+    "message": "Nhập"
+  },
+  "importReportLegendAdded": {
+    "message": "đã thêm"
+  },
+  "importReportLegendIdentical": {
+    "message": "Đã bỏ qua các tệp trùng lặp"
+  },
+  "importReportLegendInvalid": {
+    "message": "Đã bỏ qua các tệp không hợp lệ"
+  },
+  "importReportLegendUpdatedBoth": {
+    "message": "đã cập nhật siêu thông tin và mã"
+  },
+  "importReportLegendUpdatedCode": {
+    "message": "đã cập nhật mã"
+  },
+  "importReportLegendUpdatedMeta": {
+    "message": "đã cập nhật siêu thông tin"
+  },
+  "importReportTitle": {
+    "message": "Đã nhập xong"
+  },
+  "installUpdateFromLabel": {
+    "message": "Kiểm tra bản cập nhật mới"
+  },
+  "license": {
+    "message": "Giấy phép"
+  },
+  "linterCSSLintIncompatible": {
+    "message": "CSSLint không hỗ trợ bộ tiền xử lý $preprocessorname$",
+    "placeholders": {
+      "preprocessorname": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterJSONError": {
+    "message": "Định dạng JSON không hợp lệ"
+  },
+  "styleEnabledLabel": {
+    "message": "Kích hoạt"
+  },
+  "styleSaveLabel": {
+    "message": "Lưu"
+  }
+}

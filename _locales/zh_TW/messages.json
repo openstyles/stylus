@@ -1174,7 +1174,7 @@
     "message": "每週安裝"
   },
   "searchStyleQueryHint": {
-    "message": "搜尋樣式名稱時是區分大小寫的：\nsome words - 以任意順序搜尋所有文字\n\"some phrase\" - 精確符合引號內的詞語\n2020 - 如此年份顯示在2020年更新的樣式"
+    "message": "搜尋樣式名稱（若使用大寫字母，則區分大小寫）：\n一些字 - 以任何順序符合所有字\n\"一些詞\" - 精確符合引號內的詞\n/foo.*bar/i - 沒有空格的正規表示式（使用 \\s 代替）"
   },
   "searchStylesAll": {
     "message": "全部"

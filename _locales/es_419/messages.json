@@ -1051,9 +1051,6 @@
   "searchResultWeeklyCount": {
     "message": "Instalaciones semanales"
   },
-  "searchStyleQueryHint": {
-    "message": "La búsqueda de nombres de estilo no distingue mayúsculas de minúsculas:\nalgunas palabras: todas las palabras en cualquier orden\n\"una frase\": esta frase exacta (sin comillas)\n2020: al escribir un año, se muestran estilos que se actualizaron ese año"
-  },
   "searchStylesAll": {
     "message": "Todos"
   },
