@@ -4,7 +4,7 @@
 /* global SectionsEditor */
 /* global SourceEditor */
 /* global clipString createHotkeyInput helpPopup */// util.js
-/* global closeCurrentTab deepEqual sessionStore tryJSONparse */// toolbox.js
+/* global closeCurrentTab deepEqual mapObj sessionStore tryJSONparse */// toolbox.js
 /* global cmFactory */
 /* global editor EditorHeader */// base.js
 /* global linterMan */
@@ -207,11 +207,10 @@ function EditorMethods() {
     applyScrollInfo(cm, si = (editor.scrollInfo.cms || [])[0]) {
       if (si && si.sel) {
         const bmOpts = {sublimeBookmark: true, clearWhenEmpty: false}; // copied from sublime.js
-        cm.operation(() => {
-          cm.setSelections(...si.sel, {scroll: false});
-          cm.scrollIntoView(cm.getCursor(), si.parentHeight / 2);
-          cm.state.sublimeBookmarks = si.bookmarks.map(b => cm.markText(b.from, b.to, bmOpts));
-        });
+        cm.setSelections(...si.sel, {scroll: false});
+        cm.state.sublimeBookmarks = si.bookmarks.map(b => cm.markText(b.from, b.to, bmOpts));
+        Object.assign(cm.display.scroller, si.scroll); // for source editor
+        Object.assign(cm.doc, si.scroll); // for sectioned editor
       }
     },
 
@@ -223,6 +222,7 @@ function EditorMethods() {
           focus: cm.hasFocus(),
           height: cm.display.wrapper.style.height.replace('100vh', ''),
           parentHeight: cm.display.wrapper.parentElement.offsetHeight,
+          scroll:  mapObj(cm.doc, null, ['scrollLeft', 'scrollTop']),
           sel: [cm.doc.sel.ranges, cm.doc.sel.primIndex],
         })),
       };

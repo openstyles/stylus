@@ -101,7 +101,6 @@ async function SourceEditor() {
     'editor.toc.expanded': (k, val) => sectionFinder.onOff(editor.updateToc, val),
   }, {runNow: true});
 
-  editor.applyScrollInfo(cm);
   cm.clearHistory();
   cm.markClean();
   savedGeneration = cm.changeGeneration();
@@ -121,6 +120,7 @@ async function SourceEditor() {
   if (!$isTextInput(document.activeElement)) {
     cm.focus();
   }
+  editor.applyScrollInfo(cm); // WARNING! Place it after all cm.XXX calls that change scroll pos
 
   async function preprocess(style) {
     const res = await API.usercss.build({
