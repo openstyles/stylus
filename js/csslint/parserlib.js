@@ -301,7 +301,7 @@ self.parserlib = (() => {
     'font-variant-position': 'normal | sub | super',
     'font-variation-settings': 'normal | [ <string> <number> ]#',
     'font-weight': '<font-weight>',
-    'forced-color-adjust': 'auto | none',
+    'forced-color-adjust': 'auto | none | preserve-parent-color',
     '-ms-flex-align': 1,
     '-ms-flex-order': 1,
     '-ms-flex-pack': 1,
