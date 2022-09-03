@@ -356,8 +356,9 @@ a:hover {
 .newUI .style-info[data-type=version][data-value="1.0.0"] {
   display: none;
 }
+.newUI .entry .style-info[data-type=size],
 .newUI .entry .style-info[data-type=age] {
-  color: var(--c60);
+  color: var(--c50);
   text-align: right;
   padding-right: 1em;
 }

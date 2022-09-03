@@ -1,7 +1,7 @@
 /* global API */// msg.js
 /* global changeQueue installed newUI */// manage.js
 /* global checkUpdate handleUpdateInstalled */// updater-ui.js
-/* global createStyleElement createTargetsElement getFaviconSrc */// render.js
+/* global createStyleElement createTargetsElement getFaviconSrc styleToDummyEntry */// render.js
 /* global debounce getOwnTab openURL sessionStore */// toolbox.js
 /* global filterAndAppend showFiltersStats */// filters.js
 /* global sorter */
@@ -191,7 +191,7 @@ function handleUpdate(style, {reason, method} = {}) {
   if (oldEntry && method === 'styleUpdated') {
     handleToggledOrCodeOnly();
   }
-  entry = entry || createStyleElement({style});
+  entry = entry || createStyleElement(styleToDummyEntry(style));
   if (oldEntry) {
     if (oldEntry.styleNameLowerCase === entry.styleNameLowerCase) {
       installed.replaceChild(entry, oldEntry);

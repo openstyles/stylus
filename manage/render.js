@@ -17,6 +17,7 @@ const AGES = [
   [12, 'm', t('dateAbbrMonth', '\x01')],
   [Infinity, 'y', t('dateAbbrYear', '\x01')],
 ];
+const groupThousands = num => `${num}`.replace(/\d(?=(\d{3})+$)/g, '$&\xA0');
 
 (() => {
   const proto = HTMLImageElement.prototype;
@@ -70,7 +71,15 @@ function createAgeText(el, style) {
   }
 }
 
-function createStyleElement({style, name: nameLC}) {
+function calcObjSize(obj) {
+  // Inaccurate but simple
+  return typeof obj !== 'object' ? `${obj}`.length :
+    !obj ? 0 :
+      Array.isArray(obj) ? obj.reduce((sum, v) => sum + calcObjSize(v), 0) :
+        Object.entries(obj).reduce((sum, [k, v]) => sum + k.length + calcObjSize(v), 0);
+}
+
+function createStyleElement({styleMeta: style, styleNameLowerCase: nameLC, styleSize: size}) {
   // query the sub-elements just once, then reuse the references
   if ((elementParts || {}).newUI !== newUI.enabled) {
     const entry = t.template[newUI.enabled ? 'styleNewUI' : 'style'].cloneNode(true);
@@ -85,6 +94,7 @@ function createStyleElement({style, name: nameLC}) {
       homepage: $('.homepage', entry),
       homepageIcon: t.template[`homepageIcon${newUI.enabled ? 'Small' : 'Big'}`],
       infoAge: $('[data-type=age]', entry),
+      infoSize: $('[data-type=size]', entry),
       infoVer: $('[data-type=version]', entry),
       appliesTo: $('.applies-to', entry),
       targets: $('.targets', entry),
@@ -114,9 +124,11 @@ function createStyleElement({style, name: nameLC}) {
   } else {
     delete parts.infoVer.dataset.isDate;
   }
-  if (newUI.enabled) {
-    createAgeText(parts.infoAge, style);
-  } else {
+  createAgeText(parts.infoAge, style);
+  parts.infoSize.dataset.value = Math.log10(size || 1) >> 0; // for CSS to target big/small styles
+  parts.infoSize.textContent = groupThousands(Math.round(size / 1024)) + 'k';
+  parts.infoSize.title = `${t('genericSize')}: ${groupThousands(size)} B`;
+  if (!newUI.enabled) {
     parts.oldConfigure.classList.toggle('hidden', !configurable);
     parts.oldCheckUpdate.classList.toggle('hidden', !style.updateUrl);
     parts.oldUpdate.classList.toggle('hidden', !style.updateUrl);
@@ -130,8 +142,9 @@ function createStyleElement({style, name: nameLC}) {
   const entry = parts.entry.cloneNode(true);
   entry.id = ENTRY_ID_PREFIX_RAW + style.id;
   entry.styleId = style.id;
-  entry.styleNameLowerCase = nameLC || name.toLocaleLowerCase() + '\n' + name;
+  entry.styleNameLowerCase = nameLC;
   entry.styleMeta = style;
+  entry.styleSize = size;
   entry.className = parts.entryClassBase + ' ' +
     (style.enabled ? 'enabled' : 'disabled') +
     (style.updateUrl ? ' updatable' : '') +
@@ -340,16 +353,7 @@ function padLeft(val, width) {
 }
 
 function showStyles(styles = [], matchUrlIds) {
-  const sorted = sorter.sort({
-    styles: styles.map(style => {
-      const name = style.customName || style.name || '';
-      return {
-        style,
-        // sort case-insensitively the whole list then sort dupes like `Foo` and `foo` case-sensitively
-        name: name.toLocaleLowerCase() + '\n' + name,
-      };
-    }),
-  });
+  const sorted = sorter.sort(styles.map(styleToDummyEntry));
   let index = 0;
   let firstRun = true;
   installed.dataset.total = styles.length;
@@ -386,6 +390,16 @@ function showStyles(styles = [], matchUrlIds) {
       setTimeout(window.scrollTo, 0, 0, history.state.scrollY);
     }
   }
+}
+
+function styleToDummyEntry(style) {
+  const name = style.customName || style.name || '';
+  return {
+    styleMeta: style,
+    styleSize: calcObjSize(style),
+    // sort case-insensitively the whole list then sort dupes like `Foo` and `foo` case-sensitively
+    styleNameLowerCase: name.toLocaleLowerCase() + '\n' + name,
+  };
 }
 
 /* exported switchUI */

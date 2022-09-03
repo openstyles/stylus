@@ -14,27 +14,32 @@ const sorter = (() => {
   const tagData = {
     title: {
       text: t('genericTitle'),
-      parse: ({name}) => name,
+      parse: v => v.styleNameLowerCase,
       sorter: sorterType.alpha,
     },
     usercss: {
       text: 'Usercss',
-      parse: ({style}) => style.usercssData ? 0 : 1,
+      parse: v => v.styleMeta.usercssData ? 0 : 1,
       sorter: sorterType.number,
     },
     disabled: {
       text: '', // added as either "enabled" or "disabled" by the addOptions function
-      parse: ({style}) => style.enabled ? 1 : 0,
+      parse: v => v.styleMeta.enabled ? 1 : 0,
       sorter: sorterType.number,
     },
     dateInstalled: {
       text: t('dateInstalled'),
-      parse: ({style}) => style.installDate,
+      parse: v => v.styleMeta.installDate,
       sorter: sorterType.number,
     },
     dateUpdated: {
       text: t('dateUpdated'),
-      parse: ({style}) => style.updateDate || style.installDate,
+      parse: ({styleMeta: s}) => s.updateDate || s.installDate,
+      sorter: sorterType.number,
+    },
+    size: {
+      text: t('genericSize'),
+      parse: v => v.styleSize,
       sorter: sorterType.number,
     },
   };
@@ -53,6 +58,7 @@ const sorter = (() => {
     'disabled,asc, title,asc',
     'disabled,desc, title,asc',
     'disabled,desc, usercss,asc, title,asc',
+    'size,desc, title,asc',
     '{groupDesc}',
     'title,desc',
     'usercss,asc, title,desc',
@@ -120,7 +126,7 @@ const sorter = (() => {
 
     init,
 
-    sort({styles}) {
+    sort(styles) {
       const sortBy = getPref().split(splitRegex);
       const len = sortBy.length;
       return styles.sort((a, b) => {
@@ -140,17 +146,9 @@ const sorter = (() => {
     update() {
       if (!installed) return;
       const current = [...installed.children];
-      const sorted = sorter.sort({
-        styles: current.map(entry => ({
-          entry,
-          name: entry.styleNameLowerCase,
-          style: entry.styleMeta,
-        })),
-      });
-      if (current.some((entry, index) => entry !== sorted[index].entry)) {
-        const renderBin = document.createDocumentFragment();
-        sorted.forEach(({entry}) => renderBin.appendChild(entry));
-        installed.appendChild(renderBin);
+      const sorted = sorter.sort([...current]);
+      if (current.some((el, i) => el !== sorted[i])) {
+        installed.append(...sorted);
       }
       sorter.updateStripes();
     },

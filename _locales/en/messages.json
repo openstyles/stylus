@@ -498,6 +498,9 @@
     "message": "Saved",
     "description": "Used in various parts of the UI to indicate that something was saved"
   },
+  "genericSize": {
+    "message": "Size"
+  },
   "genericTest": {
     "message": "Test",
     "description": "Label for the action that runs some test e.g. opens the regexp tester panel in the editor"
