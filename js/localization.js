@@ -11,12 +11,14 @@
  */
 
 function t(key, params, strict = true) {
-  const s = chrome.i18n.getMessage(key, params);
+  const s = !params && t.cache[key]
+    || (t.cache[key] = chrome.i18n.getMessage(key, params));
   if (!s && strict) throw `Missing string "${key}"`;
   return s;
 }
 
 Object.assign(t, {
+  cache: {},
   template: {},
   ALLOWED_TAGS: ['a', 'b', 'code', 'i', 'sub', 'sup', 'wbr'],
   RX_WORD_BREAK: new RegExp([
