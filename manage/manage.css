@@ -766,7 +766,7 @@ button .svg-icon,
 
 /* highlight updated/added styles */
 .highlight {
-  animation: highlight 10s cubic-bezier(0,.82,.47,.98);
+  animation: highlight 1s cubic-bezier(0, .4, .6, 1);
 }
 .highlight-quick {
   animation: highlight .5s;
