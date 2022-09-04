@@ -28,9 +28,16 @@ const newUI = {
 Object.assign(newUI, {
   ids: Object.keys(newUI),
   prefKeyForId: id => `manage.newUI.${id}`.replace(/\.enabled$/, ''),
+  readPrefs(dest = newUI, cb) {
+    for (const id of newUI.ids) {
+      const val = dest[id] = prefs.get(newUI.prefKeyForId(id));
+      if (cb) cb(id, val);
+    }
+  },
   renderClass: () => {
     $.rootCL.toggle('newUI', newUI.enabled);
     $.rootCL.toggle('oldUI', !newUI.enabled);
+    $('#newUI').media = newUI.enabled ? '' : '?';
   },
   hasFavs: () => newUI.enabled && newUI.favicons,
   badFavsKey: 'badFavs',
@@ -41,9 +48,7 @@ Object.assign(newUI, {
   },
 });
 // ...read the actual values
-for (const id of newUI.ids) {
-  newUI[id] = prefs.get(newUI.prefKeyForId(id));
-}
+newUI.readPrefs();
 newUI.renderClass();
 
 (async function init() {

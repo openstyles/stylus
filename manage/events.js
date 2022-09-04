@@ -130,7 +130,9 @@ const Events = {
   },
 
   name(event, entry) {
-    if (newUI.enabled) Events.edit(event, entry);
+    if (newUI.enabled && !event.target.closest('.homepage')) {
+      Events.edit(event, entry);
+    }
   },
 
   toggle(event, entry) {
@@ -193,7 +195,7 @@ function handleUpdate(style, {reason, method} = {}) {
   }
   entry = entry || createStyleElement(styleToDummyEntry(style));
   if (oldEntry) {
-    if (oldEntry.styleNameLowerCase === entry.styleNameLowerCase) {
+    if (oldEntry.styleNameLC === entry.styleNameLC) {
       installed.replaceChild(entry, oldEntry);
     } else {
       oldEntry.remove();

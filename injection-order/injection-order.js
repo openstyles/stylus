@@ -37,7 +37,7 @@ async function InjectionOrder(show, el, selector) {
     parts.name.href = '/edit.html?id=' + style.id;
     parts.name.textContent = style.name;
     return Object.assign(entry.cloneNode(true), {
-      styleNameLowerCase: style.name.toLocaleLowerCase(),
+      styleNameLC: style.name.toLocaleLowerCase(),
     });
   }
 

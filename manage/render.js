@@ -3,7 +3,6 @@
 /* global URLS debounce getOwnTab isEmptyObj sessionStore stringAsRegExp */// toolbox.js
 /* global filterAndAppend */// filters.js
 /* global installed newUI */// manage.js
-/* global prefs */
 /* global sorter */
 /* global t */// localization.js
 'use strict';
@@ -18,6 +17,7 @@ const AGES = [
   [Infinity, 'y', t('dateAbbrYear', '\x01')],
 ];
 const groupThousands = num => `${num}`.replace(/\d(?=(\d{3})+$)/g, '$&\xA0');
+const renderSize = size => groupThousands(Math.round(size / 1024)) + 'k';
 
 (() => {
   const proto = HTMLImageElement.prototype;
@@ -79,7 +79,7 @@ function calcObjSize(obj) {
         Object.entries(obj).reduce((sum, [k, v]) => sum + k.length + calcObjSize(v), 0);
 }
 
-function createStyleElement({styleMeta: style, styleNameLowerCase: nameLC, styleSize: size}) {
+function createStyleElement({styleMeta: style, styleNameLC: nameLC, styleSize: size}) {
   // query the sub-elements just once, then reuse the references
   if ((elementParts || {}).newUI !== newUI.enabled) {
     const entry = t.template[newUI.enabled ? 'styleNewUI' : 'style'].cloneNode(true);
@@ -105,7 +105,6 @@ function createStyleElement({styleMeta: style, styleNameLowerCase: nameLC, style
       },
       oldConfigure: !newUI.enabled && $('.configure-usercss', entry),
       oldCheckUpdate: !newUI.enabled && $('.check-update', entry),
-      oldUpdate: !newUI.enabled && $('.update', entry),
     };
   }
   const parts = elementParts;
@@ -126,12 +125,11 @@ function createStyleElement({styleMeta: style, styleNameLowerCase: nameLC, style
   }
   createAgeText(parts.infoAge, style);
   parts.infoSize.dataset.value = Math.log10(size || 1) >> 0; // for CSS to target big/small styles
-  parts.infoSize.textContent = groupThousands(Math.round(size / 1024)) + 'k';
+  parts.infoSize.textContent = renderSize(size);
   parts.infoSize.title = `${t('genericSize')}: ${groupThousands(size)} B`;
   if (!newUI.enabled) {
     parts.oldConfigure.classList.toggle('hidden', !configurable);
     parts.oldCheckUpdate.classList.toggle('hidden', !style.updateUrl);
-    parts.oldUpdate.classList.toggle('hidden', !style.updateUrl);
   }
 
   // clear the code to free up some memory
@@ -142,7 +140,7 @@ function createStyleElement({styleMeta: style, styleNameLowerCase: nameLC, style
   const entry = parts.entry.cloneNode(true);
   entry.id = ENTRY_ID_PREFIX_RAW + style.id;
   entry.styleId = style.id;
-  entry.styleNameLowerCase = nameLC;
+  entry.styleNameLC = nameLC;
   entry.styleMeta = style;
   entry.styleSize = size;
   entry.className = parts.entryClassBase + ' ' +
@@ -166,6 +164,12 @@ function createStyleElement({styleMeta: style, styleNameLowerCase: nameLC, style
 }
 
 function createTargetsElement({entry, expanded, style = entry.styleMeta}) {
+  const maxTargets = expanded ? 1000 : newUI.enabled ? newUI.targets : 10;
+  if (!maxTargets) {
+    entry._numTargets = 0;
+    return;
+  }
+  const displayed = new Set();
   const entryTargets = $('.targets', entry);
   const expanderCls = $('.applies-to', entry).classList;
   const targets = elementParts.targets.cloneNode(true);
@@ -173,8 +177,6 @@ function createTargetsElement({entry, expanded, style = entry.styleMeta}) {
   let el = entryTargets.firstElementChild;
   let numTargets = 0;
   let allTargetsRendered = true;
-  const maxTargets = expanded ? 1000 : newUI.enabled ? newUI.targets : 10;
-  const displayed = new Set();
   for (const type of TARGET_TYPES) {
     for (const section of style.sections) {
       for (const targetValue of section[type] || []) {
@@ -352,26 +354,43 @@ function padLeft(val, width) {
   return ' '.repeat(Math.max(0, width - val.length)) + val;
 }
 
+function fitNameColumn(styles) {
+  const align = 1e9; // required by sort()
+  const lengths = styles.map(s => align +
+    (s = s.displayName || s.name || '').length +
+    s.replace(/[^\u3000-\uFE00]+/g, '').length).sort(); // CJK glyphs are twice as wide
+  const len = styles.length;
+  const fringe = len * 5 / 100 | 0; // ignoring 5% of outliers at each end
+  let avgName = 0;
+  for (let i = fringe; i < len - fringe; i++) {
+    avgName = Math.max(avgName, lengths[i] - align);
+  }
+  $.root.style.setProperty('--name-width', avgName + 'ch');
+}
+
+function fitSizeColumn(entries) {
+  const max = entries.reduce((res, e) => Math.max(res, e.styleSize), 0);
+  $.root.style.setProperty('--size-width', renderSize(max).length + 'ch');
+}
+
 function showStyles(styles = [], matchUrlIds) {
-  const sorted = sorter.sort(styles.map(styleToDummyEntry));
+  const dummies = styles.map(styleToDummyEntry);
+  const sorted = sorter.sort(dummies);
   let index = 0;
   let firstRun = true;
   installed.dataset.total = styles.length;
   const scrollY = (history.state || {}).scrollY;
   const shouldRenderAll = scrollY > window.innerHeight || sessionStore.justEditedStyleId;
   const renderBin = document.createDocumentFragment();
-  if (scrollY) {
-    renderStyles();
-  } else {
-    requestAnimationFrame(renderStyles);
-  }
+  fitNameColumn(styles);
+  fitSizeColumn(dummies);
+  renderStyles();
 
   function renderStyles() {
     const t0 = performance.now();
-    while (index < sorted.length && (shouldRenderAll || performance.now() - t0 < 20)) {
-      const info = sorted[index++];
-      const entry = createStyleElement(info);
-      if (matchUrlIds && !matchUrlIds.includes(info.style.id)) {
+    while (index < sorted.length && (shouldRenderAll || performance.now() - t0 < 50)) {
+      const entry = createStyleElement(sorted[index++]);
+      if (matchUrlIds && !matchUrlIds.includes(entry.styleMeta.id)) {
         entry.classList.add('not-matching');
       }
       renderBin.appendChild(entry);
@@ -398,7 +417,7 @@ function styleToDummyEntry(style) {
     styleMeta: style,
     styleSize: calcObjSize(style),
     // sort case-insensitively the whole list then sort dupes like `Foo` and `foo` case-sensitively
-    styleNameLowerCase: name.toLocaleLowerCase() + '\n' + name,
+    styleNameLC: name.toLocaleLowerCase() + '\n' + name,
   };
 }
 
@@ -407,13 +426,11 @@ function switchUI({styleOnly} = {}) {
   const current = {};
   const changed = {};
   let someChanged = false;
-  for (const id of newUI.ids) {
-    const value = prefs.get(newUI.prefKeyForId(id));
+  newUI.readPrefs(current, (id, value) => {
     const valueChanged = value !== newUI[id] && (id === 'enabled' || current.enabled);
-    current[id] = value;
     changed[id] = valueChanged;
     someChanged |= valueChanged;
-  }
+  });
 
   if (!styleOnly && !someChanged) {
     return;

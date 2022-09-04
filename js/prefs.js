@@ -55,6 +55,7 @@
     'manage.actions.expanded': true,
     'manage.backup.expanded': true,
     'manage.filters.expanded': true,
+    'manage.minColumnWidth': 750,
     // the new compact layout doesn't look good on Android yet
     'manage.newUI': true,
     'manage.newUI.favicons': false, // show favicons for the sites in applies-to

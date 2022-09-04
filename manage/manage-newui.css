@@ -1,0 +1,278 @@
+.disabled.entry .svg-icon {
+  color: var(--c50);
+  fill: var(--c80);
+  font-weight: normal;
+  transition: color .5s .1s, fill .5s .1s;
+}
+#installed {
+  margin-top: .75rem;
+  margin-bottom: .75rem;
+}
+.entry {
+  padding: 0 .5em;
+  display: flex;
+  border: none;
+}
+.entry.odd {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+.entry > * {
+  padding: .5rem 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+.entry .actions {
+  position: relative;
+}
+.style-info[data-type=size],
+.style-info[data-type=age] {
+  color: var(--c50);
+  justify-content: end;
+}
+.style-info[data-type=age] {
+  flex: 0 0 4ch;
+}
+.style-info[data-type=size] {
+  flex: 0 0 var(--size-width);
+}
+.style-info[data-type=version] {
+  color: var(--c40);
+  padding-left: .5em;
+  font-weight: normal;
+}
+.style-info[data-type=version][data-is-date],
+.style-info[data-type=version][data-value=""],
+.style-info[data-type=version][data-value="1.0.0"] {
+  display: none;
+}
+.entry input[type="checkbox"]:not(.slider) {
+  pointer-events: all;
+}
+.style-name {
+  font-size: 14px;
+  padding-left: var(--name-padding-left);
+  position: relative;
+  cursor: pointer;
+  justify-content: space-between;
+  flex: 0 0 var(--name-width);
+  min-width: 25%;
+  max-width: 50%;
+}
+#installed[style*="--num-targets:0"] .style-name {
+  max-width: none;
+  flex-grow: 1;
+}
+.checkmate {
+  flex-shrink: 0;
+}
+.style-name-link {
+  width: 100%;
+}
+.entry .style-name:hover::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to right, hsla(180, 50%, 30%, 0.2), hsla(180, 20%, 10%, 0.05) 50%, transparent);
+  pointer-events: none;
+}
+.entry.enabled .style-name:hover .style-name-link {
+  color: var(--accent-1);
+}
+.homepage {
+  margin-top: -3px;
+}
+.actions {
+  flex: 0 0 calc(3 * (var(--action-size) + var(--action-margin)));
+  flex-wrap: nowrap;
+  z-index: 100;
+}
+.actions > * {
+  width: var(--action-size);
+  height: var(--action-size);
+  display: flex;
+  align-items: center;
+}
+.updater-icons > * {
+  transition: opacity 1s;
+  display: none;
+}
+.entry .svg-icon {
+  fill: var(--c60);
+}
+.entry:hover .svg-icon {
+  fill: var(--c40);
+}
+.entry .svg-icon.checked,
+.entry:hover .svg-icon.checked,
+.entry:hover .svg-icon:hover {
+  fill: var(--fg);
+}
+.checking-update .check-update {
+  opacity: 0;
+  display: inline-block;
+  pointer-events: none;
+}
+.can-update .update,
+.no-update:not(.update-problem):not(.update-done) .up-to-date,
+.no-update.update-problem .check-update,
+.update-done .updated {
+  display: inline-block;
+}
+.up-to-date svg,
+.updated svg {
+  cursor: auto;
+}
+.update-done .updated svg {
+  top: -4px;
+  position: relative;
+  filter: drop-shadow(0 5px 0 currentColor);
+}
+.can-update .update,
+.no-update.update-problem .check-update {
+  cursor: pointer;
+}
+.can-update[data-details$="locally edited"] .update svg,
+.update-problem .check-update svg {
+  fill: #ef6969;
+}
+.can-update[data-details$="locally edited"]:hover .update svg,
+.entry.update-problem:hover .check-update svg {
+  fill: #fd4040;
+}
+.can-update[data-details$="locally edited"]:hover .update svg:hover,
+.entry.update-problem:hover .check-update svg:hover {
+  fill: red;
+}
+.updater-icons > :not(.check-update):after {
+  content: attr(title);
+  position: absolute;
+  display: block;
+  width: max-content;
+  max-width: 25vw;
+  padding: 1ex 1.5ex;
+  border: 1px solid #ded597;
+  background-color: #fffbd6;
+  border-radius: 4px;
+  box-shadow: 2px 3px 10px rgba(0,0,0,.25);
+  font-size: 90%;
+  animation: fadeout 10s;
+  animation-fill-mode: both;
+}
+.update-problem .check-update:after {
+  background-color: red;
+  border: 1px solid #d40000;
+  color: white;
+  animation: none;
+}
+.can-update .update:after {
+  animation: none;
+}
+.can-update:not([data-details$="locally edited"]) .update:after {
+  background-color: #c0fff0;
+  border: 1px solid #89cac9;
+}
+.applies-to {
+  padding: .25em 0 .25em 1em;
+  flex-grow: 999;
+}
+#installed[style*="--num-targets:0"] .applies-to {
+  display: none;
+}
+.targets {
+  overflow: hidden;
+  max-height: calc(var(--num-targets) * 18px);
+  width: 100%;
+}
+.applies-to.expanded .targets {
+  max-height: none;
+}
+.target {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 1em;
+  line-height: 18px;
+  width: 0;
+  min-width: 100%;
+  box-sizing: border-box;
+}
+.applies-to:not(.has-more) .expander {
+  display: none;
+}
+.target:hover {
+  background-color: inherit;
+}
+.target img {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  margin: -1px 4px 0 -20px;
+  transition: opacity .5s, filter .5s;
+  /* workaround for the buggy CSS filter: images in the hidden overflow are shown on Mac */
+  backface-visibility: hidden;
+  visibility: hidden;
+}
+.favicons-grayed .target img {
+  filter: grayscale(1);
+  opacity: .25;
+}
+.has-favicons .target {
+  padding-left: 20px;
+}
+.has-favicons .target img[src] {
+  visibility: visible;
+}
+.entry:hover .target img {
+  opacity: 1;
+  filter: none;
+}
+.target b::after {
+  content: '?';
+  margin: -2px 4px 0 -20px;
+  display: inline-block;
+  vertical-align: baseline;
+  background: var(--c85);
+  width: 16px;
+  line-height: 16px;
+  text-align: center;
+  border-radius: 50%;
+  color: var(--bg);
+}
+@media (max-width: 850px) {
+  .entry {
+    padding: 0;
+  }
+  .entry .checkmate {
+    position: absolute;
+    left: 14px;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+  }
+  .entry .style-name {
+    text-indent: unset;
+  }
+  .entry .actions {
+    width: 104px;
+    padding: .5rem 0 .5rem 6px;
+  }
+  .entry .applies-to {
+    padding: .25rem .5rem .25rem 0;
+  }
+  .entry .target {
+    max-width: 100%;
+    padding-right: 0;
+  }
+  .style-name-link::after {
+    text-indent: 0;
+    display: inline-block;
+  }
+  .entry > .style-info {
+    display: none;
+  }
+}

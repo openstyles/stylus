@@ -241,6 +241,10 @@
         <h1 i18n="openManage"></h1>
         <div class="items">
           <label>
+            <span i18n="manageMinColumnWidth"></span>
+            <input id="manage.minColumnWidth" type="number" min="300" max="9999">
+          </label>
+          <label>
             <span i18n="manageNewUI"></span>
             <span class="onoffswitch">
               <input type="checkbox" id="manage.newUI" class="slider">
@@ -268,7 +272,7 @@
           </label>
           <label>
             <span i18n="manageMaxTargets"></span>
-            <input id="manage.newUI.targets" type="number" min="1" max="99">
+            <input id="manage.newUI.targets" type="number" min="0" max="99">
           </label>
         </div>
       </div>

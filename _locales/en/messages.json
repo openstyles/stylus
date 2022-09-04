@@ -762,6 +762,9 @@
     "message": "Number of applies-to items",
     "description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
   },
+  "manageMinColumnWidth": {
+    "message": "Minimum column width (in pixels; 9999 disables multi-column mode)"
+  },
   "manageNewStyleAsUsercss": {
     "message": "as Usercss",
     "description": "VERY SHORT label for the checkbox next to the 'Write new style' button in the style manager"

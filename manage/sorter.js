@@ -1,10 +1,14 @@
-/* global $ $create messageBoxProxy */// dom.js
+/* global $ $create dom messageBoxProxy */// dom.js
 /* global installed */// manage.js
 /* global prefs */
 /* global t */// localization.js
 'use strict';
 
 const sorter = (() => {
+
+  const COL_MIN = 300; // same as options.html
+  const COL_MAX = 9999; // same as options.html
+  const COL_PROP = '--columns';
 
   const sorterType = {
     alpha: (a, b) => a < b ? -1 : a === b ? 0 : 1,
@@ -14,7 +18,7 @@ const sorter = (() => {
   const tagData = {
     title: {
       text: t('genericTitle'),
-      parse: v => v.styleNameLowerCase,
+      parse: v => v.styleNameLC,
       sorter: sorterType.alpha,
     },
     usercss: {
@@ -71,12 +75,13 @@ const sorter = (() => {
   const getPref = () => prefs.get(ID) || prefs.defaults[ID];
 
   let columns = 1;
+  let minWidth;
 
   function init() {
     prefs.subscribe(ID, sorter.update);
     $('#sorter-help').onclick = showHelp;
     addOptions();
-    updateColumnCount();
+    prefs.subscribe('manage.minColumnWidth', updateColumnWidth, {runNow: true});
   }
 
   function addOptions() {
@@ -172,19 +177,38 @@ const sorter = (() => {
   };
 
   function updateColumnCount() {
-    let newValue = 1;
-    for (let el = $.root.lastElementChild;
-         el.localName === 'style';
-         el = el.previousElementSibling) {
-      if (el.textContent.includes('--columns:')) {
-        newValue = Math.max(1, getComputedStyle($.root).getPropertyValue('--columns') | 0);
-        break;
-      }
-    }
-    if (columns !== newValue) {
-      columns = newValue;
+    const useStyle = [].some.call($.root.children,
+      el => el.tagName === 'STYLE' && el.textContent.includes(COL_PROP + ':'));
+    const v = useStyle ? Math.max(1, getComputedStyle($.root).getPropertyValue(COL_PROP) >> 0)
+      : minWidth ? onResize()
+        : columns;
+    if (columns !== v) {
+      columns = v;
       return true;
     }
+  }
+
+  function updateColumnWidth(_, val) {
+    minWidth = Math.max(val, COL_MIN);
+    if (val < COL_MAX) {
+      window.on('resize', onResize);
+    } else {
+      window.off('resize', onResize);
+      $.root.style.removeProperty(COL_PROP);
+    }
+    sorter.updateStripes({onlyWhenColumnsChanged: true});
+  }
+
+  function onResize(evt) {
+    const c = Math.max(1, (window.innerWidth - dom.HWval) / minWidth >> 0);
+    if (columns !== c) {
+      $.root.style.setProperty(COL_PROP, c);
+      if (evt) {
+        columns = c;
+        sorter.updateStripes();
+      }
+    }
+    return c;
   }
 
   async function showHelp(event) {

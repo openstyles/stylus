@@ -57,7 +57,7 @@
     let found;
     for (const entry of rotated || entries) {
       if (entry.classList.contains('hidden')) continue;
-      const name = entry.styleNameLowerCase;
+      const name = entry.styleNameLC;
       const pos = name.indexOf(text);
       if (pos === 0) {
         found = entry;
@@ -73,7 +73,7 @@
     if (found && found !== focusedEntry) {
       focusedEntry = found;
       focusedLink = $('a', found);
-      focusedName = found.styleNameLowerCase;
+      focusedName = found.styleNameLC;
       scrollElementIntoView(found, {invalidMarginRatio: .25});
       animateElement(found, 'highlight-quick');
       replaceInlineStyle({

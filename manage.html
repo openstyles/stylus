@@ -18,6 +18,8 @@
         <a target="_blank" class="homepage"></a>
       </h2>
       <p class="applies-to">
+        <span class="style-info" data-type="age"></span>.
+        <label i18n="genericSize">:</label><span class="style-info" data-type="size"></span>.
         <label i18n="appliesDisplay"></label>
         <span class="targets"></span>
       </p>
@@ -29,10 +31,8 @@
         <button class="disable" i18n="disableStyleLabel"></button>
         <button class="delete" i18n="deleteStyleLabel"></button>
         <button class="check-update" i18n="checkForUpdate"></button>
-        <button class="update" i18n="installUpdate"></button>
+        <button class="update" i18n="installUpdate" hidden></button>
         <button class="configure-usercss" i18n="configureStyle"></button>
-        <span class="style-info" data-type="size"></span>
-        <span class="style-info" data-type="age"></span>
         <span class="update-note"></span>
       </p>
     </div>
@@ -49,9 +49,9 @@
           &nbsp;
           <span class="style-info" data-type="version"></span>
         </a>
+        <a target="_blank" class="homepage" tabindex="0"></a>
       </h2>
       <p class="actions">
-        <a target="_blank" class="homepage" tabindex="0"></a>
         <a class="delete" i18n="title:deleteStyleLabel" tabindex="0">
           <svg class="svg-icon" viewBox="0 0 20 20">
             <polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5
@@ -391,6 +391,7 @@
 </template>
 
 <link rel="stylesheet" href="manage/manage.css">
+<link rel="stylesheet" href="manage/manage-newui.css" id="newUI">
 <script src="js/dark-themer.js"></script> <!-- must be last in HEAD to avoid FOUC -->
 </head>
 

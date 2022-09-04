@@ -1,7 +1,9 @@
 :root {
   --name-padding-left: 20px;
-  --name-padding-right: 40px;
-  --actions-width: 75px;
+  --name-width: 30ch;
+  --size-width: 4ch;
+  --action-size: 20px;
+  --action-margin: 6px;
 }
 body {
   /* Fill the entire viewport to enable json import via drag'n'drop */
@@ -124,17 +126,21 @@ a:hover {
 }
 
 #installed {
-  position: relative;
   padding-left: var(--header-width);
   box-sizing: border-box;
   width: 100%;
   align-self: start;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .entry {
   margin: 0;
   padding: 1.25em 2em;
   border-top: 1px solid var(--c85);
+  box-sizing: border-box;
+  position: relative;
+  width: calc(100% / var(--columns, 1));
 }
 
 .entry:first-child {
@@ -158,15 +164,13 @@ a:hover {
   margin-top: .25em;
   overflow-wrap: break-word;
 }
-
 .style-name a, .style-edit-link {
   text-decoration: none;
 }
-
+.style-name span,
 .applies-to {
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
 }
-
 .applies-to,
 .actions {
   padding-left: 15px;
@@ -181,11 +185,10 @@ a:hover {
 
 .actions > * {
   margin-bottom: .25rem;
-  display: inline-block;
 }
 
 .actions > *:not(:last-child) {
-  margin-right: .25rem;
+  margin-right: var(--action-margin);
 }
 
 .applies-to label {
@@ -240,8 +243,7 @@ a:hover {
 }
 
 .disabled h2 .style-name-link,
-.disabled .applies-to,
-.newUI .disabled.entry .svg-icon {
+.disabled .applies-to {
   color: var(--c50);
   fill: var(--c80);
   font-weight: normal;
@@ -319,55 +321,7 @@ a:hover {
 
 /* compact layout */
 
-.newUI #installed {
-  display: table;
-  margin-top: .75rem;
-  margin-bottom: .75rem;
-}
-
-.newUI .entry {
-  display: table-row;
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
-.newUI .entry.odd {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-
-.newUI .entry > * {
-  padding: .5rem 0;
-  margin: 0;
-  display: table-cell;
-  vertical-align: middle;
-}
-
-.newUI .entry .actions {
-  position: relative;
-}
-
-.style-info[data-type=version] {
-  color: var(--c40);
-  padding-left: .5em;
-  font-weight: normal;
-}
-.newUI .style-info[data-type=version][data-is-date],
-.newUI .style-info[data-type=version][data-value=""],
-.newUI .style-info[data-type=version][data-value="1.0.0"] {
-  display: none;
-}
-.newUI .entry .style-info[data-type=size],
-.newUI .entry .style-info[data-type=age] {
-  color: var(--c50);
-  text-align: right;
-  padding-right: 1em;
-}
-
 /************ checkbox & select************/
-
-#newUIoptions > div, #newUIoptions > label {
-  margin: 4px 0;
-}
 
 .filter-selection {
   position: relative;
@@ -391,10 +345,6 @@ a:hover {
 #header .filter-selection label .checkmate {
   vertical-align: middle;
   margin-top: -2px;
-}
-
-.newUI #newUIoptions > label {
-  padding-left: 0;
 }
 
 .filter-selection select {
@@ -439,7 +389,7 @@ a:hover {
 
 .entry .checkmate {
   vertical-align: middle;
-  margin: -2px 1ex 0 0;
+  margin-right: 1ch;
 }
 
 #manage-text {
@@ -456,179 +406,10 @@ a:hover {
   margin: 0 .5em;
 }
 
-.newUI .entry input[type="checkbox"]:not(.slider) {
-  pointer-events: all;
-}
-
-.newUI .style-name {
-  font-size: 14px;
-  padding-left: var(--name-padding-left);
-  padding-right: var(--name-padding-right);
-  position: relative;
-  cursor: pointer;
-}
-
-.newUI .entry .style-name:hover::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(to right, hsla(180, 50%, 30%, 0.2), hsla(180, 20%, 10%, 0.05) 50%, transparent);
-  pointer-events: none;
-}
-
-.newUI .entry.enabled .style-name:hover .style-name-link {
-  color: var(--accent-1);
-}
-
-.newUI .style-name:after {
-  text-indent: 1.2rem;
-}
-
-.newUI .actions:after {
-  text-indent: -25px;
-}
-
-.newUI .actions .homepage[href=""] {
-  display: inline-block;
-  visibility: hidden;
-  height: 0;
-}
-
-.newUI .actions {
-  width: var(--actions-width);
-  height: 20px;
-  white-space: nowrap;
-}
-
-.newUI .actions > * {
-  margin: 0 6px 0 0;
-  width: 20px;
-  height: 20px;
-}
-
-.newUI .updater-icons > * {
-  transition: opacity 1s;
-  display: none;
-}
-
-.newUI .entry .svg-icon {
-  fill: var(--c60);
-}
-
-.newUI .entry:hover .svg-icon {
-  fill: var(--c40);
-}
-
-button .svg-icon,
-.newUI .entry .svg-icon.checked,
-.newUI .entry:hover .svg-icon.checked,
-.newUI .entry:hover .svg-icon:hover {
+button .svg-icon {
   fill: var(--fg);
 }
 
-.newUI .checking-update .check-update {
-  opacity: 0;
-  display: inline-block;
-  pointer-events: none;
-}
-
-.newUI .can-update .update,
-.newUI .no-update:not(.update-problem):not(.update-done) .up-to-date,
-.newUI .no-update.update-problem .check-update,
-.newUI .update-done .updated {
-  display: inline-block;
-}
-
-.newUI .up-to-date svg,
-.newUI .updated svg {
-  cursor: auto;
-}
-
-.newUI .update-done .updated svg {
-  top: -4px;
-  position: relative;
-  filter: drop-shadow(0 5px 0 currentColor);
-}
-
-.newUI .can-update .update,
-.newUI .no-update.update-problem .check-update {
-  cursor: pointer;
-}
-
-.newUI .can-update[data-details$="locally edited"] .update svg,
-.newUI .update-problem .check-update svg {
-  fill: #ef6969;
-}
-
-.newUI .can-update[data-details$="locally edited"]:hover .update svg,
-.newUI .entry.update-problem:hover .check-update svg {
-  fill: #fd4040;
-}
-
-.newUI .can-update[data-details$="locally edited"]:hover .update svg:hover,
-.newUI .entry.update-problem:hover .check-update svg:hover {
-  fill: red;
-}
-
-.newUI .actions {
-  z-index: 100;
-}
-
-.newUI .updater-icons > :not(.check-update):after {
-  content: attr(title);
-  position: absolute;
-  margin-top: 18px;
-  margin-left: -36px;
-  padding: 1ex 1.5ex;
-  border: 1px solid #ded597;
-  background-color: #fffbd6;
-  border-radius: 4px;
-  box-shadow: 2px 3px 10px rgba(0,0,0,.25);
-  font-size: 90%;
-  animation: fadeout 10s;
-  animation-fill-mode: both;
-}
-
-.newUI .update-problem .check-update:after {
-  background-color: red;
-  border: 1px solid #d40000;
-  color: white;
-  animation: none;
-}
-
-.newUI .can-update .update:after {
-  animation: none;
-}
-
-.newUI .can-update:not([data-details$="locally edited"]) .update:after {
-  background-color: #c0fff0;
-  border: 1px solid #89cac9;
-}
-
-.newUI .applies-to {
-  padding-top: .25rem;
-  padding-bottom: .25rem;
-}
-.newUI .targets {
-  overflow: hidden;
-  max-height: calc(var(--num-targets) * 18px);
-}
-.newUI .applies-to.expanded .targets {
-  max-height: none;
-}
-.newUI .target {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: calc(75vw - var(--header-width) - var(--actions-width) - var(--name-padding-left) - var(--name-padding-right) - 6rem);
-  box-sizing: border-box;
-  padding-right: 1rem;
-  line-height: 18px;
-}
 .expander {
   cursor: pointer;
   position: absolute;
@@ -642,54 +423,6 @@ button .svg-icon,
 .expanded .expander {
   transform: rotate(180deg);
   transform-origin: 8px 8px;
-}
-.newUI .applies-to:not(.has-more) .expander {
-  display: none;
-}
-.newUI .target:hover {
-  background-color: inherit;
-}
-
-.newUI .target img {
-  width: 16px;
-  height: 16px;
-  vertical-align: middle;
-  margin: -1px 4px 0 -20px;
-  transition: opacity .5s, filter .5s;
-  /* workaround for the buggy CSS filter: images in the hidden overflow are shown on Mac */
-  backface-visibility: hidden;
-  visibility: hidden;
-}
-
-.newUI .favicons-grayed .target img {
-  filter: grayscale(1);
-  opacity: .25;
-}
-
-.newUI .has-favicons .target {
-  padding-left: 20px;
-}
-
-.newUI .has-favicons .target img[src] {
-  visibility: visible;
-}
-
-.newUI .entry:hover .target img {
-  opacity: 1;
-  filter: none;
-}
-
-.newUI .target b::after {
-  content: '?';
-  margin: -2px 4px 0 -20px;
-  display: inline-block;
-  vertical-align: baseline;
-  background: var(--c85);
-  width: 16px;
-  line-height: 16px;
-  text-align: center;
-  border-radius: 50%;
-  color: var(--bg);
 }
 
 /* Default, no update buttons */
@@ -1032,12 +765,6 @@ button .svg-icon,
   }
 }
 
-@media (max-width: 1000px) {
-  .newUI .entry > .style-info {
-    display: none;
-  }
-}
-
 @media (max-width: 850px) {
   :root {
     --name-padding-left: 34px;
@@ -1058,16 +785,12 @@ button .svg-icon,
     left: 3.75rem;
   }
 
-  html:not(.newUI) .applies-to {
+  .oldUI .applies-to {
     word-break: break-all;
   }
 
   #installed {
     table-layout: fixed;
-  }
-
-  .newUI .entry .actions {
-    padding-right: 30px
   }
 
   #search-wrapper,
@@ -1126,41 +849,6 @@ button .svg-icon,
   #header summary {
     margin-top: 0;
     padding-bottom: .25rem;
-  }
-
-  .newUI .entry {
-    padding: 0;
-  }
-
-  .newUI .entry .checkmate {
-    position: absolute;
-    left: 14px;
-    top: 0;
-    bottom: 0;
-    margin: auto;
-  }
-
-  .newUI .entry .style-name {
-    text-indent: unset;
-  }
-
-  .newUI .entry .actions {
-    width: 104px;
-    padding: .5rem 0 .5rem 6px;
-  }
-
-  .newUI .entry .applies-to {
-    padding: .25rem .5rem .25rem 0;
-  }
-
-  .newUI .entry .target {
-    max-width: 100%;
-    padding-right: 0;
-  }
-
-  .newUI .style-name-link::after {
-    text-indent: 0;
-    display: inline-block;
   }
 }
 

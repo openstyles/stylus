@@ -314,9 +314,7 @@ function setupLivePrefs(ids) {
   function getValue(el) {
     const type = el.dataset.valueType || el.type;
     return type === 'checkbox' ? el.checked :
-      // https://stackoverflow.com/questions/18062069/why-does-valueasnumber-return-nan-as-a-value
-      // valueAsNumber is not applicable for input[text/radio] or select
-      type === 'number' ? Number(el.value) :
+      type === 'number' ? parseFloat(el.value) :
       el.value;
   }
   function isSame(el, oldValue, value) {
@@ -465,6 +463,7 @@ prefs.ready.then(() => {
         const max = (innerWidth < 850 ? screen.availWidth : innerWidth) / 3;
         width = Math.round(Math.max(200, Math.min(max, Number(width) || 0)));
         $.root.style.setProperty('--header-width', width + 'px');
+        dom.HWval = width;
         return width;
       },
     });
