@@ -47,6 +47,11 @@ a:hover .svg-icon,
   fill: var(--fg);
 }
 
+.clickable {
+  text-decoration: underline dotted;
+  cursor: pointer;
+}
+
 .svg-inline-wrapper .svg-icon {
   pointer-events: none;
 }

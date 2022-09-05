@@ -1,7 +1,7 @@
 /* global API */// msg.js
 /* global prefs */
 /* global t */// localization.js
-/* global $ $$ getEventKeyName messageBoxProxy setupLivePrefs */// dom.js
+/* global $ $$ $create getEventKeyName messageBoxProxy setInputValue setupLivePrefs */// dom.js
 /* global
   CHROME_POPUP_BORDER_BUG
   FIREFOX
@@ -44,6 +44,14 @@ $('#reset').onclick = async () => {
     }
   }
 };
+$$('[data-clickable]').forEach(el => {
+  const input = $('input', el.closest('label'));
+  const value = el.dataset.clickable;
+  const rx = new RegExp(`\\b(${value})\\b`, 'g');
+  const onclick = () => setInputValue(input, value);
+  const parts = elementize(el.textContent, rx, s => $create('span.clickable', {onclick}, s));
+  el.firstChild.replaceWith(...parts);
+});
 
 function customizeHotkeys() {
   messageBoxProxy.show({
@@ -71,6 +79,10 @@ function customizeHotkeys() {
       el.setCustomValidity(err);
     }
   }
+}
+
+function elementize(str, rx, cb) {
+  return str.split(rx).map((s, i) => i % 2 ? cb(s) : s).filter(Boolean);
 }
 
 function enforceInputRange(element) {
