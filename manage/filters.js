@@ -114,7 +114,7 @@ function initFilters() {
       }
     }
     filterOnChange({forceRefilter: true});
-    router.updateSearch('search', '');
+    router.updateSearch({search: '', searchMode: ''});
   };
 
   filterOnChange({forceRefilter: true});

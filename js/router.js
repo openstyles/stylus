@@ -78,9 +78,16 @@ const router = {
     router.update();
   },
 
-  updateSearch(key, value) {
+  /**
+   * @param {Object|string} what - an object or a single key
+   * @param {string} [value] - for `key` mode
+   */
+  updateSearch(what, value) {
     const u = new URL(location);
-    u.searchParams[value ? 'set' : 'delete'](key, value);
+    const entries = typeof what === 'object' ? Object.entries(what) : [[what, value]];
+    for (const [key, val] of entries) {
+      u.searchParams[val ? 'set' : 'delete'](key, val);
+    }
     history.replaceState(history.state, null, `${u}`);
     router.update(true);
   },
