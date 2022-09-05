@@ -13,6 +13,7 @@
   messageBoxProxy
   moveFocus
   scrollElementIntoView
+  setInputValue
   setupLivePrefs
   showSpinner
   toggleDataset
@@ -293,6 +294,18 @@ function scrollElementIntoView(element, {invalidMarginRatio = 0} = {}) {
       top > Math.min(parentBottom, windowHeight) - height - windowHeight * invalidMarginRatio) {
     const scroller = element.closest('.scroller') || window;
     scroller.scrollBy(0, top - (scroller.clientHeight || windowHeight) / 2 + height);
+  }
+}
+
+function setInputValue(input, value) {
+  input.focus();
+  input.select();
+  // using execCommand to add to the input's undo history
+  document.execCommand(value ? 'insertText' : 'delete', false, value);
+  // some versions of Firefox ignore execCommand
+  if (input.value !== value) {
+    input.value = value;
+    input.dispatchEvent(new Event('input', {bubbles: true}));
   }
 }
 

@@ -1,4 +1,4 @@
-/* global $ $$ $create $remove focusAccessibility toggleDataset */// dom.js
+/* global $ $$ $create $remove focusAccessibility setInputValue toggleDataset */// dom.js
 /* global CodeMirror */
 /* global chromeLocal */// storage-util.js
 /* global colorMimicry */
@@ -928,19 +928,6 @@
         replace: state.replace,
         icase: state.icase,
       })));
-  }
-
-
-  function setInputValue(input, value) {
-    input.focus();
-    input.select();
-    // using execCommand to add to the input's undo history
-    document.execCommand(value ? 'insertText' : 'delete', false, value);
-    // some versions of Firefox ignore execCommand
-    if (input.value !== value) {
-      input.value = value;
-      input.dispatchEvent(new Event('input', {bubbles: true}));
-    }
   }
 
   //endregion

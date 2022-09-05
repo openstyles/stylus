@@ -1,4 +1,4 @@
-/* global $$ $ $create messageBoxProxy setupLivePrefs */// dom.js
+/* global $$ $ $create messageBoxProxy setInputValue setupLivePrefs */// dom.js
 /* global API */// msg.js
 /* global CODEMIRROR_THEMES */
 /* global CodeMirror */
@@ -136,15 +136,8 @@ function EditorHeader() {
     });
     resetEl.hidden = !editor.style.customName;
     resetEl.onclick = () => {
-      const {style} = editor;
-      nameEl.focus();
-      nameEl.select();
-      // trying to make it undoable via Ctrl-Z
-      if (!document.execCommand('insertText', false, style.name)) {
-        nameEl.value = style.name;
-        editor.updateName(true);
-      }
-      style.customName = null; // to delete it from db
+      editor.style.customName = null; // to delete it from db
+      setInputValue(nameEl, editor.style.name);
       resetEl.hidden = true;
     };
     const enabledEl = $('#enabled');
