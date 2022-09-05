@@ -160,40 +160,6 @@ async function getActiveTab() {
   return (await browser.tabs.query({currentWindow: true, active: true}))[0];
 }
 
-function urlToMatchPattern(url, ignoreSearch) {
-  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns
-  if (!/^(http|https|ws|wss|ftp|data|file)$/.test(url.protocol)) {
-    return undefined;
-  }
-  if (ignoreSearch) {
-    return [
-      `${url.protocol}//${url.hostname}/${url.pathname}`,
-      `${url.protocol}//${url.hostname}/${url.pathname}?*`,
-    ];
-  }
-  // FIXME: is %2f allowed in pathname and search?
-  return `${url.protocol}//${url.hostname}/${url.pathname}${url.search}`;
-}
-
-async function findExistingTab({url, currentWindow, ignoreHash = true, ignoreSearch = false}) {
-  url = tryURL(url);
-  const tabs = await browser.tabs.query({
-    url: urlToMatchPattern(url, ignoreSearch),
-    currentWindow,
-  });
-  return tabs.find(tab => {
-    const tabUrl = tryURL(tab.pendingUrl || tab.url);
-    return tabUrl.protocol === url.protocol &&
-      tabUrl.username === url.username &&
-      tabUrl.password === url.password &&
-      tabUrl.hostname === url.hostname &&
-      tabUrl.port === url.port &&
-      tabUrl.pathname === url.pathname &&
-      (ignoreSearch || tabUrl.search === url.search) &&
-      (ignoreHash || tabUrl.hash === url.hash);
-  });
-}
-
 /**
  * Opens a tab or activates an existing one,
  * reuses the New Tab page or about:blank if it's focused now
@@ -204,7 +170,7 @@ async function findExistingTab({url, currentWindow, ignoreHash = true, ignoreSea
  * @param {Boolean} [_.active=true] `true` to activate the tab
  * @param {Boolean|null} [_.currentWindow=true] `null` to check all windows
  * @param {chrome.windows.CreateData} [_.newWindow] creates a new window with these params if specified
- * @param {boolean} [_.ignoreExisting] specify to skip findExistingTab
+ * @param {boolean} [_.newTab] `true` to force a new tab instead of switching to an existing tab
  * @returns {Promise<chrome.tabs.Tab>} Promise -> opened/activated tab
  */
 async function openURL({
@@ -214,12 +180,12 @@ async function openURL({
   active = true,
   currentWindow = true,
   newWindow,
-  ignoreExisting,
+  newTab,
 }) {
   if (!url.includes('://')) {
     url = chrome.runtime.getURL(url);
   }
-  let tab = !ignoreExisting && await findExistingTab({url, currentWindow});
+  let tab = !newTab && (await browser.tabs.query({url: url.split('#')[0], currentWindow}))[0];
   if (tab) {
     return activateTab(tab, {
       index,

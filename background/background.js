@@ -8,7 +8,7 @@
 /* global usercssMan */
 /* global usoApi */
 /* global uswApi */
-/* global FIREFOX UA activateTab findExistingTab openURL */ // toolbox.js
+/* global FIREFOX UA activateTab openURL */ // toolbox.js
 /* global colorScheme */ // color-scheme.js
 'use strict';
 
@@ -87,28 +87,25 @@ addAPI(/** @namespace API */ {
 
   /** @returns {Promise<chrome.tabs.Tab>} */
   async openManage({options = false, search, searchMode} = {}) {
-    let url = chrome.runtime.getURL('manage.html');
-    if (search) {
-      url += `?search=${encodeURIComponent(search)}&searchMode=${searchMode}`;
+    const setUrlParams = url => {
+      const u = new URL(url);
+      if (search) u.searchParams.set('search', search);
+      if (searchMode) u.searchParams.set('searchMode', searchMode);
+      if (options) u.hash = '#stylus-options';
+      return u.href;
+    };
+    const base = chrome.runtime.getURL('manage.html');
+    const url = setUrlParams(base);
+    const tabs = await browser.tabs.query({url: base + '*'});
+    const same = tabs.find(t => t.url === url);
+    let tab = same || tabs[0];
+    if (!tab) {
+      API.prefsDb.get('badFavs'); // prime the cache to avoid flicker/delay when opening the page
+      tab = await openURL({url, newTab: true});
+    } else if (!same) {
+      msg.sendTab(tab.id, {method: 'pushState', url: setUrlParams(tab.url)});
     }
-    if (options) {
-      url += '#stylus-options';
-    }
-    const tab = await findExistingTab({
-      url,
-      currentWindow: null,
-      ignoreHash: true,
-      ignoreSearch: true,
-    });
-    if (tab) {
-      await activateTab(tab);
-      if (url !== (tab.pendingUrl || tab.url)) {
-        await msg.sendTab(tab.id, {method: 'pushState', url}).catch(console.error);
-      }
-      return tab;
-    }
-    API.prefsDb.get('badFavs'); // prime the cache to avoid flicker/delay when opening the page
-    return openURL({url, ignoreExisting: true}).then(activateTab); // activateTab unminimizes the window
+    return activateTab(tab); // activateTab unminimizes the window
   },
 
   /**
