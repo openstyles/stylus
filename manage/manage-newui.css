@@ -69,15 +69,8 @@
 .style-name-link {
   width: 100%;
 }
-.entry .style-name:hover::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+.entry .style-name:hover {
   background: linear-gradient(to right, hsla(180, 50%, 30%, 0.2), hsla(180, 20%, 10%, 0.05) 50%, transparent);
-  pointer-events: none;
 }
 .entry.enabled .style-name:hover .style-name-link {
   color: var(--accent-1);
