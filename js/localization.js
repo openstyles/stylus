@@ -19,7 +19,10 @@ function t(key, params, strict = true) {
 
 Object.assign(t, {
   cache: {},
-  template: {},
+  template: new Proxy({}, {
+    get: (obj, k, _) => obj[k] ||
+      (_ = $(`template[data-id="${k}"]`)) && (obj[k] = t.createTemplate(_)),
+  }),
   ALLOWED_TAGS: ['a', 'b', 'code', 'i', 'sub', 'sup', 'wbr'],
   RX_WORD_BREAK: new RegExp([
     '(',
@@ -31,7 +34,7 @@ Object.assign(t, {
     ')',
     /(?!\b|\s|$)/,
   ].map(rx => rx.source || rx).join(''), 'gu'),
-  SELECTOR: '[i18n], template',
+  SELECTOR: '[i18n]',
 
   HTML(html) {
     return typeof html !== 'string'
@@ -47,10 +50,6 @@ Object.assign(t, {
     }
     for (const node of nodes) {
       if (!node.localName) continue;
-      if (node.localName === 'template') {
-        t.createTemplate(node);
-        continue;
-      }
       const attr = node.getAttribute('i18n');
       if (!attr) continue;
       for (const part of attr.split(',')) {
