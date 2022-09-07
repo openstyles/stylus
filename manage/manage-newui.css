@@ -11,6 +11,7 @@
 .entry {
   padding: 0 .5em;
   display: flex;
+  flex-wrap: wrap;
   border: none;
 }
 .entry.odd {
@@ -180,8 +181,25 @@
   max-height: calc(var(--num-targets) * 18px);
   width: 100%;
 }
-.applies-to.expanded .targets {
-  max-height: none;
+.expander {
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  right: 4px;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+}
+.expander:hover {
+  background: hsla(0, 0%, 50%, .05);
+}
+.expander svg {
+  width: 16px;
+  height: 16px;
+  fill: var(--c50);
+}
+.applies-to:not(.has-more) .expander {
+  display: none;
 }
 .target {
   display: block;
@@ -194,12 +212,6 @@
   min-width: 100%;
   box-sizing: border-box;
 }
-.applies-to:not(.has-more) .expander {
-  display: none;
-}
-.target:hover {
-  background-color: inherit;
-}
 .target img {
   width: 16px;
   height: 16px;
@@ -209,6 +221,25 @@
   /* workaround for the buggy CSS filter: images in the hidden overflow are shown on Mac */
   backface-visibility: hidden;
   visibility: hidden;
+}
+.expanded svg {
+  transform: rotate(180deg);
+  transform-origin: 8px 8px;
+}
+.applies-to.expanded {
+  max-width: 100%;
+  align-items: flex-start;
+}
+.applies-to.expanded .targets {
+  max-height: none;
+  display: flex;
+  flex-wrap: wrap;
+}
+.applies-to.expanded .target {
+  width: auto;
+  min-width: 18em;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 .favicons-grayed .target img {
   filter: grayscale(1);
@@ -237,33 +268,11 @@
   color: var(--bg);
 }
 @media (max-width: 850px) {
+  :root {
+    --name-padding-left: 14px;
+  }
   .entry {
     padding: 0;
-  }
-  .entry .checkmate {
-    position: absolute;
-    left: 14px;
-    top: 0;
-    bottom: 0;
-    margin: auto;
-  }
-  .entry .style-name {
-    text-indent: unset;
-  }
-  .entry .actions {
-    width: 104px;
-    padding: .5rem 0 .5rem 6px;
-  }
-  .entry .applies-to {
-    padding: .25rem .5rem .25rem 0;
-  }
-  .entry .target {
-    max-width: 100%;
-    padding-right: 0;
-  }
-  .style-name-link::after {
-    text-indent: 0;
-    display: inline-block;
   }
   .entry > .style-info {
     display: none;
