@@ -195,7 +195,7 @@ a:hover {
   margin-right: .5ex;
 }
 
-.applies-to .target:hover {
+.oldUI .applies-to .target:hover {
   background-color: rgba(128, 128, 128, .15);
 }
 
@@ -408,21 +408,6 @@ a:hover {
 
 button .svg-icon {
   fill: var(--fg);
-}
-
-.expander {
-  cursor: pointer;
-  position: absolute;
-  right: 4px;
-}
-.expander svg {
-  width: 16px;
-  height: 16px;
-  fill: var(--c50);
-}
-.expanded .expander {
-  transform: rotate(180deg);
-  transform-origin: 8px 8px;
 }
 
 /* Default, no update buttons */
@@ -766,12 +751,9 @@ button .svg-icon {
 }
 
 @media (max-width: 850px) {
-  :root {
-    --name-padding-left: 34px;
-  }
-
   body {
-    display: table;
+    display: block;
+    height: auto;
   }
 
   body.all-styles-hidden-by-filters:before {
@@ -789,10 +771,6 @@ button .svg-icon {
     word-break: break-all;
   }
 
-  #installed {
-    table-layout: fixed;
-  }
-
   #search-wrapper,
   #sort-wrapper,
   #header summary {
@@ -808,11 +786,13 @@ button .svg-icon {
   }
 
   #header {
-    display: table-header-group;
     height: auto;
     padding: 0;
     width: 100%;
-    position: static;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: var(--bg);
     border-right: none;
     border-bottom: 1px dashed var(--c65);
   }
@@ -837,13 +817,8 @@ button .svg-icon {
     padding-left: 0;
   }
 
-  #header h1,
-  #backup-message {
+  #header h1 {
     display: none;
-  }
-
-  #backup-buttons {
-    margin-top: 0;
   }
 
   #header summary {
