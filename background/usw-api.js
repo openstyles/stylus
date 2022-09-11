@@ -35,7 +35,7 @@ const uswApi = (() => {
     const maxKeyLen = meta.reduce((res, [k]) => Math.max(res, k.length), 0);
     return [
       '/* ==UserStyle==',
-      ...meta.map(([k, v]) => `${k}${' '.repeat(maxKeyLen - k.length + 2)}${v || ''}`),
+      ...meta.map(([k, v]) => v && `${k}${' '.repeat(maxKeyLen - k.length + 2)}${v}`).filter(Boolean),
       '==/UserStyle== */',
     ].join('\n') + '\n\n';
   }
@@ -77,14 +77,15 @@ const uswApi = (() => {
      */
     async publish(id, sourceCode) {
       const style = await API.styles.get(id);
+      const code = style.usercssData ? sourceCode
+        : fakeUsercssHeader(style) + sourceCode;
       const data = (style._usw || {}).token
         ? style._usw
-        : await linkStyle(style, sourceCode);
-      const header = style.usercssData ? '' : fakeUsercssHeader(style);
+        : await linkStyle(style, code);
       return uswFetch(`style/${data.id}`, data.token, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({code: header + sourceCode}),
+        body: JSON.stringify({code}),
       });
     },
 
