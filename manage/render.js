@@ -359,13 +359,10 @@ function fitNameColumn(styles) {
   const lengths = styles.map(s => align +
     (s = s.displayName || s.name || '').length +
     s.replace(/[^\u3000-\uFE00]+/g, '').length).sort(); // CJK glyphs are twice as wide
-  const len = styles.length;
-  const fringe = len * 5 / 100 | 0; // ignoring 5% of outliers at each end
-  let avgName = 0;
-  for (let i = fringe; i < len - fringe; i++) {
-    avgName = Math.max(avgName, lengths[i] - align);
-  }
-  $.root.style.setProperty('--name-width', avgName + 'ch');
+  const pick = .8; // for example, .8 = 80% in single line, 20% multiline
+  const extras = 5; // an average for " UC ", "v1.0.0"
+  const res = lengths[styles.length * pick | 0] - align + extras;
+  $.root.style.setProperty('--name-width', res + 'ch');
 }
 
 function fitSizeColumn(entries) {
