@@ -64,14 +64,15 @@
   max-width: none;
   flex-grow: 1;
 }
-.checkmate {
+.entry .checkmate {
   flex-shrink: 0;
 }
 .style-name-link {
   width: 100%;
+  word-break: break-word;
 }
-.entry .style-name:hover {
-  background: linear-gradient(to right, hsla(180, 50%, 30%, 0.2), hsla(180, 20%, 10%, 0.05) 50%, transparent);
+.style-name:hover .style-name-link {
+  text-decoration: underline;
 }
 .entry.enabled .style-name:hover .style-name-link {
   color: var(--accent-1);

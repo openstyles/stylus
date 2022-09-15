@@ -164,7 +164,7 @@ a:hover {
   margin-top: .25em;
   overflow-wrap: break-word;
 }
-.style-name a, .style-edit-link {
+.entry a:not(:hover) {
   text-decoration: none;
 }
 .style-name span,
