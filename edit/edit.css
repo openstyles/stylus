@@ -39,7 +39,7 @@ html.is-new-style #publish,
 .hidden {
   display: none !important;
 }
-html.is-new-style #heading::after {
+html.is-new-style #heading::before {
   content: attr(data-add);
 }
 html:not(.is-new-style) #heading::before {

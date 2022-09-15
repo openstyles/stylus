@@ -78,9 +78,7 @@
   </template>
 
   <template data-id="homepageIconSmall">
-    <svg class="svg-icon" viewBox="0 0 20 20">
-      <path d="M4,4h5v2H6v8h8v-3h2v5H4V4z M11,3h6v6l-2-2l-4,4L9,9l4-4L11,3z"/>
-    </svg>
+    <svg class="svg-icon"><use xlink:href="#svg-icon-external"/></svg>
   </template>
 
   <template data-id="configureIcon">
@@ -92,12 +90,7 @@
   <template data-id="updaterIcons">
     <span class="updater-icons">
       <a class="check-update" i18n="title:checkForUpdate" tabindex="0">
-        <svg class="svg-icon" viewBox="0 0 20 20">
-          <path d="M18,16.6l-3.1-3.1c0.5-0.7,0.9-1.5,1-2.5h-2.1c-0.4,1.7-2,3-3.9,3c-0.8,0-1.6-0.3-2.3-0.7
-                   L10,11H6.1H4.1H4v6l2.3-2.3c1,0.8,2.3,1.3,3.7,1.3c1.3,0,2.5-0.4,3.5-1.1l3.1,3.1L18,16.6z"/>
-          <path d="M10,6c0.8,0,1.6,0.3,2.3,0.7L10,9h3.9h2.1H16V3l-2.3,2.3C12.7,4.5,11.4,4,10,4
-                   C7,4,4.6,6.2,4.1,9h2.1C6.6,7.3,8.1,6,10,6z"/>
-        </svg>
+        <svg class="svg-icon"><use xlink:href="#svg-icon-check-update"/></svg>
       </a>
       <a class="update" i18n="title:installUpdate" tabindex="0">
         <svg class="svg-icon" viewBox="0 0 20 20">
@@ -277,48 +270,39 @@
     </div>
 
     <div class="settings-column">
-      <details id="actions" data-pref="manage.actions.expanded">
+      <details id="actions-toggle" data-pref="manage.actions.expanded">
         <summary><h2 i18n="optionsActions"></h2></summary>
-        <div id="update-check">
-          <button id="check-all-updates" i18n="checkAllUpdates">
-            <span id="update-progress"></span>
-          </button>
-          <a id="update-history-button" i18n="title:genericHistoryLabel" tabindex="0">
-            <svg class="svg-icon" viewBox="0 0 20 20" i18n="alt:helpAlt">
-              <path d="M13,7H7V6h6Zm6,6.5A5.5,5.5,0,0,1,8.61,16H4V3H16V8.61A5.5,5.5,0,0,1,19,13.5ZM8,14c0-.16,0-.84,0-1H7V12H8.21a5.46,5.46,0,0,1,.39-1H7V10H9.26a5.55,5.55,0,0,1,1.09-1H7V8h7V5H6v9Zm10-.5A4.5,4.5,0,1,0,13.5,18,4.5,4.5,0,0,0,18,13.5ZM14,13V10H13v4h4V13Z"/>
-            </svg>
-          </a>
-        </div>
-
-        <div id="update-all">
-          <button id="apply-all-updates" class="hidden" i18n="applyAllUpdates"></button>
-          <span id="update-all-no-updates" class="hidden" i18n="updateAllCheckSucceededNoUpdate"></span>
-          <button id="check-all-updates-force" class="hidden" i18n="checkAllUpdatesForce"></button>
-        </div>
-
-        <div id="add-style-wrapper">
-          <a href="edit.html">
-            <button id="add-style-label" i18n="addStyleLabel" tabindex="-1"></button>
-          </a>
-          <label id="add-style-as-usercss-wrapper">
-            <input type="checkbox" id="newStyleAsUsercss">
-            <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-            <span i18n="manageNewStyleAsUsercss, title:optionsAdvancedNewStyleAsUsercss"></span>
-            <a id="usercss-wiki"
-               href="https://github.com/openstyles/stylus/wiki/Usercss"
-               i18n="title:externalUsercssDocument">
-              <svg class="svg-icon" viewBox="0 0 20 20">
-                <path d="M4,4h5v2H6v8h8v-3h2v5H4V4z M11,3h6v6l-2-2l-4,4L9,9l4-4L11,3z"/>
-              </svg>
-            </a>
-          </label>
-        </div>
-        <button id="manage-options-button" i18n="openOptions"></button>
-        <button id="injection-order-button" i18n="title:styleInjectionOrder">
-          <svg class="svg-icon"><use xlink:href="#svg-icon-reorder"/></svg>
-          &nbsp;
-        </button>
       </details>
+      <div id="actions">
+        <a id="check-all-updates" i18n="title:checkAllUpdates" tabindex="0">
+          <svg class="svg-icon"><use xlink:href="#svg-icon-check-update"/></svg>
+          <span id="update-progress"></span>
+        </a>
+        <a id="update-history-button" i18n="title:updateCheckHistory" tabindex="0">
+          <svg class="svg-icon" viewBox="0 0 20 20">
+            <path d="M13,7H7V6h6Zm6,6.5A5.5,5.5,0,0,1,8.61,16H4V3H16V8.61A5.5,5.5,0,0,1,19,13.5ZM8,14c0-.16,0-.84,0-1H7V12H8.21a5.46,5.46,0,0,1,.39-1H7V10H9.26a5.55,5.55,0,0,1,1.09-1H7V8h7V5H6v9Zm10-.5A4.5,4.5,0,1,0,13.5,18,4.5,4.5,0,0,0,18,13.5ZM14,13V10H13v4h4V13Z"/>
+          </svg>
+        </a>
+        <a id="manage-options-button" i18n="title:openOptions" tabindex="0">
+          <svg class="svg-icon"><use xlink:href="#svg-icon-config"/></svg>
+        </a>
+        <a id="injection-order-button" i18n="title:styleInjectionOrder" tabindex="0">
+          <svg class="svg-icon" viewBox="0 0 20 20">
+            <path d="M2,18h8v-6H2V18z M4,14h4v2H4V14z M2,7h8V1H2V7z M4,3h4v2H4V3z M15,13v3l-4-3.5L15,9v3h2V5h-6V4h7v9H15z M10,11H2v-1h8V11zM10,9H2V8h8V9z"/>
+          </svg>
+        </a>
+        <a href="edit.html?uc=0" i18n="title:addStyleLabel" tabindex="0">
+          <svg class="svg-icon"><use xlink:href="#svg-icon-add"/></svg>
+        </a>
+        <a href="edit.html?uc=1" id="write-usercss" i18n="title:optionsAdvancedNewStyleAsUsercss" tabindex="0">
+          <svg class="svg-icon"><use xlink:href="#svg-icon-add"/></svg>
+        </a>
+      </div>
+      <p id="update-all">
+        <button id="apply-all-updates" class="hidden" i18n="applyAllUpdates"></button>
+        <span id="update-all-no-updates" class="hidden" i18n="updateAllCheckSucceededNoUpdate"></span>
+        <button id="check-all-updates-force" class="hidden" i18n="checkAllUpdatesForce"></button>
+      </p>
     </div>
 
     <div class="settings-column">
@@ -384,8 +368,20 @@
     <path d="M13.3,12.8l1.5-2.6l-2.2-1.5c0-0.2,0.1-0.5,0.1-0.7c0-0.2,0-0.5-0.1-0.7l2.2-1.5l-1.5-2.6l-2.4,1.2 c-0.4-0.3-0.8-0.5-1.2-0.7L9.5,1h-3L6.3,3.7C5.9,3.8,5.5,4.1,5.1,4.4L2.7,3.2L1.2,5.8l2.2,1.5c0,0.2-0.1,0.5-0.1,0.7 c0,0.2,0,0.5,0.1,0.7l-2.2,1.5l1.5,2.6l2.4-1.2c0.4,0.3,0.8,0.5,1.2,0.7L6.5,15h3l0.2-2.7c0.4-0.2,0.8-0.4,1.2-0.7L13.3,12.8z  M8,10.3c-1.3,0-2.3-1-2.3-2.3c0-1.3,1-2.3,2.3-2.3c1.3,0,2.3,1,2.3,2.3C10.3,9.3,9.3,10.3,8,10.3z"/>
   </symbol>
 
-  <symbol id="svg-icon-reorder" viewBox="0 0 16 16">
-    <path d="M0,16h7v-6H0V16z M1,11h5v4H1V11z M0,5h7V0H0V5z M1,1h5v3H1V1z M13,11v3l-4-3.5L13,7v3h2V3H8V2h8v9H13z M7,9H0V8h7V9z M7,7H0V6h7V7z"/>
+  <symbol id="svg-icon-check-update" viewBox="0 0 20 20">
+    <path d="M18,16.6l-3.1-3.1c0.5-0.7,0.9-1.5,1-2.5h-2.1c-0.4,1.7-2,3-3.9,3c-0.8,0-1.6-0.3-2.3-0.7
+             L10,11H6.1H4.1H4v6l2.3-2.3c1,0.8,2.3,1.3,3.7,1.3c1.3,0,2.5-0.4,3.5-1.1l3.1,3.1L18,16.6z"/>
+    <path d="M10,6c0.8,0,1.6,0.3,2.3,0.7L10,9h3.9h2.1H16V3l-2.3,2.3C12.7,4.5,11.4,4,10,4
+             C7,4,4.6,6.2,4.1,9h2.1C6.6,7.3,8.1,6,10,6z"/>
+  </symbol>
+
+  <symbol id="svg-icon-add" viewBox="0 0 20 20">
+    <rect x="9" y="2" width="2" height="16"/>
+    <rect x="2" y="9" width="16" height="2"/>
+  </symbol>
+
+  <symbol id="svg-icon-external" viewBox="0 0 20 20">
+    <path d="M4,4h5v2H6v8h8v-3h2v5H4V4z M11,3h6v6l-2-2l-4,4L9,9l4-4L11,3z"/>
   </symbol>
 </svg>
 </template>

@@ -76,7 +76,10 @@ const editor = {
       ],
     };
     // switching the mode here to show the correct page ASAP, usually before DOMContentLoaded
-    const isUC = Boolean(style.usercssData || !id && prefs.get('newStyleAsUsercss'));
+    const isUC = Boolean(style.usercssData) || !id && (
+      params.get('uc') === '1' ||
+      !params.has('uc') && prefs.get('newStyleAsUsercss')
+    );
     Object.assign(editor, /** @namespace Editor */ {
       style,
       isUsercss: isUC,

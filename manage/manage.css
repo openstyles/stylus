@@ -57,11 +57,6 @@ a:hover {
   z-index: 9;
 }
 
-#update-check,
-#update-all {
-  margin-bottom: .5rem;
-}
-
 #check-all-updates {
   max-width: calc(100% - 30px);
 }
@@ -72,57 +67,80 @@ a:hover {
 }
 
 #header h1 {
-  margin-top: 0;
-  margin-bottom: .3em;
+  margin: 0;
 }
 
-#header a[href^="edit"] {
+#actions {
+  --num: 6;
+  --max-w: 32px;
+  display: flex;
+  justify-content: space-between;
+  max-width: calc(var(--num) * (var(--max-w) + 8px));
+}
+#actions a {
+  max-width: var(--max-w);
+  flex: 1 1;
+  text-align: center;
   text-decoration: none;
-  margin-right: 8px;
+  padding: 4px 0 5px;
+  color: var(--c20);
+  border: 1px solid var(--c85);
+  border-radius: 4px;
+  transition: background-color .15s;
+  cursor: auto;
 }
-
-#add-style-wrapper {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
+#actions a:hover {
+  color: var(--cmin);
+  background-color: hsla(0, 0%, 50%, .2);
 }
-
-#add-style-wrapper > * {
-  /* in case the children are wrapped */
-  margin-bottom: .5rem;
+#actions svg {
+  cursor: auto;
+  fill: var(--c20);
 }
-
-#add-style-as-usercss-wrapper {
-  display: flex;
-  align-items: center;
+#actions a:hover svg,
+#actions svg:hover {
+  fill: var(--cmin);
 }
-
-#add-style-as-usercss-wrapper:not(:hover) input:not(:checked) ~ a svg {
-  fill: var(--c65);
-}
-
-#add-style-as-usercss-wrapper input {
-  bottom: 0;
-  margin: auto;
-}
-
-#add-style-as-usercss-wrapper input + svg {
-  bottom: 0;
-  margin: auto;
-  left: 2px;
-}
-
-#injection-order-button {
-  --w: 16px;
-  width: var(--w);
-  box-sizing: content-box;
-  display: inline-flex;
-  align-items: center;
-}
-#injection-order-button > svg {
+#actions #write-usercss::before {
+  margin: 11px 0 0 12px;
   position: absolute;
-  width: var(--w);
-  height: var(--w);
+  font-size: 10px;
+  font-weight: bold;
+  background: none;
+  content: 'UC';
+  letter-spacing: -1px;
+}
+#actions #manage-options-button svg {
+  fill: transparent;
+  stroke: var(--fg);
+}
+#actions-toggle:not([open]) {
+  position: absolute;
+  margin-top: 4px;
+}
+#actions-toggle:not([open]) h2 {
+  display: none;
+}
+#actions-toggle[open] + div {
+  display: block;
+  text-align: left;
+  --max-w: none;
+}
+#actions-toggle[open] + div > a {
+  display: block;
+  text-align: left;
+  border: none;
+  margin: 0 0 0 -4px;
+  padding: 1px 0 1px 4px;
+  border-radius: 0;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+#actions-toggle[open] + div > a::after {
+  content: attr(data-title);
+  margin-left: .5em;
+  vertical-align: middle;
 }
 
 #installed {
@@ -452,7 +470,9 @@ button .svg-icon {
 #apply-all-updates:after {
   content: " (" attr(data-value) ")";
 }
-
+#apply-all-updates:not(.hidden) + #update-all-no-updates {
+  display: none !important;
+}
 .update-in-progress #check-all-updates {
   position: relative;
 }

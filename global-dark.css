@@ -20,8 +20,8 @@
     /* min/max are exposed in case we want to use an overdrive color for emphasis */
     --cmin: hsl(0, 0%, 100%);
     --cmax: hsl(0, 0%, 0%);
-    --accent-1: hsl(180, 100%, 95%);
-    --accent-3: hsl(180, 30%, 18%);
+    --accent-1: hsl(180, 100%, 90%);
+    --accent-3: hsl(180, 30%, 25%);
     --input-bg: var(--c95);
     --red1: hsl(0, 85%, 55%);
   }
