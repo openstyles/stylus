@@ -32,7 +32,7 @@ Object.assign(t, {
     '|',
     /((?!\s)\W){10}/,
     ')',
-    /(?!\b|\s|$)/,
+    /(?!\s|$)/,
   ].map(rx => rx.source || rx).join(''), 'gu'),
   SELECTOR: '[i18n]',
 
