@@ -58,6 +58,8 @@
   let displayedPage = 1;
   let totalPages = 1;
   let ready;
+  /** @type {?Promise} */
+  let indexing;
 
   let imgType = '.jpg';
   // detect WebP support
@@ -192,6 +194,13 @@
     }
   }
 
+  function errorIfNoneFound() {
+    if (!results.length && !$('#search-query').value) {
+      return indexing ? indexing.then(errorIfNoneFound)
+        : Promise.reject(t('searchResultNoneFound'));
+    }
+  }
+
   async function start({keepYears} = {}) {
     resetUI.timer = resetUI.timer || setTimeout(resetUI, 500);
     try {
@@ -208,11 +217,7 @@
       renderYears();
       render();
       dom.list.hidden = !results.length;
-      if (!results.length && !$('#search-query').value) {
-        if (index._ready) error(t('searchResultNoneFound'));
-      } else {
-        resetUI();
-      }
+      await errorIfNoneFound();
       resetUI();
     } catch (reason) {
       error(reason);
@@ -556,8 +561,8 @@
       if (index !== res) ready = ready.then(start);
     });
     // TODO: use Promise.allSettled when "minimum_chrome_version" >= 76 and "strict_min_version" >= 71
-    Promise.all(jobs.map(j => j.catch(e => e))).then(() => {
-      index._ready = true;
+    indexing = Promise.all(jobs.map(j => j.catch(e => e))).then(() => {
+      indexing = null;
     });
     await Promise.race(jobs);
     clearTimeout(timer);
