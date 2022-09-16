@@ -71,9 +71,10 @@ const usoApi = {};
     return true;
   };
 
-  function ping(id, resolve) {
-    return fetch(`${URLS.uso}styles/install/${id}?source=stylish-ch`)
-      .then(resolve);
+  async function ping(id, resolve) {
+    await fetch(`${URLS.uso}styles/install/${id}?source=stylish-ch`);
+    if (resolve) resolve(true);
+    return true;
   }
 
   function makeKey(key, {badKeys, newKeys}) {
