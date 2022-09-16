@@ -1,13 +1,12 @@
 'use strict';
 
 const fs = require('fs');
-const fse = require('fs-extra');
 
 const DIR = '_locales/';
 const RX_LNG_CODE = /^\w\w(_\w{2,3})?$/; // like `en` or `en_GB`
 
 const makeFileName = lng => `${DIR}${lng}/messages.json`;
-const readLngJson = lng => fse.readJsonSync(makeFileName(lng));
+const readLngJson = lng => JSON.parse(fs.readFileSync(makeFileName(lng), 'utf8'));
 const sortAlpha = ([a], [b]) => a < b ? -1 : a > b;
 
 const src = readLngJson('en');
@@ -63,7 +62,7 @@ function fixLngFile(lng) {
       fs.rmSync(`${DIR}${lng}`, {recursive: true, force: true});
       err = 'no translations -> deleted';
     } else {
-      fse.outputFileSync(makeFileName(lng), resStr + '\n');
+      fs.writeFileSync(makeFileName(lng), resStr + '\n', 'utf8');
       err = [
         numUnknown && `${numUnknown} unknown (dropped)`,
         numUntranslated && `${numUntranslated} untranslated (dropped)`,
