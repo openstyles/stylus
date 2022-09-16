@@ -194,7 +194,8 @@
 
 function inPageContext(eventId, eventIdHost, styleId, apiUrl) {
   let done, orphaned, vars;
-  if (!window.chrome) window.chrome = {runtime: {sendMessage: () => {}}}; // USO bug in FF
+  // `chrome` may be empty if no extensions use externally_connectable but USO needs it
+  if (!window.chrome) window.chrome = {runtime: {sendMessage: () => {}}};
   const EXT_ID = 'fjnbnpbmkenffdnngjfgmeleoegfcffe';
   const {defineProperty} = Object;
   const {dispatchEvent, CustomEvent, removeEventListener} = window;
@@ -224,9 +225,6 @@ function inPageContext(eventId, eventIdHost, styleId, apiUrl) {
     ],
   ];
   OVR.forEach(([obj, name, caller], i) => {
-    /* Using Proxy to make the override undetectable so Stylish cannot track our users,
-     * which was the primary reason privacy-concerned users abandoned Stylish.
-     * TODO: add a user option to allow USO see the user has Stylus? */
     const orig = obj[name];
     const ovr = new Proxy(orig, {
       apply(fn, me, args) {
@@ -237,6 +235,8 @@ function inPageContext(eventId, eventIdHost, styleId, apiUrl) {
     defineProperty(obj, name, {value: ovr});
     OVR[i] = [obj, name, ovr, orig]; // same args as restore()
   });
+  /* We set `isInstalled` at page start intentionally not trying to replicate Stylish login events.
+   * This difference allows USO site to detect presence of Stylus (or another similar extension). */
   window.isInstalled = true;
   addEventListener(eventId, onCommand, true);
   function onCommand(e) {
