@@ -127,25 +127,28 @@ const colorConverter = (() => {
     if (!func || !testAt(RX_COLOR[type], 0, value)) {
       return;
     }
-    const [s1, s2, s3, sA] = value.split(/\s*[,/]\s*|\s+/);
-    const a = isNaN(sA) ? 1 : constrain(0, 1, sA / (sA.endsWith('%') ? 100 : 1));
+    const strings = value.split(/\s*[,/]\s*|\s+/);
+    const [s1, /*s2*/, /*s3*/, sA] = strings;
+    const [n1, n2, n3, nA] = strings.map(parseFloat);
+    const a = isNaN(nA) ? 1 : constrain(0, 1, nA / (sA.endsWith('%') ? 100 : 1));
 
     if (type === 'rgb') {
       const k = s1.endsWith('%') ? 2.55 : 1;
       return {
         type,
-        r: constrain(0, 255, Math.round(s1 * k)),
-        g: constrain(0, 255, Math.round(s2 * k)),
-        b: constrain(0, 255, Math.round(s3 * k)),
+        r: constrain(0, 255, Math.round(n1 * k)),
+        g: constrain(0, 255, Math.round(n2 * k)),
+        b: constrain(0, 255, Math.round(n3 * k)),
         a,
       };
     }
-    const h = constrainHue(parseFloat(s1) * (ANGLE_TO_DEG[s1.match(/\D*$/)[0]] || 1));
-    const n2 = constrain(0, 100, parseFloat(s2) || 0);
-    const n3 = constrain(0, 100, parseFloat(s3) || 0);
+
+    const h = constrainHue(n1 * (ANGLE_TO_DEG[s1.match(/\D*$/)[0]] || 1));
+    const n2c = constrain(0, 100, n2 || 0);
+    const n3c = constrain(0, 100, n3 || 0);
     return type === 'hwb'
-      ? {type, h, w: n2, b: n3, a}
-      : {type, h, s: n2, l: n3, a};
+      ? {type, h, w: n2c, b: n3c, a}
+      : {type, h, s: n2c, l: n3c, a};
   }
 
   function formatAlpha(a) {
