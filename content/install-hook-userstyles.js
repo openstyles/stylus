@@ -10,13 +10,12 @@
   const USO = 'https://userstyles.org';
   const apiUrl = `${USO}/api/v1/styles/${usoId}`;
   const md5Url = `https://update.userstyles.org/${usoId}.md5`;
-  const CLICK = {
-    customize: '.customize_button',
-    install: '#install_style_button',
-    uninstall: '#uninstall_style_button',
-    update: '#update_style_button',
-  };
-  const CLICK_SEL = Object.values(CLICK).join(',');
+  const CLICK = [
+    ['#install_stylish_style_button', onInstall],
+    ['#update_stylish_style_button', onInstall],
+    ['.customize_style_button', onCustomize],
+    ['.uninstall_stylish_style_button', onUninstall],
+  ];
   const pageEventId = `${performance.now()}${Math.random()}`;
   const contentEventId = pageEventId + ':';
   const orphanEventId = chrome.runtime.id; // id won't be available in the orphaned script
@@ -43,7 +42,7 @@
     document.body || new Promise(resolve => addEventListener('load', resolve, {once: true})),
   ]);
 
-  if (!dup.id) {
+  if (!dup) {
     sendStylishEvent('styleCanBeInstalledChrome');
   } else if (dup.originalMd5 && dup.originalMd5 !== md5 || !dup.usercssData || !dup.md5Url) {
     // allow update if 1) changed, 2) is a classic USO style, 3) is from USO-archive
@@ -53,36 +52,45 @@
   }
 
   async function onClick(e) {
-    const el = e.target.closest(CLICK_SEL);
-    if (!el) return;
-    el.disabled = true;
-    const {id} = dup;
-    try {
-      if (el.matches(CLICK.uninstall)) {
-        dup = style = false;
-        removeEventListener('change', onChange);
-        await API.styles.delete(id);
-        return;
+    for (const [sel, fn] of CLICK) {
+      const el = e.target.closest(sel);
+      if (!el) continue;
+      try {
+        el.disabled = true;
+        await fn(e);
+      } catch (e) {
+        alert(chrome.i18n.getMessage('styleInstallFailed', e.message || e));
+      } finally {
+        el.disabled = false;
       }
-      if (el.matches(CLICK.customize)) {
-        const isOn = dup && !$('#style-settings');
-        toggleListener(isOn, 'change', onChange);
-        observeColors(isOn);
-        return;
-      }
-      e.stopPropagation();
-      if (!style) await buildStyle();
-      style = dup = await API.usercss.install(style, {
-        dup: {id},
-        vars: getPageVars(),
-      });
-      sendStylishEvent('styleInstalledChrome');
-      API.uso.pingback(id);
-    } catch (e) {
-      alert(chrome.i18n.getMessage('styleInstallFailed', e.message || e));
-    } finally {
-      el.disabled = false;
     }
+  }
+
+  function onCustomize() {
+    const ss = $('#style-settings');
+    const willShow = !ss || !ss.offsetHeight;
+    observeColors(willShow);
+    toggleListener(willShow, 'change', onChange);
+  }
+
+  async function onInstall(e) {
+    const {id} = dup;
+    e.stopPropagation();
+    if (!style) await buildStyle();
+    style = dup = await API.usercss.install(style, {
+      dup: {id},
+      vars: getPageVars(),
+    });
+    sendStylishEvent('styleInstalledChrome');
+    API.uso.pingback(id);
+  }
+
+  function onUninstall() {
+    const {id} = dup;
+    dup = style = false;
+    observeColors(false);
+    removeEventListener('change', onChange);
+    return API.styles.delete(id);
   }
 
   function onChange({target: el}) {
@@ -121,7 +129,7 @@
     const {vars} = (style || dup).usercssData;
     for (const el of document.querySelectorAll('[name^="ik-"]')) {
       const name = el.name.slice(3); // dropping "ik-"
-      const ik = badKeys[name] || name;
+      const ik = (badKeys || {})[name] || name;
       const v = vars[ik] || false;
       const isImage = el.type === 'radio';
       if (v && (!isImage || el.checked)) {
@@ -185,50 +193,66 @@
 })();
 
 function inPageContext(eventId, eventIdHost, styleId, apiUrl) {
+  let done, orphaned, vars;
+  if (!window.chrome) window.chrome = {runtime: {sendMessage: () => {}}}; // USO bug in FF
+  const EXT_ID = 'fjnbnpbmkenffdnngjfgmeleoegfcffe';
+  const {defineProperty} = Object;
   const {dispatchEvent, CustomEvent, removeEventListener} = window;
   const apply = Map.call.bind(Map.apply);
-  const CR = chrome.runtime;
-  const SEND = 'sendMessage';
-  const RP = Response.prototype;
-  const ORIG = {json: RP.json, [SEND]: CR[SEND]};
-  let done, orphaned, vars;
-  CR[SEND] = ovrSend;
-  RP.json = ovrJson;
+  const OVR = [
+    [chrome.runtime, 'sendMessage', (fn, me, args) => {
+      const [id, /*msg*/, opts, cb = opts] = args;
+      if (id !== EXT_ID) return apply(fn, me, args);
+      if (typeof cb !== 'function') return Promise.resolve(true);
+      cb(true);
+    }],
+    [Response.prototype, 'json', async (fn, me, args) => {
+      const res = await apply(fn, me, args);
+      try {
+        if (!done && me.url === apiUrl) {
+          done = true;
+          send(res);
+          setVars(res);
+        }
+      } catch (e) {}
+      return res;
+    }],
+    [window, 'fetch', (fn, me, args) =>
+      args[0] === `chrome-extension://${EXT_ID}/index.html`
+        ? Promise.resolve(new Response('<!doctype html><html lang="en"></html>'))
+        : apply(fn, me, args),
+    ],
+  ];
+  OVR.forEach(([obj, name, caller], i) => {
+    /* Using Proxy to make the override undetectable so Stylish cannot track our users,
+     * which was the primary reason privacy-concerned users abandoned Stylish.
+     * TODO: add a user option to allow USO see the user has Stylus? */
+    const orig = obj[name];
+    const ovr = new Proxy(orig, {
+      apply(fn, me, args) {
+        if (orphaned) restore(obj, name, ovr, fn);
+        return (orphaned ? apply : caller)(fn, me, args);
+      },
+    });
+    defineProperty(obj, name, {value: ovr});
+    OVR[i] = [obj, name, ovr, orig]; // same args as restore()
+  });
   window.isInstalled = true;
   addEventListener(eventId, onCommand, true);
-  function ovrSend(id, msg, opts, cb = opts) {
-    if (!orphaned &&
-        id === 'fjnbnpbmkenffdnngjfgmeleoegfcffe' &&
-        msg && msg.type === 'deleteStyle' &&
-        typeof cb === 'function') {
-      cb(true);
-    } else {
-      return ORIG[SEND](...arguments);
-    }
-  }
-  async function ovrJson() {
-    const res = await apply(ORIG.json, this, arguments);
-    try {
-      if (!done && this.url === apiUrl) {
-        if (RP.json === ovrJson) RP.json = ORIG.json;
-        done = true;
-        send(res);
-        setVars(res);
-      }
-    } catch (e) {}
-    return res;
-  }
   function onCommand(e) {
     if (e.detail === 'quit') {
       removeEventListener(eventId, onCommand, true);
-      // We can restore the hooks only if another script didn't modify them
-      if (CR[SEND] === ovrSend) CR[SEND] = ovrSend;
-      if (RP.json === ovrJson) RP.json = ORIG.json;
+      OVR.forEach(restore);
       done = orphaned = true;
     } else if (/^vars:/.test(e.detail)) {
       vars = JSON.parse(e.detail.slice(5));
     } else if (e.relatedTarget) {
       send(e.relatedTarget.uploadedData);
+    }
+  }
+  function restore(obj, name, ovr, orig) { // same order as OVR after patching
+    if (obj[name] === ovr) {
+      defineProperty(obj, name, {value: orig});
     }
   }
   function send(data) {
@@ -261,7 +285,7 @@ function inPageContext(eventId, eventIdHost, styleId, apiUrl) {
       if (ss.setting_type === 'image') {
         let isListed;
         for (const opt of ss.style_setting_options) {
-          isListed |= opt.default = (opt.value === value);
+          isListed |= opt.default = (opt.install_key === value);
         }
         images.set(ik, {url: isNew && !isListed ? vars[`${ik}-custom`].value : value, isListed});
       } else if (value.startsWith('ik-') || isNew && vars[ik].type === 'select') {
