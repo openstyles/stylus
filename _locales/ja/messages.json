@@ -355,6 +355,9 @@
   "genericSavedMessage": {
     "message": "保存しました"
   },
+  "genericSize": {
+    "message": "サイズ"
+  },
   "genericTest": {
     "message": "テスト"
   },
@@ -557,6 +560,9 @@
   },
   "manageMaxTargets": {
     "message": "適用先欄の表示件数"
+  },
+  "manageMinColumnWidth": {
+    "message": "最小カラム幅 (ピクセル単位。9999にすると、マルチカラムモードを無効にします)"
   },
   "manageNewStyleAsUsercss": {
     "message": "Usercssとして"

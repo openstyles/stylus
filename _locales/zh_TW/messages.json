@@ -393,6 +393,9 @@
   "genericSavedMessage": {
     "message": "已儲存"
   },
+  "genericSize": {
+    "message": "大小"
+  },
   "genericTest": {
     "message": "測試"
   },
@@ -592,6 +595,9 @@
   },
   "manageMaxTargets": {
     "message": "已套用項目的數量"
+  },
+  "manageMinColumnWidth": {
+    "message": "最小欄位寬度（以像素為單位；9999 停用多欄模式）"
   },
   "manageNewStyleAsUsercss": {
     "message": "做為 Usercss"

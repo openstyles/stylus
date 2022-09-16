@@ -393,6 +393,9 @@
   "genericSavedMessage": {
     "message": "已保存"
   },
+  "genericSize": {
+    "message": "大小"
+  },
   "genericTest": {
     "message": "测试"
   },

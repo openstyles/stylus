@@ -62,7 +62,7 @@
     "message": "Alle updates toepassen"
   },
   "author": {
-    "message": "Auteur"
+    "message": "Maker"
   },
   "backupButtons": {
     "message": "Back-up"
@@ -98,7 +98,7 @@
     "message": "Automatisch aanvullen tijdens typen"
   },
   "cm_colorpicker": {
-    "message": "Kleurkiezer voor CSS-kleuren"
+    "message": "Kleurkiezers voor CSS-kleuren"
   },
   "cm_indentWithTabs": {
     "message": "Tabs met slimme inspringing gebruiken"
@@ -371,6 +371,9 @@
   "genericSavedMessage": {
     "message": "Opgeslagen"
   },
+  "genericSize": {
+    "message": "Grootte"
+  },
   "genericTest": {
     "message": "Testen"
   },
@@ -567,6 +570,9 @@
   },
   "manageMaxTargets": {
     "message": "Aantal ‘Van toepassing op’-items"
+  },
+  "manageMinColumnWidth": {
+    "message": "Minimale kolombreedte (in pixels; 9999 schakelt de modus met meerdere kolommen uit)"
   },
   "manageNewStyleAsUsercss": {
     "message": "als Usercss"
@@ -1335,7 +1341,7 @@
     "message": "Niet volledig overeenkomend, dus overgeslagen"
   },
   "styleRegexpTestTitle": {
-    "message": "Lijst van overeenkomende geopende tabbladen (klik op de URL om de focus op het tabblad te leggen)"
+    "message": "Lijst met overeenkomende geopende tabbladen (klik op de URL om de focus op het tabblad te leggen)"
   },
   "styleSaveLabel": {
     "message": "Opslaan"

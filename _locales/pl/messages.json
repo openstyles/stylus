@@ -393,6 +393,9 @@
   "genericSavedMessage": {
     "message": "Zapisano"
   },
+  "genericSize": {
+    "message": "Rozmiar"
+  },
   "genericTest": {
     "message": "Testuj"
   },
@@ -592,6 +595,9 @@
   },
   "manageMaxTargets": {
     "message": "Liczba dotyczących elementów "
+  },
+  "manageMinColumnWidth": {
+    "message": "Minimalna szerokość kolumny (w pikselach; 9999 wyłącza tryb wielokolumnowy)"
   },
   "manageNewStyleAsUsercss": {
     "message": "jako Usercss"

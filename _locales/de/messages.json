@@ -346,6 +346,9 @@
   "genericSavedMessage": {
     "message": "Gespeichert"
   },
+  "genericSize": {
+    "message": "Größe"
+  },
   "genericTitle": {
     "message": "Name"
   },
@@ -542,6 +545,9 @@
   },
   "manageMaxTargets": {
     "message": "Anzahl der \"Gilt für\" Elemente"
+  },
+  "manageMinColumnWidth": {
+    "message": "Minimale Spaltenbreite (in Pixeln. 9999 deaktiviert den Mehrspalten-Modus)"
   },
   "manageNewStyleAsUsercss": {
     "message": "als UserCSS"
