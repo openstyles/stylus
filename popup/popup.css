@@ -510,33 +510,14 @@ a:hover .svg-icon {
   display: none;
 }
 
-#write-for-frames:not([hidden]) {
-  position: relative;
-  width: 5px;
-  height: 5px;
-  display: inline-block;
-  margin: 0 2px 2px;
-  --dash: transparent 2px, currentColor 2px, currentColor 3px, transparent 3px;
-  background: linear-gradient(var(--dash)), linear-gradient(90deg, var(--dash));
+#write-for-frames {
+  cursor: pointer;
+  margin: 0 0 -.25em;
+  font-family: monospace;
 }
 
-#write-for-frames.expanded {
-  background: linear-gradient(var(--dash));
-}
-
-#write-for-frames::after {
-  position: absolute;
-  margin: -2px;
-  border: 1px solid currentColor;
-  content: "";
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-}
-
-#write-for-frames:not(.expanded) ~ .match:not([data-frame-id="0"]),
-#write-for-frames:not(.expanded) ~ .match .match {
+#write-style:not(.expanded) .match:not([data-frame-id="0"]),
+#write-style:not(.expanded) .match .match {
   display: none;
 }
 

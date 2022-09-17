@@ -144,10 +144,15 @@ async function initPopup(frames) {
   }
 
   frames.forEach(createWriterElement);
-  Object.assign($('#write-for-frames'), {
-    onclick: e => e.currentTarget.classList.toggle('expanded'),
-    hidden: frames.length < 2 || !$('.match .match:not(.dupe)'),
-  });
+
+  if (frames.length > 1 && $('.match .match:not(.dupe)')) {
+    $('#write-style').append(Object.assign(t.template.writeForFrames, {
+      onclick() {
+        this.remove();
+        $('#write-style').classList.add('expanded');
+      },
+    }));
+  }
 
   const isStore = tabURL.startsWith(URLS.browserWebStore);
   if (isStore && !FIREFOX) {
