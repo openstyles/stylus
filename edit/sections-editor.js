@@ -6,6 +6,7 @@
 /* global createSection */// sections-editor-section.js
 /* global editor */
 /* global linterMan */
+/* global prefs */
 /* global styleSectionsEqual */ // sections-util.js
 /* global t */// localization.js
 'use strict';
@@ -21,6 +22,7 @@ function SectionsEditor() {
   let sectionOrder = '';
   let headerOffset; // in compact mode the header is at the top so it reduces the available height
   let cmExtrasHeight; // resize grip + borders
+  let upDownJumps;
 
   updateMeta();
   rerouteHotkeys.toggle(true); // enabled initially because we don't always focus a CodeMirror
@@ -30,6 +32,10 @@ function SectionsEditor() {
   $('#from-mozilla').on('click', () => showMozillaFormatImport());
   document.on('wheel', scrollEntirePageOnCtrlShift, {passive: false});
   CodeMirror.defaults.extraKeys['Shift-Ctrl-Wheel'] = 'scrollWindow';
+  prefs.subscribe('editor.arrowKeysTraverse', (_, val) => {
+    for (const {cm} of sections) handleKeydownSetup(cm, val);
+    upDownJumps = val;
+  }, {runNow: true});
 
   /** @namespace Editor */
   Object.assign(editor, {
@@ -70,15 +76,15 @@ function SectionsEditor() {
       }
     },
 
-    nextEditor(cm, cycle = true) {
-      return cycle || cm !== findLast(sections, s => !s.removed).cm
-        ? nextPrevEditor(cm, 1)
+    nextEditor(cm, upDown) {
+      return !upDown || cm !== findLast(sections, s => !s.removed).cm
+        ? nextPrevEditor(cm, 1, upDown)
         : null;
     },
 
-    prevEditor(cm, cycle = true) {
-      return cycle || cm !== sections.find(s => !s.removed).cm
-        ? nextPrevEditor(cm, -1)
+    prevEditor(cm, upDown) {
+      return !upDown || cm !== sections.find(s => !s.removed).cm
+        ? nextPrevEditor(cm, -1, upDown)
         : null;
     },
 
@@ -112,14 +118,16 @@ function SectionsEditor() {
       editor.useSavedStyle(newStyle);
     },
 
-    scrollToEditor(cm) {
-      const {el} = sections.find(s => s.cm === cm);
-      const r = el.getBoundingClientRect();
-      const h = window.innerHeight;
-      if (r.bottom > h && r.top > 0 ||
-          r.bottom < h && r.top < 0) {
-        window.scrollBy(0, (r.top + r.bottom - h) / 2 | 0);
-      }
+    scrollToEditor(cm, partial) {
+      const cc = partial && cm.cursorCoords(true, 'window');
+      const {top: y1, bottom: y2} = cm.el.getBoundingClientRect();
+      const rc = container.getBoundingClientRect();
+      const rcY1 = Math.max(rc.top, 0);
+      const rcY2 = Math.min(rc.bottom, innerHeight);
+      const bad = partial
+        ? cc.top < rcY1 || cc.top > rcY2 - 30
+        : y1 >= rcY1 ^ y2 <= rcY2;
+      if (bad) window.scrollBy(0, (y1 + y2 - rcY2 + rcY1) / 2 | 0);
     },
   });
 
@@ -291,10 +299,36 @@ function SectionsEditor() {
     }
   }
 
-  function nextPrevEditor(cm, direction) {
+  function handleKeydown(event) {
+    if (event.shiftKey || event.altKey || event.metaKey ||
+        event.key !== 'ArrowUp' && event.key !== 'ArrowDown') {
+      return;
+    }
+    let pos;
+    let cm = this.CodeMirror;
+    const {line, ch} = cm.getCursor();
+    if (event.key === 'ArrowUp') {
+      cm = line === 0 && editor.prevEditor(cm, true);
+      pos = cm && [cm.doc.size - 1, ch];
+    } else {
+      cm = line === cm.doc.size - 1 && editor.nextEditor(cm, true);
+      pos = cm && [0, 0];
+    }
+    if (cm) {
+      cm.setCursor(...pos);
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }
+
+  function handleKeydownSetup(cm, state) {
+    cm.display.wrapper[state ? 'on' : 'off']('keydown', handleKeydown, true);
+  }
+
+  function nextPrevEditor(cm, direction, upDown) {
     const editors = editor.getEditors();
     cm = editors[(editors.indexOf(cm) + direction + editors.length) % editors.length];
-    editor.scrollToEditor(cm);
+    editor.scrollToEditor(cm, upDown);
     cm.focus();
     return cm;
   }
@@ -576,6 +610,9 @@ function SectionsEditor() {
     if (base) {
       cm.focus();
       editor.scrollToEditor(cm);
+    }
+    if (upDownJumps) {
+      handleKeydownSetup(cm, true);
     }
     updateSectionOrder();
     updateLivePreview();

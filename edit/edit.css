@@ -75,8 +75,8 @@ html:not(.is-new-style) #heading::before {
   right: 24px;
 }
 /************ checkbox & select************/
-.options-column > div[class="option"] {
-  margin-bottom: 4px;
+.options-column > .option {
+  margin-bottom: .25rem;
 }
 
 .options-column > .usercss-only {
@@ -107,6 +107,8 @@ label {
 }
 #sections {
   padding-left: var(--header-width);
+}
+.usercss #sections {
   min-height: 0;
   height: 100%;
 }

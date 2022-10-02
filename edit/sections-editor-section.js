@@ -31,6 +31,7 @@ function createSection(originalSection, genId, si) {
     value: originalSection.code,
   });
   el.CodeMirror = cm; // used by getAssociatedEditor
+  cm.el = el;
   editor.applyScrollInfo(cm, si);
 
   const changeListeners = new Set();
@@ -114,47 +115,8 @@ function createSection(originalSection, genId, si) {
       changeGeneration = newGeneration;
       emitSectionChange('code');
     });
-    cm.display.wrapper.on('keydown', event => handleKeydown(cm, event), true);
     $('.test-regexp', el).onclick = () => updateRegexpTester(true);
     initBeautifyButton($('.beautify-section', el), [cm]);
-  }
-
-  function handleKeydown(cm, event) {
-    if (event.shiftKey || event.altKey || event.metaKey) {
-      return;
-    }
-    const {key} = event;
-    const {line, ch} = cm.getCursor();
-    switch (key) {
-      case 'ArrowLeft':
-        if (line || ch) {
-          return;
-        }
-      // fallthrough
-      case 'ArrowUp':
-        cm = line === 0 && editor.prevEditor(cm, false);
-        if (!cm) {
-          return;
-        }
-        event.preventDefault();
-        event.stopPropagation();
-        cm.setCursor(cm.doc.size - 1, key === 'ArrowLeft' ? 1e20 : ch);
-        break;
-      case 'ArrowRight':
-        if (line < cm.doc.size - 1 || ch < cm.getLine(line).length - 1) {
-          return;
-        }
-      // fallthrough
-      case 'ArrowDown':
-        cm = line === cm.doc.size - 1 && editor.nextEditor(cm, false);
-        if (!cm) {
-          return;
-        }
-        event.preventDefault();
-        event.stopPropagation();
-        cm.setCursor(0, 0);
-        break;
-    }
   }
 
   async function updateRegexpTester(toggle) {

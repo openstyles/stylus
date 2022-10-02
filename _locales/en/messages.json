@@ -186,6 +186,10 @@
     "message": "Theme",
     "description": "Label for the style editor's CSS theme."
   },
+  "cm_arrowKeysTraverse": {
+    "message": "Arrow keys ↑↓ traverse sections",
+    "description": "Label for the option in the editor."
+  },
   "colorpickerPaletteHint": {
     "message": "Right-click a swatch to cycle through its source lines"
   },

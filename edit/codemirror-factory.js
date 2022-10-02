@@ -67,6 +67,7 @@
     k.slice('editor.'.length);
   const prefKeys = prefs.knownKeys.filter(k =>
     k !== 'editor.colorpicker' && // handled in colorpicker-helper.js
+    k !== 'editor.arrowKeysTraverse' && // handled in sections-editor.js
     prefToCmOpt(k) in CodeMirror.defaults);
   const {insertTab, insertSoftTab} = CodeMirror.commands;
 

@@ -99,7 +99,7 @@
     // "Delete" item in context menu for browsers that don't have it
     'editor.contextDelete': false,
     'editor.selectByTokens': true,
-
+    'editor.arrowKeysTraverse': true,
     'editor.appliesToLineWidget': true, // show applies-to line widget on the editor
     'editor.autosaveDraft': 10, // seconds
     'editor.livePreview': true,
