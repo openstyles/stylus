@@ -134,6 +134,10 @@
   width: 100%;
 }
 
+.search-result[data-installed] {
+  box-shadow: 1px 1px 10px darkcyan;
+  border-color: darkcyan;
+}
 .search-result:not([data-installed]) .search-result-actions {
   opacity: 0;
   transition: opacity .5s;

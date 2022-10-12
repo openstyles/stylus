@@ -2,7 +2,7 @@
 /* global $entry tabURL */// popup.js
 /* global API */// msg.js
 /* global Events */
-/* global FIREFOX URLS debounce download stringAsRegExp tryRegExp tryURL */// toolbox.js
+/* global FIREFOX URLS debounce download isEmptyObj stringAsRegExp tryRegExp tryURL */// toolbox.js
 /* global prefs */
 /* global t */// localization.js
 'use strict';
@@ -27,7 +27,7 @@
   /**
    * @typedef IndexEntry
    * @prop {'uso' | 'uso-android'} f - format
-   * @prop {Number} i - id
+   * @prop {Number} i - id, later replaced with string like `uso-123`
    * @prop {string} n - name
    * @prop {string} c - category
    * @prop {Number} u - updatedTime
@@ -39,8 +39,8 @@
    * @prop {string} sn -  screenshotName
    * @prop {boolean} sa -  screenshotArchived
    *
-   * @prop {boolean} _installed
-   * @prop {number} _installedStyleId
+   * @prop {number} _styleId - installed style id
+   * @prop {boolean} _styleVars - installed style has vars
    * @prop {number} _year
    */
   /** @type IndexEntry[] */
@@ -73,6 +73,7 @@
     const entry = el.closest(RESULT_SEL);
     return {entry, result: entry && entry._result};
   };
+  const rid2id = rid => rid.split('-')[1];
   Events.searchInline = () => {
     calcCategory();
     ready = start();
@@ -158,18 +159,22 @@
 
   window.on('styleDeleted', ({detail: {style: {id}}}) => {
     restoreScrollPosition();
-    const result = results.find(r => r._installedStyleId === id);
-    if (result) {
-      API.uso.pingback(result.i, false);
-      renderActionButtons(result.i, -1);
+    const r = results.find(r => r._styleId === id);
+    if (r) {
+      if (r.f) API.uso.pingback(rid2id(r.i), false);
+      delete r._styleId;
+      renderActionButtons(r.i);
     }
   });
 
   window.on('styleAdded', async ({detail: {style}}) => {
     restoreScrollPosition();
-    const id = calcId(style) || calcId(await API.styles.get(style.id));
-    if (id && results.find(r => r.i === id)) {
-      renderActionButtons(id, style.id);
+    const ri = await API.styles.getRemoteInfo(style.id);
+    const r = ri && results.find(r => ri[0] === r.i);
+    if (r) {
+      r._styleId = style.id;
+      r._styleVars = ri[1];
+      renderActionButtons(ri[0]);
     }
   });
 
@@ -209,9 +214,10 @@
         results = await search({retry});
       }
       if (results.length) {
-        const installedStyles = await API.styles.getAll();
-        const allSupportedIds = new Set(installedStyles.map(calcId));
-        results = results.filter(r => !allSupportedIds.has(r.i));
+        const info = await API.styles.getRemoteInfo();
+        for (const r of results) {
+          [r._styleId, r._styleVars] = info[r.i] || [];
+        }
       }
       if (!keepYears) resultsAllYears = results;
       renderYears();
@@ -330,7 +336,7 @@
   function createSearchResultNode(result) {
     const entry = t.template.searchResult.cloneNode(true);
     const {
-      i: id,
+      i: rid,
       n: name,
       r: rating,
       u: updateTime,
@@ -342,7 +348,8 @@
       sn: shot,
       f: fmt,
     } = entry._result = result;
-    entry.id = RESULT_ID_PREFIX + id;
+    const id = rid2id(rid);
+    entry.id = RESULT_ID_PREFIX + rid;
     // title
     Object.assign($('.search-result-title', entry), {
       onclick: Events.openURLandHide,
@@ -421,22 +428,19 @@
     }
   }
 
-  function renderActionButtons(entry, installedId) {
-    if (Number(entry)) {
+  function renderActionButtons(entry) {
+    if (typeof entry !== 'object') {
       entry = $('#' + RESULT_ID_PREFIX + entry);
     }
     if (!entry) return;
     const result = entry._result;
-    if (typeof installedId === 'number') {
-      result._installed = installedId > 0;
-      result._installedStyleId = installedId;
-    }
-    const isInstalled = result._installed;
+    const installedId = result._styleId;
+    const isInstalled = installedId > 0; // must be boolean for comparisons below
     const status = $('.search-result-status', entry).textContent =
       isInstalled ? t('clickToUninstall') :
         entry.dataset.noImage != null ? t('installButton') :
           '';
-    const notMatching = installedId > 0 && !$entry(installedId);
+    const notMatching = isInstalled && !$entry(installedId);
     if (notMatching !== entry.classList.contains('not-matching')) {
       entry.classList.toggle('not-matching');
       if (notMatching) {
@@ -456,6 +460,7 @@
       disabled: notMatching,
     });
     toggleDataset(entry, 'installed', isInstalled);
+    toggleDataset(entry, 'customizable', result._styleVars);
   }
 
   function renderFullInfo(entry, style) {
@@ -469,17 +474,20 @@
       textContent: description,
       title: description,
     });
+    vars = !isEmptyObj(vars);
+    entry._result._styleVars = vars;
     toggleDataset(entry, 'customizable', vars);
   }
 
   function configure() {
-    const styleEntry = $entry($resultEntry(this).result._installedStyleId);
+    const styleEntry = $entry($resultEntry(this).result._styleId);
     Events.configure.call(this, {target: styleEntry});
   }
 
   async function install() {
     const {entry, result} = $resultEntry(this);
-    const {i: id, f: fmt} = result;
+    const {f: fmt} = result;
+    const id = rid2id(result.i);
     const installButton = $('.search-result-install', entry);
 
     showSpinner(entry);
@@ -507,7 +515,7 @@
   function uninstall() {
     const {entry, result} = $resultEntry(this);
     saveScrollPosition(entry);
-    API.styles.delete(result._installedStyleId);
+    API.styles.delete(result._styleId);
   }
 
   function saveScrollPosition(entry) {
@@ -553,10 +561,11 @@
   async function fetchIndex() {
     const timer = setTimeout(showSpinner, BUSY_DELAY, dom.list);
     const jobs = [
-      [INDEX_URL, json => json.filter(entry => entry.f === 'uso')],
-      [USW_INDEX_URL, json => json.data],
-    ].map(async ([url, transform]) => {
+      [INDEX_URL, 'uso', json => json.filter(v => v.f === 'uso')],
+      [USW_INDEX_URL, 'usw', json => json.data],
+    ].map(async ([url, prefix, transform]) => {
       const res = transform(await download(url, {responseType: 'json'}));
+      for (const v of res) v.i = `${prefix}-${v.i}`;
       index = index ? index.concat(res) : res;
       if (index !== res) ready = ready.then(start);
     });
@@ -606,18 +615,5 @@
         ? a.n < b.n ? -1 : a.n > b.n
         : b[order] - a[order]
     ) || b.t - a.t;
-  }
-
-  function calcUsoId({md5Url: m, updateUrl}) {
-    return Number(m && m.match(/\d+|$/)[0]) ||
-           URLS.extractUsoArchiveId(updateUrl);
-  }
-
-  function calcUswId({updateUrl}) {
-    return URLS.extractUSwId(updateUrl) || 0;
-  }
-
-  function calcId(style) {
-    return calcUsoId(style) || calcUswId(style);
   }
 })();

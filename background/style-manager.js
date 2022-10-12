@@ -199,6 +199,18 @@ const styleMan = (() => {
 
     getOrder: () => orderWrap.value,
 
+    /** @returns {Promise<string | {[remoteId:string]: styleId}>}>} */
+    async getRemoteInfo(id) {
+      if (ready.then) await ready;
+      if (id) return calcRemoteId(id2style(id));
+      const res = {};
+      for (const {style} of dataMap.values()) {
+        const [rid, vars] = calcRemoteId(style);
+        if (rid) res[rid] = [style.id, vars];
+      }
+      return res;
+    },
+
     /** @returns {Promise<StyleSectionsToApply>} */
     async getSectionsByUrl(url, id, isInitialApply) {
       if (ready.then) await ready;
@@ -364,6 +376,17 @@ const styleMan = (() => {
   /** @returns {?StyleObj} */
   function uuid2style(uuid) {
     return id2style(uuidIndex.get(uuid));
+  }
+
+  function calcRemoteId({md5Url, updateUrl, usercssData: ucd} = {}) {
+    let id;
+    id = (id = /\d+/.test(md5Url) || URLS.extractUsoArchiveId(updateUrl)) && `uso-${id}`
+      || (id = URLS.extractUSwId(updateUrl)) && `usw-${id}`
+      || '';
+    return id && [
+      id,
+      ucd && !isEmptyObj(ucd.vars),
+    ];
   }
 
   /** @returns {StyleObj} */
