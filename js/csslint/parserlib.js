@@ -3503,7 +3503,7 @@ self.parserlib = (() => {
       do {
         this._ws();
         if ((t = stream.get(true)).type === Tokens.IDENT) {
-          ids.push(t.value);
+          ids.push(this._layerName(t));
           this._ws();
           t = stream.get(true);
         }
@@ -3519,6 +3519,16 @@ self.parserlib = (() => {
       if (val !== ';') stream.mustMatch(Tokens.SEMICOLON);
       this.fire({type: 'layer', ids}, start);
       this._ws();
+    }
+
+    _layerName(start) {
+      let res = '';
+      const stream = this._tokenStream;
+      for (let t; (t = start || stream.match(Tokens.IDENT));) {
+        res += t.value + (stream.match(Tokens.DOT) ? '.' : '');
+        start = false;
+      }
+      return res;
     }
 
     _stylesheet() {
@@ -3590,7 +3600,7 @@ self.parserlib = (() => {
       this._ws();
       t = stream.get(true);
       if (/^layer(\()?$/i.test(t.value)) {
-        layer = RegExp.$1 ? stream.mustMatch(Tokens.IDENT) : '';
+        layer = RegExp.$1 ? this._layerName() : '';
         if (layer) stream.mustMatch(Tokens.RPAREN);
         this._ws();
         t = stream.get(true);
