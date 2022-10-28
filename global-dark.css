@@ -150,6 +150,9 @@
   }
   @supports (-moz-appearance: none) {
     /* Workarounds for FF bugs/quirks */
+    input {
+      color-scheme: dark;
+    }
     textarea {
       border: 1px solid var(--c65);
     }
