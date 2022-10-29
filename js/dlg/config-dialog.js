@@ -82,16 +82,15 @@ async function configDialog(style) {
         t('configOnChange'),
       ]));
     setupLivePrefs(['config.autosave']);
-
     if (isPopup) {
       adjustSizeForPopup(box);
     }
-
     box.on('change', onchange);
     buttons.save = $('[data-cmd="save"]', box);
     buttons.default = $('[data-cmd="default"]', box);
     buttons.close = $('[data-cmd="close"]', box);
     updateButtons();
+    updateOverlayScrollbar($('#message-box-contents'));
   }
 
   function onhide() {
@@ -121,6 +120,11 @@ async function configDialog(style) {
     buttons.save.disabled = !someDirty;
     buttons.default.disabled = vars.every(isDefault);
     buttons.close.textContent = t(someDirty ? 'confirmCancel' : 'confirmClose');
+  }
+
+  function updateOverlayScrollbar(el) {
+    el.classList.toggle('sb-overlay',
+      el.offsetWidth === el.clientWidth && el.scrollHeight > el.clientHeight);
   }
 
   async function save({anyChangeIsDirty = false} = {}) {

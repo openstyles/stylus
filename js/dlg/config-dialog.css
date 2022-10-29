@@ -4,10 +4,20 @@
 
 .config-dialog {
   --pad: 16px;
+  --padL: 24px;
+  --padR: 24px;
+  --icon: 16px;
+  --iconR: calc((var(--padR) - var(--icon)) / 2); /* center inside --padR */
 }
 
 .config-dialog #message-box-contents {
-  padding: var(--pad);
+  padding: var(--pad) var(--padR) var(--pad) var(--padL);
+  overflow-y: overlay;
+}
+
+.sb-overlay {
+  --padR: 32px;
+  --iconR: calc(var(--padR) - var(--icon)); /* left-align inside --padR */
 }
 
 #stylus-popup .config-dialog > div {
@@ -33,7 +43,6 @@
   display: flex;
   padding: .75em 0;
   align-items: center;
-  margin-right: calc(-1 * var(--pad)); /* for .config-reset-icon */
 }
 
 .config-body .select-resizer {
@@ -120,14 +129,16 @@
 }
 
 .config-reset-icon {
-  height: var(--pad);
+  height: var(--icon);
+  position: absolute;
+  right: var(--iconR);
 }
 
 .config-reset-icon .svg-icon {
   cursor: pointer;
   fill: var(--c65);
-  width: var(--pad);
-  height: var(--pad);
+  width: var(--icon);
+  height: var(--icon);
   padding: 0 1px;
   box-sizing: border-box;
   flex-shrink: 0;
