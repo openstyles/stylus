@@ -212,7 +212,7 @@ self.parserlib = (() => {
     'column-width': '<length> | auto',
     'columns': 1,
     'contain': 'none | strict | content | [ size || layout || style || paint ]',
-    'contain-intrinsic-size': 'none | <length>{1,2}',
+    'contain-intrinsic-size': '<contain-intrinsic>{1,2}',
     'container': '<container-name> [ / <container-type> ]?',
     'container-name': '<container-name>',
     'container-type': '<container-type>',
@@ -684,6 +684,9 @@ self.parserlib = (() => {
     Properties[`${k}-style`] = '<border-style>' + reps;
     Properties[`${k}-width`] = '<border-width>' + reps;
   }
+  for (const k of ['width', 'height', 'block-size', 'inline-size']) {
+    Properties[`contain-intrinsic-${k}`] = '<contain-intrinsic>';
+  }
 
   //#endregion
   //#region Types
@@ -882,6 +885,7 @@ self.parserlib = (() => {
     '<clip-path>': '<basic-shape> || <geometry-box>',
     '<color>': '<hex-color> | <named-color> | rgb( <rgb-color> ) | rgba( <rgb-color> ) | ' +
       'hsl( <hsl-color> ) | hsla( <hsl-color> ) | hwb( <hwb-color> )',
+    '<contain-intrinsic>': 'none | <length> | auto <length>',
     '<container-name>': 'none | <custom-ident>+',
     '<container-type>': 'normal || [ size | inline-size ]',
     '<content-list>':
