@@ -1,4 +1,4 @@
-/* global FIREFOX getActiveTab waitForTabUrl URLS */// toolbox.js
+/* global FIREFOX clamp getActiveTab waitForTabUrl URLS */// toolbox.js
 /* global chromeLocal */// storage-util.js
 'use strict';
 
@@ -165,8 +165,8 @@ const tokenMan = (() => {
     }
     if (hooks) hooks.query(query);
     const url = `${provider.authURL}?${new URLSearchParams(query)}`;
-    const width = Math.min(screen.availWidth - 100, 800);
-    const height = Math.min(screen.availHeight - 100, 800);
+    const width = clamp(screen.availWidth - 100, 400, 800);
+    const height = clamp(screen.availHeight - 100, 200, 800);
     const wnd = !alwaysUseTab && await browser.windows.getLastFocused();
     const finalUrl = await webextLaunchWebAuthFlow({
       url,
