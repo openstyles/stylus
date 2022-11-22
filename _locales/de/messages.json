@@ -88,6 +88,9 @@
   "clickToUninstall": {
     "message": "Klicken zum Deinstallieren"
   },
+  "cm_arrowKeysTraverse": {
+    "message": "Mit Pfeiltasten ↑↓ durch Abschnitte springen"
+  },
   "cm_autoCloseBrackets": {
     "message": "Klammern automatisch schließen"
   },

@@ -88,6 +88,9 @@
   "clickToUninstall": {
     "message": "クリックでアンインストール"
   },
+  "cm_arrowKeysTraverse": {
+    "message": "矢印キー↑↓セクション移動"
+  },
   "cm_autoCloseBrackets": {
     "message": "括弧と引用符を自動的に閉じる"
   },

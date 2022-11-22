@@ -91,6 +91,9 @@
   "clickToUninstall": {
     "message": "點選以解除安裝"
   },
+  "cm_arrowKeysTraverse": {
+    "message": "使用方向鍵↑↓檢視區塊"
+  },
   "cm_autoCloseBrackets": {
     "message": "自動關閉括號與引號"
   },

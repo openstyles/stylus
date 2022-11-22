@@ -91,6 +91,9 @@
   "clickToUninstall": {
     "message": "Kliknij, aby odinstalować"
   },
+  "cm_arrowKeysTraverse": {
+    "message": "Klawisze strzałek ↑↓ przemierzają sekcje"
+  },
   "cm_autoCloseBrackets": {
     "message": "Automatyczne zamykanie nawiasów i cytatów"
   },

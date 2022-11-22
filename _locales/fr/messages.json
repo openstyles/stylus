@@ -139,6 +139,9 @@
   "cm_theme": {
     "message": "Thème"
   },
+  "colorpickerPaletteHint": {
+    "message": "Clique-droit sur l'extrait de couleur pour changer ses types de lignes sources"
+  },
   "colorpickerSwitchFormatTooltip": {
     "message": "Changer de format : HEX → RGB → HSL.\nMaj-clic pour inverser la direction.\nÉgalement via les touches ⇞ (Page précédente), \f (Page précédente)."
   },
@@ -368,6 +371,9 @@
   "genericSavedMessage": {
     "message": "Enregistré"
   },
+  "genericSize": {
+    "message": "Taille"
+  },
   "genericTitle": {
     "message": "Titre"
   },
@@ -564,6 +570,9 @@
   },
   "manageMaxTargets": {
     "message": "Nombre d’items « s’applique à »"
+  },
+  "manageMinColumnWidth": {
+    "message": "Largeur de colonne minimale (en pixel ; 9999 désactive le mode multicolonne)"
   },
   "manageNewStyleAsUsercss": {
     "message": "en tant que Usercss"
@@ -868,6 +877,9 @@
   "optionsCustomizeUpdate": {
     "message": "Mises à jour"
   },
+  "optionsIconAuto": {
+    "message": "Corresponds au mode clair/sombre"
+  },
   "optionsIconDark": {
     "message": "Thème foncé"
   },
@@ -1015,6 +1027,9 @@
   },
   "prefShowBadge": {
     "message": "Afficher le nombre de styles actifs pour le site actuel sur le boutton Stylus"
+  },
+  "preferScheme": {
+    "message": "Préférence au mode clair/sombre"
   },
   "preferSchemeDark": {
     "message": "Obscur"

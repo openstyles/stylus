@@ -88,6 +88,9 @@
   "clickToUninstall": {
     "message": "Klik om te de-installeren"
   },
+  "cm_arrowKeysTraverse": {
+    "message": "Pijltoetsen ↑↓ bladeren door secties"
+  },
   "cm_autoCloseBrackets": {
     "message": "Haakjes en aanhalingstekens automatisch sluiten"
   },

@@ -50,7 +50,7 @@
     "message": "Nem lehet eltávolítani az utolsó 'érvényes erre' bejegyzést"
   },
   "appliesSpecify": {
-    "message": "Szűkítés"
+    "message": "Leszűkítés"
   },
   "appliesToEverything": {
     "message": "Minden"
@@ -84,6 +84,9 @@
   },
   "clickToUninstall": {
     "message": "Kattints az eltávolításhoz"
+  },
+  "cm_arrowKeysTraverse": {
+    "message": "Nyílbillentyűk használata ↑↓ a szekciók közötti lépegetéshez"
   },
   "cm_autoCloseBrackets": {
     "message": "Zárójelek és idézőjelek automatikus bezárása"
@@ -190,6 +193,44 @@
   "copy": {
     "message": "Másolás vágólapra"
   },
+  "customNameHint": {
+    "message": "Adjon meg egy egyedi nevet itt, hogy átnevezze a stílust az UI-on anélkül, hogy elrontaná a frissítését"
+  },
+  "customNameResetHint": {
+    "message": "Egyedi név használatának elhagyása, visszatérés a stílus saját nevéhes"
+  },
+  "dateAbbrDay": {
+    "message": "$value$n",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrHour": {
+    "message": "$value$ó",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrMonth": {
+    "message": "$value$h",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrYear": {
+    "message": "$value$é",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
   "dateInstalled": {
     "message": "Telepítés dátuma"
   },
@@ -214,11 +255,28 @@
   "disableAllStyles": {
     "message": "Összes stílus kikapcsolása"
   },
+  "disableAllStylesOff": {
+    "message": "A stílusok kikapcsolva"
+  },
   "disableStyleLabel": {
     "message": "Letiltás"
   },
+  "draftAction": {
+    "message": "Válasszon „Igen”-t a piszkozat betöltéséhez, vagy „Nem”-et, az elvetéséhez"
+  },
+  "draftTitle": {
+    "message": "$date$ ideje létrehozott piszkozat visszaállítása",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
   "dragDropMessage": {
     "message": "Ejtsd a biztonsági másolat fájlt bárhova erre az oldalra az importáláshoz!"
+  },
+  "dragDropUsercssTabstrip": {
+    "message": "A fájl letöltéséhez húzza azt a lapsávhoz (a böngészője azon területe, ahol a lapok címei jelennek meg)"
   },
   "editDeleteText": {
     "message": "Törlés"
@@ -240,6 +298,9 @@
       }
     }
   },
+  "editorSettings": {
+    "message": "Szerkesztőbeállítások"
+  },
   "enableStyleLabel": {
     "message": "Engedélyezés"
   },
@@ -248,6 +309,9 @@
   },
   "excludeStyleByUrlLabel": {
     "message": "Aktuális URL-t kivéve"
+  },
+  "exportCompatible": {
+    "message": "Exportálás (kompatibilis mód)"
   },
   "exportLabel": {
     "message": "Exportálás"
@@ -293,6 +357,9 @@
   "genericClone": {
     "message": "Klónozás"
   },
+  "genericDescription": {
+    "message": "Leírás"
+  },
   "genericDisabledLabel": {
     "message": "Letiltott"
   },
@@ -316,6 +383,12 @@
   },
   "genericSavedMessage": {
     "message": "Mentve"
+  },
+  "genericSize": {
+    "message": "Méret"
+  },
+  "genericTest": {
+    "message": "Tesztelés"
   },
   "genericTitle": {
     "message": "Cím"
@@ -343,6 +416,12 @@
   },
   "importLabel": {
     "message": "Importálás"
+  },
+  "importPreprocessor": {
+    "message": "Egy stílus <code>@prepocesszorral</code> nem fog működni a hagyományos módban. Át tudja állítani a szerkesztőt Usercss módra a következőképpen: 1.) Nyissa meg a stíluskezelőt, 2.) pipálja be a „Usercss-ként” jelölőnégyzetet, majd 3.) kattintson erre: \"Új stílus írása\".\n\nBe akarja tölteni mindenképpen?"
+  },
+  "importPreprocessorTitle": {
+    "message": "Lehetséges probléma a @preprocesszor miatt"
   },
   "importReplaceLabel": {
     "message": "Stílus felülírása"
@@ -411,6 +490,9 @@
   },
   "linkGetHelp": {
     "message": "Segítség kérése"
+  },
+  "linkGetShareStyles": {
+    "message": "Szerezz be és ossz meg stílusokat"
   },
   "linkGetStyles": {
     "message": "Szerezz be stílusokat"

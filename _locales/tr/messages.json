@@ -1,4 +1,7 @@
 {
+  "InaccessibleFileHint": {
+    "message": "Stylus bazı dosya türlerine erişemez (Ör: pdf, ,json dosyaları gibi)."
+  },
   "addStyleLabel": {
     "message": "Yeni stil oluşturun"
   },
@@ -208,6 +211,9 @@
   "disableAllStyles": {
     "message": "Tüm stilleri kapat"
   },
+  "disableAllStylesOff": {
+    "message": "Stiller kapatıldı"
+  },
   "disableStyleLabel": {
     "message": "Devre dışı bırak"
   },
@@ -237,6 +243,9 @@
       }
     }
   },
+  "editorSettings": {
+    "message": "Editör ayarları"
+  },
   "enableStyleLabel": {
     "message": "Etkinleştir"
   },
@@ -245,6 +254,9 @@
   },
   "excludeStyleByUrlLabel": {
     "message": "Mevcut URL'yi hariç tut"
+  },
+  "exportCompatible": {
+    "message": "Dışa Aktar (uyumlu mod)"
   },
   "exportLabel": {
     "message": "Dışa aktar"
@@ -290,6 +302,9 @@
   "genericClone": {
     "message": "Klon"
   },
+  "genericDescription": {
+    "message": "Açıklama"
+  },
   "genericDisabledLabel": {
     "message": "Devre dışı"
   },
@@ -313,6 +328,9 @@
   },
   "genericSavedMessage": {
     "message": "Kaydedildi"
+  },
+  "genericSize": {
+    "message": "Boyut"
   },
   "genericTitle": {
     "message": "Başlık"
@@ -410,6 +428,9 @@
   "linterIssues": {
     "message": "Sorunlar"
   },
+  "linterJSONError": {
+    "message": "Geçersiz JSON biçimi"
+  },
   "manageFaviconsGray": {
     "message": "Gri renkte"
   },
@@ -427,6 +448,9 @@
   },
   "manageNewUI": {
     "message": "Yeni yönetim ara yüzü düzeni"
+  },
+  "manageOnlyDisabled": {
+    "message": "Yalnızca devre dışı bırakılan stiller"
   },
   "manageOnlyEnabled": {
     "message": "Yalnızca etkin stiller"
@@ -482,6 +506,12 @@
   "optionsCheckUpdate": {
     "message": "Uygun tüm güncellemeleri kontrol et ve yükle."
   },
+  "optionsCustomizeBadge": {
+    "message": "Araç çubuğu simgesindeki rozet"
+  },
+  "optionsCustomizeIcon": {
+    "message": "Araç çubuğu simgesi"
+  },
   "optionsCustomizePopup": {
     "message": "Açılır pencere"
   },
@@ -490,6 +520,15 @@
   },
   "optionsHeading": {
     "message": "Seçenekler"
+  },
+  "optionsIconAuto": {
+    "message": "Koyu/Açık moda uy"
+  },
+  "optionsIconDark": {
+    "message": "Koyu tarayıcı temaları"
+  },
+  "optionsIconLight": {
+    "message": "Açık tarayıcı temaları"
   },
   "optionsOpen": {
     "message": "Aç"
@@ -518,6 +557,9 @@
   "optionsSyncLogin": {
     "message": "Giriş yap"
   },
+  "optionsSyncPassword": {
+    "message": "Şifre"
+  },
   "optionsSyncStatusConnected": {
     "message": "Bağlandı"
   },
@@ -529,6 +571,18 @@
   },
   "optionsSyncStatusDisconnecting": {
     "message": "Bağlantı kesiliyor..."
+  },
+  "optionsSyncStatusRelogin": {
+    "message": "Oturum sona erdi, lütfen tekrar giriş yapın."
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "Senkronize ediliyor..."
+  },
+  "optionsSyncSyncNow": {
+    "message": "Şimdi senkronize et"
+  },
+  "optionsSyncUsername": {
+    "message": "Kullanıcı adı"
   },
   "optionsUpdateImportNote": {
     "message": "Eski versiyonlardan ya da Stylish'ten stil yedeklerini içeri aktarırken, hepsinin güncel olduğundan emin olmak için stil yöneticisinden bir defa elle güncelleme kontrolü yapın"
@@ -563,6 +617,9 @@
   "readingStyles": {
     "message": "Stiller okunuyor..."
   },
+  "reload": {
+    "message": "Yenile"
+  },
   "replace": {
     "message": "Değiştir"
   },
@@ -578,8 +635,14 @@
   "retrieveDropboxSync": {
     "message": "Dropbox'a aktar"
   },
+  "saveAsTemplate": {
+    "message": "Şablon olarak kaydet"
+  },
   "search": {
     "message": "Ara"
+  },
+  "searchCaseSensitive": {
+    "message": "Büyük-küçük harf duyarlı"
   },
   "searchRegexp": {
     "message": "Regexp araması için /re/ sözdizimini (syntax) kullanın."
@@ -593,6 +656,21 @@
   "searchResultWeeklyCount": {
     "message": "Haftalık kurulum sayısı"
   },
+  "searchStylesAll": {
+    "message": "Tümü"
+  },
+  "searchStylesCode": {
+    "message": "CSS kodu"
+  },
+  "searchStylesMatchUrl": {
+    "message": "URL'ye göre"
+  },
+  "searchStylesMeta": {
+    "message": "Üst Veri"
+  },
+  "searchStylesName": {
+    "message": "Ad"
+  },
   "sectionAdd": {
     "message": "Başka bölüm ekle"
   },
@@ -602,8 +680,14 @@
   "sectionRemove": {
     "message": "Bölümü kaldır"
   },
+  "sectionRestore": {
+    "message": "Kaldırılan bölümü geri yükle"
+  },
   "sections": {
     "message": "Bölümler"
+  },
+  "settings": {
+    "message": "Ayarlar"
   },
   "shortcuts": {
     "message": "Kısayollar"
@@ -652,6 +736,15 @@
   "styleMozillaFormatHeading": {
     "message": "Mozilla Biçemi"
   },
+  "styleNotAppliedSchemeDark": {
+    "message": "Bu stil yalnızca Koyu Mod'da uygulanır"
+  },
+  "styleNotAppliedSchemeLight": {
+    "message": "Bu stil yalnızca Açık Mod'da uygulanır"
+  },
+  "stylePreferSchemeLabel": {
+    "message": "Koyu/Açık mod"
+  },
   "styleRegexpInvalidExplanation": {
     "message": "Hiç derlenemeyen bazı 'regexp ()' kuralları."
   },
@@ -676,6 +769,9 @@
   "styleSaveLabel": {
     "message": "Kaydet"
   },
+  "styleSettings": {
+    "message": "Stil ayarları"
+  },
   "styleToMozillaFormatHelp": {
     "message": "Kodun Mozilla biçimi, Firefox için Stylish ile kullanılabilir ve userstyles.org sitesine gönderilebilir."
   },
@@ -690,6 +786,9 @@
       }
     }
   },
+  "styleUpdateDiscardChanges": {
+    "message": "Bu stil editör dışında değiştirildi. Stili yenilemek ister misiniz?"
+  },
   "stylusUnavailableForURL": {
     "message": "Stylus bunun gibi sayfalarda çalışmaz."
   },
@@ -701,6 +800,12 @@
   },
   "syncDropboxStyles": {
     "message": "Dropbox'tan aktar"
+  },
+  "syncError": {
+    "message": "Senkronizasyon başarısız"
+  },
+  "syncErrorRelogin": {
+    "message": "Senkronizasyon başarısız. Çıkış yaptınız.\nStylus seçeneklerinden tekrar giriş yapın."
   },
   "toggleStyle": {
     "message": "Stili değiştir"
