@@ -4415,6 +4415,8 @@
     d.scroller.setAttribute("tabIndex", "-1");
     // The element in which the editor lives.
     d.wrapper = elt("div", [d.scrollbarFiller, d.gutterFiller, d.scroller], "CodeMirror");
+    // See #6982. FIXME remove when this has been fixed for a while in Chrome
+    if (chrome && chrome_version >= 105) { d.wrapper.style.clipPath = "inset(0px)"; }
 
     // This attribute is respected by automatic translation systems such as Google Translate,
     // and may also be respected by tools used by human translators.
@@ -9863,7 +9865,7 @@
 
   addLegacyProps(CodeMirror);
 
-  CodeMirror.version = "5.65.8";
+  CodeMirror.version = "5.65.10";
 
   return CodeMirror;
 
