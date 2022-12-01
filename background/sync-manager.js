@@ -183,15 +183,16 @@ const syncMan = (() => {
     ctrl = dbToCloud.dbToCloud({
       onGet: styleUtil.uuid2style,
       async onPut(doc) {
+        if (!doc) return; // TODO: delete it?
         const id = uuidIndex.get(doc._id);
-        const oldCust = uuidIndex.custom[id];
+        const oldCust = !id && uuidIndex.custom[doc.id];
         const oldDoc = oldCust || styleUtil.id2style(id);
         const diff = oldDoc ? compareRevision(oldDoc._rev, doc._rev) : -1;
         if (!diff) return;
         if (diff > 0) {
           syncMan.putDoc(oldDoc);
         } else if (oldCust) {
-          uuidIndex.custom[id] = doc;
+          uuidIndex.custom[doc.id] = doc;
         } else {
           delete doc.id;
           if (id) doc.id = id;
