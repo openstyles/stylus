@@ -73,7 +73,7 @@ const styleMan = (() => {
     _id: `${chrome.runtime.id}-${INJ_ORDER}`,
     _rev: 0,
   };
-  uuidIndex.addCustomId(orderWrap, {set: setOrder});
+  uuidIndex.addCustom(orderWrap, {set: setOrder});
 
   class MatchQuery {
     constructor(url) {

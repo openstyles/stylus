@@ -181,18 +181,18 @@ const syncMan = (() => {
   async function initController() {
     await require(['/vendor/db-to-cloud/db-to-cloud']); /* global dbToCloud */
     ctrl = dbToCloud.dbToCloud({
-      onGet: styleUtil.uuid2style,
+      onGet: _id => styleUtil.uuid2style(_id) || uuidIndex.custom[_id],
       async onPut(doc) {
         if (!doc) return; // TODO: delete it?
         const id = uuidIndex.get(doc._id);
-        const oldCust = !id && uuidIndex.custom[doc.id];
+        const oldCust = !id && uuidIndex.custom[doc._id];
         const oldDoc = oldCust || styleUtil.id2style(id);
         const diff = oldDoc ? compareRevision(oldDoc._rev, doc._rev) : -1;
         if (!diff) return;
         if (diff > 0) {
           syncMan.putDoc(oldDoc);
         } else if (oldCust) {
-          uuidIndex.custom[doc.id] = doc;
+          uuidIndex.custom[doc._id] = doc;
         } else {
           delete doc.id;
           if (id) doc.id = id;
