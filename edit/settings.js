@@ -15,9 +15,11 @@ async function StyleSettings() {
   await t.fetchTemplate('/edit/settings.html', SS_ID);
   const {style} = editor;
   const ui = t.template[SS_ID].cloneNode(true);
+  const elForm = $('.style-settings', ui);
   const elAuto = $('#config\\.autosave', ui);
   const elSave = $('#ss-save', ui);
   const elUpd = $('#ss-updatable', ui);
+  const textWidths = {};
   const pendingSetters = new Map();
   const updaters = [
     initCheckbox(elUpd, 'updatable', tryURL(style.updateUrl).href),
@@ -59,6 +61,10 @@ async function StyleSettings() {
       validate(el) {
         const val = el.value;
         el.rows = val.match(/^/gm).length + !val.endsWith('\n');
+        requestAnimationFrame(() => {
+          textWidths[type] = (el.scrollWidth | 0x7F) + 2;
+          elForm.style.width = Math.max(...Object.values(textWidths)) + 'px';
+        });
       },
     });
   }

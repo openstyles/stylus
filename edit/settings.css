@@ -4,10 +4,15 @@
 .compact-layout #help-popup.style-settings-popup {
   width: 90%;
 }
+#help-popup.style-settings-popup {
+  max-width: calc(100vw - 12rem);
+}
 .style-settings {
   padding: 0 1px; /* for focus outline */
   border: 0;
   margin: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .style-settings > * {
   display: block;
@@ -31,12 +36,9 @@
 }
 .style-settings textarea {
   resize: vertical;
-  min-width: 33vw;
   min-height: 2.5em;
   max-height: 50vh;
-}
-.style-settings textarea:not(:placeholder-shown) {
-  min-width: 50vw;
+  white-space: pre;
 }
 .style-settings .radio-wrapper {
   display: inline-flex;
