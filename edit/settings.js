@@ -91,8 +91,10 @@ async function StyleSettings() {
       let val = style[key];
       val = set(val != null ? val : defVal);
       // Skipping if unchanged to preserve the Undo history of the input
-      if (el[dom] !== val) el[dom] = val;
-      validate(el);
+      if (el[dom] !== val) {
+        el[dom] = val;
+        validate(el);
+      }
     };
   }
 
