@@ -38,7 +38,7 @@ const db = (() => {
   addAPI(/** @namespace API */ {
     drafts: getProxy('drafts'),
     /** Storage for big items that may exceed 8kB limit of chrome.storage.sync.
-     * To make an item syncable register it with uuidIndex.addCustomId. */
+     * To make an item syncable register it with uuidIndex.addCustom. */
     prefsDb: getProxy(prefs.STORAGE_KEY),
   });
   return {
