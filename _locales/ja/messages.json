@@ -230,7 +230,7 @@
     "message": "すべてのスタイルをオフにする"
   },
   "disableAllStylesOff": {
-    "message": "全スタイルをOFFにする"
+    "message": "すべてのスタイルがオフです"
   },
   "disableStyleLabel": {
     "message": "無効化"
@@ -910,7 +910,7 @@
     "message": "オプションをリセット"
   },
   "optionsStylusThemes": {
-    "message": "このページを含む任意のStylusのページで、ブラウザのツールバー内のStylusアイコンをクリックして、「スタイルを見つける」をクリックします"
+    "message": "このページを含む任意のStylusのページで、ブラウザのツールバー内のStylusアイコンをクリックして、「スタイルを検索」をクリックします"
   },
   "optionsSubheading": {
     "message": "その他のオプション"
