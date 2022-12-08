@@ -318,7 +318,7 @@ const styleMan = (() => {
     /** @returns {Promise<StyleObj>} */
     async install(style, reason = null) {
       if (ready.then) await ready;
-      reason = reason || dataMap.has(style.id) ? 'update' : 'install';
+      if (!reason) reason = dataMap.has(style.id) ? 'update' : 'install';
       style = mergeWithMapped(style);
       style.originalDigest = await calcStyleDigest(style);
       // FIXME: update updateDate? what about usercss config?
