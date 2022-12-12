@@ -388,10 +388,14 @@ function LivePreview() {
     update(newData) {
       data = newData;
       if (!port) {
-        if (!data.id || !data.enabled || !enabled) {
+        if (!data.id || !data.enabled || !enabled || !editor.dirty.isDirty()) {
           return;
         }
         createPreviewer();
+      } else if (!data.enabled) {
+        port.disconnect();
+        port = null;
+        return;
       }
       updatePreviewer(data);
     },
