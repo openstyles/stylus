@@ -40,6 +40,15 @@ async function SourceEditor() {
   editor.livePreview.init(preprocess);
   if (!style.id) setupNewStyle(await editor.template);
   createMetaCompiler(meta => {
+    const {vars} = style.usercssData;
+    if (vars) {
+      let v;
+      for (const [key, val] of Object.entries(meta.vars || {})) {
+        if ((v = vars[key]) && v.type === val.type && (v = v.value) != null) {
+          val.value = v; // TODO: check min/max? reuse assignVars?
+        }
+      }
+    }
     style.usercssData = meta;
     style.name = meta.name;
     style.url = meta.homepageURL || style.installationUrl;

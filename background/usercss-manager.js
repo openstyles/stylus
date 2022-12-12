@@ -22,7 +22,7 @@ const usercssMan = {
       // The type of var might be changed during the update. Set value to null if the value is invalid.
       for (const [key, v] of Object.entries(vars)) {
         const old = oldVars[key] && oldVars[key].value;
-        if (old) v.value = old;
+        if (old != null) v.value = old;
       }
       meta.vars = await API.worker.nullifyInvalidVars(vars);
     }
