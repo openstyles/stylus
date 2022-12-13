@@ -708,6 +708,7 @@ self.parserlib = (() => {
     frequency: 'hz,khz',
     length: 'cap,ch,em,ex,ic,lh,rlh,rem,' +
       'cm,mm,in,pc,pt,px,q,' +
+      'cqw,cqh,cqi,cqb,cqmin,cqmax,' + // containers
       'fr,' + // grids
       'vb,vi,vh,vw,vmin,vmax'.replace(/\w+/g, '$&,d$&,l$&,s$&'),
     resolution: 'dpcm,dpi,dppx,x',
