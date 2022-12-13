@@ -113,7 +113,7 @@ self.parserlib = (() => {
       'push-button | hyperlink | radio | radio-button | checkbox | menu-item | tab | menu | ' +
       'menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | ' +
       'outline-tree | range | field | combo-box | signature | password | normal',
-    'aspect-ratio': 'auto || [ <num0+> / <num0+> ]',
+    'aspect-ratio': 'auto || [ <num0+> [ / <num0+> ]? ]',
     'azimuth': '<azimuth>',
 
     'backdrop-filter': '<filter-function-list> | none',
