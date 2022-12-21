@@ -184,6 +184,7 @@ function initUnreachable(isStore) {
   } else {
     $('label', info).textContent = t('unreachableAMO');
     const note = [
+      !isStore && t('unreachableCSP'),
       isStore && t(FIREFOX >= 59 ? 'unreachableAMOHint' : 'unreachableMozSiteHintOldFF'),
       FIREFOX >= 60 && t('unreachableMozSiteHint'),
     ].filter(Boolean).join('\n');

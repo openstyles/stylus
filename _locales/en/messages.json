@@ -1775,6 +1775,10 @@
     "message": "Could not communicate with the page. Try reloading the tab.",
     "description": "Note in the toolbar popup usually on file:// URLs after [re]loading Stylus"
   },
+  "unreachableCSP": {
+    "message": "Try enabling \"Patch CSP\" in Stylus options.",
+    "description": "Note in the popup when opened on a site with CSP that breaks injection in Firefox"
+  },
   "unreachableFileHint": {
     "message": "Stylus can access file:// URLs only if you enable the corresponding checkbox for Stylus extension on chrome://extensions page.",
     "description": "Note in the toolbar popup for file:// URLs"
