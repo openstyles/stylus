@@ -1,4 +1,4 @@
-/* global $ $$ $create $remove focusAccessibility setInputValue toggleDataset */// dom.js
+/* global $ $$ $create $remove setInputValue toggleDataset */// dom.js
 /* global CodeMirror */
 /* global chromeLocal */// storage-util.js
 /* global colorMimicry */
@@ -62,31 +62,16 @@
 
   const ACTIONS = {
     key: {
-      'Enter': event => {
+      'Enter': () => {
         switch (document.activeElement) {
           case state.input:
-            if (state.dialog.dataset.type === 'find') {
-              const found = doSearch({canAdvance: false});
-              if (found) {
-                const target = $('.' + TARGET_CLASS);
-                const cm = target.CodeMirror;
-                /* Since this runs in `keydown` event we have to delay focusing
-                 * to prevent CodeMirror from seeing and handling the key */
-                setTimeout(() => (cm || target).focus());
-                if (cm) {
-                  const {from, to} = cm.state.search.searchPos;
-                  cm.jumpToPos(from, to);
-                }
-              }
-              destroyDialog({restoreFocus: !found});
-              return;
-            }
-            // fallthrough
           case state.input2:
-            doReplace();
-            return;
+            if (state.dialog.dataset.type === 'find') {
+              doSearch({reverse: false});
+            } else {
+              doReplace();
+            }
         }
-        return !focusAccessibility.closest(event.target);
       },
       'Esc': () => {
         destroyDialog({restoreFocus: true});
