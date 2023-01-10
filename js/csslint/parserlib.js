@@ -3762,9 +3762,7 @@ self.parserlib = (() => {
       } else {
         return;
       }
-      this._ws();
-      const c = stream.match(Tokens.IDENT).value;
-      if (c) {
+      for (let c; (this._ws(), c = stream.match(Tokens.IDENT).value);) {
         if (/^and$/i.test(c) || !type && /^or$/i.test(c)) {
           this._ws();
           expressions.push(this._mediaExpression());
