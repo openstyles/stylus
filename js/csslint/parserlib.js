@@ -33,23 +33,14 @@ self.parserlib = (() => {
   // Global keywords that can be set for any property are conveniently listed in `all` prop:
   // https://drafts.csswg.org/css-cascade/#all-shorthand
   const GlobalKeywords = ['initial', 'inherit', 'revert', 'unset'];
-  const rxGlobalKeyword = new RegExp(`^(${GlobalKeywords.join('|')})$`, 'i');
-  /** @param {string} [ex] |-separated exceptions
-   * @param {RegExp} [re] custom regexp check
-   * @param {function} [alt] alternative check */
-  const customIdentChecker = (ex, re, alt) =>
-    (re = new RegExp(`^(?!(default|${ex ? ex + '|' : ''}${GlobalKeywords.join('|')})$)${re ? re.source : ''}`, 'i')) &&
-    (p => p.tokenType === Tokens.IDENT && re.test(p.value) || alt && alt(p)); // eslint-disable-line no-use-before-define
-
   const Properties = {
+    __proto__: null,
     'accent-color': 'auto | <color>',
     'align-items': 'normal | stretch | <baseline-position> | [ <overflow-position>? <self-position> ]',
-    'align-content': '<align-content>',
-    'align-self': '<align-self>',
+    'align-content': 'normal | <baseline-position> | <content-distribution> | ' +
+          '<overflow-position>? <content-position>',
+    'align-self': 'auto | normal | stretch | <baseline-position> | <overflow-position>? <self-position>',
     'all': GlobalKeywords.join(' | '),
-    'alignment-adjust': 'auto | baseline | before-edge | text-before-edge | middle | central | ' +
-      'after-edge | text-after-edge | ideographic | alphabetic | hanging | ' +
-      'mathematical | <len-pct>',
     'alignment-baseline': 'auto | baseline | use-script | before-edge | text-before-edge | ' +
       'after-edge | text-after-edge | central | middle | ideographic | alphabetic | ' +
       'hanging | mathematical',
@@ -114,10 +105,11 @@ self.parserlib = (() => {
       'menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | ' +
       'outline-tree | range | field | combo-box | signature | password | normal',
     'aspect-ratio': 'auto || [ <num0+> [ / <num0+> ]? ]',
-    'azimuth': '<azimuth>',
-
+    'azimuth': '<angle> | leftwards | rightwards | [ ' +
+      '[ left-side | far-left | left | center-left | center | center-right | right | far-right | right-side ' +
+      '] || behind ]',
     'backdrop-filter': '<filter-function-list> | none',
-    'backface-visibility': 'visible | hidden',
+    'backface-visibility': '<vis-hid>',
     'background': '[ <bg-layer> , ]* <final-bg-layer>',
     'background-attachment': '<attachment>#',
     'background-blend-mode': '<blend-mode>',
@@ -131,31 +123,24 @@ self.parserlib = (() => {
     'background-repeat': '<repeat-style>#',
     'background-size': '<bg-size>#',
     'baseline-shift': 'baseline | sub | super | <len-pct>',
-    'behavior': 1,
-    'binding': 1,
     'bleed': '<length>',
     'block-size': '<width>',
-    'bookmark-label': '<content-list>',
-    'bookmark-level': 'none | <integer>',
-    'bookmark-state': 'open | closed',
-    'bookmark-target': 'none | <uri>',
-    'border-boundary': 'none | parent | display',
     'border-collapse': 'collapse | separate',
     'border-image': '[ none | <image> ] || <border-image-slice> ' +
       '[ / <border-image-width> | / <border-image-width>? / <border-image-outset> ]? || ' +
       '<border-image-repeat>',
-    'border-image-outset': '<border-image-outset>',
-    'border-image-repeat': '<border-image-repeat>',
+    'border-image-outset': '[ <length> | <number> ]{1,4}',
+    'border-image-repeat': '[ stretch | repeat | round | space ]{1,2}',
     'border-image-slice': '<border-image-slice>',
     'border-image-source': '<image> | none',
-    'border-image-width': '<border-image-width>',
+    'border-image-width': '[ <len-pct> | <number> | auto ]{1,4}',
     'border-spacing': '<length>{1,2}',
 
     'border-bottom-left-radius': '<len-pct>{1,2}',
     'border-bottom-right-radius': '<len-pct>{1,2}',
     'border-end-end-radius': '<len-pct>{1,2}',
     'border-end-start-radius': '<len-pct>{1,2}',
-    'border-radius': '<border-radius>',
+    'border-radius': '<len-pct0+>{1,4} [ / <len-pct0+>{1,4} ]?',
     'border-start-end-radius': '<len-pct>{1,2}',
     'border-start-start-radius': '<len-pct>{1,2}',
     'border-top-left-radius': '<len-pct>{1,2}',
@@ -163,47 +148,27 @@ self.parserlib = (() => {
 
     'bottom': '<width>',
     'box-decoration-break': 'slice | clone',
-    'box-shadow': '<box-shadow>',
+    'box-shadow': 'none | <shadow>#',
     'box-sizing': 'content-box | border-box',
-    'break-after': 'auto | always | avoid | left | right | page | column | avoid-page | avoid-column',
-    'break-before': 'auto | always | avoid | left | right | page | column | avoid-page | avoid-column',
+    'break-after': '<break-inside> | always | left | right | page | column',
+    'break-before': '<break-after>',
     'break-inside': 'auto | avoid | avoid-page | avoid-column',
-    '-moz-box-align': 1,
-    '-moz-box-decoration-break': 1,
-    '-moz-box-direction': 1,
-    '-moz-box-flex': 1,
-    '-moz-box-flex-group': 1,
-    '-moz-box-lines': 1,
-    '-moz-box-ordinal-group': 1,
-    '-moz-box-orient': 1,
-    '-moz-box-pack': 1,
-    '-o-box-decoration-break': 1,
-    '-webkit-box-align': 1,
-    '-webkit-box-decoration-break': 1,
-    '-webkit-box-direction': 1,
-    '-webkit-box-flex': 1,
-    '-webkit-box-flex-group': 1,
-    '-webkit-box-lines': 1,
-    '-webkit-box-ordinal-group': 1,
-    '-webkit-box-orient': 1,
-    '-webkit-box-pack': 1,
 
     'caret-color': 'auto | <color>',
     'caption-side': 'top | bottom | inline-start | inline-end',
     'clear': 'none | right | left | both | inline-start | inline-end',
     'clip': '<rect> | auto',
-    'clip-path': '<clip-source> | <clip-path> | none',
+    'clip-path': '<uri> | [ <basic-shape> || <geometry-box> ] | none',
     'clip-rule': 'nonzero | evenodd',
     'color': '<color>',
-    'color-adjust': 'economy | exact',
     'color-interpolation': 'auto | sRGB | linearRGB',
-    'color-interpolation-filters': 'auto | sRGB | linearRGB',
+    'color-interpolation-filters': '<color-interpolation>',
     'color-profile': 1,
     'color-rendering': 'auto | optimizeSpeed | optimizeQuality',
     'color-scheme': 'normal | [ light | dark | <custom-ident> ]+ && only?',
     'column-count': '<integer> | auto',
     'column-fill': 'auto | balance',
-    'column-gap': '<column-gap>',
+    'column-gap': 'normal | <len-pct>',
     'column-rule': '<border-shorthand>',
     'column-rule-color': '<color>',
     'column-rule-style': '<border-style>',
@@ -214,16 +179,13 @@ self.parserlib = (() => {
     'contain': 'none | strict | content | [ size || layout || style || paint ]',
     'contain-intrinsic-size': '<contain-intrinsic>{1,2}',
     'container': '<container-name> [ / <container-type> ]?',
-    'container-name': '<container-name>',
-    'container-type': '<container-type>',
+    'container-name': 'none | <custom-ident>+',
+    'container-type': 'normal || [ size | inline-size ]',
     'content': 'normal | none | <content-list> [ / <string> ]?',
-    'content-visibility': 'visible | auto | hidden',
+    'content-visibility': 'auto | <vis-hid>',
     'counter-increment': '<counter>',
     'counter-reset': '<counter>',
     'counter-set': '<counter>',
-    'cue': 'cue-after | cue-before',
-    'cue-after': 1,
-    'cue-before': 1,
     'cursor': '[ <uri> [ <number> <number> ]? , ]* ' +
       '[ auto | default | none | context-menu | help | pointer | progress | wait | ' +
       'cell | crosshair | text | vertical-text | alias | copy | move | no-drop | ' +
@@ -239,29 +201,15 @@ self.parserlib = (() => {
       '-webkit-box | -webkit-inline-box | -ms-flexbox',
     'dominant-baseline': 'auto | use-script | no-change | reset-size | ideographic | alphabetic | ' +
       'hanging | mathematical | central | middle | text-after-edge | text-before-edge',
-    'drop-initial-after-adjust': 'central | middle | after-edge | text-after-edge | ideographic | ' +
-      'alphabetic | mathematical | <len-pct>',
-    'drop-initial-after-align': 'baseline | use-script | before-edge | text-before-edge | ' +
-      'after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | ' +
-      'mathematical',
-    'drop-initial-before-adjust': 'before-edge | text-before-edge | central | middle | ' +
-      'hanging | mathematical | <len-pct>',
-    'drop-initial-before-align': 'caps-height | baseline | use-script | before-edge | ' +
-      'text-before-edge | after-edge | text-after-edge | central | middle | ideographic | ' +
-      'alphabetic | hanging | mathematical',
-    'drop-initial-size': 'auto | line | <len-pct>',
-    'drop-initial-value': '<integer>',
 
     'elevation': '<angle> | below | level | above | higher | lower',
     'empty-cells': 'show | hide',
-    'enable-background': 1,
+    'enable-background': 1, // SVG
 
     'fill': '<paint>',
-    'fill-opacity': '<opacity-value>',
+    'fill-opacity': '<opacity>',
     'fill-rule': 'nonzero | evenodd',
     'filter': '<filter-function-list> | <ie-function> | none',
-    'fit': 'fill | hidden | meet | slice',
-    'fit-position': 1,
     'flex': '<flex-shorthand>',
     'flex-basis': '<width>',
     'flex-direction': 'row | row-reverse | column | column-reverse',
@@ -270,28 +218,29 @@ self.parserlib = (() => {
     'flex-shrink': '<number>',
     'flex-wrap': 'nowrap | wrap | wrap-reverse',
     'float': 'left | right | none | inline-start | inline-end',
-    'float-offset': 1,
     'flood-color': 1,
-    'flood-opacity': '<opacity-value>',
+    'flood-opacity': '<opacity>',
     // matching no-pct first because Matcher doesn't retry for a longer match in nested definitions
     'font': '<font-short-tweak-no-pct>? <font-short-core> | ' +
       '[ <font-short-tweak-no-pct> || <pct> ]? <font-short-core> | ' +
       'caption | icon | menu | message-box | small-caption | status-bar',
-    'font-family': '<font-family>',
-    'font-feature-settings': '<feature-tag-value># | normal',
+    'font-family': '[ <generic-family> | <family-name> ]#',
+    'font-feature-settings': '[ <ascii4> [ <int0+> | on | off ]? ]# | normal',
     'font-kerning': 'auto | normal | none',
     'font-language-override': 'normal | <string>',
     'font-optical-sizing': 'auto | none',
     'font-palette': 'none | normal | light | dark | <custom-ident>',
-    'font-size': '<font-size>',
+    'font-size': '<absolute-size> | <relative-size> | <len-pct0+>',
     'font-size-adjust': '<number> | none',
-    'font-stretch': '<font-stretch>',
-    'font-style': '<font-style>',
+    'font-stretch': '<font-stretch-named> | <pct>',
+    'font-style': 'normal | italic | oblique <angle>?',
     'font-synthesis': 'none | [ weight || style ]',
     'font-synthesis-style': 'auto | none',
     'font-synthesis-weight': 'auto | none',
     'font-synthesis-small-caps': 'auto | none',
-    'font-variant': '<font-variant>',
+    'font-variant': 'normal | none | [ ' +
+      '<font-variant-ligatures> || <font-variant-alternates> || ' +
+      '<font-variant-caps> || <font-variant-numeric> || <font-variant-east-asian> ]',
     'font-variant-alternates': '<font-variant-alternates> | normal',
     'font-variant-caps': '<font-variant-caps> | normal',
     'font-variant-east-asian': '<font-variant-east-asian> | normal',
@@ -300,53 +249,44 @@ self.parserlib = (() => {
     'font-variant-numeric': '<font-variant-numeric> | normal',
     'font-variant-position': 'normal | sub | super',
     'font-variation-settings': 'normal | [ <string> <number> ]#',
-    'font-weight': '<font-weight>',
+    'font-weight': 'normal | bold | bolder | lighter | <num1-1000>',
     'forced-color-adjust': 'auto | none | preserve-parent-color',
-    '-ms-flex-align': 1,
-    '-ms-flex-order': 1,
-    '-ms-flex-pack': 1,
 
-    'gap': '<row-gap> <column-gap>?',
+    'gap': '<column-gap>{1,2}',
     'glyph-orientation-horizontal': '<glyph-angle>',
     'glyph-orientation-vertical': 'auto | <glyph-angle>',
 
     'grid': '<grid-template> | <grid-template-rows> / [ auto-flow && dense? ] <grid-auto-columns>? | ' +
       '[ auto-flow && dense? ] <grid-auto-rows>? / <grid-template-columns>',
     'grid-area': '<grid-line> [ / <grid-line> ]{0,3}',
-    'grid-auto-columns': '<grid-auto-columns>',
+    'grid-auto-columns': '<track-size>+',
     'grid-auto-flow': '[ row | column ] || dense',
-    'grid-auto-rows': '<grid-auto-rows>',
+    'grid-auto-rows': '<track-size>+',
     'grid-column': '<grid-line> [ / <grid-line> ]?',
-    'grid-column-start': '<grid-line>',
     'grid-column-end': '<grid-line>',
+    'grid-column-gap': -1,
+    'grid-column-start': '<grid-line>',
+    'grid-gap': -1,
     'grid-row': '<grid-line> [ / <grid-line> ]?',
-    'grid-row-start': '<grid-line>',
     'grid-row-end': '<grid-line>',
+    'grid-row-gap': -1,
+    'grid-row-start': '<grid-line>',
     'grid-template': 'none | [ <grid-template-rows> / <grid-template-columns> ] | ' +
       '[ <line-names>? <string> <track-size>? <line-names>? ]+ [ / <explicit-track-list> ]?',
     'grid-template-areas': 'none | <string>+',
-    'grid-template-columns': '<grid-template-columns>',
-    'grid-template-rows': '<grid-template-rows>',
-    'grid-row-gap': '<row-gap>',
-    'grid-column-gap': '<column-gap>',
-    'grid-gap': '<row-gap> <column-gap>?',
+    'grid-template-columns': '<grid-template-rows>',
+    'grid-template-rows': 'none | <track-list> | <auto-track-list>',
 
     'hanging-punctuation': 'none | [ first || [ force-end | allow-end ] || last ]',
     'height': 'auto | <width-height>',
-    'hyphenate-after': '<integer> | auto',
-    'hyphenate-before': '<integer> | auto',
     'hyphenate-character': '<string> | auto',
-    'hyphenate-lines': 'no-limit | <integer>',
-    'hyphenate-resource': 1,
+    'hyphenate-limit-chars': '[ auto | <integer> ]{1,3}',
     'hyphens': 'none | manual | auto',
 
-    'icon': 1,
     'image-orientation': 'from-image | none | [ <angle> || flip ]',
     'image-rendering': 'auto | smooth | high-quality | crisp-edges | pixelated | ' +
       'optimizeSpeed | optimizeQuality | -webkit-optimize-contrast',
     'image-resolution': 1,
-    'ime-mode': 'auto | normal | active | inactive | disabled',
-    'inline-box-align': 'last | <integer>',
     'inline-size': '<width>',
     'inset': '<width>{1,4}',
     'inset-block': '<width>{1,2}',
@@ -357,11 +297,13 @@ self.parserlib = (() => {
     'inset-inline-start': '<width>',
     'isolation': 'auto | isolate',
 
-    'justify-content': '<justify-content>',
+    'justify-content': 'normal | <content-distribution> | ' +
+      '<overflow-position>? [ <content-position> | left | right ]',
     'justify-items': 'normal | stretch | <baseline-position> | ' +
       '[ <overflow-position>? <self-position> ] | ' +
       '[ legacy || [ left | right | center ] ]',
-    'justify-self': '<justify-self>',
+    'justify-self': 'auto | normal | stretch | <baseline-position> | ' +
+      '<overflow-position>? [ <self-position> | left | right ]',
 
     'kerning': 'auto | <length>',
 
@@ -369,12 +311,8 @@ self.parserlib = (() => {
     'letter-spacing': '<length> | normal',
     'line-height': '<line-height>',
     'line-break': 'auto | loose | normal | strict | anywhere',
-    'line-stacking': 1,
-    'line-stacking-ruby': 'exclude-ruby | include-ruby',
-    'line-stacking-shift': 'consider-shifts | disregard-shifts',
-    'line-stacking-strategy': 'inline-line-height | block-line-height | max-height | grid-height',
-    'list-style': 1,
-    'list-style-image': '<uri> | none',
+    'list-style': '<list-style-position> || <list-style-image> || <list-style-type>',
+    'list-style-image': '<image> | none',
     'list-style-position': 'inside | outside',
     'list-style-type': '<string> | disc | circle | square | decimal | decimal-leading-zero | ' +
       'lower-roman | upper-roman | lower-greek | lower-latin | upper-latin | armenian | ' +
@@ -391,20 +329,14 @@ self.parserlib = (() => {
     'margin-inline': '<width>{1,2}',
     'margin-inline-end': '<width>',
     'margin-inline-start': '<width>',
-    'mark': 1,
-    'mark-after': 1,
-    'mark-before': 1,
-    'marker': 1,
+    'marker': -1,
     'marker-end': 1,
     'marker-mid': 1,
     'marker-start': 1,
-    'marks': 1,
-    'marquee-direction': 1,
-    'marquee-play-count': 1,
-    'marquee-speed': 1,
-    'marquee-style': 1,
-    'mask': 1,
-    'mask-image': '[ none | <image> | <uri> ]#',
+    'mask': '[ [ none | <image> ] || <position> [ / <bg-size> ]? || <repeat-style> || ' +
+      '<geometry-box> || [ <geometry-box> | no-clip ] || [ add | subtract | intersect | exclude ] || ' +
+      '[ alpha | luminance | match-source ] ]#',
+    'mask-image': '[ none | <image> ]#',
     'max-height': 'none | <width-height>',
     'max-width': 'none | <width-height>',
     'min-height': 'auto | <width-height>',
@@ -414,19 +346,18 @@ self.parserlib = (() => {
     'min-block-size': '<len-pct>',
     'min-inline-size': '<len-pct>',
     'mix-blend-mode': '<blend-mode>',
-    'move-to': 1,
-
-    'nav-down': 1,
-    'nav-index': 1,
-    'nav-left': 1,
-    'nav-right': 1,
-    'nav-up': 1,
 
     'object-fit': 'fill | contain | cover | none | scale-down',
-    'object-overflow': 'clip | visible',
     'object-position': '<position>',
     'object-view-box': 'none | <inset> | <rect> | <xywh>',
-    'opacity': '<opacity-value> | <pct>',
+    'offset': '[ <offset-position>? <offset-path> [ <len-pct> || <offset-rotate> ]? | <offset-position> ] ' +
+      '[ / <offset-anchor> ]?',
+    'offset-anchor': 'auto | <position>',
+    'offset-distance': '<len-pct>',
+    'offset-path': 'none | ray() | path() | <uri> | [ <basic-shape> && <coord-box>? ] | <coord-box>',
+    'offset-position': 'auto | <position>',
+    'offset-rotate': '[ auto | reverse ] || <angle>',
+    'opacity': '<opacity> | <pct>',
     'order': '<integer>',
     'orphans': '<integer>',
     'outline': '[ <color> | invert ] || [ auto | <border-style> ] || <border-width>',
@@ -439,7 +370,6 @@ self.parserlib = (() => {
     'overflow-block': '<overflow>',
     'overflow-clip-margin': 'visual-box | <len0+>',
     'overflow-inline': '<overflow>',
-    'overflow-style': 1,
     'overflow-wrap': 'normal | break-word | anywhere',
     'overflow-x': '<overflow>',
     'overflow-y': '<overflow>',
@@ -460,50 +390,32 @@ self.parserlib = (() => {
     'padding-left': '<len-pct0+>',
     'padding-right': '<len-pct0+>',
     'padding-top': '<len-pct0+>',
-    'page': 1,
+    'page': 'auto | <custom-ident>',
     'page-break-after': 'auto | always | avoid | left | right | recto | verso',
-    'page-break-before': 'auto | always | avoid | left | right | recto | verso',
+    'page-break-before': '<page-break-after>',
     'page-break-inside': 'auto | avoid',
-    'page-policy': 1,
-    'pause': 1,
-    'pause-after': 1,
-    'pause-before': 1,
     'perspective': 'none | <len0+>',
     'perspective-origin': '<position>',
-    'phonemes': 1,
-    'pitch': 1,
-    'pitch-range': 1,
     'place-content': '<align-content> <justify-content>?',
     'place-items': '[ normal | stretch | <baseline-position> | <self-position> ] ' +
       '[ normal | stretch | <baseline-position> | <self-position> ]?',
     'place-self': '<align-self> <justify-self>?',
-    'play-during': 1,
     'pointer-events': 'auto | none | visiblePainted | visibleFill | visibleStroke | visible | ' +
       'painted | fill | stroke | all',
-    'position': 'static | relative | absolute | fixed | sticky | -webkit-sticky',
-    'presentation-level': 1,
-    'punctuation-trim': 1,
+    'position': 'static | relative | absolute | fixed | sticky',
+    'print-color-adjust': 'economy | exact',
 
     'quotes': 1,
 
     'rendering-intent': 1,
     'resize': 'none | both | horizontal | vertical | block | inline',
-    'rest': 1,
-    'rest-after': 1,
-    'rest-before': 1,
-    'richness': 1,
     'right': '<width>',
     'rotate': 'none | [ x | y | z | <number>{3} ]? && <angle>',
-    'rotation': 1,
-    'rotation-point': 1,
-    'row-gap': '<row-gap>',
+    'row-gap': '<column-gap>',
     'ruby-align': 1,
-    'ruby-overhang': 1,
     'ruby-position': 1,
-    'ruby-span': 1,
 
     'scale': 'none | <num-pct>{1,3}',
-
     'scroll-behavior': 'auto | smooth',
     'scroll-margin': '<length>{1,4}',
     'scroll-margin-bottom': '<length>',
@@ -530,67 +442,54 @@ self.parserlib = (() => {
     'scroll-snap-align': '[ none | start | end | center ]{1,2}',
     'scroll-snap-stop': 'normal | always',
     'scroll-snap-type': 'none | [ x | y | block | inline | both ] [ mandatory | proximity ]?',
-
     'scrollbar-color': 'auto | dark | light | <color>{2}',
     'scrollbar-gutter': 'auto | stable && both-edges?',
     'scrollbar-width': 'auto | thin | none',
-    'shape-inside': 'auto | outside-shape | [ <basic-shape> || shape-box ] | <image> | display',
     'shape-rendering': 'auto | optimizeSpeed | crispEdges | geometricPrecision',
-    'size': 1,
-    'speak': 'normal | none | spell-out',
-    'speak-header': 'once | always',
-    'speak-numeral': 'digits | continuous',
-    'speak-punctuation': 'code | none',
-    'speech-rate': 1,
+    'speak': 'auto | never | always',
+    'speak-as': 1,
     'stop-color': 1,
-    'stop-opacity': '<opacity-value>',
-    'stress': 1,
-    'string-set': 1,
+    'stop-opacity': '<opacity>',
     'stroke': '<paint>',
     'stroke-dasharray': 'none | <dasharray>',
     'stroke-dashoffset': '<len-pct> | <number>',
     'stroke-linecap': 'butt | round | square',
     'stroke-linejoin': 'miter | miter-clip | round | bevel | arcs',
     'stroke-miterlimit': '<num0+>',
-    'stroke-opacity': '<opacity-value>',
+    'stroke-opacity': '<opacity>',
     'stroke-width': '<len-pct> | <number>',
 
     'table-layout': 'auto | fixed',
     'tab-size': '<number> | <length>',
-    'target': 1,
-    'target-name': 1,
-    'target-new': 1,
-    'target-position': 1,
     'text-align': '<text-align> | justify-all',
-    'text-align-all': '<text-align>',
     'text-align-last': '<text-align> | auto',
     'text-anchor': 'start | middle | end',
     'text-decoration': '<text-decoration-line> || <text-decoration-style> || <color>',
     'text-decoration-color': '<color>',
-    'text-decoration-line': '<text-decoration-line>',
+    'text-decoration-line': 'none | [ underline || overline || line-through || blink ]',
     'text-decoration-skip': 'none | ' +
       '[ objects || [ spaces | [ leading-spaces || trailing-spaces ] ] || edges || box-decoration ]',
-    'text-decoration-style': '<text-decoration-style>',
+    'text-decoration-style': 'solid | double | dotted | dashed | wavy',
     'text-emphasis': '<text-emphasis-style> || <color>',
     'text-emphasis-color': '<color>',
-    'text-emphasis-style': '<text-emphasis-style>',
+    'text-emphasis-style': 'none | <string> | ' +
+      '[ [ filled | open ] || [ dot | circle | double-circle | triangle | sesame ] ]',
     'text-emphasis-position': '[ over | under ] && [ right | left ]?',
-    'text-height': 1,
     'text-indent': '<len-pct> && hanging? && each-line?',
     'text-justify': 'auto | none | inter-word | inter-character',
-    'text-outline': 1,
     'text-overflow': 'clip | ellipsis',
     'text-rendering': 'auto | optimizeSpeed | optimizeLegibility | geometricPrecision',
     'text-shadow': 'none | [ <color>? && <length>{2,3} ]#',
     'text-transform': 'none | [ capitalize | uppercase | lowercase ] || full-width || full-size-kana',
     'text-underline-position': 'auto | [ under || [ left | right ] ]',
-    'text-wrap': 'normal | none | avoid',
     'top': '<width>',
-    'touch-action': 'auto | none | ' +
-      'pan-x | pan-y | pan-left | pan-right | pan-up | pan-down | manipulation',
-    'transform': 'none | <transform-function>+',
+    'touch-action': 'auto | none | pan-x | pan-y | pan-left | pan-right | pan-up | pan-down | manipulation',
+    'transform': 'none | <fn:transform>+',
     'transform-box': 'border-box | fill-box | view-box',
-    'transform-origin': '<transform-origin>',
+    'transform-origin': '[ left | center | right | <len-pct> ] ' +
+      '[ top | center | bottom | <len-pct> ] <length>? | ' +
+      '[ left | center | right | top | bottom | <len-pct> ] | ' +
+      '[ [ center | left | right ] && [ center | top | bottom ] ] <length>?',
     'transform-style': 'flat | preserve-3d',
     'transition': '<transition>#',
     'transition-delay': '<time>#',
@@ -601,27 +500,16 @@ self.parserlib = (() => {
 
     'unicode-range': '<unicode-range>#',
     'unicode-bidi': 'normal | embed | isolate | bidi-override | isolate-override | plaintext',
-    'user-modify': 'read-only | read-write | write-only',
     'user-select': 'auto | text | none | contain | all',
 
     'vertical-align': 'auto | use-script | baseline | sub | super | top | text-top | ' +
       'central | middle | bottom | text-bottom | <len-pct>',
-    'visibility': 'visible | hidden | collapse',
-    'voice-balance': 1,
-    'voice-duration': 1,
-    'voice-family': 1,
-    'voice-pitch': 1,
-    'voice-pitch-range': 1,
-    'voice-rate': 1,
-    'voice-stress': 1,
-    'voice-volume': 1,
-    'volume': 1,
+    'visibility': '<vis-hid> | collapse',
 
     'white-space': 'normal | pre | nowrap | pre-wrap | break-spaces | pre-line',
-    'white-space-collapse': 1,
     'widows': '<integer>',
     'width': 'auto | <width-height>',
-    'will-change': '<will-change>',
+    'will-change': 'auto | <animateable-feature>#',
     'word-break': 'normal | keep-all | break-all | break-word',
     'word-spacing': '<length> | normal',
     'word-wrap': 'normal | break-word | anywhere',
@@ -637,9 +525,11 @@ self.parserlib = (() => {
     '-webkit-text-stroke': '<border-width> || <color>',
     '-webkit-text-stroke-color': '<color>',
     '-webkit-text-stroke-width': '<border-width>',
+    '-webkit-user-modify': 'read-only | read-write | write-only',
   };
 
   const ScopedProperties = {
+    __proto__: null,
     '@font-face': Object.assign({
       'ascent-override': '[ normal | <pct0+> ]{1,2}',
       'descent-override': '[ normal | <pct0+> ]{1,2}',
@@ -664,6 +554,14 @@ self.parserlib = (() => {
     }, ...[
       'font-family',
     ].map(p => ({[p]: Properties[p]}))),
+
+    '@page': {
+      '': true, // include Properties
+      'bleed': 'auto | <length>',
+      'marks': 'none | [ crop || cross ]',
+      'size': '<length>{1,2} | auto | [ [ A3 | A4 | A5 | B4 | B5 | JIS-B4 | JIS-B5 | ' +
+        'ledger | legal | letter ] || [ portrait | landscape ] ]',
+    },
   };
 
   for (const [k, reps] of Object.entries({
@@ -691,18 +589,6 @@ self.parserlib = (() => {
   //#endregion
   //#region Types
 
-  const TYPES = /** @namespace Parser */ {
-    DEFAULT_TYPE: 0,
-    COMBINATOR_TYPE: 1,
-    MEDIA_FEATURE_TYPE: 2,
-    MEDIA_QUERY_TYPE: 3,
-    PROPERTY_NAME_TYPE: 4,
-    PROPERTY_VALUE_TYPE: 5,
-    PROPERTY_VALUE_PART_TYPE: 6,
-    SELECTOR_TYPE: 7,
-    SELECTOR_PART_TYPE: 8,
-    SELECTOR_SUB_PART_TYPE: 9,
-  };
   const UNITS = JSON.parse(`{${Object.entries({
     angle: 'deg,grad,rad,turn',
     frequency: 'hz,khz',
@@ -715,143 +601,140 @@ self.parserlib = (() => {
     time: 'ms,s',
   }).map(([type, units]) => units.replace(/\w+/g, `"$&":"${type}"`)).join(',')}}`);
   // Sticky `y` flag must be used in expressions used with peekTest and readMatch
-  const rxIdentStart = /[-\\_a-zA-Z\u00A0-\uFFFF]/u;
-  const rxNameChar = /[-\\_\da-zA-Z\u00A0-\uFFFF]/u;
+  const rxIdentStartPct = /[-\\_a-zA-Z\u00A0-\uFFFF%]/uy;
   const rxNameCharNoEsc = /[-_\da-zA-Z\u00A0-\uFFFF]+/yu; // must not match \\
+  // CSS2 system colors: https://www.w3.org/TR/css3-color/#css2-system
+  // CSS4 system colors: https://drafts.csswg.org/css-color-4/#css-system-colors
+  // 2-5 times faster than Array.includes(val.toLowerCase()) or a branched regexp like /a(foo|bar)/i
+  const rxNamedColor = /^(currentColor|transparent|aliceblue|antiquewhite|aqua|aquamarine|azure|beige|bisque|black|blanchedalmond|blue|blueviolet|brown|burlywood|cadetblue|chartreuse|chocolate|coral|cornflowerblue|cornsilk|crimson|cyan|darkblue|darkcyan|darkgoldenrod|darkgray|darkgrey|darkgreen|darkkhaki|darkmagenta|darkolivegreen|darkorange|darkorchid|darkred|darksalmon|darkseagreen|darkslateblue|darkslategray|darkslategrey|darkturquoise|darkviolet|deeppink|deepskyblue|dimgray|dimgrey|dodgerblue|firebrick|floralwhite|forestgreen|fuchsia|gainsboro|ghostwhite|gold|goldenrod|gray|grey|green|greenyellow|honeydew|hotpink|indianred|indigo|ivory|khaki|lavender|lavenderblush|lawngreen|lemonchiffon|lightblue|lightcoral|lightcyan|lightgoldenrodyellow|lightgray|lightgrey|lightgreen|lightpink|lightsalmon|lightseagreen|lightskyblue|lightslategray|lightslategrey|lightsteelblue|lightyellow|lime|limegreen|linen|magenta|maroon|mediumaquamarine|mediumblue|mediumorchid|mediumpurple|mediumseagreen|mediumslateblue|mediumspringgreen|mediumturquoise|mediumvioletred|midnightblue|mintcream|mistyrose|moccasin|navajowhite|navy|oldlace|olive|olivedrab|orange|orangered|orchid|palegoldenrod|palegreen|paleturquoise|palevioletred|papayawhip|peachpuff|peru|pink|plum|powderblue|purple|rebeccapurple|red|rosybrown|royalblue|saddlebrown|salmon|sandybrown|seagreen|seashell|sienna|silver|skyblue|slateblue|slategray|slategrey|snow|springgreen|steelblue|tan|teal|thistle|tomato|turquoise|violet|wheat|white|whitesmoke|yellow|yellowgreen|ActiveBorder|ActiveCaption|ActiveText|AppWorkspace|Background|ButtonBorder|ButtonFace|ButtonHighlight|ButtonShadow|ButtonText|Canvas|CanvasText|CaptionText|Field|FieldText|GrayText|Highlight|HighlightText|InactiveBorder|InactiveCaption|InactiveCaptionText|InfoBackground|InfoText|LinkText|Mark|MarkText|Menu|MenuText|Scrollbar|ThreeDDarkShadow|ThreeDFace|ThreeDHighlight|ThreeDLightShadow|ThreeDShadow|VisitedText|Window|WindowFrame|WindowText)$/i;
   const rxUnquotedUrlCharNoEsc = /[-!#$%&*-[\]-~\u00A0-\uFFFF]+/yu; // must not match \\
   const rxVendorPrefix = /^(?:-(webkit|moz|ms|o)-)?(.+)/i;
-  const rxCalc = /^(?:-(webkit|moz|ms|o)-)?(calc|min|max|clamp)\(/i;
 
   //#endregion
   //#region ValidationTypes - definitions
 
-  /** Allowed syntax: text, |, <syntax>, func() */
   const VTSimple = {
-    '<absolute-size>': 'xx-small | x-small | small | medium | large | x-large | xx-large',
-    '<animateable-feature>': 'scroll-position | contents | <animateable-feature-name>',
+    __proto__: null,
     '<animateable-feature-name>': customIdentChecker('will-change|auto|scroll-position|contents'),
     '<angle>': p => p.type === 'angle' || p.isCalc,
-    '<angle-or-0>': p => p.text === '0' || p.type === 'angle' || p.isCalc,
+    '<angle-or-0>': p => p.is0 || p.type === 'angle' || p.isCalc,
+    '<ascii4>': p => p.type === 'string' && p.text.length === 4 && !/[^\x20-\x7E]/.test(p.text),
     '<attr>': vtIsAttr,
-    '<attachment>': 'scroll | fixed | local',
-    '<bg-image>': '<image> | none',
-    '<blend-mode>': 'normal | multiply | screen | overlay | darken | lighten | color-dodge | ' +
-      'color-burn | hard-light | soft-light | difference | exclusion | hue | ' +
-      'saturation | color | luminosity | plus-darker | plus-lighter',
-    '<border-style>': 'none | ' +
-      'hidden | dotted | dashed | solid | double | groove | ridge | inset | outset',
-    '<border-width>': '<length> | thin | medium | thick',
-    '<box>': 'padding-box | border-box | content-box',
-    '<clip-source>': '<uri>',
-    '<column-gap>': 'normal | <len-pct>',
-    '<content-distribution>': 'space-between | space-around | space-evenly | stretch',
-    '<content-position>': 'center | start | end | flex-start | flex-end',
     '<custom-ident>': customIdentChecker(),
-    '<display-box>': 'contents | none',
-    '<display-inside>': 'flow | flow-root | table | flex | grid | ruby',
-    '<display-internal>': 'table-row-group | table-header-group | table-footer-group | ' +
-      'table-row | table-cell | table-column-group | table-column | table-caption | ' +
-      'ruby-base | ruby-text | ruby-base-container | ruby-text-container',
-    '<display-legacy>': 'inline-block | inline-table | inline-flex | inline-grid',
-    '<display-outside>': 'block | inline | run-in',
-    '<feature-tag-value>': p => p.type === 'function' && /^[A-Z0-9]{4}$/i.test(p),
+    '<custom-prop>': p => p.type === 'custom-prop',
     '<flex>': p => p.type === 'grid' && p.value >= 0 || p.isCalc,
-    '<flex-basis>': '<width>',
-    '<flex-direction>': 'row | row-reverse | column | column-reverse',
-    '<flex-grow>': '<number>',
-    '<flex-shrink>': '<number>',
-    '<flex-wrap>': 'nowrap | wrap | wrap-reverse',
-    '<font-size>': '<absolute-size> | <relative-size> | <len-pct0+>',
-    '<font-stretch>': '<font-stretch-named> | <pct>',
-    '<font-stretch-named>': 'normal | ultra-condensed | extra-condensed | condensed | ' +
-      'semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded',
-    '<font-variant-caps>':
-      'small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps',
-    '<font-variant-css21>': 'normal | small-caps',
-    '<font-weight>': 'normal | bold | bolder | lighter | <num1-1000>',
-    '<generic-family>': 'serif | sans-serif | cursive | fantasy | monospace | system-ui | ' +
-      'emoji | math | fangsong | ui-serif | ui-sans-serif | ui-monospace | ui-rounded',
-    '<geometry-box>': '<shape-box> | fill-box | stroke-box | view-box',
     '<glyph-angle>': p => p.type === 'angle' && p.units === 'deg',
-    '<gradient>': 'radial-gradient() | linear-gradient() | conic-gradient() | gradient() | ' +
-      'repeating-radial-gradient() | repeating-linear-gradient() | repeating-conic-gradient() | ' +
-      'repeating-gradient()',
-    '<hex-color>': p => p.tokenType === Tokens.HASH, //eslint-disable-line no-use-before-define
-    '<icccolor>': 'cielab() | cielch() | cielchab() | icc-color() | icc-named-color()',
+    '<hue>': p => p.type === 'number' || p.type === 'angle' || p.isCalc,
     '<ident-for-grid>': customIdentChecker('span|auto'),
-    '<ident-not-generic-family>': p => vtIsIdent(p) && !VTSimple['<generic-family>'](p),
-    '<ident-not-none>': p => vtIsIdent(p) && !/^none$/i.test(p.value),
+    '<ident-not-none>': p => p.tokenType === Tokens.IDENT && !p.is === 'none', //eslint-disable-line no-use-before-define
     '<ie-function>': p => p.tokenType === Tokens.IE_FUNCTION, //eslint-disable-line no-use-before-define
-    '<image>': '<uri> | <gradient> | cross-fade()',
-    '<inflexible-breadth>': '<len-pct> | min-content | max-content | auto',
-    '<inset>': 'inset( <len-pct>{1,4} <border-radius-round>? )',
-    '<integer>': p => p.isInt || p.isCalc,
-    '<int0+>': p => p.isInt && p.value >= 0 || p.isCalc,
-    '<int1+>': p => p.isInt && p.value > 0 || p.isCalc,
+    '<integer>': p => p.isInt,
+    '<int0+>': p => p.isInt && p.value >= 0,
+    '<int1+>': p => p.isInt && p.value > 0,
     '<length>': vtIsLength,
-    '<len0+>': p =>
-      p.value >= 0 && vtIsLength(p) || p.isCalc,
-    '<len-pct>': p => vtIsLength(p) || vtIsPct(p),
-    '<len-pct0+>': p =>
-      p.value >= 0 && (p.type === 'percentage' || vtIsLength(p)) || p.isCalc,
-    '<len-pct-side>': '<len-pct> | closest-side | farthest-side',
-    '<line>': p => p.isInt,
-    '<line-height>': '<number> | <len-pct> | normal',
-    '<line-names>': p =>
-      p.tokenType === Tokens.LBRACKET && // eslint-disable-line no-use-before-define
-      p.text.endsWith(']') && (
-        !p.expr ||
-        !p.expr.parts.length ||
-        p.expr.parts.every(VTSimple['<ident-for-grid>'], VTSimple)
-      ),
-    //eslint-disable-next-line no-use-before-define
-    '<named-color>': p => rxColors.test(p.text),
+    '<len0+>': p => p.value >= 0 && vtIsLength(p) || p.isCalc,
+    '<len-pct>': p => p.type === 'length' || p.type === 'pct' || p.is0 || p.isCalc,
+    '<len-pct0+>': p => p.value > 0 ? p.type === 'pct' || p.type === 'length' : p.is0 || p.isCalc,
     '<number>': p => p.type === 'number' || p.isCalc,
-    '<num0+>': p =>
-      p.value >= 0 && p.type === 'number' || p.isCalc,
-    '<num1-1000>': p => (p.type === 'number' && p.value >= 1 && p.value <= 1000) || p.isCalc,
-    '<num-pct>': p => p.type === 'number' || p.type === 'percentage' || p.isCalc,
-    '<num-pct0+>': p =>
-      p.value >= 0 && (p.type === 'number' || p.type === 'percentage') || p.isCalc,
-    '<opacity-value>': p => p.type === 'number' && p.value >= 0 && p.value <= 1 || p.isCalc,
-    '<overflow>': 'visible | hidden | clip | scroll | auto',
-    '<overflow-position>': 'unsafe | safe',
+    '<num0+>': p => p.type === 'number' && p.value >= 0 || p.isCalc,
+    '<num1-1000>': p => p.type === 'number' && p.value >= 1 && p.value <= 1000 || p.isCalc,
+    '<num-pct>': p => p.type === 'number' || p.type === 'pct' || p.isCalc,
+    '<num-pct0+>': p => (p.type === 'number' || p.type === 'pct') && p.value >= 0 || p.isCalc,
+    '<num-pct-none>': p => p.type === 'number' || p.type === 'pct' || p.is === 'none' || p.isCalc,
+    '<opacity>': p => p.type === 'number' && p.value >= 0 && p.value <= 1 || p.isCalc,
     '<pct>': vtIsPct,
-    '<pct0+>': p =>
-      p.value >= 0 && p.type === 'percentage' || p.isCalc,
-    '<rect>': 'rect( [ <length> | auto ]#{4} <border-radius-round>? )',
-    '<relative-size>': 'smaller | larger',
-    '<row-gap>': '<column-gap>',
-    '<self-position>': 'center | start | end | self-start | self-end | flex-start | flex-end',
-    '<shape-box>': '<box> | margin-box',
-    '<single-animation-direction>': 'normal | reverse | alternate | alternate-reverse',
-    '<single-animation-fill-mode>': 'none | forwards | backwards | both',
-    '<keyframes-name>': customIdentChecker('', /^-?[a-z_][-a-z0-9_]+$/, p => p.type === 'string'),
+    '<pct0+>': p => p.type === 'pct' && p.value >= 0 || p.isCalc,
+    '<pct0-100>': p => p.type === 'pct' && p.value >= 0 && p.value <= 100 || p.isCalc,
+    '<keyframes-name>': customIdentChecker('', '^-?[a-z_][-a-z0-9_]+$', p => p.type === 'string'),
     '<string>': p => p.type === 'string',
-    '<text-align>': 'start | end | left | right | center | justify | match-parent',
-    '<text-decoration-style>': 'solid | double | dotted | dashed | wavy',
     '<time>': p => p.type === 'time',
-    '<track-breadth>': '<len-pct> | <flex> | min-content | max-content | auto',
-    '<unicode-range>': p => /^U\+[0-9a-f?]{1,6}(-[0-9a-f?]{1,6})?\s*$/i.test(p),
-    '<unit>': ({text: t}) => t === '%' || t in UNITS || t.toLowerCase() in UNITS,
+    '<unicode-range>': p => /^U\+[0-9a-f?]{1,6}(-[0-9a-f?]{1,6})?\s*$/i.test(p.text),
     '<uri>': p => p.type === 'uri',
-    '<width>': p => /^(0|auto)$/i.test(p.text) || vtIsLength(p) || vtIsPct(p),
-    '<xywh>': 'xywh( <len-pct>{2} <len-pct0+>{2} <border-radius-round>? )',
+    '<width>': p => p.is === 'auto' || VTSimple['<len-pct>'],
   };
+  for (const type of ['hsl', 'hwb', 'lab', 'lch', 'rgb']) {
+    const rx = RegExp(`^(none|${type.replace(/./g, '$&|')}alpha)$`, 'i');
+    VTSimple[`<rel-${type}>`] = p => rx.test(p.text);
+    VTSimple[`<rel-${type}-np>`] = p => p.type === 'number' || p.type === 'pct' || p.isCalc ||
+      rx.test(p.text);
+  }
+
+  const VTFunctions = {
+    color: {
+      __proto__: null,
+      'color-mix': 'in [ <re:srgb(-linear)?|(ok)?lab|xyz(-d(50|65))?> ' +
+        '| <re:hsl|hwb|(ok)?lch> [ <re:(short|long)er|(in|de)creasing> hue ]? ' +
+        '] , [ <color> && <pct0-100>? ]#{2}',
+      'color': 'from <color> [ ' +
+          '<custom-prop> [ <num-pct-none> <custom-ident> ]# | ' +
+          '<rgb-xyz> [ <num-pct-none> | <re:[rgbxyz]> ]{3} ' +
+        '] [ / <num-pct-none> | <re:[rgbxyz]> ]? | ' +
+        '[ <rgb-xyz> <num-pct-none>{3} | <custom-prop> <num-pct-none># ] <alpha>?',
+      'hsl': '<hue> , <pct>#{2} [ , <num-pct0+> ]? | ' +
+        '[ <hue> | none ] <num-pct-none>{2} <alpha>? | ' +
+        'from <color> [ <hue> | <rel-hsl> ] <rel-hsl-np>{2} [ / <rel-hsl-np> ]?',
+      'hwb': '[ <hue> | none ] <num-pct-none>{2} <alpha>? | ' +
+        'from <color> [ <hue> | <rel-hwb> ] <rel-hwb-np>{2} [ / <rel-hwb-np> ]?',
+      'lab': '<num-pct-none>{3} <alpha>? | ' +
+        'from <color> <rel-lab-np>{3} [ / <rel-lab-np> ]?',
+      'lch': '<num-pct-none>{2} [ <hue> | none ] <alpha>? | ' +
+        'from <color> <rel-lch-np>{2} [ <hue> | <rel-lch> ] [ / <rel-lch-np> ]?',
+      'rgb': '[ <number>#{3} | <pct>#{3} ] [ , <num-pct0+> ]? | ' +
+        '<num-pct-none>{3} <alpha>? | ' +
+        'from <color> <rel-rgb-np>{3} [ / <rel-rgb-np> ]?',
+    },
+    filter: {
+      __proto__: null,
+      'blur': '<length>?',
+      'brightness': '<num-pct>?',
+      'contrast': '<num-pct>?',
+      'drop-shadow': '[ <length>{2,3} && <color>? ]?',
+      'grayscale': '<num-pct>?',
+      'hue-rotate': '<angle-or-0>?',
+      'invert': '<num-pct>?',
+      'opacity': '<num-pct>?',
+      'saturate': '<num-pct>?',
+      'sepia': '<num-pct>?',
+    },
+    transform: {
+      __proto__: null,
+      matrix: '<number>#{6}',
+      matrix3d: '<number>#{16}',
+      perspective: '<len0+> | none',
+      rotate: '<angle-or-0> | none',
+      rotate3d: '<number>#{3} , <angle-or-0>',
+      rotateX: '<angle-or-0>',
+      rotateY: '<angle-or-0>',
+      rotateZ: '<angle-or-0>',
+      scale: '[ <num-pct> ]#{1,2} | none',
+      scale3d: '<num-pct>#{3}',
+      scaleX: '<num-pct>',
+      scaleY: '<num-pct>',
+      scaleZ: '<num-pct>',
+      skew: '<angle-or-0> [ , <angle-or-0> ]?',
+      skewX: '<angle-or-0>',
+      skewY: '<angle-or-0>',
+      translate: '<len-pct>#{1,2} | none',
+      translate3d: '<len-pct>#{2} , <length>',
+      translateX: '<len-pct>',
+      translateY: '<len-pct>',
+      translateZ: '<length>',
+    },
+  };
+  for (const k of ['hsl', 'rgb']) VTFunctions.color[k + 'a'] = VTFunctions.color[k];
+  for (const k of ['lab', 'lch']) VTFunctions.color['ok' + k] = VTFunctions.color[k];
 
   const VTComplex = {
-    '<align-content>': 'normal | <baseline-position> | <content-distribution> | ' +
-      '<overflow-position>? <content-position>',
-    '<align-self>':
-      'auto | normal | stretch | <baseline-position> | <overflow-position>? <self-position>',
+    __proto__: null,
+    '<absolute-size>': 'xx-small | x-small | small | medium | large | x-large | xx-large',
+    '<alpha>': '/ <num-pct-none>',
+    '<animateable-feature>': 'scroll-position | contents | <animateable-feature-name>',
+    '<attachment>': 'scroll | fixed | local',
     '<auto-repeat>':
       'repeat( [ auto-fill | auto-fit ] , [ <line-names>? <fixed-size> ]+ <line-names>? )',
     '<auto-track-list>':
       '[ <line-names>? [ <fixed-size> | <fixed-repeat> ] ]* <line-names>? <auto-repeat> ' +
       '[ <line-names>? [ <fixed-size> | <fixed-repeat> ] ]* <line-names>?',
-    '<azimuth>':
-      '<angle> | [ [ left-side | far-left | left | center-left | center | center-right | ' +
-      'right | far-right | right-side ] || behind ] | leftwards | rightwards',
     '<baseline-position>': '[ first | last ]? baseline',
     '<basic-shape>':
       '<inset> | ' +
@@ -859,6 +742,7 @@ self.parserlib = (() => {
       'ellipse( [ <len-pct-side>{2} ]? [ at <position> ]? ) | ' +
       'path( [ [ nonzero | evenodd ] , ]? <string> ) | ' +
       'polygon( [ [ nonzero | evenodd | inherit ] , ]? [ <len-pct> <len-pct> ]# )',
+    '<bg-image>': '<image> | none',
     '<bg-layer>':
       '<bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <box>{1,2}',
     '<bg-position>':
@@ -866,73 +750,67 @@ self.parserlib = (() => {
       '[ left | center | right | <len-pct> ] [ top | center | bottom | <len-pct> ] | ' +
       '[ left | center | right | top | bottom | <len-pct> ]',
     '<bg-size>': '[ <len-pct> | auto ]{1,2} | cover | contain',
-    '<border-image-outset>': '[ <length> | <number> ]{1,4}',
-    '<border-image-repeat>': '[ stretch | repeat | round | space ]{1,2}',
-    '<border-image-slice>': Matcher =>
+    '<blend-mode>': 'normal | multiply | screen | overlay | darken | lighten | color-dodge | ' +
+      'color-burn | hard-light | soft-light | difference | exclusion | hue | ' +
+      'saturation | color | luminosity | plus-darker | plus-lighter',
+    '<border-image-slice>': M => M.many([true],
       // [<number> | <pct>]{1,4} && fill?
       // but 'fill' can appear between any of the numbers
-      Matcher.many(
-        [true],
-        Matcher.parse('<num-pct0+>'),
-        Matcher.parse('<num-pct0+>'),
-        Matcher.parse('<num-pct0+>'),
-        Matcher.parse('<num-pct0+>'),
-        'fill'),
-    '<border-image-width>': '[ <len-pct> | <number> | auto ]{1,4}',
-    '<border-radius>': '<len-pct0+>{1,4} [ / <len-pct0+>{1,4} ]?',
+      ['<num-pct0+>', '<num-pct0+>', '<num-pct0+>', '<num-pct0+>', 'fill'].map(M.fromType)),
     '<border-radius-round>': 'round <border-radius>',
     '<border-shorthand>': '<border-width> || <border-style> || <color>',
-    '<box-shadow>': 'none | <shadow>#',
-    '<clip-path>': '<basic-shape> || <geometry-box>',
-    '<color>': '<hex-color> | <named-color> | rgb( <rgb-color> ) | rgba( <rgb-color> ) | ' +
-      'hsl( <hsl-color> ) | hsla( <hsl-color> ) | hwb( <hwb-color> )',
+    '<border-style>': 'none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset',
+    '<border-width>': '<length> | thin | medium | thick',
+    '<box>': 'padding-box | border-box | content-box',
+    '<box-fsv>': 'fill-box | stroke-box | view-box',
+    '<color>': M => M.seq(
+      new M((expr, p) => p.type === 'color', '<named-color> | <hex-color> |'),
+      M.fromType('<fn:color?>')),
+    '<coord-box>': '<box> | <box-fsv>',
     '<contain-intrinsic>': 'none | <length> | auto <length>',
-    '<container-name>': 'none | <custom-ident>+',
-    '<container-type>': 'normal || [ size | inline-size ]',
+    '<content-distribution>': 'space-between | space-around | space-evenly | stretch',
     '<content-list>':
       '[ <string> | <image> | <attr> | ' +
       'content( text | before | after | first-letter | marker ) | ' +
       'counter() | counters() | leader() | ' +
-      '[ open-quote | close-quote | no-open-quote | no-close-quote ] | ' +
-      '[ target-counter() | target-counters() | target-text() ] ]+',
+      'open-quote | close-quote | no-open-quote | no-close-quote | ' +
+      'target-counter() | target-counters() | target-text() ]+',
+    '<content-position>': 'center | start | end | flex-start | flex-end',
     '<counter>': '[ <ident-not-none> <integer>? ]+ | none',
     '<cubic-bezier-timing-function>': 'ease | ease-in | ease-out | ease-in-out | ' +
       'cubic-bezier( <number>#{4} )',
-    '<dasharray>': Matcher =>
-      Matcher.parse('<len-pct0+> | <num0+>')
-        .braces(1, Infinity, '#', Matcher.parse(',').braces(0, 1, '?')),
+    '<dasharray>': M => M.parse('<len-pct0+> | <num0+>')
+      .braces(1, Infinity, '#', M.fromType(',').braces(0, 1, '?')),
+    '<display-box>': 'contents | none',
+    '<display-inside>': 'flow | flow-root | table | flex | grid | ruby',
+    '<display-internal>': 'table-row-group | table-header-group | table-footer-group | ' +
+      'table-row | table-cell | table-column-group | table-column | table-caption | ' +
+      'ruby-base | ruby-text | ruby-base-container | ruby-text-container',
+    '<display-legacy>': 'inline-block | inline-table | inline-flex | inline-grid',
     '<display-listitem>': '<display-outside>? && [ flow | flow-root ]? && list-item',
+    '<display-outside>': 'block | inline | run-in',
     '<explicit-track-list>': '[ <line-names>? <track-size> ]+ <line-names>?',
-    '<family-name>': '<string> | <ident-not-generic-family> <custom-ident>*',
+    '<family-name>': '<string> | <custom-ident>+',
     // https://drafts.fxtf.org/filter-effects/#supported-filter-functions
     // Value may be omitted in which case the default is used
-    '<filter-function>':
-      'blur( <length>? ) | ' +
-      'brightness( <num-pct>? ) | ' +
-      'contrast( <num-pct>? ) | ' +
-      'drop-shadow( [ <length>{2,3} && <color>? ]? ) | ' +
-      'grayscale( <num-pct>? ) | ' +
-      'hue-rotate( <angle-or-0>? ) | ' +
-      'invert( <num-pct>? ) | ' +
-      'opacity( <num-pct>? ) | ' +
-      'saturate( <num-pct>? ) | ' +
-      'sepia( <num-pct>? )',
-    '<filter-function-list>': '[ <filter-function> | <uri> ]+',
+    '<filter-function-list>': '[ <fn:filter> | <uri> ]+',
     '<final-bg-layer>': '<color> || <bg-image> || <bg-position> [ / <bg-size> ]? || ' +
       '<repeat-style> || <attachment> || <box>{1,2}',
-    '<fixed-repeat>':
-      'repeat( [ <int1+> ] , [ <line-names>? <fixed-size> ]+ <line-names>? )',
-    '<fixed-size>': '<len-pct> | ' +
-      'minmax( <len-pct> , <track-breadth> ) | ' +
-      'minmax( <inflexible-breadth> , <len-pct> )',
-    '<flex-shorthand>': 'none | [ <flex-grow> <flex-shrink>? || <flex-basis> ]',
-    '<font-family>': '[ <generic-family> | <family-name> ]#',
-    '<font-style>': 'normal | italic | oblique <angle>?',
+    '<fixed-repeat>': 'repeat( [ <int1+> ] , [ <line-names>? <fixed-size> ]+ <line-names>? )',
+    '<fixed-size>': '<len-pct> | minmax( <len-pct> , <track-breadth> | <inflexible-breadth> , <len-pct> )',
+    '<flex-direction>': 'row | row-reverse | column | column-reverse',
+    '<flex-shorthand>': 'none | [ <number>{1,2} || <width> ]',
+    '<flex-wrap>': 'nowrap | wrap | wrap-reverse',
     '<font-short-core>': '<font-size> [ / <line-height> ]? <font-family>',
     '<font-short-tweak-no-pct>':
-      '<font-style> || <font-variant-css21> || <font-weight> || <font-stretch-named>',
+      '<font-style> || [ normal | small-caps ] || <font-weight> || <font-stretch-named>',
+    '<font-stretch-named>': 'normal | ultra-condensed | extra-condensed | condensed | ' +
+      'semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded',
     '<font-variant-alternates>': 'stylistic() || historical-forms || styleset() || ' +
       'character-variant() || swash() || ornaments() || annotation()',
+    '<font-variant-caps>': 'small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps',
+    '<font-variant-east-asian>': '[ jis78 | jis83 | jis90 | jis04 | simplified | traditional ] || ' +
+      '[ full-width | proportional-width ] || ruby',
     '<font-variant-ligatures>': '[ common-ligatures | no-common-ligatures ] || ' +
       '[ discretionary-ligatures | no-discretionary-ligatures ] || ' +
       '[ historical-ligatures | no-historical-ligatures ] || ' +
@@ -941,27 +819,22 @@ self.parserlib = (() => {
       '[ proportional-nums | tabular-nums ] || ' +
       '[ diagonal-fractions | stacked-fractions ] || ' +
       'ordinal || slashed-zero',
-    '<font-variant-east-asian>': '[ jis78 | jis83 | jis90 | jis04 | simplified | traditional ] || ' +
-      '[ full-width | proportional-width ] || ruby',
-    '<font-variant>': 'normal | none | [ ' +
-      '<font-variant-ligatures> || <font-variant-alternates> || ' +
-      '<font-variant-caps> || <font-variant-numeric> || <font-variant-east-asian> ]',
-    '<grid-auto-columns>': '<track-size>+',
-    '<grid-auto-rows>': '<track-size>+',
+    '<generic-family>': 'serif | sans-serif | cursive | fantasy | monospace | system-ui | ' +
+      'emoji | math | fangsong | ui-serif | ui-sans-serif | ui-monospace | ui-rounded',
+    '<geometry-box>': '<shape-box> | <box2>',
+    '<gradient>': 'radial-gradient() | linear-gradient() | conic-gradient() | gradient() | ' +
+      'repeating-radial-gradient() | repeating-linear-gradient() | repeating-conic-gradient() | ' +
+      'repeating-gradient()',
     '<grid-line>': 'auto | [ <integer> && <ident-for-grid>? ] | <ident-for-grid> | ' +
       '[ span && [ <integer> || <ident-for-grid> ] ]',
-    '<grid-template>': 'none | [ <grid-template-rows> / <grid-template-columns> ] | ' +
-      '[ <line-names>? <string> <track-size>? <line-names>? ]+ ' +
-      '[ / <explicit-track-list> ]?',
-    '<grid-template-columns>': 'none | <track-list> | <auto-track-list>',
-    '<grid-template-rows>': '<grid-template-columns>',
-    '<hsl-color>': '[ <number> | <angle> ] <pct>{2} [ / <num-pct0+> ]? | ' +
-      '[ <number> | <angle> ] , <pct>#{2} [ , <num-pct0+> ]?',
-    '<hwb-color>': '[ <number> | <angle> | none ] [ <pct> | none ] [ <pct> | none ] [ / [ <num-pct> | none ] ]?',
-    '<justify-content>': 'normal | <content-distribution> | ' +
-      '<overflow-position>? [ <content-position> | left | right ]',
-    '<justify-self>': 'auto | normal | stretch | <baseline-position> | <overflow-position>? ' +
-      '[ <self-position> | left | right ]',
+    '<image>': '<uri> | <gradient> | cross-fade()',
+    '<inflexible-breadth>': '<len-pct> | min-content | max-content | auto',
+    '<inset>': 'inset( <len-pct>{1,4} <border-radius-round>? )',
+    '<len-pct-side>': '<len-pct> | closest-side | farthest-side',
+    '<line-height>': '<number> | <len-pct> | normal',
+    '<line-names>': '"[" <ident-for-grid> "]"',
+    '<overflow-position>': 'unsafe | safe',
+    '<overflow>': '<vis-hid> | clip | scroll | auto',
     '<overscroll>': 'contain | none | auto',
     '<paint>': 'none | <color> | <uri> [ none | <color> ]? | context-fill | context-stroke',
     // Because our `alt` combinator is ordered, we need to test these
@@ -971,264 +844,40 @@ self.parserlib = (() => {
       '[ left | center | right | <len-pct> ] ' +
       '[ top | center | bottom | <len-pct> ]? | ' +
       '[ left | center | right ] || [ top | center | bottom ]',
+    '<rect>': 'rect( [ <length> | auto ]#{4} <border-radius-round>? )',
+    '<relative-size>': 'smaller | larger',
     '<repeat-style>': 'repeat-x | repeat-y | [ repeat | space | round | no-repeat ]{1,2}',
-    '<rgb-color>':
-      '[ <number>{3} | <pct>{3} ] [ / <num-pct0+> ]? | ' +
-      '[ <number>#{3} | <pct>#{3} ] [ , <num-pct0+> ]?',
+    '<rgb-xyz>': 'srgb | srgb-linear | display-p3 | a98-rgb | prophoto-rgb | rec2020 | xyz | xyz-d50 | xyz-d65',
+    '<self-position>': 'center | start | end | self-start | self-end | flex-start | flex-end',
     '<shadow>': 'inset? && [ <length>{2,4} && <color>? ]',
+    '<shape-box>': '<box> | margin-box',
+    '<single-animation-direction>': 'normal | reverse | alternate | alternate-reverse',
+    '<single-animation-fill-mode>': 'none | forwards | backwards | both',
     '<single-timing-function>':
       'linear | <cubic-bezier-timing-function> | <step-timing-function> | frames( <integer> )',
     '<step-timing-function>': 'step-start | step-end | ' +
-      'steps( <integer> [ , [ jump-start | jump-end | jump-none | jump-both | start | end ] ]? )',
-    '<text-decoration-line>': 'none | [ underline || overline || line-through || blink ]',
-    '<text-emphasis-style>': 'none | ' +
-      '[ [ filled | open ] || [ dot | circle | double-circle | triangle | sesame ] ] | ' +
-      '<string>',
+      'steps( <integer> [ , <re:jump-(start|end|none|both)|start|end> ]? )',
+    '<text-align>': 'start | end | left | right | center | justify | match-parent',
+    '<track-breadth>': '<len-pct> | <flex> | min-content | max-content | auto',
     '<track-list>': '[ <line-names>? [ <track-size> | <track-repeat> ] ]+ <line-names>?',
     '<track-repeat>': 'repeat( [ <int1+> ] , [ <line-names>? <track-size> ]+ <line-names>? )',
     '<track-size>': '<track-breadth> | minmax( <inflexible-breadth> , <track-breadth> ) | ' +
       'fit-content( <len-pct> )',
-    '<transform-function>':
-      'matrix( <number>#{6} ) | ' +
-      'matrix3d( <number>#{16} ) | ' +
-      'perspective( <len0+> | none ) | ' +
-      'rotate( <angle-or-0> | none ) | ' +
-      'rotate3d( <number>#{3} , <angle-or-0> ) | ' +
-      'rotateX( <angle-or-0> ) | ' +
-      'rotateY( <angle-or-0> ) | ' +
-      'rotateZ( <angle-or-0> ) | ' +
-      'scale( [ <num-pct> ]#{1,2} | none ) | ' +
-      'scale3d( <num-pct>#{3} ) | ' +
-      'scaleX( <num-pct> ) | ' +
-      'scaleY( <num-pct> ) | ' +
-      'scaleZ( <num-pct> ) | ' +
-      'skew( <angle-or-0> [ , <angle-or-0> ]? ) | ' +
-      'skewX( <angle-or-0> ) | ' +
-      'skewY( <angle-or-0> ) | ' +
-      'translate( <len-pct>#{1,2} | none ) | ' +
-      'translate3d( <len-pct>#{2} , <length> ) | ' +
-      'translateX( <len-pct> ) | ' +
-      'translateY( <len-pct> ) | ' +
-      'translateZ( <length> )',
-    '<transform-origin>': '[ left | center | right | <len-pct> ] ' +
-      '[ top | center | bottom | <len-pct> ] <length>? | ' +
-      '[ left | center | right | top | bottom | <len-pct> ] | ' +
-      '[ [ center | left | right ] && [ center | top | bottom ] ] <length>?',
     '<transition>': '[ none | [ all | <custom-ident> ]# ] || <time> || <single-timing-function> || <time>',
-    '<width-height>': '<len-pct> | min-content | max-content | ' +
-      'fit-content | fit-content( <len-pct> ) | -moz-available | -webkit-fill-available',
-    '<will-change>': 'auto | <animateable-feature>#',
+    '<vis-hid>': 'visible | hidden',
+    '<width-height>': '<len-pct> | min-content | max-content | fit-content | ' +
+      '-moz-available | -webkit-fill-available | fit-content( <len-pct> )',
+    '<xywh>': 'xywh( <len-pct>{2} <len-pct0+>{2} <border-radius-round>? )',
   };
-
-  //#endregion
-  //#region Colors
-
-  const Colors = Object.assign(Object.create(null), {
-    // 'currentColor' color keyword
-    // https://www.w3.org/TR/css3-color/#currentcolor
-    currentColor:         '',
-    transparent:          '#0000',
-
-    aliceblue:            '#f0f8ff',
-    antiquewhite:         '#faebd7',
-    aqua:                 '#00ffff',
-    aquamarine:           '#7fffd4',
-    azure:                '#f0ffff',
-    beige:                '#f5f5dc',
-    bisque:               '#ffe4c4',
-    black:                '#000000',
-    blanchedalmond:       '#ffebcd',
-    blue:                 '#0000ff',
-    blueviolet:           '#8a2be2',
-    brown:                '#a52a2a',
-    burlywood:            '#deb887',
-    cadetblue:            '#5f9ea0',
-    chartreuse:           '#7fff00',
-    chocolate:            '#d2691e',
-    coral:                '#ff7f50',
-    cornflowerblue:       '#6495ed',
-    cornsilk:             '#fff8dc',
-    crimson:              '#dc143c',
-    cyan:                 '#00ffff',
-    darkblue:             '#00008b',
-    darkcyan:             '#008b8b',
-    darkgoldenrod:        '#b8860b',
-    darkgray:             '#a9a9a9',
-    darkgrey:             '#a9a9a9',
-    darkgreen:            '#006400',
-    darkkhaki:            '#bdb76b',
-    darkmagenta:          '#8b008b',
-    darkolivegreen:       '#556b2f',
-    darkorange:           '#ff8c00',
-    darkorchid:           '#9932cc',
-    darkred:              '#8b0000',
-    darksalmon:           '#e9967a',
-    darkseagreen:         '#8fbc8f',
-    darkslateblue:        '#483d8b',
-    darkslategray:        '#2f4f4f',
-    darkslategrey:        '#2f4f4f',
-    darkturquoise:        '#00ced1',
-    darkviolet:           '#9400d3',
-    deeppink:             '#ff1493',
-    deepskyblue:          '#00bfff',
-    dimgray:              '#696969',
-    dimgrey:              '#696969',
-    dodgerblue:           '#1e90ff',
-    firebrick:            '#b22222',
-    floralwhite:          '#fffaf0',
-    forestgreen:          '#228b22',
-    fuchsia:              '#ff00ff',
-    gainsboro:            '#dcdcdc',
-    ghostwhite:           '#f8f8ff',
-    gold:                 '#ffd700',
-    goldenrod:            '#daa520',
-    gray:                 '#808080',
-    grey:                 '#808080',
-    green:                '#008000',
-    greenyellow:          '#adff2f',
-    honeydew:             '#f0fff0',
-    hotpink:              '#ff69b4',
-    indianred:            '#cd5c5c',
-    indigo:               '#4b0082',
-    ivory:                '#fffff0',
-    khaki:                '#f0e68c',
-    lavender:             '#e6e6fa',
-    lavenderblush:        '#fff0f5',
-    lawngreen:            '#7cfc00',
-    lemonchiffon:         '#fffacd',
-    lightblue:            '#add8e6',
-    lightcoral:           '#f08080',
-    lightcyan:            '#e0ffff',
-    lightgoldenrodyellow: '#fafad2',
-    lightgray:            '#d3d3d3',
-    lightgrey:            '#d3d3d3',
-    lightgreen:           '#90ee90',
-    lightpink:            '#ffb6c1',
-    lightsalmon:          '#ffa07a',
-    lightseagreen:        '#20b2aa',
-    lightskyblue:         '#87cefa',
-    lightslategray:       '#778899',
-    lightslategrey:       '#778899',
-    lightsteelblue:       '#b0c4de',
-    lightyellow:          '#ffffe0',
-    lime:                 '#00ff00',
-    limegreen:            '#32cd32',
-    linen:                '#faf0e6',
-    magenta:              '#ff00ff',
-    maroon:               '#800000',
-    mediumaquamarine:     '#66cdaa',
-    mediumblue:           '#0000cd',
-    mediumorchid:         '#ba55d3',
-    mediumpurple:         '#9370db',
-    mediumseagreen:       '#3cb371',
-    mediumslateblue:      '#7b68ee',
-    mediumspringgreen:    '#00fa9a',
-    mediumturquoise:      '#48d1cc',
-    mediumvioletred:      '#c71585',
-    midnightblue:         '#191970',
-    mintcream:            '#f5fffa',
-    mistyrose:            '#ffe4e1',
-    moccasin:             '#ffe4b5',
-    navajowhite:          '#ffdead',
-    navy:                 '#000080',
-    oldlace:              '#fdf5e6',
-    olive:                '#808000',
-    olivedrab:            '#6b8e23',
-    orange:               '#ffa500',
-    orangered:            '#ff4500',
-    orchid:               '#da70d6',
-    palegoldenrod:        '#eee8aa',
-    palegreen:            '#98fb98',
-    paleturquoise:        '#afeeee',
-    palevioletred:        '#db7093',
-    papayawhip:           '#ffefd5',
-    peachpuff:            '#ffdab9',
-    peru:                 '#cd853f',
-    pink:                 '#ffc0cb',
-    plum:                 '#dda0dd',
-    powderblue:           '#b0e0e6',
-    purple:               '#800080',
-    rebeccapurple:        '#663399',
-    red:                  '#ff0000',
-    rosybrown:            '#bc8f8f',
-    royalblue:            '#4169e1',
-    saddlebrown:          '#8b4513',
-    salmon:               '#fa8072',
-    sandybrown:           '#f4a460',
-    seagreen:             '#2e8b57',
-    seashell:             '#fff5ee',
-    sienna:               '#a0522d',
-    silver:               '#c0c0c0',
-    skyblue:              '#87ceeb',
-    slateblue:            '#6a5acd',
-    slategray:            '#708090',
-    slategrey:            '#708090',
-    snow:                 '#fffafa',
-    springgreen:          '#00ff7f',
-    steelblue:            '#4682b4',
-    tan:                  '#d2b48c',
-    teal:                 '#008080',
-    thistle:              '#d8bfd8',
-    tomato:               '#ff6347',
-    turquoise:            '#40e0d0',
-    violet:               '#ee82ee',
-    wheat:                '#f5deb3',
-    white:                '#ffffff',
-    whitesmoke:           '#f5f5f5',
-    yellow:               '#ffff00',
-    yellowgreen:          '#9acd32',
-
-    // old = CSS2 system colors: https://www.w3.org/TR/css3-color/#css2-system
-    // new = CSS4 system colors: https://drafts.csswg.org/css-color-4/#css-system-colors
-    ActiveBorder: '',
-    ActiveCaption: '',
-    ActiveText: '', // new
-    AppWorkspace: '',
-    Background: '',
-    ButtonBorder: '', // new
-    ButtonFace: '', // old+new
-    ButtonHighlight: '',
-    ButtonShadow: '',
-    ButtonText: '', // old+new
-    Canvas: '', // new
-    CanvasText: '', // new
-    CaptionText: '',
-    Field: '', // new
-    FieldText: '', // new
-    GrayText: '', // old+new
-    Highlight: '', // old+new
-    HighlightText: '', // old+new
-    InactiveBorder: '',
-    InactiveCaption: '',
-    InactiveCaptionText: '',
-    InfoBackground: '',
-    InfoText: '',
-    LinkText: '', // new
-    Mark: '', // new
-    MarkText: '', // new
-    Menu: '',
-    MenuText: '',
-    Scrollbar: '',
-    ThreeDDarkShadow: '',
-    ThreeDFace: '',
-    ThreeDHighlight: '',
-    ThreeDLightShadow: '',
-    ThreeDShadow: '',
-    VisitedText: '', // new
-    Window: '',
-    WindowFrame: '',
-    WindowText: '',
-  });
-  const rxColors = new RegExp(`^(${Object.keys(Colors).join('|')})$`, 'i');
 
   //#endregion
   //#region Tokens
 
   /* https://www.w3.org/TR/css3-syntax/#lexical */
-  /** @type {Object<string,number|Object>} */
-  const Tokens = Object.assign([], {
+  /** @type {Record<string,(number|{})>}*/
+  const Tokens = {
+    __proto__: null,
     EOF: {}, // must be the first token
-  }, {
     // HTML-style comments
     CDC: {},
     CDO: {},
@@ -1263,10 +912,11 @@ self.parserlib = (() => {
     // measurements
     ANGLE: {},
     DIMENSION: {},
-    FREQ: {},
+    FREQUENCY: {},
     LENGTH: {},
     NUMBER: {},
     PERCENTAGE: {},
+    RESOLUTION: {},
     TIME: {},
     // functions
     FUNCTION: {},
@@ -1276,50 +926,25 @@ self.parserlib = (() => {
     // invalid string
     INVALID: {},
     // combinators
-    COLUMN: {text: '||'},
     COMMA: {text: ','},
-    GREATER: {text: '>'},
-    PLUS: {text: '+'},
-    TILDE: {text: '~'},
-    // modifier
-    ANY: {text: ['any', '-webkit-any', '-moz-any']},
-    HAS: {},
-    IS: {},
-    NOT: {},
-    WHERE: {},
-    // CSS3 Paged Media
-    BOTTOMCENTER_SYM: {text: '@bottom-center'},
-    BOTTOMLEFTCORNER_SYM: {text: '@bottom-left-corner'},
-    BOTTOMLEFT_SYM: {text: '@bottom-left'},
-    BOTTOMRIGHTCORNER_SYM: {text: '@bottom-right-corner'},
-    BOTTOMRIGHT_SYM: {text: '@bottom-right'},
-    LEFTBOTTOM_SYM: {text: '@left-bottom'},
-    LEFTMIDDLE_SYM: {text: '@left-middle'},
-    LEFTTOP_SYM: {text: '@left-top'},
-    RIGHTBOTTOM_SYM: {text: '@right-bottom'},
-    RIGHTMIDDLE_SYM: {text: '@right-middle'},
-    RIGHTTOP_SYM: {text: '@right-top'},
-    TOPCENTER_SYM: {text: '@top-center'},
-    TOPLEFTCORNER_SYM: {text: '@top-left-corner'},
-    TOPLEFT_SYM: {text: '@top-left'},
-    TOPRIGHTCORNER_SYM: {text: '@top-right-corner'},
-    TOPRIGHT_SYM: {text: '@top-right'},
-    /* CSS3 Media Queries */
-    RESOLUTION: {state: 'media'},
-    /*
-     * The following token names are not defined in any CSS specification.
-     */
+    // The following token names are not defined in any CSS specification.
     CHAR: {},
     COLON: {text: ':'},
+    COMBINATOR: {text: ['>', '+', '~', '||']},
     DOT: {text: '.'},
     EQUALS: {text: '='},
     IE_FUNCTION: {},
     IMPORTANT: {},
-    LBRACE: {text: '{', endChar: '}'},
-    LBRACKET: {text: '[', endChar: ']'},
-    LPAREN: {text: '(', endChar: ')'},
+    LBRACE: {text: '{', end: '}'},
+    LBRACKET: {text: '[', end: ']'},
+    LPAREN: {text: '(', end: ')'},
+    MARGIN_SYM: (map => ({
+      text: '@B-center@B-L-C@B-L@B-R-C@B-R@L-B@L-M@L-T@R-B@R-M@R-T@T-center@T-L-C@T-L@T-R-C@T-R'
+        .replace(/[A-Z]/g, s => map[s]).split(/(?=@)/),
+    }))({B: 'bottom', C: 'corner', L: 'left', M: 'middle', R: 'right'}),
     MINUS: {text: '-'},
     PIPE: {text: '|'},
+    PSEUDO_FUNC_SEL: {text: ['any', '-webkit-any', '-moz-any', 'has', 'is', 'not', 'where']},
     RBRACE: {text: '}'},
     RBRACKET: {text: ']'},
     RPAREN: {text: ')'},
@@ -1327,25 +952,22 @@ self.parserlib = (() => {
     SLASH: {text: '/'},
     STAR: {text: '*'},
     USO_VAR: {},
-  });
-  // make Tokens an array of tokens, store the index in original prop, add 'name' to each token
-  const typeMap = new Map();
-  for (const [k, val] of Object.entries(Tokens)) {
-    const index = Tokens[k] = Tokens.length;
-    val.name = k;
-    Tokens.push(val);
+  };
+  const getTokenName = index => (Tokens[index] || {}).name;
+  const TokenTypeByText = {__proto__: null};
+  for (let i = 0, arr = Object.keys(Tokens); i < arr.length; i++) {
+    const key = arr[i];
+    const val = Tokens[i] = Tokens[key];
     const {text} = val;
-    if (text) {
-      for (const item of Array.isArray(text) ? text : [text]) {
-        typeMap.set(item, index);
-      }
-    }
+    Tokens[key] = i;
+    val.name = key;
+    if (Array.isArray(text)) for (const str of text) TokenTypeByText[str] = i;
+    else if (text) TokenTypeByText[text] = i;
   }
   Tokens.UNKNOWN = -1;
-  Tokens.name = index => (Tokens[index] || {}).name;
-  Tokens.type = text => typeMap.get(text) || Tokens.UNKNOWN;
 
   const TT = {
+    __proto__: null,
     attrMatch: [
       Tokens.PREFIXMATCH,
       Tokens.SUFFIXMATCH,
@@ -1354,83 +976,21 @@ self.parserlib = (() => {
       Tokens.INCLUDES,
       Tokens.DASHMATCH,
     ],
-    combinator: [
-      Tokens.PLUS,
-      Tokens.GREATER,
-      Tokens.TILDE,
-      Tokens.COLUMN,
-    ],
     cruft: [
       Tokens.S,
       Tokens.CDO,
       Tokens.CDC,
-    ],
-    expression: [
-      Tokens.PLUS,
-      Tokens.MINUS,
-      Tokens.DIMENSION,
-      Tokens.NUMBER,
-      Tokens.STRING,
-      Tokens.IDENT,
-      Tokens.LENGTH,
-      Tokens.FREQ,
-      Tokens.ANGLE,
-      Tokens.TIME,
-      Tokens.RESOLUTION,
-      Tokens.SLASH,
     ],
     identString: [
       Tokens.IDENT,
       Tokens.STRING,
       Tokens.USO_VAR,
     ],
-    LParenBracket: [
-      Tokens.LPAREN,
-      Tokens.LBRACKET,
-    ],
-    LParenBracketBrace: [
-      Tokens.LPAREN,
-      Tokens.LBRACKET,
-      Tokens.LBRACE,
-    ],
-    margins: [
-      Tokens.TOPLEFTCORNER_SYM,
-      Tokens.TOPLEFT_SYM,
-      Tokens.TOPCENTER_SYM,
-      Tokens.TOPRIGHT_SYM,
-      Tokens.TOPRIGHTCORNER_SYM,
-      Tokens.BOTTOMLEFTCORNER_SYM,
-      Tokens.BOTTOMLEFT_SYM,
-      Tokens.BOTTOMCENTER_SYM,
-      Tokens.BOTTOMRIGHT_SYM,
-      Tokens.BOTTOMRIGHTCORNER_SYM,
-      Tokens.LEFTTOP_SYM,
-      Tokens.LEFTMIDDLE_SYM,
-      Tokens.LEFTBOTTOM_SYM,
-      Tokens.RIGHTTOP_SYM,
-      Tokens.RIGHTMIDDLE_SYM,
-      Tokens.RIGHTBOTTOM_SYM,
-    ],
     mediaValue: [
       Tokens.IDENT,
       Tokens.NUMBER,
       Tokens.DIMENSION,
       Tokens.LENGTH,
-    ],
-    op: [
-      Tokens.SLASH,
-      Tokens.COMMA,
-    ],
-    opInFunc: [
-      Tokens.SLASH,
-      Tokens.COMMA,
-      Tokens.PLUS,
-      Tokens.STAR,
-      Tokens.MINUS,
-    ],
-    plusMinus: [
-      Tokens.MINUS,
-      Tokens.PLUS,
     ],
     pseudo: [
       Tokens.FUNCTION,
@@ -1443,20 +1003,6 @@ self.parserlib = (() => {
     stringUri: [
       Tokens.STRING,
       Tokens.URI,
-      Tokens.USO_VAR,
-    ],
-    term: [
-      Tokens.NUMBER,
-      Tokens.PERCENTAGE,
-      Tokens.LENGTH,
-      Tokens.ANGLE,
-      Tokens.TIME,
-      Tokens.DIMENSION,
-      Tokens.FREQ,
-      Tokens.STRING,
-      Tokens.IDENT,
-      Tokens.URI,
-      Tokens.UNICODE_RANGE,
       Tokens.USO_VAR,
     ],
     usoS: [
@@ -1482,7 +1028,7 @@ self.parserlib = (() => {
     }
 
     peek(count = 1) {
-      return this._input[this._cursor + count - 1] || null;
+      return this._input[this._cursor + count - 1];
     }
 
     peekTest(stickyRx) {
@@ -1521,58 +1067,48 @@ self.parserlib = (() => {
     }
 
     /**
-     * Reads up to and including the given string.
-     * @param {String} pattern The string to read.
-     * @return {String} The string when it is found.
-     * @throws Error when the string pattern is not found.
-     */
-    readTo(pattern) {
-      const i = this._input.indexOf(pattern, this._cursor);
-      if (i < 0) throw new Error(`Expected '${pattern}'.`);
-      return this.readCount(i - this._cursor + pattern.length);
-    }
-
-    /**
      * Reads characters that match either text or a regular expression and returns those characters.
      * If a match is found, the row and column are adjusted.
-     * @param {String|RegExp} matcher
+     * @param {String|RegExp} m
      * @return {String} string or null if there was no match.
      */
-    readMatch(matcher) {
-      if (matcher.sticky) {
-        matcher.lastIndex = this._cursor;
-        return matcher.test(this._input) ?
-          this.readCount(RegExp.lastMatch.length) :
-          null;
-      }
-      if (typeof matcher === 'string') {
-        if (this._input[this._cursor] === matcher[0] &&
-            this._input.substr(this._cursor, matcher.length) === matcher) {
-          return this.readCount(matcher.length);
+    readMatch(m) {
+      const {_cursor: i, _input: str} = this;
+      if (typeof m === 'string') {
+        if (!m || str[i] === m[0] && (
+          m.length === 1 ||
+          str[i + m.length - 1] === m[m.length - 1] && str.substr(i, m.length) === m
+        )) {
+          return m && this.readCount(m.length, m);
         }
-      } else if (matcher instanceof RegExp) {
-        if (matcher.test(this._input.substr(this._cursor))) {
-          return this.readCount(RegExp.lastMatch.length);
+      } else {
+        m = m.sticky
+          ? (m.lastIndex = i, m.exec(str))
+          : m.exec(str.slice(i));
+        if (m) {
+          m = m[0];
+          return m && this.readCount(m.length, m);
         }
       }
-      return null;
     }
 
     /**
      * Reads a given number of characters. If the end of the input is reached,
      * it reads only the remaining characters and does not throw an error.
-     * @param {int} count The number of characters to read.
-     * @return {String} string or null if already at EOF
+     * @param {number} count The number of characters to read.
+     * @param {string} [text] Use an already extracted text and only increment the cursor
      */
-    readCount(count) {
-      const len = this._input.length;
-      if (this._cursor >= len) return null;
-      if (!count) return '';
-      const text = this._input.substr(this._cursor, count);
-      this._cursor = Math.min(this._cursor + count, len);
+    readCount(count, text) {
+      if (count <= 0) return '';
+      const str = this._input;
+      let i = this._cursor;
+      if (!text) text = str.substr(i, count);
+      if (!text) return; // EOF
+      this._cursor = i + (count = text.length); // may be less than requested
       let prev = -1;
-      for (let i = 0; (i = text.indexOf('\n', i)) >= 0; prev = i, i++) this._line++;
-      this._col = prev < 0 ? this._col + count : count - prev;
+      let line = this._line;
+      for (i = 0; (i = text.indexOf('\n', i)) >= 0; prev = i, i++) line++;
+      this._col = prev < 0 ? this._col + count : (this._line = line, count - prev);
       return text;
     }
   }
@@ -1591,30 +1127,34 @@ self.parserlib = (() => {
    * https://developer.mozilla.org/docs/Web/CSS/Value_definition_syntax#Component_value_combinators
    */
   class Matcher {
-
+    /**
+     * @param {(this: Matcher, expr: PropValueIterator, p?: SyntaxUnit) => boolean} matchFunc
+     * @param {string | ((prec?:number)=>string)} toString
+     * @param {?} [options]
+     */
     constructor(matchFunc, toString, options) {
       this.matchFunc = matchFunc;
-      /** @type {function(?number):string} */
-      this.toString = typeof toString === 'function' ? toString : () => toString;
-      /** @type {?Matcher[]} */
-      this.options = options;
+      if (toString.call) this.toString = toString; else this._string = toString;
+      this.options = options != null ? options : false;
     }
-
     /**
-     * @param {PropertyValueIterator} e
-     * @return {?boolean}
+     * @param {PropValueIterator} expr
+     * @param {SyntaxUnit} [p]
+     * @return {any | boolean}
      */
-    match(e) {
-      e._marks.push(e._i);
-      return e.popMark(this.matchFunc(e));
+    match(expr, p = expr._parts[expr._i]) {
+      return p ? expr._marks.push(expr._i) && expr.popMark(this.matchFunc(expr, p))
+        : this.options.min === 0;
     }
-
     braces(min, max, marker, sep) {
       return new Matcher(Matcher.funcBraces, Matcher.toStringBraces, {
         min, max, marker,
         sep: sep && Matcher.seq(sep, this),
         embraced: this,
       });
+    }
+    toString() {
+      return this._string;
     }
 
     static parse(str) {
@@ -1624,7 +1164,6 @@ self.parserlib = (() => {
       matcherCache.set(str, m);
       return m;
     }
-
     /** Simple recursive-descent grammar to build matchers from strings. */
     static doParse(str) {
       const reader = new StringReader(str);
@@ -1635,20 +1174,36 @@ self.parserlib = (() => {
       }
       return result;
     }
-
     static cast(m) {
       return m instanceof Matcher ? m : Matcher.parse(m);
     }
-
+    /**
+     * @this {PropValueIterator}
+     * @param {Matcher} m
+     */
+    static invoke(m) {
+      return m.match(this);
+    }
     // Matcher for a single type.
     static fromType(type) {
       let m = matcherCache.get(type);
-      if (m) return m;
-      m = new Matcher(Matcher.funcFromType, type, type);
-      matcherCache.set(type, m);
+      if (!m) {
+        if (type.startsWith('<fn:')) {
+          m = type.endsWith('?>');
+          m = new Matcher(Matcher.funcFunc, Matcher.toStringFunc, {
+            optional: m,
+            list: type.slice(4, m ? -2 : -1),
+          });
+        } else {
+          m = new Matcher(Matcher.funcFromType, type,
+            type.startsWith('<re:') ? {re: RegExp(`^(${type.slice(4, -1)})$`, 'i')}
+              : type.endsWith('()') ? {name: type.toLowerCase().slice(0, -2)}
+                : {type});
+        }
+        matcherCache.set(type, m);
+      }
       return m;
     }
-
     /**
      * @param {string} name - functio name
      * @param {Matcher} body - matcher for function body
@@ -1657,21 +1212,18 @@ self.parserlib = (() => {
     static func(name, body) {
       return new Matcher(Matcher.funcFunc, Matcher.toStringFunc, {name, body});
     }
-
     // Matcher for one or more juxtaposed words, which all must occur, in the given order.
     static seq(...args) {
       const ms = args.map(Matcher.cast);
       if (ms.length === 1) return ms[0];
       return new Matcher(Matcher.funcSeq, Matcher.toStringSeq, ms);
     }
-
     // Matcher for one or more alternatives, where exactly one must occur.
     static alt(...args) {
       const ms = args.map(Matcher.cast);
       if (ms.length === 1) return ms[0];
       return new Matcher(Matcher.funcAlt, Matcher.toStringAlt, ms);
     }
-
     /**
      * Matcher for two or more options: double bar (||) and double ampersand (&&) operators,
      * as well as variants of && where some of the alternatives are optional.
@@ -1689,75 +1241,75 @@ self.parserlib = (() => {
 
     /**
      * @this {Matcher}
-     * @param {PropertyValueIterator} expr
+     * @param {PropValueIterator} expr
      */
     static funcAlt(expr) {
       return this.options.some(Matcher.invoke, expr);
     }
     /**
      * @this {Matcher}
-     * @param {PropertyValueIterator} expr
+     * @param {PropValueIterator} expr
+     * @param {SyntaxUnit} [p]
      */
-    static funcBraces(expr) {
+    static funcBraces(expr, p) {
       const {min, max, sep, embraced} = this.options;
       let i = 0;
-      while (i < max && (i && sep || embraced).match(expr)) {
+      while (i < max && (i && sep || embraced).match(expr, p)) {
+        p = undefined; // clearing because expr points to the next part now
         i++;
       }
       return i >= min;
     }
     /**
      * @this {Matcher}
-     * @param {PropertyValueIterator} expr
+     * @param {PropValueIterator} expr
+     * @param {SyntaxUnit} part
      */
-    static funcFromType(expr) {
-      const part = expr.peek();
-      if (!part) return;
-      const type = this.options;
-      let result, m;
+    static funcFromType(expr, part) {
+      let result, m, opt, name, type;
       if (part.isVar) {
         result = true;
-      } else if (!type.startsWith('<')) {
-        result = vtIsLiteral(type, part);
+      } else if ((name = (opt = this.options).name)) {
+        result = part.name === name;
+      } else if ((m = opt.re)) {
+        result = m.test(part.text);
+      } else if ((type = opt.type)[0] !== '<') {
+        m = part.text;
+        result = m.length >= type.length &&
+          (type === m || m[0] === '-' && lowerCmp(type, m.match(rxVendorPrefix)[2]));
       } else if ((m = VTSimple[type])) {
-        result = m.call(VTSimple, part);
-      } else {
-        m = VTComplex[type];
-        return m instanceof Matcher ?
-          m.match(expr) :
-          m.call(VTComplex, expr);
+        result = m(part);
+      } else if ((m = VTComplex[type] || Properties[type.slice(1, -1)])) {
+        result = (m.matchFunc ? m : vtCompile(type, m)).match(expr, part);
+        if (result) return true;
       }
-      if (!result && expr.tryAttr && part.isAttr) {
-        result = vtIsAttr(part);
+      if (result || expr.tryAttr && part.name === 'attr' && (result = vtIsAttr(part))) {
+        expr.next();
       }
-      if (result) expr.next();
       return result;
     }
     /**
      * @this {Matcher}
-     * @param {PropertyValueIterator} expr
+     * @param {PropValueIterator} expr
+     * @param {SyntaxUnit} p
      */
-    static funcFunc(expr) {
-      const p = expr.peek();
-      if (p && p.expr && p.tokenType === Tokens.FUNCTION && lowerCmp(p.name, this.options.name)) {
-        let res = hasVarParts(p.expr);
-        if (!res) {
-          const vi = new PropertyValueIterator(p.expr); // eslint-disable-line no-use-before-define
-          res = this.options.body.match(vi) && !vi.hasNext;
-        }
-        return res && expr.next();
+    static funcFunc(expr, p) {
+      const opt = this.options;
+      const {name} = p;
+      let e, m, list;
+      let res = !name && opt.optional;
+      if (!res && name && name === (opt.name || name) && (e = p.expr) && !(res = hasVarParts(e)) &&
+          ((m = opt.body) != null || (m = (list = VTFunctions[opt.list])[name]))) {
+        const vi = new PropValueIterator(e); // eslint-disable-line no-use-before-define
+        if (!m.matchFunc) m = vtCompile(name, m, list);
+        res = m.match(vi) && !vi.hasNext;
       }
-    }
-    /**
-     * @this {PropertyValueIterator}
-     * @param {Matcher} m
-     */
-    static invoke(m) {
-      return m.match(this);
+      if (res) expr.next();
+      return res;
     }
     /**
      * @this {Matcher}
-     * @param {PropertyValueIterator} expr
+     * @param {PropValueIterator} expr
      */
     static funcMany(expr) {
       const seen = [];
@@ -1784,7 +1336,7 @@ self.parserlib = (() => {
         for (let i = 0; i < ms.length; i++) {
           if (seen[i]) continue;
           expr.mark();
-          if (!ms[i].matchFunc(expr)) {
+          if (expr.hasNext && !ms[i].matchFunc(expr, expr._parts[expr._i])) {
             expr.popMark(true);
             continue;
           }
@@ -1810,7 +1362,7 @@ self.parserlib = (() => {
     }
     /**
      * @this {Matcher}
-     * @param {PropertyValueIterator} expr
+     * @param {PropValueIterator} expr
      */
     static funcSeq(expr) {
       return this.options.every(Matcher.invoke, expr);
@@ -1834,20 +1386,19 @@ self.parserlib = (() => {
     }
     /** @this {Matcher} */
     static toStringFunc() {
-      const {name, body} = this.options;
-      return `${name}( ${body} )`;
+      const {name, body, list} = this.options;
+      return list ? `[ ${Object.keys(VTFunctions[list]).join('() | ')}() ]`
+        : `${name}(${body || ''})`;
     }
     /** @this {Matcher} */
     static toStringMany(prec) {
-      const {options: ms, required} = this;
-      const p = required === false ? Matcher.prec.OROR : Matcher.prec.ANDAND;
-      const s = ms.map((m, i) => {
-        if (required !== false && !required[i]) {
-          const str = m.toString(Matcher.prec.MOD);
-          return str.endsWith('?') ? str : str + '?';
-        }
-        return m.toString(p);
-      }).join(required === false ? ' || ' : ' && ');
+      const {required} = this;
+      const p = Matcher.prec[required ? 'ANDAND' : 'OROR'];
+      const s = this.options.map((m, i) =>
+        !required || required[i]
+          ? m.toString(p)
+          : m.toString(Matcher.prec.MOD).replace(/[^?]$/, '$&?')
+      ).join(required ? ' && ' : ' || ');
       return prec > p ? `[ ${s} ]` : s;
     }
     /** @this {Matcher} */
@@ -1860,6 +1411,7 @@ self.parserlib = (() => {
 
   // Precedence table of combinators.
   Matcher.prec = {
+    __proto__: null,
     MOD: 5,
     SEQ: 4,
     ANDAND: 3,
@@ -1876,49 +1428,44 @@ self.parserlib = (() => {
     };
     function alt() {
       // alt = oror (" | " oror)*
-      const m = [oror()];
-      while (reader.readMatch(' | ')) {
-        m.push(oror());
-      }
-      return m.length === 1 ? m[0] : Matcher.alt(...m);
+      const alts = [];
+      do alts.push(oror()); while (reader.readMatch(' | '));
+      return alts.length === 1 ? alts[0] : Matcher.alt(...alts);
     }
     // Matcher for two or more options in any order, at least one must be present.
     function oror() {
       // oror = andand ( " || " andand)*
-      const m = [andand()];
-      while (reader.readMatch(' || ')) {
-        m.push(andand());
-      }
-      return m.length === 1 ? m[0] : Matcher.many(false, ...m);
+      const ors = [];
+      do ors.push(andand()); while (reader.readMatch(' || '));
+      return ors.length === 1 ? ors[0] : Matcher.many(false, ...ors);
     }
     // Matcher for two or more options in any order, all mandatory.
     function andand() {
       // andand = seq ( " && " seq)*
-      const m = [seq()];
-      let reqPrev = !isOptional(m[0]);
-      const required = [reqPrev];
-      while (reader.readMatch(' && ')) {
-        const item = seq();
-        const req = !isOptional(item);
+      const ands = [];
+      const required = [];
+      let reqPrev = true;
+      do {
+        const m = seq();
+        const {options} = m;
+        const req = !options || options.marker !== '?';
         // Matcher.many apparently can't handle optional items first
         if (req && !reqPrev) {
-          m.unshift(item);
+          ands.unshift(m);
           required.unshift(req);
         } else {
-          m.push(item);
+          ands.push(m);
           required.push(req);
           reqPrev = req;
         }
-      }
-      return m.length === 1 ? m[0] : Matcher.many(required, ...m);
+      } while (reader.readMatch(' && '));
+      return ands.length === 1 ? ands[0] : Matcher.many(required, ...ands);
     }
     function seq() {
       // seq = mod ( " " mod)*
-      const ms = [mod()];
-      while (reader.readMatch(/\s(?![&|)\]])/y)) {
-        ms.push(mod());
-      }
-      return Matcher.seq(...ms);
+      const mods = [];
+      do mods.push(mod()); while (reader.readMatch(/\s(?![&|)\]])/y));
+      return Matcher.seq(...mods);
     }
     function mod() {
       // mod = term ( "?" | "*" | "+" | "#" | "{<num>,<num>}" )?
@@ -1927,17 +1474,17 @@ self.parserlib = (() => {
       if (reader.readMatch('[ ')) {
         m = alt();
         eat(' ]');
-      } else if ((fn = reader.readMatch(/[-\w]+(?=\(\s)/y))) {
-        reader.readCount(2);
+      } else if ((fn = reader.readMatch(/[-\w]+\(\s/y))) {
         m = alt();
         eat(' )');
-        return Matcher.func(fn, m);
+        return Matcher.func(fn.slice(0, -2).toLowerCase(), m);
+      } else if ((m = reader.readMatch(/([-\w]+(?:\s+\|\s+[-\w]+)+)(?=\s+(]|\|\s+)|\s*$)/y))) {
+        return Matcher.fromType(`<re:${m.replace(/\s+\|\s+/g, '|')}>`);
       } else {
-        m = Matcher.fromType(eat(/<[^>]+>|[^\s?*+#{]+/y));
+        m = Matcher.fromType(eat(/<[^>]+>|[^\s?*+#{]+/y).replace(/^(['"`])(.*)\1$/g, '$1'));
       }
-      reader.mark();
       let hash;
-      switch (reader.read()) {
+      switch (reader.readMatch(/[?*+#{]/y)) {
         case '?': return m.braces(0, 1, '?');
         case '*': return m.braces(0, Infinity, '*');
         case '+': return m.braces(1, Infinity, '+');
@@ -1950,8 +1497,6 @@ self.parserlib = (() => {
           const [min, max] = eat(/\s*\d+\s*(,\s*\d+\s*)?}/y).trim().split(/\s+|,|}/);
           return m.braces(min | 0, max | min | 0, hash, hash && ',');
         }
-        default:
-          reader.reset();
       }
       return m;
     }
@@ -1960,9 +1505,6 @@ self.parserlib = (() => {
       if (s != null) return s;
       throw new Error('Internal grammar error. ' +
         `Expected ${pattern} at ${reader._cursor} in ${reader._input}`);
-    }
-    function isOptional({options}) {
-      return options && options.marker === '?';
     }
   })();
 
@@ -1999,65 +1541,32 @@ self.parserlib = (() => {
   //#endregion
   //#region Syntax units
 
-  /**
-   * @property {boolean|number} [_isAttr]
-   * @property {boolean|number} [_isCalc]
-   * @property {boolean|number} [_isVar]
-   */
   class SyntaxUnit {
-    constructor(text, pos, type, extras) {
-      this.col = pos.col;
-      this.line = pos.line;
-      this.offset = pos.offset;
-      this.text = text;
+    /**
+     * @param {string} text
+     * @param {parserlib.Token} tok
+     * @param {string} type
+     */
+    constructor(text, tok, type) {
+      // TODO: add `endOffset` and getters for col/line/text
+      this.col = tok.col;
+      this.line = tok.line;
+      this.offset = tok.offset;
       this.type = type;
-      if (extras) Object.assign(this, extras);
+      if (text) this.text = text;
+      if (tok.tokenType == null) {
+        this.tokenType = tok.type;
+        let x;
+        if ((x = tok.prefix)) this.prefix = x;
+        if ((x = tok.name)) this.name = x;
+        if ((x = tok.expr)) this.expr = x;
+      }
     }
     valueOf() {
       return this.text;
     }
     toString() {
       return this.text;
-    }
-    get isAttr() {
-      let res = this._isAttr;
-      if (res === 0) res = this._isAttr = /^attr$/i.test(this.name);
-      return res;
-    }
-    get isCalc() {
-      let res = this._isCalc;
-      if (res === 0) res = this._isCalc = rxCalc.test(this.text);
-      return res;
-    }
-    get isVar() {
-      let res = this._isVar;
-      if (res === 0) {
-        const pp = this.expr && this.expr.parts;
-        res = this._isVar = pp && pp.length > 0 && (
-          (pp.length === 1 || pp[1].text === ',') && (
-            pp[0].type === 'custom-property' && /^var$/i.test(this.name) ||
-            pp[0].type === 'identifier' && /^env$/i.test(this.name)
-          ));
-      }
-      return res;
-    }
-    static fromToken(token) {
-      return token && new SyntaxUnit(token.value, token);
-    }
-
-    /**
-     * @param {SyntaxUnit} unit
-     * @param {SyntaxUnit|parserlib.Token} token
-     * @returns {SyntaxUnit}
-     */
-    static addFuncInfo(unit, token = unit) {
-      const {expr, name} = token;
-      const isColor = expr && expr.parts && /^((rgb|hsl)a?|hwb)$/i.test(name);
-      if (isColor) unit.type = 'color';
-      unit._isAttr =
-        unit._isCalc =
-          unit._isVar = isColor ? false : 0;
-      return unit;
     }
   }
 
@@ -2085,37 +1594,15 @@ self.parserlib = (() => {
   // individual media query
   class MediaQuery extends SyntaxUnit {
     constructor(modifier, mediaType, features, pos) {
-      const text = (modifier ? modifier + ' ' : '') +
-                   (mediaType ? mediaType : '') +
-                   (mediaType && features.length > 0 ? ' and ' : '') +
-                   features.join(' and ');
-      super(text, pos, TYPES.MEDIA_QUERY_TYPE);
+      super('', pos, mediaType);
       this.modifier = modifier;
-      this.mediaType = mediaType;
       this.features = features;
     }
-  }
-
-  // e.g. max-width:500.
-  class MediaFeature extends SyntaxUnit {
-    constructor(name, value) {
-      const text = `(${name}${value != null ? ':' + value : ''})`;
-      super(text, name, TYPES.MEDIA_FEATURE_TYPE);
-      this.name = name;
-      this.value = value;
-    }
-  }
-
-  /**
-   * An entire single selector, including all parts but not
-   * including multiple selectors (those separated by commas).
-   */
-  class Selector extends SyntaxUnit {
-    constructor(parts, pos) {
-      super(parts.join(' '), pos, TYPES.SELECTOR_TYPE);
-      this.parts = parts;
-      // eslint-disable-next-line no-use-before-define
-      this.specificity = Specificity.calculate(this);
+    get text() {
+      const mod = this.modifier || '';
+      const feats = this.features.join(' and ');
+      return define(this, 'text',
+        `${mod}${mod ? ' ' : ''}${this.type || ''}${feats ? ' and ' : ''}${feats}`);
     }
   }
 
@@ -2125,123 +1612,46 @@ self.parserlib = (() => {
    */
   class SelectorPart extends SyntaxUnit {
     constructor(elementName, modifiers, text, pos) {
-      super(text, pos, TYPES.SELECTOR_PART_TYPE);
+      super(text, pos, '');
       this.elementName = elementName;
       this.modifiers = modifiers;
     }
   }
 
-  /**
-   * Selector modifier string
-   */
   class SelectorSubPart extends SyntaxUnit {
-    constructor(text, type, pos) {
-      super(text, pos, TYPES.SELECTOR_SUB_PART_TYPE);
-      this.type = type;
-      // Some subparts have arguments
-      this.args = [];
+    constructor(text, type, pos, args) {
+      super(text, pos, type);
+      this.args = args || [];
     }
   }
 
-  /**
-   * A selector combinator (whitespace, +, >).
-   */
+  class SelectorPseudoFunc extends SelectorSubPart {
+    constructor(tok, colons, args) {
+      super('', tok, 'pseudo', args);
+      this.colons = colons;
+      this.name = tok.name;
+    }
+    get text() {
+      return define(this, 'text', `${this.colons}${this.name}(${this.args.join(',')})`);
+    }
+  }
+
   class Combinator extends SyntaxUnit {
     constructor(token) {
       const {value} = token;
-      super(value, token, TYPES.COMBINATOR_TYPE);
-      this.type =
+      super(value, token,
         value === '>' ? 'child' :
         value === '+' ? 'adjacent-sibling' :
         value === '~' ? 'sibling' :
         value === '||' ? 'column' :
         !value.trim() ? 'descendant' :
-          'unknown';
+          'unknown');
     }
   }
 
-  /**
-   * A selector specificity.
-   */
-  class Specificity {
-    /**
-     * @param {int} a Should be 1 for inline styles, zero for stylesheet styles
-     * @param {int} b Number of ID selectors
-     * @param {int} c Number of classes and pseudo classes
-     * @param {int} d Number of element names and pseudo elements
-     */
-    constructor(a, b, c, d) {
-      this.a = a;
-      this.b = b;
-      this.c = c;
-      this.d = d;
-      this.constructor = Specificity;
-    }
-    /**
-     * @param {Specificity} other The other specificity to compare to.
-     * @return {int} -1 if the other specificity is larger, 1 if smaller, 0 if equal.
-     */
-    compare(other) {
-      const comps = ['a', 'b', 'c', 'd'];
-      for (let i = 0, len = comps.length; i < len; i++) {
-        if (this[comps[i]] < other[comps[i]]) {
-          return -1;
-        } else if (this[comps[i]] > other[comps[i]]) {
-          return 1;
-        }
-      }
-      return 0;
-    }
-    valueOf() {
-      return this.a * 1000 + this.b * 100 + this.c * 10 + this.d;
-    }
-    toString() {
-      return `${this.a},${this.b},${this.c},${this.d}`;
-    }
-    /**
-     * Calculates the specificity of the given selector.
-     * @param {Selector} selector The selector to calculate specificity for.
-     * @return {Specificity} The specificity of the selector.
-     */
-    static calculate(selector) {
-      let b = 0;
-      let c = 0;
-      let d = 0;
-      selector.parts.forEach(updateValues);
-      return new Specificity(0, b, c, d);
-      function updateValues(part) {
-        if (!(part instanceof SelectorPart)) return;
-        const elementName = part.elementName ? part.elementName.text : '';
-        if (elementName && !elementName.endsWith('*')) {
-          d++;
-        }
-        for (const modifier of part.modifiers) {
-          switch (modifier.type) {
-            case 'class':
-            case 'attribute':
-              c++;
-              break;
-            case 'id':
-              b++;
-              break;
-            case 'pseudo':
-              if (isPseudoElement(modifier.text)) {
-                d++;
-              } else {
-                c++;
-              }
-              break;
-            case 'not':
-              modifier.args.forEach(updateValues);
-          }
-        }
-      }
-    }
-  }
-
-  class PropertyName extends SyntaxUnit {
-    constructor(text, hack, pos) {
-      super(text, pos, TYPES.PROPERTY_NAME_TYPE);
+  class PropName extends SyntaxUnit {
+    constructor(text, pos, hack) {
+      super(text, pos, '');
       this.hack = hack;
     }
     toString() {
@@ -2253,83 +1663,91 @@ self.parserlib = (() => {
    * A single value between ":" and ";", that is if there are multiple values
    * separated by commas, this type represents just one of the values.
    */
-  class PropertyValue extends SyntaxUnit {
-    constructor(parts, pos) {
-      super(parts.join(' '), pos, TYPES.PROPERTY_VALUE_TYPE);
+  class PropValue extends SyntaxUnit {
+    constructor(parts, pos = parts[0]) {
+      super('', pos, 'val');
       this.parts = parts;
     }
-  }
-
-  /**
-   * A single part of a value
-   * e.g. '1px solid rgb(1, 2, 3)' has 3 parts
-   * @property {PropertyValue} expr
-   */
-  class PropertyValuePart extends SyntaxUnit {
-    /** @param {parserlib.Token} token */
-    constructor(token) {
-      const {value, type} = token;
-      super(value, token, TYPES.PROPERTY_VALUE_PART_TYPE);
-      this.tokenType = type;
-      this.expr = token.expr || null;
-      switch (type) {
-        case Tokens.ANGLE:
-        case Tokens.DIMENSION:
-        case Tokens.FREQ:
-        case Tokens.LENGTH:
-        case Tokens.NUMBER:
-        case Tokens.PERCENTAGE:
-        case Tokens.TIME:
-          this.value = token.number;
-          this.units = token.units;
-          this.type = token.unitsType;
-          this.isInt = this.type === 'number' && !value.includes('.');
-          break;
-        case Tokens.HASH:
-          this.type = 'color';
-          this.value = value;
-          break;
-        case Tokens.IDENT:
-          if (value.startsWith('--')) {
-            this.type = 'custom-property';
-            this.value = value;
-          } else {
-            const namedColor = Colors[value] || Colors[value.toLowerCase()];
-            this.type = namedColor ? 'color' : 'identifier';
-            this.value = namedColor || value;
-          }
-          break;
-        case Tokens.FUNCTION: {
-          this.name = token.name;
-          SyntaxUnit.addFuncInfo(this, token);
-          break;
-        }
-        case Tokens.STRING:
-          this.type = 'string';
-          this.value = parseString(value);
-          break;
-        case Tokens.URI:
-          this.type = 'uri';
-          this.name = token.name;
-          this.uri = token.uri;
-          break;
-        case Tokens.USO_VAR:
-          this._isVar = true;
-          break;
-        default:
-          if (value === ',' || value === '/') {
-            this.type = 'operator';
-            this.value = value;
-          } else {
-            this.type = 'unknown';
-          }
-      }
+    get text() {
+      return define(this, 'text', this.parts.join(' '));
     }
   }
 
-  class PropertyValueIterator {
+  class PropValueFunc extends SyntaxUnit {
+    constructor(tok, name = tok.name) {
+      const {uri} = tok;
+      if (uri) {
+        super('', tok, 'uri');
+        this.uri = uri;
+      } else if ( // Checking string equality is much faster than regexp
+        name === 'rgb' || name === 'rgba' || name === 'hsl' || name === 'hsla' ||
+        name === 'lab' || name === 'lch' || name === 'oklab' || name === 'oklch' ||
+        name === 'hwb' || name === 'color' || name === 'color-mix'
+      ) {
+        super('', tok, 'color');
+      } else {
+        super('', tok, 'fn');
+        this.isCalc = !(
+          this.isVar = name === 'var' || name === 'env'
+        ) && (name === 'calc' || name === 'clamp' || name === 'min' || name === 'max');
+      }
+    }
+    get text() {
+      return define(this, 'text', `${this.prefix || ''}${this.name}(${this.expr || this.uri || ''})`);
+    }
+  }
+
+  class PropValueNumber extends SyntaxUnit {
+    constructor(val, tok, num) {
+      super(val, tok, tok.unitsType);
+      let x = val === '0';
+      this.is0 = x;
+      this.isInt = x ||
+        // Numbers like 1e-2 or 1e2 or 1. aren't integers
+        // Checking int32 and string equality is much faster than regexp
+        (num === (num | 0)) && (
+          val === (x = `${num}${tok.units || ''}`) ||
+          val.length === x.length + 1 && val[0] === '+' && val.endsWith(x)
+        );
+      this.units = tok.units;
+      this.value = num;
+    }
+  }
+
+  class PropValueMaybeColor extends SyntaxUnit {
+    get type() {
+      return define(this, 'type', rxNamedColor.test(this.text) ? 'color' : 'ident');
+    }
+    set type(val) {}
+  }
+
+  function PropValueUnit(tok) {
+    if (!tok) return;
+    let {type, value: val, number: n} = tok;
+    if (n != null) {
+      tok = new PropValueNumber(val, tok, n);
+    } else if (type === Tokens.HASH) {
+      tok = new SyntaxUnit(val, tok, 'color');
+    } else if (type === Tokens.STRING) {
+      tok = new SyntaxUnit(parseString(val), tok, 'string');
+      tok.raw = val;
+    } else if (type === Tokens.IDENT) {
+      tok = tok.isCust ? new SyntaxUnit(val, tok, 'custom-prop')
+        : val.length < 3 || val.length > 20
+          ? new SyntaxUnit(val, tok, 'ident')
+          : new PropValueMaybeColor(val, tok, '');
+    } else if ((n = tok.name)) {
+      tok = new PropValueFunc(tok, n);
+    } else {
+      tok = new SyntaxUnit(val, tok, '');
+      if (type === Tokens.USO_VAR) tok.isVar = true;
+    }
+    return tok;
+  }
+
+  class PropValueIterator {
     /**
-     * @param {PropertyValue} value
+     * @param {PropValue} value
      */
     constructor(value) {
       this._i = 0;
@@ -2338,18 +1756,18 @@ self.parserlib = (() => {
       this.value = value;
       this.hasNext = this._parts.length > 0;
     }
-    /** @returns {PropertyValuePart|null} */
-    peek(count) {
-      return this._parts[this._i + (count || 0)] || null;
+    /** @returns {SyntaxUnit|null} */
+    peek(count = 0) {
+      return this._parts[this._i + count];
     }
-    /** @returns {?PropertyValuePart} */
+    /** @returns {?SyntaxUnit} */
     next() {
       if (this.hasNext) {
         this.hasNext = this._i + 1 < this._parts.length;
         return this._parts[this._i++];
       }
     }
-    /** @returns {PropertyValueIterator} */
+    /** @returns {PropValueIterator} */
     mark() {
       this._marks.push(this._i);
       return this;
@@ -2371,83 +1789,34 @@ self.parserlib = (() => {
   //#endregion
   //#region ValidationTypes - implementation
 
-  for (const obj of [VTSimple, VTComplex]) {
-    const action = obj === VTSimple
-      ? rule => vtIsLiteral.bind(obj, rule)
-      : Matcher.parse;
-    for (const [id, rule] of Object.entries(obj)) {
-      if (typeof rule === 'string') {
-        obj[id] = Object.defineProperty(action(rule), 'originalText', {value: rule});
-      } else if (/^Matcher\s/.test(rule)) {
-        obj[id] = rule(Matcher);
-      }
-    }
+  function vtCompile(id, val, obj = VTComplex) {
+    val = obj[id] = val.call ? val(Matcher) : Object.assign(Matcher.parse(val), {_text: val});
+    return val;
   }
 
   function vtDescribe(type) {
-    const complex = VTComplex[type];
-    const text = complex instanceof Matcher ? complex.toString(0) : type;
-    return vtExplode(text);
+    const complex = VTComplex[type] || type[0] === '<' && Properties[type.slice(1, -1)];
+    return complex instanceof Matcher ? complex.toString(0) : vtExplode(type);
   }
 
   function vtExplode(text) {
-    if (!text.includes('<')) return text;
-    return text.replace(/(<.*?>)([{#?]?)/g, (s, rule, mod) => {
-      const ref = VTSimple[rule] || VTComplex[rule];
-      if (!ref || !ref.originalText) return s;
-      const full = vtExplode(ref.originalText);
-      const brace = mod || full.includes(' ');
-      return ((brace ? '[ ' : '') + full + (brace ? ' ]' : '')) + mod;
-    });
+    return text.includes('<') ? Matcher.parse(text).toString(0) : text;
   }
 
-  /** @param {PropertyValuePart} p */
+  /** @param {SyntaxUnit} p */
   function vtIsAttr(p) {
-    return p.isAttr && (p = p.expr) && (p = p.parts) && p.length && vtIsIdent(p[0]);
+    return p.name === 'attr' && (p = p.expr) && (p = p.parts) && (p = p[0]) &&
+      p.tokenType === Tokens.IDENT;
   }
 
-  /** @param {PropertyValuePart} p */
-  function vtIsIdent(p) {
-    return p.tokenType === Tokens.IDENT;
-  }
-
-  /** @param {PropertyValuePart} p */
+  /** @param {SyntaxUnit} p */
   function vtIsLength(p) {
-    return p.text === '0' || p.type === 'length' || p.isCalc;
+    return p.type === 'length' || p.is0 || p.isCalc;
   }
 
-  /**
-   * @param {string} literals
-   * @param {PropertyValuePart} part
-   * @return {?boolean}
-   */
-  function vtIsLiteral(literals, part) {
-    let text;
-    for (const arg of literals.includes(' | ') ? literals.split(' | ') : [literals]) {
-      if (arg.startsWith('<')) {
-        const vt = VTSimple[arg];
-        if (vt && vt(part)) {
-          return true;
-        }
-        continue;
-      }
-      if (arg.endsWith('()') &&
-          part.name &&
-          part.name.length === arg.length - 2 &&
-          lowerCmp(part.name, arg.slice(0, -2))) {
-        return true;
-      }
-      if ((text || part.text) === arg ||
-          (text || part.text).length >= arg.length &&
-          lowerCmp(arg, text || (text = part.text.match(rxVendorPrefix)[2]))) {
-        return true;
-      }
-    }
-  }
-
-  /** @param {PropertyValuePart} p */
+  /** @param {SyntaxUnit} p */
   function vtIsPct(p) {
-    return p.text === '0' || p.type === 'percentage' || p.isCalc;
+    return p.type === 'pct' || p.is0 || p.isCalc;
   }
 
   //#endregion
@@ -2455,72 +1824,67 @@ self.parserlib = (() => {
 
   const validationCache = new Map();
 
-  function validateProperty(name, property, value, Props = Properties) {
-    if (rxGlobalKeyword.test(value.parts[0])) {
-      if (value.parts.length > 1) {
-        throwEndExpected(value.parts[1], true);
-      }
+  function validateProperty(name, value, stream, Props) {
+    const pp = value.parts;
+    if (pp[0].type === 'ident' && GlobalKeywords.includes(pp[0].text.toLowerCase())) {
+      if (pp[1]) failValidation(pp[1], true);
       return;
     }
-    const prop = name.toLowerCase();
-    const spec = Props[prop.match(rxVendorPrefix)[2]];
-    if (typeof spec === 'number' || !spec && prop.startsWith('-')) {
+    Props = typeof Props === 'string' ? ScopedProperties[Props] : Props || Properties;
+    let prop = name.toLowerCase();
+    let spec, result;
+    do spec = Props[prop] || Props[''] && (Props = Properties)[prop];
+    while (!spec && (result = rxVendorPrefix.exec(prop))[1] && (prop = result[2]));
+    if (typeof spec === 'number' || !spec && name.startsWith('-')) {
       return;
     }
     if (!spec) {
-      const problem = Props === Properties || !Properties[prop] ? 'Unknown' : 'Misplaced';
-      throw new ValidationError(`${problem} property '${name}'.`, value);
+      prop = Props === Properties || !Properties[prop] ? 'Unknown' : 'Misplaced';
+      throw new ValidationError(`${prop} property '${name}'.`, value);
     }
     if (hasVarParts(value)) {
       return;
     }
+    const valueSrc = stream._reader._input.slice(pp[0].offset, stream.LT(1).offset);
     let known = validationCache.get(prop);
-    if (known && known.has(value.text)) {
+    if (known && known.has(valueSrc)) {
       return;
     }
     // Property-specific validation.
-    const expr = new PropertyValueIterator(value);
+    const expr = new PropValueIterator(value);
     const m = Matcher.parse(spec);
-    let result = m.match(expr);
-    if (/\battr\(/i.test(value.text)) {
+    result = m.match(expr);
+    if ((!result || expr.hasNext) && /\battr\(/i.test(valueSrc)) {
       if (!result) {
         expr.tryAttr = true;
         expr.resetTo(0);
         result = m.match(expr);
       }
-      for (let p; (p = expr.peek()) && p.isAttr && vtIsAttr(p);) {
+      for (let p; (p = expr.peek()) && vtIsAttr(p);) {
         expr.next();
       }
     }
     if (result) {
-      if (expr.hasNext) throwEndExpected(expr.next());
+      if (expr.hasNext) failValidation(expr.next());
     } else if (expr.hasNext && expr._i) {
-      throwEndExpected(expr.peek());
+      failValidation(expr.peek());
     } else {
-      const {text} = expr.value;
-      throw new ValidationError(`Expected '${vtDescribe(spec)}' but found '${text}'.`,
-        expr.value);
+      failValidation(expr.value, vtDescribe(spec));
     }
     if (!known) validationCache.set(prop, (known = new Set()));
-    known.add(value.text);
-    function throwEndExpected(unit, force) {
-      if (force || !unit.isVar) {
-        throw new ValidationError(`Expected end of value but found '${unit.text}'.`, unit);
-      }
-    }
+    known.add(valueSrc);
   }
 
   //#endregion
-  //#region TokenStreamBase
+  //#region TokenStream
 
-  /** lookup table size for TokenStreamBase */
   const LT_SIZE = 5;
 
   /**
    * Generic TokenStream providing base functionality.
    * @typedef TokenStream
    */
-  class TokenStreamBase {
+  class TokenStream {
 
     constructor(input) {
       this._reader = new StringReader(input ? input.toString() : '');
@@ -2539,9 +1903,9 @@ self.parserlib = (() => {
 
     /**
      * Consumes the next token if that matches any of the given token type(s).
-     * @param {int|int[]} tokenTypes
+     * @param {number|number[]} tokenTypes
      * @param {string|string[]} [values]
-     * @return {parserlib.Token|boolean} token or `false`
+     * @return {parserlib.Token|boolean|number} token or `false` or EOF (0)
      */
     match(tokenTypes, values) {
       const isArray = typeof tokenTypes === 'object';
@@ -2551,6 +1915,7 @@ self.parserlib = (() => {
           return token;
         }
         if (tt !== Tokens.COMMENT) {
+          if (!tt) return 0;
           break;
         }
       }
@@ -2559,31 +1924,32 @@ self.parserlib = (() => {
     }
 
     /**
-     * Consumes the next token if that matches the given token type(s).
-     * Otherwise an error is thrown.
-     * @param {int|int[]} tokenTypes
-     * @throws {SyntaxError}
+     * @param {Number|Number[]} tokenTypes
+     * @param {Boolean} [skipCruftBefore=true] - skip comments/whitespace before matching
+     * @returns {Object} token
      */
-    mustMatch(tokenTypes) {
+    mustMatch(tokenTypes, skipCruftBefore = true) {
+      if (skipCruftBefore && tokenTypes !== Tokens.S) {
+        this.skipComment(true);
+      }
       return this.match(tokenTypes) ||
         this.throwUnexpected(this.LT(1), tokenTypes);
     }
 
     /**
      * Keeps reading until one of the specified token types is found or EOF.
-     * @param {int|int[]} tokenTypes
+     * @param {number|number[]} tokenTypes
      */
     advance(tokenTypes) {
-      while (this.LA(0) !== 0 && !this.match(tokenTypes)) {
-        this.get();
-      }
-      return this.LA(0);
+      let tok;
+      while ((tok = this.match(tokenTypes)) === false) {/**/}
+      return tok;
     }
 
     /**
      * Consumes the next token from the token stream.
      * @param {boolean} [asToken]
-     * @return {int|parserlib.Token} The token type
+     * @return {number|parserlib.Token} The token type
      */
     get(asToken) {
       const i = this._ltIndex;
@@ -2613,20 +1979,8 @@ self.parserlib = (() => {
     }
 
     /**
-     * Looks ahead a certain number of tokens and returns the token type at that position.
-     * @param {int} index The index of the token type to retrieve.
-     *         0 for the current token, 1 for the next, -1 for the previous, etc.
-     * @return {int} The token type
-     * @throws if you lookahead past EOF, past the size of the lookahead buffer,
-     *         or back past the first token in the lookahead buffer.
-     */
-    LA(index) {
-      return (index ? this.LT(index) : this._token).type;
-    }
-
-    /**
      * Looks ahead a certain number of tokens and returns the token at that position.
-     * @param {int} index The index of the token type to retrieve.
+     * @param {number} index The index of the token type to retrieve.
      *         0 for the current token, 1 for the next, -1 for the previous, etc.
      * @param {boolean} [forceCache] won't call get() so it's useful in fast tentative checks
      * @return {Object} The token
@@ -2675,30 +2029,12 @@ self.parserlib = (() => {
 
     throwUnexpected(token = this._token, expected = []) {
       expected = (Array.isArray(expected) ? expected : [expected])
-        .map(e => typeof e === 'string' ? e : Tokens.name(e))
+        .map(e => typeof e === 'string' ? e : getTokenName(e))
         .join(', ');
       const msg = expected
         ? `Expected ${expected} but found '${token.value}'.`
         : `Unexpected '${token.value}'.`;
       throw new SyntaxError(msg, token);
-    }
-  }
-
-  //#endregion
-  //#region TokenStream
-
-  class TokenStream extends TokenStreamBase {
-
-    /**
-     * @param {Number|Number[]} tokenTypes
-     * @param {Boolean} [skipCruftBefore=true] - skip comments/whitespace before matching
-     * @returns {Object} token
-     */
-    mustMatch(tokenTypes, skipCruftBefore = true) {
-      if (skipCruftBefore && tokenTypes !== Tokens.S) {
-        this.skipComment(true);
-      }
-      return super.mustMatch(tokenTypes);
     }
 
     /**
@@ -2724,6 +2060,7 @@ self.parserlib = (() => {
       const reader = this._reader;
       /** @namespace parserlib.Token */
       const tok = {
+        __proto__: null,
         value: '',
         type: Tokens.CHAR,
         col: reader._col,
@@ -2734,7 +2071,7 @@ self.parserlib = (() => {
       let b = reader.peek();
       if (a === '\\') {
         if (b === '\n' || b === '\f') return tok;
-        a = this.readEscape();
+        a = tok.value = this.readEscape();
         b = reader.peek();
       }
       switch (a) {
@@ -2750,15 +2087,12 @@ self.parserlib = (() => {
           return tok;
         case '{':
           tok.type = Tokens.LBRACE;
-          tok.endChar = '}';
           return tok;
         case '(':
           tok.type = Tokens.LPAREN;
-          tok.endChar = ')';
           return tok;
         case '[':
           tok.type = Tokens.LBRACKET;
-          tok.endChar = ']';
           return tok;
         case '/':
           if (b === '*') {
@@ -2776,21 +2110,19 @@ self.parserlib = (() => {
         case '$':
         case '*':
           if (b === '=') {
-            tok.value = a + reader.read();
-            tok.type = typeMap.get(tok.value) || Tokens.CHAR;
+            a = tok.value = a + reader.read();
           } else if (a === '|' && b === '|') {
             reader.read();
-            tok.value = '||';
-            tok.type = Tokens.COLUMN;
-          } else {
-            tok.type = typeMap.get(a) || Tokens.CHAR;
+            a = tok.value = '||';
           }
+          tok.type = TokenTypeByText[a] || Tokens.CHAR;
           return tok;
         case '"':
         case "'":
           return this.stringToken(a, tok);
         case '#':
-          if (rxNameChar.test(b)) {
+          if (b === '-' || b === '\\' || b === '_' || b >= '0' && b <= '9' ||
+              b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' || b >= '\u00A0' && b <= '\uFFFF') {
             tok.type = Tokens.HASH;
             tok.value = this.readName(a);
           }
@@ -2807,13 +2139,14 @@ self.parserlib = (() => {
           if (b === '-') {
             if (reader.peekTest(/-\w/yu)) {
               this.identOrFunctionToken(a, tok);
+              tok.isCust = true;
             } else if (reader.readMatch('->')) {
               tok.type = Tokens.CDC;
               tok.value = '-->';
             }
           } else if (b >= '0' && b <= '9' || b === '.' && reader.peekTest(/\.\d/y)) {
             this.numberToken(a, tok);
-          } else if (rxIdentStart.test(b)) {
+          } else if (isIdentStart(b)) {
             this.identOrFunctionToken(a, tok);
           } else {
             tok.type = Tokens.MINUS;
@@ -2823,7 +2156,7 @@ self.parserlib = (() => {
           if (b >= '0' && b <= '9' || b === '.' && reader.peekTest(/\.\d/y)) {
             this.numberToken(a, tok);
           } else {
-            tok.type = Tokens.PLUS;
+            tok.type = Tokens.COMBINATOR;
           }
           return tok;
         case '!':
@@ -2832,10 +2165,11 @@ self.parserlib = (() => {
           return this.atRuleToken(a, tok);
         case ':': {
           const func = /[-hniw]/i.test(b) &&
-            reader.readMatch(/(has|not|is|where|(-(moz|webkit)-)?any)\(/iy);
+            reader.readMatch(/(?:-(?:moz|webkit)-)?(has|not|is|where|any)\(/iy);
           if (func) {
-            tok.type = Tokens[func.match(rxVendorPrefix)[2].slice(0, -1).toUpperCase()];
-            tok.value += func;
+            tok.name = RegExp.$1.toLowerCase();
+            tok.type = Tokens.PSEUDO_FUNC_SEL;
+            tok.value += func.slice(0, -1);
           } else {
             tok.type = Tokens.COLON;
           }
@@ -2859,10 +2193,10 @@ self.parserlib = (() => {
       }
       if (a >= '0' && a <= '9') {
         this.numberToken(a, tok);
-      } else if (rxIdentStart.test(a)) {
+      } else if (isIdentStart(a)) {
         this.identOrFunctionToken(a, tok);
       } else {
-        tok.type = typeMap.get(a) || Tokens.CHAR;
+        tok.type = TokenTypeByText[a] || Tokens.CHAR;
       }
       return tok;
     }
@@ -2870,7 +2204,7 @@ self.parserlib = (() => {
     atRuleToken(first, token) {
       this._reader.mark();
       let rule = first + this.readName();
-      let tt = Tokens.type(rule.toLowerCase());
+      let tt = TokenTypeByText[rule.toLowerCase()] || -1;
       // if it's not valid, use the first character only and reset the reader
       if (tt === Tokens.CHAR || tt === Tokens.UNKNOWN) {
         if (rule.length > 1) {
@@ -2888,29 +2222,21 @@ self.parserlib = (() => {
 
     identOrFunctionToken(first, token) {
       const reader = this._reader;
-      const name = this.readChunksWithEscape(first, rxNameCharNoEsc);
-      const next = reader.peek();
-      token.value = name;
-      // might be a URI or function
+      const name = token.value = this.readChunksWithEscape(first, rxNameCharNoEsc);
+      const next = reader.readMatch(lowerCmp(name, 'progid') ? /[:(]/y : '(');
       if (next === '(') {
-        reader.read();
-        if (/^(url(-prefix)?|domain)$/i.test(name)) {
-          reader.mark();
-          const uri = this.readURI(name + '(');
-          if (uri) {
-            token.type = Tokens.URI;
-            token.value = uri.text;
-            token.name = name;
-            token.uri = uri.value;
-            return token;
-          }
-          reader.reset();
-        }
-        token.type = Tokens.FUNCTION;
-        token.value += '(';
-      } else if (next === ':' && lowerCmp(name, 'progid')) {
+        const n = name.toLowerCase();
+        const uri = isUriIdent(n) && this.readUriValue();
+        const vp = n[0] === '-' && rxVendorPrefix.exec(n);
+        token.type = uri ? Tokens.URI : Tokens.FUNCTION;
+        token.name = vp ? vp[2] : n;
+        if (uri) token.uri = uri;
+        if (vp && vp[1]) token.prefix = vp[1];
+      } else if (next === ':') {
         token.type = Tokens.IE_FUNCTION;
-        token.value += reader.readTo('(');
+        token.name = (token.value = reader.readMatch(/.*?\(/).slice(0, -1))
+          .toLowerCase();
+        token.prefix = name + ':';
       } else {
         token.type = Tokens.IDENT;
       }
@@ -2946,21 +2272,18 @@ self.parserlib = (() => {
             /\d*\.?\d*(e[+-]?\d+)?/iy :
             /(\d*\.\d+|\d+\.?\d*)(e[+-]?\d+)?/iy
         ) || '');
-      let tt = Tokens.NUMBER;
-      let units, type;
-      const c = reader.peek();
-      if (rxIdentStart.test(c)) {
-        units = this.readName(reader.read());
-        type = UNITS[units] || UNITS[units.toLowerCase()];
-        tt = type && Tokens[type.toUpperCase()] ||
-             type === 'frequency' && Tokens.FREQ ||
-             Tokens.DIMENSION;
-      } else if (c === '%') {
-        units = reader.read();
-        type = 'percentage';
+      let tt, type;
+      let units = reader.readMatch(rxIdentStartPct);
+      if (units === '%') {
+        type = 'pct';
         tt = Tokens.PERCENTAGE;
+      } else if (units) {
+        units = this.readName(units);
+        type = UNITS[units] || UNITS[units.toLowerCase()];
+        tt = type && Tokens[type.toUpperCase()] || Tokens.DIMENSION;
       } else {
         type = 'number';
+        tt = Tokens.NUMBER;
       }
       token.type = tt;
       token.value = units ? value + units : value;
@@ -2972,35 +2295,33 @@ self.parserlib = (() => {
 
     stringToken(first, token) {
       const delim = first;
-      const string = first ? [first] : [];
       const reader = this._reader;
+      let string = first || '';
       let tt = Tokens.STRING;
       let c;
       while (true) {
         c = reader.readMatch(/[^\n\r\f\\'"]+|./y);
         if (!c) break;
-        string.push(c);
+        string += c;
         if (c === '\\') {
           c = reader.read();
-          if (c == null) {
-            break; // premature EOF after backslash
-          } else if (/[^\r\n\f0-9a-f]/i.test(c)) {
-            // single-character escape
-            string.push(c);
-          } else {
+          if (!c) break; // premature EOF after backslash
+          string += c;
+          if (c >= '0' && c <= '9' || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F' ||
+              c === '\n' || c === '\r' || c === '\f') {
             // read up to six hex digits + newline
-            string.push(c, reader.readMatch(/[0-9a-f]{1,6}\n?/yi));
+            string += reader.readMatch(/[0-9a-f]{1,6}\n?/yi);
           }
         } else if (c === delim) {
           break; // delimiter found.
-        } else if (reader.peekTest(/[\n\r\f]/y)) {
+        } else if ((c = reader.peek()) && (c === '\n' || c === '\r' || c === '\f')) {
           // newline without an escapement: it's an invalid string
           tt = Tokens.INVALID;
           break;
         }
       }
       token.type = c ? tt : Tokens.INVALID; // if the string wasn't closed
-      token.value = fastJoin(string);
+      token.value = string;
       return token;
     }
 
@@ -3044,26 +2365,17 @@ self.parserlib = (() => {
       return token.type !== Tokens.INVALID ? token.value : null;
     }
 
-    // returns null w/o resetting reader if URI is invalid.
-    readURI(first) {
+    // consumes the closing ")" on success
+    readUriValue() {
       const reader = this._reader;
-      const uri = first;
-      let value = '';
-      this._reader.readMatch(/\s+/y);
-      if (reader.peekTest(/['"]/y)) {
-        value = this.readString();
-        if (value == null) return null;
-        value = parseString(value);
-      } else {
-        value = this.readChunksWithEscape('', rxUnquotedUrlCharNoEsc);
+      reader.mark();
+      let v = reader.readMatch(/\s*['"]?/y).trim();
+      if (!v) v = this.readChunksWithEscape('', rxUnquotedUrlCharNoEsc);
+      else if ((v = this.readString(v))) v = parseString(v);
+      if (v != null && reader.readMatch(/\s*\)/y)) {
+        return v;
       }
-      this._reader.readMatch(/\s+/y);
-      // Ensure argument to URL is always double-quoted
-      // (This simplifies later processing in PropertyValuePart.)
-      return reader.peek() !== ')' ? null : {
-        value,
-        text: uri + serializeString(value) + reader.read(),
-      };
+      reader.reset();
     }
 
     readName(first) {
@@ -3088,18 +2400,19 @@ self.parserlib = (() => {
      */
     readChunksWithEscape(first, rx) {
       const reader = this._reader;
-      const url = first ? [first] : [];
+      let url = first || '';
       while (true) {
-        const chunk = reader.readMatch(rx);
-        if (chunk) url.push(chunk);
-        if (reader.peekTest(/\\[^\r\n\f]/y)) {
+        let c = reader.readMatch(rx);
+        if (c) url += c;
+        if (reader.peek() === '\\' && (c = reader.peek(2)) &&
+            !(c === '\n' || c === '\r' || c === '\f')) {
           reader.read();
-          url.push(this.readEscape());
+          url += this.readEscape();
         } else {
           break;
         }
       }
-      return fastJoin(url);
+      return url;
     }
 
     readComment(first) {
@@ -3116,32 +2429,30 @@ self.parserlib = (() => {
      */
     readDeclValue({omitComments, stopOn = ';!})'} = {}) {
       const reader = this._reader;
-      const value = [];
       const endings = [];
-      let end = stopOn;
       const rx = stopOn.includes(';')
         ? /([^;!'"{}()[\]/\\]|\/(?!\*))+/y
         : /([^'"{}()[\]/\\]|\/(?!\*))+/y;
+      let value = '';
+      let end = stopOn;
       while (!reader.eof()) {
-        const chunk = reader.readMatch(rx);
-        if (chunk) {
-          value.push(chunk);
-        }
+        let c = reader.readMatch(rx);
+        if (c) value += c;
         reader.mark();
-        const c = reader.read();
+        c = reader.read();
         if (!endings.length && stopOn.includes(c)) {
           reader.reset();
           break;
         }
-        value.push(c);
         if (c === '\\') {
-          value[value.length - 1] = this.readEscape();
+          value += this.readEscape();
         } else if (c === '/') {
-          value[value.length - 1] = this.readComment(c);
+          value += this.readComment(c);
           if (omitComments) value.pop();
         } else if (c === '"' || c === "'") {
-          value[value.length - 1] = this.readString(c);
+          value += this.readString(c);
         } else if (c === '{' || c === '(' || c === '[') {
+          value += c;
           endings.push(end);
           end = c === '{' ? '}' : c === '(' ? ')' : ']';
         } else if (c === '}' || c === ')' || c === ']') {
@@ -3149,13 +2460,16 @@ self.parserlib = (() => {
             reader.reset();
             return null;
           }
+          value += c;
           end = endings.pop();
           if (!end && !stopOn) {
             break;
           }
+        } else {
+          value += c;
         }
       }
-      return fastJoin(value);
+      return value;
     }
 
     readUnknownSym() {
@@ -3199,8 +2513,6 @@ self.parserlib = (() => {
     // performance.now() of the first parser after reset or page load,
     // used for weighted sorting in getBlock()
     let generationBase = null;
-    // true on page load, first run is pure analysis
-    let firstRun = true;
     let parser = null;
     let stream = null;
 
@@ -3213,7 +2525,6 @@ self.parserlib = (() => {
           generationBase = performance.now();
           return;
         }
-        if (firstRun) firstRun = false;
         stream = parser._tokenStream;
         generation = performance.now();
         trim();
@@ -3229,33 +2540,23 @@ self.parserlib = (() => {
         }
       },
       findBlock(token = getToken()) {
-        if (!parser || firstRun || !token) return;
-
+        if (!token) return;
         const reader = stream._reader;
         const input = reader._input;
-        let start = token.offset;
-        const c = input[start];
-        if (c === ' ' || c === '\t' || c === '\n' || c === '\f' || c === '\r') {
-          const rx = /\s*/y;
-          rx.lastIndex = start;
-          rx.exec(input);
-          start = rx.lastIndex;
-        }
+        const start = token.offset;
         const key = input.slice(start, input.indexOf('{', start) + 1);
-        const blocks = data.get(key);
-        if (!blocks) return;
-
-        const block = getBlock(blocks, input, start, key);
-        if (!block) return;
-
-        reader.readCount(start - reader._cursor);
-        shiftBlock(reader, start, block);
-        shiftStream(reader, block);
+        let block = data.get(key);
+        if (!block || !(block = getBlock(block, input, start, key))) return;
+        shiftBlock(block, start, token.line, token.col);
+        reader._cursor = block.endOffset;
+        reader._line = block.endLine;
+        reader._col = block.endCol;
+        stream.resetLT();
         parser._ws();
         return true;
       },
       startBlock(start = getToken()) {
-        if (!parser) return;
+        if (!start) return;
         stack.push({
           text: '',
           events: [],
@@ -3267,13 +2568,7 @@ self.parserlib = (() => {
           endCol: undefined,
           endOffset: undefined,
         });
-      },
-      adjustBlockStart(start = getToken()) {
-        if (!parser) return;
-        const block = stack[stack.length - 1];
-        block.line = start.line;
-        block.col = start.col;
-        block.offset = start.offset;
+        return stack.length;
       },
       endBlock(end = getToken()) {
         if (!parser) return;
@@ -3290,7 +2585,7 @@ self.parserlib = (() => {
         if (!blocks) data.set(key, (blocks = []));
         blocks.push(block);
       },
-      cancelBlock: () => stack.pop(),
+      cancelBlock: pos => pos === stack.length && stack.length--,
       feedback({messages}) {
         messages = new Set(messages);
         for (const blocks of data.values()) {
@@ -3371,11 +2666,11 @@ self.parserlib = (() => {
     }
 
     // Shifts positions of the block and its events, also fires the events
-    function shiftBlock(reader, start, block) {
+    function shiftBlock(block, cursor, line, col) {
       // extracted to prevent V8 deopt
-      const deltaLines = reader._line - block.line;
-      const deltaCols = block.col === 1 && reader._col === 1 ? 0 : reader._col - block.col;
-      const deltaOffs = reader._cursor - block.offset;
+      const deltaLines = line - block.line;
+      const deltaCols = block.col === 1 && col === 1 ? 0 : col - block.col;
+      const deltaOffs = cursor - block.offset;
       const hasDelta = deltaLines || deltaCols || deltaOffs;
       const shifted = new Set();
       for (const e of block.events) {
@@ -3387,18 +2682,10 @@ self.parserlib = (() => {
       block.generation = generation;
       block.endCol += block.endLine === block.line ? deltaCols : 0;
       block.endLine += deltaLines;
-      block.endOffset = reader._cursor + block.text.length;
+      block.endOffset = cursor + block.text.length;
       block.line += deltaLines;
       block.col += deltaCols;
-      block.offset = reader._cursor;
-    }
-
-    function shiftStream(reader, block) {
-      reader._line = block.endLine;
-      reader._col = block.endCol;
-      reader._cursor = block.endOffset;
-
-      stream.resetLT();
+      block.offset = cursor;
     }
 
     // Recursively applies the delta to the event and all its nested parts
@@ -3476,7 +2763,7 @@ self.parserlib = (() => {
     constructor(options) {
       super();
       this.options = options || {};
-      /** @type {TokenStream|TokenStreamBase} */
+      /** @type {TokenStream} */
       this._tokenStream = null;
     }
 
@@ -3504,15 +2791,15 @@ self.parserlib = (() => {
     _layer(start) {
       const stream = this._tokenStream;
       const ids = [];
-      let t, val;
+      let tok, val;
       do {
         this._ws();
-        if ((t = stream.get(true)).type === Tokens.IDENT) {
-          ids.push(this._layerName(t));
+        if ((tok = stream.get(true)).type === Tokens.IDENT) {
+          ids.push(this._layerName(tok));
           this._ws();
-          t = stream.get(true);
+          tok = stream.get(true);
         }
-        if ((val = t.value) === '{') {
+        if ((val = tok.value) === '{') {
           if (ids[1]) this.fire({type: 'error', message: '@layer block cannot have multiple ids'}, start);
           this.fire({type: 'startlayer', id: ids[0] || null}, start);
           this._rulesetBlock(start);
@@ -3529,8 +2816,8 @@ self.parserlib = (() => {
     _layerName(start) {
       let res = '';
       const stream = this._tokenStream;
-      for (let t; (t = start || stream.match(Tokens.IDENT));) {
-        res += t.value + (stream.match(Tokens.DOT) ? '.' : '');
+      for (let tok; (tok = start || stream.match(Tokens.IDENT));) {
+        res += tok.value + (stream.match(Tokens.DOT) ? '.' : '');
         start = false;
       }
       return res;
@@ -3598,19 +2885,19 @@ self.parserlib = (() => {
     }
 
     _import(start) {
-      let t, layer;
       const stream = this._tokenStream;
-      t = stream.mustMatch(TT.stringUri);
-      const uri = t.uri || t.value.replace(/^["']|["']$/g, '');
+      let layer;
+      let tok = stream.mustMatch(TT.stringUri);
+      const uri = tok.uri || parseString(tok.value);
       this._ws();
-      t = stream.get(true);
-      if (/^layer(\()?$/i.test(t.value)) {
-        layer = RegExp.$1 ? this._layerName() : '';
-        if (layer) stream.mustMatch(Tokens.RPAREN);
+      tok = stream.get(true);
+      if ((tok.name || tok.value.toLowerCase()) === 'layer') {
+        layer = tok.name ? this._layerName() : '';
+        if (tok.name) stream.mustMatch(Tokens.RPAREN);
         this._ws();
-        t = stream.get(true);
+        tok = stream.get(true);
       }
-      if (lowerCmp('supports(', t.value)) {
+      if (tok.name === 'supports') {
         this._ws();
         if (!this._declaration()) this._supportsCondition();
         stream.mustMatch(Tokens.RPAREN);
@@ -3629,7 +2916,7 @@ self.parserlib = (() => {
       const prefix = stream.match(Tokens.IDENT).value;
       if (prefix) this._ws();
       const token = stream.mustMatch(TT.stringUri);
-      const uri = token.uri || token.value.replace(/^["']|["']$/g, '');
+      const uri = token.uri || parseString(token.value);
       stream.mustMatch(Tokens.SEMICOLON);
       this.fire({type: 'namespace', prefix, uri}, start);
       this._ws();
@@ -3696,7 +2983,7 @@ self.parserlib = (() => {
           this._supportsCondition();
           stream.mustMatch(Tokens.RPAREN);
         }
-      } else if (stream.match(Tokens.FUNCTION, ['selector('])) {
+      } else if (stream.match(Tokens.FUNCTION, ['selector'])) {
         this._ws();
         const selector = this._selector();
         this.fire({type: 'supportsSelector', selector}, selector);
@@ -3770,42 +3057,41 @@ self.parserlib = (() => {
           stream.throwUnexpected(undefined, ["'and'", !type && "'or'"].filter(Boolean));
         }
       }
-      return new MediaQuery(mod.value || null, type, expressions, mod || next);
+      return new MediaQuery(mod.value, type, expressions, mod || next);
     }
 
     _mediaExpression() {
       const stream = this._tokenStream;
       stream.mustMatch(Tokens.LPAREN);
       const feature = this._mediaFeature(TT.mediaValue);
-      let b;
-      for (let pass = 0; ++pass <= 2;) {
+      for (let b, pass = 0; ++pass <= 2;) {
         this._ws();
         b = stream.get(true).value;
         if (/^[:=<>]$/.test(b)) {
           const isRange = /[<>]/.test(b);
           if (isRange) stream.match(Tokens.EQUALS);
           this._ws();
-          b = this._expression({calc: true});
+          feature.expr = this._expression();
           if (!isRange) break;
         } else {
           stream.unget();
-          b = null;
+          feature.expr = null;
           break;
         }
       }
       stream.mustMatch(Tokens.RPAREN);
       this._ws();
-      return new MediaFeature(feature); // TODO: construct the value properly
+      return feature; // TODO: construct the value properly
     }
 
     _mediaFeature(type = Tokens.IDENT) {
-      return SyntaxUnit.fromToken(this._tokenStream.mustMatch(type));
+      return PropValueUnit(this._tokenStream.mustMatch(type));
     }
 
     _page(start) {
       const stream = this._tokenStream;
       this._ws();
-      const id = stream.match(Tokens.IDENT).value || null;
+      const id = stream.match(Tokens.IDENT).value;
       if (id && /^auto$/i.test(id)) {
         stream.throwUnexpected();
       }
@@ -3814,12 +3100,12 @@ self.parserlib = (() => {
         : null;
       this._ws();
       this.fire({type: 'startpage', id, pseudo}, start);
-      this._readDeclarations({readMargins: true});
+      this._readDeclarations({readMargins: true, Props: '@page'});
       this.fire({type: 'endpage', id, pseudo});
     }
 
     _margin() {
-      const margin = SyntaxUnit.fromToken(this._tokenStream.match(TT.margins));
+      const margin = PropValueUnit(this._tokenStream.match(Tokens.MARGIN_SYM));
       if (!margin) return false;
       this.fire({type: 'startpagemargin', margin});
       this._readDeclarations();
@@ -3830,7 +3116,7 @@ self.parserlib = (() => {
     _fontFace(start) {
       this.fire('startfontface', start);
       this._ws();
-      this._readDeclarations({Props: ScopedProperties['@font-face']});
+      this._readDeclarations({Props: '@font-face'});
       this.fire('endfontface');
     }
 
@@ -3839,7 +3125,7 @@ self.parserlib = (() => {
         type: 'startfontpalettevalues',
         id: this._tokenStream.mustMatch(Tokens.IDENT),
       }, start);
-      this._readDeclarations({Props: ScopedProperties['@font-palette-values']});
+      this._readDeclarations({Props: '@font-palette-values'});
       this.fire('endfontpalettevalues');
     }
 
@@ -3861,17 +3147,16 @@ self.parserlib = (() => {
       do {
         this._ws();
         const uri = stream.match(Tokens.URI);
-        const fn = uri ? new PropertyValuePart(uri) : this._function() || stream.LT(1);
+        const fn = uri ? new PropValueFunc(uri) : this._function() || stream.LT(1);
         functions.push(fn);
         if (uri) this._ws();
       } while (stream.match(Tokens.COMMA));
       for (const fn of functions) {
-        if ((fn.type !== 'function' || !/^(url(-prefix)?|domain|regexp)$/i.test(fn.name)) &&
-            fn.type !== 'uri') {
+        if (!isUriIdent(fn.name) && fn.name !== 'regexp') {
           this.fire({
             type: 'error',
             message: 'Expected url( or url-prefix( or domain( or regexp(, instead saw ' +
-              Tokens.name(fn.tokenType || fn.type) + ' ' + (fn.text || fn.value),
+              getTokenName(fn.tokenType) + ' ' + fn.text,
           }, fn);
         }
       }
@@ -3899,54 +3184,26 @@ self.parserlib = (() => {
     }
 
     _combinator() {
-      const token = this._tokenStream.match(TT.combinator);
+      const token = this._tokenStream.match(Tokens.COMBINATOR);
       if (token) {
         this._ws();
         return new Combinator(token);
       }
     }
 
-    _property() {
-      const stream = this._tokenStream;
-      let token = stream.get(true);
-      let value = null;
-      let hack = null;
-      let start;
-      if (this.options.starHack && token.type === Tokens.STAR) {
-        hack = '*';
-        start = token;
-        token = stream.get(true);
-      }
-      if (token.type === Tokens.IDENT) {
-        let tokenValue = token.value;
-        // check for underscore hack - no error if not allowed because it's valid CSS syntax
-        if (this.options.underscoreHack && tokenValue.startsWith('_')) {
-          hack = '_';
-          tokenValue = tokenValue.slice(1);
-        }
-        value = new PropertyName(tokenValue, hack, start || token);
-        this._ws();
-      } else {
-        stream.unget();
-      }
-      return value;
-    }
-
     _ruleset() {
       const stream = this._tokenStream;
-      let braceOpened;
+      let braceOpened, blk;
       try {
-        stream.skipComment(undefined, true);
+        stream.skipComment(true, true);
         if (parserCache.findBlock()) {
           return true;
         }
-        parserCache.startBlock();
         const selectors = this._selectorsGroup();
         if (!selectors) {
-          parserCache.cancelBlock();
           return false;
         }
-        parserCache.adjustBlockStart(selectors[0]);
+        blk = parserCache.startBlock(selectors[0]);
         this.fire({type: 'startrule', selectors}, selectors[0]);
         this._readDeclarations({stopAfterBrace: true});
         braceOpened = true;
@@ -3955,12 +3212,12 @@ self.parserlib = (() => {
         this._ws();
         return true;
       } catch (ex) {
-        parserCache.cancelBlock();
+        parserCache.cancelBlock(blk);
         if (!(ex instanceof SyntaxError) || this.options.strict) throw ex;
         this.fire(Object.assign({}, ex, {type: 'error', error: ex}));
         // if there's a right brace, the rule is finished so don't do anything
         // otherwise, rethrow the error because it wasn't handled properly
-        if (braceOpened && stream.advance(Tokens.RBRACE) !== Tokens.RBRACE) throw ex;
+        if (braceOpened && !stream.advance(Tokens.RBRACE)) throw ex;
         // If even a single selector fails to parse, the entire ruleset should be thrown away,
         // so we let the parser continue with the next one
         return true;
@@ -4001,7 +3258,7 @@ self.parserlib = (() => {
       const sel = [];
       let nextSel = null;
       let combinator = null;
-      if (!relative || !TT.combinator.includes(stream.LT(1).type)) {
+      if (!relative || stream.LT(1).type !== Tokens.COMBINATOR) {
         nextSel = this._simpleSelectorSequence();
         if (!nextSel) {
           return null;
@@ -4036,21 +3293,21 @@ self.parserlib = (() => {
           stream.throwUnexpected(stream.LT(1));
         }
       }
-      return new Selector(sel, sel[0]);
+      return new PropValue(sel);
     }
 
     _simpleSelectorSequence() {
       const stream = this._tokenStream;
       const start = stream.LT(1);
       const modifiers = [];
-      const seq = [];
       const ns = this._namespacePrefix(start) || '';
       const next = ns ? stream.LT(1) : start;
       const elementName = (next.value === '*' || next.type === Tokens.IDENT)
         ? this._typeSelector(ns, stream.get())
         : '';
+      let text = '';
       if (elementName) {
-        seq.push(elementName);
+        text += elementName;
       } else if (ns) {
         stream.unget();
       }
@@ -4060,9 +3317,8 @@ self.parserlib = (() => {
         const component = action ? action.call(this, token) : (stream.unget(), 0);
         if (!component) break;
         modifiers.push(component);
-        seq.push(component);
+        text += component;
       }
-      const text = fastJoin(seq);
       return text && new SelectorPart(elementName, modifiers, text, start);
     }
 
@@ -4091,113 +3347,90 @@ self.parserlib = (() => {
     }
     _attrib(start) {
       const stream = this._tokenStream;
-      const value = [
-        start.value,
-        this._ws(),
-        this._namespacePrefix() || '',
-        stream.mustMatch(Tokens.IDENT, false).value,
-        this._ws(),
-      ];
+      let value = start.value;
+      value += this._ws();
+      value += this._namespacePrefix() || '';
+      value += stream.mustMatch(Tokens.IDENT, false).value;
+      value += this._ws();
       if (stream.match(TT.attrMatch)) {
-        value.push(
-          stream._token.value,
-          this._ws(),
-          stream.mustMatch(TT.identString).value,
-          this._ws());
+        value += stream._token.value;
+        value += this._ws();
+        value += stream.mustMatch(TT.identString).value;
+        value += this._ws();
         if (stream.match(Tokens.IDENT, ['i', 's'])) {
-          value.push(
-            stream._token.value,
-            this._ws());
+          value += stream._token.value;
+          value += this._ws();
         }
       }
-      value.push(stream.mustMatch(Tokens.RBRACKET).value);
-      return new SelectorSubPart(fastJoin(value), 'attribute', start);
+      value += stream.mustMatch(Tokens.RBRACKET).value;
+      return new SelectorSubPart(value, 'attribute', start);
     }
 
-    _pseudo(start) {
+    _pseudo() {
       const stream = this._tokenStream;
-      const colons = start.value + (stream.match(Tokens.COLON).value || '');
-      const t = stream.mustMatch(TT.pseudo);
-      const pseudo = t.type === Tokens.IDENT ? t.value :
-        t.value +
-        this._ws() +
-        (this._expression({list: true}) || '') +
-        stream.mustMatch(Tokens.RPAREN).value;
-      return new SelectorSubPart(colons + pseudo, 'pseudo', {
-        line: t.line,
-        col: t.col - colons.length,
-        offset: t.offset - colons.length,
-      });
+      const colons = stream.match(Tokens.COLON) ? '::' : ':';
+      const tok = stream.mustMatch(TT.pseudo);
+      tok.col -= colons.length;
+      tok.offset -= colons.length;
+      return tok.name
+        ? new SelectorPseudoFunc(tok, colons, this._expr(':', Tokens.RPAREN))
+        : new SelectorSubPart(colons + tok.value, 'pseudo', tok);
     }
 
-    _expression({calc, list} = {}) {
-      const chunks = [];
+    /** :not(), :is(), :where(), :any() */
+    _pseudoFuncSel(tok) {
+      this._ws();
+      tok = new SelectorPseudoFunc(tok, ':', this._selectorsGroup(tok.name === 'has'));
+      this._tokenStream.mustMatch(Tokens.RPAREN);
+      return tok;
+    }
+
+    _expression() {
+      const parts = [];
       const stream = this._tokenStream;
-      while (stream.get()) {
-        const {type, value} = stream._token;
-        if (calc && type === Tokens.FUNCTION) {
-          if (!rxCalc.test(value)) {
-            stream.throwUnexpected();
-          }
-          chunks.push(value,
-            this._expr('calc').text,
-            stream.mustMatch(Tokens.RPAREN).value);
-        } else if (TT.expression.includes(type) || list && type === Tokens.COMMA) {
-          chunks.push(value, this._ws());
-        } else if (type !== Tokens.COMMENT) {
+      for (let tok; (tok = stream.get(true));) {
+        if (tok.name) {
+          parts.push(this._function(tok));
+        } else if (tok.value === ')') {
           stream.unget();
           break;
+        } else if (tok.type !== Tokens.COMMENT) {
+          parts.push(tok);
+          this._ws();
         }
       }
-      return fastJoin(chunks) || null;
-    }
-
-    _is(start) {
-      let args;
-      const value =
-        start.value +
-        this._ws() +
-        (args = this._selectorsGroup(start.type === Tokens.HAS)) +
-        this._ws() +
-        this._tokenStream.mustMatch(Tokens.RPAREN).value;
-      const type = Tokens.name(start.type).toLowerCase();
-      return Object.assign(new SelectorSubPart(value, type, start), {args});
-    }
-
-    _negation(start) {
-      const stream = this._tokenStream;
-      const value = [start.value, this._ws()];
-      const args = this._selectorsGroup();
-      if (!args) stream.throwUnexpected(stream.LT(1));
-      value.push(...args, this._ws(), stream.mustMatch(Tokens.RPAREN).value);
-      return Object.assign(new SelectorSubPart(fastJoin(value), 'not', start), {args});
+      return parts[0] ? parts : null;
     }
 
     _declaration(consumeSemicolon, Props) {
-      const stream = this._tokenStream;
-      const property = this._property();
-      if (!property) {
-        return false;
+      const {_tokenStream: stream, options: opts} = this;
+      let prop, value, hack, start, invalid;
+      let tok = stream.get(true);
+      if (tok.type === Tokens.STAR && opts.starHack) {
+        hack = '*';
+        start = tok;
+        tok = stream.get(true);
+      }
+      if (tok.type === Tokens.IDENT) {
+        value = tok.value;
+        if (value[0] === '_' && opts.underscoreHack) {
+          value = value.slice(1);
+          hack = '_';
+        }
+        prop = new PropName(value, start || tok, hack);
+      } else {
+        stream.unget();
+        return;
       }
       stream.mustMatch(Tokens.COLON);
-      const value = property.text.startsWith('--')
+      value = tok.isCust
         ? this._customProperty() // whitespace is a part of custom property value
         : (this._ws(), this._expr());
       // if there's no parts for the value, it's an error
-      if (!value || value.length === 0) {
-        stream.throwUnexpected(stream.LT(1));
-      }
-      let invalid;
-      if (!this.options.skipValidation) {
+      if (!value) stream.throwUnexpected(stream.LT(1));
+      if (!opts.skipValidation && !tok.isCust) {
         try {
-          /* If hacks are allowed, then only check the root property.
-             Otherwise treat `_property` or `*property` as invalid */
-          const name =
-            this.options.starHack && property.hack === '*' ||
-            this.options.underscoreHack && property.hack === '_'
-              ? property.text
-              : property.toString();
-          validateProperty(name, property, value, Props);
+          validateProperty(prop.text, value, stream, Props);
         } catch (ex) {
           if (!(ex instanceof ValidationError)) {
             ex.message = ex.stack;
@@ -4205,181 +3438,95 @@ self.parserlib = (() => {
           invalid = ex;
         }
       }
-      const event = {
+      this.fire({
         type: 'property',
-        important: stream.match(Tokens.IMPORTANT),
-        property,
+        property: prop,
+        important: Boolean(stream.match(Tokens.IMPORTANT)),
+        message: invalid && invalid.message,
+        invalid,
         value,
-      };
+      }, prop);
+      if (consumeSemicolon) while (stream.match(TT.semiS)) {/*NOP*/}
       this._ws();
-      if (invalid) {
-        event.invalid = invalid;
-        event.message = invalid.message;
-      }
-      this.fire(event, property);
-      if (consumeSemicolon) {
-        while (stream.match(TT.semiS)) {/*NOP*/}
-        this._ws();
-      }
       return true;
     }
 
-    _expr(inFunction, endToken = Tokens.RPAREN) {
+    _expr(inFunction, endToken) {
+      const ie = this.options.ieFilters;
       const stream = this._tokenStream;
       const values = [];
-      while (true) {
-        let value = this._term(inFunction);
-        if (!value && !values.length) {
-          return null;
+      let tok, tt, v;
+      while (
+        (tt = (tok = stream.get(true)).type, v = tok.value) &&
+        (endToken ? tt !== endToken : v !== ';' && v !== '}' && v !== ')' && tt !== Tokens.IMPORTANT)
+      ) {
+        if (v === '(' || v === '[' || inFunction && v === '{') {
+          tok = this._expr(inFunction, TokenTypeByText[Tokens[tt].end]);
+        } else if (tt === Tokens.PSEUDO_FUNC_SEL) {
+          tok = this._pseudoFuncSel(tok);
+        } else if (tt === Tokens.FUNCTION) {
+          tok = this._function(tok);
+        } else if (ie && v === '=') {
+          tok = values.pop();
+          if (tok) tok.text += v + this._functionIeFilter();
+        } else if (ie && tt === Tokens.IE_FUNCTION) {
+          tok.expr = this._expr(true, Tokens.RPAREN);
+        } else if (tt === Tokens.HASH) {
+          tok = this._hexcolor(tok);
+        } else if (tt === Tokens.S) {
+          continue;
+        } else if (tt === Tokens.COMMENT) {
+          tok = 0;
         }
-        // get everything inside the parens and let validateProperty handle that
-        if (!value && inFunction && stream.peek() !== endToken) {
-          stream.get();
-          value = new PropertyValuePart(stream._token);
-        } else if (!value) {
-          break;
-        }
-        // TODO: remove this hack
-        const last = values[values.length - 1];
-        if (last && last.offset === value.offset && last.text === value.text) {
-          break;
-        }
-        values.push(value);
+        if (tok) values.push(tok instanceof SyntaxUnit ? tok : PropValueUnit(tok));
         this._ws();
-        const operator = this._tokenStream.match(inFunction ? TT.opInFunc : TT.op);
-        if (operator) {
-          this._ws();
-          values.push(new PropertyValuePart(operator));
-        }
       }
-      return values[0] ? new PropertyValue(values, values[0]) : null;
+      if (!endToken) stream.unget();
+      return inFunction === ':' ? values
+        : values[0] && new PropValue(values);
     }
 
     _customProperty() {
-      const value = this._tokenStream.readDeclValue();
+      const stream = this._tokenStream;
+      const value = stream.readDeclValue();
       if (value) {
-        const token = this._tokenStream._token;
-        token.value = value;
-        token.type = Tokens.IDENT;
-        return new PropertyValue([new PropertyValuePart(token)], token);
-      }
-    }
-
-    _term(inFunction) {
-      const stream = this._tokenStream;
-      const unary = stream.match(TT.plusMinus) && stream._token;
-      const finalize = (token, value) => {
-        if (!token && unary) stream.unget();
-        if (!token) return null;
-        if (token instanceof SyntaxUnit) return token;
-        if (unary) {
-          token.line = unary.line;
-          token.col = unary.col;
-          token.value = unary.value + (value || token.value);
-        } else if (value) {
-          token.value = value;
-        }
-        return new PropertyValuePart(token);
-      };
-      const next = this.options.ieFilters && stream.LT(1);
-      if (next && next.type === Tokens.IE_FUNCTION) {
-        return finalize(next, this._ieFunction());
-      }
-      // see if it's a simple block
-      if (stream.match(inFunction ? TT.LParenBracketBrace : TT.LParenBracket)) {
         const token = stream._token;
-        const endToken = Tokens.type(token.endChar);
-        token.expr = this._expr(inFunction, endToken);
-        stream.mustMatch(endToken);
-        return finalize(token, token.value + (token.expr || '') + token.endChar);
+        token.value = value;
+        token.type = Tokens.UNKNOWN;
+        return new PropValue([PropValueUnit(token)], token);
       }
-      return finalize(
-        // see if there's a simple match
-        stream.match(TT.term) && stream._token ||
-        this._hexcolor() ||
-        this._function({asText: Boolean(unary)}));
     }
 
-    _function({asText} = {}) {
+    _function(tok) {
       const stream = this._tokenStream;
-      if (!stream.match(Tokens.FUNCTION)) return null;
-      const start = stream._token;
-      const name = start.value.slice(0, -1);
-      this._ws();
-      const expr = this._expr(name.toLowerCase());
-      const ieFilter = this.options.ieFilters && stream.peek() === Tokens.EQUALS ?
-        this._functionIeFilter() : '';
-      const text = name + '(' + (expr || '') + ieFilter + ')';
-      stream.mustMatch(Tokens.RPAREN);
-      this._ws();
-      if (asText) {
-        return text;
+      if (tok || (tok = stream.match(Tokens.FUNCTION))) {
+        tok.expr = this._expr(true, Tokens.RPAREN);
+        this._ws();
+        return new PropValueFunc(tok);
       }
-      const m = rxVendorPrefix.exec(name);
-      return SyntaxUnit.addFuncInfo(
-        new SyntaxUnit(text, start, 'function', {
-          expr,
-          name: m[2],
-          prefix: m[1] || '',
-          tokenType: Tokens.FUNCTION,
-        }));
     }
 
     _functionIeFilter() {
       const stream = this._tokenStream;
-      const text = [];
+      let res = '';
+      let tok, tt, v;
       do {
-        if (this._ws()) {
-          text.push(stream._token.value);
-        }
-        // might be second time in the loop
-        if (stream.LA(0) === Tokens.COMMA) {
-          text.push(stream._token.value);
-        }
-        stream.match(Tokens.IDENT);
-        text.push(stream._token.value);
-        stream.match(Tokens.EQUALS);
-        text.push(stream._token.value);
-        let lt = stream.peek();
-        while (lt !== Tokens.COMMA &&
-               lt !== Tokens.S &&
-               lt !== Tokens.RPAREN &&
-               lt !== Tokens.EOF) {
-          stream.get();
-          text.push(stream._token.value);
-          lt = stream.peek();
-        }
-      } while (stream.match([Tokens.COMMA, Tokens.S]));
-      return fastJoin(text);
-    }
-
-    _ieFunction() {
-      const stream = this._tokenStream;
-      const text = [];
-      // IE function can begin like a regular function, too
-      if (stream.match([Tokens.IE_FUNCTION, Tokens.FUNCTION])) {
-        text.push(stream._token.value);
-        do {
-          text.push(
-            stream._token.value === ',' ? ',' : '', // subsequent loops
-            this._ws(),
-            stream.match(Tokens.IDENT).value || '',
-            stream.match(Tokens.EQUALS).value || '');
-          // functionText.push(this._term());
-          while (!/^([,)]|\s+)$/.test(stream.LT(1).value)) {
-            text.push(stream.get(true).value);
-          }
-        } while (stream.match([Tokens.COMMA, Tokens.S]));
-        text.push(stream.match(Tokens.RPAREN).value);
         this._ws();
-      }
-      return fastJoin(text) || null;
+        if (res) {
+          res += stream.match(Tokens.IDENT).value || '';
+          res += stream.match(Tokens.EQUALS).value || '';
+        }
+        tok = stream.get(true);
+        if ((tt = tok.type) !== Tokens.S && (v = tok.value) !== ',') {
+          if (tok.number != null || tt === Tokens.STRING) res += v;
+          else if (v === ')') return (stream.unget(), res);
+          else if (!v.startsWith('/*')) stream.throwUnexpected(tok, [Tokens.RPAREN]);
+        }
+      } while (true);
     }
 
-    _hexcolor() {
-      const stream = this._tokenStream;
-      if (!stream.match(Tokens.HASH)) return null;
-      const token = stream._token;
+    _hexcolor(token = this._tokenStream.match(Tokens.HASH)) {
+      if (!token) return;
       const color = token.value;
       const len = color.length;
       if (len !== 4 && len !== 5 && len !== 7 && len !== 9 ||
@@ -4393,7 +3540,7 @@ self.parserlib = (() => {
     _keyframes(start) {
       const stream = this._tokenStream;
       const prefix = start.value.match(rxVendorPrefix)[1] || '';
-      const name = SyntaxUnit.fromToken(stream.mustMatch(TT.identString));
+      const name = PropValueUnit(stream.mustMatch(TT.identString));
       stream.mustMatch(Tokens.LBRACE);
       this.fire({type: 'startkeyframes', name, prefix}, start);
       // check for key
@@ -4419,7 +3566,7 @@ self.parserlib = (() => {
       const token = stream.match(Tokens.PERCENTAGE) || stream.match(Tokens.IDENT, ['from', 'to']);
       if (token) {
         this._ws();
-        return SyntaxUnit.fromToken(token);
+        return PropValueUnit(token);
       } else if (!optional) {
         stream.throwUnexpected(stream.LT(1), ['%', "'from'", "'to'"]);
       }
@@ -4434,7 +3581,7 @@ self.parserlib = (() => {
      * @param {Boolean} [_.checkStart] - check for the left brace at the beginning.
      * @param {Boolean} [_.readMargins] - check for margin patterns.
      * @param {Boolean} [_.stopAfterBrace] - stop after the final } without consuming whitespace
-     * @param {{}} [_.Props] - definitions of valid properties
+     * @param {string} [_.Props] - definitions of valid properties
      */
     _readDeclarations({
       checkStart = true,
@@ -4496,7 +3643,7 @@ self.parserlib = (() => {
       const stream = this._tokenStream;
       const tokens = skipUsoVar ? TT.usoS : Tokens.S;
       let ws = start ? start.value : '';
-      for (let t; (t = stream.LT(1, true)) && t.type === Tokens.S;) {
+      for (let tok; (tok = stream.LT(1, true)) && tok.type === Tokens.S;) {
         ws += stream.get(true).value;
       }
       if (stream._ltIndex === stream._ltAhead) {
@@ -4520,92 +3667,12 @@ self.parserlib = (() => {
       this._ws();
     }
 
-    _verifyEnd() {
-      const stream = this._tokenStream;
-      if (stream.peek() !== Tokens.EOF) {
-        stream.throwUnexpected(stream.LT(1));
-      }
-    }
-
     parse(input, {reuseCache} = {}) {
       this._tokenStream = new TokenStream(input);
       parserCache.start(reuseCache && this);
       this._stylesheet();
     }
-
-    parseStyleSheet(input) {
-      return this.parse(input);
-    }
-
-    parseMediaQuery(input, {reuseCache} = {}) {
-      this._tokenStream = new TokenStream(input);
-      parserCache.start(reuseCache && this);
-      const result = this._mediaQuery();
-      this._verifyEnd();
-      return result;
-    }
-
-    /**
-     * Parses a property value (everything after the semicolon).
-     * @return {PropertyValue} The property value.
-     * @throws parserlib.util.SyntaxError If an unexpected token is found.
-     */
-    parsePropertyValue(input) {
-      this._tokenStream = new TokenStream(input);
-      this._ws();
-      const result = this._expr();
-      this._ws();
-      this._verifyEnd();
-      return result;
-    }
-
-    /**
-     * Parses a complete CSS rule, including selectors and
-     * properties.
-     * @param {String} input The text to parser.
-     * @return {Boolean} True if the parse completed successfully, false if not.
-     */
-    parseRule(input, {reuseCache} = {}) {
-      this._tokenStream = new TokenStream(input);
-      parserCache.start(reuseCache && this);
-      this._ws();
-      const result = this._ruleset();
-      this._ws();
-      this._verifyEnd();
-      return result;
-    }
-
-    /**
-     * Parses a single CSS selector (no comma)
-     * @param {String} input The text to parse as a CSS selector.
-     * @return {Selector} An object representing the selector.
-     * @throws parserlib.util.SyntaxError If an unexpected token is found.
-     */
-    parseSelector(input) {
-      this._tokenStream = new TokenStream(input);
-      this._ws();
-      const result = this._selector();
-      this._ws();
-      this._verifyEnd();
-      return result;
-    }
-
-    /**
-     * Parses an HTML style attribute: a set of CSS declarations
-     * separated by semicolons.
-     * @param {String} input The text to parse as a style attribute
-     * @return {void}
-     */
-    parseStyleAttribute(input) {
-      // help error recovery in _readDeclarations()
-      this._tokenStream = new TokenStream(input + '}');
-      this._readDeclarations({checkStart: false});
-    }
   }
-
-  Object.assign(Parser, TYPES);
-  Object.assign(Parser.prototype, TYPES);
-  Parser.prototype._readWhitespace = Parser.prototype._ws;
 
   ParserRoute[Tokens.CONTAINER_SYM] = // we don't allow @document inside @container
   ParserRoute[Tokens.DOCUMENT_SYM] =
@@ -4638,58 +3705,51 @@ self.parserlib = (() => {
     [Tokens.DOT]: Parser.prototype._class,
     [Tokens.LBRACKET]: Parser.prototype._attrib,
     [Tokens.COLON]: Parser.prototype._pseudo,
-    [Tokens.IS]: Parser.prototype._is,
-    [Tokens.HAS]: Parser.prototype._is,
-    [Tokens.ANY]: Parser.prototype._is,
-    [Tokens.WHERE]: Parser.prototype._is,
-    [Tokens.NOT]: Parser.prototype._negation,
+    [Tokens.PSEUDO_FUNC_SEL]: Parser.prototype._pseudoFuncSel,
   };
 
   //#endregion
   //#region Helper functions
 
-  function escapeChar(c) {
-    return c === '"' ? '\\' + c : `\\${c.codePointAt(0).toString(16)} `;
+  function define(obj, name, val) {
+    Object.defineProperty(obj, name, {[val.call ? 'get' : 'value']: val, configurable: true});
+    return val;
   }
-
-  function fastJoin(arr) {
-    return !arr.length ? '' :
-      arr.length === 1 ? `${arr[0]}` :
-        arr.length === 2 ? `${arr[0]}${arr[1]}` :
-          arr.join('');
+  function customIdentChecker(ex, re, alt) {
+    re = RegExp(`^(?!(default|${ex}${ex ? '|' : ''}${GlobalKeywords.join('|')})$)${re || ''}`, 'i');
+    return p => p.tokenType === Tokens.IDENT && re.test(p.text) || alt && alt(p);
   }
-
   /**
    * vars can span any number of grammar parts so not gonna try to guess. KISS.
-   * @param {PropertyValue} value
+   * @param {PropValue} value
    */
   function hasVarParts(value) {
     return value.parts.some(p => p.isVar);
   }
-
-  function isPseudoElement(pseudo) {
-    return pseudo.startsWith('::') ||
-           /^:(first-(letter|line)|before|after)$/i.test(pseudo);
+  function isIdentStart(c) {
+    return c >= 'a' && c <= 'z' || c === '-' || c === '\\' || c === '_' ||
+      c >= 'A' && c <= 'Z' || c >= '\u00A0' && c <= '\uFFFF';
   }
-
+  /** @param {string} str - must be lowercase */
+  function isUriIdent(str) {
+    return str === 'url' || str === 'url-prefix' || str === 'domain';
+  }
   function lowerCmp(a, b) {
     return a.length === b.length && (a === b || a.toLowerCase() === b.toLowerCase());
   }
-
   /** @this {String} */
   function lowerCmpThis(a) {
     return a.length === this.length && (a === this || a.toLowerCase() === this.toLowerCase());
   }
-
   function parseString(str) {
     return str.slice(1, -1) // strip surrounding quotes
       .replace(/\\(\r\n|[^\r0-9a-f]|[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?)/ig, unescapeChar);
   }
-
-  function serializeString(value) {
-    return `"${value.replace(/["\r\n\f]/g, escapeChar)}"`;
+  function failValidation(unit, what) {
+    if (!what || what === true ? (what = 'end of value') : !unit.isVar) {
+      throw new ValidationError(`Expected ${what} but found '${unit.text}'.`, unit);
+    }
   }
-
   function unescapeChar(m, c) {
     if (c === '\n' || c === '\r\n' || c === '\r' || c === '\f') {
       return '';
@@ -4704,34 +3764,14 @@ self.parserlib = (() => {
   /** @namespace parserlib */
   return {
     css: {
-      Colors,
-      Combinator,
       GlobalKeywords,
-      Matcher,
-      MediaFeature,
-      MediaQuery,
       Parser,
       Properties,
-      PropertyName,
-      PropertyValue,
-      PropertyValuePart,
-      ScopedProperties,
-      Selector,
-      SelectorPart,
-      SelectorSubPart,
-      Specificity,
       TokenStream,
-      Tokens,
-      ValidationError,
     },
     util: {
       EventTarget,
-      StringReader,
-      SyntaxError,
-      SyntaxUnit,
-      TokenStreamBase,
-      fastJoin,
-      isPseudoElement,
+      rxNamedColor,
       rxVendorPrefix,
       describeProp: vtExplode,
     },

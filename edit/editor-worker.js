@@ -32,7 +32,7 @@
           const uniq = [];
           // strip definitions of function arguments
           const desc = describeProp(v).replace(/([-\w]+)\(.*?\)/g, 'z-$1');
-          const descNoColors = desc.replace(/<named-color>/g, '');
+          const descNoColors = desc.replace(/<color>/g, '');
           // add a prefix to functions to group them at the end
           const words = descNoColors.split(rxNonWord).sort(cmp);
           for (let w of words) {

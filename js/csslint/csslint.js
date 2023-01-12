@@ -454,7 +454,7 @@ CSSLint.addRule['adjoining-classes'] = [{
   parser.addListener('startrule', event => {
     for (const selector of event.selectors) {
       for (const part of selector.parts) {
-        if (part.type === parser.SELECTOR_PART_TYPE) {
+        if (part.modifiers) {
           let classCount = 0;
           for (const modifier of part.modifiers) {
             classCount += modifier.type === 'class';
@@ -500,7 +500,7 @@ CSSLint.addRule['box-model'] = [{
           };
         }
       } else if (/^(width|height)/i.test(name) &&
-                 /^(length|percentage)/.test(event.value.parts[0].type)) {
+                 /^(length|pct)/.test(event.value.parts[0].type)) {
         properties[name] = 1;
       } else if (name === 'box-sizing') {
         boxSizing = true;
@@ -1069,8 +1069,8 @@ CSSLint.addRule['ids'] = [{
   parser.addListener('startrule', event => {
     for (const sel of event.selectors) {
       const cnt =
-        sel.parts.reduce((sum = 0, {type, modifiers}) =>
-          type === parser.SELECTOR_PART_TYPE
+        sel.parts.reduce((sum = 0, {modifiers}) =>
+          modifiers
             ? modifiers.reduce((sum, mod) => sum + (mod.type === 'id'), 0)
             : sum, 0);
       if (cnt) {
@@ -1442,7 +1442,7 @@ CSSLint.addRule['overqualified-elements'] = [{
   parser.addListener('startrule', event => {
     for (const selector of event.selectors) {
       for (const part of selector.parts) {
-        if (part.type !== parser.SELECTOR_PART_TYPE) continue;
+        if (!part.modifiers) continue;
         for (const mod of part.modifiers) {
           if (part.elementName && mod.type === 'id') {
             report(part, mod);
@@ -1476,10 +1476,7 @@ CSSLint.addRule['qualified-headings'] = [{
       let first = true;
       for (const part of selector.parts) {
         const name = part.elementName;
-        if (!first &&
-            name &&
-            part.type === parser.SELECTOR_PART_TYPE &&
-            /h[1-6]/.test(name.toString())) {
+        if (!first && name && /h[1-6]/.test(name)) {
           reporter.report(`Heading '${name}' should not be qualified.`, part, rule);
         }
         first = false;
@@ -1497,7 +1494,7 @@ CSSLint.addRule['regex-selectors'] = [{
   parser.addListener('startrule', event => {
     for (const selector of event.selectors) {
       for (const part of selector.parts) {
-        if (part.type === parser.SELECTOR_PART_TYPE) {
+        if (part.modifiers) {
           for (const mod of part.modifiers) {
             if (mod.type === 'attribute' && /([~|^$*]=)/.test(mod)) {
               reporter.report(`Slow attribute selector ${RegExp.$1}.`, mod, rule);
@@ -1605,20 +1602,16 @@ CSSLint.addRule['simple-not'] = [{
   browsers: 'All',
 }, (rule, parser, reporter) => {
   parser.addListener('startrule', e => {
+    let pp, p;
     for (const sel of e.selectors) {
-      if (!/:not\(/i.test(sel.text)) continue;
       for (const part of sel.parts) {
         if (!part.modifiers) continue;
-        for (const mod of part.modifiers) {
-          if (mod.type !== 'not') continue;
-          const {args} = mod;
-          const {parts} = args[0];
-          if (args.length > 1 ||
-              parts.length !== 1 ||
-              parts[0].modifiers.length + (parts[0].elementName ? 1 : 0) > 1 ||
-              /^:not\(/i.test(parts[0])) {
-            reporter.report('Complex selector inside :not().', args[0], rule);
-          }
+        for (const {name, args} of part.modifiers) {
+          if (name === 'not' && args[0] && (
+            args[1] ||
+            (pp = args[0].parts)[1] ||
+            (p = pp[0]).modifiers.length + (p.elementName ? 1 : 0) > 1
+          )) reporter.report('Complex selector inside :not().', args[0], rule);
         }
       }
     }
@@ -1736,7 +1729,7 @@ CSSLint.addRule['unqualified-attributes'] = [{
   parser.addListener('startrule', event => {
     for (const {parts} of event.selectors) {
       const part = parts[parts.length - 1];
-      if (part.type === parser.SELECTOR_PART_TYPE &&
+      if (part.modifiers &&
           !part.modifiers.some(mod => mod.type === 'class' || mod.type === 'id')) {
         const isUnqualified = !part.elementName || part.elementName === '*';
         for (const mod of part.modifiers) {
@@ -1860,7 +1853,7 @@ CSSLint.addRule['zero-units'] = [{
 }, (rule, parser, reporter) => {
   parser.addListener('property', event => {
     for (const p of event.value.parts) {
-      if (p.value === 0 && (p.units || p.type === 'percentage') && p.type !== 'time') {
+      if (p.value === 0 && (p.units || p.type === 'pct') && p.type !== 'time') {
         reporter.report("'0' value with redundant units.", p, rule);
       }
     }

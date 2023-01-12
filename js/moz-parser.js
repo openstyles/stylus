@@ -54,14 +54,12 @@ function extractSections({code, styleId, fast = true}) {
     for (const {name, expr, uri} of e.functions) {
       const aType = MozDocMapper.FROM_CSS[name.toLowerCase()];
       const p0 = expr && expr.parts[0];
-      if (p0 && aType === 'regexps') {
-        const s = p0.text;
-        if (hasSingleEscapes.test(p0.text)) {
-          const isQuoted = /^['"]/.test(s) && s.endsWith(s[0]);
-          p0.value = isQuoted ? s.slice(1, -1) : s;
-        }
-      }
-      (section[aType] = section[aType] || []).push(uri || p0 && p0.value || '');
+      const val = uri || (
+        p0 && aType === 'regexps' && hasSingleEscapes.test(p0.raw)
+          ? p0.raw.slice(1, -1)
+          : p0.text
+      );
+      (section[aType] = section[aType] || []).push(val || '');
     }
     sectionStack.push(section);
   });
