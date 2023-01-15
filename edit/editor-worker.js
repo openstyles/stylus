@@ -17,16 +17,16 @@
     getCssPropsValues() {
       require(['/js/csslint/parserlib']); /* global parserlib */
       const {
-        css: {Colors, GlobalKeywords, Properties},
-        util: {describeProp},
+        css: {GlobalKeywords, Properties},
+        util: {describeProp, rxNamedColor},
       } = parserlib;
-      const namedColors = Object.keys(Colors);
+      const namedColors = rxNamedColor.source.split(/[()]/)[1].split('|');
       const rxNonWord = /(?:<.+?>|[^-\w<(]+\d*)+/g;
       const res = {};
       // moving vendor-prefixed props to the end
       const cmp = (a, b) => a[0] === '-' && b[0] !== '-' ? 1 : a < b ? -1 : a > b;
       for (const [k, v] of Object.entries(Properties)) {
-        res[k] = false;
+        if (v !== -1) res[k] = false; // skipping deprecated props
         if (typeof v === 'string') {
           let last = '';
           const uniq = [];

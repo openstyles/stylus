@@ -11,6 +11,7 @@ Files copied from NPM (node_modules):
 * addon/fold/foldgutter.css
 * addon/fold/foldgutter.js
 * addon/fold/indent-fold.js
+* addon/hint/anyword-hint.js
 * addon/hint/css-hint.js
 * addon/hint/show-hint.css
 * addon/hint/show-hint.js

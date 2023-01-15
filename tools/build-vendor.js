@@ -20,6 +20,7 @@ const files = {
     'addon/fold/foldcode.js',
     'addon/fold/foldgutter.*',
     'addon/fold/indent-fold.js',
+    'addon/hint/anyword-hint.js',
     'addon/hint/css-hint.js',
     'addon/hint/show-hint.*',
     'addon/lint/css-lint.js',

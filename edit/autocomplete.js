@@ -1,6 +1,6 @@
 /* global CodeMirror */
 /* global cmFactory */
-/* global debounce */// toolbox.js
+/* global debounce stringAsRegExp tryRegExp */// toolbox.js
 /* global editor */
 /* global linterMan */
 /* global prefs */
@@ -15,6 +15,8 @@
   const rxPROP = /^(prop(erty)?|variable-2|string-2)\b/;
   const rxVAR = /(^|[^-.\w\u0080-\uFFFF])var\(/iyu;
   const rxCONSUME = /([-\w]*\s*:\s?)?/yu;
+  // Using a string to avoid syntax error in old browsers
+  const rxsWORD = tryRegExp('(?<=a)') ? '(?<![-\\w]|#[0-9a-f]*)' : '';
   const cssMime = CodeMirror.mimeModes['text/css'];
   const docFuncs = addSuffix(cssMime.documentTypes, '(');
   const {tokenHooks} = cssMime;
@@ -57,13 +59,18 @@
       (prev = i > 2 ? styles[i - 2] : 0) &&
       isSameToken(text, style, prev)
     ) i -= 2;
+    if (text[prev] === '#' && testAt(/[0-9a-f]+\b|$|\s/yi, prev + 1, text)) {
+      return; // ignore #hex colors
+    }
     i = index;
     while (
       (end == null || `${styles[i + 1]}`.startsWith(type)) &&
       (end = styles[i]) &&
       isSameToken(text, style, end)
     ) i += 2;
-    const getTokenState = () => state || (state = cm.getTokenAt(pos, true).state.state);
+    const getTokenState = () => state || (
+      (state = cm.getTokenAt(pos, true)),
+      (state = state.type ? state.state.state : type));
     const str = text.slice(prev, end);
     const left = text.slice(prev, ch).trim();
     let leftLC = left.toLowerCase();
@@ -90,7 +97,8 @@
         if (isLessLang) list = findAllCssVars(cm, left, '\\s*:').concat(list);
         break;
 
-      case '#': // prevents autocomplete for #hex colors
+      case '.':
+      case '#':
         break;
 
       case '-': // --variable
@@ -128,26 +136,31 @@
         }
         // fallthrough to `default`
 
-      default:
+      default: {
         // property values
-        if (isStylusLang || getTokenState() === 'prop') {
+        let prop;
+        if (isStylusLang || /prop/.test(getTokenState())) {
           while (i > 0 && !rxPROP.test(styles[i + 1])) i -= 2;
           const propEnd = styles[i];
-          let prop;
           if (propEnd > text.lastIndexOf(';', ch - 1)) {
             while (i > 0 && rxPROP.test(styles[i + 1])) i -= 2;
-            prop = text.slice(styles[i] || 0, propEnd).match(/([-\w]+)?$/u)[1];
+            prop = (i < 2 || styles[i] < ch) &&
+              text.slice(styles[i] || 0, propEnd).toLowerCase().match(/([-\w]+)?$/u)[1];
           }
-          if (prop) {
-            if (/[^-\w]/.test(leftLC)) {
-              prev += execAt(/[\s:()]*/y, prev, text)[0].length;
-              leftLC = leftLC.replace(/^[^\w\s]\s*/, '');
-            }
-            if (prop.startsWith('--')) prop = 'color'; // assuming 90% of variables are colors
-            if (!cssProps) await initCssProps();
-            list = [...new Set([...cssValues.all[prop] || [], ...cssValues.global])];
-            end = prev + execAt(/(\s*[-a-z(]+)?/y, prev, text)[0].length;
+        }
+        if (prop) {
+          if (/[^-\w]/.test(leftLC)) {
+            prev += execAt(/[\s:()]*/y, prev, text)[0].length;
+            leftLC = leftLC.replace(/^[^\w\s]\s*/, '');
           }
+          if (prop.startsWith('--')) prop = 'color'; // assuming 90% of variables are colors
+          else if (leftLC && prop.startsWith(leftLC)) prop = '';
+        }
+        if (prop) {
+          if (!cssProps) await initCssProps();
+          prop = cssValues.all[prop];
+          list = [...new Set([...prop || [], ...cssValues.global])];
+          end = prev + execAt(/(\s*[-a-z(]+)?/y, prev, text)[0].length;
         }
         // properties and media features
         if (!list &&
@@ -161,16 +174,24 @@
           list = state === 'atBlock_parens' ? cssMedia : cssProps;
           end -= /\W$/u.test(str); // e.g. don't consume ) when inside ()
           end += execAt(rxCONSUME, end, text)[0].length;
-
         }
-        if (!list) {
-          return isStylusLang
-            ? CodeMirror.hint.fromList(cm, {words: CodeMirror.hintWords.stylus})
-            : originalHelper(cm);
-        }
+      }
     }
-    return {
-      list: (list || []).filter(s => s.startsWith(leftLC)),
+    if (!list) {
+      const simple = isStylusLang
+        ? CodeMirror.hint.fromList(cm, {words: CodeMirror.hintWords.stylus})
+        : originalHelper(cm);
+      const word = RegExp(rxsWORD +
+        (leftLC ? stringAsRegExp(leftLC, '', true) : '[a-z]') +
+        '[-a-z]+', 'gi');
+      const any = CodeMirror.hint.anyword(cm, {word}).list;
+      list = simple ? [...new Set(simple.list.concat(any))] : any;
+      list.sort();
+    }
+    return list && {
+      list: /^(--|[#.\w])\S*\s*$/.test(leftLC)
+        ? list.filter(s => s.toLowerCase().startsWith(leftLC))
+        : list,
       from: {line, ch: prev + str.match(/^\s*/)[0].length},
       to: {line, ch: end},
     };
