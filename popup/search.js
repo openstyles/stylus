@@ -503,8 +503,8 @@
       const sourceCode = await download(updateUrl);
       const style = await API.usercss.install({sourceCode, updateUrl});
       renderFullInfo(entry, style);
-    } catch (reason) {
-      entry.dataset.error = `${t('genericError')}: ${reason}`;
+    } catch (e) {
+      entry.dataset.error = `${t('genericError')}: ${e && e.message || e}`;
       entry.scrollIntoView({behavior: 'smooth', block: 'nearest'});
     }
     $remove('.lds-spinner', entry);
