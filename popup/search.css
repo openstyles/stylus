@@ -280,6 +280,7 @@ search-result-meta [data-type="rating"][data-class="none"] dd {
   font-weight: bold;
   padding-top: var(--pad);
   hyphens: auto;
+  white-space: pre-wrap;
 }
 [data-error] .search-result-description {
   display: none;
