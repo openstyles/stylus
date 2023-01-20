@@ -445,29 +445,6 @@ CSSLint.Util = {
 //#endregion
 //#region Rules
 
-CSSLint.addRule['adjoining-classes'] = [{
-  name: 'Disallow adjoining classes',
-  desc: "Don't use adjoining classes.",
-  url: 'https://github.com/CSSLint/csslint/wiki/Disallow-adjoining-classes',
-  browsers: 'IE6',
-}, (rule, parser, reporter) => {
-  parser.addListener('startrule', event => {
-    for (const selector of event.selectors) {
-      for (const part of selector.parts) {
-        if (part.modifiers) {
-          let classCount = 0;
-          for (const modifier of part.modifiers) {
-            classCount += modifier.type === 'class';
-            if (classCount > 1) {
-              reporter.report('Adjoining classes: ' + selector.text, part, rule);
-            }
-          }
-        }
-      }
-    }
-  });
-}];
-
 CSSLint.addRule['box-model'] = [{
   name: 'Beware of broken box size',
   desc: "Don't use width or height when using padding or border.",
@@ -516,62 +493,12 @@ CSSLint.addRule['box-model'] = [{
           const {value: {parts}, line, col} = properties[prop];
           if (parts.length !== 2 || Number(parts[0].value) !== 0) {
             reporter.report(
-              `Using ${size} with ${prop} can sometimes make elements larger than you expect.`,
+              `No box-sizing and ${size} in ${prop}`,
               {line, col}, rule);
           }
         }
       }
     },
-  });
-}];
-
-CSSLint.addRule['box-sizing'] = [{
-  name: 'Disallow use of box-sizing',
-  desc: "'box-sizing' isn't supported in IE6-7.",
-  url: 'https://github.com/CSSLint/csslint/wiki/Disallow-box-sizing',
-  browsers: 'IE6, IE7',
-  tags:     ['Compatibility'],
-}, (rule, parser, reporter) => {
-  parser.addListener('property', event => {
-    if (CSSLint.Util.getPropName(event.property) === 'box-sizing') {
-      reporter.report(rule.desc, event, rule);
-    }
-  });
-}];
-
-CSSLint.addRule['bulletproof-font-face'] = [{
-  name: 'Use the bulletproof @font-face syntax',
-  desc: "Use the bulletproof @font-face syntax to avoid 404's in old IE " +
-        'http://www.fontspring.com/blog/the-new-bulletproof-font-face-syntax',
-  url: 'https://github.com/CSSLint/csslint/wiki/Bulletproof-font-face',
-  browsers: 'All',
-}, (rule, parser, reporter) => {
-  const regex = /^\s?url\(['"].+\.eot\?.*['"]\)\s*format\(['"]embedded-opentype['"]\).*$/i;
-  let firstSrc = true;
-  let ruleFailed = false;
-  let pos;
-  // Mark the start of a @font-face declaration so we only test properties inside it
-  parser.addListener('startfontface', () => {
-    parser.addListener('property', property);
-  });
-  function property(event) {
-    if (CSSLint.Util.getPropName(event.property) !== 'src') return;
-    const value = event.value.toString();
-    pos = event;
-    const matched = regex.test(value);
-    if (firstSrc && !matched) {
-      ruleFailed = true;
-      firstSrc = false;
-    } else if (!firstSrc && matched) {
-      ruleFailed = false;
-    }
-  }
-  // Back to normal rules that we don't need to test
-  parser.addListener('endfontface', () => {
-    parser.removeListener('property', property);
-    if (!ruleFailed) return;
-    reporter.report("@font-face declaration doesn't follow the fontspring bulletproof syntax.",
-      pos, rule);
   });
 }];
 
@@ -892,62 +819,6 @@ CSSLint.addRule['errors'] = [{
   parser.addListener('error', e => reporter.error(e.message, e, rule));
 }];
 
-CSSLint.addRule['fallback-colors'] = [{
-  name: 'Require fallback colors',
-  desc: "For older browsers that don't support RGBA, HSL, or HSLA, provide a fallback color.",
-  url: 'https://github.com/CSSLint/csslint/wiki/Require-fallback-colors',
-  browsers: 'IE6,IE7,IE8',
-}, (rule, parser, reporter) => {
-  const propertiesToCheck = new Set([
-    'color',
-    'background',
-    'border-color',
-    'border-top-color',
-    'border-right-color',
-    'border-bottom-color',
-    'border-left-color',
-    'border',
-    'border-top',
-    'border-right',
-    'border-bottom',
-    'border-left',
-    'background-color',
-  ]);
-  let lastProperty;
-  CSSLint.Util.registerRuleEvents(parser, {
-    start() {
-      lastProperty = null;
-    },
-    property(event) {
-      const name = CSSLint.Util.getPropName(event.property);
-      if (!propertiesToCheck.has(name)) {
-        lastProperty = event;
-        return;
-      }
-      let colorType = '';
-      for (const part of event.value.parts) {
-        if (part.type !== 'color') {
-          continue;
-        }
-        if (!('alpha' in part || 'hue' in part)) {
-          event.colorType = 'compat';
-          continue;
-        }
-        if (/([^)]+)\(/.test(part)) {
-          colorType = RegExp.$1.toUpperCase();
-        }
-        if (!lastProperty ||
-            lastProperty.colorType !== 'compat' ||
-            CSSLint.Util.getPropName(lastProperty.property) !== name) {
-          reporter.report(`Fallback ${name} (hex or RGB) should precede ${colorType} ${name}.`,
-            event, rule);
-        }
-      }
-      lastProperty = event;
-    },
-  });
-}];
-
 CSSLint.addRule['floats'] = [{
   name: 'Disallow too many floats',
   desc: 'This rule tests if the float property too many times',
@@ -1076,24 +947,6 @@ CSSLint.addRule['ids'] = [{
       if (cnt) {
         reporter.report(`Id in selector${cnt > 1 ? '!'.repeat(cnt) : '.'}`, sel, rule);
       }
-    }
-  });
-}];
-
-CSSLint.addRule['import-ie-limit'] = [{
-  name: '@import limit on IE6-IE9',
-  desc: 'IE6-9 supports up to 31 @import per stylesheet',
-  browsers: 'IE6, IE7, IE8, IE9',
-}, (rule, parser, reporter) => {
-  const MAX_IMPORT_COUNT = 31;
-  let count = 0;
-  parser.addListener('startpage', () => (count = 0));
-  parser.addListener('import', () => count++);
-  parser.addListener('endstylesheet', () => {
-    if (count > MAX_IMPORT_COUNT) {
-      reporter.rollupError(
-        `Too many @import rules (${count}). IE6-9 supports up to 31 import per stylesheet.`,
-        rule);
     }
   });
 }];
@@ -1504,42 +1357,6 @@ CSSLint.addRule['regex-selectors'] = [{
       }
     }
   });
-}];
-
-CSSLint.addRule['rules-count'] = [{
-  name: 'Rules Count',
-  desc: 'Track how many rules there are.',
-  browsers: 'All',
-}, (rule, parser, reporter) => {
-  let count = 0;
-  parser.addListener('startrule', () => count++);
-  parser.addListener('endstylesheet', () => reporter.stat('rule-count', count));
-}];
-
-CSSLint.addRule['selector-max'] = [{
-  name: 'Error when past the 4095 selector limit for IE',
-  desc: 'Will error when selector count is > 4095.',
-  browsers: 'IE',
-}, (rule, parser, reporter, limit = 4095) => {
-  let count = 0;
-  parser.addListener('startrule', event => {
-    count += event.selectors.length;
-  });
-  parser.addListener('endstylesheet', () => {
-    if (count > limit) {
-      reporter.report(count + ' selectors found. ' +
-                      'Internet Explorer supports a maximum of 4095 selectors per stylesheet. ' +
-                      'Consider refactoring.', {}, rule);
-    }
-  });
-}];
-
-CSSLint.addRule['selector-max-approaching'] = [{
-  name: 'Warn when approaching the 4095 selector limit for IE',
-  desc: 'Will warn when selector count is >= 3800 selectors.',
-  browsers: 'IE',
-}, (rule, parser, reporter) => {
-  CSSLint.rules['selector-max'].init(rule, parser, reporter, Number(rule.desc.match(/\d+/)[0]));
 }];
 
 CSSLint.addRule['selector-newline'] = [{
