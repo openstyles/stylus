@@ -119,26 +119,28 @@
     border-left: 1px solid #fff;
   }
   /* Using Chromium's dark devtools colors */
+  /* WARNING! Declare in the same order as the original codemirror.css  */
+  .cm-s-default .cm-header { color: #5db0d7 }
+  .cm-s-default .cm-keyword { color: #9a7fd5 }
   .cm-s-default .cm-atom,
   .cm-s-default .cm-number { color: #a1f7b5 }
-  .cm-s-default .cm-attribute { color: #6194c6 }
-  .cm-s-default .cm-bracket { color: #997 }
-  .cm-s-default .cm-builtin,
-  .cm-s-default .cm-link { color: #9fb4d6 }
-  .cm-s-default .cm-comment { color: #747474 }
-  .cm-s-default .cm-qualifier { color: #ffa34f }
-  .cm-s-default .cm-def,
-  .cm-s-default .cm-header,
-  .cm-s-default .cm-tag,
-  .cm-s-default .cm-type { color: #5db0d7 }
-  .cm-s-default .cm-hr { color: #999 }
-  .cm-s-default .cm-keyword { color: #9a7fd5 }
-  .cm-s-default .cm-meta { color: #ddfb55 }
-  .cm-s-default .cm-operator { color: #d2c057 }
-  .cm-s-default .cm-string { color: #f28b54 }
+  .cm-s-default .cm-def { color: #5db0d7 }
   .cm-s-default .cm-variable { color: #d9d9d9 }
+  .cm-s-default .cm-operator { color: #d2c057 }
   .cm-s-default .cm-variable-2 { color: #72b9ff }
   .cm-s-default .cm-variable-3 { color: #9bbbdc }
+  .cm-s-default .cm-type { color: #5db0d7 }
+  .cm-s-default .cm-comment { color: #747474 }
+  .cm-s-default .cm-string { color: #f28b54 }
+  .cm-s-default .cm-string-2 { color: #fb0 }
+  .cm-s-default .cm-meta { color: #ddfb55 }
+  .cm-s-default .cm-qualifier { color: #ffa34f }
+  .cm-s-default .cm-builtin { color: #9fb4d6 }
+  .cm-s-default .cm-bracket { color: #997 }
+  .cm-s-default .cm-tag { color: #5db0d7 }
+  .cm-s-default .cm-attribute { color: #6194c6 }
+  .cm-s-default .cm-link { color: #9fb4d6 }
+  .cm-s-default .cm-hr { color: #999 }
 
   @keyframes highlight {
     from {

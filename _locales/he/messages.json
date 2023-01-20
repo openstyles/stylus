@@ -449,10 +449,7 @@
   "linterConfigTooltip": {
     "message": "לחץ להגדרת linter זה"
   },
-  "linterInvalidConfigError": {
-    "message": "לא נשמר עקב הגדרות תצורה לא חוקיות אלה:"
-  },
-  "linterIssues": {
+    "linterIssues": {
     "message": "תקלות"
   },
   "linterIssuesHelp": {

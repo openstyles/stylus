@@ -540,10 +540,7 @@
   "linterConfigTooltip": {
     "message": "Настроить проверку CSS"
   },
-  "linterInvalidConfigError": {
-    "message": "Не сохранено из-за неправильных настроек ниже:"
-  },
-  "linterIssues": {
+    "linterIssues": {
     "message": "Проблемы"
   },
   "linterIssuesHelp": {

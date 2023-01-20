@@ -511,10 +511,7 @@
   "linterConfigTooltip": {
     "message": "Linterの設定を行うときはクリックしてください"
   },
-  "linterInvalidConfigError": {
-    "message": "これらの不正な設定のために保存されませんでした:"
-  },
-  "linterIssues": {
+    "linterIssues": {
     "message": "問題点"
   },
   "linterIssuesHelp": {

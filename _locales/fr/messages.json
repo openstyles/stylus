@@ -518,10 +518,7 @@
   "linterConfigTooltip": {
     "message": "Cliquez pour configurer ce vérificateur"
   },
-  "linterInvalidConfigError": {
-    "message": "Non sauvegardé à cause de ces paramètres invalides :"
-  },
-  "linterIssues": {
+    "linterIssues": {
     "message": "Problèmes"
   },
   "linterIssuesHelp": {

@@ -475,10 +475,7 @@
   "linterConfigTooltip": {
     "message": "Clique para configurar esse linter"
   },
-  "linterInvalidConfigError": {
-    "message": "Não foi possível salvar devido às seguintes configurações inválidas:"
-  },
-  "linterIssues": {
+    "linterIssues": {
     "message": "Problemas"
   },
   "linterIssuesHelp": {

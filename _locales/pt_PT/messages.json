@@ -460,10 +460,7 @@
   "linterConfigTooltip": {
     "message": "Clique para configurar este linter"
   },
-  "linterInvalidConfigError": {
-    "message": "Não foi guardado devido a estas configurações inválidas:"
-  },
-  "linterIssues": {
+    "linterIssues": {
     "message": "Problemas"
   },
   "linterIssuesHelp": {

@@ -697,10 +697,6 @@
     "message": "Click to configure this linter",
     "description": "Icon tooltip to indicate that it opens a popup with the selected linter configuration"
   },
-  "linterInvalidConfigError": {
-    "message": "Not saved due to these invalid configuration settings:",
-    "description": "Invalid linter config will show a message followed by a list of invalid entries"
-  },
   "linterIssues": {
     "message": "Issues",
     "description": "Label for the CSS linter issues block on the style edit page"

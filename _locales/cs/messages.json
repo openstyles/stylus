@@ -425,10 +425,7 @@
   "linterConfigTooltip": {
     "message": "Upravit nastavení tohoto linteru"
   },
-  "linterInvalidConfigError": {
-    "message": "Neuloženo z důvodu těchto neplatných nastavení:"
-  },
-  "linterIssues": {
+    "linterIssues": {
     "message": "Problémy"
   },
   "linterIssuesHelp": {

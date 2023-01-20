@@ -543,10 +543,7 @@
   "linterConfigTooltip": {
     "message": "点击以配置此 Linter"
   },
-  "linterInvalidConfigError": {
-    "message": "由于配置无效所以未保存："
-  },
-  "linterIssues": {
+    "linterIssues": {
     "message": "问题"
   },
   "linterIssuesHelp": {

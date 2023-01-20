@@ -496,10 +496,7 @@
   "linterConfigTooltip": {
     "message": "Klicken, um diesen Linter zu konfigurieren"
   },
-  "linterInvalidConfigError": {
-    "message": "Nicht gespeichert aufgrund folgender ungültiger Einstellungen:"
-  },
-  "linterIssues": {
+    "linterIssues": {
     "message": "Probleme"
   },
   "linterIssuesHelp": {

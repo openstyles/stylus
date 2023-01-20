@@ -210,10 +210,7 @@
   "linterConfigTooltip": {
     "message": "Щракнете, за да конфигурирате този linter"
   },
-  "linterInvalidConfigError": {
-    "message": "Не е записано заради тези неправилни настройки"
-  },
-  "linterIssues": {
+    "linterIssues": {
     "message": "Проблеми"
   },
   "linterIssuesHelp": {

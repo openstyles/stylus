@@ -374,10 +374,7 @@
   "linterConfigTooltip": {
     "message": "Click pentru a configura linter-ul"
   },
-  "linterInvalidConfigError": {
-    "message": "Nu a fost salvat din cauza acestor setări invalide:"
-  },
-  "linterIssues": {
+    "linterIssues": {
     "message": "Probleme"
   },
   "linterIssuesHelp": {

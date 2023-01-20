@@ -524,10 +524,7 @@
   "linterConfigTooltip": {
     "message": "Klik om deze linter te configureren"
   },
-  "linterInvalidConfigError": {
-    "message": "Niet opgeslagen vanwege deze ongeldige configuratie-instellingen:"
-  },
-  "linterIssues": {
+    "linterIssues": {
     "message": "Problemen"
   },
   "linterIssuesHelp": {

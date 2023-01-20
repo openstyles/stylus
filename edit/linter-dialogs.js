@@ -57,21 +57,21 @@
       ]));
     cm = popup.codebox;
     cm.focus();
-    const rulesStr = getActiveRules().join('|');
-    if (rulesStr) {
-      const rx = new RegExp(`"(${rulesStr})"\\s*:`);
-      let line = 0;
-      cm.startOperation();
-      cm.eachLine(({text}) => {
-        const m = rx.exec(text);
-        if (m) {
-          const ch = m.index + 1;
-          cm.markText({line, ch}, {line, ch: ch + m[1].length}, {className: 'active-linter-rule'});
+    const knownRules = new Set(isStylelint ? Object.keys(RULES.stylelint) : RULES.csslint.map(r => r.id));
+    const activeRules = new Set(getActiveRules());
+    cm.addOverlay({
+      token(stream) {
+        const t = stream.baseToken();
+        if (t && t.type === 'string property') {
+          const id = stream.string.substr(stream.pos + 1, t.size - 2);
+          if (knownRules.has(id)) {
+            stream.pos += t.size;
+            return 'string-2 known-linter-rule' + (activeRules.has(id) ? ' active-linter-rule' : '');
+          }
         }
-        ++line;
-      });
-      cm.endOperation();
-    }
+        stream.pos += t ? t.size : 1e9;
+      },
+    });
     cm.on('changes', updateConfigButtons);
     updateConfigButtons();
     window.on('closeHelp', onConfigClose, {once: true});
@@ -201,20 +201,6 @@
     if (!json) {
       showLinterErrorMessage(linter, t('linterJSONError'), popup);
       cm.focus();
-      return;
-    }
-    let invalid;
-    if (isStylelint) {
-      invalid = Object.keys(json.rules).filter(k => !RULES.stylelint.hasOwnProperty(k));
-    } else {
-      const ids = RULES.csslint.map(r => r.id);
-      invalid = Object.keys(json).filter(k => !ids.includes(k));
-    }
-    if (invalid.length) {
-      showLinterErrorMessage(linter, [
-        t('linterInvalidConfigError'),
-        $create('ul', invalid.map(name => $create('li', name))),
-      ], popup);
       return;
     }
     chromeSync.setLZValue(chromeSync.LZ_KEY[linter], json);

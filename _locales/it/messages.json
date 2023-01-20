@@ -396,10 +396,7 @@
       }
     }
   },
-  "linterInvalidConfigError": {
-    "message": "Non salvato a causa di queste impostazioni di configurazione non valide:"
-  },
-  "linterIssues": {
+    "linterIssues": {
     "message": "Problemi"
   },
   "linterJSONError": {

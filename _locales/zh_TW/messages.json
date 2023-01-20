@@ -546,10 +546,7 @@
   "linterConfigTooltip": {
     "message": "點選以設定此 linter"
   },
-  "linterInvalidConfigError": {
-    "message": "因為無效的設定所以未儲存："
-  },
-  "linterIssues": {
+    "linterIssues": {
     "message": "問題"
   },
   "linterIssuesHelp": {

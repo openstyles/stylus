@@ -449,10 +449,7 @@
   "linterConfigTooltip": {
     "message": "Selle linteri seadistamiseks klõpsa"
   },
-  "linterInvalidConfigError": {
-    "message": "Ei salvestatud nende vigaste seadistuste tõttu:"
-  },
-  "linterIssues": {
+    "linterIssues": {
     "message": "Vead"
   },
   "linterIssuesHelp": {

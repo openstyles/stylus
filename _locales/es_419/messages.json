@@ -472,10 +472,7 @@
   "linterConfigTooltip": {
     "message": "Haz clic para configurar este linter"
   },
-  "linterInvalidConfigError": {
-    "message": "No se guardó debido a estos ajustes de configuración no válidos:"
-  },
-  "linterIssues": {
+    "linterIssues": {
     "message": "Problemas"
   },
   "linterIssuesHelp": {

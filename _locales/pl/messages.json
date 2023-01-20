@@ -546,10 +546,7 @@
   "linterConfigTooltip": {
     "message": "Kliknij, aby skonfigurować ten linter"
   },
-  "linterInvalidConfigError": {
-    "message": "Nie zapisano z powodu tych nieprawidłowych ustawień konfiguracji:"
-  },
-  "linterIssues": {
+    "linterIssues": {
     "message": "Problemy"
   },
   "linterIssuesHelp": {

@@ -437,10 +437,7 @@
       }
     }
   },
-  "linterInvalidConfigError": {
-    "message": "Inte sparat på grund av dessa ogiltiga konfigurationsinställningar:"
-  },
-  "linterIssues": {
+    "linterIssues": {
     "message": "Problem"
   },
   "linterIssuesHelp": {

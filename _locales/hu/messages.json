@@ -522,10 +522,7 @@
   "linterConfigTooltip": {
     "message": "Linter beállítása"
   },
-  "linterInvalidConfigError": {
-    "message": "Nincs mentve a következő érvénytelen beállítások miatt:"
-  },
-  "linterIssues": {
+    "linterIssues": {
     "message": "Problémák"
   },
   "linterIssuesHelp": {
