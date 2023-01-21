@@ -449,7 +449,7 @@
   "linterConfigTooltip": {
     "message": "לחץ להגדרת linter זה"
   },
-    "linterIssues": {
+  "linterIssues": {
     "message": "תקלות"
   },
   "linterIssuesHelp": {

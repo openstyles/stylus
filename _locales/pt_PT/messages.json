@@ -460,7 +460,7 @@
   "linterConfigTooltip": {
     "message": "Clique para configurar este linter"
   },
-    "linterIssues": {
+  "linterIssues": {
     "message": "Problemas"
   },
   "linterIssuesHelp": {

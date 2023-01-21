@@ -437,7 +437,7 @@
       }
     }
   },
-    "linterIssues": {
+  "linterIssues": {
     "message": "Problem"
   },
   "linterIssuesHelp": {

@@ -425,7 +425,7 @@
   "linterConfigTooltip": {
     "message": "Upravit nastavení tohoto linteru"
   },
-    "linterIssues": {
+  "linterIssues": {
     "message": "Problémy"
   },
   "linterIssuesHelp": {

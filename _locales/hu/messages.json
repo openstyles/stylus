@@ -522,7 +522,7 @@
   "linterConfigTooltip": {
     "message": "Linter beállítása"
   },
-    "linterIssues": {
+  "linterIssues": {
     "message": "Problémák"
   },
   "linterIssuesHelp": {

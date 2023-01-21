@@ -518,7 +518,7 @@
   "linterConfigTooltip": {
     "message": "Cliquez pour configurer ce vérificateur"
   },
-    "linterIssues": {
+  "linterIssues": {
     "message": "Problèmes"
   },
   "linterIssuesHelp": {

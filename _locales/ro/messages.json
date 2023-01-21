@@ -374,7 +374,7 @@
   "linterConfigTooltip": {
     "message": "Click pentru a configura linter-ul"
   },
-    "linterIssues": {
+  "linterIssues": {
     "message": "Probleme"
   },
   "linterIssuesHelp": {

@@ -543,7 +543,7 @@
   "linterConfigTooltip": {
     "message": "点击以配置此 Linter"
   },
-    "linterIssues": {
+  "linterIssues": {
     "message": "问题"
   },
   "linterIssuesHelp": {

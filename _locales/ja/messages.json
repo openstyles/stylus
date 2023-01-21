@@ -511,7 +511,7 @@
   "linterConfigTooltip": {
     "message": "Linterの設定を行うときはクリックしてください"
   },
-    "linterIssues": {
+  "linterIssues": {
     "message": "問題点"
   },
   "linterIssuesHelp": {

@@ -540,7 +540,7 @@
   "linterConfigTooltip": {
     "message": "Настроить проверку CSS"
   },
-    "linterIssues": {
+  "linterIssues": {
     "message": "Проблемы"
   },
   "linterIssuesHelp": {

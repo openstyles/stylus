@@ -449,7 +449,7 @@
   "linterConfigTooltip": {
     "message": "Selle linteri seadistamiseks klõpsa"
   },
-    "linterIssues": {
+  "linterIssues": {
     "message": "Vead"
   },
   "linterIssuesHelp": {

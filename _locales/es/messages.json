@@ -510,7 +510,7 @@
   "linterConfigTooltip": {
     "message": "Haz clic para configurar este linter"
   },
-    "linterIssues": {
+  "linterIssues": {
     "message": "Problemas"
   },
   "linterIssuesHelp": {

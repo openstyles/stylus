@@ -475,7 +475,7 @@
   "linterConfigTooltip": {
     "message": "Clique para configurar esse linter"
   },
-    "linterIssues": {
+  "linterIssues": {
     "message": "Problemas"
   },
   "linterIssuesHelp": {

@@ -396,7 +396,7 @@
       }
     }
   },
-    "linterIssues": {
+  "linterIssues": {
     "message": "Problemi"
   },
   "linterJSONError": {

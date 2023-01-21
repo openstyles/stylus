@@ -479,7 +479,7 @@
   "linterConfigTooltip": {
     "message": "현재 Linter를 설정하려면 클릭하세요"
   },
-    "linterIssues": {
+  "linterIssues": {
     "message": "문제점"
   },
   "linterIssuesHelp": {

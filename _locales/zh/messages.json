@@ -540,7 +540,7 @@
   "linterConfigTooltip": {
     "message": "配置此Linter"
   },
-    "linterIssues": {
+  "linterIssues": {
     "message": "问题"
   },
   "linterIssuesHelp": {
