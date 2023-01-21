@@ -626,7 +626,7 @@ self.parserlib = (() => {
     '<glyph-angle>': p => p.type === 'angle' && p.units === 'deg',
     '<hue>': p => p.type === 'number' || p.type === 'angle' || p.isCalc,
     '<ident-for-grid>': customIdentChecker('span|auto'),
-    '<ident-not-none>': p => p.tokenType === Tokens.IDENT && !p.is === 'none', //eslint-disable-line no-use-before-define
+    '<ident-not-none>': p => p.tokenType === Tokens.IDENT && p.is !== 'none', //eslint-disable-line no-use-before-define
     '<ie-function>': p => p.tokenType === Tokens.IE_FUNCTION, //eslint-disable-line no-use-before-define
     '<integer>': p => p.isInt,
     '<int0+>': p => p.isInt && p.value >= 0,
@@ -1732,10 +1732,14 @@ self.parserlib = (() => {
       tok = new SyntaxUnit(parseString(val), tok, 'string');
       tok.raw = val;
     } else if (type === Tokens.IDENT) {
-      tok = tok.isCust ? new SyntaxUnit(val, tok, 'custom-prop')
-        : val.length < 3 || val.length > 20
-          ? new SyntaxUnit(val, tok, 'ident')
-          : new PropValueMaybeColor(val, tok, '');
+      if (tok.isCust) {
+        tok = new SyntaxUnit(val, tok, 'custom-prop');
+      } else if (val.length < 3 || val.length > 20 || (n = val.toLowerCase()) === 'auto' || n === 'none') {
+        tok = new SyntaxUnit(val, tok, 'ident');
+        if (n) tok.is = n;
+      } else {
+        tok = new PropValueMaybeColor(val, tok, '');
+      }
     } else if ((n = tok.name)) {
       tok = new PropValueFunc(tok, n);
     } else {
