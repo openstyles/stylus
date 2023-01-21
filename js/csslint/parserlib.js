@@ -44,17 +44,18 @@ self.parserlib = (() => {
     'alignment-baseline': 'auto | baseline | use-script | before-edge | text-before-edge | ' +
       'after-edge | text-after-edge | central | middle | ideographic | alphabetic | ' +
       'hanging | mathematical',
-    'animation': '[ <time> || <single-timing-function> || <time> || [ infinite | <number> ] || ' +
-      '<single-animation-direction> || <single-animation-fill-mode> || ' +
+    'animation': '[ <time> || <timing-function> || <time> || [ infinite | <number> ] || ' +
+      '<animation-direction> || <animation-fill-mode> || ' +
       '[ running | paused ] || [ none | <custom-ident> | <string> ] ]#',
+    'animation-composition': '[ replace | add | accumulate ]#',
     'animation-delay': '<time>#',
-    'animation-direction': '<single-animation-direction>#',
+    'animation-direction': '<animation-direction>#',
     'animation-duration': '<time>#',
-    'animation-fill-mode': '<single-animation-fill-mode>#',
+    'animation-fill-mode': '<animation-fill-mode>#',
     'animation-iteration-count': '[ <number> | infinite ]#',
     'animation-name': '[ none | <keyframes-name> ]#',
     'animation-play-state': '[ running | paused ]#',
-    'animation-timing-function': '<single-timing-function>#',
+    'animation-timing-function': '<timing-function>#',
     'appearance': 'none | auto',
     '-moz-appearance':
       'none | button | button-arrow-down | button-arrow-next | button-arrow-previous | ' +
@@ -207,7 +208,7 @@ self.parserlib = (() => {
     'enable-background': 1, // SVG
 
     'fill': '<paint>',
-    'fill-opacity': '<opacity>',
+    'fill-opacity': '<num0-1>',
     'fill-rule': 'nonzero | evenodd',
     'filter': '<filter-function-list> | <ie-function> | none',
     'flex': '<flex-shorthand>',
@@ -219,7 +220,7 @@ self.parserlib = (() => {
     'flex-wrap': 'nowrap | wrap | wrap-reverse',
     'float': 'left | right | none | inline-start | inline-end',
     'flood-color': 1,
-    'flood-opacity': '<opacity>',
+    'flood-opacity': '<num0-1>',
     // matching no-pct first because Matcher doesn't retry for a longer match in nested definitions
     'font': '<font-short-tweak-no-pct>? <font-short-core> | ' +
       '[ <font-short-tweak-no-pct> || <pct> ]? <font-short-core> | ' +
@@ -357,7 +358,7 @@ self.parserlib = (() => {
     'offset-path': 'none | ray() | path() | <uri> | [ <basic-shape> && <coord-box>? ] | <coord-box>',
     'offset-position': 'auto | <position>',
     'offset-rotate': '[ auto | reverse ] || <angle>',
-    'opacity': '<opacity> | <pct>',
+    'opacity': '<num0-1> | <pct>',
     'order': '<integer>',
     'orphans': '<integer>',
     'outline': '[ <color> | invert ] || [ auto | <border-style> ] || <border-width>',
@@ -449,14 +450,14 @@ self.parserlib = (() => {
     'speak': 'auto | never | always',
     'speak-as': 1,
     'stop-color': 1,
-    'stop-opacity': '<opacity>',
+    'stop-opacity': '<num0-1>',
     'stroke': '<paint>',
     'stroke-dasharray': 'none | <dasharray>',
     'stroke-dashoffset': '<len-pct> | <number>',
     'stroke-linecap': 'butt | round | square',
     'stroke-linejoin': 'miter | miter-clip | round | bevel | arcs',
     'stroke-miterlimit': '<num0+>',
-    'stroke-opacity': '<opacity>',
+    'stroke-opacity': '<num0-1>',
     'stroke-width': '<len-pct> | <number>',
 
     'table-layout': 'auto | fixed',
@@ -491,11 +492,11 @@ self.parserlib = (() => {
       '[ left | center | right | top | bottom | <len-pct> ] | ' +
       '[ [ center | left | right ] && [ center | top | bottom ] ] <length>?',
     'transform-style': 'flat | preserve-3d',
-    'transition': '<transition>#',
+    'transition': '[ [ none | [ all | <custom-ident> ]# ] || <time> || <timing-function> || <time> ]#',
     'transition-delay': '<time>#',
     'transition-duration': '<time>#',
     'transition-property': 'none | [ all | <custom-ident> ]#',
-    'transition-timing-function': '<single-timing-function>#',
+    'transition-timing-function': '<timing-function>#',
     'translate': 'none | <len-pct> [ <len-pct> <length>? ]?',
 
     'unicode-range': '<unicode-range>#',
@@ -637,11 +638,11 @@ self.parserlib = (() => {
     '<len-pct0+>': p => p.value > 0 ? p.type === 'pct' || p.type === 'length' : p.is0 || p.isCalc,
     '<number>': p => p.type === 'number' || p.isCalc,
     '<num0+>': p => p.type === 'number' && p.value >= 0 || p.isCalc,
+    '<num0-1>': p => p.type === 'number' && p.value >= 0 && p.value <= 1 || p.isCalc,
     '<num1-1000>': p => p.type === 'number' && p.value >= 1 && p.value <= 1000 || p.isCalc,
     '<num-pct>': p => p.type === 'number' || p.type === 'pct' || p.isCalc,
     '<num-pct0+>': p => (p.type === 'number' || p.type === 'pct') && p.value >= 0 || p.isCalc,
     '<num-pct-none>': p => p.type === 'number' || p.type === 'pct' || p.is === 'none' || p.isCalc,
-    '<opacity>': p => p.type === 'number' && p.value >= 0 && p.value <= 1 || p.isCalc,
     '<pct>': vtIsPct,
     '<pct0+>': p => p.type === 'pct' && p.value >= 0 || p.isCalc,
     '<pct0-100>': p => p.type === 'pct' && p.value >= 0 && p.value <= 100 || p.isCalc,
@@ -662,13 +663,13 @@ self.parserlib = (() => {
   const VTFunctions = {
     color: {
       __proto__: null,
-      'color-mix': 'in [ <re:srgb(-linear)?|(ok)?lab|xyz(-d(50|65))?> ' +
-        '| <re:hsl|hwb|(ok)?lch> [ <re:(short|long)er|(in|de)creasing> hue ]? ' +
+      'color-mix': 'in [ srgb | srgb-linear | lab | oklab | xyz | xyz-d50 | xyz-d65 ' +
+        '| [ hsl | hwb | lch | oklch ] [ [ shorter | longer | increasing | decreasing ] hue ]? ' +
         '] , [ <color> && <pct0-100>? ]#{2}',
       'color': 'from <color> [ ' +
           '<custom-prop> [ <num-pct-none> <custom-ident> ]# | ' +
-          '<rgb-xyz> [ <num-pct-none> | <re:[rgbxyz]> ]{3} ' +
-        '] [ / <num-pct-none> | <re:[rgbxyz]> ]? | ' +
+          '<rgb-xyz> [ <num-pct-none> | r | g | b | x | y | z ]{3} ' +
+        '] [ / <num-pct-none> | r | g | b | x | y | z ]? | ' +
         '[ <rgb-xyz> <num-pct-none>{3} | <custom-prop> <num-pct-none># ] <alpha>?',
       'hsl': '<hue> , <pct>#{2} [ , <num-pct0+> ]? | ' +
         '[ <hue> | none ] <num-pct-none>{2} <alpha>? | ' +
@@ -729,6 +730,8 @@ self.parserlib = (() => {
     '<absolute-size>': 'xx-small | x-small | small | medium | large | x-large | xx-large',
     '<alpha>': '/ <num-pct-none>',
     '<animateable-feature>': 'scroll-position | contents | <animateable-feature-name>',
+    '<animation-direction>': 'normal | reverse | alternate | alternate-reverse',
+    '<animation-fill-mode>': 'none | forwards | backwards | both',
     '<attachment>': 'scroll | fixed | local',
     '<auto-repeat>':
       'repeat( [ auto-fill | auto-fit ] , [ <line-names>? <fixed-size> ]+ <line-names>? )',
@@ -777,8 +780,6 @@ self.parserlib = (() => {
       'target-counter() | target-counters() | target-text() ]+',
     '<content-position>': 'center | start | end | flex-start | flex-end',
     '<counter>': '[ <ident-not-none> <integer>? ]+ | none',
-    '<cubic-bezier-timing-function>': 'ease | ease-in | ease-out | ease-in-out | ' +
-      'cubic-bezier( <number>#{4} )',
     '<dasharray>': M => M.parse('<len-pct0+> | <num0+>')
       .braces(1, Infinity, '#', M.fromType(',').braces(0, 1, '?')),
     '<display-box>': 'contents | none',
@@ -851,19 +852,15 @@ self.parserlib = (() => {
     '<self-position>': 'center | start | end | self-start | self-end | flex-start | flex-end',
     '<shadow>': 'inset? && [ <length>{2,4} && <color>? ]',
     '<shape-box>': '<box> | margin-box',
-    '<single-animation-direction>': 'normal | reverse | alternate | alternate-reverse',
-    '<single-animation-fill-mode>': 'none | forwards | backwards | both',
-    '<single-timing-function>':
-      'linear | <cubic-bezier-timing-function> | <step-timing-function> | frames( <integer> )',
-    '<step-timing-function>': 'step-start | step-end | ' +
-      'steps( <integer> [ , <re:jump-(start|end|none|both)|start|end> ]? )',
+    '<timing-function>': 'linear | ease | ease-in | ease-out | ease-in-out | step-start | step-end | ' +
+      'cubic-bezier( <num0-1> , <number> , <num0-1> , <number> ) | ' +
+      'steps( <integer> [ , [ jump-start | jump-end | jump-none | jump-both | start | end ] ]? )',
     '<text-align>': 'start | end | left | right | center | justify | match-parent',
     '<track-breadth>': '<len-pct> | <flex> | min-content | max-content | auto',
     '<track-list>': '[ <line-names>? [ <track-size> | <track-repeat> ] ]+ <line-names>?',
     '<track-repeat>': 'repeat( [ <int1+> ] , [ <line-names>? <track-size> ]+ <line-names>? )',
     '<track-size>': '<track-breadth> | minmax( <inflexible-breadth> , <track-breadth> ) | ' +
       'fit-content( <len-pct> )',
-    '<transition>': '[ none | [ all | <custom-ident> ]# ] || <time> || <single-timing-function> || <time>',
     '<vis-hid>': 'visible | hidden',
     '<width-height>': '<len-pct> | min-content | max-content | fit-content | ' +
       '-moz-available | -webkit-fill-available | fit-content( <len-pct> )',
@@ -1147,7 +1144,7 @@ self.parserlib = (() => {
         : this.options.min === 0;
     }
     braces(min, max, marker, sep) {
-      return new Matcher(Matcher.funcBraces, Matcher.toStringBraces, {
+      return new Matcher(Matcher.testBraces, Matcher.toStringBraces, {
         min, max, marker,
         sep: sep && Matcher.seq(sep, this),
         embraced: this,
@@ -1190,15 +1187,18 @@ self.parserlib = (() => {
       if (!m) {
         if (type.startsWith('<fn:')) {
           m = type.endsWith('?>');
-          m = new Matcher(Matcher.funcFunc, Matcher.toStringFunc, {
+          m = new Matcher(Matcher.testFunc, Matcher.toStringFunc, {
             optional: m,
             list: type.slice(4, m ? -2 : -1),
           });
         } else {
-          m = new Matcher(Matcher.funcFromType, type,
-            type.startsWith('<re:') ? {re: RegExp(`^(${type.slice(4, -1)})$`, 'i')}
-              : type.endsWith('()') ? {name: type.toLowerCase().slice(0, -2)}
-                : {type});
+          type = type.toLowerCase();
+          m = type[0] === '<' ? {type}
+            : type.endsWith('()') ? {name: type.slice(0, -2)}
+              : type[0] === '"' ? {str: type.slice(1, -1)}
+                : (m = type.split(' | '))[1] ? (type = Matcher.toStringPlain, {str: m})
+                  : {str: type};
+          m = new Matcher(Matcher.testType, type, m);
         }
         matcherCache.set(type, m);
       }
@@ -1210,19 +1210,19 @@ self.parserlib = (() => {
      * @returns {Matcher}
      */
     static func(name, body) {
-      return new Matcher(Matcher.funcFunc, Matcher.toStringFunc, {name, body});
+      return new Matcher(Matcher.testFunc, Matcher.toStringFunc, {name, body});
     }
     // Matcher for one or more juxtaposed words, which all must occur, in the given order.
     static seq(...args) {
       const ms = args.map(Matcher.cast);
       if (ms.length === 1) return ms[0];
-      return new Matcher(Matcher.funcSeq, Matcher.toStringSeq, ms);
+      return new Matcher(Matcher.testSeq, Matcher.toStringSeq, ms);
     }
     // Matcher for one or more alternatives, where exactly one must occur.
     static alt(...args) {
       const ms = args.map(Matcher.cast);
       if (ms.length === 1) return ms[0];
-      return new Matcher(Matcher.funcAlt, Matcher.toStringAlt, ms);
+      return new Matcher(Matcher.testAlt, Matcher.toStringAlt, ms);
     }
     /**
      * Matcher for two or more options: double bar (||) and double ampersand (&&) operators,
@@ -1232,7 +1232,7 @@ self.parserlib = (() => {
      */
     static many(required, ...args) {
       const ms = args.map(Matcher.cast);
-      const m = new Matcher(Matcher.funcMany, Matcher.toStringMany, ms);
+      const m = new Matcher(Matcher.testMany, Matcher.toStringMany, ms);
       m.required = required === true ? Array(ms.length).fill(true) : required;
       return m;
     }
@@ -1243,7 +1243,7 @@ self.parserlib = (() => {
      * @this {Matcher}
      * @param {PropValueIterator} expr
      */
-    static funcAlt(expr) {
+    static testAlt(expr) {
       return this.options.some(Matcher.invoke, expr);
     }
     /**
@@ -1251,7 +1251,7 @@ self.parserlib = (() => {
      * @param {PropValueIterator} expr
      * @param {SyntaxUnit} [p]
      */
-    static funcBraces(expr, p) {
+    static testBraces(expr, p) {
       const {min, max, sep, embraced} = this.options;
       let i = 0;
       while (i < max && (i && sep || embraced).match(expr, p)) {
@@ -1265,19 +1265,23 @@ self.parserlib = (() => {
      * @param {PropValueIterator} expr
      * @param {SyntaxUnit} part
      */
-    static funcFromType(expr, part) {
+    static testType(expr, part) {
       let result, m, opt, name, type;
       if (part.isVar) {
         result = true;
-      } else if ((name = (opt = this.options).name)) {
+      } else if ((type = (opt = this.options).str)) {
+        if (!part.name) {
+          m = part.text.toLowerCase();
+          name = typeof type === 'string';
+          result = name ? type === m : type.includes(m);
+          if (!result && m[0] === '-') {
+            m = part.textCore || (part.textCore = m.match(rxVendorPrefix)[2]);
+            result = name ? type === m : type.includes(m);
+          }
+        }
+      } else if ((name = opt.name)) {
         result = part.name === name;
-      } else if ((m = opt.re)) {
-        result = m.test(part.text);
-      } else if ((type = opt.type)[0] !== '<') {
-        m = part.text;
-        result = m.length >= type.length &&
-          (type === m || m[0] === '-' && lowerCmp(type, m.match(rxVendorPrefix)[2]));
-      } else if ((m = VTSimple[type])) {
+      } else if ((m = VTSimple[type = opt.type])) {
         result = m(part);
       } else if ((m = VTComplex[type] || Properties[type.slice(1, -1)])) {
         result = (m.matchFunc ? m : vtCompile(type, m)).match(expr, part);
@@ -1293,7 +1297,7 @@ self.parserlib = (() => {
      * @param {PropValueIterator} expr
      * @param {SyntaxUnit} p
      */
-    static funcFunc(expr, p) {
+    static testFunc(expr, p) {
       const opt = this.options;
       const {name} = p;
       let e, m, list;
@@ -1311,60 +1315,60 @@ self.parserlib = (() => {
      * @this {Matcher}
      * @param {PropValueIterator} expr
      */
-    static funcMany(expr) {
-      const seen = [];
-      const {/** @type {Matcher[]} */options: ms, required} = this;
-      let max = 0;
-      let pass = 0;
+    static testMany(expr) {
+      const {required} = this;
+      const state = {max: 0, pass: 0, seen: []};
       // If couldn't get a complete match, retrace our steps to make the
       // match with the maximum # of required elements.
-      if (!tryMatch(0)) {
-        pass++;
-        tryMatch(0);
+      if (!this.testManyTry(expr, state, 0)) {
+        state.pass++;
+        this.testManyTry(expr, state, 0);
       }
-      if (required === false) {
-        return max > 0;
+      if (!required) {
+        return state.max > 0;
       }
       // Use finer-grained specification of which matchers are required.
-      for (let i = 0; i < ms.length; i++) {
-        if (required[i] && !seen[i]) {
+      for (let i = 0; i < this.options.length; i++) {
+        if (required[i] && !state.seen[i]) {
           return false;
         }
       }
       return true;
-      function tryMatch(matchCount) {
-        for (let i = 0; i < ms.length; i++) {
-          if (seen[i]) continue;
-          expr.mark();
-          if (expr.hasNext && !ms[i].matchFunc(expr, expr._parts[expr._i])) {
-            expr.popMark(true);
-            continue;
-          }
-          seen[i] = true;
-          // Increase matchCount if this was a required element
-          // (or if all the elements are optional)
-          if (tryMatch(matchCount + (required === false || required[i] ? 1 : 0))) {
-            expr.popMark(true);
-            return true;
-          }
-          // Backtrack: try *not* matching using this rule, and
-          // let's see if it leads to a better overall match.
-          expr.popMark();
-          seen[i] = false;
+    }
+    testManyTry(expr, state, count) {
+      const {options: ms, required} = this;
+      const {seen} = state;
+      for (let i = 0; i < ms.length; i++) {
+        if (seen[i]) continue;
+        expr.mark();
+        if (expr.hasNext && !ms[i].matchFunc(expr, expr._parts[expr._i])) {
+          expr.popMark(true);
+          continue;
         }
-        if (pass === 0) {
-          max = Math.max(matchCount, max);
-          return matchCount === ms.length;
-        } else {
-          return matchCount === max;
+        seen[i] = true;
+        // Increase count if this was a required element
+        // (or if all the elements are optional)
+        if (this.testManyTry(expr, state, count + (!required || required[i] ? 1 : 0))) {
+          expr.popMark(true);
+          return true;
         }
+        // Backtrack: try *not* matching using this rule, and
+        // let's see if it leads to a better overall match.
+        expr.popMark();
+        seen[i] = false;
+      }
+      if (state.pass === 0) {
+        state.max = Math.max(count, state.max);
+        return count === ms.length;
+      } else {
+        return count === state.max;
       }
     }
     /**
      * @this {Matcher}
      * @param {PropValueIterator} expr
      */
-    static funcSeq(expr) {
+    static testSeq(expr) {
       return this.options.every(Matcher.invoke, expr);
     }
 
@@ -1402,6 +1406,11 @@ self.parserlib = (() => {
       return prec > p ? `[ ${s} ]` : s;
     }
     /** @this {Matcher} */
+    static toStringPlain(prec) {
+      const s = this.options.str.join(' | ');
+      return prec > Matcher.prec.SEQ ? `[ ${s} ]` : s;
+    }
+    /** @this {Matcher} */
     static toStringSeq(prec) {
       const p = Matcher.prec.SEQ;
       const s = this.options.map(m => m.toString(p)).join(' ');
@@ -1420,6 +1429,13 @@ self.parserlib = (() => {
   };
 
   Matcher.parseGrammar = (() => {
+    const rxBraces = /\s*\d+\s*(,\s*\d+\s*)?}/y;
+    const rxBracesSep = /\s+|,|}/;
+    const rxFunc = /[-\w]+\(\s/y;
+    const rxPlainTextAlt = /[-\w]+( \| [-\w]+)*(?= \| | ]| \)|\s*$)/y;
+    const rxSeqSep = /\s(?![&|)\]])/y;
+    const rxTerm = /<[^>]+>|[^\s?*+#{]+/y;
+    const rxTermMod = /[?*+#{]/y;
     /** @type {StringReader} */
     let reader;
     return newReader => {
@@ -1429,7 +1445,10 @@ self.parserlib = (() => {
     function alt() {
       // alt = oror (" | " oror)*
       const alts = [];
-      do alts.push(oror()); while (reader.readMatch(' | '));
+      do {
+        const m = reader.readMatch(rxPlainTextAlt);
+        alts.push(m ? Matcher.fromType(m) : oror());
+      } while (reader.readMatch(' | '));
       return alts.length === 1 ? alts[0] : Matcher.alt(...alts);
     }
     // Matcher for two or more options in any order, at least one must be present.
@@ -1464,27 +1483,24 @@ self.parserlib = (() => {
     function seq() {
       // seq = mod ( " " mod)*
       const mods = [];
-      do mods.push(mod()); while (reader.readMatch(/\s(?![&|)\]])/y));
+      do mods.push(mod()); while (reader.readMatch(rxSeqSep));
       return Matcher.seq(...mods);
     }
     function mod() {
       // mod = term ( "?" | "*" | "+" | "#" | "{<num>,<num>}" )?
       // term = <nt> | literal | "[ " expression " ]" | fn "( " alt " )"
-      let m, fn;
+      let m, hash, fn;
       if (reader.readMatch('[ ')) {
         m = alt();
         eat(' ]');
-      } else if ((fn = reader.readMatch(/[-\w]+\(\s/y))) {
-        m = alt();
+      } else if ((fn = reader.readMatch(rxFunc))) {
+        m = Matcher.func(fn.slice(0, -2).toLowerCase(), alt());
         eat(' )');
-        return Matcher.func(fn.slice(0, -2).toLowerCase(), m);
-      } else if ((m = reader.readMatch(/([-\w]+(?:\s+\|\s+[-\w]+)+)(?=\s+(]|\|\s+)|\s*$)/y))) {
-        return Matcher.fromType(`<re:${m.replace(/\s+\|\s+/g, '|')}>`);
+        return m;
       } else {
-        m = Matcher.fromType(eat(/<[^>]+>|[^\s?*+#{]+/y).replace(/^(['"`])(.*)\1$/g, '$1'));
+        m = Matcher.fromType(eat(rxTerm));
       }
-      let hash;
-      switch (reader.readMatch(/[?*+#{]/y)) {
+      switch (reader.readMatch(rxTermMod)) {
         case '?': return m.braces(0, 1, '?');
         case '*': return m.braces(0, Infinity, '*');
         case '+': return m.braces(1, Infinity, '+');
@@ -1494,7 +1510,7 @@ self.parserlib = (() => {
           hash = '#';
           // fallthrough
         case '{': {
-          const [min, max] = eat(/\s*\d+\s*(,\s*\d+\s*)?}/y).trim().split(/\s+|,|}/);
+          const [min, max] = eat(rxBraces).trim().split(rxBracesSep);
           return m.braces(min | 0, max | min | 0, hash, hash && ',');
         }
       }
@@ -1543,7 +1559,7 @@ self.parserlib = (() => {
 
   class SyntaxUnit {
     /**
-     * @param {string} text
+     * @param {?string} text
      * @param {parserlib.Token} tok
      * @param {string} type
      */
@@ -1553,7 +1569,7 @@ self.parserlib = (() => {
       this.line = tok.line;
       this.offset = tok.offset;
       this.type = type;
-      if (text) this.text = text;
+      if (text != null) this.text = text;
       if (tok.tokenType == null) {
         this.tokenType = tok.type;
         let x;
@@ -1594,7 +1610,7 @@ self.parserlib = (() => {
   // individual media query
   class MediaQuery extends SyntaxUnit {
     constructor(modifier, mediaType, features, pos) {
-      super('', pos, mediaType);
+      super(null, pos, mediaType);
       this.modifier = modifier;
       this.features = features;
     }
@@ -1627,7 +1643,7 @@ self.parserlib = (() => {
 
   class SelectorPseudoFunc extends SelectorSubPart {
     constructor(tok, colons, args) {
-      super('', tok, 'pseudo', args);
+      super(null, tok, 'pseudo', args);
       this.colons = colons;
       this.name = tok.name;
     }
@@ -1665,7 +1681,7 @@ self.parserlib = (() => {
    */
   class PropValue extends SyntaxUnit {
     constructor(parts, pos = parts[0]) {
-      super('', pos, 'val');
+      super(null, pos, 'val');
       this.parts = parts;
     }
     get text() {
@@ -1677,16 +1693,16 @@ self.parserlib = (() => {
     constructor(tok, name = tok.name) {
       const {uri} = tok;
       if (uri) {
-        super('', tok, 'uri');
+        super(null, tok, 'uri');
         this.uri = uri;
       } else if ( // Checking string equality is much faster than regexp
         name === 'rgb' || name === 'rgba' || name === 'hsl' || name === 'hsla' ||
         name === 'lab' || name === 'lch' || name === 'oklab' || name === 'oklch' ||
         name === 'hwb' || name === 'color' || name === 'color-mix'
       ) {
-        super('', tok, 'color');
+        super(null, tok, 'color');
       } else {
-        super('', tok, 'fn');
+        super(null, tok, 'fn');
         this.isCalc = !(
           this.isVar = name === 'var' || name === 'env'
         ) && (name === 'calc' || name === 'clamp' || name === 'min' || name === 'max');
@@ -1794,7 +1810,7 @@ self.parserlib = (() => {
   //#region ValidationTypes - implementation
 
   function vtCompile(id, val, obj = VTComplex) {
-    val = obj[id] = val.call ? val(Matcher) : Object.assign(Matcher.parse(val), {_text: val});
+    val = obj[id] = val.call ? val(Matcher) : Matcher.parse(val);
     return val;
   }
 
