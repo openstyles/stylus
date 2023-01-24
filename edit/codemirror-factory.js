@@ -20,6 +20,7 @@
 
     create(place, options) {
       const cm = CodeMirror(place, options);
+      cm.display.lineDiv.on('mousewheel', plusMinusOnWheel.bind(cm), true);
       cm.lastActive = 0;
       cms.add(cm);
       return cm;
@@ -156,6 +157,12 @@
     commentSelection(cm) {
       cm.blockComment(cm.getCursor('from'), cm.getCursor('to'), {fullLines: false});
     },
+    minus1: plusMinus.bind(null, -1),
+    minus10: plusMinus.bind(null, -10),
+    minus100: plusMinus.bind(null, -100),
+    plus1: plusMinus.bind(null, 1),
+    plus10: plusMinus.bind(null, 10),
+    plus100: plusMinus.bind(null, 100),
     toggleEditorFocus(cm) {
       if (!cm) return;
       if (cm.hasFocus()) {
@@ -172,6 +179,36 @@
     'toggleStyle',
   ]) {
     CodeMirror.commands[cmd] = (...args) => editor[cmd](...args);
+  }
+
+  function plusMinus(delta, cm, pos = cm.getCursor()) {
+    const {line, ch} = pos;
+    const {text} = cm.getLineHandle(line);
+    let m = /\s/y;
+    let i = m.lastIndex = ch;
+    // if cursor at space, choose nonspace at left or right
+    if (m.test(text)) i += !i || (m.lastIndex = i - 1, m.test(text)) ? 1 : -1;
+    // find where the number+unit starts
+    m = /[-+\d.%a-z]/iy;
+    do m.lastIndex = i;
+    while (m.test(text) ? --i >= 0 : (++i, false));
+    // get the number
+    m = /[-+]?\d+/y;
+    m.lastIndex = i;
+    m = m.exec(text);
+    if (!m) return;
+    cm.replaceRange(`${Number(m[0]) + delta}`,
+      {line, ch: i},
+      {line, ch: i + m[0].length},
+      '*incdec' + line + ':' + i);
+  }
+
+  function plusMinusOnWheel(e) {
+    if (e.altKey) {
+      e.preventDefault();
+      plusMinus((e.ctrlKey ? 100 : e.shiftKey ? 10 : 1) * (e.wheelDeltaY > 0 ? 1 : -1), this,
+        this.coordsChar({left: e.clientX, top: e.clientY}));
+    }
   }
 
   //#endregion
