@@ -40,6 +40,9 @@
       'Shift-Alt-Up': 'plus10',
       'Shift-Ctrl-Alt-Down': 'minus100',
       'Shift-Ctrl-Alt-Up': 'plus100',
+      // Adding dummy Wheel shortcuts to show it in keymap (i) popup
+      'Ctrl-Alt-WheelDown': 'minus100',
+      'Ctrl-Alt-WheelUp': 'plus100',
       'Ctrl-Pause': 'toggleEditorFocus',
     }),
     maxHighlightLength: 100e3,

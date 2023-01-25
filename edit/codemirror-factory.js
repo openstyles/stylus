@@ -191,7 +191,7 @@
     // find where the number+unit starts
     m = /[-+\d.%a-z]/iy;
     do m.lastIndex = i;
-    while (m.test(text) ? --i >= 0 : (++i, false));
+    while (i > ch - 20 && (m.test(text) ? --i >= 0 : (++i, false)));
     // get the number
     m = /[-+]?\d+/y;
     m.lastIndex = i;
@@ -207,7 +207,7 @@
     if (e.altKey) {
       e.preventDefault();
       plusMinus((e.ctrlKey ? 100 : e.shiftKey ? 10 : 1) * (e.wheelDeltaY > 0 ? 1 : -1), this,
-        this.coordsChar({left: e.clientX, top: e.clientY}));
+        this.coordsChar({left: e.clientX, top: e.clientY}, 'window'));
     }
   }
 
