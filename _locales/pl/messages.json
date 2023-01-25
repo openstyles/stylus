@@ -1447,6 +1447,9 @@
   "unreachableAMOHint": {
     "message": "Aby umożliwić dostęp, otwórz <about:config>, kliknij listę prawym przyciskiem myszy, kliknij 'Dodaj ustawienie typu', następnie 'Wartość logiczna (Boolean)', wklej <privacy.resistFingerprinting.block_mozAddonManager> i kliknij OK, <true>, OK, przeładuj stronę <addons.mozilla.org>."
   },
+  "unreachableCSP": {
+    "message": "Spróbuj włączyć \"Załataj CSP\" w opcjach Stylusa."
+  },
   "unreachableContentScript": {
     "message": "Nie można połączyć się ze stroną. Spróbuj przeładować kartę."
   },

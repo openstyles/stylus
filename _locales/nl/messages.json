@@ -1413,6 +1413,9 @@
   "unreachableAMOHint": {
     "message": "Toestemming verlenen: open <about:config>, klik met de rechtermuisknop op de lijst, klik op ‘Nieuw’ -> ‘Boolean’ en plak <privacy.resistFingerprinting.block_mozAddonManager>. Klik daarna op OK -> <true> -> OK en vernieuw de pagina <addons.mozilla.org>."
   },
+  "unreachableCSP": {
+    "message": "Probeer ‘CSP corrigeren’ in te schakelen in de Stylus-opties."
+  },
   "unreachableContentScript": {
     "message": "Kon niet met de pagina communiceren. Probeer het tabblad te vernieuwen."
   },

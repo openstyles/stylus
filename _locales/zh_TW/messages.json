@@ -1444,6 +1444,9 @@
   "unreachableAMOHint": {
     "message": "要允許存取，開啟 <about:config>，在清單上點選右鍵，點選「新增」，然後再點選「布林」，貼上 <privacy.resistFingerprinting.block_mozAddonManager> 並點選確定→<true>→確定，然後重新整理 <addons.mozilla.org> 頁面。"
   },
+  "unreachableCSP": {
+    "message": "嘗試在 Stylus 選項啟用「修補 CSP」。"
+  },
   "unreachableContentScript": {
     "message": "無法與頁面通訊。嘗試重新載入分頁。"
   },

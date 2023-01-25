@@ -618,7 +618,7 @@
     "message": "只显示非 UserCSS 样式"
   },
   "manageOnlyUpdates": {
-    "message": "只显示已更新或更新时有问题的样式"
+    "message": "只显示可更新或更新时有问题的样式"
   },
   "manageOnlyUsercss": {
     "message": "只显示 UserCSS 样式"
@@ -994,7 +994,7 @@
     "message": "同步中..."
   },
   "optionsSyncSyncNow": {
-    "message": "现在同步"
+    "message": "立即同步"
   },
   "optionsSyncUsername": {
     "message": "用户名"
@@ -1096,7 +1096,7 @@
     "message": "尝试断开连接然后再次发布"
   },
   "publishRetry": {
-    "message": "Stylus 仍在尝试发布此样式，但如果您没有看到身份验证活动或弹出窗口，您可以重试,  现在重试 ？"
+    "message": "Stylus 仍在尝试发布此样式，但如果您没有看到身份验证活动或弹出窗口，您可以重试。立即重试？"
   },
   "publishStyle": {
     "message": "发布样式"

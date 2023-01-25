@@ -1370,6 +1370,9 @@
   "unreachableAMOHint": {
     "message": "Um den Zugriff zu erlauben, öffne <about:config>, rechtsklicke in die Liste, klicke \"Neu\", dann \"Boolean\", füge <privacy.resistFingerprinting.block_mozAddonManager> ein und klicke OK, <true>, OK, lade <addons.mozilla.org> neu."
   },
+  "unreachableCSP": {
+    "message": "Versuche \"CSP abändern\" in den Stylus Optionen zu aktivieren."
+  },
   "unreachableContentScript": {
     "message": "Konnte nicht mit der Seite kommunizieren. Bitte versuchen Sie, die Seite erneut zu laden."
   },

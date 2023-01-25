@@ -399,6 +399,9 @@
   "gettingStyles": {
     "message": "Minden stílus fogadása..."
   },
+  "headerResizerHint": {
+    "message": "Tartsa lenyomva a Shift-et csak ezen típusú felületelemeknél, azaz a szerkesztőnél, kezelőnél és telepítőnél, az átméretezéshez."
+  },
   "helpAlt": {
     "message": "Segítség"
   },

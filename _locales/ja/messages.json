@@ -1406,6 +1406,9 @@
   "unreachableAMOHint": {
     "message": "アクセスを許可するには、<about:config> を開き、リストを右クリックして「新規作成」－「真偽値」をクリックし、<privacy.resistFingerprinting.block_mozAddonManager> を貼り付けてOKをクリックし、<true> を選択してOKをクリックし、その後、<addons.mozilla.org> ページをリロードしてください。"
   },
+  "unreachableCSP": {
+    "message": "Stylusのオプションで「CSPにパッチを当てる」を有効にしてみてください。"
+  },
   "unreachableContentScript": {
     "message": "ページと通信できませんでした。タブを再読み込みしてみてください。"
   },

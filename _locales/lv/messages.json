@@ -1,0 +1,81 @@
+{
+  "addStyleTitle": {
+    "message": "Pievienot stilu"
+  },
+  "appliesAdd": {
+    "message": "Pievienot"
+  },
+  "appliesRemove": {
+    "message": "Noņemt"
+  },
+  "author": {
+    "message": "Autors"
+  },
+  "checkingForUpdate": {
+    "message": "Pārbauda..."
+  },
+  "confirmCancel": {
+    "message": "Atcelt"
+  },
+  "confirmClose": {
+    "message": "Aizvērt"
+  },
+  "confirmDelete": {
+    "message": "Dzēst"
+  },
+  "confirmDiscardChanges": {
+    "message": "Atmest izmaiņas?"
+  },
+  "confirmSave": {
+    "message": "Saglabāt"
+  },
+  "dateAbbrHour": {
+    "message": "$value$s",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrYear": {
+    "message": "$value$g",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateInstalled": {
+    "message": "Uzstādīšanas datums"
+  },
+  "dateUpdated": {
+    "message": "Atjaunināšanas datums"
+  },
+  "deleteStyleConfirm": {
+    "message": "Vai esiet pārliecināts, ka vēlaties izdzēst šo stilu?"
+  },
+  "deleteStyleLabel": {
+    "message": "Dzēst"
+  },
+  "disableStyleLabel": {
+    "message": "Atspējot"
+  },
+  "editDeleteText": {
+    "message": "Dzēst"
+  },
+  "editStyleLabel": {
+    "message": "Rediģēt"
+  },
+  "genericAdd": {
+    "message": "Pievienot"
+  },
+  "genericDisabledLabel": {
+    "message": "Atspējots"
+  },
+  "optionsOpen": {
+    "message": "Atvērt"
+  },
+  "styleSaveLabel": {
+    "message": "Saglabāt"
+  }
+}
