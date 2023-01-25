@@ -160,7 +160,7 @@
           if (!cssProps) await initCssProps();
           prop = cssValues.all[prop];
           list = [...new Set([...prop || [], ...cssValues.global])];
-          end = prev + execAt(/(\s*[-a-z(]+)?/y, prev, text)[0].length;
+          end = prev + execAt(/(\s*[-a-z(]+)?/yi, prev, text)[0].length;
         }
         // properties and media features
         if (!list &&
