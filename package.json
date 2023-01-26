@@ -27,7 +27,7 @@
     "glob": "^8.0.3",
     "node-fetch": "^2.6.7",
     "sync-version": "^1.0.1",
-    "web-ext": "^7.2.0"
+    "web-ext": "^7.5.0"
   },
   "scripts": {
     "lint": "eslint \"**/*.js\" --cache",
