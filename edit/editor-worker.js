@@ -17,10 +17,11 @@
     getCssPropsValues() {
       require(['/js/csslint/parserlib']); /* global parserlib */
       const {
-        css: {GlobalKeywords, Properties},
-        util: {describeProp, rxNamedColor},
+        css: {GlobalKeywords, NamedColors, Properties},
+        util: {describeProp},
       } = parserlib;
-      const namedColors = rxNamedColor.source.split(/[()]/)[1].split('|');
+      const COLOR = '<color>';
+      const rxColor = RegExp(`${COLOR}|${describeProp(COLOR).replace(/[()|]/g, '\\$&')}|~~~`, 'g');
       const rxNonWord = /(?:<.+?>|[^-\w<(]+\d*)+/g;
       const res = {};
       // moving vendor-prefixed props to the end
@@ -31,19 +32,20 @@
           let last = '';
           const uniq = [];
           // strip definitions of function arguments
-          const desc = describeProp(v).replace(/([-\w]+)\(.*?\)/g, 'z-$1');
-          const descNoColors = desc.replace(/<color>/g, '');
+          const vNoColor = v.replace(rxColor, '~~~');
+          const desc = describeProp(vNoColor);
+          const descNoColors = desc.replace(rxColor, '');
           // add a prefix to functions to group them at the end
-          const words = descNoColors.split(rxNonWord).sort(cmp);
+          const words = descNoColors.replace(/([-\w]+\().*?\)/g, 'z-$1').split(rxNonWord).sort(cmp);
           for (let w of words) {
-            if (w.startsWith('z-')) w = w.slice(2) + '(';
+            if (w.startsWith('z-')) w = w.slice(2);
             if (w !== last) uniq.push(last = w);
           }
-          if (desc !== descNoColors) uniq.push(...namedColors);
+          if (desc !== descNoColors || v !== vNoColor) uniq.push(COLOR);
           if (uniq.length) res[k] = uniq;
         }
       }
-      return {all: res, global: GlobalKeywords};
+      return {all: res, colors: NamedColors, global: GlobalKeywords};
     },
 
     getRules(linter) {

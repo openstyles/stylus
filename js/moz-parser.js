@@ -20,14 +20,18 @@ require([
 function extractSections({code, styleId, fast = true}) {
   const hasSingleEscapes = /([^\\]|^)\\([^\\]|$)/;
   const parser = new parserlib.css.Parser({
+    noValidation: true,
     starHack: true,
-    skipValidation: true,
     topDocOnly: fast,
   });
   const sectionStack = [{code: '', start: 0}];
   const errors = [];
   const sections = [];
-  const mozStyle = code.replace(/\r\n?/g, '\n'); // same as parserlib.StringReader
+  let mozStyle;
+
+  parser.addListener('startstylesheet', () => {
+    mozStyle = parser.stream.reader._input;
+  });
 
   parser.addListener('startdocument', e => {
     const lastSection = sectionStack[sectionStack.length - 1];
@@ -35,7 +39,7 @@ function extractSections({code, styleId, fast = true}) {
     const lastCmt = getLastComment(outerText);
     const section = {
       code: '',
-      start: parser._tokenStream._token.offset + 1,
+      start: e.brace.offset + 1,
     };
     // move last comment before @-moz-document inside the section
     if (!lastCmt.includes('AGENT_SHEET') &&
@@ -55,9 +59,9 @@ function extractSections({code, styleId, fast = true}) {
       const aType = MozDocMapper.FROM_CSS[name.toLowerCase()];
       const p0 = expr && expr.parts[0];
       const val = uri || (
-        p0 && aType === 'regexps' && hasSingleEscapes.test(p0.raw)
-          ? p0.raw.slice(1, -1)
-          : p0.text
+        p0 && aType === 'regexps' && hasSingleEscapes.test(p0.text)
+          ? p0.text.slice(1, -1)
+          : p0.string
       );
       (section[aType] = section[aType] || []).push(val || '');
     }
@@ -90,7 +94,7 @@ function extractSections({code, styleId, fast = true}) {
   });
 
   try {
-    parser.parse(mozStyle, {
+    parser.parse(code, {
       reuseCache: !extractSections.lastStyleId || styleId === extractSections.lastStyleId,
     });
   } catch (e) {

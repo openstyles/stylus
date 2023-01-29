@@ -1,1588 +1,251 @@
-/*
-Modded by tophf <github.com/tophf>
-========== Original disclaimer:
-
-Parser-Lib
-Copyright (c) 2009-2016 Nicholas C. Zakas. All rights reserved.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-*/
 'use strict';
 /* eslint-disable class-methods-use-this */
 
-self.parserlib = (() => {
-
-  //#region Properties
-
-  // Global keywords that can be set for any property are conveniently listed in `all` prop:
-  // https://drafts.csswg.org/css-cascade/#all-shorthand
-  const GlobalKeywords = ['initial', 'inherit', 'revert', 'unset'];
-  const Properties = {
-    __proto__: null,
-    'accent-color': 'auto | <color>',
-    'align-items': 'normal | stretch | <baseline-position> | [ <overflow-position>? <self-position> ]',
-    'align-content': 'normal | <baseline-position> | <content-distribution> | ' +
-          '<overflow-position>? <content-position>',
-    'align-self': 'auto | normal | stretch | <baseline-position> | <overflow-position>? <self-position>',
-    'all': GlobalKeywords.join(' | '),
-    'alignment-baseline': 'auto | baseline | use-script | before-edge | text-before-edge | ' +
-      'after-edge | text-after-edge | central | middle | ideographic | alphabetic | ' +
-      'hanging | mathematical',
-    'animation': '[ <time> || <timing-function> || <time> || [ infinite | <number> ] || ' +
-      '<animation-direction> || <animation-fill-mode> || ' +
-      '[ running | paused ] || [ none | <custom-ident> | <string> ] ]#',
-    'animation-composition': '[ replace | add | accumulate ]#',
-    'animation-delay': '<time>#',
-    'animation-direction': '<animation-direction>#',
-    'animation-duration': '<time>#',
-    'animation-fill-mode': '<animation-fill-mode>#',
-    'animation-iteration-count': '[ <number> | infinite ]#',
-    'animation-name': '[ none | <keyframes-name> ]#',
-    'animation-play-state': '[ running | paused ]#',
-    'animation-timing-function': '<timing-function>#',
-    'appearance': 'none | auto',
-    '-moz-appearance':
-      'none | button | button-arrow-down | button-arrow-next | button-arrow-previous | ' +
-      'button-arrow-up | button-bevel | button-focus | caret | checkbox | checkbox-container | ' +
-      'checkbox-label | checkmenuitem | dualbutton | groupbox | listbox | listitem | ' +
-      'menuarrow | menubar | menucheckbox | menuimage | menuitem | menuitemtext | menulist | ' +
-      'menulist-button | menulist-text | menulist-textfield | menupopup | menuradio | ' +
-      'menuseparator | meterbar | meterchunk | progressbar | progressbar-vertical | ' +
-      'progresschunk | progresschunk-vertical | radio | radio-container | radio-label | ' +
-      'radiomenuitem | range | range-thumb | resizer | resizerpanel | scale-horizontal | ' +
-      'scalethumbend | scalethumb-horizontal | scalethumbstart | scalethumbtick | ' +
-      'scalethumb-vertical | scale-vertical | scrollbarbutton-down | scrollbarbutton-left | ' +
-      'scrollbarbutton-right | scrollbarbutton-up | scrollbarthumb-horizontal | ' +
-      'scrollbarthumb-vertical | scrollbartrack-horizontal | scrollbartrack-vertical | ' +
-      'searchfield | separator | sheet | spinner | spinner-downbutton | spinner-textfield | ' +
-      'spinner-upbutton | splitter | statusbar | statusbarpanel | tab | tabpanel | tabpanels | ' +
-      'tab-scroll-arrow-back | tab-scroll-arrow-forward | textfield | textfield-multiline | ' +
-      'toolbar | toolbarbutton | toolbarbutton-dropdown | toolbargripper | toolbox | tooltip | ' +
-      'treeheader | treeheadercell | treeheadersortarrow | treeitem | treeline | treetwisty | ' +
-      'treetwistyopen | treeview | -moz-mac-unified-toolbar | -moz-win-borderless-glass | ' +
-      '-moz-win-browsertabbar-toolbox | -moz-win-communicationstext | ' +
-      '-moz-win-communications-toolbox | -moz-win-exclude-glass | -moz-win-glass | ' +
-      '-moz-win-mediatext | -moz-win-media-toolbox | -moz-window-button-box | ' +
-      '-moz-window-button-box-maximized | -moz-window-button-close | ' +
-      '-moz-window-button-maximize | -moz-window-button-minimize | -moz-window-button-restore | ' +
-      '-moz-window-frame-bottom | -moz-window-frame-left | -moz-window-frame-right | ' +
-      '-moz-window-titlebar | -moz-window-titlebar-maximized',
-    '-ms-appearance':
-      'none | icon | window | desktop | workspace | document | tooltip | dialog | button | ' +
-      'push-button | hyperlink | radio | radio-button | checkbox | menu-item | tab | menu | ' +
-      'menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | ' +
-      'outline-tree | range | field | combo-box | signature | password | normal',
-    '-webkit-appearance':
-      'auto | none | button | button-bevel | caps-lock-indicator | caret | checkbox | ' +
-      'default-button | listbox | listitem | media-fullscreen-button | media-mute-button | ' +
-      'media-play-button | media-seek-back-button | media-seek-forward-button | media-slider | ' +
-      'media-sliderthumb | menulist | menulist-button | menulist-text | menulist-textfield | ' +
-      'push-button | radio | searchfield | searchfield-cancel-button | searchfield-decoration | ' +
-      'searchfield-results-button | searchfield-results-decoration | slider-horizontal | ' +
-      'slider-vertical | sliderthumb-horizontal | sliderthumb-vertical | square-button | ' +
-      'textarea | textfield | scrollbarbutton-down | scrollbarbutton-left | ' +
-      'scrollbarbutton-right | scrollbarbutton-up | scrollbargripper-horizontal | ' +
-      'scrollbargripper-vertical | scrollbarthumb-horizontal | scrollbarthumb-vertical | ' +
-      'scrollbartrack-horizontal | scrollbartrack-vertical',
-    '-o-appearance':
-      'none | window | desktop | workspace | document | tooltip | dialog | button | ' +
-      'push-button | hyperlink | radio | radio-button | checkbox | menu-item | tab | menu | ' +
-      'menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | ' +
-      'outline-tree | range | field | combo-box | signature | password | normal',
-    'aspect-ratio': 'auto || [ <num0+> [ / <num0+> ]? ]',
-    'azimuth': '<angle> | leftwards | rightwards | [ ' +
-      '[ left-side | far-left | left | center-left | center | center-right | right | far-right | right-side ' +
-      '] || behind ]',
-    'backdrop-filter': '<filter-function-list> | none',
-    'backface-visibility': '<vis-hid>',
-    'background': '[ <bg-layer> , ]* <final-bg-layer>',
-    'background-attachment': '<attachment>#',
-    'background-blend-mode': '<blend-mode>',
-    'background-clip': '[ <box> | text ]#',
-    'background-color': '<color>',
-    'background-image': '<bg-image>#',
-    'background-origin': '<box>#',
-    'background-position': '<bg-position>#',
-    'background-position-x': '[ center | [ left | right ]? <len-pct>? ]#',
-    'background-position-y': '[ center | [ top | bottom ]? <len-pct>? ]#',
-    'background-repeat': '<repeat-style>#',
-    'background-size': '<bg-size>#',
-    'baseline-shift': 'baseline | sub | super | <len-pct>',
-    'bleed': '<length>',
-    'block-size': '<width>',
-    'border-collapse': 'collapse | separate',
-    'border-image': '[ none | <image> ] || <border-image-slice> ' +
-      '[ / <border-image-width> | / <border-image-width>? / <border-image-outset> ]? || ' +
-      '<border-image-repeat>',
-    'border-image-outset': '[ <length> | <number> ]{1,4}',
-    'border-image-repeat': '[ stretch | repeat | round | space ]{1,2}',
-    'border-image-slice': '<border-image-slice>',
-    'border-image-source': '<image> | none',
-    'border-image-width': '[ <len-pct> | <number> | auto ]{1,4}',
-    'border-spacing': '<length>{1,2}',
-
-    'border-bottom-left-radius': '<len-pct>{1,2}',
-    'border-bottom-right-radius': '<len-pct>{1,2}',
-    'border-end-end-radius': '<len-pct>{1,2}',
-    'border-end-start-radius': '<len-pct>{1,2}',
-    'border-radius': '<len-pct0+>{1,4} [ / <len-pct0+>{1,4} ]?',
-    'border-start-end-radius': '<len-pct>{1,2}',
-    'border-start-start-radius': '<len-pct>{1,2}',
-    'border-top-left-radius': '<len-pct>{1,2}',
-    'border-top-right-radius': '<len-pct>{1,2}',
-
-    'bottom': '<width>',
-    'box-decoration-break': 'slice | clone',
-    'box-shadow': 'none | <shadow>#',
-    'box-sizing': 'content-box | border-box',
-    'break-after': '<break-inside> | always | left | right | page | column',
-    'break-before': '<break-after>',
-    'break-inside': 'auto | avoid | avoid-page | avoid-column',
-
-    'caret-color': 'auto | <color>',
-    'caption-side': 'top | bottom | inline-start | inline-end',
-    'clear': 'none | right | left | both | inline-start | inline-end',
-    'clip': '<rect> | auto',
-    'clip-path': '<uri> | [ <basic-shape> || <geometry-box> ] | none',
-    'clip-rule': 'nonzero | evenodd',
-    'color': '<color>',
-    'color-interpolation': 'auto | sRGB | linearRGB',
-    'color-interpolation-filters': '<color-interpolation>',
-    'color-profile': 1,
-    'color-rendering': 'auto | optimizeSpeed | optimizeQuality',
-    'color-scheme': 'normal | [ light | dark | <custom-ident> ]+ && only?',
-    'column-count': '<integer> | auto',
-    'column-fill': 'auto | balance',
-    'column-gap': 'normal | <len-pct>',
-    'column-rule': '<border-shorthand>',
-    'column-rule-color': '<color>',
-    'column-rule-style': '<border-style>',
-    'column-rule-width': '<border-width>',
-    'column-span': 'none | all',
-    'column-width': '<length> | auto',
-    'columns': 1,
-    'contain': 'none | strict | content | [ size || layout || style || paint ]',
-    'contain-intrinsic-size': '<contain-intrinsic>{1,2}',
-    'container': '<container-name> [ / <container-type> ]?',
-    'container-name': 'none | <custom-ident>+',
-    'container-type': 'normal || [ size | inline-size ]',
-    'content': 'normal | none | <content-list> [ / <string> ]?',
-    'content-visibility': 'auto | <vis-hid>',
-    'counter-increment': '<counter>',
-    'counter-reset': '<counter>',
-    'counter-set': '<counter>',
-    'cursor': '[ <uri> [ <number> <number> ]? , ]* ' +
-      '[ auto | default | none | context-menu | help | pointer | progress | wait | ' +
-      'cell | crosshair | text | vertical-text | alias | copy | move | no-drop | ' +
-      'not-allowed | grab | grabbing | e-resize | n-resize | ne-resize | nw-resize | ' +
-      's-resize | se-resize | sw-resize | w-resize | ew-resize | ns-resize | ' +
-      'nesw-resize | nwse-resize | col-resize | row-resize | all-scroll | ' +
-      'zoom-in | zoom-out ]',
-
-    'direction': 'ltr | rtl',
-    'display': '[ <display-outside> || <display-inside> ] | ' +
-      '<display-listitem> | <display-internal> | <display-box> | <display-legacy> | ' +
-      // deprecated and nonstandard
-      '-webkit-box | -webkit-inline-box | -ms-flexbox',
-    'dominant-baseline': 'auto | use-script | no-change | reset-size | ideographic | alphabetic | ' +
-      'hanging | mathematical | central | middle | text-after-edge | text-before-edge',
-
-    'elevation': '<angle> | below | level | above | higher | lower',
-    'empty-cells': 'show | hide',
-    'enable-background': 1, // SVG
-
-    'fill': '<paint>',
-    'fill-opacity': '<num0-1>',
-    'fill-rule': 'nonzero | evenodd',
-    'filter': '<filter-function-list> | <ie-function> | none',
-    'flex': '<flex-shorthand>',
-    'flex-basis': '<width>',
-    'flex-direction': 'row | row-reverse | column | column-reverse',
-    'flex-flow': '<flex-direction> || <flex-wrap>',
-    'flex-grow': '<number>',
-    'flex-shrink': '<number>',
-    'flex-wrap': 'nowrap | wrap | wrap-reverse',
-    'float': 'left | right | none | inline-start | inline-end',
-    'flood-color': 1,
-    'flood-opacity': '<num0-1>',
-    // matching no-pct first because Matcher doesn't retry for a longer match in nested definitions
-    'font': '<font-short-tweak-no-pct>? <font-short-core> | ' +
-      '[ <font-short-tweak-no-pct> || <pct> ]? <font-short-core> | ' +
-      'caption | icon | menu | message-box | small-caption | status-bar',
-    'font-family': '[ <generic-family> | <family-name> ]#',
-    'font-feature-settings': '[ <ascii4> [ <int0+> | on | off ]? ]# | normal',
-    'font-kerning': 'auto | normal | none',
-    'font-language-override': 'normal | <string>',
-    'font-optical-sizing': 'auto | none',
-    'font-palette': 'none | normal | light | dark | <custom-ident>',
-    'font-size': '<absolute-size> | <relative-size> | <len-pct0+>',
-    'font-size-adjust': '<number> | none',
-    'font-stretch': '<font-stretch-named> | <pct>',
-    'font-style': 'normal | italic | oblique <angle>?',
-    'font-synthesis': 'none | [ weight || style ]',
-    'font-synthesis-style': 'auto | none',
-    'font-synthesis-weight': 'auto | none',
-    'font-synthesis-small-caps': 'auto | none',
-    'font-variant': 'normal | none | [ ' +
-      '<font-variant-ligatures> || <font-variant-alternates> || ' +
-      '<font-variant-caps> || <font-variant-numeric> || <font-variant-east-asian> ]',
-    'font-variant-alternates': '<font-variant-alternates> | normal',
-    'font-variant-caps': '<font-variant-caps> | normal',
-    'font-variant-east-asian': '<font-variant-east-asian> | normal',
-    'font-variant-emoji': 'auto | text | emoji | unicode',
-    'font-variant-ligatures': '<font-variant-ligatures> | normal | none',
-    'font-variant-numeric': '<font-variant-numeric> | normal',
-    'font-variant-position': 'normal | sub | super',
-    'font-variation-settings': 'normal | [ <string> <number> ]#',
-    'font-weight': 'normal | bold | bolder | lighter | <num1-1000>',
-    'forced-color-adjust': 'auto | none | preserve-parent-color',
-
-    'gap': '<column-gap>{1,2}',
-    'glyph-orientation-horizontal': '<glyph-angle>',
-    'glyph-orientation-vertical': 'auto | <glyph-angle>',
-
-    'grid': '<grid-template> | <grid-template-rows> / [ auto-flow && dense? ] <grid-auto-columns>? | ' +
-      '[ auto-flow && dense? ] <grid-auto-rows>? / <grid-template-columns>',
-    'grid-area': '<grid-line> [ / <grid-line> ]{0,3}',
-    'grid-auto-columns': '<track-size>+',
-    'grid-auto-flow': '[ row | column ] || dense',
-    'grid-auto-rows': '<track-size>+',
-    'grid-column': '<grid-line> [ / <grid-line> ]?',
-    'grid-column-end': '<grid-line>',
-    'grid-column-gap': -1,
-    'grid-column-start': '<grid-line>',
-    'grid-gap': -1,
-    'grid-row': '<grid-line> [ / <grid-line> ]?',
-    'grid-row-end': '<grid-line>',
-    'grid-row-gap': -1,
-    'grid-row-start': '<grid-line>',
-    'grid-template': 'none | [ <grid-template-rows> / <grid-template-columns> ] | ' +
-      '[ <line-names>? <string> <track-size>? <line-names>? ]+ [ / <explicit-track-list> ]?',
-    'grid-template-areas': 'none | <string>+',
-    'grid-template-columns': '<grid-template-rows>',
-    'grid-template-rows': 'none | <track-list> | <auto-track-list>',
-
-    'hanging-punctuation': 'none | [ first || [ force-end | allow-end ] || last ]',
-    'height': 'auto | <width-height>',
-    'hyphenate-character': '<string> | auto',
-    'hyphenate-limit-chars': '[ auto | <integer> ]{1,3}',
-    'hyphens': 'none | manual | auto',
-
-    'image-orientation': 'from-image | none | [ <angle> || flip ]',
-    'image-rendering': 'auto | smooth | high-quality | crisp-edges | pixelated | ' +
-      'optimizeSpeed | optimizeQuality | -webkit-optimize-contrast',
-    'image-resolution': 1,
-    'inline-size': '<width>',
-    'inset': '<width>{1,4}',
-    'inset-block': '<width>{1,2}',
-    'inset-block-end': '<width>',
-    'inset-block-start': '<width>',
-    'inset-inline': '<width>{1,2}',
-    'inset-inline-end': '<width>',
-    'inset-inline-start': '<width>',
-    'isolation': 'auto | isolate',
-
-    'justify-content': 'normal | <content-distribution> | ' +
-      '<overflow-position>? [ <content-position> | left | right ]',
-    'justify-items': 'normal | stretch | <baseline-position> | ' +
-      '[ <overflow-position>? <self-position> ] | ' +
-      '[ legacy || [ left | right | center ] ]',
-    'justify-self': 'auto | normal | stretch | <baseline-position> | ' +
-      '<overflow-position>? [ <self-position> | left | right ]',
-
-    'kerning': 'auto | <length>',
-
-    'left': '<width>',
-    'letter-spacing': '<length> | normal',
-    'line-height': '<line-height>',
-    'line-break': 'auto | loose | normal | strict | anywhere',
-    'list-style': '<list-style-position> || <list-style-image> || <list-style-type>',
-    'list-style-image': '<image> | none',
-    'list-style-position': 'inside | outside',
-    'list-style-type': '<string> | disc | circle | square | decimal | decimal-leading-zero | ' +
-      'lower-roman | upper-roman | lower-greek | lower-latin | upper-latin | armenian | ' +
-      'georgian | lower-alpha | upper-alpha | none',
-
-    'margin': '<width>{1,4}',
-    'margin-bottom': '<width>',
-    'margin-left': '<width>',
-    'margin-right': '<width>',
-    'margin-top': '<width>',
-    'margin-block': '<width>{1,2}',
-    'margin-block-end': '<width>',
-    'margin-block-start': '<width>',
-    'margin-inline': '<width>{1,2}',
-    'margin-inline-end': '<width>',
-    'margin-inline-start': '<width>',
-    'marker': -1,
-    'marker-end': 1,
-    'marker-mid': 1,
-    'marker-start': 1,
-    'mask': '[ [ none | <image> ] || <position> [ / <bg-size> ]? || <repeat-style> || ' +
-      '<geometry-box> || [ <geometry-box> | no-clip ] || [ add | subtract | intersect | exclude ] || ' +
-      '[ alpha | luminance | match-source ] ]#',
-    'mask-image': '[ none | <image> ]#',
-    'max-height': 'none | <width-height>',
-    'max-width': 'none | <width-height>',
-    'min-height': 'auto | <width-height>',
-    'min-width': 'auto | <width-height>',
-    'max-block-size': '<len-pct> | none',
-    'max-inline-size': '<len-pct> | none',
-    'min-block-size': '<len-pct>',
-    'min-inline-size': '<len-pct>',
-    'mix-blend-mode': '<blend-mode>',
-
-    'object-fit': 'fill | contain | cover | none | scale-down',
-    'object-position': '<position>',
-    'object-view-box': 'none | <inset> | <rect> | <xywh>',
-    'offset': '[ <offset-position>? <offset-path> [ <len-pct> || <offset-rotate> ]? | <offset-position> ] ' +
-      '[ / <offset-anchor> ]?',
-    'offset-anchor': 'auto | <position>',
-    'offset-distance': '<len-pct>',
-    'offset-path': 'none | ray() | path() | <uri> | [ <basic-shape> && <coord-box>? ] | <coord-box>',
-    'offset-position': 'auto | <position>',
-    'offset-rotate': '[ auto | reverse ] || <angle>',
-    'opacity': '<num0-1> | <pct>',
-    'order': '<integer>',
-    'orphans': '<integer>',
-    'outline': '[ <color> | invert ] || [ auto | <border-style> ] || <border-width>',
-    'outline-color': '<color> | invert',
-    'outline-offset': '<length>',
-    'outline-style': '<border-style> | auto',
-    'outline-width': '<border-width>',
-    'overflow': '<overflow>{1,2}',
-    'overflow-anchor': 'auto | none',
-    'overflow-block': '<overflow>',
-    'overflow-clip-margin': 'visual-box | <len0+>',
-    'overflow-inline': '<overflow>',
-    'overflow-wrap': 'normal | break-word | anywhere',
-    'overflow-x': '<overflow>',
-    'overflow-y': '<overflow>',
-    'overscroll-behavior': '<overscroll>{1,2}',
-    'overscroll-behavior-block': '<overscroll>',
-    'overscroll-behavior-inline': '<overscroll>',
-    'overscroll-behavior-x': '<overscroll>',
-    'overscroll-behavior-y': '<overscroll>',
-
-    'padding': '<len-pct0+>{1,4}',
-    'padding-block': '<len-pct0+>{1,2}',
-    'padding-block-end': '<len-pct0+>',
-    'padding-block-start': '<len-pct0+>',
-    'padding-bottom': '<len-pct0+>',
-    'padding-inline': '<len-pct0+>{1,2}',
-    'padding-inline-end': '<len-pct0+>',
-    'padding-inline-start': '<len-pct0+>',
-    'padding-left': '<len-pct0+>',
-    'padding-right': '<len-pct0+>',
-    'padding-top': '<len-pct0+>',
-    'page': 'auto | <custom-ident>',
-    'page-break-after': 'auto | always | avoid | left | right | recto | verso',
-    'page-break-before': '<page-break-after>',
-    'page-break-inside': 'auto | avoid',
-    'perspective': 'none | <len0+>',
-    'perspective-origin': '<position>',
-    'place-content': '<align-content> <justify-content>?',
-    'place-items': '[ normal | stretch | <baseline-position> | <self-position> ] ' +
-      '[ normal | stretch | <baseline-position> | <self-position> ]?',
-    'place-self': '<align-self> <justify-self>?',
-    'pointer-events': 'auto | none | visiblePainted | visibleFill | visibleStroke | visible | ' +
-      'painted | fill | stroke | all',
-    'position': 'static | relative | absolute | fixed | sticky',
-    'print-color-adjust': 'economy | exact',
-
-    'quotes': 1,
-
-    'rendering-intent': 1,
-    'resize': 'none | both | horizontal | vertical | block | inline',
-    'right': '<width>',
-    'rotate': 'none | [ x | y | z | <number>{3} ]? && <angle>',
-    'row-gap': '<column-gap>',
-    'ruby-align': 1,
-    'ruby-position': 1,
-
-    'scale': 'none | <num-pct>{1,3}',
-    'scroll-behavior': 'auto | smooth',
-    'scroll-margin': '<length>{1,4}',
-    'scroll-margin-bottom': '<length>',
-    'scroll-margin-left': '<length>',
-    'scroll-margin-right': '<length>',
-    'scroll-margin-top': '<length>',
-    'scroll-margin-block': '<length>{1,2}',
-    'scroll-margin-block-end': '<length>',
-    'scroll-margin-block-start': '<length>',
-    'scroll-margin-inline': '<length>{1,2}',
-    'scroll-margin-inline-end': '<length>',
-    'scroll-margin-inline-start': '<length>',
-    'scroll-padding': '<width>{1,4}',
-    'scroll-padding-left': '<width>',
-    'scroll-padding-right': '<width>',
-    'scroll-padding-top': '<width>',
-    'scroll-padding-bottom': '<width>',
-    'scroll-padding-block': '<width>{1,2}',
-    'scroll-padding-block-end': '<width>',
-    'scroll-padding-block-start': '<width>',
-    'scroll-padding-inline': '<width>{1,2}',
-    'scroll-padding-inline-end': '<width>',
-    'scroll-padding-inline-start': '<width>',
-    'scroll-snap-align': '[ none | start | end | center ]{1,2}',
-    'scroll-snap-stop': 'normal | always',
-    'scroll-snap-type': 'none | [ x | y | block | inline | both ] [ mandatory | proximity ]?',
-    'scrollbar-color': 'auto | dark | light | <color>{2}',
-    'scrollbar-gutter': 'auto | stable && both-edges?',
-    'scrollbar-width': 'auto | thin | none',
-    'shape-rendering': 'auto | optimizeSpeed | crispEdges | geometricPrecision',
-    'speak': 'auto | never | always',
-    'speak-as': 1,
-    'stop-color': 1,
-    'stop-opacity': '<num0-1>',
-    'stroke': '<paint>',
-    'stroke-dasharray': 'none | <dasharray>',
-    'stroke-dashoffset': '<len-pct> | <number>',
-    'stroke-linecap': 'butt | round | square',
-    'stroke-linejoin': 'miter | miter-clip | round | bevel | arcs',
-    'stroke-miterlimit': '<num0+>',
-    'stroke-opacity': '<num0-1>',
-    'stroke-width': '<len-pct> | <number>',
-
-    'table-layout': 'auto | fixed',
-    'tab-size': '<number> | <length>',
-    'text-align': '<text-align> | justify-all',
-    'text-align-last': '<text-align> | auto',
-    'text-anchor': 'start | middle | end',
-    'text-decoration': '<text-decoration-line> || <text-decoration-style> || <color>',
-    'text-decoration-color': '<color>',
-    'text-decoration-line': 'none | [ underline || overline || line-through || blink ]',
-    'text-decoration-skip': 'none | ' +
-      '[ objects || [ spaces | [ leading-spaces || trailing-spaces ] ] || edges || box-decoration ]',
-    'text-decoration-style': 'solid | double | dotted | dashed | wavy',
-    'text-emphasis': '<text-emphasis-style> || <color>',
-    'text-emphasis-color': '<color>',
-    'text-emphasis-style': 'none | <string> | ' +
-      '[ [ filled | open ] || [ dot | circle | double-circle | triangle | sesame ] ]',
-    'text-emphasis-position': '[ over | under ] && [ right | left ]?',
-    'text-indent': '<len-pct> && hanging? && each-line?',
-    'text-justify': 'auto | none | inter-word | inter-character',
-    'text-overflow': 'clip | ellipsis',
-    'text-rendering': 'auto | optimizeSpeed | optimizeLegibility | geometricPrecision',
-    'text-shadow': 'none | [ <color>? && <length>{2,3} ]#',
-    'text-transform': 'none | [ capitalize | uppercase | lowercase ] || full-width || full-size-kana',
-    'text-underline-position': 'auto | [ under || [ left | right ] ]',
-    'top': '<width>',
-    'touch-action': 'auto | none | pan-x | pan-y | pan-left | pan-right | pan-up | pan-down | manipulation',
-    'transform': 'none | <fn:transform>+',
-    'transform-box': 'border-box | fill-box | view-box',
-    'transform-origin': '[ left | center | right | <len-pct> ] ' +
-      '[ top | center | bottom | <len-pct> ] <length>? | ' +
-      '[ left | center | right | top | bottom | <len-pct> ] | ' +
-      '[ [ center | left | right ] && [ center | top | bottom ] ] <length>?',
-    'transform-style': 'flat | preserve-3d',
-    'transition': '[ [ none | [ all | <custom-ident> ]# ] || <time> || <timing-function> || <time> ]#',
-    'transition-delay': '<time>#',
-    'transition-duration': '<time>#',
-    'transition-property': 'none | [ all | <custom-ident> ]#',
-    'transition-timing-function': '<timing-function>#',
-    'translate': 'none | <len-pct> [ <len-pct> <length>? ]?',
-
-    'unicode-range': '<unicode-range>#',
-    'unicode-bidi': 'normal | embed | isolate | bidi-override | isolate-override | plaintext',
-    'user-select': 'auto | text | none | contain | all',
-
-    'vertical-align': 'auto | use-script | baseline | sub | super | top | text-top | ' +
-      'central | middle | bottom | text-bottom | <len-pct>',
-    'visibility': '<vis-hid> | collapse',
-
-    'white-space': 'normal | pre | nowrap | pre-wrap | break-spaces | pre-line',
-    'widows': '<integer>',
-    'width': 'auto | <width-height>',
-    'will-change': 'auto | <animateable-feature>#',
-    'word-break': 'normal | keep-all | break-all | break-word',
-    'word-spacing': '<length> | normal',
-    'word-wrap': 'normal | break-word | anywhere',
-    'writing-mode': 'horizontal-tb | vertical-rl | vertical-lr | ' +
-      'lr-tb | rl-tb | tb-rl | bt-rl | tb-lr | bt-lr | lr-bt | rl-bt | lr | rl | tb',
-
-    'z-index': '<integer> | auto',
-    'zoom': '<number> | <pct> | normal',
-
-    // nonstandard https://compat.spec.whatwg.org/
-    '-webkit-box-reflect': '[ above | below | right | left ]? <length>? <image>?',
-    '-webkit-text-fill-color': '<color>',
-    '-webkit-text-stroke': '<border-width> || <color>',
-    '-webkit-text-stroke-color': '<color>',
-    '-webkit-text-stroke-width': '<border-width>',
-    '-webkit-user-modify': 'read-only | read-write | write-only',
-  };
-
-  const ScopedProperties = {
-    __proto__: null,
-    '@font-face': Object.assign({
-      'ascent-override': '[ normal | <pct0+> ]{1,2}',
-      'descent-override': '[ normal | <pct0+> ]{1,2}',
-      'font-display': 'auto | block | swap | fallback | optional',
-      'font-stretch': 'auto | <font-stretch>{1,2}',
-      'font-style': 'auto | normal | italic | oblique <angle>{0,2}',
-      'font-weight': 'auto | [ normal | bold | <num1-1000> ]{1,2}',
-      'line-gap-override': '[ normal | <pct0+> ]{1,2}',
-      'size-adjust': '<pct0+>',
-      'src': '[ url() [ format( <string># ) ]? | local( <family-name> ) ]#',
-    }, ...[
-      'font-family',
-      'font-size',
-      'font-variant',
-      'font-variation-settings',
-      'unicode-range',
-    ].map(p => ({[p]: Properties[p]}))),
-
-    '@font-palette-values': Object.assign({
-      'base-palette': 'light | dark | <int0+>',
-      'override-colors': '[ <int0+> <color> ]#',
-    }, ...[
-      'font-family',
-    ].map(p => ({[p]: Properties[p]}))),
-
-    '@page': {
-      '': true, // include Properties
-      'bleed': 'auto | <length>',
-      'marks': 'none | [ crop || cross ]',
-      'size': '<length>{1,2} | auto | [ [ A3 | A4 | A5 | B4 | B5 | JIS-B4 | JIS-B5 | ' +
-        'ledger | legal | letter ] || [ portrait | landscape ] ]',
-    },
-  };
-
-  for (const [k, reps] of Object.entries({
-    'border': '{1,4}',
-    'border-bottom': '',
-    'border-left': '',
-    'border-right': '',
-    'border-top': '',
-    'border-block': '{1,2}',
-    'border-block-end': '',
-    'border-block-start': '',
-    'border-inline': '{1,2}',
-    'border-inline-end': '',
-    'border-inline-start': '',
-  })) {
-    Properties[k] = '<border-shorthand>';
-    Properties[`${k}-color`] = '<color>' + reps;
-    Properties[`${k}-style`] = '<border-style>' + reps;
-    Properties[`${k}-width`] = '<border-width>' + reps;
-  }
-  for (const k of ['width', 'height', 'block-size', 'inline-size']) {
-    Properties[`contain-intrinsic-${k}`] = '<contain-intrinsic>';
-  }
-
-  //#endregion
+(() => {
   //#region Types
 
-  const UNITS = JSON.parse(`{${Object.entries({
-    angle: 'deg,grad,rad,turn',
-    frequency: 'hz,khz',
-    length: 'cap,ch,em,ex,ic,lh,rlh,rem,' +
-      'cm,mm,in,pc,pt,px,q,' +
-      'cqw,cqh,cqi,cqb,cqmin,cqmax,' + // containers
-      'fr,' + // grids
-      'vb,vi,vh,vw,vmin,vmax'.replace(/\w+/g, '$&,d$&,l$&,s$&'),
-    resolution: 'dpcm,dpi,dppx,x',
-    time: 'ms,s',
-  }).map(([type, units]) => units.replace(/\w+/g, `"$&":"${type}"`)).join(',')}}`);
+  const parserlib = typeof self !== 'undefined'
+    ? (require('/js/csslint/parserlib-base'), self.parserlib)
+    : require('./parserlib-base');
+  const {assign, defineProperty: define} = Object;
+  const isOwn = Object.call.bind({}.hasOwnProperty);
+  const {
+    css: {
+      Combinators,
+      NamedColors,
+      TokenTypeByCode,
+      TokenTypeByText,
+      Tokens,
+      Units,
+    },
+    util: {
+      Bucket,
+      EventTarget,
+      StringReader,
+      UnitTypeIds,
+      clipString,
+      validateProperty,
+    },
+  } = parserlib;
+  const {
+    CHAR, COLON, COMMA, COMBINATOR, COMMENT, DELIM, DOT, HASH,
+    FUNCTION, IDENT, LBRACE, LBRACKET, LPAREN, NUMBER, PCT, PIPE,
+    RBRACE, RBRACKET, RPAREN, S: WS, SEMICOLON, STAR, USO_VAR,
+  } = Tokens;
+  const TT = /** @type {Record<string,TokenMap>} */ {
+    attrEq: [Tokens.ATTR_EQ, Tokens.EQUALS],
+    attrEqEnd: [Tokens.ATTR_EQ, Tokens.EQUALS, RBRACKET],
+    attrStart: [PIPE, IDENT, STAR],
+    attrNameEnd: [RBRACKET, USO_VAR, WS],
+    braceLR: [LBRACE, RBRACE],
+    cruft: [Tokens.CDO, Tokens.CDC],
+    declEnd: [SEMICOLON, RBRACE],
+    docFunc: [FUNCTION, IDENT/* while typing a new func */, Tokens.URI],
+    identStar: [IDENT, STAR],
+    identString: [IDENT, Tokens.STRING, USO_VAR],
+    mediaValue: [IDENT, NUMBER, Tokens.DIMENSION, Tokens.LENGTH],
+    mediaList: [IDENT, LPAREN],
+    nthOf: [NUMBER, IDENT, Tokens.NTH],
+    nthOfEnd: [IDENT, RPAREN],
+    propCustomEnd: [DELIM, SEMICOLON, RBRACE, RBRACKET, RPAREN, Tokens.INVALID],
+    propValEnd: [DELIM, SEMICOLON, RBRACE],
+    propValEndParen: [DELIM, SEMICOLON, RBRACE, RPAREN],
+    pseudo: [FUNCTION, IDENT],
+    selectorStart: [PIPE, IDENT, STAR, HASH, DOT, LBRACKET, COLON],
+    supportsIdentNext: [COLON, LPAREN],
+    supportsInParens: [FUNCTION, IDENT, LPAREN],
+    stringUri: [Tokens.STRING, Tokens.URI, USO_VAR],
+  };
+  const B = /** @type {Record<string,Bucket>} */ {
+    attrIS: ['i', 's', ']'], // "]" is to improve the error message,
+    colors: NamedColors,
+    nthBare: ['n', '-n'],
+    plusMinus: ['+', '-'],
+  };
+  const PAIRING = [];
+  const PDESC = {configurable: true, enumerable: true, writable: true, value: null};
+  /** For these tokens stream.match() will return a USO_VAR unless the next token is a direct match */
+  const USO_VAR_PROXY = [PCT, ...TT.mediaValue, ...TT.identString]
+    .reduce((res, id) => (res[id] = true) && res, []);
   // Sticky `y` flag must be used in expressions used with peekTest and readMatch
-  const rxIdentStartPct = /[-\\_a-zA-Z\u00A0-\uFFFF%]/uy;
-  const rxNameCharNoEsc = /[-_\da-zA-Z\u00A0-\uFFFF]+/yu; // must not match \\
-  // CSS2 system colors: https://www.w3.org/TR/css3-color/#css2-system
-  // CSS4 system colors: https://drafts.csswg.org/css-color-4/#css-system-colors
-  // 2-5 times faster than Array.includes(val.toLowerCase()) or a branched regexp like /a(foo|bar)/i
-  const rxNamedColor = /^(currentColor|transparent|aliceblue|antiquewhite|aqua|aquamarine|azure|beige|bisque|black|blanchedalmond|blue|blueviolet|brown|burlywood|cadetblue|chartreuse|chocolate|coral|cornflowerblue|cornsilk|crimson|cyan|darkblue|darkcyan|darkgoldenrod|darkgray|darkgrey|darkgreen|darkkhaki|darkmagenta|darkolivegreen|darkorange|darkorchid|darkred|darksalmon|darkseagreen|darkslateblue|darkslategray|darkslategrey|darkturquoise|darkviolet|deeppink|deepskyblue|dimgray|dimgrey|dodgerblue|firebrick|floralwhite|forestgreen|fuchsia|gainsboro|ghostwhite|gold|goldenrod|gray|grey|green|greenyellow|honeydew|hotpink|indianred|indigo|ivory|khaki|lavender|lavenderblush|lawngreen|lemonchiffon|lightblue|lightcoral|lightcyan|lightgoldenrodyellow|lightgray|lightgrey|lightgreen|lightpink|lightsalmon|lightseagreen|lightskyblue|lightslategray|lightslategrey|lightsteelblue|lightyellow|lime|limegreen|linen|magenta|maroon|mediumaquamarine|mediumblue|mediumorchid|mediumpurple|mediumseagreen|mediumslateblue|mediumspringgreen|mediumturquoise|mediumvioletred|midnightblue|mintcream|mistyrose|moccasin|navajowhite|navy|oldlace|olive|olivedrab|orange|orangered|orchid|palegoldenrod|palegreen|paleturquoise|palevioletred|papayawhip|peachpuff|peru|pink|plum|powderblue|purple|rebeccapurple|red|rosybrown|royalblue|saddlebrown|salmon|sandybrown|seagreen|seashell|sienna|silver|skyblue|slateblue|slategray|slategrey|snow|springgreen|steelblue|tan|teal|thistle|tomato|turquoise|violet|wheat|white|whitesmoke|yellow|yellowgreen|ActiveBorder|ActiveCaption|ActiveText|AppWorkspace|Background|ButtonBorder|ButtonFace|ButtonHighlight|ButtonShadow|ButtonText|Canvas|CanvasText|CaptionText|Field|FieldText|GrayText|Highlight|HighlightText|InactiveBorder|InactiveCaption|InactiveCaptionText|InfoBackground|InfoText|LinkText|Mark|MarkText|Menu|MenuText|Scrollbar|ThreeDDarkShadow|ThreeDFace|ThreeDHighlight|ThreeDLightShadow|ThreeDShadow|VisitedText|Window|WindowFrame|WindowText)$/i;
-  const rxUnquotedUrlCharNoEsc = /[-!#$%&*-[\]-~\u00A0-\uFFFF]+/yu; // must not match \\
-  const rxVendorPrefix = /^(?:-(webkit|moz|ms|o)-)?(.+)/i;
-
-  //#endregion
-  //#region ValidationTypes - definitions
-
-  const VTSimple = {
-    __proto__: null,
-    '<animateable-feature-name>': customIdentChecker('will-change|auto|scroll-position|contents'),
-    '<angle>': p => p.type === 'angle' || p.isCalc,
-    '<angle-or-0>': p => p.is0 || p.type === 'angle' || p.isCalc,
-    '<ascii4>': p => p.type === 'string' && p.text.length === 4 && !/[^\x20-\x7E]/.test(p.text),
-    '<attr>': vtIsAttr,
-    '<custom-ident>': customIdentChecker(),
-    '<custom-prop>': p => p.type === 'custom-prop',
-    '<flex>': p => p.type === 'grid' && p.value >= 0 || p.isCalc,
-    '<glyph-angle>': p => p.type === 'angle' && p.units === 'deg',
-    '<hue>': p => p.type === 'number' || p.type === 'angle' || p.isCalc,
-    '<ident-for-grid>': customIdentChecker('span|auto'),
-    '<ident-not-none>': p => p.tokenType === Tokens.IDENT && p.is !== 'none', //eslint-disable-line no-use-before-define
-    '<ie-function>': p => p.tokenType === Tokens.IE_FUNCTION, //eslint-disable-line no-use-before-define
-    '<integer>': p => p.isInt,
-    '<int0+>': p => p.isInt && p.value >= 0,
-    '<int1+>': p => p.isInt && p.value > 0,
-    '<length>': vtIsLength,
-    '<len0+>': p => p.value >= 0 && vtIsLength(p) || p.isCalc,
-    '<len-pct>': p => p.type === 'length' || p.type === 'pct' || p.is0 || p.isCalc,
-    '<len-pct0+>': p => p.value > 0 ? p.type === 'pct' || p.type === 'length' : p.is0 || p.isCalc,
-    '<number>': p => p.type === 'number' || p.isCalc,
-    '<num0+>': p => p.type === 'number' && p.value >= 0 || p.isCalc,
-    '<num0-1>': p => p.type === 'number' && p.value >= 0 && p.value <= 1 || p.isCalc,
-    '<num1-1000>': p => p.type === 'number' && p.value >= 1 && p.value <= 1000 || p.isCalc,
-    '<num-pct>': p => p.type === 'number' || p.type === 'pct' || p.isCalc,
-    '<num-pct0+>': p => (p.type === 'number' || p.type === 'pct') && p.value >= 0 || p.isCalc,
-    '<num-pct-none>': p => p.type === 'number' || p.type === 'pct' || p.is === 'none' || p.isCalc,
-    '<pct>': vtIsPct,
-    '<pct0+>': p => p.type === 'pct' && p.value >= 0 || p.isCalc,
-    '<pct0-100>': p => p.type === 'pct' && p.value >= 0 && p.value <= 100 || p.isCalc,
-    '<keyframes-name>': customIdentChecker('', '^-?[a-z_][-a-z0-9_]+$', p => p.type === 'string'),
-    '<string>': p => p.type === 'string',
-    '<time>': p => p.type === 'time',
-    '<unicode-range>': p => /^U\+[0-9a-f?]{1,6}(-[0-9a-f?]{1,6})?\s*$/i.test(p.text),
-    '<uri>': p => p.type === 'uri',
-    '<width>': p => p.is === 'auto' || VTSimple['<len-pct>'],
-  };
-  for (const type of ['hsl', 'hwb', 'lab', 'lch', 'rgb']) {
-    const rx = RegExp(`^(none|${type.replace(/./g, '$&|')}alpha)$`, 'i');
-    VTSimple[`<rel-${type}>`] = p => rx.test(p.text);
-    VTSimple[`<rel-${type}-np>`] = p => p.type === 'number' || p.type === 'pct' || p.isCalc ||
-      rx.test(p.text);
-  }
-
-  const VTFunctions = {
-    color: {
-      __proto__: null,
-      'color-mix': 'in [ srgb | srgb-linear | lab | oklab | xyz | xyz-d50 | xyz-d65 ' +
-        '| [ hsl | hwb | lch | oklch ] [ [ shorter | longer | increasing | decreasing ] hue ]? ' +
-        '] , [ <color> && <pct0-100>? ]#{2}',
-      'color': 'from <color> [ ' +
-          '<custom-prop> [ <num-pct-none> <custom-ident> ]# | ' +
-          '<rgb-xyz> [ <num-pct-none> | r | g | b | x | y | z ]{3} ' +
-        '] [ / <num-pct-none> | r | g | b | x | y | z ]? | ' +
-        '[ <rgb-xyz> <num-pct-none>{3} | <custom-prop> <num-pct-none># ] <alpha>?',
-      'hsl': '<hue> , <pct>#{2} [ , <num-pct0+> ]? | ' +
-        '[ <hue> | none ] <num-pct-none>{2} <alpha>? | ' +
-        'from <color> [ <hue> | <rel-hsl> ] <rel-hsl-np>{2} [ / <rel-hsl-np> ]?',
-      'hwb': '[ <hue> | none ] <num-pct-none>{2} <alpha>? | ' +
-        'from <color> [ <hue> | <rel-hwb> ] <rel-hwb-np>{2} [ / <rel-hwb-np> ]?',
-      'lab': '<num-pct-none>{3} <alpha>? | ' +
-        'from <color> <rel-lab-np>{3} [ / <rel-lab-np> ]?',
-      'lch': '<num-pct-none>{2} [ <hue> | none ] <alpha>? | ' +
-        'from <color> <rel-lch-np>{2} [ <hue> | <rel-lch> ] [ / <rel-lch-np> ]?',
-      'rgb': '[ <number>#{3} | <pct>#{3} ] [ , <num-pct0+> ]? | ' +
-        '<num-pct-none>{3} <alpha>? | ' +
-        'from <color> <rel-rgb-np>{3} [ / <rel-rgb-np> ]?',
-    },
-    filter: {
-      __proto__: null,
-      'blur': '<length>?',
-      'brightness': '<num-pct>?',
-      'contrast': '<num-pct>?',
-      'drop-shadow': '[ <length>{2,3} && <color>? ]?',
-      'grayscale': '<num-pct>?',
-      'hue-rotate': '<angle-or-0>?',
-      'invert': '<num-pct>?',
-      'opacity': '<num-pct>?',
-      'saturate': '<num-pct>?',
-      'sepia': '<num-pct>?',
-    },
-    transform: {
-      __proto__: null,
-      matrix: '<number>#{6}',
-      matrix3d: '<number>#{16}',
-      perspective: '<len0+> | none',
-      rotate: '<angle-or-0> | none',
-      rotate3d: '<number>#{3} , <angle-or-0>',
-      rotateX: '<angle-or-0>',
-      rotateY: '<angle-or-0>',
-      rotateZ: '<angle-or-0>',
-      scale: '[ <num-pct> ]#{1,2} | none',
-      scale3d: '<num-pct>#{3}',
-      scaleX: '<num-pct>',
-      scaleY: '<num-pct>',
-      scaleZ: '<num-pct>',
-      skew: '<angle-or-0> [ , <angle-or-0> ]?',
-      skewX: '<angle-or-0>',
-      skewY: '<angle-or-0>',
-      translate: '<len-pct>#{1,2} | none',
-      translate3d: '<len-pct>#{2} , <length>',
-      translateX: '<len-pct>',
-      translateY: '<len-pct>',
-      translateZ: '<length>',
-    },
-  };
-  for (const k of ['hsl', 'rgb']) VTFunctions.color[k + 'a'] = VTFunctions.color[k];
-  for (const k of ['lab', 'lch']) VTFunctions.color['ok' + k] = VTFunctions.color[k];
-
-  const VTComplex = {
-    __proto__: null,
-    '<absolute-size>': 'xx-small | x-small | small | medium | large | x-large | xx-large',
-    '<alpha>': '/ <num-pct-none>',
-    '<animateable-feature>': 'scroll-position | contents | <animateable-feature-name>',
-    '<animation-direction>': 'normal | reverse | alternate | alternate-reverse',
-    '<animation-fill-mode>': 'none | forwards | backwards | both',
-    '<attachment>': 'scroll | fixed | local',
-    '<auto-repeat>':
-      'repeat( [ auto-fill | auto-fit ] , [ <line-names>? <fixed-size> ]+ <line-names>? )',
-    '<auto-track-list>':
-      '[ <line-names>? [ <fixed-size> | <fixed-repeat> ] ]* <line-names>? <auto-repeat> ' +
-      '[ <line-names>? [ <fixed-size> | <fixed-repeat> ] ]* <line-names>?',
-    '<baseline-position>': '[ first | last ]? baseline',
-    '<basic-shape>':
-      '<inset> | ' +
-      'circle( <len-pct-side>? [ at <position> ]? ) | ' +
-      'ellipse( [ <len-pct-side>{2} ]? [ at <position> ]? ) | ' +
-      'path( [ [ nonzero | evenodd ] , ]? <string> ) | ' +
-      'polygon( [ [ nonzero | evenodd | inherit ] , ]? [ <len-pct> <len-pct> ]# )',
-    '<bg-image>': '<image> | none',
-    '<bg-layer>':
-      '<bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <box>{1,2}',
-    '<bg-position>':
-      '[ center | [ left | right ] <len-pct>? ] && [ center | [ top | bottom ] <len-pct>? ] | ' +
-      '[ left | center | right | <len-pct> ] [ top | center | bottom | <len-pct> ] | ' +
-      '[ left | center | right | top | bottom | <len-pct> ]',
-    '<bg-size>': '[ <len-pct> | auto ]{1,2} | cover | contain',
-    '<blend-mode>': 'normal | multiply | screen | overlay | darken | lighten | color-dodge | ' +
-      'color-burn | hard-light | soft-light | difference | exclusion | hue | ' +
-      'saturation | color | luminosity | plus-darker | plus-lighter',
-    '<border-image-slice>': M => M.many([true],
-      // [<number> | <pct>]{1,4} && fill?
-      // but 'fill' can appear between any of the numbers
-      ['<num-pct0+>', '<num-pct0+>', '<num-pct0+>', '<num-pct0+>', 'fill'].map(M.fromType)),
-    '<border-radius-round>': 'round <border-radius>',
-    '<border-shorthand>': '<border-width> || <border-style> || <color>',
-    '<border-style>': 'none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset',
-    '<border-width>': '<length> | thin | medium | thick',
-    '<box>': 'padding-box | border-box | content-box',
-    '<box-fsv>': 'fill-box | stroke-box | view-box',
-    '<color>': M => M.seq(
-      new M((expr, p) => p.type === 'color', '<named-color> | <hex-color> |'),
-      M.fromType('<fn:color?>')),
-    '<coord-box>': '<box> | <box-fsv>',
-    '<contain-intrinsic>': 'none | <length> | auto <length>',
-    '<content-distribution>': 'space-between | space-around | space-evenly | stretch',
-    '<content-list>':
-      '[ <string> | <image> | <attr> | ' +
-      'content( text | before | after | first-letter | marker ) | ' +
-      'counter() | counters() | leader() | ' +
-      'open-quote | close-quote | no-open-quote | no-close-quote | ' +
-      'target-counter() | target-counters() | target-text() ]+',
-    '<content-position>': 'center | start | end | flex-start | flex-end',
-    '<counter>': '[ <ident-not-none> <integer>? ]+ | none',
-    '<dasharray>': M => M.parse('<len-pct0+> | <num0+>')
-      .braces(1, Infinity, '#', M.fromType(',').braces(0, 1, '?')),
-    '<display-box>': 'contents | none',
-    '<display-inside>': 'flow | flow-root | table | flex | grid | ruby',
-    '<display-internal>': 'table-row-group | table-header-group | table-footer-group | ' +
-      'table-row | table-cell | table-column-group | table-column | table-caption | ' +
-      'ruby-base | ruby-text | ruby-base-container | ruby-text-container',
-    '<display-legacy>': 'inline-block | inline-table | inline-flex | inline-grid',
-    '<display-listitem>': '<display-outside>? && [ flow | flow-root ]? && list-item',
-    '<display-outside>': 'block | inline | run-in',
-    '<explicit-track-list>': '[ <line-names>? <track-size> ]+ <line-names>?',
-    '<family-name>': '<string> | <custom-ident>+',
-    // https://drafts.fxtf.org/filter-effects/#supported-filter-functions
-    // Value may be omitted in which case the default is used
-    '<filter-function-list>': '[ <fn:filter> | <uri> ]+',
-    '<final-bg-layer>': '<color> || <bg-image> || <bg-position> [ / <bg-size> ]? || ' +
-      '<repeat-style> || <attachment> || <box>{1,2}',
-    '<fixed-repeat>': 'repeat( [ <int1+> ] , [ <line-names>? <fixed-size> ]+ <line-names>? )',
-    '<fixed-size>': '<len-pct> | minmax( <len-pct> , <track-breadth> | <inflexible-breadth> , <len-pct> )',
-    '<flex-direction>': 'row | row-reverse | column | column-reverse',
-    '<flex-shorthand>': 'none | [ <number>{1,2} || <width> ]',
-    '<flex-wrap>': 'nowrap | wrap | wrap-reverse',
-    '<font-short-core>': '<font-size> [ / <line-height> ]? <font-family>',
-    '<font-short-tweak-no-pct>':
-      '<font-style> || [ normal | small-caps ] || <font-weight> || <font-stretch-named>',
-    '<font-stretch-named>': 'normal | ultra-condensed | extra-condensed | condensed | ' +
-      'semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded',
-    '<font-variant-alternates>': 'stylistic() || historical-forms || styleset() || ' +
-      'character-variant() || swash() || ornaments() || annotation()',
-    '<font-variant-caps>': 'small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps',
-    '<font-variant-east-asian>': '[ jis78 | jis83 | jis90 | jis04 | simplified | traditional ] || ' +
-      '[ full-width | proportional-width ] || ruby',
-    '<font-variant-ligatures>': '[ common-ligatures | no-common-ligatures ] || ' +
-      '[ discretionary-ligatures | no-discretionary-ligatures ] || ' +
-      '[ historical-ligatures | no-historical-ligatures ] || ' +
-      '[ contextual | no-contextual ]',
-    '<font-variant-numeric>': '[ lining-nums | oldstyle-nums ] || ' +
-      '[ proportional-nums | tabular-nums ] || ' +
-      '[ diagonal-fractions | stacked-fractions ] || ' +
-      'ordinal || slashed-zero',
-    '<generic-family>': 'serif | sans-serif | cursive | fantasy | monospace | system-ui | ' +
-      'emoji | math | fangsong | ui-serif | ui-sans-serif | ui-monospace | ui-rounded',
-    '<geometry-box>': '<shape-box> | <box2>',
-    '<gradient>': 'radial-gradient() | linear-gradient() | conic-gradient() | gradient() | ' +
-      'repeating-radial-gradient() | repeating-linear-gradient() | repeating-conic-gradient() | ' +
-      'repeating-gradient()',
-    '<grid-line>': 'auto | [ <integer> && <ident-for-grid>? ] | <ident-for-grid> | ' +
-      '[ span && [ <integer> || <ident-for-grid> ] ]',
-    '<image>': '<uri> | <gradient> | cross-fade()',
-    '<inflexible-breadth>': '<len-pct> | min-content | max-content | auto',
-    '<inset>': 'inset( <len-pct>{1,4} <border-radius-round>? )',
-    '<len-pct-side>': '<len-pct> | closest-side | farthest-side',
-    '<line-height>': '<number> | <len-pct> | normal',
-    '<line-names>': '"[" <ident-for-grid> "]"',
-    '<overflow-position>': 'unsafe | safe',
-    '<overflow>': '<vis-hid> | clip | scroll | auto',
-    '<overscroll>': 'contain | none | auto',
-    '<paint>': 'none | <color> | <uri> [ none | <color> ]? | context-fill | context-stroke',
-    // Because our `alt` combinator is ordered, we need to test these
-    // in order from longest possible match to shortest.
-    '<position>':
-      '[ [ left | right ] <len-pct> ] && [ [ top | bottom ] <len-pct> ] | ' +
-      '[ left | center | right | <len-pct> ] ' +
-      '[ top | center | bottom | <len-pct> ]? | ' +
-      '[ left | center | right ] || [ top | center | bottom ]',
-    '<rect>': 'rect( [ <length> | auto ]#{4} <border-radius-round>? )',
-    '<relative-size>': 'smaller | larger',
-    '<repeat-style>': 'repeat-x | repeat-y | [ repeat | space | round | no-repeat ]{1,2}',
-    '<rgb-xyz>': 'srgb | srgb-linear | display-p3 | a98-rgb | prophoto-rgb | rec2020 | xyz | xyz-d50 | xyz-d65',
-    '<self-position>': 'center | start | end | self-start | self-end | flex-start | flex-end',
-    '<shadow>': 'inset? && [ <length>{2,4} && <color>? ]',
-    '<shape-box>': '<box> | margin-box',
-    '<timing-function>': 'linear | ease | ease-in | ease-out | ease-in-out | step-start | step-end | ' +
-      'cubic-bezier( <num0-1> , <number> , <num0-1> , <number> ) | ' +
-      'steps( <integer> [ , [ jump-start | jump-end | jump-none | jump-both | start | end ] ]? )',
-    '<text-align>': 'start | end | left | right | center | justify | match-parent',
-    '<track-breadth>': '<len-pct> | <flex> | min-content | max-content | auto',
-    '<track-list>': '[ <line-names>? [ <track-size> | <track-repeat> ] ]+ <line-names>?',
-    '<track-repeat>': 'repeat( [ <int1+> ] , [ <line-names>? <track-size> ]+ <line-names>? )',
-    '<track-size>': '<track-breadth> | minmax( <inflexible-breadth> , <track-breadth> ) | ' +
-      'fit-content( <len-pct> )',
-    '<vis-hid>': 'visible | hidden',
-    '<width-height>': '<len-pct> | min-content | max-content | fit-content | ' +
-      '-moz-available | -webkit-fill-available | fit-content( <len-pct> )',
-    '<xywh>': 'xywh( <len-pct>{2} <len-pct0+>{2} <border-radius-round>? )',
-  };
-
-  //#endregion
-  //#region Tokens
-
-  /* https://www.w3.org/TR/css3-syntax/#lexical */
-  /** @type {Record<string,(number|{})>}*/
-  const Tokens = {
-    __proto__: null,
-    EOF: {}, // must be the first token
-    // HTML-style comments
-    CDC: {},
-    CDO: {},
-    // ignorables
-    COMMENT: {hide: true},
-    S: {},
-    // attribute equality
-    DASHMATCH: {text: '|='},
-    INCLUDES: {text: '~='},
-    PREFIXMATCH: {text: '^='},
-    SUBSTRINGMATCH: {text: '*='},
-    SUFFIXMATCH: {text: '$='},
-    // identifier types
-    HASH: {},
-    IDENT: {},
-    STRING: {},
-    // at-keywords
-    CHARSET_SYM: {text: '@charset'},
-    CONTAINER_SYM: {text: '@container'},
-    DOCUMENT_SYM: {text: ['@document', '@-moz-document']},
-    FONT_FACE_SYM: {text: '@font-face'},
-    FONT_PALETTE_VALUES_SYM: {text: '@font-palette-values'},
-    IMPORT_SYM: {text: '@import'},
-    KEYFRAMES_SYM: {text: ['@keyframes', '@-webkit-keyframes', '@-moz-keyframes', '@-o-keyframes']},
-    LAYER_SYM: {text: '@layer'},
-    MEDIA_SYM: {text: '@media'},
-    NAMESPACE_SYM: {text: '@namespace'},
-    PAGE_SYM: {text: '@page'},
-    SUPPORTS_SYM: {text: '@supports'},
-    UNKNOWN_SYM: {},
-    VIEWPORT_SYM: {text: ['@viewport', '@-ms-viewport', '@-o-viewport']},
-    // measurements
-    ANGLE: {},
-    DIMENSION: {},
-    FREQUENCY: {},
-    LENGTH: {},
-    NUMBER: {},
-    PERCENTAGE: {},
-    RESOLUTION: {},
-    TIME: {},
-    // functions
-    FUNCTION: {},
-    URI: {},
-    // Unicode ranges
-    UNICODE_RANGE: {},
-    // invalid string
-    INVALID: {},
-    // combinators
-    COMMA: {text: ','},
-    // The following token names are not defined in any CSS specification.
-    CHAR: {},
-    COLON: {text: ':'},
-    COMBINATOR: {text: ['>', '+', '~', '||']},
-    DOT: {text: '.'},
-    EQUALS: {text: '='},
-    IE_FUNCTION: {},
-    IMPORTANT: {},
-    LBRACE: {text: '{', end: '}'},
-    LBRACKET: {text: '[', end: ']'},
-    LPAREN: {text: '(', end: ')'},
-    MARGIN_SYM: (map => ({
-      text: '@B-center@B-L-C@B-L@B-R-C@B-R@L-B@L-M@L-T@R-B@R-M@R-T@T-center@T-L-C@T-L@T-R-C@T-R'
-        .replace(/[A-Z]/g, s => map[s]).split(/(?=@)/),
-    }))({B: 'bottom', C: 'corner', L: 'left', M: 'middle', R: 'right'}),
-    MINUS: {text: '-'},
-    PIPE: {text: '|'},
-    PSEUDO_FUNC_SEL: {text: ['any', '-webkit-any', '-moz-any', 'has', 'is', 'not', 'where']},
-    RBRACE: {text: '}'},
-    RBRACKET: {text: ']'},
-    RPAREN: {text: ')'},
-    SEMICOLON: {text: ';'},
-    SLASH: {text: '/'},
-    STAR: {text: '*'},
-    USO_VAR: {},
-  };
-  const getTokenName = index => (Tokens[index] || {}).name;
-  const TokenTypeByText = {__proto__: null};
-  for (let i = 0, arr = Object.keys(Tokens); i < arr.length; i++) {
-    const key = arr[i];
-    const val = Tokens[i] = Tokens[key];
-    const {text} = val;
-    Tokens[key] = i;
-    val.name = key;
-    if (Array.isArray(text)) for (const str of text) TokenTypeByText[str] = i;
-    else if (text) TokenTypeByText[text] = i;
-  }
-  Tokens.UNKNOWN = -1;
-
-  const TT = {
-    __proto__: null,
-    attrMatch: [
-      Tokens.PREFIXMATCH,
-      Tokens.SUFFIXMATCH,
-      Tokens.SUBSTRINGMATCH,
-      Tokens.EQUALS,
-      Tokens.INCLUDES,
-      Tokens.DASHMATCH,
-    ],
-    cruft: [
-      Tokens.S,
-      Tokens.CDO,
-      Tokens.CDC,
-    ],
-    identString: [
-      Tokens.IDENT,
-      Tokens.STRING,
-      Tokens.USO_VAR,
-    ],
-    mediaValue: [
-      Tokens.IDENT,
-      Tokens.NUMBER,
-      Tokens.DIMENSION,
-      Tokens.LENGTH,
-    ],
-    pseudo: [
-      Tokens.FUNCTION,
-      Tokens.IDENT,
-    ],
-    semiS: [
-      Tokens.SEMICOLON,
-      Tokens.S,
-    ],
-    stringUri: [
-      Tokens.STRING,
-      Tokens.URI,
-      Tokens.USO_VAR,
-    ],
-    usoS: [
-      Tokens.USO_VAR,
-      Tokens.S,
-    ],
-  };
-
-  //#endregion
-  //#region StringReader
-
-  class StringReader {
-
-    constructor(text) {
-      this._input = text.replace(/\r\n?/g, '\n');
-      this._line = 1;
-      this._col = 1;
-      this._cursor = 0;
-    }
-
-    eof() {
-      return this._cursor >= this._input.length;
-    }
-
-    peek(count = 1) {
-      return this._input[this._cursor + count - 1];
-    }
-
-    peekTest(stickyRx) {
-      stickyRx.lastIndex = this._cursor;
-      return stickyRx.test(this._input);
-    }
-
-    read() {
-      const c = this._input[this._cursor];
-      if (!c) return null;
-      if (c === '\n') {
-        this._line++;
-        this._col = 1;
-      } else {
-        this._col++;
-      }
-      this._cursor++;
-      return c;
-    }
-
-    mark() {
-      this._bookmark = {
-        cursor: this._cursor,
-        line: this._line,
-        col: this._col,
-      };
-    }
-
-    reset() {
-      if (this._bookmark) {
-        this._cursor = this._bookmark.cursor;
-        this._line = this._bookmark.line;
-        this._col = this._bookmark.col;
-        delete this._bookmark;
-      }
-    }
-
-    /**
-     * Reads characters that match either text or a regular expression and returns those characters.
-     * If a match is found, the row and column are adjusted.
-     * @param {String|RegExp} m
-     * @return {String} string or null if there was no match.
-     */
-    readMatch(m) {
-      const {_cursor: i, _input: str} = this;
-      if (typeof m === 'string') {
-        if (!m || str[i] === m[0] && (
-          m.length === 1 ||
-          str[i + m.length - 1] === m[m.length - 1] && str.substr(i, m.length) === m
-        )) {
-          return m && this.readCount(m.length, m);
-        }
-      } else {
-        m = m.sticky
-          ? (m.lastIndex = i, m.exec(str))
-          : m.exec(str.slice(i));
-        if (m) {
-          m = m[0];
-          return m && this.readCount(m.length, m);
-        }
-      }
-    }
-
-    /**
-     * Reads a given number of characters. If the end of the input is reached,
-     * it reads only the remaining characters and does not throw an error.
-     * @param {number} count The number of characters to read.
-     * @param {string} [text] Use an already extracted text and only increment the cursor
-     */
-    readCount(count, text) {
-      if (count <= 0) return '';
-      const str = this._input;
-      let i = this._cursor;
-      if (!text) text = str.substr(i, count);
-      if (!text) return; // EOF
-      this._cursor = i + (count = text.length); // may be less than requested
-      let prev = -1;
-      let line = this._line;
-      for (i = 0; (i = text.indexOf('\n', i)) >= 0; prev = i, i++) line++;
-      this._col = prev < 0 ? this._col + count : (this._line = line, count - prev);
-      return text;
-    }
-  }
-
-  //#endregion
-  //#region Matcher
-
+  const rxComment = /\*([^*]+|\*(?!\/))*(\*\/|$)/y; // the opening "/" is already consumed
+  const rxCommentUso = /\*\[\[[-\w]+]]\*\/|\*(?:[^*]+|\*(?!\/))*(\*\/|$)/y;
+  const rxMaybeQuote = /\s*['"]?/y;
+  const rxName = /(?:[-_\da-zA-Z\u00A0-\uFFFF]+|\\(?:(?:[0-9a-fA-F]{1,6}|.)[\t ]?|$))+/y;
+  const rxNumberDigit = /\d*\.?\d*(e[+-]?\d+)?/iy;
+  const rxNumberDot = /\d+(e[+-]?\d+)?/iy;
+  const rxNumberSign = /(\d*\.\d+|\d+\.?\d*)(e[+-]?\d+)?/iy;
+  const rxSpaceRParen = /\s*\)/y;
+  const rxStringDoubleQ = /(?:[^\n\\"]+|\\(?:([0-9a-fA-F]{1,6}|.)[\t ]?|\n|$))+/y;
+  const rxStringSingleQ = /(?:[^\n\\']+|\\(?:([0-9a-fA-F]{1,6}|.)[\t ]?|\n|$))+/y;
+  const rxUnescapeLF = /\\(?:(?:([0-9a-fA-F]{1,6})|(.))[\t ]?|(\n))/g;
+  const rxUnescapeNoLF = /\\(?:([0-9a-fA-F]{1,6})|(.))[\t ]?/g;
+  const rxUnquotedUrl = /(?:[-!#$%&*-[\]-~\u00A0-\uFFFF]+|\\(?:(?:[0-9a-fA-F]{1,6}|.)[\t ]?|$))+/y;
+  const rxWS = /\s+/y;
+  const isIdentStart = c => c >= 97 && c <= 122 || c >= 65 && c <= 90 || // a-z A-Z
+    c === 45 || c === 92 || c === 95 || c >= 160; // - \ _
+  const isIdentChar = (c, prev) => c >= 97 && c <= 122 || c >= 65 && c <= 90 /* a-z A-Z */ ||
+    c === 45 || c === 92 || c === 95 || c >= 160 || c >= 48 && c <= 57 /* - \ _ 0-9 */ ||
+    prev === 92 /* \ */ && c !== 10 && c != null;
+  const isSpace = c => c === 9 && c === 10 || c === 32;
+  const unescapeNoLF = (m, code, char) => char || String.fromCodePoint(parseInt(code, 16));
+  const unescapeLF = (m, code, char, LF) => LF ? '' : char ||
+    String.fromCodePoint(parseInt(code, 16));
+  const parseString = str => str.slice(1, -1).replace(rxUnescapeLF, unescapeLF);
   /**
-   * Reuses a Matcher for a ValidationTypes definition string instead of reparsing it.
-   * @type {Map<string, Matcher>}
+   * @property {boolean} isUvp
+   * @typedef {true[]} TokenMap - index is a token id
    */
-  const matcherCache = new Map();
-
-  /**
-   * This class implements a combinator library for matcher functions.
-   * https://developer.mozilla.org/docs/Web/CSS/Value_definition_syntax#Component_value_combinators
-   */
-  class Matcher {
-    /**
-     * @param {(this: Matcher, expr: PropValueIterator, p?: SyntaxUnit) => boolean} matchFunc
-     * @param {string | ((prec?:number)=>string)} toString
-     * @param {?} [options]
-     */
-    constructor(matchFunc, toString, options) {
-      this.matchFunc = matchFunc;
-      if (toString.call) this.toString = toString; else this._string = toString;
-      this.options = options != null ? options : false;
-    }
-    /**
-     * @param {PropValueIterator} expr
-     * @param {SyntaxUnit} [p]
-     * @return {any | boolean}
-     */
-    match(expr, p = expr._parts[expr._i]) {
-      return p ? expr._marks.push(expr._i) && expr.popMark(this.matchFunc(expr, p))
-        : this.options.min === 0;
-    }
-    braces(min, max, marker, sep) {
-      return new Matcher(Matcher.testBraces, Matcher.toStringBraces, {
-        min, max, marker,
-        sep: sep && Matcher.seq(sep, this),
-        embraced: this,
-      });
-    }
-    toString() {
-      return this._string;
-    }
-
-    static parse(str) {
-      let m = matcherCache.get(str);
-      if (m) return m;
-      m = Matcher.doParse(str);
-      matcherCache.set(str, m);
-      return m;
-    }
-    /** Simple recursive-descent grammar to build matchers from strings. */
-    static doParse(str) {
-      const reader = new StringReader(str);
-      const result = Matcher.parseGrammar(reader);
-      if (!reader.eof()) {
-        throw new Error('Internal grammar error. ' +
-          `Expected end of string at ${reader._cursor}: ${reader._input}.`);
-      }
-      return result;
-    }
-    static cast(m) {
-      return m instanceof Matcher ? m : Matcher.parse(m);
-    }
-    /**
-     * @this {PropValueIterator}
-     * @param {Matcher} m
-     */
-    static invoke(m) {
-      return m.match(this);
-    }
-    // Matcher for a single type.
-    static fromType(type) {
-      let m = matcherCache.get(type);
-      if (!m) {
-        if (type.startsWith('<fn:')) {
-          m = type.endsWith('?>');
-          m = new Matcher(Matcher.testFunc, Matcher.toStringFunc, {
-            optional: m,
-            list: type.slice(4, m ? -2 : -1),
-          });
-        } else {
-          type = type.toLowerCase();
-          m = type[0] === '<' ? {type}
-            : type.endsWith('()') ? {name: type.slice(0, -2)}
-              : type[0] === '"' ? {str: type.slice(1, -1)}
-                : (m = type.split(' | '))[1] ? (type = Matcher.toStringPlain, {str: m})
-                  : {str: type};
-          m = new Matcher(Matcher.testType, type, m);
-        }
-        matcherCache.set(type, m);
-      }
-      return m;
-    }
-    /**
-     * @param {string} name - functio name
-     * @param {Matcher} body - matcher for function body
-     * @returns {Matcher}
-     */
-    static func(name, body) {
-      return new Matcher(Matcher.testFunc, Matcher.toStringFunc, {name, body});
-    }
-    // Matcher for one or more juxtaposed words, which all must occur, in the given order.
-    static seq(...args) {
-      const ms = args.map(Matcher.cast);
-      if (ms.length === 1) return ms[0];
-      return new Matcher(Matcher.testSeq, Matcher.toStringSeq, ms);
-    }
-    // Matcher for one or more alternatives, where exactly one must occur.
-    static alt(...args) {
-      const ms = args.map(Matcher.cast);
-      if (ms.length === 1) return ms[0];
-      return new Matcher(Matcher.testAlt, Matcher.toStringAlt, ms);
-    }
-    /**
-     * Matcher for two or more options: double bar (||) and double ampersand (&&) operators,
-     * as well as variants of && where some of the alternatives are optional.
-     * This will backtrack through even successful matches to try to
-     * maximize the number of items matched.
-     */
-    static many(required, ...args) {
-      const ms = args.map(Matcher.cast);
-      const m = new Matcher(Matcher.testMany, Matcher.toStringMany, ms);
-      m.required = required === true ? Array(ms.length).fill(true) : required;
-      return m;
-    }
-
-    /**************************** matchFunc **********************/
-
-    /**
-     * @this {Matcher}
-     * @param {PropValueIterator} expr
-     */
-    static testAlt(expr) {
-      return this.options.some(Matcher.invoke, expr);
-    }
-    /**
-     * @this {Matcher}
-     * @param {PropValueIterator} expr
-     * @param {SyntaxUnit} [p]
-     */
-    static testBraces(expr, p) {
-      const {min, max, sep, embraced} = this.options;
-      let i = 0;
-      while (i < max && (i && sep || embraced).match(expr, p)) {
-        p = undefined; // clearing because expr points to the next part now
-        i++;
-      }
-      return i >= min;
-    }
-    /**
-     * @this {Matcher}
-     * @param {PropValueIterator} expr
-     * @param {SyntaxUnit} part
-     */
-    static testType(expr, part) {
-      let result, m, opt, name, type;
-      if (part.isVar) {
-        result = true;
-      } else if ((type = (opt = this.options).str)) {
-        if (!part.name) {
-          m = part.text.toLowerCase();
-          name = typeof type === 'string';
-          result = name ? type === m : type.includes(m);
-          if (!result && m[0] === '-') {
-            m = part.textCore || (part.textCore = m.match(rxVendorPrefix)[2]);
-            result = name ? type === m : type.includes(m);
-          }
-        }
-      } else if ((name = opt.name)) {
-        result = part.name === name;
-      } else if ((m = VTSimple[type = opt.type])) {
-        result = m(part);
-      } else if ((m = VTComplex[type] || Properties[type.slice(1, -1)])) {
-        result = (m.matchFunc ? m : vtCompile(type, m)).match(expr, part);
-        if (result) return true;
-      }
-      if (result || expr.tryAttr && part.name === 'attr' && (result = vtIsAttr(part))) {
-        expr.next();
-      }
-      return result;
-    }
-    /**
-     * @this {Matcher}
-     * @param {PropValueIterator} expr
-     * @param {SyntaxUnit} p
-     */
-    static testFunc(expr, p) {
-      const opt = this.options;
-      const {name} = p;
-      let e, m, list;
-      let res = !name && opt.optional;
-      if (!res && name && name === (opt.name || name) && (e = p.expr) && !(res = hasVarParts(e)) &&
-          ((m = opt.body) != null || (m = (list = VTFunctions[opt.list])[name]))) {
-        const vi = new PropValueIterator(e); // eslint-disable-line no-use-before-define
-        if (!m.matchFunc) m = vtCompile(name, m, list);
-        res = m.match(vi) && !vi.hasNext;
-      }
-      if (res) expr.next();
+  for (const k in TT) {
+    TT[k] = TT[k].reduce((res, id) => {
+      if (USO_VAR_PROXY[id]) res.isUvp = 1;
+      res[id] = true;
       return res;
-    }
-    /**
-     * @this {Matcher}
-     * @param {PropValueIterator} expr
-     */
-    static testMany(expr) {
-      const {required} = this;
-      const state = {max: 0, pass: 0, seen: []};
-      // If couldn't get a complete match, retrace our steps to make the
-      // match with the maximum # of required elements.
-      if (!this.testManyTry(expr, state, 0)) {
-        state.pass++;
-        this.testManyTry(expr, state, 0);
-      }
-      if (!required) {
-        return state.max > 0;
-      }
-      // Use finer-grained specification of which matchers are required.
-      for (let i = 0; i < this.options.length; i++) {
-        if (required[i] && !state.seen[i]) {
-          return false;
-        }
-      }
-      return true;
-    }
-    testManyTry(expr, state, count) {
-      const {options: ms, required} = this;
-      const {seen} = state;
-      for (let i = 0; i < ms.length; i++) {
-        if (seen[i]) continue;
-        expr.mark();
-        if (expr.hasNext && !ms[i].matchFunc(expr, expr._parts[expr._i])) {
-          expr.popMark(true);
-          continue;
-        }
-        seen[i] = true;
-        // Increase count if this was a required element
-        // (or if all the elements are optional)
-        if (this.testManyTry(expr, state, count + (!required || required[i] ? 1 : 0))) {
-          expr.popMark(true);
-          return true;
-        }
-        // Backtrack: try *not* matching using this rule, and
-        // let's see if it leads to a better overall match.
-        expr.popMark();
-        seen[i] = false;
-      }
-      if (state.pass === 0) {
-        state.max = Math.max(count, state.max);
-        return count === ms.length;
-      } else {
-        return count === state.max;
-      }
-    }
-    /**
-     * @this {Matcher}
-     * @param {PropValueIterator} expr
-     */
-    static testSeq(expr) {
-      return this.options.every(Matcher.invoke, expr);
-    }
-
-    /**************************** toStringFunc **********************/
-
-    /** @this {Matcher} */
-    static toStringAlt(prec) {
-      const p = Matcher.prec.ALT;
-      const s = this.options.map(m => m.toString(p)).join(' | ');
-      return prec > p ? `[ ${s} ]` : s;
-    }
-    /** @this {Matcher} */
-    static toStringBraces() {
-      const {marker, min, max, embraced} = this.options;
-      return embraced.toString(Matcher.prec.MOD) + (
-        !marker || marker === '#'
-          ? `${marker || ''}{${min}${min === max ? '' : ',' + max}}`
-          : marker);
-    }
-    /** @this {Matcher} */
-    static toStringFunc() {
-      const {name, body, list} = this.options;
-      return list ? `[ ${Object.keys(VTFunctions[list]).join('() | ')}() ]`
-        : `${name}(${body || ''})`;
-    }
-    /** @this {Matcher} */
-    static toStringMany(prec) {
-      const {required} = this;
-      const p = Matcher.prec[required ? 'ANDAND' : 'OROR'];
-      const s = this.options.map((m, i) =>
-        !required || required[i]
-          ? m.toString(p)
-          : m.toString(Matcher.prec.MOD).replace(/[^?]$/, '$&?')
-      ).join(required ? ' && ' : ' || ');
-      return prec > p ? `[ ${s} ]` : s;
-    }
-    /** @this {Matcher} */
-    static toStringPlain(prec) {
-      const s = this.options.str.join(' | ');
-      return prec > Matcher.prec.SEQ ? `[ ${s} ]` : s;
-    }
-    /** @this {Matcher} */
-    static toStringSeq(prec) {
-      const p = Matcher.prec.SEQ;
-      const s = this.options.map(m => m.toString(p)).join(' ');
-      return prec > p ? `[ ${s} ]` : s;
-    }
+    }, []);
   }
-
-  // Precedence table of combinators.
-  Matcher.prec = {
-    __proto__: null,
-    MOD: 5,
-    SEQ: 4,
-    ANDAND: 3,
-    OROR: 2,
-    ALT: 1,
-  };
-
-  Matcher.parseGrammar = (() => {
-    const rxBraces = /\s*\d+\s*(,\s*\d+\s*)?}/y;
-    const rxBracesSep = /\s+|,|}/;
-    const rxFunc = /[-\w]+\(\s/y;
-    const rxPlainTextAlt = /[-\w]+( \| [-\w]+)*(?= \| | ]| \)|\s*$)/y;
-    const rxSeqSep = /\s(?![&|)\]])/y;
-    const rxTerm = /<[^>]+>|[^\s?*+#{]+/y;
-    const rxTermMod = /[?*+#{]/y;
-    /** @type {StringReader} */
-    let reader;
-    return newReader => {
-      reader = newReader;
-      return alt();
-    };
-    function alt() {
-      // alt = oror (" | " oror)*
-      const alts = [];
-      do {
-        const m = reader.readMatch(rxPlainTextAlt);
-        alts.push(m ? Matcher.fromType(m) : oror());
-      } while (reader.readMatch(' | '));
-      return alts.length === 1 ? alts[0] : Matcher.alt(...alts);
-    }
-    // Matcher for two or more options in any order, at least one must be present.
-    function oror() {
-      // oror = andand ( " || " andand)*
-      const ors = [];
-      do ors.push(andand()); while (reader.readMatch(' || '));
-      return ors.length === 1 ? ors[0] : Matcher.many(false, ...ors);
-    }
-    // Matcher for two or more options in any order, all mandatory.
-    function andand() {
-      // andand = seq ( " && " seq)*
-      const ands = [];
-      const required = [];
-      let reqPrev = true;
-      do {
-        const m = seq();
-        const {options} = m;
-        const req = !options || options.marker !== '?';
-        // Matcher.many apparently can't handle optional items first
-        if (req && !reqPrev) {
-          ands.unshift(m);
-          required.unshift(req);
-        } else {
-          ands.push(m);
-          required.push(req);
-          reqPrev = req;
-        }
-      } while (reader.readMatch(' && '));
-      return ands.length === 1 ? ands[0] : Matcher.many(required, ...ands);
-    }
-    function seq() {
-      // seq = mod ( " " mod)*
-      const mods = [];
-      do mods.push(mod()); while (reader.readMatch(rxSeqSep));
-      return Matcher.seq(...mods);
-    }
-    function mod() {
-      // mod = term ( "?" | "*" | "+" | "#" | "{<num>,<num>}" )?
-      // term = <nt> | literal | "[ " expression " ]" | fn "( " alt " )"
-      let m, hash, fn;
-      if (reader.readMatch('[ ')) {
-        m = alt();
-        eat(' ]');
-      } else if ((fn = reader.readMatch(rxFunc))) {
-        m = Matcher.func(fn.slice(0, -2).toLowerCase(), alt());
-        eat(' )');
-        return m;
-      } else {
-        m = Matcher.fromType(eat(rxTerm));
-      }
-      switch (reader.readMatch(rxTermMod)) {
-        case '?': return m.braces(0, 1, '?');
-        case '*': return m.braces(0, Infinity, '*');
-        case '+': return m.braces(1, Infinity, '+');
-        case '#':
-          if (reader.peek() !== '{') return m.braces(1, Infinity, '#', ',');
-          reader.read();
-          hash = '#';
-          // fallthrough
-        case '{': {
-          const [min, max] = eat(rxBraces).trim().split(rxBracesSep);
-          return m.braces(min | 0, max | min | 0, hash, hash && ',');
-        }
-      }
-      return m;
-    }
-    function eat(pattern) {
-      const s = reader.readMatch(pattern);
-      if (s != null) return s;
-      throw new Error('Internal grammar error. ' +
-        `Expected ${pattern} at ${reader._cursor} in ${reader._input}`);
-    }
-  })();
-
-  //#endregion
-  //#region EventTarget
-
-  class EventTarget {
-    constructor() {
-      this._listeners = new Map();
-    }
-    addListener(type, fn) {
-      let list = this._listeners.get(type);
-      if (!list) this._listeners.set(type, (list = new Set()));
-      list.add(fn);
-    }
-    fire(event) {
-      if (typeof event === 'string') {
-        event = {type: event};
-      }
-      event.target = this;
-      const list = this._listeners.get(event.type);
-      if (list) {
-        for (const fn of list) {
-          fn.call(this, event);
-        }
-      }
-    }
-    removeListener(type, fn) {
-      const list = this._listeners.get(type);
-      if (list) list.delete(fn);
-    }
-  }
+  for (const k in B) B[k] = new Bucket(B[k]);
+  // Splitting into words by an Uppercase letter
+  for (const k of 'and,andOr,auto,evenOdd,fromTo,important,layer,none,not,onlyNot,of,or'
+    .split(',')) B[k] = new Bucket(k.split(/(?=[A-Z])/).map(s => s.toLowerCase()));
+  PAIRING[LBRACE] = RBRACE;
+  PAIRING[LBRACKET] = RBRACKET;
+  PAIRING[LPAREN] = RPAREN;
 
   //#endregion
   //#region Syntax units
 
-  class SyntaxUnit {
-    /**
-     * @param {?string} text
-     * @param {parserlib.Token} tok
-     * @param {string} type
-     */
-    constructor(text, tok, type) {
-      // TODO: add `endOffset` and getters for col/line/text
-      this.col = tok.col;
-      this.line = tok.line;
-      this.offset = tok.offset;
-      this.type = type;
-      if (text != null) this.text = text;
-      if (tok.tokenType == null) {
-        this.tokenType = tok.type;
-        let x;
-        if ((x = tok.prefix)) this.prefix = x;
-        if ((x = tok.name)) this.name = x;
-        if ((x = tok.expr)) this.expr = x;
-      }
+  /**
+   * @property {boolean} [ie] ie function
+   * @property {boolean} [is0] number is an integer 0 without units
+   * @property {boolean} [isInt] number part is integer
+   * @property {boolean} [isAttr] = attr()
+   * @property {boolean} [isAuto] = auto
+   * @property {boolean} [isCalc] = calc()
+   * @property {boolean} [isNone] = none
+   * @property {boolean} [isVar] = var(), env(), /*[[var]]* /
+   * @property {TokenValue} [expr] body of function or block
+   * @property {string} [lowText] text.toLowerCase() added on demand
+   * @property {string} [name] name of function
+   * @property {number} [number] parsed number
+   * @property {string} [uri] parsed uri string
+   * @property {number} [vendorCode] char code of vendor name i.e. 102 for "f" in -moz-foo
+   * @property {number} [vendorPos] position of vendor name i.e. 5 for "f" in -moz-foo
+   */
+  class Token {
+    constructor(id, col, line, offset, offset2, input, code) {
+      this.id = id;
+      this.col = col;
+      this.line = line;
+      this.offset = offset;
+      this.offset2 = offset2;
+      this.type = '';
+      this.lowCode = code >= 65 && code <= 90 ? code + 32 : code;
+      this._input = input;
+    }
+    /** @return {Token} */
+    static from(tok) {
+      return assign(Object.create(this.prototype), tok);
+    }
+    get length() {
+      return isOwn(this, 'text') ? this.text.length : this.offset2 - this.offset;
+    }
+    get string() {
+      const str = PDESC.value = parseString(this.text);
+      define(this, 'string', PDESC);
+      return str;
+    }
+    set string(val) {
+      PDESC.value = val;
+      define(this, 'string', PDESC);
+    }
+    get text() {
+      return this._input.slice(this.offset, this.offset2);
+    }
+    set text(val) {
+      PDESC.value = val;
+      define(this, 'text', PDESC);
     }
     valueOf() {
       return this.text;
     }
     toString() {
       return this.text;
+    }
+  }
+
+  class TokenFunc extends Token {
+    /** @return {TokenFunc} */
+    static from(tok, expr, end) {
+      tok = super.from(tok);
+      tok.type = 'fn';
+      if (isOwn(tok, 'text')) tok.offsetBody = tok.offset2;
+      if (end) tok.offset2 = end.offset2;
+      if (expr) {
+        tok.expr = expr;
+        let n = tok.name; // these functions are valid only if not empty
+        if (n === 'calc' || n === 'clamp' || n === 'min' || n === 'max') {
+          tok.isCalc = true;
+        } else if (n === 'var' || n === 'env') {
+          tok.isVar = true;
+        } else if (n === 'attr' && (n = expr.parts[0]) && (n.id === IDENT || n.id === USO_VAR)) {
+          tok.isAttr = true;
+        }
+      }
+      return tok;
+    }
+    toString() { // FIXME: account for escapes
+      const s = this._input;
+      return isOwn(this, 'text')
+        ? this.text + s.slice(this.offsetBody + 1, this.offset2)
+        : s.slice(this.offset, this.offset2);
+    }
+  }
+
+  class TokenValue extends Token {
+    /** @return {TokenValue} */
+    static from(parts, tok = parts[0]) {
+      tok = super.from(tok);
+      tok.parts = parts;
+      return tok;
+    }
+    /** @return {TokenValue} */
+    static empty(tok) {
+      tok = super.from(tok);
+      tok.parts = [];
+      tok.id = Tokens.UNKNOWN;
+      tok.offset2 = tok.offset;
+      delete tok.text;
+      return tok;
+    }
+    get text() { // FIXME: account for escapes
+      return this._input.slice(this.offset, (this.parts[this.parts.length - 1] || this).offset2);
+    }
+    set text(val) {
+      PDESC.value = val;
+      define(this, 'text', PDESC);
+    }
+  }
+
+  class MediaQuery extends Token {
+    /** @return {MediaQuery} */
+    static from(tok, modifier, mediaType, features) {
+      tok = super.from(tok);
+      tok.type = mediaType;
+      tok.modifier = modifier;
+      tok.features = features;
+      return tok;
+    }
+    get text() {
+      const mod = this.modifier || '';
+      const feats = this.features.join(' and ');
+      const val = `${mod}${mod ? ' ' : ''}${this.type || ''}${feats ? ' and ' : ''}${feats}`;
+      PDESC.value = val;
+      define(this, 'text', PDESC);
+      return val;
+    }
+    set text(val) {
+      PDESC.value = val;
+      define(this, 'text', PDESC);
     }
   }
 
@@ -1597,848 +260,365 @@ self.parserlib = (() => {
     }
   }
 
-  class ValidationError extends Error {
-    constructor(message, pos) {
-      super();
-      this.col = pos.col;
-      this.line = pos.line;
-      this.offset = pos.offset;
-      this.message = message;
-    }
-  }
-
-  // individual media query
-  class MediaQuery extends SyntaxUnit {
-    constructor(modifier, mediaType, features, pos) {
-      super(null, pos, mediaType);
-      this.modifier = modifier;
-      this.features = features;
-    }
-    get text() {
-      const mod = this.modifier || '';
-      const feats = this.features.join(' and ');
-      return define(this, 'text',
-        `${mod}${mod ? ' ' : ''}${this.type || ''}${feats ? ' and ' : ''}${feats}`);
-    }
-  }
-
-  /**
-   * A single part of a selector string i.e. element name and modifiers.
-   * Does not include combinators such as spaces, +, >, etc.
-   */
-  class SelectorPart extends SyntaxUnit {
-    constructor(elementName, modifiers, text, pos) {
-      super(text, pos, '');
-      this.elementName = elementName;
-      this.modifiers = modifiers;
-    }
-  }
-
-  class SelectorSubPart extends SyntaxUnit {
-    constructor(text, type, pos, args) {
-      super(text, pos, type);
-      this.args = args || [];
-    }
-  }
-
-  class SelectorPseudoFunc extends SelectorSubPart {
-    constructor(tok, colons, args) {
-      super(null, tok, 'pseudo', args);
-      this.colons = colons;
-      this.name = tok.name;
-    }
-    get text() {
-      return define(this, 'text', `${this.colons}${this.name}(${this.args.join(',')})`);
-    }
-  }
-
-  class Combinator extends SyntaxUnit {
-    constructor(token) {
-      const {value} = token;
-      super(value, token,
-        value === '>' ? 'child' :
-        value === '+' ? 'adjacent-sibling' :
-        value === '~' ? 'sibling' :
-        value === '||' ? 'column' :
-        !value.trim() ? 'descendant' :
-          'unknown');
-    }
-  }
-
-  class PropName extends SyntaxUnit {
-    constructor(text, pos, hack) {
-      super(text, pos, '');
-      this.hack = hack;
-    }
-    toString() {
-      return (this.hack || '') + this.text;
-    }
-  }
-
-  /**
-   * A single value between ":" and ";", that is if there are multiple values
-   * separated by commas, this type represents just one of the values.
-   */
-  class PropValue extends SyntaxUnit {
-    constructor(parts, pos = parts[0]) {
-      super(null, pos, 'val');
-      this.parts = parts;
-    }
-    get text() {
-      return define(this, 'text', this.parts.join(' '));
-    }
-  }
-
-  class PropValueFunc extends SyntaxUnit {
-    constructor(tok, name = tok.name) {
-      const {uri} = tok;
-      if (uri) {
-        super(null, tok, 'uri');
-        this.uri = uri;
-      } else if ( // Checking string equality is much faster than regexp
-        name === 'rgb' || name === 'rgba' || name === 'hsl' || name === 'hsla' ||
-        name === 'lab' || name === 'lch' || name === 'oklab' || name === 'oklch' ||
-        name === 'hwb' || name === 'color' || name === 'color-mix'
-      ) {
-        super(null, tok, 'color');
-      } else {
-        super(null, tok, 'fn');
-        this.isCalc = !(
-          this.isVar = name === 'var' || name === 'env'
-        ) && (name === 'calc' || name === 'clamp' || name === 'min' || name === 'max');
-      }
-    }
-    get text() {
-      return define(this, 'text', `${this.prefix || ''}${this.name}(${this.expr || this.uri || ''})`);
-    }
-  }
-
-  class PropValueNumber extends SyntaxUnit {
-    constructor(val, tok, num) {
-      super(val, tok, tok.unitsType);
-      let x = val === '0';
-      this.is0 = x;
-      this.isInt = x ||
-        // Numbers like 1e-2 or 1e2 or 1. aren't integers
-        // Checking int32 and string equality is much faster than regexp
-        (num === (num | 0)) && (
-          val === (x = `${num}${tok.units || ''}`) ||
-          val.length === x.length + 1 && val[0] === '+' && val.endsWith(x)
-        );
-      this.units = tok.units;
-      this.value = num;
-    }
-  }
-
-  class PropValueMaybeColor extends SyntaxUnit {
-    get type() {
-      return define(this, 'type', rxNamedColor.test(this.text) ? 'color' : 'ident');
-    }
-    set type(val) {}
-  }
-
-  function PropValueUnit(tok) {
-    if (!tok) return;
-    let {type, value: val, number: n} = tok;
-    if (n != null) {
-      tok = new PropValueNumber(val, tok, n);
-    } else if (type === Tokens.HASH) {
-      tok = new SyntaxUnit(val, tok, 'color');
-    } else if (type === Tokens.STRING) {
-      tok = new SyntaxUnit(parseString(val), tok, 'string');
-      tok.raw = val;
-    } else if (type === Tokens.IDENT) {
-      if (tok.isCust) {
-        tok = new SyntaxUnit(val, tok, 'custom-prop');
-      } else if (val.length < 3 || val.length > 20 || (n = val.toLowerCase()) === 'auto' || n === 'none') {
-        tok = new SyntaxUnit(val, tok, 'ident');
-        if (n) tok.is = n;
-      } else {
-        tok = new PropValueMaybeColor(val, tok, '');
-      }
-    } else if ((n = tok.name)) {
-      tok = new PropValueFunc(tok, n);
-    } else {
-      tok = new SyntaxUnit(val, tok, '');
-      if (type === Tokens.USO_VAR) tok.isVar = true;
-    }
-    return tok;
-  }
-
-  class PropValueIterator {
-    /**
-     * @param {PropValue} value
-     */
-    constructor(value) {
-      this._i = 0;
-      this._parts = value.parts;
-      this._marks = [];
-      this.value = value;
-      this.hasNext = this._parts.length > 0;
-    }
-    /** @returns {SyntaxUnit|null} */
-    peek(count = 0) {
-      return this._parts[this._i + count];
-    }
-    /** @returns {?SyntaxUnit} */
-    next() {
-      if (this.hasNext) {
-        this.hasNext = this._i + 1 < this._parts.length;
-        return this._parts[this._i++];
-      }
-    }
-    /** @returns {PropValueIterator} */
-    mark() {
-      this._marks.push(this._i);
-      return this;
-    }
-    popMark(success) {
-      const i = this._marks.pop();
-      if (!success && i != null) {
-        this._i = i;
-        this.hasNext = i < this._parts.length;
-      }
-      return success;
-    }
-    resetTo(i) {
-      this._i = i;
-      this.hasNext = this._parts.length > i;
-    }
-  }
-
-  //#endregion
-  //#region ValidationTypes - implementation
-
-  function vtCompile(id, val, obj = VTComplex) {
-    val = obj[id] = val.call ? val(Matcher) : Matcher.parse(val);
-    return val;
-  }
-
-  function vtDescribe(type) {
-    const complex = VTComplex[type] || type[0] === '<' && Properties[type.slice(1, -1)];
-    return complex instanceof Matcher ? complex.toString(0) : vtExplode(type);
-  }
-
-  function vtExplode(text) {
-    return text.includes('<') ? Matcher.parse(text).toString(0) : text;
-  }
-
-  /** @param {SyntaxUnit} p */
-  function vtIsAttr(p) {
-    return p.name === 'attr' && (p = p.expr) && (p = p.parts) && (p = p[0]) &&
-      p.tokenType === Tokens.IDENT;
-  }
-
-  /** @param {SyntaxUnit} p */
-  function vtIsLength(p) {
-    return p.type === 'length' || p.is0 || p.isCalc;
-  }
-
-  /** @param {SyntaxUnit} p */
-  function vtIsPct(p) {
-    return p.type === 'pct' || p.is0 || p.isCalc;
-  }
-
-  //#endregion
-  //#region Validation
-
-  const validationCache = new Map();
-
-  function validateProperty(name, value, stream, Props) {
-    const pp = value.parts;
-    if (pp[0].type === 'ident' && GlobalKeywords.includes(pp[0].text.toLowerCase())) {
-      if (pp[1]) failValidation(pp[1], true);
-      return;
-    }
-    Props = typeof Props === 'string' ? ScopedProperties[Props] : Props || Properties;
-    let prop = name.toLowerCase();
-    let spec, result;
-    do spec = Props[prop] || Props[''] && (Props = Properties)[prop];
-    while (!spec && (result = rxVendorPrefix.exec(prop))[1] && (prop = result[2]));
-    if (typeof spec === 'number' || !spec && name.startsWith('-')) {
-      return;
-    }
-    if (!spec) {
-      prop = Props === Properties || !Properties[prop] ? 'Unknown' : 'Misplaced';
-      throw new ValidationError(`${prop} property '${name}'.`, value);
-    }
-    if (hasVarParts(value)) {
-      return;
-    }
-    const valueSrc = stream._reader._input.slice(pp[0].offset, stream.LT(1).offset);
-    let known = validationCache.get(prop);
-    if (known && known.has(valueSrc)) {
-      return;
-    }
-    // Property-specific validation.
-    const expr = new PropValueIterator(value);
-    const m = Matcher.parse(spec);
-    result = m.match(expr);
-    if ((!result || expr.hasNext) && /\battr\(/i.test(valueSrc)) {
-      if (!result) {
-        expr.tryAttr = true;
-        expr.resetTo(0);
-        result = m.match(expr);
-      }
-      for (let p; (p = expr.peek()) && vtIsAttr(p);) {
-        expr.next();
-      }
-    }
-    if (result) {
-      if (expr.hasNext) failValidation(expr.next());
-    } else if (expr.hasNext && expr._i) {
-      failValidation(expr.peek());
-    } else {
-      failValidation(expr.value, vtDescribe(spec));
-    }
-    if (!known) validationCache.set(prop, (known = new Set()));
-    known.add(valueSrc);
-  }
-
   //#endregion
   //#region TokenStream
 
-  const LT_SIZE = 5;
+  const LT_SIZE = 4;
 
-  /**
-   * Generic TokenStream providing base functionality.
-   * @typedef TokenStream
-   */
   class TokenStream {
 
     constructor(input) {
-      this._reader = new StringReader(input ? input.toString() : '');
-      this.resetLT();
+      this.reader = new StringReader(input ? `${input}` : '');
+      this._esc = false;
+      this._resetLT();
     }
 
-    resetLT() {
-      /** @type {parserlib.Token} Last consumed token object */
-      this._token = null;
-      // Lookahead token buffer.
-      this._lt = Array(LT_SIZE).fill(null);
-      this._ltIndex = 0;
-      this._ltAhead = 0;
-      this._ltShift = 0;
+    _resetLT() {
+      /** @type {Token} Last consumed token object */
+      this.token = null;
+      /** Lookahead token buffer */
+      this._lt = [];
+      /** Current index may change due to unget() */
+      this._cur = 0;
+      /** Wrapping around the index to avoid splicing/shifting the array */
+      this._cycle = 0;
     }
 
     /**
      * Consumes the next token if that matches any of the given token type(s).
-     * @param {number|number[]} tokenTypes
-     * @param {string|string[]} [values]
-     * @return {parserlib.Token|boolean|number} token or `false` or EOF (0)
+     * @param {number|TokenMap} what - token id or ids
+     * @param {{reuse?:boolean}|Bucket|false} [arg]
+     * - bucket to match token text, false = {skipWS:false}
+     * @return {Token | false | 0} 0 = EOF
      */
-    match(tokenTypes, values) {
-      const isArray = typeof tokenTypes === 'object';
-      for (let token, tt; (tt = (token = this.get(true)).type);) {
-        if ((isArray ? tokenTypes.includes(tt) : tt === tokenTypes) &&
-            (!values || values.some(lowerCmpThis, token.value))) {
-          return token;
-        }
-        if (tt !== Tokens.COMMENT) {
-          if (!tt) return 0;
+    match(what, arg) {
+      let tryVar;
+      const isArr = typeof what === 'object';
+      const text = arg && Array.isArray(arg) && arg;
+      const tok = !text && arg && arg.reuse && this.token ||
+        this.get(arg === false || what === WS || isArr && what[WS] ? 0
+          : tryVar = (isArr ? what.isUvp : USO_VAR_PROXY[what]) && !text ? 1 : 2);
+      return (isArr ? what[tok.id] : tok.id === what) && (!text || text.has(tok)) && tok ||
+        // Return the next token if it's not a var but a real match
+        tryVar && tok.isVar && !(tryVar = this.match(what)).isVar && tryVar ||
+        (this.unget(), tok.id ? false : 0);
+    }
+
+    /** @return {Token} */
+    mustMatch(what, arg) {
+      return this.match(what, arg) || this._failure(what, this.peek());
+    }
+
+    /**
+     * @param {boolean|2} [skip] 2=skipUsoVar
+     * @return {Token}
+     */
+    get(skip) {
+      let {_cycle, _cur, _lt} = this;
+      let tok, ti;
+      do {
+        const cached = _cur < _lt.length;
+        const slot = (_cur + _cycle) % LT_SIZE;
+        tok = cached ? (_cur++, _lt[slot]) : this._getToken();
+        ti = tok.id;
+        if (!(ti === COMMENT || skip && (ti === WS || ti === USO_VAR && skip === 2))) {
+          if (!cached) {
+            if (_lt.length < LT_SIZE) _cur++;
+            else this._cycle = _cycle = (_cycle + 1) % LT_SIZE;
+            _lt[slot] = tok;
+          }
           break;
         }
-      }
-      this.unget();
-      return false;
-    }
-
-    /**
-     * @param {Number|Number[]} tokenTypes
-     * @param {Boolean} [skipCruftBefore=true] - skip comments/whitespace before matching
-     * @returns {Object} token
-     */
-    mustMatch(tokenTypes, skipCruftBefore = true) {
-      if (skipCruftBefore && tokenTypes !== Tokens.S) {
-        this.skipComment(true);
-      }
-      return this.match(tokenTypes) ||
-        this.throwUnexpected(this.LT(1), tokenTypes);
-    }
-
-    /**
-     * Keeps reading until one of the specified token types is found or EOF.
-     * @param {number|number[]} tokenTypes
-     */
-    advance(tokenTypes) {
-      let tok;
-      while ((tok = this.match(tokenTypes)) === false) {/**/}
+      } while (ti);
+      this._cur = _cur;
+      this.token = tok;
       return tok;
     }
 
-    /**
-     * Consumes the next token from the token stream.
-     * @param {boolean} [asToken]
-     * @return {number|parserlib.Token} The token type
-     */
-    get(asToken) {
-      const i = this._ltIndex;
-      const next = i + 1;
-      const slot = (i + this._ltShift) % LT_SIZE;
-      if (i < this._ltAhead) {
-        this._ltIndex = next;
-        const token = this._token = this._lt[slot];
-        return asToken ? token : token.type;
-      }
-      const token = this._getToken();
-      const {type} = token;
-      const hide = type && (Tokens[type] || {}).hide;
-      if (type >= 0 && !hide) {
-        this._token = token;
-        this._lt[slot] = token;
-        if (this._ltAhead < LT_SIZE) {
-          this._ltIndex = next;
-          this._ltAhead++;
-        } else {
-          this._ltShift = (this._ltShift + 1) % LT_SIZE;
-        }
-      }
-      // Skip to the next token if the token type is marked as hidden.
-      return hide ? this.get(asToken) :
-        asToken ? token : type;
-    }
-
-    /**
-     * Looks ahead a certain number of tokens and returns the token at that position.
-     * @param {number} index The index of the token type to retrieve.
-     *         0 for the current token, 1 for the next, -1 for the previous, etc.
-     * @param {boolean} [forceCache] won't call get() so it's useful in fast tentative checks
-     * @return {Object} The token
-     * @throws if you lookahead past EOF, past the size of the lookahead buffer,
-     *         or back past the first token in the lookahead buffer.
-     */
-    LT(index, forceCache) {
-      if (!index) {
-        return this._token;
-      }
-      let i = index + this._ltIndex - (index > 0);
-      if (index < 0 ? i >= 0 : i < this._ltAhead) {
-        return this._lt[(i + this._ltShift) % LT_SIZE];
-      } else if (forceCache) {
-        return false;
-      }
-      if (index < 0) {
-        throw new Error('Too much lookbehind.');
-      }
-      if (index > LT_SIZE) {
-        throw new Error('Too much lookahead.');
-      }
-      i = index;
-      const oldToken = this._token;
-      while (i && i--) this.get();
-      const token = this._token;
-      this._ltIndex -= index;
-      this._token = oldToken;
-      return token;
-    }
-
-    /** Returns the token type for the next token in the stream without consuming it. */
+    /** @return {Token} */
     peek() {
-      return this.LT(1).type;
+      let tok;
+      if (this._cur < this._lt.length) {
+        tok = this._lt[(this._cur + this._cycle) % LT_SIZE];
+      } else {
+        const old = this.token;
+        tok = this.get();
+        this.token = old;
+        this._cur--;
+      }
+      return tok;
+    }
+
+    /** @return {Token} */
+    peekCached() {
+      return this._cur < this._lt.length && this._lt[(this._cur + this._cycle) % LT_SIZE];
     }
 
     /** Restores the last consumed token to the token stream. */
     unget() {
-      if (this._ltIndex) {
-        this._ltIndex--;
-        this._token = this._lt[(this._ltIndex - 1 + this._ltShift + LT_SIZE) % LT_SIZE];
+      if (this._cur) {
+        this.token = this._lt[(--this._cur - 1 + this._cycle + LT_SIZE) % LT_SIZE];
       } else {
         throw new Error('Too much lookahead.');
       }
     }
 
-    throwUnexpected(token = this._token, expected = []) {
-      expected = (Array.isArray(expected) ? expected : [expected])
-        .map(e => typeof e === 'string' ? e : getTokenName(e))
-        .join(', ');
-      const msg = expected
-        ? `Expected ${expected} but found '${token.value}'.`
-        : `Unexpected '${token.value}'.`;
-      throw new SyntaxError(msg, token);
-    }
-
-    /**
-     * @param {Boolean} [skipWS] - skip whitespace too
-     * @param {Boolean} [skipUsoVar] - skip USO_VAR too
-     */
-    skipComment(skipWS, skipUsoVar) {
-      const tt = this.LT(1, true).type;
-      if (skipWS && tt === Tokens.S ||
-          skipUsoVar && tt === Tokens.USO_VAR ||
-          tt === Tokens.COMMENT ||
-          tt == null && this._ltIndex === this._ltAhead && (
-            skipWS && this._reader.readMatch(/\s+/y),
-            this._reader.peekTest(/\/\*/y))) {
-        while (this.match(skipUsoVar ? TT.usoS : Tokens.S)) { /*NOP*/ }
-      }
+    _failure(goal = '', tok = this.token, throwIt = true) {
+      goal = typeof goal === 'string' ? goal :
+        goal instanceof Bucket ? `"${goal.join('", "')}"` :
+          (+goal ? [goal] : goal).reduce((res, v, id) => res + (res ? ', ' : '') +
+            ((v = Tokens[v === true ? id : v]).text ? `"${v.text}"` : v.name), '');
+      goal = goal ? `Expected ${goal} but found` : 'Unexpected';
+      goal = new SyntaxError(`${goal} "${clipString(tok)}".`, tok);
+      if (throwIt) throw goal;
+      return goal;
     }
 
     /**
      * @returns {Object} token
      */
     _getToken() {
-      const reader = this._reader;
-      /** @namespace parserlib.Token */
-      const tok = {
-        __proto__: null,
-        value: '',
-        type: Tokens.CHAR,
-        col: reader._col,
-        line: reader._line,
-        offset: reader._cursor,
-      };
-      let a = tok.value = reader.read();
-      let b = reader.peek();
-      if (a === '\\') {
-        if (b === '\n' || b === '\f') return tok;
-        a = tok.value = this.readEscape();
-        b = reader.peek();
-      }
-      switch (a) {
-        case ' ':
-        case '\n':
-        case '\r':
-        case '\t':
-        case '\f':
-          tok.type = Tokens.S;
-          if (/\s/.test(b)) {
-            tok.value += reader.readMatch(/\s+/y) || '';
-          }
-          return tok;
-        case '{':
-          tok.type = Tokens.LBRACE;
-          return tok;
-        case '(':
-          tok.type = Tokens.LPAREN;
-          return tok;
-        case '[':
-          tok.type = Tokens.LBRACKET;
-          return tok;
-        case '/':
-          if (b === '*') {
-            const str = tok.value = this.readComment(a);
-            tok.type = str.startsWith('/*[[') && str.endsWith(']]*/')
-              ? Tokens.USO_VAR
-              : Tokens.COMMENT;
-          } else {
-            tok.type = Tokens.SLASH;
-          }
-          return tok;
-        case '|':
-        case '~':
-        case '^':
-        case '$':
-        case '*':
-          if (b === '=') {
-            a = tok.value = a + reader.read();
-          } else if (a === '|' && b === '|') {
-            reader.read();
-            a = tok.value = '||';
-          }
-          tok.type = TokenTypeByText[a] || Tokens.CHAR;
-          return tok;
-        case '"':
-        case "'":
-          return this.stringToken(a, tok);
-        case '#':
-          if (b === '-' || b === '\\' || b === '_' || b >= '0' && b <= '9' ||
-              b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' || b >= '\u00A0' && b <= '\uFFFF') {
-            tok.type = Tokens.HASH;
-            tok.value = this.readName(a);
-          }
-          return tok;
-        case '.':
-          if (b >= '0' && b <= '9') {
-            this.numberToken(a, tok);
-          } else {
-            tok.type = Tokens.DOT;
-          }
-          return tok;
-        case '-':
-          // could be closing HTML-style comment or CSS variable
-          if (b === '-') {
-            if (reader.peekTest(/-\w/yu)) {
-              this.identOrFunctionToken(a, tok);
-              tok.isCust = true;
-            } else if (reader.readMatch('->')) {
-              tok.type = Tokens.CDC;
-              tok.value = '-->';
-            }
-          } else if (b >= '0' && b <= '9' || b === '.' && reader.peekTest(/\.\d/y)) {
-            this.numberToken(a, tok);
-          } else if (isIdentStart(b)) {
-            this.identOrFunctionToken(a, tok);
-          } else {
-            tok.type = Tokens.MINUS;
-          }
-          return tok;
-        case '+':
-          if (b >= '0' && b <= '9' || b === '.' && reader.peekTest(/\.\d/y)) {
-            this.numberToken(a, tok);
-          } else {
-            tok.type = Tokens.COMBINATOR;
-          }
-          return tok;
-        case '!':
-          return this.importantToken(a, tok);
-        case '@':
-          return this.atRuleToken(a, tok);
-        case ':': {
-          const func = /[-hniw]/i.test(b) &&
-            reader.readMatch(/(?:-(?:moz|webkit)-)?(has|not|is|where|any)\(/iy);
-          if (func) {
-            tok.name = RegExp.$1.toLowerCase();
-            tok.type = Tokens.PSEUDO_FUNC_SEL;
-            tok.value += func.slice(0, -1);
-          } else {
-            tok.type = Tokens.COLON;
-          }
-          return tok;
+      let a, c, text;
+      const {reader} = this;
+      const start = reader.index;
+      const tok = new Token(CHAR,
+        reader.col,
+        reader.line,
+        start,
+        start + 1,
+        reader._input,
+        a = reader.readCode());
+      const b = reader.peek();
+      // [\t\n\x20]
+      if (a === 9 || a === 10 || a === 32) {
+        tok.id = WS;
+        if (isSpace(b)) reader.readMatch(rxWS);
+      // [0-9]
+      } else if (a >= 48 && a <= 57) {
+      // [0-9.eE] */
+        text = this._number(a, (b >= 48 && b <= 57 || b === 46 || b === 69 || b === 101) && b, tok);
+      // [-+.]
+      } else if ((a === 45 || a === 43 && (tok.id = COMBINATOR) || a === 46 && (tok.id = DOT)) && (
+      /* [-+.][0-9] */ b >= 48 && b <= 57 ||
+      /* [-+].[0-9] */ a !== 46 && b === 46 && (c = reader.peek(2)) >= 48 && c <= 57
+      )) {
+        text = this._number(a, b, tok);
+      // -
+      } else if (a === 45) {
+        if (b === 45 /* -- */ && isIdentChar(c || (c = reader.peek(2)))) {
+          text = this._ident(a, b, 1, c, 1, tok);
+          tok.type = 'custom-prop';
+        } else if (b === 45 && (c || (c = reader.peek(2))) === 62 /* -> */) {
+          reader.read(2, '->');
+          tok.id = Tokens.CDC;
+        } else if (isIdentStart(b)) {
+          text = this._ident(a, b, 1, c, undefined, tok);
         }
-        case '<':
-          if (b === '!' && reader.readMatch('!--')) {
-            tok.type = Tokens.CDO;
-            tok.value = '<!--';
-          }
-          return tok;
-        // EOF
-        case null:
-          tok.type = Tokens.EOF;
-          return tok;
-        case 'U':
-        case 'u':
-          return b === '+'
-            ? this.unicodeRangeToken(a, tok)
-            : this.identOrFunctionToken(a, tok);
-      }
-      if (a >= '0' && a <= '9') {
-        this.numberToken(a, tok);
+      // U+ u+
+      } else if (b === 43/*+*/ && (a === 85 || a === 117)) {
+        this._unicodeRange(tok);
+      // a-z A-Z - \ _ unicode
       } else if (isIdentStart(a)) {
-        this.identOrFunctionToken(a, tok);
-      } else {
-        tok.type = TokenTypeByText[a] || Tokens.CHAR;
+        text = this._ident(a, b, c, c, c, tok);
+      } else if ((c = b === 61 // =
+      /* $= *= ^= |= ~= */
+        ? (a === 36 || a === 42 || a === 94 || a === 124 || a === 126) &&
+          Tokens.ATTR_EQ
+      /* || */
+        : a === 124 && b === 124 &&
+          COMBINATOR
+      )) {
+        tok.id = c;
+        reader.readCode();
+      // [.,:;>+~=|*{}[]()]
+      } else if ((c = TokenTypeByCode[a])) {
+        tok.id = c;
+      // /*
+      } else if (a === 47) {
+        if (b === 42) {
+          c = reader.readMatch(rxCommentUso, true);
+          tok.id = c[1] != null ? COMMENT : (tok.isVar = true, USO_VAR);
+        }
+      // ["']
+      } else if (a === 34 || a === 39) {
+        reader.readMatch(a === 34 ? rxStringDoubleQ : rxStringSingleQ);
+        if (reader.readMatchCode(a)) {
+          tok.id = Tokens.STRING;
+          tok.type = 'string';
+        } else {
+          tok.id = Tokens.INVALID;
+        }
+      // #
+      } else if (a === 35) {
+        if (isIdentChar(b)) {
+          tok.id = HASH;
+          c = this.readChunksWithEscape('', rxName);
+          text = this._esc && (String.fromCharCode(a) + c);
+        }
+      // \
+      } else if (a === 92) {
+        if (b == null) text = '\uFFFD';
+        else if (b === 10) { tok.id = WS; text = reader.readMatch(rxWS); }
+      // @
+      } else if (a === 64) {
+        if (isIdentStart(b)) {
+          c = this.readChunksWithEscape('@', rxName);
+          tok.id = TokenTypeByText[c.toLowerCase()] || Tokens.UNKNOWN_SYM;
+          text = this._esc && c;
+        }
+      // <
+      } else if (a === 60) {
+        if (b === 33 /* ! */ && reader.readMatchStr('!--')) {
+          tok.id = Tokens.CDO;
+        }
+      } else if (a == null) {
+        tok.id = Tokens.EOF;
       }
+      if ((c = reader.index) !== start + 1) tok.offset2 = c;
+      if (text) { PDESC.value = text; define(tok, 'text', PDESC); }
       return tok;
     }
 
-    atRuleToken(first, token) {
-      this._reader.mark();
-      let rule = first + this.readName();
-      let tt = TokenTypeByText[rule.toLowerCase()] || -1;
-      // if it's not valid, use the first character only and reset the reader
-      if (tt === Tokens.CHAR || tt === Tokens.UNKNOWN) {
-        if (rule.length > 1) {
-          tt = Tokens.UNKNOWN_SYM;
-        } else {
-          tt = Tokens.CHAR;
-          rule = first;
-          this._reader.reset();
-        }
-      }
-      token.type = tt;
-      token.value = rule;
-      return token;
-    }
-
-    identOrFunctionToken(first, token) {
-      const reader = this._reader;
-      const name = token.value = this.readChunksWithEscape(first, rxNameCharNoEsc);
-      const next = reader.readMatch(lowerCmp(name, 'progid') ? /[:(]/y : '(');
-      if (next === '(') {
-        const n = name.toLowerCase();
-        const uri = isUriIdent(n) && this.readUriValue();
-        const vp = n[0] === '-' && rxVendorPrefix.exec(n);
-        token.type = uri ? Tokens.URI : Tokens.FUNCTION;
-        token.name = vp ? vp[2] : n;
-        if (uri) token.uri = uri;
-        if (vp && vp[1]) token.prefix = vp[1];
-      } else if (next === ':') {
-        token.type = Tokens.IE_FUNCTION;
-        token.name = (token.value = reader.readMatch(/.*?\(/).slice(0, -1))
-          .toLowerCase();
-        token.prefix = name + ':';
-      } else {
-        token.type = Tokens.IDENT;
-      }
-      return token;
-    }
-
-    importantToken(first, token) {
-      const reader = this._reader;
-      let text = first;
-      reader.mark();
-      for (let pass = 1; pass++ <= 2;) {
-        const important = reader.readMatch(/\s*important\b/iy);
-        if (important) {
-          token.type = Tokens.IMPORTANT;
-          token.value = text + important;
-          return token;
-        }
-        const comment = reader.readMatch('/*');
-        if (!comment) break;
-        text += this.readComment(comment);
-      }
-      reader.reset();
-      return token;
-    }
-
-    numberToken(first, token) {
-      const reader = this._reader;
-      const value = first + (
-        this._reader.readMatch(
-          first === '.' ?
-            /\d+(e[+-]?\d+)?/iy :
-          first >= '0' && first <= '9' ?
-            /\d*\.?\d*(e[+-]?\d+)?/iy :
-            /(\d*\.\d+|\d+\.?\d*)(e[+-]?\d+)?/iy
-        ) || '');
-      let tt, type;
-      let units = reader.readMatch(rxIdentStartPct);
-      if (units === '%') {
-        type = 'pct';
-        tt = Tokens.PERCENTAGE;
-      } else if (units) {
-        units = this.readName(units);
-        type = UNITS[units] || UNITS[units.toLowerCase()];
-        tt = type && Tokens[type.toUpperCase()] || Tokens.DIMENSION;
-      } else {
-        type = 'number';
-        tt = Tokens.NUMBER;
-      }
-      token.type = tt;
-      token.value = units ? value + units : value;
-      token.number = parseFloat(value);
-      if (units) token.units = units;
-      if (type) token.unitsType = type;
-      return token;
-    }
-
-    stringToken(first, token) {
-      const delim = first;
-      const reader = this._reader;
-      let string = first || '';
-      let tt = Tokens.STRING;
-      let c;
-      while (true) {
-        c = reader.readMatch(/[^\n\r\f\\'"]+|./y);
-        if (!c) break;
-        string += c;
-        if (c === '\\') {
-          c = reader.read();
-          if (!c) break; // premature EOF after backslash
-          string += c;
-          if (c >= '0' && c <= '9' || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F' ||
-              c === '\n' || c === '\r' || c === '\f') {
-            // read up to six hex digits + newline
-            string += reader.readMatch(/[0-9a-f]{1,6}\n?/yi);
-          }
-        } else if (c === delim) {
-          break; // delimiter found.
-        } else if ((c = reader.peek()) && (c === '\n' || c === '\r' || c === '\f')) {
-          // newline without an escapement: it's an invalid string
-          tt = Tokens.INVALID;
-          break;
-        }
-      }
-      token.type = c ? tt : Tokens.INVALID; // if the string wasn't closed
-      token.value = string;
-      return token;
-    }
-
-    unicodeRangeToken(first, token) {
-      const reader = this._reader;
-      reader.mark();
-      token.value += reader.read(); // +
-      let chunk = this.readUnicodeRangePart(true);
-      if (!chunk) {
-        reader.reset();
-        return token;
-      }
-      token.value += chunk;
-      // if there's a ? in the first part, there can't be a second part
-      if (!token.value.includes('?') && reader.peek() === '-') {
-        reader.mark();
+    _ident(a, b,
+      bYes = isIdentChar(b, a),
+      c = bYes && this.reader.peek(2),
+      cYes = c && (isIdentChar(c, b) || a === 92 && isSpace(c)),
+      tok
+    ) {
+      const {reader} = this;
+      const first = a === 92 ? (cYes = reader.index--, '') : String.fromCharCode(a);
+      const str = cYes ? reader.readMatch(rxName) : bYes ? reader.read() : '';
+      const esc = a === 92 || b === 92 || bYes && c === 92 || str.length > 2 && str.includes('\\');
+      const name = esc ? (first + str).replace(rxUnescapeNoLF, unescapeNoLF) : first + str;
+      if (!tok) return {esc, name};
+      const vp = a === 45 /* - */ && b !== 45 && name.indexOf('-', 2) + 1;
+      const next = cYes || esc && isSpace(c) ? reader.peek() : bYes ? c : b;
+      let ovrValue = esc ? name : null;
+      if (next === 40 /* ( */) {
         reader.read();
-        chunk = this.readUnicodeRangePart(false);
-        if (!chunk) {
-          reader.reset();
-        } else {
-          token.value += '-' + chunk;
+        c = name.toLowerCase();
+        b = (c === 'url' || c === 'url-prefix' || c === 'domain') && this.readUriValue();
+        tok.id = b ? Tokens.URI : FUNCTION;
+        tok.type = b ? 'uri' : 'fn';
+        tok.name = vp ? c.slice(vp) : c;
+        if (vp) tok.prefix = c.slice(1, vp - 1);
+        if (b) tok.uri = b;
+      } else if (next === 58 /* : */ && name === 'progid') {
+        ovrValue = name + reader.readMatch(/.*?\(/y);
+        tok.id = FUNCTION;
+        tok.name = ovrValue.slice(0, -1).toLowerCase();
+        tok.type = 'fn';
+        tok.ie = true;
+      } else {
+        tok.id = IDENT;
+        if (a === 45 /* - */ || (b = name.length) < 3 || b > 20) {
+          tok.type = 'ident'; // named color min length is 3 (red), max is 20 (lightgoldenrodyellow)
         }
       }
-      token.type = Tokens.UNICODE_RANGE;
-      return token;
+      if (vp) {
+        tok.vendorCode = (b = name.charCodeAt(vp)) >= 65 && b <= 90 ? b + 32 : b;
+        tok.vendorPos = vp;
+      }
+      return ovrValue;
     }
 
-    readUnicodeRangePart(allowQuestionMark) {
-      const reader = this._reader;
-      let part = reader.readMatch(/[0-9a-f]{1,6}/iy);
-      while (allowQuestionMark && part.length < 6 && reader.peek() === '?') {
-        part += reader.read();
+    _number(a, b, tok) {
+      const {reader} = this;
+      const isPlus = a === 43;
+      const rx = b && (a === 46 ? rxNumberDot : a >= 48 && a <= 57 ? rxNumberDigit : rxNumberSign);
+      const rest = b && reader.readMatch(rx) || '';
+      const numStr = isPlus ? rest : String.fromCharCode(a) + rest;
+      let ovrText, units;
+      let c = reader.peek();
+      if (c === 37) { // %
+        tok.id = PCT;
+        tok.type = units = reader.read(1, '%');
+      } else if (isIdentStart(c)) {
+        c = this._ident(reader.readCode(), reader.peek());
+        units = c.name;
+        ovrText = c.esc && (numStr + units);
+        c = Units[units.toLowerCase()] || '';
+        tok.id = c && UnitTypeIds[c] || Tokens.DIMENSION;
+        tok.type = c;
+      } else {
+        tok.id = NUMBER;
+        tok.type = 'number';
       }
-      return part;
+      c = tok.number = +numStr;
+      tok.is0 = c === 0 && !units;
+      c = tok.isInt = c === 0 || (isPlus ? rest : numStr) === `${c | 0}`;
+      if (!c && tok.id === Tokens.NTH) {
+        tok.id = Tokens.DIMENSION;
+        tok.type = '';
+      }
+      return ovrText;
+    }
+
+    _unicodeRange(token) {
+      const {reader} = this;
+      for (let v, pass = 0; pass < 2; pass++) {
+        reader.mark();
+        reader.read(); // +
+        v = reader.readMatch(/[0-9a-f]{1,6}/iy);
+        while (!pass && v.length < 6 && reader.peek() === 63 /* ? */) {
+          v += reader.read();
+        }
+        if (!v) {
+          reader.reset();
+          return;
+        }
+        if (!pass) {
+          token.id = Tokens.UNICODE_RANGE;
+          // if there's a ? in the first part, there can't be a second part
+          if (v.includes('?') || reader.peek() !== 45 /* - */) return;
+        }
+      }
     }
 
     // returns null w/o resetting reader if string is invalid.
-    readString(first = this._reader.read()) {
-      const token = this.stringToken(first, {});
-      return token.type !== Tokens.INVALID ? token.value : null;
+    readString(first) {
+      const {reader} = this;
+      const str = reader.readMatch(first === '"' ? rxStringDoubleQ : rxStringSingleQ);
+      if (reader.readMatchStr(first)) return first + str + first;
     }
 
     // consumes the closing ")" on success
     readUriValue() {
-      const reader = this._reader;
+      const {reader} = this;
       reader.mark();
-      let v = reader.readMatch(/\s*['"]?/y).trim();
-      if (!v) v = this.readChunksWithEscape('', rxUnquotedUrlCharNoEsc);
+      let v = reader.peek();
+      v = v === 34/*"*/ || v === 39/*'*/ ? reader.read()
+        : isSpace(v) && reader.readMatch(rxMaybeQuote).trim();
+      if (!v) v = this.readChunksWithEscape('', rxUnquotedUrl);
       else if ((v = this.readString(v))) v = parseString(v);
-      if (v != null && reader.readMatch(/\s*\)/y)) {
+      if (v != null && (reader.readMatchCode(41/*)*/) || reader.readMatch(rxSpaceRParen))) {
         return v;
       }
       reader.reset();
     }
 
-    readName(first) {
-      return this.readChunksWithEscape(first, rxNameCharNoEsc);
-    }
-
     readEscape() {
-      let res = this._reader.readMatch(/[0-9a-f]{1,6}\s?/iy);
+      let res = this.reader.readMatch(/[0-9a-f]{1,6}\s?/iy);
       if (res) {
         res = parseInt(res, 16);
-        res = String.fromCodePoint(res && res <= 0x10FFFF ? res : 0xFFFD);
+        res = res && res <= 0x10FFFF ? String.fromCodePoint(res) : '\uFFFD';
       } else {
-        res = this._reader.read();
+        res = this.reader.read();
       }
+      this._esc = res != null;
       return res;
     }
 
     /**
-     * @param {?string} first
-     * @param {RegExp} rx - must not match \\
+     * @param {string} [first]
+     * @param {RegExp} rx - must be sticky
      * @returns {string}
      */
     readChunksWithEscape(first, rx) {
-      const reader = this._reader;
-      let url = first || '';
-      while (true) {
-        let c = reader.readMatch(rx);
-        if (c) url += c;
-        if (reader.peek() === '\\' && (c = reader.peek(2)) &&
-            !(c === '\n' || c === '\r' || c === '\f')) {
-          reader.read();
-          url += this.readEscape();
-        } else {
-          break;
-        }
-      }
-      return url;
-    }
-
-    readComment(first) {
-      return first +
-             this._reader.readCount(2 - first.length) +
-             this._reader.readMatch(/([^*]+|\*(?!\/))*(\*\/|$)/y);
+      const str = (first || '') + this.reader.readMatch(rx);
+      const res = str.includes('\\') ? str.replace(rxUnescapeNoLF, unescapeNoLF) : str;
+      this._esc = res.length !== str.length;
+      return res;
     }
 
     /**
@@ -2447,8 +627,8 @@ self.parserlib = (() => {
        specifying an empty string will stop after consuming the first encountered top block.
      * @returns {?string}
      */
-    readDeclValue({omitComments, stopOn = ';!})'} = {}) {
-      const reader = this._reader;
+    readDeclValue({omitComments, stopOn = ';!})]'} = {}) {
+      const {reader} = this;
       const endings = [];
       const rx = stopOn.includes(';')
         ? /([^;!'"{}()[\]/\\]|\/(?!\*))+/y
@@ -2467,7 +647,7 @@ self.parserlib = (() => {
         if (c === '\\') {
           value += this.readEscape();
         } else if (c === '/') {
-          value += this.readComment(c);
+          value += reader.readMatch(rxComment);
           if (omitComments) value.pop();
         } else if (c === '"' || c === "'") {
           value += this.readString(c);
@@ -2490,28 +670,6 @@ self.parserlib = (() => {
         }
       }
       return value;
-    }
-
-    readUnknownSym() {
-      const reader = this._reader;
-      let prelude = '';
-      let block;
-      while (true) {
-        let c = reader.peek();
-        if (!c) this.throwUnexpected();
-        if (c === '{') {
-          block = this.readDeclValue({stopOn: ''});
-          break;
-        } else if (c === ';') {
-          reader.read();
-          break;
-        } else {
-          c = this.readDeclValue({omitComments: true, stopOn: ';{}'});
-          if (!c) break;
-          prelude += c;
-        }
-      }
-      return {prelude: prelude.replace(/^\s+/, ''), block};
     }
   }
 
@@ -2545,7 +703,7 @@ self.parserlib = (() => {
           generationBase = performance.now();
           return;
         }
-        stream = parser._tokenStream;
+        stream = parser.stream;
         generation = performance.now();
         trim();
       },
@@ -2560,23 +718,22 @@ self.parserlib = (() => {
         }
       },
       findBlock(token = getToken()) {
-        if (!token) return;
-        const reader = stream._reader;
+        if (!token || !stream) return;
+        const reader = stream.reader;
         const input = reader._input;
         const start = token.offset;
         const key = input.slice(start, input.indexOf('{', start) + 1);
         let block = data.get(key);
         if (!block || !(block = getBlock(block, input, start, key))) return;
-        shiftBlock(block, start, token.line, token.col);
-        reader._cursor = block.endOffset;
-        reader._line = block.endLine;
-        reader._col = block.endCol;
-        stream.resetLT();
-        parser._ws();
+        shiftBlock(block, start, token.line, token.col, input);
+        reader.index = block.endOffset;
+        reader.line = block.endLine;
+        reader.col = block.endCol;
+        stream._resetLT();
         return true;
       },
       startBlock(start = getToken()) {
-        if (!start) return;
+        if (!start || !stream) return;
         stack.push({
           text: '',
           events: [],
@@ -2591,13 +748,13 @@ self.parserlib = (() => {
         return stack.length;
       },
       endBlock(end = getToken()) {
-        if (!parser) return;
+        if (!parser || !stream) return;
         const block = stack.pop();
         block.endLine = end.line;
-        block.endCol = end.col + end.value.length;
-        block.endOffset = end.offset + end.value.length;
+        block.endCol = end.col + end.offset2 - end.offset;
+        block.endOffset = end.offset2;
 
-        const input = stream._reader._input;
+        const input = stream.reader._input;
         const key = input.slice(block.offset, input.indexOf('{', block.offset) + 1);
         block.text = input.slice(block.offset, block.endOffset);
 
@@ -2651,8 +808,7 @@ self.parserlib = (() => {
         const halfLen = blocks.length >> 1;
         const newBlocks = blocks
           .sort((a, b) => a.time - b.time)
-          .filter((block, i) => block.generation > cutoff ||
-                                block.generation !== generation && i < halfLen);
+          .filter((b, i) => (b = b.generation) > cutoff || b !== generation && i < halfLen);
         if (!newBlocks.length) {
           data.delete(key);
         } else if (newBlocks.length !== blocks.length) {
@@ -2686,7 +842,7 @@ self.parserlib = (() => {
     }
 
     // Shifts positions of the block and its events, also fires the events
-    function shiftBlock(block, cursor, line, col) {
+    function shiftBlock(block, cursor, line, col, input) {
       // extracted to prevent V8 deopt
       const deltaLines = line - block.line;
       const deltaCols = block.col === 1 && col === 1 ? 0 : col - block.col;
@@ -2695,7 +851,7 @@ self.parserlib = (() => {
       const shifted = new Set();
       for (const e of block.events) {
         if (hasDelta) {
-          applyDelta(e, shifted, block.line, deltaLines, deltaCols, deltaOffs);
+          applyDelta(e, shifted, block.line, deltaLines, deltaCols, deltaOffs, input);
         }
         parser.fire(e, false);
       }
@@ -2709,44 +865,36 @@ self.parserlib = (() => {
     }
 
     // Recursively applies the delta to the event and all its nested parts
-    function applyDelta(obj, seen, line, lines, cols, offs) {
+    function applyDelta(obj, seen, line, lines, cols, offs, input) {
       if (seen.has(obj)) return;
       seen.add(obj);
       if (Array.isArray(obj)) {
-        for (const item of obj) {
-          if ((typeof item === 'object' || Array.isArray(item)) && item) {
-            applyDelta(item, seen, line, lines, cols, offs);
+        for (let i = 0, v; i < obj.length; i++) {
+          if ((v = obj[i]) && typeof v === 'object') {
+            applyDelta(v, seen, line, lines, cols, offs, input);
           }
         }
         return;
       }
-      // applyDelta may get surpisingly slow on complex objects so we're using an array
-      // because in js an array lookup is much faster than a property lookup
-      const keys = Object.keys(obj);
-      if (cols !== 0) {
-        if (keys.includes('col') && obj.line === line) obj.col += cols;
-        if (keys.includes('endCol') && obj.endLine === line) obj.endCol += cols;
-      }
-      if (lines !== 0) {
-        if (keys.includes('line')) obj.line += lines;
-        if (keys.includes('endLine')) obj.endLine += lines;
-      }
-      if (offs !== 0 && keys.includes('offset')) obj.offset += offs;
-      for (const k of keys) {
-        if (k !== 'col' && k !== 'endCol' &&
-            k !== 'line' && k !== 'endLine' &&
-            k !== 'offset') {
-          const v = obj[k];
-          if (v && typeof v === 'object') {
-            applyDelta(v, seen, line, lines, cols, offs);
-          }
+      for (let i = 0, keys = Object.keys(obj), k, v; i < keys.length; i++) {
+        k = keys[i];
+        if (k === 'col' ? (cols && obj.line === line && (obj.col += cols), 0)
+          : k === 'endCol' ? (cols && obj.endLine === line && (obj.endCol += cols), 0)
+          : k === 'line' ? (lines && (obj.line += lines), 0)
+          : k === 'endLine' ? (lines && (obj.endLine += lines), 0)
+          : k === 'offset' ? (offs && (obj.offset += offs), 0)
+          : k === 'offset2' ? (offs && (obj.offset2 += offs), 0)
+          : k === '_input' ? (obj._input = input, 0)
+          : k !== 'target' && (v = obj[k]) && typeof v === 'object'
+        ) {
+          applyDelta(v, seen, line, lines, cols, offs, input);
         }
       }
     }
 
     // returns next token if it's already seen or the current token
     function getToken() {
-      return parser && (stream.LT(1, true) || stream._token);
+      return parser && (stream.peekCached() || stream.token);
     }
 
     function deepCopy(obj) {
@@ -2756,9 +904,10 @@ self.parserlib = (() => {
       if (Array.isArray(obj)) {
         return obj.map(deepCopy);
       }
-      const copy = {};
-      for (const k in obj) {
-        copy[k] = deepCopy(obj[k]);
+      const copy = Object.create(Object.getPrototypeOf(obj));
+      for (let arr = Object.keys(obj), k, v, i = 0; i < arr.length; i++) {
+        v = obj[k = arr[i]];
+        copy[k] = !v || typeof v !== 'object' ? v : deepCopy(v);
       }
       return copy;
     }
@@ -2772,8 +921,10 @@ self.parserlib = (() => {
   class Parser extends EventTarget {
     /**
      * @param {Object} [options]
+     * @param {TokenStream} [options.stream]
      * @param {boolean} [options.ieFilters] - accepts IE < 8 filters instead of throwing
-     * @param {boolean} [options.skipValidation] - skip syntax validation
+     * @param {boolean} [options.noValidation] - skip syntax validation
+     * @param {boolean} [options.globalsOnly] - stop after _sheetGlobals()
      * @param {boolean} [options.starHack] - allows IE6 star hack
      * @param {boolean} [options.strict] - stop on errors instead of reporting them and continuing
      * @param {boolean} [options.topDocOnly] - quickly extract all top-level @-moz-document,
@@ -2783,97 +934,88 @@ self.parserlib = (() => {
     constructor(options) {
       super();
       this.options = options || {};
-      /** @type {TokenStream} */
-      this._tokenStream = null;
+      this.stream = null;
     }
 
+    /** 2+ = error, 1 = warning, anything else = info */
+    alarm(level, msg, token) {
+      this.fire({
+        type: level >= 2 ? 'error' : level === 1 ? 'warning' : 'info',
+        message: msg,
+      }, token);
+    }
     /**
-     * @param {string|Object} event
-     * @param {parserlib.Token|SyntaxUnit} [token=this._tokenStream._token] - sets the position
+     * @param {string|Object} e
+     * @param {Token|Token} [tok=this.stream.token] - sets the position
      */
-    fire(event, token = event.offset != null ? event : this._tokenStream._token) {
-      if (typeof event === 'string') {
-        event = {type: event};
-      }
-      if (event.offset === undefined && token) {
-        event.offset = token.offset;
-        if (event.line === undefined) event.line = token.line;
-        if (event.col === undefined) event.col = token.col;
-      }
-      if (token !== false) parserCache.addEvent(event);
-      super.fire(event);
+    fire(e, tok = e.offset != null ? e : this.stream.token) {
+      if (typeof e === 'string') e = {type: e};
+      if (tok && e.offset == null) { e.offset = tok.offset; e.line = tok.line; e.col = tok.col; }
+      if (tok !== false) parserCache.addEvent(e);
+      super.fire(e);
     }
 
     /**
      * @layer <layer-name>#;
      * @layer <layer-name>? { <stylesheet> };
      */
-    _layer(start) {
-      const stream = this._tokenStream;
+    _layer(stream, start) {
       const ids = [];
-      let tok, val;
+      let tok;
       do {
-        this._ws();
-        if ((tok = stream.get(true)).type === Tokens.IDENT) {
-          ids.push(this._layerName(tok));
-          this._ws();
-          tok = stream.get(true);
+        if ((tok = stream.get(2)).id === IDENT) {
+          ids.push(this._layerName(stream, tok));
+          tok = stream.get(2);
         }
-        if ((val = tok.value) === '{') {
-          if (ids[1]) this.fire({type: 'error', message: '@layer block cannot have multiple ids'}, start);
-          this.fire({type: 'startlayer', id: ids[0] || null}, start);
-          this._rulesetBlock(start);
-          this.fire('endlayer');
-          this._ws();
+        if (tok.id === LBRACE) {
+          if (ids[1]) this.alarm(1, '@layer block cannot have multiple ids', start);
+          this._rulesetBlock(stream, start, ['layer', {id: ids[0], brace: tok}, start]);
           return;
         }
-      } while (val === ',');
-      if (val !== ';') stream.mustMatch(Tokens.SEMICOLON);
+      } while (tok.id === COMMA);
+      stream.mustMatch(SEMICOLON, {reuse: 1});
       this.fire({type: 'layer', ids}, start);
-      this._ws();
     }
 
-    _layerName(start) {
+    _layerName(stream, start) {
       let res = '';
-      const stream = this._tokenStream;
-      for (let tok; (tok = start || stream.match(Tokens.IDENT));) {
-        res += tok.value + (stream.match(Tokens.DOT) ? '.' : '');
-        start = false;
+      for (let tok; (tok = !res && start || stream.match(IDENT, !!res));) {
+        res += tok.text;
+        if (stream.match(DOT, false)) res += '.';
+        else break;
       }
       return res;
     }
 
-    _stylesheet() {
-      const stream = this._tokenStream;
+    _stylesheet(stream) {
       this.fire('startstylesheet');
-      this._sheetGlobals();
-      const {topDocOnly} = this.options;
-      const allowedActions = topDocOnly ? ParserRoute.topDoc : ParserRoute.stylesheet;
-      for (let tt, token; (tt = (token = stream.get(true)).type); this._skipCruft()) {
+      this._sheetGlobals(stream);
+      const opts = this.options; if (opts.globalsOnly) return;
+      const {topDocOnly} = opts;
+      const actions = topDocOnly ? ParserRoute.topDoc : ParserRoute.stylesheet;
+      for (let ti, tok, fn; (ti = (tok = stream.get(2)).id);) {
         try {
-          const action = allowedActions[tt];
-          if (action) {
-            action.call(this, token);
+          if ((fn = actions[ti])) {
+            fn.call(this, stream, tok);
             continue;
           }
           if (topDocOnly) {
             stream.readDeclValue({stopOn: '{}'});
-            if (stream._reader.peek() === '{') {
+            if (stream.reader.peek() === 123 /* { */) {
               stream.readDeclValue({stopOn: ''});
             }
             continue;
           }
-          stream.unget();
-          if (!this._ruleset() && stream.peek() !== Tokens.EOF) {
-            stream.throwUnexpected(stream.get(true));
+          if (!this._ruleset(stream, tok) && stream.get().id) {
+            stream._failure();
           }
         } catch (ex) {
-          if (ex instanceof SyntaxError && !this.options.strict) {
-            this.fire(Object.assign({}, ex, {type: 'error', error: ex}));
+          if (ex instanceof SyntaxError && !opts.strict) {
+            this.fire(assign({}, ex, {type: 'error', error: ex}));
           } else {
-            ex.message = ex.stack;
-            ex.line = token.line;
-            ex.col = token.col;
+            ex.message = (ti = ex.stack).includes(fn = ex.message) ? ti : `${fn}\n${ti}`;
+            ex.line = tok.line;
+            ex.col = tok.col;
             throw ex;
           }
         }
@@ -2881,217 +1023,131 @@ self.parserlib = (() => {
       this.fire('endstylesheet');
     }
 
-    _sheetGlobals() {
-      const stream = this._tokenStream;
-      this._skipCruft();
-      for (const [type, fn, max = Infinity] of [
-        [Tokens.CHARSET_SYM, this._charset, 1],
-        [Tokens.LAYER_SYM, this._layer],
-        [Tokens.IMPORT_SYM, this._import],
-        [Tokens.NAMESPACE_SYM, this._namespace],
-      ]) {
-        for (let i = 0; i++ < max && stream.peek() === type;) {
-          fn.call(this, stream.get(true));
-          this._skipCruft();
-        }
+    _sheetGlobals(stream) {
+      for (let actions = ParserRoute.globals, tok; (tok = stream.match(actions));) {
+        actions[tok.id].call(this, stream, tok);
       }
     }
 
-    _charset(start) {
-      const stream = this._tokenStream;
-      const charset = stream.mustMatch(Tokens.STRING).value;
-      stream.mustMatch(Tokens.SEMICOLON);
+    _charset(stream, start) {
+      const charset = stream.mustMatch(Tokens.STRING).text;
+      stream.mustMatch(SEMICOLON);
       this.fire({type: 'charset', charset}, start);
     }
 
-    _import(start) {
-      const stream = this._tokenStream;
-      let layer;
-      let tok = stream.mustMatch(TT.stringUri);
-      const uri = tok.uri || parseString(tok.value);
-      this._ws();
-      tok = stream.get(true);
-      if ((tok.name || tok.value.toLowerCase()) === 'layer') {
-        layer = tok.name ? this._layerName() : '';
-        if (tok.name) stream.mustMatch(Tokens.RPAREN);
-        this._ws();
-        tok = stream.get(true);
+    _import(stream, start) {
+      let layer, name, tok;
+      const uri = (tok = stream.mustMatch(TT.stringUri)).uri || tok.string;
+      if ((name = (tok = stream.get(2)).name) === 'layer' || !name && B.layer.has(tok)) {
+        layer = name ? this._layerName(stream) : '';
+        if (name) stream.mustMatch(RPAREN);
+        name = (tok = stream.get(2)).name;
       }
-      if (tok.name === 'supports') {
-        this._ws();
-        if (!this._declaration()) this._supportsCondition();
-        stream.mustMatch(Tokens.RPAREN);
-      } else {
-        stream.unget();
+      if (name === 'supports') {
+        this._supportsInParens(stream, {id: LPAREN});
+        tok = null;
       }
-      const media = this._mediaQueryList();
-      stream.mustMatch(Tokens.SEMICOLON);
+      const media = this._mediaQueryList(stream, tok);
+      stream.mustMatch(SEMICOLON);
       this.fire({type: 'import', layer, media, uri}, start);
-      this._ws();
     }
 
-    _namespace(start) {
-      const stream = this._tokenStream;
-      this._ws();
-      const prefix = stream.match(Tokens.IDENT).value;
-      if (prefix) this._ws();
-      const token = stream.mustMatch(TT.stringUri);
-      const uri = token.uri || parseString(token.value);
-      stream.mustMatch(Tokens.SEMICOLON);
+    _namespace(stream, start) {
+      const prefix = stream.match(IDENT).text;
+      const tok = stream.mustMatch(TT.stringUri);
+      const uri = tok.uri || tok.string;
+      stream.mustMatch(SEMICOLON);
       this.fire({type: 'namespace', prefix, uri}, start);
-      this._ws();
     }
 
-    _container(start) {
-      this._ws();
-      const stream = this._tokenStream;
-      const next = stream.get(true).value;
+    _container(stream, start) {
+      const next = stream.get(2).text;
       let name;
       if (/^(\(|not)$/i.test(next)) {
         stream.unget();
       } else {
         name = next;
-        stream.mustMatch(Tokens.S);
+        stream.mustMatch(WS);
       }
       // TODO: write a proper condition parser
       const condition = stream.readDeclValue({omitComments: true, stopOn: ';{}'});
-      stream.mustMatch(Tokens.LBRACE);
-      this.fire({type: 'startcontainer', name, condition}, start);
-      this._rulesetBlock(start);
-      this.fire('endcontainer');
-      this._ws();
+      this._rulesetBlock(stream, start, ['container', {name, condition}, start]);
     }
 
-    _supports(start) {
-      const stream = this._tokenStream;
-      this._ws();
-      this._supportsCondition();
-      stream.mustMatch(Tokens.LBRACE);
-      this.fire('startsupports', start);
-      this._rulesetBlock(start);
-      this.fire('endsupports');
-      this._ws();
+    _supports(stream, start) {
+      this._supportsCondition(stream);
+      this._rulesetBlock(stream, start, ['supports', {}, start]);
     }
 
-    _supportsCondition() {
-      const stream = this._tokenStream;
-      if (stream.match(Tokens.IDENT, ['not'])) {
-        stream.mustMatch(Tokens.S);
-        this._supportsConditionInParens();
+    _supportsCondition(stream) {
+      if (stream.match(IDENT, B.not)) {
+        this._supportsInParens(stream);
       } else {
-        this._supportsConditionInParens();
-        while (stream.match(Tokens.IDENT, ['and', 'or'])) {
-          this._ws();
-          this._supportsConditionInParens();
+        let more;
+        do this._supportsInParens(stream);
+        while ((more = stream.match(IDENT, !more ? B.andOr : more.lowCode === 97 ? B.and : B.or)));
+      }
+    }
+
+    _supportsInParens(stream, tok = stream.match(TT.supportsInParens)) {
+      let x, reuse;
+      if ((x = tok.name) === 'selector') {
+        tok = this._selector(stream);
+        this.fire({type: 'supportsSelector', selector: tok}, tok);
+        reuse = true;
+      } else if (x) {
+        this._function(stream, tok);
+        reuse = 0;
+      } else if (tok.id === LPAREN && (tok = stream.match(TT.supportsInParens))) {
+        if (tok.id !== IDENT) {
+          stream.unget();
+          this._supportsCondition(stream);
+        } else if (B.not.has(tok)) {
+          this._supportsInParens(stream);
+        } else if ((x = stream.match(TT.supportsIdentNext)).id === COLON) {
+          return this._declaration(stream, tok, {colon: x, inParens: true});
+        } else if (x) { // (
+          this._expr(stream, RPAREN, true);
+          reuse = true; // )
         }
       }
+      if (reuse !== 0) stream.mustMatch(RPAREN, {reuse});
     }
 
-    _supportsConditionInParens() {
-      const stream = this._tokenStream;
-      if (stream.match(Tokens.LPAREN)) {
-        this._ws();
-        const {type, value} = stream.LT(1);
-        if (type === Tokens.IDENT) {
-          if (/^not$/i.test(value)) {
-            this._supportsCondition();
-            stream.mustMatch(Tokens.RPAREN);
-          } else {
-            this._supportsDecl(false);
-          }
-        } else {
-          this._supportsCondition();
-          stream.mustMatch(Tokens.RPAREN);
+    _media(stream, start) {
+      const media = this._mediaQueryList(stream);
+      this._rulesetBlock(stream, start, ['media', {media}, start]);
+    }
+
+    _mediaQueryList(stream, tok) {
+      const list = [];
+      while ((tok = stream.match(TT.mediaList, {reuse: tok}))) {
+        const expr = [];
+        const mod = B.onlyNot.has(tok) && tok;
+        const next = mod ? stream.mustMatch(TT.mediaList) : tok;
+        const type = next.id === IDENT && next;
+        if (!type) expr.push(this._mediaExpression(stream, next));
+        while (stream.match(IDENT, type ? B.and : B.andOr)) {
+          expr.push(this._mediaExpression(stream));
         }
-      } else if (stream.match(Tokens.FUNCTION, ['selector'])) {
-        this._ws();
-        const selector = this._selector();
-        this.fire({type: 'supportsSelector', selector}, selector);
-        stream.mustMatch(Tokens.RPAREN);
-      } else {
-        this._supportsDecl();
+        list.push(MediaQuery.from(mod || next, mod.text, type, expr));
+        if (!stream.match(COMMA)) break;
+        tok = false;
       }
-      this._ws();
+      return list;
     }
 
-    _supportsDecl(requireStartParen = true) {
-      const stream = this._tokenStream;
-      if (requireStartParen) {
-        stream.mustMatch(Tokens.LPAREN);
-      }
-      this._ws();
-      this._declaration();
-      stream.mustMatch(Tokens.RPAREN);
-    }
-
-    _media(start) {
-      const stream = this._tokenStream;
-      this._ws();
-      const mediaList = this._mediaQueryList();
-      stream.mustMatch(Tokens.LBRACE);
-      this.fire({
-        type: 'startmedia',
-        media: mediaList,
-      }, start);
-      this._rulesetBlock(start);
-      this.fire({
-        type: 'endmedia',
-        media: mediaList,
-      });
-      this._ws();
-    }
-
-    _mediaQueryList() {
-      const stream = this._tokenStream;
-      const mediaList = [];
-      this._ws();
-      if ([Tokens.IDENT, Tokens.LPAREN].includes(stream.peek())) {
-        mediaList.push(this._mediaQuery());
-      }
-      while (stream.match(Tokens.COMMA)) {
-        this._ws();
-        mediaList.push(this._mediaQuery());
-      }
-      return mediaList;
-    }
-
-    _mediaQuery() {
-      const stream = this._tokenStream;
-      const expressions = [];
-      const mod = stream.match(Tokens.IDENT, ['only', 'not']);
-      let type = null;
-      this._ws();
-      const next = stream.LT(1);
-      if (next.type === Tokens.IDENT) {
-        type = this._mediaFeature();
-      } else if (next.value === '(') {
-        expressions.push(this._mediaExpression());
-      } else {
-        return;
-      }
-      for (let c; (this._ws(), c = stream.match(Tokens.IDENT).value);) {
-        if (/^and$/i.test(c) || !type && /^or$/i.test(c)) {
-          this._ws();
-          expressions.push(this._mediaExpression());
-        } else {
-          stream.throwUnexpected(undefined, ["'and'", !type && "'or'"].filter(Boolean));
-        }
-      }
-      return new MediaQuery(mod.value, type, expressions, mod || next);
-    }
-
-    _mediaExpression() {
-      const stream = this._tokenStream;
-      stream.mustMatch(Tokens.LPAREN);
-      const feature = this._mediaFeature(TT.mediaValue);
-      for (let b, pass = 0; ++pass <= 2;) {
-        this._ws();
-        b = stream.get(true).value;
-        if (/^[:=<>]$/.test(b)) {
-          const isRange = /[<>]/.test(b);
+    _mediaExpression(stream, paren) {
+      stream.mustMatch(LPAREN, {reuse: paren});
+      const feature = stream.mustMatch(TT.mediaValue);
+      for (let tok, pass = 0; ++pass <= 2;) {
+        tok = stream.get(2).text;
+        if (tok.length === 1 && /^[:=<>]$/.test(tok)) {
+          const isRange = /[<>]/.test(tok);
           if (isRange) stream.match(Tokens.EQUALS);
-          this._ws();
-          feature.expr = this._expression();
+          feature.expr = this._expr(stream, RPAREN, true);
+          feature.offset2 = stream.token.offset2;
+          stream.unget();
           if (!isRange) break;
         } else {
           stream.unget();
@@ -3099,704 +1155,568 @@ self.parserlib = (() => {
           break;
         }
       }
-      stream.mustMatch(Tokens.RPAREN);
-      this._ws();
+      stream.mustMatch(RPAREN);
       return feature; // TODO: construct the value properly
     }
 
-    _mediaFeature(type = Tokens.IDENT) {
-      return PropValueUnit(this._tokenStream.mustMatch(type));
+    _page(stream, start) {
+      const tok = stream.match(IDENT); if (B.auto.has(tok)) stream._failure();
+      const id = tok.text;
+      const pseudo = stream.match(COLON, false) &&
+        stream.mustMatch(IDENT, false).text;
+      this._readDeclarations(stream, {
+        margins: true,
+        scope: start,
+        event: ['page', {id, pseudo}, start],
+      });
     }
 
-    _page(start) {
-      const stream = this._tokenStream;
-      this._ws();
-      const id = stream.match(Tokens.IDENT).value;
-      if (id && /^auto$/i.test(id)) {
-        stream.throwUnexpected();
-      }
-      const pseudo = stream.match(Tokens.COLON)
-        ? stream.mustMatch(Tokens.IDENT, false).value
-        : null;
-      this._ws();
-      this.fire({type: 'startpage', id, pseudo}, start);
-      this._readDeclarations({readMargins: true, Props: '@page'});
-      this.fire({type: 'endpage', id, pseudo});
+    _margin(stream, tok) {
+      this._readDeclarations(stream, {
+        event: ['pagemargin', {margin: tok}],
+      });
     }
 
-    _margin() {
-      const margin = PropValueUnit(this._tokenStream.match(Tokens.MARGIN_SYM));
-      if (!margin) return false;
-      this.fire({type: 'startpagemargin', margin});
-      this._readDeclarations();
-      this.fire({type: 'endpagemargin', margin});
-      return true;
+    _fontFace(stream, start) {
+      this._readDeclarations(stream, {
+        scope: start,
+        event: ['fontface', {}, start],
+      });
     }
 
-    _fontFace(start) {
-      this.fire('startfontface', start);
-      this._ws();
-      this._readDeclarations({Props: '@font-face'});
-      this.fire('endfontface');
+    _fontPaletteValues(stream, start) {
+      this._readDeclarations(stream, {
+        scope: start,
+        event: ['fontpalettevalues', {id: stream.mustMatch(IDENT)}, start],
+      });
     }
 
-    _fontPaletteValues(start) {
-      this.fire({
-        type: 'startfontpalettevalues',
-        id: this._tokenStream.mustMatch(Tokens.IDENT),
-      }, start);
-      this._readDeclarations({Props: '@font-palette-values'});
-      this.fire('endfontpalettevalues');
-    }
-
-    _viewport(start) {
-      // only viewport-fit is allowed but we're reusing MediaQuery syntax unit,
-      // and accept anything for the sake of simplicity since the spec isn't yet final:
-      // https://drafts.csswg.org/css-round-display/#extending-viewport-rule
-      const descriptors = this._mediaQueryList();
-      this.fire({type: 'startviewport', descriptors}, start);
-      this._ws();
-      this._readDeclarations();
-      this.fire({type: 'endviewport', descriptors});
-    }
-
-    _document(start) {
-      const stream = this._tokenStream;
+    _document(stream, start) {
       const functions = [];
-      const prefix = start.value.split('-')[1] || '';
       do {
-        this._ws();
-        const uri = stream.match(Tokens.URI);
-        const fn = uri ? new PropValueFunc(uri) : this._function() || stream.LT(1);
-        functions.push(fn);
-        if (uri) this._ws();
-      } while (stream.match(Tokens.COMMA));
-      for (const fn of functions) {
-        if (!isUriIdent(fn.name) && fn.name !== 'regexp') {
-          this.fire({
-            type: 'error',
-            message: 'Expected url( or url-prefix( or domain( or regexp(, instead saw ' +
-              getTokenName(fn.tokenType) + ' ' + fn.text,
-          }, fn);
-        }
-      }
-      stream.mustMatch(Tokens.LBRACE);
-      this.fire({type: 'startdocument', functions, prefix}, start);
+        const tok = stream.match(TT.docFunc);
+        const fn = tok.uri ? TokenFunc.from(tok) : tok.name && this._function(stream, tok);
+        if (fn && (fn.uri || fn.name === 'regexp')) functions.push(fn);
+        else this.alarm(1, 'Unknown document function', fn);
+      } while (stream.match(COMMA));
+      this.fire({
+        type: 'startdocument',
+        brace: stream.mustMatch(LBRACE),
+        functions,
+        start,
+      }, start);
       if (this.options.topDocOnly) {
         stream.readDeclValue({stopOn: '}'});
-        stream.mustMatch(Tokens.RBRACE);
+        stream.mustMatch(RBRACE);
       } else {
         /* We allow @import and such inside document sections because the final generated CSS for
          * a given page may be valid e.g. if this section is the first one that matched the URL */
-        this._sheetGlobals();
-        this._rulesetBlock(start);
+        this._sheetGlobals(stream);
+        this._rulesetBlock(stream, start);
       }
-      this.fire({type: 'enddocument', functions, prefix});
-      this._ws();
+      this.fire({type: 'enddocument', start, functions});
     }
 
-    _documentMisplaced(start) {
-      this.fire({
-        type: 'error',
-        message: 'Nested @document produces broken code',
-      }, start);
-      this._document(start);
+    _documentMisplaced(stream, start) {
+      this.alarm(2, 'Nested @document produces broken code', start);
+      this._document(stream, start);
     }
 
-    _combinator() {
-      const token = this._tokenStream.match(Tokens.COMBINATOR);
-      if (token) {
-        this._ws();
-        return new Combinator(token);
+    _propertySym(stream, start) {
+      const name = stream.mustMatch(IDENT);
+      this._readDeclarations(stream, {
+        scope: start,
+        event: ['property', {name}, start],
+      });
+    }
+
+    _ruleset(stream, tok) {
+      if (parserCache.findBlock(tok)) {
+        return true;
       }
-    }
-
-    _ruleset() {
-      const stream = this._tokenStream;
-      let braceOpened, blk;
-      try {
-        stream.skipComment(true, true);
-        if (parserCache.findBlock()) {
+      for (let blk, sels, brace, failed; !blk;) {
+        try {
+          if (!sels) sels = this._selectorsGroup(stream, tok);
+          if (!sels) return stream.unget();
+          brace = stream.mustMatch(LBRACE, {reuse: 1});
+          blk = failed || parserCache.startBlock(sels[0]);
+          this._readDeclarations(stream, {
+            brace, event: !failed && ['rule', {selectors: sels}, sels[0]],
+          });
+          if (!failed) parserCache.endBlock();
           return true;
+        } catch (ex) {
+          failed = true;
+          if (blk) parserCache.cancelBlock(blk);
+          if (!(ex instanceof SyntaxError) || this.options.strict) throw ex;
+          this.fire(assign({}, ex, {type: 'error', error: ex}));
+          if (!brace) {
+            this._expr(stream, TT.braceLR, true);
+            sels = true;
+          } else if (blk && !stream.match(RBRACE)) {
+            this._expr(stream, RBRACE, true);
+            return true;
+          }
         }
-        const selectors = this._selectorsGroup();
-        if (!selectors) {
-          return false;
-        }
-        blk = parserCache.startBlock(selectors[0]);
-        this.fire({type: 'startrule', selectors}, selectors[0]);
-        this._readDeclarations({stopAfterBrace: true});
-        braceOpened = true;
-        this.fire({type: 'endrule', selectors});
-        parserCache.endBlock();
-        this._ws();
-        return true;
-      } catch (ex) {
-        parserCache.cancelBlock(blk);
-        if (!(ex instanceof SyntaxError) || this.options.strict) throw ex;
-        this.fire(Object.assign({}, ex, {type: 'error', error: ex}));
-        // if there's a right brace, the rule is finished so don't do anything
-        // otherwise, rethrow the error because it wasn't handled properly
-        if (braceOpened && !stream.advance(Tokens.RBRACE)) throw ex;
-        // If even a single selector fails to parse, the entire ruleset should be thrown away,
-        // so we let the parser continue with the next one
-        return true;
       }
     }
 
-    /** @param {parserlib.Token} start */
-    _rulesetBlock(start) {
-      const stream = this._tokenStream;
-      const map = ParserRoute[start.type];
-      this._ws();
-      while (true) {
-        const fn = map[stream.LT(1).type];
-        if (fn) fn.call(this, stream.get(true));
-        else if (!this._ruleset()) break;
-        stream.skipComment();
+    _rulesetBlock(stream, start, evt) {
+      if (evt) {
+        const [type, msg = evt[1] = {}, eTok] = evt;
+        if (!msg.brace) msg.brace = stream.mustMatch(LBRACE);
+        this.fire(assign({type: 'start' + type}, msg), eTok);
+        evt = assign({type: 'end' + type}, msg);
       }
-      stream.mustMatch(Tokens.RBRACE);
+      let ti;
+      for (let tok, fn; (ti = (tok = stream.get(2)).id) && ti !== RBRACE;) {
+        if ((fn = ParserRoute.ruleset[ti])) fn.call(this, stream, tok);
+        else if (!this._ruleset(stream, tok)) break;
+      }
+      if (ti !== RBRACE) stream.mustMatch(RBRACE);
+      if (evt) this.fire(evt);
     }
 
-    _selectorsGroup(relative) {
-      const stream = this._tokenStream;
+    /** Warning! The next token is consumed */
+    _selectorsGroup(stream, tok, relative) {
       const selectors = [];
       let comma;
-      for (let sel; (sel = this._selector(!sel && relative));) {
-        selectors.push(sel);
-        this._ws(null, true);
-        comma = stream.match(Tokens.COMMA);
-        if (!comma) break;
-        this._ws(null, true);
+      while ((tok = this._selector(stream, tok, relative))) {
+        selectors.push(tok);
+        if ((tok = stream.token).isVar) tok = stream.get(2);
+        if (!(comma = tok.id === COMMA)) break;
+        tok = relative = undefined;
       }
-      if (comma) stream.throwUnexpected(stream.LT(1));
-      return selectors.length ? selectors : null;
+      if (comma) stream._failure();
+      if (selectors[0]) return selectors;
     }
 
-    _selector(relative) {
-      const stream = this._tokenStream;
+    /** Warning! The next token is consumed */
+    _selector(stream, tok, relative) {
       const sel = [];
-      let nextSel = null;
-      let combinator = null;
-      if (!relative || stream.LT(1).type !== Tokens.COMBINATOR) {
-        nextSel = this._simpleSelectorSequence();
-        if (!nextSel) {
-          return null;
-        }
-        sel.push(nextSel);
+      if (!tok || tok.isVar) {
+        tok = stream.get(2);
       }
-      while (true) {
-        combinator = this._combinator();
-        if (combinator) {
-          sel.push(combinator);
-          nextSel = this._simpleSelectorSequence();
-          if (nextSel) {
-            sel.push(nextSel);
+      if (!relative || tok.id !== COMBINATOR) {
+        tok = this._simpleSelectorSequence(stream, tok);
+        if (!tok) return;
+        sel.push(tok);
+        tok = false;
+      }
+      for (let combinator, ws; ; tok = false) {
+        if (!tok) tok = stream.token;
+        if (tok.id === COMBINATOR) {
+          sel.push(this._combinator(stream, tok));
+          if ((tok = this._simpleSelectorSequence(stream))) {
+            sel.push(tok);
             continue;
           }
-          stream.throwUnexpected(stream.LT(1));
-          break;
+          stream._failure();
         }
-        if (!this._ws(null, true)) {
-          break;
-        }
-        // make a fallback whitespace combinator
-        const ws = new Combinator(stream._token);
-        // look for an explicit combinator
-        combinator = this._combinator();
-        // selector is required if there's a combinator
-        nextSel = this._simpleSelectorSequence();
-        if (nextSel) {
-          sel.push(combinator || ws);
-          sel.push(nextSel);
+        while (tok.isVar) tok = stream.get();
+        ws = tok.id === WS && tok; if (!ws) break;
+        tok = stream.get(2); if (tok.id === LBRACE) break;
+        combinator = tok.id === COMBINATOR && this._combinator(stream, tok);
+        tok = this._simpleSelectorSequence(stream, combinator ? undefined : tok);
+        if (tok) {
+          sel.push(combinator || this._combinator(stream, ws));
+          sel.push(tok);
+          tok = false;
         } else if (combinator) {
-          stream.throwUnexpected(stream.LT(1));
+          stream._failure();
         }
       }
-      return new PropValue(sel);
+      return TokenValue.from(sel);
     }
 
-    _simpleSelectorSequence() {
-      const stream = this._tokenStream;
-      const start = stream.LT(1);
-      const modifiers = [];
-      const ns = this._namespacePrefix(start) || '';
-      const next = ns ? stream.LT(1) : start;
-      const elementName = (next.value === '*' || next.type === Tokens.IDENT)
-        ? this._typeSelector(ns, stream.get())
-        : '';
-      let text = '';
-      if (elementName) {
-        text += elementName;
-      } else if (ns) {
-        stream.unget();
+    /** Warning! The next token is consumed */
+    _simpleSelectorSequence(stream, start = stream.get(2)) {
+      if (!TT.selectorStart[start.id]) return;
+      let tok = start;
+      let ns, ti, tag;
+      if ((ti = start.id) === PIPE) {
+        ns = true;
+      } else if (ti === STAR || ti === IDENT) {
+        if ((tok = stream.get()).id === PIPE) {
+          ns = true;
+          tok = false;
+        } else tag = start;
       }
+      if (ns && !(tag = stream.match(TT.identStar, false))) {
+        if (ti !== PIPE) stream.unget();
+        return;
+      }
+      const mods = [];
       while (true) {
-        const token = stream.get(true);
-        const action = ParserRoute.simpleSelectorSequence[token.type];
-        const component = action ? action.call(this, token) : (stream.unget(), 0);
-        if (!component) break;
-        modifiers.push(component);
-        text += component;
+        if (!tok) tok = stream.get();
+        const fn = ParserRoute.selector[tok.id];
+        if (!(tok = fn && fn.call(this, stream, tok))) break;
+        mods.push(tok);
+        tok = false;
       }
-      return text && new SelectorPart(elementName, modifiers, text, start);
-    }
-
-    _typeSelector(ns, token) {
-      const name = new SelectorSubPart(ns + token.value, 'elementName', token);
-      name.col -= ns.length;
-      return name;
-    }
-
-    _hash(start) {
-      return new SelectorSubPart(start.value, 'id', start);
-    }
-
-    _class(start) {
-      const name = this._tokenStream.mustMatch(Tokens.IDENT, false).value;
-      return new SelectorSubPart('.' + name, 'class', start);
-    }
-
-    _namespacePrefix(next) {
-      const stream = this._tokenStream;
-      const v = (next || (next = stream.LT(1))).value;
-      return v === '|' ? v :
-        (v === '*' || next.type === Tokens.IDENT) && stream.LT(2).value === '|'
-          ? stream.get().value + stream.get().value
-          : null;
-    }
-    _attrib(start) {
-      const stream = this._tokenStream;
-      let value = start.value;
-      value += this._ws();
-      value += this._namespacePrefix() || '';
-      value += stream.mustMatch(Tokens.IDENT, false).value;
-      value += this._ws();
-      if (stream.match(TT.attrMatch)) {
-        value += stream._token.value;
-        value += this._ws();
-        value += stream.mustMatch(TT.identString).value;
-        value += this._ws();
-        if (stream.match(Tokens.IDENT, ['i', 's'])) {
-          value += stream._token.value;
-          value += this._ws();
-        }
+      if (tag && tag !== start) {
+        tag.col = start.col;
+        tag.offset = start.offset;
+        tag.lowCode = start.lowCode;
       }
-      value += stream.mustMatch(Tokens.RBRACKET).value;
-      return new SelectorSubPart(value, 'attribute', start);
-    }
-
-    _pseudo() {
-      const stream = this._tokenStream;
-      const colons = stream.match(Tokens.COLON) ? '::' : ':';
-      const tok = stream.mustMatch(TT.pseudo);
-      tok.col -= colons.length;
-      tok.offset -= colons.length;
-      return tok.name
-        ? new SelectorPseudoFunc(tok, colons, this._expr(':', Tokens.RPAREN))
-        : new SelectorSubPart(colons + tok.value, 'pseudo', tok);
-    }
-
-    /** :not(), :is(), :where(), :any() */
-    _pseudoFuncSel(tok) {
-      this._ws();
-      tok = new SelectorPseudoFunc(tok, ':', this._selectorsGroup(tok.name === 'has'));
-      this._tokenStream.mustMatch(Tokens.RPAREN);
+      tok = Token.from(start);
+      tok.elementName = tag || '';
+      tok.modifiers = mods;
+      tok.offset2 = (mods[mods.length - 1] || tok).offset2;
       return tok;
     }
 
-    _expression() {
-      const parts = [];
-      const stream = this._tokenStream;
-      for (let tok; (tok = stream.get(true));) {
-        if (tok.name) {
-          parts.push(this._function(tok));
-        } else if (tok.value === ')') {
-          stream.unget();
-          break;
-        } else if (tok.type !== Tokens.COMMENT) {
-          parts.push(tok);
-          this._ws();
-        }
-      }
-      return parts[0] ? parts : null;
+    _combinator(stream, tok = stream.match(COMBINATOR)) {
+      if (tok) tok.type = Combinators[tok.lowCode] || 'unknown';
+      return tok;
     }
 
-    _declaration(consumeSemicolon, Props) {
-      const {_tokenStream: stream, options: opts} = this;
-      let prop, value, hack, start, invalid;
-      let tok = stream.get(true);
-      if (tok.type === Tokens.STAR && opts.starHack) {
-        hack = '*';
-        start = tok;
-        tok = stream.get(true);
+    _hash(stream, tok) {
+      tok.type = 'id';
+      tok.args = [];
+      return tok;
+    }
+
+    _class(stream, tok) {
+      tok = stream.mustMatch(IDENT, false);
+      if (isOwn(tok, 'text')) tok.text = '.' + tok.text;
+      tok.type = 'class';
+      tok.col--;
+      tok.offset--;
+      tok.lowCode = 46; /* . */
+      return tok;
+    }
+
+    _attrib(stream, start) {
+      const t1 = stream.mustMatch(TT.attrStart);
+      let t2, ns, name, eq, val, mod, end;
+      if (t1.id === PIPE) { // [|
+        ns = t1;
+      } else if (t1.id === STAR) { // [*
+        ns = t1;
+        ns.offset2++;
+        stream.mustMatch(PIPE, false);
+      } else if ((t2 = stream.get()).id === PIPE) { // [ns|
+        ns = t1;
+        ns.offset2++;
+      } else if (TT.attrEq[t2.id]) { // [name=, |=, ~=, ^=, *=, $=
+        name = t1;
+        eq = t2;
+      } else if (TT.attrNameEnd[t2.id]) { // [name], [name/*[[var]]*/, [name<WS>
+        name = t1;
+        end = t2.id === RBRACKET && t2;
+      } else { // [name<?>
+        stream._failure('"]"', t2);
       }
-      if (tok.type === Tokens.IDENT) {
-        value = tok.value;
-        if (value[0] === '_' && opts.underscoreHack) {
-          value = value.slice(1);
-          hack = '_';
+      name = name || stream.mustMatch(IDENT, false);
+      if (!eq && !end) {
+        if ((t2 = stream.mustMatch(TT.attrEqEnd)).id === RBRACKET) end = t2; else eq = t2;
+      }
+      if (eq) {
+        val = stream.mustMatch(TT.identString);
+        if ((t2 = stream.get(2)).id === RBRACKET) end = t2;
+        else if (B.attrIS.has(t2)) mod = t2;
+        else stream._failure(B.attrIS, t2);
+      }
+      start.args = [
+        /*0*/ ns || '',
+        /*1*/ name,
+        /*2*/ eq || '',
+        /*3*/ val || '',
+        /*4*/ mod || '',
+      ];
+      start.type = 'attribute';
+      start.offset2 = (end || stream.mustMatch(RBRACKET)).offset2;
+      return start;
+    }
+
+    _pseudo(stream, tok) {
+      const colons = stream.match(COLON, false) ? '::' : ':';
+      tok = stream.mustMatch(TT.pseudo, false);
+      tok.col -= colons.length;
+      tok.offset -= colons.length;
+      tok.type = 'pseudo';
+      let expr, n, x;
+      if ((n = tok.name)) {
+        if (n === 'nth-child' || n === 'nth-last-child') {
+          let t1, t2, t3;
+          expr = [t1 = stream.mustMatch(TT.nthOf)];
+          if ((x = t1.id) === IDENT) {
+            if (B.nthBare.has(t1)) x = t1.id = Tokens.NTH;
+            else if (!B.evenOdd.has(t1)) stream._failure('', t1);
+            else x = 0;
+          }
+          if (x === Tokens.NTH && (x = (t2 = stream.get(2)).id) && B.plusMinus[t2.lowCode]) {
+            if (!(x === NUMBER && t2.isInt) &&
+                !(t2.length === 1 && (t3 = stream.mustMatch(NUMBER)).isInt && t3.lowCode >= 48)) {
+              stream._failure('+int, -int', t2);
+            }
+            expr[1] = t2;
+            if (t3) expr[2] = t3;
+          }
+          if (x === IDENT ||
+              x !== RPAREN && (x = (t2 = stream.match(TT.nthOfEnd)).id) === IDENT) {
+            if (!B.of.has(t2)) stream._failure(B.of, t2);
+            expr.push(t2);
+            n = 'is';
+          }
         }
-        prop = new PropName(value, start || tok, hack);
-      } else {
-        stream.unget();
+        if (n === 'not' || n === 'is' || n === 'where' || n === 'any' || n === 'has') {
+          x = this._selectorsGroup(stream, undefined, n === 'has');
+          if (!x) stream._failure('a selector');
+          if (expr) expr.push(...x); else expr = x;
+          stream.mustMatch(RPAREN, {reuse: 1});
+        } else if (x !== RPAREN) {
+          expr = this._expr(stream, RPAREN);
+        }
+        tok = TokenFunc.from(tok, expr, stream.token);
+      }
+      tok.args = expr && expr.parts || [];
+      return tok;
+    }
+
+    _declaration(stream, tok, {colon, inParens, scope} = {}) {
+      const opts = this.options;
+      if (!tok && !(tok = stream.match(opts.starHack ? TT.identStar : IDENT))) {
         return;
       }
-      stream.mustMatch(Tokens.COLON);
-      value = tok.isCust
-        ? this._customProperty() // whitespace is a part of custom property value
-        : (this._ws(), this._expr());
-      // if there's no parts for the value, it's an error
-      if (!value) stream.throwUnexpected(stream.LT(1));
-      if (!opts.skipValidation && !tok.isCust) {
-        try {
-          validateProperty(prop.text, value, stream, Props);
-        } catch (ex) {
-          if (!(ex instanceof ValidationError)) {
-            ex.message = ex.stack;
-          }
-          invalid = ex;
-        }
+      if (tok.isVar) {
+        return true;
       }
+      let hack;
+      if (tok.id === STAR) {
+        if (!(tok = stream.match(IDENT, false))) { stream.unget(); return; }
+        hack = '*'; tok.col--; tok.offset--;
+      } else if (tok.lowCode === 95 /* _ */ && opts.underscoreHack) {
+        hack = '_';
+      }
+      if (hack) {
+        tok.hack = hack;
+        PDESC.value = tok.text.slice(1); define(tok, 'text', PDESC);
+        PDESC.value = toStringPropHack; define(tok, 'toString', PDESC);
+      }
+      if (!colon) stream.mustMatch(COLON);
+      const isCust = tok.type === 'custom-prop';
+      const end = isCust ? TT.propCustomEnd : inParens ? TT.propValEndParen : TT.propValEnd;
+      const value = this._expr(stream, end, isCust) ||
+        isCust && TokenValue.empty(stream.token) ||
+        stream._failure('');
+      const invalid = !isCust && !opts.noValidation && validateProperty(tok, value, stream, scope);
+      const important = stream.token.id === DELIM && stream.mustMatch(IDENT, B.important);
       this.fire({
         type: 'property',
-        property: prop,
-        important: Boolean(stream.match(Tokens.IMPORTANT)),
+        property: tok,
         message: invalid && invalid.message,
+        important,
         invalid,
         value,
-      }, prop);
-      if (consumeSemicolon) while (stream.match(TT.semiS)) {/*NOP*/}
-      this._ws();
-      return true;
+      }, tok);
+      tok = stream.match(inParens ? RPAREN : TT.declEnd, {reuse: !important}).id;
+      return inParens ? tok : tok === SEMICOLON || (stream.unget(), tok);
     }
 
-    _expr(inFunction, endToken) {
-      const ie = this.options.ieFilters;
-      const stream = this._tokenStream;
-      const values = [];
-      let tok, tt, v;
-      while (
-        (tt = (tok = stream.get(true)).type, v = tok.value) &&
-        (endToken ? tt !== endToken : v !== ';' && v !== '}' && v !== ')' && tt !== Tokens.IMPORTANT)
-      ) {
-        if (v === '(' || v === '[' || inFunction && v === '{') {
-          tok = this._expr(inFunction, TokenTypeByText[Tokens[tt].end]);
-        } else if (tt === Tokens.PSEUDO_FUNC_SEL) {
-          tok = this._pseudoFuncSel(tok);
-        } else if (tt === Tokens.FUNCTION) {
-          tok = this._function(tok);
-        } else if (ie && v === '=') {
-          tok = values.pop();
-          if (tok) tok.text += v + this._functionIeFilter();
-        } else if (ie && tt === Tokens.IE_FUNCTION) {
-          tok.expr = this._expr(true, Tokens.RPAREN);
-        } else if (tt === Tokens.HASH) {
-          tok = this._hexcolor(tok);
-        } else if (tt === Tokens.S) {
-          continue;
-        } else if (tt === Tokens.COMMENT) {
-          tok = 0;
+    /**
+     * @param {TokenStream} stream
+     * @param {TokenMap|number} end - will be consumed!
+     * @param {boolean} [dumb] - <any-value> mode, no additional checks
+     * @return {TokenValue|void}
+     */
+    _expr(stream, end, dumb) {
+      const isEndMap = typeof end === 'object';
+      const parts = [];
+      let /** @type {Token} */ tok, ti, isVar, ie, x;
+      while ((ti = (tok = stream.get(1)).id) && !(isEndMap ? end[ti] : end === ti)) {
+        if ((x = PAIRING[ti])) {
+          tok.expr = this._expr(stream, x, dumb || ti === LBRACE);
+          if (stream.token.id !== x) stream._failure(x);
+          tok.offset2 = stream.token.offset2;
+          tok.type = 'block';
+        } else if (ti === FUNCTION) {
+          if (!tok.ie || (ie != null ? ie : ie = this.options.ieFilters)) {
+            tok = this._function(stream, tok, dumb);
+            isVar = isVar || tok.isVar;
+          }
+        } else if (ti === USO_VAR) {
+          isVar = true;
+        } else if (dumb) {
+          // No smart processing of tokens in dumb mode, we'll just accumulate the values
+        } else if (ti === HASH) {
+          this._hexcolor(stream, tok);
+        } else if (ti === IDENT && !tok.type) {
+          x = tok.lowCode;
+          tok.type = ((ti = x === 97) || x === 110) && tok.length === 4 && (
+            ti ? B.auto.has(tok, 97) && (tok.isAuto = true)
+               : B.none.has(tok, 110) && (tok.isNone = true)
+          ) || !B.colors.has(tok, x) ? 'ident' : 'color';
         }
-        if (tok) values.push(tok instanceof SyntaxUnit ? tok : PropValueUnit(tok));
-        this._ws();
+        parts.push(tok);
       }
-      if (!endToken) stream.unget();
-      return inFunction === ':' ? values
-        : values[0] && new PropValue(values);
+      if (parts[0]) return assign(TokenValue.from(parts), isVar && {isVar: true});
     }
 
-    _customProperty() {
-      const stream = this._tokenStream;
-      const value = stream.readDeclValue();
-      if (value) {
-        const token = stream._token;
-        token.value = value;
-        token.type = Tokens.UNKNOWN;
-        return new PropValue([PropValueUnit(token)], token);
-      }
+    _function(stream, tok, dumb) {
+      return TokenFunc.from(tok, this._expr(stream, RPAREN, dumb), stream.token);
     }
 
-    _function(tok) {
-      const stream = this._tokenStream;
-      if (tok || (tok = stream.match(Tokens.FUNCTION))) {
-        tok.expr = this._expr(true, Tokens.RPAREN);
-        this._ws();
-        return new PropValueFunc(tok);
-      }
-    }
-
-    _functionIeFilter() {
-      const stream = this._tokenStream;
-      let res = '';
-      let tok, tt, v;
-      do {
-        this._ws();
-        if (res) {
-          res += stream.match(Tokens.IDENT).value || '';
-          res += stream.match(Tokens.EQUALS).value || '';
+    _hexcolor(stream, tok) {
+      let text, len, offset, i, c;
+      if ((len = tok.length) === 4 || len === 5 || len === 7 || len === 9) {
+        if (isOwn(tok, 'text')) text = (offset = 0, tok.text);
+        else ({_input: text, offset} = tok);
+        for (i = 1; i < len; i++) {
+          c = text.charCodeAt(offset + i); // 2-5x faster than slicing+parseInt or regexp
+          if ((c < 48 || c > 57) && (c < 65 || c > 70) && (c < 97 || c > 102)) break;
         }
-        tok = stream.get(true);
-        if ((tt = tok.type) !== Tokens.S && (v = tok.value) !== ',') {
-          if (tok.number != null || tt === Tokens.STRING) res += v;
-          else if (v === ')') return (stream.unget(), res);
-          else if (!v.startsWith('/*')) stream.throwUnexpected(tok, [Tokens.RPAREN]);
-        }
-      } while (true);
-    }
-
-    _hexcolor(token = this._tokenStream.match(Tokens.HASH)) {
-      if (!token) return;
-      const color = token.value;
-      const len = color.length;
-      if (len !== 4 && len !== 5 && len !== 7 && len !== 9 ||
-          !/^#([a-f\d]{3}(?:[a-f\d](?:[a-f\d]{2}){0,2})?)$/i.test(color)) {
-        throw new SyntaxError(`Expected a hex color but found '${color}'.`, token);
       }
-      this._ws();
-      return token;
+      if (i === len) tok.type = 'color';
+      else this.alarm(1, `Expected a hex color but found "${clipString(tok)}".`, tok);
     }
 
-    _keyframes(start) {
-      const stream = this._tokenStream;
-      const prefix = start.value.match(rxVendorPrefix)[1] || '';
-      const name = PropValueUnit(stream.mustMatch(TT.identString));
-      stream.mustMatch(Tokens.LBRACE);
+    _keyframes(stream, start) {
+      const prefix = start.vendorPos ? start.text.slice(0, start.vendorPos) : '';
+      const name = stream.mustMatch(TT.identString);
+      stream.mustMatch(LBRACE);
       this.fire({type: 'startkeyframes', name, prefix}, start);
       // check for key
       while (true) {
-        this._ws();
-        const keys = [this._key(true)];
+        const keys = [this._key(stream, true)];
         if (!keys[0]) break;
-        while (stream.match(Tokens.COMMA)) {
-          this._ws();
-          keys.push(this._key());
+        while (stream.match(COMMA)) {
+          keys.push(this._key(stream));
         }
-        this.fire({type: 'startkeyframerule', keys}, keys[0]);
-        this._readDeclarations();
-        this.fire({type: 'endkeyframerule', keys});
+        this._readDeclarations(stream, {
+          event: ['keyframerule', {keys}, keys[0]],
+        });
       }
-      stream.mustMatch(Tokens.RBRACE);
+      stream.mustMatch(RBRACE);
       this.fire({type: 'endkeyframes', name, prefix});
-      this._ws();
     }
 
-    _key(optional) {
-      const stream = this._tokenStream;
-      const token = stream.match(Tokens.PERCENTAGE) || stream.match(Tokens.IDENT, ['from', 'to']);
-      if (token) {
-        this._ws();
-        return PropValueUnit(token);
-      } else if (!optional) {
-        stream.throwUnexpected(stream.LT(1), ['%', "'from'", "'to'"]);
-      }
+    _key(stream, optional) {
+      return stream.match(PCT) || stream.match(IDENT, B.fromTo) ||
+        !optional && stream._failure('percentage%, "from", "to"', stream.peek());
     }
 
-    _skipCruft() {
-      while (this._tokenStream.match(TT.cruft)) { /*NOP*/ }
+    _skipCruft(stream) {
+      while (stream.match(TT.cruft)) { /*NOP*/ }
     }
 
     /**
      * @param {{}} [_]
-     * @param {Boolean} [_.checkStart] - check for the left brace at the beginning.
-     * @param {Boolean} [_.readMargins] - check for margin patterns.
-     * @param {Boolean} [_.stopAfterBrace] - stop after the final } without consuming whitespace
-     * @param {string} [_.Props] - definitions of valid properties
+     * @param {TokenStream} stream
+     * @param {Token} [_.brace] - check for the left brace at the beginning.
+     * @param {Array} [_.event] - ['name', {...props}?, startToken?]
+     * @param {boolean|number} [_.margins] - check for margin patterns.
+     * @param {Token|string} [_.scope] - definitions of valid properties
      */
-    _readDeclarations({
-      checkStart = true,
-      readMargins = false,
-      stopAfterBrace = false,
-      Props,
-    } = {}) {
-      const stream = this._tokenStream;
-      if (checkStart) stream.mustMatch(Tokens.LBRACE);
-      let next, tt;
-      while ((next = stream.get(true)).value !== '}' && (tt = next.type)) {
+    _readDeclarations(stream, {brace, margins, scope, event} = {}) {
+      if (!brace) stream.mustMatch(LBRACE);
+      if (margins) margins = Tokens.MARGIN_SYM;
+      if (event) this.fire(assign({type: 'start' + event[0]}, event[1]), event[2]);
+      const declOpts = scope ? {scope: scope.id ? Tokens[scope.id].text : scope} : {};
+      const star = this.options.starHack && STAR;
+      for (let tok, ti, fn, ex; (ti = (tok = stream.get(2)).id) !== RBRACE; ex = null) {
+        if (ti === SEMICOLON) continue;
         try {
-          if (tt === Tokens.SEMICOLON ||
-              this._ws(next, true) ||
-              readMargins && this._margin() ||
-              (stream.unget(), this._declaration(true, Props))) {
-            continue;
+          if (ti === margins) {
+            this._margin(stream, tok);
+          } else if (!margins && (fn = ParserRoute.ruleset[ti])) {
+            fn.call(this, stream, tok);
+          } else if (!(ti === IDENT || ti === star) || !this._declaration(stream, tok, declOpts)) {
+            ex = stream._failure('a declaration', tok, false);
           }
+        } catch (e) {
+          ex = e;
+        }
+        if (!ex) continue;
+        if (this.options.strict || !(ex instanceof SyntaxError)) throw ex;
+        this.fire(assign({}, ex, {type: ex.type || 'error', error: ex, recoverable: true}));
+        this._expr(stream, TT.declEnd, true);
+        if ((ti = stream.token.id) === RBRACE) break;
+        else if (ti !== SEMICOLON) throw ex;
+      }
+      if (event) this.fire(assign({type: 'end' + event[0]}, event[1]));
+    }
+
+    _unknownSym(stream, start) {
+      if (this.options.strict) throw new SyntaxError('Unknown ' + start, start);
+      for (const {reader} = stream; ;) {
+        let c = reader.peek();
+        if (!c) stream._failure();
+        if (c === 123 /* { */) {
+          stream.readDeclValue({stopOn: ''});
           break;
-        } catch (ex) {
-          this._readDeclarationsRecovery(ex, arguments[0]);
+        } else if (c === 59 /* ; */) {
+          reader.read();
+          break;
+        } else {
+          c = stream.readDeclValue({omitComments: true, stopOn: ';{}'});
+          if (!c) break;
         }
       }
-      if (next.value !== '}') stream.mustMatch(Tokens.RBRACE);
-      if (!stopAfterBrace) this._ws();
-    }
-
-    _readDeclarationsRecovery(ex) {
-      if (ex) {
-        if (this.options.strict || !(ex instanceof SyntaxError)) {
-          throw ex; // if not a syntax error, rethrow it
-        }
-        this.fire(Object.assign({}, ex, {
-          type: ex.type || 'error',
-          recoverable: true,
-          error: ex,
-        }));
-      }
-      switch (this._tokenStream.advance([Tokens.SEMICOLON, Tokens.RBRACE])) {
-        case Tokens.SEMICOLON:
-          return true; // continue to the next declaration
-        case Tokens.RBRACE:
-          this._tokenStream.unget();
-          return;
-        default:
-          throw ex;
-      }
-    }
-
-    _ws(start, skipUsoVar) {
-      const tt = start && start.type;
-      if (tt && !(
-        tt === Tokens.S ||
-        tt === Tokens.COMMENT ||
-        tt === Tokens.USO_VAR && skipUsoVar
-      )) {
-        return '';
-      }
-      const stream = this._tokenStream;
-      const tokens = skipUsoVar ? TT.usoS : Tokens.S;
-      let ws = start ? start.value : '';
-      for (let tok; (tok = stream.LT(1, true)) && tok.type === Tokens.S;) {
-        ws += stream.get(true).value;
-      }
-      if (stream._ltIndex === stream._ltAhead) {
-        ws += stream._reader.readMatch(/\s+/y) || '';
-        if (!stream._reader.peekTest(/\/\*/y)) {
-          return ws;
-        }
-      }
-      while (stream.match(tokens)) {
-        ws += stream._token.value;
-      }
-      return ws;
-    }
-
-    _unknownSym(start) {
-      if (this.options.strict) {
-        throw new SyntaxError('Unknown @ rule.', start);
-      }
-      const {prelude, block} = this._tokenStream.readUnknownSym();
-      this.fire({type: 'unknown-at-rule', name: start.value, prelude, block}, start);
-      this._ws();
+      stream._resetLT();
     }
 
     parse(input, {reuseCache} = {}) {
-      this._tokenStream = new TokenStream(input);
+      const stream = this.stream = new TokenStream(input);
       parserCache.start(reuseCache && this);
-      this._stylesheet();
+      this._stylesheet(stream);
     }
   }
 
-  ParserRoute[Tokens.CONTAINER_SYM] = // we don't allow @document inside @container
-  ParserRoute[Tokens.DOCUMENT_SYM] =
-  ParserRoute[Tokens.LAYER_SYM] =
-  ParserRoute[Tokens.MEDIA_SYM] =
-  ParserRoute[Tokens.SUPPORTS_SYM] = {
-    [Tokens.DOCUMENT_SYM]: Parser.prototype._documentMisplaced,
-    [Tokens.CONTAINER_SYM]: Parser.prototype._container,
-    [Tokens.FONT_FACE_SYM]: Parser.prototype._fontFace,
-    [Tokens.FONT_PALETTE_VALUES_SYM]: Parser.prototype._fontPaletteValues,
-    [Tokens.KEYFRAMES_SYM]: Parser.prototype._keyframes,
-    [Tokens.LAYER_SYM]: Parser.prototype._layer,
-    [Tokens.MEDIA_SYM]: Parser.prototype._media,
-    [Tokens.PAGE_SYM]: Parser.prototype._page,
-    [Tokens.SUPPORTS_SYM]: Parser.prototype._supports,
-    [Tokens.UNKNOWN_SYM]: Parser.prototype._unknownSym,
-    [Tokens.VIEWPORT_SYM]: Parser.prototype._viewport,
-  };
-  ParserRoute.stylesheet = Object.assign({}, ParserRoute[Tokens.DOCUMENT_SYM], {
-    [Tokens.DOCUMENT_SYM]: Parser.prototype._document,
-    [Tokens.S]: Parser.prototype._ws,
-  });
-  ParserRoute.topDoc = {
-    [Tokens.DOCUMENT_SYM]: Parser.prototype._document,
-    [Tokens.UNKNOWN_SYM]: Parser.prototype._unknownSym,
-    [Tokens.S]: Parser.prototype._ws,
-  };
-  ParserRoute.simpleSelectorSequence = {
-    [Tokens.HASH]: Parser.prototype._hash,
-    [Tokens.DOT]: Parser.prototype._class,
-    [Tokens.LBRACKET]: Parser.prototype._attrib,
-    [Tokens.COLON]: Parser.prototype._pseudo,
-    [Tokens.PSEUDO_FUNC_SEL]: Parser.prototype._pseudoFuncSel,
-  };
+  {
+    const P = Parser.prototype;
+    let obj = ParserRoute.ruleset = [];
+    obj[Tokens.CONTAINER_SYM] = P._container;
+    obj[Tokens.DOCUMENT_SYM] = P._documentMisplaced;
+    obj[Tokens.FONT_FACE_SYM] = P._fontFace;
+    obj[Tokens.FONT_PALETTE_VALUES_SYM] = P._fontPaletteValues;
+    obj[Tokens.KEYFRAMES_SYM] = P._keyframes;
+    obj[Tokens.LAYER_SYM] = P._layer;
+    obj[Tokens.MEDIA_SYM] = P._media;
+    obj[Tokens.PAGE_SYM] = P._page;
+    obj[Tokens.PROPERTY_SYM] = P._propertySym;
+    obj[Tokens.SUPPORTS_SYM] = P._supports;
+    obj[Tokens.UNKNOWN_SYM] = P._unknownSym;
+
+    obj = ParserRoute.cruft = [];
+    obj[Tokens.CDO] = P._skipCruft;
+    obj[Tokens.CDC] = P._skipCruft;
+
+    obj = ParserRoute.stylesheet = [].concat(ParserRoute.ruleset);
+    obj[Tokens.DOCUMENT_SYM] = P._document;
+    obj[Tokens.CDO] = P._skipCruft;
+    obj[Tokens.CDC] = P._skipCruft;
+
+    obj = ParserRoute.topDoc = [].concat(ParserRoute.cruft);
+    obj[Tokens.DOCUMENT_SYM] = P._document;
+    obj[Tokens.UNKNOWN_SYM] = P._unknownSym;
+
+    obj = ParserRoute.globals = [].concat(ParserRoute.cruft);
+    obj[Tokens.CHARSET_SYM] = P._charset;
+    obj[Tokens.LAYER_SYM] = P._layer;
+    obj[Tokens.IMPORT_SYM] = P._import;
+    obj[Tokens.NAMESPACE_SYM] = P._namespace;
+
+    obj = ParserRoute.selector = [];
+    obj[HASH] = P._hash;
+    obj[DOT] = P._class;
+    obj[LBRACKET] = P._attrib;
+    obj[COLON] = P._pseudo;
+  }
 
   //#endregion
   //#region Helper functions
 
-  function define(obj, name, val) {
-    Object.defineProperty(obj, name, {[val.call ? 'get' : 'value']: val, configurable: true});
-    return val;
+  function toStringPropHack() {
+    return this.hack + this.text;
   }
-  function customIdentChecker(ex, re, alt) {
-    re = RegExp(`^(?!(default|${ex}${ex ? '|' : ''}${GlobalKeywords.join('|')})$)${re || ''}`, 'i');
-    return p => p.tokenType === Tokens.IDENT && re.test(p.text) || alt && alt(p);
-  }
-  /**
-   * vars can span any number of grammar parts so not gonna try to guess. KISS.
-   * @param {PropValue} value
-   */
-  function hasVarParts(value) {
-    return value.parts.some(p => p.isVar);
-  }
-  function isIdentStart(c) {
-    return c >= 'a' && c <= 'z' || c === '-' || c === '\\' || c === '_' ||
-      c >= 'A' && c <= 'Z' || c >= '\u00A0' && c <= '\uFFFF';
-  }
-  /** @param {string} str - must be lowercase */
-  function isUriIdent(str) {
-    return str === 'url' || str === 'url-prefix' || str === 'domain';
-  }
-  function lowerCmp(a, b) {
-    return a.length === b.length && (a === b || a.toLowerCase() === b.toLowerCase());
-  }
-  /** @this {String} */
-  function lowerCmpThis(a) {
-    return a.length === this.length && (a === this || a.toLowerCase() === this.toLowerCase());
-  }
-  function parseString(str) {
-    return str.slice(1, -1) // strip surrounding quotes
-      .replace(/\\(\r\n|[^\r0-9a-f]|[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?)/ig, unescapeChar);
-  }
-  function failValidation(unit, what) {
-    if (!what || what === true ? (what = 'end of value') : !unit.isVar) {
-      throw new ValidationError(`Expected ${what} but found '${unit.text}'.`, unit);
-    }
-  }
-  function unescapeChar(m, c) {
-    if (c === '\n' || c === '\r\n' || c === '\r' || c === '\f') {
-      return '';
-    }
-    m = /^[0-9a-f]{1,6}/i.exec(c);
-    return m ? String.fromCodePoint(parseInt(m[0], 16)) : c;
-  }
-
   //#endregion
-  //#region PUBLIC API
 
-  /** @namespace parserlib */
-  return {
-    css: {
-      GlobalKeywords,
-      Parser,
-      Properties,
-      TokenStream,
-    },
-    util: {
-      EventTarget,
-      rxNamedColor,
-      rxVendorPrefix,
-      describeProp: vtExplode,
-    },
-    cache: parserCache,
-  };
+  parserlib.css.Parser = Parser;
+  parserlib.css.TokenStream = TokenStream;
+  parserlib.util.cache = parserCache;
 
-  //#endregion
+  if (typeof self !== 'undefined') self.parserlib = parserlib;
+  else module.exports = parserlib; // eslint-disable-line no-undef
 })();

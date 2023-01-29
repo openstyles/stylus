@@ -168,14 +168,11 @@ function simplifyUsercssVars(vars) {
 
 function spliceCssAfterGlobals(section, newText, after) {
   const {code} = section;
-  const RX_IMPORT = /@import\s/gi;
-  RX_IMPORT.lastIndex = after;
-  if (RX_IMPORT.test(code)) {
+  const rx = /@import\s/gi;
+  if ((rx.lastIndex = after, rx.test(code))) {
     require(['/js/csslint/parserlib']); /* global parserlib */
-    const parser = new parserlib.css.Parser();
-    parser._tokenStream = new parserlib.css.TokenStream(code);
-    parser._sheetGlobals();
-    const {col, line, offset} = parser._tokenStream._token;
+    const P = new parserlib.css.Parser({globalsOnly: true}); P.parse(code);
+    const {col, line, offset} = P.stream.token;
     // normalizing newlines in non-usercss to match line:col from parserlib
     if ((code.indexOf('\r') + 1 || 1e99) - 1 < offset) {
       after = col + code.split('\n', line).reduce((len, s) => len + s.length + 1, 0);

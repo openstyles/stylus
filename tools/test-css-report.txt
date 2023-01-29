@@ -1,0 +1,57 @@
+warning	6	3	@import prevents parallel downloads, use <link> instead.
+warning	7	3	@import prevents parallel downloads, use <link> instead.
+warning	8	3	@import prevents parallel downloads, use <link> instead.
+warning	9	3	@import prevents parallel downloads, use <link> instead.
+warning	13	7	Empty rule.
+warning	14	7	Empty rule.
+warning	15	7	Empty rule.
+warning	16	7	Empty rule.
+error	17	41	Expected +int, -int but found "+".
+error	18	40	Expected +int, -int but found "+".
+error	19	37	Expected IDENT, NUMBER, NTH but found "-3-".
+error	20	37	Expected IDENT, NUMBER, NTH but found "+".
+error	21	39	Expected "of" but found "n".
+warning	22	43	Unqualified attribute selectors are known to be slow.
+warning	22	50	Slow attribute selector ~=.
+warning	25	8	Non-alphabetical order: "padding".
+warning	28	9	Ungrouped duplicate "filter".
+warning	28	9	!important.
+warning	43	3	A nested @import is valid only if this @-moz-document section is the first one matched for any given URL.
+warning	43	3	@import prevents parallel downloads, use <link> instead.
+warning	44	3	A nested @import is valid only if this @-moz-document section is the first one matched for any given URL.
+warning	44	3	@import prevents parallel downloads, use <link> instead.
+warning	50	7	Non-alphabetical order: "aspect-ratio".
+warning	64	3	A nested @import is valid only if this @-moz-document section is the first one matched for any given URL.
+warning	64	3	@import prevents parallel downloads, use <link> instead.
+warning	70	5	Non-alphabetical order: "font-weight".
+warning	71	12	Misplaced property "color".
+warning	81	5	Missing -moz prefix for gradient.
+warning	82	5	"svg.mobile-hero:not(.a + .b .c)" is overqualified, just use ".mobile-hero" without element name.
+warning	87	33	Expected end of value but found "inline-size22".
+warning	89	24	Unknown property "object-overflow".
+warning	90	7	Non-alphabetical order: "clip-path".
+warning	96	7	Ungrouped duplicate "filter".
+warning	96	15	Expected none | [ blur() | brightness() | contrast() | drop-shadow() | grayscale() | hue-rotate() | invert() | opacity() | saturate() | sepia() | <uri> ]+ | <ie-function> but found "alpha(opacity=70)".
+warning	109	5	!important.
+warning	110	5	!important.
+warning	110	5	Non-alphabetical order: "filter".
+warning	110	20	Expected <number-percentage>? but found "foo0".
+warning	111	13	Expected none | [ blur() | brightness() | contrast() | drop-shadow() | grayscale() | hue-rotate() | invert() | opacity() | saturate() | sepia() | <uri> ]+ | <ie-function> but found "foo(1)".
+warning	126	20	Unknown pseudo :--state1
+warning	126	29	Must use -moz- prefix in :loading
+warning	128	7	Non-alphabetical order: "background-position-x".
+warning	129	33	Expected end of value but found "oopsie".
+error	147	7	Expected a declaration but found ""TEST PASSED: parser recovery"".
+error	167	24	Expected "]" but found ""TEST PASSED: parser recovery"".
+warning	172	5	Non-alphabetical order: "--foo".
+error	183	8	Expected ":" but found ".".
+warning	190	3	"col.selected::marker" is overqualified, just use ".selected" without element name.
+warning	194	5	Non-alphabetical order: "overflow-anchor".
+warning	195	5	IE star prefix.
+warning	199	5	!important.
+warning	215	16	Expected <number-percentage-none>{3} [ / <number-percentage-none> ]? | from [ <named-or-hex-color> | color-mix() | color() | hsl() | hwb() | lab() | lch() | rgb() | hsla() | rgba() | oklab() | oklch() ] <l-a-b-alpha-none-number-percentage>{3} [ / <l-a-b-alpha-none-number-percentage> ]? but found "from red x y z".
+warning	244	5	Duplicate "color".
+warning	246	5	Duplicate "color".
+warning	270	5	Duplicate "color".
+warning	447	12	Expected <named-or-hex-color> | color-mix() | color() | hsl() | hwb() | lab() | lch() | rgb() | hsla() | rgba() | oklab() | oklch() but found "chucknorris".
+warning	448	12	Expected <named-or-hex-color> | color-mix() | color() | hsl() | hwb() | lab() | lch() | rgb() | hsla() | rgba() | oklab() | oklch() but found "blak".

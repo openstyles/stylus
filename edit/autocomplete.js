@@ -201,6 +201,12 @@
     cssValues = await linterMan.worker.getCssPropsValues();
     cssProps = addSuffix(cssValues.all);
     cssMedia = [].concat(...Object.entries(cssMime).map(getMediaKeys).filter(Boolean)).sort();
+    for (const v of Object.values(cssValues.all)) {
+      if (v && v[v.length - 1] === '<color>') {
+        v.pop();
+        v.push(...cssValues.colors);
+      }
+    }
   }
 
   function addSuffix(obj, suffix = ': ') {

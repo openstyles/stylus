@@ -1,30 +1,8 @@
-/*
-Modded by tophf <github.com/tophf>
-========== Original disclaimer:
-
-Copyright (c) 2016 Nicole Sullivan and Nicholas C. Zakas. All rights reserved.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the 'Software'), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-*/
-
-/* global parserlib */
 'use strict';
+
+const parserlib = typeof self !== 'undefined'
+  ? (require('/js/csslint/parserlib-base'), self.parserlib)
+  : require('./parserlib');
 
 //#region Reporter
 
@@ -109,10 +87,22 @@ class Reporter {
 //#endregion
 //#region CSSLint
 
-//eslint-disable-next-line no-var
-var CSSLint = (() => {
+const CSSLint = (() => {
 
-  const RX_EMBEDDED = /\/\*\s*csslint\s+((?:[^*]+|\*(?!\/))+?)\*\//ig;
+  const rxEmbedded = /\/\*\s*csslint\s+((?:[^*]+|\*(?!\/))+?)\*\//ig;
+  const rxGrammarAbbr = /([-<])(int|len|num|pct|rel-(\w{3}))(?=\W)/g;
+  const ABBR_MAP = {
+    int: 'integer',
+    len: 'length',
+    num: 'number',
+    pct: 'percentage',
+    'rel-hsl': 'h-s-l-alpha-none',
+    'rel-hwb': 'h-w-b-alpha-none',
+    'rel-lab': 'l-a-b-alpha-none',
+    'rel-lch': 'l-c-h-alpha-none',
+    'rel-rgb': 'r-g-b-alpha-none',
+  };
+  const unabbreviate = (_, c, str) => c + (ABBR_MAP[str]) || str;
   const EBMEDDED_RULE_VALUE_MAP = {
     // error
     'true': 2,
@@ -125,7 +115,6 @@ var CSSLint = (() => {
     '0': 0,
   };
   const rules = Object.create(null);
-
   // previous CSSLint overrides are used to decide whether the parserlib's cache should be reset
   let prevOverrides;
 
@@ -161,69 +150,54 @@ var CSSLint = (() => {
     /**
      * Starts the verification process for the given CSS text.
      * @param {String} text The CSS text to verify.
-     * @param {Object} ruleset (Optional) List of rules to apply. If null, then
+     * @param {Object} [ruleset] List of rules to apply. If null, then
      *      all rules are used. If a rule has a value of 1 then it's a warning,
      *      a value of 2 means it's an error.
      * @return {Object} Results of the verification.
      */
-    verify(text, ruleset) {
-
-      if (!ruleset) ruleset = this.getRuleSet();
-
+    verify(text, ruleset = this.getRuleSet()) {
       const allow = {};
       const ignore = [];
-      RX_EMBEDDED.lastIndex =
+      const emi = rxEmbedded.lastIndex =
         text.lastIndexOf('/*',
           text.indexOf('csslint',
             text.indexOf('/*') + 1 || text.length) + 1);
-      if (RX_EMBEDDED.lastIndex >= 0) {
+      if (emi >= 0) {
         ruleset = Object.assign({}, ruleset);
         applyEmbeddedOverrides(text, ruleset, allow, ignore);
       }
-
       const parser = new parserlib.css.Parser({
         starHack: true,
         ieFilters: true,
         underscoreHack: true,
         strict: false,
       });
-
       const reporter = new Reporter([], ruleset, allow, ignore);
-
+      const {messages} = reporter;
+      const report = {messages};
+      // TODO: when ruleset is unchanged we can try to invalidate only line ranges in 'allow' and 'ignore'
+      const newOvr = [ruleset, allow, ignore];
+      const reuseCache = !prevOverrides || JSON.stringify(prevOverrides) === JSON.stringify(newOvr);
+      prevOverrides = newOvr;
       // always report parsing errors as errors
       ruleset.errors = 2;
       for (const [id, mode] of Object.entries(ruleset)) {
         const rule = mode && rules[id];
         if (rule) rule.init(rule, parser, reporter);
       }
-
-      // TODO: when ruleset is unchanged we can try to invalidate only line ranges in 'allow' and 'ignore'
-      const newOvr = [ruleset, allow, ignore];
-      const reuseCache = !prevOverrides || JSON.stringify(prevOverrides) === JSON.stringify(newOvr);
-      prevOverrides = newOvr;
-
       try {
         parser.parse(text, {reuseCache});
       } catch (ex) {
         reporter.error('Fatal error, cannot continue!\n' + ex.stack, ex, {});
       }
-
-      const report = {
-        messages: reporter.messages,
-        stats: reporter.stats,
-        ruleset: reporter.ruleset,
-        allow: reporter.allow,
-        ignore: reporter.ignore,
-      };
-
       // sort by line numbers, rollups at the bottom
-      report.messages.sort((a, b) =>
-        a.rollup && !b.rollup ? 1 :
-        !a.rollup && b.rollup ? -1 :
-        a.line - b.line);
-
-      parserlib.cache.feedback(report);
-
+      messages.sort((a, b) => !!a.rollup - !!b.rollup || a.line - b.line || a.col - b.col);
+      for (const msg of messages) {
+        if ((rxGrammarAbbr.lastIndex = msg.message.indexOf('<')) >= 0) {
+          msg.message = msg.message.replace(rxGrammarAbbr, unabbreviate);
+        }
+      }
+      parserlib.util.cache.feedback(report);
       return report;
     },
   });
@@ -265,7 +239,7 @@ var CSSLint = (() => {
     let eol = -1;
     let m;
 
-    while ((m = RX_EMBEDDED.exec(text))) {
+    while ((m = rxEmbedded.exec(text))) {
       // account for the lines between the previous and current match
       while (eol <= m.index) {
         eol = text.indexOf('\n', eol + 1);
@@ -329,8 +303,9 @@ CSSLint.Util = {
 
   /** Gets the lower-cased text without vendor prefix */
   getPropName(prop) {
-    return prop._propName ||
-      (prop._propName = prop.text.match(parserlib.util.rxVendorPrefix)[2].toLowerCase());
+    const low = prop.lowText || (prop.lowText = prop.text.toLowerCase());
+    const vp = prop.vendorPos;
+    return vp ? low.slice(vp) : low;
   },
 
   registerRuleEvents(parser, {start, property, end}) {
@@ -477,7 +452,7 @@ CSSLint.addRule['box-model'] = [{
           };
         }
       } else if (/^(width|height)/i.test(name) &&
-                 /^(length|pct)/.test(event.value.parts[0].type)) {
+                 /^(length|%)/.test(event.value.parts[0].type)) {
         properties[name] = 1;
       } else if (name === 'box-sizing') {
         boxSizing = true;
@@ -491,7 +466,7 @@ CSSLint.addRule['box-model'] = [{
         for (const prop of sizeProps[size]) {
           if (prop !== 'padding' || !properties[prop]) continue;
           const {value: {parts}, line, col} = properties[prop];
-          if (parts.length !== 2 || Number(parts[0].value) !== 0) {
+          if (parts.length !== 2 || parts[0].number) {
             reporter.report(
               `No box-sizing and ${size} in ${prop}`,
               {line, col}, rule);
@@ -647,7 +622,7 @@ CSSLint.addRule['compatible-vendor-prefixes'] = [{
         if (!actual.includes(item)) {
           const spec = len === 1 ? actual[0] : len === 2 ? actual.join(' and ') : actual.join(', ');
           reporter.report(
-            `'${item}' is compatible with ${spec} and should be included as well.`,
+            `"${item}" is compatible with ${spec} and should be included as well.`,
             value.actualNodes[0], rule);
         }
       }
@@ -683,7 +658,7 @@ CSSLint.addRule['display-property-grouping'] = [{
   const reportProperty = (name, display, msg) => {
     const prop = properties[name];
     if (prop && propertiesToCheck[name] !== prop.value.toLowerCase()) {
-      reporter.report(msg || `'${name}' can't be used with display: ${display}.`, prop, rule);
+      reporter.report(msg || `"${name}" can't be used with display: ${display}.`, prop, rule);
     }
   };
   CSSLint.Util.registerRuleEvents(parser, {
@@ -714,7 +689,7 @@ CSSLint.addRule['display-property-grouping'] = [{
             .forEach(p => reportProperty(p, display));
 
           reportProperty('float', display,
-            "'display:inline' has no effect on floated elements " +
+            '"display:inline" has no effect on floated elements ' +
             '(but may be used to fix the IE6 double-margin bug).');
           break;
 
@@ -757,7 +732,7 @@ CSSLint.addRule['duplicate-background-images'] = [{
         stack[part.uri] = event;
       } else {
         reporter.report(
-          `Background image '${part.uri}' was used multiple times, ` +
+          `Background image "${part.uri}" was used multiple times, ` +
           `first declared at line ${uri.line}, col ${uri.col}.`,
           event, rule);
       }
@@ -785,7 +760,7 @@ CSSLint.addRule['duplicate-properties'] = [{
       const last = props[name];
       const dupValue = last === event.value.text;
       if (last && (lastName !== name || dupValue)) {
-        reporter.report(`${dupValue ? 'Duplicate' : 'Ungrouped duplicate'} '${property}'.`,
+        reporter.report(`${dupValue ? 'Duplicate' : 'Ungrouped duplicate'} "${property}".`,
           event, rule);
       }
       props[name] = event.value.text;
@@ -900,31 +875,20 @@ CSSLint.addRule['gradients'] = [{
   url: 'https://github.com/CSSLint/csslint/wiki/Require-all-gradient-definitions',
   browsers: 'All',
 }, (rule, parser, reporter) => {
-  let gradients;
+  let miss;
   CSSLint.Util.registerRuleEvents(parser, {
     start() {
-      gradients = {
-        moz: 0,
-        webkit: 0,
-        oldWebkit: 0,
-        o: 0,
-      };
+      miss = null;
     },
-    property(event) {
-      if (/-(moz|o|webkit)(?:-(?:linear|radial))-gradient/i.test(event.value)) {
-        gradients[RegExp.$1] = 1;
-      } else if (/-webkit-gradient/i.test(event.value)) {
-        gradients.oldWebkit = 1;
+    property({value: {parts: [p]}}) {
+      if (p && p.prefix && /(-|^)gradient$/.test(p.name)) {
+        if (!miss) miss = {moz: 1, webkit: 1};
+        delete miss[p.prefix];
       }
     },
     end(event) {
-      const missing = [];
-      if (!gradients.moz) missing.push('Firefox 3.6+');
-      if (!gradients.webkit) missing.push('Webkit (Safari 5+, Chrome)');
-      if (!gradients.oldWebkit) missing.push('Old Webkit (Safari 4+, Chrome)');
-      if (!gradients.o) missing.push('Opera 11.1+');
-      if (missing.length && missing.length < 4) {
-        reporter.report(`Missing vendor-prefixed CSS gradients for ${missing.join(', ')}.`,
+      if (miss && (miss = Object.keys(miss))[0]) {
+        reporter.report(`Missing -${miss.join(', -')} prefix${miss[1] ? 'es' : ''} for gradient.`,
           event.selectors[0], rule);
       }
     },
@@ -987,7 +951,7 @@ CSSLint.addRule['important'] = [{
 
 CSSLint.addRule['known-properties'] = [{
   name: 'Require use of known properties',
-  desc: 'Properties should be known (listed in CSS3 specification) or be a vendor-prefixed property.',
+  desc: 'Properties should be known (per CSS specification) or be a vendor-prefixed property.',
   url: 'https://github.com/CSSLint/csslint/wiki/Require-use-of-known-properties',
   browsers: 'All',
 }, (rule, parser, reporter) => {
@@ -999,6 +963,7 @@ CSSLint.addRule['known-properties'] = [{
 
 CSSLint.addRule['known-pseudos'] = [{
   name: 'Require use of known pseudo selectors',
+  // eslint-disable-next-line max-len
   url: 'https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors/Pseudo-classes_and_pseudo-elements',
   browsers: 'All',
 }, (rule, parser, reporter) => {
@@ -1008,6 +973,7 @@ CSSLint.addRule['known-pseudos'] = [{
   const FuncToo = 8; // both :function() and :non-function
   const WK = 0x10;
   const Moz = 0x20;
+  const DEAD = 0xDEAD0000; // deprecated
   const definitions = {
     // elements
     'after': 1 + 2, // also allows ":"
@@ -1125,6 +1091,7 @@ CSSLint.addRule['known-pseudos'] = [{
     'datetime-edit-text': 2 + WK,
     'datetime-edit-week-field': 2 + WK,
     'datetime-edit-year-field': 2 + WK,
+    'details-marker': 2 + WK + DEAD,
     'drag': 1 + WK,
     'drag-over': 1 + Moz,
     'file-upload-button': 2 + WK,
@@ -1161,6 +1128,7 @@ CSSLint.addRule['known-pseudos'] = [{
     'meter-inner-element': 2 + WK,
     'meter-optimum-value': 2 + WK,
     'meter-suboptimum-value': 2 + WK,
+    'outer-spin-button': 2 + WK,
     'progress-bar': 2 + WK,
     'progress-inner-element': 2 + WK,
     'progress-value': 2 + WK,
@@ -1172,6 +1140,7 @@ CSSLint.addRule['known-pseudos'] = [{
     'scrollbar-track': 2 + WK,
     'scrollbar-track-piece': 2 + WK,
     'search-cancel-button': 2 + WK,
+    'search-decoration': 2 + WK,
     'slider-container': 2 + WK,
     'slider-runnable-track': 2 + WK,
     'slider-thumb': 2 + WK,
@@ -1205,6 +1174,7 @@ CSSLint.addRule['known-pseudos'] = [{
               : defPrefixed && `Must use ${
                 (def & WK) && (def & Moz) && '-webkit- or -moz-' ||
                 (def & WK) && '-webkit-' || '-moz-'} prefix in`,
+            (def & DEAD) && 'Deprecated',
           ]) {
             if (err) reporter.report(`${err} ${text.slice(0, all.length)}`, mod, rule);
           }
@@ -1233,7 +1203,7 @@ CSSLint.addRule['order-alphabetical'] = [{
       if (!failed) {
         const name = CSSLint.Util.getPropName(event.property);
         if (name < last) {
-          reporter.report(`Non-alphabetical order: '${name}'.`, event, rule);
+          reporter.report(`Non-alphabetical order: "${name}".`, event, rule);
           failed = true;
         }
         last = name;
@@ -1289,7 +1259,7 @@ CSSLint.addRule['overqualified-elements'] = [{
 }, (rule, parser, reporter) => {
   const classes = {};
   const report = (part, mod) => {
-    reporter.report(`'${part}' is overqualified, just use '${mod}' without element name.`,
+    reporter.report(`"${part}" is overqualified, just use "${mod}" without element name.`,
       part, rule);
   };
   parser.addListener('startrule', event => {
@@ -1330,7 +1300,7 @@ CSSLint.addRule['qualified-headings'] = [{
       for (const part of selector.parts) {
         const name = part.elementName;
         if (!first && name && /h[1-6]/.test(name)) {
-          reporter.report(`Heading '${name}' should not be qualified.`, part, rule);
+          reporter.report(`Heading "${name}" should not be qualified.`, part, rule);
         }
         first = false;
       }
@@ -1341,16 +1311,18 @@ CSSLint.addRule['qualified-headings'] = [{
 CSSLint.addRule['regex-selectors'] = [{
   name: 'Disallow selectors that look like regexs',
   desc: 'Selectors that look like regular expressions are slow and should be avoided.',
+  // eslint-disable-next-line max-len
   url: 'https://github.com/CSSLint/csslint/wiki/Disallow-selectors-that-look-like-regular-expressions',
   browsers: 'All',
 }, (rule, parser, reporter) => {
   parser.addListener('startrule', event => {
-    for (const selector of event.selectors) {
-      for (const part of selector.parts) {
-        if (part.modifiers) {
-          for (const mod of part.modifiers) {
-            if (mod.type === 'attribute' && /([~|^$*]=)/.test(mod)) {
-              reporter.report(`Slow attribute selector ${RegExp.$1}.`, mod, rule);
+    for (const {parts} of event.selectors) {
+      for (const {modifiers} of parts) {
+        if (modifiers) {
+          for (const mod of modifiers) {
+            const eq = mod.type === 'attribute' && mod.args[2];
+            if (eq && eq.length === 2) {
+              reporter.report(`Slow attribute selector ${eq}.`, eq, rule);
             }
           }
         }
@@ -1361,7 +1333,7 @@ CSSLint.addRule['regex-selectors'] = [{
 
 CSSLint.addRule['selector-newline'] = [{
   name: 'Disallow new-line characters in selectors',
-  desc: 'New-line characters in selectors are usually a forgotten comma and not a descendant combinator.',
+  desc: 'New line in selectors is likely a forgotten comma and not a descendant combinator.',
   browsers: 'All',
 }, (rule, parser, reporter) => {
   parser.addListener('startrule', event => {
@@ -1387,7 +1359,7 @@ CSSLint.addRule['shorthand'] = [{
       for (const [sh, events] of Object.entries(props)) {
         const names = Object.keys(events);
         if (names.length === shorthands[sh].length) {
-          const msg = `'${sh}' shorthand can replace '${names.join("' + '")}'`;
+          const msg = `"${sh}" shorthand can replace "${names.join('" + "')}"`;
           names.forEach(n => reporter.report(msg, events[n], rule));
         }
       }
@@ -1406,7 +1378,7 @@ CSSLint.addRule['shorthand-overrides'] = [{
       const ovr = props[name];
       if (ovr) {
         delete props[name];
-        reporter.report(`'${event.property}' overrides '${Object.keys(ovr).join("', '")}' above.`,
+        reporter.report(`"${event.property}" overrides "${Object.keys(ovr).join('" + "')}" above.`,
           event, rule);
       }
     },
@@ -1463,7 +1435,7 @@ CSSLint.addRule['text-indent'] = [{
     property(event) {
       const name = CSSLint.Util.getPropName(event.property);
       const value = event.value;
-      if (name === 'text-indent' && value.parts[0].value < -99) {
+      if (name === 'text-indent' && value.parts[0].number < -99) {
         textIndent = event.property;
       } else if (name === 'direction' && /^ltr$/i.test(value)) {
         isLtr = true;
@@ -1472,9 +1444,9 @@ CSSLint.addRule['text-indent'] = [{
     end() {
       if (textIndent && !isLtr) {
         reporter.report(
-          "Negative 'text-indent' doesn't work well with RTL. " +
-          "If you use 'text-indent' for image replacement, " +
-          "explicitly set 'direction' for that item to 'ltr'.",
+          `Negative "text-indent" doesn't work well with RTL. ` +
+          'If you use "text-indent" for image replacement, ' +
+          'explicitly set "direction" for that item to "ltr".',
           textIndent, rule);
       }
     },
@@ -1544,18 +1516,18 @@ CSSLint.addRule['unqualified-attributes'] = [{
   browsers: 'All',
 }, (rule, parser, reporter) => {
   parser.addListener('startrule', event => {
-    for (const {parts} of event.selectors) {
+    event.selectors.forEach(({parts}) => {
       const part = parts[parts.length - 1];
-      if (part.modifiers &&
-          !part.modifiers.some(mod => mod.type === 'class' || mod.type === 'id')) {
-        const isUnqualified = !part.elementName || part.elementName === '*';
-        for (const mod of part.modifiers) {
-          if (mod.type === 'attribute' && isUnqualified) {
-            reporter.report(rule.desc, part, rule);
-          }
+      const mods = part.modifiers;
+      if (mods && (part.elementName || '*') === '*') {
+        let attr;
+        for (const m of mods) {
+          if (m.type === 'class' || m.type === 'id') return;
+          if (m.type === 'attribute') attr = m;
         }
+        if (attr) reporter.report(rule.desc, attr, rule);
       }
-    }
+    });
   });
 }];
 
@@ -1642,11 +1614,11 @@ CSSLint.addRule['vendor-prefix'] = [{
       for (const {needed, actual} of needsStandard) {
         const unit = properties[actual][0].name;
         if (!properties[needed]) {
-          reporter.report(`Missing standard property '${needed}' to go along with '${actual}'.`,
+          reporter.report(`Missing standard property "${needed}" to go along with "${actual}".`,
             unit, rule);
         } else if (properties[needed][0].pos < properties[actual][0].pos) {
           reporter.report(
-            `Standard property '${needed}' should come after vendor-prefixed property '${actual}'.`,
+            `Standard property "${needed}" should come after vendor-prefixed property "${actual}".`,
             unit, rule);
         }
       }
@@ -1670,11 +1642,13 @@ CSSLint.addRule['zero-units'] = [{
 }, (rule, parser, reporter) => {
   parser.addListener('property', event => {
     for (const p of event.value.parts) {
-      if (p.value === 0 && (p.units || p.type === 'pct') && p.type !== 'time') {
-        reporter.report("'0' value with redundant units.", p, rule);
+      if (p.is0 && p.units && p.type !== 'time') {
+        reporter.report('"0" value with redundant units.', p, rule);
       }
     }
   });
 }];
 
 //#endregion
+if (typeof self !== 'undefined') self.CSSLint = CSSLint;
+else module.exports = CSSLint; // eslint-disable-line no-undef
