@@ -17,7 +17,7 @@
   window.on('keypress', clickDummyLinkOnEnter);
   window.on('wheel', changeFocusedInputOnWheel, {capture: true, passive: false});
   window.on('click', splitMenu);
-  window.on('click', showTooltipNote, true);
+  window.on('click', interceptClick, true);
   window.on('resize', () => debounce(addTooltipsToEllipsized, 100));
   msg.onExtension(request => {
     if (request.method === 'editDeleteText') {
@@ -155,7 +155,7 @@
     }
   }
 
-  function showTooltipNote(event) {
+  function interceptClick(event) {
     const el = event.target.closest('[data-cmd=note]');
     if (el) {
       event.preventDefault();
@@ -164,6 +164,9 @@
         contents: tooltips.get(el) || el.title,
         buttons: [t('confirmClose')],
       });
+    }
+    if (event.target.closest('.intercepts-click')) {
+      event.preventDefault();
     }
   }
 
