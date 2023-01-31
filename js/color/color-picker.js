@@ -219,7 +219,7 @@
     if (Array.isArray(options.palette)) {
       renderPalette();
     }
-    if (!isNaN(options.left) && !isNaN(options.top)) {
+    if (opt.left || opt.top || opt.right || opt.bottom) {
       reposition();
     }
   }
@@ -768,17 +768,16 @@
   //region Miscellaneous utilities
 
   function reposition() {
-    const width = $root.offsetWidth;
-    const height = $root.offsetHeight;
-    const maxTop = window.innerHeight - height;
-    const maxTopUnobscured = options.top <= maxTop ? maxTop : options.top - height - 20;
-    const maxRight = window.innerWidth - width;
-    const maxRightUnobscured = options.left <= maxRight ? maxRight : options.left - width;
-    const left = constrain(0, Math.max(0, maxRightUnobscured), options.left);
-    const top = constrain(0, Math.max(0, maxTopUnobscured), options.top);
-    $root.style.left = left + 'px';
-    $root.style.top = top + 'px';
-    $root.style.transform = '';
+    const {offsetWidth: W, offsetHeight: H} = $root;
+    const {top: T, left: L, right: R, bottom: B} = options;
+    const maxX = innerWidth - W;
+    const maxY = innerHeight - H;
+    const s = $root.style;
+    if (!isNaN(L)) s.left = constrain(0, Math.max(0, L <= maxX ? maxX : L - W), L) + 'px';
+    else if (!isNaN(R)) s.right = constrain(0, Math.max(0, R <= maxX ? maxX : R - W), R) + 'px';
+    if (!isNaN(T)) s.top = constrain(0, Math.max(0, T <= maxY ? maxY : T - H - 20), T) + 'px';
+    else if (!isNaN(B)) s.bottom = constrain(0, Math.max(0, B <= maxY ? maxY : B - H - 20), B) + 'px';
+    s.transform = '';
   }
 
   function renderPalette() {

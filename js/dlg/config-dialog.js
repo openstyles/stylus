@@ -407,11 +407,12 @@ async function configDialog(style) {
     event.preventDefault();
     window.off('keydown', messageBox.listeners.key, true);
     const box = $('#message-box-contents');
+    const r = this.getBoundingClientRect();
     colorpicker.show({
       va: this.va,
       color: this.va.value || this.va.default,
-      top: this.getBoundingClientRect().bottom - 5,
-      left: box.getBoundingClientRect().left - 360,
+      top: Math.min(r.bottom, innerHeight - 220),
+      right: innerWidth - r.left - 10,
       guessBrightness: box,
       callback: onColorChanged,
     });
