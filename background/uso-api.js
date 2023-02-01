@@ -34,7 +34,7 @@ const usoApi = {};
 @version      ${data.updated.replace(/-/g, '').replace(/[T:]/g, '.').slice(0, 14)}
 @description  ${/^"['`]|\\/.test(descr) ? descr : descr.slice(1, -1)}
 @author       ${(data.user || {}).name || '?'}
-@license      ${makeLicense(data.license)}${vars ? '\n@preprocessor uso' + vars : ''}`
+@license      ${makeLicense(data.license)}${vars ? `\n@preprocessor uso${vars}\n` : ''}`
       .replace(/\*\//g, '*\\/') +
       `==/UserStyle== */\n${newKeys[0] ? useNewKeys(data.css, badKeys) : data.css}`;
     const {style} = await usercssMan.build({sourceCode, metaOnly});
