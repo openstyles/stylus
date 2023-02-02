@@ -83,7 +83,6 @@
     {
       "matches": ["http://userstyles.org/*", "https://userstyles.org/*"],
       "run_at": "document_start",
-      "all_frames": true,
       "js": ["content/install-hook-userstyles.js"]
     }
   ],
