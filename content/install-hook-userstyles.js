@@ -26,12 +26,16 @@
   Promise.all([
     getStyleState(),
     document.body || new Promise(cb => addEventListener('load', cb, {once: true})),
-  ]).then(([s]) => s != null && document.dispatchEvent(new Event(STATE_EVENTS[s][1])));
+  ]).then(([s]) => {
+    if (s != null) document.dispatchEvent(new Event(STATE_EVENTS[s][1]));
+    postMessage({direction: 'from-content-script', message: 'StylishInstalled'}, '*');
+  });
 
   async function onPageEvent({detail: {id, cmd, data}}) {
     if (cmd === 'msg') {
       let res;
       switch (data.type) {
+        case 'stylishUpdateChrome':
         case 'stylishInstallChrome':
           await installStyle(data);
           res = {success: true};
@@ -58,11 +62,14 @@
     const updateUrl = USO_API + usoId;
     if (!apiData || apiData.id !== usoId) apiData = await (await fetch(updateUrl)).json();
     const {style, badKeys} = await API.uso.toUsercss(apiData, {varsUrl: dup.updateUrl});
-    const {vars} = style.usercssData;
-    for (const [key, val] of Object.entries(vars && usoMsg.customOptions || {})) {
-      const name = key.slice(3); // dropping "ik-"
-      const v = vars[(badKeys || {})[name] || name];
-      if (v) v.value = v.type === 'select' ? val.replace(/^ik-/, '') : decodeURIComponent(val);
+    const usoVars = Object.entries(usoMsg.customOptions || {});
+    const vars = usoVars[0] && style.usercssData.vars;
+    if (vars) {
+      for (const [key, val] of usoVars) {
+        const name = key.slice(3); // dropping "ik-"
+        const v = vars[(badKeys || {})[name] || name];
+        if (v) v.value = v.type === 'select' ? val.replace(/^ik-/, '') : decodeURIComponent(val);
+      }
     }
     Object.assign(style, {
       md5Url,
@@ -81,12 +88,8 @@
       API.styles.find({md5Url}, {installationUrl: `https://uso.kkx.one/style/${usoId}`}),
       document.body || new Promise(resolve => addEventListener('load', resolve, {once: true})),
     ]);
-    return !dup ? 0 :
-      !dup.md5Url || // USO-archive
-      !dup.usercssData || // classic USO style
-      (dup.originalMd5 || md5) !== md5 // changed
-        ? 1
-        : 2;
+    // USO site doesn't preserve vars on update
+    return !dup ? 0 : dup.usercssData || dup.originalMd5 === md5 ? 2 : 1;
   }
 
   function runInPage(fn, ...args) {
