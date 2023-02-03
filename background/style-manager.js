@@ -603,7 +603,8 @@ const styleMan = (() => {
       (url = style.updateUrl) &&
       (url = URLS.extractGreasyForkInstallUrl(url) ||
         URLS.extractUsoArchiveInstallUrl(url) ||
-        URLS.extractUSwInstallUrl(url)
+        URLS.extractUSwInstallUrl(url) ||
+        (url = /\d+/.exec(style.md5Url)) && `${URLS.uso}styles/${url[0]}`
       )
     ) {
       if (!style.url) res = style.url = url;

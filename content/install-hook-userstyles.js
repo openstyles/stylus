@@ -41,11 +41,11 @@
           res = {success: true};
           break;
         case 'deleteStylishStyle':
-          if (dup) res = Boolean(await API.styles.delete(dup.id));
+          if (dup) res = Boolean(await API.styles.delete(dup.id).catch(() => 0));
           dup = false;
           break;
         case 'getStyleInstallStatus':
-          res = STATE_EVENTS[await getStyleState() || 0][0];
+          res = STATE_EVENTS[await getStyleState(data.payload.styleId) || 0][0];
           break;
         default:
           res = true;
