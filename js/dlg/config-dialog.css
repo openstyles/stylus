@@ -118,7 +118,10 @@
 .current-value {
   padding: 2px 4px;
   margin-right: 4px;
- }
+}
+.config-range .current-value {
+  min-width: 8ch;
+}
 
 .config-number span, .config-range span {
   line-height: var(--input-height);

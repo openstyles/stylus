@@ -18,7 +18,7 @@ async function configDialog(style) {
     '/options/onoffswitch.css',
   ]);
 
-  const AUTOSAVE_DELAY = 500;
+  const AUTOSAVE_DELAY = 400;
   let saving = false;
 
   const data = style.usercssData;
@@ -105,7 +105,7 @@ async function configDialog(style) {
     if (va) {
       va.dirty = varsInitial[va.name] !== (isDefault(va) ? va.default : va.value);
       if (prefs.get('config.autosave') && !justSaved) {
-        debounce(save, 100, {anyChangeIsDirty: true});
+        debounce(save, AUTOSAVE_DELAY, {anyChangeIsDirty: true});
         return;
       }
       renderValueState(va);
@@ -281,7 +281,7 @@ async function configDialog(style) {
             onfocus: va.type === 'number' ? selectAllOnFocus : null,
             onblur: va.type === 'number' ? updateVarOnBlur : null,
             onchange: updateVarOnChange,
-            oninput: updateVarOnInput,
+            oninput: updateVarOnChange,
             required: true,
           };
           if (typeof va.min === 'number') {
@@ -306,7 +306,7 @@ async function configDialog(style) {
               va,
               type: va.type,
               onchange: updateVarOnChange,
-              oninput: updateVarOnInput,
+              oninput: updateVarOnChange,
               onfocus: selectAllOnFocus,
             }),
           ];
@@ -332,16 +332,23 @@ async function configDialog(style) {
     this.value = isDefault(this.va) ? this.va.default : this.va.value;
   }
 
-  function updateVarOnChange() {
-    if (this.type === 'range') {
-      this.va.value = Number(this.value);
-      updateRangeCurrentValue(this.va, this.va.value);
+  function updateVarOnChange(ev) {
+    let val;
+    if (this.type === 'text') {
+      val = this.value;
+    } else if (this.type === 'range') {
+      val = this.valueAsNumber;
+      updateRangeCurrentValue(this.va, this.value);
     } else if (this.type === 'number') {
-      if (this.reportValidity()) {
-        this.va.value = Number(this.value);
-      }
+      if (!this.reportValidity()) return;
+      val = this.valueAsNumber;
     } else {
       this.va.value = this.type !== 'checkbox' ? this.value : this.checked ? '1' : '0';
+      return;
+    }
+    if (!Number.isNaN(val)) {
+      this.va.value = val;
+      if (ev.type === 'input') onchange(ev);
     }
   }
 
@@ -352,16 +359,8 @@ async function configDialog(style) {
     }
   }
 
-  function updateVarOnInput(event, debounced = false) {
-    if (debounced) {
-      event.target.dispatchEvent(new Event('change', {bubbles: true}));
-    } else {
-      debounce(updateVarOnInput, AUTOSAVE_DELAY, event, true);
-    }
-  }
-
-  function selectAllOnFocus(event) {
-    event.target.select();
+  function selectAllOnFocus() {
+    this.select();
   }
 
   function renderValues(varsToRender = vars) {
