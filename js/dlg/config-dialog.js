@@ -198,7 +198,7 @@ async function configDialog(style) {
         $('#message-box-buttons').insertAdjacentElement('afterbegin', $create('.config-error'));
       el.textContent =
         el.title = (Array.isArray(errors) ? errors : [errors])
-          .map(e => e.message || `${e}`)
+          .map(e => e.stack || e.message || `${e}`)
           .join('\n');
     }
     saving = false;
