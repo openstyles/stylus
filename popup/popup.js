@@ -46,6 +46,9 @@ if (CHROME_POPUP_BORDER_BUG) {
 if (CHROME >= 66 && CHROME <= 69) { // Chrome 66-69 adds a gap, https://crbug.com/821143
   document.head.appendChild($create('style', 'html { overflow: overlay }'));
 }
+if (CHROME >= 107) {
+  t.NodeList(document); // MutationObserver doesn't work with chrome://flags/#enable-prerender2
+}
 
 function onRuntimeMessage(msg) {
   if (!tabURL) return;
