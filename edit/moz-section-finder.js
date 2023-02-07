@@ -8,8 +8,7 @@ function MozSectionFinder(cm) {
   const KEY = 'MozSectionFinder';
   const MOZ_DOC_LEN = '@-moz-document'.length;
   const rxDOC = /@-moz-document(\s+|$)/ig;
-  const rxFUNC = /(url|url-prefix|domain|regexp)\(/iy;
-  const rxQUOTE = /['"]/y;
+  const rxFUNC = /([-a-z]+)\(/iy;
   const rxSPACE = /\s+/y;
   const rxTokDOC = /^(?!comment|string)/;
   const rxTokCOMMENT = /^comment(\s|$)/;
@@ -244,8 +243,11 @@ function MozSectionFinder(cm) {
           while (styles[j - 2] >= ch) j -= 2;
           while (styles[j] <= ch) j += 2;
         }
-        let type;
-        for (; goal && j < styles.length; ch = styles[j], j += 2) {
+        let type, chPrev;
+        for (; goal && j < styles.length;
+               (type || ch >= styles[j] || ch === chPrev) && (j += 2), chPrev = ch) {
+          /* We may loop several times through one long text token like "),        {   "
+             (chPrev prevents an endless loop, it's not really necessary but just in case) */
           let s;
           type = styles[j + 1];
           if (goal.startsWith('_')) {
@@ -257,12 +259,13 @@ function MozSectionFinder(cm) {
             }
             const isCmt = type && rxTokCOMMENT.test(type);
             if (goal === '_cmt') {
-              const cmt = trimCommentLabel(text.slice(ch, styles[j]));
-              if (isCmt && cmt) section.tocEntry.label = cmt;
-              if (!isCmt || cmt) goal = '';
+              const cmt = isCmt && trimCommentLabel(text.slice(ch, ch = styles[j]));
+              if (cmt) section.tocEntry.label = cmt;
+              if (!isCmt && type) goal = '';
               continue;
             }
             if (isCmt) {
+              ch = styles[j];
               continue;
             }
             goal = goal.slice(1);
@@ -274,38 +277,41 @@ function MozSectionFinder(cm) {
             }
             func = m[1];
             funcPos = {line, ch};
+            ch += func.length + 1; // +1 for "("
             url = null;
             goal = '_str';
             // Tokens in `styles` are split into multiple items due to `overlay`.
-            while (styles[j + 2] <= ch + func.length + 1) j += 2;
+            while (styles[j + 2] <= ch) j += 2;
           }
           if (goal === 'str') {
-            if (!rxTokSTRING.test(type)) {
-              if (url && !url.quote && !type && text[ch] === ')') {
-                goal = ')';
-              } else {
-                goal = 'error';
-                break;
-              }
-            } else {
-              if (!url) {
-                s = (rxQUOTE.lastIndex = ch, rxQUOTE.test(text)) && text[ch];
-                url = {
-                  chunks: [],
-                  start: {line, ch: s ? ch + 1 : ch},
-                  end: null,
-                  quote: s,
-                };
-              }
-              s = text.slice(ch, styles[j]);
-              url.chunks.push(s);
-              url.end = {line, ch: styles[j]};
+            if (!url) {
+              s = ((s = text[ch]) === '"' || s === "'") ? s : '';
+              url = {
+                chunks: [],
+                start: {line, ch: ch += !!s},
+                end: null,
+                quote: s,
+              };
+            }
+            if (rxTokSTRING.test(type)) {
+              let end = styles[j];
               // CSS strings can span multiple lines.
               // Tokens in `styles` are split into multiple items due to `overlay`.
-              if (url.quote && s.endsWith(url.quote) && s[s.length - 2] !== '\\') {
-                url.end.ch--;
-                goal = '_)';
+              if (end > ch) {
+                if (text[end - 1] === url.quote && text[end - 2] !== '\\') {
+                  end--;
+                  goal = '_)';
+                }
+                url.chunks.push(text.slice(ch, end));
+                url.end = {line, ch: end};
               }
+              ch = styles[j];
+            } else if (type) {
+              goal = 'error';
+              break;
+            } else {
+              goal = text[ch] === ')' ? ')' : '_)';
+              url.end = {line, ch};
             }
           }
           if (goal === ')') {
@@ -314,8 +320,7 @@ function MozSectionFinder(cm) {
               break;
             }
             ch++;
-            s = url.chunks.join('');
-            if (url.quote) s = s.slice(1, -1);
+            s = url ? url.chunks.join('') : '';
             if (!funcs.length) section.tocEntry.target = s;
             section.tocEntry.numTargets++;
             funcs.push(/** @namespace MozSectionFunc */ {
@@ -332,6 +337,7 @@ function MozSectionFinder(cm) {
               goal = '';
               break;
             }
+            ch++;
             goal = s.startsWith(',') ? '_func' :
               s.startsWith('{') ? '_cmt' :
                 !s && '_,'; // non-space something at this place = syntax error
@@ -348,7 +354,6 @@ function MozSectionFinder(cm) {
         // at this point it's either an error...
         if (goal === 'error') {
           goal = '';
-          section.funcs.length = 0;
         }
         // ...or a EOL, in which case we'll advance to the next line
         if (goal) {
