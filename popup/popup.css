@@ -438,6 +438,9 @@ a:hover .svg-icon {
 }
 
 /* 'New style' links */
+#write-style {
+  cursor: pointer;
+}
 #write-as {
   position: absolute;
   left: var(--outer-padding);
@@ -512,7 +515,6 @@ a:hover .svg-icon {
 }
 
 #write-for-frames {
-  cursor: pointer;
   margin: 0 0 -.25em .5rem;
   color: var(--c50);
   transition: color .2s;

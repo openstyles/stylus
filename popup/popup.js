@@ -211,24 +211,27 @@ function initUnreachable(isStore) {
   document.body.insertBefore(info, document.body.firstChild);
 }
 
-/** @param {chrome.webNavigation.GetAllFrameResultDetails} frame */
-function createWriterElement(frame) {
+/**
+ * @param {chrome.webNavigation.GetAllFrameResultDetails} frame
+ * @param {number} index - provided by forEach
+ */
+function createWriterElement(frame, index) {
   const {url, frameId, parentFrameId, isDupe} = frame;
   const targets = $create('span');
-
+  const elFor = !index ? $('#write-style-for') : {};
   // For this URL
   const urlLink = t.template.writeStyle.cloneNode(true);
   const isAboutBlank = url === ABOUT_BLANK;
   Object.assign(urlLink, {
     href: 'edit.html?url-prefix=' + encodeURIComponent(url),
-    title: `url-prefix("${url}")`,
+    title: elFor.title = `url-prefix("${url}")`,
     tabIndex: isAboutBlank ? -1 : 0,
     textContent: prefs.get('popup.breadcrumbs.usePath')
       ? t.breakWord(new URL(url).pathname.slice(1))
       : frameId
         ? isAboutBlank ? url : 'URL'
         : t('writeStyleForURL').replace(/ /g, '\u00a0'), // this&nbsp;URL
-    onclick: e => Events.openEditor(e, {'url-prefix': url}),
+    onclick: elFor.onclick = e => Events.openEditor(e, {'url-prefix': url}),
   });
   if (prefs.get('popup.breadcrumbs')) {
     urlLink.onmouseenter =
