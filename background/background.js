@@ -48,11 +48,7 @@ addAPI(/** @namespace API */ {
 
   /**
    * Opens the editor or activates an existing tab
-   * @param {{
-       id?: number
-       domain?: string
-       'url-prefix'?: string
-     }} params
+   * @param {string|{id?: number, domain?: string, 'url-prefix'?: string}} [params]
    * @returns {Promise<chrome.tabs.Tab>}
    */
   async openEditor(params) {
@@ -62,27 +58,17 @@ addAPI(/** @namespace API */ {
     const wndPos = wnd && prefs.get('windowPosition');
     const wndBase = wnd && prefs.get('openEditInWindow.popup') ? {type: 'popup'} : {};
     const ffBug = wnd && FIREFOX; // https://bugzil.la/1271047
-    if (wndPos) {
-      const {left, top, width, height} = wndPos;
-      const r = left + width;
-      const b = top + height;
-      const peek = 32;
-      if (isNaN(r) || r < peek || left > screen.availWidth - peek || width < 100) {
-        delete wndPos.left;
-        delete wndPos.width;
-      }
-      if (isNaN(b) || b < peek || top > screen.availHeight - peek || height < 100) {
-        delete wndPos.top;
-        delete wndPos.height;
-      }
+    for (let tab, retry = 0; retry < (wndPos ? 2 : 1); ++retry) {
+      try {
+        tab = tab || await openURL({
+          url: `${u}`,
+          currentWindow: null,
+          newWindow: wnd && Object.assign({}, wndBase, !ffBug && !retry && wndPos),
+        });
+        if (ffBug && !retry) await browser.windows.update(tab.windowId, wndPos);
+        return tab;
+      } catch (e) {}
     }
-    const tab = await openURL({
-      url: `${u}`,
-      currentWindow: null,
-      newWindow: wnd && Object.assign(wndBase, !ffBug && wndPos),
-    });
-    if (ffBug) await browser.windows.update(tab.windowId, wndPos);
-    return tab;
   },
 
   /** @returns {Promise<chrome.tabs.Tab>} */
