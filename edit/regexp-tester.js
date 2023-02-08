@@ -10,6 +10,7 @@ const regexpTester = (() => {
   let currentRegexps = [];
   let isWatching = false;
   let isShown = false;
+  let note;
 
   return {
 
@@ -144,15 +145,15 @@ const regexpTester = (() => {
           }
         }
       }
+      if (!note) {
+        note = $create('div.regexp-report-note',
+          `${t('styleRegexpTestNoteStar')} ${t('styleRegexpTestNote')}`
+            .split(/(<[^>]+>|\\+)/)
+            .map((s, i) => i % 2 ? $create('code', s[0] === '<' ? s.slice(1, -1) : s) : s));
+      }
       helpPopup.show(t('styleRegexpTestTitle'), report);
       report.onclick = onClick;
-
-      const note = $create('p.regexp-report-note',
-        t('styleRegexpTestNote')
-          .split(/(\\+)/)
-          .map(s => (s.startsWith('\\') ? $create('code', s) : s)));
       report.appendChild(note);
-      report.style.paddingBottom = note.offsetHeight + 'px';
     },
   };
 

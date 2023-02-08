@@ -707,9 +707,13 @@ label {
 }
 .regexp-report-note {
   color: var(--c60);
-  position: absolute;
-  bottom: 0;
+  min-width: fit-content;
+  width: 0;
   hyphens: auto;
+}
+.regexp-report-note code {
+  white-space: nowrap;
+  font-weight: bold;
 }
 /************ help popup ************/
 #help-popup {
@@ -1154,10 +1158,7 @@ label {
     height: min-content;
     max-width: 90%;
     max-height: 90vh;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    top: 7rem;
     margin: auto;
   }
   #help-popup[style*="left:"] {

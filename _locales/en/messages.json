@@ -1649,6 +1649,10 @@
     "message": "Note: use a single \\ for escaping in the regexp input field, which will be automatically converted to \\\\ in the style code as per specification for quoted strings in CSS.",
     "description": "RegExp test report: a note displayed at the bottom of the dialog"
   },
+  "styleRegexpTestNoteStar": {
+    "message": "Add <.*> at the end if the pattern should match as a prefix, for example <https?://(www\\.)?foo\\.com/(one|two).*>",
+    "description": "RegExp test report: a note displayed at the bottom of the dialog"
+  },
   "styleRegexpTestPartial": {
     "message": "Not matching fully, hence skipped",
     "description": "RegExp test report: label for the partially matching expressions"
