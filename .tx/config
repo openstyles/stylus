@@ -1,7 +1,7 @@
 [main]
 host = https://www.transifex.com
 
-[Stylus.messages]
+[o:github-7:p:Stylus:r:messages]
 file_filter = _locales/<lang>/messages.json
 minimum_perc = 0
 source_file = _locales/en/messages.json
