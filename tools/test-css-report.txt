@@ -8,8 +8,8 @@ warning	15	7	Empty rule.
 warning	16	7	Empty rule.
 error	17	41	Expected +int, -int but found "+".
 error	18	40	Expected +int, -int but found "+".
-error	19	37	Expected IDENT, NUMBER, NTH but found "-3-".
-error	20	37	Expected IDENT, NUMBER, NTH but found "+".
+error	19	37	Expected IDENT, NUMBER, NTH, "+" but found "-3-".
+error	20	38	Unexpected " ".
 error	21	39	Expected "of" but found "n".
 warning	22	43	Unqualified attribute selectors are known to be slow.
 warning	22	50	Slow attribute selector ~=.

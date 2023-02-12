@@ -624,7 +624,7 @@
     ATTR_EQ: {text: ['|=', '~=', '^=', '*=', '$=']},
     CHAR: {},
     COLON: {text: ':'},
-    COMBINATOR: {text: ['>', '+', '~', '||']},
+    COMBINATOR: {text: ['>', '~', '||']}, // a lone "+" isn't included as it can be a math operator
     DOT: {text: '.'},
     EQUALS: {text: '='},
     LBRACE: {text: '{', end: '}'},
@@ -634,9 +634,11 @@
       text: '@B-center@B-L-C@B-L@B-R-C@B-R@L-B@L-M@L-T@R-B@R-M@R-T@T-center@T-L-C@T-L@T-R-C@T-R'
         .replace(/[A-Z]/g, s => map[s]).split(/(?=@)/),
     }))({B: 'bottom', C: 'corner', L: 'left', M: 'middle', R: 'right'}),
+    MINUS: {text: '-'},
     NTH: {},
     PCT: {},
     PIPE: {text: '|'},
+    PLUS: {text: '+'},
     RBRACE: {text: '}'},
     RBRACKET: {text: ']'},
     RPAREN: {text: ')'},
@@ -689,8 +691,7 @@
   /*  \n   */ Combinators[10] =
   /*  \f   */ Combinators[12] =
   /*  \r   */ Combinators[13] =
-  /*  " "  */ Combinators[32] =
-  /*   /   */ Combinators[47] = 'descendant';
+  /*  " "  */ Combinators[32] = 'descendant';
   /*   >   */ Combinators[62] = 'child';
   /*   +   */ Combinators[43] = 'adjacent-sibling';
   /*   ~   */ Combinators[126] = 'sibling';

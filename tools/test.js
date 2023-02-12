@@ -33,13 +33,17 @@ function testCsslint() {
     .messages.map(m => `${m.type}\t${m.line}\t${m.col}\t${m.message}`);
   // Change 0 to 1 to update the report file
   if (0) fs.writeFileSync(REPORT_FILE, report.join('\n'), 'utf8');
-  const expected = fs.readFileSync(REPORT_FILE, 'utf8').split(/\r?\n/);
-  let a, b;
-  for (let i = 0; (a = report[i], b = expected[i]); i++) {
+  const expected = fs.readFileSync(REPORT_FILE, 'utf8').trim().split(/\r?\n/);
+  let a, b, i;
+  for (i = 0; (a = report[i]) && (b = expected[i]); i++) {
     if (a !== b) fail('csslint', chalk.red(`* RECEIVED: ${a}\n`) + `  EXPECTED: ${b}\n`);
   }
-  if ((a = report.length) !== (b = expected.length)) {
-    fail('csslint', `Found ${a} problems, expected ${b}`);
+  if (i === report.length && (i -= expected.length)) {
+    a = Math.abs(i);
+    fail('csslint',
+      (i > 0 ? `Found ${a} extra un` : `Did not find ${a} `) +
+      `expected problem${a === 1 ? '' : 's'}:\n  * ` +
+      (i > 0 ? report : expected).slice(-a).join('\n  * '));
   }
 }
 

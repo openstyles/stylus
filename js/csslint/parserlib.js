@@ -28,8 +28,8 @@
     },
   } = parserlib;
   const {
-    CHAR, COLON, COMMA, COMBINATOR, COMMENT, DELIM, DOT, HASH,
-    FUNCTION, IDENT, LBRACE, LBRACKET, LPAREN, NUMBER, PCT, PIPE,
+    CHAR, COLON, COMMA, COMMENT, DELIM, DOT, HASH, FUNCTION,
+    IDENT, LBRACE, LBRACKET, LPAREN, MINUS, NUMBER, PCT, PIPE, PLUS,
     RBRACE, RBRACKET, RPAREN, S: WS, SEMICOLON, STAR, USO_VAR,
   } = Tokens;
   const TT = /** @type {Record<string,TokenMap>} */ {
@@ -38,6 +38,7 @@
     attrStart: [PIPE, IDENT, STAR],
     attrNameEnd: [RBRACKET, USO_VAR, WS],
     braceLR: [LBRACE, RBRACE],
+    combinator: [PLUS, Tokens.COMBINATOR],
     cruft: [Tokens.CDO, Tokens.CDC],
     declEnd: [SEMICOLON, RBRACE],
     docFunc: [FUNCTION, IDENT/* while typing a new func */, Tokens.URI],
@@ -45,7 +46,7 @@
     identString: [IDENT, Tokens.STRING, USO_VAR],
     mediaValue: [IDENT, NUMBER, Tokens.DIMENSION, Tokens.LENGTH],
     mediaList: [IDENT, LPAREN],
-    nthOf: [NUMBER, IDENT, Tokens.NTH],
+    nthOf: [IDENT, NUMBER, PLUS, Tokens.NTH],
     nthOfEnd: [IDENT, RPAREN],
     propCustomEnd: [DELIM, SEMICOLON, RBRACE, RBRACKET, RPAREN, Tokens.INVALID],
     propValEnd: [DELIM, SEMICOLON, RBRACE],
@@ -67,7 +68,7 @@
   /** For these tokens stream.match() will return a USO_VAR unless the next token is a direct match */
   const USO_VAR_PROXY = [PCT, ...TT.mediaValue, ...TT.identString]
     .reduce((res, id) => (res[id] = true) && res, []);
-  // Sticky `y` flag must be used in expressions used with peekTest and readMatch
+  // Sticky `y` flag must be used in expressions for reader.readMatch
   const rxComment = /\*([^*]+|\*(?!\/))*(\*\/|$)/y; // the opening "/" is already consumed
   const rxCommentUso = /\*\[\[[-\w]+]]\*\/|\*(?:[^*]+|\*(?!\/))*(\*\/|$)/y;
   const rxMaybeQuote = /\s*['"]?/y;
@@ -88,6 +89,7 @@
     c === 45 || c === 92 || c === 95 || c >= 160 || c >= 48 && c <= 57 /* - \ _ 0-9 */ ||
     prev === 92 /* \ */ && c !== 10 && c != null;
   const isSpace = c => c === 9 && c === 10 || c === 32;
+  const toLowAscii = c => c >= 65 && c <= 90 ? c + 32 : c;
   const unescapeNoLF = (m, code, char) => char || String.fromCodePoint(parseInt(code, 16));
   const unescapeLF = (m, code, char, LF) => LF ? '' : char ||
     String.fromCodePoint(parseInt(code, 16));
@@ -105,7 +107,7 @@
   }
   for (const k in B) B[k] = new Bucket(B[k]);
   // Splitting into words by an Uppercase letter
-  for (const k of 'and,andOr,auto,evenOdd,fromTo,important,layer,none,not,onlyNot,of,or'
+  for (const k of 'and,andOr,auto,evenOdd,fromTo,important,layer,n,none,not,onlyNot,of,or'
     .split(',')) B[k] = new Bucket(k.split(/(?=[A-Z])/).map(s => s.toLowerCase()));
   PAIRING[LBRACE] = RBRACE;
   PAIRING[LBRACKET] = RBRACKET;
@@ -139,7 +141,7 @@
       this.offset = offset;
       this.offset2 = offset2;
       this.type = '';
-      this.lowCode = code >= 65 && code <= 90 ? code + 32 : code;
+      this.lowCode = toLowAscii(code);
       this._input = input;
     }
     /** @return {Token} */
@@ -398,7 +400,7 @@
       // [0-9.eE] */
         text = this._number(a, (b >= 48 && b <= 57 || b === 46 || b === 69 || b === 101) && b, tok);
       // [-+.]
-      } else if ((a === 45 || a === 43 && (tok.id = COMBINATOR) || a === 46 && (tok.id = DOT)) && (
+      } else if ((a === 45 || a === 43 && (tok.id = PLUS) || a === 46 && (tok.id = DOT)) && (
       /* [-+.][0-9] */ b >= 48 && b <= 57 ||
       /* [-+].[0-9] */ a !== 46 && b === 46 && (c = reader.peek(2)) >= 48 && c <= 57
       )) {
@@ -413,6 +415,8 @@
           tok.id = Tokens.CDC;
         } else if (isIdentStart(b)) {
           text = this._ident(a, b, 1, c, undefined, tok);
+        } else {
+          tok.id = MINUS;
         }
       // U+ u+
       } else if (b === 43/*+*/ && (a === 85 || a === 117)) {
@@ -426,7 +430,7 @@
           Tokens.ATTR_EQ
       /* || */
         : a === 124 && b === 124 &&
-          COMBINATOR
+          Tokens.COMBINATOR
       )) {
         tok.id = c;
         reader.readCode();
@@ -491,6 +495,7 @@
       const esc = a === 92 || b === 92 || bYes && c === 92 || str.length > 2 && str.includes('\\');
       const name = esc ? (first + str).replace(rxUnescapeNoLF, unescapeNoLF) : first + str;
       if (!tok) return {esc, name};
+      if (a === 92) tok.lowCode = toLowAscii(name.charCodeAt(0));
       const vp = a === 45 /* - */ && b !== 45 && name.indexOf('-', 2) + 1;
       const next = cYes || esc && isSpace(c) ? reader.peek() : bYes ? c : b;
       let ovrValue = esc ? name : null;
@@ -516,7 +521,7 @@
         }
       }
       if (vp) {
-        tok.vendorCode = (b = name.charCodeAt(vp)) >= 65 && b <= 90 ? b + 32 : b;
+        tok.vendorCode = toLowAscii(name.charCodeAt(vp));
         tok.vendorPos = vp;
       }
       return ovrValue;
@@ -946,7 +951,7 @@
     }
     /**
      * @param {string|Object} e
-     * @param {Token|Token} [tok=this.stream.token] - sets the position
+     * @param {Token} [tok=this.stream.token] - sets the position
      */
     fire(e, tok = e.offset != null ? e : this.stream.token) {
       if (typeof e === 'string') e = {type: e};
@@ -955,10 +960,6 @@
       super.fire(e);
     }
 
-    /**
-     * @layer <layer-name>#;
-     * @layer <layer-name>? { <stylesheet> };
-     */
     _layer(stream, start) {
       const ids = [];
       let tok;
@@ -1297,7 +1298,7 @@
       if (!tok || tok.isVar) {
         tok = stream.get(2);
       }
-      if (!relative || tok.id !== COMBINATOR) {
+      if (!relative || !TT.combinator[tok.id]) {
         tok = this._simpleSelectorSequence(stream, tok);
         if (!tok) return;
         sel.push(tok);
@@ -1305,7 +1306,7 @@
       }
       for (let combinator, ws; ; tok = false) {
         if (!tok) tok = stream.token;
-        if (tok.id === COMBINATOR) {
+        if (TT.combinator[tok.id]) {
           sel.push(this._combinator(stream, tok));
           if ((tok = this._simpleSelectorSequence(stream))) {
             sel.push(tok);
@@ -1316,7 +1317,7 @@
         while (tok.isVar) tok = stream.get();
         ws = tok.id === WS && tok; if (!ws) break;
         tok = stream.get(2); if (tok.id === LBRACE) break;
-        combinator = tok.id === COMBINATOR && this._combinator(stream, tok);
+        combinator = TT.combinator[tok.id] && this._combinator(stream, tok);
         tok = this._simpleSelectorSequence(stream, combinator ? undefined : tok);
         if (tok) {
           sel.push(combinator || this._combinator(stream, ws));
@@ -1366,7 +1367,7 @@
       return tok;
     }
 
-    _combinator(stream, tok = stream.match(COMBINATOR)) {
+    _combinator(stream, tok = stream.match(TT.combinator)) {
       if (tok) tok.type = Combinators[tok.lowCode] || 'unknown';
       return tok;
     }
@@ -1443,8 +1444,13 @@
           expr = [t1 = stream.mustMatch(TT.nthOf)];
           if ((x = t1.id) === IDENT) {
             if (B.nthBare.has(t1)) x = t1.id = Tokens.NTH;
-            else if (!B.evenOdd.has(t1)) stream._failure('', t1);
-            else x = 0;
+            else if (B.evenOdd.has(t1)) x = 0;
+            else stream._failure('', t1);
+          } else if (x === PLUS) {
+            if (!B.n.has(t2 = stream.get(0))) stream._failure('', t2);
+            if (isOwn(t2, 'text')) t1.text = '+' + t2.text;
+            x = t1.id = Tokens.NTH;
+            t1.offset2 = t2.offset2;
           }
           if (x === Tokens.NTH && (x = (t2 = stream.get(2)).id) && B.plusMinus[t2.lowCode]) {
             if (!(x === NUMBER && t2.isInt) &&
