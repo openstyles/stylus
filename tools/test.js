@@ -31,8 +31,8 @@ function testCsslint() {
   const report = require('../js/csslint/csslint')
     .verify(fs.readFileSync(TEST_FILE, 'utf8'))
     .messages.map(m => `${m.type}\t${m.line}\t${m.col}\t${m.message}`);
-  // Change 0 to 1 to update the report file
-  if (0) fs.writeFileSync(REPORT_FILE, report.join('\n'), 'utf8');
+  // Remove ! to update the report file, then undo and commit the changes
+  if (!'UPDATE') fs.writeFileSync(REPORT_FILE, report.join('\n'), 'utf8');
   const expected = fs.readFileSync(REPORT_FILE, 'utf8').trim().split(/\r?\n/);
   let a, b, i;
   for (i = 0; (a = report[i]) && (b = expected[i]); i++) {

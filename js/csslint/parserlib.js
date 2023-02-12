@@ -29,7 +29,7 @@
   } = parserlib;
   const {
     CHAR, COLON, COMMA, COMMENT, DELIM, DOT, HASH, FUNCTION,
-    IDENT, LBRACE, LBRACKET, LPAREN, MINUS, NUMBER, PCT, PIPE, PLUS,
+    IDENT, LBRACE, LBRACKET, LPAREN, MINUS, NTH, NUMBER, PCT, PIPE, PLUS,
     RBRACE, RBRACKET, RPAREN, S: WS, SEMICOLON, STAR, USO_VAR,
   } = Tokens;
   const TT = /** @type {Record<string,TokenMap>} */ {
@@ -46,7 +46,7 @@
     identString: [IDENT, Tokens.STRING, USO_VAR],
     mediaValue: [IDENT, NUMBER, Tokens.DIMENSION, Tokens.LENGTH],
     mediaList: [IDENT, LPAREN],
-    nthOf: [IDENT, NUMBER, PLUS, Tokens.NTH],
+    nthOf: [IDENT, NUMBER, PLUS, NTH],
     nthOfEnd: [IDENT, RPAREN],
     propCustomEnd: [DELIM, SEMICOLON, RBRACE, RBRACKET, RPAREN, Tokens.INVALID],
     propValEnd: [DELIM, SEMICOLON, RBRACE],
@@ -60,7 +60,6 @@
   const B = /** @type {Record<string,Bucket>} */ {
     attrIS: ['i', 's', ']'], // "]" is to improve the error message,
     colors: NamedColors,
-    nthBare: ['n', '-n'],
     plusMinus: ['+', '-'],
   };
   const PAIRING = [];
@@ -72,6 +71,7 @@
   const rxComment = /\*([^*]+|\*(?!\/))*(\*\/|$)/y; // the opening "/" is already consumed
   const rxCommentUso = /\*\[\[[-\w]+]]\*\/|\*(?:[^*]+|\*(?!\/))*(\*\/|$)/y;
   const rxMaybeQuote = /\s*['"]?/y;
+  const rxNth = /^(-?)n(?:(-)(\d*))?$/;
   const rxName = /(?:[-_\da-zA-Z\u00A0-\uFFFF]+|\\(?:(?:[0-9a-fA-F]{1,6}|.)[\t ]?|$))+/y;
   const rxNumberDigit = /\d*\.?\d*(e[+-]?\d+)?/iy;
   const rxNumberDot = /\d+(e[+-]?\d+)?/iy;
@@ -549,10 +549,11 @@
         tok.id = NUMBER;
         tok.type = 'number';
       }
-      c = tok.number = +numStr;
+      tok.units = units || '';
+      tok.number = c = +numStr;
       tok.is0 = c === 0 && !units;
-      c = tok.isInt = c === 0 || (isPlus ? rest : numStr) === `${c | 0}`;
-      if (!c && tok.id === Tokens.NTH) {
+      tok.isInt = c = c === 0 || (isPlus ? rest : numStr) === `${c | 0}`;
+      if (!c && tok.id === NTH) {
         tok.id = Tokens.DIMENSION;
         tok.type = '';
       }
@@ -1443,22 +1444,27 @@
           let t1, t2, t3;
           expr = [t1 = stream.mustMatch(TT.nthOf)];
           if ((x = t1.id) === IDENT) {
-            if (B.nthBare.has(t1)) x = t1.id = Tokens.NTH;
-            else if (B.evenOdd.has(t1)) x = 0;
-            else stream._failure('', t1);
+            if (B.evenOdd.has(t1)) x = 0;
+            else if (!(n = rxNth.exec(t1))) stream._failure('', t1);
+            else if (n[3]) x = 0; // n-1 or -n-1 (all done)
+            else { x = NTH; t2 = n[2] || ''; } // -n-, n-, -n, n
           } else if (x === PLUS) {
-            if (!B.n.has(t2 = stream.get(0))) stream._failure('', t2);
-            if (isOwn(t2, 'text')) t1.text = '+' + t2.text;
-            x = t1.id = Tokens.NTH;
-            t1.offset2 = t2.offset2;
+            n = rxNth.exec(t2 = stream.get(0));
+            if (!n || n[1]) stream._failure('', t2);
+            expr.push(t2);
+            if (n[3]) x = 0; // +n-1 (all done)
+            else { x = NTH; t2 = n[2] || ''; } // +n-, +n
           }
-          if (x === Tokens.NTH && (x = (t2 = stream.get(2)).id) && B.plusMinus[t2.lowCode]) {
+          if (x === NTH && (
+            t2 === '-' /* -n-, +n- */ ||
+            (x = (t2 = stream.get(2)).id) && B.plusMinus[t2.lowCode] /* +num, -num, +, - */
+          )) {
             if (!(x === NUMBER && t2.isInt) &&
                 !(t2.length === 1 && (t3 = stream.mustMatch(NUMBER)).isInt && t3.lowCode >= 48)) {
               stream._failure('+int, -int', t2);
             }
-            expr[1] = t2;
-            if (t3) expr[2] = t3;
+            if (t2.id) expr.push(t2);
+            if (t3) expr.push(t3);
           }
           if (x === IDENT ||
               x !== RPAREN && (x = (t2 = stream.match(TT.nthOfEnd)).id) === IDENT) {

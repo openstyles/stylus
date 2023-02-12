@@ -10,6 +10,8 @@
   /*cmt */
   @media (min-width: 30em) {
     @layer layout {
+      @supports selector(:nth-child(-n-3)) {}
+      @supports selector(:nth-child(+n-3)) {}
       .\:fc-\40 escape:nth-child(-1n+6) {}
       .h\:fc-\40 escape:nth-child(2) {}
       .ha\:fc-\40 escape:nth-child(odd) {}
