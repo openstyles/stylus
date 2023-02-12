@@ -99,7 +99,7 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
     ).then(ok => ok &&
       API.usercss.install(style)
         .then(install)
-        .catch(err => messageBox.alert(t('styleInstallFailed', err), 'pre'))
+        .catch(err => messageBox.alert(t('styleInstallFailed', err.message || err), 'pre'))
     );
   };
 

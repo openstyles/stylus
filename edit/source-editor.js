@@ -40,7 +40,7 @@ async function SourceEditor() {
   editor.livePreview.init(preprocess);
   if (!style.id) setupNewStyle(await editor.template);
   createMetaCompiler(meta => {
-    const {vars} = style.usercssData;
+    const {vars} = style.usercssData || {};
     if (vars) {
       let v;
       for (const [key, val] of Object.entries(meta.vars || {})) {
