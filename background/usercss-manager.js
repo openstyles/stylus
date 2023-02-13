@@ -55,11 +55,7 @@ const usercssMan = {
 
   async buildCode(style) {
     const {sourceCode: code, usercssData: {vars, preprocessor}} = style;
-    const match = code.match(RX_META);
-    const i = match.index;
-    const j = i + match[0].length;
-    const codeNoMeta = code.slice(0, i) + blankOut(code, i, j) + code.slice(j);
-    const {sections, errors, log} = await API.worker.compileUsercss(preprocessor, codeNoMeta, vars);
+    const {sections, errors, log} = await API.worker.compileUsercss(preprocessor, code, vars);
     const recoverable = errors.every(e => e.recoverable);
     if (!sections.length || !recoverable) {
       throw !recoverable ? errors : 'Style does not contain any actual CSS to apply.';
@@ -75,7 +71,7 @@ const usercssMan = {
       return style;
     }
     // remember normalized sourceCode
-    let code = style.sourceCode = style.sourceCode.replace(/\r\n?/g, '\n');
+    const code = style.sourceCode = style.sourceCode.replace(/\r\n?/g, '\n');
     style = Object.assign({
       enabled: true,
       sections: [],
@@ -85,8 +81,7 @@ const usercssMan = {
       return Promise.reject(new Error('Could not find metadata.'));
     }
     try {
-      code = blankOut(code, 0, match.index) + match[0];
-      const {metadata} = await API.worker.parseUsercssMeta(code);
+      const {metadata} = await API.worker.parseUsercssMeta(match[0]);
       style.usercssData = metadata;
       // https://github.com/openstyles/stylus/issues/560#issuecomment-440561196
       for (const [key, globalKey] of usercssMan.GLOBAL_META) {
@@ -103,6 +98,7 @@ const usercssMan = {
           : err.args;
         const msg = chrome.i18n.getMessage(`meta_${(err.code)}`, args);
         if (msg) err.message = msg;
+        err.index += match.index;
       }
       return Promise.reject(err);
     }
@@ -155,9 +151,3 @@ const usercssMan = {
     return usercssMan.buildCode(style);
   },
 };
-
-/** Replaces everything with spaces to keep the original length,
- * but preserves the line breaks to keep the original line/col relation */
-function blankOut(str, start = 0, end = str.length) {
-  return str.slice(start, end).replace(/[^\r\n]/g, ' ');
-}
