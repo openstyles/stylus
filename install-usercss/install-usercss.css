@@ -264,6 +264,8 @@ li {
 
 .main {
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .main,
