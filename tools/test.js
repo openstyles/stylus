@@ -54,7 +54,7 @@ function testParserlib() {
   for (const obj of [
     parserlib.css.Properties,
     parserlib.util.VTComplex,
-    parserlib.util.VTFunctions,
+    ...Object.values(parserlib.util.VTFunctions),
   ]) {
     for (const spec of Object.values(obj)) {
       if (typeof spec === 'string' && !Matcher.cache.has(spec)) {
