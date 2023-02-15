@@ -332,7 +332,7 @@ CSSLint.Util = {
         props = null;
       },
       property(event) {
-        if (!inRule) return;
+        if (!inRule || event.inParens) return;
         const name = CSSLint.Util.getPropName(event.property);
         const sh = shorthandsFor[name];
         if (sh) {
@@ -440,7 +440,7 @@ CSSLint.addRule['box-model'] = [{
       boxSizing = false;
     },
     property(event) {
-      if (!inRule) return;
+      if (!inRule || event.inParens) return;
       const name = CSSLint.Util.getPropName(event.property);
       if (sizeProps.width.includes(name) || sizeProps.height.includes(name)) {
         if (!/^0+\D*$/.test(event.value) &&
@@ -667,7 +667,7 @@ CSSLint.addRule['display-property-grouping'] = [{
       properties = {};
     },
     property(event) {
-      if (!inRule) return;
+      if (!inRule || event.inParens) return;
       const name = CSSLint.Util.getPropName(event.property);
       if (name in propertiesToCheck) {
         properties[name] = {
@@ -754,7 +754,7 @@ CSSLint.addRule['duplicate-properties'] = [{
       props = {};
     },
     property(event) {
-      if (!inRule) return;
+      if (!inRule || event.inParens) return;
       const property = event.property;
       const name = property.text.toLowerCase();
       const last = props[name];
@@ -778,11 +778,8 @@ CSSLint.addRule['empty-rules'] = [{
   url: 'https://github.com/CSSLint/csslint/wiki/Disallow-empty-rules',
   browsers: 'All',
 }, (rule, parser, reporter) => {
-  let count = 0;
-  parser.addListener('startrule', () => (count = 0));
-  parser.addListener('property', () => count++);
   parser.addListener('endrule', event => {
-    if (!count) reporter.report('Empty rule.', event.selectors[0], rule);
+    if (event.empty) reporter.report('Empty rule.', event.selectors[0], rule);
   });
 }];
 
@@ -880,7 +877,8 @@ CSSLint.addRule['gradients'] = [{
     start() {
       miss = null;
     },
-    property({value: {parts: [p]}}) {
+    property({inParens, value: {parts: [p]}}) {
+      if (inParens) return;
       if (p && p.prefix && /(-|^)gradient$/.test(p.name)) {
         if (!miss) miss = {moz: 1, webkit: 1};
         delete miss[p.prefix];
@@ -1200,6 +1198,7 @@ CSSLint.addRule['order-alphabetical'] = [{
       failed = false;
     },
     property(event) {
+      if (event.inParens) return;
       if (!failed) {
         const name = CSSLint.Util.getPropName(event.property);
         if (name < last) {
@@ -1231,7 +1230,7 @@ CSSLint.addRule['outline-none'] = [{
       };
     },
     property(event) {
-      if (!lastRule) return;
+      if (!lastRule || event.inParens) return;
       lastRule.propCount++;
       if (CSSLint.Util.getPropName(event.property) === 'outline' && /^(none|0)$/i.test(event.value)) {
         lastRule.outline = true;
@@ -1433,6 +1432,7 @@ CSSLint.addRule['text-indent'] = [{
       isLtr = false;
     },
     property(event) {
+      if (event.inParens) return;
       const name = CSSLint.Util.getPropName(event.property);
       const value = event.value;
       if (name === 'text-indent' && value.parts[0].number < -99) {
@@ -1590,7 +1590,7 @@ CSSLint.addRule['vendor-prefix'] = [{
       num = 1;
     },
     property(event) {
-      if (!inRule) return;
+      if (!inRule || event.inParens) return;
       const name = CSSLint.Util.getPropName(event.property);
       let prop = properties[name];
       if (!prop) prop = properties[name] = [];

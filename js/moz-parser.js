@@ -30,7 +30,7 @@ function extractSections({code, styleId, fast = true}) {
   let mozStyle;
 
   parser.addListener('startstylesheet', () => {
-    mozStyle = parser.stream.reader.string;
+    mozStyle = parser.stream.source.string;
   });
 
   parser.addListener('startdocument', e => {

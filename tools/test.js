@@ -5,7 +5,7 @@ const chalk = require('chalk');
 const glob = require('glob');
 
 testGlobalCss();
-testCsslint();
+testCsslint({overwriteReport: 0}); // Run with 1 to update the report file, undo, commit the changes
 testParserlib();
 console.log(chalk.bgGreen('All tests OK'));
 process.exit(0);
@@ -24,15 +24,14 @@ function testGlobalCss() {
   }
 }
 
-function testCsslint() {
+function testCsslint({overwriteReport}) {
   process.stdout.write('Testing csslint...');
   const TEST_FILE = 'tools/test-css.txt';
   const REPORT_FILE = TEST_FILE.replace('.txt', '-report.txt');
   const report = require('../js/csslint/csslint')
     .verify(fs.readFileSync(TEST_FILE, 'utf8'))
     .messages.map(m => `${m.type}\t${m.line}\t${m.col}\t${m.message}`);
-  // Remove ! to update the report file, then undo and commit the changes
-  if (!'UPDATE') fs.writeFileSync(REPORT_FILE, report.join('\n'), 'utf8');
+  if (overwriteReport) fs.writeFileSync(REPORT_FILE, report.join('\n'), 'utf8');
   const expected = fs.readFileSync(REPORT_FILE, 'utf8').trim().split(/\r?\n/);
   let a, b, i;
   for (i = 0; (a = report[i]) && (b = expected[i]); i++) {
@@ -58,7 +57,7 @@ function testParserlib() {
     ...Object.values(parserlib.util.VTFunctions),
   ]) {
     for (const spec of Object.values(obj)) {
-      if (typeof spec === 'string' && !Matcher.cache.has(spec)) {
+      if (typeof spec === 'string' && !Matcher.cache[spec]) {
         Matcher.parse(spec);
       }
     }
@@ -78,8 +77,11 @@ function testParserlib() {
   process.stdout.write(' OK\nTesting parserlib on all css files...');
   for (const file of glob.sync('**/*.css', {ignore: ['node_modules/**']})) {
     const text = fs.readFileSync(file, 'utf8');
-    parser.options.topDocOnly = true; parser.parse(text);
-    parser.options.topDocOnly = false; parser.parse(text);
+    const opts = parser.options;
+    opts.topDocOnly = true; parser.parse(text);
+    opts.topDocOnly = false; parser.parse(text);
+    opts.globalsOnly = true; parser.parse(text);
+    opts.globalsOnly = false;
     if (logStr) fail('parserlib', `\n${chalk.red(file)}\n${logStr}`);
   }
   console.log(' OK');

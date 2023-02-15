@@ -518,7 +518,7 @@
   };
   const ScopedProperties = {
     __proto__: null,
-    '@counter-style': {
+    'counter-style': {
       'additive-symbols': '<pad>#',
       'fallback': '<ident-not-none>',
       'negative': '<prefix>{1,2}',
@@ -531,7 +531,7 @@
       'system': 'cyclic | numeric | alphabetic | symbolic | additive | [fixed <int>?] | ' +
         '[ extends <ident-not-none> ]',
     },
-    '@font-face': Object.assign({
+    'font-face': Object.assign({
       'ascent-override': '[ normal | <pct0+> ]{1,2}',
       'descent-override': '[ normal | <pct0+> ]{1,2}',
       'font-display': 'auto | block | swap | fallback | optional',
@@ -544,19 +544,19 @@
     }, ...['font-family', 'font-size', 'font-variant', 'font-variation-settings', 'unicode-range']
       .map(p => ({[p]: Properties[p]}))
     ),
-    '@font-palette-values': {
+    'font-palette-values': {
       'base-palette': 'light | dark | <int0+>',
       'font-family': Properties['font-family'],
       'override-colors': '[ <int0+> <color> ]#',
     },
-    '@page': {
+    'page': {
       '': true, // include Properties
       'bleed': 'auto | <len>',
       'marks': 'none | [ crop || cross ]',
       'size': '<len>{1,2} | auto | [ [ A3 | A4 | A5 | B4 | B5 | JIS-B4 | JIS-B5 | ' +
         'ledger | legal | letter ] || [ portrait | landscape ] ]',
     },
-    '@property': {
+    'property': {
       'inherits': 'true | false',
       'initial-value': 1,
       'syntax': '<string>',
@@ -587,91 +587,77 @@
   //#endregion
   //#region Tokens & types
 
-  /* https://www.w3.org/TR/css3-syntax/#lexical */
-  const Tokens = /** @type {Record<string,(number|{name:string, text?:string})>} */ {
+  /**
+   * Based on https://www.w3.org/TR/css3-syntax/#lexical
+   * Each key is re-assigned to a sequential index, starting with EOF=0.
+   * Each value is converted into {name:string, text?:string} and stored as Tokens[index],
+   * e.g. AMP:'&' becomes AMP:1 and a new element is added at 1: {name:'AMP', text:'&'}.
+   */
+  const Tokens = {
     __proto__: null,
     EOF: {}, // must be the first token
-    COMMA: {text: ','},
-    DELIM: {text: '!'},
-    COMMENT: {},
-    S: {},
-    CDC: {},
-    CDO: {},
-    HASH: {},
-    IDENT: {},
-    STRING: {},
-    INVALID: {},
-    FUNCTION: {},
-    URI: {},
-    UNICODE_RANGE: {},
-    ANGLE: {}, DIMENSION: {}, FREQUENCY: {}, LENGTH: {}, NUMBER: {}, RESOLUTION: {}, TIME: {},
-    CHARSET_SYM: {text: '@charset'},
-    CONTAINER_SYM: {text: '@container'},
-    DOCUMENT_SYM: {text: ['@document', '@-moz-document']},
-    FONT_FACE_SYM: {text: '@font-face'},
-    FONT_PALETTE_VALUES_SYM: {text: '@font-palette-values'},
-    IMPORT_SYM: {text: '@import'},
-    KEYFRAMES_SYM: {text: ['@keyframes', '@-webkit-keyframes', '@-moz-keyframes', '@-o-keyframes']},
-    LAYER_SYM: {text: '@layer'},
-    MEDIA_SYM: {text: '@media'},
-    NAMESPACE_SYM: {text: '@namespace'},
-    NEST_SYM: {text: '@nest'},
-    PAGE_SYM: {text: '@page'},
-    PROPERTY_SYM: {text: '@property'},
-    SUPPORTS_SYM: {text: '@supports'},
-    UNKNOWN_SYM: {},
-    VIEWPORT_SYM: {text: ['@viewport', '@-ms-viewport', '@-o-viewport']},
-    // The following token names are not defined in any CSS specification.
-    AMP: {text: '&'},
-    ATTR_EQ: {text: ['|=', '~=', '^=', '*=', '$=']},
+    AMP: '&',
+    AT: {},
+    ATTR_EQ: ['|=', '~=', '^=', '*=', '$='],
+    CDCO: {}, // CDO and CDC
     CHAR: {},
-    COLON: {text: ':'},
-    COMBINATOR: {text: ['>', '~', '||']}, // a lone "+" isn't included as it can be a math operator
-    DOT: {text: '.'},
-    EQUALS: {text: '='},
-    LBRACE: {text: '{', end: '}'},
-    LBRACKET: {text: '[', end: ']'},
-    LPAREN: {text: '(', end: ')'},
-    MARGIN_SYM: (map => ({
-      text: '@B-center@B-L-C@B-L@B-R-C@B-R@L-B@L-M@L-T@R-B@R-M@R-T@T-center@T-L-C@T-L@T-R-C@T-R'
-        .replace(/[A-Z]/g, s => map[s]).split(/(?=@)/),
-    }))({B: 'bottom', C: 'corner', L: 'left', M: 'middle', R: 'right'}),
-    MINUS: {text: '-'},
-    NTH: {},
+    COLON: ':',
+    COMBINATOR: ['>', '~', '||'], // a lone "+" isn't included as it can be a math operator
+    COMMA: ',',
+    COMMENT: {},
+    DELIM: '!',
+    DOT: '.',
+    EQUALS: '=',
+    EQ_CMP: ['>=', '<='],
+    FREQUENCY: {},
+    FUNCTION: {},
+    HASH: '#',
+    IDENT: {},
+    INVALID: {},
+    LBRACE: '{',
+    LBRACKET: '[',
+    LPAREN: '(',
+    MINUS: '-',
+    PIPE: '|',
+    PLUS: '+',
+    RBRACE: '}',
+    RBRACKET: ']',
+    RPAREN: ')',
+    SEMICOLON: ';',
+    STAR: '*',
+    STRING: {},
+    UNICODE_RANGE: {},
+    URI: {},
+    UVAR: {}, /*[[userstyles-org-variable]]*/
+    WS: {},
+    // numbers
+    ANGLE: {},
+    DIMENSION: {},
+    LENGTH: {},
+    NUMBER: {},
     PCT: {},
-    PIPE: {text: '|'},
-    PLUS: {text: '+'},
-    RBRACE: {text: '}'},
-    RBRACKET: {text: ']'},
-    RPAREN: {text: ')'},
-    SEMICOLON: {text: ';'},
-    STAR: {text: '*'},
-    USO_VAR: {},
+    RESOLUTION: {},
+    TIME: {},
   };
-  const TokenTypeByCode = [];
-  const TokenTypeByText = {__proto__: null};
-  for (let id = 0, arr = Object.keys(Tokens); id < arr.length; id++) {
-    const key = arr[id];
-    const val = Tokens[id] = Tokens[key];
-    const {text} = val;
-    Tokens[key] = id;
-    val.name = key;
+  const TokenIdByCode = [];
+  for (let id = 0, arr = Object.keys(Tokens), key, val, text; (key = arr[id]); id++) {
+    text = ((val = Tokens[key]).slice ? val = {text: val} : val).text;
+    Tokens[val.name = key] = id;
+    Tokens[id] = val;
     if (text) {
-      for (const str of Array.isArray(text) ? text : [text]) {
-        TokenTypeByText[str] = id;
-        if (str.length === 1) TokenTypeByCode[str.charCodeAt(0)] = id;
+      for (const str of typeof text === 'string' ? [text] : text) {
+        if (str.length === 1) TokenIdByCode[str.charCodeAt(0)] = id;
       }
     }
   }
-  Tokens.UNKNOWN = -1;
-  const {IDENT} = Tokens;
+  const {ANGLE, IDENT, LENGTH, NUMBER, PCT, STRING, TIME} = Tokens;
 
   const Units = {__proto__: null};
   const UnitTypeIds = {__proto__: null};
   for (const [id, units] of [
-    [Tokens.ANGLE, 'deg,grad,rad,turn'],
+    [ANGLE, 'deg,grad,rad,turn'],
     [Tokens.FREQUENCY, 'hz,khz'],
-    [Tokens.LENGTH, 'cap,ch,em,ex,ic,lh,rlh,rem,' +
+    [LENGTH, 'cap,ch,em,ex,ic,lh,rlh,rem,' +
       'cm,mm,in,pc,pt,px,q,' +
       'cqw,cqh,cqi,cqb,cqmin,cqmax,' + // containers
       'fr,' + // grids
@@ -679,9 +665,8 @@
       'dvb,dvi,dvh,dvw,dvmin,dvmax' +
       'lvb,lvi,lvh,lvw,lvmin,lvmax' +
       'svb,svi,svh,svw,svmin,svmax'],
-    [Tokens.NTH, 'n'], // :nth-child(2n)
     [Tokens.RESOLUTION, 'dpcm,dpi,dppx,x'],
-    [Tokens.TIME, 'ms,s'],
+    [TIME, 'ms,s'],
   ]) {
     const type = Tokens[id].name.toLowerCase();
     for (const u of units.split(',')) Units[u] = type;
@@ -730,7 +715,7 @@
      * @param {number} [c]
      * @return {boolean}
      */
-    has(tok, c = tok.lowCode) {
+    has(tok, c = tok.code) {
       if (!this[c]) return false;
       let str, i;
       let low = tok.lowText;
@@ -973,82 +958,89 @@
       perspective: '<len0+> | none',
       rotate: '<angle-or-0> | none',
       rotate3d: '<num>#{3} , <angle-or-0>',
-      rotatex: '<angle-or-0>',
-      rotatey: '<angle-or-0>',
-      rotatez: '<angle-or-0>',
+      rotateX: '<angle-or-0>',
+      rotateY: '<angle-or-0>',
+      rotateZ: '<angle-or-0>',
       scale: '[ <num-pct> ]#{1,2} | none',
       scale3d: '<num-pct>#{3}',
-      scalex: '<num-pct>',
-      scaley: '<num-pct>',
-      scalez: '<num-pct>',
+      scaleX: '<num-pct>',
+      scaleY: '<num-pct>',
+      scaleZ: '<num-pct>',
       skew: '<angle-or-0> [ , <angle-or-0> ]?',
-      skewx: '<angle-or-0>',
-      skewy: '<angle-or-0>',
+      skewX: '<angle-or-0>',
+      skewY: '<angle-or-0>',
       translate: '<len-pct>#{1,2} | none',
       translate3d: '<len-pct>#{2} , <len>',
-      translatex: '<len-pct>',
-      translatey: '<len-pct>',
-      translatez: '<len>',
+      translateX: '<len-pct>',
+      translateY: '<len-pct>',
+      translateZ: '<len>',
     },
   };
-  for (const k of ['hsl', 'rgb']) VTFunctions.color[k + 'a'] = VTFunctions.color[k];
-  for (const k of ['lab', 'lch']) VTFunctions.color['ok' + k] = VTFunctions.color[k];
+  {
+    let obj = VTFunctions.color;
+    for (const k of ['hsl', 'rgb']) obj[k + 'a'] = obj[k];
+    for (const k of ['lab', 'lch']) obj['ok' + k] = obj[k];
+    obj = VTFunctions.transform;
+    for (const key in obj) {
+      const low = key.toLowerCase();
+      if (low !== key) Object.defineProperty(obj, low, {value: obj[key], writable: true});
+    }
+  }
 
   const VTSimple = {
     __proto__: null,
     '<animateable-feature-name>': customIdentChecker('will-change,auto,scroll-position,contents'),
-    '<angle>': p => p.isCalc || p.type === 'angle',
-    '<angle-or-0>': p => p.isCalc || p.is0 || p.type === 'angle',
-    '<ascii4>': p => p.type === 'string' && p.length === 4 && !/[^\x20-\x7E]/.test(p.text),
+    '<angle>': p => p.isCalc || p.id === ANGLE,
+    '<angle-or-0>': p => p.isCalc || p.is0 || p.id === ANGLE,
+    '<ascii4>': p => p.id === STRING && p.length === 4 && !/[^\x20-\x7E]/.test(p.text),
     '<attr>': p => p.isAttr,
     '<custom-ident>': p => p.id === IDENT && !buGlobalKeywords.has(p),
     '<custom-prop>': p => p.type === 'custom-prop',
-    '<flex>': p => p.isCalc || p.type === 'grid' && p.number >= 0,
-    '<hue>': p => p.isCalc || (p = p.type) === 'number' || p === 'angle',
+    '<flex>': p => p.isCalc || p.units === 'fr' && p.number >= 0,
+    '<hue>': p => p.isCalc || p.id === NUMBER || p.id === ANGLE,
     '<ident-for-grid>': customIdentChecker('span,auto'),
     '<ident-not-none>': p => p.id === IDENT && !p.isNone,
     '<ie-function>': p => p.ie,
-    '<int>': p => p.isCalc || p.isInt && p.type === 'number',
-    '<int0+>': p => p.isCalc || p.isInt && p.number >= 0 && p.type === 'number',
-    '<int1+>': p => p.isCalc || p.isInt && p.number > 0 && p.type === 'number',
-    '<int2-4>': p => p.isCalc || p.isInt && p.type === 'number' && (p = p.number) >= 2 && p <= 4,
-    '<len>': p => p.isCalc || p.is0 || p.type === 'length',
-    '<len0+>': p => p.isCalc || p.is0 || p.type === 'length' && p.number >= 0,
-    '<len-pct>': p => p.isCalc || p.is0 || (p = p.type) === 'length' || p === '%',
-    '<len-pct0+>': p => p.isCalc || p.is0 ||
-      p.number >= 0 && (p.type === '%' || p.type === 'length'),
+    '<int>': p => p.isCalc || p.isInt,
+    '<int0+>': p => p.isCalc || p.isInt && p.number >= 0,
+    '<int1+>': p => p.isCalc || p.isInt && p.number > 0,
+    '<int2-4>': p => p.isCalc || p.isInt && (p = p.number) >= 2 && p <= 4,
+    '<len>': p => p.isCalc || p.is0 || p.id === LENGTH,
+    '<len0+>': p => p.isCalc || p.is0 || p.id === LENGTH && p.number >= 0,
+    '<len-pct>': p => p.isCalc || p.is0 || p.id === LENGTH || p.id === PCT,
+    '<len-pct0+>': p => p.isCalc || p.is0 || p.number >= 0 && (p.id === PCT || p.id === LENGTH),
     '<named-or-hex-color>': p => p.type === 'color',
-    '<num>': p => p.isCalc || p.type === 'number',
-    '<num0+>': p => p.isCalc || p.type === 'number' && p.number >= 0,
-    '<num0-1>': p => p.isCalc || p.type === 'number' && (p = p.number) >= 0 && p <= 1,
-    '<num1-1000>': p => p.isCalc || p.type === 'number' && (p = p.number) >= 1 && p <= 1000,
-    '<num-pct>': p => p.isCalc || (p = p.type) === 'number' || p === '%',
-    '<num-pct0+>': p => p.isCalc || p.number >= 0 && ((p = p.type) === 'number' || p === '%'),
-    '<num-pct-none>': p => p.isCalc || p.isNone || (p = p.type) === 'number' || p === '%',
-    '<pct>': p => p.isCalc || p.is0 || p.type === '%',
-    '<pct0+>': p => p.isCalc || p.is0 || p.number >= 0 && p.type === '%',
-    '<pct0-100>': p => p.isCalc || p.is0 || p.type === '%' && (p = p.number) >= 0 && p <= 100,
-    '<keyframes-name>': customIdentChecker('', p => p.type === 'string'),
-    '<string>': p => p.type === 'string',
-    '<time>': p => p.isCalc || p.type === 'time',
+    '<num>': p => p.isCalc || p.id === NUMBER,
+    '<num0+>': p => p.isCalc || p.id === NUMBER && p.number >= 0,
+    '<num0-1>': p => p.isCalc || p.id === NUMBER && (p = p.number) >= 0 && p <= 1,
+    '<num1-1000>': p => p.isCalc || p.id === NUMBER && (p = p.number) >= 1 && p <= 1000,
+    '<num-pct>': p => p.isCalc || p.id === NUMBER || p.id === PCT,
+    '<num-pct0+>': p => p.isCalc || p.number >= 0 && (p.id === NUMBER || p.id === PCT),
+    '<num-pct-none>': p => p.isCalc || p.isNone || p.id === NUMBER || p.id === PCT,
+    '<pct>': p => p.isCalc || p.is0 || p.id === PCT,
+    '<pct0+>': p => p.isCalc || p.is0 || p.number >= 0 && p.id === PCT,
+    '<pct0-100>': p => p.isCalc || p.is0 || p.id === PCT && (p = p.number) >= 0 && p <= 100,
+    '<keyframes-name>': customIdentChecker('', p => p.id === STRING),
+    '<string>': p => p.id === STRING,
+    '<time>': p => p.isCalc || p.id === TIME,
     '<unicode-range>': p => /^U\+[0-9a-f?]{1,6}(-[0-9a-f?]{1,6})?\s*$/i.test(p.text),
     '<uri>': p => p.uri != null,
-    '<width>': p => p.isAuto || p.isCalc || p.is0 || (p = p.type) === 'length' || p === '%',
+    '<width>': p => p.isAuto || p.isCalc || p.is0 || p.id === LENGTH || p.id === PCT,
   };
   for (const type of ['hsl', 'hwb', 'lab', 'lch', 'rgb']) {
     const letters = [];
     for (let i = 0; i < type.length;) letters[type.charCodeAt(i++)] = 1;
     VTSimple[`<rel-${type}>`] = p => p.isNone
-      || (p.length === 1 ? letters[p.lowCode] : p.length === 5 && buAlpha.has(p));
+      || (p.length === 1 ? letters[p.code] : p.length === 5 && buAlpha.has(p));
     VTSimple[`<rel-${type}-num-pct>`] = p => p.isNone
-      || p.isCalc || p.type === 'number' || p.type === '%'
-      || (p.length === 1 ? letters[p.lowCode] : p.length === 5 && buAlpha.has(p));
+      || p.isCalc || p.id === NUMBER || p.id === PCT
+      || (p.length === 1 ? letters[p.code] : p.length === 5 && buAlpha.has(p));
   }
 
   //#endregion
-  //#region StringReader
+  //#region StringSource
 
-  class StringReader {
+  class StringSource {
 
     constructor(text) {
       // https://www.w3.org/TR/css-syntax-3/#input-preprocessing
@@ -1171,6 +1163,18 @@
   //#endregion
   //#region Matcher
 
+  const rxAndAndSep = /\s*&&\s*/y;
+  const rxBraces = /{\s*(\d+)\s*(?:(,)\s*(?:(\d+)\s*)?)?}/y; // {n,} = {n,Infinity}
+  const rxFuncBegin = /([-\w]+)\(\s*(\))?/y;
+  const rxFuncEnd = /\s*\)/y;
+  const rxGroupBegin = /\[\s*/y;
+  const rxGroupEnd = /\s*]/y;
+  const rxOrOrSep = /\s*\|\|\s*/y;
+  const rxOrSep = /\s*\|(?!\|)\s*/y;
+  const rxPlainTextAlt = /[-\w]+(?:\s*\|\s*[-\w]+)*(?=\s*\|(?!\|)\s*|\s*]|\s+\)|\s*$)/y;
+  const rxSeqSep = /\s+(?![&|)\]])/y;
+  const rxTerm = /<[^>\s]+>|"[^"]*"|'[^']*'|[^\s?*+#{}()[\]|&]+/y;
+
   /**
    * This class implements a combinator library for matcher functions.
    * https://developer.mozilla.org/docs/Web/CSS/Value_definition_syntax#Component_value_combinators
@@ -1278,7 +1282,7 @@
       const e = p.expr; if (!e && m) return;
       const vi = m && !e.isVar && new PropValueIterator(e); // eslint-disable-line no-use-before-define
       const mm = !vi || m.matchFunc ? m :
-        list[pn] = (m.call ? m(Matcher) : Matcher.cache.get(m) || Matcher.parse(m));
+        list[pn] = (m.call ? m(Matcher) : Matcher.cache[m] || Matcher.parse(m));
       return !vi || mm.match(vi) && vi.i >= vi.parts.length || !(expr.badFunc = [e, mm]);
     }
     /** @this {Matcher} */
@@ -1350,17 +1354,93 @@
       ).join(req ? ' && ' : ' || ');
       return prec > p ? `[ ${s} ]` : s;
     }
-    /** Simple recursive-descent grammar to build matchers from strings. */
+    /** Simple recursive-descent parseAlt to build matchers from strings. */
     static parse(str) {
-      const reader = new StringReader(str);
-      const res = Matcher.parseGrammar(reader);
-      if (!reader.eof()) {
-        const {offset: i, string} = reader;
+      const source = new StringSource(str);
+      const res = Matcher.parseAlt(source);
+      if (!source.eof()) {
+        const {offset: i, string} = source;
         throw new Error(`Internal grammar error. Unexpected "${
           clipString(string.slice(i, 31), 30)}" at position ${i} in "${string}".`);
       }
-      Matcher.cache.set(str, res);
+      Matcher.cache[str] = res;
       return res;
+    }
+    /**
+     * ALT: OROR [ " | " OROR ]*  (exactly one matches)
+     * OROR: ANDAND [ " || " ANDAND ]*  (at least one matches in any order)
+     * ANDAND: SEQ [ " && " SEQ ]*  (all match in any order)
+     * SEQ: TERM [" " TERM]*  (all match in specified order)
+     * TERM: [ "<" type ">" | literal | "[ " ALT " ]" | fn "()" | fn "( " ALT " )" ] MOD?
+     * MOD: "?" | "*" | "+" | "#" | [ "{" | "#{" ] <num>[,[<num>]?]? "}" ]
+     * The specified literal spaces like " | " are optional except " " in SEQ (i.e. \s+)
+     * @param {StringSource} src
+     * @return {Matcher}
+     */
+    static parseAlt(src) {
+      const alts = [];
+      do {
+        const pt = src.readMatch(rxPlainTextAlt);
+        if (pt) {
+          alts.push(Matcher.term(pt));
+        } else {
+          const ors = [];
+          do {
+            const ands = [];
+            do {
+              const seq = [];
+              do seq.push(Matcher.parseTerm(src));
+              while (src.readMatch(rxSeqSep));
+              ands.push(Matcher.seq(seq));
+            } while (src.readMatch(rxAndAndSep));
+            ors.push(Matcher.many(null, ands));
+          } while (src.readMatch(rxOrOrSep));
+          alts.push(Matcher.many(false, ors));
+        }
+      } while (src.readMatch(rxOrSep));
+      return Matcher.alt(alts);
+    }
+    /**
+     * @param {StringSource} src
+     * @return {Matcher}
+     */
+    static parseTerm(src) {
+      let m, fn;
+      if (src.readMatch(rxGroupBegin)) {
+        m = Matcher.parseAlt(src);
+        if (!src.readMatch(rxGroupEnd)) Matcher.parsingFailed(src, rxGroupEnd);
+      } else if ((fn = src.readMatch(rxFuncBegin, true))) {
+        m = new Matcher(Matcher.funcTest, Matcher.funcToStr, {
+          name: fn[1].toLowerCase(),
+          body: !fn[2] && Matcher.parseAlt(src),
+        });
+        if (!fn[2] && !src.readMatch(rxFuncEnd)) Matcher.parsingFailed(src, rxFuncEnd);
+      } else {
+        m = Matcher.term(src.readMatch(rxTerm) || Matcher.parsingFailed(src, rxTerm));
+      }
+      fn = src.peek();
+      if (fn === 123/* { */ || fn === 35/* # */ && src.peek(2) === 123) {
+        const hash = fn === 35 ? src.read() : '';
+        const [, a, comma, b = comma ? Infinity : a] = src.readMatch(rxBraces, true)
+          || Matcher.parsingFailed(src, rxBraces);
+        return m.braces(+a, +b, hash, hash && ',');
+      }
+      switch (fn) {
+        case 63: /* ? */ return m.braces(0, 1, src.read());
+        case 42: /* * */ return m.braces(0, Infinity, src.read());
+        case 43: /* + */ return m.braces(1, Infinity, src.read());
+        case 35: /* # */ return m.braces(1, Infinity, src.read(), ',');
+      }
+      return m;
+    }
+    /**
+     * @param {StringSource} src
+     * @param {RegExp|string} m
+     * @throws
+     */
+    static parsingFailed(src, m) {
+      throw new Error('Internal grammar error. ' +
+        `Expected ${m} at ${src.offset} in ${src.string}`);
     }
     static seq(ms) {
       return !ms[1] ? ms[0] : new Matcher(Matcher.seqTest, Matcher.seqToStr, ms, true);
@@ -1415,7 +1495,7 @@
     }
     /** Matcher for a single type */
     static term(str) {
-      let m = Matcher.cache.get(str = str.toLowerCase()); if (m) return m;
+      let m = Matcher.cache[str = str.toLowerCase()]; if (m) return m;
       if (str[0] !== '<') {
         m = new Matcher(Matcher.stringArrTest, Matcher.stringArrToStr,
           new Bucket(str.split(rxAltSep)));
@@ -1426,115 +1506,21 @@
         m = new Matcher(Matcher.simpleTest, str, m);
       } else {
         m = VTComplex[str] || Properties[str.slice(1, -1)];
-        m = m.matchFunc ? m : m.call ? m(Matcher) : Matcher.cache.get(m) || Matcher.parse(m);
+        m = m.matchFunc ? m : m.call ? m(Matcher) : Matcher.cache[m] || Matcher.parse(m);
       }
-      Matcher.cache.set(str, m);
+      Matcher.cache[str] = m;
       return m;
     }
   }
 
-  /** @type {Map<string, Matcher>} */
-  Matcher.cache = new Map();
+  /** @type {{[key:string]: Matcher}} */
+  Matcher.cache = {__proto__:null};
   // Precedence of combinators.
   Matcher.MOD = 5;
   Matcher.SEQ = 4;
   Matcher.ANDAND = 3;
   Matcher.OROR = 2;
   Matcher.ALT = 1;
-  Matcher.parseGrammar = (() => {
-    const rxAndAndSep = /\s*&&\s*/y;
-    const rxBraces = /{\s*(\d+)\s*(?:(,)\s*(?:(\d+)\s*)?)?}/y; // {n,} = {n,Infinity}
-    const rxFuncBegin = /([-\w]+)\(\s*(\))?/y;
-    const rxFuncEnd = /\s*\)/y;
-    const rxGroupBegin = /\[\s*/y;
-    const rxGroupEnd = /\s*]/y;
-    const rxOrOrSep = /\s*\|\|\s*/y;
-    const rxOrSep = /\s*\|(?!\|)\s*/y;
-    const rxPlainTextAlt = /[-\w]+(\s*\|\s*[-\w]+)*(?=\s*\|(?!\|)\s*|\s*]|\s+\)|\s*$)/y;
-    const rxSeqSep = /\s+(?![&|)\]])/y;
-    const rxTerm = /<[^>]+>|"[^"]*"|'[^']*'|[^\s?*+#{}()[\]|&]+/y;
-    const readerStack = [];
-    /** @type {StringReader} */
-    let reader;
-    return newReader => {
-      readerStack.push(reader);
-      reader = newReader;
-      const res = alt();
-      reader = readerStack.pop();
-      return res;
-    };
-    function alt() {
-      // alt = oror (" | " oror)*
-      const alts = [];
-      do {
-        const m = reader.readMatch(rxPlainTextAlt);
-        if (m) {
-          alts.push(Matcher.term(m));
-          continue;
-        }
-        // two or more options in any order, at least one must be present.
-        // oror = andand ( " || " andand)*
-        const ors = [];
-        do {
-          // two or more options in any order, all mandatory.
-          // andand = seq ( " && " seq)*
-          const ands = [];
-          do {
-            // seq = mod ( " " mod)*
-            const mods = [];
-            do {
-              // mod = term [ "?" | "*" | "+" | "#" | [ "{" | "#{" ] <num>[,<num>]? "}" ] ]?
-              // term = <type> | literal | "[ " expression " ]" | fn "()" | fn "( " alt " )"
-              let m, hash, fn;
-              if (reader.readMatch(rxGroupBegin)) {
-                m = alt();
-                eat(rxGroupEnd);
-              } else if ((fn = reader.readMatch(rxFuncBegin, true))) {
-                m = new Matcher(Matcher.funcTest, Matcher.funcToStr, {
-                  name: fn[1].toLowerCase(),
-                  body: !fn[2] && alt(),
-                });
-                if (!fn[2]) eat(rxFuncEnd);
-              } else {
-                m = Matcher.term(eat(rxTerm));
-              }
-              fn = reader.peek();
-              if (fn === 35 && reader.peek(2) === 123) { /* #{ */
-                reader.readCode();
-                hash = '#';
-                fn = 123;
-              }
-              switch (fn) {
-                case 63: /* ? */ m = m.braces(0, 1, '?'); break;
-                case 42: /* * */ m = m.braces(0, Infinity, '*'); break;
-                case 43: /* + */ m = m.braces(1, Infinity, '+'); break;
-                case 35: /* # */ m = m.braces(1, Infinity, '#', ','); break;
-                case 123: /* {, #{ */ {
-                  const [, a, sep, b = sep ? Infinity : a] = eat(rxBraces, true);
-                  m = m.braces(+a, +b, hash, hash && ',');
-                }
-                // fallthrough
-                default:
-                  fn = false;
-              }
-              if (fn) reader.readCode();
-              mods.push(m);
-            } while (reader.readMatch(rxSeqSep));
-            ands.push(Matcher.seq(mods));
-          } while (reader.readMatch(rxAndAndSep));
-          ors.push(Matcher.many(null, ands));
-        } while (reader.readMatch(rxOrOrSep));
-        alts.push(Matcher.many(false, ors));
-      } while (reader.readMatch(rxOrSep));
-      return Matcher.alt(alts);
-    }
-    function eat(m, asRe) {
-      const s = reader.readMatch(m, asRe);
-      if (s != null) return s;
-      throw new Error('Internal grammar error. ' +
-        `Expected ${m} at ${reader.offset} in ${reader.string}`);
-    }
-  })();
 
   //#endregion
   //#region Validation
@@ -1583,7 +1569,7 @@
     }
     Props = typeof Props === 'string' ? ScopedProperties[Props] : Props || Properties;
     let spec, res, vp;
-    let prop = tok.text.toLowerCase();
+    let prop = tok.lowText || tok.text.toLowerCase();
     do spec = Props[prop] || Props[''] && (Props = Properties)[prop];
     while (!spec && !res && (vp = tok.vendorPos) && (res = prop = prop.slice(vp)));
     if (typeof spec === 'number' || !spec && vp) {
@@ -1596,14 +1582,14 @@
     if (value.isVar) {
       return;
     }
-    const valueSrc = p0._input.slice(p0.offset, stream.peek().offset).trim();
+    const valueSrc = value.text.trim();
     let known = validationCache.get(prop);
     if (known && known.has(valueSrc)) {
       return;
     }
     // Property-specific validation.
     const expr = new PropValueIterator(value);
-    let m = Matcher.cache.get(spec) || Matcher.parse(spec);
+    let m = Matcher.cache[spec] || Matcher.parse(spec);
     res = m.match(expr, p0);
     if ((!res || expr.hasNext) && /\battr\(/i.test(valueSrc)) {
       if (!res) {
@@ -1631,7 +1617,7 @@
 
   function vtExplode(text) {
     return !text.includes('<') ? text
-      : (Matcher.cache.get(text) || Matcher.parse(text)).toString(0);
+      : (Matcher.cache[text] || Matcher.parse(text)).toString(0);
   }
 
   function vtFailure(unit, what) {
@@ -1659,8 +1645,6 @@
       NamedColors,
       Properties,
       ScopedProperties,
-      TokenTypeByCode,
-      TokenTypeByText,
       Tokens,
       Units,
     },
@@ -1668,7 +1652,8 @@
       Bucket,
       EventTarget,
       Matcher,
-      StringReader,
+      StringSource,
+      TokenIdByCode,
       VTComplex,
       VTFunctions,
       VTSimple,
