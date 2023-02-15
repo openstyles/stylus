@@ -14,6 +14,7 @@
       @supports selector(:nth-child(+n-3)) {}
       .\:fc-\40 escape:nth-child(-1n+6) {}
       .h\:fc-\40 escape:nth-child(2) {}
+      .h\:fc-\40 escape:nth-child(2n) {}
       .ha\:fc-\40 escape:nth-child(odd) {}
       .ha\: fc-\40 escape:nth-child(even of :not([hidden])) {}
       .ha\30 fc-\40 escape:nth-child(3n + -6) {}
@@ -28,7 +29,7 @@ heading"] {
         filter: drop-shadow(0px 0px 2px black);
         font-size: x-large;
         filter: brightness(50%) ! /*foo*/ I\m portant;
-        font-synthesis-style: auto;
+        font-synthesis-style: auto !important !important;
         font-synthesis-weight: auto;
         font-synthesis-small-caps: auto;
       }
@@ -41,6 +42,7 @@ heading"] {
   }
   @layer theme, layout;
 }
+
 @-moz-document domain("example.com") {
   @import "https://unpkg.com/open-props" layer(design.system);
   @import "https://unpkg.com/open-props/normalize.min.css" layer(demo.support);
@@ -62,6 +64,7 @@ heading"] {
     }
   }
 }
+
 @-moz-document domain("bing.com") {
   @import url('landscape.css') screen and (orientation:landscape);
   @font-face {
@@ -111,11 +114,11 @@ heading"] {
     opacity: 1!important;
     filter: invert(foo0)!important;
     filter: foo(1);
-  }
-  @media not (width <= -100px) {
-    body { background: green; }
-    @media (400px <= width <= 700px) {
+    @media not (width <= -100px) {
       body { background: green; }
+      @media (400px <= width <= 700px) {
+        body { background: green; }
+      }
     }
   }
   @media (height > -100px), (update: fast) or (update: slow) {
@@ -152,16 +155,16 @@ heading"] {
       border-block-start-style: solid;
       inline-size: /*[[some-range]]*/;
       font-size: 1q;
-    }
-    @supports (transform-origin: 5% 5%) {}
-    @supports selector(A > B) {}
-    @supports not (transform-origin: 10em 10em 10em) {}
-    @supports not (not (transform-origin: 2px)) {}
-    @supports (display: grid) and (not (display: inline-grid)) {}
-    @supports not (selector( :is(test::placeholder) + :first-child > div ) and (not (appearance:none))) {
-      a {
-        --red: red;
-        color: var(--red);
+      @supports (transform-origin: 5% 5%) {}
+      @supports selector(A > B) {}
+      @supports not (transform-origin: 10em 10em 10em) {}
+      @supports not (not (transform-origin: 2px)) {}
+      @supports (display: grid) and (not (display: inline-grid)) {}
+      @supports not (selector( :is(test::placeholder) + :first-child > div ) and (not (appearance:none))) {
+        a {
+          --red: red;
+          color: var(--red);
+        }
       }
     }
   }
@@ -182,7 +185,7 @@ heading"] {
     syntax: '<color>';
     initial-value: magenta;
     inherits: false;
-    col.selected::marker || td:focus-visible {
+    & col.selected::marker || td:focus-visible {
       background: gray;
       color: white;
       font-weight: bold;
@@ -219,26 +222,22 @@ heading"] {
     color: rgb(255, 0, 153.0);
     color: rgba(1E3 0 0 / .5e2);
     color: hsl( 50, 50%, 50%);
-
     /* These examples all specify the same color: a hot pink. */
     color: #f09;
     color: #F09;
     color: #ff0099;
     color: #FF0099;
-
     /* Hexadecimal syntax with alpha value */
     color: #f09f;
     color: #F09F;
     color: #ff0099ff;
     color: #FF0099FF;
-
     /* Hexadecimal syntax */
     color: #3a30/*   0% opaque green */;
     color: #3A3F/* full opaque green */;
     color: #33aa3300/*   0% opaque green */;
     color: #33AA3388/*  50% opaque green */;
   }
-
   /* rgb/rgba */
   th {
     /* Functional syntax */
@@ -247,24 +246,20 @@ heading"] {
     color: rgb(100%, 0%, 60%);
     color: rgb(100%, 0%, 60%);
     color: rgb(255 0 153);
-
     /* Functional syntax with alpha value */
     color: rgb(255, 0, 153, 1);
     color: rgb(255, 0, 153, 100%);
     color: rgb(255 0 153 / 1);
     color: rgb(255 0 153 / 100%);
-
     /* Functional syntax */
     color: rgba(51, 170, 51, .1)/*  10% opaque green */;
     color: rgba(51, 170, 51, .4)/*  40% opaque green */;
     color: rgba(51, 170, 51, .7)/*  70% opaque green */;
     color: rgba(51, 170, 51, 1)/* full opaque green */;
-
     /* Whitespace syntax */
     color: rgba(51 170 51 / 0.4)/*  40% opaque green */;
     color: rgba(51 170 51 / 40%)/*  40% opaque green */;
   }
-
   /* hsl/hsla */
   td {
     /* These examples all specify the same color: a lavender. */
@@ -274,25 +269,20 @@ heading"] {
     color: hsl(270deg, 60%, 70%);
     color: hsl(4.71239rad, 60%, 70%);
     color: hsl(.75turn, 60%, 70%);
-
     /* These examples all specify the same color: a lavender that is 15% opaque. */
     color: hsl(270, 60%, 50%, .15);
     color: hsl(270, 60%, 50%, 15%);
     color: hsl(270 60% 50% / .15);
     color: hsl(270 60% 50% / 15%);
-
     color: hsla(240, 100%, 50%, .05)/*   5% opaque blue */;
     color: hsla(240, 100%, 50%, .4)/*  40% opaque blue */;
     color: hsla(240, 100%, 50%, .7)/*  70% opaque blue */;
     color: hsla(240, 100%, 50%, 1)/* full opaque blue */;
-
     /* Whitespace syntax */
     color: hsla(240 100% 50% / .05)/*   5% opaque blue */;
-
     /* Percentage value for alpha */
     color: hsla(240 100% 50% / 5%)/*   5% opaque blue */;
   }
-
   /* keyword colors */
   a {
     color: aliceblue;
@@ -453,3 +443,85 @@ heading"] {
     color: #b5b5b5;
   }
 }
+
+@-moz-document
+  domain( GOOD-examples.of.nesting )
+{
+  .foo {
+    color: blue;
+    & > .bar { color: red; }
+    @nest & > .bar {
+      color: blue;
+    }
+  }
+  .foo {
+    color: blue;
+    &.bar { color: red; }
+  }
+  .foo, .bar {
+    color: blue;
+    & + .baz, &.qux { color: red; }
+    @nest .parent & {
+      color: blue;
+      & .bar & .baz & .qux { color: red; }
+    }
+  }
+  .foo {
+    @nest :not(&) {
+      color: blue;
+    }
+    color: blue;
+    & { padding: 2ch; }
+  }
+  .foo {
+    color: blue;
+    && { padding: 2ch; }
+  }
+  .error, #404 {
+    &:hover > .baz { color: red; }
+  }
+  .foo {
+    &:is(.bar, &.baz) { color: red; }
+  }
+  figure {
+    margin: 0;
+    & > figcaption {
+      background: hsl(0 0% 0% / 50%);
+      & > p {
+        font-size: .9rem;
+      }
+    }
+  }
+}
+
+@-moz-document domain( BAD-examples.of.nesting ) {
+  .foo {
+    color: blue;
+    .bar {
+      color: red;
+    }
+  }
+  .foo {
+    color: blue;
+    .bar& {
+      color: red;
+    }
+    @nest .bar {
+      color: blue;
+    }
+  }
+  .foo, .bar {
+    color: blue;
+    @nest & .bar, .baz {
+      color: blue;
+    }
+    & + .baz, .qux { color: red; }
+  }
+  .foo {
+    color: blue;
+    &__bar { color: red; }
+  }
+  &.misplaced { padding: 2ch; }
+}
+
+&.misplaced { padding: 2ch; }

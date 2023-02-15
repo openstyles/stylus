@@ -28,16 +28,15 @@
     },
   } = parserlib;
   const {
-    CHAR, COLON, COMMA, COMMENT, DELIM, DOT, HASH, FUNCTION,
+    AMP, CHAR, COLON, COMMA, COMMENT, DELIM, DOT, HASH, FUNCTION,
     IDENT, LBRACE, LBRACKET, LPAREN, MINUS, NTH, NUMBER, PCT, PIPE, PLUS,
     RBRACE, RBRACKET, RPAREN, S: WS, SEMICOLON, STAR, USO_VAR,
   } = Tokens;
-  const TT = /** @type {Record<string,TokenMap>} */ {
+  const TT = {
     attrEq: [Tokens.ATTR_EQ, Tokens.EQUALS],
     attrEqEnd: [Tokens.ATTR_EQ, Tokens.EQUALS, RBRACKET],
     attrStart: [PIPE, IDENT, STAR],
     attrNameEnd: [RBRACKET, USO_VAR, WS],
-    braceLR: [LBRACE, RBRACE],
     combinator: [PLUS, Tokens.COMBINATOR],
     cruft: [Tokens.CDO, Tokens.CDC],
     declEnd: [SEMICOLON, RBRACE],
@@ -52,12 +51,12 @@
     propValEnd: [DELIM, SEMICOLON, RBRACE],
     propValEndParen: [DELIM, SEMICOLON, RBRACE, RPAREN],
     pseudo: [FUNCTION, IDENT],
-    selectorStart: [PIPE, IDENT, STAR, HASH, DOT, LBRACKET, COLON],
+    selectorStart: [AMP, PIPE, IDENT, STAR, HASH, DOT, LBRACKET, COLON],
     supportsIdentNext: [COLON, LPAREN],
     supportsInParens: [FUNCTION, IDENT, LPAREN],
     stringUri: [Tokens.STRING, Tokens.URI, USO_VAR],
   };
-  const B = /** @type {Record<string,Bucket>} */ {
+  const B = /** @type {{[key:string]: Bucket}} */ {
     attrIS: ['i', 's', ']'], // "]" is to improve the error message,
     colors: NamedColors,
     plusMinus: ['+', '-'],
@@ -70,19 +69,30 @@
   // Sticky `y` flag must be used in expressions for reader.readMatch
   const rxComment = /\*([^*]+|\*(?!\/))*(\*\/|$)/y; // the opening "/" is already consumed
   const rxCommentUso = /\*\[\[[-\w]+]]\*\/|\*(?:[^*]+|\*(?!\/))*(\*\/|$)/y;
+  const rxDigits = /\d+/y;
   const rxMaybeQuote = /\s*['"]?/y;
-  const rxNth = /^(-?)n(?:(-)(\d*))?$/;
   const rxName = /(?:[-_\da-zA-Z\u00A0-\uFFFF]+|\\(?:(?:[0-9a-fA-F]{1,6}|.)[\t ]?|$))+/y;
+  const rxNth = /(even|odd)|(?:([-+]?\d*n)(?:\s*([-+])(\s*\d+)?)?|[-+]?\d+)((?=\s+of\s+|\s*\)))?/yi;
   const rxNumberDigit = /\d*\.?\d*(e[+-]?\d+)?/iy;
   const rxNumberDot = /\d+(e[+-]?\d+)?/iy;
   const rxNumberSign = /(\d*\.\d+|\d+\.?\d*)(e[+-]?\d+)?/iy;
+  const rxSign = /[-+]/y;
+  const rxSpace = /\s+/y;
+  const rxSpaceCmtRParen = /(?=\s|\/\*|\))/y;
+  const rxSpaceComments = /(?:\s+|\/\*(?:[^*]+|\*(?!\/))*(?:\*\/|$))+/y;
   const rxSpaceRParen = /\s*\)/y;
-  const rxStringDoubleQ = /(?:[^\n\\"]+|\\(?:([0-9a-fA-F]{1,6}|.)[\t ]?|\n|$))+/y;
-  const rxStringSingleQ = /(?:[^\n\\']+|\\(?:([0-9a-fA-F]{1,6}|.)[\t ]?|\n|$))+/y;
+  const rxStringDoubleQ = /(?:[^\n\\"]+|\\(?:([0-9a-fA-F]{1,6}|.)[\t ]?|\n|$))*/y;
+  const rxStringSingleQ = /(?:[^\n\\']+|\\(?:([0-9a-fA-F]{1,6}|.)[\t ]?|\n|$))*/y;
   const rxUnescapeLF = /\\(?:(?:([0-9a-fA-F]{1,6})|(.))[\t ]?|(\n))/g;
   const rxUnescapeNoLF = /\\(?:([0-9a-fA-F]{1,6})|(.))[\t ]?/g;
   const rxUnquotedUrl = /(?:[-!#$%&*-[\]-~\u00A0-\uFFFF]+|\\(?:(?:[0-9a-fA-F]{1,6}|.)[\t ]?|$))+/y;
-  const rxWS = /\s+/y;
+  const [rxDeclBlock, rxDeclValue] = ((
+    common = `(${rxUnescapeLF.source}|` + String.raw`\([^'"{}()[\]\\]*\)|\[[^'"{}()[\]\\]*]` +
+    `|/${rxComment.source}|"${rxStringDoubleQ.source}"|'${rxStringSingleQ.source}'|`
+  ) => [
+    String.raw`\{[^'"{}()[\]\\]*}|[^`,
+    '[^;',
+  ].map(str => RegExp(common + str + String.raw`'"{}()[\]\\/]|/(?!\*))+`, 'y')))();
   const isIdentStart = c => c >= 97 && c <= 122 || c >= 65 && c <= 90 || // a-z A-Z
     c === 45 || c === 92 || c === 95 || c >= 160; // - \ _
   const isIdentChar = (c, prev) => c >= 97 && c <= 122 || c >= 65 && c <= 90 /* a-z A-Z */ ||
@@ -271,6 +281,7 @@
 
     constructor(input) {
       this.reader = new StringReader(input ? `${input}` : '');
+      this._amp = 0;
       this._esc = false;
       this._resetLT();
     }
@@ -332,6 +343,7 @@
           break;
         }
       } while (ti);
+      if (ti === AMP) this._amp++;
       this._cur = _cur;
       this.token = tok;
       return tok;
@@ -345,6 +357,7 @@
       } else {
         const old = this.token;
         tok = this.get();
+        if (tok.id === AMP) this._amp--;
         this.token = old;
         this._cur--;
       }
@@ -359,6 +372,7 @@
     /** Restores the last consumed token to the token stream. */
     unget() {
       if (this._cur) {
+        if ((this.token || {}).id === AMP) this._amp--;
         this.token = this._lt[(--this._cur - 1 + this._cycle + LT_SIZE) % LT_SIZE];
       } else {
         throw new Error('Too much lookahead.');
@@ -382,19 +396,19 @@
     _getToken() {
       let a, c, text;
       const {reader} = this;
-      const start = reader.index;
+      const start = reader.offset;
       const tok = new Token(CHAR,
         reader.col,
         reader.line,
         start,
         start + 1,
-        reader._input,
+        reader.string,
         a = reader.readCode());
       const b = reader.peek();
       // [\t\n\x20]
       if (a === 9 || a === 10 || a === 32) {
         tok.id = WS;
-        if (isSpace(b)) reader.readMatch(rxWS);
+        if (isSpace(b)) reader.readMatch(rxSpace);
       // [0-9]
       } else if (a >= 48 && a <= 57) {
       // [0-9.eE] */
@@ -407,10 +421,10 @@
         text = this._number(a, b, tok);
       // -
       } else if (a === 45) {
-        if (b === 45 /* -- */ && isIdentChar(c || (c = reader.peek(2)))) {
+        if (b === 45/* -- */ && isIdentChar(c || (c = reader.peek(2)))) {
           text = this._ident(a, b, 1, c, 1, tok);
           tok.type = 'custom-prop';
-        } else if (b === 45 && (c || (c = reader.peek(2))) === 62 /* -> */) {
+        } else if (b === 45 && (c || (c = reader.peek(2))) === 62/* -> */) {
           reader.read(2, '->');
           tok.id = Tokens.CDC;
         } else if (isIdentStart(b)) {
@@ -419,7 +433,7 @@
           tok.id = MINUS;
         }
       // U+ u+
-      } else if (b === 43/*+*/ && (a === 85 || a === 117)) {
+      } else if ((a === 85 || a === 117) && b === 43) {
         this._unicodeRange(tok);
       // a-z A-Z - \ _ unicode
       } else if (isIdentStart(a)) {
@@ -462,7 +476,7 @@
       // \
       } else if (a === 92) {
         if (b == null) text = '\uFFFD';
-        else if (b === 10) { tok.id = WS; text = reader.readMatch(rxWS); }
+        else if (b === 10) { tok.id = WS; text = reader.readMatch(rxSpace); }
       // @
       } else if (a === 64) {
         if (isIdentStart(b)) {
@@ -472,13 +486,13 @@
         }
       // <
       } else if (a === 60) {
-        if (b === 33 /* ! */ && reader.readMatchStr('!--')) {
+        if (b === 33/*!*/ && reader.readMatchStr('!--')) {
           tok.id = Tokens.CDO;
         }
       } else if (a == null) {
         tok.id = Tokens.EOF;
       }
-      if ((c = reader.index) !== start + 1) tok.offset2 = c;
+      if ((c = reader.offset) !== start + 1) tok.offset2 = c;
       if (text) { PDESC.value = text; define(tok, 'text', PDESC); }
       return tok;
     }
@@ -490,16 +504,16 @@
       tok
     ) {
       const {reader} = this;
-      const first = a === 92 ? (cYes = reader.index--, '') : String.fromCharCode(a);
+      const first = a === 92 ? (cYes = reader.offset--, reader.col--, '') : String.fromCharCode(a);
       const str = cYes ? reader.readMatch(rxName) : bYes ? reader.read() : '';
       const esc = a === 92 || b === 92 || bYes && c === 92 || str.length > 2 && str.includes('\\');
       const name = esc ? (first + str).replace(rxUnescapeNoLF, unescapeNoLF) : first + str;
       if (!tok) return {esc, name};
       if (a === 92) tok.lowCode = toLowAscii(name.charCodeAt(0));
-      const vp = a === 45 /* - */ && b !== 45 && name.indexOf('-', 2) + 1;
+      const vp = a === 45/*-*/ && b !== 45 && name.indexOf('-', 2) + 1;
       const next = cYes || esc && isSpace(c) ? reader.peek() : bYes ? c : b;
       let ovrValue = esc ? name : null;
-      if (next === 40 /* ( */) {
+      if (next === 40/*(*/) {
         reader.read();
         c = name.toLowerCase();
         b = (c === 'url' || c === 'url-prefix' || c === 'domain') && this.readUriValue();
@@ -508,7 +522,7 @@
         tok.name = vp ? c.slice(vp) : c;
         if (vp) tok.prefix = c.slice(1, vp - 1);
         if (b) tok.uri = b;
-      } else if (next === 58 /* : */ && name === 'progid') {
+      } else if (next === 58/*:*/ && name === 'progid') {
         ovrValue = name + reader.readMatch(/.*?\(/y);
         tok.id = FUNCTION;
         tok.name = ovrValue.slice(0, -1).toLowerCase();
@@ -516,7 +530,7 @@
         tok.ie = true;
       } else {
         tok.id = IDENT;
-        if (a === 45 /* - */ || (b = name.length) < 3 || b > 20) {
+        if (a === 45/*-*/ || (b = name.length) < 3 || b > 20) {
           tok.type = 'ident'; // named color min length is 3 (red), max is 20 (lightgoldenrodyellow)
         }
       }
@@ -566,7 +580,7 @@
         reader.mark();
         reader.read(); // +
         v = reader.readMatch(/[0-9a-f]{1,6}/iy);
-        while (!pass && v.length < 6 && reader.peek() === 63 /* ? */) {
+        while (!pass && v.length < 6 && reader.peek() === 63/*?*/) {
           v += reader.read();
         }
         if (!v) {
@@ -576,7 +590,7 @@
         if (!pass) {
           token.id = Tokens.UNICODE_RANGE;
           // if there's a ? in the first part, there can't be a second part
-          if (v.includes('?') || reader.peek() !== 45 /* - */) return;
+          if (v.includes('?') || reader.peek() !== 45/*-*/) return;
         }
       }
     }
@@ -603,18 +617,6 @@
       reader.reset();
     }
 
-    readEscape() {
-      let res = this.reader.readMatch(/[0-9a-f]{1,6}\s?/iy);
-      if (res) {
-        res = parseInt(res, 16);
-        res = res && res <= 0x10FFFF ? String.fromCodePoint(res) : '\uFFFD';
-      } else {
-        res = this.reader.read();
-      }
-      this._esc = res != null;
-      return res;
-    }
-
     /**
      * @param {string} [first]
      * @param {RegExp} rx - must be sticky
@@ -627,55 +629,46 @@
       return res;
     }
 
-    /**
-     * @param {boolean} [omitComments]
-     * @param {string} [stopOn] - goes to the parent if used at the top nesting level of the value,
-       specifying an empty string will stop after consuming the first encountered top block.
-     * @returns {?string}
-     */
-    readDeclValue({omitComments, stopOn = ';!})]'} = {}) {
+    readNthChild() {
       const {reader} = this;
-      const endings = [];
-      const rx = stopOn.includes(';')
-        ? /([^;!'"{}()[\]/\\]|\/(?!\*))+/y
-        : /([^'"{}()[\]/\\]|\/(?!\*))+/y;
-      let value = '';
-      let end = stopOn;
-      while (!reader.eof()) {
-        let c = reader.readMatch(rx);
-        if (c) value += c;
-        reader.mark();
-        c = reader.read();
-        if (!endings.length && stopOn.includes(c)) {
-          reader.reset();
-          break;
-        }
-        if (c === '\\') {
-          value += this.readEscape();
-        } else if (c === '/') {
-          value += reader.readMatch(rxComment);
-          if (omitComments) value.pop();
-        } else if (c === '"' || c === "'") {
-          value += this.readString(c);
-        } else if (c === '{' || c === '(' || c === '[') {
-          value += c;
-          endings.push(end);
-          end = c === '{' ? '}' : c === '(' ? ')' : ']';
-        } else if (c === '}' || c === ')' || c === ']') {
-          if (!end.includes(c)) {
-            reader.reset();
-            return null;
-          }
-          value += c;
-          end = endings.pop();
-          if (!end && !stopOn) {
+      const m = (this.readSpaceCmt(), reader.readMatch(rxNth, true)); if (!m) return;
+      let a, b, ws;
+      if (m[1]) a = m[1]; // even|odd
+      else if (!(a = m[2])) b = m[0]; // B
+      else if ((m[3] || !m[5] && (ws = this.readSpaceCmt(), m[3] = reader.readMatch(rxSign)))) {
+        if (m[4] || (reader.mark(), this.readSpaceCmt(), m[4] = reader.readMatch(rxDigits))) {
+          b = m[3] + m[4].trim();
+        } else return reader.reset();
+      }
+      if ((a || b) && (ws || reader.readMatch(rxSpaceCmtRParen) != null)) {
+        return [a || '', b || ''];
+      }
+    }
+
+    readSpaceCmt() {
+      const c = this.reader.peek();
+      return (c === 47/*/*/ || isSpace(c)) && this.reader.readMatch(rxSpaceComments) || '';
+    }
+
+    /**
+     * @param {boolean} [inBlock] - to read to the end of the current {}-block
+     */
+    skipDeclBlock(inBlock) {
+      for (let {reader} = this, stack = [], end = inBlock ? 125 : -1, c; (c = reader.peek());) {
+        if (c === end || end < 0 && (c === 59/*;*/ || c === 125/*}*/)) {
+          end = stack.pop();
+          if (!end || end < 0 && c === 125/*}*/) {
+            if (end || c === 59/*;*/) reader.readCode(); // consuming ; or } of own block
             break;
           }
-        } else {
-          value += c;
+        } else if ((c = c === 123 ? 125/*{}*/ : c === 40 ? 41/*()*/ : c === 91 && 93/*[]*/)) {
+          stack.push(end);
+          end = c;
         }
+        reader.readCode();
+        reader.readMatch(end > 0 ? rxDeclBlock : rxDeclValue);
       }
-      return value;
+      this._resetLT();
     }
   }
 
@@ -725,14 +718,14 @@
       },
       findBlock(token = getToken()) {
         if (!token || !stream) return;
-        const reader = stream.reader;
-        const input = reader._input;
+        const {reader} = stream;
+        const {string} = reader;
         const start = token.offset;
-        const key = input.slice(start, input.indexOf('{', start) + 1);
+        const key = string.slice(start, string.indexOf('{', start) + 1);
         let block = data.get(key);
-        if (!block || !(block = getBlock(block, input, start, key))) return;
-        shiftBlock(block, start, token.line, token.col, input);
-        reader.index = block.endOffset;
+        if (!block || !(block = getBlock(block, string, start, key))) return;
+        shiftBlock(block, start, token.line, token.col, string);
+        reader.offset = block.endOffset;
         reader.line = block.endLine;
         reader.col = block.endCol;
         stream._resetLT();
@@ -759,11 +752,10 @@
         block.endLine = end.line;
         block.endCol = end.col + end.offset2 - end.offset;
         block.endOffset = end.offset2;
-
-        const input = stream.reader._input;
-        const key = input.slice(block.offset, input.indexOf('{', block.offset) + 1);
-        block.text = input.slice(block.offset, block.endOffset);
-
+        const {string} = stream.reader;
+        const start = block.offset;
+        const key = string.slice(start, string.indexOf('{', start) + 1);
+        block.text = string.slice(start, block.endOffset);
         let blocks = data.get(key);
         if (!blocks) data.set(key, (blocks = []));
         blocks.push(block);
@@ -941,6 +933,8 @@
       super();
       this.options = options || {};
       this.stream = null;
+      /** @type {number} style rule nesting depth: when > 0 @nest and &-selectors are allowed */
+      this._inStyle = 0;
     }
 
     /** 2+ = error, 1 = warning, anything else = info */
@@ -948,6 +942,7 @@
       this.fire({
         type: level >= 2 ? 'error' : level === 1 ? 'warning' : 'info',
         message: msg,
+        recoverable: true,
       }, token);
     }
     /**
@@ -971,7 +966,7 @@
         }
         if (tok.id === LBRACE) {
           if (ids[1]) this.alarm(1, '@layer block cannot have multiple ids', start);
-          this._rulesetBlock(stream, start, ['layer', {id: ids[0], brace: tok}, start]);
+          this._ruleBlock(stream, start, ['layer', {id: ids[0], brace: tok}, start]);
           return;
         }
       } while (tok.id === COMMA);
@@ -999,16 +994,9 @@
         try {
           if ((fn = actions[ti])) {
             fn.call(this, stream, tok);
-            continue;
-          }
-          if (topDocOnly) {
-            stream.readDeclValue({stopOn: '{}'});
-            if (stream.reader.peek() === 123 /* { */) {
-              stream.readDeclValue({stopOn: ''});
-            }
-            continue;
-          }
-          if (!this._ruleset(stream, tok) && stream.get().id) {
+          } else if (topDocOnly) {
+            stream.skipDeclBlock(tok);
+          } else if (!this._styleRule(stream, tok) && stream.get().id) {
             stream._failure();
           }
         } catch (ex) {
@@ -1063,22 +1051,17 @@
     }
 
     _container(stream, start) {
-      const next = stream.get(2).text;
-      let name;
-      if (/^(\(|not)$/i.test(next)) {
-        stream.unget();
-      } else {
-        name = next;
-        stream.mustMatch(WS);
-      }
-      // TODO: write a proper condition parser
-      const condition = stream.readDeclValue({omitComments: true, stopOn: ';{}'});
-      this._rulesetBlock(stream, start, ['container', {name, condition}, start]);
+      const tok = stream.match(IDENT);
+      this._ruleBlock(stream, start, ['container', {
+        name: B.not.has(tok) ? stream.unget() : tok,
+        condition: this._expr(stream, LBRACE),
+        brace: stream.mustMatch(LBRACE, {reuse: 1}),
+      }, start]);
     }
 
     _supports(stream, start) {
       this._supportsCondition(stream);
-      this._rulesetBlock(stream, start, ['supports', {}, start]);
+      this._ruleBlock(stream, start, ['supports', {}, start]);
     }
 
     _supportsCondition(stream) {
@@ -1118,7 +1101,7 @@
 
     _media(stream, start) {
       const media = this._mediaQueryList(stream);
-      this._rulesetBlock(stream, start, ['media', {media}, start]);
+      this._ruleBlock(stream, start, ['media', {media}, start]);
     }
 
     _mediaQueryList(stream, tok) {
@@ -1166,7 +1149,7 @@
       const id = tok.text;
       const pseudo = stream.match(COLON, false) &&
         stream.mustMatch(IDENT, false).text;
-      this._readDeclarations(stream, {
+      this._styleRuleBlock(stream, {
         margins: true,
         scope: start,
         event: ['page', {id, pseudo}, start],
@@ -1174,20 +1157,24 @@
     }
 
     _margin(stream, tok) {
-      this._readDeclarations(stream, {
+      this._styleRuleBlock(stream, {
         event: ['pagemargin', {margin: tok}],
       });
     }
 
+    _nest(stream, _start) {
+      this._styleRule(stream, stream.get(2), {nestSym: true});
+    }
+
     _fontFace(stream, start) {
-      this._readDeclarations(stream, {
+      this._styleRuleBlock(stream, {
         scope: start,
         event: ['fontface', {}, start],
       });
     }
 
     _fontPaletteValues(stream, start) {
-      this._readDeclarations(stream, {
+      this._styleRuleBlock(stream, {
         scope: start,
         event: ['fontpalettevalues', {id: stream.mustMatch(IDENT)}, start],
       });
@@ -1201,20 +1188,15 @@
         if (fn && (fn.uri || fn.name === 'regexp')) functions.push(fn);
         else this.alarm(1, 'Unknown document function', fn);
       } while (stream.match(COMMA));
-      this.fire({
-        type: 'startdocument',
-        brace: stream.mustMatch(LBRACE),
-        functions,
-        start,
-      }, start);
+      const brace = stream.mustMatch(LBRACE);
+      this.fire({type: 'startdocument', brace, functions, start}, start);
       if (this.options.topDocOnly) {
-        stream.readDeclValue({stopOn: '}'});
-        stream.mustMatch(RBRACE);
+        stream.skipDeclBlock(true);
       } else {
         /* We allow @import and such inside document sections because the final generated CSS for
          * a given page may be valid e.g. if this section is the first one that matched the URL */
         this._sheetGlobals(stream);
-        this._rulesetBlock(stream, start);
+        this._ruleBlock(stream, start);
       }
       this.fire({type: 'enddocument', start, functions});
     }
@@ -1226,57 +1208,10 @@
 
     _propertySym(stream, start) {
       const name = stream.mustMatch(IDENT);
-      this._readDeclarations(stream, {
+      this._styleRuleBlock(stream, {
         scope: start,
         event: ['property', {name}, start],
       });
-    }
-
-    _ruleset(stream, tok) {
-      if (parserCache.findBlock(tok)) {
-        return true;
-      }
-      for (let blk, sels, brace, failed; !blk;) {
-        try {
-          if (!sels) sels = this._selectorsGroup(stream, tok);
-          if (!sels) return stream.unget();
-          brace = stream.mustMatch(LBRACE, {reuse: 1});
-          blk = failed || parserCache.startBlock(sels[0]);
-          this._readDeclarations(stream, {
-            brace, event: !failed && ['rule', {selectors: sels}, sels[0]],
-          });
-          if (!failed) parserCache.endBlock();
-          return true;
-        } catch (ex) {
-          failed = true;
-          if (blk) parserCache.cancelBlock(blk);
-          if (!(ex instanceof SyntaxError) || this.options.strict) throw ex;
-          this.fire(assign({}, ex, {type: 'error', error: ex}));
-          if (!brace) {
-            this._expr(stream, TT.braceLR, true);
-            sels = true;
-          } else if (blk && !stream.match(RBRACE)) {
-            this._expr(stream, RBRACE, true);
-            return true;
-          }
-        }
-      }
-    }
-
-    _rulesetBlock(stream, start, evt) {
-      if (evt) {
-        const [type, msg = evt[1] = {}, eTok] = evt;
-        if (!msg.brace) msg.brace = stream.mustMatch(LBRACE);
-        this.fire(assign({type: 'start' + type}, msg), eTok);
-        evt = assign({type: 'end' + type}, msg);
-      }
-      let ti;
-      for (let tok, fn; (ti = (tok = stream.get(2)).id) && ti !== RBRACE;) {
-        if ((fn = ParserRoute.ruleset[ti])) fn.call(this, stream, tok);
-        else if (!this._ruleset(stream, tok)) break;
-      }
-      if (ti !== RBRACE) stream.mustMatch(RBRACE);
-      if (evt) this.fire(evt);
     }
 
     /** Warning! The next token is consumed */
@@ -1328,24 +1263,28 @@
           stream._failure();
         }
       }
-      return TokenValue.from(sel);
+      tok = TokenValue.from(sel);
+      tok.amps = stream._amp;
+      return tok;
     }
 
     /** Warning! The next token is consumed */
     _simpleSelectorSequence(stream, start = stream.get(2)) {
-      if (!TT.selectorStart[start.id]) return;
+      const si = start.id;
+      if (!TT.selectorStart[si]) return;
+      stream._amp = si === AMP ? 1 : 0;
       let tok = start;
-      let ns, ti, tag;
-      if ((ti = start.id) === PIPE) {
+      let ns, tag;
+      if (si === PIPE) {
         ns = true;
-      } else if (ti === STAR || ti === IDENT) {
+      } else if (si === STAR || si === IDENT) {
         if ((tok = stream.get()).id === PIPE) {
           ns = true;
           tok = false;
         } else tag = start;
       }
       if (ns && !(tag = stream.match(TT.identStar, false))) {
-        if (ti !== PIPE) stream.unget();
+        if (si !== PIPE) stream.unget();
         return;
       }
       const mods = [];
@@ -1365,6 +1304,12 @@
       tok.elementName = tag || '';
       tok.modifiers = mods;
       tok.offset2 = (mods[mods.length - 1] || tok).offset2;
+      return tok;
+    }
+
+    _amp(stream, tok) {
+      tok.type = 'amp';
+      tok.args = [];
       return tok;
     }
 
@@ -1441,44 +1386,19 @@
       let expr, n, x;
       if ((n = tok.name)) {
         if (n === 'nth-child' || n === 'nth-last-child') {
-          let t1, t2, t3;
-          expr = [t1 = stream.mustMatch(TT.nthOf)];
-          if ((x = t1.id) === IDENT) {
-            if (B.evenOdd.has(t1)) x = 0;
-            else if (!(n = rxNth.exec(t1))) stream._failure('', t1);
-            else if (n[3]) x = 0; // n-1 or -n-1 (all done)
-            else { x = NTH; t2 = n[2] || ''; } // -n-, n-, -n, n
-          } else if (x === PLUS) {
-            n = rxNth.exec(t2 = stream.get(0));
-            if (!n || n[1]) stream._failure('', t2);
-            expr.push(t2);
-            if (n[3]) x = 0; // +n-1 (all done)
-            else { x = NTH; t2 = n[2] || ''; } // +n-, +n
-          }
-          if (x === NTH && (
-            t2 === '-' /* -n-, +n- */ ||
-            (x = (t2 = stream.get(2)).id) && B.plusMinus[t2.lowCode] /* +num, -num, +, - */
-          )) {
-            if (!(x === NUMBER && t2.isInt) &&
-                !(t2.length === 1 && (t3 = stream.mustMatch(NUMBER)).isInt && t3.lowCode >= 48)) {
-              stream._failure('+int, -int', t2);
-            }
-            if (t2.id) expr.push(t2);
-            if (t3) expr.push(t3);
-          }
-          if (x === IDENT ||
-              x !== RPAREN && (x = (t2 = stream.match(TT.nthOfEnd)).id) === IDENT) {
-            if (!B.of.has(t2)) stream._failure(B.of, t2);
-            expr.push(t2);
-            n = 'is';
-          }
+          expr = stream.readNthChild();
+          const t0 = stream.get(0);
+          const t2 = t0.id === WS ? stream.get(2) : t0;
+          if (expr && B.of.has(t2)) n = 'not';
+          else if (t2.id === RPAREN) x = true;
+          else stream._failure('', t0);
         }
         if (n === 'not' || n === 'is' || n === 'where' || n === 'any' || n === 'has') {
           x = this._selectorsGroup(stream, undefined, n === 'has');
           if (!x) stream._failure('a selector');
           if (expr) expr.push(...x); else expr = x;
           stream.mustMatch(RPAREN, {reuse: 1});
-        } else if (x !== RPAREN) {
+        } else if (!x) {
           expr = this._expr(stream, RPAREN);
         }
         tok = TokenFunc.from(tok, expr, stream.token);
@@ -1499,7 +1419,7 @@
       if (tok.id === STAR) {
         if (!(tok = stream.match(IDENT, false))) { stream.unget(); return; }
         hack = '*'; tok.col--; tok.offset--;
-      } else if (tok.lowCode === 95 /* _ */ && opts.underscoreHack) {
+      } else if (tok.lowCode === 95/*_*/ && opts.underscoreHack) {
         hack = '_';
       }
       if (hack) {
@@ -1524,7 +1444,7 @@
         value,
       }, tok);
       tok = stream.match(inParens ? RPAREN : TT.declEnd, {reuse: !important}).id;
-      return inParens ? tok : tok === SEMICOLON || (stream.unget(), tok);
+      return inParens ? tok : tok === SEMICOLON || tok && (stream.unget(), tok);
     }
 
     /**
@@ -1596,7 +1516,7 @@
         while (stream.match(COMMA)) {
           keys.push(this._key(stream));
         }
-        this._readDeclarations(stream, {
+        this._styleRuleBlock(stream, {
           event: ['keyframerule', {keys}, keys[0]],
         });
       }
@@ -1609,11 +1529,64 @@
         !optional && stream._failure('percentage%, "from", "to"', stream.peek());
     }
 
-    _skipCruft(stream) {
-      while (stream.match(TT.cruft)) { /*NOP*/ }
+    /** {}-block that can contain @-rule, _styleRule */
+    _ruleBlock(stream, start, evt) {
+      if (evt) {
+        const [type, msg = evt[1] = {}, eTok] = evt;
+        if (!msg.brace) msg.brace = stream.mustMatch(LBRACE);
+        this.fire(assign({type: 'start' + type}, msg), eTok);
+        evt = assign({type: 'end' + type}, msg);
+      }
+      let ti;
+      for (let tok, fn; (ti = (tok = stream.get(2)).id) && ti !== RBRACE;) {
+        if ((fn = ParserRoute.ruleset[ti])) fn.call(this, stream, tok);
+        else if (!this._styleRule(stream, tok)) break;
+      }
+      if (ti !== RBRACE) stream.mustMatch(RBRACE);
+      if (evt) this.fire(evt);
+    }
+
+    /** A style rule i.e. _selectorsGroup { _styleRuleBlock } */
+    _styleRule(stream, tok, opts) {
+      const nestSym = opts && opts.nestSym;
+      // TODO: store isNestedRuleMisplaced in cache to enable caching of nested selectors?
+      if (!nestSym && tok.id !== AMP && parserCache.findBlock(tok)) {
+        return true;
+      }
+      let blk, brace;
+      try {
+        const sels = this._selectorsGroup(stream, tok);
+        if (!sels) {
+          if (nestSym) stream._failure('selector', tok);
+          stream.unget();
+          return;
+        }
+        if (nestSym || tok.id === AMP) {
+          if (!this._inStyle) {
+            this.alarm(2, 'Nested selector must be inside a style rule.', tok);
+          }
+          if ((tok = sels.find(isBadNesting, opts))) {
+            this.alarm(2, `Nested selector must ${nestSym ? 'contain' : 'start with'} "&".`, tok);
+          }
+        }
+        brace = stream.mustMatch(LBRACE, {reuse: 1});
+        blk = parserCache.startBlock(sels[0]);
+        if (!nestSym) this._inStyle++;
+        this._styleRuleBlock(stream, {
+          brace, event: ['rule', {selectors: sels}, sels[0]],
+        });
+        if (!nestSym) this._inStyle--;
+        parserCache.endBlock();
+      } catch (ex) {
+        if (blk) parserCache.cancelBlock(blk);
+        if (this.options.strict || !(ex instanceof SyntaxError)) throw ex;
+        this._skipDeclaration(stream, ex, !!brace);
+      }
+      return true;
     }
 
     /**
+     * {}-block that can contain _declaration, @-rule, &-prefixed _styleRule
      * @param {{}} [_]
      * @param {TokenStream} stream
      * @param {Token} [_.brace] - check for the left brace at the beginning.
@@ -1621,7 +1594,7 @@
      * @param {boolean|number} [_.margins] - check for margin patterns.
      * @param {Token|string} [_.scope] - definitions of valid properties
      */
-    _readDeclarations(stream, {brace, margins, scope, event} = {}) {
+    _styleRuleBlock(stream, {brace, margins, scope, event} = {}) {
       if (!brace) stream.mustMatch(LBRACE);
       if (margins) margins = Tokens.MARGIN_SYM;
       if (event) this.fire(assign({type: 'start' + event[0]}, event[1]), event[2]);
@@ -1634,39 +1607,40 @@
             this._margin(stream, tok);
           } else if (!margins && (fn = ParserRoute.ruleset[ti])) {
             fn.call(this, stream, tok);
-          } else if (!(ti === IDENT || ti === star) || !this._declaration(stream, tok, declOpts)) {
-            ex = stream._failure('a declaration', tok, false);
+          } else if (!(ti === IDENT || ti === star)
+          || !this._declaration(stream, tok, declOpts) && (tok = stream.peek())) {
+            ex = this._inStyle && TT.selectorStart[tok.id]
+              ? '";", &-prefix, prop:value, @condition'
+              : '';
+            ex = stream._failure(ex, tok, false);
           }
         } catch (e) {
           ex = e;
         }
-        if (!ex) continue;
-        if (this.options.strict || !(ex instanceof SyntaxError)) throw ex;
-        this.fire(assign({}, ex, {type: ex.type || 'error', error: ex, recoverable: true}));
-        this._expr(stream, TT.declEnd, true);
-        if ((ti = stream.token.id) === RBRACE) break;
-        else if (ti !== SEMICOLON) throw ex;
+        if (ex) {
+          if (this.options.strict || !(ex instanceof SyntaxError)) throw ex;
+          this._skipDeclaration(stream, ex);
+        }
       }
       if (event) this.fire(assign({type: 'end' + event[0]}, event[1]));
     }
 
+    _skipCruft(stream) {
+      while (stream.match(TT.cruft)) { /*NOP*/ }
+    }
+
+    _skipDeclaration(stream, err, inBlock) {
+      stream.skipDeclBlock(inBlock);
+      this.fire(assign({}, err, {
+        type: err.type || 'error',
+        recoverable: true,
+        error: err,
+      }));
+    }
+
     _unknownSym(stream, start) {
-      if (this.options.strict) throw new SyntaxError('Unknown ' + start, start);
-      for (const {reader} = stream; ;) {
-        let c = reader.peek();
-        if (!c) stream._failure();
-        if (c === 123 /* { */) {
-          stream.readDeclValue({stopOn: ''});
-          break;
-        } else if (c === 59 /* ; */) {
-          reader.read();
-          break;
-        } else {
-          c = stream.readDeclValue({omitComments: true, stopOn: ';{}'});
-          if (!c) break;
-        }
-      }
-      stream._resetLT();
+      if (this.options.strict) throw new SyntaxError('Unknown rule: ' + start, start);
+      stream.skipDeclBlock();
     }
 
     parse(input, {reuseCache} = {}) {
@@ -1679,6 +1653,7 @@
   {
     const P = Parser.prototype;
     let obj = ParserRoute.ruleset = [];
+    obj[AMP] = P._styleRule;
     obj[Tokens.CONTAINER_SYM] = P._container;
     obj[Tokens.DOCUMENT_SYM] = P._documentMisplaced;
     obj[Tokens.FONT_FACE_SYM] = P._fontFace;
@@ -1686,6 +1661,7 @@
     obj[Tokens.KEYFRAMES_SYM] = P._keyframes;
     obj[Tokens.LAYER_SYM] = P._layer;
     obj[Tokens.MEDIA_SYM] = P._media;
+    obj[Tokens.NEST_SYM] = P._nest;
     obj[Tokens.PAGE_SYM] = P._page;
     obj[Tokens.PROPERTY_SYM] = P._propertySym;
     obj[Tokens.SUPPORTS_SYM] = P._supports;
@@ -1711,6 +1687,7 @@
     obj[Tokens.NAMESPACE_SYM] = P._namespace;
 
     obj = ParserRoute.selector = [];
+    obj[AMP] = P._amp;
     obj[HASH] = P._hash;
     obj[DOT] = P._class;
     obj[LBRACKET] = P._attrib;
@@ -1720,6 +1697,10 @@
   //#endregion
   //#region Helper functions
 
+  /** @this {?Object} options */
+  function isBadNesting(sel) {
+    return !(sel.id === AMP || !this || this.nestSym && sel.amps);
+  }
   function toStringPropHack() {
     return this.hack + this.text;
   }

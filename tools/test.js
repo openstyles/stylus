@@ -7,7 +7,7 @@ const glob = require('glob');
 testGlobalCss();
 testCsslint();
 testParserlib();
-console.log(chalk.bgGreen('OK'));
+console.log(chalk.bgGreen('All tests OK'));
 process.exit(0);
 
 function fail(what, str) {
@@ -25,7 +25,7 @@ function testGlobalCss() {
 }
 
 function testCsslint() {
-  console.log('Testing csslint...');
+  process.stdout.write('Testing csslint...');
   const TEST_FILE = 'tools/test-css.txt';
   const REPORT_FILE = TEST_FILE.replace('.txt', '-report.txt');
   const report = require('../js/csslint/csslint')
@@ -36,19 +36,20 @@ function testCsslint() {
   const expected = fs.readFileSync(REPORT_FILE, 'utf8').trim().split(/\r?\n/);
   let a, b, i;
   for (i = 0; (a = report[i]) && (b = expected[i]); i++) {
-    if (a !== b) fail('csslint', chalk.red(`* RECEIVED: ${a}\n`) + `  EXPECTED: ${b}\n`);
+    if (a !== b) fail('csslint', chalk.red(`\n* RECEIVED: ${a}\n`) + `  EXPECTED: ${b}\n`);
   }
   if (i === report.length && (i -= expected.length)) {
     a = Math.abs(i);
-    fail('csslint',
+    fail('csslint', '\n' +
       (i > 0 ? `Found ${a} extra un` : `Did not find ${a} `) +
       `expected problem${a === 1 ? '' : 's'}:\n  * ` +
       (i > 0 ? report : expected).slice(-a).join('\n  * '));
   }
+  console.log(' OK');
 }
 
 function testParserlib() {
-  console.log('Testing parserlib...');
+  process.stdout.write('Testing parserlib internals...');
   const parserlib = require('../js/csslint/parserlib');
   const {Matcher} = parserlib.util;
   for (const obj of [
@@ -74,8 +75,12 @@ function testParserlib() {
       logStr += `  * ${tok.line}:${tok.col} [${e.type}] ${p ? p.text + ': ' : ''}${e.message}\n`;
     }
   };
+  process.stdout.write(' OK\nTesting parserlib on all css files...');
   for (const file of glob.sync('**/*.css', {ignore: ['node_modules/**']})) {
-    parser.parse(fs.readFileSync(file, 'utf8'));
-    if (logStr) fail('parserlib', `${chalk.red(file)}\n${logStr}`);
+    const text = fs.readFileSync(file, 'utf8');
+    parser.options.topDocOnly = true; parser.parse(text);
+    parser.options.topDocOnly = false; parser.parse(text);
+    if (logStr) fail('parserlib', `\n${chalk.red(file)}\n${logStr}`);
   }
+  console.log(' OK');
 }

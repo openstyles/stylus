@@ -615,12 +615,14 @@
     LAYER_SYM: {text: '@layer'},
     MEDIA_SYM: {text: '@media'},
     NAMESPACE_SYM: {text: '@namespace'},
+    NEST_SYM: {text: '@nest'},
     PAGE_SYM: {text: '@page'},
     PROPERTY_SYM: {text: '@property'},
     SUPPORTS_SYM: {text: '@supports'},
     UNKNOWN_SYM: {},
     VIEWPORT_SYM: {text: ['@viewport', '@-ms-viewport', '@-o-viewport']},
     // The following token names are not defined in any CSS specification.
+    AMP: {text: '&'},
     ATTR_EQ: {text: ['|=', '~=', '^=', '*=', '$=']},
     CHAR: {},
     COLON: {text: ':'},
@@ -1050,31 +1052,27 @@
 
     constructor(text) {
       // https://www.w3.org/TR/css-syntax-3/#input-preprocessing
-      this._break = (this._input = text.replace(/\r\n?|\f/g, '\n')).indexOf('\n');
+      this._break = (
+        this.string = text.replace(/\r\n?|\f/g, '\n')
+      ).indexOf('\n');
       this.line = 1;
       this.col = 1;
-      this.index = 0;
+      this.offset = 0;
     }
     eof() {
-      return this.index >= this._input.length;
+      return this.offset >= this.string.length;
     }
     /** @return {number} */
     peek(count = 1) {
-      return this._input.charCodeAt(this.index + count - 1);
+      return this.string.charCodeAt(this.offset + count - 1);
     }
     mark() {
-      this._bookmark = {
-        index: this.index,
-        line: this.line,
-        col: this.col,
-      };
+      this._bookmark = [this.offset, this.line, this.col, this._break];
     }
     reset() {
       const b = this._bookmark;
       if (b) {
-        this.index = b.index;
-        this.line = b.line;
-        this.col = b.col;
+        [this.offset, this.line, this.col, this._break] = b;
         this._bookmark = null;
       }
     }
@@ -1086,19 +1084,19 @@
      * @return {string|RegExpExecArray|void}
      */
     readMatch(m, asRe) {
-      const res = (m.lastIndex = this.index, m.exec(this._input));
+      const res = (m.lastIndex = this.offset, m.exec(this.string));
       if (res) return (m = res[0]) && this.read(m.length, m) && (asRe ? res : m);
     }
     /** @param {number} code */
     readMatchCode(code) {
-      if (code === this._input.charCodeAt(this.index)) {
+      if (code === this.string.charCodeAt(this.offset)) {
         return this.read();
       }
     }
     /** @param {string} m */
     readMatchStr(m) {
       const len = m.length;
-      const {index: i, _input: str} = this;
+      const {offset: i, string: str} = this;
       if (!len || str.charCodeAt(i) === m.charCodeAt(0) && (
         len === 1 ||
         str.charCodeAt(i + len - 1) === m.charCodeAt(len - 1) && str.substr(i, len) === m
@@ -1114,15 +1112,15 @@
      * @return {string}
      */
     read(count = 1, text) {
-      let {index: i, _break: br, _input: input} = this;
-      if (count <= 0 || text == null && !(text = input.substr(i, count))) return '';
-      this.index = i += (count = text.length); // may be less than requested
+      let {offset: i, _break: br, string} = this;
+      if (count <= 0 || text == null && !(text = string.substr(i, count))) return '';
+      this.offset = i += (count = text.length); // may be less than requested
       if (i <= br || br < 0) {
         this.col += count;
       } else {
         let brPrev;
         let {line} = this;
-        do ++line; while ((br = input.indexOf('\n', (brPrev = br) + 1)) >= 0 && br < i);
+        do ++line; while ((br = string.indexOf('\n', (brPrev = br) + 1)) >= 0 && br < i);
         this._break = br;
         this.line = line;
         this.col = i - brPrev;
@@ -1131,18 +1129,17 @@
     }
     /** @return {number|undefined} */
     readCode() {
-      const {index: i, _input: input} = this;
-      const c = input.charCodeAt(i);
+      const c = this.string.charCodeAt(this.offset++);
       if (c === 10) {
         this.col = 1;
         this.line++;
-        this._break = input.indexOf('\n', i + 1);
+        this._break = this.string.indexOf('\n', this.offset);
       } else if (c >= 0) { // fast NaN check
         this.col++;
       } else {
+        this.offset--; // restore EOF
         return;
       }
-      this.index = i + 1;
       return c;
     }
   }
@@ -1358,9 +1355,9 @@
       const reader = new StringReader(str);
       const res = Matcher.parseGrammar(reader);
       if (!reader.eof()) {
-        const {index: i, _input: str} = reader;
+        const {offset: i, string} = reader;
         throw new Error(`Internal grammar error. Unexpected "${
-          clipString(str.slice(i, 31), 30)}" at position ${i} in "${str}".`);
+          clipString(string.slice(i, 31), 30)}" at position ${i} in "${string}".`);
       }
       Matcher.cache.set(str, res);
       return res;
@@ -1535,7 +1532,7 @@
       const s = reader.readMatch(m, asRe);
       if (s != null) return s;
       throw new Error('Internal grammar error. ' +
-        `Expected ${m} at ${reader.index} in ${reader._input}`);
+        `Expected ${m} at ${reader.offset} in ${reader.string}`);
     }
   })();
 
