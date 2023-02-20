@@ -528,3 +528,5 @@ heading"] {
 }
 
 &.misplaced { padding: 2ch; }
+
+a { padding: 1em; }

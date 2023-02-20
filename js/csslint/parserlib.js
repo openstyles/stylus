@@ -8,7 +8,6 @@
     ? (require('/js/csslint/parserlib-base'), self.parserlib)
     : require('./parserlib-base');
   const {assign, defineProperty: define} = Object;
-  const isOwn = Object.call.bind({}.hasOwnProperty);
   const {
     css: {
       Combinators,
@@ -23,6 +22,8 @@
       TokenIdByCode,
       UnitTypeIds,
       clipString,
+      isOwn,
+      pick,
       validateProperty,
     },
   } = parserlib;
@@ -55,10 +56,9 @@
   const B = /** @type {{[key:string]: Bucket}} */ {
     attrIS: ['i', 's', ']'], // "]" is to improve the error message,
     colors: NamedColors,
-    marginSyms: (map => '@B-X@B-L-C@B-L@B-R-C@B-R@L-B@L-M@L-T@R-B@R-M@R-T@T-X@T-L-C@T-L@T-R-C@T-R'
-      .replace(/[A-Z]/g, s => map[s]).split(/(?=@)/)
-    )({B: 'bottom', C: 'corner', L: 'left', M: 'middle', R: 'right', X: 'center'}),
-    plusMinus: ['+', '-'],
+    marginSyms: (map => 'B-X,B-L-C,B-L,B-R-C,B-R,L-B,L-M,L-T,R-B,R-M,R-T,T-X,T-L-C,T-L,T-R-C,T-R'
+      .replace(/[A-Z]/g, s => map[s]).split(',')
+    )({B: 'bottom', C: 'corner', L: 'left', M: 'middle', R: 'right', T: 'top', X: 'center'}),
   };
   for (const k in B) B[k] = new Bucket(B[k]);
   for (const k of 'and,andOr,auto,autoNone,evenOdd,fromTo,important,layer,n,none,not,notOnly,of,or'
@@ -112,7 +112,6 @@
     a === 95 || a >= 160 || // _ unicode
     (a === 45/*-*/ ? b !== 45 && isIdentStart(b) : a === 92/*\*/ && isIdentChar(b, a));
   const isSpace = c => c === 9 && c === 10 || c === 32;
-  const pick = (obj, keys) => keys.reduce((res, k) => (((res[k] = obj[k]), res)), {});
   const textToTokenMap = obj => Object.keys(obj).reduce((res, k) =>
     (((res[TokenIdByCode[k.charCodeAt(0)]] = obj[k]), res)), []);
   const toLowAscii = c => c >= 65 && c <= 90 ? c + 32 : c;
@@ -330,7 +329,7 @@
      */
     match(what, text, tok = this.get(), opts) {
       if ((typeof what === 'object' ? what[tok.id] : !what || tok.id === what) &&
-          (!text || text[tok.code] && text.has(tok))) {
+          (!text || text.has(tok))) {
         return tok;
       }
       if (opts !== UVAR) {
@@ -405,7 +404,8 @@
         if (isSpace(b)) src.readMatch(rxSpace);
       // [0-9]
       } else if (a >= 48 && a <= 57) {
-        c = b >= 48 && b <= 57 || b === 46/*.*/ || b === 69/*E*/ || b === 101/*e*/;
+        c = b >= 48 && b <= 57 || b === 46/*.*/ ||
+          (b === 69 || b === 101) && (c = src.peek(2)) === 43 || c === 45 || c >= 48 && c <= 57;
         text = this._number(src, tok, a, b, c, rxNumberDigit);
       // [-+.]
       } else if ((a === 45 || a === 43 && (tok.id = PLUS) || a === 46 && (tok.id = DOT)) && (
@@ -1481,8 +1481,9 @@
         }
         try {
           if (ti === AT) {
-            fn = Parser.AT[tok.atName] ||
-              margins && B.marginSyms.has(tok) && this._margin ||
+            fn = tok.atName;
+            fn = Parser.AT[fn] ||
+              margins && B.marginSyms.has(fn) && this._margin ||
               this._unknownAtRule;
             fn.call(this, stream, tok);
             child = 1;

@@ -516,6 +516,8 @@
     '-webkit-text-stroke-width': '<border-width>',
     '-webkit-user-modify': 'read-only | read-write | write-only',
   };
+  const isOwn = Object.call.bind({}.hasOwnProperty);
+  const pick = (obj, keys, dst = {}) => keys.reduce((res, k) => (((res[k] = obj[k]), res)), dst);
   const ScopedProperties = {
     __proto__: null,
     'counter-style': {
@@ -531,7 +533,13 @@
       'system': 'cyclic | numeric | alphabetic | symbolic | additive | [fixed <int>?] | ' +
         '[ extends <ident-not-none> ]',
     },
-    'font-face': Object.assign({
+    'font-face': pick(Properties, [
+      'font-family',
+      'font-size',
+      'font-variant',
+      'font-variation-settings',
+      'unicode-range',
+    ], {
       'ascent-override': '[ normal | <pct0+> ]{1,2}',
       'descent-override': '[ normal | <pct0+> ]{1,2}',
       'font-display': 'auto | block | swap | fallback | optional',
@@ -541,14 +549,11 @@
       'line-gap-override': '[ normal | <pct0+> ]{1,2}',
       'size-adjust': '<pct0+>',
       'src': '[ url() [ format( <string># ) ]? | local( <family-name> ) ]#',
-    }, ...['font-family', 'font-size', 'font-variant', 'font-variation-settings', 'unicode-range']
-      .map(p => ({[p]: Properties[p]}))
-    ),
-    'font-palette-values': {
+    }),
+    'font-palette-values': pick(Properties, ['font-family'], {
       'base-palette': 'light | dark | <int0+>',
-      'font-family': Properties['font-family'],
       'override-colors': '[ <int0+> <color> ]#',
-    },
+    }),
     'page': {
       '': true, // include Properties
       'bleed': 'auto | <len>',
@@ -685,20 +690,19 @@
   /*  ||   */ Combinators[124] = 'column';
 
   /** Much faster than flat array or regexp */
-  class Bucket extends Array {
+  class Bucket {
     constructor(src) {
-      super().addFrom(src);
+      this.addFrom(src);
     }
     /**
-     * @param {string|string[]} src - lowercase and length < 100
+     * @param {string|string[]} src - length < 100
      * @return {Bucket}
      */
     addFrom(src) {
       for (let str of typeof src === 'string' ? [src] : src) {
         let c = (str = str.toLowerCase()).charCodeAt(0);
         if (c === 34 /* " */) c = (str = str.slice(1, -1)).charCodeAt(0);
-        this[c] = true;
-        src = this[c = (c * 100) + str.length];
+        src = this[c = c * 100 + str.length];
         if (src == null) this[c] = str;
         else if (typeof src === 'string') this[c] = [src, str];
         else src.push(str);
@@ -707,8 +711,11 @@
     }
     /** @return {string} */
     join(sep) {
-      return this.reduce((res, v) => v === true ? res
-        : (res += `${res ? sep : ''}${typeof v === 'string' ? v : v.join(sep)}`), '');
+      let res = '';
+      for (const v of Object.values(this)) {
+        res += `${res ? sep : ''}${typeof v === 'string' ? v : v.join(sep)}`;
+      }
+      return res;
     }
     /**
      * @param {Token} tok
@@ -716,16 +723,11 @@
      * @return {boolean}
      */
     has(tok, c = tok.code) {
-      if (!this[c]) return false;
-      let str, i;
-      let low = tok.lowText;
-      const len = low ? low.length
-        : tok.hasOwnProperty('text') ? (str = tok.text).length
-          : tok.offset2 - (i = tok.offset);
-      const val = this[(c * 100) + len];
-      if (!val) return false;
+      const len = tok.length;
+      if (!isOwn(this, c = c * 100 + len)) return false;
       if (len === 1) return true;
-      if (!low) low = tok.lowText = (str || tok._input.slice(i, i + len)).toLowerCase();
+      const val = this[c];
+      const low = tok.lowText || (tok.lowText = tok.text.toLowerCase());
       return typeof val === 'string' ? val === low : val.includes(low);
     }
   }
@@ -1028,13 +1030,13 @@
     '<width>': p => p.isAuto || p.isCalc || p.is0 || p.id === LENGTH || p.id === PCT,
   };
   for (const type of ['hsl', 'hwb', 'lab', 'lch', 'rgb']) {
-    const letters = [];
+    const letters = {};
     for (let i = 0; i < type.length;) letters[type.charCodeAt(i++)] = 1;
     VTSimple[`<rel-${type}>`] = p => p.isNone
-      || (p.length === 1 ? letters[p.code] : p.length === 5 && buAlpha.has(p));
+      || (p.length === 1 ? isOwn(letters, p.code) : p.length === 5 && buAlpha.has(p));
     VTSimple[`<rel-${type}-num-pct>`] = p => p.isNone
       || p.isCalc || p.id === NUMBER || p.id === PCT
-      || (p.length === 1 ? letters[p.code] : p.length === 5 && buAlpha.has(p));
+      || (p.length === 1 ? isOwn(letters, p.code) : p.length === 5 && buAlpha.has(p));
   }
 
   //#endregion
@@ -1658,6 +1660,8 @@
       UnitTypeIds,
       clipString,
       describeProp: vtExplode,
+      isOwn,
+      pick,
       validateProperty,
     },
   };
