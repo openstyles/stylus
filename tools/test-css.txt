@@ -73,6 +73,9 @@ heading"] {
          local("HelveticaNeue-Bold"),
          url(MgOpenModernaBold.ttf);
     font-weight: bold;
+    unicode-range: U+0?00-5FF, U+1e00-1???, U+222000-2300;
+    unicode-range: U+000-49F, U+2000-27FF, U+2900-2BFF, U+1D400-1D7FF;
+    unicode-range: U+3000???-9FFF, U+ffz??;
     color: red;
   }
   @font-palette-values Test {

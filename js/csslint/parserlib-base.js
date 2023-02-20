@@ -626,7 +626,7 @@
     SEMICOLON: ';',
     STAR: '*',
     STRING: {},
-    UNICODE_RANGE: {},
+    URANGE: {},
     URI: {},
     UVAR: {}, /*[[userstyles-org-variable]]*/
     WS: {},
@@ -1023,7 +1023,7 @@
     '<keyframes-name>': customIdentChecker('', p => p.id === STRING),
     '<string>': p => p.id === STRING,
     '<time>': p => p.isCalc || p.id === TIME,
-    '<unicode-range>': p => /^U\+[0-9a-f?]{1,6}(-[0-9a-f?]{1,6})?\s*$/i.test(p.text),
+    '<unicode-range>': p => p.id === Tokens.URANGE,
     '<uri>': p => p.uri != null,
     '<width>': p => p.isAuto || p.isCalc || p.is0 || p.id === LENGTH || p.id === PCT,
   };
@@ -1055,8 +1055,8 @@
       return this.offset >= this.string.length;
     }
     /** @return {number} */
-    peek(count = 1) {
-      return this.string.charCodeAt(this.offset + count - 1);
+    peek(distance = 1) {
+      return this.string.charCodeAt(this.offset + distance - 1);
     }
     mark() {
       this._bookmark = [this.offset, this.line, this.col, this._break];
@@ -1577,7 +1577,7 @@
     }
     if (!spec) {
       prop = Props === Properties || !Properties[prop] ? 'Unknown' : 'Misplaced';
-      return new ValidationError(`${prop} property "${tok.text}".`, value);
+      return new ValidationError(`${prop} property "${tok}".`, tok);
     }
     if (value.isVar) {
       return;
@@ -1601,11 +1601,9 @@
         expr.next();
       }
     }
-    res = res ? expr.hasNext && vtFailure(expr.next())
-      : expr.hasNext && expr.i ? vtFailure(expr.parts[expr.i])
-        : ((m = expr.badFunc)) ? vtFailure(m[0], vtDescribe(spec, m[1]))
-          : vtFailure(expr.value, vtDescribe(spec));
-    if (res) return res;
+    if (expr.hasNext && (res || expr.i)) return vtFailure(expr.parts[expr.i]);
+    if (!res && (m = expr.badFunc)) return vtFailure(m[0], vtDescribe(spec, m[1]));
+    if (!res) return vtFailure(expr.value, vtDescribe(spec));
     if (!known) validationCache.set(prop, (known = new Set()));
     known.add(valueSrc);
   }

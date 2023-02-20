@@ -27,42 +27,44 @@ warning	54	7	Non-alphabetical order: "aspect-ratio".
 warning	69	3	A nested @import is valid only if this @-moz-document section is the first one matched for any given URL.
 warning	69	3	@import prevents parallel downloads, use <link> instead.
 warning	75	5	Non-alphabetical order: "font-weight".
-warning	76	12	Misplaced property "color".
-warning	86	5	Missing -moz prefix for gradient.
-warning	87	5	"svg.mobile-hero:not(.a + .b .c)" is overqualified, just use ".mobile-hero" without element name.
-warning	92	33	Expected end of value but found "inline-size22".
-warning	94	24	Unknown property "object-overflow".
-warning	95	7	Non-alphabetical order: "clip-path".
-warning	101	7	Ungrouped duplicate "filter".
-warning	101	15	Expected none | [ blur() | brightness() | contrast() | drop-shadow() | grayscale() | hue-rotate() | invert() | opacity() | saturate() | sepia() | <uri> ]+ | <ie-function> but found "alpha(opacity=70)".
-warning	114	5	!important.
-warning	115	5	!important.
-warning	115	5	Non-alphabetical order: "filter".
-warning	115	20	Expected <number-percentage>? but found "foo0".
-warning	116	13	Expected none | [ blur() | brightness() | contrast() | drop-shadow() | grayscale() | hue-rotate() | invert() | opacity() | saturate() | sepia() | <uri> ]+ | <ie-function> but found "foo(1)".
-warning	131	20	Unknown pseudo :--state1
-warning	131	29	Must use -moz- prefix in :loading
-warning	133	7	Non-alphabetical order: "background-position-x".
-warning	134	33	Expected end of value but found "oopsie".
-error	152	7	Unexpected ""TEST PASSED: parser recovery"".
-error	172	24	Expected "]" but found ""TEST PASSED: parser recovery"".
-warning	177	5	Non-alphabetical order: "--foo".
-error	188	5	Nested selector must be inside a style rule.
-warning	199	5	Non-alphabetical order: "overflow-anchor".
-warning	200	5	IE star prefix.
-warning	204	5	!important.
-warning	220	16	Expected <number-percentage-none>{3} [ / <number-percentage-none> ]? | from [ <named-or-hex-color> | color-mix() | color() | hsl() | hwb() | lab() | lch() | rgb() | hsla() | rgba() | oklab() | oklch() ] <l-a-b-alpha-none-number-percentage>{3} [ / <l-a-b-alpha-none-number-percentage> ]? but found "from red x y z".
-warning	245	5	Duplicate "color".
-warning	247	5	Duplicate "color".
-warning	267	5	Duplicate "color".
-warning	439	12	Expected <named-or-hex-color> | color-mix() | color() | hsl() | hwb() | lab() | lch() | rgb() | hsla() | rgba() | oklab() | oklch() but found "chucknorris".
-warning	440	12	Expected <named-or-hex-color> | color-mix() | color() | hsl() | hwb() | lab() | lch() | rgb() | hsla() | rgba() | oklab() | oklch() but found "blak".
-warning	480	11	Id in selector.
-error	500	5	Expected ";", &-prefix, prop:value, @condition but found ".".
-error	506	5	Expected ";", &-prefix, prop:value, @condition but found ".".
-error	509	11	Nested selector must contain "&".
-error	515	19	Nested selector must contain "&".
-error	518	15	Nested selector must start with "&".
-error	522	6	Expected "{" but found "__bar".
-error	524	3	Nested selector must be inside a style rule.
-error	527	1	Nested selector must be inside a style rule.
+warning	76	24	Expected end of value but found "00".
+warning	78	20	Expected <unicode-range># but found "U+3000???-9FFF, U+ffz??".
+warning	79	5	Misplaced property "color".
+warning	89	5	Missing -moz prefix for gradient.
+warning	90	5	"svg.mobile-hero:not(.a + .b .c)" is overqualified, just use ".mobile-hero" without element name.
+warning	95	31	Expected end of value but found "/".
+warning	97	7	Unknown property "object-overflow".
+warning	98	7	Non-alphabetical order: "clip-path".
+warning	104	7	Ungrouped duplicate "filter".
+warning	104	15	Expected none | [ blur() | brightness() | contrast() | drop-shadow() | grayscale() | hue-rotate() | invert() | opacity() | saturate() | sepia() | <uri> ]+ | <ie-function> but found "alpha(opacity=70)".
+warning	117	5	!important.
+warning	118	5	!important.
+warning	118	5	Non-alphabetical order: "filter".
+warning	118	20	Expected <number-percentage>? but found "foo0".
+warning	119	13	Expected none | [ blur() | brightness() | contrast() | drop-shadow() | grayscale() | hue-rotate() | invert() | opacity() | saturate() | sepia() | <uri> ]+ | <ie-function> but found "foo(1)".
+warning	134	20	Unknown pseudo :--state1
+warning	134	29	Must use -moz- prefix in :loading
+warning	136	7	Non-alphabetical order: "background-position-x".
+warning	137	32	Expected end of value but found "<".
+error	155	7	Unexpected ""TEST PASSED: parser recovery"".
+error	175	24	Expected "]" but found ""TEST PASSED: parser recovery"".
+warning	180	5	Non-alphabetical order: "--foo".
+error	191	5	Nested selector must be inside a style rule.
+warning	202	5	Non-alphabetical order: "overflow-anchor".
+warning	203	5	IE star prefix.
+warning	207	5	!important.
+warning	223	16	Expected <number-percentage-none>{3} [ / <number-percentage-none> ]? | from [ <named-or-hex-color> | color-mix() | color() | hsl() | hwb() | lab() | lch() | rgb() | hsla() | rgba() | oklab() | oklch() ] <l-a-b-alpha-none-number-percentage>{3} [ / <l-a-b-alpha-none-number-percentage> ]? but found "from red x y z".
+warning	248	5	Duplicate "color".
+warning	250	5	Duplicate "color".
+warning	270	5	Duplicate "color".
+warning	442	12	Expected <named-or-hex-color> | color-mix() | color() | hsl() | hwb() | lab() | lch() | rgb() | hsla() | rgba() | oklab() | oklch() but found "chucknorris".
+warning	443	12	Expected <named-or-hex-color> | color-mix() | color() | hsl() | hwb() | lab() | lch() | rgb() | hsla() | rgba() | oklab() | oklch() but found "blak".
+warning	483	11	Id in selector.
+error	503	5	Expected ";", &-prefix, prop:value, @condition but found ".".
+error	509	5	Expected ";", &-prefix, prop:value, @condition but found ".".
+error	512	11	Nested selector must contain "&".
+error	518	19	Nested selector must contain "&".
+error	521	15	Nested selector must start with "&".
+error	525	6	Expected "{" but found "__bar".
+error	527	3	Nested selector must be inside a style rule.
+error	530	1	Nested selector must be inside a style rule.

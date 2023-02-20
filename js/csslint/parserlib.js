@@ -77,9 +77,9 @@
   const rxMaybeQuote = /\s*['"]?/y;
   const rxName = /(?:[-_\da-zA-Z\u00A0-\uFFFF]+|\\(?:(?:[0-9a-fA-F]{1,6}|.)[\t ]?|$))+/y;
   const rxNth = /(even|odd)|(?:([-+]?\d*n)(?:\s*([-+])(\s*\d+)?)?|[-+]?\d+)((?=\s+of\s+|\s*\)))?/yi;
-  const rxNumberDigit = /\d*\.?\d*(?:e[+-]?\d+)?/iy;
-  const rxNumberDot = /\d+(?:e[+-]?\d+)?/iy;
-  const rxNumberSign = /(?:\d*\.\d+|\d+\.?\d*)(?:e[+-]?\d+)?/iy;
+  const rxNumberDigit = /\d*(?:(\.)\d*)?(?:(e)[+-]?\d+)?/iy;
+  const rxNumberDot = /\d+(?:(e)[+-]?\d+)?/iy;
+  const rxNumberSign = /(?:(\.)\d+|\d+(?:(\.)\d*)?)(?:(e)[+-]?\d+)?/iy;
   const rxSign = /[-+]/y;
   const rxSpace = /\s+/y;
   const rxSpaceCmtRParen = /(?=\s|\/\*|\))/y;
@@ -89,6 +89,7 @@
   const rxStringSingleQ = /(?:[^\n\\']+|\\(?:([0-9a-fA-F]{1,6}|.)[\t ]?|\n|$))*/y;
   const rxUnescapeLF = /\\(?:(?:([0-9a-fA-F]{1,6})|(.))[\t ]?|(\n))/g;
   const rxUnescapeNoLF = /\\(?:([0-9a-fA-F]{1,6})|(.))[\t ]?/g;
+  const rxUnicodeRange = /\+([\da-f]{1,6})(\?{1,6}|-([\da-f]{1,6}))?/iy; // U was already consumed
   const rxUnquotedUrl = /(?:[-!#$%&*-[\]-~\u00A0-\uFFFF]+|\\(?:(?:[0-9a-fA-F]{1,6}|.)[\t ]?|$))+/y;
   const [rxDeclBlock, rxDeclValue] = ((
     exclude = String.raw`'"{}()[\]\\/`,
@@ -104,11 +105,12 @@
   ) => [`{${blk}}|[^`, '[^;'].map(str => RegExp(common + str + exclude + orSlash + '+', 'y')))();
   const isBadNestingRule = sel => !sel.isAmped;
   const isBadNestingSel = sel => sel.id !== AMP;
-  const isIdentStart = c => c >= 97 && c <= 122 || c >= 65 && c <= 90 || // a-z A-Z
-    c === 45 || c === 92 || c === 95 || c >= 160; // - \ _
   const isIdentChar = (c, prev) => c >= 97 && c <= 122 || c >= 65 && c <= 90 /* a-z A-Z */ ||
     c === 45 || c === 92 || c === 95 || c >= 160 || c >= 48 && c <= 57 /* - \ _ 0-9 */ ||
     prev === 92 /* \ */ && c !== 10 && c != null;
+  const isIdentStart = (a, b) => a >= 97 && a <= 122 || a >= 65 && a <= 90 /* a-z A-Z */ ||
+    a === 95 || a >= 160 || // _ unicode
+    (a === 45/*-*/ ? b !== 45 && isIdentStart(b) : a === 92/*\*/ && isIdentChar(b, a));
   const isSpace = c => c === 9 && c === 10 || c === 32;
   const pick = (obj, keys) => keys.reduce((res, k) => (((res[k] = obj[k]), res)), {});
   const textToTokenMap = obj => Object.keys(obj).reduce((res, k) =>
@@ -403,33 +405,47 @@
         if (isSpace(b)) src.readMatch(rxSpace);
       // [0-9]
       } else if (a >= 48 && a <= 57) {
-      // [0-9.eE] */
-        text = this._number(a, (b >= 48 && b <= 57 || b === 46 || b === 69 || b === 101) && b, tok);
+        c = b >= 48 && b <= 57 || b === 46/*.*/ || b === 69/*E*/ || b === 101/*e*/;
+        text = this._number(src, tok, a, b, c, rxNumberDigit);
       // [-+.]
       } else if ((a === 45 || a === 43 && (tok.id = PLUS) || a === 46 && (tok.id = DOT)) && (
       /* [-+.][0-9] */ b >= 48 && b <= 57 ||
-      /* [-+].[0-9] */ a !== 46 && b === 46 && (c = src.peek(2)) >= 48 && c <= 57
+      /* [-+].[0-9] */ b === 46/*.*/ && a !== 46 && (c = src.peek(2)) >= 48 && c <= 57
       )) {
-        text = this._number(a, b, tok);
+        text = this._number(src, tok, a, b, 1, a === 46 ? rxNumberDot : rxNumberSign);
       // -
       } else if (a === 45) {
-        if (b === 45/* -- */ && isIdentChar(c || (c = src.peek(2)))) {
-          text = this._ident(tok, a, b, 1, c, 1);
-          tok.type = 'custom-prop';
-        } else if (b === 45 && (c || (c = src.peek(2))) === 62/* -> */) {
-          src.read(2, '->');
-          tok.id = Tokens.CDCO;
-        } else if (isIdentStart(b)) {
-          text = this._ident(tok, a, b, 1, c);
+        if (b === 45/* -- */) {
+          if (isIdentChar(c || (c = src.peek(2)), b)) {
+            text = this._ident(src, tok, a, b, 1, c, 1);
+            tok.type = 'custom-prop';
+          } else if (c === 62/* --> */) {
+            src.read(2, '->');
+            tok.id = Tokens.CDCO;
+          } else {
+            tok.id = MINUS;
+          }
+        } else if (isIdentStart(b, b === 92/*\*/ && (c || (c = src.peek(2))))) {
+          text = this._ident(src, tok, a, b, 1, c);
         } else {
           tok.id = MINUS;
         }
       // U+ u+
       } else if ((a === 85 || a === 117) && b === 43) {
-        this._unicodeRange(tok);
-      // a-z A-Z - \ _ unicode
-      } else if (isIdentStart(a)) {
-        text = this._ident(tok, a, b);
+        c = src.readMatch(rxUnicodeRange, true);
+        if (c && parseInt(c[1], 16) <= 0x10FFFF && (
+          c[3] ? parseInt(c[3], 16) <= 0x10FFFF
+            : !c[2] || (c[1] + c[2]).length <= 6
+        )) {
+          tok.id = Tokens.URANGE;
+        } else {
+          if (c) { src.col -= (c = c[0].length); src.offset -= c; }
+          tok.id = IDENT;
+          tok.type = 'ident';
+        }
+      // a-z A-Z \ _ unicode ("-" was handled above)
+      } else if (isIdentStart(a, b)) {
+        text = this._ident(src, tok, a, b);
       } else if ((c = b === 61 // =
       /* $= *= ^= |= ~= */
         ? (a === 36 || a === 42 || a === 94 || a === 124 || a === 126) &&
@@ -444,8 +460,8 @@
         src.readCode();
       // #
       } else if (a === 35) {
-        if (isIdentChar(b)) {
-          text = this._ident(tok, a, b, 1);
+        if (isIdentChar(b, a)) {
+          text = this._ident(src, tok, a, b, 1);
           tok.id = HASH;
         }
       // [.,:;>+~=|*{}[]()]
@@ -472,8 +488,8 @@
         else if (b === 10) { tok.id = WS; text = src.readMatch(rxSpace); }
       // @
       } else if (a === 64) {
-        if (isIdentStart(b)) {
-          c = this._ident(null, src.readCode(), src.peek());
+        if (isIdentStart(b, c = (b === 45/*-*/ || b === 92/*\*/) && src.peek(2))) {
+          c = this._ident(src, null, src.readCode(), c || src.peek());
           a = c.name;
           text = c.esc && `@${a}`;
           a = a.charCodeAt(0) === 45/*-*/ && (c = a.indexOf('-', 1)) > 1 ? a.slice(c + 1) : a;
@@ -493,12 +509,11 @@
       return tok;
     }
 
-    _ident(tok, a, b,
+    _ident(src, tok, a, b,
       bYes = isIdentChar(b, a),
       c = bYes && this.source.peek(2),
       cYes = c && (isIdentChar(c, b) || a === 92 && isSpace(c))
     ) {
-      const src = this.source;
       const first = a === 92 ? (cYes = src.offset--, src.col--, '') : String.fromCharCode(a);
       const str = cYes ? src.readMatch(rxName) : bYes ? src.read() : '';
       const esc = a === 92 || b === 92 || bYes && c === 92 || str.length > 2 && str.includes('\\');
@@ -511,7 +526,7 @@
       if (next === 40/*(*/) {
         src.read();
         c = name.toLowerCase();
-        b = (c === 'url' || c === 'url-prefix' || c === 'domain') && this.readUriValue();
+        b = (c === 'url' || c === 'url-prefix' || c === 'domain') && this._uriValue(src);
         tok.id = b ? Tokens.URI : FUNCTION;
         tok.type = b ? 'uri' : 'fn';
         tok.name = vp ? c.slice(vp) : c;
@@ -536,59 +551,43 @@
       return ovrValue;
     }
 
-    _number(a, b, tok) {
-      const src = this.source;
-      const isPlus = a === 43;
-      const rx = b && (a === 46 ? rxNumberDot : a >= 48 && a <= 57 ? rxNumberDigit : rxNumberSign);
-      const rest = b && src.readMatch(rx) || '';
-      const numStr = isPlus ? rest : String.fromCharCode(a) + rest;
+    _number(src, tok, a, b, bYes, rx) {
+      const numStr = String.fromCharCode(a) + (bYes ? (b = src.readMatch(rx, true))[0] : '');
+      const isFloat = a === 46/*.*/ || bYes && (b[1] || b[2] || b[3]);
       let ovrText, units;
-      let c = src.peek();
-      if (c === 37) { // %
+      if ((a = bYes ? src.peek() : b) === 37) { // %
         tok.id = PCT;
         tok.type = units = src.read(1, '%');
-      } else if (isIdentStart(c)) {
-        c = this._ident(null, src.readCode(), src.peek());
-        units = c.name;
-        ovrText = c.esc && (numStr + units);
-        c = Units[units = units.toLowerCase()] || '';
-        tok.id = c && UnitTypeIds[c] || Tokens.DIMENSION;
-        tok.type = c;
+      } else if (isIdentStart(a, b = (a === 45/*-*/ || a === 92/*\*/) && src.peek(2))) {
+        a = this._ident(src, null, src.readCode(), b || src.peek());
+        units = a.name;
+        ovrText = a.esc && (numStr + units);
+        a = Units[units = units.toLowerCase()] || '';
+        tok.id = a && UnitTypeIds[a] || Tokens.DIMENSION;
+        tok.type = a;
       } else {
         tok.id = NUMBER;
         tok.type = 'number';
       }
       tok.units = units || '';
-      tok.number = c = +numStr;
-      tok.is0 = b = !units && !c;
-      tok.isInt = b || !units && (isPlus ? rest : numStr) === `${c | 0}`;
+      tok.number = a = +numStr;
+      tok.is0 = b = !units && !a;
+      tok.isInt = b || !units && !isFloat;
       return ovrText;
     }
 
-    _unicodeRange(token) {
-      const src = this.source;
-      for (let v, pass = 0; pass < 2; pass++) {
-        src.mark();
-        src.read(); // +
-        v = src.readMatch(/[0-9a-f]{1,6}/iy);
-        while (!pass && v.length < 6 && src.peek() === 63/*?*/) {
-          v += src.read();
-        }
-        if (!v) {
-          src.reset();
-          return;
-        }
-        if (!pass) {
-          token.id = Tokens.UNICODE_RANGE;
-          // if there's a ? in the first part, there can't be a second part
-          if (v.includes('?') || src.peek() !== 45/*-*/) return;
-        }
-      }
+    /** @param {StringSource} src */
+    _spaceCmt(src) {
+      const c = src.peek();
+      return (c === 47/*/*/ || isSpace(c)) && src.readMatch(rxSpaceComments) || '';
     }
 
-    // consumes the closing ")" on success
-    readUriValue() {
-      const src = this.source;
+    /**
+     * Consumes the closing ")" on success
+     * @param {StringSource} [src]
+     * @return {string|void}
+     */
+    _uriValue(src) {
       let v = src.peek();
       src.mark();
       v = v === 34/*"*/ || v === 39/*'*/ ? src.read()
@@ -607,24 +606,19 @@
 
     readNthChild() {
       const src = this.source;
-      const m = (this.readSpaceCmt(), src.readMatch(rxNth, true)); if (!m) return;
+      const m = (this._spaceCmt(src), src.readMatch(rxNth, true)); if (!m) return;
       let [, evenOdd, nth, sign, int, next] = m;
       let a, b, ws;
       if (evenOdd) a = evenOdd;
       else if (!(a = nth)) b = m[0]; // B
-      else if ((sign || !next && (ws = this.readSpaceCmt(), sign = src.readMatch(rxSign)))) {
-        if (int || (src.mark(), this.readSpaceCmt(), int = src.readMatch(rxDigits))) {
+      else if ((sign || !next && (ws = this._spaceCmt(src), sign = src.readMatch(rxSign)))) {
+        if (int || (src.mark(), this._spaceCmt(src), int = src.readMatch(rxDigits))) {
           b = sign + int.trim();
         } else return src.reset();
       }
       if ((a || b) && (ws || src.readMatch(rxSpaceCmtRParen) != null)) {
         return [a || '', b || ''];
       }
-    }
-
-    readSpaceCmt() {
-      const c = this.source.peek();
-      return (c === 47/*/*/ || isSpace(c)) && this.source.readMatch(rxSpaceComments) || '';
     }
 
     /**
@@ -744,12 +738,7 @@
           for (const block of blocks) {
             if (!block.events.length) continue;
             if (block.generation !== generation) continue;
-            const {
-              line: L1,
-              col: C1,
-              line2: L2,
-              col2: C2,
-            } = block;
+            const {line: L1, col: C1, line2: L2, col2: C2} = block;
             let isClean = true;
             for (const msg of messages) {
               const {line, col} = msg;
@@ -1323,8 +1312,8 @@
      * @return {TokenValue|void}
      */
     _expr(stream, end, dumb) {
-      const isEndMap = typeof end === 'object';
       const parts = [];
+      const isEndMap = typeof end === 'object';
       let /** @type {Token} */ tok, ti, isVar, endParen;
       while ((ti = (tok = stream.get(UVAR)).id) && !(isEndMap ? end[ti] : end === ti)) {
         if ((endParen = Parens[ti])) {
@@ -1721,8 +1710,7 @@
       const tok = stream.matchSmart(IDENT);
       if (B.auto.has(tok)) stream._failure();
       const id = tok.text;
-      const pseudo = stream.match(COLON) &&
-        stream.matchOrDie(IDENT).text;
+      const pseudo = stream.match(COLON) && stream.matchOrDie(IDENT).text;
       this._styleRuleBlock(stream, start, {
         event: ['page', {id, pseudo}],
         margins: true,
@@ -1763,27 +1751,8 @@
   /** Functions for selectors */
   Parser.SELECTOR = textToTokenMap({
 
-    /**
-     * @this {Parser}
-     * @param {TokenStream} stream
-     * @param {Token} tok
-     */
-    '&'(stream, tok) {
-      tok.type = 'amp';
-      tok.args = [];
-      return tok;
-    },
-
-    /**
-     * @this {Parser}
-     * @param {TokenStream} stream
-     * @param {Token} tok
-     */
-    '#'(stream, tok) {
-      tok.type = 'id';
-      tok.args = [];
-      return tok;
-    },
+    '&': (stream, tok) => assign(tok, {type: 'amp', args: []}),
+    '#': (stream, tok) => assign(tok, {type: 'id', args: []}),
 
     /**
      * @this {Parser}
