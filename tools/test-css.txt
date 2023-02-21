@@ -49,7 +49,7 @@ heading"] {
   @layer demo.support;
   @layer demo {
     .swatch:nth-child(n -1 of a:has(b)) {
-      background: var(--_color, red);
+      background: -webkit-cross-fade(url(white.png), url(black.png), 25%);
       inline-size: var(--size-3);
       aspect-ratio: calc(pow(e, pi) - pi);
       box-shadow: var(--inner-shadow-0);
@@ -183,10 +183,10 @@ heading"] {
   }
   @foo bar;
   @foo (bar);
-  @foo (bar) { a {} }
   @property --colorPrimary {
     syntax: '<color>';
     initial-value: magenta;
+    @foo (bar) { a {} }
     inherits: false;
     & col.selected::marker || td:focus-visible {
       background: gray;
@@ -211,7 +211,10 @@ heading"] {
   @keyframes fadein {
     from { opacity: 0 }
     25% , 44% {}
-    to { opacity: 1 }
+    to {
+      opacity: 1;
+      @foo (bar) { a {} }
+    }
   }
 }
 
@@ -453,9 +456,6 @@ heading"] {
   .foo {
     color: blue;
     & > .bar { color: red; }
-    @nest & > .bar {
-      color: blue;
-    }
   }
   .foo {
     color: blue;
@@ -464,13 +464,13 @@ heading"] {
   .foo, .bar {
     color: blue;
     & + .baz, &.qux { color: red; }
-    @nest .parent & {
+    .parent & {
       color: blue;
       & .bar & .baz & .qux { color: red; }
     }
   }
   .foo {
-    @nest :not(&) {
+    :not(&) {
       color: blue;
     }
     color: blue;
@@ -485,13 +485,39 @@ heading"] {
   }
   .foo {
     &:is(.bar, &.baz) { color: red; }
+    .bar& { color: red; }
   }
   figure {
+    .bar { color: red; }
     margin: 0;
     & > figcaption {
       background: hsl(0 0% 0% / 50%);
-      & > p {
+      > p {
         font-size: .9rem;
+      }
+    }
+    .bar {
+      color: blue;
+    }
+    & .bar, .baz {
+      color: blue;
+      :not(&) { color: blue; }
+    }
+    + .baz, .qux { color: red; }
+  }
+  .foo {
+    color: blue;
+    & > .bar { color: red; }
+    > .baz { color: green; }
+    &bar { color: red; }
+  }
+  @layer base {
+    html {
+      block-size: 100%;
+      @layer support {
+        > body {
+          min-block-size: 100%;
+        }
       }
     }
   }
@@ -499,34 +525,11 @@ heading"] {
 
 @-moz-document domain( BAD-examples.of.nesting ) {
   .foo {
-    color: blue;
-    .bar {
-      color: red;
-    }
-  }
-  .foo {
-    color: blue;
-    .bar& {
-      color: red;
-    }
-    @nest .bar {
-      color: blue;
-    }
-  }
-  .foo, .bar {
-    color: blue;
-    @nest & .bar, .baz {
-      color: blue;
-    }
-    & + .baz, .qux { color: red; }
-  }
-  .foo {
-    color: blue;
-    &__bar { color: red; }
+    div { color: red; }
   }
   &.misplaced { padding: 2ch; }
 }
 
 &.misplaced { padding: 2ch; }
 
-a { padding: 1em; }
+a { padding: 1em; margin: 1ex; }

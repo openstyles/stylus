@@ -38,7 +38,7 @@
     attrStart: [PIPE, IDENT, STAR],
     attrNameEnd: [RBRACKET, UVAR, WS],
     colonLParen: [COLON, LPAREN],
-    combinator: [PLUS, Tokens.COMBINATOR],
+    combinator: [PLUS, Tokens.GT, Tokens.COMBINATOR],
     condition: [FUNCTION, IDENT, LPAREN],
     declEnd: [SEMICOLON, RBRACE],
     docFunc: [FUNCTION, IDENT/* while typing a new func */, Tokens.URI],
@@ -72,7 +72,7 @@
     .reduce((res, id) => (res[id] = true) && res, []);
   // Sticky `y` flag must be used in expressions for StringSource's readMatch
   // Groups must be non-capturing (?:foo) unless explicitly necessary
-  const rxCommentUso = /\*\[\[[-\w]+]]\*\/|\*(?:[^*]+|\*(?!\/))*(\*\/|$)/y;
+  const rxCommentUso = /(\*)\[\[[-\w]+]]\*\/|\*(?:[^*]+|\*(?!\/))*(?:\*\/|$)/y;
   const rxDigits = /\d+/y;
   const rxMaybeQuote = /\s*['"]?/y;
   const rxName = /(?:[-_\da-zA-Z\u00A0-\uFFFF]+|\\(?:(?:[0-9a-fA-F]{1,6}|.)[\t ]?|$))+/y;
@@ -103,8 +103,7 @@
       String.raw`/\*(?:[^*]+|\*(?!\/))*(?:\*\/|$)`,
     ].join('|')}|`
   ) => [`{${blk}}|[^`, '[^;'].map(str => RegExp(common + str + exclude + orSlash + '+', 'y')))();
-  const isBadNestingRule = sel => !sel.isAmped;
-  const isBadNestingSel = sel => sel.id !== AMP;
+  const isRelativeSelector = sel => isOwn(TT.combinator, sel.parts[0].id);
   const isIdentChar = (c, prev) => c >= 97 && c <= 122 || c >= 65 && c <= 90 /* a-z A-Z */ ||
     c === 45 || c === 92 || c === 95 || c >= 160 || c >= 48 && c <= 57 /* - \ _ 0-9 */ ||
     prev === 92 /* \ */ && c !== 10 && c != null;
@@ -124,6 +123,7 @@
    * @property {boolean} isUvp
    * @typedef {true[]} TokenMap - index is a token id
    */
+  TT.nestSel = [...TT.selectorStart, ...TT.combinator];
   for (const k in TT) {
     TT[k] = TT[k].reduce((res, id) => {
       if (UVAR_PROXY[id]) res.isUvp = 1;
@@ -131,6 +131,7 @@
       return res;
     }, []);
   }
+  delete TT.nestSel[IDENT];
 
   //#endregion
   //#region Syntax units
@@ -141,7 +142,6 @@
    * @property {TokenValue} [expr] body of function or block
    * @property {boolean} [ie] ie function
    * @property {boolean} [is0] number is an integer 0 without units
-   * @property {boolean} [isAmped] = has "&" selector inside
    * @property {boolean} [isAttr] = attr()
    * @property {boolean} [isAuto] = auto
    * @property {boolean} [isCalc] = calc()
@@ -152,6 +152,7 @@
    * @property {string} [lowText] text.toLowerCase() added on demand
    * @property {string} [name] name of function
    * @property {number} [number] parsed number
+   * @property {string} [prefix] lowercase `-vendor-` prefix
    * @property {string} [units] lowercase units of a number
    * @property {string} [uri] parsed uri string
    * @property {number} [vendorCode] char code of vendor name i.e. 102 for "f" in -moz-foo
@@ -209,7 +210,9 @@
       if (expr) {
         tok.expr = expr;
         let n = tok.name; // these functions are valid only if not empty
-        if (n === 'calc' || n === 'clamp' || n === 'min' || n === 'max') {
+        if (n === 'calc' || n === 'clamp' || n === 'min' || n === 'max' ||
+            n === 'sin' || n === 'cos' || n === 'tan' || n === 'asin' ||
+            n === 'acos' || n === 'atan' || n === 'atan2') {
           tok.isCalc = true;
         } else if (n === 'var' || n === 'env') {
           tok.isVar = true;
@@ -293,30 +296,33 @@
     }
 
     /**
-     * @param {number} [mode]
-     * 0/falsy: skip COMMENT;
-     * UVAR id: skip COMMENT, WS;
-     * anything else: skip COMMENT, WS, UVAR
+     * @param {TokenAcquisitionMode} [mode]
      * @return {Token}
      */
     get(mode) {
       let {_buf: buf, _cur: i, _max: MAX} = this;
-      let tok, ti, cached, slot;
+      let tok, ti, slot;
       do {
-        cached = i < buf.length;
         slot = (i + this._cycle) % MAX;
-        tok = cached ? (++i, buf[slot]) : this._getToken();
-        ti = tok.id;
+        if (i >= buf.length) {
+          if (buf.length < MAX) i++;
+          else this._cycle = (this._cycle + 1) % MAX;
+          ti = (tok = buf[slot] = this._getToken(mode)).id;
+          break;
+        }
+        ++i;
+        ti = (tok = buf[slot]).id;
       } while (ti === COMMENT || mode && (ti === WS || ti === UVAR && mode !== UVAR));
-      if (!cached) {
-        if (buf.length < MAX) i++;
-        else this._cycle = (this._cycle + 1) % MAX;
-        buf[slot] = tok;
-      }
       if (ti === AMP) this._amp++;
       this._cur = i;
       this.token = tok;
       return tok;
+      /**
+       * @typedef {number} TokenAcquisitionMode
+       * 0/falsy: skip COMMENT;
+       * UVAR id: skip COMMENT, WS;
+       * anything else: skip COMMENT, WS, UVAR
+       */
     }
 
     /**
@@ -328,7 +334,7 @@
      * @return {Token|false}
      */
     match(what, text, tok = this.get(), opts) {
-      if ((typeof what === 'object' ? what[tok.id] : !what || tok.id === what) &&
+      if ((typeof what === 'object' ? isOwn(what, tok.id) : !what || tok.id === what) &&
           (!text || text.has(tok))) {
         return tok;
       }
@@ -357,7 +363,7 @@
       let tok;
       const text = opts.has ? opts : (tok = opts.reuse, opts.text);
       const ws = typeof what === 'object' ? what[WS] : what === WS;
-      let uvp = !ws && !text && (typeof what === 'object' ? what.isUvp : UVAR_PROXY[what]);
+      let uvp = !ws && !text && (typeof what === 'object' ? what.isUvp : isOwn(UVAR_PROXY, what));
       tok = tok && (tok.id != null ? tok : this.token) || this.get(uvp ? UVAR : !ws);
       uvp = uvp && tok.isVar;
       return this.match(what, text, tok, uvp ? UVAR : opts) ||
@@ -391,17 +397,28 @@
       return goal;
     }
 
-    /** @return {Token} */
-    _getToken() {
-      let a, c, text;
+    /**
+     * @param {TokenAcquisitionMode} mode
+     * @return {Token|void}
+     */
+    _getToken(mode) {
       const src = this.source;
-      const start = src.offset;
-      const tok = new Token(CHAR, src.col, src.line, start, src.string, a = src.readCode());
-      const b = src.peek();
-      // [\t\n\x20]
-      if (a === 9 || a === 10 || a === 32) {
-        tok.id = WS;
-        if (isSpace(b)) src.readMatch(rxSpace);
+      let a, b, c, text, col, line, offset;
+      while (true) {
+        ({col, line, offset} = src);
+        a = src.readCode(); if (a == null) break;
+        b = src.peek();
+        if (a === 9/*\t*/ || a === 10/*\n*/ || a === 32/* " " */) {
+          if (isSpace(b)) src.readMatch(rxSpace);
+          if (!mode) { c = WS; break; }
+        } else if (a === 47/*/*/ && b === 42/* * */) {
+          a = src.readMatch(rxCommentUso, true);
+          if (a[1] && mode === UVAR) { c = UVAR; break; }
+        } else break;
+      }
+      const tok = new Token(c || CHAR, col, line, offset, src.string, a);
+      if (c) {
+        if (c === UVAR) tok.isVar = true;
       // [0-9]
       } else if (a >= 48 && a <= 57) {
         c = b >= 48 && b <= 57 || b === 46/*.*/ ||
@@ -464,15 +481,13 @@
           text = this._ident(src, tok, a, b, 1);
           tok.id = HASH;
         }
+      // *
+      } else if (a === 42) {
+        tok.id = STAR;
+        if (isIdentStart(b)) tok.hack = '*';
       // [.,:;>+~=|*{}[]()]
       } else if ((c = TokenIdByCode[a])) {
         tok.id = c;
-      // /*
-      } else if (a === 47) {
-        if (b === 42) {
-          c = src.readMatch(rxCommentUso, true);
-          tok.id = c[1] != null ? COMMENT : (tok.isVar = true, UVAR);
-        }
       // ["']
       } else if (a === 34 || a === 39) {
         src.readMatch(a === 34 ? rxStringDoubleQ : rxStringSingleQ);
@@ -504,7 +519,7 @@
       } else if (a == null) {
         tok.id = Tokens.EOF;
       }
-      if ((c = src.offset) !== start + 1) tok.offset2 = c;
+      if ((c = src.offset) !== offset + 1) tok.offset2 = c;
       if (text) { PDESC.value = text; define(tok, 'text', PDESC); }
       return tok;
     }
@@ -530,7 +545,7 @@
         tok.id = b ? Tokens.URI : FUNCTION;
         tok.type = b ? 'uri' : 'fn';
         tok.name = vp ? c.slice(vp) : c;
-        if (vp) tok.prefix = c.slice(1, vp - 1);
+        if (vp) tok.prefix = c.slice(0, vp);
         if (b) tok.uri = b;
       } else if (next === 58/*:*/ && name === 'progid') {
         ovrValue = name + src.readMatch(/.*?\(/y);
@@ -1150,8 +1165,7 @@
       if (!tok || tok.isVar) {
         tok = stream.grab();
       }
-      const amps = tok.id === AMP ? -1 : stream._amp;
-      if (!relative || !TT.combinator[tok.id]) {
+      if (!relative || !isOwn(TT.combinator, tok.id)) {
         tok = this._simpleSelectorSequence(stream, tok);
         if (!tok) return;
         sel.push(tok);
@@ -1159,7 +1173,7 @@
       }
       for (let combinator, ws; ; tok = null) {
         if (!tok) tok = stream.token;
-        if (TT.combinator[tok.id]) {
+        if (isOwn(TT.combinator, tok.id)) {
           sel.push(this._combinator(stream, tok));
           sel.push(this._simpleSelectorSequence(stream) || stream._failure());
           continue;
@@ -1167,7 +1181,7 @@
         while (tok.isVar) tok = stream.get();
         ws = tok.id === WS && tok; if (!ws) break;
         tok = stream.grab(); if (tok.id === LBRACE) break;
-        combinator = TT.combinator[tok.id] && this._combinator(stream, tok);
+        combinator = isOwn(TT.combinator, tok.id) && this._combinator(stream, tok);
         tok = this._simpleSelectorSequence(stream, combinator ? undefined : tok);
         if (tok) {
           sel.push(combinator || this._combinator(stream, ws));
@@ -1176,9 +1190,7 @@
           stream._failure();
         }
       }
-      const res = TokenValue.from(sel);
-      res.isAmped = stream._amp > amps;
-      return res;
+      return TokenValue.from(sel);
     }
 
     /**
@@ -1188,22 +1200,23 @@
      * @return {Token|void}
      */
     _simpleSelectorSequence(stream, start = stream.grab()) {
-      const si = start.id; if (!TT.selectorStart[si]) return;
+      let si = start.id; if (!isOwn(TT.selectorStart, si)) return;
+      let ns, tag, t2;
       let tok = start;
-      let ns, tag;
-      if (si === PIPE) {
-        ns = true;
-      } else if (si === STAR || si === IDENT) {
-        if ((tok = stream.get()).id === PIPE) {
-          ns = true;
-          tok = false;
-        } else tag = start;
+      const mods = [];
+      while (si === AMP) {
+        mods.push(Parser.SELECTOR[AMP](stream, tok));
+        si = (tok = stream.get()).id;
+      }
+      if (si === PIPE || (si === STAR || si === IDENT) && (t2 = stream.get()).id === PIPE) {
+        ns = t2 ? tok : ''; tok = null;
+      } else if (t2) {
+        tag = tok; tok = t2;
       }
       if (ns && !(tag = stream.match(TT.identStar))) {
         if (si !== PIPE) stream.unget();
         return;
       }
-      const mods = [];
       while (true) {
         if (!tok) tok = stream.get();
         const fn = Parser.SELECTOR[tok.id];
@@ -1211,12 +1224,8 @@
         mods.push(tok);
         tok = false;
       }
-      if (tag && tag !== start) {
-        tag.col = start.col;
-        tag.offset = start.offset;
-        tag.code = start.code;
-      }
       tok = Token.from(start);
+      tok.ns = ns;
       tok.elementName = tag || '';
       tok.modifiers = mods;
       tok.offset2 = (mods[mods.length - 1] || tok).offset2;
@@ -1239,6 +1248,7 @@
     /**
      * prop: value ["!" "important"]? [";" | ")"]
      * Consumes ")" when inParens is true.
+     * When not inParens `tok` must be already vetted.
      * @param {TokenStream} stream
      * @param {Token} tok
      * @param {{}} [_]
@@ -1248,26 +1258,24 @@
      * @return {boolean|void}
      */
     _declaration(stream, tok, {colon, inParens, scope} = {}) {
+      if (inParens && tok.id !== IDENT) return;
+      if (tok.isVar) return true;
       const opts = this.options;
-      if (!(tok = stream.matchSmart(opts.starHack ? TT.identStar : IDENT, {reuse: tok}))) {
-        return;
-      }
-      if (tok.isVar) {
-        return true;
-      }
-      let hack;
-      if (tok.id === STAR) {
-        if (!(tok = stream.match(IDENT))) { stream.unget(); return; }
-        hack = '*'; tok.col--; tok.offset--;
-      } else if (tok.code === 95/*_*/ && opts.underscoreHack) {
-        hack = '_';
-      }
+      const hack = tok.hack
+        ? (tok = stream.match(IDENT), tok.col--, tok.offset--, '*')
+        : tok.code === 95/*_*/ && opts.underscoreHack && '_';
       if (hack) {
         tok.hack = hack;
         PDESC.value = tok.text.slice(1); define(tok, 'text', PDESC);
         PDESC.value = toStringPropHack; define(tok, 'toString', PDESC);
       }
-      if (!colon) stream.matchSmart(COLON, OrDie);
+      if (!colon && !stream.match(COLON)) {
+        if (inParens || !this._inStyle) {
+          stream._failure('":"', stream.get());
+        } else {
+          stream._failure('prop:value or a selector that is not a tag');
+        }
+      }
       const isCust = tok.type === 'custom-prop';
       const end = isCust ? TT.propCustomEnd : inParens ? TT.propValEndParen : TT.propValEnd;
       const value = this._expr(stream, end, isCust) ||
@@ -1277,6 +1285,7 @@
         validateProperty(tok, value, stream, scope);
       const important = stream.token.id === DELIM &&
         stream.matchSmart(IDENT, {must: 1, text: B.important});
+      const ti = stream.matchSmart(inParens ? RPAREN : TT.declEnd, {must: 1, reuse: !important}).id;
       this.fire({
         type: 'property',
         property: tok,
@@ -1287,8 +1296,8 @@
         scope,
         value,
       }, tok);
-      const ti = stream.matchSmart(inParens ? RPAREN : TT.declEnd, {reuse: !important}).id;
-      return inParens ? ti : ti === SEMICOLON || ti && (stream.unget(), ti);
+      if (ti === RBRACE) stream.unget();
+      return ti;
     }
 
     /**
@@ -1419,30 +1428,21 @@
      * @return {true|void}
      */
     _styleRule(stream, tok, opts) {
-      const nestSym = opts && opts.nestSym;
       // TODO: store isNestedRuleMisplaced in cache to enable caching of nested selectors?
-      if (!nestSym && tok.id !== AMP && parserCache.findBlock(tok)) {
+      if (!this._inStyle && parserCache.findBlock(tok)) {
         return true;
       }
-      let blk, brace, inStyle;
+      const inStyle = this._inStyle++;
+      let blk, brace;
       try {
-        const sels = this._selectorsGroup(stream, tok);
-        if (!sels) {
-          if (nestSym) stream._failure('selector', tok);
-          stream.unget();
-          return;
-        }
-        if (nestSym || tok.id === AMP) {
-          if (!this._inStyle) {
-            this.alarm(2, 'Nested selector must be inside a style rule.', tok);
-          }
-          if ((tok = sels.find(nestSym ? isBadNestingRule : isBadNestingSel))) {
-            this.alarm(2, `Nested selector must ${nestSym ? 'contain' : 'start with'} "&".`, tok);
-          }
+        const amps = tok.id === AMP ? -1 : stream._amp;
+        const sels = this._selectorsGroup(stream, tok, true);
+        if (!sels) { stream.unget(); return; }
+        if (!inStyle && (stream._amp > amps || sels.some(isRelativeSelector))) {
+          this.alarm(2, 'Nested selector must be inside a style rule.', tok);
         }
         brace = stream.matchSmart(LBRACE, OrDieReusing);
         blk = parserCache.startBlock(sels[0]);
-        inStyle = !nestSym && this._inStyle++;
         const msg = {selectors: sels};
         const opts2 = {brace, event: ['rule', msg]};
         this._styleRuleBlock(stream, sels[0], opts ? assign({}, opts, opts2) : opts2);
@@ -1452,7 +1452,7 @@
         this._declarationFailed(stream, ex, !!brace);
       } finally {
         if (blk) parserCache.cancelBlock(blk);
-        if (!nestSym && inStyle != null) this._inStyle = inStyle;
+        this._inStyle = inStyle;
       }
       return true;
     }
@@ -1472,6 +1472,7 @@
       const {brace = stream.matchSmart(LBRACE, OrDie)} = opts;
       const [type, msg = event[1] = {}] = event || [];
       const declOpts = scoped ? {scope: start.atName} : {};
+      const star = this.options.starHack && STAR;
       this._stack.push(start);
       let ex, child;
       if (type) this.fire(assign({type: 'start' + type, brace}, msg), start);
@@ -1482,21 +1483,19 @@
         try {
           if (ti === AT) {
             fn = tok.atName;
-            fn = Parser.AT[fn] ||
-              margins && B.marginSyms.has(fn) && this._margin ||
+            fn = margins && B.marginSyms.has(fn) && this._margin ||
+              !this._inStyle && this.alarm(1, `Nested @${fn} is not supported here.`) ||
+              Parser.AT[fn] ||
               this._unknownAtRule;
             fn.call(this, stream, tok);
             child = 1;
-          } else if (ti === AMP) {
-            child |= this._styleRule(stream, tok, opts);
-          } else if (this._declaration(stream, tok, declOpts)) {
+          } else if (ti === IDENT || ti === star && tok.hack
+            ? this._declaration(stream, tok, declOpts)
+            : !scoped && isOwn(TT.nestSel, ti) && this._styleRule(stream, tok, opts)
+          ) {
             child = 1;
           } else {
-            tok = stream.get();
-            ex = this._inStyle && TT.selectorStart[tok.id]
-              ? '";", &-prefix, prop:value, @condition'
-              : '';
-            ex = stream._failure(ex, tok, false);
+            ex = stream._failure('', tok, false);
           }
         } catch (e) {
           ex = e;
@@ -1696,15 +1695,6 @@
     /**
      * @this {Parser}
      * @param {TokenStream} stream
-     * -@param {Token} start
-     */
-    nest(stream) {
-      this._styleRule(stream, stream.grab(), {nestSym: true});
-    },
-
-    /**
-     * @this {Parser}
-     * @param {TokenStream} stream
      * @param {Token} start
      */
     page(stream, start) {
@@ -1780,15 +1770,15 @@
         ns = t1;
       } else if (t1.id === STAR) { // [*
         ns = t1;
-        ns.offset2++;
-        stream.matchOrDie(PIPE);
+        ns.offset2 = stream.matchOrDie(PIPE).offset2;
+        if (ns.length > 2) ns.text = '*|'; // comment inside
       } else if ((t2 = stream.get()).id === PIPE) { // [ns|
         ns = t1;
         ns.offset2++;
-      } else if (TT.attrEq[t2.id]) { // [name=, |=, ~=, ^=, *=, $=
+      } else if (isOwn(TT.attrEq, t2.id)) { // [name=, |=, ~=, ^=, *=, $=
         name = t1;
         eq = t2;
-      } else if (TT.attrNameEnd[t2.id]) { // [name], [name/*[[var]]*/, [name<WS>
+      } else if (isOwn(TT.attrNameEnd, t2.id)) { // [name], [name/*[[var]]*/, [name<WS>
         name = t1;
         end = t2.id === RBRACKET && t2;
       } else { // [name<?>

@@ -880,13 +880,13 @@ CSSLint.addRule['gradients'] = [{
     property({inParens, value: {parts: [p]}}) {
       if (inParens) return;
       if (p && p.prefix && /(-|^)gradient$/.test(p.name)) {
-        if (!miss) miss = {moz: 1, webkit: 1};
+        if (!miss) miss = {'-moz-': 1, '-webkit-': 1};
         delete miss[p.prefix];
       }
     },
     end(event) {
       if (miss && (miss = Object.keys(miss))[0]) {
-        reporter.report(`Missing -${miss.join(', -')} prefix${miss[1] ? 'es' : ''} for gradient.`,
+        reporter.report(`Missing ${miss.join(',')} prefix${miss[1] ? 'es' : ''} for gradient.`,
           event.selectors[0], rule);
       }
     },

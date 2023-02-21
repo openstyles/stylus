@@ -78,7 +78,7 @@
       'push-button | hyperlink | radio | radio-button | checkbox | menu-item | tab | menu | ' +
       'menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | ' +
       'outline-tree | range | field | combo-box | signature | password | normal',
-    'aspect-ratio': 'auto || [ <num0+> [ / <num0+> ]? ]',
+    'aspect-ratio': 'auto || <ratio>',
     'backdrop-filter': '<filter-function-list> | none',
     'backface-visibility': '<vis-hid>',
     'background': '[ <bg-layer> , ]* <final-bg-layer>',
@@ -554,8 +554,29 @@
       'base-palette': 'light | dark | <int0+>',
       'override-colors': '[ <int0+> <color> ]#',
     }),
+    'media': {
+      '<all>': true,
+      'any-hover': 'none | hover',
+      'any-pointer': 'none | coarse | fine',
+      'color': '<int>',
+      'color-gamut': 'srgb | p3 | rec2020',
+      'color-index': '<int>',
+      'grid': '<int0-1>',
+      'hover': 'none | hover',
+      'monochrome': '<int>',
+      'overflow-block': 'none | scroll | paged',
+      'overflow-inline': 'none | scroll',
+      'pointer': 'none | coarse | fine',
+      'resolution': '<resolution> | infinite',
+      'scan': 'interlace | progressive',
+      'update': 'none | slow | fast',
+      // deprecated
+      'device-aspect-ratio': '<ratio>',
+      'device-height': '<len>',
+      'device-width': '<len>',
+    },
     'page': {
-      '': true, // include Properties
+      '<all>': true,
       'bleed': 'auto | <len>',
       'marks': 'none | [ crop || cross ]',
       'size': '<len>{1,2} | auto | [ [ A3 | A4 | A5 | B4 | B5 | JIS-B4 | JIS-B5 | ' +
@@ -607,15 +628,15 @@
     CDCO: {}, // CDO and CDC
     CHAR: {},
     COLON: ':',
-    COMBINATOR: ['>', '~', '||'], // a lone "+" isn't included as it can be a math operator
+    COMBINATOR: ['~', '||'], // "+" and ">" are also math ops
     COMMA: ',',
     COMMENT: {},
     DELIM: '!',
     DOT: '.',
     EQUALS: '=',
     EQ_CMP: ['>=', '<='],
-    FREQUENCY: {},
     FUNCTION: {},
+    GT: '>',
     HASH: '#',
     IDENT: {},
     INVALID: {},
@@ -638,6 +659,8 @@
     // numbers
     ANGLE: {},
     DIMENSION: {},
+    FLEX: {},
+    FREQUENCY: {},
     LENGTH: {},
     NUMBER: {},
     PCT: {},
@@ -661,11 +684,11 @@
   const UnitTypeIds = {__proto__: null};
   for (const [id, units] of [
     [ANGLE, 'deg,grad,rad,turn'],
+    [Tokens.FLEX, 'fr'],
     [Tokens.FREQUENCY, 'hz,khz'],
     [LENGTH, 'cap,ch,em,ex,ic,lh,rlh,rem,' +
       'cm,mm,in,pc,pt,px,q,' +
       'cqw,cqh,cqi,cqb,cqmin,cqmax,' + // containers
-      'fr,' + // grids
       'vb,vi,vh,vw,vmin,vmax' +
       'dvb,dvi,dvh,dvw,dvmin,dvmax' +
       'lvb,lvi,lvh,lvw,lvmin,lvmax' +
@@ -719,15 +742,16 @@
     }
     /**
      * @param {Token} tok
-     * @param {number} [c]
-     * @return {boolean}
+     * @param {number} [c] - first char code
+     * @param {string} [lowText] - text to use instead of token's text
+     * @return {boolean | any}
      */
-    has(tok, c = tok.code) {
-      const len = tok.length;
+    has(tok, c = tok.code, lowText) {
+      const len = (lowText || tok).length;
       if (!isOwn(this, c = c * 100 + len)) return false;
       if (len === 1) return true;
       const val = this[c];
-      const low = tok.lowText || (tok.lowText = tok.text.toLowerCase());
+      const low = lowText || tok.lowText || (tok.lowText = tok.text.toLowerCase());
       return typeof val === 'string' ? val === low : val.includes(low);
     }
   }
@@ -877,7 +901,7 @@
       'repeating-gradient()',
     '<grid-line>': 'auto | [ <int> && <ident-for-grid>? ] | <ident-for-grid> | ' +
       '[ span && [ <int> || <ident-for-grid> ] ]',
-    '<image>': '<uri> | <gradient> | cross-fade()',
+    '<image>': '<uri> | <gradient> | -webkit-cross-fade()',
     '<inflexible-breadth>': '<len-pct> | min-content | max-content | auto',
     '<inset>': 'inset( <len-pct>{1,4} <border-radius-round>? )',
     '<len-pct-side>': '<len-pct> | closest-side | farthest-side',
@@ -894,6 +918,7 @@
       '[ left | center | right | <len-pct> ] ' +
       '[ top | center | bottom | <len-pct> ]? | ' +
       '[ left | center | right ] || [ top | center | bottom ]',
+    '<ratio>': '<num0+> [ / <num0+> ]?',
     '<rect>': 'rect( [ <len> | auto ]#{4} <border-radius-round>? )',
     '<relative-size>': 'smaller | larger',
     '<repeat-style>': 'repeat-x | repeat-y | [ repeat | space | round | no-repeat ]{1,2}',
@@ -1004,6 +1029,7 @@
     '<ident-not-none>': p => p.id === IDENT && !p.isNone,
     '<ie-function>': p => p.ie,
     '<int>': p => p.isCalc || p.isInt,
+    '<int0-1>': p => p.isCalc || p.is0 || p.isInt && p.number === 1,
     '<int0+>': p => p.isCalc || p.isInt && p.number >= 0,
     '<int1+>': p => p.isCalc || p.isInt && p.number > 0,
     '<int2-4>': p => p.isCalc || p.isInt && (p = p.number) >= 2 && p <= 4,
@@ -1023,6 +1049,7 @@
     '<pct0+>': p => p.isCalc || p.is0 || p.number >= 0 && p.id === PCT,
     '<pct0-100>': p => p.isCalc || p.is0 || p.id === PCT && (p = p.number) >= 0 && p <= 100,
     '<keyframes-name>': customIdentChecker('', p => p.id === STRING),
+    '<resolution>': p => p.id === Tokens.RESOLUTION,
     '<string>': p => p.id === STRING,
     '<time>': p => p.isCalc || p.id === TIME,
     '<unicode-range>': p => p.id === Tokens.URANGE,
@@ -1061,12 +1088,12 @@
       return this.string.charCodeAt(this.offset + distance - 1);
     }
     mark() {
-      this._bookmark = [this.offset, this.line, this.col, this._break];
+      this._bookmark = {o: this.offset, l: this.line, c: this.col, b: this._break};
     }
     reset() {
       const b = this._bookmark;
       if (b) {
-        [this.offset, this.line, this.col, this._break] = b;
+        ({o: this.offset, l: this.line, c: this.col, b: this._break} = b);
         this._bookmark = null;
       }
     }
@@ -1279,8 +1306,11 @@
      */
     static funcTest(expr, p) {
       const pn = p.name; if (!pn) return;
+      const pnv = (p.prefix || '') + pn;
       const {name, body, list} = this.arg;
-      const m = list ? list[pn] : name === pn ? (body || '') : null; if (m == null) return;
+      const m = list ? list[pn] || list[pnv]
+        : name === pn || name === pnv ? (body || '')
+          : null; if (m == null) return;
       const e = p.expr; if (!e && m) return;
       const vi = m && !e.isVar && new PropValueIterator(e); // eslint-disable-line no-use-before-define
       const mm = !vi || m.matchFunc ? m :
@@ -1572,7 +1602,7 @@
     Props = typeof Props === 'string' ? ScopedProperties[Props] : Props || Properties;
     let spec, res, vp;
     let prop = tok.lowText || tok.text.toLowerCase();
-    do spec = Props[prop] || Props[''] && (Props = Properties)[prop];
+    do spec = Props[prop] || Props['<all>'] && (Props = Properties)[prop];
     while (!spec && !res && (vp = tok.vendorPos) && (res = prop = prop.slice(vp)));
     if (typeof spec === 'number' || !spec && vp) {
       return;
