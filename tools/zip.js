@@ -23,14 +23,13 @@ function createZip(suffix) {
     ignore.push(...fs.readFileSync('.gitignore', 'utf8').split(/\r?\n/));
   } catch (e) {}
   const mj = JSON.parse(fs.readFileSync(MANIFEST, 'utf8'));
+  delete mj.key;
   if (suffix === 'chrome') {
     delete mj.applications;
   } else if (suffix === 'chrome-beta') {
     delete mj.applications;
-    delete mj.key;
     mj.name = 'Stylus (beta)';
   } else {
-    delete mj.key;
     mj.options_ui = {
       /*
        * Linking to dashboard, not to options, because this is aimed at users who removed the icon
