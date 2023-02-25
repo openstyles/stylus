@@ -6,7 +6,6 @@ const archiver = require('archiver');
 
 function createZip(suffix) {
   const MANIFEST = 'manifest.json';
-  const fileName = `stylus-${suffix}.zip`;
   const ignore = [
     MANIFEST,
     '.*', // dot files/folders (glob, not regexp)
@@ -26,6 +25,10 @@ function createZip(suffix) {
   const mj = JSON.parse(fs.readFileSync(MANIFEST, 'utf8'));
   if (suffix === 'chrome') {
     delete mj.applications;
+  } else if (suffix === 'chrome-beta') {
+    delete mj.applications;
+    delete mj.key;
+    mj.name = 'Stylus (beta)';
   } else {
     delete mj.key;
     mj.options_ui = {
@@ -37,6 +40,7 @@ function createZip(suffix) {
       open_in_tab: true,
     };
   }
+  const fileName = `stylus-${suffix}-${mj.version}.zip`;
   const file = fs.createWriteStream(fileName);
   const archive = archiver('zip');
   archive.pipe(file);
@@ -47,7 +51,7 @@ function createZip(suffix) {
 
 (async () => {
   try {
-    await Promise.all(['chrome', 'firefox'].map(createZip));
+    await Promise.all(['chrome', 'chrome-beta', 'firefox'].map(createZip));
     console.log('\x1b[32m%s\x1b[0m', 'Stylus zip complete');
   } catch (err) {
     console.error(err);
