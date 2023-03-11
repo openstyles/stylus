@@ -71,13 +71,21 @@ addAPI(/** @namespace API */ {
     }
   },
 
-  /** @returns {Promise<chrome.tabs.Tab>} */
-  async openManage({options = false, search, searchMode} = {}) {
+  /**
+   * @param {{}} [opts]
+   * @param {boolean} [opts.options]
+   * @param {string} [opts.search]
+   * @param {string} [opts.searchMode]
+   * @returns {Promise<any>}
+   */
+  async openManage(opts = {}) {
     const setUrlParams = url => {
       const u = new URL(url);
-      if (search) u.searchParams.set('search', search);
-      if (searchMode) u.searchParams.set('searchMode', searchMode);
-      if (options) u.hash = '#stylus-options';
+      for (const key of ['search', 'searchMode']) {
+        if (key in opts) u.searchParams.set(key, opts[key]);
+        else u.searchParams.delete(key);
+      }
+      u.hash = opts.options ? '#stylus-options' : '';
       return u.href;
     };
     const base = chrome.runtime.getURL('manage.html');
@@ -89,7 +97,8 @@ addAPI(/** @namespace API */ {
       API.prefsDb.get('badFavs'); // prime the cache to avoid flicker/delay when opening the page
       tab = await openURL({url, newTab: true});
     } else if (!same) {
-      msg.sendTab(tab.id, {method: 'pushState', url: setUrlParams(tab.url)});
+      await msg.sendTab(tab.id, {method: 'pushState', url: setUrlParams(tab.url)})
+        .catch(msg.ignoreError);
     }
     return activateTab(tab); // activateTab unminimizes the window
   },
