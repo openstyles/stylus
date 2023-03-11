@@ -76,7 +76,7 @@ addAPI(/** @namespace API */ {
    * @param {boolean} [opts.options]
    * @param {string} [opts.search]
    * @param {string} [opts.searchMode]
-   * @returns {Promise<any>}
+   * @returns {Promise<chrome.tabs.Tab>}
    */
   async openManage(opts = {}) {
     const setUrlParams = url => {
