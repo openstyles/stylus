@@ -120,7 +120,6 @@ const styleMan = (() => {
   //#region Exports
 
   return {
-
     /** @returns {Promise<number>} style id */
     async delete(id, reason) {
       if (ready.then) await ready;
@@ -464,9 +463,12 @@ const styleMan = (() => {
     return saveStyle(style, {reason: 'config'});
   }
 
-  function broadcastStyleUpdated(style, reason, method = 'styleUpdated') {
+  function buildCacheForStyle(style) {
     const {id} = style;
     const data = id2data(id);
+    // FIXME: ideally, when preview is available, there is no need to rebuild the cache when original style change.
+    // we should lift this logic to parent function.
+    const styleToApply = data.preview || style;
     const excluded = new Set();
     const updated = new Set();
     for (const [url, cache] of cachedStyleForUrl.entries()) {
@@ -474,21 +476,25 @@ const styleMan = (() => {
         cache.maybeMatch.add(id);
         continue;
       }
-      const code = getAppliedCode(new MatchQuery(url), style);
+      const code = getAppliedCode(new MatchQuery(url), styleToApply);
       if (code) {
         updated.add(url);
-        buildCacheEntry(cache, style, code);
+        buildCacheEntry(cache, styleToApply, code);
       } else {
         excluded.add(url);
         delete cache.sections[id];
       }
     }
     data.appliesTo = updated;
+  }
+
+  function broadcastStyleUpdated(style, reason, method = 'styleUpdated') {
+    buildCacheForStyle(style);
     return msg.broadcast({
       method,
       reason,
       style: {
-        id,
+        id: style.id,
         md5Url: style.md5Url,
         enabled: style.enabled,
       },
