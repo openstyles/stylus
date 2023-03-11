@@ -253,7 +253,7 @@ const colorConverter = (NAMED_COLORS => {
 
   function constrainHue(h) {
     return h < 0 ? h % 360 + 360 :
-      h > 360 ? h % 360 :
+      h >= 360 ? h % 360 :
         h;
   }
 
