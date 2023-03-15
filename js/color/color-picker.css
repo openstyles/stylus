@@ -305,6 +305,7 @@
   color: var(--input-color);
 }
 
+.colorpicker-theme-dark .colorpicker-dropper,
 .colorpicker-theme-dark .colorpicker-input::-webkit-inner-spin-button {
   filter: invert(1);
 }
