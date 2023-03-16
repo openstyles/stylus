@@ -9,6 +9,7 @@ function MozSectionFinder(cm) {
   const MOZ_DOC_LEN = '@-moz-document'.length;
   const rxDOC = /@-moz-document(\s+|$)/ig;
   const rxFUNC = /([-a-z]+)\(/iy;
+  const rxNEXT = /^(\s*)(.)?/;
   const rxSPACE = /\s+/y;
   const rxTokDOC = /^(?!comment|string)/;
   const rxTokCOMMENT = /^comment(\s|$)/;
@@ -261,7 +262,7 @@ function MozSectionFinder(cm) {
             if (goal === '_cmt') {
               const cmt = isCmt && trimCommentLabel(text.slice(ch, ch = styles[j]));
               if (cmt) section.tocEntry.label = cmt;
-              if (!isCmt && type) goal = '';
+              if (!isCmt && type || cmt) goal = '';
               continue;
             }
             if (isCmt) {
@@ -332,19 +333,21 @@ function MozSectionFinder(cm) {
               valueStart: url.start,
               valueEnd: url.end,
             });
-            s = text.slice(ch, styles[j]).trim();
+            s = text.slice(ch, styles[j]);
             if (s.includes('}')) { // a single `null` token like ` { } `
               goal = '';
               break;
             }
-            ch++;
-            goal = s.startsWith(',') ? '_func' :
-              s.startsWith('{') ? '_cmt' :
-                !s && '_,'; // non-space something at this place = syntax error
+            s = s.match(rxNEXT);
+            goal = s[2];
+            goal = goal === ',' ? '_func' :
+              goal === '{' ? '_cmt' :
+                !goal && '_,'; // non-space something at this place = syntax error
             if (!goal) {
               goal = 'error';
               break;
             }
+            ch += s[1].length + 1;
           }
           if (goal === ',') {
             goal = text[ch] === ',' ? '_func' : '';
