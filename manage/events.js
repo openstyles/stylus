@@ -212,10 +212,9 @@ function handleUpdate(style, {reason, method} = {}) {
   getFaviconSrc(entry);
 
   function handleToggledOrCodeOnly() {
-    style.sections.forEach(s => (s.code = null));
-    style.sourceCode = null;
+    removeStyleCode(style);
     const diff = objectDiff(oldEntry.styleMeta, style)
-      .filter(({key, path}) => path || (!key.startsWith('original') && !key.endsWith('Date')));
+      .filter(({key, path}) => path || !/^_|(Date|Digest|Md5)$/.test(key));
     if (diff.length === 0) {
       // only code was modified
       entry = oldEntry;
@@ -285,4 +284,12 @@ function objectDiff(first, second, path = '') {
     }
   }
   return diff;
+}
+
+/** Clearing the code to free up some memory */
+function removeStyleCode(style) {
+  let sum = (style.sourceCode || '').length || 0;
+  style.sections.forEach(s => { sum += (s.code || '').length; s.code = null; });
+  style.sourceCode = null;
+  Object.defineProperty(style, '_codeSize', {value: sum, writable: true}); // non-enumerable!
 }

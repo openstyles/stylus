@@ -1,6 +1,7 @@
 /* global $$ $ $create animateElement scrollElementIntoView */// dom.js
 /* global API */// msg.js
 /* global URLS debounce getOwnTab isEmptyObj sessionStore stringAsRegExp */// toolbox.js
+/* global removeStyleCode */// events.js
 /* global filterAndAppend */// filters.js
 /* global installed newUI */// manage.js
 /* global sorter */
@@ -131,11 +132,7 @@ function createStyleElement({styleMeta: style, styleNameLC: nameLC, styleSize: s
     parts.oldConfigure.classList.toggle('hidden', !configurable);
     parts.oldCheckUpdate.classList.toggle('hidden', !style.updateUrl);
   }
-
-  // clear the code to free up some memory
-  // (note, style is already a deep copy)
-  style.sourceCode = null;
-  style.sections.forEach(section => (section.code = null));
+  removeStyleCode(style);
 
   const entry = parts.entry.cloneNode(true);
   entry.id = ENTRY_ID_PREFIX_RAW + style.id;
@@ -412,7 +409,7 @@ function styleToDummyEntry(style) {
   const name = style.customName || style.name || '';
   return {
     styleMeta: style,
-    styleSize: calcObjSize(style),
+    styleSize: calcObjSize(style) + (style._codeSize || 0),
     // sort case-insensitively the whole list then sort dupes like `Foo` and `foo` case-sensitively
     styleNameLC: name.toLocaleLowerCase() + '\n' + name,
   };
