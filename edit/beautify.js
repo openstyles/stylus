@@ -80,6 +80,8 @@ function createBeautifyUI(scope, options) {
         $createOption('border: none;', 'newline_between_properties', true),
         $createOption('display: block;', 'newline_before_close_brace', true),
         $createOption('}', 'newline_between_rules'),
+        $createLabeledCheckbox('space_around_combinator', '', 'selector + selector', 'selector+selector'),
+        $createLabeledCheckbox('space_around_cmp', '', '[attribute = "1"]', '[attribute="1"]'),
         $createLabeledCheckbox('preserve_newlines', 'styleBeautifyPreserveNewlines'),
         $createLabeledCheckbox('indent_conditional', 'styleBeautifyIndentConditional'),
         editor.isUsercss && $createLabeledCheckbox('indent_mozdoc', '', '... @-moz-document'),
@@ -123,7 +125,9 @@ function createBeautifyUI(scope, options) {
     const value = target.type === 'checkbox' ? target.checked : target.selectedIndex > 0;
     const elLine = target.closest('[newline]');
     if (elLine) elLine.setAttribute('newline', value);
-    prefs.set('editor.beautify', Object.assign(options, {[target.dataset.option]: value}));
+    else if (target._) target._.node.textContent = target._[value ? 'text' : 'textOff'];
+    options[target.dataset.option] = value;
+    prefs.set('editor.beautify', Object.assign({}, options, {translate_positions: undefined}));
     beautify(scope, false);
   };
 
@@ -149,17 +153,20 @@ function createBeautifyUI(scope, options) {
     );
   }
 
-  function $createLabeledCheckbox(optionName, i18nKey, text) {
+  function $createLabeledCheckbox(optionName, i18nKey, text, textOff) {
+    const checked = options[optionName] !== false;
+    const textNode = textOff && document.createTextNode(checked ? text : textOff);
     return (
       $create('label', {style: 'display: block; clear: both;'}, [
         $create('input', {
           type: 'checkbox',
           dataset: {option: optionName},
-          checked: options[optionName] !== false,
+          _: textOff && {node: textNode, text, textOff},
+          checked,
         }),
         $create('SVG:svg.svg-icon.checked',
           $create('SVG:use', {'xlink:href': '#svg-icon-checked'})),
-        i18nKey ? t(i18nKey) : text,
+        i18nKey ? t(i18nKey) : textNode || text,
       ])
     );
   }

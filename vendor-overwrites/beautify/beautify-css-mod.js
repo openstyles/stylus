@@ -1,4 +1,3 @@
-/*jshint curly:true, eqeqeq:true, laxbreak:true, noempty:false */
 /*
 
   The MIT License (MIT)
@@ -33,31 +32,6 @@
 
     Based on code initially developed by: Einar Lielmanis, <einar@jsbeautifier.org>
         http://jsbeautifier.org/
-
-    Usage:
-        css_beautify(source_text);
-        css_beautify(source_text, options);
-
-    The options are (default in brackets):
-        indent_size (4)                         — indentation size,
-        indent_char (space)                     — character to indent with,
-        preserve_newlines (default false)       - whether existing line breaks should be preserved,
-        selector_separator_newline (true)       - separate selectors with newline or
-                                                  not (e.g. "a,\nbr" or "a, br")
-        end_with_newline (false)                - end with a newline
-        newline_between_rules (true)            - add a new line after every css rule
-        space_around_selector_separator (false) - ensure space around selector separators:
-                                                  '>', '+', '~' (e.g. "a>b" -> "a > b")
-    e.g
-
-    css_beautify(css_source_text, {
-      'indent_size': 1,
-      'indent_char': '\t',
-      'selector_separator': ' ',
-      'end_with_newline': false,
-      'newline_between_rules': true,
-      'space_around_selector_separator': true
-    });
 */
 
 // http://www.w3.org/TR/CSS21/syndata.html#tokenization
@@ -108,6 +82,7 @@
             end_with_newline = false,
             newline_between_rules = true,
             space_around_combinator = true,
+            space_around_cmp = false,
             indent_conditional = true,
             indent_mozdoc = true,
             newline_between_properties = true,
@@ -305,11 +280,11 @@
             newline_before_open_brace ? print.newLine() : print.singleSpace();
             output.push(ch);
             outputPosCol++;
-            if (!enteringConditionalGroup || (variableOrRule === MOZ_DOC ? indent_mozdoc : indent_conditional)) {
+            if (variableOrRule === MOZ_DOC ? indent_mozdoc : indent_conditional) {
                 indent();
             }
             if (!eatWhitespace(true)) {
-                newline_after_open_brace || enteringConditionalGroup ? print.newLine() : print.singleSpace();
+                newline_after_open_brace ? print.newLine() : print.singleSpace();
             }
         };
         print["}"] = function(newline) {
@@ -389,8 +364,6 @@
 
         var insideRule = false;
         var insidePropertyValue = false;
-        var enteringConditionalGroup = false;
-        var insideConditionalGroup = false;
         var top_ch = '';
         var last_top_ch = '';
 
@@ -398,15 +371,16 @@
             var whitespace = skipWhitespace();
             var isAfterSpace = whitespace !== '';
             var isAfterNewline = whitespace.indexOf('\n') !== -1;
+            var ch2 = source_text[pos + 1];
             last_top_ch = top_ch;
             top_ch = ch;
 
             if (!ch) {
                 break;
-            } else if (ch === '/' && peek() === '*') { /* css comment */
+            } else if (ch === '/' && ch2 === '*') { /* css comment */
                 print.text(eatComment());
                 if (peek() !== ';') print.newLine();
-            } else if (ch === '/' && peek() === '/') { // single line comment
+            } else if (ch === '/' && ch2 === '/') { // single line comment
                 if (!isAfterNewline && last_top_ch !== '{') {
                     print.trim();
                 }
@@ -417,7 +391,7 @@
                 print.preserveSingleSpace();
 
                 // deal with less propery mixins @{...}
-                if (peek() === '{') {
+                if (ch2 === '{') {
                     print.text(eatString('}'));
                 } else {
                     output.push(ch);
@@ -435,19 +409,10 @@
                     }
 
                     variableOrRule = '@' + variableOrRule.replace(/\s$/, '');
-
-                    // might be a nesting at-rule
-                    if (variableOrRule in css_beautify.NESTED_AT_RULE) {
-                        nestedLevel += 1;
-                        if (variableOrRule in css_beautify.CONDITIONAL_GROUP_RULE) {
-                            enteringConditionalGroup = true;
-                            if (variableOrRule === MOZ_DOC ? !indent_mozdoc : !indent_conditional) {
-                                nestedLevel--;
-                            }
-                        }
-                    }
+                    nestedLevel += variableOrRule in css_beautify.NESTED_AT_RULE &&
+                      (variableOrRule === MOZ_DOC ? indent_mozdoc : indent_conditional);
                 }
-            } else if (ch === '#' && peek() === '{') {
+            } else if (ch === '#' && ch2 === '{') {
                 print.preserveSingleSpace();
                 print.text(eatString('}'));
             } else if (ch === '{') {
@@ -463,26 +428,16 @@
                     }
                 } else {
                     print["{"](ch);
-                    // when entering conditional groups, only rulesets are allowed
-                    if (enteringConditionalGroup) {
-                        enteringConditionalGroup = false;
-                        insidePropertyValue = false;
-                        insideConditionalGroup = true;
-                        insideRule = (indentLevel > nestedLevel);
-                    } else {
-                        // otherwise, declarations are also allowed
-                        insideRule = (indentLevel >= nestedLevel);
-                    }
+                    insideRule = indentLevel >= nestedLevel;
                 }
             } else if (ch === '}') {
                 outdent();
                 print["}"](true);
                 insideRule = false;
                 insidePropertyValue = false;
-                if (nestedLevel && (indent_conditional || !insideConditionalGroup)) {
+                if (nestedLevel && indent_conditional) {
                     nestedLevel--;
                 }
-                insideConditionalGroup = false;
                 if (newlinesFromLastWSEat < 2
                 && newline_between_rules
                 //&& indentLevel === 0
@@ -491,7 +446,7 @@
                 }
             } else if (ch === ":") {
                 eatWhitespace();
-                if ((insideRule || enteringConditionalGroup) &&
+                if (insideRule &&
                     !(lookBack("&") || foundNestedPseudoClass()) &&
                     !lookBack("(")) {
                     // 'property: value' delimiter
@@ -564,6 +519,12 @@
                 } else {
                     print.singleSpace();
                 }
+            } else if (ch === '=' || ch2 === '=' && (ch === '*' || ch === '~' || ch === '^' || ch === '$' || ch === '|')) {
+                if (space_around_cmp) print.singleSpace();
+                output.push(ch); outputPosCol++;
+                if (ch !== '=') { next(); output.push(ch2); outputPosCol++; }
+                if (space_around_cmp) print.singleSpace();
+                eatWhitespace(); if (ch && !ch.trim()) ch = '';
             } else if ((ch === '>' || ch === '+' || ch === '~') &&
                 !insidePropertyValue && parenLevel < 1) {
                 //handle combinator spacing
@@ -575,26 +536,11 @@
                 } else {
                     output.push(ch);
                     outputPosCol++;
-                    eatWhitespace();
-                    // squash extra whitespace
-                    if (ch && whiteRe.test(ch)) {
-                        ch = '';
-                    }
+                    eatWhitespace(); if (ch && !ch.trim()) ch = '';
                 }
             } else if (ch === ']') {
                 output.push(ch);
                 outputPosCol++;
-            } else if (ch === '[') {
-                print.preserveSingleSpace();
-                output.push(ch);
-                outputPosCol++;
-            } else if (ch === '=') { // no whitespace before or after
-                eatWhitespace();
-                output.push('=');
-                outputPosCol++;
-                if (whiteRe.test(ch)) {
-                    ch = '';
-                }
             } else {
                 print.preserveSingleSpace();
                 output.push(ch);
@@ -608,7 +554,7 @@
             sweetCode += basebaseIndentString;
         }
 
-        sweetCode += output.join('').replace(/[\r\n\t ]+$/, '');
+        sweetCode += output.join('').replace(/\s+$/, '');
 
         // establish end_with_newline
         if (end_with_newline) {
@@ -622,18 +568,15 @@
         return sweetCode;
     }
 
-    // https://developer.mozilla.org/en-US/docs/Web/CSS/At-rule
     css_beautify.NESTED_AT_RULE = {
-        "@page": true,
+        "@container": true,
         "@font-face": true,
+        "@font-palette-values": true,
         "@keyframes": true,
-        // also in CONDITIONAL_GROUP_RULE below
+        "@layer": true,
         "@media": true,
-        "@supports": true,
-        [MOZ_DOC]: true
-    };
-    css_beautify.CONDITIONAL_GROUP_RULE = {
-        "@media": true,
+        "@page": true,
+        "@property": true,
         "@supports": true,
         [MOZ_DOC]: true
     };
