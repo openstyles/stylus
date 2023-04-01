@@ -135,7 +135,7 @@
       if (!def) def = [];
       if (!list) list = [...def];
       if (values.includes('*')) list = src[name] = list.filter(v => !rxHOST.test(v));
-      list.push(...values.filter(v => !list.includes(v) && !def.includes(v)));
+      list.push(...values.filter(v => !list.includes(v)));
       if (!list.length) delete src[name];
     }
   }
