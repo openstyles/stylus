@@ -127,7 +127,7 @@
   function getStylesViaXhr() {
     const blobId = document.cookie.split(chrome.runtime.id + '=')[1].split(';')[0];
     const url = 'blob:' + chrome.runtime.getURL(blobId);
-    document.cookie = `${chrome.runtime.id}=1; max-age=0`; // remove our cookie
+    document.cookie = `${chrome.runtime.id}=1; max-age=0; SameSite=Lax`; // remove our cookie
     const xhr = new XMLHttpRequest();
     xhr.open('GET', url, false); // synchronous
     xhr.send();

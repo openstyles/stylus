@@ -95,7 +95,7 @@
       data.blobId = URL.createObjectURL(new Blob([data.str])).slice(blobUrlPrefix.length);
       responseHeaders.push({
         name: 'Set-Cookie',
-        value: `${chrome.runtime.id}=${data.blobId}`,
+        value: `${chrome.runtime.id}=${data.blobId}; SameSite=Lax`,
       });
     }
     const csp = state.csp &&
