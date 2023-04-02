@@ -27,6 +27,9 @@ $('#options-close-icon').onclick = () => {
 $('#manage').onclick = () => {
   API.openManage();
 };
+$('#manage.newUI.favicons').onclick = () => {
+  API.prefsDb.delete('badFavs');
+};
 $('#shortcuts').onclick = () => {
   if (FIREFOX) {
     customizeHotkeys();

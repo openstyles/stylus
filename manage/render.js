@@ -278,7 +278,8 @@ async function initBadFavs() {
     `^${stringAsRegExp(URLS.favicon('\n'), '', true).replace('\n', '(.*)')}$`);
   badFavs = newUI[key] || await newUI.readBadFavs();
   const fn = e => {
-    const host = e.statusCode !== 200 && e.url.match(rxHost)[1];
+    const code = e.statusCode; // absent for network error
+    const host = code && code !== 200 && e.url.match(rxHost)[1];
     if (host && !badFavs.includes(host)) {
       badFavs.push(host);
       debounce(put, 250, badFavs, key);

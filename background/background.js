@@ -152,27 +152,10 @@ if (chrome.commands) {
   chrome.commands.onCommand.addListener(id => browserCommands[id]());
 }
 
-chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
+chrome.runtime.onInstalled.addListener(({reason/*, previousVersion*/}) => {
   if (reason === 'install') {
     if (UA.mobile) prefs.set('manage.newUI', false);
     if (UA.windows) prefs.set('editor.keyMap', 'sublime');
-  }
-  // TODO: remove this before 1.5.23 as it's only for a few users who installed git 26b75e77
-  if (reason === 'update' && previousVersion === '1.5.22') {
-    for (const dbName of ['drafts', prefs.STORAGE_KEY]) {
-      try {
-        indexedDB.open(dbName).onsuccess = async e => {
-          const idb = /** @type IDBDatabase */ e.target.result;
-          const ta = idb.objectStoreNames[0] === 'data' && idb.transaction(['data']);
-          if (ta && ta.objectStore('data').autoIncrement) {
-            ta.abort();
-            idb.close();
-            await new Promise(setTimeout);
-            indexedDB.deleteDatabase(dbName);
-          }
-        };
-      } catch (e) {}
-    }
   }
 });
 
