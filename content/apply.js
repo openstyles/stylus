@@ -20,15 +20,17 @@
     order.main[id] ||
     id + .5e6; // no order = at the end of `main`
   const isFrame = window !== parent;
-  const isFrameAboutBlank = isFrame && location.href === 'about:blank';
-  const isUnstylable = !chrome.app && document instanceof XMLDocument;
+  const isFrameSameOrigin = isFrame && Object.getOwnPropertyDescriptor(parent.location, 'href').get;
+  const isXml = document instanceof XMLDocument;
+  const isUnstylable = !chrome.app && isXml;
   const styleInjector = StyleInjector({
     compare: (a, b) => calcOrder(a) - calcOrder(b),
     onUpdate: onInjectorUpdate,
   });
   // dynamic iframes don't have a URL yet so we'll use their parent's URL (hash isn't inherited)
-  let matchUrl = isFrameAboutBlank && tryCatch(() => parent.location.href.split('#')[0]) ||
-    location.href;
+  let matchUrl = isFrameSameOrigin && location.protocol === 'about:'
+    ? parent.location.href.split('#')[0]
+    : location.href;
 
   // save it now because chrome.runtime will be unavailable in the orphaned script
   const orphanEventId = chrome.runtime.id;
@@ -100,12 +102,12 @@
     } else {
       const SYM_ID = 'styles';
       const SYM = Symbol.for(SYM_ID);
-      const parentStyles = isFrameAboutBlank &&
-        tryCatch(() => parent[parent.Symbol.for(SYM_ID)]);
+      const parentStyles = isFrameSameOrigin && parent[parent.Symbol.for(SYM_ID)];
       const styles =
         window[SYM] ||
         parentStyles && await new Promise(onFrameElementInView) && parentStyles ||
-        !isFrameAboutBlank && chrome.app && !chrome.tabs && tryCatch(getStylesViaXhr) ||
+        // XML in Chrome will be auto-converted to html later, so we can't style it via XHR now
+        !isFrameSameOrigin && !isXml && chrome.app && !chrome.tabs && tryCatch(getStylesViaXhr) ||
         await API.styles.getSectionsByUrl(matchUrl, null, true);
       if (styles.cfg) {
         isDisabled = styles.cfg.disableAll;
@@ -125,7 +127,8 @@
 
   /** Must be executed inside try/catch */
   function getStylesViaXhr() {
-    const blobId = document.cookie.split(chrome.runtime.id + '=')[1].split(';')[0];
+    const blobId = (document.cookie.split(chrome.runtime.id + '=')[1] || '').split(';')[0];
+    if (!blobId) return; // avoiding an exception so we don't spoil debugging in devtools
     const url = 'blob:' + chrome.runtime.getURL(blobId);
     document.cookie = `${chrome.runtime.id}=1; max-age=0; SameSite=Lax`; // remove our cookie
     const xhr = new XMLHttpRequest();
