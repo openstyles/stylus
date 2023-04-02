@@ -152,10 +152,13 @@ if (chrome.commands) {
   chrome.commands.onCommand.addListener(id => browserCommands[id]());
 }
 
-chrome.runtime.onInstalled.addListener(({reason/*, previousVersion*/}) => {
+chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   if (reason === 'install') {
     if (UA.mobile) prefs.set('manage.newUI', false);
     if (UA.windows) prefs.set('editor.keyMap', 'sublime');
+  }
+  if (previousVersion === '1.5.30') {
+    API.prefsDb.delete('badFavs'); // old Stylus marked all icons as bad when network was offline
   }
 });
 
