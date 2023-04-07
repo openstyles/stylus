@@ -6,7 +6,7 @@
     "message": "Escrever novo estilo"
   },
   "addStyleTitle": {
-    "message": "Adicionar estilo"
+    "message": "Adicionar Estilo"
   },
   "alphaChannel": {
     "message": "Opacidade"
@@ -41,7 +41,7 @@
     "message": "Não funciona com CSS minificado"
   },
   "appliesRegexpOption": {
-    "message": "URLs que correspondem a regexp"
+    "message": "URLs correspondentes a regexp"
   },
   "appliesRemove": {
     "message": "Remover"
@@ -64,6 +64,9 @@
   "author": {
     "message": "Autor"
   },
+  "backupMessage": {
+    "message": "Para importar o arquivo de backup, arraste e solte o mesmo para essa página ou clique o botão Importar.\n\nPara exportar um backup compatível com o Stylus mais antigo que a versão 1.5.18, dê um clique direito no botão Exportar ou segure Shift e aperte o botão Exportar"
+  },
   "bckpInstStyles": {
     "message": "Exportar estilos"
   },
@@ -82,8 +85,11 @@
   "clickToUninstall": {
     "message": "Clique para desistalar"
   },
+  "cm_arrowKeysTraverse": {
+    "message": "Setas ↑↓ atravessam seções"
+  },
   "cm_autoCloseBrackets": {
-    "message": "Auto fechar parênteses, colchetes e aspas"
+    "message": "Fechar parênteses, colchetes e aspas automaticamente"
   },
   "cm_autoCloseBracketsTooltip": {
     "message": "Adicione automaticamente um par de fechamento ao digitar uma abertura de ()[]{}''\"\""
@@ -92,10 +98,10 @@
     "message": "Autocompletar ao digitar"
   },
   "cm_colorpicker": {
-    "message": "Colorpickers para cores CSS"
+    "message": "Seletor para cores CSS"
   },
   "cm_indentWithTabs": {
-    "message": "Usar tabs com indentação inteligente"
+    "message": "Usar guias com indentação inteligente"
   },
   "cm_keyMap": {
     "message": "Mapeamentos de teclado"
@@ -107,7 +113,7 @@
     "message": "Linter CSS"
   },
   "cm_matchHighlight": {
-    "message": "Destaque"
+    "message": "Destacar"
   },
   "cm_matchHighlightSelection": {
     "message": "Somente seleção"
@@ -137,7 +143,7 @@
     "message": "Clique com o botão direito em uma amostra para percorrer suas linhas de código"
   },
   "colorpickerSwitchFormatTooltip": {
-    "message": "Inverter formatos: HEX -> RGB -> HSL.\nShift-click para inverter a direção.\nTambém por meio das teclas PgUp (PageUp), PgDn (PageDown)."
+    "message": "Trocar formatos: HEX -> RGB -> HSL.\nClique segurando Shift para inverter a direção.\nTambém por meio das teclas PgUp (PageUp) e PgDn (PageDown)."
   },
   "colorpickerTooltip": {
     "message": "Abrir seletor de cores"
@@ -208,10 +214,10 @@
     }
   },
   "dateInstalled": {
-    "message": "Data instalada "
+    "message": "Data de instalação"
   },
   "dateUpdated": {
-    "message": "Data atualizada"
+    "message": "Data de atualização"
   },
   "dbError": {
     "message": "Não foi possível usar a base de dados do Stylus. Deseja visitar uma página da web com possíveis soluções?"
@@ -236,6 +242,17 @@
   },
   "disableStyleLabel": {
     "message": "Desativar"
+  },
+  "draftAction": {
+    "message": "Escolha \"Sim\" para carregar este rascunho ou \"Não\" para descartá-lo."
+  },
+  "draftTitle": {
+    "message": "Recuperação de rascunho, criado em $date$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
   },
   "dragDropMessage": {
     "message": "Arraste seu arquivo de backup em qualquer lugar nessa página para importá-lo."
@@ -342,6 +359,9 @@
   },
   "genericSavedMessage": {
     "message": "Salvo"
+  },
+  "genericSize": {
+    "message": "Tamanho"
   },
   "genericTitle": {
     "message": "Título"
@@ -619,6 +639,9 @@
   "noStylesForSite": {
     "message": "Nenhum estilo instalado para este site."
   },
+  "numberedLine": {
+    "message": "Linha:"
+  },
   "openManage": {
     "message": "Gerenciar estilos instalados"
   },
@@ -717,6 +740,9 @@
   },
   "optionsSyncStatusDisconnecting": {
     "message": "Desconectando..."
+  },
+  "optionsSyncStatusRelogin": {
+    "message": "Sessão expirada. Por favor, entre novamente."
   },
   "optionsSyncStatusSyncing": {
     "message": "Sincronizando..."

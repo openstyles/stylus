@@ -1337,6 +1337,9 @@
   "styleRegexpTestNote": {
     "message": "Let op: gebruik een enkele \\ voor het gebruik van escapetekens in het regexp-invoerveld. Deze worden automatisch omgezet naar \\\\ in de stijlcode volgens de specificatie voor tekenreeksen tussen aanhalingstekens in CSS."
   },
+  "styleRegexpTestNoteStar": {
+    "message": "Voeg <.*> toe aan het einde als het patroon moet overeenkomen als een voorvoegsel, bijvoorbeeld <https?://(www\\.)?foo\\.com/(one|two).*>"
+  },
   "styleRegexpTestPartial": {
     "message": "Niet volledig overeenkomend, dus overgeslagen"
   },

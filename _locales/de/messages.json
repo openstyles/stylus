@@ -1300,6 +1300,9 @@
   "styleRegexpTestNote": {
     "message": "Beachte: Nutze einzelne \\ (Backslashes) zum Escapen im RegExp Feld. Diese werden automatisch im Stylecode zu doppelten \\\\ konvertiert, um der CSS Spezifikation zu entsprechen."
   },
+  "styleRegexpTestNoteStar": {
+    "message": "Füge <.*> am Ende hinzu, falls die Zeichenfolge vorangestellt werden soll. Zum Beispiel <https?://(www\\.)?foo\\.com/(one|two).*>"
+  },
   "styleRegexpTestPartial": {
     "message": "Keine genaue Übereinstimmung, wurde daher übersprungen."
   },

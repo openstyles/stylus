@@ -37,6 +37,12 @@
   "appliesLineWidgetLabel": {
     "message": "Показати цільові сайти секцій"
   },
+  "appliesLineWidgetWarning": {
+    "message": "Не працює з мінімізованим CSS"
+  },
+  "appliesRegexpOption": {
+    "message": "URL-адреси, що відповідають регулярному виразу"
+  },
   "appliesRemove": {
     "message": "Видалити"
   },
@@ -61,8 +67,20 @@
   "backupButtons": {
     "message": "Резервне копіювання"
   },
+  "backupMessage": {
+    "message": "Щоб імпортувати файл резервної копії, перетягніть його на цю сторінку або натисніть кнопку «Імпорт».\n\nЩоб експортувати сумісну резервну копію для Stylus, старішого за 1.5.18, клацніть по кнопці «Експорт» правою кнопкою миші або утримуючи Shift."
+  },
   "bckpInstStyles": {
     "message": "Експорт стилів"
+  },
+  "checkAllUpdates": {
+    "message": "Перевірити оновлення для усіх стилів"
+  },
+  "checkAllUpdatesForce": {
+    "message": "Перевірити ще раз, я не редагував жодного стилю!"
+  },
+  "checkForUpdate": {
+    "message": "Перевірити оновлення"
   },
   "checkingForUpdate": {
     "message": "Перевірка ... "
@@ -70,17 +88,98 @@
   "clickToUninstall": {
     "message": "Натисніть, щоб видалити "
   },
+  "cm_arrowKeysTraverse": {
+    "message": "Переміщення по розділам клавішами ↑↓"
+  },
+  "cm_autoCloseBrackets": {
+    "message": "Автоматичне закриття дужок і лапок"
+  },
+  "cm_autoCloseBracketsTooltip": {
+    "message": "Автоматично додавати кінцевий символ пари під час введення ()[]{}''\"\""
+  },
+  "cm_autocompleteOnTyping": {
+    "message": "Автозаповнення при введенні"
+  },
+  "cm_colorpicker": {
+    "message": "Вибір кольорів для CSS"
+  },
+  "cm_indentWithTabs": {
+    "message": "Розумні відступи за допомогою табуляції"
+  },
+  "cm_keyMap": {
+    "message": "Розкладка"
+  },
+  "cm_lineWrapping": {
+    "message": "Перенос слів"
+  },
+  "cm_matchHighlight": {
+    "message": "Підсвітка"
+  },
+  "cm_matchHighlightSelection": {
+    "message": "Виділений текст"
+  },
+  "cm_matchHighlightToken": {
+    "message": "Елемент під курсором"
+  },
+  "cm_resizeGripHint": {
+    "message": "Подвійне клацання для максимізування/відновлення висоти"
+  },
+  "cm_selectByTokens": {
+    "message": "Подвійне клацання виділяє елемент"
+  },
   "cm_selectByTokensTooltip": {
     "message": "Приклади токенов: .foo-бар-2 #aabbcc 0,32 !important\nЯкщо вимкнено: вибираються слова, розділені розділовими знаками."
+  },
+  "cm_smartIndent": {
+    "message": "Використовувати розумні відступи"
+  },
+  "cm_tabSize": {
+    "message": "Розмір відступу"
+  },
+  "cm_theme": {
+    "message": "Тема"
+  },
+  "colorpickerPaletteHint": {
+    "message": "Клацніть правою кнопкою по зразку, щоб переглянути його вихідні рядки"
+  },
+  "colorpickerSwitchFormatTooltip": {
+    "message": "Змінити формати: HEX -> RGB -> HSL.\nShift+клацання міняє в зворотньому напрямку.\nТакож клавішами PgUp (PageUp), PgDn (PageDown) keys."
+  },
+  "colorpickerTooltip": {
+    "message": "Відкрити вибір кольору"
+  },
+  "configOnChange": {
+    "message": "по зміні"
+  },
+  "configOnChangeTooltip": {
+    "message": "Автозбереження та автоматичне застосування змін"
+  },
+  "configureStyle": {
+    "message": "Налаштувати"
+  },
+  "configureStyleOnHomepage": {
+    "message": "Налаштувати на домашній сторінці"
   },
   "confirmCancel": {
     "message": "Скасувати "
   },
+  "confirmClose": {
+    "message": "Закрити"
+  },
+  "confirmDefault": {
+    "message": "За замовчуванням"
+  },
   "confirmDelete": {
     "message": "Видалити "
   },
+  "confirmDiscardChanges": {
+    "message": "Скасувати зміни?"
+  },
   "confirmNo": {
     "message": "Ні"
+  },
+  "confirmOK": {
+    "message": "ОК"
   },
   "confirmSave": {
     "message": "Зберегти"
@@ -91,20 +190,178 @@
   "confirmYes": {
     "message": "Так"
   },
+  "connectingDropbox": {
+    "message": "Підключення Dropbox..."
+  },
+  "copied": {
+    "message": "Скопійовано в буфер обміну"
+  },
+  "copy": {
+    "message": "Копіювати в буфер обміну"
+  },
+  "customNameHint": {
+    "message": "Введіть тут спеціальну назву, щоб перейменувати стиль в інтерфейсі користувача, не перериваючи його оновлення"
+  },
+  "customNameResetHint": {
+    "message": "Припинити використання користувальницької назви, перейти на власну назву стилю"
+  },
+  "dateAbbrDay": {
+    "message": "$value$д",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrHour": {
+    "message": "$value$г",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrMonth": {
+    "message": "$value$х",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateAbbrYear": {
+    "message": "$value$р",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateInstalled": {
+    "message": "Дату встановлено"
+  },
+  "dateUpdated": {
+    "message": "Дату оновлено"
+  },
+  "dbError": {
+    "message": "Під час використання бази даних Stylus сталася помилка. Бажаєте відвідати веб-сторінку з можливими рішеннями?"
+  },
+  "defaultTheme": {
+    "message": "за замовчуванням"
+  },
+  "deleteStyleConfirm": {
+    "message": "Ви дійсно бажаєте видалити цей стиль?"
+  },
   "deleteStyleLabel": {
     "message": "Видалити"
+  },
+  "description": {
+    "message": "Редизайн веба за допомогою Stylus, менеджера стилів користувача. Stylus дозволяє легко встановлювати теми та скіни для багатьох популярних сайтів."
+  },
+  "disableAllStyles": {
+    "message": "Вимкнути усі стилі"
+  },
+  "disableAllStylesOff": {
+    "message": "Стилі вимкнено"
   },
   "disableStyleLabel": {
     "message": "Вимкнути"
   },
+  "draftAction": {
+    "message": "Виберіть «Так», щоб завантажити цю чернетку, або «Ні», щоб відхилити її."
+  },
+  "draftTitle": {
+    "message": "Відновлення чернетки, створеної $date$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "dragDropMessage": {
+    "message": "Щоб імпортувати файл резервної копії, перетягніть його в будь-яке місце на цій сторінці."
+  },
+  "dragDropUsercssTabstrip": {
+    "message": "Щоб встановити файл, перетягніть його на панель вкладок (область, де відображаються заголовки вкладок)."
+  },
   "editDeleteText": {
     "message": "Видалити"
+  },
+  "editGotoLine": {
+    "message": "До рядка (або рядка:колонки)"
+  },
+  "editStyleHeading": {
+    "message": "Редагувати стиль"
+  },
+  "editStyleLabel": {
+    "message": "Редагувати"
+  },
+  "editStyleTitle": {
+    "message": "Редагувати стиль $stylename$",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "editorSettings": {
+    "message": "Налаштування редактора"
+  },
+  "enableStyleLabel": {
+    "message": "Увімкнути"
+  },
+  "excludeStyleByDomainLabel": {
+    "message": "Виключити поточний домен"
+  },
+  "excludeStyleByUrlLabel": {
+    "message": "Виключити поточний URL"
+  },
+  "exportCompatible": {
+    "message": "Експорт (режим сумісності)"
+  },
+  "exportLabel": {
+    "message": "Експорт"
+  },
+  "exportSavedSuccess": {
+    "message": "Файл сбережено успішно"
+  },
+  "externalFeedback": {
+    "message": "Зворотній зв'язок"
+  },
+  "externalHomepage": {
+    "message": "Домашня сторінка"
+  },
+  "externalLink": {
+    "message": "Зовнішнє посилання"
+  },
+  "externalSupport": {
+    "message": "Підтримка"
+  },
+  "externalUsercssDocument": {
+    "message": "Документація для Usercss"
+  },
+  "filteredStyles": {
+    "message": "$numShown$ показано з $numTotal$",
+    "placeholders": {
+      "numShown": {
+        "content": "$1"
+      },
+      "numTotal": {
+        "content": "$2"
+      }
+    }
+  },
+  "filteredStylesAllHidden": {
+    "message": "Застосовані наразі фільтри не відповідають стилям"
   },
   "findStyles": {
     "message": "Знайти стилі"
   },
   "genericAdd": {
     "message": "Додати"
+  },
+  "genericClone": {
+    "message": "Клонувати"
   },
   "genericDescription": {
     "message": "Опис"
@@ -133,6 +390,12 @@
   "genericSavedMessage": {
     "message": "Збережено"
   },
+  "genericSize": {
+    "message": "Розмір"
+  },
+  "genericTest": {
+    "message": "Тест"
+  },
   "genericTitle": {
     "message": "Ім'я"
   },
@@ -141,6 +404,9 @@
   },
   "gettingStyles": {
     "message": "Отримання всіх стилів ..."
+  },
+  "headerResizerHint": {
+    "message": "Утримуйте Shift, щоб змінити розмір лише в цьому типі інтерфейсу, тобто редакторі, менеджері, інсталяторі"
   },
   "helpAlt": {
     "message": "Довідка"
@@ -154,11 +420,29 @@
   "hostDisabled": {
     "message": "Цей хост вимкнено через помилку в поточній версії браузера, що використовується"
   },
+  "importAppendLabel": {
+    "message": "Додати до стилю"
+  },
+  "importAppendTooltip": {
+    "message": "Додати імпортований стиль до поточного стилю"
+  },
   "importLabel": {
     "message": "Імпорт"
   },
+  "importPreprocessor": {
+    "message": "Стиль з <code>@preprocessor</code> не працює в класичному режимі. Ви можете переключити редактор у режим Usercss: 1) відкрийте менеджер стилів, 2) увімкніть прапорець \"як Usercss\", 3) клацніть \"Написати новий стиль\"\n\nВсе одно імпортувати зараз?"
+  },
+  "importPreprocessorTitle": {
+    "message": "Потенційна проблема через @preprocessor"
+  },
   "importReplaceLabel": {
     "message": "Замінити стиль"
+  },
+  "importReplaceTooltip": {
+    "message": "Видалити вміст поточного стилю та замінити його імпортованим стилем"
+  },
+  "importReportLegendAdded": {
+    "message": "додано"
   },
   "importReportLegendIdentical": {
     "message": "ідентичні пропущені"
@@ -166,14 +450,133 @@
   "importReportLegendInvalid": {
     "message": "недісних пропущено"
   },
+  "importReportLegendUpdatedBoth": {
+    "message": "оновлено мета-дані та код"
+  },
+  "importReportLegendUpdatedCode": {
+    "message": "код оновлено"
+  },
+  "importReportLegendUpdatedMeta": {
+    "message": "оновлені мета-дані"
+  },
   "importReportTitle": {
     "message": "Імпорт стилів закінчено"
+  },
+  "importReportUnchanged": {
+    "message": "Нічого не змінено."
+  },
+  "importReportUndoneTitle": {
+    "message": "Імпорт скасовано"
+  },
+  "installButton": {
+    "message": "Встановити стиль"
+  },
+  "installButtonInstalled": {
+    "message": "Стиль встановлено"
+  },
+  "installButtonReinstall": {
+    "message": "Перевстановити стиль"
+  },
+  "installButtonUpdate": {
+    "message": "Оновити стиль"
   },
   "installUpdate": {
     "message": "Встановити оновлення"
   },
+  "installUpdateFrom": {
+    "message": "Поточний стиль оновлено з $url$",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "installUpdateFromLabel": {
+    "message": "Перевірити оновлення"
+  },
+  "license": {
+    "message": "Ліцензія"
+  },
+  "linkGetHelp": {
+    "message": "Отримати допомогу"
+  },
+  "linkGetShareStyles": {
+    "message": "Пошук/публікація стилей"
+  },
+  "linkGetShareStylesInfo": {
+    "message": "Новий сайт userstyles.world під керівництвом спільноти, створений авторами користувальницьких стилей для того, щоб замінити userstyles.org, який був настільки повільним і ненадійним протягом останнього року, що багато авторів перестали оновлювати свої стилі."
+  },
+  "linkGetStyles": {
+    "message": "Отримати стилі"
+  },
+  "linkGetStylesInfo": {
+    "message": "Цей архівний сайт був створений членом спільноти користувальницьких стилей для резервного копіювання повільного та ненадійного userstyles.org. Вміст архіву оновлюється приблизно раз на добу."
+  },
+  "linkStylusWiki": {
+    "message": "Вікі"
+  },
+  "linkTranslate": {
+    "message": "Переклад"
+  },
+  "linterCSSLintIncompatible": {
+    "message": "CSSLint не підтримує препроцесор $preprocessorname$",
+    "placeholders": {
+      "preprocessorname": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterCSSLintSettings": {
+    "message": "(правила: 0 = вимкнено; 1 = попередження; 2 = помилка)"
+  },
+  "linterConfigPopupTitle": {
+    "message": "Встановити конфігурацію правил $linter$",
+    "placeholders": {
+      "linter": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterConfigTooltip": {
+    "message": "Налаштувати перевірку CSS"
+  },
+  "linterIssues": {
+    "message": "Проблеми"
+  },
+  "linterIssuesHelp": {
+    "message": "Ці проблеми були знайдені у $link$:",
+    "placeholders": {
+      "link": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterJSONError": {
+    "message": "Невірний формат JSON"
+  },
+  "linterResetMessage": {
+    "message": "Щоб скасувати випадкове скидання, натисніть Ctrl-Z (або Cmd-Z) у текстовому полі"
+  },
+  "linterRulesLink": {
+    "message": "Див. повний список правил"
+  },
+  "liveReloadError": {
+    "message": "Під час перегляду файлу сталася помилка"
+  },
+  "liveReloadInstallHint": {
+    "message": "Тримайте цю вкладку відкритою для автоматичного оновлення стилю під час зовнішніх змін."
+  },
+  "liveReloadInstallHintFF": {
+    "message": "Залиште відкритими цю вкладку та вихідну вкладку, щоб автоматично оновлювати стиль у разі зовнішніх змін."
+  },
+  "liveReloadLabel": {
+    "message": "Живе перезавантаження"
+  },
   "manageFavicons": {
     "message": "Піктограми для цільових сайтів"
+  },
+  "manageFaviconsHelp": {
+    "message": "Stylus використовує зовнішній сервіс https://icons.duckduckgo.com"
   },
   "manageFilters": {
     "message": "Фільтри"
@@ -181,8 +584,150 @@
   "manageHeading": {
     "message": "Встановити Styles"
   },
+  "manageMaxTargets": {
+    "message": "Кількість цільових елементів"
+  },
+  "manageMinColumnWidth": {
+    "message": "Мінімальна ширина колонки (у пікселях, 9999 вимикає багатоколонковий режим)"
+  },
+  "manageNewStyleAsUsercss": {
+    "message": "як Usercss"
+  },
   "manageNewUI": {
     "message": "Новий макет інтерфейсу управління користувача"
+  },
+  "manageOnlyDisabled": {
+    "message": "Лише вимкнені стилі"
+  },
+  "manageOnlyEnabled": {
+    "message": "Лише активовані стилі"
+  },
+  "manageOnlyExternal": {
+    "message": "Лише зовнішні стилі"
+  },
+  "manageOnlyLocal": {
+    "message": "Лише локально створені стилі"
+  },
+  "manageOnlyLocalTooltip": {
+    "message": "(стилі, не встановлені через сайт userstyles.org)"
+  },
+  "manageOnlyNonUsercss": {
+    "message": "Лише не Usercss стилі"
+  },
+  "manageOnlyUpdates": {
+    "message": "Лише з оновленнями чи проблемами"
+  },
+  "manageOnlyUsercss": {
+    "message": "Лише стилі Usercss"
+  },
+  "menuShowBadge": {
+    "message": "Показати кількість активних стилів"
+  },
+  "meta_invalidCheckboxDefault": {
+    "message": "Невірне значення @var: значення має бути 0 або 1"
+  },
+  "meta_invalidColor": {
+    "message": "Невірний колір @var: $color$ не є кольором",
+    "placeholders": {
+      "color": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidNumber": {
+    "message": "Очікування числа"
+  },
+  "meta_invalidRange": {
+    "message": "Невірний @var $type$: значення має бути числом або масивом",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeDefault": {
+    "message": "Невірний @var $type$: значення за замовчуванням дорівнює нулю",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMax": {
+    "message": "Невірний @var $type$: значення за замовчуванням більше максимального",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMin": {
+    "message": "Невірний @var $type$:  значення за замовчуванням нижче мінімального",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMultipleUnits": {
+    "message": "Невірний @var $type$: визначено кілька одиниць",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeStep": {
+    "message": "Невірний @var $type$: значення за замовчуванням не є кратним кроку",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeTooManyValues": {
+    "message": "Невірний  @var $type$: у масиві забагато елементів",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidString": {
+    "message": "Очікування рядка в лапках"
+  },
+  "meta_invalidURLProtocol": {
+    "message": "Невірний протокол URL. Лише http та https є дозволеними: $protocol$",
+    "placeholders": {
+      "protocol": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidVersion": {
+    "message": "Неправильний номер версії"
+  },
+  "meta_invalidWord": {
+    "message": "Очікування слова"
+  },
+  "meta_missingChar": {
+    "message": "Очікування символів: $chars$",
+    "placeholders": {
+      "chars": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_missingEOT": {
+    "message": "Очікування даних EOT"
+  },
+  "meta_missingMandatory": {
+    "message": "Відсутні обов’язкові мета-дані: $keys$",
+    "placeholders": {
+      "keys": {
+        "content": "$1"
+      }
+    }
   },
   "meta_unknownJSONLiteral": {
     "message": "Невірний JSON: $literal$не є дійсним літералом JSON",
@@ -192,14 +737,137 @@
       }
     }
   },
+  "meta_unknownMeta": {
+    "message": "Невідомі метадані: $key$",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownPreprocessor": {
+    "message": "Невідомий @preprocessor: $preprocessor$",
+    "placeholders": {
+      "preprocessor": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownVarType": {
+    "message": "Невідомий @$varkey$ тип: $vartype$",
+    "placeholders": {
+      "varkey": {
+        "content": "$1"
+      },
+      "vartype": {
+        "content": "$2"
+      }
+    }
+  },
+  "noFileToImport": {
+    "message": "Щоб імпортувати стилі, спершу їх потрібно експортувати."
+  },
+  "noStylesForSite": {
+    "message": "Не встановлено стилів для цього сайту."
+  },
+  "numberedLine": {
+    "message": "Рядок:"
+  },
   "openManage": {
     "message": "Керування"
   },
   "openOptions": {
     "message": "Налаштування"
   },
+  "openStylesManager": {
+    "message": "Відкрити менеджер стилів"
+  },
+  "optionsActions": {
+    "message": "Дія"
+  },
+  "optionsAdvanced": {
+    "message": "Інше"
+  },
+  "optionsAdvancedAutoSwitchSchemeBySystem": {
+    "message": "Згідно системним налаштуванням"
+  },
+  "optionsAdvancedAutoSwitchSchemeByTime": {
+    "message": "У нічний час:"
+  },
+  "optionsAdvancedAutoSwitchSchemeNever": {
+    "message": "Відключен. Налаштування нічного/світлого режиму в стилях ігнорується."
+  },
+  "optionsAdvancedContextDelete": {
+    "message": "Додати «Видалити» в контекстне меню редактора"
+  },
+  "optionsAdvancedExposeIframes": {
+    "message": "Виявляти iframe шляхом додавання HTML[stylus-iframe]"
+  },
+  "optionsAdvancedExposeIframesNote": {
+    "message": "Встановлює верхній домен сайту в кожному iframe.\nДозволяє писати специфічний для iframe CSS на кшталт:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
+  },
+  "optionsAdvancedExposeStyleName": {
+    "message": "Виставляти назву стиля"
+  },
+  "optionsAdvancedNewStyleAsUsercss": {
+    "message": "Записати новий стиль як usercss"
+  },
+  "optionsAdvancedPatchCsp": {
+    "message": "Виправлення <code>CSP</code> для дозволу наборів стилів"
+  },
+  "optionsAdvancedPatchCspNote": {
+    "message": "Увімкніть це, якщо стилі містять зображення або шрифти, які не завантажуються на сайтах зі строгим правилом <code>CSP</code> (<code>політика захисту контента</code>).\n\nУвімкнення цього параметра послабить обмеження <code>CSP</code>, дозволяючи завантажувати важливий вміст стилів. Цей параметр призначений лише для досвідчених користувачів, які розуміють потенційні наслідки для безпеки та беруть на себе відповідальність за моніторинг вмісту, який вони дозволяють. Читайте про атаки на основі CSS для отримання додаткової інформації.\n\nТакож майте на увазі, що це конкретне налаштування не гарантовано вступить в силу, якщо інше встановлене розширення спочатку змінить відповідь мережі."
+  },
+  "optionsAdvancedStyleViaXhr": {
+    "message": "Миттєвий режим вводу"
+  },
+  "optionsBadgeDisabled": {
+    "message": "Колір фону у неактивному стані"
+  },
+  "optionsBadgeNormal": {
+    "message": "Колір фону"
+  },
+  "optionsCheck": {
+    "message": "Оновлення стилів"
+  },
+  "optionsCheckUpdate": {
+    "message": "Перевірити та встановити усі доступні оновлення"
+  },
+  "optionsCustomizeBadge": {
+    "message": "Значок на зображенні з панелі"
+  },
+  "optionsCustomizeIcon": {
+    "message": "Зображення на панелі"
+  },
+  "optionsCustomizePopup": {
+    "message": "Спливаюче вікно"
+  },
+  "optionsCustomizeSync": {
+    "message": "Синхронізація з хмарою"
+  },
+  "optionsCustomizeUpdate": {
+    "message": "Оновлення"
+  },
   "optionsHeading": {
     "message": "Налаштування"
+  },
+  "optionsIconAuto": {
+    "message": "Відповідно з нічним/світлим режимом"
+  },
+  "optionsIconDark": {
+    "message": "Нічні теми браузера"
+  },
+  "optionsIconLight": {
+    "message": "Світлі теми браузера"
+  },
+  "optionsOpen": {
+    "message": "Відкрити"
+  },
+  "optionsOpenManager": {
+    "message": "Управління стилями"
+  },
+  "optionsPopupWidth": {
+    "message": "Ширина спливаючого вікна (у пікселях)"
   },
   "optionsReset": {
     "message": "Скидання налаштувань до значень за замовчуванням"
@@ -207,14 +875,87 @@
   "optionsResetButton": {
     "message": "Скинути параметри"
   },
+  "optionsStylusThemes": {
+    "message": "Клацніть піктограму Stylus на панелі інструментів браузера на будь-якій сторінці Stylus, включаючи цю, а потім натисніть \"Знайти стилі\""
+  },
   "optionsSubheading": {
     "message": "Додатково"
+  },
+  "optionsSyncConnect": {
+    "message": "З'єднати"
+  },
+  "optionsSyncDisconnect": {
+    "message": "Відключити"
   },
   "optionsSyncLogin": {
     "message": "Логін"
   },
+  "optionsSyncNone": {
+    "message": "Немає"
+  },
+  "optionsSyncPassword": {
+    "message": "Пароль"
+  },
+  "optionsSyncStatusConnected": {
+    "message": "З'єднано"
+  },
+  "optionsSyncStatusConnecting": {
+    "message": "З'єднання..."
+  },
+  "optionsSyncStatusDisconnected": {
+    "message": "Відключено"
+  },
+  "optionsSyncStatusDisconnecting": {
+    "message": "Відключення..."
+  },
+  "optionsSyncStatusPull": {
+    "message": "Завантажено стилів $loaded$ з $total$",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusPush": {
+    "message": "Вивантажено стилів$loaded$ з $total$",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
   "optionsSyncStatusRelogin": {
     "message": "Сеанс закінчився, будь ласка, увійдіть ще раз."
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "Синхронізація..."
+  },
+  "optionsSyncSyncNow": {
+    "message": "Синхронізувати"
+  },
+  "optionsSyncUsername": {
+    "message": "Логін користувача"
+  },
+  "optionsUpdateImportNote": {
+    "message": "Імпортуючи резервні копії стилю зі старої версії або зі Stylish, зробіть одноразову перевірку наявності оновлень вручну в менеджері стилів, щоб переконатися, що всі стилі оновлюються."
+  },
+  "optionsUpdateInterval": {
+    "message": "Інтервал автооновлення стилів у годинах (вказати 0 для вимкнення)"
+  },
+  "overwriteFileExport": {
+    "message": "Ви бажаєте перезаписати існуючий файл?"
+  },
+  "paginationCurrent": {
+    "message": "Поточна сторінка"
+  },
+  "paginationEstimated": {
+    "message": "Орієнтовна кількість сторінок"
   },
   "paginationNext": {
     "message": "Наступна сторінка"
@@ -222,17 +963,143 @@
   "paginationPrevious": {
     "message": "Попередня сторінка"
   },
+  "paginationTotal": {
+    "message": "Всього сторінок"
+  },
+  "parseUsercssError": {
+    "message": "Stylus не зміг розібрати usercss:"
+  },
+  "popupAutoResort": {
+    "message": "Пересортувати стилі після переключення"
+  },
+  "popupBorders": {
+    "message": "Додати білі рамки з боків"
+  },
+  "popupBordersTooltip": {
+    "message": "Корисно для темних тем у новому Chrome, оскільки він більше не малює бічні рамки"
+  },
+  "popupHotkeysTooltip": {
+    "message": "Клацніть, щоб побачити доступні гарячі клавіші"
+  },
+  "popupManageSiteStyles": {
+    "message": "Управління стилями сайту"
+  },
+  "popupManageTooltip": {
+    "message": "Shift+клацання, або клацання правою кнопкою миші відкриває управління стилями для поточного сайту"
+  },
+  "popupMenuButtonTooltip": {
+    "message": "Меню дії"
+  },
+  "popupOpenEditInPopup": {
+    "message": "Використовувати просте вікно (без омнібоксів)"
+  },
+  "popupOpenEditInWindow": {
+    "message": "Відкрити редактор у новому вікні"
+  },
+  "popupStylesFirst": {
+    "message": "Стилі перед командами"
+  },
+  "prefShowBadge": {
+    "message": "Кількість стилів, активних на цьому сайті"
+  },
+  "preferScheme": {
+    "message": "Налаштування нічного/світлого режиму"
+  },
+  "preferSchemeAlways": {
+    "message": "Наразі ігнорується (стиль завжди застосовується), оскільки глобальний нічний/світлий режим вимкнено"
+  },
+  "preferSchemeDark": {
+    "message": "Нічний"
+  },
+  "preferSchemeLight": {
+    "message": "Світлий"
+  },
+  "preferSchemeNone": {
+    "message": "Жодного (завжди застосовується)"
+  },
+  "previewLabel": {
+    "message": "Попередній перегляд"
+  },
+  "previewTooltip": {
+    "message": "Тимчасово застосовує зміни, не зберігаючи.\nЗбережіть стиль, щоб зміни стали постійними."
+  },
+  "publish": {
+    "message": "Публіковати"
+  },
+  "publishPush": {
+    "message": "Випустити оновлення"
+  },
+  "publishReconnect": {
+    "message": "Спробуйте відключити, а потім опублікувати ще раз"
+  },
+  "publishRetry": {
+    "message": "Stylus все ще намагається опублікувати цей стиль, але ви можете повторити спробу, якщо не бачите жодної аутентифікаційної діяльності чи спливаючих вікон. Повторити зараз?"
+  },
+  "publishStyle": {
+    "message": "Опубліковати стиль"
+  },
+  "publishUsw": {
+    "message": "Використовуючи <userstyles.world>"
+  },
+  "readingStyles": {
+    "message": "Зчитування стилів..."
+  },
+  "reload": {
+    "message": "Перезавантажити"
+  },
   "replace": {
     "message": "Замінити"
   },
   "replaceAll": {
     "message": "Замінити все"
   },
+  "replaceWith": {
+    "message": "Замінити на"
+  },
+  "restoreTemplate": {
+    "message": "Відновити шаблон за замовчуванням.\n\n(Наразі відкриті сторінки редактора не зміняться.)"
+  },
   "retrieveBckp": {
     "message": "Імпорт стилів"
   },
+  "retrieveDropboxSync": {
+    "message": "Імпорт з Dropbox"
+  },
+  "saveAsTemplate": {
+    "message": "Зберегти як шаблон"
+  },
   "search": {
     "message": "Пошук"
+  },
+  "searchCaseSensitive": {
+    "message": "З урахуванням регістру"
+  },
+  "searchGlobalStyles": {
+    "message": "Також шукати глобальні стилі"
+  },
+  "searchNumberOfResults": {
+    "message": "Кількість збігів"
+  },
+  "searchNumberOfResults2": {
+    "message": "Кількість збігів у коді та цільових сайтів"
+  },
+  "searchResultInstallCount": {
+    "message": "Всього встановлень"
+  },
+  "searchResultNoneFound": {
+    "message": "Не знайдено стилів для цього сайту"
+  },
+  "searchResultNotMatching": {
+    "message": "Стиль встановлено, але він не застосовується до поточної URL-адреси сайту."
+  },
+  "searchResultRating": {
+    "message": "Рейтинг"
+  },
+  "searchResultUpdated": {
+    "message": "Оновлено"
+  },
+  "searchResultWeeklyCount": {
+    "message": "Щотижневі встановлення"
   },
   "searchStylesAll": {
     "message": "Усі"
@@ -243,14 +1110,44 @@
   "searchStylesHelp": {
     "message": "</> або <Ctrl-F>клавіша фокусує поле пошуку.\nРежим за замовчуванням — це пошук у звичайному тексті для всіх термінів, розділених пробілами, у будь-якому порядку.\nТочні слова: оберніть запит у подвійні лапки, напр. <.header ~ div\">\nРегулярні вирази: включають косі риски та прапорці, напр.</body.*?\\ba\\b/i>\n«By URL» в селекторі області: знаходить стилі, які застосовуються до повністю вказаної URL-адреси, напр. https://www.example.org/\n\"Metadata\" в селектрі області: шукає в іменах, \"applies to\" специфікаторів, URL-адреси встановлення, URL-адресі оновлення та всьому блоку метаданих для стилів CSS користувача."
   },
+  "searchStylesMatchUrl": {
+    "message": "По URL"
+  },
+  "searchStylesMeta": {
+    "message": "Метадані"
+  },
   "searchStylesName": {
     "message": "Назва"
+  },
+  "sectionAdd": {
+    "message": "Додати ще один розділ"
   },
   "sectionCode": {
     "message": "Код"
   },
+  "sectionRemove": {
+    "message": "Видалити розділ"
+  },
+  "sectionRestore": {
+    "message": "Відновити видалений розділ"
+  },
   "sections": {
     "message": "Розділи"
+  },
+  "settings": {
+    "message": "Налаштування"
+  },
+  "shortcuts": {
+    "message": "Комбінації клавіш"
+  },
+  "shortcutsNote": {
+    "message": "Визначення комбінацій клавіш"
+  },
+  "sortDateNewestFirst": {
+    "message": "спочатку найновіші"
+  },
+  "sortDateOldestFirst": {
+    "message": "спочатку найстаріші"
   },
   "styleBeautify": {
     "message": "Облагородити"
@@ -261,17 +1158,109 @@
   "styleEnabledLabel": {
     "message": "Увімкнено"
   },
+  "styleFromMozillaFormatError": {
+    "message": "Не вдалося імпортувати з формату Mozilla"
+  },
+  "styleFromMozillaFormatPrompt": {
+    "message": "Вставити код у форматі Mozilla"
+  },
+  "styleInstall": {
+    "message": "Встановити '$stylename$' у Stylus?",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleInstallFailed": {
+    "message": "Не вдалося встановити користувальницький стиль!\n$error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleMissingName": {
+    "message": "Введіть назву"
+  },
+  "styleMozillaFormatHeading": {
+    "message": "Формат Mozilla"
+  },
+  "styleName": {
+    "message": "Назва стилю"
+  },
+  "styleNotAppliedRegexpProblemTooltip": {
+    "message": "Стиль не застосовано через його неправильне використання 'regexp()'"
+  },
+  "styleNotAppliedSchemeDark": {
+    "message": "Цей стиль працює лише в нічному режимі"
+  },
+  "styleNotAppliedSchemeLight": {
+    "message": "Цей стиль працює лише у світлому режимі"
+  },
   "stylePreferSchemeLabel": {
-    "message": "Темна/Світла тема"
+    "message": "Нічний/світлий режим"
   },
   "styleSaveLabel": {
     "message": "Зберегти"
+  },
+  "styleSettings": {
+    "message": "Налаштування стилю"
+  },
+  "styleToMozillaFormatHelp": {
+    "message": "Формат коду Mozilla можна надіслати на userstyles.org і використовувати з класичним Stylish для Firefox"
+  },
+  "styleToMozillaFormatTitle": {
+    "message": "Стиль у форматі Mozilla"
+  },
+  "styleUpdate": {
+    "message": "Ви дійсно бажаєте оновити '$stylename$'?",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "syncDropboxStyles": {
+    "message": "Експорт у Dropbox"
+  },
+  "syncError": {
+    "message": "Помилка синхронізації"
   },
   "syncErrorRelogin": {
     "message": "Помилка синхронізації. Ви вийшли із системи. \nСпробуйте повторно увійти до системи в налаштуваннях Stylus."
   },
   "toggleStyle": {
     "message": "Включити/виключити стиль"
+  },
+  "undo": {
+    "message": "Скасувати"
+  },
+  "undoGlobal": {
+    "message": "Скасувати у всіх розділах"
+  },
+  "unzipStyles": {
+    "message": "Розпакування стилів..."
+  },
+  "updateAllCheckSucceededNoUpdate": {
+    "message": "Оновлень не знайдено."
+  },
+  "updateCheckFailBadResponseCode": {
+    "message": "Помилка оновлення: сервер відповів кодом $code$.",
+    "placeholders": {
+      "code": {
+        "content": "$1"
+      }
+    }
+  },
+  "updateCheckFailServerUnreachable": {
+    "message": "Помилка оновлення: сервер недоступний."
+  },
+  "updateCompleted": {
+    "message": "Оновлення завершено."
+  },
+  "updatesCurrentlyInstalled": {
+    "message": "Встановлені оновлення:"
   },
   "writeStyleFor": {
     "message": "Створити стиль для:"

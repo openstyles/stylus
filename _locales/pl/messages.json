@@ -1371,6 +1371,9 @@
   "styleRegexpTestNote": {
     "message": "Uwaga: w polu wejściowym regexp użyj pojedynczego \\ jako znaku ucieczki, który zgodnie ze specyfikacją dla cudzysłowów w CSS zostanie automatycznie zamieniony na \\\\ w kodzie stylu."
   },
+  "styleRegexpTestNoteStar": {
+    "message": "Dodaj <.*> na końcu, jeśli wzorzec ma pasować jako prefiks, na przykład  <https?://(www\\.)?foo\\.com/(jeden|dwa).*>"
+  },
   "styleRegexpTestPartial": {
     "message": "Niedopasowane zupełnie, więc pominięte"
   },

@@ -1368,6 +1368,9 @@
   "styleRegexpTestNote": {
     "message": "注意：使用單個 \\ 來在正規表示式的輸入欄位中逃脫，其將會根據在 CSS 中的引用字串的規定，自動在樣式代碼中轉換為 \\\\。"
   },
+  "styleRegexpTestNoteStar": {
+    "message": "如果模式應作為前綴相符，請在結尾新增 <.*>，例如 <https?://(www\\.)?foo\\.com/(one|two).*>"
+  },
   "styleRegexpTestPartial": {
     "message": "不完全符合，因而跳過"
   },

@@ -1330,6 +1330,9 @@
   "styleRegexpTestNote": {
     "message": "注: 正規表現の入力欄でエスケープする場合には、「\\」1個を使用してください。それは、CSSでの引用符で囲まれた文字列の仕様に従い、スタイルコード内で自動的に「\\\\」に変換されます。"
   },
+  "styleRegexpTestNoteStar": {
+    "message": "パターンを先頭一致にするには、末尾に <.*> を追加してください。例えば  <https?://(www\\.)?foo\\.com/(one|two).*>"
+  },
   "styleRegexpTestPartial": {
     "message": "完全に一致しないため、スキップされました"
   },

@@ -1069,7 +1069,7 @@
     "message": "深色／浅色模式偏好设置"
   },
   "preferSchemeAlways": {
-    "message": "目前已忽略（总是应用的样式），因为已停用全局深色／浅色模式。"
+    "message": "目前已忽略（始终应用样式），因为已停用全局深色／浅色模式。"
   },
   "preferSchemeDark": {
     "message": "深色"
@@ -1078,7 +1078,7 @@
     "message": "浅色"
   },
   "preferSchemeNone": {
-    "message": "无（总是应用）"
+    "message": "无（始终应用）"
   },
   "previewLabel": {
     "message": "实时预览"
@@ -1279,7 +1279,7 @@
     "message": "样式注入顺序"
   },
   "styleInjectionOrderHint": {
-    "message": "拖拽样式可更改排序。样式会按如下顺序注入，所以在列表更下方样式可覆盖较前面的样式。"
+    "message": "拖拽样式可更改排序。样式会按如下顺序注入，所以在列表更下方的样式可以覆盖较前面的样式。"
   },
   "styleInjectionOrderHint_prio": {
     "message": "下面列出的重要样式始终是最后注入的，因此它们可以覆盖任何新安装的样式。单击样式的标记以切换其重要性。"
