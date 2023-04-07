@@ -1362,6 +1362,7 @@
           (ei = expr.i) + 1 > expr.parts.length ||
           (x = m.match(expr)) && (x > 1 || x === 1 || m.arg.min !== 0)
           // Seeing only real matches e.g. <foo> inside <foo>? or <foo>* or <foo>#{0,n}
+          // Not using `>=` because `true>=1` and we don't want booleans here
         )) {
           state[i] = true;
           if (this.manyTestRun(state, count + (!this.req || this.req[i] ? 1 : 0), retry)) {

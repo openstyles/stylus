@@ -593,7 +593,7 @@ function SectionsEditor() {
    */
   function insertSectionAfter(init, base, forceRefresh, si) {
     if (!init) {
-      init = {code: '', urlPrefixes: ['http://example.com']};
+      init = {code: '', urlPrefixes: ['https://example.com/']};
     }
     const section = createSection(init, genId, si);
     const {cm} = section;

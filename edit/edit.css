@@ -614,6 +614,9 @@ label {
   flex-grow: 1;
   display: flex;
 }
+.applies-to[data-all] .applies-value-wrapper {
+  display: none;
+}
 .applies-to li .applies-value {
   flex-grow: 1;
   padding-left: 0.2rem;

@@ -40,9 +40,9 @@ function createSection(originalSection, genId, si) {
   const appliesToList = $('.applies-to-list', el);
   const appliesTo = [];
   MozDocMapper.forEachProp(originalSection, (type, value) =>
-    insertApplyAfter({type, value}));
+    insertApplyAfter(type, value));
   if (!appliesTo.length) {
-    insertApplyAfter({all: true});
+    insertApplyAfter();
   }
 
   let changeGeneration = cm.changeGeneration();
@@ -59,7 +59,7 @@ function createSection(originalSection, genId, si) {
     cm,
     appliesTo,
     getModel() {
-      const items = appliesTo.map(a => !a.all && [a.type, a.value]);
+      const items = appliesTo.map(a => a.type && [a.type, a.value]);
       return MozDocMapper.toSection(items, {code: cm.getValue()});
     },
     remove() {
@@ -143,7 +143,7 @@ function createSection(originalSection, genId, si) {
       }
     }
     if (!te.label) {
-      const target = appliesTo[0].all ? null : appliesTo[0].value;
+      const target = appliesTo[0].type ? appliesTo[0].value : null;
       if (te.target !== target) {
         te.target = target;
         changed = true;
@@ -194,13 +194,12 @@ function createSection(originalSection, genId, si) {
     return cmt;
   }
 
-  function insertApplyAfter(init, base) {
-    const apply = createApply(init);
+  function insertApplyAfter(type, value, base) {
+    const apply = createApply(type, value);
     appliesTo.splice(base ? appliesTo.indexOf(base) + 1 : appliesTo.length, 0, apply);
     appliesToList.insertBefore(apply.el, base ? base.el.nextSibling : null);
-    toggleDataset(appliesToContainer, 'all', init.all);
     dirty.add(apply, apply);
-    if (appliesTo.length > 1 && appliesTo[0].all) {
+    if (appliesTo.length > 1 && !appliesTo[0].type) {
       removeApply(appliesTo[0]);
     }
     if (base) requestAnimationFrame(shrinkSectionBy1);
@@ -215,51 +214,47 @@ function createSection(originalSection, genId, si) {
     apply.el.remove();
     dirty.remove(apply, apply);
     if (!appliesTo.length) {
-      insertApplyAfter({all: true});
+      insertApplyAfter();
     }
     emitSectionChange('apply');
   }
 
-  function createApply({type = 'url', value, all = false}) {
+  function createApply(type = '', value = '') {
     const applyId = genId();
     const dirtyPrefix = `section.${sectionId}.apply.${applyId}`;
-    const el = all ? t.template.appliesToEverything.cloneNode(true) :
-      t.template.appliesTo.cloneNode(true);
+    const el = t.template.appliesTo.cloneNode(true);
+    const selectEl = $('.applies-type', el);
+    const valueEl = $('.applies-value', el);
+    const toggleAll = () => toggleDataset(appliesToContainer, 'all', !type);
+    toggleAll();
+    selectEl.value = type;
+    selectEl.on('change', () => {
+      const oldType = type;
+      dirty.modify(`${dirtyPrefix}.type`, type, selectEl.value);
+      type = selectEl.value;
+      if (oldType === 'regexp' || type === 'regexp') {
+        updateRegexpTester();
+      }
+      emitSectionChange('apply');
+      validate();
+      toggleAll();
+    });
 
-    const selectEl = !all && $('.applies-type', el);
-    if (selectEl) {
-      selectEl.value = type;
-      selectEl.on('change', () => {
-        const oldType = type;
-        dirty.modify(`${dirtyPrefix}.type`, type, selectEl.value);
-        type = selectEl.value;
-        if (oldType === 'regexp' || type === 'regexp') {
-          updateRegexpTester();
-        }
-        emitSectionChange('apply');
-        validate();
-      });
-    }
-
-    const valueEl = !all && $('.applies-value', el);
-    if (valueEl) {
-      valueEl.value = value;
-      valueEl.on('input', () => {
-        dirty.modify(`${dirtyPrefix}.value`, value, valueEl.value);
-        value = valueEl.value;
-        if (type === 'regexp') {
-          updateRegexpTester();
-        }
-        emitSectionChange('apply');
-      });
-      valueEl.on('change', validate);
-    }
+    valueEl.value = value;
+    valueEl.on('input', () => {
+      dirty.modify(`${dirtyPrefix}.value`, value, valueEl.value);
+      value = valueEl.value;
+      if (type === 'regexp') {
+        updateRegexpTester();
+      }
+      emitSectionChange('apply');
+    });
+    valueEl.on('change', validate);
 
     restore();
 
     const apply = {
       id: applyId,
-      all,
       remove,
       restore,
       el,
@@ -272,16 +267,13 @@ function createSection(originalSection, genId, si) {
       },
     };
 
-    const removeButton = $('.remove-applies-to', el);
-    if (removeButton) {
-      removeButton.on('click', e => {
-        e.preventDefault();
-        removeApply(apply);
-      });
-    }
+    $('.remove-applies-to', el).on('click', e => {
+      e.preventDefault();
+      removeApply(apply);
+    });
     $('.add-applies-to', el).on('click', e => {
       e.preventDefault();
-      const newApply = insertApplyAfter({type, value: ''}, apply);
+      const newApply = insertApplyAfter(type, '', apply);
       $('input', newApply.el).focus();
     });
 
@@ -297,17 +289,13 @@ function createSection(originalSection, genId, si) {
     }
 
     function remove() {
-      if (all) {
-        return;
-      }
+      if (!type) return;
       dirty.remove(`${dirtyPrefix}.type`, type);
       dirty.remove(`${dirtyPrefix}.value`, value);
     }
 
     function restore() {
-      if (all) {
-        return;
-      }
+      if (!type) return;
       dirty.add(`${dirtyPrefix}.type`, type);
       dirty.add(`${dirtyPrefix}.value`, value);
     }
