@@ -8,8 +8,9 @@ function MozSectionFinder(cm) {
   const KEY = 'MozSectionFinder';
   const MOZ_DOC_LEN = '@-moz-document'.length;
   const rxDOC = /@-moz-document(\s+|$)/ig;
+  const rxVOID = /\s*}/y;
   const rxFUNC = /([-a-z]+)\(/iy;
-  const rxNEXT = /^(\s*)(.)?/;
+  const rxNEXT = /(\s*)(.)?/y;
   const rxSPACE = /\s+/y;
   const rxTokDOC = /^(?!comment|string)/;
   const rxTokCOMMENT = /^comment(\s|$)/;
@@ -251,6 +252,7 @@ function MozSectionFinder(cm) {
              (chPrev prevents an endless loop, it's not really necessary but just in case) */
           let s;
           type = styles[j + 1];
+          if (type && type.startsWith('overlay ')) type = '';
           if (goal.startsWith('_')) {
             if (!type && (rxSPACE.lastIndex = ch, rxSPACE.test(text))) {
               ch = rxSPACE.lastIndex;
@@ -279,7 +281,7 @@ function MozSectionFinder(cm) {
             func = m[1];
             funcPos = {line, ch};
             ch += func.length + 1; // +1 for "("
-            url = null;
+            url = false;
             goal = '_str';
             // Tokens in `styles` are split into multiple items due to `overlay`.
             while (styles[j + 2] <= ch) j += 2;
@@ -311,7 +313,7 @@ function MozSectionFinder(cm) {
               goal = 'error';
               break;
             } else {
-              goal = text[ch] === ')' ? ')' : '_)';
+              goal = text[ch] === ')' ? (j += 2, ')') : '_)';
               url.end = {line, ch};
             }
           }
@@ -333,12 +335,8 @@ function MozSectionFinder(cm) {
               valueStart: url.start,
               valueEnd: url.end,
             });
-            s = text.slice(ch, styles[j]);
-            if (s.includes('}')) { // a single `null` token like ` { } `
-              goal = '';
-              break;
-            }
-            s = s.match(rxNEXT);
+            rxNEXT.lastIndex = ch;
+            s = text.match(rxNEXT);
             goal = s[2];
             goal = goal === ',' ? '_func' :
               goal === '{' ? '_cmt' :
@@ -347,7 +345,11 @@ function MozSectionFinder(cm) {
               goal = 'error';
               break;
             }
-            ch += s[1].length + 1;
+            ch += s[0].length;
+            if (s[2] === '{' && (rxVOID.lastIndex = ch, rxVOID.test(text))) {
+              goal = '';
+              break;
+            }
           }
           if (goal === ',') {
             goal = text[ch] === ',' ? '_func' : '';
