@@ -743,7 +743,8 @@ const styleMan = (() => {
   function buildCache(cache, url, styleList) {
     const query = new MatchQuery(url);
     for (const {style, appliesTo, preview} of styleList) {
-      const code = getAppliedCode(query, preview || style);
+      // getSectionsByUrl only needs enabled styles
+      const code = style.enabled && getAppliedCode(query, preview || style);
       if (code) {
         buildCacheEntry(cache, style, code);
         appliesTo.add(url);
