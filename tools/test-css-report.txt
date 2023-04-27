@@ -41,20 +41,20 @@ warning	118	5	!important.
 warning	118	5	Non-alphabetical order: "filter".
 warning	118	20	Expected <number-percentage>? but found "foo0".
 warning	119	13	Expected none | [ blur() | brightness() | contrast() | drop-shadow() | grayscale() | hue-rotate() | invert() | opacity() | saturate() | sepia() | <uri> ]+ | <ie-function> but found "foo(1)".
+error	123	9	Expected prop:value or a selector that is not a tag but found "body".
 warning	134	20	Unknown pseudo :--state1
 warning	134	29	Must use -moz- prefix in :loading
 warning	136	7	Non-alphabetical order: "background-position-x".
 warning	137	32	Expected end of value but found "<".
 error	155	7	Unexpected ""TEST PASSED: parser recovery"".
+error	167	9	Expected prop:value or a selector that is not a tag but found "a".
 error	175	24	Expected "]" but found ""TEST PASSED: parser recovery"".
 warning	180	5	Non-alphabetical order: "--foo".
-warning	189	5	Nested @foo is not supported here.
 error	191	5	Unexpected "&".
 warning	198	3	"col.selected::marker" is overqualified, just use ".selected" without element name.
 warning	202	5	Non-alphabetical order: "overflow-anchor".
 warning	203	5	IE star prefix.
 warning	207	5	!important.
-warning	216	7	Nested @foo is not supported here.
 warning	226	16	Expected <number-percentage-none>{3} [ / <number-percentage-none> ]? | from [ <named-or-hex-color> | color-mix() | color() | hsl() | hwb() | lab() | lch() | rgb() | hsla() | rgba() | oklab() | oklch() ] <l-a-b-alpha-none-number-percentage>{3} [ / <l-a-b-alpha-none-number-percentage> ]? but found "from red x y z".
 warning	251	5	Duplicate "color".
 warning	253	5	Duplicate "color".

@@ -1061,7 +1061,8 @@
      * @param {Token} start
      */
     _margin(stream, start) {
-      this._styleRuleBlock(stream, start, {
+      this._block(stream, start, {
+        decl: true,
         event: ['pagemargin', {margin: start}],
       });
     }
@@ -1390,38 +1391,7 @@
     //#region Parser rulesets
 
     /**
-     * {}-block that can contain @-rule, _styleRule
-     * @param {TokenStream} stream
-     * @param {Token} [start]
-     * @param {Token} [brace]
-     * @param [event] - ['name', {...props}?]
-     */
-    _ruleBlock(stream, start, event, brace = event && stream.matchSmart(LBRACE, OrDie)) {
-      if (event) {
-        const [type, msg = event[1] = {}] = event;
-        this.fire(assign({type: 'start' + type, brace}, msg), start);
-        event = assign({type: 'end' + type}, msg);
-      }
-      let ti;
-      try {
-        this._stack.push(start);
-        for (let tok, fn; (ti = (tok = stream.grab()).id) && ti !== RBRACE;) {
-          if (ti === AT) {
-            fn = Parser.AT[tok.atName] || this._unknownAtRule;
-            fn.call(this, stream, tok);
-          } else if (!this._styleRule(stream, tok)) {
-            break;
-          }
-        }
-      } finally {
-        this._stack.pop();
-      }
-      if (ti !== RBRACE) stream.matchSmart(RBRACE, OrDie);
-      if (event) this.fire(event);
-    }
-
-    /**
-     * A style rule i.e. _selectorsGroup { _styleRuleBlock }
+     * A style rule i.e. _selectorsGroup { _block }
      * @param {TokenStream} stream
      * @param {Token} tok
      * @param {{}} [opts]
@@ -1432,27 +1402,25 @@
       if (!this._inStyle && parserCache.findBlock(tok)) {
         return true;
       }
-      const inStyle = this._inStyle++;
       let blk, brace;
       try {
         const amps = tok.id === AMP ? -1 : stream._amp;
         const sels = this._selectorsGroup(stream, tok, true);
         if (!sels) { stream.unget(); return; }
-        if (!inStyle && (stream._amp > amps || sels.some(isRelativeSelector))) {
+        if (!this._inStyle && (stream._amp > amps || sels.some(isRelativeSelector))) {
           this.alarm(2, 'Nested selector must be inside a style rule.', tok);
         }
         brace = stream.matchSmart(LBRACE, OrDieReusing);
         blk = parserCache.startBlock(sels[0]);
         const msg = {selectors: sels};
-        const opts2 = {brace, event: ['rule', msg]};
-        this._styleRuleBlock(stream, sels[0], opts ? assign({}, opts, opts2) : opts2);
+        const opts2 = {brace, decl: true, event: ['rule', msg]};
+        this._block(stream, sels[0], opts ? assign({}, opts, opts2) : opts2);
         if (!msg.empty) { parserCache.endBlock(); blk = 0; }
       } catch (ex) {
         if (this.options.strict || !(ex instanceof SyntaxError)) throw ex;
         this._declarationFailed(stream, ex, !!brace);
       } finally {
         if (blk) parserCache.cancelBlock(blk);
-        this._inStyle = inStyle;
       }
       return true;
     }
@@ -1463,16 +1431,18 @@
      * @param {Token} start
      * @param {{}} [opts]
      * @param {Token} [opts.brace]
+     * @param {boolean} [opts.decl] - can contain prop:value declarations
      * @param {Array|{}} [opts.event] - ['name', {...props}?]
      * @param {boolean} [opts.margins] - check for the margin @-rules.
      * @param {boolean} [opts.scoped] - use ScopedProperties for the start token's name
      */
-    _styleRuleBlock(stream, start, opts = {}) {
-      const {margins, scoped, event = []} = opts;
+    _block(stream, start, opts = {}) {
+      const {margins, scoped, decl, event = []} = opts;
       const {brace = stream.matchSmart(LBRACE, OrDie)} = opts;
       const [type, msg = event[1] = {}] = event || [];
       const declOpts = scoped ? {scope: start.atName} : {};
-      const star = this.options.starHack && STAR;
+      const inStyle = (this._inStyle += decl ? 1 : 0);
+      const star = inStyle && this.options.starHack && STAR;
       this._stack.push(start);
       let ex, child;
       if (type) this.fire(assign({type: 'start' + type, brace}, msg), start);
@@ -1484,14 +1454,13 @@
           if (ti === AT) {
             fn = tok.atName;
             fn = margins && B.marginSyms.has(fn) && this._margin ||
-              !this._inStyle && this.alarm(1, `Nested @${fn} is not supported here.`) ||
               Parser.AT[fn] ||
               this._unknownAtRule;
             fn.call(this, stream, tok);
             child = 1;
-          } else if (ti === IDENT || ti === star && tok.hack
+          } else if (inStyle && (ti === IDENT || ti === star && tok.hack)
             ? this._declaration(stream, tok, declOpts)
-            : !scoped && isOwn(TT.nestSel, ti) && this._styleRule(stream, tok, opts)
+            : !scoped && (!inStyle || isOwn(TT.nestSel, ti)) && this._styleRule(stream, tok, opts)
           ) {
             child = 1;
           } else {
@@ -1502,11 +1471,12 @@
         }
         if (ex) {
           if (this.options.strict || !(ex instanceof SyntaxError)) break;
-          this._declarationFailed(stream, ex); ex = null;
+          if (inStyle) { this._declarationFailed(stream, ex); ex = null; }
           if (!ti) break;
         }
       }
       this._stack.pop();
+      if (decl) this._inStyle--;
       if (ex) throw ex;
       if (type) { msg.empty = !child; this.fire(assign({type: 'end' + type}, msg)); }
     }
@@ -1539,7 +1509,7 @@
       const tok = stream.matchSmart(IDENT);
       const name = B.not.has(tok) ? stream.unget() : tok;
       this._condition(stream, undefined, this._containerCondition);
-      this._ruleBlock(stream, start, ['container', {name}]);
+      this._block(stream, start, {event: ['container', {name}]});
     },
 
     /**
@@ -1562,7 +1532,7 @@
         stream.skipDeclBlock(true);
         stream.matchSmart(RBRACE, OrDie);
       } else {
-        this._ruleBlock(stream, start);
+        this._block(stream, start, {brace: null});
       }
       this.fire({type: 'enddocument', start, functions});
     },
@@ -1573,7 +1543,8 @@
      * @param {Token} start
      */
     'font-face'(stream, start) {
-      this._styleRuleBlock(stream, start, {
+      this._block(stream, start, {
+        decl: true,
         event: ['fontface', {}],
         scoped: true,
       });
@@ -1585,7 +1556,8 @@
      * @param {Token} start
      */
     'font-palette-values'(stream, start) {
-      this._styleRuleBlock(stream, start, {
+      this._block(stream, start, {
+        decl: true,
         event: ['fontpalettevalues', {id: stream.matchSmart(IDENT, OrDie)}],
         scoped: true,
       });
@@ -1633,7 +1605,8 @@
           else stream._failure('percentage%, "from", "to"', tok);
         } while ((ti = (tok = stream.grab()).id) === COMMA);
         if (!keys[0]) break;
-        this._styleRuleBlock(stream, keys[0], {
+        this._block(stream, keys[0], {
+          decl: true,
           brace: ti === LBRACE ? tok : stream.unget(),
           event: ['keyframerule', {keys}],
         });
@@ -1661,7 +1634,7 @@
             throw Parser.GLOBALS;
           }
           if (ids[1]) this.alarm(1, '@layer block cannot have multiple ids', start);
-          this._ruleBlock(stream, start, ['layer', {id: ids[0]}], tok);
+          this._block(stream, start, {brace: tok, event: ['layer', {id: ids[0]}]});
           return;
         }
       } while (tok.id === COMMA);
@@ -1676,7 +1649,7 @@
      */
     media(stream, start) {
       const media = this._mediaQueryList(stream);
-      this._ruleBlock(stream, start, ['media', {media}]);
+      this._block(stream, start, {event: ['media', {media}]});
     },
 
     /**
@@ -1702,7 +1675,8 @@
       if (B.auto.has(tok)) stream._failure();
       const id = tok.text;
       const pseudo = stream.match(COLON) && stream.matchOrDie(IDENT).text;
-      this._styleRuleBlock(stream, start, {
+      this._block(stream, start, {
+        decl: true,
         event: ['page', {id, pseudo}],
         margins: true,
         scoped: true,
@@ -1716,7 +1690,8 @@
      */
     property(stream, start) {
       const name = stream.matchSmart(IDENT, OrDie);
-      this._styleRuleBlock(stream, start, {
+      this._block(stream, start, {
+        decl: true,
         event: ['property', {name}],
         scoped: true,
       });
@@ -1729,7 +1704,7 @@
      */
     supports(stream, start) {
       this._condition(stream, undefined, this._supportsCondition);
-      this._ruleBlock(stream, start, ['supports']);
+      this._block(stream, start, {event: ['supports']});
     },
   };
 

@@ -118,7 +118,7 @@ heading"] {
     filter: invert(foo0)!important;
     filter: foo(1);
     @media not (width <= -100px) {
-      body { background: green; }
+      background: green;
       @media (400px <= width <= 700px) {
         body { background: green; }
       }
