@@ -1237,6 +1237,9 @@
   "optionsUpdateInterval": {
     "message": "Userstyle autoupdate interval in hours (specify 0 to disable)"
   },
+  "optionsUrlInstaller": {
+    "message": "Open installer when navigating to a .user.css URL"
+  },
   "overwriteFileExport": {
     "message": "Do you want to overwrite an existing file?"
   },

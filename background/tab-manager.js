@@ -24,8 +24,8 @@ const tabMan = (() => {
   });
 
   return {
-    onUpdate(fn) {
-      listeners.add(fn);
+    onUpdate(fn, action = 'add') {
+      listeners[action](fn);
     },
 
     get(tabId, ...keys) {

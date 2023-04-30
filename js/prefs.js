@@ -28,6 +28,7 @@
     'newStyleAsUsercss': false,     // create new style in usercss format
     'styleViaXhr': false,           // early style injection to avoid FOUC
     'patchCsp': false,              // add data: and popular image hosting sites to strict CSP
+    'urlInstaller': true,           // auto-open installer page for supported .user.css urls
 
     // checkbox in style config dialog
     'config.autosave': true,

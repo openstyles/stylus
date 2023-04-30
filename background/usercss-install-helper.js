@@ -1,5 +1,6 @@
 /* global RX_META URLS download openURL */// toolbox.js
 /* global addAPI bgReady */// common.js
+/* global prefs */
 /* global tabMan */// msg.js
 'use strict';
 
@@ -33,24 +34,29 @@ bgReady.all.then(() => {
     },
   };
 
-  chrome.webRequest.onBeforeSendHeaders.addListener(maybeInstallFromDistro, {
-    urls: [
-      URLS.usw + 'api/style/*.user.css',
-      ...URLS.usoArchiveRaw.map(s => s + 'usercss/*.user.css'),
-      ...['greasy', 'sleazy'].map(s => `*://${s}fork.org/scripts/*/code/*.user.css`),
-      ...[].concat(
-        ...Object.entries(maybeDistro)
-          .map(([host, {glob}]) => makeUsercssGlobs(host, glob))),
-    ],
-    types: ['main_frame'],
-  }, ['blocking']);
+  prefs.subscribe('urlInstaller', toggle, {runNow: true});
 
-  chrome.webRequest.onHeadersReceived.addListener(rememberContentType, {
-    urls: makeUsercssGlobs('*', '/*'),
-    types: ['main_frame'],
-  }, ['responseHeaders']);
-
-  tabMan.onUpdate(maybeInstall);
+  function toggle(key, val) {
+    chrome.webRequest.onBeforeSendHeaders.removeListener(maybeInstallFromDistro);
+    chrome.webRequest.onHeadersReceived.removeListener(rememberContentType);
+    tabMan.onUpdate(maybeInstall, val ? 'add' : 'delete');
+    if (!val) return;
+    chrome.webRequest.onBeforeSendHeaders.addListener(maybeInstallFromDistro, {
+      urls: [
+        URLS.usw + 'api/style/*.user.css',
+        ...URLS.usoArchiveRaw.map(s => s + 'usercss/*.user.css'),
+        ...['greasy', 'sleazy'].map(s => `*://${s}fork.org/scripts/*/code/*.user.css`),
+        ...[].concat(
+          ...Object.entries(maybeDistro)
+            .map(([host, {glob}]) => makeUsercssGlobs(host, glob))),
+      ],
+      types: ['main_frame'],
+    }, ['blocking']);
+    chrome.webRequest.onHeadersReceived.addListener(rememberContentType, {
+      urls: makeUsercssGlobs('*', '/*'),
+      types: ['main_frame'],
+    }, ['responseHeaders']);
+  }
 
   function clearInstallCode(url) {
     return delete installCodeCache[url];
