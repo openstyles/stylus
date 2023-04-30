@@ -69,8 +69,7 @@ bgReady.all.then(() => {
   async function loadFromUrl(tabId, url) {
     return (
       url.startsWith('file:') ||
-      tabMan.get(tabId, isContentTypeText.name) ||
-      isContentTypeText((await fetch(url, {method: 'HEAD'})).headers.get('content-type'))
+      tabMan.get(tabId, isContentTypeText.name)
     ) && download(url);
   }
 
@@ -84,6 +83,7 @@ bgReady.all.then(() => {
 
   async function maybeInstall({tabId, url, oldUrl = ''}) {
     if (url.includes('.user.') &&
+        !tabMan.get(tabId, 'distro') &&
         /^(https?|file|ftps?):/.test(url) &&
         /\.user\.(css|styl)$/.test(url.split(/[#?]/, 1)[0]) &&
         !oldUrl.startsWith(makeInstallerUrl(url))) {
@@ -99,6 +99,7 @@ bgReady.all.then(() => {
   function maybeInstallFromDistro({tabId, url}) {
     const u = new URL(url);
     const m = maybeDistro[u.hostname];
+    tabMan.set(tabId, 'distro', true);
     if (!m || m.rx.test(u.pathname)) {
       openInstallerPage(tabId, url, {});
       // Silently suppress navigation.
