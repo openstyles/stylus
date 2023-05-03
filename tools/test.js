@@ -37,7 +37,8 @@ function testCsslint({overwriteReport}) {
   for (i = 0; (a = report[i]) && (b = expected[i]); i++) {
     if (a !== b) fail('csslint', chalk.red(`\n* RECEIVED: ${a}\n`) + `  EXPECTED: ${b}\n`);
   }
-  if (i === report.length && (i -= expected.length)) {
+  i = report.length - expected.length;
+  if (i) {
     a = Math.abs(i);
     fail('csslint', '\n' +
       (i > 0 ? `Found ${a} extra un` : `Did not find ${a} `) +

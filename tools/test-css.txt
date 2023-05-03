@@ -528,8 +528,18 @@ heading"] {
     div { color: red; }
   }
   &.misplaced { padding: 2ch; }
+  foo: bar;
+  foo:bar;;
+  foo:bar
 }
 
 &.misplaced { padding: 2ch; }
 
 a { padding: 1em; margin: 1ex; }
+
+@-moz-document domain(image-set) {
+  div {
+    background-image: image-set("foo.png" 1x, "foo-2x.png" 2x, "foo-print.png" 600dpi);
+    background-image: image-set("foo.png" foo);
+  }
+}

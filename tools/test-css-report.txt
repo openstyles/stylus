@@ -29,13 +29,14 @@ warning	75	5	Non-alphabetical order: "font-weight".
 warning	76	24	Expected end of value but found "00".
 warning	78	20	Expected <unicode-range># but found "U+3000???-9FFF, U+ffz??".
 warning	79	5	Misplaced property "color".
-warning	89	5	Missing -moz- prefix for gradient.
+warning	83	5	Non-alphabetical order: "base-palette".
 warning	90	5	"svg.mobile-hero:not(.a + .b .c)" is overqualified, just use ".mobile-hero" without element name.
 warning	95	31	Expected end of value but found "/".
 warning	97	7	Unknown property "object-overflow".
 warning	98	7	Non-alphabetical order: "clip-path".
 warning	104	7	Ungrouped duplicate "filter".
 warning	104	15	Expected none | [ blur() | brightness() | contrast() | drop-shadow() | grayscale() | hue-rotate() | invert() | opacity() | saturate() | sepia() | <uri> ]+ | <ie-function> but found "alpha(opacity=70)".
+warning	108	19	Missing -moz- prefix for gradient.
 warning	117	5	!important.
 warning	118	5	!important.
 warning	118	5	Non-alphabetical order: "filter".
@@ -65,4 +66,8 @@ warning	483	11	Id in selector.
 warning	527	3	Empty rule.
 error	528	5	Expected prop:value or a selector that is not a tag but found "div".
 error	530	3	Nested selector must be inside a style rule.
-warning	535	19	Non-alphabetical order: "margin".
+error	531	7	Expected FUNCTION, IDENT but found " ".
+error	532	10	Expected "{" but found ";".
+error	534	1	Expected "{" but found "}".
+warning	538	19	Non-alphabetical order: "margin".
+warning	543	33	Expected [ [ <uri> | radial-gradient() | linear-gradient() | conic-gradient() | gradient() | repeating-radial-gradient() | repeating-linear-gradient() | repeating-conic-gradient() | repeating-gradient() | -webkit-cross-fade() | <string> ] [ <resolution> || type(<string>) ] ]# but found ""foo.png" foo".

@@ -901,7 +901,9 @@
       'repeating-gradient()',
     '<grid-line>': 'auto | [ <int> && <ident-for-grid>? ] | <ident-for-grid> | ' +
       '[ span && [ <int> || <ident-for-grid> ] ]',
-    '<image>': '<uri> | <gradient> | -webkit-cross-fade()',
+    '<image>': '<image-no-set> | image-set( <image-set># )',
+    '<image-no-set>': '<uri> | <gradient> | -webkit-cross-fade()',
+    '<image-set>': '[ <image-no-set> | <string> ] [ <resolution> || type( <string> ) ]',
     '<inflexible-breadth>': '<len-pct> | min-content | max-content | auto',
     '<inset>': 'inset( <len-pct>{1,4} <border-radius-round>? )',
     '<len-pct-side>': '<len-pct> | closest-side | farthest-side',

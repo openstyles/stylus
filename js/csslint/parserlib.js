@@ -640,7 +640,9 @@
      * @param {boolean} [inBlock] - to read to the end of the current {}-block
      */
     skipDeclBlock(inBlock) {
-      for (let src = this.source, stack = [], end = inBlock ? 125 : -1, c; (c = src.peek());) {
+      let c = this.peekCached();
+      if (c && (c.id === RBRACE || c.id === SEMICOLON)) return;
+      for (let src = this.source, stack = [], end = inBlock ? 125 : -1; (c = src.peek());) {
         if (c === end || end < 0 && (c === 59/*;*/ || c === 125/*}*/)) {
           end = stack.pop();
           if (!end || end < 0 && c === 125/*}*/) {
@@ -1419,6 +1421,7 @@
       } catch (ex) {
         if (this.options.strict || !(ex instanceof SyntaxError)) throw ex;
         this._declarationFailed(stream, ex, !!brace);
+        return;
       } finally {
         if (blk) parserCache.cancelBlock(blk);
       }
@@ -1459,10 +1462,10 @@
             fn.call(this, stream, tok);
             child = 1;
           } else if (inStyle && (ti === IDENT || ti === star && tok.hack)
-            ? this._declaration(stream, tok, declOpts)
-            : !scoped && (!inStyle || isOwn(TT.nestSel, ti)) && this._styleRule(stream, tok, opts)
-          ) {
+              && this._declaration(stream, tok, declOpts)) {
             child = 1;
+          } else if (!scoped && (!inStyle || isOwn(TT.nestSel, ti))) {
+            child = this._styleRule(stream, tok, opts);
           } else {
             ex = stream._failure('', tok, false);
           }
@@ -1532,7 +1535,7 @@
         stream.skipDeclBlock(true);
         stream.matchSmart(RBRACE, OrDie);
       } else {
-        this._block(stream, start, {brace: null});
+        this._block(stream, start, {brace});
       }
       this.fire({type: 'enddocument', start, functions});
     },

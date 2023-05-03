@@ -310,11 +310,14 @@ CSSLint.Util = {
 
   registerRuleEvents(parser, {start, property, end}) {
     for (const e of [
+      'container',
       'fontface',
       'keyframerule',
+      'media',
       'page',
       'pagemargin',
       'rule',
+      'supports',
       'viewport',
     ]) {
       if (start) parser.addListener('start' + e, start);
@@ -325,14 +328,15 @@ CSSLint.Util = {
 
   registerShorthandEvents(parser, {property, end}) {
     const {shorthands, shorthandsFor} = CSSLint.Util;
-    let props, inRule;
+    const stack = [];
+    let props;
     CSSLint.Util.registerRuleEvents(parser, {
       start() {
-        inRule = true;
+        stack.push(props);
         props = null;
       },
       property(event) {
-        if (!inRule || event.inParens) return;
+        if (!stack.length || event.inParens) return;
         const name = CSSLint.Util.getPropName(event.property);
         const sh = shorthandsFor[name];
         if (sh) {
@@ -343,10 +347,10 @@ CSSLint.Util = {
         }
       },
       end(event) {
-        inRule = false;
         if (end && props) {
           end(event, props);
         }
+        props = stack.pop();
       },
     });
   },
@@ -430,49 +434,47 @@ CSSLint.addRule['box-model'] = [{
     width:  ['border', 'border-left', 'border-right', 'padding', 'padding-left', 'padding-right'],
     height: ['border', 'border-bottom', 'border-top', 'padding', 'padding-bottom', 'padding-top'],
   };
-  let properties = {};
-  let boxSizing = false;
-  let inRule;
+  const stack = [];
+  let props;
   CSSLint.Util.registerRuleEvents(parser, {
     start() {
-      inRule = true;
-      properties = {};
-      boxSizing = false;
+      stack.push(props);
+      props = {};
     },
     property(event) {
-      if (!inRule || event.inParens) return;
+      if (!props || event.inParens) return;
       const name = CSSLint.Util.getPropName(event.property);
       if (sizeProps.width.includes(name) || sizeProps.height.includes(name)) {
         if (!/^0+\D*$/.test(event.value) &&
             (name !== 'border' || !/^none$/i.test(event.value))) {
-          properties[name] = {
+          props[name] = {
             line: event.property.line,
             col: event.property.col,
             value: event.value,
           };
         }
-      } else if (/^(width|height)/i.test(name) &&
-                 /^(length|%)/.test(event.value.parts[0].type)) {
-        properties[name] = 1;
-      } else if (name === 'box-sizing') {
-        boxSizing = true;
+      } else if (name === 'box-sizing' ||
+          /^(width|height)/i.test(name) &&
+          /^(length|%)/.test(event.value.parts[0].type)) {
+        props[name] = 1;
       }
     },
     end() {
-      inRule = false;
-      if (boxSizing) return;
-      for (const size in sizeProps) {
-        if (!properties[size]) continue;
-        for (const prop of sizeProps[size]) {
-          if (prop !== 'padding' || !properties[prop]) continue;
-          const {value: {parts}, line, col} = properties[prop];
-          if (parts.length !== 2 || parts[0].number) {
-            reporter.report(
-              `No box-sizing and ${size} in ${prop}`,
-              {line, col}, rule);
+      if (!props['box-sizing']) {
+        for (const size in sizeProps) {
+          if (!props[size]) continue;
+          for (const prop of sizeProps[size]) {
+            if (prop !== 'padding' || !props[prop]) continue;
+            const {value: {parts}, line, col} = props[prop];
+            if (parts.length !== 2 || parts[0].number) {
+              reporter.report(
+                `No box-sizing and ${size} in ${prop}`,
+                {line, col}, rule);
+            }
           }
         }
       }
+      props = stack.pop();
     },
   });
 }];
@@ -636,6 +638,7 @@ CSSLint.addRule['display-property-grouping'] = [{
   url: 'https://github.com/CSSLint/csslint/wiki/Require-properties-appropriate-for-display',
   browsers: 'All',
 }, (rule, parser, reporter) => {
+  let props;
   const propertiesToCheck = {
     'display': 1,
     'float': 'none',
@@ -653,24 +656,25 @@ CSSLint.addRule['display-property-grouping'] = [{
     'padding-top': 1,
     'vertical-align': 1,
   };
-  let properties;
-  let inRule;
+  const stack = [];
   const reportProperty = (name, display, msg) => {
-    const prop = properties[name];
+    const prop = props[name];
     if (prop && propertiesToCheck[name] !== prop.value.toLowerCase()) {
       reporter.report(msg || `"${name}" can't be used with display: ${display}.`, prop, rule);
     }
   };
+  const INLINE = ['height', 'width', 'margin', 'margin-top', 'margin-bottom'];
+  const TABLE = ['margin', 'margin-left', 'margin-right', 'margin-top', 'margin-bottom', 'float'];
   CSSLint.Util.registerRuleEvents(parser, {
     start() {
-      inRule = true;
-      properties = {};
+      stack.push(props);
+      props = {};
     },
     property(event) {
-      if (!inRule || event.inParens) return;
+      if (!props || event.inParens) return;
       const name = CSSLint.Util.getPropName(event.property);
       if (name in propertiesToCheck) {
-        properties[name] = {
+        props[name] = {
           value: event.value.text,
           line: event.property.line,
           col: event.property.col,
@@ -678,38 +682,23 @@ CSSLint.addRule['display-property-grouping'] = [{
       }
     },
     end() {
-      inRule = false;
-      const display = properties.display && properties.display.value;
-      if (!display) return;
-
-      switch (display.toLowerCase()) {
-
-        case 'inline':
-          ['height', 'width', 'margin', 'margin-top', 'margin-bottom']
-            .forEach(p => reportProperty(p, display));
-
-          reportProperty('float', display,
+      let v;
+      if (props && (v = props.display)) {
+        v = v.value.toLowerCase();
+        if (v === 'inline') {
+          for (const p of INLINE) reportProperty(p, v);
+          reportProperty('float', v,
             '"display:inline" has no effect on floated elements ' +
             '(but may be used to fix the IE6 double-margin bug).');
-          break;
-
-        case 'block':
-          // vertical-align should not be used with block
-          reportProperty('vertical-align', display);
-          break;
-
-        case 'inline-block':
-          // float should not be used with inline-block
-          reportProperty('float', display);
-          break;
-
-        default:
-          // margin, float should not be used with table
-          if (/^table-/i.test(display)) {
-            ['margin', 'margin-left', 'margin-right', 'margin-top', 'margin-bottom', 'float']
-              .forEach(p => reportProperty(p, display));
-          }
+        } else if (v === 'block') {
+          reportProperty('vertical-align', v);
+        } else if (v === 'inline-block') {
+          reportProperty('float', v);
+        } else if (v && /^table-/i.test(v)) {
+          for (const p of TABLE) reportProperty(p, v);
+        }
       }
+      props = stack.pop();
     },
   });
 }];
@@ -747,14 +736,15 @@ CSSLint.addRule['duplicate-properties'] = [{
   url: 'https://github.com/CSSLint/csslint/wiki/Disallow-duplicate-properties',
   browsers: 'All',
 }, (rule, parser, reporter) => {
-  let props, lastName, inRule;
+  const stack = [];
+  let props, lastName;
   CSSLint.Util.registerRuleEvents(parser, {
     start() {
-      inRule = true;
+      stack.push(props);
       props = {};
     },
     property(event) {
-      if (!inRule || event.inParens) return;
+      if (!props || event.inParens) return;
       const property = event.property;
       const name = property.text.toLowerCase();
       const last = props[name];
@@ -767,7 +757,7 @@ CSSLint.addRule['duplicate-properties'] = [{
       lastName = name;
     },
     end() {
-      inRule = false;
+      props = stack.pop();
     },
   });
 }];
@@ -872,23 +862,27 @@ CSSLint.addRule['gradients'] = [{
   url: 'https://github.com/CSSLint/csslint/wiki/Require-all-gradient-definitions',
   browsers: 'All',
 }, (rule, parser, reporter) => {
+  const stack = [];
   let miss;
   CSSLint.Util.registerRuleEvents(parser, {
     start() {
+      stack.push(miss);
       miss = null;
     },
     property({inParens, value: {parts: [p]}}) {
       if (inParens) return;
       if (p && p.prefix && /(-|^)gradient$/.test(p.name)) {
-        if (!miss) miss = {'-moz-': 1, '-webkit-': 1};
+        if (!miss) miss = {'-moz-': p, '-webkit-': p};
         delete miss[p.prefix];
       }
     },
-    end(event) {
-      if (miss && (miss = Object.keys(miss))[0]) {
-        reporter.report(`Missing ${miss.join(',')} prefix${miss[1] ? 'es' : ''} for gradient.`,
-          event.selectors[0], rule);
+    end() {
+      let k;
+      if (miss && (k = Object.keys(miss))[0]) {
+        reporter.report(`Missing ${k.join(',')} prefix${k[1] ? 'es' : ''} for gradient.`,
+          miss[k[0]], rule);
       }
+      miss = stack.pop();
     },
   });
 }];
@@ -1191,9 +1185,11 @@ CSSLint.addRule['order-alphabetical'] = [{
   desc: 'Assure properties are in alphabetical order',
   browsers: 'All',
 }, (rule, parser, reporter) => {
+  const stack = [];
   let last, failed;
   CSSLint.Util.registerRuleEvents(parser, {
     start() {
+      stack.push({last, failed});
       last = '';
       failed = false;
     },
@@ -1207,6 +1203,9 @@ CSSLint.addRule['order-alphabetical'] = [{
         }
         last = name;
       }
+    },
+    end() {
+      ({last, failed} = stack.pop());
     },
   });
 }];
@@ -1582,18 +1581,19 @@ CSSLint.addRule['vendor-prefix'] = [{
     '-moz-box-sizing': 'box-sizing',
     '-webkit-box-sizing': 'box-sizing',
   };
-  let properties, num, inRule;
+  const stack = [];
+  let props, num;
   CSSLint.Util.registerRuleEvents(parser, {
     start() {
-      inRule = true;
-      properties = {};
+      stack.push({num, props});
+      props = {};
       num = 1;
     },
     property(event) {
-      if (!inRule || event.inParens) return;
+      if (!props || event.inParens) return;
       const name = CSSLint.Util.getPropName(event.property);
-      let prop = properties[name];
-      if (!prop) prop = properties[name] = [];
+      let prop = props[name];
+      if (!prop) prop = props[name] = [];
       prop.push({
         name: event.property,
         value: event.value,
@@ -1601,9 +1601,8 @@ CSSLint.addRule['vendor-prefix'] = [{
       });
     },
     end() {
-      inRule = false;
       const needsStandard = [];
-      for (const prop in properties) {
+      for (const prop in props) {
         if (prop in propertiesToCheck) {
           needsStandard.push({
             actual: prop,
@@ -1612,16 +1611,17 @@ CSSLint.addRule['vendor-prefix'] = [{
         }
       }
       for (const {needed, actual} of needsStandard) {
-        const unit = properties[actual][0].name;
-        if (!properties[needed]) {
+        const unit = props[actual][0].name;
+        if (!props[needed]) {
           reporter.report(`Missing standard property "${needed}" to go along with "${actual}".`,
             unit, rule);
-        } else if (properties[needed][0].pos < properties[actual][0].pos) {
+        } else if (props[needed][0].pos < props[actual][0].pos) {
           reporter.report(
             `Standard property "${needed}" should come after vendor-prefixed property "${actual}".`,
             unit, rule);
         }
       }
+      ({num, props} = stack.pop());
     },
   });
 }];
