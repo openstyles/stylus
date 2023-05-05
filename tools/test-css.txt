@@ -537,9 +537,14 @@ heading"] {
 
 a { padding: 1em; margin: 1ex; }
 
-@-moz-document domain(image-set) {
-  div {
+@-moz-document domain(foo) {
+  image-set {
     background-image: image-set("foo.png" 1x, "foo-2x.png" 2x, "foo-print.png" 600dpi);
     background-image: image-set("foo.png" foo);
+  }
+  animation {
+    animation-timeline: scroll();
+    animation-timeline: scroll(root block);
+    animation-timeline: scroll(root2 block);
   }
 }

@@ -71,3 +71,4 @@ error	532	10	Expected "{" but found ";".
 error	534	1	Expected "{" but found "}".
 warning	538	19	Non-alphabetical order: "margin".
 warning	543	33	Expected [ [ <uri> | radial-gradient() | linear-gradient() | conic-gradient() | gradient() | repeating-radial-gradient() | repeating-linear-gradient() | repeating-conic-gradient() | repeating-gradient() | -webkit-cross-fade() | <string> ] [ <resolution> || type(<string>) ] ]# but found ""foo.png" foo".
+warning	548	32	Expected [ [ root | nearest | self ] || [ block | inline | vertical | horizontal ] ]? but found "root2 block".

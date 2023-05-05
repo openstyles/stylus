@@ -17,17 +17,18 @@
     'alignment-baseline': 'auto | baseline | use-script | before-edge | text-before-edge | ' +
       'after-edge | text-after-edge | central | middle | ideographic | alphabetic | ' +
       'hanging | mathematical',
-    'animation': '[ <time> || <timing-function> || <time> || [ infinite | <num> ] || ' +
+    'animation': '[ <time0+> || <timing-function> || <time> || [ infinite | <num0+> ] || ' +
       '<animation-direction> || <animation-fill-mode> || ' +
-      '[ running | paused ] || [ none | <custom-ident> | <string> ] ]#',
+      '[ running | paused ] || [ none | <custom-ident> | <string> ] || <animation-timeline> ]#',
     'animation-composition': '[ replace | add | accumulate ]#',
     'animation-delay': '<time>#',
     'animation-direction': '<animation-direction>#',
-    'animation-duration': '<time>#',
+    'animation-duration': '[ auto | <time0+> ]#',
     'animation-fill-mode': '<animation-fill-mode>#',
     'animation-iteration-count': '[ <num> | infinite ]#',
     'animation-name': '[ none | <keyframes-name> ]#',
     'animation-play-state': '[ running | paused ]#',
+    'animation-timeline': '<animation-timeline>#',
     'animation-timing-function': '<timing-function>#',
     'appearance': 'none | auto',
     '-moz-appearance':
@@ -419,6 +420,11 @@
     'scroll-snap-align': '[ none | start | end | center ]{1,2}',
     'scroll-snap-stop': 'normal | always',
     'scroll-snap-type': 'none | [ x | y | block | inline | both ] [ mandatory | proximity ]?',
+    'scroll-timeline': '[ <scroll-timeline-name> ' +
+      '[ <scroll-timeline-axis> || <scroll-timeline-attachment> ]? ]#',
+    'scroll-timeline-attachment': '[ local | defer | ancestor ]#',
+    'scroll-timeline-axis': '<axis>#',
+    'scroll-timeline-name': 'none | <custom-ident>#',
     'scrollbar-color': 'auto | dark | light | <color>{2}',
     'scrollbar-gutter': 'auto | stable && both-edges?',
     'scrollbar-width': 'auto | thin | none',
@@ -804,12 +810,16 @@
     '<animateable-feature>': 'scroll-position | contents | <animateable-feature-name>',
     '<animation-direction>': 'normal | reverse | alternate | alternate-reverse',
     '<animation-fill-mode>': 'none | forwards | backwards | both',
+    '<animation-timeline>': 'auto | none | <custom-ident> | ' +
+      'scroll( [ [ root | nearest | self ] || <axis> ]? ) | ' +
+      'view( [ <axis> || [ [ auto | <len-pct> ]{1,2} ]# ]? )',
     '<attachment>': 'scroll | fixed | local',
     '<auto-repeat>':
       'repeat( [ auto-fill | auto-fit ] , [ <line-names>? <fixed-size> ]+ <line-names>? )',
     '<auto-track-list>':
       '[ <line-names>? [ <fixed-size> | <fixed-repeat> ] ]* <line-names>? <auto-repeat> ' +
       '[ <line-names>? [ <fixed-size> | <fixed-repeat> ] ]* <line-names>?',
+    '<axis>': 'block | inline | vertical | horizontal',
     '<baseline-position>': '[ first | last ]? baseline',
     '<basic-shape>':
       '<inset> | ' +
@@ -930,6 +940,7 @@
     '<shape-box>': '<box> | margin-box',
     '<timing-function>': 'linear|ease|ease-in|ease-out|ease-in-out|step-start|step-end | ' +
       'cubic-bezier( <num0-1> , <num> , <num0-1> , <num> ) | ' +
+      'linear( [ <num> && [ <pct>{1,2} ]? ]# ) | ' +
       'steps( <int> [ , [ jump-start | jump-end | jump-none | jump-both | start | end ] ]? )',
     '<text-align>': 'start | end | left | right | center | justify | match-parent',
     '<track-breadth>': '<len-pct> | <flex> | min-content | max-content | auto',
@@ -1054,6 +1065,7 @@
     '<resolution>': p => p.id === Tokens.RESOLUTION,
     '<string>': p => p.id === STRING,
     '<time>': p => p.isCalc || p.id === TIME,
+    '<time0+>': p => p.isCalc || p.id === TIME && p.number >= 0,
     '<unicode-range>': p => p.id === Tokens.URANGE,
     '<uri>': p => p.uri != null,
     '<width>': p => p.isAuto || p.isCalc || p.is0 || p.id === LENGTH || p.id === PCT,
@@ -1313,7 +1325,7 @@
       const m = list ? list[pn] || list[pnv]
         : name === pn || name === pnv ? (body || '')
           : null; if (m == null) return;
-      const e = p.expr; if (!e && m) return;
+      const e = p.expr; if (!e && m) return m.arg.min === 0;
       const vi = m && !e.isVar && new PropValueIterator(e); // eslint-disable-line no-use-before-define
       const mm = !vi || m.matchFunc ? m :
         list[pn] = (m.call ? m(Matcher) : Matcher.cache[m] || Matcher.parse(m));
