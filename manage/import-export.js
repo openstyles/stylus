@@ -123,7 +123,7 @@ async function importFromString(jsonString) {
   changeQueue.length = 0;
   changeQueue.time = performance.now();
   (await API.styles.importMany(items))
-    .forEach((style, i) => updateStats(style, infos[i]));
+    .forEach(({style, err}, i) => updateStats(style || items[i], infos[i], err));
   // TODO: set each style's order during import on-the-fly
   await API.styles.setOrder(order);
   return done();
@@ -204,7 +204,12 @@ async function importFromString(jsonString) {
         .some(field => oldStyle[field] && oldStyle[field] === newStyle[field]);
   }
 
-  function updateStats(style, {oldStyle, metaEqual, codeEqual}) {
+  function updateStats(style, {oldStyle, metaEqual, codeEqual}, err) {
+    if (err) {
+      err = (Array.isArray(err) ? err : [err]).map(e => e.message || e).join(', ');
+      stats.invalid.names.push(style.name + ' - ' + err);
+      return;
+    }
     if (!oldStyle) {
       stats.added.names.push(style.name);
       stats.added.ids.push(style.id);

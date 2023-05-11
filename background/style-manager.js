@@ -299,19 +299,26 @@ const styleMan = (() => {
       return result;
     },
 
-    /** @returns {Promise<StyleObj[]>} */
+    /** @returns {Promise<{style?:StyleObj, err?:?}[]>} */
     async importMany(items) {
       if (ready.then) await ready;
+      const res = [];
+      const styles = [];
       for (const style of items) {
-        beforeSave(style);
-        if (style.sourceCode && style.usercssData) {
-          await usercssMan.buildCode(style);
+        try {
+          beforeSave(style);
+          if (style.sourceCode && style.usercssData) {
+            await usercssMan.buildCode(style);
+          }
+          res.push(styles.push(style) - 1);
+        } catch (err) {
+          res.push({err});
         }
       }
-      const events = await db.styles.putMany(items);
-      return Promise.all(items.map((item, i) =>
-        handleSave(item, {reason: 'import'}, events[i])
-      ));
+      const events = await db.styles.putMany(styles);
+      return Promise.all(res.map(r => r.err ? r : {
+        style: handleSave(styles[r], {reason: 'import'}, events[r]),
+      }));
     },
 
     /** @returns {Promise<StyleObj>} */
