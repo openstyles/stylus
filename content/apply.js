@@ -20,7 +20,9 @@
     order.main[id] ||
     id + .5e6; // no order = at the end of `main`
   const isFrame = window !== parent;
-  const isFrameSameOrigin = isFrame && Object.getOwnPropertyDescriptor(parent.location, 'href').get;
+  const isFrameSameOrigin = isFrame
+    && (tryCatch(Object.getOwnPropertyDescriptor, parent.location, 'href') || {}).get;
+    // TODO: remove tryCatch and call directly when minimum_chrome_version >= 86
   const isXml = document instanceof XMLDocument;
   const isUnstylable = !chrome.app && isXml;
   const styleInjector = StyleInjector({
