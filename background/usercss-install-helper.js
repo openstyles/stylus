@@ -23,14 +23,16 @@ bgReady.all.then(() => {
   // `rx`: pathname regex to verify the URL really looks like a raw usercss
   const maybeDistro = {
     // https://github.com/StylishThemes/GitHub-Dark/raw/master/github-dark.user.css
+    // https://github.com/StylishThemes/GitHub-Dark/raw/master/foo/bar/github-dark.user.css
     'github.com': {
       glob: '/*/raw/*',
-      rx: /^\/[^/]+\/[^/]+\/raw\/[^/]+\/[^/]+?\.user\.(css|styl)$/,
+      rx: /^\/[^/]+\/[^/]+\/raw\/.+?\/[^/]+?\.user\.(css|styl)$/,
     },
     // https://raw.githubusercontent.com/StylishThemes/GitHub-Dark/master/github-dark.user.css
+    // https://raw.githubusercontent.com/StylishThemes/GitHub-Dark/master/foo/bar/github-dark.user.css
     'raw.githubusercontent.com': {
       glob: '/*',
-      rx: /^(\/[^/]+?){4}\.user\.(css|styl)$/,
+      rx: /^(\/[^/]+?){4,}?\.user\.(css|styl)$/,
     },
   };
 
