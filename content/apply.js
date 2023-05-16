@@ -104,7 +104,7 @@
     } else {
       const SYM_ID = 'styles';
       const SYM = Symbol.for(SYM_ID);
-      const parentStyles = isFrameSameOrigin && parent[parent.Symbol.for(SYM_ID)];
+      const parentStyles = isFrameSameOrigin && chrome.app && parent[parent.Symbol.for(SYM_ID)];
       const styles =
         window[SYM] ||
         parentStyles && await new Promise(onFrameElementInView) && parentStyles ||
