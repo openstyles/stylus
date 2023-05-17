@@ -30,7 +30,8 @@
     onUpdate: onInjectorUpdate,
   });
   // dynamic iframes don't have a URL yet so we'll use their parent's URL (hash isn't inherited)
-  let matchUrl = isFrameSameOrigin && location.protocol === 'about:'
+  const isFrameNoUrl = isFrameSameOrigin && location.protocol === 'about:';
+  let matchUrl = isFrameNoUrl
     ? parent.location.href.split('#')[0]
     : location.href;
 
@@ -104,7 +105,7 @@
     } else {
       const SYM_ID = 'styles';
       const SYM = Symbol.for(SYM_ID);
-      const parentStyles = isFrameSameOrigin && chrome.app && parent[parent.Symbol.for(SYM_ID)];
+      const parentStyles = isFrameNoUrl && chrome.app && parent[parent.Symbol.for(SYM_ID)];
       const styles =
         window[SYM] ||
         parentStyles && await new Promise(onFrameElementInView) && parentStyles ||
