@@ -386,17 +386,16 @@ function LivePreview() {
     },
 
     update(newData) {
-      data = newData;
       if (!port) {
-        if (!data.id || !data.enabled || !enabled || !editor.dirty.isDirty()) {
+        if (!enabled
+        || !newData.id // not saved
+        || !newData.enabled && data && !data.enabled // disabled both before and now
+        || !editor.dirty.isDirty()) {
           return;
         }
         createPreviewer();
-      } else if (!data.enabled) {
-        port.disconnect();
-        port = null;
-        return;
       }
+      data = newData;
       updatePreviewer(data);
     },
   };
