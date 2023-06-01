@@ -17,7 +17,7 @@
     getCssPropsValues() {
       require(['/js/csslint/parserlib']); /* global parserlib */
       const {
-        css: {GlobalKeywords, NamedColors, Properties},
+        css: {GlobalKeywords, NamedColors, Parser: {AT}, Properties},
         util: {describeProp},
       } = parserlib;
       const COLOR = '<color>';
@@ -45,7 +45,12 @@
           if (uniq.length) res[k] = uniq;
         }
       }
-      return {all: res, colors: NamedColors, global: GlobalKeywords};
+      return {
+        all: res,
+        ats: Object.keys(AT).map(k => `@${k === 'document' ? '-moz-' : ''}${k}`).sort(),
+        colors: NamedColors,
+        global: GlobalKeywords,
+      };
     },
 
     getRules(linter) {

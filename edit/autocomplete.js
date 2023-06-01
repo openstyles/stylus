@@ -22,7 +22,7 @@
   const {tokenHooks} = cssMime;
   const originalCommentHook = tokenHooks['/'];
   const originalHelper = CodeMirror.hint.css || (() => {});
-  let cssMedia, cssProps, cssValues;
+  let cssAts, cssMedia, cssProps, cssValues;
 
   const AOT_ID = 'autocompleteOnTyping';
   const AOT_PREF_ID = 'editor.' + AOT_ID;
@@ -82,18 +82,7 @@
         break;
 
       case '@':
-        list = [
-          '@-moz-document',
-          '@charset',
-          '@font-face',
-          '@import',
-          '@keyframes',
-          '@media',
-          '@namespace',
-          '@page',
-          '@supports',
-          '@viewport',
-        ];
+        list = cssAts || (await initCssProps(), cssAts);
         if (isLessLang) list = findAllCssVars(cm, left, '\\s*:').concat(list);
         break;
 
@@ -189,7 +178,7 @@
       list.sort();
     }
     return list && {
-      list: /^(--|[#.\w])\S*\s*$/.test(leftLC)
+      list: /^(--|[#.\w])\S*\s*$|^@/.test(leftLC)
         ? list.filter(s => s.toLowerCase().startsWith(leftLC))
         : list,
       from: {line, ch: prev + str.match(/^\s*/)[0].length},
@@ -199,6 +188,7 @@
 
   async function initCssProps() {
     cssValues = await linterMan.worker.getCssPropsValues();
+    cssAts = cssValues.ats;
     cssProps = addSuffix(cssValues.all);
     cssMedia = [].concat(...Object.entries(cssMime).map(getMediaKeys).filter(Boolean)).sort();
     for (const v of Object.values(cssValues.all)) {
