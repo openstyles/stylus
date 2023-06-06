@@ -17,6 +17,8 @@ const colorScheme = (() => {
     time: false,
   };
   let isDarkNow = false;
+  // matchMedia's onchange doesn't work in bg context, so we use it in our content script
+  update('system', matchMedia('(prefers-color-scheme:dark)').matches);
 
   prefs.subscribe(kSTATE, () => update());
   prefs.subscribe([kSTART, kEND], (key, value) => {

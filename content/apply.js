@@ -62,7 +62,6 @@
   // https://bugzil.la/1587723, https://crbug.com/968651
   const mqDark = matchMedia('(prefers-color-scheme: dark)');
   mqDark.onchange = e => API.colorScheme.updateSystemPreferDark(e.matches);
-  mqDark.onchange(mqDark);
 
   // Declare all vars before init() or it'll throw due to "temporal dead zone" of const/let
   init();
