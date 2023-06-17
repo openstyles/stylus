@@ -26,13 +26,13 @@ bgReady.all.then(() => {
     // https://github.com/StylishThemes/GitHub-Dark/raw/master/foo/bar/github-dark.user.css
     'github.com': {
       glob: '/*/raw/*',
-      rx: /^\/[^/]+\/[^/]+\/raw\/.+?\/[^/]+?\.user\.(css|styl)$/,
+      rx: /^\/[^/]+\/[^/]+\/raw\/.+?\/[^/]+?\.user\.(css|less|styl)$/,
     },
     // https://raw.githubusercontent.com/StylishThemes/GitHub-Dark/master/github-dark.user.css
     // https://raw.githubusercontent.com/StylishThemes/GitHub-Dark/master/foo/bar/github-dark.user.css
     'raw.githubusercontent.com': {
       glob: '/*',
-      rx: /^(\/[^/]+?){4,}?\.user\.(css|styl)$/,
+      rx: /^(\/[^/]+?){4,}?\.user\.(css|less|styl)$/,
     },
   };
 
@@ -86,14 +86,17 @@ bgReady.all.then(() => {
   }
 
   function makeUsercssGlobs(host, path) {
-    return '%css,%css?*,%styl,%styl?*'.replace(/%/g, `*://${host}${path}.user.`).split(',');
+    return '%css,%less,%styl'
+      .replace(/%\w+/g, '$&,$&?*')
+      .replace(/%/g, `*://${host}${path}.user.`)
+      .split(',');
   }
 
   async function maybeInstall({tabId, url, oldUrl = ''}) {
     if (url.includes('.user.') &&
         !tabMan.get(tabId, 'distro') &&
         /^(https?|file|ftps?):/.test(url) &&
-        /\.user\.(css|styl)$/.test(url.split(/[#?]/, 1)[0]) &&
+        /\.user\.(css|less|styl)$/.test(url.split(/[#?]/, 1)[0]) &&
         !oldUrl.startsWith(makeInstallerUrl(url))) {
       const inTab = url.startsWith('file:') && !chrome.app;
       const code = await (inTab ? loadFromFile : loadFromUrl)(tabId, url);
