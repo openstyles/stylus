@@ -16,6 +16,7 @@
   const cms = new Set();
   let lazyOpt;
 
+  const cmDefaults = CodeMirror.defaults;
   const cmFactory = window.cmFactory = {
 
     create(place, options) {
@@ -31,7 +32,7 @@
     },
 
     globalSetOption(key, value) {
-      CodeMirror.defaults[key] = value;
+      cmDefaults[key] = value;
       if (cms.size > 4 && lazyOpt.names.includes(key)) {
         lazyOpt.set(key, value);
       } else {
@@ -71,7 +72,9 @@
     k !== 'editor.arrowKeysTraverse' && // handled in sections-editor.js
     prefToCmOpt(k) in CodeMirror.defaults);
   const {insertTab, insertSoftTab} = CodeMirror.commands;
-
+  for (const key of prefKeys) {
+    cmDefaults[prefToCmOpt(key)] = prefs.get(key);
+  }
   for (const [key, fn] of Object.entries({
     'editor.tabSize'(cm, value) {
       cm.setOption('indentUnit', Number(value));
