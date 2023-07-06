@@ -459,6 +459,7 @@ label {
 .section .CodeMirror {
   margin-bottom: .5em;
   box-sizing: border-box;
+  min-height: 20px;
 }
 /* deleted section */
 .deleted-section {
