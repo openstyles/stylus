@@ -477,7 +477,7 @@
     'touch-action':
       'auto | none | pan-x | pan-y | pan-left | pan-right | pan-up | pan-down | manipulation',
     'transform': 'none | <fn:transform>+',
-    'transform-box': 'border-box | fill-box | view-box',
+    'transform-box': 'content-box | border-box | fill-box | stroke-box | view-box',
     'transform-origin': '[ left | center | right | <len-pct> ] ' +
       '[ top | center | bottom | <len-pct> ] <len>? | ' +
       '[ left | center | right | top | bottom | <len-pct> ] | ' +
