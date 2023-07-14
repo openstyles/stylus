@@ -111,7 +111,7 @@
   /** @param {chrome.webRequest.HttpHeader} csp */
   function patchCsp(csp) {
     const src = {};
-    for (let p of csp.value.split(';')) {
+    for (let p of csp.value.split(/[;,]/)) {
       p = p.trim().split(/\s+/);
       src[p[0]] = p.slice(1);
     }
