@@ -130,8 +130,8 @@
     'caption-side': 'top | bottom | inline-start | inline-end',
     'clear': 'none | right | left | both | inline-start | inline-end',
     'clip': '<rect> | auto',
-    'clip-path': '<uri> | [ <basic-shape> || <geometry-box> ] | none',
-    'clip-rule': 'nonzero | evenodd',
+    'clip-path': '<url> | [ <basic-shape> || <geometry-box> ] | none',
+    'clip-rule': '<fill-rule>',
     'color': '<color>',
     'color-interpolation': 'auto | sRGB | linearRGB',
     'color-interpolation-filters': '<color-interpolation>',
@@ -158,7 +158,7 @@
     'counter-increment': '<counter>',
     'counter-reset': '<counter>',
     'counter-set': '<counter>',
-    'cursor': '[ <uri> [ <num> <num> ]? , ]* ' +
+    'cursor': '[ [ <url> | image-set() ] [ <num> <num> ]? , ]* ' +
       '[ auto | default | none | context-menu | help | pointer | progress | wait | ' +
       'cell | crosshair | text | vertical-text | alias | copy | move | no-drop | ' +
       'not-allowed | grab | grabbing | e-resize | n-resize | ne-resize | nw-resize | ' +
@@ -328,7 +328,7 @@
       '[ / <offset-anchor> ]?',
     'offset-anchor': 'auto | <position>',
     'offset-distance': '<len-pct>',
-    'offset-path': 'none | ray() | path() | <uri> | [<basic-shape> && <coord-box>?] | <coord-box>',
+    'offset-path': 'none | [ ray() | <url> | <basic-shape> ] || <coord-box>',
     'offset-position': 'auto | <position>',
     'offset-rotate': '[ auto | reverse ] || <angle>',
     'opacity': '<num0-1> | <pct>',
@@ -821,12 +821,7 @@
       '[ <line-names>? [ <fixed-size> | <fixed-repeat> ] ]* <line-names>?',
     '<axis>': 'block | inline | vertical | horizontal',
     '<baseline-position>': '[ first | last ]? baseline',
-    '<basic-shape>':
-      '<inset> | ' +
-      'circle( <len-pct-side>? [ at <position> ]? ) | ' +
-      'ellipse( [ <len-pct-side>{2} ]? [ at <position> ]? ) | ' +
-      'path( [ [ nonzero | evenodd ] , ]? <string> ) | ' +
-      'polygon( [ [ nonzero | evenodd | inherit ] , ]? [ <len-pct> <len-pct> ]# )',
+    '<basic-shape>': '<fn:basicShape>',
     '<bg-image>': '<image> | none',
     '<bg-layer>': '<bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || ' +
       '<attachment> || <box>{1,2}',
@@ -875,7 +870,7 @@
     '<family-name>': '<string> | <custom-ident>+',
     // https://drafts.fxtf.org/filter-effects/#supported-filter-functions
     // Value may be omitted in which case the default is used
-    '<filter-function-list>': '[ <fn:filter> | <uri> ]+',
+    '<filter-function-list>': '[ <fn:filter> | <url> ]+',
     '<final-bg-layer>': '<color> || <bg-image> || <bg-position> [ / <bg-size> ]? || ' +
       '<repeat-style> || <attachment> || <box>{1,2}',
     '<fixed-repeat>': 'repeat( [ <int1+> ] , [ <line-names>? <fixed-size> ]+ <line-names>? )',
@@ -912,17 +907,17 @@
     '<grid-line>': 'auto | [ <int> && <ident-for-grid>? ] | <ident-for-grid> | ' +
       '[ span && [ <int> || <ident-for-grid> ] ]',
     '<image>': '<image-no-set> | image-set( <image-set># )',
-    '<image-no-set>': '<uri> | <gradient> | -webkit-cross-fade()',
+    '<image-no-set>': '<url> | <gradient> | -webkit-cross-fade()',
     '<image-set>': '[ <image-no-set> | <string> ] [ <resolution> || type( <string> ) ]',
     '<inflexible-breadth>': '<len-pct> | min-content | max-content | auto',
-    '<inset>': 'inset( <len-pct>{1,4} <border-radius-round>? )',
-    '<len-pct-side>': '<len-pct> | closest-side | farthest-side',
+    '<inset>': 'inset( <inset-arg> )',
+    '<inset-arg>': '<len-pct>{1,4} <border-radius-round>?',
     '<line-height>': '<num> | <len-pct> | normal',
     '<line-names>': '"[" <ident-for-grid> "]"',
     '<overflow-position>': 'unsafe | safe',
     '<overflow>': '<vis-hid> | clip | scroll | auto | overlay', // TODO: warning about `overlay`
     '<overscroll>': 'contain | none | auto',
-    '<paint>': 'none | <color> | <uri> [ none | <color> ]? | context-fill | context-stroke',
+    '<paint>': 'none | <color> | <url> [ none | <color> ]? | context-fill | context-stroke',
     // Because our `alt` combinator is ordered, we need to test these
     // in order from longest possible match to shortest.
     '<position>':
@@ -931,13 +926,15 @@
       '[ top | center | bottom | <len-pct> ]? | ' +
       '[ left | center | right ] || [ top | center | bottom ]',
     '<ratio>': '<num0+> [ / <num0+> ]?',
-    '<rect>': 'rect( [ <len> | auto ]#{4} <border-radius-round>? )',
+    '<rect>': 'rect( <rect-arg> )',
+    '<rect-arg>': '[ <len> | auto ]#{4} <border-radius-round>?',
     '<relative-size>': 'smaller | larger',
     '<repeat-style>': 'repeat-x | repeat-y | [ repeat | space | round | no-repeat ]{1,2}',
     '<rgb-xyz>': 'srgb|srgb-linear|display-p3|a98-rgb|prophoto-rgb|rec2020|xyz|xyz-d50|xyz-d65',
     '<self-position>': 'center | start | end | self-start | self-end | flex-start | flex-end',
     '<shadow>': 'inset? && [ <len>{2,4} && <color>? ]',
     '<shape-box>': '<box> | margin-box',
+    '<shape-radius>': '<len-pct0+> | closest-side | farthest-side',
     '<timing-function>': 'linear|ease|ease-in|ease-out|ease-in-out|step-start|step-end | ' +
       'cubic-bezier( <num0-1> , <num> , <num0-1> , <num> ) | ' +
       'linear( [ <num> && [ <pct>{1,2} ]? ]# ) | ' +
@@ -948,10 +945,12 @@
     '<track-repeat>': 'repeat( [ <int1+> ] , [ <line-names>? <track-size> ]+ <line-names>? )',
     '<track-size>': '<track-breadth> | minmax( <inflexible-breadth> , <track-breadth> ) | ' +
       'fit-content( <len-pct> )',
+    '<url>': '<uri> | src( <string> [ <ident> | <func> ]* )',
     '<vis-hid>': 'visible | hidden',
     '<width-height>': '<len-pct> | min-content | max-content | fit-content | ' +
       '-moz-available | -webkit-fill-available | fit-content( <len-pct> )',
-    '<xywh>': 'xywh( <len-pct>{2} <len-pct0+>{2} <border-radius-round>? )',
+    '<xywh>': 'xywh( <xywh-arg> )',
+    '<xywh-arg>': '<len-pct>{2} <len-pct0+>{2} <border-radius-round>?',
   };
 
   const VTFunctions = {
@@ -990,6 +989,15 @@
       'opacity': '<num-pct>?',
       'saturate': '<num-pct>?',
       'sepia': '<num-pct>?',
+    },
+    basicShape: {
+      'circle': '<shape-radius> [ at <position> ]?',
+      'ellipse': '[ <shape-radius>{2} ]? [ at <position> ]?',
+      'inset': '<inset-arg>',
+      'path': '[ <fill-rule> , ]? <string>',
+      'polygon': '[ <fill-rule> , ]? [ <len-pct> <len-pct> ]#',
+      'rect': '<rect-arg>',
+      'xywh': '<xywh-arg>',
     },
     transform: {
       __proto__: null,
@@ -1037,7 +1045,9 @@
     '<custom-ident>': p => p.id === IDENT && !buGlobalKeywords.has(p),
     '<custom-prop>': p => p.type === 'custom-prop',
     '<flex>': p => p.isCalc || p.units === 'fr' && p.number >= 0,
+    '<func>': p => p.type === 'fn',
     '<hue>': p => p.isCalc || p.id === NUMBER || p.id === ANGLE,
+    '<ident>': p => p.id === IDENT,
     '<ident-for-grid>': customIdentChecker('span,auto'),
     '<ident-not-none>': p => p.id === IDENT && !p.isNone,
     '<ie-function>': p => p.ie,
@@ -1334,7 +1344,7 @@
     /** @this {Matcher} */
     static funcToStr(prec) {
       const {name, body, list} = this.arg;
-      return name ? `${name}(${body || ''})` :
+      return name ? `${name}(${body ? ` ${body} ` : ''})` :
         (prec = prec > Matcher.ALT ? '[ ' : '') +
         Object.keys(list).join('() | ') +
         (prec ? '() ]' : '()');
@@ -1542,18 +1552,20 @@
     }
     /** Matcher for a single type */
     static term(str) {
+      const origStr = str;
       let m = Matcher.cache[str = str.toLowerCase()]; if (m) return m;
       if (str[0] !== '<') {
         m = new Matcher(Matcher.stringArrTest, Matcher.stringArrToStr,
           new Bucket(str.split(rxAltSep)));
         m._string = str;
       } else if (str.startsWith('<fn:')) {
-        m = new Matcher(Matcher.funcTest, Matcher.funcToStr, {list: VTFunctions[str.slice(4, -1)]});
+        m = new Matcher(Matcher.funcTest, Matcher.funcToStr, {list: VTFunctions[origStr.slice(4, -1)]});
       } else if ((m = VTSimple[str])) {
         m = new Matcher(Matcher.simpleTest, str, m);
       } else {
         m = VTComplex[str] || Properties[str.slice(1, -1)];
         m = m.matchFunc ? m : m.call ? m(Matcher) : Matcher.cache[m] || Matcher.parse(m);
+        if (str === '<url>') { m._string = str; delete m.toString; }
       }
       Matcher.cache[str] = m;
       return m;

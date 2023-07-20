@@ -35,13 +35,13 @@ warning	95	31	Expected end of value but found "/".
 warning	97	7	Unknown property "object-overflow".
 warning	98	7	Non-alphabetical order: "clip-path".
 warning	104	7	Ungrouped duplicate "filter".
-warning	104	15	Expected none | [ blur() | brightness() | contrast() | drop-shadow() | grayscale() | hue-rotate() | invert() | opacity() | saturate() | sepia() | <uri> ]+ | <ie-function> but found "alpha(opacity=70)".
+warning	104	15	Expected none | [ blur() | brightness() | contrast() | drop-shadow() | grayscale() | hue-rotate() | invert() | opacity() | saturate() | sepia() | <url> ]+ | <ie-function> but found "alpha(opacity=70)".
 warning	108	19	Missing -moz- prefix for gradient.
 warning	117	5	!important.
 warning	118	5	!important.
 warning	118	5	Non-alphabetical order: "filter".
 warning	118	20	Expected <number-percentage>? but found "foo0".
-warning	119	13	Expected none | [ blur() | brightness() | contrast() | drop-shadow() | grayscale() | hue-rotate() | invert() | opacity() | saturate() | sepia() | <uri> ]+ | <ie-function> but found "foo(1)".
+warning	119	13	Expected none | [ blur() | brightness() | contrast() | drop-shadow() | grayscale() | hue-rotate() | invert() | opacity() | saturate() | sepia() | <url> ]+ | <ie-function> but found "foo(1)".
 error	123	9	Expected prop:value or a selector that is not a tag but found "body".
 warning	134	20	Unknown pseudo :--state1
 warning	134	29	Must use -moz- prefix in :loading
@@ -70,5 +70,5 @@ error	531	7	Expected FUNCTION, IDENT but found " ".
 error	532	10	Expected "{" but found ";".
 error	534	1	Expected "{" but found "}".
 warning	538	19	Non-alphabetical order: "margin".
-warning	543	33	Expected [ [ <uri> | radial-gradient() | linear-gradient() | conic-gradient() | gradient() | repeating-radial-gradient() | repeating-linear-gradient() | repeating-conic-gradient() | repeating-gradient() | -webkit-cross-fade() | <string> ] [ <resolution> || type(<string>) ] ]# but found ""foo.png" foo".
+warning	543	33	Expected [ [ <url> | radial-gradient() | linear-gradient() | conic-gradient() | gradient() | repeating-radial-gradient() | repeating-linear-gradient() | repeating-conic-gradient() | repeating-gradient() | -webkit-cross-fade() | <string> ] [ <resolution> || type( <string> ) ] ]# but found ""foo.png" foo".
 warning	548	32	Expected [ [ root | nearest | self ] || [ block | inline | vertical | horizontal ] ]? but found "root2 block".
