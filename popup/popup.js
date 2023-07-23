@@ -221,7 +221,7 @@ function createWriterElement(frame, index) {
   const elFor = !index ? $('#write-style-for') : {};
   // For this URL
   const urlLink = t.template.writeStyle.cloneNode(true);
-  const isAboutBlank = url === ABOUT_BLANK;
+  const isAboutBlank = url.startsWith('about:');
   Object.assign(urlLink, {
     href: 'edit.html?url-prefix=' + encodeURIComponent(url),
     title: elFor.title = `url-prefix("${url}")`,
