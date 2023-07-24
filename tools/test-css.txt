@@ -547,4 +547,10 @@ a { padding: 1em; margin: 1ex; }
     animation-timeline: scroll(root block);
     animation-timeline: scroll(root2 block);
   }
+  a {
+   contain-intrinsic-size: auto none;
+   contain-intrinsic-size: auto 100px;
+   contain-intrinsic-size: 100px;
+   contain-intrinsic-size: none;
+  }
 }

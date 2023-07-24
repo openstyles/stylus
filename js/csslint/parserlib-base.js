@@ -846,7 +846,7 @@
     '<box-fsv>': 'fill-box | stroke-box | view-box',
     '<color>': '<named-or-hex-color> | <fn:color>',
     '<coord-box>': '<box> | <box-fsv>',
-    '<contain-intrinsic>': 'none | <len> | auto <len>',
+    '<contain-intrinsic>': 'auto? [ none | <len> ]',
     '<content-distribution>': 'space-between | space-around | space-evenly | stretch',
     '<content-list>':
       '[ <string> | <image> | <attr> | ' +
