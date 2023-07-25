@@ -14,30 +14,36 @@ const filtersSelector = {
   numShown: 0,
   numTotal: 0,
 };
+const fltSearch = 'search';
+const fltMode = 'searchMode';
+const fltModePref = 'manage.searchMode';
+let elSearch, elSearchMode;
 
-let filtersInitialized = false;
-
-router.watch({search: ['search', 'searchMode']}, ([search, mode]) => {
-  $('#search').value = search || '';
-  if (mode) $('#searchMode').value = mode;
-  if (!filtersInitialized) {
-    initFilters();
-    filtersInitialized = true;
-  } else {
-    searchStyles();
+router.watch({search: [fltSearch, fltMode]}, ([search, mode]) => {
+  if (!elSearch) initFilters();
+  elSearch.value = search || '';
+  if (mode || elSearchMode.value === 'url') {
+    elSearchMode.value = mode || prefs.get(fltModePref);
   }
+  searchStyles();
 });
 
 function initFilters() {
-  $('#search').oninput = $('#searchMode').oninput = function (e) {
-    router.updateSearch(this.id, e.target.value);
-  };
+  elSearch = $('#search');
+  elSearchMode = $('#' + fltModePref);
+  elSearchMode.on('change', e => {
+    if (elSearchMode.value === 'url') { // `url` mode shouldn't be saved
+      e.stopPropagation();
+    }
+  }, true);
+  elSearch.oninput = () => router.updateSearch(fltSearch, elSearch.value);
+  elSearchMode.oninput = () => router.updateSearch(fltMode, elSearchMode.value);
 
   $('#search-help').onclick = event => {
     event.preventDefault();
     messageBoxProxy.show({
       className: 'help-text center-dialog',
-      title: t('search'),
+      title: t(fltSearch),
       contents:
         $create('ul',
           t('searchStylesHelp').split('\n').map(line =>
@@ -114,7 +120,7 @@ function initFilters() {
       }
     }
     filterOnChange({forceRefilter: true});
-    router.updateSearch({search: '', searchMode: ''});
+    router.updateSearch({[fltSearch]: '', [fltMode]: ''});
   };
 
   filterOnChange({forceRefilter: true});
@@ -161,7 +167,7 @@ function filterAndAppend({entry, container}) {
  * @returns {Promise} resolves on async search
  */
 async function reapplyFilter(container = installed, alreadySearched) {
-  if (!alreadySearched && $('#search').value.trim()) {
+  if (!alreadySearched && elSearch.value.trim()) {
     await searchStyles({immediately: true, container});
   }
   // A: show
@@ -251,19 +257,17 @@ function showFiltersStats() {
 }
 
 async function searchStyles({immediately, container} = {}) {
-  const el = $('#search');
-  const elMode = $('#searchMode');
-  const query = el.value.trim();
-  const mode = elMode.value;
-  if (query === el.lastValue && mode === elMode.lastValue && !immediately && !container) {
+  const query = elSearch.value.trim();
+  const mode = elSearchMode.value;
+  if (query === elSearch.lastValue && mode === elSearchMode.lastValue && !immediately && !container) {
     return;
   }
   if (!immediately) {
     debounce(searchStyles, 150, {immediately: true});
     return;
   }
-  el.lastValue = query;
-  elMode.lastValue = mode;
+  elSearch.lastValue = query;
+  elSearchMode.lastValue = mode;
 
   const all = installed.children;
   const entries = container && container.children || container || all;

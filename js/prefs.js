@@ -63,6 +63,7 @@
     'manage.newUI.faviconsGray': true, // gray out favicons
     'manage.newUI.targets': 3,      // max number of applies-to targets visible: 0 = none
     'manage.newUI.sort': 'title,asc',
+    'manage.searchMode': 'meta',
 
     'editor.options': {},           // CodeMirror.defaults.*
     'editor.toc.expanded': true,    // UI element state: expanded/collapsed

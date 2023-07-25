@@ -2,6 +2,7 @@
 /* global CHROME UA debounce */// toolbox.js
 /* global Events handleBulkChange handleVisibilityChange */// events.js
 /* global fitSelectBoxesIn switchUI showStyles */// render.js
+/* global fltMode */// filters.js
 /* global prefs */
 /* global router */
 /* global sorter */
@@ -55,7 +56,7 @@ newUI.renderClass();
   const query = router.getSearch('search');
   const [styles, ids] = await Promise.all([
     API.styles.getAll(),
-    query && API.styles.searchDB({query, mode: router.getSearch('searchMode')}),
+    query && API.styles.searchDB({query, mode: router.getSearch(fltMode)}),
     newUI.hasFavs() && newUI.readBadFavs(),
     prefs.ready,
   ]);
