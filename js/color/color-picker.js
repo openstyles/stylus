@@ -151,8 +151,15 @@
         window.EyeDropper &&
         $('dropper', {
           tag: 'img',
-          onclick: () => new window.EyeDropper().open().then(r => setFromColor(r.sRGBHex), () => 0),
           srcset: '/images/eyedropper/16px.png, /images/eyedropper/32px.png 2x',
+          async onclick() {
+            try {
+              const c = await new window.EyeDropper().open();
+              userActivity = true;
+              setFromColor(c.sRGBHex);
+              colorpickerCallback();
+            } catch (e) {}
+          },
         }),
       ]),
       $palette = $('palette', {
@@ -200,7 +207,7 @@
     options = PUBLIC_API.options = opt;
     if (opt.round !== false) opt.round = true;
     prevFocusedElement = document.activeElement;
-    userActivity = 0;
+    userActivity = false;
     lastOutputColor = opt.color || '';
     $formatChangeButton.title = opt.tooltipForSwitcher || '';
     maxHeight = `${opt.maxHeight || 300}px`;
@@ -312,7 +319,7 @@
   }
 
   function setFromFormatElement({shiftKey}) {
-    userActivity = performance.now();
+    userActivity = true;
     HSV.a = isNaN(HSV.a) ? 1 : HSV.a;
     const formats = Object.keys($inputGroups);
     const dir = shiftKey ? -1 : 1;
@@ -334,7 +341,7 @@
   }
 
   function setFromInputs(event) {
-    userActivity = event ? performance.now() : userActivity;
+    if (event) userActivity = true;
     if (Object.values($inputs[currentFormat]).every(validateInput)) {
       setFromColor($inputs.color);
     }
@@ -411,7 +418,7 @@
       newValue = isAlpha ? alphaToString(newValue) : newValue;
     }
     event.preventDefault();
-    userActivity = performance.now();
+    userActivity = true;
     if (newValue !== undefined && newValue !== value) {
       el.value = newValue;
       setFromColor($inputs.color);
@@ -596,7 +603,7 @@
   function onPaletteClicked(e) {
     if (e.target !== e.currentTarget && e.target.__color) {
       if (!e.button && setColor(e.target.__color)) {
-        userActivity = performance.now();
+        userActivity = true;
         colorpickerCallback();
       } else if (e.button && options.paletteCallback) {
         e.preventDefault(); // suppress the default context menu
@@ -684,7 +691,7 @@
     for (const m of toArray(mode)) {
       dragging[m] = true;
     }
-    userActivity = performance.now();
+    userActivity = true;
     return true;
   }
 
@@ -704,7 +711,7 @@
     for (const m of toArray(mode)) {
       dragging[m] = false;
     }
-    userActivity = performance.now();
+    userActivity = true;
     return true;
   }
 
