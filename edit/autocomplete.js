@@ -161,7 +161,7 @@
             leftLC = '';
           }
           list = state === 'atBlock_parens' ? cssMedia : cssProps;
-          end -= /\W$/u.test(str); // e.g. don't consume ) when inside ()
+          end -= /[^-\w]$/u.test(str); // e.g. don't consume ) when inside ()
           end += execAt(rxCONSUME, end, text)[0].length;
         }
       }
