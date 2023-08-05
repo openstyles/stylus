@@ -629,6 +629,7 @@ function SectionsEditor() {
     sections[index] = sections[index - 1];
     sections[index - 1] = section;
     updateSectionOrder();
+    editor.scrollToEditor(section.cm);
   }
 
   /** @param {EditorSection} section */
@@ -641,6 +642,7 @@ function SectionsEditor() {
     sections[index] = sections[index + 1];
     sections[index + 1] = section;
     updateSectionOrder();
+    editor.scrollToEditor(section.cm);
   }
 
   /** @param {EditorSection} section */
