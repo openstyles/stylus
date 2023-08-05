@@ -3,7 +3,7 @@
 /* global CodeMirror */
 /* global RX_META debounce */// toolbox.js
 /* global MozDocMapper clipString helpPopup rerouteHotkeys showCodeMirrorPopup */// util.js
-/* global createSection */// sections-editor-section.js
+/* global EditorSection */// sections-editor-section.js
 /* global editor */
 /* global linterMan */
 /* global prefs */
@@ -65,7 +65,7 @@ function SectionsEditor() {
 
     getSearchableInputs(cm) {
       const sec = sections.find(s => s.cm === cm);
-      return sec ? sec.appliesTo.map(a => a.valueEl).filter(Boolean) : [];
+      return sec ? sec.targets.map(a => a.valueEl).filter(Boolean) : [];
     },
 
     jumpToEditor(i) {
@@ -284,7 +284,7 @@ function SectionsEditor() {
 
   function getAssociatedEditor(nearbyElement) {
     for (let el = nearbyElement; el; el = el.parentElement) {
-      // added by createSection
+      // added by EditorSection
       if (el.CodeMirror) {
         return el.CodeMirror;
       }
@@ -473,11 +473,11 @@ function SectionsEditor() {
       return false;
     }
     for (const section of sections) {
-      for (const apply of section.appliesTo) {
-        if (apply.type !== 'regexp') {
+      for (const target of section.targets) {
+        if (target.type !== 'regexp') {
           continue;
         }
-        if (!apply.valueEl.reportValidity()) {
+        if (!target.valueEl.reportValidity()) {
           messageBoxProxy.alert(t('styleBadRegexp'));
           return false;
         }
@@ -595,7 +595,7 @@ function SectionsEditor() {
     if (!init) {
       init = {code: '', urlPrefixes: ['https://example.com/']};
     }
-    const section = createSection(init, genId, si);
+    const section = new EditorSection(init, genId, si);
     const {cm} = section;
     const {code} = init;
     const index = base ? sections.indexOf(base) + 1 : sections.length;

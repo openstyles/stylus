@@ -9,176 +9,164 @@
 /* global t */// localization.js
 'use strict';
 
-/* exported createSection */
-/**
- * @param {StyleSection} originalSection
- * @param {function():number} genId
- * @param {EditorScrollInfo} [si]
- * @returns {EditorSection}
- */
-function createSection(originalSection, genId, si) {
-  const {dirty} = editor;
-  const sectionId = genId();
-  const el = t.template.section.cloneNode(true);
-  const elLabel = $('.code-label', el);
-  const cm = cmFactory.create(wrapper => {
-    // making it tall during initial load so IntersectionObserver sees only one adjacent CM
-    if (editor.loading) {
-      wrapper.style.height = si ? si.height : '100vh';
-    }
-    elLabel.after(wrapper);
-  }, {
-    value: originalSection.code,
-  });
-  el.CodeMirror = cm; // used by getAssociatedEditor
-  cm.el = el;
-  editor.applyScrollInfo(cm, si);
+/* exported EditorSection */
 
-  const changeListeners = new Set();
-
-  const appliesToContainer = $('.applies-to', el);
-  const appliesToList = $('.applies-to-list', el);
-  const appliesTo = [];
-  MozDocMapper.forEachProp(originalSection, (type, value) =>
-    insertApplyAfter(type, value));
-  if (!appliesTo.length) {
-    insertApplyAfter();
-  }
-
-  let changeGeneration = cm.changeGeneration();
-  let removed = false;
-
-  registerEvents();
-  updateRegexpTester();
-  createResizeGrip(cm);
-
-  /** @namespace EditorSection */
-  const section = {
-    id: sectionId,
-    el,
-    cm,
-    appliesTo,
-    getModel() {
-      const items = appliesTo.map(a => a.type && [a.type, a.value]);
-      return MozDocMapper.toSection(items, {code: cm.getValue()});
-    },
-    remove() {
-      linterMan.disableForEditor(cm);
-      el.classList.add('removed');
-      removed = true;
-      appliesTo.forEach(a => a.remove());
-    },
-    render() {
-      cm.refresh();
-    },
-    destroy() {
-      cmFactory.destroy(cm);
-    },
-    restore() {
-      linterMan.enableForEditor(cm);
-      el.classList.remove('removed');
-      removed = false;
-      appliesTo.forEach(a => a.restore());
-      cm.refresh();
-    },
-    onChange(fn) {
-      changeListeners.add(fn);
-    },
-    off(fn) {
-      changeListeners.delete(fn);
-    },
-    get removed() {
-      return removed;
-    },
-    tocEntry: {
+class EditorSection {
+  /**
+   * @param {StyleSection} sectionData
+   * @param {function():number} genId
+   * @param {EditorScrollInfo} [si]
+   */
+  constructor(sectionData, genId, si) {
+    const me = this; // for tocEntry.removed
+    const el = this.el = t.template.section.cloneNode(true);
+    const elLabel = this.elLabel = $('.code-label', el);
+    const cm = this.cm = el.CodeMirror /* used by getAssociatedEditor */ = cmFactory.create(wrapper => {
+      // making it tall during initial load so IntersectionObserver sees only one adjacent CM
+      if (editor.loading) {
+        wrapper.style.height = si ? si.height : '100vh';
+      }
+      elLabel.after(wrapper);
+    }, {
+      value: sectionData.code,
+    });
+    cm.el = el;
+    cm.editorSection = this;
+    el.me = this;
+    this.genId = genId;
+    this.id = genId();
+    this.changeListeners = new Set();
+    this.changeGeneration = cm.changeGeneration();
+    this.removed = false;
+    this.tocEntry = {
       label: '',
       get removed() {
-        return removed;
+        return me.removed; // using `me` because of different `this`
       },
-    },
-  };
+    };
+    this.targets = /** @type {SectionTarget[]} */ [];
+    this.targetsEl = $('.applies-to', el);
+    this.targetsListEl = $('.applies-to-list', el);
+    this.targetsEl.on('change', this);
+    this.targetsEl.on('input', this);
+    this.targetsEl.on('click', this);
+    $('.test-regexp', el).on('click', this);
+    cm.on('changes', EditorSection.onCmChanges);
+    MozDocMapper.forEachProp(sectionData, (t, v) => this.addTarget(t, v));
+    if (!this.targets.length) this.addTarget();
+    editor.applyScrollInfo(cm, si);
+    initBeautifyButton($('.beautify-section', el), [cm]);
+    prefs.subscribe('editor.toc.expanded', this.updateTocPrefToggled.bind(this), {runNow: true});
+    this.updateRegexpTester();
+    new ResizeGrip(cm); // eslint-disable-line no-use-before-define
+  }
 
-  prefs.subscribe('editor.toc.expanded', updateTocPrefToggled, {runNow: true});
+  getModel() {
+    const items = this.targets.map(t => t.type && [t.type, t.value]);
+    return MozDocMapper.toSection(items, {code: this.cm.getValue()});
+  }
 
-  return section;
+  remove() {
+    linterMan.disableForEditor(this.cm);
+    this.el.classList.add('removed');
+    this.removed = true;
+    this.targets.forEach(t => t.remove());
+  }
 
-  function emitSectionChange(origin) {
-    for (const fn of changeListeners) {
-      fn(origin);
+  render() {
+    this.cm.refresh();
+  }
+
+  destroy() {
+    cmFactory.destroy(this.cm);
+  }
+
+  restore() {
+    linterMan.enableForEditor(this.cm);
+    this.el.classList.remove('removed');
+    this.removed = false;
+    this.targets.forEach(t => t.restore());
+    this.cm.refresh();
+  }
+
+  onChange(fn) {
+    this.changeListeners.add(fn);
+  }
+
+  emitChange(origin) {
+    for (const fn of this.changeListeners) {
+      fn.call(this, origin);
     }
   }
 
-  function registerEvents() {
-    cm.on('changes', () => {
-      const newGeneration = cm.changeGeneration();
-      dirty.modify(`section.${sectionId}.code`, changeGeneration, newGeneration);
-      changeGeneration = newGeneration;
-      emitSectionChange('code');
-    });
-    $('.test-regexp', el).onclick = () => updateRegexpTester(true);
-    initBeautifyButton($('.beautify-section', el), [cm]);
+  off(fn) {
+    this.changeListeners.delete(fn);
   }
 
-  async function updateRegexpTester(toggle) {
+  async updateRegexpTester(toggle) {
     const isLoaded = typeof regexpTester === 'object' ||
       toggle && await require(['/edit/regexp-tester']); /* global regexpTester */
     if (toggle != null) {
       regexpTester.toggle(toggle);
     }
-    const regexps = appliesTo.filter(a => a.type === 'regexp')
-      .map(a => a.value);
+    const regexps = this.targets.filter(t => t.type === 'regexp').map(t => t.value);
     const hasRe = regexps.length > 0;
     if (hasRe && isLoaded) regexpTester.update(regexps);
-    el.classList.toggle('has-regexp', hasRe);
+    this.el.classList.toggle('has-regexp', hasRe);
   }
 
-  function updateTocEntry(origin) {
-    const te = section.tocEntry;
+  /**
+   * @param {EditorSection} sec
+   * @param origin
+   */
+  static updateTocEntry(sec, origin) {
+    const te = sec.tocEntry;
     let changed;
     if (origin === 'code' || !origin) {
-      const label = getLabelFromComment();
+      const label = sec.getLabelFromComment();
       if (te.label !== label) {
-        te.label = elLabel.dataset.text = label;
+        te.label = sec.elLabel.dataset.text = label;
         changed = true;
       }
     }
     if (!te.label) {
-      const target = appliesTo[0].type ? appliesTo[0].value : null;
+      const first = sec.targets[0];
+      const target = first.type ? first.value : null;
       if (te.target !== target) {
         te.target = target;
         changed = true;
       }
-      if (te.numTargets !== appliesTo.length) {
-        te.numTargets = appliesTo.length;
+      if (te.numTargets !== sec.targets.length) {
+        te.numTargets = sec.targets.length;
         changed = true;
       }
     }
-    if (changed) editor.updateToc([section]);
+    if (changed) editor.updateToc([sec]);
   }
 
-  function updateTocEntryLazy(...args) {
-    debounce(updateTocEntry, 0, ...args);
+  updateTocEntryLazy(...args) {
+    debounce(EditorSection.updateTocEntry, 0, this, ...args);
   }
 
-  function updateTocFocus() {
-    editor.updateToc({focus: true, 0: section});
+  updateTocFocus(evt) {
+    editor.updateToc({focus: true, 0: evt ? this.me : this});
   }
 
-  function updateTocPrefToggled(key, val) {
-    changeListeners[val ? 'add' : 'delete'](updateTocEntryLazy);
-    (val ? el.on : el.off).call(el, 'focusin', updateTocFocus);
+  updateTocPrefToggled(key, val) {
+    this.changeListeners[val ? 'add' : 'delete'](this.updateTocEntryLazy);
+    this.el[val ? 'on' : 'off']('focusin', this.updateTocFocus);
     if (val) {
-      updateTocEntry();
-      if (el.contains(document.activeElement)) {
-        updateTocFocus();
+      EditorSection.updateTocEntry(this);
+      if (this.el.contains(document.activeElement)) {
+        this.updateTocFocus();
       }
     }
   }
 
-  function getLabelFromComment() {
+  getLabelFromComment() {
     let cmt = '';
     let inCmt;
-    cm.eachLine(({text}) => {
+    this.cm.eachLine(({text}) => {
       let i = 0;
       if (!inCmt) {
         i = text.search(/\S/);
@@ -194,177 +182,220 @@ function createSection(originalSection, genId, si) {
     return cmt;
   }
 
-  function insertApplyAfter(type, value, base) {
-    const apply = createApply(type, value);
-    appliesTo.splice(base ? appliesTo.indexOf(base) + 1 : appliesTo.length, 0, apply);
-    appliesToList.insertBefore(apply.el, base ? base.el.nextSibling : null);
-    dirty.add(apply, apply);
-    if (appliesTo.length > 1 && !appliesTo[0].type) {
-      removeApply(appliesTo[0]);
-    }
-    if (base) requestAnimationFrame(shrinkSectionBy1);
-    emitSectionChange('apply');
-    return apply;
-  }
-
-  function removeApply(apply) {
-    const index = appliesTo.indexOf(apply);
-    appliesTo.splice(index, 1);
-    apply.remove();
-    apply.el.remove();
-    dirty.remove(apply, apply);
-    if (!appliesTo.length) {
-      insertApplyAfter();
-    }
-    emitSectionChange('apply');
-  }
-
-  function createApply(type = '', value = '') {
-    const applyId = genId();
-    const dirtyPrefix = `section.${sectionId}.apply.${applyId}`;
-    const el = t.template.appliesTo.cloneNode(true);
-    const selectEl = $('.applies-type', el);
-    const valueEl = $('.applies-value', el);
-    const toggleAll = () => toggleDataset(appliesToContainer, 'all', !type);
-    toggleAll();
-    selectEl.value = type;
-    selectEl.on('change', () => {
-      const oldType = type;
-      dirty.modify(`${dirtyPrefix}.type`, type, selectEl.value);
-      type = selectEl.value;
-      if (oldType === 'regexp' || type === 'regexp') {
-        updateRegexpTester();
-      }
-      emitSectionChange('apply');
-      validate();
-      toggleAll();
-    });
-
-    valueEl.value = value;
-    valueEl.on('input', () => {
-      dirty.modify(`${dirtyPrefix}.value`, value, valueEl.value);
-      value = valueEl.value;
-      if (type === 'regexp') {
-        updateRegexpTester();
-      }
-      emitSectionChange('apply');
-    });
-    valueEl.on('change', validate);
-
-    restore();
-
-    const apply = {
-      id: applyId,
-      remove,
-      restore,
-      el,
-      valueEl, // used by validator
-      get type() {
-        return type;
-      },
-      get value() {
-        return value;
-      },
-    };
-
-    $('.remove-applies-to', el).on('click', e => {
-      e.preventDefault();
-      removeApply(apply);
-    });
-    $('.add-applies-to', el).on('click', e => {
-      e.preventDefault();
-      const newApply = insertApplyAfter(type, '', apply);
-      $('input', newApply.el).focus();
-    });
-
-    return apply;
-
-    function validate() {
-      if (type !== 'regexp' || tryRegExp(value)) {
-        valueEl.setCustomValidity('');
-      } else {
-        valueEl.setCustomValidity(t('styleBadRegexp'));
-        setTimeout(() => valueEl.reportValidity());
-      }
-    }
-
-    function remove() {
-      if (!type) return;
-      dirty.remove(`${dirtyPrefix}.type`, type);
-      dirty.remove(`${dirtyPrefix}.value`, value);
-    }
-
-    function restore() {
-      if (!type) return;
-      dirty.add(`${dirtyPrefix}.type`, type);
-      dirty.add(`${dirtyPrefix}.value`, value);
+  /**
+   * Used by addEventListener implicitly
+   * @param {Event} evt
+   */
+  handleEvent(evt) {
+    const el = evt.target;
+    const cls = el.classList;
+    const trgEl = el.closest('.applies-to-item');
+    const trg = /** @type {SectionTarget} */ trgEl && trgEl.me;
+    switch (evt.type) {
+      case 'click':
+        if (cls.contains('test-regexp')) {
+          this.updateRegexpTester(true);
+        } else if (cls.contains('add-applies-to')) {
+          $('input', this.addTarget(trg.type, '', trg).el).focus();
+        } else if (cls.contains('remove-applies-to')) {
+          this.removeTarget(trg);
+        }
+        break;
+      case 'change':
+        if (el === trg.selectEl) trg.onSelectChange();
+        else if (el === trg.valueEl) trg.validate();
+        break;
+      case 'input':
+        if (el === trg.valueEl) trg.onValueChange();
+        break;
     }
   }
 
-  function shrinkSectionBy1() {
+  /**
+   * @param {string} [type]
+   * @param {string} [value]
+   * @param {SectionTarget} [base]
+   * @return {SectionTarget}
+   */
+  addTarget(type, value, base) {
+    const {targets} = this;
+    const res = new SectionTarget(this, type, value); // eslint-disable-line no-use-before-define
+    targets.splice(base ? targets.indexOf(base) + 1 : targets.length, 0, res);
+    this.targetsListEl.insertBefore(res.el, base ? base.el.nextSibling : null);
+    editor.dirty.add(res, res);
+    if (targets.length > 1 && !targets[0].type) {
+      this.removeTarget(targets[0]);
+    }
+    if (base) requestAnimationFrame(() => this.shrinkBy1());
+    this.emitChange('apply');
+    return res;
+  }
+
+  /**
+   * @param {SectionTarget} target
+   */
+  removeTarget(target) {
+    const {targets} = this;
+    targets.splice(targets.indexOf(target), 1);
+    editor.dirty.remove(target, target);
+    target.remove();
+    target.el.remove();
+    if (!targets.length) this.addTarget();
+    this.emitChange('apply');
+  }
+
+  shrinkBy1() {
+    const {cm, el} = this;
     const cmEl = cm.display.wrapper;
     const cmH = cmEl.offsetHeight;
     const viewH = el.parentElement.offsetHeight;
     if (el.offsetHeight > viewH && cmH > Math.min(viewH / 2, cm.display.sizer.offsetHeight + 30)) {
-      cmEl.style.height = (cmH - appliesToContainer.offsetHeight / (appliesTo.length || 1) | 0) + 'px';
+      cmEl.style.height = (cmH - this.targetsEl.offsetHeight / (this.targets.length || 1) | 0) + 'px';
     }
+  }
+
+  static onCmChanges(cm) {
+    const cur = cm.changeGeneration();
+    const sec = /** @type {EditorSection} */ cm.editorSection;
+    editor.dirty.modify(`section.${sec.id}.code`, sec.changeGeneration, cur);
+    sec.changeGeneration = cur;
+    sec.emitChange('code');
   }
 }
 
-function createResizeGrip(cm) {
-  const wrapper = cm.display.wrapper;
-  wrapper.classList.add('resize-grip-enabled');
-  const resizeGrip = t.template.resizeGrip.cloneNode(true);
-  wrapper.appendChild(resizeGrip);
-  let lastClickTime = 0;
-  let lastHeight;
-  let lastY;
-  resizeGrip.onmousedown = event => {
-    lastHeight = wrapper.offsetHeight;
-    lastY = event.clientY;
-    if (event.button !== 0) {
+class SectionTarget {
+  /**
+   * @param {EditorSection} section
+   * @param {string} type
+   * @param {string} value
+   */
+  constructor(section, type = '', value = '') {
+    this.id = section.genId();
+    this.el = t.template.appliesTo.cloneNode(true);
+    this.el.me = this;
+    this.section = section;
+    this.dirt = `section.${section.id}.apply.${this.id}`;
+    this.selectEl = $('.applies-type', this.el);
+    this.valueEl = $('.applies-value', this.el);
+    this.type = this.selectEl.value = type;
+    this.value = this.valueEl.value = value;
+    this.restore();
+    this.toggleAll();
+  }
+
+  remove() {
+    if (!this.type) return;
+    editor.dirty.remove(`${this.dirt}.type`, this.type);
+    editor.dirty.remove(`${this.dirt}.value`, this.value);
+  }
+
+  restore() {
+    if (!this.type) return;
+    editor.dirty.add(`${this.dirt}.type`, this.type);
+    editor.dirty.add(`${this.dirt}.value`, this.value);
+  }
+
+  validate() {
+    const el = this.valueEl;
+    if (this.type !== 'regexp' || tryRegExp(this.value)) {
+      el.setCustomValidity('');
+    } else {
+      el.setCustomValidity(t('styleBadRegexp'));
+      setTimeout(() => el.reportValidity());
+    }
+  }
+
+  toggleAll() {
+    toggleDataset(this.section.targetsEl, 'all', !this.type);
+  }
+
+  onSelectChange() {
+    const oldType = this.type;
+    editor.dirty.modify(`${this.dirt}.type`, this.type, this.selectEl.value);
+    this.type = this.selectEl.value;
+    if (oldType === 'regexp' || this.type === 'regexp') {
+      this.section.updateRegexpTester();
+    }
+    this.section.emitChange('apply');
+    this.validate();
+    this.toggleAll();
+  }
+
+  onValueChange() {
+    editor.dirty.modify(`${this.dirt}.value`, this.value, this.valueEl.value);
+    this.value = this.valueEl.value;
+    if (this.type === 'regexp') {
+      this.section.updateRegexpTester();
+    }
+    this.section.emitChange('apply');
+  }
+}
+
+class ResizeGrip {
+  constructor(cm) {
+    const wrapper = this.wrapper = cm.display.wrapper;
+    const el = t.template.resizeGrip.cloneNode(true);
+    wrapper.classList.add('resize-grip-enabled');
+    wrapper.appendChild(el);
+    this.cm = cm;
+    this.lastClickTime = 0;
+    this.lastHeight = 0;
+    this.minHeight = 0;
+    this.lastY = 0;
+    el.on('mousedown', {me: this, handleEvent: ResizeGrip.onMouseDown});
+    this.onResize = {me: this, handleEvent: ResizeGrip.resize};
+    this.onStop = {me: this, handleEvent: ResizeGrip.resizeStop};
+  }
+
+  static onMouseDown(evt) {
+    const me = /** @type {ResizeGrip} */ this.me;
+    me.lastHeight = me.wrapper.offsetHeight;
+    me.lastY = evt.clientY;
+    if (evt.button !== 0) {
       return;
     }
-    event.preventDefault();
-    if (Date.now() - lastClickTime < 500) {
-      lastClickTime = 0;
-      toggleSectionHeight(cm);
+    evt.preventDefault();
+    if (Date.now() - me.lastClickTime < 500) {
+      me.lastClickTime = 0;
+      me.toggleSectionHeight();
       return;
     }
-    lastClickTime = Date.now();
-    const minHeight = cm.defaultTextHeight() +
+    me.lastClickTime = Date.now();
+    me.minHeight = me.cm.defaultTextHeight() +
       /* .CodeMirror-lines padding */
-      cm.display.lineDiv.offsetParent.offsetTop +
+      me.cm.display.lineDiv.offsetParent.offsetTop +
       /* borders */
-      wrapper.offsetHeight - wrapper.clientHeight;
+      me.wrapper.offsetHeight - me.wrapper.clientHeight;
     document.body.classList.add('resizing-v');
-    document.on('mousemove', resize);
-    document.on('mouseup', resizeStop);
+    document.on('mousemove', me.onResize);
+    document.on('mouseup', me.onStop);
+  }
 
-    function resize(e) {
-      const height = Math.max(minHeight, lastHeight + e.clientY - lastY);
-      if (height !== lastHeight) {
-        cm.setSize(null, height);
-        lastHeight = height;
-        lastY = e.clientY;
-      }
+  static resize(evt) {
+    const me = /** @type {ResizeGrip} */ this.me;
+    const height = Math.max(me.minHeight, me.lastHeight + evt.clientY - me.lastY);
+    if (height !== me.lastHeight) {
+      me.cm.setSize(null, height);
+      me.lastHeight = height;
+      me.lastY = evt.clientY;
     }
+  }
 
-    function resizeStop() {
-      document.off('mouseup', resizeStop);
-      document.off('mousemove', resize);
-      document.body.classList.remove('resizing-v');
-    }
-  };
+  static resizeStop() {
+    const me = /** @type {ResizeGrip} */ this.me;
+    document.off('mouseup', me.onStop);
+    document.off('mousemove', me.onResize);
+    document.body.classList.remove('resizing-v');
+  }
 
-  function toggleSectionHeight(cm) {
+  toggleSectionHeight() {
+    const {cm, wrapper} = this;
     if (cm.state.toggleHeightSaved) {
       // restore previous size
       cm.setSize(null, cm.state.toggleHeightSaved);
       cm.state.toggleHeightSaved = 0;
     } else {
       // maximize
-      const wrapper = cm.display.wrapper;
       const allBounds = $('#sections').getBoundingClientRect();
       const pageExtrasHeight = allBounds.top + window.scrollY +
         parseFloat(getComputedStyle($('#sections')).paddingBottom);
