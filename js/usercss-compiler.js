@@ -172,7 +172,7 @@ function spliceCssAfterGlobals(section, newText, after) {
   if ((rx.lastIndex = after, rx.test(code))) {
     require(['/js/csslint/parserlib']); /* global parserlib */
     const P = new parserlib.css.Parser({globalsOnly: true}); P.parse(code);
-    const {col, line, offset} = P.stream.token;
+    const {col, line, offset} = P.stream.token || P.stream.peekCached();
     // normalizing newlines in non-usercss to match line:col from parserlib
     if ((code.indexOf('\r') + 1 || 1e99) - 1 < offset) {
       after = col + code.split('\n', line).reduce((len, s) => len + s.length + 1, 0);
