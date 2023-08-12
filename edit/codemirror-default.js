@@ -49,6 +49,7 @@
   };
 
   Object.assign(CodeMirror.defaults, defaults, prefs.get('editor.options'));
+  CodeMirror.mimeModes['text/css'].allowNested = true;
 
   // Adding hotkeys to some keymaps except 'basic' which is primitive by design
   {
