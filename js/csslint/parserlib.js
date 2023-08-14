@@ -1448,11 +1448,20 @@
       const star = inStyle && this.options.starHack && STAR;
       this._stack.push(start);
       let ex, child;
+      let prevTok;
       if (type) this.fire(assign({type: 'start' + type, brace}, msg), start);
       for (let tok, ti, fn; (ti = (tok = stream.get(UVAR)).id) !== RBRACE; ex = null) {
         if (ti === SEMICOLON || ti === UVAR && (child = 1)) {
           continue;
         }
+        if (tok === prevTok) {
+          throw new Error(
+            'parserlib is stuck in the loop, report to https://github.com/openstyles/stylus/issues/1638\n' +
+            JSON.stringify(stream, (k, v) => k !== '_input' && k !== 'string' ? v : void 0)
+              .replace(/"(\w+)":/g, '$1:\xAD')
+          );
+        }
+        prevTok = tok;
         try {
           if (ti === AT) {
             fn = tok.atName;
