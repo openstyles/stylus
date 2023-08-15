@@ -1014,6 +1014,9 @@
   "optionsUpdateInterval": {
     "message": "使用者樣式自動更新間隔（以小時計，指定為 0 以停用）"
   },
+  "optionsUrlInstaller": {
+    "message": "導航至 .user.css URL 時開啟安裝程式"
+  },
   "overwriteFileExport": {
     "message": "您想要覆寫既有的檔案嗎？"
   },

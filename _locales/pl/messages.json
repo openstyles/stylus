@@ -228,7 +228,7 @@
     }
   },
   "dateAbbrMonth": {
-    "message": "$value$mies.",
+    "message": "$value$m.",
     "placeholders": {
       "value": {
         "content": "$1"
@@ -1016,6 +1016,9 @@
   },
   "optionsUpdateInterval": {
     "message": "Interwał automatycznej aktualizacji stylu w godzinach (podaj 0, aby wyłączyć)"
+  },
+  "optionsUrlInstaller": {
+    "message": "Otwórz instalator podczas przechodzenia do adresu URL .user.css"
   },
   "overwriteFileExport": {
     "message": "Czy chcesz zastąpić istniejący plik?"

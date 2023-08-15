@@ -986,6 +986,9 @@
   "optionsUpdateInterval": {
     "message": "Interval voor automatisch bijwerken van gebruikersstijlen in uren (geef 0 op om dit uit te schakelen)"
   },
+  "optionsUrlInstaller": {
+    "message": "Installer openen bij navigeren naar een .user.css-URL"
+  },
   "overwriteFileExport": {
     "message": "Wilt u een bestaand bestand overschrijven?"
   },

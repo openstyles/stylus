@@ -209,7 +209,7 @@
     "message": "切换为样式的原始名称"
   },
   "dateAbbrDay": {
-    "message": "$value$天前",
+    "message": "$value$ 天前",
     "placeholders": {
       "value": {
         "content": "$1"
@@ -217,7 +217,7 @@
     }
   },
   "dateAbbrHour": {
-    "message": "$value$时前",
+    "message": "$value$ 小时前",
     "placeholders": {
       "value": {
         "content": "$1"
@@ -225,7 +225,7 @@
     }
   },
   "dateAbbrMonth": {
-    "message": "$value$月前",
+    "message": "$value$ 个月前",
     "placeholders": {
       "value": {
         "content": "$1"
@@ -233,7 +233,7 @@
     }
   },
   "dateAbbrYear": {
-    "message": "$value$年前",
+    "message": "$value$ 年前",
     "placeholders": {
       "value": {
         "content": "$1"
@@ -870,7 +870,7 @@
     "message": "将新样式的格式设为 UserCSS"
   },
   "optionsAdvancedPatchCsp": {
-    "message": "启用<code>CSP</code>补丁以使样式资源生效"
+    "message": "启用 <code>CSP</code> 补丁以使样式资源生效"
   },
   "optionsAdvancedPatchCspNote": {
     "message": "如果在带有严格<code>CSP</code>（<code>Content-Security-Policy</code>）的网站上无法加载样式中包含的图像或字体，请启用此补丁选项。 \n\n启用此补丁选项将会放宽<code>CSP</code>限制，从而允许加载基本样式内容。⚠此选项仅适用于了解潜在安全隐患的高级用户, 并自行承担负责监视其被允许的内容。请阅读有关基于CSS攻击的更多信息以做决定。\n\n另请注意，如果另一个已安装的扩展首先修改了网络响应，则不能保证此特定选项一定会生效。"

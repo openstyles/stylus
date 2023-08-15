@@ -112,6 +112,9 @@
   "cm_lineWrapping": {
     "message": "Перенос слів"
   },
+  "cm_linter": {
+    "message": "Перевірка CSS"
+  },
   "cm_matchHighlight": {
     "message": "Підсвітка"
   },
@@ -192,6 +195,9 @@
   },
   "connectingDropbox": {
     "message": "Підключення Dropbox..."
+  },
+  "connectingDropboxNotAllowed": {
+    "message": "Підключення до Dropbox доступне лише в програмах, встановлених безпосередньо з веб-магазину"
   },
   "copied": {
     "message": "Скопійовано в буфер обміну"
@@ -693,6 +699,46 @@
       }
     }
   },
+  "meta_invalidRangeUnits": {
+    "message": "Невірний @var $type$: '$units$' не є чинною одиницею",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      },
+      "units": {
+        "content": "$2"
+      }
+    }
+  },
+  "meta_invalidRangeValue": {
+    "message": "Невірний @var $type$: елементи в масиві мають бути числом, рядком або мати нульове значення",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidSelect": {
+    "message": "Невірний @var select: значенням за замовчуванням має бути масив або об’єкт"
+  },
+  "meta_invalidSelectEmptyOptions": {
+    "message": "Невірний @var select: список параметрів порожній"
+  },
+  "meta_invalidSelectLabel": {
+    "message": "Невірний @var select: ярлик параметру порожній"
+  },
+  "meta_invalidSelectMultipleDefaults": {
+    "message": "Невірний @var select: визначено кілька параметрів за замовчуванням"
+  },
+  "meta_invalidSelectNameDuplicated": {
+    "message": "Невірний @var select: назва параметру дублюється"
+  },
+  "meta_invalidSelectValue": {
+    "message": "Невірний @var select: значення всередині масиву/об’єкта мають бути рядком"
+  },
+  "meta_invalidSelectValueMismatch": {
+    "message": "Невірний @var select: значення немає у списку параметрів"
+  },
   "meta_invalidString": {
     "message": "Очікування рядка в лапках"
   },
@@ -742,6 +788,17 @@
     "placeholders": {
       "key": {
         "content": "$1"
+      }
+    }
+  },
+  "meta_unknownMetaTypo": {
+    "message": "Можливо @$keyOk$? Невідомі метадані: @$keyErr$",
+    "placeholders": {
+      "keyErr": {
+        "content": "$1"
+      },
+      "keyOk": {
+        "content": "$2"
       }
     }
   },
@@ -948,6 +1005,9 @@
   "optionsUpdateInterval": {
     "message": "Інтервал автооновлення стилів у годинах (вказати 0 для вимкнення)"
   },
+  "optionsUrlInstaller": {
+    "message": "Відкрити інсталятор під час переходу до URL-адреси .user.css"
+  },
   "overwriteFileExport": {
     "message": "Ви бажаєте перезаписати існуючий файл?"
   },
@@ -995,6 +1055,9 @@
   },
   "popupOpenEditInWindow": {
     "message": "Відкрити редактор у новому вікні"
+  },
+  "popupOpenEditInWindowTooltip": {
+    "message": "Також вмикається, коли вкладка редактора витягується з вікна браузера,\nі вимикається шляхом приєднання однієї вкладки редактора до іншого вікна."
   },
   "popupStylesFirst": {
     "message": "Стилі перед командами"
@@ -1092,6 +1155,9 @@
   "searchResultNotMatching": {
     "message": "Стиль встановлено, але він не застосовується до поточної URL-адреси сайту."
   },
+  "searchResultNotMatchingNote": {
+    "message": "Спробуйте попросити автора цього стилю додати URL-адресу.\n\nВи також можете відкрити стиль в менеджері і редагувати його самостійно,\nале майте на увазі, що це вимикає автоматичне оновлення для цього стилю."
+  },
   "searchResultRating": {
     "message": "Рейтинг"
   },
@@ -1149,20 +1215,47 @@
   "sortDateOldestFirst": {
     "message": "спочатку найстаріші"
   },
+  "sortLabel": {
+    "message": "Виберіть сортування, щоб застосувати до встановлених стилів"
+  },
+  "sortLabelTitleAsc": {
+    "message": "Назва за зростанням"
+  },
+  "sortLabelTitleDesc": {
+    "message": "Назва за спаданням"
+  },
+  "sortStylesHelpTitle": {
+    "message": "Сортувати вміст"
+  },
+  "styleBadRegexp": {
+    "message": "Регулярний вираз є невірний."
+  },
   "styleBeautify": {
     "message": "Облагородити"
+  },
+  "styleBeautifyPreserveNewlines": {
+    "message": "Зберігати порожні рядки"
   },
   "styleCancelEditLabel": {
     "message": "Повернутися до керування"
   },
+  "styleChangesNotSaved": {
+    "message": "Ви внесли зміни в цей стиль без збереження."
+  },
   "styleEnabledLabel": {
     "message": "Увімкнено"
+  },
+  "styleExcludeLabel": {
+    "message": "Виключені користувачем сайти"
   },
   "styleFromMozillaFormatError": {
     "message": "Не вдалося імпортувати з формату Mozilla"
   },
   "styleFromMozillaFormatPrompt": {
     "message": "Вставити код у форматі Mozilla"
+  },
+  "styleIncludeLabel": {
+    "message": "Включені користувачем сайти"
   },
   "styleInstall": {
     "message": "Встановити '$stylename$' у Stylus?",
@@ -1176,6 +1269,20 @@
     "message": "Не вдалося встановити користувальницький стиль!\n$error$",
     "placeholders": {
       "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleInstallOverwrite": {
+    "message": "'$stylename$' вже встановлен. Перезаписати?\nВерсія: $oldVersion$ -> $newVersion$",
+    "placeholders": {
+      "newVersion": {
+        "content": "$3"
+      },
+      "oldVersion": {
+        "content": "$2"
+      },
+      "stylename": {
         "content": "$1"
       }
     }
@@ -1201,6 +1308,18 @@
   "stylePreferSchemeLabel": {
     "message": "Нічний/світлий режим"
   },
+  "styleRegexpInvalidExplanation": {
+    "message": "Деякі правила 'regexp()' не вдалося скомпілювати."
+  },
+  "styleRegexpTestFull": {
+    "message": "Відповідні вкладки"
+  },
+  "styleRegexpTestInvalid": {
+    "message": "Невірні регулярні вирази пропущено"
+  },
+  "styleRegexpTestNone": {
+    "message": "Немає відповідних вкладок"
+  },
   "styleSaveLabel": {
     "message": "Зберегти"
   },
@@ -1221,14 +1340,31 @@
       }
     }
   },
+  "styleUpdateUrlLabel": {
+    "message": "URL-адреса оновлень"
+  },
+  "stylusUnavailableForURL": {
+    "message": "Stylus не працює на таких сторінках як ця."
+  },
   "syncDropboxStyles": {
     "message": "Експорт у Dropbox"
   },
   "syncError": {
     "message": "Помилка синхронізації"
   },
+  "syncErrorLock": {
+    "message": "База даних вже використовується. Термін дії блокування закінчиться о $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
   "syncErrorRelogin": {
     "message": "Помилка синхронізації. Ви вийшли із системи. \nСпробуйте повторно увійти до системи в налаштуваннях Stylus."
+  },
+  "syncStorageErrorSaving": {
+    "message": "Значення не можна зберегти. Спробуйте зменшити кількість тексту."
   },
   "toggleStyle": {
     "message": "Включити/виключити стиль"
@@ -1238,6 +1374,9 @@
   },
   "undoGlobal": {
     "message": "Скасувати у всіх розділах"
+  },
+  "unreachableAMO": {
+    "message": "Firefox блокує доступ до сайту."
   },
   "unzipStyles": {
     "message": "Розпакування стилів..."

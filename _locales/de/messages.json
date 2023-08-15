@@ -958,6 +958,9 @@
   "optionsUpdateInterval": {
     "message": "Style-Updateintervall in Stunden (0 zum Deaktivieren)"
   },
+  "optionsUrlInstaller": {
+    "message": "Öffne das Installationsfenster, wenn eine .user.css URL aufgerufen wird"
+  },
   "overwriteFileExport": {
     "message": "Willst du die existierende Datei überschreiben?"
   },

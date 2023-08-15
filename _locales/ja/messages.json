@@ -979,6 +979,9 @@
   "optionsUpdateInterval": {
     "message": "ユーザースタイルの自動更新間隔（時間単位）（0を指定すると更新しません）"
   },
+  "optionsUrlInstaller": {
+    "message": ".user.css URLに移動したときにインストーラを開く"
+  },
   "overwriteFileExport": {
     "message": "存在するファイルを上書きしてよろしいですか？"
   },
