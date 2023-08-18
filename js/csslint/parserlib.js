@@ -1400,8 +1400,8 @@
      * @return {true|void}
      */
     _styleRule(stream, tok, opts) {
-      // TODO: store isNestedRuleMisplaced in cache to enable caching of nested selectors?
-      if (!this._inStyle && parserCache.findBlock(tok)) {
+      const canCache = !this._inStyle;
+      if (canCache && parserCache.findBlock(tok)) {
         return true;
       }
       let blk, brace;
@@ -1413,11 +1413,11 @@
           this.alarm(2, 'Nested selector must be inside a style rule.', tok);
         }
         brace = stream.matchSmart(LBRACE, OrDieReusing);
-        blk = parserCache.startBlock(sels[0]);
+        blk = canCache && parserCache.startBlock(sels[0]);
         const msg = {selectors: sels};
         const opts2 = {brace, decl: true, event: ['rule', msg]};
         this._block(stream, sels[0], opts ? assign({}, opts, opts2) : opts2);
-        if (!msg.empty) { parserCache.endBlock(); blk = 0; }
+        if (blk && !msg.empty) blk = (parserCache.endBlock(), 0);
       } catch (ex) {
         if (this.options.strict || !(ex instanceof SyntaxError)) throw ex;
         this._declarationFailed(stream, ex, !!brace);
@@ -1530,7 +1530,7 @@
      * @param {Token} start
      */
     document(stream, start) {
-      if (this._stack[0]) this.alarm(2, 'Nested @document produces broken code', start);
+      if (this._stack.length) this.alarm(2, 'Nested @document produces broken code', start);
       const functions = [];
       do {
         const tok = stream.matchSmart(TT.docFunc);
