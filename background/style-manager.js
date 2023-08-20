@@ -157,6 +157,7 @@ const styleMan = (() => {
       if (ready.then) await ready;
       style = mergeWithMapped(style);
       style.updateDate = Date.now();
+      API.drafts.delete(style.id);
       return saveStyle(style, {reason: 'editSave'});
     },
 
