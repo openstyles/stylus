@@ -1,7 +1,9 @@
-/* global messageBoxProxy */// dom.js
+/* global $create */// dom.js
 /* global API */// msg.js
 /* global clamp debounce */// toolbox.js
 /* global editor */
+/* global MozDocMapper */// sections-util.js
+/* global helpPopup showCodeMirrorPopup */// util.js
 /* global prefs */
 /* global t */// localization.js
 'use strict';
@@ -11,17 +13,7 @@
   let delay;
   let port;
   connectPort();
-
-  const draft = await API.drafts.get(makeId());
-  if (draft && draft.isUsercss === editor.isUsercss) {
-    const date = makeRelativeDate(draft.date);
-    if (await messageBoxProxy.confirm(t('draftAction'), 'danger', t('draftTitle', date))) {
-      await editor.replaceStyle(draft.style, draft);
-    } else {
-      API.drafts.delete(makeId());
-    }
-  }
-
+  await maybeRestore();
   editor.dirty.onChange(isDirty => isDirty ? connectPort() : port.disconnect());
   editor.dirty.onDataChange(isDirty => debounce(updateDraft, isDirty ? delay : 0));
 
@@ -30,6 +22,37 @@
     const t = debounce.timers.get(updateDraft);
     if (t != null) debounce(updateDraft, t ? delay : 0);
   }, {runNow: true});
+
+  async function maybeRestore() {
+    const [draft] = await Promise.all([
+      API.drafts.get(makeId()),
+      require(['/js/dlg/message-box.css']),
+    ]);
+    if (!draft || draft.isUsercss !== editor.isUsercss || editor.isSame(draft.style)) {
+      return;
+    }
+    let resolve;
+    const {style} = draft;
+    const onYes = () => resolve(true);
+    const onNo = () => resolve(false);
+    const value = draft.isUsercss ? style.sourceCode : MozDocMapper.styleToCss(style);
+    const info = t('draftTitle', makeRelativeDate(draft.date));
+    const popup = showCodeMirrorPopup(info, '', {value, readOnly: true});
+    popup.className += ' danger';
+    window.on('closeHelp', onNo, {once: true});
+    helpPopup.contents.append(
+      $create('p', t('draftAction')),
+      $create('.buttons', [t('confirmYes'), t('confirmNo')].map((btn, i) =>
+        $create('button', {textContent: btn, onclick: i ? onNo : onYes})))
+    );
+    if (await new Promise(r => (resolve = r))) {
+      await editor.replaceStyle(style, draft);
+    } else {
+      API.drafts.delete(makeId());
+    }
+    window.off('closeHelp', onNo);
+    helpPopup.close();
+  }
 
   function connectPort() {
     port = chrome.runtime.connect({name: 'draft:' + makeId()});

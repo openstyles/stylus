@@ -74,6 +74,7 @@ async function SourceEditor() {
       }
       : cm.getValue(),
     getSearchableInputs: () => [],
+    isSame: styleObj => styleObj.sourceCode === cm.getValue(),
     prevEditor: nextPrevSection.bind(null, -1),
     nextEditor: nextPrevSection.bind(null, 1),
     jumpToEditor(i) {
@@ -212,7 +213,7 @@ async function SourceEditor() {
 
   async function replaceStyle(newStyle, draft) {
     dirty.clear('name');
-    const sameCode = newStyle.sourceCode === cm.getValue();
+    const sameCode = editor.isSame(newStyle);
     if (sameCode) {
       savedGeneration = cm.changeGeneration();
       dirty.clear('sourceGeneration');

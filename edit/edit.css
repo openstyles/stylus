@@ -752,6 +752,13 @@ label {
   margin: calc(-1 * var(--pad-y)) calc(-1 * var(--pad-x)) 0;
   padding: var(--pad-y2) var(--pad-x);
 }
+#help-popup.danger .title {
+  background-color: firebrick;
+  color: white;
+}
+#help-popup.danger .dismiss {
+  fill: white;
+}
 #help-popup .contents {
   max-height: calc(100vh - 8rem);
   overflow-y: auto;

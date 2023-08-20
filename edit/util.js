@@ -15,7 +15,7 @@ const helpPopup = {
    */
   show(title = '', body, props) {
     const div = $('#help-popup');
-    const contents = $('.contents', div);
+    const contents = helpPopup.contents = $('.contents', div);
     div.style = '';
     div.className = '';
     contents.textContent = '';
@@ -56,7 +56,7 @@ const helpPopup = {
     if (div.contains(document.activeElement) && (el = helpPopup.originalFocus)) {
       el.focus();
     }
-    const contents = $('.contents', div);
+    const {contents} = helpPopup;
     div.style.display = '';
     contents.textContent = '';
     window.off('keydown', helpPopup.close, true);
@@ -179,7 +179,7 @@ function createHotkeyInput(prefId, {buttons = true, onDone}) {
 function showCodeMirrorPopup(title, html, options) {
   const popup = helpPopup.show(title, html, {className: 'big'});
 
-  let cm = popup.codebox = CodeMirror($('.contents', popup), Object.assign({
+  let cm = popup.codebox = CodeMirror(helpPopup.contents, Object.assign({
     mode: 'css',
     lineNumbers: true,
     lineWrapping: prefs.get('editor.lineWrapping'),

@@ -68,6 +68,10 @@ function SectionsEditor() {
       return sec ? sec.targets.map(a => a.valueEl).filter(Boolean) : [];
     },
 
+    isSame(styleObj) {
+      return styleSectionsEqual(styleObj, getModel());
+    },
+
     jumpToEditor(i) {
       const {cm} = sections[i] || {};
       if (cm) {
@@ -89,7 +93,7 @@ function SectionsEditor() {
     },
 
     async replaceStyle(newStyle, draft) {
-      const sameCode = styleSectionsEqual(newStyle, getModel());
+      const sameCode = editor.isSame(newStyle);
       if (!sameCode && !draft && !await messageBoxProxy.confirm(t('styleUpdateDiscardChanges'))) {
         return;
       }
