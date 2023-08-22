@@ -842,9 +842,6 @@
   "openOptions": {
     "message": "Настройки"
   },
-  "openStylesManager": {
-    "message": "Менеджер стилей"
-  },
   "optionsActions": {
     "message": "Другие действия"
   },

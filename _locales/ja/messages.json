@@ -804,9 +804,6 @@
   "openOptions": {
     "message": "オプション"
   },
-  "openStylesManager": {
-    "message": "スタイルマネージャーを開く"
-  },
   "optionsActions": {
     "message": "アクション"
   },

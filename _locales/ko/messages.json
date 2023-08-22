@@ -769,9 +769,6 @@
   "openOptions": {
     "message": "옵션"
   },
-  "openStylesManager": {
-    "message": "스타일 관리자 열기"
-  },
   "optionsActions": {
     "message": "동작"
   },

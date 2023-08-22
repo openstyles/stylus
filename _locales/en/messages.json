@@ -26,7 +26,7 @@
         "content": "$1"
       }
     },
-    "description": "Text on the manage screen to describe what the style applies to"
+    "description": "Text in style manager to describe what the style applies to"
   },
   "appliesDisplayTruncatedSuffix": {
     "message": "and more",
@@ -94,7 +94,7 @@
   },
   "backupMessage": {
     "message": "To import the backup file, drag'n'drop it into this page or click the Import button.\n\nTo export a compatible backup for Stylus older than 1.5.18, right-click or shift-click the Export button.",
-    "description": "Text for Backup section's (i) in the manager"
+    "description": "Text for Backup section's (i) in style manager"
   },
   "bckpInstStyles": {
     "message": "Export styles"
@@ -369,7 +369,7 @@
   },
   "dragDropUsercssTabstrip": {
     "message": "To install the file, drop it on the tab strip (the area where the tab titles are shown).",
-    "description": "Message popup shown when erroneously dropping a usercss file into the manager page"
+    "description": "Message popup shown when erroneously dropping a usercss file into style manager page"
   },
   "editDeleteText": {
     "message": "Delete",
@@ -411,7 +411,7 @@
   },
   "exportLabel": {
     "message": "Export",
-    "description": "Label for the button to export a style ('edit' page) or all styles ('manage' page)"
+    "description": "Label for the button to export a style (editor) or all styles (style manager)"
   },
   "exportCompatible": {
     "message": "Export (compatible mode)"
@@ -550,7 +550,7 @@
   },
   "importLabel": {
     "message": "Import",
-    "description": "Label for the button to import a style ('edit' page) or all styles ('manage' page)"
+    "description": "Label for the button to import a style (editor) or all styles (style manager)"
   },
   "importPreprocessor": {
     "message": "Style with a <code>@preprocessor</code> won't work in the classic mode. You can switch the editor to Usercss mode: 1) open the style manager, 2) enable \"as Usercss\" checkbox, 3) click \"Write new style\"\n\nImport now anyway?"
@@ -645,31 +645,31 @@
   },
   "linkGetHelp": {
     "message": "Get help",
-    "description": "Homepage link text on the manage page e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
+    "description": "Homepage link text in style manager e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
   },
   "linkGetStyles": {
     "message": "Get styles",
-    "description": "Help link text on the manage page e.g. https://userstyles.org"
+    "description": "Help link text in style manager e.g. https://userstyles.org"
   },
   "linkGetStylesInfo": {
     "message": "This archive site was created by a userstyle community member to back up the slow and unresponsive userstyles.org. The archive updates its contents approximately once a day.",
-    "description": "Info shown when clicking the (i) icon of the uso-archive link in the manager"
+    "description": "Info shown when clicking the (i) icon of the uso-archive link in style manager"
   },
   "linkGetShareStyles": {
     "message": "Get and share styles",
-    "description": "Link text for https://userstyles.world/ on the manage page"
+    "description": "Link text for https://userstyles.world/ in style manager"
   },
   "linkGetShareStylesInfo": {
     "message": "The new community-driven userstyles.world site is created by userstyle authors in order to replace userstyles.org, which has been so slow and unresponsive for the past year that many authors stopped updating their styles.",
-    "description": "Info shown when clicking the (i) icon of the userstyles.world link in the manager"
+    "description": "Info shown when clicking the (i) icon of the userstyles.world link in style manager"
   },
   "linkStylusWiki": {
     "message": "Wiki",
-    "description": "Wiki link text on the manage page e.g. https://github.com/openstyles/stylus/wiki"
+    "description": "Wiki link text in style manager e.g. https://github.com/openstyles/stylus/wiki"
   },
   "linkTranslate": {
     "message": "Translate",
-    "description": "Transifex link text on the manage page"
+    "description": "Transifex link text in style manager"
   },
   "linterCSSLintIncompatible": {
     "message": "CSSLint doesn't support $preprocessorname$ preprocessor",
@@ -740,15 +740,15 @@
   },
   "manageFavicons": {
     "message": "Favicons in applies-to column",
-    "description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+    "description": "Label for the checkbox that toggles applies-to favicons in the new UI in style manager"
   },
   "manageFaviconsGray": {
     "message": "Grayed out",
-    "description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI on manage page"
+    "description": "Label for the checkbox that toggles grayed out mode of applies-to favicons in the new UI in style manager"
   },
   "manageFaviconsHelp": {
     "message": "Stylus uses an external service https://icons.duckduckgo.com",
-    "description": "Label for the checkbox that toggles applies-to favicons in the new UI on manage page"
+    "description": "Label for the checkbox that toggles applies-to favicons in the new UI in style manager"
   },
   "manageFilters": {
     "message": "Filters",
@@ -756,11 +756,11 @@
   },
   "manageHeading": {
     "message": "Installed Styles",
-    "description": "Heading for the manage page"
+    "description": "Heading for style manager"
   },
   "manageMaxTargets": {
     "message": "Number of applies-to items",
-    "description": "Label for the numeric input box to limit max number of applies-to targets in the new UI on manage page"
+    "description": "Label for the numeric input box to limit max number of applies-to targets in the new UI in style manager"
   },
   "manageMinColumnWidth": {
     "message": "Minimum column width (in pixels; 9999 disables multi-column mode)"
@@ -770,8 +770,8 @@
     "description": "VERY SHORT label for the checkbox next to the 'Write new style' button in the style manager"
   },
   "manageNewUI": {
-    "message": "New manage UI layout",
-    "description": "Label for the checkbox that toggles the new UI on manage page"
+    "message": "Table layout",
+    "description": "Label for the checkbox to show styles in a table (grid) in style manager"
   },
   "manageOnlyDisabled": {
     "message": "Only disabled styles",
@@ -807,7 +807,7 @@
   },
   "manageTitle": {
     "message": "Stylus",
-    "description": "Title for the manage page"
+    "description": "Title for style manager"
   },
   "menuShowBadge": {
     "message": "Show active style count",
@@ -1049,7 +1049,7 @@
   },
   "openManage": {
     "message": "Manage",
-    "description": "Link to open the manage page."
+    "description": "Link to open style manager."
   },
   "openOptions": {
     "message": "Options",
@@ -1134,7 +1134,7 @@
   },
   "optionsHeading": {
     "message": "Options",
-    "description": "Heading for options section on manage page."
+    "description": "Heading for options section in style manager."
   },
   "optionsIconAuto": {
     "message": "Match the Dark/Light mode"
@@ -1165,7 +1165,7 @@
   },
   "optionsSubheading": {
     "message": "More Options",
-    "description": "Subheading for options section on manage page."
+    "description": "Subheading for options section in style manager."
   },
   "optionsSyncConnect": {
     "message": "Connect"
@@ -1232,7 +1232,7 @@
     "message": "Sync now"
   },
   "optionsUpdateImportNote": {
-    "message": "When importing style backups from old version or from Stylish, do a one-time check for updates manually in the styles manager to ensure all styles are updated."
+    "message": "When importing style backups from old version or from Stylish, do a one-time check for updates manually in the style manager to ensure all styles are updated."
   },
   "optionsUpdateInterval": {
     "message": "Userstyle autoupdate interval in hours (specify 0 to disable)"
@@ -1428,7 +1428,7 @@
     "message": "The style is installed but it doesn't apply to the current site URL."
   },
   "searchResultNotMatchingNote": {
-    "message": "Try asking the author of this userstyle to add the URL.\n\nYou can also open the style in the manager and edit it yourself,\nbut be aware it disables automatic updates for this style."
+    "message": "Try asking the author of this userstyle to add the URL.\n\nYou can also open the style in style manager and edit it yourself,\nbut be aware it disables automatic updates for this style."
   },
   "searchResultRating": {
     "message": "Rating",
@@ -1448,27 +1448,27 @@
   },
   "searchStylesAll": {
     "message": "All",
-    "description": "Option for `find styles` scope selector in the manager."
+    "description": "Option for `find styles` scope selector in style manager."
   },
   "searchStylesCode": {
     "message": "CSS code",
-    "description": "Option for `find styles` scope selector in the manager."
+    "description": "Option for `find styles` scope selector in style manager."
   },
   "searchStylesHelp": {
     "message": "</> or <Ctrl-F> key focuses the search field.\nDefault mode is plain text search for all space-separated terms in any order.\nExact words: wrap the query in double quotes, e.g. <\".header ~ div\">\nRegular expressions: include slashes and flags, e.g. </body.*?\\ba\\b/i>\n\"By URL\" in scope selector: finds styles that apply to a fully specified URL e.g. https://www.example.org/\n\"Metadata\" in scope selector: searches in names, \"applies to\" specifiers, installation URL, update URL, and the entire metadata block for usercss styles.",
-    "description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field on the Manage styles page"
+    "description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field in the style manager"
   },
   "searchStylesMatchUrl": {
     "message": "By URL",
-    "description": "Option for `find styles` scope selector in the manager. See searchMatchUrlHint for more info."
+    "description": "Option for `find styles` scope selector in style manager. See searchMatchUrlHint for more info."
   },
   "searchStylesMeta": {
     "message": "Metadata",
-    "description": "Option for `find styles` scope selector in the manager."
+    "description": "Option for `find styles` scope selector in style manager."
   },
   "searchStylesName": {
     "message": "Name",
-    "description": "Option for `find styles` scope selector in the manager."
+    "description": "Option for `find styles` scope selector in style manager."
   },
   "sectionAdd": {
     "message": "Add another section",
@@ -1526,11 +1526,11 @@
   },
   "sortStylesHelp": {
     "message": "Choose the type of sort to apply to the installed entries from within the sort dropdown. The default setting applies an ascending sort (A to Z) to the entry titles. Sorts within the \"Title Descending\" group will apply a descending sort (Z to A) to the title.\nThere are other presets that will allow sorting the entries by multiple criteria. Think of this like sorting a table with multiple columns and each category in a select (between the plus signs) represents a column, or group.\nFor example, if the setting is \"Enabled (first) + Title\", the entries would sort so that all the enabled entries are sorted to the top of the list, then an entry title ascending sort (A to Z) is applied to both the enabled and disabled entries separately.",
-    "description": "Text in the minihelp displayed when clicking (i) icon to the right of the sort input field on the Manage styles page"
+    "description": "Text in the minihelp displayed when clicking (i) icon to the right of the sort input field in style manager"
   },
   "sortStylesHelpTitle": {
     "message": "Sort contents",
-    "description": "Label for the sort info popup on the Manage styles page"
+    "description": "Label for the sort info popup in style manager"
   },
   "styleBadRegexp": {
     "message": "Regexp is invalid.",
@@ -1553,7 +1553,7 @@
     "description": "CSS-beautifier option"
   },
   "styleCancelEditLabel": {
-    "message": "Back to manage",
+    "message": "Back to style manager",
     "description": "Label for cancel button for style editing"
   },
   "styleChangesNotSaved": {
@@ -1715,15 +1715,15 @@
   },
   "styleInjectionOrder": {
     "message": "Style injection order",
-    "description": "Tooltip for the button in the manager to open the dialog and also the title of this dialog"
+    "description": "Tooltip for the button in style manager to open the dialog and also the title of this dialog"
   },
   "styleInjectionOrderHint": {
     "message": "Drag'n'drop a style to change its position. Styles are injected sequentially in the order shown below so a style further down the list can override the earlier styles.",
-    "description": "Hint in the injection order dialog in the manager"
+    "description": "Hint in the injection order dialog in style manager"
   },
   "styleInjectionOrderHint_prio": {
     "message": "Important styles listed below are always injected last so they can override any newly installed styles. Click the style's mark to toggle its importance.",
-    "description": "Hint at the bottom of the injection order dialog in the manager"
+    "description": "Hint at the bottom of the injection order dialog in style manager"
   },
   "styleExcludeLabel": {
     "message": "Custom excluded sites"
