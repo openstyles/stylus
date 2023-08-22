@@ -1297,8 +1297,8 @@
     "description": "Tooltip for menu button in popup."
   },
   "popupOpenEditInPopup": {
-    "message": "Use a simple window (no omnibox)",
-    "description": "Label for the checkbox controlling 'edit' action behavior in the popup."
+    "message": "...without address bar",
+    "description": "Label for the checkbox after 'Open editor in a new window' checkbox, so these two make a sentence."
   },
   "popupOpenEditInWindow": {
     "message": "Open editor in a new window",

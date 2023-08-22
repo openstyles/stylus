@@ -44,10 +44,7 @@
 
   <script src="options/options-sync.js"></script>
   <script src="js/dark-themer.js"></script> <!-- must be last in HEAD to avoid FOUC -->
-</head>
-
-<body id="stylus-options">
-
+<template data-id="body">
   <div id="options-header">
     <div id="options-title" i18n="+optionsHeading">
       <div id="options-close-icon">
@@ -200,20 +197,6 @@
             <input type="number" id="popupWidth" min="200" max="800">
           </label>
           <label>
-            <span i18n="popupOpenEditInWindow, title:popupOpenEditInWindowTooltip"></span>
-            <span class="onoffswitch">
-              <input type="checkbox" id="openEditInWindow" class="slider">
-              <span></span>
-            </span>
-          </label>
-          <label>
-            <span i18n="popupOpenEditInPopup"></span>
-            <span class="onoffswitch">
-              <input type="checkbox" id="openEditInWindow.popup" class="slider">
-              <span></span>
-            </span>
-          </label>
-          <label>
             <span i18n="popupStylesFirst"></span>
             <span class="onoffswitch">
               <input type="checkbox" id="popup.stylesFirst" class="slider">
@@ -231,6 +214,26 @@
             <span i18n="popupBorders, title:popupBordersTooltip"></span>
             <span class="onoffswitch">
               <input type="checkbox" id="popup.borders" class="slider">
+              <span></span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="block">
+        <h1 i18n="editorSettings"></h1>
+        <div class="items">
+          <label>
+            <span i18n="popupOpenEditInWindow, title:popupOpenEditInWindowTooltip"></span>
+            <span class="onoffswitch">
+              <input type="checkbox" id="openEditInWindow" class="slider">
+              <span></span>
+            </span>
+          </label>
+          <label show-if="openEditInWindow">
+            <span i18n="popupOpenEditInPopup"></span>
+            <span class="onoffswitch">
+              <input type="checkbox" id="openEditInWindow.popup" class="slider">
               <span></span>
             </span>
           </label>
@@ -358,7 +361,10 @@
       <button id="manage" i18n="confirmClose"></button>
     </div>
   </div>
+</template>
+</head>
 
+<body id="stylus-options">
   <svg xmlns="http://www.w3.org/2000/svg" style="display: none !important;">
     <symbol id="svg-icon-help" viewBox="0 0 14 16">
       <circle cx="7" cy="5" r="1"/>

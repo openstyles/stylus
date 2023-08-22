@@ -12,8 +12,12 @@
 */// toolbox.js
 'use strict';
 
+document.body.appendChild(t.template.body);
 setupLivePrefs();
 $$('input[min], input[max]').forEach(enforceInputRange);
+for (const el of $$('[show-if]')) {
+  prefs.subscribe(el.getAttribute('show-if'), toggleShowIf, {runNow: true});
+}
 if (CHROME_POPUP_BORDER_BUG) {
   $('.chrome-no-popup-border').classList.remove('chrome-no-popup-border');
 }
@@ -102,6 +106,12 @@ function enforceInputRange(element) {
   };
   element.on('change', onChange);
   element.on('input', onChange);
+}
+
+function toggleShowIf(id, val) {
+  for (const el of $$(`[show-if="${id}"]`)) {
+    el.classList.toggle('hidden', !val);
+  }
 }
 
 window.onkeydown = event => {
