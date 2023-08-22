@@ -41,7 +41,7 @@
     'popup.breadcrumbs.usePath': false, // use URL path for 'this URL'
     'popup.enabledFirst': true,     // display enabled styles before disabled styles
     'popup.stylesFirst': true,      // display enabled styles before disabled styles
-    'popup.autoResort': false,      // auto resort styles after toggling
+    'popup.autoResort': false,      // auto re-sort styles after toggling
     'popup.borders': false,         // add white borders on the sides
     /** @type {'n' | 'u' | 't' | 'w' | 'r'} see IndexEntry */
     'popup.findSort': 'u',          // the inline style search sort order

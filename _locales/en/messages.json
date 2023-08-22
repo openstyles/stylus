@@ -1267,8 +1267,8 @@
     "description": "The error message to show when stylus failed to parse usercss"
   },
   "popupAutoResort": {
-    "message": "Resort styles in popup after toggling",
-    "description": "Label for the checkbox controlling popup resorting."
+    "message": "Re-sort styles in popup after toggling",
+    "description": "Label for the option controlling popup re-sorting."
   },
   "popupBorders": {
     "message": "Add white borders on the sides"
