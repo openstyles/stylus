@@ -68,7 +68,7 @@
     <template data-id="appliesTo">
       <li class="applies-to-item">
         <div class="select-resizer">
-          <select name="applies-type" class="applies-type style-contributor">
+          <select name="applies-type" class="applies-type">
             <option value="" i18n="appliesToEverything"></option>
             <option value="url" i18n="appliesUrlOption"></option>
             <option value="url-prefix" i18n="appliesUrlPrefixOption"></option>
@@ -78,7 +78,7 @@
           <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
         </div>
         <div class="applies-value-wrapper">
-          <input name="applies-value" class="applies-value style-contributor" spellcheck="false">
+          <input name="applies-value" class="applies-value" spellcheck="false">
           <a class="remove-applies-to" i18n="appliesRemove, title:appliesRemove" tabindex="0">
             <svg class="svg-icon remove"><use xlink:href="#svg-icon-minus"/></svg>
           </a>
@@ -245,7 +245,7 @@
       </h1>
       <section id="basic-info">
         <div id="basic-info-name">
-          <input id="name" class="style-contributor" spellcheck="false">
+          <input id="name" spellcheck="false">
           <a id="reset-name" i18n="title:customNameResetHint" tabindex="0" hidden>
             <svg class="svg-icon" viewBox="0 0 20 20">
               <polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5
@@ -258,7 +258,7 @@
           <label id="enabled-label"
                  i18n="styleEnabledLabel, title:toggleStyle"
                  data-hotkey-tooltip="toggleStyle">
-            <input type="checkbox" id="enabled" class="style-contributor">
+            <input type="checkbox" id="enabled">
             <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
           </label>
           <label id="preview-label" i18n="previewLabel, title:previewTooltip">
