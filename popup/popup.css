@@ -497,8 +497,8 @@ a:hover .svg-icon {
 #write-for-frames::before,
 .match .match::before {
   content: "";
-  width: .25rem;
-  height: .25rem;
+  width: .4rem;
+  height: .4rem;
   margin-left: -.5rem;
   display: block;
   position: absolute;
