@@ -1055,10 +1055,6 @@
     "message": "Options",
     "description": "Go to Options UI"
   },
-  "openStylesManager": {
-    "message": "Open styles manager",
-    "description": "Label for the style maanger opener in the browser action context menu."
-  },
   "optionsActions": {
     "message": "Actions"
   },
