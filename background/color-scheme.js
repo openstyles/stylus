@@ -1,3 +1,4 @@
+/* global debounce */// toolbox.js
 /* global prefs */
 /* exported colorScheme */
 
@@ -19,17 +20,18 @@ const colorScheme = (() => {
   let isDarkNow = false;
   // matchMedia's onchange doesn't work in bg context, so we use it in our content script
   update('system', matchMedia('(prefers-color-scheme:dark)').matches);
-
-  prefs.subscribe(kSTATE, () => update());
-  prefs.subscribe([kSTART, kEND], (key, value) => {
-    updateTimePreferDark();
-    createAlarm(key, value);
-  }, {runNow: true});
-  chrome.alarms.onAlarm.addListener(({name}) => {
-    if (name === kSTART || name === kEND) {
-      updateTimePreferDark();
+  prefs.subscribe(kSTATE, (_, val) => {
+    if (val === 'time') {
+      prefs.subscribe([kSTART, kEND], onNightChanged, {runNow: true});
+      chrome.alarms.onAlarm.addListener(onAlarm);
+    } else if (chrome.alarms.onAlarm.hasListener(onAlarm)) {
+      prefs.unsubscribe([kSTART, kEND], onNightChanged);
+      chrome.alarms.onAlarm.removeListener(onAlarm);
+      chrome.alarms.clear(kSTART);
+      chrome.alarms.clear(kEND);
     }
-  });
+    update();
+  }, {runNow: true});
 
   return {
     SCHEMES,
@@ -65,6 +67,20 @@ const colorScheme = (() => {
       when: date.getTime(),
       periodInMinutes: 24 * 60,
     });
+  }
+
+  function onAlarm({name}) {
+    if (name === kSTART || name === kEND) {
+      updateTimePreferDark();
+    }
+  }
+
+  function onNightChanged(force) {
+    if (force !== true) return debounce(onNightChanged, 0, true);
+    updateTimePreferDark();
+    // recreating both alarms as the user may have been in a different timezone when setting the other one
+    createAlarm(kSTART, prefs.get(kSTART));
+    createAlarm(kEND, prefs.get(kEND));
   }
 
   function updateTimePreferDark() {
