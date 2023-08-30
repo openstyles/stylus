@@ -1099,7 +1099,7 @@
     "message": "Instant inject mode"
   },
   "optionsAdvancedStyleViaXhrNote": {
-    "message": "Enable this if you encounter flashing of unstyled content (FOUC) when browsing, which is especially noticeable with dark themes.\n\nThe technical reason is that Chrome/Chromium postpones asynchronous communication of extensions, in a usually meaningless attempt to improve page load speed, potentially causing styles to be late to apply. To circumvent this, since web extensions are not provided a synchronous API, Stylus provides this option to utilize the \"deprecated\" synchronous XMLHttpRequest web API to fetch applicable styles. There shouldn't be any detrimental effects, since the request is fulfilled within a few milliseconds while the page is still being downloaded from the server.\n\nNevertheless, Chromium will print a warning in devtools' console. Right-clicking a warning, and hiding them, will prevent future warnings from being shown."
+    "message": "Enable this if you encounter flashing of unstyled content (FOUC) when browsing, which is especially noticeable with dark themes while opening a page.\n\nThis option uses the \"deprecated\" synchronous XMLHttpRequest performed internally to get the extension's background cache, i.e. it's not a network request, so the performance impact is negligible."
   },
   "optionsBadgeDisabled": {
     "message": "Background color when disabled"
