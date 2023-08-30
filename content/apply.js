@@ -109,7 +109,7 @@
         window[SYM] ||
         parentStyles && await new Promise(onFrameElementInView) && parentStyles ||
         // XML in Chrome will be auto-converted to html later, so we can't style it via XHR now
-        !isFrameSameOrigin && !isXml && chrome.app && !chrome.tabs && tryCatch(getStylesViaXhr) ||
+        !isFrameSameOrigin && !isXml && !chrome.tabs && tryCatch(getStylesViaXhr) ||
         await API.styles.getSectionsByUrl(matchUrl, null, true);
       if (styles.cfg) {
         isDisabled = styles.cfg.disableAll;

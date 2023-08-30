@@ -12,7 +12,7 @@
   /** @type {Object<string,StylesToPass>} */
   const stylesToPass = {};
   const state = {};
-  const injectedCode = CHROME && `${data => {
+  const injectedCode = `${data => {
     if (self.INJECTED !== 1) { // storing data only if apply.js hasn't run yet
       window[Symbol.for('styles')] = data;
     }
@@ -43,7 +43,7 @@
         xhr && chrome.webRequest.OnHeadersReceivedOptions.EXTRA_HEADERS,
       ].filter(Boolean));
     }
-    if (CHROME ? !off : xhr || csp) {
+    if (!off) {
       chrome.webRequest.onBeforeRequest.addListener(prepareStyles, reqFilter);
     }
     if (CHROME && !off) {
