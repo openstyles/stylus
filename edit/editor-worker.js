@@ -158,9 +158,10 @@
           isLess && /^unknown at-rule "@[-\w]+:"/.test(msg) /* LESS variables */) {
         continue;
       }
+      const {line: L, column: C} = m;
       res.push({
-        from: {line: m.line - 1, ch: m.column - 1},
-        to: {line: m.endLine - 1, ch: m.endColumn - 1},
+        from: {line: L - 1, ch: C - 1},
+        to: {line: (m.endLine || L) - 1, ch: (m.endColumn || C) - 1},
         message: msg[0].toUpperCase() + msg.slice(1),
         severity: m.severity,
         rule,

@@ -48,7 +48,7 @@
     if (await new Promise(r => (resolve = r))) {
       await editor.replaceStyle(style, draft);
     } else {
-      API.drafts.delete(makeId());
+      API.drafts.delete(makeId()).catch(() => {});
     }
     window.off('closeHelp', onNo);
     helpPopup.close();

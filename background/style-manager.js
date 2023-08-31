@@ -144,7 +144,7 @@ const styleMan = (() => {
         // Must be called after the style is deleted from dataMap
         API.usw.revoke(id);
       }
-      API.drafts.delete(id);
+      API.drafts.delete(id).catch(() => {});
       await msg.broadcast({
         method: 'styleDeleted',
         style: {id},
@@ -157,7 +157,7 @@ const styleMan = (() => {
       if (ready.then) await ready;
       style = mergeWithMapped(style);
       style.updateDate = Date.now();
-      API.drafts.delete(style.id);
+      API.drafts.delete(style.id).catch(() => {});
       return saveStyle(style, {reason: 'editSave'});
     },
 
@@ -426,7 +426,7 @@ const styleMan = (() => {
 
   function handleDraft(port) {
     const id = port.name.split(':').pop();
-    port.onDisconnect.addListener(() => API.drafts.delete(Number(id) || id));
+    port.onDisconnect.addListener(() => API.drafts.delete(Number(id) || id).catch(() => {}));
   }
 
   function handleLivePreview(port) {
