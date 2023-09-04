@@ -571,7 +571,7 @@
     const colors = {
       body: colorMimicry(document.body, {bg: 'backgroundColor'}),
       input: colorMimicry($('input:not(:disabled)'), {bg: 'backgroundColor'}),
-      icon: colorMimicry($$('svg.info')[1], {fill: 'fill'}),
+      icon: colorMimicry($$('i.i-info')[1]),
     };
     $.root.appendChild(
       $(DIALOG_STYLE_SELECTOR) ||
@@ -584,15 +584,15 @@
         color: ${colors.body.fore};
         background-color: ${colors.input.bg};
       }
-      #search-replace-dialog svg {
-        fill: ${colors.icon.fill};
+      #search-replace-dialog i {
+        color: ${colors.icon.fore};
       }
       #search-replace-dialog [data-action="case"] {
-        color: ${colors.icon.fill};
+        color: ${colors.icon.fore};
       }
-      #search-replace-dialog[data-type="replace"] button:hover svg,
-      #search-replace-dialog svg:hover {
-        fill: var(--cmin);
+      #search-replace-dialog[data-type="replace"] button:hover i,
+      #search-replace-dialog i:hover {
+        color: var(--cmin);
       }
       #search-replace-dialog [data-action="case"]:hover {
         color: var(--cmin);

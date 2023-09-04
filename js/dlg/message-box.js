@@ -166,10 +166,7 @@ messageBox.show = async ({
         $create([
           $create(`#${id}-title`, {onmousedown: messageBox.listeners.mouseDown}, title),
           $create(`#${id}-close-icon`, {onclick: messageBox.listeners.closeIcon},
-            $create('SVG:svg.svg-icon', {viewBox: '0 0 20 20'},
-              $create('SVG:path', {d: 'M11.69,10l4.55,4.55-1.69,1.69L10,11.69,' +
-                '5.45,16.23,3.77,14.55,8.31,10,3.77,5.45,5.45,3.77,10,8.31l4.55-4.55,1.69,1.69Z',
-              }))),
+            $create('i.i-close')),
           $create(`#${id}-contents`, t.HTML(contents)),
           $create(`#${id}-buttons`,
             buttons.map((content, buttonIndex) => content &&

@@ -1,8 +1,6 @@
-.disabled.entry .svg-icon {
-  color: var(--c50);
-  fill: var(--c80);
-  font-weight: normal;
-  transition: color .5s .1s, fill .5s .1s;
+.disabled.entry i {
+  color: var(--c80);
+  transition: color .5s .1s;
 }
 #installed {
   margin-top: .75rem;
@@ -22,9 +20,6 @@
   margin: 0;
   display: flex;
   align-items: center;
-}
-.entry .actions {
-  position: relative;
 }
 .style-info[data-type=size],
 .style-info[data-type=age] {
@@ -64,9 +59,6 @@
   max-width: none;
   flex-grow: 1;
 }
-.entry .checkmate {
-  flex-shrink: 0;
-}
 .style-name-link {
   width: 100%;
   word-break: break-word;
@@ -77,34 +69,30 @@
 .entry.enabled .style-name:hover .style-name-link {
   color: var(--accent-1);
 }
-.homepage {
-  margin-top: -3px;
-}
 .actions {
-  flex: 0 0 calc(3 * (var(--action-size) + var(--action-margin)));
-  flex-wrap: nowrap;
+  flex: 0 0 calc(3 * var(--action-size));
   z-index: 100;
 }
-.actions > * {
-  width: var(--action-size);
-  height: var(--action-size);
-  display: flex;
-  align-items: center;
+.actions .delete i {
+  font-size: 16px;
 }
 .updater-icons > * {
   transition: opacity 1s;
   display: none;
 }
-.entry .svg-icon {
-  fill: var(--c60);
+.configure-usercss {
+  margin-left: 2px;
 }
-.entry:hover .svg-icon {
-  fill: var(--c40);
+.entry i {
+  color: var(--c60);
 }
-.entry .svg-icon.checked,
-.entry:hover .svg-icon.checked,
-.entry:hover .svg-icon:hover {
-  fill: var(--fg);
+.entry:hover i {
+  color: var(--c40);
+}
+.entry input:checked::after,
+.entry:hover input:checked::after,
+.entry:hover i:hover {
+  color: var(--fg);
 }
 .checking-update .check-update {
   opacity: 0;
@@ -117,30 +105,25 @@
 .update-done .updated {
   display: inline-block;
 }
-.up-to-date svg,
-.updated svg {
+.up-to-date i,
+.updated i {
   cursor: auto;
-}
-.update-done .updated svg {
-  top: -4px;
-  position: relative;
-  filter: drop-shadow(0 5px 0 currentColor);
 }
 .can-update .update,
 .no-update.update-problem .check-update {
   cursor: pointer;
 }
-.can-update[data-details$="locally edited"] .update svg,
-.update-problem .check-update svg {
-  fill: #ef6969;
+.can-update[data-details$="locally edited"] .update i,
+.update-problem .check-update i {
+  color: #ef6969;
 }
-.can-update[data-details$="locally edited"]:hover .update svg,
-.entry.update-problem:hover .check-update svg {
-  fill: #fd4040;
+.can-update[data-details$="locally edited"]:hover .update i,
+.entry.update-problem:hover .check-update i {
+  color: #fd4040;
 }
-.can-update[data-details$="locally edited"]:hover .update svg:hover,
-.entry.update-problem:hover .check-update svg:hover {
-  fill: red;
+.can-update[data-details$="locally edited"]:hover .update i:hover,
+.entry.update-problem:hover .check-update i:hover {
+  color: red;
 }
 .updater-icons > :not(.check-update):after {
   content: attr(title);
@@ -194,10 +177,10 @@
 .expander:hover {
   background: hsla(0, 0%, 50%, .05);
 }
-.expander svg {
+.expander i {
   width: 16px;
   height: 16px;
-  fill: var(--c50);
+  color: var(--c50);
 }
 .applies-to:not(.has-more) .expander {
   display: none;
@@ -223,7 +206,7 @@
   backface-visibility: hidden;
   visibility: hidden;
 }
-.expanded svg {
+.expanded i {
   transform: rotate(180deg);
   transform-origin: 8px 8px;
 }

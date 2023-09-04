@@ -45,7 +45,7 @@
   align-items: center;
 }
 
-.config-body .select-resizer {
+.config-body .select-wrapper {
   position: static;
 }
 
@@ -82,7 +82,7 @@
 }
 
 .config-body input[type="text"],
-.config-body .select-resizer,
+.config-body .select-wrapper,
 .config-body select {
   width: auto;
   min-width: var(--onoffswitch-width);
@@ -111,7 +111,7 @@
   flex-shrink: 0;
 }
 
-.config-value:not(.onoffswitch):not(.select-resizer) > :not(:last-child) {
+.config-value:not(.onoffswitch):not(.select-wrapper) > :not(:last-child) {
   margin-right: 4px;
 }
 
@@ -135,26 +135,24 @@
   height: var(--icon);
   position: absolute;
   right: var(--iconR);
+  cursor: pointer;
 }
 
-.config-reset-icon .svg-icon {
-  cursor: pointer;
-  fill: var(--c65);
-  width: var(--icon);
-  height: var(--icon);
+.config-reset-icon i {
+  color: var(--c65);
+  font-size: var(--icon);
   padding: 0 1px;
   box-sizing: border-box;
   flex-shrink: 0;
 }
 
-.config-reset-icon:hover .svg-icon {
-  fill: var(--c40);
+.config-reset-icon:hover i {
+  color: var(--c40);
 }
 
 #config-autosave-wrapper {
-  position: relative;
-  padding: 0 0 0 var(--pad);
   display: inline-flex;
+  align-items: center;
 }
 
 #message-box-buttons {

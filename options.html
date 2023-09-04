@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title i18n="+optionsHeading">Stylus </title>
-  <link rel="stylesheet" href="global.css">
+  <link href="icons.ttf" rel="preload" as="font" crossorigin="anonymous">
+  <link href="global.css" rel="stylesheet">
   <link href="global-dark.css?bugfix" rel="stylesheet"> <!-- https://crbug.com/1298600 -->
 
   <script src="js/polyfill.js"></script>
@@ -48,9 +49,7 @@
   <div id="options-header">
     <div id="options-title" i18n="+optionsHeading">
       <div id="options-close-icon">
-        <svg viewBox="0 0 20 20" class="svg-icon">
-          <path d="M11.69,10l4.55,4.55-1.69,1.69L10,11.69,5.45,16.23,3.77,14.55,8.31,10,3.77,5.45,5.45,3.77,10,8.31l4.55-4.55,1.69,1.69Z"></path>
-        </svg>
+        <i class=i-close></i>
       </div>
     </div>
   </div>
@@ -65,8 +64,8 @@
           <label>
             <span i18n="optionsUpdateInterval" data-clickable="0">
               <a i18n="title:optionsUpdateImportNote"
-                 data-cmd="note" class="svg-inline-wrapper" tabindex="0">
-                <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+                 data-cmd="note" class=icon tabindex="0">
+                <i class=i-info></i>
               </a>
             </span>
             <input type="number" min="0" id="updateInterval">
@@ -79,7 +78,7 @@
         <div class="items">
           <label>
             <span class="sync-status"></span>
-            <div class="select-resizer">
+            <div class="select-wrapper">
               <select class="cloud-name">
                 <option value="none" i18n="optionsSyncNone"></option>
                 <option value="dropbox">Dropbox</option>
@@ -87,7 +86,6 @@
                 <option value="onedrive">OneDrive</option>
                 <option value="webdav">WebDAV</option>
               </select>
-              <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
             </div>
           </label>
           <table class="drive-options" data-drive="webdav">
@@ -257,8 +255,8 @@
           <label>
             <span i18n="manageFavicons">
               <a i18n="title:manageFaviconsHelp"
-                 data-cmd="note" class="svg-inline-wrapper" tabindex="0">
-                <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+                 data-cmd="note" class=icon tabindex="0">
+                <i class=i-info></i>
               </a>
             </span>
             <span class="onoffswitch">
@@ -286,8 +284,8 @@
           <label>
             <span i18n="optionsAdvancedStyleViaXhr">
               <a i18n="title:optionsAdvancedStyleViaXhrNote"
-                 data-cmd="note" class="svg-inline-wrapper" tabindex="0">
-                <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+                 data-cmd="note" class=icon tabindex="0">
+                <i class=i-info></i>
               </a>
             </span>
             <span class="onoffswitch">
@@ -299,8 +297,8 @@
             <span>
               <span i18n="html:optionsAdvancedPatchCsp"></span>
               <a i18n="title:optionsAdvancedPatchCspNote"
-                 data-cmd="note" class="svg-inline-wrapper" tabindex="0">
-                <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+                 data-cmd="note" class=icon tabindex="0">
+                <i class=i-info></i>
               </a>
             </span>
             <span class="onoffswitch">
@@ -311,8 +309,8 @@
           <label>
             <span i18n="optionsAdvancedExposeIframes">
               <a i18n="title:optionsAdvancedExposeIframesNote"
-                 data-cmd="note" class="svg-inline-wrapper" tabindex="0">
-                <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+                 data-cmd="note" class=icon tabindex="0">
+                <i class=i-info></i>
               </a>
             </span>
             <span class="onoffswitch">
@@ -323,8 +321,8 @@
           <label class="chromium-only">
             <span i18n="optionsAdvancedExposeStyleName">
               <a i18n="title:optionsAdvancedExposeStyleNameNote"
-                 data-cmd="note" class="svg-inline-wrapper" tabindex="0">
-                <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+                 data-cmd="note" class=icon tabindex="0">
+                <i class=i-info></i>
               </a>
             </span>
             <span class="onoffswitch">
@@ -365,18 +363,6 @@
 </head>
 
 <body id="stylus-options">
-  <svg xmlns="http://www.w3.org/2000/svg" style="display: none !important;">
-    <symbol id="svg-icon-help" viewBox="0 0 14 16">
-      <circle cx="7" cy="5" r="1"/>
-      <path d="M8,8c0-0.5-0.5-1-1-1H6C5.5,7,5,7.4,5,8h1v3c0,0.5,0.5,1,1,1h1c0.5,0,1-0.4,1-1H8V8z"/>
-      <path d="M7,1c3.9,0,7,3.1,7,7s-3.1,7-7,7s-7-3.1-7-7S3.1,1,7,1z M7,2.3C3.9,2.3,1.3,4.9,1.3,8s2.6,5.7,5.7,5.7s5.7-2.6,5.7-5.7S10.1,2.3,7,2.3C7,2.3,7,2.3,7,2.3z"/>
-    </symbol>
-
-    <symbol id="svg-icon-select-arrow" viewBox="0 0 1792 1792">
-      <path fill-rule="evenodd" d="M1408 704q0 26-19 45l-448 448q-19 19-45 19t-45-19l-448-448q-19-19-19-45t19-45 45-19h896q26 0 45 19t19 45z"/>
-    </symbol>
-  </svg>
-
   <script src="options/options.js"></script>
 </body>
 </html>

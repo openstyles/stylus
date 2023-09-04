@@ -27,6 +27,8 @@
     "fs-extra": "^10.1.0",
     "glob": "^8.0.3",
     "node-fetch": "^2.6.7",
+    "svg2ttf": "^6.0.3",
+    "svgicons2svgfont": "^12.0.0",
     "sync-version": "^1.0.1",
     "web-ext": "^7.6.1"
   },
@@ -35,6 +37,7 @@
     "test": "node tools/test.js && npm run lint",
     "update-locales": "tx pull --all && node tools/fix-transifex.js",
     "update-transifex": "tx push -s",
+    "build-icons": "node tools/build-icons",
     "build-vendor": "node tools/build-vendor",
     "zip": "npm test && node tools/zip.js",
     "start": "web-ext run",

@@ -42,9 +42,9 @@ a:hover {
   color: var(--c40);
 }
 
-a:hover .svg-icon,
-.svg-icon:hover {
-  fill: var(--fg);
+a:hover i,
+i:hover {
+  color: var(--fg);
 }
 
 .clickable {
@@ -52,17 +52,13 @@ a:hover .svg-icon,
   cursor: pointer;
 }
 
-.svg-inline-wrapper .svg-icon {
-  pointer-events: none;
+#options-close-icon i {
+  color: var(--c40);
+  transition: color .5s;
 }
 
-#options-close-icon .svg-icon {
-  fill: var(--c40);
-  transition: fill .5s;
-}
-
-#options-close-icon:hover .svg-icon {
-  fill: var(--fg);
+#options-close-icon:hover i {
+  color: var(--fg);
 }
 
 #options-close-icon {
@@ -73,7 +69,7 @@ a:hover .svg-icon,
   top: 6px;
 }
 
-#options-close-icon .svg-icon {
+#options-close-icon i {
   height: 20px;
   width: 20px;
 }
@@ -233,15 +229,15 @@ input[type=time] {
   cursor: pointer;
 }
 
-.svg-inline-wrapper .svg-icon {
-  width: 16px;
-  height: 16px;
-  fill: var(--c40);
+a.icon > i {
+  pointer-events: none;
+  font-size: 16px;
+  color: var(--c40);
   vertical-align: sub;
 }
 
-.svg-inline-wrapper:hover .svg-icon {
-  fill: var(--fg);
+a.icon:hover > i {
+  color: var(--fg);
 }
 
 #message-box.note {

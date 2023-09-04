@@ -4,7 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="global.css">
+  <link href="icons.ttf" rel="preload" as="font" crossorigin="anonymous">
+  <link href="global.css" rel="stylesheet">
   <link href="global-dark.css" rel="stylesheet">
 
   <template data-id="style">
@@ -12,25 +13,18 @@
       <div class="entry-content">
         <div class="main-controls">
           <label class="style-name">
-            <div class="checkmate">
-              <input class="checker" type="checkbox">
-              <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-            </div>
+            <input type=checkbox>
           </label>
         </div>
         <div class="actions">
           <a class="configure" i18n="title:configureStyle" tabindex="0">
-            <svg class="svg-icon config"><use xlink:href="#svg-icon-config"></use></svg>
+            <i class=i-config></i>
           </a>
           <a class="style-edit-link" href="edit.html" i18n="title:editStyleLabel">
-            <svg class="svg-icon edit" viewBox="0 0 14 16">
-              <path fill-rule="evenodd" d="M0 12v3h3l8-8-3-3-8 8zm3 2H1v-2h1v1h1v1zm10.3-9.3L12 6 9 3l1.3-1.3a.996.996 0 0 1 1.41 0l1.59 1.59c.39.39.39 1.02 0 1.41z"/>
-            </svg>
+            <i class=i-edit></i>
           </a>
           <a class="menu-button" i18n="title:popupMenuButtonTooltip" tabindex="0">
-            <svg class="svg-icon menu-button-icon" viewBox="0 0 3 16">
-              <path fill-rule="evenodd" d="M0 2.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0zm0 5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0zM1.5 14a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
-            </svg>
+            <i class=i-menu></i>
           </a>
         </div>
       </div>
@@ -38,21 +32,11 @@
         <div class="menu-items-wrapper">
           <b class="menu-title"></b>
           <label class="menu-item exclude-by-domain button">
-            <div class="menu-icon">
-              <div class="checkbox-container">
-                <input type="checkbox" class="exclude-by-domain-checkbox">
-                <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-              </div>
-            </div>
+            <input type="checkbox" class="exclude-by-domain-checkbox">
             <span i18n="excludeStyleByDomainLabel"></span>
           </label>
           <label class="menu-item exclude-by-url button">
-            <div class="menu-icon">
-              <div class="checkbox-container">
-                <input type="checkbox" class="exclude-by-url-checkbox">
-                <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-              </div>
-            </div>
+            <input type="checkbox" class="exclude-by-url-checkbox">
             <span i18n="excludeStyleByUrlLabel"></span>
           </label>
           <div class="menu-buttons-wrapper">
@@ -139,15 +123,15 @@
   <div class="actions" id="main-actions">
     <label id="disableAll-label" i18n="data-on:disableAllStyles, data-off:disableAllStylesOff">
       <input id="disableAll" type="checkbox">
-      <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
     </label>
-    <div id="write-style" class="if-not-blocked">
+    <div class="if-not-blocked">
       <label id="write-as" i18n="title:optionsAdvancedNewStyleAsUsercss">
         <input id="newStyleAsUsercss" type="checkbox">
-        <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
         <div>U</div>
       </label>
-      <span id="write-style-for" i18n="writeStyleFor"></span>
+      <div id="write-style">
+        <span id="write-style-for" i18n="writeStyleFor"></span>
+      </div>
     </div>
   </div>
 
@@ -166,7 +150,9 @@
                menu-gf="GreasyFork"></button>
     </div>
     <button id="options-btn" i18n="title:openOptions" class="rel">
-      <svg class="if-not-blocked abs svg-icon config"><use xlink:href="#svg-icon-config"></use></svg>
+      <svg class="if-not-blocked abs i-config" viewBox="0 0 20 20">
+        <text y="100%">⚙</text>
+      </svg>
       <span class="if-not-blocked">&nbsp;</span>
       <span class="if-blocked" i18n="openOptions"></span>
     </button>
@@ -178,31 +164,5 @@
   <!-- Here we can use the above elements before DOMContentLoaded -->
   <script src="popup/events.js"></script>
   <script src="popup/popup.js"></script>
-
-  <svg xmlns="http://www.w3.org/2000/svg" style="display: none !important;">
-    <symbol id="svg-icon-checked" viewBox="0 0 1000 1000">
-      <path fill-rule="evenodd" d="M983.2,184.3L853,69.8c-4-3.5-9.3-5.3-14.5-5c-5.3,0.4-10.3,2.8-13.8,6.8L352.3,609.2L184.4,386.9c-3.2-4.2-8-7-13.2-7.8c-5.3-0.8-10.6,0.6-14.9,3.9L18,487.5c-8.8,6.7-10.6,19.3-3.9,28.1L325,927.2c3.6,4.8,9.3,7.7,15.3,8c0.2,0,0.5,0,0.7,0c5.8,0,11.3-2.5,15.1-6.8L985,212.6C992.3,204.3,991.5,191.6,983.2,184.3z"/>
-    </symbol>
-
-    <symbol id="svg-icon-select-arrow" viewBox="0 0 1792 1792">
-      <path fill-rule="evenodd" d="M1408 704q0 26-19 45l-448 448q-19 19-45 19t-45-19l-448-448q-19-19-19-45t19-45 45-19h896q26 0 45 19t19 45z"/>
-    </symbol>
-
-    <symbol id="svg-icon-config" viewBox="0 0 16 16">
-      <path d="M13.3,12.8l1.5-2.6l-2.2-1.5c0-0.2,0.1-0.5,0.1-0.7c0-0.2,0-0.5-0.1-0.7l2.2-1.5l-1.5-2.6l-2.4,1.2 c-0.4-0.3-0.8-0.5-1.2-0.7L9.5,1h-3L6.3,3.7C5.9,3.8,5.5,4.1,5.1,4.4L2.7,3.2L1.2,5.8l2.2,1.5c0,0.2-0.1,0.5-0.1,0.7 c0,0.2,0,0.5,0.1,0.7l-2.2,1.5l1.5,2.6l2.4-1.2c0.4,0.3,0.8,0.5,1.2,0.7L6.5,15h3l0.2-2.7c0.4-0.2,0.8-0.4,1.2-0.7L13.3,12.8z  M8,10.3c-1.3,0-2.3-1-2.3-2.3c0-1.3,1-2.3,2.3-2.3c1.3,0,2.3,1,2.3,2.3C10.3,9.3,9.3,10.3,8,10.3z"/>
-    </symbol>
-
-    <symbol id="svg-icon-config-uso" viewBox="0 0 20 20">
-      <path d="M4,4h5v2H6v8h8v-3h2v5H4V4z M11,3h6v6l-2-2l-4,4L9,9l4-4L11,3z"/>
-    </symbol>
-
-    <symbol id="svg-icon-help" viewBox="0 0 14 16">
-      <title i18n="helpAlt"></title>
-      <circle cx="7" cy="5" r="1"/>
-      <path d="M8,8c0-0.5-0.5-1-1-1H6C5.5,7,5,7.4,5,8h1v3c0,0.5,0.5,1,1,1h1c0.5,0,1-0.4,1-1H8V8z"/>
-      <path d="M7,1c3.9,0,7,3.1,7,7s-3.1,7-7,7s-7-3.1-7-7S3.1,1,7,1z M7,2.3C3.9,2.3,1.3,4.9,1.3,8s2.6,5.7,5.7,5.7s5.7-2.6,5.7-5.7S10.1,2.3,7,2.3C7,2.3,7,2.3,7,2.3z"/>
-    </symbol>
-  </svg>
-
 </body>
 </html>

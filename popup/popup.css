@@ -41,13 +41,11 @@ body:not(.blocked) .if-blocked,
 }
 #main-actions > * {
   margin-top: .75em;
-  padding-left: var(--inner-padding);
-  display: block;
+  display: flex;
 }
 
 #disableAll-label {
   width: fit-content;
-  position: relative;
 }
 
 #no-styles {
@@ -55,22 +53,18 @@ body:not(.blocked) .if-blocked,
   font-weight: bold;
 }
 
-label:hover .checker:checked,
-label:hover .checker {
+.style-name:hover input:checked,
+.style-name:hover input {
   border-color: var(--c30);
   background-color: var(--c80);
 }
-
-#installed .style-name .checker,
-#installed .style-name .svg-icon.checked {
-  position: absolute;
-  top: 7px;
-  left: var(--outer-padding);
+#installed input {
   pointer-events: none;
+  align-self: center;
+  color: var(--fg);
 }
-
-.checker {
-  display: inline;
+#installed input::after {
+  height: auto;
 }
 
 a {
@@ -137,8 +131,9 @@ html[style] .entry-content {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding-left: calc(var(--outer-padding) + var(--inner-padding));
+  padding-left: var(--outer-padding);
   position: relative;
+  display: flex;
 }
 
 .entry .style-name::before {
@@ -159,17 +154,15 @@ html[style] .entry-content {
   opacity: 1;
 }
 
-.entry.disabled .style-name,
-.entry.disabled .svg-icon {
+.entry.disabled .style-name {
   font-weight: normal;
-  color: var(--c50);
-  fill: var(--c65);
+  color: var(--c65);
 }
-.entry.disabled:hover .svg-icon {
-    fill: var(--c40);
+.entry.disabled:hover i {
+  color: var(--c40);
 }
-.entry.disabled:hover a:hover .svg-icon {
-    fill: var(--fg);
+.entry.disabled:hover a:hover i {
+  color: var(--fg);
 }
 
 .entry .main-controls {
@@ -222,10 +215,7 @@ html[style*="border"] .entry:nth-child(11):before {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-}
-
-.entry .actions > .menu-button {
-  width: 16px;
+  margin-left: 2px;
 }
 
 .entry .actions > a.configure {
@@ -236,18 +226,11 @@ html[style*="border"] .entry:nth-child(11):before {
   width: 20px;
 }
 
-.svg-icon.config {
-  height: 16px;
-  width: 16px;
-}
-
-a.configure[target="_blank"] .svg-icon.config {
-  height: 20px;
-  width: 20px;
+a.configure[target="_blank"] .i-config {
+  font-size: 20px;
   margin-top: 1px;
 }
 
-.not-applied .checker,
 .not-applied .style-name,
 .not-applied .actions > * {
   opacity: .2;
@@ -256,7 +239,6 @@ a.configure[target="_blank"] .svg-icon.config {
 .not-applied .style-name {
   opacity: .5;
 }
-.not-applied:hover .checker,
 .not-applied:hover .style-name,
 .not-applied:hover .actions > * {
   opacity: 1;
@@ -354,14 +336,6 @@ a.configure[target="_blank"] .svg-icon.config {
   cursor: help;
 }
 
-/* checkbox */
-.checkbox-container {
-  position: relative;
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-}
-
 .regexp-problem-indicator {
   background-color: #d00;
   width: 14px;
@@ -420,14 +394,13 @@ a.configure[target="_blank"] .svg-icon.config {
   margin-bottom: .5rem;
 }
 
-.svg-icon {
+i {
   pointer-events: none;
-  width: 14px;
-  height: 16px;
+  font-size: 16px;
 }
 
-a:hover .svg-icon {
-  fill: var(--fg);
+a:hover i {
+  color: var(--fg);
 }
 
 /* Never shown, but can be enabled with a style */
@@ -441,19 +414,13 @@ a:hover .svg-icon {
 #write-style {
   cursor: pointer;
 }
-#write-as {
-  position: absolute;
-  left: var(--outer-padding);
-}
-#newStyleAsUsercss {
-  position: static;
-}
 #newStyleAsUsercss ~ div {
   font-weight: bold;
-  margin: -2px -1px 0;
-  padding-top: 1px;
+  margin: 0 -1px 0;
+  padding: 1px 3px 0;
   text-align: center;
-  border-radius: 3px;
+  border-radius: 4px;
+  position: absolute;
 }
 #newStyleAsUsercss:checked ~ div {
   color: var(--bg);
@@ -594,7 +561,6 @@ a:hover .svg-icon {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding: 2px 4px;
 }
 #popup-options > * {
   margin-right: var(--btn-gap);
@@ -608,6 +574,10 @@ a:hover .svg-icon {
 #options-btn svg {
   left: 0;
   right: 0;
+  top: 0;
+  bottom: 0;
+  height: 19px;
+  font: normal 20px icons;
   margin: auto;
   fill: transparent;
   stroke: currentColor;

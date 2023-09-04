@@ -360,7 +360,7 @@ function createStyleElement(style) {
         config.target = '_blank';
         config.title = t('configureStyleOnHomepage');
         config._sendMessage = {method: 'openSettings'};
-        $('use', config).attributes['xlink:href'].nodeValue = '#svg-icon-config-uso';
+        $('i', config).className = 'i-external';
       } else {
         config.classList.add('hidden');
       }

@@ -28,7 +28,6 @@ input:disabled + span {
   box-sizing: border-box;
   padding: 1rem;
   box-shadow: 0 0 50px -18px black;
-  word-break: break-all;
   overflow-wrap: break-word;
   overflow-y: auto;
   z-index: 100;
@@ -89,10 +88,6 @@ h1 {
 }
 .meta-version::before {
   content: "v";
-}
-.checkbox-wrapper {
-  box-sizing: border-box;
-  display: block;
 }
 .set-update-url p {
   word-break: break-all;
@@ -234,11 +229,11 @@ h2 {
   margin: 0;
   color: darkcyan;
 }
-.installed .configure-usercss svg {
-  fill: hsl(180, 100%, 20%);
+.installed .configure-usercss i {
+  color: hsl(180, 100%, 20%);
 }
-.installed .configure-usercss:hover svg {
-  fill: hsl(180, 100%, 30%);
+.installed .configure-usercss:hover i {
+  color: hsl(180, 100%, 30%);
 }
 
 #header-contents > .hide-empty:empty,
@@ -304,7 +299,7 @@ li {
   animation: none;
 }
 
-.configure-usercss .svg-icon.config {
+.configure-usercss .i-config {
   width: 20px;
   height: 20px;
 }

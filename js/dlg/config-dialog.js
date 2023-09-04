@@ -77,8 +77,6 @@ async function configDialog(style) {
         title: t('configOnChangeTooltip'),
       }, [
         $create('input', {id: 'config.autosave', type: 'checkbox'}),
-        $create('SVG:svg.svg-icon.checked',
-          $create('SVG:use', {'xlink:href': '#svg-icon-checked'})),
         t('configOnChange'),
       ]));
     setupLivePrefs(['config.autosave']);
@@ -218,15 +216,8 @@ async function configDialog(style) {
 
   function buildConfigForm() {
     let resetter =
-      $create('a.config-reset-icon', {tabIndex: 0}, [
-        $create('SVG:svg.svg-icon', {viewBox: '0 0 20 20'}, [
-          $create('SVG:title', t('genericResetLabel')),
-          $create('SVG:polygon', {
-            points: '16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5 ' +
-                    '5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10',
-          }),
-        ]),
-      ]);
+      $create('a.config-reset-icon', {tabIndex: 0, title: t('genericResetLabel')},
+        $create('i.i-close'));
     for (const va of vars) {
       let children;
       switch (va.type) {
@@ -260,15 +251,13 @@ async function configDialog(style) {
         case 'image':
           // TODO: a image picker input?
           children = [
-            $create('.select-resizer.config-value', [
+            $create('.select-wrapper.config-value', [
               va.input = $create('select', {
                 va,
                 onchange: updateVarOnChange,
               },
               va.options.map(o =>
                 $create('option', {value: o.name}, o.label))),
-              $create('SVG:svg.svg-icon.select-arrow',
-                $create('SVG:use', {'xlink:href': '#svg-icon-select-arrow'})),
             ]),
           ];
           break;

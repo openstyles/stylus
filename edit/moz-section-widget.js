@@ -208,8 +208,8 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
         transition: none;
         color: ${fore};
       }
-      ${C_CONTAINER} .svg-icon.select-arrow {
-        fill: ${fore};
+      ${C_CONTAINER} .select-wrapper::after {
+        color: ${fore};
         transition: none;
       }
     `;

@@ -245,11 +245,8 @@ async function showUpdateHistory(show, el, selector) {
 
       $('#message-box-buttons button').insertAdjacentElement('afterend',
         // TODO: add a <template> or a common function to create such controls
-        $create('label.checkbox-wrapper', [
-          toggler =
-            $create('input', {type: 'checkbox', checked: true, onchange: toggleSkipped}),
-          $create('SVG:svg.svg-icon.checked',
-            $create('SVG:use', {'xlink:href': '#svg-icon-checked'})),
+        $create('label', [
+          toggler = $create('input', {type: 'checkbox', checked: true, onchange: toggleSkipped}),
           t('manageOnlyUpdates'),
         ]));
 

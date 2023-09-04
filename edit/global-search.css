@@ -38,7 +38,7 @@
   align-self: center;
 }
 
-#search-replace-dialog[data-type="replace"] button svg {
+#search-replace-dialog[data-type="replace"] button i {
   display: none;
 }
 
@@ -236,7 +236,7 @@ body .CodeMirror-search-match {
     text-align: center;
     cursor: pointer;
   }
-  #search-replace-dialog[data-type="replace"] button svg {
+  #search-replace-dialog[data-type="replace"] button i {
     display: inline;
   }
   #search-replace-dialog[data-type="replace"] textarea {

@@ -6,6 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Loading...</title>
 
+  <link href="icons.ttf" rel="preload" as="font" crossorigin="anonymous">
   <link href="global.css" rel="stylesheet">
   <link href="global-dark.css" rel="stylesheet">
 
@@ -75,7 +76,7 @@
         <h2 class="install-show" i18n="installButtonInstalled"></h2>
         <button class="install install-hide" i18n="installButton"></button>
         <a class="configure-usercss" i18n="title:configureStyle" tabindex="0">
-          <svg class="svg-icon config"><use xlink:href="#svg-icon-config"></use></svg>
+          <i class=i-config></i>
         </a>
         <div class="install-show w100-full">
           <a href="manage.html"><button i18n="openManage"></button></a>
@@ -84,18 +85,14 @@
         </div>
       </div>
       <div id="ss-scheme" class="install-dim"></div>
-      <div class="set-update-url w100 checkbox-wrapper install-disable">
+      <div class="set-update-url w100 install-disable">
         <label>
-          <input type="checkbox">
-          <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-          <span i18n="installUpdateFromLabel"></span>
+          <input type="checkbox"><span i18n="installUpdateFromLabel"></span>
         </label>
         <p></p>
       </div>
-      <label class="live-reload checkbox-wrapper">
-        <input type="checkbox">
-        <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-        <span i18n="liveReloadLabel"></span>
+      <label class="live-reload">
+        <input type="checkbox"><span i18n="liveReloadLabel"></span>
       </label>
       <div id="live-reload-install-hint" class="w100" hidden></div>
       <div class="meta-description w100 hide-empty"></div>
@@ -119,23 +116,6 @@
   <div class="main">
     <div class="warnings"></div>
   </div>
-
-  <svg xmlns="http://www.w3.org/2000/svg" style="display: none !important;">
-    <symbol id="svg-icon-help" viewBox="0 0 14 16" i18n="alt:helpAlt">
-      <circle cx="7" cy="5" r="1"/>
-      <path d="M8,8c0-0.5-0.5-1-1-1H6C5.5,7,5,7.4,5,8h1v3c0,0.5,0.5,1,1,1h1c0.5,0,1-0.4,1-1H8V8z"/>
-      <path d="M7,1c3.9,0,7,3.1,7,7s-3.1,7-7,7s-7-3.1-7-7S3.1,1,7,1z M7,2.3C3.9,2.3,1.3,4.9,1.3,8s2.6,5.7,5.7,5.7s5.7-2.6,5.7-5.7S10.1,2.3,7,2.3C7,2.3,7,2.3,7,2.3z"/>
-    </symbol>
-    <symbol id="svg-icon-checked" viewBox="0 0 1000 1000">
-      <path fill-rule="evenodd" d="M983.2,184.3L853,69.8c-4-3.5-9.3-5.3-14.5-5c-5.3,0.4-10.3,2.8-13.8,6.8L352.3,609.2L184.4,386.9c-3.2-4.2-8-7-13.2-7.8c-5.3-0.8-10.6,0.6-14.9,3.9L18,487.5c-8.8,6.7-10.6,19.3-3.9,28.1L325,927.2c3.6,4.8,9.3,7.7,15.3,8c0.2,0,0.5,0,0.7,0c5.8,0,11.3-2.5,15.1-6.8L985,212.6C992.3,204.3,991.5,191.6,983.2,184.3z"/>
-    </symbol>
-    <symbol id="svg-icon-select-arrow" viewBox="0 0 1792 1792">
-      <path fill-rule="evenodd" d="M1408 704q0 26-19 45l-448 448q-19 19-45 19t-45-19l-448-448q-19-19-19-45t19-45 45-19h896q26 0 45 19t19 45z"/>
-    </symbol>
-    <symbol id="svg-icon-config" viewBox="0 0 16 16">
-      <path d="M13.3,12.8l1.5-2.6l-2.2-1.5c0-0.2,0.1-0.5,0.1-0.7c0-0.2,0-0.5-0.1-0.7l2.2-1.5l-1.5-2.6l-2.4,1.2 c-0.4-0.3-0.8-0.5-1.2-0.7L9.5,1h-3L6.3,3.7C5.9,3.8,5.5,4.1,5.1,4.4L2.7,3.2L1.2,5.8l2.2,1.5c0,0.2-0.1,0.5-0.1,0.7 c0,0.2,0,0.5,0.1,0.7l-2.2,1.5l1.5,2.6l2.4-1.2c0.4,0.3,0.8,0.5,1.2,0.7L6.5,15h3l0.2-2.7c0.4-0.2,0.8-0.4,1.2-0.7L13.3,12.8z  M8,10.3c-1.3,0-2.3-1-2.3-2.3c0-1.3,1-2.3,2.3-2.3c1.3,0,2.3,1,2.3,2.3C10.3,9.3,9.3,10.3,8,10.3z"/>
-    </symbol>
-  </svg>
 
   <script src="js/dlg/message-box.js"></script>
   <script src="install-usercss/install-usercss.js"></script>

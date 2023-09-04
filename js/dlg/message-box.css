@@ -105,12 +105,12 @@
   font-weight: bold;
 }
 
-#message-box.danger #message-box-close-icon svg {
-  fill: maroon;
+#message-box.danger #message-box-close-icon i {
+  color: maroon;
 }
 
-#message-box.danger #message-box-close-icon svg:hover {
-  fill: #600;
+#message-box.danger #message-box-close-icon i:hover {
+  color: #600;
 }
 
 #message-box-close-icon {
@@ -120,9 +120,8 @@
   top: 4px;
 }
 
-#message-box-close-icon svg {
-  width: 16px;
-  height: 16px;
+#message-box-close-icon i {
+  font-size: 16px;
 }
 
 #message-box-contents {
@@ -156,7 +155,7 @@
   direction: rtl;
 }
 
-#message-box-buttons button {
+#message-box-buttons > * {
   margin: 0 .375rem;
 }
 

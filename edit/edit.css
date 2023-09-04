@@ -83,11 +83,6 @@ html:not(.is-new-style) #heading::before {
   margin-bottom: .75rem;
 }
 
-label {
-  padding-left: 16px;
-  position: relative;
-}
-
 /************ header ************/
 #header {
   width: var(--header-width);
@@ -119,7 +114,7 @@ label {
 .aligned {
   display: table-row;
 }
-.aligned > *:not(.svg-inline-wrapper) {
+.aligned > *:not(.icon) {
   display: table-cell;
   margin-top: 0.1rem;
   min-height: 1.4rem;
@@ -147,30 +142,15 @@ label {
 }
 
 #basic-info-enabled {
-  margin-top: 2px;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  line-height: 16px;
+  margin-top: .25rem;
 }
 
 #basic-info-enabled > * {
   margin-right: 1em;
-  margin-left: 0;
 }
 
 #basic-info-enabled > :last-child {
   margin-right: 0;
-}
-
-#basic-info-enabled input,
-#basic-info-enabled svg {
-  margin: auto 0;
-  bottom: 0;
-}
-
-#basic-info-enabled svg {
-  left: 2px;
 }
 
 #preview-errors {
@@ -183,43 +163,36 @@ label {
   cursor: pointer;
 }
 
-.svg-icon {
+i {
   width: 16px;
   height: 16px;
 }
-.svg-inline-wrapper {
+a.icon {
   margin-left: .2rem;
-  display: inline-block;
-  vertical-align: middle;
 }
-#colorpicker-settings.svg-inline-wrapper {
-  margin: -2px 0 0 .1rem;
-}
-.aligned .svg-inline-wrapper {
-  margin: -2px 0 0 .3rem;
+#colorpicker-settings {
+  position: absolute;
+  margin-top: -1px;
 }
 #sections-help {
   margin-left: -1px;
 }
-.svg-icon.info {
+.i-info {
   width: 14px;
   height: 16px;
 }
-.svg-icon:hover,
-.svg-icon.info,
-.svg-icon.settings {
-  fill: var(--c40);
+i:hover,
+.i-info,
+.i-config {
+  color: var(--c40);
 }
-.svg-icon,
-.svg-icon.info:hover,
-.svg-icon.settings:hover {
-  fill: var(--fg);
+i,
+.i-info:hover,
+.i-config:hover {
+  color: var(--fg);
 }
-#options span .svg-icon {
+#options span i {
   margin-top: -3px; /* inline info and config icons */
-}
-#enabled {
-  margin-left: 0;
 }
 /* collapsibles */
 #header details {
@@ -256,8 +229,8 @@ label {
 #header summary:hover h2 {
   border-color: var(--c70);
 }
-#header summary svg {
-  margin-top: -3px;
+#header summary .icon {
+  margin-top: -.1em;
 }
 #header details > :not(summary) {
   margin: 0 0 0 var(--pad);
@@ -276,7 +249,10 @@ label {
   align-items: center;
 }
 #actions .buttons > * {
-  margin: 0 .25rem var(--pad05) 0;
+  margin-bottom: var(--pad05);
+}
+#actions .buttons > :not(:last-child) {
+  margin-right: .25rem;
 }
 
 #publish > div > * {
@@ -605,7 +581,7 @@ label {
 .applies-to li > input {
   min-height: 1.4rem;
 }
-.applies-to .select-resizer {
+.applies-to .select-wrapper {
   margin-right: .5em;
 }
 .applies-to li .add-applies-to:first-child {
@@ -635,20 +611,24 @@ label {
   justify-content: center;
   cursor: pointer;
 }
-.add-applies-to .svg-icon,
-.remove-applies-to .svg-icon {
-  pointer-events: none;
-  fill: var(--c60);
-  height: 12px;
-  width: 12px;
+.remove-applies-to {
+  margin-left: 4px;
 }
-.add-applies-to:hover .svg-icon,
-.remove-applies-to:hover .svg-icon {
+.add-applies-to i,
+.remove-applies-to i {
   pointer-events: none;
-  fill: var(--fg);
+  color: var(--c60);
+  height: 12px;
+  font-size: 12px;
+}
+.add-applies-to:hover i,
+.remove-applies-to:hover i {
+  pointer-events: none;
+  color: var(--fg);
 }
 .test-regexp {
   display: none;
+  height: var(--input-height);
 }
 .has-regexp .test-regexp {
   display: inline-block;
@@ -690,11 +670,11 @@ label {
   max-height: calc(100vh - 15rem);
   overflow-y: auto;
 }
-.regexp-report .svg-icon {
+.regexp-report i {
   position: absolute;
   margin-top: -1px;
 }
-.regexp-report details a {
+.regexp-report details div a {
   color: inherit;
   text-decoration: none;
   display: block;
@@ -757,7 +737,7 @@ label {
   color: white;
 }
 #help-popup.danger .dismiss {
-  fill: white;
+  color: white;
 }
 #help-popup .contents {
   max-height: calc(100vh - 8rem);
@@ -824,7 +804,7 @@ label {
   margin: .25em 0;
 }
 #help-popup .buttons > :nth-child(n + 2) {
-  margin: 0 0 0 .5em;
+  margin: 0 0 0 .75rem;
 }
 .non-windows #help-popup .buttons > :nth-child(n + 2) {
   margin: 0 .5em 0 0;
@@ -1102,7 +1082,7 @@ label {
     vertical-align: top;
     max-width: 100%;
     flex-direction: row;
-    margin: .25em 0 var(--pad05);
+    margin: .25em .25em var(--pad05);
   }
   #details-wrapper details[open] {
     margin-top: 0;

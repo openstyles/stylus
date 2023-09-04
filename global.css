@@ -1,3 +1,5 @@
+@charset "UTF-8";
+
 @supports not (accent-color: red) {
   /* This suppresses a bug in all? browsers: they apply transitions during page load.
    * It was fixed by crrev.com/886802 in Chrome 93, which we detect via `accent-color`.
@@ -40,6 +42,7 @@ body {
   background-color: var(--bg);
   color: var(--fg);
   margin: 0;
+  hyphens: auto;
 }
 body:lang(ja) {
   font-family: Arial, 'Meiryo UI', 'MS Gothic', system-ui, sans-serif;
@@ -52,6 +55,8 @@ body:lang(zh-HK) {
   font-family: Arial, 'Microsoft JhengHei UI', 'Microsoft JhengHei', system-ui, sans-serif;
 }
 
+a.icon { text-decoration: none; }
+
 button {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -60,8 +65,9 @@ button {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding: 2px 7px;
+  padding: 3px 7px 2px;
   border: 1px solid var(--c60);
+  border-radius: 2px;
   font: inherit;
   font-size: 13px;
   line-height: 1.2;
@@ -86,12 +92,11 @@ button:active {
   background-size: 100% 100%;
 }
 
-button .svg-icon {
+button i {
   cursor: auto;
 }
-[data-ui-theme="light"] button .svg-icon {
-  /* Our svgs are pixel-aligned so the default #000 looks too strong */
-  fill: #333;
+[data-ui-theme="light"] button i {
+  color: #333;
 }
 
 /* For some odd reason these hovers appear lighter than all other button hovers in every browser */
@@ -104,6 +109,7 @@ input {
   font: inherit;
   border: 1px solid var(--c65);
   transition: border-color .1s, box-shadow .1s;
+  color: inherit;
 }
 
 input:not([type]),
@@ -125,58 +131,44 @@ input:invalid {
   color: darkred;
 }
 
-.svg-icon {
+i {
   cursor: pointer;
   vertical-align: middle;
-  transition: fill .5s;
-  width: 20px;
-  height: 20px;
-  fill: var(--c40);
+  transition: color .5s;
+  font: 20px/1 icons;
+  color: var(--c40);
+}
+i:hover {
+  color: var(--fg);
+}
+.i-info,
+.i-config {
+  font-size: 16px;
 }
 
-.svg-icon:hover {
-  fill: var(--fg);
-}
-
-.svg-icon.info {
-  width: 14px;
-  height: 16px;
-  margin-left: .5ex;
-}
-
-.svg-icon.config {
-  width: 16px;
-  height: 16px;
-}
-
-.svg-icon.checked {
-  position: absolute;
+input[type="checkbox"]:not(.slider):checked::after {
+  content: '☑';
   height: 8px;
-  width: 8px;
-  display: none;
-  fill: var(--fg);
-  margin: 2px 0 0 2px;
-}
-
-input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
-  display: inline-flex;
-  transition: fill .1s;
+  font: 8px/1 icons;
+  color: inherit;
+  pointer-events: none;
 }
 
 input[type="checkbox"]:not(.slider) {
   -webkit-appearance: none;
   -moz-appearance: none;
-  position: absolute;
-  left: 0;
-  top: 0;
   border: 1px solid var(--c45);
   height: 12px;
   width: 12px;
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 2px;
   background-color: hsla(0, 0%, 0%, .1);
-  margin: 0;
+  margin: 0 .3rem 0 0;
   transition: background-color .1s, border-color .1s;
+  flex: 0 0 12px;
+  vertical-align: text-top;
 }
 
 input[type="checkbox"]:not(.slider):hover {
@@ -184,32 +176,21 @@ input[type="checkbox"]:not(.slider):hover {
   background-color: var(--c80);
 }
 
-input[type="checkbox"]:not(.slider):checked + .svg-icon.checked {
-  position: absolute;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-}
-
 input[type="checkbox"]:not(.slider):disabled {
   background-color: transparent;
   border-color: var(--c50);
 }
 
-input[type="checkbox"]:not(.slider):disabled + .svg-icon.checked {
-  fill: var(--c50);
+input[type="checkbox"]:not(.slider):disabled:checked::after {
+  color: var(--c50);
 }
 
-input[type="checkbox"]:not(.slider):disabled + .svg-icon.checked + span {
+input[type="checkbox"]:not(.slider):disabled + span {
   color: var(--c50);
 }
 
 label {
   transition: color .1s;
-}
-.checkbox-wrapper {
-  padding-left: 16px;
-  position: relative;
 }
 
 select {
@@ -224,24 +205,22 @@ select {
   transition: color .5s;
 }
 
-.select-wrapper,
-.select-resizer {
+.select-wrapper {
   display: inline-flex!important;
   cursor: default;
   position: relative;
 }
 
-.svg-icon.select-arrow {
+.select-wrapper::after {
+  content: '▼';
+  font: 14px/1 icons;
   pointer-events: none;
   cursor: default;
-  display: inline-flex;
-  height: 14px;
-  width: 14px;
-  fill: var(--fg);
+  color: var(--fg);
   position: absolute;
   top: 4px;
   right: 4px;
-  transition: fill .5s;
+  transition: color .5s;
 }
 
 input[type="radio"] {
@@ -287,9 +266,9 @@ select[disabled] > option {
   color: graytext;
 }
 
-select:disabled + .select-arrow,
-select[disabled] + .select-arrow {
-  fill: var(--c50);
+select:disabled + .select-wrapper::after,
+select[disabled] + .select-wrapper::after {
+  color: var(--c50);
 }
 
 summary {
@@ -311,18 +290,18 @@ summary {
 html:not(.all-disabled) body:not(#stylus-popup) #disableAll-label:not([data-persist]) {
   display: none;
 }
-html:not(.all-disabled) #disableAll-label::before {
+html:not(.all-disabled) #disableAll-label::after {
   content: attr(data-on);
 }
-.all-disabled #disableAll-label::before {
+.all-disabled #disableAll-label::after {
   content: attr(data-off);
 }
 .all-disabled #disableAll-label {
   font-weight: bold;
   color: var(--red1);
 }
-.all-disabled #disableAll-label .svg-icon {
-  fill: var(--red1);
+.all-disabled #disableAll-label i {
+  color: var(--red1);
 }
 .all-disabled #disableAll {
   border-color: var(--red1);
@@ -346,6 +325,10 @@ input[type="number"][data-focused-via-click]:focus {
 [data-focused-via-click]:focus {
   outline: none;
   box-shadow: none;
+}
+
+#header {
+  overflow-wrap: break-word;
 }
 
 /* header resizer */
@@ -398,10 +381,12 @@ body.resizing-v > * {
   --menu-pad: .5em;
 }
 .split-btn-pedal {
-  margin-left: -1px !important;
+  margin-left: -2px !important;
   padding-left: .25em !important;
   padding-right: .25em !important;
   min-width: 0 !important;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 .split-btn-pedal::after {
   --side: 4px;
@@ -409,7 +394,7 @@ body.resizing-v > * {
   border: var(--side) solid transparent;
   display: inline-block;
   border-top: calc(var(--side) * 1.3) solid currentColor;
-  vertical-align: bottom;
+  vertical-align: text-bottom;
 }
 .split-btn.active .split-btn-pedal {
   box-shadow: inset 0 0 100px rgba(0, 0, 0, .2);
@@ -434,13 +419,8 @@ body.resizing-v > * {
 }
 
 @supports (-moz-appearance: none) {
-  .firefox select {
-    padding: 0 20px 0 2px;
-    line-height: var(--input-height)!important;
-  }
-
-  svg {
-    transform: scale(1); /* de-blur */
+  button {
+    padding-top: 2.5px;
   }
 
 /* We can customize everything about number inputs except arrows. They're horrible in Linux FF, so we'll hide them unless hovered or focused. */
@@ -468,3 +448,29 @@ body.resizing-v > * {
     display: none !important;
   }
 }
+
+@font-face {
+  font-family: 'icons';
+  src: url(/icons.ttf) format('truetype');
+  unicode-range: /*AUTO-GENERATED-ICON-RANGE*/ U+20,U+2195,U+2197,U+21b2,U+21b6,U+22c1,U+22ee,U+24d8,U+25bc,U+25f4,U+2611,U+2699,U+270f,U+2713,U+2714,U+2716,U+2795,U+2796,U+27f3,U+e000;
+}
+
+/*AUTO-GENERATED-ICON*/ .i-check1::after { content: "✓"; }
+/*AUTO-GENERATED-ICON*/ .i-check2::after { content: "✔"; }
+/*AUTO-GENERATED-ICON*/ .i-checked::after { content: "☑"; }
+/*AUTO-GENERATED-ICON*/ .i-close::after { content: "✖"; }
+/*AUTO-GENERATED-ICON*/ .i-config::after { content: "⚙"; }
+/*AUTO-GENERATED-ICON*/ .i-edit::after { content: "✏"; }
+/*AUTO-GENERATED-ICON*/ .i-external::after { content: "↗"; }
+/*AUTO-GENERATED-ICON*/ .i-info::after { content: "ⓘ"; }
+/*AUTO-GENERATED-ICON*/ .i-install::after { content: "↲"; }
+/*AUTO-GENERATED-ICON*/ .i-log::after { content: "◴"; }
+/*AUTO-GENERATED-ICON*/ .i-menu::after { content: "⋮"; }
+/*AUTO-GENERATED-ICON*/ .i-minus::after { content: "➖"; }
+/*AUTO-GENERATED-ICON*/ .i-plus::after { content: "➕"; }
+/*AUTO-GENERATED-ICON*/ .i-reorder::after { content: "↕"; }
+/*AUTO-GENERATED-ICON*/ .i-select-arrow::after { content: "▼"; }
+/*AUTO-GENERATED-ICON*/ .i-sort-down::after { content: ""; }
+/*AUTO-GENERATED-ICON*/ .i-undo::after { content: "↶"; }
+/*AUTO-GENERATED-ICON*/ .i-update-check::after { content: "⟳"; }
+/*AUTO-GENERATED-ICON*/ .i-v::after { content: "⋁"; }

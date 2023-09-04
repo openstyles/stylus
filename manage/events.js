@@ -136,9 +136,7 @@ const Events = {
   },
 
   toggle(event, entry) {
-    API.styles.toggle(entry.styleId, this.matches('.enable') || this.checked ||
-      this.matches('.checkmate') && !this.querySelector('input').checked);
-      // The wrapper may get clicked if a custom style is applied to the UI
+    API.styles.toggle(entry.styleId, this.matches('.enable') || this.checked);
   },
 
   update(event, entry) {
@@ -149,7 +147,7 @@ const Events = {
 };
 
 Events.ENTRY_ROUTES = {
-  'input, .checkmate, .enable, .disable': Events.toggle,
+  'input, .enable, .disable': Events.toggle,
   '.style-name': Events.name,
   '.homepage': Events.external,
   '.check-update': Events.check,

@@ -93,7 +93,6 @@ function createStyleElement({styleMeta: style, styleNameLC: nameLC, styleSize: s
       editLink: $('.style-edit-link', entry) || {},
       editHrefBase: 'edit.html?id=',
       homepage: $('.homepage', entry),
-      homepageIcon: t.template[`homepageIcon${newUI.enabled ? 'Small' : 'Big'}`],
       infoAge: $('[data-type=age]', entry),
       infoSize: $('[data-type=size]', entry),
       infoVer: $('[data-type=version]', entry),
@@ -145,9 +144,6 @@ function createStyleElement({styleMeta: style, styleNameLC: nameLC, styleSize: s
     (style.updateUrl ? ' updatable' : '') +
     (ud ? ' usercss' : '');
 
-  if (style.url) {
-    $('.homepage', entry).appendChild(parts.homepageIcon.cloneNode(true));
-  }
   if (style.updateUrl && newUI.enabled) {
     $('.actions', entry).appendChild(t.template.updaterIcons.cloneNode(true));
   }

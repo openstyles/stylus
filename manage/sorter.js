@@ -1,4 +1,5 @@
 /* global $ $create dom messageBoxProxy */// dom.js
+/* global FIREFOX */// toolbox.js
 /* global installed */// manage.js
 /* global prefs */
 /* global t */// localization.js
@@ -91,7 +92,7 @@ const sorter = (() => {
     const option = $create('option');
     const optgroup = $create('optgroup');
     const meta = {
-      desc: ' \u21E9',
+      desc: ` ${FIREFOX ? '🠇' : '\uE000'}`,
       enabled: t('genericEnabledLabel'),
       disabled: t('genericDisabledLabel'),
       dateNew: ` (${t('sortDateNewestFirst')})`,

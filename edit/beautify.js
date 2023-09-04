@@ -136,17 +136,10 @@ function createBeautifyUI(scope, options) {
     return (
       $create('div', {attributes: {newline: value}}, [
         $create('span', indent ? {attributes: {indent: ''}} : {}, label),
-        $create('div.select-resizer', [
+        $create('div.select-wrapper', [
           $create('select', {dataset: {option: optionName}}, [
             $create('option', {selected: !value}, '\xA0'),
             $create('option', {selected: value}, '\\n'),
-          ]),
-          $create('SVG:svg.svg-icon.select-arrow', {viewBox: '0 0 1792 1792'}, [
-            $create('SVG:path', {
-              'fill-rule': 'evenodd',
-              'd': 'M1408 704q0 26-19 45l-448 448q-19 19-45 ' +
-                   '19t-45-19l-448-448q-19-19-19-45t19-45 45-19h896q26 0 45 19t19 45z',
-            }),
           ]),
         ]),
       ])
@@ -164,8 +157,6 @@ function createBeautifyUI(scope, options) {
           _: textOff && {node: textNode, text, textOff},
           checked,
         }),
-        $create('SVG:svg.svg-icon.checked',
-          $create('SVG:use', {'xlink:href': '#svg-icon-checked'})),
         i18nKey ? t(i18nKey) : textNode || text,
       ])
     );

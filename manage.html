@@ -5,7 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title i18n="manageTitle"></title>
-  <link rel="stylesheet" href="global.css">
+  <link href="icons.ttf" rel="preload" as="font" crossorigin="anonymous">
+  <link href="global.css" rel="stylesheet">
   <link href="global-dark.css" rel="stylesheet">
 
   <template data-id="style">
@@ -15,7 +16,7 @@
           &nbsp;
           <span class="style-info" data-type="version"></span>
         </a>
-        <a target="_blank" class="homepage"></a>
+        <a target="_blank" class="homepage icon"><i class=i-external></i></a>
       </h2>
       <p class="applies-to">
         <span class="style-info" data-type="age"></span>.
@@ -41,79 +42,46 @@
   <template data-id="styleNewUI">
     <div class="entry">
       <h2 class="style-name">
-        <div class="checkmate">
-          <input class="checker" type="checkbox" i18n="title:toggleStyle">
-          <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-        </div>
+        <input class="checker" type="checkbox" i18n="title:toggleStyle">
         <a class="style-name-link">
           &nbsp;
           <span class="style-info" data-type="version"></span>
         </a>
-        <a target="_blank" class="homepage" tabindex="0"></a>
+        <a target="_blank" class="homepage icon" tabindex="0"><i class=i-external></i></a>
       </h2>
       <p class="actions">
         <a class="delete" i18n="title:deleteStyleLabel" tabindex="0">
-          <svg class="svg-icon" viewBox="0 0 20 20">
-            <polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5
-                             5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10 "/>
-          </svg>
+          <i class=i-close></i>
         </a>
       </p>
       <p class="style-info" data-type="size"></p>
       <p class="style-info" data-type="age"></p>
       <div class="applies-to">
-        <a class="expander" tabindex="0">
-          <svg><use xlink:href="#svg-icon-select-arrow"/></svg>
-        </a>
+        <a class="expander" tabindex="0"><i>▼</i></a>
         <div class="targets"></div>
       </div>
     </div>
   </template>
 
-  <template data-id="homepageIconBig">
-    <svg class="svg-icon" viewBox="0 0 20 20">
-      <polygon shape-rendering="crispEdges" points="3,3 3,17 17,17 17,13 15,13 15,15 5,15 5,5 7,5 7,3 "/>
-      <polygon points="10,3 12.5,5.5 8,10 10,12 14.5,7.5 17,10 17,3 "/>
-    </svg>
-  </template>
-
-  <template data-id="homepageIconSmall">
-    <svg class="svg-icon" viewBox="0 0 20 20">
-      <path d="M4,4h5v2H6v8h8v-3h2v5H4V4z M11,3h6v6l-2-2l-4,4L9,9l4-4L11,3z"/>
-    </svg>
-  </template>
-
   <template data-id="configureIcon">
     <a class="configure-usercss" i18n="title:configureStyle" tabindex="0">
-      <svg class="svg-icon config"><use xlink:href="#svg-icon-config"></use></svg>
+      <i class=i-config></i>
     </a>
   </template>
 
   <template data-id="updaterIcons">
     <span class="updater-icons">
       <a class="check-update" i18n="title:checkForUpdate" tabindex="0">
-        <svg class="svg-icon" viewBox="0 0 20 20">
-          <path d="M18,16.6l-3.1-3.1c0.5-0.7,0.9-1.5,1-2.5h-2.1c-0.4,1.7-2,3-3.9,3c-0.8,0-1.6-0.3-2.3-0.7
-                   L10,11H6.1H4.1H4v6l2.3-2.3c1,0.8,2.3,1.3,3.7,1.3c1.3,0,2.5-0.4,3.5-1.1l3.1,3.1L18,16.6z"/>
-          <path d="M10,6c0.8,0,1.6,0.3,2.3,0.7L10,9h3.9h2.1H16V3l-2.3,2.3C12.7,4.5,11.4,4,10,4
-                   C7,4,4.6,6.2,4.1,9h2.1C6.6,7.3,8.1,6,10,6z"/>
-        </svg>
+        <i class=i-update-check></i>
       </a>
       <a class="update" i18n="title:installUpdate" tabindex="0">
-        <svg class="svg-icon" viewBox="0 0 20 20">
-          <polygon points="16,8 12,8 12,3 8,3 8,8 4,8 10,14 "/>
-          <rect shape-rendering="crispEdges" x="4" y="15" width="12" height="2"/>
-        </svg>
+        <i class=i-install></i>
       </a>
       <span class="up-to-date" i18n="title:updateCheckSucceededNoUpdate">
-        <svg class="svg-icon" viewBox="0 0 20 20">
-          <polygon points="15.83 4.75 8.76 11.82 5.2 8.26 3.51 9.95 8.76 15.19 17.52 6.43 15.83 4.75"/>
-        </svg>
+        <i class=i-check1></i>
       </span>
       <span class="updated" i18n="title:updateCompleted">
-        <svg class="svg-icon" viewBox="0 0 20 20">
-          <polygon points="15.83 4.75 8.76 11.82 5.2 8.26 3.51 9.95 8.76 15.19 17.52 6.43 15.83 4.75"/>
-        </svg>
+        <i class=i-check2></i>
       </span>
       <span class="update-note"></span>
     </span>
@@ -160,7 +128,6 @@
 
   <label id="disableAll-label" i18n="data-on:disableAllStyles, data-off:disableAllStylesOff">
     <input id="disableAll" type="checkbox">
-    <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
   </label>
 
   <div id="manage-settings">
@@ -171,11 +138,7 @@
             <div class="filter-stats-wrapper">
               <span id="filters-stats"></span>
               <a id="reset-filters" tabindex="0">
-                <svg class="svg-icon" viewBox="0 0 20 20">
-                  <title i18n="genericResetLabel"></title>
-                  <polygon points="16.2,5.5 14.5,3.8 10,8.3 5.5,3.8 3.8,5.5 8.3,10 3.8,14.5
-                                   5.5,16.2 10,11.7 14.5,16.2 16.2,14.5 11.7,10 "/>
-                </svg>
+                <i class=i-close></i>
               </a>
             </div>
           </h2>
@@ -183,67 +146,56 @@
 
         <div class="filter-selection">
           <label>
-            <div class="checkmate">
-              <input id="manage.onlyEnabled" type="checkbox"
-                     data-filter=".enabled"
-                     data-filter-hide=".disabled">
-              <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-            </div>
+            <input id="manage.onlyEnabled" type="checkbox"
+                   data-filter=".enabled"
+                   data-filter-hide=".disabled">
           </label>
-          <div class="select-resizer">
+          <div class="select-wrapper">
             <select id="manage.onlyEnabled.invert" class="fit-width">
               <option i18n="manageOnlyEnabled" value="false"></option>
               <option i18n="manageOnlyDisabled" value="true"></option>
             </select>
-            <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
           </div>
         </div>
 
         <div class="filter-selection">
           <label>
-            <div class="checkmate">
-              <input id="manage.onlyLocal" type="checkbox"
-                     data-filter=":not(.updatable):not(.update-done)"
-                     data-filter-hide=".updatable, .update-done">
-              <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-            </div>
+            <input id="manage.onlyLocal" type="checkbox"
+                   data-filter=":not(.updatable):not(.update-done)"
+                   data-filter-hide=".updatable, .update-done">
           </label>
-          <div class="select-resizer">
+          <div class="select-wrapper">
             <select id="manage.onlyLocal.invert" i18n="title:manageOnlyLocalTooltip" class="fit-width">
               <option i18n="manageOnlyLocal" value="false"></option>
               <option i18n="manageOnlyExternal" value="true"></option>
             </select>
-            <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
           </div>
         </div>
 
         <div class="filter-selection">
           <label>
-            <div class="checkmate">
-              <input id="manage.onlyUsercss" type="checkbox"
-                     data-filter=".usercss"
-                     data-filter-hide=":not(.usercss)">
-              <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-            </div>
+            <input id="manage.onlyUsercss" type="checkbox"
+                   data-filter=".usercss"
+                   data-filter-hide=":not(.usercss)">
           </label>
-          <div class="select-resizer">
+          <div class="select-wrapper">
             <select id="manage.onlyUsercss.invert" class="fit-width">
               <option i18n="manageOnlyUsercss" value="false"></option>
               <option i18n="manageOnlyNonUsercss" value="true"></option>
             </select>
-            <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
           </div>
         </div>
 
-        <label id="only-updates" class="hidden">
-          <input type="checkbox"
-                 data-filter=".can-update, .update-problem, .update-done"
-                 data-filter-hide=":not(.updatable):not(.update-done),
-                                   .no-update:not(.update-problem),
-                                   .updatable:not(.can-update):not(.update-problem):not(.update-done)">
-          <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
-          <span i18n="manageOnlyUpdates"></span>
-        </label>
+        <div class="filter-selection">
+          <label id="only-updates" class="hidden">
+            <input type="checkbox"
+                   data-filter=".can-update, .update-problem, .update-done"
+                   data-filter-hide=":not(.updatable):not(.update-done),
+                                     .no-update:not(.update-problem),
+                                     .updatable:not(.can-update):not(.update-problem):not(.update-done)">
+            <span i18n="manageOnlyUpdates"></span>
+          </label>
+        </div>
 
         <div id="search-wrapper">
           <input id="search" type="search" i18n="placeholder:search" spellcheck="false"
@@ -257,22 +209,20 @@
               <option i18n="searchStylesMatchUrl" value="url"></option>
               <option i18n="searchStylesAll" value="all"></option>
             </select>
-            <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
           </div>
           <a id="search-help" tabindex="0">
-            <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+            <i class=i-info></i>
           </a>
         </div>
 
       </details>
 
       <div id="sort-wrapper">
-        <div class="sorter-selection" i18n="title:sortLabel">
+        <div class="select-wrapper" i18n="title:sortLabel">
           <select id="manage.newUI.sort"></select>
-          <svg class="svg-icon select-arrow"><use xlink:href="#svg-icon-select-arrow"/></svg>
         </div>
         <a id="sorter-help" tabindex="0">
-          <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+          <i class=i-info></i>
         </a>
       </div>
     </div>
@@ -285,9 +235,7 @@
             <span id="update-progress"></span>
           </button>
           <a id="update-history-button" i18n="title:genericHistoryLabel" tabindex="0">
-            <svg class="svg-icon" viewBox="0 0 20 20" i18n="alt:helpAlt">
-              <path d="M13,7H7V6h6Zm6,6.5A5.5,5.5,0,0,1,8.61,16H4V3H16V8.61A5.5,5.5,0,0,1,19,13.5ZM8,14c0-.16,0-.84,0-1H7V12H8.21a5.46,5.46,0,0,1,.39-1H7V10H9.26a5.55,5.55,0,0,1,1.09-1H7V8h7V5H6v9Zm10-.5A4.5,4.5,0,1,0,13.5,18,4.5,4.5,0,0,0,18,13.5ZM14,13V10H13v4h4V13Z"/>
-            </svg>
+            <i class=i-log></i>
           </a>
         </div>
 
@@ -303,21 +251,18 @@
           </a>
           <label id="add-style-as-usercss-wrapper">
             <input type="checkbox" id="newStyleAsUsercss">
-            <svg class="svg-icon checked"><use xlink:href="#svg-icon-checked"/></svg>
             <span i18n="manageNewStyleAsUsercss, title:optionsAdvancedNewStyleAsUsercss"></span>
             <a id="usercss-wiki"
+               class="icon"
                href="https://github.com/openstyles/stylus/wiki/Usercss"
                i18n="title:externalUsercssDocument">
-              <svg class="svg-icon" viewBox="0 0 20 20">
-                <path d="M4,4h5v2H6v8h8v-3h2v5H4V4z M11,3h6v6l-2-2l-4,4L9,9l4-4L11,3z"/>
-              </svg>
+              <i class=i-external></i>
             </a>
           </label>
         </div>
         <button id="manage-options-button" i18n="openOptions"></button>
-        <button id="injection-order-button" i18n="title:styleInjectionOrder">
-          <svg class="svg-icon"><use xlink:href="#svg-icon-reorder"/></svg>
-          &nbsp;
+        <button id="injection-order-button" i18n="title:styleInjectionOrder" class="icon">
+          <i class=i-reorder></i>
         </button>
       </details>
     </div>
@@ -327,7 +272,7 @@
         <summary>
           <h2 id="backup-title" i18n="backupButtons"><!-- removing space
             --><a tabindex="0" i18n="title:backupMessage" data-cmd="note">
-              <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+              <i class=i-info></i>
             </a>
           </h2>
         </summary>
@@ -345,13 +290,13 @@
         <span>
           <a href="https://userstyles.world/explore" target="_blank" i18n="linkGetShareStyles"></a>
           <a tabindex="0" i18n="title:linkGetShareStylesInfo" data-cmd="note">
-            <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+            <i class=i-info></i>
           </a>
         </span>
         <span>
           <a href="https://uso.kkx.one/browse/styles" target="_blank" i18n="linkGetStyles"></a>
           <a tabindex="0" i18n="title:linkGetStylesInfo" data-cmd="note">
-            <svg class="svg-icon info"><use xlink:href="#svg-icon-help"/></svg>
+            <i class=i-info></i>
           </a>
         </span>
         <span><a href="https://add0n.com/stylus.html#features" target="_blank" i18n="linkGetHelp"></a></span>
@@ -374,30 +319,6 @@
 </head>
 
 <body id="stylus-manage" i18n="dragndrop-hint:dragDropMessage">
-<svg xmlns="http://www.w3.org/2000/svg" style="display: none !important;">
-  <symbol id="svg-icon-checked" viewBox="0 0 1000 1000">
-    <path fill-rule="evenodd" d="M983.2,184.3L853,69.8c-4-3.5-9.3-5.3-14.5-5c-5.3,0.4-10.3,2.8-13.8,6.8L352.3,609.2L184.4,386.9c-3.2-4.2-8-7-13.2-7.8c-5.3-0.8-10.6,0.6-14.9,3.9L18,487.5c-8.8,6.7-10.6,19.3-3.9,28.1L325,927.2c3.6,4.8,9.3,7.7,15.3,8c0.2,0,0.5,0,0.7,0c5.8,0,11.3-2.5,15.1-6.8L985,212.6C992.3,204.3,991.5,191.6,983.2,184.3z"/>
-  </symbol>
-
-  <symbol id="svg-icon-select-arrow" viewBox="0 0 1792 1792">
-    <path d="M1408 704q0 26-19 45l-448 448q-19 19-45 19t-45-19l-448-448q-19-19-19-45t19-45 45-19h896q26 0 45 19t19 45z"/>
-  </symbol>
-
-  <symbol id="svg-icon-help" viewBox="0 0 14 16">
-    <circle cx="7" cy="5" r="1"/>
-    <path d="M8,8c0-0.5-0.5-1-1-1H6C5.5,7,5,7.4,5,8h1v3c0,0.5,0.5,1,1,1h1c0.5,0,1-0.4,1-1H8V8z"/>
-    <path d="M7,1c3.9,0,7,3.1,7,7s-3.1,7-7,7s-7-3.1-7-7S3.1,1,7,1z M7,2.3C3.9,2.3,1.3,4.9,1.3,8s2.6,5.7,5.7,5.7s5.7-2.6,5.7-5.7S10.1,2.3,7,2.3C7,2.3,7,2.3,7,2.3z"/>
-  </symbol>
-
-  <symbol id="svg-icon-config" viewBox="0 0 16 16">
-    <path d="M13.3,12.8l1.5-2.6l-2.2-1.5c0-0.2,0.1-0.5,0.1-0.7c0-0.2,0-0.5-0.1-0.7l2.2-1.5l-1.5-2.6l-2.4,1.2 c-0.4-0.3-0.8-0.5-1.2-0.7L9.5,1h-3L6.3,3.7C5.9,3.8,5.5,4.1,5.1,4.4L2.7,3.2L1.2,5.8l2.2,1.5c0,0.2-0.1,0.5-0.1,0.7 c0,0.2,0,0.5,0.1,0.7l-2.2,1.5l1.5,2.6l2.4-1.2c0.4,0.3,0.8,0.5,1.2,0.7L6.5,15h3l0.2-2.7c0.4-0.2,0.8-0.4,1.2-0.7L13.3,12.8z  M8,10.3c-1.3,0-2.3-1-2.3-2.3c0-1.3,1-2.3,2.3-2.3c1.3,0,2.3,1,2.3,2.3C10.3,9.3,9.3,10.3,8,10.3z"/>
-  </symbol>
-
-  <symbol id="svg-icon-reorder" viewBox="0 0 16 16">
-    <path d="M0,16h7v-6H0V16z M1,11h5v4H1V11z M0,5h7V0H0V5z M1,1h5v3H1V1z M13,11v3l-4-3.5L13,7v3h2V3H8V2h8v9H13z M7,9H0V8h7V9z M7,7H0V6h7V7z"/>
-  </symbol>
-</svg>
-
 <script src="manage/manage.js"></script>
 </body>
 </html>
