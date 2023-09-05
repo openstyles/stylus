@@ -10,7 +10,7 @@
 (() => {
   const RESULT_ID_PREFIX = t.template.searchResult.className + '-';
   const RESULT_SEL = '.' + t.template.searchResult.className;
-  const INDEX_URL = URLS.usoArchiveRaw[0] + 'search-index.json';
+  const INDEX_URL = URLS.usoaRaw[0] + 'search-index.json';
   const USW_INDEX_URL = URLS.usw + 'api/index/uso-format';
   const USW_ICON = $create('img', {
     src: `${URLS.usw}favicon.ico`,
@@ -89,7 +89,7 @@
       where === 'uso' &&
         `${URLS.uso}styles/browse${q ? `?search_terms=${catQ}` : `/${category}`}` ||
       where === 'usoa' &&
-        `${URLS.usoArchive}browse/styles?search=%23${catQ}` ||
+        `${URLS.usoa}browse/styles?search=%23${catQ}` ||
       where === 'usw' &&
         `${URLS.usw}search?q=${catQ}` ||
       where === 'gf' &&
@@ -353,7 +353,7 @@
     // title
     Object.assign($('.search-result-title', entry), {
       onclick: Events.openURLandHide,
-      href: `${fmt ? URLS.usoArchive : URLS.usw}style/${id}`,
+      href: `${fmt ? URLS.usoa : URLS.usw}style/${id}`,
     });
     if (!fmt) $('.search-result-title', entry).prepend(USW_ICON.cloneNode(true));
     $('.search-result-title span', entry).textContent =
@@ -366,7 +366,7 @@
     } else {
       elShot._src = URLS.uso + `auto_style_screenshots/${id}${USO_AUTO_PIC_SUFFIX}`;
       shotSrc = shot && !shot.endsWith(USO_AUTO_PIC_SUFFIX)
-        ? `${shotArchived ? URLS.usoArchiveRaw[0] : URLS.uso + 'style_'}screenshots/${shot}`
+        ? `${shotArchived ? URLS.usoaRaw[0] : URLS.uso + 'style_'}screenshots/${shot}`
         : elShot._src;
     }
     if (shotSrc) {
@@ -382,7 +382,7 @@
       textContent: author,
       title: author,
       href: !fmt ? `${URLS.usw}user/${encodeURIComponent(author)}` :
-        `${URLS.usoArchive}browse/styles?search=%40${authorId}`,
+        `${URLS.usoa}browse/styles?search=%40${authorId}`,
       onclick: Events.openURLandHide,
     });
     // rating
@@ -497,8 +497,9 @@
     delete entry.dataset.error;
     if (fmt) API.uso.pingback(id, PINGBACK_DELAY);
 
-    const updateUrl = fmt ? URLS.makeUsoArchiveCodeUrl(id) : URLS.makeUswCodeUrl(id);
-
+    const updateUrl = fmt
+      ? `${URLS.usoaRaw[0]}usercss/${id}.user.css`
+      : `${URLS.usw}api/style/${id}.user.css`;
     try {
       const sourceCode = await download(updateUrl);
       const style = await API.usercss.install({sourceCode, updateUrl});

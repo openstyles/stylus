@@ -387,8 +387,8 @@ const styleMan = (() => {
 
   function calcRemoteId({md5Url, updateUrl, usercssData: ucd} = {}) {
     let id;
-    id = (id = /\d+/.test(md5Url) || URLS.extractUsoArchiveId(updateUrl)) && `uso-${id}`
-      || (id = URLS.extractUSwId(updateUrl)) && `usw-${id}`
+    id = (id = /\d+/.test(md5Url) || URLS.extractUsoaId(updateUrl)) && `uso-${id}`
+      || (id = URLS.extractUswId(updateUrl)) && `usw-${id}`
       || '';
     return id && [
       id,
@@ -615,9 +615,7 @@ const styleMan = (() => {
     if (
       (!style.url || !style.installationUrl) &&
       (url = style.updateUrl) &&
-      (url = URLS.extractGreasyForkInstallUrl(url) ||
-        URLS.extractUsoArchiveInstallUrl(url) ||
-        URLS.extractUSwInstallUrl(url) ||
+      (url = URLS.makeInstallUrl(url) ||
         (url = /\d+/.exec(style.md5Url)) && `${URLS.uso}styles/${url[0]}`
       )
     ) {

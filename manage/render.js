@@ -119,7 +119,7 @@ function createStyleElement({styleMeta: style, styleNameLC: nameLC, styleSize: s
   parts.infoVer.textContent = ud ? ud.version : '';
   parts.infoVer.dataset.value = ud ? ud.version : '';
   // USO-raw and USO-archive version is a date for which we show the Age column
-  if (ud && (style.md5Url || URLS.extractUsoArchiveId(style.updateUrl))) {
+  if (ud && (style.md5Url || URLS.extractUsoaId(style.updateUrl))) {
     parts.infoVer.dataset.isDate = '';
   } else {
     delete parts.infoVer.dataset.isDate;

@@ -46,7 +46,7 @@ bgReady.all.then(() => {
     chrome.webRequest.onBeforeSendHeaders.addListener(maybeInstallFromDistro, {
       urls: [
         URLS.usw + 'api/style/*.user.css',
-        ...URLS.usoArchiveRaw.map(s => s + 'usercss/*.user.css'),
+        ...URLS.usoaRaw.map(s => s + 'usercss/*.user.css'),
         ...['greasy', 'sleazy'].map(s => `*://${s}fork.org/scripts/*/code/*.user.css`),
         ...[].concat(
           ...Object.entries(maybeDistro)

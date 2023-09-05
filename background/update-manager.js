@@ -176,7 +176,7 @@ const updateMan = (() => {
     async function updateUsercss(css) {
       let oldVer = ucd.version;
       let {etag: oldEtag, updateUrl} = style;
-      const m2 = (css || URLS.extractUsoArchiveId(updateUrl)) &&
+      const m2 = (css || URLS.extractUsoaId(updateUrl)) &&
         await getUsoEmbeddedMeta(css);
       if (m2 && m2.updateUrl) {
         updateUrl = m2.updateUrl;

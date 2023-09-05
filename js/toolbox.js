@@ -93,36 +93,30 @@ const URLS = {
   uso: 'https://userstyles.org/',
   usoJson: 'https://userstyles.org/styles/chrome/',
 
-  usoArchive: 'https://uso.kkx.one/',
-  usoArchiveRaw: [
+  usoa: 'https://uso.kkx.one/',
+  usoaRaw: [
     'https://cdn.jsdelivr.net/gh/33kk/uso-archive@flomaster/data/',
     'https://raw.githubusercontent.com/33kk/uso-archive/flomaster/data/',
   ],
 
   usw: 'https://userstyles.world/',
 
-  extractUsoArchiveId: url =>
+  extractUsoaId: url =>
     url &&
-    URLS.usoArchiveRaw.some(u => url.startsWith(u)) &&
-    Number(url.match(/\/(\d+)\.user\.css|$/)[1]),
-  extractUsoArchiveInstallUrl: url => {
-    const id = URLS.extractUsoArchiveId(url);
-    return id ? `${URLS.usoArchive}style/${id}` : '';
-  },
-  makeUsoArchiveCodeUrl: id => `${URLS.usoArchiveRaw[0]}usercss/${id}.user.css`,
-
-  extractGreasyForkInstallUrl: url =>
-    /^(https:\/\/(?:greasy|sleazy)fork\.org\/scripts\/\d+)[^/]*\/code\/[^/]*\.user\.css$|$/.exec(url)[1],
-
-  extractUSwId: url =>
+    URLS.usoaRaw.some(u => url.startsWith(u)) &&
+    +url.match(/\/(\d+)\.user\.css|$/)[1],
+  extractUswId: url =>
     url &&
     url.startsWith(URLS.usw) &&
-    Number(url.match(/\/(\d+)\.user\.css|$/)[1]),
-  extractUSwInstallUrl: url => {
-    const id = URLS.extractUSwId(url);
-    return id ? `${URLS.usw}style/${id}` : '';
+    +url.match(/\/(\d+)\.user\.css|$/)[1],
+  makeInstallUrl: url => {
+    let id;
+    return ((id = URLS.extractUsoaId(url))) ? `${URLS.usoa}style/${id}`
+      : ((id = URLS.extractUswId(url))) ? `${URLS.usw}style/${id}`
+        : /^(https:\/\/(?:greasy|sleazy)fork\.org\/scripts\/\d+)[^/]*\/code\/[^/]*\.user\.css$|$/
+          .exec(url)[1]
+        || '';
   },
-  makeUswCodeUrl: id => `${URLS.usw}api/style/${id}.user.css`,
 
   supported: url => (
     url.startsWith('http') ||
