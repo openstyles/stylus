@@ -1,5 +1,5 @@
 /* global API */// msg.js
-/* global RX_META deepCopy download */// toolbox.js
+/* global RX_META deepCopy download mapObj */// toolbox.js
 'use strict';
 
 const usercssMan = {
@@ -120,19 +120,14 @@ const usercssMan = {
     };
   },
 
-  async find(styleOrData) {
-    if (styleOrData.id) {
-      return API.styles.get(styleOrData.id);
-    }
-    const {name, namespace} = styleOrData.usercssData || styleOrData;
-    for (const dup of await API.styles.getAll()) {
-      const data = dup.usercssData;
-      if (data &&
-        data.name === name &&
-        data.namespace === namespace) {
-        return dup;
-      }
-    }
+  /**
+   * @param {Object} data - style object or usercssData
+   * @return {Promise<?StyleObj>}
+   */
+  async find(data) {
+    if (data.id) return API.styles.get(data.id);
+    const filter = mapObj(data.usercssData || data, null, ['name', 'namespace']);
+    return API.styles.find(filter, 'usercssData');
   },
 
   async install(style, opts) {

@@ -162,17 +162,19 @@ const styleMan = (() => {
     },
 
     /** @returns {Promise<?StyleObj>} */
-    async find(...filters) {
+    async find(filter, subkey) {
       if (ready.then) await ready;
-      for (const filter of filters) {
-        const filterEntries = Object.entries(filter);
-        for (const {style} of dataMap.values()) {
-          if (filterEntries.every(([key, val]) => style[key] === val)) {
-            return style;
+      for (const {style} of dataMap.values()) {
+        let obj = subkey ? style[subkey] : style;
+        if (!obj) continue;
+        for (const key in filter) {
+          if (filter[key] !== obj[key]) {
+            obj = null;
+            break;
           }
         }
+        if (obj) return style;
       }
-      return null;
     },
 
     /** @returns {Promise<StyleObj[]>} */
