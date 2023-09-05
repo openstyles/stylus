@@ -132,7 +132,7 @@ const URLS = {
     !URLS.chromeProtectsNTP && url.startsWith('chrome://newtab/')
   ),
 
-  isLocalhost: url => /^file:|^https?:\/\/(localhost|127\.0\.0\.1)\//.test(url),
+  isLocalhost: url => /^file:|^https?:\/\/([^/]+@)?(localhost|127\.0\.0\.1)(:\d+)?\//.test(url),
 };
 
 const RX_META = /\/\*!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i;
