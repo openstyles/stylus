@@ -97,6 +97,8 @@ const URLS = {
 
   usoa: 'https://uso.kkx.one/',
   usoaRaw: [
+    // The newest URL first!
+    'https://cdn.jsdelivr.net/gh/uso-archive/data@flomaster/data/',
     'https://cdn.jsdelivr.net/gh/33kk/uso-archive@flomaster/data/',
     'https://raw.githubusercontent.com/33kk/uso-archive/flomaster/data/',
   ],
