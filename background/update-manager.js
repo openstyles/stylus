@@ -1,5 +1,5 @@
 /* global API */// msg.js
-/* global RX_META URLS debounce deepMerge download ignoreChromeError */// toolbox.js
+/* global URLS debounce deepMerge download ignoreChromeError */// toolbox.js
 /* global calcStyleDigest styleSectionsEqual */ // sections-util.js
 /* global chromeLocal */// storage-util.js
 /* global compareVersion */// cmpver.js
@@ -23,7 +23,6 @@ const updateMan = (() => {
     ERROR_JSON:    'error: JSON is invalid',
     ERROR_VERSION: 'error: version is older than installed style',
   };
-  const USO_STYLES_API = `${URLS.uso}api/v1/styles/`;
   const RH_ETAG = {responseHeaders: ['etag']}; // a hashsum of file contents
   const RX_DATE2VER = new RegExp([
     /^(\d{4})/,
@@ -38,7 +37,6 @@ const updateMan = (() => {
     503, // service unavailable
     429, // too many requests
   ];
-  let usoReferers = 0;
   let lastUpdateTime;
   let checkingAll = false;
   let logQueue = [];
@@ -152,23 +150,16 @@ const updateMan = (() => {
       if (md5 === style.originalMd5 && style.originalDigest && !ignoreDigest) {
         return Promise.reject(STATES.SAME_MD5);
       }
+      const usoId = +md5Url.match(/\/(\d+)/)[1];
       let varsUrl = '';
       if (!ucd) {
         ucd = {};
         varsUrl = updateUrl;
-        updateUrl = style.updateUrl = `${USO_STYLES_API}${md5Url.match(/\/(\d+)/)[1]}`;
       }
-      usoSpooferStart();
-      let json;
-      try {
-        json = await tryDownload(style.updateUrl, {responseType: 'json'});
-        json = await updateUsercss(json.css) ||
-          (await API.uso.toUsercss(json)).style;
-        if (varsUrl) await API.uso.useVarsUrl(json, varsUrl);
-      } finally {
-        usoSpooferStop();
-      }
-      // USO may not provide a correctly updated originalMd5 (#555)
+      updateUrl = style.updateUrl = `${URLS.usoApi}Css/${usoId}`;
+      const {result: css} = await tryDownload(updateUrl, {responseType: 'json'});
+      const json = await updateUsercss(css)
+        || await API.uso.toUsercss(usoId, varsUrl, css, style, md5, md5Url);
       json.originalMd5 = md5;
       return json;
     }
@@ -177,7 +168,7 @@ const updateMan = (() => {
       let oldVer = ucd.version;
       let {etag: oldEtag, updateUrl} = style;
       const m2 = (css || URLS.extractUsoaId(updateUrl)) &&
-        await getUsoEmbeddedMeta(css);
+        await API.uso.getEmbeddedMeta(css || style.sourceCode);
       if (m2 && m2.updateUrl) {
         updateUrl = m2.updateUrl;
         oldVer = m2.usercssData.version || '0';
@@ -210,7 +201,7 @@ const updateMan = (() => {
       }
       return err
         ? Promise.reject(err)
-        : API.usercss.buildCode(json);
+        : json;
     }
 
     async function maybeSave(json) {
@@ -229,7 +220,8 @@ const updateMan = (() => {
         return Promise.reject(STATES.MAYBE_EDITED);
       }
       return !save ? newStyle :
-        (ucd ? API.usercss.install : API.styles.install)(newStyle);
+        ucd ? API.usercss.install(newStyle, {dup: style})
+          : API.styles.install(newStyle);
     }
 
     async function tryDownload(url, params) {
@@ -261,13 +253,6 @@ const updateMan = (() => {
         m[2]--; // month is 0-based in `Date` constructor
         return new Date(...m.slice(1)).getTime();
       }
-    }
-
-    /** UserCSS metadata may be embedded in the original USO style so let's use its updateURL */
-    function getUsoEmbeddedMeta(code = style.sourceCode) {
-      const isRaw = arguments[0];
-      const m = code.includes('@updateURL') && (isRaw ? code : code.replace(RX_META, '')).match(RX_META);
-      return m && API.usercss.buildMeta({sourceCode: m[0]}).catch(() => null);
     }
   }
 
@@ -316,33 +301,5 @@ const updateMan = (() => {
     chromeLocal.setValue('updateLog', lines);
     logLastWriteTime = Date.now();
     logQueue = [];
-  }
-
-  function usoSpooferStart() {
-    if (++usoReferers === 1) {
-      chrome.webRequest.onBeforeSendHeaders.addListener(
-        usoSpoofer,
-        {types: ['xmlhttprequest'], urls: [USO_STYLES_API + '*']},
-        ['blocking', 'requestHeaders', chrome.webRequest.OnBeforeSendHeadersOptions.EXTRA_HEADERS]
-          .filter(Boolean));
-    }
-  }
-
-  function usoSpooferStop() {
-    if (--usoReferers <= 0) {
-      usoReferers = 0;
-      chrome.webRequest.onBeforeSendHeaders.removeListener(usoSpoofer);
-    }
-  }
-
-  /** @param {chrome.webRequest.WebResponseHeadersDetails | browser.webRequest._OnBeforeSendHeadersDetails} info */
-  function usoSpoofer(info) {
-    if (info.tabId < 0 && URLS.ownOrigin.startsWith(info.initiator || info.originUrl || '')) {
-      const {requestHeaders: hh} = info;
-      const i = (hh.findIndex(h => /^referer$/i.test(h.name)) + 1 || hh.push({})) - 1;
-      hh[i].name = 'referer';
-      hh[i].value = URLS.uso;
-      return {requestHeaders: hh};
-    }
   }
 })();

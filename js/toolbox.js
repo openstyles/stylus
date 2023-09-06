@@ -92,6 +92,7 @@ const URLS = {
   chromeProtectsNTP: CHROME >= 61,
 
   uso: 'https://userstyles.org/',
+  usoApi: 'https://gateway.userstyles.org/styles/getStyle',
   usoJson: 'https://userstyles.org/styles/chrome/',
 
   usoa: 'https://uso.kkx.one/',

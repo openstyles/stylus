@@ -5,9 +5,7 @@
   if (window.INJECTED_USO === 1) return;
   window.INJECTED_USO = 1;
 
-  let dup, md5, md5Url, apiData;
   const pageId = `${performance.now()}${Math.random()}`;
-  const USO_API = 'https://userstyles.org/api/v1/styles/';
   const STATE_EVENTS = [
     ['uninstalled', 'styleCanBeInstalledChrome'],
     ['canBeUpdate', 'styleCanBeUpdatedChrome'],
@@ -15,7 +13,7 @@
   ];
   const getUsoId = () => Number(location.pathname.match(/^\/styles\/(\d+)|$/)[1]);
 
-  runInPage(inPageContext, pageId, USO_API);
+  runInPage(inPageContext, pageId);
   addEventListener(pageId + '*', onPageEvent, true);
   addEventListener(chrome.runtime.id, function orphanCheck(e) {
     if (chrome.runtime.id) return true;
@@ -23,11 +21,8 @@
     removeEventListener(pageId + '*', onPageEvent, true);
     sendPageEvent({cmd: 'quit'});
   }, true);
-  Promise.all([
-    getStyleState(),
-    document.body || new Promise(cb => addEventListener('load', cb, {once: true})),
-  ]).then(([s]) => {
-    if (s != null) document.dispatchEvent(new Event(STATE_EVENTS[s][1]));
+  getStyleState().then(state => {
+    if (state) document.dispatchEvent(new Event(state[1]));
     postMessage({direction: 'from-content-script', message: 'StylishInstalled'}, '*');
   });
 
@@ -37,59 +32,33 @@
       switch (data.type) {
         case 'stylishUpdateChrome':
         case 'stylishInstallChrome':
-          await installStyle(data);
+          await API.uso.toUsercss(data.payload.styleId, data.customOptions || {});
           res = {success: true};
           break;
-        case 'deleteStylishStyle':
-          if (dup) res = Boolean(await API.styles.delete(dup.id).catch(() => 0));
-          dup = false;
+        case 'deleteStylishStyle': {
+          res = await API.uso.delete(data.payload.styleId);
           break;
+        }
         case 'getStyleInstallStatus':
-          res = STATE_EVENTS[await getStyleState(data.payload.styleId) || 0][0];
+          res = (await getStyleState(data.payload.styleId) || [])[0];
+          break;
+        case 'GET_OPEN_TABS':
+        case 'GET_TOP_SITES':
+          res = [];
           break;
         default:
           res = true;
       }
       sendPageEvent({id, data: res});
-    } else if (cmd === 'apiData') {
-      apiData = data;
     }
-  }
-
-  async function installStyle(usoMsg) {
-    const usoId = getUsoId();
-    const dupId = (dup || (dup = false)).id;
-    const updateUrl = USO_API + usoId;
-    if (!apiData || apiData.id !== usoId) apiData = await (await fetch(updateUrl)).json();
-    const {style, badKeys} = await API.uso.toUsercss(apiData, {varsUrl: dup.updateUrl});
-    const usoVars = Object.entries(usoMsg.customOptions || {});
-    const vars = usoVars[0] && style.usercssData.vars;
-    if (vars) {
-      for (const [key, val] of usoVars) {
-        const name = key.slice(3); // dropping "ik-"
-        const v = vars[(badKeys || {})[name] || name];
-        if (v) v.value = v.type === 'select' ? val.replace(/^ik-/, '') : decodeURIComponent(val);
-      }
-    }
-    Object.assign(style, {
-      md5Url,
-      updateUrl,
-      id: dupId,
-      originalMd5: md5,
-    });
-    dup = await API.usercss.install(style, {dup: {id: dupId}, vars});
   }
 
   async function getStyleState(usoId = getUsoId()) {
-    if (!usoId) return;
-    md5Url = `https://update.userstyles.org/${usoId}.md5`;
-    [md5, dup] = await Promise.all([
-      fetch(md5Url).then(r => r.text()),
-      API.styles.find({md5Url}, {installationUrl: `https://uso.kkx.one/style/${usoId}`}),
+    const [state] = await Promise.all([
+      usoId ? API.uso.getUpdatability(usoId) : -1,
       document.body || new Promise(resolve => addEventListener('load', resolve, {once: true})),
     ]);
-    // USO site doesn't preserve vars on update
-    return !dup ? 0 : dup.usercssData || dup.originalMd5 === md5 ? 2 : 1;
+    return STATE_EVENTS[state];
   }
 
   function runInPage(fn, ...args) {
@@ -107,7 +76,7 @@
   }
 })();
 
-function inPageContext(eventId, apiUrl) {
+function inPageContext(eventId) {
   let orphaned;
   // `chrome` may be empty if no extensions use externally_connectable but USO needs it
   if (!window.chrome) window.chrome = {};
@@ -119,6 +88,7 @@ function inPageContext(eventId, apiUrl) {
   const apply = call.bind(Object.apply);
   const mathRandom = Math.random;
   const promiseResolve = async val => val;
+  const startsWith = call.bind(''.startsWith);
   const callbacks = {__proto__: null};
   const OVR = [
     [chrome.runtime, 'sendMessage', (fn, me, args) => {
@@ -131,17 +101,8 @@ function inPageContext(eventId, apiUrl) {
       send('msg', msg, cb);
       return res;
     }],
-    [Response.prototype, 'json', async (fn, me, args) => {
-      const res = await apply(fn, me, args);
-      try {
-        if (Number(me.url.replace(apiUrl, ''))) {
-          send('apiData', res);
-        }
-      } catch (e) {}
-      return res;
-    }],
     [window, 'fetch', (fn, me, args) =>
-      args[0] === `chrome-extension://${EXT_ID}/index.html`
+      startsWith(`${args[0]}`, `chrome-extension://${EXT_ID}/`)
         ? promiseResolve(new Response('<!doctype html><html lang="en"></html>'))
         : apply(fn, me, args),
     ],
