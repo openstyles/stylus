@@ -1,6 +1,6 @@
 /* global CodeMirror */
 /* global cmFactory */
-/* global debounce stringAsRegExp tryRegExp */// toolbox.js
+/* global debounce stringAsRegExpStr tryRegExp */// toolbox.js
 /* global editor */
 /* global linterMan */
 /* global prefs */
@@ -171,7 +171,7 @@
         ? CodeMirror.hint.fromList(cm, {words: CodeMirror.hintWords.stylus})
         : originalHelper(cm);
       const word = RegExp(rxsWORD +
-        (leftLC ? stringAsRegExp(leftLC, '', true) : '[a-z]') +
+        (leftLC ? stringAsRegExpStr(leftLC) : '[a-z]') +
         '[-a-z]+', 'gi');
       const any = CodeMirror.hint.anyword(cm, {word}).list;
       list = simple ? [...new Set(simple.list.concat(any))] : any;

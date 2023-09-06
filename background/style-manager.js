@@ -1,5 +1,5 @@
 /* global API msg */// msg.js
-/* global CHROME URLS deepEqual isEmptyObj mapObj stringAsRegExp tryRegExp tryURL */// toolbox.js
+/* global CHROME URLS deepEqual isEmptyObj mapObj stringAsRegExpStr tryRegExp tryURL */// toolbox.js
 /* global bgReady createCache uuidIndex */// common.js
 /* global calcStyleDigest styleCodeEmpty */// sections-util.js
 /* global db */
@@ -728,7 +728,7 @@ const styleMan = (() => {
   }
 
   function compileGlob(text) {
-    return stringAsRegExp(text, '', true)
+    return stringAsRegExpStr(text)
       .replace(/\\\\\\\*|\\\*/g, m => m.length > 2 ? m : '.*');
   }
 

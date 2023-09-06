@@ -2,7 +2,7 @@
 /* global $entry tabURL */// popup.js
 /* global API */// msg.js
 /* global Events */
-/* global FIREFOX URLS debounce download isEmptyObj stringAsRegExp tryRegExp tryURL */// toolbox.js
+/* global FIREFOX URLS debounce download isEmptyObj stringAsRegExp stringAsRegExpStr tryRegExp tryURL */// toolbox.js
 /* global prefs */
 /* global t */// localization.js
 'use strict';
@@ -555,7 +555,7 @@
       );
       category = (keepThird && `${third}.` || '') + main + (keepTld || keepThird ? `.${tld}` : '');
     }
-    rxCategory = new RegExp(`\\b${stringAsRegExp(category, '', true)}\\b`, 'i');
+    rxCategory = new RegExp(`\\b${stringAsRegExpStr(category)}\\b`, 'i');
     return category !== old;
   }
 

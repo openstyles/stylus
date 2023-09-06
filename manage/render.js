@@ -1,6 +1,6 @@
 /* global $$ $ $create animateElement scrollElementIntoView */// dom.js
 /* global API */// msg.js
-/* global URLS debounce getOwnTab isEmptyObj sessionStore stringAsRegExp */// toolbox.js
+/* global URLS debounce getOwnTab isEmptyObj sessionStore stringAsRegExpStr */// toolbox.js
 /* global removeStyleCode */// events.js
 /* global filterAndAppend */// filters.js
 /* global installed newUI */// manage.js
@@ -275,7 +275,7 @@ async function initBadFavs() {
   const {put} = API.prefsDb;
   const key = newUI.badFavsKey;
   const rxHost = new RegExp(
-    `^${stringAsRegExp(URLS.favicon('\n'), '', true).replace('\n', '(.*)')}$`);
+    `^${stringAsRegExpStr(URLS.favicon('\n')).replace('\n', '(.*)')}$`);
   badFavs = newUI[key] || await newUI.readBadFavs();
   const fn = e => {
     const code = e.statusCode; // absent for network error

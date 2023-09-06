@@ -19,6 +19,7 @@
   openURL
   sessionStore
   stringAsRegExp
+  stringAsRegExpStr
   tryCatch
   tryRegExp
   tryURL
@@ -226,9 +227,12 @@ async function activateTab(tab, {url, index, openerTabId} = {}) {
   return tab;
 }
 
-function stringAsRegExp(s, flags, asString) {
-  s = s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&');
-  return asString ? s : new RegExp(s, flags);
+function stringAsRegExp(s, flags) {
+  return new RegExp(stringAsRegExpStr(s), flags);
+}
+
+function stringAsRegExpStr(s) {
+  return s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&');
 }
 
 function ignoreChromeError() {
