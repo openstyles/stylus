@@ -6,8 +6,14 @@
 const usoApi = (() => {
   const pingers = {};
   const fetchApi = async url => (await (await fetch(url)).json()).result;
+  const getMd5Url = usoId => `https://update.userstyles.org/${usoId}.md5`;
   const ordinalSort = (a, b) => a.ordinal - b.ordinal;
   return {
+
+    async delete(usoId) {
+      const style = await findStyle(usoId);
+      return style ? API.styles.delete(style.id) : false;
+    },
 
     /** UserCSS metadata may be embedded in the original USO style so let's use its updateURL */
     getEmbeddedMeta(code) {
@@ -17,10 +23,9 @@ const usoApi = (() => {
     },
 
     async getUpdatability(usoId, asObject) {
-      const md5Url = `https://update.userstyles.org/${usoId}.md5`;
+      const md5Url = getMd5Url(usoId);
       const md5 = await (await fetch(md5Url)).text();
-      const dup = await API.styles.find({md5Url})
-        || await API.styles.find({installationUrl: `${URLS.usoa}style/${usoId}`});
+      const dup = await findStyle(usoId, md5Url);
       // see STATE_EVENTS in install-hook-userstyles.js
       const state = !dup ? 0 : dup.usercssData || dup.originalMd5 === md5 ? 2 : 1;
       return asObject
@@ -104,6 +109,11 @@ ${varDefs ? patchCss(css, varMap) : css}`;
       }
     }
     return style;
+  }
+
+  async function findStyle(usoId, md5Url = getMd5Url(usoId)) {
+    return await API.styles.find({md5Url})
+      || API.styles.find({installationUrl: `${URLS.usoa}style/${usoId}`});
   }
 
   async function ping(id, resolve) {

@@ -12,13 +12,16 @@
     ['installed', 'styleAlreadyInstalledChrome'],
   ];
   const getUsoId = () => Number(location.pathname.match(/^\/styles\/(\d+)|$/)[1]);
+  let gesture = NaN;
 
   runInPage(inPageContext, pageId);
+  addEventListener('click', onClick, true);
   addEventListener(pageId + '*', onPageEvent, true);
   addEventListener(chrome.runtime.id, function orphanCheck(e) {
     if (chrome.runtime.id) return true;
     removeEventListener(e.type, orphanCheck, true);
     removeEventListener(pageId + '*', onPageEvent, true);
+    removeEventListener('click', onClick, true);
     sendPageEvent({cmd: 'quit'});
   }, true);
   getStyleState().then(state => {
@@ -26,29 +29,37 @@
     postMessage({direction: 'from-content-script', message: 'StylishInstalled'}, '*');
   });
 
+  function onClick(e) {
+    gesture = e.isTrusted ? {time: performance.now(), url: location.href} : {};
+  }
+
+  function isTrusted(data) {
+    return performance.now() - gesture.time < 1000 && location.href === gesture.url
+      || console.warn('Stylus is ignoring request not initiated by the user:', data);
+  }
+
   async function onPageEvent({detail: {id, cmd, data}}) {
     if (cmd === 'msg') {
-      let res;
+      let res = true;
       switch (data.type) {
         case 'stylishUpdateChrome':
         case 'stylishInstallChrome':
-          await API.uso.toUsercss(data.payload.styleId, data.customOptions || {});
+          if (isTrusted(data)) await API.uso.toUsercss(getUsoId(), data.customOptions || {});
           res = {success: true};
           break;
         case 'deleteStylishStyle': {
-          res = await API.uso.delete(data.payload.styleId);
+          if (isTrusted(data)) res = await API.uso.delete(getUsoId());
           break;
         }
         case 'getStyleInstallStatus':
-          res = (await getStyleState(data.payload.styleId) || [])[0];
+          if (isTrusted(data)) res = (await getStyleState(getUsoId()) || [])[0];
           break;
         case 'GET_OPEN_TABS':
         case 'GET_TOP_SITES':
           res = [];
           break;
-        default:
-          res = true;
       }
+      gesture = {};
       sendPageEvent({id, data: res});
     }
   }
