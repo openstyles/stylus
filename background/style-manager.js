@@ -613,6 +613,11 @@ const styleMan = (() => {
     if ((url = style.md5Url) && url.includes('update.update.userstyles')) {
       res = style.md5Url = url.replace('update.update.userstyles', 'update.userstyles');
     }
+    /* Outdated USO-archive links */
+    if (`${style.url}${style.installationUrl}`.includes('https://33kk.github.io/uso-archive/')) {
+      delete style.url;
+      delete style.installationUrl;
+    }
     /* Default homepage URL for external styles installed from a known distro */
     if (
       (!style.url || !style.installationUrl) &&
