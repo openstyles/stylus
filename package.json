@@ -23,14 +23,14 @@
   "devDependencies": {
     "archiver": "^5.3.1",
     "chalk": "^4.1.2",
-    "eslint": "^8.21.0",
-    "fs-extra": "^10.1.0",
-    "glob": "^8.0.3",
-    "node-fetch": "^2.6.7",
+    "eslint": "^8.48.0",
+    "fs-extra": "^11.1.0",
+    "glob": "^9.3.0",
+    "node-fetch": "^3.3.1",
     "svg2ttf": "^6.0.3",
     "svgicons2svgfont": "^12.0.0",
     "sync-version": "^1.0.1",
-    "web-ext": "^7.6.1"
+    "web-ext": "^7.7.0"
   },
   "scripts": {
     "lint": "eslint \"**/*.js\" --cache",

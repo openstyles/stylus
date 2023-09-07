@@ -120,15 +120,12 @@
         input.focus();
         prevTime = time;
       }
-    } else
-    if (key === 'Enter' && focusedLink) {
+    } else if (key === 'Enter' && focusedLink) {
       focusedLink.dispatchEvent(new MouseEvent('click', {bubbles: true}));
-    } else
-    if ((key === 'ArrowUp' || key === 'ArrowDown') && !event.shiftKey &&
+    } else if ((key === 'ArrowUp' || key === 'ArrowDown') && !event.shiftKey &&
         time - prevTime < 5000 && incrementalSearch(event, true)) {
       prevTime = time;
-    } else
-    if (event.target === input) {
+    } else if (event.target === input) {
       (focusedLink || document.body).focus();
       input.value = '';
     }
