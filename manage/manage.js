@@ -1,7 +1,7 @@
 /* global API msg */// msg.js
-/* global CHROME UA debounce */// toolbox.js
+/* global CHROME debounce */// toolbox.js
 /* global Events handleBulkChange handleVisibilityChange */// events.js
-/* global fitSelectBoxesIn switchUI showStyles */// render.js
+/* global switchUI showStyles */// render.js
 /* global fltMode */// filters.js
 /* global prefs */
 /* global router */
@@ -93,10 +93,6 @@ newUI.renderClass();
       'filteredStylesAllHidden',
     ].map(id => `--${id}:"${CSS.escape(t(id))}";`).join('')
     }}`);
-
-  if (!UA.vivaldi) {
-    fitSelectBoxesIn($('#filters'));
-  }
   if (CHROME >= 80 && CHROME <= 88) {
     // Wrong checkboxes are randomly checked after going back in history, https://crbug.com/1138598
     window.on('pagehide', () => {

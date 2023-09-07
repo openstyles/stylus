@@ -73,11 +73,16 @@ function createAgeText(el, style) {
 }
 
 function calcObjSize(obj) {
-  // Inaccurate but simple
-  return typeof obj !== 'object' ? `${obj}`.length :
-    !obj ? 0 :
-      Array.isArray(obj) ? obj.reduce((sum, v) => sum + calcObjSize(v), 0) :
-        Object.entries(obj).reduce((sum, [k, v]) => sum + k.length + calcObjSize(v), 0);
+  if (obj === true || obj == null) return 4;
+  if (obj === false) return 5;
+  let v = typeof obj;
+  if (v === 'string') return obj.length + 2; // inaccurate but fast
+  if (v === 'number') return (v = obj) >= 0 && v < 10 ? 1 : Math.ceil(Math.log10(v < 0 ? -v : v));
+  if (v !== 'object') return `${obj}`.length;
+  let sum = 1;
+  if (Array.isArray(obj)) for (v of obj) sum += calcObjSize(v) + 1;
+  else for (const k in obj) sum += k.length + 3 + calcObjSize(obj[k]) + 1;
+  return sum;
 }
 
 function createStyleElement({styleMeta: style, styleNameLC: nameLC, styleSize: size}) {
@@ -290,46 +295,43 @@ async function initBadFavs() {
   chrome.webRequest.onErrorOccurred.addListener(fn, filter); // works in FF
 }
 
-function fitSelectBox(...elems) {
-  const data = [];
-  for (const el of elems) {
-    const sel = el.selectedOptions[0];
-    if (!sel) continue;
-    const oldWidth = parseFloat(el.style.width);
-    const text = [];
-    data.push({el, text, oldWidth});
-    for (const elOpt of el.options) {
-      text.push(elOpt.textContent);
-      if (elOpt !== sel) elOpt.textContent = '';
+{
+  const hideOpts = function (evt) {
+    for (const o of [...this.options]) {
+      if (o.value !== this.value) o.remove();
     }
-    el.style.width = 'min-content';
-  }
-  for (const {el, text, oldWidth} of data) {
-    const w = el.offsetWidth;
-    if (w && oldWidth !== w) el.style.width = w + 'px';
-    text.forEach((t, i) => (el.options[i].textContent = t));
-  }
-}
-
-/* exported fitSelectBoxesIn */
-/**
- * @param {HTMLDetailsElement} el
- * @param {string} targetSel
- */
-function fitSelectBoxesIn(el, targetSel = 'select.fit-width') {
-  const fit = () => {
-    if (el.open) {
-      fitSelectBox(...$$(targetSel, el));
-    }
+    this.style.removeProperty('width');
+    if (evt && evt.isTrusted) return this.offsetWidth; // force layout
   };
-  el.on('change', ({target}) => {
-    if (el.open && target.matches(targetSel)) {
-      fitSelectBox(target);
+
+  const showOpts = function (evt) {
+    if (evt.button || this[1]) return;
+    const opts = this._opts;
+    const elems = [...opts.values()];
+    const i = elems.indexOf(opts.get(this.value));
+    this.style.width = this.offsetWidth + 'px';
+    if (i > 0) this.prepend(...elems.slice(0, i));
+    this.append(...elems.slice(i + 1));
+  };
+
+  window.fitSelectBox = (el, value, init) => {
+    const opts = el._opts || (el._opts = new Map());
+    if (init) {
+      for (const o of el.options) opts.set(o.value, o);
+      el.on('keydown', showOpts);
+      el.on('mousedown', showOpts);
+      el.on('blur', hideOpts);
+      el.on('input', hideOpts);
     }
-  });
-  fit();
-  new MutationObserver(fit)
-    .observe(el, {attributeFilter: ['open'], attributes: true});
+    if (typeof value !== 'string') value = `${value}`;
+    const opt = opts.get(value);
+    if (!opt.isConnected) {
+      if (el[0]) el[0].replaceWith(opt);
+      else el.append(opt);
+    }
+    el.value = value;
+    if (init) hideOpts.call(el);
+  };
 }
 
 function highlightEditedStyle() {
@@ -379,7 +381,11 @@ function showStyles(styles = [], matchUrlIds) {
 
   function renderStyles() {
     const t0 = performance.now();
-    while (index < sorted.length && (shouldRenderAll || performance.now() - t0 < 50)) {
+    while (index < sorted.length && (
+      shouldRenderAll ||
+      (index & 7) < 7 ||
+      performance.now() - t0 < 50
+    )) {
       const entry = createStyleElement(sorted[index++]);
       if (matchUrlIds && !matchUrlIds.includes(entry.styleMeta.id)) {
         entry.classList.add('not-matching');

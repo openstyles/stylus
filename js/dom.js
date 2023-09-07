@@ -330,7 +330,10 @@ function setupLivePrefs(ids) {
     }
     for (const el of els) {
       const oldValue = getValue(el);
-      if (!isSame(el, oldValue, value)) {
+      const diff = !isSame(el, oldValue, value);
+      if ((init || diff) && el.type === 'select-one' && el.classList.contains('fit-width')) {
+        fitSelectBox(el, value, init); /* global fitSelectBox */// manage/render.js
+      } else if (diff) {
         if (el.type === 'radio') {
           el.checked = value === oldValue;
         } else if (el.type === 'checkbox') {
