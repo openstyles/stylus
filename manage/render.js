@@ -244,7 +244,7 @@ async function getFaviconSrc(container = installed) {
     let favicon = '';
     if (type === 'domains') {
       favicon = targetValue;
-    } else if (targetValue.includes('chrome-extension:') || targetValue.includes('moz-extension:')) {
+    } else if (/-extension:\\?\//.test(targetValue)) {
       favicon = OWN_ICON;
     } else if (type === 'regexps') {
       favicon = targetValue
