@@ -413,24 +413,28 @@ a:hover i {
 /* 'New style' links */
 #write-style {
   cursor: pointer;
+  line-height: 16px;
 }
-#newStyleAsUsercss ~ div {
-  font-weight: bold;
-  margin: 0 -1px 0;
-  padding: 1px 3px 0;
-  text-align: center;
-  border-radius: 4px;
-  position: absolute;
+#write-as {
+  flex: 0;
 }
-#newStyleAsUsercss:checked ~ div {
-  color: var(--bg);
-  background-color: var(--accent-2);
+#newStyleAsUsercss + i {
+  pointer-events: auto;
+  margin-left: -1px;
+  color: var(--c60);
+}
+#newStyleAsUsercss:checked,
+#newStyleAsUsercss:checked + i {
+  border-color: var(--accent-1);
+  color: var(--accent-2);
 }
 
 .write-style-link {
   margin-left: .6ex
 }
-
+.write-style-link:nth-last-child(2) {
+  font-weight: bold;
+}
 .about-blank > .breadcrumbs {
   pointer-events: none;
 }

@@ -42,7 +42,7 @@
   <template data-id="styleNewUI">
     <div class="entry">
       <h2 class="style-name">
-        <input class="checker" type="checkbox" i18n="title:toggleStyle">
+        <input type="checkbox" i18n="title:toggleStyle">
         <a class="style-name-link">
           &nbsp;
           <span class="style-info" data-type="version"></span>
@@ -249,9 +249,9 @@
           <a href="edit.html">
             <button id="add-style-label" i18n="addStyleLabel" tabindex="-1"></button>
           </a>
-          <label id="add-style-as-usercss-wrapper">
+          <label id="add-style-as-usercss-wrapper" i18n="title:optionsAdvancedNewStyleAsUsercss">
             <input type="checkbox" id="newStyleAsUsercss">
-            <span i18n="manageNewStyleAsUsercss, title:optionsAdvancedNewStyleAsUsercss"></span>
+            <i class=i-usercss></i>
             <a id="usercss-wiki"
                class="icon"
                href="https://github.com/openstyles/stylus/wiki/Usercss"

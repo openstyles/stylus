@@ -87,19 +87,29 @@ a:hover {
   align-items: center;
   flex-wrap: wrap;
 }
-
 #add-style-wrapper > * {
   /* in case the children are wrapped */
   margin-bottom: .5rem;
 }
-
 #header #add-style-as-usercss-wrapper {
   display: flex;
   align-items: center;
 }
-
 #add-style-as-usercss-wrapper:not(:hover) input:not(:checked) ~ a i {
   color: var(--c65);
+}
+#newStyleAsUsercss + i {
+  font-size: 16px;
+  cursor: auto;
+}
+#newStyleAsUsercss:checked,
+#newStyleAsUsercss:checked + i {
+  border-color: var(--accent-1);
+  color: var(--accent-1);
+}
+#newStyleAsUsercss:checked + i + a i {
+  color: var(--accent-2);
+  filter: grayscale(.75);
 }
 
 button.icon {

@@ -347,7 +347,6 @@ function createStyleElement(style) {
     });
     const styleName = $('.style-name', entry);
     Object.assign(styleName, {
-      htmlFor: ENTRY_ID_PREFIX_RAW + style.id,
       onclick: Events.name,
     });
     styleName.appendChild(document.createTextNode(' '));

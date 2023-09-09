@@ -21,6 +21,7 @@
     --cmin: hsl(0, 0%, 100%);
     --cmax: hsl(0, 0%, 0%);
     --accent-1: hsl(180, 100%, 95%);
+    --accent-2: hsl(180, 50%, 30%);
     --accent-3: hsl(180, 30%, 18%);
     --input-bg: var(--c95);
     --red1: hsl(0, 85%, 55%);

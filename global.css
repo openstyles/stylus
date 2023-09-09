@@ -32,7 +32,7 @@
   --cmax: hsl(0, 0%, 100%);
   --bg: var(--c100);
   --fg: var(--c00);
-  --accent-1: hsl(180, 100%, 15%);
+  --accent-1: hsl(180, 100%, 19%);
   --accent-2: hsl(180, 50%, 40%);
   --accent-3: hsl(180, 40%, 69%);
   --red1: hsl(0, 70%, 45%);
@@ -452,7 +452,7 @@ body.resizing-v > * {
 @font-face {
   font-family: 'icons';
   src: url(/icons.ttf) format('truetype');
-  unicode-range: /*AUTO-GENERATED-ICON-RANGE*/ U+20,U+2195,U+2197,U+21b2,U+21b6,U+22c1,U+22ee,U+24d8,U+25bc,U+25f4,U+2611,U+2699,U+270f,U+2713,U+2714,U+2716,U+2795,U+2796,U+27f3,U+e000;
+  unicode-range: /*AUTO-GENERATED-ICON-RANGE*/ U+20,U+2195,U+2197,U+21b2,U+21b6,U+222a,U+22c1,U+22ee,U+24d8,U+25bc,U+25f4,U+2611,U+2699,U+270f,U+2713,U+2714,U+2716,U+2795,U+2796,U+27f3,U+d83e;
 }
 
 /*AUTO-GENERATED-ICON*/ .i-check1::after { content: "✓"; }
@@ -470,7 +470,8 @@ body.resizing-v > * {
 /*AUTO-GENERATED-ICON*/ .i-plus::after { content: "➕"; }
 /*AUTO-GENERATED-ICON*/ .i-reorder::after { content: "↕"; }
 /*AUTO-GENERATED-ICON*/ .i-select-arrow::after { content: "▼"; }
-/*AUTO-GENERATED-ICON*/ .i-sort-down::after { content: ""; }
+/*AUTO-GENERATED-ICON*/ .i-sort-down::after { content: "🠇"; }
+/*AUTO-GENERATED-ICON*/ .i-usercss::after { content: "∪"; }
 /*AUTO-GENERATED-ICON*/ .i-undo::after { content: "↶"; }
 /*AUTO-GENERATED-ICON*/ .i-update-check::after { content: "⟳"; }
 /*AUTO-GENERATED-ICON*/ .i-v::after { content: "⋁"; }

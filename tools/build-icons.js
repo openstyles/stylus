@@ -21,7 +21,8 @@ const SVG_MAP = Object.entries({
   'plus': '➕',
   'reorder': '↕',
   'select-arrow': '▼',
-  'sort-down': '\uE000', // must be in PUA range because the symbol is used along with normal fonts
+  'sort-down': '🠇',
+  'usercss': '∪',
   'undo': '↶',
   'update-check': '⟳',
   'v': '⋁',
