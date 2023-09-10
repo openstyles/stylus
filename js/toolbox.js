@@ -317,19 +317,31 @@ function tryURL(url) {
 }
 
 function debounce(fn, delay, ...args) {
-  clearTimeout(debounce.timers.get(fn));
-  debounce.timers.set(fn, setTimeout(debounce.run, delay, fn, ...args));
+  delay = +delay || 0;
+  let old = debounce.timers.get(fn);
+  if (!old && debounce.timers.set(fn, old = {})
+    || old.delay !== delay && (clearTimeout(old.timer), true)
+    || old.args.length !== args.length
+    || old.args.some((a, i) => a !== args[i]) // note that we can't use deepEqual here
+  ) {
+    old.args = args;
+    old.delay = delay;
+    old.timer = setTimeout(debounce.run, delay, fn, args);
+  }
 }
 
 Object.assign(debounce, {
   timers: new Map(),
-  run(fn, ...args) {
+  run(fn, args) {
     debounce.timers.delete(fn);
     fn(...args);
   },
   unregister(fn) {
-    clearTimeout(debounce.timers.get(fn));
-    debounce.timers.delete(fn);
+    const data = debounce.timers.get(fn);
+    if (data) {
+      clearTimeout(data.timer);
+      debounce.timers.delete(fn);
+    }
   },
 });
 

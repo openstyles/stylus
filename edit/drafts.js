@@ -20,7 +20,7 @@
   prefs.subscribe('editor.autosaveDraft', (key, val) => {
     delay = clamp(val * 1000 | 0, 1000, 2 ** 32 - 1);
     const t = debounce.timers.get(updateDraft);
-    if (t != null) debounce(updateDraft, t ? delay : 0);
+    if (t) debounce(updateDraft, t.delay ? delay : 0);
   }, {runNow: true});
 
   async function maybeRestore() {
