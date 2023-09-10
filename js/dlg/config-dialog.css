@@ -1,5 +1,5 @@
 :root {
-  --onoffswitch-width: 60px;
+  --value-cell-w: 60px;
 }
 
 .config-dialog {
@@ -13,6 +13,10 @@
 .config-dialog #message-box-contents {
   padding: var(--pad) var(--padR) var(--pad) var(--padL);
   overflow-y: overlay;
+}
+
+.config-dialog #message-box-buttons {
+  padding: calc(var(--pad)/2) var(--padR) calc(var(--pad)/2) var(--padL);
 }
 
 .sb-overlay {
@@ -44,6 +48,15 @@
   padding: .75em 0;
   align-items: center;
 }
+#message-box[data-num^=".........."] .config-body label {
+  padding: .5em 0;
+}
+#message-box[data-num^="..............."] .config-body label {
+  padding: .35em 0;
+}
+#message-box[data-num^="...................."] .config-body label {
+  padding: .2em 0;
+}
 
 .config-body .select-wrapper {
   position: static;
@@ -71,10 +84,8 @@
   left: 6px;
 }
 
-.config-body input,
-.config-body select,
-.config-body .onoffswitch {
-  width: var(--onoffswitch-width);
+.config-body input:not(.slider), .config-body select {
+  width: var(--value-cell-w);
   margin: 0;
   height: var(--input-height);
   box-sizing: border-box;
@@ -85,16 +96,10 @@
 .config-body .select-wrapper,
 .config-body select {
   width: auto;
-  min-width: var(--onoffswitch-width);
+  min-width: var(--value-cell-w);
   max-width: 124px;
   left: auto;
   position: relative;
-}
-
-.config-body .onoffswitch {
-  height: auto;
-  margin: calc((2em - 12px) / 2) 0;
-  flex-grow: 0;
 }
 
 .config-body input[type="text"] {
@@ -111,7 +116,7 @@
   flex-shrink: 0;
 }
 
-.config-value:not(.onoffswitch):not(.select-wrapper) > :not(:last-child) {
+.config-value:not(.slider):not(.select-wrapper) > :not(:last-child) {
   margin-right: 4px;
 }
 
@@ -187,7 +192,7 @@
 #message-box .colorview-swatch::before,
 #message-box .colorview-swatch::after,
 .color-swatch {
-  width: var(--onoffswitch-width);
+  width: var(--value-cell-w);
   height: 20px;
   left: 0;
   margin: 0;

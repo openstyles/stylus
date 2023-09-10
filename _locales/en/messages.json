@@ -1556,6 +1556,9 @@
     "message": "You've made changes to this style without saving.",
     "description": "Text for the prompt when changes are made to a style and the user tries to leave without saving"
   },
+  "styleEditor": {
+    "message": "Style editor"
+  },
   "styleEnabledLabel": {
     "message": "Enabled",
     "description": "Label for the enabled state of styles"
@@ -1600,6 +1603,9 @@
       }
     },
     "description": "Confirmation when re-installing a style"
+  },
+  "styleManager": {
+    "message": "Style manager"
   },
   "styleMissingName": {
     "message": "Enter a name",

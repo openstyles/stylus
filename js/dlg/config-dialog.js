@@ -84,6 +84,7 @@ async function configDialog(style) {
       adjustSizeForPopup(box);
     }
     box.on('change', onchange);
+    box.dataset.num = '.'.repeat(vars.length);
     buttons.save = $('[data-cmd="save"]', box);
     buttons.default = $('[data-cmd="default"]', box);
     buttons.close = $('[data-cmd="close"]', box);
@@ -235,14 +236,11 @@ async function configDialog(style) {
 
         case 'checkbox':
           children = [
-            $create('span.onoffswitch.config-value', [
-              va.input = $create('input.slider', {
-                va,
-                type: 'checkbox',
-                onchange: updateVarOnChange,
-              }),
-              $create('span'),
-            ]),
+            va.input = $create('input.slider.config-value', {
+              va,
+              type: 'checkbox',
+              onchange: updateVarOnChange,
+            }),
           ];
           break;
 

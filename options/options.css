@@ -4,6 +4,7 @@ html {
   justify-content: center;
   height: 100vh;
   background: none;
+  --value-cell-w: 4rem;
 }
 
 body {
@@ -124,8 +125,7 @@ label.chromium-only > :first-child::after {
 }
 
 h1 {
-  min-width: 30%;
-  width: 30%;
+  flex: 0 0 8em;
   margin: 0;
   font-size: 120%;
   font-weight: bold;
@@ -135,61 +135,55 @@ h1 {
 }
 
 .items {
-  min-width: 70%;
-  width: 70%;
+  width: 100%;
 }
-
-label,
-.label {
+.no-stretch {
+  width: 0;
+  flex: auto;
+}
+label {
   display: flex;
-  margin: .25ex 0;
   align-items: center;
-}
-
-.label {
-  flex-grow: 1;
-  justify-content: space-between;
-}
-
-label > :first-child {
-  transition: text-shadow .1s;
 }
 .items:not(.no-stretch) label > :first-child {
   margin-right: 8px;
   flex-grow: 1;
 }
-label:not([disabled]):hover > :first-child {
-  text-shadow: 0 0 0.01px rgba(0, 0, 0, .25);
+.items.swap label {
+  min-height: var(--input-height);
 }
-
-input[type=number],
-input[type="color"],
-select,
-.onoffswitch {
-  width: 60px;
-  box-sizing: border-box;
-  flex-shrink: 0;
+.items.swap label > :first-child {
+  order: 2;
+  margin-right: 0;
 }
-
-select.cloud-name {
-  width: auto;
+.items.swap input[type=color] {
+  --width: calc(var(
+  --value-cell-w) * .6);
+  width: var(--width);
 }
-
-button {
-  text-align: center;
+.items.swap input:not([type=number]):not([type=radio]) {
+  margin-right: calc(var(--value-cell-w) - var(--width) - .75rem);
 }
-
-input[type=number] {
+.radio-wrapper + span {
+  margin: 0 calc(3 * 16px - var(--value-cell-w) + 5px) 0 -2px;
+  width: var(--value-cell-w);
+}
+input[type="number"] {
+  width: var(--value-cell-w);
   text-align: right;
+  border: none;
+  padding: 0;
+  margin-left: -1em;
 }
-
 input[type="color"] {
+  width: var(--value-cell-w);
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
   padding: 0;
   margin: 4px 0 0 0;
   border: 1px solid var(--c65);
+  border-radius: 2px;
   height: var(--input-height);
   cursor: pointer;
 }
@@ -225,7 +219,7 @@ input[type=time] {
   position: relative;
 }
 [data-cmd="note"] {
-  padding: .5em 0 .5em 0;
+  padding-left: .25em;
   cursor: pointer;
 }
 
@@ -256,7 +250,7 @@ a.icon:hover > i {
 .sync-status {
   width: 0; /* together with flex-grow makes it reuse the current width */
   flex-grow: 1;
-  padding-right: 8px;
+  padding-left: 1em;
   box-sizing: border-box;
 }
 .sync-status::first-letter {

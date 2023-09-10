@@ -151,12 +151,14 @@
 }
 
 .non-windows #message-box-buttons {
-  text-align: right;
-  direction: rtl;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row-reverse;
 }
 
-#message-box-buttons > * {
-  margin: 0 .375rem;
+.non-windows #message-box-buttons > :nth-child(1),
+#message-box-buttons > :nth-child(n + 2) {
+  margin-left: .375rem;
 }
 
 /* popup */

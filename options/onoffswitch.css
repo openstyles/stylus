@@ -1,73 +1,54 @@
-/* On/Off FlipSwitch https://proto.io/freebies/onoff/ */
-
-.onoffswitch {
-  position: relative;
-  margin: 1ex 0;
-  -moz-user-select: none;
-  user-select: none;
+:root {
+  --slider-color: hsla(0, 0%, 50%, .35);
+  --slider-color-on: hsl(180, 50%, 40%, .33);
+  --slider-shadow-hsl: 180, 50%, 10%;
+  --slider-knob-shadow: 2px 2px 4px 1px hsl(180, 90%, 5%, .4);
 }
-
-.onoffswitch input {
+:root[data-ui-theme="dark"] {
+  --slider-color: hsla(0, 0%, 50%, 0.6);
+  --slider-color-on: hsl(180, 50%, 60%, .3);
+}
+.slider {
+  --width: calc(var(
+  --value-cell-w) * .6);
+  --knob: 15px;
+  --pad: 3px;
   -webkit-appearance: none;
   -moz-appearance: none;
-  cursor: default;
-  position: absolute;
-  top: -8px;
-  bottom: -10px;
-  left: -10px;
-  width: calc(100% + 12px);
-  border: 0;
+  appearance: none;
+  border: none;
+  flex-basis: var(--width);
+  width: var(--width);
+  height: calc(var(--knob) - 2 * var(--pad));
+  border-radius: var(--knob);
+  background: var(--slider-color);
+  box-shadow: inset 1px 1px 2px hsl(var(--slider-shadow-hsl), .5);
+  transition: box-shadow .25s;
+  display: inline-flex;
+  align-items: center;
+  color: var(--bg);
+  margin-left: calc(-.5 * var(--pad));
 }
-
-#message-box .onoffswitch input {
-  top: -6px;
-  left: -6px;
-  bottom: 0;
-  height: calc(100% + 12px);
-}
-
-.onoffswitch span {
-  display: block;
-  overflow: hidden;
-  height: 12px;
-  padding: 0;
-  line-height: 12px;
-  border: 0 solid var(--c90);
-  border-radius: 12px;
-  background-color: var(--c85);
-  box-shadow: inset 2px 2px 4px rgba(0,0,0,0.1);
-  pointer-events: none; /* this is just a non-clickable decoration, only `input` is clickable */
-}
-
-.onoffswitch span::before {
+.slider::after {
   content: "";
-  display: block;
-  width: 18px;
-  height: 18px;
-  margin: -3px;
-  background: var(--knob, var(--c95));
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 46px;
-  border-radius: 18px;
-  box-shadow: 0 3px 13px 0 rgba(0, 0, 0, 0.4);
+  display: inline-block;
+  width: var(--knob);
+  height: var(--knob);
+  border-radius: 100%;
+  box-shadow: var(--slider-knob-shadow);
+  margin: 0 calc(-1 * var(--pad));
+  background: currentColor;
+  border: 1px solid var(--slider-color);
+  box-sizing: border-box;
 }
-
-.onoffswitch input:checked + span {
-  background-color: hsla(165, 45%, 50%, .3);
+.slider:checked {
+  background-color: var(--slider-color-on);
+  justify-content: flex-end;
+  color: var(--accent-2);
 }
-
-.onoffswitch input:checked + span, .onoffswitch input:checked + span::before {
-  border-color: #CAEBE3;
+.slider:checked::after {
+  border-color: hsla(var(--slider-shadow-hsl), .25);
 }
-
-.onoffswitch input:checked + span .onoffswitch-inner {
-  margin-left: 0;
-}
-
-.onoffswitch input:checked + span::before {
-  right: 0;
-  background-color: #04BA9F;
-  box-shadow: 3px 6px 18px 0 rgba(0, 0, 0, 0.2);
+.slider:hover {
+  box-shadow: inset 1px 1px 3px hsl(var(--slider-shadow-hsl));
 }

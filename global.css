@@ -422,24 +422,9 @@ body.resizing-v > * {
   button {
     padding-top: 2.5px;
   }
-
-/* We can customize everything about number inputs except arrows. They're horrible in Linux FF, so we'll hide them unless hovered or focused. */
-  .firefox.non-windows input[type="number"] {
+  .firefox input[type="number"]:not(:hover):not(:focus) {
     -moz-appearance: textfield;
-    background: var(--bg);
-    color: var(--fg);
-    border: 1px solid var(--c65);
-  }
-
-  .firefox.non-windows input[type="number"]:not(:disabled):hover,
-  .firefox.non-windows input[type="number"]:focus {
-    -moz-appearance: number-input;
-  }
-
-  .firefox.non-windows input[type="color"] {
-    background: var(--bg);
-    border: 1px solid var(--c65);
-    padding: 4px;
+    padding-right: 1.5em;
   }
 }
 
