@@ -599,9 +599,6 @@
   "manageNewStyleAsUsercss": {
     "message": "як Usercss"
   },
-  "manageNewUI": {
-    "message": "Новий макет інтерфейсу управління користувача"
-  },
   "manageOnlyDisabled": {
     "message": "Лише вимкнені стилі"
   },
@@ -996,9 +993,6 @@
   "optionsSyncUsername": {
     "message": "Логін користувача"
   },
-  "optionsUpdateImportNote": {
-    "message": "Імпортуючи резервні копії стилю зі старої версії або зі Stylish, зробіть одноразову перевірку наявності оновлень вручну в менеджері стилів, щоб переконатися, що всі стилі оновлюються."
-  },
   "optionsUpdateInterval": {
     "message": "Інтервал автооновлення стилів у годинах (вказати 0 для вимкнення)"
   },
@@ -1026,9 +1020,6 @@
   "parseUsercssError": {
     "message": "Stylus не зміг розібрати usercss:"
   },
-  "popupAutoResort": {
-    "message": "Пересортувати стилі після переключення"
-  },
   "popupBorders": {
     "message": "Додати білі рамки з боків"
   },
@@ -1046,9 +1037,6 @@
   },
   "popupMenuButtonTooltip": {
     "message": "Меню дії"
-  },
-  "popupOpenEditInPopup": {
-    "message": "Використовувати просте вікно (без омнібоксів)"
   },
   "popupOpenEditInWindow": {
     "message": "Відкрити редактор у новому вікні"
@@ -1152,9 +1140,6 @@
   "searchResultNotMatching": {
     "message": "Стиль встановлено, але він не застосовується до поточної URL-адреси сайту."
   },
-  "searchResultNotMatchingNote": {
-    "message": "Спробуйте попросити автора цього стилю додати URL-адресу.\n\nВи також можете відкрити стиль в менеджері і редагувати його самостійно,\nале майте на увазі, що це вимикає автоматичне оновлення для цього стилю."
-  },
   "searchResultRating": {
     "message": "Рейтинг"
   },
@@ -1232,9 +1217,6 @@
   },
   "styleBeautifyPreserveNewlines": {
     "message": "Зберігати порожні рядки"
-  },
-  "styleCancelEditLabel": {
-    "message": "Повернутися до керування"
   },
   "styleChangesNotSaved": {
     "message": "Ви внесли зміни в цей стиль без збереження."

@@ -132,9 +132,6 @@
   "sections": {
     "message": "الأقسام"
   },
-  "styleCancelEditLabel": {
-    "message": "رجوع للإدارة"
-  },
   "styleChangesNotSaved": {
     "message": "لقد أجريت تغييرات على هذا النمط بدون حفظها."
   },

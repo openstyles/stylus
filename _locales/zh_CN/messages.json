@@ -597,7 +597,7 @@
     "message": "作为 UserCSS"
   },
   "manageNewUI": {
-    "message": "新版样式管理 UI 布局"
+    "message": "表格布局"
   },
   "manageOnlyDisabled": {
     "message": "只显示已禁用的样式"
@@ -875,9 +875,6 @@
   "optionsAdvancedStyleViaXhr": {
     "message": "XHR 即时注入模式"
   },
-  "optionsAdvancedStyleViaXhrNote": {
-    "message": "如果在网站加载时常看到一闪而过的样式闪烁晃眼（FOUC） 、特别是在深色主题下会感知得更明显，请启用此选项。\n\n技术上的原因是 Chrome 内核通常以 无意义的尝试 来延迟扩展的异步通信，以提高页面加载速度，这可能会导致样式慢了半拍才被应用。\n为了避免这种情况，且由于谷歌也没有提供 Web 扩展的样式同步的 API 接口，因此 Stylus 提供了此选项来变相实现, 利用「已弃用」的 XMLHttpRequest 这个同步 API 来获取适用的样式。 它几乎没有任何副作用，因为样式请求在几毫秒内就完成了, 此时网页还在从服务器下载。\n\n尽管如此，但 Chrome DevTools 仍会在 Console 中显示警告。右键单击警告并将其隐藏，将防止再次显示警告。"
-  },
   "optionsBadgeDisabled": {
     "message": "禁用所有样式时的背景颜色"
   },
@@ -996,11 +993,11 @@
   "optionsSyncUsername": {
     "message": "用户名"
   },
-  "optionsUpdateImportNote": {
-    "message": "从旧版本的 Stylus 或 Stylish 中导入样式备份时，请在样式管理器中手动检测升级一次，以确保所有样式都可更新到最新版本。"
-  },
   "optionsUpdateInterval": {
     "message": "每隔 N 小时 自动检测更新（0 为禁用）"
+  },
+  "optionsUrlInstaller": {
+    "message": "打开以 .user.css 结尾的 URL 时，直接打开安装界面"
   },
   "overwriteFileExport": {
     "message": "是否覆盖现有文件？"
@@ -1024,7 +1021,7 @@
     "message": "Stylus 未能成功解析 UserCSS："
   },
   "popupAutoResort": {
-    "message": "切换后弹窗中立即重新排序"
+    "message": "开启/关闭样式后，在弹窗中重新排序"
   },
   "popupBorders": {
     "message": "在两边增加白色边框"
@@ -1048,7 +1045,7 @@
     "message": "操作菜单"
   },
   "popupOpenEditInPopup": {
-    "message": "使用简易编辑器窗口（无 omnibox 地址栏）"
+    "message": "无地址栏的新窗口"
   },
   "popupOpenEditInWindow": {
     "message": "在新窗口打开编辑器"
@@ -1155,9 +1152,6 @@
   "searchResultNotMatching": {
     "message": "样式已安装但不适于当前 URL"
   },
-  "searchResultNotMatchingNote": {
-    "message": "尝试请求该用户样式的作者添加 URL。\n\n您也可以在管理器中打开样式自己编辑，\n但请注意，这会禁用此样式的自动更新。"
-  },
   "searchResultRating": {
     "message": "评价"
   },
@@ -1249,7 +1243,7 @@
     "message": "保留新增空行"
   },
   "styleCancelEditLabel": {
-    "message": "返回管理器"
+    "message": "返回样式管理器"
   },
   "styleChangesNotSaved": {
     "message": "您已对此样式进行了更改，但尚未保存。"

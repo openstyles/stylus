@@ -603,7 +603,7 @@
     "message": "jako Usercss"
   },
   "manageNewUI": {
-    "message": "Nowy układ interfejsu zarządzania"
+    "message": "Układ tabeli"
   },
   "manageOnlyDisabled": {
     "message": "Tylko wyłączone style"
@@ -882,7 +882,7 @@
     "message": "Tryb natychmiastowego wstrzyknięcia"
   },
   "optionsAdvancedStyleViaXhrNote": {
-    "message": "Włącz tę opcję, jeśli napotkasz miganie niestylizowanej treści (FOUC) podczas przeglądania, co jest szczególnie zauważalne w przypadku ciemnych motywów.\n\nTechnicznym powodem jest to, że Chrome/Chromium odracza asynchroniczną komunikację rozszerzeń, co zwykle jest bezsensowną próbą przyspieszenia ładowania strony i może powodować spóźnienie zastosowania stylów. Aby to obejść, ponieważ rozszerzenia internetowe nie mają synchronicznego interfejsu API, Stylus udostępnia tę opcję, która umożliwia wykorzystanie \"przestarzałego\" synchronicznego sieciowego API XMLHttpRequest do pobierania odpowiednich stylów. Nie powinno to mieć żadnych negatywnych skutków, ponieważ żądanie jest realizowane w ciągu kilku milisekund, podczas gdy strona jest nadal pobierana z serwera.\n\nNiemniej jednak Chromium wyświetli ostrzeżenie w konsoli narzędzi dla programistów. Kliknięcie ostrzeżenia prawym przyciskiem myszy i ukrycie go zapobiegnie wyświetlaniu przyszłych ostrzeżeń."
+    "message": "Włącz tę opcję, jeśli podczas przeglądania napotkasz migającą zawartość bez stylu (FOUC), co jest szczególnie zauważalne w przypadku ciemnych motywów podczas otwierania strony.\n\nTa opcja wykorzystuje „przestarzałe” synchroniczne żądanie XMLHttpRequest wykonywane wewnętrznie w celu pobrania pamięci podręcznej tła rozszerzenia, tj. nie jest to żądanie sieciowe, więc wpływ na wydajność jest znikomy."
   },
   "optionsBadgeDisabled": {
     "message": "Kolor tła po wyłączeniu"
@@ -1063,7 +1063,7 @@
     "message": "Menu akcji"
   },
   "popupOpenEditInPopup": {
-    "message": "Użyj prostego okna (bez omniboksu)"
+    "message": "...bez paska adresu"
   },
   "popupOpenEditInWindow": {
     "message": "Otwórz edytor w nowym oknie"
@@ -1171,7 +1171,7 @@
     "message": "Styl jest zainstalowany, ale nie ma zastosowania do bieżącego adresu URL witryny."
   },
   "searchResultNotMatchingNote": {
-    "message": "Poproś autora tego stylu użytkownika o dodanie adresu URL.\n\nMożesz także otworzyć styl w menedżerze i samodzielnie go edytować,\nale pamiętaj, że wyłącza to automatyczne aktualizacje tego stylu."
+    "message": "Poproś autora tego stylu użytkownika o dodanie adresu URL.\n\nMożesz także otworzyć styl w menedżerze stylów i samodzielnie go edytować,\nale pamiętaj, że wyłącza to automatyczne aktualizacje tego stylu."
   },
   "searchResultRating": {
     "message": "Ocena"
@@ -1267,7 +1267,7 @@
     "message": "Zachowaj nowe wiersze"
   },
   "styleCancelEditLabel": {
-    "message": "Powróć do zarządzania"
+    "message": "Powrót do menedżera stylów"
   },
   "styleChangesNotSaved": {
     "message": "Wprowadzono zmiany w tym stylu bez zapisywania."

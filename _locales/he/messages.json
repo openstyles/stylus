@@ -493,9 +493,6 @@
   "manageNewStyleAsUsercss": {
     "message": "כ־Usercss"
   },
-  "manageNewUI": {
-    "message": "פריסת ממשק משתמש ניהול חדשה"
-  },
   "manageOnlyDisabled": {
     "message": "רק עיצובים מושבתים"
   },
@@ -685,9 +682,6 @@
   "optionsSyncUrl": {
     "message": "כתובת אתר"
   },
-  "optionsUpdateImportNote": {
-    "message": "בעת ייבוא גיבויים לסגנון מגרסה ישנה או מ־Stylish, בדוק באופן חד פעמי אם יש עדכונים באופן ידני במנהל הסגנונות כדי לוודא שכל הסגנונות מעודכנים."
-  },
   "optionsUpdateInterval": {
     "message": "עדכון אוטומטי של Userstyle בשעות (הגדר 0 להשבתה)"
   },
@@ -837,9 +831,6 @@
   },
   "styleBeautifyPreserveNewlines": {
     "message": "שמור שורות חדשות"
-  },
-  "styleCancelEditLabel": {
-    "message": "חזרה לניהול"
   },
   "styleChangesNotSaved": {
     "message": "ביצעת שינויים בסגנון זה מבלי לשמור."

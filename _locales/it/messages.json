@@ -417,9 +417,6 @@
   "manageNewStyleAsUsercss": {
     "message": "come Usercss"
   },
-  "manageNewUI": {
-    "message": "Nuovo layout Gestione UI"
-  },
   "manageOnlyDisabled": {
     "message": "Solo stili disattivati"
   },
@@ -548,9 +545,6 @@
   "optionsSubheading": {
     "message": "Più Opzioni"
   },
-  "optionsUpdateImportNote": {
-    "message": "Quando importi backup di stili da una vecchia versione di Stylish, esegui un controllo una tantum manualmente nel gestore stili per assicurarti che siano tutti aggiornati."
-  },
   "paginationCurrent": {
     "message": "Pagina corrente"
   },
@@ -661,9 +655,6 @@
   },
   "styleBeautifyPreserveNewlines": {
     "message": "Mantieni gli \"a capo\""
-  },
-  "styleCancelEditLabel": {
-    "message": "Torna a gestione"
   },
   "styleChangesNotSaved": {
     "message": "Hai apportato modifiche a questo stile senza salvare."

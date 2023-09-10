@@ -38,9 +38,6 @@
   "optionsBadgeNormal": {
     "message": "Background colour"
   },
-  "optionsUpdateImportNote": {
-    "message": "When importing style backups from an old version or from Stylish, do a one-time check for updates manually in the styles manager to ensure all styles are updated."
-  },
   "optionsUpdateInterval": {
     "message": "Userstyle auto-update interval in hours (specify 0 to disable)"
   },

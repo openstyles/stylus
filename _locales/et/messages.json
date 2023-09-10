@@ -496,9 +496,6 @@
   "manageNewStyleAsUsercss": {
     "message": "Usercss-ina"
   },
-  "manageNewUI": {
-    "message": "Uus haldusliidese välimus"
-  },
   "manageOnlyDisabled": {
     "message": "Ainult keelatud stiilid"
   },
@@ -736,9 +733,6 @@
   "optionsSyncSyncNow": {
     "message": "Sünkrooni kohe"
   },
-  "optionsUpdateImportNote": {
-    "message": "Kui impordid stiilide varundusi vanast versioonist või Stylish'ist, tee ühekordne käsitsi uuenduste kontroll stiilide halduris, et veenduda kõikide stiilide ajakohasuses."
-  },
   "optionsUpdateInterval": {
     "message": "Kasutajastiilide automaatse uuendamise ajavahe (keelamiseks pane 0)"
   },
@@ -900,9 +894,6 @@
   },
   "styleBeautifyPreserveNewlines": {
     "message": "Säilita reavahetused"
-  },
-  "styleCancelEditLabel": {
-    "message": "Tagasi haldusesse"
   },
   "styleChangesNotSaved": {
     "message": "Sa oled teinud sellele stiilile muutusi ilma salvestamata."

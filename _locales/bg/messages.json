@@ -272,9 +272,6 @@
   "manageMaxTargets": {
     "message": "Брой на видимите приложими адреси"
   },
-  "manageNewUI": {
-    "message": "Нов интерфейс за управление"
-  },
   "manageOnlyEnabled": {
     "message": "Само включените стилове"
   },
@@ -368,9 +365,6 @@
   "optionsSyncUrl": {
     "message": "Адрес"
   },
-  "optionsUpdateImportNote": {
-    "message": "При внасянето на резервни копия от стари версии или от Стайлиш направете ръчна проверка за обновления, за да сте сигурни, че стиловете са актуални."
-  },
   "popupStylesFirst": {
     "message": "Стилове преди командите"
   },
@@ -421,9 +415,6 @@
   },
   "styleBeautifyIndentConditional": {
     "message": "Отстъп на @media, @supports"
-  },
-  "styleCancelEditLabel": {
-    "message": "Назад към стиловете"
   },
   "styleChangesNotSaved": {
     "message": "Направили сте промени по стила без да ги запазите."

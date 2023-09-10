@@ -484,9 +484,6 @@
   "manageNewStyleAsUsercss": {
     "message": "som Usercss"
   },
-  "manageNewUI": {
-    "message": "Ny hantera UI layout"
-  },
   "manageOnlyDisabled": {
     "message": "Endast inaktiverade stilar"
   },
@@ -812,9 +809,6 @@
   "optionsSyncUrl": {
     "message": "Webbadress"
   },
-  "optionsUpdateImportNote": {
-    "message": "När du importerar säkerhetskopior av stilar från gammal version eller från Stylish, gör en engångskontroll för uppdateringar manuellt i stilhanteraren för att säkerställa att alla stilar uppdateras."
-  },
   "optionsUpdateInterval": {
     "message": "Userstyle automatisk uppdateringsintervall i timmar (ange 0 för att inaktivera)"
   },
@@ -838,9 +832,6 @@
   },
   "parseUsercssError": {
     "message": "Stylus misslyckades med att tolka Usercss:"
-  },
-  "popupAutoResort": {
-    "message": "Sortera om format i popup efter växling"
   },
   "popupBorders": {
     "message": "Lägg till vita kanter på sidorna"
@@ -988,9 +979,6 @@
   },
   "styleBeautifyPreserveNewlines": {
     "message": "Bevara nya rader"
-  },
-  "styleCancelEditLabel": {
-    "message": "Återgå till hantera"
   },
   "styleChangesNotSaved": {
     "message": "Du har gjort ändringar i denna stil utan att spara."

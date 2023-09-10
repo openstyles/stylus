@@ -254,9 +254,6 @@
   "styleBeautify": {
     "message": "Улепшај"
   },
-  "styleCancelEditLabel": {
-    "message": "Назад на управљање"
-  },
   "styleChangesNotSaved": {
     "message": "Направили сте измене овог стила које нисте сачували."
   },

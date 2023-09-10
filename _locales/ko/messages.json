@@ -532,9 +532,6 @@
   "manageNewStyleAsUsercss": {
     "message": "Usercss로 작성"
   },
-  "manageNewUI": {
-    "message": "새로운 관리 페이지 UI 레이아웃"
-  },
   "manageOnlyDisabled": {
     "message": "비활성화된 스타일만"
   },
@@ -796,9 +793,6 @@
   "optionsAdvancedStyleViaXhr": {
     "message": "즉시 주입 모드"
   },
-  "optionsAdvancedStyleViaXhrNote": {
-    "message": "만약 브라우징 도중 스타일이 적용되지 않은 콘텐츠가 깜빡거리며 나오는 경우(FOUC), 특히 다크 테마를 사용하는 중 눈에 두드러지게 깜빡이는 경우 이 설정을 켜십시오.\n\n기술적으로 Chrome/Chromium이 확장 프로그램과의 비동기 통신을 미루기 때문에 발생하는 문제이며, 페이지를 더 빨리 불러오려는 시도이지만 보통은 무의미하고 스타일이 늦게 적용되도록 하는 요인으로 작용합니다. 확장 프로그램에는 이를 회피하기 위한 동기형 API가 제공되지 않으므로, Stylus는 \"비권장\" 상태인 동기형 XMLHttpRquest 웹 API를 사용하여 스타일을 가져오는 설정을 제공합니다. 페이지를 서버에서 내려받는 몇 밀리초 내에 이런 과정이 끝나므로 로드 속도에는 악영향이 없습니다.\n\n그럼에도 불구하고 Chromium 브라우저에서는 개발자 도구의 콘솔에 경고를 출력할 것입니다. 경고를 우클릭하여 숨기면 이후에는 경고가 표시되지 않습니다."
-  },
   "optionsBadgeDisabled": {
     "message": "비활성화 시의 배경 색"
   },
@@ -908,9 +902,6 @@
   "optionsSyncSyncNow": {
     "message": "지금 동기화"
   },
-  "optionsUpdateImportNote": {
-    "message": "Stylish나 구버전 스타일 백업을 가져왔을 경우, 스타일들을 최신 버전으로 유지하려면 스타일 매니저에서 한 번씩 수동으로 업데이트 검사를 진행해 주세요."
-  },
   "optionsUpdateInterval": {
     "message": "Userstyle 자동 업데이트 간격 (시간 단위, 0일시 업데이트하지 않음)"
   },
@@ -935,9 +926,6 @@
   "parseUsercssError": {
     "message": "Stylus가 Usercss 데이터를 해석하는데 실패했습니다:"
   },
-  "popupAutoResort": {
-    "message": "팝업 내에서 스타일 토글 시 재정렬"
-  },
   "popupBorders": {
     "message": "양옆에 흰색 테두리 추가"
   },
@@ -955,9 +943,6 @@
   },
   "popupMenuButtonTooltip": {
     "message": "상호작용 메뉴"
-  },
-  "popupOpenEditInPopup": {
-    "message": "단순 윈도우(옴니상자 없음) 사용하기"
   },
   "popupOpenEditInWindow": {
     "message": "새 창에서 편집기 열기"
@@ -1040,9 +1025,6 @@
   "searchResultNotMatching": {
     "message": "스타일을 설치했지만 현 사이트 URL에는 적용하지 않습니다."
   },
-  "searchResultNotMatchingNote": {
-    "message": "이 userstyle 작성자에게 URL을 넣어달라고 요청합니다.\n\n관리자에서 스타일을 열고 직접 편집할 수도 있지만,\n이 스타일의 자동 업데이트를 활성 해제할 수도 있으니 주의하세요."
-  },
   "searchResultRating": {
     "message": "평가"
   },
@@ -1123,9 +1105,6 @@
   },
   "styleBeautifyPreserveNewlines": {
     "message": "개행 문자 유지"
-  },
-  "styleCancelEditLabel": {
-    "message": "관리 페이지로 돌아가기"
   },
   "styleChangesNotSaved": {
     "message": "스타일의 변경 사항을 저장하지 않았습니다."

@@ -362,7 +362,7 @@
     "message": "Empfange alle Styles..."
   },
   "headerResizerHint": {
-    "message": "Halte Shift gedrückt, um nur diese Art der Benutzeroberfläche (z.B. Editor, Manager, Installer) zu verändern"
+    "message": "Halte Shift gedrückt, um nur diese Art der Benutzeroberfläche (z.B. Editor, Verwaltung, Installer) zu verändern"
   },
   "helpAlt": {
     "message": "Hilfe"
@@ -386,7 +386,7 @@
     "message": "Importieren"
   },
   "importPreprocessor": {
-    "message": "Ein Style mit einem <code>@preprocessor</code>funktioniert nicht im klassischen Modus. Du kannst den Editor auf UserCSS umstellen: 1) Öffne den Style-Manager, 2) Aktiviere das Kästchen \"Als UserCSS\", 3) Klicke auf \"Neuen Style erstellen\"\n\nTrotzdem jetzt importieren?"
+    "message": "Ein Style mit einem <code>@preprocessor</code>funktioniert nicht im klassischen Modus. Du kannst den Editor auf UserCSS umstellen: 1) Öffne die Style-Verwaltung, 2) Aktiviere das Kästchen \"Als UserCSS\", 3) Klicke auf \"Neuen Style erstellen\"\n\nTrotzdem jetzt importieren?"
   },
   "importPreprocessorTitle": {
     "message": "Mögliches Problem wegen @preprocessor"
@@ -553,7 +553,7 @@
     "message": "als UserCSS"
   },
   "manageNewUI": {
-    "message": "Neues Verwaltungs-Layout"
+    "message": "Tabellenlayout"
   },
   "manageOnlyDisabled": {
     "message": "Nur deaktivierte Styles"
@@ -832,7 +832,7 @@
     "message": "Style unverzüglich einfügen"
   },
   "optionsAdvancedStyleViaXhrNote": {
-    "message": "Aktivieren, falls während dem Browsen ungestylter Inhalt aufblitzt (FOUC). Besonders auffällig bei dunklen Styles.\n\nDer technische Grund ist, dass Chrome/Chromium die asynchrone Kommunikation von Erweiterungen zeitlich nach hinten verschiebt, um vermeintlich die Seitenladegeschwindigkeit zu erhöhen. Dies kann das Einfügen von Styles spürbar verzögern. Da für WebExtensions keine synchrone API bereitgestellt wird, versucht Stylus als Notbehelf, Styles über die veraltete XMLHttpRequest web API zu laden. Es sollten keine nachteiligen Effekte eintreten, weil die Anfrage innerhalb weniger Millisekunden abgearbeitet wird, während die Seite noch vom Server geladen wird.\n\nTrotzdem wird Chromium eine Warnung in der Entwicklerkonsole ausgeben. Über Rechtsklick auf die Warnung können zukünftige Meldungen versteckt werden."
+    "message": "Aktivieren, falls während dem Browsen ungestylter Inhalt aufblitzt (FOUC). Besonders auffällig bei dunklen Styles.\n\nDiese Option nutzt intern den veralteten synchronen XMLHttpRequest, um an den Hintergrundcache der Erweiterung zu gelangen. Somit ist es keine Netzwerkanfrage und die Leistungseinbußen sind zu vernachlässigen."
   },
   "optionsBadgeDisabled": {
     "message": "Hintergrundfarbe wenn deaktiviert"
@@ -980,7 +980,7 @@
     "message": "UserCSS parsen fehlgeschlagen:"
   },
   "popupAutoResort": {
-    "message": "Styles im Popup sofort neu sortieren"
+    "message": "Styles im Popup nach Aktion neu sortieren"
   },
   "popupBorders": {
     "message": "Weiße Rahmen an den Seiten hinzufügen"
@@ -998,13 +998,13 @@
     "message": "Styles dieser Seite verwalten"
   },
   "popupManageTooltip": {
-    "message": "Shift+Klick oder Rechtsklick öffnet den Stylemanager mit Filter für Styles der aktuellen Seite"
+    "message": "Shift+Klick oder Rechtsklick öffnet die Style-Verwaltung mit Filter für Styles der aktuellen Seite"
   },
   "popupMenuButtonTooltip": {
     "message": "Aktionsmenü"
   },
   "popupOpenEditInPopup": {
-    "message": "Einfaches Fenster verwenden (keine Omnibox)"
+    "message": "…ohne Adresszeile"
   },
   "popupOpenEditInWindow": {
     "message": "Editor in neuem Fenster öffnen"
@@ -1199,7 +1199,7 @@
     "message": "Leerzeilen schützen"
   },
   "styleCancelEditLabel": {
-    "message": "Zurück zum Verwalten"
+    "message": "Zurück zur Style-Verwaltung"
   },
   "styleChangesNotSaved": {
     "message": "Du hast Änderungen an diesem Style vorgenommen, ohne diese zu speichern."

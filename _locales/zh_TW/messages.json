@@ -436,7 +436,7 @@
     "message": "匯入"
   },
   "importPreprocessor": {
-    "message": "使用 <code>@preprocessor</code> 的樣是在經典模式下無法運作。您可以將編輯器切換到 Usercss 模式：1) 開啟樣式管理程式，2) 啟用「做為 Usercss」對話框，3) 點擊「編寫新樣式」\n"
+    "message": "以一個 <code>@preprocessor</code> 進行風格設定在經典模式下無法運作。您可以將編輯器切換到 Usercss 模式：1）開啟風格管理員，2）啟用「作為 Usercss」核取方塊，3）點選「撰寫新風格」\n\n現在要進行匯入嗎？"
   },
   "importPreprocessorTitle": {
     "message": "@preprocessor 引起的潛在問題"
@@ -603,7 +603,7 @@
     "message": "做為 Usercss"
   },
   "manageNewUI": {
-    "message": "新的管理介面配置"
+    "message": "表格版面配置"
   },
   "manageOnlyDisabled": {
     "message": "僅已停用的樣式"
@@ -882,7 +882,7 @@
     "message": "即時注入模式"
   },
   "optionsAdvancedStyleViaXhrNote": {
-    "message": "如果在瀏覽時遇到無樣式內容 (FOUC) 的閃爍（在深色主題下尤其明顯），請啟用此選項。\n\n技術上的原因是 Chrome/Chromium 通常以無意義的嘗試延遲擴充功能的非同步通訊來改善網頁的載入速度，這可能會導致樣式較慢才被套用。為了避免這種狀況，因為擴充功能無法使用同步 API，Stylus 提供了此選項以利用「已棄用」的同步 XMLHttpRequest 網路 API 來擷取可套用的樣式。應該不會有任何有害的影響，因為在從伺服器下載頁面的同時，請求也會在幾毫秒內完成。\n\n儘管如此，Chromium 還是會在開發者工具的主控台中顯示警告。右鍵點擊警告，然後隱藏它們，這樣警告就不會再顯示。"
+    "message": "若您在瀏覽時遇到閃爍的無樣式內容 (FOUC)，請啟用此選項，這在使用深色主題開啟頁面時尤其明顯。\n\n此選項使用了內部執行的「已棄用」同步 XMLHttpRequest 來取得擴充套件的背景快取，因為其並非網路請求，因此效能影響可以忽略不計。"
   },
   "optionsBadgeDisabled": {
     "message": "停用時的背景色彩"
@@ -1036,7 +1036,7 @@
     "message": "Stylus 解析 usercss 失敗："
   },
   "popupAutoResort": {
-    "message": "復原在切換後的彈出式視窗樣式"
+    "message": "在切換後重新排序彈出式視窗中的樣式"
   },
   "popupBorders": {
     "message": "在邊邊新增白色邊框"
@@ -1060,7 +1060,7 @@
     "message": "動作選單"
   },
   "popupOpenEditInPopup": {
-    "message": "使用簡易視窗（無多功能方框）"
+    "message": "……沒有地址列"
   },
   "popupOpenEditInWindow": {
     "message": "在新視窗開啟編輯器"
@@ -1264,7 +1264,7 @@
     "message": "保留新行"
   },
   "styleCancelEditLabel": {
-    "message": "返回到管理頁面"
+    "message": "回到樣式管理程式"
   },
   "styleChangesNotSaved": {
     "message": "你已經修改了此樣式，但尚未保存。"
@@ -1407,7 +1407,7 @@
     "message": "Stylus 不能在諸如此類的網頁上生效。"
   },
   "stylusUnavailableForURLdetails": {
-    "message": "作為安全措施，瀏覽器禁止擴充套件影響其內建頁面（如 chrome://version、截至 Chrome 61 為止的新分頁、about:addons 以及其他頁面）以及其他擴充套件的頁面。每個瀏覽器也都限制對它們自己的擴充套件庫的存取（如 Chrome 線上應用程式商店或是 Firefox 附加元件庫等）。"
+    "message": "作為安全預防措施，瀏覽器禁止擴充功能影響其內建頁面（例如 chrome://version、自 Chrome 61 起的標準新分頁頁面、about:addons 等），以及其他擴充功能的頁面。同時，每個瀏覽器也限制存取其自身的擴充功能商店（例如 Chrome Web Store 或 AMO）。"
   },
   "syncDropboxDeprecated": {
     "message": "Dropbox 匯入／匯出已被選項頁面中的更進階的樣式同步所取代。"

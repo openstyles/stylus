@@ -446,9 +446,6 @@
   "manageMaxTargets": {
     "message": "Uygulanan ögelerin sayısı"
   },
-  "manageNewUI": {
-    "message": "Yeni yönetim ara yüzü düzeni"
-  },
   "manageOnlyDisabled": {
     "message": "Yalnızca devre dışı bırakılan stiller"
   },
@@ -581,9 +578,6 @@
   "optionsSyncUsername": {
     "message": "Kullanıcı adı"
   },
-  "optionsUpdateImportNote": {
-    "message": "Eski versiyonlardan ya da Stylish'ten stil yedeklerini içeri aktarırken, hepsinin güncel olduğundan emin olmak için stil yöneticisinden bir defa elle güncelleme kontrolü yapın"
-  },
   "optionsUpdateInterval": {
     "message": "Saat cinsinden kullanıcı stili otomatik güncelleme aralığı (devre dışı bırakmak için 0 yazın) "
   },
@@ -706,9 +700,6 @@
   },
   "styleBeautify": {
     "message": "Güzelleştir"
-  },
-  "styleCancelEditLabel": {
-    "message": "Yönetim sayfasına dön"
   },
   "styleChangesNotSaved": {
     "message": "Bu stilde yaptığınız, kaydedilmemiş değişiklikler var."

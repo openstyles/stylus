@@ -548,9 +548,6 @@
   "manageNewStyleAsUsercss": {
     "message": "como UserCSS"
   },
-  "manageNewUI": {
-    "message": "Nova interface do gestor"
-  },
   "manageOnlyDisabled": {
     "message": "Somente estilos desativados"
   },
@@ -747,9 +744,6 @@
   "optionsSyncSyncNow": {
     "message": "Sincronizar agora"
   },
-  "optionsUpdateImportNote": {
-    "message": "Ao importar uma cópia de segurança de estilo da versão antiga ou do Stylish, faça uma verificação única de atualizações manualmente no gestor de estilos para garantir que todos os estilos sejam atualizados."
-  },
   "optionsUpdateInterval": {
     "message": "Intervalo de atualização automática do estilo de usuário em horas (especifique 0 para desativar)"
   },
@@ -935,9 +929,6 @@
   },
   "styleBeautifyPreserveNewlines": {
     "message": "Preserve novas linhas"
-  },
-  "styleCancelEditLabel": {
-    "message": "Voltar ao gerenciamento"
   },
   "styleChangesNotSaved": {
     "message": "Você fez alterações neste estilo sem salvar."

@@ -415,9 +415,6 @@
   "manageHeading": {
     "message": "Εγκατεστημένα Στυλ"
   },
-  "manageNewUI": {
-    "message": "Νέα διαχείριση διάταξης UI"
-  },
   "manageOnlyDisabled": {
     "message": "Μόνο απενεργοποιημένα στυλ"
   },
@@ -541,9 +538,6 @@
   "popupBordersTooltip": {
     "message": "Χρήσιμο για σκούρα θέματα στο καινούριο Chrome, καθώς δε βάφει πλέον τα ακριανά περιθώρια."
   },
-  "popupOpenEditInPopup": {
-    "message": "Χρήση ενός απλού παραθύρου (χωρίς omnibox)"
-  },
   "popupOpenEditInWindow": {
     "message": "Άνοιγμα επεξαργαστή σε νέο παράθυρο"
   },
@@ -624,9 +618,6 @@
   },
   "styleBeautifyPreserveNewlines": {
     "message": "Διατήρηση νέων γραμμών (newlines)"
-  },
-  "styleCancelEditLabel": {
-    "message": "Πίσω στη διαχείριση"
   },
   "styleChangesNotSaved": {
     "message": "Έχετε κάνει αλλαγές σε αυτό το ύφος χωρίς αποθήκευση."

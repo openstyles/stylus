@@ -398,7 +398,7 @@
     "message": "インポート"
   },
   "importPreprocessor": {
-    "message": "<code>@preprocessor</code>を含むスタイルは、クラシックモードでは機能しません。エディタをUsercssモードにしてください : 1) スタイルマネージャーを開きます, 2)「Usercssとして」チェックボックスをONにします, 3)「新スタイルを作成」をクリックします"
+    "message": "<code>@preprocessor</code>を含むスタイルは、クラシックモードでは機能しません。エディタをUsercssモードにしてください : 1) スタイルマネージャを開きます, 2)「Usercssとして」チェックボックスをONにします, 3)「新スタイルを作成」をクリックします"
   },
   "importPreprocessorTitle": {
     "message": "@preprocessorの潜在的な問題"
@@ -568,7 +568,7 @@
     "message": "Usercssとして"
   },
   "manageNewUI": {
-    "message": "新しい管理UIレイアウト"
+    "message": "テーブル形式レイアウト"
   },
   "manageOnlyDisabled": {
     "message": "無効なスタイルのみ"
@@ -846,9 +846,6 @@
   "optionsAdvancedStyleViaXhr": {
     "message": "即時更新モード"
   },
-  "optionsAdvancedStyleViaXhrNote": {
-    "message": "閲覧時に、スタイルの指定されていないコンテンツが点滅するような場合に有効にしてください。これは、ダークテーマで特に目立つことがあります。\n\n技術的な原因は、Chrome/Chromium が拡張機能との非同期通信を遅延することです。これは（無意味なことが多いですが）ページのロード時間の短縮のために行われ、スタイルの適用を遅延する場合があります。これを回避するため（web拡張自体は同期通信APIを提供していないので）、Stylusは「非推奨」の XMLHttpRequest web API をスタイルの読み込みに使用するオプションを提供しています。サーバからページがダウンロードされている間に、リクエストは数ミリ秒で終了するため、悪影響はありません。\n\nそれでも、Chromium は、開発者ツールのコンソールに警告を出力します。 警告を右クリックして非表示にすると、以後は警告を表示しないようにすることができます。"
-  },
   "optionsBadgeDisabled": {
     "message": "無効にしたときの背景色"
   },
@@ -1025,7 +1022,7 @@
     "message": "アクションメニュー"
   },
   "popupOpenEditInPopup": {
-    "message": "（アドレスバーのない）シンプルなウィンドウを使用"
+    "message": "アドレスバーなしで…"
   },
   "popupOpenEditInWindow": {
     "message": "新しいウィンドウでエディタを開く"
@@ -1133,7 +1130,7 @@
     "message": "スタイルはインストールされますが、現在のサイトのURLには適用されません。"
   },
   "searchResultNotMatchingNote": {
-    "message": "このユーザースタイルの作者に、URLの追加について確認してみてください。\nあなた自身が、管理画面でこのスタイルを開いて編集することは可能です。\nしかし、このスタイルの自動更新は無効になることに注意してください。"
+    "message": "このユーザースタイルの作者に、URLを追加できないか確認してみてください。\n\nあなた自身が、スタイルマネージャでこのスタイルを開いて編集することは可能です。\nただし、そうすると、このスタイルの自動更新は無効になることに注意してください。"
   },
   "searchResultRating": {
     "message": "評価"

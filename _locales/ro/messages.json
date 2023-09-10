@@ -412,9 +412,6 @@
   "manageMaxTargets": {
     "message": "Numărul obiectelor la care se aplică"
   },
-  "manageNewUI": {
-    "message": "UI layout pentru mesajele noi"
-  },
   "manageOnlyDisabled": {
     "message": "Doar teme dezactivate"
   },
@@ -513,9 +510,6 @@
   },
   "optionsSubheading": {
     "message": "Mai multe opțiuni"
-  },
-  "optionsUpdateImportNote": {
-    "message": "Atunci când sunt importate teme din backup-uri din versiuni mai vechi sau din Stylish, verifică upate-urile manual pentru a fi sigur că toate temele sunt la zi."
   },
   "optionsUpdateInterval": {
     "message": "Intervalul de autoupdate în ore (0 pentru dezactivat)"
@@ -654,9 +648,6 @@
   },
   "styleBeautifyPreserveNewlines": {
     "message": "Menține linii noi"
-  },
-  "styleCancelEditLabel": {
-    "message": "Înapoi la manager"
   },
   "styleChangesNotSaved": {
     "message": "Ați modificat tema fără a o salva."

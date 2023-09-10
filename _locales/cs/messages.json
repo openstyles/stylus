@@ -472,9 +472,6 @@
   "manageNewStyleAsUsercss": {
     "message": "jako Usercss"
   },
-  "manageNewUI": {
-    "message": "Nové rozložení správy rozhraní"
-  },
   "manageOnlyDisabled": {
     "message": "Pouze vypnuté styly"
   },
@@ -621,9 +618,6 @@
   },
   "optionsSyncUrl": {
     "message": "URL adresa"
-  },
-  "optionsUpdateImportNote": {
-    "message": "Importujete-li zálohy stylů ze starší verze nebo z rozšíření Stylish, proveďte jednorázovou ruční kontrolu aktualizací ve správci stylů, aby byly všechny styly aktuální."
   },
   "optionsUpdateInterval": {
     "message": "Interval automatické aktualizace stylů v hodinách (0 = vypnuto)"
@@ -774,9 +768,6 @@
   },
   "styleBeautifyPreserveNewlines": {
     "message": "Zachovat nové řádky"
-  },
-  "styleCancelEditLabel": {
-    "message": "Zpět ke správě"
   },
   "styleChangesNotSaved": {
     "message": "Provedli jste změny tohoto stylu bez uložení."

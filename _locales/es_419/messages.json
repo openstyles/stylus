@@ -525,9 +525,6 @@
   "manageNewStyleAsUsercss": {
     "message": "como UserCSS"
   },
-  "manageNewUI": {
-    "message": "Nuevo diseño de la administración"
-  },
   "manageOnlyDisabled": {
     "message": "Solo estilos deshabilitados"
   },
@@ -789,9 +786,6 @@
   "optionsAdvancedStyleViaXhr": {
     "message": "Modo de inserción instantánea"
   },
-  "optionsAdvancedStyleViaXhrNote": {
-    "message": "Activa esta opción si aparecen y desaparecen rápidamente contenidos sin estilo al cargarse páginas (el efecto es más visible con temas oscuros).\n\nLa explicación técnica es que Chrome/Chromium pospone la comunicación asincrónica de las extensiones. Esta función intenta mejorar la velocidad de carga de las páginas, aunque no siempre es efectiva y puede causar que los estilos se apliquen con retraso. Para evitar este problema (ya que las extensiones del tipo WebExtensions no pueden usar una API sincrónica), Stylus ofrece esta opción para usar la API web XMLHttpRequest  sincrónica (en desuso) para obtener los estilos correspondientes. No debería causar problemas, ya que la petición se completa en solo unos milisegundos, mientras se carga la página del servidor.\n\nDe todos modos, Chromium mostrará una advertencia en la consola de herramientas de desarrollador. Para evitar que se muestren este tipo de advertencias en el futuro, haz clic con el botón derecho sobre una advertencia y selecciona la opción para ocultarla."
-  },
   "optionsBadgeDisabled": {
     "message": "Color de fondo cuando está deshabilitado"
   },
@@ -901,9 +895,6 @@
   "optionsSyncSyncNow": {
     "message": "Sincronizar ahora"
   },
-  "optionsUpdateImportNote": {
-    "message": "Al importar los respaldos de estilos desde una versión antigua o desde Stylish, comprueba una vez las actualizaciones manualmente en el administrador de estilos para asegurarte de que todos los estilos estén actualizados."
-  },
   "optionsUpdateInterval": {
     "message": "Intervalo de actualización automática en horas (especificar 0 para deshabilitar)"
   },
@@ -928,9 +919,6 @@
   "parseUsercssError": {
     "message": "Stylus no pudo interpretar el UserCSS:"
   },
-  "popupAutoResort": {
-    "message": "Al activar esta opción, se muestran los estilos en una ventana emergente"
-  },
   "popupBorders": {
     "message": "Añadir bordes blancos en los laterales"
   },
@@ -948,9 +936,6 @@
   },
   "popupMenuButtonTooltip": {
     "message": "Acciones"
-  },
-  "popupOpenEditInPopup": {
-    "message": "Usar ventana simple (en lugar de la barra de direcciones)"
   },
   "popupOpenEditInWindow": {
     "message": "Abrir editor en una nueva ventana"
@@ -1032,9 +1017,6 @@
   },
   "searchResultNotMatching": {
     "message": "El estilo se ha instalado, pero no es válido para la URL del sitio actual."
-  },
-  "searchResultNotMatchingNote": {
-    "message": "Intenta pedir al autor de este estilo de usuario que añada la URL.\n\nTambién puedes abrir el estilo en el administrador y editarlo tú mismo,\npero ten en cuenta que deshabilita las actualizaciones automáticas de\neste estilo."
   },
   "searchResultRating": {
     "message": "Valoración"
@@ -1119,9 +1101,6 @@
   },
   "styleBeautifyPreserveNewlines": {
     "message": "Conservar nuevas líneas"
-  },
-  "styleCancelEditLabel": {
-    "message": "Volver al administrador"
   },
   "styleChangesNotSaved": {
     "message": "Has realizado cambios en este estilo sin guardarlos."

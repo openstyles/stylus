@@ -574,9 +574,6 @@
   "manageNewStyleAsUsercss": {
     "message": "en tant que Usercss"
   },
-  "manageNewUI": {
-    "message": "Nouvelle disposition de l’UI de gestion"
-  },
   "manageOnlyDisabled": {
     "message": "Seulement les styles désactivés"
   },
@@ -959,9 +956,6 @@
   "optionsSyncUsername": {
     "message": "Nom d’utilisateur"
   },
-  "optionsUpdateImportNote": {
-    "message": "Quand vous importez des sauvegardes de style d’une ancienne version ou de Stylish, faites une vérification manuellement pour vous assurez que tous les styles sont à jour."
-  },
   "optionsUpdateInterval": {
     "message": "Intervalle de mise à jour automatique des styles utilisateur en heures (spécifier 0 pour désactiver)"
   },
@@ -986,9 +980,6 @@
   "parseUsercssError": {
     "message": "Stylus a échoué à parser le usercss :"
   },
-  "popupAutoResort": {
-    "message": "Retrier les styles dans la popup à chaque (dés)activation"
-  },
   "popupBorders": {
     "message": "Ajouter des bordures blanches sur les côtés"
   },
@@ -1001,14 +992,14 @@
   "popupHotkeysTooltip": {
     "message": "Cliquez pour voir les raccourcis clavier disponibles"
   },
+  "popupManageSiteStyles": {
+    "message": "Gérer les styles de ce site"
+  },
   "popupManageTooltip": {
     "message": "Maj-clic ou clic droit ouvre le gestionnaire avec les styles applicables au site courant."
   },
   "popupMenuButtonTooltip": {
     "message": "Actions"
-  },
-  "popupOpenEditInPopup": {
-    "message": "Utiliser une simple fenêtre (pas d'omnibox)"
   },
   "popupOpenEditInWindow": {
     "message": "Ouvrir l'éditeur dans une nouvelle fenêtre"
@@ -1106,9 +1097,6 @@
   "searchResultNotMatching": {
     "message": "Ce style est installé mais il ne s'applique pas au lien du site actuel."
   },
-  "searchResultNotMatchingNote": {
-    "message": "Essaye de demander l’auteur  pour ajouter le lien l'URL.\n\nVous pouvez aussi ouvrir le style dans le gestionnaire et l'éditer soit-même,\nmais soyez avertis que cela désactive les mises à jour automatiques pour ce style."
-  },
   "searchResultRating": {
     "message": "Note"
   },
@@ -1188,7 +1176,7 @@
     "message": "Conserver les sauts de ligne"
   },
   "styleCancelEditLabel": {
-    "message": "Retour à la gestion"
+    "message": "Retour à la gestion des styles"
   },
   "styleChangesNotSaved": {
     "message": "Vous avez apporté des modifications à ce style sans les enregistrer."
@@ -1204,6 +1192,18 @@
   },
   "styleFromMozillaFormatPrompt": {
     "message": "Coller le code au format Mozilla"
+  },
+  "styleInjectionImportance": {
+    "message": "Basculer l'importance du style"
+  },
+  "styleInjectionOrder": {
+    "message": "Ordre d'injection des styles"
+  },
+  "styleInjectionOrderHint": {
+    "message": "Glissez et déposez un style pour changer sa position. Les styles sont injectés séquentiellement dans l'ordre affiché ci-dessous, donc un style plus bas dans la liste peut primer sur ceux au-dessus."
+  },
+  "styleInjectionOrderHint_prio": {
+    "message": "Les styles importants affichés ci-dessous sont toujours injectés en dernier, donc ils peuvent écraser des styles nouvellement installés. Cliquez sur la marque d'un style pour basculer son importance."
   },
   "styleInstall": {
     "message": "Installer \"$stylename$\" dans Stylus ?",
@@ -1332,6 +1332,9 @@
       }
     }
   },
+  "syncErrorRelogin": {
+    "message": "Synchronisation échouée. Vous avez été déconnecté.\nEssayez de vous reconnecter dans les options de Stylus."
+  },
   "syncStorageErrorSaving": {
     "message": "La valeur ne peut pas être sauvegardée. Essayez de réduire la quantité de texte."
   },
@@ -1349,6 +1352,9 @@
   },
   "unreachableAMOHint": {
     "message": "Pour autoriser l’accès, ouvrir <about:config>, clic-droit sur la liste, cliquez sur « Nouvelle » puis « Valeur booléenne », coller <privacy.resistFingerprinting.block_mozAddonManager> et cliquer sur OK, <true>, OK, et rechargez la page <addons.mozilla.org>."
+  },
+  "unreachableCSP": {
+    "message": "Essayez d'activer \"Corrige CSP\" dans les options de Stylus."
   },
   "unreachableContentScript": {
     "message": "Impossible de communiquer avec la page. Essayez de recharger l’onglet."

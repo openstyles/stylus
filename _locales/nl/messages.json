@@ -578,7 +578,7 @@
     "message": "als Usercss"
   },
   "manageNewUI": {
-    "message": "Nieuwe indeling van beheerscherm"
+    "message": "Tabelindeling"
   },
   "manageOnlyDisabled": {
     "message": "Alleen uitgeschakelde stijlen"
@@ -857,7 +857,7 @@
     "message": "Directe-injectiemodus"
   },
   "optionsAdvancedStyleViaXhrNote": {
-    "message": "Schakel dit in als u knipperende inhoud zonder stijlen (‘FOUC’) ondervindt tijdens het browsen, wat met name bij donkere thema’s opvalt.\n\nDe technische reden is dat Chrome/Chromium asynchrone communicatie van extensies uitstelt, doorgaans om te proberen paginalaadsnelheden te verbeteren, waardoor stijlen mogelijk te laat worden toegepast. Om dit te omzeilen, en aangezien er voor webextensies geen synchrone API wordt aangeboden, biedt Stylus deze optie om de ‘verouderde’ synchrone XMLHttpRequest-web-API voor het ophalen van toepasbare stijlen te gebruiken. Er zouden geen nadelige effecten mogen zijn, omdat de aanvraag binnen enkele milliseconden wordt behandeld terwijl de pagina nog van de server wordt gedownload.\n\nNiettemin toont Chromium een waarschuwing in de console van devtools. Door met de rechtermuisknop op een waarschuwing te klikken en deze te verbergen, worden toekomstige waarschuwingen niet meer getoond."
+    "message": "Schakel dit in als u knipperende inhoud zonder stijlen (‘FOUC’) ondervindt tijdens het browsen, wat met name opvalt bij donkere thema’s tijdens het openen van een pagina.\n\nDeze optie gebruikt de ‘verouderde’ en intern uitgevoerde synchrone XMLHttpRequest om de achtergrondbuffer van de extensie op te vragen, d.w.z. het is geen netwerkaanvraag, dus de impact op de prestaties is verwaarloosbaar."
   },
   "optionsBadgeDisabled": {
     "message": "Achtergrondkleur wanneer uitgeschakeld"
@@ -1032,7 +1032,7 @@
     "message": "Actiemenu"
   },
   "popupOpenEditInPopup": {
-    "message": "Een eenvoudig venster gebruiken (geen omnibox)"
+    "message": "…zonder adresbalk"
   },
   "popupOpenEditInWindow": {
     "message": "Editor openen in nieuw venster"
@@ -1233,7 +1233,7 @@
     "message": "Nieuwe regels behouden"
   },
   "styleCancelEditLabel": {
-    "message": "Terug naar beheren"
+    "message": "Terug naar stijlbeheerder"
   },
   "styleChangesNotSaved": {
     "message": "U hebt wijzigingen in deze stijl aangebracht zonder op te slaan."
