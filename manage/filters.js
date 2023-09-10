@@ -20,12 +20,14 @@ const fltModePref = 'manage.searchMode';
 let elSearch, elSearchMode;
 
 router.watch({search: [fltSearch, fltMode]}, ([search, mode]) => {
-  if (!elSearch) initFilters();
+  const firstRun = !elSearch;
+  if (firstRun) initFilters();
   elSearch.value = search || '';
   if (mode || elSearchMode.value === 'url') {
     elSearchMode.value = mode || prefs.get(fltModePref);
   }
-  searchStyles();
+  if (firstRun) filterOnChange({forceRefilter: true});
+  else searchStyles();
 });
 
 function initFilters() {
@@ -122,8 +124,6 @@ function initFilters() {
     filterOnChange({forceRefilter: true});
     router.updateSearch({[fltSearch]: '', [fltMode]: ''});
   };
-
-  filterOnChange({forceRefilter: true});
 }
 
 function filterOnChange({target: el, forceRefilter, alreadySearched}) {

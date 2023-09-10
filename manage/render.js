@@ -330,7 +330,18 @@ async function initBadFavs() {
       else el.append(opt);
     }
     el.value = value;
-    if (init) hideOpts.call(el);
+    if (init) {
+      const d = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), 'value');
+      Object.defineProperty(el, 'value', {
+        get: () => d.get.call(el),
+        set: val => {
+          showOpts.call(el, {});
+          d.set.call(el, val);
+          el.dispatchEvent(new Event('input', {bubbles: true}));
+        },
+      });
+      hideOpts.call(el);
+    }
   };
 }
 
