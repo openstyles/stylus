@@ -307,41 +307,36 @@ async function initBadFavs() {
   const showOpts = function (evt) {
     if (evt.button || this[1]) return;
     const opts = this._opts;
-    const elems = [...opts.values()];
-    const i = elems.indexOf(opts.get(this.value));
+    const elems = Object.values(opts);
+    const i = elems.indexOf(opts[this.value]);
     this.style.width = this.offsetWidth + 'px';
     if (i > 0) this.prepend(...elems.slice(0, i));
     this.append(...elems.slice(i + 1));
   };
 
   window.fitSelectBox = (el, value, init) => {
-    const opts = el._opts || (el._opts = new Map());
+    const opts = el._opts || (el._opts = {});
     if (init) {
-      for (const o of el.options) opts.set(o.value, o);
+      for (const o of el.options) opts[o.value] = o;
       el.on('keydown', showOpts);
       el.on('mousedown', showOpts);
       el.on('blur', hideOpts);
       el.on('input', hideOpts);
-    }
-    if (typeof value !== 'string') value = `${value}`;
-    const opt = opts.get(value);
-    if (!opt.isConnected) {
-      if (el[0]) el[0].replaceWith(opt);
-      else el.append(opt);
-    }
-    el.value = value;
-    if (init) {
       const d = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), 'value');
       Object.defineProperty(el, 'value', {
-        get: () => d.get.call(el),
+        get: d.get,
         set: val => {
-          showOpts.call(el, {});
+          const opt = opts[typeof val === 'string' ? val : val = `${val}`];
+          if (!opt.isConnected) {
+            if (el[0]) el[0].replaceWith(opt);
+            else el.append(opt);
+          }
           d.set.call(el, val);
-          el.dispatchEvent(new Event('input', {bubbles: true}));
+          hideOpts.call(el, {});
         },
       });
-      hideOpts.call(el);
     }
+    el.value = value;
   };
 }
 

@@ -121,6 +121,9 @@ function initFilters() {
         }
       }
     }
+    if (elSearchMode.value === 'url') {
+      elSearchMode.value = prefs.get(fltModePref);
+    }
     filterOnChange({forceRefilter: true});
     router.updateSearch({[fltSearch]: '', [fltMode]: ''});
   };

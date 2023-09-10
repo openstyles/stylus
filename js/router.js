@@ -86,7 +86,8 @@ const router = {
     const u = new URL(location);
     const entries = typeof what === 'object' ? Object.entries(what) : [[what, value]];
     for (const [key, val] of entries) {
-      u.searchParams[val ? 'set' : 'delete'](key, val);
+      if (val) u.searchParams.set(key, val);
+      else u.searchParams.delete(key);
     }
     history.replaceState(history.state, null, `${u}`);
     router.update(true);
