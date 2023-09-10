@@ -349,16 +349,24 @@ const styleMan = (() => {
       return id;
     },
 
-    // using bind() to skip step-into when debugging
-
-    /** @returns {Promise<StyleObj>} */
-    addExclusion: addIncludeExclude.bind(null, 'exclusions'),
-    /** @returns {Promise<StyleObj>} */
-    addInclusion: addIncludeExclude.bind(null, 'inclusions'),
     /** @returns {Promise<?StyleObj>} */
-    removeExclusion: removeIncludeExclude.bind(null, 'exclusions'),
-    /** @returns {Promise<?StyleObj>} */
-    removeInclusion: removeIncludeExclude.bind(null, 'inclusions'),
+    async toggleOverride(id, rule, isInclusion, isAdd) {
+      if (ready.then) await ready;
+      const style = Object.assign({}, id2style(id));
+      const type = isInclusion ? 'inclusions' : 'exclusions';
+      let list = style[type];
+      if (isAdd) {
+        if (!list) list = style[type] = [];
+        else if (list.includes(rule)) throw new Error('The rule already exists');
+        list.push(rule);
+      } else if (list) {
+        const i = list.indexOf(rule);
+        if (i >= 0) list.splice(i, 1);
+      } else {
+        return;
+      }
+      return saveStyle(style, {reason: 'config'});
+    },
 
     async config(id, prop, value) {
       if (ready.then) await ready;
@@ -449,28 +457,6 @@ const styleMan = (() => {
         }
       }
     });
-  }
-
-  async function addIncludeExclude(type, id, rule) {
-    if (ready.then) await ready;
-    const style = Object.assign({}, id2style(id));
-    const list = style[type] || (style[type] = []);
-    if (list.includes(rule)) {
-      throw new Error('The rule already exists');
-    }
-    style[type] = list.concat([rule]);
-    return saveStyle(style, {reason: 'config'});
-  }
-
-  async function removeIncludeExclude(type, id, rule) {
-    if (ready.then) await ready;
-    const style = Object.assign({}, id2style(id));
-    const list = style[type];
-    if (!list || !list.includes(rule)) {
-      return;
-    }
-    style[type] = list.filter(r => r !== rule);
-    return saveStyle(style, {reason: 'config'});
   }
 
   function buildCacheForStyle(style) {
@@ -642,11 +628,13 @@ const styleMan = (() => {
     return res && style;
   }
 
+  function urlMatchExclusion(e) {
+    return compileExclusion(e).test(this.urlWithoutParams);
+  }
+
   function urlMatchStyle(query, style) {
-    if (
-      style.exclusions &&
-      style.exclusions.some(e => compileExclusion(e).test(query.urlWithoutParams))
-    ) {
+    let ovr;
+    if ((ovr = style.exclusions) && ovr.some(urlMatchExclusion, query)) {
       return 'excluded';
     }
     if (!style.enabled) {
@@ -655,10 +643,7 @@ const styleMan = (() => {
     if (!colorScheme.shouldIncludeStyle(style)) {
       return 'excludedScheme';
     }
-    if (
-      style.inclusions &&
-      style.inclusions.some(r => compileExclusion(r).test(query.urlWithoutParams))
-    ) {
+    if ((ovr = style.inclusions) && ovr.some(urlMatchExclusion, query)) {
       return 'included';
     }
     return true;

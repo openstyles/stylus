@@ -481,7 +481,7 @@
 
   function configure() {
     const styleEntry = $entry($resultEntry(this).result._styleId);
-    Events.configure.call(this, {target: styleEntry});
+    Events.configure.call(this, {}, styleEntry);
   }
 
   async function install() {

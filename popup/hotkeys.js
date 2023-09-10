@@ -6,6 +6,8 @@
 
 const hotkeys = (() => {
   const entries = document.getElementsByClassName('entry');
+  const container = $('#hotkey-info');
+  const {title} = container;
   let togglablesShown = true;
   let togglables = getTogglables();
   let enabled;
@@ -16,7 +18,7 @@ const hotkeys = (() => {
   return {
     setState(newState = !enabled) {
       if (!newState !== !enabled) {
-        window[newState ? 'on' : 'off']('keydown', onKeyDown);
+        window[newState ? 'on' : 'off']('keydown', onKeyDown, true);
         enabled = newState;
       }
     },
@@ -29,7 +31,11 @@ const hotkeys = (() => {
     }
     let entry;
     let {key, code, shiftKey} = event;
-
+    if (key === 'Escape' && !shiftKey && container.dataset.active) {
+      event.preventDefault();
+      hideInfo();
+      return;
+    }
     if (key >= '0' && key <= '9') {
       entry = entries[(Number(key) || 10) - 1];
     } else if (code >= 'Digit0' && code <= 'Digit9') {
@@ -48,8 +54,7 @@ const hotkeys = (() => {
     if (!entry) {
       return;
     }
-    const target = $(shiftKey ? '.style-edit-link' : 'input', entry);
-    target.dispatchEvent(new MouseEvent('click', {cancelable: true}));
+    $(shiftKey ? '.style-edit-link' : 'input', entry).click();
   }
 
   function getTogglables() {
@@ -92,28 +97,25 @@ const hotkeys = (() => {
     return results;
   }
 
+  function hideInfo() {
+    delete container.dataset.active;
+    document.body.style.height = '';
+    container.title = title;
+    window.on('resize', adjustInfoPosition);
+  }
+
   function initHotkeyInfo() {
-    const container = $('#hotkey-info');
-    let title;
     container.onclick = ({target}) => {
       if (target.localName === 'button') {
-        close();
+        hideInfo();
       } else if (!container.dataset.active) {
         open();
       }
     };
 
-    function close() {
-      delete container.dataset.active;
-      document.body.style.height = '';
-      container.title = title;
-      window.on('resize', adjustInfoPosition);
-    }
-
     function open() {
       window.off('resize', adjustInfoPosition);
       debounce.unregister(adjustInfoPosition);
-      title = container.title;
       container.title = '';
       container.style = '';
       container.dataset.active = true;

@@ -1,19 +1,17 @@
-/* global $ $$ $remove animateElement getEventKeyName moveFocus */// dom.js
+/* global $ $$ $remove getEventKeyName moveFocus */// dom.js
 /* global API */// msg.js
 /* global getActiveTab */// toolbox.js
 /* global resortEntries tabURL */// popup.js
 /* global t */// localization.js
 'use strict';
 
-const MODAL_SHOWN = 'data-display'; // attribute name
-
+const menu = $('#menu');
+const menuExclusions = [];
 const Events = {
-
-  async configure(event) {
-    const {styleId, styleIsUsercss} = getClickedStyleElement(event);
-    if (styleIsUsercss) {
+  async configure(event, entry) {
+    if (!this.target) {
       const [style] = await Promise.all([
-        API.styles.get(styleId),
+        API.styles.get(entry.styleId),
         require(['/popup/hotkeys']), /* global hotkeys */
         require(['/js/dlg/config-dialog']), /* global configDialog */
       ]);
@@ -24,62 +22,6 @@ const Events = {
       Events.openURLandHide.call(this, event);
     }
   },
-
-  copyContent(event) {
-    event.preventDefault();
-    const target = document.activeElement;
-    const message = $('.copy-message');
-    navigator.clipboard.writeText(target.textContent);
-    target.classList.add('copied');
-    message.classList.add('show-message');
-    setTimeout(() => {
-      target.classList.remove('copied');
-      message.classList.remove('show-message');
-    }, 1000);
-  },
-
-  delete(event) {
-    const entry = getClickedStyleElement(event);
-    const box = $('#confirm');
-    box.dataset.id = entry.styleId;
-    $('b', box).textContent = $('.style-name', entry).textContent;
-    Events.showModal(box, '[data-cmd=cancel]');
-  },
-
-  getExcludeRule(type) {
-    const u = new URL(tabURL);
-    return type === 'domain'
-      ? u.origin + '/*'
-      : escapeGlob(u.origin + u.pathname); // current page
-  },
-
-  async hideModal(box, {animate} = {}) {
-    window.off('keydown', box._onkeydown);
-    box._onkeydown = null;
-    if (animate) {
-      box.style.animationName = '';
-      await animateElement(box, 'lights-on');
-    }
-    box.removeAttribute(MODAL_SHOWN);
-  },
-
-  indicator(event) {
-    const entry = getClickedStyleElement(event);
-    const info = t.template.regexpProblemExplanation.cloneNode(true);
-    $remove('#' + info.id);
-    $$('a', info).forEach(el => (el.onclick = Events.openURLandHide));
-    $$('button', info).forEach(el => (el.onclick = closeExplanation));
-    entry.appendChild(info);
-  },
-
-  isStyleExcluded({exclusions}, type) {
-    if (!exclusions) {
-      return false;
-    }
-    const rule = Events.getExcludeRule(type);
-    return exclusions.includes(rule);
-  },
-
   maybeEdit(event) {
     if (!(
       event.button === 0 && (event.ctrlKey || event.metaKey) ||
@@ -96,25 +38,17 @@ const Events = {
       return;
     }
   },
-
-  name(event) {
-    $('input', this).dispatchEvent(new MouseEvent('click'));
+  async openEditor(event, entry) {
     event.preventDefault();
-  },
-
-  async openEditor(event, options) {
-    event.preventDefault();
-    await API.openEditor(options);
+    await API.openEditor(this.openEditorOpts || {id: entry.styleId});
     window.close();
   },
-
   async openManager(event) {
     event.preventDefault();
     const isSearch = tabURL && (event.shiftKey || event.button === 2 || event.detail === 'site');
     await API.openManage(isSearch ? {search: tabURL, searchMode: 'url'} : {});
     window.close();
   },
-
   async openURLandHide(event) {
     event.preventDefault();
     await API.openURL({
@@ -123,69 +57,121 @@ const Events = {
     });
     window.close();
   },
-
-  showModal(box, cancelButtonSelector) {
-    const oldBox = $(`[${MODAL_SHOWN}]`);
-    if (oldBox) box.style.animationName = 'none';
-    // '' would be fine but 'true' is backward-compatible with the existing userstyles
-    box.setAttribute(MODAL_SHOWN, 'true');
-    box._onkeydown = e => {
-      const key = getEventKeyName(e);
-      switch (key) {
-        case 'Tab':
-        case 'Shift-Tab':
-          e.preventDefault();
-          moveFocus(box, e.shiftKey ? -1 : 1);
-          break;
-        case 'Escape': {
-          e.preventDefault();
-          window.onkeydown = null;
-          $(cancelButtonSelector, box).click();
-          break;
-        }
-      }
-    };
-    window.on('keydown', box._onkeydown);
-    moveFocus(box, 0);
-    if (oldBox) Events.hideModal(oldBox);
-  },
-
-  async toggleState(event) {
-    // when fired on checkbox, prevent the parent label from seeing the event, see #501
-    event.stopPropagation();
-    await API.styles.toggle((getClickedStyleElement(event) || {}).styleId, this.checked);
-    resortEntries();
-  },
-
-  toggleExclude(event, type) {
-    const entry = getClickedStyleElement(event);
-    if (event.target.checked) {
-      API.styles.addExclusion(entry.styleMeta.id, Events.getExcludeRule(type));
-    } else {
-      API.styles.removeExclusion(entry.styleMeta.id, Events.getExcludeRule(type));
-    }
-  },
-
-  toggleMenu(event) {
-    const entry = getClickedStyleElement(event);
-    const menu = $('.menu', entry);
-    if (menu.hasAttribute(MODAL_SHOWN)) {
-      Events.hideModal(menu, {animate: true});
-    } else {
-      $('.menu-title', entry).textContent = $('.style-name', entry).textContent;
-      Events.showModal(menu, '.menu-close');
-    }
+  toggleUrlLink({type}) {
+    this.parentElement.classList.toggle('url()', type === 'mouseenter' || type === 'focus');
   },
 };
 
-function closeExplanation() {
-  $('#regexp-explanation').remove();
+const GlobalRoutes = {
+  '#menu [data-cmd]'() {
+    if (this.dataset.cmd === 'delete') {
+      if (menu.classList.toggle('delete')) return;
+      API.styles.delete(menu.styleId);
+    }
+    menuHide();
+  },
+  '.copy'(event) {
+    event.preventDefault();
+    const target = document.activeElement;
+    const message = $('.copy-message');
+    navigator.clipboard.writeText(target.textContent);
+    target.classList.add('copied');
+    message.classList.add('show-message');
+    setTimeout(() => {
+      target.classList.remove('copied');
+      message.classList.remove('show-message');
+    }, 1000);
+  },
+};
+
+const EntryRoutes = {
+  async input(event, entry) {
+    event.stopPropagation(); // preventing .style-name from double-processing the click
+    await API.styles.toggle(entry.styleId, this.checked);
+    resortEntries();
+  },
+  '.configure': Events.configure,
+  '.menu-button'(event, entry) {
+    if (!menuExclusions.length) menuInit();
+    const exc = entry.styleMeta.exclusions || [];
+    for (const x of menuExclusions) {
+      x.el.title = x.rule;
+      x.el.classList.toggle('enabled',
+        x.input.checked = exc.includes(x.rule));
+    }
+    menu.classList.remove('delete');
+    menu.styleId = entry.styleId;
+    menu.hidden = false;
+    window.on('keydown', menuOnKey);
+    $('header', menu).textContent = $('.style-name', entry).textContent;
+    moveFocus(menu, 0);
+  },
+  '.style-edit-link': Events.openEditor,
+  '.regexp-problem-indicator'(event, entry) {
+    const info = t.template.regexpProblemExplanation.cloneNode(true);
+    $remove('#' + info.id);
+    entry.appendChild(info);
+  },
+  '#regexp-explanation a': Events.openURLandHide,
+  '#regexp-explanation button'() {
+    $('#regexp-explanation').remove();
+  },
+};
+
+document.on('click', event => {
+  const {target} = event;
+  const entry = target.closest('.entry');
+  for (let map = entry ? EntryRoutes : GlobalRoutes; ; map = GlobalRoutes) {
+    const fn = map['.' + target.className] || map[target.localName];
+    if (fn) return fn.call(target, event, entry);
+    for (const selector in map) {
+      for (let el = target; el && el !== entry; el = el.parentElement) {
+        if (el.matches(selector)) {
+          map[selector].call(el, event, entry);
+          return;
+        }
+      }
+    }
+    if (map === GlobalRoutes) break;
+  }
+});
+
+function menuInit() {
+  const u = new URL(tabURL);
+  const onExclude = function () {
+    this.elWrapper.classList.toggle('enabled', this.checked);
+    API.styles.toggleOverride(menu.styleId, this.dataset.rule, false, this.checked);
+  };
+  for (const el of $$('[data-exclude]')) {
+    const type = el.dataset.exclude;
+    const input = $('input', el);
+    menuExclusions.push({
+      el,
+      input,
+      rule: input.dataset.rule = u.origin +
+        (type === 'domain' ? '/*' : u.pathname.replace(/\*/g, '\\*')),
+    });
+    input.onchange = onExclude;
+    input.elWrapper = el;
+  }
 }
 
-function escapeGlob(text) {
-  return text.replace(/\*/g, '\\*');
+function menuHide() {
+  menu.hidden = true;
+  window.off('keydown', menuOnKey);
 }
 
-function getClickedStyleElement(event) {
-  return event.target.closest('.entry');
+function menuOnKey(e) {
+  switch (getEventKeyName(e)) {
+    case 'Tab':
+    case 'Shift-Tab':
+      e.preventDefault();
+      moveFocus(menu, e.shiftKey ? -1 : 1);
+      break;
+    case 'Escape': {
+      e.preventDefault();
+      menuHide();
+      break;
+    }
+  }
 }

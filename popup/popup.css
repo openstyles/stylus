@@ -257,9 +257,8 @@ a.configure[target="_blank"] .i-config {
   font-weight: normal;
 }
 
-/* entry menu */
-.entry .menu {
-  display: none;
+#menu:not([hidden]) {
+  display: flex;
   position: fixed;
   top: 0;
   bottom: 0;
@@ -268,72 +267,69 @@ a.configure[target="_blank"] .i-config {
   align-items: center;
   justify-content: center;
   z-index: 2147483647;
-  box-sizing: border-box;
-  overflow: hidden;
   background-color: rgba(0, 0, 0, 0.4);
-  outline: none;
-  animation: lights-off .5s cubic-bezier(.03, .67, .08, .94);
-  animation-fill-mode: both;
 }
-.menu-title,
-#confirm > div > b {
-  padding-bottom: .5em;
+#menu > div {
+  min-width: 15em;
+  max-height: 80%;
+  min-height: 8em;
+  background-color: var(--bg);
+  border: solid 2px rgba(128, 128, 128, .5);
+}
+#menu > div > * {
+  padding: .75em 1em .5em;
+}
+#menu:not(.delete) main.delete,
+#menu.delete main:not(.delete) {
+  display: none;
+}
+#menu.delete > div,
+#menu.delete [data-cmd=delete] {
+  border-color: #c00;
+}
+#menu header {
+  font-weight: bold;
+  background: var(--c90);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-#confirm button[data-cmd="ok"]:not([data-focused-via-click]):focus {
+#menu.delete header {
+  background: rgba(255, 0, 0, .25);
+}
+#menu main > * {
+  display: block;
+}
+#menu main > :nth-child(n + 2) {
+  padding-top: .5em;
+}
+#menu [data-cmd="delete"]:not([data-focused-via-click]):focus {
   box-shadow: 0 0 0 1px red; /* Using box-shadow instead of the ugly outline in new Chrome */
 }
-.menu-items-wrapper {
-  width: 80%;
-  max-height: 80%;
-  min-height: 6em;
-  padding: 1em;
-  display: flex;
-  position: relative;
-  flex-direction: column;
-  background-color: var(--bg);
-  border: solid 2px rgba(0, 0, 0, 0.5);
+#menu .enabled {
+  color: var(--accent-1);
 }
-.menu-buttons-wrapper {
+#menu .disabled {
+  color: var(--c60);
+  cursor: help;
+}
+#menu footer {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1em 0 0;
+  padding-top: .25em;
+  padding-bottom: 1em;
 }
-.menu-buttons-wrapper button {
+#menu footer > * {
   margin: 0 .25em;
 }
-.menu-item {
-  display: flex;
-  border: none;
-  align-items: center;
-  padding: 3px 0;
-  background: none;
-  text-decoration: none;
-  flex: none;
-}
-.entry .menu-item > span {
-  margin: 1px 0 -1px;
-}
-.entry .menu-item:hover,
-.entry .menu-item:active {
-  background-color: var(--c95);
-  transition: background-color .25s;
+.non-windows #menu footer {
+  direction: rtl;
+  justify-content: flex-end;
 }
 .entry .menu-icon {
   width: 26px;
   flex-shrink: 0;
-}
-.entry .menu-icon > * {
-  display: block;
-  margin: 0 auto;
-}
-.entry .menu-item.disabled {
-  opacity: 0.5;
-  background-color: transparent;
-  cursor: help;
 }
 
 .regexp-problem-indicator {
@@ -617,94 +613,6 @@ html:not(.styles-last):not(.search-results-shown) .split-btn-pedal::after {
   border-top: 1px solid var(--fg);
 }
 
-/* confirm */
-
-#confirm {
-  align-items: center;
-  justify-content: center;
-  z-index: 2147483647;
-  display: none;
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0 !important;
-  box-sizing: border-box;
-  background-color: rgba(0, 0, 0, 0.4);
-}
-
-#confirm.lights-on,
-.menu.lights-on {
-  animation: lights-on .25s ease-in-out;
-  animation-fill-mode: both;
-}
-
-#confirm.lights-on,
-#confirm.lights-on > div,
-.menu.lights-on > div {
-  display: none;
-}
-
-#confirm[data-display=true],
-.menu[data-display=true] {
-  display: flex;
-}
-
-#confirm > div {
-  width: 80%;
-  max-height: 80%;
-  min-height: 6em;
-  padding: 1em;
-  background-color: var(--bg);
-  display: flex;
-  flex-direction: column;
-  border: solid 2px rgba(0, 0, 0, 0.5);
-}
-
-#confirm > div > *:not(:last-child) {
-  padding-bottom: .5em;
-}
-
-#confirm > div > div {
-  text-align: center;
-}
-
-.non-windows #confirm > div > div {
-  direction: rtl;
-  text-align: right;
-}
-
-#confirm > div {
-  width: 80%;
-  max-height: 80%;
-  min-height: 6em;
-  padding: 1em;
-  background-color: var(--bg);
-  display: flex;
-  flex-direction: column;
-  border: solid 2px rgba(0, 0, 0, 0.5);
-}
-
-#confirm > div > *:not(:last-child) {
-  padding-bottom: .5em;
-}
-
-#confirm > div > div {
-  text-align: center;
-}
-
-.non-windows #confirm > div > div {
-  direction: rtl;
-  text-align: right;
-}
-
-#confirm > button {
-  /* add a gap between buttons both for horizontal
-  or vertical (when the label is wide) layout */
-  margin: 0 .25em .25em 0;
-}
-
 .unreachable .entry:not(.frame) {
   opacity: .25;
 }
@@ -852,24 +760,6 @@ html:not(.styles-last):not(.search-results-shown) .split-btn-pedal::after {
 }
 
 /******************************************/
-
-@keyframes lights-off {
-  from {
-    background-color: transparent;
-  }
-  to {
-    background-color: rgba(0, 0, 0, 0.4);
-  }
-}
-
-@keyframes lights-on {
-  from {
-    background-color: rgba(0, 0, 0, 0.4);
-  }
-  to {
-    background-color: transparent;
-  }
-}
 
 @media (max-height: 130px) {
   #find-split {

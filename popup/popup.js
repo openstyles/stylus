@@ -11,6 +11,7 @@
   URLS
   capitalize
   clamp
+  debounce
   getActiveTab
   isEmptyObj
 */// toolbox.js
@@ -124,19 +125,6 @@ async function initPopup(frames) {
     window.close();
   };
 
-  $('#confirm').onclick = function (e) {
-    const {id} = this.dataset;
-    switch (e.target.dataset.cmd) {
-      case 'ok':
-        Events.hideModal(this, {animate: true});
-        API.styles.delete(Number(id));
-        break;
-      case 'cancel':
-        Events.showModal($('.menu', $entry(id)), '.menu-close');
-        break;
-    }
-  };
-
   for (const el of $$('link[media=print]')) {
     el.removeAttribute('media');
   }
@@ -194,7 +182,6 @@ function initUnreachable(isStore) {
     const renderToken = s => s[0] === '<'
       ? $create('a.copy', {
         textContent: s.slice(1, -1),
-        onclick: Events.copyContent,
         tabIndex: 0,
         title: t('copy'),
       })
@@ -231,13 +218,12 @@ function createWriterElement(frame, index) {
       : frameId
         ? isAboutBlank ? url : 'URL'
         : t('writeStyleForURL').replace(/ /g, '\u00a0'), // this&nbsp;URL
-    onclick: elFor.onclick = e => Events.openEditor(e, {'url-prefix': url}),
+    onclick: elFor.onclick = Events.openEditor,
+    openEditorOpts: {'url-prefix': url},
   });
   if (prefs.get('popup.breadcrumbs')) {
-    urlLink.onmouseenter =
-      urlLink.onfocus = () => urlLink.parentNode.classList.add('url()');
-    urlLink.onmouseleave =
-      urlLink.onblur = () => urlLink.parentNode.classList.remove('url()');
+    urlLink.onmouseenter = urlLink.onmouseleave =
+      urlLink.onfocus = urlLink.onblur = Events.toggleUrlLink;
   }
   targets.appendChild(urlLink);
 
@@ -254,7 +240,8 @@ function createWriterElement(frame, index) {
       href: 'edit.html?domain=' + encodeURIComponent(domain),
       textContent: t.breakWord(numParts > 2 ? domain.split('.')[0] : domain),
       title: `domain("${domain}")`,
-      onclick: e => Events.openEditor(e, {domain}),
+      onclick: Events.openEditor,
+      openEditorOpts: {domain},
     });
     domainLink.setAttribute('subdomain', numParts > 1 ? 'true' : '');
     targets.appendChild(domainLink);
@@ -328,83 +315,46 @@ function resortEntries(entries) {
   }
 }
 
-function createStyleElement(style) {
-  let entry = $entry(style);
-  if (!entry) {
+function createStyleElement(style, entry) {
+  if (entry) {
+    style = Object.assign(entry.styleMeta, style);
+  } else {
     entry = t.template.style.cloneNode(true);
     Object.assign(entry, {
       id: ENTRY_ID_PREFIX_RAW + style.id,
       styleId: style.id,
-      styleIsUsercss: Boolean(style.usercssData),
       onmousedown: Events.maybeEdit,
-      styleMeta: style,
     });
-    Object.assign($('input', entry), {
-      onclick: Events.toggleState,
-    });
-    Object.assign($('.style-edit-link', entry), {
-      onclick: e => Events.openEditor(e, {id: style.id}),
-    });
-    const styleName = $('.style-name', entry);
-    Object.assign(styleName, {
-      onclick: Events.name,
-    });
-    styleName.appendChild(document.createTextNode(' '));
-
-    const config = $('.configure', entry);
-    config.onclick = Events.configure;
-    if (!style.usercssData) {
-      if (style.updateUrl && style.updateUrl.includes('?') && style.url) {
-        config.href = style.url;
-        config.target = '_blank';
-        config.title = t('configureStyleOnHomepage');
-        $('i', config).className = 'i-external';
-      } else {
-        config.classList.add('hidden');
-      }
-    } else if (isEmptyObj(style.usercssData.vars)) {
-      config.classList.add('hidden');
-    }
-
-    $('.delete', entry).onclick = Events.delete;
-
-    const indicator = t.template.regexpProblemIndicator.cloneNode(true);
-    indicator.appendChild(document.createTextNode('!'));
-    indicator.onclick = Events.indicator;
-    $('.main-controls', entry).appendChild(indicator);
-
-    $('.menu-button', entry).onclick = Events.toggleMenu;
-    $('.menu-close', entry).onclick = Events.toggleMenu;
-
-    $('.exclude-by-domain-checkbox', entry).onchange = e => Events.toggleExclude(e, 'domain');
-    $('.exclude-by-url-checkbox', entry).onchange = e => Events.toggleExclude(e, 'url');
   }
-
-  style = Object.assign(entry.styleMeta, style);
-
-  entry.classList.toggle('disabled', !style.enabled);
-  entry.classList.toggle('enabled', style.enabled);
+  entry.styleMeta = style;
+  const cls = entry.classList;
+  cls.toggle('disabled', !style.enabled);
+  cls.toggle('enabled', style.enabled);
   $('input', entry).checked = style.enabled;
 
   const styleName = $('.style-name', entry);
   styleName.lastChild.textContent = style.customName || style.name;
-  setTimeout(() => {
+  debounce(() => {
     styleName.title =
-      entry.styleMeta.sloppy ? t('styleNotAppliedRegexpProblemTooltip') :
-      entry.styleMeta.excludedScheme ? t(`styleNotAppliedScheme${capitalize(entry.styleMeta.preferScheme)}`) :
+      style.sloppy ? t('styleNotAppliedRegexpProblemTooltip') :
+      style.excludedScheme ? t(`styleNotAppliedScheme${capitalize(style.preferScheme)}`) :
       styleName.scrollWidth > styleName.clientWidth + 1 ? styleName.textContent :
       '';
   });
 
-  entry.classList.toggle('force-applied', style.included);
-  entry.classList.toggle('not-applied', style.excluded || style.sloppy || style.excludedScheme);
-  entry.classList.toggle('regexp-partial', style.sloppy);
+  const UCD = style.usercssData;
+  const cfg = $('.configure', entry);
+  const cfgUrl = UCD ? '#' : style.url;
+  cfg.hidden = UCD ? isEmptyObj(UCD.vars) : !style.url || !`${style.updateUrl}`.includes('?');
+  if (!cfg.hidden && cfg.href !== cfgUrl) {
+    const el = t.template[UCD ? 'config' : 'configExternal'].cloneNode(true);
+    el.href = cfgUrl;
+    cfg.replaceWith(el);
+  }
 
-  $('.exclude-by-domain-checkbox', entry).checked = Events.isStyleExcluded(style, 'domain');
-  $('.exclude-by-url-checkbox', entry).checked = Events.isStyleExcluded(style, 'url');
-
-  $('.exclude-by-domain', entry).title = Events.getExcludeRule('domain');
-  $('.exclude-by-url', entry).title = Events.getExcludeRule('url');
+  cls.toggle('force-applied', style.included);
+  cls.toggle('not-applied', style.excluded || style.sloppy || style.excludedScheme);
+  cls.toggle('regexp-partial', style.sloppy);
 
   const {frameUrl} = style;
   if (frameUrl) {
@@ -413,17 +363,18 @@ function createStyleElement(style) {
     frameEl.title = frameUrl;
     frameEl.onmousedown = Events.maybeEdit;
   }
-  entry.classList.toggle('frame', Boolean(frameUrl));
+  cls.toggle('frame', Boolean(frameUrl));
 
   return entry;
 }
 
 async function handleUpdate({style, reason}) {
-  if (reason !== 'toggle' || !$entry(style)) {
+  const entry = $entry(style);
+  if (reason !== 'toggle' || !entry) {
     style = await getStyleDataMerged(tabURL, style.id);
     if (!style) return;
   }
-  const el = createStyleElement(style);
+  const el = createStyleElement(style, entry);
   if (!el.parentNode) {
     installed.appendChild(el);
     blockPopup(false);

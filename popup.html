@@ -13,13 +13,12 @@
       <div class="entry-content">
         <div class="main-controls">
           <label class="style-name">
-            <input type=checkbox>
+            <input type=checkbox>&nbsp;
           </label>
+          <div class="regexp-problem-indicator" i18n="title:styleRegexpProblemTooltip">!</div>
         </div>
         <div class="actions">
-          <a class="configure" i18n="title:configureStyle" tabindex="0">
-            <i class=i-config></i>
-          </a>
+          <a class="configure"></a>
           <a class="style-edit-link" href="edit.html" i18n="title:editStyleLabel">
             <i class=i-edit></i>
           </a>
@@ -31,24 +30,16 @@
     </div>
   </template>
 
-  <template data-id="menu">
-    <div class="menu">
-      <div class="menu-items-wrapper">
-        <b class="menu-title"></b>
-        <label class="menu-item exclude-by-domain">
-          <input type="checkbox" class="exclude-by-domain-checkbox">
-          <span i18n="excludeStyleByDomainLabel"></span>
-        </label>
-        <label class="menu-item exclude-by-url">
-          <input type="checkbox" class="exclude-by-url-checkbox">
-          <span i18n="excludeStyleByUrlLabel"></span>
-        </label>
-        <div class="menu-buttons-wrapper">
-          <button class="delete" i18n="deleteStyleLabel"></button>
-          <button class="menu-close" i18n="confirmClose"></button>
-        </div>
-      </div>
-    </div>
+  <template data-id="config">
+    <a class="configure" i18n="title:configureStyle" tabindex="0">
+      <i class="i-config"></i>
+    </a>
+  </template>
+
+  <template data-id="configExternal">
+    <a class="configure" i18n="title:configureStyleOnHomepage" target="_blank">
+      <i class="i-external"></i>
+    </a>
   </template>
 
   <template data-id="writeStyle">
@@ -57,10 +48,6 @@
 
   <template data-id="noStyles">
     <div id="no-styles" i18n="noStylesForSite"></div>
-  </template>
-
-  <template data-id="regexpProblemIndicator">
-    <div class="regexp-problem-indicator" i18n="title:styleRegexpProblemTooltip"></div>
   </template>
 
   <template data-id="regexpProblemExplanation">
@@ -108,14 +95,20 @@
 
 <body id="stylus-popup">
 
-  <div id="confirm">
+  <div id="menu" hidden>
     <div>
-      <b>Style's Name</b>
-      <span i18n="deleteStyleConfirm"></span>
-      <div>
-        <button i18n="confirmDelete" data-cmd="ok"></button>
-        <button i18n="confirmCancel" data-cmd="cancel"></button>
-      </div>
+      <header>title</header>
+      <main>
+        <label data-exclude="domain" i18n="+excludeStyleByDomainLabel"><input type="checkbox"></label>
+        <label data-exclude="url" i18n="+excludeStyleByUrlLabel"><input type="checkbox"></label>
+      </main>
+      <main class="delete">
+        <span i18n="deleteStyleConfirm"></span>
+      </main>
+      <footer>
+        <button data-cmd="delete" i18n="confirmDelete"></button>
+        <button data-cmd="cancel" i18n="confirmClose"></button>
+      </footer>
     </div>
   </div>
 
