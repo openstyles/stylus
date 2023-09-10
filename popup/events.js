@@ -138,21 +138,15 @@ document.on('click', event => {
 
 function menuInit() {
   const u = new URL(tabURL);
-  const onExclude = function () {
-    this.elWrapper.classList.toggle('enabled', this.checked);
-    API.styles.toggleOverride(menu.styleId, this.dataset.rule, false, this.checked);
-  };
   for (const el of $$('[data-exclude]')) {
-    const type = el.dataset.exclude;
     const input = $('input', el);
-    menuExclusions.push({
-      el,
-      input,
-      rule: input.dataset.rule = u.origin +
-        (type === 'domain' ? '/*' : u.pathname.replace(/\*/g, '\\*')),
-    });
-    input.onchange = onExclude;
-    input.elWrapper = el;
+    const rule = u.origin +
+      (el.dataset.exclude === 'domain' ? '/*' : u.pathname.replace(/\*/g, '\\*'));
+    menuExclusions.push({el, input, rule});
+    input.onchange = () => {
+      el.classList.toggle('enabled', input.checked);
+      API.styles.toggleOverride(menu.styleId, rule, false, input.checked);
+    };
   }
 }
 
