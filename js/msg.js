@@ -178,15 +178,15 @@
       const bg = getExtBg() ||
         chrome.tabs && await browser.runtime.getBackgroundPage().catch(() => {});
       const message = {method: 'invokeAPI', path, args};
-      let res;
+      let res, tab;
       // content scripts, probably private tabs, and our extension tab during Chrome startup
       if (!bg || !bg.msg || !bg.msg.ready && await bg.bgReady.all && false) {
         res = bgReadying ? sendRetry(message) : msg.send(message);
-      } else {
+      } else if (!NEEDS_TAB_IN_SENDER.includes(path.join('.')) || (tab = await getOwnTab())) {
         res = deepCopy(await bg.msg._execute(TARGETS.extension, message, {
           // Using a fake id for our Options frame as we want to fetch styles early
           frameId: window === top ? 0 : 1,
-          tab: NEEDS_TAB_IN_SENDER.includes(path.join('.')) && await getOwnTab(),
+          tab: tab || false,
           url: location.href,
         }));
       }
