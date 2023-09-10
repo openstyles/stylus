@@ -1,5 +1,5 @@
 /* global API */// msg.js
-/* global RX_META deepEqual isEmptyObj tryJSONparse */// toolbox.js
+/* global RX_META deepEqual isEmptyObj */// toolbox.js
 /* global changeQueue */// manage.js
 /* global chromeSync */// storage-util.js
 /* global prefs */
@@ -90,7 +90,7 @@ function importFromFile({fileTypeFilter, file} = {}) {
           if (maybeUsercss) {
             messageBoxProxy.alert(t('dragDropUsercssTabstrip'));
           } else {
-            importFromString(text).then(resolve);
+            importFromString(text).then(resolve).catch(err => messageBoxProxy.alert(err.message));
           }
         };
         fReader.readAsText(file, 'utf-8');
@@ -101,7 +101,7 @@ function importFromFile({fileTypeFilter, file} = {}) {
 
 async function importFromString(jsonString) {
   await require(['/js/sections-util']); /* global styleJSONseemsValid styleSectionsEqual */
-  const json = tryJSONparse(jsonString);
+  const json = JSON.parse(jsonString);
   const oldStyles = Array.isArray(json) && json.length ? await API.styles.getAll() : [];
   const oldStylesById = new Map(oldStyles.map(style => [style.id, style]));
   const oldStylesByUuid = new Map(oldStyles.map(style => [style._id, style]));
