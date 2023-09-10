@@ -358,7 +358,6 @@ function createStyleElement(style) {
         config.href = style.url;
         config.target = '_blank';
         config.title = t('configureStyleOnHomepage');
-        config._sendMessage = {method: 'openSettings'};
         $('i', config).className = 'i-external';
       } else {
         config.classList.add('hidden');

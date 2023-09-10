@@ -103,32 +103,7 @@ addAPI(/** @namespace API */ {
     return activateTab(tab); // activateTab unminimizes the window
   },
 
-  /**
-   * Same as openURL, the only extra prop in `opts` is `message` - it'll be sent
-   * when the tab is ready, which is needed in the popup, otherwise another
-   * extension could force the tab to open in foreground thus auto-closing the
-   * popup (in Chrome at least) and preventing the sendMessage code from running
-   * @returns {Promise<chrome.tabs.Tab>}
-   */
-  async openURL(opts) {
-    const tab = await openURL(opts);
-    if (opts.message) {
-      await onTabReady(tab);
-      await msg.sendTab(tab.id, opts.message);
-    }
-    return tab;
-    function onTabReady(tab) {
-      return new Promise((resolve, reject) =>
-        setTimeout(function ping(numTries = 10, delay = 100) {
-          msg.sendTab(tab.id, {method: 'ping'})
-            .catch(() => false)
-            .then(pong => pong
-              ? resolve(tab)
-              : numTries && setTimeout(ping, delay, numTries - 1, delay * 1.5) ||
-                reject('timeout'));
-        }));
-    }
-  },
+  openURL,
 
   prefs: {
     getValues: () => prefs.__values, // will be deepCopy'd by apiHandler

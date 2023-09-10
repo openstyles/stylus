@@ -120,7 +120,6 @@ const Events = {
     await API.openURL({
       url: this.href || this.dataset.href,
       index: (await getActiveTab()).index + 1,
-      message: this._sendMessage,
     });
     window.close();
   },
