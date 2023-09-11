@@ -5,7 +5,7 @@
 /**
  * <tag i18n="id"> - like el.prepend() inserts the text as the first node
  * <tag i18n="+id"> - like el.append() inserts the text as the last node
- * <tag i18n="html:id"> - sets innerHTML (sanitized)
+ * <tag i18n="html:id">, <tag i18n="+html:id"> - ditto for innerHTML (sanitized)
  * <tag i18n="title: id"> - creates an attribute `title`, spaces are ignored
  * <tag i18n="id, +id2, title:id3, placeholder:id4, data-foo:id5">
  */
@@ -53,26 +53,28 @@ Object.assign(t, {
       const attr = node.getAttribute('i18n');
       if (!attr) continue;
       for (const part of attr.split(',')) {
-        let toInsert, before;
+        let toInsert, first;
         let [type, value] = part.trim().split(/\s*:\s*/);
         if (!value) [type, value] = type.split(/(\w+)/);
         value = t(value);
         switch (type) {
           case '':
-            before = node.firstChild;
+            first = true;
             // fallthrough
           case '+':
             toInsert = t.createText(value);
             break;
-          case 'html': {
+          case 'html':
+            first = true;
+            // fallthrough
+          case '+html':
             toInsert = t.createHtml(value);
             break;
-          }
           default:
             node.setAttribute(type, value);
         }
         if (toInsert) {
-          node.insertBefore(toInsert, before || null);
+          node.insertBefore(toInsert, first && node.firstChild);
         }
       }
       node.removeAttribute('i18n');

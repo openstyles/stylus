@@ -158,7 +158,7 @@
 
 .non-windows #message-box-buttons > :nth-child(1),
 #message-box-buttons > :nth-child(n + 2) {
-  margin-left: .375rem;
+  margin-left: .5rem;
 }
 
 /* popup */

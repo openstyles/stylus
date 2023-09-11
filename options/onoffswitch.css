@@ -9,8 +9,7 @@
   --slider-color-on: hsl(180, 50%, 60%, .3);
 }
 .slider {
-  --width: calc(var(
-  --value-cell-w) * .6);
+  --width: 24px;
   --knob: 15px;
   --pad: 3px;
   -webkit-appearance: none;
@@ -27,7 +26,6 @@
   display: inline-flex;
   align-items: center;
   color: var(--bg);
-  margin-left: calc(-.5 * var(--pad));
 }
 .slider::after {
   content: "";

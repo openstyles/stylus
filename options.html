@@ -211,7 +211,12 @@
         <h1 i18n="styleEditor"></h1>
         <div class="items swap">
           <label>
-            <span i18n="popupOpenEditInWindow, title:popupOpenEditInWindowTooltip"></span>
+            <span i18n="popupOpenEditInWindow">
+              <a i18n="title:popupOpenEditInWindowTooltip"
+                 data-cmd="note" class="icon" tabindex="0">
+                <i class="i-info"></i>
+              </a>
+            </span>
             <input type="checkbox" id="openEditInWindow" class="slider">
           </label>
           <label show-if="openEditInWindow">
@@ -269,8 +274,7 @@
             <input type="checkbox" id="styleViaXhr" class="slider">
           </label>
           <label>
-            <span>
-              <span i18n="html:optionsAdvancedPatchCsp"></span>
+            <span i18n="html:optionsAdvancedPatchCsp">
               <a i18n="title:optionsAdvancedPatchCspNote"
                  data-cmd="note" class=icon tabindex="0">
                 <i class=i-info></i>

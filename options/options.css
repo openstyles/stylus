@@ -4,7 +4,7 @@ html {
   justify-content: center;
   height: 100vh;
   background: none;
-  --value-cell-w: 4rem;
+  --value-cell-w: 53px; /* 48px for three img in `iconset` + padding */
 }
 
 body {
@@ -156,13 +156,8 @@ label {
   order: 2;
   margin-right: 0;
 }
-.items.swap input[type=color] {
-  --width: calc(var(
-  --value-cell-w) * .6);
-  width: var(--width);
-}
 .items.swap input:not([type=number]):not([type=radio]) {
-  margin-right: calc(var(--value-cell-w) - var(--width) - .75rem);
+  margin-right: calc(var(--value-cell-w) - var(--width));
 }
 .radio-wrapper + span {
   margin: 0 calc(3 * 16px - var(--value-cell-w) + 5px) 0 -2px;
@@ -173,7 +168,6 @@ input[type="number"] {
   text-align: right;
   border: none;
   padding: 0;
-  margin-left: -1em;
 }
 input[type="color"] {
   width: var(--value-cell-w);
@@ -196,10 +190,17 @@ input[type="color"]::-moz-color-swatch {
 input[type="color"]::-webkit-color-swatch {
   border: none;
 }
-
 input[type=time] {
   margin: 0 .5em;
   max-width: 7em; /* TODO: remove when strict_min_version >= 57 */
+}
+.slider,
+input[type=color] {
+  --width: calc(var(--value-cell-w) * .75);
+  width: var(--width);
+}
+.slider {
+  margin-left: calc(-.25 * var(--pad));
 }
 
 #actions {

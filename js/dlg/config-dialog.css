@@ -1,5 +1,6 @@
 :root {
   --value-cell-w: 60px;
+  --colorview-swatch: transparent;
 }
 
 .config-dialog {
@@ -48,14 +49,9 @@
   padding: .75em 0;
   align-items: center;
 }
-#message-box[data-num^=".........."] .config-body label {
-  padding: .5em 0;
-}
-#message-box[data-num^="..............."] .config-body label {
-  padding: .35em 0;
-}
-#message-box[data-num^="...................."] .config-body label {
-  padding: .2em 0;
+#message-box .config-body label {
+  padding: calc(.75em * (1 - var(--num) / 30)) 0; /* old browsers */
+  padding: calc(.75em * clamp(.2, 1 - (var(--num) - 5) / 30, 1)) 0; /* modern browsers */
 }
 
 .config-body .select-wrapper {
@@ -104,6 +100,10 @@
 
 .config-body input[type="text"] {
   padding-left: 0.25em;
+}
+
+.config-body .slider {
+  --width: calc(var(--value-cell-w) - var(--pad));
 }
 
 .config-name {

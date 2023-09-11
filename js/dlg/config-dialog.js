@@ -84,7 +84,7 @@ async function configDialog(style) {
       adjustSizeForPopup(box);
     }
     box.on('change', onchange);
-    box.dataset.num = '.'.repeat(vars.length);
+    box.style.setProperty('--num', vars.length);
     buttons.save = $('[data-cmd="save"]', box);
     buttons.default = $('[data-cmd="default"]', box);
     buttons.close = $('[data-cmd="close"]', box);
