@@ -1,7 +1,7 @@
 .slider {
   --width: 24px;
-  --knob: 15px;
-  --pad: 3px;
+  --knob: 12px;
+  --pad: 0px;
   --color-off: hsla(0, 0%, 50%, .35);
   --color-on: hsla(180, 50%, 40%, .33);
   --shadow-hsl: 180, 50%, 10%;
@@ -14,10 +14,13 @@
   height: calc(var(--knob) - 2 * var(--pad));
   border-radius: var(--knob);
   background: var(--color-off);
-  box-shadow: inset 1px 1px 2px hsla(var(--shadow-hsl), .5);
   transition: box-shadow .2s;
   display: inline-flex;
   align-items: center;
+}
+.slider,
+.slider:focus {
+  box-shadow: inset 1px 1px 2px hsla(var(--shadow-hsl), .5);
 }
 .slider::after {
   content: "";

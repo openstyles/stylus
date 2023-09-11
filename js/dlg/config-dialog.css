@@ -103,7 +103,7 @@
 }
 
 .config-body .slider {
-  --width: calc(var(--value-cell-w) - var(--pad));
+  --width: 40px;
 }
 
 .config-name {
