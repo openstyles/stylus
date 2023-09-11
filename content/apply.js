@@ -61,7 +61,7 @@
   // FIXME: move this to background page when following bugs are fixed:
   // https://bugzil.la/1587723, https://crbug.com/968651
   const mqDark = !isFrame && matchMedia('(prefers-color-scheme: dark)');
-  if (mqDark) mqDark.onchange = e => API.colorScheme.updateSystemPreferDark(e.matches);
+  if (mqDark) mqDark.onchange = e => API.info.set({preferDark: e.matches});
 
   // Declare all vars before init() or it'll throw due to "temporal dead zone" of const/let
   init();

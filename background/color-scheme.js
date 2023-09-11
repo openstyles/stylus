@@ -45,9 +45,8 @@ const colorScheme = (() => {
         !SCHEMES.includes(ps) ||
         isDarkNow === (ps === 'dark');
     },
-    updateSystemPreferDark(val) {
+    setSystem(val) {
       update('system', val);
-      return true;
     },
   };
 

@@ -1,5 +1,6 @@
-/* global $ */// dom.js
+/* global $ $create */// dom.js
 /* global API msg */// msg.js
+/* global FIREFOX */// toolbox.js
 'use strict';
 
 /**
@@ -11,7 +12,10 @@
  * and not even a problem in the most popular case of using system dark/light mode.
  */
 
-API.colorScheme.isDark().then(isDark => {
+(async () => {
+  let isDark, isVivaldi;
+  if (window === top) ({isDark, isVivaldi} = await API.info.get());
+  else isDark = parent.document.documentElement.dataset.uiTheme === 'dark';
   const ON = 'screen';
   const OFF = 'not all';
   const map = {[ON]: true, [OFF]: false};
@@ -22,6 +26,14 @@ API.colorScheme.isDark().then(isDark => {
       toggleDarkStyles();
     }
   });
+  // Add favicon in FF and Vivaldi
+  if (window === top && (FIREFOX || isVivaldi) && location.pathname !== '/popup.html') {
+    document.head.append(...[32, 16].map(size => $create('link', {
+      rel: 'icon',
+      href: `/images/icon/${isDark ? '' : 'light/'}${size}.png`,
+      sizes: size + 'x' + size,
+    })));
+  }
   function toggleDarkStyles() {
     $.root.dataset.uiTheme = isDark ? 'dark' : 'light';
     for (const sheet of document.styleSheets) {
@@ -32,4 +44,4 @@ API.colorScheme.isDark().then(isDark => {
       }
     }
   }
-});
+})();

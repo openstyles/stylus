@@ -1,5 +1,5 @@
 /* global API msg */// msg.js
-/* global addAPI bgReady */// common.js
+/* global addAPI bgReady detectVivaldi isVivaldi */// common.js
 /* global createWorker */// worker-util.js
 /* global prefs */
 /* global styleMan */
@@ -31,13 +31,29 @@ addAPI(/** @namespace API */ {
     },
   }))(),
 
+  info: {
+    async get() {
+      let tab;
+      return {
+        isDark: colorScheme.isDark(),
+        isVivaldi: isVivaldi != null ? isVivaldi
+          : ((tab = (this.sender || {}).tab))
+            ? !!(tab.extData || tab.vivExtData)
+            : await detectVivaldi(),
+      };
+    },
+    set(info) {
+      let v;
+      if ((v = info.preferDark)) colorScheme.setSystem(v);
+    },
+  },
+
   styles: styleMan,
   sync: syncMan,
   updater: updateMan,
   usercss: usercssMan,
   uso: usoApi,
   usw: uswApi,
-  colorScheme,
   /** @type {BackgroundWorker} */
   worker: createWorker({url: '/background/background-worker'}),
 

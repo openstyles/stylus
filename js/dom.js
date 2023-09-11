@@ -1,4 +1,4 @@
-/* global FIREFOX UA */// toolbox.js
+/* global UA */// toolbox.js
 /* global prefs */
 'use strict';
 
@@ -471,16 +471,6 @@ prefs.ready.then(() => {
     });
     prefs.ready.then(() => dom.setHWProp(prefs.get(HWprefId)));
     lazyScripts.push('/js/header-resizer');
-  }
-  // add favicon in FF
-  if (FIREFOX) {
-    for (const size of [38, 32, 19, 16]) {
-      document.head.appendChild($create('link', {
-        rel: 'icon',
-        href: `/images/icon/${size}.png`,
-        sizes: size + 'x' + size,
-      }));
-    }
   }
   window.on('load', () => require(lazyScripts), {once: true});
 })();

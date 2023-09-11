@@ -1,4 +1,5 @@
 /* global API */// msg.js
+/* global getActiveTab */// toolbox.js
 'use strict';
 
 /**
@@ -89,4 +90,13 @@ function createCache({size = 1000, onDeleted} = {}) {
       return map.size;
     },
   };
+}
+
+/* exported isVivaldi */
+let isVivaldi;
+/* exported detectVivaldi */
+async function detectVivaldi() {
+  // Note that modern Vivaldi isn't exposed in `navigator.userAgent` but it adds `extData` to tabs
+  const tab = await getActiveTab() || (await browser.tabs.query({}))[0];
+  return (isVivaldi = tab && !!(tab.extData || tab.vivExtData));
 }
