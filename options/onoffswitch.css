@@ -42,7 +42,7 @@
   background: var(--accent-2);
 }
 .slider:hover {
-  box-shadow: inset 1px 1px 3px hsla(var(--shadow-hsl));
+  box-shadow: inset 1px 1px 2px hsla(var(--shadow-hsl), .8);
 }
 .slider:focus {
   position: relative;

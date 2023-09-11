@@ -234,14 +234,10 @@
         <h1 i18n="styleManager"></h1>
         <div class="items swap">
           <label>
-            <span i18n="manageMinColumnWidth" data-clickable="9999" class="no-stretch"></span>
-            <input id="manage.minColumnWidth" type="number" min="300" max="9999">
-          </label>
-          <label>
             <span i18n="manageNewUI"></span>
             <input type="checkbox" id="manage.newUI" class="slider">
           </label>
-          <label>
+          <label show-if="manage.newUI" id="favs">
             <span i18n="manageFavicons">
               <a i18n="title:manageFaviconsHelp"
                  data-cmd="note" class=icon tabindex="0">
@@ -250,13 +246,17 @@
             </span>
             <input type="checkbox" id="manage.newUI.favicons" class="slider">
           </label>
-          <label>
+          <label show-if="manage.newUI.favicons">
             <span i18n="manageFaviconsGray"></span>
             <input type="checkbox" id="manage.newUI.faviconsGray" class="slider">
           </label>
-          <label>
+          <label show-if="manage.newUI">
             <span i18n="manageMaxTargets"></span>
             <input id="manage.newUI.targets" type="number" min="0" max="99">
+          </label>
+          <label show-if="manage.newUI">
+            <span i18n="manageMinColumnWidth" data-clickable="9999" class="no-stretch"></span>
+            <input id="manage.minColumnWidth" type="number" min="300" max="9999">
           </label>
         </div>
       </div>

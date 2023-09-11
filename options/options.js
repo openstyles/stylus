@@ -124,7 +124,7 @@ function enforceInputRange(element) {
 
 function toggleShowIf(id, val) {
   for (const el of $$(`[show-if="${id}"]`)) {
-    el.classList.toggle('hidden', !val);
+    el.classList.toggle('disabled', !val);
   }
 }
 

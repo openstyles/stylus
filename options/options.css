@@ -202,6 +202,12 @@ input[type=color] {
   margin-left: calc(-.25 * var(--pad));
 }
 
+label.disabled,
+#favs.disabled + label {
+  opacity: .5;
+  filter: grayscale(1);
+}
+
 #actions {
   justify-content: center;
   padding: .5em 1em 1em;
@@ -227,7 +233,7 @@ a.icon > i {
   pointer-events: none;
   font-size: 16px;
   color: var(--c40);
-  vertical-align: sub;
+  vertical-align: text-bottom;
 }
 
 a.icon:hover > i {
