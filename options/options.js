@@ -60,31 +60,44 @@ $$('[data-clickable]').forEach(el => {
   el.firstChild.replaceWith(...parts);
 });
 
-function customizeHotkeys() {
+async function customizeHotkeys() {
+  const isMac = (await browser.runtime.getPlatformInfo()).os === 'mac';
+  const CTRL = isMac ? 'metaKey' : 'ctrlKey';
+  const SKIP = ['Control', 'Alt', 'Shift', 'Meta', 'CapsLock', 'Tab', 'Escape', 'OS'];
   messageBoxProxy.show({
     title: t('shortcutsNote'),
     contents: t.template.shortcutsFF.cloneNode(true),
     className: 'center-dialog pre-line',
     buttons: [t('confirmClose')],
     onshow(box) {
-      box.oninput = onInput;
+      for (const el of $$('input', box)) el.onkeydown = onInput;
       setupLivePrefs($$('input', box).map(el => el.id));
     },
   });
-  async function onInput({target: el}) {
+  async function onInput(e) {
+    if (SKIP.includes(e.key)) return;
+    e.preventDefault();
+    const mod =
+      (e[CTRL] ? 'Ctrl+' : '') +
+      (e.altKey ? 'Alt+' : '') +
+      (e.shiftKey ? 'Shift+' : '');
+    const key = mod + e.key.slice(0, 1).toUpperCase() + e.key.slice(1);
+    const el = e.target;
     const name = el.id.split('.')[1];
-    const shortcut = el.value.trim();
+    const shortcut = el.value = key === 'Delete' || key === 'Backspace' ? '' : key;
+    let err;
     if (!shortcut) {
       browser.commands.reset(name).catch(ignoreChromeError);
-      el.setCustomValidity('');
-      return;
+    } else {
+      // must use try-catch as Firefox also uses `throw`
+      try {
+        await browser.commands.update({name, shortcut});
+      } catch (e) {
+        err = e;
+      }
     }
-    try {
-      await browser.commands.update({name, shortcut});
-      el.setCustomValidity('');
-    } catch (err) {
-      el.setCustomValidity(err);
-    }
+    el.setCustomValidity(err || '');
+    if (!err) el.dispatchEvent(new Event('change', {bubbles: true}));
   }
 }
 
