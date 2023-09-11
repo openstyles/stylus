@@ -35,7 +35,7 @@ const router = {
     const {buffer} = router;
     if (!buffer.length) {
       buffer.push(location.href);
-    } else if (buffer[buffer.length - 1] === location.href) {
+    } else if (buffer[buffer.length - 1] === location.href && router.initialized) {
       return;
     } else if (replace) {
       buffer[buffer.length - 1] = location.href;
@@ -57,6 +57,7 @@ const router = {
         callback(state);
       }
     }
+    router.initialized = true;
   },
 
   /**
