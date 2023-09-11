@@ -34,9 +34,8 @@
       }
     }
   }
-  prefs.subscribe('disableAll', () => {
-    $('#disableAll-label').dataset.persist = ''; // avoids hiding if already shown
-  });
+  const elOff = $('#disableAll-label'); // won't hide if already shown
+  if (elOff) prefs.subscribe('disableAll', () => (elOff.dataset.persist = ''));
 
   function changeFocusedInputOnWheel(event) {
     const el = document.activeElement;
