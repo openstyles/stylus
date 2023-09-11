@@ -4,7 +4,7 @@ html {
   justify-content: center;
   height: 100vh;
   background: none;
-  --value-cell-w: 53px; /* 48px for three img in `iconset` + padding */
+  --value-cell-w: 45px; /* ~4 digits in a number input with arrows */
 }
 
 body {
@@ -160,8 +160,7 @@ label {
   margin-right: calc(var(--value-cell-w) - var(--width));
 }
 .radio-wrapper + span {
-  margin: 0 calc(3 * 16px - var(--value-cell-w) + 5px) 0 -2px;
-  width: var(--value-cell-w);
+  margin-left: .5em;
 }
 input[type="number"] {
   width: var(--value-cell-w);
