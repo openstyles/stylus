@@ -255,7 +255,7 @@ function moveFocus(rootElement, step) {
   if (!step) step = 1;
   for (let i = 1; i <= num; i++) {
     const el = elements[(activeIndex + i * step + num) % num];
-    if (!el.disabled && el.tabIndex >= 0) {
+    if (!el.disabled && el.tabIndex >= 0 && el.getBoundingClientRect().width) {
       el.focus();
       // suppress focus outline when invoked via click
       toggleDataset(el, 'focusedViaClick', focusAccessibility.lastFocusedViaClick);
