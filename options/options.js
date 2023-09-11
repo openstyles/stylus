@@ -5,6 +5,7 @@
 /* global
   CHROME_POPUP_BORDER_BUG
   FIREFOX
+  UA
   URLS
   clamp
   ignoreChromeError
@@ -41,6 +42,7 @@ $('#shortcuts').onclick = () => {
     openURL({url: URLS.configureCommands});
   }
 };
+$('#shortcuts').hidden = FIREFOX && !browser.commands.update;
 $('#reset').onclick = async () => {
   if (await messageBoxProxy.confirm(t('confirmDiscardChanges'))) {
     for (const el of $$('input')) {
@@ -60,9 +62,8 @@ $$('[data-clickable]').forEach(el => {
   el.firstChild.replaceWith(...parts);
 });
 
-async function customizeHotkeys() {
-  const isMac = (await browser.runtime.getPlatformInfo()).os === 'mac';
-  const CTRL = isMac ? 'metaKey' : 'ctrlKey';
+function customizeHotkeys() {
+  const CTRL = UA.mac ? 'metaKey' : 'ctrlKey';
   const SKIP = ['Control', 'Alt', 'Shift', 'Meta', 'CapsLock', 'Tab', 'Escape', 'OS'];
   messageBoxProxy.show({
     title: t('shortcutsNote'),

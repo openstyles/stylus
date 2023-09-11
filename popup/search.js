@@ -22,7 +22,6 @@
   const PINGBACK_DELAY = 5e3;
   const BUSY_DELAY = .5e3;
   const USO_AUTO_PIC_SUFFIX = '-after.png';
-  const BLANK_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
   const dom = {};
   /**
    * @typedef IndexEntry
@@ -61,7 +60,7 @@
   /** @type {?Promise} */
   let indexing;
 
-  let imgType = '.jpg';
+  let imgType = '.jpeg';
   // detect WebP support
   $create('img', {
     src: 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA=',
@@ -362,7 +361,7 @@
     const elShot = $('.search-result-screenshot', entry);
     let shotSrc;
     if (!fmt) {
-      shotSrc = /^https?:/i.test(shot) && shot.replace(/\.jpg$/, imgType);
+      shotSrc = /^https?:/i.test(shot) && shot.replace(/\.\w+$/, imgType);
     } else {
       elShot._src = URLS.uso + `auto_style_screenshots/${id}${USO_AUTO_PIC_SUFFIX}`;
       shotSrc = shot && !shot.endsWith(USO_AUTO_PIC_SUFFIX)
@@ -374,7 +373,6 @@
       elShot.src = shotSrc;
       elShot.onerror = fixScreenshot;
     } else {
-      elShot.src = BLANK_PIXEL;
       entry.dataset.noImage = '';
     }
     // author
@@ -422,7 +420,7 @@
       delete this._src;
     } else {
       this.onerror = null;
-      this.src = BLANK_PIXEL;
+      this.removeAttribute('src');
       this._entry.dataset.noImage = '';
       renderActionButtons(this._entry);
     }

@@ -125,6 +125,9 @@
   background-color: hsla(180, 100%, 27%, 1);
   color: var(--bg);
 }
+.search-result[data-no-image] .search-result-screenshot {
+  opacity: 0;
+}
 
 .search-result-actions {
   bottom: 20px;
