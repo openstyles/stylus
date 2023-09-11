@@ -318,7 +318,8 @@ input[type="search"][data-focused-via-click]:focus,
 input[type="number"][data-focused-via-click]:focus {
   /* Using box-shadow instead of the ugly outline in new Chrome */
   outline: none;
-  box-shadow: 0 0 0 1px hsl(180, 100%, 38%), 0 0 3px hsla(180, 100%, 60%, .5);
+  box-shadow: var(--focus-shadow);
+  --focus-shadow: 0 0 0 1px hsl(180, 100%, 38%), 0 0 3px hsla(180, 100%, 60%, .5);
 }
 
 [data-focused-via-click] :focus,
