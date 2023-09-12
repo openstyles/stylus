@@ -30,6 +30,7 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
 body:not(.blocked) .if-blocked,
 .blocked .if-not-blocked,
 .blocked #installed > :not(.frame),
+.blocked [data-frame-id="0"] > .breadcrumbs,
 .firefox .chromium-only {
   display: none !important;
 }

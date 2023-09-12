@@ -8,7 +8,7 @@
   CHROME
   CHROME_POPUP_BORDER_BUG
   FIREFOX
-  URLS
+  UA
   capitalize
   clamp
   debounce
@@ -145,15 +145,18 @@ async function initPopup(frames) {
     }));
   }
 
-  const isStore = tabURL.startsWith(URLS.browserWebStore);
-  if (isStore && !FIREFOX) {
+  const isStore = FIREFOX ? tabURL.startsWith('https://addons.mozilla.org/') :
+      UA.opera ? tabURL.startsWith('https://addons.opera.com/') :
+        tabURL.startsWith('https://chrome.google.com/webstore/') ||
+        tabURL.startsWith('https://chromewebstore.google.com/');
+  if (isStore) {
     blockPopup();
-    return;
   }
 
   for (let retryCountdown = 10; retryCountdown-- > 0;) {
     const tab = await getActiveTab();
     if (await msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0}).catch(() => {})) {
+      if (isBlocked) blockPopup(false);
       return;
     }
     if (tab.status === 'complete' && (!FIREFOX || tab.url !== ABOUT_BLANK)) {
@@ -164,10 +167,8 @@ async function initPopup(frames) {
     await new Promise(resolve => setTimeout(resolve, 100));
   }
 
-  initUnreachable(isStore);
-}
+  if (CHROME && isStore) return;
 
-function initUnreachable(isStore) {
   const info = t.template.unreachableInfo;
   if (!FIREFOX) {
     // Chrome "Allow access to file URLs" in chrome://extensions message
@@ -195,7 +196,9 @@ function initUnreachable(isStore) {
     info.appendChild($create('p', t('InaccessibleFileHint')));
   }
   document.body.classList.add('unreachable');
-  document.body.insertBefore(info, document.body.firstChild);
+  const elInfo = $('.blocked-info');
+  if (elInfo) elInfo.replaceWith(info);
+  else document.body.prepend(info);
 }
 
 /**
@@ -394,6 +397,9 @@ function blockPopup(val = true) {
   isBlocked = val;
   document.body.classList.toggle('blocked', isBlocked);
   if (isBlocked) {
+    const el = $('#write-for-frames');
+    if (el) el.click();
+    else $('#write-wrapper').classList.add('hidden');
     document.body.prepend(t.template.unavailableInfo);
   } else {
     t.template.unavailableInfo.remove();
