@@ -44,7 +44,7 @@ addAPI(/** @namespace API */ {
     },
     set(info) {
       let v;
-      if ((v = info.preferDark)) colorScheme.setSystem(v);
+      if ((v = info.preferDark) != null) colorScheme.setSystem(v);
     },
   },
 
