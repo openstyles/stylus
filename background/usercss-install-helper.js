@@ -1,7 +1,8 @@
-/* global RX_META URLS download openURL */// toolbox.js
+/* global RX_META URLS download */// toolbox.js
 /* global addAPI bgReady */// common.js
 /* global prefs */
-/* global tabMan */// msg.js
+/* global tabMan */// tab-manager.js
+/* global openURL */// tab-util.js
 'use strict';
 
 bgReady.all.then(() => {

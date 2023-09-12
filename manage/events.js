@@ -2,7 +2,7 @@
 /* global changeQueue installed newUI */// manage.js
 /* global checkUpdate handleUpdateInstalled */// updater-ui.js
 /* global createStyleElement createTargetsElement getFaviconSrc styleToDummyEntry */// render.js
-/* global debounce getOwnTab openURL sessionStore */// toolbox.js
+/* global debounce getOwnTab sessionStore */// toolbox.js
 /* global filterAndAppend showFiltersStats */// filters.js
 /* global sorter */
 /* global t */// localization.js
@@ -68,7 +68,7 @@ const Events = {
     } else if (chrome.windows && key === 'Shift-MouseL') {
       API.openEditor({id: entry.styleId});
     } else {
-      openURL({
+      API.openURL({
         url,
         index: ownTab.index + 1,
         active: key === 'Shift-MouseM' || key === 'Shift-Ctrl-MouseL',
@@ -96,7 +96,7 @@ const Events = {
     if (getEventKeyName(event) !== 'Shift-MouseL') {
       event.preventDefault(); // Prevent FF from double-handling the event
       const {index} = await getOwnTab();
-      openURL({
+      API.openURL({
         url: event.target.closest('a').href,
         index: index + 1,
         active: !event.ctrlKey || event.shiftKey,

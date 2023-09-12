@@ -24,7 +24,9 @@
   ],
   "background": {
     "scripts": [
-      "js/polyfill.js",
+      "background/common.js",
+
+      "js/browser.js",
       "js/toolbox.js",
       "js/msg.js",
       "js/prefs.js",
@@ -32,8 +34,6 @@
       "js/sections-util.js",
       "js/worker-util.js",
       "js/cmpver.js",
-
-      "background/common.js",
 
       "background/db.js",
       "background/color-scheme.js",
@@ -43,6 +43,7 @@
       "background/style-via-webrequest.js",
       "background/sync-manager.js",
       "background/tab-manager.js",
+      "background/tab-util.js",
       "background/token-manager.js",
       "background/update-manager.js",
       "background/usercss-install-helper.js",
@@ -73,7 +74,7 @@
       "all_frames": true,
       "match_about_blank": true,
       "js": [
-        "js/polyfill.js",
+        "js/browser.js",
         "js/msg.js",
         "js/prefs.js",
         "content/style-injector.js",

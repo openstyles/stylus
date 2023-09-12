@@ -9,7 +9,7 @@ env:
   webextensions: true
 
 globals:
-  require: readonly # in polyfill.js
+  require: readonly # in toolbox.js
 
 rules:
   accessor-pairs: [2]

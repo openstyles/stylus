@@ -1,3 +1,4 @@
+/* global msg */
 'use strict';
 
 /* exported
@@ -15,8 +16,6 @@
   ignoreChromeError
   isEmptyObj
   mapObj
-  onTabReady
-  openURL
   sessionStore
   stringAsRegExp
   stringAsRegExpStr
@@ -58,6 +57,8 @@ if (FIREFOX && !chrome.browserAction.openPopup) {
     FIREFOX = parseFloat(info.version);
   });
 }
+
+const hasOwn = Object.call.bind({}.hasOwnProperty);
 
 const URLS = {
   ownOrigin: chrome.runtime.getURL(''),
@@ -137,9 +138,71 @@ if (FIREFOX || UA.opera || UA.vivaldi) {
     UA.vivaldi && 'vivaldi');
 }
 
-// FF57+ supports openerTabId, but not in Android
-// (detecting FF57 by the feature it added, not navigator.ua which may be spoofed in about:config)
-const openerTabIdSupported = (!FIREFOX || window.AbortController) && chrome.windows != null;
+if (CHROME < 61) { // TODO: remove when minimum_chrome_version >= 61
+  window.URLSearchParams = class extends URLSearchParams {
+    constructor(init) {
+      if (init && typeof init === 'object') {
+        super();
+        for (const [key, val] of Object.entries(init)) {
+          this.set(key, val);
+        }
+      } else {
+        super(...arguments);
+      }
+    }
+  };
+}
+
+window.msg = window.msg || {
+  bg: chrome.extension.getBackgroundPage(),
+  needsTab: [
+    'getTabUrlPrefix',
+    'updateIconBadge',
+    'styleViaAPI',
+  ],
+  async invokeAPI(path, message) {
+    let tab = false;
+    // Using a fake id for our Options frame as we want to fetch styles early
+    const frameId = window === top ? 0 : 1;
+    if (!msg.needsTab[path[0]] || !frameId && (tab = await getOwnTab())) {
+      const res = await msg.bg.msg._execute('extension',
+        msg.bg.deepCopy(message),
+        msg.bg.deepCopy({url: location.href, tab, frameId}));
+      return deepCopy(res);
+    }
+  },
+};
+
+async function require(urls, cb) { /* exported require */// eslint-disable-line no-redeclare
+  const promises = [];
+  const all = [];
+  const toLoad = [];
+  for (let url of Array.isArray(urls) ? urls : [urls]) {
+    const isCss = url.endsWith('.css');
+    const tag = isCss ? 'link' : 'script';
+    const attr = isCss ? 'href' : 'src';
+    if (!isCss && !url.endsWith('.js')) url += '.js';
+    if (url[0] === '/' && location.pathname.indexOf('/', 1) < 0) url = url.slice(1);
+    let el = document.head.querySelector(`${tag}[${attr}$="${url}"]`);
+    if (!el) {
+      el = document.createElement(tag);
+      toLoad.push(el);
+      require.promises[url] = new Promise((resolve, reject) => {
+        el.onload = resolve;
+        el.onerror = reject;
+        el[attr] = url;
+        if (isCss) el.rel = 'stylesheet';
+      }).catch(console.warn);
+    }
+    promises.push(require.promises[url]);
+    all.push(el);
+  }
+  if (toLoad.length) document.head.append(...toLoad);
+  if (promises.length) await Promise.all(promises);
+  if (cb) cb(...all);
+  return all[0];
+}
+require.promises = {};
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
@@ -151,78 +214,6 @@ function getOwnTab() {
 
 async function getActiveTab() {
   return (await browser.tabs.query({currentWindow: true, active: true}))[0];
-}
-
-/**
- * Opens a tab or activates an existing one,
- * reuses the New Tab page or about:blank if it's focused now
- * @param {Object} _
- * @param {string} _.url - if relative, it's auto-expanded to the full extension URL
- * @param {number} [_.index] move the tab to this index in the tab strip, -1 = last
- * @param {number} [_.openerTabId] defaults to the active tab
- * @param {Boolean} [_.active=true] `true` to activate the tab
- * @param {Boolean|null} [_.currentWindow=true] `null` to check all windows
- * @param {chrome.windows.CreateData} [_.newWindow] creates a new window with these params if specified
- * @param {boolean} [_.newTab] `true` to force a new tab instead of switching to an existing tab
- * @returns {Promise<chrome.tabs.Tab>} Promise -> opened/activated tab
- */
-async function openURL({
-  url,
-  index,
-  openerTabId,
-  active = true,
-  currentWindow = true,
-  newWindow,
-  newTab,
-}) {
-  if (!url.includes('://')) {
-    url = chrome.runtime.getURL(url);
-  }
-  let tab = !newTab && (await browser.tabs.query({url: url.split('#')[0], currentWindow}))[0];
-  if (tab) {
-    return activateTab(tab, {
-      index,
-      openerTabId,
-      // when hash is different we can only set `url` if it has # otherwise the tab would reload
-      url: url !== (tab.pendingUrl || tab.url) && url.includes('#') ? url : undefined,
-    });
-  }
-  if (newWindow && browser.windows) {
-    return (await browser.windows.create(Object.assign({url}, newWindow))).tabs[0];
-  }
-  tab = await getActiveTab() || {url: ''};
-  if (isTabReplaceable(tab, url)) {
-    return activateTab(tab, {url, openerTabId});
-  }
-  const id = openerTabId == null ? tab.id : openerTabId;
-  const opener = id != null && !tab.incognito && openerTabIdSupported && {openerTabId: id};
-  return browser.tabs.create(Object.assign({url, index, active}, opener));
-}
-
-/**
- * Replaces empty tab (NTP or about:blank)
- * except when new URL is chrome:// or chrome-extension:// and the empty tab is in incognito
- */
-function isTabReplaceable(tab, newUrl) {
-  return tab &&
-    URLS.emptyTab.includes(tab.pendingUrl || tab.url) &&
-    !(tab.incognito && newUrl.startsWith('chrome'));
-}
-
-async function activateTab(tab, {url, index, openerTabId} = {}) {
-  const options = {active: true};
-  if (url) {
-    options.url = url;
-  }
-  if (openerTabId != null && openerTabIdSupported) {
-    options.openerTabId = openerTabId;
-  }
-  await Promise.all([
-    browser.tabs.update(tab.id, options),
-    browser.windows && browser.windows.update(tab.windowId, {focused: true}),
-    index != null && browser.tabs.move(tab.id, {index}),
-  ]);
-  return tab;
 }
 
 function stringAsRegExp(s, flags) {
@@ -241,7 +232,7 @@ function ignoreChromeError() {
 function isEmptyObj(obj) {
   if (obj) {
     for (const k in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, k)) {
+      if (hasOwn(obj, k)) {
         return false;
       }
     }
@@ -374,15 +365,13 @@ function deepEqual(a, b, ignoredKeys) {
            a.every((v, i) => deepEqual(v, b[i], ignoredKeys));
   }
   for (const key in a) {
-    if (!Object.hasOwnProperty.call(a, key) ||
-        ignoredKeys && ignoredKeys.includes(key)) continue;
-    if (!Object.hasOwnProperty.call(b, key)) return false;
+    if (!hasOwn(a, key) || ignoredKeys && ignoredKeys.includes(key)) continue;
+    if (!hasOwn(b, key)) return false;
     if (!deepEqual(a[key], b[key], ignoredKeys)) return false;
   }
   for (const key in b) {
-    if (!Object.hasOwnProperty.call(b, key) ||
-        ignoredKeys && ignoredKeys.includes(key)) continue;
-    if (!Object.hasOwnProperty.call(a, key)) return false;
+    if (!hasOwn(b, key) || ignoredKeys && ignoredKeys.includes(key)) continue;
+    if (!hasOwn(a, key)) return false;
   }
   return true;
 }

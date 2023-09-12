@@ -8,7 +8,7 @@
 /* global usercssMan */
 /* global usoApi */
 /* global uswApi */
-/* global FIREFOX UA activateTab openURL */ // toolbox.js
+/* global FIREFOX UA */ // toolbox.js
 /* global colorScheme */ // color-scheme.js
 'use strict';
 
@@ -56,71 +56,6 @@ addAPI(/** @namespace API */ {
   usw: uswApi,
   /** @type {BackgroundWorker} */
   worker: createWorker({url: '/background/background-worker'}),
-
-  /** @returns {string} */
-  getTabUrlPrefix() {
-    return this.sender.tab.url.match(/^([\w-]+:\/+[^/#]+)/)[1];
-  },
-
-  /**
-   * Opens the editor or activates an existing tab
-   * @param {string|{id?: number, domain?: string, 'url-prefix'?: string}} [params]
-   * @returns {Promise<chrome.tabs.Tab>}
-   */
-  async openEditor(params) {
-    const u = new URL(chrome.runtime.getURL('edit.html'));
-    u.search = new URLSearchParams(params);
-    const wnd = chrome.windows && prefs.get('openEditInWindow');
-    const wndPos = wnd && prefs.get('windowPosition');
-    const wndBase = wnd && prefs.get('openEditInWindow.popup') ? {type: 'popup'} : {};
-    const ffBug = wnd && FIREFOX; // https://bugzil.la/1271047
-    for (let tab, retry = 0; retry < (wndPos ? 2 : 1); ++retry) {
-      try {
-        tab = tab || await openURL({
-          url: `${u}`,
-          currentWindow: null,
-          newWindow: wnd && Object.assign({}, wndBase, !ffBug && !retry && wndPos),
-        });
-        if (ffBug && !retry) await browser.windows.update(tab.windowId, wndPos);
-        return tab;
-      } catch (e) {}
-    }
-  },
-
-  /**
-   * @param {{}} [opts]
-   * @param {boolean} [opts.options]
-   * @param {string} [opts.search]
-   * @param {string} [opts.searchMode]
-   * @returns {Promise<chrome.tabs.Tab>}
-   */
-  async openManage(opts = {}) {
-    const setUrlParams = url => {
-      const u = new URL(url);
-      for (const key of ['search', 'searchMode']) {
-        if (key in opts) u.searchParams.set(key, opts[key]);
-        else u.searchParams.delete(key);
-      }
-      u.hash = opts.options ? '#stylus-options' : '';
-      return u.href;
-    };
-    const base = chrome.runtime.getURL('manage.html');
-    const url = setUrlParams(base);
-    const tabs = await browser.tabs.query({url: base + '*'});
-    const same = tabs.find(t => t.url === url);
-    let tab = same || tabs[0];
-    if (!tab) {
-      API.prefsDb.get('badFavs'); // prime the cache to avoid flicker/delay when opening the page
-      tab = await openURL({url, newTab: true});
-    } else if (!same) {
-      await msg.sendTab(tab.id, {method: 'pushState', url: setUrlParams(tab.url)})
-        .catch(msg.ignoreError);
-    }
-    return activateTab(tab); // activateTab unminimizes the window
-  },
-
-  openURL,
-
   prefs: {
     getValues: () => prefs.__values, // will be deepCopy'd by apiHandler
     set: prefs.set,
@@ -179,7 +114,7 @@ Promise.all([
   chrome.contextMenus &&
     require(['/background/context-menus']),
 ]).then(() => {
-  bgReady._resolveAll();
+  bgReady._resolveAll(true);
   msg.ready = true;
   msg.broadcast({method: 'backgroundReady'});
 });

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /*
  Generates a list of callbackless chrome.* API methods from chromium source
- to be used in polyfill.js
+ to be used in browser.js
 */
 'use strict';
 

@@ -1,5 +1,6 @@
+/* global API */// msg.js
 /* global $create */// dom.js
-/* global URLS openURL tryRegExp */// toolbox.js
+/* global URLS tryRegExp */// toolbox.js
 /* global helpPopup */// util.js
 /* global t */// localization.js
 'use strict';
@@ -161,7 +162,7 @@ const regexpTester = (() => {
     const a = event.target.closest('a, button');
     if (a) {
       event.preventDefault();
-      openURL({
+      API.openURL({
         url: a.href || a.textContent,
         currentWindow: null,
       });

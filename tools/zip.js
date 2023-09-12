@@ -30,6 +30,13 @@ function createZip(suffix) {
     delete mj.applications;
     mj.name = 'Stylus (beta)';
   } else {
+    for (const list of [
+      mj.background.scripts,
+      mj.content_scripts[0].js,
+    ]) {
+      const i = list.indexOf('js/browser.js');
+      if (i >= 0) { list.splice(i, 1); break; }
+    }
     mj.options_ui = {
       /*
        * Linking to dashboard, not to options, because this is aimed at users who removed the icon

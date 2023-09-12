@@ -1,4 +1,3 @@
-/* global URLS deepCopy getOwnTab */// toolbox.js - not used in content scripts
 'use strict';
 
 (() => {
@@ -9,11 +8,6 @@
     extension: ['both', 'extension'],
     tab: ['both', 'tab'],
   });
-  const NEEDS_TAB_IN_SENDER = [
-    'getTabUrlPrefix',
-    'updateIconBadge',
-    'styleViaAPI',
-  ];
   const ERR_NO_RECEIVER = 'Receiving end does not exist';
   const ERR_PORT_CLOSED = 'The message port closed before';
   const NULL_RESPONSE = {error: {message: ERR_NO_RECEIVER}};
@@ -23,33 +17,14 @@
     tab: new Set(),
     extension: new Set(),
   };
+  const loadBg = () => browser.runtime.getBackgroundPage().catch(() => false);
   let bgReadySignal;
   let bgReadying = new Promise(fn => (bgReadySignal = fn));
 
-  // TODO: maybe move into polyfill.js and hook addListener to wrap/unwrap automatically
+  // TODO: maybe move into browser.js and hook addListener to wrap/unwrap automatically
   chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
-  const msg = window.msg = {
-
-    isBg: getExtBg() === window,
-
-    async broadcast(data) {
-      const requests = [msg.send(data, 'both').catch(msg.ignoreError)];
-      for (const tab of await browser.tabs.query({})) {
-        const url = tab.pendingUrl || tab.url;
-        if (!tab.discarded &&
-            !url.startsWith(URLS.ownOrigin) &&
-            URLS.supported(url)) {
-          requests[tab.active ? 'unshift' : 'push'](
-            msg.sendTab(tab.id, data, null, 'both').catch(msg.ignoreError));
-        }
-      }
-      return Promise.all(requests);
-    },
-
-    broadcastExtension(...args) {
-      return msg.send(...args).catch(msg.ignoreError);
-    },
+  const msg = Object.assign(window.msg || (window.msg = {}), {
 
     isIgnorableError(err) {
       const text = `${err && err.message || err}`;
@@ -90,14 +65,9 @@
       return unwrap(err, await browser.tabs.sendMessage(tabId, {data, target}, options));
     },
 
-    _execute(types, ...args) {
+    _execute(target, ...args) {
       let result;
-      if (!(args[0] instanceof Object)) {
-        /* Data from other windows must be deep-copied to allow for GC in Chrome and
-           merely survive in FF as it kills cross-window objects when their tab is closed. */
-        args = args.map(deepCopy);
-      }
-      for (const type of types) {
+      for (const type of TARGETS[target] || TARGETS.all) {
         for (const fn of handler[type]) {
           let res;
           try {
@@ -112,19 +82,13 @@
       }
       return result;
     },
-  };
-
-  function getExtBg() {
-    const fn = chrome.extension.getBackgroundPage;
-    const bg = fn && fn();
-    return bg === window || bg && (bg.msg || {}).ready ? bg : null;
-  }
+  });
 
   function onRuntimeMessage({data, target}, sender, sendResponse) {
     if (bgReadying && data && data.method === 'backgroundReady') {
       bgReadySignal();
     }
-    const res = msg._execute(TARGETS[target] || TARGETS.all, data, sender);
+    const res = msg._execute(target, data, sender);
     if (res instanceof Promise) {
       res.then(wrapData, wrapError).then(sendResponse);
       return true;
@@ -168,31 +132,21 @@
     }
   }
 
-  const apiHandler = !msg.isBg && {
+  if (msg.bg === window) return;
+
+  const apiHandler = {
     get({path}, name) {
       const fn = () => {};
       fn.path = [...path, name];
       return new Proxy(fn, apiHandler);
     },
     async apply({path}, thisObj, args) {
-      const bg = getExtBg() ||
-        chrome.tabs && await browser.runtime.getBackgroundPage().catch(() => {});
+      const {bg = msg.bg = chrome.tabs && await loadBg() || false} = msg;
       const message = {method: 'invokeAPI', path, args};
-      let res, tab;
-      // content scripts, probably private tabs, and our extension tab during Chrome startup
-      if (!bg || !bg.msg || !bg.msg.ready && await bg.bgReady.all && false) {
-        res = bgReadying ? sendRetry(message) : msg.send(message);
-      } else if (!NEEDS_TAB_IN_SENDER.includes(path.join('.')) || (tab = await getOwnTab())) {
-        res = deepCopy(await bg.msg._execute(TARGETS.extension, message, {
-          // Using a fake id for our Options frame as we want to fetch styles early
-          frameId: window === top ? 0 : 1,
-          tab: tab || false,
-          url: location.href,
-        }));
-      }
-      return res;
+      return bg && ((bg.msg || {}).ready || await bg.bgReady.all) ? msg.invokeAPI(path, message)
+        : bgReadying ? sendRetry(message)
+          : msg.send(message);
     },
   };
-  /** @type {API} */
-  window.API = msg.isBg ? {} : new Proxy({path: []}, apiHandler);
+  window.API = /** @type {API} */ new Proxy({path: []}, apiHandler);
 })();

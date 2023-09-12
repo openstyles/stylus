@@ -1,5 +1,4 @@
-/* global API */// msg.js
-/* global getActiveTab */// toolbox.js
+/* global URLS getActiveTab */// toolbox.js
 'use strict';
 
 /**
@@ -10,6 +9,26 @@ window.bgReady = {}; /* global bgReady */
 bgReady.styles = new Promise(r => (bgReady._resolveStyles = r));
 bgReady.all = new Promise(r => (bgReady._resolveAll = r));
 
+const API = window.API = {};
+const msg = window.msg = {
+  bg: window,
+  async broadcast(data) {
+    const requests = [msg.send(data, 'both').catch(msg.ignoreError)];
+    for (const tab of await browser.tabs.query({})) {
+      const url = tab.pendingUrl || tab.url;
+      if (!tab.discarded &&
+          !url.startsWith(URLS.ownOrigin) &&
+          URLS.supported(url)) {
+        requests[tab.active ? 'unshift' : 'push'](
+          msg.sendTab(tab.id, data, null, 'both').catch(msg.ignoreError));
+      }
+    }
+    return Promise.all(requests);
+  },
+  broadcastExtension(...args) {
+    return msg.send(...args).catch(msg.ignoreError);
+  },
+};
 const uuidIndex = Object.assign(new Map(), {
   custom: {},
   /** `obj` must have a unique `id`, a UUIDv4 `_id`, and Date.now() for `_rev`. */

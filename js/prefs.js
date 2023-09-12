@@ -148,9 +148,10 @@
     any: new Set(),
     specific: {},
   };
+  const isBg = msg.bg === window;
   // API fails in the active tab during Chrome startup as it loads the tab before bg
   /** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
-  let ready = (msg.isBg ? readStorage() : API.prefs.getValues().catch(readStorage))
+  let ready = (isBg ? readStorage() : API.prefs.getValues().catch(readStorage))
     .then(data => {
       setAll(data);
       ready = true;
@@ -282,7 +283,7 @@
       /* browser.storage is slow and can randomly lose values if the tab was closed immediately
        so we're sending the value to the background script which will save it to the storage;
        the extra bonus is that invokeAPI is immediate in extension tabs */
-      if (msg.isBg) {
+      if (isBg) {
         debounce(updateStorage);
       } else {
         API.prefs.set(key, value);

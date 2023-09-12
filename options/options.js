@@ -9,7 +9,6 @@
   URLS
   clamp
   ignoreChromeError
-  openURL
 */// toolbox.js
 'use strict';
 
@@ -39,7 +38,7 @@ $('#shortcuts').onclick = () => {
   if (FIREFOX) {
     customizeHotkeys();
   } else {
-    openURL({url: URLS.configureCommands});
+    API.openURL({url: URLS.configureCommands});
   }
 };
 $('#shortcuts').hidden = FIREFOX && !browser.commands.update;
