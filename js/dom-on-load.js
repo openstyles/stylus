@@ -58,22 +58,27 @@
 
   /** Displays a full text tooltip on buttons with ellipsis overflow and no inherent title */
   function addTooltipsToEllipsized() {
-    for (const btn of document.getElementsByTagName('button')) {
-      if (btn.title && !btn.titleIsForEllipsis) {
-        continue;
+    // This is to avoid forced layout calc as the classic mode may have thousands of buttons
+    const xo = new IntersectionObserver(entries => {
+      for (const e of entries) {
+        const btn = e.target;
+        const w = e.boundingClientRect.width;
+        if (!w || btn.preresizeClientWidth === w) {
+          continue;
+        }
+        btn.preresizeClientWidth = w;
+        if (btn.scrollWidth > w) {
+          const text = btn.textContent;
+          btn.title = text.includes('\u00AD') ? text.replace(/\u00AD/g, '') : text;
+          btn.titleIsForEllipsis = true;
+        } else if (btn.title) {
+          btn.title = '';
+        }
       }
-      const width = btn.offsetWidth;
-      if (!width || btn.preresizeClientWidth === width) {
-        continue;
-      }
-      btn.preresizeClientWidth = width;
-      if (btn.scrollWidth > width) {
-        const text = btn.textContent;
-        btn.title = text.includes('\u00AD') ? text.replace(/\u00AD/g, '') : text;
-        btn.titleIsForEllipsis = true;
-      } else if (btn.title) {
-        btn.title = '';
-      }
+      xo.disconnect();
+    });
+    for (const el of document.getElementsByTagName('button')) {
+      if (!el.title || el.titleIsForEllipsis) xo.observe(el);
     }
   }
 
