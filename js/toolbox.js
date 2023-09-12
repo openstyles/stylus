@@ -304,14 +304,15 @@ function tryURL(url) {
 
 function debounce(fn, delay, ...args) {
   delay = +delay || 0;
+  const t = performance.now() + delay;
   let old = debounce.timers.get(fn);
   if (!old && debounce.timers.set(fn, old = {})
-    || old.delay !== delay && (clearTimeout(old.timer), true)
+    || delay && old.time < t && (clearTimeout(old.timer), true)
     || old.args.length !== args.length
     || old.args.some((a, i) => a !== args[i]) // note that we can't use deepEqual here
   ) {
     old.args = args;
-    old.delay = delay;
+    old.time = t;
     old.timer = setTimeout(debounce.run, delay, fn, args);
   }
 }
