@@ -227,6 +227,7 @@ function createTargetsElement({entry, expanded, style = entry.styleMeta}) {
   entry.classList.toggle('global', !numTargets);
   entry._allTargetsRendered = allTargetsRendered;
   entry._numTargets = numTargets;
+  entry.style.setProperty('--num-targets', Math.min(numTargets, newUI.targets));
 }
 
 async function getFaviconSrc(container = installed) {
@@ -379,7 +380,9 @@ function showStyles(styles = [], matchUrlIds) {
   let firstRun = true;
   installed.dataset.total = styles.length;
   const scrollY = (history.state || {}).scrollY;
-  const shouldRenderAll = scrollY > window.innerHeight || sessionStore.justEditedStyleId;
+  const shouldRenderAll = scrollY > window.innerHeight
+    || sessionStore.justEditedStyleId
+    || CSS.supports('content-visibility', 'auto');
   const renderBin = document.createDocumentFragment();
   fitNameColumn(styles);
   fitSizeColumn(dummies);
@@ -408,8 +411,6 @@ function showStyles(styles = [], matchUrlIds) {
     getFaviconSrc();
     if (sessionStore.justEditedStyleId) {
       setTimeout(highlightEditedStyle); // delaying to avoid forced layout
-    } else if ('scrollY' in (history.state || {})) {
-      setTimeout(window.scrollTo, 0, 0, history.state.scrollY);
     }
   }
 }
