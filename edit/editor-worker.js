@@ -47,7 +47,9 @@
       }
       return {
         all: res,
-        ats: Object.keys(AT).map(k => `@${k === 'document' ? '-moz-' : ''}${k}`).sort(),
+        ats: [...Object.keys(AT), 'starting-style']
+          .map(k => `@${k === 'document' ? '-moz-' : ''}${k}`)
+          .sort(),
         colors: NamedColors,
         global: GlobalKeywords,
       };
