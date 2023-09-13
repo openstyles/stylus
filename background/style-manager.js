@@ -319,9 +319,20 @@ const styleMan = (() => {
         }
       }
       const events = await db.styles.putMany(styles);
-      return Promise.all(res.map(r => r.err ? r : {
-        style: handleSave(styles[r], {reason: 'import'}, events[r]),
-      }));
+      const messages = [];
+      for (let i = 0, r; i < res.length; i++) {
+        r = res[i];
+        if (!r.err) {
+          const id = events[r];
+          const method = dataMap.has(id) ? 'styleUpdated' : 'styleAdded';
+          const style = handleSave(styles[r], {broadcast: false}, id);
+          messages.push([style, 'import', method]);
+          buildCacheForStyle(style);
+          res[i] = {style};
+        }
+      }
+      setTimeout(() => messages.forEach(args => broadcastStyleUpdated(...args)), 100);
+      return Promise.all(res);
     },
 
     /** @returns {Promise<StyleObj>} */

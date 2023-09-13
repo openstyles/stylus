@@ -14,10 +14,6 @@ document.body.appendChild(t.template.body);
 
 const installed = $('#installed');
 
-const changeQueue = [];
-changeQueue.THROTTLE = 100; // ms
-changeQueue.time = 0;
-
 // define pref-mapped ids separately
 const newUI = {
   enabled: null, // the global option should come first
@@ -116,15 +112,10 @@ function onRuntimeMessage(msg) {
     case 'styleUpdated':
     case 'styleAdded':
     case 'styleDeleted':
-      changeQueue.push(msg);
-      if (performance.now() - (changeQueue.time || 0) < changeQueue.THROTTLE) {
-        debounce(handleBulkChange, changeQueue.THROTTLE);
-      } else {
-        handleBulkChange();
-      }
-      break;
+      Events.queue.push(msg);
+      if (!Events.queue.time) handleBulkChange(Events.queue);
+      else debounce(handleBulkChange, Events.queue.THROTTLE);
   }
-  setTimeout(sorter.updateStripes, 0, {onlyWhenColumnsChanged: true});
 }
 
 async function toggleEmbeddedOptions(show, el, selector) {

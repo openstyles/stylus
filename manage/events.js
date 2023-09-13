@@ -1,5 +1,5 @@
 /* global API */// msg.js
-/* global changeQueue installed newUI */// manage.js
+/* global installed newUI */// manage.js
 /* global checkUpdate handleUpdateInstalled */// updater-ui.js
 /* global createStyleElement createTargetsElement getFaviconSrc styleToDummyEntry */// render.js
 /* global debounce getOwnTab sessionStore */// toolbox.js
@@ -18,6 +18,12 @@
 'use strict';
 
 const Events = {
+
+  queue: Object.assign([], {
+    THROTTLE: 100, // ms
+    styles: new Map(),
+    time: 0,
+  }),
 
   addEntryTitle(link) {
     const style = link.closest('.entry').styleMeta;
@@ -161,17 +167,22 @@ Events.ENTRY_ROUTES_CTX = {
 };
 
 /* exported handleBulkChange */
-function handleBulkChange() {
-  for (const msg of changeQueue) {
+function handleBulkChange(q = Events.queue) {
+  for (const msg of q) {
     const {id} = msg.style;
+    let fullStyle;
     if (msg.method === 'styleDeleted') {
       handleDelete(id);
-      changeQueue.time = performance.now();
+    } else if (msg.reason === 'import' && (fullStyle = q.styles.get(id))) {
+      handleUpdate(fullStyle, msg);
+      q.styles.delete(id);
     } else {
       handleUpdateForId(id, msg);
     }
   }
-  changeQueue.length = 0;
+  sorter.updateStripes({onlyWhenColumnsChanged: true});
+  q.time = performance.now();
+  q.length = 0;
 }
 
 function handleDelete(id) {
@@ -233,7 +244,6 @@ function handleUpdate(style, {reason, method} = {}) {
 
 async function handleUpdateForId(id, opts) {
   handleUpdate(await API.styles.get(id), opts);
-  changeQueue.time = performance.now();
 }
 
 /* exported handleVisibilityChange */

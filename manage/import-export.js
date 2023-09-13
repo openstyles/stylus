@@ -1,6 +1,6 @@
 /* global API */// msg.js
 /* global RX_META deepEqual isEmptyObj */// toolbox.js
-/* global changeQueue */// manage.js
+/* global Events */// events.js
 /* global chromeSync */// storage-util.js
 /* global prefs */
 /* global t */// localization.js
@@ -56,51 +56,57 @@ Object.assign(document.body, {
   },
 });
 
-function importFromFile({fileTypeFilter, file} = {}) {
-  return new Promise(async resolve => {
-    await require(['/js/storage-util']);
-    const fileInput = document.createElement('input');
+async function importFromFile({fileTypeFilter, file} = {}) {
+  let resolve, reject;
+  const q = Events.queue;
+  const el = document.createElement('input');
+  const textPromise = new Promise((...args) => ([resolve, reject] = args));
+  try {
     if (file) {
       readFile();
-      return;
+    } else {
+      el.style.display = 'none';
+      el.type = 'file';
+      el.accept = fileTypeFilter || '.txt';
+      el.acceptCharset = 'utf-8';
+      document.body.appendChild(el);
+      el.initialValue = el.value;
+      el.onchange = readFile;
+      el.click();
     }
-    fileInput.style.display = 'none';
-    fileInput.type = 'file';
-    fileInput.accept = fileTypeFilter || '.txt';
-    fileInput.acceptCharset = 'utf-8';
-
-    document.body.appendChild(fileInput);
-    fileInput.initialValue = fileInput.value;
-    fileInput.onchange = readFile;
-    fileInput.click();
-
-    function readFile() {
-      if (file || fileInput.value !== fileInput.initialValue) {
-        file = file || fileInput.files[0];
-        if (file.size > 100e6) {
-          messageBoxProxy.alert("100MB backup? I don't believe you.");
-          resolve();
-          return;
-        }
-        const fReader = new FileReader();
-        fReader.onloadend = event => {
-          fileInput.remove();
-          const text = event.target.result;
-          const maybeUsercss = !/^\s*\[/.test(text) && RX_META.test(text);
-          if (maybeUsercss) {
-            messageBoxProxy.alert(t('dragDropUsercssTabstrip'));
-          } else {
-            importFromString(text).then(resolve).catch(err => messageBoxProxy.alert(err.message));
-          }
-        };
-        fReader.readAsText(file, 'utf-8');
-      }
+    const text = await textPromise;
+    el.remove();
+    if (/^\s*\[/.test(text)) {
+      q.time = performance.now();
+      await importFromString(text);
+      q.time = 0;
+      setTimeout(() => q.styles.clear(), q.THROTTLE * 2);
+    } else if (RX_META.test(text)) {
+      throw t('dragDropUsercssTabstrip');
     }
-  });
+  } catch (err) {
+    messageBoxProxy.alert(err.message || err);
+  }
+  function readFile() {
+    if (!file) {
+      if (el.value === el.initialValue) return resolve('');
+      file = el.files[0];
+    }
+    if (file.size > 1e9) {
+      return reject(`${(file.size / 1e9).toFixed(1).replace('.0', '')}GB backup? I don't believe you.`);
+    }
+    const fr = new FileReader();
+    fr.onloadend = () => resolve(fr.result);
+    fr.onerror = reject;
+    fr.readAsText(file, 'utf-8');
+  }
 }
 
 async function importFromString(jsonString) {
-  await require(['/js/sections-util']); /* global styleJSONseemsValid styleSectionsEqual */
+  await require([
+    '/js/storage-util',
+    '/js/sections-util',  /* global styleJSONseemsValid styleSectionsEqual */
+  ]);
   const json = JSON.parse(jsonString);
   const oldStyles = Array.isArray(json) && json.length ? await API.styles.getAll() : [];
   const oldStylesById = new Map(oldStyles.map(style => [style.id, style]));
@@ -108,7 +114,8 @@ async function importFromString(jsonString) {
   const oldStylesByName = new Map(oldStyles.map(style => [style.name.trim(), style]));
   const oldOrder = await API.styles.getOrder();
   const items = [];
-  const infos = [];
+  const GROUP = 30;
+  const INFO = Symbol('info'); // for private props that shouldn't be transferred into API
   const stats = {
     options: {names: [], isOptions: true, legend: 'optionsHeading'},
     added: {names: [], ids: [], legend: 'importReportLegendAdded', dirty: true},
@@ -120,10 +127,16 @@ async function importFromString(jsonString) {
   };
   let order;
   await Promise.all(json.map(analyze));
-  changeQueue.length = 0;
-  changeQueue.time = performance.now();
-  (await API.styles.importMany(items))
-    .forEach(({style, err}, i) => updateStats(style || items[i], infos[i], err));
+  for (let i = 0; i < items.length; i++) {
+    const group = items[i];
+    const styles = await API.styles.importMany(group);
+    for (let j = 0; j < styles.length; j++) {
+      const {style, err} = styles[j];
+      const item = group[j];
+      if (style) Events.queue.styles.set(style.id, style);
+      updateStats(style || item, item[INFO], err);
+    }
+  }
   // TODO: set each style's order during import on-the-fly
   await API.styles.setOrder(order);
   return done();
@@ -166,8 +179,10 @@ async function importFromString(jsonString) {
       stats.unchanged.names.push(oldStyle.name);
       stats.unchanged.ids.push(oldStyle.id);
     } else {
-      items.push(item);
-      infos.push({oldStyle, metaEqual, codeEqual});
+      const i = items.length - 1;
+      const group = items[i];
+      (!group || group.length >= GROUP ? items[i + 1] = [] : group).push(item);
+      item[INFO] = {oldStyle, metaEqual, codeEqual};
     }
   }
 
@@ -305,17 +320,8 @@ async function importFromString(jsonString) {
       ...stats.codeOnly.ids,
       ...stats.added.ids,
     ];
-    let tasks = Promise.resolve();
-    // TODO: delete all deletable at once
-    // TODO: import all importable at once
-    for (const id of newIds) {
-      tasks = tasks.then(() => API.styles.delete(id));
-      const oldStyle = oldStylesById.get(id);
-      if (oldStyle) {
-        tasks = tasks.then(() => API.styles.importMany([oldStyle]));
-      }
-    }
-    await tasks;
+    await Promise.all(newIds.map(id => API.styles.delete(id)));
+    await API.styles.importMany(newIds.map(id => oldStylesById.get(id)).filter(Boolean));
     await API.styles.setOrder(oldOrder);
     await messageBoxProxy.show({
       title: t('importReportUndoneTitle'),
