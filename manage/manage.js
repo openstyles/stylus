@@ -123,11 +123,6 @@ function onRuntimeMessage(msg) {
         handleBulkChange();
       }
       break;
-    case 'styleApply':
-    case 'styleReplaceAll':
-      break;
-    default:
-      return;
   }
   setTimeout(sorter.updateStripes, 0, {onlyWhenColumnsChanged: true});
 }

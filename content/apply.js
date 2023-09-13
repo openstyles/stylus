@@ -141,19 +141,12 @@
   }
 
   function applyOnMessage(request) {
-    const {method} = request;
-    if (isUnstylable) {
-      if (method === 'urlChanged') {
-        request.method = 'styleReplaceAll';
-      }
-      if (/^(style|updateCount)/.test(method)) {
-        API.styleViaAPI(request);
-        return;
-      }
+    if (isUnstylable && /^(style|updateCount|urlChanged)/.test(request.method)) {
+      API.styleViaAPI(request);
+      return;
     }
-
     const {style} = request;
-    switch (method) {
+    switch (request.method) {
       case 'ping':
         return true;
 

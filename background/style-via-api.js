@@ -14,7 +14,7 @@
     styleDeleted,
     styleUpdated,
     styleAdded,
-    styleReplaceAll,
+    urlChanged,
     prefChanged,
     updateCount,
   };
@@ -114,7 +114,7 @@
     return style.enabled ? styleApply(style, sender) : NOP;
   }
 
-  function styleReplaceAll(request, sender) {
+  function urlChanged(request, sender) {
     const {tab, frameId} = sender;
     const oldStylesCode = getFrameStylesJoined(sender);
     return styleApply({ignoreUrlCheck: true}, sender).then(() => {

@@ -24,21 +24,19 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
 
     list,
 
-    async apply(styleMap) {
+    apply(styleMap) {
       const styles = styleMapToArray(styleMap);
-      const value = !styles.length
-        ? []
-        : await docRootObserver.evade(() => {
+      return styles.length
+        && docRootObserver.evade(() => {
           if (!isTransitionPatched && isEnabled) {
             applyTransitionPatch(styles);
           }
           return styles.map(addUpdate);
-        });
-      emitUpdate();
-      return value;
+        }).then(emitUpdate);
     },
 
     clear() {
+      if (!list.length) return;
       addRemoveElements(false);
       list.length = 0;
       table.clear();
@@ -55,8 +53,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     },
 
     remove(id) {
-      remove(id);
-      emitUpdate();
+      if (remove(id)) emitUpdate();
     },
 
     replace(styleMap) {
@@ -201,6 +198,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     table.delete(id);
     list.splice(list.indexOf(style), 1);
     style.el.remove();
+    return true;
   }
 
   function sort() {
