@@ -2,6 +2,7 @@
 /* global API */
 /* global debounce */// toolbox.js
 /* global installed */// manage.js
+/* global fitNameColumn fitSizeColumn */// render.js
 /* global prefs */
 /* global router */
 /* global sorter */
@@ -162,6 +163,8 @@ function filterAndAppend({entry, container}) {
     if (!filtersSelector.hide || !entry.matches(filtersSelector.hide)) {
       entry.classList.add('hidden');
     }
+    fitNameColumn(undefined, entry.styleMeta);
+    fitSizeColumn(undefined, entry);
   }
   return reapplyFilter(container);
 }

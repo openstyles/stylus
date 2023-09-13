@@ -129,6 +129,10 @@ const sorter = (() => {
 
   return {
 
+    get columns() {
+      return columns;
+    },
+
     init,
 
     sort(styles) {

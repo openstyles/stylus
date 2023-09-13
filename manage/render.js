@@ -19,6 +19,7 @@ const AGES = [
 ];
 const groupThousands = num => `${num}`.replace(/\d(?=(\d{3})+$)/g, '$&\xA0');
 const renderSize = size => groupThousands(Math.round(size / 1024)) + 'k';
+const nameLengths = new Map();
 
 (() => {
   const proto = HTMLImageElement.prototype;
@@ -357,20 +358,33 @@ function padLeft(val, width) {
   return ' '.repeat(Math.max(0, width - val.length)) + val;
 }
 
-function fitNameColumn(styles) {
-  const align = 1e9; // required by sort()
-  const lengths = styles.map(s => align +
-    (s = s.displayName || s.name || '').length +
-    s.replace(/[^\u3000-\uFE00]+/g, '').length).sort(); // CJK glyphs are twice as wide
-  const pick = .8; // for example, .8 = 80% in single line, 20% multiline
-  const extras = 5; // an average for " UC ", "v1.0.0"
-  const res = lengths[styles.length * pick | 0] - align + extras;
+function fitNameColumn(styles, style) {
+  if (style) calcNameLenKey(style);
+  styles = styles ? styles.map(calcNameLenKey) : [...nameLengths.values()];
+  const pick = sorter.columns > 1 ? .8 : .95; // quotient of entries in single line
+  const extras = 5; // average for optional extras like " UC ", "v1.0.0"
+  const res = nameLengths.res = styles.sort()[nameLengths.size * pick | 0] + extras - 1e9;
   $.root.style.setProperty('--name-width', res + 'ch');
 }
 
-function fitSizeColumn(entries) {
-  const max = entries.reduce((res, e) => Math.max(res, e.styleSize), 0);
-  $.root.style.setProperty('--size-width', renderSize(max).length + 'ch');
+function calcNameLenKey(style) {
+  const name = style.displayName || style.name || '';
+  const len = 1e9 + // aligning the key for sort() which uses string comparison
+    (style.enabled ? 1.05/*bold factor*/ : 1) *
+    (name.length + name.replace(/[^\u3000-\uFE00]+/g, '').length/*CJK glyph is 2x wide*/) | 0;
+  nameLengths.set(style.id, len);
+  return len;
+}
+
+function fitSizeColumn(entries = installed.children, entry) {
+  let res = entry && renderSize(entry.styleSize).length || 0;
+  if (!res) {
+    for (const e of entries) res = Math.max(res, e.styleSize);
+    res = renderSize(res).length;
+  } else if (res <= parseInt($.root.style.getPropertyValue('--size-width'))) {
+    return;
+  }
+  $.root.style.setProperty('--size-width', res + 'ch');
 }
 
 function showStyles(styles = [], matchUrlIds) {
