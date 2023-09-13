@@ -443,14 +443,11 @@ function styleToDummyEntry(style) {
 function switchUI({styleOnly} = {}) {
   const current = {};
   const changed = {};
-  let someChanged = false;
   newUI.readPrefs(current, (id, value) => {
-    const valueChanged = value !== newUI[id] && (id === 'enabled' || current.enabled);
-    changed[id] = valueChanged;
-    someChanged |= valueChanged;
+    changed[id] = value !== newUI[id] && (id === 'enabled' || current.enabled);
   });
 
-  if (!styleOnly && !someChanged) {
+  if (!styleOnly && isEmptyObj(changed)) {
     return;
   }
 
@@ -459,9 +456,7 @@ function switchUI({styleOnly} = {}) {
 
   installed.classList.toggle('has-favicons', newUI.hasFavs());
   installed.classList.toggle('favicons-grayed', newUI.enabled && newUI.faviconsGray);
-  if (installed.style.getPropertyValue('--num-targets') !== `${newUI.targets}`) {
-    installed.style.setProperty('--num-targets', newUI.targets);
-  }
+  installed.style.setProperty('--num-targets', newUI.targets);
 
   if (styleOnly) {
     return;
@@ -471,7 +466,7 @@ function switchUI({styleOnly} = {}) {
   let iconsMissing = iconsEnabled && !$('.applies-to img');
   if (changed.enabled || (iconsMissing && !elementParts)) {
     installed.textContent = '';
-    API.styles.getAll().then(showStyles);
+    requestAnimationFrame(() => API.styles.getAll().then(showStyles));
     return;
   }
   if (changed.targets) {
@@ -485,6 +480,5 @@ function switchUI({styleOnly} = {}) {
   }
   if (iconsMissing) {
     debounce(getFaviconSrc);
-    return;
   }
 }
