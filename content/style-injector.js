@@ -1,6 +1,5 @@
 'use strict';
 
-/** @type {function(opts):StyleInjector} */
 window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
   compare,
   onUpdate = () => {},
@@ -20,7 +19,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
   // will store the original method refs because the page can override them
   let creationDoc, createElement, createElementNS;
 
-  return /** @namespace StyleInjector */ {
+  return {
 
     list,
 

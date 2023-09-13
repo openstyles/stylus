@@ -24,7 +24,10 @@
   // TODO: maybe move into browser.js and hook addListener to wrap/unwrap automatically
   chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
-  const msg = Object.assign(window.msg || (window.msg = {}), {
+  /* In chrome-extension:// context `window.msg` is created earlier by another script,
+   * while in a content script it's not, but may exist anyway due to a DOM node with id="msg",
+   * so we check chrome.tabs first to decide whether we can reuse the existing object. */
+  const msg = Object.assign(chrome.tabs ? window.msg : window.msg = {}, {
 
     isIgnorableError(err) {
       const text = `${err && err.message || err}`;

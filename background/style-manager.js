@@ -1,6 +1,6 @@
 /* global API msg */// msg.js
 /* global CHROME URLS deepEqual isEmptyObj mapObj stringAsRegExpStr tryRegExp tryURL */// toolbox.js
-/* global bgReady createCache uuidIndex */// common.js
+/* global bgReady broadcastInjectorConfig createCache uuidIndex */// common.js
 /* global calcStyleDigest styleCodeEmpty */// sections-util.js
 /* global db */
 /* global prefs */
@@ -148,7 +148,7 @@ const styleMan = (() => {
       await msg.broadcast({
         method: 'styleDeleted',
         style: {id},
-      });
+      }, true);
       return id;
     },
 
@@ -223,14 +223,19 @@ const styleMan = (() => {
           },
         };
       }
-      // TODO: enable in FF when it supports sourceURL comment in style elements (also options.html)
-      const {exposeStyleName} = CHROME && prefs.__values;
-      const sender = CHROME && this && this.sender || {};
-      if (sender.frameId === 0) {
+      const {sender = {}} = this || {};
+      const {tab = {}, frameId} = sender;
+      const cfg = {
+        // TODO: enable in FF when it supports sourceURL comment in style elements (also options.html)
+        exposeStyleName: CHROME && prefs.get('exposeStyleName'),
+        exposeIframes: frameId > 0 && prefs.get('exposeIframes') && (tab.url || '').split('/', 3).join('/'),
+        order,
+      };
+      if (frameId === 0) {
         /* Chrome hides text frament from location.href of the page e.g. #:~:text=foo
            so we'll use the real URL reported by webNavigation API.
            TODO: if FF will do the same, this won't work as is: FF reports onCommitted too late */
-        url = tabMan.get(sender.tab.id, 'url', 0) || url;
+        url = tabMan.get(tab.id, 'url') || url;
       }
       let cache = cachedStyleForUrl.get(url);
       if (!cache) {
@@ -243,7 +248,7 @@ const styleMan = (() => {
       } else if (cache.maybeMatch.size) {
         buildCache(cache, url, Array.from(cache.maybeMatch, id2data).filter(Boolean));
       }
-      return Object.assign({cfg: {exposeStyleName, order}},
+      return Object.assign({cfg},
         id ? mapObj(cache.sections, null, [id])
           : cache.sections);
     },
@@ -495,17 +500,17 @@ const styleMan = (() => {
     data.appliesTo = updated;
   }
 
-  function broadcastStyleUpdated(style, reason, method = 'styleUpdated') {
+  function broadcastStyleUpdated(style, reason, isNew) {
     buildCacheForStyle(style);
     return msg.broadcast({
-      method,
+      method: isNew ? 'styleAdded' : 'styleUpdated',
       reason,
       style: {
         id: style.id,
         md5Url: style.md5Url,
         enabled: style.enabled,
       },
-    });
+    }, !isNew);
   }
 
   function beforeSave(style) {
@@ -533,7 +538,6 @@ const styleMan = (() => {
   function handleSave(style, {reason, broadcast = true}, id = style.id) {
     if (style.id == null) style.id = id;
     const data = id2data(id);
-    const method = data ? 'styleUpdated' : 'styleAdded';
     if (!data) {
       storeInMap(style);
     } else {
@@ -542,7 +546,7 @@ const styleMan = (() => {
     if (reason !== 'sync') {
       API.sync.putDoc(style);
     }
-    if (broadcast) broadcastStyleUpdated(style, reason, method);
+    if (broadcast) broadcastStyleUpdated(style, reason, !data);
     return style;
   }
 
@@ -794,7 +798,7 @@ const styleMan = (() => {
       }
     }
     if (broadcast) {
-      msg.broadcast({method: 'styleSort', order});
+      broadcastInjectorConfig('order', order);
     }
     if (store) {
       await API.prefsDb.put(orderWrap, orderWrap.id);

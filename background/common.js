@@ -1,4 +1,5 @@
 /* global URLS getActiveTab */// toolbox.js
+/* global tabMan */// tab-manager.js
 'use strict';
 
 /**
@@ -12,18 +13,16 @@ bgReady.all = new Promise(r => (bgReady._resolveAll = r));
 const API = window.API = {};
 const msg = window.msg = {
   bg: window,
-  async broadcast(data) {
-    const requests = [msg.send(data, 'both').catch(msg.ignoreError)];
-    for (const tab of await browser.tabs.query({})) {
-      const url = tab.pendingUrl || tab.url;
-      if (!tab.discarded &&
-          !url.startsWith(URLS.ownOrigin) &&
-          URLS.supported(url)) {
-        requests[tab.active ? 'unshift' : 'push'](
-          msg.sendTab(tab.id, data, null, 'both').catch(msg.ignoreError));
+  async broadcast(data, onlyStyled) {
+    const jobs = [this.broadcastExtension(data, 'both')];
+    const tabs = (await browser.tabs.query({})).sort((a, b) => b.active - a.active);
+    for (const tab of tabs) {
+      if ((onlyStyled ? tabMan.getStyleIds(tab.id) : !tab.discarded)
+      && URLS.supported(tab.pendingUrl || tab.url, false)) {
+        jobs.push(msg.sendTab(tab.id, data).catch(msg.ignoreError));
       }
     }
-    return Promise.all(requests);
+    return Promise.all(jobs);
   },
   broadcastExtension(...args) {
     return msg.send(...args).catch(msg.ignoreError);
@@ -48,6 +47,21 @@ function addAPI(methods) {
     }
   }
 }
+
+/* exported broadcastInjectorConfig */
+const broadcastInjectorConfig = ((cfg, promise) => (key, val) => {
+  if (key) {
+    if (!cfg) {
+      cfg = {};
+      promise = new Promise(setTimeout).then(broadcastInjectorConfig);
+    }
+    cfg[key] = val;
+  } else {
+    promise = msg.broadcast({method: 'injectorConfig', cfg}, true);
+    cfg = null;
+  }
+  return promise;
+})();
 
 /* exported createCache */
 /** Creates a FIFO limit-size map. */

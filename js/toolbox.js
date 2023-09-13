@@ -118,11 +118,11 @@ const URLS = {
         || '';
   },
 
-  supported: url => (
+  supported: (url, allowOwn = true) => (
     url.startsWith('http') ||
     url.startsWith('ftp') ||
     url.startsWith('file') ||
-    url.startsWith(URLS.ownOrigin) ||
+    allowOwn && url.startsWith(URLS.ownOrigin) ||
     !URLS.chromeProtectsNTP && url.startsWith('chrome://newtab/')
   ),
 
@@ -156,7 +156,6 @@ if (CHROME < 61) { // TODO: remove when minimum_chrome_version >= 61
 window.msg = window.msg || {
   bg: chrome.extension.getBackgroundPage(),
   needsTab: [
-    'getTabUrlPrefix',
     'updateIconBadge',
     'styleViaAPI',
   ],
@@ -164,7 +163,7 @@ window.msg = window.msg || {
     let tab = false;
     // Using a fake id for our Options frame as we want to fetch styles early
     const frameId = window === top ? 0 : 1;
-    if (!msg.needsTab[path[0]] || !frameId && (tab = await getOwnTab())) {
+    if (!msg.needsTab.includes(path[0]) || !frameId && (tab = await getOwnTab())) {
       const res = await msg.bg.msg._execute('extension',
         msg.bg.deepCopy(message),
         msg.bg.deepCopy({url: location.href, tab, frameId}));

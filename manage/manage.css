@@ -150,7 +150,7 @@ button.icon > i {
   box-sizing: border-box;
   position: relative;
   width: calc(100% / var(--columns, 1));
-  contain-intrinsic-block-size: 10em;
+  contain-intrinsic-block-size: auto 10em;
   content-visibility: auto;
 }
 

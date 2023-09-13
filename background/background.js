@@ -1,5 +1,5 @@
 /* global API msg */// msg.js
-/* global addAPI bgReady detectVivaldi isVivaldi */// common.js
+/* global addAPI bgReady broadcastInjectorConfig detectVivaldi isVivaldi */// common.js
 /* global createWorker */// worker-util.js
 /* global prefs */
 /* global styleMan */
@@ -117,4 +117,5 @@ Promise.all([
   bgReady._resolveAll(true);
   msg.ready = true;
   msg.broadcast({method: 'backgroundReady'});
+  prefs.subscribe(['disableAll', 'exposeIframes'], broadcastInjectorConfig);
 });

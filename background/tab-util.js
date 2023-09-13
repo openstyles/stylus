@@ -23,11 +23,6 @@ addAPI(/** @namespace API */ {
 
   openURL,
 
-  /** @returns {string} */
-  getTabUrlPrefix() {
-    return this.sender.tab.url.match(/^([\w-]+:\/+[^/#]+)/)[1];
-  },
-
   /**
    * Opens the editor or activates an existing tab
    * @param {string|{id?: number, domain?: string, 'url-prefix'?: string}} [params]

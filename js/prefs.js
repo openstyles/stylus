@@ -17,6 +17,7 @@
    * @namespace PrefsValues
    */
   const defaults = {
+    __proto__: null,
     // TODO: sort everything aphabetically
     'openEditInWindow': false,      // new editor opens in a own browser window
     'openEditInWindow.popup': false, // new editor opens in a simplified browser window without omnibox
@@ -141,7 +142,7 @@
 
     'updateInterval': 24,           // user-style automatic update interval, hours (0 = disable)
   };
-  const knownKeys = Object.keys(defaults);
+  const warnUnknown = console.warn.bind(console, 'Unknown preference "%s"');
   /** @type {PrefsValues} */
   const values = clone(defaults);
   const onChange = {
@@ -149,6 +150,9 @@
     specific: {},
   };
   const isBg = msg.bg === window;
+  const isExt = chrome.tabs;
+  // A scoped listener won't trigger for our [big] stuff in `local`, Chrome 73+, FF
+  const onSync = isExt && chrome.storage.sync.onChanged;
   // API fails in the active tab during Chrome startup as it loads the tab before bg
   /** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
   let ready = (isBg ? readStorage() : API.prefs.getValues().catch(readStorage))
@@ -157,23 +161,28 @@
       ready = true;
     });
 
-  chrome.storage.onChanged.addListener(async (changes, area) => {
-    const data = area === 'sync' && changes[STORAGE_KEY];
-    if (data) {
+  if (isExt) {
+    (onSync || chrome.storage.onChanged).addListener(async (changes, area) => {
+      const data = (onSync || area === 'sync') && changes[STORAGE_KEY];
+      if (!data) return;
       if (ready.then) await ready;
       setAll(data.newValue);
-    }
-  });
+    });
+  }
 
   const prefs = window.prefs = {
 
     STORAGE_KEY,
-    knownKeys,
     ready,
     /** @type {PrefsValues} */
     defaults: new Proxy({}, {
       get: (_, key) => clone(defaults[key]),
     }),
+    get knownKeys() {
+      const value = Object.keys(defaults);
+      Object.defineProperty(prefs, 'knownKeys', {value});
+      return value;
+    },
     /** @type {PrefsValues} */
     get values() {
       return clone(values);
@@ -183,22 +192,21 @@
     __values: values, // direct reference, be careful!
 
     get(key) {
-      const res = values[key];
-      if (res !== undefined || isKnown(key)) {
-        return clone(res);
-      }
+      const {[key]: res = warnUnknown(key)} = values;
+      return res && typeof res === 'object' ? clone(res) : res;
     },
 
     set(key, val, isSynced) {
-      if (!isKnown(key)) return;
       const oldValue = values[key];
       const type = typeof defaults[key];
+      if (!type) return warnUnknown(key);
       if (type !== typeof val) {
-        if (type === 'string') val = String(val);
-        if (type === 'number') val = Number(val) || 0;
-        if (type === 'boolean') val = val === 'true' || val !== 'false' && Boolean(val);
+        val = type === 'string' ? `${val}` :
+          type === 'number' ? +val || 0 :
+            type === 'boolean' ? val === 'true' || val !== 'false' && !!val :
+              null;
       }
-      if (val !== oldValue && !simpleDeepEqual(val, oldValue)) {
+      if (val !== oldValue && !(type === 'object' && val && simpleDeepEqual(val, oldValue))) {
         values[key] = val;
         emitChange(key, val, isSynced);
       }
@@ -221,7 +229,7 @@
       if (keys) {
         const uniqKeys = new Set(Array.isArray(keys) ? keys : [keys]);
         for (const key of uniqKeys) {
-          if (!isKnown(key)) continue;
+          if (!(key in defaults)) { warnUnknown(key); continue; }
           const listeners = onChange.specific[key] ||
             (onChange.specific[key] = new Set());
           listeners.add(fn);
@@ -259,12 +267,6 @@
       }
     },
   };
-
-  function isKnown(key) {
-    const res = knownKeys.includes(key);
-    if (!res) console.warn('Unknown preference "%s"', key);
-    return res;
-  }
 
   function setAll(settings) {
     for (const [key, value] of Object.entries(settings || {})) {

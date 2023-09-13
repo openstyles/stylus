@@ -15,10 +15,9 @@
     styleUpdated,
     styleAdded,
     urlChanged,
-    prefChanged,
+    injectorConfig,
     updateCount,
   };
-  const NOP = new Error('NOP');
   const onError = () => {};
   /* <tabId>: Object
        <frameId>: Object
@@ -32,9 +31,10 @@
     async styleViaAPI(request) {
       try {
         const fn = ACTIONS[request.method];
-        return fn ? fn(request, this.sender) : NOP;
-      } catch (e) {}
-      maybeToggleObserver();
+        if (fn) await fn(request, this.sender);
+      } finally {
+        maybeToggleObserver();
+      }
     },
   });
 
@@ -47,101 +47,95 @@
     API.updateIconBadge.call({sender}, Object.keys(frameStyles));
   }
 
-  function styleApply({id = null, ignoreUrlCheck = false}, {tab, frameId, url}) {
+  async function styleApply({id = null, ignoreUrlCheck = false}, {tab, frameId, url}) {
     if (prefs.get('disableAll')) {
-      return NOP;
+      return;
     }
     const {tabFrames, frameStyles} = getCachedData(tab.id, frameId);
     if (id === null && !ignoreUrlCheck && frameStyles.url === url) {
-      return NOP;
+      return;
     }
-    return API.styles.getSectionsByUrl(url, id).then(sections => {
-      delete sections.cfg;
-      const tasks = [];
-      for (const section of Object.values(sections)) {
-        const styleId = section.id;
-        const code = section.code.join('\n');
-        if (code === (frameStyles[styleId] || []).join('\n')) {
-          continue;
-        }
-        frameStyles[styleId] = section.code;
-        tasks.push(
-          browser.tabs.insertCSS(tab.id, {
-            code,
-            frameId,
-            runAt: 'document_start',
-            matchAboutBlank: true,
-          }).catch(onError));
+    const sections = await API.styles.getSectionsByUrl(url, id);
+    const tasks = [];
+    const {order} = sections.cfg;
+    const calcOrder = ({id}) =>
+      (order.prio[id] || 0) * 1e6 ||
+      order.main[id] ||
+      id + .5e6;
+    delete sections.cfg;
+    for (const sec of Object.values(sections).sort((a, b) => calcOrder(a) - calcOrder(b))) {
+      const styleId = sec.id;
+      const code = sec.code.join('\n');
+      if (code === (frameStyles[styleId] || []).join('\n')) {
+        continue;
       }
-      if (!removeFrameIfEmpty(tab.id, frameId, tabFrames, frameStyles)) {
-        Object.defineProperty(frameStyles, 'url', {value: url, configurable: true});
-        tabFrames[frameId] = frameStyles;
-        cache.set(tab.id, tabFrames);
-      }
-      return Promise.all(tasks);
-    })
-      .then(() => updateCount(null, {tab, frameId}));
+      frameStyles[styleId] = sec.code;
+      tasks.push(
+        browser.tabs.insertCSS(tab.id, {
+          code,
+          frameId,
+          runAt: 'document_start',
+          matchAboutBlank: true,
+        }).catch(onError));
+    }
+    if (!removeFrameIfEmpty(tab.id, frameId, tabFrames, frameStyles)) {
+      Object.defineProperty(frameStyles, 'url', {value: url, configurable: true});
+      tabFrames[frameId] = frameStyles;
+      cache.set(tab.id, tabFrames);
+    }
+    await Promise.all(tasks);
+    return updateCount(null, {tab, frameId});
   }
 
-  function styleDeleted({style: {id}}, {tab, frameId}) {
+  async function styleDeleted({style: {id}}, {tab, frameId}) {
     const {tabFrames, frameStyles, styleSections} = getCachedData(tab.id, frameId, id);
     const code = styleSections.join('\n');
     if (code && !duplicateCodeExists({frameStyles, id, code})) {
       delete frameStyles[id];
       removeFrameIfEmpty(tab.id, frameId, tabFrames, frameStyles);
-      return removeCSS(tab.id, frameId, code)
-        .then(() => updateCount(null, {tab, frameId}));
-    } else {
-      return NOP;
+      await removeCSS(tab.id, frameId, code);
+      updateCount(null, {tab, frameId});
     }
   }
 
-  function styleUpdated({style}, sender) {
+  async function styleUpdated({style}, sender) {
     if (!style.enabled) {
       return styleDeleted({style}, sender);
     }
     const {tab, frameId} = sender;
     const {frameStyles, styleSections} = getCachedData(tab.id, frameId, style.id);
     const code = styleSections.join('\n');
-    return styleApply(style, sender).then(code && (() => {
-      if (!duplicateCodeExists({frameStyles, code, id: null})) {
-        return removeCSS(tab.id, frameId, code);
-      }
-    }));
+    await styleApply(style, sender);
+    if (code && !duplicateCodeExists({frameStyles, code, id: null})) {
+      await removeCSS(tab.id, frameId, code);
+    }
   }
 
   function styleAdded({style}, sender) {
-    return style.enabled ? styleApply(style, sender) : NOP;
+    if (style.enabled) return styleApply(style, sender);
   }
 
-  function urlChanged(request, sender) {
+  async function urlChanged(request, sender) {
     const {tab, frameId} = sender;
     const oldStylesCode = getFrameStylesJoined(sender);
-    return styleApply({ignoreUrlCheck: true}, sender).then(() => {
-      const newStylesCode = getFrameStylesJoined(sender);
-      const tasks = oldStylesCode
-        .filter(code => !newStylesCode.includes(code))
-        .map(code => removeCSS(tab.id, frameId, code));
-      return Promise.all(tasks);
-    });
+    await styleApply({ignoreUrlCheck: true}, sender);
+    const newStylesCode = getFrameStylesJoined(sender);
+    return Promise.all(oldStylesCode
+      .map(code => !newStylesCode.includes(code) && removeCSS(tab.id, frameId, code))
+      .filter(Boolean));
   }
 
-  function prefChanged({prefs}, sender) {
-    if ('disableAll' in prefs) {
-      if (!prefs.disableAll) {
-        return styleApply({}, sender);
-      }
+  async function injectorConfig({cfg: {disableAll}}, sender) {
+    if (disableAll) {
       const {tab, frameId} = sender;
       const {tabFrames, frameStyles} = getCachedData(tab.id, frameId);
-      if (isEmptyObj(frameStyles)) {
-        return NOP;
+      if (!isEmptyObj(frameStyles)) {
+        removeFrameIfEmpty(tab.id, frameId, tabFrames, {});
+        await Promise.all(Object.keys(frameStyles).map(id =>
+          removeCSS(tab.id, frameId, frameStyles[id].join('\n'))));
       }
-      removeFrameIfEmpty(tab.id, frameId, tabFrames, {});
-      const tasks = Object.keys(frameStyles)
-        .map(id => removeCSS(tab.id, frameId, frameStyles[id].join('\n')));
-      return Promise.all(tasks);
-    } else {
-      return NOP;
+    } else if (disableAll != null) {
+      return styleApply({}, sender);
     }
   }
 

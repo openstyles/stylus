@@ -42,7 +42,7 @@ bgReady.all.then(() => {
   function toggle(key, val) {
     chrome.webRequest.onBeforeSendHeaders.removeListener(maybeInstallFromDistro);
     chrome.webRequest.onHeadersReceived.removeListener(rememberContentType);
-    tabMan.onUpdate(maybeInstall, val ? 'add' : 'delete');
+    tabMan.onOff(maybeInstall, val);
     if (!val) return;
     chrome.webRequest.onBeforeSendHeaders.addListener(maybeInstallFromDistro, {
       urls: [

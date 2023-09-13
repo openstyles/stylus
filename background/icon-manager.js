@@ -36,7 +36,10 @@ const iconMan = (() => {
   });
 
   chrome.webNavigation.onCommitted.addListener(({tabId, frameId}) => {
-    if (!frameId) tabMan.set(tabId, 'styleIds', undefined);
+    const ids = tabMan.getStyleIds(tabId);
+    if (!ids) return;
+    if (frameId) delete ids[frameId];
+    else tabMan.delete(tabId);
   });
   chrome.runtime.onConnect.addListener(port => {
     if (port.name === 'iframe') {
@@ -74,7 +77,7 @@ const iconMan = (() => {
       badgeOvr.color = color;
       refreshIconBadgeColor();
       setBadgeText({text});
-      for (const tabId of tabMan.list()) {
+      for (const tabId of tabMan.keys()) {
         if (text) {
           setBadgeText({tabId, text});
         } else {
@@ -88,7 +91,7 @@ const iconMan = (() => {
   };
 
   function onPortDisconnected({sender}) {
-    if (tabMan.get(sender.tab.id, 'styleIds')) {
+    if (tabMan.getStyleIds(sender.tab.id)) {
       API.updateIconBadge.call({sender}, [], {lazyBadge: true});
     }
   }
@@ -108,7 +111,7 @@ const iconMan = (() => {
 
   function refreshIcon(tabId, force = false) {
     const oldIcon = tabMan.get(tabId, 'icon');
-    const newIcon = getIconName(tabMan.get(tabId, 'styleIds', 0));
+    const newIcon = getIconName(tabMan.getStyleIds(tabId)[0]);
     // (changing the icon only for the main page, frameId = 0)
 
     if (!force && oldIcon === newIcon) {
@@ -134,7 +137,7 @@ const iconMan = (() => {
   /** @return {number | ''} */
   function getStyleCount(tabId) {
     const allIds = new Set();
-    const data = tabMan.get(tabId, 'styleIds') || {};
+    const data = tabMan.getStyleIds(tabId) || {};
     Object.values(data).forEach(frameIds => frameIds.forEach(id => allIds.add(id)));
     return allIds.size || '';
   }
@@ -175,14 +178,14 @@ const iconMan = (() => {
   }
 
   function refreshAllIcons() {
-    for (const tabId of tabMan.list()) {
+    for (const tabId of tabMan.keys()) {
       refreshIcon(tabId);
     }
     refreshGlobalIcon();
   }
 
   function refreshAllIconsBadgeText() {
-    for (const tabId of tabMan.list()) {
+    for (const tabId of tabMan.keys()) {
       refreshIconBadgeText(tabId);
     }
   }
