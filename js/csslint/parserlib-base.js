@@ -245,7 +245,8 @@
       '[ <line-names>? <string> <track-size>? <line-names>? ]+ [ / <explicit-track-list> ]?',
     'grid-template-areas': 'none | <string>+',
     'grid-template-columns': '<grid-template-rows>',
-    'grid-template-rows': 'none | <track-list> | <auto-track-list>',
+    'grid-template-rows': 'none | <track-list> | <auto-track-list> | ' +
+      'subgrid [ <line-names> | repeat( [ <int1+> | auto-fill ] , <line-names>+ ) ]*',
 
     'hanging-punctuation': 'none | [ first || [ force-end | allow-end ] || last ]',
     'height': 'auto | <width-height>',
@@ -483,8 +484,8 @@
       '[ left | center | right | top | bottom | <len-pct> ] | ' +
       '[ [ center | left | right ] && [ center | top | bottom ] ] <len>?',
     'transform-style': 'flat | preserve-3d',
-    'transition':
-      '[ [ none | [ all | <custom-ident> ]# ] || <time> || <timing-function> || <time> ]#',
+    'transition': '[ [ none | [ all | <custom-ident> ]# ] || <time> || <timing-function> || <time> || <txbhv> ]#',
+    'transition-behavior': '<txbhv>#',
     'transition-delay': '<time>#',
     'transition-duration': '<time>#',
     'transition-property': 'none | [ all | <custom-ident> ]#',
@@ -946,6 +947,7 @@
     '<track-repeat>': 'repeat( [ <int1+> ] , [ <line-names>? <track-size> ]+ <line-names>? )',
     '<track-size>': '<track-breadth> | minmax( <inflexible-breadth> , <track-breadth> ) | ' +
       'fit-content( <len-pct> )',
+    '<txbhv>': 'normal | allow-discrete',
     '<url>': '<uri> | src( <string> [ <ident> | <func> ]* )',
     '<vis-hid>': 'visible | hidden',
     '<width-height>': '<len-pct> | min-content | max-content | fit-content | ' +
