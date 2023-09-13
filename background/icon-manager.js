@@ -57,14 +57,14 @@ const iconMan = (() => {
       'disableAll',
       'badgeDisabled',
       'badgeNormal',
-    ], () => debounce(refreshIconBadgeColor), {runNow: true});
+    ], () => debounce(refreshIconBadgeColor), true);
     prefs.subscribe([
       'show-badge',
-    ], () => debounce(refreshAllIconsBadgeText), {runNow: true});
+    ], () => debounce(refreshAllIconsBadgeText), true);
     prefs.subscribe([
       'disableAll',
       'iconset',
-    ], () => debounce(refreshAllIcons), {runNow: true});
+    ], () => debounce(refreshAllIcons), true);
   });
 
   return {

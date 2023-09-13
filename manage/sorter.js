@@ -81,7 +81,7 @@ const sorter = (() => {
     prefs.subscribe(ID, sorter.update);
     $('#sorter-help').onclick = showHelp;
     addOptions();
-    prefs.subscribe('manage.minColumnWidth', updateColumnWidth, {runNow: true});
+    prefs.subscribe('manage.minColumnWidth', updateColumnWidth, true);
   }
 
   function addOptions() {

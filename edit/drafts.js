@@ -21,7 +21,7 @@
     delay = clamp(val * 1000 | 0, 1000, 2 ** 32 - 1);
     const t = debounce.timers.get(updateDraft);
     if (t) debounce(updateDraft, t.delay ? delay : 0);
-  }, {runNow: true});
+  }, true);
 
   async function maybeRestore() {
     const [draft] = await Promise.all([

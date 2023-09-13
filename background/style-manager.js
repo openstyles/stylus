@@ -45,7 +45,7 @@ const styleMan = (() => {
     seeds[4] = seeds[4] & 0x3FFF | 0x8000; // UUID variant 1, N = 8..0xB
     return Array.from(seeds, hex4dashed).join('');
   });
-  const CFG_OFF = {cfg: {disableAll: true}};
+  const CFG_OFF = {cfg: {off: true}};
   const MISSING_PROPS = {
     name: style => `ID: ${style.id}`,
     _id: () => uuidv4(),
@@ -193,7 +193,8 @@ const styleMan = (() => {
 
     /** @returns {{[styleId: string]: InjectedStyle | InjectionConfig}} */
     getSectionsByUrl(url, id, isInitialApply) {
-      if (isInitialApply && prefs.get('disableAll')) {
+      const p = prefs.__values;
+      if (isInitialApply && p.disableAll) {
         return CFG_OFF;
       }
       const {sender = {}} = this || {};
@@ -201,8 +202,8 @@ const styleMan = (() => {
       /** @type {InjectionConfig} */
       const cfg = {
         // TODO: enable in FF when it supports sourceURL comment in style elements (also options.html)
-        exposeStyleName: CHROME && prefs.get('exposeStyleName'),
-        exposeIframes: frameId > 0 && prefs.get('exposeIframes') && (tab.url || '').split('/', 3).join('/'),
+        name: CHROME && p.exposeStyleName,
+        top: frameId > 0 && p.exposeIframes && (tab.url || '').split('/', 3).join('/'),
         order,
       };
       if (frameId === 0) {

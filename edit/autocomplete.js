@@ -31,7 +31,7 @@
     cm[value ? 'on' : 'off']('changes', autocompleteOnTyping);
     cm[value ? 'on' : 'off']('pick', autocompletePicked);
   });
-  prefs.subscribe(AOT_PREF_ID, (key, val) => cmFactory.globalSetOption(AOT_ID, val), {runNow: aot});
+  prefs.subscribe(AOT_PREF_ID, (key, val) => cmFactory.globalSetOption(AOT_ID, val), aot);
 
   CodeMirror.registerHelper('hint', 'css', helper);
   CodeMirror.registerHelper('hint', 'stylus', helper);

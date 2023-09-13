@@ -56,10 +56,6 @@ addAPI(/** @namespace API */ {
   usw: uswApi,
   /** @type {BackgroundWorker} */
   worker: createWorker({url: '/background/background-worker'}),
-  prefs: {
-    getValues: () => prefs.__values, // will be deepCopy'd by apiHandler
-    set: prefs.set,
-  },
 });
 
 //#endregion
@@ -110,7 +106,7 @@ async function apiPortMessage({id, data}, port) {
     data = msg._wrapError(e);
   }
   data.id = id;
-  port.postMessage(data);
+  try { port.postMessage(data); } catch (e) {}
 }
 
 //#endregion

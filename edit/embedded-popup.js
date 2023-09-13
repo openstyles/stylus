@@ -30,7 +30,7 @@
   prefs.subscribe('iconset', (_, val) => {
     const prefix = `images/icon/${val ? 'light/' : ''}`;
     btn.srcset = `${prefix}16.png 1x,${prefix}32.png 2x`;
-  }, {runNow: true});
+  }, true);
 
   window.on('keydown', e => {
     if (getEventKeyName(e) === POPUP_HOTKEY) {

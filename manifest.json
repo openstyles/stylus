@@ -35,6 +35,7 @@
       "js/worker-util.js",
       "js/cmpver.js",
 
+      "background/bg-prefs.js",
       "background/db.js",
       "background/color-scheme.js",
       "background/icon-manager.js",
@@ -74,10 +75,9 @@
       "all_frames": true,
       "match_about_blank": true,
       "js": [
+        "content/style-injector.js",
         "js/browser.js",
         "js/msg.js",
-        "js/prefs.js",
-        "content/style-injector.js",
         "content/apply.js"
       ]
     },

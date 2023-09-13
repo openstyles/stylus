@@ -1,5 +1,6 @@
 /* global API msg */// msg.js
-/* global debounce deepMerge */// toolbox.js - not used in content scripts
+/* global deepMerge */// toolbox.js - not used in content scripts
+/* global isFrameSameOrigin */// style-injector.js (content script)
 'use strict';
 
 (() => {
@@ -145,35 +146,30 @@
   const warnUnknown = console.warn.bind(console, 'Unknown preference "%s"');
   /** @type {PrefsValues} */
   const values = clone(defaults);
-  const onChange = {
-    any: new Set(),
-    specific: {},
-  };
+  const onChange = {};
   const isBg = msg.bg === window;
   const isExt = chrome.tabs;
   // A scoped listener won't trigger for our [big] stuff in `local`, Chrome 73+, FF
   const onSync = isExt && chrome.storage.sync.onChanged;
-  // API fails in the active tab during Chrome startup as it loads the tab before bg
-  /** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
-  let ready = (isBg ? readStorage() : API.prefs.getValues().catch(readStorage))
-    .then(data => {
-      setAll(data);
-      ready = true;
-    });
-
+  let busy, setReady;
+  if (!isBg && isFrameSameOrigin && (isExt || chrome.app) && (busy = parent.prefs)) {
+    busy = Promise.resolve().then(setAll.bind(null, clone(busy.__values)));
+  } else {
+    busy = new Promise(go => (setReady = go));
+  }
+  busy.set = (v, old) => setReady && setReady(v ? setAll(v, old) : API.prefs.get().then(setAll));
   if (isExt) {
-    (onSync || chrome.storage.onChanged).addListener(async (changes, area) => {
+    if (!isBg) busy.set();
+    busy.then(() => (onSync || chrome.storage.onChanged).addListener((changes, area) => {
       const data = (onSync || area === 'sync') && changes[STORAGE_KEY];
-      if (!data) return;
-      if (ready.then) await ready;
-      setAll(data.newValue);
-    });
+      if (data) setAll(data.newValue, data.oldValue);
+    }));
   }
 
   const prefs = window.prefs = {
-
     STORAGE_KEY,
-    ready,
+    clone,
+    ready: busy,
     /** @type {PrefsValues} */
     defaults: new Proxy({}, {
       get: (_, key) => clone(defaults[key]),
@@ -187,7 +183,6 @@
     get values() {
       return clone(values);
     },
-
     __defaults: defaults, // direct reference, be careful!
     __values: values, // direct reference, be careful!
 
@@ -197,8 +192,9 @@
     },
 
     set(key, val, isSynced) {
-      const oldValue = values[key];
-      const type = typeof defaults[key];
+      const old = values[key];
+      const def = defaults[key];
+      const type = typeof def;
       if (!type) return warnUnknown(key);
       if (type !== typeof val) {
         val = type === 'string' ? `${val}` :
@@ -206,10 +202,15 @@
             type === 'boolean' ? val === 'true' || val !== 'false' && !!val :
               null;
       }
-      if (val !== oldValue && !(type === 'object' && val && simpleDeepEqual(val, oldValue))) {
-        values[key] = val;
-        emitChange(key, val, isSynced);
-      }
+      if (val === old || type === 'object' && simpleDeepEqual(val, old)) return;
+      values[key] = val;
+      const fns = onChange[key];
+      if (fns) for (const fn of fns) fn(key, val);
+      if (!isSynced && !isBg) API.prefs.set(key, val);
+      /* browser.storage is slow and can randomly lose values if the tab was closed immediately,
+       so we're sending the value to the background script which will save it to the storage;
+       the extra bonus is that invokeAPI is immediate in extension tabs. */
+      return true;
     },
 
     reset(key) {
@@ -219,86 +220,49 @@
     /**
      * @param {?string|string[]} keys - pref ids or a falsy value to subscribe to everything
      * @param {function(key:string?, value:any?)} fn
-     * @param {Object} [opts]
-     * @param {boolean} [opts.runNow] - when truthy, the listener is called immediately:
+     * @param {boolean} [runNow] - when truthy, the listener is called immediately:
      *   1) if `keys` is an array of keys, each `key` will be fired separately with a real `value`
      *   2) if `keys` is falsy, no key/value will be provided
      */
-    async subscribe(keys, fn, {runNow} = {}) {
-      const toRun = [];
-      if (keys) {
-        const uniqKeys = new Set(Array.isArray(keys) ? keys : [keys]);
-        for (const key of uniqKeys) {
-          if (!(key in defaults)) { warnUnknown(key); continue; }
-          const listeners = onChange.specific[key] ||
-            (onChange.specific[key] = new Set());
-          listeners.add(fn);
-          if (runNow) toRun.push({fn, key});
+    subscribe(keys, fn, runNow) {
+      let toRun;
+      for (const key of Array.isArray(keys) ? new Set(keys) : [keys]) {
+        if (!(key in defaults)) { warnUnknown(key); continue; }
+        (onChange[key] || (onChange[key] = new Set())).add(fn);
+        if (runNow) {
+          if (!busy) fn(key, values[key]);
+          else (toRun || (toRun = [])).push(key);
         }
-      } else {
-        onChange.any.add(fn);
-        if (runNow) toRun.push({fn});
       }
-      if (toRun.length) {
-        if (ready.then) await ready;
-        toRun.forEach(({fn, key}) => fn(key, values[key]));
-      }
-    },
-
-    subscribeMany(data, opts) {
-      for (const [k, fn] of Object.entries(data)) {
-        prefs.subscribe(k, fn, opts);
-      }
+      if (toRun) return busy.then(() => toRun.forEach(key => fn(key, values[key])));
     },
 
     unsubscribe(keys, fn) {
-      if (keys) {
-        for (const key of keys) {
-          const listeners = onChange.specific[key];
-          if (listeners) {
-            listeners.delete(fn);
-            if (!listeners.size) {
-              delete onChange.specific[key];
-            }
-          }
+      for (const key of Array.isArray(keys) ? keys : [keys]) {
+        const fns = onChange[key];
+        if (fns) {
+          fns.delete(fn);
+          if (!fns.size) delete onChange[key];
         }
-      } else {
-        onChange.all.remove(fn);
       }
     },
   };
 
-  function setAll(settings) {
-    for (const [key, value] of Object.entries(settings || {})) {
-      prefs.set(key, value, true);
+  function setAll(data, fromStorage) {
+    busy = false;
+    if (!fromStorage) {
+      Object.assign(values, data);
+      return true;
     }
-  }
-
-  function emitChange(key, value, isSynced) {
-    for (const fn of onChange.specific[key] || []) {
-      fn(key, value);
+    // checking default values that were deleted from current storage
+    for (const key in fromStorage) {
+      if (!(key in data) && key in defaults) prefs.set(key, defaults[key], true);
     }
-    for (const fn of onChange.any) {
-      fn(key, value);
+    // setting current value + deleting from the source if it's unchanged (for bg-prefs.js)
+    for (const key in data || (data = {})) {
+      if (!prefs.set(key, data[key], true)) if (isBg) delete data[key];
     }
-    if (!isSynced) {
-      /* browser.storage is slow and can randomly lose values if the tab was closed immediately
-       so we're sending the value to the background script which will save it to the storage;
-       the extra bonus is that invokeAPI is immediate in extension tabs */
-      if (isBg) {
-        debounce(updateStorage);
-      } else {
-        API.prefs.set(key, value);
-      }
-    }
-  }
-
-  async function readStorage() {
-    return (await browser.storage.sync.get(STORAGE_KEY))[STORAGE_KEY];
-  }
-
-  function updateStorage() {
-    return browser.storage.sync.set({[STORAGE_KEY]: values});
+    return !isBg || data;
   }
 
   function simpleDeepEqual(a, b) {

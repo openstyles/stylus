@@ -42,7 +42,7 @@ const syncMan = (() => {
       (_, val) => val === 'none'
         ? syncMan.stop()
         : syncMan.start(val, true),
-      {runNow: true});
+      true);
   });
 
   chrome.alarms.onAlarm.addListener(async ({name}) => {

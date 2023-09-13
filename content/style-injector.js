@@ -1,5 +1,13 @@
 'use strict';
 
+{
+  let x;
+  window.isFrame = x = window !== parent;
+  if (x) try { x = !!(Object.getOwnPropertyDescriptor(parent.location, 'href') || {}).get; } catch (e) { x = false; }
+  window.isFrameSameOrigin = x;
+  window.isFrameNoUrl = x && location.protocol === 'about:';
+}
+
 window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
   compare,
   onUpdate = () => {},
@@ -234,14 +242,13 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
 
   function styleMapToArray(styleMap) {
     if (styleMap.cfg) {
-      ({exposeStyleName} = styleMap.cfg);
-      delete styleMap.cfg;
+      exposeStyleName = styleMap.cfg.name;
     }
-    return Object.values(styleMap).map(({id, code, name}) => ({
+    return Object.values(styleMap).map(({id, code, name}) => id && ({
       id,
       name,
       code: code.join(''),
-    }));
+    })).filter(Boolean);
   }
 
   function update(newStyle) {

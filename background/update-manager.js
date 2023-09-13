@@ -46,7 +46,7 @@ const updateMan = (() => {
 
   bgReady.all.then(async () => {
     lastUpdateTime = await chromeLocal.getValue('lastUpdateTime') || Date.now();
-    prefs.subscribe('updateInterval', schedule, {runNow: true});
+    prefs.subscribe('updateInterval', schedule, true);
     chrome.alarms.onAlarm.addListener(onAlarm);
   });
 

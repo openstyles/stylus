@@ -94,6 +94,8 @@
   }
 
   function apiPortDisconnect() {
+    const error = chrome.runtime.lastError;
+    if (error) for (const id in portReqs) apiPortResponse({id, error});
     port = null;
   }
 
@@ -103,7 +105,7 @@
     if (error) {
       const {err} = req;
       err.message = error.message;
-      err.stack = error.stack + '\n' + err.stack;
+      if (error.stack) err.stack = error.stack + '\n' + err.stack;
       req.ko(error);
     } else {
       req.ok(data);
@@ -111,8 +113,9 @@
   }
 
   function onRuntimeMessage({data, target}, sender, sendResponse) {
-    if (bgReadying && data && data.method === 'backgroundReady') {
-      bgReadySignal();
+    if (data.method === 'backgroundReady') {
+      if (bgReadySignal) bgReadySignal(true);
+      if (port) apiPortDisconnect();
     }
     const res = msg._execute(target, data, sender);
     if (res instanceof Promise) {
@@ -155,11 +158,9 @@
     try {
       return await apiSend(m);
     } catch (e) {
-      if (!bgReadying || !isIgnorableError(e)) {
-        return Promise.reject(e);
-      }
-      await bgReadying;
-      return apiSend(m);
+      return bgReadying && isIgnorableError(e)
+        ? await bgReadying && apiSend(m)
+        : Promise.reject(e);
     } finally {
       // Assuming bg is ready if messaging succeeded
       bgReadying = bgReadySignal = null;

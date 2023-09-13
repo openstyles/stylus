@@ -49,19 +49,22 @@ function addAPI(methods) {
 }
 
 /* exported broadcastInjectorConfig */
-const broadcastInjectorConfig = ((cfg, promise) => (key, val) => {
+const broadcastInjectorConfig = ((map, cfg, promise) => (key, val) => {
   if (key) {
     if (!cfg) {
       cfg = {};
       promise = new Promise(setTimeout).then(broadcastInjectorConfig);
     }
-    cfg[key] = val;
+    cfg[map[key] || key] = val;
   } else {
     promise = msg.broadcast({method: 'injectorConfig', cfg}, true);
     cfg = null;
   }
   return promise;
-})();
+})({
+  exposeIframes: 'top',
+  disableAll: 'off',
+});
 
 /* exported createCache */
 /** Creates a FIFO limit-size map. */

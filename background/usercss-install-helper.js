@@ -37,7 +37,7 @@ bgReady.all.then(() => {
     },
   };
 
-  prefs.subscribe('urlInstaller', toggle, {runNow: true});
+  prefs.subscribe('urlInstaller', toggle, true);
 
   function toggle(key, val) {
     chrome.webRequest.onBeforeSendHeaders.removeListener(maybeInstallFromDistro);

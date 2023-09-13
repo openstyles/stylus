@@ -1,5 +1,5 @@
 /* global API msg */// msg.js
-/* global StyleInjector */
+/* global StyleInjector isFrame isFrameNoUrl isFrameSameOrigin */// style-injector.js
 'use strict';
 
 (() => {
@@ -10,18 +10,14 @@
    * false -> when disableAll mode is on at start, the styles won't be sent
    * so while disableAll lasts we can ignore messages about style updates because
    * the tab will explicitly ask for all styles in bulk when disableAll mode ends */
-  let hasStyles = false;
+  let hasStyles; // uninitialized for backgroundReady detection below
   let isDisabled = false;
   let isTab = !chrome.tabs || location.pathname !== '/popup.html';
-  const order = {main: [], prio: []};
+  let order;
   const calcOrder = ({id}) =>
     (order.prio[id] || 0) * 1e6 ||
     order.main[id] ||
     id + .5e6; // no order = at the end of `main`
-  const isFrame = window !== parent;
-  const isFrameSameOrigin = isFrame
-    && (tryCatch(Object.getOwnPropertyDescriptor, parent.location, 'href') || {}).get;
-    // TODO: remove tryCatch and call directly when minimum_chrome_version >= 86
   const isXml = document instanceof XMLDocument;
   const CHROME = 'app' in chrome;
   const isUnstylable = !CHROME && isXml;
@@ -30,7 +26,6 @@
     onUpdate: onInjectorUpdate,
   });
   // dynamic iframes don't have a URL yet so we'll use their parent's URL (hash isn't inherited)
-  const isFrameNoUrl = isFrameSameOrigin && location.protocol === 'about:';
   let matchUrl = isFrameNoUrl
     ? parent.location.href.split('#')[0]
     : location.href;
@@ -87,31 +82,22 @@
   }
 
   async function init() {
+    const SYM_ID = 'styles';
+    const SYM = Symbol.for(SYM_ID);
+    const parentStyles = isFrameNoUrl && CHROME && parent[parent.Symbol.for(SYM_ID)];
     if (isUnstylable) {
       await API.styleViaAPI({method: 'styleApply'});
     } else {
-      const SYM_ID = 'styles';
-      const SYM = Symbol.for(SYM_ID);
-      const parentStyles = isFrameNoUrl && CHROME && parent[parent.Symbol.for(SYM_ID)];
       const styles =
         window[SYM] ||
         parentStyles && await new Promise(onFrameElementInView) && parentStyles ||
         // XML in Chrome will be auto-converted to html later, so we can't style it via XHR now
         !isFrameSameOrigin && !isXml && !chrome.tabs && tryCatch(getStylesViaXhr) ||
         await API.styles.getSectionsByUrl(matchUrl, null, true);
-      const {cfg} = styles;
-      if (cfg) {
-        isDisabled = cfg.disableAll;
-        topSite = cfg.exposeIframes;
-        Object.assign(order, cfg.order);
-      }
+      ({order, off: isDisabled, top: topSite} = styles.cfg);
       hasStyles = !isDisabled;
-      if (hasStyles) {
-        window[SYM] = styles;
-        await styleInjector.apply(styles);
-      } else {
-        delete window[SYM];
-      }
+      window[SYM] = styles;
+      if (hasStyles) await styleInjector.apply(styles);
       styleInjector.toggle(hasStyles);
     }
   }
@@ -178,17 +164,22 @@
 
       case 'injectorConfig': {
         let v;
-        if ((v = req.cfg.disableAll) != null) { isDisabled = v; updateDisableAll(); }
-        if ((v = req.cfg.exposeIframes) != null) { topSite = v; updateExposeIframes(); }
-        if ((v = req.cfg.order) != null) { Object.assign(order, v); styleInjector.sort(); }
+        if ((v = req.cfg.off) != null) { isDisabled = v; updateDisableAll(); }
+        if ((v = req.cfg.top) != null) { topSite = v; updateExposeIframes(); }
+        if ((v = req.cfg.order) != null) { order = v; styleInjector.sort(); }
         break;
       }
+
+      case 'backgroundReady':
+        // This may happen when reloading the background page without reloading the extension
+        if (hasStyles !== null) updateCount();
+        return true;
     }
   }
 
   function updateDisableAll() {
     if (isUnstylable) {
-      API.styleViaAPI({method: 'injectorConfig', cfg: {disableAll: isDisabled}});
+      API.styleViaAPI({method: 'injectorConfig', cfg: {off: isDisabled}});
     } else if (!hasStyles && !isDisabled) {
       init();
     } else {

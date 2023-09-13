@@ -36,7 +36,7 @@ async function StyleSettings() {
   update();
   prefs.subscribe('schemeSwitcher.enabled', (_, val) => {
     $('#ss-scheme-off', ui).hidden = val !== 'never';
-  }, {runNow: true});
+  }, true);
   window.on(SS_ID, update);
   window.on('closeHelp', () => window.off(SS_ID, update), {once: true});
   helpPopup.show(t(SS_ID), ui, {

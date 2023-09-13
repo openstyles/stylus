@@ -126,8 +126,8 @@
       .filter(Boolean));
   }
 
-  async function injectorConfig({cfg: {disableAll}}, sender) {
-    if (disableAll) {
+  async function injectorConfig({cfg: {off}}, sender) {
+    if (off) {
       const {tab, frameId} = sender;
       const {tabFrames, frameStyles} = getCachedData(tab.id, frameId);
       if (!isEmptyObj(frameStyles)) {
@@ -135,7 +135,7 @@
         await Promise.all(Object.keys(frameStyles).map(id =>
           removeCSS(tab.id, frameId, frameStyles[id].join('\n'))));
       }
-    } else if (disableAll != null) {
+    } else if (off != null) {
       return styleApply({}, sender);
     }
   }

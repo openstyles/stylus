@@ -50,7 +50,7 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
     $('#ss-scheme').append(...$('#ss-scheme', el).children);
     prefs.subscribe('schemeSwitcher.enabled', (_, val) => {
       $('#ss-scheme-off').hidden = val !== 'never';
-    }, {runNow: true});
+    }, true);
   });
 
   const [

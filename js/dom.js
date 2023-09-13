@@ -303,7 +303,7 @@ function setupLivePrefs(ids) {
   let init = true;
   // getElementsByTagName is cached so it's much faster than calling querySelector for each id
   ids = ids ? [...ids] : prefs.knownKeys.filter(id => id in document.getElementsByTagName('*'));
-  prefs.subscribe(ids, updateElement, {runNow: true});
+  prefs.subscribe(ids, updateElement, true);
   init = false;
   function onChange() {
     if (this.checkValidity() && (this.type !== 'radio' || this.checked)) {
@@ -417,13 +417,13 @@ const dom = {};
 
 prefs.subscribe('disableAll', (_, val) => {
   $.rootCL.toggle('all-disabled', val);
-}, {runNow: true});
+}, true);
 
 prefs.ready.then(() => {
   waitForSelector('details[data-pref]', {
     recur(elems) {
       for (const el of elems) {
-        prefs.subscribe(el.dataset.pref, updateOnPrefChange, {runNow: true});
+        prefs.subscribe(el.dataset.pref, updateOnPrefChange, true);
         new MutationObserver(saveOnChange)
           .observe(el, {attributes: true, attributeFilter: ['open']});
       }

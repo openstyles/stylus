@@ -56,9 +56,9 @@ declare interface InjectedStyle {
 }
 
 declare interface InjectionConfig {
-  exposeStyleName?: boolean;
-  exposeIframes?: boolean;
-  disableAll?: boolean;
+  name?: boolean;
+  top?: boolean;
+  off?: boolean;
   order?: InjectionOrder;
 }
 

@@ -7,6 +7,7 @@
   <link href="icons.ttf" rel="preload" as="font" crossorigin="anonymous">
   <link href="global.css" rel="stylesheet">
   <link href="global-dark.css" rel="stylesheet">
+  <link rel="stylesheet" href="popup/popup.css">
 
   <template data-id="style">
     <div class="entry">
@@ -76,20 +77,15 @@
     <div id="write-for-frames" tabindex="0">&lt;iframe&gt;...</div>
   </template>
 
+  <script src="content/style-injector.js"></script>
   <script src="js/browser.js"></script>
   <script src="js/toolbox.js"></script>
   <script src="js/msg.js"></script>
-
-  <script src="popup/preinit.js"></script>
-
   <script src="js/prefs.js"></script>
   <script src="js/dom.js"></script>
   <script src="js/localization.js"></script>
-
-  <script src="content/style-injector.js"></script>
   <script src="content/apply.js"></script>
-
-  <link rel="stylesheet" href="popup/popup.css">
+  <script src="popup/preinit.js"></script>
   <script src="js/themer.js"></script> <!-- must be last in HEAD to avoid FOUC -->
 </head>
 

@@ -16,7 +16,7 @@ document.body.appendChild(t.template.body);
 setupLivePrefs();
 $$('input[min], input[max]').forEach(enforceInputRange);
 for (const el of $$('[show-if]')) {
-  prefs.subscribe(el.getAttribute('show-if'), toggleShowIf, {runNow: true});
+  prefs.subscribe(el.getAttribute('show-if'), toggleShowIf, true);
 }
 if (CHROME_POPUP_BORDER_BUG) {
   $('.chrome-no-popup-border').classList.remove('chrome-no-popup-border');

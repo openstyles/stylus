@@ -1,6 +1,7 @@
 /* global bgReady */// common.js
 /* global msg */
-/* global URLS ignoreChromeError */// toolbox.js
+/* global tabMan */
+/* global URLS ignoreChromeError stringAsRegExpStr */// toolbox.js
 'use strict';
 
 /*
@@ -9,74 +10,58 @@
  */
 
 bgReady.all.then(() => {
-  const NTP = 'chrome://newtab/';
   const ALL_URLS = '<all_urls>';
   const SCRIPTS = chrome.runtime.getManifest().content_scripts;
-  // expand * as .*?
-  const wildcardAsRegExp = (s, flags) => new RegExp(
-    s.replace(/[{}()[\]/\\.+?^$:=!|]/g, '\\$&')
-      .replace(/\*/g, '.*?'), flags);
+  const globToRe = (s, re = '.') => stringAsRegExpStr(s.replace(/\*/g, '\n')).replace(/\n/g, re + '*?');
   for (const cs of SCRIPTS) {
-    cs.matches = cs.matches.map(m => (
-      m === ALL_URLS ? m : wildcardAsRegExp(m)
-    ));
+    if (!(cs[ALL_URLS] = cs.matches.includes(ALL_URLS))) {
+      cs.matches.forEach((m, i) => {
+        const [scheme, host, path] = m.match(/^([^:])+:\/\/([^/]+)\/(.*)/);
+        cs.matches[i] = new RegExp(
+          `^${scheme === '*' ? 'https?' : scheme}://${globToRe(host, '[^/]')}/${globToRe(path)}$`);
+      });
+    }
   }
   const busyTabs = new Set();
   let busyTabsTimer;
 
   setTimeout(injectToAllTabs);
 
-  function injectToTab({url, tabId, frameId = null}) {
-    for (const script of SCRIPTS) {
-      if (
-        script.matches.some(match =>
-          (match === ALL_URLS || url.match(match)) &&
-          (!url.startsWith('chrome') || url === NTP))
-      ) {
-        doInject(tabId, frameId, script);
+  async function injectToTab(tabId, url) {
+    const jobs = [];
+    tabMan.set(tabId, 'url', url);
+    if (await msg.sendTab(tabId, {method: 'backgroundReady'})) {
+      return;
+    }
+    for (const cs of SCRIPTS) {
+      if (!cs[ALL_URLS] && !cs.matches.some(url.match, url)) {
+        continue;
+      }
+      const options = {
+        runAt: cs.run_at,
+        allFrames: cs.all_frames,
+        matchAboutBlank: cs.match_about_blank,
+      };
+      for (const file of cs.js) {
+        options.file = file;
+        jobs.push(browser.tabs.executeScript(tabId, options).catch(ignoreChromeError));
       }
     }
+    await Promise.all(jobs);
   }
 
-  function doInject(tabId, frameId, script) {
-    const options = frameId === null ? {} : {frameId};
-    msg.sendTab(tabId, {method: 'ping'}, options)
-      .catch(() => false)
-      .then(pong => {
-        if (pong) {
-          return;
-        }
-        const options = {
-          runAt: script.run_at,
-          allFrames: script.all_frames,
-          matchAboutBlank: script.match_about_blank,
-        };
-        if (frameId !== null) {
-          options.allFrames = false;
-          options.frameId = frameId;
-        }
-        for (const file of script.js) {
-          chrome.tabs.executeScript(tabId, Object.assign({file}, options), ignoreChromeError);
-        }
-      });
-  }
-
-  function injectToAllTabs() {
-    return browser.tabs.query({}).then(tabs => {
-      for (const tab of tabs) {
-        // skip unloaded/discarded/chrome tabs
-        if (!tab.width || tab.discarded || !URLS.supported(tab.pendingUrl || tab.url)) continue;
-        // our content scripts may still be pending injection at browser start so it's too early to ping them
-        if (tab.status === 'loading') {
-          trackBusyTab(tab.id, true);
-        } else {
-          injectToTab({
-            url: tab.pendingUrl || tab.url,
-            tabId: tab.id,
-          });
-        }
+  async function injectToAllTabs() {
+    for (const tab of await browser.tabs.query({})) {
+      const url = tab.pendingUrl || tab.url;
+      // skip unloaded/discarded/chrome tabs
+      if (!tab.width || tab.discarded || !URLS.supported(url)) continue;
+      // our content scripts may still be pending injection at browser start so it's too early to ping them
+      if (tab.status === 'loading') {
+        trackBusyTab(tab.id, true);
+      } else {
+        await injectToTab(tab.id, url);
       }
-    });
+    }
   }
 
   function toggleBusyTabListeners(state) {
@@ -101,8 +86,8 @@ bgReady.all.then(() => {
   function onBusyTabUpdated({error, frameId, tabId, url}) {
     if (!frameId && busyTabs.has(tabId)) {
       trackBusyTab(tabId, false);
-      if (url && !error) {
-        injectToTab({tabId, url});
+      if (url && !error && URLS.supported(url)) {
+        injectToTab(tabId, url);
       }
     }
   }

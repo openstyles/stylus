@@ -40,9 +40,9 @@ msg.onExtension(onRuntimeMessage);
 
 prefs.subscribe('popup.stylesFirst', (key, stylesFirst) => {
   $.rootCL.toggle('styles-last', !stylesFirst);
-}, {runNow: true});
+}, true);
 if (CHROME_POPUP_BORDER_BUG) {
-  prefs.subscribe('popup.borders', toggleSideBorders, {runNow: true});
+  prefs.subscribe('popup.borders', toggleSideBorders, true);
 }
 if (CHROME >= 66 && CHROME <= 69) { // Chrome 66-69 adds a gap, https://crbug.com/821143
   document.head.appendChild($create('style', 'html { overflow: overlay }'));
@@ -86,7 +86,7 @@ function toggleSideBorders(_key, state) {
 
 /** @param {chrome.webNavigation.GetAllFrameResultDetails[]} frames */
 async function initPopup(frames) {
-  prefs.subscribe('popupWidth', setPopupWidth, {runNow: true});
+  prefs.subscribe('popupWidth', setPopupWidth, true);
   setupLivePrefs();
 
   const elFind = $('#find-styles-btn');

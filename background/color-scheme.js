@@ -22,7 +22,7 @@ const colorScheme = (() => {
   update('system', matchMedia('(prefers-color-scheme:dark)').matches);
   prefs.subscribe(kSTATE, (_, val) => {
     if (val === 'time') {
-      prefs.subscribe([kSTART, kEND], onNightChanged, {runNow: true});
+      prefs.subscribe([kSTART, kEND], onNightChanged, true);
       chrome.alarms.onAlarm.addListener(onAlarm);
     } else if (chrome.alarms.onAlarm.hasListener(onAlarm)) {
       prefs.unsubscribe([kSTART, kEND], onNightChanged);
@@ -31,7 +31,7 @@ const colorScheme = (() => {
       chrome.alarms.clear(kEND);
     }
     update();
-  }, {runNow: true});
+  }, true);
 
   return {
     SCHEMES,

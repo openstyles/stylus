@@ -35,7 +35,7 @@ function SectionsEditor() {
   prefs.subscribe('editor.arrowKeysTraverse', (_, val) => {
     for (const {cm} of sections) handleKeydownSetup(cm, val);
     upDownJumps = val;
-  }, {runNow: true});
+  }, true);
 
   /** @namespace Editor */
   Object.assign(editor, {

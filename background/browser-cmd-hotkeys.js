@@ -7,7 +7,7 @@
 
 (() => {
   const hotkeyPrefs = prefs.knownKeys.filter(k => k.startsWith('hotkey.'));
-  prefs.subscribe(hotkeyPrefs, updateHotkey, {runNow: true});
+  prefs.subscribe(hotkeyPrefs, updateHotkey, true);
 
   async function updateHotkey(name, value) {
     try {

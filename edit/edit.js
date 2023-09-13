@@ -371,7 +371,7 @@ function EditorMethods() {
       }
     }
     cmFactory.globalSetOption('colorpicker', defaults.colorpicker);
-  }, {runNow: true});
+  }, true);
 
   $('#colorpicker-settings').onclick = function (event) {
     event.preventDefault();

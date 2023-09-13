@@ -56,7 +56,7 @@ class EditorSection {
     if (!this.targets.length) this.addTarget();
     editor.applyScrollInfo(cm, si);
     initBeautifyButton($('.beautify-section', el), [cm]);
-    prefs.subscribe('editor.toc.expanded', this.updateTocPrefToggled.bind(this), {runNow: true});
+    prefs.subscribe('editor.toc.expanded', this.updateTocPrefToggled.bind(this), true);
     this.updateRegexpTester();
     new ResizeGrip(cm); // eslint-disable-line no-use-before-define
   }

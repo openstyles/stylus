@@ -104,7 +104,7 @@ function EditorHeader() {
   setupLivePrefs();
 
   window.on('load', () => {
-    prefs.subscribe('editor.keyMap', showHotkeyInTooltip, {runNow: true});
+    prefs.subscribe('editor.keyMap', showHotkeyInTooltip, true);
     window.on('showHotkeyInTooltip', showHotkeyInTooltip);
   }, {once: true});
 

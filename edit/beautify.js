@@ -23,7 +23,7 @@ prefs.subscribe('editor.beautify.hotkey', (key, value) => {
   if (value) {
     extraKeys[value] = 'beautify';
   }
-}, {runNow: true});
+}, true);
 
 /**
  * @name beautify
