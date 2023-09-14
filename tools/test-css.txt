@@ -554,3 +554,18 @@ a { padding: 1em; margin: 1ex; }
    contain-intrinsic-size: none;
   }
 }
+@scope (.good) to (.content > *) {
+  p { color: green; }
+  > p { color: green; }
+  & > p { color: green; }
+  @scope ([data-scope='main-component']) to ([data-scope] > *) {
+    foo :scope p { color: green; }
+    @scope (:scope > .child-scope) to (:scope .limit) {
+      .content { color: red; }
+    }
+  }
+}
+@scope (.bad) too (.content > *) { p { color: green; } }
+@scope (.bad) to { p { color: green; } }
+@scope to (.bad) { p { color: green; } }
+@scope (.bad:pseudo) to (foo,) { p { color: green; } }

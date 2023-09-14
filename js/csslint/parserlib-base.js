@@ -1115,10 +1115,9 @@
       return this.string.charCodeAt(this.offset + distance - 1);
     }
     mark() {
-      this._bookmark = {o: this.offset, l: this.line, c: this.col, b: this._break};
+      return (this._bookmark = {o: this.offset, l: this.line, c: this.col, b: this._break});
     }
-    reset() {
-      const b = this._bookmark;
+    reset(b = this._bookmark) {
       if (b) {
         ({o: this.offset, l: this.line, c: this.col, b: this._break} = b);
         this._bookmark = null;

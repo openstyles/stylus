@@ -61,7 +61,7 @@
     )({B: 'bottom', C: 'corner', L: 'left', M: 'middle', R: 'right', T: 'top', X: 'center'}),
   };
   for (const k in B) B[k] = new Bucket(B[k]);
-  for (const k of 'and,andOr,auto,autoNone,evenOdd,fromTo,important,layer,n,none,not,notOnly,of,or'
+  for (const k of 'and,andOr,auto,autoNone,evenOdd,fromTo,important,layer,n,none,not,notOnly,of,or,to'
     .split(',')) B[k] = new Bucket(k.split(/(?=[A-Z])/)); // splitting by an Uppercase A-Z letter
   const OrDie = {must: true};
   const OrDieReusing = {must: true, reuse: true};
@@ -230,6 +230,10 @@
     }
   }
 
+  /**
+   * @template T
+   * @prop {T[]} parts
+   */
   class TokenValue extends Token {
     /** @return {TokenValue} */
     static from(parts, tok = parts[0]) {
@@ -914,7 +918,9 @@
       super();
       this.options = options || {};
       this.stream = null;
-      /** @type {number} style rule nesting depth: when > 0 @nest and &-selectors are allowed */
+      /** @type {number} @scope rule nesting depth: when > 0 relative and &-selectors are allowed */
+      this._inScope = 0;
+      /** @type {number} style rule nesting depth: when > 0 &-selectors are allowed */
       this._inStyle = 0;
       /** @type {Token[]} stack of currently processed nested blocks or rules */
       this._stack = [];
@@ -1141,7 +1147,7 @@
      * @param {TokenStream} stream
      * @param {Token} [tok]
      * @param {boolean} [relative]
-     * @return {Token[]|void}
+     * @return {TokenValue<TokenSelector>[]|void}
      */
     _selectorsGroup(stream, tok, relative) {
       const selectors = [];
@@ -1161,7 +1167,7 @@
      * @param {TokenStream} stream
      * @param {Token} [tok]
      * @param {boolean} [relative]
-     * @return {TokenValue|void}
+     * @return {TokenValue<TokenSelector>|void}
      */
     _selector(stream, tok, relative) {
       const sel = [];
@@ -1197,10 +1203,17 @@
     }
 
     /**
+     * @typedef {Token & {
+     * ns: string|Token
+     * elementName: string|Token
+     * modifiers: Token[]
+     * }} TokenSelector
+     */
+    /**
      * Warning! The next token is consumed
      * @param {TokenStream} stream
      * @param {Token} [start]
-     * @return {Token|void}
+     * @return {TokenSelector|void}
      */
     _simpleSelectorSequence(stream, start = stream.grab()) {
       let si = start.id; if (!isOwn(TT.selectorStart, si)) return;
@@ -1393,10 +1406,19 @@
     //#region Parser rulesets
 
     /**
+     * @prop {Token} [brace]
+     * @prop {boolean} [decl] - can contain prop:value declarations
+     * @prop {Array|{}} [event] - ['name', {...props}?]
+     * @prop {boolean} [margins] - check for the margin @-rules.
+     * @prop {boolean} [scoped] - use ScopedProperties for the start token's name
+     * @typedef {{}} RuleBlockOpts
+     */
+
+    /**
      * A style rule i.e. _selectorsGroup { _block }
      * @param {TokenStream} stream
      * @param {Token} tok
-     * @param {{}} [opts]
+     * @param {RuleBlockOpts} [opts]
      * @return {true|void}
      */
     _styleRule(stream, tok, opts) {
@@ -1409,7 +1431,7 @@
         const amps = tok.id === AMP ? -1 : stream._amp;
         const sels = this._selectorsGroup(stream, tok, true);
         if (!sels) { stream.unget(); return; }
-        if (!this._inStyle && (stream._amp > amps || sels.some(isRelativeSelector))) {
+        if (!this._inScope && !this._inStyle && (stream._amp > amps || sels.some(isRelativeSelector))) {
           this.alarm(2, 'Nested selector must be inside a style rule.', tok);
         }
         brace = stream.matchSmart(LBRACE, OrDieReusing);
@@ -1432,12 +1454,7 @@
      * {}-block that can contain _declaration, @-rule, &-prefixed _styleRule
      * @param {TokenStream} stream
      * @param {Token} start
-     * @param {{}} [opts]
-     * @param {Token} [opts.brace]
-     * @param {boolean} [opts.decl] - can contain prop:value declarations
-     * @param {Array|{}} [opts.event] - ['name', {...props}?]
-     * @param {boolean} [opts.margins] - check for the margin @-rules.
-     * @param {boolean} [opts.scoped] - use ScopedProperties for the start token's name
+     * @param {RuleBlockOpts} [opts]
      */
     _block(stream, start, opts = {}) {
       const {margins, scoped, decl, event = []} = opts;
@@ -1707,6 +1724,40 @@
         event: ['property', {name}],
         scoped: true,
       });
+    },
+
+    /**
+     * @this {Parser}
+     * @param {TokenStream} stream
+     * @param {Token} start
+     */
+    scope(stream, start) {
+      const mark = stream.source.mark();
+      let a, b;
+      let tok = stream.grab();
+      try {
+        if (tok.id === LPAREN) {
+          a = this._selectorsGroup(stream);
+          stream.matchSmart(RPAREN, OrDieReusing);
+          tok = stream.grab();
+        }
+        if (a && B.to.has(tok)) {
+          stream.matchSmart(LPAREN, OrDie);
+          b = this._selectorsGroup(stream);
+          stream.matchSmart(RPAREN, OrDieReusing);
+          tok = stream.grab();
+        }
+        tok = stream.matchSmart(LBRACE, OrDieReusing);
+      } catch (err) {
+        stream.source.reset(mark);
+        stream._resetBuf();
+        this._declarationFailed(stream, err);
+        return;
+      }
+      this._inScope++;
+      // TODO: reuse csslint::known-pseudos rule to throw on pseudo-element selectors per spec
+      this._block(stream, start, {event: ['scope', {start: a, end: b}], brace: tok});
+      this._inScope--;
     },
 
     /**

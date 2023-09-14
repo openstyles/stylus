@@ -72,3 +72,7 @@ error	534	1	Expected "{" but found "}".
 warning	538	19	Non-alphabetical order: "margin".
 warning	543	33	Expected [ [ <url> | radial-gradient() | linear-gradient() | conic-gradient() | gradient() | repeating-radial-gradient() | repeating-linear-gradient() | repeating-conic-gradient() | repeating-gradient() | -webkit-cross-fade() | <string> ] [ <resolution> || type( <string> ) ] ]# but found ""foo.png" foo".
 warning	548	32	Expected [ [ root | nearest | self ] || [ block | inline | vertical | horizontal ] ]? but found "root2 block".
+error	568	15	Expected "{" but found "too".
+error	569	18	Expected "(" but found "{".
+error	570	8	Expected "{" but found "to".
+error	571	30	Unexpected ")".
