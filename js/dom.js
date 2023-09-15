@@ -1,4 +1,4 @@
-/* global UA */// toolbox.js
+/* global FIREFOX UA */// toolbox.js
 /* global prefs */
 'use strict';
 
@@ -450,7 +450,9 @@ prefs.ready.then(() => {
   const lazyScripts = [
     '/js/dom-on-load',
   ];
-  if (!UA.windows) $.rootCL.add('non-windows');
+  const cls = (!UA.windows ? 'non-windows ' : '') +
+    (FIREFOX ? 'firefox' : UA.opera ? 'opera' : UA.vivaldi ? 'vivaldi' : '');
+  if (cls) $.root.className += ' ' + cls;
   // set language for a) CSS :lang pseudo and b) hyphenation
   $.root.setAttribute('lang', chrome.i18n.getUILanguage());
   // set up header width resizer

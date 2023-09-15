@@ -1,5 +1,5 @@
-/* global RX_META URLS download */// toolbox.js
-/* global addAPI bgReady */// common.js
+/* global RX_META URLS */// toolbox.js
+/* global addAPI bgReady download */// common.js
 /* global prefs */
 /* global tabMan */// tab-manager.js
 /* global openURL */// tab-util.js

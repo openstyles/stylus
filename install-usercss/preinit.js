@@ -1,5 +1,5 @@
 /* global API */// msg.js
-/* global closeCurrentTab download */// toolbox.js
+/* global CHROME closeCurrentTab */// toolbox.js
 /* global t */// localization.js
 'use strict';
 
@@ -25,11 +25,14 @@ const preinit = (() => {
 
   function DirectDownloader() {
     let oldCode = null;
+    const opts = {
+      // Disabling cache on http://localhost otherwise the recheck delay gets too big
+      headers: {'Cache-Control': 'no-cache, no-store'},
+    };
     return async () => {
-      const code = await download(initialUrl, {
-        // Disabling cache on http://localhost otherwise the recheck delay gets too big
-        headers: {'Cache-Control': 'no-cache, no-store'},
-      });
+      const code = CHROME < 99 // old Chrome can't fetch file://
+        ? await API.download(initialUrl, opts)
+        : await (await fetch(initialUrl, opts)).text();
       if (oldCode !== code) {
         oldCode = code;
         return code;

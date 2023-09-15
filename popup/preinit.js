@@ -1,5 +1,5 @@
 /* global API */// msg.js
-/* global URLS waitForTabUrl */// toolbox.js
+/* global URLS */// toolbox.js
 'use strict';
 
 const ABOUT_BLANK = 'about:blank';
@@ -7,7 +7,7 @@ const ABOUT_BLANK = 'about:blank';
 const preinit = (async () => {
   let [tab] = await browser.tabs.query({currentWindow: true, active: true});
   if (!chrome.app && tab.status === 'loading' && tab.url === ABOUT_BLANK) {
-    tab = await waitForTabUrl(tab);
+    tab = await API.waitForTabUrl(tab.id);
   }
   const frames = sortTabFrames(await browser.webNavigation.getAllFrames({tabId: tab.id}));
   let url = tab.pendingUrl || tab.url || ''; // new Chrome uses pendingUrl while connecting

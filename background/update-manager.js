@@ -1,6 +1,6 @@
 /* global API */// msg.js
-/* global bgReady */// common.js
-/* global URLS debounce deepMerge download ignoreChromeError */// toolbox.js
+/* global bgReady download */// common.js
+/* global URLS debounce deepMerge ignoreChromeError */// toolbox.js
 /* global calcStyleDigest styleSectionsEqual */ // sections-util.js
 /* global chromeLocal */// storage-util.js
 /* global compareVersion */// cmpver.js

@@ -78,6 +78,8 @@ addAPI(/** @namespace API */ {
     }
     return activateTab(tab); // activateTab unminimizes the window
   },
+
+  waitForTabUrl,
 });
 
 /**
@@ -142,4 +144,18 @@ async function activateTab(tab, {url, index, openerTabId} = {}) {
     index != null && browser.tabs.move(tab.id, {index}),
   ]);
   return tab;
+}
+
+function waitForTabUrl(tabId) {
+  return new Promise(resolve => {
+    browser.tabs.onUpdated.addListener(...[
+      function onUpdated(updatedId, info, updatedTab) {
+        if (info.url && updatedId === tabId) {
+          browser.tabs.onUpdated.removeListener(onUpdated);
+          resolve(updatedTab);
+        }
+      },
+      ...'UpdateFilter' in browser.tabs ? [{tabId}] : [], // FF only
+    ]);
+  });
 }

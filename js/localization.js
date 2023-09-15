@@ -1,5 +1,4 @@
 /* global $$ $ waitForSelector */// dom.js
-/* global download */// toolbox.js
 'use strict';
 
 /**
@@ -123,7 +122,7 @@ Object.assign(t, {
   fetchTemplate: async (url, name) => {
     let res = t.template[name];
     if (!res) {
-      res = t.parse(await download(url), '*');
+      res = t.parse(await (await fetch(url)).text(), '*');
       if (!$$('template', res).map(t.createTemplate).length) {
         t.createTemplate({
           content: t.toFragment($('body', res)),

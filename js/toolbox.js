@@ -3,13 +3,13 @@
 
 /* exported
   CHROME_POPUP_BORDER_BUG
+  FIREFOX
   RX_META
   UA
   capitalize
   clamp
   closeCurrentTab
   deepEqual
-  download
   getActiveTab
   getOwnTab
   getTab
@@ -20,21 +20,21 @@
   stringAsRegExp
   stringAsRegExpStr
   tryCatch
+  tryJSONparse
   tryRegExp
   tryURL
   waitForTabUrl
 */
 
-let FIREFOX;
-const [CHROME, UA] = (() => {
+const [CHROME, FIREFOX, UA] = (() => {
   const uad = navigator.userAgentData;
   const ua = uad || navigator.userAgent;
   const brands = uad ? uad.brands.map(_ => `${_.brand}/${_.version}`).join(' ') : ua;
   const getVer = name => Number(brands.match(new RegExp(name + '\\w*/(\\d+)|$'))[1]) || false;
   const platform = uad ? uad.platform : ua;
-  FIREFOX = !chrome.app && getVer('Firefox');
   return [
     getVer('Chrom'),
+    !chrome.app && getVer('Firefox'),
     {
       mac: /mac/i.test(platform),
       mobile: uad ? uad.mobile : /Android/.test(ua),
@@ -48,17 +48,14 @@ const [CHROME, UA] = (() => {
 // see PR #781
 const CHROME_POPUP_BORDER_BUG = CHROME >= 62 && CHROME <= 74;
 
-if (FIREFOX && !chrome.browserAction.openPopup) {
-  // in FF pre-57 legacy addons can override useragent so we assume the worst
-  // until we know for sure in the async getBrowserInfo()
-  // (browserAction.openPopup was added in 57)
-  FIREFOX = 55; // from strict_min_version
-  browser.runtime.getBrowserInfo().then(info => {
-    FIREFOX = parseFloat(info.version);
-  });
-}
-
+const capitalize = s => s.slice(0, 1).toUpperCase() + s.slice(1);
+const clamp = (value, min, max) => value < min ? min : value > max ? max : value;
+const getOwnTab = () => browser.tabs.getCurrent();
+const getActiveTab = async () => (await browser.tabs.query({currentWindow: true, active: true}))[0];
 const hasOwn = Object.call.bind({}.hasOwnProperty);
+const ignoreChromeError = () => { chrome.runtime.lastError; /*eslint-disable-line no-unused-expressions*/ };
+const stringAsRegExpStr = s => s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&');
+const stringAsRegExp = (s, flags) => new RegExp(stringAsRegExpStr(s), flags);
 
 const URLS = {
   ownOrigin: chrome.runtime.getURL(''),
@@ -131,13 +128,6 @@ const URLS = {
 
 const RX_META = /\/\*!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i;
 
-if (FIREFOX || UA.opera || UA.vivaldi) {
-  document.documentElement.classList.add(
-    FIREFOX && 'firefox' ||
-    UA.opera && 'opera' ||
-    UA.vivaldi && 'vivaldi');
-}
-
 if (CHROME < 61) { // TODO: remove when minimum_chrome_version >= 61
   window.URLSearchParams = class extends URLSearchParams {
     constructor(init) {
@@ -203,31 +193,6 @@ async function require(urls, cb) { /* exported require */// eslint-disable-line 
 }
 require.promises = {};
 
-function clamp(value, min, max) {
-  return Math.min(Math.max(value, min), max);
-}
-
-function getOwnTab() {
-  return browser.tabs.getCurrent();
-}
-
-async function getActiveTab() {
-  return (await browser.tabs.query({currentWindow: true, active: true}))[0];
-}
-
-function stringAsRegExp(s, flags) {
-  return new RegExp(stringAsRegExpStr(s), flags);
-}
-
-function stringAsRegExpStr(s) {
-  return s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&');
-}
-
-function ignoreChromeError() {
-  // eslint-disable-next-line no-unused-expressions
-  chrome.runtime.lastError;
-}
-
 function isEmptyObj(obj) {
   if (obj) {
     for (const k in obj) {
@@ -257,17 +222,6 @@ function mapObj(obj, fn, keys) {
   return res;
 }
 
-/**
- * js engine can't optimize the entire function if it contains try-catch
- * so we should keep it isolated from normal code in a minimal wrapper
- * 2020 update: probably fixed at least in V8
- */
-function tryCatch(func, ...args) {
-  try {
-    return func(...args);
-  } catch (e) {}
-}
-
 function tryRegExp(regexp, flags) {
   try {
     return new RegExp(regexp, flags);
@@ -284,20 +238,7 @@ function tryURL(url) {
   try {
     return new URL(url);
   } catch (e) {
-    return {
-      hash: '',
-      host: '',
-      hostname: '',
-      href: '',
-      origin: '',
-      password: '',
-      pathname: '',
-      port: '',
-      protocol: '',
-      search: '',
-      searchParams: new URLSearchParams(),
-      username: '',
-    };
+    return {};
   }
 }
 
@@ -377,19 +318,22 @@ function deepEqual(a, b, ignoredKeys) {
 }
 
 /* A simple polyfill in case DOM storage is disabled in the browser */
-const sessionStore = new Proxy({}, {
+let sessionStore = new Proxy({}, {
   get(target, name) {
     try {
-      return sessionStorage[name];
+      const val = sessionStorage[name];
+      sessionStore = sessionStorage;
+      return val;
     } catch (e) {
       Object.defineProperty(window, 'sessionStorage', {value: target});
     }
   },
-  set(target, name, value, proxy) {
+  set(target, name, value) {
     try {
       sessionStorage[name] = `${value}`;
+      sessionStore = sessionStorage;
     } catch (e) {
-      proxy[name]; // eslint-disable-line no-unused-expressions
+      this.get(target);
       target[name] = `${value}`;
     }
     return true;
@@ -399,134 +343,8 @@ const sessionStore = new Proxy({}, {
   },
 });
 
-/**
- * @param {String} url
- * @param {Object} params
- * @param {String} [params.method]
- * @param {String|Object} [params.body]
- * @param {'arraybuffer'|'blob'|'document'|'json'|'text'} [params.responseType]
- * @param {Number} [params.requiredStatusCode] resolved when matches, otherwise rejected
- * @param {Number} [params.timeout] ms
- * @param {Object} [params.headers] {name: value}
- * @param {string[]} [params.responseHeaders]
- * @returns {Promise}
- */
-function download(url, {
-  method = 'GET',
-  body,
-  responseType = 'text',
-  requiredStatusCode = 200,
-  timeout = 60e3, // connection timeout, USO is that bad
-  loadTimeout = 2 * 60e3, // data transfer timeout (counted from the first remote response)
-  headers,
-  responseHeaders,
-} = {}) {
-  /* USO can't handle POST requests for style json and XHR/fetch can't handle super long URL
-   * so we need to collapse all long variables and expand them in the response */
-  const queryPos = url.startsWith(URLS.uso) ? url.indexOf('?') : -1;
-  if (queryPos >= 0) {
-    if (body === undefined) {
-      method = 'POST';
-      body = url.slice(queryPos);
-      url = url.slice(0, queryPos);
-    }
-    if (headers === undefined) {
-      headers = {
-        'Content-type': 'application/x-www-form-urlencoded',
-      };
-    }
-  }
-  const usoVars = [];
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    const u = new URL(collapseUsoVars(url), location);
-    const onTimeout = () => {
-      xhr.abort();
-      reject(new Error('Timeout fetching ' + u.href));
-    };
-    let timer = setTimeout(onTimeout, timeout);
-    xhr.onreadystatechange = () => {
-      if (xhr.readyState >= XMLHttpRequest.HEADERS_RECEIVED) {
-        xhr.onreadystatechange = null;
-        clearTimeout(timer);
-        timer = loadTimeout && setTimeout(onTimeout, loadTimeout);
-      }
-    };
-    xhr.onload = () => {
-      if (xhr.status === requiredStatusCode || !requiredStatusCode || u.protocol === 'file:') {
-        const response = expandUsoVars(xhr.response);
-        if (responseHeaders) {
-          const headers = {};
-          for (const h of responseHeaders) headers[h] = xhr.getResponseHeader(h);
-          resolve({headers, response});
-        } else {
-          resolve(response);
-        }
-      } else {
-        reject(xhr.status);
-      }
-    };
-    xhr.onerror = () => reject(xhr.status);
-    xhr.onloadend = () => clearTimeout(timer);
-    xhr.responseType = responseType;
-    xhr.open(method, u.href);
-    for (const [name, value] of Object.entries(headers || {})) {
-      xhr.setRequestHeader(name, value);
-    }
-    xhr.send(body);
-  });
-
-  function collapseUsoVars(url) {
-    if (queryPos < 0 ||
-        url.length < 2000 ||
-        !url.startsWith(URLS.usoJson) ||
-        !/^get$/i.test(method)) {
-      return url;
-    }
-    const params = new URLSearchParams(url.slice(queryPos + 1));
-    for (const [k, v] of params.entries()) {
-      if (v.length < 10 || v.startsWith('ik-')) continue;
-      usoVars.push(v);
-      params.set(k, `\x01${usoVars.length}\x02`);
-    }
-    return url.slice(0, queryPos + 1) + params.toString();
-  }
-
-  function expandUsoVars(response) {
-    if (!usoVars.length || !response) return response;
-    const isText = typeof response === 'string';
-    const json = isText && tryJSONparse(response) || response;
-    json.updateUrl = url;
-    for (const section of json.sections || []) {
-      const {code} = section;
-      if (code.includes('\x01')) {
-        section.code = code.replace(/\x01(\d+)\x02/g, (_, num) => usoVars[num - 1] || '');
-      }
-    }
-    return isText ? JSON.stringify(json) : json;
-  }
-}
-
 async function closeCurrentTab() {
   // https://bugzil.la/1409375
   const tab = await getOwnTab();
-  if (tab) chrome.tabs.remove(tab.id);
-}
-
-function waitForTabUrl(tab) {
-  return new Promise(resolve => {
-    browser.tabs.onUpdated.addListener(...[
-      function onUpdated(tabId, info, updatedTab) {
-        if (info.url && tabId === tab.id) {
-          browser.tabs.onUpdated.removeListener(onUpdated);
-          resolve(updatedTab);
-        }
-      },
-      ...'UpdateFilter' in browser.tabs ? [{tabId: tab.id}] : [], // FF only
-    ]);
-  });
-}
-
-function capitalize(s) {
-  return s[0].toUpperCase() + s.slice(1);
+  if (tab) return chrome.tabs.remove(tab.id);
 }

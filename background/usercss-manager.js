@@ -1,5 +1,6 @@
 /* global API */// msg.js
-/* global RX_META deepCopy download mapObj */// toolbox.js
+/* global download */// common.js
+/* global RX_META deepCopy mapObj */// toolbox.js
 /* global styleMan */
 'use strict';
 

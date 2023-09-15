@@ -1,5 +1,6 @@
 /* global detectVivaldi isVivaldi */// common.js
-/* global FIREFOX clamp waitForTabUrl URLS */// toolbox.js
+/* global FIREFOX clamp URLS */// toolbox.js
+/* global waitForTabUrl */// tab-util.js
 /* global chromeLocal */// storage-util.js
 'use strict';
 
@@ -261,7 +262,7 @@ const tokenMan = (() => {
       state: 'minimized',
       url: TEST_URL,
     });
-    await waitForTabUrl(tab);
+    await waitForTabUrl(tab.id);
     chrome.windows.remove(tab.windowId);
     chrome.webRequest.onBeforeRequest.removeListener(check);
     return bugged;

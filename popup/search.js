@@ -2,7 +2,7 @@
 /* global $entry tabURL */// popup.js
 /* global API */// msg.js
 /* global Events */
-/* global FIREFOX URLS debounce download isEmptyObj stringAsRegExp stringAsRegExpStr tryRegExp tryURL */// toolbox.js
+/* global FIREFOX URLS debounce isEmptyObj stringAsRegExp stringAsRegExpStr tryRegExp tryURL */// toolbox.js
 /* global prefs */
 /* global t */// localization.js
 'use strict';
@@ -499,7 +499,7 @@
       ? `${URLS.usoaRaw[0]}usercss/${id}.user.css`
       : `${URLS.usw}api/style/${id}.user.css`;
     try {
-      const sourceCode = await download(updateUrl);
+      const sourceCode = await (await fetch(updateUrl)).text();
       const style = await API.usercss.install({sourceCode, updateUrl});
       renderFullInfo(entry, style);
     } catch (e) {
@@ -563,7 +563,7 @@
       [INDEX_URL, 'uso', json => json.filter(v => v.f === 'uso')],
       [USW_INDEX_URL, 'usw', json => json.data],
     ].map(async ([url, prefix, transform]) => {
-      const res = transform(await download(url, {responseType: 'json'}));
+      const res = transform(await (await fetch(url)).json());
       for (const v of res) v.i = `${prefix}-${v.i}`;
       index = index ? index.concat(res) : res;
       if (index !== res) ready = ready.then(start);

@@ -2,7 +2,7 @@
 /* global API */// msg.js
 /* global CODEMIRROR_THEMES */
 /* global CodeMirror */
-/* global URLS closeCurrentTab deepEqual */// toolbox.js
+/* global URLS closeCurrentTab deepEqual sessionStore */// toolbox.js
 /* global compareVersion */// cmpver.js
 /* global messageBox */
 /* global prefs */
@@ -289,7 +289,7 @@ function install(style) {
 
 function enablePostActions() {
   const {id} = installed || installedDup;
-  sessionStorage.justEditedStyleId = id;
+  sessionStore.justEditedStyleId = id;
   $('#edit').search = `?id=${id}`;
   $('#delete').onclick = async () => {
     if (await messageBox.confirm(t('deleteStyleConfirm'), 'danger center', t('confirmDelete'))) {
