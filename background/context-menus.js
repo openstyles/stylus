@@ -34,8 +34,7 @@ chrome.management.getSelf(ext => {
       contexts: ['editable'],
       documentUrlPatterns: [URLS.ownOrigin + '*'],
       click: (info, tab) => {
-        msg.sendTab(tab.id, {method: 'editDeleteText'}, undefined, 'extension')
-          .catch(msg.ignoreError);
+        msg.sendTab(tab.id, {method: 'editDeleteText'}, undefined, 'extension');
       },
     },
   });

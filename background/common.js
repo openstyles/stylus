@@ -11,7 +11,7 @@ bgReady.styles = new Promise(r => (bgReady._resolveStyles = r));
 bgReady.all = new Promise(r => (bgReady._resolveAll = r));
 
 const API = window.API = {};
-const msg = window.msg = {
+const msg = window.msg = /** @namespace msg */ {
   bg: window,
   async broadcast(data, onlyStyled) {
     const jobs = [this.broadcastExtension(data, 'both')];
@@ -19,13 +19,13 @@ const msg = window.msg = {
     for (const tab of tabs) {
       if ((onlyStyled ? tabMan.getStyleIds(tab.id) : !tab.discarded)
       && URLS.supported(tab.pendingUrl || tab.url, false)) {
-        jobs.push(msg.sendTab(tab.id, data).catch(msg.ignoreError));
+        jobs.push(msg.sendTab(tab.id, data));
       }
     }
     return Promise.all(jobs);
   },
-  broadcastExtension(...args) {
-    return msg.send(...args).catch(msg.ignoreError);
+  broadcastExtension(data, target = 'tab') {
+    return msg._unwrap(browser.runtime.sendMessage({data, target}));
   },
 };
 const uuidIndex = Object.assign(new Map(), {

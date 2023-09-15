@@ -8,18 +8,22 @@
     extension: ['both', 'extension'],
     tab: ['both', 'tab'],
   });
-  const ERR_NO_RECEIVER = 'Receiving end does not exist';
-  const ERR_PORT_CLOSED = 'The message port closed before';
-  const NULL_RESPONSE = {error: {message: ERR_NO_RECEIVER}};
-  const STACK = 'Callstack before invoking msg.';
   const handler = {
     both: new Set(),
     tab: new Set(),
     extension: new Set(),
   };
   const loadBg = () => browser.runtime.getBackgroundPage().catch(() => false);
+  const isIgnorableError = RegExp.prototype.test.bind(
+    /Receiving end does not exist|The message port closed before/);
+  const saveStack = () => new Error(); // Saving callstack prior to `await`
+
+  const portReqs = {};
   let bgReadySignal;
   let bgReadying = new Promise(fn => (bgReadySignal = fn));
+  let msgId = 0;
+  /** @type {chrome.runtime.Port} */
+  let port;
 
   // TODO: maybe move into browser.js and hook addListener to wrap/unwrap automatically
   chrome.runtime.onMessage.addListener(onRuntimeMessage);
@@ -27,18 +31,7 @@
   /* In chrome-extension:// context `window.msg` is created earlier by another script,
    * while in a content script it's not, but may exist anyway due to a DOM node with id="msg",
    * so we check chrome.tabs first to decide whether we can reuse the existing object. */
-  const msg = Object.assign(chrome.tabs ? window.msg : window.msg = {}, {
-
-    isIgnorableError(err) {
-      const text = `${err && err.message || err}`;
-      return text.includes(ERR_NO_RECEIVER) || text.includes(ERR_PORT_CLOSED);
-    },
-
-    ignoreError(err) {
-      if (!msg.isIgnorableError(err)) {
-        console.warn(err);
-      }
-    },
+  const msg = Object.assign(chrome.tabs ? window.msg : window.msg = {}, /** @namespace msg */ {
 
     on(fn) {
       handler.both.add(fn);
@@ -58,15 +51,8 @@
       }
     },
 
-    async send(data, target = 'extension') {
-      const err = new Error(`${STACK}send:`); // Saving callstack prior to `await`
-      return unwrap(err, await browser.runtime.sendMessage({data, target}));
-    },
-
-    async sendTab(tabId, data, options, target = 'tab') {
-      const err = new Error(`${STACK}sendTab:`); // Saving callstack prior to `await`
-      return unwrap(err, await browser.tabs.sendMessage(tabId, {data, target}, options));
-    },
+    sendTab: async (tabId, data, options, target = 'tab') => unwrap(
+      browser.tabs.sendMessage(tabId, {data, target}, options)),
 
     _execute(target, ...args) {
       let result;
@@ -85,7 +71,44 @@
       }
       return result;
     },
+    _unwrap: unwrap,
+    _wrapError: wrapError,
   });
+
+  async function apiSend(data) {
+    const id = ++msgId;
+    const err = saveStack();
+    if (!port) {
+      port = chrome.runtime.connect({name: 'api'});
+      port.onMessage.addListener(apiPortResponse);
+      port.onDisconnect.addListener(apiPortDisconnect);
+    }
+    port.postMessage({id, data});
+    return new Promise((ok, ko) => (portReqs[id] = {ok, ko, err}));
+  }
+
+  function apiPortCancel() {
+    delete this.cancel;
+    port.disconnect();
+    port = null;
+  }
+
+  function apiPortDisconnect() {
+    port = null;
+  }
+
+  function apiPortResponse({id, data, error}) {
+    const req = portReqs[id];
+    delete portReqs[id];
+    if (error) {
+      const {err} = req;
+      err.message = error.message;
+      err.stack = error.stack + '\n' + err.stack;
+      req.ko(error);
+    } else {
+      req.ok(data);
+    }
+  }
 
   function onRuntimeMessage({data, target}, sender, sendResponse) {
     if (bgReadying && data && data.method === 'backgroundReady') {
@@ -97,6 +120,22 @@
       return true;
     }
     if (res !== undefined) sendResponse(wrapData(res));
+  }
+
+  async function unwrap(promise) {
+    const err = saveStack();
+    let data, error;
+    try {
+      ({data, error} = await promise || {});
+    } catch (e) {
+      error = e;
+    }
+    if (!error || isIgnorableError(error)) {
+      return data;
+    }
+    err.message = error.message;
+    if (error.stack) err.stack = error.stack + '\n' + err.stack;
+    return Promise.reject(err);
   }
 
   function wrapData(data) {
@@ -112,23 +151,15 @@
     };
   }
 
-  function unwrap(localErr, {data, error} = NULL_RESPONSE) {
-    return error
-      ? Promise.reject(Object.assign(localErr, error, error.stack && {
-        stack: `${error.stack}\n${localErr.stack}`,
-      }))
-      : data;
-  }
-
   async function sendRetry(m) {
     try {
-      return await msg.send(m);
+      return await apiSend(m);
     } catch (e) {
-      if (!bgReadying || !msg.isIgnorableError(e)) {
+      if (!bgReadying || !isIgnorableError(e)) {
         return Promise.reject(e);
       }
       await bgReadying;
-      return msg.send(m);
+      return apiSend(m);
     } finally {
       // Assuming bg is ready if messaging succeeded
       bgReadying = bgReadySignal = null;
@@ -137,18 +168,24 @@
 
   if (msg.bg === window) return;
 
+  const apiApply = async (path, args) => {
+    const {bg = msg.bg = chrome.tabs && await loadBg() || false} = msg;
+    const message = {method: 'invokeAPI', path, args};
+    return bg && ((bg.msg || {}).ready || await bg.bgReady.all) ? msg.invokeAPI(path, message)
+      : bgReadying ? sendRetry(message)
+        : apiSend(message);
+  };
+
   const apiHandler = {
     get({path}, name) {
       const fn = () => {};
       fn.path = [...path, name];
       return new Proxy(fn, apiHandler);
     },
-    async apply({path}, thisObj, args) {
-      const {bg = msg.bg = chrome.tabs && await loadBg() || false} = msg;
-      const message = {method: 'invokeAPI', path, args};
-      return bg && ((bg.msg || {}).ready || await bg.bgReady.all) ? msg.invokeAPI(path, message)
-        : bgReadying ? sendRetry(message)
-          : msg.send(message);
+    apply({path}, thisObj, args) {
+      const p = apiApply(path, args);
+      p.cancel = apiPortCancel.bind(p);
+      return p;
     },
   };
   window.API = /** @type {API} */ new Proxy({path: []}, apiHandler);

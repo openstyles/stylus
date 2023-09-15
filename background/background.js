@@ -8,7 +8,7 @@
 /* global usercssMan */
 /* global usoApi */
 /* global uswApi */
-/* global FIREFOX UA */ // toolbox.js
+/* global FIREFOX UA ignoreChromeError */ // toolbox.js
 /* global colorScheme */ // color-scheme.js
 'use strict';
 
@@ -96,6 +96,22 @@ msg.on((msg, sender) => {
     return res === undefined ? null : res;
   }
 });
+chrome.runtime.onConnect.addListener(port => {
+  if (port.name === 'api') {
+    port.onMessage.addListener(apiPortMessage);
+    port.onDisconnect.addListener(ignoreChromeError);
+  }
+});
+
+async function apiPortMessage({id, data}, port) {
+  try {
+    data = {data: await msg._execute('extension', data, port.sender)};
+  } catch (e) {
+    data = msg._wrapError(e);
+  }
+  data.id = id;
+  port.postMessage(data);
+}
 
 //#endregion
 

@@ -217,10 +217,8 @@
       }
       if (lazyBadge && performance.now() > 1000) lazyBadge = false;
     }
-    (isUnstylable ?
-      API.styleViaAPI({method: 'updateCount'}) :
-      API.updateIconBadge(styleInjector.list.map(style => style.id), {lazyBadge})
-    ).catch(msg.ignoreError);
+    if (isUnstylable) API.styleViaAPI({method: 'updateCount'});
+    else API.updateIconBadge(styleInjector.list.map(style => style.id), {lazyBadge});
   }
 
   function onFrameElementInView(cb) {

@@ -44,8 +44,7 @@ const navMan = (() => {
   function onFakeNavigation(data) {
     const {url, frameId: f, documentId: d} = data;
     onNavigation.call(this, data);
-    msg.sendTab(data.tabId, {method: 'urlChanged', url}, d ? {documentId: d} : {frameId: f})
-      .catch(msg.ignoreError);
+    msg.sendTab(data.tabId, {method: 'urlChanged', url}, d ? {documentId: d} : {frameId: f});
   }
 })();
 
@@ -87,7 +86,7 @@ bgReady.all.then(() => {
   if (FIREFOX) {
     chrome.webNavigation.onDOMContentLoaded.addListener(async ({tabId, frameId}) => {
       if (frameId &&
-          !await msg.sendTab(tabId, {method: 'ping'}, {frameId}).catch(ignoreChromeError)) {
+          !await msg.sendTab(tabId, {method: 'ping'}, {frameId})) {
         for (const file of chrome.runtime.getManifest().content_scripts[0].js) {
           chrome.tabs.executeScript(tabId, {
             frameId,

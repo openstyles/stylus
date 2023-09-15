@@ -155,7 +155,7 @@ async function initPopup(frames) {
 
   for (let retryCountdown = 10; retryCountdown-- > 0;) {
     const tab = await getActiveTab();
-    if (await msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0}).catch(() => {})) {
+    if (await msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0})) {
       if (isBlocked) blockPopup(false);
       return;
     }

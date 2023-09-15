@@ -74,8 +74,7 @@ addAPI(/** @namespace API */ {
       API.prefsDb.get('badFavs'); // prime the cache to avoid flicker/delay when opening the page
       tab = await openURL({url, newTab: true});
     } else if (!same) {
-      await msg.sendTab(tab.id, {method: 'pushState', url: setUrlParams(tab.url)})
-        .catch(msg.ignoreError);
+      await msg.sendTab(tab.id, {method: 'pushState', url: setUrlParams(tab.url)});
     }
     return activateTab(tab); // activateTab unminimizes the window
   },
