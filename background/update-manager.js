@@ -1,10 +1,12 @@
 /* global API */// msg.js
+/* global bgReady */// common.js
 /* global URLS debounce deepMerge download ignoreChromeError */// toolbox.js
 /* global calcStyleDigest styleSectionsEqual */ // sections-util.js
 /* global chromeLocal */// storage-util.js
 /* global compareVersion */// cmpver.js
 /* global db */
 /* global prefs */
+/* global styleMan */
 'use strict';
 
 /* exported updateMan */
@@ -42,8 +44,8 @@ const updateMan = (() => {
   let logQueue = [];
   let logLastWriteTime = 0;
 
-  chromeLocal.getValue('lastUpdateTime').then(val => {
-    lastUpdateTime = val || Date.now();
+  bgReady.all.then(async () => {
+    lastUpdateTime = await chromeLocal.getValue('lastUpdateTime') || Date.now();
     prefs.subscribe('updateInterval', schedule, {runNow: true});
     chrome.alarms.onAlarm.addListener(onAlarm);
   });
@@ -62,7 +64,7 @@ const updateMan = (() => {
     resetInterval();
     checkingAll = true;
     const port = observe && chrome.runtime.connect({name: 'updater'});
-    const styles = (await API.styles.getAll())
+    const styles = styleMan.getAll()
       .filter(style => style.updateUrl && style.updatable !== false);
     if (port) port.postMessage({count: styles.length});
     log('');
@@ -107,7 +109,7 @@ const updateMan = (() => {
   async function checkStyle(opts) {
     let {id} = opts;
     const {
-      style = await API.styles.get(id),
+      style = styleMan.get(id),
       ignoreDigest,
       port,
       save,
@@ -213,7 +215,7 @@ const updateMan = (() => {
       newStyle.updateDate = getDateFromVer(newStyle) || Date.now();
       // update digest even if save === false as there might be just a space added etc.
       if (!ucd && styleSectionsEqual(json, style)) {
-        style.originalDigest = (await API.styles.install(newStyle)).originalDigest;
+        style.originalDigest = (await styleMan.install(newStyle)).originalDigest;
         return Promise.reject(STATES.SAME_CODE);
       }
       if (!style.originalDigest && !ignoreDigest) {
@@ -221,7 +223,7 @@ const updateMan = (() => {
       }
       return !save ? newStyle :
         ucd ? API.usercss.install(newStyle, {dup: style})
-          : API.styles.install(newStyle);
+          : styleMan.install(newStyle);
     }
 
     async function tryDownload(url, params) {

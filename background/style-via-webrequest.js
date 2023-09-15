@@ -1,6 +1,6 @@
-/* global API */// msg.js
 /* global CHROME URLS ignoreChromeError */// toolbox.js
 /* global prefs */
+/* global styleMan */
 'use strict';
 
 (() => {
@@ -61,8 +61,8 @@
   }
 
   /** @param {chrome.webRequest.WebRequestBodyDetails} req */
-  async function prepareStyles(req) {
-    const sections = await API.styles.getSectionsByUrl(req.url);
+  function prepareStyles(req) {
+    const sections = styleMan.getSectionsByUrl(req.url);
     stylesToPass[req2key(req)] = /** @namespace StylesToPass */ {
       blobId: '',
       str: JSON.stringify(sections),

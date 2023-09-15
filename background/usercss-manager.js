@@ -1,5 +1,6 @@
 /* global API */// msg.js
 /* global RX_META deepCopy download mapObj */// toolbox.js
+/* global styleMan */
 'use strict';
 
 const usercssMan = {
@@ -41,7 +42,7 @@ const usercssMan = {
     if (initialUrl) sourceCode = await download(initialUrl);
     const style = await usercssMan.buildMeta({sourceCode});
     const dup = (checkDup || assignVars) &&
-      await usercssMan.find(styleId ? {id: styleId} : style);
+      usercssMan.find(styleId ? {id: styleId} : style);
     let log;
     if (!metaOnly) {
       if (vars || assignVars) {
@@ -105,10 +106,10 @@ const usercssMan = {
   },
 
   async configVars(id, vars) {
-    const style = deepCopy(await API.styles.get(id));
+    const style = deepCopy(styleMan.get(id));
     style.usercssData.vars = vars;
     await usercssMan.buildCode(style);
-    return (await API.styles.install(style, 'config'))
+    return (await styleMan.install(style, 'config'))
       .usercssData.vars;
   },
 
@@ -116,28 +117,28 @@ const usercssMan = {
     style = await usercssMan.parse(style);
     return {
       log: style.log, // extracting the non-enumerable prop, otherwise it won't survive messaging
-      style: await API.styles.editSave(style),
+      style: await styleMan.editSave(style),
     };
   },
 
   /**
    * @param {Object} data - style object or usercssData
-   * @return {Promise<?StyleObj>}
+   * @return {StyleObj|void}
    */
-  async find(data) {
-    if (data.id) return API.styles.get(data.id);
+  find(data) {
+    if (data.id) return styleMan.get(data.id);
     const filter = mapObj(data.usercssData || data, null, ['name', 'namespace']);
-    return API.styles.find(filter, 'usercssData');
+    return styleMan.find(filter, 'usercssData');
   },
 
   async install(style, opts) {
-    return API.styles.install(await usercssMan.parse(style, opts));
+    return styleMan.install(await usercssMan.parse(style, opts));
   },
 
   async parse(style, {dup, vars} = {}) {
     style = await usercssMan.buildMeta(style);
     // preserve style.vars during update
-    if (dup || (dup = await usercssMan.find(style))) {
+    if (dup || (dup = usercssMan.find(style))) {
       style.id = dup.id;
     }
     if (vars || (vars = dup)) {

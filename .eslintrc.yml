@@ -238,3 +238,13 @@ overrides:
   - files: ["**/*worker*.js"]
     env:
       worker: true
+
+  - files: [background/*]
+    rules:
+      no-restricted-syntax: [2,  {
+        selector: 'MemberExpression[object.name="API"][property.name="styles"]',
+        message: 'Please use `styleMan` as some of its methods exposed on `API` are synchronous in bg context'
+      }, {
+        selector: 'MemberExpression[object.object.name="API"][object.property.name="usercss"][property.name="find"]',
+        message: 'Please use `usercssMan` for synchronous methods in bg context'
+      }]

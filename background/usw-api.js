@@ -1,5 +1,6 @@
 /* global API msg */// msg.js
 /* global URLS */ // toolbox.js
+/* global styleMan */
 /* global tokenMan */
 'use strict';
 
@@ -62,7 +63,7 @@ const uswApi = (() => {
   /** Uses a custom method when broadcasting and avoids needlessly sending the entire style */
   async function uswSave(style) {
     const {id, _usw} = style;
-    await API.styles.save(style, {broadcast: false});
+    await styleMan.save(style, {broadcast: false});
     msg.broadcastExtension({method: 'uswData', style: {id, _usw}});
   }
 
@@ -76,7 +77,7 @@ const uswApi = (() => {
      * @return {Promise<string>}
      */
     async publish(id, sourceCode) {
-      const style = await API.styles.get(id);
+      const style = styleMan.get(id);
       const code = style.usercssData ? sourceCode
         : fakeUsercssHeader(style) + sourceCode;
       const data = (style._usw || {}).token
@@ -95,7 +96,7 @@ const uswApi = (() => {
      */
     async revoke(id) {
       await tokenMan.revokeToken('userstylesworld', new TokenHooks(id));
-      const style = await API.styles.get(id);
+      const style = styleMan.get(id);
       if (style) {
         style._usw = {};
         await uswSave(style);

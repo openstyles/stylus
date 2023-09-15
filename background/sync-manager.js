@@ -1,9 +1,10 @@
-/* global API msg */// msg.js
+/* global msg */// msg.js
 /* global bgReady uuidIndex */// common.js
 /* global chromeLocal chromeSync */// storage-util.js
 /* global db */
 /* global iconMan */
 /* global prefs */
+/* global styleMan */
 /* global styleUtil */
 /* global tokenMan */
 'use strict';
@@ -205,10 +206,10 @@ const syncMan = (() => {
         const oldDoc = styleUtil.id2style(id);
         return oldDoc &&
           compareRevision(oldDoc._rev, rev) <= 0 &&
-          API.styles.delete(id, 'sync');
+          styleMan.delete(id, 'sync');
       },
-      async onFirstSync() {
-        for (const i of Object.values(uuidIndex.custom).concat(await API.styles.getAll())) {
+      onFirstSync() {
+        for (const i of Object.values(uuidIndex.custom).concat(styleMan.getAll())) {
           ctrl.put(i._id, i._rev);
         }
       },

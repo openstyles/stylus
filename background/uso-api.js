@@ -1,5 +1,6 @@
 /* global API */// msg.js
 /* global RX_META URLS stringAsRegExpStr */// toolbox.js
+/* global styleMan */
 /* global usercssMan */
 'use strict';
 
@@ -10,9 +11,9 @@ const usoApi = (() => {
   const ordinalSort = (a, b) => a.ordinal - b.ordinal;
   return {
 
-    async delete(usoId) {
-      const style = await findStyle(usoId);
-      return style ? API.styles.delete(style.id) : false;
+    delete(usoId) {
+      const style = findStyle(usoId);
+      return style ? styleMan.delete(style.id) : false;
     },
 
     /** UserCSS metadata may be embedded in the original USO style so let's use its updateURL */
@@ -111,9 +112,9 @@ ${varDefs ? patchCss(css, varMap) : css}`;
     return style;
   }
 
-  async function findStyle(usoId, md5Url = getMd5Url(usoId)) {
-    return await API.styles.find({md5Url})
-      || API.styles.find({installationUrl: `${URLS.usoa}style/${usoId}`});
+  function findStyle(usoId, md5Url = getMd5Url(usoId)) {
+    return styleMan.find({md5Url})
+      || styleMan.find({installationUrl: `${URLS.usoa}style/${usoId}`});
   }
 
   async function ping(id, resolve) {

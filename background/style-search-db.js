@@ -1,6 +1,7 @@
-/* global API */// msg.js
 /* global RX_META debounce stringAsRegExp tryRegExp */// toolbox.js
 /* global addAPI */// common.js
+/* global styleMan */
+/* global styleUtil */
 'use strict';
 
 (() => {
@@ -47,20 +48,21 @@
        * @param {number[]} [params.ids] - if not specified, all styles are searched
        * @returns {number[]} - array of matched styles ids
        */
-      async searchDB({query, mode = 'all', ids}) {
+      searchDB({query, mode = 'all', ids}) {
         let res = [];
         if (mode === 'url' && query) {
-          res = (await API.styles.getByUrl(query)).map(r => r.style.id);
+          res = styleMan.getByUrl(query).map(r => r.style.id);
         } else if (mode in MODES) {
           const modeHandler = MODES[mode];
           const m = /^\/(.+?)\/([gimsuy]*)$/.exec(query);
           const rx = m && tryRegExp(m[1], m[2]);
           const test = rx ? rx.test.bind(rx) : createTester(query);
-          res = (await API.styles.getAll())
-            .filter(style =>
-              (!ids || ids.includes(style.id)) &&
-              (!query || modeHandler(style, test)))
-            .map(style => style.id);
+          for (const style of styleUtil.iterStyles()) {
+            if ((!ids || ids.includes(style.id)) &&
+                (!query || modeHandler(style, test))) {
+              res.push(style.id);
+            }
+          }
           if (cache.size) debounce(clearCache, 60e3);
         }
         return res;

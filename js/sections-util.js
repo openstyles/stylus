@@ -115,7 +115,7 @@ async function calcStyleDigest(style) {
   const src = style.usercssData
     ? style.sourceCode
     // retain known properties in an arbitrarily predefined order
-    : JSON.stringify((style.sections || []).map(section => /** @namespace StyleSection */({
+    : JSON.stringify((style.sections || []).map(section => ({
       code: section.code || '',
       urls: section.urls || [],
       urlPrefixes: section.urlPrefixes || [],

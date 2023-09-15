@@ -2,6 +2,7 @@
 /* global addAPI */// common.js
 /* global isEmptyObj */// toolbox.js
 /* global prefs */
+/* global styleMan */
 'use strict';
 
 /**
@@ -55,7 +56,7 @@
     if (id === null && !ignoreUrlCheck && frameStyles.url === url) {
       return;
     }
-    const sections = await API.styles.getSectionsByUrl(url, id);
+    const sections = styleMan.getSectionsByUrl(url, id);
     const tasks = [];
     const {order} = sections.cfg;
     const calcOrder = ({id}) =>
