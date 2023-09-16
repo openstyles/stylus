@@ -38,6 +38,7 @@ const styleMan = (() => {
   const compileRe = createCompiler(text => `^(${text})$`);
   const compileSloppyRe = createCompiler(text => `^${text}$`);
   const compileExclusion = createCompiler(buildExclusion);
+
   const uuidv4 = crypto.randomUUID ? crypto.randomUUID.bind(crypto) : (() => {
     const seeds = crypto.getRandomValues(new Uint16Array(8));
     // 00001111-2222-M333-N444-555566667777
@@ -45,6 +46,7 @@ const styleMan = (() => {
     seeds[4] = seeds[4] & 0x3FFF | 0x8000; // UUID variant 1, N = 8..0xB
     return Array.from(seeds, hex4dashed).join('');
   });
+
   const CFG_OFF = {cfg: {off: true}};
   const MISSING_PROPS = {
     name: style => `ID: ${style.id}`,
@@ -52,6 +54,12 @@ const styleMan = (() => {
     _rev: () => Date.now(),
   };
   const DELETE_IF_NULL = ['id', 'customName', 'md5Url', 'originalMd5'];
+
+  const ON_DISCONNECT = {
+    livePreview: onPreviewEnd,
+    draft: onDraftEnd,
+  };
+
   const INJ_ORDER = 'injectionOrder';
   const order = /** @type {InjectionOrder} */{main: {}, prio: {}};
   const orderWrap = {
@@ -87,11 +95,11 @@ const styleMan = (() => {
   init();
 
   chrome.runtime.onConnect.addListener(port => {
-    if (port.name === 'livePreview') {
-      handleLivePreview(port);
-    } else if (port.name.startsWith('draft:')) {
-      handleDraft(port);
-    }
+    // Using ports to reliably track when the client is closed, however not for messaging,
+    // because our `API` is much faster due to direct invocation.
+    const type = port.name.split(':', 1)[0];
+    const fn = ON_DISCONNECT[type];
+    if (fn) port.onDisconnect.addListener(fn);
   });
   colorScheme.onChange(value => {
     msg.broadcastExtension({method: 'colorScheme', value});
@@ -320,6 +328,12 @@ const styleMan = (() => {
       return saveStyle(style, {reason});
     },
 
+    /** @param {StyleObj} style */
+    preview(style) {
+      id2data(style.id).preview = style;
+      broadcastStyleUpdated(style, 'editPreview');
+    },
+
     /** @returns {Promise<StyleObj>} */
     save: saveStyle,
 
@@ -418,29 +432,17 @@ const styleMan = (() => {
       style);
   }
 
-  function handleDraft(port) {
-    const id = port.name.split(':').pop();
-    port.onDisconnect.addListener(() => API.drafts.delete(Number(id) || id).catch(() => {}));
+  function onDraftEnd(port) {
+    const id = port.name.split(':')[1];
+    API.drafts.delete(+id || id).catch(() => {});
   }
 
-  function handleLivePreview(port) {
-    let id;
-    port.onMessage.addListener(style => {
-      if (!id) id = style.id;
-      const data = id2data(id);
-      data.preview = style;
-      broadcastStyleUpdated(style, 'editPreview');
-    });
-    port.onDisconnect.addListener(() => {
-      port = null;
-      if (id) {
-        const data = id2data(id);
-        if (data) {
-          data.preview = null;
-          broadcastStyleUpdated(data.style, 'editPreviewEnd');
-        }
-      }
-    });
+  function onPreviewEnd({name}) {
+    const id = +name.split(':')[1];
+    const data = id2data(id);
+    if (!data) return;
+    data.preview = null;
+    broadcastStyleUpdated(data.style, 'editPreviewEnd');
   }
 
   function buildCacheForStyle(style) {

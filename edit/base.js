@@ -401,17 +401,15 @@ function LivePreview() {
   };
 
   function createPreviewer() {
-    port = chrome.runtime.connect({name: 'livePreview'});
-    port.onDisconnect.addListener(err => {
-      throw err;
-    });
+    port = chrome.runtime.connect({name: 'livePreview:' + editor.style.id});
+    port.onDisconnect.addListener(() => (port = null));
     el = $('#preview-errors');
     el.onclick = () => messageBoxProxy.alert(el.title, 'pre');
   }
 
   async function updatePreviewer(data) {
     try {
-      port.postMessage(preprocess ? await preprocess(data) : data);
+      API.styles.preview(preprocess ? await preprocess(data) : data);
       el.hidden = true;
     } catch (err) {
       if (Array.isArray(err)) {
