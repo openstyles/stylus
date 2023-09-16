@@ -75,11 +75,7 @@
   }
 
   msg.onTab(applyOnMessage);
-  window.addEventListener('pageshow', e => {
-    if (e.isTrusted && e.persisted) { // bfcache
-      updateCount();
-    }
-  });
+  addEventListener('pageshow', onBFCache);
 
   if (!chrome.tabs) {
     window.dispatchEvent(new CustomEvent(orphanEventId));
@@ -250,6 +246,12 @@
     }
   }
 
+  function onBFCache(e) {
+    if (e.isTrusted && e.persisted) {
+      updateCount();
+    }
+  }
+
   function tryCatch(func, ...args) {
     try {
       return func(...args);
@@ -261,6 +263,7 @@
     // In Chrome content script is orphaned on an extension update/reload
     // so we need to detach event listeners
     window.removeEventListener(orphanEventId, orphanCheck, true);
+    window.removeEventListener('pageshow', onBFCache);
     if (mqDark) mqDark.onchange = null;
     isOrphaned = true;
     setTimeout(styleInjector.clear, 1000); // avoiding FOUC
