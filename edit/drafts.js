@@ -46,6 +46,7 @@
         $create('button', {textContent: btn, onclick: i ? onNo : onYes})))
     );
     if (await new Promise(r => (resolve = r))) {
+      style.id = editor.style.id;
       await editor.replaceStyle(style, draft);
     } else {
       API.drafts.delete(makeId()).catch(() => {});
