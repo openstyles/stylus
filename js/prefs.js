@@ -45,7 +45,7 @@
     'popup.autoResort': false,      // auto re-sort styles after toggling
     'popup.borders': false,         // add white borders on the sides
     /** @type {'n' | 'u' | 't' | 'w' | 'r'} see IndexEntry */
-    'popup.findSort': 'u',          // the inline style search sort order
+    'popup.findSort': 'w',          // the inline style search sort order
 
     'manage.onlyEnabled': false,    // display only enabled styles
     'manage.onlyLocal': false,      // display only styles created locally
@@ -60,8 +60,8 @@
     'manage.minColumnWidth': 750,
     // the new compact layout doesn't look good on Android yet
     'manage.newUI': true,
-    'manage.newUI.favicons': false, // show favicons for the sites in applies-to
-    'manage.newUI.faviconsGray': true, // gray out favicons
+    'manage.newUI.favicons': true, // show favicons for the sites in applies-to
+    'manage.newUI.faviconsGray': false, // gray out favicons
     'manage.newUI.targets': 3,      // max number of applies-to targets visible: 0 = none
     'manage.newUI.sort': 'title,asc',
     'manage.searchMode': 'meta',
