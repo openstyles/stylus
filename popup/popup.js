@@ -39,6 +39,7 @@ preinit.then(({frames, styles, url}) => {
 msg.onExtension(onRuntimeMessage);
 
 prefs.subscribe('popup.stylesFirst', (key, stylesFirst) => {
+  $.rootCL.toggle('styles-first', stylesFirst);
   $.rootCL.toggle('styles-last', !stylesFirst);
 }, true);
 if (CHROME_POPUP_BORDER_BUG) {
@@ -305,9 +306,7 @@ function showStyles(frameResults) {
   } else {
     installed.appendChild(t.template.noStyles);
   }
-  const zebra = $('.entry:last-child:nth-child(odd)') &&
-  !$('.styles-last') ? 'reverse-zebra' : 'zebra';
-  $('#installed').classList.add(`${zebra}`);
+  $.rootCL.add(entries.size % 2 ? 'even' : 'odd');
   require(['/popup/hotkeys']);
 }
 

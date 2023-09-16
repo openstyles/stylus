@@ -19,7 +19,7 @@
     var(--padY) * 2 + var(--name-size) * 1.2/*line-height*/);
 }
 .entry.odd {
-  background-color: rgba(128, 128, 128, 0.05);
+  background-color: var(--zebra);
 }
 .entry > * {
   padding: var(--padY) 0;

@@ -4,7 +4,7 @@ html {
   justify-content: center;
   height: 100vh;
   background: none;
-  --value-cell-w: 48px; /* ~4 digits in a number input with arrows */
+  --value-cell-w: 6ch;
 }
 
 body {
@@ -149,15 +149,23 @@ label {
   margin-right: 8px;
   flex-grow: 1;
 }
-.items.swap label {
+.swap label {
   min-height: var(--input-height);
 }
-.items.swap label > :first-child {
+.swap label > :first-child {
   order: 2;
   margin-right: 0;
 }
-.items.swap input:not([type=number]):not([type=radio]) {
+.swap input:not([type=number]):not([type=radio]) {
   margin-right: calc(var(--value-cell-w) - var(--width));
+}
+.swap input[type=number] {
+  margin-left: -2ch;
+  width: calc(var(--value-cell-w) + 2ch - var(--gap));
+}
+.swap .slider,
+.swap input[type=color] {
+  --width: calc(var(--value-cell-w) * .7);
 }
 .radio-wrapper + span {
   margin-left: .5em;
@@ -171,7 +179,8 @@ input[type="number"] {
   padding: 0;
 }
 input[type="color"] {
-  width: var(--value-cell-w);
+  --width: var(--value-cell-w);
+  width: var(--width);
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -195,13 +204,8 @@ input[type=time] {
   margin: 0 .5em;
   max-width: 7em; /* TODO: remove when strict_min_version >= 57 */
 }
-input[type=color] {
-  --width: calc(var(--value-cell-w) * .75);
-  width: var(--width);
-}
 .slider {
-  --width: calc(var(--value-cell-w) * .8);
-  margin-left: calc(-.25 * var(--pad));
+  margin-left: 0;
 }
 
 label.disabled,

@@ -36,6 +36,7 @@
   --accent-2: hsl(180, 50%, 40%);
   --accent-3: hsl(180, 40%, 69%);
   --red1: hsl(0, 70%, 45%);
+  --zebra: hsla(0, 0%, 50%, 0.05);
 }
 body {
   font: normal 12px var(--family);
@@ -72,10 +73,7 @@ button {
   font-size: 13px;
   line-height: 1.2;
   color: var(--fg);
-  background-color: var(--bg);
-  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAeCAYAAADtlXTHAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QwGBBwIHvKt6QAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAL0lEQVQI12NoaGgQZ2JgYGBkYmBgYGZiYGBggrMY4VxsYsyoskQQCB2MWAxAMhkADVECDhlW9CoAAAAASUVORK5CYII=');
-  background-repeat: repeat-x;
-  background-size: 100% 100%;
+  background: linear-gradient(var(--c95), var(--c90));
   transition: background-color .25s, border-color .25s;
 }
 
