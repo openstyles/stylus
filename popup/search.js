@@ -2,7 +2,7 @@
 /* global $entry tabURL */// popup.js
 /* global API */// msg.js
 /* global Events */
-/* global FIREFOX URLS debounce isEmptyObj stringAsRegExp stringAsRegExpStr tryRegExp tryURL */// toolbox.js
+/* global FIREFOX URLS clipString debounce isEmptyObj stringAsRegExp stringAsRegExpStr tryRegExp tryURL */// toolbox.js
 /* global prefs */
 /* global t */// localization.js
 'use strict';
@@ -356,7 +356,7 @@
     });
     if (!fmt) $('.search-result-title', entry).prepend(USW_ICON.cloneNode(true));
     $('.search-result-title span', entry).textContent =
-      t.breakWord(name.length < 300 ? name : name.slice(0, 300) + '...');
+      t.breakWord(clipString(name.length, 300));
     // screenshot
     const elShot = $('.search-result-screenshot', entry);
     let shotSrc;

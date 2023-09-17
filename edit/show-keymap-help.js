@@ -2,7 +2,7 @@
 /* global CodeMirror */
 /* global helpPopup */// util.js
 /* global prefs */
-/* global stringAsRegExp */// toolbox.js
+/* global clipString stringAsRegExp */// toolbox.js
 /* global t */// localization.js
 'use strict';
 
@@ -98,7 +98,7 @@ function showKeymapHelp() {
             // for 'emacs' keymap: provide at least something meaningful (hotkeys and the function body)
             // for 'vim*' keymaps: almost nothing as it doesn't rely on CM keymap mechanism
             cmd = cmd.toString().replace(/^function.*?{[\s\r\n]*([\s\S]+?)[\s\r\n]*}$/, '$1');
-            merged[key] = cmd.length <= 200 ? cmd : cmd.substr(0, 200) + '...';
+            merged[key] = clipString(cmd, 200);
           } else {
             merged[key] = cmd;
           }

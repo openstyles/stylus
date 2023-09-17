@@ -2,7 +2,7 @@
 /* global API */// msg.js
 /* global CODEMIRROR_THEMES */
 /* global CodeMirror */
-/* global URLS closeCurrentTab deepEqual sessionStore */// toolbox.js
+/* global URLS clipString closeCurrentTab deepEqual sessionStore */// toolbox.js
 /* global compareVersion */// cmpver.js
 /* global messageBox */
 /* global prefs */
@@ -118,8 +118,7 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
     style.updateUrl = checker.checked ? updateUrl.href : null;
   };
   checker.onchange();
-  $('.set-update-url p').textContent = updateUrl.href.length < 300 ? updateUrl.href :
-    updateUrl.href.slice(0, 300) + '...';
+  $('.set-update-url p').textContent = clipString(updateUrl.href.length, 300);
 
   // set prefer scheme
   $('#ss-scheme').onchange = e => {

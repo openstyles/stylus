@@ -1,5 +1,5 @@
 /* global API */// msg.js
-/* global RX_META deepEqual isEmptyObj */// toolbox.js
+/* global RX_META clipString deepEqual isEmptyObj */// toolbox.js
 /* global Events */// events.js
 /* global chromeSync */// storage-util.js
 /* global prefs */
@@ -153,7 +153,7 @@ async function importFromString(jsonString) {
           : typeof item.sourceCode !== 'string'
       )
     ) {
-      stats.invalid.names.push(`#${index}: ${limitString(item && item.name || '')}`);
+      stats.invalid.names.push(`#${index}: ${clipString(item && item.name || '')}`);
       return;
     }
     item.name = item.name.trim();
@@ -344,10 +344,6 @@ async function importFromString(jsonString) {
         block.onclick = highlightElement;
       }
     }
-  }
-
-  function limitString(s, limit = 100) {
-    return s.length <= limit ? s : s.substr(0, limit) + '...';
   }
 
   function reportNameChange(oldStyle, newStyle) {

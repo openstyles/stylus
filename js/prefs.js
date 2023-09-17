@@ -39,8 +39,6 @@
     'schemeSwitcher.nightStart': '18:00',
     'schemeSwitcher.nightEnd': '06:00',
 
-    'popup.breadcrumbs': true,      // display 'New style' links as URL breadcrumbs
-    'popup.breadcrumbs.usePath': false, // use URL path for 'this URL'
     'popup.enabledFirst': true,     // display enabled styles before disabled styles
     'popup.stylesFirst': true,      // display enabled styles before disabled styles
     'popup.autoResort': false,      // auto re-sort styles after toggling

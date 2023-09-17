@@ -12,6 +12,7 @@
   URLS
   capitalize
   clamp
+  clipString
   debounce
   getActiveTab
   isEmptyObj
@@ -210,28 +211,23 @@ async function initPopup(frames) {
  */
 function createWriterElement(frame, index) {
   const {url, frameId, parentFrameId, isDupe} = frame;
-  const targets = $create('span');
+  const targets = $create('div.breadcrumbs');
+  const linkSel = 'a.write-style-link';
   const elFor = !index ? $('#write-style-for') : {};
   // For this URL
-  const urlLink = t.template.writeStyle.cloneNode(true);
   const isAboutBlank = url.startsWith('about:');
-  Object.assign(urlLink, {
+  const urlLink = $create(linkSel, {
     href: 'edit.html?url-prefix=' + encodeURIComponent(url),
     title: elFor.title = `url-prefix("${url}")`,
     tabIndex: isAboutBlank ? -1 : 0,
-    textContent: prefs.get('popup.breadcrumbs.usePath')
-      ? t.breakWord(new URL(url).pathname.slice(1))
-      : frameId
-        ? isAboutBlank ? url : 'URL'
-        : t('writeStyleForURL').replace(/ /g, '\u00a0'), // this&nbsp;URL
+    textContent: isAboutBlank ? ''
+      : clipString(new URL(url).pathname.slice(1)) ||
+        t('writeStyleForURL').replace(/ /g, '\u00a0'), // this&nbsp;URL
     onclick: elFor.onclick = Events.openEditor,
     openEditorOpts: {'url-prefix': url},
   });
-  if (prefs.get('popup.breadcrumbs')) {
-    urlLink.onmouseenter = urlLink.onmouseleave =
-      urlLink.onfocus = urlLink.onblur = Events.toggleUrlLink;
-  }
-  targets.appendChild(urlLink);
+  urlLink.onmouseenter = urlLink.onmouseleave =
+    urlLink.onfocus = urlLink.onblur = Events.toggleUrlLink;
 
   // For domain
   const domains = getDomains(url);
@@ -241,27 +237,23 @@ function createWriterElement(frame, index) {
     if (domains.length > 1 && numParts === 1) {
       continue;
     }
-    const domainLink = t.template.writeStyle.cloneNode(true);
-    Object.assign(domainLink, {
+    const domainLink = isAboutBlank ? $create('span', url) : $create(linkSel, {
       href: 'edit.html?domain=' + encodeURIComponent(domain),
-      textContent: t.breakWord(numParts > 2 ? domain.split('.')[0] : domain),
+      textContent: numParts > 2 ? domain.split('.')[0] : domain,
       title: `domain("${domain}")`,
       onclick: Events.openEditor,
       openEditorOpts: {domain},
+      attributes: {subdomain: true},
     });
-    domainLink.setAttribute('subdomain', numParts > 1 ? 'true' : '');
     targets.appendChild(domainLink);
   }
 
-  if (prefs.get('popup.breadcrumbs')) {
-    targets.classList.add('breadcrumbs');
-    targets.appendChild(urlLink); // making it the last element
-  }
+  targets.appendChild(urlLink);
 
   const root = $('#write-style');
   const parent = $(`[data-frame-id="${parentFrameId}"]`, root) || root;
   const child = $create({
-    tag: 'span',
+    tag: 'div',
     className: `match${isDupe ? ' dupe' : ''}${isAboutBlank ? ' about-blank' : ''}`,
     dataset: {frameId},
     appendChild: targets,

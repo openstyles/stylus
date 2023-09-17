@@ -8,6 +8,7 @@
   UA
   capitalize
   clamp
+  clipString
   closeCurrentTab
   deepEqual
   getActiveTab
@@ -50,6 +51,7 @@ const CHROME_POPUP_BORDER_BUG = CHROME >= 62 && CHROME <= 74;
 
 const capitalize = s => s.slice(0, 1).toUpperCase() + s.slice(1);
 const clamp = (value, min, max) => value < min ? min : value > max ? max : value;
+const clipString = (str, limit = 100) => str.length > limit ? str.substr(0, limit) + '...' : str;
 const getOwnTab = () => browser.tabs.getCurrent();
 const getActiveTab = async () => (await browser.tabs.query({currentWindow: true, active: true}))[0];
 const hasOwn = Object.call.bind({}.hasOwnProperty);

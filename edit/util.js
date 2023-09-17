@@ -2,6 +2,7 @@
 /* global CodeMirror */
 /* global editor */
 /* global prefs */
+/* global clipString */// toolbox.js
 /* global t */// localization.js
 'use strict';
 
@@ -104,10 +105,6 @@ const rerouteHotkeys = {
     }
   },
 };
-
-function clipString(str, limit = 100) {
-  return str.length <= limit ? str : str.substr(0, limit) + '...';
-}
 
 /* exported createHotkeyInput */
 function createHotkeyInput(prefId, {buttons = true, onDone}) {

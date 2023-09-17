@@ -398,10 +398,10 @@ a:hover i {
   display: none;
 }
 
-/* 'New style' links */
 #write-style {
   cursor: pointer;
   line-height: 16px;
+  overflow: hidden;
 }
 #write-as {
   flex: 0;
@@ -416,43 +416,26 @@ a:hover i {
   border-color: var(--accent-1);
   color: var(--accent-2);
 }
-
 .write-style-link {
-  margin-left: .6ex
+  text-decoration: none;
+  white-space: nowrap;
+  line-height: 1;
 }
-.write-style-link:nth-last-child(2) {
-  font-weight: bold;
+.write-style-link:last-child {
+  color: var(--c60);
+  overflow: hidden;
+  flex: 1 0 2em;
+  text-overflow: ellipsis;
 }
 .about-blank > .breadcrumbs {
-  pointer-events: none;
+  cursor: default;
 }
-
-.about-blank > .breadcrumbs a {
-  text-decoration: none;
-}
-
-.match {
-  overflow-wrap: break-word;
-  display: block;
-  flex-grow: 9;
-}
-
-.match[data-frame-id="0"] {
-  min-width: 200px;
-}
-
-.match[data-frame-id="0"] > .match {
-  margin-top: .25em;
-}
-
 .match:not([data-frame-id="0"]) a {
   text-decoration: none; /* not underlining iframe links until hovered to reduce visual noise */
 }
-
 .match .match {
   margin-left: .5rem;
 }
-
 #write-for-frames::before,
 .match .match::before {
   content: "";
@@ -464,15 +447,12 @@ a:hover i {
   border-width: 1px;
   border-style: none none solid solid;
 }
-
 .dupe > .breadcrumbs {
   opacity: .5;
 }
-
 .dupe:not([data-children]) {
   display: none;
 }
-
 #write-for-frames {
   margin: 0 0 -.25em .5rem;
   color: var(--c50);
@@ -481,55 +461,42 @@ a:hover i {
 #write-for-frames:hover {
   color: var(--fg);
 }
-
 #write-style:not(.expanded) .match:not([data-frame-id="0"]),
 #write-style:not(.expanded) .match .match {
   display: none;
 }
-
-/* "breadcrumbs" 'new style' links */
-.breadcrumbs > .write-style-link {
-  margin-left: 0
+.breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
 }
-
 .breadcrumbs:hover a {
   color: var(--c75);
   text-decoration: none
 }
-
+#write-style.expanded .breadcrumbs {
+  margin-bottom: .25rem;
+}
 /* "dot" after each subdomain name */
-.breadcrumbs > .write-style-link[subdomain]::after {
+.write-style-link[subdomain]::after {
   content: "."
 }
-
-/* no "dot" after top-level domain */
-.breadcrumbs > .write-style-link:nth-last-child(2)::after {
-  content: none
-}
-
 /* "forward slash" before path ("this URL") */
-.breadcrumbs > .write-style-link:last-child::before {
+.write-style-link:last-child:not(:empty)::before {
   content: "\200b/"
 }
-
-.breadcrumbs > .write-style-link:last-child:first-child::before,
-.breadcrumbs > .write-style-link[subdomain=""] + .write-style-link::before {
+/* no "dot" after top-level domain */
+.write-style-link:nth-last-child(2)::after,
+.write-style-link:only-child::before,
+.write-style-link[subdomain=""] + a::before {
   content: none
 }
-
-/* suppress TLD-only link */
-.breadcrumbs > .write-style-link[subdomain=""] {
-  display: none
-}
-
 /* :hover style */
-.breadcrumbs.url\(\) > .write-style-link,
-
+.breadcrumbs.url\(\) > a,
 /* :hover or :focus on "this URL" sets class="url()" */
-.breadcrumbs > .write-style-link:hover,
-.breadcrumbs > .write-style-link:focus,
-.breadcrumbs > .write-style-link:hover ~ .write-style-link[subdomain],
-.breadcrumbs > .write-style-link:focus ~ .write-style-link[subdomain] {
+.breadcrumbs > a:hover,
+.breadcrumbs > a:focus,
+.breadcrumbs > a:hover ~ a[subdomain],
+.breadcrumbs > a:focus ~ a[subdomain] {
   color: inherit;
   text-decoration: underline;
 }
