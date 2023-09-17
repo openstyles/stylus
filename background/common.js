@@ -17,8 +17,11 @@ const msg = window.msg = /** @namespace msg */ {
     const jobs = [this.broadcastExtension(data, 'both')];
     const tabs = (await browser.tabs.query({})).sort((a, b) => b.active - a.active);
     for (const tab of tabs) {
-      if ((onlyStyled ? tabMan.getStyleIds(tab.id) : !tab.discarded)
-      && URLS.supported(tab.pendingUrl || tab.url, false)) {
+      if (!tab.discarded &&
+          // including tabs with unsupported `url` as they may contain supported iframes
+          (!onlyStyled || tabMan.getStyleIds(tab.id)) &&
+          // own tabs are informed via broadcastExtension
+          !(tab.pendingUrl || tab.url || '').startsWith(URLS.ownOrigin)) {
         jobs.push(msg.sendTab(tab.id, data));
       }
     }
