@@ -1,5 +1,6 @@
 /* global URLS getActiveTab tryJSONparse */// toolbox.js
 /* global tabMan */// tab-manager.js
+/* global getUrlOrigin */// tab-util.js
 'use strict';
 
 /**
@@ -11,17 +12,29 @@ bgReady.styles = new Promise(r => (bgReady._resolveStyles = r));
 bgReady.all = new Promise(r => (bgReady._resolveAll = r));
 
 const API = window.API = {};
+
 const msg = window.msg = /** @namespace msg */ {
   bg: window,
-  async broadcast(data, onlyStyled) {
-    const jobs = [this.broadcastExtension(data, 'both')];
+  /**
+   * @param {?} data
+   * @param {boolean} [onlyStyled] - only tabs that are known to contain styles
+   * @param {(tab?:Tab)=>?} [getData] - provides data for this tab, nullish result = skips tab
+   * @return {Promise<?[]>}
+   */
+  async broadcast(data, onlyStyled, getData) {
+    const jobs = [];
+    if (!getData || (data = getData())) {
+      jobs.push(this.broadcastExtension(data, 'both'));
+    }
     const tabs = (await browser.tabs.query({})).sort((a, b) => b.active - a.active);
     for (const tab of tabs) {
       if (!tab.discarded &&
           // including tabs with unsupported `url` as they may contain supported iframes
           (!onlyStyled || tabMan.getStyleIds(tab.id)) &&
           // own tabs are informed via broadcastExtension
-          !(tab.pendingUrl || tab.url || '').startsWith(URLS.ownOrigin)) {
+          !(tab.pendingUrl || tab.url || '').startsWith(URLS.ownOrigin) &&
+          (!getData || (data = getData(tab)))
+      ) {
         jobs.push(msg.sendTab(tab.id, data));
       }
     }
@@ -52,22 +65,16 @@ function addAPI(methods) {
 }
 
 /* exported broadcastInjectorConfig */
-const broadcastInjectorConfig = ((map, cfg, promise) => (key, val) => {
-  if (key) {
-    if (!cfg) {
-      cfg = {};
-      promise = new Promise(setTimeout).then(broadcastInjectorConfig);
-    }
-    cfg[map[key] || key] = val;
-  } else {
-    promise = msg.broadcast({method: 'injectorConfig', cfg}, true);
-    cfg = null;
-  }
-  return promise;
-})({
-  exposeIframes: 'top',
-  disableAll: 'off',
-});
+const broadcastInjectorConfig = ((
+  cfg,
+  map = {exposeIframes: 'top', disableAll: 'off'},
+  data = {method: 'injectorConfig', cfg},
+  setTop = tab => { data.cfg.top = tab && getUrlOrigin(tab.url); return data; },
+  throttle = () => { data.cfg = cfg; msg.broadcast(data, true, cfg.top && setTop); cfg = null; }
+) => (key, val) => {
+  if (!cfg) { cfg = {}; setTimeout(throttle); }
+  cfg[map[key] || key] = val;
+})();
 
 /* exported createCache */
 /** Creates a FIFO limit-size map. */

@@ -146,6 +146,11 @@ async function activateTab(tab, {url, index, openerTabId} = {}) {
   return tab;
 }
 
+/* exported getUrlOrigin */
+function getUrlOrigin(url = '') {
+  return url.substring(0, url.indexOf('/', url.indexOf(':') + 3));
+}
+
 function waitForTabUrl(tabId) {
   return new Promise(resolve => {
     browser.tabs.onUpdated.addListener(...[

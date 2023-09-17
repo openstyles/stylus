@@ -5,6 +5,7 @@
 /* global db */
 /* global prefs */
 /* global tabMan */
+/* global getUrlOrigin */// tab-util.js
 /* global usercssMan */
 /* global colorScheme */
 'use strict';
@@ -211,7 +212,11 @@ const styleMan = (() => {
       const cfg = {
         // TODO: enable in FF when it supports sourceURL comment in style elements (also options.html)
         name: CHROME && p.exposeStyleName,
-        top: frameId > 0 && p.exposeIframes && (tab.url || '').split('/', 3).join('/'),
+        top: p.exposeIframes && (
+          // sender may come from webRequest.onBeforeRequest for a prerendered main_frame with frameId>0
+          !frameId || sender.type === 'main_frame' ? '' // apply.js will use location.origin
+            : getUrlOrigin(tab.url || tabMan.get(sender.tabId || tab.id, 'url'))
+        ),
         order,
       };
       if (frameId === 0) {

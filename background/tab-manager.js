@@ -16,13 +16,12 @@ const tabMan = (() => {
 
   bgReady.all.then(() => {
     navMan.onUrlChange(({tabId, frameId, url}) => {
-      if (frameId || !URLS.supported(url) && (cache.delete(tabId), true)) {
-        return;
-      }
+      if (frameId) return;
       let obj, oldUrl;
       if ((obj = cacheGet(tabId))) oldUrl = obj.url;
       else cacheSet(tabId, obj = {});
       obj.url = url;
+      if (!URLS.supported(url)) return;
       for (const fn of listeners) {
         try {
           fn({tabId, url, oldUrl});

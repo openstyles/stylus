@@ -62,7 +62,7 @@
 
   /** @param {chrome.webRequest.WebRequestBodyDetails} req */
   function prepareStyles(req) {
-    const sections = styleMan.getSectionsByUrl(req.url);
+    const sections = styleMan.getSectionsByUrl.call({sender: req}, req.url);
     stylesToPass[req2key(req)] = /** @namespace StylesToPass */ {
       blobId: '',
       str: JSON.stringify(sections),

@@ -57,7 +57,7 @@ declare interface InjectedStyle {
 
 declare interface InjectionConfig {
   name?: boolean;
-  top?: boolean;
+  top?: string | false;
   off?: boolean;
   order?: InjectionOrder;
 }

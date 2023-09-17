@@ -82,24 +82,22 @@
   }
 
   async function init() {
+    if (isUnstylable) return API.styleViaAPI({method: 'styleApply'});
     const SYM_ID = 'styles';
     const SYM = Symbol.for(SYM_ID);
     const parentStyles = isFrameNoUrl && CHROME && parent[parent.Symbol.for(SYM_ID)];
-    if (isUnstylable) {
-      await API.styleViaAPI({method: 'styleApply'});
-    } else {
-      const styles =
-        window[SYM] ||
-        parentStyles && await new Promise(onFrameElementInView) && parentStyles ||
-        // XML in Chrome will be auto-converted to html later, so we can't style it via XHR now
-        !isFrameSameOrigin && !isXml && !chrome.tabs && tryCatch(getStylesViaXhr) ||
-        await API.styles.getSectionsByUrl(matchUrl, null, true);
-      ({order, off: isDisabled, top: topSite} = styles.cfg);
-      hasStyles = !isDisabled;
-      window[SYM] = styles;
-      if (hasStyles) await styleInjector.apply(styles);
-      styleInjector.toggle(hasStyles);
-    }
+    const styles =
+      window[SYM] ||
+      parentStyles && await new Promise(onFrameElementInView) && parentStyles ||
+      // XML in Chrome will be auto-converted to html later, so we can't style it via XHR now
+      !isFrameSameOrigin && !isXml && !chrome.tabs && tryCatch(getStylesViaXhr) ||
+      await API.styles.getSectionsByUrl(matchUrl, null, true);
+    ({order, off: isDisabled, top: topSite} = styles.cfg);
+    hasStyles = !isDisabled;
+    window[SYM] = styles;
+    if (!isFrame && topSite === '') styles.cfg.top = location.origin; // used by child frames via parentStyles
+    if (hasStyles) await styleInjector.apply(styles);
+    styleInjector.toggle(hasStyles);
   }
 
   /** Must be executed inside try/catch */
@@ -165,8 +163,8 @@
       case 'injectorConfig': {
         let v;
         if ((v = req.cfg.off) != null) { isDisabled = v; updateDisableAll(); }
-        if ((v = req.cfg.top) != null) { topSite = v; updateExposeIframes(); }
         if ((v = req.cfg.order) != null) { order = v; styleInjector.sort(); }
+        if (isFrame && (v = req.cfg.top) != null) { topSite = v; updateExposeIframes(); }
         break;
       }
 
@@ -192,7 +190,7 @@
     const el = document.documentElement;
     if (!el) return; // got no styles so styleInjector didn't wait for <html>
     if (!topSite || !styleInjector.list.length) {
-      el.removeAttribute(attr);
+      if (el.hasAttribute(attr)) el.removeAttribute(attr);
     } else if (el.getAttribute(attr) !== topSite) { // Checking first to avoid DOM mutations
       el.setAttribute(attr, topSite);
     }
