@@ -40,7 +40,7 @@ const msg = window.msg = /** @namespace msg */ {
     }
     return Promise.all(jobs);
   },
-  broadcastExtension(data, target = 'tab') {
+  broadcastExtension(data, target = 'extension') {
     return msg._unwrap(browser.runtime.sendMessage({data, target}));
   },
 };
