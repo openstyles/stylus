@@ -14,10 +14,7 @@ const preinit = (async () => {
   if (url === 'chrome://newtab/' && !URLS.chromeProtectsNTP) {
     url = frames[0].url || '';
   }
-  if (!URLS.supported(url)) {
-    url = '';
-    frames.length = 1;
-  }
+  // webNavigation doesn't set url in some cases e.g. in our own pages
   frames[0].url = url;
   const uniqFrames = frames.filter(f => f.url && !f.isDupe);
   const styles = await Promise.all(uniqFrames.map(async ({url}) => ({

@@ -9,6 +9,7 @@
   CHROME_POPUP_BORDER_BUG
   FIREFOX
   UA
+  URLS
   capitalize
   clamp
   debounce
@@ -22,6 +23,7 @@ let isBlocked;
 
 /** @type Element */
 const installed = $('#installed');
+const WRITE_FRAME_SEL = '.match:not([data-frame-id="0"]):not(.dupe)';
 const ENTRY_ID_PREFIX_RAW = 'style-';
 const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrId}`);
 
@@ -130,14 +132,9 @@ async function initPopup(frames) {
     el.removeAttribute('media');
   }
 
-  if (!tabURL) {
-    blockPopup();
-    return;
-  }
-
   frames.forEach(createWriterElement);
 
-  if (frames.length > 1 && $('.match .match:not(.dupe)')) {
+  if ($(WRITE_FRAME_SEL)) {
     $('#write-style').append(Object.assign(t.template.writeForFrames, {
       onclick() {
         this.remove();
@@ -152,6 +149,11 @@ async function initPopup(frames) {
         tabURL.startsWith('https://chromewebstore.google.com/');
   if (isStore) {
     blockPopup();
+  }
+
+  if (!URLS.supported(tabURL)) {
+    blockPopup();
+    return;
   }
 
   for (let retryCountdown = 10; retryCountdown-- > 0;) {
@@ -395,10 +397,8 @@ function handleDelete(id) {
 function blockPopup(val = true) {
   isBlocked = val;
   document.body.classList.toggle('blocked', isBlocked);
+  $('#write-wrapper').classList.toggle('hidden', !$(WRITE_FRAME_SEL));
   if (isBlocked) {
-    const el = $('#write-for-frames');
-    if (el) el.click();
-    else $('#write-wrapper').classList.add('hidden');
     document.body.prepend(t.template.unavailableInfo);
   } else {
     t.template.unavailableInfo.remove();
