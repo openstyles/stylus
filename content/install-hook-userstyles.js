@@ -13,28 +13,35 @@
   ];
   const getUsoId = () => Number(location.pathname.match(/^\/styles\/(\d+)|$/)[1]);
   let gesture = NaN;
+  let pageLoading;
 
   runInPage(inPageContext, pageId);
-  addEventListener('click', onClick, true);
+  addEventListener('click', onGesture, true);
+  addEventListener('keydown', onGesture, true);
   addEventListener(pageId + '*', onPageEvent, true);
   addEventListener(chrome.runtime.id, function orphanCheck(e) {
     if (chrome.runtime.id) return true;
     removeEventListener(e.type, orphanCheck, true);
     removeEventListener(pageId + '*', onPageEvent, true);
-    removeEventListener('click', onClick, true);
+    removeEventListener('click', onGesture, true);
+    removeEventListener('keydown', onGesture, true);
     sendPageEvent({cmd: 'quit'});
   }, true);
-  getStyleState().then(state => {
-    if (state) document.dispatchEvent(new Event(state[1]));
-    postMessage({direction: 'from-content-script', message: 'StylishInstalled'}, '*');
-  });
+  if ((pageLoading = !document.head && location.href)) {
+    addEventListener('DOMContentLoaded', () => {
+      postMessage({direction: 'from-content-script', message: 'StylishInstalled'}, '*');
+    }, {once: true});
+    addEventListener('load', () => {
+      pageLoading = '';
+    }, {once: true});
+  }
 
-  function onClick(e) {
-    gesture = e.isTrusted ? {time: performance.now(), url: location.href} : {};
+  function onGesture(e) {
+    if (e.isTrusted) gesture = performance.now();
   }
 
   function isTrusted(data) {
-    return performance.now() - gesture.time < 1000 && location.href === gesture.url
+    return (pageLoading === location.href || performance.now() - gesture < 1000)
       || console.warn('Stylus is ignoring request not initiated by the user:', data);
   }
 
@@ -46,30 +53,27 @@
         case 'stylishInstallChrome':
           if (isTrusted(data)) await API.uso.toUsercss(getUsoId(), data.customOptions || {});
           res = {success: true};
+          gesture = NaN;
           break;
         case 'deleteStylishStyle': {
           if (isTrusted(data)) res = await API.uso.delete(getUsoId());
+          gesture = NaN;
           break;
         }
         case 'getStyleInstallStatus':
-          if (isTrusted(data)) res = (await getStyleState(getUsoId()) || [])[0];
+          if (isTrusted(data)) res = (await getStyleState() || [])[0];
           break;
         case 'GET_OPEN_TABS':
         case 'GET_TOP_SITES':
           res = [];
           break;
       }
-      gesture = {};
       sendPageEvent({id, data: res});
     }
   }
 
   async function getStyleState(usoId = getUsoId()) {
-    const [state] = await Promise.all([
-      usoId ? API.uso.getUpdatability(usoId) : -1,
-      document.body || new Promise(resolve => addEventListener('load', resolve, {once: true})),
-    ]);
-    return STATE_EVENTS[state];
+    return STATE_EVENTS[usoId ? await API.uso.getUpdatability(usoId) : -1];
   }
 
   function runInPage(fn, ...args) {
