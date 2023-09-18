@@ -4,9 +4,14 @@
   --outer-padding: 9px;
   --hotkey-margin: 16px;
   --red1: hsl(0, 70%, 45%);
+  --hover: var(--accent-1);
+  --hover-icon: var(--c10);
+  --hover-disabled: var(--c40);
 }
 [data-ui-theme="dark"] {
   --red1: hsl(0, 85%, 65%);
+  --hover: var(--cmin);
+  --hover-disabled: var(--c30);
 }
 
 html, body {
@@ -143,14 +148,12 @@ html[style] .entry-content {
   display: flex;
 }
 
-.entry.disabled .style-name {
+.disabled .style-name,
+.disabled .actions i {
   font-weight: normal;
-  color: var(--c65);
+  color: var(--c60);
 }
-.entry.disabled:hover i {
-  color: var(--c40);
-}
-.entry.disabled:hover a:hover i {
+.disabled:hover a:hover i {
   color: var(--fg);
 }
 
@@ -167,13 +170,6 @@ html[style] .entry-content {
 .styles-first.odd .entry:nth-child(odd),
 .styles-last .entry:nth-child(even) {
   background-color: var(--zebra);
-}
-.entry:hover * {
-  color: var(--accent-1);
-}
-.entry:hover i,
-.entry.disabled:hover *:not(#\0) {
-  color: var(--accent-2);
 }
 
 .entry:nth-child(-n+10):before,
@@ -225,7 +221,7 @@ a.configure[target="_blank"] .i-config {
 
 .not-applied .style-name,
 .not-applied .actions > * {
-  opacity: .2;
+  opacity: .25;
   transition: opacity .5s ease-in-out .25s, color .5s ease-in-out .25s;
 }
 .not-applied .style-name {
@@ -235,9 +231,19 @@ a.configure[target="_blank"] .i-config {
 .not-applied:hover .actions > * {
   opacity: 1;
 }
-
 .not-applied:hover .style-name {
   color: var(--red1);
+}
+
+/* should be the last of entry to override same-specificity selectors */
+.entry:hover :not(i) {
+  color: var(--hover);
+}
+.entry:hover i {
+  color: var(--hover-icon);
+}
+.disabled:hover *:not(i) {
+  color: var(--hover-disabled);
 }
 
 .frame-url::before {
@@ -262,9 +268,6 @@ a.configure[target="_blank"] .i-config {
   background-color: rgba(0, 0, 0, 0.4);
 }
 #menu > div {
-  min-width: 15em;
-  max-height: 80%;
-  min-height: 8em;
   background-color: var(--bg);
   border: solid 2px rgba(128, 128, 128, .5);
 }
@@ -290,7 +293,7 @@ a.configure[target="_blank"] .i-config {
   background: rgba(255, 0, 0, .25);
 }
 #menu main > * {
-  display: block;
+  display: flex;
 }
 #menu main > :nth-child(n + 2) {
   padding-top: .5em;
@@ -416,13 +419,16 @@ a:hover i {
   border-color: var(--accent-1);
   color: var(--accent-2);
 }
+[data-ui-theme="dark"] #newStyleAsUsercss:checked {
+  border-color: var(--accent-2);
+}
 .write-style-link {
   text-decoration: none;
   white-space: nowrap;
   line-height: 1;
 }
 .write-style-link:last-child {
-  color: var(--c60);
+  color: var(--c50);
   overflow: hidden;
   flex: 1 0 2em;
   text-overflow: ellipsis;
@@ -586,7 +592,7 @@ a:hover i {
 .blocked-info p {
   padding: 1px 0 var(--outer-padding);
   display: block;
-  font-size: 90%;
+  font-size: 95%;
   margin: 0;
 }
 
