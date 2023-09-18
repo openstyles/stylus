@@ -1,5 +1,6 @@
 /* global $ toggleDataset */// dom.js
 /* global MozDocMapper trimCommentLabel */// util.js
+/* global CodeMirror */
 /* global cmFactory */
 /* global debounce tryRegExp */// toolbox.js
 /* global editor */
@@ -22,10 +23,12 @@ class EditorSection {
     const el = this.el = t.template.section.cloneNode(true);
     const elLabel = this.elLabel = $('.code-label', el);
     const cm = this.cm = el.CodeMirror /* used by getAssociatedEditor */ = cmFactory.create(wrapper => {
-      // making it tall during initial load so IntersectionObserver sees only one adjacent CM
-      if (editor.loading) {
-        wrapper.style.height = si ? si.height : '100vh';
-      }
+      const ws = wrapper.style;
+      const h = editor.loading
+        // making it tall during initial load so IntersectionObserver sees only one adjacent CM
+        ? ws.height = si ? si.height : '100vh'
+        : ws.height;
+      el.style.setProperty('--cm-height', h);
       elLabel.after(wrapper);
     }, {
       value: sectionData.code,
@@ -33,6 +36,7 @@ class EditorSection {
     cm.el = el;
     cm.editorSection = this;
     el.me = this;
+    cm.setSize = EditorSection.onSetSize;
     this.genId = genId;
     this.id = genId();
     this.changeListeners = new Set();
@@ -227,6 +231,7 @@ class EditorSection {
       this.removeTarget(targets[0]);
     }
     if (base) requestAnimationFrame(() => this.shrinkBy1());
+    this.el.style.setProperty('--targets', targets.length);
     this.emitChange('apply');
     return res;
   }
@@ -241,6 +246,7 @@ class EditorSection {
     target.remove();
     target.el.remove();
     if (!targets.length) this.addTarget();
+    this.el.style.setProperty('--targets', targets.length);
     this.emitChange('apply');
   }
 
@@ -260,6 +266,12 @@ class EditorSection {
     editor.dirty.modify(`section.${sec.id}.code`, sec.changeGeneration, cur);
     sec.changeGeneration = cur;
     sec.emitChange('code');
+  }
+
+  static onSetSize(w, h) {
+    const cm = this;
+    CodeMirror.prototype.setSize.call(cm, w, h);
+    cm.el.style.setProperty('--cm-height', cm.display.wrapper.style.height);
   }
 }
 

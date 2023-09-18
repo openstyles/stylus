@@ -362,6 +362,11 @@ i,
   box-shadow: none !important;
   pointer-events: auto !important; /* FF bug */
 }
+.sectioned .section {
+  content-visibility: auto;
+  contain-intrinsic-block-size: auto calc(var(--cm-height) + (2 + var(--targets, 1)) * (var(--input-height) + var(--target-gapY)));
+  --padL: calc(var(--pad) * 1.5);
+}
 #sections > .section > * {
   margin-right: var(--pad);
 }
