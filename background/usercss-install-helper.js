@@ -20,21 +20,16 @@ bgReady.all.then(() => {
     },
   });
 
-  // `glob`: pathname match pattern for webRequest
-  // `rx`: pathname regex to verify the URL really looks like a raw usercss
   const maybeDistro = {
-    // https://github.com/StylishThemes/GitHub-Dark/raw/master/github-dark.user.css
-    // https://github.com/StylishThemes/GitHub-Dark/raw/master/foo/bar/github-dark.user.css
-    'github.com': {
-      glob: '/*/raw/*',
-      rx: /^\/[^/]+\/[^/]+\/raw\/.+?\/[^/]+?\.user\.(css|less|styl)$/,
-    },
-    // https://raw.githubusercontent.com/StylishThemes/GitHub-Dark/master/github-dark.user.css
-    // https://raw.githubusercontent.com/StylishThemes/GitHub-Dark/master/foo/bar/github-dark.user.css
-    'raw.githubusercontent.com': {
-      glob: '/*',
-      rx: /^(\/[^/]+?){4,}?\.user\.(css|less|styl)$/,
-    },
+    'bitbucket.org': '/USER/REPO/raw/HEAD/FILE',
+    'dl.dropboxusercontent.com': '/s/HASH/FILE',
+    'gist.github.com': '/USER/HASH/raw/(HASH/)?FILE',
+    'gitlab.com': '/USER/REPO/(-/)?raw/BRANCH/FILE',
+    'greasyfork.org': '/scripts/NAME/code/FILE',
+    'raw.githack.com': '/USER/REPO/BRANCH/FILE',
+    'raw.githubusercontent.com': '/USER/REPO/BRANCH/FILE',
+    'rawcdn.githack.com': '/USER/REPO/TAG/FILE',
+    'sleazyfork.org': '/scripts/NAME/code/FILE',
   };
 
   prefs.subscribe('urlInstaller', toggle, true);
@@ -44,21 +39,31 @@ bgReady.all.then(() => {
     chrome.webRequest.onHeadersReceived.removeListener(rememberContentType);
     tabMan.onOff(maybeInstall, val);
     if (!val) return;
-    chrome.webRequest.onBeforeSendHeaders.addListener(maybeInstallFromDistro, {
-      urls: [
-        URLS.usw + 'api/style/*.user.css',
-        ...URLS.usoaRaw.map(s => s + 'usercss/*.user.css'),
-        ...['greasy', 'sleazy'].map(s => `*://${s}fork.org/scripts/*/code/*.user.css`),
-        ...[].concat(
-          ...Object.entries(maybeDistro)
-            .map(([host, {glob}]) => makeUsercssGlobs(host, glob))),
-      ],
-      types: ['main_frame'],
-    }, ['blocking']);
-    chrome.webRequest.onHeadersReceived.addListener(rememberContentType, {
-      urls: makeUsercssGlobs('*', '/*'),
-      types: ['main_frame'],
-    }, ['responseHeaders']);
+    const types = ['main_frame'];
+    const urls = [
+      URLS.usw + 'api/style/*.user.*',
+      URLS.usoaRaw[0] + 'usercss/*.user.css',
+    ];
+    for (const [host, val] of Object.entries(maybeDistro)) {
+      let {glob} = val;
+      if (!glob) {
+        maybeDistro[host] = {
+          glob: glob = makeUsercssGlobs(host, val
+            .replace(/[A-Z]+/g, '*') // UPPERCASE -> *
+            .replace(/\(.*?\)\?/g, '*') // (optional)? -> *
+            .replace(/\*{2,}/g, '*')), // ** -> *
+          rx: new RegExp(
+            // FILE may contain slashes e.g. /path/foo/bar but other templates cannot
+            val.replace(/FILE/g, String.raw`.*\.user\.(css|less|styl)(\?.*)?$`)
+              .replace(/[A-Z]+/g, '[^/]+')),
+        };
+      }
+      urls.push(...glob);
+    }
+    chrome.webRequest.onBeforeSendHeaders.addListener(maybeInstallFromDistro,
+      {urls, types}, ['blocking']);
+    chrome.webRequest.onHeadersReceived.addListener(rememberContentType,
+      {urls: makeUsercssGlobs(), types}, ['responseHeaders']);
   }
 
   function clearInstallCode(url) {
@@ -88,8 +93,8 @@ bgReady.all.then(() => {
 
   function makeUsercssGlobs(host, path) {
     return '%css,%less,%styl'
-      .replace(/%\w+/g, '$&,$&?*')
-      .replace(/%/g, `*://${host}${path}.user.`)
+      .replace(/%\w+/g, host ? '$&*' : '$&,$&?*')
+      .replace(/%/g, `*://${host || '*'}${path || '/*'}.user.`)
       .split(',');
   }
 
