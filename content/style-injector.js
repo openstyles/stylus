@@ -12,10 +12,12 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
   compare,
   onUpdate = () => {},
 }) => {
+  const isExt = !!chrome.tabs;
   const PREFIX = 'stylus-';
   const PATCH_ID = 'transition-patch';
   // styles are out of order if any of these elements is injected between them
-  const ORDERED_TAGS = new Set(['head', 'body', 'frameset', 'style', 'link']);
+  // except `style` on our own page as it contains overrides
+  const ORDERED_TAGS = new Set(['head', 'body', 'frameset', !isExt && 'style', 'link']);
   const docRewriteObserver = RewriteObserver(sort);
   const docRootObserver = RootObserver(sortIfNeeded);
   const toSafeChar = c => String.fromCharCode(0xFF00 + c.charCodeAt(0) - 0x20);
@@ -270,7 +272,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     return {start, stop};
 
     function start() {
-      if (observing) return;
+      if (observing || isExt) return;
       // detect dynamic iframes rewritten after creation by the embedder i.e. externally
       root = document.documentElement;
       timer = setTimeout(check);
@@ -279,7 +281,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     }
 
     function stop() {
-      if (!observing) return;
+      if (!observing || isExt) return;
       clearTimeout(timer);
       observer.disconnect();
       observing = false;
