@@ -403,7 +403,6 @@ a:hover i {
 
 #write-style {
   cursor: pointer;
-  line-height: 16px;
   overflow: hidden;
 }
 #write-as {
@@ -425,7 +424,6 @@ a:hover i {
 .write-style-link {
   text-decoration: none;
   white-space: nowrap;
-  line-height: 1;
 }
 .write-style-link:last-child {
   color: var(--c50);
@@ -478,9 +476,6 @@ a:hover i {
 .breadcrumbs:hover a {
   color: var(--c75);
   text-decoration: none
-}
-#write-style.expanded .breadcrumbs {
-  margin-bottom: .25rem;
 }
 /* "dot" after each subdomain name */
 .write-style-link[subdomain]::after {

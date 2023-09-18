@@ -30,7 +30,7 @@
 }
 
 #stylus-popup .config-body label {
-  padding: .5em 0;
+  --item-padY: .5em;
 }
 
 .config-heading {
@@ -46,12 +46,10 @@
 
 .config-body label {
   display: flex;
-  padding: .75em 0;
   align-items: center;
-}
-#message-box .config-body label {
-  padding: calc(.75em * (1 - var(--num) / 30)) 0; /* old browsers */
-  padding: calc(.75em * clamp(.2, 1 - (var(--num) - 5) / 30, 1)) 0; /* modern browsers */
+  --item-padY: .75em;
+  padding: calc(var(--item-padY) * (1 - var(--num) / 30)) 0; /* old browsers */
+  padding: calc(var(--item-padY) * clamp(.2, 1 - (var(--num) - 5) / 30, 1)) 0; /* modern browsers */
 }
 
 .config-body .select-wrapper {
