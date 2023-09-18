@@ -475,17 +475,17 @@ const styleMan = (() => {
     data.appliesTo = updated;
   }
 
-  function broadcastStyleUpdated(style, reason, isNew) {
+  function broadcastStyleUpdated(style, reason, method) {
     buildCacheForStyle(style);
     return msg.broadcast({
-      method: isNew ? 'styleAdded' : 'styleUpdated',
+      method,
       reason,
       style: {
         id: style.id,
         md5Url: style.md5Url,
         enabled: style.enabled,
       },
-    }, !isNew);
+    }, !style.enabled); // sending only to tabs that had this style enabled previously
   }
 
   function beforeSave(style) {
@@ -523,7 +523,7 @@ const styleMan = (() => {
     if (reason !== 'sync') {
       API.sync.putDoc(style);
     }
-    if (broadcast) broadcastStyleUpdated(style, reason, !data);
+    if (broadcast) broadcastStyleUpdated(style, reason, data ? 'styleUpdated' : 'styleAdded');
     return style;
   }
 
