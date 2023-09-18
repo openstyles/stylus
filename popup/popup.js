@@ -26,6 +26,7 @@ let isBlocked;
 const installed = $('#installed');
 const WRITE_FRAME_SEL = '.match:not([data-frame-id="0"]):not(.dupe)';
 const ENTRY_ID_PREFIX_RAW = 'style-';
+const EXT_NAME = `<${chrome.runtime.getManifest().name}>`;
 const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrId}`);
 
 preinit.then(({frames, styles, url}) => {
@@ -214,38 +215,33 @@ function createWriterElement(frame, index) {
   const targets = $create('div.breadcrumbs');
   const linkSel = 'a.write-style-link';
   const elFor = !index ? $('#write-style-for') : {};
-  // For this URL
   const isAboutBlank = url.startsWith('about:');
+  const domains = getDomains(url);
+  const me = url.startsWith(URLS.ownOrigin) ? EXT_NAME : '';
   const urlLink = $create(linkSel, {
-    href: 'edit.html?url-prefix=' + encodeURIComponent(url),
+    href: getEditorUrl({'url-prefix': url}, me),
     title: elFor.title = `url-prefix("${url}")`,
     tabIndex: isAboutBlank ? -1 : 0,
     textContent: isAboutBlank ? ''
       : clipString(new URL(url).pathname.slice(1)) ||
         t('writeStyleForURL').replace(/ /g, '\u00a0'), // this&nbsp;URL
     onclick: elFor.onclick = Events.openEditor,
-    openEditorOpts: {'url-prefix': url},
+    onmouseenter: Events.toggleUrlLink,
+    onmouseleave: Events.toggleUrlLink,
+    onfocus: Events.toggleUrlLink,
+    onblur: Events.toggleUrlLink,
   });
-  urlLink.onmouseenter = urlLink.onmouseleave =
-    urlLink.onfocus = urlLink.onblur = Events.toggleUrlLink;
 
-  // For domain
-  const domains = getDomains(url);
   for (const domain of domains) {
-    const numParts = domain.length - domain.replace(/\./g, '').length + 1;
-    // Don't include TLD
-    if (domains.length > 1 && numParts === 1) {
-      continue;
-    }
-    const domainLink = isAboutBlank ? $create('span', url) : $create(linkSel, {
-      href: 'edit.html?domain=' + encodeURIComponent(domain),
-      textContent: numParts > 2 ? domain.split('.')[0] : domain,
+    const d = domain.split('.');
+    if (!d[1] && domains[1]) continue; // no separate clickable TLD for domain.TLD
+    targets.appendChild(isAboutBlank ? $create('span', url) : $create(linkSel, {
+      href: getEditorUrl({domain}, me),
+      textContent: me || (d[2] ? d[0] /*kinda strip public suffix lol*/ : domain),
       title: `domain("${domain}")`,
       onclick: Events.openEditor,
-      openEditorOpts: {domain},
       attributes: {subdomain: true},
-    });
-    targets.appendChild(domainLink);
+    }));
   }
 
   targets.appendChild(urlLink);
@@ -273,6 +269,11 @@ function getDomains(url) {
     domains.push(d);
   }
   return domains;
+}
+
+function getEditorUrl(obj, me) {
+  if (me) obj.name = me;
+  return 'edit.html?' + new URLSearchParams(obj);
 }
 
 function sortStyles(entries) {

@@ -135,7 +135,7 @@ if (CHROME < 61) { // TODO: remove when minimum_chrome_version >= 61
     constructor(init) {
       if (init && typeof init === 'object') {
         super();
-        for (const [key, val] of Object.entries(init)) {
+        for (const [key, val] of init[Symbol.iterator] ? init : Object.entries(init)) {
           this.set(key, val);
         }
       } else {
@@ -238,10 +238,9 @@ function tryJSONparse(jsonString) {
 
 function tryURL(url) {
   try {
-    return new URL(url);
-  } catch (e) {
-    return {};
-  }
+    if (url) return new URL(url);
+  } catch (e) {}
+  return ''; // allows `res.prop` without checking res first
 }
 
 function debounce(fn, delay, ...args) {

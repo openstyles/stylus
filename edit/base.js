@@ -7,7 +7,7 @@
 /* global initBeautifyButton */// beautify.js
 /* global prefs */
 /* global t */// localization.js
-/* global FIREFOX getOwnTab sessionStore tryJSONparse tryURL */// toolbox.js
+/* global FIREFOX clipString getOwnTab sessionStore tryJSONparse tryURL */// toolbox.js
 'use strict';
 
 /**
@@ -62,14 +62,13 @@ const editor = {
     mqCompact,
     styleReady: prefs.ready.then(loadStyle),
   });
+
   async function loadStyle() {
     const params = new URLSearchParams(location.search);
     let id = Number(params.get('id'));
     const style = id && await API.styles.get(id) || {
       id: id = null, // resetting the non-existent id
-      name: params.get('domain') ||
-        tryURL(params.get('url-prefix')).hostname ||
-        '',
+      name: makeName(params),
       enabled: true,
       sections: [
         MozDocMapper.toSection([...params], {code: ''}),
@@ -88,7 +87,19 @@ const editor = {
     $.rootCL.add(isUC ? 'usercss' : 'sectioned');
     sessionStore.justEditedStyleId = id || '';
     // no such style so let's clear the invalid URL parameters
-    if (!id) history.replaceState({}, '', location.pathname);
+    if (id === null) {
+      params.delete('id');
+      history.replaceState({}, '', location.pathname + (params.size ? '?' : '') + params);
+    }
+  }
+
+  function makeName(params) {
+    const prefix = tryURL(params.get('url-prefix'));
+    const {pathname: p = '', hostname: host} = prefix;
+    const path = p === '/' ? '' : clipString(p.replace(/\.(html?|aspx?|cgi|php)$/, ''));
+    const name = params.get('name') || host;
+    return (name ? name + path : params.get('domain') || '?') +
+      ` - ${new Date().toLocaleDateString([], {year: 'numeric', month: 'short'})}`;
   }
 })();
 

@@ -40,7 +40,7 @@ const Events = {
   },
   async openEditor(event, entry) {
     event.preventDefault();
-    await API.openEditor(this.openEditorOpts || {id: entry.styleId});
+    await API.openEditor(this.search || {id: entry.styleId});
     window.close();
   },
   async openManager(event) {
