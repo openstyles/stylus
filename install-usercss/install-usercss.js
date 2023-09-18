@@ -118,7 +118,7 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
     style.updateUrl = checker.checked ? updateUrl.href : null;
   };
   checker.onchange();
-  $('.set-update-url p').textContent = clipString(updateUrl.href.length, 300);
+  $('.set-update-url p').textContent = clipString(updateUrl.href, 300);
 
   // set prefer scheme
   $('#ss-scheme').onchange = e => {

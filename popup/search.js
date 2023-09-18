@@ -356,7 +356,7 @@
     });
     if (!fmt) $('.search-result-title', entry).prepend(USW_ICON.cloneNode(true));
     $('.search-result-title span', entry).textContent =
-      t.breakWord(clipString(name.length, 300));
+      t.breakWord(clipString(name, 300));
     // screenshot
     const elShot = $('.search-result-screenshot', entry);
     let shotSrc;
