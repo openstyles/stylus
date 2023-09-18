@@ -165,10 +165,13 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
 
   function updateWidgetStyle() {
     funcHeight = 0;
-    const MIN_LUMA = .05;
+    const MIN_LUMA = .1;
     const MIN_LUMA_DIFF = .4;
     const color = {
-      wrapper: colorMimicry(cm.display.wrapper),
+      wrapper: colorMimicry(cm.display.wrapper, {
+        bg: 'backgroundColor',
+        fore: 'color',
+      }),
       gutter: colorMimicry(cm.display.gutters, {
         bg: 'backgroundColor',
         border: 'borderRightColor',
@@ -201,8 +204,9 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
       }
       ${C_CONTAINER} input,
       ${C_CONTAINER} select {
-        background: rgba(255, 255, 255, ${
-          Math.max(MIN_LUMA, Math.pow(Math.max(0, color.gutter.bgLuma - MIN_LUMA * 2), 2)).toFixed(2)
+        background: ${
+          color.wrapper.bg.replace(/[^,]+$/, '') +
+          Math.max(MIN_LUMA, Math.pow(color.gutter.bgLuma - MIN_LUMA * 2, 2)).toFixed(2)
         });
         border: ${borderStyleForced};
         transition: none;

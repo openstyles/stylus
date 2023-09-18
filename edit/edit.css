@@ -2,6 +2,7 @@
   --pad: 1rem; /* Edge padding for modals/blocks/whatnot. TODO: reuse it in more places */
   --pad05: calc(0.5 * var(--pad));
   --popup-button-width: 16px;
+  --target-gapY: calc(.375 * var(--pad));
 }
 
 body {
@@ -96,12 +97,19 @@ html:not(.is-new-style) #heading::before {
   z-index: 10;
   display: flex;
   flex-direction: column;
+  background-color: var(--bg);
 }
 #header h1 {
   margin-top: 0;
 }
 #sections {
   padding-left: var(--header-width);
+}
+.sectioned #sections {
+  padding-top: var(--pad);
+  padding-bottom: var(--pad);
+  counter-reset: codebox;
+  background-color: var(--c98);
 }
 .usercss #sections {
   min-height: 0;
@@ -354,12 +362,16 @@ i,
   box-shadow: none !important;
   pointer-events: auto !important; /* FF bug */
 }
-.sectioned .section {
-  margin: 0 0.7rem;
-  padding: 1rem;
+#sections > .section > * {
+  margin-right: var(--pad);
 }
-.sectioned .section:not(:first-child) {
-  border-top: 2px solid var(--c80);
+#sections > .section > :not(.applies-to) {
+  margin-left: var(--padL);
+}
+.sectioned .section:nth-child(n + 2) {
+  margin-top: var(--pad);
+  border-top: 4px double var(--c80);
+  padding-top: var(--pad05);
 }
 .add-section:after {
   content: attr(short-text);
@@ -377,13 +389,10 @@ i,
 .edit-actions button {
   margin-right: .2rem;
 }
-#sections {
-  counter-reset: codebox;
-}
 #sections > .section:not(.removed) > label {
   padding: 0 0 4px 0;
-  display: inline-block;
-  font-size: 13px;
+  display: block;
+  font-weight: bold;
   animation: 2s highlight;
   animation-play-state: paused;
   animation-direction: reverse;
@@ -436,6 +445,7 @@ i,
   margin-bottom: .5em;
   box-sizing: border-box;
   min-height: 20px;
+  background-color: var(--bg);
 }
 /* deleted section */
 .deleted-section {
@@ -537,7 +547,6 @@ i,
 .applies-to {
   display: flex;
   align-items: flex-start;
-  min-height: 30px;
   flex-wrap: wrap;
 }
 .applies-to.error {
@@ -548,10 +557,11 @@ i,
   font-size: 0;
   padding: 0;
   line-height: var(--input-height);
+  height: var(--input-height);
 }
 .sectioned .applies-to label {
-  margin-left: -24px;
-  position: absolute;
+  width: var(--padL);
+  text-align: center;
 }
 .compact-layout .applies-to label {
   display: none;
@@ -572,14 +582,21 @@ i,
   flex-wrap: wrap;
   list-style-type: none;
   align-items: center;
-  margin-bottom: .5em;
+}
+.applies-to,
+.applies-to li:nth-last-child(n + 2) {
+  margin-bottom: var(--target-gapY);
 }
 .applies-to li.applies-to-everything {
   align-items: unset;
   line-height: var(--input-height);
 }
-.applies-to li > input {
-  min-height: 1.4rem;
+.applies-to select:not(:focus) {
+  background-color: var(--c99);
+  border-color: var(--c85);
+}
+.applies-to input {
+  border-color: var(--c85);
 }
 .applies-to .select-wrapper {
   margin-right: .5em;
@@ -968,9 +985,12 @@ i,
 
 /************ line widget *************/
 .CodeMirror-linewidget .applies-to {
-  margin: 1em 0;
-  padding: .75rem calc(.25rem + var(--cm-bar-width, 0)) .25rem .75rem;
+  margin: 0 0 .25em;
+  padding: var(--pad05) calc(.25rem + var(--cm-bar-width, 0)) var(--pad05) .75rem;
   font-family: var(--family);
+}
+.CodeMirror-linewidget li:nth-last-child(n + 2) {
+  margin-bottom: calc(var(--pad05) * .5);
 }
 .CodeMirror-linewidget .applies-to li[data-type="regexp"] .test-regexp {
   display: inline;
