@@ -142,7 +142,7 @@ const styleMan = (() => {
       msg.broadcast({
         method: 'styleDeleted',
         style: {id},
-      }, true);
+      }, {onlyIfStyled: true});
       return id;
     },
 
@@ -475,17 +475,17 @@ const styleMan = (() => {
     data.appliesTo = updated;
   }
 
-  function broadcastStyleUpdated(style, reason, method) {
+  function broadcastStyleUpdated(style, reason, isNew) {
     buildCacheForStyle(style);
     return msg.broadcast({
-      method,
+      method: isNew ? 'styleAdded' : 'styleUpdated',
       reason,
       style: {
         id: style.id,
         md5Url: style.md5Url,
         enabled: style.enabled,
       },
-    }, !style.enabled); // sending only to tabs that had this style enabled previously
+    }, {onlyIfStyled: !style.enabled});
   }
 
   function beforeSave(style) {
@@ -523,7 +523,7 @@ const styleMan = (() => {
     if (reason !== 'sync') {
       API.sync.putDoc(style);
     }
-    if (broadcast) broadcastStyleUpdated(style, reason, data ? 'styleUpdated' : 'styleAdded');
+    if (broadcast) broadcastStyleUpdated(style, reason, !data);
     return style;
   }
 

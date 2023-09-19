@@ -17,11 +17,12 @@ const msg = window.msg = /** @namespace msg */ {
   bg: window,
   /**
    * @param {?} data
-   * @param {boolean} [onlyStyled] - only tabs that are known to contain styles
-   * @param {(tab?:Tab)=>?} [getData] - provides data for this tab, nullish result = skips tab
+   * @param {{}} [opts]
+   * @param {boolean} [opts.onlyIfStyled] - only tabs that are known to contain styles
+   * @param {(tab?:Tab)=>?} [opts.getData] - provides data for this tab, nullish result = skips tab
    * @return {Promise<?[]>}
    */
-  async broadcast(data, onlyStyled, getData) {
+  async broadcast(data, {onlyIfStyled, getData} = {}) {
     const jobs = [];
     if (!getData || (data = getData())) {
       jobs.push(this.broadcastExtension(data, 'both'));
@@ -30,7 +31,7 @@ const msg = window.msg = /** @namespace msg */ {
     for (const tab of tabs) {
       if (!tab.discarded &&
           // including tabs with unsupported `url` as they may contain supported iframes
-          (!onlyStyled || tabMan.getStyleIds(tab.id)) &&
+          (!onlyIfStyled || tabMan.getStyleIds(tab.id)) &&
           // own tabs are informed via broadcastExtension
           !(tab.pendingUrl || tab.url || '').startsWith(URLS.ownOrigin) &&
           (!getData || (data = getData(tab)))
@@ -67,10 +68,26 @@ function addAPI(methods) {
 /* exported broadcastInjectorConfig */
 const broadcastInjectorConfig = ((
   cfg,
-  map = {exposeIframes: 'top', disableAll: 'off'},
-  data = {method: 'injectorConfig', cfg},
-  setTop = tab => { data.cfg.top = tab && getUrlOrigin(tab.url); return data; },
-  throttle = () => { data.cfg = cfg; msg.broadcast(data, true, cfg.top && setTop); cfg = null; }
+  map = {
+    exposeIframes: 'top',
+    disableAll: 'off',
+  },
+  data = {
+    method: 'injectorConfig',
+    cfg,
+  },
+  setTop = tab => {
+    data.cfg.top = tab && getUrlOrigin(tab.url);
+    return data;
+  },
+  throttle = () => {
+    data.cfg = cfg;
+    msg.broadcast(data, {
+      getData: cfg.top && setTop,
+      onlyIfStyled: true,
+    });
+    cfg = null;
+  }
 ) => (key, val) => {
   if (!cfg) { cfg = {}; setTimeout(throttle); }
   cfg[map[key] || key] = val;
