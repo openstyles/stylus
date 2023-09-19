@@ -21,6 +21,7 @@
 
 let tabURL;
 let isBlocked;
+let styleFinder;
 
 /** @type Element */
 const installed = $('#installed');
@@ -58,7 +59,7 @@ if (CHROME >= 107) {
 
 function onRuntimeMessage(msg) {
   if (!tabURL) return;
-  let ready = Promise.resolve();
+  let ready;
   switch (msg.method) {
     case 'styleAdded':
     case 'styleUpdated':
@@ -69,7 +70,7 @@ function onRuntimeMessage(msg) {
       handleDelete(msg.style.id);
       break;
   }
-  ready.then(() => dispatchEvent(new CustomEvent(msg.method, {detail: msg})));
+  if (styleFinder) styleFinder.on(msg, ready);
 }
 
 function setPopupWidth(_key, width) {
@@ -107,11 +108,11 @@ async function initPopup(frames) {
   elFind.on('click', async () => {
     elFind.disabled = true;
     await elFindDeps();
-    Events.searchInline();
+    styleFinder.inline();
   });
   elFind.on('split-btn', async e => {
     await elFindDeps();
-    Events.searchSite(e);
+    styleFinder.inSite(e);
   });
   window.on('keydown', e => {
     if (getEventKeyName(e) === 'Ctrl-F') {

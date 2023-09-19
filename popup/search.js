@@ -4,6 +4,7 @@
 /* global Events */
 /* global FIREFOX URLS clipString debounce isEmptyObj stringAsRegExp stringAsRegExpStr tryRegExp tryURL */// toolbox.js
 /* global prefs */
+/* global styleFinder:true */// popup.js
 /* global t */// localization.js
 'use strict';
 
@@ -73,11 +74,23 @@
     return {entry, result: entry && entry._result};
   };
   const rid2id = rid => rid.split('-')[1];
-  Events.searchInline = () => {
+  const eventMap = {
+    styleAdded: onStyleInstalled,
+    styleUpdated: onStyleInstalled,
+    styleDeleted: onStyleDeleted,
+  };
+  styleFinder = {};
+  styleFinder.on = async (msg, busy) => {
+    const fn = eventMap[msg.method];
+    if (!fn) return;
+    if (busy) await busy;
+    return fn(msg);
+  };
+  styleFinder.inline = () => {
     calcCategory();
     ready = start();
   };
-  Events.searchSite = event => {
+  styleFinder.inSite = event => {
     // use a less specific category if the inline search wasn't used yet
     if (!category) calcCategory({retry: 1});
     const add = (prefix, str) => str ? prefix + str : '';
@@ -156,7 +169,7 @@
     }, {passive: true});
   }
 
-  window.on('styleDeleted', ({detail: {style: {id}}}) => {
+  function onStyleDeleted({style: {id}}) {
     restoreScrollPosition();
     const r = results.find(r => r._styleId === id);
     if (r) {
@@ -164,9 +177,9 @@
       delete r._styleId;
       renderActionButtons(r.i);
     }
-  });
+  }
 
-  window.on('styleAdded', async ({detail: {style}}) => {
+  async function onStyleInstalled({style}) {
     restoreScrollPosition();
     const ri = await API.styles.getRemoteInfo(style.id);
     const r = ri && results.find(r => ri[0] === r.i);
@@ -175,7 +188,7 @@
       r._styleVars = ri[1];
       renderActionButtons(ri[0]);
     }
-  });
+  }
 
   function next() {
     displayedPage = Math.min(totalPages, displayedPage + 1);
