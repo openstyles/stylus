@@ -22,13 +22,16 @@ const iconMan = (() => {
   addAPI(/** @namespace API */ {
   /**
    * @param {(number|string)[]} styleIds
-   * @param {boolean} [lazyBadge=false] preventing flicker during page load
+   * @param {{}} opts
+   * @param {boolean} [opts.lazyBadge=false] preventing flicker during page load
+   * @param {string} [opts.iid] - instance id
    */
-    updateIconBadge(styleIds, {lazyBadge} = {}) {
+    updateIconBadge(styleIds, {lazyBadge, iid} = {}) {
       // FIXME: in some cases, we only have to redraw the badge. is it worth a optimization?
       const {frameId, tab: {id: tabId}} = this.sender;
       const value = styleIds.length ? styleIds.map(Number) : undefined;
       tabMan.set(tabId, 'styleIds', frameId, value);
+      if (iid) tabMan.set(tabId, 'iid', frameId, iid);
       debounce(refreshStaleBadges, frameId && lazyBadge ? 250 : 0);
       staleBadges.add(tabId);
       if (!frameId) refreshIcon(tabId, true);

@@ -1,6 +1,7 @@
 /* global CHROME FIREFOX URLS deepEqual ignoreChromeError */// toolbox.js
 /* global bgReady */// common.js
 /* global msg */
+/* global tabMan */
 'use strict';
 
 /* exported navMan */
@@ -42,9 +43,13 @@ const navMan = (() => {
 
   /** @this {string} type */
   function onFakeNavigation(data) {
-    const {url, frameId: f, documentId: d} = data;
     onNavigation.call(this, data);
-    msg.sendTab(data.tabId, {method: 'urlChanged', url}, d ? {documentId: d} : {frameId: f});
+    const {tabId} = data;
+    const td = tabMan.get(tabId); if (!td) return;
+    const {url, frameId: f, documentId: d} = data;
+    const iid = !d && (td.iid || {})[f];
+    const to = d ? {documentId: d} : {frameId: f};
+    msg.sendTab(tabId, {method: 'urlChanged', iid, url}, to);
   }
 })();
 

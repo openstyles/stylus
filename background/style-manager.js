@@ -209,10 +209,10 @@ const styleMan = (() => {
       const {sender = {}} = this || {};
       const {tab = {}, frameId} = sender;
       /** @type {InjectionConfig} */
-      const cfg = {
+      const cfg = !id && {
         // TODO: enable in FF when it supports sourceURL comment in style elements (also options.html)
         name: CHROME && p.exposeStyleName,
-        top: p.exposeIframes && (
+        top: isInitialApply && p.exposeIframes && (
           // sender may come from webRequest.onBeforeRequest for a prerendered main_frame with frameId>0
           !frameId || sender.type === 'main_frame' ? '' // apply.js will use location.origin
             : getUrlOrigin(tab.url || tabMan.get(sender.tabId || tab.id, 'url'))

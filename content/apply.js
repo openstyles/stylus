@@ -10,7 +10,7 @@
    * false -> when disableAll mode is on at start, the styles won't be sent
    * so while disableAll lasts we can ignore messages about style updates because
    * the tab will explicitly ask for all styles in bulk when disableAll mode ends */
-  let hasStyles; // uninitialized for backgroundReady detection below
+  let ownStyles; // uninitialized for backgroundReady detection below
   let isDisabled = false;
   let isTab = !chrome.tabs || location.pathname !== '/popup.html';
   let order;
@@ -20,6 +20,7 @@
     id + .5e6; // no order = at the end of `main`
   const isXml = document instanceof XMLDocument;
   const CHROME = 'app' in chrome;
+  const SYM_ID = 'styles';
   const isUnstylable = !CHROME && isXml;
   const styleInjector = StyleInjector({
     compare: (a, b) => calcOrder(a) - calcOrder(b),
@@ -30,6 +31,7 @@
     ? parent.location.href.split('#')[0]
     : location.href;
   let isOrphaned;
+  let offscreen;
   let topSite = '';
   // firefox doesn't orphanize content scripts so the old elements stay
   if (!CHROME) styleInjector.clearOrphans();
@@ -38,6 +40,8 @@
   let port;
   let lazyBadge = isFrame;
 
+  /** Polyfill for documentId in Firefox and Chrome pre-106 */
+  const instanceId = !(CHROME && CSS.supports('top', '1ic')) && (Math.random() + matchUrl);
   /* about:blank iframes are often used by sites for file upload or background tasks
    * and they may break if unexpected DOM stuff is present at `load` event
    * so we'll add the styles only if the iframe becomes visible */
@@ -83,21 +87,25 @@
 
   async function init() {
     if (isUnstylable) return API.styleViaAPI({method: 'styleApply'});
-    const SYM_ID = 'styles';
-    const SYM = Symbol.for(SYM_ID);
-    const parentStyles = isFrameNoUrl && CHROME && parent[parent.Symbol.for(SYM_ID)];
-    const styles =
-      window[SYM] ||
-      parentStyles && await new Promise(onFrameElementInView) && parentStyles ||
-      // XML in Chrome will be auto-converted to html later, so we can't style it via XHR now
-      !isFrameSameOrigin && !isXml && !chrome.tabs && tryCatch(getStylesViaXhr) ||
-      await API.styles.getSectionsByUrl(matchUrl, null, true);
-    ({order, off: isDisabled, top: topSite} = styles.cfg);
-    hasStyles = !isDisabled;
-    window[SYM] = styles;
-    if (!isFrame && topSite === '') styles.cfg.top = location.origin; // used by child frames via parentStyles
-    if (hasStyles) await styleInjector.apply(styles);
-    styleInjector.toggle(hasStyles);
+    let data = isFrameNoUrl && CHROME && parent[parent.Symbol.for(SYM_ID)];
+    if (data) await new Promise(onFrameElementInView);
+    else data = !isFrameSameOrigin && !isXml && !chrome.tabs && tryCatch(getStylesViaXhr);
+    // XML in Chrome will be auto-converted to html later, so we can't style it via XHR now
+    await applyStyles(data);
+  }
+
+  async function applyStyles(data) {
+    if (isOrphaned) return;
+    let {cfg} = data || (data = await API.styles.getSectionsByUrl(matchUrl, null, !ownStyles));
+    if (!cfg) cfg = data.cfg = ownStyles.cfg;
+    isDisabled = cfg.off;
+    order = cfg.order;
+    topSite = cfg.top;
+    ownStyles = window[Symbol.for(SYM_ID)] = data;
+    if (!isFrame && topSite === '') cfg.top = location.origin; // used by child frames via parentStyles
+    if (styleInjector.list.length) await styleInjector.replace(ownStyles);
+    else if (!isDisabled) await styleInjector.apply(ownStyles);
+    styleInjector.toggle(!isDisabled);
   }
 
   /** Must be executed inside try/catch */
@@ -128,7 +136,7 @@
         break;
 
       case 'styleUpdated':
-        if (!hasStyles && isDisabled) break;
+        if (!ownStyles && isDisabled) break;
         if (style.enabled) {
           API.styles.getSectionsByUrl(matchUrl, style.id).then(sections =>
             sections[style.id]
@@ -140,20 +148,17 @@
         break;
 
       case 'styleAdded':
-        if (!hasStyles && isDisabled) break;
-        if (style.enabled) {
+        if ((ownStyles || !isDisabled) && style.enabled) {
           API.styles.getSectionsByUrl(matchUrl, style.id)
             .then(styleInjector.apply);
         }
         break;
 
       case 'urlChanged':
-        if (!hasStyles && isDisabled || matchUrl === req.url) break;
-        matchUrl = req.url;
-        API.styles.getSectionsByUrl(matchUrl).then(sections => {
-          hasStyles = true;
-          styleInjector.replace(sections);
-        });
+        if ((ownStyles || !isDisabled) && req.iid === instanceId && matchUrl !== req.url) {
+          matchUrl = req.url;
+          applyStyles();
+        }
         break;
 
       case 'updateCount':
@@ -170,7 +175,7 @@
 
       case 'backgroundReady':
         // This may happen when reloading the background page without reloading the extension
-        if (hasStyles !== null) updateCount();
+        if (ownStyles !== null) updateCount();
         return true;
     }
   }
@@ -178,8 +183,8 @@
   function updateDisableAll() {
     if (isUnstylable) {
       API.styleViaAPI({method: 'injectorConfig', cfg: {off: isDisabled}});
-    } else if (!hasStyles && !isDisabled) {
-      init();
+    } else if (!ownStyles && !isDisabled) {
+      if (!offscreen) init();
     } else {
       styleInjector.toggle(!isDisabled);
     }
@@ -207,11 +212,12 @@
       if (lazyBadge && performance.now() > 1000) lazyBadge = false;
     }
     if (isUnstylable) API.styleViaAPI({method: 'updateCount'});
-    else API.updateIconBadge(styleInjector.list.map(style => style.id), {lazyBadge});
+    else API.updateIconBadge(styleInjector.list.map(style => style.id), {lazyBadge, iid: instanceId});
   }
 
   function onFrameElementInView(cb) {
     parent[parent.Symbol.for('xo')](frameElement, cb);
+    (offscreen || (offscreen = [])).push(cb);
   }
 
   /** @param {IntersectionObserverEntry[]} entries */
@@ -243,6 +249,8 @@
     removeEventListener(evt.type, orphanCheck, true);
     removeEventListener('pageshow', onBFCache);
     if (mqDark) mqDark.onchange = null;
+    if (offscreen) for (const fn of offscreen) fn();
+    offscreen = null;
     isOrphaned = true;
     setTimeout(styleInjector.clear, 1000); // avoiding FOUC
     tryCatch(msg.off, applyOnMessage);
