@@ -102,14 +102,18 @@ html:not(.is-new-style) #heading::before {
 #header h1 {
   margin-top: 0;
 }
+.sectioned body {
+  background-color: var(--c98);
+}
 #sections {
   padding-left: var(--header-width);
 }
-.sectioned #sections {
+.sectioned:not(.compact-layout) #sections {
   padding-top: var(--pad);
   padding-bottom: var(--pad);
+}
+.sectioned #sections {
   counter-reset: codebox;
-  background-color: var(--c98);
 }
 .usercss #sections {
   min-height: 0;
@@ -362,29 +366,28 @@ i,
   box-shadow: none !important;
   pointer-events: auto !important; /* FF bug */
 }
-.sectioned .section {
+.section {
   content-visibility: auto;
   contain-intrinsic-block-size: auto calc(var(--cm-height) + (2 + var(--targets, 1)) * (var(--input-height) + var(--target-gapY)));
   --padL: calc(var(--pad) * 1.5);
 }
-#sections > .section > * {
+.sectioned:not(.compact-layout) .section > * {
   margin-right: var(--pad);
 }
-#sections > .section > :not(.applies-to) {
+.sectioned:not(.compact-layout) .section > :not(.applies-to) {
   margin-left: var(--padL);
 }
-.sectioned .section:nth-child(n + 2) {
-  margin-top: var(--pad);
+.section:nth-child(n + 2) {
+  margin-top: var(--pad05);
   border-top: 4px double var(--c80);
-  padding-top: var(--pad05);
 }
 .add-section:after {
   content: attr(short-text);
 }
-#sections > div:only-of-type .add-section:after {
+#sections[data-section-count="1"] .add-section:after {
   content: attr(long-text);
 }
-#sections > div:only-of-type .remove-section {
+#sections[data-section-count="1"] .remove-section {
   display: none;
 }
 .edit-actions {
@@ -394,7 +397,7 @@ i,
 .edit-actions button {
   margin-right: .2rem;
 }
-#sections > .section:not(.removed) > label {
+.section:not(.removed) > label {
   padding: 0 0 4px 0;
   display: block;
   font-weight: bold;
@@ -403,7 +406,7 @@ i,
   animation-direction: reverse;
   animation-fill-mode: both;
 }
-#sections > .section > label::after {
+.section > label::after {
   counter-increment: codebox;
   content: counter(codebox) ": " attr(data-text);
   margin-left: 0.25rem;
@@ -453,6 +456,9 @@ i,
   background-color: var(--bg);
 }
 /* deleted section */
+.section.removed:first-child {
+  padding-top: var(--pad);
+}
 .deleted-section {
   margin: 0;
 }
@@ -570,11 +576,6 @@ i,
 }
 .compact-layout .applies-to label {
   display: none;
-}
-.compact-layout .applies-to[data-all] label {
-  position: static;
-  display: inline;
-  margin: 0 6px 0 -4px;
 }
 .applies-to ul {
   flex: auto;
@@ -1158,11 +1159,11 @@ i,
     max-height: 1.25em;
   }
   #sections {
-    padding-left: 0;
+    padding: 0;
   }
-  #sections > :not(.single-editor) {
-    margin: 0 .5rem;
-    padding: .5rem 0;
+  .section {
+    margin: 0;
+    padding: var(--pad05);
   }
   .single-editor {
     overflow: hidden;
