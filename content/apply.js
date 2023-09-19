@@ -10,7 +10,7 @@
    * false -> when disableAll mode is on at start, the styles won't be sent
    * so while disableAll lasts we can ignore messages about style updates because
    * the tab will explicitly ask for all styles in bulk when disableAll mode ends */
-  let ownStyles; // uninitialized for backgroundReady detection below
+  let ownStyles;
   let isDisabled = false;
   let isTab = !chrome.tabs || location.pathname !== '/popup.html';
   let order;
@@ -138,9 +138,9 @@
       case 'styleUpdated':
         if (!ownStyles && isDisabled) break;
         if (style.enabled) {
-          API.styles.getSectionsByUrl(matchUrl, style.id).then(sections =>
-            sections[style.id]
-              ? styleInjector.apply(sections)
+          API.styles.getSectionsByUrl(matchUrl, style.id).then(res =>
+            res.sections.length
+              ? styleInjector.apply(res)
               : styleInjector.remove(style.id));
         } else {
           styleInjector.remove(style.id);
@@ -175,7 +175,7 @@
 
       case 'backgroundReady':
         // This may happen when reloading the background page without reloading the extension
-        if (ownStyles !== null) updateCount();
+        if (ownStyles) updateCount();
         return true;
     }
   }

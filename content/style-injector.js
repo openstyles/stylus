@@ -33,8 +33,8 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
 
     list,
 
-    apply(styleMap) {
-      const styles = styleMapToArray(styleMap);
+    apply({cfg, sections: styles}) {
+      if (cfg) exposeStyleName = cfg.name;
       return styles.length
         && docRootObserver.evade(() => {
           if (!isTransitionPatched && isEnabled) {
@@ -65,8 +65,8 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
       if (remove(id)) emitUpdate();
     },
 
-    replace(styleMap) {
-      const styles = styleMapToArray(styleMap);
+    replace({cfg, sections: styles}) {
+      if (cfg) exposeStyleName = cfg.name;
       const added = new Set(styles.map(s => s.id));
       const removed = [];
       for (const style of list) {
@@ -121,7 +121,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     // the browsers, especially Firefox, may apply all transitions on page load
     if (document.readyState === 'complete' ||
         document.visibilityState === 'hidden' ||
-        !styles.some(s => s.code.includes('transition'))) {
+        !styles.some(s => s.code.some(c => c.includes('transition')))) {
       return;
     }
     const el = createStyle({id: PATCH_ID, code: `
@@ -133,6 +133,11 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     // wait for the next paint to complete
     // note: requestAnimationFrame won't fire in inactive tabs
     requestAnimationFrame(() => setTimeout(() => el.remove()));
+  }
+
+  /** @this {Array} array to compare to */
+  function arrItemDiff(c, i) {
+    return c !== this[i];
   }
 
   function createStyle(style = {}) {
@@ -161,13 +166,20 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     return el;
   }
 
-  function setTextAndName(el, {id, code = '', name}) {
+  function setTextAndName(el, {id, code, name}) {
     if (exposeStyleName && name) {
       el.dataset.name = name;
       name = encodeURIComponent(name.replace(/[?#/']/g, toSafeChar));
-      code += `\n/*# sourceURL=${chrome.runtime.getURL(name)}.user.css#${id} */`;
+      code = code.concat(`\n/*# sourceURL=${chrome.runtime.getURL(name)}.user.css#${id} */`);
     }
-    el.textContent = code;
+    let i, len, n;
+    for (i = 0, len = code.length, n = el.firstChild; n; i++, n = n.nextSibling) {
+      /* The surplus nodes are cleared to trigger the less frequently observed `characterData` mutations,
+         and anyway it's often due to a typo/mistake while editing, which will be fixed soon */
+      if (i >= len) n.nodeValue = '';
+      else if (n.nodeValue !== code[i]) n.nodeValue = code[i];
+    }
+    if (i < len) el.append(...code.slice(i));
   }
 
   function toggleObservers(shouldStart) {
@@ -242,25 +254,16 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     return needsSort;
   }
 
-  function styleMapToArray(styleMap) {
-    if (styleMap.cfg) {
-      exposeStyleName = styleMap.cfg.name;
-    }
-    return Object.values(styleMap).map(({id, code, name}) => id && ({
-      id,
-      name,
-      code: code.join(''),
-    })).filter(Boolean);
-  }
-
   function update(newStyle) {
     const {id, code} = newStyle;
     const style = table.get(id);
-    if (style.code !== code ||
+    if (style.code.length !== code.length ||
+        style.code.some(arrItemDiff, code) ||
         style.name !== newStyle.name && exposeStyleName) {
       style.code = code;
       setTextAndName(style.el, newStyle);
     }
+
   }
 
   function RewriteObserver(onChange) {

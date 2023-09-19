@@ -2,7 +2,7 @@
 /* global addAPI */// common.js
 /* global isEmptyObj */// toolbox.js
 /* global prefs */
-/* global styleMan */
+/* global styleMan styleUtil */// style-manager.js
 'use strict';
 
 /**
@@ -56,15 +56,14 @@
     if (id === null && !ignoreUrlCheck && frameStyles.url === url) {
       return;
     }
-    const sections = styleMan.getSectionsByUrl(url, id);
+    const {sections} = styleMan.getSectionsByUrl(url, id);
+    const {order} = styleUtil;
     const tasks = [];
-    const {order} = sections.cfg;
     const calcOrder = ({id}) =>
       (order.prio[id] || 0) * 1e6 ||
       order.main[id] ||
       id + .5e6;
-    delete sections.cfg;
-    for (const sec of Object.values(sections).sort((a, b) => calcOrder(a) - calcOrder(b))) {
+    for (const sec of sections.sort((a, b) => calcOrder(a) - calcOrder(b))) {
       const styleId = sec.id;
       const code = sec.code.join('\n');
       if (code === (frameStyles[styleId] || []).join('\n')) {

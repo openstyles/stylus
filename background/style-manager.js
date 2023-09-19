@@ -15,22 +15,15 @@ const styleUtil = {};
 /* exported styleMan */
 const styleMan = (() => {
 
-  Object.assign(styleUtil, {
-    handleSave,
-    id2style,
-    iterStyles,
-    uuid2style,
-  });
-
   //#region Declarations
 
   /** @type {Map<number,StyleMapData>} */
   const dataMap = new Map();
   /** @type {Map<string,CachedInjectedStyles>} */
   const cachedStyleForUrl = createCache({
-    onDeleted(url, cache) {
-      for (const section of Object.values(cache.sections)) {
-        const data = id2data(section.id);
+    onDeleted(url, {sections}) {
+      for (const id in sections) {
+        const data = id2data(id);
         if (data) data.appliesTo.delete(url);
       }
     },
@@ -70,6 +63,14 @@ const styleMan = (() => {
     _rev: 0,
   };
   uuidIndex.addCustom(orderWrap, {set: setOrder});
+
+  Object.assign(styleUtil, {
+    handleSave,
+    id2style,
+    iterStyles,
+    uuid2style,
+    order,
+  });
 
   class MatchQuery {
     constructor(url) {
@@ -200,7 +201,7 @@ const styleMan = (() => {
       return res;
     },
 
-    /** @returns {{[styleId: string]: InjectedStyle | InjectionConfig}} */
+    /** @returns {{ cfg: InjectionConfig, sections: InjectedStyle[] }} */
     getSectionsByUrl(url, id, isInitialApply) {
       const p = prefs.__values;
       if (isInitialApply && p.disableAll) {
@@ -237,9 +238,13 @@ const styleMan = (() => {
       } else if (cache.maybeMatch.size) {
         buildCache(cache, url, Array.from(cache.maybeMatch, id2data).filter(Boolean));
       }
-      return Object.assign({cfg},
-        id ? mapObj(cache.sections, null, [id])
-          : cache.sections);
+      let res = cache.sections;
+      return {
+        cfg,
+        sections: id
+          ? ((res = res[id])) ? [res] : []
+          : Object.values(res),
+      };
     },
 
     /** @returns {StyleObj} */
@@ -482,7 +487,6 @@ const styleMan = (() => {
       reason,
       style: {
         id: style.id,
-        md5Url: style.md5Url,
         enabled: style.enabled,
       },
     }, {onlyIfStyled: !style.enabled});
