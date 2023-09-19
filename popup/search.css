@@ -7,22 +7,14 @@
   overflow-x: hidden;
 }
 
-#search-results:not([data-empty]):before {
-  background-image: linear-gradient(transparent, rgba(0, 0, 0, .3) 200px);
-  content: "";
-  top: -50px;
-  left: -1000px;
-  right: -1000px;
-  bottom: -12px;
-  position: absolute;
-  pointer-events: none;
-  animation: fadein 1s;
-  animation-fill-mode: both;
-}
-
 #search-results {
-  position: relative;
-  margin-top: -1em;
+  background: linear-gradient(
+    var(--c95) 110px /* nav and search params */,
+    var(--c70) 220px /* middle of the first thumbnail */,
+    var(--c70) calc(100% - 110px) /* middle of the last thumbnail */,
+    var(--c85) calc(100% - 30px)) /* stop at the bottom nav */;
+  padding-bottom: 0 !important;
+  border-top: 1px solid var(--c80);
 }
 
 #search-results-error {
@@ -35,7 +27,7 @@
 
 #search-results-list {
   position: relative;
-  min-height: 224px;
+  min-height: 200px;
 }
 
 .search-result,
@@ -50,10 +42,11 @@
   box-shadow: 1px 1px 10px rgba(0, 0, 0, .75);
   border-radius: 4px;
   border: 1px solid var(--c50);
-  margin-bottom: 24px;
   background-color: var(--c95);
 }
-
+.search-result:nth-last-child(n + 2) {
+  margin-bottom: 24px;
+}
 .search-result:hover {
   border-color: var(--fg);
   background-color: var(--c90);
@@ -293,19 +286,21 @@ search-result-meta [data-type="rating"][data-class="none"] dd {
 }
 
 .search-results-nav {
-  flex-direction: row;
   text-align: center;
   word-break: keep-all;
   line-height: 24px;
   font-size: 16px;
+  background-color: var(--c95);
+  margin: 0 calc(-1 * var(--outer-padding)) .5em;
 }
 .search-results-nav[data-type="top"] {
-  padding-top: 1em;
-  margin-bottom: 1em;
+  padding: .25em 0 0;
 }
 .search-results-nav[data-type="bottom"] {
-  margin-top: -1em;
-  margin-bottom: 1em;
+  border-top: var(--border);
+  padding: .25em 0;
+  margin-top: 1em;
+  margin-bottom: 0;
 }
 .search-results-nav label {
   vertical-align: middle;
@@ -344,7 +339,14 @@ search-result-meta [data-type="rating"][data-class="none"] dd {
 #search-params > * {
   margin-top: .5rem;
 }
-
+#search-params input,
+#search-params select {
+  background-color: var(--c98);
+}
+#search-params input:focus,
+#search-params select:focus {
+  background-color: var(--bg);
+}
 #search-query {
   min-width: 3em;
   margin-right: .5em;
