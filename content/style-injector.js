@@ -170,7 +170,9 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     if (exposeStyleName && name) {
       el.dataset.name = name;
       name = encodeURIComponent(name.replace(/[?#/']/g, toSafeChar));
-      code = code.concat(`\n/*# sourceURL=${chrome.runtime.getURL(name)}.user.css#${id} */`);
+      code = code.concat(`\n/*# sourceURL=${chrome.runtime.getURL(name)}.user.css#${id}${
+        window !== top ? '#' + Math.random().toString(36).slice(2) : '' // https://crbug.com/1298600
+      } */`);
     }
     let i, len, n;
     for (i = 0, len = code.length, n = el.firstChild; n; i++, n = n.nextSibling) {
