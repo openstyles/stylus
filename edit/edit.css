@@ -266,7 +266,11 @@ i,
 #actions .buttons > :not(:last-child) {
   margin-right: .25rem;
 }
-
+.dirty #save-button,
+.dirty #save-button + button {
+  background: linear-gradient(gold, orange);
+  border-color: darkgoldenrod;
+}
 #publish > div > * {
   margin-top: .75em;
 }
