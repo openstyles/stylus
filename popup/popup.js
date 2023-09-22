@@ -1,4 +1,4 @@
-/* global $ $$ $create getEventKeyName setupLivePrefs */// dom.js
+/* global $ $$ $create $remove getEventKeyName setupLivePrefs */// dom.js
 /* global ABOUT_BLANK getStyleDataMerged preinit */// preinit.js
 /* global API msg */// msg.js
 /* global Events */
@@ -13,7 +13,6 @@
   capitalize
   clamp
   clipString
-  debounce
   getActiveTab
   isEmptyObj
   stringAsRegExpStr
@@ -29,6 +28,7 @@ const installed = $('#installed');
 const WRITE_FRAME_SEL = '.match:not([data-frame-id="0"]):not(.dupe)';
 const ENTRY_ID_PREFIX_RAW = 'style-';
 const EXT_NAME = `<${chrome.runtime.getManifest().name}>`;
+const xo = new IntersectionObserver(onIntersect);
 const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrId}`);
 
 preinit.then(({frames, styles, url}) => {
@@ -68,7 +68,7 @@ function onRuntimeMessage(msg) {
       ready = handleUpdate(msg);
       break;
     case 'styleDeleted':
-      handleDelete(msg.style.id);
+      $remove($entry(msg.style.id));
       break;
   }
   if (styleFinder) styleFinder.on(msg, ready);
@@ -153,9 +153,7 @@ async function initPopup(frames) {
         tabURL.startsWith('https://chromewebstore.google.com/');
   if (isStore) {
     blockPopup();
-  }
-
-  if (!URLS.supported(tabURL)) {
+  } else if (!URLS.supported(tabURL)) {
     blockPopup();
     return;
   }
@@ -288,17 +286,14 @@ function showStyles(frameResults) {
   });
   if (entries.size) {
     resortEntries([...entries.values()]);
-  } else {
-    installed.appendChild(t.template.noStyles);
   }
-  $.rootCL.add(entries.size % 2 ? 'even' : 'odd');
   require(['/popup/hotkeys']);
 }
 
 function resortEntries(entries) {
   // `entries` is specified only at startup, after that we respect the prefs
   if (entries || prefs.get('popup.autoResort')) {
-    installed.append(...sortStyles(entries || $$('.entry', installed)));
+    installed.append(...sortStyles(entries || [...installed.children]));
   }
 }
 
@@ -310,49 +305,56 @@ function createStyleElement(style, entry) {
     Object.assign(entry, {
       id: ENTRY_ID_PREFIX_RAW + style.id,
       styleId: style.id,
+      styleMeta: style,
       onmousedown: Events.maybeEdit,
     });
   }
-  entry.styleMeta = style;
-  const cls = entry.classList;
-  cls.toggle('disabled', !style.enabled);
-  cls.toggle('enabled', style.enabled);
-  $('input', entry).checked = style.enabled;
-
-  const styleName = $('.style-name', entry);
-  styleName.lastChild.textContent = style.customName || style.name;
-  debounce(() => {
-    styleName.title =
-      style.sloppy ? t('styleNotAppliedRegexpProblemTooltip') :
-      style.excludedScheme ? t(`styleNotAppliedScheme${capitalize(style.preferScheme)}`) :
-      styleName.scrollWidth > styleName.clientWidth + 1 ? styleName.textContent :
-      '';
-  });
-
-  const UCD = style.usercssData;
+  const {enabled, frameUrl, usercssData: UCD} = style;
+  const name = $('.style-name', entry);
   const cfg = $('.configure', entry);
-  const cfgUrl = UCD ? '#' : style.url;
-  cfg.hidden = UCD ? isEmptyObj(UCD.vars) : !style.url || !`${style.updateUrl}`.includes('?');
-  if (!cfg.hidden && cfg.href !== cfgUrl) {
-    const el = t.template[UCD ? 'config' : 'configExternal'].cloneNode(true);
-    el.href = cfgUrl;
-    cfg.replaceWith(el);
-  }
+  const cfgUrl = UCD ? '' : style.url;
+  const cls = entry.classList;
 
+  cls.toggle('disabled', !enabled);
+  cls.toggle('enabled', enabled);
   cls.toggle('force-applied', style.included);
   cls.toggle('not-applied', style.excluded || style.sloppy || style.excludedScheme);
   cls.toggle('regexp-partial', style.sloppy);
+  cls.toggle('frame', !!frameUrl);
 
-  const {frameUrl} = style;
+  $('input', entry).checked = enabled;
+
+  name.$entry = entry;
+  name.lastChild.textContent = style.customName || style.name;
+
+  cfg.hidden = UCD ? isEmptyObj(UCD.vars) : !style.url || !`${style.updateUrl}`.includes('?');
+  if (!cfg.hidden && cfg.href !== cfgUrl) {
+    const el = t.template[UCD ? 'config' : 'configExternal'].cloneNode(true);
+    if (cfgUrl) el.href = cfgUrl;
+    else el.removeAttribute('href');
+    cfg.replaceWith(el);
+  }
+
   if (frameUrl) {
     const sel = 'span.frame-url';
-    const frameEl = $(sel, entry) || styleName.insertBefore($create(sel), styleName.lastChild);
+    const frameEl = $(sel, entry) || name.insertBefore($create(sel), name.lastChild);
     frameEl.title = frameUrl;
     frameEl.onmousedown = Events.maybeEdit;
   }
-  cls.toggle('frame', Boolean(frameUrl));
 
+  xo.observe(name);
   return entry;
+}
+
+/** @param {IntersectionObserverEntry[]} results */
+function onIntersect(results) {
+  for (const {target: $name, boundingClientRect: r} of results) {
+    const style = $name.$entry.styleMeta;
+    $name.title = style.sloppy ? t('styleNotAppliedRegexpProblemTooltip') :
+      style.excludedScheme ? t(`styleNotAppliedScheme${capitalize(style.preferScheme)}`) :
+        $name.scrollWidth > r.width + 1 ? $name.textContent :
+          '';
+  }
 }
 
 async function handleUpdate({style, reason}) {
@@ -362,29 +364,12 @@ async function handleUpdate({style, reason}) {
     if (!style) return;
   }
   const el = createStyleElement(style, entry);
-  if (!el.parentNode) {
-    installed.appendChild(el);
-    blockPopup(false);
-  }
+  if (!el.isConnected) installed.append(el);
   resortEntries();
-}
-
-function handleDelete(id) {
-  const el = $entry(id);
-  if (el) {
-    el.remove();
-    if (!$('.entry')) installed.appendChild(t.template.noStyles);
-  }
 }
 
 function blockPopup(val = true) {
   isBlocked = val;
-  document.body.classList.toggle('blocked', isBlocked);
+  $.rootCL.toggle('blocked', isBlocked);
   $('#write-wrapper').classList.toggle('hidden', !$(WRITE_FRAME_SEL));
-  if (isBlocked) {
-    document.body.prepend(t.template.unavailableInfo);
-  } else {
-    t.template.unavailableInfo.remove();
-    t.template.noStyles.remove();
-  }
 }

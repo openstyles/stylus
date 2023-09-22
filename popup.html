@@ -19,7 +19,7 @@
           <div class="regexp-problem-indicator" i18n="title:styleRegexpProblemTooltip">!</div>
         </div>
         <div class="actions">
-          <a class="configure"></a>
+          <a class="configure" href="#"></a>
           <a class="style-edit-link" href="edit.html" i18n="title:editStyleLabel">
             <i class=i-edit></i>
           </a>
@@ -43,22 +43,11 @@
     </a>
   </template>
 
-  <template data-id="noStyles">
-    <div id="no-styles" i18n="noStylesForSite"></div>
-  </template>
-
   <template data-id="regexpProblemExplanation">
     <div id="regexp-explanation">
       <div id="regexp-partial" i18n="html:styleRegexpPartialExplanation"></div>
       <div id="regexp-invalid" i18n="styleRegexpInvalidExplanation"></div>
       <button i18n="confirmOK"></button>
-    </div>
-  </template>
-
-  <template data-id="unavailableInfo">
-    <div class="blocked-info">
-      <label i18n="stylusUnavailableForURL"></label>
-      <p i18n="stylusUnavailableForURLdetails"></p>
     </div>
   </template>
 
@@ -87,26 +76,15 @@
 
 <body id="stylus-popup">
 
-  <div id="menu" hidden>
-    <div>
-      <header>title</header>
-      <main>
-        <label data-exclude="domain" i18n="+excludeStyleByDomainLabel"><input type="checkbox"></label>
-        <label data-exclude="url" i18n="+excludeStyleByUrlLabel"><input type="checkbox"></label>
-      </main>
-      <main class="delete">
-        <span i18n="deleteStyleConfirm"></span>
-      </main>
-      <footer>
-        <button data-cmd="delete" i18n="confirmDelete"></button>
-        <button data-cmd="cancel" i18n="confirmClose"></button>
-      </footer>
-    </div>
+  <div class="blocked-info if-blocked">
+    <label i18n="stylusUnavailableForURL"></label>
+    <p i18n="stylusUnavailableForURLdetails"></p>
   </div>
 
-  <div id="installed">
+  <main class="rel">
     <aside id="hotkey-info" i18n="title:popupHotkeysTooltip"></aside>
-  </div>
+    <div id="installed" i18n="data-no-styles:noStylesForSite"></div>
+  </main>
 
   <div class="actions" id="main-actions">
     <label id="disableAll-label" i18n="data-on:disableAllStyles, data-off:disableAllStylesOff">
@@ -147,6 +125,23 @@
     <a class="if-blocked" href="https://github.com/openstyles/stylus/wiki" target="_blank">
       <button id="popup-wiki-button" i18n="linkStylusWiki, title:linkGetHelp"></button>
     </a>
+  </div>
+
+  <div id="menu" hidden>
+    <div>
+      <header>title</header>
+      <main>
+        <label data-exclude="domain" i18n="+excludeStyleByDomainLabel"><input type="checkbox"></label>
+        <label data-exclude="url" i18n="+excludeStyleByUrlLabel"><input type="checkbox"></label>
+      </main>
+      <main class="delete">
+        <span i18n="deleteStyleConfirm"></span>
+      </main>
+      <footer>
+        <button data-cmd="delete" i18n="confirmDelete"></button>
+        <button data-cmd="cancel" i18n="confirmClose"></button>
+      </footer>
+    </div>
   </div>
 
   <!-- Here we can use the above elements before DOMContentLoaded -->

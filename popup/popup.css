@@ -2,7 +2,8 @@
   --border: 1px solid var(--c80);
   --inner-padding: 18px; /* checkbox + gap */
   --outer-padding: 9px;
-  --hotkey-margin: 16px;
+  --entry-h: 26px;
+  --hotkey-margin: 13px;
   --red1: hsl(0, 70%, 45%);
   --hover: var(--accent-1);
   --hover-icon: var(--c10);
@@ -33,7 +34,7 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
   padding-right: var(--outer-padding);
 }
 
-body:not(.blocked) .if-blocked,
+:root:not(.blocked) .if-blocked,
 .blocked .if-not-blocked,
 .blocked #installed > :not(.frame),
 .blocked [data-frame-id="0"] > .breadcrumbs,
@@ -55,9 +56,13 @@ body:not(.blocked) .if-blocked,
   width: fit-content;
 }
 
-#no-styles {
-  padding: .75em var(--outer-padding) 0;
+:root:not(.blocked) #installed:empty::after {
+  content: attr(data-no-styles);
+  padding: var(--outer-padding);
   font-weight: bold;
+  display: block;
+  border-bottom: var(--border);
+  background-color: var(--c98);
 }
 
 .style-name:hover input:checked,
@@ -67,7 +72,6 @@ body:not(.blocked) .if-blocked,
 }
 #installed input {
   pointer-events: none;
-  align-self: center;
   color: var(--fg);
 }
 #installed input::after {
@@ -76,16 +80,11 @@ body:not(.blocked) .if-blocked,
 
 a {
   color: var(--fg);
-  transition: color .5s;
+  transition: color .1s;
 }
 
 a:hover {
   color: var(--c40);
-}
-
-body > DIV:last-of-type,
-body.blocked > DIV {
-  border-bottom: none;
 }
 
 #installed {
@@ -102,10 +101,14 @@ body.blocked > DIV {
 #installed .actions {
   cursor: default;
 }
-
-#installed .actions a {
-  cursor: pointer;
+#installed a:hover i {
+  color: var(--accent-1);
+}
+.actions a {
   text-decoration: none;
+}
+.actions a:not([href]) {
+  cursor: default;
 }
 
 /* entry */
@@ -120,9 +123,9 @@ body.blocked > DIV {
 }
 .entry-content {
   display: flex;
-  align-items: center;
-  height: 26px;
-  padding: 0 14px 0 0;
+  box-sizing: border-box;
+  height: var(--entry-h);
+  padding: 0 var(--hotkey-margin) 0 0;
 }
 
 html[style] .entry-content {
@@ -133,19 +136,15 @@ html[style] .entry-content {
   display: inline-flex;
   align-items: center;
 }
-
+/* not using display:flex to simplify code for ellipsis overflow */
 .style-name {
-  height: 100%;
-  width: 100%;
-  line-height: 28px;
-  cursor: default;
+  line-height: var(--entry-h);
   font-weight: bold;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding-left: var(--outer-padding);
-  position: relative;
-  display: flex;
+  padding: 1px 0 0 var(--outer-padding);
+  flex: 1;
 }
 
 .disabled .style-name,
@@ -158,36 +157,30 @@ html[style] .entry-content {
 }
 
 .entry .main-controls {
-  height: 100%;
-  display: inline-flex;
-  flex-grow: 1;
+  display: flex;
+  flex: 1;
   overflow: hidden;
-  align-items: center;
   padding-right: 5px;
 }
 
-.styles-first.even .entry:nth-child(even),
-.styles-first.odd .entry:nth-child(odd),
-.styles-last .entry:nth-child(even) {
+.styles-first .entry:nth-last-child(odd), .styles-last .entry:nth-child(odd) {
   background-color: var(--zebra);
 }
 
-.entry:nth-child(-n+10):before,
-.entry:nth-child(11):before {
+.entry:nth-child(-n+10):before {
   counter-increment: style-number;
   content: counter(style-number);
   position: absolute;
-  top: .9ex;
-  right: 5px;
+  top: 0;
+  right: 4px;
   color: var(--c65);
+  line-height: var(--entry-h);
 }
-
-.entry:nth-child(11):before {
+.entry:nth-child(10):before {
   content: "0";
 }
 
-html[style*="border"] .entry:nth-child(-n+10):before,
-html[style*="border"] .entry:nth-child(11):before {
+html[style*="border"] .entry:nth-child(-n+10):before {
   /* the "show side borders" option adds 2px */
   right: 7px;
 }
@@ -197,8 +190,7 @@ html[style*="border"] .entry:nth-child(11):before {
   margin-right: -1px;
 }
 
-.entry .actions > * {
-  height: 26px;
+.entry .actions > :not([hidden]) {
   width: var(--inner-padding);
   display: inline-flex;
   align-items: center;
@@ -412,6 +404,7 @@ a:hover i {
   pointer-events: auto;
   margin-left: -1px;
   color: var(--c60);
+  cursor: auto;
 }
 #newStyleAsUsercss:checked,
 #newStyleAsUsercss:checked + i {
@@ -552,9 +545,8 @@ a:hover i {
   display: flex;
   flex-direction: column;
 }
-.styles-last #installed {
+.styles-last body > main {
   order: 2;
-  flex: 1 0;
 }
 .styles-last #main-actions {
   order: 1;
@@ -567,22 +559,22 @@ a:hover i {
 .unreachable .entry:not(.frame) {
   opacity: .25;
 }
-
-.unreachable .blocked-info {
+.blocked-info {
+  background-color: var(--c98);
   border-bottom: var(--border);
 }
-
 .blocked-info label {
-  padding: .75em 0 .5em;
+  padding: .75em var(--outer-padding) .5em;
   display: block;
   font-weight: bold;
+  margin: 0 calc(-1 * var(--outer-padding)) .5em;
+  background-color: var(--bg);
+  border-bottom: var(--border);
 }
-
 .blocked-info p {
   padding: 1px 0 var(--outer-padding);
   margin: 0;
 }
-
 .blocked-info .copy {
   cursor: pointer;
   transition: all .1s;
@@ -590,16 +582,13 @@ a:hover i {
   text-decoration-style: dotted;
   font-weight: bold;
 }
-
 .blocked-info .copy:hover {
   color: var(--fg);
 }
-
 .blocked-info .copy.copied {
   background: hsl(170, 40%, 80%);
   color: var(--fg);
 }
-
 .copy-message {
   white-space: nowrap;
   position: absolute;
@@ -615,11 +604,9 @@ a:hover i {
   color: var(--fg);
   z-index: 10;
 }
-
 .copy-message.show-message {
   display: block;
 }
-
 .blocked-info .copy:after {
   content: '';
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAMAAAC67D+PAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAGUExURQAAAAAAAKVnuc8AAAABdFJOUwBA5thmAAAAIElEQVQI12NgYGCEAgYgkwEMGBFijEhixDMZkUSRLQAACpYALjrE2uIAAAAASUVORK5CYII=)center no-repeat;
@@ -638,8 +625,6 @@ a:hover i {
   bottom: 0;
   width: var(--hotkey-margin);
   cursor: help;
-  margin: 0;
-  padding: 0;
   z-index: 1;
   hyphens: auto;
 }
