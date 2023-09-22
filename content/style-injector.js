@@ -140,7 +140,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     return c !== this[i];
   }
 
-  function createStyle(style = {}) {
+  function createStyle(style) {
     const {id} = style;
     if (!creationDoc) initCreationDoc();
     let el;
@@ -206,7 +206,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     creationDoc = !Event.prototype.getPreventDefault && document.wrappedJSObject;
     if (creationDoc) {
       ({createElement, createElementNS} = creationDoc);
-      const el = document.documentElement.appendChild(createStyle());
+      const el = document.documentElement.appendChild(createStyle({code: ''}));
       const isApplied = el.sheet;
       el.remove();
       if (isApplied) return;
