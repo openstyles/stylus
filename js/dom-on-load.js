@@ -1,4 +1,4 @@
-/* global $$ $ $create focusAccessibility getEventKeyName moveFocus */// dom.js
+/* global $$ $ $create focusA11y getEventKeyName moveFocus */// dom.js
 /* global CHROME clamp debounce */// toolbox.js
 /* global msg */
 /* global prefs */
@@ -92,12 +92,12 @@
 
   function keepFocusRingOnTabbing(event) {
     if (event.key === 'Tab' && !event.ctrlKey && !event.altKey && !event.metaKey) {
-      focusAccessibility.lastFocusedViaClick = false;
+      focusA11y.lastFocusedViaClick = false;
       setTimeout(() => {
         let el = document.activeElement;
         if (el) {
           el = el.closest('[data-focused-via-click]');
-          focusAccessibility.toggle(el, false);
+          focusA11y.toggle(el, false);
         }
       });
     }
@@ -134,7 +134,7 @@
       pedal.parentElement.classList.toggle('active');
       pedal.after(menu);
       moveFocus(menu, 0);
-      focusAccessibility.toggle(menu.firstChild, focusAccessibility.get(pedal));
+      focusA11y.toggle(menu.firstChild, focusA11y.get(pedal));
     }
     if (entry) {
       prevPedal.previousElementSibling.dispatchEvent(new CustomEvent('split-btn', {
@@ -152,10 +152,10 @@
   }
 
   function suppressFocusRingOnClick({target}) {
-    const el = focusAccessibility.closest(target);
+    const el = focusA11y.closest(target);
     if (el) {
-      focusAccessibility.lastFocusedViaClick = true;
-      focusAccessibility.toggle(el, true);
+      focusA11y.lastFocusedViaClick = true;
+      focusA11y.toggle(el, true);
     }
   }
 

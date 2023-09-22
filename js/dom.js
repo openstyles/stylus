@@ -8,7 +8,7 @@
   $remove
   $$remove
   animateElement
-  focusAccessibility
+  focusA11y
   getEventKeyName
   messageBoxProxy
   moveFocus
@@ -30,7 +30,7 @@ $.root = document.documentElement;
 $.rootCL = $.root.classList;
 
 // Makes the focus outline appear on keyboard tabbing, but not on mouse clicks.
-const focusAccessibility = {
+const focusA11y = {
   // last event's focusedViaClick
   lastFocusedViaClick: false,
   get: el => el && el.dataset.focusedViaClick != null,
@@ -258,7 +258,7 @@ function moveFocus(rootElement, step) {
     if (!el.disabled && el.tabIndex >= 0 && el.getBoundingClientRect().width) {
       el.focus();
       // suppress focus outline when invoked via click
-      toggleDataset(el, 'focusedViaClick', focusAccessibility.lastFocusedViaClick);
+      toggleDataset(el, 'focusedViaClick', focusA11y.lastFocusedViaClick);
       return activeEl !== el && el;
     }
   }

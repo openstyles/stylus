@@ -1,4 +1,4 @@
-/* global $ $create animateElement focusAccessibility moveFocus */// dom.js
+/* global $ $create animateElement focusA11y moveFocus */// dom.js
 /* global clamp */// toolbox.js
 /* global t */// localization.js
 'use strict';
@@ -100,7 +100,7 @@ messageBox.show = async ({
         }
         switch (key) {
           case 'Enter':
-            if (focusAccessibility.closest(target)) {
+            if (focusA11y.closest(target)) {
               return;
             }
             break;
