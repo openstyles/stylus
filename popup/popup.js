@@ -16,6 +16,7 @@
   debounce
   getActiveTab
   isEmptyObj
+  stringAsRegExpStr
 */// toolbox.js
 'use strict';
 
@@ -213,68 +214,56 @@ async function initPopup(frames) {
  */
 function createWriterElement(frame, index) {
   const {url, frameId, parentFrameId, isDupe} = frame;
-  const targets = $create('div.breadcrumbs');
-  const linkSel = 'a.write-style-link';
-  const elFor = !index ? $('#write-style-for') : {};
-  const isAboutBlank = url.startsWith('about:');
-  const domains = getDomains(url);
-  const me = url.startsWith(URLS.ownOrigin) ? EXT_NAME : '';
-  const urlLink = $create(linkSel, {
-    href: getEditorUrl({'url-prefix': url}, me),
-    title: elFor.title = `url-prefix("${url}")`,
-    tabIndex: isAboutBlank ? -1 : 0,
-    textContent: isAboutBlank ? ''
-      : clipString(new URL(url).pathname.slice(1)) ||
-        t('writeStyleForURL').replace(/ /g, '\u00a0'), // this&nbsp;URL
-    onclick: elFor.onclick = Events.openEditor,
-    onmouseenter: Events.toggleUrlLink,
-    onmouseleave: Events.toggleUrlLink,
-    onfocus: Events.toggleUrlLink,
-    onblur: Events.toggleUrlLink,
-  });
-
-  for (const domain of domains) {
-    const d = domain.split('.');
-    if (!d[1] && domains[1]) continue; // no separate clickable TLD for domain.TLD
-    targets.appendChild(isAboutBlank ? $create('span', url) : $create(linkSel, {
-      href: getEditorUrl({domain}, me),
-      textContent: me || (d[2] ? d[0] /*kinda strip public suffix lol*/ : domain),
-      title: `domain("${domain}")`,
-      onclick: Events.openEditor,
-      attributes: {subdomain: true},
-    }));
+  const isAbout = url.startsWith('about:');
+  const crumbs = [];
+  let el;
+  if (isAbout) {
+    el = $create('span', url);
+  } else {
+    el = (url.startsWith(URLS.ownOrigin) ? makeExtCrumbs : makeWebCrumbs)(crumbs, url);
+    el.onmouseenter = el.onmouseleave = el.onfocus = el.onblur = Events.toggleUrlLink;
+    if (!index) Object.assign($('#write-style-for'), {onclick: Events.openEditor, title: el.title});
   }
-
-  targets.appendChild(urlLink);
-
+  crumbs.push(el);
   const root = $('#write-style');
   const parent = $(`[data-frame-id="${parentFrameId}"]`, root) || root;
-  const child = $create({
-    tag: 'div',
-    className: `match${isDupe ? ' dupe' : ''}${isAboutBlank ? ' about-blank' : ''}`,
+  const child = $create(`.match${isDupe ? '.dupe' : ''}${isAbout ? '.about-blank' : ''}`, {
     dataset: {frameId},
-    appendChild: targets,
-  });
+  }, $create('.breadcrumbs', crumbs));
   parent.appendChild(child);
   parent.dataset.children = (Number(parent.dataset.children) || 0) + 1;
 }
 
-function getDomains(url) {
-  let d = url.split(/[/:]+/, 2)[1];
-  if (!d || url.startsWith('file:')) {
-    return [];
-  }
-  const domains = [d];
-  while (d.includes('.')) {
-    d = d.substring(d.indexOf('.') + 1);
-    domains.push(d);
-  }
-  return domains;
+function makeExtCrumbs(crumbs, url) {
+  const key = 'regexp';
+  const all = '^\\w+-extension://';
+  const page = url.slice(URLS.ownOrigin.length, url.indexOf('.html'));
+  crumbs.push(makeCrumb(key, all + '.+', EXT_NAME, EXT_NAME, true));
+  return makeCrumb(key, `${all}[^/]+/${stringAsRegExpStr(page)}.*`, EXT_NAME, page + '.*');
 }
 
-function getEditorUrl(obj, me) {
-  if (me) obj.name = me;
-  return 'edit.html?' + new URLSearchParams(obj);
+function makeWebCrumbs(crumbs, url) {
+  const i = url.indexOf('://');
+  const host = i < 0 ? url : url.slice(i + 3, url.indexOf('/', i + 3));
+  const tail = i < 0 ? '' : url.slice(i + 3 + host.length + 1);
+  for (let domain, d, j = 0; // show `tld` part only if it's the entire host e.g. localhost
+       (domain = host.slice(j)) && ((d = domain.split('.'))[1] || !j);) {
+    d = d[2] ? d[0] : domain; // kinda strip the public suffix lol
+    crumbs.push(makeCrumb('domain', domain, '', d, true));
+    j = host.indexOf('.', j + 1) + 1 || host.length;
+  }
+  return makeCrumb('url-prefix', url, '', clipString(tail) || t('writeStyleForURL'));
+}
+
+function makeCrumb(key, val, name, body, isDomain) {
+  const sp = {[key]: val};
+  if (name) sp.name = name;
+  return $create('a.write-style-link', {
+    href: 'edit.html?' + new URLSearchParams(sp),
+    onclick: Events.openEditor,
+    title: `${key}("${val}")`,
+    attributes: isDomain && {subdomain: ''},
+  }, body);
 }
 
 function sortStyles(entries) {

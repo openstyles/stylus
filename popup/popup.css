@@ -477,27 +477,21 @@ a:hover i {
   color: var(--c75);
   text-decoration: none
 }
-/* "dot" after each subdomain name */
-.write-style-link[subdomain]::after {
+/* "dot" after each subdomain name except tld */
+[subdomain]:nth-last-child(n + 3)::after {
   content: "."
 }
 /* "forward slash" before path ("this URL") */
-.write-style-link:last-child:not(:empty)::before {
+.write-style-link:not([subdomain])::before {
   content: "\200b/"
-}
-/* no "dot" after top-level domain */
-.write-style-link:nth-last-child(2)::after,
-.write-style-link:only-child::before,
-.write-style-link[subdomain=""] + a::before {
-  content: none
 }
 /* :hover style */
 .breadcrumbs.url\(\) > a,
 /* :hover or :focus on "this URL" sets class="url()" */
-.breadcrumbs > a:hover,
-.breadcrumbs > a:focus,
-.breadcrumbs > a:hover ~ a[subdomain],
-.breadcrumbs > a:focus ~ a[subdomain] {
+.breadcrumbs [subdomain]:hover,
+.breadcrumbs [subdomain]:focus,
+.breadcrumbs [subdomain]:hover ~ [subdomain],
+.breadcrumbs [subdomain]:focus ~ [subdomain] {
   color: inherit;
   text-decoration: underline;
 }
@@ -586,8 +580,6 @@ a:hover i {
 
 .blocked-info p {
   padding: 1px 0 var(--outer-padding);
-  display: block;
-  font-size: 95%;
   margin: 0;
 }
 

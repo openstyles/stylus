@@ -130,10 +130,7 @@ function $create(selector = 'div', properties, children) {
       opt.id = id;
     }
     const cls = selector.slice(classStart + 1);
-    if (cls) {
-      opt[selector.includes(':') ? 'class' : 'className'] =
-        cls.includes('.') ? cls.replace(/\./g, ' ') : cls;
-    }
+    if (cls) opt.className = cls.replace(/\./g, ' ');
     tag = selector.slice(0, Math.min(idStart, classStart));
   } else if (Array.isArray(selector)) {
     tag = 'div';
@@ -158,7 +155,7 @@ function $create(selector = 'div', properties, children) {
         Object.assign(element.dataset, val);
         break;
       case 'attributes':
-        Object.entries(val).forEach(attr => element.setAttribute(...attr));
+        if (val) Object.entries(val).forEach(attr => element.setAttribute(...attr));
         break;
       case 'style': {
         const t = typeof val;
