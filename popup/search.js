@@ -202,8 +202,8 @@
     render();
   }
 
-  function error(reason) {
-    dom.error.textContent = reason;
+  function error(err) {
+    dom.error.textContent = err && err.message || `${err}`;
     dom.error.hidden = false;
     dom.list.hidden = true;
     if (dom.error.getBoundingClientRect().bottom < 0) {
@@ -575,20 +575,37 @@
     const jobs = [
       [INDEX_URL, 'uso', json => json.filter(v => v.f === 'uso')],
       [USW_INDEX_URL, 'usw', json => json.data],
-    ].map(async ([url, prefix, transform]) => {
-      const res = transform(await (await fetch(url)).json());
-      for (const v of res) v.i = `${prefix}-${v.i}`;
-      index = index ? index.concat(res) : res;
-      if (index !== res) ready = ready.then(start);
-    });
-    // TODO: use Promise.allSettled when "minimum_chrome_version" >= 76 and "strict_min_version" >= 71
-    indexing = Promise.all(jobs.map(j => j.catch(e => e))).then(() => {
+    ].map(j => fetchIndexJob(j).catch(error));
+    indexing = Promise.all(jobs).then(() => {
       indexing = null;
     });
     await Promise.race(jobs);
     clearTimeout(timer);
     $remove(':scope > .lds-spinner', dom.list);
     return index;
+  }
+
+  async function fetchIndexJob([url, prefix, transform]) {
+    for (let triesLeft = 3; triesLeft--;) {
+      try {
+        const res = transform(await (await fetch(url)).json());
+        for (const v of res) v.i = `${prefix}-${v.i}`;
+        if (!index) {
+          index = res;
+        } else {
+          index = index.concat(res);
+          ready.then(start);
+        }
+        break;
+      } catch (e) {
+        e = e.message; // CDN weirdly fails the first time, so we'll retry
+        if (!triesLeft || e !== 'Failed to fetch') {
+          error(e);
+          break;
+        }
+        await new Promise(cb => setTimeout(cb, 250));
+      }
+    }
   }
 
   async function search({retry} = {}) {
