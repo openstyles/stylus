@@ -47,7 +47,7 @@
     "message": "删除"
   },
   "appliesRemoveError": {
-    "message": "无法移除最后一个“应用于”项目"
+    "message": "不能移除最后一个「应用于」条目"
   },
   "appliesSpecify": {
     "message": "指定"
@@ -591,7 +591,7 @@
     "message": "已安装的样式"
   },
   "manageMaxTargets": {
-    "message": "显示 \"应用于\" 的数量"
+    "message": "「应用于」列每个样式显示的对象数量"
   },
   "manageNewStyleAsUsercss": {
     "message": "作为 UserCSS"
@@ -1248,6 +1248,9 @@
   "styleChangesNotSaved": {
     "message": "您已对此样式进行了更改，但尚未保存。"
   },
+  "styleEditor": {
+    "message": "样式编辑器"
+  },
   "styleEnabledLabel": {
     "message": "启用"
   },
@@ -1304,6 +1307,9 @@
         "content": "$1"
       }
     }
+  },
+  "styleManager": {
+    "message": "样式管理器"
   },
   "styleMissingName": {
     "message": "输入名称"

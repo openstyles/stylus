@@ -1005,9 +1005,6 @@
   "optionsSyncUsername": {
     "message": "使用者名稱"
   },
-  "optionsUpdateImportNote": {
-    "message": "當從舊版本或是從 Stylish 匯入樣式備份時，在樣式管理員中手動進行一次更新檢查，以確保所有樣式都被更新。"
-  },
   "optionsUpdateInterval": {
     "message": "使用者樣式自動更新間隔（以小時計，指定為 0 以停用）"
   },

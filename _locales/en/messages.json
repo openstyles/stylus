@@ -1227,9 +1227,6 @@
   "optionsSyncSyncNow": {
     "message": "Sync now"
   },
-  "optionsUpdateImportNote": {
-    "message": "When importing style backups from old version or from Stylish, do a one-time check for updates manually in the style manager to ensure all styles are updated."
-  },
   "optionsUpdateInterval": {
     "message": "Userstyle autoupdate interval in hours (specify 0 to disable)"
   },

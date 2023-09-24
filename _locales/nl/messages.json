@@ -977,9 +977,6 @@
   "optionsSyncUsername": {
     "message": "Gebruikersnaam"
   },
-  "optionsUpdateImportNote": {
-    "message": "Als u stijlen vanuit een oudere versie of vanuit Stylish importeert, controleer dan eenmalig op updates in de stijlbeheerder om er zeker van te zijn dat alle stijlen zijn bijgewerkt."
-  },
   "optionsUpdateInterval": {
     "message": "Interval voor automatisch bijwerken van gebruikersstijlen in uren (geef 0 op om dit uit te schakelen)"
   },

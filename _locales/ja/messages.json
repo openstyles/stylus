@@ -967,9 +967,6 @@
   "optionsSyncUsername": {
     "message": "ユーザ名"
   },
-  "optionsUpdateImportNote": {
-    "message": "旧バージョンまたはStylishからスタイルのバックアップをインポートする場合は、スタイルマネージャで一度手動で更新チェックを行い、すべてのスタイルが確実に更新されるようにしてください。"
-  },
   "optionsUpdateInterval": {
     "message": "ユーザースタイルの自動更新間隔（時間単位）（0を指定すると更新しません）"
   },

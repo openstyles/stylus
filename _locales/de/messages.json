@@ -949,9 +949,6 @@
   "optionsSyncUsername": {
     "message": "Benutzername"
   },
-  "optionsUpdateImportNote": {
-    "message": "Nach dem Importieren von Styles aus einer alten Version oder von Stylish ist eine einmalige manuelle Updatesuche in der Verwaltung nötig. Dies stellt sicher, dass alle Styles auf dem aktuellsten Stand sind."
-  },
   "optionsUpdateInterval": {
     "message": "Style-Updateintervall in Stunden (0 zum Deaktivieren)"
   },

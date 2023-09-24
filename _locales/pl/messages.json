@@ -1008,9 +1008,6 @@
   "optionsSyncUsername": {
     "message": "Nazwa użytkownika"
   },
-  "optionsUpdateImportNote": {
-    "message": "Podczas importowania kopii zapasowych stylu ze starej wersji lub ze Stylish jednorazowo sprawdź aktualizacje ręcznie w menedżerze stylów, aby upewnić się, że wszystkie style są zaktualizowane."
-  },
   "optionsUpdateInterval": {
     "message": "Interwał automatycznej aktualizacji stylu w godzinach (podaj 0, aby wyłączyć)"
   },
