@@ -109,7 +109,7 @@ html:not(.is-new-style) #heading::before {
   padding-left: var(--header-width);
 }
 .sectioned:not(.compact-layout) #sections {
-  padding-top: var(--pad);
+  padding-top: var(--pad05);
   padding-bottom: var(--pad);
 }
 .sectioned #sections {
@@ -403,7 +403,7 @@ i,
   margin-right: .2rem;
 }
 .section:not(.removed) > label {
-  padding: 0 0 4px 0;
+  padding: var(--pad05) 0 .25em 0;
   display: block;
   font-weight: bold;
   animation: 2s highlight;
