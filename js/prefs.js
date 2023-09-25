@@ -140,6 +140,7 @@
     'popupWidth': 246,              // popup width in pixels
 
     'updateInterval': 24,           // user-style automatic update interval, hours (0 = disable)
+    'updateOnlyEnabled': false,
   };
   const warnUnknown = console.warn.bind(console, 'Unknown preference "%s"');
   /** @type {PrefsValues} */

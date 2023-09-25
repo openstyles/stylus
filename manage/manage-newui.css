@@ -134,10 +134,9 @@
 .updater-icons > :not(.check-update):after {
   content: attr(title);
   position: absolute;
-  display: block;
   width: max-content;
   max-width: 25vw;
-  padding: 1ex 1.5ex;
+  padding: .5ex 1.5ex;
   border: 1px solid #ded597;
   background-color: #fffbd6;
   border-radius: 4px;

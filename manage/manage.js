@@ -44,9 +44,6 @@ Object.assign(newUI, {
     return (newUI[key] = Array.isArray(val) ? val : []);
   },
 });
-// ...read the actual values
-newUI.readPrefs();
-newUI.renderClass();
 
 (async function init() {
   const query = router.getSearch('search');
@@ -54,7 +51,10 @@ newUI.renderClass();
     API.styles.getAll(),
     query && API.styles.searchDB({query, mode: router.getSearch(fltMode)}),
     newUI.hasFavs() && newUI.readBadFavs(),
-    prefs.ready,
+    prefs.ready.then(() => {
+      newUI.readPrefs();
+      newUI.renderClass();
+    }),
   ]);
   installed.on('click', Events.entryClicked);
   installed.on('contextmenu', Events.entryClicked);
@@ -101,7 +101,6 @@ newUI.renderClass();
   setTimeout(require, 0, [
     '/manage/import-export',
     '/manage/incremental-search',
-    '/manage/updater-ui',
   ]);
 })();
 

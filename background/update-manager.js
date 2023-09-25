@@ -60,12 +60,15 @@ const updateMan = (() => {
     save = true,
     ignoreDigest,
     observe,
+    onlyEnabled = prefs.get('updateOnlyEnabled'),
   } = {}) {
     resetInterval();
     checkingAll = true;
     const port = observe && chrome.runtime.connect({name: 'updater'});
-    const styles = styleMan.getAll()
-      .filter(style => style.updateUrl && style.updatable !== false);
+    const styles = styleMan.getAll().filter(s =>
+      s.updateUrl &&
+      s.updatable !== false &&
+      (!onlyEnabled || s.enabled));
     if (port) port.postMessage({count: styles.length});
     log('');
     log(`${save ? 'Scheduled' : 'Manual'} update check for ${styles.length} styles`);

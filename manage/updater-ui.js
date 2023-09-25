@@ -3,16 +3,22 @@
 /* global API */// msg.js
 /* global filterAndAppend filtersSelector */// filters.js
 /* global newUI */// manage.js
+/* global prefs */
 /* global sorter */
 /* global t */// localization.js
 'use strict';
 
-$('#check-all-updates').onclick = checkUpdateAll;
-$('#check-all-updates-force').onclick = checkUpdateAll;
-$('#apply-all-updates').onclick = applyUpdateAll;
+const btnCheck = $('#check-all-updates');
+const btnCheckForce = $('#check-all-updates-force');
+const btnApply = $('#apply-all-updates');
+btnCheck.onclick = btnCheckForce.onclick = checkUpdateAll;
+btnApply.onclick = applyUpdateAll;
+
+prefs.subscribe('updateOnlyEnabled', (key, val) => {
+  btnCheck.title = val ? t('manageOnlyEnabled') : '';
+}, true);
 
 function applyUpdateAll() {
-  const btnApply = $('#apply-all-updates');
   btnApply.disabled = true;
   setTimeout(() => {
     btnApply.classList.add('hidden');
@@ -28,16 +34,13 @@ function applyUpdateAll() {
 
 function checkUpdateAll() {
   document.body.classList.add('update-in-progress');
-  const btnCheck = $('#check-all-updates');
-  const btnCheckForce = $('#check-all-updates-force');
-  const btnApply = $('#apply-all-updates');
   const noUpdates = $('#update-all-no-updates');
   btnCheck.disabled = true;
   btnCheckForce.classList.add('hidden');
   btnApply.classList.add('hidden');
   noUpdates.classList.add('hidden');
 
-  const ignoreDigest = this && this.id === 'check-all-updates-force';
+  const ignoreDigest = this === btnCheckForce;
   $$('.updatable:not(.can-update)' + (ignoreDigest ? '' : ':not(.update-problem)'))
     .map(checkUpdate);
 
@@ -209,7 +212,6 @@ function renderUpdatesOnlyFilter({show, check} = {}) {
   checkbox.checked = check && show;
   checkbox.dispatchEvent(new Event('change'));
 
-  const btnApply = $('#apply-all-updates');
   btnApply.classList.toggle('hidden', !numUpdatable);
   btnApply.dataset.value = numUpdatable;
 }
