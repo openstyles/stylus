@@ -78,15 +78,6 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
   height: auto;
 }
 
-a {
-  color: var(--fg);
-  transition: color .1s;
-}
-
-a:hover {
-  color: var(--c40);
-}
-
 #installed {
   max-height: 445px;
   overflow-y: auto;

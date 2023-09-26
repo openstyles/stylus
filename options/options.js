@@ -25,7 +25,7 @@ if (FIREFOX && 'update' in (chrome.commands || {})) {
   $('#shortcuts').classList.remove('chromium-only');
 }
 // actions
-$('#options-close-icon').onclick = () => {
+$('header i').onclick = () => {
   top.dispatchEvent(new CustomEvent('closeOptions'));
 };
 $('#manage').onclick = () => {

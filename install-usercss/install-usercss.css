@@ -4,15 +4,6 @@ body {
   height: 100vh;
 }
 
-a {
-  color: var(--fg);
-  transition: color .5s;
-}
-
-a:hover {
-  color: var(--c40);
-}
-
 img.icon {
   height: 1.4em;
   vertical-align: middle;

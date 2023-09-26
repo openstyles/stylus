@@ -58,6 +58,13 @@ body:lang(zh-HK) {
   font-family: Arial, 'Microsoft JhengHei UI', 'Microsoft JhengHei', system-ui, sans-serif;
 }
 
+a {
+  color: var(--fg);
+  transition: color .15s;
+}
+a:hover {
+  color: var(--c40);
+}
 a.icon { text-decoration: none; }
 
 button {

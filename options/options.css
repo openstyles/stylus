@@ -1,9 +1,11 @@
-html {
+:root {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100vh;
   background: none;
+  --pad: 1rem;
+  --pad05: calc(.5 * var(--pad));
   --value-cell-w: 6ch;
 }
 
@@ -23,29 +25,11 @@ body.scaleout {
   animation: scaleout .25s ease-in-out;
 }
 
-#options {
+main {
   background: var(--bg);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-}
-
-.options-wrapper {
   overflow-y: auto;
-}
-
-a {
-  color: var(--fg);
-  transition: color .5s;
-}
-
-a:hover {
-  color: var(--c40);
-}
-
-a:hover i,
-i:hover {
-  color: var(--fg);
 }
 
 .clickable {
@@ -53,51 +37,20 @@ i:hover {
   cursor: pointer;
 }
 
-#options-close-icon i {
-  color: var(--c40);
-  transition: color .5s;
-}
-
-#options-close-icon:hover i {
-  color: var(--fg);
-}
-
-#options-close-icon {
-  display: inline-flex;
-  cursor: pointer;
-  position: absolute;
-  right: 6px;
-  top: 6px;
-}
-
-#options-close-icon i {
-  height: 20px;
-  width: 20px;
-}
-
-#options-title {
+header {
   font-weight: bold;
   background-color: var(--accent-3);
-  padding: .75rem 26px .75rem calc(30% + 4px);
-  font-size: 22px;
-  letter-spacing: .5px;
-  position: relative;
-  min-height: 42px;
-  box-sizing: border-box;
-  border-bottom: 1px solid var(--c40);
+  padding: var(--pad);
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid hsla(0, 0%, 50%, .2);
 }
-
-#options-title::before {
-  content: "";
-  width: 0;
-  height: 0;
-  padding: 0 32px 32px 0;
-  background: url(/images/icon/32.png);
-  position: absolute;
-  left: 26px;
-  top: 0;
-  bottom: 0;
-  margin: auto;
+header h1 {
+  flex: 1 0;
+  margin: 0 var(--pad05);
+}
+header i:hover {
+  color: var(--accent-1);
 }
 
 .firefox .chromium-only,
@@ -113,18 +66,14 @@ label.chromium-only > :first-child::after {
 .block {
   display: flex;
   align-items: center;
-  margin: 1em 0;
-  border-bottom: 1px dotted var(--c80);
-  padding: 0 16px .75em;
+  padding: var(--pad05) var(--pad);
   position: relative;
 }
-
-.options-wrapper .block:last-child {
-  margin-bottom: 0;
-  border-bottom: none;
+.block:nth-last-child(n + 2) {
+  border-bottom: 1px dotted var(--c80);
 }
 
-h1 {
+h2 {
   flex: 0 0 8em;
   margin: 0;
   font-size: 120%;
@@ -213,17 +162,18 @@ label.disabled,
   opacity: .5;
 }
 
-#actions {
+footer {
   justify-content: center;
-  padding: .5em 1em 1em;
-  background-color: rgba(0, 0, 0, .05);
+  padding: var(--pad05) var(--pad);
+  background-color: var(--c90);
   margin: 0;
   border-top: 1px solid var(--c60);
   border-bottom: none;
+  display: flex;
 }
 
-#actions button {
-  margin: .5em 1em 0 0;
+footer button {
+  margin: 0 .25em;
 }
 
 [data-cmd="check-updates"] button {

@@ -9,14 +9,6 @@ body {
   height: 100vh;
 }
 
-a {
-  color: var(--fg);
-  transition: color .5s;
-}
-a:hover {
-  color: #666;
-}
-
 #global-progress {
   position: fixed;
   height: 4px;

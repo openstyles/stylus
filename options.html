@@ -44,21 +44,18 @@
 
   <script src="options/options-sync.js"></script>
   <script src="js/themer.js"></script> <!-- must be last in HEAD to avoid FOUC -->
-<template data-id="body">
-  <div id="options-header">
-    <div id="options-title" i18n="+optionsHeading">
-      <div id="options-close-icon">
-        <i class=i-close></i>
-      </div>
-    </div>
-  </div>
+  <template data-id="body">
 
-  <div id="options">
+    <header>
+      <img src="/images/icon/128.png" width="32" height="32">
+      <h1 i18n="optionsHeading"></h1>
+      <i class=i-close tabindex="0"></i>
+    </header>
 
-    <div class="options-wrapper">
+    <main>
 
       <div class="block" id="updates">
-        <h1 i18n="optionsCustomizeUpdate"></h1>
+        <h2 i18n="optionsCustomizeUpdate"></h2>
         <div class="items swap">
           <label>
             <span i18n="optionsUpdateInterval" data-clickable="0"></span>
@@ -72,7 +69,7 @@
       </div>
 
       <div class="block sync-options">
-        <h1 i18n="optionsCustomizeSync"></h1>
+        <h2 i18n="optionsCustomizeSync"></h2>
         <div class="items swap">
           <label>
             <span class="sync-status"></span>
@@ -109,7 +106,7 @@
       </div>
 
       <div class="block">
-        <h1 i18n="stylePreferSchemeLabel"></h1>
+        <h2 i18n="stylePreferSchemeLabel"></h2>
         <div class="items no-stretch">
           <label class="radio-wrapper" i18n="+preferSchemeDark">
             <input type="radio" value="dark" name="schemeSwitcher.enabled">
@@ -134,7 +131,7 @@
       </div>
 
       <div class="block">
-        <h1 i18n="optionsCustomizeIcon"></h1>
+        <h2 i18n="optionsCustomizeIcon"></h2>
         <div class="items no-stretch">
           <label>
             <span class="radio-wrapper" i18n="+optionsIconAuto">
@@ -166,7 +163,7 @@
       </div>
 
       <div class="block">
-        <h1 i18n="optionsCustomizeBadge"></h1>
+        <h2 i18n="optionsCustomizeBadge"></h2>
         <div class="items swap">
           <label>
             <span i18n="prefShowBadge"></span>
@@ -184,7 +181,7 @@
       </div>
 
       <div class="block">
-        <h1 i18n="optionsCustomizePopup"></h1>
+        <h2 i18n="optionsCustomizePopup"></h2>
         <div class="items swap">
           <label>
             <span i18n="optionsPopupWidth"></span>
@@ -206,7 +203,7 @@
       </div>
 
       <div class="block">
-        <h1 i18n="styleEditor"></h1>
+        <h2 i18n="styleEditor"></h2>
         <div class="items swap">
           <label>
             <span i18n="popupOpenEditInWindow">
@@ -229,7 +226,7 @@
       </div>
 
       <div class="block">
-        <h1 i18n="styleManager"></h1>
+        <h2 i18n="styleManager"></h2>
         <div class="items swap">
           <label>
             <span i18n="manageNewUI"></span>
@@ -260,7 +257,7 @@
       </div>
 
       <div class="block" id="advanced">
-        <h1 i18n="optionsAdvanced"></h1>
+        <h2 i18n="optionsAdvanced"></h2>
         <div class="items swap">
           <label>
             <span i18n="optionsAdvancedStyleViaXhr">
@@ -306,18 +303,19 @@
       </div>
 
       <div class="block">
-        <h1 i18n="cm_theme"></h1>
+        <h2 i18n="cm_theme"></h2>
         <div class="items no-stretch" i18n="optionsStylusThemes"></div>
       </div>
-    </div>
 
-    <div class="block" id="actions">
+    </main>
+
+    <footer>
       <button id="reset" i18n="optionsResetButton, title:optionsReset"></button>
       <button id="shortcuts" i18n="shortcuts, title:shortcutsNote"></button>
       <button id="manage" i18n="confirmClose"></button>
-    </div>
-  </div>
-</template>
+    </footer>
+
+  </template>
 </head>
 
 <body id="stylus-options">
