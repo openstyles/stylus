@@ -133,10 +133,9 @@
     } catch (e) {
       error = e;
     }
-    if (!error || isIgnorableError(error)) {
+    if (!error || isIgnorableError(err.message = error.message)) {
       return data;
     }
-    err.message = error.message;
     if (error.stack) err.stack = error.stack + '\n' + err.stack;
     return Promise.reject(err);
   }
@@ -158,7 +157,7 @@
     try {
       return await apiSend(m);
     } catch (e) {
-      return bgReadying && isIgnorableError(e)
+      return bgReadying && isIgnorableError(e.message)
         ? await bgReadying && apiSend(m)
         : Promise.reject(e);
     } finally {
