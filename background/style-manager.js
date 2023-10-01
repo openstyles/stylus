@@ -201,7 +201,7 @@ const styleMan = (() => {
       return res;
     },
 
-    /** @returns {{ cfg: InjectionConfig, sections: InjectedStyle[] }} */
+    /** @returns {Injection} */
     getSectionsByUrl(url, id, isInitialApply) {
       const p = prefs.__values;
       if (isInitialApply && p.disableAll) {

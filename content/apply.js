@@ -6,17 +6,14 @@
   if (window.INJECTED === 1) return;
   window.INJECTED = 1;
 
-  /** true -> when the page styles are received,
-   * false -> when disableAll mode is on at start, the styles won't be sent
-   * so while disableAll lasts we can ignore messages about style updates because
-   * the tab will explicitly ask for all styles in bulk when disableAll mode ends */
-  let ownStyles;
-  let isDisabled = false;
   let isTab = !chrome.tabs || location.pathname !== '/popup.html';
-  let order;
-  const calcOrder = ({id}) =>
-    (order.prio[id] || 0) * 1e6 ||
-    order.main[id] ||
+  const own = /** @type {Injection} */{
+    cfg: {off: false, top: ''},
+  };
+  const calcOrder = ({id}, _) =>
+    (_ = own.cfg.order) &&
+    (_.prio[id] || 0) * 1e6 ||
+    _.main[id] ||
     id + .5e6; // no order = at the end of `main`
   const isXml = document instanceof XMLDocument;
   const CHROME = 'app' in chrome;
@@ -32,7 +29,6 @@
     : location.href;
   let isOrphaned;
   let offscreen;
-  let topSite = '';
   // firefox doesn't orphanize content scripts so the old elements stay
   if (!CHROME) styleInjector.clearOrphans();
 
@@ -96,16 +92,13 @@
 
   async function applyStyles(data) {
     if (isOrphaned) return;
-    let {cfg} = data || (data = await API.styles.getSectionsByUrl(matchUrl, null, !ownStyles));
-    if (!cfg) cfg = data.cfg = ownStyles.cfg;
-    isDisabled = cfg.off;
-    order = cfg.order;
-    topSite = cfg.top;
-    ownStyles = window[Symbol.for(SYM_ID)] = data;
-    if (!isFrame && topSite === '') cfg.top = location.origin; // used by child frames via parentStyles
-    if (styleInjector.list.length) await styleInjector.replace(ownStyles);
-    else if (!isDisabled) await styleInjector.apply(ownStyles);
-    styleInjector.toggle(!isDisabled);
+    if (!data) data = await API.styles.getSectionsByUrl(matchUrl, null, !own.sections);
+    if (!data.cfg) data.cfg = own.cfg;
+    Object.assign(own, window[Symbol.for(SYM_ID)] = data);
+    if (!isFrame && own.cfg.top === '') own.cfg.top = location.origin; // used by child frames via parentStyles
+    if (styleInjector.list.length) await styleInjector.replace(own);
+    else if (!own.cfg.off) await styleInjector.apply(own);
+    styleInjector.toggle(!own.cfg.off);
   }
 
   /** Must be executed inside try/catch */
@@ -136,7 +129,7 @@
         break;
 
       case 'styleUpdated':
-        if (!ownStyles && isDisabled) break;
+        if (!own.sections && own.cfg.off) break;
         if (style.enabled) {
           API.styles.getSectionsByUrl(matchUrl, style.id).then(res =>
             res.sections.length
@@ -148,14 +141,14 @@
         break;
 
       case 'styleAdded':
-        if ((ownStyles || !isDisabled) && style.enabled) {
+        if ((own.sections || !own.cfg.off) && style.enabled) {
           API.styles.getSectionsByUrl(matchUrl, style.id)
             .then(styleInjector.apply);
         }
         break;
 
       case 'urlChanged':
-        if ((ownStyles || !isDisabled) && req.iid === instanceId && matchUrl !== req.url) {
+        if ((own.sections || !own.cfg.off) && req.iid === instanceId && matchUrl !== req.url) {
           matchUrl = req.url;
           applyStyles();
         }
@@ -167,26 +160,35 @@
 
       case 'injectorConfig': {
         let v;
-        if ((v = req.cfg.off) != null) { isDisabled = v; updateDisableAll(); }
-        if ((v = req.cfg.order) != null) { order = v; styleInjector.sort(); }
-        if (isFrame && (v = req.cfg.top) != null) { topSite = v; updateExposeIframes(); }
+        if ((v = req.cfg.off) !== own.cfg.off) {
+          own.cfg.off = v;
+          updateDisableAll();
+        }
+        if ((v = req.cfg.order) != null) {
+          own.cfg.order = v;
+          styleInjector.sort();
+        }
+        if (isFrame && (v = req.cfg.top) !== own.cfg.top) {
+          own.cfg.top = v;
+          updateExposeIframes();
+        }
         break;
       }
 
       case 'backgroundReady':
         // This may happen when reloading the background page without reloading the extension
-        if (ownStyles) updateCount();
+        if (own.sections) updateCount();
         return true;
     }
   }
 
   function updateDisableAll() {
     if (isUnstylable) {
-      API.styleViaAPI({method: 'injectorConfig', cfg: {off: isDisabled}});
-    } else if (!ownStyles && !isDisabled) {
+      API.styleViaAPI({method: 'injectorConfig', cfg: {off: own.cfg.off}});
+    } else if (!own.sections && !own.cfg.off) {
       if (!offscreen) init();
     } else {
-      styleInjector.toggle(!isDisabled);
+      styleInjector.toggle(!own.cfg.off);
     }
   }
 
@@ -194,10 +196,10 @@
     const attr = 'stylus-iframe';
     const el = document.documentElement;
     if (!el) return; // got no styles so styleInjector didn't wait for <html>
-    if (!topSite || !styleInjector.list.length) {
+    if (!own.cfg.top || !styleInjector.list.length) {
       if (el.hasAttribute(attr)) el.removeAttribute(attr);
-    } else if (el.getAttribute(attr) !== topSite) { // Checking first to avoid DOM mutations
-      el.setAttribute(attr, topSite);
+    } else if (el.getAttribute(attr) !== own.cfg.top) { // Checking first to avoid DOM mutations
+      el.setAttribute(attr, own.cfg.top);
     }
   }
 

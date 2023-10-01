@@ -45,6 +45,11 @@ declare interface CachedInjectedStyles {
   sections: InjectedStyles;
 }
 
+declare interface Injection {
+  cfg: InjectionConfig;
+  sections: InjectedStyle[];
+}
+
 declare interface InjectedStyles {
   [styleId: string]: InjectedStyle
 }
