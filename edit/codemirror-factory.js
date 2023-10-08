@@ -190,20 +190,18 @@
   function plusMinus(delta, cm, pos = cm.getCursor()) {
     const {line, ch} = pos;
     const {text} = cm.getLineHandle(line);
-    let m = /\s/y;
+    let m = /[-+\d.%a-z]/iy;
     let i = m.lastIndex = ch;
-    // if cursor at space, choose nonspace at left or right
-    if (m.test(text)) i += !i || (m.lastIndex = i - 1, m.test(text)) ? 1 : -1;
+    if (!m.test(text)) i += !i || (m.lastIndex = i - 1, m.test(text)) ? -1 : 1;
     // find where the number+unit starts
-    m = /[-+\d.%a-z]/iy;
     do m.lastIndex = i;
     while (i > ch - 20 && (m.test(text) ? --i >= 0 : (++i, false)));
     // get the number
-    m = /[-+]?\d+/y;
+    m = /[-+]?(\d*\.)?(\d+)/y;
     m.lastIndex = i;
     m = m.exec(text);
     if (!m) return;
-    cm.replaceRange(`${Number(m[0]) + delta}`,
+    cm.replaceRange((+m[0] + delta).toFixed(m[1] ? m[2].length : 0),
       {line, ch: i},
       {line, ch: i + m[0].length},
       '*incdec' + line + ':' + i);
