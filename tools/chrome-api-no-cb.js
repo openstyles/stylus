@@ -6,7 +6,7 @@
 'use strict';
 
 const manifest = require('../manifest.json');
-const fetch = require('make-fetch-happen');
+const fetch = require('node-fetch-commonjs');
 
 (async () => {
   manifest.permissions.push('extension', 'i18n', 'runtime');

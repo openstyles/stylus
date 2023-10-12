@@ -1,6 +1,6 @@
 'use strict';
 
-const fetch = require('node-fetch');
+const fetch = require('node-fetch-commonjs');
 const fs = require('fs');
 const fse = require('fs-extra');
 const glob = require('glob').sync;
@@ -40,7 +40,7 @@ const files = {
     'lib/jsonlint.js',
     'README.md -> LICENSE',
   ],
-  'less-bundle': [
+  'less': [
     'dist/less.min.js',
   ],
   'lz-string-unsafe': [
@@ -151,7 +151,7 @@ function buildThemeList() {
         .sort()
         .map(f =>
         `  '${
-          f.match(/([^/.]+)\.css$/i)[1].replace(/'/g, '\\&$')
+          f.match(/([^/\\.]+)\.css$/i)[1].replace(/'/g, '\\&$')
         }': ${
           JSON.stringify(fs.readFileSync(f, 'utf8'))
         },`)

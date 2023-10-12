@@ -32,9 +32,12 @@ const BUILDERS = Object.assign(Object.create(null), {
   less: {
     async pre(source, vars) {
       if (!self.less) {
+        self.document = {currentScript: {}};
+        self.window = self;
         self.less = {
           logLevel: 0,
           useFileCache: false,
+          onReady: false,
         };
       }
       require(['/vendor/less-bundle/less.min']); /* global less */
