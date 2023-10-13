@@ -273,10 +273,11 @@
     const selects = $$('#search-years select');
     selects.forEach((sel, selNum) => {
       if (texts.length !== sel.length || texts.some((v, i) => v !== sel[i].text)) {
-        const {value} = sel;
+        const i = sel.selectedIndex;
+        const value = i && i < sel.length - 1 && sel.value;
         sel.textContent = '';
         sel.append(...texts.map(t => $create('option', {value: t.split(' ')[0]}, t)));
-        sel.value = value in years ? value : (sel[`${selNum ? 'first' : 'last'}Child`] || {}).value;
+        sel.value = value || (sel[`${selNum ? 'first' : 'last'}Child`] || {}).value;
       }
     });
     const [y1, y2] = selects.map(el => Number(el.value)).sort();
