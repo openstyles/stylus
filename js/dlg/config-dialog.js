@@ -39,7 +39,7 @@ async function configDialog(style) {
 
   return messageBoxProxy.show({
     title: `${style.customName || style.name} v${data.version}`,
-    className: 'config-dialog' + (isPopup ? ' stylus-popup' : ''),
+    className: 'config-dialog',
     contents: [
       $create('.config-heading', data.supportURL &&
         $createLink({className: '.external-support', href: data.supportURL}, t('externalFeedback'))),
@@ -80,11 +80,11 @@ async function configDialog(style) {
         t('configOnChange'),
       ]));
     setupLivePrefs(['config.autosave']);
+    box.style.setProperty('--num', vars.length);
     if (isPopup) {
       adjustSizeForPopup(box);
     }
     box.on('change', onchange);
-    box.style.setProperty('--num', vars.length);
     buttons.save = $('[data-cmd="save"]', box);
     buttons.default = $('[data-cmd="default"]', box);
     buttons.close = $('[data-cmd="close"]', box);

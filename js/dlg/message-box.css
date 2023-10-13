@@ -161,13 +161,12 @@
   margin-left: .5rem;
 }
 
-/* popup */
-#message-box.stylus-popup {
+#stylus-popup #message-box {
   margin: 0;
   align-items: center;
   justify-content: center;
 }
-#message-box.stylus-popup > div {
+#stylus-popup #message-box > div {
   max-height: 570px;
   max-width: 90vw;
   top: auto;
