@@ -84,7 +84,7 @@ const broadcastInjectorConfig = ((
     data.cfg = cfg;
     msg.broadcast(data, {
       getData: cfg.top && setTop,
-      onlyIfStyled: !('off' in cfg),
+      onlyIfStyled: !('off' in cfg || 'dark' in cfg),
     });
     cfg = null;
   }

@@ -61,6 +61,7 @@ declare interface InjectedStyle {
 }
 
 declare interface InjectionConfig {
+  dark?: boolean;
   name?: boolean;
   top?: string | false;
   off?: boolean;

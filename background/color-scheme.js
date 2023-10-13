@@ -35,8 +35,9 @@ const colorScheme = (() => {
 
   return {
     SCHEMES,
-    onChange(listener) {
+    onChange(listener, runNow) {
       changeListeners.add(listener);
+      if (runNow) listener(isDarkNow);
     },
     isDark: () => isDarkNow,
     /** @param {StyleObj} _ */

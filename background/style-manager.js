@@ -103,14 +103,14 @@ const styleMan = (() => {
     const fn = ON_DISCONNECT[type];
     if (fn) port.onDisconnect.addListener(fn);
   });
-  colorScheme.onChange(value => {
+  bgReady.all.then(() => colorScheme.onChange(value => {
     msg.broadcastExtension({method: 'colorScheme', value});
     for (const {style} of dataMap.values()) {
       if (colorScheme.SCHEMES.includes(style.preferScheme)) {
         broadcastStyleUpdated(style, 'colorScheme');
       }
     }
-  });
+  }, true));
 
   //#endregion
   //#region Exports
@@ -211,6 +211,7 @@ const styleMan = (() => {
       const {tab = {}, frameId} = sender;
       /** @type {InjectionConfig} */
       const cfg = !id && {
+        dark: colorScheme.isDark(),
         // TODO: enable in FF when it supports sourceURL comment in style elements (also options.html)
         name: CHROME && p.exposeStyleName,
         top: isInitialApply && p.exposeIframes && (

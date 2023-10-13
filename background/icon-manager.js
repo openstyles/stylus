@@ -54,7 +54,7 @@ const iconMan = (() => {
     if (prefs.get('iconset') === -1) {
       debounce(refreshAllIcons);
     }
-  });
+  }, true);
   bgReady.all.then(() => {
     prefs.subscribe([
       'disableAll',

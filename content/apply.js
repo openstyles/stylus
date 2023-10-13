@@ -53,7 +53,11 @@
   // FIXME: move this to background page when following bugs are fixed:
   // https://bugzil.la/1587723, https://crbug.com/968651
   const mqDark = !isFrame && matchMedia('(prefers-color-scheme: dark)');
-  if (mqDark) mqDark.onchange = e => API.info.set({preferDark: e.matches});
+  if (mqDark) {
+    mqDark.onchange = ({matches: m}) => {
+      if (m !== own.cfg.dark) API.info.set({preferDark: own.cfg.dark = m});
+    };
+  }
 
   // Declare all vars before init() or it'll throw due to "temporal dead zone" of const/let
   init();
@@ -96,6 +100,7 @@
     if (!data.cfg) data.cfg = own.cfg;
     Object.assign(own, window[Symbol.for(SYM_ID)] = data);
     if (!isFrame && own.cfg.top === '') own.cfg.top = location.origin; // used by child frames via parentStyles
+    if (!isFrame && own.cfg.dark !== mqDark.matches) mqDark.onchange(mqDark);
     if (styleInjector.list.length) await styleInjector.replace(own);
     else if (!own.cfg.off) await styleInjector.apply(own);
     styleInjector.toggle(!own.cfg.off);
@@ -159,17 +164,20 @@
         break;
 
       case 'injectorConfig': {
-        let v;
-        if ((v = req.cfg.off) !== own.cfg.off) {
-          own.cfg.off = v;
+        let k, v;
+        if ((k = 'dark', v = req.cfg[k]) !== own.cfg[k]) {
+          own.cfg[k] = v;
+        }
+        if ((k = 'off', v = req.cfg[k]) !== own.cfg[k]) {
+          own.cfg[k] = v;
           updateDisableAll();
         }
-        if ((v = req.cfg.order) != null) {
-          own.cfg.order = v;
+        if ((k = 'order', v = req.cfg[k])) {
+          own.cfg[k] = v;
           styleInjector.sort();
         }
-        if (isFrame && (v = req.cfg.top) !== own.cfg.top) {
-          own.cfg.top = v;
+        if (isFrame && (k = 'top', v = req.cfg[k]) !== own.cfg[k]) {
+          own.cfg[k] = v;
           updateExposeIframes();
         }
         break;

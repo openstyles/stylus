@@ -131,4 +131,5 @@ Promise.all([
   msg.ready = true;
   msg.broadcast({method: 'backgroundReady'});
   prefs.subscribe(['disableAll', 'exposeIframes'], broadcastInjectorConfig);
+  colorScheme.onChange(broadcastInjectorConfig.bind(null, 'dark'));
 });
