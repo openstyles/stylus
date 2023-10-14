@@ -82,9 +82,11 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
        * @param {HTMLElement} elItem
        * @param {MarkedFunc} func
        */
-      '.add-applies-to'(elItem, func) {
+      async '.add-applies-to'(elItem, func) {
         const pos = func.item.find(1);
         cm.replaceRange(`, ${func.typeText}("")`, pos, pos);
+        await new Promise(setTimeout);
+        $('input', elItem.nextElementSibling).focus();
       },
     };
 
