@@ -209,14 +209,14 @@ const styleMan = (() => {
       }
       const {sender = {}} = this || {};
       const {tab = {}, frameId} = sender;
+      const isTop = !frameId || sender.type === 'main_frame'; // prerendering in onBeforeRequest
       /** @type {InjectionConfig} */
       const cfg = !id && {
-        dark: colorScheme.isDark(),
+        dark: isTop && colorScheme.isDark(),
         // TODO: enable in FF when it supports sourceURL comment in style elements (also options.html)
         name: CHROME && p.exposeStyleName,
         top: isInitialApply && p.exposeIframes && (
-          // sender may come from webRequest.onBeforeRequest for a prerendered main_frame with frameId>0
-          !frameId || sender.type === 'main_frame' ? '' // apply.js will use location.origin
+          isTop ? '' // apply.js will use location.origin
             : getUrlOrigin(tab.url || tabMan.get(sender.tabId || tab.id, 'url'))
         ),
         order,
