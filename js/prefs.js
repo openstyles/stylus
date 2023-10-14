@@ -1,18 +1,13 @@
 /* global API msg */// msg.js
-/* global deepMerge */// toolbox.js - not used in content scripts
-/* global isFrameSameOrigin */// style-injector.js (content script)
+/* global deepCopy */// toolbox.js
+/* global isFrameSameOrigin */// style-injector.js (must be loaded first)
 'use strict';
 
 (() => {
   if (window.INJECTED === 1) return;
 
   const STORAGE_KEY = 'settings';
-  const clone = typeof deepMerge === 'function'
-    ? deepMerge
-    : val =>
-      typeof val === 'object' && val
-        ? JSON.parse(JSON.stringify(val))
-        : val;
+  const clone = deepCopy;
   /**
    * @type PrefsValues
    * @namespace PrefsValues

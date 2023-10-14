@@ -23,6 +23,9 @@
     compare: (a, b) => calcOrder(a) - calcOrder(b),
     onUpdate: onInjectorUpdate,
   });
+  const clone = typeof deepCopy === 'function'
+    ? deepCopy /* global deepCopy */// will be used in extension context
+    : val => typeof val === 'object' && val ? JSON.parse(JSON.stringify(val)) : val;
   // dynamic iframes don't have a URL yet so we'll use their parent's URL (hash isn't inherited)
   let matchUrl = isFrameNoUrl
     ? parent.location.href.split('#')[0]
@@ -87,7 +90,7 @@
 
   async function init() {
     if (isUnstylable) return API.styleViaAPI({method: 'styleApply'});
-    let data = isFrameNoUrl && CHROME && parent[parent.Symbol.for(SYM_ID)];
+    let data = isFrameNoUrl && CHROME && clone(parent[parent.Symbol.for(SYM_ID)]);
     if (data) await new Promise(onFrameElementInView);
     else data = !isFrameSameOrigin && !isXml && !chrome.tabs && tryCatch(getStylesViaXhr);
     // XML in Chrome will be auto-converted to html later, so we can't style it via XHR now
