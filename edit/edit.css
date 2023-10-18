@@ -1100,6 +1100,9 @@ i,
   #actions {
     display: inline-block;
   }
+  #actions > :nth-last-child(n + 2) {
+    margin-right: .25rem;
+  }
   #details-wrapper {
     display: inline-flex;
     vertical-align: top;
