@@ -410,13 +410,13 @@ function SectionsEditor() {
               t('importPreprocessor'), 'pre-line',
               t('importPreprocessorTitle'))
         ) {
-          const {sections, errors} = await API.worker.parseMozFormat({code});
-          if (!sections.length || errors.some(e => !e.recoverable)) {
+          const {sections: newSections, errors} = await API.worker.parseMozFormat({code});
+          if (!newSections.length || errors.some(e => !e.recoverable)) {
             await Promise.reject(errors);
           }
-          await initSections(sections, {
+          await initSections(newSections, {
             replace: replaceOldStyle,
-            focusOn: replaceOldStyle ? 0 : false,
+            focusOn: replaceOldStyle ? 0 : sections.length,
             keepDirty: true,
           });
           helpPopup.close();
@@ -529,7 +529,7 @@ function SectionsEditor() {
     let forceRefresh = true;
     let y = 0;
     let tPrev;
-    for (let i = 0; i < src.length; i++) {
+    for (let i = 0, iSec = sections.length; i < src.length; i++, iSec++) {
       const t = performance.now();
       if (!tPrev) {
         tPrev = t;
@@ -542,7 +542,7 @@ function SectionsEditor() {
       insertSectionAfter(src[i], null, forceRefresh, si && si.cms[i]);
       setGlobalProgress(i, src.length);
       if (!keepDirty) dirty.clear();
-      if (i === focusOn) sections[i].cm.focus();
+      if (iSec === focusOn) setTimeout(editor.jumpToEditor, 0, iSec);
     }
     if (!si || si.cms.every(cm => !cm.height)) {
       requestAnimationFrame(fitToAvailableSpace);
