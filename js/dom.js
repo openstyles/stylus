@@ -116,7 +116,7 @@ function $create(selector = 'div', properties, children) {
   if (typeof selector === 'string') {
     if (Array.isArray(properties) ||
         properties instanceof Node ||
-        typeof properties !== 'object') {
+        typeof properties !== 'object' && children == null) {
       opt = {};
       children = properties;
     } else {
