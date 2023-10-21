@@ -689,8 +689,7 @@ i,
 #help-popup {
   --pad-x: 1.5rem;
   --pad-y: 1rem;
-  --pad-y2: calc(var(
-  --pad-y) / 1.5);
+  --pad-y2: calc(var(--pad-y) / 1.5);
   top: 3rem;
   right: 3rem;
   max-width: calc(100% - var(--header-width) - 6rem);

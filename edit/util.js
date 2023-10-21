@@ -16,17 +16,18 @@ const helpPopup = {
    * @returns {Element & {onClose: Set<function>}} the popup
    */
   show(title = '', body, props) {
-    const div = $create(helpPopup.SEL, props, [
-      $create('i.i-close.dismiss', {onclick: helpPopup.close}),
-    ].concat(title === true ? body : [
-      $create('.title', title),
-      helpPopup.contents = $create('.contents', body && t.HTML(body)),
-    ]));
+    const div = $create(helpPopup.SEL, props,
+      $create('i.i-close.dismiss', {onclick: helpPopup.close}));
+    if (title === true) {
+      div.append(body);
+    } else {
+      div.append($create('.title', title),
+        div.contents = $create('.contents', body && t.HTML(body)));
+    }
     document.body.append(div);
     div.onClose = new Set();
     window.on('keydown', helpPopup.close, true);
     helpPopup.originalFocus = document.activeElement;
-    helpPopup.div = div;
     moveFocus(div, 0);
     return div;
   },
@@ -40,7 +41,8 @@ const helpPopup = {
         !(el = document.activeElement) ||
         !el.closest('#search-replace-dialog')
       );
-    let div = event && event.target.closest(helpPopup.SEL) || helpPopup.div;
+    const div = event && event.target.closest(helpPopup.SEL)
+      || $$(helpPopup.SEL).pop();
     if (!canClose || !div) {
       return;
     }
@@ -56,9 +58,7 @@ const helpPopup = {
     }
     div.remove();
     for (const fn of div.onClose) fn();
-    div = helpPopup.div = $$(helpPopup.SEL).pop();
-    if (div) helpPopup.contents = $('.contents', div);
-    else window.off('keydown', helpPopup.close, true);
+    if (!$(helpPopup.SEL)) window.off('keydown', helpPopup.close, true);
     return true;
   },
 };
@@ -143,10 +143,10 @@ function createHotkeyInput(prefId, {buttons = true, onDone}) {
         newValue = '';
         break;
       case 'Enter':
-        if (input.checkValidity() && onDone) onDone();
+        if (input.checkValidity() && onDone) onDone(e);
         break;
       case 'Escape':
-        if (onDone) onDone();
+        if (onDone) onDone(e);
         break;
       default:
         newValue = key.replace(/\b.$/, c => c.toUpperCase());
@@ -174,7 +174,7 @@ function createHotkeyInput(prefId, {buttons = true, onDone}) {
 function showCodeMirrorPopup(title, html, options) {
   const popup = helpPopup.show(title, html, {className: 'big'});
 
-  let cm = popup.codebox = CodeMirror(helpPopup.contents, Object.assign({
+  let cm = popup.codebox = CodeMirror(popup.contents, Object.assign({
     mode: 'css',
     lineNumbers: true,
     lineWrapping: prefs.get('editor.lineWrapping'),
@@ -200,7 +200,7 @@ function showCodeMirrorPopup(title, html, options) {
   };
   window.on('keydown', onKeyDown, true);
 
-  helpPopup.div.onClose.add(() => {
+  popup.onClose.add(() => {
     window.off('keydown', onKeyDown, true);
     $.root.style.removeProperty('pointer-events');
     cm = popup.codebox = null;

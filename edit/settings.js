@@ -55,7 +55,7 @@ async function StyleSettings(btnOpen) {
 
   function autosave(el, setter) {
     pendingSetters.set(el, setter);
-    helpPopup.div.classList.add('dirty');
+    ui.classList.add('dirty');
     elSave.disabled = false;
     if (elAuto.checked) debounce(save, AUTOSAVE_DELAY);
   }
@@ -120,7 +120,7 @@ async function StyleSettings(btnOpen) {
   function save() {
     pendingSetters.forEach(saveValue);
     pendingSetters.clear();
-    helpPopup.div.classList.remove('dirty');
+    ui.classList.remove('dirty');
     elSave.disabled = true;
   }
 
@@ -137,7 +137,7 @@ async function StyleSettings(btnOpen) {
   }
 }
 
-function EditorSettings() {
+function EditorSettings(ui) {
   prefs.subscribe('editor.linter', editor.updateLinterSwitch, true);
 
   //#region Keymap
@@ -168,32 +168,32 @@ function EditorSettings() {
     }
     if (!groupWithNext) bin = fragment;
   });
-  const selector = $('#editor.keyMap');
+  const selector = $('#editor\\.keyMap', ui);
   selector.textContent = '';
   selector.appendChild(fragment);
   selector.value = prefs.get('editor.keyMap');
   //#endregion
 
   //#region Theme
-  $('#editor.theme').append(...[
+  $('#editor\\.theme', ui).append(...[
     $create('option', {value: 'default'}, t('defaultTheme')),
     ...Object.keys(CODEMIRROR_THEMES).map(s => $create('option', s)),
   ]);
   //#endregion
 
   //#region Buttons
-  $('#colorpicker-settings').onclick = function (event) {
+  $('#colorpicker-settings', ui).onclick = function (event) {
     event.preventDefault();
     const bounds = this.getBoundingClientRect();
-    const input = createHotkeyInput('editor.colorpicker.hotkey', {onDone: () => helpPopup.close()});
+    const input = createHotkeyInput('editor.colorpicker.hotkey', {onDone: helpPopup.close});
     const popup = helpPopup.show(t('helpKeyMapHotkey'), input);
     popup.style.top = bounds.bottom + 'px';
     $('input', popup).focus();
   };
-  $('#keyMap-help').onclick = () => {
+  $('#keyMap-help', ui).onclick = () => {
     require(['/edit/show-keymap-help'], () => showKeymapHelp()); /* global showKeymapHelp */
   };
-  $('#linter-settings').onclick = () => {
+  $('#linter-settings', ui).onclick = () => {
     require(['/edit/linter-dialogs'], () => linterMan.showLintConfig());
   };
   //#endregion

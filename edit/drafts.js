@@ -39,8 +39,8 @@
     const info = t('draftTitle', makeRelativeDate(draft.date));
     const popup = showCodeMirrorPopup(info, '', {value, readOnly: true});
     popup.className += ' danger';
-    helpPopup.div.onClose.add(onNo);
-    helpPopup.contents.append(
+    popup.onClose.add(onNo);
+    popup.contents.append(
       $create('p', t('draftAction')),
       $create('.buttons', [t('confirmYes'), t('confirmNo')].map((btn, i) =>
         $create('button', {textContent: btn, onclick: i ? onNo : onYes})))

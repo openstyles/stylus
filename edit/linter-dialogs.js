@@ -74,7 +74,7 @@
     });
     cm.on('changes', updateConfigButtons);
     updateConfigButtons();
-    helpPopup.div.onClose.add(onConfigClose);
+    popup.onClose.add(onConfigClose);
   };
 
   linterMan.showLintHelp = async () => {

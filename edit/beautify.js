@@ -26,9 +26,8 @@ prefs.subscribe('editor.beautify.hotkey', (key, value) => {
 }, true);
 
 /**
- * @name beautify
  * @param {CodeMirror[]} scope
- * @param {boolean} [ui=true]
+ * @param {?} [ui]
  */
 async function beautify(scope, ui = true) {
   await require(['/vendor-overwrites/beautify/beautify-css-mod']); /* global css_beautify */
@@ -37,7 +36,7 @@ async function beautify(scope, ui = true) {
   options.indent_size = tabs ? 1 : prefs.get('editor.tabSize');
   options.indent_char = tabs ? '\t' : ' ';
   if (ui) {
-    createBeautifyUI(scope, options);
+    ui = createBeautifyUI(scope, options);
   }
   for (const cm of scope) {
     setTimeout(beautifyEditor, 0, cm, options, ui);
@@ -65,13 +64,13 @@ function beautifyEditor(cm, options, ui) {
     window.scrollTo(scrollX, scrollY);
     cm.beautifyChange[cm.changeGeneration()] = true;
     if (ui) {
-      $('button[role="close"]', helpPopup.div).disabled = false;
+      $('button[role="close"]', ui).disabled = false;
     }
   }
 }
 
 function createBeautifyUI(scope, options) {
-  helpPopup.show(t('styleBeautify'),
+  const popup = helpPopup.show(t('styleBeautify'),
     $create([
       $create('.beautify-options', [
         $createOption('.selector1,', 'selector_separator_newline'),
@@ -90,7 +89,7 @@ function createBeautifyUI(scope, options) {
         $create('span', t('styleBeautifyHint') + '\u00A0'),
         createHotkeyInput('editor.beautify.hotkey', {
           buttons: false,
-          onDone: () => moveFocus(helpPopup.div, 0),
+          onDone: () => moveFocus(popup, 0),
         }),
       ]),
       $create('.buttons', [
@@ -130,6 +129,8 @@ function createBeautifyUI(scope, options) {
     prefs.set('editor.beautify', Object.assign({}, options, {translate_positions: undefined}));
     beautify(scope, false);
   };
+
+  return popup;
 
   function $createOption(label, optionName, indent) {
     const value = options[optionName];
