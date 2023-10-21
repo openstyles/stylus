@@ -75,6 +75,10 @@
 .CodeMirror-linenumber {
   cursor: pointer; /* for bookmarking */
 }
+.CodeMirror-lint-markers {
+  margin-left: -8px;
+  margin-right: -8px;
+}
 .cm-matchhighlight,
 .CodeMirror-selection-highlight-scrollbar {
   background: hsla(200, 100%, 50%, var(--match-hl-opacity, .1));
