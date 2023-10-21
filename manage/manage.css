@@ -530,6 +530,9 @@ button i {
 #search-wrapper {
   margin-top: .35rem;
 }
+#manage\.searchMode {
+  background: var(--bg);
+}
 
 #manage\.newUI\.sort {
   max-width: 100%;
