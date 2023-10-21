@@ -61,9 +61,11 @@ async function SourceEditor() {
   Object.assign(editor, {
     sections: sectionFinder.sections,
     replaceStyle,
+    updateLinterSwitch,
     updateLivePreview,
     updateMeta,
     closestVisible: () => cm,
+    getCurrentLinter,
     getEditors: () => [cm],
     getEditorTitle: () => '',
     getValue: asObject => asObject
@@ -105,7 +107,6 @@ async function SourceEditor() {
     scrollToEditor: () => {},
   });
 
-  prefs.subscribe('editor.linter', updateLinterSwitch, true);
   prefs.subscribe('editor.appliesToLineWidget', (k, val) => sectionWidget.toggle(val), true);
   prefs.subscribe('editor.toc.expanded', (k, val) => sectionFinder.onOff(editor.updateToc, val), true);
 
@@ -156,6 +157,7 @@ async function SourceEditor() {
 
   function updateLinterSwitch() {
     const el = $('#editor.linter');
+    if (!el) return;
     el.value = getCurrentLinter();
     const cssLintOption = $('[value="csslint"]', el);
     const mode = getModeName();

@@ -294,12 +294,18 @@ function setInputValue(input, value) {
 
 /**
  * Accepts an array of pref names (values are fetched via prefs.get)
+ * or an element inside which to look for elements with known pref ids
  * and establishes a two-way connection between the document elements and the actual prefs
  */
 function setupLivePrefs(ids) {
   let init = true;
   // getElementsByTagName is cached so it's much faster than calling querySelector for each id
-  ids = ids ? [...ids] : prefs.knownKeys.filter(id => id in document.getElementsByTagName('*'));
+  if (Array.isArray(ids)) {
+    ids = [...ids];
+  } else {
+    ids = (ids instanceof Element ? ids : document).getElementsByTagName('*');
+    ids = prefs.knownKeys.filter(id => id in ids);
+  }
   prefs.subscribe(ids, updateElement, true);
   init = false;
   function onChange() {

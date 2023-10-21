@@ -39,7 +39,7 @@
     const info = t('draftTitle', makeRelativeDate(draft.date));
     const popup = showCodeMirrorPopup(info, '', {value, readOnly: true});
     popup.className += ' danger';
-    window.on('closeHelp', onNo, {once: true});
+    helpPopup.div.onClose.add(onNo);
     helpPopup.contents.append(
       $create('p', t('draftAction')),
       $create('.buttons', [t('confirmYes'), t('confirmNo')].map((btn, i) =>
@@ -51,7 +51,6 @@
     } else {
       API.drafts.delete(makeId()).catch(() => {});
     }
-    window.off('closeHelp', onNo);
     helpPopup.close();
   }
 

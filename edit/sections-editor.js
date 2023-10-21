@@ -46,6 +46,8 @@ function SectionsEditor() {
     updateLivePreview,
     updateMeta,
 
+    getCurrentLinter: () => prefs.get('editor.linter'),
+
     getEditors() {
       return sections.filter(s => !s.removed).map(s => s.cm);
     },

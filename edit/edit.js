@@ -3,7 +3,7 @@
 /* global CodeMirror */
 /* global SectionsEditor */
 /* global SourceEditor */
-/* global clipString createHotkeyInput helpPopup */// util.js
+/* global clipString */// util.js
 /* global closeCurrentTab deepEqual mapObj sessionStore tryJSONparse */// toolbox.js
 /* global cmFactory */
 /* global editor EditorHeader */// base.js
@@ -39,16 +39,15 @@ editor.styleReady.then(async () => {
 
   $('#toc').onclick = e =>
     editor.jumpToEditor([...$('#toc').children].indexOf(e.target));
-  $('#keyMap-help').onclick = () =>
-    require(['/edit/show-keymap-help'], () => showKeymapHelp()); /* global showKeymapHelp */
-  $('#linter-settings').onclick = () =>
-    require(['/edit/linter-dialogs'], () => linterMan.showLintConfig());
   $('#lint-help').onclick = () =>
     require(['/edit/linter-dialogs'], () => linterMan.showLintHelp());
-  $('#style-settings-btn').onclick = () => require([
-    '/edit/settings.css',
-    '/edit/settings', /* global StyleSettings */
-  ], () => StyleSettings());
+  $('#style-settings-btn').onclick = function () {
+    this.disabled = true;
+    require([
+      '/edit/settings.css',
+      '/edit/settings', /* global StyleSettings */
+    ], () => StyleSettings(this));
+  };
 
   require([
     '/edit/autocomplete',
@@ -373,17 +372,6 @@ function EditorMethods() {
     }
     cmFactory.globalSetOption('colorpicker', defaults.colorpicker);
   }, true);
-
-  $('#colorpicker-settings').onclick = function (event) {
-    event.preventDefault();
-    const input = createHotkeyInput('editor.colorpicker.hotkey', {onDone: () => helpPopup.close()});
-    const popup = helpPopup.show(t('helpKeyMapHotkey'), input);
-    const bounds = this.getBoundingClientRect();
-    popup.style.left = bounds.right + 10 + 'px';
-    popup.style.top = bounds.top - popup.clientHeight / 2 + 'px';
-    popup.style.right = 'auto';
-    $('input', popup).focus();
-  };
 
   function invokeColorpicker(cm) {
     cm.state.colorpicker.openPopup(prefs.get('editor.colorpicker.color'));

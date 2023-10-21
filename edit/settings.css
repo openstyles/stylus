@@ -1,49 +1,77 @@
-#help-popup.style-settings-popup.dirty .title::after {
+#help-popup[data-type="settings"].dirty .title[data-style]::after {
   content: ' *';
 }
-.compact-layout #help-popup.style-settings-popup {
-  width: 90%;
+@media (max-height: 800px) {
+  #help-popup[data-type="settings"] {
+    column-count: 2;
+    column-gap: 0;
+  }
+  #help-popup .contents {
+    break-before: avoid;
+    break-inside: avoid;
+  }
 }
-#help-popup.style-settings-popup {
-  max-width: calc(100vw - 12rem);
-}
-.style-settings {
+.settings {
   padding: 0 1px; /* for focus outline */
   border: 0;
   margin: 0;
   max-width: 100%;
   box-sizing: border-box;
 }
-.style-settings > * {
+.settings > * {
   display: block;
   margin: 1rem 0;
   padding: 0;
 }
-.style-settings > :first-child {
+.settings > :first-child {
   margin-top: 0;
 }
-.style-settings > :last-child {
+.settings > :last-child {
   margin-bottom: 0;
 }
-.style-settings input:disabled ~ label {
+.settings input:disabled ~ label {
   opacity: .5;
 }
-.style-settings .w100 {
+.settings .w100 {
   display: block;
   width: 100%;
   margin-top: .25em;
   box-sizing: border-box;
 }
-.style-settings textarea {
+.settings textarea {
   resize: vertical;
   min-height: 2.5em;
   max-height: 50vh;
   white-space: pre;
 }
-.style-settings .radio-wrapper {
+.settings .radio-wrapper {
   display: inline-flex;
   padding: 0 .8em 0 0;
 }
 a[data-cmd=note] {
   vertical-align: text-bottom;
+}
+
+/* editor settings */
+.settings[data-editor] > :not(.aligned) > * {
+  display: block;
+  margin: 0;
+  padding: .15em 0;
+}
+.settings[data-editor] .aligned > * {
+  display: table-row;
+}
+.settings[data-editor] .aligned > * > :not(.icon) {
+  display: table-cell;
+  margin-top: 0.1rem;
+  min-height: 1.4rem;
+}
+.settings[data-editor] .aligned label {
+  padding: .1rem .25rem 0 0;
+  vertical-align: middle;
+}
+.settings[data-editor] .aligned [type="number"] {
+  width: 3.5em;
+  text-align: left;
+  padding-left: .25em;
 }

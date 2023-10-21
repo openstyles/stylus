@@ -1,4 +1,4 @@
-/* global $$ $ $create messageBoxProxy setInputValue setupLivePrefs */// dom.js
+/* global $$ $ messageBoxProxy setInputValue setupLivePrefs */// dom.js
 /* global API */// msg.js
 /* global CODEMIRROR_THEMES */
 /* global CodeMirror */
@@ -109,11 +109,10 @@ const editor = {
 /* exported EditorHeader */
 function EditorHeader() {
   initBeautifyButton($('#beautify'));
-  initKeymapElement();
   initNameArea();
-  initThemeElement();
   setupLivePrefs();
-
+  // move the theme after built-in CSS so that its same-specificity selectors win
+  document.head.appendChild($('#cm-theme'));
   window.on('load', () => {
     prefs.subscribe('editor.keyMap', showHotkeyInTooltip, true);
     window.on('showHotkeyInTooltip', showHotkeyInTooltip);
@@ -153,50 +152,6 @@ function EditorHeader() {
     };
     const enabledEl = $('#enabled');
     enabledEl.onchange = () => editor.updateEnabledness(enabledEl.checked);
-  }
-
-  function initThemeElement() {
-    $('#editor.theme').append(...[
-      $create('option', {value: 'default'}, t('defaultTheme')),
-      ...Object.keys(CODEMIRROR_THEMES).map(s => $create('option', s)),
-    ]);
-    // move the theme after built-in CSS so that its same-specificity selectors win
-    document.head.appendChild($('#cm-theme'));
-  }
-
-  function initKeymapElement() {
-    // move 'pc' or 'mac' prefix to the end of the displayed label
-    const maps = Object.keys(CodeMirror.keyMap)
-      .map(name => ({
-        value: name,
-        name: name.replace(/^(pc|mac)(.+)/, (s, arch, baseName) =>
-          baseName.toLowerCase() + '-' + (arch === 'mac' ? 'Mac' : 'PC')),
-      }))
-      .sort((a, b) => a.name < b.name && -1 || a.name > b.name && 1);
-
-    const fragment = document.createDocumentFragment();
-    let bin = fragment;
-    let groupName;
-    // group suffixed maps in <optgroup>
-    maps.forEach(({value, name}, i) => {
-      groupName = !name.includes('-') ? name : groupName;
-      const groupWithNext = maps[i + 1] && maps[i + 1].name.startsWith(groupName);
-      if (groupWithNext) {
-        if (bin === fragment) {
-          bin = fragment.appendChild($create('optgroup', {label: name.split('-')[0]}));
-        }
-      }
-      const el = bin.appendChild($create('option', {value}, name));
-      if (value === prefs.defaults['editor.keyMap']) {
-        el.dataset.default = '';
-        el.title = t('defaultTheme');
-      }
-      if (!groupWithNext) bin = fragment;
-    });
-    const selector = $('#editor.keyMap');
-    selector.textContent = '';
-    selector.appendChild(fragment);
-    selector.value = prefs.get('editor.keyMap');
   }
 
   function showHotkeyInTooltip(_, mapName = prefs.get('editor.keyMap')) {

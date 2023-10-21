@@ -22,8 +22,8 @@ const regexpTester = (() => {
           chrome.tabs.onRemoved.addListener(onTabRemoved);
           chrome.tabs.onUpdated.addListener(onTabUpdated);
         }
-        helpPopup.show('', $create('.regexp-report'));
-        window.on('closeHelp', () => regexpTester.toggle(false), {once: true});
+        helpPopup.show('', $create('.regexp-report'))
+          .onClose.add(() => regexpTester.toggle(false));
         isShown = true;
       } else if (!state && isShown) {
         unwatch();

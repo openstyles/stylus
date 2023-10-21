@@ -67,14 +67,6 @@ html:not(.is-new-style) #heading::before {
 .usercss:not(.compact-layout) #popup-button {
   right: 24px;
 }
-/************ checkbox & select************/
-.options-column > .option {
-  margin-bottom: .25rem;
-}
-
-.options-column > .usercss-only {
-  margin-bottom: .75rem;
-}
 
 /************ header ************/
 #header {
@@ -114,14 +106,6 @@ html:not(.is-new-style) #heading::before {
 #sections h2 {
   margin-top: 1rem;
   margin-left: 1.7rem;
-}
-.aligned {
-  display: table-row;
-}
-.aligned > *:not(.icon) {
-  display: table-cell;
-  margin-top: 0.1rem;
-  min-height: 1.4rem;
 }
 
 /* basic info */
@@ -178,9 +162,6 @@ a.icon {
   position: absolute;
   margin-top: -1px;
 }
-#sections-help {
-  margin-left: -1px;
-}
 .i-info {
   width: 14px;
   height: 16px;
@@ -194,9 +175,6 @@ i,
 .i-info:hover,
 .i-config:hover {
   color: var(--fg);
-}
-#options span i {
-  margin-top: -3px; /* inline info and config icons */
 }
 /* collapsibles */
 #header details {
@@ -337,16 +315,6 @@ i,
 #usw-progress .lds-spinner {
   transform: scale(0.125);
   transform-origin: 0 10px;
-}
-/* options */
-#options [type="number"] {
-  width: 3.5em;
-  text-align: left;
-  padding-left: .25em;
-}
-#options .option.aligned > label {
-  padding: .1rem .25rem 0 0;
-  vertical-align: middle;
 }
 /* footer */
 .usercss #footer {
@@ -723,15 +691,14 @@ i,
 #help-popup {
   --pad-x: 1.5rem;
   --pad-y: 1rem;
-  --pad-y2: calc(var(--pad-y) / 1.5);
+  --pad-y2: calc(var(
+  --pad-y) / 1.5);
   top: 3rem;
   right: 3rem;
-  max-width: 50vw;
+  max-width: calc(100% - var(--header-width) - 6rem);
   position: fixed;
-  display: none;
   background-color: var(--bg);
   box-shadow: 3px 3px 30px rgba(0, 0, 0, 0.5);
-  padding: var(--pad-y) var(--pad-x) 0;
   z-index: 99;
 }
 #help-popup.big,
@@ -749,7 +716,6 @@ i,
 #help-popup .title {
   font-weight: bold;
   background-color: rgba(128, 128, 128, .15);
-  margin: calc(-1 * var(--pad-y)) calc(-1 * var(--pad-x)) 0;
   padding: var(--pad-y2) var(--pad-x);
 }
 #help-popup.danger .title {
@@ -762,13 +728,14 @@ i,
 #help-popup .contents {
   max-height: calc(100vh - 8rem);
   overflow-y: auto;
-  padding: var(--pad-y) 0;
+  padding: var(--pad-y) var(--pad-x);
 }
 #help-popup .dismiss {
   position: absolute;
   right: 0;
   top: 0;
   padding: var(--pad-y2) .5em;
+  font-size: 14px;
 }
 #help-popup input[type="search"],
 #help-popup .CodeMirror {
@@ -951,14 +918,6 @@ i,
 .sectioned .usercss-only,
 .usercss .sectioned-only {
   display: none !important; /* hide during page init */
-}
-
-#options:not([open]) + #lint {
-  margin-top: 0;
-}
-
-#options-wrapper .options-column:nth-child(2) {
-  margin-top: .75rem;
 }
 
 .single-editor {
@@ -1148,7 +1107,6 @@ i,
     max-width: 50vw;
     right: 0;
   }
-  #options[open],
   #publish[open],
   #lint:not([open]) {
     flex: 0 0 auto;
@@ -1169,20 +1127,20 @@ i,
     overflow: hidden;
     flex: 1;
   }
-  #help-popup.big[style="display: block;"],
-  #help-popup[style="display: block;"] {
+  #help-popup.big,
+  #help-popup {
     width: max-content;
     height: min-content;
-    max-width: 90%;
+    max-width: 100vw;
     max-height: 90vh;
     top: 7rem;
+    right: 0;
     margin: auto;
   }
   #help-popup[style*="left:"] {
     left: 1rem !important;
     margin-top: -2.35rem;
   }
-  #help-popup:not([style*="display: block;"]),
   #help-popup .CodeMirror-lint-markers,
   #help-popup .CodeMirror-guttermarker-subtle {
     display: none !important;

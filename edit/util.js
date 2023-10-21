@@ -1,4 +1,4 @@
-/* global $ $create getEventKeyName messageBoxProxy moveFocus */// dom.js
+/* global $$ $ $create getEventKeyName messageBoxProxy moveFocus */// dom.js
 /* global CodeMirror */
 /* global editor */
 /* global prefs */
@@ -7,27 +7,24 @@
 'use strict';
 
 const helpPopup = {
+  SEL: '#help-popup',
 
   /**
-   * @param {string} title - plain text
+   * @param {string|true} title - plain text or `true` to use `body` instead of .title and .contents
    * @param {string|Node} body - Node, html or plain text
    * @param {Node} [props] - DOM props for the popup element
-   * @returns {Element} the popup
+   * @returns {Element & {onClose: Set<function>}} the popup
    */
   show(title = '', body, props) {
-    const div = $('#help-popup');
-    const contents = helpPopup.contents = $('.contents', div);
-    div.style = '';
-    div.className = '';
-    contents.textContent = '';
-    Object.assign(div, props);
-    if (body) {
-      contents.appendChild(typeof body === 'string' ? t.HTML(body) : body);
-    }
-    $('.title', div).textContent = title;
-    $('.dismiss', div).onclick = helpPopup.close;
+    const div = $create(helpPopup.SEL, props, [
+      $create('i.i-close.dismiss', {onclick: helpPopup.close}),
+    ].concat(title === true ? body : [
+      $create('.title', title),
+      helpPopup.contents = $create('.contents', body && t.HTML(body)),
+    ]));
+    document.body.append(div);
+    div.onClose = new Set();
     window.on('keydown', helpPopup.close, true);
-    div.style.display = 'block';
     helpPopup.originalFocus = document.activeElement;
     helpPopup.div = div;
     moveFocus(div, 0);
@@ -43,7 +40,7 @@ const helpPopup = {
         !(el = document.activeElement) ||
         !el.closest('#search-replace-dialog')
       );
-    const {div} = helpPopup;
+    let div = event && event.target.closest(helpPopup.SEL) || helpPopup.div;
     if (!canClose || !div) {
       return;
     }
@@ -57,11 +54,12 @@ const helpPopup = {
     if (div.contains(document.activeElement) && (el = helpPopup.originalFocus)) {
       el.focus();
     }
-    const {contents} = helpPopup;
-    div.style.display = '';
-    contents.textContent = '';
-    window.off('keydown', helpPopup.close, true);
-    window.dispatchEvent(new Event('closeHelp'));
+    div.remove();
+    for (const fn of div.onClose) fn();
+    div = helpPopup.div = $$(helpPopup.SEL).pop();
+    if (div) helpPopup.contents = $('.contents', div);
+    else window.off('keydown', helpPopup.close, true);
+    return true;
   },
 };
 
@@ -202,11 +200,11 @@ function showCodeMirrorPopup(title, html, options) {
   };
   window.on('keydown', onKeyDown, true);
 
-  window.on('closeHelp', () => {
+  helpPopup.div.onClose.add(() => {
     window.off('keydown', onKeyDown, true);
     $.root.style.removeProperty('pointer-events');
     cm = popup.codebox = null;
-  }, {once: true});
+  });
 
   return popup;
 }

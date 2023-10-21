@@ -74,7 +74,7 @@
     });
     cm.on('changes', updateConfigButtons);
     updateConfigButtons();
-    window.on('closeHelp', onConfigClose, {once: true});
+    helpPopup.div.onClose.add(onConfigClose);
   };
 
   linterMan.showLintHelp = async () => {
@@ -124,7 +124,7 @@
   }
 
   async function getLinter() {
-    const val = $('#editor.linter').value;
+    const val = editor.getCurrentLinter();
     if (val && !RULES[val]) {
       RULES[val] = await linterMan.worker.getRules(val);
     }

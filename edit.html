@@ -277,105 +277,6 @@
         </div>
       </section>
       <div id="details-wrapper">
-        <details id="options" data-pref="editor.options.expanded" class="ignore-pref-if-compact">
-          <summary><h2 id="options-heading" i18n="editorSettings"></h2></summary>
-          <div id="options-wrapper">
-            <div class="options-column">
-              <div class="option">
-                <label id="lineWrapping-label" i18n="+cm_lineWrapping">
-                  <input id="editor.lineWrapping" type="checkbox">
-                </label>
-              </div>
-              <div class="option">
-                <label id="smartIndent-label" i18n="+cm_smartIndent">
-                  <input id="editor.smartIndent" type="checkbox">
-                </label>
-              </div>
-              <div class="option">
-                <label id="indentWithTabs-label" i18n="+cm_indentWithTabs">
-                  <input id="editor.indentWithTabs" type="checkbox">
-                </label>
-              </div>
-              <div class="option">
-                <label i18n="+cm_autoCloseBrackets, title:cm_autoCloseBracketsTooltip">
-                  <input id="editor.autoCloseBrackets" type="checkbox">
-                </label>
-              </div>
-              <div class="option">
-                <label i18n="+cm_autocompleteOnTyping">
-                  <input id="editor.autocompleteOnTyping" type="checkbox">
-                </label>
-              </div>
-              <div class="option">
-                <label i18n="+cm_selectByTokens, title:cm_selectByTokensTooltip">
-                  <input id="editor.selectByTokens" type="checkbox">
-                </label>
-              </div>
-              <div class="option sectioned-only">
-                <label i18n="+cm_arrowKeysTraverse">
-                  <input id="editor.arrowKeysTraverse" type="checkbox">
-                </label>
-              </div>
-              <div class="option">
-                <label i18n="+cm_colorpicker">
-                  <input id="editor.colorpicker" type="checkbox">
-                </label>
-                <a id="colorpicker-settings" class=icon i18n="title:shortcutsNote" tabindex="0">
-                  <i class=i-config></i>
-                </a>
-              </div>
-              <div class="option usercss-only">
-                <label i18n="+appliesLineWidgetLabel, title:appliesLineWidgetWarning">
-                  <input id="editor.appliesToLineWidget" type="checkbox">
-                </label>
-              </div>
-            </div>
-            <div class="options-column">
-              <div class="option aligned">
-                <label id="tabSize-label" for="editor.tabSize" i18n="cm_tabSize"></label>
-                <input id="editor.tabSize" type="number" min="0">
-              </div>
-              <div class="option aligned">
-                <label id="keyMap-label" for="editor.keyMap" i18n="cm_keyMap"></label>
-                <div class="select-wrapper">
-                  <select id="editor.keyMap"></select>
-                </div>
-                <a id="keyMap-help" class=icon tabindex="0">
-                  <i class=i-info></i>
-                </a>
-              </div>
-              <div class="option aligned">
-                <label id="theme-label" for="editor.theme" i18n="cm_theme"></label>
-                <div class="select-wrapper">
-                  <select id="editor.theme"></select>
-                </div>
-              </div>
-              <div class="option aligned">
-                <label id="highlight-label" for="editor.matchHighlight" i18n="cm_matchHighlight"></label>
-                <div class="select-wrapper">
-                  <select id="editor.matchHighlight">
-                    <option i18n="cm_matchHighlightToken" value="token">
-                    <option i18n="cm_matchHighlightSelection" value="selection">
-                    <option i18n="genericDisabledLabel" value="">
-                  </select>
-                </div>
-              </div>
-              <div class="option aligned">
-                <label id="linter-label" for="editor.linter" i18n="cm_linter"></label>
-                  <div class="select-wrapper">
-                    <select id="editor.linter">
-                      <option value="csslint" selected>CSSLint</option>
-                      <option value="stylelint">Stylelint</option>
-                      <option value="" i18n="genericDisabledLabel"></option>
-                    </select>
-                  </div>
-                <a id="linter-settings" class=icon i18n="title:linterConfigTooltip" tabindex="0">
-                  <i class=i-config></i>
-                </a>
-              </div>
-            </div>
-          </div>
-        </details>
         <details id="publish" data-pref="editor.publish.expanded" class="ignore-pref-if-compact">
           <summary><h2 i18n="publish"></h2></summary>
           <div>
@@ -415,10 +316,6 @@
       </div>
     </div>
     <section id="sections"></section>
-    <div id="help-popup">
-      <div class="title"></div><i class="i-close dismiss" id="sections-help"></i>
-      <div class="contents"></div>
-    </div>
   </template>
 
   <link href="edit/edit.css" rel="stylesheet">

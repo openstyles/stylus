@@ -1,21 +1,24 @@
-/* global $ moveFocus setupLivePrefs */// dom.js
+/* global $ $create moveFocus setupLivePrefs */// dom.js
 /* global API */// msg.js
+/* global CodeMirror */
+/* global CODEMIRROR_THEMES */
 /* global editor */
-/* global helpPopup */// util.js
+/* global helpPopup createHotkeyInput */// util.js
+/* global linterMan */
 /* global prefs */
 /* global t */// localization.js
 /* global debounce tryURL */// toolbox.js
 'use strict';
 
 /* exported StyleSettings */
-async function StyleSettings() {
+async function StyleSettings(btnOpen) {
   const AUTOSAVE_DELAY = 500; // same as config-dialog.js
   const SS_ID = 'styleSettings';
   const PASS = val => val;
   await t.fetchTemplate('/edit/settings.html', SS_ID);
+  let ui = t.template[SS_ID].cloneNode(true);
   const {style} = editor;
-  const ui = t.template[SS_ID].cloneNode(true);
-  const elForm = $('.style-settings', ui);
+  const elForm = $('.settings', ui);
   const elAuto = $('#config\\.autosave', ui);
   const elSave = $('#ss-save', ui);
   const elUpd = $('#ss-updatable', ui);
@@ -38,13 +41,16 @@ async function StyleSettings() {
     $('#ss-scheme-off', ui).hidden = val !== 'never';
   }, true);
   window.on(SS_ID, update);
-  window.on('closeHelp', () => window.off(SS_ID, update), {once: true});
-  helpPopup.show(t(SS_ID), ui, {
-    className: 'style-settings-popup',
+  ui = helpPopup.show(true, ui);
+  ui.dataset.type = 'settings';
+  ui.onClose.add(() => {
+    btnOpen.disabled = false;
+    window.off(SS_ID, update);
   });
   elSave.onclick = save;
   $('#ss-close', ui).onclick = helpPopup.close;
-  setupLivePrefs([elAuto.id]);
+  setupLivePrefs(ui);
+  EditorSettings(ui);
   moveFocus(ui, 0);
 
   function autosave(el, setter) {
@@ -129,4 +135,66 @@ async function StyleSettings() {
   function update() {
     updaters.forEach(fn => fn());
   }
+}
+
+function EditorSettings() {
+  prefs.subscribe('editor.linter', editor.updateLinterSwitch, true);
+
+  //#region Keymap
+  // move 'pc' or 'mac' prefix to the end of the displayed label
+  const maps = Object.keys(CodeMirror.keyMap)
+    .map(name => ({
+      value: name,
+      name: name.replace(/^(pc|mac)(.+)/, (s, arch, baseName) =>
+        baseName.toLowerCase() + '-' + (arch === 'mac' ? 'Mac' : 'PC')),
+    }))
+    .sort((a, b) => a.name < b.name && -1 || a.name > b.name && 1);
+  const fragment = document.createDocumentFragment();
+  let bin = fragment;
+  let groupName;
+  // group suffixed maps in <optgroup>
+  maps.forEach(({value, name}, i) => {
+    groupName = !name.includes('-') ? name : groupName;
+    const groupWithNext = maps[i + 1] && maps[i + 1].name.startsWith(groupName);
+    if (groupWithNext) {
+      if (bin === fragment) {
+        bin = fragment.appendChild($create('optgroup', {label: name.split('-')[0]}));
+      }
+    }
+    const el = bin.appendChild($create('option', {value}, name));
+    if (value === prefs.defaults['editor.keyMap']) {
+      el.dataset.default = '';
+      el.title = t('defaultTheme');
+    }
+    if (!groupWithNext) bin = fragment;
+  });
+  const selector = $('#editor.keyMap');
+  selector.textContent = '';
+  selector.appendChild(fragment);
+  selector.value = prefs.get('editor.keyMap');
+  //#endregion
+
+  //#region Theme
+  $('#editor.theme').append(...[
+    $create('option', {value: 'default'}, t('defaultTheme')),
+    ...Object.keys(CODEMIRROR_THEMES).map(s => $create('option', s)),
+  ]);
+  //#endregion
+
+  //#region Buttons
+  $('#colorpicker-settings').onclick = function (event) {
+    event.preventDefault();
+    const bounds = this.getBoundingClientRect();
+    const input = createHotkeyInput('editor.colorpicker.hotkey', {onDone: () => helpPopup.close()});
+    const popup = helpPopup.show(t('helpKeyMapHotkey'), input);
+    popup.style.top = bounds.bottom + 'px';
+    $('input', popup).focus();
+  };
+  $('#keyMap-help').onclick = () => {
+    require(['/edit/show-keymap-help'], () => showKeymapHelp()); /* global showKeymapHelp */
+  };
+  $('#linter-settings').onclick = () => {
+    require(['/edit/linter-dialogs'], () => linterMan.showLintConfig());
+  };
+  //#endregion
 }

@@ -219,6 +219,7 @@
      *   2) if `keys` is falsy, no key/value will be provided
      */
     subscribe(keys, fn, runNow) {
+      if (!fn) return;
       let toRun;
       for (const key of Array.isArray(keys) ? new Set(keys) : [keys]) {
         if (!(key in defaults)) { warnUnknown(key); continue; }
