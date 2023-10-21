@@ -76,12 +76,10 @@ html:not(.is-new-style) #heading::before {
   position: fixed;
   top: 0;
   padding-top: var(--pad);
-  box-shadow: 0 0 3rem -1.2rem #000;
   box-sizing: border-box;
   z-index: 10;
   display: flex;
   flex-direction: column;
-  background-color: var(--bg);
 }
 #header h1 {
   margin-top: 0;
@@ -1001,7 +999,6 @@ i,
     height: unset;
     width: 100%;
     overflow: visible;
-    background: var(--bg);
     border-right: none;
     border-bottom: 1px dashed var(--c65);
     padding: var(--pad05) var(--pad05) 0;

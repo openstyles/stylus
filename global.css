@@ -28,6 +28,7 @@
   --c85: hsl(0, 0%, 85%);
   --c90: hsl(0, 0%, 90%);
   --c95: hsl(0, 0%, 95%);
+  --c97: hsl(0, 0%, 97%);
   --c98: hsl(0, 0%, 98%);
   --c99: hsl(0, 0%, 99%);
   --c100: hsl(0, 0%, 100%);
@@ -337,6 +338,8 @@ input[type="number"][data-focused-via-click]:focus {
 
 #header {
   overflow-wrap: break-word;
+  background-color: var(--c97);
+  box-shadow: 0 0 10px rgba(0, 0, 0, .25);
 }
 
 /* header resizer */

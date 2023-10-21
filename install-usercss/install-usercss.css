@@ -18,7 +18,6 @@ input:disabled + span {
   flex: 0 0 var(--header-width);
   box-sizing: border-box;
   padding: 1rem;
-  box-shadow: 0 0 50px -18px black;
   overflow-wrap: break-word;
   overflow-y: auto;
   z-index: 100;
@@ -43,6 +42,7 @@ input:disabled + span {
   background: #ffe2e2;
   border-right: none;
   border-bottom: 1px dashed var(--c65);
+  box-shadow: 0 0 50px -18px black;
 }
 
 .has-warnings .warnings {

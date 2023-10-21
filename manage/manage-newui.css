@@ -3,8 +3,7 @@
   transition: color .5s .1s;
 }
 #installed {
-  margin-top: .75rem;
-  margin-bottom: .75rem;
+  margin-top: .25rem;
 }
 .entry {
   --target-height: 18px;
