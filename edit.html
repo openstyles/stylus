@@ -235,7 +235,7 @@
         </a>
       </h1>
       <section id="basic-info">
-        <div id="basic-info-name">
+        <div id="basic-info-name" class="hide-if-sticky">
           <input id="name" spellcheck="false">
           <a id="reset-name" i18n="title:customNameResetHint" tabindex="0" hidden>
             <i class=i-close></i>
@@ -243,15 +243,17 @@
           <a id="url" target="_blank" class="icon"><i class=i-external></i></a>
         </div>
         <div id="basic-info-enabled">
-          <label id="enabled-label"
+          <label id="enabled-label" class="hide-if-sticky"
                  i18n="+styleEnabledLabel, title:toggleStyle"
                  data-hotkey-tooltip="toggleStyle">
             <input type="checkbox" id="enabled">
           </label>
-          <label id="preview-label" i18n="+previewLabel, title:previewTooltip">
+          <label id="preview-label" class="hide-if-sticky"
+                 i18n="+previewLabel, title:previewTooltip">
             <input type="checkbox" id="editor.livePreview">
           </label>
-          <label id="disableAll-label" i18n="data-on:disableAllStyles, data-off:disableAllStylesOff">
+          <label id="disableAll-label" class="hide-if-sticky"
+                 i18n="data-on:disableAllStyles, data-off:disableAllStylesOff">
             <input id="disableAll" type="checkbox">
           </label>
           <span id="preview-errors" hidden>!</span>
@@ -267,7 +269,7 @@
           <button id="style-settings-btn" i18n="settings"></button>
           <button id="cancel-button" i18n="title:styleCancelEditLabel">↩</button>
         </div>
-        <div id="mozilla-format-buttons" class="buttons sectioned-only">
+        <div id="mozilla-format-buttons" class="buttons sectioned-only hide-if-sticky">
           <button id="from-mozilla" i18n="importLabel"></button>
           <button id="to-mozilla" i18n="exportLabel"></button>
           <a id="to-mozilla-help" class=icon tabindex="0"
