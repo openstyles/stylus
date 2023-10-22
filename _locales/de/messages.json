@@ -1201,6 +1201,9 @@
   "styleChangesNotSaved": {
     "message": "Du hast Änderungen an diesem Style vorgenommen, ohne diese zu speichern."
   },
+  "styleEditor": {
+    "message": "Style-Editor"
+  },
   "styleEnabledLabel": {
     "message": "Aktiviert"
   },
@@ -1257,6 +1260,9 @@
         "content": "$1"
       }
     }
+  },
+  "styleManager": {
+    "message": "Style-Verwaltung"
   },
   "styleMissingName": {
     "message": "Bitte Namen eingeben"

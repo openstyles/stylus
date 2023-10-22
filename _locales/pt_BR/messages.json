@@ -280,6 +280,9 @@
       }
     }
   },
+  "editorSettings": {
+    "message": "Configurações do editor"
+  },
   "enableStyleLabel": {
     "message": "Ativar"
   },
@@ -288,6 +291,9 @@
   },
   "excludeStyleByUrlLabel": {
     "message": "Excluir a URL atual"
+  },
+  "exportCompatible": {
+    "message": "Exportar (modo de compatibilidade)"
   },
   "exportLabel": {
     "message": "Exportar "
@@ -363,6 +369,9 @@
   "genericSize": {
     "message": "Tamanho"
   },
+  "genericTest": {
+    "message": "Teste"
+  },
   "genericTitle": {
     "message": "Título"
   },
@@ -371,6 +380,9 @@
   },
   "gettingStyles": {
     "message": "Obtendo todos os estilos..."
+  },
+  "headerResizerHint": {
+    "message": "Segure Shift para redimensionar apenas esse tipo de interface, ex: editor, gerenciador, instalador"
   },
   "helpAlt": {
     "message": "Ajuda"
@@ -591,6 +603,14 @@
   },
   "meta_invalidString": {
     "message": "Espera-se um texto entre aspas"
+  },
+  "meta_invalidURLProtocol": {
+    "message": "Protocolo de URL inválido. Apenas http e https são permitidos: $protocol$",
+    "placeholders": {
+      "protocol": {
+        "content": "$1"
+      }
+    }
   },
   "meta_invalidWord": {
     "message": "Espera-se uma palavra"

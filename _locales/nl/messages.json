@@ -662,7 +662,7 @@
     }
   },
   "meta_invalidRangeStep": {
-    "message": "Ongeldge @var $type$: standaardwaarde is geen vermeerdering van de stap",
+    "message": "Ongeldige @var $type$: standaardwaarde is geen veelvoud van de stap",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -715,7 +715,7 @@
     "message": "Ongeldige @var-select: waarden binnen de reeks/het object moeten een string zijn"
   },
   "meta_invalidSelectValueMismatch": {
-    "message": "Ongeldige @var-select: waarde staat niet op de optielijst"
+    "message": "Ongeldige @var-select: waarde bestaat niet in de optielijst"
   },
   "meta_invalidString": {
     "message": "Citaatstring verwacht"
@@ -1235,6 +1235,9 @@
   "styleChangesNotSaved": {
     "message": "U hebt wijzigingen in deze stijl aangebracht zonder op te slaan."
   },
+  "styleEditor": {
+    "message": "Stijleditor"
+  },
   "styleEnabledLabel": {
     "message": "Ingeschakeld"
   },
@@ -1291,6 +1294,9 @@
         "content": "$1"
       }
     }
+  },
+  "styleManager": {
+    "message": "Stijlbeheerder"
   },
   "styleMissingName": {
     "message": "Voer een naam in"

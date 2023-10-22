@@ -846,6 +846,9 @@
   "optionsAdvancedStyleViaXhr": {
     "message": "即時更新モード"
   },
+  "optionsAdvancedStyleViaXhrNote": {
+    "message": "ブラウジング中に、スタイルが適用されていないコンテンツが点滅する場合に、有効にしてください。これは、特にダークテーマでページを開くときに目立つことがあります。\n\nこのオプションは、拡張機能のバックグラウンドキャッシュを取得するために、「非推奨」の同期 XMLHttpRequest を使用します。これは、ネットワークリクエストではないため、パフォーマンスへの影響は無視できます。"
+  },
   "optionsBadgeDisabled": {
     "message": "無効にしたときの背景色"
   },
@@ -1228,6 +1231,9 @@
   "styleChangesNotSaved": {
     "message": "このスタイルは変更されていますが、保存されていません。"
   },
+  "styleEditor": {
+    "message": "スタイルエディタ"
+  },
   "styleEnabledLabel": {
     "message": "有効"
   },
@@ -1284,6 +1290,9 @@
         "content": "$1"
       }
     }
+  },
+  "styleManager": {
+    "message": "スタイルマネージャ"
   },
   "styleMissingName": {
     "message": "名前を入力してください"

@@ -1266,6 +1266,9 @@
   "styleChangesNotSaved": {
     "message": "你已經修改了此樣式，但尚未保存。"
   },
+  "styleEditor": {
+    "message": "樣式編輯器"
+  },
   "styleEnabledLabel": {
     "message": "已啟用"
   },
@@ -1322,6 +1325,9 @@
         "content": "$1"
       }
     }
+  },
+  "styleManager": {
+    "message": "樣式管理程式"
   },
   "styleMissingName": {
     "message": "輸入名稱"

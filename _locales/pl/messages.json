@@ -1269,6 +1269,9 @@
   "styleChangesNotSaved": {
     "message": "Wprowadzono zmiany w tym stylu bez zapisywania."
   },
+  "styleEditor": {
+    "message": "Edytor stylów"
+  },
   "styleEnabledLabel": {
     "message": "Włączony"
   },
@@ -1325,6 +1328,9 @@
         "content": "$1"
       }
     }
+  },
+  "styleManager": {
+    "message": "Menedżer stylów"
   },
   "styleMissingName": {
     "message": "Wpisz nazwę"
