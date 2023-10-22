@@ -5,8 +5,8 @@
 'use strict';
 
 (() => {
-  let nondefaults;
-  const {__defaults, STORAGE_KEY} = prefs;
+  const nondefaults = {};
+  const {__defaults, STORAGE_KEY, set} = prefs;
   const updateStorage = () => chromeSync.setValue(STORAGE_KEY, nondefaults);
 
   addAPI(/** @namespace API */{
@@ -15,8 +15,8 @@
        * WARNING for bg context: properties of object type are direct references into `values`!
        * In non-bg contexts this is correctly deep-copied by msg.js::API. */
       get: () => nondefaults,
-      set(key, val) {
-        if (prefs.set(key, val)) {
+      set: prefs.set = (key, val, ...rest) => {
+        if (set(key, val, ...rest)) {
           const def = __defaults[key];
           if (val !== def && !(val && typeof def === 'object' && deepEqual(val, def))) {
             nondefaults[key] = val;
@@ -26,15 +26,15 @@
             return;
           }
           debounce(updateStorage);
+          return true;
         }
       },
     },
   });
 
-  browser.storage.sync.get(STORAGE_KEY).then(async ({[STORAGE_KEY]: orig}) => {
+  chromeSync.getValue(STORAGE_KEY).then(orig => {
     const copy = orig && typeof orig === 'object' ? deepCopy(orig) : {};
     prefs.ready.set(copy, {});
-    nondefaults = await prefs.ready;
     if (!deepEqual(orig, nondefaults)) bgReady.all.then(updateStorage);
   });
 })();

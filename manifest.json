@@ -38,7 +38,6 @@
       "background/bg-prefs.js",
       "background/db.js",
       "background/color-scheme.js",
-      "background/icon-manager.js",
       "background/navigation-manager.js",
       "background/style-search-db.js",
       "background/style-via-webrequest.js",
@@ -53,6 +52,7 @@
       "background/usw-api.js",
 
       "background/style-manager.js",
+      "background/icon-manager.js",
       "background/background.js"
     ]
   },
