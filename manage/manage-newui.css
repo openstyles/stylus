@@ -60,7 +60,7 @@
   min-width: 25%;
   max-width: 50%;
 }
-#installed[style*="--num-targets:0"] .style-name {
+#installed:not(.has-targets) .style-name {
   max-width: none;
   flex-grow: 1;
 }
@@ -161,7 +161,7 @@
   padding: calc(var(--padY) / 2) 0 calc(var(--padY) / 2) 1em;
   flex-grow: 999;
 }
-#installed[style*="--num-targets:0"] .applies-to {
+#installed:not(.has-targets) .applies-to {
   display: none;
 }
 .targets {

@@ -206,7 +206,7 @@ function createTargetsElement({entry, expanded, style = entry.styleMeta}) {
           }
         }
         element.dataset.type = type;
-        element.appendChild(document.createTextNode(text));
+        element.append(text);
         container.appendChild(element);
       }
     }
@@ -228,7 +228,7 @@ function createTargetsElement({entry, expanded, style = entry.styleMeta}) {
   entry.classList.toggle('global', !numTargets);
   entry._allTargetsRendered = allTargetsRendered;
   entry._numTargets = numTargets;
-  entry.style.setProperty('--num-targets', Math.min(numTargets, newUI.targets));
+  if (newUI.enabled) entry.style.setProperty('--num-targets', Math.min(numTargets, newUI.targets));
 }
 
 async function getFaviconSrc(container = installed) {
@@ -456,7 +456,7 @@ function switchUI({styleOnly} = {}) {
 
   installed.classList.toggle('has-favicons', newUI.hasFavs());
   installed.classList.toggle('favicons-grayed', newUI.enabled && newUI.faviconsGray);
-  installed.style.setProperty('--num-targets', newUI.targets);
+  installed.classList.toggle('has-targets', !newUI.enabled || !!newUI.targets);
 
   if (styleOnly) {
     return;
@@ -470,11 +470,14 @@ function switchUI({styleOnly} = {}) {
     return;
   }
   if (changed.targets) {
+    const num = newUI.targets;
     for (const entry of installed.children) {
-      $('.applies-to', entry).classList.toggle('has-more', entry._numTargets > newUI.targets);
-      if (!entry._allTargetsRendered && newUI.targets > $('.targets', entry).childElementCount) {
-        createTargetsElement({entry, expanded: true});
+      $('.applies-to', entry).classList.toggle('has-more', entry._numTargets > num);
+      if (!entry._allTargetsRendered && num > $('.targets', entry).childElementCount) {
+        createTargetsElement({entry});
         iconsMissing |= iconsEnabled;
+      } else if ((+entry.style.getPropertyValue('--num-targets') || 1e9) > num) {
+        entry.style.setProperty('--num-targets', num);
       }
     }
   }
