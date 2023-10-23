@@ -728,7 +728,7 @@ button i {
     position: sticky;
     top: 0;
     z-index: 1000;
-    background: var(--bg);
+    background: var(--c97);
     border-right: none;
     border-bottom: 1px dashed var(--c65);
   }
