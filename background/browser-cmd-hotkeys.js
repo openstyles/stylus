@@ -14,8 +14,6 @@
       name = name.split('.')[1];
       if (value.trim()) {
         await browser.commands.update({name, shortcut: value});
-      } else {
-        await browser.commands.reset(name);
       }
     } catch (e) {}
   }
