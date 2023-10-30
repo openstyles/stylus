@@ -384,7 +384,7 @@ function SectionsEditor() {
           onclick: doImport,
         }),
       ]));
-    const contents = $('.contents', popup);
+    const contents = popup._contents;
     contents.insertBefore(popup.codebox.display.wrapper, contents.firstElementChild);
     popup.codebox.focus();
     popup.codebox.on('changes', cm => {

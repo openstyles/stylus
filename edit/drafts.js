@@ -40,7 +40,7 @@
     const popup = showCodeMirrorPopup(info, '', {value, readOnly: true});
     popup.className += ' danger';
     popup.onClose.add(onNo);
-    popup.contents.append(
+    popup._contents.append(
       $create('p', t('draftAction')),
       $create('.buttons', [t('confirmYes'), t('confirmNo')].map((btn, i) =>
         $create('button', {textContent: btn, onclick: i ? onNo : onYes})))

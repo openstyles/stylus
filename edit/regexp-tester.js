@@ -10,30 +10,29 @@ const regexpTester = (() => {
   const cachedRegexps = new Map();
   let currentRegexps = [];
   let isWatching = false;
-  let isShown = false;
+  let popup;
   let note;
 
   return {
 
-    toggle(state = !isShown) {
-      if (state && !isShown) {
+    toggle(state = !popup) {
+      if (state && !popup) {
         if (!isWatching) {
           isWatching = true;
           chrome.tabs.onRemoved.addListener(onTabRemoved);
           chrome.tabs.onUpdated.addListener(onTabUpdated);
         }
-        helpPopup.show('', $create('.regexp-report'))
-          .onClose.add(() => regexpTester.toggle(false));
-        isShown = true;
-      } else if (!state && isShown) {
+        popup = helpPopup.show(t('styleRegexpTestTitle'), ' ');
+        popup.onClose.add(() => regexpTester.toggle(false));
+      } else if (!state && popup) {
         unwatch();
         helpPopup.close();
-        isShown = false;
+        popup = null;
       }
     },
 
     async update(newRegexps) {
-      if (!isShown) {
+      if (!popup) {
         unwatch();
         return;
       }
@@ -152,9 +151,9 @@ const regexpTester = (() => {
             .split(/(<[^>]+>|\\+)/)
             .map((s, i) => i % 2 ? $create('code', s[0] === '<' ? s.slice(1, -1) : s) : s));
       }
-      helpPopup.show(t('styleRegexpTestTitle'), report);
+      popup._contents.firstChild.replaceWith(report);
       report.onclick = onClick;
-      report.appendChild(note);
+      if (!report.contains(note)) report.append(note);
     },
   };
 

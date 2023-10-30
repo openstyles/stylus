@@ -21,8 +21,9 @@ const helpPopup = {
     if (title === true) {
       div.append(body);
     } else {
-      div.append($create('.title', title),
-        div.contents = $create('.contents', body && t.HTML(body)));
+      div.append(
+        div._title = $create('.title', title),
+        div._contents = $create('.contents', body && t.HTML(body)));
     }
     document.body.append(div);
     div.onClose = new Set();
@@ -174,7 +175,7 @@ function createHotkeyInput(prefId, {buttons = true, onDone}) {
 function showCodeMirrorPopup(title, html, options) {
   const popup = helpPopup.show(title, html, {className: 'big'});
 
-  let cm = popup.codebox = CodeMirror(popup.contents, Object.assign({
+  let cm = popup.codebox = CodeMirror(popup._contents, Object.assign({
     mode: 'css',
     lineNumbers: true,
     lineWrapping: prefs.get('editor.lineWrapping'),

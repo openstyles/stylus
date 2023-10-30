@@ -37,7 +37,7 @@
       mode: 'application/json',
       value: config ? stringifyConfig(config) : defaultConfig,
     });
-    $('.contents', popup).appendChild(
+    popup._contents.appendChild(
       $create('div', [
         $create('p', [
           $createLink(
