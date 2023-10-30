@@ -90,10 +90,6 @@ html:not(.is-new-style) #heading::before {
 #sections {
   padding-left: var(--header-width);
 }
-.sectioned:not(.compact-layout) #sections {
-  padding-top: var(--pad05);
-  padding-bottom: var(--pad);
-}
 .sectioned #sections {
   counter-reset: codebox;
 }
@@ -333,6 +329,7 @@ i,
   content-visibility: auto;
   contain-intrinsic-block-size: auto calc(var(--cm-height) + (2 + var(--targets, 1)) * (var(--input-height) + var(--target-gapY)));
   --padL: calc(var(--pad) * 1.5);
+  padding: var(--pad) 0; /* must be a part of section for fitToAvailableSpace */
 }
 .sectioned:not(.compact-layout) .section > * {
   margin-right: var(--pad);
@@ -341,7 +338,6 @@ i,
   margin-left: var(--padL);
 }
 .section:nth-child(n + 2) {
-  margin-top: var(--pad05);
   border-top: 4px double var(--c80);
 }
 .add-section:after {
@@ -361,7 +357,7 @@ i,
   margin-right: .2rem;
 }
 .section:not(.removed) > label {
-  padding: var(--pad05) 0 .25em 0;
+  padding-bottom: .25em;
   display: block;
   font-weight: bold;
   animation: 2s highlight;
@@ -1113,7 +1109,7 @@ i,
   }
   .section {
     margin: 0;
-    padding: var(--pad05);
+    padding: var(--pad) var(--pad05);
   }
   .single-editor {
     overflow: hidden;
