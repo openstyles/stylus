@@ -152,10 +152,6 @@ i {
 a.icon {
   margin-left: .2rem;
 }
-#colorpicker-settings {
-  position: absolute;
-  margin-top: -1px;
-}
 .i-info {
   width: 14px;
   height: 16px;

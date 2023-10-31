@@ -50,7 +50,8 @@ a[data-cmd=note] {
 
 /* editor settings */
 .settings[data-editor] > :not(.aligned) > * {
-  display: block;
+  display: flex;
+  align-items: center;
   margin: 0;
   padding: .15em 0;
 }
