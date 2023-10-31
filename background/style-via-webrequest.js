@@ -1,4 +1,5 @@
 /* global CHROME URLS ignoreChromeError */// toolbox.js
+/* global msg */
 /* global prefs */
 /* global styleMan */
 'use strict';
@@ -62,6 +63,7 @@
 
   /** @param {chrome.webRequest.WebRequestBodyDetails} req */
   function prepareStyles(req) {
+    if (!msg.ready) return;
     const sections = styleMan.getSectionsByUrl.call({sender: req}, req.url);
     stylesToPass[req2key(req)] = /** @namespace StylesToPass */ {
       blobId: '',
