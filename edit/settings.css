@@ -1,20 +1,16 @@
-#help-popup[data-type="settings"].dirty .title[data-style]::after {
+#help-popup[data-type="settings"].dirty > .contents > .settings[data-style] > .title::after {
   content: ' *';
 }
-@media (max-height: 800px) {
-  #help-popup[data-type="settings"] {
-    column-count: 2;
-    column-gap: 0;
-  }
-  #help-popup .contents {
-    break-before: avoid;
-    break-inside: avoid;
-  }
+#help-popup[data-type="settings"] > .contents > .settings > .title {
+  margin: 0 calc(-1 * var(--pad-x) - 1px) var(--pad-y);
+}
+#help-popup[data-type="settings"] > .contents {
+  overflow-x: visible;
 }
 .settings {
   padding: 0 1px; /* for focus outline */
   border: 0;
-  margin: 0;
+  margin: 0 0 var(--pad-y);
   max-width: 100%;
   box-sizing: border-box;
 }

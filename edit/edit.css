@@ -686,7 +686,8 @@ i,
   --pad-x: 1.5rem;
   --pad-y: 1rem;
   --pad-y2: calc(var(--pad-y) / 1.5);
-  top: 3rem;
+  --top: 3rem;
+  top: var(--top);
   right: 3rem;
   max-width: calc(100% - var(--header-width) - 6rem);
   position: fixed;
@@ -719,7 +720,7 @@ i,
   color: white;
 }
 #help-popup .contents {
-  max-height: calc(100vh - 8rem);
+  max-height: calc(100vh - var(--top) - 4rem);
   overflow-y: auto;
   padding: var(--pad-y) var(--pad-x);
 }
@@ -1119,10 +1120,9 @@ i,
   #help-popup {
     width: max-content;
     height: min-content;
-    max-width: 100vw;
-    max-height: 90vh;
-    top: 7rem;
-    right: 0;
+    max-width: calc(100vw - 2rem);
+    --top: 7rem;
+    right: 1rem;
     margin: auto;
   }
   #help-popup[style*="left:"] {
