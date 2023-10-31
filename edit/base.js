@@ -146,8 +146,8 @@ function EditorHeader() {
     });
     resetEl.hidden = !editor.style.customName;
     resetEl.onclick = () => {
-      editor.style.customName = null; // to delete it from db
       setInputValue(nameEl, editor.style.name);
+      editor.style.customName = null; // to delete it from db
       resetEl.hidden = true;
     };
     const enabledEl = $('#enabled');
