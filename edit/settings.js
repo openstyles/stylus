@@ -49,8 +49,8 @@ async function StyleSettings(btnOpen) {
   });
   elSave.onclick = save;
   $('#ss-close', ui).onclick = helpPopup.close;
+  EditorSettings(ui); // must precede setupLivePrefs
   setupLivePrefs(ui);
-  EditorSettings(ui);
   moveFocus(ui, 0);
 
   function autosave(el, setter) {
@@ -171,7 +171,6 @@ function EditorSettings(ui) {
   const selector = $('#editor\\.keyMap', ui);
   selector.textContent = '';
   selector.appendChild(fragment);
-  selector.value = prefs.get('editor.keyMap');
   //#endregion
 
   //#region Theme
