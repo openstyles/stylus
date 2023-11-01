@@ -76,8 +76,11 @@
   cursor: pointer; /* for bookmarking */
 }
 .CodeMirror-lint-markers {
-  margin-left: -8px;
-  margin-right: -8px;
+  /* left margin of .CodeMirror-linenumber is 5px and marker's empty space on the right is 2px,
+     so the marker and the number are almost touching, which is fine due to the marker's shape,
+     while most of the time when there are no markers we only add 16-7 === 9px of empty space,
+     which is also fine as it visually balances the folding gutter on the right of numbers. */
+  margin-right: -7px;
 }
 .cm-matchhighlight,
 .CodeMirror-selection-highlight-scrollbar {

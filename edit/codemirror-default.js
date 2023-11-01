@@ -19,9 +19,9 @@
     lineWrapping: prefs.get('editor.lineWrapping'),
     foldGutter: true,
     gutters: [
+      ...(prefs.get('editor.linter') ? ['CodeMirror-lint-markers'] : []),
       'CodeMirror-linenumbers',
       'CodeMirror-foldgutter',
-      ...(prefs.get('editor.linter') ? ['CodeMirror-lint-markers'] : []),
     ],
     matchBrackets: true,
     hintOptions: {},
