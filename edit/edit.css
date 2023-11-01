@@ -334,7 +334,7 @@ i,
   margin-left: var(--padL);
 }
 .section:nth-child(n + 2) {
-  border-top: 4px double var(--c80);
+  border-top: 1px dotted var(--c80);
 }
 .add-section:after {
   content: attr(short-text);
@@ -972,9 +972,6 @@ i,
 
 /************ reponsive layouts ************/
 @media(max-width: 850px) {
-  .sectioned body {
-    height: 100%;
-  }
   .usercss body {
     display: flex;
     flex-direction: column;
@@ -1105,8 +1102,7 @@ i,
     padding: 0;
   }
   .section {
-    margin: 0;
-    padding: var(--pad) var(--pad05);
+    padding: var(--pad05);
   }
   .single-editor {
     overflow: hidden;
