@@ -322,10 +322,20 @@ i,
   pointer-events: auto !important; /* FF bug */
 }
 .section {
-  content-visibility: auto;
-  contain-intrinsic-block-size: auto calc(var(--cm-height) + (2 + var(--targets, 1)) * (var(--input-height) + var(--target-gapY)));
   --padL: calc(var(--pad) * 1.5);
   padding: var(--pad) 0; /* must be a part of section for fitToAvailableSpace */
+}
+.section > .CodeMirror {
+  content-visibility: auto;
+  contain-intrinsic-block-size: auto var(--cm-height);
+}
+.section > .applies-to {
+  content-visibility: auto;
+  contain-intrinsic-block-size: auto calc(var(--targets, 1) * (var(--input-height) + var(--target-gapY)));
+}
+.section > .edit-actions {
+  content-visibility: auto;
+  contain-intrinsic-block-size: auto var(--input-height);
 }
 .sectioned:not(.compact-layout) .section > * {
   margin-right: var(--pad);
