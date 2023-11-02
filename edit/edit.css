@@ -559,10 +559,6 @@ i,
   align-items: unset;
   line-height: var(--input-height);
 }
-.applies-to select:not(:focus) {
-  background-color: var(--c99);
-  border-color: var(--c85);
-}
 .applies-to input {
   border-color: var(--c85);
   caret-color: auto;
