@@ -3,7 +3,7 @@
   top: 0;
   right: 64px;
   min-width: 200px;
-  max-width: calc(100vw - 4rem);
+  max-width: calc(100vw - 10rem);
   box-sizing: border-box;
   z-index: 10000;
   background-color: white;
@@ -92,7 +92,7 @@
 
 #search-replace-dialog [data-action] {
   display: block;
-  padding: 2px .5em;
+  padding: 2px;
 }
 
 #search-replace-dialog [data-type="actions"] a:last-child {
