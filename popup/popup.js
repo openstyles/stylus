@@ -138,7 +138,7 @@ async function initPopup(frames) {
 
   frames.forEach(createWriterElement);
 
-  if ($(WRITE_FRAME_SEL)) {
+  if ($('.match .match:not(.dupe),' + WRITE_FRAME_SEL)) {
     $('#write-style').append(Object.assign(t.template.writeForFrames, {
       onclick() {
         this.remove();
@@ -147,21 +147,20 @@ async function initPopup(frames) {
     }));
   }
 
+  if (frames.ping0) return;
+
   const isStore = FIREFOX ? tabURL.startsWith('https://addons.mozilla.org/') :
       UA.opera ? tabURL.startsWith('https://addons.opera.com/') :
         tabURL.startsWith('https://chrome.google.com/webstore/') ||
         tabURL.startsWith('https://chromewebstore.google.com/');
-  if (isStore) {
-    blockPopup();
-  } else if (!URLS.supported(tabURL)) {
-    blockPopup();
+  blockPopup();
+  if (CHROME && isStore || !URLS.supported(tabURL)) {
     return;
   }
 
-  for (let retryCountdown = 10; retryCountdown-- > 0;) {
-    const tab = await getActiveTab();
+  for (let {tab} = frames, t2 = performance.now() + 1000; performance.now() < t2;) {
     if (await msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0})) {
-      if (isBlocked) blockPopup(false);
+      blockPopup(false);
       return;
     }
     if (tab.status === 'complete' && (!FIREFOX || tab.url !== ABOUT_BLANK)) {
@@ -169,10 +168,9 @@ async function initPopup(frames) {
     }
     // FF and some Chrome forks (e.g. CentBrowser) implement tab-on-demand
     // so we'll wait a bit to handle popup being invoked right after switching
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise(setTimeout);
+    tab = await getActiveTab();
   }
-
-  if (CHROME && isStore) return;
 
   const info = t.template.unreachableInfo;
   if (!FIREFOX) {
@@ -220,7 +218,7 @@ function createWriterElement(frame, index) {
   } else {
     el = (url.startsWith(URLS.ownOrigin) ? makeExtCrumbs : makeWebCrumbs)(crumbs, url);
     el.onmouseenter = el.onmouseleave = el.onfocus = el.onblur = Events.toggleUrlLink;
-    if (!index) Object.assign($('#write-style-for'), {onclick: Events.openEditor, title: el.title});
+    if (!index) Object.assign($('#write-style-for'), {onclick: el.click.bind(el), title: el.title});
   }
   crumbs.push(el);
   const root = $('#write-style');

@@ -1,15 +1,20 @@
-/* global API */// msg.js
-/* global URLS */// toolbox.js
+/* global API msg */// msg.js
+/* global URLS getActiveTab */// toolbox.js
 'use strict';
 
 const ABOUT_BLANK = 'about:blank';
 /* exported preinit */
 const preinit = (async () => {
-  let [tab] = await browser.tabs.query({currentWindow: true, active: true});
+  let tab = await getActiveTab();
   if (!chrome.app && tab.status === 'loading' && tab.url === ABOUT_BLANK) {
     tab = await API.waitForTabUrl(tab.id);
   }
-  const frames = sortTabFrames(await browser.webNavigation.getAllFrames({tabId: tab.id}));
+  const [ping0, frames] = await Promise.all([
+    msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0}),
+    browser.webNavigation.getAllFrames({tabId: tab.id}).then(sortTabFrames),
+  ]);
+  frames.ping0 = ping0;
+  frames.tab = tab;
   let url = tab.pendingUrl || tab.url || ''; // new Chrome uses pendingUrl while connecting
   if (url === 'chrome://newtab/' && !URLS.chromeProtectsNTP) {
     url = frames[0].url || '';
