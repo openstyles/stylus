@@ -10,12 +10,8 @@
 .CodeMirror {
   border: solid var(--c80) 1px;
   transition: box-shadow .1s;
-}
-.CodeMirror {
   color: inherit;
-  background-color: inherit;
-  border: solid var(--c80) 1px;
-  transition: box-shadow .1s;
+  background-color: var(--bg);
 }
 .CodeMirror-gutters {
   background-color: var(--c95);

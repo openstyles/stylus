@@ -478,10 +478,7 @@ i,
 }
 @keyframes highlight {
   from {
-    background-color: #ff9;
-  }
-  to {
-    background-color: inherit;
+    background-color: var(--gold1);
   }
 }
 @keyframes fadein {

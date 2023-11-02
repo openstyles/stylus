@@ -27,6 +27,7 @@
     --accent-2: hsl(180, 45%, 40%);
     --accent-3: hsl(180, 30%, 18%);
     --input-bg: var(--c95);
+    --gold1: darkgoldenrod;
     --red1: hsl(0, 85%, 55%);
   }
   button {

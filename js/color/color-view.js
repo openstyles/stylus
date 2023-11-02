@@ -665,17 +665,17 @@
     if (line < viewFrom || line > viewTo) {
       return;
     }
-    const first = cm.charCoords(data, 'window');
+    const first = cm.charCoords(data);
     const colorEnd = data.ch + data.color.length - 1;
-    let last = cm.charCoords({line, ch: colorEnd}, 'window');
+    let last = cm.charCoords({line, ch: colorEnd});
     if (last.top !== first.top) {
       const funcEnd = data.ch + data.color.indexOf('(') - 1;
-      last = cm.charCoords({line, ch: funcEnd}, 'window');
+      last = cm.charCoords({line, ch: funcEnd});
     }
     const el = document.createElement('div');
-    const DURATION_SEC = 1;
+    const DURATION_SEC = .5;
     el.style = `
-      position: fixed;
+      position: absolute;
       display: block;
       top: ${first.top}px;
       left: ${first.left}px;

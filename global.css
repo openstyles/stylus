@@ -38,6 +38,7 @@
   --accent-1: hsl(180, 100%, 19%);
   --accent-2: hsl(180, 50%, 40%);
   --accent-3: hsl(180, 40%, 69%);
+  --gold1: gold;
   --red1: hsl(0, 70%, 45%);
   --zebra: hsla(0, 0%, 50%, 0.05);
 }
