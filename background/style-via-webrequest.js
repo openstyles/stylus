@@ -8,7 +8,7 @@
   const idCSP = 'patchCsp';
   const idOFF = 'disableAll';
   const idXHR = 'styleViaXhr';
-  const rxHOST = /^('none'|(https?:\/\/)?[^']+?[^:'])$/; // strips CSP sources covered by *
+  const rxHOST = /^('non(e|ce-.+?)'|(https?:\/\/)?[^']+?[^:'])$/; // strips CSP sources covered by *
   const blobUrlPrefix = 'blob:' + chrome.runtime.getURL('/');
   /** @type {Object<string,StylesToPass>} */
   const stylesToPass = {};
