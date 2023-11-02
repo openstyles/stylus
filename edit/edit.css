@@ -716,7 +716,7 @@ i,
   background-color: firebrick;
   color: white;
 }
-#help-popup.danger .dismiss {
+#help-popup.danger > .i-close {
   color: white;
 }
 #help-popup .contents {
@@ -724,7 +724,7 @@ i,
   overflow-y: auto;
   padding: var(--pad-y) var(--pad-x);
 }
-#help-popup .dismiss {
+#help-popup > .i-close {
   position: absolute;
   right: 0;
   top: 0;

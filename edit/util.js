@@ -17,7 +17,7 @@ const helpPopup = {
    */
   show(title = '', body, props) {
     const div = $create(helpPopup.SEL, props,
-      $create('i.i-close.dismiss', {onclick: helpPopup.close}));
+      $create('i.i-close', {onclick: helpPopup.close}));
     if (title === true) {
       div.append(body);
     } else {
