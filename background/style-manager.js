@@ -212,6 +212,7 @@ const styleMan = (() => {
       const isTop = !frameId || sender.type === 'main_frame'; // prerendering in onBeforeRequest
       /** @type {InjectionConfig} */
       const cfg = !id && {
+        ass: p.styleViaASS,
         dark: isTop && colorScheme.isDark(),
         // TODO: enable in FF when it supports sourceURL comment in style elements (also options.html)
         name: CHROME && p.exposeStyleName,

@@ -14,15 +14,22 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
 }) => {
   const isExt = !!chrome.tabs;
   const PREFIX = 'stylus-';
+  const MEDIA = 'screen, ' + PREFIX;
   const PATCH_ID = 'transition-patch';
+  const kAss = 'adoptedStyleSheets';
+  const wrappedDoc = document.wrappedJSObject || document;
+  const wrappedAss = wrappedDoc[kAss];
   // styles are out of order if any of these elements is injected between them
   // except `style` on our own page as it contains overrides
   const ORDERED_TAGS = new Set(['head', 'body', 'frameset', !isExt && 'style', 'link']);
   const docRewriteObserver = RewriteObserver(sort);
   const docRootObserver = RootObserver(sortIfNeeded);
   const toSafeChar = c => String.fromCharCode(0xFF00 + c.charCodeAt(0) - 0x20);
+  const getAss = () => Object.isExtensible(ass) ? ass : ass.slice(); // eslint-disable-line no-use-before-define
   const list = [];
   const table = new Map();
+  let /** @type {CSSStyleSheet[]} */ass;
+  let root = document.documentElement;
   let isEnabled = true;
   let isTransitionPatched = chrome.app && CSS.supports('accent-color', 'red'); // Chrome 93
   let exposeStyleName;
@@ -34,7 +41,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     list,
 
     apply({cfg, sections: styles}) {
-      if (cfg) exposeStyleName = cfg.name;
+      if (cfg) updateConfig(cfg);
       return styles.length
         && docRootObserver.evade(() => {
           if (!isTransitionPatched && isEnabled) {
@@ -61,12 +68,14 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
       }
     },
 
+    config: updateConfig,
+
     remove(id) {
       if (remove(id)) emitUpdate();
     },
 
     replace({cfg, sections: styles}) {
-      if (cfg) exposeStyleName = cfg.name;
+      if (cfg) updateConfig(cfg);
       const added = new Set(styles.map(s => s.id));
       const removed = [];
       for (const style of list) {
@@ -95,20 +104,43 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     const i = list.findIndex(item => compare(item, style) > 0);
     table.set(style.id, style);
     if (isEnabled) {
-      document.documentElement.insertBefore(el, i < 0 ? null : list[i].el);
+      addElement(el, i < 0 ? null : list[i].el);
     }
     list.splice(i < 0 ? list.length : i, 0, style);
     return el;
   }
 
-  function addRemoveElements(add) {
-    for (const {el} of list) {
-      if (add) {
-        document.documentElement.appendChild(el);
-      } else {
-        el.remove();
+  function addElement(el, before) {
+    if (ass) {
+      const sheets = getAss();
+      let i = sheets.indexOf(el);
+      if (i >= 0) el = sheets.splice(i, 1)[0];
+      i = before ? sheets.indexOf(before) : -1;
+      if (i >= 0) sheets.splice(i, 0, el);
+      else sheets.push(el);
+      if (sheets !== ass) wrappedDoc[kAss] = sheets;
+    } else {
+      root.insertBefore(el, before);
+    }
+    return el;
+  }
+
+  function removeElement(el) {
+    if (el.remove) {
+      el.remove();
+    } else if (ass) {
+      const sheets = getAss();
+      const i = sheets.indexOf(el);
+      if (i >= 0) {
+        sheets.splice(i, 1);
+        if (sheets !== ass) wrappedDoc[kAss] = sheets;
       }
     }
+  }
+
+  function addRemoveElements(add) {
+    const fn = add ? addElement : removeElement;
+    for (const {el} of list) fn(el);
   }
 
   function addUpdate(style) {
@@ -124,15 +156,15 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
         !styles.some(s => s.code.some(c => c.includes('transition')))) {
       return;
     }
-    const el = createStyle({id: PATCH_ID, code: `
+    const el = createStyle({id: PATCH_ID, code: [`
       :root:not(#\\0):not(#\\0) * {
         transition: none !important;
       }
-    `});
-    document.documentElement.appendChild(el);
+    `]});
+    addElement(el);
     // wait for the next paint to complete
     // note: requestAnimationFrame won't fire in inactive tabs
-    requestAnimationFrame(() => setTimeout(() => el.remove()));
+    requestAnimationFrame(() => setTimeout(removeElement, 0, el));
   }
 
   /** @this {Array} array to compare to */
@@ -141,10 +173,25 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
   }
 
   function createStyle(style) {
-    const {id} = style;
-    if (!creationDoc) initCreationDoc();
     let el;
-    if (document.documentElement instanceof SVGSVGElement) {
+    let {id} = style;
+    if (ass) {
+      id = MEDIA + id;
+      el = new CSSStyleSheet({media: id});
+      const iOld = findAssId(id);
+      const code = style.code.join('');
+      if (code) {
+        try {
+          el.replaceSync(code);
+        } catch (err) {
+          el.replace(code);
+        }
+      }
+      if (iOld >= 0) ass[iOld].mediaText += '-old';
+      return el;
+    }
+    if (!creationDoc) initCreationDoc();
+    if (root instanceof SVGSVGElement) {
       // SVG document style
       el = createElementNS.call(creationDoc, 'http://www.w3.org/2000/svg', 'style');
     } else if (document instanceof XMLDocument) {
@@ -185,6 +232,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
   }
 
   function toggleObservers(shouldStart) {
+    if (ass && shouldStart) return;
     const onOff = shouldStart && isEnabled ? 'start' : 'stop';
     docRewriteObserver[onOff]();
     docRootObserver[onOff]();
@@ -193,6 +241,15 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
   function emitUpdate() {
     toggleObservers(list.length);
     onUpdate();
+  }
+
+  function findAssId(id) {
+    for (let i = 0; i < ass.length; i++) {
+      try {
+        if (ass[i].mediaText === id) return i;
+      } catch (err) {}
+    }
+    return -1;
   }
 
   /*
@@ -206,13 +263,13 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     creationDoc = !Event.prototype.getPreventDefault && document.wrappedJSObject;
     if (creationDoc) {
       ({createElement, createElementNS} = creationDoc);
-      const el = document.documentElement.appendChild(createStyle({code: ''}));
+      const el = addElement(createStyle({code: ['']}));
       const isApplied = el.sheet;
-      el.remove();
+      removeElement(el);
       if (isApplied) return;
     }
     creationDoc = document;
-    ({createElement, createElementNS} = document);
+    ({createElement, createElementNS} = creationDoc);
   }
 
   function remove(id) {
@@ -220,7 +277,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     if (!style) return;
     table.delete(id);
     list.splice(list.indexOf(style), 1);
-    style.el.remove();
+    removeElement(style.el);
     return true;
   }
 
@@ -236,6 +293,13 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     let el = list.length && list[0].el;
     if (!el) {
       needsSort = false;
+    } else if (ass) {
+      for (let i = ass.length - list.length; i >= 0 && i < ass.length; i++) {
+        if (ass[i] !== list[i].el) {
+          needsSort = true;
+          break;
+        }
+      }
     } else if (el.parentNode !== creationDoc.documentElement) {
       needsSort = true;
     } else {
@@ -243,7 +307,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
       while (el) {
         if (i < list.length && el === list[i].el) {
           i++;
-        } else if (ORDERED_TAGS.has(el.localName)) {
+        } else if (ass || ORDERED_TAGS.has(el.localName)) {
           needsSort = true;
           break;
         }
@@ -268,9 +332,18 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
 
   }
 
+  function updateConfig(cfg) {
+    exposeStyleName = cfg.name;
+    if (!ass !== !cfg.ass) {
+      toggleObservers();
+      addRemoveElements();
+      ass = ass ? null : wrappedAss;
+      for (const s of list) addElement(s.el = createStyle(s));
+      toggleObservers(true);
+    }
+  }
   function RewriteObserver(onChange) {
     // detect documentElement being rewritten from inside the script
-    let root;
     let observing = false;
     let timer;
     const observer = new MutationObserver(check);
@@ -320,6 +393,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     return {evade, start, stop};
 
     function evade(fn) {
+      if (ass) return Promise.resolve(fn());
       const restore = observing && start;
       stop();
       return new Promise(resolve => run(fn, resolve, waitForRoot))
@@ -328,7 +402,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
 
     function start() {
       if (observing) return;
-      observer.observe(document.documentElement, {childList: true});
+      observer.observe(root, {childList: true});
       observing = true;
     }
 
@@ -341,7 +415,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     }
 
     function run(fn, resolve, wait) {
-      if (document.documentElement) {
+      if (root) {
         resolve(fn());
         return true;
       }

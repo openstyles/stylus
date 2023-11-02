@@ -73,6 +73,7 @@ const broadcastInjectorConfig = ((
   map = {
     exposeIframes: 'top',
     disableAll: 'off',
+    styleViaASS: 'ass',
   },
   data = {
     method: 'injectorConfig',

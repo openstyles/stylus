@@ -166,25 +166,18 @@
         updateCount();
         break;
 
-      case 'injectorConfig': {
-        let k, v;
-        if ((k = 'dark', v = req.cfg[k]) !== own.cfg[k]) {
+      case 'injectorConfig':
+        for (const k in req.cfg) {
+          const v = req.cfg[k];
+          if (v === own.cfg[k]) continue;
+          if (k === 'top' && !isFrame) continue;
           own.cfg[k] = v;
-        }
-        if ((k = 'off', v = req.cfg[k]) !== own.cfg[k]) {
-          own.cfg[k] = v;
-          updateDisableAll();
-        }
-        if ((k = 'order', v = req.cfg[k])) {
-          own.cfg[k] = v;
-          styleInjector.sort();
-        }
-        if (isFrame && (k = 'top', v = req.cfg[k]) !== own.cfg[k]) {
-          own.cfg[k] = v;
-          updateExposeIframes();
+          if (k === 'off') updateDisableAll();
+          else if (k === 'order') styleInjector.sort();
+          else if (k === 'top') updateExposeIframes();
+          else styleInjector.config(own.cfg);
         }
         break;
-      }
 
       case 'backgroundReady':
         // This may happen when reloading the background page without reloading the extension

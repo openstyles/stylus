@@ -23,6 +23,7 @@
     'exposeIframes': false,         // Add 'stylus-iframe' attribute to HTML element in all iframes
     'exposeStyleName': false,       // Add style name to the style for better devtools experience
     'newStyleAsUsercss': false,     // create new style in usercss format
+    'styleViaASS': false,           // document.adoptedStyleSheets
     'styleViaXhr': false,           // early style injection to avoid FOUC
     'patchCsp': false,              // add data: and popular image hosting sites to strict CSP
     'urlInstaller': true,           // auto-open installer page for supported .user.css urls
