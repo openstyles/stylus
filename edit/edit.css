@@ -568,6 +568,7 @@ i,
 }
 .applies-to input {
   border-color: var(--c85);
+  caret-color: auto;
 }
 .applies-to .select-wrapper {
   margin-right: .5em;
