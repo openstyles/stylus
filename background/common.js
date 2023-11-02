@@ -11,7 +11,9 @@ window.bgReady = {}; /* global bgReady */
 bgReady.styles = new Promise(r => (bgReady._resolveStyles = r));
 bgReady.all = new Promise(r => (bgReady._resolveAll = r));
 
-const API = window.API = {};
+const API = window.API = {
+  download,
+};
 
 const msg = window.msg = /** @namespace msg */ {
   bg: window,

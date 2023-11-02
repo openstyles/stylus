@@ -31,11 +31,12 @@ const [CHROME, FIREFOX, UA] = (() => {
   const uad = navigator.userAgentData;
   const ua = uad || navigator.userAgent;
   const brands = uad ? uad.brands.map(_ => `${_.brand}/${_.version}`).join(' ') : ua;
-  const getVer = name => Number(brands.match(new RegExp(name + '\\w*/(\\d+)|$'))[1]) || false;
+  const getVer = name => +brands.match(new RegExp(name + '\\w*/(\\d+)|$'))[1];
   const platform = uad ? uad.platform : ua;
+  const {app} = chrome;
   return [
-    getVer('Chrom'),
-    !chrome.app && getVer('Firefox'),
+    app && getVer('Chrom'),
+    !app && getVer('Firefox') || NaN,
     {
       mac: /mac/i.test(platform),
       mobile: uad ? uad.mobile : /Android/.test(ua),
