@@ -294,8 +294,8 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     if (!el) {
       needsSort = false;
     } else if (ass) {
-      for (let i = ass.length - list.length; i >= 0 && i < ass.length; i++) {
-        if (ass[i] !== list[i].el) {
+      for (let i = ass.length - list.length; i < ass.length; i++) {
+        if (i < 0 || ass[i] !== list[i].el) {
           needsSort = true;
           break;
         }
