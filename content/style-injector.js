@@ -33,6 +33,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
   let isEnabled = true;
   let isTransitionPatched = chrome.app && CSS.supports('accent-color', 'red'); // Chrome 93
   let exposeStyleName;
+  let nonce = '';
   // will store the original method refs because the page can override them
   let creationDoc, createElement, createElementNS;
 
@@ -206,6 +207,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
       const oldEl = document.getElementById(el.id);
       if (oldEl) oldEl.id += '-superseded-by-Stylus';
     }
+    el.nonce = nonce;
     el.type = 'text/css';
     // SVG className is not a string, but an instance of SVGAnimatedString
     el.classList.add('stylus');
@@ -334,6 +336,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
 
   function updateConfig(cfg) {
     exposeStyleName = cfg.name;
+    nonce = cfg.nonce || nonce;
     if (!ass !== !cfg.ass) {
       toggleObservers();
       addRemoveElements();

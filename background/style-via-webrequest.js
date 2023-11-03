@@ -1,7 +1,8 @@
-/* global CHROME URLS ignoreChromeError */// toolbox.js
+/* global CHROME FIREFOX URLS ignoreChromeError */// toolbox.js
 /* global msg */
 /* global prefs */
 /* global styleMan */
+/* global tabMan */
 'use strict';
 
 (() => {
@@ -9,6 +10,7 @@
   const idOFF = 'disableAll';
   const idXHR = 'styleViaXhr';
   const rxHOST = /^('non(e|ce-.+?)'|(https?:\/\/)?[^']+?[^:'])$/; // strips CSP sources covered by *
+  const rxNONCE = FIREFOX && /(?:^|[;,])\s*style-src\s+[^;,]*?'nonce-([-+/=\w]+)'/;
   const blobUrlPrefix = 'blob:' + chrome.runtime.getURL('/');
   /** @type {Object<string,StylesToPass>} */
   const stylesToPass = {};
@@ -36,7 +38,7 @@
     chrome.webNavigation.onCommitted.removeListener(injectData);
     chrome.webRequest.onBeforeRequest.removeListener(prepareStyles);
     chrome.webRequest.onHeadersReceived.removeListener(modifyHeaders);
-    if (xhr || csp) {
+    if (xhr || csp || FIREFOX) {
       // We unregistered it above so that the optional EXTRA_HEADERS is properly re-registered
       chrome.webRequest.onHeadersReceived.addListener(modifyHeaders, reqFilter, [
         'blocking',
@@ -64,10 +66,11 @@
   /** @param {chrome.webRequest.WebRequestBodyDetails} req */
   function prepareStyles(req) {
     if (!msg.ready) return;
-    const sections = styleMan.getSectionsByUrl.call({sender: req}, req.url);
+    const {url} = req;
+    req.tab = {url};
     stylesToPass[req2key(req)] = /** @namespace StylesToPass */ {
       blobId: '',
-      str: JSON.stringify(sections),
+      payload: styleMan.getSectionsByUrl.call({sender: req}, url, null, true),
       timer: setTimeout(cleanUp, 600e3, req),
     };
   }
@@ -79,7 +82,7 @@
       chrome.tabs.executeScript(req.tabId, {
         frameId: req.frameId,
         runAt: 'document_start',
-        code: `(${injectedCode})(${data.str})`,
+        code: `(${injectedCode})(${JSON.stringify(data.payload)})`,
       }, ignoreChromeError);
       if (!state.xhr) cleanUp(req);
     }
@@ -87,25 +90,31 @@
 
   /** @param {chrome.webRequest.WebResponseHeadersDetails} req */
   function modifyHeaders(req) {
+    const data = stylesToPass[req2key(req)]; if (!data) return;
     const {responseHeaders} = req;
-    const data = stylesToPass[req2key(req)];
-    if (!data || data.str === '{}') {
+    const {payload} = data;
+    const secs = payload.sections;
+    const csp = (FIREFOX || state.csp) &&
+      responseHeaders.find(h => h.name.toLowerCase() === 'content-security-policy');
+    if (csp) {
+      const m = FIREFOX && csp.value.match(rxNONCE);
+      if (m) tabMan.set(req.tabId, 'nonce', req.frameId, payload.cfg.nonce = m[1]);
+      // We don't change CSP if there are no styles when the page is loaded
+      // TODO: show a reminder in the popup to reload the tab when the user enables a style
+      if (state.csp && secs[0]) patchCsp(csp);
+    }
+    if (!secs[0]) {
       cleanUp(req);
       return;
     }
     if (state.xhr) {
-      data.blobId = URL.createObjectURL(new Blob([data.str])).slice(blobUrlPrefix.length);
+      data.blobId = URL.createObjectURL(new Blob([JSON.stringify(payload)])).slice(blobUrlPrefix.length);
       responseHeaders.push({
         name: 'Set-Cookie',
         value: `${chrome.runtime.id}=${data.blobId}; SameSite=Lax`,
       });
     }
-    const csp = state.csp &&
-      responseHeaders.find(h => h.name.toLowerCase() === 'content-security-policy');
-    if (csp) {
-      patchCsp(csp);
-    }
-    if (state.xhr || csp) {
+    if (state.xhr || csp && state.csp) {
       return {responseHeaders};
     }
   }

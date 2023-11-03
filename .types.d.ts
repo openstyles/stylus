@@ -64,6 +64,7 @@ declare interface InjectionConfig {
   ass?: boolean;
   dark?: boolean;
   name?: boolean;
+  nonce?: string;
   top?: string | false;
   off?: boolean;
   order?: InjectionOrder;

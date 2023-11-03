@@ -216,6 +216,7 @@ const styleMan = (() => {
         dark: isTop && colorScheme.isDark(),
         // TODO: enable in FF when it supports sourceURL comment in style elements (also options.html)
         name: CHROME && p.exposeStyleName,
+        nonce: !CHROME && tabMan.get(tab.id, 'nonce', frameId),
         top: isInitialApply && p.exposeIframes && (
           isTop ? '' // apply.js will use location.origin
             : getUrlOrigin(tab.url || tabMan.get(sender.tabId || tab.id, 'url'))

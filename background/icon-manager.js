@@ -42,7 +42,7 @@ const iconMan = (() => {
     const ids = tabMan.getStyleIds(tabId);
     if (!ids) return;
     if (frameId) delete ids[frameId];
-    else tabMan.delete(tabId);
+    else for (const id in ids) delete ids[id];
   });
   chrome.runtime.onConnect.addListener(port => {
     if (port.name === 'iframe') {
