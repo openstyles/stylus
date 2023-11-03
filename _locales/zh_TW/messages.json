@@ -878,6 +878,9 @@
   "optionsAdvancedPatchCspNote": {
     "message": "如果樣式包含無法在有嚴格 <code>CSP</code>（<code>內容安全策略</code>）的網站上載入的圖片或字型，請啟用此選項。\n\n啟用此設定將會放寬 <code>CSP</code> 限制，允許基本的樣式內容載入。此選項僅適用於了解潛在的安全問題，且接受監視其允許內容責任的進階使用者。閱讀關於以 CSS 為基礎的攻擊來取得更多資訊。\n\n另外請注意，如果已經有另一個已安裝的附加元件先修改了網路回應，則無法保證此設定可起作用。"
   },
+  "optionsAdvancedStyleViaASS": {
+    "message": "透過 adoptedStyleSheets 規避 CSP 'style-src'"
+  },
   "optionsAdvancedStyleViaXhr": {
     "message": "即時注入模式"
   },

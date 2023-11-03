@@ -853,6 +853,9 @@
   "optionsAdvancedPatchCspNote": {
     "message": "Schakel dit in als stijlen afbeeldingen of lettertypen bevatten die niet worden geladen op websites met een streng <code>CSP</code> (<code>inhoudsbeveiligingsbeleid</code>).\n\nHet inschakelen van deze instelling versoepelt <code>CSP</code>-restricties, waardoor essentiële stijlinhoud kan worden geladen. Deze optie is alleen bedoeld voor gevorderde gebruikers die de mogelijke gevolgen op beveiligingsgebied begrijpen, en die de verantwoordelijkheid voor het monitoren van de toegestane inhoud accepteren. Lees meer over CSS-gebaseerde aanvallen voor meer informatie.\n\nHoud er ook rekening mee dat deze specifieke instelling geen garantie geeft op een goede werking als een andere geïnstalleerde extensie eerst het netwerkantwoord aanpast."
   },
+  "optionsAdvancedStyleViaASS": {
+    "message": "CSP ‘style-src’ omzeilen via adoptedStyleSheets"
+  },
   "optionsAdvancedStyleViaXhr": {
     "message": "Directe-injectiemodus"
   },

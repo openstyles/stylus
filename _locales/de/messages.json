@@ -828,6 +828,9 @@
   "optionsAdvancedPatchCspNote": {
     "message": "Aktivieren, wenn Styles Bilder oder Schriftarten enthalten, die aufgrund strenger <code>CSP</code> (<code>Content-Security-Policy</code>) Regeln mancher Seiten nicht laden.\n\nDas Aktivieren wird <code>CSP</code>Beschränkungen lockern, um für den Style erforderliche Ressourcen zu laden. Diese Option ist für fortgeschrittene Benutzer gedacht, die sich den möglichen Sicherheitsrisiken bewusst sind und die die Verantwortung dafür tragen, die nachgeladenen Inhalte selbst zu überwachen. Informiere dich über \"CSS-basierte Angriffe\" um mehr zu erfahren.\n\nBeachte außerdem, dass diese Option nicht garantiert funktioniert, falls eine andere installierte Erweiterung die Netzwerkantwort (CSP-header) zuerst abändert."
   },
+  "optionsAdvancedStyleViaASS": {
+    "message": "Umgehe CSP 'style-src' durch adoptedStyleSheets"
+  },
   "optionsAdvancedStyleViaXhr": {
     "message": "Style unverzüglich einfügen"
   },

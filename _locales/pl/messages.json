@@ -878,6 +878,9 @@
   "optionsAdvancedPatchCspNote": {
     "message": "Włącz tę opcję, jeśli style zawierają obrazy lub czcionki, które nie ładują się w witrynach ze ścisłym<code>CSP</code> (<code>Content-Security-Policy</code>).\n\nWłączenie tego ustawienia złagodzi ograniczenia <code>CSP</code>, umożliwiając załadowanie podstawowej zawartości stylu. Ta opcja jest przeznaczona tylko dla zaawansowanych użytkowników, którzy rozumieją potencjalne konsekwencje dla bezpieczeństwa i przyjmują odpowiedzialność za monitorowanie treści, na które zezwalają. Przeczytaj o atakach opartych na CSS, aby uzyskać więcej informacji.\n\nNależy również pamiętać, że to szczególne ustawienie nie jest gwarantowane, jeśli inne zainstalowane rozszerzenie zmodyfikuje najpierw odpowiedź sieci."
   },
+  "optionsAdvancedStyleViaASS": {
+    "message": "Obejdź 'style-src' CSP za pomocą adoptedStyleSheets"
+  },
   "optionsAdvancedStyleViaXhr": {
     "message": "Tryb natychmiastowego wstrzyknięcia"
   },

@@ -843,6 +843,9 @@
   "optionsAdvancedPatchCspNote": {
     "message": "厳格な<code>CSP</code>(<code>Content-Security-Policy</code>)を持つサイトで、ロードできない画像やフォントを含んだスタイルの場合に、これを有効にします。\n\nこの設定を有効にすると、<code>CSP</code>の制限をゆるめて、必要なコンテンツのロードを許可します。このオプションは、潜在的なセキュリティへの影響を理解し、許可しているコンテンツを監視する責任を持つことができる上級ユーザーのみを対象としています。 詳細については、CSSベースの攻撃に関する資料をお読みください。\n\nまた、インストールされている別の拡張機能が最初にネットワークの応答を変更した場合、この特別な設定が有効になるとは限らないことに注意してください。"
   },
+  "optionsAdvancedStyleViaASS": {
+    "message": "adoptedStyleSheetsによってCSPの 'style-src' の問題を回避する"
+  },
   "optionsAdvancedStyleViaXhr": {
     "message": "即時更新モード"
   },
