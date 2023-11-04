@@ -16,7 +16,7 @@ document.body.appendChild(t.template.body);
 setupLivePrefs();
 $$('input[min], input[max]').forEach(enforceInputRange);
 for (const el of $$('[show-if]')) {
-  prefs.subscribe(el.getAttribute('show-if'), toggleShowIf, true);
+  prefs.subscribe(el.getAttribute('show-if').replace(/^!/, ''), toggleShowIf, true);
 }
 if (CHROME_POPUP_BORDER_BUG) {
   $('.chrome-no-popup-border').classList.remove('chrome-no-popup-border');
@@ -122,8 +122,8 @@ function enforceInputRange(element) {
 }
 
 function toggleShowIf(id, val) {
-  for (const el of $$(`[show-if="${id}"]`)) {
-    el.classList.toggle('disabled', !val);
+  for (const el of $$(`[show-if="${id}"], [show-if="!${id}"]`)) {
+    el.classList.toggle('disabled', el.getAttribute('show-if')[0] === '!' ? !!val : !val);
   }
 }
 
