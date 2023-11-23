@@ -90,7 +90,7 @@ function extractSections({code, styleId, fast = true}) {
     const i = e.offset;
     const a = Math.max(mozStyle.lastIndexOf('\n', i - min) + 1, i - max);
     const b = Math.min(mozStyle.indexOf('\n', i - a > min ? i : i + min) + 1 || 1e9, i + max);
-    e.context = mozStyle.slice(a, b);
+    e.context = mozStyle.slice(a, b).trim();
   });
 
   try {

@@ -97,8 +97,8 @@
     blk = String.raw`(?:"[^"\n\\]*"|[^${exclude}${orSlash}*`,
     common = `(?:${[
       rxUnescapeLF.source,
-      `"${rxStringDoubleQ.source}"`,
-      `'${rxStringSingleQ.source}'`,
+      `"${rxStringDoubleQ.source}("|\n|$)`, // \n for bad string
+      `'${rxStringSingleQ.source}('|\n|$)`, // \n for bad string
       String.raw`\(${blk}\)|\[${blk}]`,
       String.raw`/\*(?:[^*]+|\*(?!\/))*(?:\*\/|$)`,
     ].join('|')}|`
@@ -284,6 +284,8 @@
       this._amp = 0;
       /** Lookahead buffer size */
       this._max = 4;
+      /** Closing token of the currently processed block */
+      this._pair = 0;
       this._resetBuf();
       define(this, 'grab', {writable: true, value: this.get.bind(this, true)});
     }
@@ -653,6 +655,8 @@
             if (end || c === 59/*;*/) src.readCode(); // consuming ; or } of own block
             break;
           }
+        } else if (c === 125/*}*/ || c === 41/*)*/ || c === 93/*]*/) {
+          break;
         } else if ((c = c === 123 ? 125/*{}*/ : c === 40 ? 41/*()*/ : c === 91 && 93/*[]*/)) {
           stack.push(end);
           end = c;
@@ -1322,6 +1326,8 @@
      * @param {boolean} [inBlock]
      */
     _declarationFailed(stream, err, inBlock) {
+      const c = stream._pair;
+      if (c) { stream._pair = 0; this._expr(stream, c, true); }
       stream.skipDeclBlock(inBlock);
       this.fire(assign({}, err, {
         type: err.type || 'error',
@@ -1467,7 +1473,7 @@
       let ex, child;
       let prevTok;
       if (type) this.fire(assign({type: 'start' + type, brace}, msg), start);
-      for (let tok, ti, fn; (ti = (tok = stream.get(UVAR)).id) !== RBRACE; ex = null) {
+      for (let tok, ti, fn; (ti = (tok = stream.get(UVAR)).id) && ti !== RBRACE; ex = null) {
         if (ti === SEMICOLON || ti === UVAR && (child = 1)) {
           continue;
         }
@@ -1804,6 +1810,7 @@
     '['(stream, start) {
       const t1 = stream.matchSmart(TT.attrStart, OrDie);
       let t2, ns, name, eq, val, mod, end;
+      stream._pair = RBRACKET;
       if (t1.id === PIPE) { // [|
         ns = t1;
       } else if (t1.id === STAR) { // [*
@@ -1841,6 +1848,7 @@
       ];
       start.type = 'attribute';
       start.offset2 = (end || stream.matchSmart(RBRACKET, OrDie)).offset2;
+      stream._pair = 0;
       return start;
     },
 
@@ -1857,6 +1865,7 @@
       tok.type = 'pseudo';
       let expr, n, x;
       if ((n = tok.name)) {
+        stream._pair = RPAREN;
         if (n === 'nth-child' || n === 'nth-last-child') {
           expr = stream.readNthChild();
           const t1 = stream.get();
@@ -1874,6 +1883,7 @@
           expr = this._expr(stream, RPAREN);
         }
         tok = TokenFunc.from(tok, expr, stream.token);
+        stream._pair = 0;
       }
       tok.args = expr && expr.parts || [];
       return tok;
