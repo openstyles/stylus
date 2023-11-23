@@ -1156,7 +1156,7 @@
         selectors.push(tok);
         if ((tok = stream.token).isVar) tok = stream.grab();
         if (!(comma = tok.id === COMMA)) break;
-        tok = relative = undefined;
+        tok = null;
       }
       if (comma) stream._failure();
       if (selectors[0]) return selectors;
