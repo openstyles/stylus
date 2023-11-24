@@ -223,6 +223,12 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
         window !== top ? '#' + Math.random().toString(36).slice(2) : '' // https://crbug.com/1298600
       } */`);
     }
+    // Firefox bug(?) circumvents CSP on AMO via textContent, same as Chrome's intentional behavior
+    if (!nonce && !isExt && !chrome.app && isSecureContext) {
+      code = code.join('');
+      if (code !== el.textContent) el.textContent = code;
+      return;
+    }
     let i, len, n;
     for (i = 0, len = code.length, n = el.firstChild; n; i++, n = n.nextSibling) {
       /* The surplus nodes are cleared to trigger the less frequently observed `characterData` mutations,
