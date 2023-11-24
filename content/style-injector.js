@@ -225,8 +225,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     }
     // Firefox bug(?) circumvents CSP on AMO via textContent, same as Chrome's intentional behavior
     if (!nonce && !isExt && !chrome.app && isSecureContext) {
-      code = code.join('');
-      if (code !== el.textContent) el.textContent = code;
+      el.textContent = code.join('');
       return;
     }
     let i, len, n;
