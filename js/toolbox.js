@@ -69,18 +69,6 @@ const URLS = {
 
   installUsercss: chrome.runtime.getURL('install-usercss.html'),
 
-  emptyTab: [
-    // Chrome and simple forks
-    'chrome://newtab/',
-    // Opera
-    'chrome://startpage/',
-    // Vivaldi
-    'chrome-extension://mpognobbkildjkofajifpdfhcoklimli/components/startpage/startpage.html',
-    // Firefox
-    'about:home',
-    'about:newtab',
-  ],
-
   favicon: host => `https://icons.duckduckgo.com/ip3/${host}.ico`,
 
   // Chrome 61.0.3161+ doesn't run content scripts on NTP https://crrev.com/2978953002/

@@ -12,8 +12,10 @@ const EMPTY_TAB = [
   'chrome://newtab/',
   // Opera
   'chrome://startpage/',
+  'chrome://startpageshared/',
   // Vivaldi
   'chrome-extension://mpognobbkildjkofajifpdfhcoklimli/components/startpage/startpage.html',
+  'chrome://vivaldi-webui/startpage',
   // Firefox
   'about:home',
   'about:newtab',
@@ -121,7 +123,7 @@ async function openURL({
   }
   tab = await getActiveTab() || {url: ''};
   if (tab &&
-      EMPTY_TAB.includes(tab.pendingUrl || tab.url) &&
+      EMPTY_TAB.includes((tab.pendingUrl || tab.url || '').replace('edge://', 'chrome://')) &&
       !(tab.incognito && url.startsWith('chrome'))) {
     return activateTab(tab, {url, openerTabId});
   }
