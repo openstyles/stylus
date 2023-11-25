@@ -21,7 +21,6 @@
   const PAGE_LENGTH = 100;
   // update USO style install counter if the style isn't uninstalled immediately
   const PINGBACK_DELAY = 5e3;
-  const BUSY_DELAY = .5e3;
   const USO_AUTO_PIC_SUFFIX = '-after.png';
   const dom = {};
   /**
@@ -237,6 +236,7 @@
       dom.list.hidden = !results.length;
       await errorIfNoneFound();
       resetUI();
+      if (results.length) doScrollToFirstResult();
     } catch (reason) {
       error(reason);
     }
@@ -572,24 +572,34 @@
   }
 
   async function fetchIndex() {
-    const timer = setTimeout(showSpinner, BUSY_DELAY, dom.list);
+    const elNote = $('#pct').firstChild;
     const jobs = [
       [INDEX_URL, 'uso', json => json.filter(v => v.f === 'uso')],
       [USW_INDEX_URL, 'usw', json => json.data],
-    ].map(j => fetchIndexJob(j).catch(error));
+    ].map(fetchIndexJob);
     indexing = Promise.all(jobs).then(() => {
       indexing = null;
+      elNote.style.opacity = 0;
     });
     await Promise.race(jobs);
-    clearTimeout(timer);
-    $remove(':scope > .lds-spinner', dom.list);
     return index;
   }
 
   async function fetchIndexJob([url, prefix, transform]) {
+    let el = $create({title: url});
+    $('#pct').append(el);
+    chrome.runtime.onConnect.addListener(port => {
+      if (port.name !== url) return;
+      port.onMessage.addListener(([done, total]) => {
+        if (!el) return;
+        el.textContent = total
+          ? (done / total * 100 | 0) + '%'
+          : formatNumber(done) + '...';
+      });
+    });
     for (let triesLeft = 3; triesLeft--;) {
       try {
-        const res = transform(await (await fetch(url)).json());
+        const res = transform(await API.download(url, {responseType: 'json', port: url}));
         for (const v of res) v.i = `${prefix}-${v.i}`;
         if (!index) {
           index = res;
@@ -607,6 +617,7 @@
         await new Promise(cb => setTimeout(cb, 250));
       }
     }
+    el = el.style.opacity = 0;
   }
 
   async function search({retry} = {}) {

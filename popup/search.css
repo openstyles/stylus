@@ -6,6 +6,31 @@
   overflow-y: auto;
   overflow-x: hidden;
 }
+#pct {
+  position: absolute;
+  font-size: var(--h);
+  line-height: var(--h);
+  height: var(--h);
+  margin-top: calc(var(--h) * -1);
+  --h: 8px;
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  color: var(--accent-1);
+}
+#pct > * {
+  transition: opacity .5s;
+}
+#pct > :empty {
+  opacity: 0;
+}
+#pct > :nth-child(n + 2) {
+  margin-left: 1em;
+}
+.search-results-shown #pct {
+  margin-top: 2px;
+}
 
 #search-results {
   background: linear-gradient(
