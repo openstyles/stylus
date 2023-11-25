@@ -214,12 +214,3 @@
   border: none !important;
   box-shadow: 3px 3px 50px rgba(0,0,0,.5) !important;
 }
-
-@keyframes fadein {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}

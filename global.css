@@ -430,6 +430,13 @@ body.resizing-v > * {
   color: var(--fg);
 }
 
+@keyframes fadein {
+  from { opacity: 0; }
+}
+@keyframes fadeout {
+  to { opacity: 0; }
+}
+
 @supports (-moz-appearance: none) {
   button {
     padding-top: 2.5px;

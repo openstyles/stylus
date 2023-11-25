@@ -481,14 +481,6 @@ i,
     background-color: var(--gold1);
   }
 }
-@keyframes fadein {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
 .resize-grip {
   position: absolute;
   display: block;
