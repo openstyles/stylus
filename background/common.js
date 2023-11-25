@@ -167,6 +167,7 @@ async function detectVivaldi() {
   return (isVivaldi = tab && !!(tab.extData || tab.vivExtData));
 }
 
+const downloadRequests = {};
 /* exported download */
 /**
  * @param {String} url
@@ -178,6 +179,7 @@ async function detectVivaldi() {
  * @param {Number} [params.timeout] ms
  * @param {Object} [params.headers] {name: value}
  * @param {string[]} [params.responseHeaders]
+ * @param {string} [params.port] messaging port's name to receive onprogress reports
  * @returns {Promise}
  */
 function download(url, {
@@ -189,7 +191,9 @@ function download(url, {
   loadTimeout = 2 * 60e3, // data transfer timeout (counted from the first remote response)
   headers,
   responseHeaders,
+  port,
 } = {}) {
+  let xhr;
   /* USO can't handle POST requests for style json and XHR/fetch can't handle super long URL
    * so we need to collapse all long variables and expand them in the response */
   const queryPos = url.startsWith(URLS.uso) ? url.indexOf('?') : -1;
@@ -206,8 +210,9 @@ function download(url, {
     }
   }
   const usoVars = [];
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
+  const reqKey = arguments[1] ? JSON.stringify(arguments) : url;
+  const req = downloadRequests[reqKey] || (downloadRequests[reqKey] = new Promise((resolve, reject) => {
+    xhr = new XMLHttpRequest();
     const u = new URL(collapseUsoVars(url), location);
     const onTimeout = () => {
       xhr.abort();
@@ -236,14 +241,27 @@ function download(url, {
       }
     };
     xhr.onerror = () => reject(xhr.status);
-    xhr.onloadend = () => clearTimeout(timer);
+    xhr.onloadend = () => {
+      clearTimeout(timer);
+      delete downloadRequests[reqKey];
+    };
     xhr.responseType = responseType;
     xhr.open(method, u.href);
     for (const [name, value] of Object.entries(headers || {})) {
       xhr.setRequestHeader(name, value);
     }
     xhr.send(body);
-  });
+  }));
+  if (xhr) req.xhr = xhr;
+  if (port) {
+    if (!req.ports) {
+      req.ports = [];
+      req.xhr.onprogress = e => req.ports.forEach(p => p.postMessage([e.loaded, e.total]));
+      req.xhr.addEventListener('loadend', () => req.ports.forEach(p => p.disconnect()));
+    }
+    req.ports.push(chrome.runtime.connect({name: port}));
+  }
+  return req;
 
   function collapseUsoVars(url) {
     if (queryPos < 0 ||
