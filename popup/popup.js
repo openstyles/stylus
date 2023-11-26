@@ -224,7 +224,7 @@ function createWriterElement(frame, index) {
   const root = $('#write-style');
   const parent = $(`[data-frame-id="${parentFrameId}"]`, root) || root;
   const child = $create(`.match${isDupe ? '.dupe' : ''}${isAbout ? '.about-blank' : ''}`, {
-    dataset: {frameId},
+    'data-frame-id': frameId,
   }, $create('.breadcrumbs', crumbs));
   parent.appendChild(child);
   parent.dataset.children = (Number(parent.dataset.children) || 0) + 1;

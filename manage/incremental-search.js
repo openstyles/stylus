@@ -18,7 +18,7 @@
   const input = $create('textarea', {
     id: 'incremental-search',
     spellcheck: false,
-    attributes: {tabindex: -1},
+    tabIndex: -1,
     oninput: incrementalSearch,
   });
   replaceInlineStyle({

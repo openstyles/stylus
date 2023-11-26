@@ -75,7 +75,7 @@ async function InjectionOrder(show, el, selector) {
       }
     });
     DraggableList(ol, {scrollContainer: ol});
-    return $create('section', {dataset: {[type]: ''}}, [
+    return $create('section', {['data-' + type]: ''}, [
       $create('header', t(`styleInjectionOrderHint${type === 'main' ? '' : '_' + type}`)),
       ol,
     ]);

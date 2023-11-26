@@ -94,11 +94,11 @@ function createBeautifyUI(scope, options) {
       ]),
       $create('.buttons', [
         $create('button', {
-          attributes: {role: 'close'},
+          '@role': 'close',
           onclick: helpPopup.close,
         }, t('confirmClose')),
         $create('button', {
-          attributes: {role: 'undo'},
+          '@role': 'undo',
           onclick() {
             let undoable = false;
             for (const cm of scope) {
@@ -135,10 +135,10 @@ function createBeautifyUI(scope, options) {
   function $createOption(label, optionName, indent) {
     const value = options[optionName];
     return (
-      $create('div', {attributes: {newline: value}}, [
-        $create('span', indent ? {attributes: {indent: ''}} : {}, label),
+      $create('div', {'attr:newline': value}, [
+        $create('span', indent ? {'attr:indent': ''} : {}, label),
         $create('div.select-wrapper', [
-          $create('select', {dataset: {option: optionName}}, [
+          $create('select', {'data-option': optionName}, [
             $create('option', {selected: !value}, '\xA0'),
             $create('option', {selected: value}, '\\n'),
           ]),
@@ -154,7 +154,7 @@ function createBeautifyUI(scope, options) {
       $create('label', {style: 'display: block; clear: both;'}, [
         $create('input', {
           type: 'checkbox',
-          dataset: {option: optionName},
+          'data-option': optionName,
           _: textOff && {node: textNode, text, textOff},
           checked,
         }),

@@ -47,17 +47,17 @@ async function configDialog(style) {
     ],
     buttons: [{
       textContent: t('confirmSave'),
-      dataset: {cmd: 'save'},
+      'data-cmd': 'save',
       disabled: true,
       onclick: save,
     }, {
       textContent: t('genericResetLabel'),
       title: t('optionsReset'),
-      dataset: {cmd: 'default'},
+      'data-cmd': 'default',
       onclick: useDefault,
     }, {
       textContent: t('confirmClose'),
-      dataset: {cmd: 'close'},
+      'data-cmd': 'close',
     }],
     onshow,
   }).then(onhide);

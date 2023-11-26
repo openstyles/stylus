@@ -1,4 +1,4 @@
-/* global FIREFOX UA */// toolbox.js
+/* global FIREFOX UA hasOwn */// toolbox.js
 /* global prefs */
 'use strict';
 
@@ -95,21 +95,18 @@ function $$remove(selector, base = document) {
   }
 }
 
-/*
- $create('tag#id.class.class', ?[children])
- $create('tag#id.class.class', ?textContentOrChildNode)
- $create('tag#id.class.class', {properties}, ?[children])
- $create('tag#id.class.class', {properties}, ?textContentOrChildNode)
- tag is 'div' by default, #id and .class are optional
-
- $create([children])
-
- $create({propertiesAndOptions})
- $create({propertiesAndOptions}, ?[children])
- tag:              string, default 'div'
- appendChild:      element/string or an array of elements/strings
- dataset:          object
- any DOM property: assigned as is
+/**
+ * All parameters are omittable e.g. (), (sel), (props, children), (children)
+ * All parts of `selector` are optional, tag is 'div' by default.
+ * `children` is a string (textContent) or Node or array of text/nodes
+ * `properties` is an object with some special keys:
+   tag:         string, default 'div'
+   appendChild: element/string or an array of elements/strings
+   attributes:  {'html-case-name': val, ...} via setAttribute
+   dataset:     {camelCaseName: val, ...} via Object.assign
+   'data-attr-name': val via setAttribute
+   'attr:name':      val via setAttribute without prefix
+   anythingElse:     val via el[key] assignment
  */
 function $create(selector = 'div', properties, children) {
   let tag, opt;
@@ -149,7 +146,9 @@ function $create(selector = 'div', properties, children) {
       element.appendChild(child instanceof Node ? child : document.createTextNode(child));
     }
   }
-  for (const [key, val] of Object.entries(opt)) {
+  for (const key in opt) {
+    if (!hasOwn(opt, key)) continue;
+    const val = opt[key];
     switch (key) {
       case 'dataset':
         Object.assign(element.dataset, val);
@@ -167,7 +166,9 @@ function $create(selector = 'div', properties, children) {
       case 'appendChild':
         break;
       default: {
-        element[key] = val;
+        if (key.startsWith('attr:')) element.setAttribute(key.slice(5), val);
+        else if (key.startsWith('data-')) element.setAttribute(key, val);
+        else element[key] = val;
       }
     }
   }

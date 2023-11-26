@@ -126,7 +126,7 @@ const regexpTester = (() => {
           continue;
         }
         const block = report.appendChild(
-          $create('details', {open: true, dataset: {type}}, [
+          $create('details', {open: true, 'data-type': type}, [
             $create('summary', label),
           ]));
         // 2nd level: regexp text

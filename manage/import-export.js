@@ -266,7 +266,7 @@ async function importFromString(jsonString) {
 
   function renderStats([id, {ids, names, legend, isOptions}]) {
     return names.length &&
-      $create('details', {dataset: {id}, open: isOptions}, [
+      $create('details', {'data-id': id, open: isOptions}, [
         $create('summary',
           $create('b', (isOptions ? '' : names.length + ' ') + t(legend))),
         $create('small',
@@ -287,7 +287,7 @@ async function importFromString(jsonString) {
 
   /** @this stats.<item>.ids */
   function listItemsWithId(name, i) {
-    return $create('div', {dataset: {id: this[i]}}, name);
+    return $create('div', {'data-id': this[i]}, name);
   }
 
   async function importOptions() {

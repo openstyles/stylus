@@ -345,17 +345,17 @@ linterMan.DEFAULTS = {
     function createTr() {
       let anno;
       const severityIcon = $create('div');
-      const severity = $create('td', {attributes: {role: 'severity'}}, severityIcon);
-      const line = $create('td', {attributes: {role: 'line'}});
-      const col = $create('td', {attributes: {role: 'col'}});
-      const message = $create('td', {attributes: {role: 'message'}});
+      const severity = $create('td', {'attr:role': 'severity'}, severityIcon);
+      const line = $create('td', {'attr:role': 'line'});
+      const col = $create('td', {'attr:role': 'col'});
+      const message = $create('td', {'attr:role': 'message'});
 
       const trElement = $create('tr', {
         onclick: () => gotoLintIssue(cm, anno),
       }, [
         severity,
         line,
-        $create('td', {attributes: {role: 'sep'}}, ':'),
+        $create('td', {'attr:role': 'sep'}, ':'),
         col,
         message,
       ]);
