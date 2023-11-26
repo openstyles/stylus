@@ -33,6 +33,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
   let isEnabled = true;
   let isTransitionPatched = chrome.app && CSS.supports('accent-color', 'red'); // Chrome 93
   let exposeStyleName;
+  let ffCsp; // circumventing CSP via a non-empty textContent, https://bugzil.la/1706787
   let nonce = '';
   // will store the original method refs because the page can override them
   let creationDoc, createElement, createElementNS;
@@ -191,16 +192,18 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
       if (iOld >= 0) ass[iOld].mediaText += '-old';
       return el;
     }
-    if (!creationDoc) initCreationDoc();
+    if (!creationDoc && (el = initCreationDoc(style))) {
+      return el;
+    }
     if (root instanceof SVGSVGElement) {
       // SVG document style
-      el = createElementNS.call(creationDoc, 'http://www.w3.org/2000/svg', 'style');
+      el = createElementNS('http://www.w3.org/2000/svg', 'style');
     } else if (document instanceof XMLDocument) {
       // XML document style
-      el = createElementNS.call(creationDoc, 'http://www.w3.org/1999/xhtml', 'style');
+      el = createElementNS('http://www.w3.org/1999/xhtml', 'style');
     } else {
       // HTML document style; also works on HTML-embedded SVG
-      el = createElement.call(creationDoc, 'style');
+      el = createElement('style');
     }
     if (id) {
       el.id = `${PREFIX}${id}`;
@@ -223,8 +226,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
         window !== top ? '#' + Math.random().toString(36).slice(2) : '' // https://crbug.com/1298600
       } */`);
     }
-    // Firefox bug(?) circumvents CSP on AMO via textContent, same as Chrome's intentional behavior
-    if (!nonce && !isExt && !chrome.app && isSecureContext) {
+    if (ffCsp) {
       el.textContent = code.join('');
       return;
     }
@@ -266,17 +268,27 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
   and since userAgent.navigator can be spoofed via about:config or devtools,
   we're checking for getPreventDefault that was removed in FF59
   */
-  function initCreationDoc() {
-    creationDoc = !Event.prototype.getPreventDefault && document.wrappedJSObject;
-    if (creationDoc) {
-      ({createElement, createElementNS} = creationDoc);
-      const el = addElement(createStyle({code: ['']}));
-      const isApplied = el.sheet;
-      removeElement(el);
-      if (isApplied) return;
+  function initCreationDoc(style) {
+    creationDoc = Event.prototype.getPreventDefault ? document : wrappedDoc;
+    for (let retry = 0, el, ok; !ok && retry < 2; retry++) {
+      createElement = creationDoc.createElement.bind(creationDoc);
+      createElementNS = creationDoc.createElementNS.bind(creationDoc);
+      if (chrome.app) return;
+      if (!retry || ffCsp) {
+        try {
+          el = addElement(createStyle({code: ['a:not(a){}']}));
+          ok = el.sheet;
+          removeElement(el);
+          if (ok) return;
+        } catch (err) {}
+      }
+      if (retry && ffCsp) { // ffCsp bug got fixed
+        console.debug('Stylus switched to document.adoptedStyleSheets due to a strict CSP of the page');
+        ass = wrappedAss;
+        return createStyle(style);
+      }
+      creationDoc = document;
     }
-    creationDoc = document;
-    ({createElement, createElementNS} = creationDoc);
   }
 
   function remove(id) {
@@ -342,6 +354,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
   function updateConfig(cfg) {
     exposeStyleName = cfg.name;
     nonce = cfg.nonce || nonce;
+    ffCsp = !nonce && !isExt && !chrome.app && isSecureContext;
     if (!ass !== !cfg.ass) {
       toggleObservers();
       addRemoveElements();
