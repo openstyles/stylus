@@ -336,6 +336,7 @@ button.icon > i {
   max-width: 100%;
   padding-left: 4px;
   padding-right: 14px;
+  background: none;
 }
 
 .filter-selection .select-wrapper::after {
