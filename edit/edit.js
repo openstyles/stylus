@@ -41,13 +41,6 @@ editor.styleReady.then(async () => {
     editor.jumpToEditor([...$('#toc').children].indexOf(e.target));
   $('#lint-help').onclick = () =>
     require(['/edit/linter-dialogs'], () => linterMan.showLintHelp());
-  $('#style-settings-btn').onclick = function () {
-    this.disabled = true;
-    require([
-      '/edit/settings.css',
-      '/edit/settings', /* global StyleSettings */
-    ], () => StyleSettings(this));
-  };
 
   require([
     '/edit/autocomplete',

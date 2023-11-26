@@ -1,28 +1,15 @@
-#help-popup[data-type="settings"].dirty > .contents > .settings[data-style] > .title::after {
+.settings.dirty > summary > ::after {
   content: ' *';
 }
-#help-popup[data-type="settings"] > .contents > .settings > .title {
-  margin: 0 calc(-1 * var(--pad-x) - 1px) var(--pad-y);
-}
-#help-popup[data-type="settings"] > .contents {
-  overflow-x: visible;
-}
-.settings {
-  padding: 0 1px; /* for focus outline */
-  border: 0;
-  margin: 0 0 var(--pad-y);
-  max-width: 100%;
-  box-sizing: border-box;
-}
-.settings > * {
+.settings > main > * {
   display: block;
   margin: 1rem 0;
   padding: 0;
 }
-.settings > :first-child {
+.settings > main > :first-child {
   margin-top: 0;
 }
-.settings > :last-child {
+.settings > main > :last-child {
   margin-bottom: 0;
 }
 .settings input:disabled ~ label {
@@ -44,30 +31,30 @@
   display: inline-flex;
   padding: 0 .8em 0 0;
 }
-a[data-cmd=note] {
+.settings a[data-cmd=note] {
   vertical-align: text-bottom;
 }
 
 /* editor settings */
-.settings[data-editor] > :not(.aligned) > * {
+.settings > main > section:not(.aligned) > * {
   display: flex;
   align-items: center;
   margin: 0;
   padding: .15em 0;
 }
-.settings[data-editor] .aligned > * {
+.settings > main > section.aligned > * {
   display: table-row;
 }
-.settings[data-editor] .aligned > * > :not(.icon) {
+.settings > main > section.aligned > * > :not(.icon) {
   display: table-cell;
   margin-top: 0.1rem;
   min-height: 1.4rem;
 }
-.settings[data-editor] .aligned label {
+.settings > main > section.aligned label {
   padding: .1rem .25rem 0 0;
   vertical-align: middle;
 }
-.settings[data-editor] .aligned [type="number"] {
+.settings > main > section.aligned input[type="number"] {
   width: 3.5em;
   text-align: left;
   padding-left: .25em;

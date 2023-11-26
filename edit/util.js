@@ -12,19 +12,18 @@ const helpPopup = {
   /**
    * @param {string|true} title - plain text or `true` to use `body` instead of .title and .contents
    * @param {string|Node} body - Node, html or plain text
-   * @param {Node} [props] - DOM props for the popup element
+   * @param {HTMLElement|?} [props] - DOM props for the popup element
    * @returns {Element & {onClose: Set<function>}} the popup
    */
-  show(title = '', body, props) {
+  show(title = '', body, props = {}) {
+    const {'data-id': id = props['data-id'] = title} = props;
     const div = $create(helpPopup.SEL, props,
       $create('i.i-close', {onclick: helpPopup.close}));
-    if (title === true) {
-      div.append(body);
-    } else {
-      div.append(
-        div._title = $create('.title', title),
-        div._contents = $create('.contents', body && t.HTML(body)));
-    }
+    const old = id && $(`#help-popup[data-id="${CSS.escape(id)}"] > .i-close`);
+    if (old) old.click();
+    div.append(
+      div._title = $create('.title', title),
+      div._contents = $create('.contents', body && t.HTML(body)));
     document.body.append(div);
     div.onClose = new Set();
     window.on('keydown', helpPopup.close, true);

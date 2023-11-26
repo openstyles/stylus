@@ -1,4 +1,4 @@
-/* global $ $create moveFocus setupLivePrefs */// dom.js
+/* global $ $create setupLivePrefs */// dom.js
 /* global API */// msg.js
 /* global CodeMirror */
 /* global CODEMIRROR_THEMES */
@@ -10,15 +10,33 @@
 /* global debounce tryURL */// toolbox.js
 'use strict';
 
-/* exported StyleSettings */
-async function StyleSettings(btnOpen) {
+// TODO: allow the user to customize which options are always shown
+// TODO: decide which options are shown by default
+// TODO: show all opts in a helpPopup or a dockable/movable panel
+
+for (const [id, init, tpl] of [
+  ['#options', EditorSettings, 'editorSettings'],
+  ['#styleOpts', StyleSettings, 'styleSettings'],
+]) {
+  const el = $(id, t.template.body);
+  const {pref} = el.dataset;
+  const onOpen = (key, val) => {
+    if (pref ? val : el.open) {
+      if (pref) prefs.unsubscribe(key, onOpen);
+      else val.disconnect();
+      el.append($create('main', t.template[tpl]));
+      init(el);
+      setupLivePrefs(el);
+    }
+  };
+  if (pref) prefs.subscribe(pref, onOpen, true);
+  else new MutationObserver(onOpen).observe(el, {attributes: true, attributeFilter: ['open']});
+}
+
+function StyleSettings(ui) {
   const AUTOSAVE_DELAY = 500; // same as config-dialog.js
-  const SS_ID = 'styleSettings';
   const PASS = val => val;
-  await t.fetchTemplate('/edit/settings.html', SS_ID);
-  let ui = t.template[SS_ID].cloneNode(true);
   const {style} = editor;
-  const elForm = $('.settings', ui);
   const elAuto = $('#config\\.autosave', ui);
   const elSave = $('#ss-save', ui);
   const elUpd = $('#ss-updatable', ui);
@@ -40,18 +58,8 @@ async function StyleSettings(btnOpen) {
   prefs.subscribe('schemeSwitcher.enabled', (_, val) => {
     $('#ss-scheme-off', ui).hidden = val !== 'never';
   }, true);
-  window.on(SS_ID, update);
-  ui = helpPopup.show(true, ui);
-  ui.dataset.type = 'settings';
-  ui.onClose.add(() => {
-    btnOpen.disabled = false;
-    window.off(SS_ID, update);
-  });
+  window.on('styleSettings', update);
   elSave.onclick = save;
-  $('#ss-close', ui).onclick = helpPopup.close;
-  EditorSettings(ui); // must precede setupLivePrefs
-  setupLivePrefs(ui);
-  moveFocus(ui, 0);
 
   function autosave(el, setter) {
     pendingSetters.set(el, setter);
@@ -69,7 +77,7 @@ async function StyleSettings(btnOpen) {
         el.rows = val.match(/^/gm).length + !val.endsWith('\n');
         requestAnimationFrame(() => {
           textWidths[type] = (el.scrollWidth | 0x7F) + 2;
-          elForm.style.width = Math.max(...Object.values(textWidths)) + 'px';
+          ui.style.width = Math.max(...Object.values(textWidths)) + 'px';
         });
       },
     });
@@ -186,7 +194,7 @@ function EditorSettings(ui) {
     const bounds = this.getBoundingClientRect();
     const input = createHotkeyInput('editor.colorpicker.hotkey', {onDone: helpPopup.close});
     const popup = helpPopup.show(t('helpKeyMapHotkey'), input);
-    popup.style.top = bounds.bottom + 'px';
+    popup.style = `top: ${bounds.bottom}px; left: ${bounds.left}px; right: auto;`;
     $('input', popup).focus();
   };
   $('#keyMap-help', ui).onclick = () => {

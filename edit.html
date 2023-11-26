@@ -225,6 +225,125 @@
     <link href="js/color/color-picker.css" rel="stylesheet">
     <link href="edit/codemirror-default.css" rel="stylesheet">
 
+  <template data-id="editorSettings">
+    <section>
+      <label id="lineWrapping-label" i18n="+cm_lineWrapping">
+        <input id="editor.lineWrapping" type="checkbox">
+      </label>
+      <label id="smartIndent-label" i18n="+cm_smartIndent">
+        <input id="editor.smartIndent" type="checkbox">
+      </label>
+      <label id="indentWithTabs-label" i18n="+cm_indentWithTabs">
+        <input id="editor.indentWithTabs" type="checkbox">
+      </label>
+      <label i18n="+cm_autoCloseBrackets, title:cm_autoCloseBracketsTooltip">
+        <input id="editor.autoCloseBrackets" type="checkbox">
+      </label>
+      <label i18n="+cm_autocompleteOnTyping">
+        <input id="editor.autocompleteOnTyping" type="checkbox">
+      </label>
+      <label i18n="+cm_selectByTokens, title:cm_selectByTokensTooltip">
+        <input id="editor.selectByTokens" type="checkbox">
+      </label>
+      <label i18n="+cm_arrowKeysTraverse" class="sectioned-only">
+        <input id="editor.arrowKeysTraverse" type="checkbox">
+      </label>
+      <div>
+        <label i18n="+cm_colorpicker">
+          <input id="editor.colorpicker" type="checkbox">
+        </label>
+        <a id="colorpicker-settings" class=icon i18n="title:shortcutsNote" tabindex="0">
+          <i class=i-config></i>
+        </a>
+      </div>
+      <label i18n="+appliesLineWidgetLabel, title:appliesLineWidgetWarning" class="usercss-only">
+        <input id="editor.appliesToLineWidget" type="checkbox">
+      </label>
+    </section>
+    <section class="aligned">
+      <div>
+        <label id="tabSize-label" for="editor.tabSize" i18n="cm_tabSize"></label>
+        <input id="editor.tabSize" type="number" min="0">
+      </div>
+      <div>
+        <label id="keyMap-label" for="editor.keyMap" i18n="cm_keyMap"></label>
+        <div class="select-wrapper">
+          <select id="editor.keyMap"></select>
+        </div>
+        <a id="keyMap-help" class=icon tabindex="0">
+          <i class=i-info></i>
+        </a>
+      </div>
+      <div>
+        <label id="theme-label" for="editor.theme" i18n="cm_theme"></label>
+        <div class="select-wrapper">
+          <select id="editor.theme"></select>
+        </div>
+      </div>
+      <div>
+        <label id="highlight-label" for="editor.matchHighlight" i18n="cm_matchHighlight"></label>
+        <div class="select-wrapper">
+          <select id="editor.matchHighlight">
+            <option i18n="cm_matchHighlightToken" value="token">
+            <option i18n="cm_matchHighlightSelection" value="selection">
+            <option i18n="genericDisabledLabel" value="">
+          </select>
+        </div>
+      </div>
+      <div>
+        <label id="linter-label" for="editor.linter" i18n="cm_linter"></label>
+        <div class="select-wrapper">
+          <select id="editor.linter">
+            <option value="csslint" selected>CSSLint</option>
+            <option value="stylelint">Stylelint</option>
+            <option value="" i18n="genericDisabledLabel"></option>
+          </select>
+        </div>
+        <a id="linter-settings" class=icon i18n="title:linterConfigTooltip" tabindex="0">
+          <i class=i-config></i>
+        </a>
+      </div>
+    </section>
+  </template>
+
+  <template data-id="styleSettings">
+    <div>
+      <span class="rel">
+        <input id="ss-updatable" type="checkbox">
+        <label i18n="installUpdateFromLabel" for="ss-updatable"></label>
+      </span>
+      <input id="ss-update-url" type="url" class="w100" i18n="placeholder:styleUpdateUrlLabel">
+    </div>
+    <div id="ss-scheme">
+      <div i18n="preferScheme">
+        <div><small id="ss-scheme-off" i18n="preferSchemeAlways" hidden></small></div>
+      </div>
+      <label i18n="+preferSchemeNone" class="radio-wrapper">
+        <input name="ss-scheme" type="radio" value="none">
+      </label>
+      <label i18n="+preferSchemeDark" class="radio-wrapper">
+        <input name="ss-scheme" type="radio" value="dark">
+      </label>
+      <label i18n="+preferSchemeLight" class="radio-wrapper">
+        <input name="ss-scheme" type="radio" value="light">
+      </label>
+    </div>
+    <label i18n="styleIncludeLabel">
+      <textarea id="ss-inclusions" spellcheck="false" class="w100"
+                placeholder="*://site1.com/*&#10;*://site2.com/*"></textarea>
+    </label>
+    <label i18n="styleExcludeLabel">
+      <textarea id="ss-exclusions" spellcheck="false" class="w100"
+                placeholder="*://site1.com/*&#10;*://site2.com/*"></textarea>
+    </label>
+    <div class="buttons">
+      <button id="ss-save" i18n="confirmSave" disabled></button>
+      &nbsp;
+      <label i18n="+configOnChange, title:configOnChangeTooltip">
+        <input id="config.autosave" type="checkbox">
+      </label>
+    </div>
+  </template>
   <template data-id="body"> <!-- https://crbug.com/1288447 -->
     <div id="header">
       <h1 id="heading" i18n="data-edit:editStyleHeading, data-add:addStyleTitle">
@@ -248,7 +367,7 @@
                  data-hotkey-tooltip="toggleStyle">
             <input type="checkbox" id="enabled">
           </label>
-          <label id="preview-label" class="hide-if-sticky"
+          <label class="hide-if-sticky hide-if-new"
                  i18n="+previewLabel, title:previewTooltip">
             <input type="checkbox" id="editor.livePreview">
           </label>
@@ -266,7 +385,6 @@
             ><button class="split-btn-pedal usercss-only" i18n="menu-tpl:saveAsTemplate"></button>
           </div>
           <button id="beautify" i18n="styleBeautify"></button>
-          <button id="style-settings-btn" i18n="settings"></button>
           <button id="cancel-button" i18n="title:styleCancelEditLabel">↩</button>
         </div>
         <div id="mozilla-format-buttons" class="buttons sectioned-only hide-if-sticky">
@@ -279,7 +397,15 @@
         </div>
       </section>
       <div id="details-wrapper">
-        <details id="publish" data-pref="editor.publish.expanded" class="ignore-pref-if-compact">
+        <details id="options" class="settings ignore-pref-if-compact"
+                 data-pref="editor.options.expanded">
+          <summary><h2 i18n="editorSettings"></h2></summary>
+        </details>
+        <details id="styleOpts" class="settings">
+          <summary><h2 i18n="styleSettings"></h2></summary>
+        </details>
+        <details id="publish" data-pref="editor.publish.expanded"
+                 class="ignore-pref-if-compact hide-if-new">
           <summary><h2 i18n="publish"></h2></summary>
           <div>
             <a id="usw-url" href="https://userstyles.world" target="_blank">&nbsp;</a>
@@ -321,6 +447,8 @@
   </template>
 
   <link href="edit/edit.css" rel="stylesheet">
+  <link href="edit/settings.css" rel="stylesheet">
+  <script src="edit/settings.js"></script>
   <script src="js/themer.js"></script> <!-- must be last in HEAD to avoid FOUC -->
 </head>
 

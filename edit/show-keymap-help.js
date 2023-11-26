@@ -8,7 +8,8 @@
 
 /* exported showKeymapHelp */
 function showKeymapHelp() {
-  const keyMap = mergeKeyMaps({}, prefs.get('editor.keyMap'), CodeMirror.defaults.extraKeys);
+  const PREF = 'editor.keyMap';
+  const keyMap = mergeKeyMaps({}, prefs.get(PREF), CodeMirror.defaults.extraKeys);
   const keyMapSorted = Object.keys(keyMap)
     .map(key => ({key, cmd: keyMap[key]}))
     .sort((a, b) => (a.cmd < b.cmd || (a.cmd === b.cmd && a.key < b.key) ? -1 : 1));
@@ -24,7 +25,7 @@ function showKeymapHelp() {
     tBody.appendChild(row.cloneNode(true));
   }
 
-  helpPopup.show(t('cm_keyMap') + ': ' + prefs.get('editor.keyMap'), table);
+  helpPopup.show(t('cm_keyMap') + ': ' + prefs.get(PREF), table, {'data-id': PREF});
 
   const inputs = $$('input', table);
   inputs[0].on('keydown', hotkeyHandler);

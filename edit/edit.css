@@ -26,9 +26,7 @@ body {
   opacity: 1;
 }
 
-html.is-new-style #preview-label,
-html.is-new-style #style-settings-btn,
-html.is-new-style #publish,
+.is-new-style .hide-if-new,
 .hidden {
   display: none !important;
 }
@@ -205,7 +203,7 @@ i,
   margin-top: -.1em;
 }
 #header details > :not(summary) {
-  margin: 0 0 0 var(--pad);
+  margin: 0 var(--pad05) 0 var(--pad);
   padding: calc(var(--pad)/4) 0;
 }
 #details-wrapper {
@@ -1060,12 +1058,22 @@ i,
   #details-wrapper details[open] > summary + * {
     position: absolute;
     overflow: hidden auto;
-    max-height: var(--max-height, 10vh);
+    max-height: var(--max-height, 25vh);
     max-width: calc(100vw - 2 * var(--pad));
     background: var(--bg);
     box-shadow: 0 6px 20px rgba(0, 0, 0, .3);
     padding: var(--pad);
     margin-top: var(--pad05);
+  }
+  #options > main {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  #options > main > :first-child {
+    margin: 0 1em 0 0;
+  }
+  #options > main > :nth-child(n + 2) {
+    margin: 0;
   }
   @media (max-height: 500px) {
     #details-wrapper {
