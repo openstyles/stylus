@@ -1,0 +1,80 @@
+#help-popup.regexp-report {
+  max-width: 50vw;
+}
+.regexp-report h3 {
+  margin-top: 0;
+  margin-left: calc(-1 * var(--pad));
+}
+.regexp-report h3::after {
+  content: " (" attr(data-num) ")";
+}
+.regexp-report h4 {
+  cursor: default;
+  counter-increment: rx;
+  margin: var(--pad) 0 var(--pad05) calc(-1 * var(--pad05));
+}
+.regexp-report details > a::before,
+.regexp-report h4::before {
+  content: counter(rx) ". ";
+}
+.regexp-report mark {
+  background-color: rgba(255, 255, 0, .5);
+}
+.regexp-report summary {
+  margin-left: calc(-2ch - var(--pad));
+}
+.regexp-report details {
+  word-break: break-all;
+  overflow-wrap: break-word;
+  margin-bottom: var(--pad);
+  padding-left: var(--pad);
+  counter-reset: rx;
+}
+.regexp-report details[data-type="full"] {
+  color: var(--accent-1);
+}
+.regexp-report details[data-type="partial"] {
+  color: var(--c65);
+}
+.regexp-report details[data-type="invalid"] {
+  color: var(--red1);
+}
+.regexp-report details h3 {
+  display: inline-block;
+  margin: 0 0 var(--pad05) 0;
+}
+.regexp-report details > a {
+  counter-increment: rx;
+}
+.regexp-report article {
+  padding-left: var(--pad05);
+}
+.regexp-report a {
+  color: inherit;
+  cursor: default;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: block;
+}
+.regexp-report h4:hover,
+.regexp-report a:hover {
+  text-decoration: underline;
+}
+.regexp-report a img {
+  width: 16px;
+  height: 16px;
+  margin-right: .25em;
+  object-fit: contain;
+  vertical-align: text-bottom;
+}
+.regexp-report-note {
+  color: var(--c60);
+  min-width: fit-content;
+  width: 0;
+  hyphens: auto;
+}
+.regexp-report-note code {
+  white-space: nowrap;
+  font-weight: bold;
+}

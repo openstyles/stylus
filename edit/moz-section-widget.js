@@ -54,11 +54,8 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
 
     $('[value=""]', TPL.listItem).remove();
     Object.assign($(C_TYPE, TPL.listItem), hint);
-    $(C_VALUE, TPL.listItem).after(
-      $create('button.test-regexp', t('genericTest')));
 
     CLICK_ROUTE = {
-      '.test-regexp': showRegExpTester,
       /**
        * @param {HTMLElement} elItem
        * @param {MarkedFunc} func
@@ -101,15 +98,17 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
         if (!part) return;
         const func = getFuncFor(el);
         const pos = func[part].find();
-        if (part === 'type' && el.value !== func.typeText) {
-          func.typeText = func.item[KEY].dataset.type = el.value;
+        const {value} = el;
+        if (part === 'type' && value !== func.typeText) {
+          func.typeText = func.item[KEY].dataset.type = value;
+          editor.toggleRegexp(func.value[KEY], value);
         }
         if (part === 'value' && func === getFuncsFor(el)[0]) {
           const sec = getSectionFor(el);
-          sec.tocEntry.target = el.value;
+          sec.tocEntry.target = value;
           if (!sec.tocEntry.label) editor.updateToc([sec]);
         }
-        cm.replaceRange(toDoubleslash(el.value), pos.from, pos.to, finder.IGNORE_ORIGIN);
+        cm.replaceRange(toDoubleslash(value), pos.from, pos.to, finder.IGNORE_ORIGIN);
       },
       onclick(event) {
         const {target} = event;
@@ -362,15 +361,18 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
       end = {line, ch: valueEnd.ch + Boolean(isQuoted) + 1},
     } = func;
     const el = (old.item || {})[KEY] || TPL.listItem.cloneNode(true);
+    const elVal = $(C_VALUE, el);
     /** @namespace MarkedFunc */
     const res = el[KEY] = {
       typeText: type,
       item: markFuncPart(start, end, old.item, el),
       type: markFuncPart(start, typeEnd, old.type, $(C_TYPE, el), type, toLowerCase),
-      value: markFuncPart(valuePos, valueEnd, old.value, $(C_VALUE, el), value, fromDoubleslash),
+      value: markFuncPart(valuePos, valueEnd, old.value, elVal, value, fromDoubleslash),
     };
     if (el.dataset.type !== type) {
       el.dataset.type = type;
+      elVal.focus = focusRegexp;
+      editor.toggleRegexp(elVal, type);
     }
     return res;
   }
@@ -421,17 +423,15 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
 
   /** @type {MarkedFunc} f */
   function killFunc(f) {
+    editor.toggleRegexp(f.value[KEY]);
     f.item.clear();
     f.type.clear();
     f.value.clear();
   }
 
-  async function showRegExpTester(el) {
-    /* global regexpTester */
-    await require(['/edit/regexp-tester']);
-    const reFuncs = getFuncsFor(el).filter(f => f.typeText === 'regexp');
-    regexpTester.toggle(true);
-    regexpTester.update(reFuncs.map(f => fromDoubleslash(f.value[KEY].value)));
+  function focusRegexp() {
+    if (!this.isConnected) cm.jumpToPos(getSectionFor(this).start);
+    Object.getPrototypeOf(this).focus.apply(this, arguments);
   }
 
   function fromDoubleslash(s) {

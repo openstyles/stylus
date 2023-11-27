@@ -1,6 +1,7 @@
 /* global API */// msg.js
 /* global $create */// dom.js
 /* global URLS tryRegExp */// toolbox.js
+/* global editor */
 /* global helpPopup */// util.js
 /* global t */// localization.js
 'use strict';
@@ -8,10 +9,23 @@
 const regexpTester = (() => {
   const OWN_ICON = chrome.runtime.getManifest().icons['16'];
   const cachedRegexps = new Map();
-  let currentRegexps = [];
+  const inputs = editor.regexps;
+  const observe = (el, on) => el[on ? 'on' : 'off']('input', regexpTester.update);
   let isWatching = false;
   let popup;
   let note;
+
+  ['add', 'delete'].forEach((key, i) => {
+    const fn = inputs[key];
+    inputs[key] = el => {
+      const res = fn.call(inputs, el);
+      if (isWatching) {
+        observe(el, !i);
+        regexpTester.update();
+      }
+      return res;
+    };
+  });
 
   return {
 
@@ -21,26 +35,29 @@ const regexpTester = (() => {
           isWatching = true;
           chrome.tabs.onRemoved.addListener(onTabRemoved);
           chrome.tabs.onUpdated.addListener(onTabUpdated);
+          for (const el of inputs) observe(el, true);
         }
-        popup = helpPopup.show(t('styleRegexpTestTitle'), ' ');
+        popup = helpPopup.show(t('styleRegexpTestTitle'), ' ', {className: 'regexp-report'});
         popup.onClose.add(() => regexpTester.toggle(false));
+        regexpTester.update();
       } else if (!state && popup) {
         unwatch();
-        helpPopup.close();
+        popup._close.click();
         popup = null;
       }
     },
 
-    async update(newRegexps) {
+    async update() {
       if (!popup) {
         unwatch();
         return;
       }
-      if (newRegexps) {
-        currentRegexps = newRegexps;
-      }
-      const regexps = currentRegexps.map(text => {
-        const rxData = Object.assign({text}, cachedRegexps.get(text));
+      const regexps = new Map();
+      const ael = document.activeElement;
+      for (const el of inputs) {
+        const text = el.value;
+        const old = regexps.get(text);
+        const rxData = old || Object.assign({text}, cachedRegexps.get(text));
         if (!rxData.urls) {
           cachedRegexps.set(text, Object.assign(rxData, {
             // imitate buggy Stylish-for-chrome
@@ -48,13 +65,14 @@ const regexpTester = (() => {
             urls: new Map(),
           }));
         }
-        return rxData;
-      });
+        if (!old || el === ael) rxData.el = el;
+        if (!old) regexps.set(text, rxData);
+      }
       const getMatchInfo = m => m && {text: m[0], pos: m.index};
       const tabs = await browser.tabs.query({});
       const supported = tabs.map(tab => tab.pendingUrl || tab.url).filter(URLS.supported);
       const unique = [...new Set(supported).values()];
-      for (const rxData of regexps) {
+      for (const rxData of regexps.values()) {
         const {rx, urls} = rxData;
         if (rx) {
           const urlsNow = new Map();
@@ -79,13 +97,13 @@ const regexpTester = (() => {
         invalid: {data: [], label: t('styleRegexpTestInvalid')},
       };
       // collect stats
-      for (const {text, rx, urls} of regexps) {
+      for (const {el, text, rx, urls} of regexps.values()) {
         if (!rx) {
-          stats.invalid.data.push({text});
+          stats.invalid.data.push({el, text});
           continue;
         }
         if (!urls.size) {
-          stats.none.data.push({text});
+          stats.none.data.push({el, text});
           continue;
         }
         const full = [];
@@ -110,38 +128,38 @@ const regexpTester = (() => {
           }
         }
         if (full.length) {
-          stats.full.data.push({text, urls: full});
+          stats.full.data.push({el, text, urls: full});
         }
         if (partial.length) {
-          stats.partial.data.push({text, urls: partial});
+          stats.partial.data.push({el, text, urls: partial});
         }
       }
       // render stats
-      const report = $create('.regexp-report');
-      const br = $create('br');
+      const report = $create('div');
       for (const type in stats) {
         // top level groups: full, partial, none, invalid
         const {label, data} = stats[type];
         if (!data.length) {
           continue;
         }
+        const h3 = $create('h3', {'data-num': data.length}, label);
         const block = report.appendChild(
-          $create('details', {open: true, 'data-type': type}, [
-            $create('summary', label),
-          ]));
+          $create('details', {
+            'data-type': type,
+            'open': !report.firstChild,
+          }, $create('summary', h3)));
         // 2nd level: regexp text
-        for (const {text, urls} of data) {
+        for (const {el, text, urls} of data) {
           if (urls) {
             // type is partial or full
             block.appendChild(
-              $create('details', {open: true}, [
-                $create('summary', text),
-                $create('div', urls),
+              $create('article', [
+                $create('h4', {_source: el}, text),
+                ...urls,
               ]));
           } else {
             // type is none or invalid
-            block.appendChild(document.createTextNode(text));
-            block.appendChild(br.cloneNode());
+            block.appendChild($create('a', {tabIndex: 0, _source: el}, text));
           }
         }
       }
@@ -158,11 +176,13 @@ const regexpTester = (() => {
   };
 
   function onClick(event) {
-    const a = event.target.closest('a, button');
-    if (a) {
+    let el = event.target;
+    if (el._source) {
+      el._source.focus();
+    } else if ((el = el.closest('a'))) {
       event.preventDefault();
       API.openURL({
-        url: a.href || a.textContent,
+        url: el.href || el.textContent,
         currentWindow: null,
       });
     }
@@ -182,6 +202,7 @@ const regexpTester = (() => {
     if (isWatching) {
       chrome.tabs.onRemoved.removeListener(onTabRemoved);
       chrome.tabs.onUpdated.removeListener(onTabUpdated);
+      for (const el of inputs) observe(el, false);
       isWatching = false;
     }
   }

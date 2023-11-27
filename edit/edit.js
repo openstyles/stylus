@@ -14,9 +14,8 @@
 
 //#region init
 
-document.body.appendChild(t.template.body);
+document.body.appendChild(EditorMethods(t.template.body));
 
-EditorMethods();
 editor.styleReady.then(async () => {
   EditorHeader();
   dispatchEvent(new Event('domReady'));
@@ -179,11 +178,18 @@ window.on('beforeunload', e => {
 //#endregion
 //#region editor methods
 
-function EditorMethods() {
+function EditorMethods(body) {
   const toc = [];
-  const {dirty} = editor;
+  const {dirty, regexps} = editor;
+  const elTest = $('#testRE', body);
   let {style} = editor;
   let wasDirty = false;
+
+  elTest.hidden = !style.sections.some(({regexps: r}) => r && r.length);
+  elTest.onclick = () => require([
+    '/edit/regexp-tester.css',
+    '/edit/regexp-tester', /* global regexpTester */
+  ], () => regexpTester.toggle(true));
 
   Object.defineProperties(editor, {
     scrollInfo: {
@@ -226,6 +232,15 @@ function EditorMethods() {
       if (dirty.isDirty()) {
         editor.saving = true;
         await editor.saveImpl();
+      }
+    },
+
+    toggleRegexp(el, type) {
+      let show, hide;
+      if (type === 'regexp'
+          ? regexps.add(el).size === 1 && (show = true)
+          : regexps.delete(el) && (hide = !regexps.size)) {
+        elTest.hidden = hide || !show;
       }
     },
 
@@ -308,6 +323,8 @@ function EditorMethods() {
       editor.updateMeta();
     },
   });
+
+  return body;
 }
 
 //#endregion

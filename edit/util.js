@@ -17,11 +17,11 @@ const helpPopup = {
    */
   show(title = '', body, props = {}) {
     const {'data-id': id = props['data-id'] = title} = props;
-    const div = $create(helpPopup.SEL, props,
-      $create('i.i-close', {onclick: helpPopup.close}));
+    const div = $create(helpPopup.SEL, props);
     const old = id && $(`#help-popup[data-id="${CSS.escape(id)}"] > .i-close`);
     if (old) old.click();
     div.append(
+      div._close = $create('i.i-close', {onclick: helpPopup.close}),
       div._title = $create('.title', title),
       div._contents = $create('.contents', body && t.HTML(body)));
     document.body.append(div);

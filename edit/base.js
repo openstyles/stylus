@@ -20,6 +20,8 @@ const editor = {
   isUsercss: false,
   isWindowed: false,
   livePreview: LivePreview(),
+  /** @type {Set<HTMLInputElement>} */
+  regexps: new Set(),
   /** @type {'customName'|'name'} */
   nameTarget: 'name',
   previewDelay: 200, // Chrome devtools uses 200

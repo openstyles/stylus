@@ -54,14 +54,12 @@ class EditorSection {
     this.targetsEl.on('change', this);
     this.targetsEl.on('input', this);
     this.targetsEl.on('click', this);
-    $('.test-regexp', el).on('click', this);
     cm.on('changes', EditorSection.onCmChanges);
     MozDocMapper.forEachProp(sectionData, (t, v) => this.addTarget(t, v));
     if (!this.targets.length) this.addTarget();
     editor.applyScrollInfo(cm, si);
     initBeautifyButton($('.beautify-section', el), [cm]);
     prefs.subscribe('editor.toc.expanded', this.updateTocPrefToggled.bind(this), true);
-    this.updateRegexpTester();
     new ResizeGrip(cm); // eslint-disable-line no-use-before-define
   }
 
@@ -105,18 +103,6 @@ class EditorSection {
 
   off(fn) {
     this.changeListeners.delete(fn);
-  }
-
-  async updateRegexpTester(toggle) {
-    const isLoaded = typeof regexpTester === 'object' ||
-      toggle && await require(['/edit/regexp-tester']); /* global regexpTester */
-    if (toggle != null) {
-      regexpTester.toggle(toggle);
-    }
-    const regexps = this.targets.filter(t => t.type === 'regexp').map(t => t.value);
-    const hasRe = regexps.length > 0;
-    if (hasRe && isLoaded) regexpTester.update(regexps);
-    this.el.classList.toggle('has-regexp', hasRe);
   }
 
   /**
@@ -197,9 +183,7 @@ class EditorSection {
     const trg = /** @type {SectionTarget} */ trgEl && trgEl.me;
     switch (evt.type) {
       case 'click':
-        if (cls.contains('test-regexp')) {
-          this.updateRegexpTester(true);
-        } else if (cls.contains('add-applies-to')) {
+        if (cls.contains('add-applies-to')) {
           $('input', this.addTarget(trg.type, '', trg).el).focus();
         } else if (cls.contains('remove-applies-to')) {
           this.removeTarget(trg);
@@ -289,6 +273,7 @@ class SectionTarget {
     this.dirt = `section.${section.id}.apply.${this.id}`;
     this.selectEl = $('.applies-type', this.el);
     this.valueEl = $('.applies-value', this.el);
+    editor.toggleRegexp(this.valueEl, type);
     this.type = this.selectEl.value = type;
     this.value = this.valueEl.value = value;
     this.restore();
@@ -297,6 +282,7 @@ class SectionTarget {
 
   remove() {
     if (!this.type) return;
+    editor.toggleRegexp(this.valueEl);
     editor.dirty.remove(`${this.dirt}.type`, this.type);
     editor.dirty.remove(`${this.dirt}.value`, this.value);
   }
@@ -322,23 +308,19 @@ class SectionTarget {
   }
 
   onSelectChange() {
-    const oldType = this.type;
-    editor.dirty.modify(`${this.dirt}.type`, this.type, this.selectEl.value);
-    this.type = this.selectEl.value;
-    if (oldType === 'regexp' || this.type === 'regexp') {
-      this.section.updateRegexpTester();
-    }
+    const val = this.selectEl.value;
+    editor.dirty.modify(`${this.dirt}.type`, this.type, val);
+    editor.toggleRegexp(this.valueEl, val);
+    this.type = val;
     this.section.emitChange('apply');
     this.validate();
     this.toggleAll();
   }
 
   onValueChange() {
-    editor.dirty.modify(`${this.dirt}.value`, this.value, this.valueEl.value);
-    this.value = this.valueEl.value;
-    if (this.type === 'regexp') {
-      this.section.updateRegexpTester();
-    }
+    const val = this.valueEl.value;
+    editor.dirty.modify(`${this.dirt}.value`, this.value, val);
+    this.value = val;
     this.section.emitChange('apply');
   }
 }
