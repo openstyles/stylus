@@ -181,6 +181,7 @@ i,
   margin-left: .25em;
   cursor: pointer;
   white-space: nowrap;
+  overflow: hidden;
 }
 #header summary h2 {
   display: inline-block;
@@ -1001,6 +1002,9 @@ i,
   }
   #options > main > :nth-child(n + 2) {
     margin: 0;
+  }
+  #header .settings h2 {
+    max-width: 7vw;
   }
   @media (max-height: 500px) {
     #details-wrapper {

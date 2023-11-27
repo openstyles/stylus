@@ -77,7 +77,7 @@
       }
       xo.disconnect();
     });
-    for (const el of document.getElementsByTagName('button')) {
+    for (const el of $$('button, h2')) {
       if (!el.title || el.titleIsForEllipsis) xo.observe(el);
     }
   }
