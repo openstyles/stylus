@@ -94,11 +94,11 @@ function createBeautifyUI(scope, options) {
       ]),
       $create('.buttons', [
         $create('button', {
-          '@role': 'close',
+          'attr:role': 'close',
           onclick: helpPopup.close,
         }, t('confirmClose')),
         $create('button', {
-          '@role': 'undo',
+          'attr:role': 'undo',
           onclick() {
             let undoable = false;
             for (const cm of scope) {
