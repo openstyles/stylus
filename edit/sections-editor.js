@@ -173,9 +173,8 @@ function SectionsEditor() {
     }
   }
 
-  function fitToAvailableSpace(entries, observer) {
-    observer.disconnect();
-    const lastSectionBottom = (/** @type {IntersectionObserverEntry}*/entries[0]).boundingClientRect.bottom;
+  function fitToAvailableSpace() {
+    const lastSectionBottom = container.getBoundingClientRect().bottom;
     const delta = Math.floor((window.innerHeight - lastSectionBottom) / sections.length);
     if (delta > 1) {
       sections.forEach(({cm}) => {
@@ -530,7 +529,7 @@ function SectionsEditor() {
       if (iSec === focusOn) setTimeout(editor.jumpToEditor, 0, iSec);
     }
     if (!si || si.cms.every(cm => !cm.height)) {
-      new IntersectionObserver(fitToAvailableSpace).observe(container);
+      requestAnimationFrame(fitToAvailableSpace); // avoids FOUC, unlike IntersectionObserver
     }
     container.style.removeProperty('height');
     setGlobalProgress();
