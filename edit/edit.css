@@ -2,7 +2,7 @@
   --pad: 1rem; /* Edge padding for modals/blocks/whatnot. TODO: reuse it in more places */
   --pad05: calc(0.5 * var(--pad));
   --popup-button-width: 16px;
-  --target-gapY: calc(.375 * var(--pad));
+  --target-gapY: calc(.25 * var(--pad));
 }
 
 body {
@@ -415,7 +415,7 @@ i,
   display: none;
 }
 .section .CodeMirror {
-  margin-bottom: .5em;
+  margin-bottom: var(--target-gapY);
   box-sizing: border-box;
   min-height: 20px;
   background-color: var(--bg);
@@ -518,7 +518,7 @@ i,
   background-color: #f002;
   border-color: #f008;
 }
-.applies-to label {
+.applies-to > label {
   font-size: 0;
   padding: 0;
   line-height: var(--input-height);
@@ -542,6 +542,7 @@ i,
   flex-wrap: wrap;
   list-style-type: none;
   align-items: center;
+  padding: 1px 0; /* room for focus outline */
 }
 .applies-to,
 .applies-to li:nth-last-child(n + 2) {
@@ -934,14 +935,11 @@ i,
 /************ line widget *************/
 .CodeMirror-linewidget .applies-to {
   margin: 0 0 .25em;
-  padding: var(--pad05) calc(.25rem + var(--cm-bar-width, 0)) var(--pad05) .75rem;
+  padding: var(--target-gapY) calc(.25rem + var(--cm-bar-width, 0)) var(--target-gapY) .75rem;
   font-family: var(--family);
 }
 .CodeMirror-linewidget li:nth-last-child(n + 2) {
-  margin-bottom: calc(var(--pad05) * .5);
-}
-.CodeMirror-linewidget .applies-to li[data-type="regexp"] .test-regexp {
-  display: inline;
+  margin-bottom: var(--target-gapY);
 }
 .CodeMirror-linewidget li.applies-to-everything {
   margin-left: 0.2rem;

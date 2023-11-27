@@ -46,6 +46,7 @@
 }
 .CodeMirror-activeline .applies-to ul {
   z-index: 2;
+  padding: 1px 0; /* to make outer gap same as inter-item gap */
 }
 .CodeMirror-foldgutter-open::after,
 .CodeMirror-foldgutter-folded::after {
