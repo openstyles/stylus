@@ -48,8 +48,8 @@ const uswApi = (() => {
     API.data.set('usw' + id, uswData);
     const token = await tokenMan.getToken('userstylesworld', true, new TokenHooks(id));
     const info = await uswFetch('style', token);
-    const data = style._usw = Object.assign({token}, info);
-    style.url = style.url || data.homepage || `${URLS.usw}style/${data.id}`;
+    const data = style._usw = {token, id: info.id};
+    style.url = style.url || info.homepage || `${URLS.usw}style/${data.id}`;
     await uswSave(style);
     return data;
   }

@@ -21,11 +21,11 @@
   });
   $.root.appendChild(btn);
   $.rootCL.add('popup-window');
-  window.on('domReady', () => {
+  t.body(() => {
     document.body.appendChild(btn);
     // Adding a dummy command to show in keymap help popup
     CodeMirror.defaults.extraKeys[POPUP_HOTKEY] = 'openStylusPopup';
-  }, {once: true});
+  });
 
   prefs.subscribe('iconset', (_, val) => {
     const prefix = `images/icon/${val ? 'light/' : ''}`;

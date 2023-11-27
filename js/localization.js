@@ -18,6 +18,7 @@ function t(key, params, strict = true) {
 
 Object.assign(t, {
   cache: {},
+  onBody: [],
   template: new Proxy({}, {
     get: (obj, k, _) => obj[k] ||
       (_ = $(`template[data-id="${k}"]`)) && (obj[k] = t.createTemplate(_)),
@@ -77,6 +78,18 @@ Object.assign(t, {
         }
       }
       node.removeAttribute('i18n');
+    }
+  },
+
+  body(fn) {
+    if (!fn) {
+      document.body.appendChild(t.template.body);
+      for (const fn of t.onBody) fn();
+      t.onBody = null;
+    } else if (t.onBody) {
+      t.onBody.push(fn);
+    } else {
+      fn();
     }
   },
 

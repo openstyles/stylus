@@ -14,11 +14,11 @@
 
 //#region init
 
-document.body.appendChild(EditorMethods(t.template.body));
+t.body();
+EditorMethods();
 
 editor.styleReady.then(async () => {
   EditorHeader();
-  dispatchEvent(new Event('domReady'));
   await (editor.isUsercss ? SourceEditor : SectionsEditor)();
 
   editor.dirty.onChange(editor.updateDirty);
@@ -178,10 +178,10 @@ window.on('beforeunload', e => {
 //#endregion
 //#region editor methods
 
-function EditorMethods(body) {
+function EditorMethods() {
   const toc = [];
   const {dirty, regexps} = editor;
-  const elTest = $('#testRE', body);
+  const elTest = $('#testRE');
   let {style} = editor;
   let wasDirty = false;
 
@@ -325,8 +325,6 @@ function EditorMethods(body) {
       editor.updateMeta();
     },
   });
-
-  return body;
 }
 
 //#endregion

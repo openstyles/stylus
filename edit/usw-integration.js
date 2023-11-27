@@ -5,11 +5,10 @@
 /* global t */// localization.js
 'use strict';
 
-(() => {
-  //#region Main
-
+t.body(() => {
   const ERROR_TITLE = 'UserStyles.world ' + t('genericError');
   const PROGRESS = '#usw-progress';
+  let spinner;
   let spinnerTimer = 0;
   let prevCode = '';
 
@@ -21,11 +20,9 @@
     }
   });
 
-  window.on('domReady', () => {
-    updateUI();
-    $('#usw-publish-style').onclick = disableWhileActive(publishStyle);
-    $('#usw-disconnect').onclick = disableWhileActive(disconnect);
-  }, {once: true});
+  updateUI();
+  $('#usw-publish-style').onclick = disableWhileActive(publishStyle);
+  $('#usw-disconnect').onclick = disableWhileActive(disconnect);
 
   async function publishStyle() {
     const {id} = editor.style;
@@ -54,19 +51,11 @@
 
   function updateUI(style = editor.style) {
     const usw = style._usw || {};
-    const section = $('#publish');
-    toggleDataset(section, 'connected', usw.token);
-    for (const type of ['name', 'description']) {
-      const el = $(`dd[data-usw="${type}"]`, section);
-      el.textContent = el.title = usw[type] || '';
-    }
     const elUrl = $('#usw-url');
+    toggleDataset($('#publish'), 'connected', usw.token);
     elUrl.href = `${URLS.usw}${usw.id ? `style/${usw.id}` : ''}`;
     elUrl.textContent = t('publishUsw').replace(/<(.+)>/, `$1${usw.id ? `#${usw.id}` : ''}`);
   }
-
-  //#endregion
-  //#region Utility
 
   function disableWhileActive(fn) {
     /** @this {Element} */
@@ -82,15 +71,14 @@
   function timerOn() {
     if (!spinnerTimer) {
       $(PROGRESS).textContent = '';
-      spinnerTimer = setTimeout(showSpinner, 250, PROGRESS);
+      spinnerTimer = setTimeout(async () => (spinner = await showSpinner(PROGRESS)), 250);
     }
   }
 
   function timerOff() {
-    $remove(`${PROGRESS} .lds-spinner`);
+    $remove(spinner);
     clearTimeout(spinnerTimer);
     spinnerTimer = 0;
+    spinner = null;
   }
-
-  //#endregion
-})();
+});

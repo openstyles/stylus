@@ -129,19 +129,6 @@ declare interface UsercssVarSelect extends UsercssVarBase {
 }
 
 declare interface USWorldData {
-  created_at: number;
-  description: string;
-  display_name: string;
-  homepage: string;
   id: number;
-  license: string;
-  mirror_url: string;
-  name: string;
-  notes: string;
-  original: string;
-  preview_url: string;
   token: string;
-  updated_at: number;
-  user_id: number;
-  username: string;
 }

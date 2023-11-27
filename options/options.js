@@ -12,7 +12,7 @@
 */// toolbox.js
 'use strict';
 
-document.body.appendChild(t.template.body);
+t.body();
 setupLivePrefs();
 $$('input[min], input[max]').forEach(enforceInputRange);
 for (const el of $$('[show-if]')) {

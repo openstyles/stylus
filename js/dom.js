@@ -356,7 +356,7 @@ function setupLivePrefs(ids) {
 async function showSpinner(parent) {
   await require(['/spinner.css']);
   parent = parent instanceof Node ? parent : $(parent);
-  parent.appendChild($create('.lds-spinner',
+  return parent.appendChild($create('.lds-spinner',
     new Array(12).fill($create('div')).map(e => e.cloneNode())));
 }
 

@@ -10,7 +10,7 @@
 /* global $ $$ $create animateElement setupLivePrefs */// dom.js
 'use strict';
 
-document.body.appendChild(t.template.body);
+t.body();
 
 const installed = $('#installed');
 

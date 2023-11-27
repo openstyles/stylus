@@ -241,7 +241,6 @@ i,
 #publish[data-connected] h2 {
   color: hsl(180, 100%, 20%);
 }
-#publish:not([data-connected]) #usw-link-info,
 #publish:not([data-connected]) #usw-disconnect {
   display: none;
 }
@@ -250,28 +249,6 @@ i,
 }
 #publish:not([data-connected]) #usw-publish-style::after {
   content: attr(data-publish);
-}
-#usw-link-info dl {
-  margin: 0;
-  display: flex;
-}
-#usw-link-info dt {
-  flex-shrink: 0;
-}
-#usw-link-info dt::after {
-  content: ":"
-}
-#usw-link-info dt,
-#usw-link-info dd {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-#usw-link-info dd {
-  margin-left: .5em;
-}
-#usw-link-info dd[data-usw="name"] {
-  font-weight: bold;
 }
 #usw-progress {
   position: relative;
