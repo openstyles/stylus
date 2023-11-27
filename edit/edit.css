@@ -572,6 +572,13 @@ i,
   flex-grow: 1;
   padding-left: 0.2rem;
 }
+.applies-to li .applies-value:invalid {
+  background: var(--bg);
+  color: var(--fg);
+  border-color: var(--red1);
+  --focus-color1: var(--red1);
+  --focus-color2: transparent;
+}
 .applies-to img {
   vertical-align: bottom;
 }

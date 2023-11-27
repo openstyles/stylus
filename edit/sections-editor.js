@@ -115,13 +115,14 @@ function SectionsEditor() {
     },
 
     async saveImpl() {
-      let newStyle = getModel();
-      if (!validate(newStyle)) {
-        return;
+      try {
+        if (!$('#name').reportValidity()) throw t('styleMissingName');
+        const res = await API.styles.editSave(getModel());
+        dirty.clear(); // cleaning only after saving has succeeded
+        editor.useSavedStyle(res);
+      } catch (err) {
+        messageBoxProxy.alert(err.message || err);
       }
-      newStyle = await API.styles.editSave(newStyle);
-      dirty.clear();
-      editor.useSavedStyle(newStyle);
     },
 
     scrollToEditor(cm, partial) {
@@ -472,25 +473,6 @@ function SectionsEditor() {
     return Object.assign({}, style, {
       sections: sections.filter(s => !s.removed).map(s => s.getModel()),
     });
-  }
-
-  function validate() {
-    if (!$('#name').reportValidity()) {
-      messageBoxProxy.alert(t('styleMissingName'));
-      return false;
-    }
-    for (const section of sections) {
-      for (const target of section.targets) {
-        if (target.type !== 'regexp') {
-          continue;
-        }
-        if (!target.valueEl.reportValidity()) {
-          messageBoxProxy.alert(t('styleBadRegexp'));
-          return false;
-        }
-      }
-    }
-    return true;
   }
 
   function updateMeta() {

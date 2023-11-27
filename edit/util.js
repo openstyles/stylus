@@ -214,3 +214,23 @@ function trimCommentLabel(str, limit = 1000) {
   // stripping /*** foo ***/ to foo
   return clipString(str.replace(/^[!-/:;=\s]*|[-#$&(+,./:;<=>\s*]*$/g, ''), limit);
 }
+
+function failRegexp(r) {
+  try {
+    new RegExp(r);
+    r = '';
+  } catch (err) {
+    r = err.message.split(r)[1].replace(/^\W+/, '');
+  }
+  return r;
+}
+
+/* exported validateRegexp */
+function validateRegexp({target: el}) {
+  let err = failRegexp(el.value);
+  if (err) err = t('styleBadRegexp') + '\n' + err;
+  if (el.title !== err) {
+    el.title = err;
+    el.setCustomValidity(err);
+  }
+}

@@ -2,7 +2,7 @@
 /* global MozDocMapper trimCommentLabel */// util.js
 /* global CodeMirror */
 /* global cmFactory */
-/* global debounce tryRegExp */// toolbox.js
+/* global debounce */// toolbox.js
 /* global editor */
 /* global initBeautifyButton */// beautify.js
 /* global linterMan */
@@ -191,7 +191,6 @@ class EditorSection {
         break;
       case 'change':
         if (el === trg.selectEl) trg.onSelectChange();
-        else if (el === trg.valueEl) trg.validate();
         break;
       case 'input':
         if (el === trg.valueEl) trg.onValueChange();
@@ -291,16 +290,6 @@ class SectionTarget {
     if (!this.type) return;
     editor.dirty.add(`${this.dirt}.type`, this.type);
     editor.dirty.add(`${this.dirt}.value`, this.value);
-  }
-
-  validate() {
-    const el = this.valueEl;
-    if (this.type !== 'regexp' || tryRegExp(this.value)) {
-      el.setCustomValidity('');
-    } else {
-      el.setCustomValidity(t('styleBadRegexp'));
-      setTimeout(() => el.reportValidity());
-    }
   }
 
   toggleAll() {

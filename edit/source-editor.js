@@ -1,7 +1,7 @@
 /* global $ $$remove $create $isTextInput messageBoxProxy */// dom.js
 /* global API */// msg.js
 /* global CodeMirror */
-/* global MozDocMapper */// util.js
+/* global MozDocMapper failRegexp */// util.js
 /* global MozSectionFinder */
 /* global MozSectionWidget */
 /* global RX_META debounce */// toolbox.js
@@ -98,6 +98,9 @@ async function SourceEditor() {
           res = await API.usercss.editSave({customName, enabled, id, sourceCode});
           // Awaiting inside `try` so that exceptions go to our `catch`
           await replaceStyle(res.style);
+          if ((res.badRe = getBadRegexps(res.style))) {
+            messageBoxProxy.alert(res.badRe, 'danger pre', t('styleBadRegexp'));
+          }
         }
         showLog(res);
       } catch (err) {
@@ -305,6 +308,21 @@ async function SourceEditor() {
       deltaMode === 2 || shiftKey ? Math.sign(deltaY) * cm.display.scroller.clientHeight :
       // WheelEvent.DOM_DELTA_PIXEL
       deltaY;
+  }
+
+  function getBadRegexps(style) {
+    const res = [];
+    let i = 0;
+    for (const {regexps} of style.sections) {
+      i++;
+      if (regexps) {
+        for (const r of regexps) {
+          const err = failRegexp(r);
+          if (err) res.push(`${t('sectionCode')} ${i}: ${err} ${r}`);
+        }
+      }
+    }
+    return res.join('\n\n');
   }
 
   function getModeName() {

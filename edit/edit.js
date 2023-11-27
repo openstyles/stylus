@@ -3,8 +3,8 @@
 /* global CodeMirror */
 /* global SectionsEditor */
 /* global SourceEditor */
-/* global clipString */// util.js
-/* global closeCurrentTab deepEqual mapObj sessionStore tryJSONparse */// toolbox.js
+/* global validateRegexp */// util.js
+/* global clipString closeCurrentTab deepEqual mapObj sessionStore tryJSONparse */// toolbox.js
 /* global cmFactory */
 /* global editor EditorHeader */// base.js
 /* global linterMan */
@@ -236,11 +236,13 @@ function EditorMethods(body) {
     },
 
     toggleRegexp(el, type) {
-      let show, hide;
-      if (type === 'regexp'
-          ? regexps.add(el).size === 1 && (show = true)
-          : regexps.delete(el) && (hide = !regexps.size)) {
-        elTest.hidden = hide || !show;
+      if (type === 'regexp') {
+        el.on('input', validateRegexp);
+        if (regexps.add(el).size === 1) elTest.hidden = false;
+      } else {
+        el.setCustomValidity('');
+        el.off('input', validateRegexp);
+        if (regexps.delete(el) && !regexps.size) elTest.hidden = true;
       }
     },
 
