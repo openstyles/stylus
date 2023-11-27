@@ -848,9 +848,6 @@ i,
   padding: var(--target-gapY) calc(.25rem + var(--cm-bar-width, 0)) var(--target-gapY) .75rem;
   font-family: var(--family);
 }
-.CodeMirror-linewidget li:nth-last-child(n + 2) {
-  margin-bottom: var(--target-gapY);
-}
 .CodeMirror-linewidget li.applies-to-everything {
   margin-left: 0.2rem;
 }
