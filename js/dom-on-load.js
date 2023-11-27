@@ -1,4 +1,4 @@
-/* global $$ $ $create focusA11y getEventKeyName moveFocus */// dom.js
+/* global $$ $ $create focusA11y getEventKeyName moveFocus waitForSelector */// dom.js
 /* global CHROME clamp debounce */// toolbox.js
 /* global msg */
 /* global prefs */
@@ -36,6 +36,7 @@
   }
   const elOff = $('#disableAll-label'); // won't hide if already shown
   if (elOff) prefs.subscribe('disableAll', () => (elOff.dataset.persist = ''));
+  waitForSelector('#header').then(() => require(['/js/header-resizer']));
 
   function changeFocusedInputOnWheel(event) {
     const el = document.activeElement;

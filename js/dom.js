@@ -451,9 +451,6 @@ prefs.ready.then(() => {
 });
 
 (() => {
-  const lazyScripts = [
-    '/js/dom-on-load',
-  ];
   const cls = (!UA.windows ? 'non-windows ' : '') +
     (FIREFOX ? 'firefox' : UA.opera ? 'opera' : UA.vivaldi ? 'vivaldi' : '');
   if (cls) $.root.className += ' ' + cls;
@@ -476,9 +473,8 @@ prefs.ready.then(() => {
       },
     });
     prefs.ready.then(() => dom.setHWProp(prefs.get(HWprefId)));
-    lazyScripts.push('/js/header-resizer');
   }
-  window.on('load', () => require(lazyScripts), {once: true});
+  window.on('load', () => require(['/js/dom-on-load']), {once: true});
 })();
 
 //#endregion
