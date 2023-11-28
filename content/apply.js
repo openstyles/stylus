@@ -156,9 +156,9 @@
         break;
 
       case 'urlChanged':
-        if ((own.sections || !own.cfg.off) && req.iid === instanceId && matchUrl !== req.url) {
+        if (req.iid === instanceId && matchUrl !== req.url) {
           matchUrl = req.url;
-          applyStyles();
+          if (own.sections) applyStyles(own.cfg.off && {});
         }
         break;
 
