@@ -124,6 +124,7 @@
    * @typedef {true[]} TokenMap - index is a token id
    */
   TT.nestSel = [...TT.selectorStart, ...TT.combinator];
+  TT.nestSelBlock = [...TT.nestSel, LBRACE];
   for (const k in TT) {
     TT[k] = TT[k].reduce((res, id) => {
       if (UVAR_PROXY[id]) res.isUvp = 1;
@@ -131,7 +132,6 @@
       return res;
     }, []);
   }
-  delete TT.nestSel[IDENT];
 
   //#endregion
   //#region Syntax units
@@ -441,7 +441,7 @@
         if (b === 45/* -- */) {
           if (isIdentChar(c || (c = src.peek(2)), b)) {
             text = this._ident(src, tok, a, b, 1, c, 1);
-            tok.type = 'custom-prop';
+            tok.type = '--';
           } else if (c === 62/* --> */) {
             src.read(2, '->');
             tok.id = Tokens.CDCO;
@@ -1220,7 +1220,9 @@
      * @return {TokenSelector|void}
      */
     _simpleSelectorSequence(stream, start = stream.grab()) {
-      let si = start.id; if (!isOwn(TT.selectorStart, si)) return;
+      let si = start.id;
+      // --var:foo {...} allowed only as a declaration
+      if (start.type === '--' || !isOwn(TT.selectorStart, si)) return;
       let ns, tag, t2;
       let tok = start;
       const mods = [];
@@ -1278,32 +1280,45 @@
      * @return {boolean|void}
      */
     _declaration(stream, tok, {colon, inParens, scope} = {}) {
-      if (inParens && tok.id !== IDENT) return;
-      if (tok.isVar) return true;
       const opts = this.options;
+      const isCust = tok.type === '--';
       const hack = tok.hack
         ? (tok = stream.match(IDENT), tok.col--, tok.offset--, '*')
-        : tok.code === 95/*_*/ && opts.underscoreHack && '_';
+        : tok.code === 95/*_*/ && opts.underscoreHack && tok.id === IDENT && '_';
+      const t2mark = !colon && stream.source.mark();
+      const t2raw = colon || stream.get();
+      const t2WS = t2raw.id === WS;
+      const t2 = colon
+        || (t2WS || t2raw.isVar && (stream.unget(), 1)) && stream.grab(true)
+        || t2raw;
+      let ti3;
       if (hack) {
         tok.hack = hack;
         PDESC.value = tok.text.slice(1); define(tok, 'text', PDESC);
         PDESC.value = toStringPropHack; define(tok, 'toString', PDESC);
       }
-      if (!colon && !stream.match(COLON)) {
-        if (inParens || !this._inStyle) {
-          stream._failure('":"', stream.get());
-        } else {
-          stream._failure('prop:value or a selector that is not a tag');
-        }
+      if (t2.id !== COLON || (ti3 = stream.get().id) === COLON) {
+        while (stream.token !== tok) stream.unget();
+        if (!inParens && (ti3 || isOwn(TT.nestSelBlock, t2.id))) return;
+        if (tok.isVar) return true;
+        if (inParens || isCust) stream._failure('":"', t2raw);
+        return;
       }
-      const isCust = tok.type === 'custom-prop';
+      if (ti3) stream.unget();
       const end = isCust ? TT.propCustomEnd : inParens ? TT.propValEndParen : TT.propValEnd;
-      const value = this._expr(stream, end, isCust) ||
-        isCust && TokenValue.empty(stream.token) ||
-        stream._failure('');
-      const invalid = !isCust && !opts.noValidation &&
+      const expr = this._expr(stream, end, isCust, !isOwn(TT.nestSelBlock, ti3));
+      const t = stream.token;
+      const value = expr || isCust && TokenValue.empty(t);
+      if (!inParens && t.id === LBRACE) {
+        // TODO: if not as rare as alleged, make a flat array in _expr() and reuse it
+        stream.source.reset(t2mark);
+        stream._resetBuf();
+        return;
+      }
+      if (!value) stream._failure('');
+      const invalid = !isCust && !tok.isVar && !opts.noValidation &&
         validateProperty(tok, value, stream, scope);
-      const important = stream.token.id === DELIM &&
+      const important = t.id === DELIM &&
         stream.matchSmart(IDENT, {must: 1, text: B.important});
       const ti = stream.matchSmart(inParens ? RPAREN : TT.declEnd, {must: 1, reuse: !important}).id;
       this.fire({
@@ -1340,15 +1355,17 @@
      * @param {TokenStream} stream
      * @param {TokenMap|number} end - will be consumed!
      * @param {boolean} [dumb] - <any-value> mode, no additional checks
+     * @param {boolean} [blocks] - consume {} blocks anywhere, not just at start
      * @return {TokenValue|void}
      */
-    _expr(stream, end, dumb) {
+    _expr(stream, end, dumb, blocks) {
       const parts = [];
       const isEndMap = typeof end === 'object';
       let /** @type {Token} */ tok, ti, isVar, endParen;
       while ((ti = (tok = stream.get(UVAR)).id) && !(isEndMap ? end[ti] : end === ti)) {
         if ((endParen = Parens[ti])) {
-          tok.expr = this._expr(stream, endParen, dumb || ti === LBRACE);
+          if (!dumb && !blocks && ti === LBRACE && parts.length) break;
+          tok.expr = this._expr(stream, endParen, dumb, blocks || ti === LBRACE);
           if (stream.token.id !== endParen) stream._failure(endParen);
           tok.offset2 = stream.token.offset2;
           tok.type = 'block';
@@ -1496,7 +1513,7 @@
           } else if (inStyle && (ti === IDENT || ti === star && tok.hack)
               && this._declaration(stream, tok, declOpts)) {
             child = 1;
-          } else if (!scoped && (!inStyle || isOwn(TT.nestSel, ti))) {
+          } else if (!scoped && tok.type !== '--' && (!inStyle || isOwn(TT.nestSel, ti))) {
             child = this._styleRule(stream, tok, opts);
           } else {
             ex = stream._failure('', tok, false);
@@ -1506,8 +1523,9 @@
         }
         if (ex) {
           if (this.options.strict || !(ex instanceof SyntaxError)) break;
-          if (inStyle) { this._declarationFailed(stream, ex); ex = null; }
+          this._declarationFailed(stream, ex);
           if (!ti) break;
+          ex = null;
         }
       }
       this._stack.pop();

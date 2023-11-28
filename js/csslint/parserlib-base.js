@@ -1046,7 +1046,7 @@
     '<ascii4>': p => p.id === STRING && p.length === 4 && !/[^\x20-\x7E]/.test(p.text),
     '<attr>': p => p.isAttr,
     '<custom-ident>': p => p.id === IDENT && !buGlobalKeywords.has(p),
-    '<custom-prop>': p => p.type === 'custom-prop',
+    '<custom-prop>': p => p.type === '--',
     '<flex>': p => p.isCalc || p.units === 'fr' && p.number >= 0,
     '<func>': p => p.type === 'fn',
     '<hue>': p => p.isCalc || p.id === NUMBER || p.id === ANGLE,

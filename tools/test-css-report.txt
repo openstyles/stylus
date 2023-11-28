@@ -42,13 +42,11 @@ warning	118	5	!important.
 warning	118	5	Non-alphabetical order: "filter".
 warning	118	20	Expected <number-percentage>? but found "foo0".
 warning	119	13	Expected none | [ blur() | brightness() | contrast() | drop-shadow() | grayscale() | hue-rotate() | invert() | opacity() | saturate() | sepia() | <url> ]+ | <ie-function> but found "foo(1)".
-error	123	9	Expected prop:value or a selector that is not a tag but found "body".
 warning	134	20	Unknown pseudo :--state1
 warning	134	29	Must use -moz- prefix in :loading
 warning	136	7	Non-alphabetical order: "background-position-x".
 warning	137	32	Expected end of value but found "<".
 error	155	7	Unexpected ""TEST PASSED: parser recovery"".
-error	167	9	Expected prop:value or a selector that is not a tag but found "a".
 error	175	24	Expected "]" but found ""TEST PASSED: parser recovery"".
 warning	180	5	Non-alphabetical order: "--foo".
 error	191	5	Unexpected "&".
@@ -63,16 +61,15 @@ warning	273	5	Duplicate "color".
 warning	445	12	Expected <named-or-hex-color> | color-mix() | color() | hsl() | hwb() | lab() | lch() | rgb() | hsla() | rgba() | oklab() | oklch() but found "chucknorris".
 warning	446	12	Expected <named-or-hex-color> | color-mix() | color() | hsl() | hwb() | lab() | lch() | rgb() | hsla() | rgba() | oklab() | oklch() but found "blak".
 warning	483	11	Id in selector.
-warning	527	3	Empty rule.
-error	528	5	Expected prop:value or a selector that is not a tag but found "div".
 error	530	3	Nested selector must be inside a style rule.
-error	531	7	Expected FUNCTION, IDENT but found " ".
-error	532	10	Expected "{" but found ";".
-error	534	1	Expected "{" but found "}".
-warning	538	19	Non-alphabetical order: "margin".
-warning	543	33	Expected [ [ <url> | radial-gradient() | linear-gradient() | conic-gradient() | gradient() | repeating-radial-gradient() | repeating-linear-gradient() | repeating-conic-gradient() | repeating-gradient() | -webkit-cross-fade() | <string> ] [ <resolution> || type( <string> ) ] ]# but found ""foo.png" foo".
-warning	548	32	Expected [ [ root | nearest | self ] || [ block | inline | vertical | horizontal ] ]? but found "root2 block".
-error	568	15	Expected "{" but found "too".
-error	569	18	Expected "(" but found "{".
-error	570	8	Expected "{" but found "to".
-error	571	30	Unexpected ")".
+error	531	3	Unexpected "--foo".
+error	532	7	Expected FUNCTION, IDENT but found " ".
+error	533	10	Expected "{" but found ";".
+error	535	1	Expected "{" but found "}".
+warning	539	19	Non-alphabetical order: "margin".
+warning	544	33	Expected [ [ <url> | radial-gradient() | linear-gradient() | conic-gradient() | gradient() | repeating-radial-gradient() | repeating-linear-gradient() | repeating-conic-gradient() | repeating-gradient() | -webkit-cross-fade() | <string> ] [ <resolution> || type( <string> ) ] ]# but found ""foo.png" foo".
+warning	549	32	Expected [ [ root | nearest | self ] || [ block | inline | vertical | horizontal ] ]? but found "root2 block".
+error	569	15	Expected "{" but found "too".
+error	570	18	Expected "(" but found "{".
+error	571	8	Expected "{" but found "to".
+error	572	30	Unexpected ")".

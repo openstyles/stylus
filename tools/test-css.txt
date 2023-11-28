@@ -510,7 +510,10 @@ heading"] {
     & > .bar { color: red; }
     > .baz { color: green; }
     &bar { color: red; }
-  }
+   a {
+     div { color: red; }
+   }
+ }
   @layer base {
     html {
       block-size: 100%;
@@ -524,10 +527,8 @@ heading"] {
 }
 
 @-moz-document domain( BAD-examples.of.nesting ) {
-  .foo {
-    div { color: red; }
-  }
   &.misplaced { padding: 2ch; }
+  --foo: {};
   foo: bar;
   foo:bar;;
   foo:bar
