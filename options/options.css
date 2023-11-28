@@ -151,7 +151,6 @@ input[type="color"]::-webkit-color-swatch {
 }
 input[type=time] {
   margin: 0 .5em;
-  max-width: 7em; /* TODO: remove when strict_min_version >= 57 */
 }
 .slider {
   margin-left: 0;
