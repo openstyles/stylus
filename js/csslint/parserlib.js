@@ -1289,7 +1289,7 @@
       const t2raw = colon || stream.get();
       const t2WS = t2raw.id === WS;
       const t2 = colon
-        || (t2WS || t2raw.isVar && (stream.unget(), 1)) && stream.grab(true)
+        || (t2WS || t2raw.isVar) && stream.grab()
         || t2raw;
       let ti3;
       if (hack) {
