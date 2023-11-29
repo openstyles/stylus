@@ -94,6 +94,6 @@ const preinit = (() => {
       }
     })(),
 
-    tpl: t.fetchTemplate('/edit/settings.html', 'styleSettings'),
+    tpl: t.fetchTemplate('/edit.html', 'styleSettings'),
   };
 })();

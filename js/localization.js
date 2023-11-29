@@ -136,7 +136,7 @@ Object.assign(t, {
     let res = t.template[name];
     if (!res) {
       res = t.parse(await (await fetch(url)).text(), '*');
-      if (!$$('template', res).map(t.createTemplate).length) {
+      if (!$$(`template[data-id="${name}"]`, res).map(t.createTemplate).length) {
         t.createTemplate({
           content: t.toFragment($('body', res)),
           dataset: {id: name},
