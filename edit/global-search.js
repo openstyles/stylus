@@ -664,11 +664,12 @@
         (window.innerWidth - dialogRightOffset - (dialogRight - textRight)) / (state.input2 ? 2 : 1) - 20);
       el.style.width = newWidth + 'px';
     }
-    const numLines = el.value.split('\n').length;
+    const ovrX = el.scrollWidth > el.clientWidth;
+    const numLines = el.value.split('\n').length + ovrX;
     if (numLines !== Number(el.rows)) {
       el.rows = numLines;
     }
-    el.style.overflowX = el.scrollWidth > el.clientWidth ? '' : 'hidden';
+    el.style.overflowX = ovrX ? '' : 'hidden';
   }
 
 

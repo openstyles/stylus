@@ -52,7 +52,7 @@
   resize: none;
   width: min-content;
   min-width: 10em;
-  max-width: none;
+  max-width: calc(100vw - 20rem);
   min-height: 1.3em;
   max-height: 10vh;
   line-height: 1.3em;
@@ -217,6 +217,7 @@ body .CodeMirror-search-match {
   }
   #search-replace-dialog textarea {
     min-width: 50px;
+    max-width: calc(100vw - 8rem);
   }
 }
 
