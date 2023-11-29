@@ -44,7 +44,9 @@ input:disabled + span {
   border-bottom: 1px dashed var(--c65);
   box-shadow: 0 0 50px -18px black;
 }
-
+html[data-ui-theme="dark"] .warnings {
+  background: darkred;
+}
 .has-warnings .warnings {
   display: flex;
 }
