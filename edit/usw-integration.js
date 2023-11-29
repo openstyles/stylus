@@ -5,7 +5,7 @@
 /* global t */// localization.js
 'use strict';
 
-t.body(() => {
+editor.styleReady.then(() => {
   const ERROR_TITLE = 'UserStyles.world ' + t('genericError');
   const PROGRESS = '#usw-progress';
   let spinner;

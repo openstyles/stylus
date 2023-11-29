@@ -15,10 +15,10 @@
 //#region init
 
 t.body();
-EditorMethods();
 
 editor.styleReady.then(async () => {
   EditorHeader();
+  EditorMethods();
   await (editor.isUsercss ? SourceEditor : SectionsEditor)();
 
   editor.dirty.onChange(editor.updateDirty);

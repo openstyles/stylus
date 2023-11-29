@@ -62,7 +62,10 @@ const editor = {
   toggleCompact(mqCompact);
   Object.assign(editor, /** @namespace Editor */ {
     mqCompact,
-    styleReady: prefs.ready.then(loadStyle),
+    styleReady: Promise.all([
+      prefs.ready.then(loadStyle),
+      new Promise(t.body),
+    ]),
   });
 
   async function loadStyle() {
