@@ -180,15 +180,8 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     if (ass) {
       id = MEDIA + id;
       el = new CSSStyleSheet({media: id});
+      setTextAndName(el, style);
       const iOld = findAssId(id);
-      const code = style.code.join('');
-      if (code) {
-        try {
-          el.replaceSync(code);
-        } catch (err) {
-          el.replace(code);
-        }
-      }
       if (iOld >= 0) ass[iOld].mediaText += '-old';
       return el;
     }
@@ -219,6 +212,15 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
   }
 
   function setTextAndName(el, {id, code, name}) {
+    if (ass) {
+      code = code.join(''); // TODO: only patch the changed cssRule?
+      try {
+        el.replaceSync(code);
+      } catch (err) {
+        el.replace(code);
+      }
+      return;
+    }
     if (exposeStyleName && name) {
       if (el.dataset.name !== name) el.dataset.name = name;
       name = encodeURIComponent(name.replace(/[?#/']/g, toSafeChar));
