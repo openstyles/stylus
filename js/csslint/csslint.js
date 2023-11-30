@@ -1418,6 +1418,18 @@ CSSLint.addRule['star-property-hack'] = [{
   });
 }];
 
+CSSLint.addRule['style-rule-nesting'] = [{
+  desc: 'Forbid CSS nesting of style rules for backwards compatibility.',
+}, (rule, parser, reporter) => {
+  CSSLint.Util.registerRuleEvents(parser, {
+    start(evt) {
+      if (parser._inStyle) {
+        reporter.report('Nesting is disallowed.', evt, rule);
+      }
+    },
+  });
+}];
+
 CSSLint.addRule['text-indent'] = [{
   name: 'Disallow negative text-indent',
   desc: 'Checks for text indent less than -99px',

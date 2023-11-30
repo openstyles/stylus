@@ -1483,13 +1483,13 @@
       const {margins, scoped, decl, event = []} = opts;
       const {brace = stream.matchSmart(LBRACE, OrDie)} = opts;
       const [type, msg = event[1] = {}] = event || [];
+      if (type) this.fire(assign({type: 'start' + type, brace}, msg), start);
       const declOpts = scoped ? {scope: start.atName} : {};
       const inStyle = (this._inStyle += decl ? 1 : 0);
       const star = inStyle && this.options.starHack && STAR;
       this._stack.push(start);
       let ex, child;
       let prevTok;
-      if (type) this.fire(assign({type: 'start' + type, brace}, msg), start);
       for (let tok, ti, fn; (ti = (tok = stream.get(UVAR)).id) && ti !== RBRACE; ex = null) {
         if (ti === SEMICOLON || ti === UVAR && (child = 1)) {
           continue;
