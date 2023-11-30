@@ -233,7 +233,7 @@ overrides:
       browser: false
       webextensions: false
     parserOptions:
-      ecmaVersion: 2017
+      ecmaVersion: 2021
 
   - files: ["**/*worker*.js"]
     env:

@@ -28,8 +28,10 @@ function testCsslint({overwriteReport}) {
   process.stdout.write('Testing csslint...');
   const TEST_FILE = 'tools/test-css.txt';
   const REPORT_FILE = TEST_FILE.replace('.txt', '-report.txt');
-  const report = require('../js/csslint/csslint')
-    .verify(fs.readFileSync(TEST_FILE, 'utf8'))
+  const csslint = require('../js/csslint/csslint');
+  const rules = {...csslint.getRuleSet(), 'style-rule-nesting': 0};
+  const report = csslint
+    .verify(fs.readFileSync(TEST_FILE, 'utf8'), rules)
     .messages.map(m => `${m.type}\t${m.line}\t${m.col}\t${m.message}`);
   if (overwriteReport) fs.writeFileSync(REPORT_FILE, report.join('\n'), 'utf8');
   const expected = fs.readFileSync(REPORT_FILE, 'utf8').trim().split(/\r?\n/);

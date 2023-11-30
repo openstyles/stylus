@@ -129,6 +129,9 @@ const CSSLint = (() => {
         rules[id] = rule;
         rule.id = id;
         rule.init = init;
+        if (rule.url && !rule.url.includes(':')) {
+          rule.url = 'https://github.com/CSSLint/csslint/wiki/' + rule.url;
+        }
         return true;
       },
     }),
@@ -425,10 +428,8 @@ CSSLint.Util = {
 //#region Rules
 
 CSSLint.addRule['box-model'] = [{
-  name: 'Beware of broken box size',
-  desc: "Don't use width or height when using padding or border.",
-  url: 'https://github.com/CSSLint/csslint/wiki/Beware-of-box-model-size',
-  browsers: 'All',
+  desc: 'width or height specified with padding or border and no box-sizing.',
+  url: 'Beware-of-box-model-size',
 }, (rule, parser, reporter) => {
   const sizeProps = {
     width:  ['border', 'border-left', 'border-right', 'padding', 'padding-left', 'padding-right'],
@@ -480,10 +481,8 @@ CSSLint.addRule['box-model'] = [{
 }];
 
 CSSLint.addRule['compatible-vendor-prefixes'] = [{
-  name: 'Require compatible vendor prefixes',
-  desc: 'Include all compatible vendor prefixes to reach a wider range of users.',
-  url: 'https://github.com/CSSLint/csslint/wiki/Require-compatible-vendor-prefixes',
-  browsers: 'All',
+  desc: 'Require all compatible vendor prefixes.',
+  url: 'Require-compatible-vendor-prefixes',
 }, (rule, parser, reporter) => {
   // See http://peter.sh/experiments/vendor-prefixed-css-property-overview/ for details
   const compatiblePrefixes = {
@@ -633,10 +632,8 @@ CSSLint.addRule['compatible-vendor-prefixes'] = [{
 }];
 
 CSSLint.addRule['display-property-grouping'] = [{
-  name: 'Require properties appropriate for display',
-  desc: "Certain properties shouldn't be used with certain display property values.",
-  url: 'https://github.com/CSSLint/csslint/wiki/Require-properties-appropriate-for-display',
-  browsers: 'All',
+  desc: 'Must use properties compatible with the value of `display`.',
+  url: 'Require-properties-appropriate-for-display',
 }, (rule, parser, reporter) => {
   let props;
   const propertiesToCheck = {
@@ -704,10 +701,8 @@ CSSLint.addRule['display-property-grouping'] = [{
 }];
 
 CSSLint.addRule['duplicate-background-images'] = [{
-  name: 'Disallow duplicate background images',
-  desc: 'Every background-image should be unique. Use a common class for e.g. sprites.',
-  url: 'https://github.com/CSSLint/csslint/wiki/Disallow-duplicate-background-images',
-  browsers: 'All',
+  desc: 'Same background-image must be extracted to a common class.',
+  url: 'Disallow-duplicate-background-images',
 }, (rule, parser, reporter) => {
   const stack = {};
   parser.addListener('property', event => {
@@ -720,21 +715,15 @@ CSSLint.addRule['duplicate-background-images'] = [{
       if (!uri) {
         stack[part.uri] = event;
       } else {
-        reporter.report(
-          `Background image "${part.uri}" was used multiple times, ` +
-          `first declared at line ${uri.line}, col ${uri.col}.`,
-          event, rule);
+        reporter.report(rule.desc + `. First declared at ${uri.line}:${uri.col}.`, event, rule);
       }
     }
   });
 }];
 
 CSSLint.addRule['duplicate-properties'] = [{
-  name: 'Disallow duplicate properties',
-  desc: 'Duplicate properties must appear one after the other. ' +
-    'Exact duplicates are always reported.',
-  url: 'https://github.com/CSSLint/csslint/wiki/Disallow-duplicate-properties',
-  browsers: 'All',
+  desc: 'Duplicate properties must be next to each other; exact duplicates are forbidden.',
+  url: 'Disallow-duplicate-properties',
 }, (rule, parser, reporter) => {
   const stack = [];
   let props, lastName;
@@ -763,10 +752,8 @@ CSSLint.addRule['duplicate-properties'] = [{
 }];
 
 CSSLint.addRule['empty-rules'] = [{
-  name: 'Disallow empty rules',
-  desc: 'Rules without any properties specified should be removed.',
-  url: 'https://github.com/CSSLint/csslint/wiki/Disallow-empty-rules',
-  browsers: 'All',
+  desc: 'Rule without declarations must be removed.',
+  url: 'Disallow-empty-rules',
 }, (rule, parser, reporter) => {
   parser.addListener('endrule', event => {
     if (event.empty) reporter.report('Empty rule.', event.selectors[0], rule);
@@ -775,17 +762,14 @@ CSSLint.addRule['empty-rules'] = [{
 
 CSSLint.addRule['errors'] = [{
   name: 'Parsing Errors',
-  desc: 'This rule looks for recoverable syntax errors.',
-  browsers: 'All',
+  desc: 'Recoverable syntax errors.',
 }, (rule, parser, reporter) => {
   parser.addListener('error', e => reporter.error(e.message, e, rule));
 }];
 
 CSSLint.addRule['floats'] = [{
-  name: 'Disallow too many floats',
-  desc: 'This rule tests if the float property too many times',
-  url: 'https://github.com/CSSLint/csslint/wiki/Disallow-too-many-floats',
-  browsers: 'All',
+  desc: 'More than 9 `float` declarations. Consider using a grid system instead.',
+  url: 'Disallow-too-many-floats',
 }, (rule, parser, reporter) => {
   let count = 0;
   parser.addListener('property', ({property, value}) => {
@@ -795,34 +779,24 @@ CSSLint.addRule['floats'] = [{
   });
   parser.addListener('endstylesheet', () => {
     reporter.stat('floats', count);
-    if (count >= 10) {
-      reporter.rollupWarn(
-        `Too many floats (${count}), you're probably using them for layout. ` +
-        'Consider using a grid system instead.', rule);
-    }
+    if (count >= 10) reporter.rollupWarn(count + ': ' + rule.desc, rule);
   });
 }];
 
 CSSLint.addRule['font-faces'] = [{
-  name: "Don't use too many web fonts",
-  desc: 'Too many different web fonts in the same stylesheet.',
-  url: 'https://github.com/CSSLint/csslint/wiki/Don%27t-use-too-many-web-fonts',
-  browsers: 'All',
+  desc: 'More than 5 web fonts.',
+  url: 'Don%27t-use-too-many-web-fonts',
 }, (rule, parser, reporter) => {
   let count = 0;
   parser.addListener('startfontface', () => count++);
   parser.addListener('endstylesheet', () => {
-    if (count > 5) {
-      reporter.rollupWarn(`Too many @font-face declarations (${count}).`, rule);
-    }
+    if (count > 5) reporter.rollupWarn(count + ': ' + rule.desc, rule);
   });
 }];
 
 CSSLint.addRule['font-sizes'] = [{
-  name: 'Disallow too many font sizes',
-  desc: 'Checks the number of font-size declarations.',
-  url: 'https://github.com/CSSLint/csslint/wiki/Don%27t-use-too-many-font-size-declarations',
-  browsers: 'All',
+  desc: 'More than 9 `font-size` declarations.',
+  url: 'Don%27t-use-too-many-font-size-declarations',
 }, (rule, parser, reporter) => {
   let count = 0;
   parser.addListener('property', event => {
@@ -830,16 +804,12 @@ CSSLint.addRule['font-sizes'] = [{
   });
   parser.addListener('endstylesheet', () => {
     reporter.stat('font-sizes', count);
-    if (count >= 10) {
-      reporter.rollupWarn(`Too many font-size declarations (${count}), abstraction needed.`, rule);
-    }
+    if (count >= 10) reporter.rollupWarn(count + ': ' + rule.desc, rule);
   });
 }];
 
 CSSLint.addRule['globals-in-document'] = [{
-  name: 'Warn about global @ rules inside @-moz-document',
-  desc: 'Warn about @import, @charset, @namespace inside @-moz-document',
-  browsers: 'All',
+  desc: 'Nested @import, @charset, @namespace inside @-moz-document.',
 }, (rule, parser, reporter) => {
   let level = 0;
   let index = 0;
@@ -857,10 +827,8 @@ CSSLint.addRule['globals-in-document'] = [{
 }];
 
 CSSLint.addRule['gradients'] = [{
-  name: 'Require all gradient definitions',
-  desc: 'When using a vendor-prefixed gradient, make sure to use them all.',
-  url: 'https://github.com/CSSLint/csslint/wiki/Require-all-gradient-definitions',
-  browsers: 'All',
+  desc: 'Require all vendor prefixes when using a vendor-prefixed gradient.',
+  url: 'Require-all-gradient-definitions',
 }, (rule, parser, reporter) => {
   const stack = [];
   let miss;
@@ -888,10 +856,8 @@ CSSLint.addRule['gradients'] = [{
 }];
 
 CSSLint.addRule['ids'] = [{
-  name: 'Disallow IDs in selectors',
-  desc: 'Selectors should not contain IDs.',
-  url: 'https://github.com/CSSLint/csslint/wiki/Disallow-IDs-in-selectors',
-  browsers: 'All',
+  desc: '#id selectors are forbidden.',
+  url: 'Disallow-IDs-in-selectors',
 }, (rule, parser, reporter) => {
   parser.addListener('startrule', event => {
     for (const sel of event.selectors) {
@@ -908,21 +874,17 @@ CSSLint.addRule['ids'] = [{
 }];
 
 CSSLint.addRule['import'] = [{
-  name: 'Disallow @import',
-  desc: "Don't use @import, use <link> instead.",
-  url: 'https://github.com/CSSLint/csslint/wiki/Disallow-%40import',
-  browsers: 'All',
+  desc: '@import prevents parallel downloads and may be blocked by CSP.',
+  url: 'Disallow-%40import',
 }, (rule, parser, reporter) => {
   parser.addListener('import', e => {
-    reporter.report('@import prevents parallel downloads, use <link> instead.', e, rule);
+    reporter.report(rule.desc, e, rule);
   });
 }];
 
 CSSLint.addRule['important'] = [{
-  name: 'Disallow !important',
-  desc: 'Be careful when using !important declaration',
-  url: 'https://github.com/CSSLint/csslint/wiki/Disallow-%21important',
-  browsers: 'All',
+  desc: 'More than 9 !important declarations.',
+  url: 'Disallow-%21important',
 }, (rule, parser, reporter) => {
   let count = 0;
   parser.addListener('property', event => {
@@ -933,19 +895,13 @@ CSSLint.addRule['important'] = [{
   });
   parser.addListener('endstylesheet', () => {
     reporter.stat('important', count);
-    if (count >= 10) {
-      reporter.rollupWarn(
-        `Too many !important declarations (${count}), ` +
-        'try to use less than 10 to avoid specificity issues.', rule);
-    }
+    if (count >= 10) reporter.rollupWarn(count + ': ' + rule.desc, rule);
   });
 }];
 
 CSSLint.addRule['known-properties'] = [{
-  name: 'Require use of known properties',
-  desc: 'Properties should be known (per CSS specification) or be a vendor-prefixed property.',
-  url: 'https://github.com/CSSLint/csslint/wiki/Require-use-of-known-properties',
-  browsers: 'All',
+  desc: 'Unknown property per CSS spec without a vendor prefix.',
+  url: 'Require-use-of-known-properties',
 }, (rule, parser, reporter) => {
   parser.addListener('property', event => {
     const inv = event.invalid;
@@ -957,7 +913,6 @@ CSSLint.addRule['known-pseudos'] = [{
   name: 'Require use of known pseudo selectors',
   // eslint-disable-next-line max-len
   url: 'https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors/Pseudo-classes_and_pseudo-elements',
-  browsers: 'All',
 }, (rule, parser, reporter) => {
   // 1 = requires ":"
   // 2 = requires "::"
@@ -1181,9 +1136,7 @@ CSSLint.addRule['known-pseudos'] = [{
 }];
 
 CSSLint.addRule['order-alphabetical'] = [{
-  name: 'Alphabetical order',
-  desc: 'Assure properties are in alphabetical order',
-  browsers: 'All',
+  desc: 'Properties must be ordered alphabetically.',
 }, (rule, parser, reporter) => {
   const stack = [];
   let last, failed;
@@ -1211,11 +1164,8 @@ CSSLint.addRule['order-alphabetical'] = [{
 }];
 
 CSSLint.addRule['outline-none'] = [{
-  name: 'Disallow outline: none',
-  desc: 'Use of outline: none or outline: 0 should be limited to :focus rules.',
-  url: 'https://github.com/CSSLint/csslint/wiki/Disallow-outline%3Anone',
-  browsers: 'All',
-  tags: ['Accessibility'],
+  desc: 'none or 0 for `outline` outside of :focus rule.',
+  url: 'Disallow-outline%3Anone',
 }, (rule, parser, reporter) => {
   let lastRule;
   CSSLint.Util.registerRuleEvents(parser, {
@@ -1250,10 +1200,8 @@ CSSLint.addRule['outline-none'] = [{
 }];
 
 CSSLint.addRule['overqualified-elements'] = [{
-  name: 'Disallow overqualified elements',
-  desc: "Don't use classes or IDs with elements (a.foo or a#foo).",
-  url: 'https://github.com/CSSLint/csslint/wiki/Disallow-overqualified-elements',
-  browsers: 'All',
+  desc: '.class or #id after an element tag is forbidden.',
+  url: 'Disallow-overqualified-elements',
 }, (rule, parser, reporter) => {
   const classes = {};
   const report = (part, mod) => {
@@ -1287,10 +1235,8 @@ CSSLint.addRule['overqualified-elements'] = [{
 }];
 
 CSSLint.addRule['qualified-headings'] = [{
-  name: 'Disallow qualified headings',
-  desc: 'Headings should not be qualified (namespaced).',
-  url: 'https://github.com/CSSLint/csslint/wiki/Disallow-qualified-headings',
-  browsers: 'All',
+  desc: 'Qualified headings like `div h1`.',
+  url: 'Disallow-qualified-headings',
 }, (rule, parser, reporter) => {
   parser.addListener('startrule', event => {
     for (const selector of event.selectors) {
@@ -1307,11 +1253,8 @@ CSSLint.addRule['qualified-headings'] = [{
 }];
 
 CSSLint.addRule['regex-selectors'] = [{
-  name: 'Disallow selectors that look like regexs',
-  desc: 'Selectors that look like regular expressions are slow and should be avoided.',
-  // eslint-disable-next-line max-len
-  url: 'https://github.com/CSSLint/csslint/wiki/Disallow-selectors-that-look-like-regular-expressions',
-  browsers: 'All',
+  desc: 'Slow attribute selectors with substring matching (^= $= *=. |= ~=).',
+  url: 'Disallow-selectors-that-look-like-regular-expressions',
 }, (rule, parser, reporter) => {
   parser.addListener('startrule', event => {
     for (const {parts} of event.selectors) {
@@ -1330,9 +1273,7 @@ CSSLint.addRule['regex-selectors'] = [{
 }];
 
 CSSLint.addRule['selector-newline'] = [{
-  name: 'Disallow new-line characters in selectors',
-  desc: 'New line in selectors is likely a forgotten comma and not a descendant combinator.',
-  browsers: 'All',
+  desc: 'A new line between selectors is a forgotten comma and not a descendant combinator.',
 }, (rule, parser, reporter) => {
   parser.addListener('startrule', event => {
     for (const {parts} of event.selectors) {
@@ -1346,10 +1287,8 @@ CSSLint.addRule['selector-newline'] = [{
 }];
 
 CSSLint.addRule['shorthand'] = [{
-  name: 'Require shorthand properties',
-  desc: 'Use shorthand properties where possible.',
-  url: 'https://github.com/CSSLint/csslint/wiki/Require-shorthand-properties',
-  browsers: 'All',
+  desc: 'Use shorthand declaration instead of several individual properties.',
+  url: 'Require-shorthand-properties',
 }, (rule, parser, reporter) => {
   const {shorthands} = CSSLint.Util;
   CSSLint.Util.registerShorthandEvents(parser, {
@@ -1366,10 +1305,7 @@ CSSLint.addRule['shorthand'] = [{
 }];
 
 CSSLint.addRule['shorthand-overrides'] = [{
-  name: 'Avoid shorthands that override individual properties',
-  desc: 'Avoid shorthands like `background: foo` that follow individual properties ' +
-    'like `background-image: bar` thus overriding them',
-  browsers: 'All',
+  desc: 'Use shorthand declarations before individual properties.',
 }, (rule, parser, reporter) => {
   CSSLint.Util.registerShorthandEvents(parser, {
     property(event, props, name) {
@@ -1384,9 +1320,7 @@ CSSLint.addRule['shorthand-overrides'] = [{
 }];
 
 CSSLint.addRule['simple-not'] = [{
-  name: 'Require use of simple selectors inside :not()',
-  desc: 'A complex selector inside :not() is only supported by CSS4-compliant browsers.',
-  browsers: 'All',
+  desc: 'Simple selector must be used inside :not() for backwards compatibility.',
 }, (rule, parser, reporter) => {
   parser.addListener('startrule', e => {
     let pp, p;
@@ -1406,10 +1340,8 @@ CSSLint.addRule['simple-not'] = [{
 }];
 
 CSSLint.addRule['star-property-hack'] = [{
-  name: 'Disallow properties with a star prefix',
-  desc: 'Checks for the star property hack (targets IE6/7)',
-  url: 'https://github.com/CSSLint/csslint/wiki/Disallow-star-hack',
-  browsers: 'All',
+  desc: 'Forbid star prefixed *property (IE6 hack).',
+  url: 'Disallow-star-hack',
 }, (rule, parser, reporter) => {
   parser.addListener('property', ({property}) => {
     if (property.hack === '*') {
@@ -1419,22 +1351,18 @@ CSSLint.addRule['star-property-hack'] = [{
 }];
 
 CSSLint.addRule['style-rule-nesting'] = [{
-  desc: 'Forbid CSS nesting of style rules for backwards compatibility.',
+  desc: 'Nesting inside style rules is not backwards-compatible.',
 }, (rule, parser, reporter) => {
   CSSLint.Util.registerRuleEvents(parser, {
     start(evt) {
-      if (parser._inStyle) {
-        reporter.report('Nesting is disallowed.', evt, rule);
-      }
+      if (parser._inStyle) reporter.report(rule.desc, evt, rule);
     },
   });
 }];
 
 CSSLint.addRule['text-indent'] = [{
-  name: 'Disallow negative text-indent',
-  desc: 'Checks for text indent less than -99px',
-  url: 'https://github.com/CSSLint/csslint/wiki/Disallow-negative-text-indent',
-  browsers: 'All',
+  desc: 'Large negative text-indent without `direction:ltr` causes problems in RTL languages.',
+  url: 'Disallow-negative-text-indent',
 }, (rule, parser, reporter) => {
   let textIndent, isLtr;
   CSSLint.Util.registerRuleEvents(parser, {
@@ -1453,22 +1381,14 @@ CSSLint.addRule['text-indent'] = [{
       }
     },
     end() {
-      if (textIndent && !isLtr) {
-        reporter.report(
-          `Negative "text-indent" doesn't work well with RTL. ` +
-          'If you use "text-indent" for image replacement, ' +
-          'explicitly set "direction" for that item to "ltr".',
-          textIndent, rule);
-      }
+      if (textIndent && !isLtr) reporter.report(rule.desc, textIndent, rule);
     },
   });
 }];
 
 CSSLint.addRule['underscore-property-hack'] = [{
-  name: 'Disallow properties with an underscore prefix',
-  desc: 'Checks for the underscore property hack (targets IE6)',
-  url: 'https://github.com/CSSLint/csslint/wiki/Disallow-underscore-hack',
-  browsers: 'All',
+  url: 'Disallow-underscore-hack',
+  desc: 'Forbid underscore prefixed _property (IE6 hack).',
 }, (rule, parser, reporter) => {
   parser.addListener('property', ({property}) => {
     if (property.hack === '_') {
@@ -1478,10 +1398,8 @@ CSSLint.addRule['underscore-property-hack'] = [{
 }];
 
 CSSLint.addRule['unique-headings'] = [{
-  name: 'Headings should only be defined once',
-  desc: 'Headings should be defined only once.',
-  url: 'https://github.com/CSSLint/csslint/wiki/Headings-should-only-be-defined-once',
-  browsers: 'All',
+  desc: 'Forbid redefinition of headings.',
+  url: 'Headings-should-only-be-defined-once',
 }, (rule, parser, reporter) => {
   const headings = new Array(6).fill(0);
   parser.addListener('startrule', event => {
@@ -1505,10 +1423,8 @@ CSSLint.addRule['unique-headings'] = [{
 }];
 
 CSSLint.addRule['universal-selector'] = [{
-  name: 'Disallow universal selector',
-  desc: 'The universal selector (*) is known to be slow.',
-  url: 'https://github.com/CSSLint/csslint/wiki/Disallow-universal-selector',
-  browsers: 'All',
+  desc: 'Universal selector (*) is slow.',
+  url: 'Disallow-universal-selector',
 }, (rule, parser, reporter) => {
   parser.addListener('startrule', event => {
     for (const {parts} of event.selectors) {
@@ -1521,10 +1437,8 @@ CSSLint.addRule['universal-selector'] = [{
 }];
 
 CSSLint.addRule['unqualified-attributes'] = [{
-  name: 'Disallow unqualified attribute selectors',
-  desc: 'Unqualified attribute selectors are known to be slow.',
-  url: 'https://github.com/CSSLint/csslint/wiki/Disallow-unqualified-attribute-selectors',
-  browsers: 'All',
+  desc: 'Unqualified attribute selector is slow.',
+  name: 'Disallow-unqualified-attribute-selectors',
 }, (rule, parser, reporter) => {
   parser.addListener('startrule', event => {
     event.selectors.forEach(({parts}) => {
@@ -1543,10 +1457,8 @@ CSSLint.addRule['unqualified-attributes'] = [{
 }];
 
 CSSLint.addRule['vendor-prefix'] = [{
-  name: 'Require standard property with vendor prefix',
-  desc: 'When using a vendor-prefixed property, make sure to include the standard one.',
-  url: 'https://github.com/CSSLint/csslint/wiki/Require-standard-property-with-vendor-prefix',
-  browsers: 'All',
+  desc: 'Require an additional non-prefixed declaration when using vendor prefixes.',
+  url: 'Require-standard-property-with-vendor-prefix',
 }, (rule, parser, reporter) => {
   const propertiesToCheck = {
     '-webkit-border-radius': 'border-radius',
@@ -1639,18 +1551,14 @@ CSSLint.addRule['vendor-prefix'] = [{
 }];
 
 CSSLint.addRule['warnings'] = [{
-  name: 'Parsing warnings',
-  desc: 'This rule looks for parser warnings.',
-  browsers: 'All',
+  desc: 'Parser warnings.',
 }, (rule, parser, reporter) => {
   parser.addListener('warning', e => reporter.report(e.message, e, rule));
 }];
 
 CSSLint.addRule['zero-units'] = [{
-  name: 'Disallow units for 0 values',
-  desc: "You don't need to specify units when a value is 0.",
-  url: 'https://github.com/CSSLint/csslint/wiki/Disallow-units-for-zero-values',
-  browsers: 'All',
+  desc: 'Unit suffix for "0" is redundant.',
+  url: 'Disallow-units-for-zero-values',
 }, (rule, parser, reporter) => {
   parser.addListener('property', event => {
     for (const p of event.value.parts) {

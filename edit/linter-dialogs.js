@@ -10,8 +10,10 @@
 (() => {
   /** @type {{csslint:{}, stylelint:{}}} */
   const RULES = {};
+  const KNOWN_RULES = {};
+  const defaultConfig = {};
   let cm;
-  let defaultConfig;
+  let knownRules;
   let isStylelint;
   let linter;
   let popup;
@@ -28,14 +30,39 @@
     ]);
     const config = await chromeSync.getLZValue(chromeSync.LZ_KEY[linter]);
     const title = t('linterConfigPopupTitle', isStylelint ? 'Stylelint' : 'CSSLint');
+    const activeRules = new Set(getActiveRules());
     isStylelint = linter === 'stylelint';
-    defaultConfig = stringifyConfig(linterMan.DEFAULTS[linter]);
+    knownRules = KNOWN_RULES[linter] || (
+      KNOWN_RULES[linter] = new Set((
+        isStylelint
+          ? Object.keys(RULES[linter])
+          : RULES[linter].map(r => r.id)
+      ).sort()));
+    for (let cfg of [
+      config,
+      !defaultConfig[linter] && linterMan.DEFAULTS[linter],
+    ].filter(Boolean)) {
+      const missingRules = new Set(knownRules);
+      cfg = isStylelint ? cfg.rules : cfg;
+      for (const id in cfg) {
+        if (cfg[id] && knownRules.has(id)) {
+          missingRules.delete(id);
+        } else if (/^[a-z]+(-[a-z]+)*$/.test(id)) {
+          // Deleting unknown rules that look like a valid id but allow unusual ids for user comments
+          delete cfg[id];
+        }
+      }
+      for (const id of missingRules) {
+        cfg[id] = isStylelint ? false : 0;
+      }
+    }
+    defaultConfig[linter] = stringifyConfig(linterMan.DEFAULTS[linter]);
     popup = showCodeMirrorPopup(title, null, {
       extraKeys: {'Ctrl-Enter': onConfigSave},
       hintOptions: {hint},
       lint: true,
       mode: 'application/json',
-      value: config ? stringifyConfig(config) : defaultConfig,
+      value: config ? stringifyConfig(config) : defaultConfig[linter],
     });
     popup._contents.appendChild(
       $create('div', [
@@ -57,8 +84,6 @@
       ]));
     cm = popup.codebox;
     cm.focus();
-    const knownRules = new Set(isStylelint ? Object.keys(RULES.stylelint) : RULES.csslint.map(r => r.id));
-    const activeRules = new Set(getActiveRules());
     cm.addOverlay({
       token(stream) {
         const t = stream.baseToken();
@@ -188,7 +213,7 @@
 
   function onConfigReset(event) {
     event.preventDefault();
-    cm.setValue(defaultConfig);
+    cm.setValue(defaultConfig[linter]);
     cm.focus();
     updateConfigButtons();
   }
@@ -202,6 +227,10 @@
       showLinterErrorMessage(linter, t('linterJSONError'), popup);
       cm.focus();
       return;
+    }
+    const cfg = isStylelint ? json.rules : json;
+    for (const id in cfg) {
+      if (!cfg[id]) delete cfg[id];
     }
     chromeSync.setLZValue(chromeSync.LZ_KEY[linter], json);
     cm.markClean();
@@ -228,7 +257,7 @@
 
   function updateConfigButtons() {
     $('.save', popup).disabled = cm.isClean();
-    $('.reset', popup).disabled = cm.getValue() === defaultConfig;
+    $('.reset', popup).disabled = cm.getValue() === defaultConfig[linter];
     $('.cancel', popup).textContent = t(cm.isClean() ? 'confirmClose' : 'confirmCancel');
   }
 })();

@@ -1,7 +1,7 @@
-warning	6	3	@import prevents parallel downloads, use <link> instead.
-warning	7	3	@import prevents parallel downloads, use <link> instead.
-warning	8	3	@import prevents parallel downloads, use <link> instead.
-warning	9	3	@import prevents parallel downloads, use <link> instead.
+warning	6	3	@import prevents parallel downloads and may be blocked by CSP.
+warning	7	3	@import prevents parallel downloads and may be blocked by CSP.
+warning	8	3	@import prevents parallel downloads and may be blocked by CSP.
+warning	9	3	@import prevents parallel downloads and may be blocked by CSP.
 warning	15	7	Empty rule.
 warning	16	7	Empty rule.
 warning	17	7	Empty rule.
@@ -12,19 +12,19 @@ error	21	41	Unexpected "-6".
 error	22	39	Unexpected "-".
 error	23	36	Unexpected "+".
 error	24	37	Unexpected " ".
-warning	25	43	Unqualified attribute selectors are known to be slow.
+warning	25	43	Unqualified attribute selector is slow.
 warning	25	50	Slow attribute selector ~=.
 warning	28	8	Non-alphabetical order: "padding".
 warning	31	9	Ungrouped duplicate "filter".
 warning	31	9	!important.
 error	32	47	Expected "}", ";" but found "!".
 warning	47	3	A nested @import is valid only if this @-moz-document section is the first one matched for any given URL.
-warning	47	3	@import prevents parallel downloads, use <link> instead.
+warning	47	3	@import prevents parallel downloads and may be blocked by CSP.
 warning	48	3	A nested @import is valid only if this @-moz-document section is the first one matched for any given URL.
-warning	48	3	@import prevents parallel downloads, use <link> instead.
+warning	48	3	@import prevents parallel downloads and may be blocked by CSP.
 warning	54	7	Non-alphabetical order: "aspect-ratio".
 warning	69	3	A nested @import is valid only if this @-moz-document section is the first one matched for any given URL.
-warning	69	3	@import prevents parallel downloads, use <link> instead.
+warning	69	3	@import prevents parallel downloads and may be blocked by CSP.
 warning	75	5	Non-alphabetical order: "font-weight".
 warning	76	24	Expected end of value but found "00".
 warning	78	20	Expected <unicode-range># but found "U+3000???-9FFF, U+ffz??".
