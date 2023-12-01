@@ -414,7 +414,7 @@ a:hover i {
 .write-style-link:last-child {
   color: var(--c50);
   overflow: hidden;
-  flex: 1 0 2em;
+  flex: 1 0 1ch;
   text-overflow: ellipsis;
 }
 .about-blank > .breadcrumbs {
