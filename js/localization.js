@@ -209,6 +209,35 @@ Object.assign(t, {
       return '';
     }
   },
+
+  /**
+   * @param {Date|number} date
+   * @param {RelativeTimeFormatStyle} [style]
+   * @return {string}
+   */
+  formatRelativeDate(date, style) {
+    let delta = (Date.now() - date) / 1000;
+    if (delta >= 0 && Intl.RelativeTimeFormat) {
+      for (const [span, unit, frac = 1] of [
+        [60, 'second', 0],
+        [60, 'minute', 0],
+        [24, 'hour'],
+        [7, 'day'],
+        [4, 'week'],
+        [12, 'month'],
+        [1e99, 'year'],
+      ]) {
+        if (delta < span) {
+          return (/** @type {RelativeTimeFormat} */
+            t._intlR ||
+            (t._intlR = new Intl.RelativeTimeFormat([chrome.i18n.getUILanguage(), 'en'], {style}))
+          ).format(-delta.toFixed(frac), unit);
+        }
+        delta /= span;
+      }
+    }
+    return '';
+  },
 });
 
 waitForSelector(t.SELECTOR, {recur: t.NodeList});

@@ -36,7 +36,7 @@
     const onYes = () => resolve(true);
     const onNo = () => resolve(false);
     const value = draft.isUsercss ? style.sourceCode : MozDocMapper.styleToCss(style);
-    const info = t('draftTitle', makeRelativeDate(draft.date));
+    const info = t('draftTitle', t.formatRelativeDate(draft.date));
     const popup = showCodeMirrorPopup(info, '', {value, readOnly: true});
     popup.className += ' danger';
     popup.onClose.add(onNo);
@@ -56,27 +56,6 @@
 
   function connectPort() {
     port = chrome.runtime.connect({name: 'draft:' + makeId()});
-  }
-
-  function makeRelativeDate(date) {
-    let delta = (Date.now() - date) / 1000;
-    if (delta >= 0 && Intl.RelativeTimeFormat) {
-      for (const [span, unit, frac = 1] of [
-        [60, 'second', 0],
-        [60, 'minute', 0],
-        [24, 'hour'],
-        [7, 'day'],
-        [4, 'week'],
-        [12, 'month'],
-        [1e99, 'year'],
-      ]) {
-        if (delta < span) {
-          return new Intl.RelativeTimeFormat({style: 'short'}).format(-delta.toFixed(frac), unit);
-        }
-        delta /= span;
-      }
-    }
-    return date.toLocaleString();
   }
 
   function updateDraft(isDirty = editor.dirty.isDirty()) {

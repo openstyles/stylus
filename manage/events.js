@@ -27,11 +27,13 @@ const Events = {
 
   addEntryTitle(link) {
     const style = link.closest('.entry').styleMeta;
-    const ucd = style.usercssData;
-    link.title =
-      `${t('dateInstalled')}: ${t.formatDate(style.installDate, true) || '—'}\n` +
-      `${t('dateUpdated')}: ${t.formatDate(style.updateDate, true) || '—'}\n` +
-      (ucd ? `UserCSS, v.${ucd.version}` : '');
+    const {installDate: dIns, updateDate: dUpd, usercssData: ucd} = style;
+    link.title = [
+      dUpd || dIns ? `${t.formatRelativeDate(dUpd || dIns)}` : '',
+      `${t('dateInstalled')}: ${t.formatDate(dIns, true) || '—'}`,
+      `${t('dateUpdated')}: ${t.formatDate(dUpd, true) || '—'}`,
+      ucd ? `UserCSS, v.${ucd.version}` : '',
+    ].filter(Boolean).join('\n');
   },
 
   check(event, entry) {
