@@ -98,9 +98,7 @@ async function initPopup(frames) {
 
   const elFind = $('#find-styles-btn');
   const elFindDeps = async () => {
-    if (!t.template.searchUI) {
-      document.body.append(await t.fetchTemplate('/popup/search.html', 'searchUI', true));
-    }
+    document.body.append(await t.fetchTemplate('/popup/search.html', 'searchUI', true));
     await require([
       '/popup/search.css',
       '/popup/search',
@@ -108,11 +106,11 @@ async function initPopup(frames) {
   };
   elFind.on('click', async () => {
     elFind.disabled = true;
-    await elFindDeps();
+    if (!styleFinder) await elFindDeps();
     styleFinder.inline();
   });
   elFind.on('split-btn', async e => {
-    await elFindDeps();
+    if (!styleFinder) await elFindDeps();
     styleFinder.inSite(e);
   });
   window.on('keydown', e => {
