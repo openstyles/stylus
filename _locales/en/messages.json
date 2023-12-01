@@ -486,6 +486,12 @@
     "message": "History",
     "description": "Used in various places to show a history log of something"
   },
+  "genericMaximum": {
+    "message": "maximum"
+  },
+  "genericMinimum": {
+    "message": "minimum"
+  },
   "genericNext": {
     "message": "Next",
     "description": "Used in various places to select/perform the next step/action"

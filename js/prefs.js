@@ -134,6 +134,7 @@
     'headerWidth.manage': 280,
 
     'popupWidth': 246,              // popup width in pixels
+    'popupWidthMax': 280,           // popup width in pixels
 
     'updateInterval': 24,           // user-style automatic update interval, hours (0 = disable)
     'updateOnlyEnabled': false,

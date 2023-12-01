@@ -74,11 +74,6 @@ function onRuntimeMessage(msg) {
   if (styleFinder) styleFinder.on(msg, ready);
 }
 
-function setPopupWidth(_key, width) {
-  document.body.style.width =
-    clamp(width, 200, 800) + 'px';
-}
-
 function toggleSideBorders(_key, state) {
   // runs before <body> is parsed
   const style = $.root.style;
@@ -93,7 +88,10 @@ function toggleSideBorders(_key, state) {
 
 /** @param {chrome.webNavigation.GetAllFrameResultDetails[]} frames */
 async function initPopup(frames) {
-  prefs.subscribe('popupWidth', setPopupWidth, true);
+  const kPopupWidth = 'popupWidth';
+  prefs.subscribe([kPopupWidth, 'popupWidthMax'], (key, val) => {
+    document.body.style[`${key === kPopupWidth ? 'min' : 'max'}-width`] = clamp(val, 200, 800) + 'px';
+  }, true);
   setupLivePrefs();
 
   const elFind = $('#find-styles-btn');

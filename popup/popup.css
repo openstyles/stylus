@@ -21,7 +21,9 @@ html, body {
 }
 
 body {
-  width: 252px;
+  width: auto;
+  min-width: 246px;
+  max-width: 280px;
   overflow: hidden;
 }
 
