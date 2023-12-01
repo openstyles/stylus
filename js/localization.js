@@ -197,7 +197,8 @@ Object.assign(t, {
         (t[intlKey] = new Intl.DateTimeFormat([chrome.i18n.getUILanguage(), 'en'], {
           day: 'numeric',
           month: 'short',
-          year: needsYear ? '2-digit' : undefined,
+          // needsTime = no width constraint, so we'll show the full year in all dates for consistency
+          year: needsTime ? 'numeric' : needsYear ? '2-digit' : undefined,
           hour: needsTime ? 'numeric' : undefined,
           minute: needsTime ? '2-digit' : undefined,
           weekday: needsWeekDay ? 'long' : undefined,
