@@ -99,7 +99,7 @@ async function initPopup(frames) {
   const elFind = $('#find-styles-btn');
   const elFindDeps = async () => {
     if (!t.template.searchUI) {
-      document.body.append(await t.fetchTemplate('/popup/search.html', 'searchUI'));
+      document.body.append(await t.fetchTemplate('/popup/search.html', 'searchUI', true));
     }
     await require([
       '/popup/search.css',

@@ -132,11 +132,11 @@ Object.assign(t, {
     return t.toFragment(root);
   },
 
-  fetchTemplate: async (url, name) => {
+  fetchTemplate: async (url, name, all) => {
     let res = t.template[name];
     if (!res) {
       res = t.parse(await (await fetch(url)).text(), '*');
-      if (!$$(`template[data-id="${name}"]`, res).map(t.createTemplate).length) {
+      if (!$$(`template[data-id${all ? '' : `="${name}"`}]`, res).map(t.createTemplate).length) {
         t.createTemplate({
           content: t.toFragment($('body', res)),
           dataset: {id: name},
