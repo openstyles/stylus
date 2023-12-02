@@ -457,7 +457,7 @@ body.resizing-v > * {
 
 @font-face {
   font-family: 'icons';
-  src: url(/icons.ttf) format('truetype');
+  src: url(/css/icons.ttf) format('truetype');
   unicode-range: /*AUTO-GENERATED-ICON-RANGE*/ U+20,U+2195,U+2197,U+21b2,U+21b6,U+222a,U+22c1,U+22ee,U+24d8,U+25bc,U+25f4,U+2611,U+2699,U+270f,U+2713,U+2714,U+2716,U+2795,U+2796,U+27f3,U+d83e;
 }
 

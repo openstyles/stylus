@@ -16,7 +16,7 @@ function fail(what, str) {
 }
 
 function testGlobalCss() {
-  const css = fs.readFileSync('global.css', {encoding: 'utf8'});
+  const css = fs.readFileSync('css/global.css', {encoding: 'utf8'});
   const RX_SUPPRESSOR = /[^{}]+#\\1\s?transition-suppressor[^{}]+{\s*transition:\s*none\s*!\s*important/i;
   const RX_COMMENT = /\/\*([^*]+|\*(?!\/))*(\*\/|$)/g;
   if (!RX_SUPPRESSOR.test(css.replace(RX_COMMENT, ''))) {
