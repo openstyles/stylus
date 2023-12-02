@@ -46,6 +46,7 @@
       'Ctrl-Pause': 'toggleEditorFocus',
     }),
     maxHighlightLength: 100e3,
+    undoDepth: 1000,
   };
 
   Object.assign(CodeMirror.defaults, defaults, prefs.get('editor.options'));
