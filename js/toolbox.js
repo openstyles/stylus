@@ -119,6 +119,12 @@ const URLS = {
 
 const RX_META = /\/\*!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i;
 
+// TODO: remove when min_chrome_version > 112, strict_min_version > 112
+if (!('size' in URLSearchParams.prototype)) {
+  Object.defineProperty(URLSearchParams.prototype, 'size', {
+    get() { return [...this.keys()].length; },
+  });
+}
 if (CHROME < 61) { // TODO: remove when minimum_chrome_version >= 61
   window.URLSearchParams = class extends URLSearchParams {
     constructor(init) {

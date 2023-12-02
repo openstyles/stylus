@@ -69,7 +69,7 @@ const editor = {
   });
 
   async function loadStyle() {
-    const params = new URLSearchParams(location.search);
+    let params = new URLSearchParams(location.search);
     let id = Number(params.get('id'));
     const style = id && await API.styles.get(id) || {
       id: id = null, // resetting the non-existent id
@@ -94,7 +94,8 @@ const editor = {
     // no such style so let's clear the invalid URL parameters
     if (id === null) {
       params.delete('id');
-      history.replaceState({}, '', location.pathname + (params.size ? '?' : '') + params);
+      params = `${params}`;
+      history.replaceState({}, '', location.pathname + (params ? '?' : '') + params);
     }
   }
 
