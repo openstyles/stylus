@@ -47,10 +47,9 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
   ({tabId, initialUrl} = preinit);
   liveReload = initLiveReload();
   preinit.tpl.then(el => {
-    $('#ss-scheme').append(...$('#ss-scheme', el).children);
-    prefs.subscribe('schemeSwitcher.enabled', (_, val) => {
-      $('#ss-scheme-off').hidden = val !== 'never';
-    }, true);
+    el.firstChild.remove(); // update URL
+    el.lastChild.remove(); // buttons
+    $('#styleSettings').append(el);
   });
 
   const [
@@ -59,6 +58,7 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
   ] = await Promise.all([
     preinit.ready,
     API.data.get('hasFileAccess'),
+    preinit.tpl,
   ]);
   if (!style && sourceCode == null) {
     messageBox.alert(isNaN(error) ? `${error}` : 'HTTP Error ' + error, 'pre');
@@ -82,6 +82,18 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
   const versionTest = dup && compareVersion(data.version, dupData.version);
 
   updateMeta(style, dup);
+  if (dup) {
+    ($(`[name="ss-scheme"][value="${dup.preferScheme}"]`) || {}).checked = true;
+  }
+  for (let type of ['in', 'ex']) {
+    const el = $('#ss-' + (type += 'clusions'));
+    const list = dup && dup[type] || [];
+    el.value = list.join('\n') + (list[0] ? '\n' : '');
+    el.rows = list.length + 2;
+    el.onchange = () => {
+      style[type] = el.value.split(/\n/).map(s => s.trim()).filter(Boolean);
+    };
+  }
 
   // update UI
   if (versionTest < 0) {

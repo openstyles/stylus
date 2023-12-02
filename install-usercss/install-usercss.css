@@ -87,6 +87,16 @@ h1 {
   opacity: .5;
   margin: .25em 0 0;
 }
+label {
+  display: block; /* enable margin */
+}
+textarea {
+  white-space: pre;
+  max-width: 100%;
+}
+textarea:placeholder-shown:not(:focus) {
+  background: none;
+}
 #install-wrapper {
   display: flex;
   align-items: center;

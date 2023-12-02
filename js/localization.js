@@ -103,7 +103,7 @@ Object.assign(t, {
     const {content} = el;
     const toRemove = [];
     // Compress inter-tag whitespace to reduce DOM tree and avoid space between elements without flex
-    const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
+    const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_COMMENT);
     for (let n; (n = walker.nextNode());) {
       if (!/[\xA0\S]/.test(n.textContent) ||  // allowing \xA0 so as to preserve &nbsp;
           n.nodeType === Node.COMMENT_NODE) {
