@@ -26,7 +26,6 @@ for (const [id, init, tpl] of [
       else val.disconnect();
       el.append($create('main', t.template[tpl]));
       init(el);
-      setupLivePrefs(el);
     }
   };
   if (pref) prefs.subscribe(pref, onOpen, true);
@@ -59,6 +58,7 @@ function StyleSettings(ui) {
   }, true);
   window.on('styleSettings', update);
   elSave.onclick = save;
+  setupLivePrefs(ui);
 
   function autosave(el, setter) {
     pendingSetters.set(el, setter);
@@ -141,8 +141,6 @@ function StyleSettings(ui) {
 }
 
 function EditorSettings(ui) {
-  prefs.subscribe('editor.linter', editor.updateLinterSwitch, true);
-
   //#region Keymap
   // move 'pc' or 'mac' prefix to the end of the displayed label
   const maps = Object.keys(CodeMirror.keyMap)
@@ -199,4 +197,7 @@ function EditorSettings(ui) {
     require(['/edit/linter-dialogs'], () => linterMan.showLintConfig());
   };
   //#endregion
+
+  setupLivePrefs(ui);
+  prefs.subscribe('editor.linter', editor.updateLinterSwitch, true);
 }

@@ -110,6 +110,7 @@ async function SourceEditor() {
     scrollToEditor: () => {},
   });
 
+  prefs.subscribe('editor.linter', updateLinterSwitch, true);
   prefs.subscribe('editor.appliesToLineWidget', (k, val) => sectionWidget.toggle(val), true);
   prefs.subscribe('editor.toc.expanded', (k, val) => sectionFinder.onOff(editor.updateToc, val), true);
 
