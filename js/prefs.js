@@ -1,13 +1,10 @@
 /* global API msg */// msg.js
-/* global deepCopy */// toolbox.js
-/* global isFrameSameOrigin */// style-injector.js (must be loaded first)
+/* global deepCopy deepEqual */// toolbox.js
 'use strict';
 
-(() => {
-  if (window.INJECTED === 1) return;
+/** Don't use this file in content script context! */
 
-  const STORAGE_KEY = 'settings';
-  const clone = deepCopy;
+(() => {
   /**
    * @type PrefsValues
    * @namespace PrefsValues
@@ -141,50 +138,45 @@
   };
   const warnUnknown = console.warn.bind(console, 'Unknown preference "%s"');
   /** @type {PrefsValues} */
-  const values = clone(defaults);
+  const values = deepCopy(defaults);
   const onChange = {};
   const isBg = msg.bg === window;
-  const isExt = chrome.tabs;
   // A scoped listener won't trigger for our [big] stuff in `local`, Chrome 73+, FF
-  const onSync = isExt && chrome.storage.sync.onChanged;
+  const onSync = chrome.storage.sync.onChanged;
   let busy, setReady;
-  if (!isBg && isFrameSameOrigin && (isExt || chrome.app) && (busy = parent.prefs)) {
-    busy = Promise.resolve().then(setAll.bind(null, clone(busy.__values)));
+  if (isBg) {
+    busy = new Promise(cb => (setReady = cb));
+    busy.set = (...args) => setReady(setAll(...args));
+  } else if (window === parent) {
+    busy = API.prefs.get().then(setAll);
   } else {
-    busy = new Promise(go => (setReady = go));
+    setAll(deepCopy(parent.prefs.__values)); // using deepCopy of this realm
   }
-  busy.set = (v, old) => setReady && setReady(v ? setAll(v, old) : API.prefs.get().then(setAll));
-  if (isExt) {
-    if (!isBg) busy.set();
-    busy.then(() => (onSync || chrome.storage.onChanged).addListener((changes, area) => {
-      const data = (onSync || area === 'sync') && changes[STORAGE_KEY];
-      if (data) setAll(data.newValue, data.oldValue);
-    }));
-  }
+  (onSync || chrome.storage.onChanged).addListener((changes, area) => {
+    if (busy) return;
+    // eslint-disable-next-line no-use-before-define
+    const data = (onSync || area === 'sync') && changes[prefs.STORAGE_KEY];
+    if (data) setAll(data.newValue, data.oldValue);
+  });
 
   const prefs = window.prefs = {
-    STORAGE_KEY,
-    clone,
-    ready: busy,
+    STORAGE_KEY: 'settings',
+    ready: busy || Promise.resolve(true),
     /** @type {PrefsValues} */
     defaults: new Proxy({}, {
-      get: (_, key) => clone(defaults[key]),
+      get: (_, key) => deepCopy(defaults[key]),
     }),
-    get knownKeys() {
-      const value = Object.keys(defaults);
-      Object.defineProperty(prefs, 'knownKeys', {value});
-      return value;
-    },
+    knownKeys: Object.keys(defaults),
     /** @type {PrefsValues} */
     get values() {
-      return clone(values);
+      return deepCopy(values);
     },
     __defaults: defaults, // direct reference, be careful!
     __values: values, // direct reference, be careful!
 
     get(key) {
       const {[key]: res = warnUnknown(key)} = values;
-      return res && typeof res === 'object' ? clone(res) : res;
+      return res && typeof res === 'object' ? deepCopy(res) : res;
     },
 
     set(key, val, isSynced) {
@@ -198,7 +190,7 @@
             type === 'boolean' ? val === 'true' || val !== 'false' && !!val :
               null;
       }
-      if (val === old || type === 'object' && simpleDeepEqual(val, old)) return;
+      if (val === old || type === 'object' && deepEqual(val, old)) return;
       values[key] = val;
       const fns = onChange[key];
       if (fns) for (const fn of fns) fn(key, val);
@@ -210,7 +202,7 @@
     },
 
     reset(key) {
-      prefs.set(key, clone(defaults[key]));
+      prefs.set(key, deepCopy(defaults[key]));
     },
 
     /**
@@ -260,11 +252,5 @@
       if (!prefs.set(key, data[key], true)) if (isBg) delete data[key];
     }
     return !isBg || data;
-  }
-
-  function simpleDeepEqual(a, b) {
-    return !a || !b || typeof a !== 'object' || typeof b !== 'object' ? a === b :
-      Object.keys(a).length === Object.keys(b).length &&
-      Object.keys(a).every(key => b.hasOwnProperty(key) && simpleDeepEqual(a[key], b[key]));
   }
 })();
