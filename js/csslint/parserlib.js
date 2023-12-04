@@ -1304,12 +1304,16 @@
         if (inParens || isCust) stream._failure('":"', t2raw);
         return;
       }
-      if (ti3) stream.unget();
+      if (ti3 !== WS) stream.unget();
       const end = isCust ? TT.propCustomEnd : inParens ? TT.propValEndParen : TT.propValEnd;
-      const expr = this._expr(stream, end, isCust, !isOwn(TT.nestSelBlock, ti3));
+      const expr = this._expr(stream, end, isCust);
       const t = stream.token;
       const value = expr || isCust && TokenValue.empty(t);
       if (!inParens && t.id === LBRACE) {
+        if (ti3 !== IDENT && ti3 !== FUNCTION) {
+          stream._pair = RBRACE;
+          throw new SyntaxError(`Unexpected "{" in "${tok}" declaration`, t);
+        }
         // TODO: if not as rare as alleged, make a flat array in _expr() and reuse it
         stream.source.reset(t2mark);
         stream._resetBuf();
@@ -1355,17 +1359,16 @@
      * @param {TokenStream} stream
      * @param {TokenMap|number} end - will be consumed!
      * @param {boolean} [dumb] - <any-value> mode, no additional checks
-     * @param {boolean} [blocks] - consume {} blocks anywhere, not just at start
      * @return {TokenValue|void}
      */
-    _expr(stream, end, dumb, blocks) {
+    _expr(stream, end, dumb) {
       const parts = [];
       const isEndMap = typeof end === 'object';
       let /** @type {Token} */ tok, ti, isVar, endParen;
       while ((ti = (tok = stream.get(UVAR)).id) && !(isEndMap ? end[ti] : end === ti)) {
         if ((endParen = Parens[ti])) {
-          if (!dumb && !blocks && ti === LBRACE && parts.length) break;
-          tok.expr = this._expr(stream, endParen, dumb, blocks || ti === LBRACE);
+          if (!dumb && ti === LBRACE && parts.length) break;
+          tok.expr = this._expr(stream, endParen, dumb, ti === LBRACE);
           if (stream.token.id !== endParen) stream._failure(endParen);
           tok.offset2 = stream.token.offset2;
           tok.type = 'block';

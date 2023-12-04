@@ -45,7 +45,7 @@ warning	119	13	Expected none | [ blur() | brightness() | contrast() | drop-shado
 warning	134	20	Unknown pseudo :--state1
 warning	134	29	Must use -moz- prefix in :loading
 warning	136	7	Non-alphabetical order: "background-position-x".
-warning	137	32	Expected end of value but found "<".
+error	138	73	Unexpected "{" in "background-position-y" declaration
 error	155	7	Unexpected ""TEST PASSED: parser recovery"".
 error	175	24	Expected "]" but found ""TEST PASSED: parser recovery"".
 warning	180	5	Non-alphabetical order: "--foo".
