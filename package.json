@@ -30,7 +30,7 @@
     "svg2ttf": "^6.0.3",
     "svgicons2svgfont": "^12.0.0",
     "sync-version": "^1.0.1",
-    "web-ext": "^7.7.0"
+    "web-ext": "^7.9.0"
   },
   "scripts": {
     "lint": "eslint \"**/*.js\" --cache",
