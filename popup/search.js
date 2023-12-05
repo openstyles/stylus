@@ -169,7 +169,6 @@
   }
 
   function onStyleDeleted({style: {id}}) {
-    restoreScrollPosition();
     const r = results.find(r => r._styleId === id);
     if (r) {
       if (r.f) API.uso.pingback(rid2id(r.i), false);
@@ -179,7 +178,6 @@
   }
 
   async function onStyleInstalled({style}) {
-    restoreScrollPosition();
     const ri = await API.styles.getRemoteInfo(style.id);
     const r = ri && results.find(r => ri[0] === r.i);
     if (r) {
@@ -503,7 +501,6 @@
     const installButton = $('.search-result-install', entry);
 
     showSpinner(entry);
-    saveScrollPosition(entry);
     installButton.disabled = true;
     entry.style.setProperty('pointer-events', 'none', 'important');
     delete entry.dataset.error;
@@ -526,18 +523,8 @@
   }
 
   function uninstall() {
-    const {entry, result} = $resultEntry(this);
-    saveScrollPosition(entry);
+    const {result} = $resultEntry(this);
     API.styles.delete(result._styleId);
-  }
-
-  function saveScrollPosition(entry) {
-    dom.scrollPos = entry.getBoundingClientRect().top;
-    dom.scrollPosElement = entry;
-  }
-
-  function restoreScrollPosition() {
-    window.scrollBy(0, dom.scrollPosElement.getBoundingClientRect().top - dom.scrollPos);
   }
 
   /**
