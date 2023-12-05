@@ -255,6 +255,7 @@ a.configure[target="_blank"] .i-config {
 #menu > div {
   background-color: var(--bg);
   border: solid 2px rgba(128, 128, 128, .5);
+  max-width: 100%;
 }
 #menu > div > * {
   padding: .75em 1em .5em;
