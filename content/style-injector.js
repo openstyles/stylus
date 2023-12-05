@@ -182,7 +182,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
       el = new CSSStyleSheet({media: id});
       setTextAndName(el, style);
       const iOld = findAssId(id);
-      if (iOld >= 0) ass[iOld].mediaText += '-old';
+      if (iOld >= 0) ass[iOld].media.mediaText += '-old';
       return el;
     }
     if (!creationDoc && (el = initCreationDoc(style))) {
@@ -257,7 +257,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
   function findAssId(id) {
     for (let i = 0; i < ass.length; i++) {
       try {
-        if (ass[i].mediaText === id) return i;
+        if (ass[i].media.mediaText === id) return i;
       } catch (err) {}
     }
     return -1;
