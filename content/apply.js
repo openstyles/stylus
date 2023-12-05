@@ -30,7 +30,7 @@
   let matchUrl = isFrameNoUrl
     ? parent.location.href.split('#')[0]
     : location.href;
-  let isOrphaned;
+  let isOrphaned, orphanCleanup;
   let offscreen;
   // firefox doesn't orphanize content scripts so the old elements stay
   if (!CHROME) styleInjector.clearOrphans();
@@ -77,7 +77,7 @@
   addEventListener('pageshow', onBFCache);
 
   if (!chrome.tabs) {
-    dispatchEvent(new Event(chrome.runtime.id));
+    dispatchEvent(new CustomEvent(chrome.runtime.id, {detail: orphanCleanup = Math.random()}));
     addEventListener(chrome.runtime.id, orphanCheck, true);
   }
 
@@ -95,6 +95,10 @@
     else data = !isFrameSameOrigin && !isXml && !chrome.tabs && tryCatch(getStylesViaXhr);
     // XML in Chrome will be auto-converted to html later, so we can't style it via XHR now
     await applyStyles(data);
+    if (orphanCleanup) {
+      dispatchEvent(new Event(orphanCleanup));
+      orphanCleanup = false;
+    }
   }
 
   async function applyStyles(data) {
@@ -104,8 +108,8 @@
     Object.assign(own, window[Symbol.for(SYM_ID)] = data);
     if (!isFrame && own.cfg.top === '') own.cfg.top = location.origin; // used by child frames via parentStyles
     if (!isFrame && own.cfg.dark !== mqDark.matches) mqDark.onchange(mqDark);
-    if (styleInjector.list.length) await styleInjector.replace(own);
-    else if (!own.cfg.off) await styleInjector.apply(own);
+    if (styleInjector.list.length) styleInjector.replace(own);
+    else if (!own.cfg.off) styleInjector.apply(own);
     styleInjector.toggle(!own.cfg.off);
   }
 
@@ -258,7 +262,7 @@
     if (offscreen) for (const fn of offscreen) fn();
     offscreen = null;
     isOrphaned = true;
-    setTimeout(styleInjector.clear, 1000); // avoiding FOUC
+    styleInjector.shutdown(evt.detail);
     tryCatch(msg.off, applyOnMessage);
   }
 })();

@@ -58,6 +58,8 @@ declare interface InjectedStyle {
   id: number,
   code: string[],
   name: string,
+  /** Added in style-injector */
+  el?: HTMLStyleElement|CSSStyleSheet;
 }
 
 declare interface InjectionConfig {
