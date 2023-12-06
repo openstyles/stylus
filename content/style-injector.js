@@ -18,18 +18,23 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
   const PATCH_ID = 'transition-patch';
   const kAss = 'adoptedStyleSheets';
   const wrappedDoc = document.wrappedJSObject || document;
+  const FF = wrappedDoc !== document;
   // styles are out of order if any of these elements is injected between them
   // except `style` on our own page as it contains overrides
   const ORDERED_TAGS = new Set(['head', 'body', 'frameset', !isExt && 'style', 'link']);
   const docRewriteObserver = RewriteObserver(updateRoot);
   const docRootObserver = RootObserver(restoreOrder);
   const toSafeChar = c => String.fromCharCode(0xFF00 + c.charCodeAt(0) - 0x20);
-  const getAss = () => Object.isExtensible(ass) ? ass : ass.slice(); // eslint-disable-line no-use-before-define
   /** @type {InjectedStyle[]} */
   const list = [];
   /** @type {Map<number,InjectedStyle>} */
   const table = new Map();
-  let /** @type {CSSStyleSheet[]} */ass;
+  /** @type {CSSStyleSheet[]} V1: frozen array in old Chrome, the reference changes */
+  let ass;
+  /** @type {CSSStyleSheet[]} V2: mutable array, the reference doesn't change */
+  let assV2;
+  /** @type {(haystack: CSSStyleSheet[], needle: CSSStyleSheet) => number} */
+  let assIndexOf;
   let root = document.documentElement;
   let isEnabled = true;
   let isTransitionPatched = chrome.app && CSS.supports('accent-color', 'red'); // Chrome 93
@@ -87,13 +92,13 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
 
   function addElement(el, before) {
     if (ass) {
-      const sheets = getAss();
-      let i = sheets.indexOf(el);
+      const sheets = assV2 || wrappedDoc[kAss];
+      let i = assIndexOf(sheets, el);
       if (i >= 0) el = sheets.splice(i, 1)[0];
-      i = before ? sheets.indexOf(before) : -1;
+      i = before ? assIndexOf(sheets, before) : -1;
       if (i >= 0) sheets.splice(i, 0, el);
       else sheets.push(el);
-      if (sheets !== ass) wrappedDoc[kAss] = sheets;
+      if (!assV2) wrappedDoc[kAss] = sheets;
     } else {
       updateRoot().insertBefore(el, before);
     }
@@ -112,11 +117,11 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     if (el.remove) {
       el.remove();
     } else if (ass) {
-      const sheets = getAss();
-      const i = sheets.indexOf(el);
+      const sheets = assV2 || wrappedDoc[kAss];
+      const i = assIndexOf(sheets, el);
       if (i >= 0) {
         sheets.splice(i, 1);
-        if (sheets !== ass) wrappedDoc[kAss] = sheets;
+        if (!assV2) wrappedDoc[kAss] = sheets;
       }
     }
   }
@@ -129,9 +134,12 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
 
   function replaceAss(readd) {
     const elems = list.map(s => s.el);
-    const res = ass.filter(arrItemNotIn, new Set(elems));
+    const res = FF ? cloneInto([], wrappedDoc) : []; /* global cloneInto */
+    for (let arr = assV2 || wrappedDoc[kAss], i = 0, el; i < arr.length && (el = arr[i]); i++) {
+      if (assIndexOf(elems, el) < 0) res.push(el);
+    }
     if (readd) res.push(...elems);
-    ass = wrappedDoc[kAss] = res;
+    wrappedDoc[kAss] = res;
   }
 
   function applyStyles(isReplace, {cfg, sections}) {
@@ -191,11 +199,6 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     return c !== this[i];
   }
 
-  /** @this {Set} */
-  function arrItemNotIn(item) {
-    return !this.has(item);
-  }
-
   function createStyle(style) {
     let el;
     let {id} = style;
@@ -203,7 +206,9 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
       id = MEDIA + id;
       el = new CSSStyleSheet({media: id});
       setTextAndName(el, style);
-      for (const {media: m} of ass) if (m.mediaText === id) m.mediaText += '-old';
+      for (let arr = assV2 || wrappedDoc[kAss], i = 0, m; i < arr.length; i++) {
+        if ((m = arr[i].media).mediaText === id) m.mediaText += '-old';
+      }
       return el;
     }
     if (!creationDoc && (el = initCreationDoc(style))) {
@@ -275,6 +280,19 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     onUpdate();
   }
 
+  function initAss() {
+    if (assIndexOf) return;
+    if (Object.isExtensible(ass)) assV2 = ass;
+    assIndexOf = !FF
+      ? Object.call.bind([].indexOf)
+      : (arr, {media: {mediaText: id}}) => {
+        for (let i = 0; i < arr.length; i++) {
+          if (arr[i].media.mediaText === id) return i;
+        }
+        return -1;
+      };
+  }
+
   /*
   FF59+ workaround: allow the page to read our sheets, https://github.com/openstyles/stylus/issues/461
   First we're trying the page context document where inline styles may be forbidden by CSP
@@ -296,9 +314,9 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
           if (ok) return;
         } catch (err) {}
       }
-      if (retry && ffCsp) { // ffCsp bug got fixed
+      if (retry && ffCsp && (ass = wrappedDoc[kAss])) { // ffCsp bug got fixed
+        initAss();
         console.debug('Stylus switched to document.adoptedStyleSheets due to a strict CSP of the page');
-        ass = wrappedDoc[kAss];
         return createStyle(style);
       }
       creationDoc = document;
@@ -319,8 +337,12 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     if (!el) {
       bad = false;
     } else if (ass) {
-      for (let i = ass.length - list.length; i < ass.length; i++) {
-        if (i < 0 || ass[i] !== list[i].el) {
+      if (!assV2) ass = wrappedDoc[kAss];
+      for (let len = list.length, base = ass.length - len, i = 0; i < len; i++) {
+        if (base < 0 || (
+          !FF ? ass[base + i] !== list[i].el
+            : ass[base + i].media.mediaText !== list[i].el.media.mediaText
+        )) {
           bad = true;
           break;
         }
@@ -363,6 +385,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     if (!ass !== !cfg.ass) {
       removeAllElements();
       ass = ass ? null : wrappedDoc[kAss];
+      if (ass) initAss();
       for (const s of list) s.el = createStyle(s);
       addAllElements();
     }
