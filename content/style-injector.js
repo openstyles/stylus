@@ -92,7 +92,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
 
   function addElement(el, before) {
     if (ass) {
-      const sheets = assV2 || wrappedDoc[kAss];
+      const sheets = assV2 || wrappedDoc[kAss].slice();
       let i = assIndexOf(sheets, el);
       if (i >= 0) el = sheets.splice(i, 1)[0];
       i = before ? assIndexOf(sheets, before) : -1;
@@ -117,7 +117,7 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     if (el.remove) {
       el.remove();
     } else if (ass) {
-      const sheets = assV2 || wrappedDoc[kAss];
+      const sheets = assV2 || wrappedDoc[kAss].slice();
       const i = assIndexOf(sheets, el);
       if (i >= 0) {
         sheets.splice(i, 1);
