@@ -308,8 +308,24 @@
     'marker-start': 1,
     'mask': '[ [ none | <image> ] || <position> [ / <bg-size> ]? || <repeat-style> || ' +
       '<geometry-box> || [ <geometry-box> | no-clip ] || ' +
-      '[ add | subtract | intersect | exclude ] || [ alpha | luminance | match-source ] ]#',
+      '<compositing-operator> || <masking-mode> ]#',
+    'mask-border': '<mask-border-source> ||' +
+      '<mask-border-slice> [ / <mask-border-width>? [ / <mask-border-outset> ]? ]? ||' +
+      '<mask-border-repeat> || <mask-border-mode>',
+    'mask-border-mode': '<mask-type>',
+    'mask-border-outset': '[ <len> | <num> ]{1,4}',
+    'mask-border-repeat': '[ stretch | repeat | round | space ]{1,2}',
+    'mask-border-slice': '<num-pct>{1,4} fill?',
+    'mask-border-source': 'none | <image>',
+    'mask-border-width': '[ <len-pct> | <num> | auto ]{1,4}',
+    'mask-clip': '[ <coord-box> | no-clip ]#',
+    'mask-composite': '<compositing-operator>#',
     'mask-image': '[ none | <image> ]#',
+    'mask-mode': '<masking-mode>#',
+    'mask-origin': '<coord-box>#',
+    'mask-position': '<position>#',
+    'mask-repeat': '<repeat-style>#',
+    'mask-size': '<bg-size>#',
     'mask-type': 'luminance | alpha',
     'max-height': 'none | <width-height>',
     'max-width': 'none | <width-height>',
@@ -847,7 +863,7 @@
     '<box>': 'padding-box | border-box | content-box',
     '<box-fsv>': 'fill-box | stroke-box | view-box',
     '<color>': '<named-or-hex-color> | <fn:color>',
-    '<coord-box>': '<box> | <box-fsv>',
+    '<compositing-operator>': 'add | subtract | intersect | exclude',
     '<contain-intrinsic>': 'auto? [ none | <len> ]',
     '<content-distribution>': 'space-between | space-around | space-evenly | stretch',
     '<content-list>':
@@ -857,6 +873,7 @@
       'open-quote | close-quote | no-open-quote | no-close-quote | ' +
       'target-counter() | target-counters() | target-text() ]+',
     '<content-position>': 'center | start | end | flex-start | flex-end',
+    '<coord-box>': '<box> | <box-fsv>',
     '<counter>': '[ <ident-not-none> <int>? ]+ | none',
     '<dasharray>': M => M.alt([M.term('<len-pct0+>'), M.term('<num0+>')])
       .braces(1, Infinity, '#', M.term(',').braces(0, 1, '?')),
@@ -916,6 +933,7 @@
     '<inset-arg>': '<len-pct>{1,4} <border-radius-round>?',
     '<line-height>': '<num> | <len-pct> | normal',
     '<line-names>': '"[" <ident-for-grid> "]"',
+    '<masking-mode>': 'alpha | luminance | match-source',
     '<overflow-position>': 'unsafe | safe',
     '<overflow>': '<vis-hid> | clip | scroll | auto | overlay', // TODO: warning about `overlay`
     '<overscroll>': 'contain | none | auto',
