@@ -166,7 +166,6 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
 
   function updateWidgetStyle() {
     funcHeight = 0;
-    const MIN_LUMA = .1;
     const MIN_LUMA_DIFF = .4;
     const color = {
       wrapper: colorMimicry(cm.display.wrapper, {
@@ -205,10 +204,7 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
       }
       ${C_CONTAINER} input,
       ${C_CONTAINER} select {
-        background: ${
-          color.wrapper.bg.replace(/[^,]+$/, '') +
-          Math.max(MIN_LUMA, Math.pow(color.gutter.bgLuma - MIN_LUMA * 2, 2)).toFixed(2)
-        });
+        background: ${color.wrapper.bg /* no transparency for simplicity + it's bugged in FF*/};
         border: ${borderStyleForced};
         transition: none;
         color: ${fore};

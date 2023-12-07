@@ -302,7 +302,6 @@ class SectionTarget {
     editor.toggleRegexp(this.valueEl, val);
     this.type = val;
     this.section.emitChange('apply');
-    this.validate();
     this.toggleAll();
   }
 
