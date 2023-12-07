@@ -19,17 +19,12 @@ for (const [id, init, tpl] of [
   ['#styleOpts', StyleSettings, 'styleSettings'],
 ]) {
   const el = $(id, t.template.body);
-  const {pref} = el.dataset;
-  const onOpen = (key, val) => {
-    if (pref ? val : el.open) {
-      if (pref) prefs.unsubscribe(key, onOpen);
-      else val.disconnect();
-      el.append($create('main', t.template[tpl]));
-      init(el);
-    }
-  };
-  if (pref) prefs.subscribe(pref, onOpen, true);
-  else new MutationObserver(onOpen).observe(el, {attributes: true, attributeFilter: ['open']});
+  const mo = new MutationObserver(() => {
+    mo.disconnect();
+    el.append($create('main', t.template[tpl]));
+    init(el);
+  });
+  mo.observe(el, {attributes: true, attributeFilter: ['open']});
 }
 
 function StyleSettings(ui) {

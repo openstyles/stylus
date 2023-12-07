@@ -954,11 +954,11 @@ i,
   }
   #details-wrapper details[open] {
     margin-top: 0;
-    z-index: 1000;
+    z-index: 50;
   }
   #details-wrapper details[open]:hover,
   #details-wrapper details[open]:focus-within {
-    z-index: 1001;
+    z-index: 51;
   }
   #details-wrapper details[open] > summary {
     position: static;
