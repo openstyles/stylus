@@ -20,6 +20,7 @@ async function configDialog(style) {
 
   const AUTOSAVE_DELAY = 400;
   let saving = false;
+  let bodyStyle;
 
   const data = style.usercssData;
   const varsHash = deepCopy(data.vars) || {};
@@ -93,8 +94,7 @@ async function configDialog(style) {
   }
 
   function onhide() {
-    document.body.style.minWidth = '';
-    document.body.style.minHeight = '';
+    if (bodyStyle) document.body.style.cssText = bodyStyle;
     colorpicker.hide();
   }
 
@@ -434,6 +434,7 @@ async function configDialog(style) {
 
     width = constrain(MIN_WIDTH, 798, width + PADDING);
     height = constrain(MIN_HEIGHT, 598, height + PADDING);
+    bodyStyle = document.body.style.cssText;
     document.body.style.setProperty('min-width', width + 'px', 'important');
     document.body.style.setProperty('min-height', height + 'px', 'important');
   }
