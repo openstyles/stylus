@@ -204,7 +204,6 @@
   }
 
   async function start({keepYears} = {}) {
-    resetUI.timer = resetUI.timer || setTimeout(resetUI, 500);
     try {
       results = [];
       for (let retry = 0; !results.length && retry <= 2; retry++) {
@@ -226,8 +225,6 @@
     } catch (reason) {
       error(reason);
     }
-    clearTimeout(resetUI.timer);
-    resetUI.timer = 0;
   }
 
   function resetUI() {
