@@ -596,12 +596,9 @@
         }
         break;
       } catch (e) {
-        e = e.message; // CDN weirdly fails the first time, so we'll retry
-        if (!triesLeft || e !== 'Failed to fetch') {
-          error(e);
-          break;
-        }
-        await new Promise(cb => setTimeout(cb, 250));
+        // CDN weirdly fails the first time, so we'll retry
+        if (!triesLeft) error(e.message);
+        else await new Promise(cb => setTimeout(cb, 250));
       }
     }
     el = el.style.opacity = 0;
