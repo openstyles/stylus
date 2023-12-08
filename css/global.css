@@ -143,7 +143,7 @@ input:invalid {
 i {
   cursor: pointer;
   vertical-align: middle;
-  transition: color .5s;
+  transition: color .2s;
   font: 20px/1 icons;
   color: var(--c40);
 }
