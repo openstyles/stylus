@@ -61,15 +61,15 @@ warning	273	5	Duplicate "color".
 warning	445	12	Expected <named-or-hex-color> | color-mix() | color() | hsl() | hwb() | lab() | lch() | rgb() | hsla() | rgba() | oklab() | oklch() but found "chucknorris".
 warning	446	12	Expected <named-or-hex-color> | color-mix() | color() | hsl() | hwb() | lab() | lch() | rgb() | hsla() | rgba() | oklab() | oklch() but found "blak".
 warning	483	11	Id in selector.
-error	530	3	Nested selector must be inside a style rule.
-error	531	3	Unexpected "--foo".
-error	532	7	Expected FUNCTION, IDENT but found " ".
-error	533	10	Expected "{" but found ";".
-error	535	1	Expected "{" but found "}".
-warning	539	19	Non-alphabetical order: "margin".
-warning	544	33	Expected [ [ <url> | radial-gradient() | linear-gradient() | conic-gradient() | gradient() | repeating-radial-gradient() | repeating-linear-gradient() | repeating-conic-gradient() | repeating-gradient() | -webkit-cross-fade() | <string> ] [ <resolution> || type( <string> ) ] ]# but found ""foo.png" foo".
-warning	549	32	Expected [ [ root | nearest | self ] || [ block | inline | vertical | horizontal ] ]? but found "root2 block".
-error	569	15	Expected "{" but found "too".
-error	570	18	Expected "(" but found "{".
-error	571	8	Expected "{" but found "to".
-error	572	30	Unexpected ")".
+error	531	3	Nested selector must be inside a style rule.
+error	532	3	Unexpected "--foo".
+error	533	7	Expected FUNCTION, IDENT but found " ".
+error	534	10	Expected "{" but found ";".
+error	536	1	Expected "{" but found "}".
+warning	540	19	Non-alphabetical order: "margin".
+warning	545	33	Expected [ [ <url> | radial-gradient() | linear-gradient() | conic-gradient() | gradient() | repeating-radial-gradient() | repeating-linear-gradient() | repeating-conic-gradient() | repeating-gradient() | -webkit-cross-fade() | <string> ] [ <resolution> || type( <string> ) ] ]# but found ""foo.png" foo".
+warning	550	32	Expected [ [ root | nearest | self ] || [ block | inline | vertical | horizontal ] ]? but found "root2 block".
+error	570	15	Expected "{" but found "too".
+error	571	18	Expected "(" but found "{".
+error	572	8	Expected "{" but found "to".
+error	573	30	Unexpected ")".

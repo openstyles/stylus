@@ -519,6 +519,7 @@ heading"] {
       block-size: 100%;
       @layer support {
         > body {
+          color:/*[[foo]]*/;
           min-block-size: 100%;
         }
       }

@@ -1297,7 +1297,7 @@
         PDESC.value = tok.text.slice(1); define(tok, 'text', PDESC);
         PDESC.value = toStringPropHack; define(tok, 'toString', PDESC);
       }
-      if (t2.id !== COLON || (ti3 = stream.get().id) === COLON) {
+      if (t2.id !== COLON || (ti3 = stream.get(UVAR).id) === COLON) {
         while (stream.token !== tok) stream.unget();
         if (!inParens && (ti3 || isOwn(TT.nestSelBlock, t2.id))) return;
         if (tok.isVar) return true;
