@@ -497,7 +497,7 @@ function SectionsEditor() {
   } = {}) {
     Object.assign(editor, /** @namespace Editor */ {loading: true});
     if (replace) {
-      sections.forEach(s => s.remove(true));
+      sections.forEach(s => s.remove());
       sections.length = 0;
       container.textContent = '';
     }
@@ -556,7 +556,10 @@ function SectionsEditor() {
                    '-'.repeat(20) + '\n' +
                    lines.slice(0, MAX_LINES).map(s => clipString(s, 100)).join('\n') +
                    (lines.length > MAX_LINES ? '\n...' : '');
-      $('.deleted-section', section.el).title = title;
+      const del = section.elDel = t.template.deletedSection.cloneNode(true);
+      $('button', del).onclick = () => restoreSection(section);
+      del.title = title;
+      section.el.prepend(del);
       section.remove();
     }
     dirty.remove(section, section);
@@ -567,6 +570,7 @@ function SectionsEditor() {
 
   /** @param {EditorSection} section */
   function restoreSection(section) {
+    section.elDel.remove();
     section.restore();
     updateSectionOrder();
     section.onChange(updateLivePreview);
@@ -641,7 +645,6 @@ function SectionsEditor() {
     $('.clone-section', el).onclick = () => insertSectionAfter(section.getModel(), section);
     $('.move-section-up', el).onclick = () => moveSectionUp(section);
     $('.move-section-down', el).onclick = () => moveSectionDown(section);
-    $('.restore-section', el).onclick = () => restoreSection(section);
     cm.on('paste', maybeImportOnPaste);
   }
 

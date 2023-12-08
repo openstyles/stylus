@@ -347,11 +347,6 @@ i,
   animation-direction: reverse;
   animation-fill-mode: both;
 }
-.section > label::after {
-  counter-increment: codebox;
-  content: counter(codebox) ": " attr(data-text);
-  margin-left: 0.25rem;
-}
 .usercss .applies-to {
   border-width: 1px 0;
 }
@@ -360,8 +355,19 @@ i,
   margin-right: 0.25rem;
   font-size: 12px;
 }
-.code-label[data-text] {
-  font-weight: bold;
+.code-label {
+  counter-increment: codebox;
+}
+.code-label > :first-child::after {
+  content: " " counter(codebox) ": ";
+}
+.code-label.warn {
+  color: red;
+  font-size: 120%;
+}
+.code-label.warn i {
+  color: red;
+  margin-left: .25em;
 }
 #toc {
   counter-reset: codelabel;
@@ -402,12 +408,6 @@ i,
 }
 .deleted-section {
   margin: 0;
-}
-.section .deleted-section {
-  display: none;
-}
-.section.removed .deleted-section {
-  display: block;
 }
 .section.removed .code-label,
 .section.removed .applies-to,

@@ -10,6 +10,8 @@
 /* global t */// localization.js
 'use strict';
 
+const RX_META1 = /^!?\s*==userstyle==\s*$/i;
+
 /* exported EditorSection */
 
 class EditorSection {
@@ -33,6 +35,7 @@ class EditorSection {
     }, {
       value: sectionData.code,
     });
+    this.elLabelText = elLabel.lastChild;
     cm.el = el;
     cm.editorSection = this;
     el.me = this;
@@ -61,6 +64,7 @@ class EditorSection {
     initBeautifyButton($('.beautify-section', el), [cm]);
     prefs.subscribe('editor.toc.expanded', this.updateTocPrefToggled.bind(this), true);
     new ResizeGrip(cm); // eslint-disable-line no-use-before-define
+    EditorSection.updateTocEntry(this);
   }
 
   getModel() {
@@ -115,7 +119,7 @@ class EditorSection {
     if (origin === 'code' || !origin) {
       const label = sec.getLabelFromComment();
       if (te.label !== label) {
-        te.label = sec.elLabel.dataset.text = label;
+        te.label = sec.elLabelText.textContent = label;
         changed = true;
       }
     }
@@ -143,19 +147,16 @@ class EditorSection {
   }
 
   updateTocPrefToggled(key, val) {
-    this.changeListeners[val ? 'add' : 'delete'](this.updateTocEntryLazy);
     this.el[val ? 'on' : 'off']('focusin', this.updateTocFocus);
-    if (val) {
-      EditorSection.updateTocEntry(this);
-      if (this.el.contains(document.activeElement)) {
-        this.updateTocFocus();
-      }
+    if (val && this.el.contains(document.activeElement)) {
+      this.updateTocFocus();
     }
   }
 
   getLabelFromComment() {
     let cmt = '';
     let inCmt;
+    let elUC;
     this.cm.eachLine(({text}) => {
       let i = 0;
       if (!inCmt) {
@@ -166,7 +167,17 @@ class EditorSection {
         i += 2;
       }
       const j = text.indexOf('*/', i);
-      cmt = trimCommentLabel(text.slice(i, j >= 0 ? j : text.length));
+      text = text.slice(i, j >= 0 ? j : text.length);
+      cmt = trimCommentLabel(text);
+      elUC = this.elUC;
+      if (cmt && RX_META1.test(text)) {
+        if (elUC) elUC = null;
+        else this.elLabelText.after(elUC = this.elUC = t.template.usercssSection.cloneNode(true));
+      } else if (elUC) {
+        elUC.remove();
+        elUC = this.elUC = false;
+      }
+      if (elUC != null) this.elLabel.classList.toggle('warn', elUC);
       return j >= 0 || cmt;
     });
     return cmt;
@@ -249,6 +260,7 @@ class EditorSection {
     editor.dirty.modify(`section.${sec.id}.code`, sec.changeGeneration, cur);
     sec.changeGeneration = cur;
     sec.emitChange('code');
+    sec.updateTocEntryLazy();
   }
 
   static onSetSize(w, h) {

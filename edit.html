@@ -91,10 +91,7 @@
 
     <template data-id="section">
       <div class="section">
-        <p class="deleted-section">
-          <button class="restore-section" i18n="sectionRestore"></button>
-        </p>
-        <label i18n="sectionCode" class="code-label"></label>
+        <label class="code-label"><span i18n="sectionCode"></span><span></span></label>
         <div class="applies-to">
           <label i18n="appliesLabel, title:appliesHelp" data-cmd="note">
             <a class="applies-to-help" tabindex="0">
@@ -112,6 +109,14 @@
           <button class="beautify-section" i18n="styleBeautify"></button>
         </div>
       </div>
+    </template>
+
+    <template data-id="deletedSection">
+      <p class="deleted-section"><button i18n="sectionRestore"></button></p>
+    </template>
+
+    <template data-id="usercssSection">
+      <a data-cmd="note" i18n="title:sectionUserCSS"><i class=i-info></i></a>
     </template>
 
     <template data-id="searchReplaceDialog">
