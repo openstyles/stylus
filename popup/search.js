@@ -491,9 +491,7 @@
     delete entry.dataset.error;
     if (fmt) API.uso.pingback(id, PINGBACK_DELAY);
 
-    const updateUrl = fmt
-      ? `${URLS.usoaRaw[0]}usercss/${id}.user.css`
-      : `${URLS.usw}api/style/${id}.user.css`;
+    const updateUrl = URLS.makeUpdateUrl(fmt ? 'usoa' : 'usw', id);
     try {
       const sourceCode = await (await fetch(updateUrl)).text();
       const style = await API.usercss.install({sourceCode, updateUrl});

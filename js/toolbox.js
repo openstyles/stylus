@@ -75,6 +75,8 @@ const URLS = {
   // TODO: remove when "minimum_chrome_version": "61" or higher
   chromeProtectsNTP: CHROME >= 61,
 
+  rxGF: /^(https:\/\/)(?:update\.)?((?:greasy|sleazy)fork\.org\/scripts\/)(\d+)[^/]*\/code\/[^/]*\.user\.css$|$/,
+
   uso: 'https://userstyles.org/',
   usoApi: 'https://gateway.userstyles.org/styles/getStyle',
   usoJson: 'https://userstyles.org/styles/chrome/',
@@ -82,6 +84,7 @@ const URLS = {
   usoa: 'https://uso.kkx.one/',
   usoaRaw: [
     // The newest URL first!
+    'https://raw.githubusercontent.com/uso-archive/data/flomaster/data/',
     'https://cdn.jsdelivr.net/gh/uso-archive/data@flomaster/data/',
     'https://cdn.jsdelivr.net/gh/33kk/uso-archive@flomaster/data/',
     'https://raw.githubusercontent.com/33kk/uso-archive/flomaster/data/',
@@ -97,14 +100,15 @@ const URLS = {
     url &&
     url.startsWith(URLS.usw) &&
     +url.match(/\/(\d+)\.user\.css|$/)[1],
-  makeInstallUrl: url => {
-    let id;
-    return ((id = URLS.extractUsoaId(url))) ? `${URLS.usoa}style/${id}`
-      : ((id = URLS.extractUswId(url))) ? `${URLS.usw}style/${id}`
-        : /^(https:\/\/(?:greasy|sleazy)fork\.org\/scripts\/\d+)[^/]*\/code\/[^/]*\.user\.css$|$/
-          .exec(url)[1]
-        || '';
-  },
+  makeInstallUrl: (url, id) =>
+    url === 'usoa' || !id && (id = URLS.extractUsoaId(url)) ? `${URLS.usoa}style/${id}` :
+      url === 'usw' || !id && (id = URLS.extractUswId(url)) ? `${URLS.usw}style/${id}` :
+        url === 'gf' || !id && (id = URLS.rxGF.exec(url)) ? id[1] + id[2] + id[3] :
+          '',
+  makeUpdateUrl: (url, id) =>
+    url === 'usoa' || !id && (id = URLS.extractUsoaId(url)) ? `${URLS.usoaRaw[0]}usercss/${id}.user.css` :
+      url === 'usw' || !id && (id = URLS.extractUswId(url)) ? `${URLS.usw}api/style/${id}.user.css` :
+        '',
 
   supported: (url, allowOwn = true) => (
     url.startsWith('http') ||

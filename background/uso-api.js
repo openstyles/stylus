@@ -1,14 +1,13 @@
 /* global API */// msg.js
-/* global RX_META URLS stringAsRegExpStr */// toolbox.js
+/* global RX_META URLS */// toolbox.js
+/* global download */// common.js
 /* global styleMan */
 /* global usercssMan */
 'use strict';
 
 const usoApi = (() => {
   const pingers = {};
-  const fetchApi = async url => (await (await fetch(url)).json()).result;
   const getMd5Url = usoId => `https://update.userstyles.org/${usoId}.md5`;
-  const ordinalSort = (a, b) => a.ordinal - b.ordinal;
   return {
 
     delete(usoId) {
@@ -50,29 +49,14 @@ const usoApi = (() => {
     async toUsercss(usoId, varsUrl, css, dup, md5, md5Url) {
       let v;
       if (!dup) dup = false; // "polyfilling" for dup?.prop
-      const {updateUrl = URLS.usoApi + 'Css/' + usoId} = dup;
-      const [data, settings = []] = await Promise.all([
-        fetchApi(URLS.usoApi + '/' + usoId),
-        fetchApi(URLS.usoApi + 'CustomOptions/' + usoId),
+      const {updateUrl = URLS.makeUpdateUrl('usoa', usoId)} = dup;
+      const jobs = [
         !dup && usoApi.getUpdatability(usoId, true).then(res => ({dup, md5, md5Url} = res)),
-        !css && fetchApi(updateUrl).then(res => (css = res)),
-      ]);
-      const descr = JSON.stringify(data.description.trim());
+        !css && download(updateUrl).then(res => (css = res)),
+      ].filter(Boolean);
+      if (jobs[0]) await Promise.all(jobs);
       const varMap = {};
-      const varDefs = settings.sort(ordinalSort).map(makeVar, varMap).join('');
-      const sourceCode = `\
-/* ==UserStyle==
-@name         ${data.name}
-@namespace    USO Archive
-@version      ${data.updated.replace(/-/g, '').replace(/[T:]/g, '.').slice(0, 14)}
-@description  ${/^"['`]|\\/.test(descr) ? descr : descr.slice(1, -1)}
-@author       ${((v = data.user)) ? v.name + (((v = v.paypalEmail)) ? `<${v}>` : '') : '?'}
-@license      ${makeLicense(data.license)}
-${varDefs ? `\
-@preprocessor uso${varDefs}\n` : ''}`.replace(/\*\//g, '*\\/') + `\
-==/UserStyle== */
-${varDefs ? patchCss(css, varMap) : css}`;
-      const {style} = await usercssMan.build({sourceCode, metaOnly: true});
+      const {style} = await usercssMan.build({sourceCode: css, metaOnly: true});
       const vars = (v = varsUrl || dup.updateUrl) && useVars(style, v, varMap);
       if (dup) {
         return style;
@@ -114,7 +98,7 @@ ${varDefs ? patchCss(css, varMap) : css}`;
 
   function findStyle(usoId, md5Url = getMd5Url(usoId)) {
     return styleMan.find({md5Url})
-      || styleMan.find({installationUrl: `${URLS.usoa}style/${usoId}`});
+      || styleMan.find({installationUrl: URLS.makeInstallUrl('usoa', usoId)});
   }
 
   async function ping(id, resolve) {
@@ -132,69 +116,7 @@ ${varDefs ? patchCss(css, varMap) : css}`;
     return res;
   }
 
-  function makeLicense(s) {
-    return !s ? 'NO-REDISTRIBUTION' :
-      s === 'publicdomain' ? 'CC0-1.0' :
-        s.startsWith('ccby') ? `${s.toUpperCase().match(/(..)/g).join('-')}-4.0` :
-          s;
-  }
-
-  function makeVar({
-    label,
-    settingType: type,
-    installKey: ik,
-    styleSettingOption: opts,
-  }) {
-    const map = this;
-    let value, suffix;
-    ik = makeKey(ik, map);
-    label = JSON.stringify(label);
-    switch (type) {
-
-      case 'color':
-        value = opts[0].value;
-        break;
-
-      case 'text':
-        value = JSON.stringify(opts[0].value);
-        break;
-
-      case 'image': {
-        const ikCust = `${ik}-custom`;
-        opts.push({
-          label: 'Custom',
-          installKey: `${ikCust}-dropdown`,
-          value: `/*[[${ikCust}]]*/`,
-        });
-        suffix = `\n@advanced text ${ikCust} ${label.slice(0, -1)} (Custom)" "https://foo.com/123.jpg"`;
-        type = 'dropdown';
-      } // fallthrough
-
-      case 'dropdown':
-        value = '';
-        for (const o of opts.sort(ordinalSort)) {
-          const def = o.default ? '*' : '';
-          const val = o.value;
-          const s = `  ${makeKey(o.installKey, map)} ${JSON.stringify(o.label + def)} <<<EOT${
-            val.includes('\n') ? '\n' : ' '}${val} EOT;\n`;
-          value = def ? s + value : value + s;
-        }
-        value = `{\n${value}}`;
-        break;
-
-      default:
-        value = '"ERROR: unknown type"';
-    }
-    return `\n@advanced ${type} ${ik} ${label} ${value}${suffix || ''}`;
-  }
-
   function optByName(v, name) {
     return v.options.find(o => o.name === name);
-  }
-
-  function patchCss(css, map) {
-    const rxsKeys = stringAsRegExpStr(Object.keys(map).join('\n')).replace(/\n/g, '|');
-    const rxUsoVars = new RegExp(String.raw`(/\*\[\[)(${rxsKeys})(?=]]\*\?/)`, 'g');
-    return css.replace(rxUsoVars, (s, a, key) => a + map[key]);
   }
 })();

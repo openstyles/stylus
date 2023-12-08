@@ -41,8 +41,8 @@ bgReady.all.then(() => {
     if (!val) return;
     const types = ['main_frame'];
     const urls = [
-      URLS.usw + 'api/style/*.user.*',
-      URLS.usoaRaw[0] + 'usercss/*.user.css',
+      URLS.makeUpdateUrl('usw', '*').replace('.css', '.*'),
+      URLS.makeUpdateUrl('usoa', '*'),
     ];
     for (const [host, val] of Object.entries(maybeDistro)) {
       let {glob} = val;
