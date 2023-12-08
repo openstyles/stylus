@@ -2,7 +2,7 @@
 /* global API */// msg.js
 /* global CODEMIRROR_THEMES */
 /* global CodeMirror */
-/* global URLS clipString closeCurrentTab deepEqual sessionStore */// toolbox.js
+/* global URLS clipString closeCurrentTab deepEqual sessionStore tryURL */// toolbox.js
 /* global compareVersion */// cmpver.js
 /* global messageBox */
 /* global prefs */
@@ -117,8 +117,10 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
 
   // set updateUrl
   const checker = $('.set-update-url input[type=checkbox]');
-  const updateUrl = new URL(style.updateUrl || initialUrl);
-  if (dup && dup.updateUrl === updateUrl.href) {
+  const updateUrl = tryURL(style.updateUrl || initialUrl || dup && dup.updateUrl);
+  if (!updateUrl) {
+    checker.disabled = true;
+  } else if (dup && dup.updateUrl === updateUrl.href) {
     checker.checked = true;
     // there is no way to "unset" updateUrl, you can only overwrite it.
     checker.disabled = true;
@@ -130,14 +132,14 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
     style.updateUrl = checker.checked ? updateUrl.href : null;
   };
   checker.onchange();
-  $('.set-update-url p').textContent = clipString(updateUrl.href, 300);
+  $('.set-update-url p').textContent = clipString(updateUrl.href || '', 300);
 
   // set prefer scheme
   $('#ss-scheme').onchange = e => {
     style.preferScheme = e.target.value;
   };
 
-  if (URLS.isLocalhost(initialUrl)) {
+  if (!initialUrl || URLS.isLocalhost(initialUrl)) {
     $('.live-reload input').onchange = liveReload.onToggled;
   } else {
     $('.live-reload').remove();
@@ -165,8 +167,9 @@ function updateMeta(style, dup = installedDup) {
     !dup ? 'install' :
     versionTest > 0 ? 'update' :
     'reinstall');
-  $('.set-update-url').title = dup && dup.updateUrl &&
-    (t('installUpdateFrom', dup.updateUrl) || '').replace(/\S+$/, '\n$&');
+  if (dup && dup.updateUrl) {
+    $('.set-update-url').title = t('installUpdateFrom', dup.updateUrl).replace(/\S+$/, '\n$&');
+  }
   $('.meta-name').textContent = data.name;
   $('.meta-version').textContent = data.version;
   $('.meta-description').textContent = data.description;

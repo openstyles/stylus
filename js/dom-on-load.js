@@ -1,5 +1,5 @@
 /* global $$ $ $create focusA11y getEventKeyName moveFocus waitForSelector */// dom.js
-/* global CHROME clamp debounce */// toolbox.js
+/* global CHROME clamp debounce tryURL */// toolbox.js
 /* global msg */
 /* global prefs */
 /* global t */// localization.js
@@ -37,6 +37,37 @@
   const elOff = $('#disableAll-label'); // won't hide if already shown
   if (elOff) prefs.subscribe('disableAll', () => (elOff.dataset.persist = ''));
   waitForSelector('#header').then(() => require(['/js/header-resizer']));
+
+  const getFSH = DataTransferItem.prototype.getAsFileSystemHandle;
+  if (getFSH) {
+    addEventListener('dragover', e => {
+      if (e.dataTransfer.types.includes('Files')) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, true);
+    addEventListener('drop', async e => {
+      const dt = e.dataTransfer;
+      const file = dt.files[0];
+      if (typeof importFromFile === 'function' && file.type.includes('json')) {
+        document.body.ondrop(e);
+        return;
+      }
+      if (!/\.(css|styl|less)$/i.test(file.name)) {
+        return;
+      }
+      e.preventDefault();
+      e.stopPropagation();
+      const path = '/install-usercss.html';
+      // Some apps provide the file's URL in a text dataTransfer item.
+      const url = tryURL(dt.getData('text')).href;
+      const handle = await getFSH.call([].find.call(dt.items, v => v.kind === 'file'));
+      const wnd = window.open(path);
+      // Transfer the handle to the new window (required in some versions of Chrome)
+      const {structuredClone} = wnd; // Chrome 98+
+      (wnd.fsh = structuredClone ? structuredClone(handle) : handle)._url = url;
+    }, true);
+  }
 
   function changeFocusedInputOnWheel(event) {
     const el = document.activeElement;

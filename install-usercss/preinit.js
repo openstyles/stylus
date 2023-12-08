@@ -7,13 +7,23 @@
 const preinit = (() => {
   const params = new URLSearchParams(location.search);
   const tabId = params.has('tabId') ? Number(params.get('tabId')) : -1;
-  const initialUrl = params.get('updateUrl');
+  /** @type {FileSystemFileHandle} */
+  const fsh = window.fsh;
+  const initialUrl = fsh ? fsh._url : params.get('updateUrl');
 
   /** @type function(?options):Promise<?string> */
   let getData;
   /** @type {Promise<?string>} */
   let firstGet;
-  if (tabId < 0) {
+  let oldCode = null;
+  if (fsh) {
+    let code;
+    getData = async () => oldCode !== (code = await (await fsh.getFile()).text()) && (oldCode = code);
+    firstGet = getData();
+  } else if (!initialUrl) {
+    if (history.length > 1) history.back();
+    else closeCurrentTab();
+  } else if (tabId < 0) {
     getData = DirectDownloader();
     firstGet = API.usercss.getInstallCode(initialUrl)
       .then(code => code || getData())
@@ -24,7 +34,6 @@ const preinit = (() => {
   }
 
   function DirectDownloader() {
-    let oldCode = null;
     const opts = {
       // Disabling cache on http://localhost otherwise the recheck delay gets too big
       headers: {'Cache-Control': 'no-cache, no-store'},
