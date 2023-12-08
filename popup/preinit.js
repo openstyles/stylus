@@ -9,13 +9,13 @@ const preinit = (async () => {
   if (!chrome.app && tab.status === 'loading' && tab.url === ABOUT_BLANK) {
     tab = await API.waitForTabUrl(tab.id);
   }
+  let url = tab.pendingUrl || tab.url || ''; // new Chrome uses pendingUrl while connecting
   const [ping0, frames] = await Promise.all([
-    msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0}),
+    url.startsWith(URLS.ownOrigin) || msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0}),
     browser.webNavigation.getAllFrames({tabId: tab.id}).then(sortTabFrames),
   ]);
   frames.ping0 = ping0;
   frames.tab = tab;
-  let url = tab.pendingUrl || tab.url || ''; // new Chrome uses pendingUrl while connecting
   if (url === 'chrome://newtab/' && !URLS.chromeProtectsNTP) {
     url = frames[0].url || '';
   }
