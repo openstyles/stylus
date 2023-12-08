@@ -17,8 +17,10 @@ const preinit = (() => {
   let firstGet;
   let oldCode = null;
   if (fsh) {
-    let code;
-    getData = async () => oldCode !== (code = await (await fsh.getFile()).text()) && (oldCode = code);
+    getData = async () => {
+      const code = await (await fsh.getFile()).text();
+      if (oldCode !== code) return (oldCode = code);
+    };
     firstGet = getData();
   } else if (!initialUrl) {
     if (history.length > 1) history.back();
