@@ -2,7 +2,7 @@
 /* global $entry tabURL */// popup.js
 /* global API */// msg.js
 /* global Events */
-/* global FIREFOX URLS clipString debounce isEmptyObj stringAsRegExp stringAsRegExpStr tryRegExp tryURL */// toolbox.js
+/* global URLS clipString debounce isEmptyObj stringAsRegExp stringAsRegExpStr tryRegExp tryURL */// toolbox.js
 /* global prefs */
 /* global styleFinder:true */// popup.js
 /* global t */// localization.js
@@ -154,18 +154,6 @@
       child.onclick = navOnClick[type];
       nav['_' + type] = child;
     }
-  }
-
-  if (FIREFOX) {
-    let lastShift;
-    window.on('resize', () => {
-      const scrollbarWidth = window.innerWidth - document.scrollingElement.clientWidth;
-      const shift = document.body.getBoundingClientRect().left;
-      if (!scrollbarWidth || shift === lastShift) return;
-      lastShift = shift;
-      document.body.style.setProperty('padding',
-        `0 ${scrollbarWidth + shift}px 0 ${-shift}px`, 'important');
-    }, {passive: true});
   }
 
   function onStyleDeleted({style: {id}}) {
