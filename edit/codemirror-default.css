@@ -12,6 +12,7 @@
   transition: box-shadow .1s;
   color: inherit;
   background-color: var(--bg);
+  font-size: 113%; /* most monospace fonts are optically smaller */
 }
 .CodeMirror-gutters {
   background-color: var(--c95);
