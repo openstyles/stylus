@@ -25,9 +25,9 @@ function createZip(suffix) {
   const mj = JSON.parse(fs.readFileSync(MANIFEST, 'utf8'));
   delete mj.key;
   if (suffix === 'chrome') {
-    delete mj.applications;
+    delete mj.browser_specific_settings;
   } else if (suffix === 'chrome-beta') {
-    delete mj.applications;
+    delete mj.browser_specific_settings;
     mj.name = 'Stylus (beta)';
   } else {
     for (const list of [
