@@ -76,7 +76,6 @@
       "match_about_blank": true,
       "js": [
         "content/style-injector.js",
-        "js/browser.js",
         "js/msg.js",
         "content/apply.js"
       ]
