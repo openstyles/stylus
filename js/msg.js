@@ -14,8 +14,7 @@
     extension: new Set(),
   };
   const loadBg = () => browser.runtime.getBackgroundPage().catch(() => false);
-  const isIgnorableError = RegExp.prototype.test.bind(
-    /Receiving end does not exist|The message port closed before/);
+  const rxIgnorableError = /Receiving end does not exist|The message port closed before/;
   const saveStack = () => new Error(); // Saving callstack prior to `await`
 
   const portReqs = {};
@@ -133,7 +132,7 @@
     } catch (e) {
       error = e;
     }
-    if (!error || isIgnorableError(err.message = error.message)) {
+    if (!error || rxIgnorableError.test(err.message = error.message)) {
       return data;
     }
     if (error.stack) err.stack = error.stack + '\n' + err.stack;
@@ -157,7 +156,7 @@
     try {
       return await apiSend(m);
     } catch (e) {
-      return bgReadying && isIgnorableError(e.message)
+      return bgReadying && rxIgnorableError.test(e.message)
         ? await bgReadying && apiSend(m)
         : Promise.reject(e);
     } finally {
