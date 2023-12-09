@@ -387,6 +387,13 @@ a:hover i {
 #write-style {
   cursor: pointer;
   overflow: hidden;
+  margin-right: calc(-1 * var(--outer-padding));
+}
+#write-style > div {
+  transition: opacity .25s .15s;
+}
+#write-style:not(:hover) > div {
+  opacity: .5;
 }
 #write-as {
   flex: 0;

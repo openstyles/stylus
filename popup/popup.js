@@ -48,6 +48,9 @@ prefs.subscribe('popup.stylesFirst', (key, stylesFirst) => {
   $.rootCL.toggle('styles-first', stylesFirst);
   $.rootCL.toggle('styles-last', !stylesFirst);
 }, true);
+prefs.subscribe('newStyleAsUsercss', (key, val) => {
+  $('#write-style-for').textContent = t(val ? 'optionsAdvancedNewStyleAsUsercss' : 'writeStyleFor');
+}, true);
 if (CHROME_POPUP_BORDER_BUG) {
   prefs.subscribe('popup.borders', toggleSideBorders, true);
 }
