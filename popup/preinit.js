@@ -1,5 +1,5 @@
 /* global API msg */// msg.js
-/* global URLS getActiveTab */// toolbox.js
+/* global CHROME URLS getActiveTab */// toolbox.js
 'use strict';
 
 const ABOUT_BLANK = 'about:blank';
@@ -10,10 +10,17 @@ const preinit = (async () => {
     tab = await API.waitForTabUrl(tab.id);
   }
   let url = tab.pendingUrl || tab.url || ''; // new Chrome uses pendingUrl while connecting
-  const [ping0, frames] = await Promise.all([
-    url.startsWith(URLS.ownOrigin) || msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0}),
-    browser.webNavigation.getAllFrames({tabId: tab.id}).then(sortTabFrames),
-  ]);
+  let promise;
+  const isOwn = url.startsWith(URLS.ownOrigin);
+  const jobs = [
+    isOwn
+      || (promise = msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0})),
+    isOwn && CHROME
+      ? getOwnFrames(tab.id, url) // getAllFrames doesn't work in Chrome on own pages
+      : (promise = browser.webNavigation.getAllFrames({tabId: tab.id})),
+  ];
+  const [ping0, frames] = promise ? await Promise.all(jobs) : jobs;
+  sortTabFrames(frames);
   frames.ping0 = ping0;
   frames.tab = tab;
   if (url === 'chrome://newtab/' && !URLS.chromeProtectsNTP) {
@@ -29,6 +36,13 @@ const preinit = (async () => {
   return {frames, styles, url};
 })();
 
+function getOwnFrames(tabId, url) {
+  const frames = [{frameId: 0, url}];
+  const [fw] = chrome.extension.getViews({tabId});
+  if (fw && fw[0]) frames.push({frameId: 1, parentFrameId: 0, url: fw[0].location.href});
+  return frames;
+}
+
 /* Merges the extra props from API into style data.
  * When `id` is specified returns a single object otherwise an array */
 async function getStyleDataMerged(url, id) {
@@ -41,6 +55,7 @@ async function getStyleDataMerged(url, id) {
 function sortTabFrames(frames) {
   const unknown = new Map(frames.map(f => [f.frameId, f]));
   const known = new Map([[0, unknown.get(0) || {frameId: 0, url: ''}]]);
+  const urls = new Set([ABOUT_BLANK]);
   unknown.delete(0);
   let lastSize = 0;
   while (unknown.size !== lastSize) {
@@ -53,12 +68,13 @@ function sortTabFrames(frames) {
     }
     lastSize = unknown.size; // guard against an infinite loop due to a weird frame structure
   }
-  const sortedFrames = [...known.values(), ...unknown.values()];
-  const urls = new Set([ABOUT_BLANK]);
-  for (const f of sortedFrames) {
-    if (!f.url) f.url = '';
-    f.isDupe = urls.has(f.url);
-    urls.add(f.url);
+  frames.length = 0;
+  for (const sortedFrames of [known, unknown]) {
+    for (const f of sortedFrames.values()) {
+      frames.push(f);
+      if (!f.url) f.url = '';
+      f.isDupe = urls.has(f.url);
+      urls.add(f.url);
+    }
   }
-  return sortedFrames;
 }
