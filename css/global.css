@@ -295,6 +295,16 @@ summary {
 .abs {
   position: absolute;
 }
+.no-stretch {
+  /* reuse the current width of the parent flexbox */
+  width: 0;
+  flex: auto;
+}
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 html:not(.all-disabled) body:not(#stylus-popup) #disableAll-label:not([data-persist]) {
   display: none;

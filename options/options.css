@@ -86,10 +86,6 @@ h2 {
 .items {
   width: 100%;
 }
-.no-stretch {
-  width: 0;
-  flex: auto;
-}
 label {
   display: flex;
   align-items: center;
@@ -208,8 +204,6 @@ a.icon:hover > i {
 }
 
 .sync-status {
-  width: 0; /* together with flex-grow makes it reuse the current width */
-  flex-grow: 1;
   padding-left: 1em;
   box-sizing: border-box;
 }

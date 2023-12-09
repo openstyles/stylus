@@ -271,9 +271,6 @@ a.configure[target="_blank"] .i-config {
 #menu header {
   font-weight: bold;
   background: var(--c90);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 #menu.delete header {
   background: rgba(255, 0, 0, .25);

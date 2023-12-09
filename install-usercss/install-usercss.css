@@ -348,8 +348,6 @@ li {
   }
   .set-update-url p {
     margin: 0 0 0 1rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
   .warning:not(:last-child) {
     border-bottom: 1px dashed #b57c7c;
@@ -364,11 +362,6 @@ li {
   }
   h1 {
     flex-wrap: nowrap;
-  }
-  .meta-name {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   .main {
     height: auto;
