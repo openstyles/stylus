@@ -31,14 +31,12 @@ const router = {
     history.pushState(state, null, url);
   },
 
-  update(replace) {
+  update() {
     const {buffer} = router;
     if (!buffer.length) {
       buffer.push(location.href);
     } else if (buffer[buffer.length - 1] === location.href && router.initialized) {
       return;
-    } else if (replace) {
-      buffer[buffer.length - 1] = location.href;
     } else if (buffer.length > 1 && buffer[buffer.length - 2] === location.href) {
       buffer.pop();
     } else {
@@ -91,7 +89,8 @@ const router = {
       else u.searchParams.delete(key);
     }
     history.replaceState(history.state, null, `${u}`);
-    router.update(true);
+    router.buffer.pop();
+    router.update();
   },
 
   watch(options, callback) {
@@ -108,9 +107,8 @@ const router = {
   },
 };
 
-document.on('DOMContentLoaded', () => router.update());
-window.on('popstate', () => router.update());
-window.on('hashchange', () => router.update());
+window.on('popstate', router.update);
+window.on('hashchange', router.update);
 msg.on(e => {
   if (e.method === 'pushState' && e.url !== location.href) {
     router.push(e.url);
