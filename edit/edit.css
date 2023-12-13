@@ -305,10 +305,7 @@ i,
   content-visibility: auto;
   contain-intrinsic-block-size: auto var(--cm-height);
 }
-.section > .applies-to {
-  content-visibility: auto;
-  contain-intrinsic-block-size: auto calc(var(--targets, 1) * (var(--input-height) + var(--target-gapY)));
-}
+.section > .applies-to li,
 .section > .edit-actions {
   content-visibility: auto;
   contain-intrinsic-block-size: auto var(--input-height);
@@ -337,6 +334,7 @@ i,
 }
 .edit-actions button {
   margin-right: .2rem;
+  height: var(--input-height);
 }
 .section:not(.removed) > label {
   padding-bottom: .25em;
@@ -519,9 +517,6 @@ i,
   list-style-type: none;
   align-items: center;
   padding: 1px 0; /* room for focus outline */
-}
-.applies-to,
-.applies-to li:nth-last-child(n + 2) {
   margin-bottom: var(--target-gapY);
 }
 .applies-to li.applies-to-everything {

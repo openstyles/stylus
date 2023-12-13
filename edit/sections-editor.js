@@ -158,8 +158,7 @@ function SectionsEditor() {
         headerOffset = Math.ceil(container.getBoundingClientRect().top + scrollY);
       }
       if (cmExtrasHeight == null) {
-        cmExtrasHeight = $('.resize-grip', wrapper).offsetHeight + // grip
-          wrapper.offsetHeight - wrapper.clientHeight; // borders
+        cmExtrasHeight = wrapper.offsetHeight - wrapper.clientHeight; // borders
       }
       contentHeight += cmExtrasHeight;
       cm.off('update', resize);
