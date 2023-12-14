@@ -28,7 +28,7 @@
     --accent-3: hsl(180, 30%, 18%);
     --input-bg: var(--c95);
     --gold1: darkgoldenrod;
-    --red1: hsl(0, 85%, 55%);
+    --red1: hsl(0, 100%, 65%);
   }
   button {
     background: linear-gradient(var(--c85), var(--c90));

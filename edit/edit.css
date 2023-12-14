@@ -133,14 +133,11 @@ html:not(.is-new-style) #heading::before {
   margin-right: 0;
 }
 
-#preview-errors {
-  background-color: red;
-  color: var(--bg);
-  padding: 0 6px;
-  border-radius: 9px;
-  margin-left: -.5em;
-  font-weight: bold;
+#preview-errors:not(:empty) {
+  color: var(--red1);
   cursor: pointer;
+  display: inline-block;
+  margin-right: var(--pad05);
 }
 
 i {
@@ -896,9 +893,6 @@ i,
   #heading,
   h2 {
     display: none;
-  }
-  #preview-errors {
-    margin: -2px .75em 0 -.25em !important;
   }
   #header.sticky #basic-info {
     margin: 0;

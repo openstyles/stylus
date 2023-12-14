@@ -37,7 +37,6 @@ async function SourceEditor() {
   const cm = cmFactory.create($('.single-editor'));
   const sectionFinder = MozSectionFinder(cm);
   const sectionWidget = MozSectionWidget(cm, sectionFinder);
-  editor.livePreview.init(preprocess);
   if (!style.id) setupNewStyle(await editor.template);
   createMetaCompiler(meta => {
     const {vars} = style.usercssData || {};
@@ -102,7 +101,7 @@ async function SourceEditor() {
             messageBoxProxy.alert(res.badRe, 'danger pre', t('styleBadRegexp'));
           }
         }
-        showLog(res);
+        showLog(res.log);
       } catch (err) {
         showSaveError(err);
       }
@@ -135,28 +134,16 @@ async function SourceEditor() {
   }
   editor.applyScrollInfo(cm); // WARNING! Place it after all cm.XXX calls that change scroll pos
 
-  async function preprocess(style) {
-    const res = await API.usercss.build({
-      styleId: style.id,
-      sourceCode: style.sourceCode,
-      assignVars: true,
-    });
-    showLog(res);
-    delete res.style.enabled;
-    return Object.assign(style, res.style);
-  }
-
   /** Shows the console.log output from the background worker stored in `log` property */
-  function showLog(data) {
-    if (data.log) data.log.forEach(args => console.log(...args));
-    return data;
+  function showLog(log) {
+    if (log) for (const args of log) console.log(...args);
   }
 
   function updateLivePreview() {
     if (!style.id) {
       return;
     }
-    editor.livePreview.update(Object.assign({}, style, {sourceCode: cm.getValue()}));
+    showLog(editor.livePreview(Object.assign({}, style, {sourceCode: cm.getValue()})));
   }
 
   function updateLinterSwitch() {

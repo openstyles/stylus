@@ -1,4 +1,4 @@
-/* global $$ $ messageBoxProxy setInputValue setupLivePrefs */// dom.js
+/* global $$ $ setInputValue setupLivePrefs */// dom.js
 /* global API */// msg.js
 /* global CODEMIRROR_THEMES */
 /* global CodeMirror */
@@ -329,13 +329,14 @@ function DirtyReporter() {
 }
 
 function LivePreview() {
+  const ID = 'editor.livePreview';
+  let errPos;
   let el;
   let data;
   let port;
-  let preprocess;
-  let enabled = prefs.get('editor.livePreview');
+  let enabled = prefs.get(ID);
 
-  prefs.subscribe('editor.livePreview', (key, value) => {
+  prefs.subscribe(ID, (key, value) => {
     if (!value) {
       if (port) {
         port.disconnect();
@@ -348,52 +349,62 @@ function LivePreview() {
     enabled = value;
   });
 
-  return {
-
-    /**
-     * @param {Function} [fn] - preprocessor
-     */
-    init(fn) {
-      preprocess = fn;
-    },
-
-    update(newData) {
-      if (!port) {
-        if (!enabled
-        || !newData.id // not saved
-        || !newData.enabled && data && !data.enabled // disabled both before and now
-        || !editor.dirty.isDirty()) {
-          return;
-        }
-        createPreviewer();
+  return newData => {
+    if (!port) {
+      if (!enabled
+      || !newData.id // not saved
+      || !newData.enabled && data && !data.enabled // disabled both before and now
+      || !editor.dirty.isDirty()) {
+        return;
       }
-      data = newData;
-      updatePreviewer(data);
-    },
+      createPreviewer();
+    }
+    data = newData;
+    updatePreviewer(data);
   };
 
   function createPreviewer() {
     port = chrome.runtime.connect({name: 'livePreview:' + editor.style.id});
     port.onDisconnect.addListener(() => (port = null));
     el = $('#preview-errors');
-    el.onclick = () => messageBoxProxy.alert(el.title, 'pre');
+    el.onclick = showError;
+  }
+
+  function showError() {
+    if (errPos) {
+      const cm = editor.getEditors()[0];
+      cm.setCursor(errPos);
+      cm.focus();
+    }
   }
 
   async function updatePreviewer(data) {
+    let res;
     try {
-      API.styles.preview(preprocess ? await preprocess(data) : data);
-      el.hidden = true;
+      res = await API.styles.preview(data);
+      el.textContent = '';
     } catch (err) {
+      const ucd = data.usercssData;
+      const pp = ucd && ucd.preprocessor;
+      const shift = err._varLines + 1 || 0;
+      errPos = pp && err.line && err.column
+        ? {line: err.line - shift, ch: err.column - 1}
+        : err.index;
       if (Array.isArray(err)) {
         err = err.map((e, a, b) => !(a = e.message) ? e : ((b = e.context)) ? `${a} in ${b}` : a).join('\n');
-      } else if (err && err.index != null) {
-        // FIXME: this would fail if editors[0].getValue() !== data.sourceCode
-        const pos = editor.getEditors()[0].posFromIndex(err.index);
-        err.message = `${pos.line}:${pos.ch} ${err.message || err}`;
+      } else {
+        err = err.message || `${err}`;
       }
-      el.title = err.message || `${err}`;
-      el.hidden = false;
+      if (errPos >= 0) {
+        // FIXME: this would fail if editors[0].getValue() !== data.sourceCode
+        errPos = editor.getEditors()[0].posFromIndex(errPos);
+      } else if (pp === 'stylus' && (errPos = err.match(/^\w+:(\d+):(\d+)(?:\n.+)+\s+(.+)/))) {
+        err = errPos[3];
+        errPos = {line: errPos[1] - shift, ch: errPos[2] - 1};
+      }
+      el.textContent = (errPos ? `${errPos.line + 1}:${errPos.ch + 1} ` : '') + err;
     }
+    return res;
   }
 }
 

@@ -342,9 +342,20 @@ const styleMan = (() => {
     },
 
     /** @param {StyleObj} style */
-    preview(style) {
+    async preview(style) {
+      let res = style.sourceCode || false;
+      if (res) {
+        res = await usercssMan.build({
+          styleId: style.id,
+          sourceCode: res,
+          assignVars: true,
+        });
+        delete res.style.enabled;
+        Object.assign(style, res.style);
+      }
       id2data(style.id).preview = style;
       broadcastStyleUpdated(style, 'editPreview');
+      return res.log;
     },
 
     /** @returns {Promise<StyleObj>} */

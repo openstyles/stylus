@@ -24,7 +24,7 @@ const BUILDERS = Object.assign(Object.create(null), {
       return new Promise((resolve, reject) => {
         const varDef = Object.keys(vars).map(key => `${key} = ${vars[key].value};\n`).join('');
         new StylusRenderer(varDef + source)
-          .render((err, output) => err ? reject(err) : resolve(output));
+          .render((err, output) => err ? reject(countVarLines(err, varDef)) : resolve(output));
       });
     },
   },
@@ -42,10 +42,11 @@ const BUILDERS = Object.assign(Object.create(null), {
       }
       require(['/vendor/less/less.min']); /* global less */
       const varDefs = Object.keys(vars).map(key => `@${key}:${vars[key].value};\n`).join('');
-      const res = await less.render(varDefs + source, {
-        math: 'parens-division',
-      });
-      return res.css;
+      try {
+        return (await less.render(varDefs + source, {math: 'parens-division'})).css;
+      } catch (err) {
+        throw countVarLines(err, varDefs);
+      }
     },
   },
 
@@ -139,6 +140,12 @@ async function compileUsercss(preprocessor, code, vars) {
     res.log = log;
   }
   return res;
+}
+
+function countVarLines(err, str) {
+  // var's value may include \n inside
+  err._varLines = str.match(/^/gm).length;
+  return err;
 }
 
 /**

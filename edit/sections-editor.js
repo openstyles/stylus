@@ -26,7 +26,6 @@ function SectionsEditor() {
 
   updateMeta();
   rerouteHotkeys.toggle(true); // enabled initially because we don't always focus a CodeMirror
-  editor.livePreview.init();
   $('#to-mozilla').on('click', showMozillaFormat);
   $('#to-mozilla-help').on('click', showToMozillaHelp);
   $('#from-mozilla').on('click', () => showMozillaFormatImport());
@@ -485,7 +484,7 @@ function SectionsEditor() {
   }
 
   function updateLivePreviewNow() {
-    editor.livePreview.update(getModel());
+    editor.livePreview(getModel());
   }
 
   async function initSections(src, {
