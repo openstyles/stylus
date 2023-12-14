@@ -189,6 +189,7 @@ const CSSLint = (() => {
         if (rule) rule.init(rule, parser, reporter);
       }
       try {
+        if (ruleset.doc) parser._stack.push(true);
         parser.parse(text, {reuseCache});
       } catch (ex) {
         reporter.error('Fatal error, cannot continue!\n' + ex.stack, ex, {});

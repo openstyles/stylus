@@ -147,6 +147,7 @@ linterMan.DEFAULTS = {
       validMode: mode => mode === 'css',
       getConfig: config => Object.assign({}, DEFAULTS.csslint, config),
       async lint(text, config) {
+        config.doc = !editor.isUsercss;
         const results = await worker.csslint(text, config);
         return results
           .map(({line, col: ch, message, rule, type: severity}) => line && {
