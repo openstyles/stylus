@@ -346,6 +346,12 @@
   "genericHistoryLabel": {
     "message": "履歴"
   },
+  "genericMaximum": {
+    "message": "最大値"
+  },
+  "genericMinimum": {
+    "message": "最小値"
+  },
   "genericNext": {
     "message": "次"
   },
@@ -398,7 +404,7 @@
     "message": "インポート"
   },
   "importPreprocessor": {
-    "message": "<code>@preprocessor</code>を含むスタイルは、クラシックモードでは機能しません。エディタをUsercssモードにしてください : 1) スタイルマネージャを開きます, 2)「Usercssとして」チェックボックスをONにします, 3)「新スタイルを作成」をクリックします"
+    "message": "<code>@preprocessor</code>を含むスタイルは、クラシックモードでは機能しません。エディタをUsercssモードにしてください : 1) スタイルマネージャを開きます, 2)「Usercssとして」チェックボックスをONにします, 3)「新スタイルを作成」をクリックします\n\nとにかくインポートしますか？"
   },
   "importPreprocessorTitle": {
     "message": "@preprocessorの潜在的な問題"
@@ -1176,6 +1182,9 @@
   },
   "sectionRestore": {
     "message": "削除したセクションを復旧"
+  },
+  "sectionUserCSS": {
+    "message": "以前のセクションごとのエディタは、UserCSSの文法をサポートしていません。それを使う場合には、まず、マネージャかポップアップでuserCSSのチェックボックスをONにし、新しいスタイルを作成してください。それから、現在のコードを、このエディタ上でエクスポートボタンをクリックしてコピーしてください。"
   },
   "sections": {
     "message": "セクション"

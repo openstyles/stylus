@@ -362,6 +362,12 @@
   "genericHistoryLabel": {
     "message": "Geschiedenis"
   },
+  "genericMaximum": {
+    "message": "maximaal"
+  },
+  "genericMinimum": {
+    "message": "minimaal"
+  },
   "genericNext": {
     "message": "Volgende"
   },
@@ -1180,6 +1186,9 @@
   },
   "sectionRestore": {
     "message": "Verwijderde sectie herstellen"
+  },
+  "sectionUserCSS": {
+    "message": "De klassieke in secties verdeelde editor ondersteunt geen UserCSS-syntaxis. Als u dit wilt gebruiken, vink dan dan eerst in de beheerder of pop-up het selectievakje 'userCSS' aan en maak daarna een nieuwe stijl aan. Kopieer dan uw huidige code door op de knop Exporteren in deze editor te klikken."
   },
   "sections": {
     "message": "Secties"

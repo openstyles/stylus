@@ -384,6 +384,9 @@
   "genericHistoryLabel": {
     "message": "Historia"
   },
+  "genericMaximum": {
+    "message": "maksimum"
+  },
   "genericNext": {
     "message": "Dalej"
   },
@@ -1214,6 +1217,9 @@
   },
   "sectionRestore": {
     "message": "Przywróć usuniętą sekcję"
+  },
+  "sectionUserCSS": {
+    "message": "Klasyczny edytor podzielony na sekcje nie obsługuje składni UserCSS. Aby z niej skorzystać, zaznacz najpierw pole wyboru `userCSS` w menedżerze lub wyskakującym okienku, a następnie utwórz nowy styl, wówczas skopiuj bieżący kod, klikając przycisk Eksportuj w tym edytorze."
   },
   "sections": {
     "message": "Sekcje"

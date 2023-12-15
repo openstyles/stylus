@@ -384,6 +384,12 @@
   "genericHistoryLabel": {
     "message": "История"
   },
+  "genericMaximum": {
+    "message": "максимальный"
+  },
+  "genericMinimum": {
+    "message": "минимальный"
+  },
   "genericNext": {
     "message": "Следующий"
   },
@@ -1248,8 +1254,14 @@
   "styleBeautifyPreserveNewlines": {
     "message": "Беречь пустые строки"
   },
+  "styleCancelEditLabel": {
+    "message": "Вернуться в менеджер стилей"
+  },
   "styleChangesNotSaved": {
     "message": "Вы изменили этот стиль, но не сохранили его."
+  },
+  "styleEditor": {
+    "message": "Редактор стилей"
   },
   "styleEnabledLabel": {
     "message": "Включено"
@@ -1307,6 +1319,9 @@
         "content": "$1"
       }
     }
+  },
+  "styleManager": {
+    "message": "Менеджер стилей"
   },
   "styleMissingName": {
     "message": "Введите название"

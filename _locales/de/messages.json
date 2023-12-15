@@ -337,6 +337,12 @@
   "genericHistoryLabel": {
     "message": "Verlauf"
   },
+  "genericMaximum": {
+    "message": "Maximum"
+  },
+  "genericMinimum": {
+    "message": "Minimum"
+  },
   "genericNext": {
     "message": "Weiter"
   },
@@ -1146,6 +1152,9 @@
   },
   "sectionRestore": {
     "message": "Gelöschten Bereich wiederherstellen"
+  },
+  "sectionUserCSS": {
+    "message": "Der klassische, unterteilte Editor unterstützt keine userCSS Syntax. Aktiviere das `userCSS` Kästchen in der Styleverwaltung oder im Popup und erstelle dann einen neuen Style, um userCSS verwenden zu können. Kopiere dann deinen vorherigen Code über die Export-Schaltfläche und füge ihn im neuen Style ein."
   },
   "sections": {
     "message": "Bereiche"
