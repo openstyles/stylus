@@ -1,5 +1,5 @@
 /* global API */// msg.js
-/* global RX_META clipString deepEqual isEmptyObj */// toolbox.js
+/* global RX_META UA clipString deepEqual isEmptyObj */// toolbox.js
 /* global Events */// events.js
 /* global chromeSync */// storage-util.js
 /* global prefs */
@@ -18,7 +18,7 @@ Object.assign($('#file-all-styles'), {
   onclick: exportToFile,
   oncontextmenu: exportToFile,
 }).on('split-btn', exportToFile);
-$('#unfile-all-styles').onclick = () => importFromFile({fileTypeFilter: '.json'});
+$('#unfile-all-styles').onclick = () => importFromFile();
 
 Object.assign(document.body, {
   ondragover(event) {
@@ -49,14 +49,14 @@ Object.assign(document.body, {
       if ($('#only-updates input').checked) {
         $('#only-updates input').click();
       }
-      importFromFile({file: event.dataTransfer.files[0]});
+      importFromFile(event.dataTransfer.files[0]);
     }
     /* Run import first for a while, then run fadeout which is very CPU-intensive in Chrome */
     setTimeout(() => this.ondragend(), 250);
   },
 });
 
-async function importFromFile({fileTypeFilter, file} = {}) {
+async function importFromFile(file) {
   let resolve, reject;
   const q = Events.queue;
   const el = document.createElement('input');
@@ -67,7 +67,7 @@ async function importFromFile({fileTypeFilter, file} = {}) {
     } else {
       el.style.display = 'none';
       el.type = 'file';
-      el.accept = fileTypeFilter || '.txt';
+      el.accept = 'application/json' + (UA.mobile ? ',text/plain'/*for GDrive-like apps*/ : '');
       el.acceptCharset = 'utf-8';
       document.body.appendChild(el);
       el.initialValue = el.value;
