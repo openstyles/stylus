@@ -94,7 +94,7 @@ async function configDialog(style) {
   }
 
   function onhide() {
-    if (bodyStyle) document.body.style.cssText = bodyStyle;
+    if (bodyStyle != null) document.body.style.cssText = bodyStyle;
     colorpicker.hide();
   }
 

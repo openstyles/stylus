@@ -16,22 +16,30 @@
 }
 
 html, body {
-  height: min-content;
-  max-height: 600px;
+  overflow: hidden;
 }
-
 body {
   width: auto;
   min-width: 246px;
   max-width: 280px;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+body[style*="max-height:"] > main {
+  overflow-y: auto;
+}
+.search-results-shown {
+  overflow-y: auto;
+}
+.search-results-shown body {
+  max-height: none !important; /* overriding our inline style */
 }
 
 .firefox button {
   transition: none; /* FF borks subpixel AA during transitions in popup */
 }
 
-body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
+body > div:not(#message-box):not(.colorpicker-popup) {
   padding-left: var(--outer-padding);
   padding-right: var(--outer-padding);
 }
@@ -63,7 +71,6 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
   padding: var(--outer-padding);
   font-weight: bold;
   display: block;
-  border-bottom: var(--border);
   background-color: var(--c98);
 }
 
@@ -81,8 +88,6 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
 }
 
 #installed {
-  max-height: 445px;
-  overflow-y: auto;
   counter-reset: style-number;
   position: relative;
 }
@@ -108,10 +113,12 @@ body > div:not(#installed):not(#message-box):not(.colorpicker-popup) {
 .entry {
   position: relative;
 }
-.styles-first .entry {
+.styles-last #main-actions,
+.styles-first body > main,
+.styles-first .entry:nth-last-child(n + 2) {
   border-bottom: var(--border);
 }
-.styles-last .entry {
+.styles-last .entry:nth-child(n + 2) {
   border-top: var(--border);
 }
 .entry-content {
@@ -548,10 +555,14 @@ a:hover i {
 }
 .styles-last #main-actions {
   order: 1;
-  margin: calc(-1 * var(--outer-padding)) 0 var(--outer-padding) 0;
+  margin-top: calc(-1 * var(--outer-padding));
+  padding-bottom: var(--outer-padding);
 }
 .styles-last #search-results {
   order: 3;
+}
+.styles-last #pct {
+  order: -1;
 }
 
 .unreachable .entry:not(.frame) {
@@ -688,68 +699,5 @@ a:hover i {
 @media (max-height: 130px) {
   #find-split {
     --menu-pad: .25em;
-  }
-}
-
-/* Popup adjustments for common zoom levels */
-
-@media (-webkit-min-device-pixel-ratio: 1.05) {
-  #installed {
-    max-height: 420px;
-  }
-}
-@media (-webkit-min-device-pixel-ratio: 1.1) {
-  #installed {
-    max-height: 393px;
-  }
-}
-@media (-webkit-min-device-pixel-ratio: 1.15) {
-  #installed {
-    max-height: 371px;
-  }
-}
-@media (-webkit-min-device-pixel-ratio: 1.2) {
-  #installed {
-    max-height: 348px;
-  }
-}
-@media (-webkit-min-device-pixel-ratio: 1.25) {
-  #installed {
-    max-height: 326px;
-  }
-}
-@media (-webkit-min-device-pixel-ratio: 1.30) {
-  #installed {
-    max-height: 306px;
-  }
-}
-@media (-webkit-min-device-pixel-ratio: 1.35) {
-  #installed {
-    max-height: 288px;
-  }
-}
-@media (-webkit-min-device-pixel-ratio: 1.4) {
-  #installed {
-    max-height: 271px;
-  }
-}
-@media (-webkit-min-device-pixel-ratio: 1.45) {
-  #installed {
-    max-height: 256px;
-  }
-}
-@media (-webkit-min-device-pixel-ratio: 1.5) {
-  #installed {
-    max-height: 244px;
-  }
-}
-@media (-webkit-min-device-pixel-ratio: 1.55) {
-  #installed {
-    max-height: 199px;
-  }
-}
-@media (-webkit-min-device-pixel-ratio: 1.75) {
-  #installed {
-    max-height: 144px;
   }
 }

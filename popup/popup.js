@@ -34,12 +34,10 @@ const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrI
 preinit.then(({frames, styles, url}) => {
   tabURL = url;
   initPopup(frames);
-  if (styles[0]) {
-    showStyles(styles);
-  } else {
-    // unsupported URL;
-    $('#popup-manage-button').removeAttribute('title');
-  }
+  showStyles(styles);
+  require(['/popup/hotkeys']);
+  if (UA.mobile) setMaxHeight('100vh');
+  else window.on('resize', {h0: innerHeight, handleEvent: onWindowResize});
 });
 
 msg.onExtension(onRuntimeMessage);
@@ -77,6 +75,21 @@ function onRuntimeMessage(msg) {
   if (styleFinder) styleFinder.on(msg, ready);
 }
 
+function onWindowResize() {
+  if (this.h0 === innerHeight) return;
+  window.off('resize', this);
+  new IntersectionObserver(([e], obs) => {
+    if (!e.isIntersecting) {
+      obs.disconnect();
+      setMaxHeight();
+    }
+  }).observe($('#max'));
+}
+
+function setMaxHeight(h = innerHeight - 1 + 'px') {
+  document.body.style['max-height'] = h;
+}
+
 function toggleSideBorders(_key, state) {
   // runs before <body> is parsed
   const style = $.root.style;
@@ -93,7 +106,8 @@ function toggleSideBorders(_key, state) {
 async function initPopup(frames) {
   const kPopupWidth = 'popupWidth';
   prefs.subscribe([kPopupWidth, 'popupWidthMax'], (key, val) => {
-    document.body.style[`${key === kPopupWidth ? 'min' : 'max'}-width`] = clamp(val, 200, 800) + 'px';
+    document.body.style[`${key === kPopupWidth ? 'min' : 'max'}-width`] = UA.mobile ? 'none'
+      : clamp(val, 200, 800) + 'px';
   }, true);
   setupLivePrefs();
 
@@ -284,7 +298,6 @@ function showStyles(frameResults) {
   if (entries.size) {
     resortEntries([...entries.values()]);
   }
-  require(['/popup/hotkeys']);
 }
 
 function resortEntries(entries) {

@@ -2,22 +2,16 @@
    This file is loaded dynamically when the inline search is invoked.
    So don't put main popup's stuff here. */
 
-.search-results-shown body {
-  overflow-y: auto;
-  overflow-x: hidden;
-}
 #pct {
-  position: absolute;
+  --h: var(--outer-padding);
   font-size: var(--h);
   line-height: var(--h);
-  height: var(--h);
   margin-top: calc(var(--h) * -1);
-  --h: 8px;
   box-sizing: border-box;
-  width: 100%;
   display: flex;
   justify-content: center;
-  color: var(--accent-1);
+  color: var(--accent-2);
+  z-index: 2;
 }
 #pct > * {
   transition: opacity .5s;
@@ -28,8 +22,9 @@
 #pct > :nth-child(n + 2) {
   margin-left: 1em;
 }
-.search-results-shown #pct {
-  margin-top: 2px;
+.styles-last #pct,
+.search-results-shown.styles-first #pct {
+  margin: 0 0 calc(var(--h) * -1);
 }
 
 #search-results {
@@ -70,7 +65,7 @@
   background-color: var(--c95);
 }
 .search-result:nth-last-child(n + 2) {
-  margin-bottom: 24px;
+  margin-bottom: calc(2 * var(--pad));
 }
 .search-result:hover {
   border-color: var(--fg);
@@ -356,13 +351,15 @@ search-result-meta [data-type="rating"][data-class="none"] dd {
 #search-params {
   display: flex;
   position: relative;
-  margin-top: -.5rem;
-  margin-bottom: 1.25rem;
+  --t: .5rem;
+  --x: calc(var(--t) / 2);
+  margin: calc(-1 * var(--t)) calc(-1 * var(--x)) calc(2.5 * var(--t));
+  align-items: center;
+  justify-content: center;
   flex-wrap: wrap;
 }
-
 #search-params > * {
-  margin-top: .5rem;
+  margin: var(--t) var(--x) 0;
 }
 #search-params input,
 #search-params select {
@@ -373,12 +370,35 @@ search-result-meta [data-type="rating"][data-class="none"] dd {
   background-color: var(--bg);
 }
 #search-query {
-  min-width: 3em;
+  min-width: 4em;
   margin-right: .5em;
-  flex: 1 1 0;
+  flex: 1 1 4em;
 }
-
 #search-years {
   text-align: center;
-  width: 100%;
+  min-width: 12em;
+}
+
+@media (min-width: 400px) {
+  .search-result {
+    --col: 3;
+    width: calc((100% - var(--pad) * (var(--col) - 1)) / var(--col));
+    display: inline-block;
+    vertical-align: top;
+    box-sizing: border-box;
+    margin-right: var(--pad);
+  }
+  @media (max-width: 599px) {
+    .search-result {
+      --col: 2;
+    }
+    .search-result:nth-child(even) {
+      margin-right: 0;
+    }
+  }
+}
+@media (min-width: 600px) {
+  .search-result:nth-child(3n) {
+    margin-right: 0;
+  }
 }
