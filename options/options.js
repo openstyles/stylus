@@ -21,9 +21,6 @@ for (const el of $$('[show-if]')) {
 if (CHROME_POPUP_BORDER_BUG) {
   $('.chrome-no-popup-border').classList.remove('chrome-no-popup-border');
 }
-if (FIREFOX && 'update' in (chrome.commands || {})) {
-  $('#shortcuts').classList.remove('chromium-only');
-}
 // actions
 $('header i').onclick = () => {
   top.dispatchEvent(new CustomEvent('closeOptions'));
@@ -41,7 +38,7 @@ $('#shortcuts').onclick = () => {
     API.openURL({url: URLS.configureCommands});
   }
 };
-$('#shortcuts').hidden = FIREFOX && !browser.commands.update;
+$('#shortcuts').hidden = FIREFOX && !(browser.commands || {}).update;
 $('#reset').onclick = async () => {
   if (await messageBoxProxy.confirm(t('confirmDiscardChanges'))) {
     for (const el of $$('input')) {
