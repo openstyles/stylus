@@ -10,6 +10,7 @@
   animateElement
   focusA11y
   getEventKeyName
+  important
   messageBoxProxy
   moveFocus
   scrollElementIntoView
@@ -233,6 +234,10 @@ function getEventKeyName(e, letterAsCode) {
           : e.key.toUpperCase() // C, Shift-C (single letters we use uppercase for consistency)
       : 'Mouse' + ('LMR'[e.button] || e.button)
   }`;
+}
+
+function important(str) {
+  return str.replace(/;/g, '!important;');
 }
 
 /**

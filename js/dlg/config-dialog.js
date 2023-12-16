@@ -1,6 +1,6 @@
-/* global $ $create $createLink $remove messageBoxProxy setupLivePrefs */// dom.js
+/* global $ $create $createLink $remove important messageBoxProxy setupLivePrefs */// dom.js
 /* global API */// msg.js
-/* global debounce deepCopy */// toolbox.js
+/* global UA clamp debounce deepCopy */// toolbox.js
 /* global messageBox */
 /* global prefs */
 /* global t */// localization.js
@@ -82,7 +82,7 @@ async function configDialog(style) {
       ]));
     setupLivePrefs(['config.autosave']);
     box.style.setProperty('--num', vars.length);
-    if (isPopup) {
+    if (isPopup && !UA.mobile) {
       adjustSizeForPopup(box);
     }
     box.on('change', onchange);
@@ -421,7 +421,7 @@ async function configDialog(style) {
 
   function adjustSizeForPopup(box) {
     const contents = box.firstElementChild;
-    contents.style = 'max-width: none; max-height: none;'.replace(/;/g, '!important;');
+    contents.style = important('max-width: none; max-height: none;');
     let {offsetWidth: width, offsetHeight: height} = contents;
     contents.style = '';
 
@@ -432,14 +432,12 @@ async function configDialog(style) {
     const MIN_HEIGHT = 250 + PADDING;
     elPicker.remove();
 
-    width = constrain(MIN_WIDTH, 798, width + PADDING);
-    height = constrain(MIN_HEIGHT, 598, height + PADDING);
-    bodyStyle = document.body.style.cssText;
-    document.body.style.setProperty('min-width', width + 'px', 'important');
-    document.body.style.setProperty('min-height', height + 'px', 'important');
-  }
-
-  function constrain(min, max, value) {
-    return value < min ? min : value > max ? max : value;
+    const bs = document.body.style;
+    width = clamp(width + PADDING, MIN_WIDTH, 798);
+    height = clamp(height + PADDING, MIN_HEIGHT, parseInt(bs.maxHeight) || 598);
+    bodyStyle = bs.cssText;
+    bs.cssText = bodyStyle.replace(/((min|max)-width|min-height)\s*:[^;]+|;\s*$/g, '') + `;
+      min-width:${width}px !important;
+      min-height:${height}px !important;`;
   }
 }

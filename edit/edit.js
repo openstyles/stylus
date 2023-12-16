@@ -1,4 +1,4 @@
-/* global $$ $ $create */// dom.js
+/* global $$ $ $create important */// dom.js
 /* global API msg */// msg.js
 /* global CodeMirror */
 /* global SectionsEditor */
@@ -52,12 +52,12 @@ editor.styleReady.then(async () => {
   // Set up mini-header on scroll
   const {isUsercss} = editor;
   const el = $create({
-    style: `
+    style: important(`
       top: 0;
       height: 1px;
       position: absolute;
       visibility: hidden;
-    `.replace(/;/g, '!important;'),
+    `),
   });
   const scroller = isUsercss ? $('.CodeMirror-scroll') : document.body;
   const xoRoot = isUsercss ? scroller : undefined;

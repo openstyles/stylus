@@ -1,4 +1,4 @@
-/* global $ $$ $create $remove getEventKeyName setupLivePrefs */// dom.js
+/* global $ $$ $create $remove getEventKeyName important setupLivePrefs */// dom.js
 /* global ABOUT_BLANK getStyleDataMerged preinit */// preinit.js
 /* global API msg */// msg.js
 /* global Events */
@@ -83,7 +83,10 @@ function onWindowResize() {
       obs.disconnect();
       setMaxHeight();
     }
-  }).observe($('#max'));
+  }).observe(document.body.appendChild($create('#max', {
+    // ensuring userstyles can't make it invisible accidentally
+    style: important('all:initial; height:1px; margin-top:-2px;'),
+  })));
 }
 
 function setMaxHeight(h = innerHeight - 1 + 'px') {
@@ -91,13 +94,10 @@ function setMaxHeight(h = innerHeight - 1 + 'px') {
 }
 
 function toggleSideBorders(_key, state) {
-  // runs before <body> is parsed
   const style = $.root.style;
   if (state) {
-    style.cssText +=
-      'border-left: 2px solid white !important;' +
-      'border-right: 2px solid white !important;';
-  } else if (style.cssText) {
+    style.cssText += 'left right'.replace(/\S+/g, 'border-$&: 2px solid white !important;');
+  } else if (style.borderLeft) {
     style.borderLeft = style.borderRight = '';
   }
 }
