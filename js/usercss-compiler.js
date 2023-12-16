@@ -11,7 +11,7 @@ const BUILDERS = Object.assign(Object.create(null), {
       if (!varDef) return;
       varDef = ':root {\n' + varDef + '}\n';
       for (const section of sections) {
-        if (!styleCodeEmpty(section.code)) {
+        if (!styleCodeEmpty(section)) {
           spliceCssAfterGlobals(section, varDef, styleCodeEmpty.lastIndex);
         }
       }

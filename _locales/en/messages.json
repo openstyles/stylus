@@ -399,6 +399,9 @@
   "editorSettings": {
     "message": "Editor settings"
   },
+  "emptyCode": {
+    "message": "Style sections for this URL are empty"
+  },
   "enableStyleLabel": {
     "message": "Enable",
     "description": "Label for the button to enable a style"

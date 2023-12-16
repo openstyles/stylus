@@ -66,21 +66,19 @@ const MozDocMapper = {
   },
 };
 
-function styleCodeEmpty(code) {
-  if (!code) {
-    return true;
-  }
-  let lastIndex = 0;
-  const rx = /\s+|\/\*([^*]+|\*(?!\/))*(\*\/|$)|@namespace[^;]+;|@charset[^;]+;/giyu;
-  while (rx.exec(code)) {
-    lastIndex = rx.lastIndex;
-    if (lastIndex === code.length) {
-      return true;
-    }
-  }
-  styleCodeEmpty.lastIndex = lastIndex;
-  return false;
+/** @param {StyleSection} sec */
+function styleCodeEmpty(sec) {
+  const {code} = sec;
+  let res = !code;
+  if (res || (res = sec._empty) != null) return res;
+  const len = code.length;
+  const {rx} = styleCodeEmpty; rx.lastIndex = 0;
+  let i = 0; while (rx.exec(code) && (i = rx.lastIndex) !== len) {/**/}
+  Object.defineProperty(sec, '_empty', {value: res = i === len, configurable: true});
+  styleCodeEmpty.lastIndex = i;
+  return res;
 }
+styleCodeEmpty.rx = /\s+|\/\*([^*]+|\*(?!\/))*(\*\/|$)|@namespace[^;]+;|@charset[^;]+;/giyu;
 
 /**
  * The sections are checked in successive order because it matters when many sections

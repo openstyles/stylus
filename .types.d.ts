@@ -34,6 +34,8 @@ declare interface StyleMapData {
 
 declare interface StyleSection {
   code: string[];
+  /** Non-enumerable, added internally on demand in styleMan */
+  _empty?: boolean;
   urls?: string[];
   urlPrefixes?: string[];
   domains?: string[];

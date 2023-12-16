@@ -161,6 +161,7 @@ html[style] .entry-content {
   flex: 1;
   overflow: hidden;
   padding-right: 5px;
+  align-items: center;
 }
 
 .styles-first .entry:nth-last-child(odd), .styles-last .entry:nth-child(odd) {
@@ -211,6 +212,13 @@ a.configure[target="_blank"] .i-config {
   margin-top: 1px;
 }
 
+.empty .i-empty {
+  display: initial;
+  color: var(--c50);
+  cursor: default;
+  pointer-events: auto;
+  font-size: 14px;
+}
 .not-applied .style-name,
 .not-applied .actions > * {
   opacity: .25;

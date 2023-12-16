@@ -334,7 +334,7 @@ async function getAppliesTo(style) {
   for (const section of style.sections) {
     const targets = [].concat(...TARGETS.map(t => section[t]).filter(Boolean));
     res.push(...targets);
-    numGlobals += !targets.length && !styleCodeEmpty(section.code);
+    numGlobals += !targets.length && !styleCodeEmpty(section);
   }
   res.sort();
   if (!res.length || numGlobals) {

@@ -263,6 +263,7 @@ const styleMan = (() => {
         : iterStyles();
       const query = new MatchQuery(url);
       for (const style of styles) {
+        let empty = true;
         let excluded = false;
         let excludedScheme = false;
         let included = false;
@@ -289,12 +290,19 @@ const styleMan = (() => {
               sloppy = true;
             }
             sectionMatched = true;
-            break;
+            if (empty) empty = styleCodeEmpty(section);
           }
         }
         if (sectionMatched || included) {
           result.push(/** @namespace StylesByUrlResult */ {
-            style, excluded, sloppy, excludedScheme, sectionMatched, included});
+            empty,
+            excluded,
+            excludedScheme,
+            included,
+            sectionMatched,
+            sloppy,
+            style,
+          });
         }
       }
       return result;
@@ -557,7 +565,7 @@ const styleMan = (() => {
     }
     const code = [];
     for (const section of data.sections) {
-      if (urlMatchSection(query, section) === true && !styleCodeEmpty(section.code)) {
+      if (urlMatchSection(query, section) === true && !styleCodeEmpty(section)) {
         code.push(section.code);
       }
     }
@@ -688,7 +696,7 @@ const styleMan = (() => {
     // TODO: check for invalid regexps?
     return !rrL && !ppL && !uuL && !ddL &&
       !query.isOwnPage && // We allow only intentionally targeted sections for own pages
-      (!skipEmptyGlobal || !styleCodeEmpty(section.code));
+      (!skipEmptyGlobal || !styleCodeEmpty(section));
   }
   /** @this {MatchQuery} */
   function urlMatchDomain(d) {

@@ -325,6 +325,7 @@ function createStyleElement(style, entry) {
   const cfgUrl = UCD ? '' : style.url;
   const cls = entry.classList;
 
+  cls.toggle('empty', style.empty);
   cls.toggle('disabled', !enabled);
   cls.toggle('enabled', enabled);
   cls.toggle('force-applied', style.included);

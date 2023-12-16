@@ -12,6 +12,7 @@ const SVG_MAP = Object.entries({
   'close': '✖',
   'config': '⚙',
   'edit': '✏',
+  'empty': '⊘',
   'external': '↗',
   'info': 'ⓘ',
   'install': '↲',
