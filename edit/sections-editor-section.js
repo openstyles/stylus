@@ -64,7 +64,7 @@ class EditorSection {
     initBeautifyButton($('.beautify-section', el), [cm]);
     prefs.subscribe('editor.toc.expanded', this.updateTocPrefToggled.bind(this), true);
     new ResizeGrip(cm); // eslint-disable-line no-use-before-define
-    EditorSection.updateTocEntry(this);
+    this.updateTocEntry();
   }
 
   getModel() {
@@ -109,11 +109,7 @@ class EditorSection {
     this.changeListeners.delete(fn);
   }
 
-  /**
-   * @param {EditorSection} sec
-   * @param origin
-   */
-  static updateTocEntry(sec, origin) {
+  updateTocEntry(origin, sec = this) {
     const te = sec.tocEntry;
     let changed;
     if (origin === 'code' || !origin) {
@@ -138,8 +134,8 @@ class EditorSection {
     if (changed) editor.updateToc([sec]);
   }
 
-  updateTocEntryLazy(...args) {
-    debounce(EditorSection.updateTocEntry, 0, this, ...args);
+  updateTocEntryLazy() {
+    debounce(this.updateTocEntry, 0, '', this);
   }
 
   updateTocFocus(evt) {
@@ -309,12 +305,14 @@ class SectionTarget {
   }
 
   onSelectChange() {
+    const sec = this.section;
     const val = this.selectEl.value;
     editor.dirty.modify(`${this.dirt}.type`, this.type, val);
     editor.toggleRegexp(this.valueEl, val);
     this.type = val;
-    this.section.emitChange('apply');
     this.toggleAll();
+    sec.emitChange('apply');
+    if (!sec.tocEntry.label) sec.updateTocEntry('apply');
   }
 
   onValueChange() {
