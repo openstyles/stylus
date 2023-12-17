@@ -16,7 +16,7 @@ bgReady.all.then(() => {
   for (const cs of SCRIPTS) {
     if (!(cs[ALL_URLS] = cs.matches.includes(ALL_URLS))) {
       cs.matches.forEach((m, i) => {
-        const [scheme, host, path] = m.match(/^([^:])+:\/\/([^/]+)\/(.*)/);
+        const [, scheme, host, path] = m.match(/^([^:]+):\/\/([^/]+)\/(.*)/);
         cs.matches[i] = new RegExp(
           `^${scheme === '*' ? 'https?' : scheme}://${globToRe(host, '[^/]')}/${globToRe(path)}$`);
       });
