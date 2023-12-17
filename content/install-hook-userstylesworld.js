@@ -1,15 +1,16 @@
 /* global API */// msg.js
 'use strict';
 
-(() => {
-  const ORIGIN = 'https://userstyles.world';
+window.USW !== 1 && (() => { // eslint-disable-line no-unused-expressions
+  window.USW = 1; // avoiding re-injection
+  const ORIGIN = location.origin;
   const HANDLERS = Object.assign(Object.create(null), {
 
     async 'usw-ready'() {
       send({type: 'usw-remove-stylus-button'});
       if (location.pathname === '/api/oauth/style/new') {
         const styleId = Number(new URLSearchParams(location.search).get('vendor_data'));
-        const data = await API.data.pop('usw' + styleId);
+        const data = await API.data.get('usw' + styleId);
         send({type: 'usw-fill-new-style', data});
       }
     },
@@ -29,9 +30,8 @@
     },
   });
 
-  window.addEventListener('message', ({data, source, origin}) => {
-    // Some browsers don't reveal `source` to extensions e.g. Firefox
-    if (data && (source ? source === window : origin === ORIGIN)) {
+  addEventListener('message', ({data, origin}) => {
+    if (chrome.runtime.id && data && origin === ORIGIN) {
       const fn = HANDLERS[data.type];
       if (fn) fn(data);
     }

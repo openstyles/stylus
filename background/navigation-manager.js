@@ -56,7 +56,7 @@ const navMan = (() => {
 bgReady.all.then(() => {
   /*
    * Expose style version on greasyfork/sleazyfork 1) info page and 2) code page
-   * Not using manifest.json as adding a content script disables the extension on update.
+   * Not using manifest.json to avoid injecting in unrelated sub-pages.
    */
   const urlMatches = '/scripts/\\d+[^/]*(/code)?([?#].*)?$';
   chrome.webNavigation.onCommitted.addListener(({tabId}) => {
@@ -71,20 +71,6 @@ bgReady.all.then(() => {
     ],
   });
 
-  /*
-   * Removes the Get Stylus button on style pages.
-   * Not using manifest.json as adding a content script disables the extension on update.
-   */
-  chrome.webNavigation.onCommitted.addListener(({tabId}) => {
-    chrome.tabs.executeScript(tabId, {
-      file: '/content/install-hook-userstylesworld.js',
-      runAt: 'document_start',
-    });
-  }, {
-    url: [
-      {hostEquals: 'userstyles.world'},
-    ],
-  });
   /*
    * FF misses some about:blank iframes so we inject our content script explicitly
    */

@@ -249,7 +249,6 @@ i,
 }
 #usw-progress {
   position: relative;
-  vertical-align: top;
 }
 #usw-progress .success,
 #usw-progress .unchanged {
@@ -277,7 +276,22 @@ i,
 }
 #usw-progress .lds-spinner {
   transform: scale(0.125);
-  transform-origin: 0 10px;
+  transform-origin: 0 calc(var(--input-height) / -3);
+}
+#usw-data > * > * {
+  margin-top: 0;
+  vertical-align: baseline;
+  --input-height: 1rem;
+}
+#usw-data .empty label {
+  color: var(--c60);
+}
+#usw-data input {
+  width: 100%;
+}
+#usw-data input:not(:focus):not(:hover) {
+  background: none;
+  border-color: transparent;
 }
 /* footer */
 .usercss #footer {

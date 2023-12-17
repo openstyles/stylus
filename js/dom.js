@@ -439,7 +439,7 @@ prefs.ready.then(() => {
     },
   });
   function canSave(el) {
-    return !el.matches('.compact-layout .ignore-pref-if-compact');
+    return !el.matches('.ignore-pref, .compact-layout .ignore-pref-if-compact');
   }
   /** @param {MutationRecord[]} _ */
   function saveOnChange([{target: el}]) {

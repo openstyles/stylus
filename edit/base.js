@@ -268,10 +268,9 @@ function DirtyReporter() {
       }
       notifyChange(wasDirty);
     },
-    clear(...objs) {
+    clear(id) {
       if (data.size && (
-        objs.length
-          ? objs.map(data.delete, data).includes(true)
+        id ? data.delete(id)
           : (data.clear(), true)
       )) {
         notifyChange(true);

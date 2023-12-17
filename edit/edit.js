@@ -69,7 +69,9 @@ editor.styleReady.then(async () => {
   /** @param {MediaQueryList} mq */
   function onCompactToggled(mq) {
     for (const el of $$('details[data-pref]')) {
-      el.open = mq.matches ? false : prefs.get(el.dataset.pref);
+      el.open = mq.matches ? false :
+        el.classList.contains('ignore-pref') ? el.open :
+          prefs.get(el.dataset.pref);
     }
     if (mq.matches) {
       xo.observe(el);

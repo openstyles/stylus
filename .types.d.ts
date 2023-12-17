@@ -8,7 +8,6 @@ declare interface StyleObj {
   /* optional */
   author?: string;
   customName?: string;
-  description?: string;
   exclusions?: string[];
   inclusions?: string[];
   installDate?: number;
@@ -135,4 +134,10 @@ declare interface UsercssVarSelect extends UsercssVarBase {
 declare interface USWorldData {
   id: number;
   token: string;
+  /* for sectioned styles */
+  description?: string;
+  license?: string;
+  name?: string;
+  namespace?: string;
+  username?: string;
 }

@@ -42,19 +42,20 @@
   margin: 0;
   padding: .15em 0;
 }
-.settings > main > section.aligned > * {
+/* any aligned settings */
+section.aligned > * {
   display: table-row;
 }
-.settings > main > section.aligned > * > :not(.icon) {
+section.aligned > * > :not(.icon) {
   display: table-cell;
   margin-top: 0.1rem;
   min-height: 1.4rem;
 }
-.settings > main > section.aligned label {
+section.aligned label {
   padding: .1rem .25rem 0 0;
   vertical-align: middle;
 }
-.settings > main > section.aligned input[type="number"] {
+section.aligned input[type="number"] {
   width: 3.5em;
   text-align: left;
   padding-left: .25em;

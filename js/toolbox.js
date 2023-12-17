@@ -24,6 +24,7 @@
   tryJSONparse
   tryRegExp
   tryURL
+  UCD
   waitForTabUrl
 */
 
@@ -60,6 +61,7 @@ const ignoreChromeError = () => { chrome.runtime.lastError; /*eslint-disable-lin
 const stringAsRegExpStr = s => s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&');
 const stringAsRegExp = (s, flags) => new RegExp(stringAsRegExpStr(s), flags);
 
+const UCD = 'usercssData';
 const URLS = {
   ownOrigin: chrome.runtime.getURL(''),
 
@@ -296,7 +298,7 @@ function deepCopy(src) {
 }
 
 function deepEqual(a, b, ignoredKeys) {
-  if (!a || !b) return a === b;
+  if (!a || !b || a === b /*same object ref*/) return a === b;
   const type = typeof a;
   if (type !== typeof b) return false;
   if (type !== 'object') return a === b;

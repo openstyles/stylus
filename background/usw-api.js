@@ -1,5 +1,5 @@
 /* global API msg */// msg.js
-/* global URLS */ // toolbox.js
+/* global UCD URLS RX_META deepEqual mapObj tryURL */// toolbox.js
 /* global styleMan */
 /* global tokenMan */
 'use strict';
@@ -7,6 +7,9 @@
 const uswApi = (() => {
 
   //#region Internals
+
+  const KEYS_OUT = ['description', 'homepage', 'license', 'name'];
+  const KEYS_IN = [...KEYS_OUT, 'id', 'namespace', 'username'];
 
   class TokenHooks {
     constructor(id) {
@@ -20,38 +23,43 @@ const uswApi = (() => {
     }
   }
 
-  function fakeUsercssHeader(style) {
-    const {name, _usw: u = {}} = style;
-    const meta = Object.entries({
-      '@name': u.name || name || '?',
-      '@version': // Same as USO-archive version: YYYYMMDD.hh.mm
-        new Date().toISOString().replace(/^(\d+)-(\d+)-(\d+)T(\d+):(\d+).+/, '$1$2$3.$4.$5'),
-      '@namespace': u.namespace !== '?' && u.namespace ||
-        u.username && `userstyles.world/user/${u.username}` ||
-        '?',
-      '@description': u.description,
-      '@author': u.username,
-      '@license': u.license,
-    });
+  function fakeUsercssHeader(style, usw) {
+    const {namespace: ns, username: user} = usw || (usw = {});
+    const meta = [
+      'name',
+      // Same as USO-archive version: YYYYMMDD.hh.mm
+      ['@version', new Date().toISOString().replace(/^(\d+)-(\d+)-(\d+)T(\d+):(\d+).+/, '$1$2$3.$4.$5')],
+      ['@namespace', ns !== '?' && ns ||
+        user && `https://userstyles.world/user/${user}` ||
+        '?'],
+      'description',
+      ['@homepage', tryURL(ns).href],
+      ['@author', user],
+      'license',
+    ].map((k, _) => k.map ? k[1] && k : (_ = usw[k] || style[k]) && ['@' + k, _]).filter(Boolean);
     const maxKeyLen = meta.reduce((res, [k]) => Math.max(res, k.length), 0);
-    return [
-      '/* ==UserStyle==',
-      ...meta.map(([k, v]) => v && `${k}${' '.repeat(maxKeyLen - k.length + 2)}${v}`).filter(Boolean),
-      '==/UserStyle== */',
-    ].join('\n') + '\n\n';
+    return '/* ==UserStyle==\n' +
+      meta.map(([k, v]) => `${k}${' '.repeat(maxKeyLen - k.length + 2)}${v}\n`).join('') +
+      '==/UserStyle== */\n\n';
   }
 
   async function linkStyle(style, sourceCode) {
-    const {id} = style;
-    const metadata = await API.worker.parseUsercssMeta(sourceCode).catch(console.warn) || {};
-    const uswData = Object.assign({}, style, {metadata, sourceCode});
-    API.data.set('usw' + id, uswData);
-    const token = await tokenMan.getToken('userstylesworld', true, new TokenHooks(id));
-    const info = await uswFetch('style', token);
-    const data = style._usw = {token, id: info.id};
-    style.url = style.url || info.homepage || `${URLS.usw}style/${data.id}`;
-    await uswSave(style);
-    return data;
+    const {id, name} = style;
+    const {metadata} = await API.worker.parseUsercssMeta(sourceCode.match(RX_META)[0]);
+    const out = {name, sourceCode, [UCD]: {}};
+    const KEY = 'usw' + id;
+    for (const k of KEYS_OUT) out[k] = out[UCD][k] = metadata[k] || '';
+    API.data.set(KEY, out);
+    try {
+      const token = await tokenMan.getToken('userstylesworld', true, new TokenHooks(id));
+      const info = await uswFetch('style', token);
+      const data = mapObj(info, null, style[UCD] ? 'id' : KEYS_IN);
+      data.token = token;
+      style.url = style.url || info.homepage || `${URLS.usw}style/${data.id}`;
+      return data;
+    } finally {
+      API.data.del(KEY);
+    }
   }
 
   async function uswFetch(path, token, opts) {
@@ -61,8 +69,9 @@ const uswApi = (() => {
   }
 
   /** Uses a custom method when broadcasting and avoids needlessly sending the entire style */
-  async function uswSave(style) {
-    const {id, _usw} = style;
+  async function uswSave(style, _usw) {
+    const {id} = style;
+    if (_usw) style._usw = _usw;
     await styleMan.save(style, {broadcast: false});
     msg.broadcastExtension({method: 'uswData', style: {id, _usw}});
   }
@@ -73,21 +82,24 @@ const uswApi = (() => {
   return {
     /**
      * @param {number} id
-     * @param {string} sourceCode
-     * @return {Promise<string>}
+     * @param {string} code
+     * @param {USWorldData} [usw]
+     * @return {Promise<any>}
      */
-    async publish(id, sourceCode) {
+    async publish(id, code, usw) {
       const style = styleMan.get(id);
-      const code = style.usercssData ? sourceCode
-        : fakeUsercssHeader(style) + sourceCode;
-      const data = (style._usw || {}).token
-        ? style._usw
-        : await linkStyle(style, code);
-      return uswFetch(`style/${data.id}`, data.token, {
+      if (!usw) usw = style._usw;
+      if (!style[UCD]) code = fakeUsercssHeader(style, usw) + code;
+      if (!usw || !usw.token) usw = await linkStyle(style, code);
+      const res = await uswFetch(`style/${usw.id}`, usw.token, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({code}),
       });
+      if (!deepEqual(usw, style._usw)) {
+        await uswSave(style, usw);
+      }
+      return res;
     },
 
     /**
@@ -98,7 +110,7 @@ const uswApi = (() => {
       await tokenMan.revokeToken('userstylesworld', new TokenHooks(id));
       const style = styleMan.get(id);
       if (style) {
-        style._usw = {};
+        delete style._usw.token;
         await uswSave(style);
       }
     },
