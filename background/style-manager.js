@@ -47,7 +47,6 @@ const styleMan = (() => {
     _id: () => uuidv4(),
     _rev: () => Date.now(),
   };
-  const DELETE_IF_NULL = ['id', 'customName', 'md5Url', 'originalMd5'];
 
   const ON_DISCONNECT = {
     livePreview: onPreviewEnd,
@@ -440,10 +439,6 @@ const styleMan = (() => {
   function createNewStyle() {
     return {
       enabled: true,
-      updateUrl: null,
-      md5Url: null,
-      url: null,
-      originalMd5: null,
       installDate: Date.now(),
     };
   }
@@ -518,11 +513,6 @@ const styleMan = (() => {
     if (!style.name) {
       throw new Error('Style name is empty');
     }
-    for (const key of DELETE_IF_NULL) {
-      if (style[key] == null) {
-        delete style[key];
-      }
-    }
     if (!style._id) {
       style._id = uuidv4();
     }
@@ -590,6 +580,14 @@ const styleMan = (() => {
     for (const key in MISSING_PROPS) {
       if (!style[key]) {
         style[key] = MISSING_PROPS[key](style);
+        res = 1;
+      }
+    }
+    /* delete if value is null, {}, [] */
+    for (const key in style) {
+      const v = style[key];
+      if (v == null || typeof v === 'object' && isEmptyObj(v)) {
+        delete style[key];
         res = 1;
       }
     }
