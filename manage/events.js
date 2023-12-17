@@ -2,7 +2,7 @@
 /* global installed newUI */// manage.js
 /* global checkUpdate handleUpdateInstalled */// updater-ui.js
 /* global createStyleElement createTargetsElement getFaviconSrc styleToDummyEntry */// render.js
-/* global debounce getOwnTab sessionStore */// toolbox.js
+/* global debounce getOwnTab sessionStore UCD */// toolbox.js
 /* global filterAndAppend showFiltersStats */// filters.js
 /* global sorter */
 /* global t */// localization.js
@@ -27,7 +27,7 @@ const Events = {
 
   addEntryTitle(link) {
     const style = link.closest('.entry').styleMeta;
-    const {installDate: dIns, updateDate: dUpd, usercssData: ucd} = style;
+    const {installDate: dIns, updateDate: dUpd, [UCD]: ucd} = style;
     link.title = [
       dUpd || dIns ? `${t.formatRelativeDate(dUpd || dIns)}` : '',
       `${t('dateInstalled')}: ${t.formatDate(dIns, true) || '—'}`,
@@ -150,7 +150,7 @@ const Events = {
   update(event, entry) {
     const json = entry.updatedCode;
     json.id = entry.styleId;
-    (json.usercssData ? API.usercss.install : API.styles.install)(json);
+    (json[UCD] ? API.usercss.install : API.styles.install)(json);
   },
 };
 

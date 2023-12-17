@@ -1,6 +1,6 @@
 /* global $$ $ $create animateElement scrollElementIntoView */// dom.js
 /* global API */// msg.js
-/* global URLS debounce getOwnTab isEmptyObj sessionStore stringAsRegExpStr */// toolbox.js
+/* global UCD URLS debounce getOwnTab isEmptyObj sessionStore stringAsRegExpStr */// toolbox.js
 /* global removeStyleCode */// events.js
 /* global filterAndAppend */// filters.js
 /* global installed newUI */// manage.js
@@ -114,7 +114,7 @@ function createStyleElement({styleMeta: style, styleNameLC: nameLC, styleSize: s
     };
   }
   const parts = elementParts;
-  const ud = style.usercssData;
+  const ud = style[UCD];
   const configurable = ud && ud.vars && !isEmptyObj(ud.vars);
   const name = style.customName || style.name;
   parts.checker.checked = style.enabled;

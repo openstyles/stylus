@@ -1,5 +1,5 @@
 /* global API msg */// msg.js
-/* global CHROME URLS deepEqual isEmptyObj mapObj stringAsRegExpStr tryRegExp tryURL */// toolbox.js
+/* global CHROME UCD URLS deepEqual isEmptyObj mapObj stringAsRegExpStr tryRegExp tryURL */// toolbox.js
 /* global bgReady broadcastInjectorConfig createCache uuidIndex */// common.js
 /* global calcStyleDigest styleCodeEmpty */// sections-util.js
 /* global db */
@@ -314,7 +314,7 @@ const styleMan = (() => {
       for (const style of items) {
         try {
           beforeSave(style);
-          if (style.sourceCode && style.usercssData) {
+          if (style.sourceCode && style[UCD]) {
             await usercssMan.buildCode(style);
           }
           res.push(styles.push(style) - 1);
@@ -424,7 +424,7 @@ const styleMan = (() => {
     return id2style(uuidIndex.get(uuid));
   }
 
-  function calcRemoteId({md5Url, updateUrl, usercssData: ucd} = {}) {
+  function calcRemoteId({md5Url, updateUrl, [UCD]: ucd} = {}) {
     let id;
     id = (id = /\d+/.test(md5Url) || URLS.extractUsoaId(updateUrl)) && `uso-${id}`
       || (id = URLS.extractUswId(updateUrl)) && `usw-${id}`
@@ -634,7 +634,7 @@ const styleMan = (() => {
     /* @import must precede `vars` that we add at beginning */
     if (
       initArray &&
-      !isEmptyObj((style.usercssData || {}).vars) &&
+      !isEmptyObj((style[UCD] || {}).vars) &&
       style.sections.some(({code}) =>
         code.startsWith(':root {\n  --') &&
         /@import\s/i.test(code))

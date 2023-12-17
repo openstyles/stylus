@@ -2,7 +2,7 @@
 /* global API */// msg.js
 /* global CODEMIRROR_THEMES */
 /* global CodeMirror */
-/* global URLS clipString closeCurrentTab deepEqual sessionStore tryURL */// toolbox.js
+/* global UCD URLS clipString closeCurrentTab deepEqual sessionStore tryURL */// toolbox.js
 /* global compareVersion */// cmpver.js
 /* global messageBox */
 /* global prefs */
@@ -77,8 +77,8 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
   if (!style) {
     return;
   }
-  const data = style.usercssData;
-  const dupData = dup && dup.usercssData;
+  const data = style[UCD];
+  const dupData = dup && dup[UCD];
   const versionTest = dup && compareVersion(data.version, dupData.version);
 
   updateMeta(style, dup);
@@ -148,8 +148,8 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
 
 function updateMeta(style, dup = installedDup) {
   installedDup = dup;
-  const data = style.usercssData;
-  const dupData = dup && dup.usercssData;
+  const data = style[UCD];
+  const dupData = dup && dup[UCD];
   const versionTest = dup && compareVersion(data.version, dupData.version);
 
   cm.setPreprocessor(data.preprocessor);

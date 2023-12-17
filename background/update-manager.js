@@ -1,6 +1,6 @@
 /* global API */// msg.js
 /* global bgReady download */// common.js
-/* global URLS debounce deepMerge ignoreChromeError */// toolbox.js
+/* global UCD URLS debounce deepMerge ignoreChromeError */// toolbox.js
 /* global calcStyleDigest styleSectionsEqual */ // sections-util.js
 /* global chromeLocal */// storage-util.js
 /* global compareVersion */// cmpver.js
@@ -119,7 +119,7 @@ const updateMan = (() => {
     } = opts;
     if (!id) id = style.id;
     const {md5Url} = style;
-    let {usercssData: ucd, updateUrl} = style;
+    let {[UCD]: ucd, updateUrl} = style;
     let res, state;
     try {
       await checkIfEdited();
@@ -176,7 +176,7 @@ const updateMan = (() => {
         await API.uso.getEmbeddedMeta(css || style.sourceCode);
       if (m2 && m2.updateUrl) {
         updateUrl = m2.updateUrl;
-        oldVer = m2.usercssData.version || '0';
+        oldVer = m2[UCD].version || '0';
         oldEtag = '';
       } else if (css) {
         return;
@@ -187,7 +187,7 @@ const updateMan = (() => {
       // TODO: when sourceCode is > 100kB use http range request(s) for version check
       const {headers: {etag}, response} = await tryDownload(updateUrl, RH_ETAG);
       const json = await API.usercss.buildMeta({sourceCode: response, etag, updateUrl});
-      const delta = compareVersion(json.usercssData.version, oldVer);
+      const delta = compareVersion(json[UCD].version, oldVer);
       let err;
       if (!delta && !ignoreDigest) {
         // re-install is invalid in a soft upgrade
@@ -253,7 +253,7 @@ const updateMan = (() => {
     }
 
     function getDateFromVer(style) {
-      const m = RX_DATE2VER.exec((style.usercssData || {}).version);
+      const m = RX_DATE2VER.exec((style[UCD] || {}).version);
       if (m) {
         m[2]--; // month is 0-based in `Date` constructor
         return new Date(...m.slice(1)).getTime();

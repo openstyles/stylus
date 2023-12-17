@@ -4,7 +4,7 @@
 /* global MozDocMapper failRegexp */// util.js
 /* global MozSectionFinder */
 /* global MozSectionWidget */
-/* global RX_META debounce */// toolbox.js
+/* global UCD RX_META debounce */// toolbox.js
 /* global chromeSync */// storage-util.js
 /* global cmFactory */
 /* global editor */
@@ -39,7 +39,7 @@ async function SourceEditor() {
   const sectionWidget = MozSectionWidget(cm, sectionFinder);
   if (!style.id) setupNewStyle(await editor.template);
   createMetaCompiler(meta => {
-    const {vars} = style.usercssData || {};
+    const {vars} = style[UCD] || {};
     if (vars) {
       let v;
       for (const [key, val] of Object.entries(meta.vars || {})) {
@@ -48,7 +48,7 @@ async function SourceEditor() {
         }
       }
     }
-    style.usercssData = meta;
+    style[UCD] = meta;
     style.name = meta.name;
     style.url = meta.homepageURL || style.installationUrl;
     updateMeta();
@@ -198,7 +198,7 @@ async function SourceEditor() {
     $('#enabled').checked = style.enabled;
     $('#url').href = style.url;
     editor.updateName();
-    cm.setPreprocessor((style.usercssData || {}).preprocessor);
+    cm.setPreprocessor((style[UCD] || {}).preprocessor);
   }
 
   async function replaceStyle(newStyle, draft) {

@@ -9,6 +9,7 @@
   CHROME_POPUP_BORDER_BUG
   FIREFOX
   UA
+  UCD
   URLS
   capitalize
   clamp
@@ -319,10 +320,10 @@ function createStyleElement(style, entry) {
       onmousedown: Events.maybeEdit,
     });
   }
-  const {enabled, frameUrl, usercssData: UCD} = style;
+  const {enabled, frameUrl, [UCD]: ucd} = style;
   const name = $('.style-name', entry);
   const cfg = $('.configure', entry);
-  const cfgUrl = UCD ? '' : style.url;
+  const cfgUrl = ucd ? '' : style.url;
   const cls = entry.classList;
 
   cls.toggle('empty', style.empty);
@@ -338,9 +339,9 @@ function createStyleElement(style, entry) {
   name.$entry = entry;
   name.lastChild.textContent = style.customName || style.name;
 
-  cfg.hidden = UCD ? isEmptyObj(UCD.vars) : !style.url || !`${style.updateUrl}`.includes('?');
+  cfg.hidden = ucd ? isEmptyObj(ucd.vars) : !style.url || !`${style.updateUrl}`.includes('?');
   if (!cfg.hidden && cfg.href !== cfgUrl) {
-    const el = t.template[UCD ? 'config' : 'configExternal'].cloneNode(true);
+    const el = t.template[ucd ? 'config' : 'configExternal'].cloneNode(true);
     if (cfgUrl) el.href = cfgUrl;
     else el.removeAttribute('href');
     cfg.replaceWith(el);

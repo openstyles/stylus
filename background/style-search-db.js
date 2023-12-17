@@ -1,4 +1,4 @@
-/* global RX_META debounce stringAsRegExp tryRegExp */// toolbox.js
+/* global RX_META UCD debounce stringAsRegExp tryRegExp */// toolbox.js
 /* global addAPI */// common.js
 /* global styleMan */
 /* global styleUtil */
@@ -10,18 +10,18 @@
   const METAKEYS = ['customName', 'name', 'url', 'installationUrl', 'updateUrl'];
 
   const extractMeta = style =>
-    style.usercssData
+    style[UCD]
       ? (style.sourceCode.match(RX_META) || [''])[0]
       : null;
 
   const stripMeta = style =>
-    style.usercssData
+    style[UCD]
       ? style.sourceCode.replace(RX_META, '')
       : null;
 
   const MODES = Object.assign(Object.create(null), {
     code: (style, test) =>
-      style.usercssData
+      style[UCD]
         ? test(stripMeta(style))
         : searchSections(style, test, 'code'),
 
@@ -36,7 +36,7 @@
 
     all: (style, test) =>
       MODES.meta(style, test, 'all') ||
-      !style.usercssData && MODES.code(style, test),
+      !style[UCD] && MODES.code(style, test),
   });
 
   addAPI(/** @namespace API */ {

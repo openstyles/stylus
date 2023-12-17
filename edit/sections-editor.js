@@ -1,7 +1,7 @@
 /* global $ $create $remove messageBoxProxy */// dom.js
 /* global API */// msg.js
 /* global CodeMirror */
-/* global RX_META debounce */// toolbox.js
+/* global RX_META UCD debounce */// toolbox.js
 /* global MozDocMapper clipString helpPopup rerouteHotkeys showCodeMirrorPopup */// util.js
 /* global EditorSection */// sections-editor-section.js
 /* global editor */
@@ -430,7 +430,7 @@ function SectionsEditor() {
 
     async function getPreprocessor(code) {
       try {
-        return (await API.usercss.buildMeta({sourceCode: code})).usercssData.preprocessor;
+        return (await API.usercss.buildMeta({sourceCode: code}))[UCD].preprocessor;
       } catch (e) {}
     }
 

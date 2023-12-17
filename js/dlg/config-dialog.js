@@ -1,6 +1,6 @@
 /* global $ $create $createLink $remove important messageBoxProxy setupLivePrefs */// dom.js
 /* global API */// msg.js
-/* global UA clamp debounce deepCopy */// toolbox.js
+/* global UA UCD clamp debounce deepCopy */// toolbox.js
 /* global messageBox */
 /* global prefs */
 /* global t */// localization.js
@@ -22,7 +22,7 @@ async function configDialog(style) {
   let saving = false;
   let bodyStyle;
 
-  const data = style.usercssData;
+  const data = style[UCD];
   const varsHash = deepCopy(data.vars) || {};
   const varNames = Object.keys(varsHash);
   const vars = varNames.map(name => varsHash[name]);
@@ -141,8 +141,8 @@ async function configDialog(style) {
     style.enabled = true;
     style.sourceCode = null;
     style.sections = null;
-    const styleVars = style.usercssData.vars;
-    const bgVars = isInstaller ? styleVars : (bgStyle.usercssData || {}).vars || {};
+    const styleVars = style[UCD].vars;
+    const bgVars = isInstaller ? styleVars : (bgStyle[UCD] || {}).vars || {};
     const invalid = [];
     let numValid = 0;
     for (const va of vars) {

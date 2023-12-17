@@ -1,5 +1,5 @@
 /* global API */// msg.js
-/* global RX_META UA clipString deepEqual isEmptyObj */// toolbox.js
+/* global RX_META UA UCD clipString deepEqual isEmptyObj */// toolbox.js
 /* global Events */// events.js
 /* global chromeSync */// storage-util.js
 /* global prefs */
@@ -148,7 +148,7 @@ async function importFromString(jsonString) {
     if (
       !item ||
       typeof item !== 'object' || (
-        isEmptyObj(item.usercssData)
+        isEmptyObj(item[UCD])
           ? !styleJSONseemsValid(item)
           : typeof item.sourceCode !== 'string'
       )
@@ -206,8 +206,8 @@ async function importFromString(jsonString) {
   }
 
   function sameCode(oldStyle, newStyle) {
-    const d1 = oldStyle.usercssData;
-    const d2 = newStyle.usercssData;
+    const d1 = oldStyle[UCD];
+    const d2 = newStyle[UCD];
     return !d1 + !d2
       ? styleSectionsEqual(oldStyle, newStyle)
       : oldStyle.sourceCode === newStyle.sourceCode && deepEqual(d1.vars, d2.vars);
@@ -379,7 +379,7 @@ async function exportToFile(e) {
       if (key === 'sections'
         // Keeping dummy `sections` for compatibility with older Stylus
         // even in deduped backup so the user can resave/reconfigure the style to rebuild it.
-          ? !style.usercssData || keepDupSections || (val = [{code: ''}])
+          ? !style[UCD] || keepDupSections || (val = [{code: ''}])
           : typeof val !== 'object' || !isEmptyObj(val)) {
         copy[key] = val;
       }

@@ -7,7 +7,7 @@
 /* global initBeautifyButton */// beautify.js
 /* global prefs */
 /* global t */// localization.js
-/* global FIREFOX clipString getOwnTab sessionStore tryJSONparse tryURL */// toolbox.js
+/* global UCD FIREFOX clipString getOwnTab sessionStore tryJSONparse tryURL */// toolbox.js
 'use strict';
 
 /**
@@ -80,7 +80,7 @@ const editor = {
       ],
     };
     // switching the mode here to show the correct page ASAP, usually before DOMContentLoaded
-    const isUC = Boolean(style.usercssData || !id && prefs.get('newStyleAsUsercss'));
+    const isUC = Boolean(style[UCD] || !id && prefs.get('newStyleAsUsercss'));
     Object.assign(editor, /** @namespace Editor */ {
       style,
       isUsercss: isUC,
@@ -383,7 +383,7 @@ function LivePreview() {
       res = await API.styles.preview(data);
       el.textContent = '';
     } catch (err) {
-      const ucd = data.usercssData;
+      const ucd = data[UCD];
       const pp = ucd && ucd.preprocessor;
       const shift = err._varLines + 1 || 0;
       errPos = pp && err.line && err.column

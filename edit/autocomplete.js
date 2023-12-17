@@ -1,6 +1,6 @@
 /* global CodeMirror */
 /* global cmFactory */
-/* global debounce stringAsRegExpStr tryRegExp */// toolbox.js
+/* global UCD debounce stringAsRegExpStr tryRegExp */// toolbox.js
 /* global editor */
 /* global linterMan */
 /* global prefs */
@@ -108,7 +108,7 @@
           prev += 4;
           end -= 4;
           end -= text.slice(end - 4, end) === '-rgb' ? 4 : 0;
-          list = Object.keys((editor.style.usercssData || {}).vars || {}).sort();
+          list = Object.keys((editor.style[UCD] || {}).vars || {}).sort();
           leftLC = left.slice(4);
         }
         break;
@@ -240,7 +240,7 @@
       const {string, start, pos} = stream;
       if (testAt(/\/\*\[\[/y, start, string) &&
           testAt(/]]\*\//y, pos - 4, string)) {
-        const vars = (editor.style.usercssData || {}).vars;
+        const vars = (editor.style[UCD] || {}).vars;
         token[0] =
           vars && vars.hasOwnProperty(string.slice(start + 4, pos - 4).replace(/-rgb$/, ''))
             ? USO_VALID_VAR

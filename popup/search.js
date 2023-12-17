@@ -2,7 +2,7 @@
 /* global $entry tabURL */// popup.js
 /* global API */// msg.js
 /* global Events */
-/* global URLS clipString debounce isEmptyObj stringAsRegExp stringAsRegExpStr tryRegExp tryURL */// toolbox.js
+/* global UCD URLS clipString debounce isEmptyObj stringAsRegExp stringAsRegExpStr tryRegExp tryURL */// toolbox.js
 /* global prefs */
 /* global styleFinder:true */// popup.js
 /* global t */// localization.js
@@ -459,7 +459,7 @@
   }
 
   function renderFullInfo(entry, style) {
-    let {description, vars} = style.usercssData;
+    let {description, vars} = style[UCD];
     // description
     description = (description || '')
       .replace(/<[^>]*>/g, ' ')

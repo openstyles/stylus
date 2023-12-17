@@ -1,6 +1,6 @@
 /* global API */// msg.js
 /* global download */// common.js
-/* global RX_META deepCopy mapObj */// toolbox.js
+/* global RX_META UCD deepCopy mapObj */// toolbox.js
 /* global styleMan */
 'use strict';
 
@@ -16,8 +16,8 @@ const usercssMan = {
 
   /** `src` is a style or vars */
   async assignVars(style, src) {
-    const meta = style.usercssData;
-    const meta2 = src.usercssData;
+    const meta = style[UCD];
+    const meta2 = src[UCD];
     const {vars} = meta;
     const oldVars = meta2 ? meta2.vars : src;
     if (vars && oldVars) {
@@ -56,7 +56,7 @@ const usercssMan = {
   },
 
   async buildCode(style) {
-    const {sourceCode: code, usercssData: {vars, preprocessor}} = style;
+    const {sourceCode: code, [UCD]: {vars, preprocessor}} = style;
     const {sections, errors, log} = await API.worker.compileUsercss(preprocessor, code, vars);
     const recoverable = errors.every(e => e.recoverable);
     if (!sections.length || !recoverable) {
@@ -69,7 +69,7 @@ const usercssMan = {
   },
 
   async buildMeta(style) {
-    if (style.usercssData) {
+    if (style[UCD]) {
       return style;
     }
     // remember normalized sourceCode
@@ -84,7 +84,7 @@ const usercssMan = {
     }
     try {
       const {metadata} = await API.worker.parseUsercssMeta(match[0]);
-      style.usercssData = metadata;
+      style[UCD] = metadata;
       // https://github.com/openstyles/stylus/issues/560#issuecomment-440561196
       for (const [key, globalKey] of usercssMan.GLOBAL_META) {
         const val = metadata[key];
@@ -108,10 +108,9 @@ const usercssMan = {
 
   async configVars(id, vars) {
     const style = deepCopy(styleMan.get(id));
-    style.usercssData.vars = vars;
+    style[UCD].vars = vars;
     await usercssMan.buildCode(style);
-    return (await styleMan.install(style, 'config'))
-      .usercssData.vars;
+    return (await styleMan.install(style, 'config'))[UCD].vars;
   },
 
   async editSave(style) {
@@ -128,8 +127,13 @@ const usercssMan = {
    */
   find(data) {
     if (data.id) return styleMan.get(data.id);
-    const filter = mapObj(data.usercssData || data, null, ['name', 'namespace']);
-    return styleMan.find(filter, 'usercssData');
+    const filter = mapObj(data[UCD] || data, null, ['name', 'namespace']);
+    return styleMan.find(filter, UCD);
+  },
+
+  getVersion(data) {
+    const s = usercssMan.find(data);
+    return s && s[UCD].version;
   },
 
   async install(style, opts) {

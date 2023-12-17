@@ -1,5 +1,5 @@
 /* global API */// msg.js
-/* global RX_META URLS */// toolbox.js
+/* global RX_META UCD URLS */// toolbox.js
 /* global download */// common.js
 /* global styleMan */
 /* global usercssMan */
@@ -27,7 +27,7 @@ const usoApi = (() => {
       const md5 = await (await fetch(md5Url)).text();
       const dup = await findStyle(usoId, md5Url);
       // see STATE_EVENTS in install-hook-userstyles.js
-      const state = !dup ? 0 : dup.usercssData || dup.originalMd5 === md5 ? 2 : 1;
+      const state = !dup ? 0 : dup[UCD] || dup.originalMd5 === md5 ? 2 : 1;
       return asObject
         ? {dup, md5, md5Url, state}
         : state;
@@ -72,7 +72,7 @@ const usoApi = (() => {
     src = typeof src === 'string'
       ? new URLSearchParams(src.split('?')[1])
       : Object.entries(src);
-    const {vars} = style.usercssData;
+    const {vars} = style[UCD];
     if (!vars) {
       return;
     }

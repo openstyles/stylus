@@ -2,6 +2,7 @@
 /* global installed */// manage.js
 /* global prefs */
 /* global t */// localization.js
+/* global UCD */// toolbox.js
 'use strict';
 
 const sorter = (() => {
@@ -23,7 +24,7 @@ const sorter = (() => {
     },
     usercss: {
       text: 'Usercss',
-      parse: v => v.styleMeta.usercssData ? 0 : 1,
+      parse: v => v.styleMeta[UCD] ? 0 : 1,
       sorter: sorterType.number,
     },
     disabled: {
