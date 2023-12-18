@@ -84,11 +84,6 @@
       "matches": ["*://userstyles.org/*"],
       "run_at": "document_start",
       "js": ["content/install-hook-userstyles.js"]
-    },
-    {
-      "matches": ["*://userstyles.world/*"],
-      "run_at": "document_start",
-      "js": ["content/install-hook-userstylesworld.js"]
     }
   ],
   "browser_action": {
