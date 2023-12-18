@@ -3,7 +3,7 @@
 const fetch = require('node-fetch-commonjs');
 const fs = require('fs');
 const fse = require('fs-extra');
-const glob = require('glob').sync;
+const glob = require('fast-glob').sync;
 const path = require('path');
 
 const KEEP_DIRECTORIES = null;

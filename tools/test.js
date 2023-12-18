@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const chalk = require('chalk');
-const glob = require('glob');
+const glob = require('fast-glob');
 
 testGlobalCss();
 testCsslint({overwriteReport: 0}); // Run with 1 to update the report file, undo, commit the changes
