@@ -6,22 +6,18 @@ const archiver = require('archiver');
 
 function createZip(suffix) {
   const MANIFEST = 'manifest.json';
-  const ignore = [
-    MANIFEST,
-    '.*', // dot files/folders (glob, not regexp)
-    'BUILD.md',
-    'node_modules', // may be a symlink in old node.js
-    'node_modules/**',
-    'tools/**',
-    'package.json',
-    'package-lock.json',
-    'yarn.lock',
-    '*.zip',
-    '*.map',
+  const ADD = [
+    '*/**',
+    '*.html',
+    'LICENSE',
+    'README.md',
+    'privacy-policy.md',
   ];
-  try {
-    ignore.push(...fs.readFileSync('.gitignore', 'utf8').split(/\r?\n/));
-  } catch (e) {}
+  const SKIP = [
+    '.*', // dot files/folders (glob, not regexp)
+    'node_modules',
+    'tools',
+  ];
   const mj = JSON.parse(fs.readFileSync(MANIFEST, 'utf8'));
   delete mj.key;
   if (suffix === 'chrome') {
@@ -50,7 +46,7 @@ function createZip(suffix) {
   const file = fs.createWriteStream(fileName);
   const archive = archiver('zip');
   archive.pipe(file);
-  archive.glob('**', {ignore});
+  archive.glob(ADD, {skip: SKIP});
   archive.append(Buffer.from(JSON.stringify(mj, null, 2)), {name: MANIFEST});
   return archive.finalize();
 }
