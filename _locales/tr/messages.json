@@ -701,6 +701,9 @@
   "styleBeautify": {
     "message": "Güzelleştir"
   },
+  "styleCancelEditLabel": {
+    "message": "Yönetim sayfasına dön"
+  },
   "styleChangesNotSaved": {
     "message": "Bu stilde yaptığınız, kaydedilmemiş değişiklikler var."
   },

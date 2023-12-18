@@ -611,6 +611,9 @@
   "manageNewStyleAsUsercss": {
     "message": "в виде UserCSS"
   },
+  "manageNewUI": {
+    "message": "Новый интерфейс"
+  },
   "manageOnlyDisabled": {
     "message": "Только неактивные стили"
   },
@@ -1035,6 +1038,9 @@
   "parseUsercssError": {
     "message": "Stylus не смог разобрать UserCSS:"
   },
+  "popupAutoResort": {
+    "message": "Сортировать стили после переключения"
+  },
   "popupBorders": {
     "message": "Добавить белую рамку по бокам"
   },
@@ -1160,6 +1166,9 @@
   },
   "searchResultNotMatching": {
     "message": "Стиль установлен, но он не применяется к текущему URL сайта."
+  },
+  "searchResultNotMatchingNote": {
+    "message": "Попробуйте попросить автора этого пользовательского стиля добавить URL.\n\nВы также можете открыть стиль в менеджере и отредактировать его самостоятельно,\nно имейте в виду, что при этом отключается автоматическое обновление этого стиля."
   },
   "searchResultRating": {
     "message": "Рейтинг"

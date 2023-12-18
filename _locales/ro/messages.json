@@ -649,6 +649,9 @@
   "styleBeautifyPreserveNewlines": {
     "message": "Menține linii noi"
   },
+  "styleCancelEditLabel": {
+    "message": "Înapoi la manager"
+  },
   "styleChangesNotSaved": {
     "message": "Ați modificat tema fără a o salva."
   },

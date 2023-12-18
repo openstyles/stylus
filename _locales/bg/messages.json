@@ -416,6 +416,9 @@
   "styleBeautifyIndentConditional": {
     "message": "Отстъп на @media, @supports"
   },
+  "styleCancelEditLabel": {
+    "message": "Назад към стиловете"
+  },
   "styleChangesNotSaved": {
     "message": "Направили сте промени по стила без да ги запазите."
   },

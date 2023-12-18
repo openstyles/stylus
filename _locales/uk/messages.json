@@ -1020,6 +1020,9 @@
   "parseUsercssError": {
     "message": "Stylus не зміг розібрати UserCSS:"
   },
+  "popupAutoResort": {
+    "message": "Пересортувати стилі після переключення"
+  },
   "popupBorders": {
     "message": "Додати білі рамки з боків"
   },
@@ -1140,6 +1143,9 @@
   "searchResultNotMatching": {
     "message": "Стиль встановлено, але він не застосовується до поточної URL-адреси сайту."
   },
+  "searchResultNotMatchingNote": {
+    "message": "Спробуйте попросити автора цього стилю додати URL-адресу.\n\nВи також можете відкрити стиль в менеджері і редагувати його самостійно,\nале майте на увазі, що це вимикає автоматичне оновлення для цього стилю."
+  },
   "searchResultRating": {
     "message": "Рейтинг"
   },
@@ -1217,6 +1223,9 @@
   },
   "styleBeautifyPreserveNewlines": {
     "message": "Зберігати порожні рядки"
+  },
+  "styleCancelEditLabel": {
+    "message": "Повернутися до керування"
   },
   "styleChangesNotSaved": {
     "message": "Ви внесли зміни в цей стиль без збереження."

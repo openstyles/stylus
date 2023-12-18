@@ -980,6 +980,9 @@
   "parseUsercssError": {
     "message": "Stylus a échoué à parser le UserCSS :"
   },
+  "popupAutoResort": {
+    "message": "Retrier les styles dans la popup à chaque (dés)activation"
+  },
   "popupBorders": {
     "message": "Ajouter des bordures blanches sur les côtés"
   },
@@ -1096,6 +1099,9 @@
   },
   "searchResultNotMatching": {
     "message": "Ce style est installé mais il ne s'applique pas au lien du site actuel."
+  },
+  "searchResultNotMatchingNote": {
+    "message": "Essaye de demander l’auteur  pour ajouter le lien l'URL.\n\nVous pouvez aussi ouvrir le style dans le gestionnaire et l'éditer soit-même,\nmais soyez avertis que cela désactive les mises à jour automatiques pour ce style."
   },
   "searchResultRating": {
     "message": "Note"

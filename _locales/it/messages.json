@@ -656,6 +656,9 @@
   "styleBeautifyPreserveNewlines": {
     "message": "Mantieni gli \"a capo\""
   },
+  "styleCancelEditLabel": {
+    "message": "Torna a gestione"
+  },
   "styleChangesNotSaved": {
     "message": "Hai apportato modifiche a questo stile senza salvare."
   },

@@ -919,6 +919,9 @@
   "parseUsercssError": {
     "message": "Stylus no pudo interpretar el UserCSS:"
   },
+  "popupAutoResort": {
+    "message": "Al activar esta opción, se muestran los estilos en una ventana emergente"
+  },
   "popupBorders": {
     "message": "Añadir bordes blancos en los laterales"
   },
@@ -1018,6 +1021,9 @@
   "searchResultNotMatching": {
     "message": "El estilo se ha instalado, pero no es válido para la URL del sitio actual."
   },
+  "searchResultNotMatchingNote": {
+    "message": "Intenta pedir al autor de este estilo de usuario que añada la URL.\n\nTambién puedes abrir el estilo en el administrador y editarlo tú mismo,\npero ten en cuenta que deshabilita las actualizaciones automáticas de\neste estilo."
+  },
   "searchResultRating": {
     "message": "Valoración"
   },
@@ -1101,6 +1107,9 @@
   },
   "styleBeautifyPreserveNewlines": {
     "message": "Conservar nuevas líneas"
+  },
+  "styleCancelEditLabel": {
+    "message": "Volver al administrador"
   },
   "styleChangesNotSaved": {
     "message": "Has realizado cambios en este estilo sin guardarlos."

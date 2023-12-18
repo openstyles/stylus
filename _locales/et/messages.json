@@ -895,6 +895,9 @@
   "styleBeautifyPreserveNewlines": {
     "message": "Säilita reavahetused"
   },
+  "styleCancelEditLabel": {
+    "message": "Tagasi haldusesse"
+  },
   "styleChangesNotSaved": {
     "message": "Sa oled teinud sellele stiilile muutusi ilma salvestamata."
   },

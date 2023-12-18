@@ -940,6 +940,9 @@
   "parseUsercssError": {
     "message": "A Stylus nem tudta elemezni a UserCSS-t"
   },
+  "popupAutoResort": {
+    "message": "Stílusok újrarendezése a felugró ablakban átkapcsoláskor"
+  },
   "popupBorders": {
     "message": "Fehér szegély az oldalakon"
   },
@@ -1077,6 +1080,9 @@
   },
   "styleBeautifyPreserveNewlines": {
     "message": "Új sorok megtartása"
+  },
+  "styleCancelEditLabel": {
+    "message": "Vissza a kezeléshez"
   },
   "styleChangesNotSaved": {
     "message": "Nem mentetted a stílusban lévő változásokat."

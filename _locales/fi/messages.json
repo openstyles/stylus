@@ -135,6 +135,9 @@
   "styleBadRegexp": {
     "message": "Regexp ei kelpaa."
   },
+  "styleCancelEditLabel": {
+    "message": "Takaisin hallintapaneeliin"
+  },
   "styleChangesNotSaved": {
     "message": "Olet tehnyt muutoksia tähän tyyliin tallentamatta."
   },

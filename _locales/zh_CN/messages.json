@@ -1152,6 +1152,9 @@
   "searchResultNotMatching": {
     "message": "样式已安装但不适于当前 URL"
   },
+  "searchResultNotMatchingNote": {
+    "message": "尝试请求该用户样式的作者添加 URL。\n\n您也可以在管理器中打开样式自己编辑，\n但请注意，这会禁用此样式的自动更新。"
+  },
   "searchResultRating": {
     "message": "评价"
   },

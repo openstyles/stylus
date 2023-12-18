@@ -833,6 +833,9 @@
   "parseUsercssError": {
     "message": "Stylus misslyckades med att tolka UserCSS:"
   },
+  "popupAutoResort": {
+    "message": "Sortera om format i popup efter växling"
+  },
   "popupBorders": {
     "message": "Lägg till vita kanter på sidorna"
   },
@@ -979,6 +982,9 @@
   },
   "styleBeautifyPreserveNewlines": {
     "message": "Bevara nya rader"
+  },
+  "styleCancelEditLabel": {
+    "message": "Återgå till hantera"
   },
   "styleChangesNotSaved": {
     "message": "Du har gjort ändringar i denna stil utan att spara."

@@ -984,6 +984,9 @@
   "parseUsercssError": {
     "message": "Stylus no pudo interpretar el UserCSS:"
   },
+  "popupAutoResort": {
+    "message": "Al activar esta opción, se muestran los estilos en una ventana emergente"
+  },
   "popupBorders": {
     "message": "Añadir bordes blancos en los laterales"
   },
@@ -1199,6 +1202,9 @@
   },
   "styleBeautifyPreserveNewlines": {
     "message": "Conservar nuevas líneas"
+  },
+  "styleCancelEditLabel": {
+    "message": "Volver al administrador"
   },
   "styleChangesNotSaved": {
     "message": "Has realizado cambios en este estilo sin guardarlos."

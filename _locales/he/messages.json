@@ -832,6 +832,9 @@
   "styleBeautifyPreserveNewlines": {
     "message": "שמור שורות חדשות"
   },
+  "styleCancelEditLabel": {
+    "message": "חזרה לניהול"
+  },
   "styleChangesNotSaved": {
     "message": "ביצעת שינויים בסגנון זה מבלי לשמור."
   },

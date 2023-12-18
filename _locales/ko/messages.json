@@ -926,6 +926,9 @@
   "parseUsercssError": {
     "message": "Stylus가 UserCSS 데이터를 해석하는데 실패했습니다:"
   },
+  "popupAutoResort": {
+    "message": "팝업 내에서 스타일 토글 시 재정렬"
+  },
   "popupBorders": {
     "message": "양옆에 흰색 테두리 추가"
   },
@@ -1025,6 +1028,9 @@
   "searchResultNotMatching": {
     "message": "스타일을 설치했지만 현 사이트 URL에는 적용하지 않습니다."
   },
+  "searchResultNotMatchingNote": {
+    "message": "이 userstyle 작성자에게 URL을 넣어달라고 요청합니다.\n\n관리자에서 스타일을 열고 직접 편집할 수도 있지만,\n이 스타일의 자동 업데이트를 활성 해제할 수도 있으니 주의하세요."
+  },
   "searchResultRating": {
     "message": "평가"
   },
@@ -1105,6 +1111,9 @@
   },
   "styleBeautifyPreserveNewlines": {
     "message": "개행 문자 유지"
+  },
+  "styleCancelEditLabel": {
+    "message": "관리 페이지로 돌아가기"
   },
   "styleChangesNotSaved": {
     "message": "스타일의 변경 사항을 저장하지 않았습니다."

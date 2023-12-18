@@ -950,6 +950,9 @@
   "styleBeautifyPreserveNewlines": {
     "message": "Preserve novas linhas"
   },
+  "styleCancelEditLabel": {
+    "message": "Voltar ao gerenciamento"
+  },
   "styleChangesNotSaved": {
     "message": "Você fez alterações neste estilo sem salvar."
   },

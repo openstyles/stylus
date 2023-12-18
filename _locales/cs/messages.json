@@ -769,6 +769,9 @@
   "styleBeautifyPreserveNewlines": {
     "message": "Zachovat nové řádky"
   },
+  "styleCancelEditLabel": {
+    "message": "Zpět ke správě"
+  },
   "styleChangesNotSaved": {
     "message": "Provedli jste změny tohoto stylu bez uložení."
   },
