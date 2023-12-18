@@ -272,6 +272,9 @@
   "editorSettings": {
     "message": "Editor Einstellungen"
   },
+  "emptyCode": {
+    "message": "Bereiche für diese URL sind leer"
+  },
   "enableStyleLabel": {
     "message": "Aktivieren"
   },

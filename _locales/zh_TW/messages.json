@@ -313,6 +313,9 @@
   "editorSettings": {
     "message": "編輯器設定"
   },
+  "emptyCode": {
+    "message": "此 URL 的樣式區段為空"
+  },
   "enableStyleLabel": {
     "message": "啟用"
   },

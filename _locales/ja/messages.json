@@ -275,6 +275,9 @@
   "editorSettings": {
     "message": "エディタ設定"
   },
+  "emptyCode": {
+    "message": "このURLのスタイルセクションが空です"
+  },
   "enableStyleLabel": {
     "message": "有効化"
   },

@@ -313,6 +313,9 @@
   "editorSettings": {
     "message": "Ustawienia edytora"
   },
+  "emptyCode": {
+    "message": "Sekcje stylu dla tego adresu URL są puste"
+  },
   "enableStyleLabel": {
     "message": "Włącz"
   },

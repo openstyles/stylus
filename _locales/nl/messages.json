@@ -294,6 +294,9 @@
   "editorSettings": {
     "message": "Editor-instellingen"
   },
+  "emptyCode": {
+    "message": "Stijlsecties voor deze URL zijn leeg"
+  },
   "enableStyleLabel": {
     "message": "Inschakelen"
   },
