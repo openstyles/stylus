@@ -1,6 +1,6 @@
 {
   "InaccessibleFileHint": {
-    "message": "Stylus는 일부 파일 형식(예: pdf, json 파일 등)에 접근할 수 없습니다."
+    "message": "Stylus는 일부 파일 형식(예: .pdf, .json 파일 등)에 접근할 수 없습니다."
   },
   "addStyleLabel": {
     "message": "새 스타일 작성"
@@ -283,7 +283,7 @@
     "message": "지원"
   },
   "externalUsercssDocument": {
-    "message": "Usercss 안내 문서"
+    "message": "UserCSS 안내 문서"
   },
   "filteredStyles": {
     "message": "$numTotal$개 중 $numShown$개 표시",
@@ -366,7 +366,7 @@
     "message": "가져오기"
   },
   "importPreprocessor": {
-    "message": "<code>@preprocessor</code>가 있는 스타일은 고전 모드에서 동작하지 않을 것입니다. Usercss 모드로 편집기를 전환할 수 있습니다: 1) 스타일 관리자 열기, 2) “Usercss로” 확인란 활성화하기, 3) “새 스타일 쓰기”\n\n지금 바로 가져오기?"
+    "message": "<code>@preprocessor</code>가 있는 스타일은 고전 모드에서 동작하지 않을 것입니다. UserCSS 모드로 편집기를 전환할 수 있습니다: 1) 스타일 관리자 열기, 2) “UserCSS로” 확인란 활성화하기, 3) “새 스타일 쓰기”\n\n지금 바로 가져오기?"
   },
   "importPreprocessorTitle": {
     "message": "@preprocessor로 인한 잠재적 문제가 있습니다"
@@ -530,7 +530,7 @@
     "message": "적용 대상 항목 수"
   },
   "manageNewStyleAsUsercss": {
-    "message": "Usercss로 작성"
+    "message": "UserCSS로 작성"
   },
   "manageOnlyDisabled": {
     "message": "비활성화된 스타일만"
@@ -548,13 +548,13 @@
     "message": "(userstyles.org 페이지에서 설치하지 않은 스타일)"
   },
   "manageOnlyNonUsercss": {
-    "message": "Usercss가 아닌 스타일만"
+    "message": "UserCSS가 아닌 스타일만"
   },
   "manageOnlyUpdates": {
     "message": "업데이트 혹은 문제점이 있는 것만"
   },
   "manageOnlyUsercss": {
-    "message": "Usercss 스타일만"
+    "message": "UserCSS 스타일만"
   },
   "menuShowBadge": {
     "message": "활성화된 스타일 개수 표시"
@@ -782,7 +782,7 @@
     "message": "최상위 사이트 도메인을 각 iframe에 노출합니다.\n다음과 같이 iframe용 CSS를 작성할 수 있습니다:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
   },
   "optionsAdvancedNewStyleAsUsercss": {
-    "message": "새로운 스타일을 Usercss로 작성"
+    "message": "새로운 스타일을 UserCSS로 작성"
   },
   "optionsAdvancedPatchCsp": {
     "message": "스타일 자원을 허용하도록 <code>CSP</code>패치하기"
@@ -924,7 +924,7 @@
     "message": "총 페이지 수"
   },
   "parseUsercssError": {
-    "message": "Stylus가 Usercss 데이터를 해석하는데 실패했습니다:"
+    "message": "Stylus가 UserCSS 데이터를 해석하는데 실패했습니다:"
   },
   "popupBorders": {
     "message": "양옆에 흰색 테두리 추가"
@@ -1041,7 +1041,7 @@
     "message": "CSS 코드"
   },
   "searchStylesHelp": {
-    "message": "</> 또는 <Ctrl-F> 키를 누르면 검색창에 포커스합니다.\nDefault mode is plain text search for all space-separated terms in any order.\n정확한 단어 검색: 검색어를 큰따옴표로 감쌉니다. 예: <\".header ~ div\">\n정규표현식: 빗금 및 플래그 문자를 포함합니다. 예: </body.*?\\ba\\b/i>\nURL로 찾기: 완전히 특정된 URL에 적용되는 스타일을 검색합니다. 예: https://www.example.org/\n메타데이터로 찾기: 이름, \"적용 대상\" 지정자, 설치 URL, 업데이트 URL 등 usercss 스타일의 모든 메타데이터 블록을 기반으로 검색합니다."
+    "message": "</> 또는 <Ctrl-F> 키를 누르면 검색창에 포커스합니다.\nDefault mode is plain text search for all space-separated terms in any order.\n정확한 단어 검색: 검색어를 큰따옴표로 감쌉니다. 예: <\".header ~ div\">\n정규표현식: 빗금 및 플래그 문자를 포함합니다. 예: </body.*?\\ba\\b/i>\nURL로 찾기: 완전히 특정된 URL에 적용되는 스타일을 검색합니다. 예: https://www.example.org/\n메타데이터로 찾기: 이름, \"적용 대상\" 지정자, 설치 URL, 업데이트 URL 등 UserCSS 스타일의 모든 메타데이터 블록을 기반으로 검색합니다."
   },
   "searchStylesMatchUrl": {
     "message": "URL별"
@@ -1309,7 +1309,7 @@
     "message": "코드에 @name을 지정하세요"
   },
   "usercssReplaceTemplateConfirmation": {
-    "message": "현재 코드로 새 Usercss 스타일의 기본 템플릿을 대체하시겠습니까?"
+    "message": "현재 코드로 새 UserCSS 스타일의 기본 템플릿을 대체하시겠습니까?"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "코드를 여기 입력하세요"

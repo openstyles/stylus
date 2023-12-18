@@ -253,7 +253,7 @@
     "message": "Podpora"
   },
   "externalUsercssDocument": {
-    "message": "Dokumentace pro Usercss"
+    "message": "Dokumentace pro UserCSS"
   },
   "filteredStyles": {
     "message": "zobrazeno $numShown$ z $numTotal$",
@@ -470,7 +470,7 @@
     "message": "Počet položek v části „Platí pro“"
   },
   "manageNewStyleAsUsercss": {
-    "message": "jako Usercss"
+    "message": "jako UserCSS"
   },
   "manageOnlyDisabled": {
     "message": "Pouze vypnuté styly"
@@ -488,13 +488,13 @@
     "message": "(styly nenainstalované prostřednictvím webu userstyles.org)"
   },
   "manageOnlyNonUsercss": {
-    "message": "Pouze non-Usercss styly"
+    "message": "Pouze non-UserCSS styly"
   },
   "manageOnlyUpdates": {
     "message": "Pouze s aktualizacemi nebo chybami"
   },
   "manageOnlyUsercss": {
-    "message": "Pouze Usercss styly"
+    "message": "Pouze UserCSS styly"
   },
   "menuShowBadge": {
     "message": "Zobrazit počet aktivních stylů"
@@ -563,7 +563,7 @@
     "message": "Obnažit iframe prvky pomocí HTML[stylus-iframe]"
   },
   "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Napsat nový styl jako usercss"
+    "message": "Napsat nový styl jako UserCSS"
   },
   "optionsBadgeDisabled": {
     "message": "Barva pozadí při zakázání"
@@ -641,7 +641,7 @@
     "message": "Celkový počet stránek"
   },
   "parseUsercssError": {
-    "message": "Usercss nelze zpracovat:"
+    "message": "UserCSS nelze zpracovat:"
   },
   "popupBorders": {
     "message": "Přidat postranní bílé okraje"
@@ -957,7 +957,7 @@
     "message": "Definujte @name v kódu"
   },
   "usercssReplaceTemplateConfirmation": {
-    "message": "Nahradit výchozí šablonu pro nové Usercss styly aktuálním kódem?"
+    "message": "Nahradit výchozí šablonu pro nové UserCSS styly aktuálním kódem?"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "Sem vložte kód…"

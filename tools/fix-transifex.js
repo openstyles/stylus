@@ -7,7 +7,10 @@ const DIR = path.dirname(require.resolve('../package.json')) + '/_locales/';
 const RX_LNG_CODE = /^\w\w(_\w{2,3})?$/; // like `en` or `en_GB`
 
 const makeFileName = lng => `${DIR}${lng}/messages.json`;
-const readLngJson = lng => JSON.parse(fs.readFileSync(makeFileName(lng), 'utf8'));
+const readLngJson = lng => JSON.parse(
+  fs.readFileSync(makeFileName(lng), 'utf8')
+    .replace(/\busercss\b/gi, 'UserCSS')
+);
 const sortAlpha = ([a], [b]) => a < b ? -1 : a > b;
 
 const src = readLngJson('en');

@@ -1,6 +1,6 @@
 {
   "InaccessibleFileHint": {
-    "message": "Stylus nie ma dostępu do niektórych typów plików (na przykład plików pdf i json)."
+    "message": "Stylus nie ma dostępu do niektórych typów plików (na przykład plików .pdf i .json)."
   },
   "addStyleLabel": {
     "message": "Napisz nowy styl"
@@ -347,7 +347,7 @@
     "message": "Wsparcie"
   },
   "externalUsercssDocument": {
-    "message": "Dokumentacja Usercss"
+    "message": "Dokumentacja UserCSS"
   },
   "filteredStyles": {
     "message": "Pokazano $numShown$ z sumy $numTotal$",
@@ -442,7 +442,7 @@
     "message": "Importuj"
   },
   "importPreprocessor": {
-    "message": "Styl z <code>@preprocessor</code> nie będzie działać w trybie klasycznym. Możesz przełączyć edytor w tryb Usercss: 1) otwórz menedżer stylów, 2) zaznacz pole wyboru \"jako Usercss\", 3) kliknij \"Napisz nowy styl\"\n\nCzy mimo to zaimportować teraz?"
+    "message": "Styl z <code>@preprocessor</code> nie będzie działać w trybie klasycznym. Możesz przełączyć edytor w tryb UserCSS: 1) otwórz menedżer stylów, 2) zaznacz pole wyboru \"jako UserCSS\", 3) kliknij \"Napisz nowy styl\"\n\nCzy mimo to zaimportować teraz?"
   },
   "importPreprocessorTitle": {
     "message": "Potencjalny problem związany z @preprocessor"
@@ -606,7 +606,7 @@
     "message": "Minimalna szerokość kolumny (w pikselach; 9999 wyłącza tryb wielokolumnowy)"
   },
   "manageNewStyleAsUsercss": {
-    "message": "jako Usercss"
+    "message": "jako UserCSS"
   },
   "manageNewUI": {
     "message": "Układ tabeli"
@@ -627,13 +627,13 @@
     "message": "(style nie zainstalowane poprzez stronę userstyles.org)"
   },
   "manageOnlyNonUsercss": {
-    "message": "Tylko style nie-Usercss"
+    "message": "Tylko style nie-UserCSS"
   },
   "manageOnlyUpdates": {
     "message": "Tylko z aktualizacjami lub problemami"
   },
   "manageOnlyUsercss": {
-    "message": "Tylko style Usercss"
+    "message": "Tylko style UserCSS"
   },
   "menuShowBadge": {
     "message": "Pokaż liczbę aktywnych stylów"
@@ -876,7 +876,7 @@
     "message": "Eksponuje nazwę stylu na stronie, aby ułatwić debugowanie stylów w narzędziach dla twórców witryn. Załaduj ponownie kartę(-y), aby zastosować nowe ustawienie."
   },
   "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Napisz nowy styl jako usercss"
+    "message": "Napisz nowy styl jako UserCSS"
   },
   "optionsAdvancedPatchCsp": {
     "message": "Załataj <code>CSP</code>, aby zezwolić na zasoby stylu"
@@ -1042,7 +1042,7 @@
     "message": "Wszystkie strony"
   },
   "parseUsercssError": {
-    "message": "Stylusowi nie udało się sparsować usercss:"
+    "message": "Stylusowi nie udało się sparsować UserCSS:"
   },
   "popupAutoResort": {
     "message": "Przesortuj style w oknie podręcznym po przełączeniu"
@@ -1198,7 +1198,7 @@
     "message": "Kod CSS"
   },
   "searchStylesHelp": {
-    "message": "Klawisz </> lub <Ctrl-F> uaktywnia pole wyszukiwania.\nTryb domyślny to wyszukiwanie zwykłego tekstu dla wszystkich terminów oddzielonych spacjami w dowolnej kolejności.\nDokładne słowa: zawiń zapytanie w podwójne cudzysłowy, np. <\".header ~ div\">\nWyrażenia regularne: uwzględnij ukośniki i flagi, np. </body.*?\\ba\\b/i>\n\"Według adresu URL\" w selektorze zakresu: znajduje style, które mają zastosowanie do w pełni określonego adresu URL, np. https://www.example.org/\n\"Metadane\" w selektorze zakresu: wyszukuje w nazwach, specyfikatorach „dotyczy”, adresie URL instalacji, adresie URL aktualizacji i całym bloku metadanych dla stylów usercss."
+    "message": "Klawisz </> lub <Ctrl-F> uaktywnia pole wyszukiwania.\nTryb domyślny to wyszukiwanie zwykłego tekstu dla wszystkich terminów oddzielonych spacjami w dowolnej kolejności.\nDokładne słowa: zawiń zapytanie w podwójne cudzysłowy, np. <\".header ~ div\">\nWyrażenia regularne: uwzględnij ukośniki i flagi, np. </body.*?\\ba\\b/i>\n\"Według adresu URL\" w selektorze zakresu: znajduje style, które mają zastosowanie do w pełni określonego adresu URL, np. https://www.example.org/\n\"Metadane\" w selektorze zakresu: wyszukuje w nazwach, specyfikatorach „dotyczy”, adresie URL instalacji, adresie URL aktualizacji i całym bloku metadanych dla stylów UserCSS."
   },
   "searchStylesMatchUrl": {
     "message": "Według adresu URL"
@@ -1222,7 +1222,7 @@
     "message": "Przywróć usuniętą sekcję"
   },
   "sectionUserCSS": {
-    "message": "Klasyczny edytor podzielony na sekcje nie obsługuje składni UserCSS. Aby z niej skorzystać, zaznacz najpierw pole wyboru `userCSS` w menedżerze lub wyskakującym okienku, a następnie utwórz nowy styl, wówczas skopiuj bieżący kod, klikając przycisk Eksportuj w tym edytorze."
+    "message": "Klasyczny edytor podzielony na sekcje nie obsługuje składni UserCSS. Aby z niej skorzystać, zaznacz najpierw pole wyboru `UserCSS` w menedżerze lub wyskakującym okienku, a następnie utwórz nowy styl, wówczas skopiuj bieżący kod, klikając przycisk Eksportuj w tym edytorze."
   },
   "sections": {
     "message": "Sekcje"
@@ -1537,7 +1537,7 @@
     "message": "Określ @name w kodzie"
   },
   "usercssReplaceTemplateConfirmation": {
-    "message": "Zastąpić domyślny szablon dla nowych stylów Usercss aktualnym kodem?"
+    "message": "Zastąpić domyślny szablon dla nowych stylów UserCSS aktualnym kodem?"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "Wstaw kod tutaj..."

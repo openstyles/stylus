@@ -1,6 +1,6 @@
 {
   "InaccessibleFileHint": {
-    "message": "Stylus kan inte komma åt vissa filtyper (t.ex. pdf- & json-filer)."
+    "message": "Stylus kan inte komma åt vissa filtyper (t.ex. .pdf- & .json-filer)."
   },
   "addStyleLabel": {
     "message": "Skriv ny stil"
@@ -268,7 +268,7 @@
     "message": "Extern länk"
   },
   "externalUsercssDocument": {
-    "message": "Dokumentation för Usercss"
+    "message": "Dokumentation för UserCSS"
   },
   "filteredStyles": {
     "message": "$numShown$ visade av $numTotal$ totalt",
@@ -482,7 +482,7 @@
     "message": "Antal tillämpad-för objekt"
   },
   "manageNewStyleAsUsercss": {
-    "message": "som Usercss"
+    "message": "som UserCSS"
   },
   "manageOnlyDisabled": {
     "message": "Endast inaktiverade stilar"
@@ -500,13 +500,13 @@
     "message": "(stilen som inte är installerade via en userstyles.org-sida)"
   },
   "manageOnlyNonUsercss": {
-    "message": "Endast icke-Usercss-stilar"
+    "message": "Endast icke-UserCSS-stilar"
   },
   "manageOnlyUpdates": {
     "message": "Endast med uppdateringar eller problem"
   },
   "manageOnlyUsercss": {
-    "message": "Endast Usercss-stilar"
+    "message": "Endast UserCSS-stilar"
   },
   "menuShowBadge": {
     "message": "Visa antalet aktiva stilar"
@@ -723,7 +723,7 @@
     "message": "Exponerar toppdomänen i varje iframe.\nAktiverar skriva Iframe-specifik CSS så här:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
   },
   "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Skriv ny stil som Usercss"
+    "message": "Skriv ny stil som UserCSS"
   },
   "optionsBadgeDisabled": {
     "message": "Bakgrundsfärg när inaktiverad"
@@ -831,7 +831,7 @@
     "message": "Totalt sidor"
   },
   "parseUsercssError": {
-    "message": "Stylus misslyckades med att tolka Usercss:"
+    "message": "Stylus misslyckades med att tolka UserCSS:"
   },
   "popupBorders": {
     "message": "Lägg till vita kanter på sidorna"
@@ -1171,7 +1171,7 @@
     "message": "Ange @name i koden"
   },
   "usercssReplaceTemplateConfirmation": {
-    "message": "Ersätt standardmallen för nya Usercss-stilar med den aktuella koden?"
+    "message": "Ersätt standardmallen för nya UserCSS-stilar med den aktuella koden?"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "Lägg in kod här..."

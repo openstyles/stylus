@@ -322,7 +322,7 @@
     "message": "Lien externe"
   },
   "externalUsercssDocument": {
-    "message": "Documentation d'Usercss"
+    "message": "Documentation d'UserCSS"
   },
   "filteredStyles": {
     "message": "$numShown$ montrés sur $numTotal$ au total",
@@ -408,7 +408,7 @@
     "message": "Importer"
   },
   "importPreprocessor": {
-    "message": "Les styles avec un <code>@preprocessor</code> ne fonctionnera pas en mode classique. Vous pouvez changer l'éditeur en mode Usercss : 1) Ouvrez le gestionnaire de styles, 2) Activer l'option \"en tant que Usercss\", 3) Cliquez \"écrire un nouveau style\"\n\nImporter de toute façon ?"
+    "message": "Les styles avec un <code>@preprocessor</code> ne fonctionnera pas en mode classique. Vous pouvez changer l'éditeur en mode UserCSS : 1) Ouvrez le gestionnaire de styles, 2) Activer l'option \"en tant que UserCSS\", 3) Cliquez \"écrire un nouveau style\"\n\nImporter de toute façon ?"
   },
   "importPreprocessorTitle": {
     "message": "Problème potentiel à cause de @preprocessor"
@@ -572,7 +572,7 @@
     "message": "Largeur de colonne minimale (en pixel ; 9999 désactive le mode multicolonne)"
   },
   "manageNewStyleAsUsercss": {
-    "message": "en tant que Usercss"
+    "message": "en tant que UserCSS"
   },
   "manageOnlyDisabled": {
     "message": "Seulement les styles désactivés"
@@ -590,13 +590,13 @@
     "message": "(les styles non installés via une page userstyles.org)"
   },
   "manageOnlyNonUsercss": {
-    "message": "Styles non Usercss uniquement"
+    "message": "Styles non UserCSS uniquement"
   },
   "manageOnlyUpdates": {
     "message": "Avec mises à jour ou problèmes uniquement"
   },
   "manageOnlyUsercss": {
-    "message": "Styles Usercss uniquement"
+    "message": "Styles UserCSS uniquement"
   },
   "menuShowBadge": {
     "message": "Montrer le nombre de styles actifs"
@@ -833,7 +833,7 @@
     "message": "Afficher le nom du style dans la page pour faciliter le débogage des styles dans les outils de développement. Veuillez recharger le ou les onglets pour appliquer ce nouveau paramètre."
   },
   "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Écrire un nouveau style en tant que usercss"
+    "message": "Écrire un nouveau style en tant que UserCSS"
   },
   "optionsAdvancedPatchCsp": {
     "message": "Corrige <code>CSP</code> pour permettre les ressources de style"
@@ -978,7 +978,7 @@
     "message": "Pages au total"
   },
   "parseUsercssError": {
-    "message": "Stylus a échoué à parser le usercss :"
+    "message": "Stylus a échoué à parser le UserCSS :"
   },
   "popupBorders": {
     "message": "Ajouter des bordures blanches sur les côtés"
@@ -1425,7 +1425,7 @@
     "message": "Spécifiez @name dans le code"
   },
   "usercssReplaceTemplateConfirmation": {
-    "message": "Remplacer le modèle par défaut pour les nouveaux styles Usercss par le code actuel ?"
+    "message": "Remplacer le modèle par défaut pour les nouveaux styles UserCSS par le code actuel ?"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "Insérer le code ici..."

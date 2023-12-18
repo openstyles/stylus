@@ -1,6 +1,6 @@
 {
   "InaccessibleFileHint": {
-    "message": "Stylus no puede acceder a algunos tipos de archivos (p. ej. archivos pdf y json)."
+    "message": "Stylus no puede acceder a algunos tipos de archivos (p. ej. archivos .pdf y .json)."
   },
   "addStyleLabel": {
     "message": "Escribir un estilo nuevo"
@@ -400,7 +400,7 @@
     "message": "Importar"
   },
   "importPreprocessor": {
-    "message": "Los estilos con <code>@preprocessor</code> no funcionarán en el modo clásico. Puedes cambiar el editor al modo Usercss: 1) Abre el administrador de estilos. 2) Activa la casilla 'como UserCSS'. 3) Haz clic en 'Escribir un estilo nuevo'\n\n¿Quieres importarlo de todos modos?"
+    "message": "Los estilos con <code>@preprocessor</code> no funcionarán en el modo clásico. Puedes cambiar el editor al modo UserCSS: 1) Abre el administrador de estilos. 2) Activa la casilla 'como UserCSS'. 3) Haz clic en 'Escribir un estilo nuevo'\n\n¿Quieres importarlo de todos modos?"
   },
   "importPreprocessorTitle": {
     "message": "Posible problema debido a @preprocessor"

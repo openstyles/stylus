@@ -274,7 +274,7 @@
     "message": "תמיכה"
   },
   "externalUsercssDocument": {
-    "message": "תיעוד ל־Usercss"
+    "message": "תיעוד ל־UserCSS"
   },
   "filteredStyles": {
     "message": "$numShown$ מתוך  $numTotal$ סך־הכל",
@@ -491,7 +491,7 @@
     "message": "מספר הפריטים ה־'מוחלים על'"
   },
   "manageNewStyleAsUsercss": {
-    "message": "כ־Usercss"
+    "message": "כ־UserCSS"
   },
   "manageOnlyDisabled": {
     "message": "רק עיצובים מושבתים"
@@ -509,13 +509,13 @@
     "message": "(הסגנונות שלא הותקנו דרך דף userstyles.org)"
   },
   "manageOnlyNonUsercss": {
-    "message": "רק לא עיצובי Usercss"
+    "message": "רק לא עיצובי UserCSS"
   },
   "manageOnlyUpdates": {
     "message": "רק עם עדכונים או תקלות"
   },
   "manageOnlyUsercss": {
-    "message": "רק עיצובי Usercss"
+    "message": "רק עיצובי UserCSS"
   },
   "menuShowBadge": {
     "message": "הצג כמות עיצובים מאופשרים"
@@ -571,7 +571,7 @@
     "message": "חושף את תחום האתר העליון בכל iframe.\nמאפשר כתיבת CSS ספציפית ל־iframe כך:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
   },
   "optionsAdvancedNewStyleAsUsercss": {
-    "message": "כתוב עיצוב חדש בתור usercss"
+    "message": "כתוב עיצוב חדש בתור UserCSS"
   },
   "optionsBadgeDisabled": {
     "message": "צבע רקע בעת השבתה"
@@ -704,7 +704,7 @@
     "message": "סה״כ דפים"
   },
   "parseUsercssError": {
-    "message": "Stylus נכשל בניתוח usercss:"
+    "message": "Stylus נכשל בניתוח UserCSS:"
   },
   "popupBorders": {
     "message": "הוספת שוליים לבנים בצדדים"

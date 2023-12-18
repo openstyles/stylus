@@ -1,6 +1,6 @@
 {
   "InaccessibleFileHint": {
-    "message": "Stylus 無法存取某些檔案類型（如 PDF 與 JSON 檔案）。"
+    "message": "Stylus 無法存取某些檔案類型（如 .pdf 與 .json 檔案）。"
   },
   "addStyleLabel": {
     "message": "編寫新樣式"
@@ -347,7 +347,7 @@
     "message": "支援"
   },
   "externalUsercssDocument": {
-    "message": "Usercss 的文件"
+    "message": "UserCSS 的文件"
   },
   "filteredStyles": {
     "message": "$numShown$ 個已顯示，總共 $numTotal$ 個",
@@ -445,7 +445,7 @@
     "message": "匯入"
   },
   "importPreprocessor": {
-    "message": "以一個 <code>@preprocessor</code> 進行風格設定在經典模式下無法運作。您可以將編輯器切換到 Usercss 模式：1）開啟風格管理員，2）啟用「作為 Usercss」核取方塊，3）點選「撰寫新風格」\n\n現在要進行匯入嗎？"
+    "message": "以一個 <code>@preprocessor</code> 進行風格設定在經典模式下無法運作。您可以將編輯器切換到 UserCSS 模式：1）開啟風格管理員，2）啟用「作為 UserCSS」核取方塊，3）點選「撰寫新風格」\n\n現在要進行匯入嗎？"
   },
   "importPreprocessorTitle": {
     "message": "@preprocessor 引起的潛在問題"
@@ -609,7 +609,7 @@
     "message": "最小欄位寬度（以像素為單位；9999 停用多欄模式）"
   },
   "manageNewStyleAsUsercss": {
-    "message": "做為 Usercss"
+    "message": "做為 UserCSS"
   },
   "manageNewUI": {
     "message": "表格版面配置"
@@ -630,13 +630,13 @@
     "message": "（不是透過 userstyles.org 網頁安裝的樣式）"
   },
   "manageOnlyNonUsercss": {
-    "message": "僅非 Usercss 樣式"
+    "message": "僅非 UserCSS 樣式"
   },
   "manageOnlyUpdates": {
     "message": "僅有更新或是有問題的"
   },
   "manageOnlyUsercss": {
-    "message": "僅 Usercss 樣式"
+    "message": "僅 UserCSS 樣式"
   },
   "menuShowBadge": {
     "message": "顯示生效的樣式數目"
@@ -879,7 +879,7 @@
     "message": "在頁面中發佈樣式名稱以方便在 devtools 中對樣式進行除錯。請重新載入分頁以套用新設定。"
   },
   "optionsAdvancedNewStyleAsUsercss": {
-    "message": "以 usercss 編寫新樣式"
+    "message": "以 UserCSS 編寫新樣式"
   },
   "optionsAdvancedPatchCsp": {
     "message": "修補 <code>CSP</code> 以允許樣式資源"
@@ -1042,7 +1042,7 @@
     "message": "總頁面"
   },
   "parseUsercssError": {
-    "message": "Stylus 解析 usercss 失敗："
+    "message": "Stylus 解析 UserCSS 失敗："
   },
   "popupAutoResort": {
     "message": "在切換後重新排序彈出式視窗中的樣式"
@@ -1198,7 +1198,7 @@
     "message": "CSS 程式碼"
   },
   "searchStylesHelp": {
-    "message": "</> 或 <Ctrl-F> 鍵可將焦點置於搜尋欄。\n預設的模式為純文字搜尋，以任意順序搜尋所有以空格分隔的詞語。\n精確字詞：將字詞以雙引號包起來，例如 <\".header ~ div\">\n正規表達式：包含斜線與標誌，如 </body.*?\\ba\\b/i>\n範圍選擇器中的「按 URL」：尋找適用於完全指定 URL 的樣式，如 https://www.example.org/\n範圍選擇器中的「詮釋資料」：搜尋名稱、「套用至」說明、安裝 URL、更新 URL 與整個 usercss 樣式的詮釋資料區塊。"
+    "message": "</> 或 <Ctrl-F> 鍵可將焦點置於搜尋欄。\n預設的模式為純文字搜尋，以任意順序搜尋所有以空格分隔的詞語。\n精確字詞：將字詞以雙引號包起來，例如 <\".header ~ div\">\n正規表達式：包含斜線與標誌，如 </body.*?\\ba\\b/i>\n範圍選擇器中的「按 URL」：尋找適用於完全指定 URL 的樣式，如 https://www.example.org/\n範圍選擇器中的「詮釋資料」：搜尋名稱、「套用至」說明、安裝 URL、更新 URL 與整個 UserCSS 樣式的詮釋資料區塊。"
   },
   "searchStylesMatchUrl": {
     "message": "按 URL"
@@ -1222,7 +1222,7 @@
     "message": "復原已移除的部份"
   },
   "sectionUserCSS": {
-    "message": "經典的分段編輯器不支援 UserCSS 語法。要使用它，請先在管理程式或彈出式視窗中啟用「userCSS」核取方塊，然後建立新樣式，再來透過點擊此編輯器中的「匯出」按鈕複製目前程式碼。"
+    "message": "經典的分段編輯器不支援 UserCSS 語法。要使用它，請先在管理程式或彈出式視窗中啟用「UserCSS」核取方塊，然後建立新樣式，再來透過點擊此編輯器中的「匯出」按鈕複製目前程式碼。"
   },
   "sections": {
     "message": "樣式段"
@@ -1537,7 +1537,7 @@
     "message": "在程式碼中指定 @name"
   },
   "usercssReplaceTemplateConfirmation": {
-    "message": "為新的 Usercss 樣式取代預設的範本為目前的程式碼？"
+    "message": "為新的 UserCSS 樣式取代預設的範本為目前的程式碼？"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "在此插入程式碼……"

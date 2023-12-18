@@ -1,6 +1,6 @@
 {
   "InaccessibleFileHint": {
-    "message": "Stylus 无法访问某些文件格式（例如 pdf 或 json 文件）。"
+    "message": "Stylus 无法访问某些文件格式（例如 .pdf 或 .json 文件）。"
   },
   "addStyleLabel": {
     "message": "新建样式"

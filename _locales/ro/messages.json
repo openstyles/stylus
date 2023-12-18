@@ -211,7 +211,7 @@
     "message": "Suport"
   },
   "externalUsercssDocument": {
-    "message": "Documentație pentru Usercss"
+    "message": "Documentație pentru UserCSS"
   },
   "filteredStyles": {
     "message": "$numShown$ vizualizabile din $numTotal$ ",
@@ -428,13 +428,13 @@
     "message": "(temele neinstalate prin userstyles.org)"
   },
   "manageOnlyNonUsercss": {
-    "message": "Doar teme non-Usercss"
+    "message": "Doar teme non-UserCSS"
   },
   "manageOnlyUpdates": {
     "message": "Doar cu update-uri sau erori"
   },
   "manageOnlyUsercss": {
-    "message": "Doar teme Usercss"
+    "message": "Doar teme UserCSS"
   },
   "menuShowBadge": {
     "message": "Afișați numărul temelor active"
@@ -464,7 +464,7 @@
     "message": "Expuneți iframes via HTML[stylus-iframe]"
   },
   "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Scrieți temă nouă în formatul usercss"
+    "message": "Scrieți temă nouă în formatul UserCSS"
   },
   "optionsBadgeDisabled": {
     "message": "Culoare de fundal pentru modul inactiv"
@@ -530,7 +530,7 @@
     "message": "Număr total de pagini"
   },
   "parseUsercssError": {
-    "message": "Stylus nu a putut analiza usercss-ul"
+    "message": "Stylus nu a putut analiza UserCSS-ul"
   },
   "popupBorders": {
     "message": "Adăugați bordură albă pe margini"
@@ -828,7 +828,7 @@
     "message": "Specificați @name"
   },
   "usercssReplaceTemplateConfirmation": {
-    "message": "Înlocuiți tema de bază a formatului Usercss cu acest cod?"
+    "message": "Înlocuiți tema de bază a formatului UserCSS cu acest cod?"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "Introduce cod aici..."

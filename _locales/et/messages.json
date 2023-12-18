@@ -1,6 +1,6 @@
 {
   "InaccessibleFileHint": {
-    "message": "Stylus ei saa osadele failitüüpidele ligi pääseda (nt. pdf & json failid)."
+    "message": "Stylus ei saa osadele failitüüpidele ligi pääseda (nt. .pdf & .json failid)."
   },
   "addStyleLabel": {
     "message": "Kirjuta uus stiil"
@@ -271,7 +271,7 @@
     "message": "Kasutajatugi"
   },
   "externalUsercssDocument": {
-    "message": "Usercss dokumentatsioon"
+    "message": "UserCSS dokumentatsioon"
   },
   "filteredStyles": {
     "message": "$numShown$/$numTotal$ kuvatud",
@@ -494,7 +494,7 @@
     "message": "Rakendub-üksuste arv"
   },
   "manageNewStyleAsUsercss": {
-    "message": "Usercss-ina"
+    "message": "UserCSS-ina"
   },
   "manageOnlyDisabled": {
     "message": "Ainult keelatud stiilid"
@@ -512,13 +512,13 @@
     "message": "(stiilid, mida ei paigaldatud lehelt userstyles.org)"
   },
   "manageOnlyNonUsercss": {
-    "message": "Ainult mitte-Usercss stiilid"
+    "message": "Ainult mitte-UserCSS stiilid"
   },
   "manageOnlyUpdates": {
     "message": "Ainult uuenduste või vigadega"
   },
   "manageOnlyUsercss": {
-    "message": "Ainult Usercss stiilid"
+    "message": "Ainult UserCSS stiilid"
   },
   "menuShowBadge": {
     "message": "Kuva aktiivsete stiilide hulka"
@@ -656,7 +656,7 @@
     "message": "Paljastab tipp-domeeni igas iframe'is.\nVõimaldab iframe'i-põhise CSS-koodi kirjutamise näiteks selliselt:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
   },
   "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Kirjuta uus stiil usercss-ina"
+    "message": "Kirjuta uus stiil UserCSS-ina"
   },
   "optionsBadgeDisabled": {
     "message": "Taustavärv keelatud olekus"
@@ -755,7 +755,7 @@
     "message": "Lehti kokku"
   },
   "parseUsercssError": {
-    "message": "Stylus ei suutnud usercss-i analüüsida:"
+    "message": "Stylus ei suutnud UserCSS-i analüüsida:"
   },
   "popupBorders": {
     "message": "Lisa äärtesse valged piirjooned"

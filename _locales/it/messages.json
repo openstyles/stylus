@@ -1,6 +1,6 @@
 {
   "InaccessibleFileHint": {
-    "message": "Stylus non può accedere ad alcuni tipi di file (ad es. pdf & JSON)"
+    "message": "Stylus non può accedere ad alcuni tipi di file (ad es. .pdf & .json)"
   },
   "addStyleLabel": {
     "message": "Scrivi un nuovo stile"
@@ -238,7 +238,7 @@
     "message": "Supporto"
   },
   "externalUsercssDocument": {
-    "message": "Documentazione per Usercss"
+    "message": "Documentazione per UserCSS"
   },
   "filteredStyles": {
     "message": "$numShown$ mostrati di $numTotal$ totali",
@@ -415,7 +415,7 @@
     "message": "Stili installati"
   },
   "manageNewStyleAsUsercss": {
-    "message": "come Usercss"
+    "message": "come UserCSS"
   },
   "manageOnlyDisabled": {
     "message": "Solo stili disattivati"
@@ -430,13 +430,13 @@
     "message": "Solo stili creati localmente"
   },
   "manageOnlyNonUsercss": {
-    "message": "Solo stili non-Usercss"
+    "message": "Solo stili non-UserCSS"
   },
   "manageOnlyUpdates": {
     "message": "Solo con aggiornamenti o problemi"
   },
   "manageOnlyUsercss": {
-    "message": "Solo stili Usercss"
+    "message": "Solo stili UserCSS"
   },
   "menuShowBadge": {
     "message": "Mostra contatore stili attivi"

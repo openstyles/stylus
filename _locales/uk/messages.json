@@ -1,6 +1,6 @@
 {
   "InaccessibleFileHint": {
-    "message": "Stylus не може отримати доступ до деяких типів файлів (наприклад, файли PDF і JSON)."
+    "message": "Stylus не може отримати доступ до деяких типів файлів (наприклад, файли .pdf і .json)."
   },
   "addStyleLabel": {
     "message": "Написати новий стиль"
@@ -344,7 +344,7 @@
     "message": "Підтримка"
   },
   "externalUsercssDocument": {
-    "message": "Документація для Usercss"
+    "message": "Документація для UserCSS"
   },
   "filteredStyles": {
     "message": "$numShown$ показано з $numTotal$",
@@ -436,7 +436,7 @@
     "message": "Імпорт"
   },
   "importPreprocessor": {
-    "message": "Стиль з <code>@preprocessor</code> не працює в класичному режимі. Ви можете переключити редактор у режим Usercss: 1) відкрийте менеджер стилів, 2) увімкніть прапорець \"як Usercss\", 3) клацніть \"Написати новий стиль\"\n\nВсе одно імпортувати зараз?"
+    "message": "Стиль з <code>@preprocessor</code> не працює в класичному режимі. Ви можете переключити редактор у режим UserCSS: 1) відкрийте менеджер стилів, 2) увімкніть прапорець \"як UserCSS\", 3) клацніть \"Написати новий стиль\"\n\nВсе одно імпортувати зараз?"
   },
   "importPreprocessorTitle": {
     "message": "Потенційна проблема через @preprocessor"
@@ -597,7 +597,7 @@
     "message": "Мінімальна ширина колонки (у пікселях, 9999 вимикає багатоколонковий режим)"
   },
   "manageNewStyleAsUsercss": {
-    "message": "як Usercss"
+    "message": "як UserCSS"
   },
   "manageOnlyDisabled": {
     "message": "Лише вимкнені стилі"
@@ -615,13 +615,13 @@
     "message": "(стилі, не встановлені через сайт userstyles.org)"
   },
   "manageOnlyNonUsercss": {
-    "message": "Лише не Usercss стилі"
+    "message": "Лише не UserCSS стилі"
   },
   "manageOnlyUpdates": {
     "message": "Лише з оновленнями чи проблемами"
   },
   "manageOnlyUsercss": {
-    "message": "Лише стилі Usercss"
+    "message": "Лише стилі UserCSS"
   },
   "menuShowBadge": {
     "message": "Показати кількість активних стилів"
@@ -861,7 +861,7 @@
     "message": "Виставляти назву стиля"
   },
   "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Записати новий стиль як usercss"
+    "message": "Записати новий стиль як UserCSS"
   },
   "optionsAdvancedPatchCsp": {
     "message": "Виправлення <code>CSP</code> для дозволу наборів стилів"
@@ -1018,7 +1018,7 @@
     "message": "Всього сторінок"
   },
   "parseUsercssError": {
-    "message": "Stylus не зміг розібрати usercss:"
+    "message": "Stylus не зміг розібрати UserCSS:"
   },
   "popupBorders": {
     "message": "Додати білі рамки з боків"

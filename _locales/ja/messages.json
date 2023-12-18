@@ -1,6 +1,6 @@
 {
   "InaccessibleFileHint": {
-    "message": "Stylusにはアクセスできないファイル形式があります（例えばpdfやjsonファイル等）。"
+    "message": "Stylusにはアクセスできないファイル形式があります（例えば.pdfや.jsonファイル等）。"
   },
   "addStyleLabel": {
     "message": "新スタイルを作成"
@@ -309,7 +309,7 @@
     "message": "サポート"
   },
   "externalUsercssDocument": {
-    "message": "Usercssの文書"
+    "message": "UserCSSの文書"
   },
   "filteredStyles": {
     "message": "$numTotal$ 件中の $numShown$ 件を表示",
@@ -407,7 +407,7 @@
     "message": "インポート"
   },
   "importPreprocessor": {
-    "message": "<code>@preprocessor</code>を含むスタイルは、クラシックモードでは機能しません。エディタをUsercssモードにしてください : 1) スタイルマネージャを開きます, 2)「Usercssとして」チェックボックスをONにします, 3)「新スタイルを作成」をクリックします\n\nとにかくインポートしますか？"
+    "message": "<code>@preprocessor</code>を含むスタイルは、クラシックモードでは機能しません。エディタをUserCSSモードにしてください : 1) スタイルマネージャを開きます, 2)「UserCSSとして」チェックボックスをONにします, 3)「新スタイルを作成」をクリックします\n\nとにかくインポートしますか？"
   },
   "importPreprocessorTitle": {
     "message": "@preprocessorの潜在的な問題"
@@ -574,7 +574,7 @@
     "message": "最小カラム幅 (ピクセル単位。9999にすると、マルチカラムモードを無効にします)"
   },
   "manageNewStyleAsUsercss": {
-    "message": "Usercssとして"
+    "message": "UserCSSとして"
   },
   "manageNewUI": {
     "message": "テーブル形式レイアウト"
@@ -595,13 +595,13 @@
     "message": "（userstyles.orgのページからインストールされていないスタイル）"
   },
   "manageOnlyNonUsercss": {
-    "message": "非Usercssスタイルのみ"
+    "message": "非UserCSSスタイルのみ"
   },
   "manageOnlyUpdates": {
     "message": "更新もしくは問題があるスタイルのみ"
   },
   "manageOnlyUsercss": {
-    "message": "Usercssスタイルのみ"
+    "message": "UserCSSスタイルのみ"
   },
   "menuShowBadge": {
     "message": "アクティブなスタイルの数を表示する"
@@ -844,7 +844,7 @@
     "message": "開発ツールでスタイルのデバッグを容易にするため、ページ内にスタイル名を公開します。タブをリロードして新しい設定を適用してください。"
   },
   "optionsAdvancedNewStyleAsUsercss": {
-    "message": "新しいスタイルを usercss として作成します"
+    "message": "新しいスタイルを UserCSS として作成します"
   },
   "optionsAdvancedPatchCsp": {
     "message": "スタイルのアセットを許可するために<code>CSP</code>にパッチを当てる"
@@ -1007,7 +1007,7 @@
     "message": "総ページ数"
   },
   "parseUsercssError": {
-    "message": "Stylusはusercssの解析に失敗しました: "
+    "message": "StylusはUserCSSの解析に失敗しました: "
   },
   "popupAutoResort": {
     "message": "ポップアップ内のスタイルをソートして表示"
@@ -1163,7 +1163,7 @@
     "message": "CSSコード"
   },
   "searchStylesHelp": {
-    "message": "</> または <Ctrl-F> キーで検索欄に移動します。\nデフォルトモードは、空白で区切られたすべての単語を任意の順番で探す文字列検索です。\n正確な文字列検索 : 検索文字列をダブルクォートで囲んでください。例. <\".header ~ div\">\n正規表現検索 : 検索文字列にスラッシュとフラグを含めてください。例. </body.*?\\ba\\b/i>\nスコープセレクタで「URLによる」を選択 : 指定されたURLに適用されるスタイルを見つけます。例. https://www.example.org/\nスコープセレクタで「メタデータ」を選択 : 名前、「適用先」指定子、インストールURL、アップデートURL、そして usercss スタイルのメタデータブロック全体を検索します。"
+    "message": "</> または <Ctrl-F> キーで検索欄に移動します。\nデフォルトモードは、空白で区切られたすべての単語を任意の順番で探す文字列検索です。\n正確な文字列検索 : 検索文字列をダブルクォートで囲んでください。例. <\".header ~ div\">\n正規表現検索 : 検索文字列にスラッシュとフラグを含めてください。例. </body.*?\\ba\\b/i>\nスコープセレクタで「URLによる」を選択 : 指定されたURLに適用されるスタイルを見つけます。例. https://www.example.org/\nスコープセレクタで「メタデータ」を選択 : 名前、「適用先」指定子、インストールURL、アップデートURL、そして UserCSS スタイルのメタデータブロック全体を検索します。"
   },
   "searchStylesMatchUrl": {
     "message": "URLによる"
@@ -1499,7 +1499,7 @@
     "message": "コードで@nameを指定してください"
   },
   "usercssReplaceTemplateConfirmation": {
-    "message": "現在のコードで、新しいUsercssスタイルのデフォルト・テンプレートを置き換えますか？"
+    "message": "現在のコードで、新しいUserCSSスタイルのデフォルト・テンプレートを置き換えますか？"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "ここにコードを挿入..."

@@ -1,6 +1,6 @@
 {
   "InaccessibleFileHint": {
-    "message": "Stylus não pode acessar alguns tipos de arquivos (ex: arquivos pdf e json)."
+    "message": "Stylus não pode acessar alguns tipos de arquivos (ex: arquivos .pdf e .json)."
   },
   "addStyleLabel": {
     "message": "Escrever novo estilo"
@@ -282,7 +282,7 @@
     "message": "Suporte"
   },
   "externalUsercssDocument": {
-    "message": "Documentação para Usercss"
+    "message": "Documentação para UserCSS"
   },
   "filteredStyles": {
     "message": "$numShown$ apresentado(s) de $numTotal$total",
@@ -511,7 +511,7 @@
     "message": "Número de aplica-se a itens"
   },
   "manageNewStyleAsUsercss": {
-    "message": "como Usercss"
+    "message": "como UserCSS"
   },
   "manageOnlyDisabled": {
     "message": "Apenas estilos desativados"
@@ -529,13 +529,13 @@
     "message": "(os estilos não instalados através de uma página userstyles.org)"
   },
   "manageOnlyNonUsercss": {
-    "message": "Apenas estilos não-Usercss"
+    "message": "Apenas estilos não-UserCSS"
   },
   "manageOnlyUpdates": {
     "message": "Apenas com atualizações ou problemas"
   },
   "manageOnlyUsercss": {
-    "message": "Apenas estilos Usercss"
+    "message": "Apenas estilos UserCSS"
   },
   "menuShowBadge": {
     "message": "Mostrar a contagem de estilos ativados"
@@ -620,7 +620,7 @@
     "message": "Expor iframes via HTML[stylus-iframe]"
   },
   "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Escrever novo estilo como usercss"
+    "message": "Escrever novo estilo como UserCSS"
   },
   "optionsBadgeDisabled": {
     "message": "Cor de fundo quando desativado"
@@ -722,7 +722,7 @@
     "message": "Páginas totais"
   },
   "parseUsercssError": {
-    "message": "O Stylus falhou ao analisar o usercss:"
+    "message": "O Stylus falhou ao analisar o UserCSS:"
   },
   "popupBorders": {
     "message": "Adicionar margens laterais brancas "
@@ -1053,7 +1053,7 @@
     "message": "Especificar @name no código"
   },
   "usercssReplaceTemplateConfirmation": {
-    "message": "Substituir o modelo predefinido para novos estilos de Usercss com o código atual?"
+    "message": "Substituir o modelo predefinido para novos estilos de UserCSS com o código atual?"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "Insira o código aqui..."

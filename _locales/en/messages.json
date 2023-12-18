@@ -1,6 +1,6 @@
 {
   "InaccessibleFileHint": {
-    "message": "Stylus can not access some file types (e.g. pdf & json files).",
+    "message": "Stylus can not access some file types (e.g. .pdf, .json).",
     "description": "Note in the toolbar popup for some file types that cannot be accessed"
   },
   "addStyleLabel": {
@@ -210,7 +210,7 @@
   },
   "configureStyle": {
     "message": "Configure",
-    "description": "Label for the button to configure usercss userstyle"
+    "description": "Label for the button to configure UserCSS userstyle"
   },
   "configureStyleOnHomepage": {
     "message": "Configure on homepage",
@@ -369,7 +369,7 @@
   },
   "dragDropUsercssTabstrip": {
     "message": "To install the file, drop it on the tab strip (the area where the tab titles are shown).",
-    "description": "Message popup shown when erroneously dropping a usercss file into style manager page"
+    "description": "Message popup shown when erroneously dropping a UserCSS file into style manager page"
   },
   "editDeleteText": {
     "message": "Delete",
@@ -439,8 +439,8 @@
     "description": "Label for the external link to style's support site"
   },
   "externalUsercssDocument": {
-    "message": "Documentation for Usercss",
-    "description": "Label for the external link to usercss documentation"
+    "message": "Documentation for UserCSS",
+    "description": "Label for the external link to UserCSS documentation"
   },
   "filteredStyles": {
     "message": "$numShown$ shown of $numTotal$ total",
@@ -562,7 +562,7 @@
     "description": "Label for the button to import a style (editor) or all styles (style manager)"
   },
   "importPreprocessor": {
-    "message": "Style with a <code>@preprocessor</code> won't work in the classic mode. You can switch the editor to Usercss mode: 1) open the style manager, 2) enable \"as Usercss\" checkbox, 3) click \"Write new style\"\n\nImport now anyway?"
+    "message": "Style with a <code>@preprocessor</code> won't work in the classic mode. You can switch the editor to UserCSS mode: 1) open the style manager, 2) enable \"as UserCSS\" checkbox, 3) click \"Write new style\"\n\nImport now anyway?"
   },
   "importPreprocessorTitle": {
     "message": "Potential problem due to @preprocessor"
@@ -775,7 +775,7 @@
     "message": "Minimum column width (in pixels; 9999 disables multi-column mode)"
   },
   "manageNewStyleAsUsercss": {
-    "message": "as Usercss",
+    "message": "as UserCSS",
     "description": "VERY SHORT label for the checkbox next to the 'Write new style' button in the style manager"
   },
   "manageNewUI": {
@@ -803,16 +803,16 @@
     "description": "Tooltip for the checkbox to show only locally created styles i.e. non-updatable"
   },
   "manageOnlyNonUsercss": {
-    "message": "Only non-Usercss styles",
-    "description": "Checkbox to show only non-Usercss (standard) styles"
+    "message": "Only non-UserCSS styles",
+    "description": "Checkbox to show only non-UserCSS (standard) styles"
   },
   "manageOnlyUpdates": {
     "message": "Only with updates or issues",
     "description": "Checkbox to show only styles that have updates after check-all-styles-for-updates was performed"
   },
   "manageOnlyUsercss": {
-    "message": "Only Usercss styles",
-    "description": "Checkbox to show only Usercss styles"
+    "message": "Only UserCSS styles",
+    "description": "Checkbox to show only UserCSS styles"
   },
   "manageTitle": {
     "message": "Stylus",
@@ -885,7 +885,7 @@
     "description": "Error displayed when the value of @var range or @var number is invalid"
   },
   "meta_invalidRangeStep": {
-    "message": "Invalid @var $type$: default value is not a mutiple of the step",
+    "message": "Invalid @var $type$: default value is not a multiple of the step",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -1087,7 +1087,7 @@
     "message": "Exposes the style name in the page to facilitate debugging of styles in devtools. Please reload the tab(s) to apply the new setting."
   },
   "optionsAdvancedNewStyleAsUsercss": {
-    "message": "Write new style as usercss"
+    "message": "Write new style as UserCSS"
   },
   "optionsAdvancedAutoSwitchSchemeNever": {
     "message": "Disabled. The dark/light setting in styles is ignored."
@@ -1169,7 +1169,7 @@
     "message": "Reset options"
   },
   "optionsStylusThemes": {
-    "message": "Click Stylus icon in the browser toolbar on any Stylus page including this one, then click 'Find styles'"
+    "message": "Click the Stylus icon in the browser toolbar on any Stylus page including this one, then click 'Find styles'"
   },
   "optionsSubheading": {
     "message": "More Options",
@@ -1231,7 +1231,7 @@
     "message": "URL"
   },
   "optionsSyncStatusRelogin": {
-    "message": "Session expired, please login again."
+    "message": "Session expired, please log in again."
   },
   "optionsSyncStatusSyncing": {
     "message": "Syncing..."
@@ -1268,8 +1268,8 @@
     "message": "Total pages"
   },
   "parseUsercssError": {
-    "message": "Stylus failed to parse usercss:",
-    "description": "The error message to show when stylus failed to parse usercss"
+    "message": "Stylus failed to parse UserCSS:",
+    "description": "The error message to show when stylus failed to parse UserCSS"
   },
   "popupAutoResort": {
     "message": "Re-sort styles in popup after toggling",
@@ -1460,7 +1460,7 @@
     "description": "Option for `find styles` scope selector in style manager."
   },
   "searchStylesHelp": {
-    "message": "</> or <Ctrl-F> key focuses the search field.\nDefault mode is plain text search for all space-separated terms in any order.\nExact words: wrap the query in double quotes, e.g. <\".header ~ div\">\nRegular expressions: include slashes and flags, e.g. </body.*?\\ba\\b/i>\n\"By URL\" in scope selector: finds styles that apply to a fully specified URL e.g. https://www.example.org/\n\"Metadata\" in scope selector: searches in names, \"applies to\" specifiers, installation URL, update URL, and the entire metadata block for usercss styles.",
+    "message": "</> or <Ctrl-F> key focuses the search field.\nDefault mode is plain text search for all space-separated terms in any order.\nExact words: wrap the query in double quotes, e.g. <\".header ~ div\">\nRegular expressions: include slashes and flags, e.g. </body.*?\\ba\\b/i>\n\"By URL\" in scope selector: finds styles that apply to a fully specified URL e.g. https://www.example.org/\n\"Metadata\" in scope selector: searches in names, \"applies to\" specifiers, installation URL, update URL, and the entire metadata block for UserCSS styles.",
     "description": "Text in the minihelp displayed when clicking (i) icon to the right of the search input field in the style manager"
   },
   "searchStylesMatchUrl": {
@@ -1492,7 +1492,7 @@
     "description": "Label for the button to restore a removed section"
   },
   "sectionUserCSS": {
-    "message": "The classic sectioned editor doesn't support UserCSS syntax. To use it, enable the `userCSS` checkbox first in the manager or the popup and then make a new style, then copy your current code by clicking the Export button in this editor."
+    "message": "The classic sectioned editor doesn't support UserCSS syntax. To use it, enable the `UserCSS` checkbox first in the manager or the popup and then make a new style, then copy your current code by clicking the Export button in this editor."
   },
   "sections": {
     "message": "Sections",
@@ -1510,7 +1510,7 @@
     "message": "Define keyboard shortcuts"
   },
   "shortcutsNoteFF": {
-    "message": "In Firefox 66+ you can open the built-in shortcuts UI manually:\n1) right-click Stylus icon in the toolbar and choose 'Manage'\n(alternatively, open about:addons via the main menu or Ctrl-Shift-A),\n2) in the page that opens click the cog wheel icon in the top right corner,\n3) choose 'Manage extension shortcuts'.\n\nYou can also customize the shortcuts here."
+    "message": "In Firefox 66+ you can open the built-in shortcuts UI manually:\n1) right-click the Stylus icon in the toolbar and choose 'Manage'\n(alternatively, open about:addons via the main menu or Ctrl-Shift-A),\n2) in the page that opens, click the cog wheel icon in the top right corner,\n3) choose 'Manage extension shortcuts'.\n\nYou can also customize the shortcuts here."
   },
   "sortDateNewestFirst": {
     "message": "newest first",
@@ -1753,7 +1753,7 @@
     "description": "Tooltip for the toolbar icon"
   },
   "syncErrorRelogin": {
-    "message": "Sync failed. You have been logged out.\nTry to re-login in Stylus options.",
+    "message": "Sync failed. Try logging in again in the Stylus options.",
     "description": "Tooltip for the toolbar icon"
   },
   "syncErrorLock": {
@@ -1868,17 +1868,17 @@
   },
   "usercssAvoidOverwriting": {
     "message": "Please change the value of @name or @namespace to avoid overwriting an existing style.",
-    "description": "Shown in a message box when attempting to save a new Usercss style that would overwrite an existing one."
+    "description": "Shown in a message box when attempting to save a new UserCSS style that would overwrite an existing one."
   },
   "usercssConfigIncomplete": {
     "message": "The style was updated or deleted after the configuration dialog was shown. These variables were not saved to avoid corrupting the style's metadata:"
   },
   "usercssEditorNamePlaceholder": {
     "message": "Specify @name in the code",
-    "description": "Placeholder text for the empty name input field when creating a new Usercss style"
+    "description": "Placeholder text for the empty name input field when creating a new UserCSS style"
   },
   "usercssReplaceTemplateConfirmation": {
-    "message": "Replace the default template for new Usercss styles with the current code?"
+    "message": "Replace the default template for new UserCSS styles with the current code?"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "Insert code here...",

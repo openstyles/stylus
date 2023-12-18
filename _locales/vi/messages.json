@@ -1,6 +1,6 @@
 {
   "InaccessibleFileHint": {
-    "message": "Stylus không thể truy cập một số kiểu tập tin (chẳng hạn như PDF và JSON)."
+    "message": "Stylus không thể truy cập một số kiểu tập tin (chẳng hạn như .pdf và .json)."
   },
   "addStyleLabel": {
     "message": "Viết bảng định kiểu mới"

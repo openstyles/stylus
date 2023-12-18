@@ -1,6 +1,6 @@
 {
   "InaccessibleFileHint": {
-    "message": "Το Stylus δεν έχει πρόσβαση σε κάποια αρχεία (π.χ. τα αρχεία PDF και JSON)"
+    "message": "Το Stylus δεν έχει πρόσβαση σε κάποια αρχεία (π.χ. τα αρχεία .pdf και .json)"
   },
   "addStyleLabel": {
     "message": "Γράψτε νέο στυλ"
@@ -279,7 +279,7 @@
     "message": "Υποστήριξη"
   },
   "externalUsercssDocument": {
-    "message": "Τεκμηρίωση για Usercss"
+    "message": "Τεκμηρίωση για UserCSS"
   },
   "filteredStyles": {
     "message": "Βλέπετε $numShown$ από 2$numTotal$ συνολικά",
