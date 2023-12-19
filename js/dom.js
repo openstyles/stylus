@@ -306,12 +306,8 @@ function setInputValue(input, value) {
 function setupLivePrefs(ids) {
   let init = true;
   // getElementsByTagName is cached so it's much faster than calling querySelector for each id
-  if (Array.isArray(ids)) {
-    ids = [...ids];
-  } else {
-    ids = (ids instanceof Element ? ids : document).getElementsByTagName('*');
-    ids = prefs.knownKeys.filter(id => id in ids);
-  }
+  const all = (ids instanceof Element ? ids : document).getElementsByTagName('*');
+  ids = Array.isArray(ids) ? [...ids] : prefs.knownKeys.filter(id => id in all);
   prefs.subscribe(ids, updateElement, true);
   init = false;
   function onChange() {
@@ -331,9 +327,9 @@ function setupLivePrefs(ids) {
       oldValue === value;
   }
   function updateElement(id, value) {
-    const byId = document.getElementById(id);
-    const els = byId ? [byId] : document.getElementsByName(id);
-    if (!els.length) {
+    const byId = all[id];
+    const els = byId && byId.id ? [byId] : document.getElementsByName(id);
+    if (!els[0]) {
       prefs.unsubscribe(id, updateElement);
       return;
     }

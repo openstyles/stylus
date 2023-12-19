@@ -35,6 +35,11 @@ function SectionsEditor() {
     for (const {cm} of sections) handleKeydownSetup(cm, val);
     upDownJumps = val;
   }, true);
+  prefs.subscribe('editor.targetsFirst', (_, val) => {
+    for (const sec of sections) {
+      (val ? sec.elLabel : sec.targetsEl.nextSibling).after(sec.targetsEl);
+    }
+  });
 
   /** @namespace Editor */
   Object.assign(editor, {

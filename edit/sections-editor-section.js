@@ -1,5 +1,5 @@
-/* global $ toggleDataset */// dom.js
-/* global MozDocMapper trimCommentLabel */// util.js
+/* global $ setupLivePrefs toggleDataset */// dom.js
+/* global MozDocMapper helpPopup trimCommentLabel */// util.js
 /* global CodeMirror */
 /* global cmFactory */
 /* global debounce */// toolbox.js
@@ -24,6 +24,7 @@ class EditorSection {
     const me = this; // for tocEntry.removed
     const el = this.el = t.template.section.cloneNode(true);
     const elLabel = this.elLabel = $('.code-label', el);
+    const at = this.targetsEl = $('.applies-to', el);
     const cm = this.cm = el.CodeMirror /* used by getAssociatedEditor */ = cmFactory.create(wrapper => {
       const ws = wrapper.style;
       const h = editor.loading
@@ -31,7 +32,7 @@ class EditorSection {
         ? ws.height = si ? si.height : '100vh'
         : ws.height;
       el.style.setProperty('--cm-height', h);
-      elLabel.after(wrapper);
+      at[prefs.get('editor.targetsFirst') ? 'after' : 'before'](wrapper);
     }, {
       value: sectionData.code,
     });
@@ -52,7 +53,6 @@ class EditorSection {
       },
     };
     this.targets = /** @type {SectionTarget[]} */ [];
-    this.targetsEl = $('.applies-to', el);
     this.targetsListEl = $('.applies-to-list', el);
     this.targetsEl.on('change', this);
     this.targetsEl.on('input', this);
@@ -188,12 +188,19 @@ class EditorSection {
     const cls = el.classList;
     const trgEl = el.closest('.applies-to-item');
     const trg = /** @type {SectionTarget} */ trgEl && trgEl.me;
+    let tmp;
     switch (evt.type) {
       case 'click':
         if (cls.contains('add-applies-to')) {
           $('input', this.addTarget(trg.type, '', trg).el).focus();
         } else if (cls.contains('remove-applies-to')) {
           this.removeTarget(trg);
+        } else if (!this.ati && (tmp = el.closest('label'))) {
+          const chk = $('#editor\\.targetsFirst', t.template.editorSettings.firstChild || document);
+          const chkLabel = chk.closest('label').cloneNode(true);
+          const ati = this.ati = helpPopup.show(chkLabel, tmp.title, {'data-id': 'ati'});
+          ati.onClose.add(() => delete this.ati);
+          setupLivePrefs(chkLabel);
         }
         break;
       case 'change':

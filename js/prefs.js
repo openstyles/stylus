@@ -100,6 +100,7 @@
     'editor.appliesToLineWidget': true, // show applies-to line widget on the editor
     'editor.autosaveDraft': 10, // seconds
     'editor.livePreview': true,
+    'editor.targetsFirst': true,
 
     // show CSS colors as clickable colored rectangles
     'editor.colorpicker': true,

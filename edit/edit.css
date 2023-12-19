@@ -2,7 +2,7 @@
   --pad: 1rem; /* Edge padding for modals/blocks/whatnot. TODO: reuse it in more places */
   --pad05: calc(0.5 * var(--pad));
   --popup-button-width: 16px;
-  --target-gapY: calc(.25 * var(--pad));
+  --target-gapY: 2px;
 }
 
 body {
@@ -348,7 +348,6 @@ i,
   height: var(--input-height);
 }
 .section:not(.removed) > label {
-  padding-bottom: .25em;
   display: block;
   font-weight: bold;
   animation: 2s highlight;
@@ -406,7 +405,7 @@ i,
   display: none;
 }
 .section .CodeMirror {
-  margin-bottom: var(--target-gapY);
+  margin-bottom: calc(1px + var(--target-gapY));
   box-sizing: border-box;
   min-height: 20px;
   background-color: var(--bg);
@@ -497,7 +496,7 @@ i,
 .applies-to {
   display: flex;
   align-items: flex-start;
-  flex-wrap: wrap;
+  margin-bottom: 1px;
 }
 .applies-to.error {
   background-color: #f002;
@@ -521,6 +520,7 @@ i,
   flex-grow: 1;
   margin: 0;
   padding: 0;
+  --input-height: 1.2rem;
 }
 .applies-to li {
   display: flex;
@@ -539,7 +539,7 @@ i,
   caret-color: auto;
 }
 .applies-to .select-wrapper {
-  margin-right: .5em;
+  margin-right: calc(2px + var(--target-gapY));
 }
 .applies-to li .add-applies-to:first-child {
   margin-left: 1rem;
@@ -851,7 +851,7 @@ i,
 /************ line widget *************/
 .CodeMirror-linewidget .applies-to {
   margin: 0 0 .25em;
-  padding: var(--target-gapY) calc(.25rem + var(--cm-bar-width, 0)) var(--target-gapY) .75rem;
+  padding: var(--target-gapY) calc(.25rem + var(--cm-bar-width, 0)) 0 .75rem;
   font-family: var(--family);
 }
 .CodeMirror-linewidget li.applies-to-everything {

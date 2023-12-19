@@ -396,6 +396,10 @@
     },
     "description": "Title of the page for editing styles"
   },
+  "editTargetsFirst": {
+    "message": "Show targets before code",
+    "description": "Option to show targeted sites before the code in the sectioned editor"
+  },
   "editorSettings": {
     "message": "Editor settings"
   },
