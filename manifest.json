@@ -81,7 +81,7 @@
       ]
     },
     {
-      "matches": ["*://userstyles.org/*"],
+      "matches": ["http://userstyles.org/*", "https://userstyles.org/*"],
       "run_at": "document_start",
       "js": ["content/install-hook-userstyles.js"]
     }
