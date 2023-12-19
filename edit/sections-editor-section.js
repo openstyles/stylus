@@ -312,7 +312,7 @@ class SectionTarget {
     this.type = val;
     this.toggleAll();
     sec.emitChange('apply');
-    if (!sec.tocEntry.label) sec.updateTocEntry('apply');
+    sec.updateTocEntry('apply');
   }
 
   onValueChange() {
@@ -320,6 +320,7 @@ class SectionTarget {
     editor.dirty.modify(`${this.dirt}.value`, this.value, val);
     this.value = val;
     this.section.emitChange('apply');
+    this.section.updateTocEntry('apply');
   }
 }
 
