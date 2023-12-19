@@ -1,5 +1,5 @@
 /* global CodeMirror */
-/* global debounce deepEqual */// toolbox.js
+/* global deepEqual */// toolbox.js
 /* global trimCommentLabel */// util.js
 'use strict';
 
@@ -23,6 +23,7 @@ function MozSectionFinder(cm) {
   let updFrom;
   /** @type {CodeMirror.Pos} */
   let updTo;
+  let scheduled;
 
   const finder = {
     IGNORE_ORIGIN: KEY,
@@ -103,19 +104,19 @@ function MozSectionFinder(cm) {
         updTo = maxPos(CodeMirror.changeEnd(c), updTo);
       }
     }
-    if (updTo.line >= 0) {
-      debounce(update);
+    if (updTo.line >= 0 && !scheduled) {
+      scheduled = requestAnimationFrame(update);
     }
   }
 
-  function update(from = updFrom, to = updTo) {
-    updFrom = updTo = null;
-    // Cloning to avoid breaking the internals of CodeMirror
-    from = from ? {line: from.line, ch: from.ch} : {line: 0, ch: 0};
-    to = to ? {line: to.line, ch: to.ch} : {line: cm.doc.size, ch: 0};
+  function update() {
     const {sections, listeners} = getState();
+    // Cloning to avoid breaking the internals of CodeMirror
+    let from = updFrom ? {line: updFrom.line, ch: updFrom.ch} : {line: 0, ch: 0};
+    let to = updTo ? {line: updTo.line, ch: updTo.ch} : {line: cm.doc.size, ch: 0};
     let cutAt = -1;
     let cutTo = -1;
+    scheduled = updFrom = updTo = null;
     for (let i = 0, sec; (sec = sections[i]); i++) {
       if (cmpPos(sec.end, from) >= 0) {
         if (cutAt < 0) {
@@ -132,18 +133,18 @@ function MozSectionFinder(cm) {
         }
       }
     }
-    if (cutAt < 0) from.ch = Math.max(0, from.ch - MOZ_DOC_LEN);
-    if (cutTo < 0) to.ch += MOZ_DOC_LEN;
-    const added = findSections(from, to);
-    if (!added.length && cutAt < 0 && cutTo < 0) {
-      return;
+    if (cutAt < 0) {
+      from.ch = Math.max(0, from.ch - MOZ_DOC_LEN);
+      cutAt = sections.length;
     }
     if (cutTo < 0) {
-      cutTo = sections.length;
+      to.ch += MOZ_DOC_LEN;
+      cutAt = sections.length;
     }
     let op;
     let reusedAtStart = 0;
     let reusedAtEnd = 0;
+    const added = findSections(from, to);
     const removed = sections.slice(cutAt, cutTo);
     for (const sec of added) {
       const i = removed.findIndex(isSameSection, sec);
