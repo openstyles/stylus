@@ -377,6 +377,9 @@ i,
   color: red;
   margin-left: .25em;
 }
+#toc-title[data-num]::after {
+  content: " (" attr(data-num) ")"
+}
 #toc {
   counter-reset: codelabel;
 }

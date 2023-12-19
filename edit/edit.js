@@ -279,13 +279,20 @@ function EditorMethods() {
       editor.updateTitle();
     },
 
-    updateToc(added = editor.sections) {
+    updateToc(added) {
+      const {sections} = editor;
       if (!toc.el) {
         toc.el = $('#toc');
         toc.elDetails = toc.el.closest('details');
+        toc.title = $('#toc-title').dataset;
+      }
+      let num = 0; for (const sec of sections) num += !sec.removed;
+      if ((+toc.title.num || 1) !== num) {
+        if (num > 1) toc.title.num = num;
+        else delete toc.title.num;
       }
       if (!toc.elDetails.open) return;
-      const {sections} = editor;
+      if (!added) added = sections;
       const first = sections.indexOf(added[0]);
       const elFirst = toc.el.children[first];
       if (first >= 0 && (!added.focus || !elFirst)) {
