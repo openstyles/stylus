@@ -86,8 +86,9 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
 
 msg.on((msg, sender) => {
   if (msg.method === 'invokeAPI') {
-    let res = msg.path.reduce((res, name) => res && res[name], API);
-    if (!res) throw new Error(`Unknown API.${msg.path.join('.')}`);
+    let res = API;
+    for (const p of msg.path.split('.')) res = res && res[p];
+    if (!res) throw new Error(`Unknown API.${msg.path}`);
     res = res.apply({msg, sender}, msg.args);
     return res === undefined ? null : res;
   }

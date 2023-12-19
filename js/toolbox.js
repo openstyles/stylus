@@ -164,6 +164,8 @@ window.msg = window.msg || {
     }
   },
 };
+msg.sendTab = (tabId, data, options, target = 'tab') =>
+  msg._unwrap(browser.tabs.sendMessage(tabId, {data, target}, options));
 
 async function require(urls, cb) { /* exported require */// eslint-disable-line no-redeclare
   const promises = [];

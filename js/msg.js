@@ -51,9 +51,6 @@
       }
     },
 
-    sendTab: async (tabId, data, options, target = 'tab') => unwrap(
-      browser.tabs.sendMessage(tabId, {data, target}, options)),
-
     _execute(target, ...args) {
       let result;
       for (const type of TARGETS[target] || TARGETS.all) {
@@ -85,12 +82,6 @@
     }
     port.postMessage({id, data, TDM});
     return new Promise((ok, ko) => (portReqs[id] = {ok, ko, err}));
-  }
-
-  function apiPortCancel() {
-    delete this.cancel;
-    port.disconnect();
-    port = null;
   }
 
   function apiPortDisconnect() {
@@ -179,14 +170,12 @@
   const apiHandler = {
     get({path}, name) {
       const fn = () => {};
-      fn.path = [...path, name];
+      fn.path = path ? path + '.' + name : name;
       return new Proxy(fn, apiHandler);
     },
     apply({path}, thisObj, args) {
-      const p = apiApply(path, args);
-      p.cancel = apiPortCancel.bind(p);
-      return p;
+      return apiApply(path, args);
     },
   };
-  window.API = /** @type {API} */ new Proxy({path: []}, apiHandler);
+  window.API = /** @type {API} */ new Proxy({path: ''}, apiHandler);
 })();
