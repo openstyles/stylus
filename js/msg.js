@@ -1,3 +1,4 @@
+/* global TDM */// apply.js - used only in non-bg context
 'use strict';
 
 (() => {
@@ -82,7 +83,7 @@
       port.onMessage.addListener(apiPortResponse);
       port.onDisconnect.addListener(apiPortDisconnect);
     }
-    port.postMessage({id, data});
+    port.postMessage({id, data, TDM});
     return new Promise((ok, ko) => (portReqs[id] = {ok, ko, err}));
   }
 

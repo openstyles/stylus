@@ -48,7 +48,7 @@ declare interface CachedInjectedStyles {
 
 declare interface Injection {
   cfg: InjectionConfig;
-  sections: InjectedStyle[];
+  sections?: InjectedStyle[];
 }
 
 declare interface InjectedStyles {

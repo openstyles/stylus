@@ -99,9 +99,10 @@ chrome.runtime.onConnect.addListener(port => {
   }
 });
 
-async function apiPortMessage({id, data}, port) {
+async function apiPortMessage({id, data, TDM}, port) {
   try {
     if (!msg.ready) await bgReady.all;
+    port.sender.TDM = TDM;
     data = {data: await msg._execute('extension', data, port.sender)};
   } catch (e) {
     data = msg._wrapError(e);

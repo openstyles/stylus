@@ -28,7 +28,8 @@ const iconMan = (() => {
    */
     updateIconBadge(styleIds, {lazyBadge, iid} = {}) {
       // FIXME: in some cases, we only have to redraw the badge. is it worth a optimization?
-      const {frameId, tab: {id: tabId}} = this.sender;
+      const {tab: {id: tabId}, TDM} = this.sender;
+      const frameId = TDM > 0 ? 0 : this.sender.frameId;
       const value = styleIds.length ? styleIds.map(Number) : undefined;
       tabMan.set(tabId, 'styleIds', frameId, value);
       if (iid) tabMan.set(tabId, 'iid', frameId, iid);

@@ -2,6 +2,10 @@
 /* global StyleInjector isFrame isFrameNoUrl isFrameSameOrigin */// style-injector.js
 'use strict';
 
+/** -1 = top prerendered, 0 = iframe, 1 = top, 2 = top reified
+ * @type {number} */// eslint-disable-next-line no-var
+var TDM = isFrame ? 0 : document.prerendering ? -1 : 1;
+
 (() => {
   if (window.INJECTED === 1) return;
   window.INJECTED = 1;
@@ -75,6 +79,7 @@
 
   msg.onTab(applyOnMessage);
   addEventListener('pageshow', onBFCache);
+  if (TDM < 0) document.onprerenderingchange = onReified;
 
   if (!chrome.tabs) {
     dispatchEvent(new CustomEvent(chrome.runtime.id, {detail: orphanCleanup = Math.random()}));
@@ -171,22 +176,26 @@
         break;
 
       case 'injectorConfig':
-        for (const k in req.cfg) {
-          const v = req.cfg[k];
-          if (v === own.cfg[k]) continue;
-          if (k === 'top' && !isFrame) continue;
-          own.cfg[k] = v;
-          if (k === 'off') updateDisableAll();
-          else if (k === 'order') styleInjector.sort();
-          else if (k === 'top') updateExposeIframes();
-          else styleInjector.config(own.cfg);
-        }
+        updateConfig(req);
         break;
 
       case 'backgroundReady':
         // This may happen when reloading the background page without reloading the extension
         if (own.sections) updateCount();
         return true;
+    }
+  }
+
+  function updateConfig({cfg}) {
+    for (const k in cfg) {
+      const v = cfg[k];
+      if (v === own.cfg[k]) continue;
+      if (k === 'top' && !isFrame) continue;
+      own.cfg[k] = v;
+      if (k === 'off') updateDisableAll();
+      else if (k === 'order') styleInjector.sort();
+      else if (k === 'top') updateExposeIframes();
+      else styleInjector.config(own.cfg);
     }
   }
 
@@ -212,7 +221,7 @@
   }
 
   function updateCount() {
-    if (!isTab) return;
+    if (!isTab || TDM < 0) return;
     if (isFrame) {
       if (!port && styleInjector.list.length) {
         port = chrome.runtime.connect({name: 'iframe'});
@@ -246,6 +255,15 @@
     }
   }
 
+  function onReified(e) {
+    if (e.isTrusted) {
+      TDM = 2;
+      document.onprerenderingchange = null;
+      API.styles.getSectionsByUrl('', 0, 'cfg').then(updateConfig);
+      updateCount();
+    }
+  }
+
   function tryCatch(func, ...args) {
     try {
       return func(...args);
@@ -260,6 +278,7 @@
     removeEventListener('pageshow', onBFCache);
     if (mqDark) mqDark.onchange = null;
     if (offscreen) for (const fn of offscreen) fn();
+    if (TDM < 0) document.onprerenderingchange = null;
     offscreen = null;
     isOrphaned = true;
     styleInjector.shutdown(evt.detail);

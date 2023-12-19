@@ -207,8 +207,8 @@ const styleMan = (() => {
         return CFG_OFF;
       }
       const {sender = {}} = this || {};
-      const {tab = {}, frameId} = sender;
-      const isTop = !frameId || sender.type === 'main_frame'; // prerendering in onBeforeRequest
+      const {tab = {}, frameId, TDM} = sender;
+      const isTop = !frameId || TDM || sender.type === 'main_frame'; // prerendering in onBeforeRequest
       /** @type {InjectionConfig} */
       const cfg = !id && {
         ass: p.styleViaASS,
@@ -222,6 +222,9 @@ const styleMan = (() => {
         ),
         order,
       };
+      if (isInitialApply === 'cfg') {
+        return {cfg};
+      }
       if (frameId === 0) {
         /* Chrome hides text frament from location.href of the page e.g. #:~:text=foo
            so we'll use the real URL reported by webNavigation API.
