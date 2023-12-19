@@ -254,12 +254,14 @@ function download(url, {
   }));
   if (xhr) req.xhr = xhr;
   if (port) {
-    if (!req.ports) {
-      req.ports = [];
-      req.xhr.onprogress = e => req.ports.forEach(p => p.postMessage([e.loaded, e.total]));
-      req.xhr.addEventListener('loadend', () => req.ports.forEach(p => p.disconnect()));
-    }
-    req.ports.push(chrome.runtime.connect({name: port}));
+    const ports = req.ports || (
+      req.xhr.onprogress = e => ports.forEach(p => p.postMessage([e.loaded, e.total])),
+      req.xhr.addEventListener('loadend', () => ports.forEach(p => p.disconnect())),
+      new Set()
+    );
+    const p = chrome.runtime.connect({name: port});
+    p.onDisconnect.addListener(() => ports.delete(p));
+    ports.add(p);
   }
   return req;
 
