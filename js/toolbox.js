@@ -156,7 +156,7 @@ window.msg = window.msg || {
     let tab = false;
     // Using a fake id for our Options frame as we want to fetch styles early
     const frameId = window === top ? 0 : 1;
-    if (!msg.needsTab.includes(path[0]) || !frameId && (tab = await getOwnTab())) {
+    if (!msg.needsTab.includes(path) || !frameId && (tab = await getOwnTab())) {
       const res = await msg.bg.msg._execute('extension',
         msg.bg.deepCopy(message),
         msg.bg.deepCopy({url: location.href, tab, frameId}));
