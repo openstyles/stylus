@@ -7,10 +7,8 @@ if (window.USW !== 1) {
   const ORIGIN = location.origin;
   const send = (type, data) => postMessage({type, data}, ORIGIN);
 
-  const onReady = async function (data) {
-    if (data) {
-      send('usw-remove-stylus-button');
-    }
+  const onReady = async () => {
+    send('usw-remove-stylus-button');
     if (location.pathname === '/api/oauth/style/new') {
       filledInfo = true;
       const styleId = +new URLSearchParams(location.search).get('vendor_data');
