@@ -88,7 +88,8 @@
 .injection-order-toggle:hover::after {
   color: hsl(30, 80%, 50%);
 }
-.injection-order :is([data-prio] header, ol, #message-box-buttons),
+.injection-order [data-prio] header,
+.injection-order :is(ol, #message-box-buttons),
 .injection-order-entry:nth-child(n + 2) {
   border-top: 1px solid rgba(128, 128, 128, .25);
 }

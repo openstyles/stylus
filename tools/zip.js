@@ -4,6 +4,9 @@
 const fs = require('fs');
 const glob = require('fast-glob');
 const JSZip = require('jszip');
+const chalk = require('chalk');
+const postcss = require('postcss');
+const postcssPresetEnv = require('postcss-preset-env');
 
 const sChrome = 'chrome';
 const sChromeBeta = 'chrome-beta';
@@ -34,9 +37,8 @@ const sFirefox = 'firefox';
   for (const e of glob.sync(ADD, {ignore: SKIP, stats: true, onlyFiles: true})) {
     const bytes = fs.readFileSync(e.path);
     const date = new Date(e.stats.mtime - tzBug);
-    let text;
-    if (e.path.endsWith('.css') && (text = bytes.toString('utf8')).includes(':is(')) {
-      cssFiles.push([e.path, date, text]);
+    if (e.path.endsWith('.css') && !e.path.startsWith('vendor')) {
+      cssFiles.push([e.path, date, bytes.toString('utf8')]);
     } else {
       zip.file(e.path, bytes, {date});
     }
@@ -44,26 +46,43 @@ const sFirefox = 'firefox';
   let buf;
   // add a patched manifest.json for each zip reusing compressed data for all other files
   for (const suffix of [sChrome, sChromeBeta, sFirefox]) {
-    if (buf) zip = await zip.loadAsync(buf);
-    if (suffix !== sChromeBeta) patchCss(zip, cssFiles, suffix);
     const mj = patchManifest(mjStr, suffix);
     const fileName = `stylus-${suffix}-${mj.version}.zip`;
+    if (buf) zip = await zip.loadAsync(buf);
+    if (suffix !== sChromeBeta) await patchCss(zip, cssFiles, suffix, mj);
     zip.file(MANIFEST, JSON.stringify(mj, null, 2));
     buf = await zip.generateAsync({type: 'nodebuffer', compression: 'DEFLATE'});
     jobs.push(fs.promises.writeFile(fileName, buf));
   }
   await Promise.all(jobs);
-  console.log('\x1b[32m%s\x1b[0m', 'Stylus zip complete');
+  console.log(chalk.green('Stylus zip complete'));
 })().catch(err => {
   console.error(err);
   process.exit(1);
 });
 
-function patchCss(zip, files, suffix) {
-  const any = suffix === sFirefox ? ':-moz-any(' : ':-webkit-any(';
+async function patchCss(zip, files, suffix, mj) {
+  const pc = postcss([
+    postcssPresetEnv({
+      browsers: suffix === sFirefox
+        ? 'Firefox >= ' + mj.browser_specific_settings.gecko.strict_min_version
+        : 'Chrome >= ' + mj.minimum_chrome_version,
+      features: {
+        'system-ui-font-family': false, // only necessary in Chrome 55 and we use `sans-serif` fallback anyway
+        'prefers-color-scheme-query': false, // we manually handle it via cssRules
+      },
+    }),
+  ]);
+  const pcOpts = {map: false, from: null};
+  const errors = [];
   for (const [path, date, text] of files) {
-    zip.file(path, text.replaceAll(':is(', any), {date});
+    const res = await pc.process(text, pcOpts);
+    for (const m of res.messages) {
+      errors.push(`${m.line}:${m.column} ${chalk.red(path)} ${m.text}`);
+    }
+    zip.file(path, res.css, {date});
   }
+  if (errors[0]) throw errors.join('\n');
 }
 
 function patchManifest(str, suffix) {

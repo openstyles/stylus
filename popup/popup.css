@@ -113,7 +113,7 @@ body > div:not(#message-box):not(.colorpicker-popup) {
   position: relative;
 }
 .styles-last #main-actions,
-.styles-first :is(#installed:not(:empty), .entry:nth-last-child(n + 2)) {
+.styles-first :is(#installed-wrapper, .entry:nth-last-child(n + 2)) {
   border-bottom: var(--border);
 }
 .styles-last .entry:nth-child(n + 2) {
@@ -516,6 +516,7 @@ a:hover i {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  height: var(--input-height);
 }
 #popup-options > * {
   margin-right: var(--btn-gap);

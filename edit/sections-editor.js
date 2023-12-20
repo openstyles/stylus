@@ -676,7 +676,7 @@ function SectionsEditor() {
   /** @param {IntersectionObserverEntry[]} entries */
   function refreshOnViewListener(entries) {
     for (const e of entries) {
-      const r = e.isIntersecting && e.intersectionRect;
+      const r = e.intersectionRatio && e.intersectionRect;
       if (r) {
         xo.unobserve(e.target);
         const cm = e.target.CodeMirror;

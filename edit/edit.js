@@ -82,7 +82,7 @@ editor.styleReady.then(async () => {
   /** @param {IntersectionObserverEntry[]} entries */
   function onScrolled(entries) {
     const h = $('#header');
-    const sticky = !entries.pop().isIntersecting;
+    const sticky = !entries.pop().intersectionRatio;
     if (!isUsercss) scroller.style.paddingTop = sticky ? h.offsetHeight + 'px' : '';
     h.classList.toggle('sticky', sticky);
   }

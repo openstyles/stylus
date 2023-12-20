@@ -79,15 +79,20 @@ function onRuntimeMessage(msg) {
 function onWindowResize() {
   if (this.h0 === innerHeight) return;
   window.off('resize', this);
+  const el = $create('#max', {
+    // ensuring userstyles can't make it invisible accidentally
+    style: important('all:initial; height:1px; margin-top:-2px;'),
+  });
+  document.body.appendChild(el);
   new IntersectionObserver(([e], obs) => {
-    if (!e.isIntersecting) {
+    if (!e.intersectionRatio) {
       obs.disconnect();
       setMaxHeight();
     }
-  }).observe(document.body.appendChild($create('#max', {
-    // ensuring userstyles can't make it invisible accidentally
-    style: important('all:initial; height:1px; margin-top:-2px;'),
-  })));
+  }).observe(el);
+  if (CHROME < 69 && el.getBoundingClientRect().top >= innerHeight) {
+    setMaxHeight();
+  }
 }
 
 function setMaxHeight(h = innerHeight - 1 + 'px') {
@@ -296,9 +301,7 @@ function showStyles(frameResults) {
       }
     });
   });
-  if (entries.size) {
-    resortEntries([...entries.values()]);
-  }
+  resortEntries([...entries.values()]);
 }
 
 function resortEntries(entries) {
@@ -306,6 +309,7 @@ function resortEntries(entries) {
   if (entries || prefs.get('popup.autoResort')) {
     installed.append(...sortStyles(entries || [...installed.children]));
   }
+  $('#install-wrapper').hidden = !installed.firstChild;
 }
 
 function createStyleElement(style, entry) {

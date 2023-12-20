@@ -81,7 +81,7 @@
   function onIntersect([e]) {
     const pw = frame.contentWindow;
     const el = pw.document.scrollingElement;
-    const h = e.isIntersecting && !pw.scrollY ? el.offsetHeight : el.scrollHeight;
+    const h = e.intersectionRatio && !pw.scrollY ? el.offsetHeight : el.scrollHeight;
     const hasSB = h > el.offsetHeight;
     const {width} = e.boundingClientRect;
     frame.height = h;

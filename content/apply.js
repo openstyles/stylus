@@ -242,7 +242,7 @@ var TDM = isFrame ? 0 : document.prerendering ? -1 : 1;
   /** @param {IntersectionObserverEntry[]} entries */
   function onIntersect(entries) {
     for (const e of entries) {
-      if (e.isIntersecting) {
+      if (e.intersectionRatio) {
         xo.unobserve(e.target);
         e.target.dispatchEvent(new Event(xoEventId));
       }

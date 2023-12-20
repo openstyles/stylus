@@ -315,7 +315,8 @@ i,
   content-visibility: auto;
   contain-intrinsic-block-size: auto var(--cm-height);
 }
-.section > :is(.applies-to li, .edit-actions) {
+.section > .applies-to li,
+.section > .edit-actions {
   content-visibility: auto;
   contain-intrinsic-block-size: auto var(--input-height);
 }

@@ -128,7 +128,7 @@
       const {queue, observer} = lazyOpt;
       const delayed = [];
       for (const e of entries) {
-        const r = e.isIntersecting && e.intersectionRect;
+        const r = e.intersectionRatio && e.intersectionRect;
         if (!r) continue;
         const cm = e.target.CodeMirror;
         const data = Object.entries(queue.get(cm) || {});

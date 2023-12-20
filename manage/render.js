@@ -27,7 +27,7 @@ const nameLengths = new Map();
   const pSrc = Object.getOwnPropertyDescriptor(proto, 'src');
   const xo = new IntersectionObserver(entries => {
     for (const e of entries) {
-      if (e.isIntersecting) {
+      if (e.intersectionRatio) {
         const el = e.target;
         pSrc.set.call(el, el.dataset.src);
         xo.unobserve(el);

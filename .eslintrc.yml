@@ -152,7 +152,10 @@ rules:
     # but we don't use these globals so it's most likely a mistake/typo
   no-restricted-imports: [0]
   no-restricted-modules: [2, domain, freelist, smalloc, sys]
-  no-restricted-syntax: [2, WithStatement]
+  no-restricted-syntax: [2, WithStatement, {
+    selector: 'MemberExpression > Identifier.property[name="isIntersecting"]',
+    message: 'Requires Chrome 58+. Please use intersectionRatio instead.'
+  }]
   no-return-assign: [2, except-parens]
   no-return-await: [2]
   no-script-url: [2]
