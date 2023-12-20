@@ -268,16 +268,8 @@ input[type="radio"]:checked:after {
 }
 
 /* restore disabled state dimming */
-button:disabled,
-select:disabled,
-option:disabled,
-select[disabled] > option {
+:is(button, select, option):disabled {
   color: graytext;
-}
-
-select:disabled + .select-wrapper::after,
-select[disabled] + .select-wrapper::after {
-  color: var(--c50);
 }
 
 summary {
@@ -329,19 +321,21 @@ html:not(.all-disabled) #disableAll-label::after {
 :focus,
 .CodeMirror-focused,
 /* Allowing click outline on text/search inputs and textareas */
-textarea[data-focused-via-click]:focus,
-input:not([type])[data-focused-via-click]:focus, /* same as "text" */
-input[type="text"][data-focused-via-click]:focus,
-input[type="url"][data-focused-via-click]:focus,
-input[type="search"][data-focused-via-click]:focus,
-input[type="number"][data-focused-via-click]:focus {
-  /* Using box-shadow instead of the ugly outline in new Chrome */
-  outline: none;
-  box-shadow: var(--focus-shadow);
-  --focus-color1: hsl(180, 100%, 38%);
-  --focus-color2: hsla(180, 100%, 60%, .5);
-  --focus-shadow: 0 0 0 1px var(--focus-color1), 0 0 3px var(--focus-color2);
-}
+:is(
+  textarea,
+  input:not([type]), /* same as "text" */
+  input[type="text"],
+  input[type="url"],
+  input[type="search"],
+  input[type="number"]
+)[data-focused-via-click]:focus {
+    /* Using box-shadow instead of the ugly outline in new Chrome */
+    outline: none;
+    box-shadow: var(--focus-shadow);
+    --focus-color1: hsl(180, 100%, 38%);
+    --focus-color2: hsla(180, 100%, 60%, .5);
+    --focus-shadow: 0 0 0 1px var(--focus-color1), 0 0 3px var(--focus-color2);
+  }
 
 [data-focused-via-click] :focus,
 [data-focused-via-click]:focus {

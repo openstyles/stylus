@@ -36,8 +36,7 @@
   animation: fadeout .25s ease-in-out;
 }
 
-#message-box.center,
-#message-box.center-dialog {
+#message-box:is(.center, .center-dialog) {
   align-items: center;
   justify-content: center;
 }
@@ -50,8 +49,7 @@
   text-align: left;
 }
 
-#message-box.center > div,
-#message-box.center-dialog > div {
+#message-box:is(.center, .center-dialog) > div {
   top: unset;
   right: unset;
 }

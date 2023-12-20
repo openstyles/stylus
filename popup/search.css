@@ -22,8 +22,7 @@
 #pct > :nth-child(n + 2) {
   margin-left: 1em;
 }
-.styles-last #pct,
-.search-results-shown.styles-first #pct {
+:is(.styles-last, .search-results-shown.styles-first) #pct {
   margin: 0 0 calc(var(--h) * -1);
 }
 
@@ -171,8 +170,7 @@
 }
 .search-result-install,
 .search-result-uninstall,
-.search-result:not([data-installed]) .search-result-customize,
-.search-result:not([data-customizable]) .search-result-customize {
+.search-result:not([data-installed]):not([data-customizable]) .search-result-customize {
   display: none;
 }
 .search-result.not-matching .search-result-customize {
@@ -252,14 +250,10 @@
 /* Keeping an empty rule so customizers can easily tweak it */
 search-result-meta [data-type="rating"][data-class="none"] dd {
 }
-
-.search-result-meta [data-type="weekly"],
-.search-result-meta [data-type="total"] {
+.search-result-meta :is([data-type="weekly"], [data-type="total"]) {
   text-align: right;
 }
-
-.search-result-meta [data-type="weekly"] dd,
-.search-result-meta [data-type="total"] dd {
+.search-result-meta :is([data-type="weekly"], [data-type="total"]) dd {
   font-weight: bold;
 }
 
@@ -282,8 +276,7 @@ search-result-meta [data-type="rating"][data-class="none"] dd {
   cursor: help;
 }
 
-[data-error],
-[data-error]:hover {
+[data-error]:is(*, :hover) {
   border: calc(var(--pad) / 2) solid red;
   border-radius: var(--pad);
   padding: calc(var(--pad) / 2);
@@ -361,12 +354,10 @@ search-result-meta [data-type="rating"][data-class="none"] dd {
 #search-params > * {
   margin: var(--t) var(--x) 0;
 }
-#search-params input,
-#search-params select {
+#search-params :is(input, select) {
   background-color: var(--c98);
 }
-#search-params input:focus,
-#search-params select:focus {
+#search-params :is(input, select):focus {
   background-color: var(--bg);
 }
 #search-query {

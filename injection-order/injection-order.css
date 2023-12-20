@@ -6,8 +6,7 @@
   transform: scaleY(.55);
   transform-origin: top;
 }
-.injection-order #message-box-contents,
-.injection-order section {
+.injection-order :is(#message-box-contents, section) {
   padding: 0;
   overflow: hidden;
   display: flex;
@@ -89,9 +88,7 @@
 .injection-order-toggle:hover::after {
   color: hsl(30, 80%, 50%);
 }
-.injection-order [data-prio] header,
-.injection-order ol,
-.injection-order #message-box-buttons,
+.injection-order :is([data-prio] header, ol, #message-box-buttons),
 .injection-order-entry:nth-child(n + 2) {
   border-top: 1px solid rgba(128, 128, 128, .25);
 }

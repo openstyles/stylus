@@ -57,8 +57,7 @@
   overflow: hidden;
   display: block;
 }
-.regexp-report h4:hover,
-.regexp-report a:hover {
+.regexp-report :is(h4, a):hover {
   text-decoration: underline;
 }
 .regexp-report a img {

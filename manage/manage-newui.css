@@ -26,8 +26,7 @@
   display: flex;
   align-items: center;
 }
-.style-info[data-type=size],
-.style-info[data-type=age] {
+.style-info:is([data-type=size], [data-type=age]) {
   color: var(--c50);
   justify-content: end;
 }
@@ -42,9 +41,7 @@
   padding-left: .5em;
   font-weight: normal;
 }
-.style-info[data-type=version][data-is-date],
-.style-info[data-type=version][data-value=""],
-.style-info[data-type=version][data-value="1.0.0"] {
+.style-info[data-type=version]:is([data-is-date], [data-value=""], [data-value="1.0.0"]) {
   display: none;
 }
 .entry input[type="checkbox"]:not(.slider) {
@@ -120,15 +117,7 @@
 }
 .can-update[data-details$="locally edited"] .update i,
 .update-problem .check-update i {
-  color: #ef6969;
-}
-.can-update[data-details$="locally edited"]:hover .update i,
-.entry.update-problem:hover .check-update i {
-  color: #fd4040;
-}
-.can-update[data-details$="locally edited"]:hover .update i:hover,
-.entry.update-problem:hover .check-update i:hover {
-  color: red;
+  color: var(--red1);
 }
 .updater-icons > :not(.check-update):after {
   content: attr(title);

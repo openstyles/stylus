@@ -109,8 +109,7 @@ label {
   margin-left: -2ch;
   width: calc(var(--value-cell-w) + 2ch - var(--gap));
 }
-.swap .slider,
-.swap input[type=color] {
+.swap :is(.slider, input[type=color]) {
   --width: calc(var(--value-cell-w) * .7);
 }
 .radio-wrapper + span {

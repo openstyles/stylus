@@ -78,7 +78,7 @@
   left: 6px;
 }
 
-.config-body input:not(.slider), .config-body select {
+.config-body :is(input:not(.slider), select) {
   width: var(--value-cell-w);
   margin: 0;
   height: var(--input-height);
@@ -86,9 +86,7 @@
   vertical-align: middle;
 }
 
-.config-body input[type="text"],
-.config-body .select-wrapper,
-.config-body select {
+.config-body :is(input[type="text"], .select-wrapper, select) {
   width: auto;
   min-width: var(--value-cell-w);
   max-width: 124px;
@@ -126,7 +124,7 @@
   min-width: 6ch;
 }
 
-.config-number span, .config-range span {
+:is(.config-number, .config-range) span {
   line-height: var(--input-height);
 }
 

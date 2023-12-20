@@ -282,8 +282,7 @@
   top: 8px;
 }
 
-.colorpicker-hsl-s::before,
-.colorpicker-hsl-l::before {
+:is(.colorpicker-hsl-s, .colorpicker-hsl-l)::before {
   content: "%";
   position: absolute;
   right: -1ex;

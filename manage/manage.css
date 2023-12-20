@@ -354,13 +354,11 @@ button.icon > i {
   left: 20px;
 }
 
-#filters label,
-#filters .filter-selection {
+#filters :is(label, .filter-selection) {
   transition: background-color .25s;
 }
 
-#filters label:hover,
-#filters .filter-selection:hover {
+#filters :is(label, .filter-selection):hover {
   background-color: hsla(0, 0%, 50%, .2);
 }
 
@@ -399,8 +397,7 @@ button i {
 }
 
 /* Default, no update buttons */
-.updater-icons .update,
-.updater-icons .check-update {
+.updater-icons :is(.update, .check-update) {
   display: none;
 }
 
@@ -525,8 +522,7 @@ button i {
   filter: brightness(1.2);
 }
 
-#filters summary:not(.active) #reset-filters,
-#filters summary:not(.active) #filters-stats {
+#filters summary:not(.active) :is(#reset-filters, #filters-stats) {
   display: none;
 }
 
