@@ -49,6 +49,7 @@ const nameLengths = new Map();
 
 let elementParts;
 let badFavs;
+let numStyles = 0;
 
 function $entry(styleOrId, root = installed) {
   return $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrId}`, root);
@@ -392,7 +393,6 @@ function showStyles(styles = [], matchUrlIds) {
   const sorted = sorter.sort(dummies);
   let index = 0;
   let firstRun = true;
-  installed.dataset.total = styles.length;
   const scrollY = (history.state || {}).scrollY;
   const shouldRenderAll = scrollY > window.innerHeight
     || sessionStore.justEditedStyleId
@@ -401,6 +401,7 @@ function showStyles(styles = [], matchUrlIds) {
   fitNameColumn(styles);
   fitSizeColumn(dummies);
   renderStyles();
+  updateTotal(styles.length);
 
   function renderStyles() {
     const t0 = performance.now();
@@ -484,4 +485,23 @@ function switchUI({styleOnly} = {}) {
   if (iconsMissing) {
     debounce(getFaviconSrc);
   }
+}
+
+function updateTotal(delta) {
+  if (delta) numStyles += delta;
+  if (+installed.dataset.total === numStyles) {
+    return;
+  }
+  installed.dataset.total = numStyles;
+  let el = $('#manage-text-empty');
+  if (numStyles && el) {
+    el.remove();
+  } else if (!numStyles && !el) {
+    el = $('#manage-text').cloneNode(true);
+    el.id += '-empty';
+    installed.after(el);
+  } else {
+    return;
+  }
+  $.rootCL.toggle('empty', !numStyles);
 }

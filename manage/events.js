@@ -1,7 +1,7 @@
 /* global API */// msg.js
 /* global installed newUI */// manage.js
 /* global checkUpdate handleUpdateInstalled */// updater-ui.js
-/* global createStyleElement createTargetsElement getFaviconSrc styleToDummyEntry */// render.js
+/* global createStyleElement createTargetsElement getFaviconSrc styleToDummyEntry updateTotal */// render.js
 /* global debounce getOwnTab sessionStore UCD */// toolbox.js
 /* global filterAndAppend showFiltersStats */// filters.js
 /* global sorter */
@@ -196,6 +196,7 @@ function handleDelete(id) {
       btnApply.dataset.value = Number(btnApply.dataset.value) - 1;
     }
     showFiltersStats();
+    updateTotal(-1);
   }
 }
 
@@ -213,6 +214,8 @@ function handleUpdate(style, {reason, method} = {}) {
     } else {
       oldEntry.remove();
     }
+  } else {
+    updateTotal(1);
   }
   if ((reason === 'update' || reason === 'install') && entry.matches('.updatable')) {
     handleUpdateInstalled(entry, reason);

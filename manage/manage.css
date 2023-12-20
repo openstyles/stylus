@@ -378,6 +378,22 @@ button.icon > i {
   margin: 0 .5em;
 }
 
+/* no styles */
+.empty #installed {
+  flex: 0;
+}
+.empty #manage-settings > :first-child {
+  display: none;
+}
+#manage-text-empty {
+  padding: 1.25rem 0 0 2rem;
+  line-height: 2;
+  font-size: larger;
+}
+#manage-text-empty > * {
+  display: list-item;
+}
+
 button i {
   color: var(--fg);
 }
