@@ -21,11 +21,9 @@
     "webext-launch-web-auth-flow": "^0.1.1"
   },
   "devDependencies": {
-    "@types/chrome": "^0.0.254",
     "chalk": "^4.1.2",
     "eslint": "^8.48.0",
     "fast-glob": "^3.3.1",
-    "firefox-webext-types": "^1.0.0",
     "fs-extra": "^11.1.0",
     "jszip": "^3.10.1",
     "node-fetch-commonjs": "^3.3.2",
