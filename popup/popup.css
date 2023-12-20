@@ -114,7 +114,7 @@ body > div:not(#message-box):not(.colorpicker-popup) {
   position: relative;
 }
 .styles-last #main-actions,
-.styles-first body > main,
+.styles-first #installed:not(:empty),
 .styles-first .entry:nth-last-child(n + 2) {
   border-bottom: var(--border);
 }
@@ -558,6 +558,7 @@ a:hover i {
   display: flex;
   flex-direction: column;
 }
+.styles-last .blocked-info,
 .styles-last body > main {
   order: 2;
 }
