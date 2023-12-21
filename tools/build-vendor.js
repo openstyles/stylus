@@ -12,7 +12,7 @@ const files = {
   'codemirror': [
     KEEP_DIRECTORIES,
     'addon/comment/comment.js',
-    'addon/dialog',
+    'addon/dialog/*',
     'addon/edit/closebrackets.js',
     'addon/edit/matchbrackets.js',
     'addon/fold/brace-fold.js',
@@ -32,9 +32,9 @@ const files = {
     'addon/selection/active-line.js',
     'keymap/*',
     'lib/*',
-    'mode/css',
-    'mode/javascript',
-    'mode/stylus',
+    'mode/css/*',
+    'mode/javascript/*',
+    'mode/stylus/*',
   ],
   'jsonlint': [
     'lib/jsonlint.js',
