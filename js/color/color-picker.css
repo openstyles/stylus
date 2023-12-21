@@ -4,29 +4,28 @@
   padding-left: 14px;
   position: relative;
   display: inline-block;
+  &::before {
+    content: "";
+    position: absolute;
+    display: inline-block;
+    left: 2px;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    width: 10px;
+    height: 10px;
+    box-sizing: border-box;
+    background: linear-gradient(var(--colorview-swatch), var(--colorview-swatch)), url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAJElEQVQYV2NctWrVfwYkEBYWxojMZ6SDAmT7QGx0K1EcRBsFAADeG/3M/HteAAAAAElFTkSuQmCC");
+    background-repeat: repeat;
+    background-position: center;
+    border: 1px solid #8e8e8e;
+    cursor: pointer;
+  }
+  &:hover::before {
+    border-color: #494949;
+  }
 }
 
-.colorview-swatch::before {
-  content: "";
-  position: absolute;
-  display: inline-block;
-  left: 2px;
-  top: 0;
-  bottom: 0;
-  margin: auto;
-  width: 10px;
-  height: 10px;
-  box-sizing: border-box;
-  background: linear-gradient(var(--colorview-swatch), var(--colorview-swatch)), url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAJElEQVQYV2NctWrVfwYkEBYWxojMZ6SDAmT7QGx0K1EcRBsFAADeG/3M/HteAAAAAElFTkSuQmCC");
-  background-repeat: repeat;
-  background-position: center;
-  border: 1px solid #8e8e8e;
-  cursor: pointer;
-}
-
-.colorview-swatch:hover::before {
-  border-color: #494949;
-}
 
 /* colorpicker */
 
@@ -92,20 +91,17 @@
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.12);
   -moz-user-select: none;
   user-select: none;
-}
-
-.colorpicker-popup[data-moving] {
-  opacity: .5;
-  cursor: move;
-}
-
-.colorpicker-popup[data-resizing] {
-  max-height: 90vh !important;
-}
-
-.colorpicker-popup[data-resizable] {
-  resize: vertical;
-  overflow: hidden;
+  &[data-moving] {
+    opacity: .5;
+    cursor: move;
+  }
+  &[data-resizing] {
+    max-height: 90vh !important;
+  }
+  &[data-resizable] {
+    resize: vertical;
+    overflow: hidden;
+  }
 }
 
 .colorpicker-popup-mover {
@@ -269,10 +265,9 @@
   flex: 1;
   padding: 5px;
   box-sizing: border-box;
-}
-
-.colorpicker-input-field[class$="-a"] {
-  flex-grow: 1.25;
+  &[class$="-a"] {
+    flex-grow: 1.25;
+  }
 }
 
 .colorpicker-hsl-h::before {
@@ -309,24 +304,24 @@
   filter: invert(1);
 }
 
-.colorpicker-input:hover {
-  border-color: var(--input-border-color-hover);
-}
-
-.colorpicker-input:focus {
-  color: var(--input-color-focus);
-  border-color: var(--input-border-color-focus);
-  background-color: var(--input-background-color-focus);
+.colorpicker-input {
+  &:hover {
+    border-color: var(--input-border-color-hover);
+  }
+  &:focus {
+    color: var(--input-color-focus);
+    border-color: var(--input-border-color-focus);
+    background-color: var(--input-background-color-focus);
+  }
+  &:invalid {
+    border-color: var(--invalid-border-color);
+    background-color: var(--invalid-background-color);
+    color: var(--invalid-color);
+  }
 }
 
 .colorpicker-theme-dark input:focus {
   outline: none !important;
-}
-
-.colorpicker-input:invalid {
-  border-color: var(--invalid-border-color);
-  background-color: var(--invalid-background-color);
-  color: var(--invalid-color);
 }
 
 .colorpicker-title {
@@ -340,13 +335,12 @@
 
 .colorpicker-title-action {
   cursor: pointer;
-}
-
-.colorpicker-title-action[data-active] {
-  font-weight: bold;
-  color: var(--input-color);
-  cursor: default;
-  pointer-events: none;
+  &[data-active] {
+    font-weight: bold;
+    color: var(--input-color);
+    cursor: default;
+    pointer-events: none;
+  }
 }
 
 .colorpicker-format-change {
@@ -371,10 +365,9 @@
   margin-top: -5px;
   color: var(--label-color);
   text-align: center;
-}
-
-.colorpicker-format-change-button:hover {
-  color: var(--label-color-hover);
+  &:hover {
+    color: var(--label-color-hover);
+  }
 }
 
 .colorpicker-dropper {
@@ -386,21 +379,21 @@
   cursor: pointer;
 }
 
-.colorpicker-palette:not(:empty) {
-  --swatch-size: 16px;
-  margin: 0 var(--margin) var(--margin);
-  min-height: calc(var(--swatch-size) - 4px);
-  overflow-y: auto;
-  box-sizing: content-box;
-}
-
-.colorpicker-palette .colorview-swatch {
-  padding: calc(var(--swatch-size) / 2 + 1px);
-}
-
-.colorpicker-palette .colorview-swatch::before {
-  width: var(--swatch-size);
-  height: var(--swatch-size);
+.colorpicker-palette {
+  &:not(:empty) {
+    --swatch-size: 16px;
+    margin: 0 var(--margin) var(--margin);
+    min-height: calc(var(--swatch-size) - 4px);
+    overflow-y: auto;
+    box-sizing: content-box;
+  }
+  .colorview-swatch {
+    padding: calc(var(--swatch-size) / 2 + 1px);
+    &::before {
+      width: var(--swatch-size);
+      height: var(--swatch-size);
+    }
+  }
 }
 
 .colorpicker-palette-hint {

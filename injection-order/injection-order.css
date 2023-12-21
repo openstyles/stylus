@@ -1,42 +1,50 @@
-.injection-order > div {
-  height: 100%;
-  max-width: 80vw;
-}
-.injection-order #incremental-search {
-  transform: scaleY(.55);
-  transform-origin: top;
-}
-.injection-order :is(#message-box-contents, section) {
-  padding: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-.injection-order section[data-main] {
-  flex: 1 0;
-}
-.injection-order header {
-  padding: 1rem;
-  width: 0;
-  min-width: 100%;
-  box-sizing: border-box;
-}
-.injection-order ol {
-  padding: 0;
-  margin: 0;
-  font-size: 14px;
-  overflow-y: auto;
-}
-.injection-order ol:empty {
-  display: none;
-}
-.injection-order [data-prio] header {
-  background-color: hsla(40, 80%, 50%, 0.4);
-}
-.injection-order [data-prio] {
-  height: min-content;
-  min-height: 2em;
-  max-height: 50%;
+.injection-order {
+  > div {
+    height: 100%;
+    max-width: 80vw;
+  }
+  #incremental-search {
+    transform: scaleY(.55);
+    transform-origin: top;
+  }
+  :is(#message-box-contents, section) {
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  & section[data-main] {
+    flex: 1 0;
+  }
+  & header {
+    padding: 1rem;
+    width: 0;
+    min-width: 100%;
+    box-sizing: border-box;
+  }
+  & ol {
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+    overflow-y: auto;
+  }
+  & ol:empty {
+    display: none;
+  }
+  [data-prio] {
+    & header {
+      background-color: hsla(40, 80%, 50%, 0.4);
+    }
+    height: min-content;
+    min-height: 2em;
+    max-height: 50%;
+  }
+  .draggable-list-target {
+    position: relative;
+    background: lightcyan;
+    transition: none;
+    z-index: 100;
+  }
 }
 .injection-order-entry {
   display: flex;
@@ -51,19 +59,19 @@
   overflow: hidden;
   text-overflow: ellipsis;
   cursor: move;
-}
-.injection-order-entry a[href] {
-  padding: .4em 0;
-  cursor: inherit;
-}
-.injection-order-entry.enabled a[href] {
-  font-weight: bold;
-}
-.injection-order-entry a {
-  text-decoration: none;
-}
-.injection-order-entry a[href]:hover {
-  text-decoration: underline;
+  & a {
+    text-decoration: none;
+    &[href] {
+      padding: .4em 0;
+      cursor: inherit;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+  &.enabled a[href] {
+    font-weight: bold;
+  }
 }
 .injection-order-toggle {
   display: flex;
@@ -72,30 +80,24 @@
   cursor: pointer;
   opacity: .5;
   transition: .15s;
-}
-.injection-order-toggle::after {
-  content: '\2606';
-  font-size: 20px;
-  line-height: 1;
-  transition: .15s;
-}
-.injection-order-entry:hover .injection-order-toggle {
-  opacity: 1;
-}
-[data-prio] .injection-order-toggle::after {
-  content: '\2605';
-}
-.injection-order-toggle:hover::after {
-  color: hsl(30, 80%, 50%);
+  &::after {
+    content: '\2606';
+    font-size: 20px;
+    line-height: 1;
+    transition: .15s;
+  }
+  .injection-order-entry:hover & {
+    opacity: 1;
+  }
+  [data-prio] &::after {
+    content: '\2605';
+  }
+  &:hover::after {
+    color: hsl(30, 80%, 50%);
+  }
 }
 .injection-order [data-prio] header,
 .injection-order :is(ol, #message-box-buttons),
 .injection-order-entry:nth-child(n + 2) {
   border-top: 1px solid rgba(128, 128, 128, .25);
-}
-.injection-order .draggable-list-target {
-  position: relative;
-  background: lightcyan;
-  transition: none;
-  z-index: 100;
 }

@@ -17,46 +17,45 @@
   transition: box-shadow .2s;
   display: inline-flex;
   align-items: center;
-}
-.slider,
-.slider:focus {
-  box-shadow: inset 1px 1px 2px hsla(var(--shadow-hsl), .5);
-}
-.slider::after {
-  content: "";
-  width: var(--knob);
-  height: var(--knob);
-  border-radius: 100%;
-  box-shadow: 2px 2px 4px 1px hsla(180, 90%, 5%, .4);
-  margin: 0 calc(-1 * var(--pad));
-  background: var(--bg);
-  border: 1px solid var(--color-off);
-  box-sizing: border-box;
-}
-.slider:checked {
-  background-color: var(--color-on);
-  justify-content: flex-end;
-}
-.slider:checked::after {
-  border-color: hsla(var(--shadow-hsl), .25);
-  background: var(--accent-2);
-}
-.slider:hover {
-  box-shadow: inset 1px 1px 2px hsla(var(--shadow-hsl), .8);
-}
-.slider:focus {
-  position: relative;
-}
-.slider:focus:not([data-focused-via-click])::before {
-  content: "";
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  left: calc(-2 * var(--pad));
-  padding: calc(var(--pad) + 2px) calc(var(--pad) * 2);
-  box-shadow: var(--focus-shadow);
-}
-:root[data-ui-theme="dark"] .slider {
-  --color-off: hsla(0, 0%, 50%, 0.6);
-  --color-on: hsla(180, 50%, 60%, .3);
+  &, &:focus {
+    box-shadow: inset 1px 1px 2px hsla(var(--shadow-hsl), .5);
+  }
+  &::after {
+    content: "";
+    width: var(--knob);
+    height: var(--knob);
+    border-radius: 100%;
+    box-shadow: 2px 2px 4px 1px hsla(180, 90%, 5%, .4);
+    margin: 0 calc(-1 * var(--pad));
+    background: var(--bg);
+    border: 1px solid var(--color-off);
+    box-sizing: border-box;
+  }
+  &:checked {
+    background-color: var(--color-on);
+    justify-content: flex-end;
+    &::after {
+      border-color: hsla(var(--shadow-hsl), .25);
+      background: var(--accent-2);
+    }
+  }
+  &:hover {
+    box-shadow: inset 1px 1px 2px hsla(var(--shadow-hsl), .8);
+  }
+  &:focus {
+    position: relative;
+    &:not([data-focused-via-click])::before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      left: calc(-2 * var(--pad));
+      padding: calc(var(--pad) + 2px) calc(var(--pad) * 2);
+      box-shadow: var(--focus-shadow);
+    }
+  }
+  :root[data-ui-theme="dark"] & {
+    --color-off: hsla(0, 0%, 50%, 0.6);
+    --color-on: hsla(180, 50%, 60%, .3);
+  }
 }

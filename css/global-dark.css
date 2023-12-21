@@ -67,79 +67,85 @@
   }
   /* buttons */
   ::-webkit-scrollbar-button:single-button {
-    height: 17px;
-    width: 17px;
-    background-size: 9px;
-    background-position: 4px 7px;
-    background-repeat: no-repeat;
-  }
-  ::-webkit-scrollbar-button:horizontal:single-button {
-    background-position: 7px 4px;
-  }
-  /* up */
-  ::-webkit-scrollbar-button:single-button:vertical:decrement {
-    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 35%)'><polygon points='1,0 0,1 2,1'/></svg>");
-  }
-  ::-webkit-scrollbar-button:single-button:vertical:decrement:hover {
-    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 45%)'><polygon points='1,0 0,1 2,1'/></svg>");
-  }
-  ::-webkit-scrollbar-button:single-button:vertical:decrement:active {
-    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 55%)'><polygon points='1,0 0,1 2,1'/></svg>");
-  }
-  /* down */
-  ::-webkit-scrollbar-button:single-button:vertical:increment {
-    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 35%)'><polygon points='0,0 2,0 1,1'/></svg>");
-  }
-  ::-webkit-scrollbar-button:single-button:vertical:increment:hover {
-    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 45%)'><polygon points='0,0 2,0 1,1'/></svg>");
-  }
-  ::-webkit-scrollbar-button:single-button:vertical:increment:active {
-    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 55%)'><polygon points='0,0 2,0 1,1'/></svg>");
-  }
-  /* left */
-  ::-webkit-scrollbar-button:single-button:horizontal:decrement {
-    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 35%)'><polygon points='0,1 1,2 1,0'/></svg>");
-  }
-  ::-webkit-scrollbar-button:single-button:horizontal:decrement:hover {
-    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 45%)'><polygon points='0,1 1,2 1,0'/></svg>");
-  }
-  ::-webkit-scrollbar-button:single-button:horizontal:decrement:active {
-    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 55%)'><polygon points='0,1 1,2 1,0'/></svg>");
-  }
-  /* right */
-  ::-webkit-scrollbar-button:single-button:horizontal:increment {
-    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 35%)'><polygon points='0,0 0,2 1,1'/></svg>");
-  }
-  ::-webkit-scrollbar-button:single-button:horizontal:increment:hover {
-    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 45%)'><polygon points='0,0 0,2 1,1'/></svg>");
-  }
-  ::-webkit-scrollbar-button:single-button:horizontal:increment:active {
-    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 55%)'><polygon points='0,0 0,2 1,1'/></svg>");
+    & {
+      height: 17px;
+      width: 17px;
+      background-size: 9px;
+      background-position: 4px 7px;
+      background-repeat: no-repeat;
+    }
+    &:horizontal {
+      background-position: 7px 4px;
+    }
+    /* up */
+    &:vertical {
+      &:decrement {
+        background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 35%)'><polygon points='1,0 0,1 2,1'/></svg>");
+        &:hover {
+          background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 45%)'><polygon points='1,0 0,1 2,1'/></svg>");
+        }
+        &:active {
+          background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 55%)'><polygon points='1,0 0,1 2,1'/></svg>");
+        }
+      }
+      /* down */
+      &:increment {
+        background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 35%)'><polygon points='0,0 2,0 1,1'/></svg>");
+        &:hover {
+          background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 45%)'><polygon points='0,0 2,0 1,1'/></svg>");
+        }
+        &:active {
+          background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 55%)'><polygon points='0,0 2,0 1,1'/></svg>");
+        }
+      }
+    }
+    /* left */
+    &:horizontal {
+      &:decrement {
+        background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 35%)'><polygon points='0,1 1,2 1,0'/></svg>");
+        &:hover {
+          background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 45%)'><polygon points='0,1 1,2 1,0'/></svg>");
+        }
+        &:active {
+          background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 55%)'><polygon points='0,1 1,2 1,0'/></svg>");
+        }
+      }
+      /* right */
+      &:increment {
+        background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 35%)'><polygon points='0,0 0,2 1,1'/></svg>");
+        &:hover {
+          background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 45%)'><polygon points='0,0 0,2 1,1'/></svg>");
+        }
+        &:active {
+          background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' fill='hsl(0, 0%, 55%)'><polygon points='0,0 0,2 1,1'/></svg>");
+        }
+      }
+    }
   }
   ::-webkit-scrollbar-track-piece {
     background: hsl(0, 0%, 17%);
     border: 1px solid var(--bg);
-  }
-  ::-webkit-scrollbar-track-piece:hover {
-    background: hsl(0, 0%, 20%);
-  }
-  ::-webkit-scrollbar-track-piece:active {
-    background: hsl(0, 0%, 25%);
+    &:hover {
+      background: hsl(0, 0%, 20%);
+    }
+    &:active {
+      background: hsl(0, 0%, 25%);
+    }
   }
   ::-webkit-scrollbar-thumb {
     background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1' fill='hsl(0, 0%, 30%)'><rect width='1' height='1'/></svg>") 2px 2px no-repeat;
-  }
-  ::-webkit-scrollbar-thumb:horizontal {
-    background-size: 100% 13px;
-  }
-  ::-webkit-scrollbar-thumb:vertical {
-    background-size: 13px 100%;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1' fill='hsl(0, 0%, 33%)'><rect width='1' height='1'/></svg>");
-  }
-  ::-webkit-scrollbar-thumb:active {
-    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1' fill='hsl(0, 0%, 40%)'><rect width='1' height='1'/></svg>");
+    &:horizontal {
+      background-size: 100% 13px;
+    }
+    &:vertical {
+      background-size: 13px 100%;
+    }
+    &:hover {
+      background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1' fill='hsl(0, 0%, 33%)'><rect width='1' height='1'/></svg>");
+    }
+    &:active {
+      background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1' fill='hsl(0, 0%, 40%)'><rect width='1' height='1'/></svg>");
+    }
   }
   ::-webkit-resizer {
     background: var(--input-bg) linear-gradient(-45deg,

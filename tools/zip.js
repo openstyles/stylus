@@ -13,6 +13,7 @@ const sChromeBeta = 'chrome-beta';
 const sFirefox = 'firefox';
 
 (async () => {
+  process.stdout.write('zipping...\r');
   const MANIFEST = 'manifest.json';
   const ADD = [
     '*/**',
@@ -48,23 +49,27 @@ const sFirefox = 'firefox';
   for (const suffix of [sChrome, sChromeBeta, sFirefox]) {
     const mj = patchManifest(mjStr, suffix);
     const fileName = `stylus-${suffix}-${mj.version}.zip`;
+    process.stdout.write(`zipping ${fileName}`);
     if (buf) zip = await zip.loadAsync(buf);
     if (suffix !== sChromeBeta) await patchCss(zip, cssFiles, suffix, mj);
+    else console.log('...');
     zip.file(MANIFEST, JSON.stringify(mj, null, 2));
     buf = await zip.generateAsync({type: 'nodebuffer', compression: 'DEFLATE'});
     jobs.push(fs.promises.writeFile(fileName, buf));
   }
   await Promise.all(jobs);
-  console.log(chalk.green('Stylus zip complete'));
+  console.log(chalk.green('zipping complete'));
 })().catch(err => {
   console.error(err);
   process.exit(1);
 });
 
 async function patchCss(zip, files, suffix, mj) {
+  console.log(': transpiling CSS...');
+  const FF = suffix === sFirefox;
   const pc = postcss([
     postcssPresetEnv({
-      browsers: suffix === sFirefox
+      browsers: FF
         ? 'Firefox >= ' + mj.browser_specific_settings.gecko.strict_min_version
         : 'Chrome >= ' + mj.minimum_chrome_version,
       features: {
@@ -76,7 +81,9 @@ async function patchCss(zip, files, suffix, mj) {
   const pcOpts = {map: false, from: null};
   const errors = [];
   for (const [path, date, text] of files) {
-    const res = await pc.process(text, pcOpts);
+    // not using :-moz-any() because unlike :is() it doesn't increase specificity
+    const text2 = FF ? text : text.replaceAll(':is(', ':-webkit-any(');
+    const res = await pc.process(text2, pcOpts);
     for (const m of res.messages) {
       errors.push(`${m.line}:${m.column} ${chalk.red(path)} ${m.text}`);
     }

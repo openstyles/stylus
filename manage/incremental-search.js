@@ -10,8 +10,7 @@
 */// dom.js
 'use strict';
 
-(async () => {
-  await require(['/manage/incremental-search.css']);
+(() => {
   let prevText, focusedLink, focusedEntry;
   let prevTime = performance.now();
   let focusedName = '';

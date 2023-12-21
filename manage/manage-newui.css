@@ -16,36 +16,38 @@
   contain-intrinsic-block-size: auto max(
     var(--num-targets, 0) * var(--target-height) + var(--padY),
     var(--padY) * 2 + var(--name-size) * 1.2/*line-height*/);
+  &.odd {
+    background-color: var(--zebra);
+  }
+  > * {
+    padding: var(--padY) 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+  }
+  & input[type="checkbox"]:not(.slider) {
+    pointer-events: all;
+  }
 }
-.entry.odd {
-  background-color: var(--zebra);
-}
-.entry > * {
-  padding: var(--padY) 0;
-  margin: 0;
-  display: flex;
-  align-items: center;
-}
-.style-info:is([data-type=size], [data-type=age]) {
-  color: var(--c50);
-  justify-content: end;
-}
-.style-info[data-type=age] {
-  flex: 0 0 4ch;
-}
-.style-info[data-type=size] {
-  flex: 0 0 var(--size-width);
-}
-.style-info[data-type=version] {
-  color: var(--c40);
-  padding-left: .5em;
-  font-weight: normal;
-}
-.style-info[data-type=version]:is([data-is-date], [data-value=""], [data-value="1.0.0"]) {
-  display: none;
-}
-.entry input[type="checkbox"]:not(.slider) {
-  pointer-events: all;
+.style-info {
+  &:is([data-type=size], [data-type=age]) {
+    color: var(--c50);
+    justify-content: end;
+  }
+  &[data-type=age] {
+    flex: 0 0 4ch;
+  }
+  &[data-type=size] {
+    flex: 0 0 var(--size-width);
+  }
+  &[data-type=version] {
+    color: var(--c40);
+    padding-left: .5em;
+    font-weight: normal;
+  }
+  &[data-type=version]:is([data-is-date], [data-value=""], [data-value="1.0.0"]) {
+    display: none;
+  }
 }
 .style-name {
   font-size: var(--name-size);
@@ -56,27 +58,27 @@
   flex: 0 0 var(--name-width);
   min-width: 25%;
   max-width: 50%;
-}
-#installed:not(.has-targets) .style-name {
-  max-width: none;
-  flex-grow: 1;
+  #installed:not(.has-targets) & {
+    max-width: none;
+    flex-grow: 1;
+  }
+  &:hover .style-name-link {
+    text-decoration: underline;
+  }
+  .entry.enabled &:hover .style-name-link {
+    color: var(--accent-1);
+  }
 }
 .style-name-link {
   width: 100%;
   word-break: break-word;
 }
-.style-name:hover .style-name-link {
-  text-decoration: underline;
-}
-.entry.enabled .style-name:hover .style-name-link {
-  color: var(--accent-1);
-}
 .actions {
   flex: 0 0 calc(3 * var(--action-size));
   z-index: 100;
-}
-.actions .delete i {
-  font-size: 16px;
+  .delete i {
+    font-size: 16px;
+  }
 }
 .updater-icons > * {
   transition: opacity 1s;
@@ -149,9 +151,9 @@
 .applies-to {
   padding: calc(var(--padY) / 2) 0 calc(var(--padY) / 2) 1em;
   flex-grow: 999;
-}
-#installed:not(.has-targets) .applies-to {
-  display: none;
+  #installed:not(.has-targets) & {
+    display: none;
+  }
 }
 .targets {
   overflow: hidden;
@@ -166,17 +168,17 @@
   bottom: 0;
   display: flex;
   align-items: center;
-}
-.expander:hover {
-  background: hsla(0, 0%, 50%, .05);
-}
-.expander i {
-  width: 16px;
-  height: 16px;
-  color: var(--c50);
-}
-.applies-to:not(.has-more) .expander {
-  display: none;
+  &:hover {
+    background: hsla(0, 0%, 50%, .05);
+  }
+  & i {
+    width: 16px;
+    height: 16px;
+    color: var(--c50);
+  }
+  .applies-to:not(.has-more) & {
+    display: none;
+  }
 }
 .target {
   display: block;
@@ -188,61 +190,63 @@
   width: 0;
   min-width: 100%;
   box-sizing: border-box;
+  & img {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin: -1px 4px 0 -20px;
+    transition: opacity .5s, filter .5s;
+    /* workaround for the buggy CSS filter: images in the hidden overflow are shown on Mac */
+    backface-visibility: hidden;
+    visibility: hidden;
+  }
+  .favicons-grayed & img {
+    filter: grayscale(1);
+    opacity: .25;
+  }
+  .has-favicons & {
+    padding-left: 20px;
+    & img[src] {
+      visibility: visible;
+    }
+  }
+  .entry:hover & img {
+    opacity: 1;
+    filter: none;
+  }
+  & b::after {
+    content: '?';
+    margin: -2px 4px 0 -20px;
+    display: inline-block;
+    vertical-align: baseline;
+    background: var(--c85);
+    width: 16px;
+    line-height: 16px;
+    text-align: center;
+    border-radius: 50%;
+    color: var(--bg);
+  }
 }
-.target img {
-  width: 16px;
-  height: 16px;
-  vertical-align: middle;
-  margin: -1px 4px 0 -20px;
-  transition: opacity .5s, filter .5s;
-  /* workaround for the buggy CSS filter: images in the hidden overflow are shown on Mac */
-  backface-visibility: hidden;
-  visibility: hidden;
-}
-.expanded i {
-  transform: rotate(180deg);
-  transform-origin: 8px 8px;
-}
-.applies-to.expanded {
-  max-width: 100%;
-  align-items: flex-start;
-}
-.applies-to.expanded .targets {
-  max-height: none;
-  display: flex;
-  flex-wrap: wrap;
-}
-.applies-to.expanded .target {
-  width: auto;
-  min-width: 18em;
-  overflow-wrap: anywhere;
-  white-space: normal;
-}
-.favicons-grayed .target img {
-  filter: grayscale(1);
-  opacity: .25;
-}
-.has-favicons .target {
-  padding-left: 20px;
-}
-.has-favicons .target img[src] {
-  visibility: visible;
-}
-.entry:hover .target img {
-  opacity: 1;
-  filter: none;
-}
-.target b::after {
-  content: '?';
-  margin: -2px 4px 0 -20px;
-  display: inline-block;
-  vertical-align: baseline;
-  background: var(--c85);
-  width: 16px;
-  line-height: 16px;
-  text-align: center;
-  border-radius: 50%;
-  color: var(--bg);
+.expanded {
+  & i {
+    transform: rotate(180deg);
+    transform-origin: 8px 8px;
+  }
+  &.applies-to {
+    max-width: 100%;
+    align-items: flex-start;
+    .targets {
+      max-height: none;
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .target {
+      width: auto;
+      min-width: 18em;
+      overflow-wrap: anywhere;
+      white-space: normal;
+    }
+  }
 }
 @media (max-width: 850px) {
   :root {
@@ -250,8 +254,8 @@
   }
   .entry {
     padding: 0;
-  }
-  .entry > .style-info {
-    display: none;
+    > .style-info {
+      display: none;
+    }
   }
 }

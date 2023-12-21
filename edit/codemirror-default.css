@@ -35,18 +35,20 @@
 .CodeMirror-search-hint {
   color: var(--c50);
 }
-.CodeMirror-activeline .applies-to:before {
-  background-color: hsla(214, 100%, 90%, 0.15);
-  content: "";
-  top: 1em;
-  left: 0;
-  right: 0;
-  bottom: 1em;
-  position: absolute;
-  pointer-events: none;
-}
-.CodeMirror-activeline .applies-to ul {
-  z-index: 2;
+.CodeMirror-activeline .applies-to {
+  &::before {
+    background-color: hsla(214, 100%, 90%, 0.15);
+    content: "";
+    top: 1em;
+    left: 0;
+    right: 0;
+    bottom: 1em;
+    position: absolute;
+    pointer-events: none;
+  }
+  & ul {
+    z-index: 2;
+  }
 }
 .CodeMirror-foldgutter-open::after,
 .CodeMirror-foldgutter-folded::after {

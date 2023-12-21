@@ -43,27 +43,26 @@ input:disabled + span {
   border-right: none;
   border-bottom: 1px dashed var(--c65);
   box-shadow: 0 0 50px -18px black;
-}
-html[data-ui-theme="dark"] .warnings {
-  background: darkred;
-}
-.has-warnings .warnings {
-  display: flex;
+  :root[data-ui-theme="dark"] & {
+    background: darkred;
+  }
+  .has-warnings & {
+    display: flex;
+  }
 }
 
 .warning {
   font-weight: bold;
   font-size: 125%;
   margin-bottom: 1em;
-}
-
-.warning pre {
-  overflow-wrap: break-word;
-  white-space: pre-wrap;
-  margin: 1ex 0 0;
-  font-family: monospace;
-  font-weight: normal;
-  font-size: 80%;
+  & pre {
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+    margin: 1ex 0 0;
+    font-family: monospace;
+    font-weight: normal;
+    font-size: 80%;
+  }
 }
 
 h1 {
@@ -78,9 +77,9 @@ h1 {
 .meta-version {
   font-size: 0.6em;
   white-space: nowrap;
-}
-.meta-version::before {
-  content: "v";
+  &::before {
+    content: "v";
+  }
 }
 .set-update-url p {
   word-break: break-all;
@@ -93,17 +92,17 @@ label {
 textarea {
   white-space: pre;
   max-width: 100%;
-}
-textarea:placeholder-shown:not(:focus) {
-  background: none;
+  &:placeholder-shown:not(:focus) {
+    background: none;
+  }
 }
 #install-wrapper {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-}
-#install-wrapper > :nth-last-child(n + 2) {
-  margin-right: .5rem;
+  > :nth-last-child(n + 2) {
+    margin-right: .5rem;
+  }
 }
 #live-reload-install-hint {
   color: darkcyan;
@@ -126,105 +125,83 @@ textarea:placeholder-shown:not(:focus) {
   cursor: pointer;
   box-shadow: inset 0 -1px 0 0 hsl(0, 0%, 24%), inset 0 1px 0 0 hsl(0, 0%, 30%), inset 1px 0 0 0 hsl(0, 0%, 24%);
   transition: color .25s, background-color .25s;
-}
+  &, &::before {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAAeCAYAAAAGos/EAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4gINFiccyZ2qfAAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAb0lEQVQY012OwQ3CUAzFnNeMAfsv1hk4VDTm0H6ByMmyLL2U+lRowKobwAVFEEWbwqKIIGDXBTQqBU3VbWYk0CTLIAxNEHI1s5oAYXAYm2AIfZ64Ab1ta4s/yHv908twHB5gqf0Tvyg1l9l3efC9Dw0XRC2vHIXXAAAAAElFTkSuQmCC);
+    background-size: 100% 100%;
+    background-repeat: repeat-x;
+  }
+  &:hover:not(:disabled) {
+    background-color: hsl(0, 0%, 38%);
+    color: var(--bg);
+    text-shadow: none;
+  }
+  &::before,
+  &::after {
+    content: "";
+    vertical-align: middle;
+    box-sizing: border-box;
+    border-radius: 0 4px 4px 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 30px;
+  }
+  &::before {
+    border-left: 1px solid rgba(0, 0, 0, .3);
+    box-shadow: inset 0 -1px 0 0 hsl(0, 0%, 24%), inset 0 1px 0 0 hsl(0, 0%, 30%), inset -1px 0 0 0 hsl(0, 0%, 38%);
+    padding: 5px 8px;
+    transition: background-color .25s;
+  }
+  :is(&, &:active, &:active:hover)::before {
+    background-color: hsl(176, 50%, 35%);
+  }
+  &:hover::before {
+    background-color: hsl(176, 50%, 40%);
+  }
+  &:active {
+    &, &::before {
+      background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAAeCAYAAAAGos/EAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4gINFioX6+ENuQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAc0lEQVQY003OwQ0CQQxD0edsRBX03xg9cFjBhMPuSOT0ZdmxuS/zesWTzExBI7xlZhrKeeYkmZkH1Icg3Rfs1D98v3Kgj+NSypJlpZWU0tbKKlpVCm0JSyuxPbbnqpiJ0JLr8+w9sbtGxqRFInvYbLiVGX46ECZMv8VvjwAAAABJRU5ErkJggg==);
+      background-size: 100% 100%;
+      background-repeat: repeat-x;
+    }
+    &, &:hover {
+      background-color: hsl(0, 0%, 33%);
+    }
+  }
+  &::after {
+    background-image: url(../images/icon/16.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+  }
+  &:disabled {
+    opacity: .25;
+    color: white;
+    cursor: auto;
+  }
+  &.reinstall {
+    &::after {
+      filter: grayscale(100%);
+    }
+    :is(&, &:active, &:active:hover)::before {
+      background-color: hsl(0, 0%, 20%);
+    }
+    &:hover::before {
+      background-color: hsl(0, 0%, 25%);
+    }
+  }
 
-.install,
-.install:before {
-  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAAeCAYAAAAGos/EAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4gINFiccyZ2qfAAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAb0lEQVQY012OwQ3CUAzFnNeMAfsv1hk4VDTm0H6ByMmyLL2U+lRowKobwAVFEEWbwqKIIGDXBTQqBU3VbWYk0CTLIAxNEHI1s5oAYXAYm2AIfZ64Ab1ta4s/yHv908twHB5gqf0Tvyg1l9l3efC9Dw0XRC2vHIXXAAAAAElFTkSuQmCC);
-  background-size: 100% 100%;
-  background-repeat: repeat-x;
-}
-
-.install:hover:not(:disabled) {
-  background-color: hsl(0, 0%, 38%);
-  color: var(--bg);
-  text-shadow: none;
-}
-
-.install:before,
-.install:after {
-  content: "";
-  vertical-align: middle;
-  box-sizing: border-box;
-  border-radius: 0 4px 4px 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 30px;
-}
-
-.install:before {
-  border-left: 1px solid rgba(0, 0, 0, .3);
-  box-shadow: inset 0 -1px 0 0 hsl(0, 0%, 24%), inset 0 1px 0 0 hsl(0, 0%, 30%), inset -1px 0 0 0 hsl(0, 0%, 38%);
-  padding: 5px 8px;
-  transition: background-color .25s;
-}
-
-.install:before,
-.install:active:before,
-.install:active:hover:before {
-  background-color: hsl(176, 50%, 35%);
-}
-
-.install:hover:before {
-  background-color: hsl(176, 50%, 40%);
-}
-
-.install:active,
-.install:active:before {
-  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAAeCAYAAAAGos/EAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4gINFioX6+ENuQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAc0lEQVQY003OwQ0CQQxD0edsRBX03xg9cFjBhMPuSOT0ZdmxuS/zesWTzExBI7xlZhrKeeYkmZkH1Icg3Rfs1D98v3Kgj+NSypJlpZWU0tbKKlpVCm0JSyuxPbbnqpiJ0JLr8+w9sbtGxqRFInvYbLiVGX46ECZMv8VvjwAAAABJRU5ErkJggg==);
-  background-size: 100% 100%;
-  background-repeat: repeat-x;
-}
-
-.install:active,
-.install:active:hover {
-  background-color: hsl(0, 0%, 33%);
-}
-
-.install:after {
-  background-image: url(../images/icon/16.png);
-  background-repeat: no-repeat;
-  background-position: center center;
-}
-
-.install:disabled {
-  opacity: .25;
-  color: white;
-  cursor: auto;
-}
-
-.install.reinstall:after {
-  filter: grayscale(100%);
-}
-
-.install.reinstall:before,
-.install.reinstall:active:before,
-.install.reinstall:active:hover:before {
-  background-color: hsl(0, 0%, 20%);
-}
-
-.install.reinstall:hover:before {
-  background-color: hsl(0, 0%, 25%);
-}
-
-.install.reinstall:hover:before {
-  background-color: #444;
-}
-
-.install.update:before,
-.install.update:active:before,
-.install.update:active:hover:before {
-  background-color: hsl(140, 100%, 13%);
-}
-
-.install.update:hover:before {
-  background-color: hsl(140, 100%, 18%);
-}
-
-.install.update:after {
-  filter: hue-rotate(-18deg) brightness(.7) contrast(2);
+  &.update {
+    :is(&, &:active, &:active:hover)::before {
+      background-color: hsl(140, 100%, 13%);
+    }
+    &:hover::before {
+      background-color: hsl(140, 100%, 18%);
+    }
+    &::after {
+      filter: hue-rotate(-18deg) brightness(.7) contrast(2);
+    }
+  }
 }
 
 h2 {
@@ -232,11 +209,14 @@ h2 {
   margin: 0;
   color: darkcyan;
 }
-.installed .configure-usercss i {
-  color: hsl(180, 100%, 20%);
-}
-.installed .configure-usercss:hover i {
-  color: hsl(180, 100%, 30%);
+
+.installed .configure-usercss {
+  & i {
+    color: hsl(180, 100%, 20%);
+  }
+  &:hover i {
+    color: hsl(180, 100%, 30%);
+  }
 }
 
 #header-contents > .hide-empty:empty,
@@ -250,10 +230,9 @@ body:not(.installed) .install-show,
 
 .external {
   text-align: center;
-}
-
-.external > * {
-  margin: 0 7.5px;
+  > * {
+    margin: 0 7.5px;
+  }
 }
 
 li {
@@ -310,9 +289,9 @@ li {
   width: 0;
   height: 0;
   background: none;
-}
-#message-box.config-dialog > div {
-  box-shadow: 5px 5px 50px rgba(0, 0, 0, 0.75); /* copied from message-box.css + darkened the color */
+  > div {
+    box-shadow: 5px 5px 50px rgba(0, 0, 0, 0.75); /* copied from message-box.css + darkened the color */
+  }
 }
 
 /************ reponsive layouts ************/
@@ -337,17 +316,17 @@ li {
     flex-wrap: wrap;
     align-content: flex-start;
     align-items: flex-start;
-  }
-  #header-contents > :not(.w100) {
-    margin-right: 1rem;
+    > :not(.w100) {
+      margin-right: 1rem;
+    }
   }
   .set-update-url {
     display: flex;
     white-space: nowrap;
     box-sizing: border-box;
-  }
-  .set-update-url p {
-    margin: 0 0 0 1rem;
+    & p {
+      margin: 0 0 0 1rem;
+    }
   }
   .warning:not(:last-child) {
     border-bottom: 1px dashed #b57c7c;
