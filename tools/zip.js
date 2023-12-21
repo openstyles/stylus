@@ -73,7 +73,6 @@ async function patchCss(zip, files, suffix, mj) {
         ? 'Firefox >= ' + mj.browser_specific_settings.gecko.strict_min_version
         : 'Chrome >= ' + mj.minimum_chrome_version,
       features: {
-        'system-ui-font-family': false, // only necessary in Chrome 55 and we use `sans-serif` fallback anyway
         'prefers-color-scheme-query': false, // we manually handle it via cssRules
       },
     }),

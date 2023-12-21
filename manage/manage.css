@@ -138,7 +138,7 @@ button.icon {
   padding-left: var(--header-width);
   box-sizing: border-box;
   width: 100%;
-  align-self: start;
+  align-self: flex-start;
   display: flex;
   flex-wrap: wrap;
 }

@@ -685,7 +685,7 @@ i,
   }
   .non-windows & .buttons {
     direction: rtl;
-    justify-content: start;
+    justify-content: flex-start;
     > :nth-child(n + 2) {
       margin: 0 .5em 0 0;
     }
