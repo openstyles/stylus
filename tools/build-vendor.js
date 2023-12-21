@@ -1,6 +1,6 @@
 'use strict';
 
-const fetch = require('node-fetch-commonjs');
+const fetch = require('node-fetch');
 const fs = require('fs');
 const fse = require('fs-extra');
 const glob = require('fast-glob').sync;
