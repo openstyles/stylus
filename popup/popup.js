@@ -309,7 +309,6 @@ function resortEntries(entries) {
   if (entries || prefs.get('popup.autoResort')) {
     installed.append(...sortStyles(entries || [...installed.children]));
   }
-  $('#install-wrapper').hidden = !installed.firstChild;
 }
 
 function createStyleElement(style, entry) {

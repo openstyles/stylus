@@ -111,8 +111,11 @@ body > div:not(#message-box):not(.colorpicker-popup) {
 .entry {
   position: relative;
 }
+.blocked-info,
 .styles-last #main-actions,
-.styles-first :is(#installed-wrapper, .entry:nth-last-child(n + 2)) {
+.styles-first #installed:not(:empty),
+.styles-first #installed:empty::after,
+.styles-first .entry:nth-last-child(n + 2) {
   border-bottom: var(--border);
 }
 .styles-last .entry:nth-child(n + 2) {
@@ -580,7 +583,6 @@ a:hover i {
 }
 .blocked-info {
   background-color: var(--c98);
-  border-bottom: var(--border);
   & label {
     padding: .75em var(--outer-padding) .5em;
     display: block;
