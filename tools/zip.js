@@ -80,9 +80,7 @@ async function patchCss(zip, files, suffix, mj) {
   const pcOpts = {map: false, from: null};
   const errors = [];
   for (const [path, date, text] of files) {
-    // not using :-moz-any() because unlike :is() it doesn't increase specificity
-    const text2 = FF ? text : text.replaceAll(':is(', ':-webkit-any(');
-    const res = await pc.process(text2, pcOpts);
+    const res = await pc.process(text, pcOpts);
     for (const m of res.messages) {
       errors.push(`${m.line}:${m.column} ${chalk.red(path)} ${m.text}`);
     }
