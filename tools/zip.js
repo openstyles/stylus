@@ -5,8 +5,7 @@ const fs = require('fs');
 const glob = require('fast-glob');
 const JSZip = require('jszip');
 const chalk = require('chalk');
-const postcss = require('postcss');
-const postcssPresetEnv = require('postcss-preset-env');
+const {SKIP, transpileCss} = require('./util');
 
 const sChrome = 'chrome';
 const sChromeBeta = 'chrome-beta';
@@ -22,11 +21,6 @@ const sFirefox = 'firefox';
     'README.md',
     'privacy-policy.md',
   ];
-  const SKIP = [
-    '.*', // dot files/folders (glob, not regexp)
-    'node_modules',
-    'tools',
-  ];
   const mjStr = fs.readFileSync(MANIFEST, 'utf8');
   const cssFiles = [];
   const jobs = [];
@@ -39,7 +33,7 @@ const sFirefox = 'firefox';
     const bytes = fs.readFileSync(e.path);
     const date = new Date(e.stats.mtime - tzBug);
     if (e.path.endsWith('.css') && !e.path.startsWith('vendor')) {
-      cssFiles.push([e.path, date, bytes.toString('utf8')]);
+      cssFiles.push([e.path, bytes.toString('utf8'), {date}]);
     } else {
       zip.file(e.path, bytes, {date});
     }
@@ -51,8 +45,14 @@ const sFirefox = 'firefox';
     const fileName = `stylus-${suffix}-${mj.version}.zip`;
     process.stdout.write(`zipping ${fileName}`);
     if (buf) zip = await zip.loadAsync(buf);
-    if (suffix !== sChromeBeta) await patchCss(zip, cssFiles, suffix, mj);
-    else console.log('...');
+    if (suffix !== sChromeBeta) {
+      console.log(': transpiling CSS...');
+      for await (const args of transpileCss(cssFiles, suffix === sFirefox, mj)) {
+        zip.file(...args);
+      }
+    } else {
+      console.log('...');
+    }
     zip.file(MANIFEST, JSON.stringify(mj, null, 2));
     buf = await zip.generateAsync({type: 'nodebuffer', compression: 'DEFLATE'});
     jobs.push(fs.promises.writeFile(fileName, buf));
@@ -63,31 +63,6 @@ const sFirefox = 'firefox';
   console.error(err);
   process.exit(1);
 });
-
-async function patchCss(zip, files, suffix, mj) {
-  console.log(': transpiling CSS...');
-  const FF = suffix === sFirefox;
-  const pc = postcss([
-    postcssPresetEnv({
-      browsers: FF
-        ? 'Firefox >= ' + mj.browser_specific_settings.gecko.strict_min_version
-        : 'Chrome >= ' + mj.minimum_chrome_version,
-      features: {
-        'prefers-color-scheme-query': false, // we manually handle it via cssRules
-      },
-    }),
-  ]);
-  const pcOpts = {map: false, from: null};
-  const errors = [];
-  for (const [path, date, text] of files) {
-    const res = await pc.process(text, pcOpts);
-    for (const m of res.messages) {
-      errors.push(`${m.line}:${m.column} ${chalk.red(path)} ${m.text}`);
-    }
-    zip.file(path, res.css, {date});
-  }
-  if (errors[0]) throw errors.join('\n');
-}
 
 function patchManifest(str, suffix) {
   const mj = JSON.parse(str);

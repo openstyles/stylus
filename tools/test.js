@@ -3,15 +3,28 @@
 const fs = require('fs');
 const chalk = require('chalk');
 const glob = require('fast-glob');
+const {SKIP, transpileCss} = require('./util');
 
-testGlobalCss();
-testCsslint({overwriteReport: 0}); // Run with 1 to update the report file, undo, commit the changes
-testParserlib();
-console.log(chalk.bgGreen('All tests OK'));
-process.exit(0);
+(async () => {
+  let res;
+  for (const [fn, msg] of [
+    [testGlobalCss],
+    // Run with 1 to update the report file, undo, commit the changes
+    [testCsslint.bind(null, {overwriteReport: 0}), 'Testing csslint...'],
+    [testParserlib, 'Testing parserlib internals...'],
+    [testParserlibOnFiles, 'Testing parserlib on all css files...'],
+    [testTranspile, 'Transpiling all css files'],
+  ]) {
+    if (msg) process.stdout.write(msg);
+    res = fn(res);
+    if (res instanceof Promise) await res;
+    if (msg) console.log(' OK');
+  }
+  console.log(chalk.green('CSS tests OK'));
+})();
 
 function fail(what, str) {
-  console.log(chalk.bgRed(what + ' FAILED\n') + str);
+  console.log('\r' + chalk.bgRed(what + ' FAILED\n') + str);
   process.exit(1);
 }
 
@@ -25,7 +38,6 @@ function testGlobalCss() {
 }
 
 function testCsslint({overwriteReport}) {
-  process.stdout.write('Testing csslint...');
   const TEST_FILE = 'tools/test-css.txt';
   const REPORT_FILE = TEST_FILE.replace('.txt', '-report.txt');
   const csslint = require('../js/csslint/csslint');
@@ -47,11 +59,9 @@ function testCsslint({overwriteReport}) {
       `expected problem${a === 1 ? '' : 's'}:\n  * ` +
       (i > 0 ? report : expected).slice(-a).join('\n  * '));
   }
-  console.log(' OK');
 }
 
 function testParserlib() {
-  process.stdout.write('Testing parserlib internals...');
   const parserlib = require('../js/csslint/parserlib');
   const {Matcher} = parserlib.util;
   for (const obj of [
@@ -65,6 +75,10 @@ function testParserlib() {
       }
     }
   }
+  return parserlib;
+}
+
+function testParserlibOnFiles(parserlib) {
   const parser = new parserlib.css.Parser({
     ieFilters: true,
     starHack: true,
@@ -77,8 +91,8 @@ function testParserlib() {
       logStr += `  * ${tok.line}:${tok.col} [${e.type}] ${p ? p.text + ': ' : ''}${e.message}\n`;
     }
   };
-  process.stdout.write(' OK\nTesting parserlib on all css files...');
-  for (const file of glob.sync('**/*.css', {ignore: ['node_modules/**']})) {
+  const files = [];
+  for (const file of glob.sync('**/*.css', {ignore: SKIP})) {
     const text = fs.readFileSync(file, 'utf8');
     const opts = parser.options;
     opts.topDocOnly = true; parser.parse(text);
@@ -86,6 +100,13 @@ function testParserlib() {
     opts.globalsOnly = true; parser.parse(text);
     opts.globalsOnly = false;
     if (logStr) fail('parserlib', `\n${chalk.red(file)}\n${logStr}`);
+    files.push([file, text]);
   }
-  console.log(' OK');
+  return files;
+}
+
+async function testTranspile(files) {
+  for await (const _ of transpileCss(files)) { // eslint-disable-line no-unused-vars
+    process.stdout.write('.');
+  }
 }
