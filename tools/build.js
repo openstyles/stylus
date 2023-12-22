@@ -2,63 +2,75 @@
 'use strict';
 
 const fs = require('fs');
+const fse = require('fs-extra');
 const glob = require('fast-glob');
 const JSZip = require('jszip');
 const chalk = require('chalk');
 const {SKIP, transpileCss} = require('./util');
 
+const DST = 'dist';
+const ADD = [
+  '*/**',
+  '*.html',
+  'LICENSE',
+  'README.md',
+  'privacy-policy.md',
+];
+const MANIFEST = 'manifest.json';
 const sChrome = 'chrome';
 const sChromeBeta = 'chrome-beta';
 const sFirefox = 'firefox';
 
-(async () => {
-  process.stdout.write('zipping...\r');
-  const MANIFEST = 'manifest.json';
-  const ADD = [
-    '*/**',
-    '*.html',
-    'LICENSE',
-    'README.md',
-    'privacy-policy.md',
-  ];
+(async function build([target] = process.argv.slice(2)) {
+  const tty = process.stdout.write.bind(process.stdout);
+  const jobTitle = target ? `building as "${target}"` : 'building';
+  tty(jobTitle);
   const mjStr = fs.readFileSync(MANIFEST, 'utf8');
   const cssFiles = [];
-  const jobs = [];
   // https://github.com/Stuk/jszip/issues/369
-  const tzBug = new Date().getTimezoneOffset() * 60000;
-  JSZip.defaults.date = new Date(Date.now() - tzBug);
-  // add all files except manifest.json
-  let zip = new JSZip();
+  const tzBug = target ? 0 : new Date().getTimezoneOffset() * 60000;
+  let zip, addFile;
+  if (!target) {
+    zip = new JSZip();
+    JSZip.defaults.date = new Date(Date.now() - tzBug);
+    addFile = (path, body = fs.readFileSync(path), opts) => zip.file(path, body, opts);
+  } else {
+    fse.emptydirSync(DST);
+    addFile = (path, text) => text
+      ? fse.outputFileSync(DST + '/' + path, text, 'utf8')
+      : fse.copySync(path, DST + '/' + path, {preserveTimestamps: true});
+  }
+  SKIP.push(MANIFEST);
   for (const e of glob.sync(ADD, {ignore: SKIP, stats: true, onlyFiles: true})) {
-    const bytes = fs.readFileSync(e.path);
     const date = new Date(e.stats.mtime - tzBug);
     if (e.path.endsWith('.css') && !e.path.startsWith('vendor')) {
-      cssFiles.push([e.path, bytes.toString('utf8'), {date}]);
+      cssFiles.push([e.path, fs.readFileSync(e.path, 'utf8'), {date}]);
     } else {
-      zip.file(e.path, bytes, {date});
+      addFile(e.path, undefined, {date});
     }
   }
   let buf;
-  // add a patched manifest.json for each zip reusing compressed data for all other files
-  for (const suffix of [sChrome, sChromeBeta, sFirefox]) {
+  for (const suffix of target ? [target] : [sFirefox, sChrome, sChromeBeta]) {
     const mj = patchManifest(mjStr, suffix);
-    const fileName = `stylus-${suffix}-${mj.version}.zip`;
-    process.stdout.write(`zipping ${fileName}`);
-    if (buf) zip = await zip.loadAsync(buf);
-    if (suffix !== sChromeBeta) {
-      console.log(': transpiling CSS...');
+    const zipName = zip && `stylus-${suffix}-${mj.version}.zip`;
+    if (zip) tty(`\r${jobTitle} ${zipName}`);
+    if (buf) zip = await zip.loadAsync(buf); // reusing the already compressed data
+    if (target || suffix !== sChromeBeta) { // reusing sChrome in sChromeBeta
+      tty(', transpiling CSS');
       for await (const args of transpileCss(cssFiles, suffix === sFirefox, mj)) {
-        zip.file(...args);
+        addFile(...args);
+        tty('.');
       }
     } else {
-      console.log('...');
+      tty('...');
     }
-    zip.file(MANIFEST, JSON.stringify(mj, null, 2));
-    buf = await zip.generateAsync({type: 'nodebuffer', compression: 'DEFLATE'});
-    jobs.push(fs.promises.writeFile(fileName, buf));
+    addFile(MANIFEST, JSON.stringify(mj, null, 2));
+    if (zip) {
+      buf = await zip.generateAsync({type: 'nodebuffer', compression: 'DEFLATE'});
+      fs.writeFileSync(zipName, buf);
+    }
+    console.log(chalk.green(' OK'));
   }
-  await Promise.all(jobs);
-  console.log(chalk.green('zipping complete'));
 })().catch(err => {
   console.error(err);
   process.exit(1);

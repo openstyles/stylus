@@ -29,6 +29,7 @@ async function *transpileCss(files, isFirefox, mj = fse.readJsonSync('manifest.j
 
 exports.SKIP = [
   '.*', // dot files/folders (glob, not regexp)
+  'dist',
   'node_modules',
   'tools',
 ];
