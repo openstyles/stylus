@@ -201,6 +201,7 @@
     m.lastIndex = i;
     m = m.exec(text);
     if (!m) return;
+    if (m[0].includes('.')) delta /= 10;
     cm.replaceRange((+m[0] + delta).toFixed(m[1] ? m[2].length : 0),
       {line, ch: i},
       {line, ch: i + m[0].length},
