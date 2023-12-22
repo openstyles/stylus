@@ -55,6 +55,7 @@ body > div:not(#message-box):not(.colorpicker-popup) {
 #main-actions {
   /* raise the actions above the hotkey-info */
   position: relative;
+  background: var(--zebra);
   z-index: 4;
   > * {
     margin-top: .75em;
@@ -162,8 +163,8 @@ body > div:not(#message-box):not(.colorpicker-popup) {
   align-items: center;
 }
 
-.styles-first .entry:nth-last-child(odd),
-.styles-last .entry:nth-child(odd) {
+.styles-first .entry:nth-last-child(even),
+.styles-last .entry:nth-child(even) {
   background-color: var(--zebra);
 }
 
@@ -510,6 +511,7 @@ a:hover i {
   flex-direction: row;
   padding: var(--outer-padding) 1px;
   margin-right: calc(-1 * var(--btn-gap));
+  background: var(--zebra);
   .split-btn > :first-child {
     width: calc(100% - 16px);
   }
@@ -567,7 +569,9 @@ a:hover i {
   }
   #main-actions {
     order: 1;
-    margin-top: calc(-1 * var(--outer-padding));
+    > :first-child {
+      margin-top: 0;
+    }
     padding-bottom: var(--outer-padding);
   }
   #search-results {

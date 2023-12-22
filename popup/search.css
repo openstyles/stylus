@@ -28,7 +28,8 @@
 
 #search-results {
   background: linear-gradient(
-    var(--c95) 110px /* nav and search params */,
+    var(--c95) 2em,
+    var(--c90) 110px /* nav and search params */,
     var(--c70) 220px /* middle of the first thumbnail */,
     var(--c70) calc(100% - 110px) /* middle of the last thumbnail */,
     var(--c85) calc(100% - 30px)) /* stop at the bottom nav */;
@@ -308,9 +309,10 @@
   word-break: keep-all;
   line-height: 24px;
   font-size: 16px;
-  background-color: var(--c95);
+  background-color: var(--bg);
   margin: 0 calc(-1 * var(--outer-padding)) .5em;
   &[data-type="top"] {
+    border-bottom: var(--border);
     padding: .25em 0 0;
   }
   &[data-type="bottom"] {
