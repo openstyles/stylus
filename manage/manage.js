@@ -80,6 +80,9 @@ Object.assign(newUI, {
   sorter.init();
   router.update();
   prefs.subscribe(newUI.ids.map(newUI.prefKeyForId), () => switchUI());
+  prefs.subscribe('newStyleAsUsercss', (key, val) => {
+    $('#add-style-label').textContent = t(val ? 'optionsAdvancedNewStyleAsUsercss' : 'addStyleLabel');
+  }, true);
   switchUI({styleOnly: true});
   // translate CSS manually
   document.styleSheets[0].insertRule(

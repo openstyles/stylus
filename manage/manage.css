@@ -82,10 +82,9 @@ a:hover {
 #add-style-wrapper {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
   > * {
     /* in case the children are wrapped */
-    margin-bottom: .5rem;
+  margin-bottom: .5rem;
   }
 }
 #add-style-as-usercss-wrapper {
@@ -256,10 +255,6 @@ button.icon {
 }
 
 /* collapsibles */
-#add-style-wrapper {
-  margin-bottom: 0;
-}
-
 #backup-buttons {
   display: flex;
   flex-wrap: wrap;
@@ -558,8 +553,8 @@ button i {
   width: 100%;
 }
 
-#search-help, #sorter-help {
-  margin: 0 -5px 0 2px;
+#search-help, #sorter-help, #add-style-wrapper {
+  margin-right: -4px;
 }
 
 #incremental-search {
