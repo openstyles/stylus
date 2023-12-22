@@ -4,7 +4,7 @@
 /* global SectionsEditor */
 /* global SourceEditor */
 /* global validateRegexp */// util.js
-/* global clipString closeCurrentTab deepEqual mapObj sessionStore tryJSONparse */// toolbox.js
+/* global clipString closeCurrentTab deepEqual mapObj sessionStore */// toolbox.js
 /* global cmFactory */
 /* global editor EditorHeader */// base.js
 /* global linterMan */
@@ -163,7 +163,7 @@ window.on('beforeunload', e => {
     prefs.set('windowPosition', pos);
   }
   sessionStore.windowPos = JSON.stringify(pos || {});
-  sessionStore['editorScrollInfo' + editor.style.id] = JSON.stringify(editor.makeScrollInfo());
+  API.data.set('editorScrollInfo' + editor.style.id, editor.makeScrollInfo());
   const activeElement = document.activeElement;
   if (activeElement) {
     // blurring triggers 'change' or 'input' event if needed
@@ -194,9 +194,6 @@ function EditorMethods() {
   ], () => regexpTester.toggle(true));
 
   Object.defineProperties(editor, {
-    scrollInfo: {
-      get: () => style.id && tryJSONparse(sessionStore['editorScrollInfo' + style.id]) || {},
-    },
     style: {
       get: () => style,
       set: val => (style = val),

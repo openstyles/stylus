@@ -60,25 +60,32 @@ const editor = {
   const toggleCompact = mq => $.rootCL.toggle('compact-layout', mq.matches);
   mqCompact.on('change', toggleCompact);
   toggleCompact(mqCompact);
+  let params = new URLSearchParams(location.search);
+  let id = +params.get('id');
   Object.assign(editor, /** @namespace Editor */ {
     mqCompact,
     styleReady: Promise.all([
-      prefs.ready.then(loadStyle),
+      Promise.all([
+        id ? API.styles.get(id) : undefined,
+        prefs.ready,
+      ]).then(loadStyle),
+      id && API.data.get('editorScrollInfo' + id).then(si => {
+        editor.scrollInfo = si || {};
+      }),
       new Promise(t.body),
     ]),
   });
 
-  async function loadStyle() {
-    let params = new URLSearchParams(location.search);
-    let id = Number(params.get('id'));
-    const style = id && await API.styles.get(id) || {
+  async function loadStyle([
+    style = {
       id: id = null, // resetting the non-existent id
       name: makeName(params),
       enabled: true,
       sections: [
         MozDocMapper.toSection([...params], {code: ''}),
       ],
-    };
+    },
+  ]) {
     // switching the mode here to show the correct page ASAP, usually before DOMContentLoaded
     const isUC = Boolean(style[UCD] || !id && prefs.get('newStyleAsUsercss'));
     Object.assign(editor, /** @namespace Editor */ {
