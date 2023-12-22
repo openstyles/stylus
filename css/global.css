@@ -78,8 +78,7 @@ button {
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 3px 7px 2px;
-  border: 1px solid var(--c60);
-  border-radius: 2px;
+  border: 1px solid var(--c70);
   font: inherit;
   font-size: 13px;
   line-height: 1.2;
@@ -89,6 +88,9 @@ button {
   &:not(:disabled):hover {
     background-color: var(--c95);
     border-color: var(--c50);
+  }
+  &:disabled {
+    border-color: var(--c85);
   }
   &:active {
     background-color: var(--c95);
@@ -392,9 +394,12 @@ body {
   position: relative;
   white-space: nowrap;
   --menu-pad: .5em;
+  > :first-child:hover {
+    position: relative;
+  }
 }
 .split-btn-pedal {
-  margin-left: -2px !important;
+  margin-left: -1px !important;
   padding-left: .25em !important;
   padding-right: .25em !important;
   min-width: 0 !important;
