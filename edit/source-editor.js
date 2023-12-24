@@ -112,9 +112,11 @@ async function SourceEditor() {
   prefs.subscribe('editor.appliesToLineWidget', (k, val) => sectionWidget.toggle(val), true);
   prefs.subscribe('editor.toc.expanded', (k, val) => sectionFinder.onOff(editor.updateToc, val), true);
 
-  cm.setValue(style.sourceCode);
-  cm.clearHistory();
-  cm.markClean();
+  if (style.id) {
+    cm.setValue(style.sourceCode);
+    cm.clearHistory();
+    cm.markClean();
+  }
   savedGeneration = cm.changeGeneration();
   cm.on('changes', () => {
     dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
@@ -189,7 +191,6 @@ async function SourceEditor() {
     cm.markClean();
     cm.endOperation();
     dirty.clear('sourceGeneration');
-    savedGeneration = cm.changeGeneration();
   }
 
   function updateMeta() {
