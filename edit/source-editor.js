@@ -54,7 +54,6 @@ async function SourceEditor() {
     updateMeta();
   });
   updateMeta();
-  cm.setValue(style.sourceCode);
 
   /** @namespace Editor */
   Object.assign(editor, {
@@ -113,6 +112,7 @@ async function SourceEditor() {
   prefs.subscribe('editor.appliesToLineWidget', (k, val) => sectionWidget.toggle(val), true);
   prefs.subscribe('editor.toc.expanded', (k, val) => sectionFinder.onOff(editor.updateToc, val), true);
 
+  cm.setValue(style.sourceCode);
   cm.clearHistory();
   cm.markClean();
   savedGeneration = cm.changeGeneration();
