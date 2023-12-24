@@ -691,7 +691,8 @@
     TIME: {},
   };
   const TokenIdByCode = [];
-  for (let id = 0, arr = Object.keys(Tokens), key, val, text; (key = arr[id]); id++) {
+  for (let id = 0, arr = Object.keys(Tokens), key, val, text; id < arr.length; id++) {
+    key = arr[id];
     text = ((val = Tokens[key]).slice ? val = {text: val} : val).text;
     Tokens[val.name = key] = id;
     Tokens[id] = val;
@@ -1286,9 +1287,9 @@
     /** Matcher for one or more juxtaposed words, which all must occur, in the given order. */
     static alt(ms) {
       let str; // Merging stringArray hubs
-      for (let SAT = Matcher.stringArrTest, m, i = 0; (m = ms[i]);) {
-        if (m.matchFunc === SAT) {
-          str = (str ? str + ' | ' : '') + m._string;
+      for (let SAT = Matcher.stringArrTest, i = 0; i < ms.length;) {
+        if (ms[i].matchFunc === SAT) {
+          str = (str ? str + ' | ' : '') + ms[i]._string;
           ms.splice(i, 1);
         } else i++;
       }
@@ -1302,8 +1303,8 @@
      * @return {!boolean|void}
      */
     static altTest(expr, p) {
-      for (let i = 0, m; (m = this.arg[i++]);) {
-        if (m.match(expr, p)) return true;
+      for (let ms = this.arg, i = 0; i < ms.length; i++) {
+        if (ms[i].match(expr, p)) return true;
       }
     }
     /** @this {Matcher} */
@@ -1401,10 +1402,10 @@
       return true;
     }
     manyTestRun(state, count, retry) {
-      for (let i = 0, {expr} = state, ms = this.arg, m, ei, x; (m = ms[i]); i++) {
+      for (let i = 0, {expr} = state, ms = this.arg, ei, x; i < ms.length; i++) {
         if (!state[i] && (
           (ei = expr.i) + 1 > expr.parts.length ||
-          (x = m.match(expr)) && (x > 1 || x === 1 || m.arg.min !== 0)
+          (x = ms[i].match(expr)) && (x > 1 || x === 1 || ms[i].arg.min !== 0)
           // Seeing only real matches e.g. <foo> inside <foo>? or <foo>* or <foo>#{0,n}
           // Not using `>=` because `true>=1` and we don't want booleans here
         )) {
@@ -1676,7 +1677,7 @@
         expr.tryAttr = true;
         res = m.match(expr);
       }
-      for (let p; (p = expr.parts[expr.i]) && p.isAttr;) {
+      for (let i, pp = expr.parts; (i = expr.i) < pp.length && pp[i].isAttr;) {
         expr.next();
       }
     }

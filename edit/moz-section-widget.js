@@ -243,8 +243,8 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
       }
     }
     // renumber
-    for (let i = Math.max(0, cutAt), {sections} = finder, sec; (sec = sections[i++]);) {
-      if (!toDelay.includes(sec)) {
+    for (let i = Math.max(0, cutAt), {sections} = finder, sec; i < sections.length; i++) {
+      if (!toDelay.includes(sec = sections[i])) {
         const data = $(C_LABEL, sec.widget.node).dataset;
         if (data.index !== `${i}`) data.index = `${i}`;
       }

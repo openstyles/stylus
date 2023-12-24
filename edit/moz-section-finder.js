@@ -117,7 +117,8 @@ function MozSectionFinder(cm) {
     let cutAt = -1;
     let cutTo = -1;
     scheduled = updFrom = updTo = null;
-    for (let i = 0, sec; (sec = sections[i]); i++) {
+    for (let i = 0; i < sections.length; i++) {
+      const sec = sections[i];
       if (cmpPos(sec.end, from) >= 0) {
         if (cutAt < 0) {
           cutAt = i;
