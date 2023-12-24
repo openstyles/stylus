@@ -88,6 +88,9 @@
   "clickToUninstall": {
     "message": "Cliquer pour désinstaller"
   },
+  "cm_arrowKeysTraverse": {
+    "message": "Les flèches ↑↓ franchissent les sections"
+  },
   "cm_autoCloseBrackets": {
     "message": "Fermer automatiquement les caractères ouvrants"
   },
@@ -574,6 +577,9 @@
   "manageNewStyleAsUsercss": {
     "message": "en tant que UserCSS"
   },
+  "manageNewUI": {
+    "message": "Affichage en grille"
+  },
   "manageOnlyDisabled": {
     "message": "Seulement les styles désactivés"
   },
@@ -841,8 +847,14 @@
   "optionsAdvancedPatchCspNote": {
     "message": "Activez cela si les styles comportent des images ou des polices qui échoue à charger sur les sites avec une politique de sécurité de contenus stricte <code>CSP</code> (<code>Content-Security-Policy</code>).\n\nActiver cette option permettra d'alléger les restrictions du <code>CSP</code>, permettant les styles essentiels de charger. Cette option n'est entendue que pour les utilisateurs expérimentés qui comprennent les potentielles implications de sécurité que cela introduit, et accepte la responsabilité de surveiller le contenu qu'ils autorisent. Veuillez lire les attaques basé sur le CSS pour plus d’information.\n\nAussi sachez, que cette option en particulier n'est pas garanti de fonctionner si une autre extension modifie la réponse réseau avant."
   },
+  "optionsAdvancedStyleViaASS": {
+    "message": "Contourner CSP: style-src avec adoptedStyleSheets"
+  },
   "optionsAdvancedStyleViaXhr": {
     "message": "Mode d'injection instantanée"
+  },
+  "optionsAdvancedStyleViaXhrNote": {
+    "message": "Activez cette option en cas d'intermission de contenu sans style, visible notamment lors du chargement d'une page avec un style sombre.\n\nCette option utilise l'objet synchrone « obsolète » XMLHttpRequest, invoqué en interne pour obtenir le cache d'arrière-plan de l'extension. Ce n'est pas une requête réseau, l'impact sur les performances est donc négligeable."
   },
   "optionsBadgeDisabled": {
     "message": "Couleur d'arrière plan si désactivé"
@@ -959,6 +971,9 @@
   "optionsUpdateInterval": {
     "message": "Intervalle de mise à jour automatique des styles utilisateur en heures (spécifier 0 pour désactiver)"
   },
+  "optionsUrlInstaller": {
+    "message": "Ouvrir l'installateur quand une URL .user.css est rencontrée"
+  },
   "overwriteFileExport": {
     "message": "Voulez-vous écraser un fichier existant ?"
   },
@@ -1004,6 +1019,9 @@
   "popupMenuButtonTooltip": {
     "message": "Actions"
   },
+  "popupOpenEditInPopup": {
+    "message": "…sans la barre d'adresse"
+  },
   "popupOpenEditInWindow": {
     "message": "Ouvrir l'éditeur dans une nouvelle fenêtre"
   },
@@ -1018,6 +1036,9 @@
   },
   "preferScheme": {
     "message": "Préférence au mode clair/sombre"
+  },
+  "preferSchemeAlways": {
+    "message": "Ignoré (le style s'applique toujours) car le mode global clair/sombre est désactivé"
   },
   "preferSchemeDark": {
     "message": "Obscur"
@@ -1043,6 +1064,9 @@
   "publishReconnect": {
     "message": "Essayez de vous déconnecter et de publier à nouveau"
   },
+  "publishRetry": {
+    "message": "La tentative de publier le style est toujours en cours, mais vous pouvez réessayer en l'absence de message ou d'activité d'authentification. Réessayer maintenant ?"
+  },
   "publishStyle": {
     "message": "Publier le style"
   },
@@ -1063,6 +1087,9 @@
   },
   "replaceWith": {
     "message": "Remplacer par"
+  },
+  "restoreTemplate": {
+    "message": "Rétablir le modèle par défaut.\n\n(Les pages ouvertes dans l'éditeur ne seront pas modifiées.)"
   },
   "retrieveBckp": {
     "message": "Importer des styles"
@@ -1111,6 +1138,9 @@
   },
   "searchResultWeeklyCount": {
     "message": "Installations hebdomadaires"
+  },
+  "searchStyleQueryHint": {
+    "message": "Cherchez des noms de styles (sensible à la casse en cas de majuscule) :\nmot1 mot2 - tous ces mots dans n'importe quel ordre\n\"une phrase\" - cette phrase exacte sans les guillements\n/foo.*bar/i - une expression régulière sans les espaces (utilisez \\s)"
   },
   "searchStylesAll": {
     "message": "Tout"
@@ -1187,6 +1217,9 @@
   "styleChangesNotSaved": {
     "message": "Vous avez apporté des modifications à ce style sans les enregistrer."
   },
+  "styleEditor": {
+    "message": "Éditeur de styles"
+  },
   "styleEnabledLabel": {
     "message": "Activé"
   },
@@ -1198,6 +1231,9 @@
   },
   "styleFromMozillaFormatPrompt": {
     "message": "Coller le code au format Mozilla"
+  },
+  "styleIncludeLabel": {
+    "message": "Sites inclus"
   },
   "styleInjectionImportance": {
     "message": "Basculer l'importance du style"
@@ -1241,6 +1277,9 @@
       }
     }
   },
+  "styleManager": {
+    "message": "Gestionnaire de styles"
+  },
   "styleMissingName": {
     "message": "Veuillez saisir un nom"
   },
@@ -1282,6 +1321,9 @@
   },
   "styleRegexpTestNote": {
     "message": "Note : utilisez un simple \\ pour échapper dans le champ de regexp, qui sera automatiquement converti en \\\\ dans le code conformément à la spécification des chaines citées en CSS."
+  },
+  "styleRegexpTestNoteStar": {
+    "message": "Ajoutez <.*> à la fin si l'expression doit être utilisée comme préfixe, par exemple <https?://(www\\.)?foo\\.com/(one|two).*>"
   },
   "styleRegexpTestPartial": {
     "message": "Correspondance partielle, donc ignorée"

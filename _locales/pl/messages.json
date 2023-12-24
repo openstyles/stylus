@@ -310,6 +310,9 @@
       }
     }
   },
+  "editTargetsFirst": {
+    "message": "Pokaż cele przed kodem"
+  },
   "editorSettings": {
     "message": "Ustawienia edytora"
   },

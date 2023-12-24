@@ -269,6 +269,9 @@
       }
     }
   },
+  "editTargetsFirst": {
+    "message": "Zeige Ziel-URLs am Bereichsanfang"
+  },
   "editorSettings": {
     "message": "Editor Einstellungen"
   },

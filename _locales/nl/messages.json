@@ -291,6 +291,9 @@
       }
     }
   },
+  "editTargetsFirst": {
+    "message": "Doelen tonen vóór code"
+  },
   "editorSettings": {
     "message": "Editor-instellingen"
   },
@@ -1414,7 +1417,7 @@
     }
   },
   "syncErrorRelogin": {
-    "message": "Synchronisatie mislukt. U bent afgemeld.\nProbeer u opnieuw aan te melden in de Stylus-opties."
+    "message": "Synchronisatie mislukt. Probeer u opnieuw aan te melden in de Stylus-opties."
   },
   "syncStorageErrorSaving": {
     "message": "De waarde kan niet worden opgeslagen. Probeer de hoeveelheid tekst te verminderen."
@@ -1506,7 +1509,7 @@
     "message": "Specificeer @name in de code"
   },
   "usercssReplaceTemplateConfirmation": {
-    "message": "Wilt u de standaardsjabloon voor nieuwe UserCSS-stijlen vervangen door de huidige code?"
+    "message": "De standaardsjabloon voor nieuwe UserCSS-stijlen vervangen door de huidige code?"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "Voer hier code in..."

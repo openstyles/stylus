@@ -310,6 +310,9 @@
       }
     }
   },
+  "editTargetsFirst": {
+    "message": "在程式碼前顯示目標"
+  },
   "editorSettings": {
     "message": "編輯器設定"
   },
