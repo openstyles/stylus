@@ -139,7 +139,7 @@ function MozSectionFinder(cm) {
     }
     if (cutTo < 0) {
       to.ch += MOZ_DOC_LEN;
-      cutAt = sections.length;
+      cutTo = sections.length;
     }
     let op;
     let reusedAtStart = 0;
