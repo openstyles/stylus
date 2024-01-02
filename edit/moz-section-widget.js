@@ -246,7 +246,8 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
     for (let i = Math.max(0, cutAt), {sections} = finder, sec; i < sections.length; i++) {
       if (!toDelay.includes(sec = sections[i])) {
         const data = $(C_LABEL, sec.widget.node).dataset;
-        if (data.index !== `${i}`) data.index = `${i}`;
+        const di = `${i + 1}`;
+        if (data.index !== di) data.index = di;
       }
     }
     if (toDelay.length) {
