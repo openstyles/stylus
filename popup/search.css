@@ -377,6 +377,12 @@
   min-width: 12em;
 }
 
+@media (width < 400px) {
+  #search-years {
+    width: 100%;
+  }
+}
+
 @media (min-width: 400px) {
   .search-result {
     --col: 3;
@@ -385,7 +391,7 @@
     vertical-align: top;
     box-sizing: border-box;
     margin-right: var(--pad);
-    @media (max-width: 599px) {
+    @media (width < 600px) {
       --col: 2;
       &:nth-child(even) {
         margin-right: 0;
