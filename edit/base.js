@@ -336,6 +336,10 @@ function DirtyReporter() {
 
 function LivePreview() {
   const ID = 'editor.livePreview';
+  const DEMO = {
+    stylus: 'https://stylus-lang.com/try.html',
+    less: 'https://lesscss.org/less-preview/',
+  };
   let errPos;
   let el;
   let data;
@@ -388,7 +392,6 @@ function LivePreview() {
     let res;
     try {
       res = await API.styles.preview(data);
-      el.textContent = '';
     } catch (err) {
       const ucd = data[UCD];
       const pp = ucd && ucd.preprocessor;
@@ -408,8 +411,10 @@ function LivePreview() {
         err = errPos[3];
         errPos = {line: errPos[1] - shift, ch: errPos[2] - 1};
       }
-      el.textContent = (errPos ? `${errPos.line + 1}:${errPos.ch + 1} ` : '') + err;
+      el.firstChild.textContent = (errPos ? `${errPos.line + 1}:${errPos.ch + 1} ` : '') + err;
+      el.lastChild.hidden = !(el.lastChild.href = DEMO[pp]);
     }
+    el.hidden = !!res;
     return res;
   }
 }

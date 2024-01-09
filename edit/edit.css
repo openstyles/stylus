@@ -129,11 +129,14 @@ html:not(.is-new-style) #heading::before {
   }
 }
 
-#preview-errors:not(:empty) {
+#preview-errors:not([hidden]) {
   color: var(--red1);
   cursor: pointer;
   display: inline-block;
-  margin-right: var(--pad05);
+  margin: var(--pad05) var(--pad05) -1em 0;
+  .i-external {
+    font-size: 15px;
+  }
 }
 
 i {
