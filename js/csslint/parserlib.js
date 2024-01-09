@@ -1498,11 +1498,7 @@
           continue;
         }
         if (tok === prevTok) {
-          throw new Error(
-            'parserlib is stuck in the loop, report to https://github.com/openstyles/stylus/issues/1638\n' +
-            JSON.stringify(stream, (k, v) => k !== '_input' && k !== 'string' ? v : void 0)
-              .replace(/"(\w+)":/g, '$1:\xAD')
-          );
+          stream._failure('');
         }
         prevTok = tok;
         try {
