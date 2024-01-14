@@ -36,7 +36,7 @@
   "scripts": {
     "lint": "eslint \"**/*.js\" --cache",
     "test": "node tools/test.js && npm run lint",
-    "update-locales": "tx pull --all && node tools/fix-transifex.js",
+    "update-locales": "tx pull --all && node tools/fix-transifex.js && git commit -m \"update locales\" _locales",
     "update-transifex": "tx push -s",
     "build-chrome": "node npm test && tools/build.js chrome",
     "build-firefox": "node npm test && tools/build.js firefox",
