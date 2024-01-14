@@ -1,6 +1,6 @@
 {
   "InaccessibleFileHint": {
-    "message": "Stylus ne peut pas accéder à certains types de fichiers (ex: fichiers .pdf et .json)."
+    "message": "Stylus ne peut pas accéder à certains types de fichiers (ex : fichiers .pdf et .json)."
   },
   "addStyleLabel": {
     "message": "Créer un nouveau style"
@@ -68,7 +68,7 @@
     "message": "Sauvegarde"
   },
   "backupMessage": {
-    "message": "Pour importer le fichier de sauvegarder, glissez-déposez-le sur dans page ou cliquez sur le bouton Importer.\n\nPour export une sauvegarde compatible avec une version de Stylus plus ancienne que 1.5.18, effectuez un clic droit ou un appuie sur la touche Maj + clic sur le bouton Exporter."
+    "message": "Pour importer le fichier de sauvegarde, faites un cliquer-déposer sur cette page ou cliquez sur le bouton Importer.\n\nPour exporter une sauvegarde compatible avec une version de Stylus plus ancienne que 1.5.18, effectuez un clic droit ou un appui sur la touche Maj + clic sur le bouton Exporter."
   },
   "bckpInstStyles": {
     "message": "Exporter des styles"
@@ -140,10 +140,10 @@
     "message": "Taille des tabulations"
   },
   "cm_theme": {
-    "message": "Thème"
+    "message": "Style"
   },
   "colorpickerPaletteHint": {
-    "message": "Clique-droit sur l'extrait de couleur pour changer ses types de lignes sources"
+    "message": "Clic-droit sur l'extrait de couleur pour se rendre à sa ligne source"
   },
   "colorpickerSwitchFormatTooltip": {
     "message": "Changer de format : HEX → RGB → HSL.\nMaj-clic pour inverser la direction.\nÉgalement via les touches ⇞ (Page précédente), \f (Page précédente)."
@@ -246,7 +246,7 @@
     "message": "Supprimer"
   },
   "description": {
-    "message": "Changez l'apparence du Web grâce à Stylus, un outil de gestion des styles utilisateur. Stylus vous permet d'installer facilement des thèmes et des habillages pour Google, Facebook, YouTube, orkut et bien d'autres sites encore."
+    "message": "Changez l'apparence du Web grâce à Stylus, un gestionnaire de styles utilisateur. Stylus vous permet d'installer facilement des styles et des habillages pour de nombreux sites connus."
   },
   "disableAllStyles": {
     "message": "Désactiver tous les styles"
@@ -294,8 +294,14 @@
       }
     }
   },
+  "editTargetsFirst": {
+    "message": "Afficher les sites-cible avant le code"
+  },
   "editorSettings": {
     "message": "Paramètres de l’éditeur"
+  },
+  "emptyCode": {
+    "message": "Les sections de style associées à cette URL sont vides"
   },
   "enableStyleLabel": {
     "message": "Activer"
@@ -411,7 +417,7 @@
     "message": "Importer"
   },
   "importPreprocessor": {
-    "message": "Les styles avec un <code>@preprocessor</code> ne fonctionnera pas en mode classique. Vous pouvez changer l'éditeur en mode UserCSS : 1) Ouvrez le gestionnaire de styles, 2) Activer l'option \"en tant que UserCSS\", 3) Cliquez \"écrire un nouveau style\"\n\nImporter de toute façon ?"
+    "message": "Un style avec un <code>@preprocessor</code> ne fonctionnera pas en mode classique. Vous pouvez passer l'éditeur en mode UserCSS : 1) Ouvrez le gestionnaire de styles, 2) Activez l'option \"en tant que UserCSS\", 3) Cliquez sur \"écrire un nouveau style\"\n\nPoursuivre l'import malgré tout ?"
   },
   "importPreprocessorTitle": {
     "message": "Problème potentiel à cause de @preprocessor"
@@ -821,7 +827,7 @@
     "message": "Par horaire nocturne :"
   },
   "optionsAdvancedAutoSwitchSchemeNever": {
-    "message": "Désactivé. Le paramètre clair/obscur dans les styles est ignoré."
+    "message": "Désactivé. Le paramètre clair/sombre dans les styles est ignoré."
   },
   "optionsAdvancedContextDelete": {
     "message": "Ajouter « Supprimer » dans le menu contextuel de l’extension"
@@ -903,6 +909,9 @@
   },
   "optionsResetButton": {
     "message": "Ré-initialiser les options"
+  },
+  "optionsStylusThemes": {
+    "message": "Cliquez sur l'cône Stylus dans la barre d'outils du navigateur, puis sur « Trouver des styles »"
   },
   "optionsSubheading": {
     "message": "Plus de paramètres"
@@ -993,7 +1002,7 @@
     "message": "Pages au total"
   },
   "parseUsercssError": {
-    "message": "Stylus a échoué à parser le UserCSS :"
+    "message": "Stylus n'a pas réussi à lire le UserCSS :"
   },
   "popupAutoResort": {
     "message": "Retrier les styles dans la popup à chaque (dés)activation"
@@ -1035,13 +1044,13 @@
     "message": "Afficher le nombre de styles actifs pour le site actuel sur le boutton Stylus"
   },
   "preferScheme": {
-    "message": "Préférence au mode clair/sombre"
+    "message": "Mode de couleur"
   },
   "preferSchemeAlways": {
     "message": "Ignoré (le style s'applique toujours) car le mode global clair/sombre est désactivé"
   },
   "preferSchemeDark": {
-    "message": "Obscur"
+    "message": "Sombre"
   },
   "preferSchemeLight": {
     "message": "Clair"
@@ -1053,7 +1062,7 @@
     "message": "Prévisualiser en direct"
   },
   "previewTooltip": {
-    "message": "Applique temporairement les changements sans sauvegarder.\nSauvegarde le style pour rendre les changements permanents."
+    "message": "Applique temporairement les changements sans sauvegarder.\nSauvegardez le style pour rendre les changements permanents."
   },
   "publish": {
     "message": "Publier"
@@ -1128,7 +1137,7 @@
     "message": "Ce style est installé mais il ne s'applique pas au lien du site actuel."
   },
   "searchResultNotMatchingNote": {
-    "message": "Essaye de demander l’auteur  pour ajouter le lien l'URL.\n\nVous pouvez aussi ouvrir le style dans le gestionnaire et l'éditer soit-même,\nmais soyez avertis que cela désactive les mises à jour automatiques pour ce style."
+    "message": "Essayez de demander à l'auteur du style d'ajouter l'URL.\n\nVous pouvez aussi ouvrir le style dans l'éditeur et le modifier vous-même,\nmais sachez que cela va désactiver les mises à jour automatiques pour ce style."
   },
   "searchResultRating": {
     "message": "Note"
@@ -1148,6 +1157,9 @@
   "searchStylesCode": {
     "message": "Code CSS"
   },
+  "searchStylesHelp": {
+    "message": "</> ou<Ctrl-F>active la recherche.\nPar défaut, la recherche est en mode « texte brut » sur tous les termes dans n'importe quel ordre.\nPhrase exacte : utilisez les double guillemets, par exemple <\".header ~ div\">\nExpressions régulières : acceptent les slashs et les drapeaux, par exemple</body.*?\\ba\\b/i>\n« Par lien » dans le sélecteur : trouve des styles qui s'appliquent à une URL complète, par exemple https://www.example.org/\n« Métadonnée » dans le sélecteur : cherche les noms, les spécificateurs d'URL, l'URL d'installation, l'URL de mise à jour, et le bloc de métadonnées pour les styles UserCSS."
+  },
   "searchStylesMatchUrl": {
     "message": "Par lien"
   },
@@ -1166,6 +1178,9 @@
   "sectionRestore": {
     "message": "Restaurer la section supprimée"
   },
+  "sectionUserCSS": {
+    "message": "L'éditeur classique à sections ne prend pas en charge la syntaxe UserCSS. Pour vous en servir, cochez d'abord « UserCSS » dans le gestionnaire ou la popup, créez un nouveau style, puis copiez votre code via le bouton « Exporter » dans cet éditeur."
+  },
   "settings": {
     "message": "Paramètres"
   },
@@ -1174,6 +1189,9 @@
   },
   "shortcutsNote": {
     "message": "Définir les raccourcis clavier"
+  },
+  "shortcutsNoteFF": {
+    "message": "Avec Firefox 66+, vous pouvez ouvrir l'interface native de configuration des raccourcis manuellement :\n1) clic-droit sur l'icône Stylus dans la barre d'outils et choisissez « Gérer l'extension »\n(ou ouvrez about:addons par le menu principal ou Ctrl+Maj+A) ;\n2) sur la page qui s'ouvre, cliquez sur la roue crantée en haut à droite ;\n3) choisissez « Gérer les raccourcis d'extension ».\n\nVous pouvez aussi définir les raccourcis ici :"
   },
   "sortDateNewestFirst": {
     "message": "les plus récents en premier"
@@ -1224,7 +1242,7 @@
     "message": "Activé"
   },
   "styleExcludeLabel": {
-    "message": "Personnalisation des sites exclus"
+    "message": "Sites exclus"
   },
   "styleFromMozillaFormatError": {
     "message": "Échec de l'importation depuis le format Mozilla"
@@ -1467,7 +1485,7 @@
     "message": "Veuillez changer la valeur de @name ou @namespace afin d'éviter d'écraser un style pré-existant."
   },
   "usercssConfigIncomplete": {
-    "message": "Le style a été mis à jour ou supprimer après l’apparition du dialogue de confirmation. Ces variables n’ont pas été sauvegardées pour éviter de corrompre les métadonnées du style :"
+    "message": "Le style a été mis à jour ou supprimé après l’apparition du dialogue de confirmation. Ces variables n’ont pas été sauvegardées pour éviter de corrompre les métadonnées du style :"
   },
   "usercssEditorNamePlaceholder": {
     "message": "Spécifiez @name dans le code"

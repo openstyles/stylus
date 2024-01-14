@@ -272,6 +272,9 @@
       }
     }
   },
+  "editTargetsFirst": {
+    "message": "コードの前にターゲットを表示"
+  },
   "editorSettings": {
     "message": "エディタ設定"
   },
