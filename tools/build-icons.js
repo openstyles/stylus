@@ -28,7 +28,7 @@ const SVG_MAP = Object.entries({
   'update-check': '⟳',
   'v': '⋁',
 });
-const SVG_DIR = ROOT + '.icons/';
+const SVG_DIR = ROOT + 'images/icons/';
 const CSS_FILE = ROOT + 'css/global.css';
 const CSS_FONT = ROOT + 'css/icons.ttf';
 const CMT = '/*AUTO-GENERATED-ICON*/';
