@@ -389,9 +389,9 @@ function LivePreview() {
   }
 
   async function updatePreviewer(data) {
-    let res;
     try {
-      res = await API.styles.preview(data);
+      await API.styles.preview(data);
+      el.hidden = true;
     } catch (err) {
       const ucd = data[UCD];
       const pp = ucd && ucd.preprocessor;
@@ -413,9 +413,8 @@ function LivePreview() {
       }
       el.firstChild.textContent = (errPos ? `${errPos.line + 1}:${errPos.ch + 1} ` : '') + err;
       el.lastChild.hidden = !(el.lastChild.href = DEMO[pp]);
+      el.hidden = false;
     }
-    el.hidden = !!res;
-    return res;
   }
 }
 
