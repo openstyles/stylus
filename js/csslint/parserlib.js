@@ -547,12 +547,17 @@
       if (next === 40/*(*/) {
         src.read();
         c = name.toLowerCase();
-        b = (c === 'url' || c === 'url-prefix' || c === 'domain') && this._uriValue(src);
-        tok.id = b ? Tokens.URI : FUNCTION;
-        tok.type = b ? 'uri' : 'fn';
+        if ((c === 'url' || c === 'url-prefix' || c === 'domain')
+        && (b = this._uriValue(src)) != null) {
+          tok.id = Tokens.URI;
+          tok.type = 'uri';
+          tok.uri = b;
+        } else {
+          tok.id = FUNCTION;
+          tok.type = 'fn';
+        }
         tok.name = vp ? c.slice(vp) : c;
         if (vp) tok.prefix = c.slice(0, vp);
-        if (b) tok.uri = b;
       } else if (next === 58/*:*/ && name === 'progid') {
         ovrValue = name + src.readMatch(/.*?\(/y);
         tok.id = FUNCTION;
@@ -1574,8 +1579,9 @@
       const functions = [];
       do {
         const tok = stream.matchSmart(TT.docFunc);
-        const fn = tok.uri ? TokenFunc.from(tok) : tok.name && this._function(stream, tok);
-        if (fn && (fn.uri || fn.name === 'regexp')) functions.push(fn);
+        const uri = tok.uri != null;
+        const fn = uri ? TokenFunc.from(tok) : tok.name && this._function(stream, tok);
+        if (fn && (uri || fn.name === 'regexp')) functions.push(fn);
         else this.alarm(1, 'Unknown document function', fn);
       } while (stream.matchSmart(COMMA));
       const brace = stream.matchSmart(LBRACE, OrDie);

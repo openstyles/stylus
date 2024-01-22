@@ -55,14 +55,15 @@ function extractSections({code, styleId, fast = true}) {
       doAddSection(lastSection);
       lastSection.code = '';
     }
-    for (const {name, expr, uri} of e.functions) {
+    for (const fn of e.functions) {
+      const {name, expr} = fn;
       const aType = MozDocMapper.FROM_CSS[name.toLowerCase()];
       const p0 = expr && expr.parts[0];
-      const val = uri || (
+      const {uri: val = (
         p0 && aType === 'regexps' && hasSingleEscapes.test(p0.text)
           ? p0.text.slice(1, -1)
           : p0.string
-      );
+      )} = fn;
       (section[aType] = section[aType] || []).push(val || '');
     }
     sectionStack.push(section);
