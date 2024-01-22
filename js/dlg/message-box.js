@@ -173,9 +173,10 @@ messageBox.show = async ({
               $create('button', Object.assign({
                 buttonIndex,
                 onclick: messageBox.listeners.button,
-              }, typeof content === 'object' ? content : {
-                textContent: content,
-              })))),
+              }, typeof content === 'object' && content), (
+                typeof content !== 'object' || content instanceof Node
+              ) && content)
+            ).filter(Boolean)),
         ]),
       ]);
   }
