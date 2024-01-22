@@ -1,4 +1,4 @@
-/* global $ $$remove $create $isTextInput messageBoxProxy */// dom.js
+/* global $ $$remove $create $createLink $isTextInput messageBoxProxy */// dom.js
 /* global API */// msg.js
 /* global CodeMirror */
 /* global MozDocMapper failRegexp */// util.js
@@ -87,9 +87,10 @@ async function SourceEditor() {
     },
     async saveImpl() {
       const sourceCode = cm.getValue();
+      let res;
       try {
         const {customName, enabled, id} = style;
-        let res = !id && await API.usercss.build({sourceCode, checkDup: true, metaOnly: true});
+        res = !id && await API.usercss.build({sourceCode, checkDup: true, metaOnly: true});
         if (res && res.dup) {
           messageBoxProxy.alert(t('usercssAvoidOverwriting'), 'danger', t('genericError'));
         } else {
@@ -102,7 +103,7 @@ async function SourceEditor() {
         }
         showLog(res.log);
       } catch (err) {
-        showSaveError(err);
+        showSaveError(err, res && res.style);
       }
     },
     scrollToEditor: () => {},
@@ -256,15 +257,32 @@ async function SourceEditor() {
     }
   }
 
-  function showSaveError(err) {
+  function showSaveError(err, errStyle = style) {
+    const shift = (err._varLines - 1) || 0;
     err = Array.isArray(err) ? err : [err];
     const text = err.map(e => e.message || e).join('\n');
     const points = err.map(e =>
       e.index >= 0 && cm.posFromIndex(e.index) || // usercss meta parser
       e.offset >= 0 && {line: e.line - 1, ch: e.col - 1} // csslint code parser
     ).filter(Boolean);
+    const pp = errStyle[UCD].preprocessor;
+    const ppUrl = editor.ppDemo[pp];
     cm.setSelections(points.map(p => ({anchor: p, head: p})));
-    messageBoxProxy.alert($create('pre', text), 'pre');
+    messageBoxProxy.show({
+      title: t('genericError'),
+      className: 'center pre danger',
+      contents: $create('pre',
+        pp === 'stylus' && shift
+          ? text.replace(/^.+\n/, '').replace(/^(\s*)(\d+)/gm, (s, a, b) => a + (b - shift))
+          : text),
+      buttons: [
+        t('confirmClose'),
+        ppUrl && $createLink({className: 'icon', href: ppUrl}, [
+          t('genericTest'),
+          $create('i.i-external', {style: 'line-height:0'}),
+        ]),
+      ],
+    });
   }
 
   function nextPrevSection(dir) {
