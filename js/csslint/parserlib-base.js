@@ -345,7 +345,7 @@
       '[ / <offset-anchor> ]?',
     'offset-anchor': 'auto | <position>',
     'offset-distance': '<len-pct>',
-    'offset-path': 'none | [ ray() | <url> | <basic-shape> ] || <coord-box>',
+    'offset-path': 'none | [ <ray> | <url> | <basic-shape> ] || <coord-box>',
     'offset-position': 'auto | <position>',
     'offset-rotate': '[ auto | reverse ] || <angle>',
     'opacity': '<num0-1> | <pct>',
@@ -947,6 +947,8 @@
       '[ top | center | bottom | <len-pct> ]? | ' +
       '[ left | center | right ] || [ top | center | bottom ]',
     '<ratio>': '<num0+> [ / <num0+> ]?',
+    '<ray>': 'ray( <angle> && [closest-side | closest-corner | farthest-side | farthest-corner | sides]?' +
+      ' && contain? && [at <position>]? )',
     '<rect>': 'rect( <rect-arg> )',
     '<rect-arg>': '[ <len> | auto ]#{4} <border-radius-round>?',
     '<relative-size>': 'smaller | larger',

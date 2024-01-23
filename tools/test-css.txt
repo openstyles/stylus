@@ -571,3 +571,4 @@ a { padding: 1em; margin: 1ex; }
 @scope (.bad) to { p { color: green; } }
 @scope to (.bad) { p { color: green; } }
 @scope (.bad:pseudo) to (foo,) { p { color: green; } }
+a { offset-path: ray(180deg closest-side) }
