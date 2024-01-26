@@ -53,7 +53,7 @@ const uswApi = (() => {
     try {
       const token = await tokenMan.getToken('userstylesworld', true, new TokenHooks(id));
       const info = await uswFetch('style', token);
-      const data = mapObj(info, null, style[UCD] ? 'id' : KEYS_IN);
+      const data = mapObj(info, null, style[UCD] ? ['id'] : KEYS_IN);
       data.token = token;
       style.url = style.url || info.homepage || `${URLS.usw}style/${data.id}`;
       return data;
@@ -90,7 +90,7 @@ const uswApi = (() => {
       const style = styleMan.get(id);
       if (!usw) usw = style._usw;
       if (!style[UCD]) code = fakeUsercssHeader(style, usw) + code;
-      if (!usw || !usw.token) usw = await linkStyle(style, code);
+      if (!usw || !usw.token || !usw.id) usw = await linkStyle(style, code);
       const res = await uswFetch(`style/${usw.id}`, usw.token, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
