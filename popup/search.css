@@ -174,7 +174,7 @@
 }
 .search-result-install,
 .search-result-uninstall,
-.search-result:not([data-installed]):not([data-customizable]) .search-result-customize {
+.search-result:not([data-installed][data-customizable]) .search-result-customize {
   display: none;
 }
 .search-result.not-matching .search-result-customize {
