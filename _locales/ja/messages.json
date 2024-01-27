@@ -3,7 +3,7 @@
     "message": "Stylusにはアクセスできないファイル形式があります（例えば.pdfや.jsonファイル等）。"
   },
   "addStyleLabel": {
-    "message": "新スタイルを作成"
+    "message": "スタイルを新規作成"
   },
   "addStyleTitle": {
     "message": "スタイルを追加"
@@ -847,7 +847,7 @@
     "message": "開発ツールでスタイルのデバッグを容易にするため、ページ内にスタイル名を公開します。タブをリロードして新しい設定を適用してください。"
   },
   "optionsAdvancedNewStyleAsUsercss": {
-    "message": "新しいスタイルを UserCSS として作成します"
+    "message": "スタイルをUserCSSとして新規作成"
   },
   "optionsAdvancedPatchCsp": {
     "message": "スタイルのアセットを許可するために<code>CSP</code>にパッチを当てる"

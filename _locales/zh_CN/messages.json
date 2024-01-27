@@ -3,7 +3,7 @@
     "message": "Stylus 无法访问某些文件格式（例如 .pdf 或 .json 文件）。"
   },
   "addStyleLabel": {
-    "message": "新建样式"
+    "message": "编写新样式"
   },
   "addStyleTitle": {
     "message": "添加样式"
@@ -433,7 +433,7 @@
     "message": "导入"
   },
   "importPreprocessor": {
-    "message": "带有 @preprocessor 样式不适合于当前的常规CSS模式下。\n您应该把它粘贴到 UserCSS 的编辑器模式去。\n1)打开管理器页面 2)勾选 “新建为UserCSS” 3)点击 \"新建新样式\"\n\n仍然导入吗？"
+    "message": "带有 <code>@preprocessor</code> 样式无法当前的经典模式下使用。\n您可以将编辑器切换到 UserCSS 模式。\n1) 打开样式管理器；2) 勾选「以 UserCSS」勾选框；3) 点击「编写新样式」\n\n仍然导入吗？"
   },
   "importPreprocessorTitle": {
     "message": "潜在问题之 @preprocessor 预处理"
@@ -864,7 +864,7 @@
     "message": "在页面中暴露样式名称以方便在 DevTools 中调试样式。请重新加载标签页以应用新设置。"
   },
   "optionsAdvancedNewStyleAsUsercss": {
-    "message": "将新样式的格式设为 UserCSS"
+    "message": "以 UserCSS 编写新样式"
   },
   "optionsAdvancedPatchCsp": {
     "message": "启用 <code>CSP</code> 补丁以使样式资源生效"
@@ -1129,7 +1129,7 @@
     "message": "搜索"
   },
   "searchCaseSensitive": {
-    "message": "大小写敏感"
+    "message": "区分大小写"
   },
   "searchGlobalStyles": {
     "message": "全局搜索"
