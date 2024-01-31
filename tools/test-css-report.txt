@@ -54,12 +54,12 @@ warning	198	3	"col.selected::marker" is overqualified, just use ".selected" with
 warning	202	5	Non-alphabetical order: "overflow-anchor".
 warning	203	5	IE star prefix.
 warning	207	5	!important.
-warning	226	16	Expected <number-percentage-none>{3} [ / <number-percentage-none> ]? | from [ <named-or-hex-color> | color-mix() | color() | hsl() | hwb() | lab() | lch() | rgb() | hsla() | rgba() | oklab() | oklch() ] <l-a-b-alpha-none-number-percentage>{3} [ / <l-a-b-alpha-none-number-percentage> ]? but found "from red x y z".
+warning	226	16	Expected <number-percentage-none>{3} [ / <number-percentage-none> ]? | from [ <named-or-hex-color> | color-mix() | color() | hsl() | hwb() | lab() | lch() | light-dark() | rgb() | hsla() | rgba() | oklab() | oklch() ] <l-a-b-alpha-none-number-percentage>{3} [ / <l-a-b-alpha-none-number-percentage> ]? but found "from red x y z".
 warning	251	5	Duplicate "color".
 warning	253	5	Duplicate "color".
 warning	273	5	Duplicate "color".
-warning	445	12	Expected <named-or-hex-color> | color-mix() | color() | hsl() | hwb() | lab() | lch() | rgb() | hsla() | rgba() | oklab() | oklch() but found "chucknorris".
-warning	446	12	Expected <named-or-hex-color> | color-mix() | color() | hsl() | hwb() | lab() | lch() | rgb() | hsla() | rgba() | oklab() | oklch() but found "blak".
+warning	445	12	Expected <named-or-hex-color> | color-mix() | color() | hsl() | hwb() | lab() | lch() | light-dark() | rgb() | hsla() | rgba() | oklab() | oklch() but found "chucknorris".
+warning	446	12	Expected <named-or-hex-color> | color-mix() | color() | hsl() | hwb() | lab() | lch() | light-dark() | rgb() | hsla() | rgba() | oklab() | oklch() but found "blak".
 warning	483	11	Id in selector.
 error	531	3	Nested selector must be inside a style rule.
 error	532	3	Unexpected "--foo".
@@ -73,3 +73,4 @@ error	570	15	Expected "{" but found "too".
 error	571	18	Expected "(" but found "{".
 error	572	8	Expected "{" but found "to".
 error	573	30	Unexpected ")".
+warning	576	23	Expected [ <named-or-hex-color> | color-mix() | color() | hsl() | hwb() | lab() | lch() | light-dark() | rgb() | hsla() | rgba() | oklab() | oklch() ]#{2} but found "red".

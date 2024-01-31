@@ -1,4 +1,5 @@
 *.zip
+*.tmp*
 .DS_Store
 .eslintcache
 .vscode

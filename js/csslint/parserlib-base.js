@@ -997,6 +997,7 @@
         'from <color> <rel-lab-num-pct>{3} [ / <rel-lab-num-pct> ]?',
       'lch': '<num-pct-none>{2} [ <hue> | none ] <alpha>? | ' +
         'from <color> <rel-lch-num-pct>{2} [ <hue> | <rel-lch> ] [ / <rel-lch-num-pct> ]?',
+      'light-dark': '<color>#{2}',
       'rgb': '[ <num>#{3} | <pct>#{3} ] [ , <num-pct0+> ]? | ' +
         '<num-pct-none>{3} <alpha>? | ' +
         'from <color> <rel-rgb-num-pct>{3} [ / <rel-rgb-num-pct> ]?',

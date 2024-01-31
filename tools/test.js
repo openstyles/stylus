@@ -5,12 +5,17 @@ const chalk = require('chalk');
 const glob = require('fast-glob');
 const {SKIP, transpileCss} = require('./util');
 
+/**
+ * Usage notes:
+ * When testCsslint() fails, it creates a temporary report file.
+ * Inspect it and either fix the source code or rename it to overwrite test-css-report.txt.
+*/
+
 (async () => {
   let res;
   for (const [fn, msg] of [
     [testGlobalCss],
-    // Run with 1 to update the report file, undo, commit the changes
-    [testCsslint.bind(null, {overwriteReport: 0}), 'Testing csslint...'],
+    [testCsslint, 'Testing csslint...'],
     [testParserlib, 'Testing parserlib internals...'],
     [testParserlibOnFiles, 'Testing parserlib on all css files...'],
     [testTranspile, 'Transpiling all css files'],
@@ -37,27 +42,34 @@ function testGlobalCss() {
   }
 }
 
-function testCsslint({overwriteReport}) {
+function testCsslint() {
   const TEST_FILE = 'tools/test-css.txt';
   const REPORT_FILE = TEST_FILE.replace('.txt', '-report.txt');
+  const FAILED_FILE = REPORT_FILE.replace('.txt', '.tmp.txt');
   const csslint = require('../js/csslint/csslint');
   const rules = {...csslint.getRuleSet(), 'style-rule-nesting': 0};
   const report = csslint
     .verify(fs.readFileSync(TEST_FILE, 'utf8'), rules)
     .messages.map(m => `${m.type}\t${m.line}\t${m.col}\t${m.message}`);
-  if (overwriteReport) fs.writeFileSync(REPORT_FILE, report.join('\n'), 'utf8');
   const expected = fs.readFileSync(REPORT_FILE, 'utf8').trim().split(/\r?\n/);
-  let a, b, i;
+  let a, b, i, err;
   for (i = 0; (a = report[i]) && (b = expected[i]); i++) {
-    if (a !== b) fail('csslint', chalk.red(`\n* RECEIVED: ${a}\n`) + `  EXPECTED: ${b}\n`);
+    if (a !== b) {
+      err = chalk.red(`\n* RECEIVED: ${a}\n`) + `  EXPECTED: ${b}\n`;
+      break;
+    }
   }
   i = report.length - expected.length;
   if (i) {
     a = Math.abs(i);
-    fail('csslint', '\n' +
+    err = '\n' +
       (i > 0 ? `Found ${a} extra un` : `Did not find ${a} `) +
       `expected problem${a === 1 ? '' : 's'}:\n  * ` +
-      (i > 0 ? report : expected).slice(-a).join('\n  * '));
+      (i > 0 ? report : expected).slice(-a).join('\n  * ');
+  }
+  if (err) {
+    fs.writeFileSync(FAILED_FILE, report.join('\n'), 'utf8');
+    fail('csslint', err);
   }
 }
 
