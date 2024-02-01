@@ -3,6 +3,9 @@
 {
   let x;
   window.isFrame = x = window !== parent;
+  /** @type {number}
+   * -1 = top prerendered, 0 = iframe, 1 = top, 2 = top reified */
+  window.TDM = x ? 0 : document.prerendering ? -1 : 1;
   if (x) try { x = !!(Object.getOwnPropertyDescriptor(parent.location, 'href') || {}).get; } catch (e) { x = false; }
   window.isFrameSameOrigin = x;
   window.isFrameNoUrl = x && location.protocol === 'about:';

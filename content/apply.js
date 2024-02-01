@@ -1,10 +1,7 @@
 /* global API msg */// msg.js
 /* global StyleInjector isFrame isFrameNoUrl isFrameSameOrigin */// style-injector.js
+/* global TDM:true */// style-injector.js
 'use strict';
-
-/** -1 = top prerendered, 0 = iframe, 1 = top, 2 = top reified
- * @type {number} */// eslint-disable-next-line no-var
-var TDM = isFrame ? 0 : document.prerendering ? -1 : 1;
 
 (() => {
   if (window.INJECTED === 1) return;
