@@ -411,6 +411,7 @@ function LivePreview() {
         err = errPos[3];
         errPos = {line: errPos[1] - shift, ch: errPos[2] - 1};
       }
+      el.title =
       el.firstChild.textContent = (errPos ? `${errPos.line + 1}:${errPos.ch + 1} ` : '') + err;
       el.lastChild.hidden = !(el.lastChild.href = editor.ppDemo[pp]);
       el.hidden = false;

@@ -103,7 +103,7 @@ async function SourceEditor() {
         }
         showLog(res.log);
       } catch (err) {
-        showSaveError(err, res && res.style);
+        showSaveError(err, res && res.style || style);
       }
     },
     scrollToEditor: () => {},
@@ -257,7 +257,7 @@ async function SourceEditor() {
     }
   }
 
-  function showSaveError(err, errStyle = style) {
+  function showSaveError(err, errStyle) {
     const shift = (err._varLines - 1) || 0;
     err = Array.isArray(err) ? err : [err];
     const text = err.map(e => e.message || e).join('\n');

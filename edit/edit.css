@@ -132,8 +132,13 @@ html:not(.is-new-style) #heading::before {
 #preview-errors:not([hidden]) {
   color: var(--red1);
   cursor: pointer;
-  display: inline-block;
+  display: inline-flex;
   margin: var(--pad05) var(--pad05) -1em 0;
+  max-width: 100%;
+  .compact-layout & {
+    margin-top: 0;
+    max-width: 32vw;
+  }
   .i-external {
     font-size: 15px;
   }
