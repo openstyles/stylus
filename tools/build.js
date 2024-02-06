@@ -85,13 +85,7 @@ function patchManifest(str, suffix) {
     delete mj.browser_specific_settings;
     mj.name = 'Stylus (beta)';
   } else if (suffix === sFirefox) {
-    for (const list of [
-      mj.background.scripts,
-      mj.content_scripts[0].js,
-    ]) {
-      const i = list.indexOf('js/browser.js');
-      if (i >= 0) { list.splice(i, 1); break; }
-    }
+    mj.background.scripts = mj.background.scripts.filter(s => s !== 'js/browser.js');
     mj.options_ui = {
       /*
        * Linking to dashboard, not to options, because this is aimed at users who removed the icon
