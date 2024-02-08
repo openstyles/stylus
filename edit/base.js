@@ -134,6 +134,7 @@ function EditorHeader() {
     prefs.subscribe('editor.keyMap', showHotkeyInTooltip, true);
     window.on('showHotkeyInTooltip', showHotkeyInTooltip);
   }, {once: true});
+  for (const el of $$('#header details')) el.on('contextmenu', peekDetails);
 
   function findKeyForCommand(command, map) {
     if (typeof map === 'string') map = CodeMirror.keyMap[map];
@@ -169,6 +170,16 @@ function EditorHeader() {
     };
     const enabledEl = $('#enabled');
     enabledEl.onchange = () => editor.updateEnabledness(enabledEl.checked);
+  }
+
+  async function peekDetails(evt) {
+    evt.preventDefault();
+    this.open = true;
+    while (this.matches(':hover, :active')) {
+      await new Promise(cb => setTimeout(cb, 500));
+      await new Promise(cb => this.on('mouseleave', cb, {once: true}));
+    }
+    this.open = false;
   }
 
   function showHotkeyInTooltip(_, mapName = prefs.get('editor.keyMap')) {
