@@ -55,7 +55,9 @@ const capitalize = s => s.slice(0, 1).toUpperCase() + s.slice(1);
 const clamp = (value, min, max) => value < min ? min : value > max ? max : value;
 const clipString = (str, limit = 100) => str.length > limit ? str.substr(0, limit) + '...' : str;
 const getOwnTab = () => browser.tabs.getCurrent();
-const getActiveTab = async () => (await browser.tabs.query({currentWindow: true, active: true}))[0];
+const getActiveTab = async () => (await browser.tabs.query({currentWindow: true, active: true}))[0]
+  // workaround for Chrome bug when devtools for our popup is focused
+  || (await browser.tabs.query({windowId: (await browser.windows.getCurrent()).id, active: true}))[0];
 const hasOwn = Object.call.bind({}.hasOwnProperty);
 const ignoreChromeError = () => { chrome.runtime.lastError; /*eslint-disable-line no-unused-expressions*/ };
 const stringAsRegExpStr = s => s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&');
