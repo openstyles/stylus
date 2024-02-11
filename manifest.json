@@ -30,6 +30,8 @@
       "js/toolbox.js",
       "js/msg.js",
       "js/prefs.js",
+
+      "js/popup-get-styles.js",
       "js/storage-util.js",
       "js/sections-util.js",
       "js/worker-util.js",

@@ -1,6 +1,7 @@
+/* global API msg */// msg.js
 /* global CHROME FIREFOX URLS ignoreChromeError */// toolbox.js
-/* global msg */
 /* global prefs */
+/* global popupGetStyles */
 /* global styleMan */
 /* global tabMan */
 'use strict';
@@ -32,7 +33,10 @@
       return;
     }
     const reqFilter = {
-      urls: ['*://*/*'],
+      urls: [
+        '*://*/*',
+        CHROME && chrome.runtime.getURL(chrome.runtime.getManifest().browser_action.default_popup),
+      ].filter(Boolean),
       types: ['main_frame', 'sub_frame'],
     };
     chrome.webNavigation.onCommitted.removeListener(injectData);
@@ -66,6 +70,7 @@
   /** @param {chrome.webRequest.WebRequestBodyDetails} req */
   function prepareStyles(req) {
     if (!msg.ready) return;
+    if (req.url.startsWith(URLS.ownOrigin)) return preloadPopupData();
     const {url} = req;
     req.tab = {url};
     stylesToPass[req2key(req)] = /** @namespace StylesToPass */ {
@@ -149,6 +154,10 @@
       list.push(...values.filter(v => !list.includes(v)));
       if (!list.length) delete src[name];
     }
+  }
+
+  async function preloadPopupData() {
+    API.data.set('popupData', await popupGetStyles());
   }
 
   function cleanUp(req) {

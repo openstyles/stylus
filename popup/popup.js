@@ -1,7 +1,7 @@
 /* global $ $$ $create $remove getEventKeyName important setupLivePrefs */// dom.js
-/* global ABOUT_BLANK getStyleDataMerged preinit */// preinit.js
 /* global API msg */// msg.js
 /* global Events */
+/* global popupGetStyles ABOUT_BLANK */// popup-get-styles.js
 /* global prefs */
 /* global t */// localization.js
 /* global
@@ -32,14 +32,15 @@ const EXT_NAME = `<${chrome.runtime.getManifest().name}>`;
 const xo = new IntersectionObserver(onIntersect);
 const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrId}`);
 
-preinit.then(({frames, styles, url}) => {
-  tabURL = url;
-  initPopup(frames);
-  showStyles(styles);
+(async () => {
+  const data = CHROME && await API.data.pop('popupData')
+    || await popupGetStyles();
+  initPopup(...data);
+  showStyles(...data);
   require(['/popup/hotkeys']);
   if (UA.mobile) setMaxHeight('100vh');
   else window.on('resize', {h0: innerHeight, handleEvent: onWindowResize});
-});
+})();
 
 msg.onExtension(onRuntimeMessage);
 
@@ -108,8 +109,7 @@ function toggleSideBorders(_key, state) {
   }
 }
 
-/** @param {chrome.webNavigation.GetAllFrameResultDetails[]} frames */
-async function initPopup(frames) {
+async function initPopup(frames, ping0, tab) {
   const kPopupWidth = 'popupWidth';
   prefs.subscribe([kPopupWidth, 'popupWidthMax'], (key, val) => {
     document.body.style[`${key === kPopupWidth ? 'min' : 'max'}-width`] = UA.mobile ? 'none'
@@ -155,6 +155,7 @@ async function initPopup(frames) {
     el.removeAttribute('media');
   }
 
+  tabURL = frames[0].url;
   frames.forEach(createWriterElement);
 
   if ($('.match .match:not(.dupe),' + WRITE_FRAME_SEL)) {
@@ -166,7 +167,7 @@ async function initPopup(frames) {
     }));
   }
 
-  if (frames.ping0) return;
+  if (ping0) return;
 
   const isStore = FIREFOX ? tabURL.startsWith('https://addons.mozilla.org/') :
       UA.opera ? tabURL.startsWith('https://addons.opera.com/') :
@@ -177,7 +178,7 @@ async function initPopup(frames) {
     return;
   }
 
-  for (let {tab} = frames, t2 = performance.now() + 1000; performance.now() < t2;) {
+  for (let t2 = performance.now() + 1000; performance.now() < t2;) {
     if (await msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0})) {
       blockPopup(false);
       return;
@@ -289,18 +290,20 @@ function sortStyles(entries) {
     (a.customName || a.name).localeCompare(b.customName || b.name));
 }
 
-function showStyles(frameResults) {
+function showStyles(frames) {
   const entries = new Map();
-  frameResults.forEach(({styles = [], url}, index) => {
-    if (isBlocked && !index) return;
-    styles.forEach(style => {
-      const {id} = style;
+  for (let i = 0; i < frames.length; i++) {
+    if (isBlocked && !i) continue; // skip a blocked main frame
+    const frame = frames[i];
+    for (let fs of frame.styles || []) {
+      const id = fs.style.id;
       if (!entries.has(id)) {
-        style.frameUrl = index === 0 ? '' : url;
-        entries.set(id, createStyleElement(style));
+        fs = Object.assign(fs.style, fs);
+        fs.frameUrl = !i ? '' : frame.url;
+        entries.set(id, createStyleElement(fs));
       }
-    });
-  });
+    }
+  }
   resortEntries([...entries.values()]);
 }
 
@@ -375,8 +378,9 @@ function onIntersect(results) {
 async function handleUpdate({style, reason}) {
   const entry = $entry(style);
   if (reason !== 'toggle' || !entry) {
-    style = await getStyleDataMerged(tabURL, style.id);
+    [style] = await API.styles.getByUrl(tabURL, style.id);
     if (!style) return;
+    style = Object.assign(style.style, style);
   }
   const el = createStyleElement(style, entry);
   if (!el.isConnected) installed.append(el);
