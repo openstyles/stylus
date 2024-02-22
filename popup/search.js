@@ -465,10 +465,7 @@
       .replace(/<[^>]*>/g, ' ')
       .replace(/([^.][.。?!]|[\s,].{50,70})\s+/g, '$1\n')
       .replace(/([\r\n]\s*){3,}/g, '\n\n');
-    Object.assign($('.search-result-description', entry), {
-      textContent: description,
-      title: description,
-    });
+    $('.search-result-description', entry).textContent = description;
     vars = !isEmptyObj(vars);
     entry._result._styleVars = vars;
     toggleDataset(entry, 'customizable', vars);

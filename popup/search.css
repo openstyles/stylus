@@ -54,7 +54,7 @@
 .search-result-empty {
   --pad: 8px;
   position: relative;
-  padding: var(--pad) var(--pad) 21px;
+  padding: var(--pad);
   min-height: 160px;
 }
 
@@ -262,15 +262,11 @@
   }
 }
 
-.search-result-description {
-  padding: 0;
+.search-result-description:not(:empty) {
   font-size: 90%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  position: absolute;
-  width: 100%;
-  margin-top: 4px;
+  margin-bottom: calc(var(--pad) / -2);
+  max-height: 25vh;
+  overflow-y: auto;
 }
 
 .not-matching-explainer {
@@ -296,9 +292,6 @@
     padding-top: var(--pad);
     hyphens: auto;
     white-space: pre-wrap;
-  }
-  .search-result-description {
-    display: none;
   }
   .search-result-meta {
     background: hsla(0, 100%, 90%, .80);
