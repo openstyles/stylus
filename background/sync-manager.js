@@ -198,7 +198,7 @@ const syncMan = (() => {
           delete doc.id;
           if (id) doc.id = id;
           doc.id = await db.styles.put(doc);
-          await styleUtil.handleSave(doc, {reason: 'sync'});
+          await styleUtil.handleSave(doc, 'sync');
         }
       },
       onDelete(_id, rev) {

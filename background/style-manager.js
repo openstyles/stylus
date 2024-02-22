@@ -151,7 +151,7 @@ const styleMan = (() => {
       style = mergeWithMapped(style);
       style.updateDate = Date.now();
       API.drafts.delete(style.id).catch(() => {});
-      return saveStyle(style, {reason: 'editSave'});
+      return saveStyle(style, 'editSave');
     },
 
     /** @returns {StyleObj|void} */
@@ -332,7 +332,7 @@ const styleMan = (() => {
         if (!r.err) {
           const id = events[r];
           const method = dataMap.has(id) ? 'styleUpdated' : 'styleAdded';
-          const style = handleSave(styles[r], {broadcast: false}, id);
+          const style = handleSave(styles[r], false, id);
           messages.push([style, 'import', method]);
           buildCacheForStyle(style);
           res[i] = {style};
@@ -343,12 +343,11 @@ const styleMan = (() => {
     },
 
     /** @returns {Promise<StyleObj>} */
-    async install(style, reason = null) {
-      if (!reason) reason = dataMap.has(style.id) ? 'update' : 'install';
+    async install(style, reason = dataMap.has(style.id) ? 'update' : 'install') {
       style = mergeWithMapped(style);
       style.originalDigest = await calcStyleDigest(style);
       // FIXME: update updateDate? what about usercss config?
-      return saveStyle(style, {reason});
+      return saveStyle(style, reason);
     },
 
     /** @param {StyleObj} style */
@@ -379,7 +378,7 @@ const styleMan = (() => {
     /** @returns {Promise<StyleObj>} */
     async toggle(id, enabled) {
       const style = Object.assign({}, id2style(id), {enabled});
-      await saveStyle(style, {reason: 'toggle'});
+      await saveStyle(style, 'toggle');
     },
 
     /** @returns {Promise<void>} */
@@ -397,7 +396,7 @@ const styleMan = (() => {
       } else {
         return;
       }
-      await saveStyle(style, {reason: 'config'});
+      await saveStyle(style, 'config');
     },
 
     /** @returns {Promise<void>} */
@@ -405,7 +404,7 @@ const styleMan = (() => {
       const style = Object.assign({}, id2style(id));
       const {preview = {}} = dataMap.get(id);
       style[prop] = preview[prop] = value;
-      await saveStyle(style, {reason: 'config'});
+      await saveStyle(style, 'config');
     },
   };
 
@@ -524,14 +523,19 @@ const styleMan = (() => {
   }
 
   /** @returns {Promise<StyleObj>} */
-  async function saveStyle(style, handlingOptions) {
+  async function saveStyle(style, reason) {
     beforeSave(style);
     const newId = await db.styles.put(style);
-    return handleSave(style, handlingOptions, newId);
+    return handleSave(style, reason, newId);
   }
 
-  /** @returns {Promise<StyleObj>} */
-  function handleSave(style, {reason, broadcast = true}, id = style.id) {
+  /**
+   * @param {StyleObj} style
+   * @param {string|false} [reason] - false = no broadcast
+   * @param {number} [id]
+   * @returns {StyleObj}
+   */
+  function handleSave(style, reason, id = style.id) {
     if (style.id == null) style.id = id;
     const data = id2data(id);
     if (!data) {
@@ -542,7 +546,7 @@ const styleMan = (() => {
     if (reason !== 'sync') {
       API.sync.putDoc(style);
     }
-    if (broadcast) broadcastStyleUpdated(style, reason, !data);
+    if (reason !== false) broadcastStyleUpdated(style, reason, !data);
     return style;
   }
 
