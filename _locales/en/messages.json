@@ -1413,6 +1413,10 @@
     "message": "Also search global styles",
     "description": "Checkbox label in the popup's inline style search, shown when the text to search is entered"
   },
+  "searchGlobalStylesHint": {
+    "message": "Includes styles that apply to all sites if the name contains the search text or the current site",
+    "description": "Tooltip for searchGlobalStyles checkbox"
+  },
   "searchNumberOfResults": {
     "message": "Number of matches",
     "description": "Tooltip for the number of found search results in the editor shown on Ctrl-F"
