@@ -15,7 +15,7 @@
     extension: new Set(),
   };
   const loadBg = () => browser.runtime.getBackgroundPage().catch(() => false);
-  const rxIgnorableError = /Receiving end does not exist|The message port closed before/;
+  const rxIgnorableError = /Receiving end does not exist|The message port closed|moved into back\/forward cache/;
   const saveStack = () => new Error(); // Saving callstack prior to `await`
 
   const portReqs = {};
