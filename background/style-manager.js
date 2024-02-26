@@ -402,8 +402,8 @@ const styleMan = (() => {
     /** @returns {Promise<void>} */
     async config(id, prop, value) {
       const style = Object.assign({}, id2style(id));
-      const {preview = {}} = dataMap.get(id);
-      style[prop] = preview[prop] = value;
+      const {preview} = dataMap.get(id);
+      style[prop] = (preview || {})[prop] = value;
       await saveStyle(style, 'config');
     },
   };
