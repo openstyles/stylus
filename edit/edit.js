@@ -129,6 +129,7 @@ async function handleExternalUpdate({style, reason}) {
   }
   style = await API.styles.get(style.id);
   if (reason === 'config') {
+    for (const key in editor.style) if (!(key in style)) delete editor.style[key];
     delete style.sourceCode;
     delete style.sections;
     delete style.name;
