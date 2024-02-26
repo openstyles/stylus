@@ -396,6 +396,7 @@ const styleMan = (() => {
       } else {
         return;
       }
+      cachedStyleForUrl.clear();
       await saveStyle(style, 'config');
     },
 
@@ -404,6 +405,7 @@ const styleMan = (() => {
       const style = Object.assign({}, id2style(id));
       const {preview} = dataMap.get(id);
       style[prop] = (preview || {})[prop] = value;
+      if (prop === 'inclusions' || prop === 'exclusions') cachedStyleForUrl.clear();
       await saveStyle(style, 'config');
     },
   };
