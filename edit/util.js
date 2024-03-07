@@ -220,7 +220,7 @@ function failRegexp(r) {
     new RegExp(r);
     r = '';
   } catch (err) {
-    r = err.message.split(r)[1].replace(/^\W+/, '');
+    r = err.message.split('/:').pop().trim();
   }
   return r;
 }

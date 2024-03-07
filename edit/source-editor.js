@@ -319,13 +319,11 @@ async function SourceEditor() {
 
   function getBadRegexps(style) {
     const res = [];
-    let i = 0;
     for (const {regexps} of style.sections) {
-      i++;
       if (regexps) {
         for (const r of regexps) {
           const err = failRegexp(r);
-          if (err) res.push(`${t('sectionCode')} ${i}: ${err} ${r}`);
+          if (err) res.push(`${err}: ${r}`);
         }
       }
     }
