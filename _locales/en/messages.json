@@ -889,7 +889,7 @@
     "description": "Error displayed when the value of @var range or @var number is invalid"
   },
   "meta_invalidRangeStep": {
-    "message": "Invalid @var $type$: default value is not a multiple of the step",
+    "message": "Invalid @var $type$: the value is not a multiple of the step",
     "placeholders": {
       "type": {
         "content": "$1"
