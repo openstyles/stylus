@@ -45,7 +45,9 @@ async function popupGetStyles() {
   frames.length = 0;
   for (const sortedFrames of [known, unknown]) {
     for (const f of sortedFrames.values()) {
-      f.isDupe = urls.has(f.url || (f.url = ''));
+      const u = f.url || (f.url = '');
+      f.isDupe = urls.has(u);
+      urls.add(u);
       frames.push(f);
     }
   }
