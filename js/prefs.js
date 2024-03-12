@@ -131,6 +131,8 @@
     'headerWidth.install': 280,
     'headerWidth.manage': 280,
 
+    'popup.search.globals': false,
+
     'popupWidth': 246,              // popup width in pixels
     'popupWidthMax': 280,           // popup width in pixels
 

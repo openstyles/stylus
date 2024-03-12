@@ -1,4 +1,4 @@
-/* global $ $$ $create $remove showSpinner toggleDataset */// dom.js
+/* global $ $$ $create $remove setupLivePrefs showSpinner toggleDataset */// dom.js
 /* global $entry tabURL */// popup.js
 /* global API */// msg.js
 /* global Events */
@@ -23,6 +23,8 @@
   const PINGBACK_DELAY = 5e3;
   const USO_AUTO_PIC_SUFFIX = '-after.png';
   const dom = {};
+  const $searchGlobals = $('#popup.search.globals');
+  setupLivePrefs([$searchGlobals.id]);
   /**
    * @typedef IndexEntry
    * @prop {'uso' | 'uso-android'} f - format
@@ -49,7 +51,7 @@
   let category = '';
   /** @type RegExp */
   let rxCategory;
-  let searchGlobals = $('#search-globals').checked;
+  let searchGlobals = $searchGlobals.checked;
   /** @type {RegExp[]} */
   let query = [];
   let order = prefs.get('popup.findSort');
@@ -108,7 +110,7 @@
         `/scripts/by-site/${tryURL(tabURL).hostname.replace(/^www\./, '')}?language=css${add('&q=', q)}`;
     Events.openURLandHide.call({href}, event);
   };
-  $('#search-globals').onchange = function () {
+  $searchGlobals.onchange = function () {
     searchGlobals = this.checked;
     ready = ready.then(start);
   };
