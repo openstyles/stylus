@@ -585,6 +585,7 @@ const styleMan = (() => {
   }
 
   function fixKnownProblems(style, initIndex, initArray) {
+    if (!style || !style.id) style = {id: Date.now()};
     let res = 0;
     for (const key in MISSING_PROPS) {
       if (!style[key]) {
@@ -619,10 +620,10 @@ const styleMan = (() => {
         style[key] = fixedUrl;
       }
     }
-    let url;
+    let v;
     /* USO bug, duplicate "update" subdomain, see #523 */
-    if ((url = style.md5Url) && url.includes('update.update.userstyles')) {
-      res = style.md5Url = url.replace('update.update.userstyles', 'update.userstyles');
+    if ((v = style.md5Url) && v.includes('update.update.userstyles')) {
+      res = style.md5Url = v.replace('update.update.userstyles', 'update.userstyles');
     }
     /* Outdated USO-archive links */
     if (`${style.url}${style.installationUrl}`.includes('https://33kk.github.io/uso-archive/')) {
@@ -632,25 +633,31 @@ const styleMan = (() => {
     /* Default homepage URL for external styles installed from a known distro */
     if (
       (!style.url || !style.installationUrl) &&
-      (url = style.updateUrl) &&
-      (url = URLS.makeInstallUrl(url) ||
-        (url = /\d+/.exec(style.md5Url)) && `${URLS.uso}styles/${url[0]}`
+      (v = style.updateUrl) &&
+      (v = URLS.makeInstallUrl(v) ||
+        (v = /\d+/.exec(style.md5Url)) && `${URLS.uso}styles/${v[0]}`
       )
     ) {
-      if (!style.url) res = style.url = url;
-      if (!style.installationUrl) res = style.installationUrl = url;
+      if (!style.url) res = style.url = v;
+      if (!style.installationUrl) res = style.installationUrl = v;
     }
-    /* @import must precede `vars` that we add at beginning */
-    if (
-      initArray &&
-      !isEmptyObj((style[UCD] || {}).vars) &&
-      style.sections.some(({code}) =>
-        code.startsWith(':root {\n  --') &&
-        /@import\s/i.test(code))
-    ) {
+    if (initArray && (
+      !Array.isArray(v = style.sections) && (v = 0, true) ||
+      /* @import must precede `vars` that we add at beginning */
+      !isEmptyObj((style[UCD] || {}).vars) && v.some(hasVarsAndImport)
+    )) {
+      if (!v && !style.sourceCode) {
+        style.customName = 'Damaged style #' + (style.id || initIndex);
+        style.sections = [{code: '/* No sections or sourceCode */'}];
+        return style;
+      }
       return usercssMan.buildCode(style);
     }
     return res && style;
+  }
+
+  function hasVarsAndImport({code}) {
+    return code.startsWith(':root {\n  --') && /@import\s/i.test(code);
   }
 
   function urlMatchExclusion(e) {
