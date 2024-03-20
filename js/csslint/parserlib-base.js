@@ -178,6 +178,7 @@
 
     'empty-cells': 'show | hide',
 
+    'field-sizing': 'fixed | content',
     'fill': '<paint>',
     'fill-opacity': '<num0-1>',
     'fill-rule': 'nonzero | evenodd',
