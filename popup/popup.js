@@ -84,7 +84,7 @@ function onWindowResize() {
     // ensuring userstyles can't make it invisible accidentally
     style: important('all:initial; height:1px; margin-top:-2px;'),
   });
-  document.body.appendChild(el);
+  document.documentElement.appendChild(el);
   new IntersectionObserver(([e], obs) => {
     if (!e.intersectionRatio) {
       obs.disconnect();
