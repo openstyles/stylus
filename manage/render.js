@@ -317,7 +317,7 @@ async function initBadFavs() {
     this.append(...elems.slice(i + 1));
   };
 
-  window.fitSelectBox = (el, value, init) => {
+  window.fitSelectBox = CSS.supports('field-sizing', 'content') ? () => {} : (el, value, init) => {
     const opts = el._opts || (el._opts = {});
     if (init) {
       for (const o of el.options) opts[o.value] = o;

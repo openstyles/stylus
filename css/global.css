@@ -203,6 +203,7 @@ select {
   border: 1px solid var(--c65);
   padding: 0 20px 0 6px;
   transition: color .5s;
+  field-sizing: content;
 }
 
 .select-wrapper {
