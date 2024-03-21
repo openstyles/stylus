@@ -520,6 +520,9 @@ const styleMan = (() => {
     if (!style._id) {
       style._id = uuidv4();
     }
+    if (!style.id) {
+      delete style.id;
+    }
     style._rev = Date.now();
     fixKnownProblems(style);
   }
