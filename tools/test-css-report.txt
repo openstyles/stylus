@@ -72,5 +72,4 @@ warning	550	32	Expected [ [ root | nearest | self ] || [ block | inline | vertic
 error	570	15	Expected "{" but found "too".
 error	571	18	Expected "(" but found "{".
 error	572	8	Expected "{" but found "to".
-error	573	30	Unexpected ")".
 warning	576	23	Expected [ <named-or-hex-color> | color-mix() | color() | hsl() | hwb() | lab() | lch() | light-dark() | rgb() | hsla() | rgba() | oklab() | oklch() ]#{2} but found "red".

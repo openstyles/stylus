@@ -1155,13 +1155,14 @@
      * @param {TokenStream} stream
      * @param {Token} [tok]
      * @param {boolean} [relative]
+     * @param {boolean} [lax]
      * @return {TokenValue<TokenSelector>[]|void}
      */
-    _selectorsGroup(stream, tok, relative) {
+    _selectorsGroup(stream, tok, relative, lax) {
       const selectors = [];
       let comma;
-      while ((tok = this._selector(stream, tok, relative))) {
-        selectors.push(tok);
+      while ((tok = this._selector(stream, tok, relative)) || lax) {
+        if (tok) selectors.push(tok);
         if ((tok = stream.token).isVar) tok = stream.grab();
         if (!(comma = tok.id === COMMA)) break;
         tok = null;
@@ -1773,13 +1774,13 @@
       let tok = stream.grab();
       try {
         if (tok.id === LPAREN) {
-          a = this._selectorsGroup(stream);
+          a = this._selectorsGroup(stream, undefined, false, true);
           stream.matchSmart(RPAREN, OrDieReusing);
           tok = stream.grab();
         }
         if (a && B.to.has(tok)) {
           stream.matchSmart(LPAREN, OrDie);
-          b = this._selectorsGroup(stream);
+          b = this._selectorsGroup(stream, undefined, false, true);
           stream.matchSmart(RPAREN, OrDieReusing);
           tok = stream.grab();
         }
@@ -1893,7 +1894,7 @@
       tok.col -= colons.length;
       tok.offset -= colons.length;
       tok.type = 'pseudo';
-      let expr, n, x;
+      let expr, n, x, lax;
       if ((n = tok.name)) {
         stream._pair = RPAREN;
         if (n === 'nth-child' || n === 'nth-last-child') {
@@ -1904,8 +1905,8 @@
           else if (t2.id === RPAREN) x = true;
           else stream._failure('', t1);
         }
-        if (n === 'not' || n === 'is' || n === 'where' || n === 'any' || n === 'has') {
-          x = this._selectorsGroup(stream, undefined, n === 'has');
+        if (n === 'not' || (lax = n === 'is' || n === 'where' || n === 'any') || n === 'has') {
+          x = this._selectorsGroup(stream, undefined, n === 'has', lax);
           if (!x) stream._failure('a selector');
           if (expr) expr.push(...x); else expr = x;
           stream.matchSmart(RPAREN, OrDieReusing);
