@@ -510,10 +510,10 @@ heading"] {
     & > .bar { color: red; }
     > .baz { color: green; }
     &bar { color: red; }
-   a {
+    a {
      div { color: red; }
-   }
- }
+    }
+  }
   @layer base {
     html {
       block-size: 100%;
@@ -574,3 +574,4 @@ a { padding: 1em; margin: 1ex; }
 a { offset-path: ray(180deg closest-side) }
 a { color: light-dark(lime, green); }
 a { color: light-dark(red); }
+a { not-declaration:and(#not-hex) { color: red } }

@@ -62,7 +62,7 @@ function testCsslint() {
   i = report.length - expected.length;
   if (i) {
     a = Math.abs(i);
-    err = '\n' +
+    err = (err || '') + '\n' +
       (i > 0 ? `Found ${a} extra un` : `Did not find ${a} `) +
       `expected problem${a === 1 ? '' : 's'}:\n  * ` +
       (i > 0 ? report : expected).slice(-a).join('\n  * ');

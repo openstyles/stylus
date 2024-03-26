@@ -287,7 +287,7 @@
       /** Closing token of the currently processed block */
       this._pair = 0;
       this._resetBuf();
-      define(this, 'grab', {writable: true, value: this.get.bind(this, true)});
+      define(this, 'grab', {writable: true, value: this.get.bind(this, 0, 0)});
     }
 
     _resetBuf() {
@@ -302,10 +302,11 @@
     }
 
     /**
-     * @param {TokenAcquisitionMode} [mode]
+     * @param {boolean} [uvar] - include UVAR
+     * @param {boolean} [ws] - include WS
      * @return {Token}
      */
-    get(mode) {
+    get(uvar, ws = true) {
       let {_buf: buf, _cur: i, _max: MAX} = this;
       let tok, ti, slot;
       do {
@@ -313,22 +314,16 @@
         if (i >= buf.length) {
           if (buf.length < MAX) i++;
           else this._cycle = (this._cycle + 1) % MAX;
-          ti = (tok = buf[slot] = this._getToken(mode)).id;
+          ti = (tok = buf[slot] = this._getToken(uvar, ws)).id;
           break;
         }
         ++i;
         ti = (tok = buf[slot]).id;
-      } while (ti === COMMENT || mode && (ti === WS || ti === UVAR && mode !== UVAR));
+      } while (ti === COMMENT || !ws && ti === WS || !uvar && ti === UVAR);
       if (ti === AMP) this._amp++;
       this._cur = i;
       this.token = tok;
       return tok;
-      /**
-       * @typedef {number} TokenAcquisitionMode
-       * 0/falsy: skip COMMENT;
-       * UVAR id: skip COMMENT, WS;
-       * anything else: skip COMMENT, WS, UVAR
-       */
     }
 
     /**
@@ -368,9 +363,9 @@
     matchSmart(what, opts = {}) {
       let tok;
       const text = opts.has ? opts : (tok = opts.reuse, opts.text);
-      const ws = typeof what === 'object' ? what[WS] : what === WS;
+      const ws = typeof what === 'object' ? WS in what : what === WS;
       let uvp = !ws && !text && (typeof what === 'object' ? what.isUvp : isOwn(UVAR_PROXY, what));
-      tok = tok && (tok.id != null ? tok : this.token) || this.get(uvp ? UVAR : !ws);
+      tok = tok && (tok.id != null ? tok : this.token) || this.get(uvp, ws);
       uvp = uvp && tok.isVar;
       return this.match(what, text, tok, uvp ? UVAR : opts) ||
         uvp && (this.match(what, text, this.grab()) || tok) ||
@@ -404,10 +399,9 @@
     }
 
     /**
-     * @param {TokenAcquisitionMode} mode
      * @return {Token|void}
      */
-    _getToken(mode) {
+    _getToken(uvar, ws) {
       const src = this.source;
       let a, b, c, text, col, line, offset;
       while (true) {
@@ -416,10 +410,10 @@
         b = src.peek();
         if (a === 9/*\t*/ || a === 10/*\n*/ || a === 32/* " " */) {
           if (isSpace(b)) src.readMatch(rxSpace);
-          if (!mode) { c = WS; break; }
+          if (ws) { c = WS; break; }
         } else if (a === 47/*/*/ && b === 42/* * */) {
           a = src.readMatch(rxCommentUso, true);
-          if (a[1] && mode === UVAR) { c = UVAR; break; }
+          if (uvar && a[1]) { c = UVAR; break; }
         } else break;
       }
       const tok = new Token(c || CHAR, col, line, offset, src.string, a);
@@ -933,6 +927,7 @@
       this._inStyle = 0;
       /** @type {Token[]} stack of currently processed nested blocks or rules */
       this._stack = [];
+      this._events = null;
     }
 
     /** 2 and above = error, 2 = error (recoverable), 1 = warning, anything else = info */
@@ -948,6 +943,10 @@
      * @param {Token} [tok=this.stream.token] - sets the position
      */
     fire(e, tok = e.offset != null ? e : this.stream.token) {
+      if (this._events) {
+        this._events.push(arguments);
+        return;
+      }
       if (typeof e === 'string') e = {type: e};
       if (tok && e.offset == null) { e.offset = tok.offset; e.line = tok.line; e.col = tok.col; }
       if (tok !== false) parserCache.addEvent(e);
@@ -1310,19 +1309,27 @@
         return;
       }
       if (ti3 !== WS) stream.unget();
+      // This may be a selector, so we can't report errors upstream yet
+      const events = !inParens && !isCust && (ti3 === IDENT || ti3 === FUNCTION)
+        && (this._events = []);
       const end = isCust ? TT.propCustomEnd : inParens ? TT.propValEndParen : TT.propValEnd;
       const expr = this._expr(stream, end, isCust);
       const t = stream.token;
       const value = expr || isCust && TokenValue.empty(t);
-      if (!inParens && t.id === LBRACE) {
-        if (ti3 !== IDENT && ti3 !== FUNCTION) {
-          stream._pair = RBRACE;
-          throw new SyntaxError(`Unexpected "{" in "${tok}" declaration`, t);
+      const brace = !inParens && t.id === LBRACE;
+      if (events) {
+        this._events = null;
+        if (brace) {
+          stream.source.reset(t2mark);
+          stream._resetBuf();
+          return;
         }
+        for (const v of events) this.fire(...v);
+      }
+      if (brace) {
+        stream._pair = RBRACE;
+        throw new SyntaxError(`Unexpected "{" in "${tok}" declaration`, t);
         // TODO: if not as rare as alleged, make a flat array in _expr() and reuse it
-        stream.source.reset(t2mark);
-        stream._resetBuf();
-        return;
       }
       if (!value) stream._failure('');
       const invalid = !isCust && !tok.isVar && !opts.noValidation &&
@@ -1370,10 +1377,10 @@
       const parts = [];
       const isEndMap = typeof end === 'object';
       let /** @type {Token} */ tok, ti, isVar, endParen;
-      while ((ti = (tok = stream.get(UVAR)).id) && !(isEndMap ? end[ti] : end === ti)) {
+      while ((ti = (tok = stream.get(UVAR, 0)).id) && !(isEndMap ? end[ti] : end === ti)) {
         if ((endParen = Parens[ti])) {
           if (!dumb && ti === LBRACE && parts.length) break;
-          tok.expr = this._expr(stream, endParen, dumb, ti === LBRACE);
+          tok.expr = this._expr(stream, endParen, dumb);
           if (stream.token.id !== endParen) stream._failure(endParen);
           tok.offset2 = stream.token.offset2;
           tok.type = 'block';
@@ -1498,7 +1505,7 @@
       this._stack.push(start);
       let ex, child;
       let prevTok;
-      for (let tok, ti, fn; (ti = (tok = stream.get(UVAR)).id) && ti !== RBRACE; ex = null) {
+      for (let tok, ti, fn; (ti = (tok = stream.get(UVAR, 0)).id) && ti !== RBRACE; ex = null) {
         if (ti === SEMICOLON || ti === UVAR && (child = 1)) {
           continue;
         }
@@ -1903,7 +1910,7 @@
           if (expr) expr.push(...x); else expr = x;
           stream.matchSmart(RPAREN, OrDieReusing);
         } else if (!x) {
-          expr = this._expr(stream, RPAREN);
+          expr = this._expr(stream, RPAREN, true);
         }
         tok = TokenFunc.from(tok, expr, stream.token);
         stream._pair = 0;
