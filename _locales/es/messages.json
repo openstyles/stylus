@@ -88,6 +88,9 @@
   "clickToUninstall": {
     "message": "Haz clic para desinstalar"
   },
+  "cm_arrowKeysTraverse": {
+    "message": "Teclas de flecha ↑↓ recorrer secciones"
+  },
   "cm_autoCloseBrackets": {
     "message": "Cerrar automáticamente corchetes y comillas"
   },
@@ -283,6 +286,9 @@
   "editorSettings": {
     "message": "Configuración del editor"
   },
+  "emptyCode": {
+    "message": "Las secciones de estilo de esta URL están vacías"
+  },
   "enableStyleLabel": {
     "message": "Activar"
   },
@@ -351,6 +357,12 @@
   "genericHistoryLabel": {
     "message": "Historial"
   },
+  "genericMaximum": {
+    "message": "máximo"
+  },
+  "genericMinimum": {
+    "message": "mínimo"
+  },
   "genericNext": {
     "message": "Siguiente"
   },
@@ -362,6 +374,9 @@
   },
   "genericSavedMessage": {
     "message": "Guardado"
+  },
+  "genericSize": {
+    "message": "Tamaño"
   },
   "genericTest": {
     "message": "Prueba"
@@ -560,8 +575,14 @@
   "manageMaxTargets": {
     "message": "Número de elementos 'Se aplica a'"
   },
+  "manageMinColumnWidth": {
+    "message": "Ancho mínimo de columna (en píxeles; 9999 desactiva el modo multicolumna)"
+  },
   "manageNewStyleAsUsercss": {
     "message": "como UserCSS"
+  },
+  "manageNewUI": {
+    "message": "Diseño de la tabla"
   },
   "manageOnlyDisabled": {
     "message": "Solo estilos desactivados"
@@ -645,7 +666,7 @@
     }
   },
   "meta_invalidRangeStep": {
-    "message": "@var $type$ no válido: el valor por defecto no es un múltiplo del intervalo",
+    "message": "@var $type$ no válido: el valor no es un múltiplo del intervalo",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -836,8 +857,14 @@
   "optionsAdvancedPatchCspNote": {
     "message": "Activa esta opción si los estilos contienen imágenes o fuentes que no se cargan en un sitio con una configuración estricta de <code>CSP</code> (<code>Política de seguridad de contenido</code>).\n\nAl activar esta opción, se reducen las restricciones de <code>CSP</code> para que puedan cargarse los contenidos de estilo necesarios. Esta opción va dirigida únicamente a usuarios avanzados que comprenden las posibles implicaciones de seguridad y aceptan la responsabilidad de supervisar el contenido que permiten que se cargue. Antes de usar esta opción, obtén más información sobre los ataques basados en CSS.\n\nAdemás, puede que esta opción específica no se aplique si otra extensión modifica antes la respuesta de red."
   },
+  "optionsAdvancedStyleViaASS": {
+    "message": "Evitar 'style-src' de CSP mediante adoptedStyleSheets"
+  },
   "optionsAdvancedStyleViaXhr": {
     "message": "Modo de inserción instantánea"
+  },
+  "optionsAdvancedStyleViaXhrNote": {
+    "message": "Actívelo si al navegar encuentra parpadeos de contenido sin estilo (FOUC), que se notan especialmente con temas oscuros al abrir una página.\n\nEsta opción utiliza el \"obsoleto\" XMLHttpRequest síncrono ejecutado internamente para obtener la caché en segundo plano de la extensión, es decir, no es una petición de red, por lo que el impacto en el rendimiento es insignificante"
   },
   "optionsBadgeDisabled": {
     "message": "Color de fondo cuando se desactiva"
@@ -963,6 +990,9 @@
   "optionsUpdateInterval": {
     "message": "Intervalo de actualización automática del estilo en horas (escriba 0 para desactivar)"
   },
+  "optionsUrlInstaller": {
+    "message": "Abrir el instalador al navegar a una URL .user.css"
+  },
   "overwriteFileExport": {
     "message": "¿Desea sobrescribir un archivo existente?"
   },
@@ -1007,6 +1037,9 @@
   },
   "popupMenuButtonTooltip": {
     "message": "Acciones"
+  },
+  "popupOpenEditInPopup": {
+    "message": "...sin barra de direcciones"
   },
   "popupOpenEditInWindow": {
     "message": "Abrir editor en una nueva ventana"
@@ -1095,6 +1128,9 @@
   "searchGlobalStyles": {
     "message": "También buscar estilos globales"
   },
+  "searchGlobalStylesHint": {
+    "message": "Incluye estilos que se aplican a todos los sitios si el nombre contiene el texto de búsqueda o el sitio actual"
+  },
   "searchNumberOfResults": {
     "message": "Número de coincidencias"
   },
@@ -1113,6 +1149,9 @@
   "searchResultNotMatching": {
     "message": "El estilo se ha instalado, pero no es válido para la URL del sitio actual."
   },
+  "searchResultNotMatchingNote": {
+    "message": "Intente solicitar al autor de este estilo de usuario que añada la URL.\n\nTambién puede abrir el estilo en el gestor de estilos y editarlo usted mismo,\npero tenga en cuenta que desactiva las actualizaciones automáticas para este estilo."
+  },
   "searchResultRating": {
     "message": "Valoración"
   },
@@ -1121,6 +1160,9 @@
   },
   "searchResultWeeklyCount": {
     "message": "Instalaciones semanales"
+  },
+  "searchStyleQueryHint": {
+    "message": "Buscar nombres de estilos (se distingue entre mayúsculas y minúsculas si se utiliza una letra mayúscula):\nalgunas palabras - todas estas palabras en cualquier orden\n\"alguna frase\" - esta frase exacta sin comillas\n/foo.*bar/i - expresión regular sin espacios (utilice \\s en su lugar)"
   },
   "searchStylesAll": {
     "message": "Todos"
@@ -1151,6 +1193,9 @@
   },
   "sectionRestore": {
     "message": "Restaurar sección eliminada"
+  },
+  "sectionUserCSS": {
+    "message": "El editor seccionado clásico no soporta la sintaxis UserCSS. Para usarla, activa primero la casilla `UserCSS` en el gestor o en la ventana emergente y luego crea un nuevo estilo, después copia tu código actual pulsando el botón Exportar de este editor."
   },
   "sections": {
     "message": "Secciones"
@@ -1209,6 +1254,9 @@
   "styleChangesNotSaved": {
     "message": "Has realizado cambios en este estilo sin guardarlos."
   },
+  "styleEditor": {
+    "message": "Editor de estilo"
+  },
   "styleEnabledLabel": {
     "message": "Activado"
   },
@@ -1266,6 +1314,9 @@
       }
     }
   },
+  "styleManager": {
+    "message": "Gestor de estilo"
+  },
   "styleMissingName": {
     "message": "Ingresa un nombre"
   },
@@ -1307,6 +1358,9 @@
   },
   "styleRegexpTestNote": {
     "message": "Nota: Use una única \\ como caracter de escape en el campo de entrada de la expresión regular (regexp), que se convertirá automátiascamente a \\\\ en el código del estilo igual que por especificación para cadenas entrecomilladas en CSS."
+  },
+  "styleRegexpTestNoteStar": {
+    "message": "Agregue <.*> al final si el patrón debe coincidir como prefijo, por ejemplo <https?://(www\\.)?foo\\.com/(uno|dos).*>"
   },
   "styleRegexpTestPartial": {
     "message": "No coincide completamente, por lo que se omitió"
@@ -1383,6 +1437,9 @@
   },
   "unreachableAMOHint": {
     "message": "Para permitir el acceso abra <about:config>, haga clic secundario en la lista, pulse 'Nuevo', luego 'Booleano', pegue <privacy.resistFingerprinting.block_mozAddonManager> y pulse Aceptar, <true>, Aceptar, y recargue la página <addons.mozilla.org>."
+  },
+  "unreachableCSP": {
+    "message": "Prueba a activar \"Parche CSP\" en las opciones de Stylus."
   },
   "unreachableContentScript": {
     "message": "No se pudo comunicar con la página. Prueba recargando la pestaña."

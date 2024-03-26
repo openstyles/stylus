@@ -680,14 +680,6 @@
       }
     }
   },
-  "meta_invalidRangeStep": {
-    "message": "无效的 @var $type$: 默认值不是一个数字或范围",
-    "placeholders": {
-      "type": {
-        "content": "$1"
-      }
-    }
-  },
   "meta_invalidRangeTooManyValues": {
     "message": "无效的 @var $type$: 数组中包含了过多项",
     "placeholders": {

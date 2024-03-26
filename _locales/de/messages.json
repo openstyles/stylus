@@ -649,7 +649,7 @@
     }
   },
   "meta_invalidRangeStep": {
-    "message": "Ungültige @var $type$: Standardwert ist kein Vielfaches der Schrittweite",
+    "message": "Ungültige @var $type$: Der Wert ist kein Vielfaches der Schrittweite",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -1101,6 +1101,9 @@
   },
   "searchGlobalStyles": {
     "message": "Auch globale Styles suchen"
+  },
+  "searchGlobalStylesHint": {
+    "message": "Schließt globale Styles ein, wenn der Name den Suchtext oder die aktuelle Seite beinhaltet"
   },
   "searchNumberOfResults": {
     "message": "Trefferanzahl"

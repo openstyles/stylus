@@ -668,7 +668,7 @@
     }
   },
   "meta_invalidRangeStep": {
-    "message": "@var $type$ invalide : la valeur par défaut n’est pas un multiple du pas",
+    "message": "@var $type$ invalide : la valeur n’est pas un multiple du pas",
     "placeholders": {
       "type": {
         "content": "$1"

@@ -166,6 +166,9 @@
   "confirmYes": {
     "message": "Si"
   },
+  "connectingDropbox": {
+    "message": "Connessione in corso a Dropbox..."
+  },
   "connectingDropboxNotAllowed": {
     "message": "La connessione a Dropbox è disponibile soltanto nelle app installate direttamente dal webstore"
   },
@@ -177,6 +180,9 @@
   },
   "customNameHint": {
     "message": "Inserisci qui un nome personalizzato per rinominare lo stile nell'interfaccia utente (UI) senza rompere i suoi aggiornamenti"
+  },
+  "customNameResetHint": {
+    "message": "Non utilizzare il nome personalizzato, modificalo nel nome dello stile."
   },
   "dateInstalled": {
     "message": "Data installazione"
@@ -202,8 +208,22 @@
   "disableAllStyles": {
     "message": "Disattiva tutti gli stili"
   },
+  "disableAllStylesOff": {
+    "message": "Gli stili sono disattivati"
+  },
   "disableStyleLabel": {
     "message": "Disattiva"
+  },
+  "draftTitle": {
+    "message": "bozza recuperata, creato il $date$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "dragDropMessage": {
+    "message": "Trascina e rilascia il file di backup ovunque in questa pagina per importarlo."
   },
   "editDeleteText": {
     "message": "Elimina"
@@ -224,6 +244,9 @@
         "content": "$1"
       }
     }
+  },
+  "editorSettings": {
+    "message": "Impostazioni editore"
   },
   "enableStyleLabel": {
     "message": "Attiva"
@@ -544,6 +567,9 @@
   },
   "optionsSubheading": {
     "message": "Più Opzioni"
+  },
+  "optionsSyncLogin": {
+    "message": "Accedi"
   },
   "paginationCurrent": {
     "message": "Pagina corrente"

@@ -607,7 +607,7 @@
     }
   },
   "meta_invalidRangeStep": {
-    "message": "@var $type$ no válido: el valor por defecto no es un múltiplo del intervalo",
+    "message": "@var $type$ no válido: el valor no es un múltiplo del intervalo",
     "placeholders": {
       "type": {
         "content": "$1"

@@ -699,7 +699,7 @@
     }
   },
   "meta_invalidRangeStep": {
-    "message": "無效的 @var $type$：預設值為不是一個多步驟",
+    "message": "無效的 @var $type$：預設值並非數字或範圍",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -1160,6 +1160,9 @@
   },
   "searchGlobalStyles": {
     "message": "同時搜尋全域樣式"
+  },
+  "searchGlobalStylesHint": {
+    "message": "如果名稱包含搜尋文字或目前網站，則包括適用於所有網站的樣式"
   },
   "searchNumberOfResults": {
     "message": "符合數量"

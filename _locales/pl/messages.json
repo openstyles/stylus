@@ -696,7 +696,7 @@
     }
   },
   "meta_invalidRangeStep": {
-    "message": "Nieprawidłowa @var $type$: wartość domyślna nie jest wielokrotnością kroku",
+    "message": "Nieprawidłowa @var $type$: wartość nie jest wielokrotnością kroku",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -1160,6 +1160,9 @@
   },
   "searchGlobalStyles": {
     "message": "Przeszukuj także style globalne"
+  },
+  "searchGlobalStylesHint": {
+    "message": "Uwzględnia style, które są stosowane do wszystkich witryn, jeśli nazwa zawiera tekst wyszukiwania lub bieżącą witrynę"
   },
   "searchNumberOfResults": {
     "message": "Liczba dopasowań"

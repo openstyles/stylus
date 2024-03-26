@@ -653,14 +653,6 @@
       }
     }
   },
-  "meta_invalidRangeStep": {
-    "message": "Érvénytelen változó @var (típus: $type$): az alapértelmezett érték nem a lépésköz többszöröse",
-    "placeholders": {
-      "type": {
-        "content": "$1"
-      }
-    }
-  },
   "meta_invalidRangeTooManyValues": {
     "message": "Érvénytelen változó @var (típus: $type$): a tömb túl sok elemet tartalmaz",
     "placeholders": {

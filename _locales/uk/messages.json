@@ -681,7 +681,7 @@
     }
   },
   "meta_invalidRangeStep": {
-    "message": "Невірний @var $type$: значення за замовчуванням не є кратним кроку",
+    "message": "Невірний @var $type$: значення не є кратним кроку",
     "placeholders": {
       "type": {
         "content": "$1"

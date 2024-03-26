@@ -674,7 +674,7 @@
     }
   },
   "meta_invalidRangeStep": {
-    "message": "Ongeldige @var $type$: standaardwaarde is geen veelvoud van de stap",
+    "message": "Ongeldige @var $type$: de waarde is geen veelvoud van de stap",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -1132,6 +1132,9 @@
   },
   "searchGlobalStyles": {
     "message": "Ook globale stijlen doorzoeken"
+  },
+  "searchGlobalStylesHint": {
+    "message": "Omvat stijlen die op alle websites van toepassing zijn als de naam de zoektekst of de huidige website bevat"
   },
   "searchNumberOfResults": {
     "message": "Aantal overeenkomsten"

@@ -664,7 +664,7 @@
     }
   },
   "meta_invalidRangeStep": {
-    "message": "不正な @var $type$: デフォルト値がステップ値の倍数になっていません",
+    "message": "不正な @var $type$: 値がステップ値の倍数になっていません",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -1125,6 +1125,9 @@
   },
   "searchGlobalStyles": {
     "message": "グローバルスタイルも検索"
+  },
+  "searchGlobalStylesHint": {
+    "message": "名前に検索テキストか現在のサイトが入っていれば、全サイトに適用されるスタイルを含めます"
   },
   "searchNumberOfResults": {
     "message": "マッチ数"

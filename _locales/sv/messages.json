@@ -566,7 +566,7 @@
     }
   },
   "meta_invalidRangeStep": {
-    "message": "Ogiltig @var-$type$: standardvärdet är inte en multipel av steget",
+    "message": "Ogiltig @var-$type$: värdet är inte en multipel av steget",
     "placeholders": {
       "type": {
         "content": "$1"

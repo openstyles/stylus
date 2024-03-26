@@ -613,14 +613,6 @@
       }
     }
   },
-  "meta_invalidRangeStep": {
-    "message": "@var $type$이(가) 유효하지 않습니다. 기본값이 단계의 변수가 아닙니다.",
-    "placeholders": {
-      "type": {
-        "content": "$1"
-      }
-    }
-  },
   "meta_invalidRangeTooManyValues": {
     "message": "@var $type$이(가) 유효하지 않습니다. 배열의 요소가 너무 많습니다.",
     "placeholders": {
