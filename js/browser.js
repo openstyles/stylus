@@ -1,9 +1,6 @@
 'use strict';
 
-if (window.INJECTED !== 1 && chrome.app) {
-  /* Chrome reinjects content script when documentElement is replaced so we ignore it
-   by checking against a literal `1`, not just `if (truthy)`, because <html id="INJECTED">
-   is exposed per HTML spec as a global `window.INJECTED` */
+if (!(self.browser || {}).runtime) {
   /* Auto-promisifier with a fallback to direct call on signature error.
      The fallback isn't used now since we call all synchronous methods via `chrome` */
   const directEvents = ['addListener', 'removeListener', 'hasListener', 'hasListeners'];
@@ -62,5 +59,6 @@ if (window.INJECTED !== 1 && chrome.app) {
         return target[key] || proxify(src, srcName, target, key);
       },
     });
-  window.browser = createProxy(chrome);
+  // Not assigning directly to let IDE use @types/firefox-webext-browser
+  Object.assign(self, {browser: createProxy(chrome)});
 }
