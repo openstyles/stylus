@@ -39,21 +39,22 @@ chrome.management.getSelf(ext => {
     },
   });
 
-  createContextMenus(Object.keys(contextMenus));
+  createContextMenus(Object.keys(contextMenus), true);
   chrome.contextMenus.onClicked.addListener((info, tab) =>
     contextMenus[info.menuItemId].click(info, tab));
 
-  function createContextMenus(ids) {
+  function createContextMenus(ids, isInit) {
     for (const id of ids) {
       const item = Object.assign({id, contexts: ['browser_action']}, contextMenus[id]);
       item.title = chrome.i18n.getMessage(item.title);
       if (typeof prefs.defaults[id] === 'boolean') {
-        if (item.type) {
-          prefs.subscribe(id, togglePresence);
-        } else {
+        if (!item.type) {
           item.type = 'checkbox';
           item.checked = prefs.get(id);
-          prefs.subscribe(id, CHROME >= 62 && CHROME <= 64 ? toggleCheckmarkBugged : toggleCheckmark);
+          if (isInit) prefs.subscribe(id, CHROME >= 62 && CHROME <= 64 ? toggleCheckmarkBugged : toggleCheckmark);
+        } else if (isInit) {
+          prefs.subscribe(id, togglePresence, true);
+          continue;
         }
       }
       delete item.click;
