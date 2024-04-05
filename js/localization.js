@@ -24,16 +24,7 @@ Object.assign(t, {
       (_ = $(`template[data-id="${k}"]`)) && (obj[k] = t.createTemplate(_)),
   }),
   ALLOWED_TAGS: ['a', 'b', 'code', 'i', 'sub', 'sup', 'wbr'],
-  RX_WORD_BREAK: new RegExp([
-    '(',
-    /[\d\w\u007B-\uFFFF]{10}/,
-    '|',
-    /[\d\w\u007B-\uFFFF]{5,10}[!-/]/,
-    '|',
-    /((?!\s)\W){10}/,
-    ')',
-    /(?!\s|$)/,
-  ].map(rx => rx.source || rx).join(''), 'gu'),
+  RX_WORD_BREAK: /([\w\u007B-\uFFFF]{10}|[\w\u007B-\uFFFF]{5,10}[!-/]|((?!\s)\W){10})(?!\s|$)/gu,
   SELECTOR: '[i18n]',
 
   HTML(html) {
