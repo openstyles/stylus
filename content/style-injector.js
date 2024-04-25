@@ -170,10 +170,10 @@ window.StyleInjector = window.INJECTED === 1 ? window.StyleInjector : ({
     if (isReplace && list.length > ids.size) {
       for (let i = list.length, s; --i >= 0;) if (!ids.has((s = list[i]).id)) remove(s);
     }
-    if (!isTransitionPatched) {
-      applyTransitionPatch(sections);
+    if (isEnabled) {
+      if (!isTransitionPatched) applyTransitionPatch(sections);
+      restoreOrder();
     }
-    restoreOrder();
     emitUpdate();
   }
 
