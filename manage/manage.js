@@ -32,9 +32,11 @@ Object.assign(newUI, {
     }
   },
   renderClass: () => {
-    $.rootCL.toggle('newUI', newUI.enabled);
-    $.rootCL.toggle('oldUI', !newUI.enabled);
-    $('#newUI').media = newUI.enabled ? '' : '?';
+    const on = !!newUI.enabled;
+    const el = $('#newUI');
+    $.rootCL.toggle('newUI', on);
+    $.rootCL.toggle('oldUI', !on);
+    if (on !== !el.media) el.media = on ? '' : '?';
   },
   hasFavs: () => newUI.enabled && newUI.favicons,
   badFavsKey: 'badFavs',
