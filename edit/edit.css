@@ -933,7 +933,7 @@ i,
       }
     }
     & details > :not(summary) {
-      margin-left: var(--pad05);
+      margin-left: 0;
     }
     & h2 {
       font-size: 14px;
@@ -1017,16 +1017,9 @@ i,
       --max-height: 50px;
     }
   }
-  #sections-list[open] > #toc {
-    left: 0;
-    margin-left: auto;
-    margin-right: auto;
-    width: min-content;
-  }
-  #sections-list[open] > #toc,
-  #lint[open] > .lint-report-container {
+  #toc,
+  .lint-report-container {
     max-width: 50vw;
-    right: 0;
   }
   #publish[open],
   #lint:not([open]) {

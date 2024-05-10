@@ -30,14 +30,24 @@ editor.styleReady.then(async () => {
   $('#cancel-button').onclick = editor.cancel;
 
   const elSec = $('#sections-list');
+  const elToc = $('#toc');
+  const moDetails = new MutationObserver(([{target: sec}]) => {
+    if (!sec.open) return;
+    if (sec === elSec) editor.updateToc();
+    const el = sec.lastElementChild;
+    const s = el.style;
+    const x2 = sec.getBoundingClientRect().left + el.getBoundingClientRect().width;
+    if (x2 > innerWidth - 30) s.right = '0';
+    else if (s.right) s.removeProperty('right');
+  });
   // editor.toc.expanded pref isn't saved in compact-layout so prefs.subscribe won't work
   if (elSec.open) editor.updateToc();
   // and we also toggle `open` directly in other places e.g. in detectLayout()
-  new MutationObserver(() => elSec.open && editor.updateToc())
-    .observe(elSec, {attributes: true, attributeFilter: ['open']});
-
-  $('#toc').onclick = e =>
-    editor.jumpToEditor([...$('#toc').children].indexOf(e.target));
+  for (const el of $$('#details-wrapper > details')) {
+    moDetails.observe(el, {attributes: true, attributeFilter: ['open']});
+  }
+  elToc.onclick = e =>
+    editor.jumpToEditor([].indexOf.call(elToc.children, e.target));
   $('#lint-help').onclick = () =>
     require(['/edit/linter-dialogs'], () => linterMan.showLintHelp());
 
