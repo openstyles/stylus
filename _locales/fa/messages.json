@@ -1,0 +1,52 @@
+{
+  "InaccessibleFileHint": {
+    "message": "استایلوس نمی‌تواند به برخی از انواع فایل  (مانند pdf و json) دسترسی پیدا کند."
+  },
+  "addStyleLabel": {
+    "message": "نوشتن سبک جدید"
+  },
+  "addStyleTitle": {
+    "message": "افزودن سبک"
+  },
+  "alphaChannel": {
+    "message": "شفافیت"
+  },
+  "appliesAdd": {
+    "message": "افزودن"
+  },
+  "appliesDisplay": {
+    "message": "اعمال می‌شود به: $applies$",
+    "placeholders": {
+      "applies": {
+        "content": "$1"
+      }
+    }
+  },
+  "appliesDisplayTruncatedSuffix": {
+    "message": "و غیره"
+  },
+  "appliesDomainOption": {
+    "message": "نشانی‌ها در دامنه"
+  },
+  "appliesLabel": {
+    "message": "اعمال می‌شود"
+  },
+  "appliesLineWidgetLabel": {
+    "message": "نمایش اطلاعات 'اعمال می‌شود'"
+  },
+  "appliesLineWidgetWarning": {
+    "message": "با CSS های فشرده‌شده کار نمی‌کند"
+  },
+  "appliesRegexpOption": {
+    "message": "نشانی‌های مطابق بر عبارت باقاعده"
+  },
+  "appliesRemove": {
+    "message": "حذف"
+  },
+  "appliesRemoveError": {
+    "message": "نمی توان آخرین ورودی \"اعمال می‌شود\" را حذف کرد"
+  },
+  "genericAdd": {
+    "message": "افزودن"
+  }
+}
