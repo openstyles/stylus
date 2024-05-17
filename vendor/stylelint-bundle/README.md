@@ -1,4 +1,4 @@
-## stylelint-bundle v15.10.2
+## stylelint-bundle v16.5.0
 
 Files copied from NPM (node_modules):
 * stylelint-bundle.min.js: dist/* (removed sourceMappingURL)

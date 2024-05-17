@@ -83,6 +83,9 @@
           if (sugarss == null) sugarss = !opts.code.includes('{');
           opts.config.customSyntax = sugarss ? 'sugarss' : '';
         }
+        for (const r in opts.rules || {}) {
+          if (!stylelint.rules[r]) delete opts.rules[r];
+        }
         const res = (await stylelint.lint(opts)).results[0];
         const errors = res.parseErrors.concat(res.warnings);
         if (sugarss && pass && errors[0] &&

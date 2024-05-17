@@ -112,7 +112,6 @@ linterMan.DEFAULTS = {
       'function-linear-gradient-no-nonstandard-direction': [true, {severity: 'warning'}],
       'keyframe-declaration-no-important': [true, {severity: 'warning'}],
       'media-feature-name-no-unknown': [true, {severity: 'warning'}],
-      'no-extra-semicolons': [true, {severity: 'warning'}],
       'no-invalid-double-slash-comments': [true, {severity: 'warning'}],
       'property-no-unknown': [true, {severity: 'warning'}],
       'selector-pseudo-class-no-unknown': [true, {severity: 'warning'}],
