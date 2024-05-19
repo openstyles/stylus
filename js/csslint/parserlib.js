@@ -1505,8 +1505,8 @@
       const star = inStyle && this.options.starHack && STAR;
       this._stack.push(start);
       let ex, child;
-      let prevTok;
-      for (let tok, ti, fn; (ti = (tok = stream.get(UVAR, 0)).id) && ti !== RBRACE; ex = null) {
+      for (let prevTok, tok, ti, fn; (ti = (tok = stream.get(UVAR, false)).id) !== RBRACE;) {
+        if (!ti) stream._failure('}');
         if (ti === SEMICOLON || ti === UVAR && (child = 1)) {
           continue;
         }
