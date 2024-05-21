@@ -267,6 +267,7 @@
   margin-bottom: calc(var(--pad) / -2);
   max-height: 25vh;
   overflow-y: auto;
+  overflow-wrap: break-word;
 }
 
 .not-matching-explainer {
