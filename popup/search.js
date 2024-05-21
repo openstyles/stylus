@@ -40,6 +40,7 @@
    * @prop {string} sn -  screenshotName
    * @prop {boolean} sa -  screenshotArchived
    *
+   * @prop {number} _bias - sort bias: higher value is a worse match
    * @prop {number} _styleId - installed style id
    * @prop {boolean} _styleVars - installed style has vars
    * @prop {number} _year
@@ -48,6 +49,7 @@
   let results, resultsAllYears;
   /** @type IndexEntry[] */
   let index;
+  let host3 = '';
   let category = '';
   /** @type RegExp */
   let rxCategory;
@@ -535,6 +537,7 @@
         third && third !== 'www' && third !== 'm'
       );
       category = (keepThird && `${third}.` || '') + main + (keepTld || keepThird ? `.${tld}` : '');
+      if (!host3) host3 = keepThird && category;
     }
     rxCategory = new RegExp(`\\b${stringAsRegExpStr(category)}\\b`, 'i');
     return category !== old;
@@ -594,14 +597,21 @@
 
   function isResultMatching(res) {
     const {c} = res;
-    return (
+    let bias;
+    return (bias =
       c === category ||
+      host3 && (
+        c.includes('.')
+          ? host3.charCodeAt(host3.length - c.length - 1) === 46/*.*/ && host3.endsWith(c)
+          : host3.includes(`.${c}.`)
+      ) && 2 + !res.n.includes(host3) ||
       (category === STYLUS_CATEGORY
         ? c === 'stylus' // USW
         : c === 'global' && searchGlobals &&
           (query.length || rxCategory.test(res.n))
       )
-    ) && query.every(isInHaystack, res);
+    ) && query.every(isInHaystack, res)
+      && (res._bias = bias);
   }
 
   /**
@@ -617,7 +627,7 @@
    * @param {IndexEntry} b
    */
   function comparator(a, b) {
-    return (
+    return a._bias - b._bias || (
       order === 'n'
         ? a.n < b.n ? -1 : a.n > b.n
         : b[order] - a[order]
