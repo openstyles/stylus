@@ -259,9 +259,10 @@ function makeExtCrumbs(crumbs, url) {
 }
 
 function makeWebCrumbs(crumbs, url) {
-  const i = url.indexOf('://');
-  const host = i < 0 ? url : url.slice(i + 3, url.indexOf('/', i + 3));
-  const tail = i < 0 ? '' : url.slice(i + 3 + host.length + 1);
+  const u = new URL(url);
+  const h = u.hostname; // stripping user:pwd@ and :port
+  const host = h || url;
+  const tail = h && (u.port ? ':' + u.port : '') + u.pathname + u.search + u.hash;
   for (let domain, d, j = 0; // show `tld` part only if it's the entire host e.g. localhost
        (domain = host.slice(j)) && ((d = domain.split('.'))[1] || !j);) {
     d = d[2] ? d[0] : domain; // kinda strip the public suffix lol

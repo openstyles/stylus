@@ -490,10 +490,6 @@ a:hover i {
 [subdomain]:nth-last-child(n + 3)::after {
   content: "."
 }
-/* "forward slash" before path ("this URL") */
-.write-style-link:not([subdomain])::before {
-  content: "\200b/"
-}
 /* :hover style */
 .breadcrumbs.url\(\) > a,
 /* :hover or :focus on "this URL" sets class="url()" */
