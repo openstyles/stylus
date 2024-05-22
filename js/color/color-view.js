@@ -30,6 +30,7 @@
     ')', 'gi');
   const RX_DETECT_FUNC = /((rgb|hsl)a?|hwb)\(/iy;
   const RX_COMMENT = /\/\*([^*]+|\*(?!\/))*(\*\/|$)/g;
+  const RX_STYLE = /(?:^|\s)(?:atom|keyword|variable callee|builtin)(?:\s|$)/;
   const SPACE1K = ' '.repeat(1000);
 
   // milliseconds to work on invisible colors per one run
@@ -350,13 +351,7 @@
 
     for (let i = styleIndex; i + 1 < styles.length; i += 2) {
       style = styles[i + 1];
-      const styleSupported = style && (
-        // old CodeMirror
-        style.includes('atom') || style.includes('keyword') ||
-        // new CodeMirror since 5.48
-        style.includes('variable callee')
-      );
-      if (!styleSupported) continue;
+      if (!style || !RX_STYLE.test(style)) continue;
 
       start = i > 2 ? styles[i - 2] : 0;
       end = styles[i];
