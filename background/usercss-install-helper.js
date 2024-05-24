@@ -20,57 +20,31 @@ bgReady.all.then(() => {
     },
   });
 
-  const maybeDistro = {
-    'bitbucket.org': '/USER/REPO/raw/HEAD/FILE',
-    'dl.dropboxusercontent.com': '/s/HASH/FILE',
-    'gist.github.com': '/USER/HASH/raw/(HASH/)?FILE',
-    'gitlab.com': '/USER/REPO/(-/)?raw/BRANCH/FILE',
-    'greasyfork.org': '/scripts/NAME/code/FILE',
-    'raw.githack.com': '/USER/REPO/BRANCH/FILE',
-    'raw.githubusercontent.com': '/USER/REPO/BRANCH/FILE',
-    'rawcdn.githack.com': '/USER/REPO/TAG/FILE',
-    'sleazyfork.org': '/scripts/NAME/code/FILE',
-  };
-
   prefs.subscribe('urlInstaller', toggle, true);
 
   function toggle(key, val) {
-    chrome.webRequest.onBeforeSendHeaders.removeListener(maybeInstallFromDistro);
-    chrome.webRequest.onHeadersReceived.removeListener(rememberContentType);
+    chrome.webRequest.onHeadersReceived.removeListener(maybeInstallByMime);
     tabMan.onOff(maybeInstall, val);
-    if (!val) return;
-    const types = ['main_frame'];
-    const urls = [
-      URLS.makeUpdateUrl('usw', '*').replace('.css', '.*'),
-      URLS.makeUpdateUrl('usoa', '*'),
+    const urls = val ? [''] : [
+      /* Known distribution sites where we ignore urlInstaller option, because
+         they open .user.css URL only when the "Install" button is clicked.
+         We can't be sure of it on general-purpose sites like github.com. */
+      URLS.usw,
+      ...URLS.usoaRaw,
+      ...['greasy', 'sleazy'].map(h => `https://update.${h}fork.org/`),
     ];
-    for (const [host, val] of Object.entries(maybeDistro)) {
-      let {glob} = val;
-      if (!glob) {
-        maybeDistro[host] = {
-          glob: glob = makeUsercssGlobs(host, val
-            .replace(/[A-Z]+/g, '*') // UPPERCASE -> *
-            .replace(/\(.*?\)\?/g, '*') // (optional)? -> *
-            .replace(/\*{2,}/g, '*')), // ** -> *
-          rx: new RegExp(
-            // FILE may contain slashes e.g. /path/foo/bar but other templates cannot
-            val.replace(/FILE/g, String.raw`.*\.user\.(css|less|styl)(\?.*)?$`)
-              .replace(/[A-Z]+/g, '[^/]+')),
-        };
-      }
-      urls.push(...glob);
-    }
-    chrome.webRequest.onBeforeSendHeaders.addListener(maybeInstallFromDistro,
-      {urls, types}, ['blocking']);
-    chrome.webRequest.onHeadersReceived.addListener(rememberContentType,
-      {urls: makeUsercssGlobs(), types}, ['responseHeaders']);
+    chrome.webRequest.onHeadersReceived.addListener(maybeInstallByMime, {
+      urls: urls.reduce(reduceUsercssGlobs, []),
+      types: ['main_frame'],
+    }, ['responseHeaders', 'blocking']);
   }
 
   function clearInstallCode(url) {
     return delete installCodeCache[url];
   }
 
-  /** Sites may be using custom types like text/stylus so this coarse filter only excludes html */
+  /** Ignoring .user.css response that is not a plain text but a web page.
+   * Not using a whitelist of types as the possibilities are endless e.g. text/x-css-stylus */
   function isContentTypeText(type) {
     return /^text\/(?!html)/i.test(type);
   }
@@ -91,16 +65,17 @@ bgReady.all.then(() => {
     return `${URLS.installUsercss}?updateUrl=${encodeURIComponent(url)}`;
   }
 
-  function makeUsercssGlobs(host, path) {
-    return '%css,%less,%styl'
+  function reduceUsercssGlobs(res, host) {
+    res.push(...'%css,%less,%styl'
       .replace(/%\w+/g, host ? '$&*' : '$&,$&?*')
-      .replace(/%/g, `*://${host || '*'}${path || '/*'}.user.`)
-      .split(',');
+      .replace(/%/g, `${host || '*://*/'}*.user.`)
+      .split(','));
+    return res;
   }
 
   async function maybeInstall({tabId, url, oldUrl = ''}) {
     if (url.includes('.user.') &&
-        !tabMan.get(tabId, 'distro') &&
+        tabMan.get(tabId, isContentTypeText.name) !== false &&
         /^(https?|file|ftps?):/.test(url) &&
         /\.user\.(css|less|styl)$/.test(url.split(/[#?]/, 1)[0]) &&
         !oldUrl.startsWith(makeInstallerUrl(url))) {
@@ -112,12 +87,11 @@ bgReady.all.then(() => {
     }
   }
 
-  /** Faster installation on known distribution sites to avoid flicker of css text */
-  function maybeInstallFromDistro({tabId, url}) {
-    const u = new URL(url);
-    const m = maybeDistro[u.hostname];
-    tabMan.set(tabId, 'distro', true);
-    if (!m || m.rx.test(u.pathname)) {
+  function maybeInstallByMime({tabId, url, responseHeaders}) {
+    const h = responseHeaders.find(h => h.name.toLowerCase() === 'content-type');
+    const isText = h && isContentTypeText(h.value);
+    tabMan.set(tabId, isContentTypeText.name, isText);
+    if (isText) {
       openInstallerPage(tabId, url, {});
       // Silently suppress navigation.
       // Don't redirect to the install URL as it'll flash the text!
@@ -149,11 +123,5 @@ bgReady.all.then(() => {
       }
       throw err;
     }
-  }
-
-  /** Remember Content-Type to avoid wasting time to re-fetch in loadFromUrl **/
-  function rememberContentType({tabId, responseHeaders}) {
-    const h = responseHeaders.find(h => h.name.toLowerCase() === 'content-type');
-    tabMan.set(tabId, isContentTypeText.name, h && isContentTypeText(h.value) || undefined);
   }
 });
