@@ -248,6 +248,7 @@
 
   function onBFCache(e) {
     if (e.isTrusted && e.persisted) {
+      msg._disconnectApi();
       updateCount();
     }
   }

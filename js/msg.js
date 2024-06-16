@@ -68,6 +68,7 @@
       }
       return result;
     },
+    _disconnectApi: apiPortDisconnect,
     _unwrap: unwrap,
     _wrapError: wrapError,
   });
@@ -159,22 +160,18 @@
 
   if (msg.bg === window) return;
 
-  const apiApply = async (path, args) => {
-    const {bg = msg.bg = chrome.tabs && await loadBg() || false} = msg;
-    const message = {method: 'invokeAPI', path, args};
-    return bg && ((bg.msg || {}).ready || await bg.bgReady.all) ? msg.invokeAPI(path, message)
-      : bgReadying ? sendRetry(message)
-        : apiSend(message);
-  };
-
   const apiHandler = {
     get({path}, name) {
       const fn = () => {};
       fn.path = path ? path + '.' + name : name;
       return new Proxy(fn, apiHandler);
     },
-    apply({path}, thisObj, args) {
-      return apiApply(path, args);
+    async apply({path}, thisObj, args) {
+      const {bg = msg.bg = chrome.tabs && await loadBg() || false} = msg;
+      const message = {method: 'invokeAPI', path, args};
+      return bg && ((bg.msg || {}).ready || await bg.bgReady.all) ? msg.invokeAPI(path, message)
+        : bgReadying ? sendRetry(message)
+          : apiSend(message);
     },
   };
   window.API = /** @type {API} */ new Proxy({path: ''}, apiHandler);
