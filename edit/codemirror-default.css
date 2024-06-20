@@ -124,6 +124,12 @@
   .cm-s-default div.CodeMirror-cursor {
     border-left: 1px solid #fff;
   }
+  .CodeMirror-hints {
+    background: #333;
+  }
+  .CodeMirror-hint {
+    color: var(--fg);
+  }
   /* Using Chromium's dark devtools colors */
   /* WARNING! Declare in the same order as the original codemirror.css  */
   .cm-s-default .cm-header { color: #5db0d7 }
