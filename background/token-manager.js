@@ -248,7 +248,7 @@ const tokenMan = (() => {
 
   async function detectVivaldiWebRequestBug() {
     // Workaround for https://github.com/openstyles/stylus/issues/1182
-    if (isVivaldi == null ? !await detectVivaldi() : !isVivaldi) {
+    if (isVivaldi == null ? await detectVivaldi() === false : !isVivaldi) {
       return false;
     }
     let bugged = true;

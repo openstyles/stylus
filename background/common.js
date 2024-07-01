@@ -1,4 +1,4 @@
-/* global URLS getActiveTab tryJSONparse */// toolbox.js
+/* global URLS tryJSONparse */// toolbox.js
 /* global tabMan */// tab-manager.js
 /* global getUrlOrigin */// tab-util.js
 'use strict';
@@ -159,12 +159,11 @@ function createCache({size = 1000, onDeleted} = {}) {
 }
 
 /* exported isVivaldi */
-let isVivaldi;
+let isVivaldi = chrome.app ? null : false;
 /* exported detectVivaldi */
 async function detectVivaldi() {
-  // Note that modern Vivaldi isn't exposed in `navigator.userAgent` but it adds `extData` to tabs
-  const tab = await getActiveTab() || (await browser.tabs.query({}))[0];
-  return (isVivaldi = tab && !!(tab.extData || tab.vivExtData));
+  const wnd = await browser.windows.getCurrent();
+  return (isVivaldi = wnd && !!(wnd.vivExtData || wnd.extData));
 }
 
 const downloadRequests = {};
