@@ -33,13 +33,9 @@ addAPI(/** @namespace API */ {
 
   info: {
     async get() {
-      let tab;
       return {
         isDark: colorScheme.isDark(),
-        isVivaldi: isVivaldi != null ? isVivaldi
-          : ((tab = (this.sender || {}).tab))
-            ? !!(tab.extData || tab.vivExtData)
-            : await detectVivaldi(),
+        isVivaldi: isVivaldi != null ? isVivaldi : await detectVivaldi(),
       };
     },
     set(info) {
