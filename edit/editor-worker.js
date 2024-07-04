@@ -76,15 +76,15 @@
       require(['/vendor/stylelint-bundle/stylelint-bundle.min']); /* global stylelint */
       // Stylus-lang allows a trailing ";" but sugarss doesn't, so we monkeypatch it
       stylelint.SugarSSParser.prototype.checkSemicolon = ovrCheckSemicolon;
+      for (const r in opts.config.rules) {
+        if (!stylelint.rules[r]) delete opts.config.rules[r];
+      }
       for (let pass = 2; --pass >= 0;) {
         /* We try sugarss (for indented stylus-lang), then css mode, switching them on failure,
          * so that the succeeding syntax will be used next time first. */
         if (opts.mode === 'stylus') {
           if (sugarss == null) sugarss = !opts.code.includes('{');
           opts.config.customSyntax = sugarss ? 'sugarss' : '';
-        }
-        for (const r in opts.rules || {}) {
-          if (!stylelint.rules[r]) delete opts.rules[r];
         }
         const res = (await stylelint.lint(opts)).results[0];
         const errors = res.parseErrors.concat(res.warnings);
