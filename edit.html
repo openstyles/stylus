@@ -376,10 +376,17 @@
                  data-hotkey-tooltip="toggleStyle">
             <input type="checkbox" id="enabled">
           </label>
-          <label class="hide-if-sticky hide-if-new"
-                 i18n="+previewLabel, title:previewTooltip">
-            <input type="checkbox" id="editor.livePreview">
-          </label>
+          <span id="livePreview-settings" class="hide-if-sticky hide-if-new">
+            <label i18n="+previewLabel, title:previewTooltip">
+              <input type="checkbox" id="editor.livePreview">
+            </label>
+            <details>
+              <summary></summary>
+              <main>
+                <input id="editor.livePreview.delay" type="number" min="0" max="9" step="0.1">s
+              </main>
+            </details>
+          </span>
           <label id="disableAll-label" class="hide-if-sticky"
                  i18n="data-on:disableAllStyles, data-off:disableAllStylesOff">
             <input id="disableAll" type="checkbox">

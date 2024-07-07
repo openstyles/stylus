@@ -100,6 +100,7 @@
     'editor.appliesToLineWidget': true, // show applies-to line widget on the editor
     'editor.autosaveDraft': 10, // seconds
     'editor.livePreview': true,
+    'editor.livePreview.delay': .2, // seconds (Chrome devtools uses 200ms)
     'editor.targetsFirst': true,
 
     // show CSS colors as clickable colored rectangles

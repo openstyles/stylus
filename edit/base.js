@@ -7,7 +7,7 @@
 /* global initBeautifyButton */// beautify.js
 /* global prefs */
 /* global t */// localization.js
-/* global UCD FIREFOX clipString getOwnTab sessionStore tryJSONparse tryURL */// toolbox.js
+/* global UCD FIREFOX clipString debounce getOwnTab sessionStore tryJSONparse tryURL */// toolbox.js
 'use strict';
 
 /**
@@ -20,6 +20,7 @@ const editor = {
   isUsercss: false,
   isWindowed: false,
   livePreview: LivePreview(),
+  livePreviewLazy: cb => debounce(cb, prefs.get('editor.livePreview.delay') * 1000),
   /** @type {Set<HTMLInputElement>} */
   regexps: new Set(),
   /** @type {'customName'|'name'} */
@@ -28,7 +29,6 @@ const editor = {
     stylus: 'https://stylus-lang.com/try.html',
     less: 'https://lesscss.org/less-preview/',
   },
-  previewDelay: 200, // Chrome devtools uses 200
   saving: false,
   scrollInfo: {},
 

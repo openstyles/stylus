@@ -1,7 +1,7 @@
 /* global $ $create $remove messageBoxProxy */// dom.js
 /* global API */// msg.js
 /* global CodeMirror */
-/* global RX_META UCD debounce */// toolbox.js
+/* global RX_META UCD */// toolbox.js
 /* global MozDocMapper clipString helpPopup rerouteHotkeys showCodeMirrorPopup */// util.js
 /* global EditorSection */// sections-editor-section.js
 /* global editor */
@@ -18,6 +18,7 @@ function SectionsEditor() {
   /** @type {EditorSection[]} */
   const sections = [];
   const xo = new IntersectionObserver(refreshOnViewListener, {rootMargin: '100%'});
+  const updateLivePreview = editor.livePreviewLazy.bind(null, updateLivePreviewNow);
   let INC_ID = 0; // an increment id that is used by various object to track the order
   let sectionOrder = '';
   let headerOffset; // in compact mode the header is at the top so it reduces the available height
@@ -482,10 +483,6 @@ function SectionsEditor() {
     $('#enabled').checked = style.enabled !== false;
     $('#url').href = style.url || '';
     editor.updateName();
-  }
-
-  function updateLivePreview() {
-    debounce(updateLivePreviewNow, editor.previewDelay);
   }
 
   function updateLivePreviewNow() {

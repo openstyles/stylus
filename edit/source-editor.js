@@ -4,7 +4,7 @@
 /* global MozDocMapper failRegexp */// util.js
 /* global MozSectionFinder */
 /* global MozSectionWidget */
-/* global UCD RX_META debounce */// toolbox.js
+/* global UCD RX_META */// toolbox.js
 /* global chromeSync */// storage-util.js
 /* global cmFactory */
 /* global editor */
@@ -121,7 +121,7 @@ async function SourceEditor() {
   savedGeneration = cm.changeGeneration();
   cm.on('changes', () => {
     dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
-    debounce(updateLivePreview, editor.previewDelay);
+    editor.livePreviewLazy(updateLivePreview);
   });
   cm.on('optionChange', (cm, option) => {
     if (option !== 'mode') return;

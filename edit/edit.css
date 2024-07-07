@@ -128,7 +128,34 @@ html:not(.is-new-style) #heading::before {
     margin-right: 1em;
   }
 }
-
+#livePreview-settings {
+  display: inline-flex;
+  .compact-layout & {
+    margin-right: 3ex;
+  }
+  & summary {
+    position: absolute;
+    cursor: pointer;
+    padding-left: 1ex;
+  }
+  & main {
+    position: absolute;
+    z-index: 100;
+    right: 2em;
+    box-shadow: 2px 2px 1em var(--c00);
+    margin: 1.5em 0 0 1em;
+    padding: 1em;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    gap: var(--pad05);
+    > input {
+      field-sizing: content;
+      padding-left: .5em;
+      max-width: 8ch;
+    }
+  }
+}
 #preview-errors:not([hidden]) {
   color: var(--red1);
   cursor: pointer;
@@ -166,7 +193,7 @@ i,
   color: var(--fg);
 }
 /* collapsibles */
-#header details {
+#details-wrapper details {
   margin-right: var(--header-resizer-width);
   &[open] {
     overflow-y: auto;
@@ -177,7 +204,7 @@ i,
     }
   }
 }
-#header summary {
+#details-wrapper summary {
   align-items: center;
   margin-left: .25em;
   cursor: pointer;
@@ -204,7 +231,7 @@ i,
     margin-top: -.1em;
   }
 }
-#header details > :not(summary) {
+#details-wrapper details > :not(summary) {
   margin: 0 var(--pad05) 0 var(--pad);
   padding: calc(var(--pad)/4) 0;
 }
