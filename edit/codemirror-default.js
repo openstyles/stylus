@@ -1,6 +1,6 @@
 /* global $ */// dom.js
 /* global CodeMirror */
-/* global UA */// toolbox.js
+/* global UA deepMerge */// toolbox.js
 /* global editor */
 /* global prefs */
 /* global t */// localization.js
@@ -49,7 +49,7 @@
     undoDepth: 1000,
   };
 
-  Object.assign(CodeMirror.defaults, defaults, prefs.get('editor.options'));
+  deepMerge(prefs.get('editor.options'), Object.assign(CodeMirror.defaults, defaults));
   CodeMirror.mimeModes['text/css'].allowNested = true;
 
   // Adding hotkeys to some keymaps except 'basic' which is primitive by design
