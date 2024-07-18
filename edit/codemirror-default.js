@@ -34,6 +34,8 @@
       'Alt-Enter': 'toggleStyle',
       'Alt-PageDown': 'nextEditor',
       'Alt-PageUp': 'prevEditor',
+      'Alt-Home': 'showCurrentLineAtTop',
+      'Alt-End': 'showCurrentLineAtBottom',
       'Alt-Down': 'minus1',
       'Alt-Up': 'plus1',
       'Shift-Alt-Down': 'minus10',
@@ -154,6 +156,14 @@
         const [line, ch] = str.match(/^\s*(\d+)(?:\s*:\s*(\d+))?\s*$|$/);
         if (line) cm.setCursor(line - 1, ch ? ch - 1 : cur.ch);
       }, {value: cur.line + 1});
+    },
+    showCurrentLineAtTop(cm) {
+      cm.scrollTo(null, 1e99);
+      cm.scrollIntoView();
+    },
+    showCurrentLineAtBottom(cm) {
+      cm.scrollTo(null, 0);
+      cm.scrollIntoView();
     },
   });
 })();
