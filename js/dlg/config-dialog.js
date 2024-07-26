@@ -425,16 +425,17 @@ async function configDialog(style) {
     let {offsetWidth: width, offsetHeight: height} = contents;
     contents.style = '';
 
+    const dpr = devicePixelRatio;
     const elPicker = document.body.appendChild(
       $create('.colorpicker-popup', {style: 'display: none!important'}));
-    const PADDING = 50;
-    const MIN_WIDTH = parseFloat(getComputedStyle(elPicker).width) || 350;
-    const MIN_HEIGHT = 250 + PADDING;
+    const PADDING = 50 / dpr;
+    const MIN_WIDTH = parseFloat(getComputedStyle(elPicker).width) || 350 / dpr;
+    const MIN_HEIGHT = 250 / dpr + PADDING;
     elPicker.remove();
 
     const bs = document.body.style;
-    width = clamp(width + PADDING, MIN_WIDTH, 798);
-    height = clamp(height + PADDING, MIN_HEIGHT, parseInt(bs.maxHeight) || 598);
+    width = clamp(width + PADDING, MIN_WIDTH, 798 / dpr);
+    height = clamp(height + PADDING, MIN_HEIGHT, parseInt(bs.maxHeight) || 598 / dpr);
     bodyStyle = bs.cssText;
     bs.cssText = bodyStyle.replace(/((min|max)-width|min-height)\s*:[^;]+|;\s*$/g, '') + `;
       min-width:${width}px !important;
