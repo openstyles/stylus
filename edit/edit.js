@@ -72,6 +72,7 @@ editor.styleReady.then(async () => {
   const scroller = isUsercss ? $('.CodeMirror-scroll') : document.body;
   const xoRoot = isUsercss ? scroller : undefined;
   const xo = new IntersectionObserver(onScrolled, {root: xoRoot});
+  const elInfo = $('h1 a');
   scroller.appendChild(el);
   onCompactToggled(editor.mqCompact);
   editor.mqCompact.on('change', onCompactToggled);
@@ -85,8 +86,10 @@ editor.styleReady.then(async () => {
     }
     if (mq.matches) {
       xo.observe(el);
+      $('#basic-info-name').after(elInfo);
     } else {
       xo.disconnect();
+      $('h1').append(elInfo);
     }
   }
   /** @param {IntersectionObserverEntry[]} entries */

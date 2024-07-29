@@ -79,6 +79,12 @@ html:not(.is-new-style) #heading::before {
   flex-direction: column;
   & h1 {
     margin-top: 0;
+    .usercss & {
+      margin-bottom: 0;
+      + a {
+        margin-bottom: 1em;
+      }
+    }
   }
 }
 .sectioned {
@@ -125,7 +131,7 @@ html:not(.is-new-style) #heading::before {
 #basic-info-enabled {
   margin-top: .25rem;
   > :nth-last-child(n + 2) {
-    margin-right: 1em;
+    margin-right: var(--pad05);
   }
 }
 #livePreview-settings {
@@ -966,7 +972,7 @@ i,
       font-size: 14px;
     }
     .settings h2 {
-      max-width: 7vw;
+      max-width: 10vw;
     }
   }
   #header.sticky .hide-if-sticky,
@@ -992,7 +998,11 @@ i,
       flex-grow: 1;
     }
     > *:not(:last-child) {
-      margin-right: 0.8rem;
+      margin-right: var(--pad05);
+    }
+    > a {
+      order: 1;
+      align-self: center;
     }
   }
   #actions {
