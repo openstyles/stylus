@@ -254,8 +254,6 @@ i,
   align-items: center;
   > * {
     margin-bottom: var(--pad05);
-  }
-  > :nth-last-child(n + 2) {
     margin-right: .25rem;
   }
 }
@@ -1005,11 +1003,8 @@ i,
       align-self: center;
     }
   }
-  #actions {
-    display: inline-block;
-    > :nth-last-child(n + 2) {
-      margin-right: .25rem;
-    }
+  #actions .buttons {
+    flex-wrap: nowrap;
   }
   #details-wrapper {
     display: inline-flex;
