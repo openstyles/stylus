@@ -405,7 +405,9 @@
           </div>
           <button id="beautify" i18n="styleBeautify"></button>
           <button id="testRE" i18n="+genericTest, title:appliesRegexpOption" hidden></button>
-          <button id="cancel-button" i18n="title:styleCancelEditLabel">↩</button>
+          <a id="cancel-button" i18n="title:styleCancelEditLabel" tabindex="0">
+            <i class=i-undo></i>
+          </a>
         </div>
         <div id="mozilla-format-buttons" class="buttons sectioned-only hide-if-sticky">
           <button id="from-mozilla" i18n="importLabel"></button>
