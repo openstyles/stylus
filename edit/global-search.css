@@ -212,6 +212,8 @@ body .CodeMirror-search-match {
       }
       &.hidden {
         display: block !important;
+        border: none;
+        background: none;
         font-size: 0;
         width: 24px;
         text-align: center;
