@@ -427,7 +427,7 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
   }
 
   function focusRegexp() {
-    if (!this.isConnected) cm.jumpToPos(getSectionFor(this).start);
+    if (!cm.display.lineDiv.contains(this)) cm.jumpToPos(getSectionFor(this).start);
     Object.getPrototypeOf(this).focus.apply(this, arguments);
   }
 
