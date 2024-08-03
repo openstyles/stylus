@@ -254,15 +254,6 @@ button.icon {
   display: none;
 }
 
-/* collapsibles */
-#backup-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  > * {
-    margin: 0 .2rem .5rem 0;
-  }
-}
-
 #header {
   & details {
     &:not([open]) {

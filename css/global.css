@@ -279,6 +279,15 @@ summary {
 .abs {
   position: absolute;
 }
+.flex {
+  display: flex;
+}
+.wrap {
+  flex-wrap: wrap;
+}
+.gap1 > :nth-last-child(n + 2) {
+  margin-right: .25rem;
+}
 .no-stretch {
   /* reuse the current width of the parent flexbox */
   width: 0;
