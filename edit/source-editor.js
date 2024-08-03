@@ -208,8 +208,8 @@ async function SourceEditor() {
     const sameCode = editor.isSame(newStyle);
     if (sameCode) {
       savedGeneration = cm.changeGeneration();
-      dirty.clear('sourceGeneration');
       editor.useSavedStyle(newStyle);
+      dirty.clear('sourceGeneration');
       dirty.clear('enabled');
       updateLivePreview();
       return;

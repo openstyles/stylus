@@ -81,7 +81,7 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
        */
       async '.add-applies-to'(elItem, func) {
         const pos = func.item.find(1);
-        cm.replaceRange(`, ${func.typeText}("")`, pos, pos);
+        cm.replaceRange(`, ${func._.type}("")`, pos, pos);
         await new Promise(setTimeout);
         $('input', elItem.nextElementSibling).focus();
       },
@@ -99,16 +99,19 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
         const func = getFuncFor(el);
         const pos = func[part].find();
         const {value} = el;
-        if (part === 'type' && value !== func.typeText) {
-          func.typeText = func.item[KEY].dataset.type = value;
+        if (part === 'type' && value !== func._.type) {
+          func._.type = func.item[KEY].dataset.type = value;
           editor.toggleRegexp(func.value[KEY], value);
+        }
+        if (part === 'value' && value === func._.value) {
+          return;
         }
         if (part === 'value' && func === getFuncsFor(el)[0]) {
           const sec = getSectionFor(el);
           sec.tocEntry.target = value;
           if (!sec.tocEntry.label) editor.updateToc([sec]);
         }
-        cm.replaceRange(toDoubleslash(value), pos.from, pos.to, finder.IGNORE_ORIGIN);
+        cm.replaceRange(toDoubleslash(value), pos.from, pos.to);
       },
       onclick(event) {
         const {target} = event;
@@ -361,7 +364,7 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
     const elVal = $(C_VALUE, el);
     /** @namespace MarkedFunc */
     const res = el[KEY] = {
-      typeText: type,
+      _: func,
       item: markFuncPart(start, end, old.item, el),
       type: markFuncPart(start, typeEnd, old.type, $(C_TYPE, el), type, toLowerCase),
       value: markFuncPart(valuePos, valueEnd, old.value, elVal, value, fromDoubleslash),
@@ -447,4 +450,5 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
   function setProp(obj, name, value) {
     return Object.defineProperty(obj, name, {value, configurable: true});
   }
+
 }
