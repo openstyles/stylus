@@ -112,11 +112,11 @@ const editor = {
 
   function makeName(params) {
     const prefix = tryURL(params.get('url-prefix'));
-    const {pathname: p = '', hostname: host} = prefix;
-    const path = p === '/' ? '' : clipString(p.replace(/\.(html?|aspx?|cgi|php)$/, ''));
-    const name = params.get('name') || host;
-    return (name ? name + path : params.get('domain') || '?') +
-      ` - ${new Date().toLocaleDateString([], {year: 'numeric', month: 'short'})}`;
+    const name = params.get('name') || prefix.hostname;
+    const p = prefix.pathname || '/';
+    return name
+      ? name + (p === '/' ? '' : clipString(p.replace(/\.(html?|aspx?|cgi|php)$/, '')))
+      : params.get('domain') || '?';
   }
 })();
 
