@@ -1,4 +1,7 @@
 {
+  "InaccessibleFileHint": {
+    "message": "Stylus kan ikke tilgå nogle filtyper (fx .pdf, .json)."
+  },
   "addStyleLabel": {
     "message": "Skriv ny stil"
   },
@@ -34,6 +37,9 @@
   "appliesLineWidgetLabel": {
     "message": "Vis 'Anvendes på'-info"
   },
+  "appliesLineWidgetWarning": {
+    "message": "Virker ikke med minificeret CSS"
+  },
   "appliesRegexpOption": {
     "message": "URL'er der matcher regexp'en"
   },
@@ -44,7 +50,7 @@
     "message": "Kan ikke fjerne sidste 'Anvendes på'-optegnelse"
   },
   "appliesSpecify": {
-    "message": "Specificér"
+    "message": "Angiv"
   },
   "appliesToEverything": {
     "message": "Alt"

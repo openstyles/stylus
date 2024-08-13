@@ -283,6 +283,9 @@
   "editorSettings": {
     "message": "Configurações do editor"
   },
+  "emptyCode": {
+    "message": "As seções de estilo deste URL estão vazias"
+  },
   "enableStyleLabel": {
     "message": "Ativar"
   },
@@ -353,6 +356,12 @@
   },
   "genericHistoryLabel": {
     "message": "Histórico"
+  },
+  "genericMaximum": {
+    "message": "máximo"
+  },
+  "genericMinimum": {
+    "message": "mínimo"
   },
   "genericNext": {
     "message": "Próximo"
@@ -479,8 +488,14 @@
   "linkGetHelp": {
     "message": "Buscar ajuda"
   },
+  "linkGetShareStyles": {
+    "message": " Obtenha e compartilhe estilos"
+  },
   "linkGetStyles": {
     "message": "Obter estilos"
+  },
+  "linkGetStylesInfo": {
+    "message": "Este site de arquivo foi criado por um membro da comunidade userstyle para fazer backup do lento e sem resposta userstyles.org. O arquivo atualiza seu conteúdo aproximadamente uma vez por dia."
   },
   "linkTranslate": {
     "message": "Traduzir"
@@ -611,6 +626,9 @@
         "content": "$1"
       }
     }
+  },
+  "meta_invalidVersion": {
+    "message": "Número de versão inválido"
   },
   "meta_invalidWord": {
     "message": "Espera-se uma palavra"
