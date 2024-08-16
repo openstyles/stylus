@@ -265,15 +265,21 @@ async function importFromString(jsonString) {
   }
 
   function renderStats([id, {ids, names, legend, isOptions}]) {
-    return names.length &&
+    if (!names.length) return;
+    let btn;
+    if (isOptions && names.some(_ => _.isValid)) {
+      btn = $create('button', t('importLabel'));
+      importOptions.call(btn);
+    }
+    return (
       $create('details', {'data-id': id, open: isOptions}, [
         $create('summary',
           $create('b', (isOptions ? '' : names.length + ' ') + t(legend))),
         $create('small',
           names.map(ids ? listItemsWithId : isOptions ? listOptions : listItems, ids)),
-        isOptions && names.some(_ => _.isValid) &&
-        $create('button', {onclick: importOptions}, t('importLabel')),
-      ]);
+        btn,
+      ])
+    );
   }
 
   function listOptions({name, isValid}) {
@@ -311,6 +317,7 @@ async function importFromString(jsonString) {
       this.textContent = label;
       this.onclick = importOptions;
     };
+    return this;
   }
 
   async function undo() {
