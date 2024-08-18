@@ -82,7 +82,7 @@ function onWindowResize() {
   window.off('resize', this);
   const el = $create('#max', {
     // ensuring userstyles can't make it invisible accidentally
-    style: important('all:initial; height:1px; margin-top:-2px;'),
+    style: important('all:revert; height:1px; margin-top:-2px;'),
   });
   document.documentElement.appendChild(el);
   new IntersectionObserver(([e], obs) => {
