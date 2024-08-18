@@ -393,3 +393,81 @@ function blockPopup(val = true) {
   $.rootCL.toggle('blocked', isBlocked);
   $('#write-wrapper').classList.toggle('hidden', !$(WRITE_FRAME_SEL));
 }
+
+/**
+ * Event Listener for the configure button.
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  document.on('click', (event) => {
+    if (event.target.classList.contains('configure')) {
+      handleConfigureClick();
+    } else if (event.target.id === 'message-box-close-icon') {
+      resetStylusPopupHeight();
+    }
+  });
+});
+
+/**
+ * Handles the click event on the configure button.
+ */
+function handleConfigureClick() {
+  setTimeout(() => {
+    const configDialog = $('.config-dialog');
+    const stylusPopup = $('#stylus-popup');
+
+    if (configDialog && stylusPopup) {
+      const maxHeight = calculateDialogHeight(configDialog);
+      updateStylusPopupHeight(stylusPopup, maxHeight);
+    } else {
+      console.log('Config dialog or stylus popup element not found');
+    }
+  }, 25); // Slight delay to ensure elements are available
+}
+
+/**
+ * Calculates the maximum height required for the config dialog.
+ * @param {Element} configDialog - The config dialog element.
+ * @returns {number} - The calculated maximum height.
+ */
+function calculateDialogHeight(configDialog) {
+  let maxHeight = 0;
+  const dialogTop = configDialog.getBoundingClientRect().top;
+
+  configDialog.querySelectorAll('*').forEach((element) => {
+    const rect = element.getBoundingClientRect();
+    const style = window.getComputedStyle(element);
+    const bottom = rect.top + rect.height +
+                   parseFloat(style.marginBottom || 0) +
+                   parseFloat(style.paddingBottom || 0) +
+                   parseFloat(style.borderBottomWidth || 0);
+
+    maxHeight = Math.max(maxHeight, bottom);
+  });
+
+  maxHeight -= dialogTop;
+  return maxHeight;
+}
+
+/**
+ * Updates the height of the stylus popup element.
+ * @param {Element} stylusPopup - The stylus popup element.
+ * @param {number} height - The height to set.
+ */
+function updateStylusPopupHeight(stylusPopup, height) {
+  stylusPopup.style.height = `${height}px`;
+  stylusPopup.style.maxHeight = 'none';
+}
+
+/**
+ * Resets the stylus popup height to its default state.
+ */
+function resetStylusPopupHeight() {
+  const stylusPopup = $('#stylus-popup');
+  if (stylusPopup) {
+    stylusPopup.style.height = '';
+    stylusPopup.style.maxHeight = '';
+  }
+}
+
+
+
