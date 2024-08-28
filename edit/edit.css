@@ -948,7 +948,8 @@ i,
     border-bottom: 1px dashed var(--c65);
     padding: var(--pad05) var(--pad05) 0;
     &:not(.sticky) {
-      display: block;
+      flex-direction: row;
+      flex-wrap: wrap;
     }
     &.sticky {
       flex-direction: row;
@@ -991,6 +992,9 @@ i,
     box-sizing: border-box;
     display: flex;
     flex-wrap: wrap;
+    #header:not(.sticky) & {
+      width: 100%;
+    }
     #name,
     > *:first-child {
       flex-grow: 1;
