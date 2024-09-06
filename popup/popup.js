@@ -1,4 +1,4 @@
-/* global $ $$ $create $remove getEventKeyName important setupLivePrefs */// dom.js
+/* global $ $$ $create $remove getEventKeyName setupLivePrefs */// dom.js
 /* global API msg */// msg.js
 /* global Events */
 /* global popupGetStyles ABOUT_BLANK */// popup-get-styles.js
@@ -38,8 +38,7 @@ const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrI
   initPopup(...data);
   showStyles(...data);
   require(['/popup/hotkeys']);
-  if (UA.mobile) setMaxHeight('100vh');
-  else window.on('resize', {h0: innerHeight, handleEvent: onWindowResize});
+  if (!UA.mobile) window.on('resize', onWindowResize);
 })();
 
 msg.onExtension(onRuntimeMessage);
@@ -78,26 +77,12 @@ function onRuntimeMessage(msg) {
 }
 
 function onWindowResize() {
-  if (this.h0 === innerHeight) return;
-  window.off('resize', this);
-  const el = $create('#max', {
-    // ensuring userstyles can't make it invisible accidentally
-    style: important('all:revert; height:1px; margin-top:-2px;'),
-  });
-  document.documentElement.appendChild(el);
-  new IntersectionObserver(([e], obs) => {
-    if (!e.intersectionRatio) {
-      obs.disconnect();
-      setMaxHeight();
-    }
-  }).observe(el);
-  if (CHROME < 69 && el.getBoundingClientRect().top >= innerHeight) {
-    setMaxHeight();
+  if (document.readyState !== 'complete') {
+    requestAnimationFrame(onWindowResize);
+  } else if (document.body.clientHeight > innerHeight) {
+    removeEventListener('resize', onWindowResize);
+    document.body.style.maxHeight = innerHeight + 'px';
   }
-}
-
-function setMaxHeight(h = innerHeight - 1 + 'px') {
-  document.body.style['max-height'] = h;
 }
 
 function toggleSideBorders(_key, state) {

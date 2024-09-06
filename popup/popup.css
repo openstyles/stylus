@@ -8,6 +8,7 @@
   --hover: var(--accent-1);
   --hover-icon: var(--c10);
   --hover-disabled: var(--c40);
+  scrollbar-width: none; /* suppressing the redundant overall scrollbar */
 }
 [data-ui-theme="dark"] {
   --red1: hsl(0, 85%, 65%);
