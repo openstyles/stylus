@@ -38,7 +38,8 @@ const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrI
   initPopup(...data);
   showStyles(...data);
   require(['/popup/hotkeys']);
-  if (!UA.mobile) window.on('resize', onWindowResize);
+  if (UA.mobile) document.body.style.maxHeight = '100vh';
+  else window.on('resize', onWindowResize);
 })();
 
 msg.onExtension(onRuntimeMessage);
