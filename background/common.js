@@ -78,12 +78,14 @@ const broadcastInjectorConfig = ((
   data = {
     method: 'injectorConfig',
     cfg,
-  },
-  setTop = tab => {
+  }
+) => {
+  return run;
+  function setTop(tab) {
     data.cfg.top = tab && getUrlOrigin(tab.url);
     return data;
-  },
-  throttle = () => {
+  }
+  function throttle() {
     data.cfg = cfg;
     msg.broadcast(data, {
       getData: cfg.top && setTop,
@@ -91,9 +93,13 @@ const broadcastInjectorConfig = ((
     });
     cfg = null;
   }
-) => (key, val) => {
-  if (!cfg) { cfg = {}; setTimeout(throttle); }
-  cfg[map[key] || key] = val;
+  function run(key, val) {
+    if (!cfg) {
+      cfg = {};
+      setTimeout(throttle);
+    }
+    cfg[map[key] || key] = val;
+  }
 })();
 
 /* exported createCache */
