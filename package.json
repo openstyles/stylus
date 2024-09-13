@@ -16,7 +16,7 @@
     "less": "^4.2.0",
     "lz-string-unsafe": "^1.4.4-fork-1",
     "stylelint-bundle": "^16.5.0",
-    "stylus-lang-bundle": "^0.58.1",
+    "stylus-lang-bundle": "^0.63.1",
     "usercss-meta": "^0.12.0",
     "webext-launch-web-auth-flow": "^0.1.1"
   },
