@@ -136,20 +136,23 @@ html:not(.is-new-style) #heading::before {
 }
 #livePreview-settings {
   display: inline-flex;
+  align-items: center;
   .compact-layout & {
     margin-right: 3ex;
   }
   & summary {
-    position: absolute;
-    cursor: pointer;
-    padding-left: 1ex;
+    padding-left: .4rem;
+    display: block;
+  }
+  & details[open] summary i {
+    color: var(--fg);
   }
   & main {
     position: absolute;
     z-index: 100;
     right: 2em;
-    box-shadow: 2px 2px 1em var(--c00);
-    margin: 1.5em 0 0 1em;
+    box-shadow: 2px 2px .5em var(--c65);
+    margin-top: .5em;
     padding: 1em;
     background: var(--bg);
     display: flex;
@@ -916,10 +919,10 @@ i,
     margin-right: var(--pad);
   }
   #publish[open],
-  #header details:not([open]) {
+  #details-wrapper details:not([open]) {
     flex: 0 0 auto;
   }
-  #header details {
+  #details-wrapper details {
     &[open]:not(:last-child) {
       margin-bottom: var(--pad05);
     }
