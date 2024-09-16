@@ -95,6 +95,7 @@ const iconMan = (() => {
   };
 
   function onPortDisconnected({sender}) {
+    ignoreChromeError();
     if (tabMan.getStyleIds(sender.tab.id)) {
       API.updateIconBadge.call({sender}, [], {lazyBadge: true});
     }

@@ -76,6 +76,7 @@
 
   msg.onTab(applyOnMessage);
   addEventListener('pageshow', onBFCache);
+  addEventListener('pagehide', onBFCache);
   if (TDM < 0) document.onprerenderingchange = onReified;
 
   if (!chrome.tabs) {
@@ -224,6 +225,7 @@
         port = chrome.runtime.connect({name: 'iframe'});
       } else if (port && !styleInjector.list.length) {
         port.disconnect();
+        port = null;
       }
       if (lazyBadge && performance.now() > 1000) lazyBadge = false;
     }
@@ -274,6 +276,7 @@
     // so we need to detach event listeners
     removeEventListener(evt.type, orphanCheck, true);
     removeEventListener('pageshow', onBFCache);
+    removeEventListener('pagehide', onBFCache);
     if (mqDark) mqDark.onchange = null;
     if (offscreen) for (const fn of offscreen) fn();
     if (TDM < 0) document.onprerenderingchange = null;
