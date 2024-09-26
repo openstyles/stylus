@@ -6,7 +6,7 @@
 /* global t */// localization.js
 'use strict';
 
-(() => {
+prefs.ready.then(() => {
   // CodeMirror miserably fails on keyMap='' so let's ensure it's not
   if (!prefs.get('editor.keyMap')) {
     prefs.reset('editor.keyMap');
@@ -166,4 +166,4 @@
       cm.scrollIntoView();
     },
   });
-})();
+});

@@ -11,7 +11,7 @@
   when the instance is not used anymore.
 */
 
-(() => {
+prefs.ready.then(() => {
   //#region Factory
 
   const cms = new Set();
@@ -352,4 +352,4 @@
   }
 
   //#endregion
-})();
+});
