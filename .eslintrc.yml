@@ -1,15 +1,16 @@
 # https://github.com/eslint/eslint/blob/master/docs/rules/README.md
 
 parserOptions:
-  ecmaVersion: 2017
+  ecmaVersion: 2023
+  sourceType: module
 
 env:
   browser: true
   es6: true
-  webextensions: true
 
 globals:
-  require: readonly # in toolbox.js
+  __BUILD: false
+  __ENTRY: false
 
 rules:
   accessor-pairs: [2]
@@ -22,7 +23,13 @@ rules:
   brace-style: [2, 1tbs, {allowSingleLine: true}]
   camelcase: [2, {properties: never}]
   class-methods-use-this: [2]
-  comma-dangle: [2, {arrays: always-multiline, objects: always-multiline}]
+  comma-dangle: [2, {
+    arrays: always-multiline,
+    objects: always-multiline,
+    exports: always-multiline,
+    imports: always-multiline,
+    functions: only-multiline
+  }]
   comma-spacing: [2, {before: false, after: true}]
   comma-style: [2, last]
   complexity: [0]
@@ -59,7 +66,7 @@ rules:
   keyword-spacing: [2]
   lines-around-comment: [0]
   lines-around-directive: [0]
-  max-len: [2, {code: 120, ignoreComments: true, ignoreRegExpLiterals: true}]
+  max-len: [2, {code: 100, ignoreComments: true, ignoreRegExpLiterals: true}]
   max-lines: [0]
   max-nested-callbacks: [0]
   max-params: [0]
@@ -230,24 +237,31 @@ rules:
   yoda: [2, never]
 
 overrides:
-  - files: [tools/*]
+  - files: [tools/**/*]
     env:
       node: true
       browser: false
       webextensions: false
     parserOptions:
       ecmaVersion: 2021
+      sourceType: script
 
-  - files: ["**/*worker*.js"]
+  - files:
+    - "**/*-worker.js"
+    - src/js/meta-parser.js
+    - src/js/moz-parser.js
+    - src/js/usercss-compiler.js
+    - src/js/worker-util.js
     env:
       worker: true
+    parserOptions:
+      sourceType: script
+    globals:
+      createWorkerApi: false
 
-  - files: [background/*]
+  - files:
+      src/content/*
     rules:
-      no-restricted-syntax: [2,  {
-        selector: 'MemberExpression[object.name="API"][property.name="styles"]',
-        message: 'Please use `styleMan` as some of its methods exposed on `API` are synchronous in bg context'
-      }, {
-        selector: 'MemberExpression[object.object.name="API"][object.property.name="usercss"][property.name="find"]',
-        message: 'Please use `usercssMan` for synchronous methods in bg context'
+      no-restricted-imports: [2, {
+        paths: [{name: "/js/msg", message: "Use 'msg-base' in content scripts."}]
       }]

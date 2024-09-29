@@ -1,8 +1,9 @@
-/* global browserCommands */// background.js
-/* global msg */
-/* global prefs */
-/* global CHROME URLS ignoreChromeError */// toolbox.js
-'use strict';
+import browser from '/js/browser';
+import {sendTab} from '/js/msg';
+import * as prefs from '/js/prefs';
+import {CHROME, URLS, ignoreChromeError} from '/js/toolbox';
+import {browserCommands} from './common';
+import {bgPrefsSet} from './bg-prefs';
 
 chrome.management.getSelf(ext => {
   const contextMenus = Object.assign({
@@ -34,7 +35,7 @@ chrome.management.getSelf(ext => {
       contexts: ['editable'],
       documentUrlPatterns: [URLS.ownOrigin + '*'],
       click: (info, tab) => {
-        msg.sendTab(tab.id, {method: 'editDeleteText'}, undefined, 'extension');
+        sendTab(tab.id, {method: 'editDeleteText'}, undefined, 'extension');
       },
     },
   });
@@ -51,7 +52,11 @@ chrome.management.getSelf(ext => {
         if (!item.type) {
           item.type = 'checkbox';
           item.checked = prefs.get(id);
-          if (isInit) prefs.subscribe(id, CHROME >= 62 && CHROME <= 64 ? toggleCheckmarkBugged : toggleCheckmark);
+          if (isInit) {
+            prefs.subscribe(id, CHROME >= 62 && CHROME <= 64
+              ? toggleCheckmarkBugged
+              : toggleCheckmark);
+          }
         } else if (isInit) {
           prefs.subscribe(id, togglePresence, true);
           continue;
@@ -74,7 +79,7 @@ chrome.management.getSelf(ext => {
 
   /** @param {chrome.contextMenus.OnClickData} info */
   function togglePref(info) {
-    prefs.set(info.menuItemId, info.checked);
+    bgPrefsSet(info.menuItemId, info.checked);
   }
 
   function togglePresence(id, checked) {

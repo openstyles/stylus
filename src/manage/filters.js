@@ -1,13 +1,12 @@
-/* global $ $$ $create messageBoxProxy */// dom.js
-/* global API */
-/* global debounce */// toolbox.js
-/* global installed */// manage.js
-/* global fitNameColumn fitSizeColumn */// render.js
-/* global prefs */
-/* global router */
-/* global sorter */
-/* global t */// localization.js
-'use strict';
+import messageBox from '/js/dlg/message-box';
+import {$, $$, $create} from '/js/dom';
+import {t} from '/js/localization';
+import {API} from '/js/msg';
+import * as prefs from '/js/prefs';
+import router from '/js/router';
+import {debounce} from '/js/toolbox';
+import {installed} from './manage';
+import {fitNameColumn, fitSizeColumn} from './render';
 
 const filtersSelector = {
   hide: '',
@@ -44,7 +43,7 @@ function initFilters() {
 
   $('#search-help').onclick = event => {
     event.preventDefault();
-    messageBoxProxy.show({
+    messageBox.show({
       className: 'help-text center-dialog',
       title: t(fltSearch),
       contents:
@@ -155,8 +154,7 @@ function filterOnChange({target: el, forceRefilter, alreadySearched}) {
   reapplyFilter(installed, alreadySearched).then(sorter.updateStripes);
 }
 
-/* exported filterAndAppend */
-function filterAndAppend({entry, container}) {
+export function filterAndAppend({entry, container}) {
   if (!container) {
     container = [entry];
     // reverse the visibility, otherwise reapplyFilter will see no need to work
@@ -265,7 +263,9 @@ function showFiltersStats() {
 async function searchStyles({immediately, container} = {}) {
   const query = elSearch.value.trim();
   const mode = elSearchMode.value;
-  if (query === elSearch.lastValue && mode === elSearchMode.lastValue && !immediately && !container) {
+  if (query === elSearch.lastValue
+  && mode === elSearchMode.lastValue
+  && !immediately && !container) {
     return;
   }
   if (!immediately) {

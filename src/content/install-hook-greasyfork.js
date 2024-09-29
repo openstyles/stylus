@@ -1,5 +1,5 @@
 /* global API */// msg.js
-'use strict';
+'use strict'; // eslint-disable-line strict
 
 // onCommitted may fire twice
 // Note, we're checking against a literal `1`, not just `if (truthy)`,

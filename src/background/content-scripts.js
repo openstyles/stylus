@@ -1,15 +1,15 @@
-/* global bgReady */// common.js
-/* global msg */
-/* global tabMan */
-/* global URLS ignoreChromeError stringAsRegExpStr */// toolbox.js
-'use strict';
+import browser from '/js/browser';
+import {sendTab} from '/js/msg';
+import {ignoreChromeError, stringAsRegExpStr, URLS} from '/js/toolbox';
+import {bgReady} from './common';
+import tabMan from './tab-manager';
 
-/*
+/**
  Reinject content scripts when the extension is reloaded/updated.
  Not used in Firefox as it reinjects automatically.
  */
 
-bgReady.all.then(() => {
+if (CHROME) bgReady.all.then(() => { // eslint-disable-line curly
   const ALL_URLS = '<all_urls>';
   const SCRIPTS = chrome.runtime.getManifest().content_scripts;
   const globToRe = (s, re = '.') => stringAsRegExpStr(s.replace(/\*/g, '\n')).replace(/\n/g, re + '*?');
@@ -30,7 +30,7 @@ bgReady.all.then(() => {
   async function injectToTab(tabId, url) {
     const jobs = [];
     tabMan.set(tabId, 'url', url);
-    if (await msg.sendTab(tabId, {method: 'backgroundReady'})) {
+    if (await sendTab(tabId, {method: 'backgroundReady'})) {
       return;
     }
     for (const cs of SCRIPTS) {

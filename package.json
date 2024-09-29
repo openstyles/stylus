@@ -5,9 +5,10 @@
   "license": "GPL-3.0-only",
   "repository": "openstyles/stylus",
   "author": "Stylus Team",
-  "dependenciesNotes": {
-    "codemirror": "WARNING! Always use an exact version and test it for a while before releasing"
-  },
+  "browserslist": [
+    "Chrome >= 61",
+    "Firefox >= 57"
+  ],
   "dependencies": {
     "@eight04/draggable-list": "^0.3.0",
     "codemirror": "5.65.10",
@@ -21,8 +22,12 @@
     "webext-launch-web-auth-flow": "^0.1.1"
   },
   "devDependencies": {
-    "@types/chrome": "^0.0.263",
-    "@types/firefox-webext-browser": "^120.0.3",
+    "@babel/preset-env": "^7.25.4",
+    "@rollup/plugin-alias": "^5.1.1",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-commonjs": "^28.0.0",
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "@rollup/plugin-terser": "^0.4.4",
     "chalk": "^4.1.2",
     "eslint": "^8.48.0",
     "fast-glob": "^3.3.1",
@@ -31,6 +36,9 @@
     "node-fetch": "^2.7.0",
     "postcss": "^8.4.32",
     "postcss-preset-env": "^9.3.0",
+    "rollup": "^4.22.5",
+    "rollup-plugin-copy": "^3.5.0",
+    "rollup-plugin-css-only": "^4.5.2",
     "svg2ttf": "^6.0.3",
     "svgicons2svgfont": "^12.0.0",
     "sync-version": "^1.0.1"
@@ -40,6 +48,8 @@
     "test": "node tools/test.js && npm run lint",
     "update-locales": "tx pull --all && node tools/fix-transifex.js && git commit -m \"update locales\" _locales",
     "update-transifex": "tx push -s",
+    "build": "rollup -c",
+    "watch": "rollup -c -w",
     "build-chrome": "npm test && node tools/build.js chrome",
     "build-firefox": "npm test && node tools/build.js firefox",
     "build-icons": "node tools/build-icons",

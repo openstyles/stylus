@@ -1,8 +1,6 @@
-/* global chromeLocal */// storage-util.js
-'use strict';
+import {chromeLocal} from '/js/storage-util';
 
-/* exported createChromeStorageDB */
-function createChromeStorageDB(PREFIX) {
+export default function ChromeStorageDB(PREFIX) {
   let INC;
   const isMain = !PREFIX;
   if (!PREFIX) PREFIX = 'style-';

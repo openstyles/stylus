@@ -1,12 +1,13 @@
-/* global $$ $ $create getEventKeyName messageBoxProxy moveFocus */// dom.js
-/* global CodeMirror */
-/* global editor */
-/* global prefs */
-/* global clipString */// toolbox.js
-/* global t */// localization.js
-'use strict';
+import messageBox from '/js/dlg/message-box';
+import {$, $$, $create, getEventKeyName, moveFocus} from '/js/dom';
+import {t} from '/js/localization';
+import * as prefs from '/js/prefs';
+import {clipString} from '/js/toolbox';
+import CodeMirror from 'codemirror';
+import {extraKeys} from './codemirror-default';
+import editor from './editor';
 
-const helpPopup = {
+export const helpPopup = {
   SEL: '#help-popup',
 
   /**
@@ -48,7 +49,7 @@ const helpPopup = {
     }
     if (event && (el = div.codebox) && !el.options.readOnly && !el.isClean()) {
       setTimeout(async () => {
-        const ok = await messageBoxProxy.confirm(t('confirmDiscardChanges'));
+        const ok = await messageBox.confirm(t('confirmDiscardChanges'));
         return ok && helpPopup.close();
       });
       return;
@@ -64,7 +65,7 @@ const helpPopup = {
 };
 
 // reroute handling to nearest editor when keypress resolves to one of these commands
-const rerouteHotkeys = {
+export const rerouteHotkeys = {
   commands: [
     'beautify',
     'colorpicker',
@@ -97,15 +98,14 @@ const rerouteHotkeys = {
       }
     };
     if (CodeMirror.lookupKey(keyName, CodeMirror.defaults.keyMap, rerouteCommand) === 'handled' ||
-        CodeMirror.lookupKey(keyName, CodeMirror.defaults.extraKeys, rerouteCommand) === 'handled') {
+        CodeMirror.lookupKey(keyName, extraKeys, rerouteCommand) === 'handled') {
       event.preventDefault();
       event.stopPropagation();
     }
   },
 };
 
-/* exported createHotkeyInput */
-function createHotkeyInput(prefId, {buttons = true, onDone}) {
+export function createHotkeyInput(prefId, {buttons = true, onDone}) {
   const RX_ERR = new RegExp('^(' + [
     /Space/,
     /(Shift-)?./, // a single character
@@ -170,8 +170,7 @@ function createHotkeyInput(prefId, {buttons = true, onDone}) {
   }
 }
 
-/* exported showCodeMirrorPopup */
-function showCodeMirrorPopup(title, html, options) {
+export function showCodeMirrorPopup(title, html, options) {
   const popup = helpPopup.show(title, html, {className: 'big'});
 
   let cm = popup.codebox = CodeMirror(popup._contents, Object.assign({
@@ -209,28 +208,7 @@ function showCodeMirrorPopup(title, html, options) {
   return popup;
 }
 
-/* exported trimCommentLabel */
-function trimCommentLabel(str, limit = 1000) {
+export function trimCommentLabel(str, limit = 1000) {
   // stripping /*** foo ***/ to foo
   return clipString(str.replace(/^[!-/:;=\s]*|[-#$&(+,./:;<=>\s*]*$/g, ''), limit);
-}
-
-function failRegexp(r) {
-  try {
-    new RegExp(r);
-    r = '';
-  } catch (err) {
-    r = err.message.split('/:').pop().trim();
-  }
-  return r;
-}
-
-/* exported validateRegexp */
-function validateRegexp({target: el}) {
-  let err = failRegexp(el.value);
-  if (err) err = t('styleBadRegexp') + '\n' + err;
-  if (el.title !== err) {
-    el.title = err;
-    el.setCustomValidity(err);
-  }
 }

@@ -1,6 +1,3 @@
-/* global $$ $ waitForSelector */// dom.js
-'use strict';
-
 /**
  * <tag i18n="id"> - like el.prepend() inserts the text as the first node
  * <tag i18n="+id"> - like el.append() inserts the text as the last node
@@ -8,14 +5,17 @@
  * <tag i18n="title: id"> - creates an attribute `title`, spaces are ignored
  * <tag i18n="id, +id2, title:id3, placeholder:id4, data-foo:id5">
  */
+import {$, $$} from './dom-base';
+import {waitForSelector} from './dom-util';
 
-function t(key, params, strict = true) {
+export function t(key, params, strict = true) {
   const s = !params && t.cache[key]
     || (t.cache[key] = chrome.i18n.getMessage(key, params));
   if (!s && strict) throw `Missing string "${key}"`;
   return s;
 }
 
+// TODO: export directly
 Object.assign(t, {
   cache: {},
   onBody: [],
@@ -94,10 +94,11 @@ Object.assign(t, {
     const {content} = el;
     const toRemove = [];
     // Compress inter-tag whitespace to reduce DOM tree and avoid space between elements without flex
-    const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_COMMENT);
+    const walker = document.createTreeWalker(content,
+      4 /*NodeFilter.SHOW_TEXT*/ | 0x80 /*NodeFilter.SHOW_COMMENT*/);
     for (let n; (n = walker.nextNode());) {
       if (!/[\xA0\S]/.test(n.textContent) ||  // allowing \xA0 so as to preserve &nbsp;
-          n.nodeType === Node.COMMENT_NODE) {
+          n.nodeType === 8 /*Node.COMMENT_NODE*/) {
         toRemove.push(n);
       }
     }
@@ -183,7 +184,10 @@ Object.assign(t, {
       const newDate = new Date(Number(date) || date);
       const needsYear = newDate.getYear() !== now.getYear();
       const needsWeekDay = needsTime && (now - newDate <= 7 * 24 * 3600e3);
-      const intlKey = `_intl${needsWeekDay ? 'W' : ''}${needsYear ? 'Y' : ''}${needsTime ? 'HM' : ''}`;
+      const intlKey = '_intl' +
+        (needsWeekDay ? 'W' : '') +
+        (needsYear ? 'Y' : '') +
+        (needsTime ? 'HM' : '');
       const intl = t[intlKey] ||
         (t[intlKey] = new Intl.DateTimeFormat([chrome.i18n.getUILanguage(), 'en'], {
           day: 'numeric',

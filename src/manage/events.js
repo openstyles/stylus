@@ -1,18 +1,20 @@
-/* global API */// msg.js
-/* global installed newUI */// manage.js
-/* global checkUpdate handleUpdateInstalled */// updater-ui.js
-/* global createStyleElement createTargetsElement getFaviconSrc styleToDummyEntry updateTotal */// render.js
-/* global debounce getOwnTab sessionStore UCD */// toolbox.js
-/* global filterAndAppend showFiltersStats */// filters.js
+import messageBox from '/js/dlg/message-box';
+import {filterAndAppend, showFiltersStats} from '/js/filters';
 /* global sorter */
-/* global t */// localization.js
+import {t} from '/js/localization';
+import {installed, newUI} from '/js/manage';
+import {API} from '/js/msg';
+import {
+  createStyleElement, createTargetsElement, getFaviconSrc, styleToDummyEntry, updateTotal,
+} from '/js/render';
+import {debounce, getOwnTab, sessionStore, UCD} from '/js/toolbox';
+import {checkUpdate, handleUpdateInstalled} from '/js/updater-ui';
 /* global
   $
   $$
   $entry
   animateElement
   getEventKeyName
-  messageBoxProxy
   scrollElementIntoView
 */// dom.js
 'use strict';
@@ -48,14 +50,14 @@ const Events = {
   async delete(event, entry) {
     const id = entry.styleId;
     animateElement(entry);
-    const {button} = await messageBoxProxy.show({
+    const {button} = await messageBox.show({
       title: t('deleteStyleConfirm'),
       contents: entry.styleMeta.customName || entry.styleMeta.name,
       className: 'danger center',
       buttons: [t('confirmDelete'), t('confirmCancel')],
     });
     if (button === 0) {
-      API.styles.delete(id);
+      API.styles.remove(id);
     }
     const deleteButton = $('#message-box-buttons > button');
     if (deleteButton) deleteButton.removeAttribute('data-focused-via-click');

@@ -1,10 +1,11 @@
-/* global $ $create moveFocus */// dom.js
-/* global CodeMirror */
-/* global createHotkeyInput helpPopup */// util.js
-/* global editor */
-/* global prefs */
-/* global t */// localization.js
-'use strict';
+import {t} from '/js/localization';
+import {$, $create, moveFocus} from '/js/dom';
+import * as prefs from '/js/prefs';
+import {require} from '/js/toolbox';
+import CodeMirror from 'codemirror';
+import {extraKeys} from './codemirror-default';
+import editor from './editor';
+import {createHotkeyInput, helpPopup} from './util';
 
 CodeMirror.commands.beautify = cm => {
   // using per-section mode when code editor or applies-to block is focused
@@ -13,7 +14,6 @@ CodeMirror.commands.beautify = cm => {
 };
 
 prefs.subscribe('editor.beautify.hotkey', (key, value) => {
-  const {extraKeys} = CodeMirror.defaults;
   for (const [key, cmd] of Object.entries(extraKeys)) {
     if (cmd === 'beautify') {
       delete extraKeys[key];
@@ -79,7 +79,8 @@ function createBeautifyUI(scope, options) {
         $createOption('border: none;', 'newline_between_properties', true),
         $createOption('display: block;', 'newline_before_close_brace', true),
         $createOption('}', 'newline_between_rules'),
-        $createLabeledCheckbox('space_around_combinator', '', 'selector + selector', 'selector+selector'),
+        $createLabeledCheckbox('space_around_combinator', '', 'selector + selector',
+          'selector+selector'),
         $createLabeledCheckbox('space_around_cmp', '', '[attribute = "1"]', '[attribute="1"]'),
         $createLabeledCheckbox('preserve_newlines', 'styleBeautifyPreserveNewlines'),
         $createLabeledCheckbox('indent_conditional', 'styleBeautifyIndentConditional'),
@@ -164,8 +165,7 @@ function createBeautifyUI(scope, options) {
   }
 }
 
-/* exported initBeautifyButton */
-function initBeautifyButton(btn, scope) {
+export function initBeautifyButton(btn, scope) {
   btn.onclick = btn.oncontextmenu = e => {
     e.preventDefault();
     beautify(scope || editor.getEditors(), e.type === 'click');

@@ -1,18 +1,18 @@
-/* global $ $create $remove messageBoxProxy */// dom.js
-/* global API */// msg.js
-/* global CodeMirror */
-/* global RX_META UCD */// toolbox.js
-/* global MozDocMapper clipString helpPopup rerouteHotkeys showCodeMirrorPopup */// util.js
-/* global EditorSection */// sections-editor-section.js
-/* global editor */
-/* global linterMan */
-/* global prefs */
-/* global styleSectionsEqual */ // sections-util.js
-/* global t */// localization.js
-'use strict';
+import messageBox from '/js/dlg/message-box';
+import {$, $create, $remove} from '/js/dom';
+import {t} from '/js/localization';
+import {API} from '/js/msg';
+import * as prefs from '/js/prefs';
+import {MozDocMapper, styleSectionsEqual} from '/js/sections-util';
+import {clipString, RX_META, UCD} from '/js/toolbox';
+import CodeMirror from 'codemirror';
+import {extraKeys} from './codemirror-default';
+import editor from './editor';
+import linterMan from './linter-manager';
+import EditorSection from './sections-editor-section';
+import {helpPopup, rerouteHotkeys, showCodeMirrorPopup} from './util';
 
-/* exported SectionsEditor */
-function SectionsEditor() {
+export default function SectionsEditor() {
   const {style, /** @type DirtyReporter */dirty} = editor;
   const container = $('#sections');
   /** @type {EditorSection[]} */
@@ -31,7 +31,7 @@ function SectionsEditor() {
   $('#to-mozilla-help').on('click', showToMozillaHelp);
   $('#from-mozilla').on('click', () => showMozillaFormatImport());
   document.on('wheel', scrollEntirePageOnCtrlShift, {passive: false});
-  CodeMirror.defaults.extraKeys['Shift-Ctrl-Wheel'] = 'scrollWindow';
+  extraKeys['Shift-Ctrl-Wheel'] = 'scrollWindow';
   prefs.subscribe('editor.arrowKeysTraverse', (_, val) => {
     for (const {cm} of sections) handleKeydownSetup(cm, val);
     upDownJumps = val;
@@ -101,7 +101,7 @@ function SectionsEditor() {
 
     async replaceStyle(newStyle, draft) {
       const sameCode = editor.isSame(newStyle);
-      if (!sameCode && !draft && !await messageBoxProxy.confirm(t('styleUpdateDiscardChanges'))) {
+      if (!sameCode && !draft && !await messageBox.confirm(t('styleUpdateDiscardChanges'))) {
         return;
       }
       if (!draft) {
@@ -126,7 +126,7 @@ function SectionsEditor() {
         dirty.clear(); // cleaning only after saving has succeeded
         editor.useSavedStyle(res);
       } catch (err) {
-        messageBoxProxy.alert(err.message || err);
+        messageBox.alert(err.message || err);
       }
     },
 
@@ -413,7 +413,7 @@ function SectionsEditor() {
         const code = popup.codebox.getValue().trim();
         if (!RX_META.test(code) ||
             !await getPreprocessor(code) ||
-            await messageBoxProxy.confirm(
+            await messageBox.confirm(
               t('importPreprocessor'), 'pre-line',
               t('importPreprocessorTitle'))
         ) {
@@ -450,7 +450,7 @@ function SectionsEditor() {
     }
 
     function showError(errors) {
-      messageBoxProxy.show({
+      messageBox.show({
         className: 'center danger',
         title: t('styleFromMozillaFormatError'),
         contents: $create('pre',

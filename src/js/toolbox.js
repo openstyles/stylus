@@ -1,34 +1,6 @@
-/* global msg */
-'use strict';
+import browser from '/js/browser';
 
-/* exported
-  CHROME_POPUP_BORDER_BUG
-  FIREFOX
-  RX_META
-  UA
-  capitalize
-  clamp
-  clipString
-  closeCurrentTab
-  deepEqual
-  getActiveTab
-  getOwnTab
-  getTab
-  ignoreChromeError
-  isEmptyObj
-  mapObj
-  sessionStore
-  stringAsRegExp
-  stringAsRegExpStr
-  tryCatch
-  tryJSONparse
-  tryRegExp
-  tryURL
-  UCD
-  waitForTabUrl
-*/
-
-const [CHROME, FIREFOX, UA] = (() => {
+export const [CHROME, FIREFOX, UA] = (() => {
   const uad = navigator.userAgentData;
   const ua = uad || navigator.userAgent;
   const brands = uad ? uad.brands.map(_ => `${_.brand}/${_.version}`).join(' ') : ua;
@@ -49,22 +21,25 @@ const [CHROME, FIREFOX, UA] = (() => {
 })();
 
 // see PR #781
-const CHROME_POPUP_BORDER_BUG = CHROME >= 62 && CHROME <= 74;
+export const CHROME_POPUP_BORDER_BUG = CHROME >= 62 && CHROME <= 74;
 
-const capitalize = s => s.slice(0, 1).toUpperCase() + s.slice(1);
-const clamp = (value, min, max) => value < min ? min : value > max ? max : value;
-const clipString = (str, limit = 100) => str.length > limit ? str.substr(0, limit) + '...' : str;
-const getOwnTab = () => browser.tabs.getCurrent();
-const getActiveTab = async () => (await browser.tabs.query({currentWindow: true, active: true}))[0]
+export const capitalize = s => s.slice(0, 1).toUpperCase() + s.slice(1);
+export const clamp = (value, min, max) => value < min ? min : value > max ? max : value;
+export const clipString = (str, limit = 100) => str.length > limit
+  ? str.substr(0, limit) + '...'
+  : str;
+export const getOwnTab = () => browser.tabs.getCurrent();
+export const getActiveTab = async () =>
+  (await browser.tabs.query({currentWindow: true, active: true}))[0] ||
   // workaround for Chrome bug when devtools for our popup is focused
-  || (await browser.tabs.query({windowId: (await browser.windows.getCurrent()).id, active: true}))[0];
-const hasOwn = Object.call.bind({}.hasOwnProperty);
-const ignoreChromeError = () => { chrome.runtime.lastError; /*eslint-disable-line no-unused-expressions*/ };
-const stringAsRegExpStr = s => s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&');
-const stringAsRegExp = (s, flags) => new RegExp(stringAsRegExpStr(s), flags);
+  (await browser.tabs.query({windowId: (await browser.windows.getCurrent()).id, active: true}))[0];
+export const hasOwn = Object.call.bind({}.hasOwnProperty);
+export const ignoreChromeError = () => chrome.runtime.lastError;
+export const stringAsRegExpStr = s => s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&');
+export const stringAsRegExp = (s, flags) => new RegExp(stringAsRegExpStr(s), flags);
 
-const UCD = 'usercssData';
-const URLS = {
+export const UCD = 'usercssData';
+export const URLS = {
   ownOrigin: chrome.runtime.getURL(''),
 
   configureCommands:
@@ -76,8 +51,7 @@ const URLS = {
   favicon: host => `https://icons.duckduckgo.com/ip3/${host}.ico`,
 
   // Chrome 61.0.3161+ doesn't run content scripts on NTP https://crrev.com/2978953002/
-  // TODO: remove when "minimum_chrome_version": "61" or higher
-  chromeProtectsNTP: CHROME >= 61,
+  chromeProtectsNTP: true,
 
   rxGF: /^(https:\/\/)(?:update\.)?((?:greasy|sleazy)fork\.org\/scripts\/)(\d+)[^/]*\/code\/[^/]*\.user\.css$|$/,
 
@@ -110,8 +84,10 @@ const URLS = {
         url === 'gf' || !id && (id = URLS.rxGF.exec(url)) ? id[1] + id[2] + id[3] :
           '',
   makeUpdateUrl: (url, id) =>
-    url === 'usoa' || !id && (id = URLS.extractUsoaId(url)) ? `${URLS.usoaRaw[0]}usercss/${id}.user.css` :
-      url === 'usw' || !id && (id = URLS.extractUswId(url)) ? `${URLS.usw}api/style/${id}.user.css` :
+    url === 'usoa' || !id && (id = URLS.extractUsoaId(url))
+      ? `${URLS.usoaRaw[0]}usercss/${id}.user.css` :
+    url === 'usw' || !id && (id = URLS.extractUswId(url))
+      ? `${URLS.usw}api/style/${id}.user.css` :
         '',
 
   supported: (url, allowOwn = true) => (
@@ -125,7 +101,7 @@ const URLS = {
   isLocalhost: url => /^file:|^https?:\/\/([^/]+@)?(localhost|127\.0\.0\.1)(:\d+)?\//.test(url),
 };
 
-const RX_META = /\/\*!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i;
+export const RX_META = /\/\*!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i;
 
 // TODO: remove when min_chrome_version > 112, strict_min_version > 112
 if (!('size' in URLSearchParams.prototype)) {
@@ -133,43 +109,10 @@ if (!('size' in URLSearchParams.prototype)) {
     get() { return [...this.keys()].length; },
   });
 }
-if (CHROME < 61) { // TODO: remove when minimum_chrome_version >= 61
-  window.URLSearchParams = class extends URLSearchParams {
-    constructor(init) {
-      if (init && typeof init === 'object') {
-        super();
-        for (const [key, val] of init[Symbol.iterator] ? init : Object.entries(init)) {
-          this.set(key, val);
-        }
-      } else {
-        super(...arguments);
-      }
-    }
-  };
-}
 
-window.msg = window.msg || {
-  bg: chrome.extension.getBackgroundPage(),
-  needsTab: [
-    'updateIconBadge',
-    'styleViaAPI',
-  ],
-  async invokeAPI(path, message) {
-    let tab = false;
-    // Using a fake id for our Options frame as we want to fetch styles early
-    const frameId = window === top ? 0 : 1;
-    if (!msg.needsTab.includes(path) || !frameId && (tab = await getOwnTab())) {
-      const res = await msg.bg.msg._execute('extension',
-        msg.bg.deepCopy(message),
-        msg.bg.deepCopy({url: location.href, tab, frameId}));
-      return deepCopy(res);
-    }
-  },
-};
-msg.sendTab = (tabId, data, options, target = 'tab') =>
-  msg._unwrap(browser.tabs.sendMessage(tabId, {data, target}, options));
+const resourcePromises = {};
 
-async function require(urls, cb) { /* exported require */// eslint-disable-line no-redeclare
+export async function require(urls, cb) {
   const promises = [];
   const all = [];
   const toLoad = [];
@@ -183,14 +126,14 @@ async function require(urls, cb) { /* exported require */// eslint-disable-line 
     if (!el) {
       el = document.createElement(tag);
       toLoad.push(el);
-      require.promises[url] = new Promise((resolve, reject) => {
+      resourcePromises[url] = new Promise((resolve, reject) => {
         el.onload = resolve;
         el.onerror = reject;
         el[attr] = url;
         if (isCss) el.rel = 'stylesheet';
       }).catch(console.warn);
     }
-    promises.push(require.promises[url]);
+    promises.push(resourcePromises[url]);
     all.push(el);
   }
   if (toLoad.length) document.head.append(...toLoad);
@@ -198,9 +141,8 @@ async function require(urls, cb) { /* exported require */// eslint-disable-line 
   if (cb) cb(...all);
   return all[0];
 }
-require.promises = {};
 
-function isEmptyObj(obj) {
+export function isEmptyObj(obj) {
   if (obj) {
     for (const k in obj) {
       if (hasOwn(obj, k)) {
@@ -218,7 +160,7 @@ function isEmptyObj(obj) {
  * @returns {?Object<string,T>}
  * @template T
  */
-function mapObj(obj, fn, keys) {
+export function mapObj(obj, fn, keys) {
   if (!obj) return obj;
   const res = {};
   for (const k of keys || Object.keys(obj)) {
@@ -229,26 +171,26 @@ function mapObj(obj, fn, keys) {
   return res;
 }
 
-function tryRegExp(regexp, flags) {
+export function tryRegExp(regexp, flags) {
   try {
     return new RegExp(regexp, flags);
   } catch (e) {}
 }
 
-function tryJSONparse(jsonString) {
+export function tryJSONparse(jsonString) {
   try {
     return JSON.parse(jsonString);
   } catch (e) {}
 }
 
-function tryURL(url) {
+export function tryURL(url) {
   try {
     if (url) return new URL(url);
   } catch (e) {}
   return ''; // allows `res.prop` without checking res first
 }
 
-function debounce(fn, delay, ...args) {
+export function debounce(fn, delay, ...args) {
   delay = +delay || 0;
   const t = performance.now() + delay;
   let old = debounce.timers.get(fn);
@@ -278,7 +220,7 @@ Object.assign(debounce, {
   },
 });
 
-function deepMerge(src, dst, mergeArrays) {
+export function deepMerge(src, dst, mergeArrays) {
   if (!src || typeof src !== 'object') {
     return src;
   }
@@ -297,11 +239,11 @@ function deepMerge(src, dst, mergeArrays) {
 }
 
 /** Useful in arr.map(deepCopy) to ignore the extra parameters passed by map() */
-function deepCopy(src) {
+export function deepCopy(src) {
   return deepMerge(src);
 }
 
-function deepEqual(a, b, ignoredKeys) {
+export function deepEqual(a, b, ignoredKeys) {
   if (!a || !b || a === b /*same object ref*/) return a === b;
   const type = typeof a;
   if (type !== typeof b) return false;
@@ -324,7 +266,7 @@ function deepEqual(a, b, ignoredKeys) {
 }
 
 /* A simple polyfill in case DOM storage is disabled in the browser */
-let sessionStore = new Proxy({}, {
+export let sessionStore = new Proxy({}, {
   get(target, name) {
     try {
       const val = sessionStorage[name];
@@ -349,8 +291,14 @@ let sessionStore = new Proxy({}, {
   },
 });
 
-async function closeCurrentTab() {
+export async function closeCurrentTab() {
   // https://bugzil.la/1409375
   const tab = await getOwnTab();
   if (tab) return chrome.tabs.remove(tab.id);
 }
+
+export async function fetchText(url, opts) {
+  return (await fetch(url, opts)).text();
+}
+
+self.deepCopy = deepCopy; // used by other views for cloning into this JS realm

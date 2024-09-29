@@ -5,8 +5,8 @@
   //#region Types
 
   const parserlib = typeof self !== 'undefined'
-    ? (require('/js/csslint/parserlib-base'), self.parserlib)
-    : require('./parserlib-base');
+    ? (importScripts('/js/csslint/parserlib-base'), self.parserlib)
+    : importScripts('./parserlib-base');
   const {assign, defineProperty: define} = Object;
   const {
     css: {

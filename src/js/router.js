@@ -1,8 +1,8 @@
-/* global $ */// dom.js
-/* global deepEqual */// toolbox.js
-/* global msg */
-'use strict';
+import {$} from '/js/dom';
+import * as msg from '/js/msg';
+import {deepEqual} from '/js/toolbox';
 
+// TODO: export directly
 const router = {
   buffer: (history.state || {}).buffer || [],
   watchers: [],
@@ -116,3 +116,5 @@ msg.on(e => {
     return true;
   }
 });
+
+export default router;

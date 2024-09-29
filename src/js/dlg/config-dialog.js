@@ -1,23 +1,16 @@
-/* global $ $create $createLink $remove important messageBoxProxy setupLivePrefs */// dom.js
-/* global API */// msg.js
-/* global UA UCD clamp debounce deepCopy */// toolbox.js
-/* global messageBox */
-/* global prefs */
-/* global t */// localization.js
-'use strict';
+import ColorPicker from '/js/color/color-picker';
+import {$, $create, $createLink, $remove, important, setupLivePrefs} from '/js/dom';
+import {t} from '/js/localization';
+import {API} from '/js/msg';
+import * as prefs from '/js/prefs';
+import {clamp, debounce, deepCopy, UA, UCD} from '/js/toolbox';
+import '/js/color/color-converter';
+import messageBox from './message-box';
+import '/js/color/color-picker.css';
+import '/js/dlg/config-dialog.css';
+import '/options/onoffswitch.css';
 
-/* exported configDialog */
-async function configDialog(style) {
-
-  await require([
-    '/js/color/color-converter',
-    '/js/color/color-mimicry',
-    '/js/color/color-picker',
-    '/js/color/color-picker.css',
-    '/js/dlg/config-dialog.css',
-    '/options/onoffswitch.css',
-  ]);
-
+export default function configDialog(style) {
   const AUTOSAVE_DELAY = 400;
   let saving = false;
   let bodyStyle;
@@ -31,19 +24,20 @@ async function configDialog(style) {
   const elements = [];
   const isInstaller = location.pathname.startsWith('/install-usercss.html');
   const isPopup = location.pathname.startsWith('/popup.html');
-  const colorpicker = ((window.CodeMirror || {}).prototype || window).colorpicker();
+  const colorpicker = ColorPicker();
   const buttons = {};
 
   buildConfigForm();
   renderValues();
   vars.forEach(renderValueState);
 
-  return messageBoxProxy.show({
+  return messageBox.show({
     title: `${style.customName || style.name} v${data.version}`,
     className: 'config-dialog',
     contents: [
       $create('.config-heading', data.supportURL &&
-        $createLink({className: '.external-support', href: data.supportURL}, t('externalFeedback'))),
+        $createLink({className: '.external-support', href: data.supportURL},
+          t('externalFeedback'))),
       $create('.config-body', elements),
     ],
     buttons: [{

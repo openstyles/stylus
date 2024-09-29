@@ -1,14 +1,14 @@
-/* global $ $create setupLivePrefs */// dom.js
-/* global API */// msg.js
-/* global CodeMirror */
-/* global CODEMIRROR_THEMES */
-/* global editor */
-/* global helpPopup createHotkeyInput */// util.js
-/* global linterMan */
-/* global prefs */
-/* global t */// localization.js
-/* global debounce tryURL */// toolbox.js
-'use strict';
+import {$, $create, setupLivePrefs} from '/js/dom';
+import {t} from '/js/localization';
+import {API} from '/js/msg';
+import * as prefs from '/js/prefs';
+import {debounce, tryURL} from '/js/toolbox';
+import CodeMirror from 'codemirror';
+import CODEMIRROR_THEMES from './codemirror-themes';
+import editor from './editor';
+import {showLintConfig} from './linter-dialogs';
+import showKeymapHelp from './show-keymap-help';
+import {createHotkeyInput, helpPopup} from './util';
 
 // TODO: allow the user to customize which options are always shown
 // TODO: decide which options are shown by default
@@ -172,7 +172,7 @@ function EditorSettings(ui) {
   //#region Theme
   $('#editor\\.theme', ui).append(...[
     $create('option', {value: 'default'}, t('defaultTheme')),
-    ...Object.keys(CODEMIRROR_THEMES).map(s => $create('option', s)),
+    ...CODEMIRROR_THEMES.map(s => $create('option', s)),
   ]);
   //#endregion
 
@@ -185,12 +185,8 @@ function EditorSettings(ui) {
     popup.style = `top: ${bounds.bottom}px; left: ${bounds.left}px; right: auto;`;
     $('input', popup).focus();
   };
-  $('#keyMap-help', ui).onclick = () => {
-    require(['/edit/show-keymap-help'], () => showKeymapHelp()); /* global showKeymapHelp */
-  };
-  $('#linter-settings', ui).onclick = () => {
-    require(['/edit/linter-dialogs'], () => linterMan.showLintConfig());
-  };
+  $('#keyMap-help', ui).onclick = showKeymapHelp;
+  $('#linter-settings', ui).onclick = showLintConfig;
   //#endregion
 
   setupLivePrefs(ui);

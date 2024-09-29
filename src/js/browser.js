@@ -1,6 +1,7 @@
-'use strict';
-
-if (!(self.browser || {}).runtime) {
+let browser;
+if (__BUILD === 'CHROME_MV3') {
+  browser = self.browser = chrome;
+} else if (__BUILD === 'CHROME' || !self.browser?.runtime) {
   /* Auto-promisifier with a fallback to direct call on signature error.
      The fallback isn't used now since we call all synchronous methods via `chrome` */
   const directEvents = ['addListener', 'removeListener', 'hasListener', 'hasListeners'];
@@ -59,6 +60,7 @@ if (!(self.browser || {}).runtime) {
         return target[key] || proxify(src, srcName, target, key);
       },
     });
-  // Not assigning directly to let IDE use @types/firefox-webext-browser
-  Object.assign(self, {browser: createProxy(chrome)});
+  browser = self.browser = createProxy(chrome);
 }
+
+export default browser;

@@ -1,24 +1,24 @@
-/* global $ $$ $create $remove getEventKeyName setupLivePrefs */// dom.js
-/* global API msg */// msg.js
-/* global Events */
-/* global popupGetStyles ABOUT_BLANK */// popup-get-styles.js
-/* global prefs */
-/* global t */// localization.js
-/* global
-  CHROME
-  CHROME_POPUP_BORDER_BUG
-  FIREFOX
-  UA
-  UCD
-  URLS
-  capitalize
-  clamp
-  clipString
-  getActiveTab
-  isEmptyObj
-  stringAsRegExpStr
-*/// toolbox.js
-'use strict';
+import {$, $$, $create, $remove, getEventKeyName, setupLivePrefs} from '/js/dom';
+import {t} from '/js/localization';
+import * as msg from '/js/msg';
+import {API} from '/js/msg';
+import popupGetStyles, {ABOUT_BLANK} from '/js/popup-get-styles';
+import * as prefs from '/js/prefs';
+import {
+  capitalize,
+  CHROME,
+  CHROME_POPUP_BORDER_BUG,
+  clamp,
+  clipString,
+  FIREFOX,
+  getActiveTab,
+  isEmptyObj,
+  stringAsRegExpStr,
+  UA,
+  UCD,
+  URLS,
+} from '/js/toolbox';
+import Events from './events';
 
 let tabURL;
 let isBlocked;
@@ -169,7 +169,7 @@ async function initPopup(frames, ping0, tab) {
       blockPopup(false);
       return;
     }
-    if (tab.status === 'complete' && (!FIREFOX || tab.url !== ABOUT_BLANK)) {
+    if (tab.status === 'complete' && (CHROME || tab.url !== ABOUT_BLANK)) {
       break;
     }
     // FF and some Chrome forks (e.g. CentBrowser) implement tab-on-demand
@@ -179,7 +179,7 @@ async function initPopup(frames, ping0, tab) {
   }
 
   const info = t.template.unreachableInfo;
-  if (!FIREFOX) {
+  if (CHROME) {
     // Chrome "Allow access to file URLs" in chrome://extensions message
     info.appendChild($create('p', t('unreachableFileHint')));
   } else {

@@ -1,17 +1,13 @@
-'use strict';
-
 /**
  Copied from https://github.com/violentmonkey/violentmonkey/blob/master/src/common/util.js
  and switched to Math.sign
  */
 
-/* exported compareVersion */
-
 const VERSION_RE = /^(.*?)-([-.0-9a-z]+)|$/i;
 const DIGITS_RE = /^\d+$/; // using regexp to avoid +'1e2' being parsed as 100
 
 /** @return -1 | 0 | 1 */
-function compareVersion(ver1, ver2) {
+export default function compareVersion(ver1, ver2) {
   const [, main1 = ver1 || '', pre1] = VERSION_RE.exec(ver1);
   const [, main2 = ver2 || '', pre2] = VERSION_RE.exec(ver2);
   const delta = compareVersionChunk(main1, main2)

@@ -1,9 +1,9 @@
 'use strict';
 
-require([
+importScripts(
   '/js/csslint/parserlib', /* global parserlib */
   '/js/sections-util', /* global MozDocMapper */
-]);
+);
 
 /* exported extractSections */
 /**
@@ -43,7 +43,7 @@ function extractSections({code, styleId, fast = true}) {
     };
     // move last comment before @-moz-document inside the section
     if (!lastCmt.includes('AGENT_SHEET') &&
-        !/==userstyle==/i.test(lastCmt)) {
+      !/==userstyle==/i.test(lastCmt)) {
       if (lastCmt) {
         section.code = lastCmt + '\n';
         outerText = outerText.slice(0, -lastCmt.length);

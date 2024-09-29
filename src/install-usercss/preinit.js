@@ -1,7 +1,7 @@
-/* global API */// msg.js
-/* global CHROME closeCurrentTab */// toolbox.js
-/* global t */// localization.js
-'use strict';
+import browser from '/js/browser';
+import {API} from '/js/msg';
+import {CHROME, closeCurrentTab} from '/js/toolbox';
+import {t} from '/js/localization';
 
 /* exported preinit */
 const preinit = (() => {

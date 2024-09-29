@@ -1,4 +1,4 @@
-'use strict';
+'use strict'; // eslint-disable-line strict
 
 // preventing reregistration if reinjected by tabs.executeScript for whatever reason, just in case
 if (typeof window.oldCode !== 'string') {

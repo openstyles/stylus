@@ -1,11 +1,11 @@
-/* global $ $$ $create messageBoxProxy scrollElementIntoView */// dom.js
-/* global $entry */// render.js
-/* global API */// msg.js
-/* global filterAndAppend filtersSelector */// filters.js
-/* global newUI */// manage.js
-/* global prefs */
+import {$ $$ $create messageBox scrollElementIntoView} from '/js/dom';
+import {$entry} from '/js/render';
+import {API} from '/js/msg';
+import {filterAndAppend filtersSelector} from '/js/filters';
+import {newUI} from '/js/manage';
+import * as prefs from '/js/prefs';
 /* global sorter */
-/* global t */// localization.js
+import {t} from '/js/localization';
 'use strict';
 
 const btnCheck = $('#check-all-updates');
@@ -219,7 +219,7 @@ function renderUpdatesOnlyFilter({show, check} = {}) {
 /* exported showUpdateHistory */
 async function showUpdateHistory(show, el, selector) {
   if (!show) {
-    return messageBoxProxy.close();
+    return messageBox.close();
   }
   const log = $create(selector);
   let scroller, toggler;
@@ -230,7 +230,7 @@ async function showUpdateHistory(show, el, selector) {
     API.updater.getStates(),
   ]);
   const logText = lines.join('\n');
-  await messageBoxProxy.show({
+  await messageBox.show({
     title: t('updateCheckHistory'),
     className: 'center-dialog',
     contents: log,

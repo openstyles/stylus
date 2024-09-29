@@ -1,16 +1,24 @@
-/* global API msg */// msg.js
-/* global addAPI bgReady broadcastInjectorConfig detectVivaldi isVivaldi */// common.js
-/* global createWorker */// worker-util.js
-/* global prefs */
-/* global styleMan */
-/* global syncMan */
-/* global updateMan */
-/* global usercssMan */
-/* global usoApi */
-/* global uswApi */
-/* global FIREFOX UA ignoreChromeError */ // toolbox.js
-/* global colorScheme */ // color-scheme.js
-'use strict';
+import browser from '/js/browser';
+import * as msg from '/js/msg';
+import * as prefs from '/js/prefs';
+import {ignoreChromeError, UA} from '/js/toolbox';
+import createWorker from '/js/worker-host';
+import {bgPrefsSet} from './bg-prefs';
+import {broadcast} from './broadcast';
+import broadcastInjectorConfig, {INJECTOR_CONFIG_MAP} from './broadcast-injector-config';
+import * as colorScheme from './color-scheme';
+import {addAPI, API, bgReady, browserCommands, detectVivaldi, isVivaldi} from './common';
+import download from './download';
+import './browser-cmd-hotkeys';
+import './content-scripts';
+import './context-menus';
+import * as styleMan from './style-manager';
+import * as syncMan from './sync-manager';
+import * as updateMan from './update-manager';
+import * as usercssMan from './usercss-manager';
+import * as usoApi from './uso-api';
+import * as uswApi from './usw-api';
+import './style-via-api';
 
 //#region API
 
@@ -30,6 +38,8 @@ addAPI(/** @namespace API */ {
       data[key] = val;
     },
   }))(),
+
+  download,
 
   info: {
     async get() {
@@ -57,14 +67,14 @@ addAPI(/** @namespace API */ {
 //#endregion
 //#region Events
 
-const browserCommands = {
+Object.assign(browserCommands, {
   openManage: () => API.openManage(),
   openOptions: () => API.openManage({options: true}),
   reload: () => chrome.runtime.reload(),
   styleDisableAll(info) {
-    prefs.set('disableAll', info ? info.checked : !prefs.get('disableAll'));
+    bgPrefsSet('disableAll', info ? info.checked : !prefs.get('disableAll'));
   },
-};
+});
 
 if (chrome.commands) {
   chrome.commands.onCommand.addListener(id => browserCommands[id]());
@@ -72,8 +82,8 @@ if (chrome.commands) {
 
 chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   if (reason === 'install') {
-    if (UA.mobile) prefs.set('manage.newUI', false);
-    if (UA.windows) prefs.set('editor.keyMap', 'sublime');
+    if (UA.mobile) bgPrefsSet('manage.newUI', false);
+    if (UA.windows) bgPrefsSet('editor.keyMap', 'sublime');
   }
   if (previousVersion === '1.5.30') {
     API.prefsDb.delete('badFavs'); // old Stylus marked all icons as bad when network was offline
@@ -98,11 +108,11 @@ chrome.runtime.onConnect.addListener(port => {
 
 async function apiPortMessage({id, data, TDM}, port) {
   try {
-    if (!msg.ready) await bgReady.all;
+    if (!self.msg) await bgReady.all;
     port.sender.TDM = TDM;
     data = {data: await msg._execute('extension', data, port.sender)};
   } catch (e) {
-    data = msg._wrapError(e);
+    data = msg.wrapError(e);
   }
   data.id = id;
   try { port.postMessage(data); } catch (e) {}
@@ -114,20 +124,10 @@ Promise.all([
   browser.extension.isAllowedFileSchemeAccess()
     .then(res => API.data.set('hasFileAccess', res)),
   bgReady.styles,
-  /* These are loaded conditionally.
-     Each item uses `require` individually so IDE can jump to the source and track usage. */
-  FIREFOX &&
-    require(['/background/style-via-api']),
-  FIREFOX && ((browser.commands || {}).update) &&
-    require(['/background/browser-cmd-hotkeys']),
-  !FIREFOX &&
-    require(['/background/content-scripts']),
-  chrome.contextMenus &&
-    require(['/background/context-menus']),
 ]).then(() => {
   bgReady._resolveAll(true);
-  msg.ready = true;
-  msg.broadcast({method: 'backgroundReady'});
-  prefs.subscribe(['disableAll', 'exposeIframes', 'styleViaASS'], broadcastInjectorConfig);
+  self.msg = msg;
+  broadcast({method: 'backgroundReady'});
+  prefs.subscribe(Object.keys(INJECTOR_CONFIG_MAP), broadcastInjectorConfig);
   colorScheme.onChange(broadcastInjectorConfig.bind(null, 'dark'));
 });

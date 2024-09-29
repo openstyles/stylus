@@ -5,66 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link href="css/icons.ttf" rel="preload" as="font" crossorigin="anonymous">
-    <link href="css/global.css" rel="stylesheet">
-    <link href="css/global-dark.css" rel="stylesheet">
-    <style id="cm-theme"></style>
-
-    <script src="content/style-injector.js"></script>
-    <script src="js/browser.js"></script>
-    <script src="js/toolbox.js"></script>
-    <script src="js/msg.js"></script>
-    <script src="js/prefs.js"></script>
-    <script src="js/dom.js"></script>
-    <script src="js/localization.js"></script>
-    <script src="content/apply.js"></script>
-
-    <script src="js/sections-util.js"></script>
-    <script src="js/storage-util.js"></script>
-    <script src="edit/codemirror-themes.js"></script> <!-- must precede base.js -->
-    <script src="edit/base.js"></script>
-
-    <script src="vendor/codemirror/lib/codemirror.js"></script>
-    <script src="vendor/codemirror/mode/css/css.js"></script>
-    <script src="vendor/codemirror/mode/stylus/stylus.js"></script>
-    <script src="vendor/codemirror/addon/dialog/dialog.js"></script>
-    <script src="vendor/codemirror/addon/edit/closebrackets.js"></script>
-    <script src="vendor/codemirror/addon/scroll/annotatescrollbar.js"></script>
-    <script src="vendor/codemirror/addon/search/searchcursor.js"></script>
-    <script src="vendor/codemirror/addon/search/matchesonscrollbar.js"></script>
-    <script src="vendor/codemirror/addon/comment/comment.js"></script>
-    <script src="vendor/codemirror/addon/selection/active-line.js"></script>
-    <script src="vendor/codemirror/addon/edit/matchbrackets.js"></script>
-    <script src="vendor/codemirror/addon/fold/foldcode.js"></script>
-    <script src="vendor/codemirror/addon/fold/foldgutter.js"></script>
-    <script src="vendor/codemirror/addon/fold/brace-fold.js"></script>
-    <script src="vendor/codemirror/addon/fold/indent-fold.js"></script>
-    <script src="vendor/codemirror/addon/fold/comment-fold.js"></script>
-    <script src="vendor/codemirror/addon/lint/lint.js"></script>
-    <script src="vendor/codemirror/addon/hint/anyword-hint.js"></script>
-    <script src="vendor/codemirror/addon/hint/show-hint.js"></script>
-    <script src="vendor/codemirror/addon/hint/css-hint.js"></script>
-    <script src="vendor/codemirror/keymap/emacs.js"></script>
-    <script src="vendor/codemirror/keymap/sublime.js"></script>
-    <script src="vendor/codemirror/keymap/vim.js"></script>
-    <script src="vendor-overwrites/codemirror-addon/match-highlighter.js"></script>
-
-    <script src="js/color/color-converter.js"></script>
-    <script src="js/color/color-mimicry.js"></script>
-    <script src="js/color/color-picker.js"></script>
-    <script src="js/color/color-view.js"></script>
-    <script src="js/worker-util.js"></script>
-
-    <script src="edit/util.js"></script>
-    <script src="edit/codemirror-default.js"></script>
-    <script src="edit/codemirror-factory.js"></script>
-    <script src="edit/moz-section-finder.js"></script>
-    <script src="edit/moz-section-widget.js"></script>
-    <script src="edit/linter-manager.js"></script>
-    <script src="edit/beautify.js"></script>
-    <script src="edit/source-editor.js"></script>
-    <script src="edit/sections-editor-section.js"></script>
-    <script src="edit/sections-editor.js"></script>
-    <script src="edit/usw-integration.js"></script>
+    <link href="dist/edit.js" rel="preload" as="script" crossorigin="anonymous">
+    <link href="dist/asset.css" rel="stylesheet">
 
     <template data-id="appliesTo">
       <li class="applies-to-item">
@@ -219,15 +161,6 @@
         </tbody>
       </table>
     </template>
-
-    <link href="vendor/codemirror/lib/codemirror.css" rel="stylesheet">
-    <link href="vendor/codemirror/addon/dialog/dialog.css" rel="stylesheet">
-    <link href="vendor/codemirror/addon/fold/foldgutter.css" rel="stylesheet">
-    <link href="vendor/codemirror/addon/hint/show-hint.css" rel="stylesheet">
-    <link href="vendor/codemirror/addon/lint/lint.css" rel="stylesheet">
-    <link href="vendor/codemirror/addon/search/matchesonscrollbar.css" rel="stylesheet">
-    <link href="js/color/color-picker.css" rel="stylesheet">
-    <link href="edit/codemirror-default.css" rel="stylesheet">
 
   <template data-id="editorSettings">
     <section>
@@ -467,13 +400,10 @@
     <section id="sections"></section>
   </template>
 
-  <link href="edit/edit.css" rel="stylesheet">
-  <link href="edit/settings.css" rel="stylesheet">
-  <script src="edit/settings.js"></script>
-  <script src="js/themer.js"></script> <!-- must be last in HEAD to avoid FOUC -->
+  <style id="cm-theme"></style>
 </head>
 
 <body id="stylus-edit">
-<script src="edit/edit.js"></script>
-  </body>
+  <script src="dist/edit.js" type="module"></script>
+</body>
 </html>

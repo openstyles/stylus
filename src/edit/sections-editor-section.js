@@ -1,20 +1,18 @@
-/* global $ setupLivePrefs toggleDataset */// dom.js
-/* global MozDocMapper helpPopup trimCommentLabel */// util.js
-/* global CodeMirror */
-/* global cmFactory */
-/* global debounce */// toolbox.js
-/* global editor */
-/* global initBeautifyButton */// beautify.js
-/* global linterMan */
-/* global prefs */
-/* global t */// localization.js
-'use strict';
+import {$, setupLivePrefs, toggleDataset} from '/js/dom';
+import {t} from '/js/localization';
+import * as prefs from '/js/prefs';
+import {MozDocMapper} from '/js/sections-util';
+import {debounce} from '/js/toolbox';
+import CodeMirror from 'codemirror';
+import {initBeautifyButton} from './beautify';
+import cmFactory from './codemirror-factory';
+import editor from './editor';
+import linterMan from './linter-manager';
+import {helpPopup, trimCommentLabel} from './util';
 
 const RX_META1 = /^!?\s*==userstyle==\s*$/i;
 
-/* exported EditorSection */
-
-class EditorSection {
+export default class EditorSection {
   /**
    * @param {StyleSection} sectionData
    * @param {function():number} genId

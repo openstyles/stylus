@@ -1,5 +1,6 @@
 import {$, $$, $create, focusA11y, toggleDataset} from './dom-base';
 import * as prefs from './prefs';
+import {require} from '/js/toolbox';
 
 /**
  * @param {HTMLElement} el

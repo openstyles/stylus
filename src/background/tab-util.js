@@ -1,12 +1,12 @@
-/* global msg */// msg.js
-/* global API addAPI */// common.js
-/* global FIREFOX getActiveTab */ // toolbox.js
-/* global prefs */
-'use strict';
+import browser from '/js/browser';
+import * as msg from '/js/msg';
+import {getActiveTab} from '/js/toolbox';
+import {addAPI, API} from './common';
+import * as prefs from '/js/prefs';
 
 // FF57+ supports openerTabId, but not in Android
 // (detecting FF57 by the feature it added, not navigator.ua which may be spoofed in about:config)
-const HAS_OPENER = (!FIREFOX || window.AbortController) && chrome.windows != null;
+const HAS_OPENER = (CHROME || window.AbortController) && chrome.windows != null;
 const EMPTY_TAB = [
   // Chrome and simple forks
   'chrome://newtab/',
@@ -97,7 +97,7 @@ addAPI(/** @namespace API */ {
  * @param {boolean} [_.newTab] `true` to force a new tab instead of switching to an existing tab
  * @returns {Promise<chrome.tabs.Tab>} Promise -> opened/activated tab
  */
-async function openURL({
+export async function openURL({
   url,
   index,
   openerTabId,
@@ -148,12 +148,11 @@ async function activateTab(tab, {url, index, openerTabId} = {}) {
   return tab;
 }
 
-/* exported getUrlOrigin */
-function getUrlOrigin(url = '') {
+export function getUrlOrigin(url = '') {
   return url.substring(0, url.indexOf('/', url.indexOf(':') + 3));
 }
 
-function waitForTabUrl(tabId) {
+export function waitForTabUrl(tabId) {
   return new Promise(resolve => {
     browser.tabs.onUpdated.addListener(...[
       function onUpdated(updatedId, info, updatedTab) {

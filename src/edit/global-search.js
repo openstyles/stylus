@@ -1,15 +1,12 @@
-/* global $ $$ $create $remove setInputValue toggleDataset */// dom.js
-/* global CodeMirror */
-/* global chromeLocal */// storage-util.js
-/* global colorMimicry */
-/* global debounce stringAsRegExp tryRegExp */// toolbox.js
-/* global editor */
-/* global t */// localization.js
-'use strict';
+import colorMimicry from '/js/color/color-mimicry';
+import {$, $$, $create, $remove, setInputValue, toggleDataset} from '/js/dom';
+import {t} from '/js/localization';
+import {chromeLocal} from '/js/storage-util';
+import {debounce, stringAsRegExp, tryRegExp} from '/js/toolbox';
+import CodeMirror from 'codemirror';
+import editor from './editor';
 
-(() => {
-  require(['/edit/global-search.css']);
-
+export default function GlobalSearch() {
   //region Constants and state
 
   const INCREMENTAL_SEARCH_DELAY = 0;
@@ -197,7 +194,8 @@
       state.replaceHasRefs = /\$[$&`'\d]/.test(state.replaceValue);
     }
     const cmFocused = document.activeElement && document.activeElement.closest('.CodeMirror');
-    state.activeAppliesTo = $(`.${APPLIES_VALUE_CLASS}:focus, .${APPLIES_VALUE_CLASS}.${TARGET_CLASS}`);
+    state.activeAppliesTo =
+      $(`.${APPLIES_VALUE_CLASS}:focus, .${APPLIES_VALUE_CLASS}.${TARGET_CLASS}`);
     state.cmStart = editor.closestVisible(
       cmFocused && document.activeElement ||
       state.activeAppliesTo ||
@@ -205,7 +203,6 @@
     const cmExtra = $('body > :not(#sections) .CodeMirror');
     state.editors = cmExtra ? [cmExtra.CodeMirror] : editor.getEditors();
   }
-
 
   function doSearch({
     reverse = state.reverse,
@@ -221,7 +218,8 @@
     }
     initState();
     const {cmStart} = state;
-    const {index, found, foundInCode} = state.find && doSearchInEditors({cmStart, canAdvance, inApplies}) || {};
+    const {index, found, foundInCode} =
+      state.find && doSearchInEditors({cmStart, canAdvance, inApplies}) || {};
     if (!foundInCode) clearMarker();
     if (!found) makeTargetVisible(null);
     const radiateFrom = foundInCode ? index : state.editors.indexOf(cmStart);
@@ -236,7 +234,6 @@
     state.firstRun = false;
     return found;
   }
-
 
   function doSearchInEditors({cmStart, canAdvance, inApplies}) {
     const query = state.rx || state.find;
@@ -279,7 +276,6 @@
       }
     }
   }
-
 
   function doSearchInApplies(cm, canAdvance) {
     if (!state.searchInApplies) return;
@@ -343,7 +339,6 @@
     }
   }
 
-
   function doReplaceAll() {
     initState({initReplace: true});
     clearMarker();
@@ -356,7 +351,6 @@
       doSearch({canAdvance: false});
     }
   }
-
 
   function doReplaceInEditor({cm, pos, all = false}) {
     const cursor = cm.getSearchCursor(state.rx || state.find, pos, state.cursorOptions);
@@ -387,7 +381,6 @@
     }
     return found;
   }
-
 
   function doUndo() {
     let undoneSome;
@@ -421,7 +414,6 @@
 
   //endregion
   //region Overlay
-
 
   function setupOverlay(queue, debounced) {
     if (!queue.length) {
@@ -492,7 +484,6 @@
     if (!queue.length) debounce.unregister(setupOverlay);
   }
 
-
   function tokenize(stream) {
     this.query.lastIndex = stream.pos;
     const match = this.query.exec(stream.string);
@@ -511,7 +502,6 @@
       stream.skipToEnd();
     }
   }
-
 
   function annotateScrollbar(cm, query, icase) {
     getStateSafe(cm).annotate = cm.showMatchesOnScrollbar(query, icase, ANNOTATE_SCROLLBAR_OPTIONS);
@@ -543,12 +533,10 @@
     }
   }
 
-
   function dialogShown(type) {
     return document.body.contains(state.input) &&
       (!type || state.dialog.dataset.type === type);
   }
-
 
   function createDialog(type) {
     state.originalFocus = document.activeElement;
@@ -615,7 +603,6 @@
     return dialog;
   }
 
-
   function createInput(index, name, value) {
     const input = state[name] = $$('textarea', state.dialog)[index];
     if (!input) {
@@ -627,7 +614,6 @@
     input.parentElement.appendChild(t.template.clearSearch.cloneNode(true));
     $('[data-action]', input.parentElement)._input = input;
   }
-
 
   function destroyDialog({restoreFocus = false} = {}) {
     state.input = null;
@@ -641,7 +627,6 @@
       restoreWindowScrollPos({immediately: false});
     }
   }
-
 
   function adjustTextareaSize(el) {
     const oldWidth = parseFloat(el.style.width) || el.clientWidth;
@@ -661,7 +646,8 @@
       const dialogRight = state.dialog.getBoundingClientRect().right;
       const textRight = (state.input2 || state.input).getBoundingClientRect().right;
       newWidth = Math.min(newWidth,
-        (window.innerWidth - dialogRightOffset - (dialogRight - textRight)) / (state.input2 ? 2 : 1) - 20);
+        (window.innerWidth - dialogRightOffset - (dialogRight - textRight)) /
+        (state.input2 ? 2 : 1) - 20);
       el.style.width = newWidth + 'px';
     }
     const ovrX = el.scrollWidth > el.clientWidth;
@@ -672,7 +658,6 @@
     el.style.overflowX = ovrX ? '' : 'hidden';
   }
 
-
   function enableReplaceButtons(enabled) {
     if (state.dialog && state.dialog.dataset.type === 'replace') {
       for (const el of $$('[data-action^="replace"]', state.dialog)) {
@@ -681,7 +666,6 @@
     }
   }
 
-
   function enableUndoButton(enabled) {
     if (state.dialog && state.dialog.dataset.type === 'replace') {
       for (const el of $$('[data-action="undo"]', state.dialog)) {
@@ -689,7 +673,6 @@
       }
     }
   }
-
 
   function focusUndoButton() {
     for (const btn of $$('[data-action="undo"]', state.dialog)) {
@@ -707,7 +690,6 @@
     return cm.state.search || (cm.state.search = {});
   }
 
-
   // determines search start position:
   // the cursor if it was moved or the last match
   function getContinuationPos({cm, reverse}) {
@@ -715,22 +697,20 @@
     const posType = reverse ? 'from' : 'to';
     const searchPos = (cmSearchState.searchPos || {})[posType];
     const cursorPos = cm.getCursor(posType);
-    const preferCursor = !searchPos || CodeMirror.cmpPos(cursorPos, cmSearchState.cursorPos[posType]);
+    const preferCursor = !searchPos ||
+      CodeMirror.cmpPos(cursorPos, cmSearchState.cursorPos[posType]);
     return preferCursor ? cursorPos : searchPos;
   }
-
 
   function getEOF(cm) {
     const line = cm.doc.size - 1;
     return {line, ch: cm.getLine(line).length};
   }
 
-
   function getNextEditor(cm, step = 1) {
     const editors = state.editors;
     return editors[(editors.indexOf(cm) + step + editors.length) % editors.length];
   }
-
 
   // sets the editor to start the search in
   // e.g. when the user switched to another editor and invoked a search command
@@ -740,7 +720,6 @@
       state.originalFocus = cm;
     }
   }
-
 
   // adds a class on the editor that contains the active match
   // instead of focusing it (in order to keep the minidialog focused)
@@ -758,10 +737,10 @@
     }
   }
 
-
   // scrolls the editor to reveal the match
   function makeMatchVisible(cm, searchCursor) {
-    const canFocus = !state.firstRun && (!state.dialog || !state.dialog.contains(document.activeElement));
+    const canFocus = !state.firstRun &&
+      (!state.dialog || !state.dialog.contains(document.activeElement));
     state.cm = cm;
     // scroll within the editor
     const pos = searchCursor.pos;
@@ -792,11 +771,9 @@
     }
   }
 
-
   function clearMarker() {
     if (state.marker) state.marker.clear();
   }
-
 
   function showTally(num, numApplies) {
     if (!state.tally) return;
@@ -838,7 +815,6 @@
     }
   }
 
-
   function trimUndoHistory() {
     const history = state.undoHistory;
     for (let last; (last = history[history.length - 1]);) {
@@ -852,7 +828,6 @@
     }
   }
 
-
   function focusNoScroll(el) {
     if (el) {
       saveWindowScrollPos();
@@ -861,12 +836,10 @@
     }
   }
 
-
   function saveWindowScrollPos() {
     state.scrollX = window.scrollX;
     state.scrollY = window.scrollY;
   }
-
 
   function restoreWindowScrollPos({immediately = true} = {}) {
     if (!immediately) {
@@ -878,7 +851,6 @@
       window.scrollTo(state.scrollX, state.scrollY);
     }
   }
-
 
   // produces [i, i+1, i-1, i+2, i-2, i+3, i-3, ...]
   function radiateArray(arr, focalIndex) {
@@ -897,7 +869,6 @@
     return result;
   }
 
-
   function readStorage() {
     chromeLocal.getValue('editor').then((editor = {}) => {
       state.find = editor.find || '';
@@ -905,7 +876,6 @@
       state.icase = editor.icase || state.icase;
     });
   }
-
 
   function writeStorage() {
     chromeLocal.getValue('editor').then((editor = {}) =>
@@ -917,4 +887,4 @@
   }
 
   //endregion
-})();
+}

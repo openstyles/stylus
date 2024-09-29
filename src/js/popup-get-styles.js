@@ -1,13 +1,13 @@
-/* global API msg */// msg.js
-/* global CHROME URLS getActiveTab */// toolbox.js
-'use strict';
+import browser from '/js/browser';
+import * as msg from '/js/msg';
+import {API} from '/js/msg';
+import {getActiveTab, URLS} from '/js/toolbox';
 
-const ABOUT_BLANK = 'about:blank';
+export const ABOUT_BLANK = 'about:blank';
 
-/* exported popupGetStyles */
-async function popupGetStyles() {
+export default async function popupGetStyles() {
   let tab = await getActiveTab();
-  if (!CHROME && tab.status === 'loading' && tab.url === ABOUT_BLANK) {
+  if (FIREFOX && tab.status === 'loading' && tab.url === ABOUT_BLANK) {
     tab = await API.waitForTabUrl(tab.id);
   }
   let url = tab.pendingUrl || tab.url || ''; // new Chrome uses pendingUrl while connecting

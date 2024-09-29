@@ -1,13 +1,11 @@
-/* global $create messageBoxProxy */// dom.js
-/* global API */// msg.js
-/* global DraggableList */
-/* global t */// localization.js
-'use strict';
+import messageBox from '/js/dlg/message-box';
+import {$create} from '/js/dom';
+import {API} from '/js/msg';
+import {t} from '/js/localization';
 
-/* exported InjectionOrder */
-async function InjectionOrder(show, el, selector) {
+export async function InjectionOrder(show, el, selector) {
   if (!show) {
-    return messageBoxProxy.close();
+    return messageBox.close();
   }
   const SEL_ENTRY = '.injection-order-entry';
   const groups = await API.styles.getAllOrdered(['_id', 'id', 'name', 'enabled']);
@@ -24,7 +22,7 @@ async function InjectionOrder(show, el, selector) {
       title: t('styleInjectionImportance'),
     }),
   ]);
-  await messageBoxProxy.show({
+  await messageBox.show({
     title: t('styleInjectionOrder'),
     contents: $create('fragment', Object.entries(groups).map(makeList)),
     className: 'center-dialog ' + selector.slice(1),
@@ -74,6 +72,7 @@ async function InjectionOrder(show, el, selector) {
         API.styles.setOrder(groups);
       }
     });
+    /* global DraggableList */
     DraggableList(ol, {scrollContainer: ol});
     return $create('section', {['data-' + type]: ''}, [
       $create('header', t(`styleInjectionOrderHint${type === 'main' ? '' : '_' + type}`)),

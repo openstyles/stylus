@@ -1,15 +1,14 @@
-/* global API */// msg.js
-/* global addAPI */// common.js
-/* global isEmptyObj */// toolbox.js
-/* global prefs */
-/* global styleMan styleUtil */// style-manager.js
-'use strict';
+import browser from '/js/browser';
+import * as prefs from '/js/prefs';
+import {isEmptyObj} from '/js/toolbox';
+import {addAPI, API} from './common';
+import {getSectionsByUrl, order} from './style-manager';
 
 /**
  * Uses chrome.tabs.insertCSS
  */
 
-(() => {
+if (FIREFOX) (() => { // eslint-disable-line curly
   const ACTIONS = {
     styleApply,
     styleDeleted,
@@ -56,8 +55,7 @@
     if (id === null && !ignoreUrlCheck && frameStyles.url === url) {
       return;
     }
-    const {sections} = styleMan.getSectionsByUrl(url, id);
-    const {order} = styleUtil;
+    const {sections} = getSectionsByUrl(url, id);
     const tasks = [];
     const calcOrder = ({id}) =>
       (order.prio[id] || 0) * 1e6 ||

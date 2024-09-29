@@ -1,15 +1,14 @@
-/* global $create */// dom.js
-/* global debounce */// toolbox.js
-'use strict';
+import {$create} from '/js/dom';
+import {debounce} from '/js/toolbox';
 
-/* exported colorMimicry */
+const styleCache = new Map();
+
 /**
  * Calculates real color of an element:
  * colorMimicry(cm.display.gutters, {bg: 'backgroundColor'})
  * colorMimicry('input.foo.bar', null, $('some.parent.to.host.the.dummy'))
  */
-function colorMimicry(el, targets, dummyContainer = document.body) {
-  const styleCache = colorMimicry.styleCache || (colorMimicry.styleCache = new Map());
+export default function colorMimicry(el, targets, dummyContainer = document.body) {
   targets = targets || {};
   targets.fore = 'color';
   const colors = {};
@@ -56,42 +55,47 @@ function colorMimicry(el, targets, dummyContainer = document.body) {
   }
   debounce(clearCache);
   return colors;
+}
 
-  function blend(base, color) {
-    const [r, g, b, a = 255] = (color.match(/\d+/g) || []).map(Number);
-    if (a === 255) {
-      base.r = r;
-      base.g = g;
-      base.b = b;
-      base.a = 1;
-    } else if (a) {
-      const mixedA = 1 - (1 - a / 255) * (1 - base.a);
-      const q1 = a / 255 / mixedA;
-      const q2 = base.a * (1 - mixedA) / mixedA;
-      base.r = Math.round(r * q1 + base.r * q2);
-      base.g = Math.round(g * q1 + base.g * q2);
-      base.b = Math.round(b * q1 + base.b * q2);
-      base.a = mixedA;
-    }
-    return isOpaque(base);
+function blend(base, color) {
+  let r, g, b, a;
+  if (typeof color === 'string') {
+    [r, g, b, a = 255] = (color.match(/\d+/g) || []).map(Number);
+  } else {
+    ({r, g, b, a = 255} = color);
   }
+  if (a === 255) {
+    base.r = r;
+    base.g = g;
+    base.b = b;
+    base.a = 1;
+  } else if (a) {
+    const mixedA = 1 - (1 - a / 255) * (1 - base.a);
+    const q1 = a / 255 / mixedA;
+    const q2 = base.a * (1 - mixedA) / mixedA;
+    base.r = Math.round(r * q1 + base.r * q2);
+    base.g = Math.round(g * q1 + base.g * q2);
+    base.b = Math.round(b * q1 + base.b * q2);
+    base.a = mixedA;
+  }
+  return isOpaque(base);
+}
 
-  // speed-up for sequential invocations within the same event loop cycle
-  // (we're assuming the invoker doesn't force CSSOM to refresh between the calls)
-  function getStyle(el) {
-    let style = styleCache.get(el);
-    if (!style) {
-      style = getComputedStyle(el);
-      styleCache.set(el, style);
-    }
-    return style;
+/** Speed-up for sequential invocations within the same event loop cycle
+ * (we're assuming the invoker doesn't force CSSOM to refresh between the calls) */
+function getStyle(el) {
+  let style = styleCache.get(el);
+  if (!style) {
+    style = getComputedStyle(el);
+    styleCache.set(el, style);
   }
+  return style;
+}
 
-  function clearCache() {
-    styleCache.clear();
-  }
+function clearCache() {
+  styleCache.clear();
+}
 
-  function isOpaque({a}) {
-    return Math.abs(a - 1) < 1e-3;
-  }
+function isOpaque({a}) {
+  return Math.abs(a - 1) < 1e-3;
 }

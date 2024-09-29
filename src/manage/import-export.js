@@ -1,18 +1,11 @@
-/* global API */// msg.js
-/* global RX_META UA UCD clipString deepEqual isEmptyObj */// toolbox.js
-/* global Events */// events.js
-/* global chromeSync */// storage-util.js
-/* global prefs */
-/* global t */// localization.js
-/* global
-  $
-  $$
-  $create
-  animateElement
-  messageBoxProxy
-  scrollElementIntoView
-*/// dom.js
-'use strict';
+import messageBox from '/js/dlg/message-box';
+import {$, $$, $create, animateElement, scrollElementIntoView} from '/js/dom';
+import {t} from '/js/localization';
+import {API} from '/js/msg';
+import * as prefs from '/js/prefs';
+import {chromeSync} from '/js/storage-util';
+import {clipString, deepEqual, isEmptyObj, require, RX_META, UA, UCD} from '/js/toolbox';
+import {Events} from './events';
 
 Object.assign($('#file-all-styles'), {
   onclick: exportToFile,
@@ -85,7 +78,7 @@ async function importFromFile(file) {
       throw t('dragDropUsercssTabstrip');
     }
   } catch (err) {
-    messageBoxProxy.alert(err.message || err);
+    messageBox.alert(err.message || err);
   }
   function readFile() {
     if (!file) {
@@ -93,7 +86,8 @@ async function importFromFile(file) {
       file = el.files[0];
     }
     if (file.size > 1e9) {
-      return reject(`${(file.size / 1e9).toFixed(1).replace('.0', '')}GB backup? I don't believe you.`);
+      return reject((file.size / 1e9).toFixed(1).replace('.0', '') +
+        "GB backup? I don't believe you.");
     }
     const fr = new FileReader();
     fr.onloadend = () => resolve(fr.result);
@@ -187,7 +181,7 @@ async function importFromString(jsonString) {
   }
 
   async function analyzeStorage(storage) {
-    analyzePrefs(storage[prefs.STORAGE_KEY], prefs.knownKeys, prefs.values, true);
+    analyzePrefs(storage[prefs.STORAGE_KEY], prefs.knownKeys, prefs.__values, true);
     delete storage[prefs.STORAGE_KEY];
     order = storage.order;
     delete storage.order;
@@ -250,7 +244,7 @@ async function importFromString(jsonString) {
     const numChanged = entries.reduce((sum, [, val]) =>
       sum + (val.dirty ? val.names.length : 0), 0);
     const report = entries.map(renderStats).filter(Boolean);
-    messageBoxProxy.show({
+    messageBox.show({
       title: t('importReportTitle'),
       className: 'center-dialog',
       contents: $create('#import', report.length ? report : t('importReportUnchanged')),
@@ -327,10 +321,10 @@ async function importFromString(jsonString) {
       ...stats.codeOnly.ids,
       ...stats.added.ids,
     ];
-    await Promise.all(newIds.map(id => API.styles.delete(id)));
+    await Promise.all(newIds.map(id => API.styles.remove(id)));
     await API.styles.importMany(newIds.map(id => oldStylesById.get(id)).filter(Boolean));
     await API.styles.setOrder(oldOrder);
-    await messageBoxProxy.show({
+    await messageBox.show({
       title: t('importReportUndoneTitle'),
       contents: newIds.length + ' ' + t('importReportUndone'),
       buttons: [t('confirmClose')],
@@ -367,7 +361,7 @@ async function exportToFile(e) {
   const keepDupSections = e.type === 'contextmenu' || e.shiftKey || e.detail === 'compat';
   const data = [
     Object.assign({
-      [prefs.STORAGE_KEY]: prefs.values,
+      [prefs.STORAGE_KEY]: prefs.__values,
       order: await API.styles.getOrder(),
     }, await chromeSync.getLZValues()),
     ...(await API.styles.getAll()).map(cleanupStyle),

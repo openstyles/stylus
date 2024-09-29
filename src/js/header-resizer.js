@@ -1,8 +1,7 @@
-/* global $ $$ dom */// dom.js
-/* global prefs */
-'use strict';
+import {$, $$, dom} from '/js/dom-base';
+import * as prefs from '/js/prefs';
 
-(() => {
+export default function HeaderResizer() {
   let curW = $('#header').offsetWidth;
   let offset, perPage;
   prefs.subscribe(dom.HWprefId, (key, val) => setWidth(val));
@@ -45,4 +44,4 @@
       }
     }
   }
-})();
+}

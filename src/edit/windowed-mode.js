@@ -1,6 +1,8 @@
+import browser from '/js/browser';
 import * as prefs from '/js/prefs';
-import {FIREFOX, getOwnTab, sessionStore, tryJSONparse} from '/js/toolbox';
+import {getOwnTab, sessionStore, tryJSONparse} from '/js/toolbox';
 import editor from './editor';
+import EmbeddedPopup from './embedded-popup';
 
 let ownTabId;
 if (chrome.windows) {
@@ -24,7 +26,7 @@ async function initWindowedMode() {
   chrome.tabs.onAttached.addListener(onTabAttached);
   // Chrome 96+ bug: the type is 'app' for a window that was restored via Ctrl-Shift-T
   const isSimple = ['app', 'popup'].includes((await browser.windows.getCurrent()).type);
-  if (isSimple) require(['/edit/embedded-popup']);
+  if (isSimple) EmbeddedPopup();
   editor.isWindowed = isSimple || (
     history.length === 1 &&
     await prefs.ready && prefs.get('openEditInWindow') &&

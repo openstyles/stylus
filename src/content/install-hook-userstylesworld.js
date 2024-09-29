@@ -1,5 +1,5 @@
 /* global API */// msg.js
-'use strict';
+'use strict'; // eslint-disable-line strict
 
 if (window.USW !== 1) {
   window.USW = 1; // avoiding re-injection

@@ -1,9 +1,8 @@
-/* global $ $$ $remove getEventKeyName moveFocus */// dom.js
-/* global API */// msg.js
-/* global getActiveTab */// toolbox.js
-/* global resortEntries tabURL */// popup.js
-/* global t */// localization.js
-'use strict';
+import {$, $$, $remove, getEventKeyName, moveFocus} from '/js/dom';
+import {t} from '/js/localization';
+import {API} from '/js/msg';
+import {getActiveTab, require} from '/js/toolbox';
+import {resortEntries, tabURL} from './popup';
 
 const menu = $('#menu');
 const menuExclusions = [];
@@ -66,7 +65,7 @@ const GlobalRoutes = {
   '#menu [data-cmd]'() {
     if (this.dataset.cmd === 'delete') {
       if (menu.classList.toggle('delete')) return;
-      API.styles.delete(menu.styleId);
+      API.styles.remove(menu.styleId);
     }
     menuHide();
   },
@@ -169,3 +168,5 @@ function menuOnKey(e) {
     }
   }
 }
+
+export default Events;

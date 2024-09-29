@@ -1,11 +1,11 @@
-/* global $ $$ $create $remove setupLivePrefs showSpinner toggleDataset */// dom.js
-/* global $entry tabURL */// popup.js
-/* global API */// msg.js
+import {$ $$ $create $remove setupLivePrefs showSpinner toggleDataset} from '/js/dom';
+import {$entry tabURL} from '/js/popup';
+import {API} from '/js/msg';
 /* global Events */
-/* global UCD URLS clipString debounce isEmptyObj stringAsRegExp stringAsRegExpStr tryRegExp tryURL */// toolbox.js
-/* global prefs */
-/* global styleFinder:true */// popup.js
-/* global t */// localization.js
+import {UCD URLS clipString debounce isEmptyObj stringAsRegExp stringAsRegExpStr tryRegExp tryURL} from '/js/toolbox';
+import * as prefs from '/js/prefs';
+import {styleFinder:true} from '/js/popup';
+import {t} from '/js/localization';
 'use strict';
 
 (() => {
@@ -508,7 +508,7 @@
 
   function uninstall() {
     const {result} = $resultEntry(this);
-    API.styles.delete(result._styleId);
+    API.styles.remove(result._styleId);
   }
 
   /**

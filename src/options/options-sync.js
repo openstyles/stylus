@@ -1,8 +1,7 @@
-/* global API msg */// msg.js
-/* global t */// localization.js
-/* global $ $$ toggleDataset waitForSelector */// dom.js
-/* global capitalize */// toolbox.js
-'use strict';
+import {API, onExtension} from '/js/msg';
+import {t} from '/js/localization';
+import {$, $$, toggleDataset, waitForSelector} from '/js/dom';
+import {capitalize} from '/js/toolbox';
 
 Promise.all([
   API.sync.getStatus(),
@@ -15,7 +14,7 @@ Promise.all([
   const elLogin = $('.sync-login', elSync);
   const elDriveOptions = $$('.drive-options', elSync);
   updateButtons();
-  msg.onExtension(e => {
+  onExtension(e => {
     if (e.method === 'syncStatusUpdate') {
       setStatus(e.status);
     }

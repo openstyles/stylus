@@ -1,20 +1,19 @@
-/* global $ $$remove $create $createLink $isTextInput messageBoxProxy */// dom.js
-/* global API */// msg.js
-/* global CodeMirror */
-/* global MozDocMapper failRegexp */// util.js
-/* global MozSectionFinder */
-/* global MozSectionWidget */
-/* global UCD RX_META */// toolbox.js
-/* global chromeSync */// storage-util.js
-/* global cmFactory */
-/* global editor */
-/* global linterMan */
-/* global prefs */
-/* global t */// localization.js
-'use strict';
+import messageBox from '/js/dlg/message-box';
+import {$, $$remove, $create, $createLink, $isTextInput} from '/js/dom';
+import {t} from '/js/localization';
+import {API} from '/js/msg';
+import * as prefs from '/js/prefs';
+import {MozDocMapper} from '/js/sections-util';
+import {chromeSync} from '/js/storage-util';
+import {RX_META, UCD} from '/js/toolbox';
+import CodeMirror from 'codemirror';
+import cmFactory from './codemirror-factory';
+import editor, {failRegexp} from './editor';
+import linterMan from './linter-manager';
+import MozSectionFinder from './moz-section-finder';
+import MozSectionWidget from './moz-section-widget';
 
-/* exported SourceEditor */
-async function SourceEditor() {
+export default async function SourceEditor() {
   const {style, /** @type DirtyReporter */dirty} = editor;
   const DEFAULT_TEMPLATE = `
     /* ==UserStyle==
@@ -92,13 +91,13 @@ async function SourceEditor() {
         const {customName, enabled, id} = style;
         res = !id && await API.usercss.build({sourceCode, checkDup: true, metaOnly: true});
         if (res && res.dup) {
-          messageBoxProxy.alert(t('usercssAvoidOverwriting'), 'danger', t('genericError'));
+          messageBox.alert(t('usercssAvoidOverwriting'), 'danger', t('genericError'));
         } else {
           res = await API.usercss.editSave({customName, enabled, id, sourceCode});
           // Awaiting inside `try` so that exceptions go to our `catch`
           await replaceStyle(res.style);
           if ((res.badRe = getBadRegexps(res.style))) {
-            messageBoxProxy.alert(res.badRe, 'danger pre', t('styleBadRegexp'));
+            messageBox.alert(res.badRe, 'danger pre', t('styleBadRegexp'));
           }
         }
         showLog(res.log);
@@ -215,7 +214,7 @@ async function SourceEditor() {
       return;
     }
 
-    if (draft || await messageBoxProxy.confirm(t('styleUpdateDiscardChanges'))) {
+    if (draft || await messageBox.confirm(t('styleUpdateDiscardChanges'))) {
       editor.useSavedStyle(newStyle);
       if (!sameCode) {
         const si0 = draft && draft.si.cms[0];
@@ -239,7 +238,7 @@ async function SourceEditor() {
   }
 
   async function saveTemplate() {
-    const res = await messageBoxProxy.show({
+    const res = await messageBox.show({
       contents: t('usercssReplaceTemplateConfirmation'),
       className: 'center',
       buttons: [t('confirmYes'), t('confirmNo'), {
@@ -252,7 +251,7 @@ async function SourceEditor() {
       const code = res.button === 2 ? DEFAULT_TEMPLATE : cm.getValue();
       await chromeSync.setLZValue(key, code);
       if (await chromeSync.getLZValue(key) !== code) {
-        messageBoxProxy.alert(t('syncStorageErrorSaving'));
+        messageBox.alert(t('syncStorageErrorSaving'));
       }
     }
   }
@@ -268,7 +267,7 @@ async function SourceEditor() {
     const pp = errStyle[UCD].preprocessor;
     const ppUrl = editor.ppDemo[pp];
     cm.setSelections(points.map(p => ({anchor: p, head: p})));
-    messageBoxProxy.show({
+    messageBox.show({
       title: t('genericError'),
       className: 'center pre danger',
       contents: $create('pre',

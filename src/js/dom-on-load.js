@@ -1,13 +1,13 @@
-/* global $$ $ $create focusA11y getEventKeyName moveFocus waitForSelector */// dom.js
-/* global CHROME clamp debounce tryURL */// toolbox.js
-/* global msg */
-/* global prefs */
-/* global t */// localization.js
-'use strict';
+import {$, $$, $create, focusA11y} from './dom-base';
+import {getEventKeyName, moveFocus} from './dom-util';
+import HeaderResizer from './header-resizer';
+import {t} from './localization';
+import {onExtension} from './msg';
+import * as prefs from './prefs';
+import {CHROME, clamp, debounce, tryURL} from './toolbox';
 
 /** DOM housekeeping after a page finished loading */
-
-(() => {
+export default function DomOnLoad() {
   const SPLIT_BTN_MENU = '.split-btn-menu';
   const tooltips = new WeakMap();
   splitLongTooltips();
@@ -19,7 +19,7 @@
   window.on('click', splitMenu);
   window.on('click', interceptClick, true);
   window.on('resize', () => debounce(addTooltipsToEllipsized, 100));
-  msg.onExtension(request => {
+  onExtension(request => {
     if (request.method === 'editDeleteText') {
       document.execCommand('delete');
     }
@@ -36,7 +36,7 @@
   }
   const elOff = $('#disableAll-label'); // won't hide if already shown
   if (elOff) prefs.subscribe('disableAll', () => (elOff.dataset.persist = ''));
-  waitForSelector('#header').then(() => require(['/js/header-resizer']));
+  if ($('#header')) HeaderResizer();
 
   const getFSH = DataTransferItem.prototype.getAsFileSystemHandle;
   if (getFSH) {
@@ -195,7 +195,7 @@
     const el = event.target.closest('[data-cmd=note]');
     if (el) {
       event.preventDefault();
-      window.messageBoxProxy.show({
+      window.messageBox.show({
         className: 'note center-dialog',
         contents: tooltips.get(el) || el.title,
         buttons: [t('confirmClose')],
@@ -221,4 +221,4 @@
       if (newTitle !== el.title) el.title = newTitle;
     }
   }
-})();
+}

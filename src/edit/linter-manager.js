@@ -1,13 +1,13 @@
-/* global $ $create */// dom.js
-/* global chromeSync */// storage-util.js
-/* global clipString */// util.js
-/* global createWorker */// worker-util.js
-/* global editor */
-/* global prefs */
-'use strict';
+import {$, $create} from '/js/dom';
+import * as prefs from '/js/prefs';
+import {chromeSync} from '/js/storage-util';
+import {clipString} from '/js/toolbox';
+import createWorker from '/js/worker-host';
+import editor from './editor';
 
 //#region linterMan
 
+// TODO: export directly
 const linterMan = (() => {
   const cms = new Map();
   const linters = [];
@@ -358,3 +358,5 @@ linterMan.DEFAULTS = {
 })();
 
 //#endregion
+
+export default linterMan;

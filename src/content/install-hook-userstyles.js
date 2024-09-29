@@ -1,5 +1,5 @@
 /* global API */// msg.js
-'use strict';
+'use strict'; // eslint-disable-line strict
 
 (() => {
   if (window.INJECTED_USO === 1) return;
@@ -56,7 +56,7 @@
           gesture = NaN;
           break;
         case 'deleteStylishStyle': {
-          if (isTrusted(data)) res = await API.uso.delete(getUsoId());
+          if (isTrusted(data)) res = await API.uso.deleteStyle(getUsoId());
           gesture = NaN;
           break;
         }

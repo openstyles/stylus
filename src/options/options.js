@@ -1,7 +1,9 @@
-/* global API */// msg.js
-/* global prefs */
-/* global t */// localization.js
-/* global $ $$ $create getEventKeyName messageBoxProxy setInputValue setupLivePrefs */// dom.js
+import browser from '/js/browser';
+import messageBox from '/js/dlg/message-box';
+import {$, $$, $create, getEventKeyName, setInputValue, setupLivePrefs} from '/js/dom';
+import {t} from '/js/localization';
+import {API} from '/js/msg';
+import * as prefs from '/js/prefs';
 /* global
   CHROME_POPUP_BORDER_BUG
   FIREFOX
@@ -10,7 +12,6 @@
   clamp
   ignoreChromeError
 */// toolbox.js
-'use strict';
 
 t.body();
 setupLivePrefs();
@@ -40,7 +41,7 @@ $('#shortcuts').onclick = () => {
 };
 $('#shortcuts').hidden = FIREFOX && !(browser.commands || {}).update;
 $('#reset').onclick = async () => {
-  if (await messageBoxProxy.confirm(t('confirmDiscardChanges'))) {
+  if (await messageBox.confirm(t('confirmDiscardChanges'))) {
     for (const el of $$('input')) {
       const id = el.id || el.name;
       if (prefs.knownKeys.includes(id)) {
@@ -61,7 +62,7 @@ $$('[data-clickable]').forEach(el => {
 function customizeHotkeys() {
   const CTRL = UA.mac ? 'metaKey' : 'ctrlKey';
   const SKIP = ['Control', 'Alt', 'Shift', 'Meta', 'CapsLock', 'Tab', 'Escape', 'OS'];
-  messageBoxProxy.show({
+  messageBox.show({
     title: t('shortcutsNote'),
     contents: t.template.shortcutsFF.cloneNode(true),
     className: 'center-dialog pre-line',

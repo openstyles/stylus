@@ -1,15 +1,13 @@
-/* global $$ $ $create $createLink $$remove showSpinner */// dom.js
-/* global API */// msg.js
-/* global CODEMIRROR_THEMES */
-/* global CodeMirror */
-/* global UCD URLS clipString closeCurrentTab deepEqual sessionStore tryURL */// toolbox.js
-/* global compareVersion */// cmpver.js
-/* global messageBox */
-/* global prefs */
-/* global preinit */
-/* global styleCodeEmpty */// sections-util.js
-/* global t */// localization.js
-'use strict';
+import CODEMIRROR_THEMES from '/edit/codemirror-themes';
+import compareVersion from '/js/cmpver';
+import messageBox from '/js/dlg/message-box';
+import {$, $$, $$remove, $create, $createLink, showSpinner} from '/js/dom';
+import {t} from '/js/localization';
+import {API} from '/js/msg';
+import * as prefs from '/js/prefs';
+import {styleCodeEmpty} from '/js/sections-util';
+import {clipString, closeCurrentTab, deepEqual, sessionStore, tryURL, UCD, URLS} from '/js/toolbox';
+import CodeMirror from 'codemirror';
 
 const CFG_SEL = '#message-box.config-dialog';
 let cfgShown = true;
@@ -248,8 +246,7 @@ function updateMeta(style, dup = installedDup) {
   }
 
   async function openConfigDialog() {
-    await require(['/js/dlg/config-dialog']); /* global configDialog */
-    configDialog(style);
+    (await import('/js/dlg/config-dialog')).default(style);
   }
 }
 
@@ -307,7 +304,7 @@ function enablePostActions() {
   $('#edit').search = `?id=${id}`;
   $('#delete').onclick = async () => {
     if (await messageBox.confirm(t('deleteStyleConfirm'), 'danger center', t('confirmDelete'))) {
-      await API.styles.delete(id);
+      await API.styles.remove(id);
       if (tabId < 0 && history.length > 1) {
         history.back();
       } else {

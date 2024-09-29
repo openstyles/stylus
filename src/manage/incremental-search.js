@@ -1,14 +1,6 @@
-/* global debounce */// toolbox.js
-/* global installed */// manage.js
-/* global
-  $$
-  $
-  $create
-  $isTextInput
-  animateElement
-  scrollElementIntoView
-*/// dom.js
-'use strict';
+import {$, $$, $create, $isTextInput, animateElement, scrollElementIntoView} from '/js/dom';
+import {debounce} from '/js/toolbox';
+import {installed} from './manage';
 
 (() => {
   let prevText, focusedLink, focusedEntry;

@@ -1,8 +1,7 @@
-/* global $ $$ $create */// dom.js
-/* global API */// msg.js
-/* global debounce */// toolbox.js
-/* global t */// localization.js
-'use strict';
+import {$, $$, $create} from '/js/dom';
+import {API} from '/js/msg';
+import {debounce} from '/js/toolbox';
+import {t} from '/js/localization';
 
 const hotkeys = (() => {
   const entries = document.getElementsByClassName('entry');

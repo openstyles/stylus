@@ -1,10 +1,28 @@
-/* global $ */// dom.js
-/* global CodeMirror */
-/* global UA deepMerge */// toolbox.js
-/* global editor */
-/* global prefs */
-/* global t */// localization.js
-'use strict';
+import {$} from '/js/dom';
+import CodeMirror from 'codemirror';
+import {UA, deepMerge} from '/js/toolbox';
+import editor from './editor';
+import * as prefs from '/js/prefs';
+import {t} from '/js/localization';
+
+export const extraKeys = Object.assign(CodeMirror.defaults.extraKeys || {}, {
+  // independent of current keyMap; some are implemented only for the edit page
+  'Alt-Enter': 'toggleStyle',
+  'Alt-PageDown': 'nextEditor',
+  'Alt-PageUp': 'prevEditor',
+  'Alt-Home': 'showCurrentLineAtTop',
+  'Alt-End': 'showCurrentLineAtBottom',
+  'Alt-Down': 'minus1',
+  'Alt-Up': 'plus1',
+  'Shift-Alt-Down': 'minus10',
+  'Shift-Alt-Up': 'plus10',
+  'Shift-Ctrl-Alt-Down': 'minus100',
+  'Shift-Ctrl-Alt-Up': 'plus100',
+  // Adding dummy Wheel shortcuts to show it in keymap (i) popup
+  'Ctrl-Alt-WheelDown': 'minus100',
+  'Ctrl-Alt-WheelUp': 'plus100',
+  'Ctrl-Pause': 'toggleEditorFocus',
+});
 
 prefs.ready.then(() => {
   // CodeMirror miserably fails on keyMap='' so let's ensure it's not
@@ -29,24 +47,7 @@ prefs.ready.then(() => {
     styleActiveLine: {nonEmpty: true},
     theme: prefs.get('editor.theme'),
     keyMap: prefs.get('editor.keyMap'),
-    extraKeys: Object.assign(CodeMirror.defaults.extraKeys || {}, {
-      // independent of current keyMap; some are implemented only for the edit page
-      'Alt-Enter': 'toggleStyle',
-      'Alt-PageDown': 'nextEditor',
-      'Alt-PageUp': 'prevEditor',
-      'Alt-Home': 'showCurrentLineAtTop',
-      'Alt-End': 'showCurrentLineAtBottom',
-      'Alt-Down': 'minus1',
-      'Alt-Up': 'plus1',
-      'Shift-Alt-Down': 'minus10',
-      'Shift-Alt-Up': 'plus10',
-      'Shift-Ctrl-Alt-Down': 'minus100',
-      'Shift-Ctrl-Alt-Up': 'plus100',
-      // Adding dummy Wheel shortcuts to show it in keymap (i) popup
-      'Ctrl-Alt-WheelDown': 'minus100',
-      'Ctrl-Alt-WheelUp': 'plus100',
-      'Ctrl-Pause': 'toggleEditorFocus',
-    }),
+    extraKeys,
     maxHighlightLength: 100e3,
     undoDepth: 1000,
   };
@@ -57,7 +58,7 @@ prefs.ready.then(() => {
   // Adding hotkeys to some keymaps except 'basic' which is primitive by design
   {
     const KM = CodeMirror.keyMap;
-    const extras = Object.values(CodeMirror.defaults.extraKeys);
+    const extras = Object.values(extraKeys);
     if (!extras.includes('jumpToLine')) {
       KM.sublime['Ctrl-G'] = 'jumpToLine';
       KM.emacsy['Ctrl-G'] = 'jumpToLine';

@@ -1,8 +1,8 @@
 'use strict';
 
 const parserlib = typeof self !== 'undefined'
-  ? (require('/js/csslint/parserlib-base'), self.parserlib)
-  : require('./parserlib');
+  ? (importScripts('/js/csslint/parserlib-base'), self.parserlib)
+  : importScripts('./parserlib');
 
 //#region Reporter
 

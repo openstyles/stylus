@@ -1,4 +1,4 @@
-import {$, $$, $create, important} from '/js/dom';
+import {$, $$} from '/js/dom';
 import {t} from '/js/localization';
 import * as prefs from '/js/prefs';
 import '/css/global.css';
@@ -35,8 +35,10 @@ import '/vendor-overwrites/codemirror-addon/match-highlighter.js';
 import '/js/color/color-picker.css';
 import './codemirror-default.css';
 import './edit.css';
+import './regexp-tester.css';
 import './settings.css';
 import Autocomplete from './autocomplete';
+import CompactHeader from './compact-header';
 import Drafts from './drafts';
 import editor from './editor';
 import EditorHeader from './editor-header';
@@ -58,18 +60,21 @@ t.body();
 
 styleReady.then(async () => {
   EditorHeader();
+  // TODO: load respective js on demand?
   await (editor.isUsercss ? SourceEditor : SectionsEditor)();
-
   editor.dirty.onChange(editor.updateDirty);
   prefs.subscribe('editor.linter', () => linterMan.run());
-
+  Autocomplete();
+  CompactHeader();
+  Drafts();
+  GlobalSearch();
   // enabling after init to prevent flash of validation failure on an empty name
   $('#name').required = !editor.isUsercss;
   $('#save-button').onclick = editor.save;
   $('#cancel-button').onclick = editor.cancel;
   $('#lint-help').onclick = showLintHelp;
   $('#testRE').hidden = !editor.style.sections.some(({regexps: r}) => r && r.length);
-  $('#testRE').onclick = () => require(['/edit/regexp-tester.css'], () => regexpTester.toggle(true));
+  $('#testRE').onclick = () => regexpTester.toggle(true);
   const elSec = $('#sections-list');
   const elToc = $('#toc');
   const moDetails = new MutationObserver(([{target: sec}]) => {
@@ -89,52 +94,4 @@ styleReady.then(async () => {
   }
   elToc.onclick = e =>
     editor.jumpToEditor([].indexOf.call(elToc.children, e.target));
-
-  Autocomplete();
-  Drafts();
-  GlobalSearch();
-});
-
-styleReady.then(async () => {
-  // Set up mini-header on scroll
-  const {isUsercss} = editor;
-  const el = $create({
-    style: important(`
-      top: 0;
-      height: 1px;
-      position: absolute;
-      visibility: hidden;
-    `),
-  });
-  const scroller = isUsercss ? $('.CodeMirror-scroll') : document.body;
-  const xoRoot = isUsercss ? scroller : undefined;
-  const xo = new IntersectionObserver(onScrolled, {root: xoRoot});
-  const elInfo = $('h1 a');
-  scroller.appendChild(el);
-  onCompactToggled(editor.mqCompact);
-  editor.mqCompact.on('change', onCompactToggled);
-
-  /** @param {MediaQueryList} mq */
-  function onCompactToggled(mq) {
-    for (const el of $$('details[data-pref]')) {
-      el.open = mq.matches ? false :
-        el.classList.contains('ignore-pref') ? el.open :
-          prefs.get(el.dataset.pref);
-    }
-    if (mq.matches) {
-      xo.observe(el);
-      $('#basic-info-name').after(elInfo);
-    } else {
-      xo.disconnect();
-      $('h1').append(elInfo);
-    }
-  }
-
-  /** @param {IntersectionObserverEntry[]} entries */
-  function onScrolled(entries) {
-    const h = $('#header');
-    const sticky = !entries.pop().intersectionRatio;
-    if (!isUsercss) scroller.style.paddingTop = sticky ? h.offsetHeight + 'px' : '';
-    h.classList.toggle('sticky', sticky);
-  }
 });

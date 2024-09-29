@@ -1,8 +1,3 @@
-/* global $ $create */// dom.js
-/* global API msg */// msg.js
-/* global FIREFOX */// toolbox.js
-'use strict';
-
 /**
  * This file must be loaded in a <script> tag placed after all the <link> tags
  * that contain dark themes so that the stylesheets are loaded by the time this script runs.
@@ -11,6 +6,9 @@
  * which also happens before the first paint unless the browser "yields", but that's abnormal
  * and not even a problem in the most popular case of using system dark/light mode.
  */
+import {$, $create} from '/js/dom';
+import * as msg from '/js/msg';
+import {API} from '/js/msg';
 
 (async () => {
   let isDark, isVivaldi;
@@ -27,7 +25,9 @@
     }
   });
   // Add favicon in FF and Vivaldi
-  if (window === top && (FIREFOX || isVivaldi) && location.pathname !== '/popup.html') {
+  if (window === top
+  && (FIREFOX || isVivaldi)
+  && location.pathname !== '/popup.html') {
     document.head.append(...[32, 16].map(size => $create('link', {
       rel: 'icon',
       href: `/images/icon/${isDark ? '' : 'light/'}${size}.png`,

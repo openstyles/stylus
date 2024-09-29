@@ -1,5 +1,5 @@
 /* Jison generated parser */
-var jsonlint = (function(){
+
 var parser = {trace: function trace() { },
 yy: {},
 symbols_: {"error":2,"JSONString":3,"STRING":4,"JSONNumber":5,"NUMBER":6,"JSONNullLiteral":7,"NULL":8,"JSONBooleanLiteral":9,"TRUE":10,"FALSE":11,"JSONText":12,"JSONValue":13,"EOF":14,"JSONObject":15,"JSONArray":16,"{":17,"}":18,"JSONMemberList":19,"JSONMember":20,":":21,",":22,"[":23,"]":24,"JSONElementList":25,"$accept":0,"$end":1},
@@ -410,23 +410,4 @@ lexer.conditions = {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13],"inclus
 ;
 return lexer;})()
 parser.lexer = lexer;
-return parser;
-})();
-if (typeof require !== 'undefined' && typeof exports !== 'undefined') {
-exports.parser = jsonlint;
-exports.parse = function () { return jsonlint.parse.apply(jsonlint, arguments); }
-exports.main = function commonjsMain(args) {
-    if (!args[1])
-        throw new Error('Usage: '+args[0]+' FILE');
-    if (typeof process !== 'undefined') {
-        var source = require('fs').readFileSync(require('path').join(process.cwd(), args[1]), "utf8");
-    } else {
-        var cwd = require("file").path(require("file").cwd());
-        var source = cwd.join(args[1]).read({charset: "utf-8"});
-    }
-    return exports.parser.parse(source);
-}
-if (typeof module !== 'undefined' && require.main === module) {
-  exports.main(typeof process !== 'undefined' ? process.argv.slice(1) : require("system").args);
-}
-}
+export default parser;

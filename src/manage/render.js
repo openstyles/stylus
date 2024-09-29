@@ -1,11 +1,11 @@
-/* global $$ $ $create animateElement scrollElementIntoView */// dom.js
-/* global API */// msg.js
-/* global UCD URLS debounce getOwnTab isEmptyObj sessionStore stringAsRegExpStr */// toolbox.js
-/* global removeStyleCode */// events.js
-/* global filterAndAppend */// filters.js
-/* global installed newUI */// manage.js
+import {$$ $ $create animateElement scrollElementIntoView} from '/js/dom';
+import {API} from '/js/msg';
+import {UCD URLS debounce getOwnTab isEmptyObj sessionStore stringAsRegExpStr} from '/js/toolbox';
+import {removeStyleCode} from '/js/events';
+import {filterAndAppend} from '/js/filters';
+import {installed newUI} from '/js/manage';
 /* global sorter */
-/* global t */// localization.js
+import {t} from '/js/localization';
 'use strict';
 
 const ENTRY_ID_PREFIX_RAW = 'style-';

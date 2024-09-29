@@ -31,18 +31,6 @@ export const focusA11y = {
   },
 };
 
-/**
- * Autoloads message-box.js
- */
-export let messageBoxProxy = new Proxy({}, {
-  get(_, name) {
-    return (...args) => Promise.all([
-      import('./dlg/message-box'),
-      require(['/js/dlg/message-box.css']),
-    ]).then(([m]) => (messageBoxProxy = m.default)[name](...args));
-  },
-});
-
 export function $(selector, base) {
   // we have ids with . like #manage.onlyEnabled which looks like #id.class
   // so since getElementById is superfast we'll try it anyway

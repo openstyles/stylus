@@ -1,14 +1,12 @@
-/* global API msg */// msg.js
-/* global CHROME debounce */// toolbox.js
-/* global Events handleBulkChange handleVisibilityChange */// events.js
-/* global switchUI showStyles */// render.js
-/* global fltMode */// filters.js
-/* global prefs */
-/* global router */
-/* global sorter */
-/* global t */// localization.js
-/* global $ $$ $create animateElement setupLivePrefs */// dom.js
-'use strict';
+import {$, $$, $create, animateElement, setupLivePrefs} from '/js/dom';
+import {t} from '/js/localization';
+import {API, onExtension} from '/js/msg';
+import * as prefs from '/js/prefs';
+import router from '/js/router';
+import {CHROME, debounce} from '/js/toolbox';
+import {Events, handleBulkChange, handleVisibilityChange} from './events';
+import {fltMode} from './filters';
+import {showStyles, switchUI} from './render';
 
 t.body();
 
@@ -83,7 +81,8 @@ Object.assign(newUI, {
   router.update();
   prefs.subscribe(newUI.ids.map(newUI.prefKeyForId), () => switchUI());
   prefs.subscribe('newStyleAsUsercss', (key, val) => {
-    $('#add-style-label').textContent = t(val ? 'optionsAdvancedNewStyleAsUsercss' : 'addStyleLabel');
+    $('#add-style-label').textContent =
+      t(val ? 'optionsAdvancedNewStyleAsUsercss' : 'addStyleLabel');
   }, true);
   switchUI({styleOnly: true});
   // translate CSS manually
@@ -103,13 +102,12 @@ Object.assign(newUI, {
 
   showStyles(styles, ids);
 
-  setTimeout(require, 0, [
-    '/manage/import-export',
-    '/manage/incremental-search',
-  ]);
+  await new Promise(setTimeout);
+  import('./import-export');
+  import('./incremental-search');
 })();
 
-msg.onExtension(onRuntimeMessage);
+onExtension(onRuntimeMessage);
 
 function onRuntimeMessage(msg) {
   switch (msg.method) {

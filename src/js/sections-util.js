@@ -1,14 +1,5 @@
-'use strict';
-
-/* exported
-  calcStyleDigest
-  MozDocMapper
-  styleCodeEmpty
-  styleJSONseemsValid
-  styleSectionsEqual
-*/
-
-const MozDocMapper = {
+// TODO: export directly
+export const MozDocMapper = {
   TO_CSS: {
     urls: 'url',
     urlPrefixes: 'url-prefix',
@@ -66,19 +57,20 @@ const MozDocMapper = {
   },
 };
 
+const STYLE_CODE_EMPTY_RE = /\s+|\/\*([^*]+|\*(?!\/))*(\*\/|$)|@namespace[^;]+;|@charset[^;]+;/giyu;
+
 /** @param {StyleSection} sec */
-function styleCodeEmpty(sec) {
+export function styleCodeEmpty(sec) {
   const {code} = sec;
   let res = !code;
   if (res || (res = sec._empty) != null) return res;
   const len = code.length;
-  const {rx} = styleCodeEmpty; rx.lastIndex = 0;
+  const rx = STYLE_CODE_EMPTY_RE; rx.lastIndex = 0;
   let i = 0; while (rx.exec(code) && (i = rx.lastIndex) !== len) {/**/}
   Object.defineProperty(sec, '_empty', {value: res = i === len, configurable: true});
   styleCodeEmpty.lastIndex = i;
   return res;
 }
-styleCodeEmpty.rx = /\s+|\/\*([^*]+|\*(?!\/))*(\*\/|$)|@namespace[^;]+;|@charset[^;]+;/giyu;
 
 /**
  * The sections are checked in successive order because it matters when many sections
@@ -87,7 +79,7 @@ styleCodeEmpty.rx = /\s+|\/\*([^*]+|\*(?!\/))*(\*\/|$)|@namespace[^;]+;|@charset
  * @param {Object} b - second style object
  * @returns {?boolean}
  */
-function styleSectionsEqual({sections: a}, {sections: b}) {
+export function styleSectionsEqual({sections: a}, {sections: b}) {
   const targets = ['urls', 'urlPrefixes', 'domains', 'regexps'];
   return a && b && a.length === b.length && a.every(sameSection);
   function sameSection(secA, i) {
@@ -108,7 +100,7 @@ function styleSectionsEqual({sections: a}, {sections: b}) {
   }
 }
 
-async function calcStyleDigest(style) {
+export async function calcStyleDigest(style) {
   // retain known properties in an arbitrarily predefined order
   const src = style.usercssData
     ? style.sourceCode
@@ -125,7 +117,7 @@ async function calcStyleDigest(style) {
   return Array.from(new Uint8Array(res), b => (0x100 + b).toString(16).slice(1)).join('');
 }
 
-function styleJSONseemsValid(json) {
+export function styleJSONseemsValid(json) {
   return json
     && typeof json.name == 'string'
     && json.name.trim()

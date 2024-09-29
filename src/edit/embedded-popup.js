@@ -1,10 +1,9 @@
-/* global $ $create $remove getEventKeyName */// dom.js
-/* global CodeMirror */
-/* global prefs */
-/* global t */// localization.js
-'use strict';
+import {$, $create, $remove, getEventKeyName} from '/js/dom';
+import {t} from '/js/localization';
+import * as prefs from '/js/prefs';
+import {extraKeys} from './codemirror-default';
 
-(() => {
+export default function EmbeddedPopup() {
   const ID = 'popup-iframe';
   const SEL = '#' + ID;
   const URL = chrome.runtime.getManifest().browser_action.default_popup;
@@ -24,7 +23,7 @@
   t.body(() => {
     document.body.appendChild(btn);
     // Adding a dummy command to show in keymap help popup
-    CodeMirror.defaults.extraKeys[POPUP_HOTKEY] = 'openStylusPopup';
+    extraKeys[POPUP_HOTKEY] = 'openStylusPopup';
   });
 
   prefs.subscribe('iconset', (_, val) => {
@@ -106,4 +105,4 @@
       removePopup();
     }
   }
-})();
+}

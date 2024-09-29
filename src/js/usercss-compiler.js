@@ -6,7 +6,7 @@ const BUILDERS = Object.assign(Object.create(null), {
 
   default: {
     post(sections, vars) {
-      require(['/js/sections-util']); /* global styleCodeEmpty */
+      importScripts('/js/sections-util'); /* global styleCodeEmpty */
       let varDef = Object.keys(vars).map(k => `  --${k}: ${vars[k].value};\n`).join('');
       if (!varDef) return;
       varDef = ':root {\n' + varDef + '}\n';
@@ -20,7 +20,7 @@ const BUILDERS = Object.assign(Object.create(null), {
 
   stylus: {
     pre(source, vars) {
-      require(['/vendor/stylus-lang-bundle/stylus-renderer.min']); /* global StylusRenderer */
+      importScripts('/vendor/stylus-lang-bundle/stylus-renderer.min'); /* global StylusRenderer */
       return new Promise((resolve, reject) => {
         const varDef = Object.keys(vars).map(key => `${key} = ${vars[key].value};\n`).join('');
         new StylusRenderer(varDef + source)
@@ -40,7 +40,7 @@ const BUILDERS = Object.assign(Object.create(null), {
           onReady: false,
         };
       }
-      require(['/vendor/less/less.min']); /* global less */
+      importScripts('/vendor/less/less.min'); /* global less */
       const varDefs = Object.keys(vars).map(key => `@${key}:${vars[key].value};\n`).join('');
       try {
         return (await less.render(varDefs + source, {math: 'parens-division'})).css;
@@ -52,7 +52,7 @@ const BUILDERS = Object.assign(Object.create(null), {
 
   uso: {
     pre(source, vars) {
-      require(['/js/color/color-converter']); /* global colorConverter */
+      importScripts('/js/color/color-converter'); /* global colorConverter */
       const pool = Object.create(null);
       return doReplace(source);
 
@@ -131,7 +131,7 @@ async function compileUsercss(preprocessor, code, vars) {
     });
     await builderChain;
   }
-  require(['/js/moz-parser']); /* global extractSections */
+  importScripts('/js/moz-parser'); /* global extractSections */
   const res = extractSections({code});
   if (builder.post) {
     builder.post(res.sections, vars);
@@ -180,7 +180,7 @@ function spliceCssAfterGlobals(section, newText, after) {
   const {code} = section;
   const rx = /@import\s/gi;
   if ((rx.lastIndex = after, rx.test(code))) {
-    require(['/js/csslint/parserlib']); /* global parserlib */
+    importScripts('/js/csslint/parserlib'); /* global parserlib */
     const P = new parserlib.css.Parser({globalsOnly: true}); P.parse(code);
     const {col, line, offset} = P.stream.token || P.stream.peekCached();
     // normalizing newlines in non-usercss to match line:col from parserlib

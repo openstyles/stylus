@@ -1,11 +1,13 @@
-/* global $$ $ $create $remove messageBoxProxy showSpinner toggleDataset */// dom.js
-/* global API msg */// msg.js
-/* global URLS isEmptyObj */// toolbox.js
-/* global editor */
-/* global t */// localization.js
-'use strict';
+import messageBox from '/js/dlg/message-box';
+import {$, $$, $create, $remove, showSpinner, toggleDataset} from '/js/dom';
+import {t} from '/js/localization';
+import * as msg from '/js/msg';
+import {API} from '/js/msg';
+import {isEmptyObj, URLS} from '/js/toolbox';
+import editor from './editor';
+import styleReady from './style-ready';
 
-editor.styleReady.then(() => {
+styleReady.then(() => {
   const ERROR_TITLE = 'UserStyles.world ' + t('genericError');
   const elProgress = $('#usw-progress');
   const UI = $('#publish');
@@ -30,7 +32,7 @@ editor.styleReady.then(() => {
   async function publishStyle() {
     const {id, _usw} = style;
     if (await API.data.has('usw' + id) &&
-        !await messageBoxProxy.confirm(t('publishRetry'), 'danger', ERROR_TITLE)) {
+        !await messageBox.confirm(t('publishRetry'), 'danger', ERROR_TITLE)) {
       return;
     }
     let error;

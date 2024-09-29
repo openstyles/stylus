@@ -1,9 +1,9 @@
-/* global $ $create dom messageBoxProxy */// dom.js
-/* global installed */// manage.js
-/* global prefs */
-/* global t */// localization.js
-/* global UCD */// toolbox.js
-'use strict';
+import messageBox from '/js/dlg/message-box';
+import {$, $create, dom} from '/js/dom';
+import {installed} from '/js/manage';
+import * as prefs from '/js/prefs';
+import {t} from '/js/localization';
+import {UCD} from '/js/toolbox';
 
 const sorter = (() => {
 
@@ -218,7 +218,7 @@ const sorter = (() => {
 
   async function showHelp(event) {
     event.preventDefault();
-    messageBoxProxy.show({
+    messageBox.show({
       className: 'help-text center-dialog',
       title: t('sortStylesHelpTitle'),
       contents:

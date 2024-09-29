@@ -1,10 +1,8 @@
-/* global CodeMirror */
-/* global deepEqual */// toolbox.js
-/* global trimCommentLabel */// util.js
-'use strict';
+import {deepEqual} from '/js/toolbox';
+import CodeMirror from 'codemirror';
+import {trimCommentLabel} from './util';
 
-/* exported MozSectionFinder */
-function MozSectionFinder(cm) {
+export default function MozSectionFinder(cm) {
   const KEY = 'MozSectionFinder';
   const MOZ_DOC_LEN = '@-moz-document'.length;
   const rxDOC = /@-moz-document(\s+|$)/ig;

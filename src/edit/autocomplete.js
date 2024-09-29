@@ -1,14 +1,12 @@
-/* global CodeMirror */
-/* global cmFactory */
-/* global UCD debounce stringAsRegExpStr tryRegExp */// toolbox.js
-/* global editor */
-/* global linterMan */
-/* global prefs */
-'use strict';
+import CodeMirror from 'codemirror';
+import {UCD, debounce, stringAsRegExpStr, tryRegExp} from '/js/toolbox';
+import editor from './editor';
+import linterMan from './linter-manager';
+import cmFactory from './codemirror-factory';
+import * as prefs from '/js/prefs';
 
-/* Registers 'hint' helper and 'autocompleteOnTyping' option in CodeMirror */
-
-(() => {
+/** Registers 'hint' helper and 'autocompleteOnTyping' option in CodeMirror */
+export default function Autocomplete() {
   const USO_VAR = 'uso-variable';
   const USO_VALID_VAR = 'variable-3 ' + USO_VAR;
   const USO_INVALID_VAR = 'error ' + USO_VAR;
@@ -288,4 +286,4 @@
   function autocompletePicked(cm) {
     cm.state.autocompletePicked = true;
   }
-})();
+}

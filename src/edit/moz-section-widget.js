@@ -1,14 +1,13 @@
-/* global $ $create messageBoxProxy */// dom.js
-/* global CodeMirror */
-/* global MozSectionFinder */
-/* global colorMimicry */
-/* global editor */
-/* global msg */
-/* global t */// localization.js
-'use strict';
+import colorMimicry from '/js/color/color-mimicry';
+import messageBox from '/js/dlg/message-box';
+import {$, $create} from '/js/dom';
+import {t} from '/js/localization';
+import * as msg from '/js/msg';
+import CodeMirror from 'codemirror';
+import editor from './editor';
+import MozSectionFinder from './moz-section-finder';
 
-/* exported MozSectionWidget */
-function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
+export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
   let TPL, EVENTS, CLICK_ROUTE;
   const KEY = 'MozSectionWidget';
   const C_CONTAINER = '.applies-to';
@@ -63,7 +62,7 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
       '.remove-applies-to'(elItem, func) {
         const funcs = getFuncsFor(elItem);
         if (funcs.length < 2) {
-          messageBoxProxy.show({
+          messageBox.show({
             contents: t('appliesRemoveError'),
             buttons: [t('confirmClose')],
           });
@@ -192,7 +191,8 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
     const fore = preferLine ? color.line.fore : color.wrapper.fore;
 
     const border = fore.replace(/[\d.]+(?=\))/, MIN_LUMA_DIFF / 2);
-    const borderStyleForced = `1px ${hasBorder ? color.gutter.style.borderRightStyle : 'solid'} ${border}`;
+    const borderStyleForced =
+      `1px ${hasBorder ? color.gutter.style.borderRightStyle : 'solid'} ${border}`;
 
     actualStyle.textContent = `
       ${C_CONTAINER} {
@@ -448,5 +448,4 @@ function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
   function setProp(obj, name, value) {
     return Object.defineProperty(obj, name, {value, configurable: true});
   }
-
 }

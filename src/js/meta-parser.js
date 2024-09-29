@@ -1,8 +1,7 @@
 'use strict';
 
-/* exported metaParser */
-const metaParser = (() => {
-  require(['/vendor/usercss-meta/usercss-meta']); /* global usercssMeta */
+self.metaParser = (() => {
+  importScripts('/vendor/usercss-meta/usercss-meta'); /* global usercssMeta */
   const {createParser, ParseError} = usercssMeta;
   const PREPROCESSORS = new Set(['default', 'uso', 'stylus', 'less']);
   const options = {
@@ -27,7 +26,7 @@ const metaParser = (() => {
         }
       },
       color: state => {
-        require(['/js/color/color-converter']); /* global colorConverter */
+        importScripts('/js/color/color-converter'); /* global colorConverter */
         const color = colorConverter.parse(state.value);
         if (!color) {
           throw new ParseError({

@@ -1,17 +1,17 @@
-/* global $ $create animateElement focusA11y moveFocus */// dom.js
-/* global clamp */// toolbox.js
-/* global t */// localization.js
-'use strict';
+import {$, $create, animateElement, focusA11y, moveFocus} from '/js/dom';
+import {t} from '/js/localization';
+import {clamp} from '/js/toolbox';
+import './message-box.css';
 
 // TODO: convert this singleton mess so we can show many boxes at once
-/* global messageBox */
-window.messageBox = {
+const messageBox = {
   element: null,
   listeners: null,
   _blockScroll: null,
   _originalFocus: null,
   _resolve: null,
 };
+export default messageBox;
 
 messageBox.close = async isAnimated => {
   window.off('keydown', messageBox.listeners.key, true);
@@ -44,7 +44,7 @@ messageBox.close = async isAnimated => {
  *        resolves to an object with optionally present properties depending on the interaction:
  *        {button: Number, enter: Boolean, esc: Boolean}
  */
-messageBox.show = async ({
+messageBox.show = ({
   title,
   contents,
   className = '',
@@ -52,7 +52,6 @@ messageBox.show = async ({
   onshow,
   blockScroll,
 }) => {
-  await require(['/js/dlg/message-box.css']);
   if (!messageBox.listeners) initOwnListeners();
   createElement();
   bindGlobalListeners();

@@ -1,10 +1,8 @@
-/* global colorConverter */
-/* global colorMimicry */
-'use strict';
+import * as colorConverter from './color-converter';
+import colorMimicry from './color-mimicry';
 
-(window.CodeMirror ? window.CodeMirror.prototype : window).colorpicker = function () {
+export default function ColorPicker(cm) {
   const {constrain} = colorConverter;
-  const cm = window.CodeMirror && this;
   const CSS_PREFIX = 'colorpicker-';
   const HUE_COLORS = [
     {hex: '#ff0000', start: .0},
@@ -187,7 +185,8 @@
       get: () => $inputs[currentFormat].color,
     });
     Object.defineProperty($inputs, 'colorString', {
-      get: () => currentFormat && colorConverter.format($inputs[currentFormat].color, undefined, {round: true}),
+      get: () => currentFormat &&
+        colorConverter.format($inputs[currentFormat].color, undefined, {round: true}),
     });
 
     HUE_COLORS.forEach(color => Object.assign(color, colorConverter.parse(color.hex)));
@@ -214,7 +213,8 @@
 
     $root.className = [...$root.classList]
       .filter(c => !c.startsWith(`${CSS_PREFIX}theme-`))
-      .concat(`${CSS_PREFIX}theme-${['dark', 'light'].includes(opt.theme) ? opt.theme : guessTheme()}`)
+      .concat(CSS_PREFIX + 'theme-' +
+        (opt.theme === 'dark' || opt.theme === 'light' ? opt.theme : guessTheme()))
       .join(' ');
 
     document.body.appendChild($root);
@@ -780,10 +780,16 @@
     const maxX = innerWidth - W;
     const maxY = innerHeight - H;
     const s = $root.style;
-    if (!isNaN(L)) s.left = constrain(0, Math.max(0, L <= maxX ? maxX : L - W), L) + 'px';
-    else if (!isNaN(R)) s.right = constrain(0, Math.max(0, R <= maxX ? maxX : R - W), R) + 'px';
-    if (!isNaN(T)) s.top = constrain(0, Math.max(0, T <= maxY ? maxY : T - H - 20), T) + 'px';
-    else if (!isNaN(B)) s.bottom = constrain(0, Math.max(0, B <= maxY ? maxY : B - H - 20), B) + 'px';
+    if (!isNaN(L)) {
+      s.left = constrain(0, Math.max(0, L <= maxX ? maxX : L - W), L) + 'px';
+    } else if (!isNaN(R)) {
+      s.right = constrain(0, Math.max(0, R <= maxX ? maxX : R - W), R) + 'px';
+    }
+    if (!isNaN(T)) {
+      s.top = constrain(0, Math.max(0, T <= maxY ? maxY : T - H - 20), T) + 'px';
+    } else if (!isNaN(B)) {
+      s.bottom = constrain(0, Math.max(0, B <= maxY ? maxY : B - H - 20), B) + 'px';
+    }
     s.transform = '';
   }
 
@@ -857,4 +863,4 @@
   }
 
   //endregion
-};
+}

@@ -65,7 +65,8 @@ async function updatePreviewer(data) {
       ? {line: err.line - shift, ch: err.column - 1}
       : err.index;
     if (Array.isArray(err)) {
-      err = err.map((e, a, b) => !(a = e.message) ? e : ((b = e.context)) ? `${a} in ${b}` : a).join('\n');
+      err = err.map((e, a, b) => !(a = e.message) ? e : ((b = e.context)) ? `${a} in ${b}` : a)
+        .join('\n');
     } else {
       err = err.message || `${err}`;
     }

@@ -1,40 +1,38 @@
-/* global addAPI bgReady */// common.js
-/* global chromeSync */// storage-util.js
-/* global debounce deepCopy deepEqual */ // toolbox.js
-/* global prefs */
-'use strict';
+import * as prefs from '/js/prefs';
+import {chromeSync} from '/js/storage-util';
+import {debounce, deepCopy, deepEqual} from '/js/toolbox';
+import {addAPI, bgReady} from './common';
 
-(() => {
-  const nondefaults = {};
-  const {__defaults, STORAGE_KEY, set} = prefs;
-  const updateStorage = () => chromeSync.setValue(STORAGE_KEY, nondefaults);
+const nondefaults = {};
+const updateStorage = () => chromeSync.setValue(prefs.STORAGE_KEY, nondefaults);
 
-  addAPI(/** @namespace API */{
-    prefs: {
-      /** @returns {Object} only the non-default preferences.
-       * WARNING for bg context: properties of object type are direct references into `values`!
-       * In non-bg contexts this is correctly deep-copied by msg.js::API. */
-      get: () => nondefaults,
-      set: prefs.set = (key, val, ...rest) => {
-        if (set(key, val, ...rest)) {
-          const def = __defaults[key];
-          if (val !== def && !(val && typeof def === 'object' && deepEqual(val, def))) {
-            nondefaults[key] = val;
-          } else if (key in nondefaults) {
-            delete nondefaults[key];
-          } else {
-            return;
-          }
-          debounce(updateStorage);
-          return true;
-        }
-      },
-    },
-  });
+addAPI(/** @namespace API */{
+  prefs: {
+    /** @returns {Object} only the non-default preferences.
+     * WARNING for bg context: properties of object type are direct references into `values`!
+     * In non-bg contexts this is correctly deep-copied by msg.js::API. */
+    get: () => nondefaults,
+    set: bgPrefsSet,
+  },
+});
 
-  chromeSync.getValue(STORAGE_KEY).then(orig => {
-    const copy = orig && typeof orig === 'object' ? deepCopy(orig) : {};
-    prefs.ready.set(copy, {});
-    if (!deepEqual(orig, nondefaults)) bgReady.all.then(updateStorage);
-  });
-})();
+chromeSync.getValue(prefs.STORAGE_KEY).then(orig => {
+  const copy = orig && typeof orig === 'object' ? deepCopy(orig) : {};
+  prefs.ready.set(copy, {});
+  if (!deepEqual(orig, nondefaults)) bgReady.all.then(updateStorage);
+});
+
+export function bgPrefsSet(key, val, ...rest) {
+  if (prefs.set(key, val, ...rest)) {
+    const def = prefs.__defaults[key];
+    if (val !== def && !(val && typeof def === 'object' && deepEqual(val, def))) {
+      nondefaults[key] = val;
+    } else if (key in nondefaults) {
+      delete nondefaults[key];
+    } else {
+      return;
+    }
+    debounce(updateStorage);
+    return true;
+  }
+}

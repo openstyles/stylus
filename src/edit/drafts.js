@@ -1,33 +1,30 @@
-/* global $create */// dom.js
-/* global API */// msg.js
-/* global clamp debounce */// toolbox.js
-/* global editor */
-/* global MozDocMapper */// sections-util.js
-/* global helpPopup showCodeMirrorPopup */// util.js
-/* global prefs */
-/* global t */// localization.js
-'use strict';
+import {$create} from '/js/dom';
+import {t} from '/js/localization';
+import {API} from '/js/msg';
+import * as prefs from '/js/prefs';
+import {MozDocMapper} from '/js/sections-util';
+import {clamp, debounce} from '/js/toolbox';
+import editor from './editor';
+import {helpPopup, showCodeMirrorPopup} from './util';
 
-(async function AutosaveDrafts() {
+export default async function Drafts() {
   const makeId = () => editor.style.id || 'new';
   let delay;
   let port;
-  connectPort();
-  await maybeRestore();
-  editor.dirty.onChange(isDirty => isDirty ? connectPort() : port.disconnect());
-  editor.dirty.onDataChange(isDirty => debounce(updateDraft, isDirty ? delay : 0));
 
-  prefs.subscribe('editor.autosaveDraft', (key, val) => {
-    delay = clamp(val * 1000 | 0, 1000, 2 ** 32 - 1);
-    const t = debounce.timers.get(updateDraft);
-    if (t) debounce(updateDraft, t.delay ? delay : 0);
-  }, true);
+  connectPort();
+  maybeRestore().then(() => {
+    editor.dirty.onChange(isDirty => isDirty ? connectPort() : port.disconnect());
+    editor.dirty.onDataChange(isDirty => debounce(updateDraft, isDirty ? delay : 0));
+    prefs.subscribe('editor.autosaveDraft', (key, val) => {
+      delay = clamp(val * 1000 | 0, 1000, 2 ** 32 - 1);
+      const t = debounce.timers.get(updateDraft);
+      if (t) debounce(updateDraft, t.delay ? delay : 0);
+    }, true);
+  });
 
   async function maybeRestore() {
-    const [draft] = await Promise.all([
-      API.drafts.get(makeId()),
-      require(['/js/dlg/message-box.css']),
-    ]);
+    const draft = await API.drafts.get(makeId());
     if (!draft || draft.isUsercss !== editor.isUsercss || editor.isSame(draft.style)) {
       return;
     }
@@ -67,4 +64,4 @@
       si: editor.makeScrollInfo(),
     }, makeId());
   }
-})();
+}
