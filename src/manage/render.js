@@ -1,12 +1,13 @@
-import {$$ $ $create animateElement scrollElementIntoView} from '/js/dom';
-import {API} from '/js/msg';
-import {UCD URLS debounce getOwnTab isEmptyObj sessionStore stringAsRegExpStr} from '/js/toolbox';
+import {$, $$, $create, animateElement, scrollElementIntoView} from '/js/dom';
 import {removeStyleCode} from '/js/events';
 import {filterAndAppend} from '/js/filters';
-import {installed newUI} from '/js/manage';
 /* global sorter */
 import {t} from '/js/localization';
-'use strict';
+import {installed, newUI} from '/js/manage';
+import {API} from '/js/msg';
+import {
+  debounce, getOwnTab, isEmptyObj, sessionStore, stringAsRegExpStr, UCD, URLS,
+} from '/js/toolbox';
 
 const ENTRY_ID_PREFIX_RAW = 'style-';
 const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps'];

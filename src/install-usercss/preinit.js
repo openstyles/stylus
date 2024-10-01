@@ -3,8 +3,7 @@ import {API} from '/js/msg';
 import {CHROME, closeCurrentTab} from '/js/toolbox';
 import {t} from '/js/localization';
 
-/* exported preinit */
-const preinit = (() => {
+export const preinit = (() => {
   const params = new URLSearchParams(location.search);
   const tabId = params.has('tabId') ? Number(params.get('tabId')) : -1;
   /** @type {FileSystemFileHandle} */

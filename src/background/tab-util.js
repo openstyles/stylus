@@ -1,6 +1,6 @@
 import browser from '/js/browser';
 import * as msg from '/js/msg';
-import {getActiveTab} from '/js/toolbox';
+import {CHROME, FIREFOX, getActiveTab} from '/js/toolbox';
 import {addAPI, API} from './common';
 import * as prefs from '/js/prefs';
 

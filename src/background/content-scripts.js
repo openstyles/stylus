@@ -1,6 +1,6 @@
 import browser from '/js/browser';
 import {sendTab} from '/js/msg';
-import {ignoreChromeError, stringAsRegExpStr, URLS} from '/js/toolbox';
+import {CHROME, ignoreChromeError, stringAsRegExpStr, URLS} from '/js/toolbox';
 import {bgReady} from './common';
 import tabMan from './tab-manager';
 

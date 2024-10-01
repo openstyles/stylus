@@ -37,7 +37,7 @@ const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrI
     || await popupGetStyles();
   initPopup(...data);
   showStyles(...data);
-  require(['/popup/hotkeys']);
+  import('./hotkeys');
   if (UA.mobile) document.body.style.maxHeight = '100vh';
   else window.on('resize', onWindowResize);
 })();

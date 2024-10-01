@@ -1,5 +1,5 @@
 import browser from '/js/browser';
-import {clamp, URLS} from '/js/toolbox';
+import {clamp, FIREFOX, URLS} from '/js/toolbox';
 import {chromeLocal} from '/js/storage-util';
 import {detectVivaldi, isVivaldi} from './common';
 import {waitForTabUrl} from './tab-util';

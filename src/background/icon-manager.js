@@ -1,5 +1,5 @@
 import * as prefs from '/js/prefs';
-import {debounce, FIREFOX, ignoreChromeError, UA} from '/js/toolbox';
+import {CHROME, debounce, FIREFOX, ignoreChromeError, UA} from '/js/toolbox';
 import * as colorScheme from './color-scheme';
 import {addAPI, API, bgReady} from './common';
 import tabMan from './tab-manager';

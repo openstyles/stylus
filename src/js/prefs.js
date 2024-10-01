@@ -1,5 +1,5 @@
 /** Don't use this file in content script context! */
-import {API, bg} from '/js/msg';
+import {API} from '/js/msg';
 import {deepCopy, deepEqual} from './toolbox';
 
 let busy, setReady;

@@ -1,12 +1,12 @@
-import {$ $$ $create $remove setupLivePrefs showSpinner toggleDataset} from '/js/dom';
-import {$entry tabURL} from '/js/popup';
-import {API} from '/js/msg';
-/* global Events */
-import {UCD URLS clipString debounce isEmptyObj stringAsRegExp stringAsRegExpStr tryRegExp tryURL} from '/js/toolbox';
-import * as prefs from '/js/prefs';
-import {styleFinder:true} from '/js/popup';
+import {$, $$, $create, $remove, setupLivePrefs, showSpinner, toggleDataset} from '/js/dom';
 import {t} from '/js/localization';
-'use strict';
+import {API} from '/js/msg';
+import {$entry, styleFinder, tabURL} from '/js/popup';
+import * as prefs from '/js/prefs';
+/* global Events */
+import {
+  clipString, debounce, isEmptyObj, stringAsRegExp, stringAsRegExpStr, tryRegExp, tryURL, UCD, URLS,
+} from '/js/toolbox';
 
 (() => {
   const RESULT_ID_PREFIX = t.template.searchResult.className + '-';

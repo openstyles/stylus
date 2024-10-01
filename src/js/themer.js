@@ -9,6 +9,7 @@
 import {$, $create} from '/js/dom';
 import * as msg from '/js/msg';
 import {API} from '/js/msg';
+import {FIREFOX} from '/js/toolbox';
 
 (async () => {
   let isDark, isVivaldi;

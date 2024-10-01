@@ -1,7 +1,8 @@
 import * as prefs from '/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '/js/sections-util';
 import {
-  deepEqual, isEmptyObj, mapObj, stringAsRegExpStr, tryRegExp, tryURL, UCD, URLS,
+  CHROME,
+  deepEqual, FIREFOX, isEmptyObj, mapObj, stringAsRegExpStr, tryRegExp, tryURL, UCD, URLS,
 } from '/js/toolbox';
 import {broadcast, broadcastExtension} from './broadcast';
 import broadcastInjectorConfig from './broadcast-injector-config';

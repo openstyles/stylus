@@ -17,7 +17,6 @@ import {checkUpdate, handleUpdateInstalled} from '/js/updater-ui';
   getEventKeyName
   scrollElementIntoView
 */// dom.js
-'use strict';
 
 const Events = {
 
@@ -43,7 +42,7 @@ const Events = {
   },
 
   async config(event, {styleMeta}) {
-    await require(['/js/dlg/config-dialog']); /* global configDialog */
+    await import('/js/dlg/config-dialog'); /* global configDialog */
     configDialog(styleMeta);
   },
 
@@ -170,8 +169,7 @@ Events.ENTRY_ROUTES_CTX = {
   '.applies-to .expander': Events.expandTargets,
 };
 
-/* exported handleBulkChange */
-function handleBulkChange(q = Events.queue) {
+export function handleBulkChange(q = Events.queue) {
   for (const msg of q) {
     const {id} = msg.style;
     let fullStyle;
@@ -253,8 +251,7 @@ async function handleUpdateForId(id, opts) {
   handleUpdate(await API.styles.get(id), opts);
 }
 
-/* exported handleVisibilityChange */
-function handleVisibilityChange(e) {
+export function handleVisibilityChange(e) {
   const id = Number(sessionStore.justEditedStyleId);
   if (e.type === 'pageshow' && e.persisted && id) {
     // TODO: update all elements in-place, not just the last edited style

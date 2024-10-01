@@ -23,7 +23,8 @@ export default class EditorSection {
     const el = this.el = t.template.section.cloneNode(true);
     const elLabel = this.elLabel = $('.code-label', el);
     const at = this.targetsEl = $('.applies-to', el);
-    const cm = this.cm = el.CodeMirror /* used by getAssociatedEditor */ = cmFactory.create(wrapper => {
+    // TODO: find another way other than `el.CodeMirror` for getAssociatedEditor
+    const cm = this.cm = el.CodeMirror = cmFactory.create(wrapper => {
       const ws = wrapper.style;
       const h = editor.loading
         // making it tall during initial load so IntersectionObserver sees only one adjacent CM
@@ -251,7 +252,8 @@ export default class EditorSection {
     const cmH = cmEl.offsetHeight;
     const viewH = el.parentElement.offsetHeight;
     if (el.offsetHeight > viewH && cmH > Math.min(viewH / 2, cm.display.sizer.offsetHeight + 30)) {
-      cmEl.style.height = (cmH - this.targetsEl.offsetHeight / (this.targets.length || 1) | 0) + 'px';
+      cmEl.style.height =
+        (cmH - this.targetsEl.offsetHeight / (this.targets.length || 1) | 0) + 'px';
     }
   }
 

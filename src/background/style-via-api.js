@@ -1,6 +1,6 @@
 import browser from '/js/browser';
 import * as prefs from '/js/prefs';
-import {isEmptyObj} from '/js/toolbox';
+import {FIREFOX, isEmptyObj} from '/js/toolbox';
 import {addAPI, API} from './common';
 import {getSectionsByUrl, order} from './style-manager';
 

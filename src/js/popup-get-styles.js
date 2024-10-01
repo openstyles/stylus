@@ -1,7 +1,7 @@
 import browser from '/js/browser';
 import * as msg from '/js/msg';
 import {API} from '/js/msg';
-import {getActiveTab, URLS} from '/js/toolbox';
+import {CHROME, FIREFOX, getActiveTab, URLS} from '/js/toolbox';
 
 export const ABOUT_BLANK = 'about:blank';
 

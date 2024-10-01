@@ -1,17 +1,19 @@
 import alias from '@rollup/plugin-alias';
 import {babel} from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
-import copy from 'rollup-plugin-copy';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
 import * as fse from 'fs-extra';
 import * as path from 'path';
+import {Buffer} from 'buffer';
+import copy from 'rollup-plugin-copy';
 import css from 'rollup-plugin-css-only';
 
 const BUILD = 'DEV';
-const SRC = path.resolve('src');
-const DST = SRC + '/dist';
-const DST_JS = DST + '/js';
+const SRC = path.resolve('src') + '/';
+const DST = SRC + 'dist/';
+const SHIM = path.resolve('tools/shim') + '/';
+
 const ENTRY_BG = 'background';
 const ENTRIES = [
   'edit',
@@ -20,24 +22,22 @@ const ENTRIES = [
 
 const getChunkName = chunk => path.basename(chunk.facadeModuleId || '') || 'chunk.js';
 
-const OUTPUT = {
-  dir: DST,
-  chunkFileNames: getChunkName,
-  entryFileNames: '[name].js',
-  generatedCode: 'es2015',
-  externalLiveBindings: false,
-  freeze: false,
-  // sourcemap: 'inline',
-};
 const PLUGINS = [
+  copyAndWatch([
+    'manifest.json',
+    '_locales',
+    'css/icons.ttf',
+    'images/eyedropper',
+    'images/icon',
+  ]),
   commonjs(),
   nodeResolve(),
   alias({
     entries: [
-      {find: /^(?=\/)/, replacement: SRC},
-      {find: './fs-drive', replacement: path.resolve('tools/shim/empty.js')},
-      {find: 'fs', replacement: path.resolve('tools/shim/empty.js')},
-      {find: 'path', replacement: path.resolve('tools/shim/path.js')},
+      {find: /^\//, replacement: SRC},
+      {find: './fs-drive', replacement: SHIM + 'empty.js'},
+      {find: 'fs', replacement: SHIM + 'empty.js'},
+      {find: 'path', replacement: SHIM + 'path.js'},
     ],
   }),
   babel({
@@ -64,49 +64,63 @@ const PLUGIN_TERSER = BUILD !== 'DEV' && terser({
     wrap_func_args: false,
   },
 });
-const PLUGINS_CSS = [...PLUGINS, css()];
+const PLUGIN_CSS = css();
 
-const makeEntry = (entry, file, output, opts) => {
-  const plugins = !entry || entry === ENTRY_BG ? PLUGINS : PLUGINS_CSS;
+function makeEntry(entry, file, output, opts) {
   const entryPrefix = entry ? entry + '-' : '';
+  const entryCss = entry ? 'css/' + entry + '.css' : undefined;
+  const entryJs = `js/${entry || '[name]'}.js`;
   return ({
     input: {
-      [entry || path.parse(file).name]: file || `${SRC}/${entry}/index.js`,
+      [entry || path.parse(file).name]: file || `src/${entry}/index.js`,
     },
     output: {
-      ...OUTPUT,
-      dir: entry ? DST : DST_JS,
+      dir: DST,
+      // sourcemap: 'inline',
+      generatedCode: 'es2015',
+      externalLiveBindings: false,
+      freeze: false,
       intro: entry ? `const __BUILD = "${BUILD}", __ENTRY = "${entry}";` : '',
-      assetFileNames: entry ? entry + '.css' : undefined,
-      chunkFileNames: chunk => entryPrefix + getChunkName(chunk),
+      assetFileNames: entryCss,
+      chunkFileNames: chunk => 'js/' + entryPrefix + getChunkName(chunk),
+      entryFileNames: entryJs,
       ...output,
     },
-    plugins: !entry ? plugins : [
-      ...plugins,
-      copy({targets: [{src: path.resolve(`${SRC}/${entry}.html`), dest: DST}]}),
-    ],
+    plugins: [
+      ...PLUGINS,
+      entry && entry !== ENTRY_BG && PLUGIN_CSS,
+      PLUGIN_TERSER,
+      copyAndWatch([`${entry}.html`], {__ENTRY_JS: entryJs, __ENTRY_CSS: entryCss}),
+    ].filter(Boolean),
     ...opts,
   });
-};
-
-const makeEntryIIFE = (file, opts) => makeEntry(undefined, file, {format: 'iife'}, opts);
-
-if (PLUGIN_TERSER) {
-  PLUGINS.push(PLUGIN_TERSER);
-  PLUGINS_CSS.push(PLUGIN_TERSER);
 }
 
-fse.emptyDirSync(DST);
-for (const e of [
-  'manifest.json',
-  'css/icons.ttf',
-  ...ENTRIES.map(e => e + '.html'),
-]) {
-  fse.copy(`${SRC}/${e}`, `${DST}/${path.basename(e)}`, {
-    overwrite: true,
-    preserveTimestamps: true,
+function makeEntryIIFE(file, opts) {
+  return makeEntry(undefined, file, {format: 'iife'}, opts);
+}
+
+function copyAndWatch(files, vars) {
+  const transform = vars && (
+    buf => new Buffer(buf.toString().replace(
+      new RegExp(`${Object.keys(vars).join('|')}`, 'g'),
+      s => vars[s]
+    )));
+  return Object.assign(copy({
+    flatten: false,
+    targets: files.map(f => ({
+      src: 'src/' + f,
+      dest: DST,
+      transform,
+    })),
+  }), {
+    buildStart() {
+      for (const f of files) this.addWatchFile(f);
+    },
   });
 }
+
+fse.emptyDir(DST);
 
 export default [
   ...ENTRIES.map(e => makeEntry(e)),
