@@ -1,6 +1,6 @@
 import browser from '/js/browser';
 import {sendTab} from '/js/msg';
-import {CHROME, deepEqual, FIREFOX, ignoreChromeError, URLS} from '/js/toolbox';
+import {CHROME, deepEqual, FIREFOX, ignoreChromeError, MF, URLS} from '/js/toolbox';
 import {bgReady} from './common';
 import tabMan from './tab-manager';
 
@@ -84,7 +84,7 @@ bgReady.all.then(() => {
     chrome.webNavigation.onDOMContentLoaded.addListener(async ({tabId, frameId}) => {
       if (frameId &&
           !await sendTab(tabId, {method: 'ping'}, {frameId})) {
-        for (const file of chrome.runtime.getManifest().content_scripts[0].js) {
+        for (const file of MF.content_scripts[0].js) {
           chrome.tabs.executeScript(tabId, {
             frameId,
             file,

@@ -9,7 +9,9 @@ import Tokens, {
   WS,
 } from './tokens';
 import Units, {UnitTypeIds} from './units';
-import {clipString, define, isOwn, parseString, PDESC, rxUnescapeLF, toLowAscii} from './util';
+import {
+  clipString, define, isOwn, ParseError, parseString, PDESC, rxUnescapeLF, toLowAscii,
+} from './util';
 
 export const TT = {
   attrEq: [ATTR_EQ, EQUALS],
@@ -212,7 +214,7 @@ export default class TokenStream {
         (+goal ? [goal] : goal).reduce((res, v, id) => res + (res ? ', ' : '') +
           ((v = Tokens[v === true ? id : v]).text ? `"${v.text}"` : v.name), '');
     goal = goal ? `Expected ${goal} but found` : 'Unexpected';
-    goal = new SyntaxError(`${goal} "${clipString(tok)}".`, tok);
+    goal = new ParseError(`${goal} "${clipString(tok)}".`, tok);
     if (throwIt) throw goal;
     return goal;
   }

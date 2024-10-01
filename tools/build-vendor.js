@@ -14,18 +14,6 @@ const files = {
     },
     'README.md -> LICENSE',
   ],
-  'less': [
-    'dist/less.min.js',
-  ],
-  'stylelint-bundle': [
-    'dist/stylelint-bundle.min.js',
-  ],
-  'stylus-lang-bundle': [
-    'dist/stylus-renderer.min.js',
-  ],
-  'usercss-meta': [
-    'dist/usercss-meta.js',
-  ],
   '@eight04/draggable-list': [
     'dist/draggable-list.iife.js',
   ],

@@ -1,12 +1,13 @@
 import {API, onExtension} from '/js/msg';
 import {t} from '/js/localization';
-import {$, $$, toggleDataset, waitForSelector} from '/js/dom';
+import {$, $$, toggleDataset} from '/js/dom';
 import {capitalize} from '/js/toolbox';
 
 Promise.all([
   API.sync.getStatus(),
-  waitForSelector('.sync-options'),
-]).then(([status, elSync]) => {
+  t.body(),
+]).then(([status]) => {
+  const elSync = $('.sync-options');
   const elCloud = $('.cloud-name', elSync);
   const elToggle = $('.connect', elSync);
   const elSyncNow = $('.sync-now', elSync);

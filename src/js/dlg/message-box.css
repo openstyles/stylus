@@ -79,7 +79,7 @@
     width: 0;
     height: 0;
     padding: 0 32px 32px 0;
-    background: url(/images/icon/32.png);
+    background: url(assets/icon/32.png);
     position: absolute;
     left: .5rem;
     top: 0;
@@ -94,7 +94,7 @@
     color: white;
   }
   #message-box-title::before {
-    background: url('/images/icon/32x.png');
+    background: url('assets/icon/32x.png');
   }
   #message-box-contents {
     font-weight: bold;

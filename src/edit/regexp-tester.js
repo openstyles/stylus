@@ -2,11 +2,10 @@ import browser from '/js/browser';
 import {$create} from '/js/dom';
 import {t} from '/js/localization';
 import {API} from '/js/msg';
-import {tryRegExp, URLS} from '/js/toolbox';
+import {MF_ICON, tryRegExp, URLS} from '/js/toolbox';
 import editor from './editor';
 import {helpPopup} from './util';
 
-const OWN_ICON = chrome.runtime.getManifest().icons['16'];
 const cachedRegexps = new Map();
 const inputs = editor.regexps;
 const observe = (el, on) => el[on ? 'on' : 'off']('input', update);
@@ -107,7 +106,7 @@ export async function update() {
     const partial = [];
     for (const [url, match] of urls.entries()) {
       const faviconUrl = url.startsWith(URLS.ownOrigin)
-        ? OWN_ICON
+        ? MF_ICON
         : URLS.favicon(new URL(url).hostname);
       const icon = $create('img', {src: faviconUrl});
       if (match.text.length === url.length) {

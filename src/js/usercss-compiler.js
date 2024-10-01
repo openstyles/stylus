@@ -1,4 +1,5 @@
-'use strict';
+import {styleCodeEmpty} from '/js/sections-util';
+/* global importScripts */
 
 let builderChain = Promise.resolve();
 
@@ -6,7 +7,6 @@ const BUILDERS = Object.assign(Object.create(null), {
 
   default: {
     post(sections, vars) {
-      importScripts('/js/sections-util'); /* global styleCodeEmpty */
       let varDef = Object.keys(vars).map(k => `  --${k}: ${vars[k].value};\n`).join('');
       if (!varDef) return;
       varDef = ':root {\n' + varDef + '}\n';
@@ -20,7 +20,7 @@ const BUILDERS = Object.assign(Object.create(null), {
 
   stylus: {
     pre(source, vars) {
-      importScripts('/vendor/stylus-lang-bundle/stylus-renderer.min'); /* global StylusRenderer */
+      importScripts('stylus-lang-bundle.js'); /* global StylusRenderer */
       return new Promise((resolve, reject) => {
         const varDef = Object.keys(vars).map(key => `${key} = ${vars[key].value};\n`).join('');
         new StylusRenderer(varDef + source)
@@ -40,7 +40,7 @@ const BUILDERS = Object.assign(Object.create(null), {
           onReady: false,
         };
       }
-      importScripts('/vendor/less/less.min'); /* global less */
+      importScripts('less.js'); /* global less */
       const varDefs = Object.keys(vars).map(key => `@${key}:${vars[key].value};\n`).join('');
       try {
         return (await less.render(varDefs + source, {math: 'parens-division'})).css;
@@ -52,7 +52,7 @@ const BUILDERS = Object.assign(Object.create(null), {
 
   uso: {
     pre(source, vars) {
-      importScripts('/js/color/color-converter'); /* global colorConverter */
+      importScripts('color-converter.js'); /* global colorConverter */
       const pool = Object.create(null);
       return doReplace(source);
 
@@ -101,7 +101,6 @@ const BUILDERS = Object.assign(Object.create(null), {
   },
 });
 
-/* exported compileUsercss */
 /**
  * @param {string} preprocessor
  * @param {string} code
@@ -109,7 +108,7 @@ const BUILDERS = Object.assign(Object.create(null), {
    (not a problem currently as this code runs in a worker so `vars` is just a copy)
  * @returns {Promise<{sections, errors}>}
  */
-async function compileUsercss(preprocessor, code, vars) {
+export async function compileUsercss(preprocessor, code, vars) {
   let builder = BUILDERS[preprocessor];
   if (!builder) {
     builder = BUILDERS.default;
@@ -131,7 +130,7 @@ async function compileUsercss(preprocessor, code, vars) {
     });
     await builderChain;
   }
-  importScripts('/js/moz-parser'); /* global extractSections */
+  importScripts('moz-parser.js'); /* global extractSections */
   const res = extractSections({code});
   if (builder.post) {
     builder.post(res.sections, vars);
@@ -180,7 +179,7 @@ function spliceCssAfterGlobals(section, newText, after) {
   const {code} = section;
   const rx = /@import\s/gi;
   if ((rx.lastIndex = after, rx.test(code))) {
-    importScripts('/js/csslint/parserlib'); /* global parserlib */
+    importScripts('parserlib.js'); /* global parserlib */
     const P = new parserlib.css.Parser({globalsOnly: true}); P.parse(code);
     const {col, line, offset} = P.stream.token || P.stream.peekCached();
     // normalizing newlines in non-usercss to match line:col from parserlib

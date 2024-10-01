@@ -11,6 +11,7 @@ env:
 globals:
   __BUILD: false
   __ENTRY: false
+  __JS: false
 
 rules:
   accessor-pairs: [2]
@@ -149,7 +150,7 @@ rules:
   no-obj-calls: [2]
   no-octal-escape: [2]
   no-octal: [2]
-  no-path-concat: [2]
+  no-path-concat: [0]
   no-process-exit: [0]
   no-proto: [2]
   no-redeclare: [2]
@@ -246,18 +247,9 @@ overrides:
       ecmaVersion: 2021
       sourceType: script
 
-  - files:
-    - "**/*-worker.js"
-    - src/js/meta-parser.js
-    - src/js/moz-parser.js
-    - src/js/usercss-compiler.js
-    - src/js/worker-util.js
-    env:
-      worker: true
+  - files: ["*.mjs"]
     parserOptions:
-      sourceType: script
-    globals:
-      createWorkerApi: false
+      sourceType: module
 
   - files:
       src/content/*

@@ -6,9 +6,9 @@ import * as prefs from '/js/prefs';
 import {clamp, debounce, deepCopy, UA, UCD} from '/js/toolbox';
 import '/js/color/color-converter';
 import messageBox from './message-box';
-import '/js/color/color-picker.css';
-import '/js/dlg/config-dialog.css';
-import '/options/onoffswitch.css';
+// import '/js/color/color-picker.css';
+// import '/js/dlg/config-dialog.css';
+// import '/options/onoffswitch.css';
 
 export default function configDialog(style) {
   const AUTOSAVE_DELAY = 400;

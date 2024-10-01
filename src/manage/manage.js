@@ -64,15 +64,11 @@ Object.assign(newUI, {
   $('#manage-options-button').onclick =
     router.makeToggle('stylus-options', toggleEmbeddedOptions);
   $('#injection-order-button').onclick =
-    router.makeToggle('injection-order', (...args) => InjectionOrder(...args), [
-      '/vendor/draggable-list/draggable-list.iife',
-      '/injection-order/injection-order.css',
-      '/injection-order/injection-order', /* global InjectionOrder */
-    ]);
+    router.makeToggle('injection-order', null,
+      () => import('/injection-order'));
   $('#update-history-button').onclick =
-    router.makeToggle('update-history', (...args) => showUpdateHistory(...args), [
-      '/manage/updater-ui', /* global showUpdateHistory */
-    ]);
+    router.makeToggle('update-history', null,
+      () => import('./updater-ui'));
   $$('#header a[href^="http"]').forEach(a => (a.onclick = Events.external));
   window.on('pageshow', handleVisibilityChange);
   window.on('pagehide', handleVisibilityChange);

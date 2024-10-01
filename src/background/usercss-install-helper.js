@@ -1,6 +1,6 @@
 import browser from '/js/browser';
 import * as prefs from '/js/prefs';
-import {RX_META, URLS} from '/js/toolbox';
+import {FIREFOX, RX_META, URLS} from '/js/toolbox';
 import {addAPI, bgReady} from './common';
 import download from './download';
 import tabMan from './tab-manager';

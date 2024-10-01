@@ -1,11 +1,6 @@
-'use strict';
+import {MozDocMapper} from '/js/sections-util';
+/* global parserlib */
 
-importScripts(
-  '/js/csslint/parserlib', /* global parserlib */
-  '/js/sections-util', /* global MozDocMapper */
-);
-
-/* exported extractSections */
 /**
  * Extracts @-moz-document blocks into sections and the code between them into global sections.
  * Puts the global comments into the following section to minimize the amount of global sections.
@@ -17,7 +12,7 @@ importScripts(
  * @returns {{sections: Array, errors: Array}}
  * @property {?number} lastStyleId
  */
-function extractSections({code, styleId, fast = true}) {
+export default function extractSections({code, styleId, fast = true}) {
   const hasSingleEscapes = /([^\\]|^)\\([^\\]|$)/;
   const parser = new parserlib.css.Parser({
     noValidation: true,

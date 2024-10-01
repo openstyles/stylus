@@ -1,5 +1,7 @@
 import * as prefs from '/js/prefs';
-import {CHROME, debounce, FIREFOX, ignoreChromeError, UA} from '/js/toolbox';
+import {
+  CHROME, debounce, FIREFOX, ignoreChromeError, MF_ICON_EXT, MF_ICON_PATH, UA,
+} from '/js/toolbox';
 import * as colorScheme from './color-scheme';
 import {addAPI, API, bgReady} from './common';
 import tabMan from './tab-manager';
@@ -12,7 +14,7 @@ const badgeOvr = {color: '', text: ''};
 const FIREFOX_ANDROID = FIREFOX && UA.mobile;
 let isDark;
 // https://github.com/openstyles/stylus/issues/335
-let hasCanvas = FIREFOX_ANDROID ? false : loadImage(`/images/icon/${ICON_SIZES[0]}.png`)
+let hasCanvas = FIREFOX_ANDROID ? false : loadImage(MF_ICON_PATH + ICON_SIZES[0] + MF_ICON_EXT)
   .then(({data}) => (hasCanvas = data.some(b => b !== 255)));
 
 addAPI(/** @namespace API */ {
@@ -126,7 +128,7 @@ function refreshIcon(tabId, force = false) {
 function getIconPath(icon) {
   return ICON_SIZES.reduce(
     (obj, size) => {
-      obj[size] = `/images/icon/${icon.replace('$SIZE$', size)}.png`;
+      obj[size] = MF_ICON_PATH + icon.replace('$SIZE$', size) + MF_ICON_EXT;
       return obj;
     },
     {}

@@ -8,7 +8,7 @@ import {
   createStyleElement, createTargetsElement, getFaviconSrc, styleToDummyEntry, updateTotal,
 } from '/js/render';
 import {debounce, getOwnTab, sessionStore, UCD} from '/js/toolbox';
-import {checkUpdate, handleUpdateInstalled} from '/js/updater-ui';
+import {checkUpdate, handleUpdateInstalled} from './updater-ui';
 /* global
   $
   $$

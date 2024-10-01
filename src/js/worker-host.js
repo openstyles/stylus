@@ -1,4 +1,4 @@
-export default function createWorker({url, lifeTime = 300}) {
+export default function createWorker(name, {lifeTime = 300} = {}) {
   let worker;
   let id;
   let timer;
@@ -14,7 +14,7 @@ export default function createWorker({url, lifeTime = 300}) {
 
   function init() {
     id = 0;
-    worker = new Worker('/js/worker-util.js?' + new URLSearchParams({url}));
+    worker = new Worker(`/js/${name}.js`);
     worker.onmessage = onMessage;
   }
 

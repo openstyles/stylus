@@ -1,12 +1,11 @@
-import {$ $$ $create messageBox scrollElementIntoView} from '/js/dom';
+import {$, $$, $create, messageBox, scrollElementIntoView} from '/js/dom';
 import {$entry} from '/js/render';
 import {API} from '/js/msg';
-import {filterAndAppend filtersSelector} from '/js/filters';
+import {filterAndAppend, filtersSelector} from '/js/filters';
 import {newUI} from '/js/manage';
 import * as prefs from '/js/prefs';
 /* global sorter */
 import {t} from '/js/localization';
-'use strict';
 
 const btnCheck = $('#check-all-updates');
 const btnCheckForce = $('#check-all-updates-force');
@@ -95,7 +94,7 @@ function checkUpdateAll() {
   }
 }
 
-function checkUpdate(entry, {single} = {}) {
+export function checkUpdate(entry, {single} = {}) {
   $('.update-note', entry).textContent = t('checkingForUpdate');
   $('.check-update', entry).title = '';
   if (single) {
@@ -216,8 +215,7 @@ function renderUpdatesOnlyFilter({show, check} = {}) {
   btnApply.dataset.value = numUpdatable;
 }
 
-/* exported showUpdateHistory */
-async function showUpdateHistory(show, el, selector) {
+export default async function showUpdateHistory(show, el, selector) {
   if (!show) {
     return messageBox.close();
   }
@@ -296,8 +294,7 @@ async function showUpdateHistory(show, el, selector) {
   }
 }
 
-/* exported handleUpdateInstalled */
-function handleUpdateInstalled(entry, reason) {
+export function handleUpdateInstalled(entry, reason) {
   const isNew = reason === 'install';
   const note = t(isNew ? 'installButtonInstalled' : 'updateCompleted');
   entry.classList.add('update-done', ...(isNew ? ['install-done'] : []));

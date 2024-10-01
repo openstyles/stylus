@@ -1,4 +1,4 @@
-'use strict';
+import {createWorkerApi, importScripts} from '/js/worker-util';
 
 let sugarss = null;
 
@@ -6,14 +6,14 @@ let sugarss = null;
 createWorkerApi({
 
   async csslint(code, config) {
-    importScripts('/js/csslint/parserlib', '/js/csslint/csslint'); /* global CSSLint */
+    importScripts('parserlib.js', 'csslint.js'); /* global CSSLint */
     return CSSLint
       .verify(code, config).messages
       .map(m => Object.assign(m, {rule: {id: m.rule.id}}));
   },
 
   getCssPropsValues() {
-    importScripts('/js/csslint/parserlib'); /* global parserlib */
+    importScripts('parserlib.js'); /* global parserlib */
     const {
       css: {GlobalKeywords, NamedColors, Parser: {AT}, Properties},
       util: {describeProp},
@@ -58,7 +58,7 @@ createWorkerApi({
   },
 
   metalint(code) {
-    importScripts('/js/meta-parser'); /* global metaParser */
+    importScripts('meta-parser.js'); /* global metaParser */
     const result = metaParser.lint(code);
     // extract needed info
     result.errors = result.errors.map(err => ({
@@ -71,7 +71,7 @@ createWorkerApi({
   },
 
   async stylelint(opts) {
-    importScripts('/vendor/stylelint-bundle/stylelint-bundle.min'); /* global stylelint */
+    importScripts('stylelint-bundle.js'); /* global stylelint */
     // Stylus-lang allows a trailing ";" but sugarss doesn't, so we monkeypatch it
     stylelint.SugarSSParser.prototype.checkSemicolon = ovrCheckSemicolon;
     for (const r in opts.config.rules) {
@@ -99,7 +99,7 @@ createWorkerApi({
 const ruleRetriever = {
 
   csslint() {
-    importScripts('/js/csslint/csslint');
+    importScripts('csslint.js');
     return CSSLint.getRuleList().map(rule => {
       const output = {};
       for (const [key, value] of Object.entries(rule)) {
@@ -112,9 +112,9 @@ const ruleRetriever = {
   },
 
   stylelint() {
-    importScripts('/vendor/stylelint-bundle/stylelint-bundle.min');
+    importScripts('stylelint.js');
     const options = {};
-    const rxPossible = /\bpossible:("(?:[^"]*?)"|\[(?:[^\]]*?)\]|\{(?:[^}]*?)\})/g;
+    const rxPossible = /\bpossible:("[^"]*?"|\[[^\]]*?]|\{[^}]*?})/g;
     const rxString = /"([-\w\s]{3,}?)"/g;
     for (const [id, rule] of Object.entries(stylelint.rules)) {
       const ruleCode = `${rule()}`;

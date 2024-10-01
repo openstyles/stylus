@@ -2,7 +2,7 @@ import {$, $$, $remove, getEventKeyName, moveFocus} from '/js/dom';
 import {t} from '/js/localization';
 import {API} from '/js/msg';
 import {getActiveTab, require} from '/js/toolbox';
-import {resortEntries, tabURL} from './popup';
+import {resortEntries, tabURL} from './index';
 
 const menu = $('#menu');
 const menuExclusions = [];

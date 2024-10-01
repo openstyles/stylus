@@ -5,18 +5,8 @@ import {API} from '/js/msg';
 import popupGetStyles, {ABOUT_BLANK} from '/js/popup-get-styles';
 import * as prefs from '/js/prefs';
 import {
-  capitalize,
-  CHROME,
-  CHROME_POPUP_BORDER_BUG,
-  clamp,
-  clipString,
-  FIREFOX,
-  getActiveTab,
-  isEmptyObj,
-  stringAsRegExpStr,
-  UA,
-  UCD,
-  URLS,
+  capitalize, CHROME, CHROME_POPUP_BORDER_BUG, clamp, clipString, FIREFOX, getActiveTab, isEmptyObj,
+  MF, stringAsRegExpStr, UA, UCD, URLS,
 } from '/js/toolbox';
 import Events from './events';
 
@@ -28,7 +18,7 @@ let styleFinder;
 const installed = $('#installed');
 const WRITE_FRAME_SEL = '.match:not([data-frame-id="0"]):not(.dupe)';
 const ENTRY_ID_PREFIX_RAW = 'style-';
-const EXT_NAME = `<${chrome.runtime.getManifest().name}>`;
+const EXT_NAME = `<${MF.name}>`;
 const xo = new IntersectionObserver(onIntersect);
 const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrId}`);
 

@@ -1,25 +1,25 @@
-'use strict';
+import {createWorkerApi, importScripts} from '/js/worker-util';
 
 /** @namespace BackgroundWorker */
 createWorkerApi({
 
   async compileUsercss(...args) {
-    importScripts('/js/usercss-compiler'); /* global compileUsercss */
+    importScripts('usercss-compiler.js'); /* global compileUsercss */
     return compileUsercss(...args);
   },
 
   nullifyInvalidVars(vars) {
-    importScripts('/js/meta-parser'); /* global metaParser */
+    importScripts('meta-parser.js'); /* global metaParser */
     return metaParser.nullifyInvalidVars(vars);
   },
 
   parseMozFormat(...args) {
-    importScripts('/js/moz-parser'); /* global extractSections */
+    importScripts('moz-parser.js', 'parserlib.js'); /* global extractSections */
     return extractSections(...args);
   },
 
   parseUsercssMeta(text) {
-    importScripts('/js/meta-parser');
+    importScripts('meta-parser.js');
     return metaParser.parse(text);
   },
 });

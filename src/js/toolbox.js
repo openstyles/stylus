@@ -1,5 +1,10 @@
 import browser from '/js/browser';
 
+export const MF = chrome.runtime.getManifest();
+export const MF_ICON = MF.icons[16];
+export const MF_ICON_PATH = MF_ICON.slice(0, MF_ICON.lastIndexOf('/') + 1);
+export const MF_ICON_EXT = MF_ICON.slice(MF_ICON.lastIndexOf('.'));
+
 export const [CHROME, FIREFOX, UA] = (() => {
   const uad = navigator.userAgentData;
   const ua = uad || navigator.userAgent;

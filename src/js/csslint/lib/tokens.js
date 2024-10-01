@@ -57,10 +57,10 @@ export const TIME = (Tokens[++i] = {name: 'TIME'}, i);
 
 export const TokenIdByCode = [];
 
-for (const i in Tokens) {
+for (let i in Tokens) {
   const token = Tokens[i];
   const {text} = token;
-  Tokens[token.name] = i;
+  Tokens[token.name] = i = +i;
   if (text) {
     for (const str of typeof text === 'string' ? [text] : text) {
       if (str.length === 1) TokenIdByCode[str.charCodeAt(0)] = i;

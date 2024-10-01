@@ -105,7 +105,7 @@ const rules = {
   'zero-units': ruleZeroUnits,
 };
 
-const CSSLint = Object.assign(new parserlib.util.EventTarget(), {
+const CSSLint = Object.assign(new parserlib.util.EventDispatcher(), {
 
   rules,
 
@@ -272,6 +272,7 @@ function applyEmbeddedOverrides(text, ruleset, allow, ignore) {
 
 for (const id in rules) {
   const [rule, init] = rules[id];
+  rules[id] = rule;
   rule.id = id;
   rule.init = init;
   if (rule.url && !rule.url.includes(':')) {
@@ -279,5 +280,4 @@ for (const id in rules) {
   }
 }
 
-self.CSSLint = CSSLint;
 export default CSSLint;

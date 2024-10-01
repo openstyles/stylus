@@ -6,7 +6,7 @@ import {debounce, deepMerge, ignoreChromeError, UCD, URLS} from '/js/toolbox';
 import {API, bgReady} from './common';
 import db from './db';
 import download from './download';
-import {getAll} from './style-manager';
+import * as styleMan from './style-manager';
 
 const STATES = /** @namespace UpdaterStates */ {
   UPDATED: 'updated',
@@ -57,7 +57,7 @@ export async function checkAllStyles({
   resetInterval();
   checkingAll = true;
   const port = observe && chrome.runtime.connect({name: 'updater'});
-  const styles = getAll().filter(s =>
+  const styles = styleMan.getAll().filter(s =>
     s.updateUrl &&
     s.updatable !== false &&
     (!onlyEnabled || s.enabled));

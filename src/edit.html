@@ -5,8 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link href="css/icons.ttf" rel="preload" as="font" crossorigin="anonymous">
-    <link href="__ENTRY_JS" rel="preload" as="script" crossorigin="anonymous">
-    <link href="__ENTRY_CSS" rel="stylesheet">
+    <link href="css/global.css" rel="stylesheet">
+    <link href="css/global-dark.css" rel="stylesheet">
+    <link href="../node_modules/codemirror/lib/codemirror.css" rel="stylesheet">
+    <link href="../node_modules/codemirror/addon/dialog/dialog.css" rel="stylesheet">
+    <link href="../node_modules/codemirror/addon/fold/foldgutter.css" rel="stylesheet">
+    <link href="../node_modules/codemirror/addon/hint/show-hint.css" rel="stylesheet">
+    <link href="../node_modules/codemirror/addon/lint/lint.css" rel="stylesheet">
+    <link href="../node_modules/codemirror/addon/search/matchesonscrollbar.css" rel="stylesheet">
+    <link href="js/color/color-picker.css" rel="stylesheet">
+    <link href="edit/codemirror-default.css" rel="stylesheet">
+    <link href="edit/edit.css" rel="stylesheet">
+    <link href="edit/regexp-tester.css" rel="stylesheet">
+    <link href="edit/settings.css" rel="stylesheet">
+    <script src="edit/index.js" type="module"></script>
 
     <template data-id="appliesTo">
       <li class="applies-to-item">
@@ -403,7 +415,5 @@
   <style id="cm-theme"></style>
 </head>
 
-<body id="stylus-edit">
-  <script src="__ENTRY_JS" type="module"></script>
-</body>
+<body id="stylus-edit"></body>
 </html>

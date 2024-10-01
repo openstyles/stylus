@@ -1,12 +1,13 @@
 import {$, $create, $remove, getEventKeyName} from '/js/dom';
 import {t} from '/js/localization';
 import * as prefs from '/js/prefs';
+import {MF, MF_ICON_EXT, MF_ICON_PATH} from '/js/toolbox';
 import {extraKeys} from './codemirror-default';
 
 export default function EmbeddedPopup() {
   const ID = 'popup-iframe';
   const SEL = '#' + ID;
-  const URL = chrome.runtime.getManifest().browser_action.default_popup;
+  const URL = MF.browser_action.default_popup;
   const POPUP_HOTKEY = 'Shift-Ctrl-Alt-S';
   /** @type {HTMLIFrameElement} */
   let frame;
@@ -27,8 +28,8 @@ export default function EmbeddedPopup() {
   });
 
   prefs.subscribe('iconset', (_, val) => {
-    const prefix = `images/icon/${val ? 'light/' : ''}`;
-    btn.srcset = `${prefix}16.png 1x,${prefix}32.png 2x`;
+    const prefix = `${MF_ICON_PATH}${val ? 'light/' : ''}`;
+    btn.srcset = `${prefix}16${MF_ICON_EXT} 1x,${prefix}32${MF_ICON_EXT} 2x`;
   }, true);
 
   window.on('keydown', e => {

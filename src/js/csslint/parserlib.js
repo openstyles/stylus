@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 import Bucket from './lib/bucket';
 import Combinators from './lib/combinators';
 import Matcher from './lib/matcher';
@@ -9,7 +8,7 @@ import ScopedProperties from './lib/scoped-properties';
 import StringSource from './lib/string-source';
 import TokenStream from './lib/token-stream';
 import Units, {UnitTypeIds} from './lib/units';
-import {clipString, GlobalKeywords, isOwn, pick} from './lib/util';
+import {clipString, EventDispatcher, GlobalKeywords, isOwn, pick} from './lib/util';
 import {validateProperty, vtExplode} from './lib/validation';
 import VTComplex from './lib/validation-complex';
 import VTFunctions from './lib/validation-functions';
@@ -33,7 +32,7 @@ const parserlib = {
   },
   util: {
     Bucket,
-    EventTarget,
+    EventDispatcher,
     Matcher,
     StringSource,
     TokenIdByCode,
@@ -50,5 +49,4 @@ const parserlib = {
   },
 };
 
-self.parserlib = parserlib;
 export default parserlib;

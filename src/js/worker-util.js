@@ -1,6 +1,4 @@
-'use strict';
-
-self.createWorkerApi = methods => {
+export function createWorkerApi(methods) {
   self.onmessage = async ({data: {id, action, args}}) => {
     let data, error;
     try {
@@ -11,7 +9,7 @@ self.createWorkerApi = methods => {
     }
     self.postMessage({id, data, error});
   };
-};
+}
 
 function cloneError(err) {
   return Object.assign({
@@ -25,16 +23,13 @@ function cloneError(err) {
 }
 
 const loadedUrls = [];
-const importScriptsOrig = importScripts;
-self.importScripts = (...urls) => {
-  const toLoad = urls
-    .map(u => u.endsWith('.js') ? u : u + '.js')
-    .filter(u => !loadedUrls.includes(u));
-  if (toLoad.length) {
-    loadedUrls.push(...toLoad);
-    importScriptsOrig(...toLoad);
-  }
-};
+const importScriptsOrig = self.importScripts;
+self.importScripts = importScripts;
 
-const url = new URLSearchParams(location.search).get('url');
-if (url) importScripts(url);
+export function importScripts(...urls) {
+  urls = urls.map(u => !loadedUrls.includes(u = `/${__JS}/${u}`) && u).filter(Boolean);
+  if (urls.length) {
+    loadedUrls.push(...urls);
+    importScriptsOrig(...urls);
+  }
+}

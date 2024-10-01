@@ -1,17 +1,16 @@
+import '/content/apply.js';
 import browser from '/js/browser';
 import messageBox from '/js/dlg/message-box';
 import {$, $$, $create, getEventKeyName, setInputValue, setupLivePrefs} from '/js/dom';
 import {t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
-/* global
-  CHROME_POPUP_BORDER_BUG
-  FIREFOX
-  UA
-  URLS
-  clamp
-  ignoreChromeError
-*/// toolbox.js
+import {CHROME_POPUP_BORDER_BUG, clamp, FIREFOX, ignoreChromeError, UA, URLS} from '/js/toolbox';
+import './options-sync';
+// import '/css/global.css';
+// import '/css/global-dark.css';
+// import './onoffswitch.css';
+// import './options.css';
 
 t.body();
 setupLivePrefs();
@@ -72,6 +71,7 @@ function customizeHotkeys() {
       setupLivePrefs($$('input', box).map(el => el.id));
     },
   });
+
   async function onInput(e) {
     if (SKIP.includes(e.key)) return;
     e.preventDefault();

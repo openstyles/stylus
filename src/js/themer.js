@@ -6,10 +6,10 @@
  * which also happens before the first paint unless the browser "yields", but that's abnormal
  * and not even a problem in the most popular case of using system dark/light mode.
  */
-import {$, $create} from '/js/dom';
+import {$, $create} from '/js/dom-base';
 import * as msg from '/js/msg';
 import {API} from '/js/msg';
-import {FIREFOX} from '/js/toolbox';
+import {FIREFOX, MF_ICON_EXT, MF_ICON_PATH} from '/js/toolbox';
 
 (async () => {
   let isDark, isVivaldi;
@@ -31,7 +31,7 @@ import {FIREFOX} from '/js/toolbox';
   && location.pathname !== '/popup.html') {
     document.head.append(...[32, 16].map(size => $create('link', {
       rel: 'icon',
-      href: `/images/icon/${isDark ? '' : 'light/'}${size}.png`,
+      href: `${MF_ICON_PATH}${isDark ? '' : 'light/'}${size}${MF_ICON_EXT}`,
       sizes: size + 'x' + size,
     })));
   }

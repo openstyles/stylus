@@ -149,7 +149,7 @@ export default function ColorPicker(cm) {
         window.EyeDropper &&
         $('dropper', {
           tag: 'img',
-          srcset: '/images/eyedropper/16px.png, /images/eyedropper/32px.png 2x',
+          srcset: `assets/eyedropper/16px.png, assets/eyedropper/32px.png 2x`,
           async onclick() {
             try {
               const c = await new window.EyeDropper().open();

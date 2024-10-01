@@ -9,6 +9,7 @@ import styleReady from './style-ready';
 
 styleReady.then(() => {
   const ERROR_TITLE = 'UserStyles.world ' + t('genericError');
+  const META_KEYS = ['name', 'description', 'license', 'username>author', 'homepage', 'namespace'];
   const elProgress = $('#usw-progress');
   const UI = $('#publish');
   const style = editor.style;
@@ -70,7 +71,7 @@ styleReady.then(() => {
     if ((elData.hidden = editor.isUsercss)) {
       return;
     }
-    for (const key of ['name', 'description', 'license', 'username>author', 'homepage', 'namespace']) {
+    for (const key of META_KEYS) {
       const [from, to = from] = key.split('>');
       const value = usw[from] || '';
       const id = 'usw-data-' + to;

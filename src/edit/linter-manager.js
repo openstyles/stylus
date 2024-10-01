@@ -16,7 +16,7 @@ const linterMan = (() => {
   return {
 
     /** @type {EditorWorker} */
-    worker: createWorker({url: '/edit/editor-worker'}),
+    worker: createWorker('editor-worker'),
 
     disableForEditor(cm) {
       cm.setOption('lint', false);

@@ -6,12 +6,12 @@ import {t} from '/js/localization';
 import {installed, newUI} from '/js/manage';
 import {API} from '/js/msg';
 import {
-  debounce, getOwnTab, isEmptyObj, sessionStore, stringAsRegExpStr, UCD, URLS,
+  debounce, getOwnTab, isEmptyObj, MF_ICON, sessionStore, stringAsRegExpStr, UCD, URLS,
 } from '/js/toolbox';
 
 const ENTRY_ID_PREFIX_RAW = 'style-';
 const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps'];
-const OWN_ICON = chrome.runtime.getURL(chrome.runtime.getManifest().icons['16']);
+const OWN_ICON = chrome.runtime.getURL(MF_ICON);
 const AGES = [
   [24, 'h', t('dateAbbrHour', '\x01')],
   [30, 'd', t('dateAbbrDay', '\x01')],

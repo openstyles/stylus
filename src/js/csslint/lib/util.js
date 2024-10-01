@@ -12,7 +12,7 @@ const unescapeLF = (m, code, char, LF) =>
 export const parseString = str => str.slice(1, -1).replace(rxUnescapeLF, unescapeLF);
 export const toLowAscii = c => c >= 65 && c <= 90 ? c + 32 : c;
 
-export class EventTarget {
+export class EventDispatcher {
   constructor() {
     /** @type {Record<string,Set>} */
     this._listeners = {__proto__: null};
@@ -33,7 +33,7 @@ export class EventTarget {
   }
 }
 
-export class SyntaxError extends Error {
+export class ParseError extends Error {
   constructor(message, pos) {
     super();
     this.name = this.constructor.name;

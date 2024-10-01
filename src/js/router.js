@@ -12,13 +12,13 @@ const router = {
   },
 
   /** When showing the UI, `showHide` function must resolve only when the UI is closed */
-  makeToggle(hashId, showHide, deps) {
+  makeToggle(hashId, showHide, loadDeps) {
     const hash = '#' + hashId;
     const selector = '.' + hashId;
     router.watch({hash}, async state => {
       const el = $(selector);
       if (!state === !el) return;
-      if (state && deps) await require(deps);
+      if (state && loadDeps && !showHide) showHide = await loadDeps();
       await showHide(state, el, selector);
       if (state) router.updateHash('');
     });

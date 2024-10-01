@@ -61,7 +61,7 @@ addAPI(/** @namespace API */ {
   uso: usoApi,
   usw: uswApi,
   /** @type {BackgroundWorker} */
-  worker: createWorker({url: '/background/background-worker'}),
+  worker: createWorker('background-worker'),
 });
 
 //#endregion

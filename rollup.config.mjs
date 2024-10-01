@@ -3,24 +3,32 @@ import {babel} from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
-import * as fse from 'fs-extra';
-import * as path from 'path';
+import {rollupPluginHTML as html} from '@web/rollup-plugin-html';
 import {Buffer} from 'buffer';
+import deepmerge from 'deepmerge';
+import fs from 'fs';
+import * as path from 'path';
 import copy from 'rollup-plugin-copy';
-import css from 'rollup-plugin-css-only';
+import postcss from 'rollup-plugin-postcss';
 
-const BUILD = 'DEV';
-const SRC = path.resolve('src') + '/';
-const DST = SRC + 'dist/';
+//#region Definitions
+
+// const BUILD = 'DEV';
+const BUILD = 'CHROME';
+const IS_PROD = BUILD !== 'DEV';
+const DST = 'dist/';
+const ASSETS = 'assets';
+const JS = 'js';
 const SHIM = path.resolve('tools/shim') + '/';
-
-const ENTRY_BG = 'background';
-const ENTRIES = [
+const PAGE_BG = 'background';
+const PAGES = [
   'edit',
-  ENTRY_BG,
+  'options',
+  PAGE_BG,
 ];
 
-const getChunkName = chunk => path.basename(chunk.facadeModuleId || '') || 'chunk.js';
+//#endregion
+//#region Plugins
 
 const PLUGINS = [
   copyAndWatch([
@@ -29,15 +37,19 @@ const PLUGINS = [
     'css/icons.ttf',
     'images/eyedropper',
     'images/icon',
+    'npm:less/dist/less.min.js -> less.js',
+    'npm:stylus-lang-bundle/dist/stylus-renderer.min.js -> stylus-lang-bundle.js',
+    'npm:stylelint-bundle/dist/stylelint-bundle.min.js -> stylelint-bundle.js',
   ]),
   commonjs(),
   nodeResolve(),
   alias({
     entries: [
-      {find: /^\//, replacement: SRC},
+      {find: /^\//, replacement: path.resolve('src') + '/'},
       {find: './fs-drive', replacement: SHIM + 'empty.js'},
       {find: 'fs', replacement: SHIM + 'empty.js'},
       {find: 'path', replacement: SHIM + 'path.js'},
+      {find: 'url', replacement: SHIM + 'url.js'},
     ],
   }),
   babel({
@@ -51,12 +63,12 @@ const PLUGINS = [
     ],
   }),
 ];
-const PLUGIN_TERSER = BUILD !== 'DEV' && terser({
+const PLUGIN_TERSER = IS_PROD && terser({
   compress: {
     ecma: 8,
     passes: 2,
     reduce_funcs: false,
-    unsafe_arrows: true,
+    // unsafe_arrows: true, // TODO: only apply to our code as it breaks CodeMirror
   },
   output: {
     ascii_only: false,
@@ -64,67 +76,138 @@ const PLUGIN_TERSER = BUILD !== 'DEV' && terser({
     wrap_func_args: false,
   },
 });
-const PLUGIN_CSS = css();
+const PLUGIN_CSS = postcss({
+  extract: true,
+});
 
-function makeEntry(entry, file, output, opts) {
-  const entryPrefix = entry ? entry + '-' : '';
-  const entryCss = entry ? 'css/' + entry + '.css' : undefined;
-  const entryJs = `js/${entry || '[name]'}.js`;
-  return ({
-    input: {
-      [entry || path.parse(file).name]: file || `src/${entry}/index.js`,
-    },
+//#endregion
+//#region Entry
+
+function makeEntry(pages, file, opts) {
+  return deepmerge({
+    input: pages
+      ? Object.fromEntries(pages.map(p => [p, getEntryName(p)]))
+      : {[getFileName(file)]: file},
     output: {
-      dir: DST,
-      // sourcemap: 'inline',
+      dir: DST + (pages ? ASSETS : JS),
+      sourcemap: IS_PROD ? '' : 'inline',
       generatedCode: 'es2015',
       externalLiveBindings: false,
       freeze: false,
-      intro: entry ? `const __BUILD = "${BUILD}", __ENTRY = "${entry}";` : '',
-      assetFileNames: entryCss,
-      chunkFileNames: chunk => 'js/' + entryPrefix + getChunkName(chunk),
-      entryFileNames: entryJs,
-      ...output,
+      intro: chunk => 'const ' +
+        Object.entries({JS, BUILD, ENTRY: chunk.name})
+          .map(([k, v]) => v && `__${k} = '${v}'`)
+          .filter(Boolean)
+          .join(',') + ';',
+      assetFileNames: 'styles.css',
+      chunkFileNames: getChunkName,
+      entryFileNames: '[name].js',
     },
     plugins: [
       ...PLUGINS,
-      entry && entry !== ENTRY_BG && PLUGIN_CSS,
+      ...pages?.map(p => copyAndWatch([p + '.html'], {
+        __ASSET_JS: p + '.js',
+        __ASSET_CSS: p + '.css',
+      })) || [],
+      pages && pages !== PAGE_BG && PLUGIN_CSS,
       PLUGIN_TERSER,
-      copyAndWatch([`${entry}.html`], {__ENTRY_JS: entryJs, __ENTRY_CSS: entryCss}),
     ].filter(Boolean),
-    ...opts,
-  });
+  }, opts || {});
 }
 
-function makeEntryIIFE(file, opts) {
-  return makeEntry(undefined, file, {format: 'iife'}, opts);
+function makeEntryIIFE(file, name, opts) {
+  return makeEntry(undefined, file, deepmerge({
+    output: {
+      name,
+      format: 'umd',
+    },
+  }, opts || {}));
 }
+
+//#endregion
+//#region Util
 
 function copyAndWatch(files, vars) {
-  const transform = vars && (
-    buf => new Buffer(buf.toString().replace(
-      new RegExp(`${Object.keys(vars).join('|')}`, 'g'),
-      s => vars[s]
-    )));
-  return Object.assign(copy({
-    flatten: false,
-    targets: files.map(f => ({
-      src: 'src/' + f,
-      dest: DST,
-      transform,
-    })),
-  }), {
+  const rxVars = vars && new RegExp(`${Object.keys(vars).join('|')}`, 'g');
+  const replacer = vars && (s => vars[s]);
+  const npms = {};
+  const transform = (buf, name) => {
+    let str = buf.toString();
+    if (vars) str = str.replace(rxVars, replacer);
+    if (name.endsWith('.js')) {
+      const map = npms[name] + '.map';
+      str = str.replace(/(\r?\n\/\/# sourceMappingURL=).+/,
+        IS_PROD || !fs.existsSync(map) ? '' :
+          '$1data:application/json;charset=utf-8;base64,' +
+          fs.readFileSync(map).toString('base64'));
+    }
+    return new Buffer(str);
+  };
+  const targets = files.map(f => {
+    const [from, to] = f.split(/\s*->\s*/);
+    const isJS = from.endsWith('.js');
+    const npm = from.startsWith('npm:') && from.replace('npm:', 'node_modules/');
+    if (npm && isJS) npms[path.basename(npm)] = npm;
+    return {
+      src: npm || `src/${from}`,
+      dest: DST + (
+        isJS ? JS :
+          /\b(css|images)\b/.test(from) ? ASSETS :
+            ''
+      ),
+      rename: to,
+      transform: (isJS || vars && /\.(js(on)?|css|html)$/.test(from)) &&
+        transform,
+    };
+  });
+  return Object.assign(copy({targets}), {
     buildStart() {
       for (const f of files) this.addWatchFile(f);
     },
   });
 }
 
-fse.emptyDir(DST);
+function getChunkName(chunk) {
+  return path.basename(chunk.facadeModuleId || '') || 'chunk.js';
+}
+
+function getEntryName(inputs) {
+  return `src/${inputs}/index.js`;
+}
+
+function getFileName(file) {
+  return path.parse(file).name;
+}
+
+//#endregion
+//#region Main
+
+// fse.emptyDir(DST);
 
 export default [
-  ...ENTRIES.map(e => makeEntry(e)),
-  makeEntryIIFE('/edit/editor-worker.js'),
-  makeEntryIIFE('/js/csslint/csslint.js', {external: './parserlib'}),
-  makeEntryIIFE('/js/csslint/parserlib.js'),
+  {
+    output: {
+      dir: DST,
+      experimentalMinChunkSize: 10e3,
+    },
+    plugins: [
+      ...PLUGINS,
+      html({
+        input: PAGES.map(p => `src/${p}.html`),
+      }),
+    ],
+  },
+  // makeEntry(PAGES),
+  // makeEntryIIFE('/background/background-worker.js'),
+  // makeEntryIIFE('/edit/editor-worker.js'),
+  // makeEntryIIFE('/js/color/color-converter.js', 'colorConverter'),
+  // makeEntryIIFE('/js/csslint/csslint.js', 'CSSLint', {
+  //   external: './parserlib',
+  //   output: {globals: id => id.match(/parserlib/)?.[0] || id},
+  // }),
+  // makeEntryIIFE('/js/csslint/parserlib.js', 'parserlib'),
+  // makeEntryIIFE('/js/meta-parser.js', 'metaParser'),
+  // makeEntryIIFE('/js/moz-parser.js', 'extractSections'),
 ];
+
+//#endregion

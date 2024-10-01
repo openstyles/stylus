@@ -1,9 +1,11 @@
 import messageBox from '/js/dlg/message-box';
 import {$create} from '/js/dom';
-import {API} from '/js/msg';
 import {t} from '/js/localization';
+import {API} from '/js/msg';
+import '@eight04/draggable-list/dist/draggable-list.esm.js';
+import './injection-order.css';
 
-export async function InjectionOrder(show, el, selector) {
+export default async function InjectionOrder(show, el, selector) {
   if (!show) {
     return messageBox.close();
   }
@@ -72,7 +74,6 @@ export async function InjectionOrder(show, el, selector) {
         API.styles.setOrder(groups);
       }
     });
-    /* global DraggableList */
     DraggableList(ol, {scrollContainer: ol});
     return $create('section', {['data-' + type]: ''}, [
       $create('header', t(`styleInjectionOrderHint${type === 'main' ? '' : '_' + type}`)),

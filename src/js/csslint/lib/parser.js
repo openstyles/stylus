@@ -10,7 +10,7 @@ import {
   AMP, AT, CDCO, COLON, COMMA, DELIM, DOT, FUNCTION, HASH, IDENT, LBRACE, LBRACKET, LPAREN, PIPE,
   RBRACE, RBRACKET, RPAREN, SEMICOLON, STAR, UVAR, WS,
 } from './tokens';
-import {assign, clipString, define, isOwn, PDESC} from './util';
+import {assign, clipString, define, EventDispatcher, isOwn, ParseError, PDESC} from './util';
 import {validateProperty} from './validation';
 
 const Parens = []; Parens[LBRACE] = RBRACE; Parens[LBRACKET] = RBRACKET; Parens[LPAREN] = RPAREN;
@@ -19,7 +19,7 @@ const toStringPropHack = function () { return this.hack + this.text; };
 
 //#region Parser public API
 
-class Parser extends EventTarget {
+class Parser extends EventDispatcher {
   static AT = ATS;
   /**
    * @param {Object} [options]
@@ -92,7 +92,7 @@ class Parser extends EventTarget {
         if (ex === ATS_GLOBAL) {
           break;
         }
-        if (ex instanceof SyntaxError && !opts.strict) {
+        if (ex instanceof ParseError && !opts.strict) {
           this.fire(assign({}, ex, {type: 'error', error: ex}));
         } else {
           ex.message = (ti = ex.stack).includes(fn = ex.message) ? ti : `${fn}\n${ti}`;
@@ -259,7 +259,7 @@ class Parser extends EventTarget {
    * @param {Token} start
    */
   _unknownAtRule(stream, start) {
-    if (this.options.strict) throw new SyntaxError('Unknown rule: ' + start, start);
+    if (this.options.strict) throw new ParseError('Unknown rule: ' + start, start);
     stream.skipDeclBlock();
   }
 
@@ -445,7 +445,7 @@ class Parser extends EventTarget {
     }
     if (brace) {
       stream._pair = RBRACE;
-      throw new SyntaxError(`Unexpected "{" in "${tok}" declaration`, t);
+      throw new ParseError(`Unexpected "{" in "${tok}" declaration`, t);
       // TODO: if not as rare as alleged, make a flat array in _expr() and reuse it
     }
     if (!value) stream._failure('');
@@ -598,7 +598,7 @@ class Parser extends EventTarget {
       this._block(stream, sels[0], opts ? assign({}, opts, opts2) : opts2);
       if (blk && !msg.empty) blk = (parserCache.endBlock(), 0);
     } catch (ex) {
-      if (this.options.strict || !(ex instanceof SyntaxError)) throw ex;
+      if (this.options.strict || !(ex instanceof ParseError)) throw ex;
       this._declarationFailed(stream, ex, !!brace);
       return;
     } finally {
@@ -652,7 +652,7 @@ class Parser extends EventTarget {
         ex = e;
       }
       if (ex) {
-        if (this.options.strict || !(ex instanceof SyntaxError)) break;
+        if (this.options.strict || !(ex instanceof ParseError)) break;
         this._declarationFailed(stream, ex);
         if (!ti) break;
         ex = null;

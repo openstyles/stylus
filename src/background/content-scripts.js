@@ -1,6 +1,6 @@
 import browser from '/js/browser';
 import {sendTab} from '/js/msg';
-import {CHROME, ignoreChromeError, stringAsRegExpStr, URLS} from '/js/toolbox';
+import {CHROME, ignoreChromeError, MF, stringAsRegExpStr, URLS} from '/js/toolbox';
 import {bgReady} from './common';
 import tabMan from './tab-manager';
 
@@ -11,7 +11,7 @@ import tabMan from './tab-manager';
 
 if (CHROME) bgReady.all.then(() => { // eslint-disable-line curly
   const ALL_URLS = '<all_urls>';
-  const SCRIPTS = chrome.runtime.getManifest().content_scripts;
+  const SCRIPTS = MF.content_scripts;
   const globToRe = (s, re = '.') => stringAsRegExpStr(s.replace(/\*/g, '\n')).replace(/\n/g, re + '*?');
   for (const cs of SCRIPTS) {
     if (!(cs[ALL_URLS] = cs.matches.includes(ALL_URLS))) {

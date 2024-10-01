@@ -1,6 +1,6 @@
 import popupGetStyles from '/js/popup-get-styles';
 import * as prefs from '/js/prefs';
-import {CHROME, FIREFOX, ignoreChromeError, URLS} from '/js/toolbox';
+import {CHROME, FIREFOX, ignoreChromeError, MF, URLS} from '/js/toolbox';
 import {API} from './common';
 import {getSectionsByUrl} from './style-manager';
 import tabMan from './tab-manager';
@@ -34,7 +34,7 @@ function toggle() {
     urls: [
       '*://*/*',
       CHROME &&
-      chrome.runtime.getURL(chrome.runtime.getManifest().browser_action.default_popup),
+      chrome.runtime.getURL(MF.browser_action.default_popup),
     ].filter(Boolean),
     types: ['main_frame', 'sub_frame'],
   };
