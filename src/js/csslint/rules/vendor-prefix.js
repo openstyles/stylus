@@ -1,4 +1,4 @@
-import {getPropName, registerRuleEvents} from './util';
+import {getPropName, registerRuleEvents} from './-util';
 
 export default [{
   desc: 'Require an additional non-prefixed declaration when using vendor prefixes.',

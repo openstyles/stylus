@@ -1,0 +1,15 @@
+{
+  "babel": {
+    "presets": [
+      ["@babel/preset-env", {
+        "useBuiltIns": false,
+        "bugfixes": true,
+        "loose": true
+      }]
+    ],
+    "plugins": [
+      "@babel/plugin-transform-runtime",
+      ["transform-modern-regexp", {"useRe": true}]
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-import {getPropName, registerRuleEvents} from './util';
+import {getPropName, registerRuleEvents} from './-util';
 
 export default [{
   desc: 'none or 0 for `outline` outside of :focus rule.',

@@ -1,4 +1,4 @@
-import {getPropName, registerRuleEvents} from './util';
+import {getPropName, registerRuleEvents} from './-util';
 
 export default [{
   desc: 'width or height specified with padding or border and no box-sizing.',

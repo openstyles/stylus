@@ -1,4 +1,4 @@
-import {getPropName, registerRuleEvents} from './util';
+import {getPropName, registerRuleEvents} from './-util';
 
 export default [{
   desc: 'Properties must be ordered alphabetically.',

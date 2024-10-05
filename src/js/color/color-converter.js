@@ -256,7 +256,7 @@ export function testAt(rx, index, text) {
   return rx.test(text);
 }
 
-export const NAMED_COLORS = new Map([
+export const NAMED_COLORS = /*@__PURE__*/new Map([
   ['transparent', {r: 0, g: 0, b: 0, a: 0, type: 'rgb'}],
   ['aliceblue', {r: 240, g: 248, b: 255, type: 'hex'}],
   ['antiquewhite', {r: 250, g: 235, b: 215, type: 'hex'}],

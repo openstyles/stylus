@@ -1,4 +1,4 @@
-import {registerShorthandEvents, shorthands} from './util';
+import {registerShorthandEvents, shorthands} from './-util';
 
 export default [{
   desc: 'Use shorthand declaration instead of several individual properties.',

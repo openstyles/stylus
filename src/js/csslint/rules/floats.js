@@ -1,4 +1,4 @@
-import {getPropName} from './util';
+import {getPropName} from './-util';
 
 export default [{
   desc: 'More than 9 `float` declarations. Consider using a grid system instead.',

@@ -1,4 +1,4 @@
-import {getPropName, registerRuleEvents} from './util';
+import {getPropName, registerRuleEvents} from './-util';
 
 export default [{
   desc: 'Must use properties compatible with the value of `display`.',

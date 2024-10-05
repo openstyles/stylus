@@ -1,4 +1,4 @@
-import {registerRuleEvents} from './util';
+import {registerRuleEvents} from './-util';
 
 export default [{
   desc: 'Duplicate properties must be next to each other; exact duplicates are forbidden.',

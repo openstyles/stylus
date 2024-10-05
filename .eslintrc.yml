@@ -2,7 +2,6 @@
 
 parserOptions:
   ecmaVersion: 2023
-  sourceType: module
 
 env:
   browser: true
@@ -238,16 +237,18 @@ rules:
   yoda: [2, never]
 
 overrides:
-  - files: [tools/**/*]
+  - files:
+    - tools/**/*
+    - ./*.js
     env:
       node: true
       browser: false
-      webextensions: false
     parserOptions:
       ecmaVersion: 2021
-      sourceType: script
 
-  - files: ["*.mjs"]
+  - files:
+    - src/**/*.js
+    - "*.mjs"
     parserOptions:
       sourceType: module
 

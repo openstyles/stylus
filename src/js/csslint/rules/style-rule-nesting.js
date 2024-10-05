@@ -1,4 +1,4 @@
-import {registerRuleEvents} from './util';
+import {registerRuleEvents} from './-util';
 
 export default [{
   desc: 'Nesting inside style rules is not backwards-compatible.',

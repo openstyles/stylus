@@ -1,4 +1,4 @@
-import {registerRuleEvents} from './util';
+import {registerRuleEvents} from './-util';
 
 export default [{
   desc: 'Require all vendor prefixes when using a vendor-prefixed gradient.',
