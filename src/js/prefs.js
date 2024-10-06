@@ -1,5 +1,5 @@
 /** Don't use this file in content script context! */
-import {API} from '/js/msg';
+import {API, isBg} from '/js/msg';
 import {deepCopy, deepEqual} from './toolbox';
 
 let busy, setReady;
@@ -143,7 +143,6 @@ const warnUnknown = console.warn.bind(console, 'Unknown preference "%s"');
 /** @type {PrefsValues} */
 const values = self.prefs = deepCopy(defaults);
 const onChange = {};
-const isBg = __ENTRY === 'background';
 // A scoped listener won't trigger for our [big] stuff in `local`, Chrome 73+, FF
 const onSync = chrome.storage.sync.onChanged;
 

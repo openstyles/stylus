@@ -8,14 +8,14 @@ import tabMan from './tab-manager';
 
 const ICON_SIZES = FIREFOX || !UA.vivaldi ? [16, 32] : [19, 38];
 const staleBadges = new Set();
-const imageDataCache = new Map();
+/** @type {{ [url: string]: ImageData | Promise<ImageData> }} */
+const imageDataCache = {};
 const badgeOvr = {color: '', text: ''};
 // https://github.com/openstyles/stylus/issues/1287 Fenix can't use custom ImageData
 const FIREFOX_ANDROID = FIREFOX && UA.mobile;
 let isDark;
 // https://github.com/openstyles/stylus/issues/335
-let hasCanvas = FIREFOX_ANDROID ? false : loadImage(MF_ICON_PATH + ICON_SIZES[0] + MF_ICON_EXT)
-  .then(({data}) => (hasCanvas = data.some(b => b !== 255)));
+let hasCanvas = FIREFOX_ANDROID ? false : null;
 
 addAPI(/** @namespace API */ {
 /**
@@ -51,7 +51,7 @@ chrome.runtime.onConnect.addListener(port => {
 colorScheme.onChange(val => {
   isDark = val;
   if (prefs.get('iconset') === -1) {
-    debounce(refreshAllIcons);
+    debounce(refreshGlobalIcon);
   }
 }, true);
 bgReady.all.then(() => {
@@ -161,7 +161,7 @@ async function loadImage(url) {
   const ctx = canvas.getContext('2d');
   ctx.drawImage(img, 0, 0, w, h);
   const result = ctx.getImageData(0, 0, w, h);
-  imageDataCache.set(url, result);
+  imageDataCache[url] = result;
   return result;
 }
 
@@ -214,10 +214,18 @@ function safeCall(method, data) {
 
 /** @param {chrome.browserAction.TabIconDetails} data */
 async function setIcon(data) {
-  if (hasCanvas === true || await hasCanvas) {
+  if (hasCanvas == null) {
+    const url = MF_ICON_PATH + ICON_SIZES[0] + MF_ICON_EXT;
+    hasCanvas = imageDataCache[url] = loadImage(url);
+    hasCanvas = (await hasCanvas).data.some(b => b !== 255);
+  } else if (hasCanvas.then) {
+    await hasCanvas;
+  }
+  if (hasCanvas) {
     data.imageData = {};
     for (const [key, url] of Object.entries(data.path)) {
-      data.imageData[key] = imageDataCache.get(url) || await loadImage(url);
+      const val = imageDataCache[url] || (imageDataCache[url] = loadImage(url));
+      data.imageData[key] = val.then ? await val : val;
     }
     delete data.path;
   }

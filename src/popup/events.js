@@ -1,22 +1,18 @@
 import {$, $$, $remove, getEventKeyName, moveFocus} from '/js/dom';
 import {t} from '/js/localization';
 import {API} from '/js/msg';
-import {getActiveTab, require} from '/js/toolbox';
-import {resortEntries, tabURL} from './index';
+import {getActiveTab} from '/js/toolbox';
+import {resortEntries, tabURL} from '.';
 
 const menu = $('#menu');
 const menuExclusions = [];
 const Events = {
-  async configure(event, entry) {
+  configure(event, entry) {
     if (!this.target) {
-      const [style] = await Promise.all([
-        API.styles.get(entry.styleId),
-        require(['/popup/hotkeys']), /* global hotkeys */
-        require(['/js/dlg/config-dialog']), /* global configDialog */
-      ]);
-      hotkeys.setState(false);
-      await configDialog(style);
-      hotkeys.setState(true);
+      const styleP = API.styles.get(entry.styleId);
+      return import('./hotkeys').then(hotkeys =>
+        hotkeys.pause(async () =>
+          (await import('/js/dlg/config-dialog')).default(await styleP)));
     } else {
       Events.openURLandHide.call(this, event);
     }
@@ -34,7 +30,6 @@ const Events = {
       this.onmouseup = () => $('.style-edit-link', this).click();
       this.oncontextmenu = event => event.preventDefault();
       event.preventDefault();
-      return;
     }
   },
   async openEditor(event, entry) {

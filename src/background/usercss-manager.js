@@ -12,7 +12,7 @@ const GLOBAL_META = Object.entries({
 });
 
 /** `src` is a style or vars */
-export async function assignVars(style, src) {
+async function assign(style, src) {
   const meta = style[UCD];
   const meta2 = src[UCD];
   const {vars} = meta;
@@ -44,7 +44,7 @@ export async function build({
   let log;
   if (!metaOnly) {
     if (vars || assignVars) {
-      await assignVars(style, vars || dup);
+      await assign(style, vars || dup);
     }
     await buildCode(style);
     log = style.log; // extracting the non-enumerable prop, otherwise it won't survive messaging
@@ -143,7 +143,7 @@ export async function parse(style, {dup, vars} = {}) {
     style.id = dup.id;
   }
   if (vars || (vars = dup)) {
-    await assignVars(style, vars);
+    await assign(style, vars);
   }
   return buildCode(style);
 }

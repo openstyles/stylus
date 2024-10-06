@@ -8,9 +8,7 @@ env:
   es6: true
 
 globals:
-  __BUILD: false
-  __ENTRY: false
-  __JS: false
+  process: false
 
 rules:
   accessor-pairs: [2]

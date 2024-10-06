@@ -44,16 +44,12 @@
       "all_frames": true,
       "match_about_blank": true,
       "match_origin_as_fallback": true,
-      "js": [
-        "content/style-injector.js",
-        "js/msg.js",
-        "content/apply.js"
-      ]
+      "js": ["js/apply.js"]
     },
     {
-      "matches": ["http://userstyles.org*//*", "https://userstyles.org*//*"],
+      "matches": ["http://userstyles.org/*", "https://userstyles.org/*"],
       "run_at": "document_start",
-      "js": ["content/install-hook-userstyles.js"]
+      "js": ["js/install-hook-userstyles.js"]
     }
   ],
   "browser_action": {

@@ -1,5 +1,3 @@
-@charset "UTF-8";
-
 @supports not (accent-color: red) {
   /* This suppresses a bug in all? browsers: they apply transitions during page load.
    * It was fixed by crrev.com/886802 in Chrome 93, which we detect via `accent-color`.

@@ -1,9 +1,13 @@
+import '/content/apply.js';
 import {$, dom} from './dom-base';
 import DomOnLoad from './dom-on-load';
 import {waitForSelector} from './dom-util';
 import * as prefs from './prefs';
 import './themer';
 import {FIREFOX, UA} from './toolbox';
+import '/css/global.css';
+import '/css/global-dark.css';
+
 export * from './dom-base';
 export * from './dom-util';
 

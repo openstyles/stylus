@@ -71,7 +71,7 @@ createWorkerApi({
   },
 
   async stylelint(opts) {
-    importScripts('stylelint-bundle.js'); /* global stylelint */
+    importScripts('stylelint.js'); /* global stylelint */
     // Stylus-lang allows a trailing ";" but sugarss doesn't, so we monkeypatch it
     stylelint.SugarSSParser.prototype.checkSemicolon = ovrCheckSemicolon;
     for (const r in opts.config.rules) {

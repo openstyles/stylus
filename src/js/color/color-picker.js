@@ -1,5 +1,6 @@
 import * as colorConverter from './color-converter';
 import colorMimicry from './color-mimicry';
+import './color-picker.css';
 
 export default function ColorPicker(cm) {
   const {constrain} = colorConverter;

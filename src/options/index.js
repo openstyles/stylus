@@ -1,4 +1,3 @@
-import '/content/apply.js';
 import browser from '/js/browser';
 import messageBox from '/js/dlg/message-box';
 import {$, $$, $create, getEventKeyName, setInputValue, setupLivePrefs} from '/js/dom';
@@ -7,10 +6,8 @@ import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {CHROME_POPUP_BORDER_BUG, clamp, FIREFOX, ignoreChromeError, UA, URLS} from '/js/toolbox';
 import './options-sync';
-// import '/css/global.css';
-// import '/css/global-dark.css';
-// import './onoffswitch.css';
-// import './options.css';
+import './onoffswitch.css';
+import './options.css';
 
 t.body();
 setupLivePrefs();

@@ -1,7 +1,7 @@
 let browser;
-if (__BUILD === 'CHROME_MV3') {
+if (process.env.BUILD === 'CHROME_MV3') {
   browser = self.browser = chrome;
-} else if (__BUILD === 'CHROME' || !self.browser?.runtime) {
+} else if (process.env.BUILD !== 'FIREFOX' && !self.browser?.runtime) {
   /* Auto-promisifier with a fallback to direct call on signature error.
      The fallback isn't used now since we call all synchronous methods via `chrome` */
   const directEvents = ['addListener', 'removeListener', 'hasListener', 'hasListeners'];

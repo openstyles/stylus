@@ -1,7 +1,6 @@
 import {$, $$, $create, $remove, getEventKeyName, setupLivePrefs} from '/js/dom';
 import {t} from '/js/localization';
-import * as msg from '/js/msg';
-import {API} from '/js/msg';
+import {API, onExtension, sendTab} from '/js/msg';
 import popupGetStyles, {ABOUT_BLANK} from '/js/popup-get-styles';
 import * as prefs from '/js/prefs';
 import {
@@ -9,10 +8,11 @@ import {
   MF, stringAsRegExpStr, UA, UCD, URLS,
 } from '/js/toolbox';
 import Events from './events';
+import './popup.css';
 
-let tabURL;
+export const styleFinder = {};
+export let tabURL;
 let isBlocked;
-let styleFinder;
 
 /** @type Element */
 const installed = $('#installed');
@@ -20,7 +20,7 @@ const WRITE_FRAME_SEL = '.match:not([data-frame-id="0"]):not(.dupe)';
 const ENTRY_ID_PREFIX_RAW = 'style-';
 const EXT_NAME = `<${MF.name}>`;
 const xo = new IntersectionObserver(onIntersect);
-const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrId}`);
+export const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrId}`);
 
 (async () => {
   const data = CHROME && await API.data.pop('popupData')
@@ -32,7 +32,7 @@ const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrI
   else window.on('resize', onWindowResize);
 })();
 
-msg.onExtension(onRuntimeMessage);
+onExtension(onRuntimeMessage);
 
 prefs.subscribe('popup.stylesFirst', (key, stylesFirst) => {
   $.rootCL.toggle('styles-first', stylesFirst);
@@ -64,7 +64,7 @@ function onRuntimeMessage(msg) {
       $remove($entry(msg.style.id));
       break;
   }
-  if (styleFinder) styleFinder.on(msg, ready);
+  styleFinder.on?.(msg, ready);
 }
 
 function onWindowResize() {
@@ -94,20 +94,13 @@ async function initPopup(frames, ping0, tab) {
   setupLivePrefs();
 
   const elFind = $('#find-styles-btn');
-  const elFindDeps = async () => {
-    document.body.append(await t.fetchTemplate('/popup/search.html', 'searchUI', true));
-    await require([
-      '/popup/search.css',
-      '/popup/search',
-    ]);
-  };
   elFind.on('click', async () => {
     elFind.disabled = true;
-    if (!styleFinder) await elFindDeps();
+    if (!styleFinder.on) await import('./search');
     styleFinder.inline();
   });
   elFind.on('split-btn', async e => {
-    if (!styleFinder) await elFindDeps();
+    if (!styleFinder.on) await import('./search');
     styleFinder.inSite(e);
   });
   window.on('keydown', e => {
@@ -155,7 +148,7 @@ async function initPopup(frames, ping0, tab) {
   }
 
   for (let t2 = performance.now() + 1000; performance.now() < t2;) {
-    if (await msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0})) {
+    if (await sendTab(tab.id, {method: 'ping'}, {frameId: 0})) {
       blockPopup(false);
       return;
     }
@@ -284,7 +277,7 @@ function showStyles(frames) {
   resortEntries([...entries.values()]);
 }
 
-function resortEntries(entries) {
+export function resortEntries(entries) {
   // `entries` is specified only at startup, after that we respect the prefs
   if (entries || prefs.get('popup.autoResort')) {
     installed.append(...sortStyles(entries || [...installed.children]));

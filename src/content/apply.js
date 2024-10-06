@@ -1,8 +1,8 @@
 import * as msg from '/js/msg-base';
 import {API, apiPortDisconnect} from '/js/msg-base';
-import StyleInjector from './style-injector';
+import * as styleInjector from './style-injector';
 
-// TODO: handle INJECTED = 1 in rollup?
+// TODO: handle INJECTED = 1 in webpack
 
 let isTab = !chrome.tabs || location.pathname !== '/popup.html';
 const own = /** @type {Injection} */{
@@ -17,11 +17,7 @@ const isXml = document instanceof XMLDocument;
 const CHROME = 'app' in chrome;
 const SYM_ID = 'styles';
 const isUnstylable = !CHROME && isXml;
-const styleInjector = StyleInjector({
-  compare: (a, b) => calcOrder(a) - calcOrder(b),
-  onUpdate: onInjectorUpdate,
-});
-const clone = __ENTRY !== 'content'
+const clone = 0 && process.env.PAGE // TODO: ensure deepCopy is defined first
   ? deepCopy /* global deepCopy */// will be used in extension context
   : val => typeof val === 'object' && val ? JSON.parse(JSON.stringify(val)) : val;
 const isFrame = window !== parent;
@@ -75,6 +71,7 @@ if (mqDark) {
 }
 
 // Declare all vars before init() or it'll throw due to "temporal dead zone" of const/let
+styleInjector.init(onInjectorUpdate, (a, b) => calcOrder(a) - calcOrder(b));
 init();
 
 // the popup needs a check as it's not a tab but can be opened in a tab manually for whatever reason
@@ -122,7 +119,7 @@ async function applyStyles(data) {
   Object.assign(own, window[Symbol.for(SYM_ID)] = data);
   if (!isFrame && own.cfg.top === '') own.cfg.top = location.origin; // used by child frames via parentStyles
   if (!isFrame && own.cfg.dark !== mqDark.matches) mqDark.onchange(mqDark);
-  if (styleInjector.list.length) styleInjector.replace(own);
+  if (styleInjector.list.length) styleInjector.apply(own, true);
   else if (!own.cfg.off) styleInjector.apply(own);
   styleInjector.toggle(!own.cfg.off);
 }
@@ -151,7 +148,7 @@ function applyOnMessage(req) {
       return true;
 
     case 'styleDeleted':
-      styleInjector.remove(style.id);
+      styleInjector.removeId(style.id);
       break;
 
     case 'styleUpdated':
@@ -160,9 +157,9 @@ function applyOnMessage(req) {
         API.styles.getSectionsByUrl(matchUrl, style.id).then(res =>
           res.sections.length
             ? styleInjector.apply(res)
-            : styleInjector.remove(style.id));
+            : styleInjector.removeId(style.id));
       } else {
-        styleInjector.remove(style.id);
+        styleInjector.removeId(style.id);
       }
       break;
 
@@ -204,7 +201,7 @@ function updateConfig({cfg}) {
     if (k === 'off') updateDisableAll();
     else if (k === 'order') styleInjector.sort();
     else if (k === 'top') updateExposeIframes();
-    else styleInjector.config(own.cfg);
+    else styleInjector.updateConfig(own.cfg);
   }
 }
 

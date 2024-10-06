@@ -5,6 +5,7 @@ import {API} from '/js/msg';
 import {MF_ICON, tryRegExp, URLS} from '/js/toolbox';
 import editor from './editor';
 import {helpPopup} from './util';
+import './regexp-tester.css';
 
 const cachedRegexps = new Map();
 const inputs = editor.regexps;

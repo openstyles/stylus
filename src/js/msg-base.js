@@ -1,5 +1,6 @@
 /* global TDM */// apply.js - used only in non-bg context
 
+export const isBg = process.env.PAGE === 'background';
 const TARGETS = {
   __proto: null,
   all: ['both', 'tab', 'extension'],
@@ -145,7 +146,7 @@ async function sendRetry(m) {
   }
 }
 
-export const apiHandler = __ENTRY !== 'background' && {
+export const apiHandler = !isBg && {
   get: ({name: path}, name) => new Proxy(
     Object.defineProperty(() => {}, 'name', {value: path ? path + '.' + name : name}),
     apiHandler),
@@ -153,6 +154,6 @@ export const apiHandler = __ENTRY !== 'background' && {
     (bgReadying ? sendRetry : apiSend)({method: 'invokeAPI', path, args}),
 };
 
-export const API = __ENTRY === 'background'
+export const API = isBg
   ? self.API
   : self.API = new Proxy({path: ''}, apiHandler);

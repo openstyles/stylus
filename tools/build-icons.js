@@ -30,7 +30,7 @@ const SVG_MAP = Object.entries({
 });
 const SVG_DIR = ROOT + 'images/icons/';
 const CSS_FILE = ROOT + 'css/global.css';
-const CSS_FONT = ROOT + 'css/icons.ttf';
+const CSS_FONT = ROOT + 'assets/icons.ttf';
 const CMT = '/*AUTO-GENERATED-ICON*/';
 const CMT_RANGE = '/*AUTO-GENERATED-ICON-RANGE*/';
 const CSS_ICON = `${CMT} .i-$NAME::after { content: "$CHAR"; }`;

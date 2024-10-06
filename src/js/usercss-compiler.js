@@ -20,7 +20,7 @@ const BUILDERS = Object.assign(Object.create(null), {
 
   stylus: {
     pre(source, vars) {
-      importScripts('stylus-lang-bundle.js'); /* global StylusRenderer */
+      importScripts('stylus-lang.js'); /* global StylusRenderer */
       return new Promise((resolve, reject) => {
         const varDef = Object.keys(vars).map(key => `${key} = ${vars[key].value};\n`).join('');
         new StylusRenderer(varDef + source)
@@ -108,7 +108,7 @@ const BUILDERS = Object.assign(Object.create(null), {
    (not a problem currently as this code runs in a worker so `vars` is just a copy)
  * @returns {Promise<{sections, errors}>}
  */
-export async function compileUsercss(preprocessor, code, vars) {
+export default async function compileUsercss(preprocessor, code, vars) {
   let builder = BUILDERS[preprocessor];
   if (!builder) {
     builder = BUILDERS.default;
@@ -130,7 +130,7 @@ export async function compileUsercss(preprocessor, code, vars) {
     });
     await builderChain;
   }
-  importScripts('moz-parser.js'); /* global extractSections */
+  importScripts('moz-parser.js', 'parserlib.js'); /* global extractSections */
   const res = extractSections({code});
   if (builder.post) {
     builder.post(res.sections, vars);

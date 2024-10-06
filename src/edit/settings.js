@@ -9,6 +9,7 @@ import editor from './editor';
 import {showLintConfig} from './linter-dialogs';
 import showKeymapHelp from './show-keymap-help';
 import {createHotkeyInput, helpPopup} from './util';
+import './settings.css';
 
 // TODO: allow the user to customize which options are always shown
 // TODO: decide which options are shown by default

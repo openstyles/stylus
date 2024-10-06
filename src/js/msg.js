@@ -1,5 +1,6 @@
+/** Don't use this file in content script context! */
 import browser from './browser';
-import {apiHandler, unwrap} from './msg-base';
+import {apiHandler, isBg, unwrap} from './msg-base';
 import {deepCopy, getOwnTab} from './toolbox';
 
 export * from './msg-base';
@@ -8,8 +9,7 @@ const needsTab = [
   'updateIconBadge',
   'styleViaAPI',
 ];
-
-export let bg = __ENTRY === 'background' ? self : chrome.extension.getBackgroundPage();
+export let bg = isBg ? self : chrome.extension.getBackgroundPage();
 
 async function invokeAPI(path, args) {
   let tab = false;
@@ -27,7 +27,7 @@ export function sendTab(tabId, data, options, target = 'tab') {
   return unwrap(browser.tabs.sendMessage(tabId, {data, target}, options));
 }
 
-if (__ENTRY !== 'background') {
+if (!isBg) {
   const {apply} = apiHandler;
   apiHandler.apply = async (fn, thisObj, args) => {
     if (bg === null) bg = await browser.runtime.getBackgroundPage().catch(() => {}) || false;

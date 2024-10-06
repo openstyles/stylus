@@ -4,12 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title i18n="+optionsHeading">Stylus </title>
-  <link href="css/icons.ttf" rel="preload" as="font" crossorigin="anonymous">
-  <link href="css/global.css" rel="stylesheet">
-  <link href="css/global-dark.css" rel="stylesheet"> <!-- https://crbug.com/1298600 -->
-  <link href="options/onoffswitch.css" rel="stylesheet">
-  <link href="options/options.css" rel="stylesheet">
-  <script src="options/index.js" type="module"></script>
+  <link href="assets/icons.ttf" rel="preload" as="font" crossorigin="anonymous">
+  <%= htmlWebpackPlugin.tags.headTags %>
 
   <template data-id="shortcutsFF">
     <p style="line-height: 1.5" i18n="shortcutsNoteFF"></p>

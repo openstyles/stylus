@@ -1,9 +1,39 @@
 import {$} from '/js/dom';
-import CodeMirror from 'codemirror';
 import {UA, deepMerge} from '/js/toolbox';
 import editor from './editor';
 import * as prefs from '/js/prefs';
 import {t} from '/js/localization';
+import CodeMirror from 'codemirror';
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/addon/comment/comment';
+import 'codemirror/addon/dialog/dialog';
+import 'codemirror/addon/dialog/dialog.css';
+import 'codemirror/addon/edit/closebrackets';
+import 'codemirror/addon/edit/matchbrackets';
+import 'codemirror/addon/fold/brace-fold';
+import 'codemirror/addon/fold/comment-fold';
+import 'codemirror/addon/fold/foldcode';
+import 'codemirror/addon/fold/foldgutter';
+import 'codemirror/addon/fold/foldgutter.css';
+import 'codemirror/addon/fold/indent-fold';
+import 'codemirror/addon/hint/anyword-hint';
+import 'codemirror/addon/hint/css-hint';
+import 'codemirror/addon/hint/show-hint';
+import 'codemirror/addon/hint/show-hint.css';
+import 'codemirror/addon/lint/lint';
+import 'codemirror/addon/lint/lint.css';
+import 'codemirror/addon/scroll/annotatescrollbar';
+import 'codemirror/addon/search/matchesonscrollbar';
+import 'codemirror/addon/search/matchesonscrollbar.css';
+import 'codemirror/addon/search/searchcursor';
+import 'codemirror/addon/selection/active-line';
+import 'codemirror/keymap/emacs';
+import 'codemirror/keymap/sublime';
+import 'codemirror/keymap/vim';
+import 'codemirror/mode/css/css';
+import 'codemirror/mode/stylus/stylus';
+import '/vendor-overwrites/codemirror-addon/match-highlighter.js';
+import './codemirror-default.css';
 
 export const extraKeys = Object.assign(CodeMirror.defaults.extraKeys || {}, {
   // independent of current keyMap; some are implemented only for the edit page

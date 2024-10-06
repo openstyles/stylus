@@ -27,7 +27,7 @@ const importScriptsOrig = self.importScripts;
 self.importScripts = importScripts;
 
 export function importScripts(...urls) {
-  urls = urls.map(u => !loadedUrls.includes(u = `/${__JS}/${u}`) && u).filter(Boolean);
+  urls = urls.map(u => !loadedUrls.includes(u = `/${process.env.JS}/${u}`) && u).filter(Boolean);
   if (urls.length) {
     loadedUrls.push(...urls);
     importScriptsOrig(...urls);

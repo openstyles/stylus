@@ -34,7 +34,7 @@ const PLUGINS = [
   copyAndWatch([
     'manifest.json',
     '_locales',
-    'css/icons.ttf',
+    'assets/icons.ttf',
     'images/eyedropper',
     'images/icon',
     'npm:less/dist/less.min.js -> less.js',
