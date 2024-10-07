@@ -1,4 +1,4 @@
-import browser from '/js/browser';
+import {browserWindows} from '/js/toolbox';
 
 export const bgReady = self.bgReady = {};
 bgReady.styles = new Promise(r => (bgReady._resolveStyles = r));
@@ -16,7 +16,15 @@ export const uuidIndex = Object.assign(new Map(), {
   },
 });
 
-export let isVivaldi = chrome.app ? null : false;
+export let isVivaldi = !!(browserWindows && chrome.app) && (async () => {
+  const wnd = (await browserWindows.getAll())[0] ||
+    await new Promise(resolve => browserWindows.onCreated.addListener(function onCreated(w) {
+      browserWindows.onCreated.removeListener(onCreated);
+      resolve(w);
+    }));
+  isVivaldi = wnd && !!(wnd.vivExtData || wnd.extData);
+  return isVivaldi;
+})();
 
 export function addAPI(methods) {
   for (const [key, val] of Object.entries(methods)) {
@@ -27,9 +35,4 @@ export function addAPI(methods) {
       API[key] = val;
     }
   }
-}
-
-export async function detectVivaldi() {
-  const wnd = await browser.windows.getCurrent();
-  return (isVivaldi = wnd && !!(wnd.vivExtData || wnd.extData));
 }

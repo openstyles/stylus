@@ -1,5 +1,4 @@
-import messageBox from '/js/dlg/message-box';
-import {$, $create, $createLink} from '/js/dom';
+import {$, $create, $createLink, messageBox} from '/js/dom';
 import {t} from '/js/localization';
 import {chromeSync} from '/js/storage-util';
 import {tryJSONparse} from '/js/toolbox';
@@ -17,11 +16,15 @@ let isStylelint;
 let linter;
 let popup;
 
-export async function showLintConfig() {
+$('#lint-help').onclick = showLintHelp;
+$('#linter-settings', t.template.EditorSettings).onclick = showLintConfig;
+
+async function showLintConfig() {
   linter = await getLinter();
   if (!linter) {
     return;
   }
+  // TODO: replace with JSON.parse()
   await import('/js/jsonlint-bundle');
   const config = await chromeSync.getLZValue(chromeSync.LZ_KEY[linter]);
   const title = t('linterConfigPopupTitle', isStylelint ? 'Stylelint' : 'CSSLint');
@@ -97,7 +100,7 @@ export async function showLintConfig() {
   popup.onClose.add(onConfigClose);
 }
 
-export async function showLintHelp() {
+async function showLintHelp() {
   const linter = await getLinter();
   const baseUrl = linter === 'stylelint'
     ? 'https://stylelint.io/user-guide/rules/'

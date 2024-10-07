@@ -46,8 +46,8 @@ const PLUGINS = [
   alias({
     entries: [
       {find: /^\//, replacement: path.resolve('src') + '/'},
-      {find: './fs-drive', replacement: SHIM + 'empty.js'},
-      {find: 'fs', replacement: SHIM + 'empty.js'},
+      {find: './fs-drive', replacement: SHIM + 'null.js'},
+      {find: 'fs', replacement: SHIM + 'null.js'},
       {find: 'path', replacement: SHIM + 'path.js'},
       {find: 'url', replacement: SHIM + 'url.js'},
     ],

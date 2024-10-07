@@ -1,5 +1,5 @@
 import browser from '/js/browser';
-import {$create} from '/js/dom';
+import {$, $create} from '/js/dom';
 import {t} from '/js/localization';
 import {API} from '/js/msg';
 import {MF_ICON, tryRegExp, URLS} from '/js/toolbox';
@@ -14,6 +14,8 @@ let isWatching = false;
 let popup;
 let note;
 
+$('#testRE').onclick = () => toggle(true);
+
 ['add', 'delete'].forEach((key, i) => {
   const fn = inputs[key];
   inputs[key] = el => {
@@ -26,7 +28,7 @@ let note;
   };
 });
 
-export function toggle(state = !popup) {
+function toggle(state = !popup) {
   if (state && !popup) {
     if (!isWatching) {
       isWatching = true;
@@ -44,7 +46,7 @@ export function toggle(state = !popup) {
   }
 }
 
-export async function update() {
+async function update() {
   if (!popup) {
     unwatch();
     return;

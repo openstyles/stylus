@@ -1,4 +1,4 @@
-import {$$, $create} from '/js/dom';
+import {$, $$, $create} from '/js/dom';
 import {t} from '/js/localization';
 import * as prefs from '/js/prefs';
 import {clipString, stringAsRegExp} from '/js/toolbox';
@@ -6,7 +6,7 @@ import CodeMirror from 'codemirror';
 import {extraKeys} from './codemirror-default';
 import {helpPopup} from './util';
 
-export default function showKeymapHelp() {
+$('#keyMap-help', t.template.EditorSettings).onclick = function showKeymapHelp() {
   const PREF = 'editor.keyMap';
   const keyMap = mergeKeyMaps({}, prefs.get(PREF), extraKeys);
   const keyMapSorted = Object.keys(keyMap)
@@ -110,4 +110,4 @@ export default function showKeymapHelp() {
     });
     return merged;
   }
-}
+};

@@ -1,8 +1,7 @@
-import messageBox from '/js/dlg/message-box';
-import {$, $create, dom} from '/js/dom';
-import {installed} from '/js/manage';
-import * as prefs from '/js/prefs';
+import {$, $create, dom, messageBox} from '/js/dom';
 import {t} from '/js/localization';
+import {installed} from '.';
+import * as prefs from '/js/prefs';
 import {UCD} from '/js/toolbox';
 
 const sorter = (() => {

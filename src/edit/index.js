@@ -1,15 +1,11 @@
 import {$, $$} from '/js/dom';
 import {t} from '/js/localization';
 import * as prefs from '/js/prefs';
-import Autocomplete from './autocomplete';
+import '/js/themer';
 import CompactHeader from './compact-header';
-import Drafts from './drafts';
 import editor from './editor';
 import EditorHeader from './editor-header';
-import GlobalSearch from './global-search';
-import {showLintHelp} from './linter-dialogs';
 import linterMan from './linter-manager';
-import * as regexpTester from './regexp-tester';
 import SectionsEditor from './sections-editor';
 import SourceEditor from './source-editor';
 import styleReady from './style-ready';
@@ -29,17 +25,13 @@ styleReady.then(async () => {
   await (editor.isUsercss ? SourceEditor : SectionsEditor)();
   editor.dirty.onChange(editor.updateDirty);
   prefs.subscribe('editor.linter', () => linterMan.run());
-  Autocomplete();
   CompactHeader();
-  Drafts();
-  GlobalSearch();
+  import('./lazy-init');
   // enabling after init to prevent flash of validation failure on an empty name
   $('#name').required = !editor.isUsercss;
   $('#save-button').onclick = editor.save;
   $('#cancel-button').onclick = editor.cancel;
-  $('#lint-help').onclick = showLintHelp;
   $('#testRE').hidden = !editor.style.sections.some(({regexps: r}) => r && r.length);
-  $('#testRE').onclick = () => regexpTester.toggle(true);
   const elSec = $('#sections-list');
   const elToc = $('#toc');
   const moDetails = new MutationObserver(([{target: sec}]) => {

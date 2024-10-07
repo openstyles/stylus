@@ -1,5 +1,4 @@
-import messageBox from '/js/dlg/message-box';
-import {$, $create, $remove} from '/js/dom';
+import {$, $create, $remove, messageBox} from '/js/dom';
 import {t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';

@@ -1,60 +1,62 @@
-import {$, $$, $remove, getEventKeyName, moveFocus} from '/js/dom';
+import {$, $$, $remove, configDialog, getEventKeyName, moveFocus} from '/js/dom';
 import {t} from '/js/localization';
 import {API} from '/js/msg';
 import {getActiveTab} from '/js/toolbox';
 import {resortEntries, tabURL} from '.';
+import * as hotkeys from './hotkeys';
 
 const menu = $('#menu');
 const menuExclusions = [];
-const Events = {
-  configure(event, entry) {
-    if (!this.target) {
-      const styleP = API.styles.get(entry.styleId);
-      return import('./hotkeys').then(hotkeys =>
-        hotkeys.pause(async () =>
-          (await import('/js/dlg/config-dialog')).default(await styleP)));
-    } else {
-      Events.openURLandHide.call(this, event);
-    }
-  },
-  maybeEdit(event) {
-    if (!(
-      event.button === 0 && (event.ctrlKey || event.metaKey) ||
-      event.button === 1 ||
-      event.button === 2)) {
-      return;
-    }
-    // open an editor on middleclick
-    const el = event.target;
-    if (el.matches('.entry, .style-edit-link') || el.closest('.style-name')) {
-      this.onmouseup = () => $('.style-edit-link', this).click();
-      this.oncontextmenu = event => event.preventDefault();
-      event.preventDefault();
-    }
-  },
-  async openEditor(event, entry) {
+
+export function configure(event, entry) {
+  if (!this.target) {
+    hotkeys.pause(async () => configDialog(await API.styles.get(entry.styleId)));
+  } else {
+    openURLandHide.call(this, event);
+  }
+}
+
+export function maybeEdit(event) {
+  if (!(
+    event.button === 0 && (event.ctrlKey || event.metaKey) ||
+    event.button === 1 ||
+    event.button === 2)) {
+    return;
+  }
+  // open an editor on middleclick
+  const el = event.target;
+  if (el.matches('.entry, .style-edit-link') || el.closest('.style-name')) {
+    this.onmouseup = () => $('.style-edit-link', this).click();
+    this.oncontextmenu = event => event.preventDefault();
     event.preventDefault();
-    await API.openEditor(this.search || {id: entry.styleId});
-    window.close();
-  },
-  async openManager(event) {
-    event.preventDefault();
-    const isSearch = tabURL && (event.shiftKey || event.button === 2 || event.detail === 'site');
-    await API.openManage(isSearch ? {search: tabURL, searchMode: 'url'} : {});
-    window.close();
-  },
-  async openURLandHide(event) {
-    event.preventDefault();
-    await API.openURL({
-      url: this.href || this.dataset.href,
-      index: (await getActiveTab()).index + 1,
-    });
-    window.close();
-  },
-  toggleUrlLink({type}) {
-    this.parentElement.classList.toggle('url()', type === 'mouseenter' || type === 'focus');
-  },
-};
+  }
+}
+
+export async function openEditor(event, entry) {
+  event.preventDefault();
+  await API.openEditor(this.search || {id: entry.styleId});
+  window.close();
+}
+
+export async function openManager(event) {
+  event.preventDefault();
+  const isSearch = tabURL && (event.shiftKey || event.button === 2 || event.detail === 'site');
+  await API.openManage(isSearch ? {search: tabURL, searchMode: 'url'} : {});
+  window.close();
+}
+
+export async function openURLandHide(event) {
+  event.preventDefault();
+  await API.openURL({
+    url: this.href || this.dataset.href,
+    index: (await getActiveTab()).index + 1,
+  });
+  window.close();
+}
+
+export function toggleUrlLink({type}) {
+  this.parentElement.classList.toggle('url()', type === 'mouseenter' || type === 'focus');
+}
 
 const GlobalRoutes = {
   '#menu [data-cmd]'() {
@@ -84,7 +86,7 @@ const EntryRoutes = {
     await API.styles.toggle(entry.styleId, this.checked);
     resortEntries();
   },
-  '.configure': Events.configure,
+  '.configure': configure,
   '.menu-button'(event, entry) {
     if (!menuExclusions.length) menuInit();
     const exc = entry.styleMeta.exclusions || [];
@@ -100,13 +102,13 @@ const EntryRoutes = {
     $('header', menu).textContent = $('.style-name', entry).textContent;
     moveFocus(menu, 0);
   },
-  '.style-edit-link': Events.openEditor,
+  '.style-edit-link': openEditor,
   '.regexp-problem-indicator'(event, entry) {
     const info = t.template.regexpProblemExplanation.cloneNode(true);
     $remove('#' + info.id);
     entry.appendChild(info);
   },
-  '#regexp-explanation a': Events.openURLandHide,
+  '#regexp-explanation a': openURLandHide,
   '#regexp-explanation button'() {
     $('#regexp-explanation').remove();
   },
@@ -163,5 +165,3 @@ function menuOnKey(e) {
     }
   }
 }
-
-export default Events;

@@ -238,6 +238,8 @@ overrides:
   - files:
     - tools/**/*
     - ./*.js
+    excludedFiles:
+      - tools/shim/*.js
     env:
       node: true
       browser: false
@@ -246,6 +248,7 @@ overrides:
 
   - files:
     - src/**/*.js
+    - tools/shim/*.js
     - "*.mjs"
     parserOptions:
       sourceType: module

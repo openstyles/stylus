@@ -1,6 +1,5 @@
 import colorMimicry from '/js/color/color-mimicry';
-import messageBox from '/js/dlg/message-box';
-import {$, $create} from '/js/dom';
+import {$, $create, messageBox} from '/js/dom';
 import {t} from '/js/localization';
 import * as msg from '/js/msg';
 import CodeMirror from 'codemirror';

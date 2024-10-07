@@ -1,22 +1,31 @@
+import {CodeMirror} from '/edit/codemirror-default';
 import CODEMIRROR_THEMES from '/edit/codemirror-themes';
 import compareVersion from '/js/cmpver';
-import messageBox from '/js/dlg/message-box';
-import {$, $$, $$remove, $create, $createLink, showSpinner} from '/js/dom';
+import {
+  $, $$, $$remove, $create, $createLink, configDialog, messageBox, showSpinner,
+} from '/js/dom';
 import {t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {styleCodeEmpty} from '/js/sections-util';
-import {clipString, closeCurrentTab, deepEqual, sessionStore, tryURL, UCD, URLS} from '/js/toolbox';
-import CodeMirror from 'codemirror';
+import {
+  clipString, closeCurrentTab, deepEqual, sessionStore, tryURL, UCD, URLS,
+} from '/js/toolbox';
+import DirectDownloader from './direct-downloader';
+import PortDownloader from './port-downloader';
+import './install-usercss.css';
 
 const CFG_SEL = '#message-box.config-dialog';
 let cfgShown = true;
 
 let cm;
+/** @type function(?options):Promise<?string> */
+let getData;
 let initialUrl;
 let installed;
 let installedDup;
 let liveReload;
+let sectionsPromise;
 let tabId;
 let vars;
 
@@ -29,38 +38,63 @@ document.on('visibilitychange', () => {
 
 setTimeout(() => !cm && showSpinner($('#header')), 200);
 
-/*
- * Preinit starts to download as early as possible,
- * then the critical rendering path scripts are loaded in html,
- * then the meta of the downloaded code is parsed in the background worker,
- * then CodeMirror scripts/css are added so they can load while the worker runs in parallel,
- * then the meta response arrives from API and is immediately displayed in CodeMirror,
- * then the sections of code are parsed in the background worker and displayed.
- */
 (async function init() {
-  const theme = prefs.get('editor.theme');
-  if (theme !== 'default') {
-    document.head.append($create('style', CODEMIRROR_THEMES[theme] || ''));
+  /** @type {FileSystemFileHandle} */
+  const fsh = window.fsh;
+  const params = new URLSearchParams(location.search);
+  tabId = params.has('tabId') ? Number(params.get('tabId')) : -1;
+  initialUrl = fsh ? fsh._url : params.get('updateUrl');
+
+  /** @type {Promise<?string>} */
+  let firstGet;
+  if (fsh) {
+    let oldCode = null;
+    getData = async () => {
+      const code = await (await fsh.getFile()).text();
+      if (oldCode !== code) return (oldCode = code);
+    };
+    firstGet = getData();
+  } else if (!initialUrl) {
+    if (history.length > 1) history.back();
+    else closeCurrentTab();
+  } else if (tabId < 0) {
+    getData = DirectDownloader();
+    firstGet = API.usercss.getInstallCode(initialUrl)
+      .then(code => code || getData())
+      .catch(getData);
+  } else {
+    getData = PortDownloader();
+    firstGet = getData({force: true});
   }
-  ({tabId, initialUrl} = preinit);
-  liveReload = initLiveReload();
-  preinit.tpl.then(el => {
+
+  const hasFileAccessP = API.data.get('hasFileAccess');
+  const tplP = t.fetchTemplate('/edit.html', 'styleSettings');
+  tplP.then(el => {
     el.firstChild.remove(); // update URL
     el.lastChild.remove(); // buttons
     $('#styleSettings').append(el);
   });
 
-  const [
-    {dup, style, error, sourceCode},
-    hasFileAccess,
-  ] = await Promise.all([
-    preinit.ready,
-    API.data.get('hasFileAccess'),
-    preinit.tpl,
+  let dup, style, error, sourceCode;
+  try {
+    sourceCode = await firstGet;
+    ({dup, style} = await API.usercss.build({sourceCode, checkDup: true, metaOnly: true}));
+    sectionsPromise = API.usercss.buildCode(style);
+  } catch (e) {
+    error = e;
+  }
+  liveReload = initLiveReload();
+  const [hasFileAccess] = await Promise.all([
+    hasFileAccessP,
+    prefs.ready,
   ]);
   if (!style && sourceCode == null) {
     messageBox.alert(isNaN(error) ? `${error}` : 'HTTP Error ' + error, 'pre');
     return;
+  }
+  const theme = prefs.get('editor.theme');
+  if (theme !== 'default') {
+    document.head.append($create('style', CODEMIRROR_THEMES[theme] || '')); // FIXME
   }
   cm = CodeMirror($('.main'), {
     value: sourceCode || style.sourceCode,
@@ -100,12 +134,12 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
   $('button.install').onclick = () => {
     shouldShowConfig();
     (!dup ?
-      Promise.resolve(true) :
-      messageBox.confirm($create('span', t('styleInstallOverwrite', [
-        data.name + (dup.customName ? ` (${dup.customName})` : ''),
-        dupData.version,
-        data.version,
-      ])))
+        Promise.resolve(true) :
+        messageBox.confirm($create('span', t('styleInstallOverwrite', [
+          data.name + (dup.customName ? ` (${dup.customName})` : ''),
+          dupData.version,
+          data.version,
+        ])))
     ).then(ok => ok &&
       API.usercss.install(style)
         .then(install)
@@ -154,17 +188,17 @@ function updateMeta(style, dup = installedDup) {
 
   const installButtonLabel = t(
     installed ? 'installButtonInstalled' :
-    !dup ? 'installButton' :
-    versionTest > 0 ? 'installButtonUpdate' : 'installButtonReinstall'
+      !dup ? 'installButton' :
+        versionTest > 0 ? 'installButtonUpdate' : 'installButtonReinstall'
   );
   document.title = `${installButtonLabel} ${data.name}`;
 
   $('.install').textContent = installButtonLabel;
   $('.install').classList.add(
     installed ? 'installed' :
-    !dup ? 'install' :
-    versionTest > 0 ? 'update' :
-    'reinstall');
+      !dup ? 'install' :
+        versionTest > 0 ? 'update' :
+          'reinstall');
   if (dup && dup.updateUrl) {
     $('.set-update-url').title = t('installUpdateFrom', dup.updateUrl).replace(/\S+$/, '\n$&');
   }
@@ -246,7 +280,7 @@ function updateMeta(style, dup = installedDup) {
   }
 
   async function openConfigDialog() {
-    (await import('/js/dlg/config-dialog')).default(style);
+    configDialog(style);
   }
 }
 
@@ -258,7 +292,7 @@ function showError(err) {
   if (err[0]) {
     let i;
     if ((i = err[0].index) >= 0 ||
-        (i = err[0].offset) >= 0) {
+      (i = err[0].offset) >= 0) {
       cm.jumpToPos(cm.posFromIndex(i));
       cm.setSelections(err.map(e => {
         const pos = e.index >= 0 && cm.posFromIndex(e.index) || // usercss meta parser
@@ -315,14 +349,14 @@ function enablePostActions() {
 }
 
 async function getAppliesTo(style) {
-  if (style.sectionsPromise) {
+  if (sectionsPromise) {
     try {
-      style.sections = await style.sectionsPromise;
+      style.sections = (await sectionsPromise).sections;
     } catch (error) {
       showBuildError(error);
       return [];
     } finally {
-      delete style.sectionsPromise;
+      sectionsPromise = null;
     }
   }
   let numGlobals = 0;
@@ -345,7 +379,7 @@ function adjustCodeHeight() {
   const scroller = cm.display.scroller;
   const prevWindowHeight = adjustCodeHeight.prevWindowHeight;
   if (scroller.scrollHeight === scroller.clientHeight ||
-      prevWindowHeight && window.innerHeight !== prevWindowHeight) {
+    prevWindowHeight && window.innerHeight !== prevWindowHeight) {
     adjustCodeHeight.prevWindowHeight = window.innerHeight;
     cm.setSize(null, $('.main').offsetHeight - $('.warnings').offsetHeight);
   }
@@ -355,8 +389,7 @@ function initLiveReload() {
   const DELAY = 500;
   let isEnabled = false;
   let timer = 0;
-  const getData = preinit.getData;
-  let sequence = preinit.ready;
+  let sequence = Promise.resolve();
   return {
     get enabled() {
       return isEnabled;
@@ -377,6 +410,7 @@ function initLiveReload() {
       }
     },
   };
+
   function check(opts) {
     getData(opts)
       .then(update, logError)
@@ -385,16 +419,20 @@ function initLiveReload() {
         start();
       });
   }
+
   function logError(error) {
     console.warn(t('liveReloadError', error));
   }
+
   function start() {
     timer = timer || setTimeout(check, DELAY);
   }
+
   function stop() {
     clearTimeout(timer);
     timer = 0;
   }
+
   function update(code) {
     if (code == null) return;
     sequence = sequence.catch(console.error).then(() => {

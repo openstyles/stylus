@@ -1,6 +1,4 @@
-'use strict';
-
-exports.dirname = path => {
+export function dirname(path) {
   const dir = path.replace(/[/\\][^/\\]+[/\\]?$/, '');
   return dir === path ? '.' : dir;
-};
+}

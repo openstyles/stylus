@@ -1,12 +1,8 @@
-import '/content/apply.js';
+import '/content/apply';
 import {$, dom} from './dom-base';
-import DomOnLoad from './dom-on-load';
 import {waitForSelector} from './dom-util';
 import * as prefs from './prefs';
-import './themer';
 import {FIREFOX, UA} from './toolbox';
-import '/css/global.css';
-import '/css/global-dark.css';
 
 export * from './dom-base';
 export * from './dom-util';
@@ -66,5 +62,5 @@ prefs.ready.then(() => {
     });
     prefs.ready.then(() => dom.setHWProp(prefs.get(HWprefId)));
   }
-  window.on('load', DomOnLoad, {once: true});
+  window.on('load', () => import('./dom-on-load'), {once: true});
 }

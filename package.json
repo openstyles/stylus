@@ -63,7 +63,7 @@
     "update-locales": "tx pull --all && node tools/fix-transifex.js && git commit -m \"update locales\" _locales",
     "update-transifex": "tx push -s",
     "build": "webpack-cli",
-    "watch": "webpack-cli watch",
+    "watch": "webpack-cli watch --node-env DEV",
     "build-chrome": "npm test && node tools/build.js chrome",
     "build-firefox": "npm test && node tools/build.js firefox",
     "build-icons": "node tools/build-icons",

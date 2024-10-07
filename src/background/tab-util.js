@@ -1,12 +1,12 @@
 import browser from '/js/browser';
 import * as msg from '/js/msg';
-import {CHROME, FIREFOX, getActiveTab} from '/js/toolbox';
+import {browserWindows, CHROME, FIREFOX, getActiveTab} from '/js/toolbox';
 import {addAPI, API} from './common';
 import * as prefs from '/js/prefs';
 
 // FF57+ supports openerTabId, but not in Android
 // (detecting FF57 by the feature it added, not navigator.ua which may be spoofed in about:config)
-const HAS_OPENER = (CHROME || window.AbortController) && chrome.windows != null;
+const HAS_OPENER = !!(browserWindows && (CHROME || window.AbortController));
 const EMPTY_TAB = [
   // Chrome and simple forks
   'chrome://newtab/',
@@ -33,7 +33,7 @@ addAPI(/** @namespace API */ {
   async openEditor(params) {
     const u = new URL(chrome.runtime.getURL('edit.html'));
     u.search = new URLSearchParams(params);
-    const wnd = chrome.windows && prefs.get('openEditInWindow');
+    const wnd = browserWindows && prefs.get('openEditInWindow');
     const wndPos = wnd && prefs.get('windowPosition');
     const wndBase = wnd && prefs.get('openEditInWindow.popup') ? {type: 'popup'} : {};
     const ffBug = wnd && FIREFOX; // https://bugzil.la/1271047
@@ -44,7 +44,7 @@ addAPI(/** @namespace API */ {
           currentWindow: null,
           newWindow: wnd && Object.assign({}, wndBase, !ffBug && !retry && wndPos),
         });
-        if (ffBug && !retry) await browser.windows.update(tab.windowId, wndPos);
+        if (ffBug && !retry) await browserWindows.update(tab.windowId, wndPos);
         return tab;
       } catch (e) {}
     }
@@ -118,8 +118,8 @@ export async function openURL({
       url: url !== (tab.pendingUrl || tab.url) && url.includes('#') ? url : undefined,
     });
   }
-  if (newWindow && browser.windows) {
-    return (await browser.windows.create(Object.assign({url}, newWindow))).tabs[0];
+  if (newWindow && browserWindows) {
+    return (await browserWindows.create(Object.assign({url}, newWindow))).tabs[0];
   }
   tab = await getActiveTab() || {url: ''};
   if (tab &&
@@ -142,7 +142,7 @@ async function activateTab(tab, {url, index, openerTabId} = {}) {
   }
   await Promise.all([
     browser.tabs.update(tab.id, options),
-    browser.windows && browser.windows.update(tab.windowId, {focused: true}),
+    browserWindows?.update(tab.windowId, {focused: true}),
     index != null && browser.tabs.move(tab.id, {index}),
   ]);
   return tab;

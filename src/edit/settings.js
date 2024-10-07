@@ -6,8 +6,6 @@ import {debounce, tryURL} from '/js/toolbox';
 import CodeMirror from 'codemirror';
 import CODEMIRROR_THEMES from './codemirror-themes';
 import editor from './editor';
-import {showLintConfig} from './linter-dialogs';
-import showKeymapHelp from './show-keymap-help';
 import {createHotkeyInput, helpPopup} from './util';
 import './settings.css';
 
@@ -23,6 +21,7 @@ for (const [id, init, tpl] of [
   const mo = new MutationObserver(() => {
     mo.disconnect();
     el.append($create('main', t.template[tpl]));
+    t.template[tpl] = undefined;
     init(el);
   });
   mo.observe(el, {attributes: true, attributeFilter: ['open']});
@@ -137,7 +136,6 @@ function StyleSettings(ui) {
 }
 
 function EditorSettings(ui) {
-  //#region Keymap
   // move 'pc' or 'mac' prefix to the end of the displayed label
   const maps = Object.keys(CodeMirror.keyMap)
     .map(name => ({
@@ -168,16 +166,12 @@ function EditorSettings(ui) {
   const selector = $('#editor\\.keyMap', ui);
   selector.textContent = '';
   selector.appendChild(fragment);
-  //#endregion
 
-  //#region Theme
   $('#editor\\.theme', ui).append(...[
     $create('option', {value: 'default'}, t('defaultTheme')),
     ...CODEMIRROR_THEMES.map(s => $create('option', s)),
   ]);
-  //#endregion
 
-  //#region Buttons
   $('#colorpicker-settings', ui).onclick = function (event) {
     event.preventDefault();
     const bounds = this.getBoundingClientRect();
@@ -186,9 +180,6 @@ function EditorSettings(ui) {
     popup.style = `top: ${bounds.bottom}px; left: ${bounds.left}px; right: auto;`;
     $('input', popup).focus();
   };
-  $('#keyMap-help', ui).onclick = showKeymapHelp;
-  $('#linter-settings', ui).onclick = showLintConfig;
-  //#endregion
 
   setupLivePrefs(ui);
   prefs.subscribe('editor.linter', editor.updateLinterSwitch, true);

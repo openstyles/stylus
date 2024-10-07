@@ -1,5 +1,4 @@
-import messageBox from '/js/dlg/message-box';
-import {$create} from '/js/dom';
+import {$create, messageBox} from '/js/dom';
 import {t} from '/js/localization';
 import {API} from '/js/msg';
 import '@eight04/draggable-list/dist/draggable-list.esm.js';

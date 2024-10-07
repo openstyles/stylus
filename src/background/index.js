@@ -7,7 +7,7 @@ import {bgPrefsSet} from './bg-prefs';
 import {broadcast} from './broadcast';
 import broadcastInjectorConfig, {INJECTOR_CONFIG_MAP} from './broadcast-injector-config';
 import * as colorScheme from './color-scheme';
-import {addAPI, API, bgReady, browserCommands, detectVivaldi, isVivaldi} from './common';
+import {addAPI, API, bgReady, browserCommands, isVivaldi} from './common';
 import download from './download';
 import './browser-cmd-hotkeys';
 import './content-scripts';
@@ -45,7 +45,7 @@ addAPI(/** @namespace API */ {
     async get() {
       return {
         isDark: colorScheme.isDark(),
-        isVivaldi: isVivaldi != null ? isVivaldi : await detectVivaldi(),
+        isVivaldi: isVivaldi.then ? await isVivaldi : isVivaldi,
       };
     },
     set(info) {

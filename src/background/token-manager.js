@@ -1,7 +1,7 @@
 import browser from '/js/browser';
-import {clamp, FIREFOX, URLS} from '/js/toolbox';
+import {browserWindows, clamp, FIREFOX, URLS} from '/js/toolbox';
 import {chromeLocal} from '/js/storage-util';
-import {detectVivaldi, isVivaldi} from './common';
+import {isVivaldi} from './common';
 import {waitForTabUrl} from './tab-util';
 
 const AUTH = {
@@ -59,7 +59,7 @@ const AUTH = {
 const NETWORK_LATENCY = 30; // seconds
 const DEFAULT_REDIRECT_URI = 'https://clngdbkpkpeebahjckkjfobafhncgmne.chromiumapp.org/';
 
-let alwaysUseTab = !chrome.windows || (FIREFOX ? false : null);
+let alwaysUseTab = !browserWindows || (FIREFOX ? false : null);
 
 class TokenError extends Error {
   constructor(provider, message) {
@@ -158,8 +158,8 @@ async function authUser(keys, name, interactive = false, hooks = null) {
   const url = `${provider.authURL}?${new URLSearchParams(query)}`;
   const width = clamp(screen.availWidth - 100, 400, 800);
   const height = clamp(screen.availHeight - 100, 200, 800);
-  const wnd = !alwaysUseTab && await browser.windows.getLastFocused();
-  const finalUrl = await (await import('webext-launch-web-auth-flow')).launchWebAuthFlow({
+  const wnd = !alwaysUseTab && await browserWindows.getLastFocused();
+  const finalUrl = await (await import('./sync-deps')).launchWebAuthFlow({
     url,
     alwaysUseTab,
     interactive,
@@ -237,7 +237,7 @@ async function postQuery(url, body) {
 
 async function detectVivaldiWebRequestBug() {
   // Workaround for https://github.com/openstyles/stylus/issues/1182
-  if (isVivaldi == null ? await detectVivaldi() === false : !isVivaldi) {
+  if (!(isVivaldi.then ? await isVivaldi : isVivaldi)) {
     return false;
   }
   let bugged = true;
@@ -246,13 +246,13 @@ async function detectVivaldiWebRequestBug() {
     bugged = url !== TEST_URL;
   };
   chrome.webRequest.onBeforeRequest.addListener(check, {urls: [TEST_URL], types: ['main_frame']});
-  const {tabs: [tab]} = await browser.windows.create({
+  const {tabs: [tab]} = await browserWindows.create({
     type: 'popup',
     state: 'minimized',
     url: TEST_URL,
   });
   await waitForTabUrl(tab.id);
-  chrome.windows.remove(tab.windowId);
+  browserWindows.remove(tab.windowId);
   chrome.webRequest.onBeforeRequest.removeListener(check);
   return bugged;
 }

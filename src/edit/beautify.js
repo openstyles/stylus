@@ -1,7 +1,6 @@
 import {t} from '/js/localization';
 import {$, $create, moveFocus} from '/js/dom';
 import * as prefs from '/js/prefs';
-import {require} from '/js/toolbox';
 import CodeMirror from 'codemirror';
 import {extraKeys} from './codemirror-default';
 import editor from './editor';
@@ -30,7 +29,7 @@ prefs.subscribe('editor.beautify.hotkey', (key, value) => {
  * @param {?} [ui]
  */
 async function beautify(scope, ui = true) {
-  await require(['/vendor-overwrites/beautify/beautify-css-mod']); /* global css_beautify */
+  await import('/vendor-overwrites/beautify/beautify-css-mod'); /* global css_beautify */
   const tabs = prefs.get('editor.indentWithTabs');
   const options = Object.assign(prefs.defaults['editor.beautify'], prefs.get('editor.beautify'));
   options.indent_size = tabs ? 1 : prefs.get('editor.tabSize');

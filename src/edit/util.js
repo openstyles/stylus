@@ -1,5 +1,4 @@
-import messageBox from '/js/dlg/message-box';
-import {$, $$, $create, getEventKeyName, moveFocus} from '/js/dom';
+import {$, $$, $create, getEventKeyName, messageBox, moveFocus} from '/js/dom';
 import {t} from '/js/localization';
 import * as prefs from '/js/prefs';
 import {clipString} from '/js/toolbox';

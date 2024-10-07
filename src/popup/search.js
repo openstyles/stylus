@@ -6,7 +6,7 @@ import {
   clipString, debounce, isEmptyObj, stringAsRegExp, stringAsRegExpStr, tryRegExp, tryURL, UCD, URLS,
 } from '/js/toolbox';
 import {$entry, styleFinder, tabURL} from '.';
-import Events from './events';
+import * as Events from './events';
 import './search.css';
 
 document.body.append(t.template.searchUI);

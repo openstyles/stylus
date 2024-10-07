@@ -18,7 +18,7 @@ let wasDirty = false;
  * @type Editor
  * @namespace Editor
  */
-const editor = {
+const editor = self.editor = {
   dirty,
   isUsercss: false,
   isWindowed: false,
@@ -129,7 +129,7 @@ const editor = {
       name = 'default';
       prefs.set('editor.theme', name);
     } else {
-      css = await fetchText(`/vendor/codemirror/theme/${name}.css`);
+      css = await fetchText(`/vendor/codemirror/theme/${name}.css`); // FIXME
     }
     $('#cm-theme').dataset.theme = name;
     $('#cm-theme').textContent = css;

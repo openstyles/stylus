@@ -1,5 +1,4 @@
-import messageBox from '/js/dlg/message-box';
-import {$, $$, $create, $remove, showSpinner, toggleDataset} from '/js/dom';
+import {$, $$, $create, $remove, messageBox, showSpinner, toggleDataset} from '/js/dom';
 import {t} from '/js/localization';
 import * as msg from '/js/msg';
 import {API} from '/js/msg';
@@ -119,7 +118,7 @@ styleReady.then(() => {
   function timerOn() {
     if (!spinnerTimer) {
       elProgress.textContent = '';
-      spinnerTimer = setTimeout(async () => (spinner = await showSpinner(elProgress)), 250);
+      spinnerTimer = setTimeout(() => (spinner = showSpinner(elProgress)), 250);
     }
   }
 

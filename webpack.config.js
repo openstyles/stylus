@@ -9,11 +9,11 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const {defineVars, stripSourceMap} = require('./tools/util');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const {anyPathSep, defineVars, stripSourceMap, listCodeMirrorThemes} = require('./tools/util');
 
-const DEV = true;
-const BUILD = DEV ? 'DEV' : 'CHROME';
-const IS_PROD = !DEV;
+const BUILD = process.env.NODE_ENV;
+const DEV = BUILD === 'DEV';
 const SRC = `${__dirname}/src/`;
 const DST = path.resolve('dist') + '/';
 const ASSETS = 'assets/';
@@ -22,6 +22,7 @@ const SHIM = path.resolve('tools/shim') + '/';
 const PAGE_BG = 'background';
 const PAGES = [
   'edit',
+  'install-usercss',
   'options',
   'popup',
   PAGE_BG,
@@ -31,7 +32,7 @@ const LIB_EXPORT_DEFAULT = {output: {library: {export: 'default'}}};
 /** @type {webpack.} */
 const CFG = {
   mode: DEV ? 'development' : 'production',
-  devtool: 'inline-source-map',
+  devtool: DEV && 'inline-source-map',
   output: {
     path: DST,
     filename: '[name].js',
@@ -44,8 +45,7 @@ const CFG = {
       '/': SRC,
     },
     fallback: {
-      './fs-drive': SHIM + 'empty.js',
-      'fs': SHIM + 'empty.js',
+      'fs': SHIM + 'null.js',
       'path': SHIM + 'path.js',
       'url': SHIM + 'url.js',
     },
@@ -72,7 +72,7 @@ const CFG = {
           },
         },
       }),
-      new CssMinimizerPlugin(),
+      // new CssMinimizerPlugin(),
     ],
   },
   module: {
@@ -90,6 +90,10 @@ const CFG = {
         use: {loader: 'babel-loader'},
         resolve: {fullySpecified: false},
       },
+      {
+        test: require.resolve('db-to-cloud/lib/drive/fs-drive'),
+        use: [{loader: SHIM + 'null-loader.js'}],
+      },
     ],
   },
   node: false,
@@ -98,7 +102,7 @@ const CFG = {
     maxEntrypointSize: 1e6,
   },
   plugins: [
-    defineVars({ASSETS, JS, BUILD}),
+    defineVars({ASSETS, JS, BUILD, PAGE_BG}),
     new CopyPlugin({
       patterns: [
         {context: SRC + 'content', from: 'install*.js', to: DST + JS, info: {minimized: true}},
@@ -113,12 +117,16 @@ const CFG = {
         ].map(([npm, to]) => ({
           from: require.resolve(npm),
           to: DST + JS + to,
-          transform: stripSourceMap.bind(null, DEV),
+          info: {minimized: true},
+          transform: stripSourceMap,
         })),
       ],
     }),
     // new WebpackPatchBootstrapPlugin(),
   ],
+  stats: {
+    optimizationBailout: true,
+  },
 };
 
 function mergeCfg(ovr, base) {
@@ -181,32 +189,36 @@ function makeContentScript(entry) {
 // fse.emptyDirSync(DST);
 
 module.exports = [
-  ...PAGES.map(p => mergeCfg({
-    entry: {[p]: `/${p}/index.js`},
+  mergeCfg({
+    entry: Object.fromEntries(PAGES.map(p => [p, `/${p}/index`])),
     output: {
       filename: ASSETS + '[name].js',
       chunkFilename: ASSETS + '[name].js',
     },
     optimization: {
       splitChunks: {
-        chunks: 'all',
+        chunks: /^(?!.*[/\\]shim)/,
         cacheGroups: {
           codemirror: {
-            test: /(node_modules[/\\]codemirror|codemirror-(?!factory)).+\.js$/,
+            test: /codemirror([/\\]|-(?!factory)).+\.js$/,
             name: 'codemirror',
           },
-          // common: {
-          //   test: new RegExp(
-          //     `^(${[JS, 'content/'].map(p => SRC + p).join('|')})`
-          //       .replaceAll(/[\\/]/g, /[\\/]/.source),
-          //     'i'),
-          //   name: 'common',
-          // },
+          ...Object.fromEntries([
+            [2, 'common-ui', `^${SRC}(content/|js/(dom|localization|themer))`],
+            [1, 'common', `^${SRC}js/|/lz-string(-unsafe)?/`],
+          ].map(([priority, name, test]) => [name, {
+            test: new RegExp(String.raw`(${anyPathSep(test)})[^./\\]*\.js$`),
+            name,
+            priority,
+          }])),
         },
       },
     },
     plugins: [
-      defineVars({PAGE: p}),
+      defineVars({
+        PAGE: true,
+        CODEMIRROR_THEMES: listCodeMirrorThemes(),
+      }),
       new MiniCssExtractPlugin({
         filename: ASSETS + '[name].css',
         chunkFilename: ASSETS + '[name].css',
@@ -218,24 +230,36 @@ module.exports = [
         //   return ASSETS + c.runtime + '-' + files.map(f => path.basename(f, ext)).join('-') + ext;
         // },
       }),
-      new HtmlWebpackPlugin({
+      ...PAGES.map(p => new HtmlWebpackPlugin({
+        chunks: [p],
         filename: p + '.html',
         template: SRC + p + '.html',
-        inject: false,
         scriptLoading: 'defer',
+        inject: false,
+      })),
+      new BundleAnalyzerPlugin({
+        analyzerMode: 'static',
+        openAnalyzer: false,
+        reportFilename: DST + '.report.html',
       }),
     ],
-  })),
+    resolve: {
+      modules: [
+        SHIM,
+        'node_modules',
+      ],
+    },
+  }),
   // makeLibrary('/content/apply.js'),
-  makeLibrary([
-    '/background/background-worker.js',
-    '/edit/editor-worker.js',
-  ]),
+  // makeLibrary([
+  //   '/background/background-worker.js',
+  //   '/edit/editor-worker.js',
+  // ]),
   // makeLibrary('/js/color/color-converter.js', 'colorConverter'),
   // makeLibrary('/js/csslint/csslint.js', 'CSSLint',
   //   {...LIB_EXPORT_DEFAULT, externals: {'./parserlib': 'parserlib'}}),
   // makeLibrary('/js/csslint/parserlib.js', 'parserlib', LIB_EXPORT_DEFAULT),
   // makeLibrary('/js/meta-parser.js', 'metaParser', LIB_EXPORT_DEFAULT),
   // makeLibrary('/js/moz-parser.js', 'extractSections', LIB_EXPORT_DEFAULT),
-  makeLibrary('/js/usercss-compiler.js', 'compileUsercss', LIB_EXPORT_DEFAULT),
+  // makeLibrary('/js/usercss-compiler.js', 'compileUsercss', LIB_EXPORT_DEFAULT),
 ];

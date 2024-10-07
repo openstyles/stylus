@@ -1,6 +1,6 @@
 /* global TDM */// apply.js - used only in non-bg context
 
-export const isBg = process.env.PAGE === 'background';
+export const isBg = process.env.PAGE && location.pathname === `/${process.env.PAGE_BG}.html`;
 const TARGETS = {
   __proto: null,
   all: ['both', 'tab', 'extension'],

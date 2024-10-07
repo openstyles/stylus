@@ -1,6 +1,5 @@
 import {$} from '/js/dom';
 import {UA, deepMerge} from '/js/toolbox';
-import editor from './editor';
 import * as prefs from '/js/prefs';
 import {t} from '/js/localization';
 import CodeMirror from 'codemirror';
@@ -34,6 +33,8 @@ import 'codemirror/mode/css/css';
 import 'codemirror/mode/stylus/stylus';
 import '/vendor-overwrites/codemirror-addon/match-highlighter.js';
 import './codemirror-default.css';
+
+export {CodeMirror};
 
 export const extraKeys = Object.assign(CodeMirror.defaults.extraKeys || {}, {
   // independent of current keyMap; some are implemented only for the edit page
@@ -170,7 +171,7 @@ prefs.ready.then(() => {
         this.scrollIntoView(pos, rect.height / 2);
       // case 2) inside CM viewport but outside of window viewport so just scroll the window
       } else if (y < 0 || y > innerHeight) {
-        editor.scrollToEditor(this);
+        self.editor?.scrollToEditor(this);
       }
       // Using prototype since our bookmark patch sets cm.setSelection to jumpToPos
       CodeMirror.prototype.setSelection.call(this, pos, end);

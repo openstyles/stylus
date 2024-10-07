@@ -1,10 +1,10 @@
-import messageBox from '/js/dlg/message-box';
-import {$, $$, $create, animateElement, scrollElementIntoView} from '/js/dom';
+import {$, $$, $create, animateElement, messageBox, scrollElementIntoView} from '/js/dom';
 import {t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
+import {styleJSONseemsValid, styleSectionsEqual} from '/js/sections-util';
 import {chromeSync} from '/js/storage-util';
-import {clipString, deepEqual, isEmptyObj, require, RX_META, UA, UCD} from '/js/toolbox';
+import {clipString, deepEqual, isEmptyObj, RX_META, UA, UCD} from '/js/toolbox';
 import {Events} from './events';
 
 Object.assign($('#file-all-styles'), {
@@ -97,10 +97,6 @@ async function importFromFile(file) {
 }
 
 async function importFromString(jsonString) {
-  await require([
-    '/js/storage-util',
-    '/js/sections-util',  /* global styleJSONseemsValid styleSectionsEqual */
-  ]);
   const json = JSON.parse(jsonString);
   const oldStyles = Array.isArray(json) && json.length ? await API.styles.getAll() : [];
   const oldStylesById = new Map(oldStyles.map(style => [style.id, style]));
@@ -357,7 +353,6 @@ async function importFromString(jsonString) {
 /** @param {MouseEvent} e */
 async function exportToFile(e) {
   e.preventDefault();
-  await require(['/js/storage-util']);
   const keepDupSections = e.type === 'contextmenu' || e.shiftKey || e.detail === 'compat';
   const data = [
     Object.assign({

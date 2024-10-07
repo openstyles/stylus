@@ -10,6 +10,8 @@ import {$, $create} from '/js/dom-base';
 import * as msg from '/js/msg';
 import {API} from '/js/msg';
 import {FIREFOX, MF_ICON_EXT, MF_ICON_PATH} from '/js/toolbox';
+import '/css/global.css';
+import '/css/global-dark.css';
 
 (async () => {
   let isDark, isVivaldi;

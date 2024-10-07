@@ -1,3 +1,1 @@
-'use strict';
-
-exports.URL = URL;
+export const {URL} = self;

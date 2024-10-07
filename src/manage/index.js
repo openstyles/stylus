@@ -3,10 +3,13 @@ import {t} from '/js/localization';
 import {API, onExtension} from '/js/msg';
 import * as prefs from '/js/prefs';
 import router from '/js/router';
+import '/js/themer';
 import {CHROME, debounce} from '/js/toolbox';
 import {Events, handleBulkChange, handleVisibilityChange} from './events';
 import {fltMode} from './filters';
 import {showStyles, switchUI} from './render';
+import './manage.css';
+import './manage-newui.css';
 
 t.body();
 
@@ -31,7 +34,7 @@ Object.assign(newUI, {
   },
   renderClass: () => {
     const on = !!newUI.enabled;
-    const el = $('#newUI');
+    const el = $('#newUI'); // FIXME
     $.rootCL.toggle('newUI', on);
     $.rootCL.toggle('oldUI', !on);
     if (on !== !el.media) el.media = on ? '' : '?';
@@ -61,8 +64,8 @@ Object.assign(newUI, {
   installed.on('mouseover', Events.lazyAddEntryTitle, {passive: true});
   installed.on('mouseout', Events.lazyAddEntryTitle, {passive: true});
   $('#sync-styles').onclick =
-  $('#manage-options-button').onclick =
-    router.makeToggle('stylus-options', toggleEmbeddedOptions);
+    $('#manage-options-button').onclick =
+      router.makeToggle('stylus-options', toggleEmbeddedOptions);
   $('#injection-order-button').onclick =
     router.makeToggle('injection-order', null,
       () => import('/injection-order'));
