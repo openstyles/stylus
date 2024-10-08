@@ -1,5 +1,5 @@
 import {$, setupLivePrefs, toggleDataset} from '/js/dom';
-import {t} from '/js/localization';
+import {template} from '/js/localization';
 import * as prefs from '/js/prefs';
 import {MozDocMapper} from '/js/sections-util';
 import {debounce} from '/js/toolbox';
@@ -7,7 +7,7 @@ import CodeMirror from 'codemirror';
 import {initBeautifyButton} from './beautify';
 import cmFactory from './codemirror-factory';
 import editor from './editor';
-import linterMan from './linter-manager';
+import * as linterMan from './linter';
 import {helpPopup, trimCommentLabel} from './util';
 
 const RX_META1 = /^!?\s*==userstyle==\s*$/i;
@@ -20,7 +20,7 @@ export default class EditorSection {
    */
   constructor(sectionData, genId, si) {
     const me = this; // for tocEntry.removed
-    const el = this.el = t.template.section.cloneNode(true);
+    const el = this.el = template.section.cloneNode(true);
     const elLabel = this.elLabel = $('.code-label', el);
     const at = this.targetsEl = $('.applies-to', el);
     // TODO: find another way other than `el.CodeMirror` for getAssociatedEditor
@@ -57,7 +57,7 @@ export default class EditorSection {
     this.targetsEl.on('input', this);
     this.targetsEl.on('click', this);
     cm.on('changes', EditorSection.onCmChanges);
-    MozDocMapper.forEachProp(sectionData, (t, v) => this.addTarget(t, v));
+    MozDocMapper.forEachProp(sectionData, this.addTarget.bind(this));
     if (!this.targets.length) this.addTarget();
     editor.applyScrollInfo(cm, si);
     initBeautifyButton($('.beautify-section', el), [cm]);
@@ -67,7 +67,7 @@ export default class EditorSection {
   }
 
   getModel() {
-    const items = this.targets.map(t => t.type && [t.type, t.value]);
+    const items = this.targets.map(_ => _.type && [_.type, _.value]);
     return MozDocMapper.toSection(items, {code: this.cm.getValue()});
   }
 
@@ -75,7 +75,7 @@ export default class EditorSection {
     linterMan.disableForEditor(this.cm);
     this.el.classList.add('removed');
     this.removed = true;
-    this.targets.forEach(t => t.remove());
+    this.targets.forEach(_ => _.remove());
   }
 
   render() {
@@ -90,7 +90,7 @@ export default class EditorSection {
     linterMan.enableForEditor(this.cm);
     this.el.classList.remove('removed');
     this.removed = false;
-    this.targets.forEach(t => t.restore());
+    this.targets.forEach(_ => _.restore());
     this.cm.refresh();
   }
 
@@ -167,7 +167,7 @@ export default class EditorSection {
       elUC = this.elUC;
       if (cmt && RX_META1.test(text)) {
         if (elUC) elUC = null;
-        else this.elLabelText.after(elUC = this.elUC = t.template.usercssSection.cloneNode(true));
+        else this.elLabelText.after(elUC = this.elUC = template.usercssSection.cloneNode(true));
       } else if (elUC) {
         elUC.remove();
         elUC = this.elUC = false;
@@ -195,7 +195,7 @@ export default class EditorSection {
         } else if (cls.contains('remove-applies-to')) {
           this.removeTarget(trg);
         } else if (!this.ati && (tmp = el.closest('label'))) {
-          const chk = $('#editor\\.targetsFirst', t.template.editorSettings.firstChild || document);
+          const chk = $('#editor\\.targetsFirst', template.editorSettings.firstChild || document);
           const chkLabel = chk.closest('label').cloneNode(true);
           const ati = this.ati = helpPopup.show(chkLabel, tmp.title, {'data-id': 'ati'});
           ati.onClose.add(() => delete this.ati);
@@ -281,7 +281,7 @@ class SectionTarget {
    */
   constructor(section, type = '', value = '') {
     this.id = section.genId();
-    this.el = t.template.appliesTo.cloneNode(true);
+    this.el = template.appliesTo.cloneNode(true);
     this.el.me = this;
     this.section = section;
     this.dirt = `section.${section.id}.apply.${this.id}`;
@@ -334,7 +334,7 @@ class SectionTarget {
 class ResizeGrip {
   constructor(cm) {
     const wrapper = this.wrapper = cm.display.wrapper;
-    const el = t.template.resizeGrip.cloneNode(true);
+    const el = template.resizeGrip.cloneNode(true);
     wrapper.classList.add('resize-grip-enabled');
     wrapper.appendChild(el);
     this.cm = cm;

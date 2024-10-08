@@ -12,7 +12,7 @@ CodeMirror.commands.beautify = cm => {
   beautify(isPerSection ? [cm] : editor.getEditors(), false);
 };
 
-prefs.subscribe('editor.beautify.hotkey', (key, value) => {
+prefs.subscribe('editor.beautify.hotkey', (_key, value) => {
   for (const [key, cmd] of Object.entries(extraKeys)) {
     if (cmd === 'beautify') {
       delete extraKeys[key];

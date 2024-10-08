@@ -46,11 +46,11 @@ async function buildFiles(pkg, flatPkg, patterns) {
       fse.outputFileSync(`vendor/${flatPkg}/${dest}`, await req.text());
       fetched += `* ${dest}: ${src}\n`;
     } else {
-      const files = glob(`node_modules/${pkg}/${src}`);
-      if (!files.length) {
+      const found = glob(`node_modules/${pkg}/${src}`);
+      if (!found.length) {
         throw new Error(`Pattern ${src} matches no files`);
       }
-      for (const file of files) {
+      for (const file of found) {
         const destPath = dest
           ? `vendor/${flatPkg}/${dest}`
           : `vendor/${path.relative('node_modules', file).replace(pkg + '/', flatPkg + '/')}`;
@@ -87,8 +87,8 @@ function buildReadme(pkg, flatPkg, {fetched, copied}) {
   ].filter(Boolean).join('\n\n'));
 }
 
-function getFileName(path) {
-  return path.split('/').pop();
+function getFileName(fullPath) {
+  return fullPath.split('/').pop();
 }
 
 function reportFile(pkg, file, dest) {

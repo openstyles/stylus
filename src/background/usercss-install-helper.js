@@ -90,7 +90,7 @@ async function maybeInstall({tabId, url, oldUrl = ''}) {
 }
 
 function maybeInstallByMime({tabId, url, responseHeaders}) {
-  const h = responseHeaders.find(h => h.name.toLowerCase() === 'content-type');
+  const h = responseHeaders.find(_ => _.name.toLowerCase() === 'content-type');
   const isText = h && isContentTypeText(h.value);
   tabMan.set(tabId, isContentTypeText.name, isText);
   if (isText) {

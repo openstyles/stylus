@@ -16,6 +16,16 @@ const rxIgnorableError = /Receiving end does not exist|The message port closed|m
 const saveStack = () => new Error(); // Saving callstack prior to `await`
 const portReqs = {};
 
+export const apiHandler = !isBg && {
+  get: ({name: path}, name) => new Proxy(
+    Object.defineProperty(() => {}, 'name', {value: path ? path + '.' + name : name}),
+    apiHandler),
+  apply: apiSendProxy,
+};
+export const API = isBg
+  ? self.API
+  : self.API = new Proxy({path: ''}, apiHandler);
+
 let bgReadySignal;
 let bgReadying = new Promise(fn => (bgReadySignal = fn));
 let msgId = 0;
@@ -25,7 +35,7 @@ let port;
 // TODO: maybe move into browser.js and hook addListener to wrap/unwrap automatically
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
-export function on(fn) {
+export function onMessage(fn) {
   handler.both.add(fn);
 }
 
@@ -71,6 +81,10 @@ async function apiSend(data) {
   }
   port.postMessage({id, data, TDM});
   return new Promise((ok, ko) => (portReqs[id] = {ok, ko, err}));
+}
+
+export function apiSendProxy({name: path}, thisObj, args) {
+  return (bgReadying ? sendRetry : apiSend)({method: 'invokeAPI', path, args});
 }
 
 export function apiPortDisconnect() {
@@ -145,15 +159,3 @@ async function sendRetry(m) {
     bgReadying = bgReadySignal = null;
   }
 }
-
-export const apiHandler = !isBg && {
-  get: ({name: path}, name) => new Proxy(
-    Object.defineProperty(() => {}, 'name', {value: path ? path + '.' + name : name}),
-    apiHandler),
-  apply: ({name: path}, thisObj, args) =>
-    (bgReadying ? sendRetry : apiSend)({method: 'invokeAPI', path, args}),
-};
-
-export const API = isBg
-  ? self.API
-  : self.API = new Proxy({path: ''}, apiHandler);

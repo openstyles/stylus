@@ -58,25 +58,16 @@ addAPI(/** @namespace API */ {
    * @returns {Promise<chrome.tabs.Tab>}
    */
   async openManage(opts = {}) {
-    const setUrlParams = url => {
-      const u = new URL(url);
-      for (const key of ['search', 'searchMode']) {
-        if (key in opts) u.searchParams.set(key, opts[key]);
-        else u.searchParams.delete(key);
-      }
-      u.hash = opts.options ? '#stylus-options' : '';
-      return u.href;
-    };
     const base = chrome.runtime.getURL('manage.html');
-    const url = setUrlParams(base);
+    const url = setUrlParams(base, opts);
     const tabs = await browser.tabs.query({url: base + '*'});
-    const same = tabs.find(t => t.url === url);
+    const same = tabs.find(_ => _.url === url);
     let tab = same || tabs[0];
     if (!tab) {
       API.prefsDb.get('badFavs'); // prime the cache to avoid flicker/delay when opening the page
       tab = await openURL({url, newTab: true});
     } else if (!same) {
-      await msg.sendTab(tab.id, {method: 'pushState', url: setUrlParams(tab.url)});
+      await msg.sendTab(tab.id, {method: 'pushState', url: setUrlParams(tab.url, opts)});
     }
     return activateTab(tab); // activateTab unminimizes the window
   },
@@ -150,6 +141,19 @@ async function activateTab(tab, {url, index, openerTabId} = {}) {
 
 export function getUrlOrigin(url = '') {
   return url.substring(0, url.indexOf('/', url.indexOf(':') + 3));
+}
+
+function setUrlParams(url, opts) {
+  const u = new URL(url);
+  for (const key of ['search', 'searchMode']) {
+    if (key in opts) {
+      u.searchParams.set(key, opts[key]);
+    } else {
+      u.searchParams.delete(key);
+    }
+  }
+  u.hash = opts.options ? '#stylus-options' : '';
+  return u.href;
 }
 
 export function waitForTabUrl(tabId) {

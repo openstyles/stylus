@@ -18,8 +18,7 @@ export const MozDocMapper = {
    */
   forEachProp(section, fn) {
     for (const [propName, func] of Object.entries(MozDocMapper.TO_CSS)) {
-      const props = section[propName];
-      if (props) props.forEach(value => fn(func, value));
+      section[propName]?.forEach(value => fn(func, value));
     }
   },
   /**
@@ -58,6 +57,8 @@ export const MozDocMapper = {
 };
 
 const STYLE_CODE_EMPTY_RE = /\s+|\/\*([^*]+|\*(?!\/))*(\*\/|$)|@namespace[^;]+;|@charset[^;]+;/giyu;
+const abEqual = (a, b) => a === b;
+const SECTION_TARGETS = ['urls', 'urlPrefixes', 'domains', 'regexps'];
 
 /** @param {StyleSection} sec */
 export function styleCodeEmpty(sec) {
@@ -80,24 +81,37 @@ export function styleCodeEmpty(sec) {
  * @returns {?boolean}
  */
 export function styleSectionsEqual({sections: a}, {sections: b}) {
-  const targets = ['urls', 'urlPrefixes', 'domains', 'regexps'];
-  return a && b && a.length === b.length && a.every(sameSection);
-  function sameSection(secA, i) {
-    return equalOrEmpty(secA.code, b[i].code, 'string', (a, b) => a === b) &&
-      targets.every(target => equalOrEmpty(secA[target], b[i][target], 'array', arrayMirrors));
+  return a && b && a.length === b.length && a.every(sameSection, b);
+}
+
+function sameSection(secA, i) {
+  if (!equalOrEmpty(secA.code, this[i].code, 'string', abEqual)) {
+    return;
   }
-  function equalOrEmpty(a, b, type, comparator) {
-    const typeA = type === 'array' ? Array.isArray(a) : typeof a === type;
-    const typeB = type === 'array' ? Array.isArray(b) : typeof b === type;
-    return typeA && typeB && comparator(a, b) ||
-      (a == null || typeA && !a.length) &&
-      (b == null || typeB && !b.length);
+  for (const target of SECTION_TARGETS) {
+    if (!equalOrEmpty(secA[target], this[i][target], 'array', arrayMirrors)) {
+      return;
+    }
   }
-  function arrayMirrors(a, b) {
-    return a.length === b.length &&
-      a.every(el => b.includes(el)) &&
-      b.every(el => a.includes(el));
-  }
+  return true;
+}
+
+function equalOrEmpty(a, b, type, comparator) {
+  const typeA = type === 'array' ? Array.isArray(a) : typeof a === type;
+  const typeB = type === 'array' ? Array.isArray(b) : typeof b === type;
+  return typeA && typeB && comparator(a, b) ||
+    (a == null || typeA && !a.length) &&
+    (b == null || typeB && !b.length);
+}
+
+function arrayMirrors(a, b) {
+  return a.length === b.length &&
+    a.every(thisIncludes, b) &&
+    b.every(thisIncludes, a);
+}
+
+function thisIncludes(el) {
+  return this.includes(el);
 }
 
 export async function calcStyleDigest(style) {

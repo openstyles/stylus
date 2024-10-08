@@ -1,5 +1,5 @@
 import {$, $$, $remove, configDialog, getEventKeyName, moveFocus} from '/js/dom';
-import {t} from '/js/localization';
+import {template} from '/js/localization';
 import {API} from '/js/msg';
 import {getActiveTab} from '/js/toolbox';
 import {resortEntries, tabURL} from '.';
@@ -27,7 +27,7 @@ export function maybeEdit(event) {
   const el = event.target;
   if (el.matches('.entry, .style-edit-link') || el.closest('.style-name')) {
     this.onmouseup = () => $('.style-edit-link', this).click();
-    this.oncontextmenu = event => event.preventDefault();
+    this.oncontextmenu = e => e.preventDefault();
     event.preventDefault();
   }
 }
@@ -104,7 +104,7 @@ const EntryRoutes = {
   },
   '.style-edit-link': openEditor,
   '.regexp-problem-indicator'(event, entry) {
-    const info = t.template.regexpProblemExplanation.cloneNode(true);
+    const info = template.regexpProblemExplanation.cloneNode(true);
     $remove('#' + info.id);
     entry.appendChild(info);
   },

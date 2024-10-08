@@ -1,4 +1,4 @@
-import {API} from '/js/msg-base';
+import {API} from '/js/msg';
 import {CHROME, fetchText} from '/js/toolbox';
 
 export default function DirectDownloader(url) {

@@ -1,3 +1,4 @@
+import {worker} from '/edit/linter/store';
 import {$, $$remove, $create, $createLink, $isTextInput, messageBox} from '/js/dom';
 import {t} from '/js/localization';
 import {API} from '/js/msg';
@@ -8,7 +9,7 @@ import {RX_META, UCD} from '/js/toolbox';
 import CodeMirror from 'codemirror';
 import cmFactory from './codemirror-factory';
 import editor, {failRegexp} from './editor';
-import linterMan from './linter-manager';
+import * as linterMan from './linter';
 import MozSectionFinder from './moz-section-finder';
 import MozSectionWidget from './moz-section-widget';
 
@@ -123,7 +124,7 @@ export default async function SourceEditor() {
     dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
     editor.livePreviewLazy(updateLivePreview);
   });
-  cm.on('optionChange', (cm, option) => {
+  cm.on('optionChange', (_cm, option) => {
     if (option !== 'mode') return;
     const mode = getModeName();
     if (mode === prevMode) return;
@@ -317,9 +318,9 @@ export default async function SourceEditor() {
       deltaY;
   }
 
-  function getBadRegexps(style) {
+  function getBadRegexps({sections}) {
     const res = [];
-    for (const {regexps} of style.sections) {
+    for (const {regexps} of sections) {
       if (regexps) {
         for (const r of regexps) {
           const err = failRegexp(r);
@@ -352,7 +353,7 @@ export default async function SourceEditor() {
       if (match[0] === meta && match.index === metaIndex) {
         return cache;
       }
-      const {metadata, errors} = await linterMan.worker.metalint(match[0]);
+      const {metadata, errors} = await worker.metalint(match[0]);
       if (errors.every(err => err.code === 'unknownMeta')) {
         onUpdated(metadata);
       }

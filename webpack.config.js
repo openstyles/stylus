@@ -23,6 +23,7 @@ const PAGE_BG = 'background';
 const PAGES = [
   'edit',
   'install-usercss',
+  'manage',
   'options',
   'popup',
   PAGE_BG,
@@ -36,7 +37,10 @@ const CFG = {
   output: {
     path: DST,
     filename: '[name].js',
-    assetModuleFilename: ASSETS + '[name][ext]',
+    assetModuleFilename: data => {
+      const p = data.filename.split('src/images/');
+      return ASSETS + (p[1] || '[name][ext]');
+    },
     cssFilename: ASSETS + '[name][ext]',
     cssChunkFilename: ASSETS + '[name][ext]',
   },
@@ -72,7 +76,14 @@ const CFG = {
           },
         },
       }),
-      // new CssMinimizerPlugin(),
+      new CssMinimizerPlugin({
+        minimizerOptions: {
+          preset: ['default', {
+            calc: false, // breaks clamp()
+            minifyParams: false, // breaks our @media for dark and new-ui
+          }],
+        },
+      }),
     ],
   },
   module: {
@@ -82,7 +93,7 @@ const CFG = {
         use: [
           MiniCssExtractPlugin.loader,
           {loader: 'css-loader', options: {importLoaders: 1}},
-          // 'postcss-loader', // TODO: find a way to disable via comments for e.g. clamp()
+          'postcss-loader',
         ],
       },
       {
@@ -125,7 +136,7 @@ const CFG = {
     // new WebpackPatchBootstrapPlugin(),
   ],
   stats: {
-    optimizationBailout: true,
+    // optimizationBailout: true,
   },
 };
 
@@ -222,19 +233,22 @@ module.exports = [
       new MiniCssExtractPlugin({
         filename: ASSETS + '[name].css',
         chunkFilename: ASSETS + '[name].css',
-        // chunkFilename(pathData) {
-        //   const c = pathData.chunk;
-        //   if (c.name) return c.name;
-        //   const files = [...c._groups].flatMap(g => g.origins.map(o => o.request));
-        //   const ext = files[0].match(/\.\w+$/)[0];
-        //   return ASSETS + c.runtime + '-' + files.map(f => path.basename(f, ext)).join('-') + ext;
-        // },
       }),
       ...PAGES.map(p => new HtmlWebpackPlugin({
         chunks: [p],
         filename: p + '.html',
         template: SRC + p + '.html',
-        scriptLoading: 'defer',
+        templateParameters: (compilation, files, tags, options) => {
+          const {bodyTags, headTags} = tags;
+          // The main entry goes into BODY to improve performance (2x in manage.html)
+          headTags.push(...bodyTags.splice(0, bodyTags.length - 1));
+          return {
+            compilation: compilation,
+            webpackConfig: compilation.options,
+            htmlWebpackPlugin: {tags, files, options},
+          };
+        },
+        scriptLoading: 'blocking',
         inject: false,
       })),
       new BundleAnalyzerPlugin({

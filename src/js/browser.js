@@ -18,13 +18,13 @@ if (process.env.BUILD === 'CHROME_MV3') {
     let res;
     let resolve, reject;
     // Saving the local callstack before making an async call
-    const err = new Error();
+    const localErr = new Error();
     try {
       args.push((...results) => {
         const {lastError} = chrome.runtime;
         if (lastError) {
-          err.message = lastError.message;
-          reject(err);
+          localErr.message = lastError.message;
+          reject(localErr);
         } else {
           /* Some callbacks have 2 parameters so we're resolving as an array in that case.
              For example, chrome.runtime.requestUpdateCheck and chrome.webRequest.onAuthRequired */

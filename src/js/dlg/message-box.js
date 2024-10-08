@@ -1,5 +1,5 @@
 import {$, $create, animateElement, focusA11y, moveFocus} from '/js/dom';
-import {t} from '/js/localization';
+import {t, tHTML} from '/js/localization';
 import {clamp} from '/js/toolbox';
 import './message-box.css';
 
@@ -30,7 +30,7 @@ messageBox.close = async isAnimated => {
  * @param {Object} params
  * @param {String} params.title
  * @param {String|Node|Object|Array<String|Node|Object>} params.contents
- *        a string gets parsed via t.HTML,
+ *        a string gets parsed via tHTML,
  *        a non-string is passed as is to $create()
  * @param {String} [params.className]
  *        CSS class name of the message box element
@@ -166,7 +166,7 @@ messageBox.show = ({
           $create(`#${id}-title`, {onmousedown: messageBox.listeners.mouseDown}, title),
           $create(`#${id}-close-icon`, {onclick: messageBox.listeners.closeIcon},
             $create('i.i-close')),
-          $create(`#${id}-contents`, t.HTML(contents)),
+          $create(`#${id}-contents`, tHTML(contents)),
           $create(`#${id}-buttons`,
             buttons.map((content, buttonIndex) => content &&
               $create('button', Object.assign({

@@ -462,8 +462,8 @@ export default function ColorPicker(cm) {
     if (currentFormat) {
       delete $inputGroups[currentFormat].dataset.active;
     } else {
-      for (const format in $inputGroups) {
-        delete $inputGroups[format].dataset.active;
+      for (const fmt in $inputGroups) {
+        delete $inputGroups[fmt].dataset.active;
       }
     }
     $inputGroups[format].dataset.active = '';

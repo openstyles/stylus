@@ -5,7 +5,7 @@ import * as prefs from '/js/prefs';
 import {styleJSONseemsValid, styleSectionsEqual} from '/js/sections-util';
 import {chromeSync} from '/js/storage-util';
 import {clipString, deepEqual, isEmptyObj, RX_META, UA, UCD} from '/js/toolbox';
-import {Events} from './events';
+import {queue} from './util';
 
 Object.assign($('#file-all-styles'), {
   onclick: exportToFile,
@@ -51,7 +51,7 @@ Object.assign(document.body, {
 
 async function importFromFile(file) {
   let resolve, reject;
-  const q = Events.queue;
+  const q = queue;
   const el = document.createElement('input');
   const textPromise = new Promise((...args) => ([resolve, reject] = args));
   try {
@@ -123,7 +123,7 @@ async function importFromString(jsonString) {
     for (let j = 0; j < styles.length; j++) {
       const {style, err} = styles[j];
       const item = group[j];
-      if (style) Events.queue.styles.set(style.id, style);
+      if (style) queue.styles.set(style.id, style);
       updateStats(style || item, item[INFO], err);
     }
   }

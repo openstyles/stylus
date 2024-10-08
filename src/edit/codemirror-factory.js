@@ -235,8 +235,8 @@ function selectTokenOnDoubleclick(cm, pos) {
 
   const execAt = (rx, i) => (rx.lastIndex = i) && null || rx.exec(text);
   const at = (rx, i) => (rx.lastIndex = i) && null || rx.test(text);
-  const atWord = ch => at(/\w/y, ch);
-  const atSpace = ch => at(/\s/y, ch);
+  const atWord = i => at(/\w/y, i);
+  const atSpace = i => at(/\s/y, i);
 
   const atTokenEnd = styles.indexOf(ch, 1);
   ch += atTokenEnd < 0 ? 0 : sticky === 'before' && atWord(ch - 1) ? 0 : atSpace(ch + 1) ? 0 : 1;

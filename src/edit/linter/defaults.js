@@ -1,0 +1,41 @@
+export const DEFAULTS = {
+  stylelint: {
+    rules: {
+      'at-rule-no-unknown': [true, {
+        'ignoreAtRules': ['extend', 'extends', 'css', 'block'],
+        'severity': 'warning',
+      }],
+      'block-no-empty': [true, {severity: 'warning'}],
+      'color-no-invalid-hex': [true, {severity: 'warning'}],
+      'declaration-block-no-duplicate-properties': [true, {
+        'ignore': ['consecutive-duplicates-with-different-values'],
+        'severity': 'warning',
+      }],
+      'declaration-block-no-shorthand-property-overrides': [true, {severity: 'warning'}],
+      'font-family-no-duplicate-names': [true, {severity: 'warning'}],
+      'function-calc-no-unspaced-operator': [true, {severity: 'warning'}],
+      'function-linear-gradient-no-nonstandard-direction': [true, {severity: 'warning'}],
+      'keyframe-declaration-no-important': [true, {severity: 'warning'}],
+      'media-feature-name-no-unknown': [true, {severity: 'warning'}],
+      'no-invalid-double-slash-comments': [true, {severity: 'warning'}],
+      'property-no-unknown': [true, {severity: 'warning'}],
+      'selector-pseudo-class-no-unknown': [true, {severity: 'warning'}],
+      'selector-pseudo-element-no-unknown': [true, {severity: 'warning'}],
+      'string-no-newline': [true, {severity: 'warning'}],
+      'unit-no-unknown': [true, {severity: 'warning'}],
+    },
+  },
+  csslint: {
+    'display-property-grouping': 1,
+    'duplicate-properties': 1,
+    'empty-rules': 1,
+    'errors': 1,
+    'globals-in-document': 1,
+    'known-properties': 1,
+    'known-pseudos': 1,
+    'selector-newline': 1,
+    'shorthand-overrides': 1,
+    'simple-not': 1,
+    'warnings': 1,
+  },
+};

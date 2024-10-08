@@ -15,7 +15,7 @@ let stream = null;
 /**
 * Caches the results and reuses them on subsequent parsing of the same code
 */
-export function start(newParser) {
+export function init(newParser) {
   parser = newParser;
   if (!parser) {
     data.clear();

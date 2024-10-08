@@ -163,11 +163,11 @@ export default class Matcher {
 
   static many(req, ms) {
     if (!ms[1]) return ms[0];
-    const m = new Matcher(Matcher.manyTest, Matcher.manyToStr, ms, true);
-    m.req = req === true ? Array(ms.length).fill(true) :
+    const res = new Matcher(Matcher.manyTest, Matcher.manyToStr, ms, true);
+    res.req = req === true ? Array(ms.length).fill(true) :
       req == null ? ms.map(m => !m.arg || m.arg.marker !== '?')
         : req;
-    return m;
+    return res;
   }
 
   /**

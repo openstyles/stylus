@@ -1,15 +1,15 @@
 import {$, $$, $create, animateElement, scrollElementIntoView} from '/js/dom';
-import {removeStyleCode} from '/js/events';
-import {filterAndAppend} from '/js/filters';
-/* global sorter */
-import {t} from '/js/localization';
-import {installed, newUI} from '/js/manage';
+import {breakWord, t, template} from '/js/localization';
 import {API} from '/js/msg';
 import {
   debounce, getOwnTab, isEmptyObj, MF_ICON, sessionStore, stringAsRegExpStr, UCD, URLS,
 } from '/js/toolbox';
+import {filterAndAppend} from './filters';
+import * as sorter from './sorter';
+import {
+  $entry, ENTRY_ID_PREFIX_RAW, installed, newUI, padLeft, removeStyleCode, styleToDummyEntry,
+} from './util';
 
-const ENTRY_ID_PREFIX_RAW = 'style-';
 const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps'];
 const OWN_ICON = chrome.runtime.getURL(MF_ICON);
 const AGES = [
@@ -22,39 +22,9 @@ const groupThousands = num => `${num}`.replace(/\d(?=(\d{3})+$)/g, '$&\xA0');
 const renderSize = size => groupThousands(Math.round(size / 1024)) + 'k';
 const nameLengths = new Map();
 
-(() => {
-  const proto = HTMLImageElement.prototype;
-  if ('loading' in proto) return;
-  const pSrc = Object.getOwnPropertyDescriptor(proto, 'src');
-  const xo = new IntersectionObserver(entries => {
-    for (const e of entries) {
-      if (e.intersectionRatio) {
-        const el = e.target;
-        pSrc.set.call(el, el.dataset.src);
-        xo.unobserve(el);
-        delete el.dataset.src;
-      }
-    }
-  }, {rootMargin: '200px'});
-  Object.defineProperty(proto, 'src', Object.assign({}, pSrc, {
-    set(val) {
-      if (this.loading === 'lazy') {
-        this.dataset.src = val;
-        xo.observe(this);
-      } else {
-        pSrc.set.call(this, val);
-      }
-    },
-  }));
-})();
-
 let elementParts;
 let badFavs;
 let numStyles = 0;
-
-function $entry(styleOrId, root = installed) {
-  return $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrId}`, root);
-}
 
 function createAgeText(el, style) {
   let val = style.updateDate || style.installDate;
@@ -75,25 +45,14 @@ function createAgeText(el, style) {
   }
 }
 
-function calcObjSize(obj) {
-  if (obj === true || obj == null) return 4;
-  if (obj === false) return 5;
-  let v = typeof obj;
-  if (v === 'string') return obj.length + 2; // inaccurate but fast
-  if (v === 'number') return (v = obj) >= 0 && v < 10 ? 1 : Math.ceil(Math.log10(v < 0 ? -v : v));
-  if (v !== 'object') return `${obj}`.length;
-  let sum = 1;
-  if (Array.isArray(obj)) for (v of obj) sum += calcObjSize(v) + 1;
-  else for (const k in obj) sum += k.length + 3 + calcObjSize(obj[k]) + 1;
-  return sum;
-}
-
-function createStyleElement({styleMeta: style, styleNameLC: nameLC, styleSize: size}) {
+export function createStyleElement({styleMeta: style, styleNameLC: nameLC, styleSize: size}) {
+  let entry;
+  const isNew = newUI.cfg.enabled;
   // query the sub-elements just once, then reuse the references
-  if ((elementParts || {}).newUI !== newUI.enabled) {
-    const entry = t.template[newUI.enabled ? 'styleNewUI' : 'style'].cloneNode(true);
+  if ((elementParts || {}).newUI !== isNew) {
+    entry = template[isNew ? 'styleNewUI' : 'style'].cloneNode(true);
     elementParts = {
-      newUI: newUI.enabled,
+      newUI: isNew,
       entry,
       entryClassBase: entry.className,
       checker: $('input', entry) || {},
@@ -111,8 +70,8 @@ function createStyleElement({styleMeta: style, styleNameLC: nameLC, styleSize: s
         regexpsBefore: '/',
         regexpsAfter: '/',
       },
-      oldConfigure: !newUI.enabled && $('.configure-usercss', entry),
-      oldCheckUpdate: !newUI.enabled && $('.check-update', entry),
+      oldConfigure: !isNew && $('.configure-usercss', entry),
+      oldCheckUpdate: !isNew && $('.check-update', entry),
     };
   }
   const parts = elementParts;
@@ -120,7 +79,7 @@ function createStyleElement({styleMeta: style, styleNameLC: nameLC, styleSize: s
   const configurable = ud && ud.vars && !isEmptyObj(ud.vars);
   const name = style.customName || style.name;
   parts.checker.checked = style.enabled;
-  parts.nameLink.firstChild.textContent = t.breakWord(name);
+  parts.nameLink.firstChild.textContent = breakWord(name);
   parts.nameLink.href = parts.editLink.href = parts.editHrefBase + style.id;
   parts.homepage.href = parts.homepage.title = style.url || '';
   parts.infoVer.textContent = ud ? ud.version : '';
@@ -135,13 +94,13 @@ function createStyleElement({styleMeta: style, styleNameLC: nameLC, styleSize: s
   parts.infoSize.dataset.value = Math.log10(size || 1) >> 0; // for CSS to target big/small styles
   parts.infoSize.textContent = renderSize(size);
   parts.infoSize.title = `${t('genericSize')}: ${groupThousands(size)} B`;
-  if (!newUI.enabled) {
+  if (!isNew) {
     parts.oldConfigure.classList.toggle('hidden', !configurable);
     parts.oldCheckUpdate.classList.toggle('hidden', !style.updateUrl);
   }
   removeStyleCode(style);
 
-  const entry = parts.entry.cloneNode(true);
+  entry = parts.entry.cloneNode(true);
   entry.id = ENTRY_ID_PREFIX_RAW + style.id;
   entry.styleId = style.id;
   entry.styleNameLC = nameLC;
@@ -152,11 +111,11 @@ function createStyleElement({styleMeta: style, styleNameLC: nameLC, styleSize: s
     (style.updateUrl ? ' updatable' : '') +
     (ud ? ' usercss' : '');
 
-  if (style.updateUrl && newUI.enabled) {
-    $('.actions', entry).appendChild(t.template.updaterIcons.cloneNode(true));
+  if (style.updateUrl && isNew) {
+    $('.actions', entry).appendChild(template.updaterIcons.cloneNode(true));
   }
-  if (configurable && newUI.enabled) {
-    $('.actions', entry).appendChild(t.template.configureIcon.cloneNode(true));
+  if (configurable && isNew) {
+    $('.actions', entry).appendChild(template.configureIcon.cloneNode(true));
   }
 
   createTargetsElement({entry, style});
@@ -164,8 +123,9 @@ function createStyleElement({styleMeta: style, styleNameLC: nameLC, styleSize: s
   return entry;
 }
 
-function createTargetsElement({entry, expanded, style = entry.styleMeta}) {
-  const maxTargets = expanded ? 1000 : newUI.enabled ? newUI.targets : 10;
+export function createTargetsElement({entry, expanded, style = entry.styleMeta}) {
+  const isNew = newUI.cfg.enabled;
+  const maxTargets = expanded ? 1000 : isNew ? newUI.cfg.targets : 10;
   if (!maxTargets) {
     entry._numTargets = 0;
     return;
@@ -199,12 +159,12 @@ function createTargetsElement({entry, expanded, style = entry.styleMeta}) {
           el = next;
           continue;
         }
-        const element = t.template.appliesToTarget.cloneNode(true);
-        if (!newUI.enabled) {
+        const element = template.appliesToTarget.cloneNode(true);
+        if (!isNew) {
           if (numTargets === maxTargets) {
-            container = container.appendChild(t.template.extraAppliesTo.cloneNode(true));
+            container = container.appendChild(template.extraAppliesTo.cloneNode(true));
           } else if (numTargets > 1) {
-            container.appendChild(t.template.appliesToSeparator.cloneNode(true));
+            container.appendChild(template.appliesToSeparator.cloneNode(true));
           }
         }
         element.dataset.type = type;
@@ -213,7 +173,7 @@ function createTargetsElement({entry, expanded, style = entry.styleMeta}) {
       }
     }
   }
-  if (newUI.enabled && numTargets > newUI.targets) {
+  if (isNew && numTargets > newUI.cfg.targets) {
     expanderCls.add('has-more');
   }
   if (numTargets) {
@@ -225,15 +185,15 @@ function createTargetsElement({entry, expanded, style = entry.styleMeta}) {
     if (entryTargets.firstElementChild) {
       entryTargets.textContent = '';
     }
-    entryTargets.appendChild(t.template.appliesToEverything.cloneNode(true));
+    entryTargets.appendChild(template.appliesToEverything.cloneNode(true));
   }
   entry.classList.toggle('global', !numTargets);
   entry._allTargetsRendered = allTargetsRendered;
   entry._numTargets = numTargets;
-  if (newUI.enabled) entry.style.setProperty('--num-targets', Math.min(numTargets, newUI.targets));
+  if (isNew) entry.style.setProperty('--num-targets', Math.min(numTargets, newUI.cfg.targets));
 }
 
-async function getFaviconSrc(container = installed) {
+export async function getFaviconSrc(container = installed) {
   if (!newUI.hasFavs()) return;
   if (!badFavs) await initBadFavs();
   const regexpRemoveNegativeLookAhead = /(\?!([^)]+\))|\(\?![\w(]+[^)]+[\w|)]+)/g;
@@ -281,7 +241,7 @@ async function initBadFavs() {
   const key = newUI.badFavsKey;
   const rxHost = new RegExp(
     `^${stringAsRegExpStr(URLS.favicon('\n')).replace('\n', '(.*)')}$`);
-  badFavs = newUI[key] || await newUI.readBadFavs();
+  badFavs = newUI.cfg[key] || await newUI.readBadFavs();
   const fn = e => {
     const code = e.statusCode; // absent for network error
     const host = code && code !== 200 && e.url.match(rxHost)[1];
@@ -299,51 +259,6 @@ async function initBadFavs() {
   chrome.webRequest.onErrorOccurred.addListener(fn, filter); // works in FF
 }
 
-{
-  const hideOpts = function (evt) {
-    for (const o of [...this.options]) {
-      if (o.value !== this.value) o.remove();
-    }
-    this.style.removeProperty('width');
-    if (evt && evt.isTrusted) return this.offsetWidth; // force layout
-  };
-
-  const showOpts = function (evt) {
-    if (evt.button || this[1]) return;
-    const opts = this._opts;
-    const elems = Object.values(opts);
-    const i = elems.indexOf(opts[this.value]);
-    this.style.width = this.offsetWidth + 'px';
-    if (i > 0) this.prepend(...elems.slice(0, i));
-    this.append(...elems.slice(i + 1));
-  };
-
-  window.fitSelectBox = CSS.supports('field-sizing', 'content') ? () => {} : (el, value, init) => {
-    const opts = el._opts || (el._opts = {});
-    if (init) {
-      for (const o of el.options) opts[o.value] = o;
-      el.on('keydown', showOpts);
-      el.on('mousedown', showOpts);
-      el.on('blur', hideOpts);
-      el.on('input', hideOpts);
-      const d = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), 'value');
-      Object.defineProperty(el, 'value', {
-        get: d.get,
-        set: val => {
-          const opt = opts[typeof val === 'string' ? val : val = `${val}`];
-          if (!opt.isConnected) {
-            if (el[0]) el[0].replaceWith(opt);
-            else el.append(opt);
-          }
-          d.set.call(el, val);
-          hideOpts.call(el, {});
-        },
-      });
-    }
-    el.value = value;
-  };
-}
-
 function highlightEditedStyle() {
   if (!sessionStore.justEditedStyleId) return;
   const entry = $entry(sessionStore.justEditedStyleId);
@@ -354,13 +269,7 @@ function highlightEditedStyle() {
   }
 }
 
-/** Adding spaces so CSS can detect "bigness" of a value via amount of spaces at the beginning */
-function padLeft(val, width) {
-  val = `${val}`;
-  return ' '.repeat(Math.max(0, width - val.length)) + val;
-}
-
-function fitNameColumn(styles, style) {
+export function fitNameColumn(styles, style) {
   if (style) calcNameLenKey(style);
   styles = styles ? styles.map(calcNameLenKey) : [...nameLengths.values()];
   const pick = sorter.columns > 1 ? .8 : .95; // quotient of entries in single line
@@ -378,7 +287,7 @@ function calcNameLenKey(style) {
   return len;
 }
 
-function fitSizeColumn(entries = installed.children, entry) {
+export function fitSizeColumn(entries = installed.children, entry) {
   let res = entry && renderSize(entry.styleSize).length || 0;
   if (!res) {
     for (const e of entries) res = Math.max(res, e.styleSize);
@@ -389,7 +298,7 @@ function fitSizeColumn(entries = installed.children, entry) {
   $.root.style.setProperty('--size-width', res + 'ch');
 }
 
-function showStyles(styles = [], matchUrlIds) {
+export function showStyles(styles = [], matchUrlIds) {
   const dummies = styles.map(styleToDummyEntry);
   const sorted = sorter.sort(dummies);
   let index = 0;
@@ -431,34 +340,23 @@ function showStyles(styles = [], matchUrlIds) {
   }
 }
 
-function styleToDummyEntry(style) {
-  const name = style.customName || style.name || '';
-  return {
-    styleMeta: style,
-    styleSize: calcObjSize(style) + (style._codeSize || 0),
-    // sort case-insensitively the whole list then sort dupes like `Foo` and `foo` case-sensitively
-    styleNameLC: name.toLocaleLowerCase() + '\n' + name,
-  };
-}
-
-/* exported switchUI */
-function switchUI({styleOnly} = {}) {
+export function switchUI({styleOnly} = {}) {
   const current = {};
   const changed = {};
   newUI.readPrefs(current, (id, value) => {
-    changed[id] = value !== newUI[id] && (id === 'enabled' || current.enabled);
+    changed[id] = value !== newUI.cfg[id] && (id === 'enabled' || current.enabled);
   });
 
   if (!styleOnly && isEmptyObj(changed)) {
     return;
   }
 
-  Object.assign(newUI, current);
+  Object.assign(newUI.cfg, current);
   newUI.renderClass();
 
   installed.classList.toggle('has-favicons', newUI.hasFavs());
-  installed.classList.toggle('favicons-grayed', newUI.enabled && newUI.faviconsGray);
-  installed.classList.toggle('has-targets', !newUI.enabled || !!newUI.targets);
+  installed.classList.toggle('favicons-grayed', newUI.cfg.enabled && newUI.cfg.faviconsGray);
+  installed.classList.toggle('has-targets', !newUI.cfg.enabled || !!newUI.cfg.targets);
 
   if (styleOnly) {
     return;
@@ -472,7 +370,7 @@ function switchUI({styleOnly} = {}) {
     return;
   }
   if (changed.targets) {
-    const num = newUI.targets;
+    const num = newUI.cfg.targets;
     for (const entry of installed.children) {
       $('.applies-to', entry).classList.toggle('has-more', entry._numTargets > num);
       if (!entry._allTargetsRendered && num > $('.targets', entry).childElementCount) {
@@ -488,7 +386,7 @@ function switchUI({styleOnly} = {}) {
   }
 }
 
-function updateTotal(delta) {
+export function updateTotal(delta) {
   if (delta) numStyles += delta;
   if (+installed.dataset.total === numStyles) {
     return;

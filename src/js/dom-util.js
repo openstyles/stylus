@@ -57,6 +57,17 @@ export function getEventKeyName(e, letterAsCode) {
   }`;
 }
 
+/** Declared as `@media condition, name {` */
+export function getCssMediaRuleByName(name, cb) {
+  for (const sheet of document.styleSheets) {
+    for (const {media: m} of sheet.cssRules) {
+      if (m && m[1] === name && cb(m) === false) {
+        return;
+      }
+    }
+  }
+}
+
 export function important(str) {
   return str.replace(/;/g, '!important;');
 }
@@ -158,7 +169,7 @@ export function setupLivePrefs(ids) {
       const oldValue = getValue(el);
       const diff = !isSame(el, oldValue, value);
       if ((init || diff) && el.type === 'select-one' && el.classList.contains('fit-width')) {
-        fitSelectBox(el, value, init); /* global fitSelectBox */// manage/render.js
+        fitSelectBox(el, value, init); /* global fitSelectBox */
       } else if (diff) {
         if (el.type === 'radio') {
           el.checked = value === oldValue;
@@ -215,7 +226,7 @@ export function waitForSelector(selector, {recur, stopOnDomReady = true} = {}) {
         // Checking addedNodes if only 1 MutationRecord to skip simple mutations quickly
         if (m1 || (m0 = m0.addedNodes)[3] || [].some.call(m0, isMatching)) {
           const all = $$(selector); // Using one $$ call instead of ~100 calls for each node
-          const added = !elems ? all : all.filter(el => !elems.includes(el));
+          const added = !elems ? all : all.filter(_ => !elems.includes(_));
           if (added.length) {
             elems = all;
             return recur(added);

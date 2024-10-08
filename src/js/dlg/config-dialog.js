@@ -1,19 +1,18 @@
-import ColorPicker from '/js/color/color-picker';
 import {$, $create, $createLink, $remove, important, messageBox, setupLivePrefs} from '/js/dom';
-import {t} from '/js/localization';
+import {breakWord, t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {clamp, debounce, deepCopy, UA, UCD} from '/js/toolbox';
 import './config-dialog.css';
 import '/options/onoffswitch.css';
 
-export default function configDialog(style) {
+export default async function configDialog(style) {
   const AUTOSAVE_DELAY = 400;
   let saving = false;
   let bodyStyle;
 
-  const data = style[UCD];
-  const varsHash = deepCopy(data.vars) || {};
+  const ucd = style[UCD];
+  const varsHash = deepCopy(ucd.vars) || {};
   const varNames = Object.keys(varsHash);
   const vars = varNames.map(name => varsHash[name]);
   let varsInitial = getInitialValues(varsHash);
@@ -21,7 +20,9 @@ export default function configDialog(style) {
   const elements = [];
   const isInstaller = location.pathname.startsWith('/install-usercss.html');
   const isPopup = location.pathname.startsWith('/popup.html');
-  const colorpicker = ColorPicker();
+  const colorpicker = vars.some(v => v.type === 'color')
+    ? (await import('/js/color/color-picker')).default()
+    : null;
   const buttons = {};
 
   buildConfigForm();
@@ -29,11 +30,11 @@ export default function configDialog(style) {
   vars.forEach(renderValueState);
 
   return messageBox.show({
-    title: `${style.customName || style.name} v${data.version}`,
+    title: `${style.customName || style.name} v${ucd.version}`,
     className: 'config-dialog',
     contents: [
-      $create('.config-heading', data.supportURL &&
-        $createLink({className: '.external-support', href: data.supportURL},
+      $create('.config-heading', ucd.supportURL &&
+        $createLink({className: '.external-support', href: ucd.supportURL},
           t('externalFeedback'))),
       $create('.config-body', elements),
     ],
@@ -86,7 +87,7 @@ export default function configDialog(style) {
 
   function onhide() {
     if (bodyStyle != null) document.body.style.cssText = bodyStyle;
-    colorpicker.hide();
+    colorpicker?.hide();
   }
 
   function onchange({target, justSaved = false}) {
@@ -297,7 +298,7 @@ export default function configDialog(style) {
 
       elements.push(
         $create(`label.config-${va.type}`, [
-          $create('span.config-name', t.breakWord(va.label)),
+          $create('span.config-name', breakWord(va.label)),
           ...children,
           resetter,
         ]));

@@ -1,5 +1,5 @@
 import {$, $$, $create, $remove, setupLivePrefs, showSpinner, toggleDataset} from '/js/dom';
-import {t} from '/js/localization';
+import {breakWord, formatDate, t, template} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {
@@ -9,10 +9,10 @@ import {$entry, styleFinder, tabURL} from '.';
 import * as Events from './events';
 import './search.css';
 
-document.body.append(t.template.searchUI);
+document.body.append(template.searchUI);
 
-const RESULT_ID_PREFIX = t.template.searchResult.className + '-';
-const RESULT_SEL = '.' + t.template.searchResult.className;
+const RESULT_ID_PREFIX = template.searchResult.className + '-';
+const RESULT_SEL = '.' + template.searchResult.className;
 const INDEX_URL = URLS.usoaRaw[0] + 'search-index.json';
 const USW_INDEX_URL = URLS.usw + 'api/index/uso-format';
 const USW_ICON = $create('img', {
@@ -125,10 +125,10 @@ $('#search-query').oninput = function () {
     const [
       all,
       q, qt,
-      t, rx1 = '', rx, rx2 = '',
+      rawText, rx1 = '', rx, rx2 = '',
     ] = m;
     query.push(rx1 && rx2 && tryRegExp(rx, rx2.slice(1)) ||
-      stringAsRegExp(q ? qt : t, all === all.toLocaleLowerCase() ? 'i' : ''));
+      stringAsRegExp(q ? qt : rawText, all === all.toLocaleLowerCase() ? 'i' : ''));
   }
   if (category === STYLUS_CATEGORY) {
     query.push(/\bStylus\b/);
@@ -153,7 +153,7 @@ dom.nav = {};
 const navOnClick = {prev, next};
 for (const place of ['top', 'bottom']) {
   const nav = $(`.search-results-nav[data-type="${place}"]`);
-  nav.appendChild(t.template.searchNav.cloneNode(true));
+  nav.appendChild(template.searchNav.cloneNode(true));
   dom.nav[place] = nav;
   for (const child of $$('[data-type]', nav)) {
     const type = child.dataset.type;
@@ -163,7 +163,7 @@ for (const place of ['top', 'bottom']) {
 }
 
 function onStyleDeleted({style: {id}}) {
-  const r = results.find(r => r._styleId === id);
+  const r = results.find(_ => _._styleId === id);
   if (r) {
     if (r.f) API.uso.pingback(rid2id(r.i), false);
     delete r._styleId;
@@ -173,7 +173,7 @@ function onStyleDeleted({style: {id}}) {
 
 async function onStyleInstalled({style}) {
   const ri = await API.styles.getRemoteInfo(style.id);
-  const r = ri && results.find(r => ri[0] === r.i);
+  const r = ri && results.find(_ => ri[0] === _.i);
   if (r) {
     r._styleId = style.id;
     r._styleVars = ri[1];
@@ -265,7 +265,7 @@ function renderYears() {
       const i = sel.selectedIndex;
       const value = i && i < sel.length - 1 && sel.value;
       sel.textContent = '';
-      sel.append(...texts.map(t => $create('option', {value: t.split(' ')[0]}, t)));
+      sel.append(...texts.map(_ => $create('option', {value: _.split(' ')[0]}, _)));
       sel.value = value || (sel[`${selNum ? 'first' : 'last'}Child`] || {}).value;
     }
   });
@@ -276,22 +276,22 @@ function renderYears() {
 function render() {
   totalPages = Math.ceil(results.length / PAGE_LENGTH);
   displayedPage = Math.min(displayedPage, totalPages) || 1;
-  let start = (displayedPage - 1) * PAGE_LENGTH;
+  let startAt = (displayedPage - 1) * PAGE_LENGTH;
   const end = displayedPage * PAGE_LENGTH;
   let plantAt = 0;
   let slot = dom.list.children[0];
   // keep rendered elements with ids in the range of interest
   while (
     plantAt < PAGE_LENGTH &&
-    slot && slot.id === RESULT_ID_PREFIX + (results[start] || {}).i
+    slot && slot.id === RESULT_ID_PREFIX + (results[startAt] || {}).i
   ) {
     slot = slot.nextElementSibling;
     plantAt++;
-    start++;
+    startAt++;
   }
   // add new elements
-  while (start < Math.min(end, results.length)) {
-    const entry = createSearchResultNode(results[start++]);
+  while (startAt < Math.min(end, results.length)) {
+    const entry = createSearchResultNode(results[startAt++]);
     if (slot) {
       dom.list.replaceChild(entry, slot);
       slot = entry.nextElementSibling;
@@ -336,7 +336,7 @@ function doScrollToFirstResult() {
  * @returns {Node}
  */
 function createSearchResultNode(result) {
-  const entry = t.template.searchResult.cloneNode(true);
+  const entry = template.searchResult.cloneNode(true);
   const {
     i: rid,
     n: name,
@@ -359,7 +359,7 @@ function createSearchResultNode(result) {
   });
   if (!fmt) $('.search-result-title', entry).prepend(USW_ICON.cloneNode(true));
   $('.search-result-title span', entry).textContent =
-    t.breakWord(clipString(name, 300));
+    breakWord(clipString(name, 300));
   // screenshot
   const elShot = $('.search-result-screenshot', entry);
   let shotSrc;
@@ -396,7 +396,7 @@ function createSearchResultNode(result) {
   // time
   Object.assign($('[data-type="updated"] time', entry), {
     dateTime: updateTime * 1000,
-    textContent: t.formatDate(updateTime * 1000),
+    textContent: formatDate(updateTime * 1000),
   });
   // totals
   $('[data-type="weekly"] dd', entry).textContent = formatNumber(weeklyInstalls);
@@ -445,7 +445,7 @@ function renderActionButtons(entry) {
   if (notMatching !== entry.classList.contains('not-matching')) {
     entry.classList.toggle('not-matching');
     if (notMatching) {
-      entry.prepend(t.template.searchResultNotMatching.cloneNode(true));
+      entry.prepend(template.searchResultNotMatching.cloneNode(true));
     } else {
       entry.firstElementChild.remove();
     }

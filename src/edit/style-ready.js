@@ -1,5 +1,5 @@
 import {$} from '/js/dom';
-import {t} from '/js/localization';
+import {tBody} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {MozDocMapper} from '/js/sections-util';
@@ -18,13 +18,13 @@ export default Promise.all([
   id && API.data.get('editorScrollInfo' + id).then(si => {
     editor.scrollInfo = si || {};
   }),
-  new Promise(t.body),
+  new Promise(tBody),
 ]);
 
 async function loadStyle([
   style = {
     id: id = null, // resetting the non-existent id
-    name: makeName(params),
+    name: makeName(),
     enabled: true,
     sections: [
       MozDocMapper.toSection([...params], {code: ''}),
@@ -50,7 +50,7 @@ async function loadStyle([
   }
 }
 
-function makeName(params) {
+function makeName() {
   const prefix = tryURL(params.get('url-prefix'));
   const name = params.get('name') || prefix.hostname;
   const p = prefix.pathname || '/';

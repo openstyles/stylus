@@ -197,17 +197,17 @@ export default [
       }),
     ],
   },
-  // makeEntry(PAGES),
-  // makeEntryIIFE('/background/background-worker.js'),
-  // makeEntryIIFE('/edit/editor-worker.js'),
-  // makeEntryIIFE('/js/color/color-converter.js', 'colorConverter'),
-  // makeEntryIIFE('/js/csslint/csslint.js', 'CSSLint', {
-  //   external: './parserlib',
-  //   output: {globals: id => id.match(/parserlib/)?.[0] || id},
-  // }),
-  // makeEntryIIFE('/js/csslint/parserlib.js', 'parserlib'),
-  // makeEntryIIFE('/js/meta-parser.js', 'metaParser'),
-  // makeEntryIIFE('/js/moz-parser.js', 'extractSections'),
+  makeEntry(PAGES),
+  makeEntryIIFE('/background/background-worker.js'),
+  makeEntryIIFE('/edit/editor-worker.js'),
+  makeEntryIIFE('/js/color/color-converter.js', 'colorConverter'),
+  makeEntryIIFE('/js/csslint/csslint.js', 'CSSLint', {
+    external: './parserlib',
+    output: {globals: id => id.match(/parserlib/)?.[0] || id},
+  }),
+  makeEntryIIFE('/js/csslint/parserlib.js', 'parserlib'),
+  makeEntryIIFE('/js/meta-parser.js', 'metaParser'),
+  makeEntryIIFE('/js/moz-parser.js', 'extractSections'),
 ];
 
 //#endregion

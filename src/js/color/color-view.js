@@ -31,6 +31,7 @@ const RX_DETECT_FUNC = /((rgb|hsl)a?|hwb)\(/iy;
 const RX_COMMENT = /\/\*([^*]+|\*(?!\/))*(\*\/|$)/g;
 const RX_STYLE = /(?:^|\s)(?:atom|keyword|variable callee|builtin)(?:\s|$)/;
 const SPACE1K = ' '.repeat(1000);
+const ALLOWED_STYLES = ['atom', 'keyword', 'callee', 'comment', 'string'];
 
 // milliseconds to work on invisible colors per one run
 const TIME_BUDGET = 50;
@@ -451,10 +452,10 @@ function colorizeLineViaStyles(state, lineHandle, styleIndex = 1) {
 
   function removeDeadSpans() {
     if (!spansZombies) return;
-    for (const span of markedSpans) {
-      if (span.generation !== spanGeneration &&
-          span.marker.className === COLORVIEW_CLASS) {
-        state.markersToRemove.push(span.marker);
+    for (const m of markedSpans) {
+      if (m.generation !== spanGeneration &&
+          m.marker.className === COLORVIEW_CLASS) {
+        state.markersToRemove.push(m.marker);
       }
     }
   }
@@ -614,13 +615,25 @@ function updateMarkers(state) {
 
 
 function findNearestColor({styles, text}, pos) {
-  const ALLOWED_STYLES = ['atom', 'keyword', 'callee', 'comment', 'string'];
   let start, color, prevStart, prevColor, m;
   RX_DETECT.lastIndex = Math.max(0, pos - 1000);
 
   while ((m = RX_DETECT.exec(text))) {
     start = m.index + m[1].length;
-    color = getColor(m[2].toLowerCase());
+    const token = m[2].toLowerCase();
+    const {style} = getStyleAtPos({styles, pos: start + 1}) || {};
+    const allowed = !style || ALLOWED_STYLES.includes(style.split(' ', 1)[0]);
+    if (!allowed) {
+      color = '';
+    } else if (text[start + token.length] === '(') {
+      const tail = blankOutComments(text.slice(start), 0);
+      color = tail.slice(0, tail.indexOf(')') + 1);
+      const type = color.slice(0, 3);
+      const value = color.slice(token.length + 1, -1);
+      color = testAt(RX_COLOR[type], 0, value) && color;
+    } else {
+      color = (token[0] === '#' || colorConverter.NAMED_COLORS.has(token)) && token;
+    }
     if (!color) continue;
     if (start >= pos) break;
     prevStart = start;
@@ -633,22 +646,7 @@ function findNearestColor({styles, text}, pos) {
     return {color, ch: start};
   }
 
-  function getColor(token) {
-    const {style} = getStyleAtPos({styles, pos: start + 1}) || {};
-    const allowed = !style || ALLOWED_STYLES.includes(style.split(' ', 1)[0]);
-    if (!allowed) return;
-
-    if (text[start + token.length] === '(') {
-      const tail = blankOutComments(text.slice(start), 0);
-      const color = tail.slice(0, tail.indexOf(')') + 1);
-      const type = color.slice(0, 3);
-      const value = color.slice(token.length + 1, -1);
-      return testAt(RX_COLOR[type], 0, value) && color;
-    }
-    return (token[0] === '#' || colorConverter.NAMED_COLORS.has(token)) && token;
-  }
 }
-
 
 function highlightColor(state, data) {
   const {line} = data;

@@ -1,5 +1,5 @@
 import {$, $create, setupLivePrefs} from '/js/dom';
-import {t} from '/js/localization';
+import {t, template} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {debounce, tryURL} from '/js/toolbox';
@@ -17,11 +17,11 @@ for (const [id, init, tpl] of [
   ['#options', EditorSettings, 'editorSettings'],
   ['#styleOpts', StyleSettings, 'styleSettings'],
 ]) {
-  const el = $(id, t.template.body);
+  const el = $(id, template.body);
   const mo = new MutationObserver(() => {
     mo.disconnect();
-    el.append($create('main', t.template[tpl]));
-    t.template[tpl] = undefined;
+    el.append($create('main', template[tpl]));
+    template[tpl] = undefined;
     init(el);
   });
   mo.observe(el, {attributes: true, attributeFilter: ['open']});

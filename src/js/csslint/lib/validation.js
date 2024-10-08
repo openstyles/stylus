@@ -82,8 +82,7 @@ export function validateProperty(tok, value, stream, Props) {
       expr.tryAttr = true;
       res = m.match(expr);
     }
-    for (let i,
-      pp = expr.parts; (i = expr.i) < pp.length && pp[i].isAttr;) {
+    for (let i, epp = expr.parts; (i = expr.i) < epp.length && epp[i].isAttr;) {
       expr.next();
     }
   }

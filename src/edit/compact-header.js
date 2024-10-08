@@ -5,7 +5,7 @@ import editor from './editor';
 export default function CompactHeader() {
   // Set up mini-header on scroll
   const {isUsercss} = editor;
-  const el = $create({
+  const elHeader = $create({
     style: important(`
       top: 0;
       height: 1px;
@@ -17,7 +17,7 @@ export default function CompactHeader() {
   const xoRoot = isUsercss ? scroller : undefined;
   const xo = new IntersectionObserver(onScrolled, {root: xoRoot});
   const elInfo = $('h1 a');
-  scroller.appendChild(el);
+  scroller.appendChild(elHeader);
   onCompactToggled(editor.mqCompact);
   editor.mqCompact.on('change', onCompactToggled);
 
@@ -29,7 +29,7 @@ export default function CompactHeader() {
           prefs.get(el.dataset.pref);
     }
     if (mq.matches) {
-      xo.observe(el);
+      xo.observe(elHeader);
       $('#basic-info-name').after(elInfo);
     } else {
       xo.disconnect();

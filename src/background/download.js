@@ -47,7 +47,7 @@ export default function download(url, {
   const req = downloadRequests[reqKey]
   || (downloadRequests[reqKey] = new Promise((resolve, reject) => {
     xhr = new XMLHttpRequest();
-    const u = new URL(collapseUsoVars(url), location);
+    const u = new URL(collapseUsoVars(usoVars, url, method, queryPos), location);
     const onTimeout = () => {
       xhr.abort();
       reject(new Error('Timeout fetching ' + u.href));
@@ -62,11 +62,13 @@ export default function download(url, {
     };
     xhr.onload = () => {
       if (xhr.status === requiredStatusCode || !requiredStatusCode || u.protocol === 'file:') {
-        const response = expandUsoVars(xhr.response);
+        const response = expandUsoVars(usoVars, url, xhr.response);
         if (responseHeaders) {
-          const headers = {};
-          for (const h of responseHeaders) headers[h] = xhr.getResponseHeader(h);
-          resolve({headers, response});
+          responseHeaders = responseHeaders.reduce((res, h) => {
+            res[h] = xhr.getResponseHeader(h);
+            return res;
+          }, {});
+          resolve({response, headers: responseHeaders});
         } else {
           resolve(response);
         }
@@ -88,44 +90,46 @@ export default function download(url, {
   }));
   if (xhr) req.xhr = xhr;
   if (port) {
-    const ports = req.ports || (
-      req.xhr.onprogress = e => ports.forEach(p => p.postMessage([e.loaded, e.total])),
-      req.xhr.addEventListener('loadend', () => ports.forEach(p => p.disconnect())),
-      new Set()
-    );
+    const ports = req.ports || initPorts(req.xhr, new Set());
     const p = chrome.runtime.connect({name: port});
     p.onDisconnect.addListener(() => ports.delete(p));
     ports.add(p);
   }
   return req;
+}
 
-  function collapseUsoVars(url) {
-    if (queryPos < 0 ||
-      url.length < 2000 ||
-      !url.startsWith(URLS.usoJson) ||
-      !/^get$/i.test(method)) {
-      return url;
-    }
-    const params = new URLSearchParams(url.slice(queryPos + 1));
-    for (const [k, v] of params.entries()) {
-      if (v.length < 10 || v.startsWith('ik-')) continue;
-      usoVars.push(v);
-      params.set(k, `\x01${usoVars.length}\x02`);
-    }
-    return url.slice(0, queryPos + 1) + params.toString();
+function collapseUsoVars(usoVars, url, method, queryPos) {
+  if (queryPos < 0 ||
+    url.length < 2000 ||
+    !url.startsWith(URLS.usoJson) ||
+    !/^get$/i.test(method)) {
+    return url;
   }
+  const params = new URLSearchParams(url.slice(queryPos + 1));
+  for (const [k, v] of params.entries()) {
+    if (v.length < 10 || v.startsWith('ik-')) continue;
+    usoVars.push(v);
+    params.set(k, `\x01${usoVars.length}\x02`);
+  }
+  return url.slice(0, queryPos + 1) + params.toString();
+}
 
-  function expandUsoVars(response) {
-    if (!usoVars.length || !response) return response;
-    const isText = typeof response === 'string';
-    const json = isText && tryJSONparse(response) || response;
-    json.updateUrl = url;
-    for (const section of json.sections || []) {
-      const {code} = section;
-      if (code.includes('\x01')) {
-        section.code = code.replace(/\x01(\d+)\x02/g, (_, num) => usoVars[num - 1] || '');
-      }
+function expandUsoVars(usoVars, url, response) {
+  if (!usoVars.length || !response) return response;
+  const isText = typeof response === 'string';
+  const json = isText && tryJSONparse(response) || response;
+  json.updateUrl = url;
+  for (const section of json.sections || []) {
+    const {code} = section;
+    if (code.includes('\x01')) {
+      section.code = code.replace(/\x01(\d+)\x02/g, (_, num) => usoVars[num - 1] || '');
     }
-    return isText ? JSON.stringify(json) : json;
   }
+  return isText ? JSON.stringify(json) : json;
+}
+
+function initPorts(xhr, ports) {
+  xhr.onprogress = e => ports.forEach(p => p.postMessage([e.loaded, e.total]));
+  xhr.addEventListener('loadend', () => ports.forEach(p => p.disconnect()));
+  return ports;
 }

@@ -1,5 +1,5 @@
 import {$create} from '/js/dom';
-import {t} from '/js/localization';
+import {formatRelativeDate, t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {MozDocMapper} from '/js/sections-util';
@@ -17,8 +17,8 @@ maybeRestore().then(() => {
   editor.dirty.onDataChange(isDirty => debounce(updateDraft, isDirty ? delay : 0));
   prefs.subscribe('editor.autosaveDraft', (key, val) => {
     delay = clamp(val * 1000 | 0, 1000, 2 ** 32 - 1);
-    const t = debounce.timers.get(updateDraft);
-    if (t) debounce(updateDraft, t.delay ? delay : 0);
+    const timer = debounce.timers.get(updateDraft);
+    if (timer) debounce(updateDraft, timer.delay ? delay : 0);
   }, true);
 });
 
@@ -32,7 +32,7 @@ async function maybeRestore() {
   const onYes = () => resolve(true);
   const onNo = () => resolve(false);
   const value = draft.isUsercss ? style.sourceCode : MozDocMapper.styleToCss(style);
-  const info = t('draftTitle', t.formatRelativeDate(draft.date));
+  const info = t('draftTitle', formatRelativeDate(draft.date));
   const popup = showCodeMirrorPopup(info, '', {value, readOnly: true});
   popup.className += ' danger';
   popup.onClose.add(onNo);

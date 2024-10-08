@@ -1,19 +1,16 @@
 import {API, onExtension} from '/js/msg';
-import {t} from '/js/localization';
+import {t, template} from '/js/localization';
 import {$, $$, toggleDataset} from '/js/dom';
 import {capitalize} from '/js/toolbox';
 
-Promise.all([
-  API.sync.getStatus(),
-  t.body(),
-]).then(([status]) => {
-  const elSync = $('.sync-options');
+API.sync.getStatus().then(status => {
+  const elSync = $('.sync-options', template.body);
   const elCloud = $('.cloud-name', elSync);
   const elToggle = $('.connect', elSync);
   const elSyncNow = $('.sync-now', elSync);
   const elStatus = $('.sync-status', elSync);
   const elLogin = $('.sync-login', elSync);
-  const elDriveOptions = $$('.drive-options', elSync);
+  const elDriveOptions = $$('.drive-options', template.body);
   updateButtons();
   onExtension(e => {
     if (e.method === 'syncStatusUpdate') {

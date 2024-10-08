@@ -1,5 +1,5 @@
 import {$} from '/js/dom';
-import * as msg from '/js/msg';
+import {onMessage} from '/js/msg';
 import {deepEqual} from '/js/toolbox';
 
 // TODO: export directly
@@ -109,9 +109,9 @@ const router = {
 
 window.on('popstate', router.update);
 window.on('hashchange', router.update);
-msg.on(e => {
-  if (e.method === 'pushState' && e.url !== location.href) {
-    router.push(e.url);
+onMessage(m => {
+  if (m.method === 'pushState' && m.url !== location.href) {
+    router.push(m.url);
     router.update();
     return true;
   }

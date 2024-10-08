@@ -1,11 +1,11 @@
 import {$, $$} from '/js/dom';
-import {t} from '/js/localization';
+import {tBody} from '/js/localization';
 import * as prefs from '/js/prefs';
 import '/js/themer';
 import CompactHeader from './compact-header';
 import editor from './editor';
 import EditorHeader from './editor-header';
-import linterMan from './linter-manager';
+import * as linterMan from './linter';
 import SectionsEditor from './sections-editor';
 import SourceEditor from './source-editor';
 import styleReady from './style-ready';
@@ -17,7 +17,7 @@ import './settings';
 import './usw-integration';
 import './windowed-mode';
 
-t.body();
+tBody();
 
 styleReady.then(async () => {
   EditorHeader();

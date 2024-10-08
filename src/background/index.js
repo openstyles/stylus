@@ -1,4 +1,5 @@
 import browser from '/js/browser';
+import {onMessage} from '/js/msg';
 import * as msg from '/js/msg';
 import * as prefs from '/js/prefs';
 import {ignoreChromeError, UA} from '/js/toolbox';
@@ -90,12 +91,12 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   }
 });
 
-msg.on((msg, sender) => {
-  if (msg.method === 'invokeAPI') {
+onMessage((m, sender) => {
+  if (m.method === 'invokeAPI') {
     let res = API;
-    for (const p of msg.path.split('.')) res = res && res[p];
-    if (!res) throw new Error(`Unknown API.${msg.path}`);
-    res = res.apply({msg, sender}, msg.args);
+    for (const p of m.path.split('.')) res = res && res[p];
+    if (!res) throw new Error(`Unknown API.${m.path}`);
+    res = res.apply({msg: m, sender}, m.args);
     return res === undefined ? null : res;
   }
 });

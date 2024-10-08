@@ -32,7 +32,7 @@
   <template data-id="body">
 
     <header>
-      <img src="images/icon/128.png" width="32" height="32">
+      <img src="assets/icon/128.png" width="32" height="32">
       <h1 i18n="optionsHeading"></h1>
       <i class=i-close tabindex="0"></i>
     </header>
@@ -129,9 +129,9 @@
               <input type="radio" name="iconset" value="0" data-value-type="number">
             </span>
             <span>
-              <img src="images/icon/16.png">
-              <img src="images/icon/16w.png">
-              <img src="images/icon/16x.png">
+              <img src="assets/icon/16.png">
+              <img src="assets/icon/16w.png">
+              <img src="assets/icon/16x.png">
             </span>
           </label>
           <label>
@@ -139,9 +139,9 @@
               <input type="radio" name="iconset" value="1" data-value-type="number">
             </span>
             <span>
-              <img src="images/icon/light/16.png">
-              <img src="images/icon/light/16w.png">
-              <img src="images/icon/light/16x.png">
+              <img src="assets/icon/light/16.png">
+              <img src="assets/icon/light/16w.png">
+              <img src="assets/icon/light/16x.png">
             </span>
           </label>
         </div>
@@ -311,5 +311,7 @@
   </template>
 </head>
 
-<body id="stylus-options"></body>
+<body id="stylus-options">
+  <%= htmlWebpackPlugin.tags.bodyTags %>
+</body>
 </html>

@@ -21,11 +21,9 @@ export default function EmbeddedPopup() {
   });
   $.root.appendChild(btn);
   $.rootCL.add('popup-window');
-  t.body(() => {
-    document.body.appendChild(btn);
-    // Adding a dummy command to show in keymap help popup
-    extraKeys[POPUP_HOTKEY] = 'openStylusPopup';
-  });
+  document.body.appendChild(btn);
+  // Adding a dummy command to show in keymap help popup
+  extraKeys[POPUP_HOTKEY] = 'openStylusPopup';
 
   prefs.subscribe('iconset', (_, val) => {
     const prefix = `${MF_ICON_PATH}${val ? 'light/' : ''}`;

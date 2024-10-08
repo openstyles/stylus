@@ -168,7 +168,7 @@ rules:
   no-self-compare: [2]
   no-sequences: [2]
   no-shadow-restricted-names: [2]
-  no-shadow: [0]
+  no-shadow: [2, {hoist: all}]
   no-spaced-func: [2]
   no-sparse-arrays: [2]
   no-tabs: [2]

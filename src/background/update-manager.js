@@ -163,7 +163,7 @@ export async function checkStyle(opts) {
 
   async function updateUsercss(css) {
     let oldVer = ucd.version;
-    let {etag: oldEtag, updateUrl} = style;
+    let oldEtag = style.etag;
     const m2 = (css || URLS.extractUsoaId(updateUrl)) &&
       await API.uso.getEmbeddedMeta(css || style.sourceCode);
     if (m2 && m2.updateUrl) {
@@ -173,7 +173,7 @@ export async function checkStyle(opts) {
     } else if (css) {
       return;
     }
-    if (oldEtag && oldEtag === await downloadEtag()) {
+    if (oldEtag && oldEtag === await downloadEtag(updateUrl)) {
       return Promise.reject(STATES.SAME_CODE);
     }
     // TODO: when sourceCode is > 100kB use http range request(s) for version check
@@ -221,35 +221,34 @@ export async function checkStyle(opts) {
         : styleMan.install(newStyle);
   }
 
-  async function tryDownload(url, params) {
-    let {retryDelay = 1000} = opts;
-    while (true) {
-      try {
-        params = deepMerge(params || {}, {headers: {'Cache-Control': 'no-cache'}});
-        return await download(url, params);
-      } catch (code) {
-        if (!RETRY_ERRORS.includes(code) ||
-            retryDelay > MIN_INTERVAL_MS) {
-          return Promise.reject(code);
-        }
+}
+
+async function tryDownload(url, params, {retryDelay = 1000} = {}) {
+  while (true) {
+    try {
+      params = deepMerge(params || {}, {headers: {'Cache-Control': 'no-cache'}});
+      return await download(url, params);
+    } catch (code) {
+      if (!RETRY_ERRORS.includes(code) ||
+          retryDelay > MIN_INTERVAL_MS) {
+        return Promise.reject(code);
       }
-      retryDelay *= 1.25;
-      await new Promise(resolve => setTimeout(resolve, retryDelay));
     }
+    retryDelay *= 1.25;
+    await new Promise(resolve => setTimeout(resolve, retryDelay));
   }
+}
 
-  async function downloadEtag() {
-    const opts = Object.assign({method: 'head'}, RH_ETAG);
-    const req = await tryDownload(style.updateUrl, opts);
-    return req.headers.etag;
-  }
+async function downloadEtag(url) {
+  const req = await tryDownload(url, {method: 'HEAD', ...RH_ETAG});
+  return req.headers.etag;
+}
 
-  function getDateFromVer(style) {
-    const m = RX_DATE2VER.exec((style[UCD] || {}).version);
-    if (m) {
-      m[2]--; // month is 0-based in `Date` constructor
-      return new Date(...m.slice(1)).getTime();
-    }
+function getDateFromVer(style) {
+  const m = RX_DATE2VER.exec((style[UCD] || {}).version);
+  if (m) {
+    m[2]--; // month is 0-based in `Date` constructor
+    return new Date(...m.slice(1)).getTime();
   }
 }
 

@@ -1,8 +1,7 @@
 import * as prefs from '/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '/js/sections-util';
 import {
-  CHROME,
-  deepEqual, FIREFOX, isEmptyObj, mapObj, stringAsRegExpStr, tryRegExp, tryURL, UCD, URLS,
+  CHROME, deepEqual, FIREFOX, isEmptyObj, mapObj, stringAsRegExpStr, tryRegExp, tryURL, UCD, URLS,
 } from '/js/toolbox';
 import {broadcast, broadcastExtension} from './broadcast';
 import broadcastInjectorConfig from './broadcast-injector-config';
@@ -256,7 +255,7 @@ export function getByUrl(url, id = null) {
     let included = false;
     let sloppy = false;
     let sectionMatched = false;
-    const match = urlMatchStyle(query, style);
+    let match = urlMatchStyle(query, style);
     // TODO: enable this when the function starts returning false
     // if (match === false) {
     // continue;
@@ -271,7 +270,7 @@ export function getByUrl(url, id = null) {
       excludedScheme = true;
     }
     for (const section of style.sections) {
-      const match = urlMatchSection(query, section, true);
+      match = urlMatchSection(query, section, true);
       if (match) {
         if (match === 'sloppy') {
           sloppy = true;
@@ -385,8 +384,8 @@ export async function toggleOverride(id, rule, isInclusion, isAdd) {
 /** @returns {Promise<void>} */
 export async function config(id, prop, value) {
   const style = Object.assign({}, id2style(id));
-  const {preview} = dataMap.get(id);
-  style[prop] = (preview || {})[prop] = value;
+  const d = dataMap.get(id);
+  style[prop] = (d.preview || {})[prop] = value;
   if (prop === 'inclusions' || prop === 'exclusions') cachedStyleForUrl.clear();
   await saveStyle(style, 'config');
 }
@@ -558,14 +557,14 @@ function getAppliedCode(query, data) {
 }
 
 async function init() {
-  const [order, styles = []] = await Promise.all([
+  const [orderFromDb, styles = []] = await Promise.all([
     API.prefsDb.get(orderWrap.id),
     db.styles.getAll(),
     prefs.ready,
   ]);
   const updated = await Promise.all(styles.map(fixKnownProblems).filter(Boolean));
   if (updated.length) setTimeout(db.styles.putMany, 0, updated);
-  setOrderImpl(order, {store: false});
+  setOrderImpl(orderFromDb, {store: false});
   styles.forEach(storeInMap);
   bgReady._resolveStyles();
 }
@@ -573,6 +572,7 @@ async function init() {
 function fixKnownProblems(style, initIndex, initArray) {
   if (!style || !style.id) style = {id: Date.now()};
   let res = 0;
+  let v;
   for (const key in MISSING_PROPS) {
     if (!style[key]) {
       style[key] = MISSING_PROPS[key](style);
@@ -581,7 +581,7 @@ function fixKnownProblems(style, initIndex, initArray) {
   }
   /* delete if value is null, {}, [] */
   for (const key in style) {
-    const v = style[key];
+    v = style[key];
     if (v == null || typeof v === 'object' && isEmptyObj(v)) {
       delete style[key];
       res = 1;
@@ -606,7 +606,6 @@ function fixKnownProblems(style, initIndex, initArray) {
       style[key] = fixedUrl;
     }
   }
-  let v;
   /* USO bug, duplicate "update" subdomain, see #523 */
   if ((v = style.md5Url) && v.includes('update.update.userstyles')) {
     res = style.md5Url = v.replace('update.update.userstyles', 'update.userstyles');
@@ -758,12 +757,13 @@ function buildExclusion(text) {
 
 function buildCache(cache, url, styleList) {
   const query = new MatchQuery(url);
-  for (const {style, appliesTo, preview} of styleList) {
+  for (const data of styleList) {
+    const {style} = data;
     // getSectionsByUrl only needs enabled styles
-    const code = style.enabled && getAppliedCode(query, preview || style);
+    const code = style.enabled && getAppliedCode(query, data.preview || style);
     if (code) {
       buildCacheEntry(cache, style, code);
-      appliesTo.add(url);
+      data.appliesTo.add(url);
     }
   }
 }
@@ -787,7 +787,12 @@ function hex4dashed(num, i) {
   return (num + 0x10000).toString(16).slice(-4) + (i >= 1 && i <= 4 ? '-' : '');
 }
 
-async function setOrderImpl(data, {broadcast, calc = true, store = true, sync} = {}) {
+async function setOrderImpl(data, {
+  broadcast: broadcastAllowed,
+  calc = true,
+  store = true,
+  sync,
+} = {}) {
   if (!data || !data.value || deepEqual(data.value, orderWrap.value)) {
     return;
   }
@@ -801,7 +806,7 @@ async function setOrderImpl(data, {broadcast, calc = true, store = true, sync} =
       });
     }
   }
-  if (broadcast) {
+  if (broadcastAllowed) {
     broadcastInjectorConfig('order', order);
   }
   if (store) {

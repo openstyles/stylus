@@ -1,6 +1,6 @@
 import colorMimicry from '/js/color/color-mimicry';
 import {$, $$, $create, $remove, setInputValue, toggleDataset} from '/js/dom';
-import {t} from '/js/localization';
+import {t, template} from '/js/localization';
 import {chromeLocal} from '/js/storage-util';
 import {debounce, stringAsRegExp, tryRegExp} from '/js/toolbox';
 import CodeMirror from 'codemirror';
@@ -489,9 +489,9 @@ function tokenize(stream) {
   const match = this.query.exec(stream.string);
   if (match && match.index === stream.pos) {
     this.numFound++;
-    const t = performance.now();
-    if (t - this.tallyShownTime > 10) {
-      this.tallyShownTime = t;
+    const now = performance.now();
+    if (now - this.tallyShownTime > 10) {
+      this.tallyShownTime = now;
       debounce(showTally);
     }
     stream.pos += match[0].length || 1;
@@ -542,14 +542,14 @@ function createDialog(type) {
   state.originalFocus = document.activeElement;
   state.firstRun = true;
 
-  const dialog = state.dialog = t.template.searchReplaceDialog.cloneNode(true);
+  const dialog = state.dialog = template.searchReplaceDialog.cloneNode(true);
   Object.assign(dialog, DIALOG_PROPS.dialog);
   dialog.on('focusout', EVENTS.onfocusout);
   dialog.dataset.type = type;
   dialog.style.pointerEvents = 'auto';
 
   const content = $('[data-type="content"]', dialog);
-  content.parentNode.replaceChild(t.template[type].cloneNode(true), content);
+  content.parentNode.replaceChild(template[type].cloneNode(true), content);
 
   createInput(0, 'input', state.find);
   createInput(1, 'input2', state.replace);
@@ -611,7 +611,7 @@ function createInput(index, name, value) {
   input.value = value;
   Object.assign(input, DIALOG_PROPS[name]);
 
-  input.parentElement.appendChild(t.template.clearSearch.cloneNode(true));
+  input.parentElement.appendChild(template.clearSearch.cloneNode(true));
   $('[data-action]', input.parentElement)._input = input;
 }
 
@@ -870,16 +870,16 @@ function radiateArray(arr, focalIndex) {
 }
 
 function readStorage() {
-  chromeLocal.getValue('editor').then((editor = {}) => {
-    state.find = editor.find || '';
-    state.replace = editor.replace || '';
-    state.icase = editor.icase || state.icase;
+  chromeLocal.getValue('editor').then((val = {}) => {
+    state.find = val.find || '';
+    state.replace = val.replace || '';
+    state.icase = val.icase || state.icase;
   });
 }
 
 function writeStorage() {
-  chromeLocal.getValue('editor').then((editor = {}) =>
-    chromeLocal.setValue('editor', Object.assign(editor, {
+  chromeLocal.getValue('editor').then((val = {}) =>
+    chromeLocal.setValue('editor', Object.assign(val, {
       find: state.find,
       replace: state.replace,
       icase: state.icase,

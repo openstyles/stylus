@@ -1,7 +1,7 @@
 import {$} from '/js/dom';
 import {UA, deepMerge} from '/js/toolbox';
 import * as prefs from '/js/prefs';
-import {t} from '/js/localization';
+import {template} from '/js/localization';
 import CodeMirror from 'codemirror';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/addon/comment/comment';
@@ -184,7 +184,7 @@ prefs.ready.then(() => {
       const cur = cm.getCursor();
       const oldDialog = $('.CodeMirror-dialog', cm.display.wrapper);
       if (oldDialog) cm.focus(); // close the currently opened minidialog
-      cm.openDialog(t.template.jumpToLine.cloneNode(true), str => {
+      cm.openDialog(template.jumpToLine.cloneNode(true), str => {
         const [line, ch] = str.match(/^\s*(\d+)(?:\s*:\s*(\d+))?\s*$|$/);
         if (line) cm.setCursor(line - 1, ch ? ch - 1 : cur.ch);
       }, {value: cur.line + 1});

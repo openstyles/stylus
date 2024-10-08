@@ -19,6 +19,10 @@ if (FIREFOX) (() => { // eslint-disable-line curly
     updateCount,
   };
   const onError = () => {};
+  const calcOrder = ({id}) =>
+    (order.prio[id] || 0) * 1e6 ||
+    order.main[id] ||
+    id + .5e6;
   /* <tabId>: Object
        <frameId>: Object
          url: String, non-enumerable
@@ -57,10 +61,6 @@ if (FIREFOX) (() => { // eslint-disable-line curly
     }
     const {sections} = getSectionsByUrl(url, id);
     const tasks = [];
-    const calcOrder = ({id}) =>
-      (order.prio[id] || 0) * 1e6 ||
-      order.main[id] ||
-      id + .5e6;
     for (const sec of sections.sort((a, b) => calcOrder(a) - calcOrder(b))) {
       const styleId = sec.id;
       const code = sec.code.join('\n');

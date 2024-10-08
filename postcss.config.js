@@ -1,6 +1,6 @@
 'use strict';
 
-const mj = require('src/manifest.json');
+const mj = require('./src/manifest.json');
 
 module.exports = {
   plugins: [
@@ -10,11 +10,11 @@ module.exports = {
         'Chrome >= ' + mj.minimum_chrome_version,
       ].join(','),
       features: {
+        'clamp': false, // used intentionally with a fallback
         'prefers-color-scheme-query': false, // we manually handle it via cssRules
       },
     }],
     'postcss-simple-vars',
-    'postcss-calc',
     'postcss-nested',
     'autoprefixer',
   ],

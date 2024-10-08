@@ -1,6 +1,6 @@
 export default function createWorker(name, {lifeTime = 300} = {}) {
   let worker;
-  let id;
+  let lastId;
   let timer;
   const pendingResponse = new Map();
   return new Proxy({}, {
@@ -13,7 +13,7 @@ export default function createWorker(name, {lifeTime = 300} = {}) {
   });
 
   function init() {
-    id = 0;
+    lastId = 0;
     worker = new Worker(`/js/${name}.js`);
     worker.onmessage = onMessage;
   }
@@ -30,14 +30,15 @@ export default function createWorker(name, {lifeTime = 300} = {}) {
     if (!pendingResponse.size && lifeTime >= 0) {
       timer = setTimeout(uninit, lifeTime * 1000);
     }
+    if (id === lastId) lastId--;
   }
 
   function invoke(action, args) {
     return new Promise((resolve, reject) => {
-      pendingResponse.set(id, {resolve, reject});
+      lastId++;
+      pendingResponse.set(lastId, {resolve, reject});
       clearTimeout(timer);
-      worker.postMessage({id, action, args});
-      id++;
+      worker.postMessage({id: lastId, action, args});
     });
   }
 }

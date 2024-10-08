@@ -44,7 +44,7 @@ export default function MozSectionFinder(cm) {
         keptAlive.set(id, data);
         finder.on(NOP);
       }
-      data.timer = setTimeout(id => keptAlive.delete(id), ms, id);
+      data.timer = setTimeout(() => keptAlive.delete(id), ms);
     },
 
     on(fn) {
@@ -93,7 +93,7 @@ export default function MozSectionFinder(cm) {
     return state;
   }
 
-  function onCmChanges(cm, changes) {
+  function onCmChanges(_cm, changes) {
     if (!updFrom) updFrom = {line: Infinity, ch: 0};
     if (!updTo) updTo = {line: -1, ch: 0};
     for (const c of changes) {

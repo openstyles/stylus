@@ -1,7 +1,7 @@
+import DraggableList from '@eight04/draggable-list/dist/draggable-list.esm';
 import {$create, messageBox} from '/js/dom';
 import {t} from '/js/localization';
 import {API} from '/js/msg';
-import '@eight04/draggable-list/dist/draggable-list.esm.js';
 import './injection-order.css';
 
 export default async function InjectionOrder(show, el, selector) {
@@ -64,12 +64,12 @@ export default async function InjectionOrder(show, el, selector) {
     });
     ol.on('click', e => {
       if (e.target.closest('.injection-order-toggle')) {
-        const el = e.target.closest(SEL_ENTRY);
-        const i = [].indexOf.call(el.parentNode.children, el);
+        const elEntry = e.target.closest(SEL_ENTRY);
+        const i = [].indexOf.call(elEntry.parentNode.children, elEntry);
         const [item] = ids.splice(i, 1);
         const type2 = type === 'main' ? 'prio' : 'main';
         groups[type2].push(item);
-        ols[type2].appendChild(el);
+        ols[type2].appendChild(elEntry);
         API.styles.setOrder(groups);
       }
     });

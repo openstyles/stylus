@@ -1,12 +1,11 @@
 import {$, $$, $create, messageBox, scrollElementIntoView} from '/js/dom';
-/* global sorter */
 import {t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {chromeLocal} from '/js/storage-util';
-import {newUI} from '.';
 import {filterAndAppend, filtersSelector} from './filters';
-import {$entry} from './render';
+import {updateStripes} from './sorter';
+import {$entry, newUI} from './util';
 
 const btnCheck = $('#check-all-updates');
 const btnCheckForce = $('#check-all-updates-force');
@@ -73,7 +72,8 @@ function checkUpdateAll() {
     }
     if (info.updated || 'error' in info) {
       checked++;
-      skippedEdited += !info.updated && [info.STATES.EDITED, info.STATES.MAYBE_EDITED].includes(info.error);
+      skippedEdited += !info.updated &&
+        [info.STATES.EDITED, info.STATES.MAYBE_EDITED].includes(info.error);
       reportUpdateState(info);
     }
     const progress = $('#update-progress');
@@ -161,15 +161,15 @@ function reportUpdateState({updated, style, error, STATES}) {
     newClasses.set('no-update', true);
     newClasses.set('update-problem', !same);
     $('.update-note', entry).textContent = message;
-    $('.check-update', entry).title = newUI.enabled ? message : '';
+    $('.check-update', entry).title = newUI.cfg.enabled ? message : '';
     $('.update', entry).title = t(edited ? 'updateCheckManualUpdateForce' : 'installUpdate');
     // digest may change silently when forcing an update of a locally edited style
     // so we need to update it in entry's styleMeta in all open manager tabs
     if (error === STATES.SAME_CODE) {
       for (const view of chrome.extension.getViews({type: 'tab'})) {
         if (view.location.pathname === location.pathname) {
-          const entry = $entry(style, view.document);
-          if (entry) entry.styleMeta.originalDigest = style.originalDigest;
+          const el = $entry(style, view.document);
+          if (el) el.styleMeta.originalDigest = style.originalDigest;
         }
       }
     }
@@ -195,7 +195,7 @@ function reportUpdateState({updated, style, error, STATES}) {
   }
 
   if (filtersSelector.hide && isCheckAll) {
-    filterAndAppend({entry}).then(sorter.updateStripes);
+    filterAndAppend({entry}).then(updateStripes);
   } else if (updated && !isCheckAll) {
     renderUpdatesOnlyFilter();
   }
@@ -216,7 +216,7 @@ function renderUpdatesOnlyFilter({show, check} = {}) {
   btnApply.dataset.value = numUpdatable;
 }
 
-export default async function showUpdateHistory(show, el, selector) {
+export default async function UpdateHistory(show, el, selector) {
   if (!show) {
     return messageBox.close();
   }

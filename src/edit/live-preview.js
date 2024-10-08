@@ -53,12 +53,12 @@ function showError() {
   }
 }
 
-async function updatePreviewer(data) {
+async function updatePreviewer(newData) {
   try {
-    await API.styles.preview(data);
+    await API.styles.preview(newData);
     el.hidden = true;
   } catch (err) {
-    const ucd = data[UCD];
+    const ucd = newData[UCD];
     const pp = ucd && ucd.preprocessor;
     const shift = err._varLines + 1 || 0;
     errPos = pp && err.line && err.column

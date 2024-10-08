@@ -1,6 +1,6 @@
 import colorMimicry from '/js/color/color-mimicry';
 import {$, $create, messageBox} from '/js/dom';
-import {t} from '/js/localization';
+import {t, template} from '/js/localization';
 import * as msg from '/js/msg';
 import CodeMirror from 'codemirror';
 import editor from './editor';
@@ -45,7 +45,7 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
           $create('ul' + C_LIST),
         ]),
       listItem:
-        t.template.appliesTo.cloneNode(true),
+        template.appliesTo.cloneNode(true),
       appliesToEverything:
         $create('li.applies-to-everything', t('appliesToEverything')),
     };
@@ -144,21 +144,21 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
     finder.off(update);
   }
 
-  function onCmOption(cm, option) {
+  function onCmOption(_cm, option) {
     if (option === 'theme') {
       updateWidgetStyle();
     }
   }
 
-  function onRuntimeMessage(msg) {
-    if (msg.reason === 'editPreview' && !$(`#stylus-${msg.style.id}`)) {
+  function onRuntimeMessage(m) {
+    if (m.reason === 'editPreview' && !$(`#stylus-${m.style.id}`)) {
       // no style element with this id means the style doesn't apply to the editor URL
       return;
     }
-    if (msg.style || msg.styles ||
-        msg.prefs && 'disableAll' in msg.prefs ||
-        msg.method === 'colorScheme' ||
-        msg.method === 'styleDeleted') {
+    if (m.style || m.styles ||
+        m.prefs && 'disableAll' in m.prefs ||
+        m.method === 'colorScheme' ||
+        m.method === 'styleDeleted') {
       requestAnimationFrame(updateWidgetStyle);
     }
   }

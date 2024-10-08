@@ -1,6 +1,6 @@
 import browser from '/js/browser';
 import {$, $create} from '/js/dom';
-import {t} from '/js/localization';
+import {t, template} from '/js/localization';
 import {API} from '/js/msg';
 import {MF_ICON, tryRegExp, URLS} from '/js/toolbox';
 import editor from './editor';
@@ -89,7 +89,7 @@ async function update() {
     partial: {
       data: [], label: [
         t('styleRegexpTestPartial'),
-        t.template.regexpTestPartial.cloneNode(true),
+        template.regexpTestPartial.cloneNode(true),
       ],
     },
     none: {data: [], label: t('styleRegexpTestNone')},

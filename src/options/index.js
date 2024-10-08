@@ -1,6 +1,6 @@
 import browser from '/js/browser';
 import {$, $$, $create, getEventKeyName, messageBox, setInputValue, setupLivePrefs} from '/js/dom';
-import {t} from '/js/localization';
+import {t, tBody, template} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import '/js/themer';
@@ -9,7 +9,7 @@ import './options-sync';
 import './onoffswitch.css';
 import './options.css';
 
-t.body();
+tBody();
 setupLivePrefs();
 $$('input[min], input[max]').forEach(enforceInputRange);
 for (const el of $$('[show-if]')) {
@@ -60,7 +60,7 @@ function customizeHotkeys() {
   const SKIP = ['Control', 'Alt', 'Shift', 'Meta', 'CapsLock', 'Tab', 'Escape', 'OS'];
   messageBox.show({
     title: t('shortcutsNote'),
-    contents: t.template.shortcutsFF.cloneNode(true),
+    contents: template.shortcutsFF.cloneNode(true),
     className: 'center-dialog pre-line',
     buttons: [t('confirmClose')],
     onshow(box) {
@@ -69,15 +69,15 @@ function customizeHotkeys() {
     },
   });
 
-  async function onInput(e) {
-    if (SKIP.includes(e.key)) return;
-    e.preventDefault();
+  async function onInput(evt) {
+    if (SKIP.includes(evt.key)) return;
+    evt.preventDefault();
     const mod =
-      (e[CTRL] ? 'Ctrl+' : '') +
-      (e.altKey ? 'Alt+' : '') +
-      (e.shiftKey ? 'Shift+' : '');
-    const key = mod + e.key.slice(0, 1).toUpperCase() + e.key.slice(1);
-    const el = e.target;
+      (evt[CTRL] ? 'Ctrl+' : '') +
+      (evt.altKey ? 'Alt+' : '') +
+      (evt.shiftKey ? 'Shift+' : '');
+    const key = mod + evt.key.slice(0, 1).toUpperCase() + evt.key.slice(1);
+    const el = evt.target;
     const name = el.id.split('.')[1];
     const shortcut = el.value = key === 'Delete' || key === 'Backspace' ? '' : key;
     let err;

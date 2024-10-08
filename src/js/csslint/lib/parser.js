@@ -74,7 +74,7 @@ class Parser extends EventDispatcher {
     const opts = this.options;
     const atAny = !opts.globalsOnly && this._unknownAtRule;
     const atFuncs = !atAny ? ATS_GLOBAL : opts.topDocOnly ? ATS_TDO : ATS;
-    parserCache.start(reuseCache && this);
+    parserCache.init(reuseCache && this);
     this.fire('startstylesheet');
     for (let ti, fn, tok; (ti = (tok = stream.grab()).id);) {
       try {

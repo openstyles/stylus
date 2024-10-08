@@ -43,10 +43,10 @@ const fetch = require('node-fetch');
   }
 
   async function processApi([file, path]) {
-    const [name, ext] = file.split('.');
+    const [fileName, ext] = file.split('.');
     const api = manifest.permissions.find(p =>
-      name === p.replace(/([A-Z])/g, s => '_' + s.toLowerCase()) ||
-      name === p.replace(/\./g, '_'));
+      fileName === p.replace(/([A-Z])/g, s => '_' + s.toLowerCase()) ||
+      fileName === p.replace(/\./g, '_'));
     if (!api) return;
     const text = await fetchText(path + file);
     const noCmt = text.replace(/^\s*\/\/.*$/gm, '');

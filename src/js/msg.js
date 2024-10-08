@@ -1,6 +1,6 @@
 /** Don't use this file in content script context! */
 import browser from './browser';
-import {apiHandler, isBg, unwrap} from './msg-base';
+import {apiHandler, apiSendProxy, isBg, unwrap} from './msg-base';
 import {deepCopy, getOwnTab} from './toolbox';
 
 export * from './msg-base';
@@ -28,12 +28,11 @@ export function sendTab(tabId, data, options, target = 'tab') {
 }
 
 if (!isBg) {
-  const {apply} = apiHandler;
   apiHandler.apply = async (fn, thisObj, args) => {
     if (bg === null) bg = await browser.runtime.getBackgroundPage().catch(() => {}) || false;
     const bgReady = bg?.bgReady;
     return bgReady && (bg.msg || await bgReady.all)
       ? invokeAPI(fn.name, args)
-      : apply(fn, thisObj, args);
+      : apiSendProxy(fn, thisObj, args);
   };
 }

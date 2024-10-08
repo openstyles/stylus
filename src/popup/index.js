@@ -1,5 +1,5 @@
 import {$, $$, $create, $remove, getEventKeyName, setupLivePrefs} from '/js/dom';
-import {t} from '/js/localization';
+import {t, template, tNodeList} from '/js/localization';
 import {API, onExtension, sendTab} from '/js/msg';
 import popupGetStyles, {ABOUT_BLANK} from '/js/popup-get-styles';
 import * as prefs from '/js/prefs';
@@ -49,7 +49,7 @@ if (CHROME >= 66 && CHROME <= 69) { // Chrome 66-69 adds a gap, https://crbug.co
   document.head.appendChild($create('style', 'html { overflow: overlay }'));
 }
 if (CHROME >= 107) {
-  t.NodeList(document); // MutationObserver doesn't work with chrome://flags/#enable-prerender2
+  tNodeList(document); // MutationObserver doesn't work with chrome://flags/#enable-prerender2
 }
 
 function onRuntimeMessage(msg) {
@@ -129,7 +129,7 @@ async function initPopup(frames, ping0, tab) {
   frames.forEach(createWriterElement);
 
   if ($('.match .match:not(.dupe),' + WRITE_FRAME_SEL)) {
-    $('#write-style').append(Object.assign(t.template.writeForFrames, {
+    $('#write-style').append(Object.assign(template.writeForFrames, {
       onclick() {
         this.remove();
         $('#write-style').classList.add('expanded');
@@ -162,7 +162,7 @@ async function initPopup(frames, ping0, tab) {
     tab = await getActiveTab();
   }
 
-  const info = t.template.unreachableInfo;
+  const info = template.unreachableInfo;
   if (CHROME) {
     // Chrome "Allow access to file URLs" in chrome://extensions message
     info.appendChild($create('p', t('unreachableFileHint')));
@@ -289,7 +289,7 @@ function createStyleElement(style, entry) {
   if (entry) {
     style = Object.assign(entry.styleMeta, style);
   } else {
-    entry = t.template.style.cloneNode(true);
+    entry = template.style.cloneNode(true);
     Object.assign(entry, {
       id: ENTRY_ID_PREFIX_RAW + style.id,
       styleId: style.id,
@@ -318,7 +318,7 @@ function createStyleElement(style, entry) {
 
   cfg.hidden = ucd ? isEmptyObj(ucd.vars) : !style.url || !`${style.updateUrl}`.includes('?');
   if (!cfg.hidden && cfg.href !== cfgUrl) {
-    const el = t.template[ucd ? 'config' : 'configExternal'].cloneNode(true);
+    const el = template[ucd ? 'config' : 'configExternal'].cloneNode(true);
     if (cfgUrl) el.href = cfgUrl;
     else el.removeAttribute('href');
     cfg.replaceWith(el);

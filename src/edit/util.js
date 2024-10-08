@@ -1,5 +1,5 @@
 import {$, $$, $create, getEventKeyName, messageBox, moveFocus} from '/js/dom';
-import {t} from '/js/localization';
+import {t, tHTML} from '/js/localization';
 import * as prefs from '/js/prefs';
 import {clipString} from '/js/toolbox';
 import CodeMirror from 'codemirror';
@@ -23,7 +23,7 @@ export const helpPopup = {
     div.append(
       div._close = $create('i.i-close', {onclick: helpPopup.close}),
       div._title = $create('.title', title),
-      div._contents = $create('.contents', body && t.HTML(body)));
+      div._contents = $create('.contents', body && tHTML(body)));
     document.body.append(div);
     div.onClose = new Set();
     window.on('keydown', helpPopup.close, true);

@@ -4,7 +4,7 @@ import compareVersion from '/js/cmpver';
 import {
   $, $$, $$remove, $create, $createLink, configDialog, messageBox, showSpinner,
 } from '/js/dom';
-import {t} from '/js/localization';
+import {fetchTemplate, t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {styleCodeEmpty} from '/js/sections-util';
@@ -68,7 +68,7 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
   }
 
   const hasFileAccessP = API.data.get('hasFileAccess');
-  const tplP = t.fetchTemplate('/edit.html', 'styleSettings');
+  const tplP = fetchTemplate('/edit.html', 'styleSettings');
   tplP.then(el => {
     el.firstChild.remove(); // update URL
     el.lastChild.remove(); // buttons
@@ -363,7 +363,7 @@ async function getAppliesTo(style) {
   const res = [];
   const TARGETS = ['urls', 'urlPrefixes', 'domains', 'regexps'];
   for (const section of style.sections) {
-    const targets = [].concat(...TARGETS.map(t => section[t]).filter(Boolean));
+    const targets = [].concat(...TARGETS.map(_ => section[_]).filter(Boolean));
     res.push(...targets);
     numGlobals += !targets.length && !styleCodeEmpty(section);
   }

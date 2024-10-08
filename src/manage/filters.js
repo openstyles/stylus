@@ -4,17 +4,18 @@ import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import router from '/js/router';
 import {debounce} from '/js/toolbox';
-import {installed} from './index';
 import {fitNameColumn, fitSizeColumn} from './render';
+import {updateStripes} from './sorter';
+import {installed} from './util';
 
-const filtersSelector = {
+export const filtersSelector = {
   hide: '',
   unhide: '',
   numShown: 0,
   numTotal: 0,
 };
 const fltSearch = 'search';
-const fltMode = 'searchMode';
+export const fltMode = 'searchMode';
 const fltModePref = 'manage.searchMode';
 let elSearch, elSearchMode;
 
@@ -128,14 +129,14 @@ function initFilters() {
   };
 }
 
-function filterOnChange({target: el, forceRefilter, alreadySearched}) {
+function filterOnChange({target, forceRefilter, alreadySearched}) {
   const getValue = el => (el.type === 'checkbox' ? el.checked : el.value.trim());
   if (!forceRefilter) {
-    const value = getValue(el);
-    if (value === el.lastValue) {
+    const value = getValue(target);
+    if (value === target.lastValue) {
       return;
     }
-    el.lastValue = value;
+    target.lastValue = value;
   }
   const enabledFilters = $$('#header [data-filter]').filter(el => getValue(el));
   const buildFilter = hide =>
@@ -150,7 +151,7 @@ function filterOnChange({target: el, forceRefilter, alreadySearched}) {
     hide: buildFilter(true),
     unhide: buildFilter(false),
   });
-  reapplyFilter(installed, alreadySearched).then(sorter.updateStripes);
+  reapplyFilter(installed, alreadySearched).then(updateStripes);
 }
 
 export function filterAndAppend({entry, container}) {
@@ -219,7 +220,6 @@ async function reapplyFilter(container = installed, alreadySearched) {
     installed.appendChild(toHide[0]);
   }
   showFiltersStats();
-  return;
 
   /***************************************/
 
@@ -233,7 +233,6 @@ async function reapplyFilter(container = installed, alreadySearched) {
       for (const el of container) {
         (el.matches(selector) ? toUnhide : toHide).push(el);
       }
-      return;
     } else if (hide) {
       toHide = $$(selector, container);
     } else {
@@ -242,7 +241,7 @@ async function reapplyFilter(container = installed, alreadySearched) {
   }
 }
 
-function showFiltersStats() {
+export function showFiltersStats() {
   const active = filtersSelector.hide !== '';
   $('#filters summary').classList.toggle('active', active);
   $('#reset-filters').disabled = !active;

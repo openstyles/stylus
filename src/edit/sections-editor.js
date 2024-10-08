@@ -1,5 +1,5 @@
 import {$, $create, $remove, messageBox} from '/js/dom';
-import {t} from '/js/localization';
+import {t, template} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {MozDocMapper, styleSectionsEqual} from '/js/sections-util';
@@ -7,7 +7,7 @@ import {clipString, RX_META, UCD} from '/js/toolbox';
 import CodeMirror from 'codemirror';
 import {extraKeys} from './codemirror-default';
 import editor from './editor';
-import linterMan from './linter-manager';
+import * as linterMan from './linter';
 import EditorSection from './sections-editor-section';
 import {helpPopup, rerouteHotkeys, showCodeMirrorPopup} from './util';
 
@@ -235,10 +235,10 @@ export default function SectionsEditor() {
     const windowBottom = scrollY + window.innerHeight - margin;
     const allSectionsContainerTop = scrollY + container.getBoundingClientRect().top;
     const distances = [];
-    const alreadyInView = cm && offscreenDistance(null, cm) === 0;
+    const alreadyInView = cm && offscreenDistance() === 0;
     return alreadyInView ? cm : findClosest();
 
-    function offscreenDistance(index, cm) {
+    function offscreenDistance(index) {
       if (index >= 0 && distances[index] !== undefined) {
         return distances[index];
       }
@@ -284,11 +284,11 @@ export default function SectionsEditor() {
       while (b && offscreenDistance(b - 1) <= offscreenDistance(b)) {
         b--;
       }
-      const cm = editors[b];
+      const closest = editors[b];
       if (distances[b] > 0) {
-        editor.scrollToEditor(cm);
+        editor.scrollToEditor(closest);
       }
-      return cm;
+      return closest;
     }
   }
 
@@ -513,10 +513,10 @@ export default function SectionsEditor() {
     let y = 0;
     let tPrev;
     for (let i = 0, iSec = sections.length; i < src.length; i++, iSec++) {
-      const t = performance.now();
+      const now = performance.now();
       if (!tPrev) {
-        tPrev = t;
-      } else if (t - tPrev > 100) {
+        tPrev = now;
+      } else if (now - tPrev > 100) {
         tPrev = 0;
         forceRefresh = false;
         await new Promise(setTimeout);
@@ -555,7 +555,7 @@ export default function SectionsEditor() {
                    '-'.repeat(20) + '\n' +
                    lines.slice(0, MAX_LINES).map(s => clipString(s, 100)).join('\n') +
                    (lines.length > MAX_LINES ? '\n...' : '');
-      const del = section.elDel = t.template.deletedSection.cloneNode(true);
+      const del = section.elDel = template.deletedSection.cloneNode(true);
       $('button', del).onclick = () => restoreSection(section);
       del.title = title;
       section.el.prepend(del);

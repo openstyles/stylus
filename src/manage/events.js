@@ -1,51 +1,59 @@
-import {configDialog, messageBox} from '/js/dom';
-/* global sorter */
+import {
+  $, $$, animateElement, configDialog, getEventKeyName, messageBox, scrollElementIntoView,
+} from '/js/dom';
 import {t} from '/js/localization';
-import {API} from '/js/msg';
+import {API, onExtension} from '/js/msg';
 import {browserWindows, debounce, getOwnTab, sessionStore, UCD} from '/js/toolbox';
 import {filterAndAppend, showFiltersStats} from './filters';
-import {installed, newUI} from '.';
-import {
-  createStyleElement, createTargetsElement, getFaviconSrc, styleToDummyEntry, updateTotal,
-} from './render';
+import {createStyleElement, createTargetsElement, getFaviconSrc, updateTotal} from './render';
+import * as sorter from './sorter';
 import {checkUpdate, handleUpdateInstalled} from './updater-ui';
-/* global
-  $
-  $$
-  $entry
-  animateElement
-  getEventKeyName
-  scrollElementIntoView
-*/// dom.js
+import {
+  $entry, installed, newUI, objectDiff, queue, removeStyleCode, styleToDummyEntry,
+} from './util';
 
-const Events = {
+for (const a of $$('#header a[href^="http"]')) a.onclick = openLink;
+installed.on('click', onEntryClicked);
+installed.on('contextmenu', onEntryClicked);
+window.on('pageshow', handleVisibilityChange);
+window.on('pagehide', handleVisibilityChange);
+onExtension(m => {
+  switch (m.method) {
+    case 'styleUpdated':
+    case 'styleAdded':
+    case 'styleDeleted':
+      queue.push(m);
+      if (!queue.time) handleBulkChange(queue);
+      else debounce(handleBulkChange, queue.THROTTLE);
+  }
+});
 
-  queue: Object.assign([], {
-    THROTTLE: 100, // ms
-    styles: new Map(),
-    time: 0,
-  }),
+const SEL_EXPANDER = '.applies-to .expander';
+const ENTRY_ROUTES = {
 
-  addEntryTitle(link) {
-    const style = link.closest('.entry').styleMeta;
-    const {installDate: dIns, updateDate: dUpd, [UCD]: ucd} = style;
-    link.title = [
-      dUpd || dIns ? `${t.formatRelativeDate(dUpd || dIns)}` : '',
-      `${t('dateInstalled')}: ${t.formatDate(dIns, true) || '—'}`,
-      `${t('dateUpdated')}: ${t.formatDate(dUpd, true) || '—'}`,
-      ucd ? `UserCSS, v.${ucd.version}` : '',
-    ].filter(Boolean).join('\n');
+  'input, .enable, .disable'(event, entry) {
+    API.styles.toggle(entry.styleId, this.matches('.enable') || this.checked);
   },
 
-  check(event, entry) {
+  '.style-name'(event, entry) {
+    if (newUI.cfg.enabled && !event.target.closest('.homepage')) {
+      edit(event, entry);
+    }
+  },
+
+  '.homepage': openLink,
+
+  '.check-update'(event, entry) {
     checkUpdate(entry, {single: true});
   },
 
-  config(event, {styleMeta}) {
-    configDialog(styleMeta);
+  '.update'(event, entry) {
+    const json = entry.updatedCode;
+    json.id = entry.styleId;
+    (json[UCD] ? API.usercss.install : API.styles.install)(json);
   },
 
-  async delete(event, entry) {
+  async '.delete'(event, entry) {
     const id = entry.styleId;
     animateElement(entry);
     const {button} = await messageBox.show({
@@ -61,114 +69,82 @@ const Events = {
     if (deleteButton) deleteButton.removeAttribute('data-focused-via-click');
   },
 
-  async edit(event, entry) {
-    if (event.altKey) {
-      return;
-    }
+  '.configure-usercss'(event, {styleMeta}) {
+    configDialog(styleMeta);
+  },
+
+  [SEL_EXPANDER]: expandTargets,
+};
+
+const ENTRY_ROUTES_CTX = {
+  [SEL_EXPANDER]: expandTargets,
+};
+
+async function edit(event, entry) {
+  if (event.altKey) {
+    return;
+  }
+  event.preventDefault();
+  event.stopPropagation();
+  const key = getEventKeyName(event);
+  const url = $('[href]', entry).href;
+  const ownTab = await getOwnTab();
+  if (key === 'MouseL') {
+    sessionStore['manageStylesHistory' + ownTab.id] = url;
+    location.href = url;
+  } else if (browserWindows && key === 'Shift-MouseL') {
+    API.openEditor({id: entry.styleId});
+  } else {
+    API.openURL({
+      url,
+      index: ownTab.index + 1,
+      active: key === 'Shift-MouseM' || key === 'Shift-Ctrl-MouseL',
+    });
+  }
+}
+
+function expandTargets(event, entry) {
+  if (event.type === 'contextmenu') {
     event.preventDefault();
-    event.stopPropagation();
-    const key = getEventKeyName(event);
-    const url = $('[href]', entry).href;
-    const ownTab = await getOwnTab();
-    if (key === 'MouseL') {
-      sessionStore['manageStylesHistory' + ownTab.id] = url;
-      location.href = url;
-    } else if (browserWindows && key === 'Shift-MouseL') {
-      API.openEditor({id: entry.styleId});
-    } else {
-      API.openURL({
-        url,
-        index: ownTab.index + 1,
-        active: key === 'Shift-MouseM' || key === 'Shift-Ctrl-MouseL',
-      });
-    }
-  },
+    const ex = '.expanded';
+    $$(`.has-more${$(ex, entry) ? ex : `:not(${ex})`} .expander`)
+      .forEach(el => el.click());
+    return;
+  }
+  if (!entry._allTargetsRendered) {
+    createTargetsElement({entry, expanded: true});
+    getFaviconSrc(entry);
+  }
+  this.closest('.applies-to').classList.toggle('expanded');
+}
 
-  expandTargets(event, entry) {
-    if (event.type === 'contextmenu') {
-      event.preventDefault();
-      const ex = '.expanded';
-      $$(`.has-more${$(ex, entry) ? ex : `:not(${ex})`} .expander`)
-        .forEach(el => el.click());
-      return;
-    }
-    if (!entry._allTargetsRendered) {
-      createTargetsElement({entry, expanded: true});
-      getFaviconSrc(entry);
-    }
-    this.closest('.applies-to').classList.toggle('expanded');
-  },
+export async function openLink(event) {
+  // Not handling Shift-click - the built-in 'open in a new window' command
+  if (getEventKeyName(event) !== 'Shift-MouseL') {
+    event.preventDefault(); // Prevent FF from double-handling the event
+    const {index} = await getOwnTab();
+    API.openURL({
+      url: event.target.closest('a').href,
+      index: index + 1,
+      active: !event.ctrlKey || event.shiftKey,
+    });
+  }
+}
 
-  async external(event) {
-    // Not handling Shift-click - the built-in 'open in a new window' command
-    if (getEventKeyName(event) !== 'Shift-MouseL') {
-      event.preventDefault(); // Prevent FF from double-handling the event
-      const {index} = await getOwnTab();
-      API.openURL({
-        url: event.target.closest('a').href,
-        index: index + 1,
-        active: !event.ctrlKey || event.shiftKey,
-      });
-    }
-  },
-
-  entryClicked(event) {
-    const target = event.target;
-    const entry = target.closest('.entry');
-    const routes = Events['ENTRY_ROUTES' + (event.type === 'contextmenu' ? '_CTX' : '')];
-    for (const selector in routes) {
-      for (let el = target; el && el !== entry; el = el.parentElement) {
-        if (el.matches(selector)) {
-          return routes[selector].call(el, event, entry);
-        }
+export function onEntryClicked(event) {
+  const target = event.target;
+  const entry = target.closest('.entry');
+  const routes = event.type === 'contextmenu' ? ENTRY_ROUTES_CTX : ENTRY_ROUTES;
+  for (const selector in routes) {
+    for (let el = target; el && el !== entry; el = el.parentElement) {
+      if (el.matches(selector)) {
+        return routes[selector].call(el, event, entry);
       }
     }
-  },
+  }
+}
 
-  lazyAddEntryTitle({type, target}) {
-    const cell = target.closest('h2.style-name, [data-type=age]');
-    if (cell) {
-      const link = $('.style-name-link', cell) || cell;
-      if (type === 'mouseover' && !link.title) {
-        debounce(Events.addEntryTitle, 50, link);
-      } else {
-        debounce.unregister(Events.addEntryTitle);
-      }
-    }
-  },
-
-  name(event, entry) {
-    if (newUI.enabled && !event.target.closest('.homepage')) {
-      Events.edit(event, entry);
-    }
-  },
-
-  toggle(event, entry) {
-    API.styles.toggle(entry.styleId, this.matches('.enable') || this.checked);
-  },
-
-  update(event, entry) {
-    const json = entry.updatedCode;
-    json.id = entry.styleId;
-    (json[UCD] ? API.usercss.install : API.styles.install)(json);
-  },
-};
-
-Events.ENTRY_ROUTES = {
-  'input, .enable, .disable': Events.toggle,
-  '.style-name': Events.name,
-  '.homepage': Events.external,
-  '.check-update': Events.check,
-  '.update': Events.update,
-  '.delete': Events.delete,
-  '.applies-to .expander': Events.expandTargets,
-  '.configure-usercss': Events.config,
-};
-Events.ENTRY_ROUTES_CTX = {
-  '.applies-to .expander': Events.expandTargets,
-};
-
-export function handleBulkChange(q = Events.queue) {
+export function handleBulkChange(q = queue) {
   for (const msg of q) {
     const {id} = msg.style;
     let fullStyle;
@@ -259,50 +235,4 @@ export function handleVisibilityChange(e) {
   } else if (e.type === 'pagehide') {
     history.replaceState({scrollY: window.scrollY}, document.title);
   }
-}
-
-function objectDiff(first, second, path = '') {
-  const diff = [];
-  for (const key in first) {
-    const a = first[key];
-    const b = second[key];
-    if (a === b) {
-      continue;
-    }
-    if (b === undefined) {
-      diff.push({path, key, values: [a], type: 'removed'});
-      continue;
-    }
-    if (a && typeof a.filter === 'function' && b && typeof b.filter === 'function') {
-      if (
-        a.length !== b.length ||
-        a.some((el, i) => {
-          const result = !el || typeof el !== 'object'
-            ? el !== b[i]
-            : objectDiff(el, b[i], path + key + '[' + i + '].').length;
-          return result;
-        })
-      ) {
-        diff.push({path, key, values: [a, b], type: 'changed'});
-      }
-    } else if (a && b && typeof a === 'object' && typeof b === 'object') {
-      diff.push(...objectDiff(a, b, path + key + '.'));
-    } else {
-      diff.push({path, key, values: [a, b], type: 'changed'});
-    }
-  }
-  for (const key in second) {
-    if (!(key in first)) {
-      diff.push({path, key, values: [second[key]], type: 'added'});
-    }
-  }
-  return diff;
-}
-
-/** Clearing the code to free up some memory */
-function removeStyleCode(style) {
-  let sum = (style.sourceCode || '').length || 0;
-  style.sections.forEach(s => { sum += (s.code || '').length; s.code = null; });
-  style.sourceCode = null;
-  Object.defineProperty(style, '_codeSize', {value: sum, writable: true}); // non-enumerable!
 }

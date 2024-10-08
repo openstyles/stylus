@@ -1,4 +1,3 @@
-import browser from '/js/browser';
 import {browserWindows, clamp, FIREFOX, URLS} from '/js/toolbox';
 import {chromeLocal} from '/js/storage-util';
 import {isVivaldi} from './common';

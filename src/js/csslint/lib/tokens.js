@@ -57,7 +57,7 @@ export const TIME = (Tokens[++i] = {name: 'TIME'}, i);
 
 export const TokenIdByCode = [];
 
-for (let i in Tokens) {
+for (i in Tokens) {
   const token = Tokens[i];
   const {text} = token;
   Tokens[token.name] = i = +i;

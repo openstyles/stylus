@@ -7,24 +7,27 @@
  * and not even a problem in the most popular case of using system dark/light mode.
  */
 import {$, $create} from '/js/dom-base';
+import {getCssMediaRuleByName} from '/js/dom-util';
 import * as msg from '/js/msg';
 import {API} from '/js/msg';
 import {FIREFOX, MF_ICON_EXT, MF_ICON_PATH} from '/js/toolbox';
 import '/css/global.css';
 import '/css/global-dark.css';
 
+export const MEDIA_ON = 'screen';
+export const MEDIA_OFF = 'not all';
+const MEDIA_NAME = 'dark';
+const map = {[MEDIA_ON]: true, [MEDIA_OFF]: false};
+
 (async () => {
   let isDark, isVivaldi;
   if (window === top) ({isDark, isVivaldi} = await API.info.get());
   else isDark = parent.document.documentElement.dataset.uiTheme === 'dark';
-  const ON = 'screen';
-  const OFF = 'not all';
-  const map = {[ON]: true, [OFF]: false};
-  toggleDarkStyles();
+  toggle(isDark);
   msg.onExtension(e => {
     if (e.method === 'colorScheme') {
       isDark = e.value;
-      toggleDarkStyles();
+      toggle(isDark);
     }
   });
   // Add favicon in FF and Vivaldi
@@ -37,14 +40,13 @@ import '/css/global-dark.css';
       sizes: size + 'x' + size,
     })));
   }
-  function toggleDarkStyles() {
-    $.root.dataset.uiTheme = isDark ? 'dark' : 'light';
-    for (const sheet of document.styleSheets) {
-      for (const {media: m} of sheet.cssRules) {
-        if (m && m[1] === 'dark' && map[m[0]] !== isDark) {
-          m.mediaText = `${isDark ? ON : OFF},dark`;
-        }
-      }
-    }
-  }
 })();
+
+function toggle(isDark) {
+  $.root.dataset.uiTheme = isDark ? 'dark' : 'light';
+  getCssMediaRuleByName(MEDIA_NAME, m => {
+    if (map[m[0]] !== isDark) {
+      m.mediaText = `${isDark ? MEDIA_ON : MEDIA_OFF},${MEDIA_NAME}`;
+    }
+  });
+}
