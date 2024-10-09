@@ -138,7 +138,7 @@ function filterOnChange({target, forceRefilter, alreadySearched}) {
     }
     target.lastValue = value;
   }
-  const enabledFilters = $$('#header [data-filter]').filter(el => getValue(el));
+  const enabledFilters = [...$$('#header [data-filter]')].filter(el => getValue(el));
   const buildFilter = hide =>
     (hide ? '' : '.entry.hidden') +
     [...enabledFilters.map(el =>
@@ -234,9 +234,9 @@ async function reapplyFilter(container = installed, alreadySearched) {
         (el.matches(selector) ? toUnhide : toHide).push(el);
       }
     } else if (hide) {
-      toHide = $$(selector, container);
+      toHide = [...$$(selector, container)];
     } else {
-      toUnhide = $$(selector, container);
+      toUnhide = [...$$(selector, container)];
     }
   }
 }

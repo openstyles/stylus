@@ -41,7 +41,7 @@ function checkUpdateAll() {
 
   const ignoreDigest = this === btnCheckForce;
   $$('.updatable:not(.can-update)' + (ignoreDigest ? '' : ':not(.update-problem)'))
-    .map(checkUpdate);
+    .forEach(checkUpdate);
 
   let total = 0;
   let checked = 0;

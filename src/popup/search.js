@@ -259,7 +259,7 @@ function renderYears() {
     years[y] = (years[y] || 0) + 1;
   }
   const texts = years.reduceRight((res, num, y) => res.push(`${y} (${num})`) && res, []);
-  const selects = $$('#search-years select');
+  const selects = [...$$('#search-years select')];
   selects.forEach((sel, selNum) => {
     if (texts.length !== sel.length || texts.some((v, i) => v !== sel[i].text)) {
       const i = sel.selectedIndex;

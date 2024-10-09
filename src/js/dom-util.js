@@ -139,7 +139,7 @@ export function setupLivePrefs(ids) {
   let init = true;
   // getElementsByTagName is cached so it's much faster than calling querySelector for each id
   const all = (ids instanceof Element ? ids : document).getElementsByTagName('*');
-  ids = Array.isArray(ids) ? [...ids] : prefs.knownKeys.filter(id => id in all);
+  ids = ids?.forEach ? [...ids] : prefs.knownKeys.filter(id => id in all);
   prefs.subscribe(ids, updateElement, true);
   init = false;
   function onChange() {
@@ -203,7 +203,7 @@ export function showSpinner(parent) {
 export function waitForSelector(selector, {recur, stopOnDomReady = true} = {}) {
   let el = $(selector);
   let elems;
-  return el && (!recur || recur(elems = $$(selector)) === false)
+  return el && (!recur || recur(elems = [...$$(selector)]) === false)
     ? Promise.resolve(el)
     : new Promise(resolve => {
       new MutationObserver((mutations, observer) => {
@@ -225,8 +225,8 @@ export function waitForSelector(selector, {recur, stopOnDomReady = true} = {}) {
       function callRecur([m0, m1]) {
         // Checking addedNodes if only 1 MutationRecord to skip simple mutations quickly
         if (m1 || (m0 = m0.addedNodes)[3] || [].some.call(m0, isMatching)) {
-          const all = $$(selector); // Using one $$ call instead of ~100 calls for each node
-          const added = !elems ? all : all.filter(_ => !elems.includes(_));
+          const all = [...$$(selector)]; // Using one $$ call instead of ~100 calls for each node
+          const added = !elems ? all : all.filter(notIncludedInArray, elems);
           if (added.length) {
             elems = all;
             return recur(added);
@@ -234,4 +234,8 @@ export function waitForSelector(selector, {recur, stopOnDomReady = true} = {}) {
         }
       }
     });
+}
+
+function notIncludedInArray(val) {
+  return !this.includes(val);
 }

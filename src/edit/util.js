@@ -41,7 +41,7 @@ export const helpPopup = {
         !el.closest('#search-replace-dialog')
       );
     const div = event && event.target.closest(helpPopup.SEL)
-      || $$(helpPopup.SEL).pop();
+      || [...$$(helpPopup.SEL)].pop();
     if (!canClose || !div) {
       return;
     }

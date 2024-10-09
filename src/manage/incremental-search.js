@@ -34,7 +34,7 @@ function incrementalSearch(event, immediately) {
   }
   let textAtPos = 1e6;
   let rotated;
-  const entries = $('#message-box') ? $$('.injection-order-entry') : [...installed.children];
+  const entries = [...$('#message-box') ? $$('.injection-order-entry') : installed.children];
   const focusedIndex = entries.indexOf(focusedEntry);
   if (focusedIndex > 0) {
     if (direction > 0) {

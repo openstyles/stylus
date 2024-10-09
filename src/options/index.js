@@ -64,8 +64,9 @@ function customizeHotkeys() {
     className: 'center-dialog pre-line',
     buttons: [t('confirmClose')],
     onshow(box) {
-      for (const el of $$('input', box)) el.onkeydown = onInput;
-      setupLivePrefs($$('input', box).map(el => el.id));
+      const inputs = $$('input', box);
+      for (const el of inputs) el.onkeydown = onInput;
+      setupLivePrefs(inputs);
     },
   });
 

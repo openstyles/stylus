@@ -37,7 +37,7 @@ export function tHTML(html) {
 
 export function tNodeList(nodes) {
   if (nodes instanceof Node) {
-    nodes = $$(SELECTOR, nodes).concat(nodes);
+    nodes = [...$$(SELECTOR, nodes), nodes];
   }
   for (const node of nodes) {
     if (!node.localName) continue;
@@ -116,7 +116,7 @@ export async function fetchTemplate(url, name, all) {
   let res = template[name];
   if (!res) {
     res = parseHtml(await fetchText(url), '*');
-    if (!$$(`template[data-id${all ? '' : `="${name}"`}]`, res).map(createTemplate).length) {
+    if (![...$$(`template[data-id${all ? '' : `="${name}"`}]`, res)].map(createTemplate).length) {
       createTemplate({
         content: toFragment($('body', res)),
         dataset: {id: name},

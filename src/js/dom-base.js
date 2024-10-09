@@ -31,15 +31,20 @@ export const focusA11y = {
   },
 };
 
+/**
+ * We have ids with "." like #manage.onlyEnabled which looks like #id.class
+ * so since getElementById is superfast we'll try it anyway
+ * @param {string} selector
+ * @param {Node} [base]
+ * @return {?HTMLElement}
+ */
 export function $(selector, base) {
-  // we have ids with . like #manage.onlyEnabled which looks like #id.class
-  // so since getElementById is superfast we'll try it anyway
   const byId = !base && selector.startsWith('#') && document.getElementById(selector.slice(1));
   return byId || (base || document).querySelector(selector);
 }
 
 export function $$(selector, base = document) {
-  return [...base.querySelectorAll(selector)];
+  return base.querySelectorAll(selector);
 }
 
 export function $isTextInput(el = {}) {

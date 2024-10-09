@@ -1,6 +1,6 @@
 import {$, $$, $create} from '/js/dom';
-import {API} from '/js/msg';
 import {t} from '/js/localization';
+import {API} from '/js/msg';
 
 const entries = document.getElementsByClassName('entry');
 const container = $('#hotkey-info');
@@ -59,8 +59,8 @@ function onKeyDown(event) {
 }
 
 function getTogglables() {
-  const enabledOrAll = $('.entry.enabled') ? $$('.entry.enabled') : [...entries];
-  return enabledOrAll.map(entry => entry.id);
+  return [...$('.entry.enabled') ? $$('.entry.enabled') : entries]
+    .map(entry => entry.id);
 }
 
 function countEnabledTogglables() {
