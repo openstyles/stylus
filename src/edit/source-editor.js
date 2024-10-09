@@ -201,7 +201,7 @@ export default async function SourceEditor() {
     $('#enabled').checked = style.enabled;
     $('#url').href = style.url;
     editor.updateName();
-    cm.setPreprocessor((style[UCD] || {}).preprocessor);
+    cm.setPreprocessor(style[UCD]?.preprocessor);
   }
 
   async function replaceStyle(newStyle, draft) {

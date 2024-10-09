@@ -201,7 +201,7 @@ export default class TokenStream {
   /** Restores the last consumed token to the token stream. */
   unget() {
     if (this._cur) {
-      if ((this.token || {}).id === AMP) this._amp--;
+      if (this.token?.id === AMP) this._amp--;
       this.token = this._buf[(--this._cur - 1 + this._cycle + this._max) % this._max];
     } else {
       throw new Error('Too much lookahead.');

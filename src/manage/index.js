@@ -6,7 +6,7 @@ import router from '/js/router';
 import '/js/themer';
 import {CHROME} from '/js/toolbox';
 import {fltMode} from './filters';
-import {showStyles, switchUI} from './render';
+import {readBadFavs, showStyles} from './render';
 import * as sorter from './sorter';
 import {newUI} from './util';
 import './manage.css';
@@ -43,13 +43,12 @@ Promise.all([
 function onPrefsReady() {
   setupLivePrefs();
   newUI.readPrefs();
-  newUI.renderClass();
-  prefs.subscribe(newUI.ids.map(newUI.prefKeyForId), () => switchUI(), true);
+  newUI.render(true);
+  prefs.subscribe(newUI.ids.map(newUI.prefKeyForId), () => newUI.render());
   prefs.subscribe('newStyleAsUsercss', (key, val) => {
     $('#add-style-label').textContent =
       t(val ? 'optionsAdvancedNewStyleAsUsercss' : 'addStyleLabel');
   }, true);
-  switchUI({styleOnly: true});
   sorter.init();
-  if (newUI.hasFavs()) return newUI.readBadFavs();
+  return newUI.hasFavs() && readBadFavs();
 }

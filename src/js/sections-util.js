@@ -136,5 +136,5 @@ export function styleJSONseemsValid(json) {
     && typeof json.name == 'string'
     && json.name.trim()
     && Array.isArray(json.sections)
-    && typeof (json.sections[0] || {}).code === 'string';
+    && typeof json.sections[0]?.code === 'string';
 }

@@ -143,7 +143,6 @@ export function sort(styles) {
 }
 
 export function update() {
-  if (!installed) return;
   const current = [...installed.children];
   const sorted = sort([...current]);
   if (current.some((el, i) => el !== sorted[i])) {

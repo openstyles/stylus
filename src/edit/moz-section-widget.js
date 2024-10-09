@@ -357,7 +357,7 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
       valueEnd = {line, ch: valuePos.ch + value.length},
       end = {line, ch: valueEnd.ch + Boolean(isQuoted) + 1},
     } = func;
-    const el = (old.item || {})[KEY] || TPL.listItem.cloneNode(true);
+    const el = old.item?.[KEY] || TPL.listItem.cloneNode(true);
     const elVal = $(C_VALUE, el);
     /** @namespace MarkedFunc */
     const res = el[KEY] = {

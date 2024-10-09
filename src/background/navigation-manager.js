@@ -40,7 +40,7 @@ function onFakeNavigation(data) {
   const {tabId} = data;
   const td = tabMan.get(tabId); if (!td) return;
   const {url, frameId: f, documentId: d} = data;
-  const iid = !d && (td.iid || {})[f];
+  const iid = !d && td.iid?.[f];
   const to = d ? {documentId: d} : {frameId: f};
   sendTab(tabId, {method: 'urlChanged', iid, url}, to);
 }

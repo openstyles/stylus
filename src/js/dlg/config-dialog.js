@@ -134,7 +134,7 @@ export default async function configDialog(style) {
     style.sourceCode = null;
     style.sections = null;
     const styleVars = style[UCD].vars;
-    const bgVars = isInstaller ? styleVars : (bgStyle[UCD] || {}).vars || {};
+    const bgVars = isInstaller ? styleVars : bgStyle[UCD]?.vars || {};
     const invalid = [];
     let numValid = 0;
     for (const va of vars) {

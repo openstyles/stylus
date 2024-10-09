@@ -4,7 +4,7 @@ import {deepEqual} from '/js/toolbox';
 
 // TODO: export directly
 const router = {
-  buffer: (history.state || {}).buffer || [],
+  buffer: history.state?.buffer || [],
   watchers: [],
 
   getSearch(key) {

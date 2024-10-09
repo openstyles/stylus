@@ -138,7 +138,7 @@ function keepFocusRingOnTabbing(event) {
  */
 function splitMenu(event) {
   const prevMenu = $('.split-btn.active ' + SPLIT_BTN_MENU) || $(SPLIT_BTN_MENU);
-  const prevPedal = (prevMenu || {}).previousElementSibling;
+  const prevPedal = prevMenu?.previousElementSibling;
   const pedal = event && event.target.closest('.split-btn-pedal');
   const entry = event && prevMenu && event.target.closest(SPLIT_BTN_MENU + '>*');
   if (prevMenu) {

@@ -5,7 +5,7 @@ import {t} from '/js/localization';
 import {API, onExtension} from '/js/msg';
 import {browserWindows, debounce, getOwnTab, sessionStore, UCD} from '/js/toolbox';
 import {filterAndAppend, showFiltersStats} from './filters';
-import {createStyleElement, createTargetsElement, getFaviconSrc, updateTotal} from './render';
+import {createStyleElement, createTargetsElement, renderFavs, updateTotal} from './render';
 import * as sorter from './sorter';
 import {checkUpdate, handleUpdateInstalled} from './updater-ui';
 import {
@@ -113,7 +113,7 @@ function expandTargets(event, entry) {
   }
   if (!entry._allTargetsRendered) {
     createTargetsElement({entry, expanded: true});
-    getFaviconSrc(entry);
+    renderFavs(entry);
   }
   this.closest('.applies-to').classList.toggle('expanded');
 }
@@ -200,7 +200,7 @@ function handleUpdate(style, {reason, method} = {}) {
     animateElement(entry);
     requestAnimationFrame(() => scrollElementIntoView(entry));
   }
-  getFaviconSrc(entry);
+  renderFavs(entry);
 
   function handleToggledOrCodeOnly() {
     removeStyleCode(style);

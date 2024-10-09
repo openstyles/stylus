@@ -266,7 +266,7 @@ function renderYears() {
       const value = i && i < sel.length - 1 && sel.value;
       sel.textContent = '';
       sel.append(...texts.map(_ => $create('option', {value: _.split(' ')[0]}, _)));
-      sel.value = value || (sel[`${selNum ? 'first' : 'last'}Child`] || {}).value;
+      sel.value = value || sel[`${selNum ? 'first' : 'last'}Child`]?.value;
     }
   });
   const [y1, y2] = selects.map(el => Number(el.value)).sort();
@@ -283,7 +283,7 @@ function render() {
   // keep rendered elements with ids in the range of interest
   while (
     plantAt < PAGE_LENGTH &&
-    slot && slot.id === RESULT_ID_PREFIX + (results[startAt] || {}).i
+    slot && slot.id === RESULT_ID_PREFIX + results[startAt]?.i
   ) {
     slot = slot.nextElementSibling;
     plantAt++;

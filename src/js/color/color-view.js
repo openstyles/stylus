@@ -553,7 +553,7 @@ function makePalette({cm, options}) {
   });
   const res = [];
   if (palette.size > 1 || nums && nums.length > 1) {
-    const old = new Map((options.popup.palette || []).map(el => [el.__color, el]));
+    const old = new Map(options.popup.palette?.map(el => [el.__color, el]));
     for (const [color, data] of palette) {
       const str = data.join(', ');
       let el = old.get(color);

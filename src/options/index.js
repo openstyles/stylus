@@ -35,7 +35,7 @@ $('#shortcuts').onclick = () => {
     API.openURL({url: URLS.configureCommands});
   }
 };
-$('#shortcuts').hidden = FIREFOX && !(browser.commands || {}).update;
+$('#shortcuts').hidden = FIREFOX && !browser.commands?.update;
 $('#reset').onclick = async () => {
   if (await messageBox.confirm(t('confirmDiscardChanges'))) {
     for (const el of $$('input')) {

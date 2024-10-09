@@ -186,7 +186,7 @@ function hint(cm) {
     words = ruleIds;
   } else if (depth === 2 || depth === 3 && lexical.type === ']') {
     words = !quoted ? ['true', 'false', 'null'] :
-      ruleIds.includes(prevWord) && (options[prevWord] || [])[0] || [];
+      ruleIds.includes(prevWord) && options[prevWord]?.[0] || [];
   } else if (depth === 4 && prevWord === 'severity') {
     words = ['error', 'warning'];
   } else if (depth === 4) {
@@ -195,7 +195,7 @@ function hint(cm) {
     while (prevWord && !ruleIds.includes(prevWord)) {
       prevWord = (search.find(true) || [])[1];
     }
-    words = (options[prevWord] || []).slice(-1)[0] || ruleIds;
+    words = options[prevWord]?.slice(-1)[0] || ruleIds;
   }
   return {
     list: words.filter(word => word.startsWith(leftPart)),

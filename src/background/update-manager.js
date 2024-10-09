@@ -245,7 +245,7 @@ async function downloadEtag(url) {
 }
 
 function getDateFromVer(style) {
-  const m = RX_DATE2VER.exec((style[UCD] || {}).version);
+  const m = RX_DATE2VER.exec(style[UCD]?.version);
   if (m) {
     m[2]--; // month is 0-based in `Date` constructor
     return new Date(...m.slice(1)).getTime();

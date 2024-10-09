@@ -629,7 +629,7 @@ function fixKnownProblems(style, initIndex, initArray) {
   if (initArray && (
     !Array.isArray(v = style.sections) && (v = 0, true) ||
     /* @import must precede `vars` that we add at beginning */
-    !isEmptyObj((style[UCD] || {}).vars) && v.some(hasVarsAndImport)
+    !isEmptyObj(style[UCD]?.vars) && v.some(hasVarsAndImport)
   )) {
     if (!v && !style.sourceCode) {
       style.customName = 'Damaged style #' + (style.id || initIndex);

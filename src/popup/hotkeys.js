@@ -27,7 +27,7 @@ function setState(newState = !enabled) {
 
 function onKeyDown(event) {
   if (event.ctrlKey || event.altKey || event.metaKey || !enabled ||
-      /^(text|search)$/.test((document.activeElement || {}).type)) {
+      /^(text|search)$/.test(document.activeElement?.type)) {
     return;
   }
   let entry;

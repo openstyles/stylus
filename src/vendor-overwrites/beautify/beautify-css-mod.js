@@ -91,7 +91,7 @@
             newline_before_close_brace = true,
         } = options;
 
-        var translatePos = (options.translate_positions || [])[0];
+        var translatePos = options.translate_positions?.[0];
         var translatePosIndex = 0;
         var translatePosLine = translatePos && translatePos.line;
         var translatePosCol = translatePos && translatePos.ch;

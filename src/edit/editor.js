@@ -40,7 +40,7 @@ const editor = self.editor = {
     style = val;
   },
 
-  applyScrollInfo(cm, si = (editor.scrollInfo.cms || [])[0]) {
+  applyScrollInfo(cm, si = editor.scrollInfo.cms?.[0]) {
     if (si && si.sel) {
       const bmOpts = {sublimeBookmark: true, clearWhenEmpty: false}; // copied from sublime.js
       const bms = cm.state.sublimeBookmarks = [];

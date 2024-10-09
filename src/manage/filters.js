@@ -19,7 +19,7 @@ export const fltMode = 'searchMode';
 const fltModePref = 'manage.searchMode';
 let elSearch, elSearchMode;
 
-router.watch({search: [fltSearch, fltMode]}, ([search, mode]) => {
+prefs.ready.then(() => router.watch({search: [fltSearch, fltMode]}, ([search, mode]) => {
   const firstRun = !elSearch;
   if (firstRun) initFilters();
   elSearch.value = search || '';
@@ -28,7 +28,7 @@ router.watch({search: [fltSearch, fltMode]}, ([search, mode]) => {
   }
   if (firstRun) filterOnChange({forceRefilter: true});
   else searchStyles();
-});
+}));
 
 function initFilters() {
   elSearch = $('#search');
