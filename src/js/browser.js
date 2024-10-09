@@ -1,7 +1,7 @@
 let browser;
 if (process.env.BUILD === 'CHROME_MV3') {
   browser = self.browser = chrome;
-} else if (process.env.BUILD !== 'FIREFOX' && !self.browser?.runtime) {
+} else if (process.env.BUILD !== 'FIREFOX' && !window.browser?.runtime) {
   /* Auto-promisifier with a fallback to direct call on signature error.
      The fallback isn't used now since we call all synchronous methods via `chrome` */
   const directEvents = ['addListener', 'removeListener', 'hasListener', 'hasListeners'];
@@ -60,7 +60,7 @@ if (process.env.BUILD === 'CHROME_MV3') {
         return target[key] || proxify(src, srcName, target, key);
       },
     });
-  browser = self.browser = createProxy(chrome);
+  browser = window.browser = createProxy(chrome);
 }
 
 export default browser;

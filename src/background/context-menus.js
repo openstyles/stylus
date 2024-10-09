@@ -3,7 +3,6 @@ import {sendTab} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {CHROME, URLS, ignoreChromeError} from '/js/toolbox';
 import {bgReady, browserCommands} from './common';
-import {bgPrefsSet} from './bg-prefs';
 
 bgReady.all.then(() => chrome.management.getSelf(ext => {
   const contextMenus = Object.assign({
@@ -79,7 +78,7 @@ bgReady.all.then(() => chrome.management.getSelf(ext => {
 
   /** @param {chrome.contextMenus.OnClickData} info */
   function togglePref(info) {
-    bgPrefsSet(info.menuItemId, info.checked);
+    prefs.set(info.menuItemId, info.checked);
   }
 
   function togglePresence(id, checked) {

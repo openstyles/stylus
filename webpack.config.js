@@ -163,6 +163,7 @@ function mergeCfg(ovr, base) {
 
 function makeLibrary(entry, name, extras) {
   return mergeCfg(extras, mergeCfg({
+    entry,
     output: {
       path: DST + JS,
       library: {
@@ -170,11 +171,10 @@ function makeLibrary(entry, name, extras) {
         name,
       },
     },
-    entry,
   }));
 }
 
-function makeContentScript(entry) {
+function makeContentScript(name) {
   /* TODO: write a plugin to remove webpack's machinery or write these directly + watch + babel
     makeContentScript('/content/install-hook-greasyfork.js'),
     makeContentScript('/content/install-hook-usercss.js'),
@@ -182,18 +182,17 @@ function makeContentScript(entry) {
     makeContentScript('/content/install-hook-userstylesworld.js'),
   */
   return mergeCfg({
-    entry,
-    externals: {
-      '/js/msg-base': 'API',
-    },
+    entry: '/content/' + name,
     output: {
       path: DST + JS,
       library: {
         // Not using `self` in a content script as it can be spoofed via `<html id=self>`
         type: 'window',
       },
-      module: true,
     },
+    plugins: [
+      defineVars({PAGE: false}),
+    ],
   });
 }
 
@@ -264,7 +263,7 @@ module.exports = [
       ],
     },
   }),
-  // makeLibrary('/content/apply.js'),
+  makeContentScript('apply.js'),
   // makeLibrary([
   //   '/background/background-worker.js',
   //   '/edit/editor-worker.js',

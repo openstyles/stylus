@@ -4,12 +4,12 @@ import * as msg from '/js/msg';
 import * as prefs from '/js/prefs';
 import {ignoreChromeError, UA} from '/js/toolbox';
 import createWorker from '/js/worker-host';
-import {bgPrefsSet} from './bg-prefs';
 import {broadcast} from './broadcast';
-import broadcastInjectorConfig, {INJECTOR_CONFIG_MAP} from './broadcast-injector-config';
+import './broadcast-injector-config';
 import * as colorScheme from './color-scheme';
 import {addAPI, API, bgReady, browserCommands, isVivaldi} from './common';
 import download from './download';
+import './bg-prefs';
 import './browser-cmd-hotkeys';
 import './content-scripts';
 import './context-menus';
@@ -73,7 +73,7 @@ Object.assign(browserCommands, {
   openOptions: () => API.openManage({options: true}),
   reload: () => chrome.runtime.reload(),
   styleDisableAll(info) {
-    bgPrefsSet('disableAll', info ? info.checked : !prefs.get('disableAll'));
+    prefs.set('disableAll', info ? info.checked : !prefs.get('disableAll'));
   },
 });
 
@@ -83,8 +83,8 @@ if (chrome.commands) {
 
 chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   if (reason === 'install') {
-    if (UA.mobile) bgPrefsSet('manage.newUI', false);
-    if (UA.windows) bgPrefsSet('editor.keyMap', 'sublime');
+    if (UA.mobile) prefs.set('manage.newUI', false);
+    if (UA.windows) prefs.set('editor.keyMap', 'sublime');
   }
   if (previousVersion === '1.5.30') {
     API.prefsDb.delete('badFavs'); // old Stylus marked all icons as bad when network was offline
@@ -129,6 +129,4 @@ Promise.all([
   bgReady._resolveAll(true);
   self.msg = msg;
   broadcast({method: 'backgroundReady'});
-  prefs.subscribe(Object.keys(INJECTOR_CONFIG_MAP), broadcastInjectorConfig);
-  colorScheme.onChange(broadcastInjectorConfig.bind(null, 'dark'));
 });

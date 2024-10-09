@@ -1,7 +1,6 @@
 import browser from '/js/browser';
 import * as prefs from '/js/prefs';
 import {chromeLocal, chromeSync} from '/js/storage-util';
-import {bgPrefsSet} from './bg-prefs';
 import {broadcastExtension} from './broadcast';
 import {bgReady, uuidIndex} from './common';
 import db from './db';
@@ -126,7 +125,7 @@ export async function start(name, fromPref = false) {
   await ctrl.init();
 
   await syncNow(name);
-  bgPrefsSet('sync.enabled', name);
+  prefs.set('sync.enabled', name);
   status.state = STATES.connected;
   schedule(SYNC_INTERVAL);
   emitStatusChange();
@@ -145,7 +144,7 @@ export async function stop() {
   } catch (e) {
   }
   currentDrive = null;
-  bgPrefsSet('sync.enabled', 'none');
+  prefs.set('sync.enabled', 'none');
   status.state = STATES.disconnected;
   status.currentDriveName = null;
   status.login = false;

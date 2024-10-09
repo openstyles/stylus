@@ -23,8 +23,8 @@ export const apiHandler = !isBg && {
   apply: apiSendProxy,
 };
 export const API = isBg
-  ? self.API
-  : self.API = new Proxy({path: ''}, apiHandler);
+  ? window.API
+  : window.API = new Proxy({path: ''}, apiHandler);
 
 let bgReadySignal;
 let bgReadying = new Promise(fn => (bgReadySignal = fn));

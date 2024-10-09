@@ -158,7 +158,7 @@ export const get = key => {
   return res && typeof res === 'object' ? deepCopy(res) : res;
 };
 
-export const set = (key, val, isSynced) => {
+export let set = (key, val, isSynced) => {
   const old = values[key];
   const def = defaults[key];
   const type = typeof def;
@@ -179,6 +179,8 @@ export const set = (key, val, isSynced) => {
    the extra bonus is that invokeAPI is immediate in extension tabs. */
   return true;
 };
+
+export const __newSet = fn => (set = fn);
 
 export const reset = key => {
   set(key, deepCopy(defaults[key]));

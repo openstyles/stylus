@@ -1,12 +1,20 @@
+import * as prefs from '/js/prefs';
 import {broadcast} from './broadcast';
+import * as colorScheme from './color-scheme';
+import {bgReady} from './common';
 import {getUrlOrigin} from './tab-util';
 
 let cfg;
-export const INJECTOR_CONFIG_MAP = {
+const INJECTOR_CONFIG_MAP = {
   exposeIframes: 'top',
   disableAll: 'off',
   styleViaASS: 'ass',
 };
+
+bgReady.all.then(() => {
+  prefs.subscribe(Object.keys(INJECTOR_CONFIG_MAP), broadcastInjectorConfig);
+  colorScheme.onChange(broadcastInjectorConfig.bind(null, 'dark'));
+});
 
 export default function broadcastInjectorConfig(key, val) {
   if (!cfg) {
