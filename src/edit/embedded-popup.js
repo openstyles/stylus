@@ -1,8 +1,8 @@
+import {extraKeys} from '/cm';
 import {$, $create, $remove, getEventKeyName} from '/js/dom';
 import {t} from '/js/localization';
 import * as prefs from '/js/prefs';
 import {MF, MF_ICON_EXT, MF_ICON_PATH} from '/js/toolbox';
-import {extraKeys} from './codemirror-default';
 
 export default function EmbeddedPopup() {
   const ID = 'popup-iframe';

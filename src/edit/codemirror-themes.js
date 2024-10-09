@@ -1,2 +1,0 @@
-const CODEMIRROR_THEMES = process.env.CODEMIRROR_THEMES;
-export default CODEMIRROR_THEMES;

@@ -1,7 +1,7 @@
 import {$} from '/js/dom';
-import {UA, deepMerge} from '/js/toolbox';
-import * as prefs from '/js/prefs';
 import {template} from '/js/localization';
+import * as prefs from '/js/prefs';
+import {deepMerge, UA} from '/js/toolbox';
 import CodeMirror from 'codemirror';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/addon/comment/comment';
@@ -32,9 +32,11 @@ import 'codemirror/keymap/vim';
 import 'codemirror/mode/css/css';
 import 'codemirror/mode/stylus/stylus';
 import '/vendor-overwrites/codemirror-addon/match-highlighter.js';
-import './codemirror-default.css';
+import {THEME_KEY} from './themes';
+import './index.css';
 
 export {CodeMirror};
+export * from './themes';
 
 export const extraKeys = Object.assign(CodeMirror.defaults.extraKeys || {}, {
   // independent of current keyMap; some are implemented only for the edit page
@@ -76,7 +78,7 @@ prefs.ready.then(() => {
     hintOptions: {},
     lintReportDelay: prefs.get('editor.lintReportDelay'),
     styleActiveLine: {nonEmpty: true},
-    theme: prefs.get('editor.theme'),
+    theme: prefs.get(THEME_KEY),
     keyMap: prefs.get('editor.keyMap'),
     extraKeys,
     maxHighlightLength: 100e3,

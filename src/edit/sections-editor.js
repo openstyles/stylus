@@ -1,11 +1,10 @@
+import {CodeMirror, extraKeys} from '/cm';
 import {$, $create, $remove, messageBox} from '/js/dom';
 import {t, template} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {MozDocMapper, styleSectionsEqual} from '/js/sections-util';
 import {clipString, RX_META, UCD} from '/js/toolbox';
-import CodeMirror from 'codemirror';
-import {extraKeys} from './codemirror-default';
 import editor from './editor';
 import * as linterMan from './linter';
 import EditorSection from './sections-editor-section';

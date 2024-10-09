@@ -5,7 +5,7 @@ Object.assign(EventTarget.prototype, {
   off: removeEventListener,
 });
 
-// TODO: export directly
+// FIXME: export directly
 $.root = document.documentElement;
 $.rootCL = $.root.classList;
 

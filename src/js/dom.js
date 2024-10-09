@@ -2,7 +2,7 @@ import {$, dom} from './dom-base';
 import {waitForSelector} from './dom-util';
 import * as prefs from './prefs';
 import {FIREFOX, UA} from './toolbox';
-import '/content/apply'; // must run last to let `msg` swap `API`
+import '/content/apply'; // must run last to let `msg` swap `API` and expose toolbox->deepCopy
 
 export * from './dom-base';
 export * from './dom-util';

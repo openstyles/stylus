@@ -1,6 +1,7 @@
 'use strict';
 /* eslint no-unused-vars: 1 */
 
+const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 // const fse = require('fs-extra');
@@ -10,7 +11,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const {anyPathSep, defineVars, stripSourceMap, listCodeMirrorThemes} = require('./tools/util');
+const {anyPathSep, defineVars, stripSourceMap} = require('./tools/util');
 const WebpackPatchBootstrapPlugin = require('./tools/webpack-patch-bootstrap');
 
 const BUILD = process.env.NODE_ENV;
@@ -31,7 +32,13 @@ const PAGES = [
 ];
 const LIB_EXPORT_DEFAULT = {output: {library: {export: 'default'}}};
 
-/** @type {webpack.} */
+const ASSETS_CM = ASSETS + 'cm-themes/';
+const THEME_PATH = 'node_modules/codemirror/theme';
+const THEME_NAMES = Object.fromEntries(fs.readdirSync(THEME_PATH)
+  .sort()
+  .map(f => (f = f.match(/([^/\\.]+)\.css$/i)?.[1]) && [f, ''])
+  .filter(Boolean));
+
 const CFG = {
   mode: DEV ? 'development' : 'production',
   devtool: DEV && 'inline-source-map',
@@ -112,7 +119,13 @@ const CFG = {
     maxEntrypointSize: 1e6,
   },
   plugins: [
-    defineVars({ASSETS, JS, BUILD, PAGE_BG}),
+    defineVars({
+      ASSETS,
+      ASSETS_CM,
+      JS,
+      BUILD,
+      PAGE_BG,
+    }),
     new CopyPlugin({
       patterns: [
         {context: SRC + 'content', from: 'install*.js', to: DST + JS, info: {minimized: true}},
@@ -120,6 +133,7 @@ const CFG = {
         {context: SRC + 'images', from: 'icon/**', to: DST + ASSETS},
         {context: SRC, from: 'manifest.json', to: DST},
         {context: SRC, from: '_locales/**', to: DST},
+        {context: THEME_PATH, from: '*.css', to: DST + ASSETS_CM},
         ...[
           ['stylelint-bundle', 'stylelint.js'],
           ['less/dist/less.min.js', 'less.js'],
@@ -197,70 +211,73 @@ function makeContentScript(name) {
 // fse.emptyDirSync(DST);
 
 module.exports = [
-  // mergeCfg({
-  //   entry: Object.fromEntries(PAGES.map(p => [p, `/${p}/index`])),
-  //   output: {
-  //     filename: ASSETS + '[name].js',
-  //     chunkFilename: ASSETS + '[name].js',
-  //   },
-  //   optimization: {
-  //     splitChunks: {
-  //       chunks: /^(?!.*[/\\]shim)/,
-  //       cacheGroups: {
-  //         codemirror: {
-  //           test: /codemirror([/\\]|-(?!factory)).+\.js$/,
-  //           name: 'codemirror',
-  //         },
-  //         ...Object.fromEntries([
-  //           [2, 'common-ui', `^${SRC}(content/|js/(dom|localization|themer))`],
-  //           [1, 'common', `^${SRC}js/|/lz-string(-unsafe)?/`],
-  //         ].map(([priority, name, test]) => [name, {
-  //           test: new RegExp(String.raw`(${anyPathSep(test)})[^./\\]*\.js$`),
-  //           name,
-  //           priority,
-  //         }])),
-  //       },
-  //     },
-  //   },
-  //   plugins: [
-  //     defineVars({
-  //       PAGE: true,
-  //       CODEMIRROR_THEMES: listCodeMirrorThemes(),
-  //     }),
-  //     new MiniCssExtractPlugin({
-  //       filename: ASSETS + '[name].css',
-  //       chunkFilename: ASSETS + '[name].css',
-  //     }),
-  //     ...PAGES.map(p => new HtmlWebpackPlugin({
-  //       chunks: [p],
-  //       filename: p + '.html',
-  //       template: SRC + p + '.html',
-  //       templateParameters: (compilation, files, tags, options) => {
-  //         const {bodyTags, headTags} = tags;
-  //         // The main entry goes into BODY to improve performance (2x in manage.html)
-  //         headTags.push(...bodyTags.splice(0, bodyTags.length - 1));
-  //         return {
-  //           compilation: compilation,
-  //           webpackConfig: compilation.options,
-  //           htmlWebpackPlugin: {tags, files, options},
-  //         };
-  //       },
-  //       scriptLoading: 'blocking',
-  //       inject: false,
-  //     })),
-  //     new BundleAnalyzerPlugin({
-  //       analyzerMode: 'static',
-  //       openAnalyzer: false,
-  //       reportFilename: DST + '.report.html',
-  //     }),
-  //   ],
-  //   resolve: {
-  //     modules: [
-  //       SHIM,
-  //       'node_modules',
-  //     ],
-  //   },
-  // }),
+  mergeCfg({
+    entry: Object.fromEntries(PAGES.map(p => [p, `/${p}/index`])),
+    output: {
+      filename: ASSETS + '[name].js',
+      chunkFilename: ASSETS + '[name].js',
+    },
+    optimization: {
+      splitChunks: {
+        chunks: /^(?!.*[/\\]shim)/,
+        cacheGroups: {
+          codemirror: {
+            test: new RegExp(String.raw`(${anyPathSep([
+              SRC + 'cm/',
+              String.raw`codemirror(/|-(?!factory))`,
+            ].join('|'))}).+\.js$`),
+            name: 'codemirror',
+          },
+          ...Object.fromEntries([
+            [2, 'common-ui', `^${SRC}(content/|js/(dom|localization|themer))`],
+            [1, 'common', `^${SRC}js/|/lz-string(-unsafe)?/`],
+          ].map(([priority, name, test]) => [name, {
+            test: new RegExp(String.raw`(${anyPathSep(test)})[^./\\]*\.js$`),
+            name,
+            priority,
+          }])),
+        },
+      },
+    },
+    plugins: [
+      defineVars({
+        PAGE: true,
+        THEMES: THEME_NAMES,
+      }),
+      new MiniCssExtractPlugin({
+        filename: ASSETS + '[name].css',
+        chunkFilename: ASSETS + '[name].css',
+      }),
+      ...PAGES.map(p => new HtmlWebpackPlugin({
+        chunks: [p],
+        filename: p + '.html',
+        template: SRC + p + '.html',
+        templateParameters: (compilation, files, tags, options) => {
+          const {bodyTags, headTags} = tags;
+          // The main entry goes into BODY to improve performance (2x in manage.html)
+          headTags.push(...bodyTags.splice(0, bodyTags.length - 1));
+          return {
+            compilation: compilation,
+            webpackConfig: compilation.options,
+            htmlWebpackPlugin: {tags, files, options},
+          };
+        },
+        scriptLoading: 'blocking',
+        inject: false,
+      })),
+      new BundleAnalyzerPlugin({
+        analyzerMode: 'static',
+        openAnalyzer: false,
+        reportFilename: DST + '.report.html',
+      }),
+    ],
+    resolve: {
+      modules: [
+        SHIM,
+        'node_modules',
+      ],
+    },
+  }),
   makeContentScript('apply.js'),
   // makeLibrary([
   //   '/background/background-worker.js',

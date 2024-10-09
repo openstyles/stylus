@@ -1,6 +1,6 @@
+import {CodeMirror, loadCmTheme, THEME_KEY} from '/cm';
 import {rerouteHotkeys} from '/edit/util';
 import {CHROME} from '/js/toolbox';
-import CodeMirror from 'codemirror';
 import editor from './editor';
 import * as prefs from '/js/prefs';
 
@@ -103,7 +103,7 @@ prefs.ready.then(() => {
 });
 
 prefs.subscribe(prefKeys, (key, val) => {
-  if (key === 'editor.theme') editor.updateTheme(val);
+  if (key === THEME_KEY) loadCmTheme(val);
   cmFactory.globalSetOption(prefToCmOpt(key), val);
 });
 

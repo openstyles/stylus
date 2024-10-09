@@ -1,3 +1,4 @@
+// WARNING: make sure toolbox.js runs first and sets deepCopy
 import * as msg from '/js/msg-base';
 import {API, apiPortDisconnect} from '/js/msg-base';
 import * as styleInjector from './style-injector';
@@ -15,7 +16,7 @@ const isXml = document instanceof XMLDocument;
 const CHROME = 'app' in chrome;
 const SYM_ID = 'styles';
 const isUnstylable = !CHROME && isXml;
-const clone = 0 && process.env.PAGE // TODO: ensure deepCopy is defined first
+const clone = process.env.PAGE
   ? deepCopy /* global deepCopy */// will be used in extension context
   : val => typeof val === 'object' && val ? JSON.parse(JSON.stringify(val)) : val;
 const isFrame = window !== parent;

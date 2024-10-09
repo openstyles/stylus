@@ -1,10 +1,9 @@
+import {CodeMirror, THEMES} from '/cm';
 import {$, $create, setupLivePrefs} from '/js/dom';
 import {t, template} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {debounce, tryURL} from '/js/toolbox';
-import CodeMirror from 'codemirror';
-import CODEMIRROR_THEMES from './codemirror-themes';
 import editor from './editor';
 import {createHotkeyInput, helpPopup} from './util';
 import './settings.css';
@@ -169,7 +168,7 @@ function EditorSettings(ui) {
 
   $('#editor\\.theme', ui).append(...[
     $create('option', {value: 'default'}, t('defaultTheme')),
-    ...CODEMIRROR_THEMES.map(s => $create('option', s)),
+    ...Object.keys(THEMES).map(s => $create('option', s)),
   ]);
 
   $('#colorpicker-settings', ui).onclick = function (event) {

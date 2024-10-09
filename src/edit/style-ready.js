@@ -1,3 +1,4 @@
+import {loadCmTheme} from '/cm';
 import {$} from '/js/dom';
 import {tBody} from '/js/localization';
 import {API} from '/js/msg';
@@ -13,7 +14,7 @@ let id = +params.get('id');
 export default Promise.all([
   Promise.all([
     id ? API.styles.get(id) : undefined,
-    prefs.ready.then(() => editor.updateTheme(prefs.get('editor.theme'))),
+    prefs.ready.then(() => loadCmTheme()),
   ]).then(loadStyle),
   id && API.data.get('editorScrollInfo' + id).then(si => {
     editor.scrollInfo = si || {};

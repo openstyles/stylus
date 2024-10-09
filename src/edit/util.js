@@ -1,9 +1,8 @@
+import {CodeMirror, extraKeys, THEME_KEY} from '/cm';
 import {$, $$, $create, getEventKeyName, messageBox, moveFocus} from '/js/dom';
 import {t, tHTML} from '/js/localization';
 import * as prefs from '/js/prefs';
 import {clipString} from '/js/toolbox';
-import CodeMirror from 'codemirror';
-import {extraKeys} from './codemirror-default';
 import editor from './editor';
 
 export const helpPopup = {
@@ -180,7 +179,7 @@ export function showCodeMirrorPopup(title, html, options) {
     gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'],
     matchBrackets: true,
     styleActiveLine: true,
-    theme: prefs.get('editor.theme'),
+    theme: prefs.get(THEME_KEY),
     keyMap: prefs.get('editor.keyMap'),
   }, options));
   cm.focus();

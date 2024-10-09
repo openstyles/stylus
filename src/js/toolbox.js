@@ -272,6 +272,11 @@ export async function closeCurrentTab() {
   if (tab) return chrome.tabs.remove(tab.id);
 }
 
+/**
+ * @param {string | URL | Request} url
+ * @param {RequestInit} [opts]
+ * @return {Promise<string>}
+ */
 export async function fetchText(url, opts) {
   return (await fetch(url, opts)).text();
 }

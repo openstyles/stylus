@@ -24,11 +24,12 @@ onExtension(request => {
 });
 // Removing transition-suppressor rule
 if (!CHROME || CHROME < 93) {
-  const {sheet} = $('link[href$="global.css"]'); // FIXME
-  for (let i = 0, rule; (rule = sheet.cssRules[i]); i++) {
-    if (/#\\1\s?transition-suppressor/.test(rule.cssText)) {
-      sheet.deleteRule(i);
-      break;
+  nextSheet: for (const {sheet} of document.styleSheets) {
+    for (let i = 0, rule; (rule = sheet.cssRules[i]); i++) {
+      if (/#\\1\s?transition-suppressor/.test(rule.cssText)) {
+        sheet.deleteRule(i);
+        break nextSheet;
+      }
     }
   }
 }

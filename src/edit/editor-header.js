@@ -1,8 +1,7 @@
+import {CodeMirror, extraKeys} from '/cm';
 import {$, $$, setInputValue, setupLivePrefs} from '/js/dom';
 import {t} from '/js/localization';
 import * as prefs from '/js/prefs';
-import CodeMirror from 'codemirror';
-import {extraKeys} from './codemirror-default';
 import {initBeautifyButton} from './beautify';
 import editor from './editor';
 

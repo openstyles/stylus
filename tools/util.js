@@ -35,13 +35,6 @@ function escapeRe(str) {
   return str.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&');
 }
 
-function listCodeMirrorThemes() {
-  return fs.readdirSync('node_modules/codemirror/theme')
-    .sort()
-    .map(f => f.match(/([^/\\.]+)\.css$/i)?.[1])
-    .filter(Boolean);
-}
-
 function stripSourceMap(buf, from) {
   const str = buf.toString();
   const map = from + '.map';
@@ -79,7 +72,6 @@ module.exports = {
   anyPathSep,
   defineVars,
   escapeRe,
-  listCodeMirrorThemes,
   stripSourceMap,
   transpileCss,
   SKIP: [

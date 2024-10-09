@@ -1,8 +1,7 @@
 import {$, $create} from '/js/dom';
 import {t} from '/js/localization';
 import * as prefs from '/js/prefs';
-import {clipString, debounce, deepEqual, fetchText, mapObj, sessionStore} from '/js/toolbox';
-import CODEMIRROR_THEMES from './codemirror-themes';
+import {clipString, debounce, deepEqual, mapObj, sessionStore} from '/js/toolbox';
 import DirtyReporter from './dirty-reporter';
 
 const dirty = DirtyReporter();
@@ -120,19 +119,6 @@ const editor = self.editor = {
       style[editor.nameTarget] = value;
     }
     editor.updateTitle();
-  },
-
-  async updateTheme(name) {
-    let css;
-    if (!CODEMIRROR_THEMES.includes[name]) {
-      css = '';
-      name = 'default';
-      prefs.set('editor.theme', name);
-    } else {
-      css = await fetchText(`/vendor/codemirror/theme/${name}.css`); // FIXME
-    }
-    $('#cm-theme').dataset.theme = name;
-    $('#cm-theme').textContent = css;
   },
 
   updateTitle(isDirty = editor.dirty.isDirty()) {

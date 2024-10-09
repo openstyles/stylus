@@ -1,5 +1,4 @@
-import {CodeMirror} from '/edit/codemirror-default';
-import CODEMIRROR_THEMES from '/edit/codemirror-themes';
+import {CodeMirror, loadCmTheme, THEME_KEY} from '/cm';
 import compareVersion from '/js/cmpver';
 import {
   $, $$, $$remove, $create, $createLink, configDialog, messageBox, showSpinner,
@@ -8,6 +7,7 @@ import {fetchTemplate, t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {styleCodeEmpty} from '/js/sections-util';
+import '/js/themer';
 import {
   clipString, closeCurrentTab, deepEqual, sessionStore, tryURL, UCD, URLS,
 } from '/js/toolbox';
@@ -92,10 +92,8 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
     messageBox.alert(isNaN(error) ? `${error}` : 'HTTP Error ' + error, 'pre');
     return;
   }
-  const theme = prefs.get('editor.theme');
-  if (theme !== 'default') {
-    document.head.append($create('style', CODEMIRROR_THEMES[theme] || '')); // FIXME
-  }
+  const theme = prefs.get(THEME_KEY);
+  loadCmTheme(theme);
   cm = CodeMirror($('.main'), {
     value: sourceCode || style.sourceCode,
     readOnly: true,
