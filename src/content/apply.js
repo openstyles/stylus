@@ -2,8 +2,6 @@ import * as msg from '/js/msg-base';
 import {API, apiPortDisconnect} from '/js/msg-base';
 import * as styleInjector from './style-injector';
 
-// TODO: handle INJECTED = 1 in webpack
-
 let isTab = !chrome.tabs || location.pathname !== '/popup.html';
 const own = /** @type {Injection} */{
   cfg: {off: false, top: ''},

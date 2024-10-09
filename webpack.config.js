@@ -2,7 +2,7 @@
 /* eslint no-unused-vars: 1 */
 
 const path = require('path');
-// const webpack = require('webpack');
+const webpack = require('webpack');
 // const fse = require('fs-extra');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -174,12 +174,7 @@ function makeLibrary(entry, name, extras) {
 }
 
 function makeContentScript(name) {
-  /* TODO: write a plugin to remove webpack's machinery or write these directly + watch + babel
-    makeContentScript('/content/install-hook-greasyfork.js'),
-    makeContentScript('/content/install-hook-usercss.js'),
-    makeContentScript('/content/install-hook-userstyles.js'),
-    makeContentScript('/content/install-hook-userstylesworld.js'),
-  */
+  const INJECTED = `window["${name}"]`;
   return mergeCfg({
     entry: '/content/' + name,
     output: {
@@ -191,6 +186,10 @@ function makeContentScript(name) {
     },
     plugins: [
       defineVars({PAGE: false}),
+      new webpack.BannerPlugin({
+        banner: `if(${INJECTED}!==1)${INJECTED}=1,`,
+        raw: true,
+      }),
     ],
   });
 }
@@ -198,70 +197,70 @@ function makeContentScript(name) {
 // fse.emptyDirSync(DST);
 
 module.exports = [
-  mergeCfg({
-    entry: Object.fromEntries(PAGES.map(p => [p, `/${p}/index`])),
-    output: {
-      filename: ASSETS + '[name].js',
-      chunkFilename: ASSETS + '[name].js',
-    },
-    optimization: {
-      splitChunks: {
-        chunks: /^(?!.*[/\\]shim)/,
-        cacheGroups: {
-          codemirror: {
-            test: /codemirror([/\\]|-(?!factory)).+\.js$/,
-            name: 'codemirror',
-          },
-          ...Object.fromEntries([
-            [2, 'common-ui', `^${SRC}(content/|js/(dom|localization|themer))`],
-            [1, 'common', `^${SRC}js/|/lz-string(-unsafe)?/`],
-          ].map(([priority, name, test]) => [name, {
-            test: new RegExp(String.raw`(${anyPathSep(test)})[^./\\]*\.js$`),
-            name,
-            priority,
-          }])),
-        },
-      },
-    },
-    plugins: [
-      defineVars({
-        PAGE: true,
-        CODEMIRROR_THEMES: listCodeMirrorThemes(),
-      }),
-      new MiniCssExtractPlugin({
-        filename: ASSETS + '[name].css',
-        chunkFilename: ASSETS + '[name].css',
-      }),
-      ...PAGES.map(p => new HtmlWebpackPlugin({
-        chunks: [p],
-        filename: p + '.html',
-        template: SRC + p + '.html',
-        templateParameters: (compilation, files, tags, options) => {
-          const {bodyTags, headTags} = tags;
-          // The main entry goes into BODY to improve performance (2x in manage.html)
-          headTags.push(...bodyTags.splice(0, bodyTags.length - 1));
-          return {
-            compilation: compilation,
-            webpackConfig: compilation.options,
-            htmlWebpackPlugin: {tags, files, options},
-          };
-        },
-        scriptLoading: 'blocking',
-        inject: false,
-      })),
-      new BundleAnalyzerPlugin({
-        analyzerMode: 'static',
-        openAnalyzer: false,
-        reportFilename: DST + '.report.html',
-      }),
-    ],
-    resolve: {
-      modules: [
-        SHIM,
-        'node_modules',
-      ],
-    },
-  }),
+  // mergeCfg({
+  //   entry: Object.fromEntries(PAGES.map(p => [p, `/${p}/index`])),
+  //   output: {
+  //     filename: ASSETS + '[name].js',
+  //     chunkFilename: ASSETS + '[name].js',
+  //   },
+  //   optimization: {
+  //     splitChunks: {
+  //       chunks: /^(?!.*[/\\]shim)/,
+  //       cacheGroups: {
+  //         codemirror: {
+  //           test: /codemirror([/\\]|-(?!factory)).+\.js$/,
+  //           name: 'codemirror',
+  //         },
+  //         ...Object.fromEntries([
+  //           [2, 'common-ui', `^${SRC}(content/|js/(dom|localization|themer))`],
+  //           [1, 'common', `^${SRC}js/|/lz-string(-unsafe)?/`],
+  //         ].map(([priority, name, test]) => [name, {
+  //           test: new RegExp(String.raw`(${anyPathSep(test)})[^./\\]*\.js$`),
+  //           name,
+  //           priority,
+  //         }])),
+  //       },
+  //     },
+  //   },
+  //   plugins: [
+  //     defineVars({
+  //       PAGE: true,
+  //       CODEMIRROR_THEMES: listCodeMirrorThemes(),
+  //     }),
+  //     new MiniCssExtractPlugin({
+  //       filename: ASSETS + '[name].css',
+  //       chunkFilename: ASSETS + '[name].css',
+  //     }),
+  //     ...PAGES.map(p => new HtmlWebpackPlugin({
+  //       chunks: [p],
+  //       filename: p + '.html',
+  //       template: SRC + p + '.html',
+  //       templateParameters: (compilation, files, tags, options) => {
+  //         const {bodyTags, headTags} = tags;
+  //         // The main entry goes into BODY to improve performance (2x in manage.html)
+  //         headTags.push(...bodyTags.splice(0, bodyTags.length - 1));
+  //         return {
+  //           compilation: compilation,
+  //           webpackConfig: compilation.options,
+  //           htmlWebpackPlugin: {tags, files, options},
+  //         };
+  //       },
+  //       scriptLoading: 'blocking',
+  //       inject: false,
+  //     })),
+  //     new BundleAnalyzerPlugin({
+  //       analyzerMode: 'static',
+  //       openAnalyzer: false,
+  //       reportFilename: DST + '.report.html',
+  //     }),
+  //   ],
+  //   resolve: {
+  //     modules: [
+  //       SHIM,
+  //       'node_modules',
+  //     ],
+  //   },
+  // }),
   makeContentScript('apply.js'),
   // makeLibrary([
   //   '/background/background-worker.js',
