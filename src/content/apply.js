@@ -3,7 +3,7 @@ import * as msg from '/js/msg-base';
 import {API, apiPortDisconnect} from '/js/msg-base';
 import * as styleInjector from './style-injector';
 
-let isTab = !chrome.tabs || location.pathname !== '/popup.html';
+let isTab = process.env.PAGE || location.pathname !== '/popup.html';
 const own = /** @type {Injection} */{
   cfg: {off: false, top: ''},
 };
