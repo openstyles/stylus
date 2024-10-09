@@ -4,7 +4,6 @@
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
-// const fse = require('fs-extra');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
@@ -282,15 +281,15 @@ module.exports = [
     },
   }),
   makeContentScript('apply.js'),
-  // makeLibrary([
-  //   '/background/background-worker.js',
-  //   '/edit/editor-worker.js',
-  // ]),
-  // makeLibrary('/js/color/color-converter.js', 'colorConverter'),
-  // makeLibrary('/js/csslint/csslint.js', 'CSSLint',
-  //   {...LIB_EXPORT_DEFAULT, externals: {'./parserlib': 'parserlib'}}),
-  // makeLibrary('/js/csslint/parserlib.js', 'parserlib', LIB_EXPORT_DEFAULT),
-  // makeLibrary('/js/meta-parser.js', 'metaParser', LIB_EXPORT_DEFAULT),
-  // makeLibrary('/js/moz-parser.js', 'extractSections', LIB_EXPORT_DEFAULT),
-  // makeLibrary('/js/usercss-compiler.js', 'compileUsercss', LIB_EXPORT_DEFAULT),
+  makeLibrary([
+    '/background/background-worker.js',
+    '/edit/editor-worker.js',
+  ]),
+  makeLibrary('/js/color/color-converter.js', 'colorConverter'),
+  makeLibrary('/js/csslint/csslint.js', 'CSSLint',
+    {...LIB_EXPORT_DEFAULT, externals: {'./parserlib': 'parserlib'}}),
+  makeLibrary('/js/csslint/parserlib.js', 'parserlib', LIB_EXPORT_DEFAULT),
+  makeLibrary('/js/meta-parser.js', 'metaParser', LIB_EXPORT_DEFAULT),
+  makeLibrary('/js/moz-parser.js', 'extractSections', LIB_EXPORT_DEFAULT),
+  makeLibrary('/js/usercss-compiler.js', 'compileUsercss', LIB_EXPORT_DEFAULT),
 ];

@@ -1,7 +1,7 @@
 import browser from '/js/browser';
 import * as msg from '/js/msg';
 import {browserWindows, CHROME, FIREFOX, getActiveTab} from '/js/toolbox';
-import {addAPI, API} from './common';
+import {API} from './common';
 import * as prefs from '/js/prefs';
 
 // FF57+ supports openerTabId, but not in Android
