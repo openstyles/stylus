@@ -3,7 +3,7 @@ import {
   CHROME, debounce, FIREFOX, ignoreChromeError, MF_ICON_EXT, MF_ICON_PATH, UA,
 } from '/js/toolbox';
 import * as colorScheme from './color-scheme';
-import {addAPI, API, bgReady} from './common';
+import {API, bgReady} from './common';
 import tabMan from './tab-manager';
 
 const ICON_SIZES = FIREFOX || !UA.vivaldi ? [16, 32] : [19, 38];
@@ -17,25 +17,23 @@ let isDark;
 // https://github.com/openstyles/stylus/issues/335
 let hasCanvas = FIREFOX_ANDROID ? false : null;
 
-addAPI(/** @namespace API */ {
 /**
  * @param {(number|string)[]} styleIds
  * @param {{}} opts
  * @param {boolean} [opts.lazyBadge=false] preventing flicker during page load
  * @param {string} [opts.iid] - instance id
  */
-  updateIconBadge(styleIds, {lazyBadge, iid} = {}) {
-    // FIXME: in some cases, we only have to redraw the badge. is it worth a optimization?
-    const {tab: {id: tabId}, TDM} = this.sender;
-    const frameId = TDM > 0 ? 0 : this.sender.frameId;
-    const value = styleIds.length ? styleIds.map(Number) : undefined;
-    tabMan.set(tabId, 'styleIds', frameId, value);
-    if (iid) tabMan.set(tabId, 'iid', frameId, iid);
-    debounce(refreshStaleBadges, frameId && lazyBadge ? 250 : 0);
-    staleBadges.add(tabId);
-    if (!frameId) refreshIcon(tabId, true);
-  },
-});
+export function updateIconBadge(styleIds, {lazyBadge, iid} = {}) {
+  // FIXME: in some cases, we only have to redraw the badge. is it worth a optimization?
+  const {tab: {id: tabId}, TDM} = this.sender;
+  const frameId = TDM > 0 ? 0 : this.sender.frameId;
+  const value = styleIds.length ? styleIds.map(Number) : undefined;
+  tabMan.set(tabId, 'styleIds', frameId, value);
+  if (iid) tabMan.set(tabId, 'iid', frameId, iid);
+  debounce(refreshStaleBadges, frameId && lazyBadge ? 250 : 0);
+  staleBadges.add(tabId);
+  if (!frameId) refreshIcon(tabId, true);
+}
 
 chrome.webNavigation.onCommitted.addListener(({tabId, frameId}) => {
   const ids = tabMan.getStyleIds(tabId);

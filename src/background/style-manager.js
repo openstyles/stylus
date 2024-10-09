@@ -12,6 +12,8 @@ import StyleCache from './style-cache';
 import tabMan from './tab-manager';
 import {getUrlOrigin} from './tab-util';
 
+export * from './style-search-db';
+
 //#region Declarations
 
 /** @type {Map<number,StyleMapData>} */
@@ -110,7 +112,7 @@ export function remove(id, reason) {
   const {style, appliesTo} = dataMap.get(id);
   const sync = reason !== 'sync';
   const uuid = style._id;
-  db.styles.delete(id);
+  db.delete(id);
   if (sync) API.sync.remove(uuid, Date.now());
   for (const url of appliesTo) {
     const cache = cachedStyleForUrl.get(url);
@@ -309,7 +311,7 @@ export async function importMany(items) {
       res.push({err});
     }
   }
-  const events = await db.styles.putMany(styles);
+  const events = await db.putMany(styles);
   const messages = [];
   for (let i = 0, r; i < res.length; i++) {
     r = res[i];
@@ -512,7 +514,7 @@ export {saveStyle as save};
 /** @returns {Promise<StyleObj>} */
 export async function saveStyle(style, reason) {
   beforeSave(style);
-  const newId = await db.styles.put(style);
+  const newId = await db.put(style);
   return handleSave(style, reason, newId);
 }
 
@@ -559,11 +561,11 @@ function getAppliedCode(query, data) {
 async function init() {
   const [orderFromDb, styles = []] = await Promise.all([
     API.prefsDb.get(orderWrap.id),
-    db.styles.getAll(),
+    db.getAll(),
     prefs.ready,
   ]);
   const updated = await Promise.all(styles.map(fixKnownProblems).filter(Boolean));
-  if (updated.length) setTimeout(db.styles.putMany, 0, updated);
+  if (updated.length) setTimeout(db.putMany, 0, updated);
   setOrderImpl(orderFromDb, {store: false});
   styles.forEach(storeInMap);
   bgReady._resolveStyles();

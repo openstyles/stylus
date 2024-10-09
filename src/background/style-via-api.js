@@ -1,14 +1,13 @@
 import browser from '/js/browser';
 import * as prefs from '/js/prefs';
-import {FIREFOX, isEmptyObj} from '/js/toolbox';
-import {addAPI, API} from './common';
+import {isEmptyObj} from '/js/toolbox';
+import {API} from './common';
 import {getSectionsByUrl, order} from './style-manager';
 
 /**
  * Uses chrome.tabs.insertCSS
  */
-
-if (FIREFOX) (() => { // eslint-disable-line curly
+export default function initStyleViaApi() {
   const ACTIONS = {
     styleApply,
     styleDeleted,
@@ -31,7 +30,7 @@ if (FIREFOX) (() => { // eslint-disable-line curly
   const cache = new Map();
   let observingTabs = false;
 
-  addAPI(/** @namespace API */ {
+  return /** @namespace API */ {
     async styleViaAPI(request) {
       try {
         const fn = ACTIONS[request.method];
@@ -40,7 +39,7 @@ if (FIREFOX) (() => { // eslint-disable-line curly
         maybeToggleObserver();
       }
     },
-  });
+  };
 
   function updateCount(request, sender) {
     const {tab, frameId} = sender;
@@ -223,4 +222,4 @@ if (FIREFOX) (() => { // eslint-disable-line curly
     return browser.tabs.removeCSS(tabId, {frameId, code, matchAboutBlank: true})
       .catch(onError);
   }
-})();
+}

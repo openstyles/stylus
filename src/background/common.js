@@ -25,14 +25,3 @@ export let isVivaldi = !!(browserWindows && chrome.app) && (async () => {
   isVivaldi = wnd && !!(wnd.vivExtData || wnd.extData);
   return isVivaldi;
 })();
-
-export function addAPI(methods) {
-  for (const [key, val] of Object.entries(methods)) {
-    const old = API[key];
-    if (old && Object.prototype.toString.call(old) === '[object Object]') {
-      Object.assign(old, val);
-    } else {
-      API[key] = val;
-    }
-  }
-}

@@ -2,7 +2,7 @@ import {$, $$, $create, messageBox} from '/js/dom';
 import {t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
-import router from '/js/router';
+import * as router from '/js/router';
 import {debounce} from '/js/toolbox';
 import {fitNameColumn, fitSizeColumn} from './render';
 import {updateStripes} from './sorter';
@@ -19,7 +19,7 @@ export const fltMode = 'searchMode';
 const fltModePref = 'manage.searchMode';
 let elSearch, elSearchMode;
 
-prefs.ready.then(() => router.watch({search: [fltSearch, fltMode]}, ([search, mode]) => {
+router.watch({search: [fltSearch, fltMode]}, ([search, mode]) => {
   const firstRun = !elSearch;
   if (firstRun) initFilters();
   elSearch.value = search || '';
@@ -28,7 +28,7 @@ prefs.ready.then(() => router.watch({search: [fltSearch, fltMode]}, ([search, mo
   }
   if (firstRun) filterOnChange({forceRefilter: true});
   else searchStyles();
-}));
+});
 
 function initFilters() {
   elSearch = $('#search');
@@ -277,7 +277,7 @@ async function searchStyles({immediately, container} = {}) {
   const entries = container && container.children || container || all;
   const idsToSearch = entries !== all && [...entries].map(el => el.styleId);
   const ids = entries[0]
-    ? await API.styles.searchDB({query, mode, ids: idsToSearch})
+    ? await API.styles.searchDb({query, mode, ids: idsToSearch})
     : [];
   let needsRefilter = false;
   for (const entry of entries) {

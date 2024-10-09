@@ -3,6 +3,8 @@ import {API} from './common';
 import download from './download';
 import * as styleMan from './style-manager';
 
+export * from './usercss-install-helper';
+
 const GLOBAL_META = Object.entries({
   author: null,
   description: null,

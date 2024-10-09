@@ -1,5 +1,4 @@
 import {RX_META, UCD, debounce, stringAsRegExp, tryRegExp} from '/js/toolbox';
-import {addAPI} from './common';
 import {getByUrl, iterStyles} from './style-manager';
 
 // toLocaleLowerCase cache, autocleared after 1 minute
@@ -36,36 +35,32 @@ const MODES = Object.assign(Object.create(null), {
     !style[UCD] && MODES.code(style, test),
 });
 
-addAPI(/** @namespace API */ {
-  styles: {
-    /**
-     * @param params
-     * @param {string} params.query - 1. url:someurl 2. text (may contain quoted parts like "qUot Ed")
-     * @param {'name'|'meta'|'code'|'all'|'url'} [params.mode=all]
-     * @param {number[]} [params.ids] - if not specified, all styles are searched
-     * @returns {number[]} - array of matched styles ids
-     */
-    searchDB({query, mode = 'all', ids}) {
-      let res = [];
-      if (mode === 'url' && query) {
-        res = getByUrl(query).map(r => r.style.id);
-      } else if (mode in MODES) {
-        const modeHandler = MODES[mode];
-        const m = /^\/(.+?)\/([gimsuy]*)$/.exec(query);
-        const rx = m && tryRegExp(m[1], m[2]);
-        const test = rx ? rx.test.bind(rx) : createTester(query);
-        for (const style of iterStyles()) {
-          if ((!ids || ids.includes(style.id)) &&
-              (!query || modeHandler(style, test))) {
-            res.push(style.id);
-          }
-        }
-        if (cache.size) debounce(clearCache, 60e3);
+/**
+ * @param params
+ * @param {string} params.query - 1. url:someurl 2. text (may contain quoted parts like "qUot Ed")
+ * @param {'name'|'meta'|'code'|'all'|'url'} [params.mode=all]
+ * @param {number[]} [params.ids] - if not specified, all styles are searched
+ * @returns {number[]} - array of matched styles ids
+ */
+export function searchDb({query, mode = 'all', ids}) {
+  let res = [];
+  if (mode === 'url' && query) {
+    res = getByUrl(query).map(r => r.style.id);
+  } else if (mode in MODES) {
+    const modeHandler = MODES[mode];
+    const m = /^\/(.+?)\/([gimsuy]*)$/.exec(query);
+    const rx = m && tryRegExp(m[1], m[2]);
+    const test = rx ? rx.test.bind(rx) : createTester(query);
+    for (const style of iterStyles()) {
+      if ((!ids || ids.includes(style.id)) &&
+        (!query || modeHandler(style, test))) {
+        res.push(style.id);
       }
-      return res;
-    },
-  },
-});
+    }
+    if (cache.size) debounce(clearCache, 60e3);
+  }
+  return res;
+}
 
 function createTester(query) {
   const flags = `u${lower(query) === query ? 'i' : ''}`;

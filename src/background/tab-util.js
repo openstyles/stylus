@@ -21,59 +21,52 @@ const EMPTY_TAB = [
   'about:newtab',
 ];
 
-addAPI(/** @namespace API */ {
+/**
+ * Opens the editor or activates an existing tab
+ * @param {string|{id?: number, domain?: string, 'url-prefix'?: string}} [params]
+ * @returns {Promise<chrome.tabs.Tab>}
+ */
+export async function openEditor(params) {
+  const u = new URL(chrome.runtime.getURL('edit.html'));
+  u.search = new URLSearchParams(params);
+  const wnd = browserWindows && prefs.get('openEditInWindow');
+  const wndPos = wnd && prefs.get('windowPosition');
+  const wndBase = wnd && prefs.get('openEditInWindow.popup') ? {type: 'popup'} : {};
+  const ffBug = wnd && FIREFOX; // https://bugzil.la/1271047
+  for (let tab, retry = 0; retry < (wndPos ? 2 : 1); ++retry) {
+    try {
+      tab = tab || await openURL({
+        url: `${u}`,
+        currentWindow: null,
+        newWindow: wnd && Object.assign({}, wndBase, !ffBug && !retry && wndPos),
+      });
+      if (ffBug && !retry) await browserWindows.update(tab.windowId, wndPos);
+      return tab;
+    } catch (e) {}
+  }
+}
 
-  openURL,
-
-  /**
-   * Opens the editor or activates an existing tab
-   * @param {string|{id?: number, domain?: string, 'url-prefix'?: string}} [params]
-   * @returns {Promise<chrome.tabs.Tab>}
-   */
-  async openEditor(params) {
-    const u = new URL(chrome.runtime.getURL('edit.html'));
-    u.search = new URLSearchParams(params);
-    const wnd = browserWindows && prefs.get('openEditInWindow');
-    const wndPos = wnd && prefs.get('windowPosition');
-    const wndBase = wnd && prefs.get('openEditInWindow.popup') ? {type: 'popup'} : {};
-    const ffBug = wnd && FIREFOX; // https://bugzil.la/1271047
-    for (let tab, retry = 0; retry < (wndPos ? 2 : 1); ++retry) {
-      try {
-        tab = tab || await openURL({
-          url: `${u}`,
-          currentWindow: null,
-          newWindow: wnd && Object.assign({}, wndBase, !ffBug && !retry && wndPos),
-        });
-        if (ffBug && !retry) await browserWindows.update(tab.windowId, wndPos);
-        return tab;
-      } catch (e) {}
-    }
-  },
-
-  /**
-   * @param {{}} [opts]
-   * @param {boolean} [opts.options]
-   * @param {string} [opts.search]
-   * @param {string} [opts.searchMode]
-   * @returns {Promise<chrome.tabs.Tab>}
-   */
-  async openManage(opts = {}) {
-    const base = chrome.runtime.getURL('manage.html');
-    const url = setUrlParams(base, opts);
-    const tabs = await browser.tabs.query({url: base + '*'});
-    const same = tabs.find(_ => _.url === url);
-    let tab = same || tabs[0];
-    if (!tab) {
-      API.prefsDb.get('badFavs'); // prime the cache to avoid flicker/delay when opening the page
-      tab = await openURL({url, newTab: true});
-    } else if (!same) {
-      await msg.sendTab(tab.id, {method: 'pushState', url: setUrlParams(tab.url, opts)});
-    }
-    return activateTab(tab); // activateTab unminimizes the window
-  },
-
-  waitForTabUrl,
-});
+/**
+ * @param {{}} [opts]
+ * @param {boolean} [opts.options]
+ * @param {string} [opts.search]
+ * @param {string} [opts.searchMode]
+ * @returns {Promise<chrome.tabs.Tab>}
+ */
+export async function openManage(opts = {}) {
+  const base = chrome.runtime.getURL('manage.html');
+  const url = setUrlParams(base, opts);
+  const tabs = await browser.tabs.query({url: base + '*'});
+  const same = tabs.find(_ => _.url === url);
+  let tab = same || tabs[0];
+  if (!tab) {
+    API.prefsDb.get('badFavs'); // prime the cache to avoid flicker/delay when opening the page
+    tab = await openURL({url, newTab: true});
+  } else if (!same) {
+    await msg.sendTab(tab.id, {method: 'pushState', url: setUrlParams(tab.url, opts)});
+  }
+  return activateTab(tab); // activateTab unminimizes the window
+}
 
 /**
  * Opens a tab or activates an existing one,

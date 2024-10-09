@@ -1,6 +1,6 @@
 import {$, $create, animateElement} from '/js/dom';
 import {formatDate, formatRelativeDate, t} from '/js/localization';
-import router from '/js/router';
+import * as router from '/js/router';
 import {debounce, UCD} from '/js/toolbox';
 import InjectionOrder from './injection-order';
 import UpdateHistory from './updater-ui';
@@ -16,6 +16,7 @@ $('#sync-styles').onclick =
   $('#manage-options-button').onclick = router.makeToggle('stylus-options', toggleEmbeddedOptions);
 $('#injection-order-button').onclick = router.makeToggle('injection-order', InjectionOrder);
 $('#update-history-button').onclick = router.makeToggle('update-history', UpdateHistory);
+router.update();
 
 function addEntryTitle(link) {
   const style = link.closest('.entry').styleMeta;

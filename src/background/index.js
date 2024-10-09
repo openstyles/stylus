@@ -1,29 +1,31 @@
 import browser from '/js/browser';
-import {onMessage} from '/js/msg';
 import * as msg from '/js/msg';
+import {onMessage} from '/js/msg';
 import * as prefs from '/js/prefs';
-import {ignoreChromeError, UA} from '/js/toolbox';
+import {FIREFOX, ignoreChromeError, UA} from '/js/toolbox';
 import createWorker from '/js/worker-host';
 import {broadcast} from './broadcast';
 import './broadcast-injector-config';
+import initBrowserCommandsApi from './browser-cmd-hotkeys';
 import * as colorScheme from './color-scheme';
-import {addAPI, API, bgReady, browserCommands, isVivaldi} from './common';
+import {API, bgReady, browserCommands, isVivaldi} from './common';
+import reinjectContentScripts from './content-scripts';
+import initContextMenus from './context-menus';
 import download from './download';
-import './bg-prefs';
-import './browser-cmd-hotkeys';
-import './content-scripts';
-import './context-menus';
+import {updateIconBadge} from './icon-manager';
+import prefsApi from './prefs-api';
 import * as styleMan from './style-manager';
+import initStyleViaApi from './style-via-api';
 import * as syncMan from './sync-manager';
+import {openEditor, openManage, openURL, waitForTabUrl} from './tab-util';
 import * as updateMan from './update-manager';
 import * as usercssMan from './usercss-manager';
 import * as usoApi from './uso-api';
 import * as uswApi from './usw-api';
-import './style-via-api';
 
-//#region API
+Object.assign(API, /** @namespace API */ {
 
-addAPI(/** @namespace API */ {
+  //#region API data/db/info
 
   /** Temporary storage for data needed elsewhere e.g. in a content script */
   data: ((data = {}) => ({
@@ -40,21 +42,31 @@ addAPI(/** @namespace API */ {
     },
   }))(),
 
-  download,
-
   info: {
-    async get() {
-      return {
-        isDark: colorScheme.isDark(),
-        isVivaldi: isVivaldi.then ? await isVivaldi : isVivaldi,
-      };
-    },
+    get: async () => ({
+      isDark: colorScheme.isDark(),
+      isVivaldi: isVivaldi.then ? await isVivaldi : isVivaldi,
+    }),
     set(info) {
       let v;
       if ((v = info.preferDark) != null) colorScheme.setSystem(v);
     },
   },
 
+  //#endregion
+  //#region API misc actions
+
+  download,
+  openEditor,
+  openManage,
+  openURL,
+  updateIconBadge,
+  waitForTabUrl,
+
+  //#endregion
+  //#region API namespaced actions
+
+  prefs: prefsApi,
   styles: styleMan,
   sync: syncMan,
   updater: updateMan,
@@ -63,10 +75,9 @@ addAPI(/** @namespace API */ {
   usw: uswApi,
   /** @type {BackgroundWorker} */
   worker: createWorker('background-worker'),
-});
 
-//#endregion
-//#region Events
+  //#endregion
+}, FIREFOX && initStyleViaApi());
 
 Object.assign(browserCommands, {
   openManage: () => API.openManage(),
@@ -77,11 +88,14 @@ Object.assign(browserCommands, {
   },
 });
 
-if (chrome.commands) {
-  chrome.commands.onCommand.addListener(id => browserCommands[id]());
-}
+//#region Events
+
+chrome.commands?.onCommand.addListener(id => browserCommands[id]());
 
 chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
+  if (!FIREFOX) {
+    reinjectContentScripts();
+  }
   if (reason === 'install') {
     if (UA.mobile) prefs.set('manage.newUI', false);
     if (UA.windows) prefs.set('editor.keyMap', 'sublime');
@@ -125,8 +139,10 @@ Promise.all([
   browser.extension.isAllowedFileSchemeAccess()
     .then(res => API.data.set('hasFileAccess', res)),
   bgReady.styles,
-]).then(() => {
+]).then(async () => {
   bgReady._resolveAll(true);
   self.msg = msg;
+  if (FIREFOX) initBrowserCommandsApi();
   broadcast({method: 'backgroundReady'});
+  initContextMenus();
 });

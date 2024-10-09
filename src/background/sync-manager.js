@@ -192,7 +192,7 @@ async function initController() {
       } else {
         delete doc.id;
         if (id) doc.id = id;
-        doc.id = await db.styles.put(doc);
+        doc.id = await db.put(doc);
         await styleMan.handleSave(doc, 'sync');
       }
     },

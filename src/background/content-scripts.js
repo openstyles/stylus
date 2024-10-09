@@ -1,15 +1,13 @@
 import browser from '/js/browser';
 import {sendTab} from '/js/msg';
-import {CHROME, ignoreChromeError, MF, stringAsRegExpStr, URLS} from '/js/toolbox';
-import {bgReady} from './common';
+import {ignoreChromeError, MF, stringAsRegExpStr, URLS} from '/js/toolbox';
 import tabMan from './tab-manager';
 
 /**
  Reinject content scripts when the extension is reloaded/updated.
  Not used in Firefox as it reinjects automatically.
  */
-
-if (CHROME) bgReady.all.then(() => { // eslint-disable-line curly
+export default function reinjectContentScripts() {
   const ALL_URLS = '<all_urls>';
   const SCRIPTS = MF.content_scripts;
   const globToRe = (s, re = '.') => stringAsRegExpStr(s.replace(/\*/g, '\n')).replace(/\n/g, re + '*?');
@@ -99,4 +97,4 @@ if (CHROME) bgReady.all.then(() => { // eslint-disable-line curly
   function onBusyTabRemoved(tabId) {
     trackBusyTab(tabId, false);
   }
-});
+}

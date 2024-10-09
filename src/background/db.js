@@ -1,7 +1,7 @@
 import {STORAGE_KEY} from '/js/prefs';
 import {chromeLocal} from '/js/storage-util';
 import {deepCopy} from '/js/toolbox';
-import {addAPI} from './common';
+import {API} from './common';
 import ChromeStorageDB from './db-chrome-storage';
 
 /*
@@ -32,11 +32,10 @@ const proxyHandler = {
 const getProxy = dbName => proxies[dbName] || (
   (proxies[dbName] = new Proxy({dbName}, proxyHandler))
 );
-const db = {
-  styles: getProxy(DB),
-};
 
-addAPI(/** @namespace API */ {
+export default getProxy(DB);
+
+Object.assign(API, {
   drafts: getProxy('drafts'),
   /** Storage for big items that may exceed 8kB limit of chrome.storage.sync.
    * To make an item syncable register it with uuidIndex.addCustom. */
@@ -144,5 +143,3 @@ function create(event) {
   }
   return idb;
 }
-
-export default db;

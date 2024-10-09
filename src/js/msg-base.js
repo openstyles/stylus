@@ -22,6 +22,7 @@ export const apiHandler = !isBg && {
     apiHandler),
   apply: apiSendProxy,
 };
+/** @type {API} */
 export const API = isBg
   ? window.API
   : window.API = new Proxy({path: ''}, apiHandler);

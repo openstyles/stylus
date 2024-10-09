@@ -2,7 +2,7 @@ import {$, $$, setupLivePrefs} from '/js/dom';
 import {t, tBody} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
-import router from '/js/router';
+import * as router from '/js/router';
 import '/js/themer';
 import {CHROME} from '/js/toolbox';
 import {fltMode} from './filters';
@@ -17,10 +17,21 @@ tBody();
 const query = router.getSearch('search');
 Promise.all([
   API.styles.getAll(),
-  query && API.styles.searchDB({query, mode: router.getSearch(fltMode)}),
-  prefs.ready.then(onPrefsReady),
+  query && API.styles.searchDb({query, mode: router.getSearch(fltMode)}),
+  prefs.ready.then(() => {
+    setupLivePrefs();
+    // newUI.readPrefs();
+    newUI.render(true);
+    prefs.subscribe(newUI.ids.map(newUI.prefKeyForId), () => newUI.render());
+    prefs.subscribe('newStyleAsUsercss', (key, val) => {
+      $('#add-style-label').textContent =
+        t(val ? 'optionsAdvancedNewStyleAsUsercss' : 'addStyleLabel');
+    }, true);
+    sorter.init();
+    router.update();
+    return newUI.hasFavs() && readBadFavs();
+  }),
 ]).then(async ([styles, ids]) => {
-  router.update();
   // translate CSS manually
   document.styleSheets[0].insertRule(
     `:root {${[
@@ -39,16 +50,3 @@ Promise.all([
   await new Promise(setTimeout);
   import('./lazy-init');
 });
-
-function onPrefsReady() {
-  setupLivePrefs();
-  newUI.readPrefs();
-  newUI.render(true);
-  prefs.subscribe(newUI.ids.map(newUI.prefKeyForId), () => newUI.render());
-  prefs.subscribe('newStyleAsUsercss', (key, val) => {
-    $('#add-style-label').textContent =
-      t(val ? 'optionsAdvancedNewStyleAsUsercss' : 'addStyleLabel');
-  }, true);
-  sorter.init();
-  return newUI.hasFavs() && readBadFavs();
-}

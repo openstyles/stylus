@@ -1,28 +1,24 @@
 import browser from '/js/browser';
 import * as prefs from '/js/prefs';
 import {FIREFOX, RX_META, URLS} from '/js/toolbox';
-import {addAPI, bgReady} from './common';
+import {bgReady} from './common';
 import download from './download';
 import tabMan from './tab-manager';
 import {openURL} from './tab-util';
 
 const installCodeCache = {};
 
-addAPI(/** @namespace API */ {
-  usercss: {
-    getInstallCode(url) {
-      // when the installer tab is reloaded after the cache is expired, this will throw intentionally
-      const {code, timer} = installCodeCache[url];
-      clearInstallCode(url);
-      clearTimeout(timer);
-      return code;
-    },
-  },
-});
-
 bgReady.all.then(() => {
   prefs.subscribe('urlInstaller', toggle, true);
 });
+
+export function getInstallCode(url) {
+  // when the installer tab is reloaded after the cache is expired, this will throw intentionally
+  const {code, timer} = installCodeCache[url];
+  clearInstallCode(url);
+  clearTimeout(timer);
+  return code;
+}
 
 function toggle(key, val) {
   chrome.webRequest.onHeadersReceived.removeListener(maybeInstallByMime);

@@ -2,119 +2,118 @@ import {$} from '/js/dom';
 import {onMessage} from '/js/msg';
 import {deepEqual} from '/js/toolbox';
 
-// TODO: export directly
-const router = {
-  buffer: history.state?.buffer || [],
-  watchers: [],
+const buffer = history.state?.buffer || [];
+const watchers = [];
 
-  getSearch(key) {
-    return new URLSearchParams(location.search).get(key);
-  },
+export function getSearch(key) {
+  return new URLSearchParams(location.search).get(key);
+}
 
-  /** When showing the UI, `showHide` function must resolve only when the UI is closed */
-  makeToggle(hashId, showHide, loadDeps) {
-    const hash = '#' + hashId;
-    const selector = '.' + hashId;
-    router.watch({hash}, async state => {
-      const el = $(selector);
-      if (!state === !el) return;
-      if (state && loadDeps && !showHide) showHide = await loadDeps();
-      await showHide(state, el, selector);
-      if (state) router.updateHash('');
-    });
-    return router.updateHash.bind(router, hash);
-  },
+/** When showing the UI, `showHide` function must resolve only when the UI is closed */
+export function makeToggle(hashId, showHide, loadDeps) {
+  const hash = '#' + hashId;
+  const selector = '.' + hashId;
+  watch({hash}, async state => {
+    const el = $(selector);
+    if (!state === !el) return;
+    if (state && loadDeps && !showHide) showHide = await loadDeps();
+    await showHide(state, el, selector);
+    if (state) updateHash('');
+  });
+  return updateHash.bind(null, hash);
+}
 
-  push(url) {
-    const state = history.state || {};
-    state.buffer = router.buffer;
-    history.pushState(state, null, url);
-  },
+export function push(url) {
+  const state = history.state || {};
+  state.buffer = buffer;
+  history.pushState(state, null, url);
+}
 
-  update() {
-    const {buffer} = router;
-    if (!buffer.length) {
-      buffer.push(location.href);
-    } else if (buffer[buffer.length - 1] === location.href && router.initialized) {
+export function update() {
+  if (!buffer.length) {
+    buffer.push(location.href);
+  } else if (buffer[buffer.length - 1] === location.href) {
+    if (watchers.some(w => !w.init)) callWatchers();
+    return;
+  } else if (buffer.length > 1 && buffer[buffer.length - 2] === location.href) {
+    buffer.pop();
+  } else {
+    buffer.push(location.href);
+  }
+  callWatchers();
+}
+
+function callWatchers() {
+  for (const w of watchers) {
+    const {options, callback} = w;
+    w.init = true;
+    let state;
+    if (options.hash) {
+      state = options.hash === location.hash;
+    } else if (options.search) {
+      const search = new URLSearchParams(location.search);
+      state = options.search.map(key => search.get(key));
+    }
+    if (!deepEqual(state, options.currentState)) {
+      options.currentState = state;
+      callback(state);
+    }
+  }
+}
+
+/**
+ * @param {string} hash - empty string removes the hash
+ */
+export function updateHash(hash) {
+  if (buffer.length > 1) {
+    if (!hash && !buffer[buffer.length - 2].includes('#') ||
+        hash && buffer[buffer.length - 2].endsWith(hash)) {
+      history.back();
       return;
-    } else if (buffer.length > 1 && buffer[buffer.length - 2] === location.href) {
-      buffer.pop();
-    } else {
-      buffer.push(location.href);
     }
-    for (const {options, callback} of router.watchers) {
-      let state;
-      if (options.hash) {
-        state = options.hash === location.hash;
-      } else if (options.search) {
-        const search = new URLSearchParams(location.search);
-        state = options.search.map(key => search.get(key));
-      }
-      if (!deepEqual(state, options.currentState)) {
-        options.currentState = state;
-        callback(state);
-      }
-    }
-    router.initialized = true;
-  },
+  }
+  if (!hash) {
+    hash = ' ';
+  }
+  push(hash);
+  update();
+}
 
-  /**
-   * @param {string} hash - empty string removes the hash
+/**
+ * @param {Object|string} what - an object or a single key
+ * @param {string} [value] - for `key` mode
+ */
+export function updateSearch(what, value) {
+  const u = new URL(location);
+  const entries = typeof what === 'object' ? Object.entries(what) : [[what, value]];
+  for (const [key, val] of entries) {
+    if (val) u.searchParams.set(key, val);
+    else u.searchParams.delete(key);
+  }
+  history.replaceState(history.state, null, `${u}`);
+  buffer.pop();
+  update();
+}
+
+export function watch(options, callback) {
+  /* Watch search params or hash and get notified on change.
+
+   options: {search?: Array<key: String>, hash?: String}
+   callback: (Array<value: String | null> | Boolean) => void
+
+   `hash` should always start with '#'.
+   When watching search params, callback receives a list of values.
+   When watching hash, callback receives a boolean.
    */
-  updateHash(hash) {
-    const {buffer} = router;
-    if (buffer.length > 1) {
-      if (!hash && !buffer[buffer.length - 2].includes('#') ||
-          hash && buffer[buffer.length - 2].endsWith(hash)) {
-        history.back();
-        return;
-      }
-    }
-    if (!hash) {
-      hash = ' ';
-    }
-    router.push(hash);
-    router.update();
-  },
+  watchers.push({options, callback});
+}
 
-  /**
-   * @param {Object|string} what - an object or a single key
-   * @param {string} [value] - for `key` mode
-   */
-  updateSearch(what, value) {
-    const u = new URL(location);
-    const entries = typeof what === 'object' ? Object.entries(what) : [[what, value]];
-    for (const [key, val] of entries) {
-      if (val) u.searchParams.set(key, val);
-      else u.searchParams.delete(key);
-    }
-    history.replaceState(history.state, null, `${u}`);
-    router.buffer.pop();
-    router.update();
-  },
-
-  watch(options, callback) {
-    /* Watch search params or hash and get notified on change.
-
-     options: {search?: Array<key: String>, hash?: String}
-     callback: (Array<value: String | null> | Boolean) => void
-
-     `hash` should always start with '#'.
-     When watching search params, callback receives a list of values.
-     When watching hash, callback receives a boolean.
-     */
-    router.watchers.push({options, callback});
-  },
-};
-
-window.on('popstate', router.update);
-window.on('hashchange', router.update);
+window.on('popstate', update);
+window.on('hashchange', update);
 onMessage(m => {
   if (m.method === 'pushState' && m.url !== location.href) {
-    router.push(m.url);
-    router.update();
+    push(m.url);
+    update();
     return true;
   }
 });
-
-export default router;

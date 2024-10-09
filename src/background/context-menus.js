@@ -2,9 +2,10 @@ import browser from '/js/browser';
 import {sendTab} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {CHROME, URLS, ignoreChromeError} from '/js/toolbox';
-import {bgReady, browserCommands} from './common';
+import {browserCommands} from './common';
 
-bgReady.all.then(() => chrome.management.getSelf(ext => {
+export default async function initContextMenus() {
+  const ext = await browser.management.getSelf();
   const contextMenus = Object.assign({
     'show-badge': {
       title: 'menuShowBadge',
@@ -88,4 +89,4 @@ bgReady.all.then(() => chrome.management.getSelf(ext => {
       chrome.contextMenus.remove(id, ignoreChromeError);
     }
   }
-}));
+}

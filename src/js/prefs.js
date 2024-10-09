@@ -227,7 +227,7 @@ function setAll(data, fromStorage) {
   for (const key in fromStorage) {
     if (!(key in data) && key in defaults) set(key, defaults[key], true);
   }
-  // setting current value + deleting from the source if it's unchanged (for bg-prefs.js)
+  // setting current value + deleting from the source if it's unchanged (for prefs-api.js)
   for (const key in data || (data = {})) {
     if (!set(key, data[key], true)) if (isBg) delete data[key];
   }
