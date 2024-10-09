@@ -31,6 +31,10 @@ function defineVars(vars) {
   return new webpack.DefinePlugin(env);
 }
 
+function escapeRe(str) {
+  return str.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&');
+}
+
 function listCodeMirrorThemes() {
   return fs.readdirSync('node_modules/codemirror/theme')
     .sort()
@@ -74,6 +78,7 @@ module.exports = {
   addReport,
   anyPathSep,
   defineVars,
+  escapeRe,
   listCodeMirrorThemes,
   stripSourceMap,
   transpileCss,

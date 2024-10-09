@@ -11,6 +11,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const {anyPathSep, defineVars, stripSourceMap, listCodeMirrorThemes} = require('./tools/util');
+const WebpackPatchBootstrapPlugin = require('./tools/webpack-patch-bootstrap');
 
 const BUILD = process.env.NODE_ENV;
 const DEV = BUILD === 'DEV';
@@ -55,7 +56,7 @@ const CFG = {
     },
   },
   optimization: {
-    concatenateModules: true, // makes DEV code run much faster
+    concatenateModules: true, // makes DEV code run faster
     runtimeChunk: false,
     sideEffects: true,
     usedExports: true,
@@ -95,13 +96,11 @@ const CFG = {
           {loader: 'css-loader', options: {importLoaders: 1}},
           'postcss-loader',
         ],
-      },
-      {
+      }, {
         test: /\.m?js$/,
         use: {loader: 'babel-loader'},
         resolve: {fullySpecified: false},
-      },
-      {
+      }, {
         test: require.resolve('db-to-cloud/lib/drive/fs-drive'),
         use: [{loader: SHIM + 'null-loader.js'}],
       },
@@ -133,7 +132,7 @@ const CFG = {
         })),
       ],
     }),
-    // new WebpackPatchBootstrapPlugin(),
+    new WebpackPatchBootstrapPlugin(),
   ],
   stats: {
     // optimizationBailout: true,
