@@ -110,6 +110,9 @@ const CFG = {
       }, {
         test: require.resolve('db-to-cloud/lib/drive/fs-drive'),
         use: [{loader: SHIM + 'null-loader.js'}],
+      }, {
+        test: require.resolve('jsonlint'),
+        use: [{loader: SHIM + 'jsonlint-loader.js'}],
       },
     ],
   },
