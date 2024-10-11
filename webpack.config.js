@@ -1,7 +1,6 @@
 'use strict';
 
 const fs = require('fs');
-const fse = require('fs-extra');
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -9,13 +8,14 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 const {anyPathSep, defineVars, stripSourceMap} = require('./tools/util');
 const WebpackPatchBootstrapPlugin = require('./tools/webpack-patch-bootstrap');
 
 const BUILD = process.env.NODE_ENV;
 const DEV = BUILD === 'DEV';
-const FS_CACHE = false;
+const FS_CACHE = true;
+const REPORT = !true;
 const SRC = `${__dirname}/src/`;
 const DST = path.resolve('dist') + '/';
 const ASSETS = 'assets/';
@@ -168,13 +168,15 @@ function mergeCfg(ovr, base) {
         name: BUILD + '-' + entry.join('-'),
       };
     }
-    (ovr.plugins || (ovr.plugins = [])).push(
-      new BundleAnalyzerPlugin({
-        analyzerMode: 'static',
-        openAnalyzer: false,
-        reportFilename: DST + (entry.length > 1 ? '' : '.' + entry[0]) + '.report.html',
-      })
-    );
+    if (REPORT) {
+      (ovr.plugins || (ovr.plugins = [])).push(
+        new BundleAnalyzerPlugin({
+          analyzerMode: 'static',
+          openAnalyzer: false,
+          reportFilename: DST + (entry.length > 1 ? '' : '.' + entry[0]) + '.report.html',
+        })
+      );
+    }
   }
   base = {...base || CFG};
   for (const k in ovr) {
@@ -220,8 +222,6 @@ function makeContentScript(name) {
     ],
   });
 }
-
-if (!DEV) fse.emptyDirSync(DST + ASSETS);
 
 module.exports = [
   mergeCfg({
