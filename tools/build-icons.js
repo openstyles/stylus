@@ -3,7 +3,7 @@
 const fs = require('fs');
 const svg2ttf = require('svg2ttf');
 const svgicons2svgfont = require('svgicons2svgfont');
-const ROOT = require.resolve('../package.json').replace(/[^/\\]+$/, '');
+const {ROOT} = require('./util');
 
 const SVG_MAP = Object.entries({
   'check1': '✓',

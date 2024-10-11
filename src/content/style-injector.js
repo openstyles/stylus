@@ -221,7 +221,7 @@ function setTextAndName(el, {id, code, name}) {
     code = code.join(''); // TODO: only patch the changed cssRule?
     try {
       el.replaceSync(code);
-    } catch (err) {
+    } catch {
       el.replace(code);
     }
     return;
@@ -291,7 +291,7 @@ function initCreationDoc(style) {
         ok = el.sheet;
         removeElement(el);
         if (ok) return;
-      } catch (err) {}
+      } catch {}
     }
     if (retry && ffCsp && (ass = wrappedDoc[kAss])) { // ffCsp bug got fixed
       initAss();

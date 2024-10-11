@@ -185,7 +185,7 @@ export function formatDate(date, needsTime) {
       }));
     const string = intl.format(newDate);
     return string === 'Invalid Date' ? '' : string;
-  } catch (e) {
+  } catch {
     return '';
   }
 }

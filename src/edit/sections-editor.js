@@ -435,7 +435,7 @@ export default function SectionsEditor() {
     async function getPreprocessor(code) {
       try {
         return (await API.usercss.buildMeta({sourceCode: code}))[UCD].preprocessor;
-      } catch (e) {}
+      } catch {}
     }
 
     function lockPageUI(locked) {

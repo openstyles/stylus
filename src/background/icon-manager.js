@@ -203,7 +203,7 @@ function safeCall(method, data) {
     try {
       // Chrome supports the callback since 67.0.3381.0, see https://crbug.com/451320
       fn.call(browserAction, data, ignoreChromeError);
-    } catch (e) {
+    } catch {
       // FIXME: skip pre-rendered tabs?
       fn.call(browserAction, data);
     }

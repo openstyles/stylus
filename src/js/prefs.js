@@ -245,7 +245,6 @@ if (isBg) {
 
 (onSync || chrome.storage.onChanged).addListener((changes, area) => {
   if (busy) return;
-  // eslint-disable-next-line no-use-before-define
   const data = (onSync || area === 'sync') && changes[STORAGE_KEY];
   if (data) setAll(data.newValue, data.oldValue);
 });

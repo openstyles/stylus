@@ -146,7 +146,7 @@ export default class Matcher {
     if (m == null) return;
     const e = p.expr;
     if (!e && m) return m.arg.min === 0;
-    const vi = m && !e.isVar && new PropValueIterator(e); // eslint-disable-line no-use-before-define
+    const vi = m && !e.isVar && new PropValueIterator(e);
     const mm = !vi || m.matchFunc ? m :
       list[pn] = (m.call ? m(Matcher) : Matcher.cache[m] || Matcher.parse(m));
     return !vi || mm.match(vi) && vi.i >= vi.parts.length || !(expr.badFunc = [e, mm]);

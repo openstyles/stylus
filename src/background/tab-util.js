@@ -42,7 +42,7 @@ export async function openEditor(params) {
       });
       if (ffBug && !retry) await browserWindows.update(tab.windowId, wndPos);
       return tab;
-    } catch (e) {}
+    } catch {}
   }
 }
 

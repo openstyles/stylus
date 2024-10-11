@@ -141,8 +141,7 @@ export async function stop() {
     await ctrl.uninit();
     await revokeToken(currentDrive.name);
     await chromeLocal.remove(STORAGE_KEY + currentDrive.name);
-  } catch (e) {
-  }
+  } catch {}
   currentDrive = null;
   prefs.set('sync.enabled', 'none');
   status.state = STATES.disconnected;

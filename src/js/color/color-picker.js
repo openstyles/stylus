@@ -157,7 +157,7 @@ export default function ColorPicker(cm) {
               userActivity = true;
               setFromColor(c.sRGBHex);
               colorpickerCallback();
-            } catch (e) {}
+            } catch {}
           },
         }),
       ]),

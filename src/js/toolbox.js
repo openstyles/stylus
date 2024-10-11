@@ -149,19 +149,19 @@ export function mapObj(obj, fn, keys) {
 export function tryRegExp(regexp, flags) {
   try {
     return new RegExp(regexp, flags);
-  } catch (e) {}
+  } catch {}
 }
 
 export function tryJSONparse(jsonString) {
   try {
     return JSON.parse(jsonString);
-  } catch (e) {}
+  } catch {}
 }
 
 export function tryURL(url) {
   try {
     if (url) return new URL(url);
-  } catch (e) {}
+  } catch {}
   return ''; // allows `res.prop` without checking res first
 }
 
@@ -247,7 +247,7 @@ export let sessionStore = new Proxy({}, {
       const val = sessionStorage[name];
       sessionStore = sessionStorage;
       return val;
-    } catch (e) {
+    } catch {
       Object.defineProperty(window, 'sessionStorage', {value: target});
     }
   },
@@ -255,7 +255,7 @@ export let sessionStore = new Proxy({}, {
     try {
       sessionStorage[name] = `${value}`;
       sessionStore = sessionStorage;
-    } catch (e) {
+    } catch {
       this.get(target);
       target[name] = `${value}`;
     }

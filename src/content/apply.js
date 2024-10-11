@@ -29,7 +29,7 @@ if (isFrame) {
   try {
     isFrameSameOrigin = Object.getOwnPropertyDescriptor(parent.location, 'href');
     isFrameSameOrigin = !!isFrameSameOrigin?.get;
-  } catch (e) {}
+  } catch {}
 }
 const isFrameNoUrl = isFrameSameOrigin && location.protocol === 'about:';
 
@@ -274,7 +274,7 @@ function onReified(e) {
 function tryCatch(func, ...args) {
   try {
     return func(...args);
-  } catch (e) {}
+  } catch {}
 }
 
 function orphanCheck(evt) {

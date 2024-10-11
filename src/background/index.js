@@ -130,7 +130,7 @@ async function apiPortMessage({id, data, TDM}, port) {
     data = msg.wrapError(e);
   }
   data.id = id;
-  try { port.postMessage(data); } catch (e) {}
+  try { port.postMessage(data); } catch {}
 }
 
 //#endregion

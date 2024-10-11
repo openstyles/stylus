@@ -12,6 +12,6 @@ export default function initBrowserCommandsApi() {
           shortcut: value,
         });
       }
-    } catch (e) {}
+    } catch {}
   }, true);
 }

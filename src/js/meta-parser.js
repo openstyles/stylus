@@ -53,7 +53,7 @@ const metaParser = {
       if (va.value !== null) {
         try {
           parser.validateVar(va);
-        } catch (err) {
+        } catch {
           va.value = null;
         }
       }
