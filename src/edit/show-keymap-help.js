@@ -8,7 +8,7 @@ import {helpPopup} from './util';
 let inputs;
 let tableBody;
 
-$('#keyMap-help', template.EditorSettings).onclick = function showKeymapHelp() {
+$('#keyMap-help', template.editorSettings).onclick = function showKeymapHelp() {
   const PREF = 'editor.keyMap';
   const keyMap = mergeKeyMaps({}, prefs.get(PREF), extraKeys);
   const keyMapSorted = Object.keys(keyMap)

@@ -19,7 +19,7 @@ let linter;
 let popup;
 
 $('#lint-help').onclick = showLintHelp;
-$('#linter-settings', template.EditorSettings).onclick = showLintConfig;
+$('#linter-settings', template.editorSettings).onclick = showLintConfig;
 
 async function showLintConfig() {
   linter = await getLinter();
