@@ -2,6 +2,11 @@ import browser from '/js/browser';
 import {tryJSONparse} from './toolbox';
 import {compressToUTF16, decompressFromUTF16} from 'lz-string-unsafe';
 
+export const LZ_KEY = {
+  csslint: 'editorCSSLintConfig',
+  stylelint: 'editorStylelintConfig',
+  usercssTemplate: 'usercssTemplate',
+};
 const StorageExtras = {
   async getValue(key) {
     return (await this.get(key))[key];
@@ -12,7 +17,7 @@ const StorageExtras = {
   async getLZValue(key) {
     return (await this.getLZValues([key]))[key];
   },
-  async getLZValues(keys = Object.values(this.LZ_KEY)) {
+  async getLZValues(keys = Object.values(LZ_KEY)) {
     const data = await this.get(keys);
     for (const key of keys) {
       const value = data[key];
@@ -26,11 +31,4 @@ const StorageExtras = {
 };
 
 export const chromeLocal = Object.assign(browser.storage.local, StorageExtras);
-export const chromeSync = Object.assign(browser.storage.sync, StorageExtras, {
-  // TODO: export directly
-  LZ_KEY: {
-    csslint: 'editorCSSLintConfig',
-    stylelint: 'editorStylelintConfig',
-    usercssTemplate: 'usercssTemplate',
-  },
-});
+export const chromeSync = Object.assign(browser.storage.sync, StorageExtras);

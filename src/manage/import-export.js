@@ -3,7 +3,7 @@ import {t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {styleJSONseemsValid, styleSectionsEqual} from '/js/sections-util';
-import {chromeSync} from '/js/storage-util';
+import {chromeSync, LZ_KEY} from '/js/storage-util';
 import {clipString, deepEqual, isEmptyObj, RX_META, UA, UCD} from '/js/toolbox';
 import {queue} from './util';
 
@@ -182,7 +182,7 @@ async function importFromString(jsonString) {
     order = storage.order;
     delete storage.order;
     if (!isEmptyObj(storage)) {
-      analyzePrefs(storage, Object.values(chromeSync.LZ_KEY), await chromeSync.getLZValues());
+      analyzePrefs(storage, Object.values(LZ_KEY), await chromeSync.getLZValues());
     }
   }
 

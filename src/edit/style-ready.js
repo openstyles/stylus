@@ -4,7 +4,7 @@ import {tBody} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {MozDocMapper} from '/js/sections-util';
-import {chromeSync} from '/js/storage-util';
+import {chromeSync, LZ_KEY} from '/js/storage-util';
 import {clipString, sessionStore, tryURL, UCD} from '/js/toolbox';
 import editor from './editor';
 
@@ -37,7 +37,7 @@ async function loadStyle([
   Object.assign(editor, /** @namespace Editor */ {
     style,
     isUsercss: isUC,
-    template: isUC && !id && chromeSync.getLZValue(chromeSync.LZ_KEY.usercssTemplate), // promise
+    template: isUC && !id && chromeSync.getLZValue(LZ_KEY.usercssTemplate), // promise
   });
   editor.updateClass();
   editor.updateTitle(false);

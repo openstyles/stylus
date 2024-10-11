@@ -4,7 +4,7 @@ import {t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {MozDocMapper} from '/js/sections-util';
-import {chromeSync} from '/js/storage-util';
+import {chromeSync, LZ_KEY} from '/js/storage-util';
 import {RX_META, UCD} from '/js/toolbox';
 import CodeMirror from 'codemirror';
 import cmFactory from './codemirror-factory';
@@ -249,7 +249,7 @@ export default async function SourceEditor() {
       }],
     });
     if (res.enter || res.button !== 1) {
-      const key = chromeSync.LZ_KEY.usercssTemplate;
+      const key = LZ_KEY.usercssTemplate;
       const code = res.button === 2 ? DEFAULT_TEMPLATE : cm.getValue();
       await chromeSync.setLZValue(key, code);
       if (await chromeSync.getLZValue(key) !== code) {

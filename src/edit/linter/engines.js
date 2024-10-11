@@ -1,6 +1,6 @@
 import {worker} from '/edit/linter/store';
 import * as prefs from '/js/prefs';
-import {chromeSync} from '/js/storage-util';
+import {chromeSync, LZ_KEY} from '/js/storage-util';
 import * as linterMan from '.';
 import editor from '../editor';
 import {DEFAULTS} from './defaults';
@@ -49,14 +49,14 @@ linterMan.register(async (text, _options, cm) => {
 
 chrome.storage.onChanged.addListener(changes => {
   for (const name of Object.keys(ENGINES)) {
-    if (chromeSync.LZ_KEY[name] in changes) {
+    if (LZ_KEY[name] in changes) {
       getConfig(name).then(linterMan.run);
     }
   }
 });
 
 async function getConfig(name) {
-  const rawCfg = await chromeSync.getLZValue(chromeSync.LZ_KEY[name]);
+  const rawCfg = await chromeSync.getLZValue(LZ_KEY[name]);
   const cfg = ENGINES[name].getConfig(rawCfg);
   configs.set(name, cfg);
   return cfg;
