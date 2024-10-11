@@ -15,6 +15,7 @@ const WebpackPatchBootstrapPlugin = require('./tools/webpack-patch-bootstrap');
 
 const BUILD = process.env.NODE_ENV;
 const DEV = BUILD === 'DEV';
+const FS_CACHE = false;
 const SRC = `${__dirname}/src/`;
 const DST = path.resolve('dist') + '/';
 const ASSETS = 'assets/';
@@ -51,7 +52,7 @@ const CFG = {
     cssFilename: ASSETS + '[name][ext]',
     cssChunkFilename: ASSETS + '[name][ext]',
   },
-  cache: {
+  cache: !FS_CACHE || {
     type: 'filesystem',
     buildDependencies: {
       config: [__filename],
@@ -70,8 +71,8 @@ const CFG = {
           'postcss-loader',
         ],
       }, {
+        loader: 'babel-loader',
         test: /\.m?js$/,
-        use: {loader: 'babel-loader'},
         resolve: {fullySpecified: false},
       }, {
         loader: SHIM + 'null-loader.js',
@@ -94,7 +95,6 @@ const CFG = {
   optimization: {
     concatenateModules: true, // makes DEV code run faster
     runtimeChunk: false,
-    sideEffects: true,
     usedExports: true,
     minimizer: DEV ? [] : [
       new TerserPlugin({
@@ -162,10 +162,12 @@ function mergeCfg(ovr, base) {
       ovr.entry = Object.fromEntries(entry.map(e => [path.basename(e, '.js'), e]));
     }
     entry = Object.keys(ovr.entry);
-    ovr.cache = {
-      ...ovr.cache,
-      name: BUILD + '-' + entry.join('-'),
-    };
+    if (FS_CACHE) {
+      ovr.cache = {
+        ...ovr.cache,
+        name: BUILD + '-' + entry.join('-'),
+      };
+    }
     (ovr.plugins || (ovr.plugins = [])).push(
       new BundleAnalyzerPlugin({
         analyzerMode: 'static',
