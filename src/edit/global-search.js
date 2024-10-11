@@ -22,36 +22,42 @@ const APPLIES_VALUE_CLASS = 'applies-value';
 
 const RX_MAYBE_REGEXP = /^\s*\/(.+?)\/([simguy]*)\s*$/;
 
-const state = {
-  firstRun: true,
-  // used for case-sensitive matching directly
-  find: '',
-  // used when /re/ is detected or for case-insensitive matching
-  rx: null,
-  // used by overlay and doSearchInApplies, equals to rx || stringAsRegExp(find)
-  rx2: null,
+let stateFirstRun = true;
+/** used for case-sensitive matching directly */
+let stateFind = '';
+/** used when /re/ is detected or for case-insensitive matching */
+let stateRX;
+/** used by overlay and doSearchInApplies, equals to rx || stringAsRegExp(find) */
+let stateRX2;
 
-  icase: true,
-  reverse: false,
-  lastFind: '',
+let stateIcase = true;
+let stateReverse = false;
+let stateLastFind = '';
 
-  numFound: 0,
-  numApplies: -1,
+let stateNumFound = 0;
+let stateNumApplies = -1;
 
-  replace: '',
-  lastReplace: null,
+let stateReplace = '';
+let stateLastReplace;
 
-  cm: null,
-  input: null,
-  input2: null,
-  dialog: null,
-  tally: null,
-  originalFocus: null,
+let stateActiveAppliesTo;
+let stateCm;
+let stateCmStart;
+let stateCursorOptions;
+let stateDialog;
+let stateEditors;
+let stateInput2;
+let stateInput;
+let stateMarker;
+let stateOriginalFocus;
+let stateReplaceHasRefs;
+let stateReplaceValue;
+let stateScrollX;
+let stateScrollY;
+let stateTally;
 
-  undoHistory: [],
-
-  searchInApplies: !editor.isUsercss,
-};
+const stateUndoHistory = [];
+const stateSearchInApplies = !editor.isUsercss;
 
 //endregion
 //region Events
@@ -60,9 +66,9 @@ const ACTIONS = {
   key: {
     'Enter': () => {
       switch (document.activeElement) {
-        case state.input:
-        case state.input2:
-          if (state.dialog.dataset.type === 'find') {
+        case stateInput:
+        case stateInput2:
+          if (stateDialog.dataset.type === 'find') {
             doSearch({reverse: false});
           } else {
             doReplace();
@@ -84,9 +90,9 @@ const ACTIONS = {
       setInputValue(this._input, '');
     },
     case() {
-      state.icase = !state.icase;
-      state.lastFind = '';
-      toggleDataset(this, 'enabled', !state.icase);
+      stateIcase = !stateIcase;
+      stateLastFind = '';
+      toggleDataset(this, 'enabled', !stateIcase);
       doSearch({canAdvance: false});
     },
   },
@@ -94,10 +100,10 @@ const ACTIONS = {
 
 const EVENTS = {
   oninput() {
-    state.find = state.input.value;
+    stateFind = stateInput.value;
     debounce(doSearch, INCREMENTAL_SEARCH_DELAY, {canAdvance: false});
     adjustTextareaSize(this);
-    if (!state.find) enableReplaceButtons(false);
+    if (!stateFind) enableReplaceButtons(false);
   },
   onkeydown(event) {
     const action = ACTIONS.key[CodeMirror.keyName(event)];
@@ -113,34 +119,32 @@ const EVENTS = {
     }
   },
   onfocusout() {
-    if (!state.dialog.contains(document.activeElement)) {
-      state.dialog.on('focusin', EVENTS.onfocusin);
-      state.dialog.off('focusout', EVENTS.onfocusout);
+    if (!stateDialog.contains(document.activeElement)) {
+      stateDialog.on('focusin', EVENTS.onfocusin);
+      stateDialog.off('focusout', EVENTS.onfocusout);
     }
   },
   onfocusin() {
-    state.dialog.on('focusout', EVENTS.onfocusout);
-    state.dialog.off('focusin', EVENTS.onfocusin);
+    stateDialog.on('focusout', EVENTS.onfocusout);
+    stateDialog.off('focusin', EVENTS.onfocusin);
     trimUndoHistory();
-    enableUndoButton(state.undoHistory.length);
-    if (state.find) doSearch({canAdvance: false});
+    enableUndoButton(stateUndoHistory.length);
+    if (stateFind) doSearch({canAdvance: false});
   },
 };
 
 const DIALOG_PROPS = {
-  dialog: {
-    onclick: EVENTS.onclick,
-    onkeydown: EVENTS.onkeydown,
-  },
-  input: {
-    oninput: EVENTS.oninput,
-  },
-  input2: {
-    oninput() {
-      state.replace = this.value;
-      adjustTextareaSize(this);
-      debounce(writeStorage, STORAGE_UPDATE_DELAY);
-    },
+  onclick: EVENTS.onclick,
+  onkeydown: EVENTS.onkeydown,
+};
+const INPUT_PROPS = {
+  oninput: EVENTS.oninput,
+};
+const INPUT2_PROPS = {
+  oninput() {
+    stateReplace = this.value;
+    adjustTextareaSize(this);
+    debounce(writeStorage, STORAGE_UPDATE_DELAY);
   },
 };
 
@@ -149,13 +153,13 @@ const DIALOG_PROPS = {
 
 const COMMANDS = {
   find(cm, {reverse = false} = {}) {
-    state.reverse = reverse;
+    stateReverse = reverse;
     focusDialog('find', cm);
   },
   findNext: cm => doSearch({reverse: false, cm}),
   findPrev: cm => doSearch({reverse: true, cm}),
   replace(cm) {
-    state.reverse = false;
+    stateReverse = false;
     focusDialog('replace', cm);
   },
 };
@@ -169,85 +173,85 @@ readStorage();
 //region Find
 
 function initState({initReplace} = {}) {
-  const text = state.find;
-  const textChanged = text !== state.lastFind;
+  const text = stateFind;
+  const textChanged = text !== stateLastFind;
   if (textChanged) {
-    state.numFound = 0;
-    state.numApplies = -1;
-    state.lastFind = text;
+    stateNumFound = 0;
+    stateNumApplies = -1;
+    stateLastFind = text;
     const match = text && text.match(RX_MAYBE_REGEXP);
     const unicodeFlag = 'unicode' in RegExp.prototype ? 'u' : '';
-    const string2regexpFlags = (state.icase ? 'gi' : 'g') + unicodeFlag;
-    state.rx = match && tryRegExp(match[1], 'g' + match[2].replace(/[guy]/g, '') + unicodeFlag) ||
-      text && (state.icase || text.includes('\n')) && stringAsRegExp(text, string2regexpFlags);
-    state.rx2 = state.rx || text && stringAsRegExp(text, string2regexpFlags);
-    state.cursorOptions = {
-      caseFold: !state.rx && state.icase,
+    const string2regexpFlags = (stateIcase ? 'gi' : 'g') + unicodeFlag;
+    stateRX = match && tryRegExp(match[1], 'g' + match[2].replace(/[guy]/g, '') + unicodeFlag) ||
+      text && (stateIcase || text.includes('\n')) && stringAsRegExp(text, string2regexpFlags);
+    stateRX2 = stateRX || text && stringAsRegExp(text, string2regexpFlags);
+    stateCursorOptions = {
+      caseFold: !stateRX && stateIcase,
       multiline: true,
     };
     debounce(writeStorage, STORAGE_UPDATE_DELAY);
   }
-  if (initReplace && state.replace !== state.lastReplace) {
-    state.lastReplace = state.replace;
-    state.replaceValue = state.replace.replace(/(\\r)?\\n/g, '\n').replace(/\\t/g, '\t');
-    state.replaceHasRefs = /\$[$&`'\d]/.test(state.replaceValue);
+  if (initReplace && stateReplace !== stateLastReplace) {
+    stateLastReplace = stateReplace;
+    stateReplaceValue = stateReplace.replace(/(\\r)?\\n/g, '\n').replace(/\\t/g, '\t');
+    stateReplaceHasRefs = /\$[$&`'\d]/.test(stateReplaceValue);
   }
   const cmFocused = document.activeElement && document.activeElement.closest('.CodeMirror');
-  state.activeAppliesTo =
+  stateActiveAppliesTo =
     $(`.${APPLIES_VALUE_CLASS}:focus, .${APPLIES_VALUE_CLASS}.${TARGET_CLASS}`);
-  state.cmStart = editor.closestVisible(
+  stateCmStart = editor.closestVisible(
     cmFocused && document.activeElement ||
-    state.activeAppliesTo ||
-    state.cm);
+    stateActiveAppliesTo ||
+    stateCm);
   const cmExtra = $('body > :not(#sections) .CodeMirror');
-  state.editors = cmExtra ? [cmExtra.CodeMirror] : editor.getEditors();
+  stateEditors = cmExtra ? [cmExtra.CodeMirror] : editor.getEditors();
 }
 
 function doSearch({
-  reverse = state.reverse,
+  reverse = stateReverse,
   canAdvance = true,
   inApplies = true,
   cm,
 } = {}) {
   if (cm) setActiveEditor(cm);
-  state.reverse = reverse;
-  if (!state.find && !dialogShown()) {
-    focusDialog('find', state.cm);
+  stateReverse = reverse;
+  if (!stateFind && !dialogShown()) {
+    focusDialog('find', stateCm);
     return;
   }
   initState();
-  const {cmStart} = state;
+  const cmStart = stateCmStart;
   const {index, found, foundInCode} =
-    state.find && doSearchInEditors({cmStart, canAdvance, inApplies}) || {};
+    stateFind && doSearchInEditors({cmStart, canAdvance, inApplies}) || {};
   if (!foundInCode) clearMarker();
   if (!found) makeTargetVisible(null);
-  const radiateFrom = foundInCode ? index : state.editors.indexOf(cmStart);
-  setupOverlay(radiateArray(state.editors, radiateFrom));
+  const radiateFrom = foundInCode ? index : stateEditors.indexOf(cmStart);
+  setupOverlay(radiateArray(stateEditors, radiateFrom));
   enableReplaceButtons(foundInCode);
-  if (state.find) {
-    const firstSuccessfulSearch = foundInCode && !state.numFound;
+  if (stateFind) {
+    const firstSuccessfulSearch = foundInCode && !stateNumFound;
     debounce(showTally, 0, firstSuccessfulSearch ? 1 : undefined);
   } else {
     showTally(0, 0);
   }
-  state.firstRun = false;
+  stateFirstRun = false;
   return found;
 }
 
 function doSearchInEditors({cmStart, canAdvance, inApplies}) {
-  const query = state.rx || state.find;
-  const reverse = state.reverse;
+  const query = stateRX || stateFind;
+  const reverse = stateReverse;
   const BOF = {line: 0, ch: 0};
   const EOF = getEOF(cmStart);
 
-  const start = state.editors.indexOf(cmStart);
-  const total = state.editors.length;
+  const start = stateEditors.indexOf(cmStart);
+  const total = stateEditors.length;
   let i = 0;
   let wrapAround = 0;
   let pos, index, cm;
 
-  if (inApplies && state.activeAppliesTo) {
-    if (doSearchInApplies(state.cmStart, canAdvance)) {
+  if (inApplies && stateActiveAppliesTo) {
+    if (doSearchInApplies(stateCmStart, canAdvance)) {
       return {found: true};
     }
     if (reverse) pos = EOF; else i++;
@@ -260,16 +264,16 @@ function doSearchInEditors({cmStart, canAdvance, inApplies}) {
 
   for (; i < total + wrapAround; i++) {
     index = (start + i * (reverse ? -1 : 1) + total) % total;
-    cm = state.editors[index];
+    cm = stateEditors[index];
     if (i) {
       pos = !reverse ? BOF : {line: cm.doc.size, ch: 0};
     }
-    const cursor = cm.getSearchCursor(query, pos, state.cursorOptions);
+    const cursor = cm.getSearchCursor(query, pos, stateCursorOptions);
     if (cursor.find(reverse)) {
       makeMatchVisible(cm, cursor);
       return {found: true, foundInCode: true, index};
     }
-    const cmForNextApplies = !reverse ? cm : state.editors[index ? index - 1 : total - 1];
+    const cmForNextApplies = !reverse ? cm : stateEditors[index ? index - 1 : total - 1];
     if (inApplies && doSearchInApplies(cmForNextApplies)) {
       return {found: true};
     }
@@ -277,18 +281,18 @@ function doSearchInEditors({cmStart, canAdvance, inApplies}) {
 }
 
 function doSearchInApplies(cm, canAdvance) {
-  if (!state.searchInApplies) return;
+  if (!stateSearchInApplies) return;
   const inputs = editor.getSearchableInputs(cm);
-  if (state.reverse) inputs.reverse();
-  inputs.splice(0, inputs.indexOf(state.activeAppliesTo));
+  if (stateReverse) inputs.reverse();
+  inputs.splice(0, inputs.indexOf(stateActiveAppliesTo));
   for (const input of inputs) {
     const value = input.value;
-    if (input === state.activeAppliesTo) {
-      state.rx2.lastIndex = input.selectionStart + canAdvance;
+    if (input === stateActiveAppliesTo) {
+      stateRX2.lastIndex = input.selectionStart + canAdvance;
     } else {
-      state.rx2.lastIndex = 0;
+      stateRX2.lastIndex = 0;
     }
-    const match = state.rx2.exec(value);
+    const match = stateRX2.exec(value);
     if (!match) {
       continue;
     }
@@ -299,11 +303,11 @@ function doSearchInApplies(cm, canAdvance) {
       input.setSelectionRange(end, end);
       input.setSelectionRange(match.index, end);
     });
-    const canFocus = !state.dialog || !state.dialog.contains(document.activeElement);
+    const canFocus = !stateDialog || !stateDialog.contains(document.activeElement);
     makeTargetVisible(!canFocus && input);
     editor.scrollToEditor(cm);
     if (canFocus) input.focus();
-    state.cm = cm;
+    stateCm = cm;
     clearMarker();
     return true;
   }
@@ -314,7 +318,7 @@ function doSearchInApplies(cm, canAdvance) {
 
 function doReplace() {
   initState({initReplace: true});
-  const cm = state.cmStart;
+  const cm = stateCmStart;
   const generation = cm.changeGeneration();
   const pos = getContinuationPos({cm, reverse: true});
   const cursor = doReplaceInEditor({cm, pos});
@@ -333,7 +337,7 @@ function doReplace() {
   if (cm.curOp) cm.endOperation();
 
   if (cursor) {
-    state.undoHistory.push([[cm, generation]]);
+    stateUndoHistory.push([[cm, generation]]);
     enableUndoButton(true);
   }
 }
@@ -341,19 +345,19 @@ function doReplace() {
 function doReplaceAll() {
   initState({initReplace: true});
   clearMarker();
-  const generations = new Map(state.editors.map(cm => [cm, cm.changeGeneration()]));
-  const found = state.editors.filter(cm => doReplaceInEditor({cm, all: true}));
+  const generations = new Map(stateEditors.map(cm => [cm, cm.changeGeneration()]));
+  const found = stateEditors.filter(cm => doReplaceInEditor({cm, all: true}));
   if (found.length) {
-    state.lastFind = null;
-    state.undoHistory.push(found.map(cm => [cm, generations.get(cm)]));
+    stateLastFind = null;
+    stateUndoHistory.push(found.map(cm => [cm, generations.get(cm)]));
     enableUndoButton(true);
     doSearch({canAdvance: false});
   }
 }
 
 function doReplaceInEditor({cm, pos, all = false}) {
-  const cursor = cm.getSearchCursor(state.rx || state.find, pos, state.cursorOptions);
-  const replace = state.replaceValue;
+  const cursor = cm.getSearchCursor(stateRX || stateFind, pos, stateCursorOptions);
+  const replace = stateReplaceValue;
   let found;
 
   cursor.find();
@@ -363,9 +367,9 @@ function doReplaceInEditor({cm, pos, all = false}) {
       cm.startOperation();
       getStateSafe(cm).unclosedOp = true;
     }
-    if (state.rx) {
+    if (stateRX) {
       const text = cm.getRange(cursor.pos.from, cursor.pos.to);
-      cursor.replace(state.replaceHasRefs ? text.replace(state.rx, replace) : replace);
+      cursor.replace(stateReplaceHasRefs ? text.replace(stateRX, replace) : replace);
     } else {
       cursor.replace(replace);
     }
@@ -384,24 +388,24 @@ function doReplaceInEditor({cm, pos, all = false}) {
 function doUndo() {
   let undoneSome;
   saveWindowScrollPos();
-  for (const [cm, generation] of state.undoHistory.pop() || []) {
+  for (const [cm, generation] of stateUndoHistory.pop() || []) {
     if (document.body.contains(cm.display.wrapper) && !cm.isClean(generation)) {
       cm.undo();
       cm.getAllMarks().forEach(marker =>
-        marker !== state.marker &&
+        marker !== stateMarker &&
         marker.className === MATCH_CLASS &&
         marker.clear());
       undoneSome = true;
     }
   }
-  enableUndoButton(state.undoHistory.length);
-  if (state.undoHistory.length) {
+  enableUndoButton(stateUndoHistory.length);
+  if (stateUndoHistory.length) {
     focusUndoButton();
   } else {
-    state.input.focus();
+    stateInput.focus();
   }
   if (undoneSome) {
-    state.lastFind = null;
+    stateLastFind = null;
     restoreWindowScrollPos();
     doSearch({
       reverse: false,
@@ -433,7 +437,7 @@ function setupOverlay(queue, debounced) {
     }
 
     const cmState = getStateSafe(cm);
-    const query = state.rx2;
+    const query = stateRX2;
 
     if (cmState.overlay?.query === query) {
       if (cmState.unclosedOp && cm.curOp) cm.endOperation();
@@ -448,7 +452,7 @@ function setupOverlay(queue, debounced) {
       canContinue = false;
     }
 
-    const hasMatches = query && cm.getSearchCursor(query, null, state.cursorOptions).find();
+    const hasMatches = query && cm.getSearchCursor(query, null, stateCursorOptions).find();
     if (hasMatches) {
       if (!cm.curOp) cm.startOperation();
       cmState.overlay = {
@@ -473,7 +477,7 @@ function setupOverlay(queue, debounced) {
     }
     if (hasMatches) {
       cmState.annotateTimer = setTimeout(annotateScrollbar, ANNOTATE_SCROLLBAR_DELAY,
-        cm, query, state.icase);
+        cm, query, stateIcase);
     }
 
     cmState.unclosedOp = false;
@@ -514,36 +518,37 @@ async function focusDialog(type, cm) {
   await import(/*webpackMode:"eager"*/'./global-search.css');
   setActiveEditor(cm);
 
-  const dialogFocused = state.dialog && state.dialog.contains(document.activeElement);
+  const dialogFocused = stateDialog && stateDialog.contains(document.activeElement);
   let sel = dialogFocused ? '' : getSelection().toString() || cm && cm.getSelection();
   sel = !sel.includes('\n') && !sel.includes('\r') && sel;
-  if (sel) state.find = sel;
+  if (sel) stateFind = sel;
 
   if (!dialogShown(type)) {
     destroyDialog();
     createDialog(type);
+    if (stateTally.textContent === '0') stateTally.textContent = '';
   } else if (sel) {
-    setInputValue(state.input, sel);
+    setInputValue(stateInput, sel);
   }
 
-  state.input.focus();
-  state.input.select();
-  if (state.find) {
+  stateInput.focus();
+  stateInput.select();
+  if (stateFind) {
     doSearch({canAdvance: false});
   }
 }
 
 function dialogShown(type) {
-  return document.body.contains(state.input) &&
-    (!type || state.dialog.dataset.type === type);
+  return document.body.contains(stateInput) &&
+    (!type || stateDialog.dataset.type === type);
 }
 
 function createDialog(type) {
-  state.originalFocus = document.activeElement;
-  state.firstRun = true;
+  stateOriginalFocus = document.activeElement;
+  stateFirstRun = true;
 
-  const dialog = state.dialog = template.searchReplaceDialog.cloneNode(true);
-  Object.assign(dialog, DIALOG_PROPS.dialog);
+  const dialog = stateDialog = template.searchReplaceDialog.cloneNode(true);
+  Object.assign(dialog, DIALOG_PROPS);
   dialog.on('focusout', EVENTS.onfocusout);
   dialog.dataset.type = type;
   dialog.style.pointerEvents = 'auto';
@@ -551,10 +556,10 @@ function createDialog(type) {
   const content = $('[data-type="content"]', dialog);
   content.parentNode.replaceChild(template[type].cloneNode(true), content);
 
-  createInput(0, 'input', state.find);
-  createInput(1, 'input2', state.replace);
-  toggleDataset($('[data-action="case"]', dialog), 'enabled', !state.icase);
-  state.tally = $('[data-type="tally"]', dialog);
+  stateInput = createInput(0, INPUT_PROPS, stateFind);
+  stateInput2 = createInput(1, INPUT2_PROPS, stateReplace);
+  toggleDataset($('[data-action="case"]', dialog), 'enabled', !stateIcase);
+  stateTally = $('[data-type="tally"]', dialog);
 
   const colors = {
     body: colorMimicry(document.body, {bg: 'backgroundColor'}),
@@ -593,35 +598,36 @@ function createDialog(type) {
   document.body.appendChild(dialog);
   dispatchEvent(new Event('showHotkeyInTooltip'));
 
-  adjustTextareaSize(state.input);
+  adjustTextareaSize(stateInput);
   if (type === 'replace') {
-    adjustTextareaSize(state.input2);
-    enableReplaceButtons(state.find !== '');
-    enableUndoButton(state.undoHistory.length);
+    adjustTextareaSize(stateInput2);
+    enableReplaceButtons(stateFind !== '');
+    enableUndoButton(stateUndoHistory.length);
   }
 
   return dialog;
 }
 
-function createInput(index, name, value) {
-  const input = state[name] = $$('textarea', state.dialog)[index];
+function createInput(index, props, value) {
+  const input = $$('textarea', stateDialog)[index];
   if (!input) {
     return;
   }
   input.value = value;
-  Object.assign(input, DIALOG_PROPS[name]);
+  Object.assign(input, props);
 
   input.parentElement.appendChild(template.clearSearch.cloneNode(true));
   $('[data-action]', input.parentElement)._input = input;
+  return input;
 }
 
 function destroyDialog({restoreFocus = false} = {}) {
-  state.input = null;
+  stateInput = null;
   $remove(DIALOG_SELECTOR);
   debounce.unregister(doSearch);
   makeTargetVisible(null);
   if (restoreFocus) {
-    setTimeout(focusNoScroll, 0, state.originalFocus);
+    setTimeout(focusNoScroll, 0, stateOriginalFocus);
   } else {
     saveWindowScrollPos();
     restoreWindowScrollPos({immediately: false});
@@ -642,12 +648,12 @@ function adjustTextareaSize(el) {
     widthHistory.set(el.value, newWidth);
   }
   if (newWidth !== oldWidth) {
-    const dialogRightOffset = parseFloat(getComputedStyle(state.dialog).right);
-    const dialogRight = state.dialog.getBoundingClientRect().right;
-    const textRight = (state.input2 || state.input).getBoundingClientRect().right;
+    const dialogRightOffset = parseFloat(getComputedStyle(stateDialog).right);
+    const dialogRight = stateDialog.getBoundingClientRect().right;
+    const textRight = (stateInput2 || stateInput).getBoundingClientRect().right;
     newWidth = Math.min(newWidth,
       (window.innerWidth - dialogRightOffset - (dialogRight - textRight)) /
-      (state.input2 ? 2 : 1) - 20);
+      (stateInput2 ? 2 : 1) - 20);
     el.style.width = newWidth + 'px';
   }
   const ovrX = el.scrollWidth > el.clientWidth;
@@ -659,23 +665,23 @@ function adjustTextareaSize(el) {
 }
 
 function enableReplaceButtons(enabled) {
-  if (state.dialog && state.dialog.dataset.type === 'replace') {
-    for (const el of $$('[data-action^="replace"]', state.dialog)) {
+  if (stateDialog && stateDialog.dataset.type === 'replace') {
+    for (const el of $$('[data-action^="replace"]', stateDialog)) {
       el.disabled = !enabled;
     }
   }
 }
 
 function enableUndoButton(enabled) {
-  if (state.dialog && state.dialog.dataset.type === 'replace') {
-    for (const el of $$('[data-action="undo"]', state.dialog)) {
+  if (stateDialog && stateDialog.dataset.type === 'replace') {
+    for (const el of $$('[data-action="undo"]', stateDialog)) {
       el.disabled = !enabled;
     }
   }
 }
 
 function focusUndoButton() {
-  for (const btn of $$('[data-action="undo"]', state.dialog)) {
+  for (const btn of $$('[data-action="undo"]', stateDialog)) {
     if (getComputedStyle(btn).display !== 'none') {
       btn.focus();
       break;
@@ -687,7 +693,7 @@ function focusUndoButton() {
 //region Utility
 
 function getStateSafe(cm) {
-  return cm.state.search || (cm.state.search = {});
+  return cm.stateSearch || (cm.stateSearch = {});
 }
 
 // determines search start position:
@@ -708,7 +714,7 @@ function getEOF(cm) {
 }
 
 function getNextEditor(cm, step = 1) {
-  const editors = state.editors;
+  const editors = stateEditors;
   return editors[(editors.indexOf(cm) + step + editors.length) % editors.length];
 }
 
@@ -716,8 +722,8 @@ function getNextEditor(cm, step = 1) {
 // e.g. when the user switched to another editor and invoked a search command
 function setActiveEditor(cm) {
   if (cm.display.wrapper.contains(document.activeElement)) {
-    state.cm = cm;
-    state.originalFocus = cm;
+    stateCm = cm;
+    stateOriginalFocus = cm;
   }
 }
 
@@ -739,9 +745,9 @@ function makeTargetVisible(element) {
 
 // scrolls the editor to reveal the match
 function makeMatchVisible(cm, searchCursor) {
-  const canFocus = !state.firstRun &&
-    (!state.dialog || !state.dialog.contains(document.activeElement));
-  state.cm = cm;
+  const canFocus = !stateFirstRun &&
+    (!stateDialog || !stateDialog.contains(document.activeElement));
+  stateCm = cm;
   // scroll within the editor
   const pos = searchCursor.pos;
   Object.assign(getStateSafe(cm), {
@@ -753,7 +759,7 @@ function makeMatchVisible(cm, searchCursor) {
     unclosedOp: !cm.curOp,
   });
   if (!cm.curOp) cm.startOperation();
-  if (!state.firstRun) {
+  if (!stateFirstRun) {
     cm.jumpToPos(pos.from, pos.to);
   }
   // focus or expose as the current search target
@@ -764,7 +770,7 @@ function makeMatchVisible(cm, searchCursor) {
   } else {
     makeTargetVisible(cm.display.wrapper);
     // mark the match
-    state.marker = cm.state.search.marker = cm.markText(pos.from, pos.to, {
+    stateMarker = cm.stateSearch.marker = cm.markText(pos.from, pos.to, {
       className: MATCH_CLASS,
       clearOnEnter: true,
     });
@@ -772,51 +778,52 @@ function makeMatchVisible(cm, searchCursor) {
 }
 
 function clearMarker() {
-  if (state.marker) state.marker.clear();
+  if (stateMarker) stateMarker.clear();
 }
 
 function showTally(num, numApplies) {
-  if (!state.tally) return;
+  if (!stateTally) return;
   if (num === undefined) {
     num = 0;
-    for (const cm of state.editors) {
+    for (const cm of stateEditors) {
       const {annotate, overlay} = getStateSafe(cm);
       num +=
         annotate?.matches?.length ||
         overlay?.numFound ||
         0;
     }
-    state.numFound = num;
+    stateNumFound = num;
   }
-  if (numApplies === undefined && state.searchInApplies && state.numApplies < 0) {
+  if (numApplies === undefined && stateSearchInApplies && stateNumApplies < 0) {
     numApplies = 0;
-    const elements = state.find ? document.getElementsByClassName(APPLIES_VALUE_CLASS) : [];
-    const {rx} = state;
+    const elements = stateFind ? document.getElementsByClassName(APPLIES_VALUE_CLASS) : [];
     for (const el of elements) {
       const value = el.value;
-      if (rx) {
-        rx.lastIndex = 0;
+      if (stateRX) {
+        stateRX.lastIndex = 0;
         // preventing an infinite loop if matched an empty string and didn't advance
-        for (let m; (m = rx.exec(value)) && ++numApplies && rx.lastIndex > m.index;) { /* NOP */ }
+        for (let m; (m = stateRX.exec(value)) && ++numApplies && stateRX.lastIndex > m.index;) {
+          /* NOP */
+        }
       } else {
         let i = -1;
-        while ((i = value.indexOf(state.find, i + 1)) >= 0) numApplies++;
+        while ((i = value.indexOf(stateFind, i + 1)) >= 0) numApplies++;
       }
     }
-    state.numApplies = numApplies;
+    stateNumApplies = numApplies;
   } else {
-    numApplies = state.numApplies;
+    numApplies = stateNumApplies;
   }
   const newText = num + (numApplies > 0 ? '+' + numApplies : '');
-  if (state.tally.textContent !== newText) {
-    state.tally.textContent = newText;
+  if (stateTally.textContent !== newText) {
+    stateTally.textContent = newText;
     const newTitle = t('searchNumberOfResults' + (numApplies ? '2' : ''));
-    if (state.tally.title !== newTitle) state.tally.title = newTitle;
+    if (stateTally.title !== newTitle) stateTally.title = newTitle;
   }
 }
 
 function trimUndoHistory() {
-  const history = state.undoHistory;
+  const history = stateUndoHistory;
   for (let last; (last = history[history.length - 1]);) {
     const undoables = last.filter(([cm, generation]) =>
       document.body.contains(cm.display.wrapper) && !cm.isClean(generation));
@@ -837,8 +844,8 @@ function focusNoScroll(el) {
 }
 
 function saveWindowScrollPos() {
-  state.scrollX = window.scrollX;
-  state.scrollY = window.scrollY;
+  stateScrollX = scrollX;
+  stateScrollY = scrollY;
 }
 
 function restoreWindowScrollPos({immediately = true} = {}) {
@@ -847,8 +854,8 @@ function restoreWindowScrollPos({immediately = true} = {}) {
     Promise.resolve().then(restoreWindowScrollPos);
     return;
   }
-  if (window.scrollX !== state.scrollX || window.scrollY !== state.scrollY) {
-    window.scrollTo(state.scrollX, state.scrollY);
+  if (scrollX !== stateScrollX || scrollY !== stateScrollY) {
+    scrollTo(stateScrollX, stateScrollY);
   }
 }
 
@@ -871,18 +878,18 @@ function radiateArray(arr, focalIndex) {
 
 function readStorage() {
   chromeLocal.getValue('editor').then((val = {}) => {
-    state.find = val.find || '';
-    state.replace = val.replace || '';
-    state.icase = val.icase || state.icase;
+    stateFind = val.find || '';
+    stateReplace = val.replace || '';
+    stateIcase = val.icase || stateIcase;
   });
 }
 
 function writeStorage() {
   chromeLocal.getValue('editor').then((val = {}) =>
     chromeLocal.setValue('editor', Object.assign(val, {
-      find: state.find,
-      replace: state.replace,
-      icase: state.icase,
+      find: stateFind,
+      replace: stateReplace,
+      icase: stateIcase,
     })));
 }
 
