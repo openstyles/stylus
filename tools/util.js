@@ -1,12 +1,12 @@
 'use strict';
 
 const fs = require('fs');
-const fse = require('fs-extra');
-const chalk = require('chalk');
-const postcss = require('postcss');
-const postcssPresetEnv = require('postcss-preset-env');
+const path = require('path');
 const webpack = require('webpack');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
+
+const ROOT = path.dirname(__dirname.replaceAll('\\', '/')) + '/';
+const SRC = ROOT + 'src/';
 
 function addReport(base, {entry}) {
   base.plugins = [
@@ -35,6 +35,14 @@ function escapeRe(str) {
   return str.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&');
 }
 
+function getBrowserlist() {
+  const mj = require(SRC + 'manifest.json');
+  return [
+    'Firefox >= ' + mj.browser_specific_settings.gecko.strict_min_version,
+    'Chrome >= ' + mj.minimum_chrome_version,
+  ].join(',');
+}
+
 function stripSourceMap(buf, from) {
   const str = buf.toString();
   const map = from + '.map';
@@ -45,40 +53,13 @@ function stripSourceMap(buf, from) {
   return Buffer.from(res);
 }
 
-async function *transpileCss(files, isFirefox, mj = fse.readJsonSync('manifest.json')) {
-  const pc = postcss([
-    postcssPresetEnv({
-      browsers: isFirefox
-        ? 'Firefox >= ' + mj.browser_specific_settings.gecko.strict_min_version
-        : 'Chrome >= ' + mj.minimum_chrome_version,
-      features: {
-        'prefers-color-scheme-query': false, // we manually handle it via cssRules
-      },
-    }),
-  ]);
-  for (const f of files) {
-    const [path, text, ...more] = f;
-    const res = await pc.process(text, {map: false, from: null});
-    const err = res.messages
-      .map(m => chalk.red(`${chalk.bold(path)} ${m.line}:${m.column} `) + m.text)
-      .join('\n');
-    if (err) throw err;
-    yield [path, res.css, ...more];
-  }
-}
-
 module.exports = {
+  ROOT,
+  SRC,
   addReport,
   anyPathSep,
   defineVars,
   escapeRe,
+  getBrowserlist,
   stripSourceMap,
-  transpileCss,
-  SKIP: [
-    '.*', // dot files/folders (glob, not regexp)
-    'dist',
-    'images/icons',
-    'node_modules',
-    'tools',
-  ],
 };

@@ -5,10 +5,6 @@
   "license": "GPL-3.0-only",
   "repository": "openstyles/stylus",
   "author": "Stylus Team",
-  "browserslist": [
-    "Chrome >= 61",
-    "Firefox >= 57"
-  ],
   "dependencies": {
     "@eight04/draggable-list": "^0.3.0",
     "codemirror": "5.65.10",
@@ -35,6 +31,7 @@
     "css-minimizer-webpack-plugin": "^7.0.0",
     "deepmerge": "^4.3.1",
     "eslint": "^8.48.0",
+    "extensionless": "^1.9.9",
     "fast-glob": "^3.3.1",
     "fs-extra": "^11.1.0",
     "html-webpack-plugin": "^5.6.0",
@@ -56,38 +53,20 @@
   },
   "scripts": {
     "lint": "eslint \"**/*.js\" --cache",
-    "test": "node tools/test.mjs && npm run lint",
+    "test": "npm run lint && npm run test-csslint",
+    "test-csslint": "node --import=extensionless/register tools/test-css.js",
     "update-locales": "tx pull --all && node tools/fix-transifex.js && git commit -m \"update locales\" _locales",
     "update-transifex": "tx push -s",
     "build": "webpack-cli",
     "watch": "webpack-cli watch --node-env DEV",
-    "build-chrome": "npm test && node tools/build.js chrome",
-    "build-firefox": "npm test && node tools/build.js firefox",
     "build-icons": "node tools/build-icons",
-    "build-vendor": "node tools/build-vendor",
-    "zip": "npm test && node tools/build.js",
-    "start": "web-ext run",
-    "start-chrome": "web-ext run -t chromium",
+    "zip": "npm test && npm build",
+    "postinstall": "node tools/postinstall.js",
     "preversion": "npm test",
     "version": "sync-version manifest.json && git add .",
     "postversion": "npm run zip && git push --follow-tags"
   },
   "engines": {
     "node": ">=20.6.0"
-  },
-  "babel": {
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "useBuiltIns": false,
-          "bugfixes": true,
-          "loose": true
-        }
-      ]
-    ],
-    "plugins": [
-      "@babel/plugin-transform-runtime"
-    ]
   }
 }

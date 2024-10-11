@@ -1,7 +1,7 @@
 'use strict';
-/* eslint no-unused-vars: 1 */
 
 const fs = require('fs');
+const fse = require('fs-extra');
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -51,16 +51,38 @@ const CFG = {
     cssFilename: ASSETS + '[name][ext]',
     cssChunkFilename: ASSETS + '[name][ext]',
   },
-  resolve: {
-    alias: {
-      '/': SRC,
+  cache: {
+    type: 'filesystem',
+    buildDependencies: {
+      config: [__filename],
+      codemirror: ['codemirror'],
     },
-    fallback: {
-      'fs': SHIM + 'null.js',
-      'path': SHIM + 'path.js',
-      'url': SHIM + 'url.js',
-    },
+    compression: 'gzip',
   },
+  // infrastructureLogging: {debug: /webpack\.cache/},
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {loader: 'css-loader', options: {importLoaders: 1}},
+          'postcss-loader',
+        ],
+      }, {
+        test: /\.m?js$/,
+        use: {loader: 'babel-loader'},
+        resolve: {fullySpecified: false},
+      }, {
+        test: require.resolve('db-to-cloud/lib/drive/fs-drive'),
+        use: [{loader: SHIM + 'null-loader.js'}],
+      }, {
+        test: require.resolve('jsonlint'),
+        use: [{loader: SHIM + 'jsonlint-loader.js'}],
+      },
+    ],
+  },
+  node: false,
   optimization: {
     concatenateModules: true, // makes DEV code run faster
     runtimeChunk: false,
@@ -93,29 +115,16 @@ const CFG = {
       }),
     ],
   },
-  module: {
-    rules: [
-      {
-        test: /\.css$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          {loader: 'css-loader', options: {importLoaders: 1}},
-          'postcss-loader',
-        ],
-      }, {
-        test: /\.m?js$/,
-        use: {loader: 'babel-loader'},
-        resolve: {fullySpecified: false},
-      }, {
-        test: require.resolve('db-to-cloud/lib/drive/fs-drive'),
-        use: [{loader: SHIM + 'null-loader.js'}],
-      }, {
-        test: require.resolve('jsonlint'),
-        use: [{loader: SHIM + 'jsonlint-loader.js'}],
-      },
-    ],
+  resolve: {
+    alias: {
+      '/': SRC,
+    },
+    fallback: {
+      'fs': SHIM + 'null.js',
+      'path': SHIM + 'path.js',
+      'url': SHIM + 'url.js',
+    },
   },
-  node: false,
   performance: {
     maxAssetSize: 1e6,
     maxEntrypointSize: 1e6,
@@ -127,26 +136,6 @@ const CFG = {
       JS,
       BUILD,
       PAGE_BG,
-    }),
-    new CopyPlugin({
-      patterns: [
-        {context: SRC + 'content', from: 'install*.js', to: DST + JS, info: {minimized: true}},
-        {context: SRC + 'images', from: 'eyedropper/**', to: DST + ASSETS},
-        {context: SRC + 'images', from: 'icon/**', to: DST + ASSETS},
-        {context: SRC, from: 'manifest.json', to: DST},
-        {context: SRC, from: '_locales/**', to: DST},
-        {context: THEME_PATH, from: '*.css', to: DST + ASSETS_CM},
-        ...[
-          ['stylelint-bundle', 'stylelint.js'],
-          ['less/dist/less.min.js', 'less.js'],
-          ['stylus-lang-bundle/dist/stylus-renderer.min.js', 'stylus-lang.js'],
-        ].map(([npm, to]) => ({
-          from: require.resolve(npm),
-          to: DST + JS + to,
-          info: {minimized: true},
-          transform: stripSourceMap,
-        })),
-      ],
     }),
     new WebpackPatchBootstrapPlugin(),
   ],
@@ -164,6 +153,18 @@ function mergeCfg(ovr, base) {
     if (typeof entry === 'string' ? entry = [entry] : Array.isArray(entry)) {
       ovr.entry = Object.fromEntries(entry.map(e => [path.basename(e, '.js'), e]));
     }
+    entry = Object.keys(ovr.entry);
+    ovr.cache = {
+      ...ovr.cache,
+      name: BUILD + '-' + entry.join('-'),
+    };
+    (ovr.plugins || (ovr.plugins = [])).push(
+      new BundleAnalyzerPlugin({
+        analyzerMode: 'static',
+        openAnalyzer: false,
+        reportFilename: DST + (entry.length > 1 ? '' : '.' + entry[0]) + '.report.html',
+      })
+    );
   }
   base = {...base || CFG};
   for (const k in ovr) {
@@ -210,7 +211,7 @@ function makeContentScript(name) {
   });
 }
 
-// fse.emptyDirSync(DST);
+if (!DEV) fse.emptyDirSync(DST);
 
 module.exports = [
   mergeCfg({
@@ -267,10 +268,25 @@ module.exports = [
         scriptLoading: 'blocking',
         inject: false,
       })),
-      new BundleAnalyzerPlugin({
-        analyzerMode: 'static',
-        openAnalyzer: false,
-        reportFilename: DST + '.report.html',
+      new CopyPlugin({
+        patterns: [
+          {context: SRC + 'content', from: 'install*.js', to: DST + JS, info: {minimized: true}},
+          {context: SRC + 'images', from: 'eyedropper/**', to: DST + ASSETS},
+          {context: SRC + 'images', from: 'icon/**', to: DST + ASSETS},
+          {context: SRC, from: 'manifest.json', to: DST},
+          {context: SRC, from: '_locales/**', to: DST},
+          {context: THEME_PATH, from: '*.css', to: DST + ASSETS_CM},
+          ...[
+            ['stylelint-bundle', 'stylelint.js'],
+            ['less/dist/less.min.js', 'less.js'],
+            ['stylus-lang-bundle/dist/stylus-renderer.min.js', 'stylus-lang.js'],
+          ].map(([npm, to]) => ({
+            from: require.resolve(npm),
+            to: DST + JS + to,
+            info: {minimized: true},
+            transform: stripSourceMap,
+          })),
+        ],
       }),
     ],
     resolve: {

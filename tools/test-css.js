@@ -3,13 +3,17 @@
 const fs = require('fs');
 const chalk = require('chalk');
 const glob = require('fast-glob');
-const {SKIP, transpileCss} = require('./util');
+const {SRC} = require('./util');
 
 /**
  * Usage notes:
  * When testCsslint() fails, it creates a temporary report file.
  * Inspect it and either fix the source code or rename it to overwrite test-css-report.txt.
 */
+
+const TEST_FILE = __dirname + '/test-css.txt';
+const REPORT_FILE = TEST_FILE.replace('.txt', '-report.txt');
+const FAILED_FILE = REPORT_FILE.replace('.txt', '.tmp.txt');
 
 (async () => {
   let res;
@@ -18,14 +22,14 @@ const {SKIP, transpileCss} = require('./util');
     [testCsslint, 'Testing csslint...'],
     [testParserlib, 'Testing parserlib internals...'],
     [testParserlibOnFiles, 'Testing parserlib on all css files...'],
-    [testTranspile, 'Transpiling all css files'],
   ]) {
     if (msg) process.stdout.write(msg);
     res = fn(res);
-    if (res instanceof Promise) await res;
+    if (res instanceof Promise) res = await res;
     if (msg) console.log(' OK');
   }
   console.log(chalk.green('CSS tests OK'));
+  process.exit(0);
 })();
 
 function fail(what, str) {
@@ -34,7 +38,7 @@ function fail(what, str) {
 }
 
 function testGlobalCss() {
-  const css = fs.readFileSync('css/global.css', {encoding: 'utf8'});
+  const css = fs.readFileSync(SRC + 'css/global.css', {encoding: 'utf8'});
   const RX_SUPPRESSOR = /[^{}]+#\\1\s?transition-suppressor[^{}]+{\s*transition:\s*none\s*!\s*important/i;
   const RX_COMMENT = /\/\*([^*]+|\*(?!\/))*(\*\/|$)/g;
   if (!RX_SUPPRESSOR.test(css.replace(RX_COMMENT, ''))) {
@@ -42,11 +46,8 @@ function testGlobalCss() {
   }
 }
 
-function testCsslint() {
-  const TEST_FILE = 'tools/test-css.txt';
-  const REPORT_FILE = TEST_FILE.replace('.txt', '-report.txt');
-  const FAILED_FILE = REPORT_FILE.replace('.txt', '.tmp.txt');
-  const csslint = require('../js/csslint/csslint');
+async function testCsslint() {
+  const {default: csslint} = await import(SRC + 'js/csslint/csslint');
   const rules = {...csslint.getRuleSet(), 'style-rule-nesting': 0};
   const report = csslint
     .verify(fs.readFileSync(TEST_FILE, 'utf8'), rules)
@@ -73,8 +74,8 @@ function testCsslint() {
   }
 }
 
-function testParserlib() {
-  const parserlib = require('../js/csslint/parserlib');
+async function testParserlib() {
+  const {default: parserlib} = await import(SRC + 'js/csslint/parserlib');
   const {Matcher} = parserlib.util;
   for (const obj of [
     parserlib.css.Properties,
@@ -104,7 +105,8 @@ function testParserlibOnFiles(parserlib) {
     }
   };
   const files = [];
-  for (const file of glob.sync('**/*.css', {ignore: SKIP})) {
+  for (const file of glob.sync(SRC + '**/*.css')) {
+    process.stdout.write('.');
     const text = fs.readFileSync(file, 'utf8');
     const opts = parser.options;
     opts.topDocOnly = true; parser.parse(text);
@@ -115,10 +117,4 @@ function testParserlibOnFiles(parserlib) {
     files.push([file, text]);
   }
   return files;
-}
-
-async function testTranspile(files) {
-  for await (const _ of transpileCss(files)) { // eslint-disable-line no-unused-vars
-    process.stdout.write('.');
-  }
 }
