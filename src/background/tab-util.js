@@ -112,7 +112,10 @@ export async function openURL({
     return activateTab(tab, {url, openerTabId});
   }
   const id = openerTabId == null ? tab.id : openerTabId;
-  const opener = id != null && !tab.incognito && HAS_OPENER && {openerTabId: id};
+  const opener = id != null && !tab.incognito && HAS_OPENER && {
+    openerTabId: id,
+    windowId: tab.windowId,
+  };
   return browser.tabs.create(Object.assign({url, index, active}, opener));
 }
 
