@@ -9,7 +9,7 @@ import {fetchText} from '/js/toolbox';
 import {$, $$} from './dom-base';
 
 export const template = new Proxy({}, {
-  get: (obj, k, _) => obj[k] ||
+  get: (obj, k, _) => obj.hasOwnProperty(k) ? obj[k] :
     (_ = $(`template[data-id="${k}"]`)) && (obj[k] = createTemplate(_)),
 });
 const ALLOWED_TAGS = ['a', 'b', 'code', 'i', 'sub', 'sup', 'wbr'];
