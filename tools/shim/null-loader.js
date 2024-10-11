@@ -1,3 +1,3 @@
 export default function () {
-  return 'module.exports = null';
+  return 'export default null';
 }

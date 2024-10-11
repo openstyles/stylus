@@ -74,11 +74,19 @@ const CFG = {
         use: {loader: 'babel-loader'},
         resolve: {fullySpecified: false},
       }, {
-        test: require.resolve('db-to-cloud/lib/drive/fs-drive'),
-        use: [{loader: SHIM + 'null-loader.js'}],
+        loader: SHIM + 'null-loader.js',
+        test: [
+          require.resolve('db-to-cloud/lib/drive/fs-drive'),
+        ],
       }, {
+        loader: SHIM + 'cjs-to-esm-loader.js',
+        test: [
+          'db-to-cloud',
+          'webext-launch-web-auth-flow',
+        ].map(npm => path.dirname(require.resolve(npm))),
+      }, {
+        loader: SHIM + 'jsonlint-loader.js',
         test: require.resolve('jsonlint'),
-        use: [{loader: SHIM + 'jsonlint-loader.js'}],
       },
     ],
   },
@@ -211,7 +219,7 @@ function makeContentScript(name) {
   });
 }
 
-if (!DEV) fse.emptyDirSync(DST);
+if (!DEV) fse.emptyDirSync(DST + ASSETS);
 
 module.exports = [
   mergeCfg({

@@ -158,7 +158,7 @@ async function authUser(keys, name, interactive = false, hooks = null) {
   const width = clamp(screen.availWidth - 100, 400, 800);
   const height = clamp(screen.availHeight - 100, 200, 800);
   const wnd = !alwaysUseTab && await browserWindows.getLastFocused();
-  const finalUrl = await (await import('./sync-deps')).launchWebAuthFlow({
+  const finalUrl = await (await import('webext-launch-web-auth-flow')).default({
     url,
     alwaysUseTab,
     interactive,

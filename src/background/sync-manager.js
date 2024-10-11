@@ -99,6 +99,7 @@ export async function getDriveOptions(driveName) {
 export async function start(name, fromPref = false) {
   if (ready.then) await ready;
   if (!ctrl) await initController();
+  else if (ctrl.then) await ctrl;
 
   if (currentDrive) return;
   currentDrive = await getDrive(name);
@@ -175,7 +176,7 @@ export async function syncNow() {
 //#region Utils
 
 async function initController() {
-  ctrl = (await import('./sync-deps')).dbToCloud({
+  ctrl = (await (ctrl = import('db-to-cloud'))).dbToCloud({
     onGet: _id => styleMan.uuid2style(_id) || uuidIndex.custom[_id],
     async onPut(doc) {
       if (!doc) return; // TODO: delete it?
@@ -271,7 +272,7 @@ async function getDrive(name) {
     const options = await getDriveOptions(name);
     options.getAccessToken = () => getToken(name);
     options.fetch = name === 'webdav' ? fetchWebDAV.bind(options) : fetch;
-    return (await import('./sync-deps')).drive[name](options);
+    return (await import('db-to-cloud')).drive[name].default(options);
   }
   throw new Error(`unknown cloud name: ${name}`);
 }

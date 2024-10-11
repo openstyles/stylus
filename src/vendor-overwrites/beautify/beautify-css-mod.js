@@ -37,7 +37,7 @@
 // http://www.w3.org/TR/CSS21/syndata.html#tokenization
 // http://www.w3.org/TR/css3-syntax/
 
-(function() {
+export default (function() {
 
     function mergeOpts(allOptions, targetType) {
         var finalOpts = {};
@@ -581,24 +581,5 @@
         [MOZ_DOC]: true
     };
 
-    /*global define */
-    if (typeof define === "function" && define.amd) {
-        // Add support for AMD ( https://github.com/amdjs/amdjs-api/wiki/AMD#defineamd-property- )
-        define([], function() {
-            return {
-                css_beautify: css_beautify
-            };
-        });
-    } else if (typeof exports !== "undefined") {
-        // Add support for CommonJS. Just put this file somewhere on your require.paths
-        // and you will be able to `var html_beautify = require("beautify").html_beautify`.
-        exports.css_beautify = css_beautify;
-    } else if (typeof window !== "undefined") {
-        // If we're running a web page and don't have either of the above, add our one global
-        window.css_beautify = css_beautify;
-    } else if (typeof global !== "undefined") {
-        // If we don't even have window, try global.
-        global.css_beautify = css_beautify;
-    }
-
+    return css_beautify;
 }());

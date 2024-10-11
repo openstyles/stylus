@@ -5,6 +5,8 @@ import * as prefs from '/js/prefs';
 import editor from './editor';
 import {createHotkeyInput, helpPopup} from './util';
 
+let cssBeautifyMod;
+
 CodeMirror.commands.beautify = cm => {
   // using per-section mode when code editor or applies-to block is focused
   const isPerSection = cm.display.wrapper.parentElement.contains(document.activeElement);
@@ -28,7 +30,9 @@ prefs.subscribe('editor.beautify.hotkey', (_key, value) => {
  * @param {?} [ui]
  */
 async function beautify(scope, ui = true) {
-  await import('/vendor-overwrites/beautify/beautify-css-mod'); /* global css_beautify */
+  if (!cssBeautifyMod) {
+    cssBeautifyMod = (await import('/vendor-overwrites/beautify/beautify-css-mod')).default;
+  }
   const tabs = prefs.get('editor.indentWithTabs');
   const options = Object.assign(prefs.defaults['editor.beautify'], prefs.get('editor.beautify'));
   options.indent_size = tabs ? 1 : prefs.get('editor.tabSize');
@@ -46,7 +50,7 @@ function beautifyEditor(cm, options, ui) {
     [].concat.apply([], cm.doc.sel.ranges.map(r =>
       [Object.assign({}, r.anchor), Object.assign({}, r.head)]));
   const text = cm.getValue();
-  const newText = css_beautify(text, options);
+  const newText = cssBeautifyMod(text, options);
   if (newText !== text) {
     if (!cm.beautifyChange || !cm.beautifyChange[cm.changeGeneration()]) {
       // clear the list if last change wasn't a css-beautify
