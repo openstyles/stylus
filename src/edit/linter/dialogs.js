@@ -1,6 +1,6 @@
 import {worker} from '/edit/linter/store';
 import {$, $create, $createLink, messageBox} from '/js/dom';
-import {t, template} from '/js/localization';
+import {t} from '/js/localization';
 import {chromeSync, LZ_KEY} from '/js/storage-util';
 import {tryJSONparse} from '/js/toolbox';
 import editor from '../editor';
@@ -18,10 +18,7 @@ let isStylelint;
 let linter;
 let popup;
 
-$('#lint-help').onclick = showLintHelp;
-$('#linter-settings', template.editorSettings).onclick = showLintConfig;
-
-async function showLintConfig() {
+export async function showLintConfig() {
   linter = await getLinter();
   if (!linter) {
     return;
@@ -102,7 +99,7 @@ async function showLintConfig() {
   popup.onClose.add(onConfigClose);
 }
 
-async function showLintHelp() {
+export async function showLintHelp() {
   const target = await getLinter();
   const baseUrl = target === 'stylelint'
     ? 'https://stylelint.io/user-guide/rules/'

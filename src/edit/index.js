@@ -1,6 +1,7 @@
 import {$, $$} from '/js/dom';
-import {tBody} from '/js/localization';
+import {tBody, template} from '/js/localization';
 import * as prefs from '/js/prefs';
+import CodeMirror from 'codemirror';
 import CompactHeader from './compact-header';
 import editor from './editor';
 import EditorHeader from './editor-header';
@@ -26,11 +27,30 @@ styleReady.then(async () => {
   prefs.subscribe('editor.linter', () => linterMan.run());
   CompactHeader();
   import('./lazy-init');
+  const cmCommands = CodeMirror.commands;
+  for (const cmd of ['find', 'findNext', 'findPrev', 'replace', 'replaceAll']) {
+    cmCommands[cmd] = async (...args) => {
+      await import('./global-search');
+      cmCommands[cmd](...args);
+    };
+  }
   // enabling after init to prevent flash of validation failure on an empty name
   $('#name').required = !editor.isUsercss;
   $('#save-button').onclick = editor.save;
   $('#cancel-button').onclick = editor.cancel;
-  $('#testRE').hidden = !editor.style.sections.some(({regexps: r}) => r && r.length);
+  // $('#testRE').hidden = !editor.style.sections.some(({regexps: r}) => r && r.length);
+  $('#testRE').onclick = async function () {
+    (this.onclick = (await import('./regexp-tester')).toggle)(true);
+  };
+  $('#lint-help').onclick = async function () {
+    (this.onclick = (await import('./linter/dialogs')).showLintHelp)();
+  };
+  $('#linter-settings', template.editorSettings).onclick = async function () {
+    (this.onclick = (await import('./linter/dialogs')).showLintConfig)();
+  };
+  $('#keyMap-help', template.editorSettings).onclick = async function () {
+    (this.onclick = (await import('./show-keymap-help')).default)();
+  };
   const elSec = $('#sections-list');
   const elToc = $('#toc');
   const moDetails = new MutationObserver(([{target: sec}]) => {

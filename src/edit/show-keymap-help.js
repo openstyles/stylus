@@ -1,5 +1,5 @@
 import {CodeMirror, extraKeys} from '/cm';
-import {$, $$, $create} from '/js/dom';
+import {$$, $create} from '/js/dom';
 import {t, template} from '/js/localization';
 import * as prefs from '/js/prefs';
 import {clipString, stringAsRegExp} from '/js/toolbox';
@@ -8,7 +8,7 @@ import {helpPopup} from './util';
 let inputs;
 let tableBody;
 
-$('#keyMap-help', template.editorSettings).onclick = function showKeymapHelp() {
+export default function showKeymapHelp() {
   const PREF = 'editor.keyMap';
   const keyMap = mergeKeyMaps({}, prefs.get(PREF), extraKeys);
   const keyMapSorted = Object.keys(keyMap)
@@ -32,7 +32,7 @@ $('#keyMap-help', template.editorSettings).onclick = function showKeymapHelp() {
   inputs[1].focus();
 
   table.oninput = filterTable;
-};
+}
 
 function hotkeyHandler(event) {
   const keyName = CodeMirror.keyName(event);
