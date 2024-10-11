@@ -3,7 +3,7 @@ import {$} from '/js/dom';
 import {tBody} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
-import {MozDocMapper} from '/js/sections-util';
+import * as MozDocMapper from '/js/sections-util';
 import {chromeSync, LZ_KEY} from '/js/storage-util';
 import {clipString, sessionStore, tryURL, UCD} from '/js/toolbox';
 import editor from './editor';

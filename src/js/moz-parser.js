@@ -1,4 +1,4 @@
-import {MozDocMapper} from '/js/sections-util';
+import {FROM_CSS} from './sections-util';
 /* global parserlib */
 
 /**
@@ -52,7 +52,7 @@ export default function extractSections({code, styleId, fast = true}) {
     }
     for (const fn of e.functions) {
       const {name, expr} = fn;
-      const aType = MozDocMapper.FROM_CSS[name.toLowerCase()];
+      const aType = FROM_CSS[name.toLowerCase()];
       const p0 = expr && expr.parts[0];
       const {uri: val = (
         p0 && aType === 'regexps' && hasSingleEscapes.test(p0.text)

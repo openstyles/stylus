@@ -2,7 +2,7 @@ import {$create} from '/js/dom';
 import {formatRelativeDate, t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
-import {MozDocMapper} from '/js/sections-util';
+import {styleToCss} from '/js/sections-util';
 import {clamp, debounce} from '/js/toolbox';
 import editor from './editor';
 import {helpPopup, showCodeMirrorPopup} from './util';
@@ -31,7 +31,7 @@ async function maybeRestore() {
   const {style} = draft;
   const onYes = () => resolve(true);
   const onNo = () => resolve(false);
-  const value = draft.isUsercss ? style.sourceCode : MozDocMapper.styleToCss(style);
+  const value = draft.isUsercss ? style.sourceCode : styleToCss(style);
   const info = t('draftTitle', formatRelativeDate(draft.date));
   const popup = showCodeMirrorPopup(info, '', {value, readOnly: true});
   popup.className += ' danger';

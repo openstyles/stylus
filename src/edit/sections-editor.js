@@ -3,7 +3,7 @@ import {$, $create, $remove, messageBox} from '/js/dom';
 import {t, template} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
-import {MozDocMapper, styleSectionsEqual} from '/js/sections-util';
+import {styleSectionsEqual, styleToCss} from '/js/sections-util';
 import {clipString, RX_META, UCD} from '/js/toolbox';
 import editor from './editor';
 import * as linterMan from './linter';
@@ -65,7 +65,7 @@ export default function SectionsEditor() {
 
     getValue(asObject) {
       const st = getModel();
-      return asObject ? st : MozDocMapper.styleToCss(st);
+      return asObject ? st : styleToCss(st);
     },
 
     getSearchableInputs(cm) {

@@ -3,7 +3,7 @@ import {$, $$remove, $create, $createLink, $isTextInput, messageBox} from '/js/d
 import {t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
-import {MozDocMapper} from '/js/sections-util';
+import {styleToCss} from '/js/sections-util';
 import {chromeSync, LZ_KEY} from '/js/storage-util';
 import {RX_META, UCD} from '/js/toolbox';
 import CodeMirror from 'codemirror';
@@ -186,7 +186,7 @@ export default async function SourceEditor() {
         (s, body) => body.trim() === comment ? '\n\n' : s)
       .trim() +
       '\n\n' +
-      MozDocMapper.styleToCss(style);
+      styleToCss(style);
     cm.startOperation();
     cm.setValue(style.sourceCode);
     cm.clearHistory();

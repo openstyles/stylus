@@ -1,59 +1,60 @@
-// TODO: export directly
-export const MozDocMapper = {
-  TO_CSS: {
-    urls: 'url',
-    urlPrefixes: 'url-prefix',
-    domains: 'domain',
-    regexps: 'regexp',
-  },
-  FROM_CSS: {
-    'url': 'urls',
-    'url-prefix': 'urlPrefixes',
-    'domain': 'domains',
-    'regexp': 'regexps',
-  },
-  /**
-   * @param {Object} section
-   * @param {function(func:string, value:string)} fn
-   */
-  forEachProp(section, fn) {
-    for (const [propName, func] of Object.entries(MozDocMapper.TO_CSS)) {
-      section[propName]?.forEach(value => fn(func, value));
+export const TO_CSS = {
+  urls: 'url',
+  urlPrefixes: 'url-prefix',
+  domains: 'domain',
+  regexps: 'regexp',
+};
+
+export const FROM_CSS = {
+  'url': 'urls',
+  'url-prefix': 'urlPrefixes',
+  'domain': 'domains',
+  'regexp': 'regexps',
+};
+
+/**
+ * @param {Object} section
+ * @param {function(func:string, value:string)} fn
+ */
+export const forEachProp = (section, fn) => {
+  for (const [propName, func] of Object.entries(TO_CSS)) {
+    section[propName]?.forEach(value => fn(func, value));
+  }
+};
+
+/**
+ * @param {Array<?[type,value]>} funcItems
+ * @param {?Object} [section]
+ * @returns {Object} section
+ */
+export const toSection = (funcItems, section = {}) => {
+  for (const item of funcItems) {
+    const [func, value] = item || [];
+    const propName = FROM_CSS[func];
+    if (propName) {
+      const props = section[propName] || (section[propName] = []);
+      if (Array.isArray(value)) props.push(...value);
+      else props.push(value);
     }
-  },
-  /**
-   * @param {Array<?[type,value]>} funcItems
-   * @param {?Object} [section]
-   * @returns {Object} section
-   */
-  toSection(funcItems, section = {}) {
-    for (const item of funcItems) {
-      const [func, value] = item || [];
-      const propName = MozDocMapper.FROM_CSS[func];
-      if (propName) {
-        const props = section[propName] || (section[propName] = []);
-        if (Array.isArray(value)) props.push(...value);
-        else props.push(value);
-      }
-    }
-    return section;
-  },
-  /**
-   * @param {StyleObj} style
-   * @returns {string}
-   */
-  styleToCss(style) {
-    const res = [];
-    for (const section of style.sections) {
-      const funcs = [];
-      MozDocMapper.forEachProp(section, (type, value) =>
-        funcs.push(`${type}("${value.replace(/[\\"]/g, '\\$&')}")`));
-      res.push(funcs.length
-        ? `@-moz-document ${funcs.join(', ')} {\n${section.code}\n}`
-        : section.code);
-    }
-    return res.join('\n\n');
-  },
+  }
+  return section;
+};
+
+/**
+ * @param {StyleObj} style
+ * @returns {string}
+ */
+export const styleToCss = style => {
+  const res = [];
+  for (const section of style.sections) {
+    const funcs = [];
+    forEachProp(section, (type, value) =>
+      funcs.push(`${type}("${value.replace(/[\\"]/g, '\\$&')}")`));
+    res.push(funcs.length
+      ? `@-moz-document ${funcs.join(', ')} {\n${section.code}\n}`
+      : section.code);
+  }
+  return res.join('\n\n');
 };
 
 const STYLE_CODE_EMPTY_RE = /\s+|\/\*([^*]+|\*(?!\/))*(\*\/|$)|@namespace[^;]+;|@charset[^;]+;/giyu;

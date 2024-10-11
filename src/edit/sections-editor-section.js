@@ -1,7 +1,7 @@
 import {$, setupLivePrefs, toggleDataset} from '/js/dom';
 import {template} from '/js/localization';
 import * as prefs from '/js/prefs';
-import {MozDocMapper} from '/js/sections-util';
+import * as MozDocMapper from '/js/sections-util';
 import {debounce} from '/js/toolbox';
 import CodeMirror from 'codemirror';
 import {initBeautifyButton} from './beautify';
