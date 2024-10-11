@@ -3,7 +3,6 @@ import {$, $$, $create, getEventKeyName, messageBox, setInputValue, setupLivePre
 import {t, tBody, template} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
-import '/js/themer';
 import {CHROME_POPUP_BORDER_BUG, clamp, FIREFOX, ignoreChromeError, UA, URLS} from '/js/toolbox';
 import './options-sync';
 import './onoffswitch.css';

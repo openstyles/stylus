@@ -3,7 +3,6 @@ import {t, tBody} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import * as router from '/js/router';
-import '/js/themer';
 import {CHROME} from '/js/toolbox';
 import {fltMode} from './filters';
 import {readBadFavs, showStyles} from './render';

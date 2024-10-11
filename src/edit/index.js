@@ -1,7 +1,6 @@
 import {$, $$} from '/js/dom';
 import {tBody} from '/js/localization';
 import * as prefs from '/js/prefs';
-import '/js/themer';
 import CompactHeader from './compact-header';
 import editor from './editor';
 import EditorHeader from './editor-header';

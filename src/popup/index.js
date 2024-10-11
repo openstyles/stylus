@@ -3,7 +3,6 @@ import {t, template, tNodeList} from '/js/localization';
 import {API, onExtension, sendTab} from '/js/msg';
 import popupGetStyles, {ABOUT_BLANK} from '/js/popup-get-styles';
 import * as prefs from '/js/prefs';
-import '/js/themer';
 import {
   capitalize, CHROME, CHROME_POPUP_BORDER_BUG, clamp, clipString, FIREFOX, getActiveTab, isEmptyObj,
   MF, stringAsRegExpStr, UA, UCD, URLS,

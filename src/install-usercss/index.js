@@ -7,7 +7,6 @@ import {fetchTemplate, t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {styleCodeEmpty} from '/js/sections-util';
-import '/js/themer';
 import {
   clipString, closeCurrentTab, deepEqual, sessionStore, tryURL, UCD, URLS,
 } from '/js/toolbox';
