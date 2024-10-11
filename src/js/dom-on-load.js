@@ -1,5 +1,5 @@
 import {$, $$, $create, focusA11y} from './dom-base';
-import {getEventKeyName, moveFocus} from './dom-util';
+import {getEventKeyName, messageBox, moveFocus} from './dom-util';
 import HeaderResizer from './header-resizer';
 import {t} from './localization';
 import {onExtension} from './msg';
@@ -194,7 +194,7 @@ function interceptClick(event) {
   const el = event.target.closest('[data-cmd=note]');
   if (el) {
     event.preventDefault();
-    window.messageBox.show({
+    messageBox.show({
       className: 'note center-dialog',
       contents: tooltips.get(el) || el.title,
       buttons: [t('confirmClose')],

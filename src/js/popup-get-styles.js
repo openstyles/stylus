@@ -1,6 +1,6 @@
 import browser from '/js/browser';
 import * as msg from '/js/msg';
-import {API} from '/js/msg';
+import {API, isBg} from '/js/msg';
 import {CHROME, FIREFOX, getActiveTab, URLS} from '/js/toolbox';
 
 export const ABOUT_BLANK = 'about:blank';
@@ -60,7 +60,7 @@ export default async function popupGetStyles() {
   for (const f of frames) {
     if (f.url && !f.isDupe) f.stylesIdx = styles.push(f.styles = API.styles.getByUrl(f.url)) - 1;
   }
-  if (!window.bgReady) {
+  if (!isBg) {
     styles = await Promise.all(styles);
     for (const f of frames) if (f.styles) f.styles = styles[f.stylesIdx];
   }
