@@ -6,7 +6,7 @@
  * <tag i18n="id, +id2, title:id3, placeholder:id4, data-foo:id5">
  */
 import {fetchText} from '/js/toolbox';
-import {$, $$} from './dom-base';
+import {$, $$, $toFragment} from './dom-base';
 
 export const template = new Proxy({}, {
   get: (obj, k, _) => obj.hasOwnProperty(k) ? obj[k] :
@@ -15,6 +15,16 @@ export const template = new Proxy({}, {
 const ALLOWED_TAGS = ['a', 'b', 'code', 'i', 'sub', 'sup', 'wbr'];
 const RX_WORD_BREAK = /([\w\u007B-\uFFFF]{10}|[\w\u007B-\uFFFF]{5,10}[!-/]|((?!\s)\W){10})(?!\s|$)/gu;
 const SELECTOR = '[i18n]';
+const RELATIVE_UNITS = [
+  // size, name, precision
+  [60, 'second', 0],
+  [60, 'minute', 0],
+  [24, 'hour', 1],
+  [7, 'day', 1],
+  [4, 'week', 1],
+  [12, 'month', 1],
+  [1e99, 'year', 1],
+];
 const cache = {};
 const intlCache = {};
 let onBodyListeners = [];
@@ -35,10 +45,7 @@ export function tHTML(html) {
       : document.createTextNode(html);
 }
 
-export function tNodeList(nodes) {
-  if (nodes instanceof Node) {
-    nodes = [...$$(SELECTOR, nodes), nodes];
-  }
+function tNodeList(nodes) {
   for (const node of nodes) {
     if (!node.localName) continue;
     const attr = node.getAttribute('i18n');
@@ -91,7 +98,7 @@ export function createTemplate(el) {
     }
   }
   toRemove.forEach(n => n.remove());
-  tNodeList(content);
+  tNodeList($$(SELECTOR, content));
   return (template[el.dataset.id] =
     content.childNodes.length > 1
       ? content
@@ -107,9 +114,9 @@ export function createHtml(str, trusted) {
   if (!trusted) {
     sanitizeHtml(root);
   } else if (str.includes('i18n=')) {
-    tNodeList(root);
+    tNodeList($$(SELECTOR, root));
   }
-  return toFragment(root);
+  return $toFragment(root);
 }
 
 export async function fetchTemplate(url, name, all) {
@@ -118,7 +125,7 @@ export async function fetchTemplate(url, name, all) {
     res = parseHtml(await fetchText(url), '*');
     if (![...$$(`template[data-id${all ? '' : `="${name}"`}]`, res)].map(createTemplate).length) {
       createTemplate({
-        content: toFragment($('body', res)),
+        content: $toFragment($('body', res)),
         dataset: {id: name},
       });
     }
@@ -151,13 +158,6 @@ export function sanitizeHtml(root) {
     const parent = n.parentNode;
     if (parent) parent.removeChild(n); // not using .remove() as there may be a non-element
   }
-}
-
-/** Moves child nodes to a new document fragment */
-export function toFragment(el) {
-  const bin = document.createDocumentFragment();
-  for (let n; (n = el.firstChild);) bin.appendChild(n);
-  return bin;
 }
 
 export function formatDate(date, needsTime) {
@@ -198,15 +198,7 @@ export function formatDate(date, needsTime) {
 export function formatRelativeDate(date, style) {
   let delta = (Date.now() - date) / 1000;
   if (delta >= 0 && Intl.RelativeTimeFormat) {
-    for (const [span, unit, frac = 1] of [
-      [60, 'second', 0],
-      [60, 'minute', 0],
-      [24, 'hour'],
-      [7, 'day'],
-      [4, 'week'],
-      [12, 'month'],
-      [1e99, 'year'],
-    ]) {
+    for (const [span, unit, frac] of RELATIVE_UNITS) {
       if (delta < span) {
         return (/** @type {RelativeTimeFormat} */ intlCache.R ||
           (intlCache.R = new Intl.RelativeTimeFormat([chrome.i18n.getUILanguage(), 'en'], {style}))

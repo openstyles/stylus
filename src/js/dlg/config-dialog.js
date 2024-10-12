@@ -170,7 +170,7 @@ export default async function configDialog(style) {
         $create('div', {style: 'max-width: 34em'}, t('usercssConfigIncomplete')),
         $create('ol', {style: 'text-align: left'},
           invalid.map(msg =>
-            $create({tag: 'li', appendChild: msg}))),
+            $create({tag: 'li'}, msg))),
       ], 'pre');
     }
     if (!numValid) {

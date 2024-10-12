@@ -71,7 +71,6 @@ export function $$remove(selector, base = document) {
  * `children` is a string (textContent) or Node or array of text/nodes
  * `properties` is an object with some special keys:
    tag:         string, default 'div'
-   appendChild: element/string or an array of elements/strings
    attributes:  {'html-case-name': val, ...} via setAttribute
    dataset:     {camelCaseName: val, ...} via Object.assign
    'data-attr-name': val via setAttribute
@@ -88,7 +87,6 @@ export function $create(selector = 'div', properties, children) {
       children = properties;
     } else {
       opt = properties || {};
-      children = children || opt.appendChild;
     }
     const idStart = (selector.indexOf('#') + 1 || selector.length + 1) - 1;
     const classStart = (selector.indexOf('.') + 1 || selector.length + 1) - 1;
@@ -106,15 +104,15 @@ export function $create(selector = 'div', properties, children) {
   } else {
     opt = selector;
     tag = opt.tag;
-    children = opt.appendChild || properties;
+    children = properties;
   }
   const element =
     tag === 'fragment' ? document.createDocumentFragment() :
       document.createElement(tag || 'div');
-  for (const child of Array.isArray(children) ? children : [children]) {
-    if (child) {
-      element.appendChild(child instanceof Node ? child : document.createTextNode(child));
-    }
+  if (Array.isArray(children)
+      ? (children = children.filter(Boolean)).length
+      : children && (children = [children])) {
+    element.append(...children);
   }
   for (const key in opt) {
     if (!hasOwn(opt, key)) continue;
@@ -133,7 +131,6 @@ export function $create(selector = 'div', properties, children) {
         break;
       }
       case 'tag':
-      case 'appendChild':
         break;
       default: {
         if (key.startsWith('attr:')) element.setAttribute(key.slice(5), val);
@@ -156,8 +153,14 @@ export function $createLink(href = '', content) {
   } else {
     opt.href = href;
   }
-  opt.appendChild = opt.appendChild || content;
-  return $create(opt);
+  return $create(opt, content);
+}
+
+/** Moves child nodes to a new document fragment */
+export function $toFragment(el) {
+  const bin = document.createDocumentFragment();
+  bin.append(...el.childNodes);
+  return bin;
 }
 
 export function toggleDataset(el, prop, state) {

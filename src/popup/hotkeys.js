@@ -1,4 +1,4 @@
-import {$, $$, $create} from '/js/dom';
+import {$, $$, $create, $createLink} from '/js/dom';
 import {t} from '/js/localization';
 import {API} from '/js/msg';
 
@@ -138,16 +138,9 @@ function initHotkeyInfo() {
       text
         .trim()
         .split('\n')
-        .map((line, i, array) =>
-          $create(i < array.length - 1 ? {
-            tag: 'p',
-            appendChild: keysToElements(line),
-          } : {
-            tag: 'a',
-            target: '_blank',
-            href: 'https://github.com/openstyles/stylus/wiki/Popup',
-            textContent: line,
-          }));
+        .map((line, i, array) => i < array.length - 1
+          ? $create('p', keysToElements(line))
+          : $createLink('https://github.com/openstyles/stylus/wiki/Popup', line));
     [
       linesToElements(t('popupHotkeysInfo')),
       $create('button', t('confirmOK')),

@@ -1,5 +1,5 @@
 import {$, $$, $create, $remove, getEventKeyName, setupLivePrefs} from '/js/dom';
-import {t, template, tNodeList} from '/js/localization';
+import {t, tBody, template} from '/js/localization';
 import {API, onExtension, sendTab} from '/js/msg';
 import popupGetStyles, {ABOUT_BLANK} from '/js/popup-get-styles';
 import * as prefs from '/js/prefs';
@@ -22,6 +22,8 @@ const ENTRY_ID_PREFIX_RAW = 'style-';
 const EXT_NAME = `<${MF.name}>`;
 const xo = new IntersectionObserver(onIntersect);
 export const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrId}`);
+
+tBody();
 
 (async () => {
   const data = CHROME && await API.data.pop('popupData')
@@ -46,9 +48,6 @@ if (CHROME_POPUP_BORDER_BUG) {
 }
 if (CHROME >= 66 && CHROME <= 69) { // Chrome 66-69 adds a gap, https://crbug.com/821143
   document.head.appendChild($create('style', 'html { overflow: overlay }'));
-}
-if (CHROME >= 107) {
-  tNodeList(document); // MutationObserver doesn't work with chrome://flags/#enable-prerender2
 }
 
 function onRuntimeMessage(msg) {
