@@ -220,7 +220,8 @@ export function formatRelativeDate(date, style) {
 
 export function tBody(fn) {
   if (!fn) {
-    document.body.appendChild(template.body);
+    tNodeList($$(SELECTOR));
+    if (template.body) document.body.append(template.body);
     for (fn of onBodyListeners) fn();
     template.body = onBodyListeners = undefined;
   } else if (onBodyListeners) {
