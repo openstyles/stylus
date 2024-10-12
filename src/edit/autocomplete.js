@@ -1,7 +1,7 @@
 /** Registers 'hint' helper and 'autocompleteOnTyping' option in CodeMirror */
 import {worker} from '/edit/linter/store';
 import * as prefs from '/js/prefs';
-import {debounce, stringAsRegExpStr, tryRegExp, UCD} from '/js/toolbox';
+import {debounce, hasOwn, stringAsRegExpStr, tryRegExp, UCD} from '/js/toolbox';
 import CodeMirror from 'codemirror';
 import cmFactory from './codemirror-factory';
 import editor from './editor';
@@ -239,7 +239,7 @@ function tokenizeUsoVariables(stream) {
         testAt(/]]\*\//y, pos - 4, string)) {
       const vars = editor.style[UCD]?.vars;
       token[0] =
-        vars && vars.hasOwnProperty(string.slice(start + 4, pos - 4).replace(/-rgb$/, ''))
+        vars && hasOwn(vars, string.slice(start + 4, pos - 4).replace(/-rgb$/, ''))
           ? USO_VALID_VAR
           : USO_INVALID_VAR;
     }

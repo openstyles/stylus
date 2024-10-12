@@ -4,7 +4,7 @@ import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {styleJSONseemsValid, styleSectionsEqual} from '/js/sections-util';
 import {chromeSync, LZ_KEY} from '/js/storage-util';
-import {clipString, deepEqual, isEmptyObj, RX_META, UA, UCD} from '/js/toolbox';
+import {clipString, deepEqual, hasOwn, isEmptyObj, RX_META, UA, UCD} from '/js/toolbox';
 import {queue} from './util';
 
 Object.assign($('#file-all-styles'), {
@@ -301,7 +301,7 @@ async function importFromString(jsonString) {
     this.textContent = t('undo');
     this.onclick = async () => {
       const curKeys = Object.keys(await chromeSync.get());
-      const keysToRemove = curKeys.filter(k => !oldStorage.hasOwnProperty(k));
+      const keysToRemove = curKeys.filter(k => !hasOwn(oldStorage, k));
       await chromeSync.set(oldStorage);
       await chromeSync.remove(keysToRemove);
       this.textContent = label;

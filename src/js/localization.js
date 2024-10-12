@@ -5,11 +5,11 @@
  * <tag i18n="title: id"> - creates an attribute `title`, spaces are ignored
  * <tag i18n="id, +id2, title:id3, placeholder:id4, data-foo:id5">
  */
-import {fetchText} from '/js/toolbox';
+import {fetchText, hasOwn} from '/js/toolbox';
 import {$, $$, $toFragment} from './dom-base';
 
 export const template = new Proxy({}, {
-  get: (obj, k, _) => obj.hasOwnProperty(k) ? obj[k] :
+  get: (obj, k, _) => hasOwn(obj, k) ? obj[k] :
     (_ = $(`template[data-id="${k}"]`)) && (obj[k] = createTemplate(_)),
 });
 const ALLOWED_TAGS = ['a', 'b', 'code', 'i', 'sub', 'sup', 'wbr'];
