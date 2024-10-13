@@ -40,7 +40,7 @@ function getBrowserlist() {
   return [
     'Firefox >= ' + mj.browser_specific_settings.gecko.strict_min_version,
     'Chrome >= ' + mj.minimum_chrome_version,
-  ].join(',');
+  ];
 }
 
 function stripSourceMap(buf, from) {

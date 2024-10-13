@@ -61,7 +61,7 @@
     "build": "webpack-cli",
     "watch": "webpack-cli watch --node-env DEV",
     "build-icons": "node tools/build-icons",
-    "zip": "npm test && npm build",
+    "zip": "npm test && node tools/build-zip.js",
     "postinstall": "node tools/postinstall.js",
     "preversion": "npm test",
     "version": "sync-version manifest.json && git add .",

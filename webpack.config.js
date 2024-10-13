@@ -9,18 +9,18 @@ const TerserPlugin = require('terser-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
-const {anyPathSep, defineVars, stripSourceMap} = require('./tools/util');
+const {anyPathSep, defineVars, stripSourceMap, ROOT} = require('./tools/util');
 const WebpackPatchBootstrapPlugin = require('./tools/webpack-patch-bootstrap');
 
-const BUILD = process.env.NODE_ENV;
+const [BUILD/*, FLAVOR*/] = process.env.NODE_ENV?.split(':') || [];
 const DEV = BUILD === 'DEV';
 const FS_CACHE = true;
 const REPORT = !true;
-const SRC = `${__dirname}/src/`;
-const DST = path.resolve('dist') + '/';
+const SRC = ROOT + 'src/';
+const DST = ROOT + 'dist/';
 const ASSETS = 'assets/';
 const JS = 'js/';
-const SHIM = path.resolve('tools/shim') + '/';
+const SHIM = ROOT + 'tools/shim/';
 const PAGE_BG = 'background';
 const PAGES = [
   'edit',
@@ -33,7 +33,7 @@ const PAGES = [
 const LIB_EXPORT_DEFAULT = {output: {library: {export: 'default'}}};
 
 const ASSETS_CM = ASSETS + 'cm-themes/';
-const THEME_PATH = 'node_modules/codemirror/theme';
+const THEME_PATH = ROOT + 'node_modules/codemirror/theme';
 const THEME_NAMES = Object.fromEntries(fs.readdirSync(THEME_PATH)
   .sort()
   .map(f => (f = f.match(/([^/\\.]+)\.css$/i)?.[1]) && [f, ''])
@@ -73,6 +73,7 @@ const CFG = {
       }, {
         loader: 'babel-loader',
         test: /\.m?js$/,
+        options: {root: ROOT},
         resolve: {fullySpecified: false},
       }, {
         loader: SHIM + 'null-loader.js',
@@ -141,8 +142,8 @@ const CFG = {
     defineVars({
       ASSETS,
       ASSETS_CM,
+      DEV,
       JS,
-      BUILD,
       PAGE_BG,
     }),
     new WebpackPatchBootstrapPlugin(),
@@ -165,7 +166,7 @@ function mergeCfg(ovr, base) {
     if (FS_CACHE) {
       ovr.cache = {
         ...ovr.cache,
-        name: BUILD + '-' + entry.join('-'),
+        name: (DEV ? 'dev' : 'prod') + '-' + entry.join('-'),
       };
     }
     if (REPORT) {
@@ -298,7 +299,8 @@ module.exports = [
           })),
         ],
       }),
-    ],
+      !DEV && new webpack.ProgressPlugin(),
+    ].filter(Boolean),
     resolve: {
       modules: [
         SHIM,
