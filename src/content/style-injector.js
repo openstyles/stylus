@@ -23,7 +23,7 @@ let assV2;
 let assIndexOf;
 let root = document.documentElement;
 let isEnabled = true;
-let isTransitionPatched = chrome.app && CSS.supports('accent-color', 'red'); // Chrome 93
+let isTransitionPatched;
 let exposeStyleName;
 let ffCsp; // circumventing CSP via a non-empty textContent, https://bugzil.la/1706787
 let nonce = '';
@@ -162,11 +162,10 @@ function applyTransitionPatch(styles) {
       !styles.some(s => s.code.some(c => c.includes('transition')))) {
     return;
   }
-  const el = createStyle({id: PATCH_ID, code: [`
-    :root:not(#\\0):not(#\\0) * {
-      transition: none !important;
-    }
-  `]});
+  const el = createStyle({
+    id: PATCH_ID,
+    code: [':not(#\\0):not(#\\0) { transition: none !important }'],
+  });
   addElement(el);
   // wait for the next paint to complete
   // note: requestAnimationFrame won't fire in inactive tabs
