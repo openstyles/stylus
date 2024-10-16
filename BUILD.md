@@ -26,10 +26,6 @@ The zip file includes all the files from the repository **except**:
 * `package.json` file.
 * `package-lock.json` and/or `yarn.lock` file(s).
 
-<!-- FIXME: is this statement still true?
-* `vendor/codemirror/lib` files. This path is excluded because it contains a file modified for development purposes only. Instead, the CodeMirror files are copied directly from `node_modules/codemirror/lib`.
--->
-
 ## Tag a release/Bump the version
 
 Use the `npm version (major | minor | patch)` command to tag a release.
@@ -56,15 +52,3 @@ To push files to Transifex:
 ```
 npm run update-transifex
 ```
-
-## 3rd-party libraries
-
-3rd-party libraries are managed by `npm`. Since Stylus is built with vanilla JS, we only use libraries that can run in the browser.
-
-We keep a copy of these libraries inside the `vendor` directory so users can side-load this repository without executing the build script. These files are downloaded from CDN or pulled from npm (`node_modules`).
-
-To add/update a library to the latest version, run `npm install PACKAGE_NAME@latest`.
-
-To remove a library, run `npm uninstall PACKAGE_NAME`.
-
-After the (un)installation, specify files which should be copied in `tools/build-vendor.js` and run `npm run build-vendor` to rebuild the vendor folder.

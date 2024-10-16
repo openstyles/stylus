@@ -1,0 +1,4 @@
+{
+  "description": "required by nodejs for our test-css.js",
+  "type": "module"
+}
