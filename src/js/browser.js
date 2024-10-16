@@ -1,5 +1,5 @@
 let browser;
-if (process.env.NODE_ENV === 'chrome:mv3') {
+if (process.env.MV3) {
   browser = self.browser = chrome;
 } else if (!(browser = window.browser) || !browser.runtime) {
   /* Auto-promisifier with a fallback to direct call on signature error.

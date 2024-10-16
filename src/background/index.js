@@ -16,6 +16,7 @@ import {updateIconBadge} from './icon-manager';
 import prefsApi from './prefs-api';
 import * as styleMan from './style-manager';
 import initStyleViaApi from './style-via-api';
+import './style-via-webrequest';
 import * as syncMan from './sync-manager';
 import {openEditor, openManage, openURL, waitForTabUrl} from './tab-util';
 import * as updateMan from './update-manager';
@@ -102,6 +103,9 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   }
   if (previousVersion === '1.5.30') {
     API.prefsDb.delete('badFavs'); // old Stylus marked all icons as bad when network was offline
+  }
+  if (process.env.MV3 && previousVersion.startsWith('1.5.')) {
+    prefs.set('keepAlive', -1);
   }
 });
 

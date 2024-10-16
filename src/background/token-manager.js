@@ -1,3 +1,4 @@
+import launchWebAuthFlow from 'webext-launch-web-auth-flow';
 import {browserWindows, clamp, FIREFOX, URLS} from '/js/toolbox';
 import {chromeLocal} from '/js/storage-util';
 import {isVivaldi} from './common';
@@ -158,7 +159,7 @@ async function authUser(keys, name, interactive = false, hooks = null) {
   const width = clamp(screen.availWidth - 100, 400, 800);
   const height = clamp(screen.availHeight - 100, 200, 800);
   const wnd = !alwaysUseTab && await browserWindows.getLastFocused();
-  const finalUrl = await (await import('webext-launch-web-auth-flow')).default({
+  const finalUrl = await launchWebAuthFlow({
     url,
     alwaysUseTab,
     interactive,

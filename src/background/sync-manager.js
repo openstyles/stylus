@@ -7,6 +7,7 @@ import db from './db';
 import {overrideBadge} from './icon-manager';
 import * as styleMan from './style-manager';
 import {getToken, revokeToken} from './token-manager';
+import * as dbToCloud from 'db-to-cloud';
 
 //#region Init
 
@@ -176,7 +177,7 @@ export async function syncNow() {
 //#region Utils
 
 async function initController() {
-  ctrl = (await (ctrl = import('db-to-cloud'))).dbToCloud({
+  ctrl = await (ctrl = dbToCloud.dbToCloud({
     onGet: _id => styleMan.uuid2style(_id) || uuidIndex.custom[_id],
     async onPut(doc) {
       if (!doc) return; // TODO: delete it?
@@ -229,7 +230,7 @@ async function initController() {
     retryMaxAttempts: 10,
     retryExp: 1.2,
     retryDelay: 6,
-  });
+  }));
 }
 
 function emitStatusChange() {
@@ -272,7 +273,7 @@ async function getDrive(name) {
     const options = await getDriveOptions(name);
     options.getAccessToken = () => getToken(name);
     options.fetch = name === 'webdav' ? fetchWebDAV.bind(options) : fetch;
-    return (await import('db-to-cloud')).drive[name].default(options);
+    return dbToCloud.drive[name].default(options);
   }
   throw new Error(`unknown cloud name: ${name}`);
 }

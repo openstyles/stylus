@@ -1,6 +1,5 @@
-/* global TDM */// apply.js - used only in non-bg context
-
-export const isBg = process.env.PAGE && location.pathname === `/${process.env.PAGE_BG}.html`;
+export const isBg = process.env.PAGE === 'sw'
+  || process.env.PAGE && location.pathname.startsWith(`/${process.env.PAGE_BG}`);
 const TARGETS = {
   __proto: null,
   all: ['both', 'tab', 'extension'],
@@ -28,7 +27,7 @@ export const API = isBg
   : window.API = new Proxy({path: ''}, apiHandler);
 
 let bgReadySignal;
-let bgReadying = new Promise(fn => (bgReadySignal = fn));
+let bgReadying = !process.env.MV3 && new Promise(fn => (bgReadySignal = fn));
 let msgId = 0;
 /** @type {chrome.runtime.Port} */
 let port;
@@ -80,7 +79,7 @@ async function apiSend(data) {
     port.onMessage.addListener(apiPortResponse);
     port.onDisconnect.addListener(apiPortDisconnect);
   }
-  port.postMessage({id, data, TDM});
+  port.postMessage({id, data, TDM: self.TDM});
   return new Promise((ok, ko) => (portReqs[id] = {ok, ko, err}));
 }
 

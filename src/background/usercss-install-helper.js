@@ -1,4 +1,5 @@
 import browser from '/js/browser';
+import {DNR_ID_INSTALLER} from '/js/dnr';
 import * as prefs from '/js/prefs';
 import {FIREFOX, RX_META, URLS} from '/js/toolbox';
 import {bgReady} from './common';
@@ -21,7 +22,7 @@ export function getInstallCode(url) {
 }
 
 function toggle(key, val) {
-  chrome.webRequest.onHeadersReceived.removeListener(maybeInstallByMime);
+  if (!process.env.MV3) chrome.webRequest.onHeadersReceived.removeListener(maybeInstallByMime);
   tabMan.onOff(maybeInstall, val);
   const urls = val ? [''] : [
     /* Known distribution sites where we ignore urlInstaller option, because
@@ -31,10 +32,39 @@ function toggle(key, val) {
     ...URLS.usoaRaw,
     ...['greasy', 'sleazy'].map(h => `https://update.${h}fork.org/`),
   ];
-  chrome.webRequest.onHeadersReceived.addListener(maybeInstallByMime, {
-    urls: urls.reduce(reduceUsercssGlobs, []),
-    types: ['main_frame'],
-  }, ['responseHeaders', 'blocking']);
+  if (process.env.MV3) {
+    const header = 'content-type';
+    /** @type {chrome.declarativeNetRequest.Rule[]} */
+    const rules = [{
+      id: DNR_ID_INSTALLER,
+      condition: {
+        regexFilter: val
+          ? /^.*\.user\.(?:css|less|styl)(?:\?.*)?$/.source
+          : /^.*\.user\.css$/.source,
+        requestDomains: val
+          ? undefined
+          : [...new Set(urls.map(u => u.split('/')[2]))],
+        resourceTypes: ['main_frame'],
+        responseHeaders: [{header, values: ['text/*']}],
+        excludedResponseHeaders: [{header, values: ['text/html']}],
+      },
+      action: {
+        type: 'redirect',
+        redirect: {
+          regexSubstitution: chrome.runtime.getURL('install-usercss.html#\\0'),
+        },
+      },
+    }];
+    chrome.declarativeNetRequest.updateDynamicRules({
+      removeRuleIds: rules.map(r => r.id),
+      addRules: rules,
+    });
+  } else {
+    chrome.webRequest.onHeadersReceived.addListener(maybeInstallByMime, {
+      urls: urls.reduce(reduceUsercssGlobs, []),
+      types: ['main_frame'],
+    }, ['responseHeaders', 'blocking']);
+  }
 }
 
 function clearInstallCode(url) {

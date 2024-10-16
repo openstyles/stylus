@@ -35,14 +35,25 @@ export default function reinjectContentScripts() {
       if (!cs[ALL_URLS] && !cs.matches.some(url.match, url)) {
         continue;
       }
-      const options = {
-        runAt: cs.run_at,
-        allFrames: cs.all_frames,
-        matchAboutBlank: cs.match_about_blank,
-      };
-      for (const file of cs.js) {
-        options.file = file;
-        jobs.push(browser.tabs.executeScript(tabId, options).catch(ignoreChromeError));
+      if (process.env.MV3) {
+        jobs.push(chrome.scripting.executeScript({
+          injectImmediately: cs.run_at === 'document_start',
+          target: {
+            allFrames: cs.all_frames,
+            tabId,
+          },
+          files: cs.js,
+        }).catch(ignoreChromeError));
+      } else {
+        const options = {
+          runAt: cs.run_at,
+          allFrames: cs.all_frames,
+          matchAboutBlank: cs.match_about_blank,
+        };
+        for (const file of cs.js) {
+          options.file = file;
+          jobs.push(browser.tabs.executeScript(tabId, options).catch(ignoreChromeError));
+        }
       }
     }
     await Promise.all(jobs);

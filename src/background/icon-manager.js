@@ -83,7 +83,7 @@ export function overrideBadge({text = '', color = '', title = ''} = {}) {
       refreshIconBadgeText(tabId);
     }
   }
-  chrome.browserAction.setTitle({
+  safeCall('setTitle', {
     title: title && chrome.i18n.getMessage(title) || title || '',
   });
 }
@@ -197,7 +197,7 @@ function refreshStaleBadges() {
 }
 
 function safeCall(method, data) {
-  const {browserAction = {}} = chrome;
+  const {action = {}, browserAction = action} = chrome;
   const fn = browserAction[method];
   if (fn) {
     try {

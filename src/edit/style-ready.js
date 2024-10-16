@@ -11,6 +11,10 @@ import editor from './editor';
 let params = new URLSearchParams(location.search);
 let id = +params.get('id');
 
+if (process.env.MV3 && location.hash === '#' + id) {
+  history.replaceState(null, '', location.href.split('#')[0]);
+}
+
 export default Promise.all([
   Promise.all([
     id ? API.styles.get(id) : undefined,

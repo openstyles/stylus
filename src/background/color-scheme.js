@@ -15,7 +15,9 @@ const mode = {
 };
 let isDarkNow = false;
 // matchMedia's onchange doesn't work in bg context, so we use it in our content script
-update('system', matchMedia('(prefers-color-scheme:dark)').matches);
+if (!process.env.MV3) {
+  update('system', matchMedia('(prefers-color-scheme:dark)').matches);
+}
 prefs.subscribe(kSTATE, (_, val) => {
   if (val === 'time') {
     prefs.subscribe([kSTART, kEND], onNightChanged, true);

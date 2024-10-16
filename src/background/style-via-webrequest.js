@@ -1,6 +1,6 @@
 import popupGetStyles from '/js/popup-get-styles';
 import * as prefs from '/js/prefs';
-import {CHROME, FIREFOX, ignoreChromeError, MF, URLS} from '/js/toolbox';
+import {CHROME, FIREFOX, ignoreChromeError, MF_ACTION_HTML, URLS} from '/js/toolbox';
 import {API} from './common';
 import {getSectionsByUrl} from './style-manager';
 import tabMan from './tab-manager';
@@ -14,11 +14,12 @@ const blobUrlPrefix = 'blob:' + chrome.runtime.getURL('/');
 /** @type {Object<string,StylesToPass>} */
 const stylesToPass = {};
 const state = {};
-const injectedCode = `${data => {
+const INJECTED_FUNC = data => {
   if (self.INJECTED !== 1) { // storing data only if apply.js hasn't run yet
     window[Symbol.for('styles')] = data;
   }
-}}`;
+};
+const INJECTED_CODE = `${INJECTED_FUNC}`;
 
 toggle();
 prefs.subscribe([idXHR, idOFF, idCSP], toggle);
@@ -34,7 +35,7 @@ function toggle() {
     urls: [
       '*://*/*',
       CHROME &&
-      chrome.runtime.getURL(MF.browser_action.default_popup),
+      chrome.runtime.getURL(MF_ACTION_HTML),
     ].filter(Boolean),
     types: ['main_frame', 'sub_frame'],
   };
@@ -55,7 +56,7 @@ function toggle() {
   if (CHROME && !off) {
     chrome.webNavigation.onCommitted.addListener(injectData, {url: [{urlPrefix: 'http'}]});
   }
-  if (CHROME) {
+  if (CHROME && !process.env.MV3) {
     chrome.webRequest.onBeforeRequest.addListener(openNamedStyle, {
       urls: [URLS.ownOrigin + '*.user.css'],
       types: ['main_frame'],
@@ -83,11 +84,20 @@ function injectData(req) {
   const data = stylesToPass[req2key(req)];
   if (data && !data.injected) {
     data.injected = true;
-    chrome.tabs.executeScript(req.tabId, {
-      frameId: req.frameId,
-      runAt: 'document_start',
-      code: `(${injectedCode})(${JSON.stringify(data.payload)})`,
-    }, ignoreChromeError);
+    if (process.env.MV3) {
+      chrome.scripting.executeScript({
+        target: {tabId: req.tabId, frameIds: [req.frameId]},
+        args: [data.payload],
+        func: INJECTED_FUNC,
+        injectImmediately: true,
+      }, ignoreChromeError);
+    } else {
+      chrome.tabs.executeScript(req.tabId, {
+        frameId: req.frameId,
+        runAt: 'document_start',
+        code: `(${INJECTED_CODE})(${JSON.stringify(data.payload)})`,
+      }, ignoreChromeError);
+    }
     if (!state.xhr) cleanUp(req);
   }
 }

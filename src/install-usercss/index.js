@@ -38,6 +38,10 @@ document.on('visibilitychange', () => {
 setTimeout(() => !cm && showSpinner($('#header')), 200);
 
 (async function init() {
+  if (location.hash) {
+    history.replaceState(null, '',
+      location.pathname + '?updateUrl=' + encodeURIComponent(location.hash.slice(1)));
+  }
   /** @type {FileSystemFileHandle} */
   const fsh = window.fsh;
   const params = new URLSearchParams(location.search);
@@ -57,7 +61,7 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
     if (history.length > 1) history.back();
     else closeCurrentTab();
   } else if (tabId < 0) {
-    getData = DirectDownloader();
+    getData = DirectDownloader(initialUrl);
     firstGet = API.usercss.getInstallCode(initialUrl)
       .then(code => code || getData())
       .catch(getData);

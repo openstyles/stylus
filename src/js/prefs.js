@@ -11,18 +11,19 @@ let busy, setReady;
 const defaults = {
   __proto__: null,
   // TODO: sort everything aphabetically
-  'openEditInWindow': false,      // new editor opens in a own browser window
-  'openEditInWindow.popup': false, // new editor opens in a simplified browser window without omnibox
-  'windowPosition': {},           // detached window position
-  'show-badge': true,             // display text on popup menu icon
   'disableAll': false,            // boss key
   'exposeIframes': false,         // Add 'stylus-iframe' attribute to HTML element in all iframes
   'exposeStyleName': false,       // Add style name to the style for better devtools experience
+  'keepAlive': 30,                // in minutes
   'newStyleAsUsercss': false,     // create new style in usercss format
+  'openEditInWindow': false,      // new editor opens in a own browser window
+  'openEditInWindow.popup': false, // new editor opens in a simplified browser window without omnibox
+  'patchCsp': false,              // add data: and popular image hosting sites to strict CSP
+  'show-badge': true,             // display text on popup menu icon
   'styleViaASS': false,           // document.adoptedStyleSheets
   'styleViaXhr': false,           // early style injection to avoid FOUC
-  'patchCsp': false,              // add data: and popular image hosting sites to strict CSP
   'urlInstaller': true,           // auto-open installer page for supported .user.css urls
+  'windowPosition': {},           // detached window position
 
   // checkbox in style config dialog
   'config.autosave': true,

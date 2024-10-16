@@ -4,23 +4,23 @@ export const MF = chrome.runtime.getManifest();
 export const MF_ICON = MF.icons[16].replace(chrome.runtime.getURL('/'), '');
 export const MF_ICON_PATH = MF_ICON.slice(0, MF_ICON.lastIndexOf('/') + 1);
 export const MF_ICON_EXT = MF_ICON.slice(MF_ICON.lastIndexOf('.'));
+export const MF_ACTION_HTML = (process.env.MV3 ? MF.action : MF.browser_action).default_popup;
 
 export const [CHROME, FIREFOX, UA] = (() => {
   const uad = navigator.userAgentData;
   const ua = uad || navigator.userAgent;
   const brands = uad ? uad.brands.map(_ => `${_.brand}/${_.version}`).join(' ') : ua;
-  const getVer = name => +brands.match(new RegExp(name + '\\w*/(\\d+)|$'))[1];
   const platform = uad ? uad.platform : ua;
-  const {app} = chrome;
+  const chromeVer = +brands.match(/Chrom\w*\/(\d+)|$/)[1];
   return [
-    app && getVer('Chrom'),
-    !app && getVer('Firefox') || NaN,
+    chromeVer,
+    chromeVer ? NaN : +brands.match(/Firefox\w*\/(\d+)|$/)[1],
     {
       mac: /mac/i.test(platform),
       mobile: uad ? uad.mobile : /Android/.test(ua),
       windows: /Windows/.test(platform),
-      opera: getVer('(Opera|OPR)'),
-      vivaldi: getVer('Vivaldi'),
+      opera: +brands.match(/(Opera|OPR)\w*\/(\d+)|$/)[1],
+      vivaldi: +brands.match(/Vivaldi\w*\/(\d+)|$/)[1],
     },
   ];
 })();

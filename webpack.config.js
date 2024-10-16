@@ -9,28 +9,36 @@ const TerserPlugin = require('terser-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
-const {anyPathSep, defineVars, stripSourceMap, ROOT} = require('./tools/util');
+const {
+  anyPathSep, defineVars, stripSourceMap, MANIFEST, MANIFEST_MV3, ROOT,
+} = require('./tools/util');
 const WebpackPatchBootstrapPlugin = require('./tools/webpack-patch-bootstrap');
 
-const [BUILD/*, FLAVOR*/] = process.env.NODE_ENV?.split(':') || [];
-const DEV = BUILD === 'DEV';
+const [BUILD, FLAVOR] = process.env.NODE_ENV?.split('-') || [];
+const DEV = BUILD === 'DEV' || process.env.npm_lifecycle_event?.startsWith('watch');
 const FS_CACHE = true;
-const REPORT = !true;
 const SRC = ROOT + 'src/';
 const DST = ROOT + 'dist/';
 const ASSETS = 'assets/';
 const JS = 'js/';
 const SHIM = ROOT + 'tools/shim/';
-const PAGE_BG = 'background';
+const MV3 = FLAVOR === 'mv3';
+const PAGE_BG = MV3 ? 'background-sw' : 'background';
 const PAGES = [
   'edit',
   'install-usercss',
   'manage',
   'options',
   'popup',
-  PAGE_BG,
+  ...MV3 ? ['offscreen'] : [PAGE_BG],
 ];
 const LIB_EXPORT_DEFAULT = {output: {library: {export: 'default'}}};
+const RESOLVE_VIA_SHIM = {
+  modules: [
+    SHIM,
+    'node_modules',
+  ],
+};
 
 const ASSETS_CM = ASSETS + 'cm-themes/';
 const THEME_PATH = ROOT + 'node_modules/codemirror/theme';
@@ -144,6 +152,7 @@ const CFG = {
       ASSETS_CM,
       DEV,
       JS,
+      MV3,
       PAGE_BG,
     }),
     new WebpackPatchBootstrapPlugin(),
@@ -169,7 +178,7 @@ function mergeCfg(ovr, base) {
         name: (DEV ? 'dev' : 'prod') + '-' + entry.join('-'),
       };
     }
-    if (REPORT) {
+    if (process.env.REPORT != null) {
       (ovr.plugins || (ovr.plugins = [])).push(
         new BundleAnalyzerPlugin({
           analyzerMode: 'static',
@@ -265,7 +274,7 @@ module.exports = [
       ...PAGES.map(p => new HtmlWebpackPlugin({
         chunks: [p],
         filename: p + '.html',
-        template: SRC + p + '.html',
+        template: SRC + p + '/index.html',
         templateParameters: (compilation, files, tags, options) => {
           const {bodyTags, headTags} = tags;
           // The main entry goes into BODY to improve performance (2x in manage.html)
@@ -284,7 +293,7 @@ module.exports = [
           {context: SRC + 'content', from: 'install*.js', to: DST + JS, info: {minimized: true}},
           {context: SRC + 'images', from: 'eyedropper/**', to: DST + ASSETS},
           {context: SRC + 'images', from: 'icon/**', to: DST + ASSETS},
-          {context: SRC, from: 'manifest.json', to: DST},
+          {context: SRC, from: MV3 ? MANIFEST_MV3 : MANIFEST, to: DST + MANIFEST},
           {context: SRC, from: '_locales/**', to: DST},
           {context: THEME_PATH, from: '*.css', to: DST + ASSETS_CM},
           ...[
@@ -301,12 +310,17 @@ module.exports = [
       }),
       !DEV && new webpack.ProgressPlugin(),
     ].filter(Boolean),
-    resolve: {
-      modules: [
-        SHIM,
-        'node_modules',
-      ],
-    },
+    resolve: RESOLVE_VIA_SHIM,
+  }),
+  MV3 && mergeCfg({
+    entry: `/${PAGE_BG}`,
+    output: {library: {type: 'module'}},
+    experiments: {outputModule: true},
+    plugins: [
+      defineVars({PAGE: 'sw'}),
+      new webpack.BannerPlugin({raw: true, banner: '"use strict";'}),
+    ],
+    resolve: RESOLVE_VIA_SHIM,
   }),
   makeContentScript('apply.js'),
   makeLibrary([
@@ -320,4 +334,4 @@ module.exports = [
   makeLibrary('/js/meta-parser.js', 'metaParser', LIB_EXPORT_DEFAULT),
   makeLibrary('/js/moz-parser.js', 'extractSections', LIB_EXPORT_DEFAULT),
   makeLibrary('/js/usercss-compiler.js', 'compileUsercss', LIB_EXPORT_DEFAULT),
-];
+].filter(Boolean);

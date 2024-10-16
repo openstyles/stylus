@@ -5,6 +5,8 @@ const path = require('path');
 const webpack = require('webpack');
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 
+const MANIFEST = 'manifest.json';
+const MANIFEST_MV3 = 'manifest-mv3.json';
 const ROOT = path.dirname(__dirname.replaceAll('\\', '/')) + '/';
 const SRC = ROOT + 'src/';
 
@@ -36,11 +38,13 @@ function escapeRe(str) {
 }
 
 function getBrowserlist() {
-  const mj = require(SRC + 'manifest.json');
+  const mj = require(SRC + (process.env.NODE_ENV?.includes('mv3') ? MANIFEST_MV3 : MANIFEST));
+  const FF = mj.browser_specific_settings?.gecko.strict_min_version;
+  const CH = mj.minimum_chrome_version;
   return [
-    'Firefox >= ' + mj.browser_specific_settings.gecko.strict_min_version,
-    'Chrome >= ' + mj.minimum_chrome_version,
-  ];
+    FF && 'Firefox >= ' + FF,
+    CH && 'Chrome >= ' + CH,
+  ].filter(Boolean);
 }
 
 function stripSourceMap(buf, from) {
@@ -54,6 +58,8 @@ function stripSourceMap(buf, from) {
 }
 
 module.exports = {
+  MANIFEST,
+  MANIFEST_MV3,
   ROOT,
   SRC,
   addReport,

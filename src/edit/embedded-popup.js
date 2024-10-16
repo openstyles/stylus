@@ -2,12 +2,11 @@ import {extraKeys} from '/cm';
 import {$, $create, $remove, getEventKeyName} from '/js/dom';
 import {t} from '/js/localization';
 import * as prefs from '/js/prefs';
-import {MF, MF_ICON_EXT, MF_ICON_PATH} from '/js/toolbox';
+import {MF_ACTION_HTML, MF_ICON_EXT, MF_ICON_PATH} from '/js/toolbox';
 
 export default function EmbeddedPopup() {
   const ID = 'popup-iframe';
   const SEL = '#' + ID;
-  const URL = MF.browser_action.default_popup;
   const POPUP_HOTKEY = 'Shift-Ctrl-Alt-S';
   /** @type {HTMLIFrameElement} */
   let frame;
@@ -42,7 +41,7 @@ export default function EmbeddedPopup() {
     scrollbarWidth = 0;
     frame = $create('iframe', {
       id: ID,
-      src: URL,
+      src: MF_ACTION_HTML,
       height: 600,
       width: prefs.get('popupWidth'),
       onload: initFrame,

@@ -7,20 +7,23 @@ const glob = require('fast-glob');
 const JSZip = require('jszip');
 const chalk = require('chalk');
 const webpack = require('webpack');
-const {ROOT} = require('./util');
+const {ROOT, MANIFEST} = require('./util');
 
 const DST = ROOT + 'dist/';
 const CONFIG_PATH = require.resolve(ROOT + 'webpack.config.js');
-const MANIFEST = 'manifest.json';
 const sChrome = 'chrome';
 const sChromeBeta = 'chrome-beta';
+const sChromeMV3 = 'chrome-mv3';
 const sFirefox = 'firefox';
 
 (async function build([targets] = process.argv.slice(2)) {
   // https://github.com/Stuk/jszip/issues/369
   const tzBug = new Date().getTimezoneOffset() * 60000;
   JSZip.defaults.date = new Date(Date.now() - tzBug);
-  for (const target of targets ? targets.split(',') : [sFirefox, sChrome, sChromeBeta]) {
+  targets = targets
+    ? targets.split(',')
+    : [sFirefox, sChrome, sChromeBeta, sChromeMV3];
+  for (const target of targets) {
     process.env.NODE_ENV = target;
     console.log(chalk.bold(`Building for ${target}...`));
     fse.emptyDirSync(DST);
@@ -53,12 +56,7 @@ const sFirefox = 'firefox';
 function patchManifest(str, suffix) {
   const mj = JSON.parse(str);
   delete mj.key;
-  if (suffix === sChrome) {
-    delete mj.browser_specific_settings;
-  } else if (suffix === sChromeBeta) {
-    delete mj.browser_specific_settings;
-    mj.name = 'Stylus (beta)';
-  } else if (suffix === sFirefox) {
+  if (suffix === sFirefox) {
     mj.options_ui = {
       /*
        * Linking to dashboard, not to options, because this is aimed at users who removed the icon
@@ -67,6 +65,9 @@ function patchManifest(str, suffix) {
       page: 'manage.html',
       open_in_tab: true,
     };
+  } else {
+    delete mj.browser_specific_settings;
+    if (suffix === sChromeBeta) mj.name = 'Stylus (beta)';
   }
   return mj;
 }
