@@ -228,9 +228,21 @@
       cm.focus();
       return;
     }
-    const cfg = isStylelint ? json.rules : json;
+    const getConfigRules = c => isStylelint ? c.rules || (c.rules = {}) : c;
+    const cfg = getConfigRules(json);
+    const defaults = getConfigRules(linterMan.DEFAULTS[linter]);
+    // Explicitly disabling rules enabled in our defaults but not present in the user config
+    for (const id in defaults) {
+      if (!(id in cfg)) cfg[id] = isStylelint ? false : 0;
+    }
+    /* Removing rules with a default value to reduce the size of config in sync storage and to use
+     * newer defaults in a newer version of the extension in the unlikely case we change them. */
     for (const id in cfg) {
-      if (!cfg[id]) delete cfg[id];
+      const def = defaults[id];
+      const val = cfg[id];
+      if (val ? def && JSON.stringify(val) === JSON.stringify(def) : !def) {
+        delete cfg[id];
+      }
     }
     chromeSync.setLZValue(chromeSync.LZ_KEY[linter], json);
     cm.markClean();
