@@ -3,7 +3,7 @@ import {$, $$, $create, getEventKeyName, messageBox, setInputValue, setupLivePre
 import {t, tBody, template} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
-import {CHROME_POPUP_BORDER_BUG, clamp, FIREFOX, ignoreChromeError, MAC, URLS} from '/js/toolbox';
+import {CHROME_POPUP_BORDER_BUG, clamp, FIREFOX, ignoreChromeError, MAC, OPERA} from '/js/toolbox';
 import './options-sync';
 import './onoffswitch.css';
 import './options.css';
@@ -31,7 +31,9 @@ $('#shortcuts').onclick = () => {
   if (FIREFOX) {
     customizeHotkeys();
   } else {
-    API.openURL({url: URLS.configureCommands});
+    API.openURL({
+      url: `${OPERA ? 'opera://settings' : 'chrome://extensions'}/configureCommands`,
+    });
   }
 };
 $('#shortcuts').hidden = FIREFOX && !browser.commands?.update;

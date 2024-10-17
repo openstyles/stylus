@@ -1,18 +1,14 @@
-import {OPERA} from '/js/ua';
+import {CHROME} from './ua';
 
 /** Ends with "/" */
 export const ownOrigin = chrome.runtime.getURL('');
-
-export const configureCommands =
-  OPERA ? 'opera://settings/configureCommands'
-        : 'chrome://extensions/configureCommands';
 
 export const installUsercss = 'install-usercss.html';
 
 export const favicon = host => `https://icons.duckduckgo.com/ip3/${host}.ico`;
 
 /** Chrome 61.0.3161+ doesn't run content scripts on NTP https://crrev.com/2978953002/ */
-export const chromeProtectsNTP = true;
+export const chromeProtectsNTP = process.env.MV3 || CHROME >= 61;
 
 export const rxGF = /^(https:\/\/)(?:update\.)?((?:greasy|sleazy)fork\.org\/scripts\/)(\d+)[^/]*\/code\/[^/]*\.user\.css$|$/;
 
@@ -53,12 +49,10 @@ export const makeUpdateUrl = (url, id) =>
     ? `${usw}api/style/${id}.user.css` :
       '';
 
-export const supported = (url, allowOwn = true) => (
-  url.startsWith('http') ||
-  url.startsWith('ftp') ||
-  url.startsWith('file') ||
-  allowOwn && url.startsWith(ownOrigin) ||
-  !chromeProtectsNTP && url.startsWith('chrome://newtab/')
-);
+export const supported = RegExp.prototype.test.bind(new RegExp(
+  `^(?:(?:ht|f)tps?:|file:|${ownOrigin}${
+    !process.env.MV3 && CHROME && !chromeProtectsNTP ? '|chrome://newtab/' : ''
+  })`
+));
 
 export const isLocalhost = url => /^file:|^https?:\/\/([^/]+@)?(localhost|127\.0\.0\.1)(:\d+)?\//.test(url);
