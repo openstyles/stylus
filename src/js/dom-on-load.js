@@ -48,7 +48,7 @@ if (getFSH) {
   addEventListener('drop', async e => {
     const dt = e.dataTransfer;
     const file = dt.files[0];
-    if (typeof importFromFile === 'function' && file.type.includes('json')) {
+    if (file.type.includes('json')) {
       document.body.ondrop(e);
       return;
     }
