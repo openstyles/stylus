@@ -51,7 +51,7 @@ function toggle(key, val) {
       action: {
         type: 'redirect',
         redirect: {
-          regexSubstitution: chrome.runtime.getURL('install-usercss.html#\\0'),
+          regexSubstitution: chrome.runtime.getURL(URLS.installUsercss + '#\\0'),
         },
       },
     }];
@@ -90,7 +90,7 @@ async function loadFromUrl(tabId, url) {
 }
 
 function makeInstallerUrl(url) {
-  return `${URLS.installUsercss}?updateUrl=${encodeURIComponent(url)}`;
+  return `${URLS.ownOrigin}${URLS.installUsercss}?updateUrl=${encodeURIComponent(url)}`;
 }
 
 function reduceUsercssGlobs(res, host) {

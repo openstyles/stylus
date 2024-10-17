@@ -1,18 +1,17 @@
 import * as prefs from '/js/prefs';
-import {
-  CHROME, debounce, FIREFOX, ignoreChromeError, MF_ICON_EXT, MF_ICON_PATH, UA,
-} from '/js/toolbox';
+import {debounce, ignoreChromeError, MF_ICON_EXT, MF_ICON_PATH} from '/js/toolbox';
+import {CHROME, FIREFOX, MOBILE, VIVALDI} from '/js/ua';
 import * as colorScheme from './color-scheme';
 import {API, bgReady} from './common';
 import tabMan from './tab-manager';
 
-const ICON_SIZES = FIREFOX || !UA.vivaldi ? [16, 32] : [19, 38];
+const ICON_SIZES = FIREFOX || !VIVALDI ? [16, 32] : [19, 38];
 const staleBadges = new Set();
 /** @type {{ [url: string]: ImageData | Promise<ImageData> }} */
 const imageDataCache = {};
 const badgeOvr = {color: '', text: ''};
 // https://github.com/openstyles/stylus/issues/1287 Fenix can't use custom ImageData
-const FIREFOX_ANDROID = FIREFOX && UA.mobile;
+const FIREFOX_ANDROID = FIREFOX && MOBILE;
 let isDark;
 // https://github.com/openstyles/stylus/issues/335
 let hasCanvas = FIREFOX_ANDROID ? false : null;

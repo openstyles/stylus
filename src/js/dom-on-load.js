@@ -4,7 +4,7 @@ import HeaderResizer from './header-resizer';
 import {t} from './localization';
 import {onExtension} from './msg';
 import * as prefs from './prefs';
-import {CHROME, clamp, debounce, tryURL} from './toolbox';
+import {CHROME, clamp, debounce, tryURL, URLS} from './toolbox';
 
 const SPLIT_BTN_MENU = '.split-btn-menu';
 const tooltips = new WeakMap();
@@ -57,7 +57,7 @@ if (getFSH) {
     }
     e.preventDefault();
     e.stopPropagation();
-    const path = '/install-usercss.html';
+    const path = URLS.installUsercss;
     // Some apps provide the file's URL in a text dataTransfer item.
     const url = tryURL(dt.getData('text')).href;
     const handle = await getFSH.call([].find.call(dt.items, v => v.kind === 'file'));

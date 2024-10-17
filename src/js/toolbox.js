@@ -1,29 +1,15 @@
-import browser from '/js/browser';
+import browser from './browser';
+import {CHROME} from './ua';
+import {ownOrigin} from './urls';
+
+export * from './ua';
+export * as URLS from './urls';
 
 export const MF = chrome.runtime.getManifest();
-export const MF_ICON = MF.icons[16].replace(chrome.runtime.getURL('/'), '');
+export const MF_ICON = MF.icons[16].replace(ownOrigin, '');
 export const MF_ICON_PATH = MF_ICON.slice(0, MF_ICON.lastIndexOf('/') + 1);
 export const MF_ICON_EXT = MF_ICON.slice(MF_ICON.lastIndexOf('.'));
 export const MF_ACTION_HTML = (process.env.MV3 ? MF.action : MF.browser_action).default_popup;
-
-export const [CHROME, FIREFOX, UA] = (() => {
-  const uad = navigator.userAgentData;
-  const ua = uad || navigator.userAgent;
-  const brands = uad ? uad.brands.map(_ => `${_.brand}/${_.version}`).join(' ') : ua;
-  const platform = uad ? uad.platform : ua;
-  const chromeVer = +brands.match(/Chrom\w*\/(\d+)|$/)[1];
-  return [
-    chromeVer,
-    chromeVer ? NaN : +brands.match(/Firefox\w*\/(\d+)|$/)[1],
-    {
-      mac: /mac/i.test(platform),
-      mobile: uad ? uad.mobile : /Android/.test(ua),
-      windows: /Windows/.test(platform),
-      opera: +brands.match(/(Opera|OPR)\w*\/(\d+)|$/)[1],
-      vivaldi: +brands.match(/Vivaldi\w*\/(\d+)|$/)[1],
-    },
-  ];
-})();
 
 // see PR #781
 export const CHROME_POPUP_BORDER_BUG = CHROME >= 62 && CHROME <= 74;
@@ -44,70 +30,7 @@ export const hasOwn = Object.call.bind({}.hasOwnProperty);
 export const ignoreChromeError = () => chrome.runtime.lastError;
 export const stringAsRegExpStr = s => s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&');
 export const stringAsRegExp = (s, flags) => new RegExp(stringAsRegExpStr(s), flags);
-
 export const UCD = 'usercssData';
-export const URLS = {
-  ownOrigin: chrome.runtime.getURL(''),
-
-  configureCommands:
-    UA.opera ? 'opera://settings/configureCommands'
-          : 'chrome://extensions/configureCommands',
-
-  installUsercss: chrome.runtime.getURL('install-usercss.html'),
-
-  favicon: host => `https://icons.duckduckgo.com/ip3/${host}.ico`,
-
-  // Chrome 61.0.3161+ doesn't run content scripts on NTP https://crrev.com/2978953002/
-  chromeProtectsNTP: true,
-
-  rxGF: /^(https:\/\/)(?:update\.)?((?:greasy|sleazy)fork\.org\/scripts\/)(\d+)[^/]*\/code\/[^/]*\.user\.css$|$/,
-
-  uso: 'https://userstyles.org/',
-  usoApi: 'https://gateway.userstyles.org/styles/getStyle',
-  usoJson: 'https://userstyles.org/styles/chrome/',
-
-  usoa: 'https://uso.kkx.one/',
-  usoaRaw: [
-    // The newest URL first!
-    'https://cdn.jsdelivr.net/gh/uso-archive/data@flomaster/data/',
-    'https://raw.githubusercontent.com/uso-archive/data/flomaster/data/',
-    'https://cdn.jsdelivr.net/gh/33kk/uso-archive@flomaster/data/',
-    'https://raw.githubusercontent.com/33kk/uso-archive/flomaster/data/',
-  ],
-
-  usw: 'https://userstyles.world/',
-
-  extractUsoaId: url =>
-    url &&
-    URLS.usoaRaw.some(u => url.startsWith(u)) &&
-    +url.match(/\/(\d+)\.user\.css|$/)[1],
-  extractUswId: url =>
-    url &&
-    url.startsWith(URLS.usw) &&
-    +url.match(/\/(\d+)\.user\.css|$/)[1],
-  makeInstallUrl: (url, id) =>
-    url === 'usoa' || !id && (id = URLS.extractUsoaId(url)) ? `${URLS.usoa}style/${id}` :
-      url === 'usw' || !id && (id = URLS.extractUswId(url)) ? `${URLS.usw}style/${id}` :
-        url === 'gf' || !id && (id = URLS.rxGF.exec(url)) ? id[1] + id[2] + id[3] :
-          '',
-  makeUpdateUrl: (url, id) =>
-    url === 'usoa' || !id && (id = URLS.extractUsoaId(url))
-      ? `${URLS.usoaRaw[0]}usercss/${id}.user.css` :
-    url === 'usw' || !id && (id = URLS.extractUswId(url))
-      ? `${URLS.usw}api/style/${id}.user.css` :
-        '',
-
-  supported: (url, allowOwn = true) => (
-    url.startsWith('http') ||
-    url.startsWith('ftp') ||
-    url.startsWith('file') ||
-    allowOwn && url.startsWith(URLS.ownOrigin) ||
-    !URLS.chromeProtectsNTP && url.startsWith('chrome://newtab/')
-  ),
-
-  isLocalhost: url => /^file:|^https?:\/\/([^/]+@)?(localhost|127\.0\.0\.1)(:\d+)?\//.test(url),
-};
-
 export const RX_META = /\/\*!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i;
 
 // TODO: remove when min_chrome_version > 112, strict_min_version > 112

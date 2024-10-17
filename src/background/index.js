@@ -2,7 +2,7 @@ import browser from '/js/browser';
 import * as msg from '/js/msg';
 import {onMessage} from '/js/msg';
 import * as prefs from '/js/prefs';
-import {FIREFOX, ignoreChromeError, UA} from '/js/toolbox';
+import {FIREFOX, ignoreChromeError, MOBILE, WINDOWS} from '/js/toolbox';
 import createWorker from '/js/worker-host';
 import {broadcast} from './broadcast';
 import './broadcast-injector-config';
@@ -98,8 +98,8 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
     reinjectContentScripts();
   }
   if (reason === 'install') {
-    if (UA.mobile) prefs.set('manage.newUI', false);
-    if (UA.windows) prefs.set('editor.keyMap', 'sublime');
+    if (MOBILE) prefs.set('manage.newUI', false);
+    if (WINDOWS) prefs.set('editor.keyMap', 'sublime');
   }
   if (previousVersion === '1.5.30') {
     API.prefsDb.delete('badFavs'); // old Stylus marked all icons as bad when network was offline

@@ -2,7 +2,7 @@ import {$, $create, $createLink, $remove, important, messageBox, setupLivePrefs}
 import {breakWord, t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
-import {clamp, debounce, deepCopy, UA, UCD} from '/js/toolbox';
+import {clamp, debounce, deepCopy, MOBILE, UCD, URLS} from '/js/toolbox';
 import './config-dialog.css';
 import '/options/onoffswitch.css';
 
@@ -18,8 +18,9 @@ export default async function configDialog(style) {
   let varsInitial = getInitialValues(varsHash);
 
   const elements = [];
-  const isInstaller = location.pathname.startsWith('/install-usercss.html');
-  const isPopup = location.pathname.startsWith('/popup.html');
+  const pathname = location.pathname.slice(1);
+  const isInstaller = pathname === URLS.installUsercss;
+  const isPopup = pathname === 'popup.html';
   const colorpicker = vars.some(v => v.type === 'color')
     ? (await import('/js/color/color-picker')).default()
     : null;
@@ -74,7 +75,7 @@ export default async function configDialog(style) {
       ]));
     setupLivePrefs(['config.autosave']);
     box.style.setProperty('--num', vars.length);
-    if (isPopup && !UA.mobile) {
+    if (isPopup && !MOBILE) {
       adjustSizeForPopup(box);
     }
     box.on('change', onchange);

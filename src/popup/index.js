@@ -5,7 +5,7 @@ import popupGetStyles, {ABOUT_BLANK} from '/js/popup-get-styles';
 import * as prefs from '/js/prefs';
 import {
   capitalize, CHROME, CHROME_POPUP_BORDER_BUG, clamp, clipString, FIREFOX, getActiveTab, isEmptyObj,
-  MF, stringAsRegExpStr, UA, UCD, URLS,
+  MF, MOBILE, OPERA, stringAsRegExpStr, UCD, URLS,
 } from '/js/toolbox';
 import * as Events from './events';
 import './hotkeys';
@@ -30,7 +30,7 @@ tBody();
     || await popupGetStyles();
   initPopup(...data);
   showStyles(...data);
-  if (UA.mobile) document.body.style.maxHeight = '100vh';
+  if (MOBILE) document.body.style.maxHeight = '100vh';
   else window.on('resize', onWindowResize);
 })();
 
@@ -87,7 +87,7 @@ function toggleSideBorders(_key, state) {
 async function initPopup(frames, ping0, tab) {
   const kPopupWidth = 'popupWidth';
   prefs.subscribe([kPopupWidth, 'popupWidthMax'], (key, val) => {
-    document.body.style[`${key === kPopupWidth ? 'min' : 'max'}-width`] = UA.mobile ? 'none'
+    document.body.style[`${key === kPopupWidth ? 'min' : 'max'}-width`] = MOBILE ? 'none'
       : clamp(val, 200, 800) + 'px';
   }, true);
   setupLivePrefs();
@@ -138,7 +138,7 @@ async function initPopup(frames, ping0, tab) {
   if (ping0) return;
 
   const isStore = FIREFOX ? tabURL.startsWith('https://addons.mozilla.org/') :
-      UA.opera ? tabURL.startsWith('https://addons.opera.com/') :
+      OPERA ? tabURL.startsWith('https://addons.opera.com/') :
         tabURL.startsWith('https://chrome.google.com/webstore/') ||
         tabURL.startsWith('https://chromewebstore.google.com/');
   blockPopup();

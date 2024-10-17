@@ -1,7 +1,7 @@
 import {$} from '/js/dom';
 import {template} from '/js/localization';
 import * as prefs from '/js/prefs';
-import {deepMerge, UA} from '/js/toolbox';
+import {deepMerge, WINDOWS} from '/js/toolbox';
 import CodeMirror from 'codemirror';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/addon/comment/comment';
@@ -110,7 +110,7 @@ prefs.ready.then(() => {
     if (!extras.includes('blockComment')) {
       KM.sublime['Shift-Ctrl-/'] = 'commentSelection';
     }
-    if (UA.windows) {
+    if (WINDOWS) {
       // 'pcDefault' keymap on Windows should have F3/Shift-F3/Ctrl-R
       if (!extras.includes('findNext')) KM.pcDefault['F3'] = 'findNext';
       if (!extras.includes('findPrev')) KM.pcDefault['Shift-F3'] = 'findPrev';

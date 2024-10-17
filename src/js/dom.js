@@ -1,8 +1,8 @@
 import {$, dom} from './dom-base';
 import {waitForSelector} from './dom-util';
 import * as prefs from './prefs';
-import {FIREFOX, UA} from './toolbox';
-import '/content/apply'; // must run last to let `msg` swap `API` and expose toolbox->deepCopy
+import {FIREFOX, OPERA, VIVALDI, WINDOWS} from './toolbox';
+import '/content/apply'; // must run after msg (swaps `API`) and toolbox (exposes deepCopy)
 import './themer';
 
 export * from './dom-base';
@@ -40,8 +40,8 @@ prefs.ready.then(() => {
 });
 
 {
-  const cls = (!UA.windows ? 'non-windows ' : '') +
-    (FIREFOX ? 'firefox' : UA.opera ? 'opera' : UA.vivaldi ? 'vivaldi' : '');
+  const cls = (!WINDOWS ? 'non-windows ' : '') +
+    (FIREFOX ? 'firefox' : OPERA ? 'opera' : VIVALDI ? 'vivaldi' : '');
   if (cls) $.root.className += ' ' + cls;
   // set language for a) CSS :lang pseudo and b) hyphenation
   $.root.setAttribute('lang', chrome.i18n.getUILanguage());

@@ -3,7 +3,7 @@ import {$, $$, $create, getEventKeyName, messageBox, setInputValue, setupLivePre
 import {t, tBody, template} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
-import {CHROME_POPUP_BORDER_BUG, clamp, FIREFOX, ignoreChromeError, UA, URLS} from '/js/toolbox';
+import {CHROME_POPUP_BORDER_BUG, clamp, FIREFOX, ignoreChromeError, MAC, URLS} from '/js/toolbox';
 import './options-sync';
 import './onoffswitch.css';
 import './options.css';
@@ -55,7 +55,7 @@ $$('[data-clickable]').forEach(el => {
 });
 
 function customizeHotkeys() {
-  const CTRL = UA.mac ? 'metaKey' : 'ctrlKey';
+  const CTRL = MAC ? 'metaKey' : 'ctrlKey';
   const SKIP = ['Control', 'Alt', 'Shift', 'Meta', 'CapsLock', 'Tab', 'Escape', 'OS'];
   messageBox.show({
     title: t('shortcutsNote'),

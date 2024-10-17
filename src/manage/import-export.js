@@ -4,7 +4,7 @@ import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {styleJSONseemsValid, styleSectionsEqual} from '/js/sections-util';
 import {chromeSync, LZ_KEY} from '/js/storage-util';
-import {clipString, deepEqual, hasOwn, isEmptyObj, RX_META, UA, UCD} from '/js/toolbox';
+import {clipString, deepEqual, hasOwn, isEmptyObj, MOBILE, RX_META, UCD} from '/js/toolbox';
 import {queue} from './util';
 
 Object.assign($('#file-all-styles'), {
@@ -60,7 +60,7 @@ async function importFromFile(file) {
     } else {
       el.style.display = 'none';
       el.type = 'file';
-      el.accept = 'application/json' + (UA.mobile ? ',text/plain'/*for GDrive-like apps*/ : '');
+      el.accept = 'application/json' + (MOBILE ? ',text/plain'/*for GDrive-like apps*/ : '');
       el.acceptCharset = 'utf-8';
       document.body.appendChild(el);
       el.initialValue = el.value;
