@@ -12,6 +12,7 @@ import {getIssues} from './reports';
 const RULES = {};
 const KNOWN_RULES = {};
 const defaultConfig = {};
+
 let cmDlg;
 let knownRules;
 let isStylelint;
@@ -26,6 +27,7 @@ export async function showLintConfig() {
   // TODO: replace with JSON.parse()
   await import('/js/jsonlint-bundle');
   const config = await chromeSync.getLZValue(LZ_KEY[linter]);
+  const defaults = DEFAULTS[linter];
   const title = t('linterConfigPopupTitle', isStylelint ? 'Stylelint' : 'CSSLint');
   const activeRules = new Set(getActiveRules());
   isStylelint = linter === 'stylelint';
@@ -35,12 +37,11 @@ export async function showLintConfig() {
         ? Object.keys(RULES[linter])
         : RULES[linter].map(r => r.id)
     ).sort()));
-  for (let cfg of [
+  for (const cfg of [
     config,
-    !defaultConfig[linter] && DEFAULTS[linter],
-  ].filter(Boolean)) {
+    !defaultConfig[linter] && defaults,
+  ].filter(Boolean).map(getConfigRules)) {
     const missingRules = new Set(knownRules);
-    cfg = isStylelint ? cfg.rules : cfg;
     for (const id in cfg) {
       if (cfg[id] && knownRules.has(id)) {
         missingRules.delete(id);
@@ -53,7 +54,7 @@ export async function showLintConfig() {
       cfg[id] = isStylelint ? false : 0;
     }
   }
-  defaultConfig[linter] = stringifyConfig(DEFAULTS[linter]);
+  defaultConfig[linter] = stringifyConfig(defaults);
   popup = showCodeMirrorPopup(title, null, {
     extraKeys: {'Ctrl-Enter': onConfigSave},
     hintOptions: {hint},
@@ -227,14 +228,29 @@ async function onConfigSave(event) {
     cmDlg.focus();
     return;
   }
-  const cfg = isStylelint ? json.rules : json;
+  const cfg = getConfigRules(json);
+  const defaults = getConfigRules(DEFAULTS[linter]);
+  // Explicitly disabling rules enabled in our defaults but not present in the user config
+  for (const id in defaults) {
+    if (!(id in cfg)) cfg[id] = isStylelint ? false : 0;
+  }
+  /* Removing rules with a default value to reduce the size of config in sync storage and to use
+   * newer defaults in a newer version of the extension in the unlikely case we change them. */
   for (const id in cfg) {
-    if (!cfg[id]) delete cfg[id];
+    const def = defaults[id];
+    const val = cfg[id];
+    if (val ? def && JSON.stringify(val) === JSON.stringify(def) : !def) {
+      delete cfg[id];
+    }
   }
   chromeSync.setLZValue(LZ_KEY[linter], json);
   cmDlg.markClean();
   cmDlg.focus();
   updateConfigButtons();
+}
+
+function getConfigRules(c) {
+  return isStylelint ? c.rules || (c.rules = {}) : c;
 }
 
 function stringifyConfig(config) {

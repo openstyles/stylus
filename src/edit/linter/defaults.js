@@ -1,28 +1,32 @@
+const WARNING = {severity: 'warning'};
+const ENABLED_AS_WARNING = [true, WARNING];
 export const DEFAULTS = {
   stylelint: {
+    // WARNING! onConfigSave() expects these rules to be arrays and enabled.
+    // TODO: extract deduplicateRules and use it in onInstalled event + in tests
     rules: {
       'at-rule-no-unknown': [true, {
         'ignoreAtRules': ['extend', 'extends', 'css', 'block'],
-        'severity': 'warning',
+        ...WARNING,
       }],
-      'block-no-empty': [true, {severity: 'warning'}],
-      'color-no-invalid-hex': [true, {severity: 'warning'}],
+      'block-no-empty': ENABLED_AS_WARNING,
+      'color-no-invalid-hex': ENABLED_AS_WARNING,
       'declaration-block-no-duplicate-properties': [true, {
         'ignore': ['consecutive-duplicates-with-different-values'],
-        'severity': 'warning',
+        ...WARNING,
       }],
-      'declaration-block-no-shorthand-property-overrides': [true, {severity: 'warning'}],
-      'font-family-no-duplicate-names': [true, {severity: 'warning'}],
-      'function-calc-no-unspaced-operator': [true, {severity: 'warning'}],
-      'function-linear-gradient-no-nonstandard-direction': [true, {severity: 'warning'}],
-      'keyframe-declaration-no-important': [true, {severity: 'warning'}],
-      'media-feature-name-no-unknown': [true, {severity: 'warning'}],
-      'no-invalid-double-slash-comments': [true, {severity: 'warning'}],
-      'property-no-unknown': [true, {severity: 'warning'}],
-      'selector-pseudo-class-no-unknown': [true, {severity: 'warning'}],
-      'selector-pseudo-element-no-unknown': [true, {severity: 'warning'}],
-      'string-no-newline': [true, {severity: 'warning'}],
-      'unit-no-unknown': [true, {severity: 'warning'}],
+      'declaration-block-no-shorthand-property-overrides': ENABLED_AS_WARNING,
+      'font-family-no-duplicate-names': ENABLED_AS_WARNING,
+      'function-calc-no-unspaced-operator': ENABLED_AS_WARNING,
+      'function-linear-gradient-no-nonstandard-direction': ENABLED_AS_WARNING,
+      'keyframe-declaration-no-important': ENABLED_AS_WARNING,
+      'media-feature-name-no-unknown': ENABLED_AS_WARNING,
+      'no-invalid-double-slash-comments': ENABLED_AS_WARNING,
+      'property-no-unknown': ENABLED_AS_WARNING,
+      'selector-pseudo-class-no-unknown': ENABLED_AS_WARNING,
+      'selector-pseudo-element-no-unknown': ENABLED_AS_WARNING,
+      'string-no-newline': ENABLED_AS_WARNING,
+      'unit-no-unknown': ENABLED_AS_WARNING,
     },
   },
   csslint: {
