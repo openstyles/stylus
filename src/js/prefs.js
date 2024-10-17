@@ -220,7 +220,7 @@ function setAll(data, fromStorage) {
   busy = false;
   if (!fromStorage) {
     Object.assign(values, data);
-    return true;
+    return;
   }
   // checking default values that were deleted from current storage
   for (const key in fromStorage) {
@@ -230,7 +230,6 @@ function setAll(data, fromStorage) {
   for (const key in data || (data = {})) {
     if (!set(key, data[key], true)) if (isBg) delete data[key];
   }
-  return !isBg || data;
 }
 
 if (isBg) {
@@ -250,7 +249,9 @@ onStorageChanged.addListener((changes, area) => {
   if (data) setAll(data.newValue, data.oldValue);
 });
 
-export const ready = busy || Promise.resolve(true);
+export const ready = busy || Promise.resolve();
+if (!busy) ready.then = fn => fn();
+
 export {
   defaultsClone as defaults,
   defaults as __defaults, // direct reference, be careful!

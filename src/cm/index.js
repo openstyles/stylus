@@ -57,8 +57,7 @@ export const extraKeys = Object.assign(CodeMirror.defaults.extraKeys || {}, {
   'Ctrl-Pause': 'toggleEditorFocus',
 });
 
-(async () => {
-  if (!process.env.MV3) await prefs.ready;
+prefs.ready.then(() => {
   // CodeMirror miserably fails on keyMap='' so let's ensure it's not
   if (!prefs.get('editor.keyMap')) {
     prefs.reset('editor.keyMap');
@@ -201,4 +200,4 @@ export const extraKeys = Object.assign(CodeMirror.defaults.extraKeys || {}, {
       cm.scrollIntoView();
     },
   });
-})();
+});

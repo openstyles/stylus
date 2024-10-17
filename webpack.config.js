@@ -111,7 +111,6 @@ const CFG = {
           compress: {
             reduce_funcs: false,
             ecma: 8,
-            mangle: false,
             passes: 2,
             // unsafe_arrows: true, // it's 'safe' since we don't rely on function prototypes
           },

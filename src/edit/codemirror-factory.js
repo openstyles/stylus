@@ -72,9 +72,7 @@ const prefKeys = prefs.knownKeys.filter(k =>
   k !== 'editor.arrowKeysTraverse' && // handled in sections-editor.js
   prefToCmOpt(k) in CodeMirror.defaults);
 const {insertTab, insertSoftTab} = CodeMirror.commands;
-
-(async () => {
-  if (!process.env.MV3) await prefs.ready;
+prefs.ready.then(() => {
   for (const key of prefKeys) {
     cmDefaults[prefToCmOpt(key)] = prefs.get(key);
   }
@@ -102,7 +100,7 @@ const {insertTab, insertSoftTab} = CodeMirror.commands;
     CodeMirror.defineOption(prefToCmOpt(key), prefs.get(key), fn);
     prefKeys.push(key);
   }
-})();
+});
 
 prefs.subscribe(prefKeys, (key, val) => {
   if (key === THEME_KEY) loadCmTheme(val);

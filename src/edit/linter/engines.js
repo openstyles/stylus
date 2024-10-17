@@ -1,6 +1,7 @@
 import {worker} from '/edit/linter/store';
 import * as prefs from '/js/prefs';
 import {chromeSync, LZ_KEY} from '/js/storage-util';
+import {onStorageChanged} from '/js/toolbox';
 import * as linterMan from '.';
 import editor from '../editor';
 import {DEFAULTS} from './defaults';
@@ -47,7 +48,7 @@ linterMan.register(async (text, _options, cm) => {
   }
 });
 
-(chrome.storage.sync.onChanged || chrome.storage.onChanged).addListener(changes => {
+onStorageChanged.addListener(changes => {
   for (const name of Object.keys(ENGINES)) {
     if (LZ_KEY[name] in changes) {
       getConfig(name).then(linterMan.run);

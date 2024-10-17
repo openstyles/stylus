@@ -19,7 +19,7 @@ export default process.env.MV3 ? [
   loadCmTheme(),
 ] : Promise.all([
   API.styles.getEditClientData(id).then(loadStyle),
-  prefs.ready.then(() => loadCmTheme()),
+  prefs.ready.then(loadCmTheme),
 ]);
 
 function loadStyle({si, style = makeNewStyleObj(), template}) {
