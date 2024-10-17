@@ -1,3 +1,4 @@
+import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '/js/sections-util';
 import {
@@ -6,11 +7,12 @@ import {
 import {broadcast, broadcastExtension} from './broadcast';
 import broadcastInjectorConfig from './broadcast-injector-config';
 import * as colorScheme from './color-scheme';
-import {API, bgReady, uuidIndex} from './common';
+import {bgReady, uuidIndex} from './common';
 import db from './db';
 import StyleCache from './style-cache';
 import tabMan from './tab-manager';
 import {getUrlOrigin} from './tab-util';
+import * as usercssTemplate from './usercss-template';
 
 export * from './style-search-db';
 
@@ -146,6 +148,16 @@ export function editSave(style) {
   return saveStyle(style, 'editSave');
 }
 
+export function getEditClientData(id) {
+  const style = id2style(id);
+  return /** @namespace StylusClientData */ {
+    style,
+    si: style && API.data.get('editorScrollInfo' + id),
+    template: !style && prefs.__values.newStyleAsUsercss
+      && (usercssTemplate.value || usercssTemplate.load()),
+  };
+}
+
 /** @returns {StyleObj|void} */
 export function find(filter, subkey) {
   for (const {style} of dataMap.values()) {
@@ -162,6 +174,22 @@ export function find(filter, subkey) {
 }
 
 export const getAll = () => Array.from(dataMap.values(), v => v.style);
+
+export function getCodelessStyles(ids) {
+  const res = [];
+  for (const v of ids || dataMap.values()) {
+    const style = {...(ids ? dataMap.get(v) : v).style};
+    const src = style.sections;
+    const dst = [];
+    style.sourceCode = undefined;
+    for (let i = 0; i < src.length; i++) {
+      dst[i] = {...src[i], code: undefined};
+    }
+    style.sections = dst;
+    res.push(style);
+  }
+  return res;
+}
 
 /** @returns {{[type: string]: StyleObj[]}}>} */
 export function getAllOrdered(keys) {
@@ -402,7 +430,7 @@ function id2data(id) {
 
 /** @returns {StyleObj|void} */
 export function id2style(id) {
-  return (dataMap.get(Number(id)) || {}).style;
+  return dataMap.get(+id)?.style;
 }
 
 /** @returns {StyleObj|void} */

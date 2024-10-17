@@ -1,12 +1,10 @@
 import {$, $$, $create, $remove, messageBox, showSpinner, toggleDataset} from '/js/dom';
 import {t} from '/js/localization';
-import * as msg from '/js/msg';
-import {API} from '/js/msg';
+import {API, onExtension} from '/js/msg';
 import {isEmptyObj, URLS} from '/js/toolbox';
 import editor from './editor';
-import styleReady from './style-ready';
 
-styleReady.then(() => {
+export default function USWIntegration() {
   const ERROR_TITLE = 'UserStyles.world ' + t('genericError');
   const META_KEYS = ['name', 'description', 'license', 'username>author', 'homepage', 'namespace'];
   const elProgress = $('#usw-progress');
@@ -16,7 +14,7 @@ styleReady.then(() => {
   let spinnerTimer = 0;
   let prevCode = '';
 
-  msg.onExtension(request => {
+  onExtension(request => {
     if (request.method === 'uswData' &&
         request.style.id === style.id) {
       Object.assign(style, request.style);
@@ -128,4 +126,4 @@ styleReady.then(() => {
     spinnerTimer = 0;
     spinner = null;
   }
-});
+}

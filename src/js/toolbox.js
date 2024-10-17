@@ -12,8 +12,10 @@ export const MF_ICON_EXT = MF_ICON.slice(MF_ICON.lastIndexOf('.'));
 export const MF_ACTION_HTML = (process.env.MV3 ? MF.action : MF.browser_action).default_popup;
 
 // see PR #781
-export const CHROME_POPUP_BORDER_BUG = CHROME >= 62 && CHROME <= 74;
+export const CHROME_POPUP_BORDER_BUG = !process.env.MV3 && (CHROME >= 62 && CHROME <= 74);
 export const browserWindows = browser.windows;
+/** A scoped listener won't trigger for our [big] stuff in `local`, Chrome 73+, FF */
+export const onStorageChanged = chrome.storage.sync.onChanged || chrome.storage.onChanged;
 
 export const capitalize = s => s.slice(0, 1).toUpperCase() + s.slice(1);
 export const clamp = (value, min, max) => value < min ? min : value > max ? max : value;

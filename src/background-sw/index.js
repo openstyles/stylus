@@ -1,26 +1,33 @@
-import './intro';
-import * as msg from '/js/msg';
+// WARNING! ../background must be the first to set global.API
+import '../background';
+import {_execute} from '/js/msg';
+import {URLS} from '/js/toolbox';
 import './keep-alive';
 import './bg-offscreen';
-import '../background';
-import {URLS} from '/js/toolbox';
+import setClientData from './set-client-data';
 
 /** @param {ExtendableEvent} evt */
 self.oninstall = evt => {
   evt.addRoutes({
-    condition: {not: {urlPattern: `${URLS.ownOrigin}*.user.css`}},
+    condition: {urlPattern: `${URLS.ownOrigin}*.html?clientData`},
+    source: 'fetch-event',
+  });
+  evt.addRoutes({
+    condition: {not: {urlPattern: `${URLS.ownOrigin}*.user.css`, requestDestination: 'document'}},
     source: 'network',
   });
 };
 
 /** @param {FetchEvent} evt */
 self.onfetch = evt => {
-  let url = evt.request.url;
-  if (url.startsWith(URLS.ownOrigin)
-  && +(url = url.split('#'))[1]
-  && url[0].endsWith('.user.css')
-  && !url[0].includes('?') /* skipping installer */) {
-    evt.respondWith(Response.redirect('edit.html?id=' + url[1]));
+  const url = evt.request.url;
+  if (!url.startsWith(URLS.ownOrigin)) {
+    return; // shouldn't happen but addRoutes may be bugged
+  }
+  if (url.includes('?clientData')) {
+    evt.respondWith(setClientData(url.split(/[/?.]/)[3], evt.clientId || evt.resultingClientId));
+  } else if (/\.user.css#\d+$/.test(url)) {
+    evt.respondWith(Response.redirect('edit.html'));
   }
 };
 
@@ -40,7 +47,7 @@ async function onClientPortMessage(evt) {
   const {args, id} = evt.data;
   let res, err;
   try {
-    res = msg._execute('extension', ...args, {});
+    res = _execute('extension', ...args, {});
     if (res instanceof Promise) res = await res;
   } catch (e) {
     err = e;

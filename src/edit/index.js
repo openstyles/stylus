@@ -1,3 +1,4 @@
+import styleReady from './style-ready';
 import {$, $$} from '/js/dom';
 import {tBody, template} from '/js/localization';
 import * as prefs from '/js/prefs';
@@ -8,21 +9,22 @@ import EditorHeader from './editor-header';
 import * as linterMan from './linter';
 import SectionsEditor from './sections-editor';
 import SourceEditor from './source-editor';
-import styleReady from './style-ready';
 import './edit.css';
 import './colorpicker-helper';
 import './live-preview';
 import './on-msg-extension';
 import './settings';
-import './usw-integration';
+import USWIntegration from './usw-integration';
 import './windowed-mode';
 
 tBody();
 
-styleReady.then(async () => {
+(async () => {
+  if (styleReady.then) await styleReady;
   EditorHeader();
+  USWIntegration();
   // TODO: load respective js on demand?
-  await (editor.isUsercss ? SourceEditor : SectionsEditor)();
+  (editor.isUsercss ? SourceEditor : SectionsEditor)();
   editor.dirty.onChange(editor.updateDirty);
   prefs.subscribe('editor.linter', () => linterMan.run());
   CompactHeader();
@@ -70,4 +72,4 @@ styleReady.then(async () => {
   }
   elToc.onclick = e =>
     editor.jumpToEditor([].indexOf.call(elToc.children, e.target));
-});
+})();

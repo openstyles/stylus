@@ -39,7 +39,6 @@ const RESOLVE_VIA_SHIM = {
     'node_modules',
   ],
 };
-
 const ASSETS_CM = ASSETS + 'cm-themes/';
 const THEME_PATH = ROOT + 'node_modules/codemirror/theme';
 const THEME_NAMES = Object.fromEntries(fs.readdirSync(THEME_PATH)
@@ -112,6 +111,7 @@ const CFG = {
           compress: {
             reduce_funcs: false,
             ecma: 8,
+            mangle: false,
             passes: 2,
             // unsafe_arrows: true, // it's 'safe' since we don't rely on function prototypes
           },
@@ -209,6 +209,10 @@ function makeLibrary(entry, name, extras) {
         name,
       },
     },
+    plugins: [new webpack.BannerPlugin({
+      banner: 'var global = this;',
+      raw: true,
+    })],
   }));
 }
 
@@ -226,8 +230,13 @@ function makeContentScript(name) {
     plugins: [
       defineVars({PAGE: false}),
       new webpack.BannerPlugin({
-        banner: `if(${INJECTED}!==1)${INJECTED}=1,`,
+        banner: `if(${INJECTED}!==1){${INJECTED}=1;var global = this;`,
         raw: true,
+      }),
+      new webpack.BannerPlugin({
+        banner: '}',
+        raw: true,
+        footer: true,
       }),
     ],
   });
@@ -267,6 +276,11 @@ module.exports = [
         PAGE: true,
         THEMES: THEME_NAMES,
       }),
+      new webpack.BannerPlugin({
+        banner: 'var global = this;',
+        test: /\.js$/,
+        raw: true,
+      }),
       new MiniCssExtractPlugin({
         filename: ASSETS + '[name].css',
         chunkFilename: ASSETS + '[name].css',
@@ -279,6 +293,7 @@ module.exports = [
           const {bodyTags, headTags} = tags;
           // The main entry goes into BODY to improve performance (2x in manage.html)
           headTags.push(...bodyTags.splice(0, bodyTags.length - 1));
+          if (MV3) headTags.unshift({toString: () => '<script src="?clientData"></script>'});
           return {
             compilation: compilation,
             webpackConfig: compilation.options,
@@ -314,11 +329,12 @@ module.exports = [
   }),
   MV3 && mergeCfg({
     entry: `/${PAGE_BG}`,
-    output: {library: {type: 'module'}},
-    experiments: {outputModule: true},
     plugins: [
       defineVars({PAGE: 'sw'}),
-      new webpack.BannerPlugin({raw: true, banner: '"use strict";'}),
+      new webpack.BannerPlugin({
+        banner: `var global = self, window = global;`,
+        raw: true,
+      }),
     ],
     resolve: RESOLVE_VIA_SHIM,
   }),

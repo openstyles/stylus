@@ -2,7 +2,14 @@
 
 const globals = require('globals');
 
-const shims = 'tools/shim/*.js';
+const SHIMS = 'tools/shim/*.js';
+const SRC_GLOBALS = {
+  ...globals.es2024,
+  chrome: false,
+  browser: false,
+  global: false,
+  process: false,
+};
 
 module.exports = [
   //#region Global exclusions
@@ -271,7 +278,7 @@ module.exports = [
   //#region Tooling
   {
     files: ['tools/**/*.js', '*.js'],
-    ignores: [shims],
+    ignores: [SHIMS],
     languageOptions: {
       globals: globals.node,
       ecmaVersion: 2023, // nodejs 20 per https://compat-table.github.io/compat-table/es2016plus/
@@ -294,18 +301,35 @@ module.exports = [
   //#endregion
   //#region SRC
   {
-    files: ['src/**/*.js', shims],
+    files: ['src/**/*.js', SHIMS],
     languageOptions: {
       ecmaVersion: 2024,
       globals: {
         ...globals.browser,
-        ...globals.es2024,
-        chrome: false,
-        browser: false,
-        global: false,
-        process: false,
+        ...SRC_GLOBALS,
       },
       sourceType: 'module',
+    },
+  },
+  //#endregion
+  //#region Background service worker
+  {
+    files: ['src/background-sw/**/*'],
+    languageOptions: {
+      globals: {
+        ...globals.serviceworker,
+        ...SRC_GLOBALS,
+      },
+    },
+  },
+  //#region Workers
+  {
+    files: ['src/**/*worker.js'],
+    languageOptions: {
+      globals: {
+        ...globals.worker,
+        ...SRC_GLOBALS,
+      },
     },
   },
   //#endregion

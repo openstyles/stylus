@@ -1,6 +1,6 @@
+import {API} from '/js/msg';
 import {deepEqual, mapObj, RX_META, tryURL, UCD, URLS} from '/js/toolbox';
 import {broadcastExtension} from './broadcast';
-import {API} from './common';
 import * as styleMan from './style-manager';
 import {getToken, revokeToken} from './token-manager';
 

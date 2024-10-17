@@ -1,47 +1,35 @@
 import {loadCmTheme} from '/cm';
 import {$} from '/js/dom';
-import {tBody} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import * as MozDocMapper from '/js/sections-util';
-import {chromeSync, LZ_KEY} from '/js/storage-util';
 import {clipString, sessionStore, tryURL, UCD} from '/js/toolbox';
 import editor from './editor';
 
-let params = new URLSearchParams(location.search);
-let id = +params.get('id');
-
-if (process.env.MV3 && location.hash === '#' + id) {
-  history.replaceState(null, '', location.href.split('#')[0]);
+if (process.env.MV3 && /#\d+$/.test(location.hash)) {
+  history.replaceState(history.state, '',
+    `${location.href.split('#')[0]}?id=${location.hash.slice(1)}`);
 }
 
-export default Promise.all([
-  Promise.all([
-    id ? API.styles.get(id) : undefined,
-    prefs.ready.then(() => loadCmTheme()),
-  ]).then(loadStyle),
-  id && API.data.get('editorScrollInfo' + id).then(si => {
-    editor.scrollInfo = si || {};
-  }),
-  new Promise(tBody),
+const params = new URLSearchParams(location.search);
+let id = +params.get('id');
+
+export default process.env.MV3 ? [
+  loadStyle(global.clientData),
+  loadCmTheme(),
+] : Promise.all([
+  API.styles.getEditClientData(id).then(loadStyle),
+  prefs.ready.then(() => loadCmTheme()),
 ]);
 
-async function loadStyle([
-  style = {
-    id: id = null, // resetting the non-existent id
-    name: makeName(),
-    enabled: true,
-    sections: [
-      MozDocMapper.toSection([...params], {code: ''}),
-    ],
-  },
-]) {
+function loadStyle({si, style = makeNewStyleObj(), template}) {
   // switching the mode here to show the correct page ASAP, usually before DOMContentLoaded
-  const isUC = Boolean(style[UCD] || !id && prefs.get('newStyleAsUsercss'));
+  const isUC = !!(style[UCD] || !id && template);
   Object.assign(editor, /** @namespace Editor */ {
     style,
+    template,
     isUsercss: isUC,
-    template: isUC && !id && chromeSync.getLZValue(LZ_KEY.usercssTemplate), // promise
+    scrollInfo: si || {},
   });
   editor.updateClass();
   editor.updateTitle(false);
@@ -50,16 +38,24 @@ async function loadStyle([
   // no such style so let's clear the invalid URL parameters
   if (id === null) {
     params.delete('id');
-    params = `${params}`;
-    history.replaceState({}, '', location.pathname + (params ? '?' : '') + params);
+    const str = `${params}`;
+    history.replaceState({}, '', location.pathname + (str ? '?' : '') + str);
   }
 }
 
-function makeName() {
+function makeNewStyleObj() {
+  id = null; // resetting the non-existent id
   const prefix = tryURL(params.get('url-prefix'));
   const name = params.get('name') || prefix.hostname;
   const p = prefix.pathname || '/';
-  return name
-    ? name + (p === '/' ? '' : clipString(p.replace(/\.(html?|aspx?|cgi|php)$/, '')))
-    : params.get('domain') || '?';
+  return {
+    id,
+    enabled: true,
+    name: name
+      ? name + (p === '/' ? '' : clipString(p.replace(/\.(html?|aspx?|cgi|php)$/, '')))
+      : params.get('domain') || '?',
+    sections: [
+      MozDocMapper.toSection([...params], {code: ''}),
+    ],
+  };
 }

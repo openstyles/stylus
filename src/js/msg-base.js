@@ -23,8 +23,8 @@ export const apiHandler = !isBg && {
 };
 /** @type {API} */
 export const API = isBg
-  ? window.API
-  : window.API = new Proxy({path: ''}, apiHandler);
+  ? global.API
+  : global.API = new Proxy({path: ''}, apiHandler);
 
 let bgReadySignal;
 let bgReadying = !process.env.MV3 && new Promise(fn => (bgReadySignal = fn));

@@ -1,10 +1,8 @@
 import {browserWindows} from '/js/toolbox';
 
-export const bgReady = self.bgReady = {};
+export const bgReady = {};
 bgReady.styles = new Promise(r => (bgReady._resolveStyles = r));
 bgReady.all = new Promise(r => (bgReady._resolveAll = r));
-
-export const API = {};
 
 export const browserCommands = {};
 

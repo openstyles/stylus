@@ -1,9 +1,12 @@
-import {API, onExtension} from '/js/msg';
-import {t, template} from '/js/localization';
 import {$, $$, toggleDataset} from '/js/dom';
+import {t, template} from '/js/localization';
+import {API, onExtension} from '/js/msg';
 import {capitalize} from '/js/toolbox';
 
-API.sync.getStatus().then(status => {
+(async () => {
+  let status = process.env.MV3
+    ? global.clientData.sync
+    : await API.sync.getStatus();
   const elSync = $('.sync-options', template.body);
   const elCloud = $('.cloud-name', elSync);
   const elToggle = $('.connect', elSync);
@@ -70,7 +73,9 @@ API.sync.getStatus().then(status => {
       el.disabled = !off;
     }
     toggleDataset(elSync, 'enabled', elCloud.value !== 'none');
-    setDriveOptions(await API.sync.getDriveOptions(elCloud.value));
+    setDriveOptions(process.env.MV3
+      ? global.clientData.syncOpts
+      : await API.sync.getDriveOptions(elCloud.value));
   }
 
   function getStatusText() {
@@ -90,4 +95,4 @@ API.sync.getStatus().then(status => {
     }
     return t(`optionsSyncStatus${capitalize(state)}`, null, false) || state;
   }
-});
+})();

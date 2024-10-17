@@ -8,9 +8,8 @@
  */
 import {$, $create} from '/js/dom-base';
 import {getCssMediaRuleByName} from '/js/dom-util';
-import * as msg from '/js/msg';
-import {API} from '/js/msg';
-import {FIREFOX, MF_ICON_EXT, MF_ICON_PATH} from '/js/toolbox';
+import {API, onExtension} from '/js/msg';
+import {MF_ICON_EXT, MF_ICON_PATH} from '/js/toolbox';
 import '/css/global.css';
 import '/css/global-dark.css';
 
@@ -20,19 +19,18 @@ const MEDIA_NAME = 'dark';
 const map = {[MEDIA_ON]: true, [MEDIA_OFF]: false};
 
 (async () => {
-  let isDark, isVivaldi;
-  if (window === top) ({isDark, isVivaldi} = await API.info.get());
+  let isDark, favicon;
+  if (window === top) ({dark: isDark, favicon} = global.clientData || await API.info.get());
   else isDark = parent.document.documentElement.dataset.uiTheme === 'dark';
   toggle(isDark);
-  msg.onExtension(e => {
+  onExtension(e => {
     if (e.method === 'colorScheme') {
       isDark = e.value;
       toggle(isDark);
     }
   });
-  // Add favicon in FF and Vivaldi
-  if (window === top
-  && (FIREFOX || isVivaldi)
+  if (favicon
+  && window === top
   && location.pathname !== '/popup.html') {
     document.head.append(...[32, 16].map(size => $create('link', {
       rel: 'icon',

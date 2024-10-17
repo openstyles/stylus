@@ -100,9 +100,14 @@ function onInjectorUpdate() {
 
 async function init() {
   if (isUnstylable) return API.styleViaAPI({method: 'styleApply'});
-  let data = isFrameNoUrl && CHROME && clone(parent[parent.Symbol.for(SYM_ID)]);
-  if (data) await new Promise(onFrameElementInView);
-  else data = !isFrameSameOrigin && !isXml && !chrome.tabs && tryCatch(getStylesViaXhr);
+  let data;
+  if (process.env.MV3 && process.env.PAGE) {
+    data = global.clientData.apply;
+  } else {
+    data = isFrameNoUrl && CHROME && clone(parent[parent.Symbol.for(SYM_ID)]);
+    if (data) await new Promise(onFrameElementInView);
+    else data = !isFrameSameOrigin && !isXml && !chrome.tabs && tryCatch(getStylesViaXhr);
+  }
   // XML in Chrome will be auto-converted to html later, so we can't style it via XHR now
   await applyStyles(data);
   if (orphanCleanup) {

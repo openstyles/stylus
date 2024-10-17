@@ -61,7 +61,7 @@ export async function remove(...args) {
 }
 
 /** @returns {Promise<SyncManager.Status>} */
-export async function getStatus() {
+export function getStatus() {
   return status;
 }
 

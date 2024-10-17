@@ -1,7 +1,7 @@
+import {API} from '/js/msg';
 import popupGetStyles from '/js/popup-get-styles';
 import * as prefs from '/js/prefs';
 import {CHROME, FIREFOX, ignoreChromeError, MF_ACTION_HTML, URLS} from '/js/toolbox';
-import {API} from './common';
 import {getSectionsByUrl} from './style-manager';
 import tabMan from './tab-manager';
 

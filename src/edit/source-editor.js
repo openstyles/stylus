@@ -13,7 +13,7 @@ import * as linterMan from './linter';
 import MozSectionFinder from './moz-section-finder';
 import MozSectionWidget from './moz-section-widget';
 
-export default async function SourceEditor() {
+export default function SourceEditor() {
   const {style, /** @type DirtyReporter */dirty} = editor;
   const DEFAULT_TEMPLATE = `
     /* ==UserStyle==
@@ -36,7 +36,7 @@ export default async function SourceEditor() {
   const cm = cmFactory.create($('.single-editor'));
   const sectionFinder = MozSectionFinder(cm);
   const sectionWidget = MozSectionWidget(cm, sectionFinder);
-  if (!style.id) setupNewStyle(await editor.template);
+  if (!style.id) setupNewStyle(editor.template);
   createMetaCompiler(meta => {
     const {vars} = style[UCD] || {};
     if (vars) {

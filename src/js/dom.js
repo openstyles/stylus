@@ -12,7 +12,8 @@ prefs.subscribe('disableAll', (_, val) => {
   $.rootCL.toggle('all-disabled', val);
 }, true);
 
-prefs.ready.then(() => {
+(async () => {
+  if (!process.env.MV3) await prefs.ready;
   waitForSelector('details[data-pref]', {
     recur(elems) {
       for (const el of elems) {
@@ -37,7 +38,7 @@ prefs.ready.then(() => {
       el.open = value;
     }
   }
-});
+})();
 
 {
   const cls = (!WINDOWS ? 'non-windows ' : '') +

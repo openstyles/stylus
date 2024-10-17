@@ -42,7 +42,8 @@ const MODES = Object.assign(Object.create(null), {
  * @param {number[]} [params.ids] - if not specified, all styles are searched
  * @returns {number[]} - array of matched styles ids
  */
-export function searchDb({query, mode = 'all', ids}) {
+export function searchDb({query, mode, ids}) {
+  mode ??= 'all'; // handles `null` too
   let res = [];
   if (mode === 'url' && query) {
     res = getByUrl(query).map(r => r.style.id);

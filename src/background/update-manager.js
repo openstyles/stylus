@@ -1,9 +1,10 @@
 import compareVersion from '/js/cmpver';
+import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {calcStyleDigest, styleSectionsEqual} from '/js/sections-util';
 import {chromeLocal} from '/js/storage-util';
 import {debounce, deepMerge, ignoreChromeError, UCD, URLS} from '/js/toolbox';
-import {API, bgReady} from './common';
+import {bgReady} from './common';
 import db from './db';
 import download from './download';
 import * as styleMan from './style-manager';

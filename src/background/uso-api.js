@@ -1,5 +1,5 @@
+import {API} from '/js/msg';
 import {fetchText, RX_META, UCD, URLS} from '/js/toolbox';
-import {API} from './common';
 import download from './download';
 import * as styleMan from './style-manager';
 

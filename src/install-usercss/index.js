@@ -65,7 +65,7 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
     firstGet = API.usercss.getInstallCode(initialUrl)
       .then(code => code || getData())
       .catch(getData);
-  } else {
+  } else if (!process.env.MV3) {
     getData = PortDownloader();
     firstGet = getData({force: true});
   }

@@ -2,7 +2,7 @@ import {subscribe} from '/src/js/prefs';
 
 /** @type {?Promise[]} */
 let busy;
-let lastBusyTime;
+let lastBusyTime = 0;
 let pulse;
 
 subscribe('keepAlive', checkPref, true);
@@ -14,6 +14,7 @@ export function keepAliveWhileBusy(...promises) {
 
 function checkBusyWhenSettled(promises) {
   Promise.allSettled(busy = promises).then(checkBusy);
+  if (!pulse) checkPref();
 }
 
 function checkBusy({length}) {
@@ -25,10 +26,10 @@ function checkBusy({length}) {
   }
 }
 
-async function checkPref(key, val) {
-  if (busy || val < 0 || val && (performance.now() - lastBusyTime < val * 60e3)) {
+async function checkPref(key, TTL) {
+  if (busy || TTL < 0 || TTL && (performance.now() - lastBusyTime < TTL * 60e3)) {
     chrome.runtime.getPlatformInfo();
-    if (!pulse) pulse = setInterval(checkPref, 25e3, key, val);
+    if (!pulse) pulse = setInterval(checkPref, 25e3, key, TTL);
   } else if (pulse) {
     clearInterval(pulse);
     pulse = 0;

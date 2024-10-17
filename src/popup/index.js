@@ -26,8 +26,9 @@ export const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || s
 tBody();
 
 (async () => {
-  const data = CHROME && await API.data.pop('popupData')
-    || await popupGetStyles();
+  const data = process.env.MV3
+    ? global.clientData.popup
+    : CHROME && await API.data.pop('popupData') || await popupGetStyles();
   initPopup(...data);
   showStyles(...data);
   if (MOBILE) document.body.style.maxHeight = '100vh';
@@ -84,7 +85,7 @@ function toggleSideBorders(_key, state) {
   }
 }
 
-async function initPopup(frames, ping0, tab) {
+async function initPopup(frames, ping0, tab, urlSupported) {
   const kPopupWidth = 'popupWidth';
   prefs.subscribe([kPopupWidth, 'popupWidthMax'], (key, val) => {
     document.body.style[`${key === kPopupWidth ? 'min' : 'max'}-width`] = MOBILE ? 'none'
@@ -142,7 +143,7 @@ async function initPopup(frames, ping0, tab) {
         tabURL.startsWith('https://chrome.google.com/webstore/') ||
         tabURL.startsWith('https://chromewebstore.google.com/');
   blockPopup();
-  if (CHROME && isStore || !URLS.supported(tabURL)) {
+  if (CHROME && isStore || !urlSupported) {
     return;
   }
 

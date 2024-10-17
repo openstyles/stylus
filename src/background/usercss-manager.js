@@ -1,5 +1,5 @@
+import {API} from '/js/msg';
 import {deepCopy, mapObj, RX_META, UCD} from '/js/toolbox';
-import {API} from './common';
 import download from './download';
 import * as styleMan from './style-manager';
 

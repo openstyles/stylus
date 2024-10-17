@@ -47,7 +47,7 @@ linterMan.register(async (text, _options, cm) => {
   }
 });
 
-chrome.storage.onChanged.addListener(changes => {
+(chrome.storage.sync.onChanged || chrome.storage.onChanged).addListener(changes => {
   for (const name of Object.keys(ENGINES)) {
     if (LZ_KEY[name] in changes) {
       getConfig(name).then(linterMan.run);

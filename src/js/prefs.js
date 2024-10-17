@@ -1,6 +1,6 @@
 /** Don't use this file in content script context! */
 import {API, isBg} from '/js/msg';
-import {deepCopy, deepEqual} from './toolbox';
+import {deepCopy, deepEqual, onStorageChanged} from './toolbox';
 
 let busy, setReady;
 
@@ -142,10 +142,8 @@ const defaults = {
 };
 const warnUnknown = console.warn.bind(console, 'Unknown preference "%s"');
 /** @type {PrefsValues} */
-const values = self.prefs = deepCopy(defaults);
+const values = global.prefsValues = deepCopy(defaults);
 const onChange = {};
-// A scoped listener won't trigger for our [big] stuff in `local`, Chrome 73+, FF
-const onSync = chrome.storage.sync.onChanged;
 
 export const STORAGE_KEY = 'settings';
 /** @type {PrefsValues} */
@@ -238,15 +236,17 @@ function setAll(data, fromStorage) {
 if (isBg) {
   busy = new Promise(cb => (setReady = cb));
   busy.set = (...args) => setReady(setAll(...args));
+} else if (process.env.MV3) {
+  setAll((/** @type {StylusClientData} */clientData).prefs); /* global clientData */
 } else if (window === parent) {
   busy = API.prefs.get().then(setAll);
 } else {
-  setAll(deepCopy(parent.prefs)); // using deepCopy of this realm
+  setAll(deepCopy(parent.prefsValues)); // using deepCopy of this realm
 }
 
-(onSync || chrome.storage.onChanged).addListener((changes, area) => {
+onStorageChanged.addListener((changes, area) => {
   if (busy) return;
-  const data = (onSync || area === 'sync') && changes[STORAGE_KEY];
+  const data = (!area || area === 'sync') && changes[STORAGE_KEY];
   if (data) setAll(data.newValue, data.oldValue);
 });
 

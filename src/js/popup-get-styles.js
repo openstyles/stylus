@@ -11,21 +11,13 @@ export default async function popupGetStyles() {
     tab = await API.waitForTabUrl(tab.id);
   }
   let url = tab.pendingUrl || tab.url || ''; // new Chrome uses pendingUrl while connecting
-  let promise, v;
   const isOwn = url.startsWith(URLS.ownOrigin);
-  const jobs = [
-    isOwn || (
-      promise = msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0})
-    ),
-    isOwn && CHROME ? [ // getAllFrames doesn't work in Chrome on own pages
-      {frameId: 0, url},
-      (v = chrome.extension.getViews({tabId: tab.id})[0]) && v[0] &&
-        {frameId: 1, parentFrameId: 0, url: v[0].location.href},
-    ].filter(Boolean) : (
-      promise = browser.webNavigation.getAllFrames({tabId: tab.id})
-    ),
-  ];
-  const [ping0, frames] = promise ? await Promise.all(jobs) : jobs;
+  const [ping0, frames] = await Promise.all([
+    isOwn
+      || msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0}),
+    isOwn && CHROME && getAllFrames(url, tab)
+      || browser.webNavigation.getAllFrames({tabId: tab.id}),
+  ]);
   // sorting frames and connecting children to parents
   const unknown = new Map(frames.map(f => [f.frameId, f]));
   const known = new Map([[0, unknown.get(0) || {frameId: 0, url: ''}]]);
@@ -56,13 +48,32 @@ export default async function popupGetStyles() {
   }
   // webNavigation doesn't set url in some cases e.g. in our own pages
   frames[0].url = url;
-  let styles = [];
-  for (const f of frames) {
-    if (f.url && !f.isDupe) f.stylesIdx = styles.push(f.styles = API.styles.getByUrl(f.url)) - 1;
+  const urlSupported = URLS.supported(url);
+  if (urlSupported) {
+    let styles = [];
+    for (const f of frames) {
+      if (f.url && !f.isDupe) f.stylesIdx = styles.push(f.styles = API.styles.getByUrl(f.url)) - 1;
+    }
+    if (!isBg) {
+      styles = await Promise.all(styles);
+      for (const f of frames) if (f.styles) f.styles = styles[f.stylesIdx];
+    }
   }
-  if (!isBg) {
-    styles = await Promise.all(styles);
-    for (const f of frames) if (f.styles) f.styles = styles[f.stylesIdx];
+  return [frames, ping0, tab, urlSupported];
+}
+
+/** webNavigation.getAllFrames doesn't work in Chrome on own pages */
+async function getAllFrames(url, {id: tabId}) {
+  let res;
+  if (process.env.MV3) {
+    res = await chrome.runtime.getContexts({tabIds: [tabId]});
+    res = res[1]?.documentUrl;
+  } else {
+    // first 0 = view, second 0 = iframe inside
+    res = chrome.extension.getViews({tabId: tabId})[0]?.[0]?.location.href;
   }
-  return [frames, ping0, tab];
+  return [
+    {frameId: 0, url},
+    res && {frameId: 1, parentFrameId: 0, url: res},
+  ].filter(Boolean);
 }

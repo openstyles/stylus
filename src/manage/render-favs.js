@@ -52,9 +52,11 @@ export async function renderFavs(container = installed) {
   }
 }
 
-export async function readBadFavs() {
-  const val = await (dbBusy || (dbBusy = API.prefsDb.get(BAD_FAVS_KEY)));
-  dbBusy = false;
+export async function readBadFavs(val) {
+  if (!val) {
+    val = await (dbBusy || (dbBusy = API.prefsDb.get(BAD_FAVS_KEY)));
+    dbBusy = false;
+  }
   return (newUI.cfg[BAD_FAVS_KEY] = Array.isArray(val) ? val : []);
 }
 

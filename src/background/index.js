@@ -1,6 +1,7 @@
+import './intro';
 import browser from '/js/browser';
 import * as msg from '/js/msg';
-import {onMessage} from '/js/msg';
+import {API, onMessage} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {FIREFOX, ignoreChromeError, MOBILE, WINDOWS} from '/js/toolbox';
 import createWorker from '/js/worker-host';
@@ -8,7 +9,7 @@ import {broadcast} from './broadcast';
 import './broadcast-injector-config';
 import initBrowserCommandsApi from './browser-cmd-hotkeys';
 import * as colorScheme from './color-scheme';
-import {API, bgReady, browserCommands, isVivaldi} from './common';
+import {bgReady, browserCommands, isVivaldi} from './common';
 import reinjectContentScripts from './content-scripts';
 import initContextMenus from './context-menus';
 import download from './download';
@@ -45,8 +46,8 @@ Object.assign(API, /** @namespace API */ {
 
   info: {
     get: async () => ({
-      isDark: colorScheme.isDark(),
-      isVivaldi: isVivaldi.then ? await isVivaldi : isVivaldi,
+      dark: colorScheme.isDark(),
+      favicon: FIREFOX || (isVivaldi.then ? await isVivaldi : isVivaldi),
     }),
     set(info) {
       let v;
@@ -80,6 +81,8 @@ Object.assign(API, /** @namespace API */ {
   //#endregion
 }, FIREFOX && initStyleViaApi());
 
+if (!process.env.MV3) global.allReady = bgReady.all;
+
 Object.assign(browserCommands, {
   openManage: () => API.openManage(),
   openOptions: () => API.openManage({options: true}),
@@ -103,9 +106,6 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   }
   if (previousVersion === '1.5.30') {
     API.prefsDb.delete('badFavs'); // old Stylus marked all icons as bad when network was offline
-  }
-  if (process.env.MV3 && previousVersion.startsWith('1.5.')) {
-    prefs.set('keepAlive', -1);
   }
 });
 

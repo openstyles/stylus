@@ -1,7 +1,6 @@
 import browser from '/js/browser';
-import * as msg from '/js/msg';
+import {API, sendTab} from '/js/msg';
 import {browserWindows, CHROME, FIREFOX, getActiveTab} from '/js/toolbox';
-import {API} from './common';
 import * as prefs from '/js/prefs';
 
 // FF57+ supports openerTabId, but not in Android
@@ -63,7 +62,7 @@ export async function openManage(opts = {}) {
     API.prefsDb.get('badFavs'); // prime the cache to avoid flicker/delay when opening the page
     tab = await openURL({url, newTab: true});
   } else if (!same) {
-    await msg.sendTab(tab.id, {method: 'pushState', url: setUrlParams(tab.url, opts)});
+    await sendTab(tab.id, {method: 'pushState', url: setUrlParams(tab.url, opts)});
   }
   return activateTab(tab); // activateTab unminimizes the window
 }
