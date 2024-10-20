@@ -30,7 +30,7 @@ export function createPortExec(getTarget, lockName) {
     // Saving the call stack prior to a possible async jump for easier debugging
     const p = Promise.withResolvers();
     p.stack = new Error();
-    if ((port || initPort()).then) await port;
+    if ((port ??= initPort()).then) port = await port;
     queue.set(++lastId, p);
     port.postMessage({args, id: lastId},
       Array.isArray(this) ? this : undefined); // transferables
@@ -57,6 +57,7 @@ export function createPortExec(getTarget, lockName) {
     port.onmessage = onMessage;
     queue = new Map();
     lastId = 0;
+    return port;
   }
   /** @param {MessageEvent} _ */
   function onMessage({data: {id, str, res, err}}) {

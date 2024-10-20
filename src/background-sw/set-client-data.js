@@ -7,6 +7,10 @@ import {API} from '/js/msg-base';
 import * as prefs from '/js/prefs';
 import {FIREFOX} from '/js/ua';
 
+const NO_CACHE = {
+  headers: {'cache-control': 'no-cache'},
+};
+
 /**
  * @param {FetchEvent} evt
  * @param {URL} reqUrl
@@ -50,5 +54,5 @@ export default async function setClientData(evt, reqUrl) {
 
   v = await Promise.all(Object.values(jobs));
   Object.keys(jobs).forEach((id, i) => (jobs[id] = v[i]));
-  return new Response(`var clientData = ${JSON.stringify(jobs)}`);
+  return new Response(`var clientData = ${JSON.stringify(jobs)}`, NO_CACHE);
 }

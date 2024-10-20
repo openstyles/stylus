@@ -175,16 +175,20 @@ export function find(filter, subkey) {
 
 export const getAll = () => Array.from(dataMap.values(), v => v.style);
 
-export function getCodelessStyles(ids) {
+export function getCodelessStyles(ids, forPopup) {
   const res = [];
   for (const v of ids || dataMap.values()) {
     const style = {...(ids ? dataMap.get(v) : v).style};
-    const src = style.sections;
-    const dst = [];
-    style.sourceCode = undefined;
-    for (let i = 0; i < src.length; i++) {
-      dst[i] = {...src[i], code: undefined};
+    let dst;
+    if (!forPopup) {
+      dst = [];
+      for (let i = 0, src = style.sections; i < src.length; i++) {
+        dst[i] = {...src[i], code: undefined};
+      }
+    } else if (UCD in style) {
+      style[UCD] = {vars: !isEmptyObj(style[UCD].vars) && {foo: 1}};
     }
+    style.sourceCode = undefined;
     style.sections = dst;
     res.push(style);
   }
@@ -317,7 +321,7 @@ export function getByUrl(url, id = null) {
         included,
         sectionMatched,
         sloppy,
-        style,
+        style: getCodelessStyles([style.id], true)[0],
       });
     }
   }

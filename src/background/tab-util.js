@@ -5,7 +5,7 @@ import * as prefs from '/js/prefs';
 
 // FF57+ supports openerTabId, but not in Android
 // (detecting FF57 by the feature it added, not navigator.ua which may be spoofed in about:config)
-const HAS_OPENER = !!(browserWindows && (CHROME || window.AbortController));
+const HAS_OPENER = !!(browserWindows && (CHROME || global.AbortController));
 const EMPTY_TAB = [
   // Chrome and simple forks
   'chrome://newtab/',
