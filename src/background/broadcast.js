@@ -21,7 +21,7 @@ export async function broadcast(data, {onlyIfStyled, getData} = {}) {
       // including tabs with unsupported `url` as they may contain supported iframes
       (!onlyIfStyled || tabMan.getStyleIds(tab.id)) &&
       // own tabs are informed via broadcastExtension
-      !(tab.pendingUrl || tab.url || '').startsWith(URLS.ownOrigin) &&
+      !(tab.pendingUrl || tab.url || '').startsWith(URLS.ownRoot) &&
       (!getData || (data = getData(tab)))
     ) {
       jobs.push(sendTab(tab.id, data));

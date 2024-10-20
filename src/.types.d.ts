@@ -141,3 +141,7 @@ declare interface USWorldData {
   namespace?: string;
   username?: string;
 }
+
+declare interface RemotePortEvent extends MessageEvent {
+  _transfer?: Transferable[];
+}

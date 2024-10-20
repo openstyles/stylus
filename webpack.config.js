@@ -9,9 +9,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
-const {
-  anyPathSep, defineVars, stripSourceMap, MANIFEST, MANIFEST_MV3, ROOT,
-} = require('./tools/util');
+const {defineVars, stripSourceMap, MANIFEST, MANIFEST_MV3, ROOT} = require('./tools/util');
 const WebpackPatchBootstrapPlugin = require('./tools/webpack-patch-bootstrap');
 
 const [BUILD, FLAVOR] = process.env.NODE_ENV?.split('-') || [];
@@ -24,14 +22,19 @@ const JS = 'js/';
 const SHIM = ROOT + 'tools/shim/';
 const MV3 = FLAVOR === 'mv3';
 const PAGE_BG = MV3 ? 'background-sw' : 'background';
+const PAGE_OFFSCREEN = 'offscreen';
 const PAGES = [
   'edit',
   'install-usercss',
   'manage',
   'options',
   'popup',
-  ...MV3 ? ['offscreen'] : [PAGE_BG],
+  ...MV3 ? [PAGE_OFFSCREEN] : [PAGE_BG],
 ];
+const GET_CLIENT_DATA = 'get-client-data';
+const GET_CLIENT_DATA_TAG = {
+  toString: () => `<script src="${ASSETS}${GET_CLIENT_DATA}.js"></script>`,
+};
 const LIB_EXPORT_DEFAULT = {output: {library: {export: 'default'}}};
 const RESOLVE_VIA_SHIM = {
   modules: [
@@ -103,6 +106,7 @@ const CFG = {
   optimization: {
     concatenateModules: true, // makes DEV code run faster
     runtimeChunk: false,
+    mangleExports: false,
     usedExports: true,
     minimizer: DEV ? [] : [
       new TerserPlugin({
@@ -250,24 +254,24 @@ module.exports = [
     },
     optimization: {
       splitChunks: {
-        chunks: /^(?!.*[/\\]shim)/,
-        cacheGroups: {
-          codemirror: {
-            test: new RegExp(String.raw`(${anyPathSep([
-              SRC + 'cm/',
-              String.raw`codemirror(/|-(?!factory))`,
-            ].join('|'))}).+\.js$`),
-            name: 'codemirror',
-          },
-          ...Object.fromEntries([
-            [2, 'common-ui', `^${SRC}(content/|js/(dom|localization|themer))`],
-            [1, 'common', `^${SRC}js/|/lz-string(-unsafe)?/`],
-          ].map(([priority, name, test]) => [name, {
-            test: new RegExp(String.raw`(${anyPathSep(test)})[^./\\]*\.js$`),
-            name,
-            priority,
-          }])),
-        },
+        chunks: 'all',
+        // cacheGroups: {
+        //   codemirror: {
+        //     test: new RegExp(String.raw`(${anyPathSep([
+        //       SRC + 'cm/',
+        //       String.raw`codemirror(/|-(?!factory))`,
+        //     ].join('|'))}).+\.js$`),
+        //     name: 'codemirror',
+        //   },
+        //   ...Object.fromEntries([
+        //     [2, 'common-ui', `^${SRC}(content/|js/(dom|localization|themer))`],
+        //     [1, 'common', `^${SRC}js/|/lz-string(-unsafe)?/`],
+        //   ].map(([priority, name, test]) => [name, {
+        //     test: new RegExp(String.raw`(${anyPathSep(test)})[^./\\]*\.js$`),
+        //     name,
+        //     priority,
+        //   }])),
+        // },
       },
     },
     plugins: [
@@ -292,7 +296,7 @@ module.exports = [
           const {bodyTags, headTags} = tags;
           // The main entry goes into BODY to improve performance (2x in manage.html)
           headTags.push(...bodyTags.splice(0, bodyTags.length - 1));
-          if (MV3) headTags.unshift({toString: () => '<script src="?clientData"></script>'});
+          if (MV3 && p !== PAGE_OFFSCREEN) headTags.unshift(GET_CLIENT_DATA_TAG);
           return {
             compilation: compilation,
             webpackConfig: compilation.options,
@@ -337,11 +341,12 @@ module.exports = [
     ],
     resolve: RESOLVE_VIA_SHIM,
   }),
+  MV3 && mergeCfg({
+    entry: '/js/' + GET_CLIENT_DATA,
+    output: {path: DST + ASSETS},
+  }),
   makeContentScript('apply.js'),
-  makeLibrary([
-    '/background/background-worker.js',
-    '/edit/editor-worker.js',
-  ]),
+  makeLibrary('/js/worker.js'),
   makeLibrary('/js/color/color-converter.js', 'colorConverter'),
   makeLibrary('/js/csslint/csslint.js', 'CSSLint',
     {...LIB_EXPORT_DEFAULT, externals: {'./parserlib': 'parserlib'}}),

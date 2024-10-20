@@ -33,7 +33,7 @@ export default async function initContextMenus() {
       title: 'editDeleteText',
       type: 'normal',
       contexts: ['editable'],
-      documentUrlPatterns: [URLS.ownOrigin + '*'],
+      documentUrlPatterns: [URLS.ownRoot + '*'],
       click: (info, tab) => {
         sendTab(tab.id, {method: 'editDeleteText'}, undefined, 'extension');
       },

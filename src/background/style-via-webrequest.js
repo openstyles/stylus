@@ -58,7 +58,7 @@ function toggle() {
   }
   if (CHROME && !process.env.MV3) {
     chrome.webRequest.onBeforeRequest.addListener(openNamedStyle, {
-      urls: [URLS.ownOrigin + '*.user.css'],
+      urls: [URLS.ownRoot + '*.user.css'],
       types: ['main_frame'],
     }, ['blocking']);
   }
@@ -70,7 +70,7 @@ function toggle() {
 /** @param {chrome.webRequest.WebRequestBodyDetails} req */
 function prepareStyles(req) {
   if (!self.msg) return;
-  if (req.url.startsWith(URLS.ownOrigin)) return preloadPopupData();
+  if (req.url.startsWith(URLS.ownRoot)) return preloadPopupData();
   const {url} = req;
   req.tab = {url};
   stylesToPass[req2key(req)] = /** @namespace StylesToPass */ {

@@ -1,5 +1,5 @@
 import {createParser, ParseError} from 'usercss-meta';
-/* global importScripts */
+import {importScriptsOnce} from '/js/worker-util';
 
 const PREPROCESSORS = new Set(['default', 'uso', 'stylus', 'less']);
 const options = {
@@ -24,7 +24,7 @@ const options = {
       }
     },
     color: state => {
-      importScripts('color-converter.js'); /* global colorConverter */
+      importScriptsOnce('color-converter.js'); /* global colorConverter */
       const color = colorConverter.parse(state.value);
       if (!color) {
         throw new ParseError({

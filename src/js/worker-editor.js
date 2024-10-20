@@ -1,19 +1,19 @@
-import {createWorkerApi, importScripts} from '/js/worker-util';
+import {importScriptsOnce, workerApi} from './worker-util';
 
 let sugarss = null;
 
 /** @namespace EditorWorker */
-createWorkerApi({
+Object.assign(workerApi, {
 
   async csslint(code, config) {
-    importScripts('parserlib.js', 'csslint.js'); /* global CSSLint */
+    importScriptsOnce('parserlib.js', 'csslint.js'); /* global CSSLint */
     return CSSLint
       .verify(code, config).messages
       .map(m => Object.assign(m, {rule: {id: m.rule.id}}));
   },
 
   getCssPropsValues() {
-    importScripts('parserlib.js'); /* global parserlib */
+    importScriptsOnce('parserlib.js'); /* global parserlib */
     const {
       css: {GlobalKeywords, NamedColors, Parser: {AT}, Properties},
       util: {describeProp},
@@ -58,7 +58,7 @@ createWorkerApi({
   },
 
   metalint(code) {
-    importScripts('meta-parser.js'); /* global metaParser */
+    importScriptsOnce('meta-parser.js'); /* global metaParser */
     const result = metaParser.lint(code);
     // extract needed info
     result.errors = result.errors.map(err => ({
@@ -71,7 +71,7 @@ createWorkerApi({
   },
 
   async stylelint(opts) {
-    importScripts('stylelint.js'); /* global stylelint */
+    importScriptsOnce('stylelint.js'); /* global stylelint */
     // Stylus-lang allows a trailing ";" but sugarss doesn't, so we monkeypatch it
     stylelint.SugarSSParser.prototype.checkSemicolon = ovrCheckSemicolon;
     for (const r in opts.config.rules) {
@@ -99,7 +99,7 @@ createWorkerApi({
 const ruleRetriever = {
 
   csslint() {
-    importScripts('csslint.js');
+    importScriptsOnce('csslint.js');
     return CSSLint.getRuleList().map(rule => {
       const output = {};
       for (const [key, value] of Object.entries(rule)) {
@@ -112,7 +112,7 @@ const ruleRetriever = {
   },
 
   stylelint() {
-    importScripts('stylelint.js');
+    importScriptsOnce('stylelint.js');
     const options = {};
     const rxPossible = /\bpossible:("[^"]*?"|\[[^\]]*?]|\{[^}]*?})/g;
     const rxString = /"([-\w\s]{3,}?)"/g;

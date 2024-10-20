@@ -90,7 +90,7 @@ async function loadFromUrl(tabId, url) {
 }
 
 function makeInstallerUrl(url) {
-  return `${URLS.ownOrigin}${URLS.installUsercss}?updateUrl=${encodeURIComponent(url)}`;
+  return `${URLS.ownRoot}${URLS.installUsercss}?updateUrl=${encodeURIComponent(url)}`;
 }
 
 function reduceUsercssGlobs(res, host) {

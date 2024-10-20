@@ -106,7 +106,7 @@ async function update() {
     const full = [];
     const partial = [];
     for (const [url, match] of urls.entries()) {
-      const faviconUrl = url.startsWith(URLS.ownOrigin)
+      const faviconUrl = url.startsWith(URLS.ownRoot)
         ? MF_ICON
         : URLS.favicon(new URL(url).hostname);
       const icon = $create('img', {src: faviconUrl});

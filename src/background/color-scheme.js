@@ -1,25 +1,31 @@
-import {debounce} from '/js/toolbox';
 import * as prefs from '/js/prefs';
+import {debounce, isCssDarkScheme} from '/js/toolbox';
 
 const changeListeners = new Set();
 const kSTATE = 'schemeSwitcher.enabled';
 const kSTART = 'schemeSwitcher.nightStart';
 const kEND = 'schemeSwitcher.nightEnd';
-export const SCHEMES = ['dark', 'light'];
+const kDark = 'dark';
+const kLight = 'light';
+const kNever = 'never';
+const kSystem = 'system';
+const kTime = 'time';
 const mode = {
-  never: null,
-  dark: true,
-  light: false,
-  system: false,
-  time: false,
+  [kNever]: null,
+  [kDark]: true,
+  [kLight]: false,
+  [kSystem]: false,
+  [kTime]: false,
 };
+export const SCHEMES = [kDark, kLight];
+/** @type {(val: !boolean) => void} */
+export const setSystemDark = update.bind(null, kSystem);
 let isDarkNow = false;
-// matchMedia's onchange doesn't work in bg context, so we use it in our content script
 if (!process.env.MV3) {
-  update('system', matchMedia('(prefers-color-scheme:dark)').matches);
+  setSystemDark(isCssDarkScheme());
 }
 prefs.subscribe(kSTATE, (_, val) => {
-  if (val === 'time') {
+  if (val === kTime) {
     prefs.subscribe([kSTART, kEND], onNightChanged, true);
     chrome.alarms.onAlarm.addListener(onAlarm);
   } else if (chrome.alarms.onAlarm.hasListener(onAlarm)) {
@@ -42,13 +48,9 @@ export function isDark() {
 
 /** @param {StyleObj} _ */
 export function shouldIncludeStyle({preferScheme: ps}) {
-  return prefs.get(kSTATE) === 'never' ||
+  return prefs.get(kSTATE) === kNever ||
     !SCHEMES.includes(ps) ||
-    isDarkNow === (ps === 'dark');
-}
-
-export function setSystem(val) {
-  update('system', val);
+    isDarkNow === (ps === kDark);
 }
 
 function calcTime(key) {
@@ -90,7 +92,7 @@ function updateTimePreferDark() {
   const val = start > end ?
     now >= start || now < end :
     now >= start && now < end;
-  update('time', val);
+  update(kTime, val);
 }
 
 function update(type, val) {

@@ -11,7 +11,7 @@ export default async function popupGetStyles() {
     tab = await API.waitForTabUrl(tab.id);
   }
   let url = tab.pendingUrl || tab.url || ''; // new Chrome uses pendingUrl while connecting
-  const isOwn = url.startsWith(URLS.ownOrigin);
+  const isOwn = url.startsWith(URLS.ownRoot);
   const [ping0, frames] = await Promise.all([
     isOwn
       || msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0}),

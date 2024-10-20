@@ -80,7 +80,7 @@ class MatchQuery {
     return this._set('domain', tryURL(this.url).hostname);
   }
   get isOwnPage() {
-    return this._set('isOwnPage', this.url.startsWith(URLS.ownOrigin));
+    return this._set('isOwnPage', this.url.startsWith(URLS.ownRoot));
   }
   _set(name, value) {
     Object.defineProperty(this, name, {value});

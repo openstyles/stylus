@@ -2,9 +2,10 @@ import './intro';
 import browser from '/js/browser';
 import * as msg from '/js/msg';
 import {API, onMessage} from '/js/msg';
+import {createPortProxy} from '/js/port';
 import * as prefs from '/js/prefs';
 import {FIREFOX, ignoreChromeError, MOBILE, WINDOWS} from '/js/toolbox';
-import createWorker from '/js/worker-host';
+import {workerPath} from '/js/urls';
 import {broadcast} from './broadcast';
 import './broadcast-injector-config';
 import initBrowserCommandsApi from './browser-cmd-hotkeys';
@@ -51,7 +52,7 @@ Object.assign(API, /** @namespace API */ {
     }),
     set(info) {
       let v;
-      if ((v = info.preferDark) != null) colorScheme.setSystem(v);
+      if ((v = info.preferDark) != null) colorScheme.setSystemDark(v);
     },
   },
 
@@ -76,7 +77,7 @@ Object.assign(API, /** @namespace API */ {
   uso: usoApi,
   usw: uswApi,
   /** @type {BackgroundWorker} */
-  worker: createWorker('background-worker'),
+  worker: !process.env.MV3 && createPortProxy(workerPath),
 
   //#endregion
 }, FIREFOX && initStyleViaApi());

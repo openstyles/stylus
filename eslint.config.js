@@ -324,7 +324,7 @@ module.exports = [
   },
   //#region Workers
   {
-    files: ['src/**/*worker.js'],
+    files: ['src/**/*worker*.js'],
     languageOptions: {
       globals: {
         ...globals.worker,

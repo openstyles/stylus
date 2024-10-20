@@ -1,8 +1,8 @@
 /** Don't use this file in content script context! */
 import browser from './browser';
 import {apiHandler, apiSendProxy, isBg, unwrap} from './msg-base';
-import createPort from './port';
-import {deepCopy, getOwnTab} from './toolbox';
+import {createPortExec, createPortProxy} from './port';
+import {deepCopy, getOwnTab, URLS} from './toolbox';
 
 export * from './msg-base';
 
@@ -10,11 +10,18 @@ const needsTab = [
   'updateIconBadge',
   'styleViaAPI',
 ];
-export let bg = isBg ? self : !process.env.MV3 && chrome.extension.getBackgroundPage();
 /** @type {MessagePort} */
-let swExec;
+const swExec = process.env.MV3 &&
+  createPortExec(() => navigator.serviceWorker.controller, `/${process.env.PAGE_BG}.js`);
+const workerApiPrefix = 'worker.';
+export let bg = isBg ? self : !process.env.MV3 && chrome.extension.getBackgroundPage();
+let bgWorkerProxy;
 
 async function invokeAPI({name: path}, _thisObj, args) {
+  if (path.startsWith(workerApiPrefix)) {
+    bgWorkerProxy ??= createPortProxy(URLS.workerPath);
+    return bgWorkerProxy[path.slice(workerApiPrefix.length)](...args);
+  }
   let tab = false;
   // Using a fake id for our Options frame as we want to fetch styles early
   const frameId = window === top ? 0 : 1;
@@ -22,7 +29,6 @@ async function invokeAPI({name: path}, _thisObj, args) {
     const msg = {method: 'invokeAPI', path, args};
     const sender = {url: location.href, tab, frameId};
     if (process.env.MV3) {
-      if (!swExec) swExec = createPort(() => navigator.serviceWorker.controller);
       return swExec(msg, sender);
     } else {
       const res = bg.msg._execute('extension', bg.deepCopy(msg), bg.deepCopy(sender));
@@ -41,7 +47,7 @@ if (process.env.MV3) {
   }
 } else if (!isBg) {
   apiHandler.apply = async (fn, thisObj, args) => {
-    if (bg === null) bg = await browser.runtime.getBackgroundPage().catch(() => {}) || false;
+    bg ??= await browser.runtime.getBackgroundPage().catch(() => {}) || false;
     const exec = bg && (bg.msg || await bg.allReady)
       ? invokeAPI
       : apiSendProxy;

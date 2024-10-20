@@ -409,7 +409,7 @@ export default function SectionsEditor() {
       lockPageUI(true);
       try {
         const code = popup.codebox.getValue().trim();
-        if (!RX_META.test(code) ||
+        if (!code.match(RX_META)?.[0].includes('@preprocessor') ||
             !await getPreprocessor(code) ||
             await messageBox.confirm(
               t('importPreprocessor'), 'pre-line',

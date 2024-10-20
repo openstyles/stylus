@@ -1,5 +1,5 @@
 import {styleCodeEmpty} from '/js/sections-util';
-/* global importScripts */
+import {importScriptsOnce} from '/js/worker-util';
 
 let builderChain = Promise.resolve();
 
@@ -20,7 +20,7 @@ const BUILDERS = Object.assign(Object.create(null), {
 
   stylus: {
     pre(source, vars) {
-      importScripts('stylus-lang.js'); /* global StylusRenderer */
+      importScriptsOnce('stylus-lang.js'); /* global StylusRenderer */
       return new Promise((resolve, reject) => {
         const varDef = Object.keys(vars).map(key => `${key} = ${vars[key].value};\n`).join('');
         new StylusRenderer(varDef + source)
@@ -40,7 +40,7 @@ const BUILDERS = Object.assign(Object.create(null), {
           onReady: false,
         };
       }
-      importScripts('less.js'); /* global less */
+      importScriptsOnce('less.js'); /* global less */
       const varDefs = Object.keys(vars).map(key => `@${key}:${vars[key].value};\n`).join('');
       try {
         return (await less.render(varDefs + source, {math: 'parens-division'})).css;
@@ -52,7 +52,7 @@ const BUILDERS = Object.assign(Object.create(null), {
 
   uso: {
     pre(source, vars) {
-      importScripts('color-converter.js'); /* global colorConverter */
+      importScriptsOnce('color-converter.js'); /* global colorConverter */
       const pool = Object.create(null);
       return doReplace(source);
 
@@ -130,7 +130,7 @@ export default async function compileUsercss(preprocessor, code, vars) {
     });
     await builderChain;
   }
-  importScripts('moz-parser.js', 'parserlib.js'); /* global extractSections */
+  importScriptsOnce('moz-parser.js', 'parserlib.js'); /* global extractSections */
   const res = extractSections({code});
   if (builder.post) {
     builder.post(res.sections, vars);
@@ -179,7 +179,7 @@ function spliceCssAfterGlobals(section, newText, after) {
   const {code} = section;
   const rx = /@import\s/gi;
   if ((rx.lastIndex = after, rx.test(code))) {
-    importScripts('parserlib.js'); /* global parserlib */
+    importScriptsOnce('parserlib.js'); /* global parserlib */
     const P = new parserlib.css.Parser({globalsOnly: true}); P.parse(code);
     const {col, line, offset} = P.stream.token || P.stream.peekCached();
     // normalizing newlines in non-usercss to match line:col from parserlib

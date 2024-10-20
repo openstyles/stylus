@@ -205,7 +205,7 @@ function createWriterElement(frame, index) {
   if (isAbout) {
     el = $create('span', url);
   } else {
-    el = (url.startsWith(URLS.ownOrigin) ? makeExtCrumbs : makeWebCrumbs)(crumbs, url);
+    el = (url.startsWith(URLS.ownRoot) ? makeExtCrumbs : makeWebCrumbs)(crumbs, url);
     el.onmouseenter = el.onmouseleave = el.onfocus = el.onblur = Events.toggleUrlLink;
     if (!index) Object.assign($('#write-style-for'), {onclick: el.click.bind(el), title: el.title});
   }
@@ -222,7 +222,7 @@ function createWriterElement(frame, index) {
 function makeExtCrumbs(crumbs, url) {
   const key = 'regexp';
   const all = '^\\w+-extension://';
-  const page = url.slice(URLS.ownOrigin.length, url.indexOf('.html'));
+  const page = url.slice(URLS.ownRoot.length, url.indexOf('.html'));
   crumbs.push(makeCrumb(key, all + '.+', EXT_NAME, EXT_NAME, true));
   return makeCrumb(key, `${all}[^/]+/${stringAsRegExpStr(page)}.*`, EXT_NAME, page + '.*');
 }

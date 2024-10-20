@@ -1,19 +1,20 @@
-// WARNING! ../background must be the first to set global.API
-import '../background';
-import {_execute} from '/js/msg';
-import {URLS} from '/js/toolbox';
+// WARNING! /background must be the first to set global.API
+import '/background';
+import {API, _execute} from '/js/msg';
+import {createPortProxy, initRemotePort} from '/js/port';
+import {workerPath, ownRoot} from '/js/urls';
 import './keep-alive';
-import './bg-offscreen';
+import offscreen from './offscreen';
 import setClientData from './set-client-data';
 
 /** @param {ExtendableEvent} evt */
 self.oninstall = evt => {
   evt.addRoutes({
-    condition: {urlPattern: `${URLS.ownOrigin}*.html?clientData`},
+    condition: {urlPattern: `${ownRoot}*.html?clientData*`},
     source: 'fetch-event',
   });
   evt.addRoutes({
-    condition: {not: {urlPattern: `${URLS.ownOrigin}*.user.css`, requestDestination: 'document'}},
+    condition: {not: {urlPattern: `${ownRoot}*.user.css`, requestDestination: 'document'}},
     source: 'network',
   });
 };
@@ -21,37 +22,23 @@ self.oninstall = evt => {
 /** @param {FetchEvent} evt */
 self.onfetch = evt => {
   const url = evt.request.url;
-  if (!url.startsWith(URLS.ownOrigin)) {
+  if (!url.startsWith(ownRoot)) {
     return; // shouldn't happen but addRoutes may be bugged
   }
   if (url.includes('?clientData')) {
-    evt.respondWith(setClientData(url.split(/[/?.]/)[3], evt.clientId || evt.resultingClientId));
+    evt.respondWith(setClientData(evt, new URL(url)));
   } else if (/\.user.css#\d+$/.test(url)) {
     evt.respondWith(Response.redirect('edit.html'));
   }
 };
 
-self.onmessage = evt => {
-  if (evt.data[0] === 'port') {
-    chrome.runtime.connect({name: evt.data[1]});
-    evt.ports[0].onmessage = onClientPortMessage;
-    evt.ports[0].postMessage({id: 0});
-  }
-};
-
-/**
- * @this {MessagePort}
- * @param {MessageEvent} evt
- */
-async function onClientPortMessage(evt) {
-  const {args, id} = evt.data;
-  let res, err;
-  try {
-    res = _execute('extension', ...args, {});
-    if (res instanceof Promise) res = await res;
-  } catch (e) {
-    err = e;
-    res = undefined;
-  }
-  this.postMessage({id, res, err});
+{ // API
+  const exec = _execute.bind(null, 'extension');
+  self.onmessage = evt => {
+    if (evt.data?.[0] === 'port') {
+      initRemotePort(evt, exec);
+    }
+  };
 }
+
+API.worker = createPortProxy(() => offscreen.getWorkerPort(workerPath), workerPath);
