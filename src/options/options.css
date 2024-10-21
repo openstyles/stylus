@@ -204,6 +204,7 @@ a.icon {
 .sync-status {
   padding-left: 1em;
   box-sizing: border-box;
+  overflow-wrap: break-word;
   &::first-letter {
     text-transform: uppercase;
   }

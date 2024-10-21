@@ -2,9 +2,9 @@ import {$, $$, $create, messageBox} from '/js/dom';
 import {t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
-import * as router from '/js/router';
 import {debounce} from '/js/toolbox';
 import {fitNameColumn, fitSizeColumn} from './render';
+import * as router from './router';
 import {updateStripes} from './sorter';
 import {installed} from './util';
 

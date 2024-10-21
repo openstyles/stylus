@@ -1,9 +1,11 @@
 import {createPortProxy} from '/js/port';
 import {ownRoot} from '/js/urls';
 
-const FILENAME = 'offscreen.html';
+const FILENAME = process.env.PAGE_OFFSCREEN + '.html';
 const DOC_URL = ownRoot + FILENAME;
-export default /** @type {OffscreenAPI} */ createPortProxy(getDoc, '/' + FILENAME);
+/** @type {OffscreenAPI | CommandsAPI} */
+const offscreen = createPortProxy(getDoc, {lock: '/' + FILENAME});
+export default offscreen;
 
 async function getDoc() {
   for (let retry; ; retry = true) {

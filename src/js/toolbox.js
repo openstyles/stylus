@@ -27,7 +27,7 @@ export const getActiveTab = async () =>
   (await browser.tabs.query({windowId: (await browserWindows.getCurrent()).id, active: true}))[0];
 export const ignoreChromeError = () => chrome.runtime.lastError;
 
-// TODO: remove when min_chrome_version > 112, strict_min_version > 112
+// TODO: remove when min_chrome_version >= 113, strict_min_version >= 112
 if (!process.env.MV3 && !hasOwn(URLSearchParams.prototype, 'size')) {
   Object.defineProperty(URLSearchParams.prototype, 'size', {
     get() { return [...this.keys()].length; },

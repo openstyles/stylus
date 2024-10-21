@@ -1,3 +1,4 @@
+import {kAppJson, kContentType} from '/js/consts';
 import {API} from '/js/msg';
 import {deepEqual, mapObj, RX_META, tryURL, UCD, URLS} from '/js/toolbox';
 import {broadcastExtension} from './broadcast';
@@ -89,7 +90,7 @@ export async function publish(id, code, usw) {
     if (!usw || !usw.token || !usw.id) usw = await linkStyle(style, code);
     const res = await uswFetch(`style/${usw.id}`, usw.token, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {[kContentType]: kAppJson},
       body: JSON.stringify({code}),
     });
     if (!deepEqual(usw, style._usw)) {

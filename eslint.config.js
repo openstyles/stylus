@@ -5,6 +5,7 @@ const globals = require('globals');
 const SHIMS = 'tools/shim/*.js';
 const SRC_GLOBALS = {
   ...globals.es2024,
+  __webpack_runtime_id__: false,
   chrome: false,
   browser: false,
   global: false,
@@ -32,7 +33,7 @@ module.exports = [
       'arrow-spacing': [2, {before: true, after: true}],
       'block-scoped-var': [2],
       'brace-style': [2, '1tbs', {allowSingleLine: true}],
-      'camelcase': [2, {properties: 'never'}],
+      'camelcase': [2, {properties: 'never', ignoreGlobals: true}],
       'class-methods-use-this': [2],
       'comma-dangle': [2, {
         arrays: 'always-multiline',

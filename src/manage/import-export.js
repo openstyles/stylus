@@ -1,3 +1,4 @@
+import {kAppJson} from '/js/consts';
 import {$, $$, $create, animateElement, messageBox, scrollElementIntoView} from '/js/dom';
 import {t} from '/js/localization';
 import {API} from '/js/msg';
@@ -60,7 +61,7 @@ async function importFromFile(file) {
     } else {
       el.style.display = 'none';
       el.type = 'file';
-      el.accept = 'application/json' + (MOBILE ? ',text/plain'/*for GDrive-like apps*/ : '');
+      el.accept = kAppJson + (MOBILE ? ',text/plain'/*for GDrive-like apps*/ : '');
       el.acceptCharset = 'utf-8';
       document.body.appendChild(el);
       el.initialValue = el.value;
@@ -362,7 +363,7 @@ async function exportToFile(e) {
     ...(await API.styles.getAll()).map(cleanupStyle),
   ];
   const text = JSON.stringify(data, null, '  ');
-  const type = 'application/json';
+  const type = kAppJson;
   $create('a', {
     href: URL.createObjectURL(new Blob([text], {type})),
     download: generateFileName(),

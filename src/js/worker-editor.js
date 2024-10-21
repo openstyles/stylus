@@ -1,9 +1,10 @@
-import {importScriptsOnce, workerApi} from './worker-util';
+import {COMMANDS} from '/js/port';
+import {importScriptsOnce} from './worker-util';
 
 let sugarss = null;
 
 /** @namespace EditorWorker */
-Object.assign(workerApi, {
+Object.assign(COMMANDS, {
 
   async csslint(code, config) {
     importScriptsOnce('parserlib.js', 'csslint.js'); /* global CSSLint */

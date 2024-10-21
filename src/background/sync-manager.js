@@ -1,29 +1,33 @@
 import browser from '/js/browser';
 import * as prefs from '/js/prefs';
 import {chromeLocal, chromeSync} from '/js/storage-util';
+import {fetchWebDAV, hasOwn} from '/js/util-base';
 import {broadcastExtension} from './broadcast';
-import {bgReady, uuidIndex} from './common';
+import {uuidIndex} from './common';
 import db from './db';
+import {cloudDrive, dbToCloud} from './db-to-cloud-broker';
 import {overrideBadge} from './icon-manager';
 import * as styleMan from './style-manager';
+import * as STATES from './sync-manager-states';
 import {getToken, revokeToken} from './token-manager';
-import * as dbToCloud from 'db-to-cloud';
+
+export {getToken};
 
 //#region Init
 
-const SYNC_DELAY = 1; // minutes
-const SYNC_INTERVAL = 30; // minutes
-const STATES = Object.freeze({
-  connected: 'connected',
-  connecting: 'connecting',
-  disconnected: 'disconnected',
-  disconnecting: 'disconnecting',
-});
+const ALARM_ID = 'syncNow';
+const PREF_ID = 'sync.enabled';
+/** (minutes) to give the browser some time at startup to open the active tab etc. */
+const SYNC_INIT_DELAY = 10 / 60;
+/** (minutes) to debounce syncing after an item is uploaded/deleted. */
+const SYNC_DELAY = 1;
+/** (minutes) between regular sync jobs, also acts as an upper limit for SYNC_DELAY debouncing. */
+const SYNC_INTERVAL = 30;
 const STORAGE_KEY = 'sync/state/';
 const NO_LOGIN = ['webdav'];
 const status = /** @namespace SyncManager.Status */ {
   STATES,
-  state: STATES.disconnected,
+  state: STATES.pending,
   syncing: false,
   progress: null,
   currentDriveName: null,
@@ -33,41 +37,37 @@ const status = /** @namespace SyncManager.Status */ {
 const compareRevision = (rev1, rev2) => rev1 - rev2;
 let lastError = null;
 let ctrl;
-let currentDrive;
-/** @type {Promise|boolean} will be `true` to avoid wasting a microtask tick on each `await` */
-let ready = bgReady.styles.then(() => {
-  ready = true;
-  prefs.subscribe('sync.enabled',
-    (_, val) => val === 'none'
-      ? stop()
-      : start(val, true),
-    true);
-});
+let curDrive;
+let curDriveName;
+let delayedInit;
+let resolveOnSync;
+let scheduling;
+let syncingNow;
 
-chrome.alarms.onAlarm.addListener(async ({name}) => {
-  if (name === 'syncNow') {
-    await syncNow();
-  }
+chrome.alarms.onAlarm.addListener(a => {
+  if (a.name === ALARM_ID) process.env.KEEP_ALIVE(syncNow());
 });
+prefs.subscribe(PREF_ID, schedule, true);
 
 //#endregion
 //#region Exports
 
 export async function remove(...args) {
-  if (ready.then) await ready;
-  if (!currentDrive) return;
+  if (delayedInit) await start();
+  if (!curDrive) return;
   schedule();
   return ctrl.delete(...args);
 }
 
 /** @returns {Promise<SyncManager.Status>} */
 export function getStatus() {
+  if (delayedInit) start(); // not awaiting (could be slow), we'll broadcast the updates
   return status;
 }
 
 export async function login(name) {
-  if (ready.then) await ready;
-  if (!name) name = prefs.get('sync.enabled');
+  if (delayedInit) await start();
+  if (!name) name = curDriveName;
   await revokeToken(name);
   try {
     await getToken(name, true);
@@ -81,8 +81,8 @@ export async function login(name) {
 }
 
 export async function putDoc({_id, _rev}) {
-  if (ready.then) await ready;
-  if (!currentDrive) return;
+  if (delayedInit) await start();
+  if (!curDrive) return;
   schedule();
   return ctrl.put(_id, _rev);
 }
@@ -97,55 +97,54 @@ export async function getDriveOptions(driveName) {
   return await chromeSync.getValue(key) || {};
 }
 
-export async function start(name, fromPref = false) {
-  if (ready.then) await ready;
-  if (!ctrl) await initController();
-  else if (ctrl.then) await ctrl;
-
-  if (currentDrive) return;
-  currentDrive = await getDrive(name);
-  ctrl.use(currentDrive);
-
+export async function start(name = delayedInit) {
+  const isInit = name && name === delayedInit;
+  const isStop = status.state === STATES.disconnecting;
+  delayedInit = false;
+  if ((ctrl ??= initController()).then) ctrl = await ctrl;
+  if (curDrive) return;
+  curDriveName = name;
+  curDrive = getDrive(name); // preventing re-entry by assigning synchronously
+  curDrive = await curDrive;
+  ctrl.use(curDrive);
   status.state = STATES.connecting;
-  status.currentDriveName = currentDrive.name;
+  status.currentDriveName = curDriveName;
   emitStatusChange();
-
-  if (fromPref || NO_LOGIN.includes(currentDrive.name)) {
+  if (isInit || NO_LOGIN.includes(curDriveName)) {
     status.login = true;
   } else {
     try {
       await login(name);
     } catch (err) {
       console.error(err);
-      status.errorMessage = err.message;
-      lastError = err;
+      setError(err);
       emitStatusChange();
       return stop();
     }
   }
-
   await ctrl.init();
-
+  if (isStop) return;
   await syncNow(name);
-  prefs.set('sync.enabled', name);
+  prefs.set(PREF_ID, name);
   status.state = STATES.connected;
-  schedule(SYNC_INTERVAL);
   emitStatusChange();
 }
 
 export async function stop() {
-  if (ready.then) await ready;
-  if (!currentDrive) return;
-  chrome.alarms.clear('syncNow');
+  if (delayedInit) {
+    status.state = STATES.disconnecting;
+    try { await start(); } catch {}
+  }
+  if (!curDrive) return;
   status.state = STATES.disconnecting;
   emitStatusChange();
   try {
     await ctrl.uninit();
-    await revokeToken(currentDrive.name);
-    await chromeLocal.remove(STORAGE_KEY + currentDrive.name);
+    await revokeToken(curDriveName);
+    await chromeLocal.remove(STORAGE_KEY + curDriveName);
   } catch {}
-  currentDrive = null;
-  prefs.set('sync.enabled', 'none');
+  curDrive = curDriveName = null;
+  prefs.set(PREF_ID, 'none');
   status.state = STATES.disconnected;
   status.currentDriveName = null;
   status.login = false;
@@ -153,31 +152,36 @@ export async function stop() {
 }
 
 export async function syncNow() {
-  if (ready.then) await ready;
-  if (!currentDrive || !status.login) {
+  if (syncingNow) return;
+  syncingNow = true;
+  if (delayedInit) await start();
+  if (!curDrive || !status.login) {
     console.warn('cannot sync when disconnected');
     return;
   }
   try {
     await ctrl.syncNow();
-    status.errorMessage = null;
-    lastError = null;
+    setError();
   } catch (err) {
     err.message = translateErrorMessage(err);
-    status.errorMessage = err.message;
-    lastError = err;
+    setError(err);
     if (isGrantError(err)) {
       status.login = false;
     }
   }
+  if (process.env.MV3 && resolveOnSync) {
+    resolveOnSync();
+    resolveOnSync = null;
+  }
+  syncingNow = false;
   emitStatusChange();
 }
 
 //#endregion
 //#region Utils
 
-async function initController() {
-  ctrl = await (ctrl = dbToCloud.dbToCloud({
+function initController() {
+  return dbToCloud({
     onGet: _id => styleMan.uuid2style(_id) || uuidIndex.custom[_id],
     async onPut(doc) {
       if (!doc) return; // TODO: delete it?
@@ -218,6 +222,7 @@ async function initController() {
       } else {
         status.progress = e;
       }
+      if (lastError) setError();
       emitStatusChange();
     },
     compareRevision,
@@ -230,7 +235,7 @@ async function initController() {
     retryMaxAttempts: 10,
     retryExp: 1.2,
     retryDelay: 6,
-  }));
+  });
 }
 
 function emitStatusChange() {
@@ -269,29 +274,43 @@ function getErrorBadge() {
 }
 
 async function getDrive(name) {
-  if (name === 'dropbox' || name === 'google' || name === 'onedrive' || name === 'webdav') {
-    const options = await getDriveOptions(name);
-    options.getAccessToken = () => getToken(name);
-    options.fetch = name === 'webdav' ? fetchWebDAV.bind(options) : fetch;
-    return dbToCloud.drive[name].default(options);
+  if (!hasOwn(cloudDrive, name)) throw new Error(`Unknown cloud provider: ${name}`);
+  const opts = await getDriveOptions(name);
+  const webdav = name === 'webdav';
+  if (!process.env.MV3 || !webdav) opts.getAccessToken = () => getToken(name);
+  if (!process.env.MV3 && webdav) opts.fetch = fetchWebDAV.bind(opts);
+  return cloudDrive[name](opts);
+}
+
+async function schedule(isInit, prefVal = curDriveName) {
+  if (scheduling) return;
+  scheduling = true;
+  /** @type {?chrome.alarms.Alarm} */
+  const alarm = isInit && await browser.alarms.get(ALARM_ID);
+  delayedInit = hasOwn(cloudDrive, prefVal) && prefVal;
+  if (!delayedInit) {
+    status.state = STATES.disconnected;
+    if (alarm) chrome.alarms.clear(ALARM_ID);
+    if (isInit) emitStatusChange();
+  } else if (!alarm
+    || Math.abs((alarm.periodInMinutes || 1e99) - SYNC_INTERVAL) > 1e-6
+    || ((alarm.scheduledTime - Date.now()) / 60e3 + SYNC_INTERVAL) % SYNC_INTERVAL >
+        (isInit ? SYNC_INTERVAL : SYNC_DELAY)
+  ) {
+    chrome.alarms.create(ALARM_ID, {
+      delayInMinutes: isInit ? SYNC_INIT_DELAY : SYNC_DELAY,
+      periodInMinutes: SYNC_INTERVAL,
+    });
+    if (process.env.MV3 && !resolveOnSync) {
+      process.env.KEEP_ALIVE(new Promise(cb => (resolveOnSync = cb)));
+    }
   }
-  throw new Error(`unknown cloud name: ${name}`);
+  scheduling = false;
 }
 
-/** @this {Object} DriveOptions */
-function fetchWebDAV(url, init = {}) {
-  init.credentials = 'omit'; // circumventing nextcloud CSRF token error
-  init.headers = Object.assign({}, init.headers, {
-    Authorization: `Basic ${btoa(`${this.username || ''}:${this.password || ''}`)}`,
-  });
-  return fetch(url, init);
-}
-
-function schedule(delay = SYNC_DELAY) {
-  chrome.alarms.create('syncNow', {
-    delayInMinutes: delay, // fractional values are supported
-    periodInMinutes: SYNC_INTERVAL,
-  });
+function setError(err) {
+  status.errorMessage = err?.message;
+  lastError = err;
 }
 
 function translateErrorMessage(err) {
@@ -299,7 +318,7 @@ function translateErrorMessage(err) {
     return browser.i18n.getMessage('syncErrorLock',
       new Date(err.expire).toLocaleString([], {timeStyle: 'short'}));
   }
-  return err.message || String(err);
+  return err.message || JSON.stringify(err);
 }
 
 //#endregion

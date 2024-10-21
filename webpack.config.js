@@ -9,12 +9,13 @@ const TerserPlugin = require('terser-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
-const {defineVars, stripSourceMap, MANIFEST, MANIFEST_MV3, ROOT} = require('./tools/util');
+const {anyPathSep, stripSourceMap, RawEnvPlugin, MANIFEST, MANIFEST_MV3, ROOT} =
+  require('./tools/util');
 const WebpackPatchBootstrapPlugin = require('./tools/webpack-patch-bootstrap');
 
 const [BUILD, FLAVOR] = process.env.NODE_ENV?.split('-') || [];
 const DEV = BUILD === 'DEV' || process.env.npm_lifecycle_event?.startsWith('watch');
-const FS_CACHE = true;
+const FS_CACHE = !DEV;
 const SRC = ROOT + 'src/';
 const DST = ROOT + 'dist/';
 const ASSETS = 'assets/';
@@ -36,6 +37,7 @@ const GET_CLIENT_DATA_TAG = {
   toString: () => `<script src="${ASSETS}${GET_CLIENT_DATA}.js"></script>`,
 };
 const LIB_EXPORT_DEFAULT = {output: {library: {export: 'default'}}};
+const NO_KEEP_ALIVE = {KEEP_ALIVE: ''};
 const RESOLVE_VIA_SHIM = {
   modules: [
     SHIM,
@@ -49,7 +51,7 @@ const THEME_NAMES = Object.fromEntries(fs.readdirSync(THEME_PATH)
   .map(f => (f = f.match(/([^/\\.]+)\.css$/i)?.[1]) && [f, ''])
   .filter(Boolean));
 
-const CFG = {
+const getBaseConfig = () => ({
   mode: DEV ? 'development' : 'production',
   devtool: DEV && 'inline-source-map',
   output: {
@@ -81,15 +83,12 @@ const CFG = {
           'postcss-loader',
         ],
       }, {
-        loader: 'babel-loader',
         test: /\.m?js$/,
-        options: {root: ROOT},
-        resolve: {fullySpecified: false},
-      }, {
-        loader: SHIM + 'null-loader.js',
-        test: [
-          require.resolve('db-to-cloud/lib/drive/fs-drive'),
+        use: [
+          RawEnvPlugin.loader,
+          {loader: 'babel-loader', options: {root: ROOT}},
         ],
+        resolve: {fullySpecified: false},
       }, {
         loader: SHIM + 'cjs-to-esm-loader.js',
         test: [
@@ -150,20 +149,24 @@ const CFG = {
     maxEntrypointSize: 1e6,
   },
   plugins: [
-    defineVars({
+    new RawEnvPlugin({
       ASSETS,
       ASSETS_CM,
+      DEBUG: !!process.env.DEBUG,
       DEV,
       JS,
       MV3,
       PAGE_BG,
+      PAGE_OFFSCREEN,
+    }, { // hiding `global` from IDE so it doesn't see the symbol as a global
+      API: 'global.API',
     }),
     new WebpackPatchBootstrapPlugin(),
   ],
   stats: {
     // optimizationBailout: true,
   },
-};
+});
 
 function mergeCfg(ovr, base) {
   if (!ovr) {
@@ -191,7 +194,7 @@ function mergeCfg(ovr, base) {
       );
     }
   }
-  base = {...base || CFG};
+  base = base ? {...base} : getBaseConfig();
   for (const k in ovr) {
     const o = ovr[k];
     const b = base[k];
@@ -231,7 +234,7 @@ function makeContentScript(name) {
       },
     },
     plugins: [
-      defineVars({PAGE: false}),
+      new RawEnvPlugin({ENTRY: false}, NO_KEEP_ALIVE),
       new webpack.BannerPlugin({
         banner: `if(${INJECTED}!==1){${INJECTED}=1;var global = this;`,
         raw: true,
@@ -247,7 +250,7 @@ function makeContentScript(name) {
 
 module.exports = [
   mergeCfg({
-    entry: Object.fromEntries(PAGES.map(p => [p, `/${p}/index`])),
+    entry: Object.fromEntries(PAGES.map(p => [p, `/${p}`])),
     output: {
       filename: ASSETS + '[name].js',
       chunkFilename: ASSETS + '[name].js',
@@ -255,30 +258,30 @@ module.exports = [
     optimization: {
       splitChunks: {
         chunks: 'all',
-        // cacheGroups: {
-        //   codemirror: {
-        //     test: new RegExp(String.raw`(${anyPathSep([
-        //       SRC + 'cm/',
-        //       String.raw`codemirror(/|-(?!factory))`,
-        //     ].join('|'))}).+\.js$`),
-        //     name: 'codemirror',
-        //   },
-        //   ...Object.fromEntries([
-        //     [2, 'common-ui', `^${SRC}(content/|js/(dom|localization|themer))`],
-        //     [1, 'common', `^${SRC}js/|/lz-string(-unsafe)?/`],
-        //   ].map(([priority, name, test]) => [name, {
-        //     test: new RegExp(String.raw`(${anyPathSep(test)})[^./\\]*\.js$`),
-        //     name,
-        //     priority,
-        //   }])),
-        // },
+        cacheGroups: {
+          codemirror: {
+            test: new RegExp(String.raw`(${anyPathSep([
+              SRC + 'cm/',
+              String.raw`codemirror(/|-(?!factory))`,
+            ].join('|'))}).+\.js$`),
+            name: 'codemirror',
+          },
+          ...Object.fromEntries([
+            [2, 'common-ui', `^${SRC}(content/|js/(dom|localization|themer))`],
+            [1, 'common', `^${SRC}js/|/lz-string(-unsafe)?/`],
+          ].map(([priority, name, test]) => [name, {
+            test: new RegExp(String.raw`(${anyPathSep(test)})[^./\\]*\.js$`),
+            name,
+            priority,
+          }])),
+        },
       },
     },
     plugins: [
-      defineVars({
-        PAGE: true,
+      new RawEnvPlugin({
+        ENTRY: true,
         THEMES: THEME_NAMES,
-      }),
+      }, NO_KEEP_ALIVE),
       new webpack.BannerPlugin({
         banner: 'var global = this;',
         test: /\.js$/,
@@ -330,23 +333,28 @@ module.exports = [
     ].filter(Boolean),
     resolve: RESOLVE_VIA_SHIM,
   }),
-  MV3 && mergeCfg({
-    entry: `/${PAGE_BG}`,
-    plugins: [
-      defineVars({PAGE: 'sw'}),
-      new webpack.BannerPlugin({
-        banner: `var global = self, window = global;`,
-        raw: true,
-      }),
-    ],
-    resolve: RESOLVE_VIA_SHIM,
-  }),
-  MV3 && mergeCfg({
-    entry: '/js/' + GET_CLIENT_DATA,
-    output: {path: DST + ASSETS},
-  }),
+  ...!MV3 ? [] : [
+    mergeCfg({
+      entry: `/${PAGE_BG}`,
+      plugins: [
+        new RawEnvPlugin({ENTRY: 'sw'}, {KEEP_ALIVE: 'global.keepAlive'}),
+        new webpack.BannerPlugin({
+          banner: `var global = self, window = global;`,
+          raw: true,
+        }),
+      ],
+      resolve: RESOLVE_VIA_SHIM,
+    }),
+    mergeCfg({
+      entry: '/js/' + GET_CLIENT_DATA,
+      output: {path: DST + ASSETS},
+    }),
+    makeLibrary('db-to-cloud/lib/drive/webdav', 'webdav', LIB_EXPORT_DEFAULT),
+  ],
   makeContentScript('apply.js'),
-  makeLibrary('/js/worker.js'),
+  makeLibrary('/js/worker.js', undefined, {
+    plugins: [new RawEnvPlugin({ENTRY: 'worker'}, NO_KEEP_ALIVE)],
+  }),
   makeLibrary('/js/color/color-converter.js', 'colorConverter'),
   makeLibrary('/js/csslint/csslint.js', 'CSSLint',
     {...LIB_EXPORT_DEFAULT, externals: {'./parserlib': 'parserlib'}}),

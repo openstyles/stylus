@@ -1,10 +1,10 @@
-import {worker} from '/edit/linter/store';
+import {kAppJson} from '/js/consts';
 import {$, $create, $createLink, messageBox} from '/js/dom';
 import {t} from '/js/localization';
 import {chromeSync, LZ_KEY} from '/js/storage-util';
 import {tryJSONparse} from '/js/toolbox';
 import editor from '../editor';
-import {helpPopup, showCodeMirrorPopup} from '../util';
+import {helpPopup, showCodeMirrorPopup, worker} from '../util';
 import {DEFAULTS} from './defaults';
 import {getIssues} from './reports';
 
@@ -59,7 +59,7 @@ export async function showLintConfig() {
     extraKeys: {'Ctrl-Enter': onConfigSave},
     hintOptions: {hint},
     lint: true,
-    mode: 'application/json',
+    mode: kAppJson,
     value: config ? stringifyConfig(config) : defaultConfig[linter],
   });
   popup._contents.appendChild(

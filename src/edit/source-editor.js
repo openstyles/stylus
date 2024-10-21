@@ -1,4 +1,3 @@
-import {worker} from '/edit/linter/store';
 import {$, $$remove, $create, $createLink, $isTextInput, messageBox} from '/js/dom';
 import {t} from '/js/localization';
 import {API} from '/js/msg';
@@ -12,6 +11,7 @@ import editor, {failRegexp} from './editor';
 import * as linterMan from './linter';
 import MozSectionFinder from './moz-section-finder';
 import MozSectionWidget from './moz-section-widget';
+import {worker} from './util';
 
 export default function SourceEditor() {
   const {style, /** @type DirtyReporter */dirty} = editor;

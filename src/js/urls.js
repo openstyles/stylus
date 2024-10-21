@@ -4,6 +4,7 @@ import {CHROME} from './ua';
 export const ownRoot = /*@__PURE__*/ chrome.runtime.getURL('');
 export const installUsercss = 'install-usercss.html';
 export const workerPath = '/js/worker.js';
+export const swPath = `/${process.env.PAGE_BG}.js`;
 export const favicon = host => `https://icons.duckduckgo.com/ip3/${host}.ico`;
 /** Chrome 61.0.3161+ doesn't run content scripts on NTP https://crrev.com/2978953002/ */
 export const chromeProtectsNTP = process.env.MV3 || CHROME >= 61;

@@ -13,7 +13,8 @@ import {capitalize} from '/js/toolbox';
   const elSyncNow = $('.sync-now', elSync);
   const elStatus = $('.sync-status', elSync);
   const elLogin = $('.sync-login', elSync);
-  const elDriveOptions = $$('.drive-options', template.body);
+  const elDriveOptions = $$('.drive-options', elSync);
+  const $$driveOptions = () => $$(`[data-drive=${elCloud.value}] [data-option]`, elSync);
   updateButtons();
   onExtension(e => {
     if (e.method === 'syncStatusUpdate') {
@@ -37,14 +38,14 @@ import {capitalize} from '/js/toolbox';
 
   function getDriveOptions() {
     const result = {};
-    for (const el of $$(`[data-drive=${elCloud.value}] [data-option]`)) {
+    for (const el of $$driveOptions()) {
       result[el.dataset.option] = el.value;
     }
     return result;
   }
 
   function setDriveOptions(options) {
-    for (const el of $$(`[data-drive=${elCloud.value}] [data-option]`)) {
+    for (const el of $$driveOptions()) {
       el.value = options[el.dataset.option] || '';
     }
   }
@@ -55,12 +56,12 @@ import {capitalize} from '/js/toolbox';
   }
 
   async function updateButtons() {
-    const {state, STATES} = status;
+    const state = status.state;
+    const STATES = status.STATES;
     const isConnected = state === STATES.connected;
     const off = state === STATES.disconnected;
-    if (status.currentDriveName) {
-      elCloud.value = status.currentDriveName;
-    }
+    const drv = status.currentDriveName;
+    if (drv) elCloud.value = drv;
     elCloud.disabled = !off;
     elToggle.disabled = status.syncing;
     elToggle.textContent = t(`optionsSync${off ? 'Connect' : 'Disconnect'}`);
@@ -73,9 +74,8 @@ import {capitalize} from '/js/toolbox';
       el.disabled = !off;
     }
     toggleDataset(elSync, 'enabled', elCloud.value !== 'none');
-    setDriveOptions(process.env.MV3
-      ? global.clientData.syncOpts
-      : await API.sync.getDriveOptions(elCloud.value));
+    setDriveOptions(process.env.MV3 && global.clientData.syncOpts
+      || await API.sync.getDriveOptions(elCloud.value));
   }
 
   function getStatusText() {

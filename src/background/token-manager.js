@@ -1,8 +1,9 @@
-import launchWebAuthFlow from 'webext-launch-web-auth-flow';
-import {browserWindows, clamp, FIREFOX, URLS} from '/js/toolbox';
+import {kAppUrlencoded, kContentType} from '/js/consts';
+import {DNR_ID_IDENTITY, updateDNR} from '/js/dnr';
 import {chromeLocal} from '/js/storage-util';
+import {browserWindows, clamp, FIREFOX, URLS} from '/js/toolbox';
 import {isVivaldi} from './common';
-import {waitForTabUrl} from './tab-util';
+import launchWebAuthFlow from 'webext-launch-web-auth-flow';
 
 const AUTH = {
   dropbox: {
@@ -139,10 +140,11 @@ async function refreshToken(name, k, obj) {
 async function authUser(keys, name, interactive = false, hooks = null) {
   const provider = AUTH[name];
   const state = Math.random().toFixed(8).slice(2);
+  const customRedirectUri = provider.redirect_uri;
   const query = {
     response_type: provider.flow,
     client_id: provider.clientId,
-    redirect_uri: provider.redirect_uri || DEFAULT_REDIRECT_URI,
+    redirect_uri: customRedirectUri || DEFAULT_REDIRECT_URI,
     state,
   };
   if (provider.scopes) {
@@ -151,29 +153,10 @@ async function authUser(keys, name, interactive = false, hooks = null) {
   if (provider.authQuery) {
     Object.assign(query, provider.authQuery);
   }
-  if (alwaysUseTab == null) {
-    alwaysUseTab = await detectVivaldiWebRequestBug();
-  }
-  if (hooks) hooks.query(query);
+  hooks?.query(query);
   const url = `${provider.authURL}?${new URLSearchParams(query)}`;
-  const width = clamp(screen.availWidth - 100, 400, 800);
-  const height = clamp(screen.availHeight - 100, 200, 800);
-  const wnd = !alwaysUseTab && await browserWindows.getLastFocused();
-  const finalUrl = await launchWebAuthFlow({
-    url,
-    alwaysUseTab,
-    interactive,
-    redirect_uri: query.redirect_uri,
-    windowOptions: wnd && Object.assign({
-      state: 'normal',
-      width,
-      height,
-    }, wnd.state !== 'minimized' && {
-      // Center the popup to the current window
-      top: Math.ceil(wnd.top + (wnd.height - width) / 2),
-      left: Math.ceil(wnd.left + (wnd.width - width) / 2),
-    }),
-  });
+  const finalUrl = await (process.env.MV3 ? authUserMV3 : authUserMV2)(url, interactive,
+    customRedirectUri);
   const params = new URLSearchParams(
     provider.flow === 'token' ?
       new URL(finalUrl).hash.slice(1) :
@@ -206,6 +189,54 @@ async function authUser(keys, name, interactive = false, hooks = null) {
   return handleTokenResult(result, keys);
 }
 
+async function authUserMV2(url, interactive, redirectUri) {
+  alwaysUseTab ??= await isVivaldi;
+  const width = clamp(screen.availWidth - 100, 400, 800);
+  const height = clamp(screen.availHeight - 100, 200, 800);
+  const wnd = !alwaysUseTab && await browserWindows.getLastFocused();
+  return launchWebAuthFlow({
+    url,
+    alwaysUseTab,
+    interactive,
+    redirect_uri: redirectUri || DEFAULT_REDIRECT_URI,
+    windowOptions: wnd && Object.assign({
+      state: 'normal',
+      width,
+      height,
+    }, wnd.state !== 'minimized' && {
+      // Center the popup to the current window
+      top: Math.ceil(wnd.top + (wnd.height - width) / 2),
+      left: Math.ceil(wnd.left + (wnd.width - width) / 2),
+    }),
+  });
+}
+
+async function authUserMV3(url, interactive, redirectUri) {
+  if (redirectUri) {
+    // FIXME: see if this works, otherwise use a content script to redirect to DEFAULT_REDIRECT_URI
+    await updateDNR([{
+      id: DNR_ID_IDENTITY,
+      condition: {
+        urlFilter: '|' + redirectUri,
+        resourceTypes: ['main_frame'],
+      },
+      action: {
+        type: 'redirect',
+        redirect: {
+          transform: {
+            host: DEFAULT_REDIRECT_URI.split('/')[2],
+          },
+        },
+      },
+    }]);
+  }
+  try {
+    return await chrome.identity.launchWebAuthFlow({interactive, url});
+  } finally {
+    if (redirectUri) await updateDNR(null, [DNR_ID_IDENTITY]);
+  }
+}
+
 async function handleTokenResult(result, k) {
   await chromeLocal.set({
     [k.TOKEN]: result.access_token,
@@ -220,9 +251,7 @@ async function handleTokenResult(result, k) {
 async function postQuery(url, body) {
   const options = {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
+    headers: {[kContentType]: kAppUrlencoded},
     body: body ? new URLSearchParams(body) : null,
   };
   const r = await fetch(url, options);
@@ -233,26 +262,4 @@ async function postQuery(url, body) {
   const err = new Error(`Failed to fetch (${r.status}): ${text}`);
   err.code = r.status;
   throw err;
-}
-
-async function detectVivaldiWebRequestBug() {
-  // Workaround for https://github.com/openstyles/stylus/issues/1182
-  if (!(isVivaldi.then ? await isVivaldi : isVivaldi)) {
-    return false;
-  }
-  let bugged = true;
-  const TEST_URL = chrome.runtime.getURL('manifest.json');
-  const check = ({url}) => {
-    bugged = url !== TEST_URL;
-  };
-  chrome.webRequest.onBeforeRequest.addListener(check, {urls: [TEST_URL], types: ['main_frame']});
-  const {tabs: [tab]} = await browserWindows.create({
-    type: 'popup',
-    state: 'minimized',
-    url: TEST_URL,
-  });
-  await waitForTabUrl(tab.id);
-  browserWindows.remove(tab.windowId);
-  chrome.webRequest.onBeforeRequest.removeListener(check);
-  return bugged;
 }

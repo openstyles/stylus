@@ -1,7 +1,8 @@
-import {importScriptsOnce, workerApi} from './worker-util';
+import {COMMANDS} from '/js/port';
+import {importScriptsOnce} from './worker-util';
 
 /** @namespace BackgroundWorker */
-Object.assign(workerApi, {
+Object.assign(COMMANDS, {
   /* global compileUsercss */
   compileUsercss: [() => compileUsercss, 'usercss-compiler.js'],
   /* global metaParser */
@@ -11,12 +12,12 @@ Object.assign(workerApi, {
   parseUsercssMeta: [() => metaParser.parse, 'meta-parser.js'],
 });
 
-for (const k in workerApi) {
-  if (Array.isArray(workerApi[k])) {
-    const [getFunc, ...files] = workerApi[k];
-    workerApi[k] = function () {
+for (const k in COMMANDS) {
+  if (Array.isArray(COMMANDS[k])) {
+    const [getFunc, ...files] = COMMANDS[k];
+    COMMANDS[k] = function () {
       importScriptsOnce(...files);
-      return (workerApi[k] = getFunc()).apply(this, arguments);
+      return (COMMANDS[k] = getFunc()).apply(this, arguments);
     };
   }
 }

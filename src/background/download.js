@@ -1,3 +1,4 @@
+import {kAppUrlencoded, kContentType} from '/js/consts';
 import {tryJSONparse, URLS} from '/js/toolbox';
 
 /** @type {Record<string, {req: Promise, ports: Set<chrome.runtime.Port>}>} */
@@ -63,9 +64,7 @@ async function doDownload(url, {
       } else if (method === 'GET' && url.length >= 2000 && url.startsWith(URLS.usoJson)) {
         url = collapseUsoVars(usoVars = [], url, i);
       }
-      headers ??= {
-        'Content-type': 'application/x-www-form-urlencoded',
-      };
+      headers ??= {[kContentType]: kAppUrlencoded};
     }
     /** @type {Response | XMLHttpRequest} */
     const resp = process.env.MV3
@@ -193,7 +192,7 @@ async function fetchWithProgress(resp, responseType, headers, jobKey) {
     }
   }
   if (responseType === 'blob') {
-    data = new Blob([data], {type: headers.get('Content-Type')});
+    data = new Blob([data], {type: headers.get(kContentType)});
   } else if (responseType === 'arraybuffer') {
     data = data.buffer;
   } else {

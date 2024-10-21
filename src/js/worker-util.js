@@ -1,5 +1,3 @@
-export const workerApi = {};
-
 const loadedUrls = [];
 
 export const importScriptsOnce = (...urls) => {

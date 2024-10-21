@@ -1,9 +1,9 @@
 // WARNING: make sure toolbox.js runs first and sets deepCopy
 import * as msg from '/js/msg-base';
-import {API, apiPortDisconnect} from '/js/msg-base';
+import {API, apiPortDisconnect} from '/js/msg-api';
 import * as styleInjector from './style-injector';
 
-let isTab = process.env.PAGE || location.pathname !== '/popup.html';
+let isTab = !process.env.ENTRY || __webpack_runtime_id__ !== 'popup';
 const own = /** @type {Injection} */{
   cfg: {off: false, top: ''},
 };
@@ -16,7 +16,7 @@ const isXml = document instanceof XMLDocument;
 const CHROME = 'app' in chrome;
 const SYM_ID = 'styles';
 const isUnstylable = !CHROME && isXml;
-const clone = process.env.PAGE
+const clone = process.env.ENTRY
   ? deepCopy /* global deepCopy */// will be used in extension context
   : val => typeof val === 'object' && val ? JSON.parse(JSON.stringify(val)) : val;
 const isFrame = window !== parent;
@@ -101,7 +101,7 @@ function onInjectorUpdate() {
 async function init() {
   if (isUnstylable) return API.styleViaAPI({method: 'styleApply'});
   let data;
-  if (process.env.MV3 && process.env.PAGE) {
+  if (process.env.MV3 && process.env.ENTRY) {
     data = global.clientData.apply;
   } else {
     data = isFrameNoUrl && CHROME && clone(parent[parent.Symbol.for(SYM_ID)]);

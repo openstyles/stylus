@@ -47,7 +47,7 @@ prefs.ready.then(() => {
   $.root.setAttribute('lang', chrome.i18n.getUILanguage());
   // set up header width resizer
   const HW = 'headerWidth.';
-  const HWprefId = HW + location.pathname.match(/^.(\w*)/)[1];
+  const HWprefId = HW + __webpack_runtime_id__;
   if (prefs.knownKeys.includes(HWprefId)) {
     Object.assign(dom, {
       HW,

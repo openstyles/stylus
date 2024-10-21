@@ -3,6 +3,7 @@ import browser from './browser';
 import {apiHandler, apiSendProxy, isBg, unwrap} from './msg-base';
 import {createPortExec, createPortProxy} from './port';
 import {deepCopy, getOwnTab, URLS} from './toolbox';
+import {swPath} from './urls';
 
 export * from './msg-base';
 
@@ -12,15 +13,17 @@ const needsTab = [
 ];
 /** @type {MessagePort} */
 const swExec = process.env.MV3 &&
-  createPortExec(() => navigator.serviceWorker.controller, `/${process.env.PAGE_BG}.js`);
+  createPortExec(() => navigator.serviceWorker.controller, {lock: swPath});
 const workerApiPrefix = 'worker.';
+let workerProxy;
 export let bg = isBg ? self : !process.env.MV3 && chrome.extension.getBackgroundPage();
-let bgWorkerProxy;
 
 async function invokeAPI({name: path}, _thisObj, args) {
+  // Non-cloneable event is passed when doing `elem.onclick = API.foo`
+  if (args[0] instanceof Event) args[0] = 'Event';
   if (path.startsWith(workerApiPrefix)) {
-    bgWorkerProxy ??= createPortProxy(URLS.workerPath);
-    return bgWorkerProxy[path.slice(workerApiPrefix.length)](...args);
+    workerProxy ??= createPortProxy(URLS.workerPath);
+    return workerProxy[path.slice(workerApiPrefix.length)](...args);
   }
   let tab = false;
   // Using a fake id for our Options frame as we want to fetch styles early
@@ -42,7 +45,7 @@ export function sendTab(tabId, data, options, target = 'tab') {
 }
 
 if (process.env.MV3) {
-  if (process.env.PAGE !== 'sw') {
+  if (process.env.ENTRY !== 'sw') {
     apiHandler.apply = invokeAPI;
   }
 } else if (!isBg) {

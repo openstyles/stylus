@@ -3,7 +3,7 @@ import {isVivaldi} from '/background/common';
 import prefsApi from '/background/prefs-api';
 import * as styleMan from '/background/style-manager';
 import * as syncMan from '/background/sync-manager';
-import {API} from '/js/msg-base';
+import {API} from '/js/msg-api';
 import * as prefs from '/js/prefs';
 import {FIREFOX} from '/js/ua';
 
@@ -54,5 +54,7 @@ export default async function setClientData(evt, reqUrl) {
 
   v = await Promise.all(Object.values(jobs));
   Object.keys(jobs).forEach((id, i) => (jobs[id] = v[i]));
-  return new Response(`var clientData = ${JSON.stringify(jobs)}`, NO_CACHE);
+  return new Response(`var clientData = new Proxy(${JSON.stringify(jobs)}, {get: ${(obj, k, _) => ((
+    (_ = obj[k]), delete obj[k], _
+  ))}})`, NO_CACHE);
 }

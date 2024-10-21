@@ -44,6 +44,7 @@
     "postcss-nested": "^6.2.0",
     "postcss-preset-env": "^9.3.0",
     "postcss-simple-vars": "^7.0.1",
+    "string-replace-loader": "^3.1.0",
     "svg2ttf": "^6.0.3",
     "svgicons2svgfont": "^12.0.0",
     "sync-version": "^1.0.1",

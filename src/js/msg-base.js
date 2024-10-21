@@ -1,5 +1,7 @@
-export const isBg = process.env.PAGE === 'sw'
-  || process.env.PAGE && location.pathname.startsWith(`/${process.env.PAGE_BG}`);
+import {apiPortDisconnect, bgReadySignal, port, rxIgnorableError, saveStack} from './msg-api';
+
+export * from './msg-api';
+
 const TARGETS = {
   __proto: null,
   all: ['both', 'tab', 'extension'],
@@ -11,27 +13,6 @@ const handler = {
   tab: new Set(),
   extension: new Set(),
 };
-const rxIgnorableError = /Receiving end does not exist|The message port closed|moved into back\/forward cache/;
-const saveStack = () => new Error(); // Saving callstack prior to `await`
-const portReqs = {};
-
-export const apiHandler = !isBg && {
-  get: ({name: path}, name) => new Proxy(
-    Object.defineProperty(() => {}, 'name', {value: path ? path + '.' + name : name}),
-    apiHandler),
-  apply: apiSendProxy,
-};
-/** @type {API} */
-export const API = isBg
-  ? global.API
-  : global.API = new Proxy({path: ''}, apiHandler);
-
-let bgReadySignal;
-let bgReadying = !process.env.MV3 && new Promise(fn => (bgReadySignal = fn));
-let msgId = 0;
-/** @type {chrome.runtime.Port} */
-let port;
-
 // TODO: maybe move into browser.js and hook addListener to wrap/unwrap automatically
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
@@ -68,42 +49,7 @@ export function _execute(target, ...args) {
       }
     }
   }
-  return result;
-}
-
-async function apiSend(data) {
-  const id = ++msgId;
-  const err = saveStack();
-  if (!port) {
-    port = chrome.runtime.connect({name: 'api'});
-    port.onMessage.addListener(apiPortResponse);
-    port.onDisconnect.addListener(apiPortDisconnect);
-  }
-  port.postMessage({id, data, TDM: self.TDM});
-  return new Promise((ok, ko) => (portReqs[id] = {ok, ko, err}));
-}
-
-export function apiSendProxy({name: path}, thisObj, args) {
-  return (bgReadying ? sendRetry : apiSend)({method: 'invokeAPI', path, args});
-}
-
-export function apiPortDisconnect() {
-  const error = chrome.runtime.lastError;
-  if (error) for (const id in portReqs) apiPortResponse({id, error});
-  port = null;
-}
-
-function apiPortResponse({id, data, error}) {
-  const req = portReqs[id];
-  delete portReqs[id];
-  if (error) {
-    const {err} = req;
-    err.message = error.message;
-    if (error.stack) err.stack = error.stack + '\n' + err.stack;
-    req.ko(error);
-  } else {
-    req.ok(data);
-  }
+  return process.env.KEEP_ALIVE(result);
 }
 
 export function onRuntimeMessage({data, target}, sender, sendResponse) {
@@ -145,17 +91,4 @@ export function wrapError(error) {
       stack: error.stack,
     }, error), // passing custom properties e.g. `error.index`
   };
-}
-
-async function sendRetry(m) {
-  try {
-    return await apiSend(m);
-  } catch (e) {
-    return bgReadying && rxIgnorableError.test(e.message)
-      ? await bgReadying && apiSend(m)
-      : Promise.reject(e);
-  } finally {
-    // Assuming bg is ready if messaging succeeded
-    bgReadying = bgReadySignal = null;
-  }
 }

@@ -1,10 +1,10 @@
 /** Registers 'hint' helper and 'autocompleteOnTyping' option in CodeMirror */
-import {worker} from '/edit/linter/store';
 import * as prefs from '/js/prefs';
 import {debounce, hasOwn, stringAsRegExpStr, tryRegExp, UCD} from '/js/toolbox';
 import CodeMirror from 'codemirror';
 import cmFactory from './codemirror-factory';
 import editor from './editor';
+import {worker} from './util';
 
 const USO_VAR = 'uso-variable';
 const USO_VALID_VAR = 'variable-3 ' + USO_VAR;

@@ -1,9 +1,9 @@
-import {worker} from '/edit/linter/store';
 import * as prefs from '/js/prefs';
 import {chromeSync, LZ_KEY} from '/js/storage-util';
 import {onStorageChanged} from '/js/toolbox';
 import * as linterMan from '.';
 import editor from '../editor';
+import {worker} from '../util';
 import {DEFAULTS} from './defaults';
 
 const configs = new Map();

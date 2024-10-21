@@ -1,8 +1,8 @@
 import {$, $create, animateElement} from '/js/dom';
 import {formatDate, formatRelativeDate, t} from '/js/localization';
-import * as router from '/js/router';
 import {debounce, UCD} from '/js/toolbox';
 import InjectionOrder from './injection-order';
+import * as router from './router';
 import UpdateHistory from './updater-ui';
 import {installed} from './util';
 import './events';
