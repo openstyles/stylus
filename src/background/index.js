@@ -47,7 +47,7 @@ Object.assign(API, /** @namespace API */ {
 
   info: {
     get: async () => ({
-      dark: colorScheme.isDark(),
+      dark: colorScheme.isDark,
       favicon: FIREFOX || (isVivaldi.then ? await isVivaldi : isVivaldi),
     }),
     set(info) {
@@ -98,7 +98,7 @@ Object.assign(browserCommands, {
 chrome.commands?.onCommand.addListener(id => browserCommands[id]());
 
 chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
-  if (!FIREFOX) {
+  if (process.env.BUILD !== 'firefox' && !FIREFOX) {
     reinjectContentScripts();
   }
   if (reason === 'install') {

@@ -32,3 +32,6 @@ const StorageExtras = {
 
 export const chromeLocal = Object.assign(browser.storage.local, StorageExtras);
 export const chromeSync = Object.assign(browser.storage.sync, StorageExtras);
+export const chromeSession = process.env.MV3
+  ? Object.assign(chrome.storage.session, StorageExtras)
+  : null;

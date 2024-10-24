@@ -1,7 +1,9 @@
 import * as prefs from '/js/prefs';
 import {debounce, isCssDarkScheme} from '/js/toolbox';
+import {sessionData} from './session-data';
 
 const changeListeners = new Set();
+const kSESSION = 'dark';
 const kSTATE = 'schemeSwitcher.enabled';
 const kSTART = 'schemeSwitcher.nightStart';
 const kEND = 'schemeSwitcher.nightEnd';
@@ -10,47 +12,48 @@ const kLight = 'light';
 const kNever = 'never';
 const kSystem = 'system';
 const kTime = 'time';
-const mode = {
-  [kNever]: null,
+const MAP = {
+  [kNever]: false,
   [kDark]: true,
   [kLight]: false,
   [kSystem]: false,
   [kTime]: false,
 };
+const MAP_KEYS = process.env.MV3 && Object.keys(MAP);
 export const SCHEMES = [kDark, kLight];
 /** @type {(val: !boolean) => void} */
 export const setSystemDark = update.bind(null, kSystem);
-let isDarkNow = false;
-if (!process.env.MV3) {
-  setSystemDark(isCssDarkScheme());
-}
-prefs.subscribe(kSTATE, (_, val) => {
+export let isDark = false;
+let prefState;
+
+chrome.alarms.onAlarm.addListener(onAlarm);
+
+prefs.subscribe(kSTATE, (_, val, firstRun) => {
+  prefState = val;
+  if (firstRun) {
+    if (process.env.MV3) readSessionData();
+    else setSystemDark(isCssDarkScheme());
+  }
   if (val === kTime) {
     prefs.subscribe([kSTART, kEND], onNightChanged, true);
-    chrome.alarms.onAlarm.addListener(onAlarm);
-  } else if (chrome.alarms.onAlarm.hasListener(onAlarm)) {
+  } else {
     prefs.unsubscribe([kSTART, kEND], onNightChanged);
-    chrome.alarms.onAlarm.removeListener(onAlarm);
     chrome.alarms.clear(kSTART);
     chrome.alarms.clear(kEND);
   }
-  update();
+  if (update() && process.env.MV3) writeSessionData();
 }, true);
 
 export function onChange(listener, runNow) {
   changeListeners.add(listener);
-  if (runNow) listener(isDarkNow);
-}
-
-export function isDark() {
-  return isDarkNow;
+  if (runNow) listener(isDark);
 }
 
 /** @param {StyleObj} _ */
 export function shouldIncludeStyle({preferScheme: ps}) {
-  return prefs.get(kSTATE) === kNever ||
-    !SCHEMES.includes(ps) ||
-    isDarkNow === (ps === kDark);
+  return prefState === kNever ||
+    ps !== kDark && ps !== kLight ||
+    isDark === (ps === kDark);
 }
 
 function calcTime(key) {
@@ -97,14 +100,28 @@ function updateTimePreferDark() {
 
 function update(type, val) {
   if (type) {
-    if (mode[type] === val) return;
-    mode[type] = val;
+    if (MAP[type] === val) return;
+    MAP[type] = val;
   }
-  val = mode[prefs.get(kSTATE)];
-  if (isDarkNow !== val) {
-    isDarkNow = val;
-    for (const listener of changeListeners) {
-      listener(isDarkNow);
-    }
+  val = MAP[prefState];
+  if (isDark !== val) {
+    isDark = val;
+    for (const fn of changeListeners) fn(isDark);
+    if (process.env.MV3) type = true;
   }
+  if (process.env.MV3) {
+    return type;
+  }
+}
+
+function readSessionData() {
+  let data = sessionData[kSESSION];
+  if (data != null) {
+    for (let i = MAP_KEYS.length; --i >= 0; data /= 10) MAP[MAP_KEYS[i]] = !!+(data % 10);
+    isDark = !!(data % 10);
+  }
+}
+
+function writeSessionData() {
+  sessionData[kSESSION] = +`${+isDark}${MAP_KEYS.map(k => +MAP[k]).join('')}`;
 }

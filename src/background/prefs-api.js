@@ -1,7 +1,8 @@
 import * as prefs from '/js/prefs';
 import {chromeSync} from '/js/storage-util';
-import {debounce, deepCopy, deepEqual} from '/js/toolbox';
+import {debounce, deepCopy, deepEqual, isObject} from '/js/toolbox';
 import {bgReady} from './common';
+import {sessionData} from './session-data';
 
 const nondefaults = {};
 const origSet = prefs.set;
@@ -28,8 +29,11 @@ export default {
   }),
 };
 
-chromeSync.getValue(prefs.STORAGE_KEY).then(orig => {
-  const copy = orig && typeof orig === 'object' ? deepCopy(orig) : {};
-  prefs.ready.set(copy, {});
+(async () => {
+  let orig = chromeSync.getValue(prefs.STORAGE_KEY);
+  orig = process.env.MV3
+    ? (await Promise.all([orig, sessionData]))[0]
+    : await orig;
+  prefs.ready.set(isObject(orig) ? deepCopy(orig) : {}, {});
   if (!deepEqual(orig, nondefaults)) bgReady.all.then(updateStorage);
-});
+})();

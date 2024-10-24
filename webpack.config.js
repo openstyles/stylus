@@ -152,6 +152,7 @@ const getBaseConfig = () => ({
     new RawEnvPlugin({
       ASSETS,
       ASSETS_CM,
+      BUILD,
       DEBUG: !!process.env.DEBUG,
       DEV,
       JS,

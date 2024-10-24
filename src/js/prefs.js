@@ -197,13 +197,17 @@ export const subscribe = (keys, fn, runNow) => {
   let toRun;
   for (const key of Array.isArray(keys) ? new Set(keys) : [keys]) {
     if (!(key in defaults)) { warnUnknown(key); continue; }
-    (onChange[key] || (onChange[key] = new Set())).add(fn);
+    (onChange[key] ??= new Set()).add(fn);
     if (runNow) {
       if (!busy) fn(key, values[key]);
-      else (toRun || (toRun = [])).push(key);
+      else (toRun ??= []).push(key);
     }
   }
-  if (toRun) return busy.then(() => toRun.forEach(key => fn(key, values[key])));
+  if (toRun) {
+    return busy.then(() => {
+      for (const key of toRun) fn(key, values[key], true);
+    });
+  }
 };
 
 export const unsubscribe = (keys, fn) => {

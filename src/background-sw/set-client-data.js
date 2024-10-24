@@ -26,7 +26,7 @@ export default async function setClientData(evt, reqUrl) {
 
   Object.assign(jobs, /** @namespace StylusClientData */ {
     apply: styleMan.getSectionsByUrl(pageUrl, null, true),
-    dark: isDark(),
+    dark: isDark,
     favicon: FIREFOX || isVivaldi,
     prefs: prefsApi.get(),
 

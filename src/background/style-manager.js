@@ -233,7 +233,7 @@ export function getSectionsByUrl(url, id, isInitialApply) {
   /** @type {InjectionConfig} */
   const cfg = !id && {
     ass: p.styleViaASS,
-    dark: isTop && colorScheme.isDark(),
+    dark: isTop && colorScheme.isDark,
     // TODO: enable in FF when it supports sourceURL comment in style elements (also options.html)
     name: CHROME && p.exposeStyleName,
     nonce: FIREFOX && tabMan.get(tab.id, 'nonce', frameId),
