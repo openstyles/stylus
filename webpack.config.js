@@ -172,6 +172,7 @@ const getBaseConfig = () => ({
         terserOptions: {
           mangle: {
             keep_fnames: true,
+            reserved: ['window'],
           },
         },
       }, TERSER_OPTS)),
