@@ -88,7 +88,7 @@ class MatchQuery {
   }
 }
 
-init();
+bgReady.styles = init();
 
 chrome.runtime.onConnect.addListener(port => {
   // Using ports to reliably track when the client is closed, however not for messaging,
@@ -97,7 +97,7 @@ chrome.runtime.onConnect.addListener(port => {
   const fn = ON_DISCONNECT[type];
   if (fn) port.onDisconnect.addListener(fn);
 });
-bgReady.all.then(() => colorScheme.onChange(value => {
+bgReady.then(() => colorScheme.onChange(value => {
   broadcastExtension({method: 'colorScheme', value});
   for (const {style} of dataMap.values()) {
     if (colorScheme.SCHEMES.includes(style.preferScheme)) {
@@ -600,7 +600,6 @@ async function init() {
   if (updated.length) setTimeout(db.putMany, 0, updated);
   setOrderImpl(orderFromDb, {store: false});
   styles.forEach(storeInMap);
-  bgReady._resolveStyles();
 }
 
 function fixKnownProblems(style, initIndex, initArray) {

@@ -1,9 +1,6 @@
 import {browserWindows} from '/js/toolbox';
 
-export const bgReady = {};
-bgReady.styles = new Promise(r => (bgReady._resolveStyles = r));
-bgReady.all = new Promise(r => (bgReady._resolveAll = r));
-
+export const bgReady = (r => Object.assign(new Promise(cb => (r = cb)), {resolve: r}))();
 export const browserCommands = {};
 
 export const uuidIndex = Object.assign(new Map(), {
@@ -23,3 +20,8 @@ export let isVivaldi = !!(browserWindows && chrome.app) && (async () => {
   isVivaldi = wnd && !!(wnd.vivExtData || wnd.extData);
   return isVivaldi;
 })();
+
+if (!process.env.MV3) {
+  global._ready = bgReady;
+  global._bg = true; // for IS_BG check
+}

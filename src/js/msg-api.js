@@ -1,10 +1,8 @@
-export const isBg = process.env.ENTRY === 'sw'
-  || process.env.ENTRY && __webpack_runtime_id__ === process.env.PAGE_BG;
 export const rxIgnorableError = /Receiving end does not exist|The message port closed|moved into back\/forward cache/;
 export const saveStack = () => new Error(); // Saving callstack prior to `await`
 const portReqs = {};
 
-export const apiHandler = !isBg && {
+export const apiHandler = !process.env.IS_BG && {
   get: ({name: path}, name) => new Proxy(
     Object.defineProperty(() => {}, 'name', {value: path ? path + '.' + name : name}),
     apiHandler),
@@ -12,7 +10,7 @@ export const apiHandler = !isBg && {
 };
 /** @typedef {{}} API */
 /** @type {API} */
-export const API = isBg
+export const API = process.env.IS_BG
   ? process.env.API
   : process.env.API = new Proxy({path: ''}, apiHandler);
 

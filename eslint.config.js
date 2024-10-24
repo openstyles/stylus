@@ -5,7 +5,6 @@ const globals = require('globals');
 const SHIMS = 'tools/shim/*.js';
 const SRC_GLOBALS = {
   ...globals.es2024,
-  __webpack_runtime_id__: false,
   chrome: false,
   browser: false,
   global: false,

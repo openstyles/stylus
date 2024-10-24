@@ -44,7 +44,7 @@ const tabMan = Object.assign(cache, {
 
 chrome.tabs.onRemoved.addListener(tabId => cache.delete(tabId));
 chrome.tabs.onReplaced.addListener((added, removed) => cache.delete(removed));
-bgReady.all.then(() => {
+bgReady.then(() => {
   onUrlChange(({tabId, frameId, url}) => {
     if (frameId) return;
     let obj, oldUrl;

@@ -1,6 +1,7 @@
 /** Don't use this file in content script context! */
 import browser from './browser';
-import {apiHandler, apiSendProxy, isBg, unwrap} from './msg-base';
+import {apiHandler, apiSendProxy} from './msg-api';
+import {unwrap} from './msg-base';
 import {createPortExec, createPortProxy} from './port';
 import {deepCopy, getOwnTab, URLS} from './toolbox';
 import {swPath} from './urls';
@@ -16,7 +17,7 @@ const swExec = process.env.MV3 &&
   createPortExec(() => navigator.serviceWorker.controller, {lock: swPath});
 const workerApiPrefix = 'worker.';
 let workerProxy;
-export let bg = isBg ? self : !process.env.MV3 && chrome.extension.getBackgroundPage();
+export let bg = process.env.IS_BG ? self : !process.env.MV3 && chrome.extension.getBackgroundPage();
 
 async function invokeAPI({name: path}, _thisObj, args) {
   // Non-cloneable event is passed when doing `elem.onclick = API.foo`
@@ -34,7 +35,7 @@ async function invokeAPI({name: path}, _thisObj, args) {
     if (process.env.MV3) {
       return swExec(msg, sender);
     } else {
-      const res = bg.msg._execute('extension', bg.deepCopy(msg), bg.deepCopy(sender));
+      const res = bg._msgExec('extension', bg._deepCopy(msg), bg._deepCopy(sender));
       return deepCopy(await res);
     }
   }
@@ -48,10 +49,10 @@ if (process.env.MV3) {
   if (process.env.ENTRY !== 'sw') {
     apiHandler.apply = invokeAPI;
   }
-} else if (!isBg) {
+} else if (!process.env.IS_BG) {
   apiHandler.apply = async (fn, thisObj, args) => {
     bg ??= await browser.runtime.getBackgroundPage().catch(() => {}) || false;
-    const exec = bg && (bg.msg || await bg.allReady)
+    const exec = bg && (bg._msgExec || await bg._ready)
       ? invokeAPI
       : apiSendProxy;
     return exec(fn, thisObj, args);

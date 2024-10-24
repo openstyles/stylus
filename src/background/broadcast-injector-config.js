@@ -11,7 +11,7 @@ const INJECTOR_CONFIG_MAP = {
   styleViaASS: 'ass',
 };
 
-bgReady.all.then(() => {
+bgReady.then(() => {
   prefs.subscribe(Object.keys(INJECTOR_CONFIG_MAP), broadcastInjectorConfig);
   colorScheme.onChange(broadcastInjectorConfig.bind(null, 'dark'));
 });

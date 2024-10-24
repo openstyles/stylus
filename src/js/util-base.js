@@ -8,9 +8,7 @@ export const clamp = (value, min, max) => value < min ? min : value > max ? max 
 export const clipString = (str, limit = 100) => str.length > limit
   ? str.substr(0, limit) + '...'
   : str;
-export const hasOwn = process.env.MV3
-  ? /*@__PURE__*/Object.hasOwn
-  : /*@__PURE__*/Object.call.bind({}.hasOwnProperty);
+export const hasOwn = /*@__PURE__*/Object.call.bind({}.hasOwnProperty);
 /** FYI, matchMedia's onchange doesn't work in bg context, so we use it in our content script */
 export const isCssDarkScheme = () => matchMedia('(prefers-color-scheme:dark)').matches;
 export const isObject = val => typeof val === 'object' && val;

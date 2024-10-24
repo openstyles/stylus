@@ -31,7 +31,7 @@ const map = {[MEDIA_ON]: true, [MEDIA_OFF]: false};
   });
   if (favicon
   && window === top
-  && __webpack_runtime_id__ !== 'popup') {
+  && location.pathname !== '/popup.html') {
     document.head.append(...[32, 16].map(size => $create('link', {
       rel: 'icon',
       href: `${MF_ICON_PATH}${isDark ? '' : 'light/'}${size}${MF_ICON_EXT}`,

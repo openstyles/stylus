@@ -96,4 +96,4 @@ export async function closeCurrentTab() {
   if (tab) return chrome.tabs.remove(tab.id);
 }
 
-Object.assign(self, {deepCopy}); // used by other views for cloning into this JS realm
+global._deepCopy = deepCopy; // used by other views for cloning into this JS realm

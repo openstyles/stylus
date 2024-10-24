@@ -2,6 +2,7 @@ import {API} from '/js/msg';
 import popupGetStyles from '/js/popup-get-styles';
 import * as prefs from '/js/prefs';
 import {CHROME, FIREFOX, ignoreChromeError, MF_ACTION_HTML, URLS} from '/js/toolbox';
+import {bgReady} from './common';
 import {getSectionsByUrl} from './style-manager';
 import tabMan from './tab-manager';
 
@@ -69,7 +70,7 @@ function toggle() {
 
 /** @param {chrome.webRequest.WebRequestBodyDetails} req */
 function prepareStyles(req) {
-  if (!self.msg) return;
+  if (bgReady.resolve) return;
   if (req.url.startsWith(URLS.ownRoot)) return preloadPopupData();
   const {url} = req;
   req.tab = {url};

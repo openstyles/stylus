@@ -45,7 +45,7 @@ function onFakeNavigation(data) {
   sendTab(tabId, {method: 'urlChanged', iid, url}, to);
 }
 
-bgReady.all.then(() => {
+bgReady.then(() => {
   /*
    * Expose style version on greasyfork/sleazyfork 1) info page and 2) code page
    * Not using manifest.json to avoid injecting in unrelated sub-pages.

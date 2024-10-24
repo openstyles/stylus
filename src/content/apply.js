@@ -3,7 +3,7 @@ import * as msg from '/js/msg-base';
 import {API, apiPortDisconnect} from '/js/msg-api';
 import * as styleInjector from './style-injector';
 
-let isTab = !process.env.ENTRY || __webpack_runtime_id__ !== 'popup';
+let isTab = !process.env.ENTRY || location.pathname !== '/popup.html';
 const own = /** @type {Injection} */{
   cfg: {off: false, top: ''},
 };
@@ -17,7 +17,7 @@ const CHROME = 'app' in chrome;
 const SYM_ID = 'styles';
 const isUnstylable = !CHROME && isXml;
 const clone = process.env.ENTRY
-  ? deepCopy /* global deepCopy */// will be used in extension context
+  ? _deepCopy /* global _deepCopy */// will be used in extension context
   : val => typeof val === 'object' && val ? JSON.parse(JSON.stringify(val)) : val;
 const isFrame = window !== parent;
 /** @type {number}

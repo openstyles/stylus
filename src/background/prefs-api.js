@@ -35,5 +35,5 @@ export default {
     ? (await Promise.all([orig, sessionData]))[0]
     : await orig;
   prefs.ready.set(isObject(orig) ? deepCopy(orig) : {}, {});
-  if (!deepEqual(orig, nondefaults)) bgReady.all.then(updateStorage);
+  if (!deepEqual(orig, nondefaults)) bgReady.then(updateStorage);
 })();

@@ -52,7 +52,7 @@ colorScheme.onChange(val => {
     debounce(refreshGlobalIcon);
   }
 }, true);
-bgReady.all.then(() => {
+bgReady.then(() => {
   prefs.subscribe([
     'disableAll',
     'badgeDisabled',

@@ -1,6 +1,8 @@
 let browser;
 if (process.env.MV3) {
-  browser = self.browser = chrome;
+  browser = window.browser = chrome;
+} else if (process.env.BUILD === 'firefox') {
+  browser = window.browser;
 } else if (!(browser = window.browser) || !browser.runtime) {
   /* Auto-promisifier with a fallback to direct call on signature error.
      The fallback isn't used now since we call all synchronous methods via `chrome` */

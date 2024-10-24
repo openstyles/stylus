@@ -10,7 +10,7 @@ import {openURL} from './tab-util';
 
 const installCodeCache = {};
 
-bgReady.all.then(() => {
+bgReady.then(() => {
   prefs.subscribe('urlInstaller', toggle, true);
 });
 

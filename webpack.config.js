@@ -13,7 +13,8 @@ const {anyPathSep, stripSourceMap, RawEnvPlugin, MANIFEST, MANIFEST_MV3, ROOT} =
   require('./tools/util');
 const WebpackPatchBootstrapPlugin = require('./tools/webpack-patch-bootstrap');
 
-const [BUILD, FLAVOR] = process.env.NODE_ENV?.split('-') || [];
+const NODE_ENV = process.env.NODE_ENV;
+const [BUILD, FLAVOR] = NODE_ENV?.split('-') || [];
 const DEV = BUILD === 'DEV' || process.env.npm_lifecycle_event?.startsWith('watch');
 const FS_CACHE = !DEV;
 const SRC = ROOT + 'src/';
@@ -45,11 +46,56 @@ const RESOLVE_VIA_SHIM = {
   ],
 };
 const ASSETS_CM = ASSETS + 'cm-themes/';
-const THEME_PATH = ROOT + 'node_modules/codemirror/theme';
+const CODE_MIRROR_PATH = path.dirname(require.resolve('codemirror/package.json')) + path.sep;
+const THEME_PATH = CODE_MIRROR_PATH.replaceAll('\\', '/') + '/theme';
 const THEME_NAMES = Object.fromEntries(fs.readdirSync(THEME_PATH)
   .sort()
   .map(f => (f = f.match(/([^/\\.]+)\.css$/i)?.[1]) && [f, ''])
   .filter(Boolean));
+/** Getting rid of the unused webpack machinery */
+const OUTPUT_MODULE = {
+  output: {
+    module: true,
+    library: {type: 'modern-module'},
+  },
+  experiments: {outputModule: true},
+};
+const VARS = {
+  ASSETS,
+  ASSETS_CM,
+  BUILD,
+  DEBUG: !!process.env.DEBUG,
+  DEV,
+  IS_BG: false,
+  JS,
+  MV3,
+  PAGE_BG,
+  PAGE_OFFSCREEN,
+};
+const RAW_VARS = {
+  // hiding `global` from IDE so it doesn't see the symbol as a global
+  API: 'global.API',
+};
+const BANNER = '{const global = this, window = global;';
+const addWrapper = (banner = BANNER, footer = '}', test = /\.js$/) => [
+  new webpack.BannerPlugin({raw: true, test, banner}),
+  new webpack.BannerPlugin({raw: true, test, banner: footer, footer: true}),
+];
+const TERSER_OPTS = {
+  extractComments: false,
+  terserOptions: {
+    compress: {
+      ecma: MV3 ? 2024 : 2017,
+      passes: 1,
+      // unsafe_arrows: true, // it's 'safe' since we don't rely on function prototypes
+    },
+    output: {
+      ascii_only: false,
+      comments: false,
+      wrap_func_args: false,
+    },
+  },
+};
 
 const getBaseConfig = () => ({
   mode: DEV ? 'development' : 'production',
@@ -84,10 +130,20 @@ const getBaseConfig = () => ({
         ],
       }, {
         test: /\.m?js$/,
+        include: [path.resolve(SRC)],
         use: [
           RawEnvPlugin.loader,
           {loader: 'babel-loader', options: {root: ROOT}},
         ],
+        resolve: {fullySpecified: false},
+      }, {
+        test: /\.m?js$/,
+        exclude: [
+          path.resolve(SRC),
+          CODE_MIRROR_PATH, // speedup for a big ES5 package
+        ],
+        loader: 'babel-loader',
+        options: {root: ROOT},
         resolve: {fullySpecified: false},
       }, {
         loader: SHIM + 'cjs-to-esm-loader.js',
@@ -98,32 +154,27 @@ const getBaseConfig = () => ({
       }, {
         loader: SHIM + 'jsonlint-loader.js',
         test: require.resolve('jsonlint'),
+      }, {
+        loader: SHIM + 'lzstring-loader.js',
+        test: require.resolve('lz-string-unsafe'),
       },
     ],
   },
   node: false,
   optimization: {
     concatenateModules: true, // makes DEV code run faster
-    runtimeChunk: false,
+    chunkIds: false,
     mangleExports: false,
     usedExports: true,
     minimizer: DEV ? [] : [
-      new TerserPlugin({
-        extractComments: false,
+      new TerserPlugin(mergeCfg({
+        exclude: /codemirror(?!-factory)/,
         terserOptions: {
-          compress: {
-            reduce_funcs: false,
-            ecma: 8,
-            passes: 2,
-            // unsafe_arrows: true, // it's 'safe' since we don't rely on function prototypes
-          },
-          output: {
-            ascii_only: false,
-            comments: false,
-            wrap_func_args: false,
+          mangle: {
+            keep_fnames: true,
           },
         },
-      }),
+      }, TERSER_OPTS)),
       new CssMinimizerPlugin({
         minimizerOptions: {
           preset: ['default', {
@@ -149,19 +200,8 @@ const getBaseConfig = () => ({
     maxEntrypointSize: 1e6,
   },
   plugins: [
-    new RawEnvPlugin({
-      ASSETS,
-      ASSETS_CM,
-      BUILD,
-      DEBUG: !!process.env.DEBUG,
-      DEV,
-      JS,
-      MV3,
-      PAGE_BG,
-      PAGE_OFFSCREEN,
-    }, { // hiding `global` from IDE so it doesn't see the symbol as a global
-      API: 'global.API',
-    }),
+    new RawEnvPlugin(VARS, RAW_VARS),
+    new webpack.ids.NamedChunkIdsPlugin({context: SRC}),
     new WebpackPatchBootstrapPlugin(),
   ],
   stats: {
@@ -182,7 +222,7 @@ function mergeCfg(ovr, base) {
     if (FS_CACHE) {
       ovr.cache = {
         ...ovr.cache,
-        name: (DEV ? 'dev' : 'prod') + '-' + entry.join('-'),
+        name: NODE_ENV + '-' + entry.join('-'),
       };
     }
     if (process.env.REPORT != null) {
@@ -212,41 +252,23 @@ function makeLibrary(entry, name, extras) {
     output: {
       path: DST + JS,
       library: {
-        type: 'self',
+        type: 'global',
         name,
       },
     },
-    plugins: [new webpack.BannerPlugin({
-      banner: 'var global = this;',
-      raw: true,
-    })],
+    plugins: addWrapper(),
   }));
 }
 
 function makeContentScript(name) {
-  const INJECTED = `window["${name}"]`;
-  return mergeCfg({
+  return mergeCfg(OUTPUT_MODULE, mergeCfg({
     entry: '/content/' + name,
-    output: {
-      path: DST + JS,
-      library: {
-        // Not using `self` in a content script as it can be spoofed via `<html id=self>`
-        type: 'window',
-      },
-    },
+    output: {path: DST + JS},
     plugins: [
       new RawEnvPlugin({ENTRY: false}, NO_KEEP_ALIVE),
-      new webpack.BannerPlugin({
-        banner: `if(${INJECTED}!==1){${INJECTED}=1;var global = this;`,
-        raw: true,
-      }),
-      new webpack.BannerPlugin({
-        banner: '}',
-        raw: true,
-        footer: true,
-      }),
+      ...addWrapper(`if (window["${name}"]!==1) ${BANNER} global["${name}"] = 1;`),
     ],
-  });
+  }));
 }
 
 module.exports = [
@@ -257,6 +279,12 @@ module.exports = [
       chunkFilename: ASSETS + '[name].js',
     },
     optimization: {
+      minimizer: DEV ? [] : [
+        new TerserPlugin({...TERSER_OPTS, include: /codemirror(?!-factory)/}),
+      ],
+      runtimeChunk: {
+        name: 'common',
+      },
       splitChunks: {
         chunks: 'all',
         cacheGroups: {
@@ -282,12 +310,11 @@ module.exports = [
       new RawEnvPlugin({
         ENTRY: true,
         THEMES: THEME_NAMES,
-      }, NO_KEEP_ALIVE),
-      new webpack.BannerPlugin({
-        banner: 'var global = this;',
-        test: /\.js$/,
-        raw: true,
+      }, {
+        ...NO_KEEP_ALIVE,
+        IS_BG: MV3 ? 'false' : '(global._bg === true)',
       }),
+      ...addWrapper(),
       new MiniCssExtractPlugin({
         filename: ASSETS + '[name].css',
         chunkFilename: ASSETS + '[name].css',
@@ -338,22 +365,25 @@ module.exports = [
     mergeCfg({
       entry: `/${PAGE_BG}`,
       plugins: [
-        new RawEnvPlugin({ENTRY: 'sw'}, {KEEP_ALIVE: 'global.keepAlive'}),
-        new webpack.BannerPlugin({
-          banner: `var global = self, window = global;`,
-          raw: true,
+        new RawEnvPlugin({
+          ENTRY: 'sw',
+          IS_BG: true,
+        }, {
+          KEEP_ALIVE: 'global.keepAlive',
         }),
+        ...addWrapper(),
       ],
       resolve: RESOLVE_VIA_SHIM,
     }),
-    mergeCfg({
+    mergeCfg(OUTPUT_MODULE, mergeCfg({
       entry: '/js/' + GET_CLIENT_DATA,
       output: {path: DST + ASSETS},
-    }),
+    })),
     makeLibrary('db-to-cloud/lib/drive/webdav', 'webdav', LIB_EXPORT_DEFAULT),
   ],
   makeContentScript('apply.js'),
   makeLibrary('/js/worker.js', undefined, {
+    ...OUTPUT_MODULE,
     plugins: [new RawEnvPlugin({ENTRY: 'worker'}, NO_KEEP_ALIVE)],
   }),
   makeLibrary('/js/color/color-converter.js', 'colorConverter'),

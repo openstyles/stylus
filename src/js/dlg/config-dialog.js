@@ -18,8 +18,9 @@ export default async function configDialog(style) {
   let varsInitial = getInitialValues(varsHash);
 
   const elements = [];
-  const isPopup = __webpack_runtime_id__ === 'popup';
-  const isInstaller = !isPopup && `${__webpack_runtime_id__}.html` === URLS.installUsercss;
+  const pathname = location.pathname.slice(1);
+  const isInstaller = pathname === URLS.installUsercss;
+  const isPopup = pathname === 'popup.html';
   const colorpicker = vars.some(v => v.type === 'color')
     ? (await import('/js/color/color-picker')).default()
     : null;

@@ -43,7 +43,7 @@ let checkingAll = false;
 let logQueue = [];
 let logLastWriteTime = 0;
 
-bgReady.all.then(async () => {
+bgReady.then(async () => {
   lastUpdateTime = await chromeLocal.getValue('lastUpdateTime') || Date.now();
   prefs.subscribe('updateInterval', schedule, true);
   chrome.alarms.onAlarm.addListener(onAlarm);

@@ -2,7 +2,7 @@ import {$, dom} from './dom-base';
 import {waitForSelector} from './dom-util';
 import * as prefs from './prefs';
 import {FIREFOX, OPERA, VIVALDI, WINDOWS} from './toolbox';
-import '/content/apply'; // must run after msg (swaps `API`) and toolbox (exposes deepCopy)
+import '/content/apply'; // must run after msg (swaps `API`) and toolbox (exposes _deepCopy)
 import './themer';
 
 export * from './dom-base';
@@ -47,7 +47,7 @@ prefs.ready.then(() => {
   $.root.setAttribute('lang', chrome.i18n.getUILanguage());
   // set up header width resizer
   const HW = 'headerWidth.';
-  const HWprefId = HW + __webpack_runtime_id__;
+  const HWprefId = HW + location.pathname.match(/^.(\w*)/)[1];
   if (prefs.knownKeys.includes(HWprefId)) {
     Object.assign(dom, {
       HW,

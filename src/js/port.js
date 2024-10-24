@@ -13,7 +13,7 @@ export const COMMANDS = process.env.ENTRY !== 'sw' && (
 );
 export const PORT_TIMEOUT = 5 * 60e3; // TODO: expose as a configurable option
 const autoClose = process.env.ENTRY === 'worker' ||
-  process.env.ENTRY === true && __webpack_runtime_id__ === process.env.PAGE_OFFSCREEN;
+  process.env.ENTRY === true && location.pathname === `/${process.env.PAGE_OFFSCREEN}.html`;
 const kInitPort = 'port';
 const ret0 = () => 0;
 const navSW = navigator.serviceWorker;

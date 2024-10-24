@@ -1,7 +1,7 @@
 import DraggableList from '@eight04/draggable-list';
-import {$create, messageBox} from '/js/dom';
-import {t} from '/js/localization';
-import {API} from '/js/msg';
+import {$create, messageBox} from '/src/js/dom';
+import {t} from '/src/js/localization';
+import {API} from '/src/js/msg';
 
 export default async function InjectionOrder(show, el, selector) {
   if (!show) {

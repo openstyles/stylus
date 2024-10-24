@@ -16,6 +16,8 @@ const sChromeBeta = 'chrome-beta';
 const sChromeMV3 = 'chrome-mv3';
 const sFirefox = 'firefox';
 
+fse.emptyDirSync(ROOT + 'node_modules/.cache/webpack');
+
 (async function build([targets] = process.argv.slice(2)) {
   // https://github.com/Stuk/jszip/issues/369
   const tzBug = new Date().getTimezoneOffset() * 60000;

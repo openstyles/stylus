@@ -82,8 +82,6 @@ Object.assign(API, /** @namespace API */ {
   //#endregion
 }, FIREFOX && initStyleViaApi());
 
-if (!process.env.MV3) global.allReady = bgReady.all;
-
 Object.assign(browserCommands, {
   openManage: () => API.openManage(),
   openOptions: () => API.openManage({options: true}),
@@ -128,7 +126,7 @@ chrome.runtime.onConnect.addListener(port => {
 
 async function apiPortMessage({id, data, TDM}, port) {
   try {
-    if (!self.msg) await bgReady.all;
+    if (bgReady.resolve) await bgReady;
     port.sender.TDM = TDM;
     data = {data: await msg._execute('extension', data, port.sender)};
   } catch (e) {
@@ -145,8 +143,9 @@ Promise.all([
     .then(res => API.data.set('hasFileAccess', res)),
   bgReady.styles,
 ]).then(async () => {
-  bgReady._resolveAll(true);
-  self.msg = msg;
+  bgReady.resolve();
+  bgReady.resolve = null;
+  if (!process.env.MV3) window._msgExec = msg._execute;
   if (FIREFOX) initBrowserCommandsApi();
   broadcast({method: 'backgroundReady'});
   initContextMenus();
