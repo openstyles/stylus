@@ -38,7 +38,6 @@ const GET_CLIENT_DATA_TAG = {
   toString: () => `<script src="${ASSETS}${GET_CLIENT_DATA}.js"></script>`,
 };
 const LIB_EXPORT_DEFAULT = {output: {library: {export: 'default'}}};
-const NO_KEEP_ALIVE = {KEEP_ALIVE: ''};
 const RESOLVE_VIA_SHIM = {
   modules: [
     SHIM,
@@ -47,6 +46,7 @@ const RESOLVE_VIA_SHIM = {
 };
 const ASSETS_CM = ASSETS + 'cm-themes/';
 const CODE_MIRROR_PATH = path.dirname(require.resolve('codemirror/package.json')) + path.sep;
+const CODEMIRROR_NATIVE = /codemirror(?!-factory)/; // `factory` is our code
 const THEME_PATH = CODE_MIRROR_PATH.replaceAll('\\', '/') + '/theme';
 const THEME_NAMES = Object.fromEntries(fs.readdirSync(THEME_PATH)
   .sort()
@@ -66,6 +66,7 @@ const VARS = {
   BUILD,
   DEBUG: !!process.env.DEBUG,
   DEV,
+  ENTRY: false,
   IS_BG: false,
   JS,
   MV3,
@@ -75,6 +76,7 @@ const VARS = {
 const RAW_VARS = {
   // hiding `global` from IDE so it doesn't see the symbol as a global
   API: 'global.API',
+  KEEP_ALIVE: '',
 };
 const BANNER = '{const global = this, window = global;';
 const addWrapper = (banner = BANNER, footer = '}', test = /\.js$/) => [
@@ -168,7 +170,7 @@ const getBaseConfig = () => ({
     usedExports: true,
     minimizer: DEV ? [] : [
       new TerserPlugin(mergeCfg({
-        exclude: /codemirror(?!-factory)/,
+        exclude: CODEMIRROR_NATIVE,
         terserOptions: {
           mangle: {
             keep_fnames: true,
@@ -257,7 +259,9 @@ function makeLibrary(entry, name, extras) {
         name,
       },
     },
-    plugins: addWrapper(),
+    plugins: name
+      ? addWrapper()
+      : addWrapper(`(()=>${BANNER}`, '})()'),
   }));
 }
 
@@ -265,10 +269,7 @@ function makeContentScript(name) {
   return mergeCfg(OUTPUT_MODULE, mergeCfg({
     entry: '/content/' + name,
     output: {path: DST + JS},
-    plugins: [
-      new RawEnvPlugin({ENTRY: false}, NO_KEEP_ALIVE),
-      ...addWrapper(`if (window["${name}"]!==1) ${BANNER} global["${name}"] = 1;`),
-    ],
+    plugins: addWrapper(`if (window["${name}"]!==1) ${BANNER} global["${name}"] = 1;`),
   }));
 }
 
@@ -281,7 +282,7 @@ module.exports = [
     },
     optimization: {
       minimizer: DEV ? [] : [
-        new TerserPlugin({...TERSER_OPTS, include: /codemirror(?!-factory)/}),
+        new TerserPlugin({...TERSER_OPTS, include: CODEMIRROR_NATIVE}),
       ],
       runtimeChunk: {
         name: 'common',
@@ -292,7 +293,7 @@ module.exports = [
           codemirror: {
             test: new RegExp(String.raw`(${anyPathSep([
               SRC + 'cm/',
-              String.raw`codemirror(/|-(?!factory))`,
+              CODEMIRROR_NATIVE.source,
             ].join('|'))}).+\.js$`),
             name: 'codemirror',
           },
@@ -312,7 +313,6 @@ module.exports = [
         ENTRY: true,
         THEMES: THEME_NAMES,
       }, {
-        ...NO_KEEP_ALIVE,
         IS_BG: MV3 ? 'false' : '(global._bg === true)',
       }),
       ...addWrapper(),
@@ -385,7 +385,7 @@ module.exports = [
   makeContentScript('apply.js'),
   makeLibrary('/js/worker.js', undefined, {
     ...OUTPUT_MODULE,
-    plugins: [new RawEnvPlugin({ENTRY: 'worker'}, NO_KEEP_ALIVE)],
+    plugins: [new RawEnvPlugin({ENTRY: 'worker'})],
   }),
   makeLibrary('/js/color/color-converter.js', 'colorConverter'),
   makeLibrary('/js/csslint/csslint.js', 'CSSLint',
