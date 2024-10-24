@@ -1,5 +1,6 @@
 import {CodeMirror, extraKeys} from '/cm';
-import {$, $create, moveFocus} from '/js/dom';
+import {$, $create} from '/js/dom';
+import {moveFocus} from '/js/dom-util';
 import {t} from '/js/localization';
 import * as prefs from '/js/prefs';
 import editor from './editor';

@@ -1,6 +1,7 @@
 /** Don't use this file in content script context! */
-import {API} from '/js/msg-api';
-import {deepCopy, deepEqual, onStorageChanged} from './toolbox';
+import {API} from './msg-api';
+import {deepCopy, deepEqual} from './util';
+import {onStorageChanged} from './util-webext';
 
 let busy, setReady;
 

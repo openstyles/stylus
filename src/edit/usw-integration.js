@@ -1,7 +1,9 @@
-import {$, $$, $create, $remove, messageBox, showSpinner, toggleDataset} from '/js/dom';
+import {$, $$, $create, $remove, toggleDataset} from '/js/dom';
+import {messageBox, showSpinner} from '/js/dom-util';
 import {t} from '/js/localization';
 import {API, onExtension} from '/js/msg';
-import {isEmptyObj, URLS} from '/js/toolbox';
+import * as URLS from '/js/urls';
+import {isEmptyObj} from '/js/util';
 import editor from './editor';
 
 export default function USWIntegration() {

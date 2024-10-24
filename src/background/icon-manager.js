@@ -1,7 +1,8 @@
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
-import {debounce, ignoreChromeError, MF_ICON_EXT, MF_ICON_PATH} from '/js/toolbox';
+import {ignoreChromeError, MF_ICON_EXT, MF_ICON_PATH} from '/js/util-webext';
 import {CHROME, FIREFOX, MOBILE, VIVALDI} from '/js/ua';
+import {debounce} from '/js/util';
 import * as colorScheme from './color-scheme';
 import {bgReady} from './common';
 import tabMan from './tab-manager';

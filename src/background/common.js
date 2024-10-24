@@ -1,4 +1,4 @@
-import {browserWindows} from '/js/toolbox';
+import {browserWindows} from '/js/util-webext';
 
 export const bgReady = (r => Object.assign(new Promise(cb => (r = cb)), {resolve: r}))();
 export const browserCommands = {};

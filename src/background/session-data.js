@@ -1,5 +1,5 @@
 import {chromeSession} from '/js/storage-util';
-import {debounce, deepEqual, deepMerge, isEmptyObj, isObject} from '/js/toolbox';
+import {debounce, deepEqual, deepMerge, isEmptyObj, isObject} from '/js/util';
 
 let sessionDataSaved;
 let sessionDataToWrite;

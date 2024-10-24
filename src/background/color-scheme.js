@@ -1,5 +1,5 @@
 import * as prefs from '/js/prefs';
-import {debounce, isCssDarkScheme} from '/js/toolbox';
+import {debounce, isCssDarkScheme} from '/js/util';
 import {sessionData} from './session-data';
 
 const changeListeners = new Set();

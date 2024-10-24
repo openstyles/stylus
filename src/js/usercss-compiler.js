@@ -1,5 +1,5 @@
-import {styleCodeEmpty} from '/js/sections-util';
-import {importScriptsOnce} from '/js/worker-util';
+import {styleCodeEmpty} from './sections-util';
+import {importScriptsOnce} from './worker-util';
 
 let builderChain = Promise.resolve();
 

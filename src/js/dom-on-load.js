@@ -1,10 +1,12 @@
-import {$, $$, $create, focusA11y} from './dom-base';
+import {$, $$, $create, focusA11y} from './dom';
 import {getEventKeyName, messageBox, moveFocus} from './dom-util';
 import HeaderResizer from './header-resizer';
 import {t} from './localization';
 import {onExtension} from './msg';
 import * as prefs from './prefs';
-import {CHROME, clamp, debounce, tryURL, URLS} from './toolbox';
+import {CHROME} from './ua';
+import {installUsercss} from './urls';
+import {clamp, debounce, tryURL} from './util';
 
 const SPLIT_BTN_MENU = '.split-btn-menu';
 const tooltips = new WeakMap();
@@ -57,7 +59,7 @@ if (getFSH) {
     }
     e.preventDefault();
     e.stopPropagation();
-    const path = URLS.installUsercss;
+    const path = installUsercss;
     // Some apps provide the file's URL in a text dataTransfer item.
     const url = tryURL(dt.getData('text')).href;
     const handle = await getFSH.call([].find.call(dt.items, v => v.kind === 'file'));

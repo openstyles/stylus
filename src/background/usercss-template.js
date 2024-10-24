@@ -1,5 +1,5 @@
 import {chromeSync, LZ_KEY} from '/js/storage-util';
-import {onStorageChanged} from '/js/toolbox';
+import {onStorageChanged} from '/js/util-webext';
 
 export let value;
 

@@ -1,6 +1,6 @@
 import {CodeMirror, loadCmTheme, THEME_KEY} from '/cm';
 import {rerouteHotkeys} from '/edit/util';
-import {CHROME} from '/js/toolbox';
+import {CHROME} from '/js/ua';
 import editor from './editor';
 import * as prefs from '/js/prefs';
 

@@ -1,9 +1,10 @@
 import {CodeMirror, extraKeys, THEME_KEY} from '/cm';
-import {$, $$, $create, getEventKeyName, messageBox, moveFocus} from '/js/dom';
+import {$, $$, $create} from '/js/dom';
+import {getEventKeyName, messageBox, moveFocus} from '/js/dom-util';
 import {t, tHTML} from '/js/localization';
 import {createPortProxy} from '/js/port';
 import * as prefs from '/js/prefs';
-import {clipString} from '/js/toolbox';
+import {clipString} from '/js/util';
 import {workerPath} from '/js/urls';
 import editor from './editor';
 

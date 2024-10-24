@@ -1,6 +1,9 @@
 import browser from '/js/browser';
 import {sendTab} from '/js/msg';
-import {CHROME, deepEqual, FIREFOX, ignoreChromeError, MF, URLS} from '/js/toolbox';
+import {CHROME, FIREFOX} from '/js/ua';
+import {chromeProtectsNTP} from '/js/urls';
+import {deepEqual} from '/js/util';
+import {ignoreChromeError, MF} from '/js/util-webext';
 import {bgReady} from './common';
 import tabMan from './tab-manager';
 
@@ -20,7 +23,7 @@ async function onNavigation(data) {
   }
   prevData = data;
   if (CHROME &&
-      URLS.chromeProtectsNTP &&
+      chromeProtectsNTP &&
       data.url.startsWith('https://www.google.') &&
       data.url.includes('/_/chrome/newtab?')) {
     // Modern Chrome switched to WebUI NTP so this is obsolete, but there may be exceptions

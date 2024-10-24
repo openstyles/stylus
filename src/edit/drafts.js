@@ -1,9 +1,9 @@
 import {$create} from '/js/dom';
 import {formatRelativeDate, t} from '/js/localization';
-import {API} from '/js/msg';
+import {API} from '/js/msg-api';
 import * as prefs from '/js/prefs';
 import {styleToCss} from '/js/sections-util';
-import {clamp, debounce} from '/js/toolbox';
+import {clamp, debounce} from '/js/util';
 import editor from './editor';
 import {helpPopup, showCodeMirrorPopup} from './util';
 

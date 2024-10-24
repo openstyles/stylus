@@ -1,8 +1,10 @@
-import {$, $$, setupLivePrefs} from '/js/dom';
+import '/js/dom-init';
+import {$, $$} from '/js/dom';
+import {setupLivePrefs} from '/js/dom-util';
 import {t, tBody} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
-import {CHROME} from '/js/toolbox';
+import {CHROME} from '/js/ua';
 import {fltMode} from './filters';
 import {readBadFavs, showStyles} from './render';
 import * as router from './router';

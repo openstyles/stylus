@@ -1,3 +1,4 @@
+import '/js/dom-init';
 import styleReady from './style-ready';
 import {$, $$} from '/js/dom';
 import {tBody, template} from '/js/localization';

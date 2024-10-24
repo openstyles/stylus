@@ -1,8 +1,9 @@
 import {kAppJson} from '/js/consts';
-import {$, $create, $createLink, messageBox} from '/js/dom';
+import {$, $create, $createLink} from '/js/dom';
+import {messageBox} from '/js/dom-util';
 import {t} from '/js/localization';
 import {chromeSync, LZ_KEY} from '/js/storage-util';
-import {tryJSONparse} from '/js/toolbox';
+import {tryJSONparse} from '/js/util';
 import editor from '../editor';
 import {helpPopup, showCodeMirrorPopup, worker} from '../util';
 import {DEFAULTS} from './defaults';

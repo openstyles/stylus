@@ -14,8 +14,35 @@ export const isCssDarkScheme = () => matchMedia('(prefers-color-scheme:dark)').m
 export const isObject = val => typeof val === 'object' && val;
 export const stringAsRegExpStr = s => s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&');
 export const stringAsRegExp = (s, flags) => new RegExp(stringAsRegExpStr(s), flags);
-export const UCD = 'usercssData';
 export const RX_META = /\/\*!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i;
+
+export const debounce = /*@__PURE__*/Object.assign((fn, delay, ...args) => {
+  delay = +delay || 0;
+  const t = performance.now() + delay;
+  let old = debounce.timers.get(fn);
+  if (!old && debounce.timers.set(fn, old = {})
+    || delay && old.time < t && (clearTimeout(old.timer), true)
+    || old.args.length !== args.length
+    || old.args.some((a, i) => a !== args[i]) // note that we can't use deepEqual here
+  ) {
+    old.args = args;
+    old.time = t;
+    old.timer = setTimeout(debounce.run, delay, fn, args);
+  }
+}, {
+  timers: new Map(),
+  run(fn, args) {
+    debounce.timers.delete(fn);
+    fn(...args);
+  },
+  unregister(fn) {
+    const data = debounce.timers.get(fn);
+    if (data) {
+      clearTimeout(data.timer);
+      debounce.timers.delete(fn);
+    }
+  },
+});
 
 export function isEmptyObj(obj) {
   if (obj) {
@@ -130,3 +157,29 @@ export function fetchWebDAV(url, init = {}) {
     },
   });
 }
+
+/** A simple polyfill in case DOM storage is disabled in the browser */
+export let sessionStore = /*@__PURE__*/ new Proxy({}, {
+  get(target, name) {
+    try {
+      const val = sessionStorage[name];
+      sessionStore = sessionStorage;
+      return val;
+    } catch {
+      Object.defineProperty(window, 'sessionStorage', {value: target});
+    }
+  },
+  set(target, name, value) {
+    try {
+      sessionStorage[name] = `${value}`;
+      sessionStore = sessionStorage;
+    } catch {
+      this.get(target);
+      target[name] = `${value}`;
+    }
+    return true;
+  },
+  deleteProperty(target, name) {
+    return delete target[name];
+  },
+});

@@ -1,5 +1,5 @@
 import {$, $create} from '/js/dom';
-import {clipString} from '/js/toolbox';
+import {clipString} from '/js/util';
 import * as linterMan from '.';
 import editor from '../editor';
 

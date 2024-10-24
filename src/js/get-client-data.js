@@ -1,4 +1,4 @@
-import {isCssDarkScheme} from '/js/util-base';
+import {isCssDarkScheme} from './util';
 
 document.write(`<script src="?${new URLSearchParams({
   clientData: '',

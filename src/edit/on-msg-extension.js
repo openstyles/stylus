@@ -1,5 +1,5 @@
 import {API, onExtension} from '/js/msg';
-import {closeCurrentTab} from '/js/toolbox';
+import {closeCurrentTab} from '/js/util-webext';
 import editor from './editor';
 
 onExtension(request => {

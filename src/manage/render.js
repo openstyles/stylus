@@ -1,6 +1,9 @@
-import {$, animateElement, scrollElementIntoView, toggleDataset} from '/js/dom';
+import {UCD} from '/js/consts';
+import {$, toggleDataset} from '/js/dom';
+import {animateElement, scrollElementIntoView} from '/js/dom-util';
 import {breakWord, t, template} from '/js/localization';
-import {isEmptyObj, sessionStore, UCD, URLS} from '/js/toolbox';
+import {extractUsoaId} from '/js/urls';
+import {isEmptyObj, sessionStore} from '/js/util';
 import {filterAndAppend} from './filters';
 import {renderFavs} from './render';
 import * as sorter from './sorter';
@@ -95,7 +98,7 @@ export function createStyleElement({styleMeta: style, styleNameLC: nameLC, style
   partInfoVer.textContent = ud ? ud.version : '';
   partInfoVer.dataset.value = ud ? ud.version : '';
   // USO-raw and USO-archive version is a date for which we show the Age column
-  toggleDataset(partInfoVer, 'isDate', ud && (style.md5Url || URLS.extractUsoaId(updateUrl)));
+  toggleDataset(partInfoVer, 'isDate', ud && (style.md5Url || extractUsoaId(updateUrl)));
   createAgeText(partInfoAge, style);
   partInfoSize.dataset.value = Math.log10(size || 1) >> 0; // for CSS to target big/small styles
   partInfoSize.textContent = renderSize(size);

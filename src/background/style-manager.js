@@ -1,9 +1,10 @@
+import {UCD} from '/js/consts';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '/js/sections-util';
-import {
-  CHROME, deepEqual, FIREFOX, isEmptyObj, mapObj, stringAsRegExpStr, tryRegExp, tryURL, UCD, URLS,
-} from '/js/toolbox';
+import {CHROME, FIREFOX} from '/js/ua';
+import * as URLS from '/js/urls';
+import {deepEqual, isEmptyObj, mapObj, stringAsRegExpStr, tryRegExp, tryURL} from '/js/util';
 import {broadcast, broadcastExtension} from './broadcast';
 import broadcastInjectorConfig from './broadcast-injector-config';
 import * as colorScheme from './color-scheme';

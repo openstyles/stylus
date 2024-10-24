@@ -1,5 +1,5 @@
 import {createParser, ParseError} from 'usercss-meta';
-import {importScriptsOnce} from '/js/worker-util';
+import {importScriptsOnce} from './worker-util';
 
 const PREPROCESSORS = new Set(['default', 'uso', 'stylus', 'less']);
 const options = {

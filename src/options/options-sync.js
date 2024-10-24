@@ -1,7 +1,7 @@
 import {$, $$, toggleDataset} from '/js/dom';
 import {t, template} from '/js/localization';
 import {API, onExtension} from '/js/msg';
-import {capitalize} from '/js/toolbox';
+import {capitalize} from '/js/util';
 
 (async () => {
   let status = process.env.MV3

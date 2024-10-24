@@ -1,5 +1,5 @@
-import {$, $$, dom} from '/js/dom-base';
-import * as prefs from '/js/prefs';
+import {$, $$, dom} from './dom';
+import * as prefs from './prefs';
 
 export default function HeaderResizer() {
   let curW = $('#header').offsetWidth;

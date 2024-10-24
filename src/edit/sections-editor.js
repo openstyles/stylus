@@ -1,10 +1,12 @@
 import {CodeMirror, extraKeys} from '/cm';
-import {$, $create, $remove, messageBox} from '/js/dom';
+import {UCD} from '/js/consts';
+import {$, $create, $remove} from '/js/dom';
+import {messageBox} from '/js/dom-util';
 import {t, template} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {styleSectionsEqual, styleToCss} from '/js/sections-util';
-import {clipString, RX_META, UCD} from '/js/toolbox';
+import {clipString, RX_META} from '/js/util';
 import editor from './editor';
 import * as linterMan from './linter';
 import EditorSection from './sections-editor-section';

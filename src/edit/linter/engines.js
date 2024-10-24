@@ -1,6 +1,6 @@
 import * as prefs from '/js/prefs';
 import {chromeSync, LZ_KEY} from '/js/storage-util';
-import {onStorageChanged} from '/js/toolbox';
+import {onStorageChanged} from '/js/util-webext';
 import * as linterMan from '.';
 import editor from '../editor';
 import {worker} from '../util';

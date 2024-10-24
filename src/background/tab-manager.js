@@ -1,4 +1,4 @@
-import {URLS} from '/js/toolbox';
+import {supported} from '/js/urls';
 import {bgReady} from './common';
 import {onUrlChange} from './navigation-manager';
 
@@ -51,7 +51,7 @@ bgReady.then(() => {
     if ((obj = cacheGet(tabId))) oldUrl = obj.url;
     else cacheSet(tabId, obj = {});
     obj.url = url;
-    if (!URLS.supported(url)) return;
+    if (!supported(url)) return;
     for (const fn of listeners) {
       try {
         fn({tabId, url, oldUrl});

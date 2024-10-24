@@ -1,6 +1,7 @@
-import {$, $create, animateElement, focusA11y, moveFocus} from '/js/dom';
+import {$, $create, focusA11y} from '/js/dom';
+import {animateElement, moveFocus} from '/js/dom-util';
 import {t, tHTML} from '/js/localization';
-import {clamp} from '/js/toolbox';
+import {clamp} from '/js/util';
 import './message-box.css';
 
 // TODO: convert this singleton mess so we can show many boxes at once

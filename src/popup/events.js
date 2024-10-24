@@ -1,7 +1,8 @@
-import {$, $$, $remove, configDialog, getEventKeyName, moveFocus} from '/js/dom';
+import {$, $$, $remove} from '/js/dom';
+import {configDialog, getEventKeyName, moveFocus} from '/js/dom-util';
 import {template} from '/js/localization';
 import {API} from '/js/msg';
-import {getActiveTab} from '/js/toolbox';
+import {getActiveTab} from '/js/util-webext';
 import {resortEntries, tabURL} from '.';
 import * as hotkeys from './hotkeys';
 

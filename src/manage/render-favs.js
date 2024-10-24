@@ -1,6 +1,8 @@
 import {$, $$, $create} from '/js/dom';
 import {API} from '/js/msg';
-import {debounce, getOwnTab, MF_ICON, stringAsRegExpStr, URLS} from '/js/toolbox';
+import * as URLS from '/js/urls';
+import {debounce, stringAsRegExpStr} from '/js/util';
+import {getOwnTab, MF_ICON} from '/js/util-webext';
 import {createTargetsElement} from './render';
 import {installed, newUI} from './util';
 

@@ -6,10 +6,10 @@
  * which also happens before the first paint unless the browser "yields", but that's abnormal
  * and not even a problem in the most popular case of using system dark/light mode.
  */
-import {$, $create} from '/js/dom-base';
-import {getCssMediaRuleByName} from '/js/dom-util';
-import {API, onExtension} from '/js/msg';
-import {MF_ICON_EXT, MF_ICON_PATH} from '/js/toolbox';
+import {$, $create} from './dom';
+import {getCssMediaRuleByName} from './dom-util';
+import {API, onExtension} from './msg-base';
+import {MF_ICON_EXT, MF_ICON_PATH} from './util-webext';
 import '/css/global.css';
 import '/css/global-dark.css';
 
@@ -22,7 +22,7 @@ const map = {[MEDIA_ON]: true, [MEDIA_OFF]: false};
   let isDark, favicon;
   if (window === top) ({dark: isDark, favicon} = global.clientData || await API.info.get());
   else isDark = parent.document.documentElement.dataset.uiTheme === 'dark';
-  toggle(isDark);
+  toggle(isDark, true);
   onExtension(e => {
     if (e.method === 'colorScheme') {
       isDark = e.value;
@@ -40,8 +40,9 @@ const map = {[MEDIA_ON]: true, [MEDIA_OFF]: false};
   }
 })();
 
-function toggle(isDark) {
+function toggle(isDark, firstRun) {
   $.root.dataset.uiTheme = isDark ? 'dark' : 'light';
+  if (firstRun && !isDark) return;
   getCssMediaRuleByName(MEDIA_NAME, m => {
     if (map[m[0]] !== isDark) {
       m.mediaText = `${isDark ? MEDIA_ON : MEDIA_OFF},${MEDIA_NAME}`;

@@ -1,6 +1,6 @@
 import * as prefs from '/js/prefs';
 import {chromeSync} from '/js/storage-util';
-import {debounce, deepCopy, deepEqual, isObject} from '/js/toolbox';
+import {debounce, deepCopy, deepEqual, isObject} from '/js/util';
 import {bgReady} from './common';
 import {sessionData} from './session-data';
 

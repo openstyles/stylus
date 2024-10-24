@@ -1,10 +1,11 @@
 import './intro';
 import browser from '/js/browser';
 import * as msg from '/js/msg';
-import {API, onMessage} from '/js/msg';
+import {API, onMessage} from '/js/msg-base';
 import {createPortProxy} from '/js/port';
 import * as prefs from '/js/prefs';
-import {FIREFOX, ignoreChromeError, MOBILE, WINDOWS} from '/js/toolbox';
+import {ignoreChromeError} from '/js/util-webext';
+import {FIREFOX, MOBILE, WINDOWS} from '/js/ua';
 import {workerPath} from '/js/urls';
 import {broadcast} from './broadcast';
 import './broadcast-injector-config';

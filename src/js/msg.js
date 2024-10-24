@@ -3,8 +3,9 @@ import browser from './browser';
 import {apiHandler, apiSendProxy} from './msg-api';
 import {unwrap} from './msg-base';
 import {createPortExec, createPortProxy} from './port';
-import {deepCopy, getOwnTab, URLS} from './toolbox';
-import {swPath} from './urls';
+import {swPath, workerPath} from './urls';
+import {deepCopy} from './util';
+import {getOwnTab} from './util-webext';
 
 export * from './msg-base';
 
@@ -23,7 +24,7 @@ async function invokeAPI({name: path}, _thisObj, args) {
   // Non-cloneable event is passed when doing `elem.onclick = API.foo`
   if (args[0] instanceof Event) args[0] = 'Event';
   if (path.startsWith(workerApiPrefix)) {
-    workerProxy ??= createPortProxy(URLS.workerPath);
+    workerProxy ??= createPortProxy(workerPath);
     return workerProxy[path.slice(workerApiPrefix.length)](...args);
   }
   let tab = false;

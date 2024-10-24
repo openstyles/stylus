@@ -1,9 +1,12 @@
 import compareVersion from '/js/cmpver';
+import {UCD} from '/js/consts';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {calcStyleDigest, styleSectionsEqual} from '/js/sections-util';
 import {chromeLocal} from '/js/storage-util';
-import {debounce, deepMerge, ignoreChromeError, UCD, URLS} from '/js/toolbox';
+import {extractUsoaId, isLocalhost, usoApi} from '/js/urls';
+import {debounce, deepMerge} from '/js/util';
+import {ignoreChromeError} from '/js/util-webext';
 import {bgReady} from './common';
 import db from './db';
 import download from './download';
@@ -154,7 +157,7 @@ export async function checkStyle(opts) {
       ucd = {};
       varsUrl = updateUrl;
     }
-    updateUrl = style.updateUrl = `${URLS.usoApi}Css/${usoId}`;
+    updateUrl = style.updateUrl = `${usoApi}Css/${usoId}`;
     const {result: css} = await tryDownload(updateUrl, {responseType: 'json'});
     const json = await updateUsercss(css)
       || await API.uso.toUsercss(usoId, varsUrl, css, style, md5, md5Url);
@@ -165,7 +168,7 @@ export async function checkStyle(opts) {
   async function updateUsercss(css) {
     let oldVer = ucd.version;
     let oldEtag = style.etag;
-    const m2 = (css || URLS.extractUsoaId(updateUrl)) &&
+    const m2 = (css || extractUsoaId(updateUrl)) &&
       await API.uso.getEmbeddedMeta(css || style.sourceCode);
     if (m2 && m2.updateUrl) {
       updateUrl = m2.updateUrl;
@@ -186,7 +189,7 @@ export async function checkStyle(opts) {
       // re-install is invalid in a soft upgrade
       err = response === style.sourceCode
         ? STATES.SAME_CODE
-        : !URLS.isLocalhost(updateUrl) && STATES.SAME_VERSION;
+        : !isLocalhost(updateUrl) && STATES.SAME_VERSION;
     }
     if (delta < 0) {
       // downgrade is always invalid

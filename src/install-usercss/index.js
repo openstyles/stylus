@@ -1,15 +1,16 @@
+import '/js/dom-init';
 import {CodeMirror, loadCmTheme, THEME_KEY} from '/cm';
 import compareVersion from '/js/cmpver';
-import {
-  $, $$, $$remove, $create, $createLink, configDialog, messageBox, showSpinner,
-} from '/js/dom';
+import {UCD} from '/js/consts';
+import {$, $$, $$remove, $create, $createLink} from '/js/dom';
+import {configDialog, messageBox, showSpinner} from '/js/dom-util';
 import {fetchTemplate, t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {styleCodeEmpty} from '/js/sections-util';
-import {
-  clipString, closeCurrentTab, deepEqual, sessionStore, tryURL, UCD, URLS,
-} from '/js/toolbox';
+import {isLocalhost} from '/js/urls';
+import {clipString, deepEqual, sessionStore, tryURL} from '/js/util';
+import {closeCurrentTab} from '/js/util-webext';
 import DirectDownloader from './direct-downloader';
 import PortDownloader from './port-downloader';
 import './install-usercss.css';
@@ -172,7 +173,7 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
     style.preferScheme = e.target.value;
   };
 
-  if (!initialUrl || URLS.isLocalhost(initialUrl)) {
+  if (!initialUrl || isLocalhost(initialUrl)) {
     $('.live-reload input').onchange = liveReload.onToggled;
   } else {
     $('.live-reload').remove();

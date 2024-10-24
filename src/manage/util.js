@@ -1,4 +1,4 @@
-import {$} from '/js/dom-base';
+import {$} from '/js/dom';
 import {template} from '/js/localization';
 import * as newUI from './new-ui';
 

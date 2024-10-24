@@ -1,7 +1,9 @@
 import {API} from '/js/msg';
 import popupGetStyles from '/js/popup-get-styles';
 import * as prefs from '/js/prefs';
-import {CHROME, FIREFOX, ignoreChromeError, MF_ACTION_HTML, URLS} from '/js/toolbox';
+import {CHROME, FIREFOX} from '/js/ua';
+import {ownRoot} from '/js/urls';
+import {ignoreChromeError, MF_ACTION_HTML} from '/js/util-webext';
 import {bgReady} from './common';
 import {getSectionsByUrl} from './style-manager';
 import tabMan from './tab-manager';
@@ -59,7 +61,7 @@ function toggle() {
   }
   if (CHROME && !process.env.MV3) {
     chrome.webRequest.onBeforeRequest.addListener(openNamedStyle, {
-      urls: [URLS.ownRoot + '*.user.css'],
+      urls: [ownRoot + '*.user.css'],
       types: ['main_frame'],
     }, ['blocking']);
   }
@@ -71,7 +73,7 @@ function toggle() {
 /** @param {chrome.webRequest.WebRequestBodyDetails} req */
 function prepareStyles(req) {
   if (bgReady.resolve) return;
-  if (req.url.startsWith(URLS.ownRoot)) return preloadPopupData();
+  if (req.url.startsWith(ownRoot)) return preloadPopupData();
   const {url} = req;
   req.tab = {url};
   stylesToPass[req2key(req)] = /** @namespace StylesToPass */ {

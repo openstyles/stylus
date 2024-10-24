@@ -1,9 +1,10 @@
 import {loadCmTheme} from '/cm';
+import {UCD} from '/js/consts';
 import {$} from '/js/dom';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import * as MozDocMapper from '/js/sections-util';
-import {clipString, sessionStore, tryURL, UCD} from '/js/toolbox';
+import {clipString, sessionStore, tryURL} from '/js/util';
 import editor from './editor';
 
 if (process.env.MV3 && /#\d+$/.test(location.hash)) {

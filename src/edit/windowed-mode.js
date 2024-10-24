@@ -1,6 +1,8 @@
 import browser from '/js/browser';
 import * as prefs from '/js/prefs';
-import {browserWindows, FIREFOX, getOwnTab, sessionStore, tryJSONparse} from '/js/toolbox';
+import {FIREFOX} from '/js/ua';
+import {sessionStore, tryJSONparse} from '/js/util';
+import {browserWindows, getOwnTab} from '/js/util-webext';
 import editor from './editor';
 import EmbeddedPopup from './embedded-popup';
 

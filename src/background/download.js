@@ -1,5 +1,6 @@
 import {kAppUrlencoded, kContentType} from '/js/consts';
-import {tryJSONparse, URLS} from '/js/toolbox';
+import {uso, usoJson} from '/js/urls';
+import {tryJSONparse} from '/js/util';
 
 /** @type {Record<string, {req: Promise, ports: Set<chrome.runtime.Port>}>} */
 const jobs = {};
@@ -55,13 +56,13 @@ async function doDownload(url, {
 }, jobKey) {
   let abort, data, timer, usoVars;
   try {
-    if (url.startsWith(URLS.uso) && url.includes('?')) {
+    if (url.startsWith(uso) && url.includes('?')) {
       const i = url.indexOf('?');
       if (body == null) {
         method = 'POST';
         body = url.slice(i);
         url = url.slice(0, i);
-      } else if (method === 'GET' && url.length >= 2000 && url.startsWith(URLS.usoJson)) {
+      } else if (method === 'GET' && url.length >= 2000 && url.startsWith(usoJson)) {
         url = collapseUsoVars(usoVars = [], url, i);
       }
       headers ??= {[kContentType]: kAppUrlencoded};

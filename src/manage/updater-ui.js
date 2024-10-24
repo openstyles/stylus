@@ -1,4 +1,5 @@
-import {$, $$, $create, messageBox, scrollElementIntoView} from '/js/dom';
+import {$, $$, $create} from '/js/dom';
+import {messageBox, scrollElementIntoView} from '/js/dom-util';
 import {t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';

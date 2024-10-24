@@ -2,7 +2,7 @@ import {CodeMirror, extraKeys} from '/cm';
 import {$$, $create} from '/js/dom';
 import {t, template} from '/js/localization';
 import * as prefs from '/js/prefs';
-import {clipString, stringAsRegExp} from '/js/toolbox';
+import {clipString, stringAsRegExp} from '/js/util';
 import {helpPopup} from './util';
 
 let inputs;

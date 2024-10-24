@@ -1,7 +1,9 @@
-import browser from '/js/browser';
-import * as msg from '/js/msg';
-import {API} from '/js/msg-api';
-import {CHROME, FIREFOX, getActiveTab, URLS} from '/js/toolbox';
+import browser from './browser';
+import * as msg from './msg';
+import {API} from './msg-api';
+import {CHROME, FIREFOX} from './ua';
+import {chromeProtectsNTP, ownRoot, supported} from './urls';
+import {getActiveTab} from './util-webext';
 
 export const ABOUT_BLANK = 'about:blank';
 
@@ -11,7 +13,7 @@ export default async function popupGetStyles() {
     tab = await API.waitForTabUrl(tab.id);
   }
   let url = tab.pendingUrl || tab.url || ''; // new Chrome uses pendingUrl while connecting
-  const isOwn = url.startsWith(URLS.ownRoot);
+  const isOwn = url.startsWith(ownRoot);
   const [ping0, frames] = await Promise.all([
     isOwn
       || msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0}),
@@ -43,12 +45,12 @@ export default async function popupGetStyles() {
       frames.push(f);
     }
   }
-  if (url === 'chrome://newtab/' && !URLS.chromeProtectsNTP) {
+  if (url === 'chrome://newtab/' && !chromeProtectsNTP) {
     url = frames[0].url || '';
   }
   // webNavigation doesn't set url in some cases e.g. in our own pages
   frames[0].url = url;
-  const urlSupported = URLS.supported(url);
+  const urlSupported = supported(url);
   if (urlSupported) {
     let styles = [];
     for (const f of frames) {

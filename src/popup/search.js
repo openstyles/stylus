@@ -1,10 +1,12 @@
-import {$, $$, $create, $remove, setupLivePrefs, showSpinner, toggleDataset} from '/js/dom';
+import {UCD} from '/js/consts';
+import {$, $$, $create, $remove, toggleDataset} from '/js/dom';
+import {setupLivePrefs, showSpinner} from '/js/dom-util';
 import {breakWord, formatDate, t, template} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
-import {
-  clipString, debounce, isEmptyObj, stringAsRegExp, stringAsRegExpStr, tryRegExp, tryURL, UCD, URLS,
-} from '/js/toolbox';
+import * as URLS from '/js/urls';
+import {clipString, debounce, isEmptyObj, stringAsRegExp, stringAsRegExpStr, tryRegExp, tryURL}
+  from '/js/util';
 import {$entry, styleFinder, tabURL} from '.';
 import * as Events from './events';
 import './search.css';

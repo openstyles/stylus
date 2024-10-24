@@ -1,6 +1,6 @@
 import {API} from '/js/msg-api';
 import {COMMANDS} from '/js/port';
-import {fetchWebDAV, isCssDarkScheme, mapObj} from '/js/util-base';
+import {fetchWebDAV, isCssDarkScheme, mapObj} from '/js/util';
 
 let webdavInstance;
 

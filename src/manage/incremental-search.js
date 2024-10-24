@@ -1,5 +1,6 @@
-import {$, $$, $create, $isTextInput, animateElement, scrollElementIntoView} from '/js/dom';
-import {debounce} from '/js/toolbox';
+import {$, $$, $create, $isTextInput} from '/js/dom';
+import {animateElement, scrollElementIntoView} from '/js/dom-util';
+import {debounce} from '/js/util';
 import {installed} from './util';
 
 let prevText, focusedLink, focusedEntry;

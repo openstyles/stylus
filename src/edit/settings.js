@@ -1,9 +1,10 @@
 import {CodeMirror, THEMES} from '/cm';
-import {$, $create, setupLivePrefs} from '/js/dom';
+import {$, $create} from '/js/dom';
+import {setupLivePrefs} from '/js/dom-util';
 import {t, template} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
-import {debounce, tryURL} from '/js/toolbox';
+import {debounce, tryURL} from '/js/util';
 import editor from './editor';
 import {createHotkeyInput, helpPopup} from './util';
 import './settings.css';

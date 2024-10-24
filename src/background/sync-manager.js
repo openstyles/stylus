@@ -1,7 +1,7 @@
 import browser from '/js/browser';
 import * as prefs from '/js/prefs';
 import {chromeLocal, chromeSync} from '/js/storage-util';
-import {fetchWebDAV, hasOwn} from '/js/util-base';
+import {fetchWebDAV, hasOwn} from '/js/util';
 import {broadcastExtension} from './broadcast';
 import {uuidIndex} from './common';
 import db from './db';

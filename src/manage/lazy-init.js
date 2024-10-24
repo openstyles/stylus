@@ -1,6 +1,8 @@
-import {$, $create, animateElement} from '/js/dom';
+import {UCD} from '/js/consts';
+import {$, $create} from '/js/dom';
+import {animateElement} from '/js/dom-util';
 import {formatDate, formatRelativeDate, t} from '/js/localization';
-import {debounce, UCD} from '/js/toolbox';
+import {debounce} from '/js/util';
 import InjectionOrder from './injection-order';
 import * as router from './router';
 import UpdateHistory from './updater-ui';

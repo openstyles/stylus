@@ -1,10 +1,12 @@
-import {$, $$remove, $create, $createLink, $isTextInput, messageBox} from '/js/dom';
+import {UCD} from '/js/consts';
+import {$, $$remove, $create, $createLink, $isTextInput} from '/js/dom';
+import {messageBox} from '/js/dom-util';
 import {t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {styleToCss} from '/js/sections-util';
 import {chromeSync, LZ_KEY} from '/js/storage-util';
-import {RX_META, UCD} from '/js/toolbox';
+import {RX_META} from '/js/util';
 import CodeMirror from 'codemirror';
 import cmFactory from './codemirror-factory';
 import editor, {failRegexp} from './editor';

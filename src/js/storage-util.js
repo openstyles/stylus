@@ -1,5 +1,5 @@
-import browser from '/js/browser';
-import {tryJSONparse} from './toolbox';
+import browser from './browser';
+import {tryJSONparse} from './util';
 import {compressToUTF16, decompressFromUTF16} from 'lz-string-unsafe';
 
 export const LZ_KEY = {

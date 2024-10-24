@@ -1,4 +1,4 @@
-import {COMMANDS} from '/js/port';
+import {COMMANDS} from './port';
 import {importScriptsOnce} from './worker-util';
 
 let sugarss = null;

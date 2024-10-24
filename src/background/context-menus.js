@@ -1,7 +1,9 @@
 import browser from '/js/browser';
 import {sendTab} from '/js/msg';
 import * as prefs from '/js/prefs';
-import {CHROME, URLS, ignoreChromeError} from '/js/toolbox';
+import {ignoreChromeError} from '/js/util-webext';
+import {CHROME} from '/js/ua';
+import {ownRoot} from '/js/urls';
 import {browserCommands} from './common';
 
 export default async function initContextMenus() {
@@ -33,7 +35,7 @@ export default async function initContextMenus() {
       title: 'editDeleteText',
       type: 'normal',
       contexts: ['editable'],
-      documentUrlPatterns: [URLS.ownRoot + '*'],
+      documentUrlPatterns: [ownRoot + '*'],
       click: (info, tab) => {
         sendTab(tab.id, {method: 'editDeleteText'}, undefined, 'extension');
       },

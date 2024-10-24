@@ -1,12 +1,15 @@
-import {$, $$, $create, $remove, getEventKeyName, setupLivePrefs} from '/js/dom';
+import '/js/dom-init';
+import {UCD} from '/js/consts';
+import {$, $$, $create, $remove} from '/js/dom';
+import {getEventKeyName, setupLivePrefs} from '/js/dom-util';
 import {t, tBody, template} from '/js/localization';
 import {API, onExtension, sendTab} from '/js/msg';
 import popupGetStyles, {ABOUT_BLANK} from '/js/popup-get-styles';
 import * as prefs from '/js/prefs';
-import {
-  capitalize, CHROME, CHROME_POPUP_BORDER_BUG, clamp, clipString, FIREFOX, getActiveTab, isEmptyObj,
-  MF, MOBILE, OPERA, stringAsRegExpStr, UCD, URLS,
-} from '/js/toolbox';
+import {CHROME, FIREFOX, MOBILE, OPERA} from '/js/ua';
+import {ownRoot} from '/js/urls';
+import {capitalize, clamp, clipString, isEmptyObj, stringAsRegExpStr} from '/js/util';
+import {CHROME_POPUP_BORDER_BUG, getActiveTab, MF} from '/js/util-webext';
 import * as Events from './events';
 import './hotkeys';
 import './popup.css';
@@ -205,7 +208,7 @@ function createWriterElement(frame, index) {
   if (isAbout) {
     el = $create('span', url);
   } else {
-    el = (url.startsWith(URLS.ownRoot) ? makeExtCrumbs : makeWebCrumbs)(crumbs, url);
+    el = (url.startsWith(ownRoot) ? makeExtCrumbs : makeWebCrumbs)(crumbs, url);
     el.onmouseenter = el.onmouseleave = el.onfocus = el.onblur = Events.toggleUrlLink;
     if (!index) Object.assign($('#write-style-for'), {onclick: el.click.bind(el), title: el.title});
   }
@@ -222,7 +225,7 @@ function createWriterElement(frame, index) {
 function makeExtCrumbs(crumbs, url) {
   const key = 'regexp';
   const all = '^\\w+-extension://';
-  const page = url.slice(URLS.ownRoot.length, url.indexOf('.html'));
+  const page = url.slice(ownRoot.length, url.indexOf('.html'));
   crumbs.push(makeCrumb(key, all + '.+', EXT_NAME, EXT_NAME, true));
   return makeCrumb(key, `${all}[^/]+/${stringAsRegExpStr(page)}.*`, EXT_NAME, page + '.*');
 }

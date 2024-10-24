@@ -1,7 +1,7 @@
 import {t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
-import {sessionStore} from '/js/toolbox';
+import {sessionStore} from '/js/util';
 import editor from './editor';
 
 window.on('beforeunload', e => {

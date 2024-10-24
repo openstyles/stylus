@@ -1,6 +1,7 @@
 /** Registers 'hint' helper and 'autocompleteOnTyping' option in CodeMirror */
+import {UCD} from '/js/consts';
 import * as prefs from '/js/prefs';
-import {debounce, hasOwn, stringAsRegExpStr, tryRegExp, UCD} from '/js/toolbox';
+import {debounce, hasOwn, stringAsRegExpStr, tryRegExp} from '/js/util';
 import CodeMirror from 'codemirror';
 import cmFactory from './codemirror-factory';
 import editor from './editor';

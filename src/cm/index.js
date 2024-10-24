@@ -1,7 +1,8 @@
 import {$} from '/js/dom';
 import {template} from '/js/localization';
 import * as prefs from '/js/prefs';
-import {deepMerge, WINDOWS} from '/js/toolbox';
+import {WINDOWS} from '/js/ua';
+import {deepMerge} from '/js/util';
 import CodeMirror from 'codemirror';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/addon/comment/comment';

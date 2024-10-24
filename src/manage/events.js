@@ -1,9 +1,12 @@
+import {UCD} from '/js/consts';
+import {$, $$} from '/js/dom';
 import {
-  $, $$, animateElement, configDialog, getEventKeyName, messageBox, scrollElementIntoView,
-} from '/js/dom';
+  animateElement, configDialog, getEventKeyName, messageBox, scrollElementIntoView,
+} from '/js/dom-util';
 import {t} from '/js/localization';
 import {API, onExtension} from '/js/msg';
-import {browserWindows, debounce, getOwnTab, sessionStore, UCD} from '/js/toolbox';
+import {debounce, sessionStore} from '/js/util';
+import {browserWindows, getOwnTab} from '/js/util-webext';
 import {filterAndAppend, showFiltersStats} from './filters';
 import {createStyleElement, createTargetsElement, renderFavs, updateTotal} from './render';
 import * as sorter from './sorter';
