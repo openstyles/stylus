@@ -14,8 +14,7 @@ export const COMMANDS = process.env.ENTRY !== 'sw' && (
 export const PORT_TIMEOUT = 5 * 60e3; // TODO: expose as a configurable option
 const autoClose = process.env.ENTRY === 'worker' ||
   process.env.ENTRY === true && location.pathname === `/${process.env.PAGE_OFFSCREEN}.html`;
-const kInitPort = 'port';
-const ret0 = () => 0;
+const NOP = () => {};
 const navSW = navigator.serviceWorker;
 if (process.env.MV3 && process.env.ENTRY === true) {
   navSW.onmessage = initRemotePort.bind(COMMANDS);
@@ -45,13 +44,15 @@ export function createPortExec(getTarget, {lock, once} = {}) {
   return async function exec(...args) {
     const ctx = [new Error().stack]; // saving it prior to a possible async jump for easier debugging
     const promise = new Promise((resolve, reject) => ctx.push(resolve, reject));
-    if ((port ??= initPort()).then) port = await port;
-    queue.set(++lastId, ctx);
-    (once ? target : port).postMessage({args, id: lastId},
-      once ? [port] : Array.isArray(this) ? this : undefined); // transferables
+    if ((port ??= initPort(args)).then) port = await port;
+    process.env.DEBUG(location.pathname, 'exec send', ...args);
+    (once ? target : port).postMessage({args, id: ++lastId},
+      once || (Array.isArray(this) ? this : undefined));
+    queue.set(lastId, ctx);
     return promise;
   };
   async function initPort() {
+    process.env.DEBUG(location.pathname, 'exec init', getTarget);
     if (typeof getTarget === 'string') {
       lock = getTarget;
       target = new SharedWorker(getTarget);
@@ -66,7 +67,8 @@ export function createPortExec(getTarget, {lock, once} = {}) {
     } else {
       const mc = new MessageChannel();
       port = mc.port1;
-      if (!once) target.postMessage([kInitPort, lock], [mc.port2]);
+      if (once) once = [mc.port2];
+      else target.postMessage({lock}, [mc.port2]);
     }
     port.onmessage = onMessage;
     port.onmessageerror = onMessageError;
@@ -76,6 +78,7 @@ export function createPortExec(getTarget, {lock, once} = {}) {
   }
   /** @param {MessageEvent} _ */
   function onMessage({data}) {
+    process.env.DEBUG(location.pathname, 'exec onmessage', data);
     if (!lockRequested && !once) trackTarget(queue);
     const {id, res, err} = data.id ? data : JSON.parse(data);
     const [stack, resolve, reject] = queue.get(id);
@@ -94,7 +97,7 @@ export function createPortExec(getTarget, {lock, once} = {}) {
   }
   async function trackTarget(queueCopy) {
     lockRequested = true;
-    await navigator.locks.request(lock, ret0);
+    await navigator.locks.request(lock, NOP);
     for (const [stack, /*resolve*/, reject] of queueCopy.values()) {
       const err = new Error('Target disconnected');
       err.stack = stack;
@@ -111,22 +114,25 @@ export function createPortExec(getTarget, {lock, once} = {}) {
  * @param {MessageEvent} evt
  */
 export function initRemotePort(evt) {
-  const initData = evt.data || {};
-  if (initData.id) return navSW.onmessage(evt); // one-time message
-  const lock = initData[1] || location.pathname;
-  const port = evt.ports[0];
+  const {lock = location.pathname, id: once} = evt.data || {};
   const exec = this;
-  if (!lockingSelf && lock) {
-    lockingSelf = true;
-    navigator.locks.request(lock, () => new Promise(ret0));
-  }
+  const port = evt.ports[0];
+  process.env.DEBUG(location.pathname, 'initRemotePort', evt);
   let numJobs = 0;
+  if (!lockingSelf && lock && !once) {
+    lockingSelf = true;
+    navigator.locks.request(lock, () => new Promise(NOP));
+  }
   port.onerror = console.error;
-  port.onmessage = async portEvent => {
-    if (process.env.DEBUG) console.log('incoming', portEvent);
+  port.onmessage = onMessage;
+  port.onmessageerror = onMessageError;
+  if (once) onMessage(evt);
+  async function onMessage(portEvent) {
+    process.env.DEBUG(location.pathname, 'port onmessage', portEvent);
     const data = portEvent.data;
     const {args, id} = data.id ? data : JSON.parse(data);
-    let res, err;
+    let res,
+      err;
     numJobs++;
     if (timer) {
       clearTimeout(timer);
@@ -142,12 +148,11 @@ export function initRemotePort(evt) {
       delete e.source;
       // TODO: find which props are actually used (err may contain noncloneable Response)
     }
-    if (process.env.DEBUG) console.log('outgoing', id, res, err, portEvent._transfer);
-    (portEvent.ports[0] || portEvent.source || port).postMessage({id, res, err},
+    process.env.DEBUG(location.pathname, 'port response', {id, res, err}, portEvent._transfer);
+    port.postMessage({id, res, err},
       (/**@type{RemotePortEvent}*/portEvent)._transfer);
     if (!--numJobs && autoClose) closeAfterDelay();
-  };
-  port.onmessageerror = onMessageError;
+  }
 }
 
 export function closeAfterDelay() {

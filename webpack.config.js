@@ -64,7 +64,6 @@ const VARS = {
   ASSETS,
   ASSETS_CM,
   BUILD,
-  DEBUG: !!process.env.DEBUG,
   DEV,
   ENTRY: false,
   IS_BG: false,
@@ -76,6 +75,7 @@ const VARS = {
 const RAW_VARS = {
   // hiding `global` from IDE so it doesn't see the symbol as a global
   API: 'global.API',
+  DEBUG: process.env.DEBUG ? 'console.log' : 'null?.',
   KEEP_ALIVE: '',
 };
 const BANNER = '{const global = this, window = global;';
