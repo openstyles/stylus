@@ -81,7 +81,7 @@ export function tryRegExp(regexp, flags) {
 
 export function tryJSONparse(jsonString) {
   try {
-    return JSON.parse(jsonString);
+    if (jsonString) return JSON.parse(jsonString);
   } catch {}
 }
 

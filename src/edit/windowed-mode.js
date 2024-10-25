@@ -1,4 +1,4 @@
-import browser from '/js/browser';
+import '/js/browser';
 import * as prefs from '/js/prefs';
 import {FIREFOX} from '/js/ua';
 import {sessionStore, tryJSONparse} from '/js/util';

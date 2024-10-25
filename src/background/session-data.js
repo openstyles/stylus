@@ -4,7 +4,7 @@ import {debounce, deepEqual, deepMerge, isEmptyObj, isObject} from '/js/util';
 let sessionDataSaved;
 let sessionDataToWrite;
 export let sessionData = process.env.MV3 && (async () => {
-  sessionData = new Proxy(await chrome.storage.session.get(), {
+  sessionData = new Proxy(await chromeSession.get(), {
     set(target, key, val) {
       const obj = isObject(val);
       if (obj ? !deepEqual(val, target[key]) : val !== target[key]) {

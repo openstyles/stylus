@@ -1,4 +1,4 @@
-import browser from './browser';
+import './browser';
 import * as msg from './msg';
 import {API} from './msg-api';
 import {CHROME, FIREFOX} from './ua';

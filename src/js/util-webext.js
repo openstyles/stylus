@@ -1,4 +1,4 @@
-import browser from './browser';
+import './browser';
 import {CHROME} from './ua';
 import {ownRoot} from './urls';
 import {deepCopy} from './util';

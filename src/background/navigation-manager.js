@@ -1,4 +1,4 @@
-import browser from '/js/browser';
+import '/js/browser';
 import {sendTab} from '/js/msg';
 import {CHROME, FIREFOX} from '/js/ua';
 import {chromeProtectsNTP} from '/js/urls';

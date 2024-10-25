@@ -1,8 +1,8 @@
+import {getLZValue, LZ_KEY, setLZValue} from '/js/chrome-sync';
 import {kAppJson} from '/js/consts';
 import {$, $create, $createLink} from '/js/dom';
 import {messageBox} from '/js/dom-util';
 import {t} from '/js/localization';
-import {chromeSync, LZ_KEY} from '/js/storage-util';
 import {tryJSONparse} from '/js/util';
 import editor from '../editor';
 import {helpPopup, showCodeMirrorPopup, worker} from '../util';
@@ -27,7 +27,7 @@ export async function showLintConfig() {
   }
   // TODO: replace with JSON.parse()
   await import('/js/jsonlint-bundle');
-  const config = await chromeSync.getLZValue(LZ_KEY[linter]);
+  const config = await getLZValue(LZ_KEY[linter]);
   const defaults = DEFAULTS[linter];
   const title = t('linterConfigPopupTitle', isStylelint ? 'Stylelint' : 'CSSLint');
   const activeRules = new Set(getActiveRules());
@@ -244,7 +244,7 @@ async function onConfigSave(event) {
       delete cfg[id];
     }
   }
-  chromeSync.setLZValue(LZ_KEY[linter], json);
+  setLZValue(LZ_KEY[linter], json);
   cmDlg.markClean();
   cmDlg.focus();
   updateConfigButtons();

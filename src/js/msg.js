@@ -1,5 +1,5 @@
 /** Don't use this file in content script context! */
-import browser from './browser';
+import './browser';
 import {apiHandler, apiSendProxy} from './msg-api';
 import {unwrap} from './msg-base';
 import {createPortExec, createPortProxy} from './port';

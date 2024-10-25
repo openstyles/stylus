@@ -89,8 +89,8 @@ const TERSER_OPTS = {
   terserOptions: {
     compress: {
       ecma: MV3 ? 2024 : 2017,
-      passes: 1,
-      // unsafe_arrows: true, // it's 'safe' since we don't rely on function prototypes
+      passes: 2,
+      reduce_funcs: false,
     },
     output: {
       ascii_only: false,
@@ -170,15 +170,7 @@ const getBaseConfig = () => ({
     mangleExports: false,
     usedExports: true,
     minimizer: DEV ? [] : [
-      new TerserPlugin(mergeCfg({
-        exclude: CODEMIRROR_NATIVE,
-        terserOptions: {
-          mangle: {
-            keep_fnames: true,
-            reserved: ['window'],
-          },
-        },
-      }, TERSER_OPTS)),
+      new TerserPlugin(mergeCfg({exclude: CODEMIRROR_NATIVE}, TERSER_OPTS)),
       new CssMinimizerPlugin({
         minimizerOptions: {
           preset: ['default', {

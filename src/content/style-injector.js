@@ -283,7 +283,7 @@ function initCreationDoc(style) {
   for (let retry = 0, el, ok; !ok && retry < 2; retry++) {
     createElement = creationDoc.createElement.bind(creationDoc);
     createElementNS = creationDoc.createElementNS.bind(creationDoc);
-    if (chrome.app) return;
+    if (!FF) return;
     if (!retry || ffCsp) {
       try {
         el = addElement(createStyle({code: ['a:not(a){}']}));
@@ -360,7 +360,7 @@ export function sort() {
 export function updateConfig(cfg) {
   exposeStyleName = cfg.name;
   nonce = cfg.nonce || nonce;
-  ffCsp = !nonce && !isExt && !chrome.app && isSecureContext;
+  ffCsp = !nonce && !isExt && FF && isSecureContext;
   if (!ass !== !cfg.ass) {
     removeAllElements();
     ass = ass ? null : wrappedDoc[kAss];

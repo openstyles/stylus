@@ -1,5 +1,5 @@
 import './intro';
-import browser from '/js/browser';
+import '/js/browser';
 import * as msg from '/js/msg';
 import {API, onMessage} from '/js/msg-base';
 import {createPortProxy} from '/js/port';

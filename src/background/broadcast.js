@@ -1,4 +1,4 @@
-import browser from '/js/browser';
+import '/js/browser';
 import {sendTab, unwrap} from '/js/msg';
 import {ownRoot} from '/js/urls';
 import tabMan from './tab-manager';

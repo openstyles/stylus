@@ -1,5 +1,5 @@
 import '/js/dom-init';
-import browser from '/js/browser';
+import '/js/browser';
 import {$, $$, $create} from '/js/dom';
 import {getEventKeyName, messageBox, setInputValue, setupLivePrefs} from '/js/dom-util';
 import {t, tBody, template} from '/js/localization';

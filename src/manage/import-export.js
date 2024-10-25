@@ -1,3 +1,4 @@
+import * as chromeSync from '/js/chrome-sync';
 import {kAppJson, UCD} from '/js/consts';
 import {$, $$, $create} from '/js/dom';
 import {animateElement, messageBox, scrollElementIntoView} from '/js/dom-util';
@@ -5,7 +6,6 @@ import {t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {styleJSONseemsValid, styleSectionsEqual} from '/js/sections-util';
-import {chromeSync, LZ_KEY} from '/js/storage-util';
 import {MOBILE} from '/js/ua';
 import {clipString, deepEqual, hasOwn, isEmptyObj, RX_META} from '/js/util';
 import {queue} from './util';
@@ -185,7 +185,7 @@ async function importFromString(jsonString) {
     order = storage.order;
     delete storage.order;
     if (!isEmptyObj(storage)) {
-      analyzePrefs(storage, Object.values(LZ_KEY), await chromeSync.getLZValues());
+      analyzePrefs(storage, Object.values(chromeSync.LZ_KEY), await chromeSync.getLZValues());
     }
   }
 

@@ -1,4 +1,4 @@
-import browser from '/js/browser';
+import '/js/browser';
 import {knownKeys, subscribe} from '/js/prefs';
 
 export default function initBrowserCommandsApi() {

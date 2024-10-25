@@ -17,9 +17,9 @@ const blobUrlPrefix = 'blob:' + chrome.runtime.getURL('/');
 /** @type {Object<string,StylesToPass>} */
 const stylesToPass = {};
 const state = {};
-const INJECTED_FUNC = data => {
-  if (window['apply.js'] !== 1) { // storing data only if apply.js hasn't run yet
-    window[Symbol.for('styles')] = data;
+const INJECTED_FUNC = function (data) {
+  if (this['apply.js'] !== 1) { // storing data only if apply.js hasn't run yet
+    this[Symbol.for('styles')] = data;
   }
 };
 const INJECTED_CODE = `${INJECTED_FUNC}`;

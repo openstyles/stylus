@@ -1,4 +1,4 @@
-import browser from '/js/browser';
+import '/js/browser';
 import {sendTab} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {ignoreChromeError} from '/js/util-webext';

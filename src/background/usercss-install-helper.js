@@ -1,4 +1,4 @@
-import browser from '/js/browser';
+import '/js/browser';
 import {kContentType} from '/js/consts';
 import {DNR_ID_INSTALLER, updateDNR} from '/js/dnr';
 import * as prefs from '/js/prefs';

@@ -1,3 +1,4 @@
+import {getLZValue, LZ_KEY, setLZValue} from '/js/chrome-sync';
 import {UCD} from '/js/consts';
 import {$, $$remove, $create, $createLink, $isTextInput} from '/js/dom';
 import {messageBox} from '/js/dom-util';
@@ -5,7 +6,6 @@ import {t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {styleToCss} from '/js/sections-util';
-import {chromeSync, LZ_KEY} from '/js/storage-util';
 import {RX_META} from '/js/util';
 import CodeMirror from 'codemirror';
 import cmFactory from './codemirror-factory';
@@ -253,8 +253,8 @@ export default function SourceEditor() {
     if (res.enter || res.button !== 1) {
       const key = LZ_KEY.usercssTemplate;
       const code = res.button === 2 ? DEFAULT_TEMPLATE : cm.getValue();
-      await chromeSync.setLZValue(key, code);
-      if (await chromeSync.getLZValue(key) !== code) {
+      await setLZValue(key, code);
+      if (await getLZValue(key) !== code) {
         messageBox.alert(t('syncStorageErrorSaving'));
       }
     }

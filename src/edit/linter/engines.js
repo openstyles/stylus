@@ -1,5 +1,5 @@
+import {getLZValue, LZ_KEY} from '/js/chrome-sync';
 import * as prefs from '/js/prefs';
-import {chromeSync, LZ_KEY} from '/js/storage-util';
 import {onStorageChanged} from '/js/util-webext';
 import * as linterMan from '.';
 import editor from '../editor';
@@ -57,7 +57,7 @@ onStorageChanged.addListener(changes => {
 });
 
 async function getConfig(name) {
-  const rawCfg = await chromeSync.getLZValue(LZ_KEY[name]);
+  const rawCfg = await getLZValue(LZ_KEY[name]);
   const cfg = ENGINES[name].getConfig(rawCfg);
   configs.set(name, cfg);
   return cfg;

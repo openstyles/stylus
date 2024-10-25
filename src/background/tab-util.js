@@ -1,4 +1,4 @@
-import browser from '/js/browser';
+import '/js/browser';
 import {API, sendTab} from '/js/msg';
 import {CHROME, FIREFOX} from '/js/ua';
 import * as prefs from '/js/prefs';

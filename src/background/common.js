@@ -1,3 +1,4 @@
+import {CHROME} from '/js/ua';
 import {browserWindows} from '/js/util-webext';
 
 export const bgReady = (r => Object.assign(new Promise(cb => (r = cb)), {resolve: r}))();
@@ -11,7 +12,7 @@ export const uuidIndex = Object.assign(new Map(), {
   },
 });
 
-export let isVivaldi = !!(browserWindows && chrome.app) && (async () => {
+export let isVivaldi = !!(browserWindows && CHROME) && (async () => {
   const wnd = (await browserWindows.getAll())[0] ||
     await new Promise(resolve => browserWindows.onCreated.addListener(function onCreated(w) {
       browserWindows.onCreated.removeListener(onCreated);

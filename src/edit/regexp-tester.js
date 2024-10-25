@@ -1,4 +1,4 @@
-import browser from '/js/browser';
+import '/js/browser';
 import {$create} from '/js/dom';
 import {t, template} from '/js/localization';
 import {API} from '/js/msg';
