@@ -16,7 +16,7 @@
     left: 94px;
     top: 23px;
     position: absolute;
-    animation: lds-spinner linear 1s infinite;
+    animation: fadeout linear 1s infinite;
     animation-direction: reverse;
     background: currentColor;
     width: 12px;
