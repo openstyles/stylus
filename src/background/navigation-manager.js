@@ -22,7 +22,8 @@ async function onNavigation(data) {
     return; // Chrome bug: listener is called twice with identical data
   }
   prevData = data;
-  if (CHROME &&
+  if (!process.env.MV3 &&
+      CHROME &&
       chromeProtectsNTP &&
       data.url.startsWith('https://www.google.') &&
       data.url.includes('/_/chrome/newtab?')) {
@@ -48,7 +49,7 @@ function onFakeNavigation(data) {
   sendTab(tabId, {method: 'urlChanged', iid, url}, to);
 }
 
-bgReady.then(() => {
+if (!process.env.MV3) {
   /*
    * Expose style version on greasyfork/sleazyfork 1) info page and 2) code page
    * Not using manifest.json to avoid injecting in unrelated sub-pages.
@@ -83,7 +84,7 @@ bgReady.then(() => {
   /*
    * FF misses some about:blank iframes so we inject our content script explicitly
    */
-  if (FIREFOX) {
+  if (process.env.BUILD !== 'chrome' && FIREFOX) {
     chrome.webNavigation.onDOMContentLoaded.addListener(async ({tabId, frameId}) => {
       if (frameId &&
           !await sendTab(tabId, {method: 'ping'}, {frameId})) {
@@ -99,4 +100,4 @@ bgReady.then(() => {
       url: [{urlEquals: 'about:blank'}],
     });
   }
-});
+}
