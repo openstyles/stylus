@@ -11,6 +11,7 @@ export default function USWIntegration() {
   const META_KEYS = ['name', 'description', 'license', 'username>author', 'homepage', 'namespace'];
   const elProgress = $('#usw-progress');
   const UI = $('#publish');
+  const btnPublish = $('#usw-publish-style');
   const style = editor.style;
   let spinner;
   let spinnerTimer = 0;
@@ -26,8 +27,7 @@ export default function USWIntegration() {
   });
 
   updateUI();
-  $('#usw-publish-style').onclick = disableWhileActive(publishStyle);
-  $('#usw-disconnect').onclick = disableWhileActive(disconnect);
+  btnPublish.onclick = $('#usw-disconnect').onclick = onClick;
 
   async function publishStyle() {
     const {id, _usw} = style;
@@ -92,15 +92,14 @@ export default function USWIntegration() {
     }
   }
 
-  function disableWhileActive(fn) {
-    /** @this {Element} */
-    return async function () {
-      this.disabled = true;
-      timerOn();
-      await fn().catch(console.error);
-      timerOff();
-      this.disabled = false;
-    };
+  /** @this {Element} */
+  async function onClick() {
+    this.disabled = true;
+    timerOn();
+    await (this === btnPublish ? publishStyle : disconnect)()
+      .catch(console.error);
+    timerOff();
+    this.disabled = false;
   }
 
   function onDataChanged() {
