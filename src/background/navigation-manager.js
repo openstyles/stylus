@@ -4,7 +4,6 @@ import {CHROME, FIREFOX} from '/js/ua';
 import {chromeProtectsNTP} from '/js/urls';
 import {deepEqual} from '/js/util';
 import {ignoreChromeError, MF} from '/js/util-webext';
-import {bgReady} from './common';
 import tabMan from './tab-manager';
 
 const listeners = new Set();
