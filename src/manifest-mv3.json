@@ -15,6 +15,7 @@
     "alarms",
     "contextMenus",
     "declarativeNetRequestWithHostAccess",
+    "declarativeNetRequestFeedback",
     "identity",
     "offscreen",
     "scripting",

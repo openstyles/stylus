@@ -14,7 +14,7 @@ const {anyPathSep, stripSourceMap, RawEnvPlugin, MANIFEST, MANIFEST_MV3, ROOT} =
 const WebpackPatchBootstrapPlugin = require('./tools/webpack-patch-bootstrap');
 
 const NODE_ENV = process.env.NODE_ENV;
-const [BUILD, FLAVOR] = NODE_ENV?.split('-') || [];
+const [BUILD, FLAVOR, ZIP] = NODE_ENV?.split('-') || [];
 const DEV = BUILD === 'DEV' || process.env.npm_lifecycle_event?.startsWith('watch');
 const FS_CACHE = !DEV;
 const SRC = ROOT + 'src/';
@@ -71,6 +71,7 @@ const VARS = {
   MV3,
   PAGE_BG,
   PAGE_OFFSCREEN,
+  ZIP: !!ZIP,
 };
 const RAW_VARS = {
   // hiding `global` from IDE so it doesn't see the symbol as a global

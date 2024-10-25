@@ -26,12 +26,14 @@ fse.emptyDirSync(ROOT + 'node_modules/.cache/webpack');
     ? targets.split(',')
     : [sFirefox, sChrome, sChromeBeta, sChromeMV3];
   for (const target of targets) {
-    process.env.NODE_ENV = target;
+    process.env.NODE_ENV = target + '-zip';
     console.log(chalk.bold(`Building for ${target}...`));
     fse.emptyDirSync(DST);
     delete require.cache[CONFIG_PATH];
+
     const err = await new Promise(cb => webpack(require(CONFIG_PATH), cb));
     if (err) throw err;
+
     const mj = patchManifest(fs.readFileSync(DST + MANIFEST, 'utf8'), target);
     const zipName = `stylus-${target}-${mj.version}.zip`;
     const zip = new JSZip();
@@ -57,6 +59,8 @@ fse.emptyDirSync(ROOT + 'node_modules/.cache/webpack');
 
 function patchManifest(str, suffix) {
   const mj = JSON.parse(str);
+  const i = mj.permissions.indexOf('declarativeNetRequestFeedback');
+  if (i >= 0) mj.permissions.splice(i, 1);
   delete mj.key;
   if (suffix === sFirefox) {
     mj.options_ui = {
