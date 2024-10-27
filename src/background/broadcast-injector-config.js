@@ -1,7 +1,7 @@
 import * as prefs from '/js/prefs';
 import {broadcast} from './broadcast';
 import * as colorScheme from './color-scheme';
-import {bgReady} from './common';
+import {bgReady, safeTimeout} from './common';
 import {getUrlOrigin} from './tab-util';
 
 let cfg;
@@ -19,7 +19,7 @@ bgReady.then(() => {
 export default function broadcastInjectorConfig(key, val) {
   if (!cfg) {
     cfg = {};
-    setTimeout(throttle);
+    safeTimeout(throttle);
   }
   cfg[INJECTOR_CONFIG_MAP[key] || key] = val;
 }

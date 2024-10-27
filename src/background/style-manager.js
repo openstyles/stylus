@@ -8,7 +8,7 @@ import {deepEqual, isEmptyObj, mapObj, stringAsRegExpStr, tryRegExp, tryURL} fro
 import {broadcast, broadcastExtension} from './broadcast';
 import broadcastInjectorConfig from './broadcast-injector-config';
 import * as colorScheme from './color-scheme';
-import {bgReady, uuidIndex} from './common';
+import {bgReady, safeTimeout, uuidIndex} from './common';
 import db from './db';
 import StyleCache from './style-cache';
 import tabMan from './tab-manager';
@@ -357,7 +357,7 @@ export async function importMany(items) {
       res[i] = {style};
     }
   }
-  setTimeout(() => messages.forEach(args => broadcastStyleUpdated(...args)), 100);
+  safeTimeout(() => messages.forEach(args => broadcastStyleUpdated(...args)), 100);
   return Promise.all(res);
 }
 
@@ -598,7 +598,7 @@ async function init() {
     prefs.ready,
   ]);
   const updated = await Promise.all(styles.map(fixKnownProblems).filter(Boolean));
-  if (updated.length) setTimeout(db.putMany, 0, updated);
+  if (updated.length) safeTimeout(db.putMany, 0, updated);
   setOrderImpl(orderFromDb, {store: false});
   styles.forEach(storeInMap);
 }

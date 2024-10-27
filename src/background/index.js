@@ -4,6 +4,7 @@ import * as msg from '/js/msg';
 import {API, onMessage} from '/js/msg-base';
 import {createPortProxy} from '/js/port';
 import * as prefs from '/js/prefs';
+import {kResolve} from '/js/util';
 import {ignoreChromeError} from '/js/util-webext';
 import {FIREFOX, MOBILE, WINDOWS} from '/js/ua';
 import {workerPath} from '/js/urls';
@@ -127,7 +128,7 @@ chrome.runtime.onConnect.addListener(port => {
 
 async function apiPortMessage({id, data, TDM}, port) {
   try {
-    if (bgReady.resolve) await bgReady;
+    if (bgReady[kResolve]) await bgReady;
     port.sender.TDM = TDM;
     data = {data: await msg._execute('extension', data, port.sender)};
   } catch (e) {
@@ -144,8 +145,8 @@ Promise.all([
     .then(res => API.data.set('hasFileAccess', res)),
   bgReady.styles,
 ]).then(async () => {
-  bgReady.resolve();
-  bgReady.resolve = null;
+  bgReady[kResolve]();
+  bgReady[kResolve] = null;
   if (!process.env.MV3) window._msgExec = msg._execute;
   if (FIREFOX) initBrowserCommandsApi();
   broadcast({method: 'backgroundReady'});

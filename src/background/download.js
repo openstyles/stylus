@@ -1,6 +1,7 @@
 import {kAppUrlencoded, kContentType} from '/js/consts';
 import {uso, usoJson} from '/js/urls';
 import {tryJSONparse} from '/js/util';
+import {safeTimeout} from './common';
 
 /** @type {Record<string, {req: Promise, ports: Set<chrome.runtime.Port>}>} */
 const jobs = {};
@@ -74,7 +75,7 @@ async function doDownload(url, {
         method,
         signal: !timeout ? null : (
           abort = new AbortController(),
-          timer = setTimeout(callAbort, timeout, abort, url),
+          timer = safeTimeout(callAbort, timeout, abort, url),
           abort.signal
         ),
       })
@@ -98,7 +99,7 @@ async function doDownload(url, {
       });
     if (process.env.MV3) {
       if (timer) clearTimeout(timer);
-      timer = loadTimeout && setTimeout(callAbort, loadTimeout, abort, url);
+      timer = loadTimeout && safeTimeout(callAbort, loadTimeout, abort, url);
     }
     if (requiredStatusCode && resp.status !== requiredStatusCode && !url.startsWith('file:')) {
       throw new Error(`Bad status code ${resp.status} for ${url}`);

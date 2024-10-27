@@ -3,8 +3,9 @@ import popupGetStyles from '/js/popup-get-styles';
 import * as prefs from '/js/prefs';
 import {CHROME, FIREFOX} from '/js/ua';
 import {ownRoot} from '/js/urls';
+import {kResolve} from '/js/util';
 import {ignoreChromeError, MF_ACTION_HTML} from '/js/util-webext';
-import {bgReady} from './common';
+import {bgReady, safeTimeout} from './common';
 import {getSectionsByUrl} from './style-manager';
 import tabMan from './tab-manager';
 
@@ -72,14 +73,15 @@ function toggle() {
 
 /** @param {chrome.webRequest.WebRequestBodyDetails} req */
 function prepareStyles(req) {
-  if (bgReady.resolve) return;
+  if (bgReady[kResolve]) return;
   if (req.url.startsWith(ownRoot)) return preloadPopupData();
+  const mv3TTL = process.env.MV3 && prefs.get('keepAlive');
   const {url} = req;
   req.tab = {url};
   stylesToPass[req2key(req)] = /** @namespace StylesToPass */ {
     blobId: '',
     payload: getSectionsByUrl.call({sender: req}, url, null, true),
-    timer: setTimeout(cleanUp, 600e3, req),
+    timer: safeTimeout(cleanUp, (mv3TTL > 0 ? mv3TTL : 10) * 60e3, req),
   };
 }
 

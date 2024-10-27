@@ -1,8 +1,9 @@
 import '/js/browser';
 import {sendTab} from '/js/msg';
-import {ignoreChromeError, MF} from '/js/util-webext';
 import * as URLS from '/js/urls';
 import {stringAsRegExpStr} from '/js/util';
+import {ignoreChromeError, MF} from '/js/util-webext';
+import {safeTimeout} from './common';
 import tabMan from './tab-manager';
 
 /**
@@ -25,7 +26,7 @@ export default function reinjectContentScripts() {
   const busyTabs = new Set();
   let busyTabsTimer;
 
-  setTimeout(injectToAllTabs);
+  safeTimeout(injectToAllTabs);
 
   async function injectToTab(tabId, url) {
     const jobs = [];
@@ -82,7 +83,7 @@ export default function reinjectContentScripts() {
     chrome.webNavigation.onTabReplaced[toggle](onBusyTabReplaced);
     chrome.tabs.onRemoved[toggle](onBusyTabRemoved);
     if (state) {
-      busyTabsTimer = setTimeout(toggleBusyTabListeners, 15e3, false);
+      busyTabsTimer = safeTimeout(toggleBusyTabListeners, 15e3, false);
     } else {
       clearTimeout(busyTabsTimer);
     }

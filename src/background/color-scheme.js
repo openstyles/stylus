@@ -41,7 +41,7 @@ prefs.subscribe(kSTATE, (_, val, firstRun) => {
     chrome.alarms.clear(kSTART);
     chrome.alarms.clear(kEND);
   }
-  if (update() && process.env.MV3) writeSessionData();
+  update();
 }, true);
 
 export function onChange(listener, runNow) {
@@ -109,9 +109,7 @@ function update(type, val) {
     for (const fn of changeListeners) fn(isDark);
     if (process.env.MV3) type = true;
   }
-  if (process.env.MV3) {
-    return type;
-  }
+  if (process.env.MV3 && type) debounce(writeSessionData);
 }
 
 function readSessionData() {

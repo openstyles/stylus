@@ -7,7 +7,7 @@ import {chromeLocal} from '/js/storage-util';
 import {extractUsoaId, isLocalhost, usoApi} from '/js/urls';
 import {debounce, deepMerge} from '/js/util';
 import {ignoreChromeError} from '/js/util-webext';
-import {bgReady} from './common';
+import {bgReady, safeTimeout} from './common';
 import db from './db';
 import download from './download';
 import * as styleMan from './style-manager';
@@ -239,7 +239,7 @@ async function tryDownload(url, params, {retryDelay = 1000} = {}) {
       }
     }
     retryDelay *= 1.25;
-    await new Promise(resolve => setTimeout(resolve, retryDelay));
+    await new Promise(resolve => safeTimeout(resolve, retryDelay));
   }
 }
 

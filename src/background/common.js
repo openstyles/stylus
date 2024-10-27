@@ -1,8 +1,20 @@
 import {CHROME} from '/js/ua';
+import {kResolve, promiseWithResolve} from '/js/util';
 import {browserWindows} from '/js/util-webext';
 
-export const bgReady = (r => Object.assign(new Promise(cb => (r = cb)), {resolve: r}))();
+export const bgReady = promiseWithResolve();
 export const browserCommands = {};
+
+export const safeTimeout = process.env.ENTRY === 'sw'
+  ? (fn, delay, ...args) =>
+    setTimeout(safeTimeoutResolve, delay, fn, args,
+      process.env.KEEP_ALIVE(promiseWithResolve())[kResolve])
+  : setTimeout;
+
+const safeTimeoutResolve = process.env.ENTRY === 'sw' && ((fn, args, resolve) => {
+  resolve();
+  fn(...args);
+});
 
 export const uuidIndex = Object.assign(new Map(), {
   custom: {},

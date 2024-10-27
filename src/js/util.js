@@ -3,6 +3,8 @@
  * Used in limited contexts such as the offscreen document.
  * Only for pure declarations with no side effects or marked with /*@__PURE__*/
 
+export const kResolve = 'resolve';
+
 export const capitalize = s => s.slice(0, 1).toUpperCase() + s.slice(1);
 export const clamp = (value, min, max) => value < min ? min : value > max ? max : value;
 export const clipString = (str, limit = 100) => str.length > limit
@@ -14,34 +16,49 @@ export const isCssDarkScheme = () => matchMedia('(prefers-color-scheme:dark)').m
 export const isObject = val => typeof val === 'object' && val;
 export const stringAsRegExpStr = s => s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&');
 export const stringAsRegExp = (s, flags) => new RegExp(stringAsRegExpStr(s), flags);
+/** @return {Promise & {resolve: function}} */
+export const promiseWithResolve = _ => Object.assign(new Promise(cb => (_ = cb)), {[kResolve]: _});
 export const RX_META = /\/\*!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i;
 
-export const debounce = /*@__PURE__*/Object.assign((fn, delay, ...args) => {
-  delay = +delay || 0;
-  const t = performance.now() + delay;
-  let old = debounce.timers.get(fn);
-  if (!old && debounce.timers.set(fn, old = {})
-    || delay && old.time < t && (clearTimeout(old.timer), true)
-    || old.args.length !== args.length
-    || old.args.some((a, i) => a !== args[i]) // note that we can't use deepEqual here
-  ) {
+export const debounce = /*@__PURE__*/(() => {
+  const timers = new Map();
+  return Object.assign((fn, delay, ...args) => {
+    delay = +delay || 0;
+    const t = performance.now() + delay;
+    let old = timers.get(fn);
+    if (!old) {
+      timers.set(fn, old = {});
+    } else if (delay && old.time < t) {
+      clearTimer(old);
+    } else if (old.args.length === args.length && old.args.every((a, i) => a === args[i])) {
+      // Not using deepEqual because a different object reference means a different `args`
+      return;
+    }
     old.args = args;
     old.time = t;
-    old.timer = setTimeout(debounce.run, delay, fn, args);
+    old.timer = setTimeout(run, delay, fn, args, process.env.ENTRY === 'sw' && (
+      old[kResolve] = process.env.KEEP_ALIVE(promiseWithResolve())[kResolve]
+    ));
+  }, {
+    timers,
+    run,
+    unregister(fn) {
+      const data = timers.get(fn);
+      if (data) {
+        clearTimer(data);
+        timers.delete(fn);
+      }
+    },
+  });
+  function clearTimer(data) {
+    clearTimeout(data.timer);
+    if (process.env.ENTRY === 'sw') data[kResolve]();
   }
-}, {
-  timers: new Map(),
-  run(fn, args) {
-    debounce.timers.delete(fn);
+  function run(fn, args, resolve) {
+    if (process.env.ENTRY === 'sw') resolve();
+    timers.delete(fn);
     fn(...args);
-  },
-  unregister(fn) {
-    const data = debounce.timers.get(fn);
-    if (data) {
-      clearTimeout(data.timer);
-      debounce.timers.delete(fn);
-    }
-  },
+  }
 });
 
 export function isEmptyObj(obj) {
