@@ -44,7 +44,7 @@ if (process.env.MV3) {
   const proxify = (src, srcName, target, key) => {
     let res = src[key];
     if (res && typeof res === 'object') {
-      res = createProxy(res, key); // eslint-disable-line no-use-before-define
+      res = createProxy(res, key);
     } else if (typeof res === 'function') {
       res = (srcName.startsWith('on') ? directEvents : directMethods[srcName] || []).includes(key)
         ? res.bind(src)

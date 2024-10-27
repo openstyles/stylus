@@ -55,7 +55,7 @@ Object.assign(COMMANDS, {
   },
 
   getRules(linter) {
-    return ruleRetriever[linter](); // eslint-disable-line no-use-before-define
+    return ruleRetriever[linter]();
   },
 
   metalint(code) {

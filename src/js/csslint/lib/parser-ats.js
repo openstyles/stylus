@@ -153,7 +153,7 @@ const ATS = {
       if (tok.id === LBRACE) {
         if (this.options.globalsOnly) {
           this.stream.token = start;
-          throw ATS_GLOBAL; // eslint-disable-line no-use-before-define
+          throw ATS_GLOBAL;
         }
         if (ids[1]) this.alarm(1, '@layer block cannot have multiple ids', start);
         this._block(stream, start, {brace: tok, event: ['layer', {id: ids[0]}]});

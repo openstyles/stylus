@@ -79,7 +79,7 @@ export function parse(s) {
   } else if (s.endsWith(')') && (s = s.match(/^(hwb|(hsl|rgb)a?)\(\s*([^)]+)/i))) {
     return parseFunc((s[2] || s[1]).toLowerCase(), s[3]);
   } else {
-    return NAMED_COLORS.get(s.toLowerCase()); // eslint-disable-line no-use-before-define
+    return NAMED_COLORS.get(s.toLowerCase());
   }
 }
 

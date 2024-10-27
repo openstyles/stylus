@@ -32,9 +32,8 @@ const cmFactory = {
 
   globalSetOption(key, value) {
     cmDefaults[key] = value;
-    // eslint-disable-next-line no-use-before-define
     if (cms.size > 4 && lazyOpt.names.includes(key)) {
-      lazyOpt.set(key, value); // eslint-disable-line no-use-before-define
+      lazyOpt.set(key, value);
     } else {
       cms.forEach(cm => cm.setOption(key, value));
     }
