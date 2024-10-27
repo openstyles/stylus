@@ -88,8 +88,9 @@ const addWrapper = (banner = BANNER, footer = '}', test = /\.js$/) => [
 const TERSER_OPTS = {
   extractComments: false,
   terserOptions: {
+    toplevel: true,
+    ecma: MV3 ? 2024 : 2017,
     compress: {
-      ecma: MV3 ? 2024 : 2017,
       passes: 2,
       reduce_funcs: false,
     },
@@ -157,7 +158,6 @@ const getBaseConfig = () => ({
   optimization: {
     concatenateModules: true, // makes DEV code run faster
     chunkIds: false,
-    usedExports: true,
     minimizer: DEV ? [] : [
       new TerserPlugin(mergeCfg({
         exclude: CODEMIRROR_NATIVE,

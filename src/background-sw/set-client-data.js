@@ -22,7 +22,7 @@ export default async function setClientData(evt, reqUrl) {
   const pageUrl = reqParams.get('url');
   const pageParams = new URL(pageUrl).searchParams;
   const jobs = {};
-  setSystemDark(!!+reqParams.get('cssSchemeDark'));
+  setSystemDark(!!+reqParams.get('dark'));
 
   Object.assign(jobs, /** @namespace StylusClientData */ {
     apply: styleMan.getSectionsByUrl(pageUrl, null, true),
