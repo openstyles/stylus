@@ -5,8 +5,8 @@ let busy;
 let lastBusyTime = 0;
 let pulse;
 
-subscribe('keepAlive', checkPref, true);
 process.env.KEEP_ALIVE = keepAlive;
+subscribe('keepAlive', checkPref, true);
 
 export function keepAlive(v) {
   if (!(v instanceof Promise)) lastBusyTime = performance.now();

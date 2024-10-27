@@ -59,7 +59,7 @@ export const debounce = /*@__PURE__*/(() => {
     timers.delete(fn);
     fn(...args);
   }
-});
+})();
 
 export function isEmptyObj(obj) {
   if (obj) {

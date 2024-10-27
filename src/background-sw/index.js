@@ -1,12 +1,12 @@
-// WARNING! /background must be the first to set global.API
-import '/background';
+import '/background/intro'; // sets global.API
+import {keepAlive} from './keep-alive'; // sets global.keepAlive
 import {cloudDrive} from '/background/db-to-cloud-broker';
 import {_execute, API} from '/js/msg';
 import {createPortProxy, initRemotePort} from '/js/port';
 import {ownRoot, workerPath} from '/js/urls';
-import {keepAlive} from './keep-alive';
 import offscreen from './offscreen';
 import setClientData from './set-client-data';
+import '/background';
 
 /** @param {ExtendableEvent} evt */
 self.oninstall = evt => {
