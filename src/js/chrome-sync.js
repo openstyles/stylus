@@ -52,10 +52,10 @@ export async function run(...args) {
 }
 
 function wait() {
-  return new Promise(resolve =>
+  return process.env.KEEP_ALIVE(new Promise(resolve =>
     setTimeout(onTimeout,
       60e3 / (syncApi[kMAX] || 120) * (Math.random() * 2 + 1),
-      resolve));
+      resolve)));
 }
 
 function onTimeout(resolve) {
