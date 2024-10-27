@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 'use strict';
 
+const childProcess = require('child_process');
 const fs = require('fs');
 const fse = require('fs-extra');
 const glob = require('fast-glob');
 const JSZip = require('jszip');
 const chalk = require('chalk');
-const webpack = require('webpack');
 const {ROOT, MANIFEST} = require('./util');
 
 const DST = ROOT + 'dist/';
-const CONFIG_PATH = require.resolve(ROOT + 'webpack.config.js');
+const WEBPACK_CLI = 'webpack-cli --no-stats';
 const sChrome = 'chrome';
 const sChromeBeta = 'chrome-beta';
 const sChromeMV3 = 'chrome-mv3';
@@ -26,14 +26,10 @@ fse.emptyDirSync(ROOT + 'node_modules/.cache/webpack');
     ? targets.split(',')
     : [sFirefox, sChrome, sChromeBeta, sChromeMV3];
   for (const target of targets) {
-    process.env.NODE_ENV = target + '-zip';
-    console.log(chalk.bold(`Building for ${target}...`));
+    process.env.NODE_ENV = target + ':zip';
+    console.log(chalk.bgYellow.bold(`\nBuilding for ${target}...`));
     fse.emptyDirSync(DST);
-    delete require.cache[CONFIG_PATH];
-
-    const err = await new Promise(cb => webpack(require(CONFIG_PATH), cb));
-    if (err) throw err;
-
+    childProcess.execSync(WEBPACK_CLI, {stdio: 'inherit'});
     const mj = patchManifest(fs.readFileSync(DST + MANIFEST, 'utf8'), target);
     const zipName = `stylus-${target}-${mj.version}.zip`;
     const zip = new JSZip();

@@ -9,12 +9,13 @@ const TerserPlugin = require('terser-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
-const {anyPathSep, stripSourceMap, RawEnvPlugin, MANIFEST, MANIFEST_MV3, ROOT} =
-  require('./tools/util');
+const RawEnvPlugin = require('./tools/raw-env-plugin');
 const WebpackPatchBootstrapPlugin = require('./tools/webpack-patch-bootstrap');
+const {anyPathSep, stripSourceMap, MANIFEST, MANIFEST_MV3, ROOT} = require('./tools/util');
 
 const NODE_ENV = process.env.NODE_ENV;
-const [BUILD, FLAVOR, ZIP] = NODE_ENV?.split('-') || [];
+const [TARGET, ZIP] = NODE_ENV?.split(':') || [''];
+const [BUILD, FLAVOR] = TARGET.split('-');
 const DEV = BUILD === 'DEV' || process.env.npm_lifecycle_event?.startsWith('watch');
 const FS_CACHE = !DEV;
 const SRC = ROOT + 'src/';
@@ -133,18 +134,7 @@ const getBaseConfig = () => ({
         ],
       }, {
         test: /\.m?js$/,
-        include: [path.resolve(SRC)],
-        use: [
-          RawEnvPlugin.loader,
-          {loader: 'babel-loader', options: {root: ROOT}},
-        ],
-        resolve: {fullySpecified: false},
-      }, {
-        test: /\.m?js$/,
-        exclude: [
-          path.resolve(SRC),
-          CODE_MIRROR_PATH, // speedup for a big ES5 package
-        ],
+        exclude: [CODE_MIRROR_PATH], // speedup for a big ES5 package
         loader: 'babel-loader',
         options: {root: ROOT},
         resolve: {fullySpecified: false},
@@ -167,10 +157,14 @@ const getBaseConfig = () => ({
   optimization: {
     concatenateModules: true, // makes DEV code run faster
     chunkIds: false,
-    mangleExports: false,
     usedExports: true,
     minimizer: DEV ? [] : [
-      new TerserPlugin(mergeCfg({exclude: CODEMIRROR_NATIVE}, TERSER_OPTS)),
+      new TerserPlugin(mergeCfg({
+        exclude: CODEMIRROR_NATIVE,
+        terserOptions: {
+          mangle: {keep_fnames: true},
+        },
+      }, TERSER_OPTS)),
       new CssMinimizerPlugin({
         minimizerOptions: {
           preset: ['default', {
@@ -196,6 +190,7 @@ const getBaseConfig = () => ({
     maxEntrypointSize: 1e6,
   },
   plugins: [
+    // new webpack.debug.ProfilingPlugin({outputPath: DST + '.profile.json'}),
     new RawEnvPlugin(VARS, RAW_VARS),
     new webpack.ids.NamedChunkIdsPlugin({context: SRC}),
     new WebpackPatchBootstrapPlugin(),
@@ -218,7 +213,7 @@ function mergeCfg(ovr, base) {
     if (FS_CACHE) {
       ovr.cache = {
         ...ovr.cache,
-        name: NODE_ENV + '-' + entry.join('-'),
+        name: entry.join('-'),
       };
     }
     if (process.env.REPORT != null) {
