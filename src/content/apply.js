@@ -13,7 +13,7 @@ const calcOrder = ({id}, _) =>
   _.main[id] ||
   id + .5e6; // no order = at the end of `main`
 const isXml = document instanceof XMLDocument;
-const CHROME = 'app' in chrome;
+const CHROME = process.env.BUILD === 'chrome' || global === window;
 const SYM_ID = 'styles';
 const isUnstylable = !CHROME && isXml;
 const clone = process.env.ENTRY
@@ -47,11 +47,11 @@ let port;
 let lazyBadge = isFrame;
 
 /** Polyfill for documentId in Firefox and Chrome pre-106 */
-const instanceId = !(CHROME && CSS.supports('top', '1ic')) && (Math.random() + matchUrl);
+const instanceId = !(CHROME && CSS.supports('top', '1ic')) && (Math.random() || Math.random());
 /* about:blank iframes are often used by sites for file upload or background tasks
  * and they may break if unexpected DOM stuff is present at `load` event
  * so we'll add the styles only if the iframe becomes visible */
-const xoEventId = `${Math.random()}`;
+const xoEventId = `${instanceId}`;
 /** @type IntersectionObserver */
 let xo;
 window[Symbol.for('xo')] = (el, cb) => {
