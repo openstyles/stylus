@@ -82,7 +82,7 @@ Object.assign(API, /** @namespace API */ {
   worker: !process.env.MV3 && createPortProxy(workerPath),
 
   //#endregion
-}, FIREFOX && initStyleViaApi());
+}, process.env.BUILD !== 'chrome' && FIREFOX && initStyleViaApi());
 
 Object.assign(browserCommands, {
   openManage: () => API.openManage(),
@@ -147,8 +147,8 @@ Promise.all([
 ]).then(async () => {
   bgReady[kResolve]();
   bgReady[kResolve] = null;
-  if (!process.env.MV3) window._msgExec = msg._execute;
-  if (FIREFOX) initBrowserCommandsApi();
+  if (process.env.ENTRY !== 'sw') window._msgExec = msg._execute;
+  if (process.env.BUILD !== 'chrome' && FIREFOX) initBrowserCommandsApi();
   broadcast({method: 'backgroundReady'});
   initContextMenus();
 });
