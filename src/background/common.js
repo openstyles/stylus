@@ -11,10 +11,8 @@ export const safeTimeout = process.env.ENTRY === 'sw'
       process.env.KEEP_ALIVE(promiseWithResolve())[kResolve])
   : setTimeout;
 
-const safeTimeoutResolve = process.env.ENTRY === 'sw' && ((fn, args, resolve) => {
-  resolve();
-  fn(...args);
-});
+const safeTimeoutResolve = process.env.ENTRY === 'sw'
+  && ((fn, args, resolve) => resolve(fn(...args)));
 
 export const uuidIndex = Object.assign(new Map(), {
   custom: {},

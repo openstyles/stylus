@@ -78,7 +78,7 @@ const RAW_VARS = {
   // hiding `global` from IDE so it doesn't see the symbol as a global
   API: 'global.API',
   DEBUG: process.env.DEBUG ? 'console.log' : 'null?.',
-  KEEP_ALIVE: '',
+  KEEP_ALIVE: '1&&',
 };
 const BANNER = '{const global = this, window = global;';
 const addWrapper = (banner = BANNER, footer = '}', test = /\.js$/) => [

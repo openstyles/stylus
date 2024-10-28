@@ -7,7 +7,7 @@ import {RX_META} from '/js/util';
 import {FIREFOX} from '/js/ua';
 import {bgReady, safeTimeout} from './common';
 import download from './download';
-import tabMan from './tab-manager';
+import * as tabMan from './tab-manager';
 import {openURL} from './tab-util';
 
 const installCodeCache = {};

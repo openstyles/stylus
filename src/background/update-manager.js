@@ -8,7 +8,7 @@ import {extractUsoaId, isLocalhost, usoApi} from '/js/urls';
 import {debounce, deepMerge} from '/js/util';
 import {ignoreChromeError} from '/js/util-webext';
 import {bgReady, safeTimeout} from './common';
-import db from './db';
+import {db} from './db';
 import download from './download';
 import * as styleMan from './style-manager';
 

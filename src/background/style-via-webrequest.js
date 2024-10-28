@@ -7,7 +7,7 @@ import {kResolve} from '/js/util';
 import {ignoreChromeError, MF_ACTION_HTML} from '/js/util-webext';
 import {bgReady, safeTimeout} from './common';
 import {getSectionsByUrl} from './style-manager';
-import tabMan from './tab-manager';
+import * as tabMan from './tab-manager';
 
 const idCSP = 'patchCsp';
 const idOFF = 'disableAll';

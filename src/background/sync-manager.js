@@ -5,7 +5,7 @@ import {chromeLocal} from '/js/storage-util';
 import {fetchWebDAV, hasOwn} from '/js/util';
 import {broadcastExtension} from './broadcast';
 import {uuidIndex} from './common';
-import db from './db';
+import {db} from './db';
 import {cloudDrive, dbToCloud} from './db-to-cloud-broker';
 import {overrideBadge} from './icon-manager';
 import * as styleMan from './style-manager';

@@ -5,7 +5,7 @@ import {CHROME, FIREFOX, MOBILE, VIVALDI} from '/js/ua';
 import {debounce} from '/js/util';
 import * as colorScheme from './color-scheme';
 import {bgReady} from './common';
-import tabMan from './tab-manager';
+import * as tabMan from './tab-manager';
 
 const ICON_SIZES = FIREFOX || !VIVALDI ? [16, 32] : [19, 38];
 const staleBadges = new Set();
@@ -22,7 +22,7 @@ let hasCanvas = FIREFOX_ANDROID ? false : null;
  * @param {(number|string)[]} styleIds
  * @param {{}} opts
  * @param {boolean} [opts.lazyBadge=false] preventing flicker during page load
- * @param {string} [opts.iid] - instance id
+ * @param {number} [opts.iid] - instance id
  */
 export function updateIconBadge(styleIds, {lazyBadge, iid} = {}) {
   // FIXME: in some cases, we only have to redraw the badge. is it worth a optimization?

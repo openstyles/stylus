@@ -1,9 +1,8 @@
 import * as prefs from '/js/prefs';
 import {debounce, isCssDarkScheme} from '/js/util';
-import {sessionData} from './session-data';
+import * as stateDb from './state-db';
 
 const changeListeners = new Set();
-const kSESSION = 'dark';
 const kSTATE = 'schemeSwitcher.enabled';
 const kSTART = 'schemeSwitcher.nightStart';
 const kEND = 'schemeSwitcher.nightEnd';
@@ -19,7 +18,6 @@ const MAP = {
   [kSystem]: false,
   [kTime]: false,
 };
-const MAP_KEYS = process.env.MV3 && Object.keys(MAP);
 export const SCHEMES = [kDark, kLight];
 /** @type {(val: !boolean) => void} */
 export const setSystemDark = update.bind(null, kSystem);
@@ -31,8 +29,12 @@ chrome.alarms.onAlarm.addListener(onAlarm);
 prefs.subscribe(kSTATE, (_, val, firstRun) => {
   prefState = val;
   if (firstRun) {
-    if (process.env.MV3) readSessionData();
-    else setSystemDark(isCssDarkScheme());
+    if (!process.env.MV3) {
+      setSystemDark(isCssDarkScheme());
+    } else if ((_ = stateDb.get(kDark))) {
+      isDark = _[1];
+      Object.assign(MAP, _[2]);
+    }
   }
   if (val === kTime) {
     prefs.subscribe([kSTART, kEND], onNightChanged, true);
@@ -109,17 +111,5 @@ function update(type, val) {
     for (const fn of changeListeners) fn(isDark);
     if (process.env.MV3) type = true;
   }
-  if (process.env.MV3 && type) debounce(writeSessionData);
-}
-
-function readSessionData() {
-  let data = sessionData[kSESSION];
-  if (data != null) {
-    for (let i = MAP_KEYS.length; --i >= 0; data /= 10) MAP[MAP_KEYS[i]] = !!+(data % 10);
-    isDark = !!(data % 10);
-  }
-}
-
-function writeSessionData() {
-  sessionData[kSESSION] = +`${+isDark}${MAP_KEYS.map(k => +MAP[k]).join('')}`;
+  if (process.env.MV3 && type) stateDb.set(kDark, {1: isDark, 2: MAP});
 }

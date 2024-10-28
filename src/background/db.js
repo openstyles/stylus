@@ -11,35 +11,34 @@ import ChromeStorageDB from './db-chrome-storage';
  https://www.reddit.com/r/firefox/comments/7ijuaq/firefox_59_webextensions_can_use_indexeddb_when/
 */
 
-let exec = async (...args) => (
+let exec = process.env.MV3 ? dbExecIndexedDB : async (...args) => (
   exec = await tryUsingIndexedDB().catch(useChromeStorage)
 )(...args);
 const DB = 'stylish';
 const FALLBACK = 'dbInChromeStorage';
-const ID_AS_KEY = {[DB]: true};
+const ID_AS_KEY = {};
 const getStoreName = dbName => dbName === DB ? 'styles' : 'data';
 const cache = {};
 const proxies = {};
 const proxyHandler = {
-  get: ({dbName}, cmd) =>
-    (...args) =>
-      (dbName === DB ? exec : cachedExec)(dbName, cmd, ...args),
+  get: ({dbName}, cmd) => (dbName === DB ? exec : cachedExec).bind(null, dbName, cmd),
 };
 /**
  * @param {string} dbName
  * @return {IDBObjectStore | {putMany: function(items:?[]):Promise<?[]>}}
  */
-const getProxy = dbName => proxies[dbName] || (
-  (proxies[dbName] = new Proxy({dbName}, proxyHandler))
-);
+export const getDbProxy = (dbName, idAsKey) => (proxies[dbName] ??= (
+  (ID_AS_KEY[dbName] = !!idAsKey),
+  new Proxy({dbName}, proxyHandler)
+));
 
-export default getProxy(DB);
+export const db = getDbProxy(DB, true);
 
 Object.assign(API, /** @namespace API */ {
-  drafts: getProxy('drafts'),
+  drafts: getDbProxy('drafts'),
   /** Storage for big items that may exceed 8kB limit of chrome.storage.sync.
    * To make an item syncable register it with uuidIndex.addCustom. */
-  prefsDb: getProxy(STORAGE_KEY),
+  prefsDb: getDbProxy(STORAGE_KEY),
 });
 
 async function cachedExec(dbName, cmd, a, b) {

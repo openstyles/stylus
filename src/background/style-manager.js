@@ -1,4 +1,4 @@
-import {UCD} from '/js/consts';
+import {kUrl, UCD} from '/js/consts';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '/js/sections-util';
@@ -9,9 +9,9 @@ import {broadcast, broadcastExtension} from './broadcast';
 import broadcastInjectorConfig from './broadcast-injector-config';
 import * as colorScheme from './color-scheme';
 import {bgReady, safeTimeout, uuidIndex} from './common';
-import db from './db';
+import {db} from './db';
 import StyleCache from './style-cache';
-import tabMan from './tab-manager';
+import * as tabMan from './tab-manager';
 import {getUrlOrigin} from './tab-util';
 import * as usercssTemplate from './usercss-template';
 
@@ -240,7 +240,7 @@ export function getSectionsByUrl(url, id, isInitialApply) {
     nonce: FIREFOX && tabMan.get(tab.id, 'nonce', frameId),
     top: isInitialApply && p.exposeIframes && (
       isTop ? '' // apply.js will use location.origin
-        : getUrlOrigin(tab.url || tabMan.get(sender.tabId || tab.id, 'url'))
+        : getUrlOrigin(tab.url || tabMan.get(sender.tabId || tab.id, kUrl))
     ),
     order,
   };
@@ -251,7 +251,7 @@ export function getSectionsByUrl(url, id, isInitialApply) {
     /* Chrome hides text frament from location.href of the page e.g. #:~:text=foo
        so we'll use the real URL reported by webNavigation API.
        TODO: if FF will do the same, this won't work as is: FF reports onCommitted too late */
-    url = tabMan.get(tab.id, 'url') || url;
+    url = tabMan.get(tab.id, kUrl) || url;
   }
   /** @type {CachedInjectedStyles} */
   let cache = cachedStyleForUrl.get(url);

@@ -4,7 +4,7 @@ import {CHROME, FIREFOX} from '/js/ua';
 import {chromeProtectsNTP} from '/js/urls';
 import {deepEqual} from '/js/util';
 import {ignoreChromeError, MF} from '/js/util-webext';
-import tabMan from './tab-manager';
+import * as tabMan from './tab-manager';
 
 const listeners = new Set();
 /** @param {function(data: Object, type: ('committed'|'history'|'hash'))} fn */

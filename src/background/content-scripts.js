@@ -1,10 +1,11 @@
 import '/js/browser';
+import {kUrl} from '/js/consts';
 import {sendTab} from '/js/msg';
 import * as URLS from '/js/urls';
 import {stringAsRegExpStr} from '/js/util';
 import {ignoreChromeError, MF} from '/js/util-webext';
 import {safeTimeout} from './common';
-import tabMan from './tab-manager';
+import * as tabMan from './tab-manager';
 
 /**
  Reinject content scripts when the extension is reloaded/updated.
@@ -30,7 +31,7 @@ export default function reinjectContentScripts() {
 
   async function injectToTab(tabId, url) {
     const jobs = [];
-    tabMan.set(tabId, 'url', url);
+    tabMan.set(tabId, kUrl, url);
     if (await sendTab(tabId, {method: 'backgroundReady'})) {
       return;
     }

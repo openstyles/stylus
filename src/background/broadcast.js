@@ -1,7 +1,7 @@
 import '/js/browser';
 import {sendTab, unwrap} from '/js/msg';
 import {ownRoot} from '/js/urls';
-import tabMan from './tab-manager';
+import * as tabMan from './tab-manager';
 
 /**
  * @param {?} data
