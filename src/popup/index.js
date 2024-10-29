@@ -34,8 +34,7 @@ tBody();
     || await popupGetStyles();
   initPopup(...data);
   showStyles(...data);
-  if (MOBILE) document.body.style.maxHeight = '100vh';
-  else window.on('resize', onWindowResize);
+  if (!MOBILE) window.on('resize', onWindowResize);
 })();
 
 onExtension(onRuntimeMessage);

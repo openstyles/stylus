@@ -1,7 +1,7 @@
 import {$, dom} from './dom';
 import {waitForSelector} from './dom-util';
 import * as prefs from './prefs';
-import {FIREFOX, OPERA, VIVALDI, WINDOWS} from './ua';
+import {FIREFOX, MOBILE, OPERA, VIVALDI, WINDOWS} from './ua';
 import './msg';
 import './themer';
 import './util-webext';
@@ -39,8 +39,11 @@ prefs.ready.then(() => {
 });
 
 {
-  const cls = (!WINDOWS ? 'non-windows ' : '') +
-    (FIREFOX ? 'firefox' : OPERA ? 'opera' : VIVALDI ? 'vivaldi' : '');
+  const cls = [
+    MOBILE && 'mobile',
+    !WINDOWS && 'non-windows',
+    FIREFOX ? 'firefox' : OPERA ? 'opera' : VIVALDI && 'vivaldi',
+  ].filter(Boolean).join(' ');
   if (cls) $.root.className += ' ' + cls;
   // set language for a) CSS :lang pseudo and b) hyphenation
   $.root.setAttribute('lang', chrome.i18n.getUILanguage());

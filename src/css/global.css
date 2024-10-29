@@ -46,6 +46,9 @@ body {
   color: var(--fg);
   margin: 0;
   hyphens: auto;
+  .mobile > & {
+    max-height: 100vh;
+  }
   &:lang(ja) {
     font-family: Arial, 'Meiryo UI', 'MS Gothic', system-ui, sans-serif;
   }
