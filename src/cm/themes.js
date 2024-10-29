@@ -17,7 +17,7 @@ export function loadCmTheme(name = prefs.get(THEME_KEY)) {
     prefs.set(THEME_KEY, name);
   } else if (!css) {
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', `${process.env.ASSETS_CM}${name}.css`, /*async=*/false);
+    xhr.open('GET', `${process.env.CM_PATH}${name}.css`, /*async=*/false);
     xhr.send();
     css = THEMES[name] = xhr.response;
   }

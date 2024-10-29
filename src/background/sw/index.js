@@ -1,12 +1,12 @@
-import '/background/intro'; // sets global.API
-import {keepAlive} from './keep-alive'; // sets global.keepAlive
-import {cloudDrive} from '/background/db-to-cloud-broker';
+import '../intro'; // sets global.API
+import './keep-alive'; // sets global.keepAlive
 import {_execute, API} from '/js/msg';
 import {createPortProxy, initRemotePort} from '/js/port';
 import {ownRoot, workerPath} from '/js/urls';
+import {cloudDrive} from '../db-to-cloud-broker';
 import offscreen from './offscreen';
 import setClientData from './set-client-data';
-import '/background';
+import '..';
 
 /** @param {ExtendableEvent} evt */
 self.oninstall = evt => {

@@ -170,7 +170,7 @@ textarea {
     }
   }
   &::after {
-    background-image: url(/images/icon/16.png);
+    background-image: url(../icon/16.png);
     background-repeat: no-repeat;
     background-position: center center;
   }
@@ -361,7 +361,7 @@ li {
 /* Retina-specific stuff here */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   .install:after {
-    background-image: url(/images/icon/32.png);
+    background-image: url(../icon/32.png);
     background-size: 16px 16px;
   }
 }

@@ -1,12 +1,12 @@
-import {isDark, setSystemDark} from '/background/color-scheme';
-import {bgReady, isVivaldi} from '/background/common';
-import prefsApi from '/background/prefs-api';
-import * as styleMan from '/background/style-manager';
-import * as syncMan from '/background/sync-manager';
 import {API} from '/js/msg-api';
 import * as prefs from '/js/prefs';
 import {FIREFOX} from '/js/ua';
 import {kResolve} from '/js/util';
+import {isDark, setSystemDark} from '../color-scheme';
+import {bgReady, isVivaldi} from '../common';
+import prefsApi from '../prefs-api';
+import * as styleMan from '../style-manager';
+import * as syncMan from '../sync-manager';
 
 /** @type {ResponseInit} */
 const RESPONSE_INIT = {

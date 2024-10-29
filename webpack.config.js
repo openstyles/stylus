@@ -20,11 +20,11 @@ const DEV = BUILD === 'DEV' || process.env.npm_lifecycle_event?.startsWith('watc
 const FS_CACHE = !DEV;
 const SRC = ROOT + 'src/';
 const DST = ROOT + 'dist/';
-const ASSETS = 'assets/';
+const CSS = 'css/';
 const JS = 'js/';
 const SHIM = ROOT + 'tools/shim/';
 const MV3 = FLAVOR === 'mv3';
-const PAGE_BG = MV3 ? 'background-sw' : 'background';
+const PAGE_BG = MV3 ? 'background/sw' : 'background';
 const PAGE_OFFSCREEN = 'offscreen';
 const PAGES = [
   'edit',
@@ -32,11 +32,11 @@ const PAGES = [
   'manage',
   'options',
   'popup',
-  ...MV3 ? [PAGE_OFFSCREEN] : [PAGE_BG],
+  MV3 ? PAGE_OFFSCREEN : PAGE_BG,
 ];
 const GET_CLIENT_DATA = 'get-client-data';
 const GET_CLIENT_DATA_TAG = {
-  toString: () => `<script src="${ASSETS}${GET_CLIENT_DATA}.js"></script>`,
+  toString: () => `<script src="${JS}${GET_CLIENT_DATA}.js"></script>`,
 };
 const LIB_EXPORT_DEFAULT = {output: {library: {export: 'default'}}};
 const RESOLVE_VIA_SHIM = {
@@ -45,10 +45,10 @@ const RESOLVE_VIA_SHIM = {
     'node_modules',
   ],
 };
-const ASSETS_CM = ASSETS + 'cm-themes/';
-const CODE_MIRROR_PATH = path.dirname(require.resolve('codemirror/package.json')) + path.sep;
-const CODEMIRROR_NATIVE = /codemirror(?!-factory)/; // `factory` is our code
-const THEME_PATH = CODE_MIRROR_PATH.replaceAll('\\', '/') + '/theme';
+const CM_PATH = CSS + 'cm-themes/';
+const CM_PACKAGE_PATH = path.dirname(require.resolve('codemirror/package.json')) + path.sep;
+const CM_NATIVE_RE = /codemirror(?!-factory)/; // `factory` is our code
+const THEME_PATH = CM_PACKAGE_PATH.replaceAll('\\', '/') + '/theme';
 const THEME_NAMES = Object.fromEntries(fs.readdirSync(THEME_PATH)
   .sort()
   .map(f => (f = f.match(/([^/\\.]+)\.css$/i)?.[1]) && [f, ''])
@@ -62,9 +62,8 @@ const OUTPUT_MODULE = {
   experiments: {outputModule: true},
 };
 const VARS = {
-  ASSETS,
-  ASSETS_CM,
   BUILD,
+  CM_PATH,
   DEV,
   ENTRY: false,
   IS_BG: false,
@@ -108,12 +107,10 @@ const getBaseConfig = () => ({
   output: {
     path: DST,
     filename: '[name].js',
-    assetModuleFilename: data => {
-      const p = data.filename.split('src/images/');
-      return ASSETS + (p[1] || '[name][ext]');
-    },
-    cssFilename: ASSETS + '[name][ext]',
-    cssChunkFilename: ASSETS + '[name][ext]',
+    publicPath: '/',
+    assetModuleFilename: m => m.filename.split('src/')[1] || m,
+    cssFilename: CSS + '[name][ext]',
+    cssChunkFilename: CSS + '[name][ext]',
   },
   cache: !FS_CACHE || {
     type: 'filesystem',
@@ -134,8 +131,11 @@ const getBaseConfig = () => ({
           'postcss-loader',
         ],
       }, {
+        test: /\.(png|svg|jpe?g|gif|ttf)$/i,
+        type: 'asset/resource',
+      }, {
         test: /\.m?js$/,
-        exclude: [CODE_MIRROR_PATH], // speedup for a big ES5 package
+        exclude: [CM_PACKAGE_PATH], // speedup for a big ES5 package
         loader: 'babel-loader',
         options: {root: ROOT},
         resolve: {fullySpecified: false},
@@ -160,7 +160,7 @@ const getBaseConfig = () => ({
     chunkIds: false,
     minimizer: DEV ? [] : [
       new TerserPlugin(mergeCfg({
-        exclude: CODEMIRROR_NATIVE,
+        exclude: CM_NATIVE_RE,
         terserOptions: {
           mangle: {keep_fnames: true},
         },
@@ -265,12 +265,12 @@ module.exports = [
   mergeCfg({
     entry: Object.fromEntries(PAGES.map(p => [p, `/${p}`])),
     output: {
-      filename: ASSETS + '[name].js',
-      chunkFilename: ASSETS + '[name].js',
+      filename: JS + '[name].js',
+      chunkFilename: JS + '[name].js',
     },
     optimization: {
       minimizer: DEV ? [] : [
-        new TerserPlugin({...TERSER_OPTS, include: CODEMIRROR_NATIVE}),
+        new TerserPlugin({...TERSER_OPTS, include: CM_NATIVE_RE}),
       ],
       runtimeChunk: {
         name: 'common',
@@ -281,7 +281,7 @@ module.exports = [
           codemirror: {
             test: new RegExp(String.raw`(${anyPathSep([
               SRC + 'cm/',
-              CODEMIRROR_NATIVE.source,
+              CM_NATIVE_RE.source,
             ].join('|'))}).+\.js$`),
             name: 'codemirror',
           },
@@ -305,8 +305,8 @@ module.exports = [
       }),
       ...addWrapper(),
       new MiniCssExtractPlugin({
-        filename: ASSETS + '[name].css',
-        chunkFilename: ASSETS + '[name].css',
+        filename: CSS + '[name].css',
+        chunkFilename: CSS + '[name].css',
       }),
       ...PAGES.map(p => new HtmlWebpackPlugin({
         chunks: [p],
@@ -328,12 +328,11 @@ module.exports = [
       })),
       new CopyPlugin({
         patterns: [
+          {context: SRC, from: 'icon/**', to: DST},
           {context: SRC + 'content', from: 'install*.js', to: DST + JS, info: {minimized: true}},
-          {context: SRC + 'images', from: 'eyedropper/**', to: DST + ASSETS},
-          {context: SRC + 'images', from: 'icon/**', to: DST + ASSETS},
           {context: SRC, from: MV3 ? MANIFEST_MV3 : MANIFEST, to: DST + MANIFEST},
           {context: SRC, from: '_locales/**', to: DST},
-          {context: THEME_PATH, from: '*.css', to: DST + ASSETS_CM},
+          {context: THEME_PATH, from: '*.css', to: DST + CM_PATH},
           ...[
             ['stylelint-bundle', 'stylelint.js'],
             ['less/dist/less.min.js', 'less.js'],
@@ -366,7 +365,7 @@ module.exports = [
     }),
     mergeCfg(OUTPUT_MODULE, mergeCfg({
       entry: '/js/' + GET_CLIENT_DATA,
-      output: {path: DST + ASSETS},
+      output: {path: DST + JS},
     })),
     makeLibrary('db-to-cloud/lib/drive/webdav', 'webdav', LIB_EXPORT_DEFAULT),
   ],

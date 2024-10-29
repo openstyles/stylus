@@ -314,7 +314,7 @@ module.exports = [
   //#endregion
   //#region Background service worker
   {
-    files: ['src/background-sw/**/*'],
+    files: ['src/background/sw/**/*'],
     languageOptions: {
       globals: {
         ...globals.serviceworker,

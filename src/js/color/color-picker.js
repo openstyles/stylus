@@ -150,7 +150,8 @@ export default function ColorPicker(cm) {
         window.EyeDropper &&
         $('dropper', {
           tag: 'img',
-          srcset: `assets/eyedropper/16px.png, assets/eyedropper/32px.png 2x`,
+          // TODO: bind this to the actual source path via webpack
+          srcset: 'icon/eyedropper/16px.png, icon/eyedropper/32px.png 2x',
           async onclick() {
             try {
               const c = await new window.EyeDropper().open();
