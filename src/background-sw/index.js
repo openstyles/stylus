@@ -26,7 +26,6 @@ self.onfetch = evt => {
   if (!url.startsWith(ownRoot)) {
     return; // shouldn't happen but addRoutes may be bugged
   }
-  keepAlive();
   if (url.includes('?clientData')) {
     evt.respondWith(setClientData(evt, new URL(url)));
   } else if (/\.user.css#\d+$/.test(url)) {

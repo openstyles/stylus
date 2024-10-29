@@ -4,37 +4,36 @@ import {subscribe} from '/js/prefs';
 let busy;
 let lastBusyTime = 0;
 let pulse;
+let TTL;
 
 process.env.KEEP_ALIVE = keepAlive;
-subscribe('keepAlive', checkPref, true);
+subscribe('keepAlive', (_, val) => {
+  TTL = val * 60e3;
+  reschedule();
+}, true);
 
-export function keepAlive(v) {
-  if (!(v instanceof Promise)) lastBusyTime = performance.now();
-  else if (!busy) checkBusyWhenSettled([v]);
-  else busy.push(v);
-  return v;
+export function keepAlive(job) {
+  if (!(job instanceof Promise)) lastBusyTime = performance.now();
+  else if (!busy) settle([job]);
+  else busy.push(job);
+  return job;
 }
 
-function checkBusyWhenSettled(promises) {
-  Promise.allSettled(busy = promises).then(checkBusy);
-  if (!pulse) checkPref();
+async function settle(promises) {
+  busy = promises;
+  if (!pulse) reschedule();
+  do await Promise.allSettled(busy);
+  while (busy?.splice(0, promises.length) && busy.length);
+  busy = null;
+  lastBusyTime = performance.now();
 }
 
-function checkBusy({length}) {
-  if (length < busy.length) {
-    checkBusyWhenSettled(busy.slice(length));
-  } else {
-    busy = null;
-    lastBusyTime = performance.now();
-  }
-}
-
-async function checkPref(key, TTL) {
-  if (busy || TTL < 0 || TTL && (performance.now() - lastBusyTime < TTL * 60e3)) {
-    chrome.runtime.getPlatformInfo();
-    if (!pulse) pulse = setInterval(checkPref, 25e3, key, TTL);
+async function reschedule() {
+  if (busy || TTL < 0 || TTL && (performance.now() - lastBusyTime < TTL)) {
+    chrome.extension.isAllowedIncognitoAccess();
+    pulse ??= setInterval(reschedule, 25e3);
   } else if (pulse) {
     clearInterval(pulse);
-    pulse = 0;
+    pulse = null;
   }
 }
