@@ -29,9 +29,9 @@ export const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || s
 tBody();
 
 (async () => {
-  const data = process.env.MV3
-    ? global.clientData.popup
-    : CHROME && await API.data.pop('popupData') || await popupGetStyles();
+  const data = process.env.MV3 && global.clientData.popup
+    || CHROME && await API.data.pop('popupData')
+    || await popupGetStyles();
   initPopup(...data);
   showStyles(...data);
   if (MOBILE) document.body.style.maxHeight = '100vh';

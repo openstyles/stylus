@@ -1,13 +1,15 @@
 import {isDark, setSystemDark} from '/background/color-scheme';
-import {isVivaldi} from '/background/common';
+import {bgReady, isVivaldi} from '/background/common';
 import prefsApi from '/background/prefs-api';
 import * as styleMan from '/background/style-manager';
 import * as syncMan from '/background/sync-manager';
 import {API} from '/js/msg-api';
 import * as prefs from '/js/prefs';
 import {FIREFOX} from '/js/ua';
+import {kResolve} from '/js/util';
 
-const NO_CACHE = {
+/** @type {ResponseInit} */
+const RESPONSE_INIT = {
   headers: {'cache-control': 'no-cache'},
 };
 
@@ -16,6 +18,7 @@ const NO_CACHE = {
  * @param {URL} reqUrl
  */
 export default async function setClientData(evt, reqUrl) {
+  if (bgReady[kResolve]) await bgReady;
   let v;
   const reqParams = reqUrl.searchParams;
   const page = reqUrl.pathname.slice(1/*"/"*/, -5/*".html"*/);
@@ -56,5 +59,5 @@ export default async function setClientData(evt, reqUrl) {
   Object.keys(jobs).forEach((id, i) => (jobs[id] = v[i]));
   return new Response(`var clientData = new Proxy(${JSON.stringify(jobs)}, {get: ${(obj, k, _) => ((
     (_ = obj[k]), delete obj[k], _
-  ))}})`, NO_CACHE);
+  ))}})`, RESPONSE_INIT);
 }
