@@ -1,14 +1,7 @@
-import {isCssDarkScheme} from './util';
+import {isCssDarkScheme, makePropertyPopProxy} from './util';
 
-window.clientData = new Proxy({}, {
-  get: (obj, k, v) => ((
-    (v = obj[k]),
-    delete obj[k],
-    v
-  )),
-});
-document.write(`<script src="?${new URLSearchParams({
-  clientData: '',
+self[process.env.CLIENT_DATA] = makePropertyPopProxy();
+document.write(`<script src="?clientData&${new URLSearchParams({
   dark: +isCssDarkScheme(),
   url: location,
 })}"></script>`);

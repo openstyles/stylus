@@ -1,12 +1,11 @@
 import {$, $$, toggleDataset} from '/js/dom';
 import {t, template} from '/js/localization';
 import {API, onExtension} from '/js/msg';
+import {clientData} from '/js/prefs';
 import {capitalize} from '/js/util';
 
 (async () => {
-  let status = process.env.MV3
-    ? global.clientData.sync
-    : await API.sync.getStatus();
+  let {sync: status, syncOpts} = process.env.MV3 ? clientData : await clientData;
   const elSync = $('.sync-options', template.body);
   const elCloud = $('.cloud-name', elSync);
   const elToggle = $('.connect', elSync);
@@ -44,12 +43,6 @@ import {capitalize} from '/js/util';
     return result;
   }
 
-  function setDriveOptions(options) {
-    for (const el of $$driveOptions()) {
-      el.value = options[el.dataset.option] || '';
-    }
-  }
-
   function setStatus(newStatus) {
     status = newStatus;
     updateButtons();
@@ -74,8 +67,11 @@ import {capitalize} from '/js/util';
       el.disabled = !off;
     }
     toggleDataset(elSync, 'enabled', elCloud.value !== 'none');
-    setDriveOptions(process.env.MV3 && global.clientData.syncOpts
-      || await API.sync.getDriveOptions(elCloud.value));
+    syncOpts ??= await API.sync.getDriveOptions(elCloud.value);
+    for (const el of $$driveOptions()) {
+      el.value = syncOpts[el.dataset.option] || '';
+    }
+    syncOpts = null; // clearing the initial value from clientData so that next time API is called
   }
 
   function getStatusText() {

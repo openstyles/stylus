@@ -63,19 +63,19 @@ const OUTPUT_MODULE = {
 };
 const VARS = {
   BUILD,
+  CLIENT_DATA: 'clientData', // hiding the global from IDE
   CM_PATH,
   DEV,
   ENTRY: false,
   IS_BG: false,
   JS,
   MV3,
-  PAGE_BG,
+  PAGE_BG: PAGE_BG.split('/').pop(),
   PAGE_OFFSCREEN,
   ZIP: !!ZIP,
 };
 const RAW_VARS = {
-  // hiding `global` from IDE so it doesn't see the symbol as a global
-  API: 'global.API',
+  API: 'global.API', // hiding the global from IDE
   DEBUG: process.env.DEBUG ? 'console.log' : 'null?.',
   KEEP_ALIVE: '1&&',
 };
@@ -279,11 +279,12 @@ module.exports = [
         chunks: 'all',
         cacheGroups: {
           codemirror: {
-            test: new RegExp(String.raw`(${anyPathSep([
+            test: new RegExp(anyPathSep([
               SRC + 'cm/',
               CM_NATIVE_RE.source,
-            ].join('|'))}).+\.js$`),
+            ].join('|'))),
             name: 'codemirror',
+            enforce: true,
           },
           ...Object.fromEntries([
             [2, 'common-ui', `^${SRC}(content/|js/(dom|localization|themer))`],

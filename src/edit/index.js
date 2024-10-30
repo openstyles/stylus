@@ -1,5 +1,4 @@
 import '/js/dom-init';
-import styleReady from './style-ready';
 import {$, $$} from '/js/dom';
 import {tBody, template} from '/js/localization';
 import * as prefs from '/js/prefs';
@@ -8,20 +7,21 @@ import CompactHeader from './compact-header';
 import editor from './editor';
 import EditorHeader from './editor-header';
 import * as linterMan from './linter';
-import SectionsEditor from './sections-editor';
-import SourceEditor from './source-editor';
-import './edit.css';
-import './colorpicker-helper';
-import './live-preview';
+import loading from './load-style';
 import './on-msg-extension';
 import './settings';
+import SectionsEditor from './sections-editor';
+import SourceEditor from './source-editor';
+import './colorpicker-helper';
+import './live-preview';
 import USWIntegration from './usw-integration';
 import './windowed-mode';
+import './edit.css';
 
 tBody();
 
 (async () => {
-  if (styleReady.then) await styleReady;
+  if (loading) await loading;
   EditorHeader();
   USWIntegration();
   // TODO: load respective js on demand?

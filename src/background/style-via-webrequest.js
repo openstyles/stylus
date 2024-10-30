@@ -1,4 +1,4 @@
-import {kPopupData} from '/js/consts';
+import {kPopup} from '/js/consts';
 import {API} from '/js/msg';
 import popupGetStyles from '/js/popup-get-styles';
 import * as prefs from '/js/prefs';
@@ -186,7 +186,7 @@ function patchCspSrc(src, name, ...values) {
 
 async function preloadPopupData(req) {
   // tabId < 0 means the popup is shown normally and not as a page in a tab
-  API.data.set(kPopupData, req.tabId < 0 && popupGetStyles());
+  API.data.set(kPopup, req.tabId < 0 && popupGetStyles());
 }
 
 function cleanUp(req) {

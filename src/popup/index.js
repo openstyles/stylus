@@ -1,10 +1,10 @@
 import '/js/dom-init';
-import {kPopupData, UCD} from '/js/consts';
+import {kPopup, UCD} from '/js/consts';
 import {$, $$, $create, $remove} from '/js/dom';
 import {getEventKeyName, setupLivePrefs} from '/js/dom-util';
 import {t, tBody, template} from '/js/localization';
 import {API, onExtension, sendTab} from '/js/msg';
-import popupGetStyles, {ABOUT_BLANK} from '/js/popup-get-styles';
+import {ABOUT_BLANK} from '/js/popup-get-styles';
 import * as prefs from '/js/prefs';
 import {CHROME, FIREFOX, MOBILE, OPERA} from '/js/ua';
 import {ownRoot} from '/js/urls';
@@ -29,9 +29,7 @@ export const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || s
 tBody();
 
 (async () => {
-  const data = process.env.MV3 && global.clientData[kPopupData]
-    || CHROME && await API.data.pop(kPopupData)
-    || await popupGetStyles();
+  const data = (process.env.MV3 ? prefs.clientData : await prefs.clientData)[kPopup];
   initPopup(...data);
   showStyles(...data);
   if (!MOBILE) window.on('resize', onWindowResize);

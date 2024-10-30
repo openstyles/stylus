@@ -1,9 +1,17 @@
 /** Don't use this file in content script context! */
 import {API} from './msg-api';
-import {deepCopy, deepEqual} from './util';
+import {deepCopy, deepEqual, isCssDarkScheme, makePropertyPopProxy} from './util';
 import {onStorageChanged} from './util-webext';
 
 let busy, setReady;
+
+/** @type {StylusClientData & {then: (cb: (data: StylusClientData) => ?) => Promise}} */
+export const clientData = process.env.ENTRY === true && (
+  global[process.env.CLIENT_DATA] ??= API.setClientData(null, {
+    url: location.href,
+    dark: isCssDarkScheme(),
+  }).then(makePropertyPopProxy)
+);
 
 /**
  * @type PrefsValues
@@ -15,7 +23,7 @@ const defaults = {
   'disableAll': false,            // boss key
   'exposeIframes': false,         // Add 'stylus-iframe' attribute to HTML element in all iframes
   'exposeStyleName': false,       // Add style name to the style for better devtools experience
-  'keepAlive': 5,                 // in minutes
+  'keepAlive': 60,                // in minutes
   'newStyleAsUsercss': false,     // create new style in usercss format
   'openEditInWindow': false,      // new editor opens in a own browser window
   'openEditInWindow.popup': false, // new editor opens in a simplified browser window without omnibox
@@ -143,7 +151,7 @@ const defaults = {
 };
 const warnUnknown = console.warn.bind(console, 'Unknown preference "%s"');
 /** @type {PrefsValues} */
-const values = global.prefsValues = deepCopy(defaults);
+const values = deepCopy(defaults);
 const onChange = {};
 
 export const STORAGE_KEY = 'settings';
@@ -241,11 +249,9 @@ if (process.env.IS_BG) {
   busy = new Promise(cb => (setReady = cb));
   busy.set = (...args) => setReady(setAll(...args));
 } else if (process.env.MV3) {
-  setAll((/** @type {StylusClientData} */clientData).prefs); /* global clientData */
-} else if (window === parent) {
-  busy = API.prefs.get().then(setAll);
+  setAll(clientData.prefs);
 } else {
-  setAll(deepCopy(parent.prefsValues)); // using deepCopy of this realm
+  busy = clientData.then(data => setAll(data.prefs));
 }
 
 onStorageChanged.addListener((changes, area) => {

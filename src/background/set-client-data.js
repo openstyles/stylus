@@ -1,31 +1,33 @@
-import {kPopupData} from '/js/consts';
+import {kPopup} from '/js/consts';
 import {API} from '/js/msg-api';
 import * as prefs from '/js/prefs';
 import {FIREFOX} from '/js/ua';
 import {kResolve} from '/js/util';
-import {isDark, setSystemDark} from '../color-scheme';
-import {bgReady, isVivaldi} from '../common';
-import prefsApi from '../prefs-api';
-import * as styleMan from '../style-manager';
-import {webRequestBlocking} from '../style-via-webrequest';
-import * as syncMan from '../sync-manager';
+import {isDark, setSystemDark} from './color-scheme';
+import {bgReady, isVivaldi} from './common';
+import prefsApi from './prefs-api';
+import * as styleMan from './style-manager';
+import {webRequestBlocking} from './style-via-webrequest';
+import * as syncMan from './sync-manager';
 
 /** @type {ResponseInit} */
 const RESPONSE_INIT = {
   headers: {'cache-control': 'no-cache'},
 };
-const ASSIGN_FUNC_STR = process.env.MV3 && `${data => Object.assign(window.clientData, data)}`;
+const ASSIGN_FUNC_STR = process.env.MV3 && `${function (data) {
+  Object.assign(this[process.env.CLIENT_DATA], data);
+}}`;
 
-export default async function setClientData(reqUrl) {
+export default async function setClientData(reqParams, {
+  dark: pageDark = !!+reqParams.get('dark'),
+  url: pageUrl = reqParams.get('url'),
+} = {}) {
   if (bgReady[kResolve]) await bgReady;
-  let v;
-  reqUrl = new URL(reqUrl);
-  const reqParams = reqUrl.searchParams;
-  const page = reqUrl.pathname.slice(1/*"/"*/, -5/*".html"*/);
-  const pageUrl = reqParams.get('url');
-  const pageParams = new URL(pageUrl).searchParams;
+  let v, params;
+  const url = new URL(pageUrl);
+  const page = url.pathname.slice(1/*"/"*/, -5/*".html"*/);
   const jobs = {};
-  setSystemDark(!!+reqParams.get('dark'));
+  setSystemDark(pageDark);
 
   Object.assign(jobs, /** @namespace StylusClientData */ {
     apply: styleMan.getSectionsByUrl(pageUrl, null, true),
@@ -34,15 +36,15 @@ export default async function setClientData(reqUrl) {
     prefs: prefsApi.get(),
 
   }, page === 'edit' ?
-    styleMan.getEditClientData(+pageParams.get('id'))
+    styleMan.getEditClientData(+url.searchParams.get('id'))
 
   : page === 'manage' ? /** @namespace StylusClientData */ {
     badFavs: prefs.__values['manage.newUI'] && prefs.__values['manage.newUI.favicons']
       && API.prefsDb.get('badFavs'),
-    ids: (v = pageParams.get('search') || undefined)
+    ids: (v = (params = url.searchParams).get('search') || undefined)
       && styleMan.searchDb({
         query: v,
-        mode: pageParams.get('searchMode') || prefs.__values['manage.searchMode'],
+        mode: params.get('searchMode') || prefs.__values['manage.searchMode'],
       }),
     styles: process.env.MV3 ? styleMan.getCodelessStyles() : styleMan.getAll(),
 
@@ -52,7 +54,7 @@ export default async function setClientData(reqUrl) {
     wrb: webRequestBlocking,
 
   } : page === 'popup' ? /** @namespace StylusClientData */ {
-    [kPopupData]: API.data.pop(kPopupData),
+    [kPopup]: API.data.pop(kPopup),
 
   } : null);
 

@@ -2,10 +2,8 @@ import '/js/dom-init';
 import {$, $$} from '/js/dom';
 import {setupLivePrefs} from '/js/dom-util';
 import {t, tBody} from '/js/localization';
-import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {CHROME} from '/js/ua';
-import {fltMode} from './filters';
 import {readBadFavs, showStyles} from './render';
 import * as router from './router';
 import * as sorter from './sorter';
@@ -16,18 +14,9 @@ import './manage-newui.css';
 tBody();
 
 (async () => {
-  /** @type {StylusClientData} */
-  const clientData = process.env.MV3 && global.clientData;
-  const query = !process.env.MV3 && router.getSearch('search');
-  const [styles, ids] = process.env.MV3 ? [
-    clientData.styles,
-    clientData.ids,
-    init(clientData.badFavs),
-  ] : await Promise.all([
-    API.styles.getAll(),
-    query && API.styles.searchDb({query, mode: router.getSearch(fltMode)}),
-    prefs.ready.then(init),
-  ]);
+  const {badFavs, ids, styles} = process.env.MV3 ? prefs.clientData : await prefs.clientData;
+  init(badFavs);
+  showStyles(styles, ids);
   // translate CSS manually
   document.styleSheets[0].insertRule(
     `:root {${[
@@ -42,7 +31,6 @@ tBody();
       $$('input[type=checkbox]').forEach((el, i) => (el.name = `bug${i}`));
     });
   }
-  showStyles(styles, ids);
   await new Promise(setTimeout);
   import('./lazy-init');
 })();

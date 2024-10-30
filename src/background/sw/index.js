@@ -5,7 +5,7 @@ import {createPortProxy, initRemotePort} from '/js/port';
 import {ownRoot, workerPath} from '/js/urls';
 import {cloudDrive} from '../db-to-cloud-broker';
 import offscreen from './offscreen';
-import setClientData from './set-client-data';
+import setClientData from '../set-client-data';
 import '..';
 
 /** @param {ExtendableEvent} evt */
@@ -27,7 +27,7 @@ self.onfetch = evt => {
     return; // shouldn't happen but addRoutes may be bugged
   }
   if (url.includes('?clientData')) {
-    evt.respondWith(setClientData(url));
+    evt.respondWith(setClientData(new URL(url).searchParams));
   } else if (/\.user.css#\d+$/.test(url)) {
     evt.respondWith(Response.redirect('edit.html'));
   }

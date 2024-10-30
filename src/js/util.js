@@ -61,6 +61,14 @@ export const debounce = /*@__PURE__*/(() => {
   }
 })();
 
+export const makePropertyPopProxy = () => new Proxy({}, {
+  get: (obj, k, v) => ((
+    (v = obj[k]),
+    delete obj[k],
+    v
+  )),
+});
+
 export function isEmptyObj(obj) {
   if (obj) {
     for (const k in obj) {

@@ -1,7 +1,6 @@
 import {loadCmTheme} from '/cm';
 import {UCD} from '/js/consts';
 import {$} from '/js/dom';
-import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import * as MozDocMapper from '/js/sections-util';
 import {clipString, sessionStore, tryURL} from '/js/util';
@@ -15,13 +14,9 @@ if (process.env.MV3 && /#\d+$/.test(location.hash)) {
 const params = new URLSearchParams(location.search);
 let id = +params.get('id');
 
-export default process.env.MV3 ? [
-  loadStyle(global.clientData),
-  loadCmTheme(),
-] : Promise.all([
-  API.styles.getEditClientData(id).then(loadStyle),
-  prefs.ready.then(loadCmTheme),
-]);
+export default process.env.MV3
+  ? loadStyle(prefs.clientData)
+  : prefs.clientData.then(loadStyle);
 
 function loadStyle({si, style = makeNewStyleObj(), template}) {
   // switching the mode here to show the correct page ASAP, usually before DOMContentLoaded
@@ -42,6 +37,7 @@ function loadStyle({si, style = makeNewStyleObj(), template}) {
     const str = `${params}`;
     history.replaceState({}, '', location.pathname + (str ? '?' : '') + str);
   }
+  loadCmTheme();
 }
 
 function makeNewStyleObj() {

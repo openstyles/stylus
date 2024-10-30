@@ -8,7 +8,8 @@
  */
 import {$, $create} from './dom';
 import {getCssMediaRuleByName} from './dom-util';
-import {API, onExtension} from './msg-base';
+import {onExtension} from './msg-base';
+import {clientData} from './prefs';
 import {MF_ICON_EXT, MF_ICON_PATH} from './util-webext';
 import '/css/global.css';
 import '/css/global-dark.css';
@@ -20,7 +21,7 @@ const map = {[MEDIA_ON]: true, [MEDIA_OFF]: false};
 
 (async () => {
   let isDark, favicon;
-  if (window === top) ({dark: isDark, favicon} = global.clientData || await API.info.get());
+  if (window === top) ({dark: isDark, favicon} = process.env.MV3 ? clientData : await clientData);
   else isDark = parent.document.documentElement.dataset.uiTheme === 'dark';
   toggle(isDark, true);
   onExtension(e => {

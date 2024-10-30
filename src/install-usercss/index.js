@@ -71,7 +71,7 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
     firstGet = getData({force: true});
   }
 
-  const hasFileAccessP = API.data.get('hasFileAccess');
+  const hasFileAccessP = browser.extension.isAllowedFileSchemeAccess();
   const tplP = fetchTemplate('/edit.html', 'styleSettings');
   tplP.then(el => {
     el.firstChild.remove(); // update URL

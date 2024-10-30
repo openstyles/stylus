@@ -18,6 +18,7 @@ import initContextMenus from './context-menus';
 import download from './download';
 import {updateIconBadge} from './icon-manager';
 import prefsApi from './prefs-api';
+import setClientData from './set-client-data';
 import * as styleMan from './style-manager';
 import initStyleViaApi from './style-via-api';
 import './style-via-webrequest';
@@ -78,10 +79,19 @@ Object.assign(API, /** @namespace API */ {
   usercss: usercssMan,
   uso: usoApi,
   usw: uswApi,
-  /** @type {BackgroundWorker} */
-  worker: !process.env.MV3 && createPortProxy(workerPath),
 
   //#endregion
+
+}, !process.env.MV3 && {
+
+  //#region API for MV2
+
+  setClientData,
+  /** @type {BackgroundWorker} */
+  worker: createPortProxy(workerPath),
+
+  //#endregion
+
 }, process.env.BUILD !== 'chrome' && FIREFOX && initStyleViaApi());
 
 Object.assign(browserCommands, {
@@ -140,11 +150,7 @@ async function apiPortMessage({id, data, TDM}, port) {
 
 //#endregion
 
-Promise.all([
-  browser.extension.isAllowedFileSchemeAccess()
-    .then(res => API.data.set('hasFileAccess', res)),
-  bgReady.styles,
-]).then(async () => {
+bgReady.styles.then(() => {
   bgReady[kResolve]();
   bgReady[kResolve] = null;
   if (process.env.ENTRY !== 'sw') window._msgExec = msg._execute;

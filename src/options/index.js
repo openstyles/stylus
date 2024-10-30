@@ -60,7 +60,7 @@ $$('[data-clickable]').forEach(el => {
   el.firstChild.replaceWith(...parts);
 });
 (async () => {
-  const {wrb} = await global.clientData || {};
+  const {wrb} = process.env.MV3 ? prefs.clientData : await prefs.clientData;
   if (wrb === false) {
     for (const el of $$('.webRequestBlocking')) {
       el.classList.add('disabled');
