@@ -198,7 +198,7 @@ function interceptClick(event) {
     event.preventDefault();
     messageBox.show({
       className: 'note center-dialog',
-      contents: tooltips.get(el) || tHTML(el.title),
+      contents: tHTML(tooltips.get(el) || el.title),
       buttons: [t('confirmClose')],
     });
   }
@@ -210,14 +210,14 @@ function interceptClick(event) {
 function splitLongTooltips() {
   for (const el of $$('[title]')) {
     tooltips.set(el, el.title);
-    el.title = el.title.replace(/<\/?\w+>/g, ''); // strip html tags
+    el.title = el.title.replace(/\s*<\/?[^>]+>\s*/g, ' '); // strip html tags
     if (el.title.length < 50) {
       continue;
     }
     const newTitle = el.title
       .split('\n')
-      .map(s => s.replace(/([^.][.。?!]|.{50,60},)\s+/g, '$1\n'))
-      .map(s => s.replace(/(.{50,80}(?=.{40,}))\s+/g, '$1\n'))
+      .map(s => s.replace(/([.?!]\s+|[．。？！]\s*|.{50,60},)\s+/gu, '$1\n'))
+      .map(s => s.replace(/(.{50,80}(?=.{40,}))\s+/gu, '$1\n'))
       .join('\n');
     if (newTitle !== el.title) el.title = newTitle;
   }
