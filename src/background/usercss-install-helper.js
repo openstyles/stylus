@@ -41,9 +41,9 @@ function toggle(key, val) {
     updateDNR([{
       id: DNR_ID_INSTALLER,
       condition: {
-        regexFilter: val
-          ? /^.*\.user\.(?:css|less|styl)(?:\?.*)?$/.source
-          : /^.*\.user\.css$/.source,
+        regexFilter: (val
+          ? /^.*\.user\.(?:css|less|styl)(?:\?.*)?$/
+          : /^.*\.user\.css$/).source,
         requestDomains: val
           ? undefined
           : [...new Set(urls.map(u => u.split('/')[2]))],
