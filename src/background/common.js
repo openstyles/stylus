@@ -32,7 +32,5 @@ export let isVivaldi = !!(browserWindows && CHROME) && (async () => {
   return isVivaldi;
 })();
 
-if (!process.env.MV3) {
-  global._ready = bgReady;
-  global._bg = true; // for IS_BG check
-}
+window._ready = bgReady;
+if (!process.env.MV3) window._bg = true; // for IS_BG check

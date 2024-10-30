@@ -1,4 +1,5 @@
 import './browser';
+import {kResolve} from '/js/util';
 import * as msg from './msg';
 import {API} from './msg-api';
 import {CHROME, FIREFOX} from './ua';
@@ -52,6 +53,9 @@ export default async function popupGetStyles() {
   frames[0].url = url;
   const urlSupported = supported(url);
   if (urlSupported) {
+    if (process.env.IS_BG && window._ready[kResolve]) {
+      await window._ready;
+    }
     let styles = [];
     for (const f of frames) {
       if (f.url && !f.isDupe) f.stylesIdx = styles.push(f.styles = API.styles.getByUrl(f.url)) - 1;

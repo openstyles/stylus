@@ -3,7 +3,8 @@ import {$, $create, $remove} from '/js/dom';
 import {getEventKeyName} from '/js/dom-util';
 import {t} from '/js/localization';
 import * as prefs from '/js/prefs';
-import {MF_ACTION_HTML, MF_ICON_EXT, MF_ICON_PATH} from '/js/util-webext';
+import {actionPopupUrl} from '/js/urls';
+import {MF_ICON_EXT, MF_ICON_PATH} from '/js/util-webext';
 
 export default function EmbeddedPopup() {
   const ID = 'popup-iframe';
@@ -42,7 +43,7 @@ export default function EmbeddedPopup() {
     scrollbarWidth = 0;
     frame = $create('iframe', {
       id: ID,
-      src: MF_ACTION_HTML,
+      src: actionPopupUrl,
       height: 600,
       width: prefs.get('popupWidth'),
       onload: initFrame,

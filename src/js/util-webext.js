@@ -7,7 +7,6 @@ export const MF = /*@__PURE__*/ chrome.runtime.getManifest();
 export const MF_ICON = /*@__PURE__*/ MF.icons[16].replace(ownRoot, '');
 export const MF_ICON_PATH = /*@__PURE__*/ MF_ICON.slice(0, MF_ICON.lastIndexOf('/') + 1);
 export const MF_ICON_EXT = /*@__PURE__*/ MF_ICON.slice(MF_ICON.lastIndexOf('.'));
-export const MF_ACTION_HTML = (process.env.MV3 ? MF.action : MF.browser_action).default_popup;
 
 // see PR #781
 export const CHROME_POPUP_BORDER_BUG = !process.env.MV3 && (CHROME >= 62 && CHROME <= 74);

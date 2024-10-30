@@ -3,9 +3,9 @@ import {API} from '/js/msg';
 import popupGetStyles from '/js/popup-get-styles';
 import * as prefs from '/js/prefs';
 import {CHROME, FIREFOX} from '/js/ua';
-import {ownRoot} from '/js/urls';
+import {actionPopupUrl, ownRoot} from '/js/urls';
 import {kResolve} from '/js/util';
-import {ignoreChromeError, MF_ACTION_HTML} from '/js/util-webext';
+import {ignoreChromeError} from '/js/util-webext';
 import {bgReady} from './common';
 import {getSectionsByUrl} from './style-manager';
 import * as tabMan from './tab-manager';
@@ -38,6 +38,12 @@ if (CHROME && !process.env.MV3) {
     types: ['main_frame'],
   }, ['blocking']);
 }
+if (CHROME && process.env.BUILD !== 'firefox') {
+  chrome.webRequest.onBeforeRequest.addListener(preloadPopupData, {
+    urls: [actionPopupUrl],
+    types: ['main_frame'],
+  });
+}
 
 function toggle(prefKey) {
   // Must register all listeners synchronously to make them wake the SW
@@ -49,10 +55,7 @@ function toggle(prefKey) {
     return;
   }
   const reqFilter = {
-    urls: [
-      '*://*/*',
-      CHROME && chrome.runtime.getURL(MF_ACTION_HTML),
-    ].filter(Boolean),
+    urls: ['*://*/*'],
     types: ['main_frame', 'sub_frame'],
   };
   chrome.webNavigation.onCommitted.removeListener(injectData);
@@ -85,7 +88,6 @@ function toggle(prefKey) {
 /** @param {chrome.webRequest.WebRequestBodyDetails} req */
 function prepareStyles(req) {
   if (bgReady[kResolve]) return;
-  if (req.url.startsWith(ownRoot)) return preloadPopupData(req);
   const TTL = process.env.MV3 ? prefs.__values.keepAlive : -1;
   const {url} = req;
   const payload = getSectionsByUrl.call({sender: (req.tab = {url}, req)}, url, null, true);
