@@ -44,12 +44,12 @@ function lazyAddEntryTitle({type, target}) {
 }
 
 async function toggleEmbeddedOptions(show, el, selector) {
+  // TODO: use messageBox() or a dockable sidepanel or the chrome.sidePanel API
   if (show) {
     $.root.appendChild($create('iframe' + selector, {src: '/options.html'}))
       .focus();
-    await new Promise(resolve => window.on('closeOptions', resolve, {once: true}));
+    await new Promise(resolve => (window.closeOptions = resolve));
   } else {
-    el.contentDocument.body.classList.add('scaleout');
     await animateElement(el, 'fadeout');
     el.remove();
   }

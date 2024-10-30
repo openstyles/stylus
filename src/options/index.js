@@ -18,13 +18,16 @@ $$('input[min], input[max]').forEach(enforceInputRange);
 for (const el of $$('[show-if]')) {
   prefs.subscribe(el.getAttribute('show-if').replace(/^!/, ''), toggleShowIf, true);
 }
-if (CHROME_POPUP_BORDER_BUG) {
-  $('.chrome-no-popup-border').classList.remove('chrome-no-popup-border');
+if (!process.env.MV3 && process.env.BUILD !== 'firefox' && CHROME_POPUP_BORDER_BUG) {
+  $('#popupWidth').closest('.items').append(template.popupBorders);
 }
+window.on('keydown', event => {
+  if (getEventKeyName(event) === 'Escape') {
+    tellTopToCloseOptions();
+  }
+});
+$('header i').onclick = tellTopToCloseOptions;
 // actions
-$('header i').onclick = () => {
-  top.dispatchEvent(new CustomEvent('closeOptions'));
-};
 $('#manage').onclick = () => {
   API.openManage();
 };
@@ -32,7 +35,7 @@ $('#manage.newUI.favicons').onclick = () => {
   API.prefsDb.delete('badFavs');
 };
 $('#shortcuts').onclick = () => {
-  if (FIREFOX) {
+  if (process.env.BUILD !== 'chrome' && FIREFOX) {
     customizeHotkeys();
   } else {
     API.openURL({
@@ -64,7 +67,11 @@ for (const el of $$('[data-clickable]')) {
   if (wrb === false) {
     for (const el of $$('.webRequestBlocking')) {
       el.classList.add('disabled');
-      $('.icon', el).after(template.WRB.cloneNode(true));
+      $('.icon', el).after($create('a.broken', {
+        'data-cmd': 'note',
+        tabIndex: 0,
+        title: t('webRequestBlockingMV3Note', chrome.runtime.id),
+      }, '⚒'));
     }
   }
 })();
@@ -133,8 +140,6 @@ function toggleShowIf(id, val) {
   }
 }
 
-window.onkeydown = event => {
-  if (getEventKeyName(event) === 'Escape') {
-    top.dispatchEvent(new CustomEvent('closeOptions'));
-  }
-};
+function tellTopToCloseOptions() {
+  top.closeOptions();
+}

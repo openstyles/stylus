@@ -44,11 +44,12 @@ prefs.subscribe('popup.stylesFirst', (key, stylesFirst) => {
 prefs.subscribe('newStyleAsUsercss', (key, val) => {
   $('#write-style-for').textContent = t(val ? 'optionsAdvancedNewStyleAsUsercss' : 'writeStyleFor');
 }, true);
-if (CHROME_POPUP_BORDER_BUG) {
+if (!process.env.MV3 && process.env.BUILD !== 'firefox' && CHROME_POPUP_BORDER_BUG) {
   prefs.subscribe('popup.borders', toggleSideBorders, true);
 }
-if (CHROME >= 66 && CHROME <= 69) { // Chrome 66-69 adds a gap, https://crbug.com/821143
-  document.head.appendChild($create('style', 'html { overflow: overlay }'));
+if (!process.env.MV3 && CHROME >= 66 && CHROME <= 69) {
+  // Chrome 66-69 adds a gap, https://crbug.com/821143
+  $.root.style.overflow = 'overlay';
 }
 
 function onRuntimeMessage(msg) {

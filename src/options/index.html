@@ -29,8 +29,11 @@
     </p>
   </template>
 
-  <template data-id="WRB">
-    <a data-cmd="note" tabindex="0" i18n="title:webRequestBlockingMV3Note" class="broken">⚒</a>
+  <template data-id="popupBorders">
+    <label>
+      <span i18n="popupBorders, title:popupBordersTooltip"></span>
+      <input type="checkbox" id="popup.borders" class="slider">
+    </label>
   </template>
 
   <template data-id="body">
@@ -187,10 +190,6 @@
           <label>
             <span i18n="popupAutoResort"></span>
             <input type="checkbox" id="popup.autoResort" class="slider">
-          </label>
-          <label class="chromium-only chrome-no-popup-border">
-            <span i18n="popupBorders, title:popupBordersTooltip"></span>
-            <input type="checkbox" id="popup.borders" class="slider">
           </label>
         </div>
       </div>

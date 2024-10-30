@@ -19,10 +19,6 @@ body {
   max-height: calc(100vh - 32px);
   border: 1px solid var(--c60);
   box-shadow: 0px 5px 15px 3px hsla(0, 0%, 0%, .35);
-  animation: scalein .25s ease-in-out;
-  &.scaleout {
-    animation: scaleout .25s ease-in-out;
-  }
 }
 
 main {
@@ -246,19 +242,4 @@ a.icon {
 }
 .sync-options .actions button {
   margin-top: .5em;
-}
-
-@keyframes scalein {
-  0% {
-    transform: scale3d(.3, .3, .3);
-  }
-  100% {
-    transform: scale3d(1, 1, 1);
-  }
-}
-
-@keyframes scaleout {
-  100% {
-    transform: scale3d(0, 0, 0);
-  }
 }
