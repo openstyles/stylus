@@ -1,3 +1,4 @@
+import {kPopupData} from '/js/consts';
 import {API} from '/js/msg-api';
 import * as prefs from '/js/prefs';
 import {FIREFOX} from '/js/ua';
@@ -13,14 +14,12 @@ import * as syncMan from '../sync-manager';
 const RESPONSE_INIT = {
   headers: {'cache-control': 'no-cache'},
 };
+const ASSIGN_FUNC_STR = process.env.MV3 && `${data => Object.assign(window.clientData, data)}`;
 
-/**
- * @param {FetchEvent} evt
- * @param {URL} reqUrl
- */
-export default async function setClientData(evt, reqUrl) {
+export default async function setClientData(reqUrl) {
   if (bgReady[kResolve]) await bgReady;
   let v;
+  reqUrl = new URL(reqUrl);
   const reqParams = reqUrl.searchParams;
   const page = reqUrl.pathname.slice(1/*"/"*/, -5/*".html"*/);
   const pageUrl = reqParams.get('url');
@@ -45,7 +44,7 @@ export default async function setClientData(evt, reqUrl) {
         query: v,
         mode: pageParams.get('searchMode') || prefs.__values['manage.searchMode'],
       }),
-    styles: styleMan.getCodelessStyles(),
+    styles: process.env.MV3 ? styleMan.getCodelessStyles() : styleMan.getAll(),
 
   } : page === 'options' ? /** @namespace StylusClientData */ {
     sync: (v = syncMan.getStatus()),
@@ -53,13 +52,13 @@ export default async function setClientData(evt, reqUrl) {
     wrb: webRequestBlocking,
 
   } : page === 'popup' ? /** @namespace StylusClientData */ {
-    popup: API.data.pop('popupData'),
+    [kPopupData]: API.data.pop(kPopupData),
 
   } : null);
 
   v = await Promise.all(Object.values(jobs));
   Object.keys(jobs).forEach((id, i) => (jobs[id] = v[i]));
-  return new Response(`var clientData = new Proxy(${JSON.stringify(jobs)}, {get: ${(obj, k, _) => ((
-    (_ = obj[k]), delete obj[k], _
-  ))}})`, RESPONSE_INIT);
+  return process.env.MV3
+    ? new Response(`(${ASSIGN_FUNC_STR})(${JSON.stringify(jobs)})`, RESPONSE_INIT)
+    : jobs;
 }

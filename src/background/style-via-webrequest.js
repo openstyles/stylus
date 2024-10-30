@@ -1,3 +1,4 @@
+import {kPopupData} from '/js/consts';
 import {API} from '/js/msg';
 import popupGetStyles from '/js/popup-get-styles';
 import * as prefs from '/js/prefs';
@@ -77,7 +78,7 @@ function toggle() {
 /** @param {chrome.webRequest.WebRequestBodyDetails} req */
 function prepareStyles(req) {
   if (bgReady[kResolve]) return;
-  if (req.url.startsWith(ownRoot)) return preloadPopupData();
+  if (req.url.startsWith(ownRoot)) return preloadPopupData(req);
   const mv3TTL = process.env.MV3 && prefs.get('keepAlive');
   const {url} = req;
   req.tab = {url};
@@ -174,8 +175,9 @@ function patchCspSrc(src, name, ...values) {
   }
 }
 
-async function preloadPopupData() {
-  API.data.set('popupData', await popupGetStyles());
+async function preloadPopupData(req) {
+  // tabId < 0 means the popup is shown normally and not as a page in a tab
+  API.data.set(kPopupData, req.tabId < 0 && popupGetStyles());
 }
 
 function cleanUp(req) {

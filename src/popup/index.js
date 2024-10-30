@@ -1,5 +1,5 @@
 import '/js/dom-init';
-import {UCD} from '/js/consts';
+import {kPopupData, UCD} from '/js/consts';
 import {$, $$, $create, $remove} from '/js/dom';
 import {getEventKeyName, setupLivePrefs} from '/js/dom-util';
 import {t, tBody, template} from '/js/localization';
@@ -29,8 +29,8 @@ export const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || s
 tBody();
 
 (async () => {
-  const data = process.env.MV3 && global.clientData.popup
-    || CHROME && await API.data.pop('popupData')
+  const data = process.env.MV3 && global.clientData[kPopupData]
+    || CHROME && await API.data.pop(kPopupData)
     || await popupGetStyles();
   initPopup(...data);
   showStyles(...data);
