@@ -51,14 +51,14 @@ $('#reset').onclick = async () => {
     }
   }
 };
-$$('[data-clickable]').forEach(el => {
-  const input = $('input', el.closest('label'));
+for (const el of $$('[data-clickable]')) {
   const value = el.dataset.clickable;
-  const rx = new RegExp(`\\b(${value})\\b`, 'g');
-  const onclick = () => setInputValue(input, value);
-  const parts = elementize(el.textContent, rx, s => $create('span.clickable', {onclick}, s));
-  el.firstChild.replaceWith(...parts);
-});
+  const p = el.textContent.match(new RegExp(`^(.*\\W)(${value})(?=\\W)(.*)`));
+  if (!p) continue;
+  const input = $('input', el.closest('label'));
+  const span = $create('span.clickable', {onclick: () => setInputValue(input, value)}, p[2]);
+  el.firstChild.replaceWith(p[1], span, p[3]);
+}
 (async () => {
   const {wrb} = process.env.MV3 ? prefs.clientData : await prefs.clientData;
   if (wrb === false) {
@@ -109,10 +109,6 @@ function customizeHotkeys() {
     el.setCustomValidity(err || '');
     if (!err) el.dispatchEvent(new Event('change', {bubbles: true}));
   }
-}
-
-function elementize(str, rx, cb) {
-  return str.split(rx).map((s, i) => i % 2 ? cb(s) : s).filter(Boolean);
 }
 
 function enforceInputRange(element) {
