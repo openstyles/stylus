@@ -1,7 +1,9 @@
 const isExt = !!chrome.tabs;
-const PREFIX = 'stylus-';
+const CLASS = 'stylus';
+const PREFIX = CLASS + '-';
 const MEDIA = 'screen, ' + PREFIX;
 const PATCH_ID = 'transition-patch';
+const SUPERSEDED = '-superseded-by-Stylus';
 const kAss = 'adoptedStyleSheets';
 const wrappedDoc = document.wrappedJSObject || document;
 const FF = wrappedDoc !== document;
@@ -49,9 +51,11 @@ export function shutdown(eventId) {
 }
 
 export function clearOrphans() {
-  for (const el of document.querySelectorAll(`:root > style[id^="${PREFIX}"].stylus`)) {
+  for (const el of document.querySelectorAll(`:root > style[id^="${PREFIX}"].${CLASS}`)) {
     const id = el.id.slice(PREFIX.length);
-    if (/^\d+$/.test(id) || id === PATCH_ID) {
+    if (id === PATCH_ID ||
+        id.endsWith(SUPERSEDED) ||
+        /^\d+$/.test(id) && !table.has(+id)) {
       el.remove();
     }
   }
@@ -205,12 +209,12 @@ function createStyle(style) {
   if (id) {
     el.id = `${PREFIX}${id}`;
     const oldEl = document.getElementById(el.id);
-    if (oldEl) oldEl.id += '-superseded-by-Stylus';
+    if (oldEl) oldEl.id += SUPERSEDED;
   }
   el.nonce = nonce;
   el.type = 'text/css';
   // SVG className is not a string, but an instance of SVGAnimatedString
-  el.classList.add('stylus');
+  el.classList.add(CLASS);
   setTextAndName(el, style);
   return el;
 }

@@ -3,7 +3,6 @@ import * as msg from '/js/msg-base';
 import {API, apiPortDisconnect} from '/js/msg-api';
 import * as styleInjector from './style-injector';
 
-let isTab = !process.env.ENTRY || location.pathname !== '/popup.html';
 const own = /** @type {Injection} */{
   cfg: {off: false, top: ''},
 };
@@ -20,6 +19,7 @@ const clone = process.env.ENTRY
   ? _deepCopy /* global _deepCopy */// will be used in extension context
   : val => typeof val === 'object' && val ? JSON.parse(JSON.stringify(val)) : val;
 const isFrame = window !== parent;
+let stylesAppliedTime;
 /** @type {number}
  * TODO: expose to msg.js without `window`
  * -1 = top prerendered, 0 = iframe, 1 = top, 2 = top reified */
@@ -33,60 +33,51 @@ if (isFrame) {
 }
 const isFrameNoUrl = isFrameSameOrigin && location.protocol === 'about:';
 
+/** Polyfill for documentId in Firefox and Chrome pre-106 */
+const instanceId = !(CHROME && CSS.supports('top', '1ic')) && (Math.random() || Math.random());
+/** about:blank iframes are often used by sites for file upload or background tasks,
+ * and they may break if unexpected DOM stuff is present at `load` event
+ * so we'll add the styles only if the iframe becomes visible */
+const xoEventId = `${instanceId}`;
+
+// FIXME: move this to background page when following bugs are fixed:
+// https://bugzil.la/1587723, https://crbug.com/968651
+const mqDark = !isFrame && matchMedia('(prefers-color-scheme: dark)');
+
 // dynamic iframes don't have a URL yet so we'll use their parent's URL (hash isn't inherited)
 let matchUrl = isFrameNoUrl
   ? parent.location.href.split('#')[0]
   : location.href;
 let isOrphaned, orphanCleanup;
 let offscreen;
-// firefox doesn't orphanize content scripts so the old elements stay
-if (!CHROME) styleInjector.clearOrphans();
-
 /** @type chrome.runtime.Port */
 let port;
 let lazyBadge = isFrame;
-
-/** Polyfill for documentId in Firefox and Chrome pre-106 */
-const instanceId = !(CHROME && CSS.supports('top', '1ic')) && (Math.random() || Math.random());
-/* about:blank iframes are often used by sites for file upload or background tasks
- * and they may break if unexpected DOM stuff is present at `load` event
- * so we'll add the styles only if the iframe becomes visible */
-const xoEventId = `${instanceId}`;
 /** @type IntersectionObserver */
 let xo;
-window[Symbol.for('xo')] = (el, cb) => {
-  if (!xo) xo = new IntersectionObserver(onIntersect, {rootMargin: '100%'});
-  el.addEventListener(xoEventId, cb, {once: true});
-  xo.observe(el);
-};
 
-// FIXME: move this to background page when following bugs are fixed:
-// https://bugzil.la/1587723, https://crbug.com/968651
-const mqDark = !isFrame && matchMedia('(prefers-color-scheme: dark)');
+if (CHROME) {
+  window[Symbol.for('xo')] = (el, cb) => {
+    if (!xo) xo = new IntersectionObserver(onIntersect, {rootMargin: '100%'});
+    el.addEventListener(xoEventId, cb, {once: true});
+    xo.observe(el);
+  };
+}
 if (mqDark) {
   mqDark.onchange = ({matches: m}) => {
     if (m !== own.cfg.dark) API.info.set({preferDark: own.cfg.dark = m});
   };
 }
-
+if (TDM < 0) {
+  document.onprerenderingchange = onReified;
+}
 // Declare all vars before init() or it'll throw due to "temporal dead zone" of const/let
 styleInjector.init(onInjectorUpdate, (a, b) => calcOrder(a) - calcOrder(b));
 init();
-
-// the popup needs a check as it's not a tab but can be opened in a tab manually for whatever reason
-if (!isTab) {
-  chrome.tabs.getCurrent(tab => {
-    isTab = Boolean(tab);
-    if (tab && styleInjector.list.length) updateCount();
-  });
-}
-
 msg.onTab(applyOnMessage);
 addEventListener('pageshow', onBFCache);
 addEventListener('pagehide', onBFCache);
-if (TDM < 0) document.onprerenderingchange = onReified;
-
-if (!chrome.tabs) {
+if (!process.env.ENTRY) {
   dispatchEvent(new CustomEvent(chrome.runtime.id, {detail: orphanCleanup = Math.random()}));
   addEventListener(chrome.runtime.id, orphanCheck, true);
 }
@@ -106,13 +97,14 @@ async function init() {
   } else {
     data = isFrameNoUrl && CHROME && clone(parent[parent.Symbol.for(SYM_ID)]);
     if (data) await new Promise(onFrameElementInView);
-    else data = !isFrameSameOrigin && !isXml && !chrome.tabs && tryCatch(getStylesViaXhr);
+    else data = !process.env.ENTRY && !isFrameSameOrigin && !isXml && tryCatch(getStylesViaXhr);
+    // XML in Chrome will be auto-converted to html later, so we can't style it via XHR now
   }
-  // XML in Chrome will be auto-converted to html later, so we can't style it via XHR now
   await applyStyles(data);
   if (orphanCleanup) {
     dispatchEvent(new Event(orphanCleanup));
     orphanCleanup = false;
+    if (!CHROME) styleInjector.clearOrphans(); // Firefox doesn't orphanize content scripts
   }
 }
 
@@ -126,6 +118,7 @@ async function applyStyles(data) {
   if (styleInjector.list.length) styleInjector.apply(own, true);
   else if (!own.cfg.off) styleInjector.apply(own);
   styleInjector.toggle(!own.cfg.off);
+  stylesAppliedTime ??= performance.now();
 }
 
 /** Must be executed inside try/catch */
@@ -149,7 +142,10 @@ function applyOnMessage(req) {
   const {style} = req;
   switch (req.method) {
     case 'ping':
-      return true;
+      return !process.env.MV3 || [
+        performance.getEntriesByType('paint')[0]?.startTime | 0 || 0,
+        stylesAppliedTime | 0 || 0,
+      ];
 
     case 'styleDeleted':
       styleInjector.removeId(style.id);
@@ -231,7 +227,7 @@ function updateExposeIframes() {
 }
 
 function updateCount() {
-  if (!isTab || TDM < 0) return;
+  if (TDM < 0) return;
   if (isFrame) {
     if (!port && styleInjector.list.length) {
       port = chrome.runtime.connect({name: 'iframe'});
