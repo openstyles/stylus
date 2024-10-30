@@ -59,6 +59,15 @@ $$('[data-clickable]').forEach(el => {
   const parts = elementize(el.textContent, rx, s => $create('span.clickable', {onclick}, s));
   el.firstChild.replaceWith(...parts);
 });
+(async () => {
+  const {wrb} = await global.clientData || {};
+  if (wrb === false) {
+    for (const el of $$('.webRequestBlocking')) {
+      el.classList.add('disabled');
+      $('.icon', el).after(template.webRequestBlockingMV3Note.cloneNode(true));
+    }
+  }
+})();
 
 function customizeHotkeys() {
   const CTRL = MAC ? 'metaKey' : 'ctrlKey';

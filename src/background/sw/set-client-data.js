@@ -6,6 +6,7 @@ import {isDark, setSystemDark} from '../color-scheme';
 import {bgReady, isVivaldi} from '../common';
 import prefsApi from '../prefs-api';
 import * as styleMan from '../style-manager';
+import {webRequestBlocking} from '../style-via-webrequest';
 import * as syncMan from '../sync-manager';
 
 /** @type {ResponseInit} */
@@ -49,6 +50,7 @@ export default async function setClientData(evt, reqUrl) {
   } : page === 'options' ? /** @namespace StylusClientData */ {
     sync: (v = syncMan.getStatus()),
     syncOpts: ((v = v.currentDriveName)) ? syncMan.getDriveOptions(v) : {},
+    wrb: webRequestBlocking,
 
   } : page === 'popup' ? /** @namespace StylusClientData */ {
     popup: API.data.pop('popupData'),

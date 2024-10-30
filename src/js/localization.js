@@ -12,7 +12,7 @@ export const template = /*@__PURE__*/new Proxy({}, {
   get: (obj, k, _) => hasOwn(obj, k) ? obj[k] :
     (_ = $(`template[data-id="${k}"]`)) && (obj[k] = createTemplate(_)),
 });
-const ALLOWED_TAGS = ['a', 'b', 'code', 'i', 'sub', 'sup', 'wbr'];
+const ALLOWED_TAGS = ['a', 'b', 'br', 'code', 'i', 'nobr', 'small', 'sub', 'sup', 'wbr'];
 const RX_WORD_BREAK = /([\w\u007B-\uFFFF]{10}|[\w\u007B-\uFFFF]{5,10}[!-/]|((?!\s)\W){10})(?!\s|$)/gu;
 const SELECTOR = '[i18n]';
 const RELATIVE_UNITS = [
@@ -145,9 +145,13 @@ export function sanitizeHtml(root) {
     if (n.nodeType === Node.TEXT_NODE) {
       n.nodeValue = breakWord(n.nodeValue);
     } else if (ALLOWED_TAGS.includes(n.localName)) {
+      const isA = n.localName === 'a';
       for (const attr of n.attributes) {
-        if (n.localName !== 'a' || attr.localName !== 'href' || !/^https?:/.test(n.href)) {
+        if (!(isA && attr.localName === 'href' && /^https?:/.test(n.href))) {
           n.removeAttribute(attr.name);
+        } else if (isA) {
+          n.target = '_blank';
+          n.rel = 'noreferrer';
         }
       }
     } else {

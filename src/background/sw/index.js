@@ -27,7 +27,7 @@ self.onfetch = evt => {
     return; // shouldn't happen but addRoutes may be bugged
   }
   if (url.includes('?clientData')) {
-    evt.respondWith(setClientData(evt, new URL(url)));
+    evt.respondWith(setClientData(url));
   } else if (/\.user.css#\d+$/.test(url)) {
     evt.respondWith(Response.redirect('edit.html'));
   }

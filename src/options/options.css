@@ -53,6 +53,7 @@ header {
   }
 }
 
+html:not(.mv3) .mv3-only,
 .firefox .chromium-only,
 .chromium-only.chrome-no-popup-border {
   display: none;
@@ -153,7 +154,10 @@ input[type=time] {
 
 label.disabled,
 #favs.disabled + label {
-  opacity: .5;
+  color: var(--c65);
+  input {
+    opacity: .5;
+  }
 }
 
 footer {
@@ -173,8 +177,13 @@ footer {
   position: relative;
 }
 [data-cmd="note"] {
-  padding-left: .25em;
+  padding-left: .25rem;
   cursor: pointer;
+  &.broken {
+    font-size: 1.5rem;
+    line-height: 1rem;
+    vertical-align: text-bottom;
+  }
 }
 
 a.icon {

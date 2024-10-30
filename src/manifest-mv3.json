@@ -17,6 +17,7 @@
     "declarativeNetRequestWithHostAccess",
     "declarativeNetRequestFeedback",
     "identity",
+    "idle",
     "offscreen",
     "scripting",
     "storage",

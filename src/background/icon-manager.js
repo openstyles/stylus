@@ -14,7 +14,6 @@ const imageDataCache = {};
 const badgeOvr = {color: '', text: ''};
 // https://github.com/openstyles/stylus/issues/1287 Fenix can't use custom ImageData
 const FIREFOX_ANDROID = FIREFOX && MOBILE;
-let isDark;
 // https://github.com/openstyles/stylus/issues/335
 let hasCanvas = FIREFOX_ANDROID ? false : null;
 
@@ -47,12 +46,11 @@ chrome.runtime.onConnect.addListener(port => {
     port.onDisconnect.addListener(onPortDisconnected);
   }
 });
-colorScheme.onChange(val => {
-  isDark = val;
+colorScheme.onChange(() => {
   if (prefs.get('iconset') === -1) {
     debounce(refreshGlobalIcon);
   }
-}, true);
+}, !process.env.MV3);
 bgReady.then(() => {
   prefs.subscribe([
     'disableAll',
@@ -104,7 +102,7 @@ function refreshIconBadgeText(tabId) {
 
 function getIconName(hasStyles = false) {
   const i = prefs.get('iconset');
-  const prefix = i === 0 || i === -1 && isDark ? '' : 'light/';
+  const prefix = i === 0 || i === -1 && colorScheme.isDark ? '' : 'light/';
   const postfix = prefs.get('disableAll') ? 'x' : !hasStyles ? 'w' : '';
   return `${prefix}$SIZE$${postfix}`;
 }

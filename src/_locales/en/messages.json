@@ -1090,6 +1090,12 @@
   "optionsAdvancedExposeStyleNameNote": {
     "message": "Exposes the style name in the page to facilitate debugging of styles in devtools. Please reload the tab(s) to apply the new setting."
   },
+  "optionsAdvancedKeepAlive": {
+    "message": "Style cache duration in minutes (-1 = unlimited)"
+  },
+  "optionsAdvancedKeepAliveNote": {
+    "message": "Increase it if you encounter flashing of unstyled content (FOUC) when opening a page after not interacting with the browser for a while.\n\n-1 = ManifestV2 default behavior (no limit).\n0 = ManifestV3 default behavior (half a minute).\n\nThe cache takes 30MB or more of RAM, but rebuilding it may take too much time and cause FOUC depending on the website, network speed, amount of styles, RAM size, and CPU performance."
+  },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Write new style as UserCSS"
   },
@@ -1895,6 +1901,9 @@
   "versionInvalidOlder": {
     "message": "The version is older than the installed style.",
     "description": "Displayed when the version of style is older than the installed one"
+  },
+  "webRequestBlockingMV3Note": {
+    "message": "Requires webRequestBlocking permission which can be enabled in ManifestV3 using one of these methods:\n\n 1) Export the backup, set up <a href='https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist'>ExtensionInstallForcelist</a> policy for this extension's id \"clngdbkpkpeebahjckkjfobafhncgmne\", restart the browser, wait for the extension to be installed, import the backup in the style manager, and optionally pin the icon to the toolbar.\n\n 2) Use Chrome-Developer-Mode-Extension-Warning-Patcher in Windows and enable the webRequestBlocking patch.\n\n3) Modify the command line in the browser's icon or launcher: add a space and <code><nobr>--allowlisted-extension-id=clngdbkpkpeebahjckkjfobafhncgmne</nobr></code>"
   },
   "writeStyleFor": {
     "message": "Write style for: ",

@@ -24,6 +24,9 @@ const INJECTED_FUNC = function (data) {
   }
 };
 const INJECTED_CODE = `${INJECTED_FUNC}`;
+export const webRequestBlocking = browser.permissions.contains({
+  permissions: ['webRequestBlocking'],
+});
 
 toggle();
 prefs.subscribe([idXHR, idOFF, idCSP], toggle);

@@ -48,7 +48,10 @@ prefs.subscribe(kSTATE, (_, val, firstRun) => {
 
 export function onChange(listener, runNow) {
   changeListeners.add(listener);
-  if (runNow) listener(isDark);
+  if (runNow) {
+    if (prefState) listener(isDark);
+    else prefs.ready.then(() => listener(isDark));
+  }
 }
 
 /** @param {StyleObj} _ */
@@ -76,8 +79,9 @@ function createAlarm(key, value) {
   });
 }
 
-function onAlarm({name}) {
+async function onAlarm({name}) {
   if (name === kSTART || name === kEND) {
+    if (!prefState) await prefs.ready;
     updateTimePreferDark();
   }
 }

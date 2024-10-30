@@ -105,7 +105,7 @@ bgReady.then(() => colorScheme.onChange(value => {
       broadcastStyleUpdated(style, 'colorScheme');
     }
   }
-}, true));
+}, !process.env.MV3));
 
 //#endregion
 //#region Exports

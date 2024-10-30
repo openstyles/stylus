@@ -29,6 +29,10 @@
     </p>
   </template>
 
+  <template data-id="webRequestBlockingMV3Note">
+    <a data-cmd="note" tabindex="0" i18n="title:webRequestBlockingMV3Note" class="broken">⚒</a>
+  </template>
+
   <template data-id="body">
 
     <header>
@@ -248,7 +252,16 @@
       <div class="block" id="advanced">
         <h2 i18n="optionsAdvanced"></h2>
         <div class="items swap">
-          <label>
+          <label class="mv3-only">
+            <span i18n="optionsAdvancedKeepAlive" data-clickable="-1">
+              <a i18n="title:optionsAdvancedKeepAliveNote"
+                 data-cmd="note" class=icon tabindex="0">
+                <i class=i-info></i>
+              </a>
+            </span>
+            <input id="keepAlive" type="number" min="-1" max="999">
+          </label>
+          <label class="webRequestBlocking">
             <span i18n="optionsAdvancedStyleViaXhr">
               <a i18n="title:optionsAdvancedStyleViaXhrNote"
                  data-cmd="note" class=icon tabindex="0">
@@ -257,11 +270,7 @@
             </span>
             <input type="checkbox" id="styleViaXhr" class="slider">
           </label>
-          <label>
-            <span i18n="optionsAdvancedStyleViaASS"></span>
-            <input type="checkbox" id="styleViaASS" class="slider">
-          </label>
-          <label>
+          <label class="webRequestBlocking">
             <span i18n="html:optionsAdvancedPatchCsp">
               <a i18n="title:optionsAdvancedPatchCspNote"
                  data-cmd="note" class=icon tabindex="0">
@@ -269,6 +278,10 @@
               </a>
             </span>
             <input type="checkbox" id="patchCsp" class="slider">
+          </label>
+          <label>
+            <span i18n="optionsAdvancedStyleViaASS"></span>
+            <input type="checkbox" id="styleViaASS" class="slider">
           </label>
           <label>
             <span i18n="optionsAdvancedExposeIframes">
