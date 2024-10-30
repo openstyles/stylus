@@ -1903,7 +1903,7 @@
     "description": "Displayed when the version of style is older than the installed one"
   },
   "webRequestBlockingMV3Note": {
-    "message": "Requires webRequestBlocking permission which can be enabled in ManifestV3 using one of these methods:\n\n 1) Export the backup, set up <a href='https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist'>ExtensionInstallForcelist</a> policy for this extension's id \"$id$\", restart the browser, wait for the extension to be installed, import the backup in the style manager, and optionally pin the icon to the toolbar.\n\n 2) Use <a href='https://github.com/Ceiridge/Chrome-Developer-Mode-Extension-Warning-Patcher'>Chrome-Developer-Mode-Extension-Warning-Patcher</a> in Windows and enable the webRequestBlocking patch.\n\n3) Modify the command line in the browser's icon or launcher: add a space and <code><nobr>--allowlisted-extension-id=$id$</nobr></code>",
+    "message": "Requires webRequestBlocking permission which can be enabled in ManifestV3 using one of these methods:\n\n 1) Export the backup, set up <a href='https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist'>ExtensionInstallForcelist</a> policy for this extension's id \"$id$\", restart the browser, wait for the extension to be installed, import the backup in the style manager, and optionally pin the icon to the toolbar.\n\n 2) Modify the command line in the browser's icon or launcher: add a space and <code><nobr>--allowlisted-extension-id=$id$</nobr></code>",
     "placeholders": {
       "id": {
         "content": "$1"
