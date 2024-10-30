@@ -1,61 +1,51 @@
 import '/js/browser';
 import {sendTab} from '/js/msg';
 import * as prefs from '/js/prefs';
-import {ignoreChromeError} from '/js/util-webext';
 import {CHROME} from '/js/ua';
 import {ownRoot} from '/js/urls';
+import {ignoreChromeError} from '/js/util-webext';
 import {browserCommands} from './common';
 
-export default async function initContextMenus() {
-  const ext = await browser.management.getSelf();
-  const contextMenus = Object.assign({
-    'show-badge': {
-      title: 'menuShowBadge',
-      click: togglePref,
-    },
-    'disableAll': {
-      title: 'disableAllStyles',
-      click: browserCommands.styleDisableAll,
-    },
-    'open-manager': {
-      title: 'optionsOpenManager',
-      click: browserCommands.openManage,
-    },
-    'open-options': {
-      title: 'openOptions',
-      click: browserCommands.openOptions,
-    },
-  }, ext.installType === 'development' && {
-    'reload': {
-      title: 'reload',
-      click: browserCommands.reload,
-    },
+let ITEMS;
+
+chrome.contextMenus.onClicked.addListener((info, tab) =>
+  ITEMS[info.menuItemId][0](info, tab));
+
+export default function initContextMenus() {
+  /** id is either a prefs id or an i18n key to be used for the title */
+  ITEMS = Object.assign({
+    'show-badge': [togglePref, {title: 'menuShowBadge'}],
+    'disableAll': [browserCommands.styleDisableAll, {title: 'disableAllStyles'}],
+    'styleManager': [browserCommands.openManage],
+    'openOptions': [browserCommands.openOptions],
+    'reload': [browserCommands.reload],
   }, CHROME && {
-    'editor.contextDelete': {
+    'editor.contextDelete': [(info, tab) => {
+      sendTab(tab.id, {method: 'editDeleteText'}, undefined, 'extension');
+    }, {
       title: 'editDeleteText',
       type: 'normal',
       contexts: ['editable'],
       documentUrlPatterns: [ownRoot + '*'],
-      click: (info, tab) => {
-        sendTab(tab.id, {method: 'editDeleteText'}, undefined, 'extension');
-      },
-    },
+    }],
   });
-
-  createContextMenus(Object.keys(contextMenus), true);
-  chrome.contextMenus.onClicked.addListener((info, tab) =>
-    contextMenus[info.menuItemId].click(info, tab));
+  createContextMenus(Object.keys(ITEMS), true);
 
   function createContextMenus(ids, isInit) {
     for (const id of ids) {
-      const item = Object.assign({id, contexts: ['browser_action']}, contextMenus[id]);
-      item.title = chrome.i18n.getMessage(item.title);
-      if (typeof prefs.defaults[id] === 'boolean') {
+      const item = ITEMS[id][1] ??= {};
+      if (isInit) {
+        item.id = id;
+        item.contexts ??= [process.env.MV3 ? 'action' : 'browser_action'];
+        item.title = chrome.i18n.getMessage(item.title ?? id);
+      }
+      if (typeof prefs.__defaults[id] === 'boolean') {
         if (!item.type) {
           item.type = 'checkbox';
-          item.checked = prefs.get(id);
+          item.checked = prefs.__values[id];
           if (isInit) {
-            prefs.subscribe(id, CHROME >= 62 && CHROME <= 64
+            prefs.subscribe(id,
+              !process.env.MV3 && process.env.BUILD !== 'firefox' && CHROME >= 62 && CHROME <= 64
               ? toggleCheckmarkBugged
               : toggleCheckmark);
           }
@@ -64,7 +54,6 @@ export default async function initContextMenus() {
           continue;
         }
       }
-      delete item.click;
       chrome.contextMenus.create(item, ignoreChromeError);
     }
   }

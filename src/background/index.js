@@ -110,6 +110,7 @@ chrome.commands?.onCommand.addListener(id => browserCommands[id]());
 chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   if (process.env.BUILD !== 'firefox' && !FIREFOX) {
     reinjectContentScripts();
+    initContextMenus();
   }
   if (reason === 'install') {
     if (MOBILE) prefs.set('manage.newUI', false);
@@ -154,7 +155,9 @@ bgReady.styles.then(() => {
   bgReady[kResolve]();
   bgReady[kResolve] = null;
   if (process.env.ENTRY !== 'sw') window._msgExec = msg._execute;
-  if (process.env.BUILD !== 'chrome' && FIREFOX) initBrowserCommandsApi();
+  if (process.env.BUILD !== 'chrome' && FIREFOX) {
+    initBrowserCommandsApi();
+    initContextMenus();
+  }
   broadcast({method: 'backgroundReady'});
-  initContextMenus();
 });
