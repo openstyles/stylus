@@ -1091,7 +1091,7 @@
     "message": "Exposes the style name in the page to facilitate debugging of styles in devtools. Please reload the tab(s) to apply the new setting."
   },
   "optionsAdvancedKeepAlive": {
-    "message": "Style cache duration in minutes (-1 = unlimited)"
+    "message": "Style cache duration (in minutes, -1 = no limit)"
   },
   "optionsAdvancedKeepAliveNote": {
     "message": "Increase it if you encounter flashing of unstyled content (FOUC) when opening a page after not interacting with the browser for a while.\n\n-1 = ManifestV2 default behavior (no limit).\n0 = ManifestV3 default behavior (half a minute).\n\nThe cache takes 30MB or more of RAM, but rebuilding it may take too much time and cause FOUC depending on the website, network speed, amount of styles, RAM size, and CPU performance."

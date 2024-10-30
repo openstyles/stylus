@@ -6,6 +6,10 @@ let webdavInstance;
 
 /** @namespace OffscreenAPI */
 Object.assign(COMMANDS, {
+  createObjectURL: URL.createObjectURL,
+  revokeObjectURL: URL.revokeObjectURL,
+  /** Note that `onchange` doesn't work in bg context, so we use it in the content script */
+  isDark: isCssDarkScheme,
   webdav: (cmd, ...args) => webdavInstance[cmd](...args),
   webdavInit: async cfg => {
     if (!webdavInstance) await loadScript(process.env.JS + 'webdav.js');
@@ -14,8 +18,6 @@ Object.assign(COMMANDS, {
     webdavInstance = global.webdav(cfg);
     return mapObj(webdavInstance, v => typeof v === 'function' ? null : v);
   },
-  /** Note that `onchange` doesn't work in bg context, so we use it in the content script */
-  isDark: isCssDarkScheme,
 });
 
 /** A loader for scripts exposing a global, 100x smaller than webpack's smart chunk loader */

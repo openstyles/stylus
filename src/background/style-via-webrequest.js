@@ -6,7 +6,7 @@ import {CHROME, FIREFOX} from '/js/ua';
 import {ownRoot} from '/js/urls';
 import {kResolve} from '/js/util';
 import {ignoreChromeError, MF_ACTION_HTML} from '/js/util-webext';
-import {bgReady, safeTimeout} from './common';
+import {bgReady} from './common';
 import {getSectionsByUrl} from './style-manager';
 import * as tabMan from './tab-manager';
 
@@ -15,10 +15,9 @@ const idOFF = 'disableAll';
 const idXHR = 'styleViaXhr';
 const rxHOST = /^('non(e|ce-.+?)'|(https?:\/\/)?[^']+?[^:'])$/; // strips CSP sources covered by *
 const rxNONCE = FIREFOX && /(?:^|[;,])\s*style-src\s+[^;,]*?'nonce-([-+/=\w]+)'/;
-const blobUrlPrefix = 'blob:' + chrome.runtime.getURL('/');
-/** @type {Object<string,StylesToPass>} */
+const BLOB_URL_PREFIX_LEN = ('blob:' + ownRoot).length;
+const makeBlob = data => new Blob([JSON.stringify(data)]);
 const stylesToPass = {};
-const state = {};
 const INJECTED_FUNC = function (data) {
   if (this['apply.js'] !== 1) { // storing data only if apply.js hasn't run yet
     this[Symbol.for('styles')] = data;
@@ -28,29 +27,38 @@ const INJECTED_CODE = `${INJECTED_FUNC}`;
 export const webRequestBlocking = browser.permissions.contains({
   permissions: ['webRequestBlocking'],
 });
+let curOFF, curCSP, curXHR;
 
 toggle();
-prefs.subscribe([idXHR, idOFF, idCSP], toggle);
+prefs.subscribe([idOFF, idCSP, idXHR], toggle);
+prefs.ready.then(() => toggle(true)); // unregister unused listeners
+if (CHROME && !process.env.MV3) {
+  chrome.webRequest.onBeforeRequest.addListener(openNamedStyle, {
+    urls: [ownRoot + '*.user.css'],
+    types: ['main_frame'],
+  }, ['blocking']);
+}
 
-function toggle() {
-  const off = prefs.get(idOFF);
-  const csp = prefs.get(idCSP) && !off;
-  const xhr = prefs.get(idXHR) && !off;
-  if (xhr === state.xhr && csp === state.csp && off === state.off) {
+function toggle(prefKey) {
+  // Must register all listeners synchronously to make them wake the SW
+  const mv3init = process.env.MV3 && !prefKey;
+  const off = prefs.__values[idOFF];
+  const csp = !off && prefs.__values[idCSP];
+  const xhr = !off && prefs.__values[idXHR];
+  if (xhr === curXHR && csp === curCSP && off === curOFF) { // will compute to false at init
     return;
   }
   const reqFilter = {
     urls: [
       '*://*/*',
-      CHROME &&
-      chrome.runtime.getURL(MF_ACTION_HTML),
+      CHROME && chrome.runtime.getURL(MF_ACTION_HTML),
     ].filter(Boolean),
     types: ['main_frame', 'sub_frame'],
   };
   chrome.webNavigation.onCommitted.removeListener(injectData);
   chrome.webRequest.onBeforeRequest.removeListener(prepareStyles);
   chrome.webRequest.onHeadersReceived.removeListener(modifyHeaders);
-  if (xhr || csp || FIREFOX) {
+  if (xhr || csp || FIREFOX || mv3init) {
     // We unregistered it above so that the optional EXTRA_HEADERS is properly re-registered
     chrome.webRequest.onHeadersReceived.addListener(modifyHeaders, reqFilter, [
       'blocking',
@@ -58,35 +66,36 @@ function toggle() {
       xhr && chrome.webRequest.OnHeadersReceivedOptions.EXTRA_HEADERS,
     ].filter(Boolean));
   }
-  if (!off) {
+  if (!off || mv3init) {
     chrome.webRequest.onBeforeRequest.addListener(prepareStyles, reqFilter);
   }
-  if (CHROME && !off) {
+  if (CHROME && !off && !xhr || mv3init) {
     chrome.webNavigation.onCommitted.addListener(injectData, {url: [{urlPrefix: 'http'}]});
   }
-  if (CHROME && !process.env.MV3) {
-    chrome.webRequest.onBeforeRequest.addListener(openNamedStyle, {
-      urls: [ownRoot + '*.user.css'],
-      types: ['main_frame'],
-    }, ['blocking']);
+  if (process.env.MV3 && (xhr || curXHR) && !mv3init) {
+    const TTL = prefs.__values.keepAlive;
+    global.offscreen.setPortTimeout(!xhr || !TTL ? null : TTL * 60e3);
   }
-  state.csp = csp;
-  state.off = off;
-  state.xhr = xhr;
+  curCSP = csp;
+  curOFF = off;
+  curXHR = xhr;
 }
+
 
 /** @param {chrome.webRequest.WebRequestBodyDetails} req */
 function prepareStyles(req) {
   if (bgReady[kResolve]) return;
   if (req.url.startsWith(ownRoot)) return preloadPopupData(req);
-  const mv3TTL = process.env.MV3 && prefs.get('keepAlive');
+  const TTL = process.env.MV3 ? prefs.__values.keepAlive : -1;
   const {url} = req;
-  req.tab = {url};
-  stylesToPass[req2key(req)] = /** @namespace StylesToPass */ {
-    blobId: '',
-    payload: getSectionsByUrl.call({sender: req}, url, null, true),
-    timer: safeTimeout(cleanUp, (mv3TTL > 0 ? mv3TTL : 10) * 60e3, req),
-  };
+  const payload = getSectionsByUrl.call({sender: (req.tab = {url}, req)}, url, null, true);
+  const timer = setTimeout(cleanUp, TTL > 0 ? TTL * 60e3 : TTL < 0 ? 600e3 : 25e3, req);
+  const data = stylesToPass[req2key(req)] = {payload, timer};
+  if (process.env.MV3 && curXHR && payload.sections.length) {
+    global.offscreen.createObjectURL(makeBlob(payload)).then(blobUrl => {
+      data.blobId = blobUrl;
+    });
+  }
 }
 
 function injectData(req) {
@@ -107,7 +116,7 @@ function injectData(req) {
         code: `(${INJECTED_CODE})(${JSON.stringify(data.payload)})`,
       }, ignoreChromeError);
     }
-    if (!state.xhr) cleanUp(req);
+    if (!curXHR) cleanUp(req);
   }
 }
 
@@ -117,28 +126,28 @@ function modifyHeaders(req) {
   const {responseHeaders} = req;
   const {payload} = data;
   const secs = payload.sections;
-  const csp = (FIREFOX || state.csp) &&
+  const csp = (FIREFOX || curCSP) &&
     responseHeaders.find(h => h.name.toLowerCase() === 'content-security-policy');
   if (csp) {
     const m = FIREFOX && csp.value.match(rxNONCE);
     if (m) tabMan.set(req.tabId, 'nonce', req.frameId, payload.cfg.nonce = m[1]);
     // We don't change CSP if there are no styles when the page is loaded
     // TODO: show a reminder in the popup to reload the tab when the user enables a style
-    if (state.csp && secs[0]) patchCsp(csp);
+    if (curCSP && secs[0]) patchCsp(csp);
   }
   if (!secs[0]) {
     cleanUp(req);
     return;
   }
-  if (state.xhr) {
-    data.blobId = URL.createObjectURL(new Blob([JSON.stringify(payload)]))
-      .slice(blobUrlPrefix.length);
+  const blobId = curXHR &&
+    (data.blobId ??= !process.env.MV3 && URL.createObjectURL(makeBlob(payload)));
+  if (blobId) {
     responseHeaders.push({
       name: 'Set-Cookie',
-      value: `${chrome.runtime.id}=${data.blobId}; SameSite=Lax`,
+      value: `${chrome.runtime.id}=${data.blobId.slice(BLOB_URL_PREFIX_LEN)}; SameSite=Lax`,
     });
   }
-  if (state.xhr || csp && state.csp) {
+  if (blobId || csp && curCSP) {
     return {responseHeaders};
   }
 }
@@ -185,10 +194,8 @@ function cleanUp(req) {
   const data = stylesToPass[key];
   if (data) {
     delete stylesToPass[key];
-    clearTimeout(data.timer);
-    if (data.blobId) {
-      URL.revokeObjectURL(blobUrlPrefix + data.blobId);
-    }
+    if (data.timer) clearTimeout(data.timer);
+    if (data.blobId) (process.env.MV3 ? global.offscreen : URL).revokeObjectURL(data.blobId);
   }
 }
 

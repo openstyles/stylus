@@ -64,7 +64,7 @@ $$('[data-clickable]').forEach(el => {
   if (wrb === false) {
     for (const el of $$('.webRequestBlocking')) {
       el.classList.add('disabled');
-      $('.icon', el).after(template.webRequestBlockingMV3Note.cloneNode(true));
+      $('.icon', el).after(template.WRB.cloneNode(true));
     }
   }
 })();

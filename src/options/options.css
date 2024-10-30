@@ -183,6 +183,10 @@ footer {
     font-size: 1.5rem;
     line-height: 1rem;
     vertical-align: text-bottom;
+    color: red;
+    &:hover {
+      text-shadow: 0 0 1px darkred;
+    }
   }
 }
 

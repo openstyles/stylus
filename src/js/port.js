@@ -9,9 +9,16 @@ export const COMMANDS = process.env.ENTRY !== 'sw' && (
       this._transfer = [p];
       return p;
     },
+    setPortTimeout(val) {
+      portTimeout = val ?? PORT_TIMEOUT;
+      if (timer) {
+        clearTimeout(timer);
+        timer = portTimeout > 0 && setTimeout(close, portTimeout);
+      }
+    },
   }
 );
-export const PORT_TIMEOUT = 5 * 60e3; // TODO: expose as a configurable option
+const PORT_TIMEOUT = 5 * 60e3; // TODO: expose as a configurable option?
 const autoClose = process.env.ENTRY === 'worker' ||
   process.env.ENTRY === true && location.pathname === `/${process.env.PAGE_OFFSCREEN}.html`;
 const NOP = () => {};
@@ -19,9 +26,9 @@ const navSW = navigator.serviceWorker;
 if (process.env.MV3 && process.env.ENTRY === true) {
   navSW.onmessage = initRemotePort.bind(COMMANDS);
 }
-let timer;
 let lockingSelf;
-
+let portTimeout = PORT_TIMEOUT;
+let timer;
 
 export function createPortProxy(getTarget, opts) {
   let exec;
@@ -131,8 +138,7 @@ export function initRemotePort(evt) {
     process.env.DEBUG(location.pathname, 'port onmessage', portEvent);
     const data = portEvent.data;
     const {args, id} = data.id ? data : JSON.parse(data);
-    let res,
-      err;
+    let res, err;
     numJobs++;
     if (timer) {
       clearTimeout(timer);
@@ -151,12 +157,10 @@ export function initRemotePort(evt) {
     process.env.DEBUG(location.pathname, 'port response', {id, res, err}, portEvent._transfer);
     port.postMessage({id, res, err},
       (/**@type{RemotePortEvent}*/portEvent)._transfer);
-    if (!--numJobs && autoClose) closeAfterDelay();
+    if (!--numJobs && autoClose && !timer && portTimeout > 0) {
+      timer = setTimeout(close, portTimeout);
+    }
   }
-}
-
-export function closeAfterDelay() {
-  if (!timer) timer = setTimeout(close, PORT_TIMEOUT);
 }
 
 /** @param {MessageEvent} _ */
