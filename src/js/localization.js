@@ -13,7 +13,7 @@ export const template = /*@__PURE__*/new Proxy({}, {
     (_ = $(`template[data-id="${k}"]`)) && (obj[k] = createTemplate(_)),
 });
 const ALLOWED_TAGS = ['a', 'b', 'br', 'code', 'i', 'nobr', 'small', 'sub', 'sup', 'wbr'];
-const RX_WORD_BREAK = /([\w\u007B-\uFFFF]{10}|[\w\u007B-\uFFFF]{5,10}[!-/]|((?!\s)\W){10})(?!\s|$)/gu;
+const RX_WORD_BREAK = /([\w{-\uFFFF]{10}|[\w{-\uFFFF]{5,10}[!'")*,./]|((?!\s)\W){10})(?!\s|$)/gu;
 const SELECTOR = '[i18n]';
 const RELATIVE_UNITS = [
   // size, name, precision
