@@ -149,10 +149,11 @@ export function sanitizeHtml(root) {
       for (const attr of n.attributes) {
         if (!(isA && attr.localName === 'href' && /^https?:/.test(n.href))) {
           n.removeAttribute(attr.name);
-        } else if (isA) {
-          n.target = '_blank';
-          n.rel = 'noreferrer';
         }
+      }
+      if (isA) {
+        n.target = '_blank';
+        n.rel = 'noreferrer';
       }
     } else {
       toRemove.push(n);
