@@ -75,15 +75,13 @@ function toggle(prefKey) {
   if (CHROME && !off && !xhr || mv3init) {
     chrome.webNavigation.onCommitted.addListener(injectData, {url: [{urlPrefix: 'http'}]});
   }
-  if (process.env.MV3 && (xhr || curXHR) && !mv3init) {
-    const TTL = prefs.__values.keepAlive;
-    global.offscreen.setPortTimeout(!xhr || !TTL ? null : TTL * 60e3);
+  if (process.env.MV3 && (xhr !== curXHR) && !mv3init) {
+    global.offscreen.syncLifetimeToSW(xhr);
   }
   curCSP = csp;
   curOFF = off;
   curXHR = xhr;
 }
-
 
 /** @param {chrome.webRequest.WebRequestBodyDetails} req */
 function prepareStyles(req) {

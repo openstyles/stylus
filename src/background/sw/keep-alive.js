@@ -1,21 +1,23 @@
-import {bgReady} from '/background/common';
 import {subscribe} from '/js/prefs';
+import {bgReady} from '../common';
 
 /** @type {?Promise[]} */
 let busy;
 let lastBusyTime = 0;
 let pulse;
+/** ms */
 let TTL;
+/** seconds */
 let idleDuration;
 
 process.env.KEEP_ALIVE = keepAlive;
 subscribe('keepAlive', (_, val) => {
   idleDuration = Math.max(30, val * 60 | 0/*to integer*/ || 0/*if val is not a number*/);
   TTL = val * 60e3;
-  reschedule();
+  if (!pulse || !TTL && !busy) reschedule();
 }, true);
 
-export function keepAlive(job) {
+function keepAlive(job) {
   if (!(job instanceof Promise)) lastBusyTime = performance.now();
   else if (!busy) keepAliveUntilSettled([job]);
   else busy.push(job);
@@ -41,8 +43,8 @@ async function keepAliveUntilSettled(promises) {
  */
 async function reschedule() {
   if (busy || TTL < 0
-      ? await isUserActiveInBrowser(true)
-      : TTL && (performance.now() < lastBusyTime + TTL) && await isUserActiveInBrowser()) {
+    ? isUserActiveInBrowser(true) // not awaiting as we don't need the result
+    : TTL && performance.now() < lastBusyTime + TTL && await isUserActiveInBrowser()) {
     pulse ??= setInterval(reschedule, 25e3);
   } else if (pulse) {
     clearInterval(pulse);
@@ -50,8 +52,7 @@ async function reschedule() {
   }
 }
 
-async function isUserActiveInBrowser(overrideResult) {
-  return await chrome.idle.queryState(idleDuration) === 'active' || (
-    overrideResult ?? (await chrome.windows.getAll({})).some(w => w.focused)
-  );
+async function isUserActiveInBrowser(yes) {
+  return (await chrome.idle.queryState(idleDuration) !== 'idle' || yes) &&
+    (yes || (await chrome.windows.getAll({})).some(wnd => wnd.focused));
 }

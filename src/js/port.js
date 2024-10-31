@@ -9,11 +9,15 @@ export const COMMANDS = process.env.ENTRY !== 'sw' && (
       this._transfer = [p];
       return p;
     },
-    setPortTimeout(val) {
-      portTimeout = val ?? PORT_TIMEOUT;
-      if (timer) {
-        clearTimeout(timer);
-        timer = portTimeout > 0 && setTimeout(close, portTimeout);
+    syncLifetimeToSW(enable) {
+      if (enable && !swPort) {
+        swPort = chrome.runtime.connect({name: process.env.PAGE_OFFSCREEN});
+        swPort.onDisconnect.addListener(close);
+        timer = timer && clearTimeout(timer);
+      } else if (!enable && swPort) {
+        swPort.disconnect();
+        swPort = null;
+        if (!timer && !numJobs) timer = setTimeout(close, PORT_TIMEOUT);
       }
     },
   }
@@ -27,7 +31,9 @@ if (process.env.MV3 && process.env.ENTRY === true) {
   navSW.onmessage = initRemotePort.bind(COMMANDS);
 }
 let lockingSelf;
-let portTimeout = PORT_TIMEOUT;
+let numJobs = 0;
+/** @type {chrome.runtime.Port} */
+let swPort;
 let timer;
 
 export function createPortProxy(getTarget, opts) {
@@ -125,7 +131,6 @@ export function initRemotePort(evt) {
   const exec = this;
   const port = evt.ports[0];
   process.env.DEBUG(location.pathname, 'initRemotePort', evt);
-  let numJobs = 0;
   if (!lockingSelf && lock && !once) {
     lockingSelf = true;
     navigator.locks.request(lock, () => new Promise(NOP));
@@ -157,8 +162,8 @@ export function initRemotePort(evt) {
     process.env.DEBUG(location.pathname, 'port response', {id, res, err}, portEvent._transfer);
     port.postMessage({id, res, err},
       (/**@type{RemotePortEvent}*/portEvent)._transfer);
-    if (!--numJobs && autoClose && !timer && portTimeout > 0) {
-      timer = setTimeout(close, portTimeout);
+    if (!--numJobs && autoClose && !timer && !swPort) {
+      timer = setTimeout(close, PORT_TIMEOUT);
     }
   }
 }
