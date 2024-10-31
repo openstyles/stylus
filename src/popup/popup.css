@@ -40,7 +40,7 @@ body[style*="max-height:"] > main {
   transition: none; /* FF borks subpixel AA during transitions in popup */
 }
 
-body > div:not(#message-box):not(.colorpicker-popup) {
+body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colorpicker-popup) {
   padding-left: var(--outer-padding);
   padding-right: var(--outer-padding);
 }
@@ -49,6 +49,7 @@ body > div:not(#message-box):not(.colorpicker-popup) {
 .blocked .if-not-blocked,
 .blocked #installed > :not(.frame),
 .blocked [data-frame-id="0"] > .breadcrumbs,
+#write-wrapper:not(.hidden) + label,
 .firefox .chromium-only {
   display: none !important;
 }
@@ -56,16 +57,16 @@ body > div:not(#message-box):not(.colorpicker-popup) {
 #main-actions {
   /* raise the actions above the hotkey-info */
   position: relative;
-  background: var(--zebra);
+  background: var(--c95);
   z-index: 4;
+  padding: var(--outer-padding);
   > * {
-    margin-top: .75em;
     display: flex;
+    align-items: center;
   }
-}
-
-#disableAll-label {
-  width: fit-content;
+  > :nth-last-child(n + 2) {
+    flex: 1;
+  }
 }
 
 :root:not(.blocked) #installed:empty::after {
@@ -99,9 +100,42 @@ body > div:not(#message-box):not(.colorpicker-popup) {
   }
 }
 
-.all-disabled .style-name {
-  text-decoration: line-through;
+.all-disabled {
+  .style-name {
+    text-decoration: line-through;
+  }
+  #disableAll-label::after {
+    --c: crimson;
+    background: var(--c);
+    color: #fff;
+    font-size: 10px;
+    padding: 2px 0;
+    left: 0;
+    bottom: -9px;
+    position: absolute;
+    text-align: center;
+    text-transform: uppercase;
+    width: 100%;
+  }
+  #disableAll {
+    --color-on: hsl(348, 83%, 50%, .4);
+    --shadow-hsl: 348, 83%, 10%;
+    color: var(--c);
+    justify-content: flex-start;
+  }
+  #main-actions {
+    margin-bottom: 8px;
+  }
 }
+
+#disableAll {
+  --knob: 18px;
+  --width: 30px;
+  justify-content: flex-end;
+  color: var(--accent-2);
+  --color-off: hsla(180, 50%, 40%, .33);
+}
+
 .actions a {
   text-decoration: none;
   &:not([href]) {
@@ -114,7 +148,8 @@ body > div:not(#message-box):not(.colorpicker-popup) {
   position: relative;
 }
 .blocked-info,
-.styles-last #main-actions,
+#main-actions,
+.styles-last #popup-options,
 .styles-first #installed:not(:empty),
 .styles-first #installed:empty::after,
 .styles-first .entry:nth-last-child(n + 2) {
@@ -162,11 +197,6 @@ body > div:not(#message-box):not(.colorpicker-popup) {
   overflow: hidden;
   padding-right: 5px;
   align-items: center;
-}
-
-.styles-first .entry:nth-last-child(even),
-.styles-last .entry:nth-child(even) {
-  background-color: var(--zebra);
 }
 
 .entry:nth-child(-n+10):before {
@@ -403,7 +433,6 @@ a:hover i {
 #write-style {
   cursor: pointer;
   overflow: hidden;
-  margin-right: calc(-1 * var(--outer-padding));
   > div {
     transition: opacity .25s .15s;
   }
@@ -503,12 +532,12 @@ a:hover i {
 /* action buttons */
 
 #popup-options {
-  --btn-gap: 4px;
+  --btn-gap: var(--outer-padding);
   display: flex;
   flex-direction: row;
-  padding: var(--outer-padding) 1px;
+  padding: var(--outer-padding);
   margin-right: calc(-1 * var(--btn-gap));
-  background: var(--zebra);
+  background: var(--bg);
   .split-btn > :first-child {
     width: calc(100% - 16px);
   }
@@ -520,6 +549,10 @@ a:hover i {
     overflow: hidden;
     text-overflow: ellipsis;
     height: var(--input-height);
+    &:not(:hover) {
+      border-color: transparent;
+      background: none;
+    }
   }
   > * {
     margin-right: var(--btn-gap);
@@ -528,19 +561,22 @@ a:hover i {
   .split-btn > :first-child {
     /* several languages have labels of wildly different lengths so we try to maintain the proportion */
     flex: 1 1 auto;
-    min-width: 2em;
   }
 }
-#options-btn svg {
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  height: 19px;
-  font: normal 20px icons;
-  margin: auto;
-  fill: transparent;
-  stroke: currentColor;
+#options-btn {
+  html:not(.blocked) & {
+    display: flex;
+    align-items: center;
+    flex: 0 0 20px;
+    padding: 0 3px;
+    box-sizing: content-box;
+  }
+  svg {
+    height: 20px;
+    font: normal 20px icons;
+    fill: transparent;
+    stroke: currentColor;
+  }
 }
 .styles-first:not(.search-results-shown) {
   #popup-options .split-btn-menu {
@@ -556,7 +592,7 @@ a:hover i {
   }
 }
 .styles-last {
-  :is(body, #main-actions) {
+  body {
     display: flex;
     flex-direction: column;
   }

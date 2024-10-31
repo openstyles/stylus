@@ -822,6 +822,10 @@
     "message": "Stylus",
     "description": "Title for style manager"
   },
+  "masterSwitch": {
+    "message": "Master switch",
+    "description": "Master switch that toggles whether the extension applies any styles"
+  },
   "menuShowBadge": {
     "message": "Show active style count",
     "description": "Label (must be very short) for the checkbox in the toolbar button context menu controlling toolbar badge text."

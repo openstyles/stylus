@@ -168,18 +168,19 @@
     <div id="installed" i18n="data-no-styles:noStylesForSite"></div>
   </main>
 
-  <div class="actions" id="main-actions">
-    <label id="disableAll-label" i18n="data-on:disableAllStyles, data-off:disableAllStylesOff">
-      <input id="disableAll" type="checkbox">
-    </label>
+  <div class="actions flex" id="main-actions">
     <div id="write-wrapper">
       <label id="write-as" i18n="title:optionsAdvancedNewStyleAsUsercss">
         <input id="newStyleAsUsercss" type="checkbox">
         <i class=i-usercss></i>
       </label>
       <div id="write-style" class="no-stretch">
-        <header id="write-style-for" class="ellipsis"></header>
+        <header id="write-style-for" class="ellipsis" i18n="writeStyleFor"></header>
       </div>
+    </div>
+    <label for="disableAll" i18n="masterSwitch"></label>
+    <div id="disableAll-label" i18n="data-off:disableAllStylesOff">
+      <input id="disableAll" type="checkbox" class="slider">
     </div>
   </div>
 
@@ -197,11 +198,10 @@
                menu-uso="UserStyles"
                menu-gf="GreasyFork"></button>
     </div>
-    <button id="options-btn" i18n="title:openOptions" class="rel">
-      <svg class="if-not-blocked abs" viewBox="0 0 20 20">
+    <button id="options-btn" i18n="title:openOptions">
+      <svg class="if-not-blocked" viewBox="0 0 20 20">
         <text y="100%">⚙</text>
       </svg>
-      <span class="if-not-blocked">&nbsp;</span>
       <span class="if-blocked" i18n="openOptions"></span>
     </button>
     <a class="if-blocked" href="https://github.com/openstyles/stylus/wiki" target="_blank">

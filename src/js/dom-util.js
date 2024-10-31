@@ -168,12 +168,15 @@ export function setupLivePrefs(ids) {
     for (const el of els) {
       const oldValue = getValue(el);
       const diff = !isSame(el, oldValue, value);
-      if ((init || diff) && el.type === 'select-one' && el.classList.contains('fit-width')) {
-        fitSelectBox(el, value, init); /* global fitSelectBox */
+      const type = el.type;
+      if (type === 'select-one') {
+        if ((init || diff) && el.classList.contains('fit-width')) {
+          fitSelectBox(el, value, init); /* global fitSelectBox */
+        }
       } else if (diff) {
-        if (el.type === 'radio') {
+        if (type === 'radio') {
           el.checked = value === oldValue;
-        } else if (el.type === 'checkbox') {
+        } else if (type === 'checkbox') {
           el.checked = value;
         } else {
           el.value = value;

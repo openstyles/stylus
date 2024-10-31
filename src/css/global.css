@@ -9,7 +9,7 @@
 }
 :root {
   --family: Arial, "Helvetica Neue", Helvetica, system-ui, sans-serif;
-  --input-height: 22px;
+  --input-height: 24px;
   --cmin: hsl(0, 0%, 00%);
   --c00: hsl(0, 0%, 00%);
   --c10: hsl(0, 0%, 10%);
@@ -63,7 +63,7 @@ body {
 
 a {
   color: var(--fg);
-  transition: color .15s;
+  transition: color .1s;
   &:hover {
     color: var(--c40);
   }
@@ -85,7 +85,7 @@ button {
   line-height: 1.2;
   color: var(--fg);
   background: linear-gradient(var(--c95), var(--c90));
-  transition: background-color .25s, border-color .25s;
+  transition: background-color .1s, border-color .1s;
   &:not(:disabled):hover {
     background-color: var(--c95);
     border-color: var(--c50);
@@ -138,7 +138,7 @@ input {
 i {
   cursor: pointer;
   vertical-align: middle;
-  transition: color .2s;
+  transition: color .1s;
   font: 20px/1 icons;
   color: var(--c40);
   &:hover {
@@ -203,7 +203,7 @@ select {
   background-color: var(--bg);
   border: 1px solid var(--c65);
   padding: 0 20px 0 6px;
-  transition: color .5s;
+  transition: color .1s;
   field-sizing: content;
 }
 
@@ -220,7 +220,7 @@ select {
     position: absolute;
     top: 4px;
     right: 4px;
-    transition: color .5s;
+    transition: color .1s;
   }
 }
 
@@ -240,7 +240,7 @@ input[type="radio"] {
     background-color: transparent;
     transform: scale(0);
     transform-origin: 50% 50%;
-    transition: background-color .5s, transform .5s;
+    transition: background-color .1s, transform .1s;
     border-radius: 50%;
     height: 7px;
     width: 7px;

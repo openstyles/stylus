@@ -13,6 +13,7 @@
   width: var(--width);
   height: calc(var(--knob) - 2 * var(--pad));
   border-radius: var(--knob);
+  color: var(--bg);
   background: var(--color-off);
   transition: box-shadow .2s;
   display: inline-flex;
@@ -25,18 +26,18 @@
     width: var(--knob);
     height: var(--knob);
     border-radius: 100%;
-    box-shadow: 2px 2px 4px 1px hsla(180, 90%, 5%, .4);
+    box-shadow: 2px 2px 4px 1px hsla(var(--shadow-hsl), .4);
     margin: 0 calc(-1 * var(--pad));
-    background: var(--bg);
+    background-color: currentColor;
     border: 1px solid var(--color-off);
     box-sizing: border-box;
   }
   &:checked {
     background-color: var(--color-on);
     justify-content: flex-end;
+    color: var(--accent-2);
     &::after {
       border-color: hsla(var(--shadow-hsl), .25);
-      background: var(--accent-2);
     }
   }
   &:hover {

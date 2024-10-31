@@ -11,6 +11,7 @@ import {ownRoot} from '/js/urls';
 import {capitalize, clamp, clipString, isEmptyObj, stringAsRegExpStr} from '/js/util';
 import {CHROME_POPUP_BORDER_BUG, getActiveTab, MF} from '/js/util-webext';
 import * as Events from './events';
+import '/css/onoffswitch.css';
 import './hotkeys';
 import './popup.css';
 
@@ -41,8 +42,9 @@ prefs.subscribe('popup.stylesFirst', (key, stylesFirst) => {
   $.rootCL.toggle('styles-first', stylesFirst);
   $.rootCL.toggle('styles-last', !stylesFirst);
 }, true);
-prefs.subscribe('newStyleAsUsercss', (key, val) => {
-  $('#write-style-for').textContent = t(val ? 'optionsAdvancedNewStyleAsUsercss' : 'writeStyleFor');
+prefs.subscribe('disableAll', (key, val) => {
+  global[key].title = t('masterSwitch') + ':\n' +
+    t(val ? 'disableAllStylesOff' : 'genericEnabledLabel');
 }, true);
 if (!process.env.MV3 && process.env.BUILD !== 'firefox' && CHROME_POPUP_BORDER_BUG) {
   prefs.subscribe('popup.borders', toggleSideBorders, true);
