@@ -4,7 +4,7 @@ import compareVersion from '/js/cmpver';
 import {UCD} from '/js/consts';
 import {$, $$, $$remove, $create, $createLink} from '/js/dom';
 import {configDialog, messageBox, showSpinner} from '/js/dom-util';
-import {fetchTemplate, t} from '/js/localization';
+import {fetchTemplate, t, tBody} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {styleCodeEmpty} from '/js/sections-util';
@@ -35,7 +35,7 @@ document.on('visibilitychange', () => {
   $$remove('#message-box:not(.config-dialog)');
   if (installed) liveReload.onToggled();
 });
-
+tBody();
 setTimeout(() => !cm && showSpinner($('#header')), 200);
 
 (async function init() {
