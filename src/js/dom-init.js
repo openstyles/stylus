@@ -47,7 +47,7 @@ prefs.ready.then(() => {
   ].filter(Boolean).join(' ');
   if (cls) $.root.className += ' ' + cls;
   // set language for a) CSS :lang pseudo and b) hyphenation
-  $.root.setAttribute('lang', chrome.i18n.getUILanguage());
+  $.root.lang = chrome.i18n.getUILanguage();
   // set up header width resizer
   const HW = 'headerWidth.';
   const HWprefId = HW + location.pathname.match(/^.(\w*)/)[1];

@@ -1072,6 +1072,27 @@
     "message": "Options",
     "description": "Go to Options UI"
   },
+  "optionFOUC": {
+    "message": "Styles applied too late?",
+    "description": "Shown in the options. Followed by FOUCMV2 or FOUCMV3 message."
+  },
+  "optionFOUCMV2": {
+    "message": "Consider enabling \"<a>\".",
+    "description": "<a> is replaced with the translation for 'Instant inject mode' option."
+  },
+  "optionFOUCMV3": {
+    "message": "Consider enabling \"<a>\" and increasing \"<b>\".",
+    "description": "<a> is replaced with the translation for 'Instant inject mode' option, <b> is replaced with the translation for 'Style cache duration' option."
+  },
+  "optionKeepAlive": {
+    "message": "Style cache duration"
+  },
+  "optionKeepAliveLegend": {
+    "message": "(in minutes, -1 = no limit)"
+  },
+  "optionKeepAliveNote": {
+    "message": "Increase it if you encounter flashing of unstyled content (FOUC) when opening a page after not interacting with the browser for a while.\n\n-1 = ManifestV2 default behavior (no limit).\n0 = ManifestV3 default behavior (half a minute).\n\nThe cache takes 30MB or more of RAM, but rebuilding it may take too much time and cause FOUC depending on the website, network speed, amount of styles, RAM size, and CPU performance."
+  },
   "optionsActions": {
     "message": "Actions"
   },
@@ -1093,12 +1114,6 @@
   },
   "optionsAdvancedExposeStyleNameNote": {
     "message": "Exposes the style name in the page to facilitate debugging of styles in devtools. Please reload the tab(s) to apply the new setting."
-  },
-  "optionsAdvancedKeepAlive": {
-    "message": "Style cache duration (in minutes, -1 = no limit)"
-  },
-  "optionsAdvancedKeepAliveNote": {
-    "message": "Increase it if you encounter flashing of unstyled content (FOUC) when opening a page after not interacting with the browser for a while.\n\n-1 = ManifestV2 default behavior (no limit).\n0 = ManifestV3 default behavior (half a minute).\n\nThe cache takes 30MB or more of RAM, but rebuilding it may take too much time and cause FOUC depending on the website, network speed, amount of styles, RAM size, and CPU performance."
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Write new style as UserCSS"

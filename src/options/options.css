@@ -156,6 +156,10 @@ label.disabled,
   }
 }
 
+#FOUC {
+  background: #fb04;
+}
+
 footer {
   justify-content: center;
   padding: var(--pad05) var(--pad);

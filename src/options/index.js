@@ -15,6 +15,12 @@ import './options.css';
 tBody();
 setupLivePrefs();
 $$('input[min], input[max]').forEach(enforceInputRange);
+$('#FOUC .items').textContent = t(process.env.MV3 ? 'optionFOUCMV3' : 'optionFOUCMV2')
+  .replace('<a>', t('optionsAdvancedStyleViaXhr'))
+  .replace('<b>', t('optionKeepAlive'));
+$('#keepAlive').previousElementSibling.firstChild.textContent +=
+  (/^(zh|ja|ko)/.test($.root.lang) ? '' : ' ') +
+  t('optionKeepAliveLegend').trim();
 for (const el of $$('[show-if]')) {
   prefs.subscribe(el.getAttribute('show-if').replace(/^!/, ''), toggleShowIf, true);
 }

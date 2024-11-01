@@ -19,7 +19,6 @@ const clone = process.env.ENTRY
   ? _deepCopy /* global _deepCopy */// will be used in extension context
   : val => typeof val === 'object' && val ? JSON.parse(JSON.stringify(val)) : val;
 const isFrame = window !== parent;
-let stylesAppliedTime;
 /** @type {number}
  * TODO: expose to msg.js without `window`
  * -1 = top prerendered, 0 = iframe, 1 = top, 2 = top reified */
@@ -118,7 +117,6 @@ async function applyStyles(data) {
   if (styleInjector.list.length) styleInjector.apply(own, true);
   else if (!own.cfg.off) styleInjector.apply(own);
   styleInjector.toggle(!own.cfg.off);
-  stylesAppliedTime ??= performance.now();
 }
 
 /** Must be executed inside try/catch */
@@ -142,10 +140,7 @@ function applyOnMessage(req) {
   const {style} = req;
   switch (req.method) {
     case 'ping':
-      return !process.env.MV3 || [
-        performance.getEntriesByType('paint')[0]?.startTime | 0 || 0,
-        stylesAppliedTime | 0 || 0,
-      ];
+      return true;
 
     case 'styleDeleted':
       styleInjector.removeId(style.id);
@@ -186,7 +181,7 @@ function applyOnMessage(req) {
       break;
 
     case 'backgroundReady':
-      // This may happen when reloading the background page without reloading the extension
+      // This may happen when restarting the background script without reloading the extension
       if (own.sections) updateCount();
       return true;
   }

@@ -44,6 +44,7 @@ function lazyAddEntryTitle({type, target}) {
 }
 
 async function toggleEmbeddedOptions(show, el, selector) {
+  document.title = t(show ? 'optionsHeading' : 'styleManager');
   // TODO: use messageBox() or a dockable sidepanel or the chrome.sidePanel API
   if (show) {
     $.root.appendChild($create('iframe' + selector, {src: '/options.html'}))
