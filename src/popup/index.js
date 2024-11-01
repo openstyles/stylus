@@ -2,7 +2,7 @@ import '/js/dom-init';
 import {kPopup, UCD} from '/js/consts';
 import {$, $$, $create, $remove} from '/js/dom';
 import {getEventKeyName, setupLivePrefs} from '/js/dom-util';
-import {t, tBody, template} from '/js/localization';
+import {t, template} from '/js/localization';
 import {API, onExtension, sendTab} from '/js/msg';
 import {ABOUT_BLANK} from '/js/popup-get-styles';
 import * as prefs from '/js/prefs';
@@ -11,8 +11,8 @@ import {ownRoot} from '/js/urls';
 import {capitalize, clamp, clipString, isEmptyObj, stringAsRegExpStr} from '/js/util';
 import {CHROME_POPUP_BORDER_BUG, getActiveTab, MF} from '/js/util-webext';
 import * as Events from './events';
-import '/css/onoffswitch.css';
 import './hotkeys';
+import '/css/onoffswitch.css';
 import './popup.css';
 
 export const styleFinder = {};
@@ -26,8 +26,6 @@ const ENTRY_ID_PREFIX_RAW = 'style-';
 const EXT_NAME = `<${MF.name}>`;
 const xo = new IntersectionObserver(onIntersect);
 export const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrId}`);
-
-tBody();
 
 (async () => {
   const data = (process.env.MV3 ? prefs.clientData : await prefs.clientData)[kPopup];

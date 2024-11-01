@@ -154,9 +154,8 @@
     <p class="not-matching-explainer"
        i18n="searchResultNotMatching, title:searchResultNotMatchingNote"></p>
   </template>
-</head>
 
-<body id="stylus-popup">
+  <template data-id="body">
 
   <div class="blocked-info if-blocked">
     <label i18n="stylusUnavailableForURL"></label>
@@ -225,6 +224,10 @@
       </footer>
     </div>
   </div>
+</template>
+</head>
+
+<body id="stylus-popup">
   <%= htmlWebpackPlugin.tags.bodyTags %>
 </body>
 </html>

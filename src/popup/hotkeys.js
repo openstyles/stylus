@@ -1,6 +1,8 @@
 import {$, $$, $create, $createLink} from '/js/dom';
-import {t} from '/js/localization';
+import {t, tBody} from '/js/localization';
 import {API} from '/js/msg';
+
+tBody();
 
 const entries = document.getElementsByClassName('entry');
 const container = $('#hotkey-info');
