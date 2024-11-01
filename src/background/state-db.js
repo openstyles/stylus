@@ -9,12 +9,14 @@ const idb = process.env.MV3 && getDbProxy('state', true);
 /** @type {StateDbMap} */
 export const data = process.env.MV3 && new Map();
 
-export const ready = process.env.MV3 && Promise.all([
+export const ready = !process.env.MV3 ? null : Promise.all([
   idb.getAll(),
   chrome.tabs.query({}),
 ]).then(([dbData, tabs]) => {
+  const tabsObj = {};
   for (const val of dbData) data.set(val.id, val);
-  return [data, tabs];
+  for (const tab of tabs) tabsObj[tab.id] = tab;
+  return [data, tabs, tabsObj];
 });
 
 /** @type {(key: string|number) => Object} */

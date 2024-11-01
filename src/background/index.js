@@ -122,7 +122,9 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   }
   if (process.env.MV3) {
     chrome.declarativeNetRequest.getDynamicRules({}).then(rules =>
-      updateDNR(null, rules.map(r => r.id)));
+      updateDNR(undefined, rules.map(r => r.id)));
+    chrome.declarativeNetRequest.getSessionRules({}).then(rules =>
+      updateDNR(undefined, rules.map(r => r.id), true));
   }
 });
 

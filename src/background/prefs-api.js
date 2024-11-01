@@ -31,9 +31,7 @@ export default {
 
 (async () => {
   let orig = chromeSync.getValue(prefs.STORAGE_KEY);
-  orig = process.env.MV3
-    ? (await Promise.all([orig, stateDb.ready]))[0]
-    : await orig;
+  [orig] = await Promise.all([orig, stateDb.ready]);
   prefs.ready.set(isObject(orig) ? deepCopy(orig) : {}, {});
   if (!deepEqual(orig, nondefaults)) bgReady.then(updateStorage);
 })();

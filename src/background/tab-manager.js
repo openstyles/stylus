@@ -72,7 +72,7 @@ bgReady.then(() => {
   });
 });
 
-stateDb.ready.then(([dbData, tabs]) => {
+stateDb.ready?.then(([dbData, tabs]) => {
   const tabIds = tabs.length !== dbData.size && new Set();
   for (const {id, url} of tabs) {
     const data = dbData.get(id) || {};

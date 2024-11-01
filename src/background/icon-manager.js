@@ -1,10 +1,11 @@
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
-import {ignoreChromeError, MF_ICON_EXT, MF_ICON_PATH} from '/js/util-webext';
 import {CHROME, FIREFOX, MOBILE, VIVALDI} from '/js/ua';
 import {debounce} from '/js/util';
+import {ignoreChromeError, MF_ICON_EXT, MF_ICON_PATH} from '/js/util-webext';
 import * as colorScheme from './color-scheme';
 import {bgReady} from './common';
+import {removePreloadedStyles} from './style-via-webrequest';
 import * as tabMan from './tab-manager';
 
 const ICON_SIZES = FIREFOX || !VIVALDI ? [16, 32] : [19, 38];
@@ -33,6 +34,7 @@ export function updateIconBadge(styleIds, {lazyBadge, iid} = {}) {
   debounce(refreshStaleBadges, frameId && lazyBadge ? 250 : 0);
   staleBadges.add(tabId);
   if (!frameId) refreshIcon(tabId, true);
+  removePreloadedStyles(null, tabId + ':' + frameId);
 }
 
 chrome.webNavigation.onCommitted.addListener(({tabId, frameId}) => {

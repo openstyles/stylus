@@ -6,6 +6,7 @@ import * as styleInjector from './style-injector';
 const own = /** @type {Injection} */{
   cfg: {off: false, top: ''},
 };
+const ownId = chrome.runtime.id;
 const calcOrder = ({id}, _) =>
   (_ = own.cfg.order) &&
   (_.prio[id] || 0) * 1e6 ||
@@ -77,8 +78,8 @@ msg.onTab(applyOnMessage);
 addEventListener('pageshow', onBFCache);
 addEventListener('pagehide', onBFCache);
 if (!process.env.ENTRY) {
-  dispatchEvent(new CustomEvent(chrome.runtime.id, {detail: orphanCleanup = Math.random()}));
-  addEventListener(chrome.runtime.id, orphanCheck, true);
+  dispatchEvent(new CustomEvent(ownId, {detail: orphanCleanup = Math.random()}));
+  addEventListener(ownId, orphanCheck, true);
 }
 
 function onInjectorUpdate() {
@@ -96,7 +97,7 @@ async function init() {
   } else {
     data = isFrameNoUrl && CHROME && clone(parent[parent.Symbol.for(SYM_ID)]);
     if (data) await new Promise(onFrameElementInView);
-    else data = !process.env.ENTRY && !isFrameSameOrigin && !isXml && tryCatch(getStylesViaXhr);
+    else data = !process.env.ENTRY && !isFrameSameOrigin && !isXml && getStylesViaXhr();
     // XML in Chrome will be auto-converted to html later, so we can't style it via XHR now
   }
   await applyStyles(data);
@@ -121,15 +122,17 @@ async function applyStyles(data) {
 
 /** Must be executed inside try/catch */
 function getStylesViaXhr() {
-  const blobId = (document.cookie.split(chrome.runtime.id + '=')[1] || '').split(';')[0];
-  if (!blobId) return; // avoiding an exception so we don't spoil debugging in devtools
-  const url = 'blob:' + chrome.runtime.getURL(blobId);
-  document.cookie = `${chrome.runtime.id}=1; max-age=0; SameSite=Lax`; // remove our cookie
-  const xhr = new XMLHttpRequest();
-  xhr.open('GET', url, false); // synchronous
-  xhr.send();
-  URL.revokeObjectURL(url);
-  return JSON.parse(xhr.response);
+  try {
+    const blobId = (document.cookie.split(ownId + '=')[1] || '').split(';')[0];
+    if (!blobId) return; // avoiding an exception so we don't spoil debugging in devtools
+    const url = 'blob:' + chrome.runtime.getURL(blobId);
+    document.cookie = `${ownId}=1; max-age=0; SameSite=Lax`; // remove our cookie
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url, false); // synchronous
+    xhr.send();
+    URL.revokeObjectURL(url);
+    return JSON.parse(xhr.response);
+  } catch {}
 }
 
 function applyOnMessage(req) {
@@ -267,17 +270,12 @@ function onReified(e) {
   }
 }
 
-function tryCatch(func, ...args) {
-  try {
-    return func(...args);
-  } catch {}
-}
-
 function orphanCheck(evt) {
+  // id will be undefined if the extension is orphaned
   if (chrome.runtime.id) return;
   // In Chrome content script is orphaned on an extension update/reload
   // so we need to detach event listeners
-  removeEventListener(evt.type, orphanCheck, true);
+  removeEventListener(ownId, orphanCheck, true);
   removeEventListener('pageshow', onBFCache);
   removeEventListener('pagehide', onBFCache);
   if (mqDark) mqDark.onchange = null;
@@ -286,5 +284,5 @@ function orphanCheck(evt) {
   offscreen = null;
   isOrphaned = true;
   styleInjector.shutdown(evt.detail);
-  tryCatch(msg.off, applyOnMessage);
+  msg.off(applyOnMessage);
 }

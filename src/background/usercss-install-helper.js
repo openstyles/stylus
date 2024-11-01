@@ -45,8 +45,11 @@ function toggle(key, val) {
           ? undefined
           : [...new Set(urls.map(u => u.split('/')[2]))],
         resourceTypes: ['main_frame'],
-        responseHeaders: [{header: kContentType, values: ['text/*']}],
-        excludedResponseHeaders: [{header: kContentType, values: ['text/html']}],
+        responseHeaders: [{
+          header: kContentType,
+          values: ['text/*'],
+          excludedValues: ['text/html'],
+        }],
       },
       action: {
         type: 'redirect',

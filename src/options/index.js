@@ -71,7 +71,8 @@ for (const el of $$('[data-clickable]')) {
 (async () => {
   const {wrb} = process.env.MV3 ? prefs.clientData : await prefs.clientData;
   if (wrb === false) {
-    for (const el of $$('.webRequestBlocking')) {
+    for (let el of $$('#patchCsp')) {
+      el = el.closest('label');
       el.classList.add('disabled');
       $('.icon', el).after($create('a.broken', {
         'data-cmd': 'note',
