@@ -1,5 +1,6 @@
 import './intro';
 import '/js/browser';
+import {updateDNR} from '/js/dnr';
 import * as msg from '/js/msg';
 import {API, onMessage} from '/js/msg-base';
 import {createPortProxy} from '/js/port';
@@ -118,6 +119,10 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   }
   if (previousVersion === '1.5.30') {
     API.prefsDb.delete('badFavs'); // old Stylus marked all icons as bad when network was offline
+  }
+  if (process.env.MV3) {
+    chrome.declarativeNetRequest.getDynamicRules({}).then(rules =>
+      updateDNR(null, rules.map(r => r.id)));
   }
 });
 

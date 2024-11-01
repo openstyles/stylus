@@ -25,9 +25,6 @@ export function getInstallCode(url) {
 }
 
 function toggle(key, val) {
-  if (!process.env.MV3) {
-    chrome.webRequest.onHeadersReceived.removeListener(maybeInstallByMime);
-  }
   tabMan.onOff(maybeInstall, val);
   const urls = val ? [''] : [
     /* Known distribution sites where we ignore urlInstaller option, because
@@ -59,6 +56,7 @@ function toggle(key, val) {
       },
     }]);
   } else {
+    chrome.webRequest.onHeadersReceived.removeListener(maybeInstallByMime);
     chrome.webRequest.onHeadersReceived.addListener(maybeInstallByMime, {
       urls: urls.reduce(reduceUsercssGlobs, []),
       types: ['main_frame'],
