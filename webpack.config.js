@@ -159,6 +159,7 @@ const getBaseConfig = () => ({
   optimization: {
     concatenateModules: true, // makes DEV code run faster
     chunkIds: false,
+    mangleExports: false,
     minimizer: DEV ? [] : [
       new TerserPlugin(mergeCfg({
         exclude: CM_NATIVE_RE,
