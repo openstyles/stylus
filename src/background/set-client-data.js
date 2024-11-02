@@ -4,6 +4,7 @@ import * as prefs from '/js/prefs';
 import {FIREFOX} from '/js/ua';
 import {isDark, setSystemDark} from './color-scheme';
 import {bgReady, isVivaldi} from './common';
+import makePopupData from './popup-data';
 import prefsApi from './prefs-api';
 import * as styleMan from './style-manager';
 import {webRequestBlocking} from './style-via-webrequest';
@@ -53,7 +54,7 @@ export default async function setClientData(reqParams, {
     wrb: webRequestBlocking,
 
   } : page === 'popup' ? /** @namespace StylusClientData */ {
-    [kPopup]: API.data.pop(kPopup),
+    [kPopup]: API.data.pop(kPopup) || makePopupData(),
 
   } : null);
 
