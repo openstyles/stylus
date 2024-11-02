@@ -8,7 +8,7 @@
  */
 import {$, $create} from './dom';
 import {getCssMediaRuleByName} from './dom-util';
-import {onExtension} from './msg-base';
+import {onExtension} from './msg';
 import {clientData} from './prefs';
 import {MF_ICON_EXT, MF_ICON_PATH} from './util-webext';
 import '/css/global.css';

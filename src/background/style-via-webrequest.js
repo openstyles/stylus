@@ -1,13 +1,12 @@
-import {kAppJson, kPopup} from '/js/consts';
+import {kAppJson, kPopup, kResolve} from '/js/consts';
 import {updateDNR} from '/js/dnr';
 import {API} from '/js/msg';
-import popupGetStyles from '/js/popup-get-styles';
 import * as prefs from '/js/prefs';
 import {CHROME, FIREFOX} from '/js/ua';
 import {actionPopupUrl, ownRoot} from '/js/urls';
-import {kResolve} from '/js/util';
-import {ignoreChromeError} from '/js/util-webext';
+import {ignoreChromeError, toggleListener} from '/js/util-webext';
 import {bgReady, safeTimeout} from './common';
+import makePopupData from './popup-data';
 import * as stateDb from './state-db';
 import {getSectionsByUrl} from './style-manager';
 import * as tabMan from './tab-manager';
@@ -81,7 +80,10 @@ if (CHROME && !process.env.MV3) {
   }, ['blocking']);
 }
 if (CHROME && process.env.BUILD !== 'firefox') {
-  chrome.webRequest.onBeforeRequest.addListener(preloadPopupData, {
+  chrome.webRequest.onBeforeRequest.addListener(req => {
+    // tabId < 0 means the popup is shown normally and not as a page in a tab
+    API.data.set(kPopup, req.tabId < 0 && makePopupData());
+  }, {
     urls: [actionPopupUrl],
     types: [kMainFrame],
   });
@@ -96,9 +98,6 @@ function toggle(prefKey) {
   if (!mv3init && xhr === curXHR && csp === curCSP && off === curOFF) {
     return;
   }
-  const toggleListener = (evt, add, ...args) => add
-    ? evt.addListener(...args)
-    : evt.removeListener(args[0]);
   let v;
   if (!process.env.MV3 && (FIREFOX || (xhr || csp) !== (curXHR || curCSP))) {
     v = chrome.webRequest.onHeadersReceived;
@@ -249,11 +248,6 @@ function patchCspSrc(src, name, ...values) {
     list.push(...values.filter(v => !list.includes(v)));
     if (!list.length) delete src[name];
   }
-}
-
-async function preloadPopupData(req) {
-  // tabId < 0 means the popup is shown normally and not as a page in a tab
-  API.data.set(kPopup, req.tabId < 0 && popupGetStyles());
 }
 
 export function removePreloadedStyles(req, key = req2key(req), data = stylesToPass[key], keep) {

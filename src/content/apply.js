@@ -1,5 +1,5 @@
 // WARNING: make sure util-webext.js runs first and sets _deepCopy
-import * as msg from '/js/msg-base';
+import * as msg from '/js/msg';
 import {API, apiPortDisconnect} from '/js/msg-api';
 import * as styleInjector from './style-injector';
 

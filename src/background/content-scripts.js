@@ -1,9 +1,9 @@
 import '/js/browser';
 import {kUrl} from '/js/consts';
-import {sendTab} from '/js/msg';
 import * as URLS from '/js/urls';
 import {stringAsRegExpStr} from '/js/util';
 import {ignoreChromeError, MF} from '/js/util-webext';
+import {sendTab} from './broadcast';
 import {safeTimeout} from './common';
 import * as tabMan from './tab-manager';
 

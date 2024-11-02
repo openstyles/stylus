@@ -15,12 +15,18 @@ export const browserWindows = browser.windows;
 export const onStorageChanged = chrome.storage.sync.onChanged || chrome.storage.onChanged;
 
 export const getOwnTab = () => browser.tabs.getCurrent();
+
 export const getActiveTab = async () =>
   (await browser.tabs.query({currentWindow: true, active: true}))[0] ||
   // workaround for Chrome bug when devtools for our popup is focused
   browserWindows &&
   (await browser.tabs.query({windowId: (await browserWindows.getCurrent()).id, active: true}))[0];
+
 export const ignoreChromeError = () => chrome.runtime.lastError;
+
+export const toggleListener = (evt, add, ...args) => add
+  ? evt.addListener(...args)
+  : evt.removeListener(args[0]);
 
 export async function closeCurrentTab() {
   // https://bugzil.la/1409375

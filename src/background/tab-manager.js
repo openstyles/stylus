@@ -1,4 +1,5 @@
 import {supported} from '/js/urls';
+import {toggleListener} from '/js/util-webext';
 import {bgReady} from './common';
 import {onUrlChange} from './navigation-manager';
 import * as stateDb from './state-db';
@@ -49,7 +50,7 @@ export const set = (tabId, ...args) => {
   else if (meta) delete meta[lastKey];
 };
 
-const deleteKey = tabId => {
+export const remove = tabId => {
   cache.delete(tabId);
   stateDb.del(tabId);
 };
@@ -85,6 +86,9 @@ stateDb.ready?.then(([dbData, tabs]) => {
       if (!tabIds.has(key)) stateDb.del(key);
     }
   }
-  chrome.tabs.onRemoved.addListener(deleteKey);
-  chrome.tabs.onReplaced.addListener((added, removed) => deleteKey(removed));
 });
+
+if (!process.env.MV3) { // we don't want these events to start the SW
+  toggleListener(chrome.tabs.onRemoved, true, remove);
+  toggleListener(chrome.tabs.onReplaced, true, (added, removed) => remove(removed));
+}

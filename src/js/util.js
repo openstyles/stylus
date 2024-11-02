@@ -2,8 +2,7 @@
  * WARNING!
  * Used in limited contexts such as the offscreen document.
  * Only for pure declarations with no side effects or marked with /*@__PURE__*/
-
-export const kResolve = 'resolve';
+import {kResolve} from './consts';
 
 export const capitalize = s => s.slice(0, 1).toUpperCase() + s.slice(1);
 export const clamp = (value, min, max) => value < min ? min : value > max ? max : value;

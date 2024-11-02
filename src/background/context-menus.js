@@ -1,9 +1,9 @@
 import '/js/browser';
-import {sendTab} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {CHROME} from '/js/ua';
 import {ownRoot} from '/js/urls';
 import {ignoreChromeError} from '/js/util-webext';
+import {sendTab} from './broadcast';
 import {browserCommands} from './common';
 
 let ITEMS;

@@ -286,19 +286,6 @@ module.exports = [
     },
   },
   //#endregion
-  //#region Content scripts
-  {
-    files: ['src/content/*'],
-    rules: {
-      'no-restricted-imports': [2, {
-        paths: [{
-          name: '/js/msg',
-          message: "Use 'msg-base' in content scripts.",
-        }],
-      }],
-    },
-  },
-  //#endregion
   //#region SRC
   {
     files: ['src/**/*.js', SHIMS],

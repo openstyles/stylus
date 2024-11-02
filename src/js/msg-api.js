@@ -1,4 +1,4 @@
-export const rxIgnorableError = /Receiving end does not exist|The message port closed|moved into back\/forward cache/;
+export const rxIgnorableError = /(R)eceiving end does not exist|The message port closed|moved into back\/forward cache/;
 export const saveStack = () => new Error(); // Saving callstack prior to `await`
 const portReqs = {};
 

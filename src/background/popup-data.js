@@ -1,30 +1,28 @@
-import './browser';
-import {kResolve} from '/js/util';
-import * as msg from './msg';
-import {API} from './msg-api';
-import {CHROME, FIREFOX} from './ua';
-import {chromeProtectsNTP, ownRoot, supported} from './urls';
-import {getActiveTab} from './util-webext';
+import '/js/browser';
+import {kAboutBlank, kResolve} from '/js/consts';
+import {API} from '/js/msg';
+import {CHROME, FIREFOX} from '/js/ua';
+import {chromeProtectsNTP, ownRoot, supported} from '/js/urls';
+import {getActiveTab} from '/js/util-webext';
+import {pingTab} from './broadcast';
 
-export const ABOUT_BLANK = 'about:blank';
-
-export default async function popupGetStyles() {
+export default async function makePopupData() {
   let tab = await getActiveTab();
-  if (FIREFOX && tab.status === 'loading' && tab.url === ABOUT_BLANK) {
+  if (FIREFOX && tab.status === 'loading' && tab.url === kAboutBlank) {
     tab = await API.waitForTabUrl(tab.id);
   }
   let url = tab.pendingUrl || tab.url || ''; // new Chrome uses pendingUrl while connecting
   const isOwn = url.startsWith(ownRoot);
   const [ping0, frames] = await Promise.all([
     isOwn
-      || msg.sendTab(tab.id, {method: 'ping'}, {frameId: 0}),
+      || pingTab(tab.id),
     isOwn && CHROME && getAllFrames(url, tab)
       || browser.webNavigation.getAllFrames({tabId: tab.id}),
   ]);
   // sorting frames and connecting children to parents
   const unknown = new Map(frames.map(f => [f.frameId, f]));
   const known = new Map([[0, unknown.get(0) || {frameId: 0, url: ''}]]);
-  const urls = new Set([ABOUT_BLANK]);
+  const urls = new Set([kAboutBlank]);
   unknown.delete(0);
   let lastSize = 0;
   while (unknown.size !== lastSize) {
@@ -32,7 +30,7 @@ export default async function popupGetStyles() {
       if (known.has(f.parentFrameId)) {
         unknown.delete(frameId);
         if (!f.errorOccurred) known.set(frameId, f);
-        if (f.url === ABOUT_BLANK) f.url = known.get(f.parentFrameId).url;
+        if (f.url === kAboutBlank) f.url = known.get(f.parentFrameId).url;
       }
     }
     lastSize = unknown.size; // guard against an infinite loop due to a weird frame structure

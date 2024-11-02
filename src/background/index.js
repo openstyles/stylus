@@ -1,15 +1,14 @@
 import './intro';
 import '/js/browser';
+import {kResolve} from '/js/consts';
 import {updateDNR} from '/js/dnr';
-import * as msg from '/js/msg';
-import {API, onMessage} from '/js/msg-base';
+import {_execute, API, onMessage, wrapError} from '/js/msg';
 import {createPortProxy} from '/js/port';
 import * as prefs from '/js/prefs';
-import {kResolve} from '/js/util';
-import {ignoreChromeError} from '/js/util-webext';
 import {FIREFOX, MOBILE, WINDOWS} from '/js/ua';
 import {workerPath} from '/js/urls';
-import {broadcast} from './broadcast';
+import {ignoreChromeError} from '/js/util-webext';
+import {broadcast, pingTab} from './broadcast';
 import './broadcast-injector-config';
 import initBrowserCommandsApi from './browser-cmd-hotkeys';
 import * as colorScheme from './color-scheme';
@@ -67,6 +66,7 @@ Object.assign(API, /** @namespace API */ {
   openEditor,
   openManage,
   openURL,
+  pingTab,
   updateIconBadge,
   waitForTabUrl,
 
@@ -148,9 +148,9 @@ async function apiPortMessage({id, data, TDM}, port) {
   try {
     if (bgReady[kResolve]) await bgReady;
     port.sender.TDM = TDM;
-    data = {data: await msg._execute('extension', data, port.sender)};
+    data = {data: await _execute('extension', data, port.sender)};
   } catch (e) {
-    data = msg.wrapError(e);
+    data = wrapError(e);
   }
   data.id = id;
   try { port.postMessage(data); } catch {}
@@ -161,7 +161,7 @@ async function apiPortMessage({id, data, TDM}, port) {
 bgReady.styles.then(() => {
   bgReady[kResolve]();
   bgReady[kResolve] = null;
-  if (process.env.ENTRY !== 'sw') window._msgExec = msg._execute;
+  if (process.env.ENTRY !== 'sw') window._msgExec = _execute;
   if (process.env.BUILD !== 'chrome' && FIREFOX) {
     initBrowserCommandsApi();
     initContextMenus();

@@ -1,5 +1,6 @@
+import {kResolve} from '/js/consts';
 import {CHROME} from '/js/ua';
-import {kResolve, promiseWithResolve} from '/js/util';
+import {promiseWithResolve} from '/js/util';
 import {browserWindows} from '/js/util-webext';
 
 export const bgReady = promiseWithResolve();

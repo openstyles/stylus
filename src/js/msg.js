@@ -1,61 +1,80 @@
-/** Don't use this file in content script context! */
-import './browser';
-import {apiHandler, apiSendProxy} from './msg-api';
-import {unwrap} from './msg-base';
-import {createPortExec, createPortProxy} from './port';
-import {swPath, workerPath} from './urls';
-import {deepCopy} from './util';
-import {getOwnTab} from './util-webext';
+import {apiPortDisconnect, bgReadySignal, port} from './msg-api';
 
-export * from './msg-base';
+/** @type {API} */
+export const API = process.env.API;
 
-const needsTab = [
-  'updateIconBadge',
-  'styleViaAPI',
-];
-/** @type {MessagePort} */
-const swExec = process.env.MV3 &&
-  createPortExec(() => navigator.serviceWorker.controller, {lock: swPath});
-const workerApiPrefix = 'worker.';
-let workerProxy;
-export let bg = process.env.IS_BG ? self : !process.env.MV3 && chrome.extension.getBackgroundPage();
+const TARGETS = {
+  __proto: null,
+  all: ['both', 'tab', 'extension'],
+  extension: ['both', 'extension'],
+  tab: ['both', 'tab'],
+};
+const handler = {
+  both: new Set(),
+  tab: new Set(),
+  extension: new Set(),
+};
+// TODO: maybe move into browser.js and hook addListener to wrap/unwrap automatically
+chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
-async function invokeAPI({name: path}, _thisObj, args) {
-  // Non-cloneable event is passed when doing `elem.onclick = API.foo`
-  if (args[0] instanceof Event) args[0] = 'Event';
-  if (path.startsWith(workerApiPrefix)) {
-    workerProxy ??= createPortProxy(workerPath);
-    return workerProxy[path.slice(workerApiPrefix.length)](...args);
+export function onMessage(fn) {
+  handler.both.add(fn);
+}
+
+export function onTab(fn) {
+  handler.tab.add(fn);
+}
+
+export function onExtension(fn) {
+  handler.extension.add(fn);
+}
+
+export function off(fn) {
+  for (const type of TARGETS.all) {
+    handler[type].delete(fn);
   }
-  let tab = false;
-  // Using a fake id for our Options frame as we want to fetch styles early
-  const frameId = window === top ? 0 : 1;
-  if (!needsTab.includes(path) || !frameId && (tab = await getOwnTab())) {
-    const msg = {method: 'invokeAPI', path, args};
-    const sender = {url: location.href, tab, frameId};
-    if (process.env.MV3) {
-      return swExec(msg, sender);
-    } else {
-      const res = bg._msgExec('extension', bg._deepCopy(msg), bg._deepCopy(sender));
-      return deepCopy(await res);
+}
+
+export function _execute(target, ...args) {
+  let result;
+  for (const type of TARGETS[target] || TARGETS.all) {
+    for (const fn of handler[type]) {
+      let res;
+      try {
+        res = fn(...args);
+      } catch (err) {
+        res = Promise.reject(err);
+      }
+      if (res !== undefined && result === undefined) {
+        result = res;
+      }
     }
   }
+  return process.env.KEEP_ALIVE(result);
 }
 
-export function sendTab(tabId, data, options, target = 'tab') {
-  return unwrap(browser.tabs.sendMessage(tabId, {data, target}, options));
-}
-
-if (process.env.MV3) {
-  if (process.env.ENTRY !== 'sw') {
-    apiHandler.apply = invokeAPI;
+export function onRuntimeMessage({data, target}, sender, sendResponse) {
+  if (data.method === 'backgroundReady') {
+    if (bgReadySignal) bgReadySignal(true);
+    if (port) apiPortDisconnect();
   }
-} else if (!process.env.IS_BG) {
-  apiHandler.apply = async (fn, thisObj, args) => {
-    bg ??= await browser.runtime.getBackgroundPage().catch(() => {}) || false;
-    const exec = bg && (bg._msgExec || await bg._ready)
-      ? invokeAPI
-      : apiSendProxy;
-    return exec(fn, thisObj, args);
+  const res = _execute(target, data, sender);
+  if (res instanceof Promise) {
+    res.then(wrapData, wrapError).then(sendResponse);
+    return true;
+  }
+  if (res !== undefined) sendResponse(wrapData(res));
+}
+
+function wrapData(data) {
+  return {data};
+}
+
+export function wrapError(error) {
+  return {
+    error: Object.assign({
+      message: error.message || `${error}`,
+      stack: error.stack,
+    }, error), // passing custom properties e.g. `error.index`
   };
 }

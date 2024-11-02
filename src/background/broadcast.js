@@ -1,5 +1,5 @@
 import '/js/browser';
-import {sendTab, unwrap} from '/js/msg';
+import {rxIgnorableError, saveStack} from '/js/msg-api';
 import {ownRoot} from '/js/urls';
 import * as tabMan from './tab-manager';
 
@@ -32,4 +32,32 @@ export async function broadcast(data, {onlyIfStyled, getData} = {}) {
 
 export function broadcastExtension(data, target = 'extension') {
   return unwrap(browser.runtime.sendMessage({data, target}));
+}
+
+export function pingTab(tabId, frameId = 0) {
+  return sendTab(tabId, {method: 'ping'}, {frameId});
+}
+
+export function sendTab(tabId, data, options, target = 'tab') {
+  return unwrap(browser.tabs.sendMessage(tabId, {data, target}, options),
+    process.env.MV3 && !options?.frameId ? tabId : -1);
+}
+
+async function unwrap(promise, tabId) {
+  const err = saveStack();
+  let data, error;
+  try {
+    ({data, error} = await promise || {});
+    if (!error) return data;
+  } catch (e) {
+    error = e;
+    if (rxIgnorableError.test(err.message = e.message)) {
+      if (process.env.MV3 && tabId >= 0 && RegExp.$1) {
+        tabMan.remove(tabId);
+      }
+      return data;
+    }
+  }
+  if (error.stack) err.stack = error.stack + '\n' + err.stack;
+  return Promise.reject(err);
 }

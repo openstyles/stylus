@@ -1,10 +1,9 @@
 import '/js/dom-init';
-import {kPopup, UCD} from '/js/consts';
+import {kAboutBlank, kPopup, UCD} from '/js/consts';
 import {$, $$, $create, $remove} from '/js/dom';
 import {getEventKeyName, setupLivePrefs} from '/js/dom-util';
 import {t, template} from '/js/localization';
-import {API, onExtension, sendTab} from '/js/msg';
-import {ABOUT_BLANK} from '/js/popup-get-styles';
+import {onExtension} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {CHROME, FIREFOX, MOBILE, OPERA} from '/js/ua';
 import {ownRoot} from '/js/urls';
@@ -149,11 +148,11 @@ async function initPopup(frames, ping0, tab, urlSupported) {
   }
 
   for (let t2 = performance.now() + 1000; performance.now() < t2;) {
-    if (await sendTab(tab.id, {method: 'ping'}, {frameId: 0})) {
+    if (await API.pingTab(tab.id)) {
       blockPopup(false);
       return;
     }
-    if (tab.status === 'complete' && (CHROME || tab.url !== ABOUT_BLANK)) {
+    if (tab.status === 'complete' && (CHROME || tab.url !== kAboutBlank)) {
       break;
     }
     // FF and some Chrome forks (e.g. CentBrowser) implement tab-on-demand

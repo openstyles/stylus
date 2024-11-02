@@ -2,7 +2,7 @@ import {$, dom} from './dom';
 import {waitForSelector} from './dom-util';
 import * as prefs from './prefs';
 import {FIREFOX, MOBILE, OPERA, VIVALDI, WINDOWS} from './ua';
-import './msg';
+import './msg-init';
 import './themer';
 import './util-webext';
 import '/content/apply'; // must run after msg (swaps `API`) and util-webext (exposes _deepCopy)

@@ -1,8 +1,7 @@
-import {kPopup} from '/js/consts';
-import {API} from '/js/msg-api';
+import {kPopup, kResolve} from '/js/consts';
+import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {FIREFOX} from '/js/ua';
-import {kResolve} from '/js/util';
 import {isDark, setSystemDark} from './color-scheme';
 import {bgReady, isVivaldi} from './common';
 import prefsApi from './prefs-api';

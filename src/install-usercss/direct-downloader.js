@@ -1,4 +1,4 @@
-import {API} from '/js/msg-api';
+import {API} from '/js/msg';
 import {fetchText} from '/js/util';
 import {CHROME} from '/js/ua';
 

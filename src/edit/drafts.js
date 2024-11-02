@@ -1,6 +1,6 @@
 import {$create} from '/js/dom';
 import {formatRelativeDate, t} from '/js/localization';
-import {API} from '/js/msg-api';
+import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {styleToCss} from '/js/sections-util';
 import {clamp, debounce} from '/js/util';

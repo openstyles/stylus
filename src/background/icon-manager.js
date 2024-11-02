@@ -5,6 +5,7 @@ import {debounce} from '/js/util';
 import {ignoreChromeError, MF_ICON_EXT, MF_ICON_PATH} from '/js/util-webext';
 import * as colorScheme from './color-scheme';
 import {bgReady} from './common';
+import {WEB_NAV_FILTER_STYLABLE} from './navigation-manager';
 import {removePreloadedStyles} from './style-via-webrequest';
 import * as tabMan from './tab-manager';
 
@@ -42,7 +43,7 @@ chrome.webNavigation.onCommitted.addListener(({tabId, frameId}) => {
   if (!ids) return;
   if (frameId) delete ids[frameId];
   else for (const id in ids) delete ids[id];
-});
+}, WEB_NAV_FILTER_STYLABLE);
 chrome.runtime.onConnect.addListener(port => {
   if (port.name === 'iframe') {
     port.onDisconnect.addListener(onPortDisconnected);
