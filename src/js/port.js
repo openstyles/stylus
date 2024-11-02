@@ -52,7 +52,7 @@ export function createPortExec(getTarget, {lock, once} = {}) {
   let port;
   /** @type {MessagePort | Client | SharedWorker} */
   let target;
-  let lockRequested;
+  let tracking;
   let lastId = 0;
   return async function exec(...args) {
     const ctx = [new Error().stack]; // saving it prior to a possible async jump for easier debugging
@@ -65,7 +65,7 @@ export function createPortExec(getTarget, {lock, once} = {}) {
     return promise;
   };
   async function initPort() {
-    process.env.DEBUGLOG(location.pathname, 'exec init', getTarget);
+    process.env.DEBUGLOG(location.pathname, 'exec init', {getTarget});
     if (typeof getTarget === 'string') {
       lock = getTarget;
       target = new SharedWorker(getTarget);
@@ -92,7 +92,7 @@ export function createPortExec(getTarget, {lock, once} = {}) {
   /** @param {MessageEvent} _ */
   function onMessage({data}) {
     process.env.DEBUGLOG(location.pathname, 'exec onmessage', data);
-    if (!lockRequested && !once) trackTarget(queue);
+    if (!tracking && !once) trackTarget(queue);
     const {id, res, err} = data.id ? data : JSON.parse(data);
     const [stack, resolve, reject] = queue.get(id);
     queue.delete(id);
@@ -109,8 +109,9 @@ export function createPortExec(getTarget, {lock, once} = {}) {
     }
   }
   async function trackTarget(queueCopy) {
-    lockRequested = true;
+    tracking = true;
     await navigator.locks.request(lock, NOP);
+    tracking = false;
     for (const [stack, /*resolve*/, reject] of queueCopy.values()) {
       const err = new Error('Target disconnected');
       err.stack = stack;
@@ -134,6 +135,7 @@ export function initRemotePort(evt) {
   if (!lockingSelf && lock && !once) {
     lockingSelf = true;
     navigator.locks.request(lock, () => new Promise(NOP));
+    process.env.DEBUGLOG(location.pathname, 'initRemotePort lock', lock);
   }
   port.onerror = console.error;
   port.onmessage = onMessage;
