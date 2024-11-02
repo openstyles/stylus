@@ -5,6 +5,10 @@ import * as MozDocMapper from '/js/sections-util';
 import {clipString, sessionStore, tryURL} from '/js/util';
 import editor from './editor';
 
+if (location.hash) { // redirected from devtools -> "open in a new tab"
+  history.replaceState(history.state, '', location.href.split('#')[0]);
+}
+
 const params = new URLSearchParams(location.search);
 let id = +params.get('id');
 

@@ -28,8 +28,8 @@ self.onfetch = evt => {
   }
   if (url.includes('?clientData')) {
     evt.respondWith(setClientData(new URL(url).searchParams));
-  } else if (/\.user.css#\d+$/.test(url)) {
-    evt.respondWith(Response.redirect('edit.html'));
+  } else if (/\.user.css#(\d+)$/.test(url)) {
+    evt.respondWith(Response.redirect('edit.html?id=' + RegExp.$1));
   }
 };
 
