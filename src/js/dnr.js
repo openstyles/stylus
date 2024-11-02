@@ -15,6 +15,6 @@ export const updateDNR = (
   removeRuleIds,
 });
 
-if (process.env.MV3 && !process.env.ZIP) {
+if (process.env.MV3 && !process.env.ZIP && process.env.DEBUG) {
   chrome.declarativeNetRequest.onRuleMatchedDebug?.addListener(console.log.bind(null, 'DNR'));
 }

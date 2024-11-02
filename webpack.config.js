@@ -65,6 +65,7 @@ const VARS = {
   BUILD,
   CLIENT_DATA: 'clientData', // hiding the global from IDE
   CM_PATH,
+  DEBUG: !!process.env.DEBUG,
   DEV,
   ENTRY: false,
   IS_BG: false,
@@ -76,7 +77,7 @@ const VARS = {
 };
 const RAW_VARS = {
   API: 'global.API', // hiding the global from IDE
-  DEBUG: process.env.DEBUG ? 'console.log' : 'null?.',
+  DEBUGLOG: process.env.DEBUG ? 'console.log' : 'null?.',
   KEEP_ALIVE: '1&&',
 };
 const BANNER = '{const global = this, window = global;';

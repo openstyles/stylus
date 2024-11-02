@@ -58,14 +58,14 @@ export function createPortExec(getTarget, {lock, once} = {}) {
     const ctx = [new Error().stack]; // saving it prior to a possible async jump for easier debugging
     const promise = new Promise((resolve, reject) => ctx.push(resolve, reject));
     if ((port ??= initPort(args)).then) port = await port;
-    process.env.DEBUG(location.pathname, 'exec send', ...args);
+    process.env.DEBUGLOG(location.pathname, 'exec send', ...args);
     (once ? target : port).postMessage({args, id: ++lastId},
       once || (Array.isArray(this) ? this : undefined));
     queue.set(lastId, ctx);
     return promise;
   };
   async function initPort() {
-    process.env.DEBUG(location.pathname, 'exec init', getTarget);
+    process.env.DEBUGLOG(location.pathname, 'exec init', getTarget);
     if (typeof getTarget === 'string') {
       lock = getTarget;
       target = new SharedWorker(getTarget);
@@ -91,7 +91,7 @@ export function createPortExec(getTarget, {lock, once} = {}) {
   }
   /** @param {MessageEvent} _ */
   function onMessage({data}) {
-    process.env.DEBUG(location.pathname, 'exec onmessage', data);
+    process.env.DEBUGLOG(location.pathname, 'exec onmessage', data);
     if (!lockRequested && !once) trackTarget(queue);
     const {id, res, err} = data.id ? data : JSON.parse(data);
     const [stack, resolve, reject] = queue.get(id);
@@ -130,7 +130,7 @@ export function initRemotePort(evt) {
   const {lock = location.pathname, id: once} = evt.data || {};
   const exec = this;
   const port = evt.ports[0];
-  process.env.DEBUG(location.pathname, 'initRemotePort', evt);
+  process.env.DEBUGLOG(location.pathname, 'initRemotePort', evt);
   if (!lockingSelf && lock && !once) {
     lockingSelf = true;
     navigator.locks.request(lock, () => new Promise(NOP));
@@ -140,7 +140,7 @@ export function initRemotePort(evt) {
   port.onmessageerror = onMessageError;
   if (once) onMessage(evt);
   async function onMessage(portEvent) {
-    process.env.DEBUG(location.pathname, 'port onmessage', portEvent);
+    process.env.DEBUGLOG(location.pathname, 'port onmessage', portEvent);
     const data = portEvent.data;
     const {args, id} = data.id ? data : JSON.parse(data);
     let res, err;
@@ -159,7 +159,7 @@ export function initRemotePort(evt) {
       delete e.source;
       // TODO: find which props are actually used (err may contain noncloneable Response)
     }
-    process.env.DEBUG(location.pathname, 'port response', {id, res, err}, portEvent._transfer);
+    process.env.DEBUGLOG(location.pathname, 'port response', {id, res, err}, portEvent._transfer);
     port.postMessage({id, res, err},
       (/**@type{RemotePortEvent}*/portEvent)._transfer);
     if (!--numJobs && autoClose && !timer && !swPort) {
