@@ -1,5 +1,4 @@
 import {loadCmTheme} from '/cm';
-import {UCD} from '/js/consts';
 import {$} from '/js/dom';
 import * as prefs from '/js/prefs';
 import * as MozDocMapper from '/js/sections-util';
@@ -13,9 +12,7 @@ export default process.env.MV3
   ? loadStyle(prefs.clientData)
   : prefs.clientData.then(loadStyle);
 
-function loadStyle({si, style = makeNewStyleObj(), template}) {
-  // switching the mode here to show the correct page ASAP, usually before DOMContentLoaded
-  const isUC = !!(style[UCD] || !id && template);
+function loadStyle({style = makeNewStyleObj(), isUC, si, template}) {
   Object.assign(editor, /** @namespace Editor */ {
     style,
     template,

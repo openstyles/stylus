@@ -1,7 +1,6 @@
-import {apiPortDisconnect, bgReadySignal, port} from './msg-api';
+import {API, apiPortDisconnect, bgReadySignal, port} from './msg-api';
 
-/** @type {API} */
-export const API = process.env.API;
+export {API};
 
 const TARGETS = {
   __proto: null,

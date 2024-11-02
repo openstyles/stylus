@@ -151,11 +151,12 @@ export function editSave(style) {
 
 export function getEditClientData(id) {
   const style = id2style(id);
+  const isUC = style ? UCD in style : prefs.__values.newStyleAsUsercss;
   return /** @namespace StylusClientData */ {
     style,
+    isUC,
     si: style && API.data.get('editorScrollInfo' + id),
-    template: !style && prefs.__values.newStyleAsUsercss
-      && (usercssTemplate.value || usercssTemplate.load()),
+    template: !style && isUC && (usercssTemplate.value || usercssTemplate.load()),
   };
 }
 

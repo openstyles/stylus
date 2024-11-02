@@ -3,7 +3,7 @@ import {kAboutBlank, kPopup, UCD} from '/js/consts';
 import {$, $$, $create, $remove} from '/js/dom';
 import {getEventKeyName, setupLivePrefs} from '/js/dom-util';
 import {t, template} from '/js/localization';
-import {onExtension} from '/js/msg';
+import {API, onExtension} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {CHROME, FIREFOX, MOBILE, OPERA} from '/js/ua';
 import {ownRoot} from '/js/urls';
