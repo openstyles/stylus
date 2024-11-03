@@ -7,21 +7,22 @@ import {ignoreChromeError, MF} from '/js/util-webext';
 import {pingTab, sendTab} from './broadcast';
 import * as tabMan from './tab-manager';
 
-const listeners = new Set();
-/** @param {function(data: Object, type: ('committed'|'history'|'hash'))} fn */
-export const onUrlChange = fn => listeners.add(fn);
+/** @type {Set<(data: Object, type: 'committed'|'history'|'hash') => ?>} */
+export const onUrlChange = new Set();
+export const webNavigation = chrome.webNavigation;
 /** @type {{ url: chrome.events.UrlFilter[] }} */
-export const WEB_NAV_FILTER_STYLABLE = {
+const WEBNAV_FILTER_STYLABLE = {
   url: [{schemes: ['http', 'https', 'file', 'ftp', 'ftps']}],
 };
+const kCommitted = 'committed';
 let prevData = {};
 
-chrome.webNavigation.onCommitted.addListener(onNavigation.bind(['committed']),
-  WEB_NAV_FILTER_STYLABLE);
-chrome.webNavigation.onHistoryStateUpdated.addListener(onFakeNavigation.bind(['history']),
-  WEB_NAV_FILTER_STYLABLE);
-chrome.webNavigation.onReferenceFragmentUpdated.addListener(onFakeNavigation.bind(['hash']),
-  WEB_NAV_FILTER_STYLABLE);
+webNavigation.onCommitted.addListener(onNavigation.bind([kCommitted]),
+  WEBNAV_FILTER_STYLABLE);
+webNavigation.onHistoryStateUpdated.addListener(onFakeNavigation.bind(['history']),
+  WEBNAV_FILTER_STYLABLE);
+webNavigation.onReferenceFragmentUpdated.addListener(onFakeNavigation.bind(['hash']),
+  WEBNAV_FILTER_STYLABLE);
 
 /** @this {string[]} type */
 async function onNavigation(data) {
@@ -29,6 +30,14 @@ async function onNavigation(data) {
     return; // Chrome bug: listener is called twice with identical data
   }
   prevData = data;
+  if (this[0] === kCommitted) {
+    const {tabId, frameId} = data;
+    const ids = tabMan.getStyleIds(tabId);
+    if (ids) {
+      if (frameId) delete ids[frameId];
+      else for (const id in ids) delete ids[id];
+    }
+  }
   if (!process.env.MV3 &&
       CHROME &&
       chromeProtectsNTP &&
@@ -42,7 +51,7 @@ async function onNavigation(data) {
       data.url = url;
     }
   }
-  for (const fn of listeners) fn(data, this[0]);
+  for (const fn of onUrlChange) fn(data, this[0]);
 }
 
 /** @this {string} type */
@@ -62,7 +71,7 @@ if (!process.env.MV3) {
    * Not using manifest.json to avoid injecting in unrelated sub-pages.
    */
   const urlMatches = '/scripts/\\d+[^/]*(/code)?([?#].*)?$';
-  chrome.webNavigation.onCommitted.addListener(({tabId}) => {
+  webNavigation.onCommitted.addListener(({tabId}) => {
     chrome.tabs.executeScript(tabId, {
       file: '/content/install-hook-greasyfork.js',
       runAt: 'document_start',
@@ -78,7 +87,7 @@ if (!process.env.MV3) {
    * Removes the Get Stylus button on style pages.
    * Not using manifest.json as adding a content script may disable the extension on update.
    */
-  chrome.webNavigation.onCommitted.addListener(({tabId}) => {
+  webNavigation.onCommitted.addListener(({tabId}) => {
     chrome.tabs.executeScript(tabId, {
       file: '/content/install-hook-userstylesworld.js',
       runAt: 'document_start',
@@ -92,7 +101,7 @@ if (!process.env.MV3) {
    * FF misses some about:blank iframes so we inject our content script explicitly
    */
   if (process.env.BUILD !== 'chrome' && FIREFOX) {
-    chrome.webNavigation.onDOMContentLoaded.addListener(async ({tabId, frameId}) => {
+    webNavigation.onDOMContentLoaded.addListener(async ({tabId, frameId}) => {
       if (frameId && !await pingTab(tabId, frameId)) {
         for (const file of MF.content_scripts[0].js) {
           chrome.tabs.executeScript(tabId, {

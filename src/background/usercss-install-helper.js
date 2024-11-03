@@ -1,5 +1,5 @@
 import '/js/browser';
-import {kContentType} from '/js/consts';
+import {kContentType, kMainFrame} from '/js/consts';
 import {DNR_ID_INSTALLER, updateDNR} from '/js/dnr';
 import * as prefs from '/js/prefs';
 import * as URLS from '/js/urls';
@@ -25,7 +25,8 @@ export function getInstallCode(url) {
 }
 
 function toggle(key, val) {
-  tabMan.onOff(maybeInstall, val);
+  if (val) tabMan.onUrl.add(maybeInstall);
+  else tabMan.onUrl.delete(maybeInstall);
   const urls = val ? [''] : [
     /* Known distribution sites where we ignore urlInstaller option, because
        they open .user.css URL only when the "Install" button is clicked.
@@ -44,7 +45,7 @@ function toggle(key, val) {
         requestDomains: val
           ? undefined
           : [...new Set(urls.map(u => u.split('/')[2]))],
-        resourceTypes: ['main_frame'],
+        resourceTypes: [kMainFrame],
         responseHeaders: [{
           header: kContentType,
           values: ['text/*'],
@@ -62,7 +63,7 @@ function toggle(key, val) {
     chrome.webRequest.onHeadersReceived.removeListener(maybeInstallByMime);
     chrome.webRequest.onHeadersReceived.addListener(maybeInstallByMime, {
       urls: urls.reduce(reduceUsercssGlobs, []),
-      types: ['main_frame'],
+      types: [kMainFrame],
     }, ['responseHeaders', 'blocking']);
   }
 }
@@ -101,7 +102,7 @@ function reduceUsercssGlobs(res, host) {
   return res;
 }
 
-async function maybeInstall({tabId, url, oldUrl = ''}) {
+async function maybeInstall(tabId, url, oldUrl = '') {
   if (url.includes('.user.') &&
       tabMan.get(tabId, isContentTypeText.name) !== false &&
       /^(https?|file|ftps?):/.test(url) &&

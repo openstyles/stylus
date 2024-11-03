@@ -23,7 +23,7 @@ export const ready = !process.env.MV3 ? null : Promise.all([
 export const get = process.env.MV3 && data.get.bind(data);
 
 export const set = (key, val) => {
-  process.env.DEBUGLOG('stateDb set', key, val);
+  process.env.DEBUGWARN('stateDb set', key, val);
   if (!val || isEmptyObjExceptId(val)) {
     remove(key);
   } else {
@@ -39,7 +39,7 @@ export const set = (key, val) => {
 };
 
 export const remove = key => {
-  process.env.DEBUGLOG('stateDb remove', key);
+  process.env.DEBUGWARN('stateDb remove', key);
   if (data.has(key)) {
     data.delete(key);
     if (sessionDataToWrite) delete sessionDataToWrite[key];

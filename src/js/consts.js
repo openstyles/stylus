@@ -9,6 +9,7 @@ export const kAboutBlank = 'about:blank';
 export const kAppJson = 'application/json';
 export const kAppUrlencoded = 'application/x-www-form-urlencoded';
 export const kContentType = 'content-type'; // must be lowercase!
+export const kMainFrame = 'main_frame';
 export const kPopup = 'popup';
 export const kResolve = 'resolve';
 export const kUrl = 'url';

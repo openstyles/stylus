@@ -5,6 +5,7 @@ import {stringAsRegExpStr} from '/js/util';
 import {ignoreChromeError, MF} from '/js/util-webext';
 import {sendTab} from './broadcast';
 import {safeTimeout} from './common';
+import {webNavigation} from './navigation-manager';
 import * as tabMan from './tab-manager';
 
 /**
@@ -79,9 +80,9 @@ export default function reinjectContentScripts() {
 
   function toggleBusyTabListeners(state) {
     const toggle = state ? 'addListener' : 'removeListener';
-    chrome.webNavigation.onCompleted[toggle](onBusyTabUpdated);
-    chrome.webNavigation.onErrorOccurred[toggle](onBusyTabUpdated);
-    chrome.webNavigation.onTabReplaced[toggle](onBusyTabReplaced);
+    webNavigation.onCompleted[toggle](onBusyTabUpdated);
+    webNavigation.onErrorOccurred[toggle](onBusyTabUpdated);
+    webNavigation.onTabReplaced[toggle](onBusyTabReplaced);
     chrome.tabs.onRemoved[toggle](onBusyTabRemoved);
     if (state) {
       busyTabsTimer = safeTimeout(toggleBusyTabListeners, 15e3, false);

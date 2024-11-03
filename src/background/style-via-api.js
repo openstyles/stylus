@@ -2,6 +2,7 @@ import '/js/browser';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {isEmptyObj} from '/js/util';
+import {webNavigation} from './navigation-manager';
 import {getSectionsByUrl, order} from './style-manager';
 
 /**
@@ -148,7 +149,7 @@ export default function initStyleViaApi() {
       return;
     }
     observingTabs = !observingTabs;
-    chrome.webNavigation.onCommitted[method](onNavigationCommitted);
+    webNavigation.onCommitted[method](onNavigationCommitted);
     chrome.tabs.onRemoved[method](onTabRemoved);
     chrome.tabs.onReplaced[method](onTabReplaced);
   }

@@ -57,8 +57,8 @@ export function createPortExec(getTarget, {lock, once} = {}) {
   return async function exec(...args) {
     const ctx = [new Error().stack]; // saving it prior to a possible async jump for easier debugging
     const promise = new Promise((resolve, reject) => ctx.push(resolve, reject));
+    process.env.DEBUGWARN(location.pathname, 'exec send', ...args);
     if ((port ??= initPort(args)).then) port = await port;
-    process.env.DEBUGLOG(location.pathname, 'exec send', ...args);
     (once ? target : port).postMessage({args, id: ++lastId},
       once || (Array.isArray(this) ? this : undefined));
     queue.set(lastId, ctx);
@@ -131,7 +131,7 @@ export function initRemotePort(evt) {
   const {lock = location.pathname, id: once} = evt.data || {};
   const exec = this;
   const port = evt.ports[0];
-  process.env.DEBUGLOG(location.pathname, 'initRemotePort', evt);
+  process.env.DEBUGWARN(location.pathname, 'initRemotePort', evt);
   if (!lockingSelf && lock && !once) {
     lockingSelf = true;
     navigator.locks.request(lock, () => new Promise(NOP));

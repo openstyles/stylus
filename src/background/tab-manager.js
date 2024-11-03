@@ -4,14 +4,11 @@ import {bgReady} from './common';
 import {onUrlChange} from './navigation-manager';
 import * as stateDb from './state-db';
 
-const listeners = new Set();
+export const onUrl = new Set();
+export const onUnload = new Set();
 /** @typedef {{ url:string, styleIds: {[frameId:string]: number[]} }} StyleIdsFrameMap */
 /** @type {Map<number,{ url:string, styleIds: StyleIdsFrameMap }>} */
 const cache = new Map();
-
-export const onOff = (fn, state = true) => {
-  listeners[state ? 'add' : 'delete'](fn);
-};
 
 export const get = (tabId, ...keyPath) => {
   let res = cache.get(tabId);
@@ -58,21 +55,14 @@ export const remove = tabId => {
 };
 
 bgReady.then(() => {
-  onUrlChange(({tabId, frameId, url}) => {
+  onUrlChange.add(({tabId, frameId, url}) => {
     if (frameId) return;
     let obj, oldUrl;
     if ((obj = cache.get(tabId))) oldUrl = obj.url;
     else cache.set(tabId, obj = {});
     obj.url = url;
     stateDb.set(tabId, obj);
-    if (!supported(url)) return;
-    for (const fn of listeners) {
-      try {
-        fn({tabId, url, oldUrl});
-      } catch (err) {
-        console.error(err);
-      }
-    }
+    for (const fn of onUrl) fn(tabId, url, oldUrl);
   });
 });
 
@@ -92,7 +82,18 @@ stateDb.ready?.then(([dbData, tabs]) => {
   }
 });
 
-if (!process.env.MV3) { // we don't want these events to start the SW
+chrome.runtime.onConnect.addListener(port => {
+  if (port.name !== 'unload') return;
+  process.env.DEBUGLOG('Unload', port.sender);
+  const {sender} = port;
+  const tabId = sender.tab.id;
+  const frameId = sender.frameId;
+  for (const fn of onUnload) fn(tabId, frameId, sender);
+  if (!frameId) remove(tabId);
+});
+
+if (!process.env.MV3) {
+  // we don't want these events to start the SW
   toggleListener(chrome.tabs.onRemoved, true, remove);
   toggleListener(chrome.tabs.onReplaced, true, (added, removed) => remove(removed));
 }

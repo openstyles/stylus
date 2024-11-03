@@ -1,11 +1,9 @@
-import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {CHROME, FIREFOX, MOBILE, VIVALDI} from '/js/ua';
 import {debounce} from '/js/util';
 import {ignoreChromeError, MF_ICON_EXT, MF_ICON_PATH} from '/js/util-webext';
 import * as colorScheme from './color-scheme';
 import {bgReady} from './common';
-import {WEB_NAV_FILTER_STYLABLE} from './navigation-manager';
 import {removePreloadedStyles} from './style-via-webrequest';
 import * as tabMan from './tab-manager';
 
@@ -18,6 +16,33 @@ const badgeOvr = {color: '', text: ''};
 const FIREFOX_ANDROID = FIREFOX && MOBILE;
 // https://github.com/openstyles/stylus/issues/335
 let hasCanvas = FIREFOX_ANDROID ? false : null;
+
+colorScheme.onChange(() => {
+  if (prefs.get('iconset') === -1) {
+    debounce(refreshGlobalIcon);
+  }
+}, !process.env.MV3);
+
+bgReady.then(() => {
+  prefs.subscribe([
+    'disableAll',
+    'badgeDisabled',
+    'badgeNormal',
+  ], () => debounce(refreshIconBadgeColor), true);
+  prefs.subscribe([
+    'show-badge',
+  ], () => debounce(refreshAllIconsBadgeText), true);
+  prefs.subscribe([
+    'disableAll',
+    'iconset',
+  ], () => debounce(refreshAllIcons), true);
+});
+
+tabMan.onUnload.add((tabId, frameId, port) => {
+  if (frameId && tabMan.getStyleIds(tabId)) {
+    updateIconBadge.call(port, [], {lazyBadge: true});
+  }
+});
 
 /**
  * @param {(number|string)[]} styleIds
@@ -38,37 +63,6 @@ export function updateIconBadge(styleIds, {lazyBadge, iid} = {}) {
   removePreloadedStyles(null, tabId + ':' + frameId);
 }
 
-chrome.webNavigation.onCommitted.addListener(({tabId, frameId}) => {
-  const ids = tabMan.getStyleIds(tabId);
-  if (!ids) return;
-  if (frameId) delete ids[frameId];
-  else for (const id in ids) delete ids[id];
-}, WEB_NAV_FILTER_STYLABLE);
-chrome.runtime.onConnect.addListener(port => {
-  if (port.name === 'iframe') {
-    port.onDisconnect.addListener(onPortDisconnected);
-  }
-});
-colorScheme.onChange(() => {
-  if (prefs.get('iconset') === -1) {
-    debounce(refreshGlobalIcon);
-  }
-}, !process.env.MV3);
-bgReady.then(() => {
-  prefs.subscribe([
-    'disableAll',
-    'badgeDisabled',
-    'badgeNormal',
-  ], () => debounce(refreshIconBadgeColor), true);
-  prefs.subscribe([
-    'show-badge',
-  ], () => debounce(refreshAllIconsBadgeText), true);
-  prefs.subscribe([
-    'disableAll',
-    'iconset',
-  ], () => debounce(refreshAllIcons), true);
-});
-
   /** Calling with no params clears the override */
 export function overrideBadge({text = '', color = '', title = ''} = {}) {
   if (badgeOvr.text === text) {
@@ -88,13 +82,6 @@ export function overrideBadge({text = '', color = '', title = ''} = {}) {
   safeCall('setTitle', {
     title: title && chrome.i18n.getMessage(title) || title || '',
   });
-}
-
-function onPortDisconnected({sender}) {
-  ignoreChromeError();
-  if (tabMan.getStyleIds(sender.tab.id)) {
-    API.updateIconBadge.call({sender}, [], {lazyBadge: true});
-  }
 }
 
 function refreshIconBadgeText(tabId) {

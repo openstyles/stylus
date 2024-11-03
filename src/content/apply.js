@@ -50,8 +50,6 @@ let matchUrl = isFrameNoUrl
   : location.href;
 let isOrphaned, orphanCleanup;
 let offscreen;
-/** @type chrome.runtime.Port */
-let port;
 let lazyBadge = isFrame;
 /** @type IntersectionObserver */
 let xo;
@@ -77,6 +75,7 @@ init();
 msg.onTab(applyOnMessage);
 addEventListener('pageshow', onBFCache);
 addEventListener('pagehide', onBFCache);
+if (process.env.MV3) addEventListener('beforeunload', onBeforeUnload);
 if (!process.env.ENTRY) {
   dispatchEvent(new CustomEvent(ownId, {detail: orphanCleanup = Math.random()}));
   addEventListener(ownId, orphanCheck, true);
@@ -221,15 +220,7 @@ function updateExposeIframes() {
 
 function updateCount() {
   if (TDM < 0) return;
-  if (isFrame) {
-    if (!port && styleInjector.list.length) {
-      port = chrome.runtime.connect({name: 'iframe'});
-    } else if (port && !styleInjector.list.length) {
-      port.disconnect();
-      port = null;
-    }
-    if (lazyBadge && performance.now() > 1000) lazyBadge = false;
-  }
+  if (isFrame && lazyBadge && performance.now() > 1000) lazyBadge = false;
   if (isUnstylable) API.styleViaAPI({method: 'updateCount'});
   else API.updateIconBadge(styleInjector.list.map(style => style.id), {lazyBadge, iid: instanceId});
 }
@@ -256,6 +247,10 @@ function onBFCache(e) {
   }
 }
 
+function onBeforeUnload(e) {
+  if (e.isTrusted) chrome.runtime.connect({name: 'unload'});
+}
+
 function onReified(e) {
   if (e.isTrusted) {
     TDM = window.TDM = 2;
@@ -273,6 +268,7 @@ function orphanCheck(evt) {
   removeEventListener(ownId, orphanCheck, true);
   removeEventListener('pageshow', onBFCache);
   removeEventListener('pagehide', onBFCache);
+  if (process.env.MV3) removeEventListener('beforeunload', onBeforeUnload);
   if (mqDark) mqDark.onchange = null;
   if (offscreen) for (const fn of offscreen) fn();
   if (TDM < 0) document.onprerenderingchange = null;

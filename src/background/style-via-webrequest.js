@@ -1,11 +1,13 @@
-import {kAppJson, kPopup, kResolve} from '/js/consts';
+import {kAppJson, kMainFrame, kPopup, kResolve} from '/js/consts';
 import {updateDNR} from '/js/dnr';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {CHROME, FIREFOX} from '/js/ua';
 import {actionPopupUrl, ownRoot} from '/js/urls';
+import {deepEqual} from '/js/util';
 import {ignoreChromeError, toggleListener} from '/js/util-webext';
 import {bgReady, safeTimeout} from './common';
+import {webNavigation} from './navigation-manager';
 import makePopupData from './popup-data';
 import * as stateDb from './state-db';
 import {getSectionsByUrl} from './style-manager';
@@ -14,14 +16,14 @@ import * as tabMan from './tab-manager';
 const idCSP = 'patchCsp';
 const idOFF = 'disableAll';
 const idXHR = 'styleViaXhr';
-const REVOKE_TIMEOUT = 60e3;
+const REVOKE_TIMEOUT = 10e3;
 const ownId = chrome.runtime.id;
 const kSetCookie = 'set-cookie'; // must be lowercase
-const kMainFrame = 'main_frame';
 const kSubFrame = 'sub_frame';
 const rxHOST = /^('non(e|ce-.+?)'|(https?:\/\/)?[^']+?[^:'])$/; // strips CSP sources covered by *
 const rxNONCE = FIREFOX && /(?:^|[;,])\s*style-src\s+[^;,]*?'nonce-([-+/=\w]+)'/;
 const BLOB_URL_PREFIX = 'blob:' + ownRoot;
+const WEBNAV_FILTER = {url: [{urlPrefix: 'http'}]};
 const WR_FILTER = {
   urls: ['*://*/*'],
   types: [kMainFrame, kSubFrame],
@@ -31,7 +33,7 @@ const makeXhrCookie = blobId => `${ownId}=${blobId}; SameSite=Lax`;
 const req2key = req => req.tabId + ':' + req.frameId;
 const revokeObjectURL = blobId => blobId &&
   (process.env.MV3 ? global.offscreen : URL).revokeObjectURL(BLOB_URL_PREFIX + blobId);
-const stylesToPass = {};
+const toSend = {};
 const INJECTED_FUNC = function (data) {
   if (this['apply.js'] !== 1) { // storing data only if apply.js hasn't run yet
     this[Symbol.for('styles')] = data;
@@ -57,9 +59,10 @@ stateDb.ready?.then(([stateDbData, /*tabs*/, tabsObj]) => {
     if (id < 0) {
       id = -id;
       const {t: tabId, f: frameId, b: blobId} = /** @type {StyleBlobDNRRule} */data;
-      if (tabId in tabsObj) {
+      const tab = tabsObj[tabId];
+      if (tab) {
         dnrRules[id] = data;
-        stylesToPass[tabId + ':' + frameId] = {ruleId: id, blobId};
+        toSend[tabId + ':' + frameId] = {ruleId: id, blobId, url: tab.url};
       } else {
         revokeObjectURL(blobId);
         removeRuleIds.push(id);
@@ -73,6 +76,10 @@ prefs.ready.then(() => {
   toggle(process.env.MV3); // in MV3 this will unregister unused listeners
   prefs.subscribe([idOFF, idCSP, idXHR], toggle);
 });
+tabMan.onUnload.add((tabId, frameId) => {
+  removePreloadedStyles(null, tabId + ':' + frameId);
+});
+webNavigation.onErrorOccurred.addListener(removePreloadedStyles, WEBNAV_FILTER);
 if (CHROME && !process.env.MV3) {
   chrome.webRequest.onBeforeRequest.addListener(openNamedStyle, {
     urls: [ownRoot + '*.user.css'],
@@ -113,7 +120,7 @@ function toggle(prefKey) {
     toggleListener(chrome.webRequest.onBeforeRequest, mv3init || !off, prepareStyles, WR_FILTER);
   }
   if (mv3init || CHROME && (v = !off && !xhr) !== (!curOFF && !curXHR)) {
-    toggleListener(chrome.webNavigation.onCommitted, v, injectData, {url: [{urlPrefix: 'http'}]});
+    toggleListener(webNavigation.onCommitted, v, injectData, WEBNAV_FILTER);
   }
   curCSP = csp;
   curOFF = off;
@@ -125,21 +132,33 @@ async function prepareStyles(req) {
   if (bgReady[kResolve]) await bgReady;
   const {url} = req;
   const key = req2key(req);
-  const oldData = stylesToPass[key];
-  const data = oldData || (stylesToPass[key] = {});
+  const oldData = toSend[key];
+  const data = oldData || (toSend[key] = {});
   const thisArg = {sender: (req.tab = {url}, req)};
   const payload = data.payload = getSectionsByUrl.call(thisArg, url, null, true);
   const willStyle = payload.sections.length;
+  data.url = url;
   if (oldData) removePreloadedStyles(null, key, data, willStyle);
   if (process.env.MV3 && curXHR && willStyle) prepareStylesMV3(req, data, key, payload);
-  safeTimeout(removePreloadedStyles, REVOKE_TIMEOUT, null, key, data);
 }
 
-async function prepareStylesMV3(req, data, key, payload) {
-  const blobUrl = await global.offscreen.createObjectURL(makeBlob(payload));
-  const blobId = data.blobId = blobUrl.slice(BLOB_URL_PREFIX.length);
+async function prepareStylesMV3({tabId, frameId, url}, data, key, payload) {
+  let blobId;
+  for (const k in toSend) {
+    const val = toSend[k];
+    if (val.url === url && deepEqual(payload, val.payload)) {
+      setTimeout(removeTemporaryTab, REVOKE_TIMEOUT, tabId);
+      payload = val.payload;
+      blobId = val.blobId;
+      break;
+    }
+  }
+  if (!blobId) {
+    blobId = (await global.offscreen.createObjectURL(makeBlob(payload)))
+      .slice(BLOB_URL_PREFIX.length);
+  }
+  data.blobId = blobId;
   const cookie = makeXhrCookie(blobId);
-  const {tabId, frameId} = req;
   let {ruleId = 0} = data;
   if (!ruleId) {
     while (++ruleId in dnrRules) {/**/}
@@ -163,7 +182,7 @@ async function prepareStylesMV3(req, data, key, payload) {
 }
 
 function injectData(req) {
-  const data = stylesToPass[req2key(req)];
+  const data = toSend[req2key(req)];
   if (data && !data.injected) {
     data.injected = true;
     if (process.env.MV3) {
@@ -187,7 +206,7 @@ function injectData(req) {
 /** @param {chrome.webRequest.WebResponseHeadersDetails} req */
 function modifyHeaders(req) {
   const key = req2key(req);
-  const data = stylesToPass[key]; if (!data) return;
+  const data = toSend[key]; if (!data) return;
   const {responseHeaders} = req;
   const {payload} = data;
   const secs = payload.sections;
@@ -247,19 +266,36 @@ function patchCspSrc(src, name, ...values) {
   }
 }
 
-export function removePreloadedStyles(req, key = req2key(req), data = stylesToPass[key], keep) {
+export function removePreloadedStyles(req, key = req2key(req), data = toSend[key], keep) {
   if (!data) return;
-  if (!keep) delete stylesToPass[key];
+  if (!keep) delete toSend[key];
   let v = data.blobId;
   if (v) {
     if (req) safeTimeout(revokeObjectURL, REVOKE_TIMEOUT, v);
     else revokeObjectURL(v);
     data.blobId = '';
   }
+  if ((v = data.timer)) {
+    data.timer = clearTimeout(v);
+  }
   if (process.env.MV3 && !keep && (v = data.ruleId) in dnrRules) {
     delete dnrRules[v];
     updateDNR(undefined, [v], true);
     stateDb.remove(-v);
+  }
+}
+
+async function removeTemporaryTab(tabId) {
+  try {
+    await chrome.tabs.get(tabId);
+  } catch {
+    tabMan.remove(tabId);
+    tabId += ':';
+    for (const key in toSend) {
+      if (key.startsWith(tabId)) {
+        removePreloadedStyles(null, key);
+      }
+    }
   }
 }
 
