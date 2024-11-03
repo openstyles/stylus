@@ -14,7 +14,7 @@ import * as tabMan from './tab-manager';
 const idCSP = 'patchCsp';
 const idOFF = 'disableAll';
 const idXHR = 'styleViaXhr';
-const kState = 'xhrBlob';
+const REVOKE_TIMEOUT = 60e3;
 const ownId = chrome.runtime.id;
 const kSetCookie = 'set-cookie'; // must be lowercase
 const kMainFrame = 'main_frame';
@@ -41,11 +41,11 @@ const INJECTED_CODE = `${INJECTED_FUNC}`;
 export const webRequestBlocking = browser.permissions.contains({
   permissions: ['webRequestBlocking'],
 });
+/** @type {Record<string, StyleBlobDNRRule>} */
+const dnrRules = {};
 let curOFF = false;
 let curCSP = false;
 let curXHR = false;
-/** @type {Record<string, string[]>} value is [key, blobId]*/
-let dnrRules;
 
 if (process.env.MV3) {
   toggle(); // register listeners synchronously so they wake up the SW next time it dies
@@ -53,21 +53,21 @@ if (process.env.MV3) {
 }
 stateDb.ready?.then(([stateDbData, /*tabs*/, tabsObj]) => {
   const removeRuleIds = [];
-  for (const id in dnrRules = stateDbData.get(kState) || {}) {
-    const data = dnrRules[id];
-    const [key, blobId] = data;
-    if (key.split(':', 1)[0] in tabsObj) {
-      stylesToPass[key] = {ruleId: +id, blobId};
-    } else {
-      delete dnrRules[id];
-      revokeObjectURL(blobId);
-      if (+id) removeRuleIds.push(+id);
+  stateDbData.forEach((data, id) => {
+    if (id < 0) {
+      id = -id;
+      const {t: tabId, f: frameId, b: blobId} = /** @type {StyleBlobDNRRule} */data;
+      if (tabId in tabsObj) {
+        dnrRules[id] = data;
+        stylesToPass[tabId + ':' + frameId] = {ruleId: id, blobId};
+      } else {
+        revokeObjectURL(blobId);
+        removeRuleIds.push(id);
+        stateDb.remove(-id);
+      }
     }
-  }
-  if (removeRuleIds.length) {
-    stateDb.set(kState, dnrRules);
-    updateDNR(null, removeRuleIds, true);
-  }
+  });
+  if (removeRuleIds.length) updateDNR(undefined, removeRuleIds, true);
 });
 prefs.ready.then(() => {
   toggle(process.env.MV3); // in MV3 this will unregister unused listeners
@@ -115,11 +115,6 @@ function toggle(prefKey) {
   if (mv3init || CHROME && (v = !off && !xhr) !== (!curOFF && !curXHR)) {
     toggleListener(chrome.webNavigation.onCommitted, v, injectData, {url: [{urlPrefix: 'http'}]});
   }
-  // register asynchronously so it doesn't wake up the SW
-  if (!mv3init && (v = !off && xhr) !== (curOFF && curXHR)) {
-    toggleListener(chrome.webRequest.onCompleted, v, removePreloadedStyles, WR_FILTER);
-    toggleListener(chrome.webRequest.onErrorOccurred, v, removePreloadedStyles, WR_FILTER);
-  }
   curCSP = csp;
   curOFF = off;
   curXHR = xhr;
@@ -130,31 +125,33 @@ async function prepareStyles(req) {
   if (bgReady[kResolve]) await bgReady;
   const {url} = req;
   const key = req2key(req);
-  const data = stylesToPass[key] ??= {};
+  const oldData = stylesToPass[key];
+  const data = oldData || (stylesToPass[key] = {});
   const thisArg = {sender: (req.tab = {url}, req)};
   const payload = data.payload = getSectionsByUrl.call(thisArg, url, null, true);
-  if (process.env.MV3 && curXHR) prepareStylesMV3(req, data, key, payload);
+  const willStyle = payload.sections.length;
+  if (oldData) removePreloadedStyles(null, key, data, willStyle);
+  if (process.env.MV3 && curXHR && willStyle) prepareStylesMV3(req, data, key, payload);
+  safeTimeout(removePreloadedStyles, REVOKE_TIMEOUT, null, key, data);
 }
 
 async function prepareStylesMV3(req, data, key, payload) {
-  const willStyle = payload.sections.length;
-  let {ruleId = 0} = data;
-  if (ruleId) removePreloadedStyles(req, key, data, willStyle);
-  if (!willStyle) return;
   const blobUrl = await global.offscreen.createObjectURL(makeBlob(payload));
   const blobId = data.blobId = blobUrl.slice(BLOB_URL_PREFIX.length);
   const cookie = makeXhrCookie(blobId);
+  const {tabId, frameId} = req;
+  let {ruleId = 0} = data;
   if (!ruleId) {
     while (++ruleId in dnrRules) {/**/}
     data.ruleId = ruleId;
   }
-  dnrRules[ruleId] = [key, blobId];
-  stateDb.set(kState, dnrRules);
+  /** @namespace StyleBlobDNRRule */
+  stateDb.set(-ruleId, dnrRules[ruleId] = {t: tabId, f: frameId, b: blobId});
   updateDNR([{
     id: ruleId,
     condition: {
-      tabIds: [req.tabId],
-      resourceTypes: [req.frameId ? kSubFrame : kMainFrame],
+      tabIds: [tabId],
+      resourceTypes: [frameId ? kSubFrame : kMainFrame],
       // Forcing the rule to be evaluated later, when response headers are received.
       excludedResponseHeaders: [{header: kSetCookie, values: [cookie]}],
     },
@@ -253,11 +250,16 @@ function patchCspSrc(src, name, ...values) {
 export function removePreloadedStyles(req, key = req2key(req), data = stylesToPass[key], keep) {
   if (!data) return;
   if (!keep) delete stylesToPass[key];
-  const blobId = data.blobId;
-  if (blobId) {
-    if (req) safeTimeout(revokeObjectURL, 10e3, blobId);
-    else revokeObjectURL(blobId);
+  let v = data.blobId;
+  if (v) {
+    if (req) safeTimeout(revokeObjectURL, REVOKE_TIMEOUT, v);
+    else revokeObjectURL(v);
     data.blobId = '';
+  }
+  if (process.env.MV3 && !keep && (v = data.ruleId) in dnrRules) {
+    delete dnrRules[v];
+    updateDNR(undefined, [v], true);
+    stateDb.remove(-v);
   }
 }
 

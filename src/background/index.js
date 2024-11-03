@@ -1,7 +1,7 @@
 import './intro';
 import '/js/browser';
 import {kResolve} from '/js/consts';
-import {updateDNR} from '/js/dnr';
+import {DNR, updateDNR} from '/js/dnr';
 import {_execute, API, onMessage, wrapError} from '/js/msg';
 import {createPortProxy} from '/js/port';
 import * as prefs from '/js/prefs';
@@ -19,6 +19,7 @@ import download from './download';
 import {updateIconBadge} from './icon-manager';
 import prefsApi from './prefs-api';
 import setClientData from './set-client-data';
+import * as stateDb from './state-db';
 import * as styleMan from './style-manager';
 import initStyleViaApi from './style-via-api';
 import './style-via-webrequest';
@@ -121,10 +122,11 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
     API.prefsDb.delete('badFavs'); // old Stylus marked all icons as bad when network was offline
   }
   if (process.env.MV3) {
-    chrome.declarativeNetRequest.getDynamicRules({}).then(rules =>
-      updateDNR(undefined, rules.map(r => r.id)));
-    chrome.declarativeNetRequest.getSessionRules({}).then(rules =>
-      updateDNR(undefined, rules.map(r => r.id), true));
+    stateDb.idb.clear();
+    for (const isSession of [false, true]) {
+      (isSession ? DNR.getDynamicRules() : DNR.getSessionRules()).then(rules =>
+        updateDNR(undefined, rules.map(r => r.id), isSession));
+    }
   }
 });
 

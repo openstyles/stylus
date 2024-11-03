@@ -37,22 +37,24 @@ export const set = (tabId, ...args) => {
   const value = args.pop();
   const lastKey = args.pop();
   const del = value === undefined;
-  let meta = cache.get(tabId);
-  if (!meta) {
+  let obj0;
+  let obj = cache.get(tabId);
+  if (!obj) {
     if (del) return;
-    cache.set(tabId, meta = {});
+    cache.set(tabId, obj = {});
   }
-  stateDb.set(tabId, meta);
-  for (let i = 0, key; meta && i < args.length; i++) {
-    meta = meta[key = args[i]] || !del && (meta[key] = {});
+  obj0 = obj;
+  for (let i = 0, key; obj && i < args.length; i++) {
+    obj = obj[key = args[i]] || !del && (obj[key] = {});
   }
-  if (!del) meta[lastKey] = value;
-  else if (meta) delete meta[lastKey];
+  if (!del) obj[lastKey] = value;
+  else if (obj) delete obj[lastKey];
+  stateDb.set(tabId, obj0);
 };
 
 export const remove = tabId => {
   cache.delete(tabId);
-  stateDb.del(tabId);
+  stateDb.remove(tabId);
 };
 
 bgReady.then(() => {
@@ -62,6 +64,7 @@ bgReady.then(() => {
     if ((obj = cache.get(tabId))) oldUrl = obj.url;
     else cache.set(tabId, obj = {});
     obj.url = url;
+    stateDb.set(tabId, obj);
     if (!supported(url)) return;
     for (const fn of listeners) {
       try {
@@ -74,17 +77,18 @@ bgReady.then(() => {
 });
 
 stateDb.ready?.then(([dbData, tabs]) => {
-  const tabIds = tabs.length !== dbData.size && new Set();
   for (const {id, url} of tabs) {
-    const data = dbData.get(id) || {};
-    cache.set(id, data);
-    if (data.url !== url) stateDb.set(id, data).url = url;
-    if (tabIds) tabIds.add(id);
-  }
-  if (tabIds) {
-    for (const key of dbData.keys()) {
-      if (!tabIds.has(key)) stateDb.del(key);
+    if (supported(url)) {
+      let data = dbData.get(id);
+      if (!data ? data = {} : data.url !== url) {
+        data.url = url;
+        stateDb.set(id, data);
+      }
+      cache.set(id, data);
     }
+  }
+  for (const key of dbData.keys()) {
+    if (+key >= 0 && !cache.has(key)) stateDb.remove(key);
   }
 });
 

@@ -77,7 +77,7 @@ const VARS = {
 };
 const RAW_VARS = {
   API: 'global.API', // hiding the global from IDE
-  DEBUGLOG: process.env.DEBUG ? 'console.log' : 'null?.',
+  DEBUGLOG: process.env.DEBUG ? 'console.warn' : 'null?.',
   KEEP_ALIVE: '1&&',
 };
 const BANNER = '{const global = this, window = global;';

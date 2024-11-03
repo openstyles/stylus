@@ -130,13 +130,12 @@ function getStylesViaXhr() {
     const xhr = new XMLHttpRequest();
     xhr.open('GET', url, false); // synchronous
     xhr.send();
-    URL.revokeObjectURL(url);
     return JSON.parse(xhr.response);
   } catch {}
 }
 
 function applyOnMessage(req) {
-  if (isUnstylable && /^(style|updateCount|urlChanged)/.test(req.method)) {
+  if (isUnstylable && /^(style|urlChanged)/.test(req.method)) {
     API.styleViaAPI(req);
     return;
   }
@@ -173,10 +172,6 @@ function applyOnMessage(req) {
         matchUrl = req.url;
         if (own.sections) applyStyles(own.cfg.off && {});
       }
-      break;
-
-    case 'updateCount':
-      updateCount();
       break;
 
     case 'injectorConfig':
