@@ -262,7 +262,9 @@ function makeContentScript(name) {
   return mergeCfg(OUTPUT_MODULE, mergeCfg({
     entry: '/content/' + name,
     output: {path: DST + JS},
-    plugins: addWrapper(`if (window["${name}"]!==1) ${BANNER} global["${name}"] = 1;`),
+    plugins: addWrapper(
+      `window["${name}"]!==1 && (() => ${BANNER} global["${name}"] = 1;`,
+      '})();'),
   }));
 }
 
@@ -292,7 +294,7 @@ module.exports = [
             enforce: true,
           },
           ...Object.fromEntries([
-            [2, 'common-ui', `^${SRC_ESC}(content/|js/(dom|localization|themer))`],
+            [2, 'common-ui', `^${SRC_ESC}(content/|js/(dom|header|localization|themer))`],
             [1, 'common', `^${SRC_ESC}js/|/lz-string(-unsafe)?/`],
           ].map(([priority, name, test]) => [name, {
             test: new RegExp(String.raw`(${test.replaceAll('/', SEP_ESC)})[^./\\]*\.js$`),

@@ -4,7 +4,7 @@ import {important, messageBox, setupLivePrefs} from '/js/dom-util';
 import {breakWord, t} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
-import {clamp, debounce, deepCopy} from '/js/util';
+import {clamp, debounce, deepCopy, sleep} from '/js/util';
 import {MOBILE} from '/js/ua';
 import {installUsercss} from '/js/urls';
 import './config-dialog.css';
@@ -125,7 +125,7 @@ export default async function configDialog(style) {
 
   async function save({anyChangeIsDirty = false} = {}) {
     for (let delay = 1; saving && delay < 1000; delay *= 2) {
-      await new Promise(resolve => setTimeout(resolve, delay));
+      await sleep(delay);
     }
     if (saving) {
       throw 'Could not save: still saving previous results...';

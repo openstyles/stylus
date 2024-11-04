@@ -3,6 +3,7 @@ import {$, $$} from '/js/dom';
 import {setInputValue, setupLivePrefs} from '/js/dom-util';
 import {t} from '/js/localization';
 import * as prefs from '/js/prefs';
+import {sleep} from '/js/util';
 import {initBeautifyButton} from './beautify';
 import editor from './editor';
 
@@ -59,7 +60,7 @@ async function peekDetails(evt) {
   evt.preventDefault();
   this.open = true;
   while (this.matches(':hover, :active')) {
-    await new Promise(cb => setTimeout(cb, 500));
+    await sleep(500);
     await new Promise(cb => this.on('mouseleave', cb, {once: true}));
   }
   this.open = false;

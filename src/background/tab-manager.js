@@ -1,4 +1,5 @@
 import {supported} from '/js/urls';
+import {sleep} from '/js/util';
 import {toggleListener} from '/js/util-webext';
 import {bgReady} from './common';
 import {onUrlChange} from './navigation-manager';
@@ -82,17 +83,28 @@ stateDb.ready?.then(([dbData, tabs]) => {
 });
 
 chrome.runtime.onConnect.addListener(port => {
-  if (port.name !== 'unload') return;
-  process.env.DEBUGLOG('Unload', port.sender);
-  const {sender} = port;
-  const tabId = sender.tab.id;
-  const frameId = sender.frameId;
-  for (const fn of onUnload) fn(tabId, frameId, sender);
-  if (!frameId) remove(tabId);
+  if (port.name === 'apply') {
+    port.onDisconnect.addListener(onPortDisconnected);
+  }
 });
 
 if (!process.env.MV3) {
   // we don't want these events to start the SW
   toggleListener(chrome.tabs.onRemoved, true, remove);
   toggleListener(chrome.tabs.onReplaced, true, (added, removed) => remove(removed));
+}
+
+async function onPortDisconnected(port) {
+  const {sender} = port;
+  const tabId = sender.tab.id;
+  const frameId = sender.frameId;
+  for (const fn of onUnload) fn(tabId, frameId, port);
+  if (process.env.MV3 && !frameId) {
+    try {
+      await sleep(1000);
+      if (cache.has(tabId)) await chrome.tabs.get(tabId);
+    } catch {
+      remove(tabId);
+    }
+  }
 }

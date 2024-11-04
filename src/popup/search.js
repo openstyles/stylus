@@ -5,8 +5,9 @@ import {breakWord, formatDate, t, template} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import * as URLS from '/js/urls';
-import {clipString, debounce, isEmptyObj, stringAsRegExp, stringAsRegExpStr, tryRegExp, tryURL}
-  from '/js/util';
+import {
+  clipString, debounce, isEmptyObj, sleep, stringAsRegExp, stringAsRegExpStr, tryRegExp, tryURL,
+} from '/js/util';
 import {$entry, styleFinder, tabURL} from '.';
 import * as Events from './events';
 import './search.css';
@@ -587,7 +588,7 @@ async function fetchIndexJob([url, prefix, transform]) {
     } catch (e) {
       // CDN weirdly fails the first time, so we'll retry
       if (!triesLeft) error(e.message);
-      else await new Promise(cb => setTimeout(cb, 250));
+      else await sleep(250);
     }
   }
   el = el.style.opacity = 0;

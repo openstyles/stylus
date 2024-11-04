@@ -1,16 +1,17 @@
-const isExt = !!chrome.tabs;
 const CLASS = 'stylus';
 const PREFIX = CLASS + '-';
 const MEDIA = 'screen, ' + PREFIX;
 const PATCH_ID = 'transition-patch';
 const SUPERSEDED = '-superseded-by-Stylus';
 const kAss = 'adoptedStyleSheets';
-const wrappedDoc = document.wrappedJSObject || document;
-const FF = wrappedDoc !== document;
+const FF = process.env.BUILD !== 'chrome' && global !== window;
+const wrappedDoc = FF && process.env.BUILD !== 'chrome'
+  && document.wrappedJSObject
+  || document;
 // styles are out of order if any of these elements is injected between them
 // except `style` on our own page as it contains overrides
-const ORDERED_TAGS = new Set(['head', 'body', 'frameset', !isExt && 'style', 'link']);
-const docRewriteObserver = RewriteObserver(updateRoot);
+const ORDERED_TAGS = new Set(['head', 'body', 'frameset', !process.env.ENTRY && 'style', 'link']);
+const docRewriteObserver = !process.env.ENTRY && RewriteObserver(updateRoot);
 const docRootObserver = RootObserver(restoreOrder);
 const toSafeChar = c => String.fromCharCode(0xFF00 + c.charCodeAt(0) - 0x20);
 /** @type {InjectedStyle[]} */
@@ -117,7 +118,9 @@ function removeAllElements() {
 
 function replaceAss(readd) {
   const elems = list.map(s => s.el);
-  const res = FF ? cloneInto([], wrappedDoc) : []; /* global cloneInto */
+  const res = FF && process.env.BUILD !== 'chrome'
+    ? cloneInto([], wrappedDoc) /* global cloneInto */
+    : [];
   for (let arr = assV2 || wrappedDoc[kAss], i = 0, el; i < arr.length && (el = arr[i]); i++) {
     if (assIndexOf(elems, el) < 0) res.push(el);
   }
@@ -196,10 +199,10 @@ function createStyle(style) {
   if (!creationDoc && (el = initCreationDoc(style))) {
     return el;
   }
-  if (root instanceof SVGSVGElement) {
+  if (!process.env.ENTRY && root instanceof SVGSVGElement) {
     // SVG document style
     el = createElementNS('http://www.w3.org/2000/svg', 'style');
-  } else if (document instanceof XMLDocument) {
+  } else if (!process.env.ENTRY && document instanceof XMLDocument) {
     // XML document style
     el = createElementNS('http://www.w3.org/1999/xhtml', 'style');
   } else {
@@ -253,7 +256,7 @@ function setTextAndName(el, {id, code, name}) {
 function toggleObservers(shouldStart) {
   if (ass && shouldStart) return;
   const onOff = shouldStart && isEnabled ? 'start' : 'stop';
-  docRewriteObserver[onOff]();
+  if (!process.env.ENTRY) docRewriteObserver[onOff]();
   docRootObserver[onOff]();
 }
 
@@ -265,7 +268,7 @@ function emitUpdate() {
 function initAss() {
   if (assIndexOf) return;
   if (Object.isExtensible(ass)) assV2 = ass;
-  assIndexOf = !FF
+  assIndexOf = !FF || process.env.BUILD === 'chrome'
     ? Object.call.bind([].indexOf)
     : (arr, {media: {mediaText: id}}) => {
       for (let i = 0; i < arr.length; i++) {
@@ -283,11 +286,15 @@ and since userAgent.navigator can be spoofed via about:config or devtools,
 we're checking for getPreventDefault that was removed in FF59
 */
 function initCreationDoc(style) {
-  creationDoc = Event.prototype.getPreventDefault ? document : wrappedDoc;
+  creationDoc = FF && process.env.BUILD !== 'chrome' && Event.prototype.getPreventDefault
+    ? document
+    : wrappedDoc;
   for (let retry = 0, el, ok; !ok && retry < 2; retry++) {
     createElement = creationDoc.createElement.bind(creationDoc);
     createElementNS = creationDoc.createElementNS.bind(creationDoc);
-    if (!FF) return;
+    if (!FF || process.env.BUILD === 'chrome') {
+      return;
+    }
     if (!retry || ffCsp) {
       try {
         el = addElement(createStyle({code: ['a:not(a){}']}));
@@ -323,7 +330,8 @@ function restoreOrder(mutations) {
     if (!assV2) ass = wrappedDoc[kAss];
     for (let len = list.length, base = ass.length - len, i = 0; i < len; i++) {
       if (base < 0 || (
-        !FF ? ass[base + i] !== list[i].el
+        !FF || process.env.BUILD === 'chrome'
+          ? ass[base + i] !== list[i].el
           : ass[base + i].media.mediaText !== list[i].el.media.mediaText
       )) {
         bad = true;
@@ -364,7 +372,7 @@ export function sort() {
 export function updateConfig(cfg) {
   exposeStyleName = cfg.name;
   nonce = cfg.nonce || nonce;
-  ffCsp = !nonce && !isExt && FF && isSecureContext;
+  ffCsp = !nonce && !process.env.ENTRY && (FF && process.env.BUILD !== 'chrome') && isSecureContext;
   if (!ass !== !cfg.ass) {
     removeAllElements();
     ass = ass ? null : wrappedDoc[kAss];
@@ -392,7 +400,7 @@ function RewriteObserver(check) {
   return {start, stop};
 
   function start() {
-    if (observing || isExt || ass) return;
+    if (observing || ass) return;
     // detect dynamic iframes rewritten after creation by the embedder i.e. externally
     root = document.documentElement;
     timer = setTimeout(check);
@@ -400,7 +408,7 @@ function RewriteObserver(check) {
     observing = true;
   }
   function stop() {
-    if (!observing || isExt) return;
+    if (!observing) return;
     clearTimeout(timer);
     observer.disconnect();
     observing = false;

@@ -4,6 +4,7 @@ import {setupLivePrefs} from '/js/dom-util';
 import {t, tBody} from '/js/localization';
 import * as prefs from '/js/prefs';
 import {CHROME} from '/js/ua';
+import {sleep} from '/js/util';
 import {readBadFavs, showStyles} from './render';
 import * as router from './router';
 import * as sorter from './sorter';
@@ -31,7 +32,7 @@ tBody();
       $$('input[type=checkbox]').forEach((el, i) => (el.name = `bug${i}`));
     });
   }
-  await new Promise(setTimeout);
+  await sleep();
   import('./lazy-init');
 })();
 

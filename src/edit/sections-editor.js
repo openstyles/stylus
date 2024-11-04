@@ -6,7 +6,7 @@ import {t, template} from '/js/localization';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {styleSectionsEqual, styleToCss} from '/js/sections-util';
-import {clipString, RX_META} from '/js/util';
+import {clipString, RX_META, sleep} from '/js/util';
 import editor from './editor';
 import * as linterMan from './linter';
 import EditorSection from './sections-editor-section';
@@ -520,7 +520,7 @@ export default function SectionsEditor() {
       } else if (now - tPrev > 100) {
         tPrev = 0;
         forceRefresh = false;
-        await new Promise(setTimeout);
+        await sleep();
       }
       if (si) forceRefresh = y < si.scrollY2 && (y += si.cms[i].parentHeight) > si.scrollY;
       insertSectionAfter(src[i], null, forceRefresh, si && si.cms[i]);
