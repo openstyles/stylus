@@ -24,8 +24,12 @@ function anyPathSep(str) {
   return str.replace(/[\\/]/g, /[\\/]/.source);
 }
 
-function escapeRe(str) {
+function escapeForRe(str) {
   return str.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&');
+}
+
+function escapeToRe(str, flags) {
+  return new RegExp(str.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&'), flags);
 }
 
 function getBrowserlist() {
@@ -55,7 +59,8 @@ module.exports = {
   SRC,
   addReport,
   anyPathSep,
-  escapeRe,
+  escapeForRe,
+  escapeToRe,
   getBrowserlist,
   stripSourceMap,
 };

@@ -12,7 +12,7 @@ import {broadcast, pingTab} from './broadcast';
 import './broadcast-injector-config';
 import initBrowserCommandsApi from './browser-cmd-hotkeys';
 import * as colorScheme from './color-scheme';
-import {bgReady, browserCommands, isVivaldi} from './common';
+import {bgReady, isVivaldi} from './common';
 import reinjectContentScripts from './content-scripts';
 import initContextMenus from './context-menus';
 import download from './download';
@@ -96,18 +96,7 @@ Object.assign(API, /** @namespace API */ {
 
 }, process.env.BUILD !== 'chrome' && FIREFOX && initStyleViaApi());
 
-Object.assign(browserCommands, {
-  openManage: () => API.openManage(),
-  openOptions: () => API.openManage({options: true}),
-  reload: () => chrome.runtime.reload(),
-  styleDisableAll(info) {
-    prefs.set('disableAll', info ? info.checked : !prefs.get('disableAll'));
-  },
-});
-
 //#region Events
-
-chrome.commands?.onCommand.addListener(id => browserCommands[id]());
 
 chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   if (process.env.BUILD !== 'firefox' && !FIREFOX) {

@@ -1,39 +1,56 @@
 import '/js/browser';
+import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {CHROME} from '/js/ua';
 import {ownRoot} from '/js/urls';
 import {ignoreChromeError} from '/js/util-webext';
 import {sendTab} from './broadcast';
-import {browserCommands} from './common';
 
-let ITEMS;
+const kDisableAll = 'disableAll';
+const kStyleManager = 'styleManager';
+const kOpenOptions = 'openOptions';
+const kReload = 'reload';
 
-chrome.contextMenus.onClicked.addListener((info, tab) =>
-  ITEMS[info.menuItemId][0](info, tab));
+const openManage = () => API.openManage();
+const openOptions = () => API.openManage({options: true});
+const reload = chrome.runtime.reload;
+const styleDisableAll = info => prefs.set(kDisableAll,
+  info ? info.checked : !prefs.get(kDisableAll));
+
+const COMMANDS = {
+  openManage,
+  [kOpenOptions]: openOptions,
+  [kReload]: reload,
+  styleDisableAll,
+};
+
+/** id is either a prefs id or an i18n key to be used for the title */
+const MENUS = Object.assign({
+  'show-badge': [togglePref, {title: 'menuShowBadge'}],
+  [kDisableAll]: [styleDisableAll, {title: 'disableAllStyles'}],
+  [kStyleManager]: [openManage],
+  [kOpenOptions]: [openOptions],
+  [kReload]: [reload],
+}, CHROME && {
+  'editor.contextDelete': [(info, tab) => {
+    sendTab(tab.id, {method: 'editDeleteText'}, undefined, 'extension');
+  }, {
+    title: 'editDeleteText',
+    type: 'normal',
+    contexts: ['editable'],
+    documentUrlPatterns: [ownRoot + '*'],
+  }],
+});
+
+chrome.commands?.onCommand.addListener(id => COMMANDS[id]());
+chrome.contextMenus.onClicked.addListener((info, tab) => MENUS[info.menuItemId][0](info, tab));
 
 export default function initContextMenus() {
-  /** id is either a prefs id or an i18n key to be used for the title */
-  ITEMS = Object.assign({
-    'show-badge': [togglePref, {title: 'menuShowBadge'}],
-    'disableAll': [browserCommands.styleDisableAll, {title: 'disableAllStyles'}],
-    'styleManager': [browserCommands.openManage],
-    'openOptions': [browserCommands.openOptions],
-    'reload': [browserCommands.reload],
-  }, CHROME && {
-    'editor.contextDelete': [(info, tab) => {
-      sendTab(tab.id, {method: 'editDeleteText'}, undefined, 'extension');
-    }, {
-      title: 'editDeleteText',
-      type: 'normal',
-      contexts: ['editable'],
-      documentUrlPatterns: [ownRoot + '*'],
-    }],
-  });
-  createContextMenus(Object.keys(ITEMS), true);
+  createContextMenus(Object.keys(MENUS), true);
 
   function createContextMenus(ids, isInit) {
     for (const id of ids) {
-      const item = ITEMS[id][1] ??= {};
+      const item = MENUS[id][1] ??= {};
       if (isInit) {
         item.id = id;
         item.contexts ??= [process.env.MV3 ? 'action' : 'browser_action'];
@@ -68,11 +85,6 @@ export default function initContextMenus() {
     createContextMenus([id]);
   }
 
-  /** @param {chrome.contextMenus.OnClickData} info */
-  function togglePref(info) {
-    prefs.set(info.menuItemId, info.checked);
-  }
-
   function togglePresence(id, checked) {
     if (checked) {
       createContextMenus([id]);
@@ -80,4 +92,10 @@ export default function initContextMenus() {
       chrome.contextMenus.remove(id, ignoreChromeError);
     }
   }
+
+}
+
+/** @param {chrome.contextMenus.OnClickData} info */
+function togglePref(info) {
+  prefs.set(info.menuItemId, info.checked);
 }

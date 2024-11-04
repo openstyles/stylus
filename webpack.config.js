@@ -11,7 +11,7 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 const RawEnvPlugin = require('./tools/raw-env-plugin');
 const WebpackPatchBootstrapPlugin = require('./tools/webpack-patch-bootstrap');
-const {anyPathSep, stripSourceMap, MANIFEST, MANIFEST_MV3, ROOT} = require('./tools/util');
+const {escapeForRe, stripSourceMap, MANIFEST, MANIFEST_MV3, ROOT} = require('./tools/util');
 
 const NODE_ENV = process.env.NODE_ENV;
 const [TARGET, ZIP] = NODE_ENV?.split(':') || [''];
@@ -23,6 +23,8 @@ const DST = ROOT + 'dist/';
 const CSS = 'css/';
 const JS = 'js/';
 const SHIM = ROOT + 'tools/shim/';
+const SEP_ESC = escapeForRe(path.sep);
+const SRC_ESC = escapeForRe(SRC.replaceAll('/', path.sep));
 const MV3 = FLAVOR === 'mv3';
 const PAGE_BG = MV3 ? 'background/sw' : 'background';
 const PAGE_OFFSCREEN = 'offscreen';
@@ -137,7 +139,7 @@ const getBaseConfig = () => ({
         type: 'asset/resource',
       }, {
         test: /\.m?js$/,
-        exclude: [CM_PACKAGE_PATH], // speedup for a big ES5 package
+        exclude: [ROOT + 'node_modules/'],
         loader: 'babel-loader',
         options: {root: ROOT},
         resolve: {fullySpecified: false},
@@ -282,18 +284,18 @@ module.exports = [
         chunks: 'all',
         cacheGroups: {
           codemirror: {
-            test: new RegExp(anyPathSep([
-              SRC + 'cm/',
+            test: new RegExp([
+              SRC_ESC + 'cm' + SEP_ESC,
               CM_NATIVE_RE.source,
-            ].join('|'))),
+            ].join('|')),
             name: 'codemirror',
             enforce: true,
           },
           ...Object.fromEntries([
-            [2, 'common-ui', `^${SRC}(content/|js/(dom|localization|themer))`],
-            [1, 'common', `^${SRC}js/|/lz-string(-unsafe)?/`],
+            [2, 'common-ui', `^${SRC_ESC}(content/|js/(dom|localization|themer))`],
+            [1, 'common', `^${SRC_ESC}js/|/lz-string(-unsafe)?/`],
           ].map(([priority, name, test]) => [name, {
-            test: new RegExp(String.raw`(${anyPathSep(test)})[^./\\]*\.js$`),
+            test: new RegExp(String.raw`(${test.replaceAll('/', SEP_ESC)})[^./\\]*\.js$`),
             name,
             priority,
           }])),

@@ -34,13 +34,12 @@ export const set = (tabId, ...args) => {
   const value = args.pop();
   const lastKey = args.pop();
   const del = value === undefined;
-  let obj0;
   let obj = cache.get(tabId);
+  let obj0 = obj;
   if (!obj) {
     if (del) return;
-    cache.set(tabId, obj = {});
+    cache.set(tabId, obj = obj0 = {});
   }
-  obj0 = obj;
   for (let i = 0, key; obj && i < args.length; i++) {
     obj = obj[key = args[i]] || !del && (obj[key] = {});
   }

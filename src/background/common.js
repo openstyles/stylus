@@ -4,7 +4,6 @@ import {promiseWithResolve} from '/js/util';
 import {browserWindows} from '/js/util-webext';
 
 export const bgReady = promiseWithResolve();
-export const browserCommands = {};
 
 export const safeTimeout = process.env.ENTRY === 'sw'
   ? (fn, delay, ...args) =>
