@@ -23,7 +23,7 @@ const defaults = {
   'disableAll': false,            // boss key
   'exposeIframes': false,         // Add 'stylus-iframe' attribute to HTML element in all iframes
   'exposeStyleName': false,       // Add style name to the style for better devtools experience
-  'keepAlive': 1,                 // in minutes
+  'keepAlive': 0,                 // in minutes
   'newStyleAsUsercss': false,     // create new style in usercss format
   'openEditInWindow': false,      // new editor opens in a own browser window
   'openEditInWindow.popup': false, // new editor opens in a simplified browser window without omnibox
