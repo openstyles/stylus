@@ -2,7 +2,7 @@ import {kUrl, UCD} from '/js/consts';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '/js/sections-util';
-import {CHROME, FIREFOX} from '/js/ua';
+import {CHROME} from '/js/ua';
 import * as URLS from '/js/urls';
 import {deepEqual, isEmptyObj, mapObj, stringAsRegExpStr, tryRegExp, tryURL} from '/js/util';
 import {broadcast, broadcastExtension} from './broadcast';
@@ -238,7 +238,7 @@ export function getSectionsByUrl(url, id, isInitialApply) {
     dark: isTop && colorScheme.isDark,
     // TODO: enable in FF when it supports sourceURL comment in style elements (also options.html)
     name: CHROME && p.exposeStyleName,
-    nonce: FIREFOX && tabMan.get(tab.id, 'nonce', frameId),
+    nonce: tabMan.get(tab.id, 'nonce', frameId),
     top: isInitialApply && p.exposeIframes && (
       isTop ? '' // apply.js will use location.origin
         : getUrlOrigin(tab.url || tabMan.get(sender.tabId || tab.id, kUrl))

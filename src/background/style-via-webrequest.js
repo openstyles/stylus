@@ -21,7 +21,7 @@ const ownId = chrome.runtime.id;
 const kSetCookie = 'set-cookie'; // must be lowercase
 const kSubFrame = 'sub_frame';
 const rxHOST = /^('non(e|ce-.+?)'|(https?:\/\/)?[^']+?[^:'])$/; // strips CSP sources covered by *
-const rxNONCE = FIREFOX && /(?:^|[;,])\s*style-src\s+[^;,]*?'nonce-([-+/=\w]+)'/;
+const rxNONCE = /(?:^|[;,])\s*style-src\s+[^;,]*?'nonce-([-+/=\w]+)'/;
 const BLOB_URL_PREFIX = 'blob:' + ownRoot;
 const WEBNAV_FILTER = {url: [{urlPrefix: 'http'}]};
 const WR_FILTER = {
@@ -106,14 +106,18 @@ function toggle(prefKey) {
     return;
   }
   let v;
-  if (!process.env.MV3 && (FIREFOX || (xhr || csp) !== (curXHR || curCSP))) {
+  if (process.env.BUILD === 'firefox' || FIREFOX || (
+    process.env.MV3
+      ? csp !== curCSP
+      : (xhr || csp) !== (curXHR || curCSP)
+  )) {
     v = chrome.webRequest.onHeadersReceived;
     // unregister first since new registrations are additive internally
     toggleListener(v, false, modifyHeaders);
     toggleListener(v, true, modifyHeaders, WR_FILTER, [
       'blocking',
       'responseHeaders',
-      xhr && chrome.webRequest.OnHeadersReceivedOptions.EXTRA_HEADERS,
+      !process.env.MV3 && xhr && chrome.webRequest.OnHeadersReceivedOptions.EXTRA_HEADERS,
     ].filter(Boolean));
   }
   if (mv3init || off !== curOFF) {
@@ -212,7 +216,7 @@ function modifyHeaders(req) {
   const secs = payload.sections;
   const csp = (FIREFOX || curCSP) && findHeader(responseHeaders, 'content-security-policy');
   if (csp) {
-    const m = FIREFOX && csp.value.match(rxNONCE);
+    const m = csp.value.match(rxNONCE);
     if (m) tabMan.set(req.tabId, 'nonce', req.frameId, payload.cfg.nonce = m[1]);
     // We don't change CSP if there are no styles when the page is loaded
     // TODO: show a reminder in the popup to reload the tab when the user enables a style
@@ -222,12 +226,17 @@ function modifyHeaders(req) {
     removePreloadedStyles(req, key, data);
     return;
   }
-  const blobId = curXHR && (data.blobId ??=
-    !process.env.MV3 && URL.createObjectURL(makeBlob(payload)).slice(BLOB_URL_PREFIX.length)
-  );
-  const cookie = blobId && makeXhrCookie(blobId);
-  if (blobId && (!process.env.MV3 || !findHeader(responseHeaders, kSetCookie, cookie))) {
-    responseHeaders.push({name: kSetCookie, value: cookie});
+  let blobId;
+  if (curXHR && (
+    blobId = (data.blobId ??=
+      !process.env.MV3 && URL.createObjectURL(makeBlob(payload)).slice(BLOB_URL_PREFIX.length)
+    ))) {
+    blobId = makeXhrCookie(blobId);
+    if (!process.env.MV3 || !findHeader(responseHeaders, kSetCookie, blobId)) {
+      responseHeaders.push({name: kSetCookie, value: blobId});
+    } else {
+      blobId = false;
+    }
   }
   if (blobId || csp && curCSP) {
     return {responseHeaders};
