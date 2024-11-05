@@ -1,6 +1,6 @@
 import {supported} from '/js/urls';
 import {sleep} from '/js/util';
-import {toggleListener} from '/js/util-webext';
+import {ignoreChromeError, toggleListener} from '/js/util-webext';
 import {bgReady} from './common';
 import {onUrlChange} from './navigation-manager';
 import * as stateDb from './state-db';
@@ -95,6 +95,7 @@ if (!process.env.MV3) {
 }
 
 async function onPortDisconnected(port) {
+  ignoreChromeError();
   const {sender} = port;
   const tabId = sender.tab.id;
   const frameId = sender.frameId;
