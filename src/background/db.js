@@ -1,6 +1,7 @@
 import {API} from '/js/msg';
 import {STORAGE_KEY} from '/js/prefs';
 import {chromeLocal} from '/js/storage-util';
+import {CHROME} from '/js/ua';
 import {deepCopy} from '/js/util';
 import ChromeStorageDB from './db-chrome-storage';
 
@@ -11,11 +12,12 @@ import ChromeStorageDB from './db-chrome-storage';
  https://www.reddit.com/r/firefox/comments/7ijuaq/firefox_59_webextensions_can_use_indexeddb_when/
 */
 
-let exec = process.env.MV3 ? dbExecIndexedDB : async (...args) => (
-  exec = await tryUsingIndexedDB().catch(useChromeStorage)
-)(...args);
+let exec = process.env.BUILD === 'chrome' || CHROME
+  ? dbExecIndexedDB
+  : tryUsingIndexedDB;
 const DB = 'stylish';
 const FALLBACK = 'dbInChromeStorage';
+const REASON = FALLBACK + 'Reason';
 const ID_AS_KEY = {};
 const getStoreName = dbName => dbName === DB ? 'styles' : 'data';
 const cache = {};
@@ -54,20 +56,35 @@ async function cachedExec(dbName, cmd, a, b) {
   return res;
 }
 
-async function tryUsingIndexedDB() {
+async function tryUsingIndexedDB(...args) {
   // we use chrome.storage.local fallback if IndexedDB doesn't save data,
   // which, once detected on the first run, is remembered in chrome.storage.local
   // note that accessing indexedDB may throw, https://github.com/openstyles/stylus/issues/615
+  let err;
   if (typeof indexedDB === 'undefined') {
-    throw new Error('indexedDB is undefined');
+    err = new Error('IndexedDB is disabled in the browser');
+  } else {
+    try {
+      const [res, fallback = await testDB()] = await Promise.all([
+        dbExecIndexedDB(...args),
+        chromeLocal.getValue(FALLBACK),
+      ]);
+      if (!fallback) {
+        exec = dbExecIndexedDB;
+        return res;
+      }
+      // TODO: show this in the manager and allow exporting/switching the other DB
+      console.warn('IndexedDB is not used due to a previous failure, but seems functional now:', {
+        previousFailure: await chromeLocal.getValue(REASON),
+        currentResult: res,
+        arguments: args,
+      });
+    } catch (e) {
+      err = e;
+    }
   }
-  switch (await chromeLocal.getValue(FALLBACK)) {
-    case true: throw null;
-    case false: break;
-    default: await testDB();
-  }
-  chromeLocal.setValue(FALLBACK, false);
-  return dbExecIndexedDB;
+  exec = useChromeStorage(err);
+  return exec(...args);
 }
 
 async function testDB() {
@@ -78,10 +95,12 @@ async function testDB() {
 }
 
 async function useChromeStorage(err) {
-  chromeLocal.setValue(FALLBACK, true);
   if (err) {
-    chromeLocal.setValue(FALLBACK + 'Reason', err.message + (err.stack ? '\n' + err.stack : ''));
-    console.warn('Failed to access indexedDB. Switched to storage API.', err);
+    chromeLocal.set({
+      [FALLBACK]: true,
+      [REASON]: err.message + (err.stack ? '\n' + err.stack : ''),
+    });
+    console.warn('Failed to access IndexedDB. Switched to extension storage API.', err);
   }
   const BASES = {};
   return (dbName, method, ...args) => (
