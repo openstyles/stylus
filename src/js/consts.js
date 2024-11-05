@@ -1,8 +1,9 @@
 /**
  * WARNING!
  * Used in limited contexts such as the offscreen document.
+ * All values are unconditionally inlined via webpack-inline-constant-exports-plugin.
  * Only for pure declarations with no side effects or marked with /*@__PURE__*/
-/** */
+/** */// TODO: collect consts from the entire code
 
 export const UCD = 'usercssData';
 export const kAboutBlank = 'about:blank';

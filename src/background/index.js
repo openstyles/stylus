@@ -84,7 +84,7 @@ Object.assign(API, /** @namespace API */ {
 
   //#endregion
 
-}, !process.env.MV3 && {
+}, !process.env.MV3 && /** @namespace API */ {
 
   //#region API for MV2
 

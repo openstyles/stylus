@@ -8,6 +8,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const InlineConstantExportsPlugin = require('@automattic/webpack-inline-constant-exports-plugin');
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 const RawEnvPlugin = require('./tools/raw-env-plugin');
 const WebpackPatchBootstrapPlugin = require('./tools/webpack-patch-bootstrap');
@@ -198,6 +199,7 @@ const getBaseConfig = () => ({
     // new webpack.debug.ProfilingPlugin({outputPath: DST + '.profile.json'}),
     new RawEnvPlugin(VARS, RAW_VARS),
     new webpack.ids.NamedChunkIdsPlugin({context: SRC}),
+    new InlineConstantExportsPlugin([/[/\\]consts\.js$/]),
     new WebpackPatchBootstrapPlugin(),
   ],
   stats: {
