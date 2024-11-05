@@ -13,7 +13,7 @@ const kReload = 'reload';
 
 const openManage = () => API.openManage();
 const openOptions = () => API.openManage({options: true});
-const reload = chrome.runtime.reload;
+const reload = () => chrome.runtime.reload();
 const styleDisableAll = info => prefs.set(kDisableAll,
   info ? info.checked : !prefs.get(kDisableAll));
 
