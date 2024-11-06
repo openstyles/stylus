@@ -12,8 +12,7 @@ const {ROOT, MANIFEST} = require('./util');
 const DST = ROOT + 'dist/';
 const WEBPACK_CLI = 'webpack-cli --no-stats';
 const sChrome = 'chrome';
-const sChromeBeta = 'chrome-beta';
-const sChromeMV3 = 'chrome-mv3';
+const sChromeBeta = 'chrome-mv3';
 const sFirefox = 'firefox';
 
 fse.emptyDirSync(ROOT + 'node_modules/.cache/webpack');
@@ -24,7 +23,7 @@ fse.emptyDirSync(ROOT + 'node_modules/.cache/webpack');
   JSZip.defaults.date = new Date(Date.now() - tzBug);
   targets = targets
     ? targets.split(',')
-    : [sFirefox, sChrome, sChromeBeta, sChromeMV3];
+    : [sFirefox, sChrome, sChromeBeta];
   for (const target of targets) {
     process.env.NODE_ENV = target + ':zip';
     console.log(chalk.bgYellow.bold(`\nBuilding for ${target}...`));
