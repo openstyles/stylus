@@ -1,10 +1,12 @@
 import '/js/browser';
-import {kAboutBlank, kResolve} from '/js/consts';
+import {kAboutBlank, kPopup, kResolve} from '/js/consts';
 import {API} from '/js/msg';
 import {CHROME, FIREFOX} from '/js/ua';
 import {chromeProtectsNTP, ownRoot, supported} from '/js/urls';
 import {getActiveTab} from '/js/util-webext';
 import {pingTab} from './broadcast';
+import reinjectContentScripts from './content-scripts';
+import * as tabMan from './tab-manager';
 
 export default async function makePopupData() {
   let tab = await getActiveTab();
@@ -13,7 +15,13 @@ export default async function makePopupData() {
   }
   let url = tab.pendingUrl || tab.url || ''; // new Chrome uses pendingUrl while connecting
   const isOwn = url.startsWith(ownRoot);
-  const [ping0, frames] = await Promise.all([
+  const [
+    ping0 = process.env.MV3 && !tabMan.get(tab.id, kPopup) && (
+      tabMan.set(tab.id, kPopup, true),
+      await reinjectContentScripts(tab)
+    ),
+    frames,
+  ] = await Promise.all([
     isOwn
       || pingTab(tab.id),
     isOwn && CHROME && getAllFrames(url, tab)
