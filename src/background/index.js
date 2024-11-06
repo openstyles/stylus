@@ -157,5 +157,5 @@ bgReady.styles.then(() => {
     initBrowserCommandsApi();
     initContextMenus();
   }
-  broadcast({method: 'backgroundReady'});
+  if (!process.env.MV3) broadcast({method: 'backgroundReady'});
 });
