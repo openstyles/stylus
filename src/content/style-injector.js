@@ -4,10 +4,12 @@ const MEDIA = 'screen, ' + PREFIX;
 const PATCH_ID = 'transition-patch';
 const SUPERSEDED = '-superseded-by-Stylus';
 const kAss = 'adoptedStyleSheets';
-const FF = process.env.BUILD !== 'chrome' && global !== window;
-const wrappedDoc = FF && process.env.BUILD !== 'chrome'
-  && document.wrappedJSObject
-  || document;
+const FF = process.env.BUILD !== 'chrome' && (
+  process.env.ENTRY
+    ? 'contextualIdentities' in chrome
+    : global !== window
+);
+const wrappedDoc = FF && document.wrappedJSObject || document;
 // styles are out of order if any of these elements is injected between them
 // except `style` on our own page as it contains overrides
 const ORDERED_TAGS = new Set(['head', 'body', 'frameset', !process.env.ENTRY && 'style', 'link']);
@@ -118,9 +120,7 @@ function removeAllElements() {
 
 function replaceAss(readd) {
   const elems = list.map(s => s.el);
-  const res = FF && process.env.BUILD !== 'chrome'
-    ? cloneInto([], wrappedDoc) /* global cloneInto */
-    : [];
+  const res = FF ? cloneInto([], wrappedDoc) /* global cloneInto */ : [];
   for (let arr = assV2 || wrappedDoc[kAss], i = 0, el; i < arr.length && (el = arr[i]); i++) {
     if (assIndexOf(elems, el) < 0) res.push(el);
   }
@@ -268,7 +268,7 @@ function emitUpdate() {
 function initAss() {
   if (assIndexOf) return;
   if (Object.isExtensible(ass)) assV2 = ass;
-  assIndexOf = !FF || process.env.BUILD === 'chrome'
+  assIndexOf = !FF
     ? Object.call.bind([].indexOf)
     : (arr, {media: {mediaText: id}}) => {
       for (let i = 0; i < arr.length; i++) {
@@ -286,13 +286,11 @@ and since userAgent.navigator can be spoofed via about:config or devtools,
 we're checking for getPreventDefault that was removed in FF59
 */
 function initCreationDoc(style) {
-  creationDoc = FF && process.env.BUILD !== 'chrome' && Event.prototype.getPreventDefault
-    ? document
-    : wrappedDoc;
+  creationDoc = FF && Event.prototype.getPreventDefault ? document : wrappedDoc;
   for (let retry = 0, el, ok; !ok && retry < 2; retry++) {
     createElement = creationDoc.createElement.bind(creationDoc);
     createElementNS = creationDoc.createElementNS.bind(creationDoc);
-    if (!FF || process.env.BUILD === 'chrome') {
+    if (!FF) {
       return;
     }
     if (!retry || ffCsp) {
@@ -330,7 +328,7 @@ function restoreOrder(mutations) {
     if (!assV2) ass = wrappedDoc[kAss];
     for (let len = list.length, base = ass.length - len, i = 0; i < len; i++) {
       if (base < 0 || (
-        !FF || process.env.BUILD === 'chrome'
+        !FF
           ? ass[base + i] !== list[i].el
           : ass[base + i].media.mediaText !== list[i].el.media.mediaText
       )) {
@@ -372,7 +370,7 @@ export function sort() {
 export function updateConfig(cfg) {
   exposeStyleName = cfg.name;
   nonce = cfg.nonce || nonce;
-  ffCsp = !nonce && !process.env.ENTRY && (FF && process.env.BUILD !== 'chrome') && isSecureContext;
+  ffCsp = !nonce && !process.env.ENTRY && FF && isSecureContext;
   if (!ass !== !cfg.ass) {
     removeAllElements();
     ass = ass ? null : wrappedDoc[kAss];
