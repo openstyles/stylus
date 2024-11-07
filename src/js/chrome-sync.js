@@ -1,6 +1,6 @@
 import {compressToUTF16, decompressFromUTF16} from 'lz-string-unsafe';
 import './browser';
-import {tryJSONparse} from './util';
+import {sleep, tryJSONparse} from './util';
 
 const syncApi = browser.storage.sync;
 const kMAX = 'MAX_WRITE_OPERATIONS_PER_MINUTE';
@@ -10,17 +10,17 @@ export const LZ_KEY = {
   usercssTemplate: 'usercssTemplate',
 };
 /** @type {() => Promise<void>} */
-export const clear = /*@__PURE__*/syncApi.clear.bind(syncApi);
+export const clear = /*@__PURE__*/run.bind(syncApi.clear);
 /** @type {(what: string | string[]) => Promise<void>} */
-export const remove = /*@__PURE__*/syncApi.remove.bind(syncApi);
+export const remove = /*@__PURE__*/run.bind(syncApi.remove);
 /** @type {(what: string | string[] | object) => Promise<object>} */
 export const get = /*@__PURE__*/syncApi.get.bind(syncApi);
 /** @type {(what: object) => Promise<void>} */
-export const set = /*@__PURE__*/syncApi.set.bind(syncApi);
+export const set = /*@__PURE__*/run.bind(syncApi.set);
 export const getValue = async key => (await get(key))[key];
 export const setValue = (key, value) => set({[key]: value});
 
-let promise;
+let busy;
 
 export async function getLZValue(key) {
   return tryJSONparse(decompressFromUTF16((await get(key))[key]));
@@ -42,23 +42,14 @@ export async function getLZValues(keys = Object.values(LZ_KEY)) {
 export async function run(...args) {
   while (true) {
     try {
-      if (!promise) return await this(...args);
-      await promise;
+      if (!busy) return await (busy = this.apply(syncApi, args));
+      await busy.catch(() => 0);
     } catch (err) {
       if (!err.message.includes(kMAX)) throw err;
-      promise = promise ? promise.then(wait) : wait();
+      busy = sleep(60e3 / (syncApi[kMAX] || 120) * (Math.random() * 2 + 1));
+      await process.env.KEEP_ALIVE(busy);
+    } finally {
+      busy = null;
     }
   }
-}
-
-function wait() {
-  return process.env.KEEP_ALIVE(new Promise(resolve =>
-    setTimeout(onTimeout,
-      60e3 / (syncApi[kMAX] || 120) * (Math.random() * 2 + 1),
-      resolve)));
-}
-
-function onTimeout(resolve) {
-  promise = null;
-  resolve();
 }
