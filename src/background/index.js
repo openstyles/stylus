@@ -2,12 +2,11 @@ import './intro';
 import '/js/browser';
 import {kResolve} from '/js/consts';
 import {DNR, updateDNR} from '/js/dnr';
-import {_execute, API, onMessage, wrapError} from '/js/msg';
+import {_execute, API, onMessage} from '/js/msg';
 import {createPortProxy} from '/js/port';
 import * as prefs from '/js/prefs';
 import {FIREFOX, MOBILE, WINDOWS} from '/js/ua';
 import {workerPath} from '/js/urls';
-import {ignoreChromeError} from '/js/util-webext';
 import {broadcast, pingTab} from './broadcast';
 import './broadcast-injector-config';
 import initBrowserCommandsApi from './browser-cmd-hotkeys';
@@ -119,33 +118,16 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   }
 });
 
-onMessage((m, sender) => {
+onMessage(async (m, sender) => {
   if (m.method === 'invokeAPI') {
+    if (bgReady[kResolve]) await bgReady;
     let res = API;
     for (const p of m.path.split('.')) res = res && res[p];
     if (!res) throw new Error(`Unknown API.${m.path}`);
     res = res.apply({msg: m, sender}, m.args);
-    return res === undefined ? null : res;
+    return res ?? null;
   }
 });
-chrome.runtime.onConnect.addListener(port => {
-  if (port.name === 'api') {
-    port.onMessage.addListener(apiPortMessage);
-    port.onDisconnect.addListener(ignoreChromeError);
-  }
-});
-
-async function apiPortMessage({id, data, TDM}, port) {
-  try {
-    if (bgReady[kResolve]) await bgReady;
-    port.sender.TDM = TDM;
-    data = {data: await _execute('extension', data, port.sender)};
-  } catch (e) {
-    data = wrapError(e);
-  }
-  data.id = id;
-  try { port.postMessage(data); } catch {}
-}
 
 //#endregion
 

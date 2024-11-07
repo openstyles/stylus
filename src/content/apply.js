@@ -1,6 +1,6 @@
 // WARNING: make sure util-webext.js runs first and sets _deepCopy
 import * as msg from '/js/msg';
-import {API, apiPortDisconnect} from '/js/msg-api';
+import {API, isFrame, TDM} from '/js/msg-api';
 import * as styleInjector from './style-injector';
 
 const own = /** @type {Injection} */{
@@ -19,11 +19,6 @@ const isUnstylable = !CHROME && isXml;
 const clone = process.env.ENTRY
   ? _deepCopy /* global _deepCopy */// will be used in extension context
   : val => typeof val === 'object' && val ? JSON.parse(JSON.stringify(val)) : val;
-const isFrame = window !== parent;
-/** @type {number}
- * TODO: expose to msg.js without `window`
- * -1 = top prerendered, 0 = iframe, 1 = top, 2 = top reified */
-let TDM = window.TDM = isFrame ? 0 : document.prerendering ? -1 : 1;
 let isFrameSameOrigin = false;
 if (isFrame) {
   try {
@@ -76,7 +71,6 @@ styleInjector.init(onInjectorUpdate, (a, b) => calcOrder(a) - calcOrder(b));
 init();
 msg.onTab(applyOnMessage);
 addEventListener('pageshow', onBFCache);
-addEventListener('pagehide', onBFCache);
 if (!process.env.ENTRY) {
   dispatchEvent(new CustomEvent(ownId, {detail: orphanCleanup = Math.random()}));
   addEventListener(ownId, orphanCheck, true);
@@ -252,14 +246,13 @@ function onIntersect(entries) {
 
 function onBFCache(e) {
   if (e.isTrusted && e.persisted) {
-    apiPortDisconnect();
     updateCount();
   }
 }
 
 function onReified(e) {
   if (e.isTrusted) {
-    TDM = window.TDM = 2;
+    TDM = 2;
     document.onprerenderingchange = null;
     API.styles.getSectionsByUrl('', 0, 'cfg').then(updateConfig);
     updateCount();
@@ -273,7 +266,6 @@ function orphanCheck(evt) {
   // so we need to detach event listeners
   removeEventListener(ownId, orphanCheck, true);
   removeEventListener('pageshow', onBFCache);
-  removeEventListener('pagehide', onBFCache);
   if (mqDark) mqDark.onchange = null;
   if (offscreen) for (const fn of offscreen) fn();
   if (TDM < 0) document.onprerenderingchange = null;

@@ -1,4 +1,4 @@
-import {API, apiPortDisconnect, bgReadySignal, port} from './msg-api';
+import {API, bgReadySignal} from './msg-api';
 
 export {API};
 
@@ -53,9 +53,8 @@ export function _execute(target, ...args) {
 }
 
 export function onRuntimeMessage({data, target}, sender, sendResponse) {
-  if (data.method === 'backgroundReady') {
-    if (bgReadySignal) bgReadySignal(true);
-    if (port) apiPortDisconnect();
+  if (data.method === 'backgroundReady' && !process.env.IS_BG) {
+    bgReadySignal?.(true);
   }
   const res = _execute(target, data, sender);
   if (res instanceof Promise) {

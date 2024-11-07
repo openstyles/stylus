@@ -1,5 +1,5 @@
 import '/js/browser';
-import {rxIgnorableError, saveStack} from '/js/msg-api';
+import {rxIgnorableError} from '/js/msg-api';
 import {ownRoot} from '/js/urls';
 import * as tabMan from './tab-manager';
 
@@ -44,7 +44,7 @@ export function sendTab(tabId, data, options, target = 'tab') {
 }
 
 async function unwrap(promise, tabId) {
-  const err = saveStack();
+  const err = new Error();
   let data, error;
   try {
     ({data, error} = await promise || {});

@@ -1,14 +1,11 @@
+import {FF} from '/js/msg-api';
+
 const CLASS = 'stylus';
 const PREFIX = CLASS + '-';
 const MEDIA = 'screen, ' + PREFIX;
 const PATCH_ID = 'transition-patch';
 const SUPERSEDED = '-superseded-by-Stylus';
 const kAss = 'adoptedStyleSheets';
-const FF = process.env.BUILD !== 'chrome' && (
-  process.env.ENTRY
-    ? 'contextualIdentities' in chrome
-    : global !== window
-);
 const wrappedDoc = FF && document.wrappedJSObject || document;
 // styles are out of order if any of these elements is injected between them
 // except `style` on our own page as it contains overrides
