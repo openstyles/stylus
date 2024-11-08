@@ -14,3 +14,4 @@ export const kMainFrame = 'main_frame';
 export const kPopup = 'popup';
 export const kResolve = 'resolve';
 export const kUrl = 'url';
+export const kApplyPort = 'apply';

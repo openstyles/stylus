@@ -1,12 +1,19 @@
-import {FF} from '/js/msg-api';
+import * as msgApi from '/js/msg-api';
 
+// allows Terser to drop unused code in targeted builds
+export const FF = process.env.BUILD !== 'chrome' && msgApi.FF;
 const CLASS = 'stylus';
 const PREFIX = CLASS + '-';
 const MEDIA = 'screen, ' + PREFIX;
 const PATCH_ID = 'transition-patch';
-const SUPERSEDED = '-superseded-by-Stylus';
 const kAss = 'adoptedStyleSheets';
-const wrappedDoc = FF && document.wrappedJSObject || document;
+export const own = /** @type {Injection} */{
+  cfg: {off: false, top: ''},
+};
+export const ownId = chrome.runtime.id;
+export const isXml = !process.env.ENTRY && document instanceof XMLDocument;
+const wrappedDoc = process.env.BUILD !== 'chrome' && FF && document.wrappedJSObject
+  || document;
 // styles are out of order if any of these elements is injected between them
 // except `style` on our own page as it contains overrides
 const ORDERED_TAGS = new Set(['head', 'body', 'frameset', !process.env.ENTRY && 'style', 'link']);
@@ -15,6 +22,8 @@ const docRootObserver = RootObserver(restoreOrder);
 const toSafeChar = c => String.fromCharCode(0xFF00 + c.charCodeAt(0) - 0x20);
 /** @type {InjectedStyle[]} */
 export const list = [];
+const calcOrder = ({id}) => orderPrio[id] * 1e6 || orderMain[id] || id + .5e6;
+const compare = (a, b) => calcOrder(a) - calcOrder(b);
 /** @type {Map<number,InjectedStyle>} */
 const table = new Map();
 /** @type {CSSStyleSheet[]} V1: frozen array in old Chrome, the reference changes */
@@ -33,32 +42,15 @@ let reorderCnt = 0;
 let reorderStart = 0;
 // will store the original method refs because the page can override them
 let creationDoc, createElement, createElementNS;
-let compare, onUpdate;
+let orderPrio, orderMain;
+export let onInjectorUpdate, orphanCheck;
 
-export function init(newOnUpdate, newCompare) {
-  onUpdate = newOnUpdate;
-  compare = newCompare;
-}
-
-export function shutdown(eventId) {
+export function shutdown() {
   if (!list.length) return;
   toggleObservers(false);
-  addEventListener(eventId, () => {
-    removeAllElements();
-    list.length = 0;
-    table.clear();
-  }, {once: true});
-}
-
-export function clearOrphans() {
-  for (const el of document.querySelectorAll(`:root > style[id^="${PREFIX}"].${CLASS}`)) {
-    const id = el.id.slice(PREFIX.length);
-    if (id === PATCH_ID ||
-        id.endsWith(SUPERSEDED) ||
-        /^\d+$/.test(id) && !table.has(+id)) {
-      el.remove();
-    }
-  }
+  removeAllElements();
+  list.length = 0;
+  table.clear();
 }
 
 export function removeId(id) {
@@ -134,7 +126,7 @@ export function apply({cfg, sections}, isReplace) {
     if (!old) {
       style.el = createStyle(style);
       table.set(id, style);
-      const i = list.findIndex(item => compare(item, style) > 0);
+      const i = list.findIndex(item => calcOrder(item) > calcOrder(style));
       list.splice(i < 0 ? list.length : i, 0, style);
     } else if (old.code.length !== code.length
       || old.code.some(arrItemDiff, code)
@@ -199,7 +191,7 @@ function createStyle(style) {
   if (!process.env.ENTRY && root instanceof SVGSVGElement) {
     // SVG document style
     el = createElementNS('http://www.w3.org/2000/svg', 'style');
-  } else if (!process.env.ENTRY && document instanceof XMLDocument) {
+  } else if (isXml) {
     // XML document style
     el = createElementNS('http://www.w3.org/1999/xhtml', 'style');
   } else {
@@ -208,8 +200,7 @@ function createStyle(style) {
   }
   if (id) {
     el.id = `${PREFIX}${id}`;
-    const oldEl = document.getElementById(el.id);
-    if (oldEl) oldEl.id += SUPERSEDED;
+    document.getElementById(el.id)?.remove();
   }
   el.nonce = nonce;
   el.type = 'text/css';
@@ -259,7 +250,7 @@ function toggleObservers(shouldStart) {
 
 function emitUpdate() {
   toggleObservers(list.length);
-  onUpdate();
+  onInjectorUpdate();
 }
 
 function initAss() {
@@ -317,6 +308,7 @@ function removeStyle(style) {
 }
 
 function restoreOrder(mutations) {
+  if (!orphanCheck()) return;
   let bad;
   let el = list.length && list[0].el;
   if (!el) {
@@ -368,6 +360,7 @@ export function updateConfig(cfg) {
   exposeStyleName = cfg.name;
   nonce = cfg.nonce || nonce;
   ffCsp = !nonce && !process.env.ENTRY && FF && isSecureContext;
+  ({main: orderMain = {}, prio: orderPrio = {}} = cfg.order || {});
   if (!ass !== !cfg.ass) {
     removeAllElements();
     ass = ass ? null : wrappedDoc[kAss];
@@ -378,6 +371,7 @@ export function updateConfig(cfg) {
 }
 
 function updateRoot() {
+  if (!orphanCheck()) return;
   // Known to change mysteriously in iframes without triggering RewriteObserver
   if (root !== document.documentElement) {
     root = document.documentElement;

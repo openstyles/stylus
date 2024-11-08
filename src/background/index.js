@@ -98,7 +98,7 @@ Object.assign(API, /** @namespace API */ {
 //#region Events
 
 chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
-  if (process.env.BUILD !== 'firefox' && !FIREFOX) {
+  if (process.env.BUILD === 'chrome' || !FIREFOX) {
     reinjectContentScripts();
     initContextMenus();
   }

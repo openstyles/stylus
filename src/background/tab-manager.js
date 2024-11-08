@@ -1,3 +1,4 @@
+import {kApplyPort} from '/js/consts';
 import {supported} from '/js/urls';
 import {sleep} from '/js/util';
 import {ignoreChromeError, toggleListener} from '/js/util-webext';
@@ -83,7 +84,7 @@ stateDb.ready?.then(([dbData, tabs]) => {
 });
 
 chrome.runtime.onConnect.addListener(port => {
-  if (port.name === 'apply') {
+  if (port.name === kApplyPort) {
     port.onDisconnect.addListener(onPortDisconnected);
   }
 });
@@ -96,8 +97,9 @@ if (!process.env.MV3) {
 
 async function onPortDisconnected(port) {
   ignoreChromeError();
+  process.env.DEBUGLOG(port.sender);
   const {sender} = port;
-  const tabId = sender.tab.id;
+  const tabId = sender.tab?.id;
   const frameId = sender.frameId;
   for (const fn of onUnload) fn(tabId, frameId, port);
   if (process.env.MV3 && !frameId) {

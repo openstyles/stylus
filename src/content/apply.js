@@ -1,21 +1,14 @@
 // WARNING: make sure util-webext.js runs first and sets _deepCopy
+import {kApplyPort} from '/js/consts';
 import * as msg from '/js/msg';
-import {API, isFrame, TDM} from '/js/msg-api';
+import {API, isFrame, TDM, updateTDM} from '/js/msg-api';
 import * as styleInjector from './style-injector';
+import {FF, isXml, own, ownId} from './style-injector';
 
-const own = /** @type {Injection} */{
-  cfg: {off: false, top: ''},
-};
-const ownId = chrome.runtime.id;
-const calcOrder = ({id}, _) =>
-  (_ = own.cfg.order) &&
-  (_.prio[id] || 0) * 1e6 ||
-  _.main[id] ||
-  id + .5e6; // no order = at the end of `main`
-const isXml = document instanceof XMLDocument;
-const CHROME = process.env.BUILD === 'chrome' || global === window;
 const SYM_ID = 'styles';
-const isUnstylable = !CHROME && isXml;
+const kPageHide = 'pagehide';
+const kPageShow = 'pageshow';
+const isUnstylable = FF && isXml;
 const clone = process.env.ENTRY
   ? _deepCopy /* global _deepCopy */// will be used in extension context
   : val => typeof val === 'object' && val ? JSON.parse(JSON.stringify(val)) : val;
@@ -29,7 +22,7 @@ if (isFrame) {
 const isFrameNoUrl = isFrameSameOrigin && location.protocol === 'about:';
 
 /** Polyfill for documentId in Firefox and Chrome pre-106 */
-const instanceId = !(CHROME && CSS.supports('top', '1ic')) && (Math.random() || Math.random());
+const instanceId = (FF || !CSS.supports('top', '1ic')) && (Math.random() || Math.random());
 /** about:blank iframes are often used by sites for file upload or background tasks,
  * and they may break if unexpected DOM stuff is present at `load` event
  * so we'll add the styles only if the iframe becomes visible */
@@ -43,7 +36,6 @@ const mqDark = !isFrame && matchMedia('(prefers-color-scheme: dark)');
 let matchUrl = isFrameNoUrl
   ? parent.location.href.split('#')[0]
   : location.href;
-let isOrphaned, orphanCleanup;
 let offscreen;
 /** @type chrome.runtime.Port */
 let port;
@@ -51,7 +43,7 @@ let lazyBadge = isFrame;
 /** @type IntersectionObserver */
 let xo;
 
-if (CHROME) {
+if (!FF) {
   window[Symbol.for('xo')] = (el, cb) => {
     if (!xo) xo = new IntersectionObserver(onIntersect, {rootMargin: '100%'});
     el.addEventListener(xoEventId, cb, {once: true});
@@ -66,22 +58,16 @@ if (mqDark) {
 if (TDM < 0) {
   document.onprerenderingchange = onReified;
 }
+styleInjector.onInjectorUpdate = () => {
+  updateCount();
+  if (isFrame) updateExposeIframes();
+};
+styleInjector.orphanCheck = orphanCheck;
 // Declare all vars before init() or it'll throw due to "temporal dead zone" of const/let
-styleInjector.init(onInjectorUpdate, (a, b) => calcOrder(a) - calcOrder(b));
 init();
 msg.onTab(applyOnMessage);
-addEventListener('pageshow', onBFCache);
-if (!process.env.ENTRY) {
-  dispatchEvent(new CustomEvent(ownId, {detail: orphanCleanup = Math.random()}));
-  addEventListener(ownId, orphanCheck, true);
-}
-
-function onInjectorUpdate() {
-  if (!isOrphaned) {
-    updateCount();
-    if (isFrame) updateExposeIframes();
-  }
-}
+addEventListener(kPageShow, onBFCache);
+addEventListener(kPageHide, onBFCache);
 
 async function init() {
   if (isUnstylable) return API.styleViaAPI({method: 'styleApply'});
@@ -89,21 +75,16 @@ async function init() {
   if (process.env.ENTRY && (data = global.clientData)) {
     data = (/**@type{StylusClientData}*/process.env.MV3 ? data : await data).apply;
   } else {
-    data = isFrameNoUrl && CHROME && clone(parent[parent.Symbol.for(SYM_ID)]);
+    data = isFrameNoUrl && !FF && clone(parent[parent.Symbol.for(SYM_ID)]);
     if (data) await new Promise(onFrameElementInView);
     else data = !process.env.ENTRY && !isFrameSameOrigin && !isXml && getStylesViaXhr();
     // XML in Chrome will be auto-converted to html later, so we can't style it via XHR now
   }
+  if (!orphanCheck()) return;
   await applyStyles(data);
-  if (orphanCleanup) {
-    dispatchEvent(new Event(orphanCleanup));
-    orphanCleanup = false;
-    if (!CHROME) styleInjector.clearOrphans(); // Firefox doesn't orphanize content scripts
-  }
 }
 
 async function applyStyles(data) {
-  if (isOrphaned) return;
   if (!data) data = await API.styles.getSectionsByUrl(matchUrl, null, !own.sections);
   if (!data.cfg) data.cfg = own.cfg;
   Object.assign(own, window[Symbol.for(SYM_ID)] = data);
@@ -213,18 +194,19 @@ function updateExposeIframes() {
   }
 }
 
-function updateCount() {
+function updateCount(show = true) {
   if (TDM < 0) return;
   if (process.env.MV3 || isFrame) {
-    if (!port && styleInjector.list.length) {
-      port = chrome.runtime.connect({name: 'iframe'});
+    if (!port && styleInjector.list.length && show) {
+      port = chrome.runtime.connect({name: kApplyPort});
       port.onDisconnect.addListener(() => (port = null));
-    } else if (port && !styleInjector.list.length) {
+    } else if (port && (!show || !styleInjector.list.length)) {
       port.disconnect();
       port = null;
     }
     if (lazyBadge && performance.now() > 1000) lazyBadge = false;
   }
+  if (!show) return;
   if (isUnstylable) API.styleViaAPI({method: 'updateCount'});
   else API.updateIconBadge(styleInjector.list.map(style => style.id), {lazyBadge, iid: instanceId});
 }
@@ -236,6 +218,7 @@ function onFrameElementInView(cb) {
 
 /** @param {IntersectionObserverEntry[]} entries */
 function onIntersect(entries) {
+  if (!orphanCheck()) return;
   for (const e of entries) {
     if (e.intersectionRatio) {
       xo.unobserve(e.target);
@@ -245,32 +228,34 @@ function onIntersect(entries) {
 }
 
 function onBFCache(e) {
+  if (!orphanCheck()) return;
   if (e.isTrusted && e.persisted) {
-    updateCount();
+    updateCount(e.type === kPageShow);
   }
 }
 
 function onReified(e) {
+  if (!orphanCheck()) return;
   if (e.isTrusted) {
-    TDM = 2;
+    updateTDM(2);
     document.onprerenderingchange = null;
     API.styles.getSectionsByUrl('', 0, 'cfg').then(updateConfig);
     updateCount();
   }
 }
 
-function orphanCheck(evt) {
+function orphanCheck() {
   // id will be undefined if the extension is orphaned
-  if (chrome.runtime.id) return;
+  if (chrome.runtime.id) return true;
   // In Chrome content script is orphaned on an extension update/reload
   // so we need to detach event listeners
   removeEventListener(ownId, orphanCheck, true);
-  removeEventListener('pageshow', onBFCache);
+  removeEventListener(kPageShow, onBFCache);
+  removeEventListener(kPageHide, onBFCache);
   if (mqDark) mqDark.onchange = null;
   if (offscreen) for (const fn of offscreen) fn();
   if (TDM < 0) document.onprerenderingchange = null;
   offscreen = null;
-  isOrphaned = true;
-  styleInjector.shutdown(evt.detail);
+  styleInjector.shutdown();
   msg.off(applyOnMessage);
 }

@@ -20,9 +20,13 @@ export const isFrame = !process.env.IS_BG && window !== top;
 
 export let bgReadySignal;
 let bgReadying = !process.env.MV3 && new Promise(fn => (bgReadySignal = fn));
-/** @type {number} -1 = top prerendered, 0 = iframe, 1 = top, 2 = top reified */
-export let TDM = isFrame ? 0 // eslint-disable-line prefer-const
-  : !process.env.IS_BG && document.prerendering ? -1 : 1;
+/** @type {number} top document mode
+ * -1 = top prerendered, 0 = iframe, 1 = top, 2 = top reified */
+export let TDM = isFrame ? 0 : !process.env.IS_BG && document.prerendering ? -1 : 1;
+
+export function updateTDM(value) {
+  TDM = value;
+}
 
 export async function apiSendProxy({name: path}, thisObj, args) {
   const localErr = new Error();
