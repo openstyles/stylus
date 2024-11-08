@@ -23,7 +23,7 @@ export default async function makePopupData() {
     frames,
   ] = await Promise.all([
     isOwn
-      || pingTab(tab.id),
+      || supported(url) && pingTab(tab.id),
     isOwn && CHROME && getAllFrames(url, tab)
       || browser.webNavigation.getAllFrames({tabId: tab.id}),
   ]);

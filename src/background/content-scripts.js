@@ -7,6 +7,8 @@ import {sendTab} from './broadcast';
 import {webNavigation} from './navigation-manager';
 import * as tabMan from './tab-manager';
 
+let initialized;
+
 /**
  Reinject content scripts when the extension is reloaded/updated.
  Not used in Firefox as it reinjects automatically.
@@ -16,8 +18,12 @@ export default async function reinjectContentScripts(targetTab) {
   const SCRIPTS = MF.content_scripts;
   const globToRe = (s, re = '.') => stringAsRegExpStr(s.replace(/\*/g, '\n')).replace(/\n/g, re + '*?');
   const busyTabs = /*@__PURE__*/new Set();
-  for (const cs of SCRIPTS) {
-    if (!(cs[ALL_URLS] = cs.matches.includes(ALL_URLS))) {
+  if (!initialized) {
+    initialized = true;
+    for (const cs of SCRIPTS) {
+      if ((cs[ALL_URLS] = cs.matches.includes(ALL_URLS))) {
+        continue;
+      }
       cs.matches.forEach((m, i) => {
         const [, scheme, host, path] = m.match(/^([^:]+):\/\/([^/]+)\/(.*)/);
         cs.matches[i] = new RegExp(`^${
