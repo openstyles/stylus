@@ -6,7 +6,7 @@ import {onStorageChanged} from './util-webext';
 let busy, setReady;
 
 /** @type {StylusClientData & {then: (cb: (data: StylusClientData) => ?) => Promise}} */
-export const clientData = process.env.ENTRY === true && (
+export const clientData = !process.env.IS_BG && (
   global[process.env.CLIENT_DATA] ??= API.setClientData(null, {
     url: location.href,
     dark: isCssDarkScheme(),

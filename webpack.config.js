@@ -80,8 +80,8 @@ const VARS = {
 };
 const RAW_VARS = {
   API: 'global.API', // hiding the global from IDE
-  DEBUGLOG: process.env.DEBUG ? 'console.log' : 'null?.',
-  DEBUGWARN: process.env.DEBUG ? 'console.warn' : 'null?.',
+  DEBUGLOG: (process.env.DEBUG ? '' : 'null&&') + 'console.log',
+  DEBUGWARN: (process.env.DEBUG ? '' : 'null&&') + 'console.warn',
   KEEP_ALIVE: '1&&',
 };
 const BANNER = '{const global = this, window = global;';
@@ -139,7 +139,7 @@ const getBaseConfig = () => ({
         test: /\.(png|svg|jpe?g|gif|ttf)$/i,
         type: 'asset/resource',
       }, {
-        test: /\.m?js$/,
+        test: /\.m?js(\?.*)?$/,
         exclude: [ROOT + 'node_modules/'],
         loader: 'babel-loader',
         options: {root: ROOT},

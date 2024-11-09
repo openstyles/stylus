@@ -47,12 +47,12 @@ export const set = (tabId, ...args) => {
   }
   if (!del) obj[lastKey] = value;
   else if (obj) delete obj[lastKey];
-  stateDb.set(tabId, obj0);
+  if (process.env.MV3) stateDb.set(tabId, obj0);
 };
 
 export const remove = tabId => {
   cache.delete(tabId);
-  stateDb.remove(tabId);
+  if (process.env.MV3) stateDb.remove(tabId);
 };
 
 bgReady.then(() => {
@@ -62,7 +62,7 @@ bgReady.then(() => {
     if ((obj = cache.get(tabId))) oldUrl = obj.url;
     else cache.set(tabId, obj = {});
     obj.url = url;
-    stateDb.set(tabId, obj);
+    if (process.env.MV3) stateDb.set(tabId, obj);
     for (const fn of onUrl) fn(tabId, url, oldUrl);
   });
 });

@@ -61,7 +61,7 @@ export const debounce = /*@__PURE__*/(() => {
   }
 })();
 
-export const makePropertyPopProxy = () => new Proxy({}, {
+export const makePropertyPopProxy = data => new Proxy(data, {
   get: (obj, k, v) => ((
     (v = obj[k]),
     delete obj[k],

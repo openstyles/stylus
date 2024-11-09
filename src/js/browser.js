@@ -61,3 +61,19 @@ if (process.env.MV3) {
     });
   global.browser = createProxy(chrome);
 }
+
+if (!process.env.MV3 && !DOMTokenList.prototype.replace) {
+  // TODO: remove when minimum_chrome_version >= 61
+  global.URLSearchParams = class extends URLSearchParams {
+    constructor(init) {
+      if (init && typeof init === 'object') {
+        super();
+        for (const [key, val] of init[Symbol.iterator] ? init : Object.entries(init)) {
+          this.set(key, val);
+        }
+      } else {
+        super(...arguments);
+      }
+    }
+  };
+}
