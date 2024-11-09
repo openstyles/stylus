@@ -534,33 +534,18 @@ a:hover i {
 #popup-options {
   --btn-gap: var(--outer-padding);
   display: flex;
-  flex-direction: row;
   padding: var(--outer-padding);
   margin-right: calc(-1 * var(--btn-gap));
   background: var(--bg);
-  .split-btn > :first-child {
-    width: calc(100% - 16px);
-  }
-  .blocked & > * > :first-child {
-    width: 100%;
-  }
-  & button {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    height: var(--input-height);
-    &:not(:hover) {
-      border-color: transparent;
-      background: none;
-    }
+  justify-content: space-between;
+  & button:not(:hover) {
+    border-color: transparent;
+    background: none;
   }
   > * {
+    display: flex;
+    max-width: calc(50% - var(--btn-gap) - var(--inner-padding));
     margin-right: var(--btn-gap);
-  }
-  > *,
-  .split-btn > :first-child {
-    /* several languages have labels of wildly different lengths so we try to maintain the proportion */
-    flex: 1 1 auto;
   }
 }
 #options-btn {

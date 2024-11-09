@@ -70,7 +70,7 @@ function onRuntimeMessage(msg) {
 function onWindowResize() {
   if (document.readyState !== 'complete') {
     requestAnimationFrame(onWindowResize);
-  } else if (document.body.clientHeight > innerHeight) {
+  } else if (document.body.clientHeight > innerHeight + 1/*rounding errors in CSS*/) {
     removeEventListener('resize', onWindowResize);
     document.body.style.maxHeight = innerHeight + 'px';
   }

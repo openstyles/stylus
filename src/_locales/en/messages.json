@@ -462,6 +462,10 @@
     "message": "Currently applied filters match no styles",
     "description": "Text shown when no styles match currently applied filter in the style manager"
   },
+  "find": {
+    "message": "Find",
+    "description": "Button in the popup to find styles for the current site"
+  },
   "findStyles": {
     "message": "Find styles",
     "description": "Text for a link that gets a list of styles for the current site"
