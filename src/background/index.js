@@ -5,7 +5,7 @@ import {DNR, updateDNR} from '/js/dnr';
 import {_execute, API, onMessage} from '/js/msg';
 import {createPortProxy} from '/js/port';
 import * as prefs from '/js/prefs';
-import {FIREFOX, MOBILE, WINDOWS} from '/js/ua';
+import {CHROME, FIREFOX, MOBILE, WINDOWS} from '/js/ua';
 import {workerPath} from '/js/urls';
 import {broadcast, pingTab} from './broadcast';
 import './broadcast-injector-config';
@@ -51,7 +51,8 @@ Object.assign(API, /** @namespace API */ {
   info: {
     get: async () => ({
       dark: colorScheme.isDark,
-      favicon: FIREFOX || (isVivaldi.then ? await isVivaldi : isVivaldi),
+      favicon: process.env.BUILD !== 'chrome' && FIREFOX
+        || (isVivaldi.then ? await isVivaldi : isVivaldi),
     }),
     set(info) {
       let v;
@@ -98,7 +99,7 @@ Object.assign(API, /** @namespace API */ {
 //#region Events
 
 chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
-  if (process.env.BUILD === 'chrome' || !FIREFOX) {
+  if (process.env.BUILD !== 'firefox' && CHROME) {
     reinjectContentScripts();
     initContextMenus();
   }

@@ -24,7 +24,7 @@ export default async function makePopupData() {
   ] = await Promise.all([
     isOwn
       || supported(url) && pingTab(tab.id),
-    isOwn && CHROME && getAllFrames(url, tab)
+    isOwn && CHROME && process.env.BUILD !== 'firefox' && getAllFrames(url, tab)
       || browser.webNavigation.getAllFrames({tabId: tab.id}),
   ]);
   // sorting frames and connecting children to parents

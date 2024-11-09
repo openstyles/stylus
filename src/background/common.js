@@ -28,7 +28,7 @@ export let isVivaldi = !!(browserWindows && CHROME) && (async () => {
       browserWindows.onCreated.removeListener(onCreated);
       resolve(w);
     }));
-  isVivaldi = wnd && !!(wnd.vivExtData || wnd.extData);
+  isVivaldi = !!(wnd && (wnd.vivExtData || wnd.extData));
   return isVivaldi;
 })();
 

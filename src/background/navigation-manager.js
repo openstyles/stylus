@@ -26,7 +26,8 @@ webNavigation.onReferenceFragmentUpdated.addListener(onFakeNavigation.bind(['has
 
 /** @this {string[]} type */
 async function onNavigation(data) {
-  if (CHROME && data.timeStamp === prevData.timeStamp && deepEqual(data, prevData)) {
+  if (CHROME && process.env.BUILD !== 'firefox' &&
+      data.timeStamp === prevData.timeStamp && deepEqual(data, prevData)) {
     return; // Chrome bug: listener is called twice with identical data
   }
   prevData = data;
@@ -39,7 +40,7 @@ async function onNavigation(data) {
     }
   }
   if (!process.env.MV3 &&
-      CHROME &&
+      CHROME && process.env.BUILD !== 'firefox' &&
       chromeProtectsNTP &&
       data.url.startsWith('https://www.google.') &&
       data.url.includes('/_/chrome/newtab?')) {

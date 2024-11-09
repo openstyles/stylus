@@ -80,7 +80,7 @@ tabMan.onUnload.add((tabId, frameId) => {
   removePreloadedStyles(null, tabId + ':' + frameId);
 });
 webNavigation.onErrorOccurred.addListener(removePreloadedStyles, WEBNAV_FILTER);
-if (CHROME && !process.env.MV3) {
+if (CHROME && !process.env.MV3 && process.env.BUILD !== 'firefox') {
   chrome.webRequest.onBeforeRequest.addListener(openNamedStyle, {
     urls: [ownRoot + '*.user.css'],
     types: [kMainFrame],
@@ -106,7 +106,7 @@ function toggle(prefKey) {
     return;
   }
   let v;
-  if (process.env.BUILD === 'firefox' || FIREFOX || (
+  if (process.env.BUILD !== 'chrome' && FIREFOX || (
     process.env.MV3
       ? csp !== curCSP
       : (xhr || csp) !== (curXHR || curCSP)
