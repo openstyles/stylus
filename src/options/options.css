@@ -65,6 +65,7 @@ label.chromium-only > :first-child::after {
   align-items: center;
   padding: var(--pad05) var(--pad);
   position: relative;
+  flex-shrink: 0; /* TODO: remove when minimum_chrome_version >= 72 */
   &:nth-last-child(n + 2) {
     border-bottom: 1px dotted var(--c80);
   }
