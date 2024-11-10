@@ -2,6 +2,7 @@
 import {API} from './msg-api';
 import {deepCopy, deepEqual, isCssDarkScheme, makePropertyPopProxy} from './util';
 import {onStorageChanged} from './util-webext';
+import './msg-init'; // installs direct `API` handler
 
 let busy, setReady;
 
