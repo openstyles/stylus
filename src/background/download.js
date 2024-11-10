@@ -1,7 +1,6 @@
 import {kAppUrlencoded, kContentType} from '/js/consts';
 import {uso, usoJson} from '/js/urls';
 import {tryJSONparse} from '/js/util';
-import {safeTimeout} from './common';
 
 /** @type {Record<string, {req: Promise, ports: Set<chrome.runtime.Port>}>} */
 const jobs = {};
@@ -27,8 +26,9 @@ const callAbort = process.env.MV3 && ((ctl, url) => ctl.abort(kTimeoutFetching +
  */
 export default function download(url, params = {}) {
   const key = arguments[1] ? url + '\x00' + JSON.stringify(params) : url;
-  const job = jobs[key] ||
-    (jobs[key] = {req: doDownload(url, params, key)});
+  const job = jobs[key] ??= {
+    req: process.env.KEEP_ALIVE(doDownload(url, params, key)),
+  };
   if (params.port) {
     const ports = job.ports || (job.ports = new Set());
     const p = chrome.runtime.connect({name: params.port});
@@ -75,7 +75,7 @@ async function doDownload(url, {
         method,
         signal: !timeout ? null : (
           abort = new AbortController(),
-          timer = safeTimeout(callAbort, timeout, abort, url),
+          timer = setTimeout(callAbort, timeout, abort, url),
           abort.signal
         ),
       })
@@ -99,7 +99,7 @@ async function doDownload(url, {
       });
     if (process.env.MV3) {
       if (timer) clearTimeout(timer);
-      timer = loadTimeout && safeTimeout(callAbort, loadTimeout, abort, url);
+      timer = loadTimeout && setTimeout(callAbort, loadTimeout, abort, url);
     }
     if (requiredStatusCode && resp.status !== requiredStatusCode && !url.startsWith('file:')) {
       throw new Error(`Bad status code ${resp.status} for ${url}`);

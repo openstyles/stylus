@@ -558,7 +558,10 @@ async function fetchIndex() {
     indexing = null;
     elNote.style.opacity = 0;
   });
-  await Promise.race(jobs);
+  // Polyfilling a leaky Promise.race, https://crbug.com/42203149
+  await new Promise((resolve, reject) => {
+    for (const job of jobs) job.then(resolve, reject);
+  });
   return index;
 }
 
