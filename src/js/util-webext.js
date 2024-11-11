@@ -3,6 +3,7 @@ import {CHROME} from './ua';
 import {ownRoot} from './urls';
 import {deepCopy} from './util';
 
+export const ownId = chrome.runtime.id;
 export const MF = /*@__PURE__*/ chrome.runtime.getManifest();
 export const MF_ICON = /*@__PURE__*/ MF.icons[16].replace(ownRoot, '');
 export const MF_ICON_PATH = /*@__PURE__*/ MF_ICON.slice(0, MF_ICON.lastIndexOf('/') + 1);

@@ -5,7 +5,7 @@ import * as prefs from '/js/prefs';
 import {CHROME, FIREFOX} from '/js/ua';
 import {actionPopupUrl, ownRoot} from '/js/urls';
 import {deepEqual} from '/js/util';
-import {ignoreChromeError, toggleListener} from '/js/util-webext';
+import {ignoreChromeError, ownId, toggleListener} from '/js/util-webext';
 import {bgReady, safeTimeout} from './common';
 import {webNavigation} from './navigation-manager';
 import makePopupData from './popup-data';
@@ -17,7 +17,6 @@ const idCSP = 'patchCsp';
 const idOFF = 'disableAll';
 const idXHR = 'styleViaXhr';
 const REVOKE_TIMEOUT = 10e3;
-const ownId = chrome.runtime.id;
 const kSetCookie = 'set-cookie'; // must be lowercase
 const kSubFrame = 'sub_frame';
 const rxHOST = /^('non(e|ce-.+?)'|(https?:\/\/)?[^']+?[^:'])$/; // strips CSP sources covered by *

@@ -216,7 +216,6 @@ async function authUserMV2(url, interactive, redirectUri) {
 
 async function authUserMV3(url, interactive, redirectUri) {
   if (redirectUri) {
-    // FIXME: see if this works, otherwise use a content script to redirect to DEFAULT_REDIRECT_URI
     await updateDNR([{
       id: DNR_ID_IDENTITY,
       condition: {
