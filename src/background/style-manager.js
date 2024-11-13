@@ -89,8 +89,6 @@ class MatchQuery {
   }
 }
 
-bgReady.styles = init();
-
 chrome.runtime.onConnect.addListener(port => {
   // Using ports to reliably track when the client is closed, however not for messaging,
   // because our `API` is much faster due to direct invocation.
@@ -98,6 +96,8 @@ chrome.runtime.onConnect.addListener(port => {
   const fn = ON_DISCONNECT[type];
   if (fn) port.onDisconnect.addListener(fn);
 });
+
+bgReady._deps.push(init());
 bgReady.then(() => colorScheme.onChange(value => {
   broadcastExtension({method: 'colorScheme', value});
   for (const {style} of dataMap.values()) {

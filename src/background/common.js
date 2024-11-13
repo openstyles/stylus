@@ -33,3 +33,4 @@ export let isVivaldi = !!(browserWindows && CHROME) && (async () => {
 })();
 
 window._ready = bgReady;
+bgReady._deps = [];

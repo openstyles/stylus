@@ -36,7 +36,7 @@ export const debounce = /*@__PURE__*/(() => {
     }
     old.args = args;
     old.time = t;
-    old.timer = setTimeout(run, delay, fn, args, process.env.ENTRY === 'sw' && (
+    old.timer = setTimeout(run, delay, fn, args, process.env.ENTRY === 'sw' && delay && (
       old[kResolve] = process.env.KEEP_ALIVE(promiseWithResolve())[kResolve]
     ));
   }, {
@@ -56,7 +56,7 @@ export const debounce = /*@__PURE__*/(() => {
   }
   async function run(fn, args, resolve) {
     timers.delete(fn);
-    if (process.env.ENTRY === 'sw') resolve(fn(...args));
+    if (process.env.ENTRY === 'sw' && resolve) resolve(fn(...args));
     else fn(...args);
   }
 })();

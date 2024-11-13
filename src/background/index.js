@@ -132,9 +132,9 @@ onMessage(async (m, sender) => {
 
 //#endregion
 
-bgReady.styles.then(() => {
+Promise.all(bgReady._deps).then(() => {
   bgReady[kResolve]();
-  bgReady[kResolve] = null;
+  bgReady[kResolve] = bgReady._deps = null;
   if (process.env.ENTRY !== 'sw') window._msgExec = _execute;
   if (process.env.BUILD !== 'chrome' && FIREFOX) {
     initBrowserCommandsApi();
