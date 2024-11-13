@@ -19,11 +19,12 @@ export const get = /*@__PURE__*/syncApi.get.bind(syncApi);
 export const set = /*@__PURE__*/run.bind(syncApi.set);
 export const getValue = async key => (await get(key))[key];
 export const setValue = (key, value) => set({[key]: value});
+export const unLZ = val => tryJSONparse(decompressFromUTF16(val));
 
 let busy;
 
 export async function getLZValue(key) {
-  return tryJSONparse(decompressFromUTF16((await get(key))[key]));
+  return unLZ((await get(key))[key]);
 }
 
 export function setLZValue(key, value) {
@@ -34,7 +35,7 @@ export async function getLZValues(keys = Object.values(LZ_KEY)) {
   const data = await get(keys);
   for (const key of keys) {
     const value = data[key];
-    data[key] = value && tryJSONparse(decompressFromUTF16(value));
+    data[key] = value && unLZ(value);
   }
   return data;
 }

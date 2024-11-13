@@ -12,7 +12,7 @@ const {ROOT, MANIFEST} = require('./util');
 const DST = ROOT + 'dist/';
 const WEBPACK_CLI = 'webpack-cli --no-stats';
 const sChrome = 'chrome';
-const sChromeBeta = 'chrome-mv3';
+const sChromeBeta = 'chrome-beta';
 const sFirefox = 'firefox';
 
 fse.emptyDirSync(ROOT + 'node_modules/.cache/webpack');

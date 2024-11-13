@@ -1,4 +1,4 @@
-import {getLZValue, LZ_KEY} from '/js/chrome-sync';
+import {getLZValue, LZ_KEY, unLZ} from '/js/chrome-sync';
 import {onStorageChanged} from '/js/util-webext';
 
 export let value;
@@ -13,6 +13,6 @@ export async function load() {
 
 onStorageChanged.addListener(changes => {
   if ((changes = changes[key])) {
-    value = changes.newValue;
+    value = unLZ(changes.newValue);
   }
 });

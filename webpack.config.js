@@ -26,7 +26,7 @@ const JS = 'js/';
 const SHIM = ROOT + 'tools/shim/';
 const SEP_ESC = escapeForRe(path.sep);
 const SRC_ESC = escapeForRe(SRC.replaceAll('/', path.sep));
-const MV3 = FLAVOR === 'mv3';
+const MV3 = ['mv3', 'beta'].includes(FLAVOR);
 const PAGE_BG = MV3 ? 'background/sw' : 'background';
 const PAGE_OFFSCREEN = 'offscreen';
 const PAGES = [
