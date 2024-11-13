@@ -7,7 +7,7 @@ import {chromeLocal} from '/js/storage-util';
 import {extractUsoaId, isLocalhost, usoApi} from '/js/urls';
 import {debounce, deepMerge} from '/js/util';
 import {ignoreChromeError} from '/js/util-webext';
-import {bgReady, safeTimeout} from './common';
+import {bgBusy, safeTimeout} from './common';
 import {db} from './db';
 import download from './download';
 import * as styleMan from './style-manager';
@@ -46,7 +46,7 @@ let checkingAll = false;
 let logQueue = [];
 let logLastWriteTime = 0;
 
-bgReady.then(async () => {
+bgBusy.then(async () => {
   lastUpdateTime = await chromeLocal.getValue('lastUpdateTime') || Date.now();
   prefs.subscribe('updateInterval', schedule, true);
   chrome.alarms.onAlarm.addListener(onAlarm);

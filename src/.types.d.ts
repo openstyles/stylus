@@ -145,3 +145,8 @@ declare interface USWorldData {
 declare interface RemotePortEvent extends MessageEvent {
   _transfer?: Transferable[];
 }
+
+declare interface IDBObjectStoreMany extends IDBObjectStore {
+  getMany: (ids: any[]) => Promise<any[]>;
+  putMany: (items: any[]) => Promise<any[]>;
+}

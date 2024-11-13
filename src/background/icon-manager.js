@@ -3,7 +3,7 @@ import {CHROME, FIREFOX, MOBILE, VIVALDI} from '/js/ua';
 import {debounce} from '/js/util';
 import {ignoreChromeError, MF_ICON_EXT, MF_ICON_PATH} from '/js/util-webext';
 import * as colorScheme from './color-scheme';
-import {bgReady} from './common';
+import {bgBusy} from './common';
 import {removePreloadedStyles} from './style-via-webrequest';
 import * as tabMan from './tab-manager';
 
@@ -23,7 +23,7 @@ colorScheme.onChange(() => {
   }
 }, !process.env.MV3);
 
-bgReady.then(() => {
+bgBusy.then(() => {
   prefs.subscribe([
     'disableAll',
     'badgeDisabled',

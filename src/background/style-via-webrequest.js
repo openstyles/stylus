@@ -1,15 +1,15 @@
-import {kAppJson, kMainFrame, kPopup, kResolve} from '/js/consts';
-import {updateDNR} from '/js/dnr';
+import {kAppJson, kMainFrame, kPopup} from '/js/consts';
+import {updateSessionRules} from '/js/dnr';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {CHROME, FIREFOX} from '/js/ua';
 import {actionPopupUrl, ownRoot} from '/js/urls';
 import {deepEqual} from '/js/util';
 import {ignoreChromeError, ownId, toggleListener} from '/js/util-webext';
-import {bgReady, safeTimeout} from './common';
+import {bgBusy, bgPreInit, safeTimeout, stateDB} from './common';
 import {webNavigation} from './navigation-manager';
 import makePopupData from './popup-data';
-import * as stateDb from './state-db';
+import * as styleCache from './style-cache';
 import {getSectionsByUrl} from './style-manager';
 import * as tabMan from './tab-manager';
 
@@ -17,6 +17,7 @@ const idCSP = 'patchCsp';
 const idOFF = 'disableAll';
 const idXHR = 'styleViaXhr';
 const REVOKE_TIMEOUT = 10e3;
+const kRuleIds = 'ruleIds';
 const kSetCookie = 'set-cookie'; // must be lowercase
 const kSubFrame = 'sub_frame';
 const rxHOST = /^('non(e|ce-.+?)'|(https?:\/\/)?[^']+?[^:'])$/; // strips CSP sources covered by *
@@ -42,8 +43,8 @@ const INJECTED_CODE = `${INJECTED_FUNC}`;
 export const webRequestBlocking = browser.permissions.contains({
   permissions: ['webRequestBlocking'],
 });
-/** @type {Record<string, StyleBlobDNRRule>} */
-const dnrRules = {};
+/** @type {Set<number>} */
+let ruleIds;
 let curOFF = false;
 let curCSP = false;
 let curXHR = false;
@@ -51,26 +52,10 @@ let curXHR = false;
 if (process.env.MV3) {
   toggle(); // register listeners synchronously so they wake up the SW next time it dies
   global.offscreen.syncLifetimeToSW(true);
+  bgPreInit.push((async () => {
+    ruleIds = await stateDB.get(kRuleIds) || new Set();
+  })());
 }
-stateDb.ready?.then(([stateDbData, /*tabs*/, tabsObj]) => {
-  const removeRuleIds = [];
-  stateDbData.forEach((data, id) => {
-    if (id < 0) {
-      id = -id;
-      const {t: tabId, f: frameId, b: blobId} = /** @type {StyleBlobDNRRule} */data;
-      const tab = tabsObj[tabId];
-      if (tab) {
-        dnrRules[id] = data;
-        toSend[tabId + ':' + frameId] = {ruleId: id, blobId, url: tab.url};
-      } else {
-        revokeObjectURL(blobId);
-        removeRuleIds.push(id);
-        stateDb.remove(-id);
-      }
-    }
-  });
-  if (removeRuleIds.length) updateDNR(undefined, removeRuleIds, true);
-});
 prefs.ready.then(() => {
   toggle(process.env.MV3); // in MV3 this will unregister unused listeners
   prefs.subscribe([idOFF, idCSP, idXHR], toggle);
@@ -132,13 +117,24 @@ function toggle(prefKey) {
 
 /** @type {typeof chrome.webRequest.onBeforeRequest.callback} */
 async function prepareStyles(req) {
-  if (bgReady[kResolve]) await bgReady;
   const {url} = req;
-  const key = req2key(req);
+  const {tabId, frameId} = req;
+  if (bgBusy) {
+    const jobs = [
+      styleCache.loadOne(url),
+      frameId && tabMan.load(tabId),
+    ];
+    const i = bgPreInit.push(...jobs) - jobs.length;
+    const results = await Promise.all(bgPreInit);
+    const cached = results[i];
+    const tab = results[i + 1];
+    if (tab) req.tab = tab;
+    if (!cached) await bgBusy;
+  }
+  const key = tabId + ':' + frameId;
   const oldData = toSend[key];
   const data = oldData || (toSend[key] = {});
-  const thisArg = {sender: (req.tab = {url}, req)};
-  const payload = data.payload = getSectionsByUrl.call(thisArg, url, null, true);
+  const payload = data.payload = getSectionsByUrl.call({sender: req}, url, null, true);
   const willStyle = payload.sections.length;
   data.url = url;
   if (oldData) removePreloadedStyles(null, key, data, willStyle);
@@ -164,12 +160,13 @@ async function prepareStylesMV3({tabId, frameId, url}, data, key, payload) {
   const cookie = makeXhrCookie(blobId);
   let {ruleId = 0} = data;
   if (!ruleId) {
-    while (++ruleId in dnrRules) {/**/}
+    while (ruleIds.has(++ruleId)) {/**/}
     data.ruleId = ruleId;
   }
   /** @namespace StyleBlobDNRRule */
-  stateDb.set(-ruleId, dnrRules[ruleId] = {t: tabId, f: frameId, b: blobId});
-  updateDNR([{
+  ruleIds.add(ruleId);
+  stateDB.put(ruleIds, kRuleIds);
+  updateSessionRules([{
     id: ruleId,
     condition: {
       tabIds: [tabId],
@@ -181,7 +178,7 @@ async function prepareStylesMV3({tabId, frameId, url}, data, key, payload) {
       type: 'modifyHeaders',
       responseHeaders: [{header: kSetCookie, value: cookie, operation: 'append'}],
     },
-  }], [ruleId], true);
+  }]);
 }
 
 function injectData(req) {
@@ -286,10 +283,11 @@ export function removePreloadedStyles(req, key = req2key(req), data = toSend[key
   if ((v = data.timer)) {
     data.timer = clearTimeout(v);
   }
-  if (process.env.MV3 && !keep && (v = data.ruleId) in dnrRules) {
-    delete dnrRules[v];
-    updateDNR(undefined, [v], true);
-    stateDb.remove(-v);
+  if (process.env.MV3 && !keep && ruleIds.has(v = data.ruleId)) {
+    ruleIds.delete(v);
+    if (ruleIds.size) stateDB.put(ruleIds, kRuleIds);
+    else stateDB.delete(kRuleIds);
+    updateSessionRules(undefined, [v]);
   }
 }
 

@@ -1,7 +1,7 @@
 import './intro';
 import '/js/browser';
 import {kResolve} from '/js/consts';
-import {DNR, updateDNR} from '/js/dnr';
+import {DNR, updateDynamicRules} from '/js/dnr';
 import {_execute, API, onMessage} from '/js/msg';
 import {createPortProxy} from '/js/port';
 import * as prefs from '/js/prefs';
@@ -10,15 +10,14 @@ import {workerPath} from '/js/urls';
 import {broadcast, pingTab} from './broadcast';
 import './broadcast-injector-config';
 import initBrowserCommandsApi from './browser-cmd-hotkeys';
-import * as colorScheme from './color-scheme';
-import {bgReady, isVivaldi} from './common';
+import {setSystemDark} from './color-scheme';
+import {bgBusy, bgInit, bgPreInit} from './common';
 import reinjectContentScripts from './content-scripts';
 import initContextMenus from './context-menus';
 import download from './download';
 import {updateIconBadge} from './icon-manager';
 import prefsApi from './prefs-api';
 import setClientData from './set-client-data';
-import * as stateDb from './state-db';
 import * as styleMan from './style-manager';
 import initStyleViaApi from './style-via-api';
 import './style-via-webrequest';
@@ -48,18 +47,6 @@ Object.assign(API, /** @namespace API */ {
     },
   }))(),
 
-  info: {
-    get: async () => ({
-      dark: colorScheme.isDark,
-      favicon: process.env.BUILD !== 'chrome' && FIREFOX
-        || (isVivaldi.then ? await isVivaldi : isVivaldi),
-    }),
-    set(info) {
-      let v;
-      if ((v = info.preferDark) != null) colorScheme.setSystemDark(v);
-    },
-  },
-
   //#endregion
   //#region API misc actions
 
@@ -68,6 +55,7 @@ Object.assign(API, /** @namespace API */ {
   openManage,
   openURL,
   pingTab,
+  setSystemDark,
   updateIconBadge,
   waitForTabUrl,
 
@@ -111,17 +99,16 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
     API.prefsDb.delete('badFavs'); // old Stylus marked all icons as bad when network was offline
   }
   if (process.env.MV3) {
-    stateDb.idb.clear();
-    for (const isSession of [false, true]) {
-      (isSession ? DNR.getDynamicRules() : DNR.getSessionRules()).then(rules =>
-        updateDNR(undefined, rules.map(r => r.id), isSession));
-    }
+    bgPreInit.push(
+      DNR.getDynamicRules().then(rules =>
+        updateDynamicRules(undefined, rules.map(r => r.id)))
+    );
   }
 });
 
 onMessage(async (m, sender) => {
   if (m.method === 'invokeAPI') {
-    if (bgReady[kResolve]) await bgReady;
+    if (bgBusy) await bgBusy;
     let res = API;
     for (const p of m.path.split('.')) res = res && res[p];
     if (!res) throw new Error(`Unknown API.${m.path}`);
@@ -132,13 +119,16 @@ onMessage(async (m, sender) => {
 
 //#endregion
 
-Promise.all(bgReady._deps).then(() => {
-  bgReady[kResolve]();
-  bgReady[kResolve] = bgReady._deps = null;
+(async () => {
+  const numPreInit = bgPreInit.length;
+  await Promise.all(bgPreInit);
+  await Promise.all(bgPreInit.slice(numPreInit)); // added by an event listener on wake-up
+  await Promise.all(bgInit.map(v => typeof v === 'function' ? v() : v));
+  bgBusy[kResolve]();
   if (process.env.ENTRY !== 'sw') window._msgExec = _execute;
   if (process.env.BUILD !== 'chrome' && FIREFOX) {
     initBrowserCommandsApi();
     initContextMenus();
   }
   if (!process.env.MV3) broadcast({method: 'backgroundReady'});
-});
+})();

@@ -1,7 +1,7 @@
 import * as prefs from '/js/prefs';
 import {broadcast} from './broadcast';
 import * as colorScheme from './color-scheme';
-import {bgReady, safeTimeout} from './common';
+import {bgBusy, safeTimeout} from './common';
 import {getUrlOrigin} from './tab-util';
 
 let cfg;
@@ -11,7 +11,7 @@ const INJECTOR_CONFIG_MAP = {
   styleViaASS: 'ass',
 };
 
-bgReady.then(() => {
+bgBusy.then(() => {
   prefs.subscribe(Object.keys(INJECTOR_CONFIG_MAP), broadcastInjectorConfig);
   colorScheme.onChange(broadcastInjectorConfig.bind(null, 'dark'));
 });

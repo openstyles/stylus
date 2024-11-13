@@ -52,7 +52,7 @@ if (!FF) {
 }
 if (mqDark) {
   mqDark.onchange = ({matches: m}) => {
-    if (m !== own.cfg.dark) API.info.set({preferDark: own.cfg.dark = m});
+    if (m !== own.cfg.dark) API.setSystemDark(own.cfg.dark = m);
   };
 }
 if (TDM < 0) {

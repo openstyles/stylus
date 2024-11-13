@@ -2,9 +2,8 @@ import {kApplyPort} from '/js/consts';
 import {supported} from '/js/urls';
 import {sleep} from '/js/util';
 import {ignoreChromeError, toggleListener} from '/js/util-webext';
-import {bgReady} from './common';
+import {bgBusy, bgInit, stateDB} from './common';
 import {onUrlChange} from './navigation-manager';
-import * as stateDb from './state-db';
 
 export const onUrl = new Set();
 export const onUnload = new Set();
@@ -27,6 +26,17 @@ export const entries = /*@__PURE__*/cache.entries.bind(cache);
 /** @type {typeof Map.prototype.keys} */
 export const keys = /*@__PURE__*/cache.keys.bind(cache);
 
+export const load = async tabId => {
+  const oldVal = process.env.MV3 && await stateDB.get(tabId);
+  const val = oldVal || {
+    id: tabId,
+    url: (await browser.tabs.get(tabId).catch(ignoreChromeError))?.url,
+  };
+  cache.set(tabId, val);
+  if (process.env.MV3 && !oldVal) stateDB.put(val, tabId);
+  return val;
+};
+
 /**
  * number of keys is arbitrary, last arg is value, `undefined` will delete the last key from meta
  * (tabId, 'foo', 123) will set tabId's meta to {foo: 123},
@@ -47,40 +57,54 @@ export const set = (tabId, ...args) => {
   }
   if (!del) obj[lastKey] = value;
   else if (obj) delete obj[lastKey];
-  if (process.env.MV3) stateDb.set(tabId, obj0);
+  if (process.env.MV3) {
+    obj0.id = tabId;
+    stateDB.put(obj0, tabId);
+  }
 };
 
 export const remove = tabId => {
   cache.delete(tabId);
-  if (process.env.MV3) stateDb.remove(tabId);
+  if (process.env.MV3) stateDB.delete(tabId);
 };
 
-bgReady.then(() => {
+bgInit.push(async () => {
+  const [dbData, tabs] = await Promise.all([
+    process.env.MV3 ? stateDB.getAll(IDBKeyRange.bound(0, Number.MAX_SAFE_INTEGER)) : [],
+    chrome.tabs.query({}),
+  ]);
+  const tabsObj = {};
+  const dbMap = new Map();
+  for (const val of dbData) dbMap.set(val.id, val);
+  for (const tab of tabs) tabsObj[tab.id] = tab;
+  for (const {id, url} of tabs) {
+    if (supported(url)) {
+      let data = process.env.MV3 && dbMap.get(id);
+      if (!data ? data = {id} : data.url !== url) {
+        data.url = url;
+        if (process.env.MV3) stateDB.put(data, id);
+      }
+      cache.set(id, data);
+    }
+  }
+  if (process.env.MV3) {
+    for (const key of dbMap.keys()) {
+      if (!cache.has(key)) stateDB.delete(key);
+    }
+  }
+});
+
+bgBusy.then(() => {
   onUrlChange.add(({tabId, frameId, url}) => {
     if (frameId) return;
     let obj, oldUrl;
     if ((obj = cache.get(tabId))) oldUrl = obj.url;
     else cache.set(tabId, obj = {});
+    obj.id = tabId;
     obj.url = url;
-    if (process.env.MV3) stateDb.set(tabId, obj);
+    if (process.env.MV3) stateDB.put(obj, tabId);
     for (const fn of onUrl) fn(tabId, url, oldUrl);
   });
-});
-
-stateDb.ready?.then(([dbData, tabs]) => {
-  for (const {id, url} of tabs) {
-    if (supported(url)) {
-      let data = dbData.get(id);
-      if (!data ? data = {} : data.url !== url) {
-        data.url = url;
-        stateDb.set(id, data);
-      }
-      cache.set(id, data);
-    }
-  }
-  for (const key of dbData.keys()) {
-    if (+key >= 0 && !cache.has(key)) stateDb.remove(key);
-  }
 });
 
 chrome.runtime.onConnect.addListener(port => {

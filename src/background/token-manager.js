@@ -1,5 +1,5 @@
 import {kAppUrlencoded, kContentType} from '/js/consts';
-import {DNR_ID_IDENTITY, updateDNR} from '/js/dnr';
+import {DNR_ID_IDENTITY, updateDynamicRules} from '/js/dnr';
 import {chromeLocal} from '/js/storage-util';
 import {FIREFOX} from '/js/ua';
 import * as URLS from '/js/urls';
@@ -217,7 +217,7 @@ async function authUserMV2(url, interactive, redirectUri) {
 async function authUserMV3(url, interactive, redirectUri) {
   const apiUrl = chrome.identity.getRedirectURL();
   if (apiUrl !== redirectUri) {
-    await updateDNR([{
+    await updateDynamicRules([{
       id: DNR_ID_IDENTITY,
       condition: {
         urlFilter: '|' + redirectUri,
@@ -236,7 +236,7 @@ async function authUserMV3(url, interactive, redirectUri) {
   try {
     return await chrome.identity.launchWebAuthFlow({interactive, url});
   } finally {
-    if (redirectUri) await updateDNR(null, [DNR_ID_IDENTITY]);
+    if (redirectUri) await updateDynamicRules(undefined, [DNR_ID_IDENTITY]);
   }
 }
 

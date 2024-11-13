@@ -18,42 +18,54 @@ let exec = process.env.BUILD === 'chrome' || CHROME
 const DB = 'stylish';
 const FALLBACK = 'dbInChromeStorage';
 const REASON = FALLBACK + 'Reason';
-const ID_AS_KEY = {};
+const CACHING = {};
+const DATA_KEY = {};
 const STORES = {};
-const cache = {};
+const VERSIONS = {};
+const dataCache = {};
 const proxies = {};
 const databases = {};
 const proxyHandler = {
-  get: ({dbName}, cmd) => (dbName === DB ? exec : cachedExec).bind(null, dbName, cmd),
+  get: ({dbName}, cmd) => (CACHING[dbName] ? cachedExec : exec).bind(null, dbName, cmd),
 };
 /**
  * @param {string} dbName
- * @param {boolean} [idAsKey]
- * @param {string} [storeName]
- * @return {IDBObjectStore | {putMany: function(items:?[]):Promise<?[]>}}
+ * @param {object} [cfg]
+ * @param {boolean} [cfg.cache]
+ * @param {boolean|string} [cfg.id] - object's prop to be used as a db key
+ * @param {string} [cfg.store]
+ * @return {IDBObjectStoreMany}
  */
-export const getDbProxy = (dbName, idAsKey, store = 'data') => (proxies[dbName] ??= (
-  (ID_AS_KEY[dbName] = !!idAsKey),
+export const getDbProxy = (dbName, {
+  cache,
+  id,
+  store = 'data',
+  ver = 2,
+} = {}) => (proxies[dbName] ??= (
+  (CACHING[dbName] = cache),
+  (DATA_KEY[dbName] = !id || typeof id === 'string' ? id : 'id'),
   (STORES[dbName] = store),
+  (VERSIONS[dbName] = ver),
   new Proxy({dbName}, proxyHandler)
 ));
 
-export const db = getDbProxy(DB, true, 'styles');
+export const db = getDbProxy(DB, {id: true, store: 'styles'});
 
 Object.assign(API, /** @namespace API */ {
-  drafts: getDbProxy('drafts'),
+  drafts: getDbProxy('drafts', {cache: true}),
   /** Storage for big items that may exceed 8kB limit of chrome.storage.sync.
    * To make an item syncable register it with uuidIndex.addCustom. */
-  prefsDb: getDbProxy(STORAGE_KEY),
+  prefsDb: getDbProxy(STORAGE_KEY, {cache: true}),
 });
 
 async function cachedExec(dbName, cmd, a, b) {
-  const hub = cache[dbName] || (cache[dbName] = {});
+  const hub = dataCache[dbName] || (dataCache[dbName] = {});
   const res = cmd === 'get' && a in hub ? hub[a] : await exec(...arguments);
   if (cmd === 'get') {
     hub[a] = deepCopy(res);
   } else if (cmd === 'put') {
-    hub[ID_AS_KEY[dbName] ? a.id : b] = deepCopy(a);
+    const key = DATA_KEY[dbName];
+    hub[key ? a[key] : b] = deepCopy(a);
   } else if (cmd === 'delete') {
     delete hub[a];
   }
@@ -139,7 +151,7 @@ function storeMany(store, method, items) {
   });
   const results = [];
   /** @param {IDBRequest} req */
-  const onsuccess = req => {
+  const onsuccess = ({target: req}) => {
     results[req.i] = req.result;
     if (!--num) resolve(results);
   };
@@ -157,7 +169,7 @@ function storeMany(store, method, items) {
 
 function open(name) {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(name, 2);
+    const request = indexedDB.open(name, VERSIONS[name]);
     request.onsuccess = e => resolve(create(e));
     request.onerror = reject;
     request.onupgradeneeded = create;
@@ -165,7 +177,7 @@ function open(name) {
 }
 
 function create(event) {
-  /** @type IDBDatabase */
+  /** @type {IDBDatabase} */
   const idb = event.target.result;
   const dbName = idb.name;
   const sn = STORES[dbName];
@@ -178,8 +190,8 @@ function create(event) {
         };
       });
     }
-    idb.createObjectStore(sn, ID_AS_KEY[dbName] ? {
-      keyPath: 'id',
+    idb.createObjectStore(sn, DATA_KEY[dbName] ? {
+      keyPath: DATA_KEY[dbName],
       autoIncrement: true,
     } : undefined);
   }

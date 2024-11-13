@@ -1,5 +1,5 @@
 import {subscribe} from '/js/prefs';
-import {bgReady} from '../common';
+import {bgBusy} from '../common';
 
 /** @type {?Promise[]} */
 let busy;
@@ -26,7 +26,7 @@ function keepAlive(job) {
 
 async function keepAliveUntilSettled(promises) {
   busy = promises;
-  if (TTL == null) await bgReady;
+  if (TTL == null && bgBusy) await bgBusy;
   if (!pulse) reschedule();
   do await Promise.allSettled(busy);
   while (busy?.splice(0, promises.length) && busy.length);

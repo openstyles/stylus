@@ -46,7 +46,7 @@ if (process.env.MV3) {
 } else if (!process.env.IS_BG) {
   apiHandler.apply = async (fn, thisObj, args) => {
     bg ??= await browser.runtime.getBackgroundPage().catch(() => {}) || false;
-    const exec = bg && (bg._msgExec || await bg._ready)
+    const exec = bg && (bg._msgExec || await bg._busy)
       ? invokeAPI
       : apiSendProxy;
     return exec(fn, thisObj, args);

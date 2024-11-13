@@ -8,9 +8,9 @@ import {deepEqual, isEmptyObj, mapObj, stringAsRegExpStr, tryRegExp, tryURL} fro
 import {broadcast, broadcastExtension} from './broadcast';
 import broadcastInjectorConfig from './broadcast-injector-config';
 import * as colorScheme from './color-scheme';
-import {bgReady, safeTimeout, uuidIndex} from './common';
+import {bgInit, safeTimeout, uuidIndex} from './common';
 import {db} from './db';
-import StyleCache from './style-cache';
+import * as styleCache from './style-cache';
 import * as tabMan from './tab-manager';
 import {getUrlOrigin} from './tab-util';
 import * as usercssTemplate from './usercss-template';
@@ -21,15 +21,8 @@ export * from './style-search-db';
 
 /** @type {Map<number,StyleMapData>} */
 const dataMap = new Map();
-/** @type {Map<string,CachedInjectedStyles>} */
-const cachedStyleForUrl = StyleCache({
-  onDeleted(url, {sections}) {
-    for (const id in sections) {
-      const data = id2data(id);
-      if (data) data.appliesTo.delete(url);
-    }
-  },
-});
+/** @returns {StyleMapData|void} */
+const id2data = dataMap.get.bind(dataMap);
 const BAD_MATCHER = {test: () => false};
 const compileRe = createCompiler(text => `^(${text})$`);
 const compileSloppyRe = createCompiler(text => `^${text}$`);
@@ -97,15 +90,32 @@ chrome.runtime.onConnect.addListener(port => {
   if (fn) port.onDisconnect.addListener(fn);
 });
 
-bgReady._deps.push(init());
-bgReady.then(() => colorScheme.onChange(value => {
-  broadcastExtension({method: 'colorScheme', value});
-  for (const {style} of dataMap.values()) {
-    if (colorScheme.SCHEMES.includes(style.preferScheme)) {
-      broadcastStyleUpdated(style, 'colorScheme');
+bgInit.push(async () => {
+  const [orderFromDb, styles = []] = await Promise.all([
+    API.prefsDb.get(orderWrap.id),
+    db.getAll(),
+    styleCache.loadAll(),
+  ]);
+  const updated = await Promise.all(styles.map(fixKnownProblems).filter(Boolean));
+  if (updated.length) setTimeout(db.putMany, 0, updated);
+  setOrderImpl(orderFromDb, {store: false});
+  styles.forEach(storeInMap);
+  styleCache.hydrate(dataMap);
+  colorScheme.onChange(value => {
+    broadcastExtension({method: 'colorScheme', value});
+    for (const {style} of dataMap.values()) {
+      if (colorScheme.SCHEMES.includes(style.preferScheme)) {
+        broadcastStyleUpdated(style, 'colorScheme');
+      }
     }
+  }, !process.env.MV3);
+});
+
+styleCache.onDeleted.add((url, val) => {
+  for (const id in val.sections) {
+    dataMap.get(+id)?.appliesTo.delete(url);
   }
-}, !process.env.MV3));
+});
 
 //#endregion
 //#region Exports
@@ -118,7 +128,7 @@ export function remove(id, reason) {
   db.delete(id);
   if (sync) API.sync.remove(uuid, Date.now());
   for (const url of appliesTo) {
-    const cache = cachedStyleForUrl.get(url);
+    const cache = styleCache.get(url);
     if (cache) delete cache.sections[id];
   }
   dataMap.delete(id);
@@ -255,14 +265,14 @@ export function getSectionsByUrl(url, id, isInitialApply) {
     url = tabMan.get(tab.id, kUrl) || url;
   }
   /** @type {CachedInjectedStyles} */
-  let cache = cachedStyleForUrl.get(url);
+  let cache = styleCache.get(url);
   if (!cache) {
     cache = {
+      url,
       sections: {},
       maybeMatch: new Set(),
     };
     buildCache(cache, url, dataMap.values());
-    cachedStyleForUrl.set(url, cache);
   } else if (cache.maybeMatch.size) {
     buildCache(cache, url, Array.from(cache.maybeMatch, id2data).filter(Boolean));
   }
@@ -413,7 +423,7 @@ export async function toggleOverride(id, rule, isInclusion, isAdd) {
   } else {
     return;
   }
-  cachedStyleForUrl.clear();
+  styleCache.clear();
   await saveStyle(style, 'config');
 }
 
@@ -422,17 +432,12 @@ export async function config(id, prop, value) {
   const style = Object.assign({}, id2style(id));
   const d = dataMap.get(id);
   style[prop] = (d.preview || {})[prop] = value;
-  if (prop === 'inclusions' || prop === 'exclusions') cachedStyleForUrl.clear();
+  if (prop === 'inclusions' || prop === 'exclusions') styleCache.clear();
   await saveStyle(style, 'config');
 }
 
 //#endregion
 //#region Implementation
-
-/** @returns {StyleMapData|void} */
-function id2data(id) {
-  return dataMap.get(id);
-}
 
 /** @returns {StyleObj|void} */
 export function id2style(id) {
@@ -500,7 +505,9 @@ function buildCacheForStyle(style) {
   const styleToApply = data.preview || style;
   const excluded = new Set();
   const updated = new Set();
-  for (const [url, cache] of cachedStyleForUrl.entries()) {
+  for (const cache of styleCache.values()) {
+    styleCache.add(cache);
+    const url = cache.url;
     if (!data.appliesTo.has(url)) {
       cache.maybeMatch.add(id);
       continue;
@@ -576,32 +583,22 @@ export function handleSave(style, reason, id = style.id) {
 // get styles matching a URL, including sloppy regexps and excluded items.
 function getAppliedCode(query, data) {
   const result = urlMatchStyle(query, data);
-  if (result === 'included') {
-    // return all sections
-    return data.sections.map(s => s.code);
-  }
-  if (result !== true) {
+  const isIncluded = result === 'included';
+  const code = [];
+  const idx = [];
+  if (!isIncluded && result !== true) {
     return;
   }
-  const code = [];
+  let i = 0;
   for (const section of data.sections) {
-    if (urlMatchSection(query, section) === true && !styleCodeEmpty(section)) {
+    if ((isIncluded || urlMatchSection(query, section) === true)
+    && !styleCodeEmpty(section)) {
       code.push(section.code);
+      idx.push(i);
     }
+    i++;
   }
-  return code.length && code;
-}
-
-async function init() {
-  const [orderFromDb, styles = []] = await Promise.all([
-    API.prefsDb.get(orderWrap.id),
-    db.getAll(),
-    prefs.ready,
-  ]);
-  const updated = await Promise.all(styles.map(fixKnownProblems).filter(Boolean));
-  if (updated.length) safeTimeout(db.putMany, 0, updated);
-  setOrderImpl(orderFromDb, {store: false});
-  styles.forEach(storeInMap);
+  return code.length && [idx, code];
 }
 
 function fixKnownProblems(style, initIndex, initArray) {
@@ -801,15 +798,11 @@ function buildCache(cache, url, styleList) {
       data.appliesTo.add(url);
     }
   }
+  styleCache.add(cache);
 }
 
-function buildCacheEntry(cache, style, code = style.code) {
-  /** @type {InjectedStyle} */
-  cache.sections[style.id] = {
-    code,
-    id: style.id,
-    name: style.customName || style.name,
-  };
+function buildCacheEntry(entry, style, [idx, code]) {
+  styleCache.make(entry, style, idx, code);
 }
 
 /** @return {Generator<StyleObj>} */

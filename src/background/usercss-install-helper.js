@@ -1,18 +1,18 @@
 import '/js/browser';
 import {kContentType, kMainFrame} from '/js/consts';
-import {DNR_ID_INSTALLER, updateDNR} from '/js/dnr';
+import {DNR_ID_INSTALLER, updateDynamicRules} from '/js/dnr';
 import * as prefs from '/js/prefs';
 import * as URLS from '/js/urls';
 import {RX_META} from '/js/util';
 import {FIREFOX} from '/js/ua';
-import {bgReady, safeTimeout} from './common';
+import {bgBusy, safeTimeout} from './common';
 import download from './download';
 import * as tabMan from './tab-manager';
 import {openURL} from './tab-util';
 
 const installCodeCache = {};
 
-bgReady.then(() => {
+bgBusy.then(() => {
   prefs.subscribe('urlInstaller', toggle, true);
 });
 
@@ -36,7 +36,7 @@ function toggle(key, val) {
     ...['greasy', 'sleazy'].map(h => `https://update.${h}fork.org/`),
   ];
   if (process.env.MV3) {
-    updateDNR([{
+    updateDynamicRules([{
       id: DNR_ID_INSTALLER,
       condition: {
         regexFilter: (val

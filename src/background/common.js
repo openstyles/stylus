@@ -1,9 +1,13 @@
-import {kResolve} from '/js/consts';
+import {kResolve, kStateDB} from '/js/consts';
 import {CHROME} from '/js/ua';
 import {promiseWithResolve} from '/js/util';
 import {browserWindows} from '/js/util-webext';
+import {getDbProxy} from './db';
 
-export const bgReady = promiseWithResolve();
+export let bgBusy = promiseWithResolve();
+/** Minimal init for a wake-up event */
+export const bgPreInit = [];
+export const bgInit = [];
 
 export const safeTimeout = process.env.ENTRY === 'sw'
   ? (fn, delay, ...args) =>
@@ -13,6 +17,8 @@ export const safeTimeout = process.env.ENTRY === 'sw'
 
 const safeTimeoutResolve = process.env.ENTRY === 'sw'
   && ((fn, args, resolve) => resolve(fn(...args)));
+
+export const stateDB = process.env.MV3 && getDbProxy(kStateDB, {store: 'kv'});
 
 export const uuidIndex = Object.assign(new Map(), {
   custom: {},
@@ -32,5 +38,5 @@ export let isVivaldi = !!(browserWindows && CHROME) && (async () => {
   return isVivaldi;
 })();
 
-window._ready = bgReady;
-bgReady._deps = [];
+window._busy = bgBusy;
+bgBusy.then(() => (bgBusy = null));

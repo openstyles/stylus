@@ -1,6 +1,6 @@
 import * as prefs from '/js/prefs';
 import {debounce, isCssDarkScheme} from '/js/util';
-import * as stateDb from './state-db';
+import {bgBusy, bgInit, bgPreInit, stateDB} from './common';
 
 const changeListeners = new Set();
 const kSTATE = 'schemeSwitcher.enabled';
@@ -11,7 +11,7 @@ const kLight = 'light';
 const kNever = 'never';
 const kSystem = 'system';
 const kTime = 'time';
-const MAP = {
+const map = {
   [kNever]: false,
   [kDark]: true,
   [kLight]: false,
@@ -21,21 +21,29 @@ const MAP = {
 export const SCHEMES = [kDark, kLight];
 /** @type {(val: !boolean) => void} */
 export const setSystemDark = update.bind(null, kSystem);
-export let isDark = false;
+export let isDark;
 let prefState;
 
 chrome.alarms.onAlarm.addListener(onAlarm);
 
-prefs.subscribe(kSTATE, (_, val, firstRun) => {
-  prefState = val;
-  if (firstRun) {
-    if (!process.env.MV3) {
-      setSystemDark(isCssDarkScheme());
-    } else if ((_ = stateDb.get(kDark))) {
-      isDark = _[1];
-      Object.assign(MAP, _[2]);
+if (process.env.MV3) {
+  bgPreInit.push(stateDB.get(kDark).then(v => {
+    if (!v) {
+      isDark = false;
+    } else {
+      isDark ??= v[0];
+      Object.assign(map, v[1]);
     }
-  }
+  }));
+  bgInit.push(async () => {
+    setSystemDark(await global.offscreen.isDark());
+  });
+} else {
+  setSystemDark(isCssDarkScheme());
+}
+
+prefs.subscribe(kSTATE, (_, val) => {
+  prefState = val;
   if (val === kTime) {
     prefs.subscribe([kSTART, kEND], onNightChanged, true);
   } else {
@@ -106,14 +114,16 @@ function updateTimePreferDark() {
 
 function update(type, val) {
   if (type) {
-    if (MAP[type] === val) return;
-    MAP[type] = val;
+    if (map[type] === val) return;
+    map[type] = val;
   }
-  val = MAP[prefState];
+  val = map[prefState];
   if (isDark !== val) {
     isDark = val;
     for (const fn of changeListeners) fn(isDark);
     if (process.env.MV3) type = true;
   }
-  if (process.env.MV3 && type) stateDb.set(kDark, {1: isDark, 2: MAP});
+  if (process.env.MV3 && type && !bgBusy) {
+    stateDB.put([isDark, map], kDark);
+  }
 }

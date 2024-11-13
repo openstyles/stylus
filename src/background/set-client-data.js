@@ -1,9 +1,9 @@
-import {kPopup, kResolve} from '/js/consts';
+import {kPopup} from '/js/consts';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {FIREFOX} from '/js/ua';
 import {isDark, setSystemDark} from './color-scheme';
-import {bgReady, isVivaldi} from './common';
+import {bgBusy, isVivaldi} from './common';
 import makePopupData from './popup-data';
 import prefsApi from './prefs-api';
 import * as styleMan from './style-manager';
@@ -22,7 +22,7 @@ export default async function setClientData(reqParams, {
   dark: pageDark = !!+reqParams.get('dark'),
   url: pageUrl = reqParams.get('url'),
 } = {}) {
-  if (bgReady[kResolve]) await bgReady;
+  if (bgBusy) await bgBusy;
   let v, params;
   const url = new URL(pageUrl);
   const page = url.pathname.slice(1/*"/"*/, -5/*".html"*/);
