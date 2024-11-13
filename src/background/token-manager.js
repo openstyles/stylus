@@ -143,11 +143,11 @@ async function refreshToken(name, k, obj) {
 async function authUser(keys, name, interactive = false, hooks = null) {
   const provider = AUTH[name];
   const state = Math.random().toFixed(8).slice(2);
-  const customRedirectUri = provider.redirect_uri;
+  const redirectUri = provider.redirect_uri || DEFAULT_REDIRECT_URI;
   const query = {
     response_type: provider.flow,
     client_id: provider.clientId,
-    redirect_uri: customRedirectUri || DEFAULT_REDIRECT_URI,
+    redirect_uri: redirectUri,
     state,
   };
   if (provider.scopes) {
@@ -159,7 +159,7 @@ async function authUser(keys, name, interactive = false, hooks = null) {
   hooks?.query(query);
   const url = `${provider.authURL}?${new URLSearchParams(query)}`;
   const finalUrl = await (process.env.MV3 ? authUserMV3 : authUserMV2)(url, interactive,
-    customRedirectUri);
+    redirectUri);
   const params = new URLSearchParams(
     provider.flow === 'token' ?
       new URL(finalUrl).hash.slice(1) :
@@ -201,7 +201,7 @@ async function authUserMV2(url, interactive, redirectUri) {
     url,
     alwaysUseTab,
     interactive,
-    redirect_uri: redirectUri || DEFAULT_REDIRECT_URI,
+    redirect_uri: redirectUri,
     windowOptions: wnd && Object.assign({
       state: 'normal',
       width,
@@ -215,7 +215,8 @@ async function authUserMV2(url, interactive, redirectUri) {
 }
 
 async function authUserMV3(url, interactive, redirectUri) {
-  if (redirectUri) {
+  const apiUrl = chrome.identity.getRedirectURL();
+  if (apiUrl !== redirectUri) {
     await updateDNR([{
       id: DNR_ID_IDENTITY,
       condition: {
@@ -226,7 +227,7 @@ async function authUserMV3(url, interactive, redirectUri) {
         type: 'redirect',
         redirect: {
           transform: {
-            host: DEFAULT_REDIRECT_URI.split('/')[2],
+            host: apiUrl.split('/')[2],
           },
         },
       },
