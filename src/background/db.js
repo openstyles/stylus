@@ -19,22 +19,26 @@ const DB = 'stylish';
 const FALLBACK = 'dbInChromeStorage';
 const REASON = FALLBACK + 'Reason';
 const ID_AS_KEY = {};
-const getStoreName = dbName => dbName === DB ? 'styles' : 'data';
+const STORES = {};
 const cache = {};
 const proxies = {};
+const databases = {};
 const proxyHandler = {
   get: ({dbName}, cmd) => (dbName === DB ? exec : cachedExec).bind(null, dbName, cmd),
 };
 /**
  * @param {string} dbName
+ * @param {boolean} [idAsKey]
+ * @param {string} [storeName]
  * @return {IDBObjectStore | {putMany: function(items:?[]):Promise<?[]>}}
  */
-export const getDbProxy = (dbName, idAsKey) => (proxies[dbName] ??= (
+export const getDbProxy = (dbName, idAsKey, store = 'data') => (proxies[dbName] ??= (
   (ID_AS_KEY[dbName] = !!idAsKey),
+  (STORES[dbName] = store),
   new Proxy({dbName}, proxyHandler)
 ));
 
-export const db = getDbProxy(DB, true);
+export const db = getDbProxy(DB, true, 'styles');
 
 Object.assign(API, /** @namespace API */ {
   drafts: getDbProxy('drafts'),
@@ -112,23 +116,43 @@ async function useChromeStorage(err) {
 
 async function dbExecIndexedDB(dbName, method, ...args) {
   const mode = method.startsWith('get') ? 'readonly' : 'readwrite';
-  const storeName = getStoreName(dbName);
-  const store = (await open(dbName)).transaction([storeName], mode).objectStore(storeName);
-  const fn = method === 'putMany' ? putMany : storeRequest;
-  return fn(store, method, ...args);
+  const storeName = STORES[dbName];
+  const store = (databases[dbName] ??= await open(dbName))
+    .transaction([storeName], mode)
+    .objectStore(storeName);
+  return method.endsWith('Many')
+    ? storeMany(store, method.slice(0, -4), args[0])
+    : new Promise((resolve, reject) => {
+      /** @type {IDBRequest} */
+      const request = store[method](...args);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = reject;
+    });
 }
 
-function storeRequest(store, method, ...args) {
-  return new Promise((resolve, reject) => {
-    /** @type {IDBRequest} */
-    const request = store[method](...args);
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = reject;
+function storeMany(store, method, items) {
+  let num = 0;
+  let resolve, reject;
+  const p = new Promise((ok, ko) => {
+    resolve = ok;
+    reject = ko;
   });
-}
-
-function putMany(store, _method, items) {
-  return Promise.all(items.map(item => storeRequest(store, 'put', item)));
+  const results = [];
+  /** @param {IDBRequest} req */
+  const onsuccess = req => {
+    results[req.i] = req.result;
+    if (!--num) resolve(results);
+  };
+  for (const item of items) {
+    /** @type {IDBRequest} */
+    const req = store[method](item);
+    req.onerror = reject;
+    req.onsuccess = onsuccess;
+    req.i = num;
+    results[num] = null; // avoiding holes in case the results come out of order
+    num++;
+  }
+  return p;
 }
 
 function open(name) {
@@ -144,7 +168,7 @@ function create(event) {
   /** @type IDBDatabase */
   const idb = event.target.result;
   const dbName = idb.name;
-  const sn = getStoreName(dbName);
+  const sn = STORES[dbName];
   if (!idb.objectStoreNames.contains(sn)) {
     if (event.type === 'success') {
       idb.close();
