@@ -30,7 +30,7 @@
     max-height: 50vh;
     white-space: pre;
   }
-  & .radio-wrapper {
+  .compact-layout & .radio-wrapper {
     display: inline-flex;
     padding: 0 .8em 0 0;
   }
