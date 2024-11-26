@@ -1,7 +1,7 @@
 import './intro';
 import '/js/browser';
 import {kResolve} from '/js/consts';
-import {DNR, updateDynamicRules} from '/js/dnr';
+import {DNR, getRuleIds, updateDynamicRules, updateSessionRules} from '/js/dnr';
 import {_execute, API, onMessage} from '/js/msg';
 import {createPortProxy} from '/js/port';
 import * as prefs from '/js/prefs';
@@ -11,7 +11,7 @@ import {broadcast, pingTab} from './broadcast';
 import './broadcast-injector-config';
 import initBrowserCommandsApi from './browser-cmd-hotkeys';
 import {setSystemDark} from './color-scheme';
-import {bgBusy, bgInit, bgPreInit} from './common';
+import {bgBusy, bgInit, bgPreInit, stateDB} from './common';
 import reinjectContentScripts from './content-scripts';
 import initContextMenus from './context-menus';
 import download from './download';
@@ -100,8 +100,9 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   }
   if (process.env.MV3) {
     bgPreInit.push(
-      DNR.getDynamicRules().then(rules =>
-        updateDynamicRules(undefined, rules.map(r => r.id)))
+      stateDB.clear(),
+      DNR.getDynamicRules().then(rules => updateDynamicRules(undefined, getRuleIds(rules))),
+      DNR.getSessionRules().then(rules => updateSessionRules(undefined, getRuleIds(rules))),
     );
   }
 });

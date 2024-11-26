@@ -2,11 +2,12 @@ import {kApplyPort} from '/js/consts';
 import {supported} from '/js/urls';
 import {sleep} from '/js/util';
 import {ignoreChromeError, toggleListener} from '/js/util-webext';
-import {bgBusy, bgInit, stateDB} from './common';
+import {bgBusy, bgInit, bgPreInit, stateDB} from './common';
 import {onUrlChange} from './navigation-manager';
 
-export const onUrl = new Set();
+export const onLoad = new Set();
 export const onUnload = new Set();
+export const onUrl = new Set();
 /** @typedef {{ url:string, styleIds: {[frameId:string]: number[]} }} StyleIdsFrameMap */
 /** @type {Map<number,{ url:string, styleIds: StyleIdsFrameMap }>} */
 const cache = new Map();
@@ -109,7 +110,8 @@ bgBusy.then(() => {
 
 chrome.runtime.onConnect.addListener(port => {
   if (port.name === kApplyPort) {
-    port.onDisconnect.addListener(onPortDisconnected);
+    onPortToggled(port, true);
+    port.onDisconnect.addListener(onPortToggled);
   }
 });
 
@@ -119,19 +121,23 @@ if (!process.env.MV3) {
   toggleListener(chrome.tabs.onReplaced, true, (added, removed) => remove(removed));
 }
 
-async function onPortDisconnected(port) {
+async function onPortToggled(port, connected) {
   ignoreChromeError();
-  process.env.DEBUGLOG(port.sender);
+  process.env.DEBUGLOG(port.sender, connected);
+  if (bgBusy) await Promise.all(bgPreInit);
   const {sender} = port;
   const tabId = sender.tab?.id;
   const frameId = sender.frameId;
-  for (const fn of onUnload) fn(tabId, frameId, port);
-  if (process.env.MV3 && !frameId) {
+  if (process.env.MV3 && !frameId && !connected) {
     try {
       await sleep(1000);
       if (cache.has(tabId)) await chrome.tabs.get(tabId);
+      return;
     } catch {
       remove(tabId);
     }
+  }
+  for (const fn of connected ? onLoad : onUnload) {
+    fn(tabId, frameId, port);
   }
 }

@@ -15,9 +15,12 @@ export const updateDynamicRules = updateDNR.bind(DNR.updateDynamicRules);
  */
 export const updateSessionRules = updateDNR.bind(DNR.updateSessionRules);
 
+const getRuleId = r => r.id;
+export const getRuleIds = rules => rules.map(getRuleId);
+
 function updateDNR(
   addRules,
-  removeRuleIds = addRules.map(r => r.id),
+  removeRuleIds = getRuleIds(addRules),
 ) {
   return this({addRules, removeRuleIds});
 }

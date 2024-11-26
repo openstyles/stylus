@@ -197,10 +197,10 @@ function updateExposeIframes() {
 function updateCount(show = true) {
   if (TDM < 0) return;
   if (process.env.MV3 || isFrame) {
-    if (!port && styleInjector.list.length && show) {
+    if (!port && show) {
       port = chrome.runtime.connect({name: kApplyPort});
       port.onDisconnect.addListener(() => (port = null));
-    } else if (port && (!show || !styleInjector.list.length)) {
+    } else if (port && !show) {
       port.disconnect();
       port = null;
     }

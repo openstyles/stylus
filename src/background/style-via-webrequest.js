@@ -4,9 +4,9 @@ import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {CHROME, FIREFOX} from '/js/ua';
 import {actionPopupUrl, ownRoot} from '/js/urls';
-import {deepEqual} from '/js/util';
+import {deepEqual, isEmptyObj} from '/js/util';
 import {ignoreChromeError, ownId, toggleListener} from '/js/util-webext';
-import {bgBusy, bgPreInit, safeTimeout, stateDB} from './common';
+import {bgBusy, bgPreInit, stateDB} from './common';
 import {webNavigation} from './navigation-manager';
 import makePopupData from './popup-data';
 import * as styleCache from './style-cache';
@@ -43,7 +43,7 @@ const INJECTED_CODE = `${INJECTED_FUNC}`;
 export const webRequestBlocking = browser.permissions.contains({
   permissions: ['webRequestBlocking'],
 });
-/** @type {Set<number>} */
+const ruleIdKeys = {};
 let ruleIds;
 let curOFF = false;
 let curCSP = false;
@@ -53,14 +53,15 @@ if (process.env.MV3) {
   toggle(); // register listeners synchronously so they wake up the SW next time it dies
   global.offscreen.syncLifetimeToSW(true);
   bgPreInit.push((async () => {
-    ruleIds = await stateDB.get(kRuleIds) || new Set();
+    ruleIds = await stateDB.get(kRuleIds) || {};
+    for (const id in ruleIds) ruleIdKeys[ruleIds[id]] = id;
   })());
 }
 prefs.ready.then(() => {
   toggle(process.env.MV3); // in MV3 this will unregister unused listeners
   prefs.subscribe([idOFF, idCSP, idXHR], toggle);
 });
-tabMan.onUnload.add((tabId, frameId) => {
+tabMan.onLoad.add((tabId, frameId) => {
   removePreloadedStyles(null, tabId + ':' + frameId);
 });
 webNavigation.onErrorOccurred.addListener(removePreloadedStyles, WEBNAV_FILTER);
@@ -160,12 +161,12 @@ async function prepareStylesMV3({tabId, frameId, url}, data, key, payload) {
   const cookie = makeXhrCookie(blobId);
   let {ruleId = 0} = data;
   if (!ruleId) {
-    while (ruleIds.has(++ruleId)) {/**/}
+    while (++ruleId in ruleIds) {/**/}
     data.ruleId = ruleId;
   }
-  /** @namespace StyleBlobDNRRule */
-  ruleIds.add(ruleId);
-  stateDB.put(ruleIds, kRuleIds);
+  ruleIds[ruleId] = key;
+  ruleIdKeys[key] = ruleId;
+  setTimeout(flushState);
   updateSessionRules([{
     id: ruleId,
     condition: {
@@ -272,21 +273,22 @@ function patchCspSrc(src, name, ...values) {
 }
 
 export function removePreloadedStyles(req, key = req2key(req), data = toSend[key], keep) {
-  if (!data) return;
-  if (!keep) delete toSend[key];
-  let v = data.blobId;
-  if (v) {
-    if (req) safeTimeout(revokeObjectURL, REVOKE_TIMEOUT, v);
-    else revokeObjectURL(v);
-    data.blobId = '';
+  let v;
+  if (data) {
+    if (!keep) delete toSend[key];
+    if ((v = data.blobId)) {
+      if (req) setTimeout(revokeObjectURL, REVOKE_TIMEOUT, v);
+      else revokeObjectURL(v);
+      data.blobId = '';
+    }
+    if ((v = data.timer)) {
+      data.timer = clearTimeout(v);
+    }
   }
-  if ((v = data.timer)) {
-    data.timer = clearTimeout(v);
-  }
-  if (process.env.MV3 && !keep && ruleIds.has(v = data.ruleId)) {
-    ruleIds.delete(v);
-    if (ruleIds.size) stateDB.put(ruleIds, kRuleIds);
-    else stateDB.delete(kRuleIds);
+  if (process.env.MV3 && !keep && (data ? ruleIds[v = data.ruleId] : v = ruleIdKeys[key])) {
+    delete ruleIds[v];
+    delete ruleIdKeys[key];
+    setTimeout(flushState);
     updateSessionRules(undefined, [v]);
   }
 }
@@ -310,6 +312,14 @@ function findHeader(headers, name, value) {
     if (h.name.toLowerCase() === name && (value == null || h.value === value)) {
       return h;
     }
+  }
+}
+
+function flushState() {
+  if (isEmptyObj(ruleIds)) {
+    stateDB.delete(kRuleIds);
+  } else {
+    stateDB.put(ruleIds, kRuleIds);
   }
 }
 
