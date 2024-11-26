@@ -49,7 +49,7 @@ body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colo
 .blocked .if-not-blocked,
 .blocked #installed > :not(.frame),
 .blocked [data-frame-id="0"] > .breadcrumbs,
-#write-wrapper:not(.hidden) + label,
+#write-wrapper:not(.hidden) + label[for="disableAll"],
 .firefox .chromium-only {
   display: none !important;
 }
@@ -127,7 +127,9 @@ body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colo
     margin-bottom: 8px;
   }
 }
-
+label[for="disableAll"] {
+  justify-content: center;
+}
 #disableAll {
   --knob: 18px;
   --width: 30px;
