@@ -1091,8 +1091,13 @@
   "optionKeepAlive": {
     "message": "Style cache duration"
   },
-  "optionKeepAliveLegend": {
-    "message": "(in minutes, -1 = no limit)"
+  "optionKeepAlive2": {
+    "message": "(in minutes, -1 = no limit)",
+    "description": "Text shown after 'Style cache duration' (optionKeepAlive)"
+  },
+  "optionKeepAliveIdle": {
+    "message": "...even if the browser is inactive",
+    "description": "Option shown below 'Style cache duration' (optionKeepAlive)"
   },
   "optionKeepAliveNote": {
     "message": "Increase it if you encounter flashing of unstyled content (FOUC) when opening a page after not interacting with the browser for a while.\n\n-1 = ManifestV2 default behavior (no limit).\n0 = ManifestV3 default behavior (half a minute).\n\nThe cache takes 30MB or more of RAM, but rebuilding it may take too much time and cause FOUC depending on the website, network speed, amount of styles, RAM size, and CPU performance."

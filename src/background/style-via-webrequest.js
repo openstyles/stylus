@@ -129,8 +129,8 @@ function toggle(prefKey) {
 
 /** @type {typeof chrome.webRequest.onBeforeRequest.callback} */
 async function prepareStyles(req) {
-  const {url} = req;
-  const {tabId, frameId} = req;
+  const {tabId, frameId, url} = req;
+  if (tabId < 0) return;
   if (bgBusy) {
     const jobs = [
       styleCache.loadOne(url),

@@ -1,4 +1,4 @@
-import {subscribe} from '/js/prefs';
+import * as prefs from '/js/prefs';
 import {bgBusy} from '../common';
 
 /** @type {?Promise[]} */
@@ -11,7 +11,7 @@ let TTL;
 let idleDuration;
 
 process.env.KEEP_ALIVE = keepAlive;
-subscribe('keepAlive', (_, val) => {
+prefs.subscribe('keepAlive', (_, val) => {
   idleDuration = Math.max(30, val * 60 | 0/*to integer*/ || 0/*if val is not a number*/);
   TTL = val * 60e3;
   if (!pulse || !TTL && !busy) reschedule();
@@ -44,7 +44,8 @@ async function keepAliveUntilSettled(promises) {
 async function reschedule() {
   if (busy || TTL < 0
     ? isUserActiveInBrowser(true) // not awaiting as we don't need the result
-    : TTL && performance.now() < lastBusyTime + TTL && await isUserActiveInBrowser()) {
+    : TTL && performance.now() < lastBusyTime + TTL
+      && await isUserActiveInBrowser(prefs.__values.keepAliveIdle)) {
     pulse ??= setInterval(reschedule, 25e3);
   } else if (pulse) {
     clearInterval(pulse);

@@ -20,9 +20,9 @@ $('#FOUC .items').textContent = t(process.env.MV3 ? 'optionFOUCMV3' : 'optionFOU
   .replace('<b>', t('optionKeepAlive'));
 $('#keepAlive').previousElementSibling.firstChild.textContent +=
   (/^(zh|ja|ko)/.test($.root.lang) ? '' : ' ') +
-  t('optionKeepAliveLegend').trim();
+  t('optionKeepAlive2').trim();
 for (const el of $$('[show-if]')) {
-  prefs.subscribe(el.getAttribute('show-if').replace(/^!/, ''), toggleShowIf, true);
+  prefs.subscribe(el.getAttribute('show-if').match(/[.\w]+/)[0], toggleShowIf, true);
 }
 if (!process.env.MV3 && process.env.BUILD !== 'firefox' && CHROME_POPUP_BORDER_BUG) {
   $('#popupWidth').closest('.items').append(template.popupBorders);
@@ -141,9 +141,15 @@ function enforceInputRange(element) {
   element.on('input', onChange);
 }
 
-function toggleShowIf(id, val) {
-  for (const el of $$(`[show-if="${id}"], [show-if="!${id}"]`)) {
-    el.classList.toggle('disabled', el.getAttribute('show-if')[0] === '!' ? !!val : !val);
+function toggleShowIf(key, val) {
+  for (const el of $$(`[show-if*="${key}"]`)) {
+    const [, not, id, op, opVal] = el.getAttribute('show-if').match(/^(!?)([.\w]+)(!?=)?(.*)/);
+    if (id === key) {
+      el.classList.toggle('disabled', !(
+        not ? !val : !op ? val :
+          op === '=' ? val == opVal : val != opVal // eslint-disable-line eqeqeq
+      ));
+    }
   }
 }
 
