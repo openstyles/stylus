@@ -45,6 +45,7 @@ export const webRequestBlocking = browser.permissions.contains({
 });
 const ruleIdKeys = {};
 let ruleIds;
+let timer;
 let curOFF = false;
 let curCSP = false;
 let curXHR = false;
@@ -54,15 +55,25 @@ if (process.env.MV3) {
   global.offscreen.syncLifetimeToSW(true);
   bgPreInit.push((async () => {
     ruleIds = await stateDB.get(kRuleIds) || {};
-    for (const id in ruleIds) ruleIdKeys[ruleIds[id]] = id;
+    for (const id in ruleIds) ruleIdKeys[ruleIds[id]] = +id;
   })());
 }
 prefs.ready.then(() => {
   toggle(process.env.MV3); // in MV3 this will unregister unused listeners
   prefs.subscribe([idOFF, idCSP, idXHR], toggle);
 });
-tabMan.onLoad.add((tabId, frameId) => {
-  removePreloadedStyles(null, tabId + ':' + frameId);
+bgBusy.then(() => {
+  const tabIds = [];
+  for (let key in ruleIdKeys) {
+    if (!tabMan.get(key = parseInt(key))) {
+      tabIds.push(key);
+    }
+  }
+  if (tabIds.length) removeTabData(tabIds);
+});
+tabMan.onUnload.add((tabId, frameId) => {
+  if (frameId) setTimeout(removePreloadedStyles, REVOKE_TIMEOUT, null, tabId + ':' + frameId);
+  else removeTabData([tabId]);
 });
 webNavigation.onErrorOccurred.addListener(removePreloadedStyles, WEBNAV_FILTER);
 if (CHROME && !process.env.MV3 && process.env.BUILD !== 'firefox') {
@@ -166,7 +177,7 @@ async function prepareStylesMV3({tabId, frameId, url}, data, key, payload) {
   }
   ruleIds[ruleId] = key;
   ruleIdKeys[key] = ruleId;
-  setTimeout(flushState);
+  timer ??= setTimeout(flushState);
   updateSessionRules([{
     id: ruleId,
     condition: {
@@ -288,8 +299,30 @@ export function removePreloadedStyles(req, key = req2key(req), data = toSend[key
   if (process.env.MV3 && !keep && (data ? ruleIds[v = data.ruleId] : v = ruleIdKeys[key])) {
     delete ruleIds[v];
     delete ruleIdKeys[key];
-    setTimeout(flushState);
+    timer ??= setTimeout(flushState);
     updateSessionRules(undefined, [v]);
+  }
+}
+
+function removeTabData(tabIds) {
+  tabIds = new RegExp(`^(?:${tabIds.join('|')}):`);
+  const ids = [];
+  for (const key in ruleIdKeys) {
+    if (tabIds.test(key)) {
+      const id = ruleIdKeys[key];
+      ids.push(id);
+      delete ruleIds[id];
+      delete ruleIdKeys[key];
+    }
+  }
+  if (ids.length) {
+    updateSessionRules(undefined, ids);
+    timer ??= setTimeout(flushState);
+  }
+  for (const key in toSend) {
+    if (tabIds.test(key)) {
+      removePreloadedStyles(null, key);
+    }
   }
 }
 
@@ -298,12 +331,7 @@ async function removeTemporaryTab(tabId) {
     await chrome.tabs.get(tabId);
   } catch {
     tabMan.remove(tabId);
-    tabId += ':';
-    for (const key in toSend) {
-      if (key.startsWith(tabId)) {
-        removePreloadedStyles(null, key);
-      }
-    }
+    removeTabData([tabId]);
   }
 }
 
@@ -316,6 +344,7 @@ function findHeader(headers, name, value) {
 }
 
 function flushState() {
+  timer = null;
   if (isEmptyObj(ruleIds)) {
     stateDB.delete(kRuleIds);
   } else {

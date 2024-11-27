@@ -6,8 +6,8 @@ import * as styleInjector from './style-injector';
 import {FF, isXml, own, ownId} from './style-injector';
 
 const SYM_ID = 'styles';
-const kPageHide = 'pagehide';
 const kPageShow = 'pageshow';
+const kBeforeUnload = 'beforeunload';
 const isUnstylable = FF && isXml;
 const clone = process.env.ENTRY
   ? _deepCopy /* global _deepCopy */// will be used in extension context
@@ -60,14 +60,17 @@ if (TDM < 0) {
 }
 styleInjector.onInjectorUpdate = () => {
   updateCount();
-  if (isFrame) updateExposeIframes();
+  if (isFrame) {
+    updateExposeIframes();
+    (styleInjector.list.length ? addEventListener : removeEventListener)(
+      kBeforeUnload, onBeforeUnload, true);
+  }
 };
 styleInjector.orphanCheck = orphanCheck;
 // Declare all vars before init() or it'll throw due to "temporal dead zone" of const/let
 init();
 msg.onTab(applyOnMessage);
 addEventListener(kPageShow, onBFCache);
-addEventListener(kPageHide, onBFCache);
 
 async function init() {
   if (isUnstylable) return API.styleViaAPI({method: 'styleApply'});
@@ -194,19 +197,9 @@ function updateExposeIframes() {
   }
 }
 
-function updateCount(show = true) {
+function updateCount() {
   if (TDM < 0) return;
-  if (process.env.MV3 || isFrame) {
-    if (!port && show) {
-      port = chrome.runtime.connect({name: kApplyPort});
-      port.onDisconnect.addListener(() => (port = null));
-    } else if (port && !show) {
-      port.disconnect();
-      port = null;
-    }
-    if (lazyBadge && performance.now() > 1000) lazyBadge = false;
-  }
-  if (!show) return;
+  if (isFrame && lazyBadge && performance.now() > 1000) lazyBadge = false;
   if (isUnstylable) API.styleViaAPI({method: 'updateCount'});
   else API.updateIconBadge(styleInjector.list.map(style => style.id), {lazyBadge, iid: instanceId});
 }
@@ -227,10 +220,16 @@ function onIntersect(entries) {
   }
 }
 
+function onBeforeUnload(e) {
+  if (orphanCheck() && e.isTrusted && !port) {
+    port = chrome.runtime.connect({name: kApplyPort});
+    port.onDisconnect.addListener(() => (port = null));
+  }
+}
+
 function onBFCache(e) {
-  if (!orphanCheck()) return;
-  if (e.isTrusted && e.persisted) {
-    updateCount(e.type === kPageShow);
+  if (orphanCheck() && e.isTrusted && e.persisted) {
+    updateCount();
   }
 }
 
@@ -251,7 +250,7 @@ function orphanCheck() {
   // so we need to detach event listeners
   removeEventListener(ownId, orphanCheck, true);
   removeEventListener(kPageShow, onBFCache);
-  removeEventListener(kPageHide, onBFCache);
+  removeEventListener(kBeforeUnload, onBeforeUnload, true);
   if (mqDark) mqDark.onchange = null;
   if (offscreen) for (const fn of offscreen) fn();
   if (TDM < 0) document.onprerenderingchange = null;
