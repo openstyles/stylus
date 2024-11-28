@@ -1,12 +1,12 @@
 import {db as styleDB, getDbProxy} from './db';
 
+let onDeleted;
 let timer;
 const MAX = 1000;
 const cacheDB = getDbProxy('cache', {id: 'url'});
 const cache = new Map();
 const toWrite = new Set();
 
-export const onDeleted = new Set();
 /** @type {typeof Map.prototype.values} */
 export const values = cache.values.bind(cache);
 
@@ -31,7 +31,7 @@ export async function loadOne(url) {
     const styles = styleIds.length ? await styleDB.getMany(styleIds) : [];
     for (const style of styles) {
       if (!style || !make(val, style)) {
-        del(val, url);
+        del([val]);
         return;
       }
     }
@@ -49,15 +49,17 @@ export async function loadAll() {
 
 /** @param {Map<number,StyleMapData>} dataMap */
 export function hydrate(dataMap) {
+  const toDel = [];
   for (const val of values()) {
     for (const id in ensureSections(val)) {
       const data = dataMap.get(+id);
       if (!data || !make(val, data.style)) {
-        del(val);
+        toDel.push(val);
         break;
       }
     }
   }
+  if (toDel[0]) del(toDel);
 }
 
 export function ensureSections(entry) {
@@ -87,10 +89,16 @@ export function make(entry, style, idx, code) {
   return true;
 }
 
-function del(val, url = val.url) {
-  cache.delete(url);
-  cacheDB.delete(url);
-  for (const fn of onDeleted) fn(url, val);
+export function setOnDeleted(fn) {
+  onDeleted = fn;
+}
+
+function del(items) {
+  cacheDB.deleteMany(items);
+  for (const val of items) {
+    cache.delete(val.url);
+    onDeleted(val);
+  }
 }
 
 /** @param {Set} items */
@@ -122,11 +130,11 @@ function hit(val) {
 }
 
 function prune() {
-  const toDel = [...cache.values()]
+  del([...values()]
+    .filter(val => val.d)
     .sort(({d: [a1, a2]}, {d: [b1, b2]}) =>
       100 * (a1 - b1) +
       10 * ((b2 - b1) - (a2 - a1)) +
       a2 - b2)
-    .slice(0, MAX * .25);
-  for (const val of toDel) del(val);
+    .slice(0, MAX * .25));
 }

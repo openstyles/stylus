@@ -111,9 +111,9 @@ bgInit.push(async () => {
   }, !process.env.MV3);
 });
 
-styleCache.onDeleted.add((url, val) => {
+styleCache.setOnDeleted(val => {
   for (const id in val.sections) {
-    dataMap.get(+id)?.appliesTo.delete(url);
+    dataMap.get(+id)?.appliesTo.delete(val.url);
   }
 });
 
