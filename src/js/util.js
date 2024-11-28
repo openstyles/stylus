@@ -52,7 +52,7 @@ export const debounce = /*@__PURE__*/(() => {
   });
   function clearTimer(data) {
     clearTimeout(data.timer);
-    if (process.env.ENTRY === 'sw') data[kResolve]();
+    if (process.env.ENTRY === 'sw' && (data = data[kResolve])) data();
   }
   async function run(fn, args, resolve) {
     timers.delete(fn);
