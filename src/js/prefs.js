@@ -7,7 +7,7 @@ import './msg-init'; // installs direct `API` handler
 let busy, setReady;
 
 /** @type {StylusClientData & {then: (cb: (data: StylusClientData) => ?) => Promise}} */
-export const clientData = !process.env.IS_BG && (
+export const clientData = !process.env.IS_BG && (process.env.MV3 ? global[process.env.CLIENT_DATA] :
   global[process.env.CLIENT_DATA] ??= API.setClientData(null, {
     url: location.href,
     dark: isCssDarkScheme(),
