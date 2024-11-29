@@ -93,12 +93,15 @@ export function setOnDeleted(fn) {
   onDeleted = fn;
 }
 
+/** (!) Overwrites contents of `items` */
 function del(items) {
-  cacheDB.deleteMany(items);
-  for (const val of items) {
-    cache.delete(val.url);
+  if (!items[0]) return;
+  for (let i = 0, val; i < items.length; i++) {
+    val = items[i];
+    cache.delete(items[i] = val.url);
     onDeleted(val);
   }
+  cacheDB.deleteMany(items);
 }
 
 /** @param {Set} items */
