@@ -21,7 +21,6 @@ module.exports = {
     }],
   ],
   plugins: [
-    // ['babel-plugin-inline-constants', {modules: ['./src/js/consts.js']}],
     // '@babel/plugin-transform-runtime',
     // ['transform-modern-regexp', {useRe: true}], // TODO: use for complex regexps
   ],

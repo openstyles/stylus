@@ -33,7 +33,8 @@ function escapeToRe(str, flags) {
 }
 
 function getBrowserlist() {
-  const mj = require(SRC + (process.env.NODE_ENV?.includes('mv3') ? MANIFEST_MV3 : MANIFEST));
+  const mv3 = /chrome-(mv3|beta)/.test(process.env.NODE_ENV);
+  const mj = require(SRC + (mv3 ? MANIFEST_MV3 : MANIFEST));
   const FF = mj.browser_specific_settings?.gecko.strict_min_version;
   const CH = mj.minimum_chrome_version;
   return [
