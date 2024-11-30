@@ -27,13 +27,13 @@ const kShowBadge = 'show-badge';
 // https://github.com/openstyles/stylus/issues/335
 let hasCanvas = FIREFOX_ANDROID ? false : null;
 
-colorScheme.onChange(() => {
-  if (__prefs[kIconset] === -1) {
-    debounce(refreshGlobalIcon);
-  }
-}, !process.env.MV3);
 
 bgBusy.then(() => {
+  colorScheme.onChange(() => {
+    if (__prefs[kIconset] === -1) {
+      debounce(refreshGlobalIcon);
+    }
+  }, !process.env.MV3);
   subscribe([
     kDisableAll,
     kBadgeDisabled,
