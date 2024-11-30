@@ -13,7 +13,6 @@ import '/css/onoffswitch.css';
 import './options.css';
 
 tBody();
-setupLivePrefs();
 $$('input[min], input[max]').forEach(enforceInputRange);
 $('#FOUC .items').textContent = t(process.env.MV3 ? 'optionFOUCMV3' : 'optionFOUCMV2')
   .replace('<a>', t('optionsAdvancedStyleViaXhr'))
@@ -70,6 +69,7 @@ for (const el of $$('[data-clickable]')) {
 }
 (async () => {
   const {wrb} = process.env.MV3 ? prefs.clientData : await prefs.clientData;
+  setupLivePrefs();
   if (wrb === false) {
     for (let el of $$('#patchCsp')) {
       el = el.closest('label');

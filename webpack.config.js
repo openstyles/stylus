@@ -265,7 +265,7 @@ function makeContentScript(name) {
     entry: '/content/' + name,
     output: {path: DST + JS},
     plugins: addWrapper(
-      `window["${name}"]!==1 && (() => ${BANNER} global["${name}"] = 1;`,
+      `window["${name}"]!==1 && (() => {const global = this; global["${name}"] = 1;`,
       '})();'),
   }));
 }

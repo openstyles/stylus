@@ -18,8 +18,8 @@ const FIREFOX_ANDROID = FIREFOX && MOBILE;
 const ICON_SIZES =
   !process.env.MV3 && VIVALDI ? [19, 38] : // old Vivaldi
     process.env.MV3 || !FIREFOX ? [16, 32] : // Chromium
-      MOBILE ? [32, 38, 48] : // FF mobile 1x, 1.5x, 2x DPI
-        [16, 32, 48, 64]; // FF desktop toolbar and panel 1x, 1.5x, 2x DPI
+      MOBILE ? [32, 38] : // FF mobile 1x, 1.5x, 2x DPI // TODO: +48
+        [16, 32, 38]; // FF desktop toolbar and panel 1x, 1.5x, 2x DPI // TODO: 38->48, +64
 const kBadgeDisabled = 'badgeDisabled';
 const kBadgeNormal = 'badgeNormal';
 const kIconset = 'iconset';

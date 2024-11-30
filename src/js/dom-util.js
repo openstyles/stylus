@@ -131,6 +131,7 @@ export function setInputValue(input, value) {
 }
 
 /**
+ * Must be called when prefs is ready to properly handle init=true -> subscribe -> init=false
  * Accepts an array of pref names (values are fetched via prefs.get)
  * or an element inside which to look for elements with known pref ids
  * and establishes a two-way connection between the document elements and the actual prefs

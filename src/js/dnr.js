@@ -1,19 +1,19 @@
 export const DNR_ID_IDENTITY = 10;
 export const DNR_ID_INSTALLER = 20;
 
-export const DNR = chrome.declarativeNetRequest;
+export const DNR = process.env.MV3 && chrome.declarativeNetRequest;
 /**
  * @param {chrome.declarativeNetRequest.Rule[]} [addRules]
  * @param {number[]} [removeRuleIds]
  * @return {Promise<void>}
  */
-export const updateDynamicRules = updateDNR.bind(DNR.updateDynamicRules);
+export const updateDynamicRules = process.env.MV3 && updateDNR.bind(DNR.updateDynamicRules);
 /**
  * @param {chrome.declarativeNetRequest.Rule[]} addRules
  * @param {number[]} [removeRuleIds]
  * @return {Promise<void>}
  */
-export const updateSessionRules = updateDNR.bind(DNR.updateSessionRules);
+export const updateSessionRules = process.env.MV3 && updateDNR.bind(DNR.updateSessionRules);
 
 const getRuleId = r => r.id;
 export const getRuleIds = rules => rules.map(getRuleId);

@@ -70,7 +70,7 @@ export const remove = tabId => {
 bgInit.push(async () => {
   const [dbData, tabs] = await Promise.all([
     process.env.MV3 ? stateDB.getAll(IDBKeyRange.bound(0, Number.MAX_SAFE_INTEGER)) : [],
-    chrome.tabs.query({}),
+    browser.tabs.query({}),
   ]);
   const tabsObj = {};
   const dbMap = new Map();

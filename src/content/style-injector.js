@@ -109,7 +109,7 @@ function removeAllElements() {
 
 function replaceAss(readd) {
   const elems = list.map(s => s.el);
-  const res = FF ? cloneInto([], wrappedDoc) /* global cloneInto */ : [];
+  const res = !process.env.ENTRY && FF ? cloneInto([], wrappedDoc) /* global cloneInto */ : [];
   for (let arr = assV2 || wrappedDoc[kAss], i = 0, el; i < arr.length && (el = arr[i]); i++) {
     if (assIndexOf(elems, el) < 0) res.push(el);
   }
