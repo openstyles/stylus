@@ -112,6 +112,9 @@ chrome.runtime.onConnect.addListener(port => {
   }
 });
 
+// Wake up when a new empty is created to ensure the styles are preloaded
+chrome.tabs.onCreated.addListener(() => {});
+
 chrome.tabs.onRemoved.addListener(async tabId => {
   if (bgBusy) await Promise.all(bgPreInit);
   remove(tabId);
