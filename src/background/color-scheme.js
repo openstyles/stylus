@@ -23,6 +23,7 @@ export const SCHEMES = [kDark, kLight];
 export const setSystemDark = update.bind(null, kSystem);
 export let isDark;
 let prefState;
+let flushing;
 
 chrome.alarms.onAlarm.addListener(onAlarm);
 
@@ -123,7 +124,13 @@ function update(type, val) {
     for (const fn of changeListeners) fn(isDark);
     if (process.env.MV3) type = true;
   }
-  if (process.env.MV3 && type && !bgBusy) {
-    stateDB.put([isDark, map], kDark);
+  if (process.env.MV3 && type) {
+    flushing ??= setTimeout(flushState);
   }
+}
+
+async function flushState() {
+  if (bgBusy) await bgBusy;
+  await stateDB.put([isDark, map], kDark);
+  flushing = null;
 }
