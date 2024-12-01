@@ -1,7 +1,7 @@
 import {kApplyPort} from '/js/consts';
 import {supported} from '/js/urls';
 import {ignoreChromeError} from '/js/util-webext';
-import {bgBusy, bgInit, bgPreInit, stateDB} from './common';
+import {bgBusy, bgInit, stateDB} from './common';
 import {onUrlChange} from './navigation-manager';
 
 export const onUnload = new Set();
@@ -116,7 +116,7 @@ chrome.runtime.onConnect.addListener(port => {
 chrome.tabs.onCreated.addListener(() => {});
 
 chrome.tabs.onRemoved.addListener(async tabId => {
-  if (bgBusy) await Promise.all(bgPreInit);
+  if (bgBusy) await bgBusy;
   remove(tabId);
   for (const fn of onUnload) fn(tabId, 0);
 });
@@ -124,7 +124,7 @@ chrome.tabs.onRemoved.addListener(async tabId => {
 async function onPortDisconnected(port) {
   ignoreChromeError();
   process.env.DEBUGLOG(port.sender);
-  if (bgBusy) await Promise.all(bgPreInit);
+  if (bgBusy) await bgBusy;
   const {sender} = port;
   const tabId = sender.tab?.id;
   const frameId = sender.frameId;

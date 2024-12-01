@@ -131,7 +131,8 @@ function toggle(prefKey) {
 async function prepareStyles(req) {
   const {tabId, frameId, url} = req;
   if (tabId < 0) return;
-  if (bgBusy) {
+  if (bgPreInit.length) {
+    // bgPreInit in progress, let's join it
     const jobs = [
       styleCache.loadOne(url),
       frameId && tabMan.load(tabId),
@@ -142,6 +143,9 @@ async function prepareStyles(req) {
     const tab = results[i + 1];
     if (tab) req.tab = tab;
     if (!cached) await bgBusy;
+  } else if (bgBusy) {
+    // bgPreInit done, bgInit in progress
+    await bgBusy;
   }
   const key = tabId + ':' + frameId;
   const oldData = toSend[key];

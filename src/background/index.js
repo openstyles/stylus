@@ -124,6 +124,7 @@ onMessage(async (m, sender) => {
   const numPreInit = bgPreInit.length;
   await Promise.all(bgPreInit);
   await Promise.all(bgPreInit.slice(numPreInit)); // added by an event listener on wake-up
+  bgPreInit.length = 0;
   await Promise.all(bgInit.map(v => typeof v === 'function' ? v() : v));
   bgBusy[kResolve]();
   if (process.env.ENTRY !== 'sw') window._msgExec = _execute;
