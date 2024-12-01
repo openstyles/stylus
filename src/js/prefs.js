@@ -72,6 +72,7 @@ const defaults = {
   'editor.options': {},           // CodeMirror.defaults.*
   'editor.toc.expanded': true,    // UI element state: expanded/collapsed
   'editor.options.expanded': true, // UI element state: expanded/collapsed
+  'editor.options.style.expanded': true, // UI element state: expanded/collapsed
   'editor.lint.expanded': true,   // UI element state: expanded/collapsed
   'editor.publish.expanded': true, // UI element state expanded/collapsed
   'editor.lineWrapping': true,    // word wrap
