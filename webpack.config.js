@@ -12,7 +12,7 @@ const InlineConstantExportsPlugin = require('@automattic/webpack-inline-constant
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 const RawEnvPlugin = require('./tools/raw-env-plugin');
 const WebpackPatchBootstrapPlugin = require('./tools/webpack-patch-bootstrap');
-const {escapeForRe, stripSourceMap, MANIFEST, MANIFEST_MV3, ROOT} = require('./tools/util');
+const {escapeForRe, getManifestOvrName, stripSourceMap, MANIFEST, ROOT} = require('./tools/util');
 
 const NODE_ENV = process.env.NODE_ENV;
 const [TARGET, ZIP] = NODE_ENV?.split(':') || [''];
@@ -270,6 +270,20 @@ function makeContentScript(name) {
   }));
 }
 
+function makeManifest(files) {
+  let [base, ovr] = (files[0].sourceFilename.endsWith(MANIFEST) ? files : files.reverse())
+    .map(file => file.data.toString());
+  base = JSON.parse(MV3 ? base.replace('"browser_action"', '"action"') : base);
+  ovr = JSON.parse(ovr);
+  for (const [key, val] of Object.entries(ovr)) {
+    const old = base[key];
+    if (Array.isArray(old)) old.push(...val);
+    else if (old && typeof old === 'object') Object.assign(old, val);
+    else base[key] = val;
+  }
+  return JSON.stringify(base, null, 2);
+}
+
 module.exports = [
 
   mergeCfg({
@@ -341,7 +355,8 @@ module.exports = [
         patterns: [
           {context: SRC, from: 'icon/**', to: DST},
           {context: SRC + 'content', from: 'install*.js', to: DST + JS, info: {minimized: true}},
-          {context: SRC, from: MV3 ? MANIFEST_MV3 : MANIFEST, to: DST + MANIFEST},
+          {context: SRC, from: getManifestOvrName(MV3, true), to: MANIFEST,
+            transformAll: makeManifest},
           {context: SRC, from: '_locales/**', to: DST},
           {context: THEME_PATH, from: '*.css', to: DST + CM_PATH},
           ...[

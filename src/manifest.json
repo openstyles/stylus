@@ -1,41 +1,22 @@
 {
   "name": "Stylus",
-  "version": "2.0.0",
-  "minimum_chrome_version": "56",
+  "version": "",
+  "minimum_chrome_version": "",
   "description": "__MSG_description__",
   "homepage_url": "https://add0n.com/stylus.html",
-  "manifest_version": 2,
+  "manifest_version": 0,
   "icons": {
     "16": "icon/16.png",
     "32": "icon/32.png",
     "48": "icon/48.png",
     "128": "icon/128.png"
   },
-  "permissions": [
-    "tabs",
-    "webNavigation",
-    "webRequest",
-    "webRequestBlocking",
-    "contextMenus",
-    "storage",
-    "unlimitedStorage",
-    "alarms",
-    "<all_urls>"
-  ],
-  "background": {
-    "page": "background.html"
-  },
+  "permissions": [],
+  "background": {},
   "commands": {
-    "_execute_browser_action": {},
-    "openManage": {
-    "description": "__MSG_openManage__"
-    },
-    "reload": {
-      "description": "__MSG_reload__"
-    },
-    "styleDisableAll": {
-    "description": "__MSG_disableAllStyles__"
-    }
+    "openManage": {"description": "__MSG_openManage__"},
+    "reload": {"description": "__MSG_reload__"},
+    "styleDisableAll": {"description": "__MSG_disableAllStyles__"}
   },
   "content_scripts": [
     {
@@ -47,7 +28,7 @@
       "js": ["js/apply.js"]
     },
     {
-      "matches": ["http://userstyles.org/*", "https://userstyles.org/*"],
+      "matches": ["https://userstyles.org/*"],
       "run_at": "document_start",
       "js": ["js/install-hook-userstyles.js"]
     }

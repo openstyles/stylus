@@ -1,16 +1,7 @@
 {
-  "name": "Stylus",
   "version": "3.0.4",
   "minimum_chrome_version": "128",
-  "description": "__MSG_description__",
-  "homepage_url": "https://add0n.com/stylus.html",
   "manifest_version": 3,
-  "icons": {
-    "16": "icon/16.png",
-    "32": "icon/32.png",
-    "48": "icon/48.png",
-    "128": "icon/128.png"
-  },
   "permissions": [
     "alarms",
     "contextMenus",
@@ -34,26 +25,10 @@
     "service_worker": "sw.js"
   },
   "commands": {
-    "_execute_action": {},
-    "openManage": {
-      "description": "__MSG_openManage__"
-    },
-    "reload": {
-      "description": "__MSG_reload__"
-    },
-    "styleDisableAll": {
-      "description": "__MSG_disableAllStyles__"
-    }
+    "_execute_action": {}
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "run_at": "document_start",
-      "all_frames": true,
-      "match_about_blank": true,
-      "match_origin_as_fallback": true,
-      "js": ["js/apply.js"]
-    }, {
       "matches": ["https://greasyfork.org/*scripts/*", "https://sleazyfork.org/*scripts/*"],
       "js": ["js/install-hook-greasyfork.js"],
       "run_at": "document_start"
@@ -61,27 +36,11 @@
       "matches": ["https://userstyles.world/*"],
       "js": ["js/install-hook-userstylesworld.js"],
       "run_at": "document_start"
-    }, {
-      "matches": ["https://userstyles.org/*"],
-      "run_at": "document_start",
-      "js": ["js/install-hook-userstyles.js"]
     }
   ],
-  "action": {
-    "default_icon": {
-      "16": "icon/16w.png",
-      "32": "icon/32w.png",
-      "19": "icon/19w.png",
-      "38": "icon/38w.png"
-    },
-    "default_title": "Stylus",
-    "default_popup": "popup.html"
-  },
   "web_accessible_resources": [{
     "resources": ["install-usercss.html"],
     "matches": ["<all_urls>"],
     "use_dynamic_url": false
-  }],
-  "default_locale": "en",
-  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2ypG+Z/beZtoYrxxwXYhMwQiAiwRVnSHqdpOSzJdjsXVWdvJjlgEuZcU8kte75w58P45LsRUrwvU6N9x12S6eW84KNEBC8rlZj0RGNoxuhSAcdxneYzjJ9tBkZKOidVedYHHsi3LeaXiLuTNTBR+2lf3uCNcP0ebaFML9uDLdYTGEW4eL3hnEKYPSmT1/xkh4bSGTToCg4YNuWWWoTA0beEOpBWYkPVMarLDQgPzMN5Byu5w3lOS2zL0PPJcmdyk3ez/ZsB4PZKU+h17fVA6+YTvUfxUqLde5i2RiuZhEb6Coo5/W90ZW1yCDC9osjWrxMGYeUMQWHPIgFtDhk4K6QIDAQAB"
+  }]
 }

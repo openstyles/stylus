@@ -1,0 +1,22 @@
+{
+  "version": "2.0.0",
+  "minimum_chrome_version": "56",
+  "manifest_version": 2,
+  "permissions": [
+    "alarms",
+    "contextMenus",
+    "storage",
+    "tabs",
+    "unlimitedStorage",
+    "webNavigation",
+    "webRequest",
+    "webRequestBlocking",
+    "<all_urls>"
+  ],
+  "background": {
+    "page": "background.html"
+  },
+  "commands": {
+    "_execute_browser_action": {}
+  }
+}
