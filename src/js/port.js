@@ -23,6 +23,7 @@ export const COMMANDS = process.env.ENTRY !== 'sw' && (
   }
 );
 const PORT_TIMEOUT = 5 * 60e3; // TODO: expose as a configurable option?
+const navLocks = navigator.locks;
 const autoClose = process.env.ENTRY === 'worker' ||
   process.env.ENTRY === true && location.pathname === `/${process.env.PAGE_OFFSCREEN}.html`;
 const NOP = () => {};
@@ -92,7 +93,7 @@ export function createPortExec(getTarget, {lock, once} = {}) {
   /** @param {MessageEvent} _ */
   function onMessage({data}) {
     process.env.DEBUGLOG(location.pathname, 'exec onmessage', data);
-    if (!tracking && !once) trackTarget(queue);
+    if (!tracking && !once && navLocks) trackTarget(queue);
     const {id, res, err} = data.id ? data : JSON.parse(data);
     const [stack, resolve, reject] = queue.get(id);
     queue.delete(id);
@@ -110,7 +111,7 @@ export function createPortExec(getTarget, {lock, once} = {}) {
   }
   async function trackTarget(queueCopy) {
     tracking = true;
-    await navigator.locks.request(lock, NOP);
+    await navLocks.request(lock, NOP);
     tracking = false;
     for (const [stack, /*resolve*/, reject] of queueCopy.values()) {
       const err = new Error('Target disconnected');
@@ -132,9 +133,9 @@ export function initRemotePort(evt) {
   const exec = this;
   const port = evt.ports[0];
   process.env.DEBUGWARN(location.pathname, 'initRemotePort', evt);
-  if (!lockingSelf && lock && !once) {
+  if (!lockingSelf && lock && !once && navLocks) {
     lockingSelf = true;
-    navigator.locks.request(lock, () => new Promise(NOP));
+    navLocks.request(lock, () => new Promise(NOP));
     process.env.DEBUGLOG(location.pathname, 'initRemotePort lock', lock);
   }
   port.onerror = console.error;
