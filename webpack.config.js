@@ -220,7 +220,8 @@ function mergeCfg(ovr, base) {
     if (FS_CACHE) {
       ovr.cache = {
         ...ovr.cache,
-        name: entry.join('-'),
+        // Differentiating by MV2/MV3 because targeted browsers are different in babel and postcss
+        name: [MV3 ? 'mv3' : 'mv2', ...entry].join('-'),
       };
     }
     if (process.env.REPORT != null) {
