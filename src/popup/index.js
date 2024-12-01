@@ -201,6 +201,7 @@ function createWriterElement(frame, index) {
   const {url, frameId, parentFrameId, isDupe} = frame;
   const isAbout = url.startsWith('about:');
   const crumbs = [];
+  if (!url) return;
   let el;
   if (isAbout) {
     el = $create('span', url);

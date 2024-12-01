@@ -29,8 +29,9 @@ export default async function makePopupData() {
   ]);
   // sorting frames and connecting children to parents
   const unknown = new Map(frames.map(f => [f.frameId, f]));
-  const known = new Map([[0, unknown.get(0) || {frameId: 0, url: ''}]]);
+  const known = new Map();
   const urls = new Set([kAboutBlank]);
+  known.set(0, unknown.get(0) || {frameId: 0, url: ''});
   unknown.delete(0);
   let lastSize = 0;
   while (unknown.size !== lastSize) {
@@ -46,7 +47,7 @@ export default async function makePopupData() {
   frames.length = 0;
   for (const sortedFrames of [known, unknown]) {
     for (const f of sortedFrames.values()) {
-      const u = f.url || (f.url = '');
+      const u = f.url ??= '';
       f.isDupe = urls.has(u);
       urls.add(u);
       frames.push(f);
