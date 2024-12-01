@@ -271,6 +271,7 @@ function makeContentScript(name) {
 }
 
 module.exports = [
+
   mergeCfg({
     entry: Object.fromEntries(PAGES.map(p => [p, `/${p}`])),
     output: {
@@ -359,6 +360,7 @@ module.exports = [
     ].filter(Boolean),
     resolve: RESOLVE_VIA_SHIM,
   }),
+
   ...!MV3 ? [] : [
     mergeCfg({
       entry: `/${PAGE_BG}`,
@@ -379,6 +381,7 @@ module.exports = [
     })),
     makeLibrary('db-to-cloud/lib/drive/webdav', 'webdav', LIB_EXPORT_DEFAULT),
   ],
+
   makeContentScript('apply.js'),
   makeLibrary('/js/worker.js', undefined, {
     ...OUTPUT_MODULE,
