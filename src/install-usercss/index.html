@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html id="stylus" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Loading...</title>
+
+  <link href="css/icons.ttf" rel="preload" as="font" crossorigin="anonymous">
+  <%= htmlWebpackPlugin.tags.headTags %>
+
+  <template data-id="jumpToLine">
+    <span i18n="editGotoLine">: <input class="CodeMirror-jump-field" type="text"></span>
+  </template>
+</head>
+<body id="stylus-install-usercss">
+  <div id="header">
+    <div id="header-contents">
+      <h1 class="w100">
+        <span class="meta-name ellipsis"></span>
+        <small class="meta-version"></small>
+      </h1>
+      <div id="install-wrapper">
+        <h2 class="install-show" i18n="installButtonInstalled"></h2>
+        <button class="install install-hide" i18n="installButton"></button>
+        <a class="configure-usercss" i18n="title:configureStyle" tabindex="0">
+          <i class=i-config></i>
+        </a>
+        <div class="install-show w100-full">
+          <a href="manage.html"><button i18n="openManage"></button></a>
+          <a id="edit" href="edit.html?id="><button i18n="editStyleLabel"></button></a>
+          <a id="delete" tabindex="0"><button i18n="deleteStyleLabel"></button></a>
+        </div>
+      </div>
+      <div class="set-update-url w100 install-disable">
+        <label>
+          <input type="checkbox"><span i18n="installUpdateFromLabel"></span>
+        </label>
+        <p class="ellipsis"></p>
+      </div>
+      <label class="live-reload">
+        <input type="checkbox"><span i18n="liveReloadLabel"></span>
+      </label>
+      <div id="live-reload-install-hint" class="w100" hidden></div>
+      <div id="styleSettings" class="install-dim"></div>
+      <div class="meta-description w100 hide-empty"></div>
+      <div>
+        <h3 i18n="author"></h3>
+        <span class="meta-author"></span>
+      </div>
+      <div>
+        <h3 i18n="license"></h3>
+        <span class="meta-license"></span>
+      </div>
+      <div class="external-link hide-empty"></div>
+      <div class="w100">
+        <h3 i18n="appliesLabel"></h3>
+        <ul class="applies-to">
+        </ul>
+      </div>
+    </div>
+    <div id="header-resizer" i18n="title:headerResizerHint"></div>
+  </div>
+  <div class="main">
+    <div class="warnings"></div>
+  </div>
+  <%= htmlWebpackPlugin.tags.bodyTags %>
+</body>
+</html>

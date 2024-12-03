@@ -1,0 +1,46 @@
+{
+  "version": "3.0.4",
+  "minimum_chrome_version": "128",
+  "manifest_version": 3,
+  "permissions": [
+    "alarms",
+    "contextMenus",
+    "declarativeNetRequestWithHostAccess",
+    "declarativeNetRequestFeedback",
+    "identity",
+    "idle",
+    "offscreen",
+    "scripting",
+    "storage",
+    "tabs",
+    "unlimitedStorage",
+    "webNavigation",
+    "webRequest",
+    "webRequestBlocking"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "sw.js"
+  },
+  "commands": {
+    "_execute_action": {}
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://greasyfork.org/*scripts/*", "https://sleazyfork.org/*scripts/*"],
+      "js": ["js/install-hook-greasyfork.js"],
+      "run_at": "document_start"
+    }, {
+      "matches": ["https://userstyles.world/*"],
+      "js": ["js/install-hook-userstylesworld.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [{
+    "resources": ["install-usercss.html"],
+    "matches": ["<all_urls>"],
+    "use_dynamic_url": false
+  }]
+}

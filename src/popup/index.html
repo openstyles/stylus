@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html id="stylus">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="css/icons.ttf" rel="preload" as="font" crossorigin="anonymous">
+  <%= htmlWebpackPlugin.tags.headTags %>
+
+  <template data-id="style">
+    <div class="entry">
+      <div class="entry-content">
+        <div class="main-controls">
+          <label class="style-name">
+            <input type=checkbox>&nbsp;
+          </label>
+          <i class=i-empty data-cmd="note" i18n="title:emptyCode" hidden></i>
+          <div class="regexp-problem-indicator" data-cmd="note" i18n="title:styleRegexpProblemTooltip">!</div>
+        </div>
+        <div class="actions">
+          <a class="configure" href="#"></a>
+          <a class="style-edit-link" href="edit.html" i18n="title:editStyleLabel">
+            <i class=i-edit></i>
+          </a>
+          <a class="menu-button" i18n="title:popupMenuButtonTooltip" tabindex="0">
+            <i class=i-menu></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template data-id="config">
+    <a class="configure" i18n="title:configureStyle" tabindex="0">
+      <i class="i-config"></i>
+    </a>
+  </template>
+
+  <template data-id="configExternal">
+    <a class="configure" i18n="title:configureStyleOnHomepage" target="_blank">
+      <i class="i-external"></i>
+    </a>
+  </template>
+
+  <template data-id="regexpProblemExplanation">
+    <div id="regexp-explanation">
+      <div id="regexp-partial" i18n="html:styleRegexpPartialExplanation"></div>
+      <div id="regexp-invalid" i18n="styleRegexpInvalidExplanation"></div>
+      <button i18n="confirmOK"></button>
+    </div>
+  </template>
+
+  <template data-id="unreachableInfo">
+    <div class="blocked-info">
+      <div class="copy-message" i18n="copied"></div>
+      <label i18n="unreachableContentScript"></label>
+    </div>
+  </template>
+
+  <template data-id="writeForFrames">
+    <div id="write-for-frames" tabindex="0">&lt;iframe&gt;...</div>
+  </template>
+
+  <template data-id="searchUI">
+    <div id="pct"><div i18n=gettingStyles></div></div>
+    <div id="search-results-error" hidden></div>
+    <div id="search-results" hidden>
+      <div class="search-results-nav" data-type="top"></div>
+      <div id="search-params">
+        <div id="search-years">
+          <div class="select-wrapper">
+            <select></select>
+          </div>
+          -
+          <div class="select-wrapper">
+            <select></select>
+          </div>
+        </div>
+        <input id="search-query" type="search" i18n="placeholder:search, title:searchStyleQueryHint">
+        <div class="select-wrapper">
+          <select id="search-order" i18n="title:sortStylesHelpTitle">
+            <option value="n" i18n="genericTitle">
+            <option value="u" i18n="searchResultUpdated">
+            <option value="t" i18n="searchResultInstallCount">
+            <option value="w" i18n="searchResultWeeklyCount">
+            <option value="r" i18n="searchResultRating">
+          </select>
+        </div>
+        <label i18n="+searchGlobalStyles, title:searchGlobalStylesHint">
+          <input id="popup.search.globals" type="checkbox">
+        </label>
+      </div>
+      <div id="search-results-list"></div>
+      <div class="search-results-nav" data-type="bottom"></div>
+    </div>
+  </template>
+
+  <template data-id="searchNav">
+    <div>
+      <button data-type="prev" i18n="title:paginationPrevious" disabled>◄</button>
+      <label>
+        <span data-type="page" i18n="title:paginationCurrent">-</span>
+        /
+        <span data-type="total" i18n="title:paginationEstimated">-</span>
+        (<span data-type="num"></span>)
+      </label>
+      <button data-type="next" i18n="title:paginationNext" disabled>►</button>
+    </div>
+  </template>
+
+  <template data-id="searchResult">
+    <div class="search-result">
+      <a class="search-result-title"><span></span></a>
+      <div class="search-result-info">
+        <img class="search-result-screenshot" i18n="title:installButton">
+        <div class="search-result-status"></div>
+        <div class="search-result-actions">
+          <button class="search-result-install" i18n="installButton"></button>
+          <button class="search-result-uninstall" i18n="deleteStyleLabel"></button>
+          <button class="search-result-customize" i18n="configureStyle"></button>
+        </div>
+        <dl class="search-result-meta">
+          <div data-type="author">
+            <dt i18n="author"></dt>
+            <dd><a target="_blank" i18n="title:author"></a></dd>
+          </div>
+          <div data-type="rating">
+            <dt i18n="searchResultRating"></dt>
+            <dd i18n="title:searchResultRating"></dd>
+          </div>
+          <div data-type="updated">
+            <dt i18n="searchResultUpdated"></dt>
+            <dd i18n="title:searchResultUpdated"><time></time></dd>
+          </div>
+          <div data-type="weekly">
+            <dt i18n="searchResultWeeklyCount"></dt>
+            <dd i18n="title:searchResultWeeklyCount"></dd>
+          </div>
+          <div data-type="total">
+            <dt i18n="searchResultInstallCount"></dt>
+            <dd i18n="title:searchResultInstallCount"></dd>
+          </div>
+        </dl>
+      </div>
+      <div class="search-result-description"></div>
+    </div>
+  </template>
+
+  <template data-id="emptySearchResult">
+    <div class="search-result-empty"></div>
+  </template>
+
+  <template data-id="searchResultNotMatching">
+    <p class="not-matching-explainer"
+       i18n="searchResultNotMatching, title:searchResultNotMatchingNote"></p>
+  </template>
+
+  <template data-id="body">
+
+  <div class="blocked-info if-blocked">
+    <label i18n="stylusUnavailableForURL"></label>
+    <p i18n="stylusUnavailableForURLdetails"></p>
+  </div>
+
+  <main id="installed-wrapper" class="rel">
+    <aside id="hotkey-info" i18n="title:popupHotkeysTooltip"></aside>
+    <div id="installed" i18n="data-no-styles:noStylesForSite"></div>
+  </main>
+
+  <div class="actions flex" id="main-actions">
+    <div id="write-wrapper">
+      <label id="write-as" i18n="title:optionsAdvancedNewStyleAsUsercss">
+        <input id="newStyleAsUsercss" type="checkbox">
+        <i class=i-usercss></i>
+      </label>
+      <div id="write-style" class="no-stretch">
+        <header id="write-style-for" class="ellipsis" i18n="writeStyleFor"></header>
+      </div>
+    </div>
+    <label for="disableAll" i18n="masterSwitch"></label>
+    <label id="disableAll-label" i18n="data-off:disableAllStylesOff">
+      <input id="disableAll" type="checkbox" class="slider">
+    </label>
+  </div>
+
+  <div id="popup-options">
+    <div class="split-btn" id="manage-split">
+      <button id="popup-manage-button" i18n="openManage, title:popupManageTooltip"
+              data-href="manage.html"></button
+      ><button class="if-not-blocked split-btn-pedal" i18n="menu-site:popupManageSiteStyles"></button>
+    </div>
+    <div class="split-btn if-not-blocked" id="find-split">
+      <button id="find-styles-btn" i18n="find" title="Ctrl-F"></button
+      ><button class="split-btn-pedal"
+               menu-usoa="UserStyles Archive"
+               menu-usw="UserStyles World"
+               menu-uso="UserStyles"
+               menu-gf="GreasyFork"></button>
+    </div>
+    <button id="options-btn" i18n="title:openOptions">
+      <svg class="if-not-blocked" viewBox="0 0 20 20">
+        <text y="100%">⚙</text>
+      </svg>
+      <span class="if-blocked" i18n="openOptions"></span>
+    </button>
+    <a class="if-blocked" href="https://github.com/openstyles/stylus/wiki" target="_blank">
+      <button id="popup-wiki-button" i18n="linkStylusWiki, title:linkGetHelp"></button>
+    </a>
+  </div>
+
+  <div id="menu" hidden>
+    <div>
+      <header class="ellipsis">title</header>
+      <main>
+        <label data-exclude="domain" i18n="+excludeStyleByDomainLabel"><input type="checkbox"></label>
+        <label data-exclude="url" i18n="+excludeStyleByUrlLabel"><input type="checkbox"></label>
+      </main>
+      <main class="delete">
+        <span i18n="deleteStyleConfirm"></span>
+      </main>
+      <footer>
+        <button data-cmd="delete" i18n="confirmDelete"></button>
+        <button data-cmd="cancel" i18n="confirmClose"></button>
+      </footer>
+    </div>
+  </div>
+</template>
+</head>
+
+<body id="stylus-popup">
+  <%= htmlWebpackPlugin.tags.bodyTags %>
+</body>
+</html>

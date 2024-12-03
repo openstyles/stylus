@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html id="stylus">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title i18n="styleManager"></title>
+  <link href="css/icons.ttf" rel="preload" as="font" crossorigin="anonymous">
+  <%= htmlWebpackPlugin.tags.headTags %>
+
+  <template data-id="style">
+    <div class="entry">
+      <h2 class="style-name">
+        <a class="style-name-link">
+          &nbsp;
+          <span class="style-info" data-type="version"></span>
+        </a>
+        <a target="_blank" class="homepage icon"><i class=i-external></i></a>
+      </h2>
+      <p class="applies-to">
+        <span class="style-info" data-type="age"></span>.
+        <label i18n="genericSize">:</label><span class="style-info" data-type="size"></span>.
+        <label i18n="appliesDisplay"></label>
+        <span class="targets"></span>
+      </p>
+      <p class="actions">
+        <a class="style-edit-link">
+          <button i18n="editStyleLabel" tabindex="-1"></button>
+        </a>
+        <button class="enable" i18n="enableStyleLabel"></button>
+        <button class="disable" i18n="disableStyleLabel"></button>
+        <button class="delete" i18n="deleteStyleLabel"></button>
+        <button class="check-update" i18n="checkForUpdate"></button>
+        <button class="update" i18n="installUpdate" hidden></button>
+        <button class="configure-usercss" i18n="configureStyle"></button>
+        <span class="update-note"></span>
+      </p>
+    </div>
+  </template>
+
+  <template data-id="styleNewUI">
+    <div class="entry">
+      <h2 class="style-name">
+        <input type="checkbox" i18n="title:toggleStyle">
+        <a class="style-name-link">
+          &nbsp;
+          <span class="style-info" data-type="version"></span>
+        </a>
+        <a target="_blank" class="homepage icon" tabindex="0"><i class=i-external></i></a>
+      </h2>
+      <p class="actions">
+        <a class="delete" i18n="title:deleteStyleLabel" tabindex="0">
+          <i class=i-close></i>
+        </a>
+      </p>
+      <p class="style-info" data-type="size"></p>
+      <p class="style-info" data-type="age"></p>
+      <div class="applies-to">
+        <a class="expander" tabindex="0"><i>▼</i></a>
+        <div class="targets"></div>
+      </div>
+    </div>
+  </template>
+
+  <template data-id="configureIcon">
+    <a class="configure-usercss" i18n="title:configureStyle" tabindex="0">
+      <i class=i-config></i>
+    </a>
+  </template>
+
+  <template data-id="updaterIcons">
+    <span class="updater-icons">
+      <a class="check-update" i18n="title:checkForUpdate" tabindex="0">
+        <i class=i-update-check></i>
+      </a>
+      <a class="update" i18n="title:installUpdate" tabindex="0">
+        <i class=i-install></i>
+      </a>
+      <span class="up-to-date" i18n="title:updateCheckSucceededNoUpdate">
+        <i class=i-check1></i>
+      </span>
+      <span class="updated" i18n="title:updateCompleted">
+        <i class=i-check2></i>
+      </span>
+      <span class="update-note"></span>
+    </span>
+  </template>
+
+  <template data-id="appliesToTarget">
+    <span class="target"></span>
+  </template>
+
+  <template data-id="appliesToSeparator">
+    <span class="sep">, </span>
+  </template>
+
+  <template data-id="appliesToEverything">
+    <span class="target" i18n="appliesToEverything"></span>
+  </template>
+
+  <template data-id="extraAppliesTo">
+    <details class="applies-to-extra">
+      <summary class="applies-to-extra-expander" i18n="appliesDisplayTruncatedSuffix"></summary>
+    </details>
+  </template>
+
+<template data-id="body"> <!-- https://crbug.com/1288447 -->
+
+<div id="header">
+  <h1 id="manage-heading" i18n="manageHeading"></h1>
+
+  <label id="disableAll-label" i18n="data-on:disableAllStyles, data-off:disableAllStylesOff">
+    <input id="disableAll" type="checkbox">
+  </label>
+
+  <div id="manage-settings">
+    <div class="settings-column">
+      <details id="filters" data-pref="manage.filters.expanded">
+        <summary>
+          <h2 i18n="manageFilters">:
+            <div class="filter-stats-wrapper">
+              <span id="filters-stats"></span>
+              <a id="reset-filters" tabindex="0">
+                <i class=i-close></i>
+              </a>
+            </div>
+          </h2>
+        </summary>
+
+        <div class="filter-selection">
+          <label>
+            <input id="manage.onlyEnabled" type="checkbox"
+                   data-filter=".enabled"
+                   data-filter-hide=".disabled">
+          </label>
+          <div class="select-wrapper">
+            <select id="manage.onlyEnabled.invert" class="fit-width">
+              <option i18n="manageOnlyEnabled" value="false"></option>
+              <option i18n="manageOnlyDisabled" value="true"></option>
+            </select>
+          </div>
+        </div>
+
+        <div class="filter-selection">
+          <label>
+            <input id="manage.onlyLocal" type="checkbox"
+                   data-filter=":not(.updatable):not(.update-done)"
+                   data-filter-hide=".updatable, .update-done">
+          </label>
+          <div class="select-wrapper">
+            <select id="manage.onlyLocal.invert" i18n="title:manageOnlyLocalTooltip" class="fit-width">
+              <option i18n="manageOnlyLocal" value="false"></option>
+              <option i18n="manageOnlyExternal" value="true"></option>
+            </select>
+          </div>
+        </div>
+
+        <div class="filter-selection">
+          <label>
+            <input id="manage.onlyUsercss" type="checkbox"
+                   data-filter=".usercss"
+                   data-filter-hide=":not(.usercss)">
+          </label>
+          <div class="select-wrapper">
+            <select id="manage.onlyUsercss.invert" class="fit-width">
+              <option i18n="manageOnlyUsercss" value="false"></option>
+              <option i18n="manageOnlyNonUsercss" value="true"></option>
+            </select>
+          </div>
+        </div>
+
+        <div class="filter-selection">
+          <label id="only-updates" class="hidden">
+            <input type="checkbox"
+                   data-filter=".can-update, .update-problem, .update-done"
+                   data-filter-hide=":not(.updatable):not(.update-done),
+                                     .no-update:not(.update-problem),
+                                     .updatable:not(.can-update):not(.update-problem):not(.update-done)">
+            <span i18n="manageOnlyUpdates"></span>
+          </label>
+        </div>
+
+        <div id="search-wrapper">
+          <input id="search" type="search" i18n="placeholder:search" spellcheck="false"
+                 data-filter=":not(.not-matching)"
+                 data-filter-hide=".not-matching">
+          <div class="select-wrapper">
+            <select id="manage.searchMode" class="fit-width">
+              <option i18n="searchStylesName" value="name"></option>
+              <option i18n="searchStylesMeta" value="meta" selected></option>
+              <option i18n="searchStylesCode" value="code"></option>
+              <option i18n="searchStylesMatchUrl" value="url"></option>
+              <option i18n="searchStylesAll" value="all"></option>
+            </select>
+          </div>
+          <a id="search-help" tabindex="0">
+            <i class=i-info></i>
+          </a>
+        </div>
+
+      </details>
+
+      <div id="sort-wrapper">
+        <div class="select-wrapper" i18n="title:sortLabel">
+          <select id="manage.newUI.sort"></select>
+        </div>
+        <a id="sorter-help" tabindex="0">
+          <i class=i-info></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="settings-column">
+      <details id="actions" data-pref="manage.actions.expanded">
+        <summary><h2 i18n="optionsActions"></h2></summary>
+        <div id="update-check">
+          <button id="check-all-updates" i18n="checkAllUpdates">
+            <span id="update-progress"></span>
+          </button>
+          <a id="update-history-button" i18n="title:genericHistoryLabel" tabindex="0">
+            <i class=i-log></i>
+          </a>
+        </div>
+
+        <div id="update-all">
+          <button id="apply-all-updates" class="hidden" i18n="applyAllUpdates"></button>
+          <span id="update-all-no-updates" class="hidden" i18n="updateAllCheckSucceededNoUpdate"></span>
+          <button id="check-all-updates-force" class="hidden" i18n="checkAllUpdatesForce"></button>
+        </div>
+
+        <div id="add-style-wrapper">
+          <a href="edit.html" class="ellipsis">
+            <button id="add-style-label" tabindex="-1">&nbsp;</button>
+          </a>
+          <label id="add-style-as-usercss-wrapper" i18n="title:optionsAdvancedNewStyleAsUsercss">
+            <input type="checkbox" id="newStyleAsUsercss">
+            <i class=i-usercss></i>
+            <a id="usercss-wiki"
+               class="icon"
+               href="https://github.com/openstyles/stylus/wiki/Usercss"
+               i18n="title:externalUsercssDocument">
+              <i class=i-external></i>
+            </a>
+          </label>
+        </div>
+
+        <div class="gap1">
+          <button id="injection-order-button" i18n="styleInjectionOrder"></button>
+          <button id="manage-options-button" i18n="openOptions"></button>
+        </div>
+      </details>
+    </div>
+
+    <div class="settings-column">
+      <details id="backup" data-pref="manage.backup.expanded">
+        <summary>
+          <h2 id="backup-title" i18n="backupButtons"><!-- removing space
+            --><a tabindex="0" i18n="title:backupMessage" data-cmd="note">
+              <i class=i-info></i>
+            </a>
+          </h2>
+        </summary>
+        <div id="backup-buttons" class="flex wrap gap1">
+          <div class="split-btn">
+            <button id="file-all-styles" i18n="exportLabel"></button
+            ><button class="split-btn-pedal" i18n="menu-compat:exportCompatible"></button>
+          </div>
+          <button id="unfile-all-styles" i18n="importLabel"></button>
+          <button id="sync-styles" i18n="optionsCustomizeSync"></button>
+        </div>
+      </details>
+
+      <div id="manage-text">
+        <span>
+          <a href="https://userstyles.world/explore" target="_blank" i18n="linkGetShareStyles"></a>
+          <a tabindex="0" i18n="title:linkGetShareStylesInfo" data-cmd="note">
+            <i class=i-info></i>
+          </a>
+        </span>
+        <span>
+          <a href="https://uso.kkx.one/browse/styles" target="_blank" i18n="linkGetStyles"></a>
+          <a tabindex="0" i18n="title:linkGetStylesInfo" data-cmd="note">
+            <i class=i-info></i>
+          </a>
+        </span>
+        <span><a href="https://add0n.com/stylus.html#features" target="_blank" i18n="linkGetHelp"></a></span>
+        <span><a href="https://github.com/openstyles/stylus/wiki" target="_blank" i18n="linkStylusWiki"></a></span>
+        <span><a href="https://www.transifex.com/github-7/Stylus" target="_blank" i18n="linkTranslate"></a></span>
+      </div>
+    </div>
+  </div>
+
+  <div id="header-resizer" i18n="title:headerResizerHint"></div>
+</div>
+
+<div id="installed"></div>
+
+</template>
+</head>
+
+<body id="stylus-manage" i18n="dragndrop-hint:dragDropMessage">
+  <%= htmlWebpackPlugin.tags.bodyTags %>
+</body>
+</html>

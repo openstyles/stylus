@@ -1,37 +1,73 @@
 'use strict';
 
-const fse = require('fs-extra');
-const chalk = require('chalk');
-const postcss = require('postcss');
-const postcssPresetEnv = require('postcss-preset-env');
+const fs = require('fs');
+const path = require('path');
+const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 
-async function *transpileCss(files, isFirefox, mj = fse.readJsonSync('manifest.json')) {
-  const pc = postcss([
-    postcssPresetEnv({
-      browsers: isFirefox
-        ? 'Firefox >= ' + mj.browser_specific_settings.gecko.strict_min_version
-        : 'Chrome >= ' + mj.minimum_chrome_version,
-      features: {
-        'prefers-color-scheme-query': false, // we manually handle it via cssRules
-      },
+const MANIFEST = 'manifest.json';
+const ROOT = path.dirname(__dirname.replaceAll('\\', '/')) + '/';
+const SRC = ROOT + 'src/';
+
+function addReport(base, {entry}) {
+  base.plugins = [
+    ...base.plugins || [],
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'static',
+      openAnalyzer: false,
+      reportFilename: base.output.path + '/.' + Object.keys(entry).join('-') + '.report.html',
     }),
-  ]);
-  for (const f of files) {
-    const [path, text, ...more] = f;
-    const res = await pc.process(text, {map: false, from: null});
-    const err = res.messages
-      .map(m => chalk.red(`${chalk.bold(path)} ${m.line}:${m.column} `) + m.text)
-      .join('\n');
-    if (err) throw err;
-    yield [path, res.css, ...more];
-  }
+  ];
 }
 
-exports.SKIP = [
-  '.*', // dot files/folders (glob, not regexp)
-  'dist',
-  'images/icons',
-  'node_modules',
-  'tools',
-];
-exports.transpileCss = transpileCss;
+function anyPathSep(str) {
+  return str.replace(/[\\/]/g, /[\\/]/.source);
+}
+
+function escapeForRe(str) {
+  return str.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&');
+}
+
+function escapeToRe(str, flags) {
+  return new RegExp(str.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&'), flags);
+}
+
+function getBrowserlist() {
+  const mj = require(SRC + getManifestOvrName());
+  const FF = mj.browser_specific_settings?.gecko.strict_min_version;
+  const CH = mj.minimum_chrome_version;
+  return [
+    FF && 'Firefox >= ' + FF,
+    CH && 'Chrome >= ' + CH,
+  ].filter(Boolean);
+}
+
+function getManifestOvrName(
+  mv3 = /chrome-(mv3|beta)/.test(process.env.NODE_ENV),
+  asGlob
+) {
+  const s = '-mv' + (mv3 ? 3 : 2);
+  return MANIFEST.replace('.', asGlob ? `?(${s}).` : s + '.');
+}
+
+function stripSourceMap(buf, from) {
+  const str = buf.toString();
+  const map = from + '.map';
+  const res = str.replace(/(\r?\n\/\/# sourceMappingURL=).+/,
+    process.env.NODE_ENV !== 'DEV' || !fs.existsSync(map) ? '' :
+      '$1data:application/json;charset=utf-8;base64,' +
+      fs.readFileSync(map).toString('base64'));
+  return Buffer.from(res);
+}
+
+module.exports = {
+  MANIFEST,
+  ROOT,
+  SRC,
+  addReport,
+  anyPathSep,
+  escapeForRe,
+  escapeToRe,
+  getBrowserlist,
+  getManifestOvrName,
+  stripSourceMap,
+};

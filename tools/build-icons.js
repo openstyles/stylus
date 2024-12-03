@@ -3,7 +3,7 @@
 const fs = require('fs');
 const svg2ttf = require('svg2ttf');
 const svgicons2svgfont = require('svgicons2svgfont');
-const ROOT = require.resolve('../package.json').replace(/[^/\\]+$/, '');
+const {SRC} = require('./util');
 
 const SVG_MAP = Object.entries({
   'check1': '✓',
@@ -28,9 +28,9 @@ const SVG_MAP = Object.entries({
   'update-check': '⟳',
   'v': '⋁',
 });
-const SVG_DIR = ROOT + 'images/icons/';
-const CSS_FILE = ROOT + 'css/global.css';
-const CSS_FONT = ROOT + 'css/icons.ttf';
+const SVG_DIR = SRC + 'icons/';
+const CSS_FILE = SRC + 'css/global.css';
+const CSS_FONT = SRC + 'css/icons.ttf';
 const CMT = '/*AUTO-GENERATED-ICON*/';
 const CMT_RANGE = '/*AUTO-GENERATED-ICON-RANGE*/';
 const CSS_ICON = `${CMT} .i-$NAME::after { content: "$CHAR"; }`;

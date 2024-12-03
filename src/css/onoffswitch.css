@@ -1,0 +1,62 @@
+.slider {
+  --width: 24px;
+  --knob: 12px;
+  --pad: 0px;
+  --color-off: hsla(0, 0%, 50%, .35);
+  --color-on: hsla(180, 50%, 40%, .33);
+  --shadow-hsl: 180, 50%, 10%;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: none;
+  flex-basis: var(--width);
+  width: var(--width);
+  height: calc(var(--knob) - 2 * var(--pad));
+  border-radius: var(--knob);
+  color: var(--bg);
+  background: var(--color-off);
+  transition: box-shadow .2s;
+  display: inline-flex;
+  align-items: center;
+  &, &:focus {
+    box-shadow: inset 1px 1px 2px hsla(var(--shadow-hsl), .5);
+  }
+  &::after {
+    content: "";
+    width: var(--knob);
+    height: var(--knob);
+    border-radius: 100%;
+    box-shadow: 2px 2px 4px 1px hsla(var(--shadow-hsl), .4);
+    margin: 0 calc(-1 * var(--pad));
+    background-color: currentColor;
+    border: 1px solid var(--color-off);
+    box-sizing: border-box;
+  }
+  &:checked {
+    background-color: var(--color-on);
+    justify-content: flex-end;
+    color: var(--accent-2);
+    &::after {
+      border-color: hsla(var(--shadow-hsl), .25);
+    }
+  }
+  &:hover {
+    box-shadow: inset 1px 1px 2px hsla(var(--shadow-hsl), .8);
+  }
+  &:focus {
+    position: relative;
+    &:not([data-focused-via-click])::before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      left: calc(-2 * var(--pad));
+      padding: calc(var(--pad) + 2px) calc(var(--pad) * 2);
+      box-shadow: var(--focus-shadow);
+    }
+  }
+  :root[data-ui-theme="dark"] & {
+    --color-off: hsla(0, 0%, 50%, 0.6);
+    --color-on: hsla(180, 50%, 60%, .3);
+  }
+}
