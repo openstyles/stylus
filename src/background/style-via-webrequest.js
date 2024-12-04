@@ -46,7 +46,7 @@ export const webRequestBlocking = browser.permissions.contains({
 const ruleIdKeys = {};
 let ruleIds;
 let timer;
-let curOFF = false;
+let curOFF = true;
 let curCSP = false;
 let curXHR = false;
 
