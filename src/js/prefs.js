@@ -7,11 +7,14 @@ import './msg-init'; // installs direct `API` handler
 let busy, setReady;
 
 /** @type {StylusClientData & {then: (cb: (data: StylusClientData) => ?) => Promise}} */
-export const clientData = !process.env.IS_BG && (process.env.MV3 ? global[process.env.CLIENT_DATA] :
-  global[process.env.CLIENT_DATA] ??= API.setClientData(null, {
-    url: location.href,
-    dark: isCssDarkScheme(),
-  }).then(makePropertyPopProxy)
+export const clientData = !process.env.IS_BG && (
+  process.env.MV3
+    ? global[process.env.CLIENT_DATA]
+    : API.setClientData(null, {url: location.href, dark: isCssDarkScheme()}).then(data => {
+      data = makePropertyPopProxy(data);
+      setAll(data.prefs);
+      return data;
+    })
 );
 
 /**
@@ -253,8 +256,10 @@ if (process.env.IS_BG) {
   busy.set = (...args) => setReady(setAll(...args));
 } else if (process.env.MV3) {
   setAll(clientData.prefs);
+  busy = Promise.resolve();
+  busy.then = fn => fn(); // run synchronously in the same microtick because the data is ready
 } else {
-  busy = clientData.then(data => setAll(data.prefs));
+  busy = clientData;
 }
 
 onStorageChanged.addListener((changes, area) => {
@@ -263,10 +268,8 @@ onStorageChanged.addListener((changes, area) => {
   if (data) setAll(data.newValue, data.oldValue);
 });
 
-export const ready = busy || Promise.resolve();
-if (!busy) ready.then = fn => fn();
-
 export {
+  busy as ready,
   defaultsClone as defaults,
   defaults as __defaults, // direct reference, be careful!
   values as __values, // direct reference, be careful!
