@@ -80,7 +80,9 @@ function isContentTypeText(type) {
 
 // in Firefox we have to use a content script to read file://
 async function loadFromFile(tabId) {
-  return (await browser.tabs.executeScript(tabId, {file: '/content/install-hook-usercss.js'}))[0];
+  return (await browser.tabs.executeScript(tabId, {
+    file: `/${process.env.JS}install-hook-usercss.js`,
+  }))[0];
 }
 
 async function loadFromUrl(tabId, url) {

@@ -74,7 +74,7 @@ if (!process.env.MV3) {
   const urlMatches = '/scripts/\\d+[^/]*(/code)?([?#].*)?$';
   webNavigation.onCommitted.addListener(({tabId}) => {
     chrome.tabs.executeScript(tabId, {
-      file: '/content/install-hook-greasyfork.js',
+      file: `/${process.env.JS}install-hook-greasyfork.js`,
       runAt: 'document_start',
     });
   }, {
@@ -90,7 +90,7 @@ if (!process.env.MV3) {
    */
   webNavigation.onCommitted.addListener(({tabId}) => {
     chrome.tabs.executeScript(tabId, {
-      file: '/content/install-hook-userstylesworld.js',
+      file: `/${process.env.JS}install-hook-userstylesworld.js`,
       runAt: 'document_start',
     });
   }, {
