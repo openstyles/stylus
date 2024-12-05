@@ -127,10 +127,12 @@ onMessage(async (m, sender) => {
   bgPreInit.length = 0;
   await Promise.all(bgInit.map(v => typeof v === 'function' ? v() : v));
   bgBusy[kResolve]();
-  if (process.env.ENTRY !== 'sw') window._msgExec = _execute;
   if (process.env.BUILD !== 'chrome' && FIREFOX) {
     initBrowserCommandsApi();
-    initContextMenus();
   }
-  if (!process.env.MV3) broadcast({method: 'backgroundReady'});
+  if (!process.env.MV3) {
+    window._msgExec = _execute;
+    initContextMenus();
+    broadcast({method: 'backgroundReady'});
+  }
 })();
