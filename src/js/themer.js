@@ -39,7 +39,6 @@ const map = {[MEDIA_ON]: true, [MEDIA_OFF]: false};
       sizes: size + 'x' + size,
     })));
   }
-
 })();
 
 function updateDOM(isDark) {
