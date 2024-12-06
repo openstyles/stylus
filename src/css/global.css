@@ -150,6 +150,10 @@ i {
   font-size: 16px;
 }
 
+input[type="range"] {
+  accent-color: hsl(180, 45%, 40%);
+}
+
 input[type="checkbox"]:not(.slider) {
   &:checked::after {
     content: '☑';
