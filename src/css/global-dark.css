@@ -33,17 +33,20 @@
   button {
     background: linear-gradient(var(--c85), var(--c90));
   }
-  input {
-    color-scheme: dark;
-  }
   textarea,
   input[type=url],
   input[type=time] {
     background-color: var(--input-bg);
     color: var(--fg);
   }
+  input::-webkit-inner-spin-button {
+    filter: invert(.8);
+  }
   input[type=radio]:checked:after {
     background-color: var(--fg);
+  }
+  input[type=time]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
   }
   select {
     background-color: var(--bg);
@@ -158,6 +161,9 @@
   }
   @supports (-moz-appearance: none) {
     /* Workarounds for FF bugs/quirks */
+    input {
+      color-scheme: dark;
+    }
     textarea {
       border: 1px solid var(--c65);
     }
