@@ -9,7 +9,7 @@ const SYM_ID = 'styles';
 const kPageShow = 'pageshow';
 const kBeforeUnload = 'beforeunload';
 const isUnstylable = FF && isXml;
-const clone = process.env.ENTRY
+const clone = __.ENTRY
   ? _deepCopy /* global _deepCopy */// will be used in extension context
   : val => typeof val === 'object' && val ? JSON.parse(JSON.stringify(val)) : val;
 let isFrameSameOrigin = false;
@@ -75,12 +75,12 @@ addEventListener(kPageShow, onBFCache);
 async function init() {
   if (isUnstylable) return API.styleViaAPI({method: 'styleApply'});
   let data;
-  if (process.env.ENTRY && (data = global.clientData)) {
-    data = (/**@type{StylusClientData}*/process.env.MV3 ? data : await data).apply;
+  if (__.ENTRY && (data = global.clientData)) {
+    data = (/**@type{StylusClientData}*/__.MV3 ? data : await data).apply;
   } else {
     data = isFrameNoUrl && !FF && clone(parent[parent.Symbol.for(SYM_ID)]);
     if (data) await new Promise(onFrameElementInView);
-    else data = !process.env.ENTRY && !isFrameSameOrigin && !isXml && getStylesViaXhr();
+    else data = !__.ENTRY && !isFrameSameOrigin && !isXml && getStylesViaXhr();
     // XML in Chrome will be auto-converted to html later, so we can't style it via XHR now
   }
   if (!orphanCheck()) return;

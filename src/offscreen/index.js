@@ -12,7 +12,7 @@ Object.assign(COMMANDS, {
   isDark: isCssDarkScheme,
   webdav: (cmd, ...args) => webdavInstance[cmd](...args),
   webdavInit: async cfg => {
-    if (!webdavInstance) await loadScript(process.env.JS + 'webdav.js');
+    if (!webdavInstance) await loadScript(__.JS + 'webdav.js');
     cfg.fetch = fetchWebDAV.bind(cfg);
     cfg.getAccessToken = () => API.sync.getToken('webdav');
     webdavInstance = global.webdav(cfg);

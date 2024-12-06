@@ -7,9 +7,9 @@ import './msg-init'; // installs direct `API` handler
 let busy, setReady;
 
 /** @type {StylusClientData & {then: (cb: (data: StylusClientData) => ?) => Promise}} */
-export const clientData = !process.env.IS_BG && (
-  process.env.MV3
-    ? global[process.env.CLIENT_DATA]
+export const clientData = !__.IS_BG && (
+  __.MV3
+    ? global[__.CLIENT_DATA]
     : API.setClientData(null, {url: location.href, dark: isCssDarkScheme()}).then(data => {
       data = makePropertyPopProxy(data);
       setAll(data.prefs);
@@ -187,7 +187,7 @@ export let set = (key, val, isSynced) => {
   values[key] = val;
   const fns = onChange[key];
   if (fns) for (const fn of fns) fn(key, val);
-  if (!isSynced && !process.env.IS_BG) API.prefs.set(key, val);
+  if (!isSynced && !__.IS_BG) API.prefs.set(key, val);
   /* browser.storage is slow and can randomly lose values if the tab was closed immediately,
    so we're sending the value to the background script which will save it to the storage;
    the extra bonus is that invokeAPI is immediate in extension tabs. */
@@ -247,14 +247,14 @@ function setAll(data, fromStorage) {
   }
   // setting current value + deleting from the source if it's unchanged (for prefs-api.js)
   for (const key in data || (data = {})) {
-    if (!set(key, data[key], true)) if (process.env.IS_BG) delete data[key];
+    if (!set(key, data[key], true)) if (__.IS_BG) delete data[key];
   }
 }
 
-if (process.env.IS_BG) {
+if (__.IS_BG) {
   busy = new Promise(cb => (setReady = cb));
   busy.set = (...args) => setReady(setAll(...args));
-} else if (process.env.MV3) {
+} else if (__.MV3) {
   setAll(clientData.prefs);
   busy = Promise.resolve();
   busy.then = fn => fn(); // run synchronously in the same microtick because the data is ready

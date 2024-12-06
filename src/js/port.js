@@ -1,5 +1,5 @@
-export const COMMANDS = process.env.ENTRY !== 'sw' && (
-  process.env.ENTRY === 'worker' || !process.env.MV3 ? {
+export const COMMANDS = __.ENTRY !== 'sw' && (
+  __.ENTRY === 'worker' || !__.MV3 ? {
     __proto__: null,
   } : /** @namespace CommandsAPI */ {
     __proto__: null,
@@ -11,7 +11,7 @@ export const COMMANDS = process.env.ENTRY !== 'sw' && (
     },
     syncLifetimeToSW(enable) {
       if (enable && !swPort) {
-        swPort = chrome.runtime.connect({name: process.env.PAGE_OFFSCREEN});
+        swPort = chrome.runtime.connect({name: __.PAGE_OFFSCREEN});
         swPort.onDisconnect.addListener(close);
         timer = timer && clearTimeout(timer);
       } else if (!enable && swPort) {
@@ -24,11 +24,11 @@ export const COMMANDS = process.env.ENTRY !== 'sw' && (
 );
 const PORT_TIMEOUT = 5 * 60e3; // TODO: expose as a configurable option?
 const navLocks = navigator.locks;
-const autoClose = process.env.ENTRY === 'worker' ||
-  process.env.ENTRY === true && location.pathname === `/${process.env.PAGE_OFFSCREEN}.html`;
+const autoClose = __.ENTRY === 'worker' ||
+  __.ENTRY === true && location.pathname === `/${__.PAGE_OFFSCREEN}.html`;
 const NOP = () => {};
 const navSW = navigator.serviceWorker;
-if (process.env.MV3 && process.env.ENTRY === true) {
+if (__.MV3 && __.ENTRY === true) {
   navSW.onmessage = initRemotePort.bind(COMMANDS);
 }
 let lockingSelf;
@@ -58,7 +58,7 @@ export function createPortExec(getTarget, {lock, once} = {}) {
   return async function exec(...args) {
     const ctx = [new Error().stack]; // saving it prior to a possible async jump for easier debugging
     const promise = new Promise((resolve, reject) => ctx.push(resolve, reject));
-    process.env.DEBUGWARN(location.pathname, 'exec send', ...args);
+    __.DEBUGWARN(location.pathname, 'exec send', ...args);
     if ((port ??= initPort(args)).then) port = await port;
     (once ? target : port).postMessage({args, id: ++lastId},
       once || (Array.isArray(this) ? this : undefined));
@@ -66,7 +66,7 @@ export function createPortExec(getTarget, {lock, once} = {}) {
     return promise;
   };
   async function initPort() {
-    process.env.DEBUGLOG(location.pathname, 'exec init', {getTarget});
+    __.DEBUGLOG(location.pathname, 'exec init', {getTarget});
     if (typeof getTarget === 'string') {
       lock = getTarget;
       target = new SharedWorker(getTarget);
@@ -92,7 +92,7 @@ export function createPortExec(getTarget, {lock, once} = {}) {
   }
   /** @param {MessageEvent} _ */
   function onMessage({data}) {
-    process.env.DEBUGLOG(location.pathname, 'exec onmessage', data);
+    __.DEBUGLOG(location.pathname, 'exec onmessage', data);
     if (!tracking && !once && navLocks) trackTarget(queue);
     const {id, res, err} = data.id ? data : JSON.parse(data);
     const [stack, resolve, reject] = queue.get(id);
@@ -132,18 +132,18 @@ export function initRemotePort(evt) {
   const {lock = location.pathname, id: once} = evt.data || {};
   const exec = this;
   const port = evt.ports[0];
-  process.env.DEBUGWARN(location.pathname, 'initRemotePort', evt);
+  __.DEBUGWARN(location.pathname, 'initRemotePort', evt);
   if (!lockingSelf && lock && !once && navLocks) {
     lockingSelf = true;
     navLocks.request(lock, () => new Promise(NOP));
-    process.env.DEBUGLOG(location.pathname, 'initRemotePort lock', lock);
+    __.DEBUGLOG(location.pathname, 'initRemotePort lock', lock);
   }
   port.onerror = console.error;
   port.onmessage = onMessage;
   port.onmessageerror = onMessageError;
   if (once) onMessage(evt);
   async function onMessage(portEvent) {
-    process.env.DEBUGLOG(location.pathname, 'port onmessage', portEvent);
+    __.DEBUGLOG(location.pathname, 'port onmessage', portEvent);
     const data = portEvent.data;
     const {args, id} = data.id ? data : JSON.parse(data);
     let res, err;
@@ -162,7 +162,7 @@ export function initRemotePort(evt) {
       delete e.source;
       // TODO: find which props are actually used (err may contain noncloneable Response)
     }
-    process.env.DEBUGLOG(location.pathname, 'port response', {id, res, err}, portEvent._transfer);
+    __.DEBUGLOG(location.pathname, 'port response', {id, res, err}, portEvent._transfer);
     port.postMessage({id, res, err},
       (/**@type{RemotePortEvent}*/portEvent)._transfer);
     if (!--numJobs && autoClose && !timer && !swPort) {

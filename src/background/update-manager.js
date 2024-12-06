@@ -269,7 +269,7 @@ function schedule() {
 }
 
 function onAlarm({name}) {
-  if (name === ALARM_NAME) process.env.KEEP_ALIVE(checkAllStyles());
+  if (name === ALARM_NAME) __.KEEP_ALIVE(checkAllStyles());
 }
 
 function resetInterval() {

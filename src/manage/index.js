@@ -15,7 +15,7 @@ import './manage-newui.css';
 tBody();
 
 (async () => {
-  const {badFavs, ids, styles} = process.env.MV3 ? prefs.clientData : await prefs.clientData;
+  const {badFavs, ids, styles} = __.MV3 ? prefs.clientData : await prefs.clientData;
   init(badFavs);
   showStyles(styles, ids);
   // translate CSS manually
@@ -26,7 +26,7 @@ tBody();
       'filteredStylesAllHidden',
     ].map(id => `--${id}:"${CSS.escape(t(id))}";`).join('')
     }}`);
-  if (!process.env.MV3 && CHROME >= 80 && CHROME <= 88) {
+  if (!__.MV3 && CHROME >= 80 && CHROME <= 88) {
     // Wrong checkboxes are randomly checked after going back in history, https://crbug.com/1138598
     window.on('pagehide', () => {
       $$('input[type=checkbox]').forEach((el, i) => (el.name = `bug${i}`));

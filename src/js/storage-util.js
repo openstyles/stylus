@@ -11,5 +11,5 @@ const StorageExtras = {
 
 export const chromeLocal =
   /*@__PURE__*/Object.assign(browser.storage.local, StorageExtras);
-export const chromeSession = process.env.MV3 &&
+export const chromeSession = __.MV3 &&
   /*@__PURE__*/Object.assign(chrome.storage.session, StorageExtras);

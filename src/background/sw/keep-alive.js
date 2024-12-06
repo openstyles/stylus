@@ -10,7 +10,7 @@ let TTL;
 /** seconds */
 let idleDuration;
 
-process.env.KEEP_ALIVE = keepAlive;
+__.KEEP_ALIVE = keepAlive;
 prefs.subscribe('keepAlive', (_, val) => {
   idleDuration = Math.max(30, val * 60 | 0/*to integer*/ || 0/*if val is not a number*/);
   TTL = val * 60e3;

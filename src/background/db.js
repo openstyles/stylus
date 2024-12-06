@@ -12,7 +12,7 @@ import ChromeStorageDB from './db-chrome-storage';
  https://www.reddit.com/r/firefox/comments/7ijuaq/firefox_59_webextensions_can_use_indexeddb_when/
 */
 
-let exec = process.env.BUILD === 'chrome' || CHROME
+let exec = __.BUILD === 'chrome' || CHROME
   ? dbExecIndexedDB
   : tryUsingIndexedDB;
 const DB = 'stylish';

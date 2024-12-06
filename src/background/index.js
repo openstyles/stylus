@@ -72,7 +72,7 @@ Object.assign(API, /** @namespace API */ {
 
   //#endregion
 
-}, !process.env.MV3 && /** @namespace API */ {
+}, !__.MV3 && /** @namespace API */ {
 
   //#region API for MV2
 
@@ -82,12 +82,12 @@ Object.assign(API, /** @namespace API */ {
 
   //#endregion
 
-}, process.env.BUILD !== 'chrome' && FIREFOX && initStyleViaApi());
+}, __.BUILD !== 'chrome' && FIREFOX && initStyleViaApi());
 
 //#region Events
 
 chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
-  if (process.env.BUILD !== 'firefox' && CHROME) {
+  if (__.BUILD !== 'firefox' && CHROME) {
     reinjectContentScripts();
     initContextMenus();
   }
@@ -98,7 +98,7 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   if (previousVersion === '1.5.30') {
     API.prefsDb.delete('badFavs'); // old Stylus marked all icons as bad when network was offline
   }
-  if (process.env.MV3) {
+  if (__.MV3) {
     bgPreInit.push(
       stateDB.clear(),
       DNR.getDynamicRules().then(rules => updateDynamicRules(undefined, getRuleIds(rules))),
@@ -127,10 +127,10 @@ onMessage(async (m, sender) => {
   bgPreInit.length = 0;
   await Promise.all(bgInit.map(v => typeof v === 'function' ? v() : v));
   bgBusy[kResolve]();
-  if (process.env.BUILD !== 'chrome' && FIREFOX) {
+  if (__.BUILD !== 'chrome' && FIREFOX) {
     initBrowserCommandsApi();
   }
-  if (!process.env.MV3) {
+  if (!__.MV3) {
     window._msgExec = _execute;
     initContextMenus();
     broadcast({method: 'backgroundReady'});

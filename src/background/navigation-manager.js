@@ -26,7 +26,7 @@ webNavigation.onReferenceFragmentUpdated.addListener(onFakeNavigation.bind(['has
 
 /** @this {string[]} type */
 async function onNavigation(data) {
-  if (CHROME && process.env.BUILD !== 'firefox' &&
+  if (CHROME && __.BUILD !== 'firefox' &&
       data.timeStamp === prevData.timeStamp && deepEqual(data, prevData)) {
     return; // Chrome bug: listener is called twice with identical data
   }
@@ -39,8 +39,8 @@ async function onNavigation(data) {
       else for (const id in ids) delete ids[id];
     }
   }
-  if (!process.env.MV3 &&
-      CHROME && process.env.BUILD !== 'firefox' &&
+  if (!__.MV3 &&
+      CHROME && __.BUILD !== 'firefox' &&
       chromeProtectsNTP &&
       data.url.startsWith('https://www.google.') &&
       data.url.includes('/_/chrome/newtab?')) {
@@ -61,12 +61,12 @@ function onFakeNavigation(data) {
   const {tabId} = data;
   const td = tabMan.get(tabId); if (!td) return;
   const {url, frameId: f, documentId: d} = data;
-  const iid = !process.env.MV3 && !d && td.iid?.[f];
-  const to = process.env.MV3 || d ? {documentId: d} : {frameId: f};
+  const iid = !__.MV3 && !d && td.iid?.[f];
+  const to = __.MV3 || d ? {documentId: d} : {frameId: f};
   sendTab(tabId, {method: 'urlChanged', iid, url}, to);
 }
 
-if (!process.env.MV3) {
+if (!__.MV3) {
   /*
    * Expose style version on greasyfork/sleazyfork 1) info page and 2) code page
    * Not using manifest.json to avoid injecting in unrelated sub-pages.
@@ -74,7 +74,7 @@ if (!process.env.MV3) {
   const urlMatches = '/scripts/\\d+[^/]*(/code)?([?#].*)?$';
   webNavigation.onCommitted.addListener(({tabId}) => {
     chrome.tabs.executeScript(tabId, {
-      file: `/${process.env.JS}install-hook-greasyfork.js`,
+      file: `/${__.JS}install-hook-greasyfork.js`,
       runAt: 'document_start',
     });
   }, {
@@ -90,7 +90,7 @@ if (!process.env.MV3) {
    */
   webNavigation.onCommitted.addListener(({tabId}) => {
     chrome.tabs.executeScript(tabId, {
-      file: `/${process.env.JS}install-hook-userstylesworld.js`,
+      file: `/${__.JS}install-hook-userstylesworld.js`,
       runAt: 'document_start',
     });
   }, {
@@ -101,7 +101,7 @@ if (!process.env.MV3) {
   /*
    * FF misses some about:blank iframes so we inject our content script explicitly
    */
-  if (process.env.BUILD !== 'chrome' && FIREFOX) {
+  if (__.BUILD !== 'chrome' && FIREFOX) {
     webNavigation.onDOMContentLoaded.addListener(async ({tabId, frameId}) => {
       if (frameId && !await pingTab(tabId, frameId)) {
         for (const file of MF.content_scripts[0].js) {

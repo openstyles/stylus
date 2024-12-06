@@ -27,7 +27,7 @@ let flushing;
 
 chrome.alarms.onAlarm.addListener(onAlarm);
 
-if (process.env.MV3) {
+if (__.MV3) {
   bgPreInit.push(stateDB.get(kDark).then(v => {
     if (!v) {
       isDark = false;
@@ -122,9 +122,9 @@ function update(type, val) {
   if (isDark !== val) {
     isDark = val;
     for (const fn of changeListeners) fn(isDark);
-    if (process.env.MV3) type = true;
+    if (__.MV3) type = true;
   }
-  if (process.env.MV3 && type) {
+  if (__.MV3 && type) {
     flushing ??= setTimeout(flushState);
   }
 }

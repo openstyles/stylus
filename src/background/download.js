@@ -6,7 +6,7 @@ import {tryJSONparse} from '/js/util';
 const jobs = {};
 const kTimeoutFetching = 'Timeout fetching ';
 /** @param {AbortController} ctl */
-const callAbort = process.env.MV3 && ((ctl, url) => ctl.abort(kTimeoutFetching + url));
+const callAbort = __.MV3 && ((ctl, url) => ctl.abort(kTimeoutFetching + url));
 
 /** @typedef DownloadParams
  * @prop {'GET' | 'POST' | 'HEAD' | string} [method]
@@ -27,7 +27,7 @@ const callAbort = process.env.MV3 && ((ctl, url) => ctl.abort(kTimeoutFetching +
 export default function download(url, params = {}) {
   const key = arguments[1] ? url + '\x00' + JSON.stringify(params) : url;
   const job = jobs[key] ??= {
-    req: process.env.KEEP_ALIVE(doDownload(url, params, key)),
+    req: __.KEEP_ALIVE(doDownload(url, params, key)),
   };
   if (params.port) {
     const ports = job.ports || (job.ports = new Set());
@@ -69,7 +69,7 @@ async function doDownload(url, {
       headers ??= {[kContentType]: kAppUrlencoded};
     }
     /** @type {Response | XMLHttpRequest} */
-    const resp = process.env.MV3
+    const resp = __.MV3
       ? await fetch(url, {
         body,
         method,
@@ -97,14 +97,14 @@ async function doDownload(url, {
         if (timeout || loadTimeout) xhr.ontimeout = () => abort(new Error(kTimeoutFetching + url));
         xhr.send(body);
       });
-    if (process.env.MV3) {
+    if (__.MV3) {
       if (timer) clearTimeout(timer);
       timer = loadTimeout && setTimeout(callAbort, loadTimeout, abort, url);
     }
     if (requiredStatusCode && resp.status !== requiredStatusCode && !url.startsWith('file:')) {
       throw new Error(`Bad status code ${resp.status} for ${url}`);
     }
-    if (!process.env.MV3) {
+    if (!__.MV3) {
       data = await new Promise((resolve, reject) => {
         abort = reject; // for xhr.onerror and xhr.ontimeout
         resp.onload = () => resolve(resp.response);
@@ -122,7 +122,7 @@ async function doDownload(url, {
     }
     return data;
   } finally {
-    if (process.env.MV3 && timer) clearTimeout(timer);
+    if (__.MV3 && timer) clearTimeout(timer);
     jobs[jobKey].ports?.forEach(p => p.disconnect());
     delete jobs[jobKey];
   }
@@ -160,7 +160,7 @@ function expandUsoVars(usoVars, url, response) {
 function extractHeaders(src, headers) {
   const res = {};
   for (const h of headers) {
-    res[h] = process.env.MV3
+    res[h] = __.MV3
       ? src.headers.get(h)
       : src.getResponseHeader(h);
   }

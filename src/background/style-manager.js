@@ -108,7 +108,7 @@ bgInit.push(async () => {
         broadcastStyleUpdated(style, 'colorScheme');
       }
     }
-  }, !process.env.MV3);
+  }, !__.MV3);
 });
 
 styleCache.setOnDeleted(val => {

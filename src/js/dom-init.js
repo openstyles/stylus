@@ -40,7 +40,7 @@ prefs.ready.then(() => {
 
 {
   const cls = [
-    process.env.MV3 && 'mv3',
+    __.MV3 && 'mv3',
     MOBILE && 'mobile',
     !WINDOWS && 'non-windows',
     FIREFOX ? 'firefox' : OPERA ? 'opera' : VIVALDI && 'vivaldi',

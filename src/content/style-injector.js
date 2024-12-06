@@ -1,7 +1,7 @@
 import * as msgApi from '/js/msg-api';
 
 // allows Terser to drop unused code in targeted builds
-export const FF = process.env.BUILD !== 'chrome' && msgApi.FF;
+export const FF = __.BUILD !== 'chrome' && msgApi.FF;
 const CLASS = 'stylus';
 const PREFIX = CLASS + '-';
 const MEDIA = 'screen, ' + PREFIX;
@@ -11,13 +11,13 @@ export const own = /** @type {Injection} */{
   cfg: {off: false, top: ''},
 };
 export const ownId = chrome.runtime.id;
-export const isXml = !process.env.ENTRY && document instanceof XMLDocument;
-const wrappedDoc = process.env.BUILD !== 'chrome' && FF && document.wrappedJSObject
+export const isXml = !__.ENTRY && document instanceof XMLDocument;
+const wrappedDoc = __.BUILD !== 'chrome' && FF && document.wrappedJSObject
   || document;
 // styles are out of order if any of these elements is injected between them
 // except `style` on our own page as it contains overrides
-const ORDERED_TAGS = new Set(['head', 'body', 'frameset', !process.env.ENTRY && 'style', 'link']);
-const docRewriteObserver = !process.env.ENTRY && RewriteObserver(updateRoot);
+const ORDERED_TAGS = new Set(['head', 'body', 'frameset', !__.ENTRY && 'style', 'link']);
+const docRewriteObserver = !__.ENTRY && RewriteObserver(updateRoot);
 const docRootObserver = RootObserver(restoreOrder);
 const toSafeChar = c => String.fromCharCode(0xFF00 + c.charCodeAt(0) - 0x20);
 /** @type {InjectedStyle[]} */
@@ -109,7 +109,7 @@ function removeAllElements() {
 
 function replaceAss(readd) {
   const elems = list.map(s => s.el);
-  const res = !process.env.ENTRY && FF ? cloneInto([], wrappedDoc) /* global cloneInto */ : [];
+  const res = !__.ENTRY && FF ? cloneInto([], wrappedDoc) /* global cloneInto */ : [];
   for (let arr = assV2 || wrappedDoc[kAss], i = 0, el; i < arr.length && (el = arr[i]); i++) {
     if (assIndexOf(elems, el) < 0) res.push(el);
   }
@@ -188,7 +188,7 @@ function createStyle(style) {
   if (!creationDoc && (el = initCreationDoc(style))) {
     return el;
   }
-  if (!process.env.ENTRY && root instanceof SVGSVGElement) {
+  if (!__.ENTRY && root instanceof SVGSVGElement) {
     // SVG document style
     el = createElementNS('http://www.w3.org/2000/svg', 'style');
   } else if (isXml) {
@@ -244,7 +244,7 @@ function setTextAndName(el, {id, code, name}) {
 function toggleObservers(shouldStart) {
   if (ass && shouldStart) return;
   const onOff = shouldStart && isEnabled ? 'start' : 'stop';
-  if (!process.env.ENTRY) docRewriteObserver[onOff]();
+  if (!__.ENTRY) docRewriteObserver[onOff]();
   docRootObserver[onOff]();
 }
 
@@ -359,7 +359,7 @@ export function sort() {
 export function updateConfig(cfg) {
   exposeStyleName = cfg.name;
   nonce = cfg.nonce || nonce;
-  ffCsp = !nonce && !process.env.ENTRY && FF && isSecureContext;
+  ffCsp = !nonce && !__.ENTRY && FF && isSecureContext;
   ({main: orderMain = {}, prio: orderPrio = {}} = cfg.order || {});
   if (!ass !== !cfg.ass) {
     removeAllElements();

@@ -12,7 +12,7 @@ if (location.hash) { // redirected from devtools -> "open in a new tab"
 const params = new URLSearchParams(location.search);
 let id = +params.get('id');
 
-export default process.env.MV3
+export default __.MV3
   ? loadStyle(prefs.clientData)
   : prefs.clientData.then(loadStyle);
 

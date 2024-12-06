@@ -14,7 +14,7 @@ import './options.css';
 
 tBody();
 $$('input[min], input[max]').forEach(enforceInputRange);
-$('#FOUC .items').textContent = t(process.env.MV3 ? 'optionFOUCMV3' : 'optionFOUCMV2')
+$('#FOUC .items').textContent = t(__.MV3 ? 'optionFOUCMV3' : 'optionFOUCMV2')
   .replace('<a>', t('optionsAdvancedStyleViaXhr'))
   .replace('<b>', t('optionKeepAlive'));
 $('#keepAlive').previousElementSibling.firstChild.textContent +=
@@ -23,7 +23,7 @@ $('#keepAlive').previousElementSibling.firstChild.textContent +=
 for (const el of $$('[show-if]')) {
   prefs.subscribe(el.getAttribute('show-if').match(/[.\w]+/)[0], toggleShowIf, true);
 }
-if (!process.env.MV3 && process.env.BUILD !== 'firefox' && CHROME_POPUP_BORDER_BUG) {
+if (!__.MV3 && __.BUILD !== 'firefox' && CHROME_POPUP_BORDER_BUG) {
   $('#popupWidth').closest('.items').append(template.popupBorders);
 }
 window.on('keydown', event => {
@@ -40,7 +40,7 @@ $('#manage.newUI.favicons').onclick = () => {
   API.prefsDb.delete('badFavs');
 };
 $('#shortcuts').onclick = () => {
-  if (process.env.BUILD !== 'chrome' && FIREFOX) {
+  if (__.BUILD !== 'chrome' && FIREFOX) {
     customizeHotkeys();
   } else {
     API.openURL({
@@ -68,7 +68,7 @@ for (const el of $$('[data-clickable]')) {
   el.firstChild.replaceWith(p[1], span, p[3]);
 }
 (async () => {
-  const {wrb} = process.env.MV3 ? prefs.clientData : await prefs.clientData;
+  const {wrb} = __.MV3 ? prefs.clientData : await prefs.clientData;
   setupLivePrefs();
   if (wrb === false) {
     for (let el of $$('#patchCsp')) {

@@ -35,7 +35,7 @@ function toggle(key, val) {
     ...URLS.usoaRaw,
     ...['greasy', 'sleazy'].map(h => `https://update.${h}fork.org/`),
   ];
-  if (process.env.MV3) {
+  if (__.MV3) {
     updateDynamicRules([{
       id: DNR_ID_INSTALLER,
       condition: {
@@ -81,7 +81,7 @@ function isContentTypeText(type) {
 // in Firefox we have to use a content script to read file://
 async function loadFromFile(tabId) {
   return (await browser.tabs.executeScript(tabId, {
-    file: `/${process.env.JS}install-hook-usercss.js`,
+    file: `/${__.JS}install-hook-usercss.js`,
   }))[0];
 }
 

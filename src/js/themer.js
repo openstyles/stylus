@@ -21,7 +21,7 @@ const map = {[MEDIA_ON]: true, [MEDIA_OFF]: false};
 
 (async () => {
   let isDark, favicon;
-  if (window === top) ({dark: isDark, favicon} = process.env.MV3 ? clientData : await clientData);
+  if (window === top) ({dark: isDark, favicon} = __.MV3 ? clientData : await clientData);
   else isDark = parent.document.documentElement.dataset.uiTheme === 'dark';
   toggle(isDark, true);
   onExtension(e => {

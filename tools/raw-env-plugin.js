@@ -3,10 +3,10 @@
 const webpack = require('webpack');
 const ReplaceSource = require('webpack-sources/lib/ReplaceSource');
 
-const re = /\bprocess\.env\.([$_A-Z][$_A-Z\d]*)\b/g;
+const re = /\b(?:__|process\.env)\.([$_A-Z][$_A-Z\d]*)\b/g;
 const STAGE = webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_COMPATIBILITY;
 
-/** Dumb regexp replacement for `process.env.XXX` vars via String.replace() */
+/** Dumb regexp replacement for `__.XXX` or `process.env.XXX` vars via String.replace() */
 module.exports = class RawEnvPlugin {
 
   constructor(vars, raws = {}) {

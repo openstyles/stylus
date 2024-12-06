@@ -65,6 +65,7 @@ const OUTPUT_MODULE = {
   experiments: {outputModule: true},
 };
 const VARS = {
+  API: 'API', // hiding the global from IDE
   BUILD,
   CLIENT_DATA: 'clientData', // hiding the global from IDE
   CM_PATH,
@@ -79,7 +80,6 @@ const VARS = {
   ZIP: !!ZIP,
 };
 const RAW_VARS = {
-  API: 'global.API', // hiding the global from IDE
   DEBUGLOG: (process.env.DEBUG ? '' : 'null&&') + 'console.log',
   DEBUGWARN: (process.env.DEBUG ? '' : 'null&&') + 'console.warn',
   KEEP_ALIVE: '1&&',

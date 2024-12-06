@@ -16,7 +16,7 @@ export default async function makePopupData() {
   let url = tab.pendingUrl || tab.url || ''; // new Chrome uses pendingUrl while connecting
   const isOwn = url.startsWith(ownRoot);
   const [
-    ping0 = process.env.MV3 && !tabMan.get(tab.id, kPopup) && (
+    ping0 = __.MV3 && !tabMan.get(tab.id, kPopup) && (
       tabMan.set(tab.id, kPopup, true),
       await reinjectContentScripts(tab)
     ),
@@ -24,7 +24,7 @@ export default async function makePopupData() {
   ] = await Promise.all([
     isOwn
       || supported(url) && pingTab(tab.id),
-    isOwn && CHROME && process.env.BUILD !== 'firefox' && getAllFrames(url, tab)
+    isOwn && CHROME && __.BUILD !== 'firefox' && getAllFrames(url, tab)
       || browser.webNavigation.getAllFrames({tabId: tab.id}),
   ]);
   // sorting frames and connecting children to parents
@@ -60,14 +60,14 @@ export default async function makePopupData() {
   frames[0].url = url;
   const urlSupported = supported(url);
   if (urlSupported) {
-    if (process.env.IS_BG && window._busy) {
+    if (__.IS_BG && window._busy) {
       await window._busy;
     }
     let styles = [];
     for (const f of frames) {
       if (f.url && !f.isDupe) f.stylesIdx = styles.push(f.styles = API.styles.getByUrl(f.url)) - 1;
     }
-    if (!process.env.IS_BG) {
+    if (!__.IS_BG) {
       styles = await Promise.all(styles);
       for (const f of frames) if (f.styles) f.styles = styles[f.stylesIdx];
     }
@@ -78,7 +78,7 @@ export default async function makePopupData() {
 /** webNavigation.getAllFrames doesn't work in Chrome on own pages */
 async function getAllFrames(url, {id: tabId}) {
   let res;
-  if (process.env.MV3) {
+  if (__.MV3) {
     res = await chrome.runtime.getContexts({tabIds: [tabId]});
     res = res[1]?.documentUrl;
   } else {

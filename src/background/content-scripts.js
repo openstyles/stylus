@@ -46,7 +46,7 @@ export default async function reinjectContentScripts(targetTab) {
     const res = tab.width && !tab.discarded && URLS.supported(url) && (
       /* In MV2 persistent background script our content scripts may still be pending
        * injection at browser start, so it's too early to ping them. */
-      !process.env.MV3 && !targetTab && tab.status === 'loading'
+      !__.MV3 && !targetTab && tab.status === 'loading'
         ? trackBusyTab(tab.id, true)
         : await injectToTab(tab.id, url)
     );
@@ -63,7 +63,7 @@ export default async function reinjectContentScripts(targetTab) {
       if (!cs[ALL_URLS] && !cs.matches.some(url.match, url)) {
         continue;
       }
-      if (process.env.MV3) {
+      if (__.MV3) {
         jobs.push(chrome.scripting.executeScript({
           injectImmediately: cs.run_at === 'document_start',
           target: {

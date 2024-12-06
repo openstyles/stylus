@@ -27,7 +27,7 @@ const xo = new IntersectionObserver(onIntersect);
 export const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrId}`);
 
 (async () => {
-  const data = (process.env.MV3 ? prefs.clientData : await prefs.clientData)[kPopup];
+  const data = (__.MV3 ? prefs.clientData : await prefs.clientData)[kPopup];
   initPopup(...data);
   showStyles(...data);
   if (!MOBILE) window.on('resize', onWindowResize);
@@ -43,10 +43,10 @@ prefs.subscribe('disableAll', (key, val) => {
   global[key].title = t('masterSwitch') + ':\n' +
     t(val ? 'disableAllStylesOff' : 'genericEnabledLabel');
 }, true);
-if (!process.env.MV3 && process.env.BUILD !== 'firefox' && CHROME_POPUP_BORDER_BUG) {
+if (!__.MV3 && __.BUILD !== 'firefox' && CHROME_POPUP_BORDER_BUG) {
   prefs.subscribe('popup.borders', toggleSideBorders, true);
 }
-if (!process.env.MV3 && CHROME >= 66 && CHROME <= 69) {
+if (!__.MV3 && CHROME >= 66 && CHROME <= 69) {
   // Chrome 66-69 adds a gap, https://crbug.com/821143
   $.root.style.overflow = 'overlay';
 }

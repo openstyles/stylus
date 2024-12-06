@@ -32,7 +32,7 @@ const makeBlob = data => new Blob([JSON.stringify(data)], {type: kAppJson});
 const makeXhrCookie = blobId => `${ownId}=${blobId}; SameSite=Lax`;
 const req2key = req => req.tabId + ':' + req.frameId;
 const revokeObjectURL = blobId => blobId &&
-  (process.env.MV3 ? global.offscreen : URL).revokeObjectURL(BLOB_URL_PREFIX + blobId);
+  (__.MV3 ? global.offscreen : URL).revokeObjectURL(BLOB_URL_PREFIX + blobId);
 const toSend = {};
 const INJECTED_FUNC = function (data) {
   if (this['apply.js'] !== 1) { // storing data only if apply.js hasn't run yet
@@ -50,7 +50,7 @@ let curOFF = true;
 let curCSP = false;
 let curXHR = false;
 
-if (process.env.MV3) {
+if (__.MV3) {
   toggle(); // register listeners synchronously so they wake up the SW next time it dies
   global.offscreen.syncLifetimeToSW(true);
   bgPreInit.push((async () => {
@@ -59,7 +59,7 @@ if (process.env.MV3) {
   })());
 }
 prefs.ready.then(() => {
-  toggle(process.env.MV3); // in MV3 this will unregister unused listeners
+  toggle(__.MV3); // in MV3 this will unregister unused listeners
   prefs.subscribe([idOFF, idCSP, idXHR], toggle);
 });
 bgBusy.then(() => {
@@ -76,13 +76,13 @@ tabMan.onUnload.add((tabId, frameId) => {
   else removeTabData([tabId]);
 });
 webNavigation.onErrorOccurred.addListener(removePreloadedStyles, WEBNAV_FILTER);
-if (CHROME && !process.env.MV3 && process.env.BUILD !== 'firefox') {
+if (CHROME && !__.MV3 && __.BUILD !== 'firefox') {
   chrome.webRequest.onBeforeRequest.addListener(openNamedStyle, {
     urls: [ownRoot + '*.user.css'],
     types: [kMainFrame],
   }, ['blocking']);
 }
-if (CHROME && process.env.BUILD !== 'firefox') {
+if (CHROME && __.BUILD !== 'firefox') {
   chrome.webRequest.onBeforeRequest.addListener(req => {
     // tabId < 0 means the popup is shown normally and not as a page in a tab
     API.data.set(kPopup, req.tabId < 0 && makePopupData());
@@ -94,7 +94,7 @@ if (CHROME && process.env.BUILD !== 'firefox') {
 
 function toggle(prefKey) {
   // Must register all listeners synchronously to make them wake the SW
-  const mv3init = process.env.MV3 && !prefKey;
+  const mv3init = __.MV3 && !prefKey;
   const off = prefs.__values[idOFF];
   const csp = !off && prefs.__values[idCSP];
   const xhr = !off && prefs.__values[idXHR];
@@ -102,8 +102,8 @@ function toggle(prefKey) {
     return;
   }
   let v;
-  if (process.env.BUILD !== 'chrome' && FIREFOX || (
-    process.env.MV3
+  if (__.BUILD !== 'chrome' && FIREFOX || (
+    __.MV3
       ? csp !== curCSP
       : (xhr || csp) !== (curXHR || curCSP)
   )) {
@@ -113,7 +113,7 @@ function toggle(prefKey) {
     toggleListener(v, true, modifyHeaders, WR_FILTER, [
       'blocking',
       'responseHeaders',
-      !process.env.MV3 && xhr && chrome.webRequest.OnHeadersReceivedOptions.EXTRA_HEADERS,
+      !__.MV3 && xhr && chrome.webRequest.OnHeadersReceivedOptions.EXTRA_HEADERS,
     ].filter(Boolean));
   }
   if (mv3init || off !== curOFF) {
@@ -154,7 +154,7 @@ async function prepareStyles(req) {
   const willStyle = payload.sections.length;
   data.url = url;
   if (oldData) removePreloadedStyles(null, key, data, willStyle);
-  if (process.env.MV3 && curXHR && willStyle) prepareStylesMV3(req, data, key, payload);
+  if (__.MV3 && curXHR && willStyle) prepareStylesMV3(req, data, key, payload);
 }
 
 async function prepareStylesMV3({tabId, frameId, url}, data, key, payload) {
@@ -201,7 +201,7 @@ function injectData(req) {
   const data = toSend[req2key(req)];
   if (data && !data.injected) {
     data.injected = true;
-    if (process.env.MV3) {
+    if (__.MV3) {
       chrome.scripting.executeScript({
         target: {tabId: req.tabId, frameIds: [req.frameId]},
         args: [data.payload],
@@ -241,10 +241,10 @@ function modifyHeaders(req) {
   let blobId;
   if (curXHR && (
     blobId = (data.blobId ??=
-      !process.env.MV3 && URL.createObjectURL(makeBlob(payload)).slice(BLOB_URL_PREFIX.length)
+      !__.MV3 && URL.createObjectURL(makeBlob(payload)).slice(BLOB_URL_PREFIX.length)
     ))) {
     blobId = makeXhrCookie(blobId);
-    if (!process.env.MV3 || !findHeader(responseHeaders, kSetCookie, blobId)) {
+    if (!__.MV3 || !findHeader(responseHeaders, kSetCookie, blobId)) {
       responseHeaders.push({name: kSetCookie, value: blobId});
     } else {
       blobId = false;
@@ -300,7 +300,7 @@ export function removePreloadedStyles(req, key = req2key(req), data = toSend[key
       data.timer = clearTimeout(v);
     }
   }
-  if (process.env.MV3 && !keep && (data ? ruleIds[v = data.ruleId] : v = ruleIdKeys[key])) {
+  if (__.MV3 && !keep && (data ? ruleIds[v = data.ruleId] : v = ruleIdKeys[key])) {
     delete ruleIds[v];
     delete ruleIdKeys[key];
     timer ??= setTimeout(flushState);

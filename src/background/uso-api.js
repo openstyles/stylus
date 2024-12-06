@@ -36,7 +36,7 @@ export function pingback(usoId, delay) {
   clearTimeout(pingers[usoId]);
   delete pingers[usoId];
   if (delay > 0) {
-    return process.env.KEEP_ALIVE(new Promise(resolve => (
+    return __.KEEP_ALIVE(new Promise(resolve => (
       pingers[usoId] = setTimeout(ping, delay, usoId, resolve)
     )));
   }

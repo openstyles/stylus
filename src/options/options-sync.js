@@ -5,7 +5,7 @@ import {clientData} from '/js/prefs';
 import {capitalize} from '/js/util';
 
 (async () => {
-  let {sync: status, syncOpts} = process.env.MV3 ? clientData : await clientData;
+  let {sync: status, syncOpts} = __.MV3 ? clientData : await clientData;
   const elSync = $('.sync-options', template.body);
   const elCloud = $('.cloud-name', elSync);
   const elToggle = $('.connect', elSync);

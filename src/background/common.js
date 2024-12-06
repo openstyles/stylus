@@ -9,16 +9,16 @@ export let bgBusy = promiseWithResolve();
 export const bgPreInit = [];
 export const bgInit = [];
 
-export const safeTimeout = process.env.ENTRY === 'sw'
+export const safeTimeout = __.ENTRY === 'sw'
   ? (fn, delay, ...args) =>
     setTimeout(safeTimeoutResolve, delay, fn, args,
-      process.env.KEEP_ALIVE(promiseWithResolve())[kResolve])
+      __.KEEP_ALIVE(promiseWithResolve())[kResolve])
   : setTimeout;
 
-const safeTimeoutResolve = process.env.ENTRY === 'sw'
+const safeTimeoutResolve = __.ENTRY === 'sw'
   && ((fn, args, resolve) => resolve(fn(...args)));
 
-export const stateDB = process.env.MV3 && getDbProxy(kStateDB, {store: 'kv'});
+export const stateDB = __.MV3 && getDbProxy(kStateDB, {store: 'kv'});
 
 export const uuidIndex = Object.assign(new Map(), {
   custom: {},

@@ -8,7 +8,7 @@ const SRC_GLOBALS = {
   chrome: false,
   browser: false,
   global: false,
-  process: false,
+  __: false,
 };
 
 module.exports = [

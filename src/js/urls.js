@@ -5,10 +5,10 @@ export const ownRoot = /*@__PURE__*/ chrome.runtime.getURL('');
 export const actionPopupUrl = ownRoot + 'popup.html';
 export const installUsercss = 'install-usercss.html';
 export const workerPath = '/js/worker.js';
-export const swPath = process.env.MV3 && `/${process.env.PAGE_BG}.js`;
+export const swPath = __.MV3 && `/${__.PAGE_BG}.js`;
 export const favicon = host => `https://icons.duckduckgo.com/ip3/${host}.ico`;
 /** Chrome 61.0.3161+ doesn't run content scripts on NTP https://crrev.com/2978953002/ */
-export const chromeProtectsNTP = process.env.MV3 || CHROME >= 61;
+export const chromeProtectsNTP = __.MV3 || CHROME >= 61;
 export const rxGF = /^(https:\/\/)(?:update\.)?((?:greasy|sleazy)fork\.org\/scripts\/)(\d+)[^/]*\/code\/[^/]*\.user\.css$|$/;
 
 export const uso = 'https://userstyles.org/';
@@ -52,7 +52,7 @@ const regExpTest = RegExp.prototype.test;
 
 export const supported = /*@__PURE__*/ regExpTest.bind(new RegExp(
   `^(?:(?:ht|f)tps?:|file:|${ownRoot}${
-    !process.env.MV3 && CHROME && !chromeProtectsNTP ? '|chrome://newtab/' : ''
+    !__.MV3 && CHROME && !chromeProtectsNTP ? '|chrome://newtab/' : ''
   })`
 ));
 

@@ -48,7 +48,7 @@ export async function run(...args) {
     } catch (err) {
       if (!err.message.includes(kMAX)) throw err;
       busy = sleep(60e3 / (syncApi[kMAX] || 120) * (Math.random() * 2 + 1));
-      await process.env.KEEP_ALIVE(busy);
+      await __.KEEP_ALIVE(busy);
     } finally {
       busy = null;
     }

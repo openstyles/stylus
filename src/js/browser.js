@@ -1,6 +1,6 @@
-if (process.env.MV3) {
+if (__.MV3) {
   global.browser = chrome;
-} else if (process.env.BUILD !== 'firefox' && !global.browser?.runtime) {
+} else if (__.BUILD !== 'firefox' && !global.browser?.runtime) {
   /* Auto-promisifier with a fallback to direct call on signature error.
      The fallback isn't used now since we call all synchronous methods via `chrome` */
   const directEvents = ['addListener', 'removeListener', 'hasListener', 'hasListeners'];
@@ -62,7 +62,7 @@ if (process.env.MV3) {
   global.browser = createProxy(chrome);
 }
 
-if (!process.env.MV3 && !DOMTokenList.prototype.replace) {
+if (!__.MV3 && !DOMTokenList.prototype.replace) {
   // TODO: remove when minimum_chrome_version >= 61
   global.URLSearchParams = class extends URLSearchParams {
     constructor(init) {

@@ -49,11 +49,11 @@ export function _execute(target, ...args) {
       }
     }
   }
-  return process.env.KEEP_ALIVE(result);
+  return __.KEEP_ALIVE(result);
 }
 
 export function onRuntimeMessage({data, target}, sender, sendResponse) {
-  if (data.method === 'backgroundReady' && !process.env.IS_BG) {
+  if (data.method === 'backgroundReady' && !__.IS_BG) {
     bgReadySignal?.(true);
   }
   const res = _execute(target, data, sender);

@@ -8,7 +8,7 @@ import {bgBusy} from './common';
 import {removePreloadedStyles} from './style-via-webrequest';
 import * as tabMan from './tab-manager';
 
-const browserAction = (process.env.MV3 ? chrome.action : chrome.browserAction) || {};
+const browserAction = (__.MV3 ? chrome.action : chrome.browserAction) || {};
 const staleBadges = new Set();
 /** @type {{ [url: string]: ImageData | Promise<ImageData> }} */
 const imageDataCache = {};
@@ -16,8 +16,8 @@ const badgeOvr = {color: '', text: ''};
 // https://github.com/openstyles/stylus/issues/1287 Fenix can't use custom ImageData
 const FIREFOX_ANDROID = FIREFOX && MOBILE;
 const ICON_SIZES =
-  !process.env.MV3 && VIVALDI ? [19, 38] : // old Vivaldi
-    process.env.MV3 || !FIREFOX ? [16, 32] : // Chromium
+  !__.MV3 && VIVALDI ? [19, 38] : // old Vivaldi
+    __.MV3 || !FIREFOX ? [16, 32] : // Chromium
       MOBILE ? [32, 38] : // FF mobile 1x, 1.5x, 2x DPI // TODO: +48
         [16, 32, 38]; // FF desktop toolbar and panel 1x, 1.5x, 2x DPI // TODO: 38->48, +64
 const kBadgeDisabled = 'badgeDisabled';
@@ -33,7 +33,7 @@ bgBusy.then(() => {
     if (__prefs[kIconset] === -1) {
       debounce(refreshGlobalIcon);
     }
-  }, !process.env.MV3);
+  }, !__.MV3);
   subscribe([
     kDisableAll,
     kBadgeDisabled,
@@ -142,8 +142,8 @@ function getStyleCount(tabId) {
 
 // Caches imageData for icon paths
 async function loadImage(url) {
-  const {OffscreenCanvas} = (process.env.MV3 || CHROME && self.createImageBitmap) && self || {};
-  const img = process.env.MV3 || OffscreenCanvas
+  const {OffscreenCanvas} = (__.MV3 || CHROME && self.createImageBitmap) && self || {};
+  const img = __.MV3 || OffscreenCanvas
     ? await createImageBitmap(await (await fetch(url)).blob())
     : await new Promise((resolve, reject) =>
       Object.assign(new Image(), {
@@ -152,7 +152,7 @@ async function loadImage(url) {
         onerror: reject,
       }));
   const {width: w, height: h} = img;
-  const canvas = process.env.MV3 || OffscreenCanvas
+  const canvas = __.MV3 || OffscreenCanvas
     ? new OffscreenCanvas(w, h)
     : Object.assign(document.createElement('canvas'), {width: w, height: h});
   const ctx = canvas.getContext('2d');

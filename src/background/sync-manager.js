@@ -46,7 +46,7 @@ let scheduling;
 let syncingNow;
 
 chrome.alarms.onAlarm.addListener(a => {
-  if (a.name === ALARM_ID) process.env.KEEP_ALIVE(syncNow());
+  if (a.name === ALARM_ID) __.KEEP_ALIVE(syncNow());
 });
 prefs.subscribe(PREF_ID, schedule, true);
 
@@ -170,7 +170,7 @@ export async function syncNow() {
       status.login = false;
     }
   }
-  if (process.env.MV3 && resolveOnSync) {
+  if (__.MV3 && resolveOnSync) {
     resolveOnSync();
     resolveOnSync = null;
   }
@@ -278,8 +278,8 @@ async function getDrive(name) {
   if (!hasOwn(cloudDrive, name)) throw new Error(`Unknown cloud provider: ${name}`);
   const opts = await getDriveOptions(name);
   const webdav = name === 'webdav';
-  if (!process.env.MV3 || !webdav) opts.getAccessToken = () => getToken(name);
-  if (!process.env.MV3 && webdav) opts.fetch = fetchWebDAV.bind(opts);
+  if (!__.MV3 || !webdav) opts.getAccessToken = () => getToken(name);
+  if (!__.MV3 && webdav) opts.fetch = fetchWebDAV.bind(opts);
   return cloudDrive[name](opts);
 }
 
@@ -302,8 +302,8 @@ async function schedule(isInit, prefVal = curDriveName) {
       delayInMinutes: isInit ? SYNC_INIT_DELAY : SYNC_DELAY,
       periodInMinutes: SYNC_INTERVAL,
     });
-    if (process.env.MV3 && !resolveOnSync) {
-      process.env.KEEP_ALIVE(new Promise(cb => (resolveOnSync = cb)));
+    if (__.MV3 && !resolveOnSync) {
+      __.KEEP_ALIVE(new Promise(cb => (resolveOnSync = cb)));
     }
   }
   scheduling = false;

@@ -158,7 +158,7 @@ async function authUser(keys, name, interactive = false, hooks = null) {
   }
   hooks?.query(query);
   const url = `${provider.authURL}?${new URLSearchParams(query)}`;
-  const finalUrl = await (process.env.MV3 ? authUserMV3 : authUserMV2)(url, interactive,
+  const finalUrl = await (__.MV3 ? authUserMV3 : authUserMV2)(url, interactive,
     redirectUri);
   const params = new URLSearchParams(
     provider.flow === 'token' ?
