@@ -42,7 +42,7 @@ function getBrowserlist() {
 }
 
 function getManifestOvrName(
-  mv3 = /chrome-(mv3|beta)/.test(process.env.NODE_ENV),
+  mv3 = /-mv3/.test(process.env.NODE_ENV),
   asGlob
 ) {
   const s = '-mv' + (mv3 ? 3 : 2);

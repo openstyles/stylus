@@ -16,7 +16,7 @@ const {escapeForRe, getManifestOvrName, stripSourceMap, MANIFEST, ROOT} = requir
 
 const NODE_ENV = process.env.NODE_ENV;
 const [TARGET, ZIP] = NODE_ENV?.split(':') || [''];
-const [BUILD, FLAVOR] = TARGET.split('-');
+const [BUILD, FLAVOR, CHANNEL] = TARGET.split('-');
 const DEV = BUILD === 'DEV' || process.env.npm_lifecycle_event?.startsWith('watch');
 const FS_CACHE = !DEV;
 const SRC = ROOT + 'src/';
@@ -26,7 +26,7 @@ const JS = 'js/';
 const SHIM = ROOT + 'tools/shim/';
 const SEP_ESC = escapeForRe(path.sep);
 const SRC_ESC = escapeForRe(SRC.replaceAll('/', path.sep));
-const MV3 = ['mv3', 'beta'].includes(FLAVOR);
+const MV3 = FLAVOR === 'mv3';
 const PAGE_BG = MV3 ? 'background/sw' : 'background';
 const PAGE_OFFSCREEN = 'offscreen';
 const PAGES = [
@@ -282,6 +282,7 @@ function makeManifest(files) {
     else if (old && typeof old === 'object') Object.assign(old, val);
     else base[key] = val;
   }
+  if (CHANNEL === 'beta') base.name += ' (beta)';
   return JSON.stringify(base, null, 2);
 }
 

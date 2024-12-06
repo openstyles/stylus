@@ -11,9 +11,12 @@ const {ROOT, MANIFEST} = require('./util');
 
 const DST = ROOT + 'dist/';
 const WEBPACK_CLI = 'webpack-cli --no-stats';
-const sChrome = 'chrome';
-const sChromeBeta = 'chrome-beta';
-const sFirefox = 'firefox';
+const TARGETS = [
+  'firefox',
+  'chrome-mv2',
+  'chrome-mv3',
+  'chrome-mv3-beta',
+];
 
 fse.emptyDirSync(ROOT + 'node_modules/.cache/webpack');
 
@@ -21,9 +24,7 @@ fse.emptyDirSync(ROOT + 'node_modules/.cache/webpack');
   // https://github.com/Stuk/jszip/issues/369
   const tzBug = new Date().getTimezoneOffset() * 60000;
   JSZip.defaults.date = new Date(Date.now() - tzBug);
-  targets = targets
-    ? targets.split(',')
-    : [sFirefox, sChrome, sChromeBeta];
+  targets = targets ? targets.split(',') : TARGETS;
   for (const target of targets) {
     process.env.NODE_ENV = target + ':zip';
     console.log(chalk.bgYellow.bold(`\nBuilding for ${target}...`));
@@ -52,23 +53,10 @@ fse.emptyDirSync(ROOT + 'node_modules/.cache/webpack');
   process.exit(1);
 });
 
-function patchManifest(str, suffix) {
+function patchManifest(str) {
   const mj = JSON.parse(str);
   const i = mj.permissions.indexOf('declarativeNetRequestFeedback');
   if (i >= 0) mj.permissions.splice(i, 1);
   delete mj.key;
-  if (suffix === sFirefox) {
-    mj.options_ui = {
-      /*
-       * Linking to dashboard, not to options, because this is aimed at users who removed the icon
-       * from the toolbar (they rarely use Stylus) so they visit about:addons instead.
-       */
-      page: 'manage.html',
-      open_in_tab: true,
-    };
-  } else {
-    delete mj.browser_specific_settings;
-    if (suffix === sChromeBeta) mj.name = 'Stylus (beta)';
-  }
   return mj;
 }
