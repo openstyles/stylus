@@ -48,6 +48,9 @@
   input[type=time]::-webkit-calendar-picker-indicator {
     filter: invert(1);
   }
+  input[type="range"] {
+    color-scheme: dark;
+  }
   select {
     background-color: var(--bg);
   }
