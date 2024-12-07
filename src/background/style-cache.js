@@ -144,5 +144,5 @@ function prune() {
       100 * (a1 - b1) +
       10 * ((b2 - b1) - (a2 - a1)) +
       a2 - b2)
-    .slice(0, MAX * .25));
+    .slice(0, 10));
 }
