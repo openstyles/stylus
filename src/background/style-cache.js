@@ -51,12 +51,17 @@ export async function loadAll() {
 export function hydrate(dataMap) {
   const toDel = [];
   for (const val of values()) {
-    for (const id in ensureSections(val)) {
-      const data = dataMap.get(+id);
-      if (!data || !make(val, data.style)) {
-        toDel.push(val);
-        break;
+    try {
+      for (const id in ensureSections(val)) {
+        const data = dataMap.get(+id);
+        if (!data || !make(val, data.style)) {
+          toDel.push(val);
+          break;
+        }
       }
+    } catch (e) {
+      toDel.push(val);
+      console.error(e, val);
     }
   }
   if (toDel[0]) del(toDel);
