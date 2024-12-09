@@ -129,10 +129,10 @@ onMessage(async (m, sender) => {
   bgBusy[kResolve]();
   if (__.BUILD !== 'chrome' && FIREFOX) {
     initBrowserCommandsApi();
+    initContextMenus();
   }
   if (!__.MV3) {
     window._msgExec = _execute;
-    initContextMenus();
     broadcast({method: 'backgroundReady'});
   }
 })();
