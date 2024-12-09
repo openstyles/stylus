@@ -2,6 +2,15 @@
    This file is loaded dynamically when the inline search is invoked.
    So don't put main popup's stuff here. */
 
+.search-results-shown {
+  body {
+    overflow-y: auto;
+  }
+  main {
+    flex: 1 0;
+  }
+}
+
 #pct {
   --h: var(--outer-padding);
   font-size: var(--h);

@@ -29,12 +29,6 @@ body {
 body[style*="max-height:"] > main {
   overflow-y: auto;
 }
-.search-results-shown {
-  overflow-y: auto;
-  > body {
-    max-height: none !important; /* overriding our inline style */
-  }
-}
 
 .firefox button {
   transition: none; /* FF borks subpixel AA during transitions in popup */
