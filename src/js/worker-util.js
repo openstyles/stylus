@@ -1,7 +1,8 @@
 const loadedUrls = [];
 
 export const importScriptsOnce = (...urls) => {
-  urls = urls.map(u => !loadedUrls.includes(u = `/${__.JS}${u}`) && u).filter(Boolean);
+  // All files are in the same directory; not loading via an absolute path as it's bugged in Orion
+  urls = urls.filter(u => !loadedUrls.includes(u));
   if (urls.length) {
     loadedUrls.push(...urls);
     importScripts(...urls);
