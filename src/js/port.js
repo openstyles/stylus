@@ -5,7 +5,7 @@ export const COMMANDS = __.ENTRY !== 'sw' && (
     __proto__: null,
     /** @this {RemotePortEvent} */
     getWorkerPort(url) {
-      const p = new SharedWorker(url).port;
+      const p = getWorkerPort(url);
       this._transfer = [p];
       return p;
     },
@@ -26,6 +26,9 @@ const PORT_TIMEOUT = 5 * 60e3; // TODO: expose as a configurable option?
 const navLocks = navigator.locks;
 const autoClose = __.ENTRY === 'worker' ||
   __.ENTRY === true && location.pathname === `/${__.PAGE_OFFSCREEN}.html`;
+// SW can't nest workers, https://crbug.com/40772041
+const SharedWorker = __.ENTRY !== 'sw' && global.SharedWorker;
+const kWorker = '_worker';
 const NOP = () => {};
 const navSW = navigator.serviceWorker;
 if (__.MV3 && __.ENTRY === true) {
@@ -67,22 +70,20 @@ export function createPortExec(getTarget, {lock, once} = {}) {
   };
   async function initPort() {
     __.DEBUGLOG(location.pathname, 'exec init', {getTarget});
-    if (typeof getTarget === 'string') {
+    // SW can't nest workers, https://crbug.com/40772041
+    if (__.ENTRY !== 'sw' && typeof getTarget === 'string') {
       lock = getTarget;
-      target = new SharedWorker(getTarget);
-      target.onerror = console.error;
-      target = target.port;
+      target = getWorkerPort(getTarget, console.error);
     } else {
       target = typeof getTarget === 'function' ? getTarget() : getTarget;
       if (target.then) target = await target;
     }
     if (target instanceof MessagePort) {
       port = target;
+    } else if (once) {
+      port = initChannelPort(target, null, once = []);
     } else {
-      const mc = new MessageChannel();
-      port = mc.port1;
-      if (once) once = [mc.port2];
-      else target.postMessage({lock}, [mc.port2]);
+      port = initChannelPort(target, {lock});
     }
     port.onmessage = onMessage;
     port.onmessageerror = onMessageError;
@@ -169,6 +170,42 @@ export function initRemotePort(evt) {
       timer = setTimeout(close, PORT_TIMEOUT);
     }
   }
+}
+
+/** @return {MessagePort} */
+function getWorkerPort(url, onerror) {
+  /** @type {SharedWorker|Worker} */
+  let worker;
+  if (SharedWorker) {
+    worker = new SharedWorker(url, 'Stylus');
+    if (onerror) worker.onerror = onerror;
+    return worker.port;
+  }
+  // Chrome Android
+  let target = global;
+  if (__.MV3 || !__.IS_BG/* in MV2 the bg page can create Worker */) {
+    for (const view of chrome.extension.getViews()) {
+      if ((worker = view[kWorker])) {
+        break;
+      }
+      if (view.location.pathname === `/${__.MV3 ? __.PAGE_OFFSCREEN : __.PAGE_BG}.html`) {
+        target = view;
+      }
+    }
+  }
+  if (!worker) {
+    worker = target[kWorker] = new (target.Worker)(url);
+    if (onerror) worker.onerror = onerror;
+  }
+  return initChannelPort(worker, null);
+}
+
+function initChannelPort(target, msg, transfer) {
+  const mc = new MessageChannel();
+  const port2 = mc.port2;
+  if (transfer) transfer[0] = port2;
+  else target.postMessage(msg, [port2]);
+  return mc.port1;
 }
 
 /** @param {MessageEvent} _ */
