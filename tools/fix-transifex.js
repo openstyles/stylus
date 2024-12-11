@@ -1,9 +1,9 @@
 'use strict';
 
 const fs = require('fs');
-const path = require('path');
+const {SRC} = require('./util');
 
-const DIR = path.dirname(require.resolve('../package.json')) + '/_locales/';
+const DIR = SRC + '_locales/';
 const RX_LNG_CODE = /^\w\w(_\w{2,3})?$/; // like `en` or `en_GB`
 
 const makeFileName = lng => `${DIR}${lng}/messages.json`;

@@ -2,9 +2,9 @@
 host = https://www.transifex.com
 
 [o:github-7:p:Stylus:r:messages]
-file_filter = _locales/<lang>/messages.json
+file_filter = src/_locales/<lang>/messages.json
 minimum_perc = 0
-source_file = _locales/en/messages.json
+source_file = src/_locales/en/messages.json
 source_lang = en_US
 type = CHROME
 
