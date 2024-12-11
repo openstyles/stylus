@@ -1,3 +1,23 @@
+declare var __: {
+  API: 'API',
+  BUILD: 'DEV' | 'chrome' | 'firefox',
+  CLIENT_DATA: 'clientData',
+  CM_PATH: string,
+  DEBUG: boolean,
+  DEBUGLOG: typeof console.log,
+  DEBUGWARN: typeof console.warn,
+  DEV: boolean,
+  ENTRY: 'sw' | 'worker' | boolean,
+  IS_BG: boolean,
+  JS: string,
+  KEEP_ALIVE: <T>(job: T) => T,
+  MV3: boolean,
+  PAGE_BG: 'background' | 'sw',
+  PAGE_OFFSCREEN: 'offscreen',
+  THEMES: Record<string, string>,
+  ZIP: boolean,
+}
+
 declare interface StyleObj {
   enabled: boolean;
   id: number;
