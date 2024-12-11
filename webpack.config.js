@@ -282,6 +282,7 @@ function makeManifest(files) {
     else if (old && typeof old === 'object') Object.assign(old, val);
     else base[key] = val;
   }
+  base.version = (MV3 ? 3 : 2) + base.version.slice(1);
   return JSON.stringify(base, null, 2);
 }
 
