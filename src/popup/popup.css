@@ -54,6 +54,7 @@ body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colo
   background: var(--c95);
   z-index: 4;
   padding: var(--outer-padding);
+  gap: 1em;
   > * {
     display: flex;
     align-items: center;
