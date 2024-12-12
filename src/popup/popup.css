@@ -53,9 +53,9 @@ body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colo
   position: relative;
   background: var(--c95);
   z-index: 4;
-  padding: var(--outer-padding);
-  gap: 1em;
+  padding: 0;
   > * {
+    padding: var(--outer-padding);
     display: flex;
     align-items: center;
   }
@@ -427,6 +427,9 @@ a:hover i {
   display: none;
 }
 
+#write-wrapper:not(.hidden) {
+  border-right: var(--border);
+}
 #write-style {
   cursor: pointer;
   overflow: hidden;
