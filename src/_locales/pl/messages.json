@@ -29,7 +29,7 @@
     "message": "Adresy URL w domenie"
   },
   "appliesHelp": {
-    "message": "Użyj przycisków \"Dotyczy\", aby ograniczyć adresy URL, których dotyczy kod w tej sekcji."
+    "message": "Użyj przycisków „Dotyczy”, aby ograniczyć adresy URL, których dotyczy kod w tej sekcji."
   },
   "appliesLabel": {
     "message": "Dotyczy"
@@ -366,6 +366,9 @@
   "filteredStylesAllHidden": {
     "message": "Aktualnie stosowane filtry nie pasują do żadnego stylu"
   },
+  "find": {
+    "message": "Znajdź"
+  },
   "findStyles": {
     "message": "Znajdź style"
   },
@@ -445,7 +448,7 @@
     "message": "Importuj"
   },
   "importPreprocessor": {
-    "message": "Styl z <code>@preprocessor</code> nie będzie działać w trybie klasycznym. Możesz przełączyć edytor w tryb UserCSS: 1) otwórz menedżer stylów, 2) zaznacz pole wyboru \"jako UserCSS\", 3) kliknij \"Napisz nowy styl\"\n\nCzy mimo to zaimportować teraz?"
+    "message": "Styl z <code>@preprocessor</code> nie będzie działać w trybie klasycznym. Możesz przełączyć edytor w tryb UserCSS: 1) otwórz menedżer stylów, 2) zaznacz pole wyboru „jako UserCSS”, 3) kliknij „Napisz nowy styl”\n\nCzy mimo to zaimportować teraz?"
   },
   "importPreprocessorTitle": {
     "message": "Potencjalny problem związany z @preprocessor"
@@ -637,6 +640,9 @@
   },
   "manageOnlyUsercss": {
     "message": "Tylko style UserCSS"
+  },
+  "masterSwitch": {
+    "message": "Przełącznik główny"
   },
   "menuShowBadge": {
     "message": "Pokaż liczbę aktywnych stylów"
@@ -847,6 +853,27 @@
   },
   "openOptions": {
     "message": "Opcje"
+  },
+  "optionFOUC": {
+    "message": "Style zastosowane zbyt późno?"
+  },
+  "optionFOUCMV2": {
+    "message": "Rozważ włączenie „<a>”."
+  },
+  "optionFOUCMV3": {
+    "message": "Rozważ włączenie „<a>” i zwiększenie „<b>”."
+  },
+  "optionKeepAlive": {
+    "message": "Czas trwania pamięci podręcznej stylu"
+  },
+  "optionKeepAlive2": {
+    "message": "(w minutach, -1 = brak limitu)"
+  },
+  "optionKeepAliveIdle": {
+    "message": "...nawet jeśli przeglądarka jest nieaktywna"
+  },
+  "optionKeepAliveNote": {
+    "message": "Zwiększ ją, jeśli napotkasz miganie niestylizowanej zawartości (FOUC) podczas otwierania strony po pewnym czasie niekorzystania z przeglądarki.\n\n-1 = domyślne zachowanie ManifestV2 (bez ograniczeń).\n0 = domyślne zachowanie ManifestV3 (pół minuty).\n\nPamięć podręczna zajmuje 30 MB lub więcej pamięci RAM, ale jej odbudowa może zająć zbyt dużo czasu i spowodować FOUC w zależności od witryny, szybkości sieci, liczby stylów, rozmiaru pamięci RAM i wydajności procesora."
   },
   "optionsActions": {
     "message": "Akcje"
@@ -1204,7 +1231,7 @@
     "message": "Kod CSS"
   },
   "searchStylesHelp": {
-    "message": "Klawisz </> lub <Ctrl-F> uaktywnia pole wyszukiwania.\nTryb domyślny to wyszukiwanie zwykłego tekstu dla wszystkich terminów oddzielonych spacjami w dowolnej kolejności.\nDokładne słowa: zawiń zapytanie w podwójne cudzysłowy, np. <\".header ~ div\">\nWyrażenia regularne: uwzględnij ukośniki i flagi, np. </body.*?\\ba\\b/i>\n\"Według adresu URL\" w selektorze zakresu: znajduje style, które mają zastosowanie do w pełni określonego adresu URL, np. https://www.example.org/\n\"Metadane\" w selektorze zakresu: wyszukuje w nazwach, specyfikatorach „dotyczy”, adresie URL instalacji, adresie URL aktualizacji i całym bloku metadanych dla stylów UserCSS."
+    "message": "Klawisz </> lub <Ctrl-F> uaktywnia pole wyszukiwania.\nTryb domyślny to wyszukiwanie zwykłego tekstu dla wszystkich terminów oddzielonych spacjami w dowolnej kolejności.\nDokładne słowa: zawiń zapytanie w podwójne cudzysłowy, np. <\".header ~ div\">\nWyrażenia regularne: uwzględnij ukośniki i flagi, np. </body.*?\\ba\\b/i>\n„Według adresu URL\" w selektorze zakresu: znajduje style, które mają zastosowanie do w pełni określonego adresu URL, np. https://www.example.org/\n„Metadane” w selektorze zakresu: wyszukuje w nazwach, specyfikatorach „dotyczy”, adresie URL instalacji, adresie URL aktualizacji i całym bloku metadanych dla stylów UserCSS."
   },
   "searchStylesMatchUrl": {
     "message": "Według adresu URL"
@@ -1261,7 +1288,7 @@
     "message": "Tytuł malejąco"
   },
   "sortStylesHelp": {
-    "message": "Wybierz rodzaj sortowania, który zostanie zastosowany do zainstalowanych wpisów z listy sortowania. Ustawienie domyślne stosuje sortowanie rosnące (od A do Z) do tytułów wpisów. Sortowania w grupie \"Tytuł malejąco\" zastosują sortowanie malejące (od Z do A) do tytułu.\nIstnieją inne ustawienia, które umożliwiają sortowanie wpisów według wielu kryteriów. Pomyśl o tym jako o sortowaniu tabeli z wieloma kolumnami, a każda kategoria w zaznaczeniu (między znakami plus) reprezentuje kolumnę lub grupę.\nNa przykład, jeśli ustawienie ma wartość \"Włączone (pierwsze) + tytuł\", wpisy zostaną uporządkowane, tak aby wszystkie włączone pozycje zostały posortowane na początek listy, a następnie do każdego z nich zostanie dodane oddzielnie sortowanie tytułu rosnąco (od A do Z) włączonych i wyłączonych wpisów."
+    "message": "Wybierz rodzaj sortowania, który zostanie zastosowany do zainstalowanych wpisów z listy sortowania. Ustawienie domyślne stosuje sortowanie rosnące (od A do Z) do tytułów wpisów. Sortowania w grupie „Tytuł malejąco” zastosują sortowanie malejące (od Z do A) do tytułu.\nIstnieją inne ustawienia, które umożliwiają sortowanie wpisów według wielu kryteriów. Pomyśl o tym jako o sortowaniu tabeli z wieloma kolumnami, a każda kategoria w zaznaczeniu (między znakami plus) reprezentuje kolumnę lub grupę.\nNa przykład, jeśli ustawienie ma wartość „Włączone (pierwsze) + tytuł”, wpisy zostaną uporządkowane, tak aby wszystkie włączone pozycje zostały posortowane na początek listy, a następnie do każdego z nich zostanie dodane oddzielnie sortowanie tytułu rosnąco (od A do Z) włączonych i wyłączonych wpisów."
   },
   "sortStylesHelpTitle": {
     "message": "Sortuj zawartość"
@@ -1472,7 +1499,7 @@
     "message": "Aby umożliwić dostęp, otwórz <about:config>, kliknij listę prawym przyciskiem myszy, kliknij 'Dodaj ustawienie typu', następnie 'Wartość logiczna (Boolean)', wklej <privacy.resistFingerprinting.block_mozAddonManager> i kliknij OK, <true>, OK, przeładuj stronę <addons.mozilla.org>."
   },
   "unreachableCSP": {
-    "message": "Spróbuj włączyć \"Załataj CSP\" w opcjach Stylusa."
+    "message": "Spróbuj włączyć „Załataj CSP” w opcjach Stylusa."
   },
   "unreachableContentScript": {
     "message": "Nie można połączyć się ze stroną. Spróbuj przeładować kartę."
@@ -1550,6 +1577,14 @@
   },
   "versionInvalidOlder": {
     "message": "Wersja jest starsza niż zainstalowany styl."
+  },
+  "webRequestBlockingMV3Note": {
+    "message": "Wymaga uprawnienia webRequestBlocking, które można włączyć w ManifestV3 za pomocą jednej z następujących metod:\n\n1) Wyeksportuj kopię zapasową, skonfiguruj zasady <a href='https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist'>ExtensionInstallForcelist</a> dla identyfikatora tego rozszerzenia „$id$”, uruchom ponownie przeglądarkę, poczekaj na zainstalowanie rozszerzenia, zaimportuj kopię zapasową w menedżerze stylów i opcjonalnie przypnij ikonę do paska narzędzi.\n\n2) Zmodyfikuj wiersz poleceń w ikonie przeglądarki lub programie uruchamiającym: dodaj spację i <code><nobr>--allowlisted-extension-id=$id$</nobr></code>",
+    "placeholders": {
+      "id": {
+        "content": "$1"
+      }
+    }
   },
   "writeStyleFor": {
     "message": "Napisz styl dla:"

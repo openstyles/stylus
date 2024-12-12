@@ -344,6 +344,9 @@
   "filteredStylesAllHidden": {
     "message": "Geen overeenkomende stijlen met de momenteel toegepaste filters"
   },
+  "find": {
+    "message": "Zoeken"
+  },
   "findStyles": {
     "message": "Stijlen zoeken"
   },
