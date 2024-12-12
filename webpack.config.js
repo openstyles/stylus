@@ -48,6 +48,7 @@ const RESOLVE_VIA_SHIM = {
     'node_modules',
   ],
 };
+const MAX_CHUNKNAME_LEN = 24; // in Windows, path+name is limited to 260 chars
 const CM_PATH = CSS + 'cm-themes/';
 const CM_PACKAGE_PATH = path.dirname(require.resolve('codemirror/package.json')) + path.sep;
 const CM_NATIVE_RE = /codemirror(?!-factory)/; // `factory` is our code
@@ -207,6 +208,17 @@ const getBaseConfig = () => ({
   },
 });
 
+function getChunkFileName({chunk}) {
+  let res = (chunk.name || chunk.id)
+    .replace(/(^|-)(css|js(_(color|dlg))?|vendor-overwrites_.+?_)/g, '')
+    .replace(/^[-_]|[-_]$|[-_]{2}/g, '')
+    .replace(/[-_](css|js)(?=$|[-_])/g, '');
+  if (res.length > MAX_CHUNKNAME_LEN) {
+    res = res.slice(0, MAX_CHUNKNAME_LEN).replace(/_[a-z]{0,2}$/, '');
+  }
+  return this[0] + res.replaceAll('_', '-') + this[1];
+}
+
 function mergeCfg(ovr, base) {
   if (!ovr) {
     return base;
@@ -292,7 +304,7 @@ module.exports = [
     entry: Object.fromEntries(PAGES.map(p => [p, `/${p}`])),
     output: {
       filename: JS + '[name].js',
-      chunkFilename: JS + '[name].js',
+      chunkFilename: getChunkFileName.bind([JS, '.js']),
     },
     optimization: {
       minimizer: DEV ? [] : [
@@ -315,8 +327,10 @@ module.exports = [
           ...Object.fromEntries([
             [2, 'common-ui', `^${SRC_ESC}(content/|js/(dom|header|localization|themer))`],
             [1, 'common', `^${SRC_ESC}js/|/lz-string(-unsafe)?/`],
+            [-10, 'vendors', /node_modules/],
           ].map(([priority, name, test]) => [name, {
-            test: new RegExp(String.raw`(${test.replaceAll('/', SEP_ESC)})[^./\\]*\.js$`),
+            test: test instanceof RegExp ? test :
+              new RegExp(String.raw`(${test.replaceAll('/', SEP_ESC)})[^./\\]*\.js$`),
             name,
             priority,
           }])),
@@ -332,8 +346,8 @@ module.exports = [
       }),
       ...addWrapper(),
       new MiniCssExtractPlugin({
-        filename: CSS + '[name].css',
-        chunkFilename: CSS + '[name].css',
+        filename: getChunkFileName.bind([CSS, '.css']),
+        chunkFilename: getChunkFileName.bind([CSS, '.css']),
       }),
       ...PAGES.map(p => new HtmlWebpackPlugin({
         chunks: [p],
