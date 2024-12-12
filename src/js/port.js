@@ -183,7 +183,9 @@ function getWorkerPort(url, onerror) {
   }
   // Chrome Android
   let target = global;
-  if (__.MV3 || !__.IS_BG/* in MV2 the bg page can create Worker */) {
+  if (!__.MV3 && __.IS_BG) { // in MV2 the bg page can create Worker
+    worker = target[kWorker];
+  } else {
     for (const view of chrome.extension.getViews()) {
       if ((worker = view[kWorker])) {
         break;
