@@ -48,7 +48,6 @@ const VTSimple = {
   '<time0+>': p => p.isCalc || p.id === TIME && p.number >= 0,
   '<unicode-range>': p => p.id === URANGE,
   '<uri>': p => p.uri != null,
-  '<width>': p => p.isAuto || p.isCalc || p.is0 || p.id === LENGTH || p.id === PCT,
 };
 
 for (const type of ['hsl', 'hwb', 'lab', 'lch', 'rgb']) {

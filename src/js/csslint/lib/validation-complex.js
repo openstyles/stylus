@@ -148,8 +148,9 @@ const VTComplex = {
   '<txbhv>': 'normal | allow-discrete',
   '<url>': '<uri> | src( <string> [ <ident> | <func> ]* )',
   '<vis-hid>': 'visible | hidden',
-  '<width-height>': '<len-pct> | min-content | max-content | fit-content | ' +
+  '<width>': '<len-pct> | auto | min-content | max-content | ' +
     '-moz-available | -webkit-fill-available | fit-content( <len-pct> )',
+  '<width-none>': '<len-pct> | none | min-content | max-content | fit-content( <len-pct> )',
   '<xywh>': 'xywh( <xywh-arg> )',
   '<xywh-arg>': '<len-pct>{2} <len-pct0+>{2} <border-radius-round>?',
 };
