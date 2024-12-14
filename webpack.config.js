@@ -41,7 +41,6 @@ const GET_CLIENT_DATA = 'get-client-data';
 const GET_CLIENT_DATA_TAG = {
   toString: () => `<script src="${JS}${GET_CLIENT_DATA}.js"></script>`,
 };
-const LIB_EXPORT_DEFAULT = {output: {library: {export: 'default'}}};
 const RESOLVE_VIA_SHIM = {
   modules: [
     SHIM,
@@ -258,19 +257,22 @@ function mergeCfg(ovr, base) {
 }
 
 function makeLibrary(entry, name, extras) {
-  return mergeCfg(extras, mergeCfg({
+  let cfg = mergeCfg({
     entry,
     output: {
       path: DST + JS,
-      library: {
+      library: name && {
         type: 'global',
-        name,
+        name: name?.replace(/^\W+/, ''),
+        export: name[0] === '*' ? undefined : 'default',
       },
     },
     plugins: name
       ? addWrapper()
       : addWrapper(`(()=>${BANNER}`, '})()'),
-  }));
+  });
+  if (!name) cfg = mergeCfg(OUTPUT_MODULE, cfg);
+  return extras ? mergeCfg(extras, cfg) : cfg;
 }
 
 function makeContentScript(name) {
@@ -410,19 +412,17 @@ module.exports = [
       entry: '/js/' + GET_CLIENT_DATA,
       output: {path: DST + JS},
     })),
-    makeLibrary('db-to-cloud/lib/drive/webdav', 'webdav', LIB_EXPORT_DEFAULT),
+    makeLibrary('db-to-cloud/lib/drive/webdav', 'webdav'),
   ],
 
   makeContentScript('apply.js'),
   makeLibrary('/js/worker.js', undefined, {
-    ...OUTPUT_MODULE,
     plugins: [new RawEnvPlugin({ENTRY: 'worker'})],
   }),
-  makeLibrary('/js/color/color-converter.js', 'colorConverter'),
-  makeLibrary('/js/csslint/csslint.js', 'CSSLint',
-    {...LIB_EXPORT_DEFAULT, externals: {'./parserlib': 'parserlib'}}),
-  makeLibrary('/js/csslint/parserlib.js', 'parserlib', LIB_EXPORT_DEFAULT),
-  makeLibrary('/js/meta-parser.js', 'metaParser', LIB_EXPORT_DEFAULT),
-  makeLibrary('/js/moz-parser.js', 'extractSections', LIB_EXPORT_DEFAULT),
-  makeLibrary('/js/usercss-compiler.js', 'compileUsercss', LIB_EXPORT_DEFAULT),
+  makeLibrary('/js/color/color-converter.js', '*:colorConverter'),
+  makeLibrary('/js/csslint/csslint.js', 'CSSLint', {externals: {'./parserlib': 'parserlib'}}),
+  makeLibrary('/js/csslint/parserlib.js', 'parserlib'),
+  makeLibrary('/js/meta-parser.js', 'metaParser'),
+  makeLibrary('/js/moz-parser.js', 'extractSections'),
+  makeLibrary('/js/usercss-compiler.js', 'compileUsercss'),
 ].filter(Boolean);
