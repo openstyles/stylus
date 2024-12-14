@@ -74,7 +74,6 @@ const VTComplex = {
   '<fixed-size>':
     '<len-pct> | minmax( <len-pct> , <track-breadth> | <inflexible-breadth> , <len-pct> )',
   '<flex-direction>': 'row | row-reverse | column | column-reverse',
-  '<flex-shorthand>': 'none | [ <num>{1,2} || <width> ]',
   '<flex-wrap>': 'nowrap | wrap | wrap-reverse',
   '<font-short-core>': '<font-size> [ / <line-height> ]? <font-family>',
   '<font-short-tweak-no-pct>':
@@ -148,9 +147,10 @@ const VTComplex = {
   '<txbhv>': 'normal | allow-discrete',
   '<url>': '<uri> | src( <string> [ <ident> | <func> ]* )',
   '<vis-hid>': 'visible | hidden',
-  '<width>': '<len-pct> | auto | min-content | max-content | ' +
+  '<width>': 'auto | <width-base>',
+  '<width-base>': '<len-pct> | min-content | max-content | ' +
     '-moz-available | -webkit-fill-available | fit-content( <len-pct> )',
-  '<width-none>': '<len-pct> | none | min-content | max-content | fit-content( <len-pct> )',
+  '<width-max>': 'none | <width-base>',
   '<xywh>': 'xywh( <xywh-arg> )',
   '<xywh-arg>': '<len-pct>{2} <len-pct0+>{2} <border-radius-round>?',
 };

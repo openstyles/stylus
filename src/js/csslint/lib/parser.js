@@ -514,7 +514,7 @@ class Parser extends EventDispatcher {
         this._hexcolor(stream, tok);
       } else if (ti === IDENT && !tok.type) {
         if (B.autoNone.has(tok)) {
-          tok[tok.code === 97 ? 'isAuto' : 'isNone'] = true;
+          if (tok.code === 110/*n*/) tok.isNone = true;
           tok.type = 'ident';
         } else {
           tok.type = B.colors.has(tok) ? 'color' : 'ident';

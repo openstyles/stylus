@@ -50,9 +50,7 @@ export function validateProperty(tok, value, stream, Props) {
     return pp[1] && vtFailure(pp[1], true);
   }
   Props = typeof Props === 'string' ? ScopedProperties[Props] : Props || Properties;
-  let spec,
-    res,
-    vp;
+  let spec, res, vp;
   let prop = tok.lowText || tok.text.toLowerCase();
   do {
     spec = Props[prop] || Props['<all>'] && (Props = Properties)[prop];

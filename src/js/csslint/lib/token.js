@@ -8,7 +8,6 @@ import {assign, define, isOwn, parseString, PDESC, toLowAscii} from './util';
  * @property {boolean} [ie] ie function
  * @property {boolean} [is0] number is an integer 0 without units
  * @property {boolean} [isAttr] = attr()
- * @property {boolean} [isAuto] = auto
  * @property {boolean} [isCalc] = calc()
  * @property {boolean} [isInt] = integer without units
  * @property {boolean} [isNone] = none
