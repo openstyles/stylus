@@ -15,13 +15,13 @@ const map = {
   [kNever]: false,
   [kDark]: true,
   [kLight]: false,
-  [kSystem]: false,
+  [kSystem]: null,
   [kTime]: false,
 };
 export const SCHEMES = [kDark, kLight];
 /** @type {(val: !boolean) => void} */
 export const setSystemDark = update.bind(null, kSystem);
-export let isDark;
+export let isDark = null;
 let prefState;
 let flushing;
 
