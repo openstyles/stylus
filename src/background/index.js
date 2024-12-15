@@ -1,6 +1,6 @@
 import './intro';
 import '/js/browser';
-import {kResolve} from '/js/consts';
+import {kInstall, kResolve} from '/js/consts';
 import {DNR, getRuleIds, updateDynamicRules, updateSessionRules} from '/js/dnr';
 import {_execute, API, onMessage} from '/js/msg';
 import {createPortProxy} from '/js/port';
@@ -91,7 +91,7 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
     reinjectContentScripts();
     initContextMenus();
   }
-  if (reason === 'install') {
+  if (reason === kInstall) {
     if (MOBILE) prefs.set('manage.newUI', false);
     if (WINDOWS) prefs.set('editor.keyMap', 'sublime');
   }
@@ -103,6 +103,7 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
       stateDB.clear(),
       DNR.getDynamicRules().then(rules => updateDynamicRules(undefined, getRuleIds(rules))),
       DNR.getSessionRules().then(rules => updateSessionRules(undefined, getRuleIds(rules))),
+      kInstall,
     );
   }
 });

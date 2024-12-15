@@ -1,10 +1,10 @@
-import {kDisableAll} from '/js/consts';
+import {kDisableAll, kInstall} from '/js/consts';
 import {subscribe, __values as __prefs} from '/js/prefs';
 import {CHROME, FIREFOX, MOBILE, VIVALDI} from '/js/ua';
 import {debounce} from '/js/util';
 import {ignoreChromeError, MF_ICON_EXT, MF_ICON_PATH} from '/js/util-webext';
 import * as colorScheme from './color-scheme';
-import {bgBusy} from './common';
+import {bgBusy, bgPreInit} from './common';
 import {removePreloadedStyles} from './style-via-webrequest';
 import * as tabMan from './tab-manager';
 
@@ -29,23 +29,24 @@ let hasCanvas = FIREFOX_ANDROID ? false : null;
 
 
 bgBusy.then(() => {
+  const runNow = !__.MV3 || bgPreInit.includes(kInstall);
   colorScheme.onChange(() => {
     if (__prefs[kIconset] === -1) {
       debounce(refreshGlobalIcon);
     }
-  }, !__.MV3);
+  }, runNow);
   subscribe([
     kDisableAll,
     kBadgeDisabled,
     kBadgeNormal,
-  ], () => debounce(refreshIconBadgeColor), true);
+  ], () => debounce(refreshIconBadgeColor), runNow);
   subscribe([
     kShowBadge,
-  ], () => debounce(refreshAllIconsBadgeText), true);
+  ], () => debounce(refreshAllIconsBadgeText), runNow);
   subscribe([
     kDisableAll,
     kIconset,
-  ], () => debounce(refreshAllIcons), true);
+  ], () => debounce(refreshAllIcons), runNow);
 });
 
 tabMan.onUnload.add((tabId, frameId, port) => {
