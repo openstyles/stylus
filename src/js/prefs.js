@@ -4,7 +4,7 @@ import {deepCopy, deepEqual, isCssDarkScheme, makePropertyPopProxy} from './util
 import {onStorageChanged} from './util-webext';
 import './msg-init'; // installs direct `API` handler
 
-let busy, setReady;
+let busy, ready, setReady;
 
 /** @type {StylusClientData & {then: (cb: (data: StylusClientData) => ?) => Promise}} */
 export const clientData = !__.IS_BG && (
@@ -252,14 +252,14 @@ function setAll(data, fromStorage) {
 }
 
 if (__.IS_BG) {
-  busy = new Promise(cb => (setReady = cb));
+  busy = ready = new Promise(cb => (setReady = cb));
   busy.set = (...args) => setReady(setAll(...args));
 } else if (__.MV3) {
   setAll(clientData.prefs);
-  busy = Promise.resolve();
-  busy.then = fn => fn(); // run synchronously in the same microtick because the data is ready
+  ready = Promise.resolve();
+  ready.then = fn => fn(); // run synchronously in the same microtick because the data is ready
 } else {
-  busy = clientData;
+  busy = ready = clientData;
 }
 
 onStorageChanged.addListener((changes, area) => {
@@ -269,7 +269,7 @@ onStorageChanged.addListener((changes, area) => {
 });
 
 export {
-  busy as ready,
+  ready,
   defaultsClone as defaults,
   defaults as __defaults, // direct reference, be careful!
   values as __values, // direct reference, be careful!
