@@ -42,8 +42,6 @@ body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colo
 :root:not(.blocked) .if-blocked,
 .blocked .if-not-blocked,
 .blocked #installed > :not(.frame),
-.blocked [data-frame-id="0"] > .breadcrumbs,
-#write-wrapper:not(.hidden) + label[for="disableAll"],
 .firefox .chromium-only {
   display: none !important;
 }
@@ -57,7 +55,6 @@ body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colo
   > * {
     padding: var(--outer-padding);
     display: flex;
-    align-items: center;
   }
   > :nth-last-child(n + 2) {
     flex: 1;
@@ -99,21 +96,30 @@ body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colo
   .style-name {
     text-decoration: line-through;
   }
-  #disableAll-label::after {
-    --c: crimson;
-    background: var(--c);
-    color: #fff;
-    font-size: 10px;
-    padding: 2px 0;
-    left: 0;
-    bottom: -9px;
-    position: absolute;
-    text-align: center;
-    text-transform: uppercase;
-    width: 100%;
+  #disableAll-label {
+    &:hover {
+      background: hsla(20, 100%, 60%, .1);
+    }
+    &::after {
+      --c: crimson;
+      background: var(--c);
+      color: #fff;
+      font-size: 10px;
+      padding: 2px 0;
+      left: 0;
+      bottom: -9px;
+      position: absolute;
+      text-align: center;
+      text-transform: uppercase;
+      width: 100%;
+    }
+    img {
+      right: auto;
+      margin-left: -1px; /* 1px is transparent in the icon */
+    }
   }
   #disableAll {
-    --color-on: hsl(348, 83%, 50%, .4);
+    --color-on: hsla(20, 100%, 60%, .4);
     --shadow-hsl: 348, 83%, 10%;
     color: var(--c);
     justify-content: flex-start;
@@ -122,15 +128,27 @@ body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colo
     margin-bottom: 8px;
   }
 }
-label[for="disableAll"] {
-  justify-content: center;
+#disableAll-label {
+  align-items: center;
+  &:hover {
+    background: hsla(180, 50%, 40%, .1);
+  }
+  img {
+    position: absolute;
+    filter: drop-shadow(1px 1px 2px #0008);
+    right: calc(var(--outer-padding) - 1px); /* 1px is transparent in the icon */
+  }
 }
 #disableAll {
-  --knob: 18px;
+  --knob: 10px;
   --width: 30px;
+  margin: 0;
   justify-content: flex-end;
   color: var(--accent-2);
   --color-off: hsla(180, 50%, 40%, .33);
+  &::after {
+    content: none;
+  }
 }
 
 .actions a {
@@ -427,8 +445,16 @@ a:hover i {
   display: none;
 }
 
-#write-wrapper:not(.hidden) {
+#write-wrapper {
   border-right: var(--border);
+}
+#write-style-for {
+  &::after {
+    content: attr(data-text);
+  }
+  .blocked &::after {
+    content: attr(data-blocked);
+  }
 }
 #write-style {
   cursor: pointer;

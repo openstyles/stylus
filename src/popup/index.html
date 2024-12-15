@@ -174,12 +174,13 @@
         <i class=i-usercss></i>
       </label>
       <div id="write-style" class="no-stretch">
-        <header id="write-style-for" class="ellipsis" i18n="writeStyleFor"></header>
+        <header id="write-style-for" class="ellipsis"
+                i18n="data-text:writeStyleFor, data-blocked:addStyleLabel"></header>
       </div>
     </div>
-    <label for="disableAll" i18n="masterSwitch"></label>
     <label id="disableAll-label" i18n="data-off:disableAllStylesOff">
       <input id="disableAll" type="checkbox" class="slider">
+      <img srcset="icon/16.png, icon/32.png 2x">
     </label>
   </div>
 
@@ -189,7 +190,7 @@
               data-href="manage.html"></button
       ><button class="if-not-blocked split-btn-pedal" i18n="menu-site:popupManageSiteStyles"></button>
     </div>
-    <div class="split-btn if-not-blocked" id="find-split">
+    <div class="split-btn" id="find-split">
       <button id="find-styles-btn" i18n="find" title="Ctrl-F"></button
       ><button class="split-btn-pedal"
                menu-usoa="UserStyles Archive"
@@ -198,14 +199,10 @@
                menu-gf="GreasyFork"></button>
     </div>
     <button id="options-btn" i18n="title:openOptions">
-      <svg class="if-not-blocked" viewBox="0 0 20 20">
+      <svg viewBox="0 0 20 20">
         <text y="100%">⚙</text>
       </svg>
-      <span class="if-blocked" i18n="openOptions"></span>
     </button>
-    <a class="if-blocked" href="https://github.com/openstyles/stylus/wiki" target="_blank">
-      <button id="popup-wiki-button" i18n="linkStylusWiki, title:linkGetHelp"></button>
-    </a>
   </div>
 
   <div id="menu" hidden>

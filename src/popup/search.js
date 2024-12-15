@@ -8,7 +8,7 @@ import * as URLS from '/js/urls';
 import {
   clipString, debounce, isEmptyObj, sleep, stringAsRegExp, stringAsRegExpStr, tryRegExp, tryURL,
 } from '/js/util';
-import {$entry, styleFinder, tabUrl} from '.';
+import {$entry, styleFinder, tabUrl, tabUrlSupported} from '.';
 import * as Events from './events';
 import './search.css';
 
@@ -27,9 +27,18 @@ const PAGE_LENGTH = 100;
 // update USO style install counter if the style isn't uninstalled immediately
 const PINGBACK_DELAY = 5e3;
 const USO_AUTO_PIC_SUFFIX = '-after.png';
+const GLOBAL = 'global';
 const dom = {};
 const $searchGlobals = $('#popup.search.globals');
-setupLivePrefs([$searchGlobals.id]);
+if (!tabUrlSupported) {
+  $searchGlobals.checked = $searchGlobals.disabled = true;
+} else {
+  setupLivePrefs([$searchGlobals.id]);
+  $searchGlobals.onchange = () => {
+    searchGlobals = $searchGlobals.checked;
+    ready = ready.then(start);
+  };
+}
 /**
  * @typedef IndexEntry
  * @prop {'uso' | 'uso-android'} f - format
@@ -58,7 +67,7 @@ let host3 = '';
 let category = '';
 /** @type RegExp */
 let rxCategory;
-let searchGlobals = $searchGlobals.checked;
+let searchGlobals = !tabUrlSupported || $searchGlobals.checked;
 /** @type {RegExp[]} */
 let query = [];
 let order = prefs.get('popup.findSort');
@@ -107,19 +116,19 @@ styleFinder.inSite = event => {
   const catQ = category + add('+', q);
   const href =
     where === 'uso' &&
-      `${URLS.uso}styles/browse${q ? `?search_terms=${catQ}` : `/${category}`}` ||
+      `${URLS.uso}styles/browse${q ? `?search_terms=${catQ}`
+        : category === GLOBAL ? '' : `/${category}`}` ||
     where === 'usoa' &&
       `${URLS.usoa}browse/styles?search=%23${catQ}` ||
     where === 'usw' &&
       `${URLS.usw}search?q=${catQ}` ||
     where === 'gf' &&
       'https://greasyfork.org/' + ($.root.lang.split('-')[0] || 'en') +
-      `/scripts/by-site/${tryURL(tabUrl).hostname.replace(/^www\./, '')}?language=css${add('&q=', q)}`;
+      `/scripts${tabUrlSupported
+        ? tryURL(tabUrl).hostname.replace(/^(www\.)?/, '/by-site/')
+        : ''
+      }?language=css${add('&q=', q)}`;
   Events.openURLandHide.call({href}, event);
-};
-$searchGlobals.onchange = function () {
-  searchGlobals = this.checked;
-  ready = ready.then(start);
 };
 $('#search-query').oninput = function () {
   query = [];
@@ -521,11 +530,10 @@ function uninstall() {
  * @returns {boolean} true if the category has actually changed
  */
 function calcCategory({retry} = {}) {
-  const u = tryURL(tabUrl);
   const old = category;
-  if (!u.href) {
-    // Invalid URL
-    category = '';
+  const u = tabUrlSupported && tryURL(tabUrl);
+  if (!u?.href) {
+    category = GLOBAL;
   } else if (u.protocol === 'file:') {
     category = 'file:';
   } else if (u.protocol === location.protocol) {
@@ -615,7 +623,7 @@ function isResultMatching(res) {
     ) && 2 + !res.n.includes(host3) ||
     (category === STYLUS_CATEGORY
       ? c === 'stylus' // USW
-      : c === 'global' && searchGlobals &&
+      : c === GLOBAL && searchGlobals &&
         (query.length || rxCategory.test(res.n))
     )
   ) && query.every(isInHaystack, res)

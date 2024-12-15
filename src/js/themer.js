@@ -14,20 +14,23 @@ import {MF_ICON_EXT, MF_ICON_PATH} from './util-webext';
 import '/css/global.css';
 import '/css/global-dark.css';
 
+export const isDarkChanged = new Set();
 export const MEDIA_ON = 'screen';
 export const MEDIA_OFF = 'not all';
 const MEDIA_NAME = 'dark';
 const map = {[MEDIA_ON]: true, [MEDIA_OFF]: false};
 
+export let isDark;
+
 (async () => {
-  let isDark, favicon;
+  let favicon;
   if (window === top) ({dark: isDark, favicon} = __.MV3 ? clientData : await clientData);
   else isDark = parent.document.documentElement.dataset.uiTheme === 'dark';
-  updateDOM(isDark);
+  updateDOM();
   onExtension(e => {
     if (e.method === 'colorScheme' && isDark !== e.value) {
       isDark = e.value;
-      updateDOM(isDark);
+      updateDOM();
     }
   });
   if (favicon
@@ -41,11 +44,12 @@ const map = {[MEDIA_ON]: true, [MEDIA_OFF]: false};
   }
 })();
 
-function updateDOM(isDark) {
+function updateDOM() {
   $.root.dataset.uiTheme = isDark ? 'dark' : 'light';
   getCssMediaRuleByName(MEDIA_NAME, m => {
     if (map[m[0]] !== isDark) {
       m.mediaText = `${isDark ? MEDIA_ON : MEDIA_OFF},${MEDIA_NAME}`;
     }
   });
+  for (const fn of isDarkChanged) fn(isDark);
 }

@@ -5,6 +5,7 @@ import {getEventKeyName, setupLivePrefs} from '/js/dom-util';
 import {t, template} from '/js/localization';
 import {API, onExtension} from '/js/msg';
 import * as prefs from '/js/prefs';
+import {isDark, isDarkChanged} from '/js/themer';
 import {CHROME, FIREFOX, MOBILE, OPERA} from '/js/ua';
 import {ownRoot} from '/js/urls';
 import {capitalize, clamp, clipString, isEmptyObj, sleep, stringAsRegExpStr} from '/js/util';
@@ -16,6 +17,7 @@ import './popup.css';
 
 export const styleFinder = {};
 export let tabUrl;
+export let tabUrlSupported;
 let isBlocked;
 
 /** @type Element */
@@ -35,12 +37,16 @@ export const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || s
 
 onExtension(onRuntimeMessage);
 
+updateStateIcon(isDark);
+isDarkChanged.add(val => updateStateIcon(val, null));
+
 prefs.subscribe('popup.stylesFirst', (key, stylesFirst) => {
   $.rootCL.toggle('styles-first', stylesFirst);
   $.rootCL.toggle('styles-last', !stylesFirst);
 }, true);
 prefs.subscribe('disableAll', (key, val) => {
-  global[key].title = t('masterSwitch') + ':\n' +
+  updateStateIcon(null, val);
+  $('#disableAll-label').title = t('masterSwitch') + ':\n' +
     t(val ? 'disableAllStylesOff' : 'genericEnabledLabel');
 }, true);
 if (!__.MV3 && __.BUILD !== 'firefox' && CHROME_POPUP_BORDER_BUG) {
@@ -125,6 +131,7 @@ async function initPopup(frames, ping0, tab, urlSupported) {
   }
 
   tabUrl = frames[0].url;
+  tabUrlSupported = urlSupported;
   frames.forEach(createWriterElement);
 
   if ($('.match .match:not(.dupe),' + WRITE_FRAME_SEL)) {
@@ -198,7 +205,8 @@ async function initPopup(frames, ping0, tab, urlSupported) {
  * @param {number} index - provided by forEach
  */
 function createWriterElement(frame, index) {
-  const {url, frameId, parentFrameId, isDupe} = frame;
+  const {frameId, parentFrameId, isDupe} = frame;
+  const url = tabUrlSupported || frameId ? frame.url : 'https://www.example.com/abcd';
   const isAbout = url.startsWith('about:');
   const crumbs = [];
   if (!url) return;
@@ -361,5 +369,12 @@ async function handleUpdate({style, reason}) {
 function blockPopup(val = true) {
   isBlocked = val;
   $.rootCL.toggle('blocked', isBlocked);
-  $('#write-wrapper').classList.toggle('hidden', !$(WRITE_FRAME_SEL));
+}
+
+function updateStateIcon(newDark, newDisabled) {
+  const el = $('#disableAll-label img');
+  let srcset = el.srcset;
+  if (newDark != null) srcset = srcset.replace(/\/\D*/g, newDark ? '/' : '/light/');
+  if (newDisabled != null) srcset = srcset.replace(/x?\./g, newDisabled ? 'x.' : '.');
+  el.srcset = srcset;
 }
