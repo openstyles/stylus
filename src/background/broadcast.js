@@ -39,11 +39,10 @@ export function pingTab(tabId, frameId = 0) {
 }
 
 export function sendTab(tabId, data, options, target = 'tab') {
-  return unwrap(browser.tabs.sendMessage(tabId, {data, target}, options),
-    __.MV3 && !options?.frameId ? tabId : -1);
+  return unwrap(browser.tabs.sendMessage(tabId, {data, target}, options));
 }
 
-async function unwrap(promise, tabId) {
+async function unwrap(promise) {
   const err = new Error();
   let data, error;
   try {
@@ -52,9 +51,6 @@ async function unwrap(promise, tabId) {
   } catch (e) {
     error = e;
     if (rxIgnorableError.test(err.message = e.message)) {
-      if (__.MV3 && tabId >= 0 && RegExp.$1) {
-        tabMan.remove(tabId);
-      }
       return data;
     }
   }
