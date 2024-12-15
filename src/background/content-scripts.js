@@ -12,6 +12,8 @@ let initialized;
 /**
  Reinject content scripts when the extension is reloaded/updated.
  Not used in Firefox as it reinjects automatically.
+ @param {chrome.tabs.Tab} [targetTab]
+ @return {?boolean} whether targetTab's top doc is injectable
  */
 export default async function reinjectContentScripts(targetTab) {
   const ALL_URLS = '<all_urls>';
@@ -46,17 +48,19 @@ export default async function reinjectContentScripts(targetTab) {
     const res = tab.width && !tab.discarded && URLS.supported(url) && (
       /* In MV2 persistent background script our content scripts may still be pending
        * injection at browser start, so it's too early to ping them. */
-      !__.MV3 && !targetTab && tab.status === 'loading'
-        ? trackBusyTab(tab.id, true)
-        : await injectToTab(tab.id, url)
+      __.MV3 || targetTab || tab.status !== 'loading'
+        ? await injectToTab(tab.id, url, targetTab)
+        : trackBusyTab(tab.id, true)
     );
-    if (targetTab) return !res || !res[0].message; // no error message
+    if (targetTab) {
+      return res && res[0] && !res[0].message /* no error */ && res[0].frameId === 0;
+    }
   }
 
-  async function injectToTab(tabId, url) {
+  async function injectToTab(tabId, url, targeted) {
     const jobs = [];
     tabMan.set(tabId, kUrl, url);
-    if (await sendTab(tabId, {method: 'backgroundReady'})) {
+    if (!targeted && await sendTab(tabId, {method: 'backgroundReady'})) {
       return;
     }
     for (const cs of SCRIPTS) {
@@ -84,7 +88,7 @@ export default async function reinjectContentScripts(targetTab) {
         }
       }
     }
-    await Promise.all(jobs);
+    return Promise.all(jobs);
   }
 
   function toggleBusyTabListeners(state) {
