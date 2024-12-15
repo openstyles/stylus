@@ -15,7 +15,7 @@ import '/css/onoffswitch.css';
 import './popup.css';
 
 export const styleFinder = {};
-export let tabURL;
+export let tabUrl;
 let isBlocked;
 
 /** @type Element */
@@ -52,7 +52,7 @@ if (!__.MV3 && CHROME >= 66 && CHROME <= 69) {
 }
 
 function onRuntimeMessage(msg) {
-  if (!tabURL) return;
+  if (!tabUrl) return;
   let ready;
   switch (msg.method) {
     case 'styleAdded':
@@ -124,7 +124,7 @@ async function initPopup(frames, ping0, tab, urlSupported) {
     el.removeAttribute('media');
   }
 
-  tabURL = frames[0].url;
+  tabUrl = frames[0].url;
   frames.forEach(createWriterElement);
 
   if ($('.match .match:not(.dupe),' + WRITE_FRAME_SEL)) {
@@ -138,10 +138,10 @@ async function initPopup(frames, ping0, tab, urlSupported) {
 
   if (ping0) return;
 
-  const isStore = FIREFOX ? tabURL.startsWith('https://addons.mozilla.org/') :
-      OPERA ? tabURL.startsWith('https://addons.opera.com/') :
-        tabURL.startsWith('https://chrome.google.com/webstore/') ||
-        tabURL.startsWith('https://chromewebstore.google.com/');
+  const isStore = FIREFOX ? tabUrl.startsWith('https://addons.mozilla.org/') :
+      OPERA ? tabUrl.startsWith('https://addons.opera.com/') :
+        tabUrl.startsWith('https://chrome.google.com/webstore/') ||
+        tabUrl.startsWith('https://chromewebstore.google.com/');
   blockPopup();
   if (CHROME && isStore || !urlSupported) {
     return;
@@ -184,7 +184,7 @@ async function initPopup(frames, ping0, tab, urlSupported) {
     info.appendChild(noteNode);
   }
   // Inaccessible locally hosted file type, e.g. JSON, PDF, etc.
-  if (tabURL.length - tabURL.lastIndexOf('.') <= 5) {
+  if (tabUrl.length - tabUrl.lastIndexOf('.') <= 5) {
     info.appendChild($create('p', t('InaccessibleFileHint')));
   }
   document.body.classList.add('unreachable');
@@ -349,7 +349,7 @@ function onIntersect(results) {
 async function handleUpdate({style, reason}) {
   const entry = $entry(style);
   if (reason !== 'toggle' || !entry) {
-    [style] = await API.styles.getByUrl(tabURL, style.id);
+    [style] = await API.styles.getByUrl(tabUrl, style.id);
     if (!style) return;
     style = Object.assign(style.style, style);
   }

@@ -3,7 +3,7 @@ import {configDialog, getEventKeyName, moveFocus} from '/js/dom-util';
 import {template} from '/js/localization';
 import {API} from '/js/msg';
 import {getActiveTab} from '/js/util-webext';
-import {resortEntries, tabURL} from '.';
+import {resortEntries, tabUrl} from '.';
 import * as hotkeys from './hotkeys';
 
 const menu = $('#menu');
@@ -41,8 +41,8 @@ export async function openEditor(event, entry) {
 
 export async function openManager(event) {
   event.preventDefault();
-  const isSearch = tabURL && (event.shiftKey || event.button === 2 || event.detail === 'site');
-  await API.openManage(isSearch ? {search: tabURL, searchMode: 'url'} : {});
+  const isSearch = tabUrl && (event.shiftKey || event.button === 2 || event.detail === 'site');
+  await API.openManage(isSearch ? {search: tabUrl, searchMode: 'url'} : {});
   window.close();
 }
 
@@ -134,7 +134,7 @@ document.on('click', event => {
 });
 
 function menuInit() {
-  const u = new URL(tabURL);
+  const u = new URL(tabUrl);
   for (const el of $$('[data-exclude]')) {
     const input = $('input', el);
     const rule = u.origin +

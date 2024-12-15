@@ -8,7 +8,7 @@ import * as URLS from '/js/urls';
 import {
   clipString, debounce, isEmptyObj, sleep, stringAsRegExp, stringAsRegExpStr, tryRegExp, tryURL,
 } from '/js/util';
-import {$entry, styleFinder, tabURL} from '.';
+import {$entry, styleFinder, tabUrl} from '.';
 import * as Events from './events';
 import './search.css';
 
@@ -114,7 +114,7 @@ styleFinder.inSite = event => {
       `${URLS.usw}search?q=${catQ}` ||
     where === 'gf' &&
       'https://greasyfork.org/' + ($.root.lang.split('-')[0] || 'en') +
-      `/scripts/by-site/${tryURL(tabURL).hostname.replace(/^www\./, '')}?language=css${add('&q=', q)}`;
+      `/scripts/by-site/${tryURL(tabUrl).hostname.replace(/^www\./, '')}?language=css${add('&q=', q)}`;
   Events.openURLandHide.call({href}, event);
 };
 $searchGlobals.onchange = function () {
@@ -521,7 +521,7 @@ function uninstall() {
  * @returns {boolean} true if the category has actually changed
  */
 function calcCategory({retry} = {}) {
-  const u = tryURL(tabURL);
+  const u = tryURL(tabUrl);
   const old = category;
   if (!u.href) {
     // Invalid URL
