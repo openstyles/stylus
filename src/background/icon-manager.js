@@ -1,10 +1,10 @@
-import {kDisableAll, kInstall} from '/js/consts';
+import {kDisableAll} from '/js/consts';
 import {subscribe, __values as __prefs} from '/js/prefs';
 import {CHROME, FIREFOX, MOBILE, VIVALDI} from '/js/ua';
 import {debounce} from '/js/util';
 import {ignoreChromeError, MF_ICON_EXT, MF_ICON_PATH} from '/js/util-webext';
 import * as colorScheme from './color-scheme';
-import {bgBusy, bgPreInit} from './common';
+import {bgBusy, bgInit} from './common';
 import {removePreloadedStyles} from './style-via-webrequest';
 import * as tabMan from './tab-manager';
 
@@ -27,9 +27,17 @@ const kShowBadge = 'show-badge';
 // https://github.com/openstyles/stylus/issues/335
 let hasCanvas = FIREFOX_ANDROID ? false : null;
 
+bgInit.push(initIcons);
 
-bgBusy.then(() => {
-  const runNow = !__.MV3 || bgPreInit.includes(kInstall);
+export async function refreshIconsWhenReady() {
+  if (bgBusy) {
+    bgInit[bgInit.indexOf(initIcons)] = 0;
+    await bgBusy;
+  }
+  initIcons(true);
+}
+
+function initIcons(runNow = !__.MV3) {
   colorScheme.onChange(() => {
     if (__prefs[kIconset] === -1) {
       debounce(refreshGlobalIcon);
@@ -47,7 +55,7 @@ bgBusy.then(() => {
     kDisableAll,
     kIconset,
   ], () => debounce(refreshAllIcons), runNow);
-});
+}
 
 tabMan.onUnload.add((tabId, frameId, port) => {
   if (frameId && tabMan.getStyleIds(tabId)) {

@@ -15,7 +15,7 @@ import {bgBusy, bgInit, bgPreInit, stateDB} from './common';
 import reinjectContentScripts from './content-scripts';
 import initContextMenus from './context-menus';
 import download from './download';
-import {updateIconBadge} from './icon-manager';
+import {refreshIconsWhenReady, updateIconBadge} from './icon-manager';
 import prefsApi from './prefs-api';
 import setClientData from './set-client-data';
 import * as styleMan from './style-manager';
@@ -103,10 +103,14 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
       stateDB.clear(),
       DNR.getDynamicRules().then(rules => updateDynamicRules(undefined, getRuleIds(rules))),
       DNR.getSessionRules().then(rules => updateSessionRules(undefined, getRuleIds(rules))),
-      kInstall,
     );
+    refreshIconsWhenReady();
   }
 });
+
+if (__.MV3) {
+  chrome.runtime.onStartup.addListener(refreshIconsWhenReady);
+}
 
 onMessage(async (m, sender) => {
   if (m.method === 'invokeAPI') {
