@@ -10,23 +10,21 @@ const offscreen = global[__.PAGE_OFFSCREEN] = createPortProxy(getDoc, {
 export default offscreen;
 
 async function getDoc() {
-  for (let retry; ; retry = true) {
-    for (const client of await self.clients.matchAll({includeUncontrolled: true})) {
-      if (client.url === DOC_URL) {
-        return client;
-      }
-    }
-    if (retry) {
-      return;
-    }
-    try {
-      await chrome.offscreen.createDocument({
-        url: DOC_URL,
-        reasons: ['BLOBS', 'DOM_PARSER', 'MATCH_MEDIA', 'WORKERS'],
-        justification: 'ManifestV3 requirement',
-      });
-    } catch (err) {
-      if (!err.message.startsWith('Only a single offscreen')) throw err;
+  __.DEBUGLOG('getDoc creating...');
+  try {
+    await chrome.offscreen.createDocument({
+      url: DOC_URL,
+      reasons: ['BLOBS', 'DOM_PARSER', 'MATCH_MEDIA', 'WORKERS'],
+      justification: 'ManifestV3 requirement',
+    });
+  } catch (err) {
+    if (!err.message.startsWith('Only a single offscreen')) throw err;
+  }
+  __.DEBUGLOG('getDoc created');
+  for (const client of await self.clients.matchAll({includeUncontrolled: true})) {
+    if (client.url === DOC_URL) {
+      __.DEBUGLOG('getDoc', client);
+      return client;
     }
   }
 }

@@ -48,3 +48,5 @@ cloudDrive.webdav = async cfg => {
   for (const k in res) res[k] ??= webdav.bind(null, k);
   return res;
 };
+
+offscreen.syncLifetimeToSW(true);

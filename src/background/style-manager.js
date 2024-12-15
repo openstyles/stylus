@@ -91,11 +91,13 @@ chrome.runtime.onConnect.addListener(port => {
 });
 
 bgInit.push(async () => {
+  __.DEBUGLOG('styleMan init...');
   const [orderFromDb, styles = []] = await Promise.all([
     API.prefsDb.get(orderWrap.id),
     db.getAll(),
     styleCache.loadAll(),
   ]);
+  __.DEBUGLOG('styleMan fixKnownProblems...');
   const updated = await Promise.all(styles.map(fixKnownProblems).filter(Boolean));
   if (updated.length) setTimeout(db.putMany, 0, updated);
   setOrderImpl(orderFromDb, {store: false});
@@ -109,6 +111,7 @@ bgInit.push(async () => {
       }
     }
   }, !__.MV3);
+  __.DEBUGLOG('styleMan init done');
 });
 
 styleCache.setOnDeleted(val => {

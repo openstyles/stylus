@@ -52,7 +52,6 @@ let curXHR = false;
 
 if (__.MV3) {
   toggle(); // register listeners synchronously so they wake up the SW next time it dies
-  global.offscreen.syncLifetimeToSW(true);
   bgPreInit.push((async () => {
     ruleIds = await stateDB.get(kRuleIds) || {};
     for (const id in ruleIds) ruleIdKeys[ruleIds[id]] = +id;
@@ -130,31 +129,35 @@ function toggle(prefKey) {
 /** @type {typeof chrome.webRequest.onBeforeRequest.callback} */
 async function prepareStyles(req) {
   const {tabId, frameId, url} = req;
+  const key = tabId + ':' + frameId;
+  __.DEBUGLOG('prepareStyles', key, req);
   if (tabId < 0) return;
-  if (bgPreInit.length) {
-    // bgPreInit in progress, let's join it
-    const jobs = [
+  let cached, unlock;
+  const bgPreInitLen = __.MV3 && bgPreInit.length;
+  const lock = __.MV3 && bgPreInitLen && new Promise(resolve => (unlock = resolve));
+  if (bgPreInitLen) { // bgPreInit in progress, let's join it
+    bgPreInit.push(
       styleCache.loadOne(url),
-      frameId && tabMan.load(tabId),
-    ];
-    const i = bgPreInit.push(...jobs) - jobs.length;
-    const results = await Promise.all(bgPreInit);
-    const cached = results[i];
-    const tab = results[i + 1];
-    if (tab) req.tab = tab;
-    if (!cached) await bgBusy;
-  } else if (bgBusy) {
-    // bgPreInit done, bgInit in progress
+      frameId ? tabMan.load(tabId) : undefined,
+    );
+    const all = Promise.all(bgPreInit);
+    bgPreInit.push(lock); // keeps bgBusy from resolving until we're done here
+    [cached, req.tab] = (await all).slice(bgPreInitLen);
+    __.DEBUGLOG('prepareStyles cache', key, cached);
+  }
+  if (__.MV3 && !cached && bgBusy) {
+    if (lock) unlock();
     await bgBusy;
   }
-  const key = tabId + ':' + frameId;
   const oldData = toSend[key];
   const data = oldData || (toSend[key] = {});
   const payload = data.payload = getSectionsByUrl.call({sender: req}, url, null, true);
   const willStyle = payload.sections.length;
   data.url = url;
   if (oldData) removePreloadedStyles(null, key, data, willStyle);
-  if (__.MV3 && curXHR && willStyle) prepareStylesMV3(req, data, key, payload);
+  if (__.MV3 && curXHR && willStyle) await prepareStylesMV3(req, data, key, payload);
+  if (lock) setTimeout(unlock);
+  __.DEBUGLOG('prepareStyles done', key, data);
 }
 
 async function prepareStylesMV3({tabId, frameId, url}, data, key, payload) {
@@ -182,7 +185,7 @@ async function prepareStylesMV3({tabId, frameId, url}, data, key, payload) {
   ruleIds[ruleId] = key;
   ruleIdKeys[key] = ruleId;
   timer ??= setTimeout(flushState);
-  updateSessionRules([{
+  await updateSessionRules([{
     id: ruleId,
     condition: {
       tabIds: [tabId],
