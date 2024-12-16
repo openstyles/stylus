@@ -214,7 +214,7 @@ export const subscribe = (keys, fn, runNow) => {
     if (!(key in defaults)) { warnUnknown(key); continue; }
     (onChange[key] ??= new Set()).add(fn);
     if (runNow) {
-      if (!busy) fn(key, values[key]);
+      if (!busy) fn(key, values[key], true);
       else (toRun ??= []).push(key);
     }
   }
