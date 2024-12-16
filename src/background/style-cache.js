@@ -75,7 +75,7 @@ export function ensureSections(entry) {
 export function make(entry, style, idx, code) {
   const id = style.id;
   const entrySections = entry.sections;
-  if (idx || !(idx = entrySections[id]).idx) {
+  if (idx || (idx = entrySections[id]) && !idx.idx) {
     if (!code) {
       code = [];
       for (const i of idx) {
@@ -91,7 +91,7 @@ export function make(entry, style, idx, code) {
       name: style.customName || style.name,
     };
   }
-  return true;
+  return !!idx;
 }
 
 export function setOnDeleted(fn) {
