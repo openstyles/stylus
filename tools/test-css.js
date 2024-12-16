@@ -3,6 +3,7 @@
 const fs = require('fs');
 const chalk = require('chalk');
 const glob = require('fast-glob');
+const postcss = require('postcss');
 const {SRC} = require('./util');
 
 /**
@@ -104,17 +105,24 @@ function testParserlibOnFiles(parserlib) {
       logStr += `  * ${tok.line}:${tok.col} [${e.type}] ${p ? p.text + ': ' : ''}${e.message}\n`;
     }
   };
-  const files = [];
-  for (const file of glob.sync(SRC + '**/*.css')) {
+  const opts = parser.options;
+  let pc, pcPlugins, m;
+  return Promise.all(glob.sync(SRC + '**/*.css').map(async file => {
     process.stdout.write('.');
-    const text = fs.readFileSync(file, 'utf8');
-    const opts = parser.options;
+    let text = fs.readFileSync(file, 'utf8');
+    if ((m = text.match(/\/\*\s*(postcss-.+?)\s*\*\//))) {
+      if (m[1] !== pcPlugins) {
+        pcPlugins = m[1];
+        pc = postcss(pcPlugins.split(/\s*,\s*|\s+/).map(s => require(s)));
+      }
+      text = await pc.process(text, {map: false, from: null});
+      text = text.css;
+    }
     opts.topDocOnly = true; parser.parse(text);
     opts.topDocOnly = false; parser.parse(text);
     opts.globalsOnly = true; parser.parse(text);
     opts.globalsOnly = false;
     if (logStr) fail('parserlib', `\n${chalk.red(file)}\n${logStr}`);
-    files.push([file, text]);
-  }
-  return files;
+    return [file, text];
+  }));
 }

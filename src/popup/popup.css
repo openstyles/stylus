@@ -1,3 +1,7 @@
+/* postcss-simple-vars */
+$powerWidth: 30px;
+$powerOverlap: 4px; /* must be >= 1px (transparent edge) */
+
 :root {
   --border: 1px solid var(--c80);
   --inner-padding: 18px; /* checkbox + gap */
@@ -114,8 +118,7 @@ body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colo
       width: 100%;
     }
     img {
-      right: auto;
-      margin-left: -1px; /* 1px is transparent in the icon */
+      right: calc($powerWidth - $powerOverlap);
     }
   }
   #disableAll {
@@ -136,18 +139,17 @@ body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colo
   img {
     position: absolute;
     filter: drop-shadow(1px 1px 2px #0008);
-    right: calc(var(--outer-padding) - 1px); /* 1px is transparent in the icon */
+    right: calc(var(--outer-padding) - $powerOverlap);
   }
 }
 #disableAll {
-  --knob: 10px;
-  --width: 30px;
+  --width: $powerWidth;
   margin: 0;
   justify-content: flex-end;
   color: var(--accent-2);
   --color-off: hsla(180, 50%, 40%, .33);
   &::after {
-    content: none;
+    content: none; /* hiding the knob */
   }
 }
 

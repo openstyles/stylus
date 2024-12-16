@@ -316,7 +316,7 @@ html:not(.all-disabled) {
   #disableAll-label {
     font-weight: bold;
     color: var(--red1);
-    display: inline-block;
+    display: inline-flex;
     &::after {
       content: attr(data-off);
     }
