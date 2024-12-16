@@ -427,3 +427,5 @@ module.exports = [
   makeLibrary('/js/moz-parser.js', 'extractSections'),
   makeLibrary('/js/usercss-compiler.js', 'compileUsercss'),
 ].filter(Boolean);
+
+module.exports.parallelism = 2;
