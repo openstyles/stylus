@@ -1,16 +1,24 @@
 import {createPortProxy} from '/js/port';
 import {ownRoot} from '/js/urls';
 
+let creating;
+
+/** @return {WindowClient[]} */
+export const getWindowClients = () => self.clients.matchAll({
+  includeUncontrolled: true,
+  type: 'window',
+});
+export const getOffscreenClient = () => (creating ??= create());
 const FILENAME = __.PAGE_OFFSCREEN + '.html';
 const DOC_URL = ownRoot + FILENAME;
 /** @type {OffscreenAPI | CommandsAPI} */
-const offscreen = global[__.PAGE_OFFSCREEN] = createPortProxy(getDoc, {
+const offscreen = createPortProxy(getOffscreenClient, {
   lock: '/' + FILENAME,
 });
 export default offscreen;
 
-async function getDoc() {
-  __.DEBUGLOG('getDoc creating...');
+async function create() {
+  __.DEBUGTRACE('getDoc creating...');
   try {
     await chrome.offscreen.createDocument({
       url: DOC_URL,
@@ -21,10 +29,9 @@ async function getDoc() {
     if (!err.message.startsWith('Only a single offscreen')) throw err;
   }
   __.DEBUGLOG('getDoc created');
-  for (const client of await self.clients.matchAll({includeUncontrolled: true})) {
-    if (client.url === DOC_URL) {
-      __.DEBUGLOG('getDoc', client);
-      return client;
-    }
-  }
+  const clients = await getWindowClients();
+  const client = clients.find(c => c.url === DOC_URL);
+  creating = null;
+  __.DEBUGLOG('getDoc', client);
+  return client;
 }

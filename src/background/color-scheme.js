@@ -1,6 +1,6 @@
 import * as prefs from '/js/prefs';
 import {debounce, isCssDarkScheme} from '/js/util';
-import {bgBusy, bgInit, bgPreInit, stateDB} from './common';
+import {bgBusy, bgPreInit, stateDB} from './common';
 
 const changeListeners = new Set();
 const kSTATE = 'schemeSwitcher.enabled';
@@ -36,9 +36,6 @@ if (__.MV3) {
       Object.assign(map, v[1]);
     }
   }));
-  bgInit.push(async () => {
-    setSystemDark(await global.offscreen.isDark());
-  });
 } else {
   setSystemDark(isCssDarkScheme());
 }

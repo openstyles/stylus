@@ -81,6 +81,7 @@ const VARS = {
 };
 const RAW_VARS = {
   DEBUGLOG: (process.env.DEBUG ? '' : 'null&&') + 'console.log',
+  DEBUGTRACE: (process.env.DEBUG ? '' : 'null&&') + 'console.trace',
   DEBUGWARN: (process.env.DEBUG ? '' : 'null&&') + 'console.warn',
   KEEP_ALIVE: '1&&',
 };

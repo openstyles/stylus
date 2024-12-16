@@ -1,27 +1,30 @@
+import {isCssDarkScheme} from '/js/util';
+
 export const COMMANDS = __.ENTRY !== 'sw' && (
   __.ENTRY === 'worker' || !__.MV3 ? {
     __proto__: null,
   } : /** @namespace CommandsAPI */ {
     __proto__: null,
+    isDark: isCssDarkScheme,
+    createObjectURL: URL.createObjectURL,
+    revokeObjectURL: URL.revokeObjectURL,
     /** @this {RemotePortEvent} */
     getWorkerPort(url) {
       const p = getWorkerPort(url);
       this._transfer = [p];
       return p;
     },
-    syncLifetimeToSW(enable) {
-      if (enable && !swPort) {
-        swPort = chrome.runtime.connect({name: __.PAGE_OFFSCREEN});
-        swPort.onDisconnect.addListener(close);
-        timer = timer && clearTimeout(timer);
-      } else if (!enable && swPort) {
-        swPort.disconnect();
-        swPort = null;
-        if (!timer && !numJobs) timer = setTimeout(close, PORT_TIMEOUT);
+    keepAlive(val) {
+      if (val && timer) {
+        timer = clearTimeout(timer);
+      } else if (!val && !timer && !numJobs) {
+        timer = setTimeout(close, Math.max(0, lastBusy + PORT_TIMEOUT - performance.now()));
       }
+      keepAlive = val;
     },
   }
 );
+export const CONNECTED = Symbol('connected');
 const PORT_TIMEOUT = 5 * 60e3; // TODO: expose as a configurable option?
 const navLocks = navigator.locks;
 const autoClose = __.ENTRY === 'worker' ||
@@ -36,17 +39,18 @@ if (__.MV3 && __.ENTRY === true) {
 }
 let lockingSelf;
 let numJobs = 0;
-/** @type {chrome.runtime.Port} */
-let swPort;
+let lastBusy = 0;
+let keepAlive;
 let timer;
 
 export function createPortProxy(getTarget, opts) {
   let exec;
-  const init = (...args) => (exec ??= createPortExec(getTarget, opts))(...args);
   return new Proxy({}, {
-    get: (_, cmd) => function (...args) {
-      return (exec || init).call(this, cmd, ...args);
-    },
+    get: (_, cmd) => cmd === CONNECTED
+      ? exec?.[CONNECTED]
+      : function (...args) {
+        return (exec ??= createPortExec(getTarget, opts)).call(this, cmd, ...args);
+      },
   });
 }
 
@@ -58,16 +62,17 @@ export function createPortExec(getTarget, {lock, once} = {}) {
   let target;
   let tracking;
   let lastId = 0;
-  return async function exec(...args) {
+  return exec;
+  async function exec(...args) {
     const ctx = [new Error().stack]; // saving it prior to a possible async jump for easier debugging
     const promise = new Promise((resolve, reject) => ctx.push(resolve, reject));
-    __.DEBUGWARN(location.pathname, 'exec send', ...args);
+    __.DEBUGTRACE(location.pathname, 'exec send', ...args);
     if ((port ??= initPort(args)).then) port = await port;
     (once ? target : port).postMessage({args, id: ++lastId},
       once || (Array.isArray(this) ? this : undefined));
     queue.set(lastId, ctx);
     return promise;
-  };
+  }
   async function initPort() {
     __.DEBUGLOG(location.pathname, 'exec init', {getTarget});
     // SW can't nest workers, https://crbug.com/40772041
@@ -89,6 +94,7 @@ export function createPortExec(getTarget, {lock, once} = {}) {
     port.onmessageerror = onMessageError;
     queue = new Map();
     lastId = 0;
+    exec[CONNECTED] = true;
     return port;
   }
   /** @param {MessageEvent} _ */
@@ -107,6 +113,7 @@ export function createPortExec(getTarget, {lock, once} = {}) {
     }
     if (once) {
       port.close();
+      exec[CONNECTED] =
       queue = port = target = null;
     }
   }
@@ -120,6 +127,7 @@ export function createPortExec(getTarget, {lock, once} = {}) {
       reject(err);
     }
     if (queue === queueCopy) {
+      exec[CONNECTED] =
       port = queue = target = null;
     }
   }
@@ -133,7 +141,7 @@ export function initRemotePort(evt) {
   const {lock = location.pathname, id: once} = evt.data || {};
   const exec = this;
   const port = evt.ports[0];
-  __.DEBUGWARN(location.pathname, 'initRemotePort', evt);
+  __.DEBUGTRACE(location.pathname, 'initRemotePort', evt);
   if (!lockingSelf && lock && !once && navLocks) {
     lockingSelf = true;
     navLocks.request(lock, () => new Promise(NOP));
@@ -166,9 +174,10 @@ export function initRemotePort(evt) {
     __.DEBUGLOG(location.pathname, 'port response', {id, res, err}, portEvent._transfer);
     port.postMessage({id, res, err},
       (/**@type{RemotePortEvent}*/portEvent)._transfer);
-    if (!--numJobs && autoClose && !timer && !swPort) {
+    if (!--numJobs && autoClose && !timer && !keepAlive) {
       timer = setTimeout(close, PORT_TIMEOUT);
     }
+    lastBusy = performance.now();
   }
 }
 

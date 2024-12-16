@@ -1,4 +1,4 @@
-import {kAppJson, kMainFrame, kPopup} from '/js/consts';
+import {kAppJson, kMainFrame, kPopup, kSubFrame} from '/js/consts';
 import {updateSessionRules} from '/js/dnr';
 import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
@@ -19,7 +19,6 @@ const idXHR = 'styleViaXhr';
 const REVOKE_TIMEOUT = 10e3;
 const kRuleIds = 'ruleIds';
 const kSetCookie = 'set-cookie'; // must be lowercase
-const kSubFrame = 'sub_frame';
 const rxHOST = /^('non(e|ce-.+?)'|(https?:\/\/)?[^']+?[^:'])$/; // strips CSP sources covered by *
 const rxNONCE = /(?:^|[;,])\s*style-src\s+[^;,]*?'nonce-([-+/=\w]+)'/;
 const BLOB_URL_PREFIX = 'blob:' + ownRoot;
@@ -32,7 +31,7 @@ const makeBlob = data => new Blob([JSON.stringify(data)], {type: kAppJson});
 const makeXhrCookie = blobId => `${ownId}=${blobId}; SameSite=Lax`;
 const req2key = req => req.tabId + ':' + req.frameId;
 const revokeObjectURL = blobId => blobId &&
-  (__.MV3 ? global.offscreen : URL).revokeObjectURL(BLOB_URL_PREFIX + blobId);
+  (__.MV3 ? API.client : URL).revokeObjectURL(BLOB_URL_PREFIX + blobId);
 const toSend = {};
 const INJECTED_FUNC = function (data) {
   if (this['apply.js'] !== 1) { // storing data only if apply.js hasn't run yet
@@ -172,7 +171,7 @@ async function prepareStylesMV3({tabId, frameId, url}, data, key, payload) {
     }
   }
   if (!blobId) {
-    blobId = (await global.offscreen.createObjectURL(makeBlob(payload)))
+    blobId = (await API.client.createObjectURL(makeBlob(payload)))
       .slice(BLOB_URL_PREFIX.length);
   }
   data.blobId = blobId;

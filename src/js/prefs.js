@@ -10,7 +10,7 @@ let busy, ready, setReady;
 export const clientData = !__.IS_BG && (
   __.MV3
     ? global[__.CLIENT_DATA]
-    : API.setClientData(null, {url: location.href, dark: isCssDarkScheme()}).then(data => {
+    : API.setClientData({url: location.href, dark: isCssDarkScheme()}).then(data => {
       data = makePropertyPopProxy(data);
       setAll(data.prefs);
       return data;
@@ -35,7 +35,7 @@ const defaults = {
   'patchCsp': false,              // add data: and popular image hosting sites to strict CSP
   'show-badge': true,             // display text on popup menu icon
   'styleViaASS': false,           // document.adoptedStyleSheets
-  'styleViaXhr': true,            // early style injection to avoid FOUC
+  'styleViaXhr': false,           // early style injection to avoid FOUC
   'urlInstaller': true,           // auto-open installer page for supported .user.css urls
   'windowPosition': {},           // detached window position
 

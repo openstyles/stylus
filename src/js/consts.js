@@ -17,4 +17,5 @@ export const kMainFrame = 'main_frame';
 export const kPopup = 'popup';
 export const kResolve = 'resolve';
 export const kStateDB = 'state';
+export const kSubFrame = 'sub_frame';
 export const kUrl = 'url';

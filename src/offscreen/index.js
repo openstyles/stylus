@@ -1,15 +1,11 @@
 import {API} from '/js/msg-api';
 import {COMMANDS} from '/js/port';
-import {fetchWebDAV, isCssDarkScheme, mapObj} from '/js/util';
+import {fetchWebDAV, mapObj} from '/js/util';
 
 let webdavInstance;
 
 /** @namespace OffscreenAPI */
 Object.assign(COMMANDS, {
-  createObjectURL: URL.createObjectURL,
-  revokeObjectURL: URL.revokeObjectURL,
-  /** Note that `onchange` doesn't work in bg context, so we use it in the content script */
-  isDark: isCssDarkScheme,
   webdav: (cmd, ...args) => webdavInstance[cmd](...args),
   webdavInit: async cfg => {
     if (!webdavInstance) await loadScript(__.JS + 'webdav.js');

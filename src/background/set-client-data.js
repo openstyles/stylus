@@ -18,9 +18,9 @@ const ASSIGN_FUNC_STR = __.MV3 && `${function (data) {
   Object.assign(this[__.CLIENT_DATA], data);
 }}`;
 
-export default async function setClientData(reqParams, {
-  dark: pageDark = !!+reqParams.get('dark'),
-  url: pageUrl = reqParams.get('url'),
+export default async function setClientData({
+  dark: pageDark,
+  url: pageUrl,
 } = {}) {
   if (bgBusy) await bgBusy;
   let v, params;
