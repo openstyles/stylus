@@ -1,2 +1,7 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Enforce LF on files that are copied as-is either fully or partially (html attribute values)
+*.html text eol=lf
+*.json text eol=lf
+*.md text eol=lf
