@@ -205,5 +205,5 @@ async function fetchWithProgress(resp, responseType, headers, jobKey) {
 }
 
 function reportProgress(jobKey, msg) {
-  jobs[jobKey].ports?.forEach(p => p.postMessage(msg));
+  jobs[jobKey]?.ports?.forEach(p => p.postMessage(msg));
 }
