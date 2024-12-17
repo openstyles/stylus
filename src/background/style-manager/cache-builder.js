@@ -1,7 +1,7 @@
-import {id2data} from '@/background/style-manager/util';
 import {styleCodeEmpty} from '@/js/sections-util';
 import * as styleCache from './cache';
 import {urlMatchSection, urlMatchStyle} from './matcher';
+import {id2data} from './util';
 
 export function buildCacheForStyle(style) {
   const {id} = style;
