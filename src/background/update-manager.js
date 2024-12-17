@@ -4,10 +4,10 @@ import {API} from '/js/msg';
 import * as prefs from '/js/prefs';
 import {calcStyleDigest, styleSectionsEqual} from '/js/sections-util';
 import {chromeLocal} from '/js/storage-util';
-import {extractUsoaId, isLocalhost, usoApi} from '/js/urls';
-import {debounce, deepMerge} from '/js/util';
+import {extractUsoaId, isCdnUrl, isLocalhost, usoApi} from '/js/urls';
+import {debounce, deepMerge, getHost, resolvedPromise, sleep} from '/js/util';
 import {ignoreChromeError} from '/js/util-webext';
-import {bgBusy, safeTimeout} from './common';
+import {bgBusy} from './common';
 import {db} from './db';
 import download from './download';
 import * as styleMan from './style-manager';
@@ -27,6 +27,7 @@ const STATES = /** @namespace UpdaterStates */ {
   ERROR_VERSION: 'error: version is older than installed style',
 };
 export const getStates = () => STATES;
+const safeSleep = __.MV3 ? ms => __.KEEP_ALIVE(sleep(ms)) : sleep;
 const RH_ETAG = {responseHeaders: ['etag']}; // a hashsum of file contents
 const RX_DATE2VER = new RegExp([
   /^(\d{4})/,
@@ -41,6 +42,8 @@ const RETRY_ERRORS = [
   503, // service unavailable
   429, // too many requests
 ];
+const HOST_THROTTLE = 1000; // ms
+const hostJobs = {};
 let lastUpdateTime;
 let checkingAll = false;
 let logQueue = [];
@@ -227,19 +230,28 @@ export async function checkStyle(opts) {
 
 }
 
-async function tryDownload(url, params, {retryDelay = 1000} = {}) {
+async function tryDownload(url, params, {retryDelay = HOST_THROTTLE} = {}) {
   while (true) {
+    let host, job;
     try {
       params = deepMerge(params || {}, {headers: {'Cache-Control': 'no-cache'}});
-      return await download(url, params);
+      host = getHost(url);
+      job = hostJobs[host];
+      job = hostJobs[host] = (job
+        ? job.then(() => safeSleep(HOST_THROTTLE / (isCdnUrl(url) ? 4 : 1)))
+        : resolvedPromise()
+      ).then(() => download(url, params));
+      return await job;
     } catch (code) {
       if (!RETRY_ERRORS.includes(code) ||
           retryDelay > MIN_INTERVAL_MS) {
-        return Promise.reject(code);
+        throw code;
       }
+    } finally {
+      if (hostJobs[host] === job) delete hostJobs[host];
     }
     retryDelay *= 1.25;
-    await new Promise(resolve => safeTimeout(resolve, retryDelay));
+    await safeSleep(retryDelay);
   }
 }
 

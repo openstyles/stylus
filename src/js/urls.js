@@ -59,3 +59,7 @@ export const supported = /*@__PURE__*/ regExpTest.bind(new RegExp(
 export const isLocalhost = /*@__PURE__*/ regExpTest.bind(
   /^file:|^https?:\/\/([^/]+@)?(localhost|127\.0\.0\.1)(:\d+)?\//
 );
+
+export const isCdnUrl = /*@__PURE__*/ regExpTest.bind(
+  /^https:\/\/((\w+-)?cdn(js)?(-\w+)?\.[^/]+|[^/]+?\.github(usercontent)?\.(io|com))\//i
+);
