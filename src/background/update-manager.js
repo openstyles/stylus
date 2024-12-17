@@ -5,7 +5,7 @@ import * as prefs from '/js/prefs';
 import {calcStyleDigest, styleSectionsEqual} from '/js/sections-util';
 import {chromeLocal} from '/js/storage-util';
 import {extractUsoaId, isCdnUrl, isLocalhost, usoApi} from '/js/urls';
-import {debounce, deepMerge, getHost, resolvedPromise, sleep} from '/js/util';
+import {debounce, deepMerge, getHost, sleep} from '/js/util';
 import {ignoreChromeError} from '/js/util-webext';
 import {bgBusy} from './common';
 import {db} from './db';
@@ -27,6 +27,7 @@ const STATES = /** @namespace UpdaterStates */ {
   ERROR_VERSION: 'error: version is older than installed style',
 };
 export const getStates = () => STATES;
+const NOP = () => {};
 const safeSleep = __.MV3 ? ms => __.KEEP_ALIVE(sleep(ms)) : sleep;
 const RH_ETAG = {responseHeaders: ['etag']}; // a hashsum of file contents
 const RX_DATE2VER = new RegExp([
@@ -238,8 +239,8 @@ async function tryDownload(url, params, {retryDelay = HOST_THROTTLE} = {}) {
       host = getHost(url);
       job = hostJobs[host];
       job = hostJobs[host] = (job
-        ? job.then(() => safeSleep(HOST_THROTTLE / (isCdnUrl(url) ? 4 : 1)))
-        : resolvedPromise()
+        ? job.catch(NOP).then(() => safeSleep(HOST_THROTTLE / (isCdnUrl(url) ? 4 : 1)))
+        : Promise.resolve()
       ).then(() => download(url, params));
       return await job;
     } catch (code) {

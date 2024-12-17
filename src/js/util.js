@@ -14,7 +14,6 @@ export const hasOwn = /*@__PURE__*/Object.call.bind({}.hasOwnProperty);
 /** FYI, matchMedia's onchange doesn't work in bg context, so we use it in our content script */
 export const isCssDarkScheme = () => matchMedia('(prefers-color-scheme:dark)').matches;
 export const isObject = val => typeof val === 'object' && val;
-export const resolvedPromise = async val => val;
 export const sleep = ms => new Promise(ms > 0 ? cb => setTimeout(cb, ms) : setTimeout);
 export const stringAsRegExpStr = s => s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&');
 export const stringAsRegExp = (s, flags) => new RegExp(stringAsRegExpStr(s), flags);
