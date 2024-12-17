@@ -1,5 +1,6 @@
 import * as prefs from '@/js/prefs';
 import {debounce, isCssDarkScheme} from '@/js/util';
+import {broadcastExtension} from './broadcast';
 import {bgBusy, bgPreInit, stateDB} from './common';
 
 const changeListeners = new Set();
@@ -118,6 +119,7 @@ function update(type, val) {
   val = map[prefState];
   if (isDark !== val) {
     isDark = val;
+    broadcastExtension({method: 'colorScheme', value: isDark});
     for (const fn of changeListeners) fn(isDark);
     if (__.MV3) type = true;
   }

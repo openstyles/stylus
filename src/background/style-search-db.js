@@ -1,6 +1,7 @@
 import {UCD} from '@/js/consts';
 import {debounce, RX_META, stringAsRegExp, tryRegExp} from '@/js/util';
-import {getByUrl, iterStyles} from './style-manager';
+import {getByUrl} from './style-manager';
+import {iterStyles} from './style-manager/util';
 
 // toLocaleLowerCase cache, autocleared after 1 minute
 const cache = new Map();

@@ -1,4 +1,4 @@
-import {db as styleDB, getDbProxy} from './db';
+import {db as styleDB, getDbProxy} from '../db';
 
 let onDeleted;
 let timer;

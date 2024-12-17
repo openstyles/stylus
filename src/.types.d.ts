@@ -103,6 +103,14 @@ declare interface InjectionOrderGroup {
   [id: string]: number;
 }
 
+declare interface MatchQuery {
+  url: string;
+  domain?: string;
+  isOwnPage?: boolean;
+  urlWithoutHash?: string;
+  urlWithoutParams?: string;
+}
+
 declare interface UsercssData {
   name: string;
   namespace: string;

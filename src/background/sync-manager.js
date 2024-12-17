@@ -9,6 +9,7 @@ import {db} from './db';
 import {cloudDrive, dbToCloud} from './db-to-cloud-broker';
 import {overrideBadge} from './icon-manager';
 import * as styleMan from './style-manager';
+import {onSaved, getByUuid} from './style-manager/util';
 import * as STATES from './sync-manager-states';
 import {getToken, revokeToken} from './token-manager';
 
@@ -183,7 +184,7 @@ export async function syncNow() {
 
 function initController() {
   return dbToCloud({
-    onGet: _id => styleMan.uuid2style(_id) || uuidIndex.custom[_id],
+    onGet: _id => getByUuid(_id) || uuidIndex.custom[_id],
     async onPut(doc) {
       if (!doc) return; // TODO: delete it?
       const id = uuidIndex.get(doc._id);
@@ -199,7 +200,7 @@ function initController() {
         delete doc.id;
         if (id) doc.id = id;
         doc.id = await db.put(doc);
-        await styleMan.handleSave(doc, 'sync');
+        await onSaved(doc, 'sync');
       }
     },
     onDelete(_id, rev) {

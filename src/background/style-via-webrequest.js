@@ -9,7 +9,7 @@ import {ignoreChromeError, ownId, toggleListener} from '@/js/util-webext';
 import {bgBusy, bgPreInit, stateDB} from './common';
 import {webNavigation} from './navigation-manager';
 import makePopupData from './popup-data';
-import * as styleCache from './style-cache';
+import * as styleCache from './style-manager/cache';
 import {getSectionsByUrl} from './style-manager';
 import * as tabMan from './tab-manager';
 

@@ -1,9 +1,10 @@
 import '@/js/browser';
+import {order} from '@/background/style-manager/util';
 import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {isEmptyObj} from '@/js/util';
 import {webNavigation} from './navigation-manager';
-import {getSectionsByUrl, order} from './style-manager';
+import {getSectionsByUrl} from './style-manager';
 
 /**
  * Uses chrome.tabs.insertCSS
