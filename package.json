@@ -1,6 +1,6 @@
 {
   "name": "Stylus",
-  "version": "1.5.51",
+  "version": "2.0.7",
   "description": "Redesign the web with Stylus, a user styles manager",
   "license": "GPL-3.0-only",
   "repository": "openstyles/stylus",
@@ -47,7 +47,6 @@
     "postcss-simple-vars": "^7.0.1",
     "svg2ttf": "^6.0.3",
     "svgicons2svgfont": "^12.0.0",
-    "sync-version": "^1.0.1",
     "terser-webpack-plugin": "^5.3.10",
     "webpack": "^5.97.1",
     "webpack-bundle-analyzer": "^4.10.2",
@@ -60,11 +59,11 @@
     "update-locales": "tx pull --all && node tools/fix-transifex.js && git commit -m \"update locales\" src/_locales",
     "update-transifex": "tx push -s",
     "build-icons": "node tools/build-icons",
-    "build-chrome-mv2": "webpack-cli --define-process-env-node-env chrome-mv2",
-    "build-chrome-mv3": "webpack-cli --define-process-env-node-env chrome-mv3",
-    "build-firefox": "webpack-cli --define-process-env-node-env firefox",
-    "watch-mv2": "webpack-cli watch --define-process-env-node-env DEV",
-    "watch-mv3": "webpack-cli watch --define-process-env-node-env chrome-mv3",
+    "build-chrome-mv2": "webpack-cli --node-env chrome-mv2",
+    "build-chrome-mv3": "webpack-cli --node-env chrome-mv3",
+    "build-firefox": "webpack-cli --node-env firefox",
+    "watch-mv2": "webpack-cli watch --node-env DEV",
+    "watch-mv3": "webpack-cli watch --node-env chrome-mv3",
     "zip": "npm test && node tools/build-zip.js",
     "zip-chrome-mv2": "npm test && node tools/build-zip.js chrome-mv2",
     "zip-chrome-mv3": "npm test && node tools/build-zip.js chrome-mv3",
@@ -72,8 +71,8 @@
     "zip-firefox": "npm test && node tools/build-zip.js firefox",
     "postinstall": "node tools/postinstall.js",
     "preversion": "npm test",
-    "version": "sync-version manifest.json && git add .",
-    "postversion": "npm run zip && git push --follow-tags"
+    "version": "node tools/sync-manifest-version.js && git add .",
+    "bump": "npm version patch"
   },
   "engines": {
     "node": ">=20.6.0"
