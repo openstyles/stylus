@@ -3,7 +3,7 @@ import {kContentType, kMainFrame} from '/js/consts';
 import {DNR_ID_INSTALLER, updateDynamicRules} from '/js/dnr';
 import * as prefs from '/js/prefs';
 import * as URLS from '/js/urls';
-import {RX_META} from '/js/util';
+import {getHost, RX_META} from '/js/util';
 import {FIREFOX} from '/js/ua';
 import {bgBusy, safeTimeout} from './common';
 import download from './download';
@@ -44,7 +44,7 @@ function toggle(key, val) {
           : /^.*\.user\.css$/).source,
         requestDomains: val
           ? undefined
-          : [...new Set(urls.map(u => u.split('/')[2]))],
+          : [...new Set(urls.map(getHost))],
         resourceTypes: [kMainFrame],
         responseHeaders: [{
           header: kContentType,

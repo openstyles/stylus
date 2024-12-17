@@ -3,7 +3,7 @@ import {DNR_ID_IDENTITY, updateDynamicRules} from '/js/dnr';
 import {chromeLocal} from '/js/storage-util';
 import {FIREFOX} from '/js/ua';
 import * as URLS from '/js/urls';
-import {clamp} from '/js/util';
+import {clamp, getHost} from '/js/util';
 import {browserWindows} from '/js/util-webext';
 import launchWebAuthFlow from 'webext-launch-web-auth-flow';
 import {isVivaldi} from './common';
@@ -227,7 +227,7 @@ async function authUserMV3(url, interactive, redirectUri) {
         type: 'redirect',
         redirect: {
           transform: {
-            host: apiUrl.split('/')[2],
+            host: getHost(apiUrl),
           },
         },
       },

@@ -5,7 +5,7 @@ import {getEventKeyName, setupLivePrefs} from '/js/dom-util';
 import {t, template} from '/js/localization';
 import {API, onExtension} from '/js/msg';
 import * as prefs from '/js/prefs';
-import {isDark, isDarkChanged} from '/js/themer';
+import {isDark, onDarkChanged} from '/js/themer';
 import {CHROME, FIREFOX, MOBILE, OPERA} from '/js/ua';
 import {ownRoot} from '/js/urls';
 import {capitalize, clamp, clipString, isEmptyObj, sleep, stringAsRegExpStr} from '/js/util';
@@ -38,7 +38,7 @@ export const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || s
 onExtension(onRuntimeMessage);
 
 updateStateIcon(isDark);
-isDarkChanged.add(val => updateStateIcon(val, null));
+onDarkChanged.add(val => updateStateIcon(val, null));
 
 prefs.subscribe('popup.stylesFirst', (key, stylesFirst) => {
   $.rootCL.toggle('styles-first', stylesFirst);

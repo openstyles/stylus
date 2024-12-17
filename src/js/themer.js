@@ -14,7 +14,7 @@ import {MF_ICON_EXT, MF_ICON_PATH} from './util-webext';
 import '/css/global.css';
 import '/css/global-dark.css';
 
-export const isDarkChanged = new Set();
+export const onDarkChanged = new Set();
 export const MEDIA_ON = 'screen';
 export const MEDIA_OFF = 'not all';
 const MEDIA_NAME = 'dark';
@@ -51,5 +51,5 @@ function updateDOM() {
       m.mediaText = `${isDark ? MEDIA_ON : MEDIA_OFF},${MEDIA_NAME}`;
     }
   });
-  for (const fn of isDarkChanged) fn(isDark);
+  for (const fn of onDarkChanged) fn(isDark);
 }

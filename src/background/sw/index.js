@@ -78,7 +78,7 @@ bgPreInit.push(
 
 /**
  * This ensures that SW starts even before our page makes a clientData request inside.
- * The actual listener may be invoked after `onfetch`, but is may depend on implementation.
+ * The actual listener is usually invoked after `onfetch`, but there's no guarantee.
  */
 chrome.webRequest.onBeforeRequest.addListener(req => {
   clientUrls[req.url] = true;
