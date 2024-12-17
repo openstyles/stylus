@@ -1,10 +1,10 @@
-import '/js/browser';
-import {kContentType, kMainFrame} from '/js/consts';
-import {DNR_ID_INSTALLER, updateDynamicRules} from '/js/dnr';
-import * as prefs from '/js/prefs';
-import * as URLS from '/js/urls';
-import {getHost, RX_META} from '/js/util';
-import {FIREFOX} from '/js/ua';
+import '@/js/browser';
+import {kContentType, kMainFrame} from '@/js/consts';
+import {DNR_ID_INSTALLER, updateDynamicRules} from '@/js/dnr';
+import * as prefs from '@/js/prefs';
+import * as URLS from '@/js/urls';
+import {getHost, RX_META} from '@/js/util';
+import {FIREFOX} from '@/js/ua';
 import {bgBusy, safeTimeout} from './common';
 import download from './download';
 import * as tabMan from './tab-manager';

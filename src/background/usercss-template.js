@@ -1,5 +1,5 @@
-import {getLZValue, LZ_KEY, unLZ} from '/js/chrome-sync';
-import {onStorageChanged} from '/js/util-webext';
+import {getLZValue, LZ_KEY, unLZ} from '@/js/chrome-sync';
+import {onStorageChanged} from '@/js/util-webext';
 
 export let value;
 

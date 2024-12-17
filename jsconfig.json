@@ -2,11 +2,11 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "/*": ["./src/*"]
+      "@/*": ["./src/*"]
     }
   },
   "exclude": ["node_modules"],
   "typeAcquisition": {
-    "include": ["./types.d.ts"]
+    "include": ["@/types.d.ts"]
   }
 }

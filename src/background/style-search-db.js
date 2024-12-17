@@ -1,5 +1,5 @@
-import {UCD} from '/js/consts';
-import {debounce, RX_META, stringAsRegExp, tryRegExp} from '/js/util';
+import {UCD} from '@/js/consts';
+import {debounce, RX_META, stringAsRegExp, tryRegExp} from '@/js/util';
 import {getByUrl, iterStyles} from './style-manager';
 
 // toLocaleLowerCase cache, autocleared after 1 minute

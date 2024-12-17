@@ -1,9 +1,9 @@
-import colorMimicry from '/js/color/color-mimicry';
-import {$, $$, $create, $remove, toggleDataset} from '/js/dom';
-import {setInputValue} from '/js/dom-util';
-import {t, template} from '/js/localization';
-import {chromeLocal} from '/js/storage-util';
-import {debounce, stringAsRegExp, tryRegExp} from '/js/util';
+import colorMimicry from '@/js/color/color-mimicry';
+import {$, $$, $create, $remove, toggleDataset} from '@/js/dom';
+import {setInputValue} from '@/js/dom-util';
+import {t, template} from '@/js/localization';
+import {chromeLocal} from '@/js/storage-util';
+import {debounce, stringAsRegExp, tryRegExp} from '@/js/util';
 import CodeMirror from 'codemirror';
 import editor from './editor';
 

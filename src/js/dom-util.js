@@ -1,6 +1,6 @@
 import {$, $$, $create, focusA11y, toggleDataset} from './dom';
 import * as prefs from './prefs';
-import '/css/spinner.css';
+import '@/css/spinner.css';
 
 export let configDialog = async (...args) => (
   configDialog = (await import('./dlg/config-dialog')).default

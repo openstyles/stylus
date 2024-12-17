@@ -1,8 +1,8 @@
-import {$, $$, toggleDataset} from '/js/dom';
-import {t, template} from '/js/localization';
-import {API, onExtension} from '/js/msg';
-import {clientData} from '/js/prefs';
-import {capitalize} from '/js/util';
+import {$, $$, toggleDataset} from '@/js/dom';
+import {t, template} from '@/js/localization';
+import {API, onExtension} from '@/js/msg';
+import {clientData} from '@/js/prefs';
+import {capitalize} from '@/js/util';
 
 (async () => {
   let {sync: status, syncOpts} = __.MV3 ? clientData : await clientData;

@@ -1,4 +1,4 @@
-import * as prefs from '/js/prefs';
+import * as prefs from '@/js/prefs';
 import {broadcast} from './broadcast';
 import * as colorScheme from './color-scheme';
 import {bgBusy, safeTimeout} from './common';

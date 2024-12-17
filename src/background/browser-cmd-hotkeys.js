@@ -1,5 +1,5 @@
-import '/js/browser';
-import {knownKeys, subscribe} from '/js/prefs';
+import '@/js/browser';
+import {knownKeys, subscribe} from '@/js/prefs';
 
 export default function initBrowserCommandsApi() {
   const browserCommands = browser.commands;

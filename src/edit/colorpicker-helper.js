@@ -1,7 +1,7 @@
-import {CodeMirror, extraKeys} from '/cm';
-import {t} from '/js/localization';
-import * as prefs from '/js/prefs';
-import '/js/color/color-view';
+import {CodeMirror, extraKeys} from '@/cm';
+import {t} from '@/js/localization';
+import * as prefs from '@/js/prefs';
+import '@/js/color/color-view';
 import cmFactory from './codemirror-factory';
 
 const {defaults, commands} = CodeMirror;

@@ -1,5 +1,5 @@
-import {$create} from '/js/dom';
-import {debounce} from '/js/util';
+import {$create} from '@/js/dom';
+import {debounce} from '@/js/util';
 
 const styleCache = new Map();
 

@@ -1,6 +1,6 @@
-import '/js/browser';
-import {rxIgnorableError} from '/js/msg-api';
-import {ownRoot} from '/js/urls';
+import '@/js/browser';
+import {rxIgnorableError} from '@/js/msg-api';
+import {ownRoot} from '@/js/urls';
 import * as tabMan from './tab-manager';
 
 /**

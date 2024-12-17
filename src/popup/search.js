@@ -1,13 +1,13 @@
-import {UCD} from '/js/consts';
-import {$, $$, $create, $remove, toggleDataset} from '/js/dom';
-import {setupLivePrefs, showSpinner} from '/js/dom-util';
-import {breakWord, formatDate, t, template} from '/js/localization';
-import {API} from '/js/msg';
-import * as prefs from '/js/prefs';
-import * as URLS from '/js/urls';
+import {UCD} from '@/js/consts';
+import {$, $$, $create, $remove, toggleDataset} from '@/js/dom';
+import {setupLivePrefs, showSpinner} from '@/js/dom-util';
+import {breakWord, formatDate, t, template} from '@/js/localization';
+import {API} from '@/js/msg';
+import * as prefs from '@/js/prefs';
+import * as URLS from '@/js/urls';
 import {
   clipString, debounce, isEmptyObj, sleep, stringAsRegExp, stringAsRegExpStr, tryRegExp, tryURL,
-} from '/js/util';
+} from '@/js/util';
 import {$entry, styleFinder, tabUrl, tabUrlSupported} from '.';
 import * as Events from './events';
 import './search.css';

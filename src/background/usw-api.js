@@ -1,7 +1,7 @@
-import {kAppJson, kContentType, UCD} from '/js/consts';
-import {API} from '/js/msg';
-import * as URLS from '/js/urls';
-import {deepEqual, mapObj, RX_META, tryURL} from '/js/util';
+import {kAppJson, kContentType, UCD} from '@/js/consts';
+import {API} from '@/js/msg';
+import * as URLS from '@/js/urls';
+import {deepEqual, mapObj, RX_META, tryURL} from '@/js/util';
 import {broadcastExtension} from './broadcast';
 import * as styleMan from './style-manager';
 import {getToken, revokeToken} from './token-manager';

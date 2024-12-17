@@ -1,8 +1,8 @@
-import '/js/browser';
-import {kUrl} from '/js/consts';
-import * as URLS from '/js/urls';
-import {sleep, stringAsRegExpStr} from '/js/util';
-import {ignoreChromeError, MF} from '/js/util-webext';
+import '@/js/browser';
+import {kUrl} from '@/js/consts';
+import * as URLS from '@/js/urls';
+import {sleep, stringAsRegExpStr} from '@/js/util';
+import {ignoreChromeError, MF} from '@/js/util-webext';
 import {sendTab} from './broadcast';
 import {webNavigation} from './navigation-manager';
 import * as tabMan from './tab-manager';

@@ -1,6 +1,6 @@
-import {kApplyPort} from '/js/consts';
-import {supported} from '/js/urls';
-import {ignoreChromeError} from '/js/util-webext';
+import {kApplyPort} from '@/js/consts';
+import {supported} from '@/js/urls';
+import {ignoreChromeError} from '@/js/util-webext';
 import {bgBusy, bgInit, stateDB} from './common';
 import {onUrlChange} from './navigation-manager';
 

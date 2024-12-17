@@ -1,9 +1,9 @@
-import {$, $$, $create} from '/js/dom';
-import {messageBox, scrollElementIntoView} from '/js/dom-util';
-import {t} from '/js/localization';
-import {API} from '/js/msg';
-import * as prefs from '/js/prefs';
-import {chromeLocal} from '/js/storage-util';
+import {$, $$, $create} from '@/js/dom';
+import {messageBox, scrollElementIntoView} from '@/js/dom-util';
+import {t} from '@/js/localization';
+import {API} from '@/js/msg';
+import * as prefs from '@/js/prefs';
+import {chromeLocal} from '@/js/storage-util';
 import {filterAndAppend, filtersSelector} from './filters';
 import {updateStripes} from './sorter';
 import {$entry, newUI} from './util';

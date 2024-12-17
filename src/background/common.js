@@ -1,7 +1,7 @@
-import {kResolve, kStateDB} from '/js/consts';
-import {CHROME} from '/js/ua';
-import {promiseWithResolve} from '/js/util';
-import {browserWindows} from '/js/util-webext';
+import {kResolve, kStateDB} from '@/js/consts';
+import {CHROME} from '@/js/ua';
+import {promiseWithResolve} from '@/js/util';
+import {browserWindows} from '@/js/util-webext';
 import {getDbProxy} from './db';
 
 export let bgBusy = promiseWithResolve();

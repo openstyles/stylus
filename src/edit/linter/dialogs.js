@@ -1,9 +1,9 @@
-import {getLZValue, LZ_KEY, setLZValue} from '/js/chrome-sync';
-import {kAppJson} from '/js/consts';
-import {$, $create, $createLink} from '/js/dom';
-import {messageBox} from '/js/dom-util';
-import {t} from '/js/localization';
-import {tryJSONparse} from '/js/util';
+import {getLZValue, LZ_KEY, setLZValue} from '@/js/chrome-sync';
+import {kAppJson} from '@/js/consts';
+import {$, $create, $createLink} from '@/js/dom';
+import {messageBox} from '@/js/dom-util';
+import {t} from '@/js/localization';
+import {tryJSONparse} from '@/js/util';
 import editor from '../editor';
 import {helpPopup, showCodeMirrorPopup, worker} from '../util';
 import {DEFAULTS} from './defaults';
@@ -26,7 +26,7 @@ export async function showLintConfig() {
     return;
   }
   // TODO: replace with JSON.parse()
-  await import('/js/jsonlint-bundle');
+  await import('@/js/jsonlint-bundle');
   const config = await getLZValue(LZ_KEY[linter]);
   const defaults = DEFAULTS[linter];
   const title = t('linterConfigPopupTitle', isStylelint ? 'Stylelint' : 'CSSLint');

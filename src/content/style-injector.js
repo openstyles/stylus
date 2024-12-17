@@ -1,4 +1,4 @@
-import * as msgApi from '/js/msg-api';
+import * as msgApi from '@/js/msg-api';
 
 // allows Terser to drop unused code in targeted builds
 export const FF = __.BUILD !== 'chrome' && msgApi.FF;

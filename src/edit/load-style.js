@@ -1,8 +1,8 @@
-import {loadCmTheme} from '/cm';
-import {$} from '/js/dom';
-import * as prefs from '/js/prefs';
-import * as MozDocMapper from '/js/sections-util';
-import {clipString, sessionStore, tryURL} from '/js/util';
+import {loadCmTheme} from '@/cm';
+import {$} from '@/js/dom';
+import * as prefs from '@/js/prefs';
+import * as MozDocMapper from '@/js/sections-util';
+import {clipString, sessionStore, tryURL} from '@/js/util';
 import editor from './editor';
 
 if (location.hash) { // redirected from devtools -> "open in a new tab"

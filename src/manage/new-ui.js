@@ -1,9 +1,9 @@
-import {$} from '/js/dom';
-import {getCssMediaRuleByName} from '/js/dom-util';
-import {API} from '/js/msg';
-import * as prefs from '/js/prefs';
-import {MEDIA_OFF, MEDIA_ON} from '/js/themer';
-import {debounce, isEmptyObj} from '/js/util';
+import {$} from '@/js/dom';
+import {getCssMediaRuleByName} from '@/js/dom-util';
+import {API} from '@/js/msg';
+import * as prefs from '@/js/prefs';
+import {MEDIA_OFF, MEDIA_ON} from '@/js/themer';
+import {debounce, isEmptyObj} from '@/js/util';
 import {favsBusy, partEntry, renderFavs, renderMissingFavs, showStyles} from './render';
 import {installed} from './util';
 

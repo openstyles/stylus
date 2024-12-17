@@ -1,7 +1,7 @@
 // WARNING: make sure util-webext.js runs first and sets _deepCopy
-import {kApplyPort} from '/js/consts';
-import * as msg from '/js/msg';
-import {API, isFrame, TDM, updateTDM} from '/js/msg-api';
+import {kApplyPort} from '@/js/consts';
+import * as msg from '@/js/msg';
+import {API, isFrame, TDM, updateTDM} from '@/js/msg-api';
 import * as styleInjector from './style-injector';
 import {FF, isXml, own, ownId} from './style-injector';
 

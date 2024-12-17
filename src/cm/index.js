@@ -1,8 +1,8 @@
-import {$} from '/js/dom';
-import {template} from '/js/localization';
-import * as prefs from '/js/prefs';
-import {WINDOWS} from '/js/ua';
-import {deepMerge} from '/js/util';
+import {$} from '@/js/dom';
+import {template} from '@/js/localization';
+import * as prefs from '@/js/prefs';
+import {WINDOWS} from '@/js/ua';
+import {deepMerge} from '@/js/util';
 import CodeMirror from 'codemirror';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/addon/comment/comment';
@@ -32,7 +32,7 @@ import 'codemirror/keymap/sublime';
 import 'codemirror/keymap/vim';
 import 'codemirror/mode/css/css';
 import 'codemirror/mode/stylus/stylus';
-import '/vendor-overwrites/codemirror-addon/match-highlighter.js';
+import '@/vendor-overwrites/codemirror-addon/match-highlighter.js';
 import {THEME_KEY} from './themes';
 import './index.css';
 

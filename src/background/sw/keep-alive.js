@@ -1,4 +1,4 @@
-import * as prefs from '/js/prefs';
+import * as prefs from '@/js/prefs';
 import {bgBusy} from '../common';
 
 /** @type {?Promise[]} */

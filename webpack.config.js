@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs');
+const childProcess = require('child_process');
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -14,11 +15,12 @@ const RawEnvPlugin = require('./tools/raw-env-plugin');
 const WebpackPatchBootstrapPlugin = require('./tools/webpack-patch-bootstrap');
 const {escapeForRe, getManifestOvrName, stripSourceMap, MANIFEST, ROOT} = require('./tools/util');
 
+const GITHUB_ACTIONS = process.env.GITHUB_ACTIONS;
 const NODE_ENV = process.env.NODE_ENV;
 const [TARGET, ZIP] = NODE_ENV?.split(':') || [''];
 const [BUILD, FLAVOR] = TARGET.split('-');
 const DEV = BUILD === 'DEV' || process.env.npm_lifecycle_event?.startsWith('watch');
-const FS_CACHE = !DEV;
+const FS_CACHE = !DEV && !GITHUB_ACTIONS;
 const SRC = ROOT + 'src/';
 const DST = ROOT + 'dist/';
 const CSS = 'css/';
@@ -184,7 +186,7 @@ const getBaseConfig = () => ({
   },
   resolve: {
     alias: {
-      '/': SRC,
+      '@': SRC,
     },
     fallback: {
       'fs': SHIM + 'null.js',
@@ -278,7 +280,7 @@ function makeLibrary(entry, name, extras) {
 
 function makeContentScript(name) {
   return mergeCfg(OUTPUT_MODULE, mergeCfg({
-    entry: '/content/' + name,
+    entry: '@/content/' + name,
     output: {path: DST + JS},
     plugins: addWrapper(
       `window["${name}"]!==1 && (() => {const global = this; global["${name}"] = 1;`,
@@ -297,14 +299,18 @@ function makeManifest(files) {
     else if (old && typeof old === 'object') Object.assign(old, val);
     else base[key] = val;
   }
-  base.version = (MV3 ? 3 : 2) + base.version.slice(1);
+  const ver = base.version = (MV3 ? 3 : 2) + base.version.slice(1);
+  if (GITHUB_ACTIONS) {
+    delete base.key;
+    childProcess.execSync(`echo "_VER=${ver}" >> $GITHUB_ENV`);
+  }
   return JSON.stringify(base, null, 2);
 }
 
 module.exports = [
 
   mergeCfg({
-    entry: Object.fromEntries(PAGES.map(p => [p, `/${p}`])),
+    entry: Object.fromEntries(PAGES.map(p => [p, `@/${p}`])),
     output: {
       filename: JS + '[name].js',
       chunkFilename: getChunkFileName.bind([JS, '.js']),
@@ -397,7 +403,7 @@ module.exports = [
 
   ...!MV3 ? [] : [
     mergeCfg({
-      entry: `/${PAGE_BG}`,
+      entry: `@/${PAGE_BG}`,
       plugins: [
         new RawEnvPlugin({
           ENTRY: 'sw',
@@ -410,22 +416,22 @@ module.exports = [
       resolve: RESOLVE_VIA_SHIM,
     }),
     mergeCfg(OUTPUT_MODULE, mergeCfg({
-      entry: '/js/' + GET_CLIENT_DATA,
+      entry: '@/js/' + GET_CLIENT_DATA,
       output: {path: DST + JS},
     })),
     makeLibrary('db-to-cloud/lib/drive/webdav', 'webdav'),
   ],
 
   makeContentScript('apply.js'),
-  makeLibrary('/js/worker.js', undefined, {
+  makeLibrary('@/js/worker.js', undefined, {
     plugins: [new RawEnvPlugin({ENTRY: 'worker'})],
   }),
-  makeLibrary('/js/color/color-converter.js', '*:colorConverter'),
-  makeLibrary('/js/csslint/csslint.js', 'CSSLint', {externals: {'./parserlib': 'parserlib'}}),
-  makeLibrary('/js/csslint/parserlib.js', 'parserlib'),
-  makeLibrary('/js/meta-parser.js', 'metaParser'),
-  makeLibrary('/js/moz-parser.js', 'extractSections'),
-  makeLibrary('/js/usercss-compiler.js', 'compileUsercss'),
+  makeLibrary('@/js/color/color-converter.js', '*:colorConverter'),
+  makeLibrary('@/js/csslint/csslint.js', 'CSSLint', {externals: {'./parserlib': 'parserlib'}}),
+  makeLibrary('@/js/csslint/parserlib.js', 'parserlib'),
+  makeLibrary('@/js/meta-parser.js', 'metaParser'),
+  makeLibrary('@/js/moz-parser.js', 'extractSections'),
+  makeLibrary('@/js/usercss-compiler.js', 'compileUsercss'),
 ].filter(Boolean);
 
 module.exports.parallelism = 2;

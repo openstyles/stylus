@@ -1,6 +1,6 @@
-import {API} from '/js/msg';
-import {fetchText} from '/js/util';
-import {CHROME} from '/js/ua';
+import {API} from '@/js/msg';
+import {fetchText} from '@/js/util';
+import {CHROME} from '@/js/ua';
 
 export default function DirectDownloader(url) {
   const opts = {

@@ -1,7 +1,7 @@
-import '/js/dom-init';
-import {$, $$} from '/js/dom';
-import {tBody, template} from '/js/localization';
-import * as prefs from '/js/prefs';
+import '@/js/dom-init';
+import {$, $$} from '@/js/dom';
+import {tBody, template} from '@/js/localization';
+import * as prefs from '@/js/prefs';
 import CodeMirror from 'codemirror';
 import CompactHeader from './compact-header';
 import editor from './editor';

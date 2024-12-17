@@ -1,8 +1,8 @@
-import {kDisableAll} from '/js/consts';
-import {subscribe, __values as __prefs} from '/js/prefs';
-import {CHROME, FIREFOX, MOBILE, VIVALDI} from '/js/ua';
-import {debounce} from '/js/util';
-import {ignoreChromeError, MF_ICON_EXT, MF_ICON_PATH} from '/js/util-webext';
+import {kDisableAll} from '@/js/consts';
+import {subscribe, __values as __prefs} from '@/js/prefs';
+import {CHROME, FIREFOX, MOBILE, VIVALDI} from '@/js/ua';
+import {debounce} from '@/js/util';
+import {ignoreChromeError, MF_ICON_EXT, MF_ICON_PATH} from '@/js/util-webext';
 import * as colorScheme from './color-scheme';
 import {bgBusy, bgInit} from './common';
 import {removePreloadedStyles} from './style-via-webrequest';

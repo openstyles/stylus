@@ -1,4 +1,4 @@
-import {deepEqual} from '/js/util';
+import {deepEqual} from '@/js/util';
 import CodeMirror from 'codemirror';
 import {trimCommentLabel} from './util';
 

@@ -1,6 +1,6 @@
-import {kAppUrlencoded, kContentType} from '/js/consts';
-import {uso, usoJson} from '/js/urls';
-import {tryJSONparse} from '/js/util';
+import {kAppUrlencoded, kContentType} from '@/js/consts';
+import {uso, usoJson} from '@/js/urls';
+import {tryJSONparse} from '@/js/util';
 
 /** @type {Record<string, {req: Promise, ports: Set<chrome.runtime.Port>}>} */
 const jobs = {};

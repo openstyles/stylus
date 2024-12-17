@@ -1,7 +1,7 @@
-import '/js/browser';
-import {API} from '/js/msg';
-import * as prefs from '/js/prefs';
-import {isEmptyObj} from '/js/util';
+import '@/js/browser';
+import {API} from '@/js/msg';
+import * as prefs from '@/js/prefs';
+import {isEmptyObj} from '@/js/util';
 import {webNavigation} from './navigation-manager';
 import {getSectionsByUrl, order} from './style-manager';
 

@@ -1,4 +1,4 @@
-import {isCssDarkScheme} from '/js/util';
+import {isCssDarkScheme} from '@/js/util';
 
 export const COMMANDS = __.ENTRY !== 'sw' && (
   __.ENTRY === 'worker' || !__.MV3 ? {

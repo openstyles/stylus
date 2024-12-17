@@ -1,8 +1,8 @@
-import {CodeMirror, loadCmTheme, THEME_KEY} from '/cm';
-import {rerouteHotkeys} from '/edit/util';
-import {CHROME} from '/js/ua';
+import {CodeMirror, loadCmTheme, THEME_KEY} from '@/cm';
+import {rerouteHotkeys} from '@/edit/util';
+import {CHROME} from '@/js/ua';
 import editor from './editor';
-import * as prefs from '/js/prefs';
+import * as prefs from '@/js/prefs';
 
 /*
   All cm instances created by this module are collected so we can broadcast prefs

@@ -1,10 +1,10 @@
-import '/js/browser';
-import {kDisableAll} from '/js/consts';
-import {API} from '/js/msg';
-import * as prefs from '/js/prefs';
-import {CHROME} from '/js/ua';
-import {ownRoot} from '/js/urls';
-import {ignoreChromeError} from '/js/util-webext';
+import '@/js/browser';
+import {kDisableAll} from '@/js/consts';
+import {API} from '@/js/msg';
+import * as prefs from '@/js/prefs';
+import {CHROME} from '@/js/ua';
+import {ownRoot} from '@/js/urls';
+import {ignoreChromeError} from '@/js/util-webext';
 import {sendTab} from './broadcast';
 
 const kStyleManager = 'styleManager';

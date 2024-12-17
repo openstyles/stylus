@@ -1,10 +1,10 @@
-import '/js/browser';
-import {$create} from '/js/dom';
-import {t, template} from '/js/localization';
-import {API} from '/js/msg';
-import * as URLS from '/js/urls';
-import {tryRegExp} from '/js/util';
-import {MF_ICON} from '/js/util-webext';
+import '@/js/browser';
+import {$create} from '@/js/dom';
+import {t, template} from '@/js/localization';
+import {API} from '@/js/msg';
+import * as URLS from '@/js/urls';
+import {tryRegExp} from '@/js/util';
+import {MF_ICON} from '@/js/util-webext';
 import editor from './editor';
 import {helpPopup} from './util';
 import './regexp-tester.css';

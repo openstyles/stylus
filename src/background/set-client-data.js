@@ -1,7 +1,7 @@
-import {kPopup} from '/js/consts';
-import {API} from '/js/msg';
-import * as prefs from '/js/prefs';
-import {FIREFOX} from '/js/ua';
+import {kPopup} from '@/js/consts';
+import {API} from '@/js/msg';
+import * as prefs from '@/js/prefs';
+import {FIREFOX} from '@/js/ua';
 import {isDark, setSystemDark} from './color-scheme';
 import {bgBusy, isVivaldi} from './common';
 import makePopupData from './popup-data';

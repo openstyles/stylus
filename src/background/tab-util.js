@@ -1,8 +1,8 @@
-import '/js/browser';
-import {API} from '/js/msg';
-import * as prefs from '/js/prefs';
-import {CHROME, FIREFOX} from '/js/ua';
-import {browserWindows, getActiveTab} from '/js/util-webext';
+import '@/js/browser';
+import {API} from '@/js/msg';
+import * as prefs from '@/js/prefs';
+import {CHROME, FIREFOX} from '@/js/ua';
+import {browserWindows, getActiveTab} from '@/js/util-webext';
 import {sendTab} from './broadcast';
 
 // FF57+ supports openerTabId, but not in Android

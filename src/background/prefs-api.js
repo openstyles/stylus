@@ -1,6 +1,6 @@
-import * as chromeSync from '/js/chrome-sync';
-import * as prefs from '/js/prefs';
-import {debounce, deepEqual, deepMerge, isObject} from '/js/util';
+import * as chromeSync from '@/js/chrome-sync';
+import * as prefs from '@/js/prefs';
+import {debounce, deepEqual, deepMerge, isObject} from '@/js/util';
 import {bgBusy, bgPreInit} from './common';
 
 const nondefaults = {};

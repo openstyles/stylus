@@ -1,5 +1,5 @@
-import * as prefs from '/js/prefs';
-import {debounce, isCssDarkScheme} from '/js/util';
+import * as prefs from '@/js/prefs';
+import {debounce, isCssDarkScheme} from '@/js/util';
 import {bgBusy, bgPreInit, stateDB} from './common';
 
 const changeListeners = new Set();

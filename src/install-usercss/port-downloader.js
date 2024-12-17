@@ -1,4 +1,4 @@
-import {closeCurrentTab} from '/js/util-webext';
+import {closeCurrentTab} from '@/js/util-webext';
 
 export default function PortDownloader(url, tabId) {
   const resolvers = new Map();

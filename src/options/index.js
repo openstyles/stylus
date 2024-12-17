@@ -1,15 +1,15 @@
-import '/js/dom-init';
-import '/js/browser';
-import {$, $$, $create} from '/js/dom';
-import {getEventKeyName, messageBox, setInputValue, setupLivePrefs} from '/js/dom-util';
-import {t, tBody, template} from '/js/localization';
-import {API} from '/js/msg';
-import * as prefs from '/js/prefs';
-import {FIREFOX, MAC, OPERA} from '/js/ua';
-import {clamp} from '/js/util';
-import {CHROME_POPUP_BORDER_BUG, ignoreChromeError} from '/js/util-webext';
+import '@/js/dom-init';
+import '@/js/browser';
+import {$, $$, $create} from '@/js/dom';
+import {getEventKeyName, messageBox, setInputValue, setupLivePrefs} from '@/js/dom-util';
+import {t, tBody, template} from '@/js/localization';
+import {API} from '@/js/msg';
+import * as prefs from '@/js/prefs';
+import {FIREFOX, MAC, OPERA} from '@/js/ua';
+import {clamp} from '@/js/util';
+import {CHROME_POPUP_BORDER_BUG, ignoreChromeError} from '@/js/util-webext';
 import './options-sync';
-import '/css/onoffswitch.css';
+import '@/css/onoffswitch.css';
 import './options.css';
 
 tBody();

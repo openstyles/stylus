@@ -1,9 +1,9 @@
-import '/js/browser';
-import {kAboutBlank} from '/js/consts';
-import {CHROME, FIREFOX} from '/js/ua';
-import {chromeProtectsNTP} from '/js/urls';
-import {deepEqual} from '/js/util';
-import {ignoreChromeError, MF} from '/js/util-webext';
+import '@/js/browser';
+import {kAboutBlank} from '@/js/consts';
+import {CHROME, FIREFOX} from '@/js/ua';
+import {chromeProtectsNTP} from '@/js/urls';
+import {deepEqual} from '@/js/util';
+import {ignoreChromeError, MF} from '@/js/util-webext';
 import {pingTab, sendTab} from './broadcast';
 import * as tabMan from './tab-manager';
 

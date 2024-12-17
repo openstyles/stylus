@@ -1,10 +1,10 @@
-import {kAppUrlencoded, kContentType} from '/js/consts';
-import {DNR_ID_IDENTITY, updateDynamicRules} from '/js/dnr';
-import {chromeLocal} from '/js/storage-util';
-import {FIREFOX} from '/js/ua';
-import * as URLS from '/js/urls';
-import {clamp, getHost} from '/js/util';
-import {browserWindows} from '/js/util-webext';
+import {kAppUrlencoded, kContentType} from '@/js/consts';
+import {DNR_ID_IDENTITY, updateDynamicRules} from '@/js/dnr';
+import {chromeLocal} from '@/js/storage-util';
+import {FIREFOX} from '@/js/ua';
+import * as URLS from '@/js/urls';
+import {clamp, getHost} from '@/js/util';
+import {browserWindows} from '@/js/util-webext';
 import launchWebAuthFlow from 'webext-launch-web-auth-flow';
 import {isVivaldi} from './common';
 

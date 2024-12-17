@@ -1,5 +1,5 @@
-import {$create} from '/js/dom';
-import * as prefs from '/js/prefs';
+import {$create} from '@/js/dom';
+import * as prefs from '@/js/prefs';
 
 /** @type {{ [name: string]: string }} */
 export const THEMES = __.THEMES;

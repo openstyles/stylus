@@ -11,8 +11,8 @@ import {getCssMediaRuleByName} from './dom-util';
 import {onExtension} from './msg';
 import {clientData} from './prefs';
 import {MF_ICON_EXT, MF_ICON_PATH} from './util-webext';
-import '/css/global.css';
-import '/css/global-dark.css';
+import '@/css/global.css';
+import '@/css/global-dark.css';
 
 export const onDarkChanged = new Set();
 export const MEDIA_ON = 'screen';

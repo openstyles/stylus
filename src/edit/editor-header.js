@@ -1,9 +1,9 @@
-import {CodeMirror, extraKeys} from '/cm';
-import {$, $$} from '/js/dom';
-import {setInputValue, setupLivePrefs} from '/js/dom-util';
-import {t} from '/js/localization';
-import * as prefs from '/js/prefs';
-import {sleep} from '/js/util';
+import {CodeMirror, extraKeys} from '@/cm';
+import {$, $$} from '@/js/dom';
+import {setInputValue, setupLivePrefs} from '@/js/dom-util';
+import {t} from '@/js/localization';
+import * as prefs from '@/js/prefs';
+import {sleep} from '@/js/util';
 import {initBeautifyButton} from './beautify';
 import editor from './editor';
 

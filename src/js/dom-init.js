@@ -5,7 +5,7 @@ import {FIREFOX, MOBILE, OPERA, VIVALDI, WINDOWS} from './ua';
 import './msg-init';
 import './themer';
 import './util-webext';
-import '/content/apply'; // must run after msg (swaps `API`) and util-webext (exposes _deepCopy)
+import '@/content/apply'; // must run after msg (swaps `API`) and util-webext (exposes _deepCopy)
 
 prefs.subscribe('disableAll', (_, val) => {
   $.rootCL.toggle('all-disabled', val);

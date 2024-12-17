@@ -1,4 +1,4 @@
-import {chromeLocal} from '/js/storage-util';
+import {chromeLocal} from '@/js/storage-util';
 
 export default function ChromeStorageDB(PREFIX) {
   let INC;

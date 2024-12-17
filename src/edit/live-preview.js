@@ -1,7 +1,7 @@
-import {UCD} from '/js/consts';
-import {$} from '/js/dom';
-import {API} from '/js/msg';
-import * as prefs from '/js/prefs';
+import {UCD} from '@/js/consts';
+import {$} from '@/js/dom';
+import {API} from '@/js/msg';
+import * as prefs from '@/js/prefs';
 import editor from './editor';
 
 const ID = 'editor.livePreview';

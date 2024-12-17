@@ -1,5 +1,5 @@
-import {$} from '/js/dom';
-import {template} from '/js/localization';
+import {$} from '@/js/dom';
+import {template} from '@/js/localization';
 import * as newUI from './new-ui';
 
 export {newUI};

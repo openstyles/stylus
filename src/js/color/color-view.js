@@ -1,5 +1,5 @@
-import * as colorConverter from '/js/color/color-converter';
-import ColorPicker from '/js/color/color-picker';
+import * as colorConverter from '@/js/color/color-converter';
+import ColorPicker from '@/js/color/color-picker';
 import CodeMirror from 'codemirror';
 
 //region Constants

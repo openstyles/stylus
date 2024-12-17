@@ -1,14 +1,14 @@
-import {UCD} from '/js/consts';
-import {$, $create, $createLink, $remove} from '/js/dom';
-import {important, messageBox, setupLivePrefs} from '/js/dom-util';
-import {breakWord, t} from '/js/localization';
-import {API} from '/js/msg';
-import * as prefs from '/js/prefs';
-import {clamp, debounce, deepCopy, sleep} from '/js/util';
-import {MOBILE} from '/js/ua';
-import {installUsercss} from '/js/urls';
+import {UCD} from '@/js/consts';
+import {$, $create, $createLink, $remove} from '@/js/dom';
+import {important, messageBox, setupLivePrefs} from '@/js/dom-util';
+import {breakWord, t} from '@/js/localization';
+import {API} from '@/js/msg';
+import * as prefs from '@/js/prefs';
+import {clamp, debounce, deepCopy, sleep} from '@/js/util';
+import {MOBILE} from '@/js/ua';
+import {installUsercss} from '@/js/urls';
 import './config-dialog.css';
-import '/css/onoffswitch.css';
+import '@/css/onoffswitch.css';
 
 export default async function configDialog(style) {
   const AUTOSAVE_DELAY = 400;
@@ -26,7 +26,7 @@ export default async function configDialog(style) {
   const isInstaller = pathname === installUsercss;
   const isPopup = pathname === 'popup.html';
   const colorpicker = vars.some(v => v.type === 'color')
-    ? (await import('/js/color/color-picker')).default()
+    ? (await import('@/js/color/color-picker')).default()
     : null;
   const buttons = {};
 

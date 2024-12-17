@@ -1,9 +1,9 @@
-import '/js/browser';
-import {kAboutBlank, kPopup} from '/js/consts';
-import {API} from '/js/msg';
-import {CHROME, FIREFOX} from '/js/ua';
-import {chromeProtectsNTP, ownRoot, supported} from '/js/urls';
-import {getActiveTab} from '/js/util-webext';
+import '@/js/browser';
+import {kAboutBlank, kPopup} from '@/js/consts';
+import {API} from '@/js/msg';
+import {CHROME, FIREFOX} from '@/js/ua';
+import {chromeProtectsNTP, ownRoot, supported} from '@/js/urls';
+import {getActiveTab} from '@/js/util-webext';
 import {pingTab} from './broadcast';
 import reinjectContentScripts from './content-scripts';
 import * as tabMan from './tab-manager';

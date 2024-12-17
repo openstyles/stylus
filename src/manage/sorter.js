@@ -1,9 +1,9 @@
-import {UCD} from '/js/consts';
-import {$, $create, dom} from '/js/dom';
-import {messageBox} from '/js/dom-util';
-import {t} from '/js/localization';
-import {installed} from '/manage/util';
-import * as prefs from '/js/prefs';
+import {UCD} from '@/js/consts';
+import {$, $create, dom} from '@/js/dom';
+import {messageBox} from '@/js/dom-util';
+import {t} from '@/js/localization';
+import {installed} from '@/manage/util';
+import * as prefs from '@/js/prefs';
 
 const COL_MIN = 300; // same as options.html
 const COL_MAX = 9999; // same as options.html

@@ -1,11 +1,11 @@
-import {CodeMirror, extraKeys, THEME_KEY} from '/cm';
-import {$, $$, $create} from '/js/dom';
-import {getEventKeyName, messageBox, moveFocus} from '/js/dom-util';
-import {t, tHTML} from '/js/localization';
-import {createPortProxy} from '/js/port';
-import * as prefs from '/js/prefs';
-import {clipString} from '/js/util';
-import {workerPath} from '/js/urls';
+import {CodeMirror, extraKeys, THEME_KEY} from '@/cm';
+import {$, $$, $create} from '@/js/dom';
+import {getEventKeyName, messageBox, moveFocus} from '@/js/dom-util';
+import {t, tHTML} from '@/js/localization';
+import {createPortProxy} from '@/js/port';
+import * as prefs from '@/js/prefs';
+import {clipString} from '@/js/util';
+import {workerPath} from '@/js/urls';
 import editor from './editor';
 
 export const helpPopup = {

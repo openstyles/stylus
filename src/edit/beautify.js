@@ -1,8 +1,8 @@
-import {CodeMirror, extraKeys} from '/cm';
-import {$, $create} from '/js/dom';
-import {moveFocus} from '/js/dom-util';
-import {t} from '/js/localization';
-import * as prefs from '/js/prefs';
+import {CodeMirror, extraKeys} from '@/cm';
+import {$, $create} from '@/js/dom';
+import {moveFocus} from '@/js/dom-util';
+import {t} from '@/js/localization';
+import * as prefs from '@/js/prefs';
 import editor from './editor';
 import {createHotkeyInput, helpPopup} from './util';
 
@@ -32,7 +32,7 @@ prefs.subscribe('editor.beautify.hotkey', (_key, value) => {
  */
 async function beautify(scope, ui = true) {
   if (!cssBeautifyMod) {
-    cssBeautifyMod = (await import('/vendor-overwrites/beautify/beautify-css-mod')).default;
+    cssBeautifyMod = (await import('@/vendor-overwrites/beautify/beautify-css-mod')).default;
   }
   const tabs = prefs.get('editor.indentWithTabs');
   const options = Object.assign(prefs.defaults['editor.beautify'], prefs.get('editor.beautify'));

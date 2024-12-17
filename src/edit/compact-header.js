@@ -1,6 +1,6 @@
-import {$, $$, $create} from '/js/dom';
-import {important} from '/js/dom-util';
-import * as prefs from '/js/prefs';
+import {$, $$, $create} from '@/js/dom';
+import {important} from '@/js/dom-util';
+import * as prefs from '@/js/prefs';
 import editor from './editor';
 
 export default function CompactHeader() {

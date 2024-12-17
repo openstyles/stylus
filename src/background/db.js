@@ -1,8 +1,8 @@
-import {API} from '/js/msg';
-import {STORAGE_KEY} from '/js/prefs';
-import {chromeLocal} from '/js/storage-util';
-import {CHROME} from '/js/ua';
-import {deepCopy} from '/js/util';
+import {API} from '@/js/msg';
+import {STORAGE_KEY} from '@/js/prefs';
+import {chromeLocal} from '@/js/storage-util';
+import {CHROME} from '@/js/ua';
+import {deepCopy} from '@/js/util';
 import ChromeStorageDB from './db-chrome-storage';
 
 /*

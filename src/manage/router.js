@@ -1,6 +1,6 @@
-import {$} from '/js/dom';
-import {onMessage} from '/js/msg';
-import {deepEqual} from '/js/util';
+import {$} from '@/js/dom';
+import {onMessage} from '@/js/msg';
+import {deepEqual} from '@/js/util';
 
 const buffer = history.state?.buffer || [];
 const watchers = [];

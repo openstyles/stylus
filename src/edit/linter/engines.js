@@ -1,6 +1,6 @@
-import {getLZValue, LZ_KEY} from '/js/chrome-sync';
-import * as prefs from '/js/prefs';
-import {onStorageChanged} from '/js/util-webext';
+import {getLZValue, LZ_KEY} from '@/js/chrome-sync';
+import * as prefs from '@/js/prefs';
+import {onStorageChanged} from '@/js/util-webext';
 import * as linterMan from '.';
 import editor from '../editor';
 import {worker} from '../util';

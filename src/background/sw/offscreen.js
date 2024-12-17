@@ -1,5 +1,5 @@
-import {createPortProxy} from '/js/port';
-import {ownRoot} from '/js/urls';
+import {createPortProxy} from '@/js/port';
+import {ownRoot} from '@/js/urls';
 
 let creating;
 
