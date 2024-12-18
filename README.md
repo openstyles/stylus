@@ -4,6 +4,7 @@ Stylus is a fork of Stylish for Chrome, also compatible with Firefox as a WebExt
 
 ## Highlights
 
+* Lightweight content script (10kB) runs in about a millisecond so it doesn't slow down web pages
 * In addition to the userstyles.org site, styles with customizable parameters can also be installed from .user.css or .user.styl URLs (see [Usercss format wiki](https://github.com/openstyles/stylus/wiki/Usercss)).
 * Site styles can be discovered and previewed in the popup using inline search with screenshot thumbnails.
 * A backup feature which is compatible with other userstyles managers.
@@ -20,11 +21,23 @@ Stylus is a fork of Stylish for Chrome, also compatible with Firefox as a WebExt
 
 In Opera browser please use our extension from Chrome Web Store, see [the instruction](https://github.com/openstyles/stylus/wiki/Opera,-Outdated-Stylus).
 
+## Nightly test builds
+
+Downloading requires a github.com account.
+
+1. open https://github.com/openstyles/stylus/actions/workflows/ci.yml
+2. open an entry and download the build listed in `Artifacts` e.g. `stylus-chrome-mv3-3.0.7-fc0999b` is a ManifestV3 build for Chrome/Chromium 128 or newer, `fc0999b` is the commit hash.
+3. Install it as an unpacked extension in Chrome or as a temporary extension in Firefox.
+
+In Chrome, it runs in parallel to the existing Stylus extension from the web store if you have one, so you may want to disable it while testing. This is because the id is not pinned and is generated from the full directory path of the unpacked extension.
+
+In Firefox, it'll temporarily replace the existing Stylus extension. To restore the main extension, restart the browser.
+
 ## Screenshots
 
 Manager | Editor | Popup search | Popup config | Manager config | Options
 -|-|-|-|-|-
-![Style manager](https://user-images.githubusercontent.com/1310400/34453460-214eaa5c-ed67-11e7-843b-d8960b71db6e.png) | ![Style editor](https://user-images.githubusercontent.com/1310400/34459585-3932cd94-ee05-11e7-9a1b-679522dddfb3.png) | ![Popup inline search](https://user-images.githubusercontent.com/1310400/34453463-21a44368-ed67-11e7-93b2-e1c8f5aac868.png) | ![Popup config for usercss](https://user-images.githubusercontent.com/1310400/34453462-218a589a-ed67-11e7-9040-7d0469eeadc3.png) | ![Style manager config for usercss](https://user-images.githubusercontent.com/1310400/34453464-21bdaf9c-ed67-11e7-8517-62d2f02e1918.png) | ![Options](https://user-images.githubusercontent.com/1310400/34453461-216aee4c-ed67-11e7-92db-ea21c1da5826.png)
+![Style manager](.github/screenshots/manager.png) | ![Style editor](.github/screenshots/editor.png) | ![Popup inline search](.github/screenshots/popup-search.png) | ![Popup config for usercss](.github/screenshots/popup-config.png) | ![Style manager config for usercss](.github/screenshots/manager-config.png) | ![Options](.github/screenshots/options.png)
 
 ## Help
 
