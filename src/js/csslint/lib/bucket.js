@@ -43,7 +43,7 @@ export default class Bucket {
     if (!isOwn(this, c = c * 100 + len)) return false;
     if (len === 1) return true;
     const val = this[c];
-    const low = lowText || tok.lowText || (tok.lowText = tok.text.toLowerCase());
+    const low = lowText || (tok.lowText ??= tok.text.toLowerCase());
     return typeof val === 'string' ? val === low : val.includes(low);
   }
 }

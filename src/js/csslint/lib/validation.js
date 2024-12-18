@@ -46,12 +46,9 @@ class ValidationError extends Error {
 export function validateProperty(tok, value, stream, Props) {
   const pp = value.parts;
   const p0 = pp[0];
-  if (p0.type === 'ident' && buGlobalKeywords.has(p0)) {
-    return pp[1] && vtFailure(pp[1], true);
-  }
   Props = typeof Props === 'string' ? ScopedProperties[Props] : Props || Properties;
   let spec, res, vp;
-  let prop = tok.lowText || tok.text.toLowerCase();
+  let prop = tok.lowText ??= tok.text.toLowerCase();
   do {
     spec = Props[prop] || Props['<all>'] && (Props = Properties)[prop];
   } while (!spec && !res && (vp = tok.vendorPos) && (res = prop = prop.slice(vp)));
@@ -64,6 +61,9 @@ export function validateProperty(tok, value, stream, Props) {
   }
   if (value.isVar) {
     return;
+  }
+  if (p0.type === 'ident' && buGlobalKeywords.has(p0)) {
+    return pp[1] && vtFailure(pp[1], true);
   }
   const valueSrc = value.text.trim();
   let known = validationCache.get(prop);
