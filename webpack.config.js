@@ -150,9 +150,10 @@ const getBaseConfig = () => ({
       }, {
         loader: SHIM + 'cjs-to-esm-loader.js',
         test: [
+          '@eight04/read-write-lock',
           'db-to-cloud',
           'webext-launch-web-auth-flow',
-        ].map(npm => path.dirname(require.resolve(npm))),
+        ].map(npm => path.dirname(require.resolve(npm)) + path.sep),
       }, {
         loader: SHIM + 'jsonlint-loader.js',
         test: require.resolve('jsonlint'),
