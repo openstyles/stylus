@@ -13,6 +13,7 @@ import {getUrlOrigin} from '../tab-util';
 import * as usercssTemplate from '../usercss-template';
 import * as styleCache from './cache';
 import {buildCache, buildCacheForStyle} from './cache-builder';
+import './connector';
 import {fixKnownProblems, onBeforeSave, onSaved} from './fixer';
 import {urlMatchSection, urlMatchStyle} from './matcher';
 import {

@@ -78,7 +78,7 @@ Object.assign(API, /** @namespace API */ {
   //#region API for MV2
 
   setClientData,
-  /** @type {BackgroundWorker} */
+  /** @type {WorkerAPI} */
   worker: createPortProxy(workerPath),
 
   //#endregion

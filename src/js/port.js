@@ -33,9 +33,8 @@ const autoClose = __.ENTRY === 'worker' ||
 const SharedWorker = __.ENTRY !== 'sw' && global.SharedWorker;
 const kWorker = '_worker';
 const NOP = () => {};
-const navSW = navigator.serviceWorker;
 if (__.MV3 && __.ENTRY === true) {
-  navSW.onmessage = initRemotePort.bind(COMMANDS);
+  navigator.serviceWorker.onmessage = initRemotePort.bind(COMMANDS);
 }
 let lockingSelf;
 let numJobs = 0;

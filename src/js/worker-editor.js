@@ -3,7 +3,7 @@ import {importScriptsOnce} from './worker-util';
 
 let sugarss = null;
 
-/** @namespace EditorWorker */
+/** @namespace WorkerAPI */
 Object.assign(COMMANDS, {
 
   async csslint(code, config) {

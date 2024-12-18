@@ -50,7 +50,7 @@ global.onfetch = evt => {
 global.onmessage = initRemotePort.bind(_execute.bind(null, 'extension'));
 
 /** @type {CommandsAPI} */
-API.client = createPortProxy(async () => await getClient() || getOffscreenClient());
+API.client = createPortProxy(async () => await getClient() || getOffscreenClient(), {once: true});
 
 API.worker = createPortProxy(async () => {
   const client = await getClient();

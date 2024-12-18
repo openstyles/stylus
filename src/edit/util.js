@@ -106,7 +106,7 @@ export const rerouteHotkeys = {
   },
 };
 
-/** @type {EditorWorker} */
+/** @type {WorkerAPI} */
 export const worker = createPortProxy(workerPath);
 
 export function createHotkeyInput(prefId, {buttons = true, onDone}) {

@@ -1,7 +1,7 @@
 import {COMMANDS} from './port';
 import {importScriptsOnce} from './worker-util';
 
-/** @namespace BackgroundWorker */
+/** @namespace WorkerAPI */
 Object.assign(COMMANDS, {
   /* global compileUsercss */
   compileUsercss: [() => compileUsercss, 'usercss-compiler.js'],

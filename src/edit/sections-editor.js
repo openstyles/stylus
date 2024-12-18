@@ -10,7 +10,7 @@ import {clipString, RX_META, sleep} from '@/js/util';
 import editor from './editor';
 import * as linterMan from './linter';
 import EditorSection from './sections-editor-section';
-import {helpPopup, rerouteHotkeys, showCodeMirrorPopup} from './util';
+import {helpPopup, rerouteHotkeys, showCodeMirrorPopup, worker} from './util';
 
 export default function SectionsEditor() {
   const {style, /** @type DirtyReporter */dirty} = editor;
@@ -417,7 +417,7 @@ export default function SectionsEditor() {
               t('importPreprocessor'), 'pre-line',
               t('importPreprocessorTitle'))
         ) {
-          const {sections: newSections, errors} = await API.worker.parseMozFormat({code});
+          const {sections: newSections, errors} = await worker.parseMozFormat({code});
           if (!newSections.length || errors.some(e => !e.recoverable)) {
             await Promise.reject(errors);
           }
