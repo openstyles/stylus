@@ -65,7 +65,7 @@ export function createPortExec(getTarget, {lock, once} = {}) {
   async function exec(...args) {
     const ctx = [new Error().stack]; // saving it prior to a possible async jump for easier debugging
     const promise = new Promise((resolve, reject) => ctx.push(resolve, reject));
-    __.DEBUGTRACE(location.pathname, 'exec send', ...args);
+    __.DEBUGTRACE(location.pathname, 'exec send', args);
     if ((port ??= initPort(args)).then) port = await port;
     (once ? target : port).postMessage({args, id: ++lastId},
       once || (Array.isArray(this) ? this : undefined));
