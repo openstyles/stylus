@@ -24,6 +24,7 @@ import './style-via-webrequest';
 import * as syncMan from './sync-manager';
 import {openEditor, openManage, openURL, waitForTabUrl} from './tab-util';
 import * as updateMan from './update-manager';
+import {kUrlInstaller, toggleUrlInstaller} from './usercss-manager';
 import * as usercssMan from './usercss-manager';
 import * as usoApi from './uso-api';
 import * as uswApi from './usw-api';
@@ -105,6 +106,10 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
       DNR.getSessionRules().then(rules => updateSessionRules(undefined, getRuleIds(rules))),
     );
     refreshIconsWhenReady();
+    (async () => {
+      if (bgBusy) await bgBusy;
+      if (prefs.__values[kUrlInstaller]) toggleUrlInstaller(true);
+    })();
   }
 });
 

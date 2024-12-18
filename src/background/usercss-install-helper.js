@@ -11,9 +11,10 @@ import * as tabMan from './tab-manager';
 import {openURL} from './tab-util';
 
 const installCodeCache = {};
+export const kUrlInstaller = 'urlInstaller';
 
 bgBusy.then(() => {
-  prefs.subscribe('urlInstaller', toggle, true);
+  prefs.subscribe(kUrlInstaller, toggle, true);
 });
 
 export function getInstallCode(url) {
@@ -24,9 +25,13 @@ export function getInstallCode(url) {
   return code;
 }
 
-function toggle(key, val) {
+function toggle(key, val, isInit) {
   if (val) tabMan.onUrl.add(maybeInstall);
   else tabMan.onUrl.delete(maybeInstall);
+  if (!__.MV3 || !isInit) toggleUrlInstaller(val);
+}
+
+export function toggleUrlInstaller(val) {
   const urls = val ? [''] : [
     /* Known distribution sites where we ignore urlInstaller option, because
        they open .user.css URL only when the "Install" button is clicked.
@@ -69,7 +74,7 @@ function toggle(key, val) {
 }
 
 function clearInstallCode(url) {
-  return delete installCodeCache[url];
+  delete installCodeCache[url];
 }
 
 /** Ignoring .user.css response that is not a plain text but a web page.
