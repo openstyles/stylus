@@ -2,12 +2,12 @@ import {UCD} from '@/js/consts';
 import {API} from '@/js/msg-api';
 import * as URLS from '@/js/urls';
 import {isEmptyObj} from '@/js/util';
-import {makeRandomUUID} from './util';
+import {broadcastStyleUpdated, id2data, makeRandomUUID, storeInMap} from './util';
 
 const MISSING_PROPS = {
   name: style => `ID: ${style.id}`,
-  _id: () => makeRandomUUID(),
-  _rev: () => Date.now(),
+  _id: makeRandomUUID,
+  _rev: Date.now,
 };
 
 const hasVarsAndImport = ({code}) => code.startsWith(':root {\n  --') && /@import\s/i.test(code);
@@ -82,4 +82,39 @@ export function fixKnownProblems(style, initIndex, initArray) {
     return API.usercss.buildCode(style);
   }
   return res && style;
+}
+
+export function onBeforeSave(style) {
+  if (!style.name) {
+    throw new Error('Style name is empty');
+  }
+  if (!style._id) {
+    style._id = makeRandomUUID();
+  }
+  if (!style.id) {
+    delete style.id;
+  }
+  style._rev = Date.now();
+  fixKnownProblems(style);
+}
+
+/**
+ * @param {StyleObj} style
+ * @param {string|false} [reason] - false = no broadcast
+ * @param {number} [id]
+ * @returns {StyleObj}
+ */
+export function onSaved(style, reason, id = style.id) {
+  if (style.id == null) style.id = id;
+  const data = id2data(id);
+  if (!data) {
+    storeInMap(style);
+  } else {
+    data.style = style;
+  }
+  if (reason !== 'sync') {
+    API.sync.putDoc(style);
+  }
+  if (reason !== false) broadcastStyleUpdated(style, reason, !data);
+  return style;
 }

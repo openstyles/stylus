@@ -9,7 +9,8 @@ import {db} from './db';
 import {cloudDrive, dbToCloud} from './db-to-cloud-broker';
 import {overrideBadge} from './icon-manager';
 import * as styleMan from './style-manager';
-import {onSaved, getByUuid} from './style-manager/util';
+import {onSaved} from './style-manager/fixer';
+import {getByUuid} from './style-manager/util';
 import * as STATES from './sync-manager-states';
 import {getToken, revokeToken} from './token-manager';
 

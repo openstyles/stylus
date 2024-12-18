@@ -13,11 +13,11 @@ import {getUrlOrigin} from '../tab-util';
 import * as usercssTemplate from '../usercss-template';
 import * as styleCache from './cache';
 import {buildCache, buildCacheForStyle} from './cache-builder';
-import {fixKnownProblems} from './fixer';
+import {fixKnownProblems, onBeforeSave, onSaved} from './fixer';
 import {urlMatchSection, urlMatchStyle} from './matcher';
 import {
   broadcastStyleUpdated, calcRemoteId, dataMap, getById, getByUuid, id2data, iterStyles,
-  mergeWithMapped, onBeforeSave, onSaved, order, orderWrap, setOrderImpl, storeInMap,
+  mergeWithMapped, order, orderWrap, setOrderImpl, storeInMap,
 } from './util';
 
 bgInit.push(async () => {
