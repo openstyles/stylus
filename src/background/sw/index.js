@@ -17,7 +17,6 @@ const clientUrls = {};
 
 /** @param {ExtendableEvent} evt */
 global.oninstall = evt => {
-  skipWaiting();
   evt.addRoutes({
     condition: {urlPattern: `${ownRoot}*.html?clientData*`},
     source: 'fetch-event',
