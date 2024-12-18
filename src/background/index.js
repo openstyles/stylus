@@ -7,6 +7,7 @@ import {createPortProxy} from '@/js/port';
 import * as prefs from '@/js/prefs';
 import {CHROME, FIREFOX, MOBILE, WINDOWS} from '@/js/ua';
 import {workerPath} from '@/js/urls';
+import {sleep} from '@/js/util';
 import {broadcast, pingTab} from './broadcast';
 import './broadcast-injector-config';
 import initBrowserCommandsApi from './browser-cmd-hotkeys';
@@ -113,9 +114,15 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   }
 });
 
-if (__.MV3) {
-  chrome.runtime.onStartup.addListener(refreshIconsWhenReady);
-}
+chrome.runtime.onStartup.addListener(async () => {
+  await refreshIconsWhenReady();
+  await sleep(1000);
+  const minDate = Date.now() - 30 * 24 * 60e3;
+  for (const id of await API.drafts.getAllKeys()) {
+    const {date} = await API.drafts.get(id) || {};
+    if (date < minDate) API.drafts.delete(id);
+  }
+});
 
 onMessage(async (m, sender) => {
   if (m.method === 'invokeAPI') {

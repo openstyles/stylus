@@ -11,9 +11,8 @@ const makeId = () => editor.style.id || 'new';
 let delay;
 let port;
 
-connectPort();
 maybeRestore().then(() => {
-  editor.dirty.onChange(isDirty => isDirty ? connectPort() : port.disconnect());
+  editor.dirty.onChange(isDirty => isDirty ? !port && connectPort() : port?.disconnect());
   editor.dirty.onDataChange(isDirty => debounce(updateDraft, isDirty ? delay : 0));
   prefs.subscribe('editor.autosaveDraft', (key, val) => {
     delay = clamp(val * 1000 | 0, 1000, 2 ** 32 - 1);
@@ -52,12 +51,13 @@ async function maybeRestore() {
 
 function connectPort() {
   port = chrome.runtime.connect({name: 'draft:' + makeId()});
+  port.onDisconnect.addListener(() => (port = null));
 }
 
 function updateDraft(isDirty = editor.dirty.isDirty()) {
   if (!isDirty) return;
   API.drafts.put({
-    date: Date.now(),
+    date: new Date(),
     isUsercss: editor.isUsercss,
     style: editor.getValue(true),
     si: editor.makeScrollInfo(),
