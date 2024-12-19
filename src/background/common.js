@@ -47,7 +47,7 @@ bgBusy.then(() => {
 if (__.DEBUG) {
   bgPreInit.push = (...args) => {
     const {stack} = new Error();
-    for (const a of args) a._stack = stack;
+    for (const a of args) if (a && typeof a === 'object') a._stack = stack;
     return [].push.apply(bgPreInit, args);
   };
 }
