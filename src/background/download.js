@@ -54,6 +54,7 @@ async function doDownload(url, {
   headers,
   responseHeaders,
   port,
+  ...opts
 }, jobKey) {
   let abort, data, timer, usoVars;
   try {
@@ -71,8 +72,10 @@ async function doDownload(url, {
     /** @type {Response | XMLHttpRequest} */
     const resp = __.MV3
       ? await fetch(url, {
+        ...opts,
         body,
         method,
+        headers,
         signal: !timeout ? null : (
           abort = new AbortController(),
           timer = setTimeout(callAbort, timeout, abort, url),
