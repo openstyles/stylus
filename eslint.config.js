@@ -32,7 +32,7 @@ module.exports = [
       'arrow-spacing': [2, {before: true, after: true}],
       'block-scoped-var': [2],
       'brace-style': [2, '1tbs', {allowSingleLine: true}],
-      'camelcase': [2, {properties: 'never', ignoreGlobals: true}],
+      'camelcase': [2, {properties: 'never', ignoreGlobals: true, allow: ['^k_']}],
       'class-methods-use-this': [2],
       'comma-dangle': [2, {
         arrays: 'always-multiline',

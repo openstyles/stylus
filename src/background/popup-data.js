@@ -1,5 +1,5 @@
 import '@/js/browser';
-import {kAboutBlank, kPopup} from '@/js/consts';
+import {kAboutBlank, k_busy, kPopup} from '@/js/consts';
 import {API} from '@/js/msg';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {chromeProtectsNTP, ownRoot, supported} from '@/js/urls';
@@ -60,8 +60,8 @@ export default async function makePopupData() {
   frames[0].url = url;
   const urlSupported = supported(url);
   if (urlSupported) {
-    if (__.IS_BG && window._busy) {
-      await window._busy;
+    if (__.IS_BG && global[k_busy]) {
+      await global[k_busy];
     }
     let styles = [];
     for (const f of frames) {

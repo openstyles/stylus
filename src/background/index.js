@@ -1,6 +1,6 @@
 import './intro';
 import '@/js/browser';
-import {kInstall, kResolve} from '@/js/consts';
+import {k_msgExec, kInstall, kResolve} from '@/js/consts';
 import {DNR, getRuleIds, updateDynamicRules, updateSessionRules} from '@/js/dnr';
 import {_execute, API, onMessage} from '@/js/msg';
 import {createPortProxy} from '@/js/port';
@@ -148,7 +148,7 @@ onMessage(async (m, sender) => {
     initContextMenus();
   }
   if (!__.MV3) {
-    window._msgExec = _execute;
+    global[k_msgExec] = _execute;
     broadcast({method: 'backgroundReady'});
   }
 })();

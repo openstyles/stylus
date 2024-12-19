@@ -1,4 +1,5 @@
 import './browser';
+import {k_deepCopy} from './consts';
 import {CHROME} from './ua';
 import {ownRoot} from './urls';
 import {deepCopy} from './util';
@@ -35,4 +36,4 @@ export async function closeCurrentTab() {
   if (tab) return chrome.tabs.remove(tab.id);
 }
 
-global._deepCopy = deepCopy; // used by other views for cloning into this JS realm
+global[k_deepCopy] = deepCopy; // used by other views for cloning into this JS realm

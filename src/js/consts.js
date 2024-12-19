@@ -19,3 +19,6 @@ export const kResolve = 'resolve';
 export const kStateDB = 'state';
 export const kSubFrame = 'sub_frame';
 export const kUrl = 'url';
+export const k_busy = '_busy';
+export const k_deepCopy = '_deepCopy';
+export const k_msgExec = '_msgExec';

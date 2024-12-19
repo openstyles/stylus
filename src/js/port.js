@@ -154,7 +154,7 @@ export function initRemotePort(evt) {
   async function onMessage(portEvent) {
     const data = portEvent.data;
     const {args, id} = data.id ? data : JSON.parse(data);
-    if (__.DEBUG & 2) console.log('%c%s port onmessage', 'color:green', PATH, id, portEvent);
+    if (__.DEBUG & 2) console.log('%c%s port onmessage', 'color:green', PATH, id, data, portEvent);
     let res, err;
     numJobs++;
     if (timer) {

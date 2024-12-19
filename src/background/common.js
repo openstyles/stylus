@@ -1,4 +1,4 @@
-import {kResolve, kStateDB} from '@/js/consts';
+import {k_busy, kResolve, kStateDB} from '@/js/consts';
 import {CHROME} from '@/js/ua';
 import {promiseWithResolve} from '@/js/util';
 import {browserWindows} from '@/js/util-webext';
@@ -39,8 +39,11 @@ export let isVivaldi = !!(browserWindows && CHROME) && (async () => {
   return isVivaldi;
 })();
 
-window._busy = bgBusy;
-bgBusy.then(() => (bgBusy = null));
+global[k_busy] = bgBusy;
+bgBusy.then(() => {
+  bgBusy = null;
+  delete global[k_busy];
+});
 if (__.DEBUG) {
   bgPreInit.push = (...args) => {
     const {stack} = new Error();

@@ -1,5 +1,5 @@
 // WARNING: make sure util-webext.js runs first and sets _deepCopy
-import {kApplyPort} from '@/js/consts';
+import {k_deepCopy, kApplyPort} from '@/js/consts';
 import * as msg from '@/js/msg';
 import {API, isFrame, TDM, updateTDM} from '@/js/msg-api';
 import * as styleInjector from './style-injector';
@@ -10,7 +10,7 @@ const kPageShow = 'pageshow';
 const kBeforeUnload = 'beforeunload';
 const isUnstylable = FF && isXml;
 const clone = __.ENTRY
-  ? _deepCopy /* global _deepCopy */// will be used in extension context
+  ? global[k_deepCopy] // will be used in extension context
   : val => typeof val === 'object' && val ? JSON.parse(JSON.stringify(val)) : val;
 let isFrameSameOrigin = false;
 if (isFrame) {

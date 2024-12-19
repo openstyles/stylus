@@ -1,5 +1,6 @@
 /** Don't use this file in content script context! */
 import './browser';
+import {k_busy, k_deepCopy, k_msgExec} from '@/js/consts';
 import {apiHandler, apiSendProxy} from './msg-api';
 import {createPortExec, createPortProxy} from './port';
 import {swPath, workerPath} from './urls';
@@ -33,7 +34,7 @@ async function invokeAPI({name: path}, _thisObj, args) {
     if (__.MV3) {
       return swExec(msg, sender);
     } else {
-      const res = bg._msgExec('extension', bg._deepCopy(msg), bg._deepCopy(sender));
+      const res = bg[k_msgExec]('extension', bg[k_deepCopy](msg), bg[k_deepCopy](sender));
       return deepCopy(await res);
     }
   }
@@ -46,7 +47,7 @@ if (__.MV3) {
 } else if (!__.IS_BG) {
   apiHandler.apply = async (fn, thisObj, args) => {
     bg ??= await browser.runtime.getBackgroundPage().catch(() => {}) || false;
-    const exec = bg && (bg._msgExec || await bg._busy)
+    const exec = bg && (bg[k_msgExec] || await bg[k_busy])
       ? invokeAPI
       : apiSendProxy;
     return exec(fn, thisObj, args);
