@@ -40,3 +40,10 @@ export let isVivaldi = !!(browserWindows && CHROME) && (async () => {
 
 window._busy = bgBusy;
 bgBusy.then(() => (bgBusy = null));
+if (__.DEBUG) {
+  bgPreInit.push = (...args) => {
+    const {stack} = new Error();
+    for (const a of args) a._stack = stack;
+    return [].push.apply(bgPreInit, args);
+  };
+}
