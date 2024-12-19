@@ -6,7 +6,7 @@ import {CONNECTED, initRemotePort} from '@/js/port';
 import * as prefs from '@/js/prefs';
 import {ownRoot} from '@/js/urls';
 import {setSystemDark} from '../color-scheme';
-import {bgPreInit, clientDataJobs} from '../common';
+import {bgBusy, clientDataJobs} from '../common';
 import {cloudDrive} from '../db-to-cloud-broker';
 import setClientData from '../set-client-data';
 import offscreen from '../offscreen';
@@ -59,7 +59,7 @@ prefs.subscribe('styleViaXhr', (key, val) => {
   }
 }, true);
 
-bgPreInit.push(offscreen.isDark().then(setSystemDark));
+bgBusy.then(() => offscreen.isDark().then(setSystemDark));
 
 /**
  * This ensures that SW starts even before our page makes a clientData request inside.

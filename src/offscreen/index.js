@@ -1,11 +1,14 @@
 import {API} from '@/js/msg-api';
 import {COMMANDS} from '@/js/port';
-import {fetchWebDAV, mapObj} from '@/js/util';
+import {fetchWebDAV, isCssDarkScheme, mapObj} from '@/js/util';
 
 let webdavInstance;
 
 /** @namespace OffscreenAPI */
 Object.assign(COMMANDS, {
+  isDark: isCssDarkScheme,
+  createObjectURL: URL.createObjectURL,
+  revokeObjectURL: URL.revokeObjectURL,
   webdav: (cmd, ...args) => webdavInstance[cmd](...args),
   webdavInit: async cfg => {
     if (!webdavInstance) await loadScript(__.JS + 'webdav.js');

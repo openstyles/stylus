@@ -1,46 +1,47 @@
-import {isCssDarkScheme} from '@/js/util';
-
 export const COMMANDS = __.ENTRY !== 'sw' && (
   __.ENTRY === 'worker' || !__.MV3 ? {
     __proto__: null,
   } : /** @namespace CommandsAPI */ {
     __proto__: null,
-    isDark: isCssDarkScheme,
-    createObjectURL: URL.createObjectURL,
-    revokeObjectURL: URL.revokeObjectURL,
     /** @this {RemotePortEvent} */
     getWorkerPort(url) {
       const p = getWorkerPort(url);
       this._transfer = [p];
       return p;
     },
-    keepAlive(val) {
-      if (val && timer) {
-        timer = clearTimeout(timer);
-      } else if (!val && !timer && !numJobs) {
-        timer = setTimeout(close, Math.max(0, lastBusy + PORT_TIMEOUT - performance.now()));
-      }
-      keepAlive = val;
-    },
   }
 );
 export const CONNECTED = Symbol('connected');
 const PATH = location.pathname;
-const PORT_TIMEOUT = 5 * 60e3; // TODO: expose as a configurable option?
+const TTL = __.ENTRY === 'worker' ? 5 * 60e3 : 30e3; // TODO: add a configurable option?
 const navLocks = navigator.locks;
-const autoClose = __.ENTRY === 'worker' ||
-  __.ENTRY === true && PATH === `/${__.PAGE_OFFSCREEN}.html`;
+const willAutoClose = __.ENTRY === 'worker' ||
+  __.MV3 && __.ENTRY === true && PATH === `/${__.PAGE_OFFSCREEN}.html`;
 // SW can't nest workers, https://crbug.com/40772041
 const SharedWorker = __.ENTRY !== 'sw' && global.SharedWorker;
 const kWorker = '_worker';
 const NOP = () => {};
 if (__.MV3 && __.ENTRY === true) {
   navigator.serviceWorker.onmessage = initRemotePort.bind(COMMANDS);
+  if (willAutoClose) {
+    Object.assign(COMMANDS, /** @namespace CommandsAPI */ {
+      keepAlive(val) {
+        if (!val) {
+          autoClose();
+        } else if (!bgPort) {
+          if (timer) timer = clearTimeout(timer);
+          bgPort = chrome.runtime.connect({name: __.PAGE_OFFSCREEN});
+          bgPort.onDisconnect.addListener(() => autoClose());
+        }
+      },
+    });
+  }
 }
 let lockingSelf;
 let numJobs = 0;
 let lastBusy = 0;
-let keepAlive;
+/** @type {chrome.runtime.Port} */
+let bgPort;
 let timer;
 
 export function createPortProxy(getTarget, opts) {
@@ -152,16 +153,14 @@ export function initRemotePort(evt) {
   port.onmessage = onMessage;
   port.onmessageerror = onMessageError;
   if (once) onMessage(evt);
+  /** @param {RemotePortEvent} portEvent */
   async function onMessage(portEvent) {
     const data = portEvent.data;
     const {args, id} = data.id ? data : JSON.parse(data);
     if (__.DEBUG & 2) console.log('%c%s port onmessage', 'color:green', PATH, id, data, portEvent);
     let res, err;
     numJobs++;
-    if (timer) {
-      clearTimeout(timer);
-      timer = 0;
-    }
+    if (timer) timer = clearTimeout(timer);
     try {
       const fn = typeof exec === 'function' ? exec : exec[args.shift()];
       res = fn.apply(portEvent, args);
@@ -173,12 +172,20 @@ export function initRemotePort(evt) {
       // TODO: find which props are actually used (err may contain noncloneable Response)
     }
     if (__.DEBUG & 2) console.log('%c%s port response', 'color:green', PATH, id, {res, err});
-    port.postMessage({id, res, err},
-      (/**@type{RemotePortEvent}*/portEvent)._transfer);
-    if (!--numJobs && autoClose && !timer && !keepAlive) {
-      timer = setTimeout(close, PORT_TIMEOUT);
+    port.postMessage({id, res, err}, portEvent._transfer);
+    if (!--numJobs && willAutoClose && !bgPort) {
+      autoClose(TTL);
     }
     lastBusy = performance.now();
+  }
+}
+
+function autoClose(delay) {
+  if (!delay && bgPort && __.MV3 && __.ENTRY === true) {
+    bgPort = bgPort.disconnect();
+  }
+  if (!bgPort && !numJobs && !timer) {
+    timer = setTimeout(close, delay || Math.max(0, lastBusy + TTL - performance.now()));
   }
 }
 

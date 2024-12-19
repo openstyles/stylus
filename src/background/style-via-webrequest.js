@@ -6,6 +6,7 @@ import {CHROME, FIREFOX} from '@/js/ua';
 import {actionPopupUrl, ownRoot} from '@/js/urls';
 import {deepEqual, isEmptyObj} from '@/js/util';
 import {ignoreChromeError, ownId, toggleListener} from '@/js/util-webext';
+import {setSystemDark} from './color-scheme';
 import {bgBusy, bgPreInit, stateDB} from './common';
 import {webNavigation} from './navigation-manager';
 import offscreen from './offscreen';
@@ -145,6 +146,7 @@ async function prepareStyles(req) {
     bgPreInit.push(
       styleCache.loadOne(url),
       frameId ? tabMan.load(tabId) : undefined,
+      offscreen.isDark().then(setSystemDark),
     );
     const all = Promise.all(bgPreInit);
     if (lock) bgPreInit.push(lock); // keeps bgBusy from resolving until we're done here
