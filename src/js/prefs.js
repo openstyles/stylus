@@ -158,6 +158,7 @@ const defaults = {
 const warnUnknown = console.warn.bind(console, 'Unknown preference "%s"');
 /** @type {PrefsValues} */
 const values = deepCopy(defaults);
+/** @type {Record<string, Set<function>>} */
 const onChange = {};
 
 export const STORAGE_KEY = 'settings';
@@ -185,8 +186,7 @@ export let set = (key, val, isSynced) => {
   }
   if (val === old || type === 'object' && deepEqual(val, old)) return;
   values[key] = val;
-  const fns = onChange[key];
-  if (fns) for (const fn of fns) fn(key, val);
+  if (!global._busy || !__.IS_BG) onChange[key]?.forEach(fn => fn(key, val));
   if (!isSynced && !__.IS_BG) API.prefs.set(key, val);
   /* browser.storage is slow and can randomly lose values if the tab was closed immediately,
    so we're sending the value to the background script which will save it to the storage;
