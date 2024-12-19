@@ -144,8 +144,8 @@ async function prepareStyles(req) {
     [cached, req.tab] = (await all).slice(bgPreInitLen);
     __.DEBUGLOG('prepareStyles cache', key, cached);
   }
-  if (__.MV3 && !cached && bgBusy) {
-    if (lock) unlock();
+  if (!cached && bgBusy) {
+    if (lock) lock = unlock(); // set to undefined
     await bgBusy;
   }
   const oldData = toSend[key];
@@ -162,7 +162,7 @@ async function prepareStyles(req) {
 }
 
 /** @returns {?} falsy = bgPreInit is not locked */
-async function prepareStylesMV3(tabId, frameId, url, data, key, payload, unlockPreInit) {
+async function prepareStylesMV3(tabId, frameId, url, data, key, payload, unlock) {
   let blobId;
   for (const k in toSend) {
     const val = toSend[k];
@@ -174,9 +174,8 @@ async function prepareStylesMV3(tabId, frameId, url, data, key, payload, unlockP
     }
   }
   if (!blobId) {
-    if (__.MV3 && unlockPreInit && clientUrls[url]) {
-      unlockPreInit();
-      unlockPreInit = null;
+    if (__.MV3 && unlock && clientUrls[url]) {
+      unlock = unlock(); // set to undefined
     }
     blobId = (await API.client.createObjectURL(makeBlob(payload)))
       .slice(BLOB_URL_PREFIX.length);
@@ -204,7 +203,7 @@ async function prepareStylesMV3(tabId, frameId, url, data, key, payload, unlockP
       responseHeaders: [{header: kSetCookie, value: cookie, operation: 'append'}],
     },
   }]);
-  return unlockPreInit;
+  return unlock;
 }
 
 function injectData(req) {
