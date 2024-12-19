@@ -4,15 +4,13 @@ import {kMainFrame, kSubFrame} from '@/js/consts';
 import {_execute, API} from '@/js/msg';
 import {CONNECTED, createPortProxy, initRemotePort} from '@/js/port';
 import * as prefs from '@/js/prefs';
-import {ownRoot, workerPath} from '@/js/urls';
+import {clientUrls, ownRoot, workerPath} from '@/js/urls';
 import {setSystemDark} from '../color-scheme';
-import {bgBusy} from '../common';
+import {bgBusy, bgPreInit} from '../common';
 import {cloudDrive} from '../db-to-cloud-broker';
 import setClientData from '../set-client-data';
 import offscreen, {getOffscreenClient, getWindowClients} from './offscreen';
 import '..';
-
-const clientUrls = {};
 
 /** @param {ExtendableEvent} evt */
 global.oninstall = evt => {
@@ -85,6 +83,7 @@ chrome.webRequest.onBeforeRequest.addListener(req => {
 });
 
 async function getClient() {
+  if (bgBusy) await Promise.all(bgPreInit);
   for (const client of await getWindowClients()) {
     if (!clientUrls[client.url]) {
       return client;

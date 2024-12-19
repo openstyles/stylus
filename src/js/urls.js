@@ -9,6 +9,7 @@ export const swPath = __.MV3 && `/${__.PAGE_BG}.js`;
 export const favicon = host => `https://icons.duckduckgo.com/ip3/${host}.ico`;
 /** Chrome 61.0.3161+ doesn't run content scripts on NTP https://crrev.com/2978953002/ */
 export const chromeProtectsNTP = __.MV3 || CHROME >= 61;
+export const clientUrls = {};
 export const rxGF = /^(https:\/\/)(?:update\.)?((?:greasy|sleazy)fork\.org\/scripts\/)(\d+)[^/]*\/code\/[^/]*\.user\.css$|$/;
 
 export const uso = 'https://userstyles.org/';

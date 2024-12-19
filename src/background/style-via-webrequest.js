@@ -3,7 +3,7 @@ import {updateSessionRules} from '@/js/dnr';
 import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {CHROME, FIREFOX} from '@/js/ua';
-import {actionPopupUrl, ownRoot} from '@/js/urls';
+import {actionPopupUrl, clientUrls, ownRoot} from '@/js/urls';
 import {deepEqual, isEmptyObj} from '@/js/util';
 import {ignoreChromeError, ownId, toggleListener} from '@/js/util-webext';
 import {bgBusy, bgPreInit, stateDB} from './common';
@@ -129,18 +129,18 @@ function toggle(prefKey) {
 async function prepareStyles(req) {
   const {tabId, frameId, url} = req;
   const key = tabId + ':' + frameId;
+  const bgPreInitLen = __.MV3 && bgPreInit.length;
   __.DEBUGLOG('prepareStyles', key, req);
   if (tabId < 0) return;
   let cached, unlock;
-  const bgPreInitLen = __.MV3 && bgPreInit.length;
-  const lock = __.MV3 && bgPreInitLen && new Promise(resolve => (unlock = resolve));
+  let lock = __.MV3 && bgPreInitLen && new Promise(resolve => (unlock = resolve));
   if (bgPreInitLen) { // bgPreInit in progress, let's join it
     bgPreInit.push(
       styleCache.loadOne(url),
       frameId ? tabMan.load(tabId) : undefined,
     );
     const all = Promise.all(bgPreInit);
-    bgPreInit.push(lock); // keeps bgBusy from resolving until we're done here
+    if (lock) bgPreInit.push(lock); // keeps bgBusy from resolving until we're done here
     [cached, req.tab] = (await all).slice(bgPreInitLen);
     __.DEBUGLOG('prepareStyles cache', key, cached);
   }
@@ -154,12 +154,15 @@ async function prepareStyles(req) {
   const willStyle = payload.sections.length;
   data.url = url;
   if (oldData) removePreloadedStyles(null, key, data, willStyle);
-  if (__.MV3 && curXHR && willStyle) await prepareStylesMV3(req, data, key, payload);
+  if (__.MV3 && curXHR && willStyle) {
+    lock = await prepareStylesMV3(tabId, frameId, url, data, key, payload, unlock);
+  }
   if (lock) setTimeout(unlock);
   __.DEBUGLOG('prepareStyles done', key, data);
 }
 
-async function prepareStylesMV3({tabId, frameId, url}, data, key, payload) {
+/** @returns {?} falsy = bgPreInit is not locked */
+async function prepareStylesMV3(tabId, frameId, url, data, key, payload, unlockPreInit) {
   let blobId;
   for (const k in toSend) {
     const val = toSend[k];
@@ -171,6 +174,10 @@ async function prepareStylesMV3({tabId, frameId, url}, data, key, payload) {
     }
   }
   if (!blobId) {
+    if (__.MV3 && unlockPreInit && clientUrls[url]) {
+      unlockPreInit();
+      unlockPreInit = null;
+    }
     blobId = (await API.client.createObjectURL(makeBlob(payload)))
       .slice(BLOB_URL_PREFIX.length);
   }
@@ -197,6 +204,7 @@ async function prepareStylesMV3({tabId, frameId, url}, data, key, payload) {
       responseHeaders: [{header: kSetCookie, value: cookie, operation: 'append'}],
     },
   }]);
+  return unlockPreInit;
 }
 
 function injectData(req) {
