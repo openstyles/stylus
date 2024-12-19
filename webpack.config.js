@@ -20,7 +20,6 @@ const NODE_ENV = process.env.NODE_ENV;
 const [TARGET, ZIP] = NODE_ENV?.split(':') || [''];
 const [BUILD, FLAVOR] = TARGET.split('-');
 const DEV = BUILD === 'DEV' || process.env.npm_lifecycle_event?.startsWith('watch');
-const FS_CACHE = !DEV && !GITHUB_ACTIONS;
 const SRC = ROOT + 'src/';
 const DST = ROOT + 'dist/';
 const CSS = 'css/';
@@ -39,6 +38,7 @@ const PAGES = [
   'popup',
   MV3 ? PAGE_OFFSCREEN : PAGE_BG,
 ];
+const FS_CACHE = !DEV && !(GITHUB_ACTIONS && MV3 /* only one MV3 build in GA */);
 const GET_CLIENT_DATA = 'get-client-data';
 const GET_CLIENT_DATA_TAG = {
   toString: () => `<script src="${JS}${GET_CLIENT_DATA}.js"></script>`,
