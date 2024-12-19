@@ -5,9 +5,8 @@ import {_execute, API} from '@/js/msg';
 import {CONNECTED, createPortProxy, initRemotePort} from '@/js/port';
 import * as prefs from '@/js/prefs';
 import {ownRoot, workerPath} from '@/js/urls';
-import {sleep} from '@/js/util';
 import {setSystemDark} from '../color-scheme';
-import {bgBusy, bgPreInit} from '../common';
+import {bgInit} from '../common';
 import {cloudDrive} from '../db-to-cloud-broker';
 import setClientData from '../set-client-data';
 import offscreen, {getOffscreenClient, getWindowClients} from './offscreen';
@@ -71,7 +70,7 @@ prefs.subscribe('styleViaXhr', (key, val) => {
   }
 }, true);
 
-bgPreInit.push(
+bgInit.push(
   API.client.isDark().then(setSystemDark),
 );
 
@@ -87,9 +86,7 @@ chrome.webRequest.onBeforeRequest.addListener(req => {
 });
 
 async function getClient() {
-  if (bgBusy) await sleep(); // give onfetch and onBeforeRequest time to fire
-  const clients = await getWindowClients();
-  for (const client of clients) {
+  for (const client of await getWindowClients()) {
     if (!clientUrls[client.url]) {
       return client;
     }
