@@ -9,7 +9,7 @@ import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {styleCodeEmpty} from '@/js/sections-util';
 import {isLocalhost} from '@/js/urls';
-import {clipString, deepEqual, sessionStore, tryURL} from '@/js/util';
+import {clipString, debounce, deepEqual, sessionStore, tryURL} from '@/js/util';
 import {closeCurrentTab} from '@/js/util-webext';
 import DirectDownloader from './direct-downloader';
 import PortDownloader from './port-downloader';
@@ -19,12 +19,17 @@ const CFG_SEL = '#message-box.config-dialog';
 let cfgShown = true;
 
 let cm;
+/** @type {FileSystemHandle} */
+let fsh;
+/** @type {FileSystemObserver | boolean} */
+let fso;
 /** @type function(?options):Promise<?string> */
 let getData;
 let initialUrl;
 let installed;
 let installedDup;
 let liveReload;
+let liveReloadEnabled = false;
 let sectionsPromise;
 let tabId;
 let vars;
@@ -33,7 +38,7 @@ let vars;
 // which stays after installing since we don't want to wait for the fadeout animation before resolving.
 document.on('visibilitychange', () => {
   $$remove('#message-box:not(.config-dialog)');
-  if (installed) liveReload.onToggled();
+  if (installed) liveReload();
 });
 tBody();
 setTimeout(() => !cm && showSpinner($('#header')), 200);
@@ -43,9 +48,8 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
     history.replaceState(null, '',
       location.pathname + '?updateUrl=' + encodeURIComponent(location.hash.slice(1)));
   }
-  /** @type {FileSystemFileHandle} */
-  const fsh = window.fsh;
   const params = new URLSearchParams(location.search);
+  fsh = window.fsh;
   tabId = params.has('tabId') ? Number(params.get('tabId')) : -1;
   initialUrl = fsh ? fsh._url : params.get('updateUrl');
 
@@ -174,7 +178,7 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
   };
 
   if (!initialUrl || isLocalhost(initialUrl)) {
-    $('.live-reload input').onchange = liveReload.onToggled;
+    $('.live-reload input').onchange = liveReload;
   } else {
     $('.live-reload').remove();
   }
@@ -325,13 +329,14 @@ function install(style) {
   $$remove('.warning');
   $('button.install').disabled = true;
   $('button.install').classList.add('installed');
-  $('#live-reload-install-hint').hidden = !liveReload.enabled;
+  $('#live-reload-install-hint').hidden = !liveReloadEnabled;
   $('.set-update-url').title = style.updateUrl ?
     t('installUpdateFrom', style.updateUrl) : '';
   $$('.install-disable input').forEach(el => (el.disabled = true));
   document.body.classList.add('installed');
   enablePostActions();
   updateMeta(style);
+  if (liveReloadEnabled) liveReload();
 }
 
 function enablePostActions() {
@@ -389,50 +394,47 @@ function adjustCodeHeight() {
 
 function initLiveReload() {
   const DELAY = 500;
-  let isEnabled = false;
   let timer = 0;
   let sequence = Promise.resolve();
-  return {
-    get enabled() {
-      return isEnabled;
-    },
-    onToggled(e) {
-      if (e) isEnabled = e.target.checked;
-      if (installed || installedDup) {
-        if (isEnabled) {
-          check({force: true});
-        } else {
-          stop();
-        }
-        $('.install').disabled = isEnabled;
-        Object.assign($('#live-reload-install-hint'), {
-          hidden: !isEnabled,
-          textContent: t(`liveReloadInstallHint${tabId >= 0 ? 'FF' : ''}`),
-        });
-      }
-    },
+  return e => {
+    if (e) liveReloadEnabled = e.target.checked;
+    if (!installed && !installedDup) return;
+    if (liveReloadEnabled) start({force: true}); else stop();
+    $('.install').disabled = liveReloadEnabled;
+    Object.assign($('#live-reload-install-hint'), {
+      hidden: !liveReloadEnabled,
+      textContent: t(`liveReloadInstallHint${tabId >= 0 ? 'FF' : ''}`),
+    });
   };
 
-  function check(opts) {
-    getData(opts)
-      .then(update, logError)
-      .then(() => {
-        timer = 0;
-        start();
-      });
+  async function check(opts) {
+    try {
+      update(await getData(opts));
+    } catch (err) {
+      console.warn(t('liveReloadError', err));
+    }
+    timer ??= setTimeout(check, DELAY);
   }
 
-  function logError(error) {
-    console.warn(t('liveReloadError', error));
-  }
-
-  function start() {
-    timer = timer || setTimeout(check, DELAY);
+  async function start(opts) {
+    if (fsh
+    && (fso || (fso = global.FileSystemObserver) && (fso = new fso(() => debounce(check, 20))))) {
+      try {
+        await fso.observe(fsh);
+        timer = false; // disables polling
+      } catch {
+        timer = null;
+      }
+    }
+    check(opts);
   }
 
   function stop() {
-    clearTimeout(timer);
-    timer = 0;
+    if (timer) {
+      timer = clearTimeout(timer);
+    } else if (fso) {
+      fso.disconnect();
+    }
   }
 
   function update(code) {
