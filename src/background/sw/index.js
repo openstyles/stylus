@@ -6,7 +6,7 @@ import {CONNECTED, createPortProxy, initRemotePort} from '@/js/port';
 import * as prefs from '@/js/prefs';
 import {ownRoot, workerPath} from '@/js/urls';
 import {setSystemDark} from '../color-scheme';
-import {bgInit} from '../common';
+import {bgBusy} from '../common';
 import {cloudDrive} from '../db-to-cloud-broker';
 import setClientData from '../set-client-data';
 import offscreen, {getOffscreenClient, getWindowClients} from './offscreen';
@@ -70,9 +70,8 @@ prefs.subscribe('styleViaXhr', (key, val) => {
   }
 }, true);
 
-bgInit.push(
-  API.client.isDark().then(setSystemDark),
-);
+// not using bgPreInit because we can't reliably exclude the onfetch client
+bgBusy.then(() => API.client.isDark().then(setSystemDark));
 
 /**
  * This ensures that SW starts even before our page makes a clientData request inside.
