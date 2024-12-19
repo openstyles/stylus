@@ -4,9 +4,9 @@ import {kMainFrame, kSubFrame} from '@/js/consts';
 import {_execute, API} from '@/js/msg';
 import {CONNECTED, createPortProxy, initRemotePort} from '@/js/port';
 import * as prefs from '@/js/prefs';
-import {clientUrls, ownRoot, workerPath} from '@/js/urls';
+import {ownRoot, workerPath} from '@/js/urls';
 import {setSystemDark} from '../color-scheme';
-import {bgBusy, bgPreInit} from '../common';
+import {bgBusy, clientDataJobs} from '../common';
 import {cloudDrive} from '../db-to-cloud-broker';
 import setClientData from '../set-client-data';
 import offscreen, {getOffscreenClient, getWindowClients} from './offscreen';
@@ -35,9 +35,9 @@ global.onfetch = evt => {
     const sp = new URL(url).searchParams;
     const dark = !!+sp.get('dark');
     const pageUrl = sp.get('url');
-    clientUrls[pageUrl] = true;
-    evt.respondWith(setClientData({dark, url: pageUrl})
-      .finally(() => delete clientUrls[pageUrl]));
+    const job = clientDataJobs[pageUrl] = setClientData({dark, url: pageUrl});
+    job.finally(() => delete clientDataJobs[pageUrl]);
+    evt.respondWith(job);
   } else if (/\.user.css#(\d+)$/.test(url)) {
     evt.respondWith(Response.redirect('edit.html?id=' + RegExp.$1));
   }
@@ -76,17 +76,20 @@ bgBusy.then(() => API.client.isDark().then(setSystemDark));
  * The actual listener is usually invoked after `onfetch`, but there's no guarantee.
  */
 chrome.webRequest.onBeforeRequest.addListener(req => {
-  clientUrls[req.url] = true;
+  clientDataJobs[req.url] = true;
 }, {
   urls: [ownRoot + '*.html*'],
   types: [kMainFrame, kSubFrame],
 });
 
 async function getClient() {
-  if (bgBusy) await Promise.all(bgPreInit);
+  let busy, job;
   for (const client of await getWindowClients()) {
-    if (!clientUrls[client.url]) {
+    if ((job = clientDataJobs[client.url])) {
+      (busy ??= []).push(job);
+    } else {
       return client;
     }
   }
+  return busy && Promise.any(busy).then(getClient, getClient); // query again to ensure it's alive
 }

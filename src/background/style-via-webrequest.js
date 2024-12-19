@@ -3,10 +3,10 @@ import {updateSessionRules} from '@/js/dnr';
 import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {CHROME, FIREFOX} from '@/js/ua';
-import {actionPopupUrl, clientUrls, ownRoot} from '@/js/urls';
+import {actionPopupUrl, ownRoot} from '@/js/urls';
 import {deepEqual, isEmptyObj} from '@/js/util';
 import {ignoreChromeError, ownId, toggleListener} from '@/js/util-webext';
-import {bgBusy, bgPreInit, stateDB} from './common';
+import {bgBusy, bgPreInit, clientDataJobs, stateDB} from './common';
 import {webNavigation} from './navigation-manager';
 import makePopupData from './popup-data';
 import * as styleCache from './style-manager/cache';
@@ -56,10 +56,12 @@ if (__.MV3) {
     for (const id in ruleIds) ruleIdKeys[ruleIds[id]] = +id;
   })());
 }
+
 prefs.ready.then(() => {
   toggle(__.MV3); // in MV3 this will unregister unused listeners
   prefs.subscribe([idOFF, idCSP, idXHR], toggle);
 });
+
 bgBusy.then(() => {
   const tabIds = [];
   for (let key in ruleIdKeys) {
@@ -69,17 +71,21 @@ bgBusy.then(() => {
   }
   if (tabIds.length) removeTabData(tabIds);
 });
+
 tabMan.onUnload.add((tabId, frameId) => {
   if (frameId) setTimeout(removePreloadedStyles, REVOKE_TIMEOUT, null, tabId + ':' + frameId);
   else removeTabData([tabId]);
 });
+
 webNavigation.onErrorOccurred.addListener(removePreloadedStyles, WEBNAV_FILTER);
+
 if (CHROME && !__.MV3 && __.BUILD !== 'firefox') {
   chrome.webRequest.onBeforeRequest.addListener(openNamedStyle, {
     urls: [ownRoot + '*.user.css'],
     types: [kMainFrame],
   }, ['blocking']);
 }
+
 if (CHROME && __.BUILD !== 'firefox') {
   chrome.webRequest.onBeforeRequest.addListener(req => {
     // tabId < 0 means the popup is shown normally and not as a page in a tab
@@ -149,7 +155,7 @@ async function prepareStyles(req) {
     await bgBusy;
   }
   const oldData = toSend[key];
-  const data = oldData || (toSend[key] = {});
+  const data = oldData || {};
   const payload = data.payload = getSectionsByUrl.call({sender: req}, url, null, true);
   const willStyle = payload.sections.length;
   data.url = url;
@@ -157,6 +163,7 @@ async function prepareStyles(req) {
   if (__.MV3 && curXHR && willStyle) {
     lock = await prepareStylesMV3(tabId, frameId, url, data, key, payload, unlock);
   }
+  toSend[key] = data;
   if (lock) setTimeout(unlock);
   __.DEBUGLOG('prepareStyles done', key, data);
 }
@@ -165,6 +172,7 @@ async function prepareStyles(req) {
 async function prepareStylesMV3(tabId, frameId, url, data, key, payload, unlock) {
   let blobId;
   for (const k in toSend) {
+    if (key === k) continue;
     const val = toSend[k];
     if (val.url === url && deepEqual(payload, val.payload)) {
       setTimeout(removeTemporaryTab, REVOKE_TIMEOUT, tabId);
@@ -174,7 +182,7 @@ async function prepareStylesMV3(tabId, frameId, url, data, key, payload, unlock)
     }
   }
   if (!blobId) {
-    if (__.MV3 && unlock && clientUrls[url]) {
+    if (__.MV3 && unlock && clientDataJobs[url]) {
       unlock = unlock(); // set to undefined
     }
     blobId = (await API.client.createObjectURL(makeBlob(payload)))
@@ -299,7 +307,7 @@ function patchCspSrc(src, name, ...values) {
 export function removePreloadedStyles(req, key = req2key(req), data = toSend[key], keep) {
   let v;
   if (data) {
-    if (!keep) delete toSend[key];
+    delete toSend[key];
     if ((v = data.blobId)) {
       if (req) setTimeout(revokeObjectURL, REVOKE_TIMEOUT, v);
       else revokeObjectURL(v);

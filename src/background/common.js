@@ -8,6 +8,7 @@ export let bgBusy = promiseWithResolve();
 /** Minimal init for a wake-up event */
 export const bgPreInit = [];
 export const bgInit = [];
+export const clientDataJobs = {};
 
 export const safeTimeout = __.ENTRY === 'sw'
   ? (fn, delay, ...args) =>
