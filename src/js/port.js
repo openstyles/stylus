@@ -25,10 +25,11 @@ export const COMMANDS = __.ENTRY !== 'sw' && (
   }
 );
 export const CONNECTED = Symbol('connected');
+const PATH = location.pathname;
 const PORT_TIMEOUT = 5 * 60e3; // TODO: expose as a configurable option?
 const navLocks = navigator.locks;
 const autoClose = __.ENTRY === 'worker' ||
-  __.ENTRY === true && location.pathname === `/${__.PAGE_OFFSCREEN}.html`;
+  __.ENTRY === true && PATH === `/${__.PAGE_OFFSCREEN}.html`;
 // SW can't nest workers, https://crbug.com/40772041
 const SharedWorker = __.ENTRY !== 'sw' && global.SharedWorker;
 const kWorker = '_worker';
@@ -65,15 +66,15 @@ export function createPortExec(getTarget, {lock, once} = {}) {
   async function exec(...args) {
     const ctx = [new Error().stack]; // saving it prior to a possible async jump for easier debugging
     const promise = new Promise((resolve, reject) => ctx.push(resolve, reject));
-    __.DEBUGTRACE(location.pathname, 'exec send', args);
     if ((port ??= initPort(args)).then) port = await port;
     (once ? target : port).postMessage({args, id: ++lastId},
       once || (Array.isArray(this) ? this : undefined));
     queue.set(lastId, ctx);
+    if (__.DEBUG & 2) console.trace('%c%s exec sent', 'color:green', PATH, lastId, args);
     return promise;
   }
   async function initPort() {
-    __.DEBUGLOG(location.pathname, 'exec init', {getTarget});
+    if (__.DEBUG & 2) console.log('%c%s exec init', 'color:blue', PATH, {getTarget});
     // SW can't nest workers, https://crbug.com/40772041
     if (__.ENTRY !== 'sw' && typeof getTarget === 'string') {
       lock = getTarget;
@@ -98,7 +99,7 @@ export function createPortExec(getTarget, {lock, once} = {}) {
   }
   /** @param {MessageEvent} _ */
   function onMessage({data}) {
-    __.DEBUGLOG(location.pathname, 'exec onmessage', data);
+    if (__.DEBUG & 2) console.log('%c%s exec onmessage', 'color:darkcyan', PATH, data.id, data);
     if (!tracking && !once && navLocks) trackTarget(queue);
     const {id, res, err} = data.id ? data : JSON.parse(data);
     const [stack, resolve, reject] = queue.get(id);
@@ -137,23 +138,23 @@ export function createPortExec(getTarget, {lock, once} = {}) {
  * @param {MessageEvent} evt
  */
 export function initRemotePort(evt) {
-  const {lock = location.pathname, id: once} = evt.data || {};
+  const {lock = PATH, id: once} = evt.data || {};
   const exec = this;
   const port = evt.ports[0];
-  __.DEBUGTRACE(location.pathname, 'initRemotePort', evt);
+  if (__.DEBUG & 2) console.trace('%c%s initRemotePort', 'color:orange', PATH, evt);
   if (!lockingSelf && lock && !once && navLocks) {
     lockingSelf = true;
     navLocks.request(lock, () => new Promise(NOP));
-    __.DEBUGLOG(location.pathname, 'initRemotePort lock', lock);
+    if (__.DEBUG & 2) console.log('%c%s initRemotePort lock', 'color:orange', PATH, lock);
   }
   port.onerror = console.error;
   port.onmessage = onMessage;
   port.onmessageerror = onMessageError;
   if (once) onMessage(evt);
   async function onMessage(portEvent) {
-    __.DEBUGLOG(location.pathname, 'port onmessage', portEvent);
     const data = portEvent.data;
     const {args, id} = data.id ? data : JSON.parse(data);
+    if (__.DEBUG & 2) console.log('%c%s port onmessage', 'color:green', PATH, id, portEvent);
     let res, err;
     numJobs++;
     if (timer) {
@@ -170,7 +171,7 @@ export function initRemotePort(evt) {
       delete e.source;
       // TODO: find which props are actually used (err may contain noncloneable Response)
     }
-    __.DEBUGLOG(location.pathname, 'port response', {id, res, err}, portEvent._transfer);
+    if (__.DEBUG & 2) console.log('%c%s port response', 'color:green', PATH, id, {res, err});
     port.postMessage({id, res, err},
       (/**@type{RemotePortEvent}*/portEvent)._transfer);
     if (!--numJobs && autoClose && !timer && !keepAlive) {

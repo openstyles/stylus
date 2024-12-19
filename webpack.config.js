@@ -66,12 +66,16 @@ const OUTPUT_MODULE = {
   },
   experiments: {outputModule: true},
 };
+const DEBUGMASK = {
+  port: 2,
+  life: 4,
+};
 const VARS = {
   API: 'API', // hiding the global from IDE
   BUILD,
   CLIENT_DATA: 'clientData', // hiding the global from IDE
   CM_PATH,
-  DEBUG: !!process.env.DEBUG,
+  DEBUG: process.env.DEBUG?.split(',').reduce((res, s) => res + DEBUGMASK[s], 1) || 0,
   DEV,
   ENTRY: false,
   IS_BG: false,

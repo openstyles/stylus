@@ -3,7 +3,8 @@ declare var __: {
   BUILD: 'DEV' | 'chrome' | 'firefox',
   CLIENT_DATA: 'clientData',
   CM_PATH: string,
-  DEBUG: boolean,
+  /** bit mask, 1: general, 2: port, 4: life (keepAlive) */
+  DEBUG: number,
   DEBUGLOG: typeof console.log,
   DEBUGTRACE: typeof console.trace,
   DEBUGWARN: typeof console.warn,
