@@ -3,10 +3,8 @@ import '@/js/browser';
 import {k_msgExec, kInstall, kResolve} from '@/js/consts';
 import {DNR, getRuleIds, updateDynamicRules, updateSessionRules} from '@/js/dnr';
 import {_execute, API, onMessage} from '@/js/msg';
-import {createPortProxy} from '@/js/port';
 import * as prefs from '@/js/prefs';
 import {CHROME, FIREFOX, MOBILE, WINDOWS} from '@/js/ua';
-import {workerPath} from '@/js/urls';
 import {sleep} from '@/js/util';
 import {broadcast, pingTab} from './broadcast';
 import './broadcast-injector-config';
@@ -78,8 +76,6 @@ Object.assign(API, /** @namespace API */ {
   //#region API for MV2
 
   setClientData,
-  /** @type {WorkerAPI} */
-  worker: createPortProxy(workerPath),
 
   //#endregion
 

@@ -6,11 +6,12 @@ import {CHROME, FIREFOX} from '@/js/ua';
 import {actionPopupUrl, ownRoot} from '@/js/urls';
 import {deepEqual, isEmptyObj} from '@/js/util';
 import {ignoreChromeError, ownId, toggleListener} from '@/js/util-webext';
-import {bgBusy, bgPreInit, clientDataJobs, stateDB} from './common';
+import {bgBusy, bgPreInit, stateDB} from './common';
 import {webNavigation} from './navigation-manager';
+import offscreen from './offscreen';
 import makePopupData from './popup-data';
-import * as styleCache from './style-manager/cache';
 import {getSectionsByUrl} from './style-manager';
+import * as styleCache from './style-manager/cache';
 import * as tabMan from './tab-manager';
 
 const idCSP = 'patchCsp';
@@ -31,7 +32,7 @@ const makeBlob = data => new Blob([JSON.stringify(data)], {type: kAppJson});
 const makeXhrCookie = blobId => `${ownId}=${blobId}; SameSite=Lax`;
 const req2key = req => req.tabId + ':' + req.frameId;
 const revokeObjectURL = blobId => blobId &&
-  (__.MV3 ? API.client : URL).revokeObjectURL(BLOB_URL_PREFIX + blobId);
+  (__.MV3 ? offscreen : URL).revokeObjectURL(BLOB_URL_PREFIX + blobId);
 const toSend = {};
 const INJECTED_FUNC = function (data) {
   if (this['apply.js'] !== 1) { // storing data only if apply.js hasn't run yet
@@ -161,7 +162,7 @@ async function prepareStyles(req) {
   data.url = url;
   if (oldData) removePreloadedStyles(null, key, data, willStyle);
   if (__.MV3 && curXHR && willStyle) {
-    lock = await prepareStylesMV3(tabId, frameId, url, data, key, payload, unlock);
+    await prepareStylesMV3(tabId, frameId, url, data, key, payload);
   }
   toSend[key] = data;
   if (lock) setTimeout(unlock);
@@ -169,7 +170,7 @@ async function prepareStyles(req) {
 }
 
 /** @returns {?} falsy = bgPreInit is not locked */
-async function prepareStylesMV3(tabId, frameId, url, data, key, payload, unlock) {
+async function prepareStylesMV3(tabId, frameId, url, data, key, payload) {
   let blobId;
   for (const k in toSend) {
     if (key === k) continue;
@@ -182,10 +183,7 @@ async function prepareStylesMV3(tabId, frameId, url, data, key, payload, unlock)
     }
   }
   if (!blobId) {
-    if (__.MV3 && unlock && clientDataJobs[url]) {
-      unlock = unlock(); // set to undefined
-    }
-    blobId = (await API.client.createObjectURL(makeBlob(payload)))
+    blobId = (await offscreen.createObjectURL(makeBlob(payload)))
       .slice(BLOB_URL_PREFIX.length);
   }
   data.blobId = blobId;
@@ -211,7 +209,6 @@ async function prepareStylesMV3(tabId, frameId, url, data, key, payload, unlock)
       responseHeaders: [{header: kSetCookie, value: cookie, operation: 'append'}],
     },
   }]);
-  return unlock;
 }
 
 function injectData(req) {

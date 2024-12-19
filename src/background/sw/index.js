@@ -1,15 +1,15 @@
 import '../intro'; // sets global.API
 import './keep-alive'; // sets global.keepAlive
 import {kMainFrame, kSubFrame} from '@/js/consts';
-import {_execute, API} from '@/js/msg';
-import {CONNECTED, createPortProxy, initRemotePort} from '@/js/port';
+import {_execute} from '@/js/msg';
+import {CONNECTED, initRemotePort} from '@/js/port';
 import * as prefs from '@/js/prefs';
-import {ownRoot, workerPath} from '@/js/urls';
+import {ownRoot} from '@/js/urls';
 import {setSystemDark} from '../color-scheme';
-import {bgBusy, clientDataJobs} from '../common';
+import {bgPreInit, clientDataJobs} from '../common';
 import {cloudDrive} from '../db-to-cloud-broker';
 import setClientData from '../set-client-data';
-import offscreen, {getOffscreenClient, getWindowClients} from './offscreen';
+import offscreen from '../offscreen';
 import '..';
 
 /** @param {ExtendableEvent} evt */
@@ -46,15 +46,6 @@ global.onfetch = evt => {
 // API
 global.onmessage = initRemotePort.bind(_execute.bind(null, 'extension'));
 
-/** @type {CommandsAPI} */
-API.client = createPortProxy(async () => await getClient() || getOffscreenClient(), {once: true});
-
-API.worker = createPortProxy(async () => {
-  const client = await getClient();
-  const proxy = client ? createPortProxy(client, {once: true}) : offscreen;
-  return proxy.getWorkerPort(workerPath);
-}, {lock: workerPath});
-
 cloudDrive.webdav = async cfg => {
   const res = await offscreen.webdavInit(cfg);
   const webdav = offscreen.webdav;
@@ -68,8 +59,7 @@ prefs.subscribe('styleViaXhr', (key, val) => {
   }
 }, true);
 
-// not using bgPreInit because we can't reliably exclude the onfetch client
-bgBusy.then(() => API.client.isDark().then(setSystemDark));
+bgPreInit.push(offscreen.isDark().then(setSystemDark));
 
 /**
  * This ensures that SW starts even before our page makes a clientData request inside.
@@ -81,15 +71,3 @@ chrome.webRequest.onBeforeRequest.addListener(req => {
   urls: [ownRoot + '*.html*'],
   types: [kMainFrame, kSubFrame],
 });
-
-async function getClient() {
-  let busy, job;
-  for (const client of await getWindowClients()) {
-    if ((job = clientDataJobs[client.url])) {
-      (busy ??= []).push(job);
-    } else {
-      return client;
-    }
-  }
-  return busy && Promise.any(busy).then(getClient, getClient); // query again to ensure it's alive
-}

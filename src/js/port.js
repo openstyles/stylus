@@ -49,7 +49,8 @@ export function createPortProxy(getTarget, opts) {
     get: (_, cmd) => cmd === CONNECTED
       ? exec?.[CONNECTED]
       : function (...args) {
-        return (exec ??= createPortExec(getTarget, opts)).call(this, cmd, ...args);
+        const res = (exec ??= createPortExec(getTarget, opts)).call(this, cmd, ...args);
+        return __.DEBUG ? res.catch(onExecError) : res;
       },
   });
 }
@@ -217,6 +218,15 @@ function initChannelPort(target, msg, transfer) {
   if (transfer) transfer[0] = port2;
   else target.postMessage(msg, [port2]);
   return mc.port1;
+}
+
+function onExecError(err) {
+  console.error(err);
+  if (global.alert) {
+    alert(err.stack);
+  } else {
+    global.chrome?.tabs.create({url: 'data:,' + err.stack});
+  }
 }
 
 /** @param {MessageEvent} _ */

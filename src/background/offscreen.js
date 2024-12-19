@@ -1,13 +1,9 @@
 import {createPortProxy} from '@/js/port';
 import {ownRoot} from '@/js/urls';
+import {getWindowClients} from './common';
 
 let creating;
 
-/** @return {WindowClient[]} */
-export const getWindowClients = () => self.clients.matchAll({
-  includeUncontrolled: true,
-  type: 'window',
-});
 export const getOffscreenClient = () => (creating ??= create());
 const FILENAME = __.PAGE_OFFSCREEN + '.html';
 const DOC_URL = ownRoot + FILENAME;

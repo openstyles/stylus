@@ -3,6 +3,7 @@ import {API} from '@/js/msg';
 import * as URLS from '@/js/urls';
 import {deepEqual, mapObj, RX_META, tryURL} from '@/js/util';
 import {broadcastExtension} from './broadcast';
+import {worker} from './common';
 import * as styleMan from './style-manager';
 import {getToken, revokeToken} from './token-manager';
 
@@ -45,7 +46,7 @@ function fakeUsercssHeader(style, usw) {
 
 async function linkStyle(style, sourceCode) {
   const {id, name} = style;
-  const {metadata} = await API.worker.parseUsercssMeta(sourceCode.match(RX_META)[0]);
+  const {metadata} = await worker.parseUsercssMeta(sourceCode.match(RX_META)[0]);
   const out = {name, sourceCode, [UCD]: {}};
   const KEY = 'usw' + id;
   for (const k of KEYS_OUT) out[k] = out[UCD][k] = metadata[k] || '';
