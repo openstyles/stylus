@@ -5,7 +5,7 @@ import * as prefs from '@/js/prefs';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {actionPopupUrl, ownRoot} from '@/js/urls';
 import {deepEqual, isEmptyObj} from '@/js/util';
-import {ignoreChromeError, ownId, toggleListener} from '@/js/util-webext';
+import {ownId, toggleListener} from '@/js/util-webext';
 import {setSystemDark} from './color-scheme';
 import {bgBusy, bgPreInit, stateDB} from './common';
 import {webNavigation} from './navigation-manager';
@@ -35,12 +35,6 @@ const req2key = req => req.tabId + ':' + req.frameId;
 const revokeObjectURL = blobId => blobId &&
   (__.MV3 ? offscreen : URL).revokeObjectURL(BLOB_URL_PREFIX + blobId);
 const toSend = {};
-const INJECTED_FUNC = function (data) {
-  if (this['apply.js'] !== 1) { // storing data only if apply.js hasn't run yet
-    this[Symbol.for('styles')] = data;
-  }
-};
-const INJECTED_CODE = `${INJECTED_FUNC}`;
 export const webRequestBlocking = browser.permissions.contains({
   permissions: ['webRequestBlocking'],
 });
@@ -125,9 +119,6 @@ function toggle(prefKey) {
   if (mv3init || off !== curOFF) {
     toggleListener(chrome.webRequest.onBeforeRequest, mv3init || !off, prepareStyles, WR_FILTER);
   }
-  if (mv3init || CHROME && (v = !off && !xhr) !== (!curOFF && !curXHR)) {
-    toggleListener(webNavigation.onCommitted, v, injectData, WEBNAV_FILTER);
-  }
   curCSP = csp;
   curOFF = off;
   curXHR = xhr;
@@ -211,28 +202,6 @@ async function prepareStylesMV3(tabId, frameId, url, data, key, payload) {
       responseHeaders: [{header: kSetCookie, value: cookie, operation: 'append'}],
     },
   }]);
-}
-
-function injectData(req) {
-  const data = toSend[req2key(req)];
-  if (data && !data.injected) {
-    data.injected = true;
-    if (__.MV3) {
-      chrome.scripting.executeScript({
-        target: {tabId: req.tabId, frameIds: [req.frameId]},
-        args: [data.payload],
-        func: INJECTED_FUNC,
-        injectImmediately: true,
-      }, ignoreChromeError);
-    } else {
-      chrome.tabs.executeScript(req.tabId, {
-        frameId: req.frameId,
-        runAt: 'document_start',
-        code: `(${INJECTED_CODE})(${JSON.stringify(data.payload)})`,
-      }, ignoreChromeError);
-    }
-    if (!curXHR) removePreloadedStyles(req);
-  }
 }
 
 /** @param {chrome.webRequest.WebResponseHeadersDetails} req */
