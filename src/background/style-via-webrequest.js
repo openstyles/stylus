@@ -130,7 +130,7 @@ async function prepareStyles(req) {
   const key = tabId + ':' + frameId;
   const bgPreInitLen = __.MV3 && bgPreInit.length;
   const isDark = colorScheme.isSystem()
-    && !tabMan.someInjectable(tabId)
+    && !tabMan.someInjectable()
     && colorScheme.refreshSystemDark();
   __.DEBUGLOG('prepareStyles', key, req);
   let cached, unlock;

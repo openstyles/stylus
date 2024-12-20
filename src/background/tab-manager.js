@@ -62,9 +62,9 @@ export const set = (tabId, ...args) => {
   }
 };
 
-export const someInjectable = skipTabId => {
+export const someInjectable = () => {
   for (const v of cache.values()) {
-    if (v.id !== skipTabId && (v.styleIds || supported(v.url))) {
+    if (v.styleIds || supported(v.url)) {
       return true;
     }
   }
