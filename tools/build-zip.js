@@ -18,8 +18,6 @@ const TARGETS = [
   'chrome-mv3-beta',
 ];
 
-fse.emptyDirSync(ROOT + 'node_modules/.cache/webpack');
-
 (async function build([targets] = process.argv.slice(2)) {
   // https://github.com/Stuk/jszip/issues/369
   const tzBug = new Date().getTimezoneOffset() * 60000;
