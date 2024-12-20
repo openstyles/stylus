@@ -96,7 +96,7 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
     API.prefsDb.delete('badFavs'); // old Stylus marked all icons as bad when network was offline
   }
   if (__.MV3) {
-    bgPreInit.push(
+    (bgPreInit.length ? bgPreInit : []).push(
       stateDB.clear(),
       DNR.getDynamicRules().then(rules => updateDynamicRules(undefined, getRuleIds(rules))),
       DNR.getSessionRules().then(rules => updateSessionRules(undefined, getRuleIds(rules))),
