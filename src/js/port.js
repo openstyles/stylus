@@ -15,27 +15,26 @@ export const CONNECTED = Symbol('connected');
 const PATH = location.pathname;
 const TTL = __.ENTRY === 'worker' ? 5 * 60e3 : 30e3; // TODO: add a configurable option?
 const navLocks = navigator.locks;
-const willAutoClose = __.ENTRY === 'worker' ||
-  __.MV3 && __.ENTRY === true && PATH === `/${__.PAGE_OFFSCREEN}.html`;
+const willAutoClose = __.ENTRY === 'worker' || __.ENTRY === __.PAGE_OFFSCREEN;
 // SW can't nest workers, https://crbug.com/40772041
 const SharedWorker = __.ENTRY !== 'sw' && global.SharedWorker;
 const kWorker = '_worker';
 const NOP = () => {};
-if (__.MV3 && __.ENTRY === true) {
+if (__.MV3 && __.ENTRY === true || __.ENTRY === __.PAGE_OFFSCREEN) {
   navigator.serviceWorker.onmessage = initRemotePort.bind(COMMANDS);
-  if (willAutoClose) {
-    Object.assign(COMMANDS, /** @namespace CommandsAPI */ {
-      keepAlive(val) {
-        if (!val) {
-          autoClose();
-        } else if (!bgPort) {
-          if (timer) timer = clearTimeout(timer);
-          bgPort = chrome.runtime.connect({name: __.PAGE_OFFSCREEN});
-          bgPort.onDisconnect.addListener(() => autoClose());
-        }
-      },
-    });
-  }
+}
+if (__.ENTRY === __.PAGE_OFFSCREEN) {
+  Object.assign(COMMANDS, /** @namespace CommandsAPI */ {
+    keepAlive(val) {
+      if (!val) {
+        autoClose();
+      } else if (!bgPort) {
+        if (timer) timer = clearTimeout(timer);
+        bgPort = chrome.runtime.connect({name: __.PAGE_OFFSCREEN});
+        bgPort.onDisconnect.addListener(() => autoClose());
+      }
+    },
+  });
 }
 let lockingSelf;
 let numJobs = 0;
@@ -181,7 +180,7 @@ export function initRemotePort(evt) {
 }
 
 function autoClose(delay) {
-  if (!delay && bgPort && __.MV3 && __.ENTRY === true) {
+  if (!delay && bgPort && __.ENTRY === __.PAGE_OFFSCREEN) {
     bgPort = bgPort.disconnect();
   }
   if (!bgPort && !numJobs && !timer) {
@@ -202,7 +201,7 @@ function getWorkerPort(url, onerror) {
   let target = global;
   if (!__.MV3 && __.IS_BG) { // in MV2 the bg page can create Worker
     worker = target[kWorker];
-  } else {
+  } else if (__.ENTRY === true) {
     for (const view of chrome.extension.getViews()) {
       if ((worker = view[kWorker])) {
         break;

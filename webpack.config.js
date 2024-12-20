@@ -36,8 +36,8 @@ const PAGES = [
   'manage',
   'options',
   'popup',
-  MV3 ? PAGE_OFFSCREEN : PAGE_BG,
-];
+  !MV3 && PAGE_BG,
+].filter(Boolean);
 const FS_CACHE = !DEV && !(GITHUB_ACTIONS && MV3 /* only one MV3 build in GA */);
 const GET_CLIENT_DATA = 'get-client-data';
 const GET_CLIENT_DATA_TAG = {
@@ -371,7 +371,7 @@ module.exports = [
           const {bodyTags, headTags} = tags;
           // The main entry goes into BODY to improve performance (2x in manage.html)
           headTags.push(...bodyTags.splice(0, bodyTags.length - 1));
-          if (MV3 && p !== PAGE_OFFSCREEN) headTags.unshift(GET_CLIENT_DATA_TAG);
+          if (MV3) headTags.unshift(GET_CLIENT_DATA_TAG);
           return {
             compilation: compilation,
             webpackConfig: compilation.options,
@@ -406,26 +406,48 @@ module.exports = [
     resolve: RESOLVE_VIA_SHIM,
   }),
 
-  ...!MV3 ? [] : [
-    mergeCfg({
-      entry: `@/${PAGE_BG}`,
-      plugins: [
-        new RawEnvPlugin({
-          ENTRY: 'sw',
-          IS_BG: true,
-        }, {
-          KEEP_ALIVE: 'global.keepAlive',
-        }),
-        ...addWrapper(),
-      ],
-      resolve: RESOLVE_VIA_SHIM,
-    }),
-    mergeCfg(OUTPUT_MODULE, mergeCfg({
-      entry: '@/js/' + GET_CLIENT_DATA,
-      output: {path: DST + JS},
-    })),
-    makeLibrary('db-to-cloud/lib/drive/webdav', 'webdav'),
-  ],
+  MV3 && mergeCfg({
+    entry: `@/${PAGE_BG}`,
+    plugins: [
+      new RawEnvPlugin({
+        ENTRY: 'sw',
+        IS_BG: true,
+      }, {
+        KEEP_ALIVE: 'global.keepAlive',
+      }),
+      ...addWrapper(),
+    ],
+    resolve: RESOLVE_VIA_SHIM,
+  }),
+
+  MV3 && mergeCfg({
+    entry: `@/${PAGE_OFFSCREEN}`,
+    output: {
+      filename: JS + '[name].js',
+    },
+    optimization: {
+      minimizer: DEV ? [] : [new TerserPlugin(TERSER_OPTS)],
+    },
+    plugins: [
+      new RawEnvPlugin({ENTRY: PAGE_OFFSCREEN}),
+      ...addWrapper(),
+      new HtmlWebpackPlugin({
+        chunks: [PAGE_OFFSCREEN],
+        filename: PAGE_OFFSCREEN + '.html',
+        template: SRC + PAGE_OFFSCREEN + '/index.html',
+        scriptLoading: 'blocking',
+        inject: false,
+      }),
+    ],
+    resolve: RESOLVE_VIA_SHIM,
+  }),
+
+  MV3 && mergeCfg(OUTPUT_MODULE, mergeCfg({
+    entry: '@/js/' + GET_CLIENT_DATA,
+    output: {path: DST + JS},
+  })),
+
+  MV3 && makeLibrary('db-to-cloud/lib/drive/webdav', 'webdav'),
 
   makeContentScript('apply.js'),
   makeLibrary('@/js/worker.js', undefined, {

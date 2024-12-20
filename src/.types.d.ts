@@ -9,7 +9,7 @@ declare var __: {
   DEBUGTRACE: typeof console.trace,
   DEBUGWARN: typeof console.warn,
   DEV: boolean,
-  ENTRY: 'sw' | 'worker' | string | boolean,
+  ENTRY: 'offscreen' | 'sw' | 'worker' | string | boolean,
   IS_BG: boolean,
   JS: string,
   KEEP_ALIVE: <T>(job: T) => T,
