@@ -149,7 +149,7 @@ const VTComplex = {
   '<vis-hid>': 'visible | hidden',
   '<width>': 'auto | <width-base>',
   '<width-base>': '<len-pct> | min-content | max-content | ' +
-    '-moz-available | -webkit-fill-available | fit-content( <len-pct> )',
+    '-moz-available | -webkit-fill-available | fit-content',
   '<width-max>': 'none | <width-base>',
   '<xywh>': 'xywh( <xywh-arg> )',
   '<xywh-arg>': '<len-pct>{2} <len-pct0+>{2} <border-radius-round>?',
