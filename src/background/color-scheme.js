@@ -24,14 +24,11 @@ export const SCHEMES = [kDark, kLight];
 export const isSystem = () => prefState === kSystem;
 export const refreshSystemDark = () => !__.MV3
   ? setSystemDark(isCssDarkScheme())
-  : prefState === kSystem
-    ? offscreen.isDark().then(setSystemDark)
-    : map[kSystem];
+  : prefState === kSystem && offscreen.isDark().then(setSystemDark);
 /** @type {(val: !boolean) => void} */
 export const setSystemDark = update.bind(null, kSystem);
 export let isDark = null;
 let prefState;
-let flushing;
 
 chrome.alarms.onAlarm.addListener(onAlarm);
 
@@ -127,17 +124,7 @@ function update(type, val) {
   val = map[prefState];
   if (isDark !== val) {
     isDark = val;
-    broadcastExtension({method: 'colorScheme', value: isDark});
+    if (!bgBusy) broadcastExtension({method: 'colorScheme', value: isDark});
     for (const fn of changeListeners) fn(isDark);
-    if (__.MV3) type = true;
   }
-  if (__.MV3 && type) {
-    flushing ??= setTimeout(flushState);
-  }
-}
-
-async function flushState() {
-  if (bgBusy) await bgBusy;
-  await stateDB.put([isDark, map], kDark);
-  flushing = null;
 }

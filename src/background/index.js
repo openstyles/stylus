@@ -109,7 +109,20 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   }
 });
 
-chrome.runtime.onStartup.addListener(async () => {
+if (__.MV3) {
+  chrome.storage.session.get('init', async ({init}) => {
+    __.DEBUGLOG('new session:', !init);
+    if (init) return;
+    chrome.storage.session.set({init: true});
+    onStartup();
+    await bgBusy;
+    reinjectContentScripts();
+  });
+} else {
+  chrome.runtime.onStartup.addListener(onStartup);
+}
+
+async function onStartup() {
   await refreshIconsWhenReady();
   await sleep(1000);
   const minDate = Date.now() - 30 * 24 * 60e3;
@@ -117,7 +130,7 @@ chrome.runtime.onStartup.addListener(async () => {
     const {date} = await API.drafts.get(id) || {};
     if (date < minDate) API.drafts.delete(id);
   }
-});
+}
 
 onMessage(async (m, sender) => {
   if (m.method === 'invokeAPI') {
