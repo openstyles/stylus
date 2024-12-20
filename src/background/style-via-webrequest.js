@@ -6,7 +6,7 @@ import {CHROME, FIREFOX} from '@/js/ua';
 import {actionPopupUrl, ownRoot} from '@/js/urls';
 import {deepEqual, isEmptyObj} from '@/js/util';
 import {ownId, toggleListener} from '@/js/util-webext';
-import {setSystemDark} from './color-scheme';
+import * as colorScheme from './color-scheme';
 import {bgBusy, bgPreInit, stateDB} from './common';
 import {webNavigation} from './navigation-manager';
 import offscreen from './offscreen';
@@ -126,18 +126,20 @@ function toggle(prefKey) {
 
 /** @type {typeof chrome.webRequest.onBeforeRequest.callback} */
 async function prepareStyles(req) {
-  const {tabId, frameId, url} = req;
+  const {tabId, frameId, url} = req; if (tabId < 0) return;
   const key = tabId + ':' + frameId;
   const bgPreInitLen = __.MV3 && bgPreInit.length;
+  const isDark = colorScheme.isSystem()
+    && !tabMan.someInjectable(tabId)
+    && colorScheme.refreshSystemDark();
   __.DEBUGLOG('prepareStyles', key, req);
-  if (tabId < 0) return;
   let cached, unlock;
   let lock = __.MV3 && bgPreInitLen && new Promise(resolve => (unlock = resolve));
-  if (bgPreInitLen) { // bgPreInit in progress, let's join it
+  if (__.MV3 && bgPreInitLen) { // bgPreInit in progress, let's join it
     bgPreInit.push(
       styleCache.loadOne(url),
       frameId ? tabMan.load(tabId) : undefined,
-      offscreen.isDark().then(setSystemDark),
+      isDark,
     );
     const all = Promise.all(bgPreInit);
     if (lock) bgPreInit.push(lock); // keeps bgBusy from resolving until we're done here
@@ -147,6 +149,8 @@ async function prepareStyles(req) {
   if (!cached && bgBusy) {
     if (lock) lock = unlock(); // set to undefined
     await bgBusy;
+  } else if (!bgPreInitLen && isDark && __.MV3) {
+    await isDark;
   }
   const oldData = toSend[key];
   const data = oldData || {};

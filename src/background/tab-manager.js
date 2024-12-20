@@ -7,7 +7,7 @@ import {onUrlChange} from './navigation-manager';
 export const onUnload = new Set();
 export const onUrl = new Set();
 /** @typedef {{ url:string, styleIds: {[frameId:string]: number[]} }} StyleIdsFrameMap */
-/** @type {Map<number,{ url:string, styleIds: StyleIdsFrameMap }>} */
+/** @type {Map<number,{ id: number, url:string, styleIds: StyleIdsFrameMap }>} */
 const cache = new Map();
 
 export const get = (tabId, ...keyPath) => {
@@ -59,6 +59,14 @@ export const set = (tabId, ...args) => {
   if (__.MV3) {
     obj0.id = tabId;
     stateDB.put(obj0, tabId);
+  }
+};
+
+export const someInjectable = skipTabId => {
+  for (const v of cache.values()) {
+    if (v.id !== skipTabId && (v.styleIds || supported(v.url))) {
+      return true;
+    }
   }
 };
 

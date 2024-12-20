@@ -1,7 +1,8 @@
 import * as prefs from '@/js/prefs';
 import {debounce, isCssDarkScheme} from '@/js/util';
 import {broadcastExtension} from './broadcast';
-import {bgBusy, bgPreInit, stateDB} from './common';
+import {bgBusy, bgInit, bgPreInit, stateDB} from './common';
+import offscreen from './offscreen';
 
 const changeListeners = new Set();
 const kSTATE = 'schemeSwitcher.enabled';
@@ -20,6 +21,12 @@ const map = {
   [kTime]: false,
 };
 export const SCHEMES = [kDark, kLight];
+export const isSystem = () => prefState === kSystem;
+export const refreshSystemDark = () => !__.MV3
+  ? setSystemDark(isCssDarkScheme())
+  : prefState === kSystem
+    ? offscreen.isDark().then(setSystemDark)
+    : map[kSystem];
 /** @type {(val: !boolean) => void} */
 export const setSystemDark = update.bind(null, kSystem);
 export let isDark = null;
@@ -37,8 +44,9 @@ if (__.MV3) {
       Object.assign(map, v[1]);
     }
   }));
+  bgInit.push(refreshSystemDark);
 } else {
-  setSystemDark(isCssDarkScheme());
+  refreshSystemDark();
 }
 
 prefs.subscribe(kSTATE, (_, val) => {
