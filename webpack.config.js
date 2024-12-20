@@ -18,7 +18,7 @@ const {escapeForRe, getManifestOvrName, stripSourceMap, MANIFEST, ROOT} = requir
 const GITHUB_ACTIONS = process.env.GITHUB_ACTIONS;
 const NODE_ENV = process.env.NODE_ENV;
 const [TARGET, ZIP] = NODE_ENV?.split(':') || [''];
-const [BUILD, FLAVOR] = TARGET.split('-');
+const [BUILD, FLAVOR, CHANNEL] = TARGET.split('-');
 const DEV = BUILD === 'DEV' || process.env.npm_lifecycle_event?.startsWith('watch');
 const SRC = ROOT + 'src/';
 const DST = ROOT + 'dist/';
@@ -304,7 +304,10 @@ function makeManifest(files) {
     else if (old && typeof old === 'object') Object.assign(old, val);
     else base[key] = val;
   }
-  const ver = base.version = (MV3 ? 3 : 2) + base.version.slice(1);
+  let ver = base.version;
+  if (MV3 && CHANNEL === 'beta' && parseInt(ver) === 2) {
+    ver = base.version = 3 + ver.slice(1);
+  }
   if (GITHUB_ACTIONS) {
     delete base.key;
     childProcess.execSync(`echo "_VER=${ver}" >> $GITHUB_ENV`);
