@@ -131,7 +131,6 @@ chrome.tabs.onRemoved.addListener(async tabId => {
 
 async function onPortDisconnected(port) {
   ignoreChromeError();
-  __.DEBUGLOG(port.sender);
   if (bgBusy) await bgBusy;
   const {sender} = port;
   const tabId = sender.tab?.id;
