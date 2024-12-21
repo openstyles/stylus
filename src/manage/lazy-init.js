@@ -1,7 +1,8 @@
 import {UCD} from '@/js/consts';
-import {$, $create} from '@/js/dom';
+import {$, $$, $create} from '@/js/dom';
 import {animateElement} from '@/js/dom-util';
 import {formatDate, formatRelativeDate, t} from '@/js/localization';
+import {CHROME} from '@/js/ua';
 import {debounce} from '@/js/util';
 import InjectionOrder from './injection-order';
 import * as router from './router';
@@ -19,6 +20,13 @@ $('#sync-styles').onclick =
 $('#injection-order-button').onclick = router.makeToggle('injection-order', InjectionOrder);
 $('#update-history-button').onclick = router.makeToggle('update-history', UpdateHistory);
 router.update();
+
+if (!__.MV3 && __.BUILD !== 'firefox' && CHROME >= 80 && CHROME <= 88) {
+  // Wrong checkboxes are randomly checked after going back in history, https://crbug.com/1138598
+  window.on('pagehide', () => {
+    $$('input[type=checkbox]').forEach((el, i) => (el.name = `bug${i}`));
+  });
+}
 
 function addEntryTitle(link) {
   const style = link.closest('.entry').styleMeta;
