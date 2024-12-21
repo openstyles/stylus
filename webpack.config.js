@@ -369,7 +369,7 @@ module.exports = [
       ...PAGES.map(p => new HtmlWebpackPlugin({
         chunks: [p],
         filename: p + '.html',
-        template: SRC + p + '/index.html',
+        template: SRC + p + '.html',
         templateParameters: (compilation, files, tags, options) => {
           const {bodyTags, headTags} = tags;
           // The main entry goes into BODY to improve performance (2x in manage.html)
@@ -437,7 +437,7 @@ module.exports = [
       new HtmlWebpackPlugin({
         chunks: [PAGE_OFFSCREEN],
         filename: PAGE_OFFSCREEN + '.html',
-        template: SRC + PAGE_OFFSCREEN + '/index.html',
+        template: SRC + PAGE_OFFSCREEN + '.html',
         scriptLoading: 'blocking',
         inject: false,
       }),
