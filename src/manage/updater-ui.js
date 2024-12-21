@@ -1,6 +1,6 @@
-import {$, $$, $create} from '@/js/dom';
+import {$, $$, $create, $detach} from '@/js/dom';
 import {messageBox, scrollElementIntoView} from '@/js/dom-util';
-import {t} from '@/js/localization';
+import {t, template} from '@/js/localization';
 import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {chromeLocal} from '@/js/storage-util';
@@ -8,20 +8,29 @@ import {filterAndAppend, filtersSelector} from './filters';
 import {updateStripes} from './sorter';
 import {$entry, newUI} from './util';
 
+const elAll = template.updateAll;
+const btnApply = $('#apply-all-updates', elAll);
 const btnCheck = $('#check-all-updates');
-const btnCheckForce = $('#check-all-updates-force');
-const btnApply = $('#apply-all-updates');
+const btnCheckForce = $('#check-all-updates-force', elAll);
+const elNoUpdates = $('#update-all-no-updates', elAll);
+const elOnlyUpdates = template.onlyUpdates;
 btnCheck.onclick = btnCheckForce.onclick = checkUpdateAll;
 btnApply.onclick = applyUpdateAll;
 
+for (const el of [...elAll.children]) $detach(el);
+for (const id of ['updateAll', 'onlyUpdates']) {
+  $(`template[data-id="${id}"]`).replaceWith(template[id]);
+}
+$detach(elOnlyUpdates);
+
 prefs.subscribe('updateOnlyEnabled', (key, val) => {
-  btnCheck.title = val ? t('manageOnlyEnabled') : '';
+  btnCheck.title = `${btnCheck.title.split('\n')[0]}\n(${val ? t('manageOnlyEnabled') : ''})`;
 }, true);
 
 function applyUpdateAll() {
   btnApply.disabled = true;
   setTimeout(() => {
-    btnApply.classList.add('hidden');
+    $detach(btnApply);
     btnApply.disabled = false;
     renderUpdatesOnlyFilter({show: false});
   }, 1000);
@@ -34,11 +43,10 @@ function applyUpdateAll() {
 
 function checkUpdateAll() {
   document.body.classList.add('update-in-progress');
-  const noUpdates = $('#update-all-no-updates');
   btnCheck.disabled = true;
-  btnCheckForce.classList.add('hidden');
-  btnApply.classList.add('hidden');
-  noUpdates.classList.add('hidden');
+  $detach(btnCheckForce);
+  $detach(btnApply);
+  $detach(elNoUpdates);
 
   const ignoreDigest = this === btnCheckForce;
   $$('.updatable:not(.can-update)' + (ignoreDigest ? '' : ':not(.update-problem)'))
@@ -89,9 +97,9 @@ function checkUpdateAll() {
     btnApply.disabled = false;
     renderUpdatesOnlyFilter({check: updated + skippedEdited > 0});
     if (!updated) {
-      noUpdates.dataset.skippedEdited = skippedEdited > 0;
-      noUpdates.classList.remove('hidden');
-      btnCheckForce.classList.toggle('hidden', skippedEdited === 0);
+      elNoUpdates.dataset.skippedEdited = skippedEdited > 0;
+      $detach(elNoUpdates, false);
+      $detach(btnCheckForce, !skippedEdited);
     }
   }
 }
@@ -132,7 +140,7 @@ function reportUpdateState({updated, style, error, STATES}) {
     newClasses.set('can-update', true);
     entry.updatedCode = style;
     $('.update-note', entry).textContent = '';
-    $('#only-updates').classList.remove('hidden');
+    $detach(elOnlyUpdates, false);
   } else if (!entry.classList.contains('can-update')) {
     const same = (
       error === STATES.SAME_MD5 ||
@@ -205,15 +213,15 @@ function reportUpdateState({updated, style, error, STATES}) {
 function renderUpdatesOnlyFilter({show, check} = {}) {
   const numUpdatable = $$('.can-update').length;
   const mightUpdate = numUpdatable > 0 || $('.update-problem');
-  const checkbox = $('#only-updates input');
+  const checkbox = $('input', elOnlyUpdates);
   show = show !== undefined ? show : mightUpdate;
   check = check !== undefined ? show && check : checkbox.checked && mightUpdate;
 
-  $('#only-updates').classList.toggle('hidden', !show);
+  $detach(elOnlyUpdates, !show);
   checkbox.checked = check && show;
   checkbox.dispatchEvent(new Event('change'));
 
-  btnApply.classList.toggle('hidden', !numUpdatable);
+  $detach(btnApply, !numUpdatable);
   btnApply.dataset.value = numUpdatable;
 }
 

@@ -114,8 +114,48 @@
   </label>
 
   <div id="manage-settings">
-    <div class="settings-column">
-      <details id="filters" data-pref="manage.filters.expanded">
+    <div class="settings-column flex" id="actions">
+      <a id="check-all-updates" i18n="title:checkAllUpdates" class="icon" tabindex="0">
+        <i class=i-update-check></i>
+        <span id="update-progress"></span>
+      </a>
+      <a id="update-history-button" i18n="title:genericHistoryLabel" class="icon" tabindex="0">
+        <i class=i-log></i>
+      </a>
+      <a id="injection-order-button" i18n="title:styleInjectionOrder" class="icon" tabindex="0">
+        <i class=i-reorder></i>
+      </a>
+      <a id="manage-options-button" i18n="title:openOptions" class="icon" tabindex="0">
+        <svg class="hollow-gear" viewBox="0 0 20 20" stroke-width="1.25px">
+          <text y="100%">⚙</text>
+        </svg>
+      </a>
+
+      <a id="add-style" i18n="title:addStyleLabel" class="icon" tabindex="0" href="edit.html">
+        <i class=i-plus></i>
+      </a>
+      <label id="add-style-as-usercss-wrapper" i18n="title:optionsAdvancedNewStyleAsUsercss">
+        <input type="checkbox" id="newStyleAsUsercss">
+        <i class=i-usercss></i>
+        <a id="usercss-wiki"
+           class="icon"
+           href="https://github.com/openstyles/stylus/wiki/Usercss"
+           i18n="title:externalUsercssDocument">
+          <i class=i-external></i>
+        </a>
+      </label>
+
+      <div id="update-all">
+        <template data-id="updateAll">
+          <button id="apply-all-updates" i18n="applyAllUpdates"></button>
+          <span id="update-all-no-updates" i18n="updateAllCheckSucceededNoUpdate"></span>
+          <button id="check-all-updates-force" i18n="checkAllUpdatesForce"></button>
+        </template>
+      </div>
+    </div>
+
+    <div class="settings-column" id="filters">
+      <details data-pref="manage.filters.expanded">
         <summary>
           <h2 i18n="manageFilters">:
             <div class="filter-stats-wrapper">
@@ -170,7 +210,8 @@
         </div>
 
         <div class="filter-selection">
-          <label id="only-updates" class="hidden">
+        <template data-id="onlyUpdates">
+          <label id="only-updates">
             <input type="checkbox"
                    data-filter=".can-update, .update-problem, .update-done"
                    data-filter-hide=":not(.updatable):not(.update-done),
@@ -178,6 +219,7 @@
                                      .updatable:not(.can-update):not(.update-problem):not(.update-done)">
             <span i18n="manageOnlyUpdates"></span>
           </label>
+        </template>
         </div>
 
         <div id="search-wrapper">
@@ -193,7 +235,7 @@
               <option i18n="searchStylesAll" value="all"></option>
             </select>
           </div>
-          <a id="search-help" tabindex="0">
+          <a id="search-help" tabindex="0" class="icon">
             <i class=i-info></i>
           </a>
         </div>
@@ -204,89 +246,53 @@
         <div class="select-wrapper" i18n="title:sortLabel">
           <select id="manage.newUI.sort"></select>
         </div>
-        <a id="sorter-help" tabindex="0">
+        <a id="sorter-help" tabindex="0" class="icon">
           <i class=i-info></i>
         </a>
       </div>
     </div>
 
-    <div class="settings-column">
-      <details id="actions" data-pref="manage.actions.expanded">
-        <summary><h2 i18n="optionsActions"></h2></summary>
-        <div id="update-check">
-          <button id="check-all-updates" i18n="checkAllUpdates">
-            <span id="update-progress"></span>
-          </button>
-          <a id="update-history-button" i18n="title:genericHistoryLabel" tabindex="0">
-            <i class=i-log></i>
-          </a>
-        </div>
-
-        <div id="update-all">
-          <button id="apply-all-updates" class="hidden" i18n="applyAllUpdates"></button>
-          <span id="update-all-no-updates" class="hidden" i18n="updateAllCheckSucceededNoUpdate"></span>
-          <button id="check-all-updates-force" class="hidden" i18n="checkAllUpdatesForce"></button>
-        </div>
-
-        <div id="add-style-wrapper">
-          <a href="edit.html" class="ellipsis">
-            <button id="add-style-label" tabindex="-1">&nbsp;</button>
-          </a>
-          <label id="add-style-as-usercss-wrapper" i18n="title:optionsAdvancedNewStyleAsUsercss">
-            <input type="checkbox" id="newStyleAsUsercss">
-            <i class=i-usercss></i>
-            <a id="usercss-wiki"
-               class="icon"
-               href="https://github.com/openstyles/stylus/wiki/Usercss"
-               i18n="title:externalUsercssDocument">
-              <i class=i-external></i>
-            </a>
-          </label>
-        </div>
-
-        <div class="gap1">
-          <button id="injection-order-button" i18n="styleInjectionOrder"></button>
-          <button id="manage-options-button" i18n="openOptions"></button>
-        </div>
-      </details>
-    </div>
-
-    <div class="settings-column">
-      <details id="backup" data-pref="manage.backup.expanded">
+    <div class="settings-column" id="backup">
+      <details data-pref="manage.backup.expanded">
         <summary>
           <h2 id="backup-title" i18n="backupButtons"><!-- removing space
-            --><a tabindex="0" i18n="title:backupMessage" data-cmd="note">
+            --><a tabindex="0" i18n="title:backupMessage" data-cmd="note" class="icon">
               <i class=i-info></i>
             </a>
           </h2>
         </summary>
-        <div id="backup-buttons" class="flex wrap gap1">
+        <main class="flex wrap gap1">
           <div class="split-btn">
             <button id="file-all-styles" i18n="exportLabel"></button
             ><button class="split-btn-pedal" i18n="menu-compat:exportCompatible"></button>
           </div>
           <button id="unfile-all-styles" i18n="importLabel"></button>
           <button id="sync-styles" i18n="optionsCustomizeSync"></button>
-        </div>
+        </main>
       </details>
+    </div>
 
-      <div id="manage-text">
+    <div class="settings-column" id="links">
+    <details data-pref="manage.actions.expanded">
+      <summary><h2></h2></summary>
+      <main>
         <span>
           <a href="https://userstyles.world/explore" target="_blank" i18n="linkGetShareStyles"></a>
-          <a tabindex="0" i18n="title:linkGetShareStylesInfo" data-cmd="note">
+          <a tabindex="0" i18n="title:linkGetShareStylesInfo" data-cmd="note" class="icon">
             <i class=i-info></i>
           </a>
         </span>
         <span>
           <a href="https://uso.kkx.one/browse/styles" target="_blank" i18n="linkGetStyles"></a>
-          <a tabindex="0" i18n="title:linkGetStylesInfo" data-cmd="note">
+          <a tabindex="0" i18n="title:linkGetStylesInfo" data-cmd="note" class="icon">
             <i class=i-info></i>
           </a>
         </span>
         <span><a href="https://add0n.com/stylus.html#features" target="_blank" i18n="linkGetHelp"></a></span>
         <span><a href="https://github.com/openstyles/stylus/wiki" target="_blank" i18n="linkStylusWiki"></a></span>
         <span><a href="https://www.transifex.com/github-7/Stylus" target="_blank" i18n="linkTranslate"></a></span>
-      </div>
+      </main>
+    </details>
     </div>
   </div>
 

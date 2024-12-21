@@ -107,9 +107,6 @@ textarea {
 #live-reload-install-hint {
   color: darkcyan;
 }
-.w100 {
-  width: 100%;
-}
 
 .install {
   background-color: hsl(0, 0%, 33%);

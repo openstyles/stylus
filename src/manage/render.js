@@ -290,12 +290,12 @@ export function updateTotal(delta) {
     return;
   }
   installed.dataset.total = numStyles;
-  let el = $('#manage-text-empty');
+  let el = $('#links-empty');
   if (numStyles && el) {
     el.remove();
   } else if (!numStyles && !el) {
-    el = $('#manage-text').cloneNode(true);
-    el.id += '-empty';
+    el = $('#links main').cloneNode(true);
+    el.id = 'links-empty';
     installed.after(el);
   } else {
     return;

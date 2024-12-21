@@ -1,3 +1,8 @@
+/* postcss-simple-vars */
+$pad: 1rem;
+$iconGapX: .75rem;
+$iconGap: .25rem $iconGapX;
+
 :root {
   --name-padding-left: 20px;
   --name-width: 30ch;
@@ -36,11 +41,7 @@ body.all-styles-hidden-by-filters {
 
 a, .disabled a:hover {
   color: var(--fg);
-  transition: color .5s;
-}
-
-a:hover {
-  color: var(--c40);
+  transition: color .25s;
 }
 
 #header {
@@ -48,60 +49,48 @@ a:hover {
   height: 100vh;
   position: fixed;
   top: 0;
-  padding: 1rem;
+  padding: $pad;
   overflow: auto;
   box-sizing: border-box;
   z-index: 9;
-  & h1 {
+  h1 {
     margin-top: 0;
     margin-bottom: .3em;
   }
-  & a[href^="edit"] {
-    text-decoration: none;
-    margin-right: 8px;
-  }
-  & a:not(.icon) i {
-    margin-left: .2em;
+  i.i-info {
+    margin-left: .25em;
   }
 }
-
-#update-check,
-#update-all {
-  margin-bottom: .5rem;
+#manage-settings {
+  display: flex;
+  flex-wrap: wrap;
 }
-
-#check-all-updates {
-  max-width: calc(100% - 30px);
+#actions {
+  gap: $iconGap;
+  flex-flow: wrap;
+  margin: .25rem 0 -.5rem;
+  .icon:not([href]) > * {
+    color: inherit;
+  }
+  .icon > :hover {
+    color: var(--accent-1);
+  }
 }
-
 #check-all-updates-force {
   white-space: normal;
   text-align: left;
 }
-
-#add-style-wrapper {
-  display: flex;
-  align-items: center;
-  > * {
-    /* in case the children are wrapped */
-  margin-bottom: .5rem;
-  }
-}
 #add-style-as-usercss-wrapper {
   display: flex;
   align-items: center;
-  &:not(:hover) input:not(:checked) ~ a i {
-    color: var(--c65);
-  }
-}
-#newStyleAsUsercss {
-  + i {
+  > i {
     font-size: 16px;
-    cursor: auto;
+    margin-right: .25em;
   }
-  &:checked {
-    &, + i {
-      border-color: var(--accent-1);
+  :checked {
+    border-color: var(--accent-1);
+    color: var(--accent-1);
+    + i {
       color: var(--accent-1);
       + a i {
         color: var(--accent-2);
@@ -110,26 +99,11 @@ a:hover {
     }
   }
 }
-
-button.icon {
-  --w: 16px;
-  width: var(--w);
-  box-sizing: content-box;
-  margin-left: .2rem;
-  position: relative;
-  &::after {
-    content: '\A0';
-  }
-  > i {
-    position: absolute;
-    font-size: var(--w);
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: auto;
-    width: var(--w);
-    height: var(--w);
+#backup main {
+  $gap: .25rem;
+  margin: 0 -$gap -$gap 0;
+  > * {
+    margin: 0 $gap $gap 0;
   }
 }
 
@@ -233,11 +207,11 @@ button.icon {
 }
 
 .disabled {
-  & h2 .style-name-link,
+  h2 .style-name-link,
   .applies-to {
     color: var(--c60);
     font-weight: normal;
-    transition: color .5s .1s;
+    transition: color .25s .1s;
   }
   &.usercss .style-name-link::after {
     background-color: hsla(180, 35%, 50%, .2);
@@ -245,17 +219,10 @@ button.icon {
   &:hover .actions {
     opacity: 1;
   }
-  .disable {
-    display: none;
-  }
-}
-
-.enabled .enable {
-  display: none;
 }
 
 #header {
-  & details {
+  details {
     &:not([open]) {
       &, & h2 {
         padding-bottom: 0;
@@ -265,13 +232,12 @@ button.icon {
       padding-bottom: .5rem;
     }
   }
-
-  & summary {
+  summary {
     margin-top: .25rem;
     align-items: center;
     margin-left: -13px;
     cursor: pointer;
-    & h2 {
+    h2 {
       display: inline;
       border-bottom: 1px dotted transparent;
       margin-top: .1em;
@@ -284,16 +250,15 @@ button.icon {
       border-color: var(--c75);
     }
   }
-  & #filters summary {
+  #filters summary {
     margin-bottom: -2px;
-    & h2 {
+    h2 {
       display: inline-flex;
       flex-wrap: wrap;
       align-items: center;
     }
   }
 }
-/* compact layout */
 
 /************ checkbox & select************/
 
@@ -311,7 +276,7 @@ button.icon {
     height: 18px;
     padding: 0 0 0 8px;
   }
-  & select {
+  select {
     height: 18px;
     border: none;
     max-width: 100%;
@@ -341,30 +306,25 @@ button.icon {
   }
 }
 
-#manage-text {
-  display: flex;
-  flex-wrap: wrap;
-  padding-top: .35rem;
-  > * {
-    display: flex;
-    align-items: center;
+#links {
+  margin-top: .25rem;
+  details:not([open]) h2::after {
+    content: "...";
   }
-  > :not(:last-child):after {
-    content: "|";
-    margin: 0 .5em;
+  main {
+    margin-top: -1rem;
+    display: flex;
+    flex-flow: column;
+    gap: .25em;
   }
 }
-
 /* no styles */
 .empty {
   #installed {
     flex: 0;
   }
-  #manage-settings > :first-child {
-    display: none;
-  }
 }
-#manage-text-empty {
+#links-empty {
   padding: 1.25rem 0 0 2rem;
   line-height: 2;
   font-size: larger;
@@ -377,19 +337,25 @@ button i {
   color: var(--fg);
 }
 
+.disabled .disable,
+.enabled .enable,
+.empty #filters,
+#filters summary:not(.active) :is(#reset-filters, #filters-stats),
+#update-all:empty,
+.can-update .check-update,
+/* Updates not available */
+.no-update:not(.update-problem) .check-update,
+.update-done .check-update,
 /* Default, no update buttons */
-.updater-icons :is(.update, .check-update) {
+.updater-icons :is(.update, .check-update),
+/* Update check in progress */
+.checking-update .check-update {
   display: none;
 }
 
 /* Check update button for things that can */
 .updatable .check-update {
   display: inline-block;
-}
-
-/* Update check in progress */
-.checking-update .check-update {
-  display: none;
 }
 
 /* Updates available */
@@ -399,19 +365,6 @@ button i {
   }
   &[data-details$="locally edited"] button.update:after {
     content: "*";
-  }
-  .check-update {
-    display: none;
-  }
-}
-
-/* Updates not available */
-.check-update {
-  .no-update:not(.update-problem) & {
-    display: none;
-  }
-  .update-done & {
-    display: none;
   }
 }
 
@@ -441,7 +394,6 @@ button i {
 #update-all-no-updates[data-skipped-edited="true"] {
   font-weight: bold;
 }
-
 #update-all-no-updates[data-skipped-edited="true"]::after {
   content: " " var(--updateAllCheckSucceededSomeEdited);
   font-weight: normal;
@@ -491,17 +443,13 @@ button i {
 }
 
 #reset-filters {
-  & i {
+  i {
     color: var(--accent-2);
     padding: 2px;
   }
   &:hover i {
     filter: brightness(1.2);
   }
-}
-
-#filters summary:not(.active) :is(#reset-filters, #filters-stats) {
-  display: none;
 }
 
 #search-wrapper, #sort-wrapper {
@@ -544,10 +492,6 @@ button i {
   width: 100%;
 }
 
-#search-help, #sorter-help, #add-style-wrapper {
-  margin-right: -4px;
-}
-
 #incremental-search {
   position: absolute;
   color: transparent;
@@ -570,10 +514,10 @@ button i {
   &#message-box > div {
     max-width: 26rem;
   }
-  & li:not(:last-child) {
+  li:not(:last-child) {
     margin-bottom: 1em;
   }
-  & mark {
+  mark {
     background-color: rgba(128, 128, 128, .15);
     color: currentColor;
     padding: 2px 6px;
@@ -623,7 +567,7 @@ button i {
   &:not(:last-child) {
     margin-bottom: 1em;
   }
-  & small > * {
+  small > * {
     margin-left: 1.5em;
   }
   > button {
@@ -658,7 +602,8 @@ button i {
 }
 
 .settings-column {
-  margin-top: 1rem;
+  margin-top: $pad;
+  width: 100%;
 }
 
 @media (max-width: 850px) {
@@ -707,29 +652,34 @@ button i {
     background: var(--c97);
     border-right: none;
     border-bottom: 1px dashed var(--c65);
-    & h1 {
+    h1 {
       display: none;
     }
-    & summary {
+    summary {
       margin-top: 0;
       padding-bottom: .25rem;
     }
   }
-
+  #disableAll-label {
+    margin: $iconGapX $pad -$iconGapX;
+    display: block;
+  }
   #manage-settings {
-    display: flex;
-    flex-wrap: wrap;
-    width: 100%;
-    padding: 0 0 1rem;
+    padding: $pad;
+    gap: $pad;
     > .settings-column {
       display: flex;
-      flex-direction: column;
-      flex: 1;
-      padding: 0 1rem;
-      box-sizing: border-box;
+      align-items: flex-start;
+      flex-flow: wrap;
+      flex: 1 1;
+      margin: 0;
+      width: auto;
+      height: fit-content;
+    }
+    > #actions {
+      flex: 0 0 calc(2 * (20px /*icon*/ + $iconGapX) + $pad);
     }
   }
-
   #installed {
     margin-top: 0;
     padding-left: 0;

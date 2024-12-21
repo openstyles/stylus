@@ -1,5 +1,5 @@
 import '@/js/dom-init';
-import {$, $$} from '@/js/dom';
+import {$$} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
 import {t, tBody} from '@/js/localization';
 import * as prefs from '@/js/prefs';
@@ -38,13 +38,8 @@ tBody();
 
 function init(badFavs) {
   setupLivePrefs();
-  // newUI.readPrefs();
   newUI.render(true);
   prefs.subscribe(newUI.ids.map(newUI.prefKeyForId), () => newUI.render());
-  prefs.subscribe('newStyleAsUsercss', (key, val) => {
-    $('#add-style-label').textContent =
-      t(val ? 'optionsAdvancedNewStyleAsUsercss' : 'addStyleLabel');
-  }, true);
   sorter.init();
   router.update();
   return newUI.hasFavs() && readBadFavs(badFavs);

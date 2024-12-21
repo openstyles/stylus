@@ -65,7 +65,7 @@ a {
   color: var(--fg);
   transition: color .1s;
   &:hover {
-    color: var(--c40);
+    color: var(--accent-1);
   }
   &.icon { text-decoration: none; }
 }
@@ -136,7 +136,9 @@ input {
 }
 
 i {
-  cursor: pointer;
+  a[href] > & {
+    cursor: pointer;
+  }
   vertical-align: middle;
   transition: color .1s;
   font: 20px/1 icons;
@@ -274,6 +276,14 @@ summary {
   user-select: none;
 }
 
+.hollow-gear {
+  cursor: default;
+  height: 20px;
+  font: normal 20px icons;
+  fill: transparent;
+  stroke: currentColor;
+}
+
 /* global stuff we use everywhere */
 .hidden {
   display: none !important;
@@ -290,8 +300,8 @@ summary {
 .wrap {
   flex-wrap: wrap;
 }
-.gap1 > :nth-last-child(n + 2) {
-  margin-right: .25rem;
+.w100 {
+  width: 100%;
 }
 .no-stretch {
   /* reuse the current width of the parent flexbox */

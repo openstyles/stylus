@@ -135,6 +135,7 @@
     font-size: 90%;
     animation: fadeout 10s;
     animation-fill-mode: both;
+    pointer-events: none;
   }
   .update-problem .check-update:after {
     background-color: red;

@@ -28,6 +28,8 @@ export const focusA11y = {
   },
 };
 
+const detachments = new WeakMap();
+
 /**
  * We have ids with "." like #manage.onlyEnabled which looks like #id.class
  * so since getElementById is superfast we'll try it anyway
@@ -40,6 +42,7 @@ export function $(selector, base) {
   return byId || (base || document).querySelector(selector);
 }
 
+/** @returns {NodeListOf<HTMLElement>} */
 export function $$(selector, base = document) {
   return base.querySelectorAll(selector);
 }
@@ -149,6 +152,27 @@ export function $createLink(href = '', content) {
     opt.href = href;
   }
   return $create(opt, content);
+}
+
+export function $detach(el, state = true) {
+  let cmt = detachments.get(el);
+  state ??= !cmt;
+  if (state) {
+    if (!cmt) {
+      cmt = document.createComment(
+        ((cmt = el.id)) ? '#' + cmt :
+          ((cmt = el.className)) ? '.' + cmt :
+            el.outerHTML);
+      detachments.set(el, cmt);
+      el.replaceWith(cmt);
+    }
+  } else {
+    if (cmt) {
+      cmt.replaceWith(el);
+      detachments.delete(el);
+    }
+  }
+  return state;
 }
 
 /** Moves child nodes to a new document fragment */

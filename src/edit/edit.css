@@ -1,3 +1,6 @@
+/* postcss-simple-vars */
+$plus-minus-pad: .5rem;
+
 :root {
   --pad: 1rem; /* Edge padding for modals/blocks/whatnot. TODO: reuse it in more places */
   --pad05: calc(0.5 * var(--pad));
@@ -623,21 +626,15 @@ i,
 .add-applies-to,
 .remove-applies-to {
   font-size: 0;
-  height: var(--input-height);
-  width: var(--input-height);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
+  margin-right: $plus-minus-pad;
 }
 .remove-applies-to {
-  margin-left: 4px;
+  margin-left: $plus-minus-pad;
 }
 :is(.add-applies-to, .remove-applies-to) i {
   pointer-events: none;
   color: var(--c60);
-  height: 12px;
-  font-size: 12px;
 }
 :is(.add-applies-to, .remove-applies-to):hover i {
   pointer-events: none;

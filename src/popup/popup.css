@@ -585,12 +585,6 @@ a:hover i {
     padding: 0 3px;
     box-sizing: content-box;
   }
-  svg {
-    height: 20px;
-    font: normal 20px icons;
-    fill: transparent;
-    stroke: currentColor;
-  }
 }
 .styles-first:not(.search-results-shown) {
   #popup-options .split-btn-menu {

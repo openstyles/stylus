@@ -8,6 +8,7 @@
 import {$, $$, $toFragment} from './dom';
 import {fetchText, hasOwn} from './util';
 
+/** @type {{ [id: string]: Element | DocumentFragment }} */
 export const template = /*@__PURE__*/new Proxy({}, {
   get: (obj, k, _) => hasOwn(obj, k) ? obj[k] :
     (_ = $(`template[data-id="${k}"]`)) && (obj[k] = createTemplate(_)),
