@@ -625,9 +625,9 @@ button i {
   border: 0;
   z-index: 2147483647;
   background-color: hsla(0, 0%, 0%, .45);
-  animation: fadein .25s ease-in-out;
+  animation: fadein .25s;
   &.fadeout {
-    animation: fadeout .25s ease-in-out;
+    animation: fadeout .25s;
   }
 }
 
