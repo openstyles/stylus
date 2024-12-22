@@ -15,10 +15,10 @@ import './incremental-search';
 installed.on('mouseover', lazyAddEntryTitle, {passive: true});
 installed.on('mouseout', lazyAddEntryTitle, {passive: true});
 
-$('#sync-styles').onclick =
-  $('#manage-options-button').onclick = router.makeToggle('stylus-options', toggleEmbeddedOptions);
-$('#injection-order-button').onclick = router.makeToggle('injection-order', InjectionOrder);
-$('#update-history-button').onclick = router.makeToggle('update-history', UpdateHistory);
+router.makeToggle('#sync-styles', 'stylus-options', toggleEmbeddedOptions);
+router.makeToggle('#manage-options-button', 'stylus-options', toggleEmbeddedOptions);
+router.makeToggle('#injection-order-button', 'injection-order', InjectionOrder);
+router.makeToggle('#update-history-button', 'update-history', UpdateHistory);
 router.update();
 
 if (!__.MV3 && __.BUILD !== 'firefox' && CHROME >= 80 && CHROME <= 88) {
@@ -51,12 +51,13 @@ function lazyAddEntryTitle({type, target}) {
   }
 }
 
-async function toggleEmbeddedOptions(show, el, selector) {
+async function toggleEmbeddedOptions(show, el, selector, toggler) {
   document.title = t(show ? 'optionsHeading' : 'styleManager');
   // TODO: use messageBox() or a dockable sidepanel or the chrome.sidePanel API
   if (show) {
-    $.root.appendChild($create('iframe' + selector, {src: '/options.html'}))
-      .focus();
+    el = $.root.appendChild($create('iframe' + selector, {src: '/options.html'}));
+    el.focus();
+    el.contentWindow._toggler = toggler.id;
     await new Promise(resolve => (window.closeOptions = resolve));
   } else {
     await animateElement(el, 'fadeout');

@@ -81,6 +81,9 @@ for (const el of $$('[data-clickable]')) {
       }, '⚒'));
     }
   }
+  if (window._toggler === 'sync-styles') {
+    $('.cloud-name').focus();
+  }
 })();
 
 function customizeHotkeys() {

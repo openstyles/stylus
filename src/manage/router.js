@@ -10,17 +10,18 @@ export function getSearch(key) {
 }
 
 /** When showing the UI, `showHide` function must resolve only when the UI is closed */
-export function makeToggle(hashId, showHide, loadDeps) {
+export function makeToggle(toggler, hashId, showHide, loadDeps) {
+  toggler = $(toggler);
   const hash = '#' + hashId;
   const selector = '.' + hashId;
   watch({hash}, async state => {
     const el = $(selector);
     if (!state === !el) return;
-    if (state && loadDeps && !showHide) showHide = await loadDeps();
-    await showHide(state, el, selector);
+    if (state && loadDeps) showHide ??= await loadDeps();
+    await showHide(state, el, selector, toggler);
     if (state) updateHash('');
   });
-  return updateHash.bind(null, hash);
+  toggler.on('click', updateHash.bind(null, hash));
 }
 
 export function push(url) {
