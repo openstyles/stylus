@@ -1,3 +1,8 @@
+/* postcss-simple-vars */
+$pad: 1rem;
+$iconGapX: .75rem;
+$iconGapY: .25rem;
+
 @media not all, newui {
   .disabled.entry i {
     color: var(--c80);
@@ -253,6 +258,10 @@
   @media (max-width: 850px) {
     :root {
       --name-padding-left: 14px;
+    }
+    #disableAll-label {
+      margin: $iconGapX $pad -$iconGapX;
+      display: block;
     }
     .entry {
       padding: 0;

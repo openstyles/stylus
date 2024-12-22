@@ -42,9 +42,8 @@ Object.assign(document.body, {
   ondrop(event) {
     if (event.dataTransfer.files.length) {
       event.preventDefault();
-      if ($('#only-updates input').checked) {
-        $('#only-updates input').click();
-      }
+      const elOnly = $('#only-updates input');
+      if (elOnly?.checked) elOnly.click();
       importFromFile(event.dataTransfer.files[0]);
     }
     /* Run import first for a while, then run fadeout which is very CPU-intensive in Chrome */

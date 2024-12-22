@@ -135,14 +135,20 @@ const getBaseConfig = () => ({
   // infrastructureLogging: {debug: /webpack\.cache/},
   module: {
     rules: [
-      {
-        test: /\.css$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          {loader: 'css-loader', options: {importLoaders: 1}},
-          'postcss-loader',
-        ],
+      // calc plugin for clamp() is broken: https://github.com/postcss/postcss-calc/issues/123
+      ...((skip = 'js/dlg/config-dialog.css', use = [
+        MiniCssExtractPlugin.loader,
+        {loader: 'css-loader', options: {importLoaders: 1}},
+      ]) => [{
+        test: (skip = path.resolve(SRC + skip)),
+        use: [...use, 'postcss-loader'],
       }, {
+        test: /\.css$/,
+        exclude: [skip],
+        use: [...use, {loader: 'postcss-loader', options: {postcssOptions: mergeCfg({plugins: [
+          'postcss-calc',
+        ]}, require('./postcss.config'))}}],
+      }])(), {
         test: /\.(png|svg|jpe?g|gif|ttf)$/i,
         type: 'asset/resource',
       }, {

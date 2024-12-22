@@ -18,10 +18,6 @@ export const clientData = !__.IS_BG && (
     })
 );
 
-/**
- * @type PrefsValues
- * @namespace PrefsValues
- */
 const defaults = {
   __proto__: null,
   // TODO: sort everything aphabetically
@@ -61,9 +57,10 @@ const defaults = {
   'manage.onlyLocal.invert': false,   // display only externally installed styles
   'manage.onlyUsercss.invert': false, // display only non-usercss (standard) styles
   // UI element state: expanded/collapsed
-  'manage.actions.expanded': true,
+  'manage.actions.expanded': false,
   'manage.backup.expanded': true,
   'manage.filters.expanded': true,
+  'manage.links.expanded': true,
   'manage.minColumnWidth': 750,
   // the new compact layout doesn't look good on Android yet
   'manage.newUI': true,
@@ -157,13 +154,12 @@ const defaults = {
   'updateOnlyEnabled': false,
 };
 const warnUnknown = console.warn.bind(console, 'Unknown preference "%s"');
-/** @type {PrefsValues} */
 const values = deepCopy(defaults);
 /** @type {Record<string, Set<function>>} */
 const onChange = {};
 
 export const STORAGE_KEY = 'settings';
-/** @type {PrefsValues} */
+/** @type {typeof defaults} */
 const defaultsClone = new Proxy({}, {
   get: (_, key) => deepCopy(defaults[key]),
 });

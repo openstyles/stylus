@@ -22,10 +22,14 @@ for (const id of ['updateAll', 'onlyUpdates']) {
   $(`template[data-id="${id}"]`).replaceWith(template[id]);
 }
 $detach(elOnlyUpdates);
-
-prefs.subscribe('updateOnlyEnabled', (key, val) => {
-  btnCheck.title = `${btnCheck.title.split('\n')[0]}\n(${val ? t('manageOnlyEnabled') : ''})`;
-}, true);
+{
+  const kBtns = 'manage.actions.expanded';
+  const kOnly = 'updateOnlyEnabled';
+  prefs.subscribe([kBtns, kOnly], () => {
+    btnCheck.title = btnCheck.title.split('\n')[0] +
+      (!prefs.__values[kBtns] && prefs.__values[kOnly] ? `\n(${t('manageOnlyEnabled')})` : '');
+  }, true);
+}
 
 function applyUpdateAll() {
   btnApply.disabled = true;

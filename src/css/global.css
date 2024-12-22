@@ -100,7 +100,7 @@ button {
     background-repeat: repeat-x;
     background-size: 100% 100%;
   }
-  & i {
+  i {
     cursor: auto;
   }
 }

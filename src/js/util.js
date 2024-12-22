@@ -136,7 +136,12 @@ export function deepMerge(src, dst, mergeArrays) {
   return dst;
 }
 
-/** Useful in arr.map(deepCopy) to ignore the extra parameters passed by map() */
+/**
+ * Useful in arr.map(deepCopy) to ignore the extra parameters passed by map()
+ * @template T
+ * @param {T} src
+ * @return {T}
+ */
 export function deepCopy(src) {
   return deepMerge(src);
 }

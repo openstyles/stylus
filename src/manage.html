@@ -107,7 +107,7 @@
 <template data-id="body"> <!-- https://crbug.com/1288447 -->
 
 <div id="header">
-  <h1 id="manage-heading" i18n="manageHeading"></h1>
+  <h1 i18n="manageHeading"></h1>
 
   <label id="disableAll-label" i18n="data-on:disableAllStyles, data-off:disableAllStylesOff">
     <input id="disableAll" type="checkbox">
@@ -115,43 +115,51 @@
 
   <div id="manage-settings">
     <div class="settings-column flex" id="actions">
-      <a id="check-all-updates" i18n="title:checkAllUpdates" class="icon" tabindex="0">
-        <i class=i-update-check></i>
-        <span id="update-progress"></span>
-      </a>
-      <a id="update-history-button" i18n="title:genericHistoryLabel" class="icon" tabindex="0">
-        <i class=i-log></i>
-      </a>
-      <a id="injection-order-button" i18n="title:styleInjectionOrder" class="icon" tabindex="0">
-        <i class=i-reorder></i>
-      </a>
-      <a id="manage-options-button" i18n="title:openOptions" class="icon" tabindex="0">
-        <svg class="hollow-gear" viewBox="0 0 20 20" stroke-width="1.25px">
-          <text y="100%">⚙</text>
-        </svg>
-      </a>
+      <details data-pref="manage.actions.expanded">
+        <summary>
+          <main>
+            <button id="check-all-updates" i18n="title:checkAllUpdates" class="icon" tabindex="0">
+              <i class=i-update-check></i>
+              <span id="update-progress"></span>
+            </button>
+            <button id="update-history-button" i18n="title:genericHistoryLabel" class="icon" tabindex="0">
+              <i class=i-log></i>
+            </button>
+            <button id="injection-order-button" i18n="title:styleInjectionOrder" class="icon" tabindex="0">
+              <i class=i-reorder></i>
+            </button>
+            <button id="manage-options-button" i18n="title:openOptions" class="icon" tabindex="0">
+              <svg class="hollow-gear" viewBox="0 0 20 20" stroke-width="1.25px">
+                <text y="100%">⚙</text>
+              </svg>
+            </button>
 
-      <a id="add-style" i18n="title:addStyleLabel" class="icon" tabindex="0" href="edit.html">
-        <i class=i-plus></i>
-      </a>
-      <label id="add-style-as-usercss-wrapper" i18n="title:optionsAdvancedNewStyleAsUsercss">
-        <input type="checkbox" id="newStyleAsUsercss">
-        <i class=i-usercss></i>
-        <a id="usercss-wiki"
-           class="icon"
-           href="https://github.com/openstyles/stylus/wiki/Usercss"
-           i18n="title:externalUsercssDocument">
-          <i class=i-external></i>
-        </a>
-      </label>
+            <a id="add-style" class="icon" tabindex="0" href="edit.html">
+              <button i18n="title:addStyleLabel">
+                <i class=i-plus></i>
+              </button>
+            </a>
+            <label id="add-style-as-usercss-wrapper" i18n="title:optionsAdvancedNewStyleAsUsercss">
+              <input type="checkbox" id="newStyleAsUsercss">
+              <i class=i-usercss></i>
+              <a id="usercss-wiki"
+                 class="icon"
+                 href="https://github.com/openstyles/stylus/wiki/Usercss"
+                 i18n="title:externalUsercssDocument">
+                <i class=i-external></i>
+              </a>
+            </label>
 
-      <div id="update-all">
-        <template data-id="updateAll">
-          <button id="apply-all-updates" i18n="applyAllUpdates"></button>
-          <span id="update-all-no-updates" i18n="updateAllCheckSucceededNoUpdate"></span>
-          <button id="check-all-updates-force" i18n="checkAllUpdatesForce"></button>
-        </template>
-      </div>
+            <div id="update-all">
+              <template data-id="updateAll">
+                <button id="apply-all-updates" i18n="applyAllUpdates"></button>
+                <span id="update-all-no-updates" i18n="updateAllCheckSucceededNoUpdate"></span>
+                <button id="check-all-updates-force" i18n="checkAllUpdatesForce"></button>
+              </template>
+            </div>
+          </main>
+        </summary>
+      </details>
     </div>
 
     <div class="settings-column" id="filters">
@@ -261,7 +269,7 @@
             </a>
           </h2>
         </summary>
-        <main class="flex wrap gap1">
+        <main class="flex wrap">
           <div class="split-btn">
             <button id="file-all-styles" i18n="exportLabel"></button
             ><button class="split-btn-pedal" i18n="menu-compat:exportCompatible"></button>
@@ -273,7 +281,7 @@
     </div>
 
     <div class="settings-column" id="links">
-    <details data-pref="manage.actions.expanded">
+    <details data-pref="manage.links.expanded">
       <summary><h2></h2></summary>
       <main>
         <span>

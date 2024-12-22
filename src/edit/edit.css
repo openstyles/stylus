@@ -80,7 +80,7 @@ html:not(.is-new-style) #heading::before {
   z-index: 10;
   display: flex;
   flex-direction: column;
-  & h1 {
+  h1 {
     margin-top: 0;
     .usercss & {
       margin-bottom: 0;
@@ -104,7 +104,7 @@ html:not(.is-new-style) #heading::before {
     min-height: 0;
     height: 100%;
   }
-  & h2 {
+  h2 {
     margin-top: 1rem;
     margin-left: 1.7rem;
   }
@@ -143,14 +143,14 @@ html:not(.is-new-style) #heading::before {
   .compact-layout & {
     margin-right: 3ex;
   }
-  & summary {
+  summary {
     padding-left: .4rem;
     display: block;
   }
-  & details[open] summary i {
+  details[open] summary i {
     color: var(--fg);
   }
-  & main {
+  main {
     position: absolute;
     z-index: 100;
     right: 2em;
@@ -160,10 +160,10 @@ html:not(.is-new-style) #heading::before {
     background: var(--bg);
     display: flex;
     align-items: center;
-    gap: var(--pad05);
     > input {
       field-sizing: content;
       padding-left: .5em;
+      margin-right: 1ch;
       max-width: 8ch;
     }
   }
@@ -222,7 +222,7 @@ i,
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
-  & h2 {
+  h2 {
     display: inline-block;
     border-bottom: 1px dotted transparent;
     margin: 0 0 0 -13px;
@@ -230,7 +230,7 @@ i,
     max-width: calc(var(--header-width) - 2*var(--pad));
     vertical-align: middle;
     &,
-    & > :first-child {
+    > :first-child {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -239,7 +239,7 @@ i,
   &:hover h2 {
     border-color: var(--c70);
   }
-  & .icon {
+  .icon {
     margin-top: -.1em;
   }
 }
@@ -274,12 +274,12 @@ i,
   > div > * {
     margin-top: .75em;
   }
-  & a:visited {
+  a:visited {
     margin-top: .75em;
   }
   &[data-connected] {
     > summary::marker,
-    & h2 {
+    h2 {
       color: hsl(180, 100%, 20%);
     }
     #usw-publish-style::after {
@@ -331,10 +331,10 @@ i,
     vertical-align: baseline;
     --input-height: 1rem;
   }
-  & .empty label {
+  .empty label {
     color: var(--c60);
   }
-  & input {
+  input {
     width: 100%;
     &:not(:focus):not(:hover) {
       background: none;
@@ -395,7 +395,7 @@ i,
 .edit-actions {
   display: flex;
   flex-wrap: wrap;
-  & button {
+  button {
     margin-right: .2rem;
     height: var(--input-height);
   }
@@ -424,7 +424,7 @@ i,
   &.warn {
     color: red;
     font-size: 120%;
-    & i {
+    i {
       color: red;
       margin-left: .25em;
     }
@@ -435,7 +435,7 @@ i,
 }
 #toc {
   counter-reset: codelabel;
-  & li {
+  li {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -572,14 +572,14 @@ i,
   .compact-layout & label {
     display: none;
   }
-  & ul {
+  ul {
     flex: auto;
     flex-grow: 1;
     margin: 0;
     padding: 0;
     --input-height: 1.2rem;
   }
-  & li {
+  li {
     display: flex;
     flex-wrap: wrap;
     list-style-type: none;
@@ -609,17 +609,17 @@ i,
       }
     }
   }
-  & input {
+  input {
     border-color: var(--c85);
     caret-color: auto;
   }
-  & .select-wrapper {
+  .select-wrapper {
     margin-right: calc(2px + var(--target-gapY));
   }
   &[data-all] .applies-value-wrapper {
     display: none;
   }
-  & img {
+  img {
     vertical-align: bottom;
   }
 }
@@ -701,13 +701,13 @@ i,
     padding: 0 3px 0 0;
     border-spacing: 0;
     word-break: break-all;
-    & input {
+    input {
       width: 100%;
     }
-    & tr:nth-child(odd) {
+    tr:nth-child(odd) {
       background-color: rgba(0, 0, 0, 0.07);
     }
-    & td:first-child {
+    td:first-child {
       white-space: nowrap;
       font-family: monospace;
       padding-right: 0.5rem;
@@ -729,7 +729,7 @@ i,
       margin: 0 .5em 0 0;
     }
   }
-  & button[name^="import"] {
+  button[name^="import"] {
     line-height: 1.5rem;
     pointer-events: none;
     opacity: 0.5;
@@ -740,10 +740,10 @@ i,
   }
   .rules {
     padding: 0 15px;
-    & li {
+    li {
       padding-top: .5em;
     }
-    & p {
+    p {
       margin: .25em 0;
     }
   }
@@ -755,33 +755,33 @@ i,
   > summary h2 {
     display: inline-flex;
   }
-  & table {
+  table {
     border-spacing: 0;
     line-height: 1.0;
     width: 100%;
     font-size: 85%;
     cursor: pointer;
   }
-  & .report {
+  .report {
     display: flex;
   }
-  & .empty {
+  .empty {
     display: none;
   }
-  & .caption {
+  .caption {
     vertical-align: top;
     line-height: 16px;
     font-weight: bold;
   }
-  & .report:not(.empty) ~ :not(.empty) {
+  .report:not(.empty) ~ :not(.empty) {
     border-top: 1px dotted rgba(128, 128, 128, .5);
     margin-top: .25em;
     padding-top: .25em;
   }
-  & tr:hover {
+  tr:hover {
     background-color: hsla(180, 50%, 36%, .2);
   }
-  & td {
+  td {
     padding: 0;
     line-height: 16px;
     &:last-child {
@@ -822,13 +822,13 @@ i,
 /************ CSS beautifier ************/
 .beautify-options {
   white-space: nowrap;
-  & div {
+  div {
     float: left;
     display: flex;
     align-items: center;
     &[newline="true"] + div {
       clear: left;
-      & span[indent] {
+      span[indent] {
         padding-left: 2rem;
       }
     }
@@ -843,11 +843,11 @@ i,
     content: "";
     height: 1rem;
   }
-  & span {
+  span {
     font-weight: bold;
     font-family: monospace;
   }
-  & select {
+  select {
     border: none;
     background: var(--c95);
     font-family: monospace;
@@ -964,10 +964,10 @@ i,
         margin: .25em 0 0 !important;
       }
     }
-    & details > :not(summary) {
+    details > :not(summary) {
       margin-left: 0;
     }
-    & h2 {
+    h2 {
       font-size: 14px;
     }
     .settings h2 {
