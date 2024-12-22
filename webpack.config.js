@@ -153,7 +153,7 @@ const getBaseConfig = () => ({
         type: 'asset/resource',
       }, {
         test: /\.m?js(\?.*)?$/,
-        exclude: [ROOT + 'node_modules/'],
+        exclude: MV3 ? [ROOT + 'node_modules/'] : undefined,
         loader: 'babel-loader',
         options: {root: ROOT},
         resolve: {fullySpecified: false},

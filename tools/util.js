@@ -35,8 +35,8 @@ function escapeToRe(str, flags) {
 
 function getBrowserlist() {
   const mj = require(SRC + getManifestOvrName());
-  const FF = mj.browser_specific_settings?.gecko.strict_min_version;
-  const CH = mj.minimum_chrome_version;
+  const FF = parseFloat(mj.browser_specific_settings?.gecko.strict_min_version);
+  const CH = parseFloat(mj.minimum_chrome_version);
   return [
     FF && 'Firefox >= ' + FF,
     CH && 'Chrome >= ' + CH,
