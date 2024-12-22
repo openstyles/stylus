@@ -6,8 +6,8 @@
   body {
     overflow-y: auto;
   }
-  main {
-    flex: 1 0;
+  #installed-wrapper, #main-actions, #popup-options {
+    flex-shrink: 0;
   }
 }
 

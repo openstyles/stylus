@@ -376,7 +376,7 @@ h1 {
     transition: filter .5s;
   }
   a:not(:hover) img {
-    filter: grayscale(1) var(--filter,);
+    filter: var(--filter, grayscale(1));
   }
 }
 /* no styles */
