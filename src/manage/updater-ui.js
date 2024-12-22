@@ -1,4 +1,4 @@
-import {$, $$, $create, $detach} from '@/js/dom';
+import {$, $$, $create, $detach, $toggleClasses} from '@/js/dom';
 import {messageBox, scrollElementIntoView} from '@/js/dom-util';
 import {t, template} from '@/js/localization';
 import {API} from '@/js/msg';
@@ -125,23 +125,23 @@ export function checkUpdate(entry, {single} = {}) {
 function reportUpdateState({updated, style, error, STATES}) {
   const isCheckAll = document.body.classList.contains('update-in-progress');
   const entry = $entry(style);
-  const newClasses = new Map([
+  const newClasses = {
     /*
      When a style is updated/installed, handleUpdateInstalled() clears "updatable"
      and sets "update-done" class (optionally "install-done").
      If you don't close the manager and the style is changed remotely,
      checking for updates would find an update so we need to ensure the entry is "updatable"
      */
-    ['updatable', true],
+    'updatable': 1,
     // falsy = remove
-    ['checking-update', 0],
-    ['update-done', 0],
-    ['install-done', 0],
-    ['no-update', 0],
-    ['update-problem', 0],
-  ]);
+    'checking-update': 0,
+    'update-done': 0,
+    'install-done': 0,
+    'no-update': 0,
+    'update-problem': 0,
+  };
   if (updated) {
-    newClasses.set('can-update', true);
+    newClasses['can-update'] = true;
     entry.updatedCode = style;
     $('.update-note', entry).textContent = '';
     $detach(elOnlyUpdates, false);
@@ -171,8 +171,8 @@ function reportUpdateState({updated, style, error, STATES}) {
     }
     entry.dataset.error = error;
     const message = same ? t('updateCheckSucceededNoUpdate') : error;
-    newClasses.set('no-update', true);
-    newClasses.set('update-problem', !same);
+    newClasses['no-update'] = true;
+    newClasses['update-problem'] = !same;
     $('.update-note', entry).textContent = message;
     $('.check-update', entry).title = newUI.cfg.enabled ? message : '';
     $('.update', entry).title = t(edited ? 'updateCheckManualUpdateForce' : 'installUpdate');
@@ -191,21 +191,7 @@ function reportUpdateState({updated, style, error, STATES}) {
     }
   }
 
-  // construct a new className:
-  // 1. add all truthy newClasses
-  // 2. remove falsy newClasses
-  // 3. keep existing classes otherwise
-  const classes = new Map([...entry.classList.values()].map(cls => [cls, true]));
-  for (const [cls, newState] of newClasses) {
-    classes.set(cls, newState);
-  }
-  const className = [...classes]
-    .map(([cls, state]) => state && cls)
-    .filter(Boolean)
-    .join(' ');
-  if (className !== entry.className) {
-    entry.className = className;
-  }
+  $toggleClasses(entry, newClasses);
 
   if (filtersSelector.hide && isCheckAll) {
     filterAndAppend({entry}).then(updateStripes);

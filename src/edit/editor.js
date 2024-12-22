@@ -5,7 +5,6 @@ import {clipString, debounce, deepEqual, mapObj, sessionStore} from '@/js/util';
 import DirtyReporter from './dirty-reporter';
 
 const dirty = DirtyReporter();
-const mqCompact = matchMedia('(max-width: 850px)');
 /** @type {Set<HTMLInputElement>} */
 const regexps = new Set();
 const toc = [];
@@ -22,7 +21,6 @@ const editor = self.editor = {
   isUsercss: false,
   isWindowed: false,
   livePreviewLazy: cb => debounce(cb, prefs.get('editor.livePreview.delay') * 1000),
-  mqCompact,
   /** @type {'customName'|'name'} */
   nameTarget: 'name',
   ppDemo: {
@@ -190,10 +188,6 @@ const editor = self.editor = {
   },
 };
 
-function toggleCompact(mq) {
-  $.rootCL.toggle('compact-layout', mq.matches);
-}
-
 export function failRegexp(r) {
   try {
     new RegExp(r);
@@ -212,8 +206,5 @@ function validateRegexp({target: el}) {
     el.setCustomValidity(err);
   }
 }
-
-mqCompact.on('change', toggleCompact);
-toggleCompact(mqCompact);
 
 export default editor;

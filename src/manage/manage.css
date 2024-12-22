@@ -79,7 +79,10 @@ a, .disabled a:hover {
     display: flex;
     flex-flow: wrap;
     align-items: center;
-    margin: -$pad 0 calc(-$pad/2) $summaryX;
+    margin: -$pad calc(-$pad/2) calc(-$pad/2) $summaryX;
+    .compact-layout & {
+      margin-right: $pad;
+    }
     > * {
       margin: 0 $iconGapY $iconGapY 0;
     }
@@ -93,7 +96,10 @@ a, .disabled a:hover {
       line-height: 1;
     }
   }
-  :is(details:not([open]) button, #update-history-button):not(:hover) {
+  :is(
+    & details:not([open]) button,
+    .normal-layout & #update-history-button
+  ):not(:hover) {
     background: none;
     border-color: transparent;
   }
@@ -113,7 +119,7 @@ a, .disabled a:hover {
         left: 3px;
       }
     }
-    #update-history-button {
+    .normal-layout & #update-history-button {
       padding-left: calc($btnTextX - 9px);
       &::before {
         content: '\a0';
@@ -713,10 +719,6 @@ h1,
     &:last-child {
       margin-right: 0;
     }
-  }
-  #actions {
-    flex: 0 0 calc(2 * (20px /*icon*/ + $iconGapX) + $pad);
-    margin-right: $pad;
   }
   #installed {
     margin-top: 0;

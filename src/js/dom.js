@@ -6,6 +6,8 @@ Object.assign(EventTarget.prototype, {
 $.root = document.documentElement;
 $.rootCL = $.root.classList;
 
+export const mqCompact = $.rootCL.contains('normal-layout') && matchMedia('(max-width: 850px)');
+
 export const dom = {};
 
 // Makes the focus outline appear on keyboard tabbing, but not on mouse clicks.
@@ -173,6 +175,22 @@ export function $detach(el, state = true) {
     }
   }
   return state;
+}
+
+/**
+ * construct a new className:
+ * 1. add a class if value is truthy
+ * 2. remove a class if value is falsy
+ * 3. keep existing classes otherwise
+ * @param {HTMLElement} el
+ * @param {object} newClasses
+ */
+export function $toggleClasses(el, newClasses) {
+  const list = new Set();
+  for (const c of el.classList) list.add(c);
+  for (const c in newClasses) if (newClasses[c]) list.add(c); else list.delete(c);
+  let res = ''; for (const c of list) res += res ? ' ' + c : c;
+  if (el.className !== res) el.className = res;
 }
 
 /** Moves child nodes to a new document fragment */

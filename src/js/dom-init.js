@@ -1,4 +1,4 @@
-import {$, dom} from './dom';
+import {$, $toggleClasses, dom, mqCompact} from './dom';
 import {waitForSelector} from './dom-util';
 import * as prefs from './prefs';
 import {FIREFOX, MOBILE, OPERA, VIVALDI, WINDOWS} from './ua';
@@ -48,6 +48,19 @@ prefs.ready.then(() => {
   if (cls) $.root.className += ' ' + cls;
   // set language for a) CSS :lang pseudo and b) hyphenation
   $.root.lang = chrome.i18n.getUILanguage();
+}
+if (mqCompact) {
+  const toggleCompact = mq => {
+    mq = mq.matches;
+    $toggleClasses($.root, {
+      'compact-layout': mq,
+      'normal-layout': !mq,
+    });
+  };
+  mqCompact.on('change', toggleCompact);
+  toggleCompact(mqCompact);
+}
+{
   // set up header width resizer
   const HW = 'headerWidth.';
   const HWprefId = HW + location.pathname.match(/^.(\w*)/)[1];

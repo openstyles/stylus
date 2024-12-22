@@ -1,4 +1,4 @@
-import {$, $$, $create} from '@/js/dom';
+import {$, $$, $create, mqCompact} from '@/js/dom';
 import {important} from '@/js/dom-util';
 import * as prefs from '@/js/prefs';
 import editor from './editor';
@@ -19,8 +19,8 @@ export default function CompactHeader() {
   const xo = new IntersectionObserver(onScrolled, {root: xoRoot});
   const elInfo = $('h1 a');
   scroller.appendChild(elHeader);
-  onCompactToggled(editor.mqCompact);
-  editor.mqCompact.on('change', onCompactToggled);
+  onCompactToggled(mqCompact);
+  mqCompact.on('change', onCompactToggled);
 
   /** @param {MediaQueryList} mq */
   function onCompactToggled(mq) {
