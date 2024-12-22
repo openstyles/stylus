@@ -1,3 +1,4 @@
+/* postcss-simple-vars */
 .settings {
   &.dirty > summary > ::after {
     content: ' *';
@@ -15,26 +16,35 @@
       margin-bottom: 0;
     }
   }
-  & input:disabled ~ label {
+  input:disabled ~ label {
     opacity: .5;
   }
-  & .w100 {
+  .w100 {
     display: block;
     width: 100%;
     margin-top: .25em;
     box-sizing: border-box;
   }
-  & textarea {
+  textarea {
+    $height: 1.75em;
     resize: vertical;
-    min-height: 2.5em;
+    min-height: $height;
     max-height: 50vh;
     white-space: pre;
+    &:placeholder-shown {
+      resize: none;
+      height: 1.75em;
+      &:not(:focus) {
+        background: none;
+        border: transparent;
+      }
+    }
   }
   .compact-layout & .radio-wrapper {
     display: inline-flex;
     padding: 0 .8em 0 0;
   }
-  & a[data-cmd=note] {
+  a[data-cmd=note] {
     vertical-align: text-bottom;
   }
 
@@ -56,11 +66,11 @@ section.aligned {
     margin-top: 0.1rem;
     min-height: 1.4rem;
   }
-  & label {
+  label {
     padding: .1rem .25rem 0 0;
     vertical-align: middle;
   }
-  & input[type="number"] {
+  input[type="number"] {
     width: 3.5em;
     text-align: left;
     padding-left: .25em;

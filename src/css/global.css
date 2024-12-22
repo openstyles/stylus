@@ -119,7 +119,7 @@ input {
   border: 1px solid var(--c65);
   transition: border-color .1s, box-shadow .1s;
   color: inherit;
-  &:not([type]), &[type=text], &[type=number], &[type=search] {
+  &:not([type]), &[type=text], &[type=number], &[type=search], &[type=url] {
     background: var(--bg);
     color: var(--fg);
     height: var(--input-height);
