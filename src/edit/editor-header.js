@@ -15,7 +15,7 @@ export default function EditorHeader() {
     prefs.subscribe('editor.keyMap', showHotkeyInTooltip, true);
     window.on('showHotkeyInTooltip', showHotkeyInTooltip);
   }, {once: true});
-  for (const el of $$('#header details')) {
+  for (const el of $$('#header summary')) {
     el.on('contextmenu', peekDetails);
   }
 }
@@ -58,12 +58,13 @@ function initNameArea() {
 
 async function peekDetails(evt) {
   evt.preventDefault();
-  this.open = true;
-  while (this.matches(':hover, :active')) {
+  const elDetails = this.parentNode;
+  if (!(elDetails.open = !elDetails.open)) return;
+  while (elDetails.matches(':hover, :active')) {
     await sleep(500);
-    await new Promise(cb => this.on('mouseleave', cb, {once: true}));
+    await new Promise(cb => elDetails.on('mouseleave', cb, {once: true}));
   }
-  this.open = false;
+  elDetails.open = false;
 }
 
 function showHotkeyInTooltip(_, mapName = prefs.get('editor.keyMap')) {
