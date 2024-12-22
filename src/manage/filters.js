@@ -24,9 +24,7 @@ router.watch({search: [fltSearch, fltMode]}, ([search, mode]) => {
   const firstRun = !elSearch;
   if (firstRun) initFilters();
   elSearch.value = search || '';
-  if (mode || elSearchMode.value === 'url') {
-    elSearchMode.value = mode || prefs.get(fltModePref);
-  }
+  elSearchMode.value = mode || prefs.get(fltModePref);
   if (firstRun) filterOnChange({forceRefilter: true});
   else searchStyles();
 });
