@@ -54,12 +54,15 @@ a, .disabled a:hover {
   overflow: auto;
   box-sizing: border-box;
   z-index: 9;
-  h1 {
-    margin-top: 0;
-    margin-bottom: .3em;
-  }
   i.i-info {
     margin-left: .25em;
+  }
+}
+h1 {
+  margin-top: 0;
+  margin-bottom: calc($pad/2);
+  .filtered & {
+    visibility: hidden;
   }
 }
 #manage-settings {
@@ -105,7 +108,8 @@ a, .disabled a:hover {
   }
   details[open] {
     $btnTextX: 26px;
-    button {
+    button.icon,
+    .icon > button {
       display: flex;
       align-items: center;
       padding-left: $btnTextX;
@@ -124,6 +128,13 @@ a, .disabled a:hover {
       &::before {
         content: '\a0';
       }
+    }
+  }
+  #backup {
+    $gap: .25rem;
+    margin: calc($pad/2) -$gap 0 0;
+    > * {
+      margin: 0 $gap $gap 0;
     }
   }
 }
@@ -148,13 +159,6 @@ a, .disabled a:hover {
         filter: grayscale(.75);
       }
     }
-  }
-}
-#backup main {
-  $gap: .25rem;
-  margin: 0 -$gap -$gap 0;
-  > * {
-    margin: 0 $gap $gap 0;
   }
 }
 
@@ -300,14 +304,6 @@ a, .disabled a:hover {
       border-color: var(--c75);
     }
   }
-  #filters summary {
-    margin-bottom: -2px;
-    h2 {
-      display: inline-flex;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-  }
 }
 
 /************ checkbox & select************/
@@ -357,9 +353,14 @@ a, .disabled a:hover {
 }
 
 #links {
-  margin-top: -$pad;
+  margin: calc($pad/-2) 0 0;
   details:not([open]) h2::after {
     content: "...";
+  }
+  summary {
+    padding: 0;
+    margin-top: $pad;
+    height: calc($pad*.75);
   }
   main {
     margin-top: -$pad;
@@ -387,11 +388,11 @@ button i {
   color: var(--fg);
 }
 
-h1,
+.compact-layout h1,
 .disabled .disable,
 .enabled .enable,
 .empty #filters,
-#filters summary:not(.active) :is(#reset-filters, #filters-stats),
+#header:not(.filtered) #stats,
 #update-all:empty,
 .can-update .check-update,
 /* Updates not available */
@@ -469,37 +470,23 @@ h1,
   }
 }
 
-.active #filters-stats {
+#stats {
   background-color: darkcyan;
   border-color: darkcyan;
   color: white;
   font-size: 0.7rem;
   font-weight: normal;
-  padding: 2px 5px;
-  position: relative;
+  padding: 1px 0 1px 5px;
+  position: absolute;
+  top: $pad;
   white-space: nowrap;
-}
-
-.filter-stats-wrapper {
-  display: flex;
-  align-items: center;
-  margin-left: .2rem;
-}
-
-#header #filters summary {
-  white-space: nowrap;
-  ::-webkit-details-marker {
-    margin-top: 4px
-  }
-}
-
-#reset-filters {
   i {
-    color: var(--accent-2);
+    color: #fff;
     padding: 2px;
+    margin-left: calc($pad/4);
   }
-  &:hover i {
-    filter: brightness(1.2);
+  a:hover i {
+    background: hsl(180, 100%, 37%);
   }
 }
 
@@ -512,14 +499,11 @@ h1,
 #sort-wrapper > :first-child {
   flex-grow: 1;
 }
-#search-wrapper {
-  margin-bottom: .5rem;
-}
 #search + * {
   margin-left: -1px;
 }
 #search-wrapper {
-  margin-top: .35rem;
+  margin: calc($pad/2) 0;
 }
 #manage\.searchMode {
   background: var(--bg);
@@ -532,7 +516,6 @@ h1,
 #search, #manage\.newUI\.sort {
   min-width: 4em; /* reduces the big default width */
   background: var(--bg);
-  height: 20px;
   box-sizing: border-box;
   padding: 3px 3px 3px 4px;
   color: var(--fg);
@@ -555,11 +538,6 @@ h1,
   box-sizing: content-box;
   pointer-events: none;
   z-index: 2147483647,
-}
-
-#sort-wrapper .select-wrapper::after {
-  top: 3px;
-  right: 4px;
 }
 
 .help-text {
@@ -678,7 +656,6 @@ h1,
   #search-wrapper,
   #sort-wrapper,
   #header summary {
-    min-width: 10em;
     max-width: 50vw;
   }
 
@@ -699,13 +676,15 @@ h1,
     background: var(--c97);
     border-right: none;
     border-bottom: 1px dashed var(--c65);
-    summary {
-      margin-top: 0;
-      padding-bottom: .25rem;
-    }
+  }
+  #stats {
+    position: static;
+  }
+  #filters {
+    flex-flow: column;
   }
   #manage-settings {
-    padding: $pad 0 $pad $pad;
+    padding: $pad 0 0 $pad;
     margin: 0;
   }
   .settings-column {
@@ -715,17 +694,20 @@ h1,
     flex: 1 1;
     width: auto;
     height: fit-content;
-    margin: 0 $pad 0 0;
-    &:last-child {
-      margin-right: 0;
-    }
+    margin: 0 $pad $pad 0;
+  }
+  .filter-selection {
+    width: 100%;
   }
   #installed {
     margin-top: 0;
     padding-left: 0;
   }
   #links {
-    margin-top: 0;
+    flex: 0 0 2em;
+    &:has([open]) {
+      flex: 0 0 fit-content;
+    }
   }
 }
 

@@ -107,14 +107,105 @@
 <template data-id="body"> <!-- https://crbug.com/1288447 -->
 
 <div id="header">
-  <h1 i18n="manageHeading"></h1>
+  <h1 i18n="styleManager"></h1>
 
   <label id="disableAll-label" i18n="data-on:disableAllStyles, data-off:disableAllStylesOff">
     <input id="disableAll" type="checkbox">
   </label>
 
   <div id="manage-settings">
-    <div class="settings-column flex" id="actions">
+    <div class="settings-column" id="filters">
+      <div id="stats">
+        <span></span>
+        <a tabindex="0" i18n="title:genericResetLabel">
+          <i class=i-close></i>
+        </a>
+      </div>
+
+      <div class="filter-selection">
+        <label>
+          <input id="manage.onlyEnabled" type="checkbox"
+                 data-filter=".enabled"
+                 data-filter-hide=".disabled">
+        </label>
+        <div class="select-wrapper">
+          <select id="manage.onlyEnabled.invert" class="fit-width">
+            <option i18n="manageOnlyEnabled" value="false"></option>
+            <option i18n="manageOnlyDisabled" value="true"></option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-selection">
+        <label>
+          <input id="manage.onlyLocal" type="checkbox"
+                 data-filter=":not(.updatable):not(.update-done)"
+                 data-filter-hide=".updatable, .update-done">
+        </label>
+        <div class="select-wrapper">
+          <select id="manage.onlyLocal.invert" i18n="title:manageOnlyLocalTooltip" class="fit-width">
+            <option i18n="manageOnlyLocal" value="false"></option>
+            <option i18n="manageOnlyExternal" value="true"></option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-selection">
+        <label>
+          <input id="manage.onlyUsercss" type="checkbox"
+                 data-filter=".usercss"
+                 data-filter-hide=":not(.usercss)">
+        </label>
+        <div class="select-wrapper">
+          <select id="manage.onlyUsercss.invert" class="fit-width">
+            <option i18n="manageOnlyUsercss" value="false"></option>
+            <option i18n="manageOnlyNonUsercss" value="true"></option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-selection">
+      <template data-id="onlyUpdates">
+        <label id="only-updates">
+          <input type="checkbox"
+                 data-filter=".can-update, .update-problem, .update-done"
+                 data-filter-hide=":not(.updatable):not(.update-done),
+                                   .no-update:not(.update-problem),
+                                   .updatable:not(.can-update):not(.update-problem):not(.update-done)">
+          <span i18n="manageOnlyUpdates"></span>
+        </label>
+      </template>
+      </div>
+
+      <div id="search-wrapper">
+          <input id="search" type="search" i18n="placeholder:search" spellcheck="false"
+                 data-filter=":not(.not-matching)"
+                 data-filter-hide=".not-matching">
+          <div class="select-wrapper">
+            <select id="manage.searchMode" class="fit-width">
+              <option i18n="searchStylesName" value="name"></option>
+              <option i18n="searchStylesMeta" value="meta" selected></option>
+              <option i18n="searchStylesCode" value="code"></option>
+              <option i18n="searchStylesMatchUrl" value="url"></option>
+              <option i18n="searchStylesAll" value="all"></option>
+            </select>
+          </div>
+          <a id="search-help" tabindex="0" class="icon" i18n="title:searchStylesHelp">
+            <i class=i-info></i>
+          </a>
+        </div>
+
+      <div id="sort-wrapper">
+        <div class="select-wrapper" i18n="title:sortLabel">
+          <select id="manage.newUI.sort"></select>
+        </div>
+        <a id="sorter-help" tabindex="0" class="icon" data-cmd="note" i18n="title:sortStylesHelp">
+          <i class=i-info></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="settings-column" id="actions">
       <details data-pref="manage.actions.expanded">
         <summary>
           <main>
@@ -157,126 +248,18 @@
                 <button id="check-all-updates-force" i18n="checkAllUpdatesForce"></button>
               </template>
             </div>
+
+
+            <div id="backup">
+              <span class="split-btn">
+                <button id="file-all-styles" i18n="exportLabel"></button
+                ><button class="split-btn-pedal" i18n="menu-compat:exportCompatible"></button>
+              </span>
+              <button id="unfile-all-styles" i18n="importLabel"></button>
+              <button id="sync-styles" i18n="optionsCustomizeSync"></button>
+            </div>
           </main>
         </summary>
-      </details>
-    </div>
-
-    <div class="settings-column" id="filters">
-      <details data-pref="manage.filters.expanded">
-        <summary>
-          <h2 i18n="manageFilters">:
-            <div class="filter-stats-wrapper">
-              <span id="filters-stats"></span>
-              <a id="reset-filters" tabindex="0">
-                <i class=i-close></i>
-              </a>
-            </div>
-          </h2>
-        </summary>
-
-        <div class="filter-selection">
-          <label>
-            <input id="manage.onlyEnabled" type="checkbox"
-                   data-filter=".enabled"
-                   data-filter-hide=".disabled">
-          </label>
-          <div class="select-wrapper">
-            <select id="manage.onlyEnabled.invert" class="fit-width">
-              <option i18n="manageOnlyEnabled" value="false"></option>
-              <option i18n="manageOnlyDisabled" value="true"></option>
-            </select>
-          </div>
-        </div>
-
-        <div class="filter-selection">
-          <label>
-            <input id="manage.onlyLocal" type="checkbox"
-                   data-filter=":not(.updatable):not(.update-done)"
-                   data-filter-hide=".updatable, .update-done">
-          </label>
-          <div class="select-wrapper">
-            <select id="manage.onlyLocal.invert" i18n="title:manageOnlyLocalTooltip" class="fit-width">
-              <option i18n="manageOnlyLocal" value="false"></option>
-              <option i18n="manageOnlyExternal" value="true"></option>
-            </select>
-          </div>
-        </div>
-
-        <div class="filter-selection">
-          <label>
-            <input id="manage.onlyUsercss" type="checkbox"
-                   data-filter=".usercss"
-                   data-filter-hide=":not(.usercss)">
-          </label>
-          <div class="select-wrapper">
-            <select id="manage.onlyUsercss.invert" class="fit-width">
-              <option i18n="manageOnlyUsercss" value="false"></option>
-              <option i18n="manageOnlyNonUsercss" value="true"></option>
-            </select>
-          </div>
-        </div>
-
-        <div class="filter-selection">
-        <template data-id="onlyUpdates">
-          <label id="only-updates">
-            <input type="checkbox"
-                   data-filter=".can-update, .update-problem, .update-done"
-                   data-filter-hide=":not(.updatable):not(.update-done),
-                                     .no-update:not(.update-problem),
-                                     .updatable:not(.can-update):not(.update-problem):not(.update-done)">
-            <span i18n="manageOnlyUpdates"></span>
-          </label>
-        </template>
-        </div>
-
-        <div id="search-wrapper">
-          <input id="search" type="search" i18n="placeholder:search" spellcheck="false"
-                 data-filter=":not(.not-matching)"
-                 data-filter-hide=".not-matching">
-          <div class="select-wrapper">
-            <select id="manage.searchMode" class="fit-width">
-              <option i18n="searchStylesName" value="name"></option>
-              <option i18n="searchStylesMeta" value="meta" selected></option>
-              <option i18n="searchStylesCode" value="code"></option>
-              <option i18n="searchStylesMatchUrl" value="url"></option>
-              <option i18n="searchStylesAll" value="all"></option>
-            </select>
-          </div>
-          <a id="search-help" tabindex="0" class="icon" i18n="title:searchStylesHelp">
-            <i class=i-info></i>
-          </a>
-        </div>
-
-      </details>
-
-      <div id="sort-wrapper">
-        <div class="select-wrapper" i18n="title:sortLabel">
-          <select id="manage.newUI.sort"></select>
-        </div>
-        <a id="sorter-help" tabindex="0" class="icon" data-cmd="note" i18n="title:sortStylesHelp">
-          <i class=i-info></i>
-        </a>
-      </div>
-    </div>
-
-    <div class="settings-column" id="backup">
-      <details data-pref="manage.backup.expanded">
-        <summary>
-          <h2 id="backup-title" i18n="backupButtons"><!-- removing space
-            --><a tabindex="0" i18n="title:backupMessage" data-cmd="note" class="icon">
-              <i class=i-info></i>
-            </a>
-          </h2>
-        </summary>
-        <main class="flex wrap">
-          <div class="split-btn">
-            <button id="file-all-styles" i18n="exportLabel"></button
-            ><button class="split-btn-pedal" i18n="menu-compat:exportCompatible"></button>
-          </div>
-          <button id="unfile-all-styles" i18n="importLabel"></button>
-          <button id="sync-styles" i18n="optionsCustomizeSync"></button>
-        </main>
       </details>
     </div>
 

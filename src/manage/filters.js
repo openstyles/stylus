@@ -101,7 +101,7 @@ function initFilters() {
     }
   });
 
-  $('#reset-filters').onclick = event => {
+  $('#stats a').onclick = event => {
     event.preventDefault();
     if (!filtersSelector.hide) {
       return;
@@ -242,16 +242,15 @@ async function reapplyFilter(container = installed, alreadySearched) {
 
 export function showFiltersStats() {
   const active = filtersSelector.hide !== '';
-  $('#filters summary').classList.toggle('active', active);
-  $('#reset-filters').disabled = !active;
   const numTotal = installed.childElementCount;
   const numHidden = installed.getElementsByClassName('entry hidden').length;
   const numShown = numTotal - numHidden;
+  $('#header').classList.toggle('filtered', active);
   if (filtersSelector.numShown !== numShown ||
       filtersSelector.numTotal !== numTotal) {
     filtersSelector.numShown = numShown;
     filtersSelector.numTotal = numTotal;
-    $('#filters-stats').textContent = t('filteredStyles', [numShown, numTotal]);
+    $('#stats span').textContent = t('filteredStyles', [numShown, numTotal]);
     document.body.classList.toggle('all-styles-hidden-by-filters',
       !numShown && numTotal && filtersSelector.hide);
   }

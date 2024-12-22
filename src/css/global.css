@@ -297,6 +297,9 @@ summary {
 .flex {
   display: flex;
 }
+.center-items {
+  align-items: center;
+}
 .wrap {
   flex-wrap: wrap;
 }

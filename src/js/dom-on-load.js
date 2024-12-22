@@ -219,7 +219,7 @@ function splitLongTooltips() {
       continue;
     }
     const newTitle = el.title
-      .split('\n')
+      .split(/\n+/)
       .map(s => s.replace(/([.?!]\s+|[．。？！]\s*|.{50,60},)\s+/gu, '$1\n'))
       .map(s => s.replace(/(.{50,80}(?=.{40,}))\s+/gu, '$1\n'))
       .join('\n\n');
