@@ -366,7 +366,17 @@ h1 {
     margin-top: -$pad;
     display: flex;
     flex-flow: column;
-    line-height: 1.5;
+    align-items: flex-start;
+    line-height: 1.6;
+  }
+  img {
+    width: 16px;
+    vertical-align: text-bottom;
+    padding-right: .25em;
+    transition: filter .5s;
+  }
+  a:not(:hover) img {
+    filter: grayscale(1) var(--filter,);
   }
 }
 /* no styles */

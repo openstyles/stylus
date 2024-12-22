@@ -668,17 +668,9 @@
     "message": "Get styles",
     "description": "Help link text in style manager e.g. https://userstyles.org"
   },
-  "linkGetStylesInfo": {
-    "message": "This archive site was created by a userstyle community member to back up the slow and unresponsive userstyles.org. The archive updates its contents approximately once a day.",
-    "description": "Info shown when clicking the (i) icon of the uso-archive link in style manager"
-  },
   "linkGetShareStyles": {
     "message": "Get and share styles",
     "description": "Link text for https://userstyles.world/ in style manager"
-  },
-  "linkGetShareStylesInfo": {
-    "message": "The new community-driven userstyles.world site is created by userstyle authors in order to replace userstyles.org, which has been so slow and unresponsive for the past year that many authors stopped updating their styles.",
-    "description": "Info shown when clicking the (i) icon of the userstyles.world link in style manager"
   },
   "linkStylusWiki": {
     "message": "Wiki",

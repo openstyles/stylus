@@ -1,8 +1,9 @@
-import {$} from '@/js/dom';
+import {$, $$, $$remove, $create} from '@/js/dom';
 import {getCssMediaRuleByName} from '@/js/dom-util';
 import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {MEDIA_OFF, MEDIA_ON} from '@/js/themer';
+import {favicon} from '@/js/urls';
 import {debounce, isEmptyObj} from '@/js/util';
 import {favsBusy, partEntry, renderFavs, renderMissingFavs, showStyles} from './render';
 import {installed} from './util';
@@ -54,15 +55,23 @@ export function render(isInit) {
   installed.classList.toggle('favicons-grayed', cfg.enabled && cfg.faviconsGray);
   installed.classList.toggle('has-targets', !cfg.enabled || !!cfg.targets);
 
+  const iconsEnabled = hasFavs();
+  let iconsMissing = iconsEnabled && !$('#links img');
+  if (iconsMissing) {
+    for (const /**@type{HTMLAnchorElement}*/el of $$('#links a')) {
+      el.prepend($create('img', {src: favicon(el.hostname)}));
+    }
+  } else if (!iconsEnabled && !isInit) {
+    $$remove('#links img');
+  }
+
   if (isInit) {
     return;
   }
 
-  const iconsEnabled = hasFavs();
-  let iconsMissing = iconsEnabled && !$('.applies-to img');
   if (changed.enabled || iconsMissing && !favsBusy && !partEntry) {
     installed.textContent = '';
-    requestAnimationFrame(() => API.styles.getAll().then(showStyles));
+    API.styles.getAll().then(showStyles);
     return;
   }
   if (changed.targets) {
