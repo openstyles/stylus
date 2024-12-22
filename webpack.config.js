@@ -13,13 +13,13 @@ const InlineConstantExportsPlugin = require('@automattic/webpack-inline-constant
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 const RawEnvPlugin = require('./tools/raw-env-plugin');
 const WebpackPatchBootstrapPlugin = require('./tools/webpack-patch-bootstrap');
-const {escapeForRe, getManifestOvrName, stripSourceMap, MANIFEST, ROOT} = require('./tools/util');
+const {escapeForRe, getManifestOvrName, stripSourceMap, DEV, MANIFEST, ROOT} =
+  require('./tools/util');
 
 const GITHUB_ACTIONS = process.env.GITHUB_ACTIONS;
 const NODE_ENV = process.env.NODE_ENV;
 const [TARGET, ZIP] = NODE_ENV?.split(':') || [''];
 const [BUILD, FLAVOR, CHANNEL] = TARGET.split('-');
-const DEV = BUILD === 'DEV' || process.env.npm_lifecycle_event?.startsWith('watch');
 const SRC = ROOT + 'src/';
 const DST = ROOT + 'dist/';
 const CSS = 'css/';
@@ -38,7 +38,7 @@ const PAGES = [
   'popup',
   !MV3 && PAGE_BG,
 ].filter(Boolean);
-const FS_CACHE = !DEV && !(GITHUB_ACTIONS && MV3 /* only one MV3 build in GA */);
+const FS_CACHE = !DEV && !GITHUB_ACTIONS;
 const GET_CLIENT_DATA = 'get-client-data';
 const GET_CLIENT_DATA_TAG = {
   toString: () => `<script src="${JS}${GET_CLIENT_DATA}.js"></script>`,

@@ -15,21 +15,12 @@ jobs:
 
       - run: echo "_REV=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      # MV2 firefox
+      # MV2
 
-      - run: rm -rf dist && npm run build-firefox
+      - run: rm -rf dist && npm run build-mv2
       - uses: actions/upload-artifact@v4
         with:
-          name: 'stylus-firefox-mv2-${{ env._VER }}-${{ env._REV }}'
-          path: 'dist/*'
-          if-no-files-found: error
-
-      # MV2 chrome
-
-      - run: rm -rf dist && npm run build-chrome-mv2
-      - uses: actions/upload-artifact@v4
-        with:
-          name: 'stylus-chrome-mv2-${{ env._VER }}-${{ env._REV }}'
+          name: 'stylus-mv2-${{ env._VER }}-${{ env._REV }}'
           path: 'dist/*'
           if-no-files-found: error
 

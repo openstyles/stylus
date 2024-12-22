@@ -8,6 +8,8 @@ const MANIFEST = 'manifest.json';
 const ROOT = path.dirname(__dirname.replaceAll('\\', '/')) + '/';
 const SRC = ROOT + 'src/';
 
+const DEV = process.env.npm_lifecycle_event?.startsWith('watch');
+
 function addReport(base, {entry}) {
   base.plugins = [
     ...base.plugins || [],
@@ -53,13 +55,14 @@ function stripSourceMap(buf, from) {
   const str = buf.toString();
   const map = from + '.map';
   const res = str.replace(/(\r?\n\/\/# sourceMappingURL=).+/,
-    process.env.NODE_ENV !== 'DEV' || !fs.existsSync(map) ? '' :
+    !DEV || !fs.existsSync(map) ? '' :
       '$1data:application/json;charset=utf-8;base64,' +
       fs.readFileSync(map).toString('base64'));
   return Buffer.from(res);
 }
 
 module.exports = {
+  DEV,
   MANIFEST,
   ROOT,
   SRC,

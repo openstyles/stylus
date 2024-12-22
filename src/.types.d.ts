@@ -1,6 +1,6 @@
 declare var __: {
   API: 'API',
-  BUILD: 'DEV' | 'chrome' | 'firefox',
+  BUILD: '' | 'chrome' | 'firefox',
   CLIENT_DATA: 'clientData',
   CM_PATH: string,
   /** bit mask, 1: general, 2: port, 4: life (keepAlive) */
@@ -8,7 +8,6 @@ declare var __: {
   DEBUGLOG: typeof console.log,
   DEBUGTRACE: typeof console.trace,
   DEBUGWARN: typeof console.warn,
-  DEV: boolean,
   ENTRY: 'offscreen' | 'sw' | 'worker' | string | boolean,
   IS_BG: boolean,
   JS: string,
