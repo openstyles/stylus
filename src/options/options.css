@@ -203,18 +203,6 @@ a.icon {
   }
 }
 
-#message-box.note {
-  align-items: center;
-  justify-content: center;
-  white-space: pre-wrap;
-  > div {
-    max-width: 40em;
-    top: unset;
-    right: unset;
-    position: relative;
-  }
-}
-
 .sync-status {
   padding-left: 1em;
   box-sizing: border-box;

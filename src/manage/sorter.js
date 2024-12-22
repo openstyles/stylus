@@ -1,6 +1,5 @@
 import {UCD} from '@/js/consts';
 import {$, $create, dom} from '@/js/dom';
-import {messageBox} from '@/js/dom-util';
 import {t} from '@/js/localization';
 import {installed} from '@/manage/util';
 import * as prefs from '@/js/prefs';
@@ -78,7 +77,6 @@ let minWidth;
 
 export function init() {
   prefs.subscribe(ID, update);
-  $('#sorter-help').onclick = showHelp;
   addOptions();
   prefs.subscribe('manage.minColumnWidth', updateColumnWidth, true);
 }
@@ -202,17 +200,4 @@ function onResize(evt) {
     }
   }
   return c;
-}
-
-async function showHelp(event) {
-  event.preventDefault();
-  messageBox.show({
-    className: 'help-text center-dialog',
-    title: t('sortStylesHelpTitle'),
-    contents:
-      $create('div',
-        t('sortStylesHelp').split('\n').map(line =>
-          $create('p', line))),
-    buttons: [t('confirmOK')],
-  });
 }

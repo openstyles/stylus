@@ -193,12 +193,15 @@ function suppressFocusRingOnClick({target}) {
 }
 
 function interceptClick(event) {
-  const el = event.target.closest('[data-cmd=note]');
-  if (el) {
+  let note = event.target.closest('[data-cmd=note]');
+  if (note) {
     event.preventDefault();
+    note = tooltips.get(note) || note.title;
     messageBox.show({
       className: 'note center-dialog',
-      contents: tHTML(tooltips.get(el) || el.title),
+      contents: note.includes('<') ? tHTML(note) :
+        note.includes('\n') ? $create('div', note.split('\n').map(line => $create('p', line))) :
+          note,
       buttons: [t('confirmClose')],
     });
   }
@@ -210,7 +213,8 @@ function interceptClick(event) {
 function splitLongTooltips() {
   for (const el of $$('[title]')) {
     tooltips.set(el, el.title);
-    el.title = el.title.replace(/\s*<\/?[^>]+>\s*/g, ' '); // strip html tags
+    // Strip html tags but allow <invalid-html-tags> which we use to emphasize stuff
+    el.title = el.title.replace(/(\n\s*)?<\/?[a-z]+[^>]*>(\n\s*)?/g, ' ');
     if (el.title.length < 50) {
       continue;
     }
@@ -218,7 +222,7 @@ function splitLongTooltips() {
       .split('\n')
       .map(s => s.replace(/([.?!]\s+|[．。？！]\s*|.{50,60},)\s+/gu, '$1\n'))
       .map(s => s.replace(/(.{50,80}(?=.{40,}))\s+/gu, '$1\n'))
-      .join('\n');
+      .join('\n\n');
     if (newTitle !== el.title) el.title = newTitle;
   }
 }
