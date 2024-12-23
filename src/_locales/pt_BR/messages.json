@@ -494,9 +494,6 @@
   "linkGetStyles": {
     "message": "Obter estilos"
   },
-  "linkGetStylesInfo": {
-    "message": "Este site de arquivo foi criado por um membro da comunidade userstyle para fazer backup do lento e sem resposta userstyles.org. O arquivo atualiza seu conteúdo aproximadamente uma vez por dia."
-  },
   "linkTranslate": {
     "message": "Traduzir"
   },
@@ -1083,9 +1080,6 @@
   },
   "stylusUnavailableForURLdetails": {
     "message": "Como precaução de segurança, o browser proíbe extensões de afetar as páginas embutidas (como chrome://version, a página de novo separador predefinido no Chrome 61, about:addons, e assim sucessivamente) tal como páginas de outras extensões. Cada browser também restringe acesso à sua própria galeria de extensões (como Chrome Web Store ou AMO)"
-  },
-  "syncDropboxStyles": {
-    "message": "Exportar para Dropbox"
   },
   "syncStorageErrorSaving": {
     "message": "O valor não pode ser guardado. Tente reduzir a quantidade de texto."

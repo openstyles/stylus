@@ -509,14 +509,8 @@
   "linkGetShareStyles": {
     "message": "获取|分享 样式"
   },
-  "linkGetShareStylesInfo": {
-    "message": "由社区驱动的新站点 userstyles.world 是用户样式的作者们创建的，目的是取代 userstyles.org。userstyles.org 在过去一年中运行缓慢且反应迟钝，以至于许多作者都不再更新他们的样式。"
-  },
   "linkGetStyles": {
     "message": "获取样式"
-  },
-  "linkGetStylesInfo": {
-    "message": "该存档站点是一位用户样式社区的成员创建的，约每天更新一次其内容，用于备份运行缓慢且反应迟钝的 userstyles.org。"
   },
   "linkTranslate": {
     "message": "翻译"
@@ -1385,12 +1379,6 @@
   },
   "stylusUnavailableForURLdetails": {
     "message": "出于安全考虑，浏览器禁止扩展程序影响其内置页面（例如 chrome://version，Chrome 61 后的标准新标签页，about:addons 等等）以及其他扩展程序的页面。每个浏览器也限制了对于自己扩展程序库的介入〔例如 Chrome 网上应用店、Firefox 附加组件（addons.mozilla.org）〕。"
-  },
-  "syncDropboxDeprecated": {
-    "message": "在选项页面中， Dropbox 导入/导出 已经替换为更高级的样式同步方式。"
-  },
-  "syncDropboxStyles": {
-    "message": "导出至 Dropbox"
   },
   "syncError": {
     "message": "同步失败"

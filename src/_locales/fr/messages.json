@@ -493,14 +493,8 @@
   "linkGetShareStyles": {
     "message": "Obtenir et partager les styles"
   },
-  "linkGetShareStylesInfo": {
-    "message": "Le nouveau userstyles.world géré par la communauté est créé par les auteurs d'userstyles dans le but de remplacer userstyles.org, qui a été tellement lent et inconscient durant l'année dernière que beaucoup d'auteurs ont arrêté de mettre à jour leurs styles."
-  },
   "linkGetStyles": {
     "message": "Obtenir des styles"
-  },
-  "linkGetStylesInfo": {
-    "message": "Ce site d'archive à été créé par un membre de la communauté userstyle pour archiver le lent et inconscient site userstyles.org. Cette archive est mise à jour approximativement chaque jour."
   },
   "linkTranslate": {
     "message": "Traduire"
@@ -1380,12 +1374,6 @@
   },
   "stylusUnavailableForURLdetails": {
     "message": "Par mesure de sécurité, le navigateur interdit aux extensions d’affecter ses pages internes (comme chrome://version, la page nouvel onglet standard de Chrome 61, about:addons, etc.) ainsi que les pages d’autres extensions. Chaque navigateur restreint également l’accès à sa propre galerie d’extensions (tel que le Chrome Web Store ou AMO)."
-  },
-  "syncDropboxDeprecated": {
-    "message": "L´import/export Dropbox est remplacé par une méthode de synchronisation de styles plus avancés dans la page des options"
-  },
-  "syncDropboxStyles": {
-    "message": "Exporter vers Dropbox"
   },
   "syncError": {
     "message": "Synchronisation échouée"

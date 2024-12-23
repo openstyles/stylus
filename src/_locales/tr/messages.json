@@ -786,12 +786,6 @@
   "stylusUnavailableForURLdetails": {
     "message": "Bir güvenlik önlemi olarak tarayıcı eklentilerin, kendinin yerleşik sayfalarını (chrome://version, Chrome 61'den itibaren standart yeni sekme sayfası, about: addons vb.) ve diğer uzantı sayfalarını etkilemesini engeller. Ayrıca her tarayıcı kendi uzantı galerisine (Chrome Web Mağazası veya AMO gibi) erişimi de kısıtlar. "
   },
-  "syncDropboxDeprecated": {
-    "message": "Dropbox içe/dışa aktarma, seçenekler sayfasında daha gelişmiş bir stil senkronizasyonu ile değiştirilir."
-  },
-  "syncDropboxStyles": {
-    "message": "Dropbox'tan aktar"
-  },
   "syncError": {
     "message": "Senkronizasyon başarısız"
   },

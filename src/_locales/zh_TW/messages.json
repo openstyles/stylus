@@ -366,6 +366,9 @@
   "filteredStylesAllHidden": {
     "message": "目前套用的過濾器未符合樣式"
   },
+  "find": {
+    "message": "尋找"
+  },
   "findStyles": {
     "message": "尋找樣式"
   },
@@ -524,14 +527,8 @@
   "linkGetShareStyles": {
     "message": "取得並分享樣式"
   },
-  "linkGetShareStylesInfo": {
-    "message": "新的由社群經營的 userstyles.world 網站是由 userstyle 作者建立的，目的是取代 userstyles.org，該網站在過去一年中緩慢且反應遲鈍，許多作者都因此停止更新他們的樣式。"
-  },
   "linkGetStyles": {
     "message": "取得樣式"
-  },
-  "linkGetStylesInfo": {
-    "message": "此封存網站由 userstyle 社群成員為了備份緩慢且無回應的 userstyles.org 所建立。封存大概每一天會更新一次內容。"
   },
   "linkTranslate": {
     "message": "翻譯"
@@ -640,6 +637,9 @@
   },
   "manageOnlyUsercss": {
     "message": "僅 UserCSS 樣式"
+  },
+  "masterSwitch": {
+    "message": "總開關"
   },
   "menuShowBadge": {
     "message": "顯示生效的樣式數目"
@@ -850,6 +850,27 @@
   },
   "openOptions": {
     "message": "選項"
+  },
+  "optionFOUC": {
+    "message": "樣式套用得太晚了嗎？"
+  },
+  "optionFOUCMV2": {
+    "message": "請考慮啟用「<a>」。"
+  },
+  "optionFOUCMV3": {
+    "message": "請考慮啟用「<a>」並增加「<b>」。"
+  },
+  "optionKeepAlive": {
+    "message": "樣式快取持續時間"
+  },
+  "optionKeepAlive2": {
+    "message": "（以分鐘計，-1 = 無限制）"
+  },
+  "optionKeepAliveIdle": {
+    "message": "……即使瀏覽器處於非作用中狀態"
+  },
+  "optionKeepAliveNote": {
+    "message": "如果您在一段時間未與瀏覽器互動後，開啟頁面時遇到未套用樣式內容閃爍 (FOUC)，請增加該值。\n\n-1 = ManifestV2 預設行為（無限制）。\n0 = ManifestV3 預設行為（半分鐘）。\n\n快取需要 30MB 或更多的 RAM，但重建快取可能會花費太多時間並導致 FOUC，這取決於網站、網路速度、樣式數量、RAM 大小與 CPU 效能。"
   },
   "optionsActions": {
     "message": "動作"
@@ -1433,12 +1454,6 @@
   "stylusUnavailableForURLdetails": {
     "message": "作為安全預防措施，瀏覽器禁止擴充功能影響其內建頁面（例如 chrome://version、自 Chrome 61 起的標準新分頁頁面、about:addons 等），以及其他擴充功能的頁面。同時，每個瀏覽器也限制存取其自身的擴充功能商店（例如 Chrome Web Store 或 AMO）。"
   },
-  "syncDropboxDeprecated": {
-    "message": "Dropbox 匯入／匯出已被選項頁面中的更進階的樣式同步所取代。"
-  },
-  "syncDropboxStyles": {
-    "message": "Dropbox 匯出"
-  },
   "syncError": {
     "message": "同步失敗"
   },
@@ -1550,6 +1565,14 @@
   },
   "versionInvalidOlder": {
     "message": "版本舊於已安裝的樣式。"
+  },
+  "webRequestBlockingMV3Note": {
+    "message": "需要 webRequestBlocking 權限，可使用下列的其中一個方法在 ManifestV3 中啟用：\n\n1) 匯出備份，為此擴充套件的 ID「$id$」設定 <a href='https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist'>ExtensionInstallForcelist</a> 策略，重新啟動瀏覽器，等待擴充套件安裝完成，在樣式管理器中匯入備份，並可將圖示釘選到工具列上。\n\n2) 修改瀏覽器圖示或啟動器中的命令列：新增空格與 <code><nobr>--allowlisted-extension-id=$id$</nobr></code>",
+    "placeholders": {
+      "id": {
+        "content": "$1"
+      }
+    }
   },
   "writeStyleFor": {
     "message": "編寫樣式給："

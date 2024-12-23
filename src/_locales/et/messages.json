@@ -1002,12 +1002,6 @@
   "stylusUnavailableForURLdetails": {
     "message": "Turvakaalutlustel keelab brauser laiendustel sisseehitatud lehtede (nagu chrome://version, standardne uue kaardi leht alates versioonist Chrome 61, about:addons jne) ning ka teiste laienduste lehtede muutmise. Iga brauser piirab lisaks juurdepääsu oma laienduste galeriile (nagu Chrome'i veebipood või AMO)."
   },
-  "syncDropboxDeprecated": {
-    "message": "Dropboxi importimine/eksportimine on asendatud edasijõudnuma stiilide sünkroonijaga valikute lehel."
-  },
-  "syncDropboxStyles": {
-    "message": "Dropboxi eksportimine"
-  },
   "syncStorageErrorSaving": {
     "message": "Väärtust ei saa salvestada. Proovi teksti hulka vähendada."
   },

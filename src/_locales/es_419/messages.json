@@ -1218,12 +1218,6 @@
   "stylusUnavailableForURLdetails": {
     "message": "Como medida de seguridad, el navegador impide que las extensiones afecten a sus páginas incorporadas (como chrome://version, la página de pestaña nueva a partir de Chrome 61, about:addons, etc.), así como a las páginas de otras extensiones. Cada navegador también restringe el acceso a su propia galería de extensiones (como Chrome Web Store o AMO)."
   },
-  "syncDropboxDeprecated": {
-    "message": "La importación/exportación de Dropbox se reemplaza por una sincronización de estilo más avanzado en la página de opciones."
-  },
-  "syncDropboxStyles": {
-    "message": "Exportar a Dropbox"
-  },
   "syncError": {
     "message": "No se pudo sincronizar"
   },

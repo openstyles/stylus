@@ -442,14 +442,8 @@
   "linkGetShareStyles": {
     "message": "스타일 주고받기"
   },
-  "linkGetShareStylesInfo": {
-    "message": "커뮤니티에 의해 새롭게 운영되는 userstyles.world 사이트는 userstyle 투고자들이 userstyle.org를 대체하기 위해 만들었습니다. userstyle.org는 지난 몇 년간 많은 투고자들이 스타일을 업데이트하는 것을 멈춰서 느리고 둔감해졌습니다."
-  },
   "linkGetStyles": {
     "message": "스타일 찾기"
-  },
-  "linkGetStylesInfo": {
-    "message": "본 아카이브 사이트는 느리고 응답이 늦는 userstyles.org를 백업하기 위해 Userstyle 커뮤니티 회원에 의해 제작되었습니다. 하루에 약 한 번 아카이브 내 콘텐츠가 갱신됩니다."
   },
   "linkStylusWiki": {
     "message": "위키"
@@ -1213,12 +1207,6 @@
   },
   "stylusUnavailableForURLdetails": {
     "message": "브라우저 보안 상의 이유로, 확장 프로그램은 브라우저 내장 페이지(chrome://version, Chrome 61의 표준 새 탭 페이지, about:addons 등)나 타 확장 프로그램의 페이지에 영향을 미칠 수 없습니다. 각 브라우저의 확장 프로그램 스토어(Chrome 웹 스토어, AMO 등) 접근 또한 마찬가지입니다."
-  },
-  "syncDropboxDeprecated": {
-    "message": "Dropbox 가져오기/내보내기는 옵션 페이지의 더 발전된 스타일 동기화 기능으로 대체되었습니다."
-  },
-  "syncDropboxStyles": {
-    "message": "Dropbox 내보내기"
   },
   "syncError": {
     "message": "동기화를 실패했습니다"

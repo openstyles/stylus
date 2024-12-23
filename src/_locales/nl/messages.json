@@ -505,14 +505,8 @@
   "linkGetShareStyles": {
     "message": "Stijlen verkrijgen en delen"
   },
-  "linkGetShareStylesInfo": {
-    "message": "De nieuwe door de gemeenschap mogelijk gemaakte website userstyles.world is gemaakt door schrijvers van gebruikersstijlen ter vervanging van userstyles.org, dat het afgelopen jaar zó traag was en slecht reageerde dat veel schrijvers hun stijlen niet meer hebben bijgewerkt."
-  },
   "linkGetStyles": {
     "message": "Stijlen verkrijgen"
-  },
-  "linkGetStylesInfo": {
-    "message": "Deze archiefwebsite is gemaakt door een lid van de gemeenschap van gebruikersstijlen als back-up van de trage en niet-reagerende website userstyles.org. Het archief werkt de inhoud ervan ongeveer eenmaal per dag bij."
   },
   "linkTranslate": {
     "message": "Vertalen"
@@ -1404,12 +1398,6 @@
   },
   "stylusUnavailableForURLdetails": {
     "message": "Als beveiligingsmaatregel verbiedt de browser dat extensies effect hebben op ingebouwde pagina’s (zoals chrome://version, de standaard nieuw-tabbladpagina sinds Chrome 61, about:addons, enz.), evenals op pagina’s van andere extensies. Ook beperkt elke browser toegang tot de eigen extensiegalerij (zoals de Chrome Web Store of AMO)."
-  },
-  "syncDropboxDeprecated": {
-    "message": "Importeren/exporteren via Dropbox is vervangen door een meer geavanceerde stijlsynchronisatie in de optiespagina."
-  },
-  "syncDropboxStyles": {
-    "message": "Dropbox - Exporteren"
   },
   "syncError": {
     "message": "Synchronisatie mislukt"

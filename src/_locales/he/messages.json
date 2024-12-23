@@ -933,9 +933,6 @@
   "stylusUnavailableForURLdetails": {
     "message": "כאמצעי אבטחה, הדפדפן אוסר על הרחבות להשפיע על הדפים המובנים שלו (כמו chrome://version, הכרטיסייה החדשה הרגילה החל מ־Chrome 61, about:addons וכן הלאה), וכן על דפי הרחבות אחרים. כל דפדפן גם מגביל את הגישה לגלריית התוספים שלו (כמו חנות האינטרנט של Chrome או AMO)."
   },
-  "syncDropboxStyles": {
-    "message": "ייצוא Dropbox"
-  },
   "syncStorageErrorSaving": {
     "message": "הערך לא יכול להשמר. אנא נסה להקטין את גודל הטקסט."
   },

@@ -319,6 +319,9 @@
   "filteredStylesAllHidden": {
     "message": "Aktuell angewandte Filter treffen auf keinen Style zu"
   },
+  "find": {
+    "message": "Suchen"
+  },
   "findStyles": {
     "message": "Styles finden"
   },
@@ -474,14 +477,8 @@
   "linkGetShareStyles": {
     "message": "Styles finden und teilen"
   },
-  "linkGetShareStylesInfo": {
-    "message": "Die neue, von der Community betriebene Website userstyles.world wurde von Userstyle-Autoren erstellt, um userstyles.org zu ersetzen. Dieses war im letzten Jahr so langsam und unzuverlässig geworden, dass viele Autoren ihre Styles nicht mehr aktualisierten."
-  },
   "linkGetStyles": {
     "message": "Styles beziehen"
-  },
-  "linkGetStylesInfo": {
-    "message": "Diese Archivseite wurde von einem Nutzer der Userstyle Community erstellt, um eine Sicherungskopie des langsamen und unzuverlässigen userstyles.org bereitzustellen. Die Inhalte werden ungefähr einmal am Tag aktualisiert."
   },
   "linkTranslate": {
     "message": "Übersetzen"
@@ -590,6 +587,9 @@
   },
   "manageOnlyUsercss": {
     "message": "Nur UserCSS Styles"
+  },
+  "masterSwitch": {
+    "message": "Hauptschalter"
   },
   "menuShowBadge": {
     "message": "Anzahl der aktiven Styles anzeigen"
@@ -800,6 +800,24 @@
   },
   "openOptions": {
     "message": "Optionen"
+  },
+  "optionFOUC": {
+    "message": "Styles zu spät angewendet?"
+  },
+  "optionFOUCMV2": {
+    "message": "Versuche \"<a>\" zu aktivieren."
+  },
+  "optionFOUCMV3": {
+    "message": "Versuche \"<a>\" zu aktivieren und \"<b>\" zu vergrößern."
+  },
+  "optionKeepAlive": {
+    "message": "Style Cachedauer"
+  },
+  "optionKeepAlive2": {
+    "message": "(in Minuten, -1 = unbegrenzt)"
+  },
+  "optionKeepAliveIdle": {
+    "message": "…auch wenn Browser inaktiv"
   },
   "optionsActions": {
     "message": "Aktionen"
@@ -1361,9 +1379,6 @@
   },
   "stylusUnavailableForURLdetails": {
     "message": "Als Sicherheitsvorkehrung verbietet der Browser es Erweiterungen, seine eigenen Seiten (wie z.B. chrome://version oder about:addons) und eigene Seiten anderer Erweiterungen zu verändern. Auch die jeweils browser-eigene Erweiterungsgalerie (wie Chrome Web Store oder addons.mozilla.org) kann nicht verändert werden."
-  },
-  "syncDropboxDeprecated": {
-    "message": "Dropbox Import / Export wurde durch einen fortschrittlicheren Mechanismus auf der Optionsseite ersetzt."
   },
   "syncError": {
     "message": "Synchronisation fehlgeschlagen"

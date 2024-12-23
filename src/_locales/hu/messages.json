@@ -1180,9 +1180,6 @@
   "stylusUnavailableForURLdetails": {
     "message": "Biztonsági okokból a böngésző megtiltja, hogy a kiegészítők változtatásokat tegyenek a beépített oldalain (pl. chrome://verzió, a Chrome 61 alapértelmezett „új lap” oldala, about:addons és így tovább) valamint más kiterjesztések oldalain. Ezen kívül mindegyik böngésző korlátozza a saját kiegészítőgalériájának elérését (pl. Chrome webáruház vagy a Mozilla kiegészítők oldala)"
   },
-  "syncDropboxStyles": {
-    "message": "Exportálás Dropboxba"
-  },
   "syncStorageErrorSaving": {
     "message": "Az értéket nem lehet menteni. Próbáld meg csökkenteni a szövegmennyiséget!"
   },

@@ -3,7 +3,7 @@
     "message": "Stylus no puede acceder a algunos tipos de archivos (p. ej. archivos .pdf y .json)."
   },
   "addStyleLabel": {
-    "message": "Escribir un estilo nuevo"
+    "message": "Crear nuevo estilo"
   },
   "addStyleTitle": {
     "message": "Añadir estilo"
@@ -41,7 +41,7 @@
     "message": "No funciona con CSS minificado"
   },
   "appliesRegexpOption": {
-    "message": "URLs que coinciden con la regexp"
+    "message": "URLs que coinciden con la expresión regular"
   },
   "appliesRemove": {
     "message": "Eliminar"
@@ -74,7 +74,7 @@
     "message": "Exportar estilos"
   },
   "checkAllUpdates": {
-    "message": "Buscar actualizaciones para todos los estilos"
+    "message": "Actualizar todos los estilos"
   },
   "checkAllUpdatesForce": {
     "message": "Comprobar de nuevo, ¡no he editado ningún estilo!"
@@ -283,6 +283,9 @@
       }
     }
   },
+  "editTargetsFirst": {
+    "message": "Mostrar URLs  arriba del editor"
+  },
   "editorSettings": {
     "message": "Configuración del editor"
   },
@@ -486,19 +489,13 @@
     "message": "Licencia"
   },
   "linkGetHelp": {
-    "message": "Obtener ayuda"
+    "message": "Buscar ayuda"
   },
   "linkGetShareStyles": {
-    "message": "Obtener y compartir estilos"
-  },
-  "linkGetShareStylesInfo": {
-    "message": "El nuevo sitio userstyles.world, gestionado por la comunidad, ha sido creado por los creadores de usertyles para sustituir a userstyles.org, que ha sido muy lento y no ha respondido durante el último año, por lo que muchos creadores han dejado de actualizar sus estilos."
+    "message": "Buscar y compartir estilos"
   },
   "linkGetStyles": {
-    "message": "Obtener estilos"
-  },
-  "linkGetStylesInfo": {
-    "message": "Este repositorio fue creado por un miembro de la comunidad userstyle para suplir el lento y disfuncional userstyles.org. El repositorio se actualiza aproximadamente una vez al día."
+    "message": "Buscar estilos"
   },
   "linkTranslate": {
     "message": "Traducir"
@@ -1276,13 +1273,13 @@
     "message": "Alternar la importancia del estilo"
   },
   "styleInjectionOrder": {
-    "message": "Orden de inyección de estilo"
+    "message": "Ordenar aplicación de los estilos"
   },
   "styleInjectionOrderHint": {
-    "message": "Arrastre y suelte un estilo para cambiar su posición. Los estilos se inyectan secuencialmente en el orden que se muestra a continuación, por lo que un estilo que esté más abajo en la lista puede anular los estilos anteriores."
+    "message": "Arrastre un estilo para cambiar su posición. Los estilos se aplican secuencialmente en el orden que se muestra a continuación, por lo que un estilo que esté más abajo en la lista puede anular los estilos anteriores."
   },
   "styleInjectionOrderHint_prio": {
-    "message": "Los estilos importantes que se indican a continuación se inyectan siempre en último lugar para que puedan anular cualquier estilo recién instalado. Haga clic en la marca del estilo para cambiar su importancia."
+    "message": "Los estilos importantes que se indican a continuación se aplican siempre en último lugar para que puedan anular cualquier estilo recién instalado. Haga clic en la estrella del estilo para cambiar su importancia."
   },
   "styleInstall": {
     "message": "¿Quiere instalar «$stylename$» en Stylus?",
@@ -1399,12 +1396,6 @@
   },
   "stylusUnavailableForURLdetails": {
     "message": "Como medida de seguridad, el navegador impide que las extensiones afecten a sus páginas incorporadas (como chrome://version, la página de pestaña nueva a partir de Chrome 61, about:addons, etc.), así como a las páginas de otras extensiones. Cada navegador también restringe el acceso a su propia galería de extensiones (como Chrome Web Store o AMO)."
-  },
-  "syncDropboxDeprecated": {
-    "message": "La importación/exportación de Dropbox se reemplaza por una sincronización de estilo más avanzado en la página de opciones."
-  },
-  "syncDropboxStyles": {
-    "message": "Exportar a Dropbox"
   },
   "syncError": {
     "message": "No se pudo sincronizar"

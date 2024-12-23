@@ -1087,12 +1087,6 @@
   "stylusUnavailableForURLdetails": {
     "message": "Som en säkerhetsåtgärd förbjuder webbläsaren tillägg från att påverka dess inbyggda sidor (som chrome://version, den vanliga nya fliksidan från Chrome 61, about:addons och så vidare) samt andra tilläggssidor. Varje webbläsare begränsar också tillgången till sina egna tilläggsgalleri (som Chrome Web Store eller AMO)."
   },
-  "syncDropboxDeprecated": {
-    "message": "Import/export av Dropbox ersätts av en mer avancerad synkronisering av format på sidan med alternativ."
-  },
-  "syncDropboxStyles": {
-    "message": "Dropbox exportering"
-  },
   "syncStorageErrorSaving": {
     "message": "Värdet kan inte sparas. Försök att minska mängden text."
   },
