@@ -5,6 +5,7 @@ import {getEventKeyName, messageBox, setInputValue, setupLivePrefs} from '@/js/d
 import {tBody, template} from '@/js/localization';
 import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
+import {DRIVE_NAMES} from '@/js/sync-util';
 import {FIREFOX, MAC, OPERA} from '@/js/ua';
 import {clamp, t} from '@/js/util';
 import {CHROME_POPUP_BORDER_BUG, ignoreChromeError} from '@/js/util-webext';
@@ -23,6 +24,9 @@ $('#keepAlive').previousElementSibling.firstChild.textContent +=
 for (const el of $$('[show-if]')) {
   prefs.subscribe(el.getAttribute('show-if').match(/[.\w]+/)[0], toggleShowIf, true);
 }
+$('.cloud-name').append(
+  ...Object.entries(DRIVE_NAMES).map(([id, name]) =>
+    $create('option', {value: id}, name)));
 if (!__.MV3 && __.BUILD !== 'firefox' && CHROME_POPUP_BORDER_BUG) {
   $('#popupWidth').closest('.items').append(template.popupBorders);
 }

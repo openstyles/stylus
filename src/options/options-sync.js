@@ -2,7 +2,8 @@ import {$, $$, toggleDataset} from '@/js/dom';
 import {template} from '@/js/localization';
 import {API, onExtension} from '@/js/msg';
 import {clientData} from '@/js/prefs';
-import {capitalize, t} from '@/js/util';
+import {connected, disconnected, getStatusText} from '@/js/sync-util';
+import {t} from '@/js/util';
 
 (async () => {
   let {sync: status, syncOpts} = __.MV3 ? clientData : await clientData;
@@ -50,17 +51,16 @@ import {capitalize, t} from '@/js/util';
 
   async function updateButtons() {
     const state = status.state;
-    const STATES = status.STATES;
-    const isConnected = state === STATES.connected;
-    const off = state === STATES.disconnected;
-    const drv = status.currentDriveName;
+    const isConnected = state === connected;
+    const off = state === disconnected;
+    const drv = status.drive;
     if (drv) elCloud.value = drv;
     elCloud.disabled = !off;
     elToggle.disabled = status.syncing;
     elToggle.textContent = t(`optionsSync${off ? 'Connect' : 'Disconnect'}`);
     elToggle.dataset.cmd = off ? 'start' : 'stop';
     elSyncNow.disabled = !isConnected || status.syncing || !status.login;
-    elStatus.textContent = getStatusText();
+    elStatus.textContent = getStatusText(status);
     elLogin.hidden = !isConnected || status.login;
     for (const el of elDriveOptions) {
       el.hidden = el.dataset.drive !== elCloud.value;
@@ -72,23 +72,5 @@ import {capitalize, t} from '@/js/util';
       el.value = syncOpts[el.dataset.option] || '';
     }
     syncOpts = null; // clearing the initial value from clientData so that next time API is called
-  }
-
-  function getStatusText() {
-    if (status.syncing) {
-      const {phase, loaded, total} = status.progress || {};
-      return phase
-        ? t(`optionsSyncStatus${capitalize(phase)}`, [loaded + 1, total], false) ||
-          `${phase} ${loaded} / ${total}`
-        : t('optionsSyncStatusSyncing');
-    }
-    const {state, errorMessage, STATES} = status;
-    if (errorMessage && (state === STATES.connected || state === STATES.disconnected)) {
-      return errorMessage;
-    }
-    if (state === STATES.connected && !status.login) {
-      return t('optionsSyncStatusRelogin');
-    }
-    return t(`optionsSyncStatus${capitalize(state)}`, null, false) || state;
   }
 })();

@@ -161,6 +161,18 @@ h1 {
     }
   }
 }
+#sync-styles {
+  p {
+    word-break: break-word;
+    font-size: smaller;
+    margin: 0 0 -.5em 8px;
+    user-select: text;
+    color: var(--accent-1);
+    &:empty {
+      margin: 0;
+    }
+  }
+}
 
 #installed {
   padding-left: var(--header-width);

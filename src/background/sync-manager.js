@@ -2,7 +2,7 @@ import '@/js/browser';
 import * as chromeSync from '@/js/chrome-sync';
 import * as prefs from '@/js/prefs';
 import {chromeLocal} from '@/js/storage-util';
-import * as STATES from '@/js/sync-states';
+import * as STATES from '@/js/sync-util';
 import {fetchWebDAV, hasOwn, t} from '@/js/util';
 import {broadcastExtension} from './broadcast';
 import {uuidIndex} from './common';
@@ -28,14 +28,8 @@ const SYNC_DELAY = 1;
 const SYNC_INTERVAL = 30;
 const STORAGE_KEY = 'sync/state/';
 const NO_LOGIN = ['webdav'];
-const status = /** @namespace SyncManager.Status */ {
-  STATES,
+const status = {
   state: STATES.pending,
-  syncing: false,
-  progress: null,
-  currentDriveName: null,
-  errorMessage: null,
-  login: false,
 };
 const compareRevision = (rev1, rev2) => rev1 - rev2;
 let lastError = null;
@@ -62,7 +56,6 @@ export async function remove(...args) {
   return ctrl.delete(...args);
 }
 
-/** @returns {Promise<SyncManager.Status>} */
 export function getStatus() {
   if (delayedInit) start(); // not awaiting (could be slow), we'll broadcast the updates
   return status;
@@ -111,7 +104,7 @@ export async function start(name = delayedInit) {
   curDrive = await curDrive;
   ctrl.use(curDrive);
   status.state = STATES.connecting;
-  status.currentDriveName = curDriveName;
+  status.drive = curDriveName;
   emitStatusChange();
   if (isInit || NO_LOGIN.includes(curDriveName)) {
     status.login = true;
@@ -149,7 +142,7 @@ export async function stop() {
   curDrive = curDriveName = null;
   prefs.set(PREF_ID, 'none');
   status.state = STATES.disconnected;
-  status.currentDriveName = null;
+  status.drive = null;
   status.login = false;
   emitStatusChange();
 }

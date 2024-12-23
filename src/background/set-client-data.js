@@ -47,10 +47,11 @@ export default async function setClientData({
         mode: params.get('searchMode') || prefs.__values['manage.searchMode'],
       }),
     styles: __.MV3 ? styleMan.getCodelessStyles() : styleMan.getAll(),
+    sync: syncMan.getStatus(),
 
   } : page === 'options' ? /** @namespace StylusClientData */ {
     sync: (v = syncMan.getStatus()),
-    syncOpts: ((v = v.currentDriveName)) ? syncMan.getDriveOptions(v) : {},
+    syncOpts: ((v = v.drive)) ? syncMan.getDriveOptions(v) : {},
     wrb: webRequestBlocking,
 
   } : page === 'popup' ? /** @namespace StylusClientData */ {

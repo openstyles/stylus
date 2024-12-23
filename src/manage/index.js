@@ -1,7 +1,11 @@
 import '@/js/dom-init';
+import {$} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
-import {t, tBody} from '@/js/localization';
+import {tBody} from '@/js/localization';
+import {onExtension} from '@/js/msg';
 import * as prefs from '@/js/prefs';
+import * as syncUtil from '@/js/sync-util';
+import {t} from '@/js/util';
 import {readBadFavs, showStyles} from './render';
 import * as router from './router';
 import * as sorter from './sorter';
@@ -12,7 +16,7 @@ import './manage-newui.css';
 tBody();
 
 (async () => {
-  const {badFavs, ids, styles} = __.MV3 ? prefs.clientData : await prefs.clientData;
+  const {badFavs, ids, styles, sync} = __.MV3 ? prefs.clientData : await prefs.clientData;
   const rerenderNewUI = () => newUI.render();
   setupLivePrefs();
   newUI.render(true);
@@ -21,6 +25,8 @@ tBody();
   router.update();
   if (newUI.hasFavs()) readBadFavs(badFavs);
   showStyles(styles, ids);
+  renderSyncStatus(sync);
+  onExtension(e => e.method === 'syncStatusUpdate' && renderSyncStatus(e.status));
   import('./lazy-init');
 })();
 
@@ -32,3 +38,10 @@ document.styleSheets[0].insertRule(
     'filteredStylesAllHidden',
   ].map(id => `--${id}:"${CSS.escape(t(id))}";`).join('')
   }}`);
+
+function renderSyncStatus(val) {
+  const [btn, text] = $('#sync-styles').children;
+  const drive = syncUtil.DRIVE_NAMES[val.drive || prefs.__values['sync.enabled']];
+  btn.textContent = drive ? t('syncCloud', drive) : t('optionsCustomizeSync');
+  text.textContent = drive ? syncUtil.getStatusText(val) : '';
+}
