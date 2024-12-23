@@ -9,11 +9,11 @@ import {MOBILE} from '@/js/ua';
 import {clipString, deepEqual, hasOwn, isEmptyObj, RX_META, t} from '@/js/util';
 import {queue} from './util';
 
-Object.assign($('#file-all-styles'), {
+Object.assign($('#export'), {
   onclick: exportToFile,
   oncontextmenu: exportToFile,
 }).on('split-btn', exportToFile);
-$('#unfile-all-styles').onclick = () => importFromFile();
+$('#import').onclick = () => importFromFile();
 
 Object.assign(document.body, {
   ondragover(event) {
