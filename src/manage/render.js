@@ -2,7 +2,6 @@ import {UCD} from '@/js/consts';
 import {$, toggleDataset} from '@/js/dom';
 import {animateElement, scrollElementIntoView} from '@/js/dom-util';
 import {breakWord, t, template} from '@/js/localization';
-import {extractUsoaId} from '@/js/urls';
 import {isEmptyObj, sessionStore} from '@/js/util';
 import {filterAndAppend} from './filters';
 import {renderFavs} from './render';
@@ -30,6 +29,9 @@ const partDecorations = {
   regexpsBefore: '/',
   regexpsAfter: '/',
 };
+/** Hiding date-like version as it's too long and is already shown in the age column */
+const rxIsDateVer = /^20\d\d(?:\d{2,4})?(?:\.\d\d?){2}$/g;
+const rxNonCJK = /[^\u3000-\uFE00]+/g;
 
 let elLinks, elLinksParent;
 let numStyles = 0;
@@ -90,16 +92,17 @@ export function createStyleElement({styleMeta: style, styleNameLC: nameLC, style
   const {updateUrl} = style;
   const configurable = ud && ud.vars && !isEmptyObj(ud.vars);
   const name = style.customName || style.name;
+  const version = ud ? ud.version : '';
   const isNew = newUI.cfg.enabled;
   if (isNew !== partNewUI) createParts(isNew);
   partChecker.checked = style.enabled;
   partNameLink.firstChild.textContent = breakWord(name);
   partNameLink.href = partEditLink.href = partEditHrefBase + style.id;
   partHomepage.href = partHomepage.title = style.url || '';
-  partInfoVer.textContent = ud ? ud.version : '';
-  partInfoVer.dataset.value = ud ? ud.version : '';
+  partInfoVer.textContent = version;
+  partInfoVer.dataset.value = version;
   // USO-raw and USO-archive version is a date for which we show the Age column
-  toggleDataset(partInfoVer, 'isDate', ud && (style.md5Url || extractUsoaId(updateUrl)));
+  toggleDataset(partInfoVer, 'isDate', version.length >= 8 && rxIsDateVer.test(version));
   createAgeText(partInfoAge, style);
   partInfoSize.dataset.value = Math.log10(size || 1) >> 0; // for CSS to target big/small styles
   partInfoSize.textContent = renderSize(size);
@@ -224,7 +227,7 @@ function calcNameLenKey(style) {
   const name = style.displayName || style.name || '';
   const len = 1e9 + // aligning the key for sort() which uses string comparison
     (style.enabled ? 1.05/*bold factor*/ : 1) *
-    (name.length + name.replace(/[^\u3000-\uFE00]+/g, '').length/*CJK glyph is 2x wide*/) | 0;
+    (name.length + name.replace(rxNonCJK, '').length/*CJK glyph is 2x wide*/) | 0;
   nameLengths.set(style.id, len);
   return len;
 }
