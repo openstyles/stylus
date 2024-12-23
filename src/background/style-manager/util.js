@@ -20,8 +20,6 @@ export const orderWrap = {
   _id: `${chrome.runtime.id}-${INJ_ORDER}`,
   _rev: 0,
 };
-/** @returns {{[type: string]: string[]}}>} */
-export const getOrder = () => orderWrap.value;
 
 /** uuidv4 helper: converts to a 4-digit hex string and adds "-" at required positions */
 const hex4 = num => (num < 0x1000 ? num + 0x10000 : num).toString(16).slice(-4);

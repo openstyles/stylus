@@ -17,7 +17,7 @@ import './connector';
 import {fixKnownProblems, onBeforeSave, onSaved} from './fixer';
 import {urlMatchSection, urlMatchStyle} from './matcher';
 import {
-  broadcastStyleUpdated, calcRemoteId, dataMap, getById, getByUuid, getOrder, id2data, iterStyles,
+  broadcastStyleUpdated, calcRemoteId, dataMap, getById, getByUuid, id2data, iterStyles,
   mergeWithMapped, order, orderWrap, setOrderImpl, storeInMap,
 } from './util';
 
@@ -51,7 +51,7 @@ styleCache.setOnDeleted(val => {
 });
 
 export * from '../style-search-db';
-export {getById as get, getOrder};
+export {getById as get};
 
 /** @returns {Promise<void>} */
 export async function config(id, prop, value) {
@@ -86,6 +86,9 @@ export function find(filter, subkey) {
 }
 
 export const getAll = () => Array.from(dataMap.values(), v => v.style);
+
+/** @returns {{[type: string]: string[]}}>} */
+export const getOrder = () => orderWrap.value;
 
 /** @returns {{[type: string]: StyleObj[]}}>} */
 export function getAllOrdered(keys) {
