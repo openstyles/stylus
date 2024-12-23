@@ -384,13 +384,10 @@ h1 {
   #installed {
     flex: 0;
   }
-}
-#links-empty {
-  padding: 1.25rem 0 0 2rem;
-  line-height: 2;
-  font-size: larger;
-  > * {
-    display: list-item;
+  #links {
+    padding: 1.25rem 0 0 2rem;
+    line-height: 2;
+    font-size: larger;
   }
 }
 

@@ -31,6 +31,7 @@ const partDecorations = {
   regexpsAfter: '/',
 };
 
+let elLinks, elLinksParent;
 let numStyles = 0;
 export let favsBusy;
 export let partEntry;
@@ -285,20 +286,13 @@ export function showStyles(styles = [], matchUrlIds) {
 }
 
 export function updateTotal(delta) {
-  if (delta) numStyles += delta;
+  numStyles += delta;
   if (+installed.dataset.total === numStyles) {
     return;
   }
   installed.dataset.total = numStyles;
-  let el = $('#links-empty');
-  if (numStyles && el) {
-    el.remove();
-  } else if (!numStyles && !el) {
-    el = $('#links main').cloneNode(true);
-    el.id = 'links-empty';
-    installed.after(el);
-  } else {
-    return;
-  }
+  elLinksParent ??= (elLinks = $('#links')).parentNode;
+  if (!numStyles) installed.after(elLinks);
+  else elLinksParent.append(elLinks);
   $.rootCL.toggle('empty', !numStyles);
 }
