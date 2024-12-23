@@ -1,6 +1,6 @@
 import {UCD} from '@/js/consts';
 import {API} from '@/js/msg';
-import {deepCopy, mapObj, RX_META} from '@/js/util';
+import {deepCopy, mapObj, RX_META, t} from '@/js/util';
 import {worker} from './common';
 import download from './download';
 import * as styleMan from './style-manager';
@@ -99,7 +99,7 @@ export async function buildMeta(style) {
       const args = err.code === 'missingMandatory' || err.code === 'missingChar'
         ? err.args.map(e => e.length === 1 ? JSON.stringify(e) : e).join(', ')
         : err.args;
-      const msg = chrome.i18n.getMessage(`meta_${(err.code)}`, args);
+      const msg = t(`meta_${(err.code)}`, args);
       if (msg) err.message = msg;
       err.index += match.index;
     }

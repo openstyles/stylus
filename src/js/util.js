@@ -21,22 +21,32 @@ export const stringAsRegExp = (s, flags) => new RegExp(stringAsRegExpStr(s), fla
 export const promiseWithResolve = _ => Object.assign(new Promise(cb => (_ = cb)), {[kResolve]: _});
 export const RX_META = /\/\*!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i;
 
+const tCache = {};
+
+export const t = (key, params, strict = true) => {
+  const cached = !params && tCache[key];
+  const s = cached || chrome.i18n.getMessage(key, params);
+  if (!s && strict) throw `Missing string "${key}"`;
+  if (!params) tCache[key] = s;
+  return s;
+};
+
 export const debounce = /*@__PURE__*/(() => {
   const timers = new Map();
   return Object.assign((fn, delay, ...args) => {
     delay = +delay || 0;
-    const t = performance.now() + delay;
+    const time = performance.now() + delay;
     let old = timers.get(fn);
     if (!old) {
       timers.set(fn, old = {});
-    } else if (delay && old.time < t) {
+    } else if (delay && old.time < time) {
       clearTimer(old);
     } else if (old.args.length === args.length && old.args.every((a, i) => a === args[i])) {
       // Not using deepEqual because a different object reference means a different `args`
       return;
     }
     old.args = args;
-    old.time = t;
+    old.time = time;
     old.timer = setTimeout(run, delay, fn, args, __.ENTRY === 'sw' && delay && (
       old[kResolve] = __.KEEP_ALIVE(promiseWithResolve())[kResolve]
     ));

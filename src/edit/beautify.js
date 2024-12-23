@@ -1,8 +1,8 @@
 import {CodeMirror, extraKeys} from '@/cm';
 import {$, $create} from '@/js/dom';
 import {moveFocus} from '@/js/dom-util';
-import {t} from '@/js/localization';
 import * as prefs from '@/js/prefs';
+import {t} from '@/js/util';
 import editor from './editor';
 import {createHotkeyInput, helpPopup} from './util';
 

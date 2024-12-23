@@ -6,7 +6,7 @@
  * <tag i18n="id, +id2, title:id3, placeholder:id4, data-foo:id5">
  */
 import {$, $$, $toFragment} from './dom';
-import {fetchText, hasOwn} from './util';
+import {fetchText, hasOwn, t} from './util';
 
 /** @type {{ [id: string]: Element | DocumentFragment }} */
 export const template = /*@__PURE__*/new Proxy({}, {
@@ -26,17 +26,8 @@ const RELATIVE_UNITS = [
   [12, 'month', 1],
   [1e99, 'year', 1],
 ];
-const cache = {};
 const intlCache = {};
 let onBodyListeners = [];
-
-export function t(key, params, strict = true) {
-  const cached = !params && cache[key];
-  const s = cached || chrome.i18n.getMessage(key, params);
-  if (!s && strict) throw `Missing string "${key}"`;
-  if (!params) cache[key] = s;
-  return s;
-}
 
 export function tHTML(html) {
   return typeof html !== 'string'

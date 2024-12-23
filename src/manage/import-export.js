@@ -2,12 +2,11 @@ import * as chromeSync from '@/js/chrome-sync';
 import {kAppJson, UCD} from '@/js/consts';
 import {$, $$, $create} from '@/js/dom';
 import {animateElement, messageBox, scrollElementIntoView} from '@/js/dom-util';
-import {t} from '@/js/localization';
 import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {styleJSONseemsValid, styleSectionsEqual} from '@/js/sections-util';
 import {MOBILE} from '@/js/ua';
-import {clipString, deepEqual, hasOwn, isEmptyObj, RX_META} from '@/js/util';
+import {clipString, deepEqual, hasOwn, isEmptyObj, RX_META, t} from '@/js/util';
 import {queue} from './util';
 
 Object.assign($('#file-all-styles'), {

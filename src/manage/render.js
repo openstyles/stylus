@@ -1,8 +1,8 @@
 import {UCD} from '@/js/consts';
 import {$, toggleDataset} from '@/js/dom';
 import {animateElement, scrollElementIntoView} from '@/js/dom-util';
-import {breakWord, t, template} from '@/js/localization';
-import {isEmptyObj, sessionStore} from '@/js/util';
+import {breakWord, template} from '@/js/localization';
+import {isEmptyObj, sessionStore, t} from '@/js/util';
 import {filterAndAppend} from './filters';
 import {renderFavs} from './render';
 import * as sorter from './sorter';

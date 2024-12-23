@@ -1,7 +1,6 @@
 import {$, $create} from '@/js/dom';
-import {t} from '@/js/localization';
 import * as prefs from '@/js/prefs';
-import {clipString, debounce, deepEqual, mapObj, sessionStore} from '@/js/util';
+import {clipString, debounce, deepEqual, mapObj, sessionStore, t} from '@/js/util';
 import DirtyReporter from './dirty-reporter';
 
 const dirty = DirtyReporter();

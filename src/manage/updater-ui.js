@@ -1,9 +1,10 @@
 import {$, $$, $create, $detach, $toggleClasses} from '@/js/dom';
 import {messageBox, scrollElementIntoView} from '@/js/dom-util';
-import {t, template} from '@/js/localization';
+import {template} from '@/js/localization';
 import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {chromeLocal} from '@/js/storage-util';
+import {t} from '@/js/util';
 import {filterAndAppend, filtersSelector} from './filters';
 import {updateStripes} from './sorter';
 import {$entry, newUI} from './util';

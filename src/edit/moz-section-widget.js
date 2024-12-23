@@ -1,9 +1,9 @@
 import colorMimicry from '@/js/color/color-mimicry';
 import {$, $create} from '@/js/dom';
 import {messageBox} from '@/js/dom-util';
-import {t, template} from '@/js/localization';
+import {template} from '@/js/localization';
 import * as msg from '@/js/msg';
-import {sleep} from '@/js/util';
+import {sleep, t} from '@/js/util';
 import CodeMirror from 'codemirror';
 import editor from './editor';
 import MozSectionFinder from './moz-section-finder';

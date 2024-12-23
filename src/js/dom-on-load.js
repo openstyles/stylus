@@ -1,12 +1,12 @@
 import {$, $$, $create, focusA11y} from './dom';
 import {getEventKeyName, messageBox, moveFocus} from './dom-util';
 import HeaderResizer from './header-resizer';
-import {t, tHTML} from './localization';
+import {tHTML} from './localization';
 import {onExtension} from './msg';
 import * as prefs from './prefs';
 import {CHROME} from './ua';
 import {installUsercss} from './urls';
-import {clamp, debounce, tryURL} from './util';
+import {clamp, debounce, t, tryURL} from './util';
 
 const SPLIT_BTN_MENU = '.split-btn-menu';
 const tooltips = new WeakMap();

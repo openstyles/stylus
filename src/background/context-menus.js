@@ -4,6 +4,7 @@ import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {CHROME} from '@/js/ua';
 import {ownRoot} from '@/js/urls';
+import {t} from '@/js/util';
 import {ignoreChromeError} from '@/js/util-webext';
 import {sendTab} from './broadcast';
 
@@ -54,7 +55,7 @@ export default function initContextMenus() {
       if (isInit) {
         item.id = id;
         item.contexts ??= [__.MV3 ? 'action' : 'browser_action'];
-        item.title = chrome.i18n.getMessage(item.title ?? id);
+        item.title = t(item.title ?? id);
       }
       if (typeof prefs.__defaults[id] === 'boolean') {
         if (!item.type) {

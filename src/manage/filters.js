@@ -1,9 +1,8 @@
 import {$, $$, $create} from '@/js/dom';
 import {messageBox} from '@/js/dom-util';
-import {t} from '@/js/localization';
 import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
-import {debounce} from '@/js/util';
+import {debounce, t} from '@/js/util';
 import {fitNameColumn, fitSizeColumn} from './render';
 import * as router from './router';
 import {updateStripes} from './sorter';

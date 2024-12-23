@@ -1,6 +1,7 @@
 import {$, $$, $create, $createLink} from '@/js/dom';
-import {t, tBody} from '@/js/localization';
+import {tBody} from '@/js/localization';
 import {API} from '@/js/msg';
+import {t} from '@/js/util';
 
 tBody();
 

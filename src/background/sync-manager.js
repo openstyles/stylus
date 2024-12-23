@@ -2,7 +2,8 @@ import '@/js/browser';
 import * as chromeSync from '@/js/chrome-sync';
 import * as prefs from '@/js/prefs';
 import {chromeLocal} from '@/js/storage-util';
-import {fetchWebDAV, hasOwn} from '@/js/util';
+import * as STATES from '@/js/sync-states';
+import {fetchWebDAV, hasOwn, t} from '@/js/util';
 import {broadcastExtension} from './broadcast';
 import {uuidIndex} from './common';
 import {db} from './db';
@@ -11,7 +12,6 @@ import {overrideBadge} from './icon-manager';
 import * as styleMan from './style-manager';
 import {onSaved} from './style-manager/fixer';
 import {getByUuid} from './style-manager/util';
-import * as STATES from './sync-manager-states';
 import {getToken, revokeToken} from './token-manager';
 
 export {getToken};
@@ -267,7 +267,7 @@ function getErrorBadge() {
       text: 'x',
       color: '#F00',
       title: !status.login ? 'syncErrorRelogin' : `${
-        chrome.i18n.getMessage('syncError')
+        t('syncError')
       }\n---------------------\n${
         // splitting to limit each line length
         lastError.message.replace(/.{60,}?\s(?=.{30,})/g, '$&\n')

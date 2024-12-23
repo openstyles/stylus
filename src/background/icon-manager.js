@@ -1,7 +1,7 @@
 import {kDisableAll} from '@/js/consts';
 import {subscribe, __values as __prefs} from '@/js/prefs';
 import {CHROME, FIREFOX, MOBILE, VIVALDI} from '@/js/ua';
-import {debounce} from '@/js/util';
+import {debounce, t} from '@/js/util';
 import {ignoreChromeError, MF_ICON_EXT, MF_ICON_PATH} from '@/js/util-webext';
 import * as colorScheme from './color-scheme';
 import {bgBusy, bgInit} from './common';
@@ -99,7 +99,7 @@ export function overrideBadge({text = '', color = '', title = ''} = {}) {
     }
   }
   safeCall('setTitle', {
-    title: title && chrome.i18n.getMessage(title) || title || '',
+    title: title && t(title) || title || '',
   });
 }
 
