@@ -79,17 +79,6 @@ export function breakWord(text) {
 
 export function createTemplate(el) {
   const {content} = el;
-  const toRemove = [];
-  // Compress inter-tag whitespace to reduce DOM tree and avoid space between elements without flex
-  const walker = document.createTreeWalker(content,
-    4 /*NodeFilter.SHOW_TEXT*/ | 0x80 /*NodeFilter.SHOW_COMMENT*/);
-  for (let n; (n = walker.nextNode());) {
-    if (!/[\xA0\S]/.test(n.textContent) ||  // allowing \xA0 so as to preserve &nbsp;
-        n.nodeType === 8 /*Node.COMMENT_NODE*/) {
-      toRemove.push(n);
-    }
-  }
-  toRemove.forEach(n => n.remove());
   tNodeList($$(SELECTOR, content));
   return (template[el.dataset.id] =
     content.childNodes.length > 1

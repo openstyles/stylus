@@ -375,6 +375,7 @@ module.exports = [
       ...PAGES.map(p => new HtmlWebpackPlugin({
         chunks: [p],
         filename: p + '.html',
+        minify: true, // to see possible whitespace elimination problems in dev build
         template: SRC + p + '.html',
         templateParameters: (compilation, files, tags, options) => {
           const {bodyTags, headTags} = tags;
