@@ -25,6 +25,6 @@ function updateDNR(
   return this({addRules, removeRuleIds});
 }
 
-if (__.MV3 && !__.ZIP && __.DEBUG) {
+if (__.MV3 && (__.DEBUG || __.DEV)) {
   DNR.onRuleMatchedDebug?.addListener(console.log.bind(null, 'DNR'));
 }

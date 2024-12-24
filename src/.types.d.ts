@@ -8,6 +8,7 @@ declare var __: {
   DEBUGLOG: typeof console.log,
   DEBUGTRACE: typeof console.trace,
   DEBUGWARN: typeof console.warn,
+  DEV: boolean,
   ENTRY: 'offscreen' | 'sw' | 'worker' | string | boolean,
   IS_BG: boolean,
   JS: string,

@@ -5,7 +5,6 @@
     "alarms",
     "contextMenus",
     "declarativeNetRequestWithHostAccess",
-    "declarativeNetRequestFeedback",
     "identity",
     "idle",
     "offscreen",

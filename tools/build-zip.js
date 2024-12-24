@@ -55,8 +55,6 @@ const TARGETS = [
 function patchManifest(str, target) {
   const [/*BUILD*/, /*FLAVOR*/, CHANNEL] = target.split('-');
   const mj = JSON.parse(str);
-  const i = mj.permissions.indexOf('declarativeNetRequestFeedback');
-  if (i >= 0) mj.permissions.splice(i, 1);
   if (CHANNEL) mj.name += ` (${CHANNEL})`;
   delete mj.key;
   return mj;

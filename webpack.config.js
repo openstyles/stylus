@@ -16,8 +16,7 @@ const WebpackPatchBootstrapPlugin = require('./tools/webpack-patch-bootstrap');
 const {escapeForRe, getManifestOvrName, stripSourceMap, DEV, MANIFEST, ROOT} =
   require('./tools/util');
 
-const GITHUB_ACTIONS = process.env.GITHUB_ACTIONS;
-const NODE_ENV = process.env.NODE_ENV;
+const {DEBUG, GITHUB_ACTIONS, NODE_ENV} = process.env;
 const [TARGET, ZIP] = NODE_ENV?.split(':') || [''];
 const [BUILD, FLAVOR, CHANNEL] = TARGET.split('-');
 const SRC = ROOT + 'src/';
@@ -75,7 +74,7 @@ const VARS = {
   BUILD,
   CLIENT_DATA: 'clientData', // hiding the global from IDE
   CM_PATH,
-  DEBUG: process.env.DEBUG?.split(',').reduce((res, s) => res + DEBUGMASK[s], 1) || 0,
+  DEBUG: DEBUG?.split(',').reduce((res, s) => res + DEBUGMASK[s], 1) || 0,
   DEV,
   ENTRY: false,
   IS_BG: false,
@@ -86,9 +85,9 @@ const VARS = {
   ZIP: !!ZIP,
 };
 const RAW_VARS = {
-  DEBUGLOG: (process.env.DEBUG ? '' : 'null&&') + 'console.log',
-  DEBUGTRACE: (process.env.DEBUG ? '' : 'null&&') + 'console.trace',
-  DEBUGWARN: (process.env.DEBUG ? '' : 'null&&') + 'console.warn',
+  DEBUGLOG: (DEBUG ? '' : 'null&&') + 'console.log',
+  DEBUGTRACE: (DEBUG ? '' : 'null&&') + 'console.trace',
+  DEBUGWARN: (DEBUG ? '' : 'null&&') + 'console.warn',
   KEEP_ALIVE: '1&&',
 };
 const BANNER = '{const global = this, window = global;';
@@ -313,6 +312,9 @@ function makeManifest(files) {
   let ver = base.version;
   if (MV3 && CHANNEL === 'beta' && parseInt(ver) === 2) {
     ver = base.version = 3 + ver.slice(1);
+  }
+  if (MV3 && (DEBUG || DEV)) {
+    base.permissions.push('declarativeNetRequestFeedback');
   }
   if (GITHUB_ACTIONS) {
     delete base.key;
