@@ -1,8 +1,8 @@
-import {$, $$, toggleDataset} from '@/js/dom';
+import {$, $$, $create, toggleDataset} from '@/js/dom';
 import {template} from '@/js/localization';
 import {API, onExtension} from '@/js/msg';
 import {clientData} from '@/js/prefs';
-import {connected, disconnected, getStatusText} from '@/js/sync-util';
+import {connected, disconnected, DRIVE_NAMES, getStatusText} from '@/js/sync-util';
 import {t} from '@/js/util';
 
 (async () => {
@@ -14,7 +14,10 @@ import {t} from '@/js/util';
   const elStatus = $('.sync-status', elSync);
   const elLogin = $('.sync-login', elSync);
   const elDriveOptions = $$('.drive-options', elSync);
-  const $$driveOptions = () => $$(`[data-drive=${elCloud.value}] [data-option]`, elSync);
+  const $$driveOptions = () => $$(`[data-drive="${elCloud.value}"] [data-option]`, elSync);
+  elCloud.append(
+    ...Object.entries(DRIVE_NAMES).map(([id, name]) =>
+      $create('option', {value: id}, name)));
   updateButtons();
   onExtension(e => {
     if (e.method === 'syncStatusUpdate') {
