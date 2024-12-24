@@ -18,6 +18,7 @@ export function add(val) {
 }
 
 export function clear() {
+  if (onDeleted) cache.forEach(onDeleted);
   cache.clear();
   cacheDB.clear();
   if (timer) timer = clearTimeout(timer);

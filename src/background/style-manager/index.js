@@ -12,7 +12,7 @@ import * as tabMan from '../tab-manager';
 import {getUrlOrigin} from '../tab-util';
 import * as usercssTemplate from '../usercss-template';
 import * as styleCache from './cache';
-import {buildCache, buildCacheForStyle} from './cache-builder';
+import {buildCache} from './cache-builder';
 import './connector';
 import {fixKnownProblems, onBeforeSave, onSaved} from './fixer';
 import {urlMatchSection, urlMatchStyle} from './matcher';
@@ -278,10 +278,10 @@ export async function importMany(items) {
       const method = dataMap.has(id) ? 'styleUpdated' : 'styleAdded';
       const style = onSaved(styles[r], false, id);
       messages.push([style, 'import', method]);
-      buildCacheForStyle(style);
       res[i] = {style};
     }
   }
+  styleCache.clear();
   safeTimeout(() => messages.forEach(args => broadcastStyleUpdated(...args)), 100);
   return Promise.all(res);
 }
