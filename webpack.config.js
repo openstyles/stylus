@@ -13,12 +13,12 @@ const InlineConstantExportsPlugin = require('@automattic/webpack-inline-constant
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 const RawEnvPlugin = require('./tools/raw-env-plugin');
 const WebpackPatchBootstrapPlugin = require('./tools/webpack-patch-bootstrap');
-const {escapeForRe, getManifestOvrName, stripSourceMap, DEV, MANIFEST, ROOT} =
-  require('./tools/util');
+const {
+  escapeForRe, getManifestOvrName, transESM2var, transSourceMap,
+  BUILD, CHANNEL, DEV, MANIFEST, MV3, ROOT, ZIP,
+} = require('./tools/util');
 
-const {DEBUG, GITHUB_ACTIONS, NODE_ENV} = process.env;
-const [TARGET, ZIP] = NODE_ENV?.split(':') || [''];
-const [BUILD, FLAVOR, CHANNEL] = TARGET.split('-');
+const {DEBUG, GITHUB_ACTIONS} = process.env;
 const SRC = ROOT + 'src/';
 const DST = ROOT + 'dist/';
 const CSS = 'css/';
@@ -26,7 +26,6 @@ const JS = 'js/';
 const SHIM = ROOT + 'tools/shim/';
 const SEP_ESC = escapeForRe(path.sep);
 const SRC_ESC = escapeForRe(SRC.replaceAll('/', path.sep));
-const MV3 = FLAVOR === 'mv3';
 const PAGE_BG = MV3 ? 'background/sw' : 'background';
 const PAGE_OFFSCREEN = 'offscreen';
 const PAGES = [
@@ -37,7 +36,7 @@ const PAGES = [
   'popup',
   !MV3 && PAGE_BG,
 ].filter(Boolean);
-const FS_CACHE = !DEV && !GITHUB_ACTIONS;
+const FS_CACHE = !DEV && !GITHUB_ACTIONS && process.env.STYLUS_FS_CACHE;
 const GET_CLIENT_DATA = 'get-client-data';
 const GET_CLIENT_DATA_TAG = {
   toString: () => `<script src="${JS}${GET_CLIENT_DATA}.js"></script>`,
@@ -98,7 +97,6 @@ const addWrapper = (banner = BANNER, footer = '}', test = /\.js$/) => [
 const TERSER_OPTS = {
   extractComments: false,
   terserOptions: {
-    toplevel: true,
     ecma: MV3 ? 2024 : 2017,
     compress: {
       passes: 2,
@@ -402,14 +400,16 @@ module.exports = [
           {context: SRC, from: '_locales/**', to: DST},
           {context: THEME_PATH, from: '*.css', to: DST + CM_PATH},
           ...[
+            ['csslint-mod/dist/csslint.js', 'csslint.js', true],
+            ['csslint-mod/dist/parserlib.js', 'parserlib.js', true],
             ['stylelint-bundle', 'stylelint.js'],
             ['less/dist/less.min.js', 'less.js'],
             ['stylus-lang-bundle/dist/stylus-renderer.min.js', 'stylus-lang.js'],
-          ].map(([npm, to]) => ({
+          ].map(([npm, to, babelize]) => ({
             from: require.resolve(npm),
             to: DST + JS + to,
-            info: {minimized: true},
-            transform: stripSourceMap,
+            info: {minimized: !babelize},
+            transform: babelize ? transESM2var : transSourceMap,
           })),
         ],
       }),
@@ -466,8 +466,6 @@ module.exports = [
     plugins: [new RawEnvPlugin({ENTRY: 'worker'})],
   }),
   makeLibrary('@/js/color/color-converter.js', '*:colorConverter'),
-  makeLibrary('@/js/csslint/csslint.js', 'CSSLint', {externals: {'./parserlib': 'parserlib'}}),
-  makeLibrary('@/js/csslint/parserlib.js', 'parserlib'),
   makeLibrary('@/js/meta-parser.js', 'metaParser'),
   makeLibrary('@/js/moz-parser.js', 'extractSections'),
   makeLibrary('@/js/usercss-compiler.js', 'compileUsercss'),

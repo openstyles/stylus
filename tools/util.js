@@ -2,12 +2,15 @@
 
 const fs = require('fs');
 const path = require('path');
+const babel = require('@babel/core');
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 
 const MANIFEST = 'manifest.json';
 const ROOT = path.dirname(__dirname.replaceAll('\\', '/')) + '/';
 const SRC = ROOT + 'src/';
-
+const [TARGET, ZIP] = process.env.NODE_ENV?.split(':') || [''];
+const [BUILD, FLAVOR, CHANNEL] = TARGET.split('-');
+const MV3 = FLAVOR === 'mv3';
 const DEV = process.env.npm_lifecycle_event?.startsWith('watch');
 
 function addReport(base, {entry}) {
@@ -51,26 +54,56 @@ function getManifestOvrName(
   return MANIFEST.replace('.', asGlob ? `?(${s}).` : s + '.');
 }
 
-function stripSourceMap(buf, from) {
+function transBabel(buf, from) {
+  const res = babel.transformSync(transSourceMap(buf, from), {
+    minified: !DEV,
+    sourceMaps: DEV && 'inline',
+  });
+  return res.code;
+}
+
+function transESM2var(buf, from) {
+  const code = transSourceMap(buf, from).replace(/^import.+/, '');
+  const i = code.lastIndexOf('\nexport');
+  const j = code.indexOf('\n', i + 1);
+  const name = Object.assign(/{\s*(\w+)/g, {lastIndex: i}).exec(code)[1];
+  const varFn = `var ${name} = (() => {${code.slice(0, i)}\nreturn ${name};})();${code.slice(j)}`;
+  if (MV3) return varFn;
+  const res = babel.transformSync(varFn, {
+    minified: !DEV,
+    sourceMaps: DEV && 'inline',
+  });
+  return res.code;
+}
+
+function transSourceMap(buf, from) {
   const str = buf.toString();
   const map = from + '.map';
   const res = str.replace(/(\r?\n\/\/# sourceMappingURL=).+/,
     !DEV || !fs.existsSync(map) ? '' :
       '$1data:application/json;charset=utf-8;base64,' +
       fs.readFileSync(map).toString('base64'));
-  return Buffer.from(res);
+  return res;
 }
 
 module.exports = {
+  BUILD,
+  CHANNEL,
   DEV,
+  FLAVOR,
   MANIFEST,
+  MV3,
   ROOT,
   SRC,
+  TARGET,
+  ZIP,
   addReport,
   anyPathSep,
   escapeForRe,
   escapeToRe,
   getBrowserlist,
   getManifestOvrName,
-  stripSourceMap,
+  transBabel,
+  transESM2var,
+  transSourceMap,
 };
