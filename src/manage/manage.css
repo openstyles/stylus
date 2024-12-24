@@ -76,13 +76,10 @@ h1 {
 #actions {
   /* TODO: find a reliable way to polyfill `gap` for flexbox in Chrome<84,FF<63 */
   details {
-    width: 100%;
+    width: 0;
   }
   main {
-    display: flex;
-    flex-flow: wrap;
-    align-items: center;
-    margin: -$pad calc(-$pad/2) calc(-$pad/2) $summaryX;
+    margin: -$pad calc(-$pad/2) calc(-$pad/2) 0;
     .compact-layout & {
       margin-right: $pad;
     }
@@ -90,9 +87,9 @@ h1 {
       margin: 0 $iconGapY $iconGapY 0;
     }
   }
-  details:not([open]) {
-    main > :not(a),
-    a > button {
+  details:not([open]) + main {
+    > :not(a),
+    > a > button {
       padding: calc($iconGapY / 2);
     }
     button.icon {
@@ -100,13 +97,13 @@ h1 {
     }
   }
   :is(
-    & details:not([open]) button,
+    & details:not([open]) + main button,
     .normal-layout & #update-history-button
   ):not(:hover) {
     background: none;
     border-color: transparent;
   }
-  details[open] {
+  details[open] + main {
     $btnTextX: 26px;
     button.icon,
     .icon > button {
@@ -690,7 +687,6 @@ button i {
     position: sticky;
     top: 0;
     z-index: 1000;
-    background: var(--c97);
     border-right: none;
     border-bottom: 1px dashed var(--c65);
   }

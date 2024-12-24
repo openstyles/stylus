@@ -17,7 +17,7 @@ window.on('keydown', keepFocusRingOnTabbing, {passive: true});
 window.on('keypress', clickDummyLinkOnEnter);
 window.on('wheel', changeFocusedInputOnWheel, {capture: true, passive: false});
 window.on('click', splitMenu);
-window.on('click', interceptClick, true);
+window.on('click', showTooltipNote, true);
 window.on('resize', () => debounce(addTooltipsToEllipsized, 100));
 onExtension(request => {
   if (request.method === 'editDeleteText') {
@@ -201,7 +201,7 @@ function suppressFocusRingOnClick({target}) {
   }
 }
 
-function interceptClick(event) {
+function showTooltipNote(event) {
   let note = event.target.closest('[data-cmd=note]');
   if (note) {
     event.preventDefault();
@@ -213,9 +213,6 @@ function interceptClick(event) {
           note,
       buttons: [t('confirmClose')],
     });
-  }
-  if (event.target.closest('.intercepts-click')) {
-    event.preventDefault();
   }
 }
 

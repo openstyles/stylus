@@ -207,61 +207,60 @@
 
     <div class="settings-column" id="actions">
       <details data-pref="manage.actions.expanded">
-        <summary>
-          <main class="intercepts-click">
-            <button id="check-all-updates" i18n="title:checkAllUpdates" class="icon" tabindex="0">
-              <i class=i-update-check></i>
-              <span id="update-progress"></span>
-            </button>
-            <button id="update-history-button" i18n="title:genericHistoryLabel" class="icon" tabindex="0">
-              <i class=i-log></i>
-            </button>
-            <button id="injection-order-button" i18n="title:styleInjectionOrder" class="icon" tabindex="0">
-              <i class=i-reorder></i>
-            </button>
-            <button id="manage-options-button" i18n="title:openOptions" class="icon" tabindex="0">
-              <svg class="hollow-gear" viewBox="0 0 20 20" stroke-width="1.25px">
-                <text y="100%">⚙</text>
-              </svg>
-            </button>
-
-            <a id="add-style" class="icon" tabindex="0" href="edit.html">
-              <button i18n="title:addStyleLabel">
-                <i class=i-plus></i>
-              </button>
-            </a>
-            <label id="add-style-as-usercss-wrapper" i18n="title:optionsAdvancedNewStyleAsUsercss">
-              <input type="checkbox" id="newStyleAsUsercss">
-              <i class=i-usercss></i>
-              <a id="usercss-wiki"
-                 class="icon"
-                 href="https://github.com/openstyles/stylus/wiki/Usercss"
-                 i18n="title:externalUsercssDocument">
-                <i class=i-external></i>
-              </a>
-            </label>
-
-            <div id="update-all">
-              <template data-id="updateAll">
-                <button id="apply-all-updates" i18n="applyAllUpdates"></button>
-                <span id="update-all-no-updates" i18n="updateAllCheckSucceededNoUpdate"></span>
-                <button id="check-all-updates-force" i18n="checkAllUpdatesForce"></button>
-              </template>
-            </div>
-
-
-            <div id="backup" class="flex wrap center-items">
-              <button id="sync-styles">&nbsp;</button>
-              <button id="import" i18n="importLabel"></button>
-              <span class="split-btn">
-                <button id="export" i18n="exportLabel"></button
-                ><button class="split-btn-pedal" i18n="menu-compat:exportCompatible"></button>
-              </span>
-              <p></p>
-            </div>
-          </main>
-        </summary>
+        <summary></summary>
       </details>
+      <main class="flex wrap center-items">
+        <button id="check-all-updates" i18n="title:checkAllUpdates" class="icon" tabindex="0">
+          <i class=i-update-check></i>
+          <span id="update-progress"></span>
+        </button>
+        <button id="update-history-button" i18n="title:genericHistoryLabel" class="icon" tabindex="0">
+          <i class=i-log></i>
+        </button>
+        <button id="injection-order-button" i18n="title:styleInjectionOrder" class="icon" tabindex="0">
+          <i class=i-reorder></i>
+        </button>
+        <button id="manage-options-button" i18n="title:openOptions" class="icon" tabindex="0">
+          <svg class="hollow-gear" viewBox="0 0 20 20" stroke-width="1.25px">
+            <text y="100%">⚙</text>
+          </svg>
+        </button>
+
+        <a id="add-style" class="icon" tabindex="0" href="edit.html">
+          <button i18n="title:addStyleLabel">
+            <i class=i-plus></i>
+          </button>
+        </a>
+        <label id="add-style-as-usercss-wrapper" i18n="title:optionsAdvancedNewStyleAsUsercss">
+          <input type="checkbox" id="newStyleAsUsercss">
+          <i class=i-usercss></i>
+          <a id="usercss-wiki"
+             class="icon"
+             href="https://github.com/openstyles/stylus/wiki/Usercss"
+             i18n="title:externalUsercssDocument">
+            <i class=i-external></i>
+          </a>
+        </label>
+
+        <div id="update-all">
+          <template data-id="updateAll">
+            <button id="apply-all-updates" i18n="applyAllUpdates"></button>
+            <span id="update-all-no-updates" i18n="updateAllCheckSucceededNoUpdate"></span>
+            <button id="check-all-updates-force" i18n="checkAllUpdatesForce"></button>
+          </template>
+        </div>
+
+
+        <div id="backup" class="flex wrap center-items">
+          <button id="sync-styles">&nbsp;</button>
+          <button id="import" i18n="importLabel"></button>
+          <span class="split-btn">
+            <button id="export" i18n="exportLabel"></button
+            ><button class="split-btn-pedal" i18n="menu-compat:exportCompatible"></button>
+          </span>
+          <p></p>
+        </div>
+      </main>
     </div>
 
     <div class="settings-column" id="links">
