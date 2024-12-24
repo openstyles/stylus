@@ -56,8 +56,8 @@ export async function remove(...args) {
   return ctrl.delete(...args);
 }
 
-export function getStatus() {
-  if (delayedInit) start(); // not awaiting (could be slow), we'll broadcast the updates
+export function getStatus(sneaky) {
+  if (delayedInit && !sneaky) start(); // not awaiting (could be slow), we'll broadcast the updates
   return status;
 }
 

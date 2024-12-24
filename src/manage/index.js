@@ -41,6 +41,7 @@ document.styleSheets[0].insertRule(
 
 function renderSyncStatus(val) {
   const drive = syncUtil.DRIVE_NAMES[val.drive || prefs.__values['sync.enabled']];
+  const msg = drive ? syncUtil.getStatusText(val) : '';
   $('#sync-styles').textContent = drive ? t('syncCloud', drive) : t('optionsCustomizeSync');
-  $('#backup p').textContent = drive ? syncUtil.getStatusText(val) : '';
+  $('#backup p').textContent = msg === syncUtil.pending ? '' : msg;
 }
