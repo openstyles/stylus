@@ -16,14 +16,17 @@ const handler = {
 // TODO: maybe move into browser.js and hook addListener to wrap/unwrap automatically
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
+/** @param {function} fn - return `undefined` by default to avoid breaking onRuntimeMessage */
 export function onMessage(fn) {
   handler.both.add(fn);
 }
 
+/** @param {function} fn - return `undefined` by default to avoid breaking onRuntimeMessage */
 export function onTab(fn) {
   handler.tab.add(fn);
 }
 
+/** @param {function} fn - return `undefined` by default to avoid breaking onRuntimeMessage */
 export function onExtension(fn) {
   handler.extension.add(fn);
 }

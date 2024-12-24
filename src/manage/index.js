@@ -26,7 +26,9 @@ tBody();
   if (newUI.hasFavs()) readBadFavs(badFavs);
   showStyles(styles, ids);
   renderSyncStatus(sync);
-  onExtension(e => e.method === 'syncStatusUpdate' && renderSyncStatus(e.status));
+  onExtension(e => { // returning `undefined` by default to avoid breaking bg::onRuntimeMessage
+    if (e.method === 'syncStatusUpdate') renderSyncStatus(e.status);
+  });
   import('./lazy-init');
 })();
 

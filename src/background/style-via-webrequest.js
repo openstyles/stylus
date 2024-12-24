@@ -102,7 +102,7 @@ function toggle(prefKey) {
     return;
   }
   let v;
-  if (__.BUILD !== 'chrome' && FIREFOX || (
+  if (__.BUILD !== 'chrome' && FIREFOX || off !== curOFF && (
     __.MV3
       ? csp !== curCSP
       : (xhr || csp) !== (curXHR || curCSP)
@@ -110,14 +110,16 @@ function toggle(prefKey) {
     v = chrome.webRequest.onHeadersReceived;
     // unregister first since new registrations are additive internally
     toggleListener(v, false, modifyHeaders);
-    toggleListener(v, true, modifyHeaders, WR_FILTER, [
+    toggleListener(v, !off, modifyHeaders, WR_FILTER, [
       'blocking',
       'responseHeaders',
       !__.MV3 && xhr && chrome.webRequest.OnHeadersReceivedOptions.EXTRA_HEADERS,
     ].filter(Boolean));
   }
-  if (mv3init || off !== curOFF) {
-    toggleListener(chrome.webRequest.onBeforeRequest, mv3init || !off, prepareStyles, WR_FILTER);
+  if (mv3init || off !== curOFF && (xhr || csp) !== (curXHR || curCSP)) {
+    toggleListener(chrome.webRequest.onBeforeRequest,
+      mv3init || !off && (xhr || csp),
+      prepareStyles, WR_FILTER);
   }
   curCSP = csp;
   curOFF = off;
@@ -126,6 +128,7 @@ function toggle(prefKey) {
 
 /** @type {typeof chrome.webRequest.onBeforeRequest.callback} */
 async function prepareStyles(req) {
+  if (!curXHR && !curCSP && !bgBusy) return;
   const {tabId, frameId, url} = req; if (tabId < 0) return;
   const key = tabId + ':' + frameId;
   const bgPreInitLen = __.MV3 && bgPreInit.length;
