@@ -153,6 +153,7 @@ function splitMenu(event) {
   }
   if (pedal && pedal !== prevPedal) {
     const menu = $create(SPLIT_BTN_MENU,
+      {style: 'opacity:0'},
       Array.from(pedal.attributes, ({name, value}) =>
         name.startsWith('menu-') &&
         $create('a', {tabIndex: 0, __cmd: name.split('-').pop()}, value)
@@ -168,6 +169,14 @@ function splitMenu(event) {
     pedal.after(menu);
     moveFocus(menu, 0);
     focusA11y.toggle(menu.firstChild, focusA11y.get(pedal));
+    new IntersectionObserver(([{
+      intersectionRect: {width: iw},
+      boundingClientRect: {width: cw},
+    }], observer) => {
+      observer.disconnect();
+      menu.style.opacity = '';
+      if (iw < cw) menu.style.transform = `translateX(calc(${iw - cw}px - var(--menu-pad)))`;
+    }).observe(menu);
   }
   if (entry) {
     prevPedal.previousElementSibling.dispatchEvent(new CustomEvent('split-btn', {
