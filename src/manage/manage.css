@@ -95,7 +95,7 @@ h1 {
     a > button {
       padding: calc($iconGapY / 2);
     }
-    button {
+    button.icon {
       line-height: 1;
     }
   }
@@ -131,10 +131,20 @@ h1 {
     }
   }
   #backup {
-    $gap: .25rem;
+    $gap: $iconGapY;
     margin: calc($pad/2) -$gap 0 0;
     > * {
       margin: 0 $gap $gap 0;
+    }
+    p {
+      word-break: break-word;
+      font-size: smaller;
+      margin: 0 0 -.5em 8px;
+      user-select: text;
+      color: var(--accent-1);
+      &:empty {
+        margin: 0;
+      }
     }
   }
 }
@@ -158,18 +168,6 @@ h1 {
         color: var(--accent-2);
         filter: grayscale(.75);
       }
-    }
-  }
-}
-#sync-styles {
-  p {
-    word-break: break-word;
-    font-size: smaller;
-    margin: 0 0 -.5em 8px;
-    user-select: text;
-    color: var(--accent-1);
-    &:empty {
-      margin: 0;
     }
   }
 }

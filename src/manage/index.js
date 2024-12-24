@@ -40,8 +40,7 @@ document.styleSheets[0].insertRule(
   }}`);
 
 function renderSyncStatus(val) {
-  const [btn, text] = $('#sync-styles').children;
   const drive = syncUtil.DRIVE_NAMES[val.drive || prefs.__values['sync.enabled']];
-  btn.textContent = drive ? t('syncCloud', drive) : t('optionsCustomizeSync');
-  text.textContent = drive ? syncUtil.getStatusText(val) : '';
+  $('#sync-styles').textContent = drive ? t('syncCloud', drive) : t('optionsCustomizeSync');
+  $('#backup p').textContent = drive ? syncUtil.getStatusText(val) : '';
 }
