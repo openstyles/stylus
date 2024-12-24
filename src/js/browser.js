@@ -122,7 +122,7 @@ function patchEventListener(obj, name, fn) {
     case 'addListener':
       res = (cb, ...opts) =>
         fn.call(obj, (...args) => {
-          console.log(name, ...args);
+          console.log(name, ...name === 'onMessage' ? args.slice(0, 2) : args);
           return cb(...args);
         }, ...opts);
       origListeners.set(fn, res);
