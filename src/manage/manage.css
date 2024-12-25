@@ -46,6 +46,8 @@ a, .disabled a:hover {
 }
 
 #header {
+  display: flex;
+  flex-flow: column;
   width: var(--header-width);
   height: 100vh;
   position: fixed;
@@ -67,7 +69,8 @@ h1 {
 }
 #manage-settings {
   display: flex;
-  flex-wrap: wrap;
+  flex-flow: column;
+  flex: 1;
 }
 .settings-column {
   width: 100%;
@@ -146,6 +149,9 @@ h1 {
 #check-all-updates-force {
   white-space: normal;
   text-align: left;
+}
+#add-style {
+  margin-right: 1em;
 }
 #add-style-as-usercss-wrapper {
   display: flex;
@@ -374,13 +380,13 @@ h1 {
 }
 
 #links {
-  margin: calc($pad/-2) 0 0;
+  margin: calc($pad/-2) $pad 0 0;
   details:not([open]) h2::after {
     content: "...";
   }
   summary {
     padding: 0;
-    margin-top: $pad;
+    margin-top: calc($pad/2);
     height: calc($pad*.75);
   }
   main {
@@ -711,6 +717,7 @@ button i {
     flex-flow: column;
   }
   #manage-settings {
+    flex-flow: wrap;
     padding: $pad 0 0 $pad;
     margin: 0;
   }
