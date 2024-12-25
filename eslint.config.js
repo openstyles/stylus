@@ -11,6 +11,8 @@ const SRC_GLOBALS = {
   __: false,
 };
 
+let v;
+
 module.exports = [
   //#region Global exclusions
   {
@@ -276,14 +278,18 @@ module.exports = [
   },
   //#endregion
   //#region Tooling
-  {
-    files: ['tools/**/*.js', '*.js'],
+  v = {
+    files: ['tools/**/*.mjs', '*.mjs'],
     ignores: [SHIMS],
     languageOptions: {
       globals: globals.node,
       ecmaVersion: 2023, // nodejs 20 per https://compat-table.github.io/compat-table/es2016plus/
-      sourceType: 'commonjs',
     },
+  },
+  {
+    ...v,
+    files: ['tools/**/*.js', '*.js'],
+    languageOptions: {...v.languageOptions, sourceType: 'commonjs'},
   },
   //#endregion
   //#region SRC

@@ -1776,15 +1776,6 @@
   "styleExcludeLabel": {
     "message": "Custom excluded sites"
   },
-  "syncCloud": {
-    "message": "$cloud$ sync",
-    "description": "An informational button that shows the sync state and opens sync options when clicked, it doesn't perform sync. The $cloud$ is the name of the current cloud provider e.g. 'Google Drive sync' or `Dropbox sync'. The sync's status/progress/error is shown underneath.",
-    "placeholders": {
-      "cloud": {
-        "content": "$1"
-      }
-    }
-  },
   "syncError": {
     "message": "Sync failed",
     "description": "Tooltip for the toolbar icon"

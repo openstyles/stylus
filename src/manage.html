@@ -210,24 +210,24 @@
         <summary></summary>
       </details>
       <main class="flex wrap center-items">
-        <button id="check-all-updates" i18n="title:checkAllUpdates" class="icon" tabindex="0">
+        <button id="check-all-updates" i18n="title:checkAllUpdates" class="icon">
           <i class=i-update-check></i>
           <span id="update-progress"></span>
         </button>
-        <button id="update-history-button" i18n="title:genericHistoryLabel" class="icon" tabindex="0">
+        <button id="update-history-button" i18n="title:genericHistoryLabel" class="icon">
           <i class=i-log></i>
         </button>
-        <button id="injection-order-button" i18n="title:styleInjectionOrder" class="icon" tabindex="0">
+        <button id="injection-order-button" i18n="title:styleInjectionOrder" class="icon">
           <i class=i-reorder></i>
         </button>
-        <button id="manage-options-button" i18n="title:openOptions" class="icon" tabindex="0">
+        <button id="manage-options-button" i18n="title:openOptions" class="icon">
           <svg class="hollow-gear" viewBox="0 0 20 20" stroke-width="1.25px">
             <text y="100%">⚙</text>
           </svg>
         </button>
 
-        <a id="add-style" class="icon" tabindex="0" href="edit.html">
-          <button i18n="title:addStyleLabel">
+        <a id="add-style" tabindex="0" href="edit.html">
+          <button i18n="title:addStyleLabel" class="icon">
             <i class=i-plus></i>
           </button>
         </a>
@@ -252,7 +252,9 @@
 
 
         <div id="backup" class="flex wrap center-items">
-          <button id="sync-styles">&nbsp;</button>
+          <button id="sync-styles" class="icon flex center-items" i18n="title:optionsCustomizeSync">
+            <i class=i-cloud></i>
+          </button>
           <button id="import" i18n="importLabel"></button>
           <span class="split-btn">
             <button id="export" i18n="exportLabel"></button

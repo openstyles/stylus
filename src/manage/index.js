@@ -1,5 +1,5 @@
 import '@/js/dom-init';
-import {$} from '@/js/dom';
+import {$, toggleDataset} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
 import {tBody} from '@/js/localization';
 import {onExtension} from '@/js/msg';
@@ -25,10 +25,7 @@ tBody();
   router.update();
   if (newUI.hasFavs()) readBadFavs(badFavs);
   showStyles(styles, ids);
-  renderSyncStatus(sync);
-  onExtension(e => { // returning `undefined` by default to avoid breaking bg::onRuntimeMessage
-    if (e.method === 'syncStatusUpdate') renderSyncStatus(e.status);
-  });
+  initSyncButton(sync);
   import('./lazy-init');
 })();
 
@@ -41,9 +38,18 @@ document.styleSheets[0].insertRule(
   ].map(id => `--${id}:"${CSS.escape(t(id))}";`).join('')
   }}`);
 
-function renderSyncStatus(val) {
-  const drive = syncUtil.DRIVE_NAMES[val.drive || prefs.__values['sync.enabled']];
-  const msg = drive ? syncUtil.getStatusText(val) : '';
-  $('#sync-styles').textContent = drive ? t('syncCloud', drive) : t('optionsCustomizeSync');
-  $('#backup p').textContent = msg === syncUtil.pending ? '' : msg;
+function initSyncButton(sync) {
+  const el = $('#sync-styles');
+  const elMsg = $('#backup p');
+  const render = val => {
+    const drive = syncUtil.DRIVE_NAMES[val.drive || prefs.__values['sync.enabled']];
+    const msg = drive ? syncUtil.getStatusText(val) : '';
+    el.title = t('optionsCustomizeSync');
+    toggleDataset(el, 'cloud', drive);
+    elMsg.textContent = msg === syncUtil.pending || msg === syncUtil.connected ? '' : msg;
+  };
+  onExtension(e => { // returning `undefined` by default to avoid breaking bg::onRuntimeMessage
+    if (e.method === 'syncStatusUpdate') render(e.status);
+  });
+  render(sync);
 }

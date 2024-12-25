@@ -63,7 +63,7 @@ import {t} from '@/js/util';
     elToggle.textContent = t(`optionsSync${off ? 'Connect' : 'Disconnect'}`);
     elToggle.dataset.cmd = off ? 'start' : 'stop';
     elSyncNow.disabled = !isConnected || status.syncing || !status.login;
-    elStatus.textContent = getStatusText(status);
+    elStatus.textContent = getStatusText(status, true);
     elLogin.hidden = !isConnected || status.login;
     for (const el of elDriveOptions) {
       el.hidden = el.dataset.drive !== elCloud.value;

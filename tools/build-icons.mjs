@@ -1,33 +1,16 @@
-'use strict';
+import fs from 'fs';
+import chalk from 'chalk';
+import glob from 'fast-glob';
+import path from 'path';
+import stream from 'stream';
+import svg2ttf from 'svg2ttf';
+import {SVGIcons2SVGFontStream} from 'svgicons2svgfont';
+import {SRC} from './util.js';
 
-const fs = require('fs');
-const svg2ttf = require('svg2ttf');
-const svgicons2svgfont = require('svgicons2svgfont');
-const {SRC} = require('./util');
+process.stdout.write('Creating icons font: ');
 
-const SVG_MAP = Object.entries({
-  'check1': '✓',
-  'check2': '✔',
-  'checked': '☑',
-  'close': '✖',
-  'config': '⚙',
-  'edit': '✏',
-  'empty': '⊘',
-  'external': '↗',
-  'info': 'ⓘ',
-  'install': '↲',
-  'log': '◴',
-  'menu': '⋮',
-  'minus': '➖',
-  'plus': '➕',
-  'reorder': '↕',
-  'select-arrow': '▼',
-  'sort-down': '🠇',
-  'usercss': '∪',
-  'undo': '↶',
-  'update-check': '⟳',
-  'v': '⋁',
-});
+const ERRORS = [];
+const SVG_MAP = [];
 const SVG_DIR = SRC + 'icons/';
 const CSS_FILE = SRC + 'css/global.css';
 const CSS_FONT = SRC + 'css/icons.ttf';
@@ -36,18 +19,26 @@ const CMT_RANGE = '/*AUTO-GENERATED-ICON-RANGE*/';
 const CSS_ICON = `${CMT} .i-$NAME::after { content: "$CHAR"; }`;
 
 let svgText = '';
-const fontStream = new svgicons2svgfont({
+const fontStream = new SVGIcons2SVGFontStream({
   fontName: 'icons',
   fontHeight: 1024,
   log: (str, ...args) => !/normalize option may help/.test(str) && console.log(str, ...args),
 });
 fontStream.on('data', s => (svgText += s)).on('end', convert);
 
-for (const [name, char] of SVG_MAP) {
-  const file = SVG_DIR + name + '.svg';
-  const glyph = fs.createReadStream(file);
+for (const file of glob.globSync(SVG_DIR + '*.svg')) {
+  const name = path.basename(file).split('.')[0];
+  const text = fs.readFileSync(file, 'utf8');
+  const char = text.match(/<svg[^>]*?\sid="\s*([^\s"]+)\s*"/)?.[1];
+  if (!char) {
+    ERRORS.push(name);
+    continue;
+  }
+  process.stdout.write(char);
+  const glyph = stream.Readable.from([text]);
   glyph.metadata = {name, file, unicode: [char]};
   fontStream.write(glyph);
+  SVG_MAP.push([name, char]);
 }
 fontStream.end();
 
@@ -86,4 +77,8 @@ function convert() {
   }
 
   fs.writeFileSync(CSS_FONT, Buffer.from(ttf.buffer));
+
+  console.log(` (${SVG_MAP.length})`, ERRORS[0]
+    ? chalk.red(`and ${ERRORS.length} with no id skipped:\n  `) + ERRORS.join('\n  ')
+    : chalk.green('OK'));
 }

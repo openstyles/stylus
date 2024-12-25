@@ -73,7 +73,8 @@ h1 {
   width: 100%;
   margin-bottom: $pad;
 }
-#actions {
+[id=actions] /* reducing specificity */ {
+  flex: 1;
   /* TODO: find a reliable way to polyfill `gap` for flexbox in Chrome<84,FF<63 */
   details {
     width: 0;
@@ -87,12 +88,11 @@ h1 {
       margin: 0 $iconGapY $iconGapY 0;
     }
   }
+  $iconPad: calc($iconGapY / 2);
   details:not([open]) + main {
-    > :not(a),
-    > a > button {
-      padding: calc($iconGapY / 2);
-    }
     button.icon {
+      --cloud-pad-r: calc($iconPad * 2);
+      padding: $iconPad;
       line-height: 1;
     }
   }
@@ -105,8 +105,7 @@ h1 {
   }
   details[open] + main {
     $btnTextX: 26px;
-    button.icon,
-    .icon > button {
+    button.icon {
       display: flex;
       align-items: center;
       padding-left: $btnTextX;
@@ -136,7 +135,6 @@ h1 {
     p {
       word-break: break-word;
       font-size: smaller;
-      margin: 0 0 -.5em 8px;
       user-select: text;
       color: var(--accent-1);
       &:empty {
@@ -166,6 +164,22 @@ h1 {
         filter: grayscale(.75);
       }
     }
+  }
+}
+#sync-styles {
+  &[data-cloud] {
+    &::before {
+      content: attr(data-cloud);
+      padding-left: $iconPad;
+      padding-right: var(--cloud-pad-r);
+      order: 1;
+    }
+    i {
+      color: var(--accent-1);
+    }
+  }
+  i {
+    line-height: calc(14px * 1.2);
   }
 }
 

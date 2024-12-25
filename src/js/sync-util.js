@@ -13,12 +13,14 @@ export const DRIVE_NAMES = {
   webdav: 'WebDAV',
 };
 
-export const getStatusText = status => {
+const getPhaseText = (phase, loaded, total) =>
+  t(`optionsSyncStatus${capitalize(phase)}`, total && [loaded + 1, total], false);
+
+export const getStatusText = (status, verbose) => {
   if (status.syncing) {
     const {phase, loaded, total} = status.progress || {};
     return phase
-      ? t(`optionsSyncStatus${capitalize(phase)}`, [loaded + 1, total], false) ||
-      `${phase} ${loaded} / ${total}`
+      ? getPhaseText(phase, loaded, total) || `${phase} ${loaded} / ${total}`
       : t('optionsSyncStatusSyncing');
   }
   const {state, errorMessage} = status;
@@ -28,5 +30,5 @@ export const getStatusText = status => {
   if (state === connected && !status.login) {
     return t('optionsSyncStatusRelogin');
   }
-  return t(`optionsSyncStatus${capitalize(state)}`, null, false) || state;
+  return verbose && getPhaseText(state) || state;
 };

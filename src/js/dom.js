@@ -204,7 +204,7 @@ export function toggleDataset(el, prop, state) {
   if (!el) return;
   const wasEnabled = el.dataset[prop] != null; // avoids mutating DOM unnecessarily
   if (state) {
-    if (!wasEnabled) el.dataset[prop] = '';
+    if (!wasEnabled) el.dataset[prop] = typeof state === 'string' ? state : '';
   } else {
     if (wasEnabled) delete el.dataset[prop];
   }

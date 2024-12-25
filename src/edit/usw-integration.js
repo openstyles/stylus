@@ -60,7 +60,7 @@ export default function USWIntegration() {
     const usw = style._usw || false;
     const elUrl = $('#usw-url');
     const elData = $('#usw-data');
-    const isOn = usw.token;
+    const isOn = !!usw.token;
     toggleDataset(UI, 'connected', isOn);
     UI.classList.toggle('ignore-pref', !isOn);
     if (!isOn) UI.open = false;
