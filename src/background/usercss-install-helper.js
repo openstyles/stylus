@@ -54,7 +54,7 @@ export function toggleUrlInstaller(val) {
         responseHeaders: [{
           header: kContentType,
           values: ['text/*'],
-          excludedValues: ['text/html'],
+          excludedValues: ['text/html*'], // * excludes charset and whatnot
         }],
       },
       action: {
