@@ -226,6 +226,7 @@ export function fitNameColumn(styles, style) {
 function calcNameLenKey(style) {
   const name = style.displayName || style.name || '';
   const len = 1e9 + // aligning the key for sort() which uses string comparison
+    (style[UCD] ? 4 : 0) +
     (style.enabled ? 1.05/*bold factor*/ : 1) *
     (name.length + name.replace(rxNonCJK, '').length/*CJK glyph is 2x wide*/) | 0;
   nameLengths.set(style.id, len);
