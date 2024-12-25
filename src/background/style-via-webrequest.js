@@ -1,4 +1,4 @@
-import {kAppJson, kMainFrame, kPopup, kSubFrame} from '@/js/consts';
+import {kAppJson, kMainFrame, kPopup, kStyleViaXhr, kSubFrame} from '@/js/consts';
 import {updateSessionRules} from '@/js/dnr';
 import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
@@ -17,7 +17,6 @@ import * as tabMan from './tab-manager';
 
 const idCSP = 'patchCsp';
 const idOFF = 'disableAll';
-const idXHR = 'styleViaXhr';
 const REVOKE_TIMEOUT = 10e3;
 const kRuleIds = 'ruleIds';
 const kSetCookie = 'set-cookie'; // must be lowercase
@@ -55,7 +54,7 @@ if (__.MV3) {
 
 prefs.ready.then(() => {
   toggle(__.MV3); // in MV3 this will unregister unused listeners
-  prefs.subscribe([idOFF, idCSP, idXHR], toggle);
+  prefs.subscribe([idOFF, idCSP, kStyleViaXhr], toggle);
 });
 
 bgBusy.then(() => {
@@ -97,7 +96,7 @@ function toggle(prefKey) {
   const mv3init = __.MV3 && !prefKey;
   const off = prefs.__values[idOFF];
   const csp = !off && prefs.__values[idCSP];
-  const xhr = !off && prefs.__values[idXHR];
+  const xhr = !off && prefs.__values[kStyleViaXhr];
   if (!mv3init && xhr === curXHR && csp === curCSP && off === curOFF) {
     return;
   }

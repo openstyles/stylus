@@ -1,3 +1,5 @@
+import {kStyleViaXhr} from '@/js/consts';
+import {CONNECTED} from '@/js/port';
 import * as prefs from '@/js/prefs';
 import {debounce, isCssDarkScheme} from '@/js/util';
 import {broadcastExtension} from './broadcast';
@@ -42,6 +44,12 @@ if (__.MV3) {
     }
   }));
   bgInit.push(refreshSystemDark);
+  prefs.subscribe([kSTATE, kStyleViaXhr], () => {
+    const val = prefState === kSystem || prefs.__values[kStyleViaXhr];
+    if (val || offscreen[CONNECTED]) {
+      offscreen.keepAlive(val);
+    }
+  }, true);
 } else {
   refreshSystemDark();
 }

@@ -2,8 +2,7 @@ import '../intro'; // sets global.API
 import './keep-alive'; // sets global.keepAlive
 import {kMainFrame, kSubFrame} from '@/js/consts';
 import {_execute} from '@/js/msg';
-import {CONNECTED, initRemotePort} from '@/js/port';
-import * as prefs from '@/js/prefs';
+import {initRemotePort} from '@/js/port';
 import {ownRoot} from '@/js/urls';
 import {clientDataJobs} from '../common';
 import {cloudDrive} from '../db-to-cloud-broker';
@@ -51,12 +50,6 @@ cloudDrive.webdav = async cfg => {
   for (const k in res) res[k] ??= webdav.bind(null, k);
   return res;
 };
-
-prefs.subscribe('styleViaXhr', (key, val) => {
-  if (val || offscreen[CONNECTED]) {
-    offscreen.keepAlive(val);
-  }
-}, true);
 
 /**
  * This ensures that SW starts even before our page makes a clientData request inside.

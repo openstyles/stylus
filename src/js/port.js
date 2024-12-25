@@ -115,7 +115,7 @@ export function createPortExec(getTarget, {lock, once} = {}) {
     if (once) {
       port.close();
       exec[CONNECTED] =
-      queue = port = target = null;
+      queue = port = port.onmessage = target = null;
     }
   }
   async function trackTarget(queueCopy) {
