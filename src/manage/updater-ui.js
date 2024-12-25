@@ -1,4 +1,4 @@
-import {$, $$, $create, $detach, $toggleClasses} from '@/js/dom';
+import {$, $$, $create, $detach, toggleClasses} from '@/js/dom';
 import {messageBox, scrollElementIntoView} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg';
@@ -192,7 +192,7 @@ function reportUpdateState({updated, style, error, STATES}) {
     }
   }
 
-  $toggleClasses(entry, newClasses);
+  toggleClasses(entry, newClasses);
 
   if (filtersSelector.hide && isCheckAll) {
     filterAndAppend({entry}).then(updateStripes);

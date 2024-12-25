@@ -1,4 +1,4 @@
-import {$, $toggleClasses, dom, mqCompact} from './dom';
+import {$, dom, mqCompact, toggleClasses} from './dom';
 import {waitForSelector} from './dom-util';
 import * as prefs from './prefs';
 import {FIREFOX, MOBILE, OPERA, VIVALDI, WINDOWS} from './ua';
@@ -52,7 +52,7 @@ prefs.ready.then(() => {
 if (mqCompact) {
   const toggleCompact = mq => {
     mq = mq.matches;
-    $toggleClasses($.root, {
+    toggleClasses($.root, {
       'compact-layout': mq,
       'normal-layout': !mq,
     });

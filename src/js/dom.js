@@ -177,6 +177,13 @@ export function $detach(el, state = true) {
   return state;
 }
 
+/** Moves child nodes to a new document fragment */
+export function $toFragment(el) {
+  const bin = document.createDocumentFragment();
+  bin.append(...el.childNodes);
+  return bin;
+}
+
 /**
  * construct a new className:
  * 1. add a class if value is truthy
@@ -185,19 +192,12 @@ export function $detach(el, state = true) {
  * @param {HTMLElement} el
  * @param {object} newClasses
  */
-export function $toggleClasses(el, newClasses) {
+export function toggleClasses(el, newClasses) {
   const list = new Set();
   for (const c of el.classList) list.add(c);
   for (const c in newClasses) if (newClasses[c]) list.add(c); else list.delete(c);
   let res = ''; for (const c of list) res += res ? ' ' + c : c;
   if (el.className !== res) el.className = res;
-}
-
-/** Moves child nodes to a new document fragment */
-export function $toFragment(el) {
-  const bin = document.createDocumentFragment();
-  bin.append(...el.childNodes);
-  return bin;
 }
 
 export function toggleDataset(el, prop, state) {
