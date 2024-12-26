@@ -1,3 +1,4 @@
+import {kCssPropSuffix} from '@/js/consts';
 import {COMMANDS} from './port';
 import {importScriptsOnce} from './worker-util';
 
@@ -17,16 +18,23 @@ Object.assign(COMMANDS, {
     importScriptsOnce('parserlib.js'); /* global parserlib */
     const {
       css: {GlobalKeywords, NamedColors, Parser: {AT}, Properties},
-      util: {describeProp},
+      util: {describeProp, VTFunctions},
     } = parserlib;
+    const atKeys = [`@-moz-document`, '@starting-style'];
+    const keys = Object.keys(Properties).sort();
     const COLOR = '<color>';
     const rxColor = RegExp(`${COLOR}|${describeProp(COLOR).replace(/[()|]/g, '\\$&')}|~~~`, 'g');
+    const rxFunc = /([-\w]+\().*?\)/g;
     const rxNonWord = /(?:<.+?>|[^-\w<(]+\d*)+/g;
     const res = {};
     // moving vendor-prefixed props to the end
     const cmp = (a, b) => a[0] === '-' && b[0] !== '-' ? 1 : a < b ? -1 : a > b;
-    for (const [k, v] of Object.entries(Properties)) {
-      if (v !== -1) res[k] = false; // skipping deprecated props
+    for (const k in AT) {
+      if (k !== 'document') atKeys.push('@' + k);
+    }
+    for (let i = 0, k, v; i < keys.length; i++) {
+      k = keys[i];
+      v = Properties[k];
       if (typeof v === 'string') {
         let last = '';
         const uniq = [];
@@ -35,22 +43,28 @@ Object.assign(COMMANDS, {
         const desc = describeProp(vNoColor);
         const descNoColors = desc.replace(rxColor, '');
         // add a prefix to functions to group them at the end
-        const words = descNoColors.replace(/([-\w]+\().*?\)/g, 'z-$1').split(rxNonWord).sort(cmp);
+        const words = descNoColors.replace(rxFunc, 'z-$1').split(rxNonWord).sort(cmp);
         for (let w of words) {
           if (w.startsWith('z-')) w = w.slice(2);
           if (w !== last) uniq.push(last = w);
         }
         if (desc !== descNoColors || v !== vNoColor) uniq.push(COLOR);
-        if (uniq.length) res[k] = uniq;
+        v = uniq.join('\n');
+      } else if (v === -1) { // skipping deprecated props
+        k = '';
+      } else {
+        v = '';
       }
+      if (k) res[k += kCssPropSuffix] = v;
+      keys[i] = k;
     }
+    /** @namespace AutocompleteSpec */
     return {
       all: res,
-      ats: [...Object.keys(AT), 'starting-style']
-        .map(k => `@${k === 'document' ? '-moz-' : ''}${k}`)
-        .sort(),
-      colors: NamedColors,
-      global: GlobalKeywords,
+      ats: atKeys.sort(),
+      colors: NamedColors.join('\n') + '\n' + Object.keys(VTFunctions.color).join('(\n') + '(',
+      global: '\n' + GlobalKeywords.join('\n'),
+      keys: keys.filter(Boolean),
     };
   },
 

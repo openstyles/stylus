@@ -11,6 +11,7 @@ export const kAppJson = 'application/json';
 export const kAppUrlencoded = 'application/x-www-form-urlencoded';
 export const kApplyPort = 'apply';
 export const kContentType = 'content-type'; // must be lowercase!
+export const kCssPropSuffix = ': ';
 export const kDisableAll = 'disableAll';
 export const kInstall = 'install';
 export const kMainFrame = 'main_frame';

@@ -1,5 +1,5 @@
 /** Registers 'hint' helper and 'autocompleteOnTyping' option in CodeMirror */
-import {UCD} from '@/js/consts';
+import {kCssPropSuffix, UCD} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {debounce, hasOwn, stringAsRegExpStr, tryRegExp} from '@/js/util';
 import CodeMirror from 'codemirror';
@@ -10,17 +10,37 @@ import {worker} from './util';
 const USO_VAR = 'uso-variable';
 const USO_VALID_VAR = 'variable-3 ' + USO_VAR;
 const USO_INVALID_VAR = 'error ' + USO_VAR;
-const rxPROP = /^(prop(erty)?|variable-2|string-2)\b/;
-const rxVAR = /(^|[^-.\w\u0080-\uFFFF])var\(/iyu;
-const rxCONSUME = /([-\w]*\s*:\s?)?/yu;
-// Using a string to avoid syntax error in old browsers
-const rxsWORD = tryRegExp('(?<=a)') ? '(?<![-\\w]|#[0-9a-f]*)' : '';
+const rxCmAnyProp = /^(prop(erty)?|variable-2|string-2)\b/;
+const rxCmProp = /prop/;
+const rxCmTopFunc = /^(top|documentTypes|atBlock)/;
+const rxCmVarTagColor = /^(variable|tag|error)/;
+const rxConsume = /([-\w]*\s*:\s?)?/yu;
+const rxCruftAtStart = /^[^\w\s]\s*/;
+const rxFilterable = /^(--|[#.\w])\S*\s*$|^@/;
+const rxHexColor = /[0-9a-f]+\b|$|\s/yi;
+const rxMaybeProp1 = /^(prop(erty|\?)|atom|error|tag)/;
+const rxMaybeProp2 = /^(block|atBlock_parens|maybeprop)/;
+const rxNamedColors = /<color>$/;
+const rxNonWord = /[^-\w]/u;
+const rxNonWordEnd = /[^-\w]$/u;
+const rxPropChars = /(\s*[-a-z(]+)?/yi;
+const rxPropEnd = /[\s:()]*/y;
+const rxVar = /(^|[^-.\w\u0080-\uFFFF])var\(/iyu;
+/** Using a string to avoid syntax error while loading this script in old browsers */
+const rxWordStart = __.MV3 ? /(?<![-\w]|#[0-9a-f]*)/
+  : tryRegExp('(?<![-\\w]|#[0-9a-f]*)');
+const rxWord = __.MV3 ? /(?<![-\w]|#[0-9a-f]*)[a-z][-a-z]+/gi
+  : rxWordStart ? tryRegExp('(?<![-\\w]|#[0-9a-f]*)[a-z][-a-z]+', 'gi')
+    : /\b[a-z][-a-z]+/gi;
+const rxstrWordStart = rxWordStart ? rxWordStart.source : '';
 const cssMime = CodeMirror.mimeModes['text/css'];
 const docFuncs = addSuffix(cssMime.documentTypes, '(');
+const docFuncsStr = '\n' + docFuncs.join('\n');
 const {tokenHooks} = cssMime;
 const originalCommentHook = tokenHooks['/'];
 const originalHelper = CodeMirror.hint.css || (() => {});
-let cssAts, cssMedia, cssProps, cssValues;
+let cssAts, cssColors, cssMedia, cssProps, cssPropsLC, cssPropNames;
+let /** @type {AutocompleteSpec} */ cssSpecData;
 
 const AOT_ID = 'autocompleteOnTyping';
 const AOT_PREF_ID = 'editor.' + AOT_ID;
@@ -47,6 +67,7 @@ async function helper(cm) {
   if (!type || type === 'comment' || type === 'string') {
     return originalHelper(cm);
   }
+  let list, leftLC, prop;
   // not using getTokenAt until the need is unavoidable because it reparses text
   // and runs a whole lot of complex calc inside which is slow on long lines
   // especially if autocomplete is auto-shown on each keystroke
@@ -57,7 +78,7 @@ async function helper(cm) {
     (prev = i > 2 ? styles[i - 2] : 0) &&
     isSameToken(text, style, prev)
   ) i -= 2;
-  if (text[prev] === '#' && testAt(/[0-9a-f]+\b|$|\s/yi, prev + 1, text)) {
+  if (text[prev] === '#' && testAt(rxHexColor, prev + 1, text)) {
     return; // ignore #hex colors
   }
   i = index;
@@ -71,8 +92,7 @@ async function helper(cm) {
     (state = state.type ? state.state.state : type));
   const str = text.slice(prev, end);
   const left = text.slice(prev, ch).trim();
-  let leftLC = left.toLowerCase();
-  let list;
+  leftLC = left.toLowerCase();
   switch (leftLC[0]) {
 
     case '!':
@@ -90,7 +110,7 @@ async function helper(cm) {
 
     case '-': // --variable
     case '(': // var(
-      list = str.startsWith('--') || testAt(rxVAR, ch - 5, text)
+      list = str.startsWith('--') || testAt(rxVar, ch - 5, text)
         ? findAllCssVars(cm, left)
         : [];
       if (str.startsWith('(')) {
@@ -114,9 +134,9 @@ async function helper(cm) {
     case 'u': // url(), url-prefix()
     case 'd': // domain()
     case 'r': // regexp()
-      if (/^(variable|tag|error)/.test(type) &&
-          docFuncs.some(s => s.startsWith(leftLC)) &&
-          /^(top|documentTypes|atBlock)/.test(getTokenState())) {
+      if (rxCmVarTagColor.test(type) &&
+          docFuncsStr.includes('\n' + leftLC) &&
+          rxCmTopFunc.test(getTokenState())) {
         end++;
         list = docFuncs;
         break;
@@ -125,42 +145,42 @@ async function helper(cm) {
 
     default: {
       // property values
-      let prop;
-      if (isStylusLang || /prop/.test(getTokenState())) {
-        while (i > 0 && !rxPROP.test(styles[i + 1])) i -= 2;
+      if (isStylusLang || rxCmProp.test(getTokenState())) {
+        while (i > 0 && !rxCmAnyProp.test(styles[i + 1])) i -= 2;
         const propEnd = styles[i];
         if (propEnd > text.lastIndexOf(';', ch - 1)) {
-          while (i > 0 && rxPROP.test(styles[i + 1])) i -= 2;
+          while (i > 0 && rxCmAnyProp.test(styles[i + 1])) i -= 2;
           prop = (i < 2 || styles[i] < ch) &&
             text.slice(styles[i] || 0, propEnd).toLowerCase().match(/([-\w]+)?$/u)[1];
         }
       }
       if (prop) {
-        if (/[^-\w]/.test(leftLC)) {
-          prev += execAt(/[\s:()]*/y, prev, text)[0].length;
-          leftLC = leftLC.replace(/^[^\w\s]\s*/, '');
+        if (rxNonWord.test(leftLC)) {
+          prev += execAt(rxPropEnd, prev, text)[0].length;
+          leftLC = leftLC.replace(rxCruftAtStart, '');
         }
         if (prop.startsWith('--')) prop = 'color'; // assuming 90% of variables are colors
         else if (leftLC && prop.startsWith(leftLC)) prop = '';
       }
       if (prop) {
-        if (!cssProps) await initCssProps();
-        prop = cssValues.all[prop];
-        list = [...new Set([...prop || [], ...cssValues.global])];
-        end = prev + execAt(/(\s*[-a-z(]+)?/yi, prev, text)[0].length;
+        if (!cssPropNames) await initCssProps();
+        prop = cssProps[prop + kCssPropSuffix] || '';
+        if (prop) {
+          list = prop.replace(rxNamedColors, cssColors) + cssSpecData.global;
+          list = list.split('\n');
+        }
+        end = prev + execAt(rxPropChars, prev, text)[0].length;
       }
       // properties and media features
-      if (!list &&
-          /^(prop(erty|\?)|atom|error|tag)/.test(type) &&
-          /^(block|atBlock_parens|maybeprop)/.test(getTokenState())) {
-        if (!cssProps) await initCssProps();
+      if (!list && rxMaybeProp1.test(type) && rxMaybeProp2.test(getTokenState())) {
+        if (!cssPropNames) await initCssProps();
         if (type === 'prop?') {
           prev += leftLC.length;
           leftLC = '';
         }
-        list = state === 'atBlock_parens' ? cssMedia : cssProps;
-        end -= /[^-\w]$/u.test(str); // e.g. don't consume ) when inside ()
-        end += execAt(rxCONSUME, end, text)[0].length;
+        list = state === 'atBlock_parens' ? cssMedia : prop = cssPropNames;
+        end -= rxNonWordEnd.test(str); // e.g. don't consume ) when inside ()
+        end += execAt(rxConsume, end, text)[0].length;
       }
     }
   }
@@ -168,42 +188,63 @@ async function helper(cm) {
     const simple = isStylusLang
       ? CodeMirror.hint.fromList(cm, {words: CodeMirror.hintWords.stylus})
       : originalHelper(cm);
-    const word = RegExp(rxsWORD +
-      (leftLC ? stringAsRegExpStr(leftLC) : '[a-z]') +
-      '[-a-z]+', 'gi');
+    const word = leftLC
+      ? RegExp(rxstrWordStart + stringAsRegExpStr(leftLC) + '[-a-z]+', 'gi')
+      : rxWord;
     const any = CodeMirror.hint.anyword(cm, {word}).list;
     list = simple ? [...new Set(simple.list.concat(any))] : any;
     list.sort();
   }
-  return list && {
-    list: /^(--|[#.\w])\S*\s*$|^@/.test(leftLC)
-      ? list.filter(s => s.toLowerCase().startsWith(leftLC))
-      : list,
+  const filterable = rxFilterable.test(leftLC);
+  if (filterable) {
+    const uniq = new Set(list);
+    const uniq2 = new Set();
+    const uniq3 = new Set();
+    const len = leftLC.length;
+    for (const v of uniq) {
+      i = v.toLowerCase().indexOf(leftLC);
+      if (!i) continue;
+      if (i > 0) uniq2.add(v);
+      uniq.delete(v);
+    }
+    if (prop != null && !rxNonWord.test(leftLC) && !leftLC.startsWith('--')) {
+      for (const name of cssPropNames) {
+        for (let j = 0, a, b, lc = cssPropsLC[name];
+          j >= 0 && (j = lc.indexOf(leftLC, j)) >= 0;
+          j = b
+        ) {
+          a = lc.lastIndexOf('\n', j) + 1;
+          b = lc.indexOf('\n', j + len);
+          (j === a ? uniq2 : uniq3).add(name + cssProps[name].slice(a, b < 0 ? 1e9 : b));
+        }
+      }
+    }
+    list = [...uniq, ...uniq2, ...uniq3];
+  }
+  return {
+    list,
     from: {line, ch: prev + str.match(/^\s*/)[0].length},
     to: {line, ch: end},
   };
 }
 
 async function initCssProps() {
-  cssValues = await worker.getCssPropsValues();
-  cssAts = cssValues.ats;
-  cssProps = addSuffix(cssValues.all);
+  cssSpecData = await worker.getCssPropsValues();
+  cssAts = cssSpecData.ats;
+  cssColors = cssSpecData.colors;
+  cssProps = cssSpecData.all;
+  cssPropsLC = {}; for (const k in cssProps) cssPropsLC[k] = cssProps[k].toLowerCase();
+  cssPropNames = cssSpecData.keys;
   cssMedia = [].concat(...Object.entries(cssMime).map(getMediaKeys).filter(Boolean)).sort();
-  for (const v of Object.values(cssValues.all)) {
-    if (v && v[v.length - 1] === '<color>') {
-      v.pop();
-      v.push(...cssValues.colors);
-    }
-  }
 }
 
-function addSuffix(obj, suffix = ': ') {
+function addSuffix(obj, suffix) {
   // Sorting first, otherwise "foo-bar:" would precede "foo:"
-  return Object.keys(obj).sort().map(k => k + suffix);
+  return (Object.keys(obj).sort().join(suffix + '\n') + suffix).split('\n');
 }
 
 function getMediaKeys([k, v]) {
-  return k === 'mediaFeatures' && addSuffix(v) ||
+  return k === 'mediaFeatures' && addSuffix(v, kCssPropSuffix) ||
     k.startsWith('media') && Object.keys(v);
 }
 
