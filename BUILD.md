@@ -3,7 +3,8 @@
 ## Preparation
 
 1. Install [Node.js](https://nodejs.org/en/).
-2. Go to the project root, run `npm install`. This will install all required dependencies.
+2. Install PNPM e.g. run `npm install -g pnpm` or use another method for your OS, see https://pnpm.io/installation
+3. Go to the project root, run `pnpm i`. This will install all required dependencies.
 
 ## Preparation for Transifex
 
@@ -14,20 +15,20 @@ Extra preparations are needed if you want to pull locale files from Transifex:
 
 ## Build
 
-| type         | command                    |
-|--------------|----------------------------|
-| Chrome (MV2) | `npm run build-chrome-mv2` |
-| Chrome (MV3) | `npm run build-chrome-mv3` |
-| Firefox      | `npm run build-firefox`    |
+| type                  | command                 |
+|-----------------------|-------------------------|
+| MV2 for any browser   | `pnpm build-mv2`        |
+| MV2 Firefox optimized | `pnpm build-firefox`    |
+| MV3 Chrome/Chromiums  | `pnpm build-chrome-mv3` |
 
 ⚠ `dist` folder is not cleared.
 
 ## Watch / develop
 
-| type | command             |
-|------|---------------------|
-| MV2  | `npm run watch-mv2` |
-| MV3  | `npm run watch-mv3` |
+| type | command          |
+|------|------------------|
+| MV2  | `pnpm watch-mv2` |
+| MV3  | `pnpm watch-mv3` |
 
 ⚠ `dist` folder is not cleared.
 
@@ -35,20 +36,20 @@ Extra preparations are needed if you want to pull locale files from Transifex:
 
 The files are created in the project root directory.
 
-| type              | command                       |
-|-------------------|-------------------------------|
-| All               | `npm run zip`                 |
-| Chrome (MV2)      | `npm run zip-chrome-mv2`      |
-| Chrome (MV3)      | `npm run zip-chrome-mv3`      |
-| Chrome (MV3 beta) | `npm run zip-chrome-mv3-beta` |
-| Firefox           | `npm run zip-firefox`         |
+| type            | command                    |
+|-----------------|----------------------------|
+| All             | `pnpm zip`                 |
+| MV2 Firefox     | `pnpm zip-firefox`         |
+| MV2 Chrome      | `pnpm zip-chrome-mv2`      |
+| MV3 Chrome      | `pnpm zip-chrome-mv3`      |
+| MV3 Chrome beta | `pnpm zip-chrome-mv3-beta` |
 
 ## Tag a release/Bump the version
 
-| type   | command             |
-|--------|---------------------|
-| Stable | `npm version minor` |
-| Beta   | `npm version patch` |
+| type     | command            |
+|----------|--------------------|
+| Beta/Dev | `pnpm bump`        |
+| Stable   | `pnpm bump-stable` |
 
 There are some scripts that will run automatically before/after tagging a version. Includes:
 
@@ -64,11 +65,11 @@ We host locale files (`message.json`) on Transifex. All the files exist in our G
 To pull files from Transifex, run
 
 ```
-npm run update-locales
+pnpm update-locales
 ```
 
 To push files to Transifex:
 
 ```
-npm run update-transifex
+pnpm update-transifex
 ```

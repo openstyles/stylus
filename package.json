@@ -71,7 +71,8 @@
     "zip-firefox": "pnpm test && node tools/build-zip.js firefox",
     "preversion": "pnpm test",
     "version": "node tools/sync-manifest-version.js && git add .",
-    "bump": "pnpm version patch"
+    "bump": "pnpm version patch",
+    "bump-stable": "pnpm version minor"
   },
   "engines": {
     "node": ">=20.6.0"
