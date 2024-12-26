@@ -1,5 +1,15 @@
 name: ci
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - 'src/**'
+      - '*.js' # root configs
+      - 'package.json'
+      - '!src/types.d.ts'
+      - .github/workflows/ci.yml
+
+  pull_request:
+    branches: [master]
 
 jobs:
   test:
@@ -10,10 +20,9 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           version: 9
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v4
         with:
           node-version: '>=20.6.0'
-          cache: 'pnpm'
 
       - run: pnpm install
       - run: pnpm test
