@@ -23,6 +23,7 @@
     "@babel/core": "^7.26.0",
     "@babel/plugin-transform-runtime": "^7.25.9",
     "@babel/preset-env": "^7.26.0",
+    "@types/codemirror": "^5.60.15",
     "@types/webpack": "^5.28.5",
     "autoprefixer": "^10.4.20",
     "babel-loader": "^9.2.1",

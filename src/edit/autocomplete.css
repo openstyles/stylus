@@ -1,0 +1,6 @@
+.CodeMirror-hint b {
+  background-color: hsla(51, 100%, 50%, .25);
+}
+.CodeMirror-hint-active b {
+  background: deepskyblue;
+}

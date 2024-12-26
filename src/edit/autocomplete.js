@@ -1,15 +1,17 @@
 /** Registers 'hint' helper and 'autocompleteOnTyping' option in CodeMirror */
 import {kCssPropSuffix, UCD} from '@/js/consts';
 import * as prefs from '@/js/prefs';
-import {debounce, hasOwn, stringAsRegExpStr, tryRegExp} from '@/js/util';
+import {hasOwn, stringAsRegExpStr, tryRegExp} from '@/js/util';
 import CodeMirror from 'codemirror';
+import {
+  addSuffix, autocompleteOnTyping, Completion, execAt, findAllCssVars, isSameToken, testAt,
+  USO_INVALID_VAR, USO_VALID_VAR,
+} from './autocomplete-util';
 import cmFactory from './codemirror-factory';
 import editor from './editor';
 import {worker} from './util';
+import './autocomplete.css';
 
-const USO_VAR = 'uso-variable';
-const USO_VALID_VAR = 'variable-3 ' + USO_VAR;
-const USO_INVALID_VAR = 'error ' + USO_VAR;
 const rxCmAnyProp = /^(prop(erty)?|variable-2|string-2)\b/;
 const rxCmProp = /prop/;
 const rxCmTopFunc = /^(top|documentTypes|atBlock)/;
@@ -21,8 +23,10 @@ const rxHexColor = /[0-9a-f]+\b|$|\s/yi;
 const rxMaybeProp1 = /^(prop(erty|\?)|atom|error|tag)/;
 const rxMaybeProp2 = /^(block|atBlock_parens|maybeprop)/;
 const rxNamedColors = /<color>$/;
+const rxNonSpace = /\S/;
 const rxNonWord = /[^-\w]/u;
 const rxNonWordEnd = /[^-\w]$/u;
+const rxPropOrEnd = /^([-a-z]*)(: ?|\()?$/i;
 const rxPropChars = /(\s*[-a-z(]+)?/yi;
 const rxPropEnd = /[\s:()]*/y;
 const rxVar = /(^|[^-.\w\u0080-\uFFFF])var\(/iyu;
@@ -39,27 +43,49 @@ const docFuncsStr = '\n' + docFuncs.join('\n');
 const {tokenHooks} = cssMime;
 const originalCommentHook = tokenHooks['/'];
 const originalHelper = CodeMirror.hint.css || (() => {});
-let cssAts, cssColors, cssMedia, cssProps, cssPropsLC, cssPropNames;
-let /** @type {AutocompleteSpec} */ cssSpecData;
 
 const AOT_ID = 'autocompleteOnTyping';
 const AOT_PREF_ID = 'editor.' + AOT_ID;
 const aot = prefs.get(AOT_PREF_ID);
+
+let cssAts, cssColors, cssMedia, cssProps, cssPropsLC, cssPropNames;
+let /** @type {AutocompleteSpec} */ cssSpecData;
+let prevData, prevMatch, prevLine, prevCh;
+
 CodeMirror.defineOption(AOT_ID, aot, (cm, value) => {
   cm[value ? 'on' : 'off']('changes', autocompleteOnTyping);
-  cm[value ? 'on' : 'off']('pick', autocompletePicked);
 });
 prefs.subscribe(AOT_PREF_ID, (key, val) => cmFactory.globalSetOption(AOT_ID, val), aot);
-
 CodeMirror.registerHelper('hint', 'css', helper);
 CodeMirror.registerHelper('hint', 'stylus', helper);
-
 tokenHooks['/'] = tokenizeUsoVariables;
 
 async function helper(cm) {
   const pos = cm.getCursor();
   const {line, ch} = pos;
   const {styles, text} = cm.getLineHandle(line);
+  if (
+    prevLine === line &&
+    prevCh <= ch &&
+    prevMatch === text.slice(prevCh - prevMatch.length, prevCh) &&
+    (prevLine = text.slice(prevCh, ch).match(rxPropOrEnd))
+  ) {
+    prevData.to.ch = ch;
+    prevData.len = (prevMatch += prevLine[1] || prevLine[2]).length;
+    for (let arr = prevData.list, a = 0, ok = 0, v;
+         a < arr.length || ok && !(arr.length = ok);
+         a++) {
+      v = arr[a];
+      if (v.text.indexOf(prevMatch) === v.i) {
+        if (ok < a) arr[ok] = v;
+        ok++;
+      }
+    }
+    prevLine = line;
+    prevCh = ch;
+    return prevData;
+  }
+  prevData = null;
   const {style, index} = cm.getStyleAtPos({styles, pos: ch}) || {};
   const isLessLang = cm.doc.mode.helperType === 'less';
   const isStylusLang = cm.doc.mode.name === 'stylus';
@@ -195,37 +221,47 @@ async function helper(cm) {
     list = simple ? [...new Set(simple.list.concat(any))] : any;
     list.sort();
   }
+  const len = leftLC.length;
   const filterable = rxFilterable.test(leftLC);
   if (filterable) {
-    const uniq = new Set(list);
-    const uniq2 = new Set();
-    const uniq3 = new Set();
-    const len = leftLC.length;
-    for (const v of uniq) {
+    const inValues = prop != null && !rxNonWord.test(leftLC) && !leftLC.startsWith('--');
+    const names1 = new Map();
+    const names2 = new Map();
+    const values1 = inValues && new Map();
+    const values2 = inValues && new Map();
+    for (const v of list) {
       i = v.toLowerCase().indexOf(leftLC);
-      if (!i) continue;
-      if (i > 0) uniq2.add(v);
-      uniq.delete(v);
+      if (i >= 0) (i ? names2 : names1).set(v, new Completion(i, v));
     }
-    if (prop != null && !rxNonWord.test(leftLC) && !leftLC.startsWith('--')) {
+    list = [...names1.values(), ...names2.values()];
+    if (inValues) {
       for (const name of cssPropNames) {
-        for (let j = 0, a, b, lc = cssPropsLC[name];
-          j >= 0 && (j = lc.indexOf(leftLC, j)) >= 0;
-          j = b
+        i = 0;
+        for (let a, b, v, lc = cssPropsLC[name], nameLen = name.length;
+          i >= 0 && (i = lc.indexOf(leftLC, i)) >= 0;
+          i = b
         ) {
-          a = lc.lastIndexOf('\n', j) + 1;
-          b = lc.indexOf('\n', j + len);
-          (j === a ? uniq2 : uniq3).add(name + cssProps[name].slice(a, b < 0 ? 1e9 : b));
+          a = lc.lastIndexOf('\n', i) + 1;
+          b = lc.indexOf('\n', i + len);
+          v = name + cssProps[name].slice(a, b < 0 ? 1e9 : b);
+          (i === a ? values1 : values2).set(v, new Completion(i - a + nameLen, v, true));
         }
       }
+      list.push(...values1.values(), ...values2.values());
     }
-    list = [...uniq, ...uniq2, ...uniq3];
   }
-  return {
+  prev += str.search(rxNonSpace);
+  prevMatch = text.slice(prev, ch);
+  prevLine = line;
+  prevCh = ch;
+  /** @namespace CompletionData */
+  prevData = {
+    len,
     list,
-    from: {line, ch: prev + str.match(/^\s*/)[0].length},
+    from: {line, ch: prev},
     to: {line, ch: end},
   };
+  return prevData;
 }
 
 async function initCssProps() {
@@ -238,39 +274,9 @@ async function initCssProps() {
   cssMedia = [].concat(...Object.entries(cssMime).map(getMediaKeys).filter(Boolean)).sort();
 }
 
-function addSuffix(obj, suffix) {
-  // Sorting first, otherwise "foo-bar:" would precede "foo:"
-  return (Object.keys(obj).sort().join(suffix + '\n') + suffix).split('\n');
-}
-
 function getMediaKeys([k, v]) {
   return k === 'mediaFeatures' && addSuffix(v, kCssPropSuffix) ||
     k.startsWith('media') && Object.keys(v);
-}
-
-/** makes sure we don't process a different adjacent comment */
-function isSameToken(text, style, i) {
-  return !style || text[i] !== '/' && text[i + 1] !== '*' ||
-    !style.startsWith(USO_VALID_VAR) && !style.startsWith(USO_INVALID_VAR);
-}
-
-function findAllCssVars(cm, leftPart, rightPart = '') {
-  // simplified regex without CSS escapes
-  const [, prefixed, named] = leftPart.match(/^(--|@)?(\S)?/);
-  const rx = new RegExp(
-    '(?:^|[\\s/;{])(' +
-    (prefixed ? leftPart : '--') +
-    (named ? '' : '[a-zA-Z_\u0080-\uFFFF]') +
-    '[-0-9a-zA-Z_\u0080-\uFFFF]*)' +
-    rightPart,
-    'g');
-  const list = new Set();
-  cm.eachLine(({text}) => {
-    for (let m; (m = rx.exec(text));) {
-      list.add(m[1]);
-    }
-  });
-  return [...list].sort();
 }
 
 function tokenizeUsoVariables(stream) {
@@ -287,43 +293,4 @@ function tokenizeUsoVariables(stream) {
     }
   }
   return token;
-}
-
-function execAt(rx, index, text) {
-  rx.lastIndex = index;
-  return rx.exec(text);
-}
-
-function testAt(rx, index, text) {
-  rx.lastIndex = Math.max(0, index);
-  return rx.test(text);
-}
-
-function autocompleteOnTyping(cm, [info], debounced) {
-  const lastLine = info.text[info.text.length - 1];
-  if (cm.state.completionActive ||
-      info.origin && !info.origin.includes('input') ||
-      !lastLine) {
-    return;
-  }
-  if (cm.state.autocompletePicked) {
-    cm.state.autocompletePicked = false;
-    return;
-  }
-  if (!debounced) {
-    debounce(autocompleteOnTyping, 100, cm, [info], true);
-    return;
-  }
-  if (lastLine.match(/[-a-z!]+$/i)) {
-    cm.state.autocompletePicked = false;
-    cm.options.hintOptions.completeSingle = false;
-    cm.execCommand('autocomplete');
-    setTimeout(() => {
-      cm.options.hintOptions.completeSingle = true;
-    });
-  }
-}
-
-function autocompletePicked(cm) {
-  cm.state.autocompletePicked = true;
 }

@@ -54,6 +54,9 @@ importers:
       '@babel/preset-env':
         specifier: ^7.26.0
         version: 7.26.0(@babel/core@7.26.0)
+      '@types/codemirror':
+        specifier: ^5.60.15
+        version: 5.60.15
       '@types/webpack':
         specifier: ^5.28.5
         version: 5.28.5(webpack-cli@5.1.4)
@@ -1034,6 +1037,9 @@ packages:
     resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
     engines: {node: '>=10.13.0'}
 
+  '@types/codemirror@5.60.15':
+    resolution: {integrity: sha512-dTOvwEQ+ouKJ/rE9LT1Ue2hmP6H1mZv5+CCnNWu2qtiOe2LQa9lCprEY20HxiDmV/Bxh+dXjywmy5aKvoGjULA==}
+
   '@types/eslint-scope@3.7.7':
     resolution: {integrity: sha512-MzMFlSLBqNF2gcHWO0G1vP/YQyfvrxZ0bF+u7mzUdZ1/xK4A4sru+nraZz5i3iEIk1l1uyicaDVTB4QbbEkAYg==}
 
@@ -1063,6 +1069,9 @@ packages:
 
   '@types/sax@1.2.7':
     resolution: {integrity: sha512-rO73L89PJxeYM3s3pPPjiPgVVcymqU490g0YO5n5By0k2Erzj6tay/4lr1CHAAU4JyOWd1rpQ8bCf6cZfHU96A==}
+
+  '@types/tern@0.23.9':
+    resolution: {integrity: sha512-ypzHFE/wBzh+BlH6rrBgS5I/Z7RD21pGhZ2rltb/+ZrVM1awdZwjx7hE5XfuYgHWk9uvV5HLZN3SloevCAp3Bw==}
 
   '@types/webpack@5.28.5':
     resolution: {integrity: sha512-wR87cgvxj3p6D0Crt1r5avwqffqPXUkNlnQ1mjU93G7gCuFjufZR4I6j8cz5g1F1tTYpfOOFvly+cmIQwL9wvw==}
@@ -4267,6 +4276,10 @@ snapshots:
 
   '@trysound/sax@0.2.0': {}
 
+  '@types/codemirror@5.60.15':
+    dependencies:
+      '@types/tern': 0.23.9
+
   '@types/eslint-scope@3.7.7':
     dependencies:
       '@types/eslint': 9.6.1
@@ -4300,6 +4313,10 @@ snapshots:
   '@types/sax@1.2.7':
     dependencies:
       '@types/node': 22.10.2
+
+  '@types/tern@0.23.9':
+    dependencies:
+      '@types/estree': 1.0.6
 
   '@types/webpack@5.28.5(webpack-cli@5.1.4)':
     dependencies:
