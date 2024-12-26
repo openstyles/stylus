@@ -17,6 +17,8 @@ import './live-preview';
 import USWIntegration from './usw-integration';
 import './windowed-mode';
 import './edit.css';
+/** Loading here to avoid a separate tiny file in dist */
+import './autocomplete.css';
 
 tBody();
 
