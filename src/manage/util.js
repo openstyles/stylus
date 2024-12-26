@@ -1,4 +1,4 @@
-import {$} from '@/js/dom';
+import {$, cssFieldSizing} from '@/js/dom';
 import {template} from '@/js/localization';
 import * as newUI from './new-ui';
 
@@ -93,7 +93,7 @@ export function styleToDummyEntry(style) {
   };
 }
 
-self.fitSelectBox = CSS.supports('field-sizing', 'content') ? () => {} : ((
+self.fitSelectBox = cssFieldSizing ? () => {} : ((
   opts = {},
   showOpts = function (evt) {
     if (evt.button || this[1]) return;

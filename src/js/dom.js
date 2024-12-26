@@ -6,8 +6,8 @@ Object.assign(EventTarget.prototype, {
 $.root = document.documentElement;
 $.rootCL = $.root.classList;
 
+export const cssFieldSizing = __.MV3 || CSS.supports('field-sizing', 'content');
 export const mqCompact = $.rootCL.contains('normal-layout') && matchMedia('(max-width: 850px)');
-
 export const dom = {};
 
 // Makes the focus outline appear on keyboard tabbing, but not on mouse clicks.

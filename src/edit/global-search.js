@@ -1,5 +1,5 @@
 import colorMimicry from '@/js/color/color-mimicry';
-import {$, $$, $create, $remove, toggleDataset} from '@/js/dom';
+import {$, $$, $create, $remove, cssFieldSizing, toggleDataset} from '@/js/dom';
 import {setInputValue} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {chromeLocal} from '@/js/storage-util';
@@ -103,7 +103,7 @@ const EVENTS = {
   oninput() {
     stateFind = stateInput.value;
     debounce(doSearch, INCREMENTAL_SEARCH_DELAY, {canAdvance: false});
-    adjustTextareaSize(this);
+    if (!__.MV3 && !cssFieldSizing) adjustTextareaSize(this);
     if (!stateFind) enableReplaceButtons(false);
   },
   onkeydown(event) {
@@ -144,7 +144,7 @@ const INPUT_PROPS = {
 const INPUT2_PROPS = {
   oninput() {
     stateReplace = this.value;
-    adjustTextareaSize(this);
+    if (!__.MV3 && !cssFieldSizing) adjustTextareaSize(this);
     debounce(writeStorage, STORAGE_UPDATE_DELAY);
   },
 };
@@ -599,9 +599,9 @@ function createDialog(type) {
   document.body.appendChild(dialog);
   dispatchEvent(new Event('showHotkeyInTooltip'));
 
-  adjustTextareaSize(stateInput);
+  if (!__.MV3 && !cssFieldSizing) adjustTextareaSize(stateInput);
   if (type === 'replace') {
-    adjustTextareaSize(stateInput2);
+    if (!__.MV3 && !cssFieldSizing) adjustTextareaSize(stateInput2);
     enableReplaceButtons(stateFind !== '');
     enableUndoButton(stateUndoHistory.length);
   }
@@ -636,28 +636,12 @@ function destroyDialog({restoreFocus = false} = {}) {
 }
 
 function adjustTextareaSize(el) {
-  const oldWidth = parseFloat(el.style.width) || el.clientWidth;
-  const widthHistory = el._widthHistory = el._widthHistory || new Map();
-  const knownWidth = widthHistory.get(el.value);
-  let newWidth;
-  if (knownWidth) {
-    newWidth = knownWidth;
-  } else {
-    const hasVerticalScrollbar = el.scrollHeight > el.clientHeight;
-    newWidth = el.scrollWidth + (hasVerticalScrollbar ? el.scrollWidth - el.clientWidth : 0);
-    newWidth += newWidth > oldWidth ? 50 : 0;
-    widthHistory.set(el.value, newWidth);
-  }
-  if (newWidth !== oldWidth) {
-    const dialogRightOffset = parseFloat(getComputedStyle(stateDialog).right);
-    const dialogRight = stateDialog.getBoundingClientRect().right;
-    const textRight = (stateInput2 || stateInput).getBoundingClientRect().right;
-    newWidth = Math.min(newWidth,
-      (window.innerWidth - dialogRightOffset - (dialogRight - textRight)) /
-      (stateInput2 ? 2 : 1) - 20);
-    el.style.width = newWidth + 'px';
-  }
-  const ovrX = el.scrollWidth > el.clientWidth;
+  const sw = el.scrollWidth;
+  const cw = el.clientWidth;
+  const w = sw > cw && ((sw / 50 | 0) + 1) * 50;
+  if (!w || w === cw) return;
+  el.style.width = w + 'px';
+  const ovrX = el.scrollWidth > el.clientWidth; // recalculate
   const numLines = el.value.split('\n').length + ovrX;
   if (numLines !== Number(el.rows)) {
     el.rows = numLines;
