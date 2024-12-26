@@ -21,7 +21,7 @@ Stylus is a fork of Stylish for Chrome, also compatible with Firefox as a WebExt
 
 In Opera browser please use our extension from Chrome Web Store, see [the instruction](https://github.com/openstyles/stylus/wiki/Opera,-Outdated-Stylus).
 
-## Nightly test builds
+## Nightly test builds [![ci](https://github.com/openstyles/stylus/actions/workflows/ci.yml/badge.svg)](https://github.com/openstyles/stylus/actions/workflows/ci.yml)
 
 Downloading requires a github.com account.
 
