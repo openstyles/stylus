@@ -8,7 +8,7 @@
   "dependencies": {
     "@eight04/draggable-list": "^0.3.0",
     "codemirror": "5.65.10",
-    "csslint-mod": "openstyles/csslint-mod#4057ba061d14342bcfa58158f37a9c203f0c0429",
+    "csslint-mod": "openstyles/csslint-mod#682c164914b68a0a62cd580c290b630d8a5d0d78",
     "db-to-cloud": "^0.7.0",
     "jsonlint": "^1.6.3",
     "less": "^4.2.0",
