@@ -1,11 +1,12 @@
 /** Registers 'hint' helper and 'autocompleteOnTyping' option in CodeMirror */
+import {getStyleAtPos} from '@/cm/util';
 import {kCssPropSuffix, UCD} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {hasOwn, stringAsRegExpStr, tryRegExp} from '@/js/util';
 import CodeMirror from 'codemirror';
 import {
-  addSuffix, autocompleteOnTyping, Completion, execAt, findAllCssVars, isSameToken, testAt,
-  USO_INVALID_VAR, USO_VALID_VAR,
+  addSuffix, autocompleteOnTyping, Completion, execAt, findAllCssVars, getTokenState, isSameToken,
+  testAt, USO_INVALID_VAR, USO_VALID_VAR,
 } from './autocomplete-util';
 import cmFactory from './codemirror-factory';
 import editor from './editor';
@@ -60,18 +61,21 @@ CodeMirror.registerHelper('hint', 'css', helper);
 CodeMirror.registerHelper('hint', 'stylus', helper);
 tokenHooks['/'] = tokenizeUsoVariables;
 
+/** @param {CodeMirror.Editor} cm */
 async function helper(cm) {
   const pos = cm.getCursor();
   const {line, ch} = pos;
   const {styles, text} = cm.getLineHandle(line);
+  let i, end, leftLC, list, prev, prop, state, str, type;
   if (
     prevLine === line &&
     prevCh <= ch &&
     prevMatch === text.slice(prevCh - prevMatch.length, prevCh) &&
-    (prevLine = text.slice(prevCh, ch).match(rxPropOrEnd))
+    (i = text.slice(prevCh, ch).match(rxPropOrEnd)) &&
+    (prevMatch += i[1], !i[2])
   ) {
+    prevData.len = prevMatch.length;
     prevData.to.ch = ch;
-    prevData.len = (prevMatch += prevLine[1] || prevLine[2]).length;
     for (let arr = prevData.list, a = 0, ok = 0, v;
          a < arr.length || ok && !(arr.length = ok);
          a++) {
@@ -86,56 +90,57 @@ async function helper(cm) {
     return prevData;
   }
   prevData = null;
-  const {style, index} = cm.getStyleAtPos({styles, pos: ch}) || {};
-  const isLessLang = cm.doc.mode.helperType === 'less';
-  const isStylusLang = cm.doc.mode.name === 'stylus';
-  const type = style && style.split(' ', 1)[0] || 'prop?';
-  if (!type || type === 'comment' || type === 'string') {
-    return originalHelper(cm);
-  }
-  let list, leftLC, prop;
-  // not using getTokenAt until the need is unavoidable because it reparses text
-  // and runs a whole lot of complex calc inside which is slow on long lines
-  // especially if autocomplete is auto-shown on each keystroke
-  let prev, end, state;
-  let i = index;
-  while (
-    (prev == null || `${styles[i - 1]}`.startsWith(type)) &&
-    (prev = i > 2 ? styles[i - 2] : 0) &&
-    isSameToken(text, style, prev)
-  ) i -= 2;
-  if (text[prev] === '#' && testAt(rxHexColor, prev + 1, text)) {
-    return; // ignore #hex colors
-  }
-  i = index;
-  while (
-    (end == null || `${styles[i + 1]}`.startsWith(type)) &&
-    (end = styles[i]) &&
-    isSameToken(text, style, end)
-  ) i += 2;
-  const getTokenState = () => state || (
-    (state = cm.getTokenAt(pos, true)),
-    (state = state.type ? state.state.state : type));
-  const str = text.slice(prev, end);
-  const left = text.slice(prev, ch).trim();
-  leftLC = left.toLowerCase();
-  switch (leftLC[0]) {
+  if (i) {
+    prop = prevMatch;
+    prev = end = ch;
+    str = leftLC = '';
+  } else {
+    const [style, styleIndex] = getStyleAtPos(styles, ch) || [];
+    type = style && style.split(' ', 1)[0] || 'prop?';
+    if (!type || type === 'comment' || type === 'string') {
+      return originalHelper(cm);
+    }
+    // not using getTokenAt until the need is unavoidable because it reparses text
+    // and runs a whole lot of complex calc inside which is slow on long lines
+    // especially if autocomplete is auto-shown on each keystroke
+    i = styleIndex;
+    while (
+      (prev == null || `${styles[i - 1]}`.startsWith(type)) &&
+      (prev = i > 2 ? styles[i - 2] : 0) &&
+      isSameToken(text, style, prev)
+    ) i -= 2;
+    if (text[prev] === '#' && testAt(rxHexColor, prev + 1, text)) {
+      return; // ignore #hex colors
+    }
+    i = styleIndex;
+    while (
+      (end == null || `${styles[i + 1]}`.startsWith(type)) &&
+      (end = styles[i]) &&
+      isSameToken(text, style, end)
+    ) i += 2;
+    str = text.slice(prev, end);
+    const left = text.slice(prev, ch).trim();
+    const L = (leftLC = left.toLowerCase())[0];
 
-    case '!':
+    // Using Allman style to have conceptually one block but with separate clauses
+    /*eslint-disable brace-style*/
+    if (L === '!')
+    {
       list = '!important'.startsWith(leftLC) ? ['!important'] : [];
-      break;
-
-    case '@':
+    }
+    else if (L === '@')
+    {
       list = cssAts || (await initCssProps(), cssAts);
-      if (isLessLang) list = findAllCssVars(cm, left, '\\s*:').concat(list);
-      break;
-
-    case '.':
-    case '#':
-      break;
-
-    case '-': // --variable
-    case '(': // var(
+      if (cm.doc.mode.helperType === 'less') {
+        list = findAllCssVars(cm, left, '\\s*:').concat(list);
+      }
+    }
+    else if (L === '.' || L === '#') // classes, ids, hex colors
+    {
+      list = false;
+    }
+    else if (L === '-' /*--var*/ || L === '(' /*var()*/)
+    {
       list = str.startsWith('--') || testAt(rxVar, ch - 5, text)
         ? findAllCssVars(cm, left)
         : [];
@@ -145,9 +150,9 @@ async function helper(cm) {
       } else {
         leftLC = left;
       }
-      break;
-
-    case '/': // USO vars
+    }
+    else if (L === '/') // USO vars
+    {
       if (str.startsWith('/*[[') && str.endsWith(']]*/')) {
         prev += 4;
         end -= 4;
@@ -155,63 +160,66 @@ async function helper(cm) {
         list = Object.keys(editor.style[UCD]?.vars || {}).sort();
         leftLC = left.slice(4);
       }
-      break;
-
-    case 'u': // url(), url-prefix()
-    case 'd': // domain()
-    case 'r': // regexp()
+    }
+    else if (L === 'u' /*url*/ || L === 'd' /*domain*/ || L === 'r' /*regexp*/)
+    {
       if (rxCmVarTagColor.test(type) &&
           docFuncsStr.includes('\n' + leftLC) &&
-          rxCmTopFunc.test(getTokenState())) {
+          rxCmTopFunc.test(state ??= getTokenState(cm, pos, type))) {
         end++;
         list = docFuncs;
-        break;
-      }
-      // fallthrough to `default`
-
-    default: {
-      // property values
-      if (isStylusLang || rxCmProp.test(getTokenState())) {
-        while (i > 0 && !rxCmAnyProp.test(styles[i + 1])) i -= 2;
-        const propEnd = styles[i];
-        if (propEnd > text.lastIndexOf(';', ch - 1)) {
-          while (i > 0 && rxCmAnyProp.test(styles[i + 1])) i -= 2;
-          prop = (i < 2 || styles[i] < ch) &&
-            text.slice(styles[i] || 0, propEnd).toLowerCase().match(/([-\w]+)?$/u)[1];
-        }
-      }
-      if (prop) {
-        if (rxNonWord.test(leftLC)) {
-          prev += execAt(rxPropEnd, prev, text)[0].length;
-          leftLC = leftLC.replace(rxCruftAtStart, '');
-        }
-        if (prop.startsWith('--')) prop = 'color'; // assuming 90% of variables are colors
-        else if (leftLC && prop.startsWith(leftLC)) prop = '';
-      }
-      if (prop) {
-        if (!cssPropNames) await initCssProps();
-        prop = cssProps[prop + kCssPropSuffix] || '';
-        if (prop) {
-          list = prop.replace(rxNamedColors, cssColors) + cssSpecData.global;
-          list = list.split('\n');
-        }
-        end = prev + execAt(rxPropChars, prev, text)[0].length;
-      }
-      // properties and media features
-      if (!list && rxMaybeProp1.test(type) && rxMaybeProp2.test(getTokenState())) {
-        if (!cssPropNames) await initCssProps();
-        if (type === 'prop?') {
-          prev += leftLC.length;
-          leftLC = '';
-        }
-        list = state === 'atBlock_parens' ? cssMedia : prop = cssPropNames;
-        end -= rxNonWordEnd.test(str); // e.g. don't consume ) when inside ()
-        end += execAt(rxConsume, end, text)[0].length;
       }
     }
   }
+  /*eslint-enable brace-style*/
+
+  if (list == null) {
+    // property values
+    if (!prop && (
+      cm.doc.mode.name === 'stylus' ||
+      rxCmProp.test(state ??= getTokenState(cm, pos, type))
+    )) {
+      while (i > 0 && !rxCmAnyProp.test(styles[i + 1])) i -= 2;
+      const propEnd = styles[i];
+      if (propEnd > text.lastIndexOf(';', ch - 1)) {
+        while (i > 0 && rxCmAnyProp.test(styles[i + 1])) i -= 2;
+        prop = (i < 2 || styles[i] < ch) &&
+          text.slice(styles[i] || 0, propEnd).toLowerCase().match(/([-\w]+)?$/u)[1];
+      }
+    }
+    if (prop) {
+      if (rxNonWord.test(leftLC)) {
+        prev += execAt(rxPropEnd, prev, text)[0].length;
+        leftLC = leftLC.replace(rxCruftAtStart, '');
+      }
+      if (prop.startsWith('--')) prop = 'color'; // assuming 90% of variables are colors
+      else if (leftLC && prop.startsWith(leftLC)) prop = '';
+    }
+    if (prop) {
+      if (!cssPropNames) await initCssProps();
+      prop = cssProps[prop + kCssPropSuffix] || '';
+      if (prop) {
+        list = prop.replace(rxNamedColors, cssColors) + cssSpecData.global;
+        list = list.split('\n');
+      }
+      end = prev + execAt(rxPropChars, prev, text)[0].length;
+    }
+    // properties and media features
+    if (!list
+    && rxMaybeProp1.test(type)
+    && rxMaybeProp2.test(state ??= getTokenState(cm, pos, type))) {
+      if (!cssPropNames) await initCssProps();
+      if (type === 'prop?') {
+        prev += leftLC.length;
+        leftLC = '';
+      }
+      list = state === 'atBlock_parens' ? cssMedia : cssPropNames;
+      end -= rxNonWordEnd.test(str); // e.g. don't consume ) when inside ()
+      end += execAt(rxConsume, end, text)[0].length;
+    }
+  }
   if (!list) {
-    const simple = isStylusLang
+    const simple = cm.doc.mode.name === 'stylus'
       ? CodeMirror.hint.fromList(cm, {words: CodeMirror.hintWords.stylus})
       : originalHelper(cm);
     const word = leftLC
@@ -222,26 +230,24 @@ async function helper(cm) {
     list.sort();
   }
   const len = leftLC.length;
-  const filterable = rxFilterable.test(leftLC);
-  if (filterable) {
-    const inValues = prop != null && !rxNonWord.test(leftLC) && !leftLC.startsWith('--');
+  if (!leftLC || rxFilterable.test(leftLC)) {
     const names1 = new Map();
     const names2 = new Map();
-    const values1 = inValues && new Map();
-    const values2 = inValues && new Map();
     for (const v of list) {
-      i = v.toLowerCase().indexOf(leftLC);
+      i = leftLC ? v.toLowerCase().indexOf(leftLC) : 0;
       if (i >= 0) (i ? names2 : names1).set(v, new Completion(i, v));
     }
     list = [...names1.values(), ...names2.values()];
-    if (inValues) {
+    if (!prop) {
+      const values1 = new Map();
+      const values2 = new Map();
       for (const name of cssPropNames) {
         i = 0;
         for (let a, b, v, lc = cssPropsLC[name], nameLen = name.length;
-          i >= 0 && (i = lc.indexOf(leftLC, i)) >= 0;
-          i = b
+          i >= 0 && (!leftLC || (i = lc.indexOf(leftLC, i)) >= 0);
+          i = leftLC ? b : b + 1
         ) {
-          a = lc.lastIndexOf('\n', i) + 1;
+          a = leftLC ? lc.lastIndexOf('\n', i) + 1 : i;
           b = lc.indexOf('\n', i + len);
           v = name + cssProps[name].slice(a, b < 0 ? 1e9 : b);
           (i === a ? values1 : values2).set(v, new Completion(i - a + nameLen, v, true));
@@ -250,7 +256,7 @@ async function helper(cm) {
       list.push(...values1.values(), ...values2.values());
     }
   }
-  prev += str.search(rxNonSpace);
+  prev += Math.max(0, str.search(rxNonSpace));
   prevMatch = text.slice(prev, ch);
   prevLine = line;
   prevCh = ch;

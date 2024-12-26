@@ -27,11 +27,13 @@ export class Completion {
    */
   hint(cm, {from, to}, {text}) {
     pickedCms.add(cm);
-    if (text !== cm.getRange(from, to)) {
+    if (text === cm.getRange(from, to)) {
+      cm.setCursor(to);
+    } else {
       cm.replaceRange(text, from, to, 'complete');
-      if (text.endsWith(kCssPropSuffix)) {
-        setTimeout(execAutocomplete, 0, cm);
-      }
+    }
+    if (text.endsWith(kCssPropSuffix)) {
+      setTimeout(execAutocomplete, 0, cm);
     }
   }
   /**
@@ -96,6 +98,13 @@ export function findAllCssVars(cm, leftPart, rightPart = '') {
     }
   });
   return [...list].sort();
+}
+
+export function getTokenState(cm, pos, type) {
+  const token = cm.getTokenAt(pos, true);
+  return token.type
+    ? token.state.state
+    : type;
 }
 
 /** makes sure we don't process a different adjacent comment */

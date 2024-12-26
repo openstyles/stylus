@@ -1,3 +1,4 @@
+import {getStyleAtPos} from '@/cm/util';
 import * as colorConverter from '@/js/color/color-converter';
 import ColorPicker from '@/js/color/color-picker';
 import CodeMirror from 'codemirror';
@@ -138,8 +139,6 @@ CodeMirror.defineOption('colorpicker', false, (cm, value, oldValue) => {
     cm.state.colorpicker = new ColorSwatch(cm, value);
   }
 });
-
-CodeMirror.prototype.getStyleAtPos = getStyleAtPos;
 
 //endregion
 //region Colorizing
@@ -322,7 +321,7 @@ function colorizeLine(state, lineHandle) {
     if (m) {
       cmtEnd += m.index + m[1].length;
       cm.getTokenTypeAt({line: state.line, ch: 0});
-      const {index} = getStyleAtPos({styles: lineHandle.styles, pos: cmtEnd}) || {};
+      const index = getStyleAtPos(lineHandle.styles, cmtEnd, 1);
       colorizeLineViaStyles(state, lineHandle, Math.max(1, index || 0));
       return;
     }
@@ -621,7 +620,7 @@ function findNearestColor({styles, text}, pos) {
   while ((m = RX_DETECT.exec(text))) {
     start = m.index + m[1].length;
     const token = m[2].toLowerCase();
-    const {style} = getStyleAtPos({styles, pos: start + 1}) || {};
+    const style = getStyleAtPos(styles, start + 1, 0);
     const allowed = !style || ALLOWED_STYLES.includes(style.split(' ', 1)[0]);
     if (!allowed) {
       color = '';
@@ -675,41 +674,6 @@ function highlightColor(state, data) {
   `;
   document.body.appendChild(el);
   setTimeout(() => el.remove(), DURATION_SEC * 1000);
-}
-
-function getStyleAtPos({
-  line,
-  styles = this.getLineHandle(line).styles,
-  pos,
-}) {
-  if (pos < 0 || !styles) return;
-  const len = styles.length;
-  const end = styles[len - 2];
-  if (pos > end) return;
-  if (pos === end) {
-    return {
-      style: styles[len - 1],
-      index: len - 2,
-    };
-  }
-  const mid = (pos / end * (len - 1) & ~1) + 1;
-  let a = mid;
-  let b;
-  while (a > 1 && styles[a] > pos) {
-    b = a;
-    a = (a / 2 & ~1) + 1;
-  }
-  if (!b) b = mid;
-  while (b < len && styles[b] < pos) b = ((len + b) / 2 & ~1) + 1;
-  while (a < b - 3) {
-    const c = ((a + b) / 2 & ~1) + 1;
-    if (styles[c] > pos) b = c; else a = c;
-  }
-  while (a < len && styles[a] < pos) a += 2;
-  return {
-    style: styles[a + 1],
-    index: a,
-  };
 }
 
 
