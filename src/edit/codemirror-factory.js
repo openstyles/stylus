@@ -1,5 +1,6 @@
 import {CodeMirror, loadCmTheme, THEME_KEY} from '@/cm';
 import {rerouteHotkeys} from '@/edit/util';
+import {kCodeMirror} from '@/js/consts';
 import {CHROME} from '@/js/ua';
 import editor from './editor';
 import * as prefs from '@/js/prefs';
@@ -128,7 +129,7 @@ const lazyOpt = {
     for (const e of entries) {
       const r = e.intersectionRatio && e.intersectionRect;
       if (!r) continue;
-      const cm = e.target.CodeMirror;
+      const cm = e.target[kCodeMirror];
       const data = Object.entries(queue.get(cm) || {});
       queue.delete(cm);
       observer.unobserve(e.target);

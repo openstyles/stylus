@@ -1,3 +1,4 @@
+import {kCodeMirror} from '@/js/consts';
 import {$, toggleDataset} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
 import {template} from '@/js/localization';
@@ -24,8 +25,8 @@ export default class EditorSection {
     const el = this.el = template.section.cloneNode(true);
     const elLabel = this.elLabel = $('.code-label', el);
     const at = this.targetsEl = $('.applies-to', el);
-    // TODO: find another way other than `el.CodeMirror` for getAssociatedEditor
-    const cm = this.cm = el.CodeMirror = cmFactory.create(wrapper => {
+    // TODO: find another way other than `el[kCodeMirror]` for getAssociatedEditor
+    const cm = this.cm = el[kCodeMirror] = cmFactory.create(wrapper => {
       const ws = wrapper.style;
       const h = editor.loading
         // making it tall during initial load so IntersectionObserver sees only one adjacent CM

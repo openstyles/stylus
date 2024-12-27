@@ -1,5 +1,5 @@
 import {CodeMirror, extraKeys} from '@/cm';
-import {UCD} from '@/js/consts';
+import {kCodeMirror, UCD} from '@/js/consts';
 import {$, $create, $remove} from '@/js/dom';
 import {messageBox} from '@/js/dom-util';
 import {template} from '@/js/localization';
@@ -296,8 +296,8 @@ export default function SectionsEditor() {
   function getAssociatedEditor(nearbyElement) {
     for (let el = nearbyElement; el; el = el.parentElement) {
       // added by EditorSection
-      if (el.CodeMirror) {
-        return el.CodeMirror;
+      if (el[kCodeMirror]) {
+        return el[kCodeMirror];
       }
     }
   }
@@ -316,7 +316,7 @@ export default function SectionsEditor() {
       return;
     }
     let pos;
-    let cm = this.CodeMirror;
+    let cm = this[kCodeMirror];
     const {line, ch} = cm.getCursor();
     if (event.key === 'ArrowUp') {
       cm = line === 0 && editor.prevEditor(cm, true);
@@ -676,7 +676,7 @@ export default function SectionsEditor() {
       const r = e.intersectionRatio && e.intersectionRect;
       if (r) {
         xo.unobserve(e.target);
-        const cm = e.target.CodeMirror;
+        const cm = e.target[kCodeMirror];
         if (r.bottom > 0 && r.top < window.innerHeight) {
           refreshOnViewNow(cm);
         } else {

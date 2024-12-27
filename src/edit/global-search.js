@@ -1,4 +1,5 @@
 import colorMimicry from '@/js/color/color-mimicry';
+import {kCodeMirror} from '@/js/consts';
 import {$, $$, $create, $remove, cssFieldSizing, toggleDataset} from '@/js/dom';
 import {setInputValue} from '@/js/dom-util';
 import {template} from '@/js/localization';
@@ -205,7 +206,7 @@ function initState({initReplace} = {}) {
     stateActiveAppliesTo ||
     stateCm);
   const cmExtra = $('body > :not(#sections) .CodeMirror');
-  stateEditors = cmExtra ? [cmExtra.CodeMirror] : editor.getEditors();
+  stateEditors = cmExtra ? [cmExtra[kCodeMirror]] : editor.getEditors();
 }
 
 function doSearch({
