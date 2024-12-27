@@ -94,7 +94,8 @@ const addWrapper = (banner = BANNER, footer = '}', test = /\.js$/) => [
   new webpack.BannerPlugin({raw: true, test, banner}),
   new webpack.BannerPlugin({raw: true, test, banner: footer, footer: true}),
 ];
-const TERSER_OPTS = {
+const getTerserOptions = forCodeMirror => ({
+  [forCodeMirror ? 'include' : 'exclude']: CM_NATIVE_RE,
   extractComments: false,
   terserOptions: {
     ecma: MV3 ? 2024 : 2017,
@@ -102,15 +103,19 @@ const TERSER_OPTS = {
       passes: 2,
       reduce_funcs: false,
     },
+    mangle: forCodeMirror ? true : {
+      keep_classnames: true,
+      keep_fnames: true,
+    },
     output: {
       ascii_only: false,
       comments: false,
       wrap_func_args: false,
     },
   },
-};
+});
 
-const getBaseConfig = () => ({
+const getBaseConfig = hasCodeMirror => ({
   mode: DEV ? 'development' : 'production',
   devtool: DEV && 'inline-source-map',
   output: {
@@ -176,12 +181,8 @@ const getBaseConfig = () => ({
     chunkIds: false,
     mangleExports: false,
     minimizer: DEV ? [] : [
-      new TerserPlugin(mergeCfg({
-        exclude: CM_NATIVE_RE,
-        terserOptions: {
-          mangle: {keep_fnames: true},
-        },
-      }, TERSER_OPTS)),
+      hasCodeMirror && new TerserPlugin(getTerserOptions(true)),
+      new TerserPlugin(getTerserOptions()),
       new CssMinimizerPlugin({
         minimizerOptions: {
           preset: ['default', {
@@ -190,7 +191,7 @@ const getBaseConfig = () => ({
           }],
         },
       }),
-    ],
+    ].filter(Boolean),
   },
   resolve: {
     alias: {
@@ -255,8 +256,10 @@ function mergeCfg(ovr, base) {
         })
       );
     }
+    base = getBaseConfig(entry.includes('edit'));
+  } else {
+    base = {...base};
   }
-  base = base ? {...base} : getBaseConfig();
   for (const k in ovr) {
     const o = ovr[k];
     const b = base[k];
@@ -330,9 +333,6 @@ module.exports = [
       chunkFilename: getChunkFileName.bind([JS, '.js']),
     },
     optimization: {
-      minimizer: DEV ? [] : [
-        new TerserPlugin({...TERSER_OPTS, include: CM_NATIVE_RE}),
-      ],
       runtimeChunk: {
         name: 'common',
       },
@@ -436,9 +436,6 @@ module.exports = [
     entry: `@/${PAGE_OFFSCREEN}`,
     output: {
       filename: JS + '[name].js',
-    },
-    optimization: {
-      minimizer: DEV ? [] : [new TerserPlugin(TERSER_OPTS)],
     },
     plugins: [
       new RawEnvPlugin({ENTRY: PAGE_OFFSCREEN}),
