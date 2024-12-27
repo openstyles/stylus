@@ -95,7 +95,7 @@ const addWrapper = (banner = BANNER, footer = '}', test = /\.js$/) => [
   new webpack.BannerPlugin({raw: true, test, banner: footer, footer: true}),
 ];
 const getTerserOptions = forExternals => ({
-  [forExternals ? 'include' : 'exclude']: /node_modules/,
+  [forExternals ? 'include' : 'exclude']: /node_modules|codemirror(?!-factory)/,
   extractComments: false,
   terserOptions: {
     ecma: MV3 ? 2024 : 2017,
