@@ -1,27 +1,33 @@
 import {CodeMirror, THEMES} from '@/cm';
+import {kEditorSettings} from '@/js/consts';
 import {$, $create} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
-import {template} from '@/js/localization';
+import {templateCache, htmlToTemplate, template} from '@/js/localization';
 import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {debounce, t, tryURL} from '@/js/util';
 import editor from './editor';
 import {createHotkeyInput, helpPopup} from './util';
 import './settings.css';
+import htmlEditorSettings from './editor-settings.html';
+import htmlStyleOpts from './style-settings.html';
+
+export {htmlEditorSettings};
 
 // TODO: allow the user to customize which options are always shown
 // TODO: decide which options are shown by default
 // TODO: show all opts in a helpPopup or a dockable/movable panel
 
-for (const [id, init, tpl] of [
-  ['#options', EditorSettings, 'editorSettings'],
-  ['#styleOpts', StyleSettings, 'styleSettings'],
+for (const [id, init, tpl, html] of [
+  ['#options', EditorSettings, kEditorSettings, htmlEditorSettings],
+  ['#styleOpts', StyleSettings, 'styleSettings', htmlStyleOpts],
 ]) {
   const el = $(id, template.body);
   const mo = new MutationObserver(() => {
     mo.disconnect();
-    el.append($create('main', template[tpl]));
-    template[tpl] = undefined;
+    // Making templateCache reusable in $,$$ by replacing an empty document fragment
+    templateCache[tpl] = el.appendChild($create('main',
+      templateCache[tpl] ??= htmlToTemplate(html)));
     init(el);
   });
   mo.observe(el, {attributes: true, attributeFilter: ['open']});
@@ -179,6 +185,14 @@ function EditorSettings(ui) {
     const popup = helpPopup.show(t('helpKeyMapHotkey'), input);
     popup.style = `top: ${bounds.bottom}px; left: ${bounds.left}px; right: auto;`;
     $('input', popup).focus();
+  };
+
+  $('#keyMap-help', ui).onclick = async function () {
+    (this.onclick = (await import('./keymap-help')).keymapHelp)();
+  };
+
+  $('#linter-settings', ui).onclick = async function () {
+    (this.onclick = (await import('./linter/dialogs')).showLintConfig)();
   };
 
   setupLivePrefs(ui);

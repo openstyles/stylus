@@ -7,6 +7,7 @@ import * as prefs from '@/js/prefs';
 import {clipString, t} from '@/js/util';
 import {workerPath} from '@/js/urls';
 import editor from './editor';
+export {default as htmlAppliesTo} from './applies-to.html';
 
 export const helpPopup = {
   SEL: '#help-popup',

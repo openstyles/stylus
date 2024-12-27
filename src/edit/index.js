@@ -1,6 +1,6 @@
 import '@/js/dom-init';
 import {$, $$} from '@/js/dom';
-import {tBody, template} from '@/js/localization';
+import {tBody} from '@/js/localization';
 import * as prefs from '@/js/prefs';
 import CodeMirror from 'codemirror';
 import CompactHeader from './compact-header';
@@ -49,12 +49,6 @@ tBody();
   };
   $('#lint-help').onclick = async function () {
     (this.onclick = (await import('./linter/dialogs')).showLintHelp)();
-  };
-  $('#linter-settings', template.editorSettings).onclick = async function () {
-    (this.onclick = (await import('./linter/dialogs')).showLintConfig)();
-  };
-  $('#keyMap-help', template.editorSettings).onclick = async function () {
-    (this.onclick = (await import('./show-keymap-help')).default)();
   };
   const elSec = $('#sections-list');
   const elToc = $('#toc');

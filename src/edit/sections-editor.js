@@ -2,7 +2,7 @@ import {CodeMirror, extraKeys} from '@/cm';
 import {kCodeMirror, UCD} from '@/js/consts';
 import {$, $create, $remove} from '@/js/dom';
 import {messageBox} from '@/js/dom-util';
-import {template} from '@/js/localization';
+import {htmlToTemplateCache, templateCache} from '@/js/localization';
 import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {styleSectionsEqual, styleToCss} from '@/js/sections-util';
@@ -11,8 +11,10 @@ import editor from './editor';
 import * as linterMan from './linter';
 import EditorSection from './sections-editor-section';
 import {helpPopup, rerouteHotkeys, showCodeMirrorPopup, worker} from './util';
+import html from './sections-editor.html';
 
 export default function SectionsEditor() {
+  htmlToTemplateCache(html);
   const {style, /** @type DirtyReporter */dirty} = editor;
   const container = $('#sections');
   /** @type {EditorSection[]} */
@@ -556,7 +558,7 @@ export default function SectionsEditor() {
                    '-'.repeat(20) + '\n' +
                    lines.slice(0, MAX_LINES).map(s => clipString(s, 100)).join('\n') +
                    (lines.length > MAX_LINES ? '\n...' : '');
-      const del = section.elDel = template.deletedSection.cloneNode(true);
+      const del = section.elDel = templateCache.deletedSection.cloneNode(true);
       $('button', del).onclick = () => restoreSection(section);
       del.title = title;
       section.el.prepend(del);

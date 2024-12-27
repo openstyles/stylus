@@ -2,11 +2,14 @@ import colorMimicry from '@/js/color/color-mimicry';
 import {kCodeMirror} from '@/js/consts';
 import {$, $$, $create, $remove, cssFieldSizing, toggleDataset} from '@/js/dom';
 import {setInputValue} from '@/js/dom-util';
-import {template} from '@/js/localization';
+import {htmlToTemplateCache, templateCache} from '@/js/localization';
 import {chromeLocal} from '@/js/storage-util';
 import {debounce, stringAsRegExp, t, tryRegExp} from '@/js/util';
 import CodeMirror from 'codemirror';
 import editor from './editor';
+import html from './global-search.html';
+
+htmlToTemplateCache(html);
 
 //region Constants and state
 
@@ -549,14 +552,14 @@ function createDialog(type) {
   stateOriginalFocus = document.activeElement;
   stateFirstRun = true;
 
-  const dialog = stateDialog = template.searchReplaceDialog.cloneNode(true);
+  const dialog = stateDialog = templateCache.searchReplaceDialog.cloneNode(true);
   Object.assign(dialog, DIALOG_PROPS);
   dialog.on('focusout', EVENTS.onfocusout);
   dialog.dataset.type = type;
   dialog.style.pointerEvents = 'auto';
 
   const content = $('[data-type="content"]', dialog);
-  content.parentNode.replaceChild(template[type].cloneNode(true), content);
+  content.parentNode.replaceChild(templateCache[type].cloneNode(true), content);
 
   stateInput = createInput(0, INPUT_PROPS, stateFind);
   stateInput2 = createInput(1, INPUT2_PROPS, stateReplace);
@@ -618,7 +621,7 @@ function createInput(index, props, value) {
   input.value = value;
   Object.assign(input, props);
 
-  input.parentElement.appendChild(template.clearSearch.cloneNode(true));
+  input.parentElement.appendChild(templateCache.clearSearch.cloneNode(true));
   $('[data-action]', input.parentElement)._input = input;
   return input;
 }

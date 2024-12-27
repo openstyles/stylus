@@ -1,7 +1,7 @@
 import {UCD} from '@/js/consts';
 import {$, $$, $create, $remove, toggleDataset} from '@/js/dom';
 import {setupLivePrefs, showSpinner} from '@/js/dom-util';
-import {breakWord, formatDate, template} from '@/js/localization';
+import {breakWord, formatDate, htmlToTemplateCache, templateCache} from '@/js/localization';
 import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import * as URLS from '@/js/urls';
@@ -11,11 +11,14 @@ import {
 import {$entry, styleFinder, tabUrl, tabUrlSupported} from '.';
 import * as Events from './events';
 import './search.css';
+import html from './search.html';
 
-document.body.append(template.searchUI);
+htmlToTemplateCache(html);
+document.body.append(templateCache.searchUI);
 
-const RESULT_ID_PREFIX = template.searchResult.className + '-';
-const RESULT_SEL = '.' + template.searchResult.className;
+const RESULT_TPL = templateCache.searchResult;
+const RESULT_ID_PREFIX = RESULT_TPL.className + '-';
+const RESULT_SEL = '.' + RESULT_TPL.className;
 const INDEX_URL = URLS.usoaRaw[0] + 'search-index.json';
 const USW_INDEX_URL = URLS.usw + 'api/index/uso-format';
 const USW_ICON = $create('img', {
@@ -165,7 +168,7 @@ dom.nav = {};
 const navOnClick = {prev, next};
 for (const place of ['top', 'bottom']) {
   const nav = $(`.search-results-nav[data-type="${place}"]`);
-  nav.appendChild(template.searchNav.cloneNode(true));
+  nav.appendChild(templateCache.searchNav.cloneNode(true));
   dom.nav[place] = nav;
   for (const child of $$('[data-type]', nav)) {
     const type = child.dataset.type;
@@ -348,7 +351,7 @@ function doScrollToFirstResult() {
  * @returns {Node}
  */
 function createSearchResultNode(result) {
-  const entry = template.searchResult.cloneNode(true);
+  const entry = RESULT_TPL.cloneNode(true);
   const {
     i: rid,
     n: name,
@@ -457,7 +460,7 @@ function renderActionButtons(entry) {
   if (notMatching !== entry.classList.contains('not-matching')) {
     entry.classList.toggle('not-matching');
     if (notMatching) {
-      entry.prepend(template.searchResultNotMatching.cloneNode(true));
+      entry.prepend(templateCache.searchResultNotMatching.cloneNode(true));
     } else {
       entry.firstElementChild.remove();
     }

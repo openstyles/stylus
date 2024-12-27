@@ -1,0 +1,93 @@
+<template data-id="searchUI">
+  <div id="pct"><div i18n=gettingStyles></div></div>
+  <div id="search-results-error" hidden></div>
+  <div id="search-results" hidden>
+    <div class="search-results-nav" data-type="top"></div>
+    <div id="search-params">
+      <div id="search-years">
+        <div class="select-wrapper">
+          <select></select>
+        </div>
+        -
+        <div class="select-wrapper">
+          <select></select>
+        </div>
+      </div>
+      <input id="search-query" type="search" i18n="placeholder:search, title:searchStyleQueryHint">
+      <div class="select-wrapper">
+        <select id="search-order" i18n="title:sortStylesHelpTitle">
+          <option value="n" i18n="genericTitle">
+          <option value="u" i18n="searchResultUpdated">
+          <option value="t" i18n="searchResultInstallCount">
+          <option value="w" i18n="searchResultWeeklyCount">
+          <option value="r" i18n="searchResultRating">
+        </select>
+      </div>
+      <label i18n="+searchGlobalStyles, title:searchGlobalStylesHint">
+        <input id="popup.search.globals" type="checkbox">
+      </label>
+    </div>
+    <div id="search-results-list"></div>
+    <div class="search-results-nav" data-type="bottom"></div>
+  </div>
+</template>
+
+<template data-id="searchNav">
+  <div>
+    <button data-type="prev" i18n="title:paginationPrevious" disabled>◄</button>
+    <label>
+      <span data-type="page" i18n="title:paginationCurrent">-</span>
+      /
+      <span data-type="total" i18n="title:paginationEstimated">-</span>
+      (<span data-type="num"></span>)
+    </label>
+    <button data-type="next" i18n="title:paginationNext" disabled>►</button>
+  </div>
+</template>
+
+<template data-id="searchResult">
+  <div class="search-result">
+    <a class="search-result-title"><span></span></a>
+    <div class="search-result-info">
+      <img class="search-result-screenshot" i18n="title:installButton" loading="lazy">
+      <div class="search-result-status"></div>
+      <div class="search-result-actions">
+        <button class="search-result-install" i18n="installButton"></button>
+        <button class="search-result-uninstall" i18n="deleteStyleLabel"></button>
+        <button class="search-result-customize" i18n="configureStyle"></button>
+      </div>
+      <dl class="search-result-meta">
+        <div data-type="author">
+          <dt i18n="author"></dt>
+          <dd><a target="_blank" i18n="title:author"></a></dd>
+        </div>
+        <div data-type="rating">
+          <dt i18n="searchResultRating"></dt>
+          <dd i18n="title:searchResultRating"></dd>
+        </div>
+        <div data-type="updated">
+          <dt i18n="searchResultUpdated"></dt>
+          <dd i18n="title:searchResultUpdated"><time></time></dd>
+        </div>
+        <div data-type="weekly">
+          <dt i18n="searchResultWeeklyCount"></dt>
+          <dd i18n="title:searchResultWeeklyCount"></dd>
+        </div>
+        <div data-type="total">
+          <dt i18n="searchResultInstallCount"></dt>
+          <dd i18n="title:searchResultInstallCount"></dd>
+        </div>
+      </dl>
+    </div>
+    <div class="search-result-description"></div>
+  </div>
+</template>
+
+<template data-id="emptySearchResult">
+  <div class="search-result-empty"></div>
+</template>
+
+<template data-id="searchResultNotMatching">
+  <p class="not-matching-explainer"
+     i18n="searchResultNotMatching, title:searchResultNotMatchingNote"></p>
+</template>

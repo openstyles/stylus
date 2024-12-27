@@ -49,6 +49,7 @@ let partChecker,
   partOldCheckUpdate,
   partOldConfigure,
   partTargets;
+let tplConfigureIcon, tplEverything, tplExtra, tplSep, tplTarget, tplUpdaterIcons;
 
 function createAgeText(el, style) {
   let val = style.updateDate || style.installDate;
@@ -125,8 +126,8 @@ export function createStyleElement({styleMeta: style, styleNameLC: nameLC, style
     (ud ? ' usercss' : '');
   if (isNew && (updateUrl || configurable)) {
     $('.actions', entry).append(...[
-      updateUrl && template.updaterIcons.cloneNode(true),
-      configurable && template.configureIcon.cloneNode(true),
+      updateUrl && (tplUpdaterIcons ??= template.updaterIcons).cloneNode(true),
+      configurable && (tplConfigureIcon ??= template.configureIcon).cloneNode(true),
     ].filter(Boolean));
   }
   createTargetsElement({entry, style});
@@ -144,6 +145,7 @@ export function createTargetsElement({entry, expanded, style = entry.styleMeta})
   const entryTargets = $('.targets', entry);
   const expanderCls = $('.applies-to', entry).classList;
   const targets = partTargets.cloneNode(true);
+  const toAppend = [];
   let container = targets;
   let el = entryTargets.firstElementChild;
   let numTargets = 0;
@@ -166,24 +168,29 @@ export function createTargetsElement({entry, expanded, style = entry.styleMeta})
         if (el && el.dataset.type === type && el.lastChild.textContent === text) {
           const next = el.nextElementSibling;
           // TODO: collect all in a fragment and use a single container.append()
-          container.appendChild(el);
+          toAppend.push(el);
           el = next;
           continue;
         }
-        const element = template.appliesToTarget.cloneNode(true);
+        const element = (tplTarget ??= template.appliesToTarget).cloneNode(true);
         if (!isNew) {
           if (numTargets === maxTargets) {
-            container = container.appendChild(template.extraAppliesTo.cloneNode(true));
+            const extra = (tplExtra ??= template.extraAppliesTo).cloneNode(true);
+            toAppend.push(extra);
+            container.append(...toAppend);
+            container = extra;
+            toAppend.length = 0;
           } else if (numTargets > 1) {
-            container.appendChild(template.appliesToSeparator.cloneNode(true));
+            toAppend.push((tplSep ??= template.appliesToSeparator).cloneNode(true));
           }
         }
         element.dataset.type = type;
         element.append(text);
-        container.appendChild(element);
+        toAppend.push(element);
       }
     }
   }
+  container.append(...toAppend);
   if (isNew && numTargets > newUI.cfg.targets) {
     expanderCls.add('has-more');
   }
@@ -196,7 +203,7 @@ export function createTargetsElement({entry, expanded, style = entry.styleMeta})
     if (entryTargets.firstElementChild) {
       entryTargets.textContent = '';
     }
-    entryTargets.appendChild(template.appliesToEverything.cloneNode(true));
+    entryTargets.appendChild((tplEverything ??= template.appliesToEverything).cloneNode(true));
   }
   entry.classList.toggle('global', !numTargets);
   entry._allTargetsRendered = allTargetsRendered;

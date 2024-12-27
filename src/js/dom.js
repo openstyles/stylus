@@ -2,7 +2,10 @@ Object.assign(EventTarget.prototype, {
   on: addEventListener,
   off: removeEventListener,
 });
-
+for (const {prototype} of [Document, DocumentFragment, Element]) {
+  prototype.$ = prototype.querySelector;
+  prototype.$$ = prototype.querySelectorAll;
+}
 $.root = document.documentElement;
 $.rootCL = $.root.classList;
 

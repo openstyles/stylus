@@ -4,12 +4,12 @@ import compareVersion from '@/js/cmpver';
 import {UCD} from '@/js/consts';
 import {$, $$, $$remove, $create, $createLink} from '@/js/dom';
 import {configDialog, messageBox, showSpinner} from '@/js/dom-util';
-import {fetchTemplate, tBody} from '@/js/localization';
+import {htmlToTemplate, tBody} from '@/js/localization';
 import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {styleCodeEmpty} from '@/js/sections-util';
 import {isLocalhost} from '@/js/urls';
-import {clipString, debounce, deepEqual, sessionStore, t, tryURL} from '@/js/util';
+import {clipString, debounce, deepEqual, fetchText, sessionStore, t, tryURL} from '@/js/util';
 import {closeCurrentTab} from '@/js/util-webext';
 import DirectDownloader from './direct-downloader';
 import PortDownloader from './port-downloader';
@@ -76,8 +76,8 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
   }
 
   const hasFileAccessP = browser.extension.isAllowedFileSchemeAccess();
-  const tplP = fetchTemplate('/edit.html', 'styleSettings');
-  tplP.then(el => {
+  fetchText('/edit.html').then(html => {
+    const el = htmlToTemplate(html);
     el.firstChild.remove(); // update URL
     el.lastChild.remove(); // buttons
     $('#styleSettings').append(el);

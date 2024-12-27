@@ -36,6 +36,7 @@
     "fast-glob": "^3.3.2",
     "fs-extra": "^11.2.0",
     "globals": "^15.14.0",
+    "html-loader": "^5.1.0",
     "html-webpack-plugin": "^5.6.3",
     "jszip": "^3.10.1",
     "mini-css-extract-plugin": "^2.9.2",

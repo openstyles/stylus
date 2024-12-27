@@ -1,7 +1,7 @@
-import {kCodeMirror} from '@/js/consts';
+import {kCodeMirror, kEditorSettings} from '@/js/consts';
 import {$, toggleDataset} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
-import {template} from '@/js/localization';
+import {templateCache, htmlToTemplate, template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
 import * as MozDocMapper from '@/js/sections-util';
 import {debounce} from '@/js/util';
@@ -10,7 +10,8 @@ import {initBeautifyButton} from './beautify';
 import cmFactory from './codemirror-factory';
 import editor from './editor';
 import * as linterMan from './linter';
-import {helpPopup, trimCommentLabel} from './util';
+import {htmlEditorSettings} from './settings';
+import {helpPopup, htmlAppliesTo, trimCommentLabel} from './util';
 
 const RX_META1 = /^!?\s*==userstyle==\s*$/i;
 
@@ -22,7 +23,7 @@ export default class EditorSection {
    */
   constructor(sectionData, genId, si) {
     const me = this; // for tocEntry.removed
-    const el = this.el = template.section.cloneNode(true);
+    const el = this.el = templateCache.section.cloneNode(true);
     const elLabel = this.elLabel = $('.code-label', el);
     const at = this.targetsEl = $('.applies-to', el);
     // TODO: find another way other than `el[kCodeMirror]` for getAssociatedEditor
@@ -169,7 +170,9 @@ export default class EditorSection {
       elUC = this.elUC;
       if (cmt && RX_META1.test(text)) {
         if (elUC) elUC = null;
-        else this.elLabelText.after(elUC = this.elUC = template.usercssSection.cloneNode(true));
+        else {
+          this.elLabelText.after(elUC = this.elUC = templateCache.usercssSection.cloneNode(true));
+        }
       } else if (elUC) {
         elUC.remove();
         elUC = this.elUC = false;
@@ -182,7 +185,7 @@ export default class EditorSection {
 
   /**
    * Used by addEventListener implicitly
-   * @param {Event} evt
+   * @param {MouseEvent} evt
    */
   handleEvent(evt) {
     const el = evt.target;
@@ -197,7 +200,8 @@ export default class EditorSection {
         } else if (cls.contains('remove-applies-to')) {
           this.removeTarget(trg);
         } else if (!this.ati && (tmp = el.closest('label'))) {
-          const chk = $('#editor\\.targetsFirst', template.editorSettings.firstChild || document);
+          const chk = $('#editor\\.targetsFirst', templateCache[kEditorSettings] ??=
+            htmlToTemplate(htmlEditorSettings));
           const chkLabel = chk.closest('label').cloneNode(true);
           const ati = this.ati = helpPopup.show(chkLabel, tmp.title, {'data-id': 'ati'});
           ati.onClose.add(() => delete this.ati);
@@ -283,7 +287,7 @@ class SectionTarget {
    */
   constructor(section, type = '', value = '') {
     this.id = section.genId();
-    this.el = template.appliesTo.cloneNode(true);
+    this.el = (templateCache.appliesTo ??= htmlToTemplate(htmlAppliesTo)).cloneNode(true);
     this.el.me = this;
     this.section = section;
     this.dirt = `section.${section.id}.apply.${this.id}`;

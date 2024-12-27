@@ -1,12 +1,13 @@
 import colorMimicry from '@/js/color/color-mimicry';
 import {$, $create} from '@/js/dom';
 import {messageBox} from '@/js/dom-util';
-import {template} from '@/js/localization';
+import {htmlToTemplate, templateCache} from '@/js/localization';
 import * as msg from '@/js/msg';
 import {sleep, t} from '@/js/util';
 import CodeMirror from 'codemirror';
 import editor from './editor';
 import MozSectionFinder from './moz-section-finder';
+import {htmlAppliesTo} from './util';
 
 export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
   let TPL, EVENTS, CLICK_ROUTE;
@@ -47,7 +48,7 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
           $create('ul' + C_LIST),
         ]),
       listItem:
-        template.appliesTo.cloneNode(true),
+        (templateCache.appliesTo ??= htmlToTemplate(htmlAppliesTo)).cloneNode(true),
       appliesToEverything:
         $create('li.applies-to-everything', t('appliesToEverything')),
     };

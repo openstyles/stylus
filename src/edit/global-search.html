@@ -1,0 +1,71 @@
+<template data-id="searchReplaceDialog">
+  <div id="search-replace-dialog">
+    <div data-type="main">
+      <div data-type="content"></div>
+      <div data-type="actions">
+        <a data-action="case" i18n="title:searchCaseSensitive" tabindex="0">Aa</a>
+        <a data-action="prev" i18n="title:genericPrevious" data-hotkey-tooltip="findPrev" tabindex="0" style="width:20px">
+          <i class=i-v style="transform:rotate(180deg); position: absolute; transform-origin:10px 5px;"></i>
+        </a>
+        <a data-action="next" i18n="title:genericNext" data-hotkey-tooltip="findNext" tabindex="0">
+          <i class=i-v></i>
+        </a>
+        <a data-action="close" i18n="title:confirmClose" data-hotkey-tooltip="=Esc" tabindex="0">
+          <i class=i-close></i>
+        </a>
+      </div>
+    </div>
+    <div data-type="status">
+      <div class="CodeMirror-search-hint" i18n-text="searchRegexp"></div>
+      <div data-type="tally" i18n="title:searchNumberOfResults"></div>
+    </div>
+  </div>
+</template>
+
+<template data-id="clearSearch">
+  <div data-type="hover" i18n="title:confirmDelete">
+    <i class=i-close data-action="clear"></i>
+  </div>
+</template>
+
+<template data-id="find">
+  <div data-type="content">
+    <div data-type="input-wrapper">
+      <textarea class="CodeMirror-search-field" rows="1" spellcheck="false" required
+                i18n="placeholder:search"></textarea>
+    </div>
+  </div>
+</template>
+
+<template data-id="replace">
+  <div data-type="content">
+    <div data-type="input-wrapper">
+      <textarea data-type="replace-from"
+                i18n="placeholder:replace"
+                class="CodeMirror-search-field" rows="1" required
+                spellcheck="false"></textarea>
+    </div>
+    <div data-type="input-wrapper">
+      <textarea data-type="replace-to"
+                i18n="placeholder:replaceWith"
+                class="CodeMirror-search-field" rows="1" required
+                spellcheck="false"></textarea>
+    </div>
+    <button data-action="replace" i18n="replace" disabled></button>
+    <button data-action="replaceAll" i18n="replaceAll" disabled></button>
+    <button data-action="undo" i18n="undo" disabled></button>
+    <!--
+    Using a separate set of buttons because
+    2. the icon doesn't fill the entire button area so tooltips aren't shown when the edges are hovered
+    -->
+    <button class="hidden" data-action="replace" i18n="title:replace" disabled>
+      <i class=i-check1></i>
+    </button>
+    <button class="hidden" data-action="replaceAll" i18n="title:replaceAll" disabled>
+      <i class=i-check2></i>
+    </button>
+    <button class="hidden" data-action="undo" i18n="title:undo" disabled>
+      <i class=i-undo></i>
+    </button>
+  </div>
+</template>

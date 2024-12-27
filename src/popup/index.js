@@ -25,6 +25,7 @@ const installed = $('#installed');
 const WRITE_FRAME_SEL = '.match:not([data-frame-id="0"]):not(.dupe)';
 const ENTRY_ID_PREFIX_RAW = 'style-';
 const EXT_NAME = `<${MF.name}>`;
+const TPL_STYLE = template.style;
 const xo = new IntersectionObserver(onIntersect);
 export const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrId}`);
 
@@ -297,7 +298,7 @@ function createStyleElement(style, entry) {
   if (entry) {
     style = Object.assign(entry.styleMeta, style);
   } else {
-    entry = template.style.cloneNode(true);
+    entry = TPL_STYLE.cloneNode(true);
     Object.assign(entry, {
       id: ENTRY_ID_PREFIX_RAW + style.id,
       styleId: style.id,

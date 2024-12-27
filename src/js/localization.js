@@ -5,13 +5,15 @@
  * <tag i18n="title: id"> - creates an attribute `title`, spaces are ignored
  * <tag i18n="id, +id2, title:id3, placeholder:id4, data-foo:id5">
  */
-import {$, $$, $toFragment} from './dom';
-import {fetchText, hasOwn, t} from './util';
+import {$toFragment} from './dom';
+import {t} from './util';
 
-/** @type {{ [id: string]: Element | DocumentFragment }} */
-export const template = /*@__PURE__*/new Proxy({}, {
-  get: (obj, k, _) => hasOwn(obj, k) ? obj[k] :
-    (_ = $(`template[data-id="${k}"]`)) && (obj[k] = createTemplate(_)),
+/** @typedef {Record<string, Element|DocumentFragment>} TemplateCache */
+/** @type {TemplateCache} */
+export const templateCache = {};
+/** @type {TemplateCache} */
+export const template = /*@__PURE__*/new Proxy(templateCache, {
+  get: (obj, k) => obj[k] || createTemplate(document.$(`template[data-id="${k}"]`)),
 });
 const ALLOWED_TAGS = ['a', 'b', 'br', 'code', 'i', 'nobr', 'small', 'sub', 'sup', 'wbr'];
 const RX_WORD_BREAK = /([\w{-\uFFFF]{10}|[\w{-\uFFFF]{5,10}[!'")*,./]|((?!\s)\W){10})(?!\s|$)/gu;
@@ -27,15 +29,18 @@ const RELATIVE_UNITS = [
   [1e99, 'year', 1],
 ];
 const intlCache = {};
-let onBodyListeners = [];
+/** Adds soft hyphens every 10 characters to ensure the long words break before breaking the layout */
+export const breakWord = text => text.length <= 10 ? text
+  : text.replace(RX_WORD_BREAK, '$&\u00AD');
+export const createText = str => document.createTextNode(breakWord(str));
+export const parseHtml = str => new DOMParser().parseFromString(str, 'text/html');
+export const tHTML = html => typeof html !== 'string'
+  ? html
+  : /<\w+/.test(html) // check for html tags
+    ? htmlToFragment(html.replace(/>\n\s*</g, '><').trim())
+    : document.createTextNode(html);
 
-export function tHTML(html) {
-  return typeof html !== 'string'
-    ? html
-    : /<\w+/.test(html) // check for html tags
-      ? createHtml(html.replace(/>\n\s*</g, '><').trim())
-      : document.createTextNode(html);
-}
+let onBodyListeners = [];
 
 function tNodeList(nodes) {
   for (const node of nodes) {
@@ -58,7 +63,7 @@ function tNodeList(nodes) {
           first = true;
           // fallthrough
         case '+html':
-          toInsert = createHtml(value);
+          toInsert = htmlToFragment(value);
           break;
         default:
           node.setAttribute(type, value);
@@ -71,52 +76,36 @@ function tNodeList(nodes) {
   }
 }
 
-/** Adds soft hyphens every 10 characters to ensure the long words break before breaking the layout */
-export function breakWord(text) {
-  return text.length <= 10 ? text :
-    text.replace(RX_WORD_BREAK, '$&\u00AD');
+function createTemplate(el) {
+  if (!el) return;
+  const {content = el, dataset: {id} = {}} = el;
+  const first = content.firstChild;
+  const res = first.nextSibling ? content : first;
+  if (id) templateCache[id] = res;
+  tNodeList(res.$$(SELECTOR));
+  return res;
 }
 
-export function createTemplate(el) {
-  const {content} = el;
-  tNodeList($$(SELECTOR, content));
-  return (template[el.dataset.id] =
-    content.childNodes.length > 1
-      ? content
-      : content.childNodes[0]);
-}
-
-export function createText(str) {
-  return document.createTextNode(breakWord(str));
-}
-
-export function createHtml(str, trusted) {
-  const root = parseHtml(str);
+function htmlToFragment(str, trusted) {
+  const root = parseHtml(str).body;
   if (!trusted) {
     sanitizeHtml(root);
   } else if (str.includes('i18n=')) {
-    tNodeList($$(SELECTOR, root));
+    tNodeList(root.$$(SELECTOR));
   }
   return $toFragment(root);
 }
 
-export async function fetchTemplate(url, name, all) {
-  let res = template[name];
-  if (!res) {
-    res = parseHtml(await fetchText(url), '*');
-    if (![...$$(`template[data-id${all ? '' : `="${name}"`}]`, res)].map(createTemplate).length) {
-      createTemplate({
-        content: $toFragment($('body', res)),
-        dataset: {id: name},
-      });
-    }
-    res = template[name];
-  }
+export function htmlToTemplate(html) {
+  const el = parseHtml(html).body;
+  const first = el.firstChild;
+  const res = first.nextSibling ? $toFragment(el) : first;
+  tNodeList(res.$$(SELECTOR));
   return res;
 }
 
-function parseHtml(str, pick = 'body') {
-  return $(pick, new DOMParser().parseFromString(str, 'text/html'));
+export function htmlToTemplateCache(html) {
+  for (const el of parseHtml(html).$$('template[data-id]')) createTemplate(el);
 }
 
 export function sanitizeHtml(root) {
@@ -141,8 +130,7 @@ export function sanitizeHtml(root) {
     }
   }
   for (const n of toRemove) {
-    const parent = n.parentNode;
-    if (parent) parent.removeChild(n); // not using .remove() as there may be a non-element
+    n.parentNode?.removeChild(n); // not using .remove() as there may be a non-element
   }
 }
 
@@ -198,8 +186,8 @@ export function formatRelativeDate(date, style) {
 
 export function tBody(fn) {
   if (!fn) {
-    tNodeList($$(SELECTOR));
-    if (template.body) document.body.append(template.body);
+    tNodeList(document.$$(SELECTOR));
+    if (template.body) document.body.append(templateCache.body);
     for (fn of onBodyListeners) fn();
     template.body = onBodyListeners = undefined;
   } else if (onBodyListeners) {

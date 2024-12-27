@@ -1,0 +1,29 @@
+<template data-id="section">
+  <div class="section">
+    <label class="code-label"><span i18n="sectionCode"></span><span></span></label>
+    <div class="applies-to">
+      <label i18n="appliesLabel, title:appliesHelp">
+        <a tabindex="0">
+          <i class=i-info></i>
+        </a>
+      </label>
+      <ul class="applies-to-list"></ul>
+    </div>
+    <div class="edit-actions">
+      <button class="remove-section" i18n="sectionRemove"></button>
+      <button class="add-section" i18n="long-text:sectionAdd, short-text:genericAdd"></button>
+      <button class="clone-section" i18n="genericClone"></button>
+      <button class="move-section-up"></button>
+      <button class="move-section-down"></button>
+      <button class="beautify-section" i18n="styleBeautify"></button>
+    </div>
+  </div>
+</template>
+
+<template data-id="deletedSection">
+  <p class="deleted-section"><button i18n="sectionRestore"></button></p>
+</template>
+
+<template data-id="usercssSection">
+  <a data-cmd="note" i18n="title:sectionUserCSS" class="icon"><i class=i-info></i></a>
+</template>

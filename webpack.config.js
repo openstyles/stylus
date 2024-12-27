@@ -159,6 +159,16 @@ const getBaseConfig = hasCodeMirror => ({
         options: {root: ROOT},
         resolve: {fullySpecified: false},
       }, {
+        loader: 'html-loader',
+        test: new RegExp(SRC_ESC + String.raw`.*[/\\].*\.html$`),
+        options: {
+          sources: false, // false = keep the source as-is
+          minimize: { // to ensure the same output in dev and prod builds
+            collapseWhitespace: true,
+            removeComments: true,
+          },
+        },
+      }, {
         loader: SHIM + 'cjs-to-esm-loader.js',
         test: [
           '@eight04/read-write-lock',

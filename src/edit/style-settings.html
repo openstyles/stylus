@@ -1,0 +1,38 @@
+<!-- element is removed in install-usercss -->
+<div>
+  <span class="rel">
+    <input id="ss-updatable" type="checkbox">
+    <label i18n="installUpdateFromLabel" for="ss-updatable"></label>
+  </span>
+  <input id="ss-update-url" type="url" class="w100" i18n="placeholder:styleUpdateUrlLabel">
+</div>
+<div id="ss-scheme">
+  <div i18n="preferScheme">
+    <div><small id="ss-scheme-off" i18n="preferSchemeAlways" hidden></small></div>
+  </div>
+  <label i18n="+preferSchemeNone" class="radio-wrapper">
+    <input name="ss-scheme" type="radio" value="none">
+  </label>
+  <label i18n="+preferSchemeDark" class="radio-wrapper">
+    <input name="ss-scheme" type="radio" value="dark">
+  </label>
+  <label i18n="+preferSchemeLight" class="radio-wrapper">
+    <input name="ss-scheme" type="radio" value="light">
+  </label>
+</div>
+<label i18n="styleIncludeLabel">
+  <textarea id="ss-inclusions" spellcheck="false" class="w100"
+            placeholder="*://www.aaa.com/*"></textarea>
+</label>
+<label i18n="styleExcludeLabel">
+  <textarea id="ss-exclusions" spellcheck="false" class="w100"
+            placeholder="*://www.aaa.com/*"></textarea>
+</label>
+<!-- element is removed in install-usercss -->
+<div class="buttons">
+  <button id="ss-save" i18n="confirmSave" disabled></button>
+  &nbsp;
+  <label i18n="+configOnChange, title:configOnChangeTooltip">
+    <input id="config.autosave" type="checkbox">
+  </label>
+</div>
