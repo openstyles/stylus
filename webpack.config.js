@@ -115,6 +115,9 @@ const getTerserOptions = forExternals => ({
   },
 });
 
+/**
+ * @return {import('webpack/types').Configuration}
+ */
 const getBaseConfig = hasCodeMirror => ({
   mode: DEV ? 'development' : 'production',
   devtool: DEV && 'inline-source-map',
@@ -239,6 +242,11 @@ function getChunkFileName({chunk}) {
   return this[0] + res.replaceAll('_', '-') + this[1];
 }
 
+/**
+ * @param {import('webpack/types').Configuration} ovr
+ * @param {import('webpack/types').Configuration} [base]
+ * @return {import('webpack/types').Configuration}
+ */
 function mergeCfg(ovr, base) {
   if (!ovr) {
     return base;
