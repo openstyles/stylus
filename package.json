@@ -81,6 +81,6 @@
     "bump-stable": "pnpm version minor"
   },
   "engines": {
-    "node": ">=20.6.0"
+    "node": ">=22.12.0"
   }
 }

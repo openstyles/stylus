@@ -22,7 +22,7 @@ jobs:
           version: 9
       - uses: actions/setup-node@v4
         with:
-          node-version: '>=20.6.0'
+          node-version: '>=22.12.0'
 
       - run: pnpm install
       - run: pnpm test
