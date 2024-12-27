@@ -94,8 +94,8 @@ const addWrapper = (banner = BANNER, footer = '}', test = /\.js$/) => [
   new webpack.BannerPlugin({raw: true, test, banner}),
   new webpack.BannerPlugin({raw: true, test, banner: footer, footer: true}),
 ];
-const getTerserOptions = forCodeMirror => ({
-  [forCodeMirror ? 'include' : 'exclude']: CM_NATIVE_RE,
+const getTerserOptions = forExternals => ({
+  [forExternals ? 'include' : 'exclude']: /node_modules/,
   extractComments: false,
   terserOptions: {
     ecma: MV3 ? 2024 : 2017,
@@ -103,7 +103,7 @@ const getTerserOptions = forCodeMirror => ({
       passes: 2,
       reduce_funcs: false,
     },
-    mangle: forCodeMirror ? true : {
+    mangle: forExternals ? true : {
       keep_classnames: true,
       keep_fnames: true,
     },
@@ -153,9 +153,8 @@ const getBaseConfig = hasCodeMirror => ({
       }])(), {
         test: /\.(png|svg|jpe?g|gif|ttf)$/i,
         type: 'asset/resource',
-      }, {
+      }, !MV3 && {
         test: /\.m?js(\?.*)?$/,
-        exclude: MV3 ? [ROOT + 'node_modules/'] : undefined,
         loader: 'babel-loader',
         options: {root: ROOT},
         resolve: {fullySpecified: false},
@@ -173,7 +172,7 @@ const getBaseConfig = hasCodeMirror => ({
         loader: SHIM + 'lzstring-loader.js',
         test: require.resolve('lz-string-unsafe'),
       },
-    ],
+    ].filter(Boolean),
   },
   node: false,
   optimization: {
@@ -413,7 +412,7 @@ module.exports = [
           })),
         ],
       }),
-      !DEV && new webpack.ProgressPlugin(),
+      new webpack.ProgressPlugin(),
     ].filter(Boolean),
     resolve: RESOLVE_VIA_SHIM,
   }),
