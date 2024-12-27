@@ -282,6 +282,7 @@ summary {
   font: normal 20px icons;
   fill: transparent;
   stroke: currentColor;
+  vertical-align: middle;
 }
 
 /* global stuff we use everywhere */
