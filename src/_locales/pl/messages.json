@@ -1454,14 +1454,6 @@
   "stylusUnavailableForURLdetails": {
     "message": "Ze względów bezpieczeństwa przeglądarka nie zezwala, aby rozszerzenia wpływały na wbudowane strony (np. chrome://version, standardowa strona nowej karty od Chrome 61, about:addons itd.), a także na inne strony rozszerzeń. Każda przeglądarka ogranicza również dostęp do własnej galerii rozszerzeń (np. Chrome Web Store lub AMO)."
   },
-  "syncCloud": {
-    "message": "Synchronizacja $cloud$",
-    "placeholders": {
-      "cloud": {
-        "content": "$1"
-      }
-    }
-  },
   "syncError": {
     "message": "Synchronizacja nie powiodła się"
   },
