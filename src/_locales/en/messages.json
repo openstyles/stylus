@@ -470,6 +470,10 @@
     "message": "Find styles",
     "description": "Text for a link that gets a list of styles for the current site"
   },
+  "findStylesOnline": {
+    "message": "Click to find styles online.",
+    "description": "Shown in the popup under \"No styles installed for this site.\""
+  },
   "genericAdd": {
     "message": "Add",
     "description": "Used in various places for an action that adds something"

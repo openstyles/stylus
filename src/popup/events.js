@@ -60,6 +60,9 @@ export function toggleUrlLink({type}) {
 }
 
 const GlobalRoutes = {
+  '#installed:empty'() {
+    $('#find-styles-btn').click();
+  },
   '#menu [data-cmd]'() {
     if (this.dataset.cmd === 'delete') {
       if (menu.classList.toggle('delete')) return;

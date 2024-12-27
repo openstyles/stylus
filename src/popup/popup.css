@@ -66,12 +66,21 @@ body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colo
   }
 }
 
-:root:not(.blocked) #installed:empty::after {
-  content: attr(data-no-styles);
+:root:not(.blocked) #installed:empty {
   padding: var(--outer-padding);
-  font-weight: bold;
-  display: block;
   background-color: var(--c98);
+  flex-flow: column;
+  display: flex;
+  &::before {
+    content: attr(data-no-styles);
+  }
+  &::after {
+    content: attr(data-find);
+    font-weight: bold;
+  }
+  &:hover {
+    color: var(--accent-1);
+  }
 }
 
 .style-name:hover input:is(:checked, *) {
@@ -168,8 +177,7 @@ body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colo
 .blocked-info,
 #main-actions,
 .styles-last #popup-options,
-.styles-first #installed:not(:empty),
-.styles-first #installed:empty::after,
+.styles-first #installed,
 .styles-first .entry:nth-last-child(n + 2) {
   border-bottom: var(--border);
 }

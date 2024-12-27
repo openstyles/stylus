@@ -47,11 +47,14 @@
 }
 
 #search-results-error {
-  background-color: rgba(255, 0, 0, 0.4);
+  color: #fff;
+  background-color: var(--red1);
   font-weight: bold;
   padding: 5px;
   text-align: center;
-  margin: 0 0 var(--outer-padding);
+  + :not([hidden]) {
+    margin-top: var(--outer-padding);
+  }
 }
 
 #search-results-list {
