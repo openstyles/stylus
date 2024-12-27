@@ -52,6 +52,11 @@
     "webpack-bundle-analyzer": "^4.10.2",
     "webpack-cli": "^5.1.4"
   },
+  "pnpm": {
+    "overrides": {
+      "jsonlint>nomnom": "-"
+    }
+  },
   "scripts": {
     "lint": "eslint . --cache",
     "test": "pnpm lint && pnpm test-csslint",
