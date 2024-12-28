@@ -1,6 +1,6 @@
 import {$, $$, $create, toggleDataset} from '@/js/dom';
 import {template} from '@/js/localization';
-import {API, onExtension} from '@/js/msg';
+import {API, onMessage} from '@/js/msg';
 import {clientData} from '@/js/prefs';
 import {connected, disconnected, DRIVE_NAMES, getStatusText} from '@/js/sync-util';
 import {t} from '@/js/util';
@@ -19,7 +19,7 @@ import {t} from '@/js/util';
     ...Object.entries(DRIVE_NAMES).map(([id, name]) =>
       $create('option', {value: id}, name)));
   updateButtons();
-  onExtension(e => {
+  onMessage(e => {
     if (e.method === 'syncStatusUpdate') {
       setStatus(e.status);
     }

@@ -115,6 +115,5 @@ onMessage(m => {
   if (m.method === 'pushState' && m.url !== location.href) {
     push(m.url);
     update();
-    return true;
   }
 });

@@ -2,7 +2,7 @@ import '@/js/dom-init';
 import {$, toggleDataset} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
 import {tBody} from '@/js/localization';
-import {onExtension} from '@/js/msg';
+import {onMessage} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import * as syncUtil from '@/js/sync-util';
 import {t} from '@/js/util';
@@ -48,7 +48,7 @@ function initSyncButton(sync) {
     toggleDataset(el, 'cloud', drive);
     elMsg.textContent = msg === syncUtil.pending || msg === syncUtil.connected ? '' : msg;
   };
-  onExtension(e => { // returning `undefined` by default to avoid breaking bg::onRuntimeMessage
+  onMessage(e => {
     if (e.method === 'syncStatusUpdate') render(e.status);
   });
   render(sync);

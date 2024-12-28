@@ -2,7 +2,7 @@ import {$, $$, $create, focusA11y} from './dom';
 import {getEventKeyName, messageBox, moveFocus} from './dom-util';
 import HeaderResizer from './header-resizer';
 import {tHTML} from './localization';
-import {onExtension} from './msg';
+import {onMessage} from './msg';
 import * as prefs from './prefs';
 import {CHROME} from './ua';
 import {installUsercss} from './urls';
@@ -19,7 +19,7 @@ window.on('wheel', changeFocusedInputOnWheel, {capture: true, passive: false});
 window.on('click', splitMenu);
 window.on('click', showTooltipNote, true);
 window.on('resize', () => debounce(addTooltipsToEllipsized, 100));
-onExtension(request => {
+onMessage(request => {
   if (request.method === 'editDeleteText') {
     document.execCommand('delete');
   }

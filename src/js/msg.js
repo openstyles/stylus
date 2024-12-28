@@ -2,80 +2,50 @@ import {API, bgReadySignal} from './msg-api';
 
 export {API};
 
-const TARGETS = {
-  __proto: null,
-  all: ['both', 'tab', 'extension'],
-  extension: ['both', 'extension'],
-  tab: ['both', 'tab'],
+const handlers = new Map();
+export const onMessage = (fn, replyAllowed) => {
+  handlers.set(fn, replyAllowed);
 };
-const handler = {
-  both: new Set(),
-  tab: new Set(),
-  extension: new Set(),
+export const off = fn => {
+  handlers.delete(fn);
 };
-// TODO: maybe move into browser.js and hook addListener to wrap/unwrap automatically
+export const wrapData = data => ({
+  data,
+});
+export const wrapError = error => ({
+  error: Object.assign({
+    message: error.message || `${error}`,
+    stack: error.stack,
+  }, error), // passing custom properties e.g. `error.index`
+});
+
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
-/** @param {function} fn - return `undefined` by default to avoid breaking onRuntimeMessage */
-export function onMessage(fn) {
-  handler.both.add(fn);
-}
-
-/** @param {function} fn - return `undefined` by default to avoid breaking onRuntimeMessage */
-export function onTab(fn) {
-  handler.tab.add(fn);
-}
-
-/** @param {function} fn - return `undefined` by default to avoid breaking onRuntimeMessage */
-export function onExtension(fn) {
-  handler.extension.add(fn);
-}
-
-export function off(fn) {
-  for (const type of TARGETS.all) {
-    handler[type].delete(fn);
-  }
-}
-
-export function _execute(target, ...args) {
+export function _execute(data, sender) {
   let result;
-  for (const type of TARGETS[target] || TARGETS.all) {
-    for (const fn of handler[type]) {
-      let res;
-      try {
-        res = fn(...args);
-      } catch (err) {
-        res = Promise.reject(err);
-      }
-      if (res !== undefined && result === undefined) {
-        result = res;
-      }
+  let res;
+  for (const [fn, replyAllowed] of handlers) {
+    try {
+      res = fn(data, sender);
+    } catch (err) {
+      res = Promise.reject(err);
+    }
+    if (replyAllowed && res !== result && result === undefined) {
+      result = res;
     }
   }
-  return __.KEEP_ALIVE(result);
+  return result;
 }
 
-export function onRuntimeMessage({data, target}, sender, sendResponse) {
-  if (data.method === 'backgroundReady' && !__.IS_BG) {
+function onRuntimeMessage({data, TDM}, sender, sendResponse) {
+  if (!__.MV3 && !__.IS_BG && data.method === 'backgroundReady') {
     bgReadySignal?.(true);
   }
-  const res = _execute(target, data, sender);
+  sender.TDM = TDM;
+  const res = _execute(data, sender);
   if (res instanceof Promise) {
     res.then(wrapData, wrapError).then(sendResponse);
     return true;
   }
   if (res !== undefined) sendResponse(wrapData(res));
-}
-
-function wrapData(data) {
-  return {data};
-}
-
-export function wrapError(error) {
-  return {
-    error: Object.assign({
-      message: error.message || `${error}`,
-      stack: error.stack,
-    }, error), // passing custom properties e.g. `error.index`
-  };
 }

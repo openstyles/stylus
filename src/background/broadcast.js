@@ -13,7 +13,7 @@ import * as tabMan from './tab-manager';
 export async function broadcast(data, {onlyIfStyled, getData} = {}) {
   const jobs = [];
   if (!getData || (data = getData())) {
-    jobs.push(broadcastExtension(data, 'both'));
+    jobs.push(broadcastExtension(data));
   }
   const tabs = (await browser.tabs.query({})).sort((a, b) => b.active - a.active);
   for (const tab of tabs) {
@@ -30,16 +30,16 @@ export async function broadcast(data, {onlyIfStyled, getData} = {}) {
   return Promise.all(jobs);
 }
 
-export function broadcastExtension(data, target = 'extension') {
-  return unwrap(browser.runtime.sendMessage({data, target}));
+export function broadcastExtension(data) {
+  return unwrap(browser.runtime.sendMessage({data}));
 }
 
 export function pingTab(tabId, frameId = 0) {
   return sendTab(tabId, {method: 'ping'}, {frameId});
 }
 
-export function sendTab(tabId, data, options, target = 'tab') {
-  return unwrap(browser.tabs.sendMessage(tabId, {data, target}, options));
+export function sendTab(tabId, data, options) {
+  return unwrap(browser.tabs.sendMessage(tabId, {data}, options));
 }
 
 async function unwrap(promise) {

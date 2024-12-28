@@ -8,7 +8,7 @@
  */
 import {$, $create} from './dom';
 import {getCssMediaRuleByName} from './dom-util';
-import {onExtension} from './msg';
+import {onMessage} from './msg';
 import {clientData} from './prefs';
 import {MF_ICON_EXT, MF_ICON_PATH} from './util-webext';
 import '@/css/global.css';
@@ -27,7 +27,7 @@ export let isDark;
   if (window === top) ({dark: isDark, favicon} = __.MV3 ? clientData : await clientData);
   else isDark = parent.document.documentElement.dataset.uiTheme === 'dark';
   updateDOM();
-  onExtension(e => {
+  onMessage(e => {
     if (e.method === 'colorScheme' && isDark !== e.value) {
       isDark = e.value;
       updateDOM();

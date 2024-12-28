@@ -3,7 +3,7 @@ import {kAboutBlank, kPopup, UCD} from '@/js/consts';
 import {$, $$, $create, $remove} from '@/js/dom';
 import {getEventKeyName, setupLivePrefs} from '@/js/dom-util';
 import {template} from '@/js/localization';
-import {API, onExtension} from '@/js/msg';
+import {API, onMessage} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {isDark, onDarkChanged} from '@/js/themer';
 import {CHROME, FIREFOX, MOBILE, OPERA} from '@/js/ua';
@@ -36,7 +36,7 @@ export const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || s
   if (!MOBILE) window.on('resize', onWindowResize);
 })();
 
-onExtension(onRuntimeMessage);
+onMessage(onRuntimeMessage);
 
 updateStateIcon(isDark);
 onDarkChanged.add(val => updateStateIcon(val, null));

@@ -1,8 +1,8 @@
-import {API, onExtension} from '@/js/msg';
+import {API, onMessage} from '@/js/msg';
 import {closeCurrentTab} from '@/js/util-webext';
 import editor from './editor';
 
-onExtension(request => {
+onMessage(request => {
   const {style} = request;
   switch (request.method) {
     case 'styleUpdated':

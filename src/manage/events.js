@@ -3,7 +3,7 @@ import {$, $$} from '@/js/dom';
 import {
   animateElement, configDialog, getEventKeyName, messageBox, scrollElementIntoView,
 } from '@/js/dom-util';
-import {API, onExtension} from '@/js/msg';
+import {API, onMessage} from '@/js/msg';
 import {debounce, sessionStore, t} from '@/js/util';
 import {browserWindows, getOwnTab} from '@/js/util-webext';
 import {filterAndAppend, showFiltersStats} from './filters';
@@ -19,7 +19,7 @@ installed.on('click', onEntryClicked);
 installed.on('contextmenu', onEntryClicked);
 window.on('pageshow', handleVisibilityChange);
 window.on('pagehide', handleVisibilityChange);
-onExtension(m => {
+onMessage(m => {
   switch (m.method) {
     case 'styleUpdated':
     case 'styleAdded':

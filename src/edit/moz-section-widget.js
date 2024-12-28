@@ -128,7 +128,7 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
     actualStyle = $create('style');
 
     cm.on('optionChange', onCmOption);
-    msg.onExtension(onRuntimeMessage);
+    msg.onMessage(onRuntimeMessage);
     if (finder.sections.length) {
       update(finder.sections, []);
     }

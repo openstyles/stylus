@@ -69,7 +69,7 @@ styleInjector.onInjectorUpdate = () => {
 styleInjector.orphanCheck = orphanCheck;
 // Declare all vars before init() or it'll throw due to "temporal dead zone" of const/let
 init();
-msg.onTab(applyOnMessage);
+msg.onMessage(applyOnMessage, true);
 addEventListener(kPageShow, onBFCache);
 
 async function init() {

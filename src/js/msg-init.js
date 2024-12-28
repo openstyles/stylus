@@ -34,7 +34,8 @@ async function invokeAPI({name: path}, _thisObj, args) {
     if (__.MV3) {
       return swExec(msg, sender);
     } else {
-      const res = bg[k_msgExec]('extension', bg[k_deepCopy](msg), bg[k_deepCopy](sender));
+      const bgDeepCopy = bg[k_deepCopy];
+      const res = bg[k_msgExec](bgDeepCopy(msg), bgDeepCopy(sender));
       return deepCopy(await res);
     }
   }

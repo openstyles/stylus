@@ -34,7 +34,7 @@ const MENUS = Object.assign({
   [kReload]: [reload],
 }, CHROME && {
   'editor.contextDelete': [(info, tab) => {
-    sendTab(tab.id, {method: 'editDeleteText'}, undefined, 'extension');
+    sendTab(tab.id, {method: 'editDeleteText'});
   }, {
     title: 'editDeleteText',
     type: 'normal',

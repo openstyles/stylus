@@ -42,7 +42,7 @@ global.onfetch = evt => {
 };
 
 // API
-global.onmessage = initRemotePort.bind(_execute.bind(null, 'extension'));
+global.onmessage = initRemotePort.bind(_execute);
 
 cloudDrive.webdav = async cfg => {
   const res = await offscreen.webdavInit(cfg);

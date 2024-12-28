@@ -34,7 +34,7 @@ export async function apiSendProxy({name: path}, thisObj, args) {
   for (let res, err, retry = 0; retry < 2; retry++) {
     try {
       if (__.MV3 || FF) {
-        res = await chrome.runtime.sendMessage(msg);
+        res = await (FF ? browser : chrome).runtime.sendMessage(msg);
       } else {
         res = await new Promise((resolve, reject) =>
           chrome.runtime.sendMessage(msg, res2 =>

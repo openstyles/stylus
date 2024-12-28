@@ -1,6 +1,6 @@
 import {$, $$, $create, $remove, toggleDataset} from '@/js/dom';
 import {messageBox, showSpinner} from '@/js/dom-util';
-import {API, onExtension} from '@/js/msg';
+import {API, onMessage} from '@/js/msg';
 import * as URLS from '@/js/urls';
 import {isEmptyObj, t} from '@/js/util';
 import editor from './editor';
@@ -16,7 +16,7 @@ export default function USWIntegration() {
   let spinnerTimer = 0;
   let prevCode = '';
 
-  onExtension(request => {
+  onMessage(request => {
     if (request.method === 'uswData' &&
         request.style.id === style.id) {
       Object.assign(style, request.style);

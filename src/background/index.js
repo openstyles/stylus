@@ -141,7 +141,7 @@ onMessage(async (m, sender) => {
     res = res.apply({msg: m, sender}, m.args);
     return res ?? null;
   }
-});
+}, true);
 
 //#endregion
 
