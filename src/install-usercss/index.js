@@ -9,10 +9,12 @@ import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {styleCodeEmpty} from '@/js/sections-util';
 import {isLocalhost} from '@/js/urls';
-import {clipString, debounce, deepEqual, fetchText, sessionStore, t, tryURL} from '@/js/util';
+import {clipString, debounce, deepEqual, sessionStore, t, tryURL} from '@/js/util';
 import {closeCurrentTab} from '@/js/util-webext';
 import DirectDownloader from './direct-downloader';
 import PortDownloader from './port-downloader';
+import htmlStyleOpts from '../edit/style-settings.html';
+import '../edit/settings.css';
 import './install-usercss.css';
 
 const CFG_SEL = '#message-box.config-dialog';
@@ -76,12 +78,10 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
   }
 
   const hasFileAccessP = browser.extension.isAllowedFileSchemeAccess();
-  fetchText('/edit.html').then(html => {
-    const el = htmlToTemplate(html);
-    el.firstChild.remove(); // update URL
-    el.lastChild.remove(); // buttons
-    $('#styleSettings').append(el);
-  });
+  const elSettings = htmlToTemplate(htmlStyleOpts);
+  elSettings.$('#ss-update-url').closest('div').remove();
+  elSettings.$('.buttons').remove();
+  $('.settings').append(elSettings);
 
   let dup, style, error, sourceCode;
   try {

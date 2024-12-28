@@ -249,7 +249,9 @@ li {
   border: none;
 }
 
-/* spinner-related */
+.settings > :nth-child(n + 2) {
+  margin-top: 1em;
+}
 
 #header {
   position: relative;
