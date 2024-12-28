@@ -179,9 +179,6 @@ const getBaseConfig = hasCodeMirror => ({
           'webext-launch-web-auth-flow',
         ].map(npm => path.dirname(require.resolve(npm)) + path.sep),
       }, {
-        loader: SHIM + 'jsonlint-loader.js',
-        test: require.resolve('jsonlint'),
-      }, {
         loader: SHIM + 'lzstring-loader.js',
         test: require.resolve('lz-string-unsafe'),
       },

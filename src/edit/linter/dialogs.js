@@ -24,7 +24,6 @@ export async function showLintConfig() {
   if (!linter) {
     return;
   }
-  // TODO: replace with JSON.parse()
   await import('@/js/jsonlint-bundle');
   const config = await getLZValue(LZ_KEY[linter]);
   const defaults = DEFAULTS[linter];

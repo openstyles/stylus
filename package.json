@@ -10,7 +10,6 @@
     "codemirror": "5.65.10",
     "csslint-mod": "github:openstyles/csslint-mod#semver:^v1.0.2",
     "db-to-cloud": "^0.7.0",
-    "jsonlint": "^1.6.3",
     "less": "^4.2.1",
     "lz-string-unsafe": "1.4.4-fork-1",
     "stylelint-bundle": "^16.5.0",
@@ -52,11 +51,6 @@
     "webpack": "^5.97.1",
     "webpack-bundle-analyzer": "^4.10.2",
     "webpack-cli": "^5.1.4"
-  },
-  "pnpm": {
-    "overrides": {
-      "jsonlint>nomnom": "-"
-    }
   },
   "scripts": {
     "lint": "eslint . --cache",
