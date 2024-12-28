@@ -17,6 +17,7 @@ const cms = new Set();
 const cmDefaults = CodeMirror.defaults;
 const cmFactory = {
 
+  /** @return {CodeMirror.Editor} */
   create(place, options) {
     const cm = CodeMirror(place, options);
     cm.display.lineDiv.on('mousewheel', plusMinusOnWheel.bind(cm), true);

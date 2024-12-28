@@ -35,10 +35,10 @@ export default function SourceEditor() {
   $('#save-button').on('split-btn', saveTemplate);
 
   const cm = cmFactory.create($('.single-editor'));
+  const cmpPos = CodeMirror.cmpPos;
   const sectionFinder = MozSectionFinder(cm);
   const sectionWidget = MozSectionWidget(cm, sectionFinder);
-  if (!style.id) setupNewStyle(editor.template);
-  createMetaCompiler(meta => {
+  const metaCompiler = createMetaCompiler(meta => {
     const {vars} = style[UCD] || {};
     if (vars) {
       let v;
@@ -53,6 +53,7 @@ export default function SourceEditor() {
     style.url = meta.homepageURL || style.installationUrl;
     updateMeta();
   });
+  if (!style.id) setupNewStyle(editor.template);
   updateMeta();
 
   /** @namespace Editor */
@@ -121,9 +122,10 @@ export default function SourceEditor() {
     cm.markClean();
   }
   savedGeneration = cm.changeGeneration();
-  cm.on('changes', () => {
+  cm.on('changes', (_, changes) => {
     dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
     editor.livePreviewLazy(updateLivePreview);
+    metaCompiler(changes);
   });
   cm.on('optionChange', (_cm, option) => {
     if (option !== 'mode') return;
@@ -340,38 +342,63 @@ export default function SourceEditor() {
   }
 
   function createMetaCompiler(onUpdated) {
-    let meta = null;
-    let metaIndex = null;
-    let cache = [];
-    linterMan.register(async (text, options, _cm) => {
-      if (_cm !== cm) {
-        return;
+    let meta, iFrom, iTo, min, max;
+    let prevRes, busy, done;
+    linterMan.register(run);
+    return run;
+
+    async function run(text, options, cm2) {
+      if (cm2 && cm2 !== cm) return;
+      if (busy) return busy;
+      if (meta && !cm2) {
+        for (const change of /**@type{CodeMirror.EditorChange[]}*/text) {
+          const a = change.from;
+          const b = CodeMirror.changeEnd(change);
+          if (cmpPos(a, min) < 0 ? ((min = a), cmpPos(b, min) >= 0) : cmpPos(a, max) <= 0) {
+            if (cmpPos(b, max) > 0) max = b;
+            text = '';
+          }
+        }
+        // Exit if all changes are outside the metadata range
+        if (text) return;
+        /* Get the entire text because the current meta's ending may have been removed,
+           while another existing ending may be outside the changed range. */
+        text = cm.getValue();
+      }
+      // Comparing even if there are changes as the user may have typed the same text over
+      if (meta
+        && text.charCodeAt(iFrom) === meta.charCodeAt(iFrom)
+        && text.charCodeAt(iTo) === meta.charCodeAt(iTo)
+        && text.slice(iFrom, iTo + 1) === meta) {
+        return prevRes;
       }
       const match = text.match(RX_META);
       if (!match) {
         return [];
       }
-      if (match[0] === meta && match.index === metaIndex) {
-        return cache;
-      }
+      busy = new Promise(cb => (done = cb));
       const {metadata, errors} = await worker.metalint(match[0]);
       if (errors.every(err => err.code === 'unknownMeta')) {
         onUpdated(metadata);
       }
-      cache = errors.map(({code, index, args, message}) => {
+      meta = match[0];
+      iFrom = match.index; min = cm.posFromIndex(iFrom);
+      iTo = iFrom + meta.length - 1; max = cm.posFromIndex(iTo);
+      for (let i = 0; i < errors.length; i++) {
+        const {code, index, args, message} = errors[i];
         const isUnknownMeta = code === 'unknownMeta';
         const typo = isUnknownMeta && args[1] ? 'Typo' : ''; // args[1] may be present but undefined
-        return ({
-          from: cm.posFromIndex((index || 0) + match.index),
-          to: cm.posFromIndex((index || 0) + match.index),
+        errors[i] = {
+          from: cm.posFromIndex((index || 0) + i),
+          to: cm.posFromIndex((index || 0) + i),
           message: code && t(`meta_${code}${typo}`, args, false) || message,
           severity: isUnknownMeta ? 'warning' : 'error',
           rule: code,
-        });
-      });
-      meta = match[0];
-      metaIndex = match.index;
-      return cache;
-    });
+        };
+      }
+      prevRes = errors;
+      done(prevRes);
+      return prevRes;
+    }
   }
 }
