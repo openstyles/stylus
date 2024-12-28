@@ -14,9 +14,13 @@ See if the problem exists in a newly created browser profile. If it doesn't, the
 2.
 3.
 
+<!-- Check the devtools console for related errors, e.g. right-click the page to show the menu, click `Inspect`, switch to `Console`. -->
+
 <!-- Describe the expected outcome if it's not already mentioned in the description -->
 
-### Screenshot or a screen recording
+### Screenshots, links, CSS
+
+<!-- Screenshot or a screen recording to illustrate the problem -->
 
 <!-- URL for published styles -->
 
