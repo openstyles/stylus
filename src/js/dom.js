@@ -13,26 +13,6 @@ export const cssFieldSizing = __.MV3 || CSS.supports('field-sizing', 'content');
 export const mqCompact = $.rootCL.contains('normal-layout') && matchMedia('(max-width: 850px)');
 export const dom = {};
 
-// Makes the focus outline appear on keyboard tabbing, but not on mouse clicks.
-export const focusA11y = {
-  // last event's focusedViaClick
-  lastFocusedViaClick: false,
-  get: el => el && el.dataset.focusedViaClick != null,
-  toggle: (el, state) => el && toggleDataset(el, 'focusedViaClick', state),
-  // to avoid a full layout recalc due to changes on body/root
-  // we modify the closest focusable element (like input or button or anything with tabindex=0)
-  closest(el) {
-    let labelSeen;
-    for (; el; el = el.parentElement) {
-      if (el.localName === 'label' && el.control && !labelSeen) {
-        el = el.control;
-        labelSeen = true;
-      }
-      if (el.tabIndex >= 0) return el;
-    }
-  },
-};
-
 const detachments = new WeakMap();
 
 /**

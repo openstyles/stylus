@@ -1,4 +1,5 @@
-import {$, $$, $create, focusA11y, toggleDataset} from './dom';
+import {kHocused, kHocusedAttr} from '@/js/consts';
+import {$, $$, $create, toggleDataset} from './dom';
 import * as prefs from './prefs';
 import '@/css/spinner.css';
 
@@ -11,6 +12,17 @@ export let messageBox = /*@__PURE__*/new Proxy({}, {
     messageBox = (await import('./dlg/message-box')).default
   )[key](...args),
 });
+
+/**
+ * Hocus-focus.
+ * Last event's focusedViaClick.
+ * Making the focus outline appear on keyboard tabbing, but not on mouse clicks.
+ */
+let lastHocus = false;
+export const closestHocused = el => el?.closest(`[${kHocusedAttr}]`);
+export const isHocused = el => el && kHocused in el.dataset;
+export const setLastHocus = (el, state) => el && toggleDataset(el, kHocused, (lastHocus = state));
+export const setHocus = (el, state) => el && toggleDataset(el, kHocused, state);
 
 /**
  * @param {HTMLElement} el
@@ -39,6 +51,21 @@ export function animateElement(el, cls = 'highlight', ...removeExtraClasses) {
     el.classList.add(cls);
   });
 }
+
+/**
+ * to avoid a full layout recalc due to changes on body/root
+ * we modify the closest focusable element (like input or button or anything with tabindex=0)
+ */
+export const closestFocusable = el => {
+  let labelSeen;
+  for (; el; el = el.parentElement) {
+    if (el.localName === 'label' && el.control && !labelSeen) {
+      el = el.control;
+      labelSeen = true;
+    }
+    if (el.tabIndex >= 0) return el;
+  }
+};
 
 export function getEventKeyName(e, letterAsCode) {
   const mods =
@@ -93,7 +120,7 @@ export function moveFocus(rootElement, step) {
     if (!el.disabled && el.tabIndex >= 0 && el.getBoundingClientRect().width) {
       el.focus();
       // suppress focus outline when invoked via click
-      toggleDataset(el, 'focusedViaClick', focusA11y.lastFocusedViaClick);
+      setHocus(el, lastHocus);
       return activeEl !== el && el;
     }
   }

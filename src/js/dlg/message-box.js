@@ -1,5 +1,5 @@
-import {$, $create, focusA11y} from '@/js/dom';
-import {animateElement, moveFocus} from '@/js/dom-util';
+import {$, $create} from '@/js/dom';
+import {animateElement, closestFocusable, moveFocus} from '@/js/dom-util';
 import {tHTML} from '@/js/localization';
 import {clamp, t} from '@/js/util';
 import './message-box.css';
@@ -100,7 +100,7 @@ messageBox.show = ({
         }
         switch (key) {
           case 'Enter':
-            if (focusA11y.closest(target)) {
+            if (closestFocusable(target)) {
               return;
             }
             break;

@@ -1,7 +1,7 @@
 import {UCD} from '@/js/consts';
 import {$, $$} from '@/js/dom';
 import {
-  animateElement, configDialog, getEventKeyName, messageBox, scrollElementIntoView,
+  animateElement, configDialog, getEventKeyName, messageBox, scrollElementIntoView, setHocus,
 } from '@/js/dom-util';
 import {API, onMessage} from '@/js/msg';
 import {debounce, sessionStore, t} from '@/js/util';
@@ -67,8 +67,7 @@ const ENTRY_ROUTES = {
     if (button === 0) {
       API.styles.remove(id);
     }
-    const deleteButton = $('#message-box-buttons > button');
-    if (deleteButton) deleteButton.removeAttribute('data-focused-via-click');
+    setHocus($('#message-box-buttons > button'), false);
   },
 
   '.configure-usercss'(event, {styleMeta}) {

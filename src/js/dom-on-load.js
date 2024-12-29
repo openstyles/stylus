@@ -1,5 +1,8 @@
-import {$, $$, $create, focusA11y} from './dom';
-import {getEventKeyName, messageBox, moveFocus} from './dom-util';
+import {$, $$, $create} from './dom';
+import {
+  closestFocusable, closestHocused, getEventKeyName, isHocused, messageBox, moveFocus, setHocus,
+  setLastHocus,
+} from './dom-util';
 import HeaderResizer from './header-resizer';
 import {tHTML} from './localization';
 import {onMessage} from './msg';
@@ -125,14 +128,8 @@ function clickDummyLinkOnEnter(e) {
 
 function keepFocusRingOnTabbing(event) {
   if (event.key === 'Tab' && !event.ctrlKey && !event.altKey && !event.metaKey) {
-    focusA11y.lastFocusedViaClick = false;
-    setTimeout(() => {
-      let el = document.activeElement;
-      if (el) {
-        el = el.closest('[data-focused-via-click]');
-        focusA11y.toggle(el, false);
-      }
-    });
+    setLastHocus(false);
+    setTimeout(() => setHocus(closestHocused(document.activeElement), false));
   }
 }
 
@@ -168,7 +165,7 @@ function splitMenu(event) {
     pedal.parentElement.classList.toggle('active');
     pedal.after(menu);
     moveFocus(menu, 0);
-    focusA11y.toggle(menu.firstChild, focusA11y.get(pedal));
+    setHocus(menu.firstChild, isHocused(pedal));
     new IntersectionObserver(([{
       intersectionRect: {width: iw},
       boundingClientRect: {width: cw},
@@ -194,11 +191,7 @@ function splitMenuEscape(e) {
 }
 
 function suppressFocusRingOnClick({target}) {
-  const el = focusA11y.closest(target);
-  if (el) {
-    focusA11y.lastFocusedViaClick = true;
-    focusA11y.toggle(el, true);
-  }
+  setLastHocus(closestFocusable(target), true);
 }
 
 function showTooltipNote(event) {
