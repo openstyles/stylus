@@ -2,6 +2,7 @@ import {UCD} from '@/js/consts';
 import {$, toggleDataset} from '@/js/dom';
 import {animateElement, scrollElementIntoView} from '@/js/dom-util';
 import {breakWord, template} from '@/js/localization';
+import {TO_CSS} from '@/js/sections-util';
 import {isEmptyObj, sessionStore, t} from '@/js/util';
 import {filterAndAppend} from './filters';
 import {renderFavs} from './render';
@@ -12,7 +13,6 @@ import {
 
 export * from './render-favs';
 
-const TARGET_TYPES = ['domains', 'urls', 'urlPrefixes', 'regexps'];
 const AGES = [
   [24, 'h', t('dateAbbrHour', '\x01')],
   [30, 'd', t('dateAbbrDay', '\x01')],
@@ -150,7 +150,7 @@ export function createTargetsElement({entry, expanded, style = entry.styleMeta})
   let el = entryTargets.firstElementChild;
   let numTargets = 0;
   let allTargetsRendered = true;
-  for (const type of TARGET_TYPES) {
+  for (const type in TO_CSS) {
     for (const section of style.sections) {
       for (const targetValue of section[type] || []) {
         if (displayed.has(targetValue)) {

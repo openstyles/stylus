@@ -3,7 +3,7 @@ import {$, toggleDataset} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
 import {templateCache, htmlToTemplate, template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
-import * as MozDocMapper from '@/js/sections-util';
+import {FROM_CSS, TO_CSS} from '@/js/sections-util';
 import {debounce} from '@/js/util';
 import CodeMirror from 'codemirror';
 import {initBeautifyButton} from './beautify';
@@ -60,7 +60,11 @@ export default class EditorSection {
     this.targetsEl.on('input', this);
     this.targetsEl.on('click', this);
     cm.on('changes', EditorSection.onCmChanges);
-    MozDocMapper.forEachProp(sectionData, this.addTarget.bind(this));
+    for (const propName in TO_CSS) {
+      const arr = sectionData[propName];
+      const cssName = TO_CSS[propName];
+      if (cssName && arr) for (const v of arr) this.addTarget(cssName, v);
+    }
     if (!this.targets.length) this.addTarget();
     editor.applyScrollInfo(cm, si);
     initBeautifyButton($('.beautify-section', el), [cm]);
@@ -70,8 +74,12 @@ export default class EditorSection {
   }
 
   getModel() {
-    const items = this.targets.map(_ => _.type && [_.type, _.value]);
-    return MozDocMapper.toSection(items, {code: this.cm.getValue()});
+    /** @type {StyleSection} */
+    const res = {code: this.cm.getValue()};
+    for (const {type, value} of this.targets) {
+      if (type) (res[FROM_CSS[type]] ??= []).push(value);
+    }
+    return res;
   }
 
   remove() {

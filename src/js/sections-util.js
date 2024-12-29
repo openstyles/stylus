@@ -1,44 +1,18 @@
 export const TO_CSS = {
-  urls: 'url',
-  urlPrefixes: 'url-prefix',
   domains: 'domain',
+  urlPrefixes: 'url-prefix',
+  urls: 'url',
   regexps: 'regexp',
 };
-
 export const FROM_CSS = {
-  'url': 'urls',
-  'url-prefix': 'urlPrefixes',
   'domain': 'domains',
+  'url-prefix': 'urlPrefixes',
+  'url': 'urls',
   'regexp': 'regexps',
 };
-
-/**
- * @param {Object} section
- * @param {function(func:string, value:string)} fn
- */
-export const forEachProp = (section, fn) => {
-  for (const [propName, func] of Object.entries(TO_CSS)) {
-    section[propName]?.forEach(value => fn(func, value));
-  }
-};
-
-/**
- * @param {Array<?[type,value]>} funcItems
- * @param {?Object} [section]
- * @returns {Object} section
- */
-export const toSection = (funcItems, section = {}) => {
-  for (const item of funcItems) {
-    const [func, value] = item || [];
-    const propName = FROM_CSS[func];
-    if (propName) {
-      const props = section[propName] || (section[propName] = []);
-      if (Array.isArray(value)) props.push(...value);
-      else props.push(value);
-    }
-  }
-  return section;
-};
+const STYLE_CODE_EMPTY_RE =
+  /\s+|\/\*([^*]+|\*(?!\/))*(\*\/|$)|@namespace[^;]+;|@charset[^;]+;/iyu;
+const rxEscape = /[\\"]/g;
 
 /**
  * @param {StyleObj} style
@@ -47,19 +21,21 @@ export const toSection = (funcItems, section = {}) => {
 export const styleToCss = style => {
   const res = [];
   for (const section of style.sections) {
-    const funcs = [];
-    forEachProp(section, (type, value) =>
-      funcs.push(`${type}("${value.replace(/[\\"]/g, '\\$&')}")`));
-    res.push(funcs.length
-      ? `@-moz-document ${funcs.join(', ')} {\n${section.code}\n}`
-      : section.code);
+    let funcs, arr, cssName;
+    for (const propName in TO_CSS) {
+      if ((arr = section[propName])) {
+        cssName = TO_CSS[propName];
+        for (const v of arr) {
+          res.push(funcs ? ', ' : res.length ? '\n\n@-moz-document ' : '@-moz-document ',
+            cssName, '("', v.replace(rxEscape, '\\$&'), '")');
+          funcs = true;
+        }
+      }
+    }
+    res.push(funcs ? ' {\n' : '', section.code, funcs ? '\n}' : '');
   }
-  return res.join('\n\n');
+  return res.join('');
 };
-
-const STYLE_CODE_EMPTY_RE = /\s+|\/\*([^*]+|\*(?!\/))*(\*\/|$)|@namespace[^;]+;|@charset[^;]+;/giyu;
-const abEqual = (a, b) => a === b;
-const SECTION_TARGETS = ['urls', 'urlPrefixes', 'domains', 'regexps'];
 
 /** @param {StyleSection} sec */
 export function styleCodeEmpty(sec) {
@@ -86,29 +62,28 @@ export function styleSectionsEqual({sections: a}, {sections: b}) {
 }
 
 function sameSection(secA, i) {
-  if (!equalOrEmpty(secA.code, this[i].code, 'string', abEqual)) {
+  const secB = this[i];
+  if (!equalOrEmpty(secA.code, secB.code, true)) {
     return;
   }
-  for (const target of SECTION_TARGETS) {
-    if (!equalOrEmpty(secA[target], this[i][target], 'array', arrayMirrors)) {
+  for (const target in TO_CSS) {
+    if (!equalOrEmpty(secA[target], secB[target], false)) {
       return;
     }
   }
   return true;
 }
 
-function equalOrEmpty(a, b, type, comparator) {
-  const typeA = type === 'array' ? Array.isArray(a) : typeof a === type;
-  const typeB = type === 'array' ? Array.isArray(b) : typeof b === type;
-  return typeA && typeB && comparator(a, b) ||
+function equalOrEmpty(a, b, isStr) {
+  const typeA = isStr ? typeof a === 'string' : Array.isArray(a);
+  const typeB = isStr ? typeof b === 'string' : Array.isArray(b);
+  return typeA && typeB && (isStr ? a === b : a.length === b.length && arrayEquals(a, b)) ||
     (a == null || typeA && !a.length) &&
     (b == null || typeB && !b.length);
 }
 
-function arrayMirrors(a, b) {
-  return a.length === b.length &&
-    a.every(thisIncludes, b) &&
-    b.every(thisIncludes, a);
+function arrayEquals(a, b) {
+  return a.every(thisIncludes, b) && b.every(thisIncludes, a);
 }
 
 function thisIncludes(el) {
@@ -116,7 +91,6 @@ function thisIncludes(el) {
 }
 
 export async function calcStyleDigest(style) {
-  // retain known properties in an arbitrarily predefined order
   const src = style.usercssData
     ? style.sourceCode
     // retain known properties in an arbitrarily predefined order

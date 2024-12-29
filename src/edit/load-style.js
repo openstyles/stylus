@@ -1,7 +1,7 @@
 import {loadCmTheme} from '@/cm';
 import {$} from '@/js/dom';
 import * as prefs from '@/js/prefs';
-import * as MozDocMapper from '@/js/sections-util';
+import {FROM_CSS} from '@/js/sections-util';
 import {clipString, sessionStore, tryURL} from '@/js/util';
 import editor from './editor';
 
@@ -41,14 +41,14 @@ function makeNewStyleObj() {
   const prefix = tryURL(params.get('url-prefix'));
   const name = params.get('name') || prefix.hostname;
   const p = prefix.pathname || '/';
+  const section = {code: ''};
+  for (let [k, v] of params) if ((k = FROM_CSS[k])) section[k] = [v];
   return {
     id,
     enabled: true,
     name: name
       ? name + (p === '/' ? '' : clipString(p.replace(/\.(html?|aspx?|cgi|php)$/, '')))
       : params.get('domain') || '?',
-    sections: [
-      MozDocMapper.toSection([...params], {code: ''}),
-    ],
+    sections: [section],
   };
 }

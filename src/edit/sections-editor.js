@@ -370,8 +370,10 @@ export default function SectionsEditor() {
   }
 
   function showMozillaFormat() {
-    const popup = showCodeMirrorPopup(t('styleToMozillaFormatTitle'), '', {readOnly: true});
-    popup.codebox.setValue(editor.getValue());
+    const popup = showCodeMirrorPopup(t('styleToMozillaFormatTitle'), '', {
+      readOnly: true,
+      value: editor.getValue(),
+    });
     popup.codebox.execCommand('selectAll');
   }
 
