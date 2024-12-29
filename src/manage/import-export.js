@@ -1,6 +1,6 @@
 import * as chromeSync from '@/js/chrome-sync';
-import {kAppJson, UCD} from '@/js/consts';
-import {$, $$, $create} from '@/js/dom';
+import {kAppJson, kStyleIdPrefix, UCD} from '@/js/consts';
+import {$create} from '@/js/dom';
 import {animateElement, messageBox, scrollElementIntoView} from '@/js/dom-util';
 import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
@@ -9,11 +9,11 @@ import {MOBILE} from '@/js/ua';
 import {clipString, deepEqual, hasOwn, isEmptyObj, RX_META, t} from '@/js/util';
 import {queue} from './util';
 
-Object.assign($('#export'), {
+Object.assign($id('export'), {
   onclick: exportToFile,
   oncontextmenu: exportToFile,
 }).on('split-btn', exportToFile);
-$('#import').onclick = () => importFromFile();
+$id('import').onclick = () => importFromFile();
 
 Object.assign(document.body, {
   ondragover(event) {
@@ -53,7 +53,7 @@ Object.assign(document.body, {
 async function importFromFile(file) {
   let resolve, reject;
   const q = queue;
-  const el = document.createElement('input');
+  const el = $tag('input');
   const textPromise = new Promise((...args) => ([resolve, reject] = args));
   try {
     if (file) {
@@ -263,28 +263,34 @@ async function importFromString(jsonString) {
       importOptions.call(btn);
     }
     return (
-      $create('details', {'data-id': id, open: isOptions}, [
+      $create('details', {open: isOptions}, [
         $create('summary',
           $create('b', (isOptions ? '' : names.length + ' ') + t(legend))),
         $create('small',
           names.map(ids ? listItemsWithId : isOptions ? listOptions : listItems, ids)),
         btn,
-      ])
+      ].filter(Boolean), {data: {id}})
     );
   }
 
   function listOptions({name, isValid}) {
-    return $create(isValid ? 'div' : 'del',
-      name + (isValid ? '' : ` (${t(stats.invalid.legend)})`));
+    const el = $tag(isValid ? 'div' : 'del');
+    el.textContent = name + (isValid ? '' : ` (${t(stats.invalid.legend)})`);
+    return el;
   }
 
   function listItems(name) {
-    return $create('div', name);
+    const el = $tag('div');
+    el.textContent = name;
+    return el;
   }
 
   /** @this stats.<item>.ids */
   function listItemsWithId(name, i) {
-    return $create('div', {'data-id': this[i]}, name);
+    const el = $tag('div');
+    el.textContent = name;
+    el.dataset.id = this[i];
+    return el;
   }
 
   async function importOptions() {
@@ -330,7 +336,7 @@ async function importFromString(jsonString) {
 
   function bindClick() {
     const highlightElement = event => {
-      const styleElement = $('#style-' + event.target.dataset.id);
+      const styleElement = $id(kStyleIdPrefix + event.target.dataset.id);
       if (styleElement) {
         scrollElementIntoView(styleElement);
         animateElement(styleElement);

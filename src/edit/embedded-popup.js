@@ -1,5 +1,5 @@
 import {extraKeys} from '@/cm';
-import {$, $create, $remove} from '@/js/dom';
+import {$create} from '@/js/dom';
 import {getEventKeyName} from '@/js/dom-util';
 import * as prefs from '@/js/prefs';
 import {actionPopupUrl} from '@/js/urls';
@@ -8,7 +8,6 @@ import {MF_ICON_EXT, MF_ICON_PATH} from '@/js/util-webext';
 
 export default function EmbeddedPopup() {
   const ID = 'popup-iframe';
-  const SEL = '#' + ID;
   const POPUP_HOTKEY = 'Shift-Ctrl-Alt-S';
   /** @type {HTMLIFrameElement} */
   let frame;
@@ -20,8 +19,8 @@ export default function EmbeddedPopup() {
     title: t('optionsCustomizePopup') + '\n' + POPUP_HOTKEY,
     onclick: embedPopup,
   });
-  $.root.appendChild(btn);
-  $.rootCL.add('popup-window');
+  $root.appendChild(btn);
+  $rootCL.add('popup-window');
   document.body.appendChild(btn);
   // Adding a dummy command to show in keymap help popup
   extraKeys[POPUP_HOTKEY] = 'openStylusPopup';
@@ -38,7 +37,7 @@ export default function EmbeddedPopup() {
   });
 
   function embedPopup() {
-    if ($(SEL)) return;
+    if ($id(ID)) return;
     isLoaded = false;
     scrollbarWidth = 0;
     frame = $create('iframe', {
@@ -60,7 +59,7 @@ export default function EmbeddedPopup() {
     pw.on('keydown', removePopupOnEsc);
     pw.close = removePopup;
     new pw.IntersectionObserver(onIntersect).observe(body.appendChild(
-      $create('div', {style: {height: '1px', marginTop: '-1px'}})
+      $create('div', {style: 'height: 1px; marginTop: -1px;'})
     ));
     new pw.MutationObserver(onMutation).observe(body, {
       attributes: true,
@@ -96,7 +95,7 @@ export default function EmbeddedPopup() {
 
   function removePopup() {
     frame = null;
-    $remove(SEL);
+    $id(ID)?.remove();
     window.off('mousedown', removePopup);
   }
 

@@ -1,5 +1,4 @@
 import '@/js/dom-init';
-import {$, $$} from '@/js/dom';
 import {tBody} from '@/js/localization';
 import * as prefs from '@/js/prefs';
 import CodeMirror from 'codemirror';
@@ -40,18 +39,18 @@ tBody();
     };
   }
   // enabling after init to prevent flash of validation failure on an empty name
-  $('#name').required = !editor.isUsercss;
-  $('#save-button').onclick = editor.save;
-  $('#cancel-button').onclick = editor.cancel;
-  // $('#testRE').hidden = !editor.style.sections.some(({regexps: r}) => r && r.length);
-  $('#testRE').onclick = async function () {
+  $id('name').required = !editor.isUsercss;
+  $id('save-button').onclick = editor.save;
+  $id('cancel-button').onclick = editor.cancel;
+  // $id('testRE').hidden = !editor.style.sections.some(({regexps: r}) => r && r.length);
+  $id('testRE').onclick = async function () {
     (this.onclick = (await import('./regexp-tester')).toggle)(true);
   };
-  $('#lint-help').onclick = async function () {
+  $id('lint-help').onclick = async function () {
     (this.onclick = (await import('./linter/dialogs')).showLintHelp)();
   };
-  const elSec = $('#sections-list');
-  const elToc = $('#toc');
+  const elSec = $id('sections-list');
+  const elToc = $id('toc');
   const moDetails = new MutationObserver(([{target: sec}]) => {
     if (!sec.open) return;
     if (sec === elSec) editor.updateToc();

@@ -1,5 +1,4 @@
 import {CodeMirror, extraKeys} from '@/cm';
-import {$, $$} from '@/js/dom';
 import {setInputValue, setupLivePrefs} from '@/js/dom-util';
 import * as prefs from '@/js/prefs';
 import {sleep, t} from '@/js/util';
@@ -7,7 +6,7 @@ import {initBeautifyButton} from './beautify';
 import editor from './editor';
 
 export default function EditorHeader() {
-  initBeautifyButton($('#beautify'));
+  initBeautifyButton($id('beautify'));
   initNameArea();
   setupLivePrefs();
   window.on('load', () => {
@@ -35,8 +34,8 @@ function findKeyForCommand(command, map) {
 }
 
 function initNameArea() {
-  const nameEl = $('#name');
-  const resetEl = $('#reset-name');
+  const nameEl = $id('name');
+  const resetEl = $id('reset-name');
   const isCustomName = editor.style.updateUrl || editor.isUsercss;
   editor.nameTarget = isCustomName ? 'customName' : 'name';
   nameEl.placeholder = t(editor.isUsercss ? 'usercssEditorNamePlaceholder' : 'styleMissingName');
@@ -51,7 +50,7 @@ function initNameArea() {
     editor.style.customName = null; // to delete it from db
     resetEl.hidden = true;
   };
-  const enabledEl = $('#enabled');
+  const enabledEl = $id('enabled');
   enabledEl.onchange = () => editor.updateEnabledness(enabledEl.checked);
 }
 

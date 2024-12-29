@@ -2,7 +2,7 @@ import '@/js/dom-init';
 import {CodeMirror, loadCmTheme, THEME_KEY} from '@/cm';
 import compareVersion from '@/js/cmpver';
 import {UCD} from '@/js/consts';
-import {$, $$, $$remove, $create, $createLink} from '@/js/dom';
+import {$$remove, $create, $createLink} from '@/js/dom';
 import {configDialog, messageBox, showSpinner} from '@/js/dom-util';
 import {htmlToTemplate, tBody} from '@/js/localization';
 import {API} from '@/js/msg';
@@ -47,7 +47,7 @@ document.on('visibilitychange', () => {
   if (installed) liveReload();
 });
 tBody();
-setTimeout(() => !cm && showSpinner($('#header')), 200);
+setTimeout(() => !cm && showSpinner($id('header')), 200);
 
 (async function init() {
   if (location.hash) {
@@ -128,7 +128,7 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
     ($(`[name="ss-scheme"][value="${dup.preferScheme}"]`) || {}).checked = true;
   }
   for (let type of ['in', 'ex']) {
-    const el = $('#ss-' + (type += 'clusions'));
+    const el = $id('ss-' + (type += 'clusions'));
     const list = dup && dup[type] || [];
     el.value = list.join('\n') + (list[0] ? '\n' : '');
     el.rows = list.length + 2;
@@ -177,7 +177,7 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
   $('.set-update-url p').textContent = clipString(updateUrl.href || '', 300);
 
   // set prefer scheme
-  $('#ss-scheme').onchange = e => {
+  $id('ss-scheme').onchange = e => {
     style.preferScheme = e.target.value;
   };
 
@@ -249,9 +249,9 @@ function updateMeta(newStyle) {
     openConfigDialog();
   }
 
-  $('#header').dataset.arrivedFast = performance.now() < 500;
-  $('#header').classList.add('meta-init');
-  $('#header').classList.remove('meta-init-error');
+  $id('header').dataset.arrivedFast = performance.now() < 500;
+  $id('header').classList.add('meta-init');
+  $id('header').classList.remove('meta-init-error');
 
   setTimeout(() => $$remove('.lds-spinner'), 1000);
   showError('');
@@ -325,7 +325,7 @@ function showError(err) {
 }
 
 function showBuildError(error) {
-  $('#header').classList.add('meta-init-error');
+  $id('header').classList.add('meta-init-error');
   console.error(error);
   showError(error);
 }
@@ -336,7 +336,7 @@ function install(res) {
   $$remove('.warning');
   $('button.install').disabled = true;
   $('button.install').classList.add('installed');
-  $('#live-reload-install-hint').hidden = !liveReloadEnabled;
+  $id('live-reload-install-hint').hidden = !liveReloadEnabled;
   $('.set-update-url').title = style.updateUrl ?
     t('installUpdateFrom', style.updateUrl) : '';
   $$('.install-disable input').forEach(el => (el.disabled = true));
@@ -349,8 +349,8 @@ function install(res) {
 function enablePostActions() {
   const {id} = installed || dup;
   sessionStore.justEditedStyleId = id;
-  $('#edit').search = `?id=${id}`;
-  $('#delete').onclick = async () => {
+  $id('edit').search = `?id=${id}`;
+  $id('delete').onclick = async () => {
     if (await messageBox.confirm(t('deleteStyleConfirm'), 'danger center', t('confirmDelete'))) {
       await API.styles.remove(id);
       if (tabId < 0 && history.length > 1) {
@@ -408,7 +408,7 @@ function initLiveReload() {
     if (!installed && !dup) return;
     if (liveReloadEnabled) start({force: true}); else stop();
     $('.install').disabled = liveReloadEnabled;
-    Object.assign($('#live-reload-install-hint'), {
+    Object.assign($id('live-reload-install-hint'), {
       hidden: !liveReloadEnabled,
       textContent: t(`liveReloadInstallHint${tabId >= 0 ? 'FF' : ''}`),
     });

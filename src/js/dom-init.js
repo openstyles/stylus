@@ -1,4 +1,4 @@
-import {$, dom, mqCompact, toggleClasses} from './dom';
+import {dom, mqCompact, $toggleClasses} from './dom';
 import {waitForSelector} from './dom-util';
 import * as prefs from './prefs';
 import {FIREFOX, MOBILE, OPERA, VIVALDI, WINDOWS} from './ua';
@@ -8,7 +8,7 @@ import './util-webext';
 import '@/content/apply'; // must run after msg (swaps `API`) and util-webext (exposes _deepCopy)
 
 prefs.subscribe('disableAll', (_, val) => {
-  $.rootCL.toggle('all-disabled', val);
+  $rootCL.toggle('all-disabled', val);
 }, true);
 
 prefs.ready.then(() => {
@@ -45,14 +45,14 @@ prefs.ready.then(() => {
     !WINDOWS && 'non-windows',
     FIREFOX ? 'firefox' : OPERA ? 'opera' : VIVALDI && 'vivaldi',
   ].filter(Boolean).join(' ');
-  if (cls) $.root.className += ' ' + cls;
+  if (cls) $root.className += ' ' + cls;
   // set language for a) CSS :lang pseudo and b) hyphenation
-  $.root.lang = chrome.i18n.getUILanguage();
+  $root.lang = chrome.i18n.getUILanguage();
 }
 if (mqCompact) {
   const toggleCompact = mq => {
     mq = mq.matches;
-    toggleClasses($.root, {
+    $toggleClasses($root, {
       'compact-layout': mq,
       'normal-layout': !mq,
     });
@@ -72,7 +72,7 @@ if (mqCompact) {
         // If this is a small window on a big monitor the user can maximize it later
         const max = (innerWidth < 850 ? screen.availWidth : innerWidth) / 3;
         width = Math.round(Math.max(200, Math.min(max, Number(width) || 0)));
-        $.root.style.setProperty('--header-width', width + 'px');
+        $root.style.setProperty('--header-width', width + 'px');
         dom.HWval = width;
         return width;
       },

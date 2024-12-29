@@ -1,4 +1,4 @@
-import {$, $$, $$remove, $create} from '@/js/dom';
+import {$$remove, $create, $toggleClasses} from '@/js/dom';
 import {getCssMediaRuleByName} from '@/js/dom-util';
 import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
@@ -30,8 +30,7 @@ export function readPrefs(dest = cfg, cb) {
 export function renderClass() {
   const on = !!cfg.enabled;
   if (!media) getCssMediaRuleByName(MEDIA_NAME, m => !(media = m));
-  $.rootCL.toggle('newUI', on);
-  $.rootCL.toggle('oldUI', !on);
+  $toggleClasses($root, {newUI: on, oldUI: !on});
   if (on !== (media[0] === MEDIA_ON)) {
     media.mediaText = `${on ? MEDIA_ON : MEDIA_OFF},${MEDIA_NAME}`;
   }
@@ -51,9 +50,11 @@ export function render(isInit) {
   Object.assign(cfg, current);
   renderClass();
 
-  installed.classList.toggle('has-favicons', hasFavs());
-  installed.classList.toggle('favicons-grayed', cfg.enabled && cfg.faviconsGray);
-  installed.classList.toggle('has-targets', !cfg.enabled || !!cfg.targets);
+  $toggleClasses(installed, {
+    'has-favicons': hasFavs(),
+    'favicons-grayed': cfg.enabled && cfg.faviconsGray,
+    'has-targets': !cfg.enabled || !!cfg.targets,
+  });
 
   const iconsEnabled = hasFavs();
   let iconsMissing = iconsEnabled && !$('#links img');

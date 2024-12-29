@@ -1,4 +1,3 @@
-import {$, $$, $remove} from '@/js/dom';
 import {configDialog, getEventKeyName, moveFocus} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg';
@@ -6,7 +5,7 @@ import {getActiveTab} from '@/js/util-webext';
 import {resortEntries, tabUrl} from '.';
 import * as hotkeys from './hotkeys';
 
-const menu = $('#menu');
+const menu = $id('menu');
 const menuExclusions = [];
 
 export function configure(event, entry) {
@@ -27,7 +26,7 @@ export function maybeEdit(event) {
   // open an editor on middleclick
   const el = event.target;
   if (el.matches('.entry, .style-edit-link') || el.closest('.style-name')) {
-    this.onmouseup = () => $('.style-edit-link', this).click();
+    this.onmouseup = () => this.$('.style-edit-link').click();
     this.oncontextmenu = e => e.preventDefault();
     event.preventDefault();
   }
@@ -61,7 +60,7 @@ export function toggleUrlLink({type}) {
 
 const GlobalRoutes = {
   '#installed:empty'() {
-    $('#find-styles-btn').click();
+    $id('find-styles-btn').click();
   },
   '#menu [data-cmd]'() {
     if (this.dataset.cmd === 'delete') {
@@ -103,18 +102,18 @@ const EntryRoutes = {
     menu.styleId = entry.styleId;
     menu.hidden = false;
     window.on('keydown', menuOnKey);
-    $('header', menu).textContent = $('.style-name', entry).textContent;
+    menu.$('header').textContent = entry.$('.style-name').textContent;
     moveFocus(menu, 0);
   },
   '.style-edit-link': openEditor,
   '.regexp-problem-indicator'(event, entry) {
     const info = template.regexpProblemExplanation.cloneNode(true);
-    $remove('#' + info.id);
+    $id(info.id)?.remove();
     entry.appendChild(info);
   },
   '#regexp-explanation a': openURLandHide,
   '#regexp-explanation button'() {
-    $('#regexp-explanation').remove();
+    $id('regexp-explanation').remove();
   },
 };
 
@@ -139,7 +138,7 @@ document.on('click', event => {
 function menuInit() {
   const u = new URL(tabUrl);
   for (const el of $$('[data-exclude]')) {
-    const input = $('input', el);
+    const input = el.$('input');
     const rule = u.origin +
       (el.dataset.exclude === 'domain' ? '/*' : u.pathname.replace(/\*/g, '\\*'));
     menuExclusions.push({el, input, rule});

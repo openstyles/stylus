@@ -1,5 +1,5 @@
 import {kCodeMirror, kEditorSettings} from '@/js/consts';
-import {$, toggleDataset} from '@/js/dom';
+import {$toggleDataset} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
 import {templateCache, htmlToTemplate, template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
@@ -24,8 +24,8 @@ export default class EditorSection {
   constructor(sectionData, genId, si) {
     const me = this; // for tocEntry.removed
     const el = this.el = templateCache.section.cloneNode(true);
-    const elLabel = this.elLabel = $('.code-label', el);
-    const at = this.targetsEl = $('.applies-to', el);
+    const elLabel = this.elLabel = el.$('.code-label');
+    const at = this.targetsEl = el.$('.applies-to');
     // TODO: find another way other than `el[kCodeMirror]` for getAssociatedEditor
     const cm = this.cm = el[kCodeMirror] = cmFactory.create(wrapper => {
       const ws = wrapper.style;
@@ -55,7 +55,7 @@ export default class EditorSection {
       },
     };
     this.targets = /** @type {SectionTarget[]} */ [];
-    this.targetsListEl = $('.applies-to-list', el);
+    this.targetsListEl = el.$('.applies-to-list');
     this.targetsEl.on('change', this);
     this.targetsEl.on('input', this);
     this.targetsEl.on('click', this);
@@ -67,7 +67,7 @@ export default class EditorSection {
     }
     if (!this.targets.length) this.addTarget();
     editor.applyScrollInfo(cm, si);
-    initBeautifyButton($('.beautify-section', el), [cm]);
+    initBeautifyButton(el.$('.beautify-section'), [cm]);
     prefs.subscribe('editor.toc.expanded', this.updateTocPrefToggled.bind(this), true);
     new ResizeGrip(cm); // eslint-disable-line no-use-before-define
     this.updateTocEntry();
@@ -204,14 +204,14 @@ export default class EditorSection {
     switch (evt.type) {
       case 'click':
         if (cls.contains('add-applies-to')) {
-          $('input', this.addTarget(trg.type, '', trg).el).focus();
+          this.addTarget(trg.type, '', trg).el.$('input').focus();
         } else if (cls.contains('remove-applies-to')) {
           this.removeTarget(trg);
         } else if (!this.ati && (tmp = el.closest('label'))) {
-          const chk = $('#editor\\.targetsFirst', templateCache[kEditorSettings] ??=
-            htmlToTemplate(htmlEditorSettings));
+          const chk = (templateCache[kEditorSettings] ??= htmlToTemplate(htmlEditorSettings))
+            .$('#editor\\.targetsFirst');
           const chkLabel = chk.closest('label').cloneNode(true);
-          const ati = this.ati = helpPopup.show(chkLabel, tmp.title, {'data-id': 'ati'});
+          const ati = this.ati = helpPopup.show(chkLabel, tmp.title, {}, 'ati');
           ati.onClose.add(() => delete this.ati);
           setupLivePrefs(chkLabel);
         }
@@ -299,8 +299,8 @@ class SectionTarget {
     this.el.me = this;
     this.section = section;
     this.dirt = `section.${section.id}.apply.${this.id}`;
-    this.selectEl = $('.applies-type', this.el);
-    this.valueEl = $('.applies-value', this.el);
+    this.selectEl = this.el.$('.applies-type');
+    this.valueEl = this.el.$('.applies-value');
     editor.toggleRegexp(this.valueEl, type);
     this.type = this.selectEl.value = type;
     this.value = this.valueEl.value = value;
@@ -322,7 +322,7 @@ class SectionTarget {
   }
 
   toggleAll() {
-    toggleDataset(this.section.targetsEl, 'all', !this.type);
+    $toggleDataset(this.section.targetsEl, 'all', !this.type);
   }
 
   onSelectChange() {
@@ -410,9 +410,9 @@ class ResizeGrip {
       cm.state.toggleHeightSaved = 0;
     } else {
       // maximize
-      const allBounds = $('#sections').getBoundingClientRect();
+      const allBounds = $id('sections').getBoundingClientRect();
       const pageExtrasHeight = allBounds.top + window.scrollY +
-        parseFloat(getComputedStyle($('#sections')).paddingBottom);
+        parseFloat(getComputedStyle($id('sections')).paddingBottom);
       const sectionEl = wrapper.parentNode;
       const sectionExtrasHeight = sectionEl.clientHeight - wrapper.offsetHeight;
       cm.state.toggleHeightSaved = wrapper.clientHeight;

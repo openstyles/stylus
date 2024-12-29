@@ -38,7 +38,7 @@ async function maybeRestore() {
   popup._contents.append(
     $create('p', t('draftAction')),
     $create('.buttons', [t('confirmYes'), t('confirmNo')].map((btn, i) =>
-      $create('button', {textContent: btn, onclick: i ? onNo : onYes})))
+      $create('button', {onclick: i ? onNo : onYes}, btn)))
   );
   if (await new Promise(r => (resolve = r))) {
     style.id = editor.style.id;

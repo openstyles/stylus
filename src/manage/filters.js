@@ -1,4 +1,4 @@
-import {$, $$, $create} from '@/js/dom';
+import {$create} from '@/js/dom';
 import {messageBox} from '@/js/dom-util';
 import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
@@ -29,8 +29,8 @@ router.watch({search: [fltSearch, fltMode]}, ([search, mode]) => {
 });
 
 function initFilters() {
-  elSearch = $('#search');
-  elSearchMode = $('#' + fltModePref);
+  elSearch = $id('search');
+  elSearchMode = $id(fltModePref);
   elSearchMode.on('change', e => {
     if (elSearchMode.value === 'url') { // `url` mode shouldn't be saved
       e.stopPropagation();
@@ -39,7 +39,7 @@ function initFilters() {
   elSearch.oninput = () => router.updateSearch(fltSearch, elSearch.value);
   elSearchMode.oninput = () => router.updateSearch(fltMode, elSearchMode.value);
 
-  $('#search-help').onclick = event => {
+  $id('search-help').onclick = event => {
     event.preventDefault();
     messageBox.show({
       className: 'help-text center-dialog',
@@ -61,7 +61,7 @@ function initFilters() {
   };
 
   $$('select[id$=".invert"]').forEach(el => {
-    const slave = $('#' + el.id.replace('.invert', ''));
+    const slave = $id(el.id.replace('.invert', ''));
     const slaveData = slave.dataset;
     const valueMap = new Map([
       [false, slaveData.filter],
@@ -232,9 +232,9 @@ async function reapplyFilter(container = installed, alreadySearched) {
         (el.matches(selector) ? toUnhide : toHide).push(el);
       }
     } else if (hide) {
-      toHide = [...$$(selector, container)];
+      toHide = [...container.$$(selector)];
     } else {
-      toUnhide = [...$$(selector, container)];
+      toUnhide = [...container.$$(selector)];
     }
   }
 }
@@ -244,7 +244,7 @@ export function showFiltersStats() {
   const numTotal = installed.childElementCount;
   const numHidden = installed.getElementsByClassName('entry hidden').length;
   const numShown = numTotal - numHidden;
-  $('#header').classList.toggle('filtered', active);
+  $id('header').classList.toggle('filtered', active);
   if (filtersSelector.numShown !== numShown ||
       filtersSelector.numTotal !== numTotal) {
     filtersSelector.numShown = numShown;

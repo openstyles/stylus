@@ -1,4 +1,4 @@
-import {$, $$, $create, mqCompact} from '@/js/dom';
+import {$create, mqCompact} from '@/js/dom';
 import {important} from '@/js/dom-util';
 import * as prefs from '@/js/prefs';
 import editor from './editor';
@@ -6,7 +6,7 @@ import editor from './editor';
 export default function CompactHeader() {
   // Set up mini-header on scroll
   const {isUsercss} = editor;
-  const elHeader = $create({
+  const elHeader = $create('div', {
     style: important(`
       top: 0;
       height: 1px;
@@ -31,7 +31,7 @@ export default function CompactHeader() {
     }
     if (mq.matches) {
       xo.observe(elHeader);
-      $('#basic-info-name').after(elInfo);
+      $id('basic-info-name').after(elInfo);
     } else {
       xo.disconnect();
       $('h1').append(elInfo);
@@ -40,7 +40,7 @@ export default function CompactHeader() {
 
   /** @param {IntersectionObserverEntry[]} entries */
   function onScrolled(entries) {
-    const h = $('#header');
+    const h = $id('header');
     const sticky = !entries.pop().intersectionRatio;
     if (!isUsercss) scroller.style.paddingTop = sticky ? h.offsetHeight + 'px' : '';
     h.classList.toggle('sticky', sticky);

@@ -5,7 +5,7 @@
  * <tag i18n="title: id"> - creates an attribute `title`, spaces are ignored
  * <tag i18n="id, +id2, title:id3, placeholder:id4, data-foo:id5">
  */
-import {$toFragment} from './dom';
+import {$createFragment} from './dom';
 import {t} from './util';
 
 /** @typedef {Record<string, Element|DocumentFragment>} TemplateCache */
@@ -13,7 +13,7 @@ import {t} from './util';
 export const templateCache = {};
 /** @type {TemplateCache} */
 export const template = /*@__PURE__*/new Proxy(templateCache, {
-  get: (obj, k) => obj[k] || createTemplate(document.$(`template[data-id="${k}"]`)),
+  get: (obj, k) => obj[k] || createTemplate($(`template[data-id="${k}"]`)),
 });
 const ALLOWED_TAGS = ['a', 'b', 'br', 'code', 'i', 'nobr', 'small', 'sub', 'sup', 'wbr'];
 const RX_WORD_BREAK = /([\w{-\uFFFF]{10}|[\w{-\uFFFF]{5,10}[!'")*,./]|((?!\s)\W){10})(?!\s|$)/gu;
@@ -93,19 +93,20 @@ function htmlToFragment(str, trusted) {
   } else if (str.includes('i18n=')) {
     tNodeList(root.$$(SELECTOR));
   }
-  return $toFragment(root);
+  return $createFragment(root.childNodes);
 }
 
 export function htmlToTemplate(html) {
   const el = parseHtml(html).body;
   const first = el.firstChild;
-  const res = first.nextSibling ? $toFragment(el) : first;
+  const res = first.nextSibling ? $createFragment(el.childNodes) : first;
   tNodeList(res.$$(SELECTOR));
   return res;
 }
 
 export function htmlToTemplateCache(html) {
   for (const el of parseHtml(html).$$('template[data-id]')) createTemplate(el);
+  return templateCache;
 }
 
 export function sanitizeHtml(root) {

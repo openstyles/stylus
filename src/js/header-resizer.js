@@ -1,11 +1,11 @@
-import {$, $$, dom} from './dom';
+import {dom} from './dom';
 import * as prefs from './prefs';
 
 export default function HeaderResizer() {
-  let curW = $('#header').offsetWidth;
+  let curW = $id('header').offsetWidth;
   let offset, perPage;
   prefs.subscribe(dom.HWprefId, (key, val) => setWidth(val));
-  $('#header-resizer').onmousedown = e => {
+  $id('header-resizer').onmousedown = e => {
     if (e.button) return;
     offset = curW - e.clientX;
     perPage = e.shiftKey;

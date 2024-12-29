@@ -1,6 +1,6 @@
 import {getLZValue, LZ_KEY, setLZValue} from '@/js/chrome-sync';
 import {UCD} from '@/js/consts';
-import {$, $$remove, $create, $createLink, $isTextInput} from '@/js/dom';
+import {$$remove, $create, $createLink, $isTextInput} from '@/js/dom';
 import {messageBox} from '@/js/dom-util';
 import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
@@ -29,10 +29,10 @@ export default function SourceEditor() {
   let prevMode = NaN;
 
   $$remove('.sectioned-only');
-  $('#header').on('wheel', headerOnScroll);
-  $('#sections').textContent = '';
-  $('#sections').appendChild($create('.single-editor'));
-  $('#save-button').on('split-btn', saveTemplate);
+  $id('header').on('wheel', headerOnScroll);
+  $id('sections').textContent = '';
+  $id('sections').appendChild($create('.single-editor'));
+  $id('save-button').on('split-btn', saveTemplate);
 
   const cm = cmFactory.create($('.single-editor'));
   const cmpPos = CodeMirror.cmpPos;
@@ -154,10 +154,10 @@ export default function SourceEditor() {
   }
 
   function updateLinterSwitch() {
-    const el = $('#editor.linter');
+    const el = $id('editor.linter');
     if (!el) return;
     el.value = getCurrentLinter();
-    const cssLintOption = $('[value="csslint"]', el);
+    const cssLintOption = el.$('[value="csslint"]');
     const mode = getModeName();
     if (mode !== 'css') {
       cssLintOption.disabled = true;
@@ -200,9 +200,9 @@ export default function SourceEditor() {
 
   function updateMeta() {
     const name = style.customName || style.name;
-    $('#name').value = name;
-    $('#enabled').checked = style.enabled;
-    $('#url').href = style.url;
+    $id('name').value = name;
+    $id('enabled').checked = style.enabled;
+    $id('url').href = style.url;
     editor.updateName();
     cm.setPreprocessor(style[UCD]?.preprocessor);
   }

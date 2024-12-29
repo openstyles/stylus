@@ -1,5 +1,5 @@
-import {UCD} from '@/js/consts';
-import {$, toggleDataset} from '@/js/dom';
+import {kStyleIdPrefix, UCD} from '@/js/consts';
+import {$toggleDataset} from '@/js/dom';
 import {animateElement, scrollElementIntoView} from '@/js/dom-util';
 import {breakWord, template} from '@/js/localization';
 import {TO_CSS} from '@/js/sections-util';
@@ -7,9 +7,7 @@ import {isEmptyObj, sessionStore, t} from '@/js/util';
 import {filterAndAppend} from './filters';
 import {renderFavs} from './render';
 import * as sorter from './sorter';
-import {
-  $entry, ENTRY_ID_PREFIX_RAW, installed, newUI, padLeft, removeStyleCode, styleToDummyEntry,
-} from './util';
+import {installed, newUI, padLeft, removeStyleCode, styleToDummyEntry} from './util';
 
 export * from './render-favs';
 
@@ -75,16 +73,16 @@ function createParts(isNew) {
   partNewUI = isNew;
   partEntry = template[isNew ? 'styleNewUI' : 'style'].cloneNode(true);
   partEntryClassBase = partEntry.className;
-  partChecker = $('input', partEntry) || {};
-  partNameLink = $('.style-name-link', partEntry);
-  partEditLink = $('.style-edit-link', partEntry) || {};
-  partHomepage = $('.homepage', partEntry);
-  partInfoAge = $('[data-type=age]', partEntry);
-  partInfoSize = $('[data-type=size]', partEntry);
-  partInfoVer = $('[data-type=version]', partEntry);
-  partTargets = $('.targets', partEntry);
-  partOldConfigure = !isNew && $('.configure-usercss', partEntry);
-  partOldCheckUpdate = !isNew && $('.check-update', partEntry);
+  partChecker = partEntry.$('input') || {};
+  partNameLink = partEntry.$('.style-name-link');
+  partEditLink = partEntry.$('.style-edit-link') || {};
+  partHomepage = partEntry.$('.homepage');
+  partInfoAge = partEntry.$('[data-type=age]');
+  partInfoSize = partEntry.$('[data-type=size]');
+  partInfoVer = partEntry.$('[data-type=version]');
+  partTargets = partEntry.$('.targets');
+  partOldConfigure = !isNew && partEntry.$('.configure-usercss');
+  partOldCheckUpdate = !isNew && partEntry.$('.check-update');
   return partEntry;
 }
 
@@ -103,7 +101,7 @@ export function createStyleElement({styleMeta: style, styleNameLC: nameLC, style
   partInfoVer.textContent = version;
   partInfoVer.dataset.value = version;
   // USO-raw and USO-archive version is a date for which we show the Age column
-  toggleDataset(partInfoVer, 'isDate', version.length >= 8 && rxIsDateVer.test(version));
+  $toggleDataset(partInfoVer, 'isDate', version.length >= 8 && rxIsDateVer.test(version));
   createAgeText(partInfoAge, style);
   partInfoSize.dataset.value = Math.log10(size || 1) >> 0; // for CSS to target big/small styles
   partInfoSize.textContent = renderSize(size);
@@ -115,7 +113,7 @@ export function createStyleElement({styleMeta: style, styleNameLC: nameLC, style
   removeStyleCode(style);
   // Now that we assigned the parts, we can clone the element
   const entry = partEntry.cloneNode(true);
-  entry.id = ENTRY_ID_PREFIX_RAW + style.id;
+  entry.id = kStyleIdPrefix + style.id;
   entry.styleId = style.id;
   entry.styleNameLC = nameLC;
   entry.styleMeta = style;
@@ -125,7 +123,7 @@ export function createStyleElement({styleMeta: style, styleNameLC: nameLC, style
     (updateUrl ? ' updatable' : '') +
     (ud ? ' usercss' : '');
   if (isNew && (updateUrl || configurable)) {
-    $('.actions', entry).append(...[
+    entry.$('.actions').append(...[
       updateUrl && (tplUpdaterIcons ??= template.updaterIcons).cloneNode(true),
       configurable && (tplConfigureIcon ??= template.configureIcon).cloneNode(true),
     ].filter(Boolean));
@@ -142,8 +140,8 @@ export function createTargetsElement({entry, expanded, style = entry.styleMeta})
     return;
   }
   const displayed = new Set();
-  const entryTargets = $('.targets', entry);
-  const expanderCls = $('.applies-to', entry).classList;
+  const entryTargets = entry.$('.targets');
+  const expanderCls = entry.$('.applies-to').classList;
   const targets = partTargets.cloneNode(true);
   const toAppend = [];
   let container = targets;
@@ -213,7 +211,7 @@ export function createTargetsElement({entry, expanded, style = entry.styleMeta})
 
 function highlightEditedStyle() {
   if (!sessionStore.justEditedStyleId) return;
-  const entry = $entry(sessionStore.justEditedStyleId);
+  const entry = $id(kStyleIdPrefix + sessionStore.justEditedStyleId);
   delete sessionStore.justEditedStyleId;
   if (entry) {
     animateElement(entry);
@@ -227,7 +225,7 @@ export function fitNameColumn(styles, style) {
   const pick = sorter.columns > 1 ? .8 : .95; // quotient of entries in single line
   const extras = 5; // average for optional extras like " UC ", "v1.0.0"
   const res = nameLengths.res = styles.sort()[nameLengths.size * pick | 0] + extras - 1e9;
-  $.root.style.setProperty('--name-width', res + 'ch');
+  $root.style.setProperty('--name-width', res + 'ch');
 }
 
 function calcNameLenKey(style) {
@@ -244,10 +242,10 @@ export function fitSizeColumn(entries = installed.children, entry) {
   if (!res) {
     for (const e of entries) res = Math.max(res, e.styleSize);
     res = renderSize(res).length;
-  } else if (res <= parseInt($.root.style.getPropertyValue('--size-width'))) {
+  } else if (res <= parseInt($root.style.getPropertyValue('--size-width'))) {
     return;
   }
-  $.root.style.setProperty('--size-width', res + 'ch');
+  $root.style.setProperty('--size-width', res + 'ch');
 }
 
 export function showStyles(styles = [], matchUrlIds) {
@@ -301,8 +299,8 @@ export function updateTotal(delta) {
     return;
   }
   installed.dataset.total = numStyles;
-  elLinksParent ??= (elLinks = $('#links')).parentNode;
+  elLinksParent ??= (elLinks = $id('links')).parentNode;
   if (!numStyles) installed.after(elLinks);
   else elLinksParent.append(elLinks);
-  $.rootCL.toggle('empty', !numStyles);
+  $rootCL.toggle('empty', !numStyles);
 }

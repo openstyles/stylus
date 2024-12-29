@@ -1,9 +1,11 @@
-import {$, $create} from '@/js/dom';
+import {htmlToTemplate} from '@/js/localization';
 import {clipString} from '@/js/util';
 import * as linterMan from '.';
 import editor from '../editor';
+import html from './reports.html';
 
 const tables = new Map();
+let tplReport, tplRow, rowSeverityIcon, rowSeverity, rowLine, rowCol, rowMessage;
 
 linterMan.onLintingUpdated((annotationsNotSorted, annotations, cm) => {
   let table = tables.get(cm);
@@ -32,7 +34,7 @@ export function getIssues() {
   const issues = new Set();
   for (const table of tables.values()) {
     for (const tr of table.trs) {
-      issues.add(tr.getAnnotation());
+      issues.add(tr._anno);
     }
   }
   return issues;
@@ -47,8 +49,8 @@ export function refreshReport() {
 function updateCount() {
   const issueCount = Array.from(tables.values())
     .reduce((sum, table) => sum + table.trs.length, 0);
-  $('#lint').hidden = !issueCount;
-  $('#issue-count').textContent = issueCount;
+  $id('lint').hidden = !issueCount;
+  $id('issue-count').textContent = issueCount;
 }
 
 function findNextSibling(cm) {
@@ -63,10 +65,17 @@ function findNextSibling(cm) {
 }
 
 function createTable(cm) {
-  const caption = $create('.caption');
-  const table = $create('table');
-  const report = $create('.report', [caption, table]);
+  if (!tplReport) {
+    tplReport = htmlToTemplate(html);
+    tplRow = tplReport.$('tr');
+    tplRow.remove();
+  }
+  const report = tplReport.cloneNode(true);
+  const caption = report.$('.caption');
+  const table = report.$('table');
   const trs = [];
+  table._cm = cm;
+  table.onclick = gotoLintIssue;
   return {
     element: report,
     trs,
@@ -76,80 +85,61 @@ function createTable(cm) {
 
   function updateCaption() {
     const t = editor.getEditorTitle(cm);
-    Object.assign(caption, typeof t == 'string' ? {textContent: t} : t);
+    if (typeof t == 'string') caption.textContent = t;
+    else Object.assign(caption, t);
   }
 
   function updateAnnotations(lines) {
     let i = 0;
     for (const anno of getAnnotations()) {
-      let tr;
+      const tr = createTr(anno);
       if (i < trs.length) {
-        tr = trs[i];
+        trs[i].replaceWith(trs[i] = tr);
       } else {
-        tr = createTr();
         trs.push(tr);
-        table.appendChild(tr.element);
+        table.appendChild(tr);
       }
-      tr.update(anno);
       i++;
     }
-    if (i === 0) {
+    if (!i) {
       trs.length = 0;
       table.textContent = '';
     } else {
-      while (trs.length > i) {
-        trs.pop().element.remove();
-      }
+      while (trs.length > i) trs.pop().remove();
     }
-    report.classList.toggle('empty', !trs.length);
+    report.classList.toggle('empty', !i);
 
     function *getAnnotations() {
-      for (const line of lines.filter(Boolean)) {
-        yield *line;
+      for (const line of lines) {
+        if (line) yield *line;
       }
     }
   }
 
-  function createTr() {
-    let anno;
-    const severityIcon = $create('div');
-    const severity = $create('td', {'attr:role': 'severity'}, severityIcon);
-    const line = $create('td', {'attr:role': 'line'});
-    const col = $create('td', {'attr:role': 'col'});
-    const message = $create('td', {'attr:role': 'message'});
-
-    const trElement = $create('tr', {
-      onclick: () => gotoLintIssue(cm, anno),
-    }, [
-      severity,
-      line,
-      $create('td', {'attr:role': 'sep'}, ':'),
-      col,
-      message,
-    ]);
-    return {
-      element: trElement,
-      update,
-      getAnnotation: () => anno,
-    };
-
-    function update(_anno) {
-      anno = _anno;
-      trElement.className = anno.severity;
-      severity.dataset.rule = anno.rule;
-      severityIcon.className = `CodeMirror-lint-marker CodeMirror-lint-marker-${anno.severity}`;
-      severityIcon.textContent = anno.severity;
-      line.textContent = anno.from.line + 1;
-      col.textContent = anno.from.ch + 1;
-      message.title = clipString(anno.message, 1000) +
-        (anno.rule ? `\n(${anno.rule})` : '');
-      message.textContent = clipString(anno.message, 100).replace(/ at line.*/, '');
+  function createTr(anno) {
+    if (!rowCol) {
+      [rowSeverity, rowLine, /*sep*/, rowCol, rowMessage] = tplRow.children;
+      rowSeverityIcon = rowSeverity.firstChild;
     }
+    const {message, from, rule, severity} = anno;
+    rowSeverity.dataset.rule = rule;
+    rowSeverityIcon.className = 'CodeMirror-lint-marker CodeMirror-lint-marker-' + severity;
+    rowSeverityIcon.textContent = severity;
+    rowLine.textContent = from.line + 1;
+    rowCol.textContent = from.ch + 1;
+    rowMessage.title = clipString(message, 1000) + (rule ? `\n(${rule})` : '');
+    rowMessage.textContent = clipString(message, 100).replace(/ at line.*/, '');
+    const tr = tplRow.cloneNode(true);
+    tr.className = severity;
+    tr._anno = anno;
+    return tr;
   }
 }
 
-function gotoLintIssue(cm, anno) {
+function gotoLintIssue(e) {
+  const tr = e.target.closest('tr');
+  const cm = this._cm;
   editor.scrollToEditor(cm);
   cm.focus();
-  cm.jumpToPos(anno.from);
+  cm.jumpToPos(tr._anno.from);
 }

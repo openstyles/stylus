@@ -1,4 +1,3 @@
-import {$, $$} from '@/js/dom';
 import {onMessage} from '@/js/msg';
 import {deepEqual} from '@/js/util';
 

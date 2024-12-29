@@ -1,6 +1,6 @@
 import '@/js/dom-init';
-import {kAboutBlank, kPopup, UCD} from '@/js/consts';
-import {$, $$, $create, $remove} from '@/js/dom';
+import {kAboutBlank, kPopup, kStyleIdPrefix, UCD} from '@/js/consts';
+import {$create, $createFragment} from '@/js/dom';
 import {getEventKeyName, setupLivePrefs} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API, onMessage} from '@/js/msg';
@@ -22,13 +22,11 @@ let isBlocked;
 let prevHeight;
 
 /** @type Element */
-const installed = $('#installed');
+const installed = $id('installed');
 const WRITE_FRAME_SEL = '.match:not([data-frame-id="0"]):not(.dupe)';
-const ENTRY_ID_PREFIX_RAW = 'style-';
 const EXT_NAME = `<${MF.name}>`;
 const TPL_STYLE = template.style;
 const xo = new IntersectionObserver(onIntersect);
-export const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrId}`);
 
 (async () => {
   const data = (__.MV3 ? prefs.clientData : await prefs.clientData)[kPopup];
@@ -46,12 +44,12 @@ updateStateIcon(isDark);
 onDarkChanged.add(val => updateStateIcon(val, null));
 
 prefs.subscribe('popup.stylesFirst', (key, stylesFirst) => {
-  $.rootCL.toggle('styles-first', stylesFirst);
-  $.rootCL.toggle('styles-last', !stylesFirst);
+  $rootCL.toggle('styles-first', stylesFirst);
+  $rootCL.toggle('styles-last', !stylesFirst);
 }, true);
 prefs.subscribe('disableAll', (key, val) => {
   updateStateIcon(null, val);
-  $('#disableAll-label').title = t('masterSwitch') + ':\n' +
+  $id('disableAll-label').title = t('masterSwitch') + ':\n' +
     t(val ? 'disableAllStylesOff' : 'genericEnabledLabel');
 }, true);
 if (!__.MV3 && __.BUILD !== 'firefox' && CHROME_POPUP_BORDER_BUG) {
@@ -59,7 +57,7 @@ if (!__.MV3 && __.BUILD !== 'firefox' && CHROME_POPUP_BORDER_BUG) {
 }
 if (!__.MV3 && CHROME >= 66 && CHROME <= 69) {
   // Chrome 66-69 adds a gap, https://crbug.com/821143
-  $.root.style.overflow = 'overlay';
+  $root.style.overflow = 'overlay';
 }
 
 function onRuntimeMessage(msg) {
@@ -72,7 +70,7 @@ function onRuntimeMessage(msg) {
       ready = handleUpdate(msg);
       break;
     case 'styleDeleted':
-      $remove($entry(msg.style.id));
+      $id(kStyleIdPrefix + msg.style.id)?.remove();
       break;
   }
   styleFinder.on?.(msg, ready);
@@ -90,7 +88,7 @@ function onWindowResize() {
 }
 
 function toggleSideBorders(_key, state) {
-  const style = $.root.style;
+  const style = $root.style;
   if (state) {
     style.cssText += 'left right'.replace(/\S+/g, 'border-$&: 2px solid white !important;');
   } else if (style.borderLeft) {
@@ -106,7 +104,7 @@ async function initPopup(frames, ping0, tab, urlSupported) {
   }, true);
   setupLivePrefs();
 
-  const elFind = $('#find-styles-btn');
+  const elFind = $id('find-styles-btn');
   elFind.on('click', async () => {
     elFind.disabled = true;
     if (!styleFinder.on) await import('./search');
@@ -123,12 +121,12 @@ async function initPopup(frames, ping0, tab, urlSupported) {
     }
   });
 
-  Object.assign($('#popup-manage-button'), {
+  Object.assign($id('popup-manage-button'), {
     onclick: Events.openManager,
     oncontextmenu: Events.openManager,
   }).on('split-btn', Events.openManager);
 
-  $('#options-btn').onclick = () => {
+  $id('options-btn').onclick = () => {
     API.openManage({options: true});
     window.close();
   };
@@ -142,10 +140,10 @@ async function initPopup(frames, ping0, tab, urlSupported) {
   frames.forEach(createWriterElement);
 
   if ($('.match .match:not(.dupe),' + WRITE_FRAME_SEL)) {
-    $('#write-style').append(Object.assign(template.writeForFrames, {
+    $id('write-style').append(Object.assign(template.writeForFrames, {
       onclick() {
         this.remove();
-        $('#write-style').classList.add('expanded');
+        $id('write-style').classList.add('expanded');
       },
     }));
   }
@@ -180,7 +178,7 @@ async function initPopup(frames, ping0, tab, urlSupported) {
     // Chrome "Allow access to file URLs" in chrome://extensions message
     info.appendChild($create('p', t('unreachableFileHint')));
   } else {
-    $('label', info).textContent = t('unreachableAMO');
+    info.$('label').textContent = t('unreachableAMO');
     const note = [
       !isStore && t('unreachableCSP'),
       isStore && t(FIREFOX >= 59 ? 'unreachableAMOHint' : 'unreachableMozSiteHintOldFF'),
@@ -194,7 +192,7 @@ async function initPopup(frames, ping0, tab, urlSupported) {
       })
       : s;
     const renderLine = line => $create('p', line.split(/(<.*?>)/).map(renderToken));
-    const noteNode = $create('fragment', note.split('\n').map(renderLine));
+    const noteNode = $createFragment(note.split('\n').map(renderLine));
     info.appendChild(noteNode);
   }
   // Inaccessible locally hosted file type, e.g. JSON, PDF, etc.
@@ -219,18 +217,21 @@ function createWriterElement(frame, index) {
   if (!url) return;
   let el;
   if (isAbout) {
-    el = $create('span', url);
+    el = $tag('span');
+    el.textContent = url;
   } else {
     el = (url.startsWith(ownRoot) ? makeExtCrumbs : makeWebCrumbs)(crumbs, url);
     el.onmouseenter = el.onmouseleave = el.onfocus = el.onblur = Events.toggleUrlLink;
-    if (!index) Object.assign($('#write-style-for'), {onclick: el.click.bind(el), title: el.title});
+    if (!index) {
+      Object.assign($id('write-style-for'), {onclick: el.click.bind(el), title: el.title});
+    }
   }
   crumbs.push(el);
-  const root = $('#write-style');
-  const parent = $(`[data-frame-id="${parentFrameId}"]`, root) || root;
-  const child = $create(`.match${isDupe ? '.dupe' : ''}${isAbout ? '.about-blank' : ''}`, {
-    'data-frame-id': frameId,
-  }, $create('.breadcrumbs', crumbs));
+  const root = $id('write-style');
+  const parent = root.$(`[data-frame-id="${parentFrameId}"]`) || root;
+  const child = $create(`.match${isDupe ? '.dupe' : ''}${isAbout ? '.about-blank' : ''}`,
+    $create('.breadcrumbs', crumbs));
+  child.dataset.frameId = frameId;
   parent.appendChild(child);
   parent.dataset.children = (Number(parent.dataset.children) || 0) + 1;
 }
@@ -264,8 +265,7 @@ function makeCrumb(key, val, name, body, isDomain) {
     href: 'edit.html?' + new URLSearchParams(sp),
     onclick: Events.openEditor,
     title: `${key}("${val}")`,
-    attributes: isDomain && {subdomain: ''},
-  }, body);
+  }, body, isDomain && {attr: {subdomain: ''}});
 }
 
 function sortStyles(entries) {
@@ -306,15 +306,15 @@ function createStyleElement(style, entry) {
   } else {
     entry = TPL_STYLE.cloneNode(true);
     Object.assign(entry, {
-      id: ENTRY_ID_PREFIX_RAW + style.id,
+      id: kStyleIdPrefix + style.id,
       styleId: style.id,
       styleMeta: style,
       onmousedown: Events.maybeEdit,
     });
   }
   const {enabled, frameUrl, [UCD]: ucd} = style;
-  const name = $('.style-name', entry);
-  const cfg = $('.configure', entry);
+  const name = entry.$('.style-name');
+  const cfg = entry.$('.configure');
   const cfgUrl = ucd ? '' : style.url;
   const cls = entry.classList;
 
@@ -326,7 +326,7 @@ function createStyleElement(style, entry) {
   cls.toggle('regexp-partial', style.sloppy);
   cls.toggle('frame', !!frameUrl);
 
-  $('input', entry).checked = enabled;
+  entry.$('input').checked = enabled;
 
   name.$entry = entry;
   name.lastChild.textContent = style.customName || style.name;
@@ -341,7 +341,7 @@ function createStyleElement(style, entry) {
 
   if (frameUrl) {
     const sel = 'span.frame-url';
-    const frameEl = $(sel, entry) || name.insertBefore($create(sel), name.lastChild);
+    const frameEl = entry.$(sel) || name.insertBefore($create(sel), name.lastChild);
     frameEl.title = frameUrl;
     frameEl.onmousedown = Events.maybeEdit;
   }
@@ -362,7 +362,7 @@ function onIntersect(results) {
 }
 
 async function handleUpdate({style, reason}) {
-  const entry = $entry(style);
+  const entry = $id(kStyleIdPrefix + style.id);
   if (reason !== 'toggle' || !entry) {
     [style] = await API.styles.getByUrl(tabUrl, style.id);
     if (!style) return;
@@ -375,7 +375,7 @@ async function handleUpdate({style, reason}) {
 
 function blockPopup(val = true) {
   isBlocked = val;
-  $.rootCL.toggle('blocked', isBlocked);
+  $rootCL.toggle('blocked', isBlocked);
 }
 
 function updateStateIcon(newDark, newDisabled) {

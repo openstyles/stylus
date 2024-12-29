@@ -1,5 +1,5 @@
 import {UCD} from '@/js/consts';
-import {$, $$, $create} from '@/js/dom';
+import {$create} from '@/js/dom';
 import {animateElement} from '@/js/dom-util';
 import {formatDate, formatRelativeDate} from '@/js/localization';
 import {CHROME} from '@/js/ua';
@@ -41,7 +41,7 @@ function addEntryTitle(link) {
 function lazyAddEntryTitle({type, target}) {
   const cell = target.closest('h2.style-name, [data-type=age]');
   if (cell) {
-    const link = $('.style-name-link', cell) || cell;
+    const link = cell.$('.style-name-link') || cell;
     if (type === 'mouseover' && !link.title) {
       debounce(addEntryTitle, 50, link);
     } else {
@@ -54,7 +54,7 @@ async function toggleEmbeddedOptions(show, el, selector, toggler) {
   document.title = t(show ? 'optionsHeading' : 'styleManager');
   // TODO: use messageBox() or a dockable sidepanel or the chrome.sidePanel API
   if (show) {
-    el = $.root.appendChild($create('iframe' + selector));
+    el = $root.appendChild($create('iframe' + selector));
     el.focus();
     // Chrome bug workaround. TODO: use `src` on the element when minimum_chrome_version>79
     el.contentWindow.location = '/options.html#' + toggler.id;

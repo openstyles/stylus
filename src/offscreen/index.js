@@ -22,7 +22,7 @@ Object.assign(COMMANDS, {
 /** A loader for scripts exposing a global, 100x smaller than webpack's smart chunk loader */
 function loadScript(url) {
   return new Promise((resolve, reject) => document.head.appendChild(Object.assign(
-    document.createElement('script'), {
+    $tag('script'), {
       src: url,
       onload: resolve,
       onerror: reject,

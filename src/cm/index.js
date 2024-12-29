@@ -1,4 +1,3 @@
-import {$} from '@/js/dom';
 import {template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
 import {WINDOWS} from '@/js/ua';
@@ -185,7 +184,7 @@ prefs.ready.then(() => {
   Object.assign(CodeMirror.commands, {
     jumpToLine(cm) {
       const cur = cm.getCursor();
-      const oldDialog = $('.CodeMirror-dialog', cm.display.wrapper);
+      const oldDialog = cm.display.wrapper.$('.CodeMirror-dialog');
       if (oldDialog) cm.focus(); // close the currently opened minidialog
       cm.openDialog(template.jumpToLine.cloneNode(true), str => {
         const [line, ch] = str.match(/^\s*(\d+)(?:\s*:\s*(\d+))?\s*$|$/);

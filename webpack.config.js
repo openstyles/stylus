@@ -12,7 +12,6 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const InlineConstantExportsPlugin = require('@automattic/webpack-inline-constant-exports-plugin');
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 const RawEnvPlugin = require('./tools/raw-env-plugin');
-const WebpackPatchBootstrapPlugin = require('./tools/webpack-patch-bootstrap');
 const {
   escapeForRe, getManifestOvrName, transESM2var, transSourceMap,
   BUILD, CHANNEL, DEV, MANIFEST, MV3, ROOT, ZIP,
@@ -68,6 +67,19 @@ const DEBUGMASK = {
   port: 2,
   life: 4,
 };
+const ALIASES = {
+  funcs: {
+    $: 'document.querySelector',
+    $$: 'document.querySelectorAll',
+    $id: 'document.getElementById',
+    $tag: 'document.createElement',
+  },
+  vars: {
+    document: 'global.document',
+    $root: 'document.documentElement',
+    $rootCL: '$root.classList',
+  },
+};
 const VARS = {
   API: 'API', // hiding the global from IDE
   BUILD,
@@ -89,8 +101,12 @@ const RAW_VARS = {
   DEBUGWARN: (DEBUG ? '' : 'null&&') + 'console.warn',
   KEEP_ALIVE: '1&&',
 };
-const BANNER = '{const global = this, window = global;';
-const addWrapper = (banner = BANNER, footer = '}', test = /\.js$/) => [
+const INTRO = '"use strict"; { const global = self, window = global';
+const INTRO_ALIASES = [
+  ...Object.entries(ALIASES.vars).map(([k, v]) => `${k}=${v}`),
+  ...Object.entries(DEV ? ALIASES.funcs : []).map(([k, v]) => `${k}=${v}.bind(document)`),
+].join(', ');
+const addWrapper = (banner = INTRO + ';', footer = '}', test = /\.js$/) => [
   new webpack.BannerPlugin({raw: true, test, banner}),
   new webpack.BannerPlugin({raw: true, test, banner: footer, footer: true}),
 ];
@@ -100,7 +116,11 @@ const getTerserOptions = forExternals => ({
   terserOptions: {
     ecma: MV3 ? 2024 : 2017,
     compress: {
-      passes: 2,
+      pure_getters: true,
+      global_defs: !forExternals && Object.entries(ALIASES.funcs).reduce((res, [key, val]) => {
+        res['@' + key] = val;
+        return res;
+      }, {}),
       reduce_funcs: false,
     },
     mangle: forExternals ? true : {
@@ -139,6 +159,10 @@ const getBaseConfig = hasCodeMirror => ({
   },
   // infrastructureLogging: {debug: /webpack\.cache/},
   module: {
+    parser: {
+      'javascript/auto': {node: false},
+      'javascript/esm': {node: false},
+    },
     rules: [
       // calc plugin for clamp() is broken: https://github.com/postcss/postcss-calc/issues/123
       ...((skip = 'js/dlg/config-dialog.css', use = [
@@ -184,7 +208,6 @@ const getBaseConfig = hasCodeMirror => ({
       },
     ].filter(Boolean),
   },
-  node: false,
   optimization: {
     concatenateModules: true, // makes DEV code run faster
     chunkIds: false,
@@ -221,7 +244,6 @@ const getBaseConfig = hasCodeMirror => ({
     new RawEnvPlugin(VARS, RAW_VARS),
     new webpack.ids.NamedChunkIdsPlugin({context: SRC}),
     new InlineConstantExportsPlugin([/[/\\]consts\.js$/]),
-    new WebpackPatchBootstrapPlugin(),
   ],
   stats: {
     // optimizationBailout: true,
@@ -230,13 +252,15 @@ const getBaseConfig = hasCodeMirror => ({
 
 function getChunkFileName({chunk}) {
   let res = (chunk.name || chunk.id)
-    .replace(/(^|-)(css|js(_(color|dlg))?|vendor-overwrites_.+?_)/g, '')
-    .replace(/^[-_]|[-_]$|[-_]{2}/g, '')
+    .replace(/(^|-)(css|js(_(color|dlg))?|vendor-overwrites_.+?_)|_js$/g, '')
+    .replace(/node_modules(.+?node_modules)?/g, '')
+    .replace(/^[-_]+|[-_]+$|(?<=[-_])[-_]+/g, '')
     .replace(/[-_](css|js)(?=$|[-_])/g, '');
   if (res.length > MAX_CHUNKNAME_LEN) {
-    res = res.slice(0, MAX_CHUNKNAME_LEN).replace(/_[a-z]{0,2}$/, '');
+    res = res.slice(0, MAX_CHUNKNAME_LEN).replace(/[-_][a-z]{0,2}$/, '');
   }
-  return this[0] + res.replaceAll('_', '-') + this[1];
+  res = this[0] + res.replaceAll('_', '-') + this[1];
+  return res;
 }
 
 /**
@@ -297,7 +321,7 @@ function makeLibrary(entry, name, extras) {
     },
     plugins: name
       ? addWrapper()
-      : addWrapper(`(()=>${BANNER}`, '})()'),
+      : addWrapper(INTRO + '; (()=>{', '})()}'),
   });
   if (!name) cfg = mergeCfg(OUTPUT_MODULE, cfg);
   return extras ? mergeCfg(extras, cfg) : cfg;
@@ -308,7 +332,8 @@ function makeContentScript(name) {
     entry: '@/content/' + name,
     output: {path: DST + JS},
     plugins: addWrapper(
-      `window["${name}"]!==1 && (() => {const global = this; global["${name}"] = 1;`,
+      `"use strict"; self["${name}"]!==1 && (() => { ` +
+        `const global = self, ${INTRO_ALIASES}; global["${name}"] = 1;`,
       '})();'),
   }));
 }
@@ -381,7 +406,7 @@ module.exports = [
       }, {
         IS_BG: MV3 ? 'false' : '(global._bg === true)',
       }),
-      ...addWrapper(),
+      ...addWrapper(INTRO + ', ' + INTRO_ALIASES + ';'),
       new MiniCssExtractPlugin({
         filename: getChunkFileName.bind([CSS, '.css']),
         chunkFilename: getChunkFileName.bind([CSS, '.css']),
@@ -453,7 +478,7 @@ module.exports = [
     },
     plugins: [
       new RawEnvPlugin({ENTRY: PAGE_OFFSCREEN}),
-      ...addWrapper(),
+      ...addWrapper(INTRO + ', ' + INTRO_ALIASES + ';'),
       new HtmlWebpackPlugin({
         chunks: [PAGE_OFFSCREEN],
         filename: PAGE_OFFSCREEN + '.html',

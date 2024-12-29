@@ -1,4 +1,4 @@
-import {$, $$, $create} from './dom';
+import {$create} from './dom';
 import {
   closestFocusable, closestHocused, getEventKeyName, isHocused, messageBox, moveFocus, setHocus,
   setLastHocus,
@@ -38,9 +38,9 @@ if (!CHROME || CHROME < 93) {
     }
   }
 }
-const elOff = $('#disableAll-label'); // won't hide if already shown
+const elOff = $id('disableAll-label'); // won't hide if already shown
 if (elOff) prefs.subscribe('disableAll', () => (elOff.dataset.persist = ''));
-if ($('#header')) HeaderResizer();
+if ($id('header')) HeaderResizer();
 
 const getFSH = DataTransferItem.prototype.getAsFileSystemHandle;
 if (getFSH) {

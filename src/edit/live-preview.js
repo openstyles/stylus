@@ -1,5 +1,4 @@
 import {UCD} from '@/js/consts';
-import {$} from '@/js/dom';
 import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import editor from './editor';
@@ -42,7 +41,7 @@ editor.livePreview = newData => {
 function createPreviewer() {
   port = chrome.runtime.connect({name: 'livePreview:' + editor.style.id});
   port.onDisconnect.addListener(() => (port = null));
-  el = $('#preview-errors');
+  el = $id('preview-errors');
   el.onclick = showError;
 }
 

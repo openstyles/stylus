@@ -1,4 +1,4 @@
-import {$, $$, $create, $isTextInput} from '@/js/dom';
+import {$create, $isTextInput} from '@/js/dom';
 import {animateElement, scrollElementIntoView} from '@/js/dom-util';
 import {debounce} from '@/js/util';
 import {installed} from './util';
@@ -35,7 +35,7 @@ function incrementalSearch(event, immediately) {
   }
   let textAtPos = 1e6;
   let rotated;
-  const entries = [...$('#message-box') ? $$('.injection-order-entry') : installed.children];
+  const entries = [...$id('message-box') ? $$('.injection-order-entry') : installed.children];
   const focusedIndex = entries.indexOf(focusedEntry);
   if (focusedIndex > 0) {
     if (direction > 0) {
@@ -63,7 +63,7 @@ function incrementalSearch(event, immediately) {
   }
   if (found && found !== focusedEntry) {
     focusedEntry = found;
-    focusedLink = $('a', found);
+    focusedLink = found.$('a');
     focusedName = found.styleNameLC;
     scrollElementIntoView(found, {invalidMarginRatio: .25});
     animateElement(found, 'highlight-quick');
@@ -82,7 +82,7 @@ function maybeRefocus(event) {
   if (event.altKey || event.metaKey) {
     return;
   }
-  const modal = $('#message-box');
+  const modal = $id('message-box');
   if (modal && !modal.classList.contains('injection-order')) {
     return;
   }
@@ -93,7 +93,7 @@ function maybeRefocus(event) {
       (code === 'Slash' || key === '/') && !ctrl && !inTextInput) {
     // focus search field on "/" or Ctrl-F key
     event.preventDefault();
-    if (!modal) $('#search').focus();
+    if (!modal) $id('search').focus();
     return;
   }
   if (ctrl || inTextInput && event.target !== input) {

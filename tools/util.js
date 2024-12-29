@@ -70,6 +70,7 @@ function transESM2var(buf, from) {
   const varFn = `var ${name} = (() => {${code.slice(0, i)}\nreturn ${name};})();${code.slice(j)}`;
   if (MV3) return varFn;
   const res = babel.transformSync(varFn, {
+    compact: !DEV,
     minified: !DEV,
     sourceMaps: DEV && 'inline',
   });

@@ -1,5 +1,5 @@
 import {kHocused, kHocusedAttr} from '@/js/consts';
-import {$, $$, $create, toggleDataset} from './dom';
+import {$create, $toggleDataset} from './dom';
 import * as prefs from './prefs';
 import '@/css/spinner.css';
 
@@ -21,8 +21,8 @@ export let messageBox = /*@__PURE__*/new Proxy({}, {
 let lastHocus = false;
 export const closestHocused = el => el?.closest(`[${kHocusedAttr}]`);
 export const isHocused = el => el && kHocused in el.dataset;
-export const setLastHocus = (el, state) => el && toggleDataset(el, kHocused, (lastHocus = state));
-export const setHocus = (el, state) => el && toggleDataset(el, kHocused, state);
+export const setLastHocus = (el, state) => el && $toggleDataset(el, kHocused, (lastHocus = state));
+export const setHocus = (el, state) => el && $toggleDataset(el, kHocused, state);
 
 /**
  * @param {HTMLElement} el
@@ -251,7 +251,7 @@ export function waitForSelector(selector, {recur, stopOnDomReady = true} = {}) {
         }
       }).observe(document, {childList: true, subtree: true});
       function isMatching(n) {
-        return n.tagName && (n.matches(selector) || n.firstElementChild && $(selector, n));
+        return n.tagName && (n.matches(selector) || n.firstElementChild && n.$(selector));
       }
       function callRecur([m0, m1]) {
         // Checking addedNodes if only 1 MutationRecord to skip simple mutations quickly

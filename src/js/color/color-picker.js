@@ -76,7 +76,7 @@ export default function ColorPicker(cm) {
         children = props;
         props = {};
       }
-      const el = document.createElement(props.tag || 'div');
+      const el = $tag(props.tag || 'div');
       el.className = toArray(cls).map(c => c ? CSS_PREFIX + c : '').join(' ');
       el.append(...toArray(children).filter(Boolean));
       if (props) delete props.tag;

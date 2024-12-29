@@ -1,4 +1,4 @@
-import {$, $$, $create, toggleDataset} from '@/js/dom';
+import {$create, $toggleDataset} from '@/js/dom';
 import {template} from '@/js/localization';
 import {API, onMessage} from '@/js/msg';
 import {clientData} from '@/js/prefs';
@@ -7,14 +7,14 @@ import {t} from '@/js/util';
 
 (async () => {
   let {sync: status, syncOpts} = __.MV3 ? clientData : await clientData;
-  const elSync = $('.sync-options', template.body);
-  const elCloud = $('.cloud-name', elSync);
-  const elToggle = $('.connect', elSync);
-  const elSyncNow = $('.sync-now', elSync);
-  const elStatus = $('.sync-status', elSync);
-  const elLogin = $('.sync-login', elSync);
-  const elDriveOptions = $$('.drive-options', elSync);
-  const $$driveOptions = () => $$(`[data-drive="${elCloud.value}"] [data-option]`, elSync);
+  const elSync = template.body.$('.sync-options');
+  const elCloud = elSync.$('.cloud-name');
+  const elToggle = elSync.$('.connect');
+  const elSyncNow = elSync.$('.sync-now');
+  const elStatus = elSync.$('.sync-status');
+  const elLogin = elSync.$('.sync-login');
+  const elDriveOptions = elSync.$$('.drive-options');
+  const $$driveOptions = () => elSync.$$(`[data-drive="${elCloud.value}"] [data-option]`);
   elCloud.append(
     ...Object.entries(DRIVE_NAMES).map(([id, name]) =>
       $create('option', {value: id}, name)));
@@ -69,7 +69,7 @@ import {t} from '@/js/util';
       el.hidden = el.dataset.drive !== elCloud.value;
       el.disabled = !off;
     }
-    toggleDataset(elSync, 'enabled', elCloud.value !== 'none');
+    $toggleDataset(elSync, 'enabled', elCloud.value !== 'none');
     syncOpts ??= await API.sync.getDriveOptions(elCloud.value);
     for (const el of $$driveOptions()) {
       el.value = syncOpts[el.dataset.option] || '';

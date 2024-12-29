@@ -1,5 +1,5 @@
-import {UCD} from '@/js/consts';
-import {$, $$, $create, $remove, toggleDataset} from '@/js/dom';
+import {kStyleIdPrefix, UCD} from '@/js/consts';
+import {$create, $toggleDataset} from '@/js/dom';
 import {setupLivePrefs, showSpinner} from '@/js/dom-util';
 import {breakWord, formatDate, htmlToTemplateCache, templateCache} from '@/js/localization';
 import {API} from '@/js/msg';
@@ -8,7 +8,7 @@ import * as URLS from '@/js/urls';
 import {
   clipString, debounce, isEmptyObj, sleep, stringAsRegExp, stringAsRegExpStr, t, tryRegExp, tryURL,
 } from '@/js/util';
-import {$entry, styleFinder, tabUrl, tabUrlSupported} from '.';
+import {styleFinder, tabUrl, tabUrlSupported} from '.';
 import * as Events from './events';
 import './search.css';
 import html from './search.html';
@@ -32,7 +32,7 @@ const PINGBACK_DELAY = 5e3;
 const USO_AUTO_PIC_SUFFIX = '-after.png';
 const GLOBAL = 'global';
 const dom = {};
-const $searchGlobals = $('#popup.search.globals');
+const $searchGlobals = $id('popup.search.globals');
 if (!tabUrlSupported) {
   $searchGlobals.checked = $searchGlobals.disabled = true;
 } else {
@@ -115,7 +115,7 @@ styleFinder.inSite = event => {
   if (!category) calcCategory({retry: 1});
   const add = (prefix, str) => str ? prefix + str : '';
   const where = event.detail;
-  const q = encodeURIComponent($('#search-query').value.trim());
+  const q = encodeURIComponent($id('search-query').value.trim());
   const catQ = category + add('+', q);
   const href =
     where === 'uso' &&
@@ -126,14 +126,14 @@ styleFinder.inSite = event => {
     where === 'usw' &&
       `${URLS.usw}search?q=${catQ}` ||
     where === 'gf' &&
-      'https://greasyfork.org/' + ($.root.lang.split('-')[0] || 'en') +
+      'https://greasyfork.org/' + ($root.lang.split('-')[0] || 'en') +
       `/scripts${tabUrlSupported
         ? tryURL(tabUrl).hostname.replace(/^(www\.)?/, '/by-site/')
         : ''
       }?language=css${add('&q=', q)}`;
   Events.openURLandHide.call({href}, event);
 };
-$('#search-query').oninput = function () {
+$id('search-query').oninput = function () {
   query = [];
   const text = this.value.trim();
   for (let re = /(")(.+?)"|((\/)?(\S+?)(\/\w*)?)(?=\s|$)/g, m; (m = re.exec(text));) {
@@ -150,27 +150,27 @@ $('#search-query').oninput = function () {
   }
   ready = ready.then(start);
 };
-$('#search-years').onchange = () => {
+$id('search-years').onchange = () => {
   ready = ready.then(() => start({keepYears: true}));
 };
-$('#search-order').value = order;
-$('#search-order').onchange = function () {
+$id('search-order').value = order;
+$id('search-order').onchange = function () {
   order = this.value;
   prefs.set('popup.findSort', order);
   results.sort(comparator);
   render();
 };
-dom.list = $('#search-results-list');
-dom.container = $('#search-results');
+dom.list = $id('search-results-list');
+dom.container = $id('search-results');
 dom.container.dataset.empty = '';
-dom.error = $('#search-results-error');
+dom.error = $id('search-results-error');
 dom.nav = {};
 const navOnClick = {prev, next};
 for (const place of ['top', 'bottom']) {
   const nav = $(`.search-results-nav[data-type="${place}"]`);
   nav.appendChild(templateCache.searchNav.cloneNode(true));
   dom.nav[place] = nav;
-  for (const child of $$('[data-type]', nav)) {
+  for (const child of nav.$$('[data-type]')) {
     const type = child.dataset.type;
     child.onclick = navOnClick[type];
     nav['_' + type] = child;
@@ -218,7 +218,7 @@ function error(err) {
 }
 
 function errorIfNoneFound() {
-  if (!results.length && !$('#search-query').value) {
+  if (!results.length && !$id('search-query').value) {
     return indexing ? indexing.then(errorIfNoneFound)
       : Promise.reject(t('searchResultNoneFound'));
   }
@@ -249,7 +249,7 @@ async function start({keepYears} = {}) {
 }
 
 function resetUI() {
-  $.rootCL.add('search-results-shown');
+  $rootCL.add('search-results-shown');
   dom.container.hidden = false;
   dom.list.hidden = false;
   dom.error.hidden = true;
@@ -368,15 +368,15 @@ function createSearchResultNode(result) {
   const id = rid2id(rid);
   entry.id = RESULT_ID_PREFIX + rid;
   // title
-  Object.assign($('.search-result-title', entry), {
+  Object.assign(entry.$('.search-result-title'), {
     onclick: Events.openURLandHide,
     href: `${fmt ? URLS.usoa : URLS.usw}style/${id}`,
   });
-  if (!fmt) $('.search-result-title', entry).prepend(USW_ICON.cloneNode(true));
-  $('.search-result-title span', entry).textContent =
+  if (!fmt) entry.$('.search-result-title').prepend(USW_ICON.cloneNode(true));
+  entry.$('.search-result-title span').textContent =
     breakWord(clipString(name, 300));
   // screenshot
-  const elShot = $('.search-result-screenshot', entry);
+  const elShot = entry.$('.search-result-screenshot');
   let shotSrc;
   if (!fmt) {
     shotSrc = /^https?:/i.test(shot) && shot.replace(/\.\w+$/, imgType);
@@ -394,7 +394,7 @@ function createSearchResultNode(result) {
     entry.dataset.noImage = '';
   }
   // author
-  Object.assign($('[data-type="author"] a', entry), {
+  Object.assign(entry.$('[data-type="author"] a'), {
     textContent: author,
     title: author,
     href: !fmt ? `${URLS.usw}user/${encodeURIComponent(author)}` :
@@ -402,20 +402,20 @@ function createSearchResultNode(result) {
     onclick: Events.openURLandHide,
   });
   // rating
-  $('[data-type="rating"]', entry).dataset.class =
+  entry.$('[data-type="rating"]').dataset.class =
     !rating ? 'none' :
       rating >= 2.5 ? 'good' :
         rating >= 1.5 ? 'okay' :
           'bad';
-  $('[data-type="rating"] dd', entry).textContent = rating && rating.toFixed(1) || '';
+  entry.$('[data-type="rating"] dd').textContent = rating && rating.toFixed(1) || '';
   // time
-  Object.assign($('[data-type="updated"] time', entry), {
+  Object.assign(entry.$('[data-type="updated"] time'), {
     dateTime: updateTime * 1000,
     textContent: formatDate(updateTime * 1000),
   });
   // totals
-  $('[data-type="weekly"] dd', entry).textContent = formatNumber(weeklyInstalls);
-  $('[data-type="total"] dd', entry).textContent = formatNumber(totalInstalls);
+  entry.$('[data-type="weekly"] dd').textContent = formatNumber(weeklyInstalls);
+  entry.$('[data-type="total"] dd').textContent = formatNumber(totalInstalls);
   renderActionButtons(entry);
   return entry;
 }
@@ -446,17 +446,17 @@ function fixScreenshot() {
 
 function renderActionButtons(entry) {
   if (typeof entry !== 'object') {
-    entry = $('#' + RESULT_ID_PREFIX + entry);
+    entry = $id(RESULT_ID_PREFIX + entry);
   }
   if (!entry) return;
   const result = entry._result;
   const installedId = result._styleId;
   const isInstalled = installedId > 0; // must be boolean for comparisons below
-  const status = $('.search-result-status', entry).textContent =
+  const status = entry.$('.search-result-status').textContent =
     isInstalled ? t('clickToUninstall') :
       entry.dataset.noImage != null ? t('installButton') :
         '';
-  const notMatching = isInstalled && !$entry(installedId);
+  const notMatching = isInstalled && !$id(kStyleIdPrefix + installedId);
   if (notMatching !== entry.classList.contains('not-matching')) {
     entry.classList.toggle('not-matching');
     if (notMatching) {
@@ -465,18 +465,18 @@ function renderActionButtons(entry) {
       entry.firstElementChild.remove();
     }
   }
-  Object.assign($('.search-result-screenshot', entry), {
+  Object.assign(entry.$('.search-result-screenshot'), {
     onclick: isInstalled ? uninstall : install,
     title: status ? '' : t('installButton'),
   });
-  $('.search-result-uninstall', entry).onclick = uninstall;
-  $('.search-result-install', entry).onclick = install;
-  Object.assign($('.search-result-customize', entry), {
+  entry.$('.search-result-uninstall').onclick = uninstall;
+  entry.$('.search-result-install').onclick = install;
+  Object.assign(entry.$('.search-result-customize'), {
     onclick: configure,
     disabled: notMatching,
   });
-  toggleDataset(entry, 'installed', isInstalled);
-  toggleDataset(entry, 'customizable', result._styleVars);
+  $toggleDataset(entry, 'installed', isInstalled);
+  $toggleDataset(entry, 'customizable', result._styleVars);
 }
 
 function renderFullInfo(entry, style) {
@@ -486,14 +486,14 @@ function renderFullInfo(entry, style) {
     .replace(/<[^>]*>/g, ' ')
     .replace(/([^.][.。?!]|[\s,].{50,70})\s+/g, '$1\n')
     .replace(/([\r\n]\s*){3,}/g, '\n\n');
-  $('.search-result-description', entry).textContent = description;
+  entry.$('.search-result-description').textContent = description;
   vars = !isEmptyObj(vars);
   entry._result._styleVars = vars;
-  toggleDataset(entry, 'customizable', vars);
+  $toggleDataset(entry, 'customizable', vars);
 }
 
 function configure() {
-  const styleEntry = $entry($resultEntry(this).result._styleId);
+  const styleEntry = $id(kStyleIdPrefix + $resultEntry(this).result._styleId);
   Events.configure.call(this, {}, styleEntry);
 }
 
@@ -501,9 +501,9 @@ async function install() {
   const {entry, result} = $resultEntry(this);
   const {f: fmt} = result;
   const id = rid2id(result.i);
-  const installButton = $('.search-result-install', entry);
+  const installButton = entry.$('.search-result-install');
 
-  showSpinner(entry);
+  const spinner = showSpinner(entry);
   installButton.disabled = true;
   entry.style.setProperty('pointer-events', 'none', 'important');
   delete entry.dataset.error;
@@ -518,7 +518,7 @@ async function install() {
     entry.dataset.error = `${t('genericError')}: ${e && e.message || e}`;
     entry.scrollIntoView({behavior: 'smooth', block: 'nearest'});
   }
-  $remove('.lds-spinner', entry);
+  spinner.remove();
   installButton.disabled = false;
   entry.style.pointerEvents = '';
 }
@@ -560,7 +560,7 @@ function calcCategory({retry} = {}) {
 }
 
 async function fetchIndex() {
-  const elNote = $('#pct').firstChild;
+  const elNote = $id('pct').firstChild;
   const jobs = [
     [INDEX_URL, 'uso', json => json.filter(v => v.f === 'uso')],
     [USW_INDEX_URL, 'usw', json => json.data],
@@ -577,8 +577,8 @@ async function fetchIndex() {
 }
 
 async function fetchIndexJob([url, prefix, transform]) {
-  let el = $create({title: url});
-  $('#pct').append(el);
+  let el = $create('div', {title: url});
+  $id('pct').append(el);
   chrome.runtime.onConnect.addListener(port => {
     if (port.name !== url) return;
     port.onMessage.addListener(([done, total]) => {

@@ -181,3 +181,52 @@ declare interface IDBObjectStoreMany extends IDBObjectStore {
   getMany: (ids: any[]) => Promise<any[]>;
   putMany: (items: any[]) => Promise<any[]>;
 }
+
+declare var $: typeof document.querySelector;
+declare var $$: typeof document.querySelectorAll;
+declare var $id: typeof document.getElementById;
+declare var $root: typeof document.documentElement;
+declare var $rootCL: typeof document.documentElement.classList;
+declare var $tag: typeof document.createElement;
+declare var on: typeof EventTarget.prototype.addEventListener;
+declare var off: typeof EventTarget.prototype.removeEventListener;
+
+interface Document {
+  $: typeof Document.prototype.querySelector;
+  $$: typeof Document.prototype.querySelectorAll;
+}
+interface DocumentFragment {
+  $: typeof DocumentFragment.prototype.querySelector;
+  $$: typeof DocumentFragment.prototype.querySelectorAll;
+}
+interface Element {
+  $: typeof Element.prototype.querySelector;
+  $$: typeof Element.prototype.querySelectorAll;
+}
+interface EventTarget {
+  on: typeof EventTarget.prototype.addEventListener;
+  off: typeof EventTarget.prototype.removeEventListener;
+}
+
+/** https://stackoverflow.com/a/57386444 */
+type OmitMatchingProps<T,M> = Omit<T,{
+  [K in keyof T]-?: T[K] extends M ? K : never
+}[keyof T]>;
+
+type PickMatchingProps<T,M> = Pick<T,{
+  [K in keyof T]-?: T[K] extends M ? K : never
+}[keyof T]>;
+
+/** https://stackoverflow.com/a/74852313 */
+type PickStartingWith<T, S extends string> = {
+    [K in keyof T as K extends `${S}${infer R}` ? K : never]: T[K]
+}
+
+type WritableElementProps = PickMatchingProps<HTMLElement,String>
+  & OmitMatchingProps<HTMLOrSVGElement,Function>
+  & PickStartingWith<GlobalEventHandlers,'on'>;
+
+type AppendableChild = String | Node;
+type AppendableChildren = Iterable<AppendableChild>;
+type AppendableElementGuts = AppendableChild | AppendableChildren;
+type ElementTags = keyof HTMLElementTagNameMap;

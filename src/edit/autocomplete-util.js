@@ -1,7 +1,7 @@
 import {kCssPropSuffix} from '@/js/consts';
 import {debounce} from '@/js/util';
 
-const MARK = document.createElement('b');
+const MARK = $tag('b');
 const USO_VAR = 'uso-variable';
 export const USO_VALID_VAR = 'variable-3 ' + USO_VAR;
 export const USO_INVALID_VAR = 'error ' + USO_VAR;

@@ -1,5 +1,5 @@
 import {CodeMirror, extraKeys} from '@/cm';
-import {$$, $create} from '@/js/dom';
+import {$create} from '@/js/dom';
 import {htmlToTemplate} from '@/js/localization';
 import * as prefs from '@/js/prefs';
 import {clipString, stringAsRegExp, t} from '@/js/util';
@@ -28,9 +28,9 @@ export function keymapHelp() {
     tableBody.appendChild(row.cloneNode(true));
   }
 
-  helpPopup.show(t('cm_keyMap') + ': ' + prefs.get(PREF), table, {'data-id': PREF});
+  helpPopup.show(t('cm_keyMap') + ': ' + prefs.__values[PREF], table, {}, PREF);
 
-  inputs = $$('input', table);
+  inputs = table.$$('input');
   inputs[0].on('keydown', hotkeyHandler);
   inputs[1].focus();
 

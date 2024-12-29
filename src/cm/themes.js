@@ -1,11 +1,11 @@
-import {$create} from '@/js/dom';
 import * as prefs from '@/js/prefs';
 
 /** @type {{ [name: string]: string }} */
 export const THEMES = __.THEMES;
 export const THEME_KEY = 'editor.theme';
 const DEFAULT = 'default';
-const EL = document.head.appendChild($create('style#cm-theme'));
+const EL = document.head.appendChild($tag('style'));
+EL.id = 'cm-theme';
 
 export function loadCmTheme(name = prefs.get(THEME_KEY)) {
   let css;

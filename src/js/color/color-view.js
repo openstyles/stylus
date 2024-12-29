@@ -87,7 +87,7 @@ class ColorSwatch {
     this.popup = ColorPicker(cm);
     if (!this.popup) {
       delete CM_EVENTS.mousedown;
-      document.head.appendChild(document.createElement('style')).textContent = `
+      document.head.appendChild($tag('style')).textContent = `
         .colorview-swatch::before {
           cursor: auto;
         }
@@ -557,7 +557,7 @@ function makePalette({cm, options}) {
       const str = data.join(', ');
       let el = old.get(color);
       if (!el) {
-        el = document.createElement('div');
+        el = $tag('div');
         el.__color = color; // also used in color-picker.js
         el.className = COLORVIEW_SWATCH_CLASS;
         el.style.setProperty(`--${COLORVIEW_SWATCH_CLASS}`, color);
@@ -571,7 +571,7 @@ function makePalette({cm, options}) {
       }
       res.push(el);
     }
-    res.push(Object.assign(document.createElement('span'), {
+    res.push(Object.assign($tag('span'), {
       className: 'colorpicker-palette-hint',
       title: options.popup.paletteHint,
       textContent: '?',
@@ -661,7 +661,7 @@ function highlightColor(state, data) {
     const funcEnd = data.ch + data.color.indexOf('(') - 1;
     last = cm.charCoords({line, ch: funcEnd});
   }
-  const el = document.createElement('div');
+  const el = $tag('div');
   const DURATION_SEC = .5;
   el.style = `
     position: absolute;

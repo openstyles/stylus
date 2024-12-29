@@ -6,7 +6,7 @@
  * which also happens before the first paint unless the browser "yields", but that's abnormal
  * and not even a problem in the most popular case of using system dark/light mode.
  */
-import {$, $create} from './dom';
+import {$create} from './dom';
 import {getCssMediaRuleByName} from './dom-util';
 import {onMessage} from './msg';
 import {clientData} from './prefs';
@@ -45,7 +45,7 @@ export let isDark;
 })();
 
 function updateDOM() {
-  $.root.dataset.uiTheme = isDark ? 'dark' : 'light';
+  $root.dataset.uiTheme = isDark ? 'dark' : 'light';
   getCssMediaRuleByName(MEDIA_NAME, m => {
     if (map[m[0]] !== isDark) {
       m.mediaText = `${isDark ? MEDIA_ON : MEDIA_OFF},${MEDIA_NAME}`;

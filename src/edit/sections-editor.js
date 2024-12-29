@@ -1,6 +1,6 @@
 import {CodeMirror, extraKeys} from '@/cm';
 import {kCodeMirror, UCD} from '@/js/consts';
-import {$, $create, $remove} from '@/js/dom';
+import {$create} from '@/js/dom';
 import {messageBox} from '@/js/dom-util';
 import {htmlToTemplateCache, templateCache} from '@/js/localization';
 import {API} from '@/js/msg';
@@ -16,7 +16,7 @@ import html from './sections-editor.html';
 export default function SectionsEditor() {
   htmlToTemplateCache(html);
   const {style, /** @type DirtyReporter */dirty} = editor;
-  const container = $('#sections');
+  const container = $id('sections');
   /** @type {EditorSection[]} */
   const sections = [];
   const xo = new IntersectionObserver(refreshOnViewListener, {rootMargin: '100%'});
@@ -29,9 +29,9 @@ export default function SectionsEditor() {
 
   updateMeta();
   rerouteHotkeys.toggle(true); // enabled initially because we don't always focus a CodeMirror
-  $('#to-mozilla').on('click', showMozillaFormat);
-  $('#to-mozilla-help').on('click', showToMozillaHelp);
-  $('#from-mozilla').on('click', () => showMozillaFormatImport());
+  $id('to-mozilla').on('click', showMozillaFormat);
+  $id('to-mozilla-help').on('click', showToMozillaHelp);
+  $id('from-mozilla').on('click', () => showMozillaFormatImport());
   document.on('wheel', scrollEntirePageOnCtrlShift, {passive: false});
   extraKeys['Shift-Ctrl-Wheel'] = 'scrollWindow';
   prefs.subscribe('editor.arrowKeysTraverse', (_, val) => {
@@ -123,7 +123,7 @@ export default function SectionsEditor() {
 
     async saveImpl() {
       try {
-        if (!$('#name').reportValidity()) throw t('styleMissingName');
+        if (!$id('name').reportValidity()) throw t('styleMissingName');
         const res = await API.styles.editSave(getModel());
         dirty.clear(); // cleaning only after saving has succeeded
         editor.useSavedStyle(res);
@@ -194,7 +194,7 @@ export default function SectionsEditor() {
   }
 
   function setGlobalProgress(done, total) {
-    const progressElement = $('#global-progress') ||
+    const progressElement = $id('global-progress') ||
       total && document.body.appendChild($create('#global-progress'));
     if (total) {
       const progress = (done / Math.max(done, total) * 100).toFixed(1);
@@ -203,7 +203,7 @@ export default function SectionsEditor() {
         progressElement.title = progress + '%';
       });
     } else {
-      $remove(progressElement);
+      progressElement.remove();
     }
   }
 
@@ -445,7 +445,7 @@ export default function SectionsEditor() {
     }
 
     function lockPageUI(locked) {
-      $.root.style.pointerEvents = locked ? 'none' : '';
+      $root.style.pointerEvents = locked ? 'none' : '';
       if (popup.codebox) {
         popup.classList.toggle('ready', locked ? false : !popup.codebox.isBlank());
         popup.codebox.options.readOnly = locked;
@@ -483,9 +483,9 @@ export default function SectionsEditor() {
   }
 
   function updateMeta() {
-    $('#name').value = style.customName || style.name || '';
-    $('#enabled').checked = style.enabled !== false;
-    $('#url').href = style.url || '';
+    $id('name').value = style.customName || style.name || '';
+    $id('enabled').checked = style.enabled !== false;
+    $id('url').href = style.url || '';
     editor.updateName();
   }
 
@@ -561,7 +561,7 @@ export default function SectionsEditor() {
                    lines.slice(0, MAX_LINES).map(s => clipString(s, 100)).join('\n') +
                    (lines.length > MAX_LINES ? '\n...' : '');
       const del = section.elDel = templateCache.deletedSection.cloneNode(true);
-      $('button', del).onclick = () => restoreSection(section);
+      del.$('button').onclick = () => restoreSection(section);
       del.title = title;
       section.el.prepend(del);
       section.remove();
@@ -644,11 +644,11 @@ export default function SectionsEditor() {
   /** @param {EditorSection} section */
   function registerEvents(section) {
     const {el, cm} = section;
-    $('.remove-section', el).onclick = () => removeSection(section);
-    $('.add-section', el).onclick = () => insertSectionAfter(undefined, section);
-    $('.clone-section', el).onclick = () => insertSectionAfter(section.getModel(), section);
-    $('.move-section-up', el).onclick = () => moveSectionUp(section);
-    $('.move-section-down', el).onclick = () => moveSectionDown(section);
+    el.$('.remove-section').onclick = () => removeSection(section);
+    el.$('.add-section').onclick = () => insertSectionAfter(undefined, section);
+    el.$('.clone-section').onclick = () => insertSectionAfter(section.getModel(), section);
+    el.$('.move-section-up').onclick = () => moveSectionUp(section);
+    el.$('.move-section-down').onclick = () => moveSectionDown(section);
     cm.on('paste', maybeImportOnPaste);
   }
 

@@ -1,13 +1,9 @@
-import {$, cssFieldSizing} from '@/js/dom';
+import {cssFieldSizing} from '@/js/dom';
 import {template} from '@/js/localization';
 import * as newUI from './new-ui';
 
 export {newUI};
-export const ENTRY_ID_PREFIX_RAW = 'style-';
-export const installed = $('#installed', template.body);
-
-export const $entry = (styleOrId, root = installed) => $(
-  `#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || styleOrId}`, root);
+export const installed = template.body.$('#installed');
 
 export const queue = Object.assign([], {
   THROTTLE: 100, // ms

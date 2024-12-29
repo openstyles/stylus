@@ -163,7 +163,7 @@ async function loadImage(url) {
   const {width: w, height: h} = img;
   const canvas = __.MV3 || OffscreenCanvas
     ? new OffscreenCanvas(w, h)
-    : Object.assign(document.createElement('canvas'), {width: w, height: h});
+    : Object.assign($tag('canvas'), {width: w, height: h});
   const ctx = canvas.getContext('2d');
   ctx.drawImage(img, 0, 0, w, h);
   const result = ctx.getImageData(0, 0, w, h);

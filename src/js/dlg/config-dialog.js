@@ -1,5 +1,5 @@
 import {UCD} from '@/js/consts';
-import {$, $create, $createLink, $remove} from '@/js/dom';
+import {$create, $createLink} from '@/js/dom';
 import {important, messageBox, setupLivePrefs} from '@/js/dom-util';
 import {breakWord} from '@/js/localization';
 import {API} from '@/js/msg';
@@ -41,20 +41,17 @@ export default async function configDialog(style) {
           t('externalFeedback'))),
       $create('.config-body', elements),
     ],
-    buttons: [{
-      textContent: t('confirmSave'),
-      'data-cmd': 'save',
-      disabled: true,
-      onclick: save,
-    }, {
-      textContent: t('genericResetLabel'),
-      title: t('optionsReset'),
-      'data-cmd': 'default',
-      onclick: useDefault,
-    }, {
-      textContent: t('confirmClose'),
-      'data-cmd': 'close',
-    }],
+    buttons: [
+      $create('button', {disabled: true, onclick: save},
+        t('confirmSave'),
+        {data: {cmd: 'save'}}),
+      $create('button', {disabled: true, onclick: useDefault, title: t('optionsReset')},
+        t('genericResetLabel'),
+        {data: {cmd: 'default'}}),
+      $create('button',
+        t('confirmClose'),
+        {data: {cmd: 'close'}}),
+    ],
     onshow,
   }).then(onhide);
 
@@ -81,11 +78,11 @@ export default async function configDialog(style) {
       adjustSizeForPopup(box);
     }
     box.on('change', onchange);
-    buttons.save = $('[data-cmd="save"]', box);
-    buttons.default = $('[data-cmd="default"]', box);
-    buttons.close = $('[data-cmd="close"]', box);
+    buttons.save = box.$('[data-cmd="save"]');
+    buttons.default = box.$('[data-cmd="default"]');
+    buttons.close = box.$('[data-cmd="close"]');
     updateButtons();
-    updateOverlayScrollbar($('#message-box-contents'));
+    updateOverlayScrollbar($id('message-box-contents'));
   }
 
   function onhide() {
@@ -173,7 +170,7 @@ export default async function configDialog(style) {
         $create('div', {style: 'max-width: 34em'}, t('usercssConfigIncomplete')),
         $create('ol', {style: 'text-align: left'},
           invalid.map(msg =>
-            $create({tag: 'li'}, msg))),
+            $create('li', msg))),
       ], 'pre');
     }
     if (!numValid) {
@@ -186,10 +183,10 @@ export default async function configDialog(style) {
       vars.forEach(va => onchange({target: va.input, justSaved: true}));
       renderValues();
       updateButtons();
-      $remove('.config-error');
+      $('.config-error')?.remove();
     } catch (errors) {
-      const el = $('.config-error', messageBox.element) ||
-        $('#message-box-buttons').insertAdjacentElement('afterbegin', $create('.config-error'));
+      const el = messageBox.element.$('.config-error') ||
+        $id('message-box-buttons').insertAdjacentElement('afterbegin', $create('.config-error'));
       el.textContent =
         el.title = (Array.isArray(errors) ? errors : [errors])
           .map(e => e.stack || e.message || `${e}`)
@@ -335,7 +332,7 @@ export default async function configDialog(style) {
   }
 
   function updateRangeCurrentValue(va, value) {
-    const span = $('.current-value', va.input.closest('.config-range'));
+    const span = va.input.closest('.config-range').$('.current-value');
     if (span) {
       span.textContent = value + (va.units || '');
     }
@@ -374,7 +371,7 @@ export default async function configDialog(style) {
     const el = va.input.closest('label');
     el.classList.toggle('dirty', Boolean(va.dirty));
     el.classList.toggle('nondefault', !isDefault(va));
-    $('.config-reset-icon', el).disabled = isDefault(va);
+    el.$('.config-reset-icon').disabled = isDefault(va);
   }
 
   function resetOnClick(event) {
@@ -387,7 +384,7 @@ export default async function configDialog(style) {
   function showColorpicker(event) {
     event.preventDefault();
     window.off('keydown', messageBox.listeners.key, true);
-    const box = $('#message-box-contents');
+    const box = $id('message-box-contents');
     const r = this.getBoundingClientRect();
     colorpicker.show({
       va: this.va,

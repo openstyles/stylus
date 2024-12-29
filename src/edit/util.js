@@ -1,5 +1,5 @@
 import {CodeMirror, extraKeys, THEME_KEY} from '@/cm';
-import {$, $$, $create} from '@/js/dom';
+import {$create, $createFragment} from '@/js/dom';
 import {getEventKeyName, messageBox, moveFocus} from '@/js/dom-util';
 import {tHTML} from '@/js/localization';
 import {createPortProxy} from '@/js/port';
@@ -14,15 +14,16 @@ export const helpPopup = {
 
   /**
    * @param {string|true} title - plain text or `true` to use `body` instead of .title and .contents
-   * @param {string|Node} body - Node, html or plain text
-   * @param {HTMLElement|?} [props] - DOM props for the popup element
-   * @returns {Element & {onClose: Set<function>}} the popup
+   * @param {AppendableElementGuts} body - Node, html or plain text
+   * @param {WritableElementProps} [props] - DOM props for the popup element
+   * @param {Object} [dataset] - dataset props for the popup element
+   * @returns {HTMLElement & {onClose: Set<function>}} the popup
    */
-  show(title = '', body, props = {}) {
-    const {'data-id': id = props['data-id'] = title} = props;
+  show(title = '', body, props, id = title) {
     const div = $create(helpPopup.SEL, props);
-    const old = id && $(`#help-popup[data-id="${CSS.escape(id)}"] > .i-close`);
+    const old = id && $(`${helpPopup.SEL}[data-id="${CSS.escape(id)}"] > .i-close`);
     if (old) old.click();
+    div.dataset.id = id;
     div.append(
       div._close = $create('i.i-close', {onclick: helpPopup.close}),
       div._title = $create('.title', title),
@@ -131,7 +132,7 @@ export function createHotkeyInput(prefId, {buttons = true, onDone}) {
   const [btnOk, btnUndo, btnReset] = buttons || [];
   onkeydown(null, initialValue);
   return buttons
-    ? $create('fragment', [input, $create('.buttons', buttons)])
+    ? $createFragment([input, $create('.buttons', buttons)])
     : input;
 
   function onkeydown(e, key) {
@@ -191,12 +192,12 @@ export function showCodeMirrorPopup(title, html, options) {
   }, options));
   cm.focus();
 
-  $.root.style.pointerEvents = 'none';
+  $root.style.pointerEvents = 'none';
   popup.style.pointerEvents = 'auto';
 
   const onKeyDown = event => {
     if (event.key === 'Tab' && !event.ctrlKey && !event.altKey && !event.metaKey) {
-      const search = $('#search-replace-dialog');
+      const search = $id('search-replace-dialog');
       const area = search && search.contains(document.activeElement) ? search : popup;
       moveFocus(area, event.shiftKey ? -1 : 1);
       event.preventDefault();
@@ -206,7 +207,7 @@ export function showCodeMirrorPopup(title, html, options) {
 
   popup.onClose.add(() => {
     window.off('keydown', onKeyDown, true);
-    $.root.style.removeProperty('pointer-events');
+    $root.style.removeProperty('pointer-events');
     cm = popup.codebox = null;
   });
 

@@ -1,5 +1,4 @@
 import {loadCmTheme} from '@/cm';
-import {$} from '@/js/dom';
 import * as prefs from '@/js/prefs';
 import {FROM_CSS} from '@/js/sections-util';
 import {clipString, sessionStore, tryURL} from '@/js/util';
@@ -25,7 +24,7 @@ function loadStyle({style = makeNewStyleObj(), isUC, si, template}) {
   });
   editor.updateClass();
   editor.updateTitle(false);
-  $.rootCL.add(isUC ? 'usercss' : 'sectioned');
+  $rootCL.add(isUC ? 'usercss' : 'sectioned');
   sessionStore.justEditedStyleId = id || '';
   // no such style so let's clear the invalid URL parameters
   if (id === null) {

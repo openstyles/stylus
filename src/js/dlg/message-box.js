@@ -1,4 +1,4 @@
-import {$, $create} from '@/js/dom';
+import {$create} from '@/js/dom';
 import {animateElement, closestFocusable, moveFocus} from '@/js/dom-util';
 import {tHTML} from '@/js/localization';
 import {clamp, t} from '@/js/util';
@@ -72,9 +72,9 @@ messageBox.show = ({
     onshow(messageBox.element);
   }
 
-  if (!$('#message-box-title').textContent) {
-    $('#message-box-title').hidden = true;
-    $('#message-box-close-icon').hidden = true;
+  if (!$id('message-box-title').textContent) {
+    $id('message-box-title').hidden = true;
+    $id('message-box-close-icon').hidden = true;
   }
 
   return new Promise(resolve => {
@@ -162,21 +162,21 @@ messageBox.show = ({
     }
     const id = 'message-box';
     messageBox.element =
-      $create({id, className}, [
-        $create([
+      $create('div', {id, className}, [
+        $create('div', [
           $create(`#${id}-title`, {onmousedown: messageBox.listeners.mouseDown}, title),
           $create(`#${id}-close-icon`, {onclick: messageBox.listeners.closeIcon},
             $create('i.i-close')),
           $create(`#${id}-contents`, tHTML(contents)),
-          $create(`#${id}-buttons`,
-            buttons.map((content, buttonIndex) => content &&
-              $create('button', Object.assign({
-                buttonIndex,
-                onclick: messageBox.listeners.button,
-              }, typeof content === 'object' && content), (
-                typeof content !== 'object' || content instanceof Node
-              ) && content)
-            ).filter(Boolean)),
+          $create(`#${id}-buttons`, buttons.filter(Boolean).map((btn, buttonIndex) => {
+            if (btn.localName !== 'button') {
+              const obj = typeof btn === 'object' && btn;
+              btn = $create('button', obj, (!obj || btn instanceof Node) && btn);
+            }
+            btn.buttonIndex = buttonIndex;
+            btn.onclick ??= messageBox.listeners.button;
+            return btn;
+          })),
         ]),
       ]);
   }

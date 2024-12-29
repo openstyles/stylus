@@ -1,5 +1,5 @@
 import '@/js/dom-init';
-import {$, toggleDataset} from '@/js/dom';
+import {$toggleDataset} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
 import {tBody} from '@/js/localization';
 import {onMessage} from '@/js/msg';
@@ -39,13 +39,13 @@ document.styleSheets[0].insertRule(
   }}`);
 
 function initSyncButton(sync) {
-  const el = $('#sync-styles');
+  const el = $id('sync-styles');
   const elMsg = $('#backup p');
   const render = val => {
     const drive = syncUtil.DRIVE_NAMES[val.drive || prefs.__values['sync.enabled']];
     const msg = drive ? syncUtil.getStatusText(val) : '';
     el.title = t('optionsCustomizeSync');
-    toggleDataset(el, 'cloud', drive);
+    $toggleDataset(el, 'cloud', drive);
     elMsg.textContent = msg === syncUtil.pending || msg === syncUtil.connected ? '' : msg;
   };
   onMessage(e => {

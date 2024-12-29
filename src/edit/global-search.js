@@ -1,6 +1,6 @@
 import colorMimicry from '@/js/color/color-mimicry';
 import {kCodeMirror} from '@/js/consts';
-import {$, $$, $create, $remove, cssFieldSizing, toggleDataset} from '@/js/dom';
+import {cssFieldSizing, $toggleDataset, $create} from '@/js/dom';
 import {setInputValue} from '@/js/dom-util';
 import {htmlToTemplateCache, templateCache} from '@/js/localization';
 import {chromeLocal} from '@/js/storage-util';
@@ -18,8 +18,8 @@ const ANNOTATE_SCROLLBAR_DELAY = 350;
 const ANNOTATE_SCROLLBAR_OPTIONS = {maxMatches: 10e3};
 const STORAGE_UPDATE_DELAY = 500;
 
-const DIALOG_SELECTOR = '#search-replace-dialog';
-const DIALOG_STYLE_SELECTOR = '#search-replace-dialog-style';
+const DLG_ID = 'search-replace-dialog';
+const DLG_STYLE_ID = 'search-replace-dialog-style';
 const TARGET_CLASS = 'search-target-editor';
 const MATCH_CLASS = 'search-target-match';
 const MATCH_TOKEN_NAME = 'searching';
@@ -97,7 +97,7 @@ const ACTIONS = {
     case() {
       stateIcase = !stateIcase;
       stateLastFind = '';
-      toggleDataset(this, 'enabled', !stateIcase);
+      $toggleDataset(this, 'enabled', !stateIcase);
       doSearch({canAdvance: false});
     },
   },
@@ -558,22 +558,22 @@ function createDialog(type) {
   dialog.dataset.type = type;
   dialog.style.pointerEvents = 'auto';
 
-  const content = $('[data-type="content"]', dialog);
+  const content = dialog.$('[data-type="content"]');
   content.parentNode.replaceChild(templateCache[type].cloneNode(true), content);
 
   stateInput = createInput(0, INPUT_PROPS, stateFind);
   stateInput2 = createInput(1, INPUT2_PROPS, stateReplace);
-  toggleDataset($('[data-action="case"]', dialog), 'enabled', !stateIcase);
-  stateTally = $('[data-type="tally"]', dialog);
+  $toggleDataset(dialog.$('[data-action="case"]'), 'enabled', !stateIcase);
+  stateTally = dialog.$('[data-type="tally"]');
 
   const colors = {
     body: colorMimicry(document.body, {bg: 'backgroundColor'}),
     input: colorMimicry($('input:not(:disabled)'), {bg: 'backgroundColor'}),
     icon: colorMimicry($$('i.i-info')[1]),
   };
-  $.root.appendChild(
-    $(DIALOG_STYLE_SELECTOR) ||
-    $create('style' + DIALOG_STYLE_SELECTOR)
+  $root.appendChild(
+    $id(DLG_STYLE_ID) ||
+    $create('style#' + DLG_STYLE_ID)
   ).textContent = `
     #search-replace-dialog {
       background-color: ${colors.body.bg};
@@ -614,7 +614,7 @@ function createDialog(type) {
 }
 
 function createInput(index, props, value) {
-  const input = $$('textarea', stateDialog)[index];
+  const input = stateDialog.$$('textarea')[index];
   if (!input) {
     return;
   }
@@ -622,13 +622,13 @@ function createInput(index, props, value) {
   Object.assign(input, props);
 
   input.parentElement.appendChild(templateCache.clearSearch.cloneNode(true));
-  $('[data-action]', input.parentElement)._input = input;
+  input.parentElement.$('[data-action]')._input = input;
   return input;
 }
 
 function destroyDialog({restoreFocus = false} = {}) {
   stateInput = null;
-  $remove(DIALOG_SELECTOR);
+  $id(DLG_ID)?.remove();
   debounce.unregister(doSearch);
   makeTargetVisible(null);
   if (restoreFocus) {
@@ -655,7 +655,7 @@ function adjustTextareaSize(el) {
 
 function enableReplaceButtons(enabled) {
   if (stateDialog && stateDialog.dataset.type === 'replace') {
-    for (const el of $$('[data-action^="replace"]', stateDialog)) {
+    for (const el of stateDialog.$$('[data-action^="replace"]')) {
       el.disabled = !enabled;
     }
   }
@@ -663,14 +663,14 @@ function enableReplaceButtons(enabled) {
 
 function enableUndoButton(enabled) {
   if (stateDialog && stateDialog.dataset.type === 'replace') {
-    for (const el of $$('[data-action="undo"]', stateDialog)) {
+    for (const el of stateDialog.$$('[data-action="undo"]')) {
       el.disabled = !enabled;
     }
   }
 }
 
 function focusUndoButton() {
-  for (const btn of $$('[data-action="undo"]', stateDialog)) {
+  for (const btn of stateDialog.$$('[data-action="undo"]')) {
     if (getComputedStyle(btn).display !== 'none') {
       btn.focus();
       break;

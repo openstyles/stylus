@@ -1,4 +1,4 @@
-import {$, $create} from '@/js/dom';
+import {$create} from '@/js/dom';
 import * as prefs from '@/js/prefs';
 import {clipString, debounce, deepEqual, mapObj, sessionStore, t} from '@/js/util';
 import DirtyReporter from './dirty-reporter';
@@ -80,16 +80,16 @@ const editor = self.editor = {
       el.off('input', validateRegexp);
       if (regexps.delete(el) && !regexps.size) hide = true;
     }
-    if (hide != null) $('#testRE').hidden = hide;
+    if (hide != null) $id('testRE').hidden = hide;
   },
 
   toggleStyle(enabled = !style.enabled) {
-    $('#enabled').checked = enabled;
+    $id('enabled').checked = enabled;
     editor.updateEnabledness(enabled);
   },
 
   updateClass() {
-    $.rootCL.toggle('is-new-style', !editor.style.id);
+    $rootCL.toggle('is-new-style', !editor.style.id);
   },
 
   updateDirty() {
@@ -97,7 +97,7 @@ const editor = self.editor = {
     if (wasDirty !== isDirty) {
       wasDirty = isDirty;
       document.body.classList.toggle('dirty', isDirty);
-      $('#save-button').disabled = !isDirty;
+      $id('save-button').disabled = !isDirty;
     }
     editor.updateTitle();
   },
@@ -111,7 +111,7 @@ const editor = self.editor = {
   updateName(isUserInput) {
     if (!editor) return;
     if (isUserInput) {
-      const {value} = $('#name');
+      const {value} = $id('name');
       dirty.modify('name', style[editor.nameTarget] || style.name, value);
       style[editor.nameTarget] = value;
     }
@@ -130,9 +130,9 @@ const editor = self.editor = {
   updateToc(added) {
     const {sections} = editor;
     if (!toc.el) {
-      toc.el = $('#toc');
+      toc.el = $id('toc');
       toc.elDetails = toc.el.closest('details');
-      toc.title = $('#toc-title').dataset;
+      toc.title = $id('toc-title').dataset;
     }
     let num = 0;
     for (const sec of sections) num += !sec.removed;
@@ -169,7 +169,7 @@ const editor = self.editor = {
     }
     if (added.focus) {
       const cls = 'current';
-      const old = $('.' + cls, toc.el);
+      const old = toc.el.$('.' + cls);
       const el = elFirst || toc.el.children[first];
       if (old && old !== el) old.classList.remove(cls);
       el.classList.add(cls);
