@@ -1,7 +1,9 @@
+import {kCodeMirror} from '@/js/consts';
 import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {sessionStore, t} from '@/js/util';
 import editor from './editor';
+import {helpPopup} from './util';
 
 window.on('beforeunload', e => {
   let pos;
@@ -33,7 +35,9 @@ window.on('beforeunload', e => {
     // refocus if unloading was canceled
     setTimeout(() => activeElement.focus());
   }
-  if (editor.dirty.isDirty()) {
+  if (editor.dirty.isDirty() ||
+    [].some.call(document.$$(helpPopup.SEL + ` .${kCodeMirror}`), el =>
+      !el[kCodeMirror].isClean())) {
     // neither confirm() nor custom messages work in modern browsers but just in case
     e.returnValue = t('styleChangesNotSaved');
   }
