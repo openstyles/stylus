@@ -244,7 +244,7 @@ async function helper(cm) {
         i = 0;
         for (let a, b, v, lc = cssPropsLC[name], nameLen = name.length;
           i >= 0 && (!leftLC || (i = lc.indexOf(leftLC, i)) >= 0);
-          i = leftLC ? b : b + 1
+          i = leftLC ? b : b + 1 || b/*retain -1 to end the loop*/
         ) {
           a = leftLC ? lc.lastIndexOf('\n', i) + 1 : i;
           b = lc.indexOf('\n', i + len);
