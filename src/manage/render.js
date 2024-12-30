@@ -30,7 +30,7 @@ const partDecorations = {
   regexpsAfter: '/',
 };
 /** Hiding date-like version as it's too long and is already shown in the age column */
-const rxIsDateVer = /^20\d\d(?:\d{2,4})?(?:\.\d\d?){2}$/g;
+const rxIsDateVer = /^20\d{4,6}(?:\.\d\d?){2}$/;
 const rxNonCJK = /[^\u3000-\uFE00]+/g;
 
 let elLinks, elLinksParent;
