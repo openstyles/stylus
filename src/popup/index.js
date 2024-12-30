@@ -19,7 +19,7 @@ export const styleFinder = {};
 export let tabUrl;
 export let tabUrlSupported;
 let isBlocked;
-let prevHeight = 20; // ignore the initial micro-size popup
+let prevHeight;
 
 /** @type Element */
 const installed = $('#installed');
@@ -34,6 +34,9 @@ export const $entry = styleOrId => $(`#${ENTRY_ID_PREFIX_RAW}${styleOrId.id || s
   const data = (__.MV3 ? prefs.clientData : await prefs.clientData)[kPopup];
   initPopup(...data);
   showStyles(...data);
+  // Wait for Firefox to resizes the popup so innerHeight corresponds to the actual body height
+  if (FIREFOX) await new Promise(requestAnimationFrame);
+  prevHeight = Math.max(innerHeight, 150);
   if (!MOBILE) window.on('resize', onWindowResize);
 })();
 
@@ -77,13 +80,10 @@ function onRuntimeMessage(msg) {
 
 function onWindowResize() {
   const h = innerHeight;
-  if (prevHeight && h < prevHeight) {
-    return;
-  }
-  if (document.readyState !== 'complete') {
-    requestAnimationFrame(onWindowResize);
-  } else if (document.body.clientHeight > h + 1/*rounding errors in CSS*/) {
-    removeEventListener('resize', onWindowResize);
+  if (h > prevHeight
+  && document.readyState !== 'loading'
+  && document.body.clientHeight > h + 1/*rounding errors in CSS*/) {
+    window.off('resize', onWindowResize);
     document.body.style.maxHeight = h + 'px';
   }
   prevHeight = h;
