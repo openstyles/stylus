@@ -187,9 +187,13 @@ export function formatRelativeDate(date, style) {
 export function tBody(fn) {
   if (!fn) {
     tNodeList(document.$$(SELECTOR));
-    if (template.body) document.body.append(templateCache.body);
+    const tpl = template.body;
+    if (tpl && document.body !== tpl) {
+      document.body.appendChild(tpl);
+      template.body = document.body;
+    }
     for (fn of onBodyListeners) fn();
-    template.body = onBodyListeners = undefined;
+    onBodyListeners = undefined;
   } else if (onBodyListeners) {
     onBodyListeners.push(fn);
   } else {
