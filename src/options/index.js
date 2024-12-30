@@ -82,7 +82,7 @@ for (const el of $$('[data-clickable]')) {
       }, '⚒'));
     }
   }
-  if (window._toggler === 'sync-styles') {
+  if (location.hash === '#sync-styles') {
     $('.cloud-name').focus();
   }
 })();

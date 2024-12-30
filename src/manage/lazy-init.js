@@ -15,8 +15,7 @@ import './incremental-search';
 installed.on('mouseover', lazyAddEntryTitle, {passive: true});
 installed.on('mouseout', lazyAddEntryTitle, {passive: true});
 
-router.makeToggle('#sync-styles', 'stylus-options', toggleEmbeddedOptions);
-router.makeToggle('#manage-options-button', 'stylus-options', toggleEmbeddedOptions);
+router.makeToggle('#manage-options-button, #sync-styles', 'stylus-options', toggleEmbeddedOptions);
 router.makeToggle('#injection-order-button', 'injection-order', InjectionOrder);
 router.makeToggle('#update-history-button', 'update-history', UpdateHistory);
 router.update();

@@ -1,4 +1,4 @@
-import {$} from '@/js/dom';
+import {$, $$} from '@/js/dom';
 import {onMessage} from '@/js/msg';
 import {deepEqual} from '@/js/util';
 
@@ -11,7 +11,6 @@ export function getSearch(key) {
 
 /** When showing the UI, `showHide` function must resolve only when the UI is closed */
 export function makeToggle(toggler, hashId, showHide, loadDeps) {
-  toggler = $(toggler);
   const hash = '#' + hashId;
   const selector = '.' + hashId;
   watch({hash}, async state => {
@@ -21,7 +20,12 @@ export function makeToggle(toggler, hashId, showHide, loadDeps) {
     await showHide(state, el, selector, toggler);
     if (state) updateHash('');
   });
-  toggler.on('click', updateHash.bind(null, hash));
+  for (const el of $$(toggler)) {
+    el.on('click', () => {
+      toggler = el;
+      updateHash(hash);
+    });
+  }
 }
 
 export function push(url) {
