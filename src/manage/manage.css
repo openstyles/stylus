@@ -97,7 +97,9 @@ h1 {
       --cloud-pad-r: calc($iconPad * 2);
       padding: $iconPad;
       line-height: 1;
-      border-radius: 50%;
+      &:not([data-cloud]) {
+        border-radius: 50%;
+      }
     }
   }
   :is(
