@@ -45,6 +45,7 @@ body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colo
 
 :root:not(.blocked) .if-blocked,
 .blocked .if-not-blocked,
+.blocked #installed:empty,
 .blocked #installed > :not(.frame),
 .blocked [data-frame-id="0"] > .breadcrumbs:not(:only-child),
 .firefox .chromium-only {
