@@ -196,10 +196,9 @@ async function helper(cm) {
     }
     if (prop) {
       if (!cssPropNames) await initCssProps();
-      prop = cssProps[prop + kCssPropSuffix] || '';
-      if (prop) {
-        list = prop.replace(rxNamedColors, cssColors) + cssSpecData.global;
-        list = list.split('\n');
+      list = cssProps[prop + kCssPropSuffix];
+      if (list !== null) {
+        list = (list.replace(rxNamedColors, cssColors) + cssSpecData.global).split('\n');
       }
       end = prev + execAt(rxPropChars, prev, text)[0].length;
     }
