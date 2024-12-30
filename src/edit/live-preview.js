@@ -9,9 +9,11 @@ let errPos;
 let el;
 let data;
 let port;
-let enabled = prefs.get(ID);
+let enabled;
 
-prefs.subscribe(ID, (key, value) => {
+prefs.subscribe(ID, (key, value, init) => {
+  enabled = value;
+  if (init) return;
   if (!value) {
     if (port) {
       port.disconnect();
@@ -21,8 +23,7 @@ prefs.subscribe(ID, (key, value) => {
     createPreviewer();
     updatePreviewer(data);
   }
-  enabled = value;
-});
+}, true);
 
 editor.livePreview = newData => {
   if (!port) {
