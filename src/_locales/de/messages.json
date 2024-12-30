@@ -325,6 +325,9 @@
   "findStyles": {
     "message": "Styles finden"
   },
+  "findStylesOnline": {
+    "message": "Hier klicken, um online Styles zu suchen."
+  },
   "genericAdd": {
     "message": "Hinzufügen"
   },
@@ -818,6 +821,9 @@
   },
   "optionKeepAliveIdle": {
     "message": "…auch wenn Browser inaktiv"
+  },
+  "optionKeepAliveNote": {
+    "message": "Erhöhe den Wert, wenn beim Öffnen einer Seite nach längerer Nichtbenutzung des Browsers ein Blinken von ungestyltem Inhalt (FOUC) auftritt.\n\n-1 = ManifestV2 Standardverhalten (Kein Limit).\n0 = ManifestV3 Standardverhalten (halbe Minute).\n\nDer Cache benötigt 30 MB oder mehr RAM, aber der Wiederaufbau kann zu viel Zeit in Anspruch nehmen und zu FOUC führen je nach Website, Netzwerkgeschwindigkeit, Anzahl der Styles, RAM-Größe und CPU-Leistung."
   },
   "optionsActions": {
     "message": "Aktionen"
@@ -1491,6 +1497,14 @@
   },
   "versionInvalidOlder": {
     "message": "Die Version des Styles ist älter als die des bereits installierten."
+  },
+  "webRequestBlockingMV3Note": {
+    "message": "Erfordert die Berechtigung webRequestBlocking, die in ManifestV3 mit einer der folgenden Methoden aktiviert werden kann:\n\n 1) Exportiere das Backup, richte die <a href='https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist'>ExtensionInstallForcelist-Richtlinie</a> für die ID \"$id$\" dieser Erweiterung ein. Starte den Browser neu und warte, bis die Erweiterung installiert ist. importiere das Backup in den Style Manager.\n\n 2) Ändere die Befehlszeile in der Browserverknüpfung oder im Launcher: Füge ein Leerzeichen und <code><nobr>--allowlisted-extension-id=$id$</nobr></code>hinzu.",
+    "placeholders": {
+      "id": {
+        "content": "$1"
+      }
+    }
   },
   "writeStyleFor": {
     "message": "Style erstellen für:"

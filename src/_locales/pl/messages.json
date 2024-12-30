@@ -372,6 +372,9 @@
   "findStyles": {
     "message": "Znajdź style"
   },
+  "findStylesOnline": {
+    "message": "Kliknij, aby znaleźć style online."
+  },
   "genericAdd": {
     "message": "Dodaj"
   },

@@ -259,7 +259,7 @@
     "message": "行（または行:列）に移動"
   },
   "editStyleHeading": {
-    "message": "スタイルを編集"
+    "message": "スタイルエディタ"
   },
   "editStyleLabel": {
     "message": "編集"
@@ -333,6 +333,9 @@
   },
   "findStyles": {
     "message": "スタイルを検索"
+  },
+  "findStylesOnline": {
+    "message": "クリックしてオンラインでスタイルを検索。"
   },
   "genericAdd": {
     "message": "追加"
@@ -783,7 +786,7 @@
     }
   },
   "meta_unknownPreprocessor": {
-    "message": "不明な @preprocessor: $preprocessor$",
+    "message": "不明な @preprocessor: $preprocessor$",
     "placeholders": {
       "preprocessor": {
         "content": "$1"
@@ -820,10 +823,10 @@
     "message": "スタイルの適用が遅すぎる?"
   },
   "optionFOUCMV2": {
-    "message": "\"<a>”を有効にすることを検討ください。"
+    "message": "「<a>」を有効にすることを検討ください。"
   },
   "optionFOUCMV3": {
-    "message": "\"<a>\"を有効にし、\"<b>\"を増加することを検討ください。"
+    "message": "「<a>」を有効にし、「<b>」を増加することを検討ください。"
   },
   "optionKeepAlive": {
     "message": "スタイルキャッシュ期間"
@@ -1529,7 +1532,7 @@
     "message": "インストール済みのスタイルより古いバージョンです。"
   },
   "webRequestBlockingMV3Note": {
-    "message": "webRequestBlocking 権限が必要です。これは、次のいずれかの方法で Manifest V3 で有効にすることができます:\n\n 1) バックアップをエクスポートし、この拡張機能の ID \"$id$\" に対して <a href='https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist'>ExtensionInstallForcelist</a> ポリシーを設定し、ブラウザを再起動して、拡張機能がインストールされるのを待ち、スタイルマネージャーでバックアップをインポートし、必要に応じてアイコンをツールバーにピン留めします。\n\n 2) ブラウザのアイコンまたはランチャーのコマンドライン文字列を変更します: スペースと <code><nobr>--allowlisted-extension-id=$id$</nobr></code> を追加します。",
+    "message": "webRequestBlocking 権限が必要です。これは、次のいずれかの方法で Manifest V3 で有効にすることができます:\n\n 1) バックアップをエクスポートし、この拡張機能の ID「$id$」に対して <a href='https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist'>ExtensionInstallForcelist</a> ポリシーを設定し、ブラウザを再起動して、拡張機能がインストールされるのを待ち、スタイルマネージャでバックアップをインポートし、必要に応じてアイコンをツールバーにピン留めします。\n\n 2) ブラウザのアイコンまたはランチャーのコマンドライン文字列を変更します: スペースと <code><nobr>--allowlisted-extension-id=$id$</nobr></code> を追加します。",
     "placeholders": {
       "id": {
         "content": "$1"

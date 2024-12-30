@@ -372,6 +372,9 @@
   "findStyles": {
     "message": "尋找樣式"
   },
+  "findStylesOnline": {
+    "message": "點選以在線上尋找樣式。"
+  },
   "genericAdd": {
     "message": "新增"
   },
