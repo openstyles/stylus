@@ -19,6 +19,7 @@ export const styleFinder = {};
 export let tabUrl;
 export let tabUrlSupported;
 let isBlocked;
+let prevHeight = 20; // ignore the initial micro-size popup
 
 /** @type Element */
 const installed = $('#installed');
@@ -75,12 +76,17 @@ function onRuntimeMessage(msg) {
 }
 
 function onWindowResize() {
+  const h = innerHeight;
+  if (prevHeight && h < prevHeight) {
+    return;
+  }
   if (document.readyState !== 'complete') {
     requestAnimationFrame(onWindowResize);
-  } else if (document.body.clientHeight > innerHeight + 1/*rounding errors in CSS*/) {
+  } else if (document.body.clientHeight > h + 1/*rounding errors in CSS*/) {
     removeEventListener('resize', onWindowResize);
-    document.body.style.maxHeight = innerHeight + 'px';
+    document.body.style.maxHeight = h + 'px';
   }
+  prevHeight = h;
 }
 
 function toggleSideBorders(_key, state) {
