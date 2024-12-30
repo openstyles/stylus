@@ -6,7 +6,6 @@ import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {clamp, debounce, deepCopy, sleep, t} from '@/js/util';
 import {MOBILE} from '@/js/ua';
-import {installUsercss} from '@/js/urls';
 import './config-dialog.css';
 import '@/css/onoffswitch.css';
 
@@ -23,7 +22,6 @@ export default async function configDialog(style) {
 
   const elements = [];
   const pathname = location.pathname.slice(1);
-  const isInstaller = pathname === installUsercss;
   const isPopup = pathname === 'popup.html';
   const colorpicker = vars.some(v => v.type === 'color')
     ? (await import('@/js/color/color-picker')).default()
@@ -133,13 +131,13 @@ export default async function configDialog(style) {
     if (!vars.some(va => va.dirty || anyChangeIsDirty && va.value !== va.savedValue)) {
       return;
     }
-    const bgStyle = !isInstaller && await API.styles.get(style.id).catch(() => ({}));
+    const bgStyle = style.id && await API.styles.get(style.id).catch(() => ({}));
     style = style.sections ? Object.assign({}, style) : style;
     style.enabled = true;
     style.sourceCode = null;
     style.sections = null;
     const styleVars = style[UCD].vars;
-    const bgVars = isInstaller ? styleVars : bgStyle[UCD]?.vars || {};
+    const bgVars = !style.id ? styleVars : bgStyle[UCD]?.vars || {};
     const invalid = [];
     let numValid = 0;
     for (const va of vars) {
@@ -183,7 +181,7 @@ export default async function configDialog(style) {
     }
     saving = true;
     try {
-      const newVars = isInstaller ? styleVars : await API.usercss.configVars(style.id, styleVars);
+      const newVars = !style.id ? styleVars : await API.usercss.configVars(style.id, styleVars);
       varsInitial = getInitialValues(newVars);
       vars.forEach(va => onchange({target: va.input, justSaved: true}));
       renderValues();

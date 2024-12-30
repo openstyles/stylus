@@ -28,8 +28,12 @@ let fso;
 /** @type function(?options):Promise<?string> */
 let getData;
 let initialUrl;
+/** @type {StyleObj} */
+let style;
+/** @type {StyleObj} */
 let installed;
-let installedDup;
+/** @type {StyleObj} */
+let dup;
 let liveReload;
 let liveReloadEnabled = false;
 let sectionsPromise;
@@ -83,7 +87,7 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
   elSettings.$('.buttons').remove();
   $('.settings').append(elSettings);
 
-  let dup, style, error, sourceCode;
+  let error, sourceCode;
   try {
     sourceCode = await firstGet;
     ({dup, style} = await API.usercss.build({sourceCode, checkDup: true, metaOnly: true}));
@@ -119,7 +123,7 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
   const dupData = dup && dup[UCD];
   const versionTest = dup && compareVersion(data.version, dupData.version);
 
-  updateMeta(style, dup);
+  updateMeta();
   if (dup) {
     ($(`[name="ss-scheme"][value="${dup.preferScheme}"]`) || {}).checked = true;
   }
@@ -184,8 +188,11 @@ setTimeout(() => !cm && showSpinner($('#header')), 200);
   }
 })();
 
-function updateMeta(style, dup = installedDup) {
-  installedDup = dup;
+function updateMeta(newStyle) {
+  if (newStyle) {
+    Object.assign(style, newStyle);
+    for (const k in style) if (!(k in newStyle)) delete style[k];
+  }
   const data = style[UCD];
   const dupData = dup && dup[UCD];
   const versionTest = dup && compareVersion(data.version, dupData.version);
@@ -218,7 +225,7 @@ function updateMeta(style, dup = installedDup) {
   replaceChildren($('.meta-author'), makeAuthor(data.author), true);
   replaceChildren($('.meta-license'), data.license, true);
   replaceChildren($('.external-link'), makeExternalLink());
-  getAppliesTo(style).then(list =>
+  getAppliesTo().then(list =>
     replaceChildren($('.applies-to'), list.map(s => $create('li', s))));
 
   Object.assign($('.configure-usercss'), {
@@ -285,7 +292,7 @@ function updateMeta(style, dup = installedDup) {
       ]));
   }
 
-  async function openConfigDialog() {
+  function openConfigDialog() {
     configDialog(style);
   }
 }
@@ -323,8 +330,8 @@ function showBuildError(error) {
   showError(error);
 }
 
-function install(style) {
-  installed = style;
+function install(res) {
+  installed = res;
 
   $$remove('.warning');
   $('button.install').disabled = true;
@@ -335,12 +342,12 @@ function install(style) {
   $$('.install-disable input').forEach(el => (el.disabled = true));
   document.body.classList.add('installed');
   enablePostActions();
-  updateMeta(style);
+  updateMeta(res);
   if (liveReloadEnabled) liveReload();
 }
 
 function enablePostActions() {
-  const {id} = installed || installedDup;
+  const {id} = installed || dup;
   sessionStore.justEditedStyleId = id;
   $('#edit').search = `?id=${id}`;
   $('#delete').onclick = async () => {
@@ -355,7 +362,7 @@ function enablePostActions() {
   };
 }
 
-async function getAppliesTo(style) {
+async function getAppliesTo() {
   if (sectionsPromise) {
     try {
       style.sections = (await sectionsPromise).sections;
@@ -398,7 +405,7 @@ function initLiveReload() {
   let sequence = Promise.resolve();
   return e => {
     if (e) liveReloadEnabled = e.target.checked;
-    if (!installed && !installedDup) return;
+    if (!installed && !dup) return;
     if (liveReloadEnabled) start({force: true}); else stop();
     $('.install').disabled = liveReloadEnabled;
     Object.assign($('#live-reload-install-hint'), {
@@ -440,7 +447,7 @@ function initLiveReload() {
   function update(code) {
     if (code == null) return;
     sequence = sequence.catch(console.error).then(() => {
-      const {id} = installed || installedDup;
+      const {id} = installed || dup;
       const scrollInfo = cm.getScrollInfo();
       const cursor = cm.getCursor();
       cm.setValue(code);
