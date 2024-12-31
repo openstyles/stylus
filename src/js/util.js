@@ -92,11 +92,11 @@ export function isEmptyObj(obj) {
 }
 
 /**
- * @param {?Object} obj
- * @param {function(val:?, key:string, obj:Object):T} [fn]
+ * @param {T} obj
+ * @param {function(val:V, key:keyof T, obj:T):V} [fn]
  * @param {string[]} [keys]
- * @returns {?Object<string,T>}
- * @template T
+ * @returns {Record<keyof T, V>}
+ * @template T, V
  */
 export function mapObj(obj, fn, keys) {
   if (!obj) return obj;

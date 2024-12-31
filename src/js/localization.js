@@ -188,9 +188,8 @@ export function tBody(fn) {
   if (!fn) {
     tNodeList(document.$$(SELECTOR));
     const tpl = template.body;
-    if (tpl && document.body !== tpl) {
-      document.body.appendChild(tpl);
-      template.body = document.body;
+    if (tpl && tpl !== document.body) {
+      (template.body = document.body).append(tpl);
     }
     for (fn of onBodyListeners) fn();
     onBodyListeners = undefined;
