@@ -6,7 +6,7 @@ import {CHROME} from '@/js/ua';
 import {isEmptyObj, mapObj} from '@/js/util';
 import {broadcast} from '../broadcast';
 import * as colorScheme from '../color-scheme';
-import {bgBusy, bgInit, safeTimeout, uuidIndex} from '../common';
+import {bgBusy, bgInit, uuidIndex} from '../common';
 import {db} from '../db';
 import * as tabMan from '../tab-manager';
 import {getUrlOrigin} from '../tab-util';
@@ -282,7 +282,7 @@ export async function importMany(items) {
     }
   }
   styleCache.clear();
-  safeTimeout(() => messages.forEach(args => broadcastStyleUpdated(...args)), 100);
+  setTimeout(() => messages.forEach(args => broadcastStyleUpdated(...args)), 100);
   return Promise.all(res);
 }
 

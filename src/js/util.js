@@ -33,6 +33,18 @@ export const t = (key, params, strict = true) => {
 
 export const debounce = /*@__PURE__*/(() => {
   const timers = new Map();
+  const clearTimer = data => clearTimeout(data.timer);
+  const run = async (fn, args) => {
+    timers.delete(fn);
+    fn(...args);
+  };
+  const unregister = fn => {
+    const data = timers.get(fn);
+    if (data) {
+      clearTimer(data);
+      timers.delete(fn);
+    }
+  };
   return Object.assign((fn, delay, ...args) => {
     delay = +delay || 0;
     const time = performance.now() + delay;
@@ -47,29 +59,12 @@ export const debounce = /*@__PURE__*/(() => {
     }
     old.args = args;
     old.time = time;
-    old.timer = setTimeout(run, delay, fn, args, __.ENTRY === 'sw' && delay && (
-      old[kResolve] = __.KEEP_ALIVE(promiseWithResolve())[kResolve]
-    ));
+    old.timer = setTimeout(run, delay, fn, args);
   }, {
     timers,
     run,
-    unregister(fn) {
-      const data = timers.get(fn);
-      if (data) {
-        clearTimer(data);
-        timers.delete(fn);
-      }
-    },
+    unregister,
   });
-  function clearTimer(data) {
-    clearTimeout(data.timer);
-    if (__.ENTRY === 'sw' && (data = data[kResolve])) data();
-  }
-  async function run(fn, args, resolve) {
-    timers.delete(fn);
-    if (__.ENTRY === 'sw' && resolve) resolve(fn(...args));
-    else fn(...args);
-  }
 })();
 
 export const makePropertyPopProxy = data => new Proxy(data, {

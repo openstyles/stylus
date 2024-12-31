@@ -1,8 +1,8 @@
-import {k_busy, kResolve, kStateDB} from '@/js/consts';
+import {k_busy, kStateDB} from '@/js/consts';
 import {createPortProxy} from '@/js/port';
 import {CHROME} from '@/js/ua';
 import {workerPath} from '@/js/urls';
-import {promiseWithResolve} from '@/js/util';
+import {promiseWithResolve, sleep} from '@/js/util';
 import {browserWindows} from '@/js/util-webext';
 import {getDbProxy} from './db';
 import offscreen from './offscreen';
@@ -12,18 +12,25 @@ export let bgBusy = promiseWithResolve();
 export const bgPreInit = [];
 export const bgInit = [];
 
+const CLIENT_TIMEOUT = 100;
 export const clientDataJobs = {};
 
-const getClient = async () => {
-  let busy, job;
-  for (const client of await getWindowClients()) {
-    if ((job = clientDataJobs[client.url])) {
-      (busy ??= []).push(job);
-    } else {
-      return client;
+export const getClient = async () => {
+  for (let busy, job, tEnd;
+      !tEnd || performance.now() < tEnd;
+      tEnd ??= performance.now() + CLIENT_TIMEOUT) {
+    for (const client of await getWindowClients()) {
+      if ((job = clientDataJobs[client.url])) {
+        (busy ??= []).push(job);
+      } else {
+        return client;
+      }
     }
+    if (!busy || !await Promise.race([
+      Promise.any(busy).catch(() => 0),
+      sleep(CLIENT_TIMEOUT),
+    ])) break;
   }
-  return busy && Promise.any(busy).then(getClient, getClient); // query again to ensure it's alive
 };
 
 /** @return {WindowClient[]} */
@@ -31,15 +38,6 @@ export const getWindowClients = () => self.clients.matchAll({
   includeUncontrolled: true,
   type: 'window',
 });
-
-export const safeTimeout = __.ENTRY === 'sw'
-  ? (fn, delay, ...args) =>
-    setTimeout(safeTimeoutResolve, delay, fn, args,
-      __.KEEP_ALIVE(promiseWithResolve())[kResolve])
-  : setTimeout;
-
-const safeTimeoutResolve = __.ENTRY === 'sw'
-  && ((fn, args, resolve) => resolve(fn(...args)));
 
 export const stateDB = __.MV3 && getDbProxy(kStateDB, {store: 'kv'});
 

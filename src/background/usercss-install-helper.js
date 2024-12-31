@@ -5,7 +5,7 @@ import * as prefs from '@/js/prefs';
 import * as URLS from '@/js/urls';
 import {getHost, RX_META} from '@/js/util';
 import {FIREFOX} from '@/js/ua';
-import {bgBusy, safeTimeout} from './common';
+import {bgBusy} from './common';
 import download from './download';
 import * as tabMan from './tab-manager';
 import {openURL} from './tab-util';
@@ -147,7 +147,7 @@ async function openInstallerPage(tabId, url, {code, inTab} = {}) {
       currentWindow: null,
     });
   }
-  const timer = safeTimeout(clearInstallCode, 10e3, url);
+  const timer = setTimeout(clearInstallCode, 10e3, url);
   installCodeCache[url] = {code, timer};
   try {
     await browser.tabs.update(tabId, {url: newUrl});

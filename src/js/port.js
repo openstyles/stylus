@@ -61,6 +61,7 @@ export function createPortExec(getTarget, {lock, once} = {}) {
   let port;
   /** @type {MessagePort | Client | SharedWorker} */
   let target;
+  let timeout;
   let tracking;
   let lastId = 0;
   return exec;
@@ -71,6 +72,7 @@ export function createPortExec(getTarget, {lock, once} = {}) {
     (once ? target : port).postMessage({args, id: ++lastId},
       once || (Array.isArray(this) ? this : undefined));
     queue.set(lastId, ctx);
+    if (__.ENTRY === 'sw' && once) timeout = setTimeout(onTimeout, 1000);
     if (__.DEBUG & 2) console.trace('%c%s exec sent', 'color:green', PATH, lastId, args);
     return promise;
   }
@@ -101,6 +103,11 @@ export function createPortExec(getTarget, {lock, once} = {}) {
   /** @param {MessageEvent} _ */
   function onMessage({data}) {
     if (__.DEBUG & 2) console.log('%c%s exec onmessage', 'color:darkcyan', PATH, data.id, data);
+    if (__.ENTRY === 'sw' && once) clearTimeout(timeout);
+    if (!queue) { // FIXME: why does this happen???
+      console.warn(`No queue in ${PATH}, data: ${JSON.stringify(data ?? `${data}`)}`);
+      return;
+    }
     if (!tracking && !once && navLocks) trackTarget(queue);
     const {id, res, err} = data.id ? data : JSON.parse(data);
     const [stack, resolve, reject] = queue.get(id);
@@ -117,6 +124,10 @@ export function createPortExec(getTarget, {lock, once} = {}) {
       exec[CONNECTED] =
       queue = port = port.onmessage = target = null;
     }
+  }
+  function onTimeout() {
+    console.warn(`Timeout in ${PATH}`);
+    onMessage({});
   }
   async function trackTarget(queueCopy) {
     tracking = true;
