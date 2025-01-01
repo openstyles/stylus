@@ -5,6 +5,7 @@ const childProcess = require('child_process');
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackProcessingPlugin = require('html-webpack-processing-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
@@ -14,7 +15,7 @@ const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 const RawEnvPlugin = require('./tools/raw-env-plugin');
 const {
   escapeForRe, getManifestOvrName, transESM2var, transSourceMap,
-  BUILD, CHANNEL, DEV, MANIFEST, MV3, ROOT, ZIP,
+  BUILD, CHANNEL, DEV, MANIFEST, MV3, ROOT, ZIP, nukeHtmlSpaces,
 } = require('./tools/util');
 
 const {DEBUG, GITHUB_ACTIONS} = process.env;
@@ -190,10 +191,8 @@ const getBaseConfig = hasCodeMirror => ({
         test: new RegExp(SRC_ESC + String.raw`.*[/\\].*\.html$`),
         options: {
           sources: false, // false = keep the source as-is
-          minimize: { // to ensure the same output in dev and prod builds
-            collapseWhitespace: true,
-            removeComments: true,
-          },
+          minimize: false, // false = use our preprocessor
+          preprocessor: nukeHtmlSpaces,
         },
       }, {
         loader: SHIM + 'cjs-to-esm-loader.js',
@@ -429,7 +428,9 @@ module.exports = [
         },
         scriptLoading: 'blocking',
         inject: false,
+        postProcessing: nukeHtmlSpaces,
       })),
+      new HtmlWebpackProcessingPlugin(),
       new CopyPlugin({
         patterns: [
           {context: SRC, from: 'icon/**', to: DST},

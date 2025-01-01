@@ -8,10 +8,18 @@ const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 const MANIFEST = 'manifest.json';
 const ROOT = path.dirname(__dirname.replaceAll('\\', '/')) + '/';
 const SRC = ROOT + 'src/';
+
 const [TARGET, ZIP] = process.env.NODE_ENV?.split(':') || [''];
 const [BUILD, FLAVOR, CHANNEL] = TARGET.split('-');
 const MV3 = FLAVOR === 'mv3';
 const DEV = process.env.npm_lifecycle_event?.startsWith('watch');
+
+/** Nuking redundant quotes https://html.spec.whatwg.org/multipage/syntax.html#syntax-attributes */
+const RX_HTML_ATTR = /(?<=<[^<>]+\s[-\w]+=)"([^"'`=<>\s]+)"(?:\s+?(?=>|\s\S))?/g;
+/** Nuking comments and whitespace between tags on separate lines as we don't rely on it.
+ * The only exception we use is a same-line space e.g. <b>foo</b> <b>bar</b>  */
+const RX_HTML_WS = /^\s+|(?<=>|&nbsp;)[ \t]*[\r\n]\s*|<!--.*?-->|\s+$/gs;
+const nukeHtmlSpaces = str => str.replace(RX_HTML_WS, '').replace(RX_HTML_ATTR, '$1');
 
 function addReport(base, {entry}) {
   base.plugins = [
@@ -104,6 +112,7 @@ module.exports = {
   escapeToRe,
   getBrowserlist,
   getManifestOvrName,
+  nukeHtmlSpaces,
   transBabel,
   transESM2var,
   transSourceMap,
