@@ -197,11 +197,11 @@ const getBaseConfig = hasCodeMirror => ({
         },
       }, {
         loader: SHIM + 'cjs-to-esm-loader.js',
-        test: [
-          '@eight04/read-write-lock',
+        test: new RegExp(`/node_modules/(${escapeForRe([
+          '@eight04/',
           'db-to-cloud',
           'webext-launch-web-auth-flow',
-        ].map(npm => path.dirname(require.resolve(npm)) + path.sep),
+        ].join('\n')).replaceAll('\n', '|')})`.replaceAll('/', SEP_ESC)),
       }, {
         loader: SHIM + 'lzstring-loader.js',
         test: require.resolve('lz-string-unsafe'),
