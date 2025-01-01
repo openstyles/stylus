@@ -1,5 +1,5 @@
 import '@/js/browser';
-import {getClient} from '@/background/common';
+import {getWindowClients} from '@/background/common';
 import {rxIgnorableError} from '@/js/msg-api';
 import {ownRoot, supported} from '@/js/urls';
 import {getActiveTab} from '@/js/util-webext';
@@ -30,7 +30,7 @@ async function doBroadcast() {
   const nStyled = toBroadcastStyled.indexOf(false);
   const bAllStyled = nStyled < 0;
   const [client, tabs, activeTab] = await Promise.all([
-    !__.MV3 || getClient(), // no way to detect MV2 incognito popup?
+    !__.MV3 || getWindowClients(), // TODO: detect the popup in Chrome MV2 incognito window?
     bAllStyled ? [] : browser.tabs.query({}),
     bAllStyled && tabMan.someInjectable() && getActiveTab(),
   ]);
