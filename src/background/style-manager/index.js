@@ -1,4 +1,4 @@
-import {kUrl, UCD} from '@/js/consts';
+import {IMPORT_THROTTLE, kUrl, UCD} from '@/js/consts';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '@/js/sections-util';
@@ -282,7 +282,7 @@ export async function importMany(items) {
     }
   }
   styleCache.clear();
-  setTimeout(() => messages.forEach(args => broadcastStyleUpdated(...args)), 100);
+  setTimeout(() => messages.forEach(args => broadcastStyleUpdated(...args)), IMPORT_THROTTLE);
   return Promise.all(res);
 }
 

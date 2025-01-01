@@ -1,4 +1,5 @@
 import {kHocused, kHocusedAttr} from '@/js/consts';
+import {notIncludedInArray} from '@/js/util';
 import {$create, $toggleDataset} from './dom';
 import * as prefs from './prefs';
 import '@/css/spinner.css';
@@ -265,8 +266,4 @@ export function waitForSelector(selector, {recur, stopOnDomReady = true} = {}) {
         }
       }
     });
-}
-
-function notIncludedInArray(val) {
-  return !this.includes(val);
 }

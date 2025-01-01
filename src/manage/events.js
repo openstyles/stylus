@@ -1,4 +1,4 @@
-import {kStyleIdPrefix, UCD} from '@/js/consts';
+import {IMPORT_THROTTLE, kStyleIdPrefix, UCD} from '@/js/consts';
 import {$toggleClasses} from '@/js/dom';
 import {
   animateElement, configDialog, getEventKeyName, messageBox, scrollElementIntoView, setHocus,
@@ -24,7 +24,7 @@ onMessage(m => {
     case 'styleDeleted':
       queue.push(m);
       if (!queue.time) handleBulkChange(queue);
-      else debounce(handleBulkChange, queue.THROTTLE);
+      else debounce(handleBulkChange, IMPORT_THROTTLE);
   }
 });
 

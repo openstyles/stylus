@@ -6,7 +6,6 @@ export {newUI};
 export const installed = template.body.$('#installed');
 
 export const queue = Object.assign([], {
-  THROTTLE: 100, // ms
   styles: new Map(),
   time: 0,
 });

@@ -1,5 +1,5 @@
 import * as chromeSync from '@/js/chrome-sync';
-import {kAppJson, kStyleIdPrefix, UCD} from '@/js/consts';
+import {IMPORT_THROTTLE, kAppJson, kStyleIdPrefix, UCD} from '@/js/consts';
 import {$create} from '@/js/dom';
 import {animateElement, messageBox, scrollElementIntoView} from '@/js/dom-util';
 import {API} from '@/js/msg';
@@ -74,7 +74,7 @@ async function importFromFile(file) {
       q.time = performance.now();
       await importFromString(text);
       q.time = 0;
-      setTimeout(() => q.styles.clear(), q.THROTTLE * 2);
+      setTimeout(() => q.styles.clear(), IMPORT_THROTTLE * 2);
     } else if (RX_META.test(text)) {
       throw t('dragDropUsercssTabstrip');
     }

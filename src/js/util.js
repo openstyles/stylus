@@ -104,6 +104,10 @@ export function mapObj(obj, fn, keys) {
   return res;
 }
 
+export function notIncludedInArray(val) {
+  return !this.includes(val);
+}
+
 export function tryRegExp(regexp, flags) {
   try {
     return new RegExp(regexp, flags);
