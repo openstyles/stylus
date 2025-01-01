@@ -99,7 +99,7 @@ export function overrideBadge({text = '', color = '', title = ''} = {}) {
     }
   }
   safeCall('setTitle', {
-    title: title && t(title) || title || '',
+    title: title && t(title, '', false) || title || '',
   });
 }
 
