@@ -292,9 +292,20 @@ module.exports = [
     languageOptions: {...v.languageOptions, sourceType: 'commonjs'},
   },
   //#endregion
+  //#region SHIMS
+  {
+    files: [SHIMS],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        ...globals.es2024,
+      },
+    },
+  },
+  //#endregion
   //#region SRC
   {
-    files: ['src/**/*.js', SHIMS],
+    files: ['src/**/*.js'],
     languageOptions: {
       ecmaVersion: 2024,
       globals: {
@@ -308,6 +319,17 @@ module.exports = [
         $tag: false,
       },
       sourceType: 'module',
+    },
+  },
+  //#endregion
+  //#region SRC copied
+  {
+    files: ['src/content/install*.js'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...SRC_GLOBALS,
+      },
     },
   },
   //#endregion

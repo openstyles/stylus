@@ -1,1 +1,1 @@
-export const {URL} = self;
+export const {URL} = global;
