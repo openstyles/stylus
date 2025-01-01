@@ -49,7 +49,7 @@ async function doBroadcast() {
       if (i && t.active) {
         tabs[tabsLen] = tabs[0].id;
         tabs[0] = t.id;
-      } else if (i > tabsLen) {
+      } else {
         tabs[tabsLen] = t.id;
       }
       tabsLen++;
