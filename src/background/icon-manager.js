@@ -91,7 +91,7 @@ export function overrideBadge({text = '', color = '', title = ''} = {}) {
   badgeOvr.color = color;
   refreshIconBadgeColor();
   setBadgeText({text});
-  for (const tabId of tabMan.keys()) {
+  for (const tabId of tabMan.cache.keys()) {
     if (text) {
       setBadgeText({tabId, text});
     } else {
@@ -185,14 +185,14 @@ function refreshIconBadgeColor() {
 }
 
 function refreshAllIcons() {
-  for (const tabId of tabMan.keys()) {
+  for (const tabId of tabMan.cache.keys()) {
     refreshIcon(tabId);
   }
   refreshGlobalIcon();
 }
 
 function refreshAllIconsBadgeText() {
-  for (const tabId of tabMan.keys()) {
+  for (const tabId of tabMan.cache.keys()) {
     refreshIconBadgeText(tabId);
   }
 }

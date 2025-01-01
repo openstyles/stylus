@@ -8,7 +8,7 @@ export const onUnload = new Set();
 export const onUrl = new Set();
 /** @typedef {{ url:string, styleIds: {[frameId:string]: number[]} }} StyleIdsFrameMap */
 /** @type {Map<number,{ id: number, url:string, styleIds: StyleIdsFrameMap }>} */
-const cache = new Map();
+export const cache = new Map();
 
 export const get = (tabId, ...keyPath) => {
   let res = cache.get(tabId);
@@ -18,12 +18,6 @@ export const get = (tabId, ...keyPath) => {
 
 /** @return {StyleIdsFrameMap|false} */
 export const getStyleIds = id => cache.get(id)?.styleIds || false;
-
-/** @type {typeof Map.prototype.entries} */
-export const entries = /*@__PURE__*/cache.entries.bind(cache);
-
-/** @type {typeof Map.prototype.keys} */
-export const keys = /*@__PURE__*/cache.keys.bind(cache);
 
 export const load = async tabId => {
   const oldVal = __.MV3 && await stateDB.get(tabId);

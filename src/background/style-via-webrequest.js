@@ -60,7 +60,7 @@ prefs.ready.then(() => {
 bgBusy.then(() => {
   const tabIds = [];
   for (let key in ruleIdKeys) {
-    if (!tabMan.get(key = parseInt(key))) {
+    if (!tabMan.cache.has(key = parseInt(key))) {
       tabIds.push(key);
     }
   }

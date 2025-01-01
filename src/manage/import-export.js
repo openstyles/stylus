@@ -295,15 +295,17 @@ async function importFromString(jsonString) {
 
   async function importOptions() {
     const oldStorage = await chromeSync.get();
+    const lz = {};
     for (const {name, val, isValid, isPref} of stats.options.names) {
       if (isValid) {
         if (isPref) {
           prefs.set(name, val);
         } else {
-          chromeSync.setLZValue(name, val);
+          lz[name] = val;
         }
       }
     }
+    chromeSync.setLZValues(lz);
     const label = this.textContent;
     this.textContent = t('undo');
     this.onclick = async () => {

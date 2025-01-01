@@ -26,6 +26,9 @@ export default {
       return true;
     }
   }),
+  upload(data) {
+    for (const k in data) prefs.set(k, data[k]);
+  },
 };
 
 bgPreInit.push(chromeSync.getValue(prefs.STORAGE_KEY).then(orig => {

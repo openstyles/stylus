@@ -1,3 +1,5 @@
+import {kInvokeAPI} from '@/js/consts';
+
 export const FF = __.BUILD !== 'chrome' && (
   __.ENTRY
     ? 'contextualIdentities' in chrome
@@ -30,7 +32,7 @@ export function updateTDM(value) {
 
 export async function apiSendProxy({name: path}, thisObj, args) {
   const localErr = new Error();
-  const msg = {data: {method: 'invokeAPI', path, args}, TDM};
+  const msg = {data: {method: kInvokeAPI, path, args}, TDM};
   for (let res, err, retry = 0; retry < 2; retry++) {
     try {
       if (__.MV3 || FF) {

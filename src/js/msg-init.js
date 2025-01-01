@@ -1,6 +1,6 @@
 /** Don't use this file in content script context! */
 import './browser';
-import {k_busy, k_deepCopy, k_msgExec} from '@/js/consts';
+import {k_busy, k_deepCopy, k_msgExec, kInvokeAPI} from '@/js/consts';
 import {apiHandler, apiSendProxy} from './msg-api';
 import {createPortExec, createPortProxy} from './port';
 import {swPath, workerPath} from './urls';
@@ -29,7 +29,7 @@ async function invokeAPI({name: path}, _thisObj, args) {
   // Using a fake id for our Options frame as we want to fetch styles early
   const frameId = window === top ? 0 : 1;
   if (!needsTab.includes(path) || !frameId && (tab = await getOwnTab())) {
-    const msg = {method: 'invokeAPI', path, args};
+    const msg = {method: kInvokeAPI, path, args};
     const sender = {url: location.href, tab, frameId};
     if (__.MV3) {
       return swExec(msg, sender);

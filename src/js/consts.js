@@ -18,6 +18,7 @@ export const kEditorSettings = 'editorSettings';
 export const kHocused = 'focusedViaClick';
 export const kHocusedAttr = 'data-focused-via-click';
 export const kInstall = 'install';
+export const kInvokeAPI = 'invokeAPI';
 export const kMainFrame = 'main_frame';
 export const kPopup = 'popup';
 export const kResolve = 'resolve';

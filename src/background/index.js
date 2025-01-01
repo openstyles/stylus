@@ -1,6 +1,6 @@
 import './intro';
 import '@/js/browser';
-import {k_msgExec, kInstall, kResolve} from '@/js/consts';
+import {k_msgExec, kInstall, kInvokeAPI, kResolve} from '@/js/consts';
 import {DNR, getRuleIds, updateDynamicRules, updateSessionRules} from '@/js/dnr';
 import {_execute, API, onMessage} from '@/js/msg';
 import * as prefs from '@/js/prefs';
@@ -133,7 +133,7 @@ async function onStartup() {
 }
 
 onMessage(async (m, sender) => {
-  if (m.method === 'invokeAPI') {
+  if (m.method === kInvokeAPI) {
     if (bgBusy) await bgBusy;
     let res = API;
     for (const p of m.path.split('.')) res = res && res[p];

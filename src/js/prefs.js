@@ -6,6 +6,7 @@ import {onStorageChanged} from './util-webext';
 import './msg-init'; // installs direct `API` handler
 
 let busy, ready, setReady;
+let toUpload;
 
 /** @type {StylusClientData & {then: (cb: (data: StylusClientData) => ?) => Promise}} */
 export const clientData = !__.IS_BG && (
@@ -184,7 +185,7 @@ export let set = (key, val, isSynced) => {
   if (val === old || type === 'object' && deepEqual(val, old)) return;
   values[key] = val;
   if (!global[k_busy] || !__.IS_BG) onChange[key]?.forEach(fn => fn(key, val));
-  if (!isSynced && !__.IS_BG) API.prefs.set(key, val);
+  if (!isSynced && !__.IS_BG) (toUpload ??= Promise.resolve().then(upload) && {})[key] = val;
   /* browser.storage is slow and can randomly lose values if the tab was closed immediately,
    so we're sending the value to the background script which will save it to the storage;
    the extra bonus is that invokeAPI is immediate in extension tabs. */
@@ -231,6 +232,11 @@ export const unsubscribe = (keys, fn) => {
     }
   }
 };
+
+function upload() {
+  API.prefs.upload(toUpload);
+  toUpload = null;
+}
 
 function setAll(data, fromStorage) {
   busy = false;

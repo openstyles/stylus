@@ -59,7 +59,7 @@ async function onNavigation(data) {
 function onFakeNavigation(data) {
   onNavigation.call(this, data);
   const {tabId} = data;
-  const td = tabMan.get(tabId); if (!td) return;
+  const td = tabMan.cache.has(tabId); if (!td) return;
   const {url, frameId: f, documentId: d} = data;
   const iid = !__.MV3 && !d && td.iid?.[f];
   const to = __.MV3 || d ? {documentId: d} : {frameId: f};
