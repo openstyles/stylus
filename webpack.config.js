@@ -117,7 +117,7 @@ const getTerserOptions = forExternals => ({
     ecma: MV3 ? 2024 : 2017,
     compress: {
       pure_getters: true,
-      global_defs: !forExternals && Object.entries(ALIASES.funcs).reduce((res, [key, val]) => {
+      global_defs: Object.entries(ALIASES.funcs).reduce((res, [key, val]) => {
         res['@' + key] = val;
         return res;
       }, {}),
