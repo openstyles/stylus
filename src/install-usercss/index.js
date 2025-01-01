@@ -401,7 +401,7 @@ function adjustCodeHeight() {
 
 function initLiveReload() {
   const DELAY = 500;
-  let timer = 0;
+  let timer = true;
   let sequence = Promise.resolve();
   return e => {
     if (e) liveReloadEnabled = e.target.checked;
@@ -420,7 +420,7 @@ function initLiveReload() {
     } catch (err) {
       console.warn(t('liveReloadError', err));
     }
-    timer ??= setTimeout(check, DELAY);
+    if (timer) timer = setTimeout(check, DELAY);
   }
 
   async function start(opts) {
@@ -428,9 +428,9 @@ function initLiveReload() {
     && (fso || (fso = global.FileSystemObserver) && (fso = new fso(() => debounce(check, 20))))) {
       try {
         await fso.observe(fsh);
-        timer = false; // disables polling
+        timer = false; // disables polling on successful registration of the observer
       } catch {
-        timer = null;
+        timer = true;
       }
     }
     check(opts);
