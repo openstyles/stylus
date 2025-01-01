@@ -263,13 +263,13 @@ async function importFromString(jsonString) {
       importOptions.call(btn);
     }
     return (
-      $create('details', {open: isOptions}, [
+      $create(`details[data-id=${id}]`, {open: isOptions}, [
         $create('summary',
           $create('b', (isOptions ? '' : names.length + ' ') + t(legend))),
         $create('small',
           names.map(ids ? listItemsWithId : isOptions ? listOptions : listItems, ids)),
         btn,
-      ].filter(Boolean), {data: {id}})
+      ].filter(Boolean))
     );
   }
 

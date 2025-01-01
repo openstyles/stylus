@@ -49,7 +49,7 @@ module.exports = [
       'computed-property-spacing': [2, 'never'],
       'consistent-return': [0],
       'constructor-super': [2],
-      'curly': [2, 'multi-line'],
+      'curly': [0, 'multi-or-nest', 'consistent'],
       'default-case': [0],
       'dot-location': [2, 'property'],
       'dot-notation': [0],

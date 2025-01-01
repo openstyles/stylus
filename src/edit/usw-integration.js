@@ -43,7 +43,7 @@ export default function USWIntegration() {
     const title = `${new Date().toLocaleString()}\n${res}`;
     const failed = error || /^Error:/.test(res);
     elProgress.append(...failed ? [
-      $create('a.error', {title, tabIndex: 0}, res, {data: {cmd: 'note'}}),
+      $create('a.error[data-cmd=note]', {title, tabIndex: 0}, res),
       _usw && _usw.token && $create('div', t('publishReconnect')),
     ].filter(Boolean) : [
       $create(`span.${isDiff ? 'success' : 'unchanged'}`, {title}),

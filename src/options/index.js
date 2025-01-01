@@ -75,10 +75,10 @@ for (const el of $$('[data-clickable]')) {
     for (let el of $$('#patchCsp')) {
       el = el.closest('label');
       el.classList.add('disabled');
-      el.$('.icon').after($create('a.broken', {
+      el.$('.icon').after($create('a.broken[data-cmd=note]', {
         tabIndex: 0,
         title: t('webRequestBlockingMV3Note', chrome.runtime.id),
-      }, '⚒', {data: {cmd: 'note'}}));
+      }, '⚒'));
     }
   }
   if (location.hash === '#sync-styles') {

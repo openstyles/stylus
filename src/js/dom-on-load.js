@@ -154,7 +154,7 @@ function splitMenu(event) {
       Array.from(pedal.attributes, ({name, value}) =>
         name.startsWith('menu-') &&
         $create('a', {tabIndex: 0, __cmd: name.split('-').pop()}, value)
-      ));
+      ).filter(Boolean));
     window.on('keydown', splitMenuEscape);
     menu.onfocusout = e => {
       if (!menu.contains(e.relatedTarget)) {

@@ -261,11 +261,11 @@ function makeWebCrumbs(crumbs, url) {
 function makeCrumb(key, val, name, body, isDomain) {
   const sp = {[key]: val};
   if (name) sp.name = name;
-  return $create('a.write-style-link', {
+  return $create('a.write-style-link' + (isDomain ? '[subdomain]' : ''), {
     href: 'edit.html?' + new URLSearchParams(sp),
     onclick: Events.openEditor,
     title: `${key}("${val}")`,
-  }, body, isDomain && {attr: {subdomain: ''}});
+  }, body);
 }
 
 function sortStyles(entries) {

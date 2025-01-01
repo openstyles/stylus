@@ -6,68 +6,56 @@ for (const {prototype} of [Document, DocumentFragment, Element]) {
   prototype.$ = prototype.querySelector;
   prototype.$$ = prototype.querySelectorAll;
 }
-Object.assign(Element.prototype, {
-  /**
-   * @param {AppendableElementGuts} guts
-   */
-  $guts(guts) {
-    if (typeof guts === 'string') this.textContent = guts;
-    else if (Array.isArray(guts)) this.append(...guts);
-    else if (guts instanceof Node) this.appendChild(guts);
-    else return;
-    return this;
-  },
-  // $set(props, dataset) {
-  //   if (dataset) Object.assign(this.dataset, dataset);
-  //   return props ? Object.assign(this, props) : this;
-  // },
-});
 
 export const cssFieldSizing = __.MV3 || CSS.supports('field-sizing', 'content');
 export const mqCompact = $rootCL.contains('normal-layout') && matchMedia('(max-width: 850px)');
 export const dom = {};
 
 const detachments = new WeakMap();
+const getObjectType = /*@__PURE__*/Object.call.bind({}.toString);
 
-export function $isTextInput(el = {}) {
-  return el.localName === 'textarea' ||
-    el.localName === 'input' && /^(text|search|number)$/.test(el.type);
-}
+export const $isTextInput = ({localName, type} = {}) =>
+  localName === 'textarea' ||
+  localName === 'input' && (
+    type === 'text' ||
+    type === 'search' ||
+    type === 'number' ||
+    type === 'url'
+  );
 
 /**
  * Props and guts are omittable e.g. (selector), (selector, props), (selector, guts)
- * @param {Tag | string} selector - 'tag#id.cls1.cls2', all optional, tag is 'div' by default
+ * @param {Tag | string} selector - 'tag#id.cls1.cls2[data-foo][attr=val]',
+ *   all optional, default tag is 'div'
  * @param {WritableElementProps | AppendableElementGuts} [props]
- * @param {AppendableElementGuts | Extras} [guts]
- * @param {Extras} [extras]
+ * @param {AppendableElementGuts} [guts]
  * @return {HTMLElementTagNameMap[Tag] | HTMLElement}
  * @template {ElementTags} Tag
- * @template {{data?:{}, attr?:{}}} Extras
  */
-export function $create(selector, props, guts, extras) {
-  const tic = selector.split('.');
-  const ti = tic[0].split('#');
-  const el = $tag(ti[0] || 'div');
-  if (ti[1]) el.id = ti[1];
-  if (tic.length > 1) {
-    el.className = tic.length > 2 ? tic.slice(1).join(' ') : tic[1];
+export function $create(selector, props, guts) {
+  let el;
+  if (!/\W/.test(selector))
+    el = $tag(selector);
+  else {
+    const tica = selector.split('[');
+    const tic = tica[0].split('.');
+    const ti = tic[0].split('#');
+    el = $tag(ti[0] || 'div');
+    if (ti[1])
+      el.id = ti[1];
+    if (tic.length > 1)
+      el.className = tic.length > 2 ? tic.slice(1).join(' ') : tic[1];
+    for (let i = 1, a; (a = tica[i++]);)
+      el.setAttribute((a = a.split(']')[0].split('='))[0], a[1] || '');
   }
-  if (props != null && (
-    typeof props === 'string' ? (el.textContent = props, true)
-      : Array.isArray(props) ? (el.append(...props), true)
-        : props instanceof Node ? (el.appendChild(props), true)
-          : props && (Object.assign(el, props), false))) {
-    extras = guts;
-    guts = null;
+  if (props != null) {
+    if (getObjectType(props) === '[object Object]') Object.assign(el, props);
+    else guts = props;
   }
   if (guts != null) {
     if (typeof guts === 'string') el.textContent = guts;
     else if (Array.isArray(guts)) el.append(...guts);
     else if (guts instanceof Node) el.appendChild(guts);
-  }
-  if (extras) {
-    if ((props = extras.data)) Object.assign(el.dataset, props);
-    if ((props = extras.attr)) for (const a in props) el.setAttribute(a, props[a]);
   }
   return el;
 }

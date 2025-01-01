@@ -77,9 +77,9 @@ export default async function InjectionOrder(show, el, selector) {
       }
     });
     DraggableList(ol, {scrollContainer: ol});
-    return $create('section', [
+    return $create(`section[data-${type}]`, [
       $create('header', t(`styleInjectionOrderHint${type === 'main' ? '' : '_' + type}`)),
       ol,
-    ], {data: {[type]: ''}});
+    ]);
   }
 }

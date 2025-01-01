@@ -88,7 +88,7 @@ function createBeautifyUI(scope, options) {
         $createLabeledCheckbox('preserve_newlines', 'styleBeautifyPreserveNewlines'),
         $createLabeledCheckbox('indent_conditional', 'styleBeautifyIndentConditional'),
         editor.isUsercss && $createLabeledCheckbox('indent_mozdoc', '', '... @-moz-document'),
-      ]),
+      ].filter(Boolean)),
       $create('p.beautify-hint', [
         $create('span', t('styleBeautifyHint') + '\u00A0'),
         createHotkeyInput('editor.beautify.hotkey', {
@@ -97,8 +97,8 @@ function createBeautifyUI(scope, options) {
         }),
       ]),
       $create('.buttons', [
-        $create('button', {onclick: helpPopup.close}, t('confirmClose'), {attr: {role: 'close'}}),
-        $create('button', {
+        $create('button[role=close]', {onclick: helpPopup.close}, t('confirmClose')),
+        $create('button[role=undo]', {
           onclick() {
             let undoable = false;
             for (const cm of scope) {
@@ -113,7 +113,7 @@ function createBeautifyUI(scope, options) {
             }
             this.disabled = !undoable;
           },
-        }, t(scope.length === 1 ? 'undo' : 'undoGlobal'), {attr: {role: 'undo'}}),
+        }, t(scope.length === 1 ? 'undo' : 'undoGlobal')),
       ]),
     ]),
     {
@@ -135,30 +135,31 @@ function createBeautifyUI(scope, options) {
   function $createOption(label, optionName, indent) {
     const value = options[optionName];
     return (
-      $create('div', [
-        $create('span', label, {attr: indent && {indent: ''}}),
+      $create(`div[newline=${value}]`, [
+        $create('span' + (indent ? '[indent]' : ''), label),
         $create('div.select-wrapper', [
-          $create('select', [
+          $create(`select[data-option=${optionName}]`, [
             $create('option', {selected: !value}, '\xA0'),
             $create('option', {selected: value}, '\\n'),
-          ], {data: {option: optionName}}),
+          ]),
         ]),
-      ], {attr: {newline: value}})
+      ])
     );
   }
 
   function $createLabeledCheckbox(optionName, i18nKey, text, textOff) {
     const checked = options[optionName] !== false;
     const textNode = textOff && document.createTextNode(checked ? text : textOff);
-    const elLabel = $tag('label');
-    const elInput = $tag('input');
-    elLabel.style = 'display: block; clear: both;';
-    elInput.type = 'checkbox';
-    elInput._ = textOff && {node: textNode, text, textOff};
-    elInput.checked = checked;
-    elInput.dataset.option = optionName;
-    elLabel.append(elInput,
-      i18nKey ? t(i18nKey) : textNode || text);
+    return (
+      $create('label', {style: 'display: block; clear: both;'}, [
+        $create(`input[data-option=${optionName}]`, {
+          type: 'checkbox',
+          _: textOff && {node: textNode, text, textOff},
+          checked,
+        }),
+        i18nKey ? t(i18nKey) : textNode || text,
+      ])
+    );
   }
 }
 
