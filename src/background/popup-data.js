@@ -1,17 +1,18 @@
 import '@/js/browser';
 import {kAboutBlank, k_busy, kPopup} from '@/js/consts';
-import {API} from '@/js/msg';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {chromeProtectsNTP, ownRoot, supported} from '@/js/urls';
 import {getActiveTab} from '@/js/util-webext';
 import {pingTab} from './broadcast';
 import reinjectContentScripts from './content-scripts';
+import {getByUrl} from './style-manager';
 import * as tabMan from './tab-manager';
+import {waitForTabUrl} from './tab-util';
 
 export default async function makePopupData() {
   let tab = await getActiveTab();
   if (FIREFOX && tab.status === 'loading' && tab.url === kAboutBlank) {
-    tab = await API.waitForTabUrl(tab.id);
+    tab = await waitForTabUrl(tab.id);
   }
   let url = tab.pendingUrl || tab.url || ''; // new Chrome uses pendingUrl while connecting
   const isOwn = url.startsWith(ownRoot);
@@ -65,7 +66,7 @@ export default async function makePopupData() {
     }
     let styles = [];
     for (const f of frames) {
-      if (f.url && !f.isDupe) f.stylesIdx = styles.push(f.styles = API.styles.getByUrl(f.url)) - 1;
+      if (f.url && !f.isDupe) f.stylesIdx = styles.push(f.styles = getByUrl(f.url)) - 1;
     }
     if (!__.IS_BG) {
       styles = await Promise.all(styles);

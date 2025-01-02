@@ -1,9 +1,9 @@
 import {UCD} from '@/js/consts';
-import {API} from '@/js/msg';
 import * as URLS from '@/js/urls';
 import {fetchText, RX_META} from '@/js/util';
 import download from './download';
 import * as styleMan from './style-manager';
+import * as usercssMan from './usercss-manager';
 
 const pingers = {};
 const getMd5Url = usoId => `https://update.userstyles.org/${usoId}.md5`;
@@ -18,7 +18,7 @@ export function getEmbeddedMeta(code) {
   const isRaw = arguments[0];
   const m = code.includes('@updateURL')
     && (isRaw ? code : code.replace(RX_META, '')).match(RX_META);
-  return m && API.usercss.buildMeta({sourceCode: m[0]}).catch(() => null);
+  return m && usercssMan.buildMeta({sourceCode: m[0]}).catch(() => null);
 }
 
 export async function getUpdatability(usoId, asObject) {
@@ -58,7 +58,7 @@ export async function toUsercss(usoId, varsUrl, css, dup, md5, md5Url) {
   ].filter(Boolean);
   if (jobs[0]) await Promise.all(jobs);
   const varMap = {};
-  const {style} = await API.usercss.build({sourceCode: css, metaOnly: true});
+  const {style} = await usercssMan.build({sourceCode: css, metaOnly: true});
   const vars = (v = varsUrl || dup.updateUrl) && useVars(style, v, varMap);
   if (dup) {
     return style;
@@ -66,7 +66,7 @@ export async function toUsercss(usoId, varsUrl, css, dup, md5, md5Url) {
   style.md5Url = md5Url;
   style.originalMd5 = md5;
   style.updateUrl = updateUrl;
-  await API.usercss.install(style, {dup, vars});
+  await usercssMan.install(style, {dup, vars});
 }
 
 function useVars(style, src, cfg) {

@@ -1,13 +1,12 @@
 import {kAppJson, kMainFrame, kPopup, kStyleViaXhr, kSubFrame} from '@/js/consts';
 import {updateSessionRules} from '@/js/dnr';
-import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {actionPopupUrl, ownRoot} from '@/js/urls';
 import {deepEqual, isEmptyObj} from '@/js/util';
 import {ownId, toggleListener} from '@/js/util-webext';
 import * as colorScheme from './color-scheme';
-import {bgBusy, bgPreInit, stateDB} from './common';
+import {bgBusy, bgPreInit, dataHub, stateDB} from './common';
 import {webNavigation} from './navigation-manager';
 import offscreen from './offscreen';
 import makePopupData from './popup-data';
@@ -84,7 +83,7 @@ if (CHROME && !__.MV3 && __.BUILD !== 'firefox') {
 if (CHROME && __.BUILD !== 'firefox') {
   chrome.webRequest.onBeforeRequest.addListener(req => {
     // tabId < 0 means the popup is shown normally and not as a page in a tab
-    API.data.set(kPopup, req.tabId < 0 && makePopupData());
+    dataHub[kPopup] = req.tabId < 0 && makePopupData();
   }, {
     urls: [actionPopupUrl],
     types: [kMainFrame],

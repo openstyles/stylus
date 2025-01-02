@@ -2,7 +2,8 @@ import './intro';
 import '@/js/browser';
 import {k_msgExec, kInstall, kInvokeAPI, kResolve} from '@/js/consts';
 import {DNR, getRuleIds, updateDynamicRules, updateSessionRules} from '@/js/dnr';
-import {_execute, API, onMessage} from '@/js/msg';
+import {_execute, onMessage} from '@/js/msg';
+import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {CHROME, FIREFOX, MOBILE, WINDOWS} from '@/js/ua';
 import {sleep} from '@/js/util';
@@ -10,9 +11,10 @@ import {broadcast, pingTab} from './broadcast';
 import './broadcast-injector-config';
 import initBrowserCommandsApi from './browser-cmd-hotkeys';
 import {setSystemDark} from './color-scheme';
-import {bgBusy, bgInit, bgPreInit, stateDB} from './common';
+import {bgBusy, bgInit, bgPreInit, dataHub, stateDB} from './common';
 import reinjectContentScripts from './content-scripts';
 import initContextMenus from './context-menus';
+import {draftsDb, prefsDb} from './db';
 import download from './download';
 import {refreshIconsWhenReady, updateIconBadge} from './icon-manager';
 import prefsApi from './prefs-api';
@@ -21,7 +23,7 @@ import * as styleMan from './style-manager';
 import initStyleViaApi from './style-via-api';
 import './style-via-webrequest';
 import * as syncMan from './sync-manager';
-import {openEditor, openManage, openURL, waitForTabUrl} from './tab-util';
+import {openEditor, openManager, openURL} from './tab-util';
 import * as updateMan from './update-manager';
 import * as usercssMan from './usercss-manager';
 import * as usoApi from './uso-api';
@@ -31,32 +33,18 @@ Object.assign(API, /** @namespace API */ {
 
   //#region API data/db/info
 
-  /** Temporary storage for data needed elsewhere e.g. in a content script */
-  data: ((data = {}) => ({
-    del: key => delete data[key],
-    get: key => data[key],
-    has: key => key in data,
-    pop: key => {
-      const val = data[key];
-      delete data[key];
-      return val;
-    },
-    set: (key, val) => {
-      data[key] = val;
-    },
-  }))(),
+  data: dataHub,
 
   //#endregion
   //#region API misc actions
 
   download,
   openEditor,
-  openManage,
+  openManager,
   openURL,
   pingTab,
   setSystemDark,
   updateIconBadge,
-  waitForTabUrl,
 
   //#endregion
   //#region API namespaced actions
@@ -93,7 +81,7 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
     if (WINDOWS) prefs.set('editor.keyMap', 'sublime');
   }
   if (previousVersion === '1.5.30') {
-    API.prefsDb.delete('badFavs'); // old Stylus marked all icons as bad when network was offline
+    prefsDb.delete('badFavs'); // old Stylus marked all icons as bad when network was offline
   }
   if (__.MV3) {
     (bgPreInit.length ? bgPreInit : []).push(
@@ -126,9 +114,9 @@ async function onStartup() {
   await refreshIconsWhenReady();
   await sleep(1000);
   const minDate = Date.now() - 30 * 24 * 60e3;
-  for (const id of await API.drafts.getAllKeys()) {
-    const {date} = await API.drafts.get(id) || {};
-    if (date < minDate) API.drafts.delete(id);
+  for (const id of await draftsDb.getAllKeys()) {
+    const {date} = await draftsDb.get(id) || {};
+    if (date < minDate) draftsDb.delete(id);
   }
 }
 

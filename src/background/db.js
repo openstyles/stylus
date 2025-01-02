@@ -1,4 +1,4 @@
-import {API} from '@/js/msg';
+import {API} from '@/js/msg-api';
 import {STORAGE_KEY} from '@/js/prefs';
 import {chromeLocal} from '@/js/storage-util';
 import {CHROME} from '@/js/ua';
@@ -50,12 +50,14 @@ export const getDbProxy = (dbName, {
 ));
 
 export const db = getDbProxy(DB, {id: true, store: 'styles'});
+export const draftsDb = getDbProxy('drafts', {cache: true});
+/** Storage for big items that may exceed 8kB limit of chrome.storage.sync.
+ * To make an item syncable register it with uuidIndex.addCustom. */
+export const prefsDb = getDbProxy(STORAGE_KEY, {cache: true});
 
 Object.assign(API, /** @namespace API */ {
-  drafts: getDbProxy('drafts', {cache: true}),
-  /** Storage for big items that may exceed 8kB limit of chrome.storage.sync.
-   * To make an item syncable register it with uuidIndex.addCustom. */
-  prefsDb: getDbProxy(STORAGE_KEY, {cache: true}),
+  draftsDb,
+  prefsDb,
 });
 
 async function cachedExec(dbName, cmd, a, b) {

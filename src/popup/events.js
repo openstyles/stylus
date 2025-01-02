@@ -1,6 +1,6 @@
 import {configDialog, getEventKeyName, moveFocus} from '@/js/dom-util';
 import {template} from '@/js/localization';
-import {API} from '@/js/msg';
+import {API} from '@/js/msg-api';
 import {getActiveTab} from '@/js/util-webext';
 import {resortEntries, tabUrl} from '.';
 import * as hotkeys from './hotkeys';
@@ -41,7 +41,7 @@ export async function openEditor(event, entry) {
 export async function openManager(event) {
   event.preventDefault();
   const isSearch = tabUrl && (event.shiftKey || event.button === 2 || event.detail === 'site');
-  await API.openManage(isSearch ? {search: tabUrl, searchMode: 'url'} : {});
+  await API.openManager(isSearch ? {search: tabUrl, searchMode: 'url'} : {});
   window.close();
 }
 

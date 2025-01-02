@@ -1,7 +1,7 @@
 import '@/js/browser';
 import {$create} from '@/js/dom';
 import {template} from '@/js/localization';
-import {API} from '@/js/msg';
+import {API} from '@/js/msg-api';
 import * as URLS from '@/js/urls';
 import {t, tryRegExp} from '@/js/util';
 import {MF_ICON} from '@/js/util-webext';

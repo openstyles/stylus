@@ -1,6 +1,5 @@
 import compareVersion from '@/js/cmpver';
 import {UCD} from '@/js/consts';
-import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {calcStyleDigest, styleSectionsEqual} from '@/js/sections-util';
 import {chromeLocal} from '@/js/storage-util';
@@ -11,6 +10,8 @@ import {bgBusy} from './common';
 import {db} from './db';
 import download from './download';
 import * as styleMan from './style-manager';
+import * as usercssMan from './usercss-manager';
+import {getEmbeddedMeta, toUsercss} from './uso-api';
 
 const STATES = /** @namespace UpdaterStates */ {
   UPDATED: 'updated',
@@ -164,7 +165,7 @@ export async function checkStyle(opts) {
     updateUrl = style.updateUrl = `${usoApi}Css/${usoId}`;
     const {result: css} = await tryDownload(updateUrl, {responseType: 'json'});
     const json = await updateUsercss(css)
-      || await API.uso.toUsercss(usoId, varsUrl, css, style, md5, md5Url);
+      || await toUsercss(usoId, varsUrl, css, style, md5, md5Url);
     json.originalMd5 = md5;
     return json;
   }
@@ -173,7 +174,7 @@ export async function checkStyle(opts) {
     let oldVer = ucd.version;
     let oldEtag = style.etag;
     const m2 = (css || extractUsoaId(updateUrl)) &&
-      await API.uso.getEmbeddedMeta(css || style.sourceCode);
+      await getEmbeddedMeta(css || style.sourceCode);
     if (m2 && m2.updateUrl) {
       updateUrl = m2.updateUrl;
       oldVer = m2[UCD].version || '0';
@@ -186,7 +187,7 @@ export async function checkStyle(opts) {
     }
     // TODO: when sourceCode is > 100kB use http range request(s) for version check
     const {headers: {etag}, response} = await tryDownload(updateUrl, RH_ETAG);
-    const json = await API.usercss.buildMeta({sourceCode: response, etag, updateUrl});
+    const json = await usercssMan.buildMeta({sourceCode: response, etag, updateUrl});
     const delta = compareVersion(json[UCD].version, oldVer);
     let err;
     if (!delta && !ignoreDigest) {
@@ -225,7 +226,7 @@ export async function checkStyle(opts) {
       return Promise.reject(STATES.MAYBE_EDITED);
     }
     return !save ? newStyle :
-      ucd ? API.usercss.install(newStyle, {dup: style})
+      ucd ? usercssMan.install(newStyle, {dup: style})
         : styleMan.install(newStyle);
   }
 

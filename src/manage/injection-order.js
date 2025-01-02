@@ -1,7 +1,7 @@
 import {$create, $createFragment} from '@/js/dom';
 import DraggableList from '@eight04/draggable-list';
 import {messageBox} from '@/js/dom-util';
-import {API} from '@/js/msg';
+import {API} from '@/js/msg-api';
 import {t} from '@/js/util';
 
 export default async function InjectionOrder(show, el, selector) {

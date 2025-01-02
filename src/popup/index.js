@@ -3,7 +3,8 @@ import {kAboutBlank, kPopup, kStyleIdPrefix, UCD} from '@/js/consts';
 import {$create, $createFragment} from '@/js/dom';
 import {getEventKeyName, setupLivePrefs} from '@/js/dom-util';
 import {template} from '@/js/localization';
-import {API, onMessage} from '@/js/msg';
+import {onMessage} from '@/js/msg';
+import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {isDark, onDarkChanged} from '@/js/themer';
 import {CHROME, FIREFOX, MOBILE, OPERA} from '@/js/ua';
@@ -127,7 +128,7 @@ async function initPopup(frames, ping0, tab, urlSupported) {
   }).on('split-btn', Events.openManager);
 
   $id('options-btn').onclick = () => {
-    API.openManage({options: true});
+    API.openManager({options: true});
     window.close();
   };
 

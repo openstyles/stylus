@@ -1,7 +1,7 @@
 import '@/js/browser';
-import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {isEmptyObj} from '@/js/util';
+import {updateIconBadge} from './icon-manager';
 import {webNavigation} from './navigation-manager';
 import {getSectionsByUrl} from './style-manager';
 import {order} from './style-manager/util';
@@ -49,7 +49,7 @@ export default function initStyleViaApi() {
       throw new Error('we do not count styles for frames');
     }
     const {frameStyles} = getCachedData(tab.id, frameId);
-    API.updateIconBadge.call({sender}, Object.keys(frameStyles));
+    updateIconBadge.call({sender}, Object.keys(frameStyles));
   }
 
   async function styleApply({id = null, ignoreUrlCheck = false}, {tab, frameId, url}) {

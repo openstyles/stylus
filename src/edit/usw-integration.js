@@ -1,6 +1,7 @@
 import {$create, $toggleDataset} from '@/js/dom';
 import {messageBox, showSpinner} from '@/js/dom-util';
-import {API, onMessage} from '@/js/msg';
+import {onMessage} from '@/js/msg';
+import {API} from '@/js/msg-api';
 import * as URLS from '@/js/urls';
 import {isEmptyObj, t} from '@/js/util';
 import editor from './editor';

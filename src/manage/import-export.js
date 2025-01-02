@@ -2,7 +2,7 @@ import * as chromeSync from '@/js/chrome-sync';
 import {IMPORT_THROTTLE, kAppJson, kStyleIdPrefix, UCD} from '@/js/consts';
 import {$create} from '@/js/dom';
 import {animateElement, messageBox, scrollElementIntoView} from '@/js/dom-util';
-import {API} from '@/js/msg';
+import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {styleJSONseemsValid, styleSectionsEqual} from '@/js/sections-util';
 import {MOBILE} from '@/js/ua';
@@ -235,24 +235,21 @@ async function importFromString(jsonString) {
     stats.metaOnly.ids.push(style.id);
   }
 
-  function done() {
+  async function done() {
     scrollTo(0, 0);
     const entries = Object.entries(stats);
     const numChanged = entries.reduce((sum, [, val]) =>
       sum + (val.dirty ? val.names.length : 0), 0);
     const report = entries.map(renderStats).filter(Boolean);
-    messageBox.show({
+    const {button} = await messageBox.show({
       title: t('importReportTitle'),
       className: 'center-dialog',
       contents: $create('#import', report.length ? report : t('importReportUnchanged')),
       buttons: [t('confirmClose'), numChanged && t('undo')],
       onshow: bindClick,
-    })
-      .then(({button}) => {
-        if (button === 1) {
-          undo();
-        }
-      });
+    });
+    if (button === 1)
+      undo();
   }
 
   function renderStats([id, {ids, names, legend, isOptions}]) {

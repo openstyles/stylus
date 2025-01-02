@@ -3,7 +3,7 @@ import {kEditorSettings} from '@/js/consts';
 import {$create} from '@/js/dom';
 import {setupLivePrefs} from '@/js/dom-util';
 import {templateCache, htmlToTemplate, template} from '@/js/localization';
-import {API} from '@/js/msg';
+import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {debounce, t, tryURL} from '@/js/util';
 import editor from './editor';

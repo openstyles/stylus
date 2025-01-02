@@ -1,16 +1,15 @@
 import {kAppJson, kContentType, UCD} from '@/js/consts';
-import {API} from '@/js/msg';
 import * as URLS from '@/js/urls';
 import {deepEqual, mapObj, RX_META, tryURL} from '@/js/util';
 import {broadcastExtension} from './broadcast';
-import {worker} from './common';
+import {dataHub, worker} from './common';
 import * as styleMan from './style-manager';
 import {getToken, revokeToken} from './token-manager';
 
 const KEYS_OUT = ['description', 'homepage', 'license', 'name'];
 const KEYS_IN = [...KEYS_OUT, 'id', 'namespace', 'username'];
-const pushId = id => API.data.set('usw' + id, true);
-const popId = id => API.data.del('usw' + id);
+const pushId = id => dataHub.set('usw' + id, true);
+const popId = id => dataHub.del('usw' + id);
 
 class TokenHooks {
   constructor(id) {
@@ -48,9 +47,8 @@ async function linkStyle(style, sourceCode) {
   const {id, name} = style;
   const {metadata} = await worker.parseUsercssMeta(sourceCode.match(RX_META)[0]);
   const out = {name, sourceCode, [UCD]: {}};
-  const KEY = 'usw' + id;
   for (const k of KEYS_OUT) out[k] = out[UCD][k] = metadata[k] || '';
-  API.data.set(KEY, out);
+  pushId(id, out);
   try {
     const token = await getToken('userstylesworld', true, new TokenHooks(id));
     const info = await uswFetch('style', token);
@@ -59,7 +57,7 @@ async function linkStyle(style, sourceCode) {
     style.url = style.url || info.homepage || `${URLS.usw}style/${data.id}`;
     return data;
   } finally {
-    API.data.del(KEY);
+    popId(id);
   }
 }
 
@@ -111,7 +109,7 @@ export async function publish(id, code, usw) {
  */
 export async function revoke(id) {
   try {
-    API.data.set('usw' + id, true);
+    pushId(id, true);
     await revokeToken('userstylesworld', new TokenHooks(id));
     const style = styleMan.get(id);
     if (style) {
@@ -119,6 +117,6 @@ export async function revoke(id) {
       await uswSave(style);
     }
   } finally {
-    API.data.del('usw' + id);
+    popId(id);
   }
 }

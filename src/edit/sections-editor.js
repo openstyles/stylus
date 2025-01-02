@@ -3,7 +3,7 @@ import {kCodeMirror, UCD} from '@/js/consts';
 import {$create} from '@/js/dom';
 import {messageBox} from '@/js/dom-util';
 import {htmlToTemplateCache, templateCache} from '@/js/localization';
-import {API} from '@/js/msg';
+import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {styleSectionsEqual, styleToCss} from '@/js/sections-util';
 import {clipString, RX_META, sleep, t} from '@/js/util';

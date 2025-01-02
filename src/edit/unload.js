@@ -1,5 +1,5 @@
 import {kCodeMirror} from '@/js/consts';
-import {API} from '@/js/msg';
+import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {sessionStore, t} from '@/js/util';
 import editor from './editor';
@@ -27,7 +27,7 @@ window.on('beforeunload', e => {
     prefs.set('windowPosition', pos);
   }
   sessionStore.windowPos = JSON.stringify(pos || {});
-  API.data.set('editorScrollInfo' + editor.style.id, editor.makeScrollInfo());
+  API.saveScroll(editor.style.id, editor.makeScrollInfo());
   const activeElement = document.activeElement;
   if (activeElement) {
     // blurring triggers 'change' or 'input' event if needed

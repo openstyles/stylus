@@ -2,7 +2,7 @@ import {kStyleIdPrefix} from '@/js/consts';
 import {$create, $detach, $toggleClasses} from '@/js/dom';
 import {messageBox, scrollElementIntoView} from '@/js/dom-util';
 import {template} from '@/js/localization';
-import {API} from '@/js/msg';
+import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {chromeLocal} from '@/js/storage-util';
 import {t} from '@/js/util';

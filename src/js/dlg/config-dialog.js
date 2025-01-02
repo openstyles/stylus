@@ -2,7 +2,7 @@ import {UCD} from '@/js/consts';
 import {$create, $createLink} from '@/js/dom';
 import {important, messageBox, setupLivePrefs} from '@/js/dom-util';
 import {breakWord} from '@/js/localization';
-import {API} from '@/js/msg';
+import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {clamp, debounce, deepCopy, sleep, t} from '@/js/util';
 import {MOBILE} from '@/js/ua';

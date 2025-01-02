@@ -2,7 +2,7 @@ import {kStyleIdPrefix, UCD} from '@/js/consts';
 import {$create, $toggleDataset} from '@/js/dom';
 import {setupLivePrefs, showSpinner} from '@/js/dom-util';
 import {breakWord, formatDate, htmlToTemplateCache, templateCache} from '@/js/localization';
-import {API} from '@/js/msg';
+import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import * as URLS from '@/js/urls';
 import {

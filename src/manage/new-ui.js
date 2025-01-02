@@ -1,6 +1,6 @@
 import {$$remove, $create, $toggleClasses} from '@/js/dom';
 import {getCssMediaRuleByName} from '@/js/dom-util';
-import {API} from '@/js/msg';
+import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {MEDIA_OFF, MEDIA_ON} from '@/js/themer';
 import {favicon} from '@/js/urls';

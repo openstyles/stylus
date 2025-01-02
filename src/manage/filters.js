@@ -1,6 +1,6 @@
 import {$create} from '@/js/dom';
 import {messageBox} from '@/js/dom-util';
-import {API} from '@/js/msg';
+import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {debounce, t} from '@/js/util';
 import {fitNameColumn, fitSizeColumn} from './render';

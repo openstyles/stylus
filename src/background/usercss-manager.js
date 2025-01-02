@@ -1,5 +1,4 @@
 import {UCD} from '@/js/consts';
-import {API} from '@/js/msg';
 import {deepCopy, mapObj, RX_META, t} from '@/js/util';
 import {worker} from './common';
 import download from './download';
@@ -111,7 +110,7 @@ export async function configVars(id, vars) {
   const style = deepCopy(styleMan.get(id));
   style[UCD].vars = vars;
   await buildCode(style);
-  return (await API.styles.install(style, 'config'))[UCD].vars;
+  return (await styleMan.install(style, 'config'))[UCD].vars;
 }
 
 export async function editSave(style) {

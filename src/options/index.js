@@ -3,7 +3,7 @@ import '@/js/browser';
 import {$create} from '@/js/dom';
 import {getEventKeyName, messageBox, setInputValue, setupLivePrefs} from '@/js/dom-util';
 import {htmlToTemplate, tBody, template, templateCache} from '@/js/localization';
-import {API} from '@/js/msg';
+import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {FIREFOX, MAC, OPERA} from '@/js/ua';
 import {clamp, t} from '@/js/util';
@@ -35,7 +35,7 @@ window.on('keydown', event => {
 $('header i').onclick = tellTopToCloseOptions;
 // actions
 $id('manage').onclick = () => {
-  API.openManage();
+  API.openManager();
 };
 $id('manage.newUI.favicons').onclick = () => {
   API.prefsDb.delete('badFavs');

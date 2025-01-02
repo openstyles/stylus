@@ -1,7 +1,8 @@
 import {UCD} from '@/js/consts';
-import {API} from '@/js/msg-api';
 import * as URLS from '@/js/urls';
 import {isEmptyObj} from '@/js/util';
+import * as usercssMan from '../usercss-manager';
+import * as syncMan from '../sync-manager';
 import {broadcastStyleUpdated, id2data, makeRandomUUID, storeInMap} from './util';
 
 const MISSING_PROPS = {
@@ -79,7 +80,7 @@ export function fixKnownProblems(style, initIndex, initArray) {
       style.sections = [{code: '/* No sections or sourceCode */'}];
       return style;
     }
-    return API.usercss.buildCode(style);
+    return usercssMan.buildCode(style);
   }
   return res && style;
 }
@@ -113,7 +114,7 @@ export function onSaved(style, reason, id = style.id) {
     data.style = style;
   }
   if (reason !== 'sync') {
-    API.sync.putDoc(style);
+    syncMan.putDoc(style);
   }
   if (reason !== false) broadcastStyleUpdated(style, reason, !data);
   return style;

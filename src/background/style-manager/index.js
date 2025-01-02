@@ -1,5 +1,4 @@
 import {IMPORT_THROTTLE, kUrl, UCD} from '@/js/consts';
-import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '@/js/sections-util';
 import {CHROME} from '@/js/ua';
@@ -7,10 +6,12 @@ import {isEmptyObj, mapObj} from '@/js/util';
 import {broadcast} from '../broadcast';
 import * as colorScheme from '../color-scheme';
 import {bgBusy, bgInit, uuidIndex} from '../common';
-import {db} from '../db';
+import {db, draftsDb, prefsDb} from '../db';
+import * as syncMan from '../sync-manager';
 import * as tabMan from '../tab-manager';
 import {getUrlOrigin} from '../tab-util';
-import * as usercssTemplate from '../usercss-template';
+import * as usercssMan from '../usercss-manager';
+import * as uswApi from '../usw-api';
 import * as styleCache from './cache';
 import {buildCache} from './cache-builder';
 import './connector';
@@ -24,7 +25,7 @@ import {
 bgInit.push(async () => {
   __.DEBUGLOG('styleMan init...');
   const [orderFromDb, styles = []] = await Promise.all([
-    API.prefsDb.get(orderWrap.id),
+    prefsDb.get(orderWrap.id),
     db.getAll(),
     styleCache.loadAll(),
   ]);
@@ -66,7 +67,7 @@ export async function config(id, prop, value) {
 export function editSave(style) {
   style = mergeWithMapped(style);
   style.updateDate = Date.now();
-  API.drafts.delete(style.id).catch(() => {});
+  draftsDb.delete(style.id).catch(() => {});
   return save(style, 'editSave');
 }
 
@@ -180,17 +181,6 @@ export function getCodelessStyles(ids, forPopup) {
   return res;
 }
 
-export function getEditClientData(id) {
-  const style = getById(id);
-  const isUC = style ? UCD in style : prefs.__values.newStyleAsUsercss;
-  return /** @namespace StylusClientData */ {
-    style,
-    isUC,
-    si: style && API.data.get('editorScrollInfo' + id),
-    template: !style && isUC && (usercssTemplate.value || usercssTemplate.load()),
-  };
-}
-
 /** @returns {string | {[remoteId:string]: styleId}}>} */
 export function getRemoteInfo(id) {
   if (id) return calcRemoteId(getById(id));
@@ -262,7 +252,7 @@ export async function importMany(items) {
     try {
       onBeforeSave(style);
       if (style.sourceCode && style[UCD]) {
-        await API.usercss.buildCode(style);
+        await usercssMan.buildCode(style);
       }
       res.push(styles.push(style) - 1);
     } catch (err) {
@@ -298,7 +288,7 @@ export async function install(style, reason = dataMap.has(style.id) ? 'update' :
 export async function preview(style) {
   let res = style.sourceCode || false;
   if (res) {
-    res = await API.usercss.build({
+    res = await usercssMan.build({
       styleId: style.id,
       sourceCode: res,
       assignVars: true,
@@ -317,7 +307,7 @@ export function remove(id, reason) {
   const sync = reason !== 'sync';
   const uuid = style._id;
   db.delete(id);
-  if (sync) API.sync.remove(uuid, Date.now());
+  if (sync) syncMan.remove(uuid, Date.now());
   for (const url of appliesTo) {
     const cache = styleCache.get(url);
     if (cache) delete cache.sections[id];
@@ -332,9 +322,9 @@ export function remove(id, reason) {
   setOrderImpl(orderWrap, {calc: false});
   if (style._usw && style._usw.token) {
     // Must be called after the style is deleted from dataMap
-    API.usw.revoke(id);
+    uswApi.revoke(id);
   }
-  API.drafts.delete(id).catch(() => {});
+  draftsDb.delete(id).catch(() => {});
   broadcast({
     method: 'styleDeleted',
     style: {id},

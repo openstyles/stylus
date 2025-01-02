@@ -1,7 +1,5 @@
 import {kInvokeAPI} from '@/js/consts';
-import {API, bgReadySignal} from './msg-api';
-
-export {API};
+import {bgReadySignal} from './msg-api';
 
 const handlers = new Map();
 export const onMessage = (fn, replyAllowed) => {

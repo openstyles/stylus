@@ -5,7 +5,7 @@ import {UCD} from '@/js/consts';
 import {$$remove, $create, $createLink} from '@/js/dom';
 import {configDialog, messageBox, showSpinner} from '@/js/dom-util';
 import {htmlToTemplate, tBody} from '@/js/localization';
-import {API} from '@/js/msg';
+import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {styleCodeEmpty} from '@/js/sections-util';
 import {isLocalhost} from '@/js/urls';

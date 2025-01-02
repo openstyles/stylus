@@ -1,6 +1,7 @@
 import {$create, $toggleDataset} from '@/js/dom';
 import {template} from '@/js/localization';
-import {API, onMessage} from '@/js/msg';
+import {onMessage} from '@/js/msg';
+import {API} from '@/js/msg-api';
 import {clientData} from '@/js/prefs';
 import {connected, disconnected, DRIVE_NAMES, getStatusText} from '@/js/sync-util';
 import {t} from '@/js/util';

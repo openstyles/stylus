@@ -1,9 +1,9 @@
 import '@/js/browser';
-import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {browserWindows, getActiveTab} from '@/js/util-webext';
 import {sendTab} from './broadcast';
+import {prefsDb} from './db';
 
 // FF57+ supports openerTabId, but not in Android
 // (detecting FF57 by the feature it added, not navigator.ua which may be spoofed in about:config)
@@ -54,14 +54,14 @@ export async function openEditor(params) {
  * @param {string} [opts.searchMode]
  * @returns {Promise<chrome.tabs.Tab>}
  */
-export async function openManage(opts = {}) {
+export async function openManager(opts = {}) {
   const base = chrome.runtime.getURL('manage.html');
   const url = setUrlParams(base, opts);
   const tabs = await browser.tabs.query({url: base + '*'});
   const same = tabs.find(_ => _.url === url);
   let tab = same || tabs[0];
   if (!tab) {
-    API.prefsDb.get('badFavs'); // prime the cache to avoid flicker/delay when opening the page
+    prefsDb.get('badFavs'); // prime the cache to avoid flicker/delay when opening the page
     tab = await openURL({url, newTab: true});
   } else if (!same) {
     await sendTab(tab.id, {method: 'pushState', url: setUrlParams(tab.url, opts)});

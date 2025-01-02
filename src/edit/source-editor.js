@@ -2,7 +2,7 @@ import {getLZValue, LZ_KEY, setLZValue} from '@/js/chrome-sync';
 import {UCD} from '@/js/consts';
 import {$$remove, $create, $createLink, $isTextInput} from '@/js/dom';
 import {messageBox} from '@/js/dom-util';
-import {API} from '@/js/msg';
+import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {styleToCss} from '@/js/sections-util';
 import {RX_META, t} from '@/js/util';

@@ -1,10 +1,11 @@
 import {UCD} from '@/js/consts';
-import {API} from '@/js/msg-api';
 import * as URLS from '@/js/urls';
 import {deepEqual, isEmptyObj, mapObj} from '@/js/util';
 import {broadcast} from '../broadcast';
 import broadcastInjectorConfig from '../broadcast-injector-config';
 import {uuidIndex} from '../common';
+import {prefsDb} from '../db';
+import * as syncMan from '../sync-manager';
 import {buildCacheForStyle} from './cache-builder';
 
 /** @type {Map<number,StyleMapData>} */
@@ -103,10 +104,10 @@ export async function setOrderImpl(data, {
     broadcastInjectorConfig('order', order);
   }
   if (store) {
-    await API.prefsDb.put(orderWrap, orderWrap.id);
+    await prefsDb.put(orderWrap, orderWrap.id);
   }
   if (sync) {
-    API.sync.putDoc(orderWrap);
+    syncMan.putDoc(orderWrap);
   }
 }
 

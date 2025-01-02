@@ -1,5 +1,5 @@
 import {UCD} from '@/js/consts';
-import {API} from '@/js/msg';
+import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import editor from './editor';
 

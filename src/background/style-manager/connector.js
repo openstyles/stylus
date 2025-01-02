@@ -1,4 +1,4 @@
-import {API} from '@/js/msg-api';
+import {draftsDb} from '../db';
 import {broadcastStyleUpdated, id2data} from './util';
 
 const ON_DISCONNECT = {
@@ -16,7 +16,7 @@ chrome.runtime.onConnect.addListener(port => {
 
 function onDraftEnd(port) {
   const id = port.name.split(':')[1];
-  API.drafts.delete(+id || id).catch(() => {});
+  draftsDb.delete(+id || id).catch(() => {});
 }
 
 function onPreviewEnd({name}) {

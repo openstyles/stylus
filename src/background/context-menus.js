@@ -1,37 +1,40 @@
 import '@/js/browser';
 import {kDisableAll} from '@/js/consts';
-import {API} from '@/js/msg';
 import * as prefs from '@/js/prefs';
 import {CHROME} from '@/js/ua';
 import {ownRoot} from '@/js/urls';
 import {t} from '@/js/util';
 import {ignoreChromeError} from '@/js/util-webext';
 import {sendTab} from './broadcast';
+import {openManager} from './tab-util';
 
 const kStyleManager = 'styleManager';
+/** Keeping r-less old spelling to preserve user's browser pref for the hotkey */
+const kOpenManage = 'openManage';
 const kOpenOptions = 'openOptions';
 const kReload = 'reload';
+const kStyleDisableAll = 'styleDisableAll';
 
-const openManage = () => API.openManage();
-const openOptions = () => API.openManage({options: true});
-const reload = () => chrome.runtime.reload();
-const styleDisableAll = info => prefs.set(kDisableAll,
+const cmdOpenManager = () => openManager();
+const cmdOpenOptions = () => openManager({options: true});
+const cmdReload = () => chrome.runtime.reload();
+const cmdStyleDisableAll = info => prefs.set(kDisableAll,
   info ? info.checked : !prefs.get(kDisableAll));
 
 const COMMANDS = {
-  openManage,
-  [kOpenOptions]: openOptions,
-  [kReload]: reload,
-  styleDisableAll,
+  [kOpenManage]: cmdOpenManager,
+  [kOpenOptions]: cmdOpenOptions,
+  [kReload]: cmdReload,
+  [kStyleDisableAll]: cmdStyleDisableAll,
 };
 
 /** id is either a prefs id or an i18n key to be used for the title */
 const MENUS = Object.assign({
   'show-badge': [togglePref, {title: 'menuShowBadge'}],
-  [kDisableAll]: [styleDisableAll, {title: 'disableAllStyles'}],
-  [kStyleManager]: [openManage],
-  [kOpenOptions]: [openOptions],
-  [kReload]: [reload],
+  [kDisableAll]: [cmdStyleDisableAll, {title: 'disableAllStyles'}],
+  [kStyleManager]: [cmdOpenManager],
+  [kOpenOptions]: [cmdOpenOptions],
+  [kReload]: [cmdReload],
 }, CHROME && {
   'editor.contextDelete': [(info, tab) => {
     sendTab(tab.id, {method: 'editDeleteText'});

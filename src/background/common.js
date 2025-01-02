@@ -15,6 +15,22 @@ export const bgInit = [];
 const CLIENT_TIMEOUT = 100;
 export const clientDataJobs = {};
 
+/** Temporary storage for data needed elsewhere e.g. in a content script */
+export const dataHub = {
+  del: key => delete data[key],
+  get: key => data[key],
+  has: key => key in data,
+  pop: key => {
+    const val = data[key];
+    delete data[key];
+    return val;
+  },
+  set: (key, val) => {
+    data[key] = val;
+  },
+};
+const data = {__proto__: null};
+
 export const getClient = async () => {
   for (let busy, job, tEnd;
       !tEnd || performance.now() < tEnd;

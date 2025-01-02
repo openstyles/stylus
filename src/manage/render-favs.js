@@ -1,5 +1,5 @@
 import {$create} from '@/js/dom';
-import {API} from '@/js/msg';
+import {API} from '@/js/msg-api';
 import * as URLS from '@/js/urls';
 import {debounce, stringAsRegExpStr} from '@/js/util';
 import {getOwnTab, MF_ICON} from '@/js/util-webext';
