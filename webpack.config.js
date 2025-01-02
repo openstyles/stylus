@@ -50,7 +50,6 @@ const RESOLVE_VIA_SHIM = {
 const MAX_CHUNKNAME_LEN = 24; // in Windows, path+name is limited to 260 chars
 const CM_PATH = CSS + 'cm-themes/';
 const CM_PACKAGE_PATH = path.dirname(require.resolve('codemirror/package.json')) + path.sep;
-const CM_NATIVE_RE = /codemirror(?!-factory)/; // `factory` is our code
 const THEME_PATH = CM_PACKAGE_PATH.replaceAll('\\', '/') + '/theme';
 const THEME_NAMES = Object.fromEntries(fs.readdirSync(THEME_PATH)
   .sort()
@@ -382,7 +381,7 @@ module.exports = [
           codemirror: {
             test: new RegExp([
               SRC_ESC + 'cm' + SEP_ESC,
-              CM_NATIVE_RE.source,
+              'codemirror(?!-factory)', // `factory` is our code
             ].join('|')),
             name: 'codemirror',
             enforce: true,

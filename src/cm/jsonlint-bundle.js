@@ -1,4 +1,4 @@
-import {CodeMirror} from '@/cm';
+import {CodeMirror} from '.';
 import 'codemirror/mode/javascript/javascript';
 import {parseJSON} from 'usercss-meta/lib/parse-util';
 
