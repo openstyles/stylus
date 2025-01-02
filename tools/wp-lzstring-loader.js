@@ -1,5 +1,7 @@
+'use strict';
+
 /** Convert to ESM */
-export default function (text) {
+module.exports = function (text) {
   text = text
     .replace('var LZStringUnsafe = (function () {', '')
     .split(`\n  };\n})();\n`)[0]
@@ -12,4 +14,4 @@ export default function (text) {
           ? `${func} ${id}`
           : `{${func} as ${id}}`
       ));
-}
+};

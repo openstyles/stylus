@@ -12,7 +12,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const InlineConstantExportsPlugin = require('@automattic/webpack-inline-constant-exports-plugin');
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
-const RawEnvPlugin = require('./tools/raw-env-plugin');
+const {RawEnvPlugin} = require('./tools/wp-raw-patch-plugin');
 const {
   escapeForRe, getManifestOvrName, transESM2var, transSourceMap,
   BUILD, CHANNEL, DEV, MANIFEST, MV3, ROOT, ZIP, nukeHtmlSpaces,
@@ -181,10 +181,12 @@ const getBaseConfig = hasCodeMirror => ({
       }])(), {
         test: /\.(png|svg|jpe?g|gif|ttf)$/i,
         type: 'asset/resource',
-      }, !MV3 && {
+      }, {
         test: /\.m?js(\?.*)?$/,
-        loader: 'babel-loader',
-        options: {root: ROOT},
+        use: [
+          {loader: './tools/wp-raw-patch-plugin'},
+          !MV3 && {loader: 'babel-loader', options: {root: ROOT}},
+        ].filter(Boolean),
         resolve: {fullySpecified: false},
       }, {
         loader: 'html-loader',
@@ -195,14 +197,14 @@ const getBaseConfig = hasCodeMirror => ({
           preprocessor: nukeHtmlSpaces,
         },
       }, {
-        loader: SHIM + 'cjs-to-esm-loader.js',
+        loader: './tools/wp-cjs-to-esm-loader.js',
         test: new RegExp(`/node_modules/(${escapeForRe([
           '@eight04/',
           'db-to-cloud',
           'webext-launch-web-auth-flow',
         ].join('\n')).replaceAll('\n', '|')})`.replaceAll('/', SEP_ESC)),
       }, {
-        loader: SHIM + 'lzstring-loader.js',
+        loader: './tools/wp-lzstring-loader.js',
         test: require.resolve('lz-string-unsafe'),
       },
     ].filter(Boolean),

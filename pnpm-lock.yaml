@@ -57,6 +57,9 @@ importers:
       '@types/webpack':
         specifier: ^5.28.5
         version: 5.28.5(webpack-cli@5.1.4)
+      acorn:
+        specifier: ^8.14.0
+        version: 8.14.0
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.4.49)
@@ -123,6 +126,9 @@ importers:
       postcss-simple-vars:
         specifier: ^7.0.1
         version: 7.0.1(postcss@8.4.49)
+      source-map-js:
+        specifier: ^1.2.1
+        version: 1.2.1
       svg2ttf:
         specifier: ^6.0.3
         version: 6.0.3
