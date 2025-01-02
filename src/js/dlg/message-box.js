@@ -169,10 +169,7 @@ messageBox.show = ({
             $create('i.i-close')),
           $create(`#${id}-contents`, tHTML(contents)),
           $create(`#${id}-buttons`, buttons.filter(Boolean).map((btn, buttonIndex) => {
-            if (btn.localName !== 'button') {
-              const obj = typeof btn === 'object' && btn;
-              btn = $create('button', obj, (!obj || btn instanceof Node) && btn);
-            }
+            if (btn.localName !== 'button') btn = $create('button', btn);
             btn.buttonIndex = buttonIndex;
             btn.onclick ??= messageBox.listeners.button;
             return btn;
