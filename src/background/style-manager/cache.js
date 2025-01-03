@@ -113,11 +113,22 @@ function del(items) {
 /** @param {Set} items */
 function flush() {
   const bare = [];
-  for (const {d, url, maybeMatch, sections} of toWrite) {
+  let toDel;
+  nextEntry:
+  for (const val of toWrite) {
+    const {d, url, maybeMatch, sections} = val;
     const indexes = {};
     const res = {};
     let styleId;
-    for (styleId in sections) indexes[styleId] = sections[styleId].idx;
+    for (styleId in sections) {
+      const sec = sections[styleId];
+      const idx = sec && (Array.isArray(sec) ? sec : sec.idx);
+      if (!idx) {
+        (toDel ??= []).push(val);
+        continue nextEntry;
+      }
+      indexes[styleId] = idx;
+    }
     // Adding the meaningful props first to ensure their visibility in devtools DB viewer
     if (styleId) res.sections = indexes;
     if (maybeMatch.size) res.maybeMatch = maybeMatch;
@@ -125,6 +136,7 @@ function flush() {
     res.url = url;
     bare.push(res);
   }
+  if (toDel) del(toDel);
   cacheDB.putMany(bare);
   toWrite.clear();
   timer = null;
