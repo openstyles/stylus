@@ -1,7 +1,10 @@
+import {NAMED_COLORS} from '@/js/color/color-converter';
+import {COLORVIEW_SWATCH_CLASS, COLORVIEW_SWATCH_PROP} from '@/js/color/color-view';
 import {kCssPropSuffix} from '@/js/consts';
 import {debounce} from '@/js/util';
 
 const MARK = $tag('b');
+const SWATCH = Object.assign($tag('span'), {className: COLORVIEW_SWATCH_CLASS});
 const USO_VAR = 'uso-variable';
 export const USO_VALID_VAR = 'variable-3 ' + USO_VAR;
 export const USO_INVALID_VAR = 'error ' + USO_VAR;
@@ -14,10 +17,10 @@ export const addSuffix = (obj, suffix) =>
 
 export class Completion {
   /* eslint-disable class-methods-use-this */
-  constructor(i, text, isValue) {
+  constructor(i, text, val) {
     this.i = i;
     this.text = text;
-    this.val = isValue;
+    this.val = val;
   }
 
   /**
@@ -42,12 +45,25 @@ export class Completion {
    * @param {Completion} completion
    */
   render(el, {len}, {i, text, val}) {
-    el.className += ` hint-${val ? 'value' : 'name'} hint-${i ? 'start' : 'inside'}`;
-    el.append(...[
-      i && text.slice(0, i),
-      len && (el = MARK.cloneNode(), el.append(text.slice(i, i + len)), el),
-      !(i += len) ? text : text.slice(i),
-    ].filter(Boolean));
+    let color, mark;
+    if (NAMED_COLORS.has(val || text))
+      (color = SWATCH.cloneNode()).style.setProperty(COLORVIEW_SWATCH_PROP, val || text);
+    if (len)
+      (mark = MARK.cloneNode()).append((val || text).slice(i, i + len));
+    el.className +=
+      (val ? ' hint-value' : ' hint-name') +
+      (i ? ' hint-start' : ' hint-inside');
+    if (!color && !mark) {
+      el.textContent = text + (val || '');
+    } else {
+      el.append(...[
+        val && text,
+        color,
+        (val || text).slice(0, i),
+        mark,
+        (val || text).slice(i + len),
+      ].filter(Boolean));
+    }
   }
 }
 

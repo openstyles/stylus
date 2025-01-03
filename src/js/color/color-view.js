@@ -6,8 +6,8 @@ import CodeMirror from 'codemirror';
 //region Constants
 
 const COLORVIEW_CLASS = 'colorview';
-const COLORVIEW_SWATCH_CLASS = COLORVIEW_CLASS + '-swatch';
-const COLORVIEW_SWATCH_CSS = `--${COLORVIEW_SWATCH_CLASS}:`;
+export const COLORVIEW_SWATCH_CLASS = COLORVIEW_CLASS + '-swatch';
+export const COLORVIEW_SWATCH_PROP = `--${COLORVIEW_SWATCH_CLASS}`;
 const CLOSE_POPUP_EVENT = 'close-colorpicker-popup';
 
 const {RX_COLOR, testAt} = colorConverter;
@@ -401,7 +401,7 @@ function colorizeLineViaStyles(state, lineHandle, styleIndex = 1) {
     state.cm.markText({line, ch: start}, {line, ch: end}, {
       className: COLORVIEW_CLASS,
       startStyle: COLORVIEW_SWATCH_CLASS,
-      css: COLORVIEW_SWATCH_CSS + colorValue,
+      css: COLORVIEW_SWATCH_PROP + ':' + colorValue,
       color,
     });
   }
@@ -446,7 +446,7 @@ function colorizeLineViaStyles(state, lineHandle, styleIndex = 1) {
     span.line = state.line;
     span.index = spanIndex - 1;
     span.marker.color = color;
-    span.marker.css = COLORVIEW_SWATCH_CSS + colorValue;
+    span.marker.css = COLORVIEW_SWATCH_PROP + ':' + colorValue;
   }
 
   function removeDeadSpans() {
@@ -560,7 +560,7 @@ function makePalette({cm, options}) {
         el = $tag('div');
         el.__color = color; // also used in color-picker.js
         el.className = COLORVIEW_SWATCH_CLASS;
-        el.style.setProperty(`--${COLORVIEW_SWATCH_CLASS}`, color);
+        el.style.setProperty(COLORVIEW_SWATCH_PROP, color);
       }
       if (el.__str !== str) {
         el.__str = str;

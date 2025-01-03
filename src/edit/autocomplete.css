@@ -1,5 +1,15 @@
-.CodeMirror-hint b {
-  background-color: hsla(51, 100%, 50%, .25);
+.CodeMirror-hint {
+  b {
+    background-color: hsla(51, 100%, 50%, .25);
+  }
+  .colorview-swatch {
+    vertical-align: middle;
+    &::before {
+      left: 0;
+      width: 11px;
+      height: 11px;
+    }
+  }
 }
 .CodeMirror-hint-active b {
   background: deepskyblue;

@@ -67,6 +67,7 @@ async function helper(cm) {
   const {styles, text} = cm.getLineHandle(line);
   let i, end, leftLC, list, prev, prop, state, str, type;
   if (
+    prevData &&
     prevLine === line &&
     prevCh <= ch &&
     prevMatch === text.slice(prevCh - prevMatch.length, prevCh) &&
@@ -239,16 +240,17 @@ async function helper(cm) {
     if (!prop) {
       const values1 = new Map();
       const values2 = new Map();
+      if (!cssPropNames) await initCssProps();
       for (const name of cssPropNames) {
         i = 0;
-        for (let a, b, v, lc = cssPropsLC[name], nameLen = name.length;
+        for (let a, b, v, lc = cssPropsLC[name];
           i >= 0 && (!leftLC || (i = lc.indexOf(leftLC, i)) >= 0);
           i = leftLC ? b : b + 1 || b/*retain -1 to end the loop*/
         ) {
           a = leftLC ? lc.lastIndexOf('\n', i) + 1 : i;
           b = lc.indexOf('\n', i + len);
-          v = name + cssProps[name].slice(a, b < 0 ? 1e9 : b);
-          (i === a ? values1 : values2).set(v, new Completion(i - a + nameLen, v, true));
+          v = cssProps[name].slice(a, b < 0 ? 1e9 : b);
+          (i === a ? values1 : values2).set(name + v, new Completion(i - a, name, v));
         }
       }
       list.push(...values1.values(), ...values2.values());
@@ -260,6 +262,7 @@ async function helper(cm) {
   prevCh = ch;
   /** @namespace CompletionData */
   prevData = {
+    /** length of the highlight for the matched input */
     len,
     list,
     from: {line, ch: prev},
