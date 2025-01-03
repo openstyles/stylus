@@ -48,7 +48,7 @@ function createPreviewer() {
 function showError() {
   if (errPos) {
     const cm = editor.getEditors()[0];
-    cm.setCursor(errPos);
+    cm.jumpToPos(errPos);
     cm.focus();
   }
 }
@@ -61,7 +61,7 @@ async function updatePreviewer(newData) {
     const ucd = newData[UCD];
     const pp = ucd && ucd.preprocessor;
     const shift = err._varLines + 1 || 0;
-    errPos = pp && err.line && err.column
+    errPos = pp && (err.line ??= err.lineno) && err.column
       ? {line: err.line - shift, ch: err.column - 1}
       : err.index;
     if (Array.isArray(err)) {
@@ -73,7 +73,9 @@ async function updatePreviewer(newData) {
     if (errPos >= 0) {
       // FIXME: this would fail if editors[0].getValue() !== data.sourceCode
       errPos = editor.getEditors()[0].posFromIndex(errPos);
-    } else if (pp === 'stylus' && (errPos = err.match(/^\w+:(\d+):(\d+)(?:\n.+)+\s+(.+)/))) {
+    } else if (!errPos && pp === 'stylus' && (
+      errPos = err.match(/^\w+:(\d+):(\d+)(?:\n.+)+\s+(.+)/)
+    )) {
       err = errPos[3];
       errPos = {line: errPos[1] - shift, ch: errPos[2] - 1};
     }
