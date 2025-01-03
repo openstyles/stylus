@@ -116,8 +116,9 @@ export function createPortExec(getTarget, {lock, once} = {}) {
     if (!err) {
       resolve(res);
     } else {
-      err.stack += '\n' + stack;
-      reject(err);
+      reject(Array.isArray(err)
+        ? Object.assign(...err, {stack: err[0].stack + '\n' + stack})
+        : err);
     }
     if (once) {
       port.close();
@@ -177,9 +178,7 @@ export function initRemotePort(evt) {
       if (res instanceof Promise) res = await res;
     } catch (e) {
       res = undefined; // clearing a rejected Promise
-      err = e;
-      delete e.source;
-      // TODO: find which props are actually used (err may contain noncloneable Response)
+      err = e instanceof Error ? [e, {...e}] : e; // keeping own props added on top of an Error
     }
     if (__.DEBUG & 2) console.log('%c%s port response', 'color:green', PATH, id, {res, err});
     port.postMessage({id, res, err}, portEvent._transfer);
