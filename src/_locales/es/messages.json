@@ -339,8 +339,14 @@
   "filteredStylesAllHidden": {
     "message": "Los filtros aplicados actualmente no coinciden con ningún estilo"
   },
+  "find": {
+    "message": "Buscar"
+  },
   "findStyles": {
     "message": "Buscar estilos"
+  },
+  "findStylesOnline": {
+    "message": "Haz clic para encontrar estilos en línea."
   },
   "genericAdd": {
     "message": "Añadir"
@@ -585,7 +591,7 @@
     "message": "Solo estilos desactivados"
   },
   "manageOnlyEnabled": {
-    "message": "Solamente estilos activados"
+    "message": "Solo estilos activados"
   },
   "manageOnlyExternal": {
     "message": "Solo estilos externos"
@@ -604,6 +610,9 @@
   },
   "manageOnlyUsercss": {
     "message": "Solo estilos UserCSS"
+  },
+  "masterSwitch": {
+    "message": "Interruptor general"
   },
   "menuShowBadge": {
     "message": "Mostrar número de estilos activos"
@@ -810,10 +819,31 @@
     "message": "Línea:"
   },
   "openManage": {
-    "message": "Administrar"
+    "message": "Gestionar"
   },
   "openOptions": {
     "message": "Opciones"
+  },
+  "optionFOUC": {
+    "message": "¿Estilos aplicados demasiado tarde?"
+  },
+  "optionFOUCMV2": {
+    "message": "Considere la posibilidad de activar \"<a>\"."
+  },
+  "optionFOUCMV3": {
+    "message": "Considere la posibilidad de activar \"<a>\" y aumentar \"<b>\"."
+  },
+  "optionKeepAlive": {
+    "message": "Duración de la caché de estilos"
+  },
+  "optionKeepAlive2": {
+    "message": "(en minutos, -1 = sin límite)"
+  },
+  "optionKeepAliveIdle": {
+    "message": "...aunque el navegador esté inactivo"
+  },
+  "optionKeepAliveNote": {
+    "message": "Auméntalo si encuentras parpadeo de contenido sin estilo (FOUC) al abrir una página después de no interactuar con el navegador durante un tiempo.\n\n-1 = Comportamiento por defecto de ManifestV2 (sin límite).\n0 = Comportamiento por defecto de ManifestV3 (medio minuto).\n\nLa caché ocupa 30MB o más de RAM, pero reconstruirla puede llevar demasiado tiempo y causar FOUC dependiendo del sitio web, la velocidad de la red, la cantidad de estilos, el tamaño de la RAM y el rendimiento de la CPU."
   },
   "optionsActions": {
     "message": "Acciones"
@@ -1273,7 +1303,7 @@
     "message": "Alternar la importancia del estilo"
   },
   "styleInjectionOrder": {
-    "message": "Ordenar aplicación de los estilos"
+    "message": "Orden de aplicación de los estilos"
   },
   "styleInjectionOrderHint": {
     "message": "Arrastre un estilo para cambiar su posición. Los estilos se aplican secuencialmente en el orden que se muestra a continuación, por lo que un estilo que esté más abajo en la lista puede anular los estilos anteriores."
@@ -1312,7 +1342,7 @@
     }
   },
   "styleManager": {
-    "message": "Gestor de estilo"
+    "message": "Gestor de estilos"
   },
   "styleMissingName": {
     "message": "Ingresa un nombre"
@@ -1508,6 +1538,14 @@
   },
   "versionInvalidOlder": {
     "message": "La versión es más antigua que el estilo instalado."
+  },
+  "webRequestBlockingMV3Note": {
+    "message": "Requiere el permiso webRequestBlocking que puede ser activado en ManifestV3 usando uno de estos métodos:\n\n 1) Exporte la copia de seguridad, configure la política <a href='https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist'>ExtensionInstallForcelist</a> para el id \"$id$\" de esta extensión, reinicie el navegador, espere a que se instale la extensión, importe la copia de seguridad en el gestor de estilos y, opcionalmente, fije el icono a la barra de herramientas.\n\n 2) Modifique la línea de comandos en el icono o lanzador del navegador: agregue un espacio y <code><nobr>--allowlisted-extension-id=$id$</nobr></code>",
+    "placeholders": {
+      "id": {
+        "content": "$1"
+      }
+    }
   },
   "writeStyleFor": {
     "message": "Escribir estilo para:"
