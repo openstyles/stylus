@@ -47,7 +47,9 @@ declare interface StyleObj {
   _usw?: USWorldData;
 }
 
-declare interface StyleMapData {
+type StyleDataMap = Map<number, StyleDataMapEntry>;
+
+declare interface StyleDataMapEntry {
   style: StyleObj;
   preview?: StyleObj;
   appliesTo: Set<string>;
@@ -63,45 +65,50 @@ declare interface StyleSection {
   regexps?: string[];
 }
 
-declare interface CachedInjectedStyles {
-  maybeMatch: Set<number>;
-  sections: InjectedStyles;
+declare namespace Injection {
+  interface Response {
+    cfg: Config;
+    sections?: Sections[];
+  }
+  interface SectionsMap {
+    [styleId: string]: Sections
+  }
+  interface Sections {
+    id: number,
+    /** Added in style-manager::cache */
+    idx?: MatchCache.Index,
+    code: string[],
+    name: string,
+    /** Added in style-injector */
+    el?: HTMLStyleElement|CSSStyleSheet;
+  }
+  interface Config {
+    ass?: boolean;
+    dark?: boolean;
+    name?: boolean;
+    nonce?: string;
+    top?: string | false;
+    off?: boolean;
+    order?: Order;
+  }
+  interface Order {
+    main: Record<string,number>;
+    prio: Record<string,number>;
+  }
 }
 
-declare interface Injection {
-  cfg: InjectionConfig;
-  sections?: InjectedStyle[];
-}
-
-declare interface InjectedStyles {
-  [styleId: string]: InjectedStyle
-}
-
-declare interface InjectedStyle {
-  id: number,
-  code: string[],
-  name: string,
-  /** Added in style-injector */
-  el?: HTMLStyleElement|CSSStyleSheet;
-}
-
-declare interface InjectionConfig {
-  ass?: boolean;
-  dark?: boolean;
-  name?: boolean;
-  nonce?: string;
-  top?: string | false;
-  off?: boolean;
-  order?: InjectionOrder;
-}
-
-declare interface InjectionOrder {
-  main: InjectionOrderGroup;
-  prio: InjectionOrderGroup;
-}
-
-declare interface InjectionOrderGroup {
-  [id: string]: number;
+declare namespace MatchCache {
+  interface Entry {
+    url: string;
+    maybeMatch: Set<number>;
+    sections: Injection.SectionsMap;
+  }
+  type DbEntry = Entry & {
+    d: Date[];
+    sections: IndexMap;
+  }
+  type IndexMap = {[styleId: string]: Index};
+  type Index = number[];
 }
 
 declare interface MatchQuery {

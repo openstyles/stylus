@@ -8,13 +8,13 @@ import {prefsDb} from '../db';
 import * as syncMan from '../sync-manager';
 import {buildCacheForStyle} from './cache-builder';
 
-/** @type {Map<number,StyleMapData>} */
+/** @type {StyleDataMap} */
 export const dataMap = new Map();
-/** @returns {StyleMapData|void} */
+/** @returns {StyleDataMapEntry|void} */
 export const id2data = dataMap.get.bind(dataMap);
 
 const INJ_ORDER = 'injectionOrder';
-export const order = /** @type {InjectionOrder} */{main: {}, prio: {}};
+export const order = /** @type {Injection.Order} */{main: {}, prio: {}};
 export const orderWrap = {
   id: INJ_ORDER,
   value: mapObj(order, () => []),

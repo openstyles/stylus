@@ -1,8 +1,10 @@
 import {styleCodeEmpty} from '@/js/sections-util';
-import * as styleCache from './cache';
+import cacheData, * as styleCache from './cache';
 import {urlMatchSection, urlMatchStyle} from './matcher';
 import {id2data} from './util';
 
+/** @param {StyleObj} style
+ * @return {void} */
 export function buildCacheForStyle(style) {
   const {id} = style;
   const data = id2data(id);
@@ -11,8 +13,7 @@ export function buildCacheForStyle(style) {
   const styleToApply = data.preview || style;
   const excluded = new Set();
   const updated = new Set();
-  for (const cache of styleCache.values()) {
-    styleCache.add(cache);
+  for (const cache of cacheData.values()) {
     const url = cache.url;
     if (!data.appliesTo.has(url)) {
       cache.maybeMatch.add(id);
@@ -30,9 +31,14 @@ export function buildCacheForStyle(style) {
   data.appliesTo = updated;
 }
 
-export function buildCache(cache, url, styleList) {
+/**
+ * @param {MatchCache.Entry} cache
+ * @param {string} url
+ * @param {Iterable<StyleDataMapEntry>} dataList
+ * @return {void} */
+export function buildCache(cache, url, dataList) {
   const query = {url};
-  for (const data of styleList) {
+  for (const data of dataList) {
     const {style} = data;
     // getSectionsByUrl only needs enabled styles
     const code = style.enabled && getAppliedCode(query, data.preview || style);
@@ -44,13 +50,23 @@ export function buildCache(cache, url, styleList) {
   styleCache.add(cache);
 }
 
+/**
+ * @param {MatchCache.Entry} entry
+ * @param {StyleObj} style
+ * @param {MatchCache.Index} [idx]
+ * @param {string[]} [code]
+ */
 function buildCacheEntry(entry, style, [idx, code]) {
   styleCache.make(entry, style, idx, code);
 }
 
-/** Get styles matching a URL, including sloppy regexps and excluded items. */
-function getAppliedCode(query, data) {
-  const result = urlMatchStyle(query, data);
+/** Get styles matching a URL, including sloppy regexps and excluded items.
+ * @param {MatchQuery} query
+ * @param {StyleObj} style
+ * @return {?Array}
+ */
+function getAppliedCode(query, style) {
+  const result = urlMatchStyle(query, style);
   const isIncluded = result === 'included';
   const code = [];
   const idx = [];
@@ -58,7 +74,7 @@ function getAppliedCode(query, data) {
     return;
   }
   let i = 0;
-  for (const section of data.sections) {
+  for (const section of style.sections) {
     if ((isIncluded || urlMatchSection(query, section) === true)
     && !styleCodeEmpty(section)) {
       code.push(section.code);

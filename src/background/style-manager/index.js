@@ -192,7 +192,7 @@ export function getRemoteInfo(id) {
   return res;
 }
 
-/** @returns {Injection} */
+/** @returns {Injection.Response} */
 export function getSectionsByUrl(url, id, isInitialApply) {
   const p = prefs.__values;
   if (isInitialApply && p.disableAll) {
@@ -201,7 +201,7 @@ export function getSectionsByUrl(url, id, isInitialApply) {
   const {sender = {}} = this || {};
   const {tab = {}, frameId, TDM} = sender;
   const isTop = !frameId || TDM || sender.type === 'main_frame'; // prerendering in onBeforeRequest
-  /** @type {InjectionConfig} */
+  /** @type {Injection.Config} */
   const cfg = !id && {
     ass: p.styleViaASS,
     dark: isTop && colorScheme.isDark,
@@ -223,7 +223,6 @@ export function getSectionsByUrl(url, id, isInitialApply) {
        TODO: if FF will do the same, this won't work as is: FF reports onCommitted too late */
     url = tabMan.get(tab.id, kUrl) || url;
   }
-  /** @type {CachedInjectedStyles} */
   let cache = styleCache.get(url);
   if (!cache) {
     cache = {

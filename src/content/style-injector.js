@@ -7,7 +7,7 @@ const PREFIX = CLASS + '-';
 const MEDIA = 'screen, ' + PREFIX;
 const PATCH_ID = 'transition-patch';
 const kAss = 'adoptedStyleSheets';
-export const own = /** @type {Injection} */{
+export const own = /** @type {Injection.Response} */{
   cfg: {off: false, top: ''},
 };
 export const ownId = chrome.runtime.id;
@@ -20,11 +20,11 @@ const ORDERED_TAGS = new Set(['head', 'body', 'frameset', !__.ENTRY && 'style', 
 const docRewriteObserver = !__.ENTRY && RewriteObserver(updateRoot);
 const docRootObserver = RootObserver(restoreOrder);
 const toSafeChar = c => String.fromCharCode(0xFF00 + c.charCodeAt(0) - 0x20);
-/** @type {InjectedStyle[]} */
+/** @type {Injection.Sections[]} */
 export const list = [];
 const calcOrder = ({id}) => orderPrio[id] * 1e6 || orderMain[id] || id + .5e6;
 const compare = (a, b) => calcOrder(a) - calcOrder(b);
-/** @type {Map<number,InjectedStyle>} */
+/** @type {Map<number,Injection.Sections>} */
 const table = new Map();
 /** @type {CSSStyleSheet[]} V1: frozen array in old Chrome, the reference changes */
 let ass;

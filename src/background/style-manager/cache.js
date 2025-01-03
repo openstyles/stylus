@@ -1,22 +1,29 @@
+import {bgBusy} from '../common';
 import {db as styleDB, getDbProxy} from '../db';
 
 let onDeleted;
 let timer;
 const MAX = 1000;
 const cacheDB = getDbProxy('cache', {id: 'url'});
+/** @type {Map<string,MatchCache.Entry>} keyed on URL */
 const cache = new Map();
+/** @type {Set<MatchCache.Entry | MatchCache.DbEntry>} */
 const toWrite = new Set();
 
-/** @type {typeof Map.prototype.values} */
-export const values = cache.values.bind(cache);
+export default cache;
 
+/** @param {string} url
+ * @return {?MatchCache.Entry} */
 export const get = url => (url = cache.get(url)) && hit(url);
 
+/** @param {MatchCache.Entry} val
+ * @return {void} */
 export function add(val) {
   cache.set(val.url, hit(val));
   if (cache.size >= MAX) prune();
 }
 
+/** @return {void} */
 export function clear() {
   if (onDeleted) cache.forEach(onDeleted);
   cache.clear();
@@ -24,6 +31,8 @@ export function clear() {
   if (timer) timer = clearTimeout(timer);
 }
 
+/** @param {string} url
+ * @return {Promise<?MatchCache.Entry>} */
 export async function loadOne(url) {
   const val = await cacheDB.get(url);
   if (val) {
@@ -40,6 +49,7 @@ export async function loadOne(url) {
   return val;
 }
 
+/** @return {Promise<void>} */
 export async function loadAll() {
   for (const val of await cacheDB.getAll()) {
     if (!cache.has(val.url)) {
@@ -48,10 +58,11 @@ export async function loadAll() {
   }
 }
 
-/** @param {Map<number,StyleMapData>} dataMap */
+/** @param {StyleDataMap} dataMap
+ * @return {void} */
 export function hydrate(dataMap) {
   const toDel = [];
-  for (const val of values()) {
+  for (const val of cache.values()) {
     try {
       for (const id in ensureSections(val)) {
         const data = dataMap.get(+id);
@@ -68,11 +79,20 @@ export function hydrate(dataMap) {
   if (toDel[0]) del(toDel);
 }
 
+/** @param {MatchCache.DbEntry}
+ * @return {Object} */
 export function ensureSections(entry) {
   entry.maybeMatch ??= new Set();
   return (entry.sections ??= {});
 }
 
+/**
+ * @param {MatchCache.DbEntry} entry
+ * @param {StyleObj} style
+ * @param {MatchCache.Index} [idx]
+ * @param {string[]} [code]
+ * @return {?boolean}
+ */
 export function make(entry, style, idx, code) {
   const id = style.id;
   const entrySections = entry.sections;
@@ -99,7 +119,9 @@ export function setOnDeleted(fn) {
   onDeleted = fn;
 }
 
-/** (!) Overwrites contents of `items` */
+/** @sideeffects Overwrites the array
+ * @param {MatchCache.Entry}
+ * @return {void} */
 function del(items) {
   if (!items[0]) return;
   for (let i = 0, val; i < items.length; i++) {
@@ -110,17 +132,20 @@ function del(items) {
   cacheDB.deleteMany(items);
 }
 
-/** @param {Set} items */
+/** @return {void} */
 function flush() {
   const bare = [];
   let toDel;
   nextEntry:
   for (const val of toWrite) {
     const {d, url, maybeMatch, sections} = val;
+    /** @type {MatchCache.IndexMap} */
     const indexes = {};
+    /** @type {MatchCache.DbEntry} */
     const res = {};
     let styleId;
     for (styleId in sections) {
+      /** @type {Injection.Sections | MatchCache.Index} */
       const sec = sections[styleId];
       const idx = sec && (Array.isArray(sec) ? sec : sec.idx);
       if (!idx) {
@@ -142,16 +167,27 @@ function flush() {
   timer = null;
 }
 
+/** @return {Promise<void>} */
+async function flushLater() {
+  const delay = bgBusy ? 5000/*to let the browser settle down on startup*/ : 1000;
+  if (bgBusy) await bgBusy; // bgBusy will be null after await
+  setTimeout(flush, delay);
+}
+
+/** @template {MatchCache.Entry} T
+ * @param {T} val
+ * @return {T} */
 function hit(val) {
   if (val) {
     toWrite.add(val);
-    timer ??= setTimeout(flush);
+    timer ??= flushLater();
   }
   return val;
 }
 
+/** @return {void} */
 function prune() {
-  del([...values()]
+  del([...cache.values()]
     .filter(val => val.d)
     .sort(({d: [a1, a2]}, {d: [b1, b2]}) =>
       100 * (a1 - b1) +
