@@ -114,9 +114,10 @@ function toggle(prefKey) {
       !__.MV3 && xhr && chrome.webRequest.OnHeadersReceivedOptions.EXTRA_HEADERS,
     ].filter(Boolean));
   }
-  if (mv3init || off !== curOFF && (xhr || csp) !== (curXHR || curCSP)) {
+  // In MV3 even without xhr/csp we need it to wake up the background script earlier to avoid FOUC
+  if (mv3init || off !== curOFF && (__.MV3 || (xhr || csp) !== (curXHR || curCSP))) {
     toggleListener(chrome.webRequest.onBeforeRequest,
-      mv3init || !off && (xhr || csp),
+      mv3init || !off && (__.MV3 || xhr || csp),
       prepareStyles, WR_FILTER);
   }
   curCSP = csp;
