@@ -88,10 +88,10 @@ export function pingTab(tabId, frameId = 0) {
 }
 
 export function sendTab(tabId, data, options, multi) {
-  return unwrap(browser.tabs.sendMessage(tabId, {data, multi}, options));
+  return unwrap(browser.tabs.sendMessage(tabId, {data, multi}, options), multi);
 }
 
-async function unwrap(promise) {
+async function unwrap(promise, multi) {
   const err = new Error();
   let data, error;
   try {
@@ -100,9 +100,14 @@ async function unwrap(promise) {
   } catch (e) {
     error = e;
     if (rxIgnorableError.test(err.message = e.message)) {
-      return data;
+      return;
     }
   }
-  if (error.stack) err.stack = error.stack + '\n' + err.stack;
+  if (error.stack)
+    err.stack = error.stack + '\n' + err.stack;
+  if (multi) {
+    console.error(err);
+    return data;
+  }
   return Promise.reject(err);
 }
