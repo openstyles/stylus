@@ -181,11 +181,16 @@ const getBaseConfig = hasCodeMirror => ({
         test: /\.(png|svg|jpe?g|gif|ttf)$/i,
         type: 'asset/resource',
       }, {
-        test: /\.m?js(\?.*)?$/,
+        test: new RegExp(SRC_ESC + /.*\.m?js(\?.*)?$/.source),
         use: [
           {loader: './tools/wp-raw-patch-plugin'},
           !MV3 && {loader: 'babel-loader', options: {root: ROOT}},
         ].filter(Boolean),
+        resolve: {fullySpecified: false},
+      }, !MV3 && {
+        test: new RegExp(String.raw`^(?!${SRC_ESC}).*\.m?js(\?.*)?$`),
+        loader: 'babel-loader',
+        options: {root: ROOT},
         resolve: {fullySpecified: false},
       }, {
         loader: 'html-loader',

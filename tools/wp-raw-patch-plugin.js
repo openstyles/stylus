@@ -29,7 +29,7 @@ const DefinePropertyGettersRuntimeModule =
 
 const rxExportArrow = /^export const (\$?\w*) = \([^)]*?\) =>/m;
 /** Patching __.ABCD and (0,export)() in invocations */
-const re = /\b__\.([$_A-Z][$_A-Z\d]*)\b|\(0,(\w+\.\$?\w*)\)/g;
+const re = /\b__\.([$_A-Z][$_A-Z\d]*)\b|\(0,(\w+\.\$?\w*)\)(?=\()/g;
 const STAGE = (/**@type {typeof import('webpack/types').Compilation}*/webpack.Compilation)
   .PROCESS_ASSETS_STAGE_OPTIMIZE_COMPATIBILITY;
 const STATIC = '/*static:';
@@ -66,7 +66,10 @@ class RawEnvPlugin {
       if (this !== actor) return;
       compilation.hooks.processAssets.tap({name: NAME, stage: STAGE}, assets => {
         for (const assetName in assets) {
-          if (!assetName.endsWith('.js')) continue;
+          if (!assetName.endsWith('.js')
+          || compilation.assetsInfo.get(assetName).sourceFilename?.includes('node_modules')) {
+            continue;
+          }
           const assetSource = assets[assetName];
           const str = assetSource.source();
           let replacer;
