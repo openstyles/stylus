@@ -274,7 +274,7 @@ export default async function configDialog(style) {
           children = [
             va.type === 'range' && $create('span.current-value'),
             va.input = $create('input.config-value', options),
-          ];
+          ].filter(Boolean);
           break;
         }
 
