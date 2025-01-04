@@ -358,7 +358,9 @@ h1 {
     max-width: 100%;
     padding-left: 4px;
     padding-right: 14px;
-    background: none;
+    [data-ui-theme="light"] & {
+      background: none;
+    }
   }
   .select-wrapper {
     &::after {

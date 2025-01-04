@@ -89,9 +89,9 @@ export function styleToDummyEntry(style) {
 }
 
 self.fitSelectBox = cssFieldSizing ? () => {} : ((
-  opts = {},
   showOpts = function (evt) {
     if (evt.button || this[1]) return;
+    const opts = this._opts;
     const elems = Object.values(opts);
     const i = elems.indexOf(opts[this.value]);
     this.style.width = this.offsetWidth + 'px';
@@ -106,6 +106,7 @@ self.fitSelectBox = cssFieldSizing ? () => {} : ((
     if (evt && evt.isTrusted) return this.offsetWidth; // force layout
   },
   initOpts = function (el) {
+    const opts = el._opts = {};
     for (const o of el.options) opts[o.value] = o;
     el.on('keydown', showOpts);
     el.on('mousedown', showOpts);
