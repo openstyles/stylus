@@ -1,7 +1,7 @@
 import {IMPORT_THROTTLE, kUrl, UCD} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '@/js/sections-util';
-import {isEmptyObj, mapObj, sleep} from '@/js/util';
+import {isEmptyObj, mapObj} from '@/js/util';
 import {broadcast} from '../broadcast';
 import * as colorScheme from '../color-scheme';
 import {bgBusy, bgInit, uuidIndex} from '../common';
@@ -28,17 +28,13 @@ bgInit.push(async () => {
     db.getAll(),
     styleCache.loadAll(),
   ]);
-  (async () => {
-    await bgBusy;
-    await sleep();
-    __.DEBUGLOG('styleMan fixKnownProblems...');
-    const fixed = (await Promise.all(styles.map(fixKnownProblems))).filter(Boolean);
-    setTimeout(db.putMany, 0, fixed);
-  })();
   setOrderImpl(orderFromDb, {store: false});
-  for (const style of styles)
-    try { storeInMap(style); } catch {}
+  initStyleMap(styles);
   styleCache.hydrate(dataMap);
+  __.DEBUGLOG('styleMan init done');
+});
+
+bgBusy.then(() => {
   colorScheme.onChange(() => {
     for (const {style} of dataMap.values()) {
       if (colorScheme.SCHEMES.includes(style.preferScheme)) {
@@ -46,7 +42,6 @@ bgInit.push(async () => {
       }
     }
   }, !__.MV3);
-  __.DEBUGLOG('styleMan init done');
 });
 
 styleCache.setOnDeleted(val => {
@@ -57,6 +52,28 @@ styleCache.setOnDeleted(val => {
 
 export * from '../style-search-db';
 export {getById as get};
+
+function initStyleMap(styles) {
+  let fixed, lost;
+  for (let style of styles) {
+    try {
+      if (+style.id > 0 && style._id.trim() && typeof style.sections[0].code === 'string') {
+        storeInMap(style);
+        continue;
+      }
+    } catch {}
+    style = fixKnownProblems(style, true);
+    if (style) (fixed ??= {})[style.id] = style;
+    else (lost ??= []).push(style);
+  }
+  if (fixed) {
+    console.warn(`Fixed ${fixed.length} styles, ids:`, ...Object.keys(fixed));
+    Promise.all([...bgBusy, Object.values(fixed)])
+      .then(() => setTimeout(db.putMany, 0, fixed));
+  }
+  if (lost)
+    console.error(`Skipped ${lost.length} invalid entries:`, lost);
+}
 
 /** @returns {Promise<void>} */
 export async function config(id, prop, value) {

@@ -13,14 +13,19 @@ const MISSING_PROPS = {
 
 const hasVarsAndImport = ({code}) => code.startsWith(':root {\n  --') && /@import\s/i.test(code);
 
-export function fixKnownProblems(style, initIndex, initArray) {
+/**
+ * @param {StyleObj} style
+ * @param {boolean} [revive]
+ * @return {?StyleObj|Promise<StyleObj>}
+ */
+export function fixKnownProblems(style, revive) {
   let res = 0;
   let v;
   if (!style || typeof style !== 'object')
-    style = {};
-  if (!style.id && initArray) {
+    return style;
+  if (!+style.id && revive) {
     res = new Set();
-    for (const x of initArray) if (x) res.add(x.id);
+    for (const x of revive) if (x) res.add(x.id);
     for (v = 1, res.has(v); ;) v++;
   }
   for (const key in MISSING_PROPS) {
@@ -76,7 +81,7 @@ export function fixKnownProblems(style, initIndex, initArray) {
     if (!style.url) res = style.url = v;
     if (!style.installationUrl) res = style.installationUrl = v;
   }
-  if (initArray && (
+  if (revive && (
     !Array.isArray(v = style.sections) && (v = 0, true) ||
     /* @import must precede `vars` that we add at beginning */
     !isEmptyObj(style[UCD]?.vars) && v.some(hasVarsAndImport)
