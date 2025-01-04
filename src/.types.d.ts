@@ -77,7 +77,8 @@ declare namespace Injection {
     id: number,
     /** Added in style-manager::cache */
     idx?: MatchCache.Index,
-    code: string[],
+    /** array in bg, string in content */
+    code: string[] | string,
     name: string,
     /** Added in style-injector */
     el?: HTMLStyleElement|CSSStyleSheet;

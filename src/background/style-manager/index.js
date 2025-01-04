@@ -1,7 +1,6 @@
 import {IMPORT_THROTTLE, kUrl, UCD} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '@/js/sections-util';
-import {CHROME} from '@/js/ua';
 import {isEmptyObj, mapObj} from '@/js/util';
 import {broadcast} from '../broadcast';
 import * as colorScheme from '../color-scheme';
@@ -206,7 +205,7 @@ export function getSectionsByUrl(url, id, isInitialApply) {
     ass: p.styleViaASS,
     dark: isTop && colorScheme.isDark,
     // TODO: enable in FF when it supports sourceURL comment in style elements (also options.html)
-    name: CHROME && p.exposeStyleName,
+    name: p.exposeStyleName,
     nonce: tabMan.get(tab.id, 'nonce', frameId),
     top: isInitialApply && p.exposeIframes && (
       isTop ? '' // apply.js will use location.origin
