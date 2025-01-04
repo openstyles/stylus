@@ -42,14 +42,14 @@ const PATCH_EXPORTS_SRC = 'for(var key in definition) {';
 const PATCH_EXPORTS = `$&
   let v = definition[key];
   if (typeof v == "object") {
-  if (v[0]) exports[key] = v[1];
-  else Object.defineProperty(exports, v[0] = key, {
-    configurable: true,
-    enumerable: true,
-    get: () => Object.defineProperty(exports, v[0], {value: v = v[1]()}) && v,
-  });
-  continue;
-}`;
+    if (v[0]) exports[key] = v[1];
+    else Object.defineProperty(exports, v[0] = key, {
+      configurable: true,
+      enumerable: true,
+      get: () => Object.defineProperty(exports, v[0], {value: v = v[1]()}) && v,
+    });
+    continue;
+  }`;
 let exportHooked;
 
 class RawEnvPlugin {

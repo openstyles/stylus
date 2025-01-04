@@ -6,7 +6,7 @@ import {ignoreChromeError, MF_ICON_EXT, MF_ICON_PATH} from '@/js/util-webext';
 import * as colorScheme from './color-scheme';
 import {bgBusy, bgInit} from './common';
 import {removePreloadedStyles} from './style-via-webrequest';
-import * as tabMan from './tab-manager';
+import tabCache, * as tabMan from './tab-manager';
 
 const browserAction = (__.MV3 ? chrome.action : chrome.browserAction) || {};
 const staleBadges = new Set();
@@ -91,7 +91,7 @@ export function overrideBadge({text = '', color = '', title = ''} = {}) {
   badgeOvr.color = color;
   refreshIconBadgeColor();
   setBadgeText({text});
-  for (const tabId of tabMan.cache.keys()) {
+  for (const tabId of tabCache.keys()) {
     if (text) {
       setBadgeText({tabId, text});
     } else {
@@ -185,14 +185,14 @@ function refreshIconBadgeColor() {
 }
 
 function refreshAllIcons() {
-  for (const tabId of tabMan.cache.keys()) {
+  for (const tabId of tabCache.keys()) {
     refreshIcon(tabId);
   }
   refreshGlobalIcon();
 }
 
 function refreshAllIconsBadgeText() {
-  for (const tabId of tabMan.cache.keys()) {
+  for (const tabId of tabCache.keys()) {
     refreshIconBadgeText(tabId);
   }
 }

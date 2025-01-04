@@ -3,7 +3,7 @@ import {getWindowClients} from '@/background/common';
 import {rxIgnorableError} from '@/js/msg-api';
 import {ownRoot, supported} from '@/js/urls';
 import {getActiveTab} from '@/js/util-webext';
-import * as tabMan from './tab-manager';
+import tabCache, * as tabMan from './tab-manager';
 
 let /**@type{?[]}*/toBroadcast;
 let /**@type{boolean[]}*/toBroadcastStyled;
@@ -57,7 +57,7 @@ async function doBroadcast() {
     tabs.length = tabsLen;
   } else if (activeTab) {
     tabsLen = tabs.push(activeTab.id);
-    for (const t of tabMan.cache.values()) {
+    for (const t of tabCache.values()) {
       if (t.id !== activeTab.id && t.styleIds) {
         tabsLen = tabs.push(t.id);
       }

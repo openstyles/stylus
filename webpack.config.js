@@ -123,10 +123,7 @@ const getTerserOptions = forExternals => ({
       }, {}),
       reduce_funcs: false,
     },
-    mangle: forExternals ? true : {
-      keep_classnames: true,
-      keep_fnames: true,
-    },
+    mangle: !!forExternals,
     output: {
       ascii_only: false,
       comments: false,

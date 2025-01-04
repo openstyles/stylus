@@ -8,7 +8,8 @@ export const onUnload = new Set();
 export const onUrl = new Set();
 /** @typedef {{ url:string, styleIds: {[frameId:string]: number[]} }} StyleIdsFrameMap */
 /** @type {Map<number,{ id: number, url:string, styleIds: StyleIdsFrameMap }>} */
-export const cache = new Map();
+const cache = new Map();
+export default cache;
 
 export const get = (tabId, ...keyPath) => {
   let res = cache.get(tabId);

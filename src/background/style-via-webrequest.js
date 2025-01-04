@@ -12,7 +12,7 @@ import offscreen from './offscreen';
 import makePopupData from './popup-data';
 import {getSectionsByUrl} from './style-manager';
 import * as styleCache from './style-manager/cache';
-import * as tabMan from './tab-manager';
+import tabCache, * as tabMan from './tab-manager';
 
 const idCSP = 'patchCsp';
 const idOFF = 'disableAll';
@@ -59,7 +59,7 @@ prefs.ready.then(() => {
 bgBusy.then(() => {
   const tabIds = [];
   for (let key in ruleIdKeys) {
-    if (!tabMan.cache.has(key = parseInt(key))) {
+    if (!tabCache.has(key = parseInt(key))) {
       tabIds.push(key);
     }
   }
