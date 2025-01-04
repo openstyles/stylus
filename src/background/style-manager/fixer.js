@@ -14,9 +14,15 @@ const MISSING_PROPS = {
 const hasVarsAndImport = ({code}) => code.startsWith(':root {\n  --') && /@import\s/i.test(code);
 
 export function fixKnownProblems(style, initIndex, initArray) {
-  if (!style || !style.id) style = {id: Date.now()};
   let res = 0;
   let v;
+  if (!style || typeof style !== 'object')
+    style = {};
+  if (!style.id && initArray) {
+    res = new Set();
+    for (const x of initArray) if (x) res.add(x.id);
+    for (v = 1, res.has(v); ;) v++;
+  }
   for (const key in MISSING_PROPS) {
     if (!style[key]) {
       style[key] = MISSING_PROPS[key](style);
@@ -76,7 +82,7 @@ export function fixKnownProblems(style, initIndex, initArray) {
     !isEmptyObj(style[UCD]?.vars) && v.some(hasVarsAndImport)
   )) {
     if (!v && !style.sourceCode) {
-      style.customName = 'Damaged style #' + (style.id || initIndex);
+      style.customName = 'Damaged style #' + style.id;
       style.sections = [{code: '/* No sections or sourceCode */'}];
       return style;
     }

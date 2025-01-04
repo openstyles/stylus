@@ -1,7 +1,7 @@
 import {IMPORT_THROTTLE, kUrl, UCD} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '@/js/sections-util';
-import {isEmptyObj, mapObj} from '@/js/util';
+import {isEmptyObj, mapObj, sleep} from '@/js/util';
 import {broadcast} from '../broadcast';
 import * as colorScheme from '../color-scheme';
 import {bgBusy, bgInit, uuidIndex} from '../common';
@@ -28,11 +28,16 @@ bgInit.push(async () => {
     db.getAll(),
     styleCache.loadAll(),
   ]);
-  __.DEBUGLOG('styleMan fixKnownProblems...');
-  const updated = await Promise.all(styles.map(fixKnownProblems).filter(Boolean));
-  if (updated[0]) bgBusy.then(() => setTimeout(db.putMany, 0, updated));
+  (async () => {
+    await bgBusy;
+    await sleep();
+    __.DEBUGLOG('styleMan fixKnownProblems...');
+    const fixed = (await Promise.all(styles.map(fixKnownProblems))).filter(Boolean);
+    setTimeout(db.putMany, 0, fixed);
+  })();
   setOrderImpl(orderFromDb, {store: false});
-  styles.forEach(storeInMap);
+  for (const style of styles)
+    try { storeInMap(style); } catch {}
   styleCache.hydrate(dataMap);
   colorScheme.onChange(() => {
     for (const {style} of dataMap.values()) {
