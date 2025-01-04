@@ -7,7 +7,7 @@ import HeaderResizer from './header-resizer';
 import {tHTML} from './localization';
 import {onMessage} from './msg';
 import * as prefs from './prefs';
-import {CHROME} from './ua';
+import {CHROME, FIREFOX} from './ua';
 import {installUsercss} from './urls';
 import {clamp, debounce, t, tryURL} from './util';
 
@@ -155,6 +155,8 @@ function splitMenu(event) {
         name.startsWith('menu-') &&
         $create('a', {tabIndex: 0, __cmd: name.split('-').pop()}, value)
       ).filter(Boolean));
+    const wrapper = pedal.parentElement;
+    const xo = new IntersectionObserver(splitMenuIntersect);
     window.on('keydown', splitMenuEscape);
     menu.onfocusout = e => {
       if (!menu.contains(e.relatedTarget)) {
@@ -162,18 +164,14 @@ function splitMenu(event) {
       }
     };
     pedal.on('mousedown', e => e.preventDefault());
-    pedal.parentElement.classList.toggle('active');
+    wrapper.classList.toggle('active');
     pedal.after(menu);
     moveFocus(menu, 0);
     setHocus(menu.firstChild, isHocused(pedal));
-    new IntersectionObserver(([{
-      intersectionRect: {width: iw},
-      boundingClientRect: {width: cw},
-    }], observer) => {
-      observer.disconnect();
-      menu.style.opacity = '';
-      if (iw < cw) menu.style.transform = `translateX(calc(${iw - cw}px - var(--menu-pad)))`;
-    }).observe(menu);
+    xo.observe(menu);
+    if (__.BUILD !== 'chrome' && FIREFOX) // https://bugzil.la/1939973
+      for (let el = wrapper; (el = el.offsetParent) && el.tagName !== 'BODY';)
+        xo.observe(el);
   }
   if (entry) {
     prevPedal.previousElementSibling.dispatchEvent(new CustomEvent('split-btn', {
@@ -188,6 +186,22 @@ function splitMenuEscape(e) {
     e.preventDefault();
     splitMenu();
   }
+}
+
+/**
+ * @param {IntersectionObserverEntry[]} entries
+ * @param {IntersectionObserver} observer
+ */
+function splitMenuIntersect(entries, observer) {
+  observer.disconnect();
+  const menu = entries[0].target;
+  let width = 1e6;
+  let x, ir;
+  for ({intersectionRect: ir} of entries)
+    width = Math.min(width, ir.width - (x != null ? x : (x = ir.x, 0)));
+  x = width - entries[0].boundingClientRect.width;
+  if (x < 0) menu.style.transform = `translateX(calc(${x}px - var(--menu-pad)))`;
+  menu.style.opacity = '';
 }
 
 function suppressFocusRingOnClick({target}) {
