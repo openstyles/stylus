@@ -587,10 +587,8 @@ a:hover i {
   }
 }
 #options-btn {
-  html:not(.blocked) & {
-    padding: 2px;
-    border-radius: 50%;
-  }
+  padding: 2px;
+  border-radius: 50%;
 }
 .styles-first:not(.search-results-shown) {
   #popup-options .split-btn-menu {
