@@ -5,7 +5,7 @@ export const FF = __.BUILD !== 'chrome' && (
     ? 'contextualIdentities' in chrome
     : global !== window
 );
-export const rxIgnorableError = /(R)eceiving end does not exist|The message port closed|moved into back\/forward cache/;
+export const rxIgnorableError = /(R)eceiving end does not exist|The message (port|channel) closed|moved into back\/forward cache/;
 
 export const apiHandler = !__.IS_BG && {
   get: ({name: path}, name) => new Proxy(
