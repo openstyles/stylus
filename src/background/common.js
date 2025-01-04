@@ -1,5 +1,5 @@
 import {k_busy, kStateDB} from '@/js/consts';
-import {createPortProxy} from '@/js/port';
+import {CONNECTED, createPortProxy} from '@/js/port';
 import {CHROME} from '@/js/ua';
 import {workerPath} from '@/js/urls';
 import {promiseWithResolve, sleep} from '@/js/util';
@@ -31,17 +31,22 @@ export const dataHub = {
 };
 const data = {__proto__: null};
 
+/** @return {WindowClient} the offscreen document if it runs, otherwise any available client */
 export const getClient = async () => {
-  for (let busy, job, tEnd;
+  for (let busy, client, job, tEnd;
       !tEnd || performance.now() < tEnd;
       tEnd ??= performance.now() + CLIENT_TIMEOUT) {
-    for (const client of await getWindowClients()) {
-      if ((job = clientDataJobs[client.url])) {
+    for (const c of await getWindowClients()) {
+      if ((job = clientDataJobs[c.url])) {
         (busy ??= []).push(job);
+      } else if (c.url.endsWith(__.PAGE_OFFSCREEN)) {
+        return c;
       } else {
-        return client;
+        client = c;
       }
     }
+    if (client)
+      return client;
     if (!busy || !await Promise.race([
       Promise.any(busy).catch(() => 0),
       sleep(CLIENT_TIMEOUT),
@@ -70,7 +75,10 @@ export const worker = !__.MV3
   ? createPortProxy(workerPath)
   : createPortProxy(async () => {
     const client = await getClient();
-    const proxy = client ? createPortProxy(client, {once: true}) : offscreen;
+    const proxy = !client || client.url.endsWith(__.PAGE_OFFSCREEN) ? (
+      client && (offscreen[CONNECTED] = client),
+      offscreen
+    ) : createPortProxy(client, {once: true});
     return proxy.getWorkerPort(workerPath);
   }, {lock: workerPath});
 

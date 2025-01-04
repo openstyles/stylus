@@ -46,32 +46,37 @@ let timer;
 export function createPortProxy(getTarget, opts) {
   let exec;
   return new Proxy({}, {
-    get: (_, cmd) => cmd === CONNECTED
+    get: (me, cmd) => cmd === CONNECTED
       ? exec?.[CONNECTED]
       : function (...args) {
-        const res = (exec ??= createPortExec(getTarget, opts)).call(this, cmd, ...args);
+        if (!exec) {
+          exec = me[CONNECTED];
+          delete me[CONNECTED];
+          exec = createPortExec(getTarget, opts, exec);
+        }
+        const res = exec.call(this, cmd, ...args);
         return __.DEBUG ? res.catch(onExecError) : res;
       },
   });
 }
 
-export function createPortExec(getTarget, {lock, once} = {}) {
+export function createPortExec(getTarget, {lock, once} = {}, target) {
+  /** @type {Map<number,{stack: string, p: Promise, fn: function[]}>} */
   let queue;
   /** @type {MessagePort} */
   let port;
-  /** @type {MessagePort | Client | SharedWorker} */
-  let target;
   let timeout;
   let tracking;
   let lastId = 0;
   return exec;
   async function exec(...args) {
-    const ctx = [new Error().stack]; // saving it prior to a possible async jump for easier debugging
-    const promise = new Promise((resolve, reject) => ctx.push(resolve, reject));
+    const ctx = {stack: new Error().stack}; // saving it prior to an async jump for easier debugging
+    const promise = new Promise((resolve, reject) => (ctx.fn = [resolve, reject]));
     if ((port ??= initPort(args)).then) port = await port;
     (once ? target : port).postMessage({args, id: ++lastId},
       once || (Array.isArray(this) ? this : undefined));
     queue.set(lastId, ctx);
+    if (once) ctx.p = promise.catch(NOP);
     if (__.ENTRY === 'sw' && once) timeout = setTimeout(onTimeout, 1000);
     if (__.DEBUG & 2) console.trace('%c%s exec sent', 'color:green', PATH, lastId, args);
     return promise;
@@ -82,7 +87,7 @@ export function createPortExec(getTarget, {lock, once} = {}) {
     if (__.ENTRY !== 'sw' && typeof getTarget === 'string') {
       lock = getTarget;
       target = getWorkerPort(getTarget, console.error);
-    } else {
+    } else if (!target) {
       target = typeof getTarget === 'function' ? getTarget() : getTarget;
       if (target.then) target = await target;
     }
@@ -110,9 +115,10 @@ export function createPortExec(getTarget, {lock, once} = {}) {
     }
     if (!tracking && !once && navLocks) trackTarget(queue);
     const {id, res, err} = data.id ? data : JSON.parse(data);
-    const [stack, resolve, reject] = queue.get(id);
+    const {stack, fn: [resolve, reject]} = queue.get(id);
     queue.delete(id);
-    if (id === lastId) --lastId;
+    if (lastId > 1000 && !queue.has(1))
+      lastId = 0;
     if (!err) {
       resolve(res);
     } else {
@@ -120,11 +126,14 @@ export function createPortExec(getTarget, {lock, once} = {}) {
         ? Object.assign(...err, {stack: err[0].stack + '\n' + stack})
         : err);
     }
-    if (once) {
-      port.close();
-      exec[CONNECTED] =
-      queue = port = port.onmessage = target = null;
-    }
+    if (once && queue.size)
+      Promise.all(Array.from(queue.values(), ctx => ctx.p))
+        .then(discard);
+  }
+  function discard(didWait) {
+    if (!port) return;
+    if (didWait) port.close();
+    exec[CONNECTED] = queue = port = port.onmessage = target = null;
   }
   function onTimeout() {
     console.warn(`Timeout in ${PATH}`);
@@ -134,15 +143,13 @@ export function createPortExec(getTarget, {lock, once} = {}) {
     tracking = true;
     await navLocks.request(lock, NOP);
     tracking = false;
-    for (const [stack, /*resolve*/, reject] of queueCopy.values()) {
+    for (const {stack, fn: [, reject]} of queueCopy.values()) {
       const err = new Error('Target disconnected');
       err.stack = stack;
       reject(err);
     }
-    if (queue === queueCopy) {
-      exec[CONNECTED] =
-      port = queue = target = null;
-    }
+    if (queue === queueCopy)
+      discard();
   }
 }
 
