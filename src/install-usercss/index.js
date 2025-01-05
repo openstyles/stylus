@@ -288,7 +288,7 @@ function updateMeta(newStyle) {
           $create('li',
             $createLink(...args)
           )
-        )),
+        ).filter(Boolean)),
       ]));
   }
 
