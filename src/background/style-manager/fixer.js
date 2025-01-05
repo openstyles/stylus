@@ -21,13 +21,6 @@ const hasVarsAndImport = ({code}) => code.startsWith(':root {\n  --') && /@impor
 export function fixKnownProblems(style, revive) {
   let res = 0;
   let v;
-  if (!style || typeof style !== 'object')
-    return style;
-  if (!+style.id && revive) {
-    res = new Set();
-    for (const x of revive) if (x) res.add(x.id);
-    for (v = 1, res.has(v); ;) v++;
-  }
   for (const key in MISSING_PROPS) {
     if (!style[key]) {
       style[key] = MISSING_PROPS[key](style);

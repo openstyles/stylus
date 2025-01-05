@@ -55,24 +55,25 @@ export {getById as get};
 
 function initStyleMap(styles) {
   let fixed, lost;
-  for (let style of styles) {
-    try {
-      if (+style.id > 0 && style._id.trim() && typeof style.sections[0].code === 'string') {
-        storeInMap(style);
-        continue;
-      }
-    } catch {}
-    style = fixKnownProblems(style, true);
-    if (style) (fixed ??= {})[style.id] = style;
-    else (lost ??= []).push(style);
+  for (const style of styles) {
+    if (+style.id > 0
+    && typeof style._id === 'string'
+    && typeof style.sections?.[0]?.code === 'string') {
+      storeInMap(style);
+    } else {
+      let fix;
+      try { fix = fixKnownProblems(style, true); } catch {}
+      if (fix) (fixed ??= {})[fix.id] = fix;
+      else (lost ??= []).push(style);
+    }
   }
   if (fixed) {
     console.warn(`Fixed ${fixed.length} styles, ids:`, ...Object.keys(fixed));
     Promise.all([...bgBusy, Object.values(fixed)])
-      .then(() => setTimeout(db.putMany, 0, fixed));
+      .then(() => setTimeout(db.putMany, 1000, fixed));
   }
   if (lost)
-    console.error(`Skipped ${lost.length} invalid entries:`, lost);
+    console.error(`Skipped ${lost.length} unrecoverable styles:`, lost);
 }
 
 /** @returns {Promise<void>} */
