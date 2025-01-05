@@ -33,11 +33,37 @@ In Chrome, it runs in parallel to the existing Stylus extension from the web sto
 
 In Firefox, it'll temporarily replace the existing Stylus extension. To restore the main extension, restart the browser.
 
-## Screenshots
+<details><summary><h2>Screenshots</h2></summary>
 
-Manager | Editor | Popup search | Popup config | Manager config | Options
--|-|-|-|-|-
-![Style manager](.github/screenshots/manager.png) | ![Style editor](.github/screenshots/editor.png) | ![Popup inline search](.github/screenshots/popup-search.png) | ![Popup config for usercss](.github/screenshots/popup-config.png) | ![Style manager config for usercss](.github/screenshots/manager-config.png) | ![Options](.github/screenshots/options.png)
+* Manager
+
+   ![Style manager](.github/screenshots/manager.png)
+
+* Installer
+
+  ![Installer](.github/screenshots/installer.png)
+
+* Editor
+
+  ![Style editor](.github/screenshots/editor.png)
+
+* Popup search
+
+  ![Popup inline search](.github/screenshots/popup-search.png)
+
+* Popup config
+
+  ![Popup config for usercss](.github/screenshots/popup-config.png)
+
+* Manager config
+
+  ![Style manager config for usercss](.github/screenshots/manager-config.png)
+
+* Options
+
+  ![Options](.github/screenshots/options.png)
+
+</details>
 
 ## Help
 
