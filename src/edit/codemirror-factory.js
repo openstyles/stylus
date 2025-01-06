@@ -187,7 +187,7 @@ for (const cmd of [
   CodeMirror.commands[cmd] = (...args) => editor[cmd](...args);
 }
 
-function plusMinus(delta, cm, pos = cm.getCursor()) {
+function plusMinusOne(delta, cm, pos = cm.getCursor(), inOp) {
   const {line, ch} = pos;
   const {text} = cm.getLineHandle(line);
   let m = /[-+\d.%a-z]/iy;
@@ -202,16 +202,28 @@ function plusMinus(delta, cm, pos = cm.getCursor()) {
   m = m.exec(text);
   if (!m) return;
   if (m[0].includes('.')) delta /= 10;
+  inOp = inOp && (cm.curOp || (cm.startOperation(), true));
   cm.replaceRange((+m[0] + delta).toFixed(m[1] ? m[2].length : 0),
     {line, ch: i},
     {line, ch: i + m[0].length},
     '*incdec' + line + ':' + i);
+  return inOp;
+}
+
+function plusMinus(delta, cm) {
+  let op;
+  for (const /**@type{CodeMirror.Range}*/sel of cm.doc.sel.ranges) {
+    if (plusMinusOne(delta, cm, sel.head, !op))
+      op = true;
+  }
+  if (op === true)
+    cm.endOperation();
 }
 
 function plusMinusOnWheel(e) {
   if (e.altKey) {
     e.preventDefault();
-    plusMinus((e.ctrlKey ? 100 : e.shiftKey ? 10 : 1) * (e.wheelDeltaY > 0 ? 1 : -1), this,
+    plusMinusOne((e.ctrlKey ? 100 : e.shiftKey ? 10 : 1) * (e.wheelDeltaY > 0 ? 1 : -1), this,
       this.coordsChar({left: e.clientX, top: e.clientY}, 'window'));
   }
 }
