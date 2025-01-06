@@ -1,5 +1,5 @@
 import {deepEqual} from '@/js/util';
-import CodeMirror from 'codemirror';
+import {CodeMirror} from '@/cm';
 import {trimCommentLabel} from './util';
 
 export default function MozSectionFinder(cm) {

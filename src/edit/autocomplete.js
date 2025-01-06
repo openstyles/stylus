@@ -3,7 +3,7 @@ import {getStyleAtPos} from '@/cm/util';
 import {kCssPropSuffix, UCD} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {hasOwn, stringAsRegExpStr, tryRegExp} from '@/js/util';
-import CodeMirror from 'codemirror';
+import {CodeMirror} from '@/cm';
 import {
   addSuffix, autocompleteOnTyping, Completion, execAt, findAllCssVars, getTokenState, isSameToken,
   testAt, USO_INVALID_VAR, USO_VALID_VAR,

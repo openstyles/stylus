@@ -5,7 +5,7 @@ import {setInputValue} from '@/js/dom-util';
 import {htmlToTemplateCache, templateCache} from '@/js/localization';
 import {chromeLocal} from '@/js/storage-util';
 import {debounce, stringAsRegExp, t, tryRegExp} from '@/js/util';
-import CodeMirror from 'codemirror';
+import {CodeMirror} from '@/cm';
 import editor from './editor';
 import html from './global-search.html';
 

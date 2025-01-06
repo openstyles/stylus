@@ -6,7 +6,7 @@ import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {styleToCss} from '@/js/sections-util';
 import {RX_META, t} from '@/js/util';
-import CodeMirror from 'codemirror';
+import {CodeMirror} from '@/cm';
 import cmFactory from './codemirror-factory';
 import editor, {failRegexp} from './editor';
 import * as linterMan from './linter';

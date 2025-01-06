@@ -1,7 +1,7 @@
 import {getStyleAtPos} from '@/cm/util';
 import * as colorConverter from '@/js/color/color-converter';
 import ColorPicker from '@/js/color/color-picker';
-import CodeMirror from 'codemirror';
+import {CodeMirror} from '@/cm';
 
 //region Constants
 

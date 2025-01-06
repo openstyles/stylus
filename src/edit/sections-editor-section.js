@@ -5,7 +5,7 @@ import {templateCache, htmlToTemplate, template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
 import {FROM_CSS, TO_CSS} from '@/js/sections-util';
 import {debounce} from '@/js/util';
-import CodeMirror from 'codemirror';
+import {CodeMirror} from '@/cm';
 import {initBeautifyButton} from './beautify';
 import cmFactory from './codemirror-factory';
 import editor from './editor';

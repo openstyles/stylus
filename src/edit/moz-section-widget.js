@@ -4,7 +4,7 @@ import {messageBox} from '@/js/dom-util';
 import {htmlToTemplate, templateCache} from '@/js/localization';
 import * as msg from '@/js/msg';
 import {sleep, t} from '@/js/util';
-import CodeMirror from 'codemirror';
+import {CodeMirror} from '@/cm';
 import editor from './editor';
 import MozSectionFinder from './moz-section-finder';
 import {htmlAppliesTo} from './util';

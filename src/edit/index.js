@@ -1,7 +1,7 @@
 import '@/js/dom-init';
 import {tBody} from '@/js/localization';
 import * as prefs from '@/js/prefs';
-import CodeMirror from 'codemirror';
+import {CodeMirror} from '@/cm';
 import CompactHeader from './compact-header';
 import editor from './editor';
 import EditorHeader from './editor-header';

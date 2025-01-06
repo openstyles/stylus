@@ -2,7 +2,7 @@ import {template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
 import {WINDOWS} from '@/js/ua';
 import {deepMerge} from '@/js/util';
-import CodeMirror from 'codemirror';
+import CM from 'codemirror';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/addon/comment/comment';
 import 'codemirror/addon/dialog/dialog';
@@ -35,7 +35,7 @@ import '@/vendor-overwrites/codemirror-addon/match-highlighter.js';
 import {THEME_KEY} from './themes';
 import './index.css';
 
-export {CodeMirror};
+export const CodeMirror = CM; // workaround for webpack's `codemirror_default()` import
 export * from './themes';
 
 export const extraKeys = Object.assign(CodeMirror.defaults.extraKeys || {}, {
