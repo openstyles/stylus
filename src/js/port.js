@@ -13,11 +13,12 @@ export const COMMANDS = __.ENTRY !== 'sw' && (
 );
 export const CONNECTED = Symbol('connected');
 const PATH = location.pathname;
-const TTL = __.ENTRY === 'worker' ? 5 * 60e3 : 30e3; // TODO: add a configurable option?
+const TTL = 5 * 60e3; // TODO: add a configurable option?
 const navLocks = navigator.locks;
 const willAutoClose = __.ENTRY === 'worker' || __.ENTRY === __.PAGE_OFFSCREEN;
 // SW can't nest workers, https://crbug.com/40772041
 const SharedWorker = __.ENTRY !== 'sw' && global.SharedWorker;
+const WeakRef = global.WeakRef;
 const kWorker = '_worker';
 const NOP = () => {};
 if (__.MV3 && __.ENTRY === true || __.ENTRY === __.PAGE_OFFSCREEN) {
@@ -49,11 +50,7 @@ export function createPortProxy(getTarget, opts) {
     get: (me, cmd) => cmd === CONNECTED
       ? exec?.[CONNECTED]
       : function (...args) {
-        if (!exec) {
-          exec = me[CONNECTED];
-          delete me[CONNECTED];
-          exec = createPortExec(getTarget, opts, exec);
-        }
+        exec ??= createPortExec(getTarget, opts, me[CONNECTED]);
         const res = exec.call(this, cmd, ...args);
         return __.DEBUG ? res.catch(onExecError) : res;
       },
@@ -61,26 +58,38 @@ export function createPortProxy(getTarget, opts) {
 }
 
 export function createPortExec(getTarget, {lock, once} = {}, target) {
-  /** @type {Map<number,{stack: string, p: Promise, fn: function[]}>} */
+  /** @type {Map<number,{stack: string, p: Promise, t: number, rr: function[]}>} */
   let queue;
   /** @type {MessagePort} */
   let port;
-  let timeout;
+  /** @type {WeakRef} */
+  let ref;
+  let initializing;
   let tracking;
   let lastId = 0;
   return exec;
+
   async function exec(...args) {
-    const ctx = {stack: new Error().stack}; // saving it prior to an async jump for easier debugging
-    const promise = new Promise((resolve, reject) => (ctx.fn = [resolve, reject]));
-    if ((port ??= initPort(args)).then) port = await port;
-    (once ? target : port).postMessage({args, id: ++lastId},
+    // Saving the stack to attach it to `error` in onMessage
+    const ctx = {stack: new Error().stack};
+    const promise = new Promise((resolve, reject) => (ctx.rr = [resolve, reject]));
+
+    if (!(exec[CONNECTED] = ref ? !!ref.deref() : !!port) && !initializing)
+      initializing = initPort();
+    if (!exec[CONNECTED]) // when initPort didn't complete synchronously
+      initializing = await initializing;
+
+    (once ? target : port || ref.deref()).postMessage(
+      {args, id: ++lastId},
       once || (Array.isArray(this) ? this : undefined));
+
     queue.set(lastId, ctx);
     if (once) ctx.p = promise.catch(NOP);
-    if (__.ENTRY === 'sw' && once) timeout = setTimeout(onTimeout, 1000);
+    ctx.t = setTimeout(onTimeout, 5000, lastId, args, ctx.rr);
     if (__.DEBUG & 2) console.trace('%c%s exec sent', 'color:green', PATH, lastId, args);
     return promise;
   }
+
   async function initPort() {
     if (__.DEBUG & 2) console.log('%c%s exec init', 'color:blue', PATH, {getTarget});
     // SW can't nest workers, https://crbug.com/40772041
@@ -103,19 +112,19 @@ export function createPortExec(getTarget, {lock, once} = {}, target) {
     queue = new Map();
     lastId = 0;
     exec[CONNECTED] = true;
-    return port;
+    if (WeakRef) {
+      ref = new WeakRef(port);
+      port = null;
+    }
   }
+
   /** @param {MessageEvent} _ */
   function onMessage({data}) {
     if (__.DEBUG & 2) console.log('%c%s exec onmessage', 'color:darkcyan', PATH, data.id, data);
-    if (__.ENTRY === 'sw' && once) clearTimeout(timeout);
-    if (!queue) { // FIXME: why does this happen???
-      console.warn(`No queue in ${PATH}, data: ${JSON.stringify(data ?? `${data}`)}`);
-      return;
-    }
     if (!tracking && !once && navLocks) trackTarget(queue);
     const {id, res, err} = data.id ? data : JSON.parse(data);
-    const {stack, fn: [resolve, reject]} = queue.get(id);
+    const {stack, t, rr: [resolve, reject]} = queue.get(id);
+    clearTimeout(t);
     queue.delete(id);
     if (lastId > 1000 && !queue.has(1))
       lastId = 0;
@@ -127,29 +136,41 @@ export function createPortExec(getTarget, {lock, once} = {}, target) {
         : err);
     }
     if (once && queue.size)
-      Promise.all(Array.from(queue.values(), ctx => ctx.p))
-        .then(discard);
+      discard(queue, true);
   }
-  function discard(didWait) {
-    if (!port) return;
-    if (didWait) port.close();
-    exec[CONNECTED] = queue = port = port.onmessage = target = null;
+
+  async function discard(myQ, wait) {
+    if (__.DEBUG & 2 && wait) console.log(`${PATH} discarding`, myQ, queue, myQ === queue);
+    while (wait && myQ.size) {
+      wait = [...myQ.keys()];
+      await Promise.all(Array.from(myQ.values(), ctx => ctx.p.catch(NOP)));
+    }
+    if (myQ !== queue) return;
+    if (wait) ref.deref()?.close();
+    exec[CONNECTED] = queue = ref = port = target = null;
   }
-  function onTimeout() {
-    console.warn(`Timeout in ${PATH}`);
-    onMessage({});
+
+  async function onTimeout(id, args, rr) {
+    console.warn(`${PATH} timeout for`, args);
+    queue?.delete(id);
+    exec(...args).then(...rr);
   }
-  async function trackTarget(queueCopy) {
+
+  async function trackTarget(myQ) {
     tracking = true;
     await navLocks.request(lock, NOP);
     tracking = false;
-    for (const {stack, fn: [, reject]} of queueCopy.values()) {
-      const err = new Error('Target disconnected');
-      err.stack = stack;
+    if (__.DEBUG & 2) console.log(`${PATH} target disconnected`, myQ, queue, myQ === queue);
+    for (const {stack, t, rr: [, reject]} of myQ.values()) {
+      const msg = 'Target disconnected';
+      const err = new Error(msg);
+      err.stack = msg + '\n' + stack;
       reject(err);
+      clearTimeout(t);
     }
-    if (queue === queueCopy)
-      discard();
+    myQ.clear();
+    if (queue === myQ)
+      discard(myQ);
   }
 }
 
@@ -171,6 +192,7 @@ export function initRemotePort(evt) {
   port.onmessage = onMessage;
   port.onmessageerror = onMessageError;
   if (once) onMessage(evt);
+
   /** @param {RemotePortEvent} portEvent */
   async function onMessage(portEvent) {
     const data = portEvent.data;
@@ -187,7 +209,7 @@ export function initRemotePort(evt) {
       res = undefined; // clearing a rejected Promise
       err = e instanceof Error ? [e, {...e}] : e; // keeping own props added on top of an Error
     }
-    if (__.DEBUG & 2) console.log('%c%s port response', 'color:green', PATH, id, {res, err});
+    if (__.DEBUG & 2) console.log('%c%s port response', 'color:blue', PATH, id, {res, err});
     port.postMessage({id, res, err}, portEvent._transfer);
     if (!--numJobs && willAutoClose && !bgPort) {
       autoClose(TTL);
