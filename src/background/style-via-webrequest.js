@@ -127,14 +127,14 @@ function toggle(prefKey) {
 
 /** @type {typeof chrome.webRequest.onBeforeRequest.callback} */
 async function prepareStyles(req) {
-  if (!curXHR && !curCSP && !bgBusy) return;
   const {tabId, frameId, url} = req; if (tabId < 0) return;
   const key = tabId + ':' + frameId;
   const bgPreInitLen = __.MV3 && bgPreInit.length;
   const isDark = colorScheme.isSystem()
     && !tabMan.someInjectable()
     && colorScheme.refreshSystemDark();
-  __.DEBUGLOG('prepareStyles', key, req);
+  __.DEBUGLOG('prepareStyles', key, req, {isDark});
+  if (!curXHR && !curCSP && !bgBusy) return;
   let cached, unlock;
   let lock = __.MV3 && bgPreInitLen && new Promise(resolve => (unlock = resolve));
   if (__.MV3 && bgPreInitLen) { // bgPreInit in progress, let's join it

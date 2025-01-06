@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Making exports directly invocable by patch webpack guts:
+ * Making exports directly invocable by patching webpack's output:
  * 1. remove (0,export)() in invocations as we don't rely on `this` in general,
  *    except cases where we expect it to be set explicitly e.g. `sender` for messages.
  * 2. set the exported functions directly on the exports object as values because
@@ -10,7 +10,7 @@
  *
  * Aside from a negligible performance improvement, it restores sane debugging process when
  * stepping line by line via F11 key to step inside the function. Previously, it would make 3+
- * nonsensical jumps which became excrutiating when doing it on a line with several exports e.g.
+ * nonsensical jumps which becomes excrutiating when doing it on a line with several exports e.g.
  * mod.foo(mod.const1, mod.const2, mod.const3, mod.const4) with webpack's default implementation
  * would force you to step 15 times (or more if those consts are reexported) instead of 1.
  */
@@ -73,14 +73,14 @@ class RawEnvPlugin {
       });
       for (const type of ['auto', 'esm']) {
         params.normalModuleFactory.hooks.parser.for('javascript/' + type)
-          .tap('staticExport', arrowToFuncParser);
+          .tap(NAME, findStaticExports);
       }
     });
   }
 }
 
 /** @param {import('webpack/types').JavascriptParser} parser */
-function arrowToFuncParser(parser) {
+function findStaticExports(parser) {
   /** @type {WeakMap<object, Map<string,string>>} */
   const topConsts = new WeakMap();
   parser.hooks.program.tap(NAME, /**@param {Program} ast*/ast => {
@@ -144,7 +144,7 @@ hookFunc(HarmonyExportSpecifierDependency.Template, 'apply', (fn, me, args) => {
 
 hookFunc(HarmonyImportSpecifierDependency.Template, '_getCodeForIds', (fn, me, args) => {
   const res = Reflect.apply(fn, me, args);
-  return res.replace(/^\(0,([$\w]+\.[$\w]+)\)$/, '$1');
+  return res.replace(rxCall, '$1');
 });
 
 hookFunc(HarmonyExportInitFragment, 'getContent', (fn, me, args) => {

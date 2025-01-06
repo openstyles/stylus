@@ -76,7 +76,7 @@ export const worker = !__.MV3
   : createPortProxy(async () => {
     const client = await getClient();
     const proxy = !client || client.url.endsWith(__.PAGE_OFFSCREEN) ? (
-      client && (offscreen[CONNECTED] = client),
+      offscreen[CONNECTED] ??= client,
       offscreen
     ) : createPortProxy(client, {once: true});
     return proxy.getWorkerPort(workerPath);
