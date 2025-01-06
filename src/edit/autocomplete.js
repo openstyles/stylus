@@ -36,7 +36,6 @@ const rxWordStart = __.MV3 ? /(?<![-\w]|#[0-9a-f]*)/
 const rxWord = __.MV3 ? /(?<![-\w]|#[0-9a-f]*)[a-z][-a-z]+/gi
   : rxWordStart ? tryRegExp('(?<![-\\w]|#[0-9a-f]*)[a-z][-a-z]+', 'gi')
     : /\b[a-z][-a-z]+/gi;
-const rxstrWordStart = rxWordStart ? rxWordStart.source : '';
 const cssMime = CodeMirror.mimeModes['text/css'];
 const docFuncs = addSuffix(cssMime.documentTypes, '(');
 const docFuncsStr = '\n' + docFuncs.join('\n');
@@ -222,10 +221,11 @@ async function helper(cm) {
       ? CodeMirror.hint.fromList(cm, {words: CodeMirror.hintWords.stylus})
       : originalHelper(cm);
     const word = leftLC
-      ? RegExp(rxstrWordStart + stringAsRegExpStr(leftLC) + '[-a-z]+', 'gi')
+      ? RegExp(stringAsRegExpStr(leftLC) + '[-a-z]+', 'gi')
       : rxWord;
     const any = CodeMirror.hint.anyword(cm, {word}).list;
-    list = simple ? [...new Set(simple.list.concat(any))] : any;
+    if (!cssColors) await initCssProps();
+    list = [...new Set(simple.list.concat(any, cssColors.split('\n')))];
     list.sort();
   }
   const len = leftLC.length;
