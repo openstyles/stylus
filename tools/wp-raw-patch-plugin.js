@@ -39,7 +39,13 @@ const NAME = __filename.slice(__dirname.length + 1).replace(/\.\w+$/, '');
 const SYM = Symbol(NAME);
 const CONST = 'const';
 const FUNC = 'func';
-const toOneLine = str => str.replace(/[\r\n]\s*/g, '');
+const MAKE_NS = `\
+${RG.makeNamespaceObject} = ${exports =>
+  Object.defineProperties(exports, {
+    [Symbol.toStringTag]: {value: 'Module'},
+    __esModule: {value: true},
+  })
+}`.replace(/[\r\n]\s*/g, '');
 
 class RawEnvPlugin {
   constructor(vars, raws = {}) {
@@ -177,13 +183,7 @@ hookFunc(ConcatenatedModule, 'codeGeneration', (fn, me, args) => {
   return res;
 });
 
-MakeNamespaceObjectRuntimeModule.prototype.generate = () => toOneLine(`\
-${RG.makeNamespaceObject} = ${exports =>
-  Object.defineProperties(exports, {
-    [Symbol.toStringTag]: {value: 'Module'},
-    __esModule: {value: true},
-  })
-}`);
+MakeNamespaceObjectRuntimeModule.prototype.generate = () => MAKE_NS;
 
 function hookFunc(obj, name, hook) {
   if (typeof obj === 'function') obj = obj.prototype;

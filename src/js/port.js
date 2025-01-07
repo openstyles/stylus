@@ -142,7 +142,6 @@ export function createPortExec(getTarget, {lock, once} = {}, target) {
   async function discard(myQ, wait) {
     if (__.DEBUG & 2 && wait) console.log(`${PATH} discarding`, myQ, queue, myQ === queue);
     while (wait && myQ.size) {
-      wait = [...myQ.keys()];
       await Promise.all(Array.from(myQ.values(), ctx => ctx.p.catch(NOP)));
     }
     if (myQ !== queue) return;

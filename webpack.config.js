@@ -63,10 +63,6 @@ const OUTPUT_MODULE = {
   },
   experiments: {outputModule: true},
 };
-const DEBUGMASK = {
-  port: 2,
-  life: 4,
-};
 const ALIASES = {
   funcs: {
     $: 'document.querySelector',
@@ -85,7 +81,6 @@ const VARS = {
   BUILD,
   CLIENT_DATA: 'clientData', // hiding the global from IDE
   CM_PATH,
-  DEBUG: DEBUG?.split(',').reduce((res, s) => res + DEBUGMASK[s], 1) || 0,
   DEV,
   ENTRY: false,
   IS_BG: false,
@@ -96,6 +91,7 @@ const VARS = {
   ZIP: !!ZIP,
 };
 const RAW_VARS = {
+  DEBUG: DEBUG || '0',
   DEBUGLOG: (DEBUG ? '' : 'null&&') + 'console.log',
   DEBUGTRACE: (DEBUG ? '' : 'null&&') + 'console.trace',
   DEBUGWARN: (DEBUG ? '' : 'null&&') + 'console.warn',
