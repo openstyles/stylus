@@ -32,47 +32,31 @@ const intlCache = {};
 /** Adds soft hyphens every 10 characters to ensure the long words break before breaking the layout */
 export const breakWord = text => text.length <= 10 ? text
   : text.replace(RX_WORD_BREAK, '$&\u00AD');
-export const createText = str => document.createTextNode(breakWord(str));
 export const parseHtml = str => new DOMParser().parseFromString(str, 'text/html');
 export const tHTML = html => typeof html !== 'string'
   ? html
   : /<\w+/.test(html) // check for html tags
-    ? htmlToFragment(html.replace(/>\n\s*</g, '><').trim())
+    ? $createFragment(sanitizeHtml(html))
     : document.createTextNode(html);
 
 let onBodyListeners = [];
 
-function tNodeList(nodes) {
-  for (const node of nodes) {
-    if (!node.localName) continue;
-    const attr = node.getAttribute('i18n');
+function tElements(elems) {
+  for (const el of elems) {
+    const attr = el.getAttribute('i18n');
     if (!attr) continue;
-    for (const part of attr.split(',')) {
-      let toInsert, first;
-      let [type, value] = part.trim().split(/\s*:\s*/);
-      if (!value) [type, value] = type.split(/(\w+)/);
-      value = t(value);
-      switch (type) {
-        case '':
-          first = true;
-          // fallthrough
-        case '+':
-          toInsert = createText(value);
-          break;
-        case 'html':
-          first = true;
-          // fallthrough
-        case '+html':
-          toInsert = htmlToFragment(value);
-          break;
-        default:
-          node.setAttribute(type, value);
-      }
-      if (toInsert) {
-        node.insertBefore(toInsert, first && node.firstChild);
-      }
+    for (let item of attr.split(',')) {
+      item = item.trim();
+      const add = item.charCodeAt(0) === 43/* + */;
+      const fn = add ? 'append' : 'prepend';
+      const i = item.indexOf(':');
+      const key = i > 0 && item.slice(add, i);
+      const val = t(i > 0 ? item.slice(i + 1).trim() : add ? item.slice(1) : item);
+      if (!key) el[fn](breakWord(val));
+      else if (key === 'html') el[fn](...sanitizeHtml(val));
+      else el.setAttribute(key, breakWord(val));
     }
-    node.removeAttribute('i18n');
+    el.removeAttribute('i18n');
   }
 }
 
@@ -82,25 +66,15 @@ function createTemplate(el) {
   const first = content.firstChild;
   const res = first.nextSibling ? content : first;
   if (id) templateCache[id] = res;
-  tNodeList(res.$$(SELECTOR));
+  tElements(res.$$(SELECTOR));
   return res;
-}
-
-function htmlToFragment(str, trusted) {
-  const root = parseHtml(str).body;
-  if (!trusted) {
-    sanitizeHtml(root);
-  } else if (str.includes('i18n=')) {
-    tNodeList(root.$$(SELECTOR));
-  }
-  return $createFragment(root.childNodes);
 }
 
 export function htmlToTemplate(html) {
   const el = parseHtml(html).body;
   const first = el.firstChild;
   const res = first.nextSibling ? $createFragment(el.childNodes) : first;
-  tNodeList(res.$$(SELECTOR));
+  tElements(res.$$(SELECTOR));
   return res;
 }
 
@@ -109,7 +83,8 @@ export function htmlToTemplateCache(html) {
   return templateCache;
 }
 
-export function sanitizeHtml(root) {
+export function sanitizeHtml(str) {
+  const root = parseHtml(str).body;
   const toRemove = [];
   const walker = document.createTreeWalker(root);
   for (let n; (n = walker.nextNode());) {
@@ -133,6 +108,7 @@ export function sanitizeHtml(root) {
   for (const n of toRemove) {
     n.parentNode?.removeChild(n); // not using .remove() as there may be a non-element
   }
+  return root.childNodes;
 }
 
 export function formatDate(date, needsTime) {
@@ -187,7 +163,7 @@ export function formatRelativeDate(date, style) {
 
 export function tBody(fn) {
   if (!fn) {
-    tNodeList(document.$$(SELECTOR));
+    tElements(document.$$(SELECTOR));
     const tpl = template.body;
     if (tpl && tpl !== document.body) {
       (template.body = document.body).append(tpl);

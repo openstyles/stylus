@@ -21,13 +21,13 @@ export const stringAsRegExp = (s, flags) => new RegExp(stringAsRegExpStr(s), fla
 export const promiseWithResolve = _ => Object.assign(new Promise(cb => (_ = cb)), {[kResolve]: _});
 export const RX_META = /\/\*!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i;
 
-const tCache = {};
+const tCache = /*@__PURE__*/new Map();
 
 export const t = (key, params, strict = true) => {
-  const cached = !params && tCache[key];
+  const cached = !params && tCache.get(key);
   const s = cached || chrome.i18n.getMessage(key, params);
   if (!s && strict) throw `Missing string "${key}"`;
-  if (!params) tCache[key] = s;
+  if (!params) tCache.set(key, s);
   return s;
 };
 
