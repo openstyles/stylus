@@ -80,6 +80,7 @@ async function doBroadcast() {
 }
 
 export function broadcastExtension(data, multi) {
+  if (multi && !(multi = data.length > 1)) data = data[0];
   return unwrap(browser.runtime.sendMessage({data, multi}));
 }
 
@@ -88,6 +89,7 @@ export function pingTab(tabId, frameId = 0) {
 }
 
 export function sendTab(tabId, data, options, multi) {
+  if (multi && !(multi = data.length > 1)) data = data[0];
   return unwrap(browser.tabs.sendMessage(tabId, {data, multi}, options), multi);
 }
 

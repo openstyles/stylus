@@ -39,6 +39,8 @@ let matchUrl = isFrameNoUrl
 let offscreen;
 /** @type chrome.runtime.Port */
 let port;
+let throttled;
+let throttledCount;
 let lazyBadge = isFrame;
 /** @type IntersectionObserver */
 let xo;
@@ -112,9 +114,14 @@ function getStylesViaXhr() {
   } catch {}
 }
 
-function applyOnMessage(req) {
+function applyOnMessage(req, sender, multi) {
   if (isUnstylable && /^(style|urlChanged)/.test(req.method)) {
     API.styleViaAPI(req);
+    return;
+  }
+  if (multi) {
+    throttled ??= Promise.resolve().then(processThrottled) && [];
+    throttled.push(req);
     return;
   }
   const {style} = req;
@@ -163,6 +170,13 @@ function applyOnMessage(req) {
   }
 }
 
+function processThrottled() {
+  for (const req of throttled)
+    applyOnMessage(req);
+  throttled = null;
+  updateCount();
+}
+
 function updateConfig({cfg}) {
   for (const k in cfg) {
     const v = cfg[k];
@@ -198,10 +212,15 @@ function updateExposeIframes() {
 }
 
 function updateCount() {
+  let ids, str;
   if (TDM < 0) return;
   if (isFrame && lazyBadge && performance.now() > 1000) lazyBadge = false;
   if (isUnstylable) API.styleViaAPI({method: 'updateCount'});
-  else API.updateIconBadge(styleInjector.list.map(style => style.id), {lazyBadge, iid: instanceId});
+  else if (!throttled
+  && throttledCount !== (str = (ids = [...styleInjector.table.keys()]).join(','))) {
+    API.updateIconBadge(ids, {lazyBadge, iid: instanceId});
+    throttledCount = str;
+  }
 }
 
 function onFrameElementInView(cb) {
@@ -229,6 +248,7 @@ function onBeforeUnload(e) {
 
 function onBFCache(e) {
   if (orphanCheck() && e.isTrusted && e.persisted) {
+    throttledCount = '';
     updateCount();
   }
 }

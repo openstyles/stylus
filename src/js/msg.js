@@ -41,7 +41,7 @@ export function _execute(data, sender, multi) {
   do {
     for (const [fn, replyAllowed] of handlers) {
       try {
-        res = fn(data, sender);
+        res = fn(data, sender, !!multi);
       } catch (err) {
         res = Promise.reject(err);
       }

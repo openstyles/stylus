@@ -26,7 +26,7 @@ const randomIds = {};
 const calcOrder = ({id}) => orderPrio[id] * 1e6 || orderMain[id] || id + .5e6;
 const compare = (a, b) => calcOrder(a) - calcOrder(b);
 /** @type {Map<number,Injection.Sections>} */
-const table = new Map();
+export const table = new Map();
 /** @type {CSSStyleSheet[]} V1: frozen array in old Chrome, the reference changes */
 let ass;
 /** @type {CSSStyleSheet[]} V2: mutable array, the reference doesn't change */
