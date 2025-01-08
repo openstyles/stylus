@@ -1,18 +1,7 @@
 import {k_onDisconnect} from '@/js/consts';
+import {sleep} from '@/js/util';
 
-export const COMMANDS = __.ENTRY !== 'sw' && (
-  __.ENTRY === 'worker' || !__.MV3 ? {
-    __proto__: null,
-  } : /** @namespace CommandsAPI */ {
-    __proto__: null,
-    /** @this {RemotePortEvent} */
-    getWorkerPort(url) {
-      const p = getWorkerPort(url);
-      this._transfer = [p];
-      return p;
-    },
-  }
-);
+export const COMMANDS = {__proto__: null};
 export const CONNECTED = Symbol('connected');
 const PATH = location.pathname;
 const TTL = 5 * 60e3; // TODO: add a configurable option?
@@ -23,8 +12,18 @@ const SharedWorker = __.ENTRY !== 'sw' && global.SharedWorker;
 const WeakRef = global.WeakRef;
 const kWorker = '_worker';
 const NOP = () => {};
+const PING = 'ping';
+const PING_MAX = 5000; // ms
 if (__.MV3 && __.ENTRY === true || __.ENTRY === __.PAGE_OFFSCREEN) {
   navigator.serviceWorker.onmessage = initRemotePort.bind(COMMANDS);
+  Object.assign(COMMANDS, /** @namespace CommandsAPI */ {
+    /** @this {RemotePortEvent} */
+    getWorkerPort(url) {
+      const p = getWorkerPort(url);
+      this._transfer = [p];
+      return p;
+    },
+  });
 }
 if (__.ENTRY === __.PAGE_OFFSCREEN) {
   Object.assign(COMMANDS, /** @namespace CommandsAPI */ {
@@ -58,20 +57,21 @@ export function createPortProxy(getTarget, opts) {
 }
 
 export function createPortExec(getTarget, {lock, once} = {}, target) {
-  /** @type {Map<number,{stack: string, p: Promise, t: number, rr: function[]}>} */
+  /** @type {Map<number,{stack: string, p: Promise, args: any[], rr: function[]}>} */
   let queue;
   /** @type {MessagePort} */
   let port;
   /** @type {WeakRef} */
   let ref;
   let initializing;
+  let ping;
   let tracking;
   let lastId = 0;
   return exec;
 
   async function exec(...args) {
     // Saving the stack to attach it to `error` in onMessage
-    const ctx = {stack: new Error().stack};
+    const ctx = {args, stack: new Error().stack};
     const promise = new Promise((resolve, reject) => (ctx.rr = [resolve, reject]));
 
     // Re-connect if disconnected unless already initializing
@@ -87,14 +87,14 @@ export function createPortExec(getTarget, {lock, once} = {}, target) {
       once || (Array.isArray(this) ? this : undefined));
 
     queue.set(lastId, ctx);
+    ping ??= setTimeout(pingOnTimeout, PING_MAX);
     if (once) ctx.p = promise.catch(NOP);
-    ctx.t = setTimeout(onTimeout, 5000, lastId, args, ctx.rr);
-    if (__.DEBUG & 2) console.trace('%c%s exec sent', 'color:green', PATH, lastId, args);
+    __.DEBUGPORT('%c%s exec sent', 'color:green', PATH, lastId, ctx);
     return promise;
   }
 
   async function initPort() {
-    if (__.DEBUG & 2) console.log('%c%s exec init', 'color:blue', PATH, {getTarget});
+    __.DEBUGPORT('%c%s exec init', 'color:blue', PATH, {getTarget});
     // SW can't nest workers, https://crbug.com/40772041
     if (__.ENTRY !== 'sw' && typeof getTarget === 'string') {
       lock = getTarget;
@@ -130,18 +130,18 @@ export function createPortExec(getTarget, {lock, once} = {}, target) {
 
   /** @param {MessageEvent} _ */
   function onMessage({data}) {
-    if (__.DEBUG & 2) console.log('%c%s exec onmessage', 'color:darkcyan', PATH, data.id, data);
+    __.DEBUGPORT('%c%s exec onmessage', 'color:darkcyan', PATH, data.id, data);
     if (!queue) {
       try { data = JSON.stringify(data); } catch {}
       console.error(PATH + ' empty queue in onMessage ' + data);
       return;
     }
+    if (ping) ping = clearTimeout(ping);
     if (!tracking && !once && navLocks) trackTarget(queue);
     const {id, res, err} = data.id ? data : JSON.parse(data);
-    const {stack, t, rr: [resolve, reject]} = queue.get(id);
-    clearTimeout(t);
+    const {stack, rr: [resolve, reject]} = queue.get(id);
     queue.delete(id);
-    if (lastId > 1000 && !queue.has(1))
+    if (lastId > 1e9)
       lastId = 0;
     if (!err) {
       resolve(res);
@@ -153,19 +153,26 @@ export function createPortExec(getTarget, {lock, once} = {}, target) {
   }
 
   async function discard(myQ, wait) {
-    if (__.DEBUG & 2 && wait) console.log(`${PATH} discarding`, myQ, queue, myQ === queue);
+    if (wait) __.DEBUGPORT(`${PATH} discarding`, myQ, queue, myQ === queue);
     while (wait && myQ.size) {
       await Promise.all(Array.from(myQ.values(), ctx => ctx.p.catch(NOP)));
     }
     if (myQ !== queue) return;
     if (wait) ref.deref()?.close();
+    if (ping) ping = clearTimeout(ping);
     exec[CONNECTED] = queue = ref = port = target = null;
   }
 
-  async function onTimeout(id, args, rr) {
-    console.warn(`${PATH} timeout for`, args);
-    queue?.delete(id);
-    exec(...args).then(...rr);
+  async function pingOnTimeout() {
+    ping = null;
+    if (!queue || await Promise.race([exec(PING), sleep(PING_MAX)]))
+      return;
+    console.warn(`${PATH} ping failed! Re-sending`, queue && [...queue.values()]);
+    ref = port = null; // force re-connect
+    if (queue)
+      for (const {args, rr} of queue.values())
+        if (args[0] !== PING)
+          exec(...args).then(...rr);
   }
 
   async function trackTarget(myQ) {
@@ -175,14 +182,13 @@ export function createPortExec(getTarget, {lock, once} = {}, target) {
   }
 
   function onDisconnect(myQ) {
-    if (__.DEBUG & 2) console.log(`${PATH} target disconnected`, myQ, queue, myQ === queue);
+    __.DEBUGPORT(`${PATH} target disconnected`, myQ, queue, myQ === queue);
     tracking = false;
-    for (const {stack, t, rr: [, reject]} of myQ.values()) {
+    for (const {stack, rr: [, reject]} of myQ.values()) {
       const msg = 'Target disconnected';
       const err = new Error(msg);
       err.stack = msg + '\n' + stack;
       reject(err);
-      clearTimeout(t);
     }
     myQ.clear();
     if (queue === myQ)
@@ -198,13 +204,13 @@ export function initRemotePort(evt) {
   const {lock = PATH, id: once} = evt.data || {};
   const exec = this;
   const port = evt.ports[0];
-  if (__.DEBUG & 2) console.trace('%c%s initRemotePort', 'color:orange', PATH, evt);
+  __.DEBUGPORT('%c%s initRemotePort', 'color:orange', PATH, evt, [new Error().stack]);
   if (__.ENTRY === __.PAGE_OFFSCREEN) {
     if (!bgPort) trackSW();
   } else if (!lockingSelf && lock && !once && navLocks) {
     lockingSelf = true;
     navLocks.request(lock, () => new Promise(NOP));
-    if (__.DEBUG & 2) console.log('%c%s initRemotePort lock', 'color:orange', PATH, lock);
+    __.DEBUGPORT('%c%s initRemotePort lock', 'color:orange', PATH, lock);
   }
   port.onerror = console.error;
   port.onmessage = onMessage;
@@ -215,11 +221,13 @@ export function initRemotePort(evt) {
   async function onMessage(portEvent) {
     const data = portEvent.data;
     const {args, id} = data.id ? data : JSON.parse(data);
-    if (__.DEBUG & 2) console.log('%c%s port onmessage', 'color:green', PATH, id, data, portEvent);
+    __.DEBUGPORT('%c%s port onmessage', 'color:green', PATH, id, data, portEvent);
     let res, err;
     numJobs++;
     if (timer) timer = clearTimeout(timer);
-    try {
+    if (args[0] === PING) {
+      res = true;
+    } else try {
       const fn = typeof exec === 'function' ? exec : exec[args.shift()];
       res = fn.apply(portEvent, args);
       if (res instanceof Promise) res = await res;
@@ -232,7 +240,7 @@ export function initRemotePort(evt) {
         err = [e];
       }
     }
-    if (__.DEBUG & 2) console.log('%c%s port response', 'color:blue', PATH, id, {res, err});
+    __.DEBUGPORT('%c%s port response', 'color:blue', PATH, id, {res, err});
     port.postMessage({id, res, err}, portEvent._transfer);
     if (!--numJobs && willAutoClose && !bgPort) {
       autoClose(TTL);

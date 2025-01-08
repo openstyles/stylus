@@ -90,9 +90,15 @@ const VARS = {
   PAGE_OFFSCREEN,
   ZIP: !!ZIP,
 };
+const DEBUG_MODE = {
+  GENERAL: 1,
+  PORT: 2,
+  LIFE: 4,
+};
 const RAW_VARS = {
   DEBUG: DEBUG || '0',
   DEBUGLOG: (DEBUG ? '' : 'null&&') + 'console.log',
+  DEBUGPORT: (+DEBUG & DEBUG_MODE.PORT ? '' : 'null&&') + 'console.log',
   DEBUGTRACE: (DEBUG ? '' : 'null&&') + 'console.trace',
   DEBUGWARN: (DEBUG ? '' : 'null&&') + 'console.warn',
   KEEP_ALIVE: '1&&',
