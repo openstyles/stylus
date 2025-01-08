@@ -11,8 +11,9 @@ import offscreen from '../offscreen';
 import '..';
 
 if (__.DEBUG) {
-  global.onunhandledrejection = global.onerror = ({reason, error = reason}) => {
-    chrome.tabs.create({url: 'data:,' + (error.stack || error.message || `${error}`)});
+  global.onunhandledrejection = global.onerror = e => {
+    e = e.reason || e.error || e;
+    chrome.tabs.create({url: 'data:,' + (e.stack || e.message || `${e}`)});
   };
 }
 
