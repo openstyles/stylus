@@ -3,7 +3,7 @@ import * as chromeSync from '@/js/chrome-sync';
 import * as prefs from '@/js/prefs';
 import {chromeLocal} from '@/js/storage-util';
 import * as STATES from '@/js/sync-util';
-import {fetchWebDAV, hasOwn, t} from '@/js/util';
+import {fetchWebDAV, hasOwn, t, tryURL} from '@/js/util';
 import {broadcastExtension} from './broadcast';
 import {uuidIndex} from './common';
 import {db} from './db';
@@ -100,7 +100,7 @@ export async function start(name = delayedInit) {
   if ((ctrl ??= initController()).then) ctrl = await ctrl;
   if (curDrive) return;
   curDriveName = name;
-  curDrive = getDrive(name); // preventing re-entry by assigning synchronously
+  curDrive = getDrive(name).catch(console.error); // preventing re-entry by assigning synchronously
   curDrive = await curDrive;
   ctrl.use(curDrive);
   status.state = STATES.connecting;
@@ -273,6 +273,10 @@ async function getDrive(name) {
   if (!hasOwn(cloudDrive, name)) throw new Error(`Unknown cloud provider: ${name}`);
   const opts = await getDriveOptions(name);
   const webdav = name === 'webdav';
+  if (webdav && !tryURL(opts.url)) {
+    prefs.set(PREF_ID, 'none');
+    throw new Error('Broken options: WebDAV server URL is missing');
+  }
   if (!__.MV3 || !webdav) opts.getAccessToken = () => getToken(name);
   if (!__.MV3 && webdav) opts.fetch = fetchWebDAV.bind(opts);
   return cloudDrive[name](opts);
