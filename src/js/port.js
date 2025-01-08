@@ -74,10 +74,13 @@ export function createPortExec(getTarget, {lock, once} = {}, target) {
     const ctx = {stack: new Error().stack};
     const promise = new Promise((resolve, reject) => (ctx.rr = [resolve, reject]));
 
+    // Re-connect if disconnected unless already initializing
     if (!(exec[CONNECTED] = ref ? !!ref.deref() : !!port) && !initializing)
       initializing = initPort();
-    if (!exec[CONNECTED]) // when initPort didn't complete synchronously
-      initializing = await initializing;
+    // If initPort didn't await inside, CONNECTED is true and we immediately clear `initializing`,
+    // otherwise we'll await first in this exec() and in the overlapped subsequent exec(s).
+    if (initializing)
+      initializing = !exec[CONNECTED] && await initializing;
 
     (once ? target : port || ref.deref()).postMessage(
       {args, id: ++lastId},
