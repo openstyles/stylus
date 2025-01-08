@@ -143,9 +143,7 @@ h1 {
       font-size: smaller;
       user-select: text;
       color: var(--accent-1);
-      &:empty {
-        margin: 0;
-      }
+      margin-left: 4px;
     }
   }
 }
