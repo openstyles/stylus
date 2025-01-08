@@ -54,7 +54,6 @@ if (getFSH) {
     const dt = e.dataTransfer;
     const file = dt.files[0];
     if (file.type.includes('json')) {
-      document.body.ondrop(e);
       return;
     }
     if (!/\.(css|styl|less)$/i.test(file.name)) {

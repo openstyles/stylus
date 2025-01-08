@@ -118,8 +118,7 @@ async function importFromString(jsonString) {
   };
   let order;
   await Promise.all(json.map(analyze));
-  for (let i = 0; i < items.length; i++) {
-    const group = items[i];
+  for (const group of items) {
     const styles = await API.styles.importMany(group);
     for (let j = 0; j < styles.length; j++) {
       const {style, err} = styles[j];
