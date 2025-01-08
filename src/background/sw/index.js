@@ -10,6 +10,12 @@ import setClientData from '../set-client-data';
 import offscreen from '../offscreen';
 import '..';
 
+if (__.DEBUG) {
+  global.onunhandledrejection = global.onerror = ({reason, error = reason}) => {
+    chrome.tabs.create({url: 'data:,' + (error.stack || error.message || `${error}`)});
+  };
+}
+
 /** @param {ExtendableEvent} evt */
 global.oninstall = evt => {
   evt.addRoutes({

@@ -52,8 +52,7 @@ export function createPortProxy(getTarget, opts) {
       ? exec?.[CONNECTED]
       : function (...args) {
         exec ??= createPortExec(getTarget, opts, me[CONNECTED]);
-        const res = exec.call(this, cmd, ...args);
-        return __.DEBUG ? res.catch(onExecError) : res;
+        return exec.call(this, cmd, ...args);
       },
   });
 }
@@ -147,9 +146,7 @@ export function createPortExec(getTarget, {lock, once} = {}, target) {
     if (!err) {
       resolve(res);
     } else {
-      reject(Array.isArray(err)
-        ? Object.assign(...err, {stack: err[0].stack + '\n' + stack})
-        : err);
+      reject(err[1] ? Object.assign(...err, {stack: err[0].stack + '\n' + stack}) : err[0]);
     }
     if (once && queue.size)
       discard(queue, true);
@@ -228,7 +225,12 @@ export function initRemotePort(evt) {
       if (res instanceof Promise) res = await res;
     } catch (e) {
       res = undefined; // clearing a rejected Promise
-      err = e instanceof Error ? [e, {...e}] : e; // keeping own props added on top of an Error
+      if (e instanceof Error) {
+        delete e.origin; // non-clonable
+        err = [e, {...e}]; // keeping own props added on top of an Error
+      } else {
+        err = [e];
+      }
     }
     if (__.DEBUG & 2) console.log('%c%s port response', 'color:blue', PATH, id, {res, err});
     port.postMessage({id, res, err}, portEvent._transfer);
@@ -284,15 +286,6 @@ function initChannelPort(target, msg, transfer) {
   if (transfer) transfer[0] = port2;
   else target.postMessage(msg, [port2]);
   return mc.port1;
-}
-
-function onExecError(err) {
-  console.error(err);
-  if (global.alert) {
-    alert(err.stack);
-  } else {
-    global.chrome?.tabs.create({url: 'data:,' + err.stack});
-  }
 }
 
 /** @param {MessageEvent} _ */
