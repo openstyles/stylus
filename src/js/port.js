@@ -199,7 +199,7 @@ export function initRemotePort(evt) {
   const exec = this;
   const port = evt.ports[0];
   if (__.DEBUG & 2) console.trace('%c%s initRemotePort', 'color:orange', PATH, evt);
-  if (__.ENTRY === 'offscreen') {
+  if (__.ENTRY === __.PAGE_OFFSCREEN) {
     if (!bgPort) trackSW();
   } else if (!lockingSelf && lock && !once && navLocks) {
     lockingSelf = true;
