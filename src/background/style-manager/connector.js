@@ -1,18 +1,11 @@
+import {onDisconnect} from '@/js/msg';
 import {draftsDb} from '../db';
 import {broadcastStyleUpdated, id2data} from './util';
 
-const ON_DISCONNECT = {
-  livePreview: onPreviewEnd,
-  draft: onDraftEnd,
-};
-
-chrome.runtime.onConnect.addListener(port => {
-  // Using ports to reliably track when the client is closed, however not for messaging,
-  // because our `API` is much faster due to direct invocation.
-  const type = port.name.split(':', 1)[0];
-  const fn = ON_DISCONNECT[type];
-  if (fn) port.onDisconnect.addListener(fn);
-});
+// Using ports to reliably track when the client is closed, however not for messaging,
+// because our `API` is much faster due to direct invocation.
+onDisconnect.draft = onDraftEnd;
+onDisconnect.livePreview = onPreviewEnd;
 
 function onDraftEnd(port) {
   const id = port.name.split(':')[1];

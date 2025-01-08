@@ -2,6 +2,7 @@ import {kStyleIdPrefix, UCD} from '@/js/consts';
 import {$create, $toggleDataset} from '@/js/dom';
 import {setupLivePrefs, showSpinner} from '@/js/dom-util';
 import {breakWord, formatDate, htmlToTemplateCache, templateCache} from '@/js/localization';
+import {onConnect} from '@/js/msg';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import * as URLS from '@/js/urls';
@@ -579,15 +580,14 @@ async function fetchIndex() {
 async function fetchIndexJob([url, prefix, transform]) {
   let el = $create('div', {title: url});
   $id('pct').append(el);
-  chrome.runtime.onConnect.addListener(port => {
-    if (port.name !== url) return;
+  onConnect[url] = port => {
     port.onMessage.addListener(([done, total]) => {
       if (!el) return;
       el.textContent = total
         ? (done / total * 100 | 0) + '%'
         : formatNumber(done) + '...';
     });
-  });
+  };
   for (let triesLeft = 3; triesLeft--;) {
     try {
       const res = transform(await API.download(url, {responseType: 'json', port: url}));

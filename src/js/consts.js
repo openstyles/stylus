@@ -30,5 +30,6 @@ export const kUrl = 'url';
 export const k_busy = '_busy';
 export const k_deepCopy = '_deepCopy';
 export const k_msgExec = '_msgExec';
+export const k_onDisconnect = '_onDisconnect';
 
 export const IMPORT_THROTTLE = 100; //ms

@@ -1,4 +1,5 @@
 import {kApplyPort} from '@/js/consts';
+import {onDisconnect} from '@/js/msg';
 import {supported} from '@/js/urls';
 import {ignoreChromeError} from '@/js/util-webext';
 import {bgBusy, bgInit, stateDB} from './common';
@@ -109,11 +110,7 @@ bgBusy.then(() => {
   });
 });
 
-chrome.runtime.onConnect.addListener(port => {
-  if (port.name === kApplyPort) {
-    port.onDisconnect.addListener(onPortDisconnected);
-  }
-});
+onDisconnect[kApplyPort] = onPortDisconnected;
 
 // Wake up when a new empty is created to ensure the styles are preloaded
 chrome.tabs.onCreated.addListener(() => {});

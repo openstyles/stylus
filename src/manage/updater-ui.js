@@ -2,6 +2,7 @@ import {kStyleIdPrefix} from '@/js/consts';
 import {$create, $detach, $toggleClasses} from '@/js/dom';
 import {messageBox, scrollElementIntoView} from '@/js/dom-util';
 import {template} from '@/js/localization';
+import {onConnect} from '@/js/msg';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {chromeLocal} from '@/js/storage-util';
@@ -63,11 +64,7 @@ function checkUpdateAll() {
   let skippedEdited = 0;
   let updated = 0;
 
-  chrome.runtime.onConnect.addListener(function onConnect(port) {
-    if (port.name !== 'updater') return;
-    port.onMessage.addListener(observer);
-    chrome.runtime.onConnect.removeListener(onConnect);
-  });
+  onConnect.updater = port => port.onMessage.addListener(observer);
 
   API.updater.checkAllStyles({
     save: false,

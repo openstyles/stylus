@@ -1,7 +1,9 @@
-import {kInvokeAPI} from '@/js/consts';
+import {k_onDisconnect, kInvokeAPI} from '@/js/consts';
 import {bgReadySignal} from './msg-api';
 
 const handlers = new Map();
+export const onConnect = {};
+export const onDisconnect = global[k_onDisconnect] = {};
 export const onMessage = (fn, replyAllowed) => {
   handlers.set(fn, replyAllowed);
 };
@@ -19,6 +21,15 @@ export const wrapError = error => ({
 });
 
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
+if (__.ENTRY) {
+  chrome.runtime.onConnect.addListener(port => {
+    const name = port.name.split(':', 1)[0];
+    const fnOn = onConnect[name];
+    const fnOff = onDisconnect[name];
+    if (fnOn) fnOn(port);
+    if (fnOff) port.onDisconnect.addListener(fnOff);
+  });
+}
 
 export function _execute(data, sender, multi) {
   let result;

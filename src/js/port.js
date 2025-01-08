@@ -1,3 +1,5 @@
+import {k_onDisconnect} from '@/js/consts';
+
 export const COMMANDS = __.ENTRY !== 'sw' && (
   __.ENTRY === 'worker' || !__.MV3 ? {
     __proto__: null,
@@ -31,8 +33,7 @@ if (__.ENTRY === __.PAGE_OFFSCREEN) {
         autoClose();
       } else if (!bgPort) {
         if (timer) timer = clearTimeout(timer);
-        bgPort = chrome.runtime.connect({name: __.PAGE_OFFSCREEN});
-        bgPort.onDisconnect.addListener(() => autoClose());
+        trackSW();
       }
     },
   });
@@ -119,11 +120,23 @@ export function createPortExec(getTarget, {lock, once} = {}, target) {
       ref = new WeakRef(port);
       port = null;
     }
+    if (__.ENTRY === 'sw' && lock === '/' + __.PAGE_OFFSCREEN + '.html') {
+      tracking = true;
+      global[k_onDisconnect][__.PAGE_OFFSCREEN] = () => {
+        delete global[k_onDisconnect][__.PAGE_OFFSCREEN];
+        onDisconnect(queue);
+      };
+    }
   }
 
   /** @param {MessageEvent} _ */
   function onMessage({data}) {
     if (__.DEBUG & 2) console.log('%c%s exec onmessage', 'color:darkcyan', PATH, data.id, data);
+    if (!queue) {
+      try { data = JSON.stringify(data); } catch {}
+      console.error(PATH + ' empty queue in onMessage ' + data);
+      return;
+    }
     if (!tracking && !once && navLocks) trackTarget(queue);
     const {id, res, err} = data.id ? data : JSON.parse(data);
     const {stack, t, rr: [resolve, reject]} = queue.get(id);
@@ -161,8 +174,12 @@ export function createPortExec(getTarget, {lock, once} = {}, target) {
   async function trackTarget(myQ) {
     tracking = true;
     await navLocks.request(lock, NOP);
-    tracking = false;
+    onDisconnect(myQ);
+  }
+
+  function onDisconnect(myQ) {
     if (__.DEBUG & 2) console.log(`${PATH} target disconnected`, myQ, queue, myQ === queue);
+    tracking = false;
     for (const {stack, t, rr: [, reject]} of myQ.values()) {
       const msg = 'Target disconnected';
       const err = new Error(msg);
@@ -185,7 +202,9 @@ export function initRemotePort(evt) {
   const exec = this;
   const port = evt.ports[0];
   if (__.DEBUG & 2) console.trace('%c%s initRemotePort', 'color:orange', PATH, evt);
-  if (!lockingSelf && lock && !once && navLocks) {
+  if (__.ENTRY === 'offscreen') {
+    if (!bgPort) trackSW();
+  } else if (!lockingSelf && lock && !once && navLocks) {
     lockingSelf = true;
     navLocks.request(lock, () => new Promise(NOP));
     if (__.DEBUG & 2) console.log('%c%s initRemotePort lock', 'color:orange', PATH, lock);
@@ -280,4 +299,9 @@ function onExecError(err) {
 function onMessageError({data, source}) {
   console.warn('Non-cloneable data', data);
   source.postMessage(JSON.stringify(data));
+}
+
+function trackSW() {
+  bgPort = chrome.runtime.connect({name: __.PAGE_OFFSCREEN});
+  bgPort.onDisconnect.addListener(() => autoClose());
 }
