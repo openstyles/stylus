@@ -11,7 +11,7 @@ export const COLORVIEW_SWATCH_PROP = `--${COLORVIEW_SWATCH_CLASS}`;
 const CLOSE_POPUP_EVENT = 'close-colorpicker-popup';
 
 const {RX_COLOR, testAt} = colorConverter;
-const RX_UNSUPPORTED = (s => s && new RegExp(s))([
+const RX_UNSUPPORTED = !__.MV3 && (s => s && new RegExp(s))([
   !CSS.supports('color', '#abcd') && /#(.{4}){1,2}$/,
   !CSS.supports('color', 'hwb(1 0% 0%)') && /^hwb\(/,
   !CSS.supports('color', 'rgb(1e2,0,0)') && /\de/,

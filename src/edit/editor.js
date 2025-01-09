@@ -1,6 +1,7 @@
 import {$create} from '@/js/dom';
 import * as prefs from '@/js/prefs';
 import {clipString, debounce, deepEqual, mapObj, sessionStore, t} from '@/js/util';
+import {sticky} from './compact-header';
 import DirtyReporter from './dirty-reporter';
 
 const dirty = DirtyReporter();
@@ -28,6 +29,7 @@ const editor = self.editor = {
   },
   regexps,
   saving: false,
+  /** @type {EditorScrollInfoContainer} */
   scrollInfo: {},
   get style() {
     return style;
@@ -44,14 +46,17 @@ const editor = self.editor = {
       cm.setSelections(...si.sel, {scroll: false});
       Object.assign(cm.display.scroller, si.scroll); // for source editor
       Object.assign(cm.doc, si.scroll); // for sectioned editor
+      return si;
     }
   },
 
   cancel: () => location.assign('/manage.html'),
 
   makeScrollInfo() {
-    return {
+    return /** @namespace EditorScrollInfoContainer */ {
+      sticky,
       scrollY: window.scrollY,
+      /** @type {EditorScrollInfo[]} */
       cms: editor.getEditors().map(cm => /** @namespace EditorScrollInfo */({
         bookmarks: (cm.state.sublimeBookmarks || []).map(b => b.find()),
         focus: cm.hasFocus(),
@@ -59,6 +64,7 @@ const editor = self.editor = {
         parentHeight: cm.display.wrapper.parentElement.offsetHeight,
         scroll: mapObj(cm.doc, null, ['scrollLeft', 'scrollTop']),
         sel: [cm.doc.sel.ranges, cm.doc.sel.primIndex],
+        viewTo: cm.display.viewTo,
       })),
     };
   },

@@ -27,6 +27,9 @@ export default function SourceEditor() {
   `.replace(/^\s+/gm, '');
   let savedGeneration;
   let prevMode = NaN;
+  /** @type {MozSectionFinder} */
+  let sectionFinder;
+  let sectionWidget;
 
   $$remove('.sectioned-only');
   $id('header').on('wheel', headerOnScroll);
@@ -34,10 +37,23 @@ export default function SourceEditor() {
   $id('sections').appendChild($create('.single-editor'));
   $id('save-button').on('split-btn', saveTemplate);
 
-  const cm = cmFactory.create($('.single-editor'));
+  const cm = cmFactory.create($('.single-editor'), {
+    value: style.id ? style.sourceCode : setupNewStyle(editor.template),
+    finishInit(me) {
+      const si = editor.applyScrollInfo(me) || {};
+      editor.viewTo = si.viewTo;
+      sectionFinder = MozSectionFinder(me);
+      sectionWidget = MozSectionWidget(me, sectionFinder);
+      prefs.subscribe('editor.linter', updateLinterSwitch, true);
+      prefs.subscribe('editor.appliesToLineWidget',
+        (k, val) => sectionWidget.toggle(val), true);
+      prefs.subscribe('editor.toc.expanded',
+        (k, val) => sectionFinder.onOff(editor.updateToc, val), true);
+      Object.assign(me.curOp, si.scroll);
+      editor.viewTo = 0;
+    },
+  });
   const cmpPos = CodeMirror.cmpPos;
-  const sectionFinder = MozSectionFinder(cm);
-  const sectionWidget = MozSectionWidget(cm, sectionFinder);
   const metaCompiler = createMetaCompiler(meta => {
     const {vars} = style[UCD] || {};
     if (vars) {
@@ -53,7 +69,6 @@ export default function SourceEditor() {
     style.url = meta.homepageURL || style.installationUrl;
     updateMeta();
   });
-  if (!style.id) setupNewStyle(editor.template);
   updateMeta();
 
   /** @namespace Editor */
@@ -110,17 +125,6 @@ export default function SourceEditor() {
     scrollToEditor: () => {},
   });
 
-  prefs.subscribe('editor.linter', updateLinterSwitch, true);
-  prefs.subscribe('editor.appliesToLineWidget',
-    (k, val) => sectionWidget.toggle(val), true);
-  prefs.subscribe('editor.toc.expanded',
-    (k, val) => sectionFinder.onOff(editor.updateToc, val), true);
-
-  if (style.id) {
-    cm.setValue(style.sourceCode);
-    cm.clearHistory();
-    cm.markClean();
-  }
   savedGeneration = cm.changeGeneration();
   cm.on('changes', (_, changes) => {
     dirty.modify('sourceGeneration', savedGeneration, cm.changeGeneration());
@@ -139,7 +143,6 @@ export default function SourceEditor() {
   if (!$isTextInput(document.activeElement)) {
     cm.focus();
   }
-  editor.applyScrollInfo(cm); // WARNING! Place it after all cm.XXX calls that change scroll pos
 
   /** Shows the console.log output from the background worker stored in `log` property */
   function showLog(log) {
@@ -183,19 +186,14 @@ export default function SourceEditor() {
     if (Object.keys(sec0).length === 1) { // the only key is 'code'
       sec0.domains = ['example.com'];
     }
-    style.sourceCode = (tpl || DEFAULT_TEMPLATE)
+    return (style.sourceCode = (tpl || DEFAULT_TEMPLATE)
       .replace(/(@name)(?:([\t\x20]+).*|\n)/, (_, k, space) => `${k}${space || ' '}${style.name}`)
       .replace(/\s*@-moz-document[^{]*{([^}]*)}\s*$/g, // stripping dummy sections
         (s, body) => body.trim() === comment ? '\n\n' : s)
       .trim() +
       '\n\n' +
-      styleToCss(style);
-    cm.startOperation();
-    cm.setValue(style.sourceCode);
-    cm.clearHistory();
-    cm.markClean();
-    cm.endOperation();
-    dirty.clear('sourceGeneration');
+      styleToCss(style)
+    );
   }
 
   function updateMeta() {

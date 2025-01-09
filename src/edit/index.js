@@ -2,7 +2,7 @@ import '@/js/dom-init';
 import {tBody} from '@/js/localization';
 import * as prefs from '@/js/prefs';
 import {CodeMirror} from '@/cm';
-import CompactHeader from './compact-header';
+import CompactHeader, {toggleSticky} from './compact-header';
 import editor from './editor';
 import EditorHeader from './editor-header';
 import * as linterMan from './linter';
@@ -23,6 +23,7 @@ tBody();
 
 (async () => {
   if (loading) await loading;
+  if (editor.scrollInfo.sticky) toggleSticky(true);
   EditorHeader();
   USWIntegration();
   // TODO: load respective js on demand?

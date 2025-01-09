@@ -23,6 +23,7 @@ export default function MozSectionFinder(cm) {
   let updTo;
   let scheduled;
 
+  /** @namespace MozSectionFinder */
   const finder = {
     IGNORE_ORIGIN: KEY,
     EQ_SKIP_KEYS: [

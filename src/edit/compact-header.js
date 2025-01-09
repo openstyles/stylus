@@ -1,7 +1,12 @@
 import {$create, mqCompact} from '@/js/dom';
 import {important} from '@/js/dom-util';
+import {template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
 import editor from './editor';
+
+const h = template.body.$('#header');
+export const toggleSticky = val => h.classList.toggle('sticky', val);
+export let sticky;
 
 export default function CompactHeader() {
   // Set up mini-header on scroll
@@ -40,9 +45,8 @@ export default function CompactHeader() {
 
   /** @param {IntersectionObserverEntry[]} entries */
   function onScrolled(entries) {
-    const h = $id('header');
-    const sticky = !entries.pop().intersectionRatio;
+    sticky = !entries.pop().intersectionRatio;
     if (!isUsercss) scroller.style.paddingTop = sticky ? h.offsetHeight + 'px' : '';
-    h.classList.toggle('sticky', sticky);
+    toggleSticky(sticky);
   }
 }

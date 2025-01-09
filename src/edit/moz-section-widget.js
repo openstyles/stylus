@@ -229,11 +229,12 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
     const isDelayed = added.isDelayed && (cm.startOperation(), true);
     const toDelay = [];
     const t0 = performance.now();
-    let {viewFrom, viewTo} = cm.display;
+    let viewTo = editor.viewTo || cm.display.viewTo;
     for (const sec of added) {
       const i = removed.findIndex(isReusableWidget, sec);
       const old = removed[i];
-      if (isDelayed || old || sec.end.line >= viewFrom && sec.start.line < viewTo) {
+      if (isDelayed || old
+      || sec.start.line < viewTo /* must add preceding ones to calc scrollTop*/) {
         renderWidget(sec, old);
         viewTo -= (sec.funcs.length || 1) * 1.25;
         if (old) removed[i] = null;

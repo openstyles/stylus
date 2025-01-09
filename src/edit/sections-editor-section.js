@@ -37,6 +37,9 @@ export default class EditorSection {
       at[prefs.get('editor.targetsFirst') ? 'after' : 'before'](wrapper);
     }, {
       value: sectionData.code,
+      finishInit(_) {
+        editor.applyScrollInfo(_, si);
+      },
     });
     this.elLabelText = elLabel.lastChild;
     cm.el = el;
@@ -66,7 +69,6 @@ export default class EditorSection {
       if (cssName && arr) for (const v of arr) this.addTarget(cssName, v);
     }
     if (!this.targets.length) this.addTarget();
-    editor.applyScrollInfo(cm, si);
     initBeautifyButton(el.$('.beautify-section'), [cm]);
     prefs.subscribe('editor.toc.expanded', this.updateTocPrefToggled.bind(this), true);
     new ResizeGrip(cm); // eslint-disable-line no-use-before-define
