@@ -144,8 +144,10 @@ export function createPortExec(getTarget, {lock, once} = {}, target) {
 
   async function trackTarget(myQ) {
     tracking = true;
-    while (!(await navLocks.query()).held.some(v => v.name === lock))
-      __.DEBUGPORT(PATH, 'waiting for lock', lock, await sleep(10));
+    while (!(await navLocks.query()).held.some(v => v.name === lock)) {
+      __.DEBUGPORT(PATH, 'waiting for lock', lock);
+      await sleep(10);
+    }
     await navLocks.request(lock, NOP);
     tracking = false;
     __.DEBUGPORT(`${PATH} target disconnected`, target, lock, once);
