@@ -2,11 +2,10 @@ import {kApplyPort} from '@/js/consts';
 import {onDisconnect} from '@/js/msg';
 import {supported} from '@/js/urls';
 import {ignoreChromeError} from '@/js/util-webext';
-import {bgBusy, bgInit, stateDB} from './common';
+import {bgBusy, bgInit, onUnload, onUrl} from './common';
+import {stateDB} from './db';
 import {onUrlChange} from './navigation-manager';
 
-export const onUnload = new Set();
-export const onUrl = new Set();
 /** @typedef {{ url:string, styleIds: {[frameId:string]: number[]} }} StyleIdsFrameMap */
 /** @type {Map<number,{ id: number, url:string, styleIds: StyleIdsFrameMap }>} */
 const cache = new Map();

@@ -6,9 +6,10 @@ import {actionPopupUrl, ownRoot} from '@/js/urls';
 import {deepEqual, isEmptyObj} from '@/js/util';
 import {ownId, toggleListener} from '@/js/util-webext';
 import * as colorScheme from './color-scheme';
-import {bgBusy, bgPreInit, dataHub, stateDB} from './common';
+import {bgBusy, bgPreInit, dataHub, onUnload} from './common';
+import {stateDB} from './db';
 import {webNavigation} from './navigation-manager';
-import offscreen from './offscreen';
+import offscreen, {offscreenCache} from './offscreen';
 import makePopupData from './popup-data';
 import {getSectionsByUrl} from './style-manager';
 import * as styleCache from './style-manager/cache';
@@ -46,6 +47,7 @@ let curXHR = false;
 if (__.MV3) {
   toggle(); // register listeners synchronously so they wake up the SW next time it dies
   bgPreInit.push((async () => {
+    await offscreenCache;
     ruleIds = await stateDB.get(kRuleIds) || {};
     for (const id in ruleIds) ruleIdKeys[ruleIds[id]] = +id;
   })());
@@ -66,7 +68,7 @@ bgBusy.then(() => {
   if (tabIds.length) removeTabData(tabIds);
 });
 
-tabMan.onUnload.add((tabId, frameId) => {
+onUnload.add((tabId, frameId) => {
   if (frameId) setTimeout(removePreloadedStyles, REVOKE_TIMEOUT, null, tabId + ':' + frameId);
   else removeTabData([tabId]);
 });

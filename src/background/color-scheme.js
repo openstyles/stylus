@@ -1,16 +1,16 @@
-import {kStyleViaXhr} from '@/js/consts';
-import {CONNECTED} from '@/js/port';
+import {kDark, kStyleViaXhr, STATE_DB} from '@/js/consts';
+import {CLIENT} from '@/js/port';
 import * as prefs from '@/js/prefs';
 import {debounce, isCssDarkScheme} from '@/js/util';
 import {broadcastExtension} from './broadcast';
-import {bgBusy, bgInit, bgPreInit, stateDB} from './common';
-import offscreen from './offscreen';
+import {bgBusy, bgInit, bgPreInit} from './common';
+import {stateDB} from './db';
+import offscreen, {offscreenCache} from './offscreen';
 
 const changeListeners = new Set();
 const kSTATE = 'schemeSwitcher.enabled';
 const kSTART = 'schemeSwitcher.nightStart';
 const kEND = 'schemeSwitcher.nightEnd';
-const kDark = 'dark';
 const kLight = 'light';
 const kNever = 'never';
 const kSystem = 'system';
@@ -35,20 +35,16 @@ let prefState;
 chrome.alarms.onAlarm.addListener(onAlarm);
 
 if (__.MV3) {
-  bgPreInit.push(stateDB.get(kDark).then(v => {
-    if (!v) {
-      isDark = false;
-    } else {
-      isDark ??= v[0];
-      Object.assign(map, v[1]);
-    }
+  bgPreInit.push(offscreenCache.then(v => {
+    if (v && (v = v[STATE_DB])) setSystemDark(v.get(kDark));
+    else bgInit.push(refreshSystemDark);
   }));
-  bgInit.push(refreshSystemDark);
-  prefs.subscribe([kSTATE, kStyleViaXhr], () => {
-    const val = prefState === kSystem || prefs.__values[kStyleViaXhr];
-    if (val || offscreen[CONNECTED]) {
+  prefs.subscribe([kSTATE, kStyleViaXhr], (key, val, init) => {
+    if (init && key !== kStyleViaXhr) // only process the last one on init
+      return;
+    val = prefState === kSystem || prefs.__values[kStyleViaXhr];
+    if (val || offscreen[CLIENT])
       offscreen.keepAlive(val);
-    }
   }, true);
 } else {
   refreshSystemDark();
@@ -127,6 +123,8 @@ function updateTimePreferDark() {
 function update(type, val) {
   if (type) {
     if (map[type] === val) return;
+    if (__.MV3 && type === kSystem)
+      stateDB.put(val, kDark);
     map[type] = val;
   }
   val = map[prefState];

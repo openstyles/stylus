@@ -27,7 +27,7 @@ const SHIM = ROOT + 'tools/shim/';
 const SEP_ESC = escapeForRe(path.sep);
 const SRC_ESC = escapeForRe(SRC.replaceAll('/', path.sep));
 const PAGE_BG = MV3 ? 'background/sw' : 'background';
-const PAGE_OFFSCREEN = 'offscreen';
+const OFFSCREEN = 'offscreen';
 const PAGES = [
   'edit',
   'install-usercss',
@@ -87,7 +87,6 @@ const VARS = {
   JS,
   MV3,
   PAGE_BG: PAGE_BG.split('/').pop(),
-  PAGE_OFFSCREEN,
   ZIP: !!ZIP,
 };
 const DEBUG_MODE = {
@@ -472,17 +471,17 @@ module.exports = [
   }),
 
   MV3 && mergeCfg({
-    entry: `@/${PAGE_OFFSCREEN}`,
+    entry: `@/${OFFSCREEN}`,
     output: {
       filename: JS + '[name].js',
     },
     plugins: [
-      new RawEnvPlugin({ENTRY: PAGE_OFFSCREEN}),
+      new RawEnvPlugin({ENTRY: OFFSCREEN}),
       ...addWrapper(INTRO + ', ' + INTRO_ALIASES + ';'),
       new HtmlWebpackPlugin({
-        chunks: [PAGE_OFFSCREEN],
-        filename: PAGE_OFFSCREEN + '.html',
-        template: SRC + PAGE_OFFSCREEN + '.html',
+        chunks: [OFFSCREEN],
+        filename: OFFSCREEN + '.html',
+        template: SRC + OFFSCREEN + '.html',
         scriptLoading: 'blocking',
         inject: false,
       }),

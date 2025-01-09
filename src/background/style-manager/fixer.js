@@ -3,7 +3,20 @@ import * as URLS from '@/js/urls';
 import {isEmptyObj} from '@/js/util';
 import * as usercssMan from '../usercss-manager';
 import * as syncMan from '../sync-manager';
-import {broadcastStyleUpdated, id2data, makeRandomUUID, storeInMap} from './util';
+import {broadcastStyleUpdated, id2data, storeInMap} from './util';
+
+/** uuidv4 helper: converts to a 4-digit hex string and adds "-" at required positions */
+const hex4 = num => (num < 0x1000 ? num + 0x10000 : num).toString(16).slice(-4);
+
+const makeRandomUUID = crypto.randomUUID?.bind(crypto) || !__.MV3 && (() => {
+  const seeds = crypto.getRandomValues(new Uint16Array(8));
+  // 00001111-2222-M333-N444-555566667777
+  return hex4(seeds[0]) + hex4(seeds[1]) + '-' +
+    hex4(seeds[2]) + '-' +
+    hex4(seeds[3] & 0x0FFF | 0x4000) + '-' + // UUID version 4, M = 4
+    hex4(seeds[4] & 0x3FFF | 0x8000) + '-' + // UUID variant 1, N = 8..0xB
+    hex4(seeds[5]) + hex4(seeds[6]) + hex4(seeds[7]);
+});
 
 const MISSING_PROPS = {
   name: style => `ID: ${style.id}`,

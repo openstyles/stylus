@@ -2,10 +2,10 @@ import '@/js/browser';
 import {kContentType, kMainFrame} from '@/js/consts';
 import {DNR_ID_INSTALLER, updateDynamicRules} from '@/js/dnr';
 import * as prefs from '@/js/prefs';
+import {FIREFOX} from '@/js/ua';
 import * as URLS from '@/js/urls';
 import {getHost, RX_META} from '@/js/util';
-import {FIREFOX} from '@/js/ua';
-import {bgBusy} from './common';
+import {bgBusy, onUrl} from './common';
 import download from './download';
 import * as tabMan from './tab-manager';
 import {openURL} from './tab-util';
@@ -26,8 +26,8 @@ export function getInstallCode(url) {
 }
 
 function toggle(key, val, isInit) {
-  if (val) tabMan.onUrl.add(maybeInstall);
-  else tabMan.onUrl.delete(maybeInstall);
+  if (val) onUrl.add(maybeInstall);
+  else onUrl.delete(maybeInstall);
   if (!__.MV3 || !isInit) toggleUrlInstaller(val);
 }
 

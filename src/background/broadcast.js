@@ -1,9 +1,9 @@
 import '@/js/browser';
-import {getWindowClients} from '@/background/common';
 import {rxIgnorableError} from '@/js/msg-api';
 import {ownRoot, supported} from '@/js/urls';
 import {getActiveTab} from '@/js/util-webext';
 import tabCache, * as tabMan from './tab-manager';
+import {getWindowClients} from './util';
 
 let /**@type{?[]}*/toBroadcast;
 let /**@type{boolean[]}*/toBroadcastStyled;

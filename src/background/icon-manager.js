@@ -1,10 +1,10 @@
 import {kDisableAll} from '@/js/consts';
-import {subscribe, __values as __prefs} from '@/js/prefs';
+import {__values as __prefs, subscribe} from '@/js/prefs';
 import {CHROME, FIREFOX, MOBILE, VIVALDI} from '@/js/ua';
 import {debounce, t} from '@/js/util';
 import {ignoreChromeError, MF_ICON_EXT, MF_ICON_PATH} from '@/js/util-webext';
 import * as colorScheme from './color-scheme';
-import {bgBusy, bgInit} from './common';
+import {bgBusy, bgInit, onUnload} from './common';
 import {removePreloadedStyles} from './style-via-webrequest';
 import tabCache, * as tabMan from './tab-manager';
 
@@ -57,7 +57,7 @@ function initIcons(runNow = !__.MV3) {
   ], () => debounce(refreshAllIcons), runNow);
 }
 
-tabMan.onUnload.add((tabId, frameId, port) => {
+onUnload.add((tabId, frameId, port) => {
   if (frameId && tabMan.getStyleIds(tabId)) {
     updateIconBadge.call(port, [], {lazyBadge: true});
   }

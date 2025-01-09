@@ -1,11 +1,13 @@
-import {UCD} from '@/js/consts';
+import {CACHE_DB, DB, STATE_DB, UCD} from '@/js/consts';
 import * as URLS from '@/js/urls';
 import {deepEqual, isEmptyObj, mapObj} from '@/js/util';
 import {broadcast} from '../broadcast';
 import broadcastInjectorConfig from '../broadcast-injector-config';
-import {uuidIndex} from '../common';
+import {bgBusy, uuidIndex} from '../common';
 import {prefsDb} from '../db';
+import offscreen from '../offscreen';
 import * as syncMan from '../sync-manager';
+import {getCacheSkeletons} from './cache';
 import {buildCacheForStyle} from './cache-builder';
 
 /** @type {StyleDataMap} */
@@ -21,19 +23,6 @@ export const orderWrap = {
   _id: `${chrome.runtime.id}-${INJ_ORDER}`,
   _rev: 0,
 };
-
-/** uuidv4 helper: converts to a 4-digit hex string and adds "-" at required positions */
-const hex4 = num => (num < 0x1000 ? num + 0x10000 : num).toString(16).slice(-4);
-
-export const makeRandomUUID = crypto.randomUUID?.bind(crypto) || !__.MV3 && (() => {
-  const seeds = crypto.getRandomValues(new Uint16Array(8));
-  // 00001111-2222-M333-N444-555566667777
-  return hex4(seeds[0]) + hex4(seeds[1]) + '-' +
-    hex4(seeds[2]) + '-' +
-    hex4(seeds[3] & 0x0FFF | 0x4000) + '-' + // UUID version 4, M = 4
-    hex4(seeds[4] & 0x3FFF | 0x8000) + '-' + // UUID variant 1, N = 8..0xB
-    hex4(seeds[5]) + hex4(seeds[6]) + hex4(seeds[7]);
-});
 
 export function calcRemoteId({md5Url, updateUrl, [UCD]: ucd} = {}) {
   let id;
@@ -79,6 +68,22 @@ export function broadcastStyleUpdated(style, reason, isNew) {
 /** @return {Generator<StyleObj>} */
 export function *iterStyles() {
   for (const v of dataMap.values()) yield v.style;
+}
+
+export async function offloadCache(stateData) {
+  if (bgBusy) await bgBusy;
+  const styleMap = new Map();
+  const cacheMap = new Map();
+  for (const {style} of dataMap.values())
+    styleMap.set(style.id, style);
+  for (const v of getCacheSkeletons())
+    cacheMap.set(v.url, v);
+  __.DEBUGLOG('Offloading cache...');
+  await offscreen.dbCache({
+    [DB]: styleMap,
+    [CACHE_DB]: cacheMap,
+    [STATE_DB]: new Map(Object.entries(stateData)),
+  });
 }
 
 export async function setOrderImpl(data, {

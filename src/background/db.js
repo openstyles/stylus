@@ -1,9 +1,14 @@
+import {CACHE_DB, DB, STATE_DB} from '@/js/consts';
 import {API} from '@/js/msg-api';
+import {CLIENT} from '@/js/port';
 import {STORAGE_KEY} from '@/js/prefs';
 import {chromeLocal} from '@/js/storage-util';
 import {CHROME} from '@/js/ua';
-import {deepCopy} from '@/js/util';
+import {deepMerge} from '@/js/util';
+import {bgBusy} from './common';
 import ChromeStorageDB from './db-chrome-storage';
+import offscreen, {offscreenCache} from './offscreen';
+import {offloadCache} from './style-manager/util';
 
 /*
  Initialize a database. There are some problems using IndexedDB in Firefox:
@@ -15,7 +20,7 @@ import ChromeStorageDB from './db-chrome-storage';
 let exec = __.BUILD === 'chrome' || CHROME
   ? dbExecIndexedDB
   : tryUsingIndexedDB;
-const DB = 'stylish';
+const cachedClient = new WeakSet();
 const FALLBACK = 'dbInChromeStorage';
 const REASON = FALLBACK + 'Reason';
 const CACHING = {};
@@ -26,7 +31,7 @@ const dataCache = {};
 const proxies = {};
 const databases = {};
 const proxyHandler = {
-  get: ({dbName}, cmd) => (CACHING[dbName] ? cachedExec : exec).bind(null, dbName, cmd),
+  get: ({dbName}, cmd) => (CACHING[dbName] || exec).bind(null, dbName, cmd),
 };
 /**
  * @param {string} dbName
@@ -36,24 +41,38 @@ const proxyHandler = {
  * @param {string} [cfg.store]
  * @return {IDBObjectStoreMany}
  */
-export const getDbProxy = (dbName, {
+const getDbProxy = (dbName, {
   cache,
   id,
   store = 'data',
   ver = 2,
 } = {}) => (proxies[dbName] ??= (
-  (CACHING[dbName] = cache),
+  (CACHING[dbName] = typeof cache === 'function' ? cache : cache && cachedExec),
   (DATA_KEY[dbName] = !id || typeof id === 'string' ? id : 'id'),
   (STORES[dbName] = store),
   (VERSIONS[dbName] = ver),
   new Proxy({dbName}, proxyHandler)
 ));
 
-export const db = getDbProxy(DB, {id: true, store: 'styles'});
+export const cacheDB = getDbProxy(CACHE_DB, {
+  id: 'url',
+  cache: __.MV3 && cachedExecOffscreen,
+});
+export const db = getDbProxy(DB, {
+  id: true,
+  store: 'styles',
+  cache: __.MV3 && cachedExecOffscreen,
+});
 export const draftsDb = getDbProxy('drafts', {cache: true});
 /** Storage for big items that may exceed 8kB limit of chrome.storage.sync.
  * To make an item syncable register it with uuidIndex.addCustom. */
-export const prefsDb = getDbProxy(STORAGE_KEY, {cache: true});
+export const prefsDb = getDbProxy(STORAGE_KEY, {
+  cache: !__.MV3 || cachedExecOffscreen,
+});
+export const stateDB = __.MV3 && getDbProxy(STATE_DB, {
+  store: 'kv',
+  cache: cachedExecOffscreen,
+});
 
 Object.assign(API, /** @namespace API */ {
   draftsDb,
@@ -61,15 +80,46 @@ Object.assign(API, /** @namespace API */ {
 });
 
 async function cachedExec(dbName, cmd, a, b) {
-  const hub = dataCache[dbName] || (dataCache[dbName] = {});
-  const res = cmd === 'get' && a in hub ? hub[a] : await exec(...arguments);
-  if (cmd === 'get') {
-    hub[a] = deepCopy(res);
-  } else if (cmd === 'put') {
-    const key = DATA_KEY[dbName];
-    hub[key ? a[key] : b] = deepCopy(a);
-  } else if (cmd === 'delete') {
-    delete hub[a];
+  const old = dataCache[dbName];
+  const hub = old || (dataCache[dbName] = {__proto__: null});
+  const res = cmd === 'get' && a in hub
+    ? hub[a]
+    : old && cmd === 'getAll'
+      ? Object.values(old)
+      : await exec(...arguments);
+  switch (cmd) {
+    case 'put':
+      cmd = DATA_KEY[dbName];
+      hub[cmd ? a[cmd] : b] = deepMerge(a);
+      break;
+    case 'delete':
+      delete hub[a];
+      break;
+    case 'clear':
+      delete dataCache[dbName];
+      break;
+  }
+  return res && typeof res === 'object' ? deepMerge(res) : res;
+}
+
+async function cachedExecOffscreen(dbName, cmd, a) {
+  let res;
+  const isRead = cmd === 'get' || cmd === 'getAll';
+  if (isRead
+  && offscreenCache
+  && await offscreenCache
+  && (res = offscreenCache[dbName])) {
+    res = cmd === 'get' ? res.get(a) : [...res.values()];
+  } else {
+    if ((a = offscreen[CLIENT])) {
+      if (!cachedClient.has(a)) {
+        cachedClient.add(a);
+        if (!bgBusy) offloadCache(dataCache[STATE_DB] || {});
+      } else if (!isRead) {
+        offscreen.dbCache(...arguments);
+      }
+    }
+    res = (dbName === STATE_DB || dbName === STORAGE_KEY ? cachedExec : exec)(...arguments);
   }
   return res;
 }

@@ -2,7 +2,6 @@
  * WARNING!
  * Used in limited contexts such as the offscreen document.
  * Only for pure declarations with no side effects or marked with /*@__PURE__*/
-import {kResolve} from './consts';
 
 export const capitalize = s => s.slice(0, 1).toUpperCase() + s.slice(1);
 export const clamp = (value, min, max) => value < min ? min : value > max ? max : value;
@@ -17,8 +16,6 @@ export const isObject = val => typeof val === 'object' && val;
 export const sleep = ms => new Promise(ms > 0 ? cb => setTimeout(cb, ms) : setTimeout);
 export const stringAsRegExpStr = s => s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&');
 export const stringAsRegExp = (s, flags) => new RegExp(stringAsRegExpStr(s), flags);
-/** @return {Promise & {resolve: function}} */
-export const promiseWithResolve = _ => Object.assign(new Promise(cb => (_ = cb)), {[kResolve]: _});
 export const RX_META = /\/\*!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i;
 
 const tCache = /*@__PURE__*/new Map();

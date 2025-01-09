@@ -1,18 +1,10 @@
-import {k_busy, kStateDB} from '@/js/consts';
-import {CONNECTED, createPortProxy} from '@/js/port';
+import {k_busy, kResolve} from '@/js/consts';
 import {CHROME} from '@/js/ua';
-import {workerPath} from '@/js/urls';
-import {promiseWithResolve, sleep} from '@/js/util';
 import {browserWindows} from '@/js/util-webext';
-import {getDbProxy} from './db';
-import offscreen from './offscreen';
 
-export let bgBusy = promiseWithResolve();
 /** Minimal init for a wake-up event */
 export const bgPreInit = [];
 export const bgInit = [];
-
-const CLIENT_TIMEOUT = 100;
 export const clientDataJobs = {};
 
 /** Temporary storage for data needed elsewhere e.g. in a content script */
@@ -31,36 +23,8 @@ export const dataHub = {
 };
 const data = {__proto__: null};
 
-/** @return {WindowClient} the offscreen document if it runs, otherwise any available client */
-export const getClient = async () => {
-  for (let busy, client, job, tEnd;
-      !tEnd || performance.now() < tEnd;
-      tEnd ??= performance.now() + CLIENT_TIMEOUT) {
-    for (const c of await getWindowClients()) {
-      if ((job = clientDataJobs[c.url])) {
-        (busy ??= []).push(job);
-      } else if (c.url.endsWith(__.PAGE_OFFSCREEN)) {
-        return c;
-      } else {
-        client = c;
-      }
-    }
-    if (client)
-      return client;
-    if (!busy || !await Promise.race([
-      Promise.any(busy).catch(() => 0),
-      sleep(CLIENT_TIMEOUT),
-    ])) break;
-  }
-};
-
-/** @return {WindowClient[]} */
-export const getWindowClients = () => self.clients.matchAll({
-  includeUncontrolled: true,
-  type: 'window',
-});
-
-export const stateDB = __.MV3 && getDbProxy(kStateDB, {store: 'kv'});
+export const onUnload = new Set();
+export const onUrl = new Set();
 
 export const uuidIndex = Object.assign(new Map(), {
   custom: {},
@@ -69,18 +33,6 @@ export const uuidIndex = Object.assign(new Map(), {
     Object.defineProperty(uuidIndex.custom, obj._id, {get, set});
   },
 });
-
-/** @type {WorkerAPI} */
-export const worker = !__.MV3
-  ? createPortProxy(workerPath)
-  : createPortProxy(async () => {
-    const client = await getClient();
-    const proxy = !client || client.url.endsWith(__.PAGE_OFFSCREEN) ? (
-      offscreen[CONNECTED] ??= client,
-      offscreen
-    ) : createPortProxy(client, {once: true});
-    return proxy.getWorkerPort(workerPath);
-  }, {lock: workerPath});
 
 export let isVivaldi = !!(browserWindows && CHROME) && (async () => {
   const wnd = (await browserWindows.getAll())[0] ||
@@ -92,7 +44,10 @@ export let isVivaldi = !!(browserWindows && CHROME) && (async () => {
   return isVivaldi;
 })();
 
-global[k_busy] = bgBusy;
+export let bgBusy = global[k_busy] = (_ =>
+  Object.assign(new Promise(cb => (_ = cb)), {[kResolve]: _})
+)();
+
 bgBusy.then(() => {
   bgBusy = null;
   delete global[k_busy];

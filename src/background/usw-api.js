@@ -2,9 +2,10 @@ import {kAppJson, kContentType, UCD} from '@/js/consts';
 import * as URLS from '@/js/urls';
 import {deepEqual, mapObj, RX_META, tryURL} from '@/js/util';
 import {broadcastExtension} from './broadcast';
-import {dataHub, worker} from './common';
+import {dataHub} from './common';
 import * as styleMan from './style-manager';
 import {getToken, revokeToken} from './token-manager';
+import {worker} from './util';
 
 const KEYS_OUT = ['description', 'homepage', 'license', 'name'];
 const KEYS_IN = [...KEYS_OUT, 'id', 'namespace', 'username'];

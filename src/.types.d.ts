@@ -16,7 +16,6 @@ declare var __: {
   KEEP_ALIVE: <T>(job: T) => T,
   MV3: boolean,
   PAGE_BG: 'background' | 'sw',
-  PAGE_OFFSCREEN: 'offscreen',
   THEMES: Record<string, string>,
   ZIP: boolean,
 }

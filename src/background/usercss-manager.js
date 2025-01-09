@@ -1,8 +1,8 @@
 import {UCD} from '@/js/consts';
 import {deepCopy, mapObj, RX_META, t} from '@/js/util';
-import {worker} from './common';
 import download from './download';
 import * as styleMan from './style-manager';
+import {worker} from './util';
 
 export * from './usercss-install-helper';
 

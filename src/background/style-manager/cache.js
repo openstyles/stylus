@@ -1,10 +1,9 @@
 import {bgBusy} from '../common';
-import {db as styleDB, getDbProxy} from '../db';
+import {cacheDB, db as styleDB} from '../db';
 
 let onDeleted;
 let timer;
 const MAX = 1000;
-const cacheDB = getDbProxy('cache', {id: 'url'});
 /** @type {Map<string,MatchCache.Entry>} keyed on URL */
 const cache = new Map();
 /** @type {Set<MatchCache.Entry | MatchCache.DbEntry>} */
@@ -132,12 +131,10 @@ function del(items) {
   cacheDB.deleteMany(items);
 }
 
-/** @return {void} */
-function flush() {
+export function getCacheSkeletons(arr = cache.values(), toDel = []) {
   const bare = [];
-  let toDel;
   nextEntry:
-  for (const val of toWrite) {
+  for (const val of arr) {
     const {d, url, maybeMatch, sections} = val;
     /** @type {MatchCache.IndexMap} */
     const indexes = {};
@@ -149,7 +146,7 @@ function flush() {
       const sec = sections[styleId];
       const idx = sec && (Array.isArray(sec) ? sec : sec.idx);
       if (!idx) {
-        (toDel ??= []).push(val);
+        toDel.push(val);
         continue nextEntry;
       }
       indexes[styleId] = idx;
@@ -161,8 +158,15 @@ function flush() {
     res.url = url;
     bare.push(res);
   }
-  if (toDel) del(toDel);
-  cacheDB.putMany(bare);
+  return bare;
+}
+
+/** @return {void} */
+function flush() {
+  const toDel = [];
+  const res = getCacheSkeletons(toWrite, toDel);
+  if (toDel[0]) del(toDel);
+  cacheDB.putMany(res);
   toWrite.clear();
   timer = null;
 }
