@@ -64,7 +64,10 @@ async function doBroadcast() {
     }
   }
   if (client) {
-    jobs.push(broadcastExtension(data, true));
+    jobs.push(broadcastExtension(
+      data.length > 1 ? data : data[0],
+      data.length > 1
+    ));
   } else if (!tabsLen) {
     return;
   }
@@ -72,7 +75,13 @@ async function doBroadcast() {
     const msg = !nStyled || tabMan.getStyleIds(tabId)
       ? msgStyled ??= data
       : msgUnstyled ??= data.filter((v, i) => !styled[i]);
-    if (jobs.push(sendTab(tabId, msg, undefined, true)) > 20) {
+    const num = msg.length;
+    if (num && jobs.push(sendTab(
+      tabId,
+      num > 1 ? msg : msg[0],
+      undefined,
+      num > 1
+    )) > 20) {
       await Promise.all(jobs.splice(0));
     }
   }
@@ -80,7 +89,6 @@ async function doBroadcast() {
 }
 
 export function broadcastExtension(data, multi) {
-  if (multi && !(multi = data.length > 1)) data = data[0];
   return unwrap(browser.runtime.sendMessage({data, multi}));
 }
 
@@ -89,7 +97,6 @@ export function pingTab(tabId, frameId = 0) {
 }
 
 export function sendTab(tabId, data, options, multi) {
-  if (multi && !(multi = data.length > 1)) data = data[0];
   return unwrap(browser.tabs.sendMessage(tabId, {data, multi}, options), multi);
 }
 
