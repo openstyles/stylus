@@ -89,8 +89,10 @@ bgInit.push(async () => {
       cache.set(id, data);
     }
   }
-  if (__.MV3)
-    stateDB.deleteMany([...dbMap.keys()].filter(k => !cache.has(k)));
+  if (__.MV3) {
+    const toDel = [...dbMap.keys()].filter(k => !cache.has(k));
+    if (toDel.length) stateDB.deleteMany(toDel);
+  }
 });
 
 bgBusy.then(() => {

@@ -1,6 +1,5 @@
-import {CLIENT, createPortProxy} from '@/js/port';
+import {createPortProxy} from '@/js/port';
 import {ownRoot} from '@/js/urls';
-import {bgBusy} from './common';
 import {getWindowClients} from './util';
 
 const FILENAME = 'offscreen.html';
@@ -14,12 +13,6 @@ const offscreen = createPortProxy(() => (
 });
 export default offscreen;
 
-export let offscreenCache = __.MV3 && (async () => {
-  bgBusy.then(() => (offscreenCache = null));
-  offscreenCache = (offscreen[CLIENT] = await findOffscreenClient()) &&
-    await offscreen.getData();
-  return offscreenCache;
-})();
 let creating;
 
 async function findOffscreenClient() {

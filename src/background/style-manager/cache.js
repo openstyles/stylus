@@ -131,10 +131,12 @@ function del(items) {
   cacheDB.deleteMany(items);
 }
 
-export function getCacheSkeletons(arr = cache.values(), toDel = []) {
+/** @return {void} */
+function flush() {
   const bare = [];
+  let toDel;
   nextEntry:
-  for (const val of arr) {
+  for (const val of toWrite) {
     const {d, url, maybeMatch, sections} = val;
     /** @type {MatchCache.IndexMap} */
     const indexes = {};
@@ -146,7 +148,7 @@ export function getCacheSkeletons(arr = cache.values(), toDel = []) {
       const sec = sections[styleId];
       const idx = sec && (Array.isArray(sec) ? sec : sec.idx);
       if (!idx) {
-        toDel.push(val);
+        (toDel ??= []).push(val);
         continue nextEntry;
       }
       indexes[styleId] = idx;
@@ -158,15 +160,8 @@ export function getCacheSkeletons(arr = cache.values(), toDel = []) {
     res.url = url;
     bare.push(res);
   }
-  return bare;
-}
-
-/** @return {void} */
-function flush() {
-  const toDel = [];
-  const res = getCacheSkeletons(toWrite, toDel);
-  if (toDel[0]) del(toDel);
-  cacheDB.putMany(res);
+  if (toDel) del(toDel);
+  cacheDB.putMany(bare);
   toWrite.clear();
   timer = null;
 }

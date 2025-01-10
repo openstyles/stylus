@@ -9,7 +9,7 @@ import * as colorScheme from './color-scheme';
 import {bgBusy, bgPreInit, dataHub, onUnload} from './common';
 import {stateDB} from './db';
 import {webNavigation} from './navigation-manager';
-import offscreen, {offscreenCache} from './offscreen';
+import offscreen from './offscreen';
 import makePopupData from './popup-data';
 import {getSectionsByUrl} from './style-manager';
 import * as styleCache from './style-manager/cache';
@@ -47,7 +47,6 @@ let curXHR = false;
 if (__.MV3) {
   toggle(); // register listeners synchronously so they wake up the SW next time it dies
   bgPreInit.push((async () => {
-    await offscreenCache;
     ruleIds = await stateDB.get(kRuleIds) || {};
     for (const id in ruleIds) ruleIdKeys[ruleIds[id]] = +id;
   })());

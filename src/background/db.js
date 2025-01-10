@@ -1,13 +1,10 @@
 import {CACHE_DB, DB, STATE_DB} from '@/js/consts';
 import {API} from '@/js/msg-api';
-import {CLIENT} from '@/js/port';
-import {STORAGE_KEY, subscribe} from '@/js/prefs';
+import {STORAGE_KEY} from '@/js/prefs';
 import {chromeLocal} from '@/js/storage-util';
 import {CHROME} from '@/js/ua';
 import {deepMerge} from '@/js/util';
 import ChromeStorageDB from './db-chrome-storage';
-import offscreen, {offscreenCache} from './offscreen';
-import {offloadCache} from './style-manager/util';
 
 /*
  Initialize a database. There are some problems using IndexedDB in Firefox:
@@ -19,15 +16,13 @@ import {offloadCache} from './style-manager/util';
 let exec = __.BUILD === 'chrome' || CHROME
   ? dbExecIndexedDB
   : tryUsingIndexedDB;
-const cachedClient = new WeakSet();
 const FALLBACK = 'dbInChromeStorage';
 const REASON = FALLBACK + 'Reason';
 const DRAFTS_DB = 'drafts';
 const CACHING = {
   [DRAFTS_DB]: cachedExec,
-  [STORAGE_KEY]: __.MV3 ? cachedExecOffscreen : cachedExec,
+  [STORAGE_KEY]: cachedExec,
 };
-const CACHING2 = {};
 const DATA_KEY = {};
 const STORES = {};
 const VERSIONS = {};
@@ -37,9 +32,6 @@ const databases = {};
 const proxyHandler = {
   get: ({dbName}, cmd) => (CACHING[dbName] || exec).bind(null, dbName, cmd),
 };
-const getAll = (range, map) => range instanceof IDBKeyRange
-  ? [...map.keys()].filter(range.includes, range).map(map.get, map)
-  : [...map.values()];
 /**
  * @param {string} dbName
  * @param {object} [cfg]
@@ -66,75 +58,22 @@ export const draftsDb = getDbProxy(DRAFTS_DB);
 export const prefsDb = getDbProxy(STORAGE_KEY);
 export const stateDB = __.MV3 && getDbProxy(STATE_DB, {store: 'kv'});
 
-if (__.MV3) {
-  const toggleOffscreenCache = val => {
-    CACHING[CACHE_DB] = CACHING[DB] = CACHING[STATE_DB] = val
-      ? cachedExecOffscreen
-      : cachedExec;
-    if (!val && offscreen[CLIENT])
-      offscreen.dbCache(null);
-  };
-  toggleOffscreenCache(true);
-  CACHING2[STORAGE_KEY] = CACHING2[STATE_DB] = cachedExec;
-  subscribe('keepAliveCache', (key, val) => toggleOffscreenCache(val), true);
-}
-
 Object.assign(API, /** @namespace API */ {
   draftsDb,
   prefsDb,
 });
 
 async function cachedExec(dbName, cmd, a, b) {
-  const old = dataCache[dbName];
-  const hub = old || (dataCache[dbName] = new Map());
-  const res = cmd === 'get' && hub.has(a)
-    ? hub.get(a)
-    : old && (
-      cmd === 'getAll' ? getAll(a, hub)
-        : cmd === 'getMany' && a.map(hub.get, hub)
-    ) || await exec(...arguments);
-  switch (cmd) {
-    case 'put':
-      cmd = DATA_KEY[dbName];
-      hub.set(cmd ? a[cmd] : b, deepMerge(a));
-      break;
-    case 'putMany':
-      cmd = DATA_KEY[dbName];
-      for (b of a) hub.set(b[cmd], deepMerge(b));
-      break;
-    case 'deleteMany':
-      a.forEach(hub.delete, hub);
-      break;
-    case 'delete':
-    case 'clear':
-      hub[cmd](a);
-      break;
+  const hub = dataCache[dbName] ??= {};
+  const res = cmd === 'get' && a in hub ? hub[a] : await exec(...arguments);
+  if (cmd === 'get') {
+    hub[a] = deepMerge(res);
+  } else if (cmd === 'put') {
+    const key = DATA_KEY[dbName];
+    hub[key ? a[key] : b] = deepMerge(a);
+  } else if (cmd === 'delete') {
+    delete hub[a];
   }
-  return res && typeof res === 'object' ? deepMerge(res) : res;
-}
-
-async function cachedExecOffscreen(dbName, cmd, a, b) {
-  let res, client, isRead;
-  if ((isRead = cmd.startsWith('get'))
-  && offscreenCache
-  && await offscreenCache
-  && (res = offscreenCache[dbName])) {
-    return cmd === 'get' ? res.get(a)
-      : cmd === 'getMany' ? a.map(res.get, res)
-        : getAll(a, res);
-  }
-  if ((client = offscreen[CLIENT]) && !cachedClient.has(client)) {
-    cachedClient.add(client);
-    if (!offscreenCache) {
-      offloadCache(dataCache);
-      client = null;
-    }
-  }
-  if (client && !isRead)
-    offscreen.dbCache(dbName, cmd, a, b, DATA_KEY[dbName]);
-  res = await (CACHING2[dbName] || exec)(dbName, cmd, a, b);
-  if (client && isRead)
-    offscreen.dbCache(dbName, 'res:' + cmd, res, a, DATA_KEY[dbName]);
   return res;
 }
 

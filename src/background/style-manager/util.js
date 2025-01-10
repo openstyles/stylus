@@ -1,13 +1,11 @@
-import {CACHE_DB, DB, UCD} from '@/js/consts';
+import {UCD} from '@/js/consts';
 import * as URLS from '@/js/urls';
 import {deepEqual, isEmptyObj, mapObj} from '@/js/util';
 import {broadcast} from '../broadcast';
 import broadcastInjectorConfig from '../broadcast-injector-config';
 import {uuidIndex} from '../common';
 import {prefsDb} from '../db';
-import offscreen from '../offscreen';
 import * as syncMan from '../sync-manager';
-import {getCacheSkeletons} from './cache';
 import {buildCacheForStyle} from './cache-builder';
 
 /** @type {StyleDataMap} */
@@ -68,18 +66,6 @@ export function broadcastStyleUpdated(style, reason, isNew) {
 /** @return {Generator<StyleObj>} */
 export function *iterStyles() {
   for (const v of dataMap.values()) yield v.style;
-}
-
-export function offloadCache(dbCache) {
-  const res = {...dbCache};
-  const styleMap = res[DB] = new Map();
-  const cacheMap = res[CACHE_DB] = new Map();
-  for (const {style} of dataMap.values())
-    styleMap.set(style.id, style);
-  for (const v of getCacheSkeletons())
-    cacheMap.set(v.url, v);
-  __.DEBUGLOG('Offloading cache...');
-  return offscreen.dbCache(res);
 }
 
 export async function setOrderImpl(data, {

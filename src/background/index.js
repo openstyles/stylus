@@ -14,7 +14,7 @@ import {setSystemDark} from './color-scheme';
 import {bgBusy, bgInit, bgPreInit, dataHub} from './common';
 import reinjectContentScripts from './content-scripts';
 import initContextMenus from './context-menus';
-import {draftsDb, prefsDb, stateDB} from './db';
+import {cacheDB, draftsDb, prefsDb, stateDB} from './db';
 import download from './download';
 import {refreshIconsWhenReady, updateIconBadge} from './icon-manager';
 import prefsApi from './prefs-api';
@@ -85,6 +85,7 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   }
   if (__.MV3) {
     (bgPreInit.length ? bgPreInit : []).push(
+      cacheDB.clear(),
       stateDB.clear(),
       DNR.getDynamicRules().then(rules => updateDynamicRules(undefined, getRuleIds(rules))),
       DNR.getSessionRules().then(rules => updateSessionRules(undefined, getRuleIds(rules))),

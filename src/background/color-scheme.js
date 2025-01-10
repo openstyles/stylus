@@ -1,11 +1,11 @@
-import {kDark, kStyleViaXhr, STATE_DB} from '@/js/consts';
+import {kDark, kStyleViaXhr} from '@/js/consts';
 import {CLIENT} from '@/js/port';
 import * as prefs from '@/js/prefs';
 import {debounce, isCssDarkScheme} from '@/js/util';
 import {broadcastExtension} from './broadcast';
-import {bgBusy, bgInit, bgPreInit} from './common';
+import {bgBusy, bgPreInit} from './common';
 import {stateDB} from './db';
-import offscreen, {offscreenCache} from './offscreen';
+import offscreen from './offscreen';
 
 const changeListeners = new Set();
 const kSTATE = 'schemeSwitcher.enabled';
@@ -35,10 +35,7 @@ let prefState;
 chrome.alarms.onAlarm.addListener(onAlarm);
 
 if (__.MV3) {
-  bgPreInit.push(offscreenCache.then(v => {
-    if (v && (v = v[STATE_DB])) setSystemDark(v.get(kDark));
-    else bgInit.push(refreshSystemDark);
-  }));
+  bgPreInit.push(stateDB.get(kDark).then(setSystemDark));
   prefs.subscribe([kSTATE, kStyleViaXhr], (key, val, init) => {
     if (init && key !== kStyleViaXhr) // only process the last one on init
       return;
