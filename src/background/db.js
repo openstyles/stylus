@@ -5,7 +5,6 @@ import {STORAGE_KEY} from '@/js/prefs';
 import {chromeLocal} from '@/js/storage-util';
 import {CHROME} from '@/js/ua';
 import {deepMerge} from '@/js/util';
-import {bgBusy} from './common';
 import ChromeStorageDB from './db-chrome-storage';
 import offscreen, {offscreenCache} from './offscreen';
 import {offloadCache} from './style-manager/util';
@@ -33,6 +32,9 @@ const databases = {};
 const proxyHandler = {
   get: ({dbName}, cmd) => (CACHING[dbName] || exec).bind(null, dbName, cmd),
 };
+const getAll = (range, map) => range instanceof IDBKeyRange
+  ? [...map.keys()].filter(range.includes, range).map(map.get, map)
+  : [...map.values()];
 /**
  * @param {string} dbName
  * @param {object} [cfg]
@@ -81,22 +83,20 @@ Object.assign(API, /** @namespace API */ {
 
 async function cachedExec(dbName, cmd, a, b) {
   const old = dataCache[dbName];
-  const hub = old || (dataCache[dbName] = {__proto__: null});
-  const res = cmd === 'get' && a in hub
-    ? hub[a]
+  const hub = old || (dataCache[dbName] = new Map());
+  const res = cmd === 'get' && hub.has(a)
+    ? hub.get(a)
     : old && cmd === 'getAll'
-      ? Object.values(old)
+      ? getAll(a, hub)
       : await exec(...arguments);
   switch (cmd) {
     case 'put':
       cmd = DATA_KEY[dbName];
-      hub[cmd ? a[cmd] : b] = deepMerge(a);
+      hub.set(cmd ? a[cmd] : b, deepMerge(a));
       break;
     case 'delete':
-      delete hub[a];
-      break;
     case 'clear':
-      delete dataCache[dbName];
+      hub[cmd](a);
       break;
   }
   return res && typeof res === 'object' ? deepMerge(res) : res;
@@ -109,12 +109,12 @@ async function cachedExecOffscreen(dbName, cmd, a) {
   && offscreenCache
   && await offscreenCache
   && (res = offscreenCache[dbName])) {
-    res = cmd === 'get' ? res.get(a) : [...res.values()];
+    res = cmd === 'get' ? res.get(a) : getAll(a, res);
   } else {
     if ((a = offscreen[CLIENT])) {
       if (!cachedClient.has(a)) {
         cachedClient.add(a);
-        if (!bgBusy) offloadCache(dataCache[STATE_DB] || {});
+        if (!offscreenCache) setTimeout(offloadCache, 100, dataCache);
       } else if (!isRead) {
         offscreen.dbCache(...arguments);
       }

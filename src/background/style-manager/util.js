@@ -1,4 +1,4 @@
-import {CACHE_DB, DB, STATE_DB, UCD} from '@/js/consts';
+import {CACHE_DB, DB, UCD} from '@/js/consts';
 import * as URLS from '@/js/urls';
 import {deepEqual, isEmptyObj, mapObj} from '@/js/util';
 import {broadcast} from '../broadcast';
@@ -70,20 +70,17 @@ export function *iterStyles() {
   for (const v of dataMap.values()) yield v.style;
 }
 
-export async function offloadCache(stateData) {
+export async function offloadCache(dbCache) {
   if (bgBusy) await bgBusy;
-  const styleMap = new Map();
-  const cacheMap = new Map();
+  const res = {...dbCache};
+  const styleMap = res[DB] = new Map();
+  const cacheMap = res[CACHE_DB] = new Map();
   for (const {style} of dataMap.values())
     styleMap.set(style.id, style);
   for (const v of getCacheSkeletons())
     cacheMap.set(v.url, v);
   __.DEBUGLOG('Offloading cache...');
-  await offscreen.dbCache({
-    [DB]: styleMap,
-    [CACHE_DB]: cacheMap,
-    [STATE_DB]: new Map(Object.entries(stateData)),
-  });
+  await offscreen.dbCache(res);
 }
 
 export async function setOrderImpl(data, {
