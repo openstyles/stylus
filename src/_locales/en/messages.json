@@ -96,6 +96,10 @@
     "message": "To import the backup file, drag'n'drop it into this page or click the Import button.\n\nTo export a compatible backup for Stylus older than 1.5.18, right-click or shift-click the Export button.",
     "description": "Text for Backup section's (i) in style manager"
   },
+  "backupReminder": {
+    "message": "<b>Styles may be lost</b> due to power failure, bugs in the browser, personal mistake.<hr><b>Backup your data:</b> either configure \"Sync to cloud\" in the options or manually click the export button whenever you make significant changes or, preferably, set up automatic backup of all your data using a dedicated app.",
+    "description": "Shown in the style manager. Text between <b> and </b> is in bold font, <hr> is just an empty line in-between to make the text more readable."
+  },
   "bckpInstStyles": {
     "message": "Export styles"
   },

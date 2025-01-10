@@ -15,7 +15,7 @@ export const templateCache = {};
 export const template = /*@__PURE__*/new Proxy(templateCache, {
   get: (obj, k) => obj[k] || createTemplate($(`template[data-id="${k}"]`)),
 });
-const ALLOWED_TAGS = ['a', 'b', 'br', 'code', 'i', 'nobr', 'small', 'sub', 'sup', 'wbr'];
+const ALLOWED_TAGS = ['a', 'b', 'br', 'code', 'i', 'hr', 'nobr', 'small', 'sub', 'sup', 'wbr'];
 const RX_WORD_BREAK = /([\w{-\uFFFF]{10}|[\w{-\uFFFF]{5,10}[!'")*,./]|((?!\s)\W){10})(?!\s|$)/gu;
 const SELECTOR = '[i18n]';
 const RELATIVE_UNITS = [

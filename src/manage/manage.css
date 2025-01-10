@@ -75,6 +75,9 @@ h1 {
 .settings-column {
   width: 100%;
   margin-bottom: $pad;
+  summary:empty + main {
+    margin-top: -$pad;
+  }
 }
 [id=actions] /* reducing specificity */ {
   flex: 1;
@@ -145,6 +148,20 @@ h1 {
       color: var(--accent-1);
       margin-left: 4px;
     }
+  }
+}
+#backup-hint {
+  .compact-layout & {
+    margin: -$pad calc($pad/2) calc($pad/2) 0;
+    flex-basis: 100%;
+    order: 99;
+    hr {
+      display: inline-block;
+      width: .25em;
+    }
+  }
+  hr {
+    border: none;
   }
 }
 #check-all-updates-force {
@@ -387,13 +404,7 @@ h1 {
   details:not([open]) h2::after {
     content: "...";
   }
-  summary {
-    padding: 0;
-    margin-top: calc($pad/2);
-    height: calc($pad*.75);
-  }
   main {
-    margin-top: -$pad;
     display: flex;
     flex-flow: column;
     align-items: flex-start;
