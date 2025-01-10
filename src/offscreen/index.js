@@ -10,21 +10,27 @@ Object.assign(COMMANDS, {
   isDark: isCssDarkScheme,
   createObjectURL: URL.createObjectURL,
   revokeObjectURL: URL.revokeObjectURL,
-  dbCache(db, cmd, a, b) {
-    if (typeof db === 'object') {
-      dbCache = db;
+  dbCache(dbName, cmd, a, b, dataKey) {
+    if (typeof dbName === 'object' /* includes `null` */) {
+      dbCache = dbName;
       return;
     }
-    db = (dbCache ??= {})[db] ??= new Map();
-    if (cmd === 'put')
-      db.set(b, a);
+    const map = (dbCache ??= {})[dbName] ??= new Map();
+    if (cmd === 'put' || cmd === 'res:get')
+      map.set(b, a);
     else if (cmd === 'delete' || cmd === 'clear')
-      db[cmd](a);
-    else return cmd === 'get'
-      ? db.get(a)
-      : cmd === 'getAll'
-        ? [...db.values()]
-        : null;
+      map[cmd](a);
+    else if (cmd === 'deleteMany')
+      a.forEach(map.delete, map);
+    else if (cmd === 'putMany' || cmd === 'res:getAll')
+      for (b of a) map.set(b[dataKey], b);
+    else if (cmd === 'res:getMany')
+      for (let i = 0; i < a.length; i++)
+        map.set(b[i], a[i]);
+    else return cmd === 'get' ? map.get(a)
+      : cmd === 'getAll' ? [...map.values()]
+        : cmd === 'getMany' ? a.map(map.get, map)
+          : undefined;
   },
   getData: () => dbCache,
   webdav: (cmd, ...args) => webdavInstance[cmd](...args),

@@ -89,11 +89,8 @@ bgInit.push(async () => {
       cache.set(id, data);
     }
   }
-  if (__.MV3) {
-    for (const key of dbMap.keys()) {
-      if (!cache.has(key)) stateDB.delete(key);
-    }
-  }
+  if (__.MV3)
+    stateDB.deleteMany([...dbMap.keys()].filter(k => !cache.has(k)));
 });
 
 bgBusy.then(() => {

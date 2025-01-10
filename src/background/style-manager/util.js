@@ -3,7 +3,7 @@ import * as URLS from '@/js/urls';
 import {deepEqual, isEmptyObj, mapObj} from '@/js/util';
 import {broadcast} from '../broadcast';
 import broadcastInjectorConfig from '../broadcast-injector-config';
-import {bgBusy, uuidIndex} from '../common';
+import {uuidIndex} from '../common';
 import {prefsDb} from '../db';
 import offscreen from '../offscreen';
 import * as syncMan from '../sync-manager';
@@ -70,8 +70,7 @@ export function *iterStyles() {
   for (const v of dataMap.values()) yield v.style;
 }
 
-export async function offloadCache(dbCache) {
-  if (bgBusy) await bgBusy;
+export function offloadCache(dbCache) {
   const res = {...dbCache};
   const styleMap = res[DB] = new Map();
   const cacheMap = res[CACHE_DB] = new Map();
@@ -80,7 +79,7 @@ export async function offloadCache(dbCache) {
   for (const v of getCacheSkeletons())
     cacheMap.set(v.url, v);
   __.DEBUGLOG('Offloading cache...');
-  await offscreen.dbCache(res);
+  return offscreen.dbCache(res);
 }
 
 export async function setOrderImpl(data, {

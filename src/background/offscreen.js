@@ -16,7 +16,7 @@ export default offscreen;
 
 export let offscreenCache = __.MV3 && (async () => {
   bgBusy.then(() => (offscreenCache = null));
-  offscreenCache = (offscreen[CLIENT] = (await findOffscreenClient())) &&
+  offscreenCache = (offscreen[CLIENT] = await findOffscreenClient()) &&
     await offscreen.getData();
   return offscreenCache;
 })();
