@@ -14,6 +14,7 @@ export function buildCacheForStyle(style) {
   const excluded = new Set();
   const updated = new Set();
   for (const cache of cacheData.values()) {
+    styleCache.add(cache); // write the updated value to db
     const url = cache.url;
     if (!data.appliesTo.has(url)) {
       cache.maybeMatch.add(id);
