@@ -1,5 +1,5 @@
-import {deepEqual} from '@/js/util';
 import {CodeMirror} from '@/cm';
+import {deepEqual} from '@/js/util';
 import {trimCommentLabel} from './util';
 
 export default function MozSectionFinder(cm) {
@@ -17,6 +17,12 @@ export default function MozSectionFinder(cm) {
   const minPos = (a, b) => cmpPos(a, b) < 0 ? a : b;
   const maxPos = (a, b) => cmpPos(a, b) > 0 ? a : b;
   const keptAlive = new Map();
+  const state = /** @namespace MozSectionCmState */ {
+    /** @type {Set<function>} */
+    listeners: new Set(),
+    /** @type {MozSection[]} */
+    sections: [],
+  };
   /** @type {CodeMirror.Pos} */
   let updFrom;
   /** @type {CodeMirror.Pos} */
@@ -32,9 +38,7 @@ export default function MozSectionFinder(cm) {
       'valueEnd',
       'sticky', // added by TextMarker::find()
     ],
-    get sections() {
-      return getState().sections;
-    },
+    sections: state.sections,
     keepAliveFor(id, ms) {
       let data = keptAlive.get(id);
       if (data) {
@@ -49,7 +53,7 @@ export default function MozSectionFinder(cm) {
     },
 
     on(fn) {
-      const {listeners} = getState();
+      const {listeners} = state;
       const needsInit = !listeners.size;
       listeners.add(fn);
       if (needsInit) {
@@ -59,7 +63,7 @@ export default function MozSectionFinder(cm) {
     },
 
     off(fn) {
-      const {listeners, sections} = getState();
+      const {listeners, sections} = state;
       if (listeners.size) {
         listeners.delete(fn);
         if (!listeners.size) {
@@ -76,23 +80,9 @@ export default function MozSectionFinder(cm) {
 
     /** @param {MozSection} [section] */
     updatePositions(section) {
-      (section ? [section] : getState().sections).forEach(setPositionFromMark);
+      (section ? [section] : state.sections).forEach(setPositionFromMark);
     },
   };
-
-  /** @returns {MozSectionCmState} */
-  function getState() {
-    let state = cm.state[KEY];
-    if (!state) {
-      state = cm.state[KEY] = /** @namespace MozSectionCmState */ {
-        /** @type {Set<function>} */
-        listeners: new Set(),
-        /** @type {MozSection[]} */
-        sections: [],
-      };
-    }
-    return state;
-  }
 
   function onCmChanges(_cm, changes) {
     if (!updFrom) updFrom = {line: Infinity, ch: 0};
@@ -109,7 +99,7 @@ export default function MozSectionFinder(cm) {
   }
 
   function update() {
-    const {sections, listeners} = getState();
+    const {sections, listeners} = state;
     // Cloning to avoid breaking the internals of CodeMirror
     let from = updFrom ? {line: updFrom.line, ch: updFrom.ch} : {line: 0, ch: 0};
     let to = updTo ? {line: updTo.line, ch: updTo.ch} : {line: cm.doc.size, ch: 0};

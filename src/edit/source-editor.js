@@ -44,6 +44,9 @@ export default function SourceEditor() {
       editor.viewTo = si.viewTo;
       sectionFinder = MozSectionFinder(me);
       sectionWidget = MozSectionWidget(me, sectionFinder);
+      editor.sections = sectionFinder.sections;
+      prefs.subscribe('editor.toc.expanded',
+        (k, val) => sectionFinder.onOff(editor.updateToc, val), true);
       prefs.subscribe('editor.appliesToLineWidget',
         (k, val) => sectionWidget.toggle(val), true);
       Object.assign(me.curOp, si.scroll);
@@ -69,12 +72,9 @@ export default function SourceEditor() {
   updateMeta();
   // Subsribing outside of finishInit() because it uses `cm` that's still not initialized
   prefs.subscribe('editor.linter', updateLinterSwitch, true);
-  prefs.subscribe('editor.toc.expanded',
-    (k, val) => sectionFinder.onOff(editor.updateToc, val), true);
 
   /** @namespace Editor */
   Object.assign(editor, {
-    sections: sectionFinder.sections,
     replaceStyle,
     updateLinterSwitch,
     updateLivePreview,
