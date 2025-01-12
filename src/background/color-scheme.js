@@ -39,7 +39,7 @@ if (__.MV3) {
   prefs.subscribe([kSTATE, kStyleViaXhr], (key, val, init) => {
     if (init && key !== kStyleViaXhr) // only process the last one on init
       return;
-    val = prefState === kSystem || prefs.__values[kStyleViaXhr];
+    val = prefs.__values[kSTATE] === kSystem || prefs.__values[kStyleViaXhr];
     if (val || offscreen[CLIENT])
       offscreen.keepAlive(val);
   }, true);
