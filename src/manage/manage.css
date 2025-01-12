@@ -549,6 +549,7 @@ button i {
 #search-wrapper > :first-child,
 #sort-wrapper > :first-child {
   flex-grow: 1;
+  max-width: calc(100% - var(--action-size));
 }
 #search + * {
   margin-left: -1px;
