@@ -255,7 +255,7 @@ $iconGapY: .25rem;
       }
     }
   }
-  @media (max-width: 850px) {
+  @media screen and (max-width: 850px), compact {
     :root {
       --name-padding-left: 14px;
     }

@@ -37,6 +37,7 @@ const defaults = {
   'styleViaXhr': false,           // early style injection to avoid FOUC
   'urlInstaller': true,           // auto-open installer page for supported .user.css urls
   'windowPosition': {},           // detached window position
+  'compactWidth': 850,
 
   // checkbox in style config dialog
   'config.autosave': true,

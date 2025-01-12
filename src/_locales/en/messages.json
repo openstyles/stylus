@@ -478,6 +478,10 @@
     "message": "Click to find styles online.",
     "description": "Shown in the popup under \"No styles installed for this site.\""
   },
+  "general": {
+    "message": "General",
+    "description": "Label of a section in UI that contains general/common/nonspecific stuff"
+  },
   "genericAdd": {
     "message": "Add",
     "description": "Used in various places for an action that adds something"
@@ -1075,6 +1079,9 @@
   "openOptions": {
     "message": "Options",
     "description": "Go to Options UI"
+  },
+  "optionCompactWidth": {
+    "message": "Max window width for compact UI layout (in pixels)"
   },
   "optionFOUC": {
     "message": "Styles applied too late?",

@@ -683,7 +683,7 @@ button i {
   }
 }
 
-@media (max-width: 850px) {
+@media screen and (max-width: 850px), compact {
   body {
     display: block;
     height: auto;

@@ -926,7 +926,7 @@ i,
 }
 
 /************ reponsive layouts ************/
-@media(max-width: 850px) {
+@media screen and (max-width: 850px), compact {
   .usercss body {
     display: flex;
     flex-direction: column;

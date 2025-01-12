@@ -1,5 +1,6 @@
-import {dom, mqCompact, $toggleClasses} from './dom';
-import {waitForSelector} from './dom-util';
+import {$toggleClasses, dom} from './dom';
+import {getCssMediaRuleByName} from './dom-util';
+import {tBody} from './localization';
 import * as prefs from './prefs';
 import {FIREFOX, MOBILE, OPERA, VIVALDI, WINDOWS} from './ua';
 import './msg-init';
@@ -7,36 +8,11 @@ import './themer';
 import './util-webext';
 import '@/content/apply'; // must run after msg (swaps `API`) and util-webext (exposes _deepCopy)
 
+export let mqCompact;
+
 prefs.subscribe('disableAll', (_, val) => {
   $rootCL.toggle('all-disabled', val);
 }, true);
-
-prefs.ready.then(() => {
-  waitForSelector('details[data-pref]', {
-    recur(elems) {
-      for (const el of elems) {
-        prefs.subscribe(el.dataset.pref, updateOnPrefChange, true);
-        new MutationObserver(saveOnChange)
-          .observe(el, {attributes: true, attributeFilter: ['open']});
-      }
-    },
-  });
-  function canSave(el) {
-    return !el.matches('.ignore-pref, .compact-layout .ignore-pref-if-compact');
-  }
-  /** @param {MutationRecord[]} _ */
-  function saveOnChange([{target: el}]) {
-    if (canSave(el)) {
-      prefs.set(el.dataset.pref, el.open);
-    }
-  }
-  function updateOnPrefChange(key, value) {
-    const el = $(`details[data-pref="${key}"]`);
-    if (el.open !== value && canSave(el)) {
-      el.open = value;
-    }
-  }
-});
 
 {
   const cls = [
@@ -49,17 +25,31 @@ prefs.ready.then(() => {
   // set language for a) CSS :lang pseudo and b) hyphenation
   $root.lang = chrome.i18n.getUILanguage();
 }
-if (mqCompact) {
-  const toggleCompact = mq => {
-    mq = mq.matches;
+
+if ($rootCL.contains('normal-layout')) {
+  let /** @type {MediaQueryList}*/ mq;
+  const listeners = new Set();
+  const toggleCompact = function ({matches: val}) {
     $toggleClasses($root, {
-      'compact-layout': mq,
-      'normal-layout': !mq,
+      'compact-layout': val,
+      'normal-layout': !val,
     });
+    for (const fn of listeners) fn(val);
   };
-  mqCompact.on('change', toggleCompact);
-  toggleCompact(mqCompact);
+  mqCompact = fn => {
+    listeners.add(fn);
+    if (mq) fn(mq.matches);
+  };
+  prefs.subscribe('compactWidth', (k, val) => {
+    mq = matchMedia(`(max-width: ${val}px)`);
+    (mq.onchange = toggleCompact)(mq);
+    getCssMediaRuleByName('compact', m => {
+      k = m.mediaText.replace(/\d+/, val);
+      if (m.mediaText !== k) m.mediaText = k;
+    });
+  }, true);
 }
+
 {
   // set up header width resizer
   const HW = 'headerWidth.';
@@ -81,3 +71,33 @@ if (mqCompact) {
   }
   window.on('load', () => import('./dom-on-load'), {once: true});
 }
+
+prefs.ready.then(() => tBody(() => {
+  const mo = new MutationObserver(saveOnChange);
+  const moCfg = {attributes: true, attributeFilter: ['open']};
+  const SEL = 'details[data-pref]';
+  for (const el of $$(SEL)) {
+    prefs.subscribe(el.dataset.pref, updateOnPrefChange, true);
+    mo.observe(el, moCfg);
+  }
+  mqCompact?.(val => {
+    for (const el of $$(SEL))
+      if (!el.matches('.ignore-pref'))
+        el.open = !val && prefs.__values[el.dataset.pref];
+  });
+  function canSave(el) {
+    return !el.matches('.ignore-pref, .compact-layout .ignore-pref-if-compact');
+  }
+  /** @param {MutationRecord[]} _ */
+  function saveOnChange([{target: el}]) {
+    if (canSave(el)) {
+      prefs.set(el.dataset.pref, el.open);
+    }
+  }
+  function updateOnPrefChange(key, value) {
+    const el = $(`details[data-pref="${key}"]`);
+    if (el.open !== value && canSave(el)) {
+      el.open = value;
+    }
+  }
+}));

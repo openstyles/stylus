@@ -486,7 +486,7 @@ body {
   }
 }
 
-@media (max-width: 850px) {
+@media screen and (max-width: 850px), compact {
   #header-resizer {
     display: none !important;
   }

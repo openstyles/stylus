@@ -8,7 +8,6 @@ for (const {prototype} of [Document, DocumentFragment, Element]) {
 }
 
 export const cssFieldSizing = __.MV3 || CSS.supports('field-sizing', 'content');
-export const mqCompact = $rootCL.contains('normal-layout') && matchMedia('(max-width: 850px)');
 export const dom = {};
 
 const detachments = new WeakMap();

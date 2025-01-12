@@ -295,7 +295,7 @@ li {
 
 /************ reponsive layouts ************/
 
-@media (max-width: 850px) {
+@media screen and (max-width: 850px), compact {
   body {
     flex-direction: column;
   }
@@ -347,7 +347,7 @@ li {
   }
 }
 
-@media (min-width: 850px) {
+@media not (max-width: 850px), compact {
   #header {
     height: 100% !important; /* overrides user resize */
   }

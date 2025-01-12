@@ -1,7 +1,7 @@
-import {$create, mqCompact} from '@/js/dom';
+import {$create} from '@/js/dom';
+import {mqCompact} from '@/js/dom-init';
 import {important} from '@/js/dom-util';
 import {template} from '@/js/localization';
-import * as prefs from '@/js/prefs';
 import editor from './editor';
 
 const h = template.body.$('#header');
@@ -24,24 +24,15 @@ export default function CompactHeader() {
   const xo = new IntersectionObserver(onScrolled, {root: xoRoot});
   const elInfo = $('h1 a');
   scroller.appendChild(elHeader);
-  onCompactToggled(mqCompact);
-  mqCompact.on('change', onCompactToggled);
-
-  /** @param {MediaQueryList} mq */
-  function onCompactToggled(mq) {
-    for (const el of $$('details[data-pref]')) {
-      el.open = mq.matches ? false :
-        el.classList.contains('ignore-pref') ? el.open :
-          prefs.get(el.dataset.pref);
-    }
-    if (mq.matches) {
+  mqCompact(val => {
+    if (val) {
       xo.observe(elHeader);
       $id('basic-info-name').after(elInfo);
     } else {
       xo.disconnect();
       $('h1').append(elInfo);
     }
-  }
+  });
 
   /** @param {IntersectionObserverEntry[]} entries */
   function onScrolled(entries) {
