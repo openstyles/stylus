@@ -40,15 +40,17 @@ export default function SourceEditor() {
   const cm = cmFactory.create($('.single-editor'), {
     value: style.id ? style.sourceCode : setupNewStyle(editor.template),
     finishInit(me) {
+      const kToc = 'editor.toc.expanded';
+      const kWidget = 'editor.appliesToLineWidget';
       const si = editor.applyScrollInfo(me) || {};
       editor.viewTo = si.viewTo;
       sectionFinder = MozSectionFinder(me);
       sectionWidget = MozSectionWidget(me, sectionFinder);
       editor.sections = sectionFinder.sections;
-      prefs.subscribe('editor.toc.expanded',
-        (k, val) => sectionFinder.onOff(editor.updateToc, val), true);
-      prefs.subscribe('editor.appliesToLineWidget',
-        (k, val) => sectionWidget.toggle(val), true);
+      prefs.subscribe([kToc, kWidget], (k, val) => {
+        sectionFinder.onOff(editor.updateToc, prefs.__values[kToc] || prefs.__values[kWidget]);
+        if (k === kWidget) sectionWidget.toggle(val);
+      }, true);
       Object.assign(me.curOp, si.scroll);
       editor.viewTo = 0;
     },
