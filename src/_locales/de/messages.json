@@ -70,6 +70,9 @@
   "backupMessage": {
     "message": "Um die Backupdatei zu importieren, ziehe sie in diese Seite oder klicke auf die Import-Schaltfläche.\n\nZum Exportieren einer mit Stylus 1.5.18 (und älter) kompatiblen Backupdatei, rechtsklicke oder Shift-klicke auf die Export-Schaltfläche."
   },
+  "backupReminder": {
+    "message": "<b>Styles können verloren gehen</b> durch Stromausfall, Browser- oder Anwenderfehler. <hr><b>Sichere deine Daten:</b> Entweder in den Optionen „Mit der Cloud synchronisieren“ nutzen oder nach wesentlichen Änderungen manuell über die Exportschaltfläche. Erstelle am besten eine automatische Sicherung all deiner Daten mit einem Backupprogramm."
+  },
   "bckpInstStyles": {
     "message": "Styles exportieren"
   },

@@ -73,6 +73,9 @@
   "backupMessage": {
     "message": "Aby zaimportować plik kopii zapasowej, przeciągnij go i upuść na tej stronie lub kliknij przycisk Importuj.\n\nAby wyeksportować kompatybilną kopię zapasową Stylusa w wersji starszej niż 1.5.18, kliknij prawym przyciskiem myszy lub kliknij z wciśniętym klawiszem Shift przycisk Eksportuj."
   },
+  "backupReminder": {
+    "message": "<b>Style mogą zostać utracone</b> z powodu awarii zasilania, błędów w przeglądarce lub pomyłek.<hr><b>Utwórz kopię zapasową swoich danych:</b> skonfiguruj opcję „Synchronizuj z chmurą” w opcjach lub ręcznie kliknij przycisk eksportu za każdym razem, gdy wprowadzisz istotne zmiany, lub — co jest lepsze — skonfiguruj automatyczne tworzenie kopii zapasowych wszystkich Twoich danych za pomocą dedykowanej aplikacji."
+  },
   "bckpInstStyles": {
     "message": "Eksportuj style"
   },
