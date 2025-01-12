@@ -219,7 +219,6 @@ i,
 #details-wrapper summary {
   align-items: center;
   margin-left: .25em;
-  cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
   h2 {
@@ -235,9 +234,6 @@ i,
       overflow: hidden;
       text-overflow: ellipsis;
     }
-  }
-  &:hover h2 {
-    border-color: var(--c70);
   }
   .icon {
     margin-top: -.1em;

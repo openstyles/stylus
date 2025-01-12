@@ -274,6 +274,9 @@ input[type="radio"] {
 summary {
   -moz-user-select: none;
   user-select: none;
+  &:hover {
+    color: var(--accent-1);
+  }
 }
 
 .hollow-gear {
