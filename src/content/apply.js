@@ -7,11 +7,10 @@ import {FF, isXml, own, ownId} from './style-injector';
 
 const SYM_ID = 'styles';
 const kPageShow = 'pageshow';
-const kBeforeUnload = 'beforeunload';
 const isUnstylable = FF && isXml;
 const clone = __.ENTRY
   ? global[k_deepCopy] // will be used in extension context
-  : val => typeof val === 'object' && val ? JSON.parse(JSON.stringify(val)) : val;
+  : !FF && (val => typeof val === 'object' && val ? JSON.parse(JSON.stringify(val)) : val);
 let isFrameSameOrigin = false;
 if (isFrame) {
   try {
@@ -22,11 +21,11 @@ if (isFrame) {
 const isFrameNoUrl = isFrameSameOrigin && location.protocol === 'about:';
 
 /** Polyfill for documentId in Firefox and Chrome pre-106 */
-const instanceId = (FF || !CSS.supports('top', '1ic')) && (Math.random() || Math.random());
+const instanceId = (FF || !__.MV3 && !CSS.supports('top', '1ic')) && Math.random() || undefined;
 /** about:blank iframes are often used by sites for file upload or background tasks,
  * and they may break if unexpected DOM stuff is present at `load` event
  * so we'll add the styles only if the iframe becomes visible */
-const xoEventId = `${instanceId}`;
+const xoEventId = `${instanceId || Math.random()}`;
 
 // FIXME: move this to background page when following bugs are fixed:
 // https://bugzil.la/1587723, https://crbug.com/968651
@@ -64,11 +63,16 @@ styleInjector.onInjectorUpdate = () => {
   updateCount();
   if (isFrame) {
     updateExposeIframes();
-    (styleInjector.list.length ? addEventListener : removeEventListener)(
-      kBeforeUnload, onBeforeUnload, true);
+    if (!styleInjector.list.length) {
+      port?.disconnect();
+      port = null;
+    } else if (!port) {
+      port = chrome.runtime.connect({name: kApplyPort});
+      port.onDisconnect.addListener(() => (port = null));
+    }
   }
 };
-styleInjector.orphanCheck = orphanCheck;
+styleInjector.selfDestruct = selfDestruct;
 // Declare all vars before init() or it'll throw due to "temporal dead zone" of const/let
 init();
 msg.onMessage(applyOnMessage, true);
@@ -85,7 +89,7 @@ async function init() {
     else data = !__.ENTRY && !isFrameSameOrigin && !isXml && getStylesViaXhr();
     // XML in Chrome will be auto-converted to html later, so we can't style it via XHR now
   }
-  if (!orphanCheck()) return;
+  if (!chrome.runtime.id) return selfDestruct();
   await applyStyles(data);
 }
 
@@ -153,7 +157,7 @@ function applyOnMessage(req, sender, multi) {
       break;
 
     case 'urlChanged':
-      if (req.iid === instanceId && matchUrl !== req.url) {
+      if ((isFrameNoUrl || req.iid === instanceId) && matchUrl !== req.url) {
         matchUrl = req.url;
         if (own.sections) applyStyles(own.cfg.off && {});
       }
@@ -230,7 +234,7 @@ function onFrameElementInView(cb) {
 
 /** @param {IntersectionObserverEntry[]} entries */
 function onIntersect(entries) {
-  if (!orphanCheck()) return;
+  if (!chrome.runtime.id) return selfDestruct();
   for (const e of entries) {
     if (e.intersectionRatio) {
       xo.unobserve(e.target);
@@ -239,22 +243,16 @@ function onIntersect(entries) {
   }
 }
 
-function onBeforeUnload(e) {
-  if (orphanCheck() && e.isTrusted && !port) {
-    port = chrome.runtime.connect({name: kApplyPort});
-    port.onDisconnect.addListener(() => (port = null));
-  }
-}
-
 function onBFCache(e) {
-  if (orphanCheck() && e.isTrusted && e.persisted) {
+  if (!chrome.runtime.id) return selfDestruct();
+  if (e.isTrusted && e.persisted) {
     throttledCount = '';
     updateCount();
   }
 }
 
 function onReified(e) {
-  if (!orphanCheck()) return;
+  if (!chrome.runtime.id) return selfDestruct();
   if (e.isTrusted) {
     updateTDM(2);
     document.onprerenderingchange = null;
@@ -263,18 +261,15 @@ function onReified(e) {
   }
 }
 
-function orphanCheck() {
-  // id will be undefined if the extension is orphaned
-  if (chrome.runtime.id) return true;
+function selfDestruct() {
   // In Chrome content script is orphaned on an extension update/reload
   // so we need to detach event listeners
-  removeEventListener(ownId, orphanCheck, true);
   removeEventListener(kPageShow, onBFCache);
-  removeEventListener(kBeforeUnload, onBeforeUnload, true);
   if (mqDark) mqDark.onchange = null;
   if (offscreen) for (const fn of offscreen) fn();
   if (TDM < 0) document.onprerenderingchange = null;
   offscreen = null;
   styleInjector.shutdown();
   msg.off(applyOnMessage);
+  port?.disconnect();
 }

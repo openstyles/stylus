@@ -44,7 +44,7 @@ let reorderStart = 0;
 // will store the original method refs because the page can override them
 let creationDoc, createElement, createElementNS;
 let orderPrio, orderMain;
-export let onInjectorUpdate, orphanCheck;
+export let onInjectorUpdate, selfDestruct;
 
 export function shutdown() {
   if (!list.length) return;
@@ -297,7 +297,7 @@ function removeStyle(style) {
 }
 
 function restoreOrder(mutations) {
-  if (!orphanCheck()) return;
+  if (!chrome.runtime.id) return selfDestruct();
   let bad;
   let el = list.length && list[0].el;
   if (!el) {
@@ -360,7 +360,7 @@ export function updateConfig(cfg) {
 }
 
 function updateRoot() {
-  if (!orphanCheck()) return;
+  if (!chrome.runtime.id) return selfDestruct();
   // Known to change mysteriously in iframes without triggering RewriteObserver
   if (root !== document.documentElement) {
     root = document.documentElement;
