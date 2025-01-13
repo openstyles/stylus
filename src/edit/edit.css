@@ -654,7 +654,9 @@ i,
   }
   &.big {
     box-shadow: rgba(0, 0, 0, 0.45) 0px 0px 0px 100000px !important;
-    left: calc(var(--header-width) - 3rem);
+    .normal-layout & {
+      left: calc(var(--header-width) - 3rem);
+    }
     .CodeMirror {
       min-height: 2rem;
       height: 70vh;
