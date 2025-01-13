@@ -325,13 +325,14 @@ function makeLibrary(entry, name, extras) {
 }
 
 function makeContentScript(name) {
+  // (!) `global` must be `this` because in Firefox it's not equal to `window` or `self`
+  const intro = `if (self["${name}"]!==1) { self["${name}"]=1; const global = this, ${
+    INTRO_ALIASES
+  }; (() => { "use strict"; `;
   return mergeCfg(OUTPUT_MODULE, mergeCfg({
     entry: '@/content/' + name,
     output: {path: DST + JS},
-    plugins: addWrapper(
-      `"use strict"; self["${name}"]!==1 && (() => { ` +
-        `const global = self, ${INTRO_ALIASES}; global["${name}"] = 1;`,
-      '})();'),
+    plugins: addWrapper(intro, '})()}'),
   }));
 }
 
