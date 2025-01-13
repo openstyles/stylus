@@ -111,8 +111,8 @@ const addWrapper = (banner = INTRO + ';', footer = '}', test = /\.js$/) => [
   new webpack.BannerPlugin({raw: true, test, banner}),
   new webpack.BannerPlugin({raw: true, test, banner: footer, footer: true}),
 ];
-const getTerserOptions = forExternals => ({
-  [forExternals ? 'include' : 'exclude']: /node_modules|codemirror(?!-factory)/,
+const getTerserOptions = (cm, ovr = {mangle: !!cm}) => ({
+  [cm ? 'include' : 'exclude']: /node_modules|codemirror(?!-factory)/,
   extractComments: false,
   terserOptions: {
     ecma: MV3 ? 2024 : 2017,
@@ -124,19 +124,20 @@ const getTerserOptions = forExternals => ({
       }, {}),
       reduce_funcs: false,
     },
-    mangle: !!forExternals,
     output: {
       ascii_only: false,
       comments: false,
       wrap_func_args: false,
     },
+    ...ovr,
   },
 });
+const tersers = {};
 
 /**
  * @return {import('webpack/types').Configuration}
  */
-const getBaseConfig = hasCodeMirror => ({
+const getBaseConfig = () => ({
   mode: DEV ? 'development' : 'production',
   devtool: DEV && 'inline-source-map',
   output: {
@@ -210,8 +211,6 @@ const getBaseConfig = hasCodeMirror => ({
     chunkIds: false,
     mangleExports: false,
     minimizer: DEV ? [] : [
-      hasCodeMirror && new TerserPlugin(getTerserOptions(true)),
-      new TerserPlugin(getTerserOptions()),
       new CssMinimizerPlugin({
         minimizerOptions: {
           preset: ['default', {
@@ -291,7 +290,9 @@ function mergeCfg(ovr, base) {
         })
       );
     }
-    base = getBaseConfig(entry.includes('edit'));
+    base = getBaseConfig();
+    if (!DEV && !ovr.optimization?.minimizer)
+      base.optimization.minimizer.push(tersers.own ??= new TerserPlugin(getTerserOptions()));
   } else {
     base = {...base};
   }
@@ -333,6 +334,13 @@ function makeContentScript(name) {
     entry: '@/content/' + name,
     output: {path: DST + JS},
     plugins: addWrapper(intro, '})()}'),
+    optimization: {
+      minimizer: DEV ? [] : [
+        // mangling vars/funcs improves performance by a fraction of millisecond,
+        // but on 1000 pages+frames it'll accumulate to a fraction of a second
+        new TerserPlugin(getTerserOptions(false, {mangle: true})),
+      ],
+    },
   }));
 }
 
@@ -370,6 +378,10 @@ module.exports = [
       chunkFilename: getChunkFileName.bind([JS, '.js']),
     },
     optimization: {
+      minimizer: DEV ? [] : [
+        tersers.cm ??= new TerserPlugin(getTerserOptions(true)),
+        tersers.own ??= new TerserPlugin(getTerserOptions()),
+      ],
       runtimeChunk: {
         name: 'common',
       },

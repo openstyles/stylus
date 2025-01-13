@@ -3,7 +3,7 @@ import {bgReadySignal} from './msg-api';
 
 const handlers = new Map();
 export const onConnect = {};
-export const onDisconnect = global[k_onDisconnect] = {};
+export const onDisconnect = {};
 export const onMessage = (fn, replyAllowed) => {
   handlers.set(fn, replyAllowed);
 };
@@ -22,6 +22,7 @@ export const wrapError = error => ({
 
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 if (__.ENTRY) {
+  global[k_onDisconnect] = onDisconnect;
   chrome.runtime.onConnect.addListener(port => {
     const name = port.name.split(':', 1)[0];
     const fnOn = onConnect[name];
