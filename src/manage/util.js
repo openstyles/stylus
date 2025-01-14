@@ -7,7 +7,6 @@ export const installed = template.body.$('#installed');
 
 export const queue = Object.assign([], {
   styles: new Map(),
-  time: 0,
 });
 
 export function calcObjSize(obj) {

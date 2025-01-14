@@ -52,7 +52,6 @@ Object.assign(document.body, {
 
 async function importFromFile(file) {
   let resolve, reject;
-  const q = queue;
   const el = $tag('input');
   const textPromise = new Promise((...args) => ([resolve, reject] = args));
   try {
@@ -71,10 +70,8 @@ async function importFromFile(file) {
     const text = await textPromise;
     el.remove();
     if (/^\s*\[/.test(text)) {
-      q.time = performance.now();
       await importFromString(text);
-      q.time = 0;
-      setTimeout(() => q.styles.clear(), IMPORT_THROTTLE * 2);
+      setTimeout(() => queue.styles.clear(), IMPORT_THROTTLE * 2);
     } else if (RX_META.test(text)) {
       throw t('dragDropUsercssTabstrip');
     }

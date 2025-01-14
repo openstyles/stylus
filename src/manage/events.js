@@ -1,11 +1,11 @@
-import {IMPORT_THROTTLE, kStyleIdPrefix, UCD} from '@/js/consts';
+import {kStyleIdPrefix, UCD} from '@/js/consts';
 import {$toggleClasses} from '@/js/dom';
 import {
   animateElement, configDialog, getEventKeyName, messageBox, scrollElementIntoView, setHocus,
 } from '@/js/dom-util';
 import {onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
-import {debounce, sessionStore, t} from '@/js/util';
+import {sessionStore, t} from '@/js/util';
 import {browserWindows, getOwnTab} from '@/js/util-webext';
 import {filterAndAppend, showFiltersStats} from './filters';
 import {createStyleElement, createTargetsElement, renderFavs, updateTotal} from './render';
@@ -24,8 +24,7 @@ onMessage.set(m => {
     case 'styleAdded':
     case 'styleDeleted':
       queue.push(m);
-      if (!queue.time) handleBulkChange(queue);
-      else debounce(handleBulkChange, IMPORT_THROTTLE);
+      queue.p ??= Promise.resolve().then(handleBulkChange);
   }
 });
 
@@ -144,22 +143,22 @@ export function onEntryClicked(event) {
   }
 }
 
-export function handleBulkChange(q = queue) {
-  for (const msg of q) {
+export function handleBulkChange() {
+  for (const msg of queue) {
     const {id} = msg.style;
     let fullStyle;
     if (msg.method === 'styleDeleted') {
       handleDelete(id);
-    } else if (msg.reason === 'import' && (fullStyle = q.styles.get(id))) {
+    } else if (msg.reason === 'import' && (fullStyle = queue.styles.get(id))) {
       handleUpdate(fullStyle, msg);
-      q.styles.delete(id);
+      queue.styles.delete(id);
     } else {
       handleUpdateForId(id, msg);
     }
   }
   sorter.updateStripes({onlyWhenColumnsChanged: true});
-  q.time = performance.now();
-  q.length = 0;
+  queue.p = null;
+  queue.length = 0;
 }
 
 function handleDelete(id) {
