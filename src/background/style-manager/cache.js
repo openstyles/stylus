@@ -81,7 +81,6 @@ export function hydrate(dataMap) {
 /** @param {MatchCache.DbEntry}
  * @return {Object} */
 export function ensureSections(entry) {
-  entry.maybeMatch ??= new Set();
   return (entry.sections ??= {});
 }
 
@@ -137,7 +136,7 @@ function flush() {
   let toDel;
   nextEntry:
   for (const val of toWrite) {
-    const {d, url, maybeMatch, sections} = val;
+    const {d, url, sections} = val;
     /** @type {MatchCache.IndexMap} */
     const indexes = {};
     /** @type {MatchCache.DbEntry} */
@@ -155,7 +154,6 @@ function flush() {
     }
     // Adding the meaningful props first to ensure their visibility in devtools DB viewer
     if (styleId) res.sections = indexes;
-    if (maybeMatch.size) res.maybeMatch = maybeMatch;
     res.d = [d?.[1] || 0, new Date()];
     res.url = url;
     bare.push(res);
@@ -176,7 +174,7 @@ async function flushLater() {
 /** @template {MatchCache.Entry} T
  * @param {T} val
  * @return {T} */
-function hit(val) {
+export function hit(val) {
   if (val) {
     toWrite.add(val);
     timer ??= flushLater();

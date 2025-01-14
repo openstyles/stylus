@@ -1,7 +1,7 @@
 import {styleCodeEmpty} from '@/js/sections-util';
 import cacheData, * as styleCache from './cache';
 import {urlMatchSection, urlMatchStyle} from './matcher';
-import {id2data} from './util';
+import {dataMap, id2data} from './util';
 
 /** @param {StyleObj} style
  * @return {void} */
@@ -14,20 +14,20 @@ export function buildCacheForStyle(style) {
   const excluded = new Set();
   const updated = new Set();
   for (const cache of cacheData.values()) {
-    styleCache.add(cache); // write the updated value to db
+    let code;
     const url = cache.url;
     if (!data.appliesTo.has(url)) {
-      cache.maybeMatch.add(id);
-      continue;
-    }
-    const code = getAppliedCode({url}, styleToApply);
-    if (code) {
+      (cache.maybeMatch ??= new Set()).add(id);
+    } else if ((code = getAppliedCode({url}, styleToApply))) {
       updated.add(url);
       buildCacheEntry(cache, styleToApply, code);
-    } else {
+    } else if (cache.sections[id]) {
       excluded.add(url);
       delete cache.sections[id];
+    } else {
+      continue;
     }
+    styleCache.hit(cache);
   }
   data.appliesTo = updated;
 }
@@ -35,20 +35,24 @@ export function buildCacheForStyle(style) {
 /**
  * @param {MatchCache.Entry} cache
  * @param {string} url
- * @param {Iterable<StyleDataMapEntry>} dataList
+ * @param {Iterable<number>} ids
  * @return {void} */
-export function buildCache(cache, url, dataList) {
+export function buildCache(cache, url, ids) {
   const query = {url};
-  for (const data of dataList) {
+  let hit;
+  for (let data of ids || dataMap.values()) {
+    if (ids && !(data = dataMap.get(data)))
+      continue;
     const {style} = data;
     // getSectionsByUrl only needs enabled styles
     const code = style.enabled && getAppliedCode(query, data.preview || style);
     if (code) {
       buildCacheEntry(cache, style, code);
       data.appliesTo.add(url);
+      hit = true;
     }
   }
-  styleCache.add(cache);
+  if (hit) styleCache.hit(cache);
 }
 
 /**

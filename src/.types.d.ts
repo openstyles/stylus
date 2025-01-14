@@ -101,10 +101,11 @@ declare namespace Injection {
 declare namespace MatchCache {
   interface Entry {
     url: string;
-    maybeMatch: Set<number>;
+    maybeMatch?: Set<number>;
     sections: Injection.SectionsMap;
   }
-  type DbEntry = Entry & {
+  type DbEntry = {
+    url: string;
     d: Date[];
     sections: IndexMap;
   }

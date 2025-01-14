@@ -250,11 +250,10 @@ export function getSectionsByUrl(url, id, isInitialApply) {
     cache = {
       url,
       sections: {},
-      maybeMatch: new Set(),
     };
-    buildCache(cache, url, dataMap.values());
-  } else if (cache.maybeMatch.size) {
-    buildCache(cache, url, Array.from(cache.maybeMatch, id2data).filter(Boolean));
+    buildCache(cache, url);
+  } else if (cache.maybeMatch) {
+    buildCache(cache, url, cache.maybeMatch);
   }
   let res = cache.sections;
   return {
