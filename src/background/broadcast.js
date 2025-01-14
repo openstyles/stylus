@@ -1,5 +1,5 @@
 import '@/js/browser';
-import {kStyleIds} from '@/js/consts';
+import {kStyleIds, kUrl} from '@/js/consts';
 import {rxIgnorableError} from '@/js/msg-api';
 import {ownRoot, supported} from '@/js/urls';
 import {getActiveTab} from '@/js/util-webext';
@@ -57,10 +57,9 @@ async function doBroadcast() {
     }
     tabs.length = tabsLen;
   } else if (activeTab) {
-    tabsLen = tabs.push(activeTab.id);
     for (const t of tabCache.values()) {
-      if (t.id !== activeTab.id && t[kStyleIds]) {
-        tabsLen = tabs.push(t.id);
+      if (t[kStyleIds] && !t[kUrl][0].startsWith(ownRoot)) {
+        tabsLen = tabs[t.id === activeTab.id ? 'unshift' : 'push'](t.id);
       }
     }
   }
