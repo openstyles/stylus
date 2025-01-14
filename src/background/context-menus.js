@@ -18,8 +18,8 @@ const kStyleDisableAll = 'styleDisableAll';
 const cmdOpenManager = () => openManager();
 const cmdOpenOptions = () => openManager({options: true});
 const cmdReload = () => chrome.runtime.reload();
-const cmdStyleDisableAll = info => prefs.set(kDisableAll,
-  info ? info.checked : !prefs.get(kDisableAll));
+const cmdStyleDisableAll = info => prefs.ready.then(() => prefs.set(kDisableAll,
+  info ? info.checked : !prefs.__values[kDisableAll]));
 
 const COMMANDS = {
   [kOpenManage]: cmdOpenManager,

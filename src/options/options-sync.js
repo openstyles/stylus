@@ -20,7 +20,7 @@ import {t} from '@/js/util';
     ...Object.entries(DRIVE_NAMES).map(([id, name]) =>
       $create('option', {value: id}, name)));
   updateButtons();
-  onMessage(e => {
+  onMessage.set(e => {
     if (e.method === 'syncStatusUpdate') {
       setStatus(e.status);
     }

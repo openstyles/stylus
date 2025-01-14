@@ -17,7 +17,7 @@ export default function USWIntegration() {
   let spinnerTimer = 0;
   let prevCode = '';
 
-  onMessage(request => {
+  onMessage.set(request => {
     if (request.method === 'uswData' &&
         request.style.id === style.id) {
       Object.assign(style, request.style);

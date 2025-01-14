@@ -1,4 +1,5 @@
-import {onDisconnect} from '@/js/msg';
+import {kResolve} from '@/js/consts';
+import {onConnect, onDisconnect} from '@/js/msg';
 import {draftsDb} from '../db';
 import {broadcastStyleUpdated, id2data} from './util';
 
@@ -6,14 +7,23 @@ import {broadcastStyleUpdated, id2data} from './util';
 // because our `API` is much faster due to direct invocation.
 onDisconnect.draft = onDraftEnd;
 onDisconnect.livePreview = onPreviewEnd;
+if (__.MV3) {
+  onConnect.draft = onConnect.livePreview = port => {
+    __.KEEP_ALIVE(new Promise(resolve => {
+      port[kResolve] = resolve;
+    }));
+  };
+}
 
 function onDraftEnd(port) {
+  port[kResolve]();
   const id = port.name.split(':')[1];
   draftsDb.delete(+id || id).catch(() => {});
 }
 
-function onPreviewEnd({name}) {
-  const id = +name.split(':')[1];
+function onPreviewEnd(port) {
+  port[kResolve]();
+  const id = +port.name.split(':')[1];
   const data = id2data(id);
   if (!data) return;
   data.preview = null;

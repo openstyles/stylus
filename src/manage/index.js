@@ -48,7 +48,7 @@ function initSyncButton(sync) {
     $toggleDataset(el, 'cloud', drive);
     elMsg.textContent = msg === syncUtil.pending || msg === syncUtil.connected ? '' : msg;
   };
-  onMessage(e => {
+  onMessage.set(e => {
     if (e.method === 'syncStatusUpdate') render(e.status);
   });
   render(sync);

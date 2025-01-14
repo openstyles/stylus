@@ -39,7 +39,7 @@ const xo = new IntersectionObserver(onIntersect);
   if (!MOBILE) window.on('resize', onWindowResize);
 })();
 
-onMessage(onRuntimeMessage);
+onMessage.set(onRuntimeMessage);
 
 updateStateIcon(isDark);
 onDarkChanged.add(val => updateStateIcon(val, null));

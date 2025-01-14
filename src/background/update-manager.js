@@ -282,8 +282,11 @@ function schedule() {
   }
 }
 
-function onAlarm({name}) {
-  if (name === ALARM_NAME) __.KEEP_ALIVE(checkAllStyles());
+async function onAlarm({name}) {
+  if (name === ALARM_NAME) {
+    if (bgBusy) await bgBusy;
+    __.KEEP_ALIVE(checkAllStyles());
+  }
 }
 
 function resetInterval() {

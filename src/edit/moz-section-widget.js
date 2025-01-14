@@ -2,7 +2,7 @@ import colorMimicry from '@/js/color/color-mimicry';
 import {$create} from '@/js/dom';
 import {messageBox} from '@/js/dom-util';
 import {htmlToTemplate, templateCache} from '@/js/localization';
-import * as msg from '@/js/msg';
+import {onMessage} from '@/js/msg';
 import {sleep, t} from '@/js/util';
 import {CodeMirror} from '@/cm';
 import editor from './editor';
@@ -128,7 +128,7 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
     actualStyle = $tag('style');
 
     cm.on('optionChange', onCmOption);
-    msg.onMessage(onRuntimeMessage);
+    onMessage.set(onRuntimeMessage);
     if (finder.sections.length) {
       update(finder.sections, []);
     }
@@ -140,7 +140,7 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
   function destroy() {
     enabled = false;
     cm.off('optionChange', onCmOption);
-    msg.off(onRuntimeMessage);
+    onMessage.delete(onRuntimeMessage);
     actualStyle.remove();
     actualStyle = null;
     cm.operation(() => finder.sections.forEach(killWidget));

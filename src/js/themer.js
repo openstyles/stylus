@@ -27,7 +27,7 @@ export let isDark;
   if (window === top) ({dark: isDark, favicon} = __.MV3 ? clientData : await clientData);
   else isDark = parent.document.documentElement.dataset.uiTheme === 'dark';
   updateDOM();
-  onMessage(e => {
+  onMessage.set(e => {
     if (e.method === 'colorScheme' && isDark !== e.value) {
       isDark = e.value;
       updateDOM();

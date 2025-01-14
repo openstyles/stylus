@@ -5,7 +5,7 @@ import {chromeLocal} from '@/js/storage-util';
 import * as STATES from '@/js/sync-util';
 import {fetchWebDAV, hasOwn, t, tryURL} from '@/js/util';
 import {broadcastExtension} from './broadcast';
-import {uuidIndex} from './common';
+import {bgBusy, uuidIndex} from './common';
 import {db} from './db';
 import {cloudDrive, dbToCloud} from './db-to-cloud-broker';
 import {overrideBadge} from './icon-manager';
@@ -41,8 +41,11 @@ let resolveOnSync;
 let scheduling;
 let syncingNow;
 
-chrome.alarms.onAlarm.addListener(a => {
-  if (a.name === ALARM_ID) __.KEEP_ALIVE(syncNow());
+chrome.alarms.onAlarm.addListener(async a => {
+  if (a.name === ALARM_ID) {
+    if (bgBusy) await bgBusy;
+    __.KEEP_ALIVE(syncNow());
+  }
 });
 prefs.subscribe(PREF_ID, schedule, true);
 

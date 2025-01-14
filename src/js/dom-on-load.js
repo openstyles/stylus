@@ -22,7 +22,7 @@ window.on('wheel', changeFocusedInputOnWheel, {capture: true, passive: false});
 window.on('click', splitMenu);
 window.on('click', showTooltipNote, true);
 window.on('resize', () => debounce(addTooltipsToEllipsized, 100));
-onMessage(request => {
+onMessage.set(request => {
   if (request.method === 'editDeleteText') {
     document.execCommand('delete');
   }

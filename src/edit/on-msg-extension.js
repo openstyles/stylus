@@ -3,7 +3,7 @@ import {API} from '@/js/msg-api';
 import {closeCurrentTab} from '@/js/util-webext';
 import editor from './editor';
 
-onMessage(request => {
+onMessage.set(request => {
   const {style} = request;
   switch (request.method) {
     case 'styleUpdated':

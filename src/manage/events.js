@@ -18,7 +18,7 @@ installed.on('click', onEntryClicked);
 installed.on('contextmenu', onEntryClicked);
 window.on('pageshow', handleVisibilityChange);
 window.on('pagehide', handleVisibilityChange);
-onMessage(m => {
+onMessage.set(m => {
   switch (m.method) {
     case 'styleUpdated':
     case 'styleAdded':

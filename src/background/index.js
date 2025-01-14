@@ -121,9 +121,8 @@ async function onStartup() {
   }
 }
 
-onMessage(async (m, sender) => {
+onMessage.set((m, sender) => {
   if (m.method === kInvokeAPI) {
-    if (bgBusy) await bgBusy;
     let res = API;
     for (const p of m.path.split('.')) res = res && res[p];
     if (!res) throw new Error(`Unknown API.${m.path}`);

@@ -5,6 +5,7 @@ import {chromeProtectsNTP} from '@/js/urls';
 import {deepEqual} from '@/js/util';
 import {ignoreChromeError, MF} from '@/js/util-webext';
 import {pingTab, sendTab} from './broadcast';
+import {bgBusy} from './common';
 import tabCache from './tab-manager';
 
 /** @type {Set<(data: Object, type: 'committed'|'history'|'hash') => ?>} */
@@ -30,6 +31,7 @@ async function onNavigation(navType, data) {
     return; // Chrome bug: listener is called twice with identical data
   }
   prevData = data;
+  if (bgBusy) await bgBusy;
   if (!__.MV3 &&
       CHROME && __.BUILD !== 'firefox' &&
       chromeProtectsNTP &&

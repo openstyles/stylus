@@ -1,6 +1,6 @@
 // WARNING: make sure util-webext.js runs first and sets _deepCopy
 import {k_deepCopy, kApplyPort} from '@/js/consts';
-import * as msg from '@/js/msg';
+import {onMessage} from '@/js/msg';
 import {API, isFrame, TDM, updateTDM} from '@/js/msg-api';
 import * as styleInjector from './style-injector';
 import {FF, isXml, own, ownId} from './style-injector';
@@ -81,7 +81,7 @@ styleInjector.onInjectorUpdate = () => {
 styleInjector.selfDestruct = selfDestruct;
 // Declare all vars before init() or it'll throw due to "temporal dead zone" of const/let
 init();
-msg.onMessage(applyOnMessage, true);
+onMessage.set(applyOnMessage, true);
 addEventListener(kPageShow, onBFCache);
 
 async function init() {
@@ -287,6 +287,6 @@ function selfDestruct() {
   navHub.removeEventListener(NAV_ID, onUrlChanged, true);
   offscreen = null;
   styleInjector.shutdown();
-  msg.off(applyOnMessage);
+  onMessage.delete(applyOnMessage);
   port?.disconnect();
 }

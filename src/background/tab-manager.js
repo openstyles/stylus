@@ -126,9 +126,8 @@ chrome.tabs.onRemoved.addListener(async tabId => {
   for (const fn of onUnload) fn(tabId, 0);
 });
 
-async function onPortDisconnected(port) {
+function onPortDisconnected(port) {
   ignoreChromeError();
-  if (bgBusy) await bgBusy;
   const {sender} = port;
   const tabId = sender.tab?.id;
   const frameId = sender.frameId;

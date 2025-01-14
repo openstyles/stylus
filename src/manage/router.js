@@ -114,7 +114,7 @@ export function watch(options, callback) {
 
 window.on('popstate', update);
 window.on('hashchange', update);
-onMessage(m => {
+onMessage.set(m => {
   if (m.method === 'pushState' && m.url !== location.href) {
     push(m.url);
     update();

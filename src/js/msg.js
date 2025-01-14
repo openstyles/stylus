@@ -1,15 +1,10 @@
-import {k_onDisconnect, kInvokeAPI} from '@/js/consts';
+import {k_busy, kInvokeAPI} from '@/js/consts';
 import {bgReadySignal} from './msg-api';
 
-const handlers = new Map();
+/** @type {Map<function,boolean>} true: returned value is used as the reply */
+export const onMessage = new Map();
 export const onConnect = {};
 export const onDisconnect = {};
-export const onMessage = (fn, replyAllowed) => {
-  handlers.set(fn, replyAllowed);
-};
-export const off = fn => {
-  handlers.delete(fn);
-};
 export const wrapData = data => ({
   data,
 });
@@ -22,8 +17,8 @@ export const wrapError = error => ({
 
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 if (__.ENTRY) {
-  global[k_onDisconnect] = onDisconnect;
-  chrome.runtime.onConnect.addListener(port => {
+  chrome.runtime.onConnect.addListener(async port => {
+    if (__.IS_BG && global[k_busy]) await global[k_busy];
     const name = port.name.split(':', 1)[0];
     const fnOn = onConnect[name];
     const fnOff = onDisconnect[name];
@@ -40,7 +35,7 @@ export function _execute(data, sender, multi) {
     data = (multi = data)[0];
   }
   do {
-    for (const [fn, replyAllowed] of handlers) {
+    for (const [fn, replyAllowed] of onMessage) {
       try {
         res = fn(data, sender, !!multi);
       } catch (err) {
@@ -62,7 +57,10 @@ function onRuntimeMessage({data, multi, TDM}, sender, sendResponse) {
     return;
   }
   sender.TDM = TDM;
-  const res = _execute(data, sender, multi);
+  let res = __.IS_BG && global[k_busy];
+  res = res
+    ? res.then(_execute.bind(null, data, sender, multi))
+    : _execute(data, sender, multi);
   if (res instanceof Promise) {
     res.then(wrapData, wrapError).then(sendResponse);
     return true;
