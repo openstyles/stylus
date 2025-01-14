@@ -7,7 +7,7 @@ import * as colorScheme from '../color-scheme';
 import {bgBusy, bgInit, uuidIndex} from '../common';
 import {db, draftsDb, prefsDb} from '../db';
 import * as syncMan from '../sync-manager';
-import * as tabMan from '../tab-manager';
+import tabCache from '../tab-manager';
 import {getUrlOrigin} from '../tab-util';
 import * as usercssMan from '../usercss-manager';
 import * as uswApi from '../usw-api';
@@ -17,7 +17,7 @@ import './connector';
 import {fixKnownProblems, onBeforeSave, onSaved} from './fixer';
 import {urlMatchSection, urlMatchStyle} from './matcher';
 import {
-  broadcastStyleUpdated, calcRemoteId, dataMap, getById, getByUuid, id2data, iterStyles,
+  broadcastStyleUpdated, calcRemoteId, dataMap, getById, getByUuid, id2data,
   mergeWithMapped, order, orderWrap, setOrderImpl, storeInMap,
 } from './util';
 
@@ -135,9 +135,9 @@ export function getByUrl(url, id = null) {
   const result = [];
   const styles = id
     ? [getById(id)].filter(Boolean)
-    : iterStyles();
+    : dataMap.values();
   const query = {url};
-  for (const style of styles) {
+  for (const {style} of styles) {
     let empty = true;
     let excluded = false;
     let excludedScheme = false;
@@ -223,16 +223,17 @@ export function getSectionsByUrl(url, id, isInitialApply) {
   const {sender = {}} = this || {};
   const {tab = {}, frameId, TDM} = sender;
   const isTop = !frameId || TDM || sender.type === 'main_frame'; // prerendering in onBeforeRequest
+  const td = tabCache.get(sender.tabId || tab.id) || {};
   /** @type {Injection.Config} */
   const cfg = !id && {
     ass: p.styleViaASS,
     dark: isTop && colorScheme.isDark,
     // TODO: enable in FF when it supports sourceURL comment in style elements (also options.html)
     name: p.exposeStyleName,
-    nonce: tabMan.get(tab.id, 'nonce', frameId),
+    nonce: td.nonce?.[frameId],
     top: isInitialApply && p.exposeIframes && (
       isTop ? '' // apply.js will use location.origin
-        : getUrlOrigin(tab.url || tabMan.get(sender.tabId || tab.id, kUrl))
+        : getUrlOrigin(tab.url || td[kUrl]?.[0])
     ),
     order,
   };
@@ -243,7 +244,7 @@ export function getSectionsByUrl(url, id, isInitialApply) {
     /* Chrome hides text frament from location.href of the page e.g. #:~:text=foo
        so we'll use the real URL reported by webNavigation API.
        TODO: if FF will do the same, this won't work as is: FF reports onCommitted too late */
-    url = tabMan.get(tab.id, kUrl) || url;
+    url = td[kUrl]?.[0] || url;
   }
   let cache = styleCache.get(url);
   if (!cache) {

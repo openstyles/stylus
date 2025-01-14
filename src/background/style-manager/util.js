@@ -63,11 +63,6 @@ export function broadcastStyleUpdated(style, reason, isNew) {
   }, {onlyIfStyled: !style.enabled});
 }
 
-/** @return {Generator<StyleObj>} */
-export function *iterStyles() {
-  for (const v of dataMap.values()) yield v.style;
-}
-
 export async function setOrderImpl(data, {
   broadcast: broadcastAllowed,
   calc = true,

@@ -1,7 +1,7 @@
 import {UCD} from '@/js/consts';
 import {debounce, RX_META, stringAsRegExp, tryRegExp} from '@/js/util';
 import {getByUrl} from './style-manager';
-import {iterStyles} from './style-manager/util';
+import {dataMap} from './style-manager/util';
 
 // toLocaleLowerCase cache, autocleared after 1 minute
 const cache = new Map();
@@ -54,7 +54,7 @@ export function searchDb({query, mode, ids}) {
     const m = /^\/(.+?)\/([gimsuy]*)$/.exec(query);
     const rx = m && tryRegExp(m[1], m[2]);
     const test = rx ? rx.test.bind(rx) : createTester(query);
-    for (const style of iterStyles()) {
+    for (const {style} of dataMap) {
       if ((!ids || ids.includes(style.id)) &&
         (!query || modeHandler(style, test))) {
         res.push(style.id);

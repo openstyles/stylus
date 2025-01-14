@@ -1,13 +1,13 @@
-import {kApplyPort} from '@/js/consts';
+import {kApplyPort, kStyleIds, kUrl} from '@/js/consts';
 import {onDisconnect} from '@/js/msg';
 import {supported} from '@/js/urls';
 import {ignoreChromeError} from '@/js/util-webext';
 import {bgBusy, bgInit, onUnload, onUrl} from './common';
 import {stateDB} from './db';
-import {onUrlChange} from './navigation-manager';
+import {kCommitted, onUrlChange} from './navigation-manager';
 
 /** @typedef {{ url:string, styleIds: {[frameId:string]: number[]} }} StyleIdsFrameMap */
-/** @type {Map<number,{ id: number, url:string, styleIds: StyleIdsFrameMap }>} */
+/** @type {Map<number,{ id: number, nonce:Object, url:Object, styleIds: StyleIdsFrameMap }>} */
 const cache = new Map();
 export default cache;
 
@@ -16,9 +16,6 @@ export const get = (tabId, ...keyPath) => {
   for (let i = 0; res && i < keyPath.length; i++) res = res[keyPath[i]];
   return res;
 };
-
-/** @return {StyleIdsFrameMap|false} */
-export const getStyleIds = id => cache.get(id)?.styleIds || false;
 
 export const load = async tabId => {
   const oldVal = __.MV3 && await stateDB.get(tabId);
@@ -55,11 +52,12 @@ export const set = (tabId, ...args) => {
     obj0.id = tabId;
     stateDB.put(obj0, tabId);
   }
+  return value;
 };
 
 export const someInjectable = () => {
-  for (const v of cache.values()) {
-    if (v.styleIds || supported(v.url)) {
+  for (let v of cache.values()) {
+    if (v[kStyleIds] || (v = v[kUrl]) && supported(v[0])) {
       return true;
     }
   }
@@ -82,8 +80,8 @@ bgInit.push(async () => {
   for (const {id, url} of tabs) {
     if (supported(url)) {
       let data = __.MV3 && dbMap.get(id);
-      if (!data ? data = {id} : data.url !== url) {
-        data.url = url;
+      if (!data || data[kUrl]?.[0] !== url) {
+        data = {id, [kUrl]: {0: url}};
         if (__.MV3) stateDB.put(data, id);
       }
       cache.set(id, data);
@@ -96,13 +94,22 @@ bgInit.push(async () => {
 });
 
 bgBusy.then(() => {
-  onUrlChange.add(({tabId, frameId, url}) => {
-    if (frameId) return;
+  onUrlChange.add(({tabId, frameId, url}, navType) => {
     let obj, oldUrl;
-    if ((obj = cache.get(tabId))) oldUrl = obj.url;
-    else cache.set(tabId, obj = {});
-    obj.id = tabId;
-    obj.url = url;
+    if ((obj = cache.get(tabId))) {
+      oldUrl = obj[kUrl]?.[0];
+      if (navType === kCommitted && obj[kStyleIds]) {
+        if (frameId) delete obj[kStyleIds][frameId];
+        else delete obj[kStyleIds];
+      }
+    } else {
+      cache.set(tabId, obj = {id: tabId});
+    }
+    if (navType === kCommitted && !frameId)
+      obj[kUrl] = {0: url};
+    else
+      (obj[kUrl] ??= {})[frameId] = url;
+    if (frameId) return;
     if (__.MV3) stateDB.put(obj, tabId);
     for (const fn of onUrl) fn(tabId, url, oldUrl);
   });

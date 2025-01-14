@@ -1,4 +1,4 @@
-import {kDisableAll} from '@/js/consts';
+import {kDisableAll, kStyleIds, kUrl} from '@/js/consts';
 import {__values as __prefs, subscribe} from '@/js/prefs';
 import {CHROME, FIREFOX, MOBILE, VIVALDI} from '@/js/ua';
 import {debounce, t} from '@/js/util';
@@ -58,24 +58,22 @@ function initIcons(runNow = !__.MV3) {
 }
 
 onUnload.add((tabId, frameId, port) => {
-  if (frameId && tabMan.getStyleIds(tabId)) {
-    updateIconBadge.call(port, [], {lazyBadge: true});
+  if (frameId && tabCache.get(tabId)?.[kStyleIds]) {
+    updateIconBadge.call(port, [], true);
   }
 });
 
 /**
  * @param {(number|string)[]} styleIds
- * @param {{}} opts
- * @param {boolean} [opts.lazyBadge=false] preventing flicker during page load
- * @param {number} [opts.iid] - instance id
+ * @param {boolean} [lazyBadge] preventing flicker during page load
  */
-export function updateIconBadge(styleIds, {lazyBadge, iid} = {}) {
+export function updateIconBadge(styleIds, lazyBadge) {
   // FIXME: in some cases, we only have to redraw the badge. is it worth a optimization?
-  const {tab: {id: tabId}, TDM} = this.sender;
+  const {tab: {id: tabId}, TDM, url} = this.sender;
   const frameId = TDM > 0 ? 0 : this.sender.frameId;
   const value = styleIds.length ? styleIds.map(Number) : undefined;
-  tabMan.set(tabId, 'styleIds', frameId, value);
-  if (iid) tabMan.set(tabId, 'iid', frameId, iid);
+  tabMan.set(tabId, kStyleIds, frameId, value);
+  tabMan.set(tabId, kUrl, frameId, value && url);
   debounce(refreshStaleBadges, frameId && lazyBadge ? 250 : 0);
   staleBadges.add(tabId);
   if (!frameId) refreshIcon(tabId, true);
@@ -117,10 +115,10 @@ function getIconName(hasStyles = false) {
 }
 
 function refreshIcon(tabId, force = false) {
-  const oldIcon = tabMan.get(tabId, 'icon');
-  const newIcon = getIconName(tabMan.getStyleIds(tabId)[0]);
+  const td = tabCache.get(tabId) || {id: tabId};
+  const oldIcon = td.icon;
+  const newIcon = getIconName(td[kStyleIds]?.[0]);
   // (changing the icon only for the main page, frameId = 0)
-
   if (!force && oldIcon === newIcon) {
     return;
   }
@@ -144,8 +142,8 @@ function getIconPath(icon) {
 /** @return {number | ''} */
 function getStyleCount(tabId) {
   const allIds = new Set();
-  const data = tabMan.getStyleIds(tabId) || {};
-  Object.values(data).forEach(frameIds => frameIds.forEach(id => allIds.add(id)));
+  for (const frameData of Object.values(tabCache.get(tabId)?.[kStyleIds] || {}))
+    frameData.forEach(allIds.add, allIds);
   return allIds.size || '';
 }
 

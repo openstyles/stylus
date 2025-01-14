@@ -59,7 +59,7 @@ export default async function reinjectContentScripts(targetTab) {
 
   async function injectToTab(tabId, url, targeted) {
     const jobs = [];
-    tabMan.set(tabId, kUrl, url);
+    tabMan.set(tabId, kUrl, 0, url);
     if (!targeted && await sendTab(tabId, {method: 'backgroundReady'})) {
       return;
     }

@@ -1,8 +1,9 @@
 import '@/js/browser';
+import {kStyleIds} from '@/js/consts';
 import {rxIgnorableError} from '@/js/msg-api';
 import {ownRoot, supported} from '@/js/urls';
 import {getActiveTab} from '@/js/util-webext';
-import tabCache, * as tabMan from './tab-manager';
+import tabCache, {someInjectable} from './tab-manager';
 import {getWindowClients} from './util';
 
 let /**@type{?[]}*/toBroadcast;
@@ -32,7 +33,7 @@ async function doBroadcast() {
   const [client, tabs, activeTab] = await Promise.all([
     !__.MV3 || getWindowClients(), // TODO: detect the popup in Chrome MV2 incognito window?
     bAllStyled ? [] : browser.tabs.query({}),
-    bAllStyled && tabMan.someInjectable() && getActiveTab(),
+    bAllStyled && someInjectable() && getActiveTab(),
   ]);
   const data = toBroadcast;
   const styled = toBroadcastStyled;
@@ -58,7 +59,7 @@ async function doBroadcast() {
   } else if (activeTab) {
     tabsLen = tabs.push(activeTab.id);
     for (const t of tabCache.values()) {
-      if (t.id !== activeTab.id && t.styleIds) {
+      if (t.id !== activeTab.id && t[kStyleIds]) {
         tabsLen = tabs.push(t.id);
       }
     }
@@ -72,7 +73,7 @@ async function doBroadcast() {
     return;
   }
   for (const tabId of tabs) {
-    const msg = !nStyled || tabMan.getStyleIds(tabId)
+    const msg = !nStyled || tabCache.get(tabId)?.[kStyleIds]
       ? msgStyled ??= data
       : msgUnstyled ??= data.filter((v, i) => !styled[i]);
     const num = msg.length;

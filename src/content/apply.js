@@ -27,6 +27,9 @@ const instanceId = (FF || !__.MV3 && !CSS.supports('top', '1ic')) && Math.random
  * so we'll add the styles only if the iframe becomes visible */
 const xoEventId = `${instanceId || Math.random()}`;
 
+const NAV_ID = 'url:' + chrome.runtime.id;
+const navHub = FF ? global : global[NAV_ID] = new EventTarget();
+
 // FIXME: move this to background page when following bugs are fixed:
 // https://bugzil.la/1587723, https://crbug.com/968651
 const mqDark = !isFrame && matchMedia('(prefers-color-scheme: dark)');
@@ -45,11 +48,14 @@ let lazyBadge = isFrame;
 let xo;
 
 if (!FF) {
-  window[Symbol.for('xo')] = (el, cb) => {
+  global[Symbol.for('xo')] = (el, cb) => {
     if (!xo) xo = new IntersectionObserver(onIntersect, {rootMargin: '100%'});
     el.addEventListener(xoEventId, cb, {once: true});
     xo.observe(el);
   };
+}
+if (isFrameNoUrl) {
+  (FF ? parent : parent[NAV_ID]).addEventListener(NAV_ID, onUrlChanged, true);
 }
 if (mqDark) {
   mqDark.onchange = ({matches: m}) => {
@@ -96,7 +102,7 @@ async function init() {
 async function applyStyles(data, isInitial = !own.sections) {
   if (!data) data = await API.styles.getSectionsByUrl(matchUrl, null, isInitial);
   if (!data.cfg) data.cfg = own.cfg;
-  Object.assign(own, window[Symbol.for(SYM_ID)] = data);
+  Object.assign(own, global[Symbol.for(SYM_ID)] = data);
   if (!isFrame && own.cfg.top === '') own.cfg.top = location.origin; // used by child frames via parentStyles
   if (!isFrame && own.cfg.dark !== mqDark.matches) mqDark.onchange(mqDark);
   if (styleInjector.list.length) styleInjector.apply(own, true);
@@ -157,10 +163,8 @@ function applyOnMessage(req, sender, multi) {
       break;
 
     case 'urlChanged':
-      if ((isFrameNoUrl || req.iid === instanceId) && matchUrl !== req.url) {
-        matchUrl = req.url;
-        if (own.sections) applyStyles(own.cfg.off && {});
-      }
+      if (matchUrl === req.old)
+        updateUrl(req.url);
       break;
 
     case 'injectorConfig':
@@ -222,8 +226,16 @@ function updateCount() {
   if (isUnstylable) API.styleViaAPI({method: 'updateCount'});
   else if (!throttled
   && throttledCount !== (str = (ids = [...styleInjector.table.keys()]).join(','))) {
-    API.updateIconBadge(ids, {lazyBadge, iid: instanceId});
+    API.updateIconBadge(ids, lazyBadge);
     throttledCount = str;
+  }
+}
+
+function updateUrl(url) {
+  if (url !== matchUrl) {
+    matchUrl = url;
+    if (own.sections) applyStyles(own.cfg.off && {});
+    navHub.dispatchEvent(new Event(NAV_ID));
   }
 }
 
@@ -261,6 +273,10 @@ function onReified(e) {
   }
 }
 
+function onUrlChanged() {
+  updateUrl(parent.location.href);
+}
+
 function selfDestruct() {
   // In Chrome content script is orphaned on an extension update/reload
   // so we need to detach event listeners
@@ -268,6 +284,7 @@ function selfDestruct() {
   if (mqDark) mqDark.onchange = null;
   if (offscreen) for (const fn of offscreen) fn();
   if (TDM < 0) document.onprerenderingchange = null;
+  navHub.removeEventListener(NAV_ID, onUrlChanged, true);
   offscreen = null;
   styleInjector.shutdown();
   msg.off(applyOnMessage);

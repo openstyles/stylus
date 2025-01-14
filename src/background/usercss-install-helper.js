@@ -7,10 +7,11 @@ import * as URLS from '@/js/urls';
 import {getHost, RX_META} from '@/js/util';
 import {bgBusy, onUrl} from './common';
 import download from './download';
-import * as tabMan from './tab-manager';
+import tabCache, * as tabMan from './tab-manager';
 import {openURL} from './tab-util';
 
 const installCodeCache = {};
+const MIME = 'mime';
 export const kUrlInstaller = 'urlInstaller';
 
 bgBusy.then(() => {
@@ -93,7 +94,7 @@ async function loadFromFile(tabId) {
 async function loadFromUrl(tabId, url) {
   return (
     url.startsWith('file:') ||
-    tabMan.get(tabId, isContentTypeText.name)
+    tabCache.get(tabId)?.[MIME]
   ) && download(url);
 }
 
@@ -111,7 +112,7 @@ function reduceUsercssGlobs(res, host) {
 
 async function maybeInstall(tabId, url, oldUrl = '') {
   if (url.includes('.user.') &&
-      tabMan.get(tabId, isContentTypeText.name) !== false &&
+      tabCache.get(tabId)?.[MIME] !== false &&
       /^(https?|file|ftps?):/.test(url) &&
       /\.user\.(css|less|styl)$/.test(url.split(/[#?]/, 1)[0]) &&
       !oldUrl.startsWith(makeInstallerUrl(url))) {
@@ -126,7 +127,7 @@ async function maybeInstall(tabId, url, oldUrl = '') {
 function maybeInstallByMime({tabId, url, responseHeaders}) {
   const h = responseHeaders.find(_ => _.name.toLowerCase() === kContentType);
   const isText = h && isContentTypeText(h.value);
-  tabMan.set(tabId, isContentTypeText.name, isText);
+  tabMan.set(tabId, MIME, isText);
   if (isText) {
     openInstallerPage(tabId, url, {});
     // Silently suppress navigation.

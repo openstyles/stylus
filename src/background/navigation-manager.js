@@ -1,11 +1,11 @@
 import '@/js/browser';
-import {kAboutBlank} from '@/js/consts';
+import {kAboutBlank, kUrl} from '@/js/consts';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {chromeProtectsNTP} from '@/js/urls';
 import {deepEqual} from '@/js/util';
 import {ignoreChromeError, MF} from '@/js/util-webext';
 import {pingTab, sendTab} from './broadcast';
-import tabCache, * as tabMan from './tab-manager';
+import tabCache from './tab-manager';
 
 /** @type {Set<(data: Object, type: 'committed'|'history'|'hash') => ?>} */
 export const onUrlChange = new Set();
@@ -14,31 +14,22 @@ export const webNavigation = chrome.webNavigation;
 const WEBNAV_FILTER_STYLABLE = {
   url: [{schemes: ['http', 'https', 'file', 'ftp', 'ftps']}],
 };
-const kCommitted = 'committed';
+export const kCommitted = 'committed';
 let prevData = {};
 
-webNavigation.onCommitted.addListener(onNavigation.bind([kCommitted]),
+webNavigation.onCommitted.addListener(onNavigation.bind(null, kCommitted),
   WEBNAV_FILTER_STYLABLE);
-webNavigation.onHistoryStateUpdated.addListener(onFakeNavigation.bind(['history']),
+webNavigation.onHistoryStateUpdated.addListener(onNavigation.bind(null, 'history'),
   WEBNAV_FILTER_STYLABLE);
-webNavigation.onReferenceFragmentUpdated.addListener(onFakeNavigation.bind(['hash']),
+webNavigation.onReferenceFragmentUpdated.addListener(onNavigation.bind(null, 'hash'),
   WEBNAV_FILTER_STYLABLE);
 
-/** @this {string[]} type */
-async function onNavigation(data) {
+async function onNavigation(navType, data) {
   if (CHROME && __.BUILD !== 'firefox' &&
       data.timeStamp === prevData.timeStamp && deepEqual(data, prevData)) {
     return; // Chrome bug: listener is called twice with identical data
   }
   prevData = data;
-  if (this[0] === kCommitted) {
-    const {tabId, frameId} = data;
-    const ids = tabMan.getStyleIds(tabId);
-    if (ids) {
-      if (frameId) delete ids[frameId];
-      else for (const id in ids) delete ids[id];
-    }
-  }
   if (!__.MV3 &&
       CHROME && __.BUILD !== 'firefox' &&
       chromeProtectsNTP &&
@@ -52,19 +43,17 @@ async function onNavigation(data) {
       data.url = url;
     }
   }
-  for (const fn of onUrlChange) fn(data, this[0]);
-}
-
-/** @this {string} type */
-function onFakeNavigation(data) {
-  onNavigation.call(this, data);
   const {tabId} = data;
-  const td = tabCache.get(tabId); if (!td) return;
-  const {url, frameId: f, documentId: d, frameType} = data;
-  const isTop = !frameType && !f || frameType === 'outer_frame';
-  const iid = !__.MV3 && !d && td.iid?.[f];
-  const to = isTop ? undefined : __.MV3 || d ? {documentId: d} : {frameId: f};
-  sendTab(tabId, {method: 'urlChanged', iid, url}, to);
+  const td = tabCache.get(tabId);
+  if (td && navType !== kCommitted) {
+    const {frameId: f, documentId: d, frameType, url} = data;
+    const isTop = !frameType && !f || frameType === 'outer_frame';
+    const oldUrl = td[kUrl]?.[f];
+    if (oldUrl !== url)
+      sendTab(tabId, {method: 'urlChanged', top: isTop, old: oldUrl, url},
+        __.MV3 || d ? {documentId: d} : {frameId: f});
+  }
+  for (const fn of onUrlChange) fn(data, navType);
 }
 
 if (!__.MV3) {
