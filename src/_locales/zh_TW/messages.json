@@ -73,6 +73,9 @@
   "backupMessage": {
     "message": "要匯入備份檔案，請將其拖曳至此頁面或點擊匯入按鈕。\n\n要匯出相容於比 1.5.18 還舊的 Stylus 版本的備份，請右鍵點擊或按住 Shift 然後點擊匯出按鈕。"
   },
+  "backupReminder": {
+    "message": "樣式可能會因為停電、瀏覽器臭蟲、個人錯誤而<b>遺失</b>。<hr><b>備份您的資料：</b>在選項中設定「同步至雲端」，或者每當您進行重大變更時手動按一下匯出按鈕，或者最好使用專用的應用程式設定自動備份所有資料。"
+  },
   "bckpInstStyles": {
     "message": "匯出樣式"
   },
@@ -374,6 +377,9 @@
   },
   "findStylesOnline": {
     "message": "點選以在線上尋找樣式。"
+  },
+  "general": {
+    "message": "一般"
   },
   "genericAdd": {
     "message": "新增"
@@ -853,6 +859,9 @@
   },
   "openOptions": {
     "message": "選項"
+  },
+  "optionCompactWidth": {
+    "message": "精簡使用者介面版面配置的最大視窗寬度（畫素）"
   },
   "optionFOUC": {
     "message": "樣式套用得太晚了嗎？"

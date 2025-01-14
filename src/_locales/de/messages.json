@@ -331,6 +331,9 @@
   "findStylesOnline": {
     "message": "Hier klicken, um online Styles zu suchen."
   },
+  "general": {
+    "message": "Allgemeines"
+  },
   "genericAdd": {
     "message": "Hinzufügen"
   },
@@ -806,6 +809,9 @@
   },
   "openOptions": {
     "message": "Optionen"
+  },
+  "optionCompactWidth": {
+    "message": "Maximale Fensterbreite beim kompakten UI Layout (in Pixeln)"
   },
   "optionFOUC": {
     "message": "Styles zu spät angewendet?"
