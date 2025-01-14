@@ -1,3 +1,4 @@
+import {k_size} from '@/js/consts';
 import {cssFieldSizing} from '@/js/dom';
 import {template} from '@/js/localization';
 import * as newUI from './new-ui';
@@ -9,34 +10,10 @@ export const queue = Object.assign([], {
   styles: new Map(),
 });
 
-export function calcObjSize(obj) {
-  if (obj === true || obj == null) return 4;
-  if (obj === false) return 5;
-  let v = typeof obj;
-  if (v === 'string') return obj.length + 2; // inaccurate but fast
-  if (v === 'number') return (v = obj) >= 0 && v < 10 ? 1 : Math.ceil(Math.log10(v < 0 ? -v : v));
-  if (v !== 'object') return `${obj}`.length;
-  let sum = 1;
-  if (Array.isArray(obj)) for (v of obj) sum += calcObjSize(v) + 1;
-  else for (const k in obj) sum += k.length + 3 + calcObjSize(obj[k]) + 1;
-  return sum;
-}
-
 /** Adding spaces so CSS can detect "bigness" of a value via amount of spaces at the beginning */
 export function padLeft(val, width) {
   val = `${val}`;
   return ' '.repeat(Math.max(0, width - val.length)) + val;
-}
-
-/** Clearing the code to free up some memory */
-export function removeStyleCode(style) {
-  let sum = (style.sourceCode || '').length || 0;
-  style.sections.forEach(s => {
-    sum += (s.code || '').length;
-    s.code = null;
-  });
-  style.sourceCode = null;
-  Object.defineProperty(style, '_codeSize', {value: sum, writable: true}); // non-enumerable!
 }
 
 export function objectDiff(first, second, path = '') {
@@ -79,9 +56,11 @@ export function objectDiff(first, second, path = '') {
 
 export function styleToDummyEntry(style) {
   const name = style.customName || style.name || '';
+  const size = style[k_size];
+  delete style[k_size];
   return {
     styleMeta: style,
-    styleSize: calcObjSize(style) + (style._codeSize || 0),
+    styleSize: size,
     // sort case-insensitively the whole list then sort dupes like `Foo` and `foo` case-sensitively
     styleNameLC: name.toLocaleLowerCase() + '\n' + name,
   };

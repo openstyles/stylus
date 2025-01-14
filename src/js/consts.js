@@ -32,6 +32,7 @@ export const kUrls = 'urls';
 export const k_busy = '_busy';
 export const k_deepCopy = '_deepCopy';
 export const k_msgExec = '_msgExec';
+export const k_size = '_size';
 
 export const CACHE_DB = 'cache';
 export const DB = 'stylish';

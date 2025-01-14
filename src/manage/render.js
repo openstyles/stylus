@@ -7,7 +7,7 @@ import {isEmptyObj, sessionStore, t} from '@/js/util';
 import {filterAndAppend} from './filters';
 import {renderFavs} from './render';
 import * as sorter from './sorter';
-import {installed, newUI, padLeft, removeStyleCode, styleToDummyEntry} from './util';
+import {installed, newUI, padLeft, styleToDummyEntry} from './util';
 
 export * from './render-favs';
 
@@ -110,7 +110,6 @@ export function createStyleElement({styleMeta: style, styleNameLC: nameLC, style
     partOldConfigure.classList.toggle('hidden', !configurable);
     partOldCheckUpdate.classList.toggle('hidden', !updateUrl);
   }
-  removeStyleCode(style);
   // Now that we assigned the parts, we can clone the element
   const entry = partEntry.cloneNode(true);
   entry.id = kStyleIdPrefix + style.id;

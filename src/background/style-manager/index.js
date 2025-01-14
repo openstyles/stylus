@@ -1,7 +1,7 @@
-import {IMPORT_THROTTLE, kUrl, UCD} from '@/js/consts';
+import {IMPORT_THROTTLE, k_size, kUrl, UCD} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '@/js/sections-util';
-import {isEmptyObj, mapObj} from '@/js/util';
+import {calcObjSize, mapObj} from '@/js/util';
 import {broadcast} from '../broadcast';
 import * as colorScheme from '../color-scheme';
 import {bgBusy, bgInit, uuidIndex} from '../common';
@@ -133,11 +133,8 @@ export function getByUrl(url, id = null) {
   // FIXME: do we want to cache this? Who would like to open popup rapidly
   // or search the DB with the same URL?
   const result = [];
-  const styles = id
-    ? [getById(id)].filter(Boolean)
-    : dataMap.values();
   const query = {url};
-  for (const {style} of styles) {
+  for (const {style} of id ? [dataMap.get(id)].filter(Boolean) : dataMap.values()) {
     let empty = true;
     let excluded = false;
     let excludedScheme = false;
@@ -176,31 +173,39 @@ export function getByUrl(url, id = null) {
         included,
         sectionMatched,
         sloppy,
-        style: getCodelessStyles([style.id], true)[0],
+        style: getCore({id: style.id}),
       });
     }
   }
   return result;
 }
 
-export function getCodelessStyles(ids, forPopup) {
+/**
+ * @param {{}} [opts]
+ * @param {number} [opts.id] - process and return only one style
+ * @param {boolean} [opts.code] - include `code` and `sourceCode`
+ * @param {boolean} [opts.sections] - include `sections`
+ * @param {boolean} [opts.vars] - include `usercssData.vars`
+ * @return {StyleObj[] | StyleObj}
+ */
+export function getCore({id, code, sections, size, vars} = {}) {
   const res = [];
-  for (const v of ids || dataMap.values()) {
-    const style = {...(ids ? dataMap.get(v) : v).style};
-    let dst;
-    if (!forPopup) {
-      dst = [];
-      for (let i = 0, src = style.sections; i < src.length; i++) {
-        dst[i] = {...src[i], code: undefined};
-      }
-    } else if (UCD in style) {
-      style[UCD] = {vars: !isEmptyObj(style[UCD].vars) && {foo: 1}};
-    }
-    style.sourceCode = undefined;
-    style.sections = dst;
+  for (let style of id ? [dataMap.get(id)] : dataMap.values()) {
+    style = {...style.style};
+    let tmp;
+    if (size)
+      style[k_size] = calcObjSize(style);
+    if (!code && sections)
+      tmp = style.sections.map(sec => ({...sec, code: undefined}));
+    if (!code || !sections)
+      style.sections = tmp;
+    if (!code)
+      style.sourceCode = undefined;
+    if (!vars && (tmp = style[UCD]))
+      style[UCD] = {...tmp, vars: Object.keys(tmp.vars || {}).length ? {foo: 1} : undefined};
     res.push(style);
   }
-  return res;
+  return id ? res[0] : res;
 }
 
 /** @returns {string | {[remoteId:string]: styleId}}>} */

@@ -11,7 +11,7 @@ import {filterAndAppend, showFiltersStats} from './filters';
 import {createStyleElement, createTargetsElement, renderFavs, updateTotal} from './render';
 import * as sorter from './sorter';
 import {checkUpdate, handleUpdateInstalled} from './updater-ui';
-import {installed, newUI, objectDiff, queue, removeStyleCode, styleToDummyEntry} from './util';
+import {installed, newUI, objectDiff, queue, styleToDummyEntry} from './util';
 
 for (const a of $$('#header a[href^="http"]')) a.onclick = openLink;
 installed.on('click', onEntryClicked);
@@ -202,7 +202,6 @@ function handleUpdate(style, {reason, method} = {}) {
   renderFavs(entry);
 
   function handleToggledOrCodeOnly() {
-    removeStyleCode(style);
     const diff = objectDiff(oldEntry.styleMeta, style)
       .filter(({key, path}) => path || !/^_|(Date|Digest|Md5)$/.test(key));
     if (diff.length === 0) {
@@ -222,7 +221,7 @@ function handleUpdate(style, {reason, method} = {}) {
 }
 
 async function handleUpdateForId(id, opts) {
-  handleUpdate(await API.styles.get(id), opts);
+  handleUpdate(await API.styles.getCore({id, sections: true, size: true}), opts);
 }
 
 export function handleVisibilityChange(e) {

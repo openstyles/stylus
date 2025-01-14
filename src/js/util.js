@@ -72,6 +72,19 @@ export const makePropertyPopProxy = data => new Proxy(data, {
   )),
 });
 
+export function calcObjSize(obj) {
+  if (obj === true || obj == null) return 4;
+  if (obj === false) return 5;
+  let v = typeof obj;
+  if (v === 'string') return obj.length + 2; // inaccurate but fast
+  if (v === 'number') return (v = obj) >= 0 && v < 10 ? 1 : Math.ceil(Math.log10(v < 0 ? -v : v));
+  if (v !== 'object') return `${obj}`.length;
+  let sum = 1;
+  if (Array.isArray(obj)) for (v of obj) sum += calcObjSize(v) + 1;
+  else for (const k in obj) sum += k.length + 3 + calcObjSize(obj[k]) + 1;
+  return sum;
+}
+
 export function isEmptyObj(obj) {
   if (obj) {
     for (const k in obj) {

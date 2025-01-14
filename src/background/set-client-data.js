@@ -45,7 +45,7 @@ const PROVIDERS = {
           query,
           mode: sp.get('searchMode') || prefs.__values['manage.searchMode'],
         }),
-      styles: __.MV3 ? styleMan.getCodelessStyles() : styleMan.getAll(),
+      styles: __.MV3 ? styleMan.getCore({sections: true, size: true}) : styleMan.getAll(),
       sync: syncMan.getStatus(true),
     };
   },

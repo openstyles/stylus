@@ -39,11 +39,11 @@ async function handleExternalUpdate({style, reason}) {
     editor.updateMeta();
     return;
   }
-  style = await API.styles.get(style.id);
+  style = await API.styles.getCore({id: style.id, vars: true});
   if (reason === 'config') {
-    for (const key in editor.style) if (!(key in style)) delete editor.style[key];
-    delete style.sourceCode;
-    delete style.sections;
+    for (const key in editor.style)
+      if (key !== 'sourceCode' && key !== 'sections' && !(key in style))
+        delete editor.style[key];
     delete style.name;
     delete style.enabled;
     Object.assign(editor.style, style);

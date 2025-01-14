@@ -127,11 +127,9 @@ export default async function configDialog(style) {
     if (!vars.some(va => va.dirty || anyChangeIsDirty && va.value !== va.savedValue)) {
       return;
     }
-    const bgStyle = style.id && await API.styles.get(style.id).catch(() => ({}));
-    style = style.sections ? Object.assign({}, style) : style;
+    const bgStyle = style.id &&
+      await API.styles.getCore({id: style.id, vars: true}).catch(() => ({}));
     style.enabled = true;
-    style.sourceCode = null;
-    style.sections = null;
     const styleVars = style[UCD].vars;
     const bgVars = !style.id ? styleVars : bgStyle[UCD]?.vars || {};
     const invalid = [];
