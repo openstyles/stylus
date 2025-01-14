@@ -73,7 +73,7 @@ async function uswSave(style, _usw) {
   const {id} = style;
   if (_usw) style._usw = _usw;
   else _usw = style._usw;
-  await styleMan.save(style, {broadcast: false});
+  await styleMan.save(style, false);
   broadcastExtension({method: 'uswData', style: {id, _usw}});
 }
 
