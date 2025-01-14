@@ -154,23 +154,22 @@ function filterOnChange({target, forceRefilter, alreadySearched}) {
 
 export function filterAndAppend({entry, container}) {
   if (!container) {
-    container = [entry];
-    // reverse the visibility, otherwise reapplyFilter will see no need to work
-    if (!filtersSelector.hide || !entry.matches(filtersSelector.hide)) {
-      entry.classList.add('hidden');
-    }
     fitNameColumn(undefined, entry.styleMeta);
     fitSizeColumn(undefined, entry);
   }
-  return reapplyFilter(container);
+  return reapplyFilter(container || [entry], undefined, entry);
 }
 
 /**
  * @returns {Promise} resolves on async search
  */
-async function reapplyFilter(container = installed, alreadySearched) {
+async function reapplyFilter(container = installed, alreadySearched, entry) {
   if (!alreadySearched && elSearch.value.trim()) {
     await searchStyles({immediately: true, container});
+  }
+  // reverse the visibility, otherwise reapplyFilter will see no need to work
+  if (entry && (!filtersSelector.hide || !entry.matches(filtersSelector.hide))) {
+    entry.classList.add('hidden');
   }
   // A: show
   let toHide = [];
@@ -186,7 +185,7 @@ async function reapplyFilter(container = installed, alreadySearched) {
     return;
   }
   // filtering needed or a single-element job from handleUpdate()
-  for (const entry of toUnhide.children || toUnhide) {
+  for (entry of toUnhide.children || toUnhide) {
     if (!entry.parentNode) {
       installed.appendChild(entry);
     }
@@ -202,7 +201,7 @@ async function reapplyFilter(container = installed, alreadySearched) {
     showFiltersStats();
     return;
   }
-  for (const entry of toHide) {
+  for (entry of toHide) {
     entry.classList.add('hidden');
   }
   // showStyles() is building the page with filters active so we need to:
