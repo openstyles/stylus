@@ -81,7 +81,7 @@ addEventListener(kPageShow, onBFCache);
 async function init() {
   if (isUnstylable) return API.styleViaAPI({method: 'styleApply'});
   let data;
-  if (__.ENTRY && (data = global.clientData)) {
+  if (__.ENTRY && (data = global[__.CLIENT_DATA])) {
     data = (/**@type{StylusClientData}*/__.MV3 ? data : await data).apply;
   } else {
     data = isFrameNoUrl && !FF && clone(parent[parent.Symbol.for(SYM_ID)]);
@@ -90,11 +90,11 @@ async function init() {
     // XML in Chrome will be auto-converted to html later, so we can't style it via XHR now
   }
   if (!chrome.runtime.id) return selfDestruct();
-  await applyStyles(data);
+  await applyStyles(data, true);
 }
 
-async function applyStyles(data) {
-  if (!data) data = await API.styles.getSectionsByUrl(matchUrl, null, !own.sections);
+async function applyStyles(data, isInitial = !own.sections) {
+  if (!data) data = await API.styles.getSectionsByUrl(matchUrl, null, isInitial);
   if (!data.cfg) data.cfg = own.cfg;
   Object.assign(own, window[Symbol.for(SYM_ID)] = data);
   if (!isFrame && own.cfg.top === '') own.cfg.top = location.origin; // used by child frames via parentStyles
@@ -229,7 +229,7 @@ function updateCount() {
 
 function onFrameElementInView(cb) {
   parent[parent.Symbol.for('xo')](frameElement, cb);
-  (offscreen || (offscreen = [])).push(cb);
+  (offscreen ??= []).push(cb);
 }
 
 /** @param {IntersectionObserverEntry[]} entries */
@@ -247,7 +247,7 @@ function onBFCache(e) {
   if (!chrome.runtime.id) return selfDestruct();
   if (e.isTrusted && e.persisted) {
     throttledCount = '';
-    updateCount();
+    init(); // styles may have been toggled while we were in bfcache
   }
 }
 
