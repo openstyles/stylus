@@ -10,8 +10,6 @@ import {buildCacheForStyle} from './cache-builder';
 
 /** @type {StyleDataMap} */
 export const dataMap = new Map();
-/** @returns {StyleDataMapEntry|void} */
-export const id2data = dataMap.get.bind(dataMap);
 
 const INJ_ORDER = 'injectionOrder';
 export const order = /** @type {Injection.Order} */{main: {}, prio: {}};

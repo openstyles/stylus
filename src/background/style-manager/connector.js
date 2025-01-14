@@ -1,7 +1,7 @@
 import {kResolve} from '@/js/consts';
 import {onConnect, onDisconnect} from '@/js/msg';
 import {draftsDb} from '../db';
-import {broadcastStyleUpdated, id2data} from './util';
+import {broadcastStyleUpdated, dataMap} from './util';
 
 // Using ports to reliably track when the client is closed, however not for messaging,
 // because our `API` is much faster due to direct invocation.
@@ -24,7 +24,7 @@ function onDraftEnd(port) {
 function onPreviewEnd(port) {
   port[kResolve]();
   const id = +port.name.split(':')[1];
-  const data = id2data(id);
+  const data = dataMap.get(id);
   if (!data) return;
   data.preview = null;
   broadcastStyleUpdated(data.style, 'editPreviewEnd');

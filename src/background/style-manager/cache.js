@@ -36,7 +36,7 @@ export async function loadOne(url) {
   const val = await cacheDB.get(url);
   if (val) {
     cache.set(url, hit(val));
-    const styleIds = Object.keys(ensureSections(val)).map(Number);
+    const styleIds = Object.keys(val.sections ??= {}).map(Number);
     const styles = styleIds.length ? await styleDB.getMany(styleIds) : [];
     for (const style of styles) {
       if (!style || !make(val, style)) {
@@ -62,26 +62,17 @@ export async function loadAll() {
 export function hydrate(dataMap) {
   const toDel = [];
   for (const val of cache.values()) {
-    try {
-      for (const id in ensureSections(val)) {
-        const data = dataMap.get(+id);
-        if (!data || !make(val, data.style)) {
-          toDel.push(val);
-          break;
-        }
+    for (const id in (val.sections ??= {})) {
+      const data = dataMap.get(+id);
+      if (!data || !make(val, data.style)) {
+        toDel.push(val);
+        break;
+      } else {
+        data.appliesTo.add(val.url);
       }
-    } catch (e) {
-      toDel.push(val);
-      console.error(e, val);
     }
   }
   if (toDel[0]) del(toDel);
-}
-
-/** @param {MatchCache.DbEntry}
- * @return {Object} */
-export function ensureSections(entry) {
-  return (entry.sections ??= {});
 }
 
 /**
@@ -166,7 +157,7 @@ function flush() {
 
 /** @return {Promise<void>} */
 async function flushLater() {
-  const delay = bgBusy ? 5000/*to let the browser settle down on startup*/ : 1000;
+  const delay = bgBusy ? 5000/*to let the browser settle down on startup*/ : 50;
   if (bgBusy) await bgBusy; // bgBusy will be null after await
   setTimeout(flush, delay);
 }

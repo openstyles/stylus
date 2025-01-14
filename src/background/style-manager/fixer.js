@@ -1,9 +1,10 @@
 import {UCD} from '@/js/consts';
 import * as URLS from '@/js/urls';
 import {isEmptyObj} from '@/js/util';
-import * as usercssMan from '../usercss-manager';
 import * as syncMan from '../sync-manager';
-import {broadcastStyleUpdated, id2data, storeInMap} from './util';
+import * as usercssMan from '../usercss-manager';
+import {buildCacheForStyle} from './cache-builder';
+import {broadcastStyleUpdated, dataMap, storeInMap} from './util';
 
 /** uuidv4 helper: converts to a 4-digit hex string and adds "-" at required positions */
 const hex4 = num => (num < 0x1000 ? num + 0x10000 : num).toString(16).slice(-4);
@@ -124,15 +125,19 @@ export function onBeforeSave(style) {
  */
 export function onSaved(style, reason, id = style.id) {
   if (style.id == null) style.id = id;
-  const data = id2data(id);
+  const data = dataMap.get(id);
   if (!data) {
     storeInMap(style);
   } else {
     data.style = style;
   }
+  if (reason !== false) {
+    broadcastStyleUpdated(style, reason, !data);
+  } else {
+    buildCacheForStyle(style);
+  }
   if (reason !== 'sync') {
     syncMan.putDoc(style);
   }
-  if (reason !== false) broadcastStyleUpdated(style, reason, !data);
   return style;
 }

@@ -1,28 +1,28 @@
 import {styleCodeEmpty} from '@/js/sections-util';
 import cacheData, * as styleCache from './cache';
 import {urlMatchSection, urlMatchStyle} from './matcher';
-import {dataMap, id2data} from './util';
+import {dataMap} from './util';
 
 /** @param {StyleObj} style
  * @return {void} */
 export function buildCacheForStyle(style) {
   const {id} = style;
-  const data = id2data(id);
+  const data = dataMap.get(id);
   // FIXME: ideally, when preview is available, there is no need to rebuild the cache when original style change.
   // we should lift this logic to parent function.
   const styleToApply = data.preview || style;
-  const excluded = new Set();
   const updated = new Set();
   for (const cache of cacheData.values()) {
-    let code;
     const url = cache.url;
     if (!data.appliesTo.has(url)) {
       (cache.maybeMatch ??= new Set()).add(id);
-    } else if ((code = getAppliedCode({url}, styleToApply))) {
+      continue;
+    }
+    const code = getAppliedCode({url}, styleToApply);
+    if (code) {
       updated.add(url);
       buildCacheEntry(cache, styleToApply, code);
     } else if (cache.sections[id]) {
-      excluded.add(url);
       delete cache.sections[id];
     } else {
       continue;
@@ -35,11 +35,10 @@ export function buildCacheForStyle(style) {
 /**
  * @param {MatchCache.Entry} cache
  * @param {string} url
- * @param {Iterable<number>} ids
+ * @param {Iterable<number>} [ids]
  * @return {void} */
 export function buildCache(cache, url, ids) {
   const query = {url};
-  let hit;
   for (let data of ids || dataMap.values()) {
     if (ids && !(data = dataMap.get(data)))
       continue;
@@ -49,10 +48,8 @@ export function buildCache(cache, url, ids) {
     if (code) {
       buildCacheEntry(cache, style, code);
       data.appliesTo.add(url);
-      hit = true;
     }
   }
-  if (hit) styleCache.hit(cache);
 }
 
 /**

@@ -17,7 +17,7 @@ import './connector';
 import {fixKnownProblems, onBeforeSave, onSaved} from './fixer';
 import {urlMatchSection, urlMatchStyle} from './matcher';
 import {
-  broadcastStyleUpdated, calcRemoteId, dataMap, getById, getByUuid, id2data,
+  broadcastStyleUpdated, calcRemoteId, dataMap, getById, getByUuid,
   mergeWithMapped, order, orderWrap, setOrderImpl, storeInMap,
 } from './util';
 
@@ -246,17 +246,16 @@ export function getSectionsByUrl(url, id, isInitialApply) {
        TODO: if FF will do the same, this won't work as is: FF reports onCommitted too late */
     url = td[kUrl]?.[0] || url;
   }
+  let res;
   let cache = styleCache.get(url);
   if (!cache) {
-    cache = {
-      url,
-      sections: {},
-    };
+    cache = {url, sections: {}};
+    styleCache.add(cache);
     buildCache(cache, url);
-  } else if (cache.maybeMatch) {
-    buildCache(cache, url, cache.maybeMatch);
+  } else if ((res = cache.maybeMatch)) {
+    buildCache(cache, url, res);
   }
-  let res = cache.sections;
+  res = cache.sections;
   return {
     cfg,
     sections: id
@@ -317,7 +316,7 @@ export async function preview(style) {
     delete res.style.enabled;
     Object.assign(style, res.style);
   }
-  id2data(style.id).preview = style;
+  dataMap.get(style.id).preview = style;
   broadcastStyleUpdated(style, 'editPreview');
   return res.log;
 }
