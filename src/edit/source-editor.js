@@ -27,9 +27,13 @@ export default function SourceEditor() {
   `.replace(/^\s+/gm, '');
   let savedGeneration;
   let prevMode = NaN;
+  let prevSel;
   /** @type {MozSectionFinder} */
   let sectionFinder;
   let sectionWidget;
+  /** @type {MozSection[]} */
+  let mozSections;
+  let updateTocFocusPending;
 
   $$remove('.sectioned-only');
   $id('header').on('wheel', headerOnScroll);
@@ -37,6 +41,7 @@ export default function SourceEditor() {
   $id('sections').appendChild($create('.single-editor'));
   $id('save-button').on('split-btn', saveTemplate);
 
+  const cmpPos = CodeMirror.cmpPos;
   const cm = cmFactory.create($('.single-editor'), {
     value: style.id ? style.sourceCode : setupNewStyle(editor.template),
     finishInit(me) {
@@ -46,16 +51,17 @@ export default function SourceEditor() {
       editor.viewTo = si.viewTo;
       sectionFinder = MozSectionFinder(me);
       sectionWidget = MozSectionWidget(me, sectionFinder);
-      editor.sections = sectionFinder.sections;
+      mozSections = editor.sections = sectionFinder.sections;
+      prevSel = me.doc.sel;
       prefs.subscribe([kToc, kWidget], (k, val) => {
-        sectionFinder.onOff(editor.updateToc, prefs.__values[kToc] || prefs.__values[kWidget]);
+        sectionFinder.onOff(updateToc, prefs.__values[kToc] || prefs.__values[kWidget]);
         if (k === kWidget) sectionWidget.toggle(val);
+        if (k === kToc) me[val ? 'on' : 'off']('cursorActivity', onCursorActivity);
       }, true);
       Object.assign(me.curOp, si.scroll);
       editor.viewTo = 0;
     },
   });
-  const cmpPos = CodeMirror.cmpPos;
   const metaCompiler = createMetaCompiler(meta => {
     const {vars} = style[UCD] || {};
     if (vars) {
@@ -294,16 +300,15 @@ export default function SourceEditor() {
     // ensure the data is ready in case the user wants to jump around a lot in a large style
     sectionFinder.keepAliveFor(nextPrevSection, 10e3);
     sectionFinder.updatePositions();
-    const {sections} = sectionFinder;
-    const num = sections.length;
+    const num = mozSections.length;
     if (!num) return;
     dir = dir < 0 ? -1 : 0;
     const pos = cm.getCursor();
-    let i = sections.findIndex(sec => CodeMirror.cmpPos(sec.start, pos) > Math.min(dir, 0));
-    if (i < 0 && (!dir || CodeMirror.cmpPos(sections[num - 1].start, pos) < 0)) {
+    let i = mozSections.findIndex(sec => CodeMirror.cmpPos(sec.start, pos) > Math.min(dir, 0));
+    if (i < 0 && (!dir || CodeMirror.cmpPos(mozSections[num - 1].start, pos) < 0)) {
       i = 0;
     }
-    cm.jumpToPos(sections[(i + dir + num) % num].start);
+    cm.jumpToPos(mozSections[(i + dir + num) % num].start);
   }
 
   function headerOnScroll({target, deltaY, deltaMode, shiftKey}) {
@@ -401,5 +406,40 @@ export default function SourceEditor() {
       done(prevRes);
       return prevRes;
     }
+  }
+
+  function onCursorActivity() {
+    if (prevSel !== cm.doc.sel) {
+      prevSel = cm.doc.sel;
+      updateTocFocusPending ??= Promise.resolve().then(updateTocFocus);
+    }
+  }
+
+  function updateToc(...args) {
+    editor.updateToc(...args);
+    updateTocFocus();
+  }
+
+  function updateTocFocus() {
+    updateTocFocusPending = null;
+    const pos = prevSel.ranges[0].head;
+    const toc = editor.toc;
+    let end = mozSections.length;
+    let a = 0;
+    let b = end--;
+    let c = pos.line && Math.min(toc.i ?? (a + b) >> 1, end);
+    let c0, sec;
+    while (a < b && c0 !== c) {
+      sec = mozSections[c];
+      if (cmpPos(sec.start, pos) > 0)
+        b = c;
+      else if (c < end && cmpPos(mozSections[c + 1].start, pos) <= 0)
+        a = c;
+      else
+        return c !== toc.i && editor.updateToc({focus: true, 0: sec});
+      c0 = c;
+      c = (a + b) >> 1;
+    }
+    toc.el.$('.' + toc.cls)?.classList.remove(toc.cls);
   }
 }

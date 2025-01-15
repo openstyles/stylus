@@ -8,6 +8,7 @@ const dirty = DirtyReporter();
 /** @type {Set<HTMLInputElement>} */
 const regexps = new Set();
 const toc = [];
+toc.cls = 'current';
 
 let style;
 let wasDirty = false;
@@ -37,6 +38,7 @@ const editor = self.editor = {
   set style(val) {
     style = val;
   },
+  toc,
 
   applyScrollInfo(cm, si = editor.scrollInfo.cms?.[0]) {
     if (si && si.sel) {
@@ -174,7 +176,8 @@ const editor = self.editor = {
       toc.length--;
     }
     if (added.focus) {
-      const cls = 'current';
+      toc.i = first;
+      const cls = toc.cls;
       const old = toc.el.$('.' + cls);
       const el = elFirst || toc.el.children[first];
       if (old && old !== el) old.classList.remove(cls);

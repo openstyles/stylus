@@ -169,7 +169,8 @@ export default function MozSectionFinder(cm) {
     }
     if (op) {
       sections.splice(cutAt, cutTo - cutAt, ...added);
-      listeners.forEach(fn => fn(added, removed, cutAt, cutTo));
+      for (const fn of listeners)
+        fn.call(cm, added, removed, cutAt, cutTo);
     }
     if (op === true) {
       cm.endOperation();

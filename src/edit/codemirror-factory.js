@@ -20,7 +20,7 @@ const cmFactory = {
   /**
    * @param {HTMLElement | ((host: HTMLElement) => void)} place
    * @param {CodeMirror.EditorConfiguration} [options]
-   * @return {CodeMirror.Editor}
+   * @return {CodeMirror.Editor & {doc: CodeMirror.Doc}}
    */
   create(place, options) {
     const cm = CodeMirror(place, options);
