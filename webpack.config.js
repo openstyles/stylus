@@ -111,7 +111,7 @@ const addWrapper = (banner = INTRO + ';', footer = '}', test = /\.js$/) => [
   new webpack.BannerPlugin({raw: true, test, banner}),
   new webpack.BannerPlugin({raw: true, test, banner: footer, footer: true}),
 ];
-const getTerserOptions = (cm, ovr = {mangle: !!cm}) => ({
+const getTerserOptions = (cm, ovr) => ({
   [cm ? 'include' : 'exclude']: /node_modules|codemirror(?!-factory)/,
   extractComments: false,
   terserOptions: {
@@ -129,7 +129,12 @@ const getTerserOptions = (cm, ovr = {mangle: !!cm}) => ({
       comments: false,
       wrap_func_args: false,
     },
-    ...ovr,
+    ...ovr ?? {
+      mangle: !!cm || {
+        reserved: new Set(),
+        keep_classnames: true,
+      },
+    },
   },
 });
 const tersers = {};

@@ -33,6 +33,8 @@ const MakeNamespaceObjectRuntimeModule =
 const rxVar = /\b__\.([$_A-Z][$_A-Z\d]*)\b/g;
 /** Patching (0,module.export) */
 const rxCall = /^\(0,([$\w]+\.[$\w]+)\)$/;
+const rxUnmangled = /\b[$a-z]\w{2,}\b/gi;
+const MANGLE = ['document', 'global', 'window', 'moduleId', 'cachedModule'];
 const STAGE = (/**@type {typeof import('webpack/types').Compilation}*/webpack.Compilation)
   .PROCESS_ASSETS_STAGE_OPTIMIZE_COMPATIBILITY;
 const NAME = __filename.slice(__dirname.length + 1).replace(/\.\w+$/, '');
@@ -59,6 +61,9 @@ class RawEnvPlugin {
       for (const [k, v] of Object.entries(this.vars)) map[k] = JSON.stringify(v);
       for (const [k, v] of Object.entries(this.raws)) map[k] = v;
       if (this !== actor) return;
+      const [reserved] = compilation.options.optimization.minimizer
+        .map(m => m.options.minimizer.options.mangle?.reserved)
+        .filter(Boolean);
       compilation.hooks.processAssets.tap({name: NAME, stage: STAGE}, assets => {
         for (const assetName in assets) {
           if (!assetName.endsWith('.js')
@@ -67,6 +72,11 @@ class RawEnvPlugin {
           }
           const assetSource = assets[assetName];
           const str = assetSource.source();
+          if (reserved) {
+            `${str}`.split('function __webpack_require__')[0].match(rxUnmangled)
+              .forEach(reserved.add, reserved);
+            MANGLE.forEach(reserved.delete, reserved);
+          }
           let replacer;
           for (let m, val; (m = rxVar.exec(str));) {
             if ((val = map[m[1]]) != null) {
