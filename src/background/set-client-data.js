@@ -75,8 +75,8 @@ export default async function setClientData({
   dark: pageDark,
   url: pageUrl,
 } = {}) {
-  if (bgBusy) await bgBusy;
   setSystemDark(pageDark);
+  if (bgBusy) await bgBusy;
   const url = new URL(pageUrl);
   const page = url.pathname.slice(1/*"/"*/, -5/*".html"*/);
   const jobs = /** @namespace StylusClientData */ Object.assign({

@@ -28,6 +28,12 @@ const kShowBadge = 'show-badge';
 let hasCanvas = FIREFOX_ANDROID ? false : null;
 
 bgInit.push(initIcons);
+colorScheme.onChange(() => {
+  if (__prefs[kIconset] === -1) {
+    debounce(refreshGlobalIcon);
+    debounce(refreshAllIcons);
+  }
+});
 
 export async function refreshIconsWhenReady() {
   if (bgBusy) {
@@ -38,11 +44,6 @@ export async function refreshIconsWhenReady() {
 }
 
 function initIcons(runNow = !__.MV3) {
-  colorScheme.onChange(() => {
-    if (__prefs[kIconset] === -1) {
-      debounce(refreshGlobalIcon);
-    }
-  }, runNow);
   subscribe([
     kDisableAll,
     kBadgeDisabled,

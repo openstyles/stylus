@@ -34,14 +34,12 @@ bgInit.push(async () => {
   __.DEBUGLOG('styleMan init done');
 });
 
-bgBusy.then(() => {
-  colorScheme.onChange(() => {
-    for (const {style} of dataMap.values()) {
-      if (colorScheme.SCHEMES.includes(style.preferScheme)) {
-        broadcastStyleUpdated(style, 'colorScheme');
-      }
+colorScheme.onChange(() => {
+  for (const {style} of dataMap.values()) {
+    if (colorScheme.SCHEMES.includes(style.preferScheme)) {
+      broadcastStyleUpdated(style, 'colorScheme');
     }
-  }, !__.MV3);
+  }
 });
 
 styleCache.setOnDeleted(val => {

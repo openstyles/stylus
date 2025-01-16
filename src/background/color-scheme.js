@@ -1,9 +1,9 @@
-import {kDark, kStyleViaXhr} from '@/js/consts';
+import {BIT_DARK, BIT_SYS_DARK, kDark, kStyleViaXhr} from '@/js/consts';
 import {CLIENT} from '@/js/port';
 import * as prefs from '@/js/prefs';
 import {debounce, isCssDarkScheme} from '@/js/util';
 import {broadcastExtension} from './broadcast';
-import {bgBusy, bgPreInit} from './common';
+import {bgBusy, bgPreInit, clientDataJobs} from './common';
 import {stateDB} from './db';
 import offscreen from './offscreen';
 
@@ -31,23 +31,35 @@ export const refreshSystemDark = () => !__.MV3
 export const setSystemDark = update.bind(null, kSystem);
 export let isDark = null;
 let prefState;
+let saved;
+let notified;
+let timer;
 
 chrome.alarms.onAlarm.addListener(onAlarm);
 
 if (__.MV3) {
-  bgPreInit.push(stateDB.get(kDark).then(setSystemDark));
-  prefs.subscribe([kSTATE, kStyleViaXhr], (key, val, init) => {
+  bgPreInit.push(stateDB.get(kDark).then(val => {
+    __.DEBUGLOG('colorScheme stateDB', val);
+    saved = +val;
+    if (typeof val === 'number') {
+      notified = isDark = !!(val & BIT_DARK);
+      map[kSystem] ??= !!(val & BIT_SYS_DARK); // e.g. clientDataJob did it
+      update();
+    }
+  }));
+  bgBusy.then(() => setTimeout(() => prefs.subscribe([kSTATE, kStyleViaXhr], (key, val, init) => {
     if (init && key !== kStyleViaXhr) // only process the last one on init
       return;
     val = prefs.__values[kSTATE] === kSystem || prefs.__values[kStyleViaXhr];
     if (val || offscreen[CLIENT])
       offscreen.keepAlive(val);
-  }, true);
+  }, true), clientDataJobs.size ? 50/*let the client page load first*/ : 0));
 } else {
   refreshSystemDark();
 }
 
 prefs.subscribe(kSTATE, (_, val) => {
+  __.DEBUGLOG('colorScheme pref', val);
   prefState = val;
   if (val === kTime) {
     prefs.subscribe([kSTART, kEND], onNightChanged, true);
@@ -59,12 +71,8 @@ prefs.subscribe(kSTATE, (_, val) => {
   update();
 }, true);
 
-export function onChange(listener, runNow) {
+export function onChange(listener) {
   changeListeners.add(listener);
-  if (runNow) {
-    if (prefState) listener(isDark);
-    else prefs.ready.then(() => listener(isDark));
-  }
 }
 
 /** @param {StyleObj} _ */
@@ -118,16 +126,33 @@ function updateTimePreferDark() {
 }
 
 function update(type, val) {
+  __.DEBUGLOG('colorScheme update', type, val);
   if (type) {
     if (map[type] === val) return;
     if (__.MV3 && type === kSystem)
-      stateDB.put(val, kDark);
+      timer ??= setTimeout(writeState);
     map[type] = val;
+    if (!prefState) return; // setClientData woke SW up, still starting
   }
   val = map[prefState];
   if (isDark !== val) {
     isDark = val;
-    if (!bgBusy) broadcastExtension({method: 'colorScheme', value: isDark});
-    for (const fn of changeListeners) fn(isDark);
+    if (isDark !== notified && saved != null)
+      notify();
   }
+}
+
+function notify() {
+  __.DEBUGLOG('colorScheme notify', isDark);
+  notified = isDark;
+  broadcastExtension({method: 'colorScheme', value: isDark});
+  for (const fn of changeListeners) fn(isDark);
+}
+
+async function writeState() {
+  if (bgBusy) await bgBusy;
+  const val = (isDark ? BIT_DARK : 0) + (map[kSystem] ? BIT_SYS_DARK : 0);
+  if (saved !== val)
+    stateDB.put(saved = val, kDark);
+  timer = null;
 }

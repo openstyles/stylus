@@ -40,8 +40,9 @@ global.onfetch = evt => {
     const sp = new URL(url).searchParams;
     const dark = !!+sp.get('dark');
     const pageUrl = sp.get('url');
-    const job = clientDataJobs[pageUrl] = setClientData({dark, url: pageUrl});
-    job.finally(() => delete clientDataJobs[pageUrl]);
+    const job = setClientData({dark, url: pageUrl});
+    clientDataJobs.set(pageUrl, job);
+    job.finally(() => clientDataJobs.delete(pageUrl));
     evt.respondWith(job);
   } else if (/\.user.css#(\d+)$/.test(url)) {
     evt.respondWith(Response.redirect('edit.html?id=' + RegExp.$1));
@@ -62,9 +63,7 @@ cloudDrive.webdav = async cfg => {
  * This ensures that SW starts even before our page makes a clientData request inside.
  * The actual listener is usually invoked after `onfetch`, but there's no guarantee.
  */
-chrome.webRequest.onBeforeRequest.addListener(req => {
-  clientDataJobs[req.url] = true;
-}, {
+chrome.webRequest.onBeforeRequest.addListener(() => {}, {
   urls: [ownRoot + '*.html*'],
   types: [kMainFrame, kSubFrame],
 });

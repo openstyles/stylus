@@ -14,7 +14,7 @@ const getWorkerPortFromClient = async () => {
   __.DEBUGPORT('sw -> worker -> offscreen client', offscreen[CLIENT]);
   if (!offscreen[CLIENT]) {
     for (const client of await getWindowClients()) {
-      if (!clientDataJobs[client.url]) {
+      if (!clientDataJobs.has(client.url)) {
         __.DEBUGPORT('sw -> worker -> client', client);
         proxy = createPortProxy(client, {once: true});
         break;

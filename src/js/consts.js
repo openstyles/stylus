@@ -39,3 +39,6 @@ export const DB = 'stylish';
 export const STATE_DB = 'state';
 
 export const IMPORT_THROTTLE = 100; //ms
+
+export const BIT_DARK = 1;
+export const BIT_SYS_DARK = 2;

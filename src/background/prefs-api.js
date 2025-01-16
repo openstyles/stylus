@@ -32,6 +32,7 @@ export default {
 };
 
 bgPreInit.push(chromeSync.getValue(prefs.STORAGE_KEY).then(orig => {
+  __.DEBUGLOG('prefsApi', orig);
   prefs.ready.set(isObject(orig) ? deepMerge(orig) : {}, {});
   if (!deepEqual(orig, nondefaults)) bgBusy.then(updateStorage);
   return prefs.ready;

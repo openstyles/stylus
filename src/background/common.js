@@ -5,7 +5,8 @@ import {browserWindows} from '@/js/util-webext';
 /** Minimal init for a wake-up event */
 export const bgPreInit = [];
 export const bgInit = [];
-export const clientDataJobs = {};
+/** @type {Map<string,Promise>} */
+export const clientDataJobs = __.MV3 && new Map();
 
 /** Temporary storage for data needed elsewhere e.g. in a content script */
 export const dataHub = {

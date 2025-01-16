@@ -15,8 +15,8 @@ const INJECTOR_CONFIG_MAP = {
 
 bgBusy.then(() => {
   prefs.subscribe(Object.keys(INJECTOR_CONFIG_MAP), broadcastInjectorConfig);
-  colorScheme.onChange(broadcastInjectorConfig.bind(null, 'dark'));
 });
+colorScheme.onChange(broadcastInjectorConfig.bind(null, 'dark'));
 
 export default function broadcastInjectorConfig(key, val) {
   key = INJECTOR_CONFIG_MAP[key] || key;
