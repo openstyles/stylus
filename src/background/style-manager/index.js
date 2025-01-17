@@ -1,11 +1,12 @@
-import {IMPORT_THROTTLE, k_size, kStyleViaXhr, kUrl, UCD} from '@/js/consts';
+import {DB, IMPORT_THROTTLE, k_size, kInjectionOrder, kStyleViaXhr, kUrl, UCD} from '@/js/consts';
+import {STORAGE_KEY} from '@/js/prefs';
 import * as prefs from '@/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '@/js/sections-util';
 import {calcObjSize, mapObj} from '@/js/util';
 import {broadcast} from '../broadcast';
 import * as colorScheme from '../color-scheme';
 import {bgBusy, bgInit, onSchemeChange, uuidIndex} from '../common';
-import {db, draftsDB, prefsDB} from '../db';
+import {db, draftsDB, execMirror, prefsDB} from '../db';
 import * as syncMan from '../sync-manager';
 import tabCache from '../tab-manager';
 import {getUrlOrigin} from '../tab-util';
@@ -23,13 +24,18 @@ import {
 
 bgInit.push(async () => {
   __.DEBUGLOG('styleMan init...');
-  const [orderFromDb, styles = []] = await Promise.all([
-    prefsDB.get(orderWrap.id),
+  let mirrored;
+  let [orderFromDb, styles] = await Promise.all([
+    prefsDB.get(kInjectionOrder),
     db.getAll(),
     styleCache.loadAll(),
   ]);
+  if (!orderFromDb)
+    orderFromDb = await execMirror(STORAGE_KEY, 'get', kInjectionOrder);
+  if (!styles[0])
+    styles = mirrored = await execMirror(DB, 'getAll');
   setOrderImpl(orderFromDb, {store: false});
-  initStyleMap(styles);
+  initStyleMap(styles, mirrored);
   styleCache.hydrate(dataMap);
   __.DEBUGLOG('styleMan init done');
 });
@@ -51,27 +57,38 @@ styleCache.setOnDeleted(val => {
 export * from '../style-search-db';
 export {getById as get};
 
-function initStyleMap(styles) {
-  let fixed, lost;
-  for (const style of styles) {
+async function initStyleMap(styles, mirrored) {
+  let fix, fixed, lost, i, style, len;
+  for (i = 0, len = 0, style; i < styles.length; i++) {
+    style = styles[i];
     if (+style.id > 0
     && typeof style._id === 'string'
     && typeof style.sections?.[0]?.code === 'string') {
       storeInMap(style);
+      if (mirrored) {
+        if (i > len) styles[len] = style;
+        len++;
+      }
     } else {
-      let fix;
       try { fix = fixKnownProblems(style, true); } catch {}
-      if (fix) (fixed ??= {})[fix.id] = fix;
+      if (fix) (fixed ??= new Map()).set(style.id, fix);
       else (lost ??= []).push(style);
     }
   }
-  if (fixed) {
-    console.warn(`Fixed ${fixed.length} styles, ids:`, ...Object.keys(fixed));
-    Promise.all([...bgBusy, Object.values(fixed)])
-      .then(() => setTimeout(db.putMany, 1000, fixed));
-  }
+  styles.length = len;
   if (lost)
     console.error(`Skipped ${lost.length} unrecoverable styles:`, lost);
+  if (fixed) {
+    console[mirrored ? 'log' : 'warn'](`Fixed ${fixed.size} styles, ids:`, ...fixed.keys());
+    fixed = await Promise.all([...fixed.values(), bgBusy]);
+    fixed.pop();
+    if (mirrored) {
+      styles.push(...fixed);
+      fixed.forEach(storeInMap);
+    }
+  }
+  if (styles.length)
+    setTimeout(db.putMany, 100, styles);
 }
 
 /** @returns {Promise<void>} */

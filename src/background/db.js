@@ -24,7 +24,8 @@ const CACHING = {
   [STORAGE_KEY]: cachedExec,
 };
 const {CompressionStream} = global;
-const MIRROR_INIT = CompressionStream && {headers: {[kContentType]: 'application/gzip'}};
+const kApplicationGzip = 'application/gzip';
+const MIRROR_INIT = CompressionStream && {headers: {[kContentType]: kApplicationGzip}};
 const MIRROR_PREFIX = 'http://_/';
 /** @type {{[id: string]: Cache}} */
 const MIRROR = {
@@ -210,11 +211,26 @@ function create(event) {
   return idb;
 }
 
-async function execMirror(dbName, method, a, b) {
+export async function execMirror(dbName, method, a, b) {
   const mirror = MIRROR[dbName] ??= await caches.open(dbName);
   switch (method) {
     case 'delete':
       return mirror.delete(MIRROR_PREFIX + a);
+    case 'get':
+      b = await execMirror(dbName, 'getAll', a);
+      return b[0];
+    case 'getAll':
+      a = await mirror.matchAll(a);
+      for (let i = 0; i < a.length; i++) {
+        b = a[i];
+        if (MIRROR_INIT && b.headers.get(kContentType) === kApplicationGzip)
+          b = new Response(b.body.pipeThrough(new DecompressionStream('gzip')));
+        a[i] = b.text();
+      }
+      a = await Promise.all(a);
+      for (let i = 0; i < a.length; i++)
+        a[i] = JSON.parse(a[i]);
+      return a;
     case 'put':
       await sleep(10);
       if (dbName === DB && a[UCD])
