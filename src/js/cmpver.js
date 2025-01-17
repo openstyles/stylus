@@ -13,7 +13,7 @@ export default function compareVersion(ver1, ver2) {
   const delta = compareVersionChunk(main1, main2)
     || !pre1 - !pre2 // 1.2.3-pre-release is less than 1.2.3
     || pre1 && compareVersionChunk(pre1, pre2, true); // if pre1 is present, pre2 is too
-  return Math.sign(delta);
+  return Math.sign(delta || 0);
 }
 
 function compareVersionChunk(ver1, ver2, isSemverMode) {
