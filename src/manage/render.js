@@ -2,6 +2,7 @@ import {kStyleIdPrefix, UCD} from '@/js/consts';
 import {$toggleDataset} from '@/js/dom';
 import {animateElement, scrollElementIntoView} from '@/js/dom-util';
 import {breakWord, template} from '@/js/localization';
+import * as prefs from '@/js/prefs';
 import {TO_CSS} from '@/js/sections-util';
 import {isEmptyObj, sessionStore, t} from '@/js/util';
 import {filterAndAppend} from './filters';
@@ -299,6 +300,10 @@ export function updateTotal(delta) {
   }
   installed.dataset.total = numStyles;
   elLinksParent ??= (elLinks = $id('links')).parentNode;
+  const det = elLinks.$('details');
+  const prefId = 'manage.links.expanded';
+  $toggleDataset(det, 'pref', numStyles && prefId);
+  det.open = !numStyles || prefs.__values[prefId];
   if (!numStyles) installed.after(elLinks);
   else elLinksParent.append(elLinks);
   $rootCL.toggle('empty', !numStyles);
