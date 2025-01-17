@@ -22,7 +22,7 @@ maybeRestore().then(() => {
 });
 
 async function maybeRestore() {
-  const draft = await API.draftsDb.get(makeId());
+  const draft = await API.draftsDB.get(makeId());
   if (!draft || draft.isUsercss !== editor.isUsercss || editor.isSame(draft.style)) {
     return;
   }
@@ -44,7 +44,7 @@ async function maybeRestore() {
     style.id = editor.style.id;
     await editor.replaceStyle(style, draft);
   } else {
-    API.draftsDb.delete(makeId()).catch(() => {});
+    API.draftsDB.delete(makeId()).catch(() => {});
   }
   helpPopup.close();
 }
@@ -56,7 +56,7 @@ function connectPort() {
 
 function updateDraft(isDirty = editor.dirty.isDirty()) {
   if (!isDirty) return;
-  API.draftsDb.put({
+  API.draftsDB.put({
     date: new Date(),
     isUsercss: editor.isUsercss,
     style: editor.getValue(true),

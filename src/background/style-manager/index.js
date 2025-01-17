@@ -4,8 +4,8 @@ import {calcStyleDigest, styleCodeEmpty} from '@/js/sections-util';
 import {calcObjSize, mapObj} from '@/js/util';
 import {broadcast} from '../broadcast';
 import * as colorScheme from '../color-scheme';
-import {bgBusy, bgInit, uuidIndex} from '../common';
-import {db, draftsDb, prefsDb} from '../db';
+import {bgBusy, bgInit, onSchemeChange, uuidIndex} from '../common';
+import {db, draftsDB, prefsDB} from '../db';
 import * as syncMan from '../sync-manager';
 import tabCache from '../tab-manager';
 import {getUrlOrigin} from '../tab-util';
@@ -24,7 +24,7 @@ import {
 bgInit.push(async () => {
   __.DEBUGLOG('styleMan init...');
   const [orderFromDb, styles = []] = await Promise.all([
-    prefsDb.get(orderWrap.id),
+    prefsDB.get(orderWrap.id),
     db.getAll(),
     styleCache.loadAll(),
   ]);
@@ -34,7 +34,7 @@ bgInit.push(async () => {
   __.DEBUGLOG('styleMan init done');
 });
 
-colorScheme.onChange(() => {
+onSchemeChange.add(() => {
   for (const {style} of dataMap.values()) {
     if (colorScheme.SCHEMES.includes(style.preferScheme)) {
       broadcastStyleUpdated(style, 'colorScheme');
@@ -87,7 +87,7 @@ export async function config(id, prop, value) {
 export function editSave(style) {
   style = mergeWithMapped(style);
   style.updateDate = Date.now();
-  draftsDb.delete(style.id).catch(() => {});
+  draftsDB.delete(style.id).catch(() => {});
   return save(style, 'editSave');
 }
 
@@ -347,7 +347,7 @@ export function remove(id, reason) {
     // Must be called after the style is deleted from dataMap
     uswApi.revoke(id);
   }
-  draftsDb.delete(id).catch(() => {});
+  draftsDB.delete(id).catch(() => {});
   broadcast({
     method: 'styleDeleted',
     style: {id},

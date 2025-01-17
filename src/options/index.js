@@ -38,7 +38,7 @@ $id('manage').onclick = () => {
   API.openManager();
 };
 $id('manage.newUI.favicons').onclick = () => {
-  API.prefsDb.delete('badFavs');
+  API.prefsDB.delete('badFavs');
 };
 $id('shortcuts').onclick = () => {
   if (__.BUILD !== 'chrome' && FIREFOX) {

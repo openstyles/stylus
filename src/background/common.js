@@ -24,6 +24,7 @@ export const dataHub = {
 };
 const data = {__proto__: null};
 
+export const onSchemeChange = new Set();
 export const onUnload = new Set();
 export const onUrl = new Set();
 

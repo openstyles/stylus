@@ -1,6 +1,6 @@
 import {kResolve} from '@/js/consts';
 import {onConnect, onDisconnect} from '@/js/msg';
-import {draftsDb} from '../db';
+import {draftsDB} from '../db';
 import {broadcastStyleUpdated, dataMap} from './util';
 
 // Using ports to reliably track when the client is closed, however not for messaging,
@@ -18,7 +18,7 @@ if (__.MV3) {
 function onDraftEnd(port) {
   port[kResolve]();
   const id = port.name.split(':')[1];
-  draftsDb.delete(+id || id).catch(() => {});
+  draftsDB.delete(+id || id).catch(() => {});
 }
 
 function onPreviewEnd(port) {

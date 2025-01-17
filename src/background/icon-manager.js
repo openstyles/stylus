@@ -4,7 +4,7 @@ import {CHROME, FIREFOX, MOBILE, VIVALDI} from '@/js/ua';
 import {debounce, t} from '@/js/util';
 import {ignoreChromeError, MF_ICON_EXT, MF_ICON_PATH} from '@/js/util-webext';
 import * as colorScheme from './color-scheme';
-import {bgBusy, bgInit, onUnload} from './common';
+import {bgBusy, bgInit, onSchemeChange, onUnload} from './common';
 import {removePreloadedStyles} from './style-via-webrequest';
 import tabCache, * as tabMan from './tab-manager';
 
@@ -28,7 +28,7 @@ const kShowBadge = 'show-badge';
 let hasCanvas = FIREFOX_ANDROID ? false : null;
 
 bgInit.push(initIcons);
-colorScheme.onChange(() => {
+onSchemeChange.add(() => {
   if (__prefs[kIconset] === -1) {
     debounce(refreshGlobalIcon);
     debounce(refreshAllIcons);

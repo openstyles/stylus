@@ -1,8 +1,7 @@
 import * as prefs from '@/js/prefs';
 import {isEmptyObj} from '@/js/util';
 import {broadcast} from './broadcast';
-import * as colorScheme from './color-scheme';
-import {bgBusy} from './common';
+import {bgBusy, onSchemeChange} from './common';
 import {getUrlOrigin} from './tab-util';
 
 let cfg;
@@ -16,7 +15,7 @@ const INJECTOR_CONFIG_MAP = {
 bgBusy.then(() => {
   prefs.subscribe(Object.keys(INJECTOR_CONFIG_MAP), broadcastInjectorConfig);
 });
-colorScheme.onChange(broadcastInjectorConfig.bind(null, 'dark'));
+onSchemeChange.add(broadcastInjectorConfig.bind(null, 'dark'));
 
 export default function broadcastInjectorConfig(key, val) {
   key = INJECTOR_CONFIG_MAP[key] || key;

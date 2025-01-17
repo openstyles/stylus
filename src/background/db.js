@@ -52,15 +52,15 @@ const getDbProxy = (dbName, {
 
 export const cacheDB = getDbProxy(CACHE_DB, {id: 'url'});
 export const db = getDbProxy(DB, {id: true, store: 'styles'});
-export const draftsDb = getDbProxy(DRAFTS_DB);
+export const draftsDB = getDbProxy(DRAFTS_DB);
 /** Storage for big items that may exceed 8kB limit of chrome.storage.sync.
  * To make an item syncable register it with uuidIndex.addCustom. */
-export const prefsDb = getDbProxy(STORAGE_KEY);
+export const prefsDB = getDbProxy(STORAGE_KEY);
 export const stateDB = __.MV3 && getDbProxy(STATE_DB, {store: 'kv'});
 
 Object.assign(API, /** @namespace API */ {
-  draftsDb,
-  prefsDb,
+  draftsDB,
+  prefsDB,
 });
 
 async function cachedExec(dbName, cmd, a, b) {

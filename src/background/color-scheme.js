@@ -3,11 +3,10 @@ import {CLIENT} from '@/js/port';
 import * as prefs from '@/js/prefs';
 import {debounce, isCssDarkScheme} from '@/js/util';
 import {broadcastExtension} from './broadcast';
-import {bgBusy, bgPreInit, clientDataJobs} from './common';
+import {bgBusy, bgPreInit, clientDataJobs, onSchemeChange} from './common';
 import {stateDB} from './db';
 import offscreen from './offscreen';
 
-const changeListeners = new Set();
 const kSTATE = 'schemeSwitcher.enabled';
 const kSTART = 'schemeSwitcher.nightStart';
 const kEND = 'schemeSwitcher.nightEnd';
@@ -70,10 +69,6 @@ prefs.subscribe(kSTATE, (_, val) => {
   }
   update();
 }, true);
-
-export function onChange(listener) {
-  changeListeners.add(listener);
-}
 
 /** @param {StyleObj} _ */
 export function shouldIncludeStyle({preferScheme: ps}) {
@@ -146,7 +141,7 @@ function notify() {
   __.DEBUGLOG('colorScheme notify', isDark);
   notified = isDark;
   broadcastExtension({method: 'colorScheme', value: isDark});
-  for (const fn of changeListeners) fn(isDark);
+  for (const fn of onSchemeChange) fn(isDark);
 }
 
 async function writeState() {

@@ -4,7 +4,7 @@ import * as prefs from '@/js/prefs';
 import {FIREFOX} from '@/js/ua';
 import {isDark, setSystemDark} from './color-scheme';
 import {bgBusy, dataHub, isVivaldi} from './common';
-import {prefsDb, stateDB} from './db';
+import {prefsDB, stateDB} from './db';
 import makePopupData from './popup-data';
 import prefsApi from './prefs-api';
 import * as styleMan from './style-manager';
@@ -39,7 +39,7 @@ const PROVIDERS = {
     return /** @namespace StylusClientData */ {
       badFavs: prefs.__values['manage.newUI']
         && prefs.__values['manage.newUI.favicons']
-        && prefsDb.get('badFavs'),
+        && prefsDB.get('badFavs'),
       ids: query
         && styleMan.searchDb({
           query,

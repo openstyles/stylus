@@ -4,7 +4,7 @@ import {deepEqual, isEmptyObj, mapObj} from '@/js/util';
 import {broadcast} from '../broadcast';
 import broadcastInjectorConfig from '../broadcast-injector-config';
 import {uuidIndex} from '../common';
-import {prefsDb} from '../db';
+import {prefsDB} from '../db';
 import * as syncMan from '../sync-manager';
 import {buildCacheForStyle} from './cache-builder';
 
@@ -84,7 +84,7 @@ export async function setOrderImpl(data, {
     broadcastInjectorConfig('order', order);
   }
   if (store) {
-    await prefsDb.put(orderWrap, orderWrap.id);
+    await prefsDB.put(orderWrap, orderWrap.id);
   }
   if (sync) {
     syncMan.putDoc(orderWrap);

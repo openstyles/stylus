@@ -56,7 +56,7 @@ export async function renderFavs(container = installed) {
 
 export async function readBadFavs(val) {
   if (!val) {
-    val = await (dbBusy || (dbBusy = API.prefsDb.get(BAD_FAVS_KEY)));
+    val = await (dbBusy || (dbBusy = API.prefsDB.get(BAD_FAVS_KEY)));
     dbBusy = false;
   }
   return (newUI.cfg[BAD_FAVS_KEY] = Array.isArray(val) ? val : []);
@@ -64,7 +64,7 @@ export async function readBadFavs(val) {
 
 async function initBadFavs() {
   // API creates a new function each time so we save it for `debounce` which is keyed on function object
-  const {put} = API.prefsDb;
+  const {put} = API.prefsDB;
   const rxHost = new RegExp(
     `^${stringAsRegExpStr(URLS.favicon('\n')).replace('\n', '(.*)')}$`);
   badFavs = newUI.cfg[BAD_FAVS_KEY] || await (badFavs = readBadFavs());
