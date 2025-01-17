@@ -1,62 +1,71 @@
+import {DB, UCD} from '@/js/consts';
 import {chromeLocal} from '@/js/storage-util';
 
-export default function ChromeStorageDB(PREFIX) {
-  let INC;
-  const isMain = !PREFIX;
-  if (!PREFIX) PREFIX = 'style-';
+const GET_KEYS = !!chromeLocal.getKeys;
 
-  return {
+export default class ChromeStorageDB {
 
-    delete(id) {
-      return chromeLocal.remove(PREFIX + id);
-    },
+  constructor(dbName, mirror) {
+    this._max = dbName === DB ? 0 : 1;
+    this._mirror = mirror;
+    this._prefix = dbName === DB ? 'style-' : `${dbName}-`;
+  }
 
-    get(id) {
-      return chromeLocal.getValue(PREFIX + id);
-    },
+  delete(id) {
+    return chromeLocal.remove(this._prefix + id);
+  }
 
-    async getAll() {
-      const all = await chromeLocal.get();
-      if (!INC) prepareInc(all);
-      return Object.entries(all)
-        .map(([key, val]) => key.startsWith(PREFIX) &&
-          (!isMain || Number(key.slice(PREFIX.length))) &&
-          val)
-        .filter(Boolean);
-    },
+  async get(id) {
+    return (await chromeLocal.get(id = this._prefix + id))[id];
+  }
 
-    async put(item) {
-      if (!item.id) {
-        if (!INC) await prepareInc();
-        item.id = INC++;
-      }
-      await chromeLocal.setValue(PREFIX + item.id, item);
-      return item.id;
-    },
+  async getAll() {
+    const all = !GET_KEYS && await chromeLocal.get();
+    const keys = GET_KEYS ? await chromeLocal.getKeys() : Object.keys(all);
+    const res = [];
+    if (!this._max)
+      await this._init(keys);
+    for (const key of keys)
+      if (key.startsWith(this._prefix))
+        res.push(GET_KEYS ? key : all[key]);
+    return GET_KEYS
+      ? Object.values(await chromeLocal.get(res))
+      : res;
+  }
 
-    async putMany(items) {
-      const data = {};
-      for (const item of items) {
-        if (!item.id) {
-          if (!INC) await prepareInc();
-          item.id = INC++;
-        }
-        data[PREFIX + item.id] = item;
-      }
-      await chromeLocal.set(data);
-      return items.map(_ => _.id);
-    },
-  };
+  async put(item, key) {
+    key ??= item.id ??= (!this._max && await this._init(), this._max++);
+    await chromeLocal.set({
+      [this._prefix + key]: this._mirror && item[UCD]
+        ? {...item, sections: undefined}
+        : item,
+    });
+    return key;
+  }
 
-  async function prepareInc(data) {
-    INC = 1;
-    for (const key in data || await chromeLocal.get()) {
-      if (key.startsWith(PREFIX)) {
-        const id = Number(key.slice(PREFIX.length));
-        if (id >= INC) {
-          INC = id + 1;
-        }
-      }
+  async putMany(items) {
+    const data = {};
+    const res = [];
+    for (const item of items) {
+      const id = item.id ??= (!this._max && await this._init(), this._max++);
+      data[this._prefix + id] = this._mirror && item[UCD]
+        ? {...item, sections: undefined}
+        : item;
+      res.push(id);
     }
+    await chromeLocal.set(data);
+    return res;
+  }
+
+  async _init(keys) {
+    let res = 1;
+    let id;
+    keys ??= GET_KEYS
+      ? await chromeLocal.getKeys()
+      : Object.keys(await chromeLocal.get());
+    for (const key of keys)
+      if (key.startsWith(this._prefix) && (id = +key.slice(this._prefix.length)) >= res)
+        res = id + 1;
+    this._max = res;
   }
 }

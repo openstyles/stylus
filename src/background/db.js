@@ -29,6 +29,7 @@ const VERSIONS = {};
 const dataCache = {};
 const proxies = {};
 const databases = {};
+const chromeBases = {};
 const proxyHandler = {
   get: ({dbName}, cmd) => (CACHING[dbName] || exec).bind(null, dbName, cmd),
 };
@@ -123,12 +124,8 @@ async function useChromeStorage(err) {
     });
     console.warn('Failed to access IndexedDB. Switched to extension storage API.', err);
   }
-  const BASES = {};
-  return (dbName, method, ...args) => (
-    BASES[dbName] || (
-      BASES[dbName] = ChromeStorageDB(dbName !== DB && `${dbName}-`)
-    )
-  )[method](...args);
+  return (dbName, method, ...args) =>
+    (chromeBases[dbName] ??= new ChromeStorageDB(dbName))[method](...args);
 }
 
 async function dbExecIndexedDB(dbName, method, ...args) {
