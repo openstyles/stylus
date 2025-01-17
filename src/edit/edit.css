@@ -436,7 +436,7 @@ i,
     overflow: hidden;
     text-overflow: ellipsis;
     cursor: pointer;
-    &.current:not(:only-child) {
+    &.current {
       font-weight: bold;
     }
     &[tabindex="-1"] {

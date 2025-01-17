@@ -441,5 +441,6 @@ export default function SourceEditor() {
       c = (a + b) >> 1;
     }
     toc.el.$('.' + toc.cls)?.classList.remove(toc.cls);
+    toc.i = null;
   }
 }
