@@ -157,7 +157,7 @@ async function prepareStyles(req) {
   }
   const oldData = toSend[key];
   const data = oldData || {};
-  const payload = data.payload = getSectionsByUrl.call({sender: req}, url, null, true);
+  const payload = data.payload = getSectionsByUrl.call({sender: req}, url, null, kStyleViaXhr);
   const willStyle = payload.sections.length;
   data.url = url;
   if (oldData) removePreloadedStyles(null, key, data, willStyle);
@@ -200,6 +200,7 @@ async function prepareStylesMV3(tabId, frameId, url, data, key, payload) {
     id: ruleId,
     condition: {
       tabIds: [tabId],
+      urlFilter: '|' + url + '|',
       resourceTypes: [frameId ? kSubFrame : kMainFrame],
       // Forcing the rule to be evaluated later, when response headers are received.
       excludedResponseHeaders: [{header: kSetCookie, values: [cookie]}],

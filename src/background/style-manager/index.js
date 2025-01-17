@@ -1,4 +1,4 @@
-import {IMPORT_THROTTLE, k_size, kUrl, UCD} from '@/js/consts';
+import {IMPORT_THROTTLE, k_size, kStyleViaXhr, kUrl, UCD} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '@/js/sections-util';
 import {calcObjSize, mapObj} from '@/js/util';
@@ -243,14 +243,18 @@ export function getSectionsByUrl(url, id, isInitialApply) {
   if (isInitialApply === 'cfg') {
     return {cfg};
   }
-  if (frameId === 0) {
+  let res, cache;
+  if (frameId === 0
+  && isInitialApply !== kStyleViaXhr
+  && (res = td[kUrl])
+  && (res = res[0]) !== url
+  && res.split('#', 1)[0] === url.split('#', 1)[0]) {
     /* Chrome hides text frament from location.href of the page e.g. #:~:text=foo
        so we'll use the real URL reported by webNavigation API.
        TODO: if FF will do the same, this won't work as is: FF reports onCommitted too late */
-    url = td[kUrl]?.[0] || url;
+    url = res || url;
   }
-  let res;
-  let cache = styleCache.get(url);
+  cache = styleCache.get(url);
   if (!cache) {
     cache = {url, sections: {}};
     styleCache.add(cache);
