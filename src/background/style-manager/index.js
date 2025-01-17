@@ -295,7 +295,12 @@ export async function importMany(items) {
       const method = dataMap.has(id) ? 'styleUpdated' : 'styleAdded';
       const style = onSaved(styles[r], false, id);
       messages.push([style, 'import', method]);
-      res[i] = {style};
+      res[i] = {
+        style: {
+          ...style,
+          [k_size]: calcObjSize(style),
+        },
+      };
     }
   }
   styleCache.clear();
