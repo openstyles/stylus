@@ -1,4 +1,4 @@
-import {UCD} from '@/js/consts';
+import {kInjectionOrder, UCD} from '@/js/consts';
 import * as URLS from '@/js/urls';
 import {deepEqual, isEmptyObj, mapObj} from '@/js/util';
 import {broadcast} from '../broadcast';
@@ -11,12 +11,11 @@ import {buildCacheForStyle} from './cache-builder';
 /** @type {StyleDataMap} */
 export const dataMap = new Map();
 
-const INJ_ORDER = 'injectionOrder';
 export const order = /** @type {Injection.Order} */{main: {}, prio: {}};
 export const orderWrap = {
-  id: INJ_ORDER,
+  id: kInjectionOrder,
   value: mapObj(order, () => []),
-  _id: `${chrome.runtime.id}-${INJ_ORDER}`,
+  _id: `${chrome.runtime.id}-${kInjectionOrder}`,
   _rev: 0,
 };
 

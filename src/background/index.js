@@ -1,5 +1,6 @@
 import './intro';
 import '@/js/browser';
+import compareVersion from '@/js/cmpver';
 import {k_msgExec, kInstall, kInvokeAPI, kResolve} from '@/js/consts';
 import {DNR, getRuleIds, updateDynamicRules, updateSessionRules} from '@/js/dnr';
 import {_execute, onMessage} from '@/js/msg';
@@ -14,13 +15,14 @@ import {setSystemDark} from './color-scheme';
 import {bgBusy, bgInit, bgPreInit, dataHub} from './common';
 import reinjectContentScripts from './content-scripts';
 import initContextMenus from './context-menus';
-import {draftsDB, prefsDB, stateDB} from './db';
+import {draftsDB, mirrorStorage, prefsDB, stateDB} from './db';
 import download from './download';
 import {refreshIconsWhenReady, updateIconBadge} from './icon-manager';
 import prefsApi from './prefs-api';
 import setClientData from './set-client-data';
 import * as styleMan from './style-manager';
 import * as styleCache from './style-manager/cache';
+import {dataMap} from './style-manager/util';
 import initStyleViaApi from './style-via-api';
 import './style-via-webrequest';
 import * as syncMan from './sync-manager';
@@ -84,21 +86,25 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   if (previousVersion === '1.5.30') {
     prefsDB.delete('badFavs'); // old Stylus marked all icons as bad when network was offline
   }
-  (bgPreInit.length ? bgPreInit : bgInit).push(
-    styleCache.clear(),
-  );
-  if (__.MV3) {
-    (bgPreInit.length ? bgPreInit : []).push(
+  if (previousVersion >= '2.0.0' && compareVersion(previousVersion, '2.3.6') < 0) {
+    (bgPreInit.length ? bgPreInit : bgInit).push(
+      styleCache.clear(),
       stateDB.clear(),
+    );
+  }
+  if (__.MV3) {
+    (bgPreInit.length ? bgPreInit : bgInit).push(
       DNR.getDynamicRules().then(rules => updateDynamicRules(undefined, getRuleIds(rules))),
       DNR.getSessionRules().then(rules => updateSessionRules(undefined, getRuleIds(rules))),
     );
     refreshIconsWhenReady();
-    (async () => {
-      if (bgBusy) await bgBusy;
-      if (prefs.__values[usercssMan.kUrlInstaller]) usercssMan.toggleUrlInstaller(true);
-    })();
   }
+  (async () => {
+    if (bgBusy) await bgBusy;
+    if (__.MV3 && prefs.__values[usercssMan.kUrlInstaller])
+      usercssMan.toggleUrlInstaller(true);
+    mirrorStorage(dataMap);
+  })();
 });
 
 if (__.MV3) {

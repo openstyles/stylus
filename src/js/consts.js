@@ -18,6 +18,7 @@ export const kDisableAll = 'disableAll';
 export const kEditorSettings = 'editorSettings';
 export const kHocused = 'focusedViaClick';
 export const kHocusedAttr = 'data-focused-via-click';
+export const kInjectionOrder = 'injectionOrder';
 export const kInstall = 'install';
 export const kInvokeAPI = 'invokeAPI';
 export const kMainFrame = 'main_frame';

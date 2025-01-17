@@ -1,9 +1,9 @@
-import {CACHE_DB, DB, STATE_DB} from '@/js/consts';
+import {CACHE_DB, DB, kContentType, kInjectionOrder, STATE_DB, UCD} from '@/js/consts';
 import {API} from '@/js/msg-api';
 import {STORAGE_KEY} from '@/js/prefs';
 import {chromeLocal} from '@/js/storage-util';
 import {CHROME} from '@/js/ua';
-import {deepMerge} from '@/js/util';
+import {deepMerge, sleep} from '@/js/util';
 import ChromeStorageDB from './db-chrome-storage';
 
 /*
@@ -22,6 +22,14 @@ const DRAFTS_DB = 'drafts';
 const CACHING = {
   [DRAFTS_DB]: cachedExec,
   [STORAGE_KEY]: cachedExec,
+};
+const {CompressionStream} = global;
+const MIRROR_INIT = CompressionStream && {headers: {[kContentType]: 'application/gzip'}};
+const MIRROR_PREFIX = 'http://_/';
+/** @type {{[id: string]: Cache}} */
+const MIRROR = {
+  [DB]: null,
+  [STORAGE_KEY]: null,
 };
 const DATA_KEY = {};
 const STORES = {};
@@ -129,11 +137,13 @@ async function useChromeStorage(err) {
 }
 
 async function dbExecIndexedDB(dbName, method, ...args) {
-  const mode = method.startsWith('get') ? 'readonly' : 'readwrite';
+  const mode = method.startsWith('get') ? undefined : 'readwrite';
   const storeName = STORES[dbName];
   const store = (databases[dbName] ??= await open(dbName))
     .transaction([storeName], mode)
     .objectStore(storeName);
+  if (mode && dbName in MIRROR)
+    execMirror(...arguments);
   return method.endsWith('Many')
     ? storeMany(store, method.slice(0, -4), args[0])
     : new Promise((resolve, reject) => {
@@ -198,4 +208,38 @@ function create(event) {
     } : undefined);
   }
   return idb;
+}
+
+async function execMirror(dbName, method, a, b) {
+  const mirror = MIRROR[dbName] ??= await caches.open(dbName);
+  switch (method) {
+    case 'delete':
+      return mirror.delete(MIRROR_PREFIX + a);
+    case 'put':
+      await sleep(10);
+      if (dbName === DB && a[UCD])
+        delete (a = {...a}).sections;
+      b = MIRROR_PREFIX + (b ?? a.id);
+      a = JSON.stringify(a);
+      MIRROR_INIT.headers['Content-Length'] = a.length;
+      if (CompressionStream)
+        a = new Response(a).body.pipeThrough(new CompressionStream('gzip'));
+      return mirror.put(b, new Response(a, MIRROR_INIT));
+    case 'putMany':
+      for (b of a)
+        await execMirror(dbName, 'put', b);
+  }
+}
+
+export async function mirrorStorage(dataMap) {
+  if (!await caches.has(DB)) {
+    for (const {style} of dataMap.values())
+      await execMirror(DB, 'put', style);
+  }
+  if (!await caches.has(STORAGE_KEY)) {
+    for (const key of [kInjectionOrder]) {
+      const val = await prefsDB.get(key);
+      if (val) await execMirror(STORAGE_KEY, 'put', val, key);
+    }
+  }
 }
