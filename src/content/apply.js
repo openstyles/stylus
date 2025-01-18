@@ -31,8 +31,9 @@ const NAV_ID = 'url:' + chrome.runtime.id;
 /** Firefox disallows direct access to global variables in the parent's "isolated world".
  * Chrome 63 and older can't construct EventTarget, so we detect them via ResizeObserver,
  * using a typeof check to skip an implicit global for <html id="ResizeObserver"> */
-const navHubGlobal = FF || typeof ResizeObserver !== 'function';
+const navHubGlobal = FF || !__.MV3 && typeof ResizeObserver !== 'function';
 const navHub = navHubGlobal ? global : global[NAV_ID] = new EventTarget();
+const navHubParent = isFrameNoUrl && (navHubGlobal ? parent : parent[NAV_ID]) || null;
 
 // FIXME: move this to background page when following bugs are fixed:
 // https://bugzil.la/1587723, https://crbug.com/968651
@@ -58,9 +59,7 @@ if (!FF) {
     xo.observe(el);
   };
 }
-if (isFrameNoUrl) {
-  (navHubGlobal ? parent : parent[NAV_ID]).addEventListener(NAV_ID, onUrlChanged, true);
-}
+navHubParent?.addEventListener(NAV_ID, onUrlChanged, true);
 if (mqDark) {
   mqDark.onchange = ({matches: m}) => {
     if (m !== own.cfg.dark) API.setSystemDark(own.cfg.dark = m);
@@ -288,7 +287,7 @@ function selfDestruct() {
   if (mqDark) mqDark.onchange = null;
   if (offscreen) for (const fn of offscreen) fn();
   if (TDM < 0) document.onprerenderingchange = null;
-  navHub.removeEventListener(NAV_ID, onUrlChanged, true);
+  navHubParent?.removeEventListener(NAV_ID, onUrlChanged, true);
   offscreen = null;
   styleInjector.shutdown();
   onMessage.delete(applyOnMessage);
