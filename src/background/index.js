@@ -1,6 +1,5 @@
 import './intro';
 import '@/js/browser';
-import compareVersion from '@/js/cmpver';
 import {k_msgExec, kInstall, kInvokeAPI, kResolve} from '@/js/consts';
 import {DNR, getRuleIds, updateDynamicRules, updateSessionRules} from '@/js/dnr';
 import {_execute, onMessage} from '@/js/msg';
@@ -86,14 +85,12 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   if (previousVersion === '1.5.30') {
     prefsDB.delete('badFavs'); // old Stylus marked all icons as bad when network was offline
   }
-  if (previousVersion >= '2.0.0' && compareVersion(previousVersion, '2.3.6') < 0) {
-    (bgPreInit.length ? bgPreInit : bgInit).push(
-      styleCache.clear(),
-      stateDB.clear(),
-    );
-  }
+  (bgPreInit.length ? bgPreInit : bgInit).push(
+    styleCache.clear(),
+  );
   if (__.MV3) {
     (bgPreInit.length ? bgPreInit : bgInit).push(
+      stateDB.clear(),
       DNR.getDynamicRules().then(rules => updateDynamicRules(undefined, getRuleIds(rules))),
       DNR.getSessionRules().then(rules => updateSessionRules(undefined, getRuleIds(rules))),
     );
