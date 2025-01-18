@@ -28,7 +28,9 @@ const instanceId = (FF || !__.MV3 && !CSS.supports('top', '1ic')) && Math.random
 const xoEventId = `${instanceId || Math.random()}`;
 
 const NAV_ID = 'url:' + chrome.runtime.id;
-const navHub = FF ? global : global[NAV_ID] = new EventTarget();
+// Detect Chrome 63 and older which can't construct EventTarget via ResizeObserver
+const navHubGlobal = FF || !global.ResizeObserver;
+const navHub = navHubGlobal ? global : global[NAV_ID] = new EventTarget();
 
 // FIXME: move this to background page when following bugs are fixed:
 // https://bugzil.la/1587723, https://crbug.com/968651
@@ -55,7 +57,7 @@ if (!FF) {
   };
 }
 if (isFrameNoUrl) {
-  (FF ? parent : parent[NAV_ID]).addEventListener(NAV_ID, onUrlChanged, true);
+  (navHubGlobal ? parent : parent[NAV_ID]).addEventListener(NAV_ID, onUrlChanged, true);
 }
 if (mqDark) {
   mqDark.onchange = ({matches: m}) => {

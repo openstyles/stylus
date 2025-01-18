@@ -237,7 +237,8 @@ export async function execMirror(dbName, method, a, b) {
         delete (a = {...a}).sections;
       b = MIRROR_PREFIX + (b ?? a.id);
       a = JSON.stringify(a);
-      MIRROR_INIT.headers['Content-Length'] = a.length;
+      if (MIRROR_INIT)
+        MIRROR_INIT.headers['Content-Length'] = a.length;
       if (CompressionStream)
         a = new Response(a).body.pipeThrough(new CompressionStream('gzip'));
       return mirror.put(b, new Response(a, MIRROR_INIT));
