@@ -57,7 +57,7 @@
     "lint": "eslint . --cache",
     "test": "pnpm lint && pnpm test-csslint",
     "test-csslint": "node tools/test-css.js",
-    "update-locales": "tx pull --all && node tools/fix-transifex.js && git commit -m \"update locales\" src/_locales",
+    "update-locales": "tx pull --all --minimum-perc=1 && node tools/fix-transifex.js commit",
     "update-transifex": "tx push -s",
     "build-icons": "node tools/build-icons.mjs",
     "build-mv2": "webpack-cli --node-env any-mv2",
