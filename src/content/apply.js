@@ -28,8 +28,10 @@ const instanceId = (FF || !__.MV3 && !CSS.supports('top', '1ic')) && Math.random
 const xoEventId = `${instanceId || Math.random()}`;
 
 const NAV_ID = 'url:' + chrome.runtime.id;
-// Detect Chrome 63 and older which can't construct EventTarget via ResizeObserver
-const navHubGlobal = FF || !global.ResizeObserver;
+/** Firefox disallows direct access to global variables in the parent's "isolated world".
+ * Chrome 63 and older can't construct EventTarget, so we detect them via ResizeObserver,
+ * using a typeof check to skip an implicit global for <html id="ResizeObserver"> */
+const navHubGlobal = FF || typeof ResizeObserver !== 'function';
 const navHub = navHubGlobal ? global : global[NAV_ID] = new EventTarget();
 
 // FIXME: move this to background page when following bugs are fixed:
