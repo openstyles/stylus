@@ -1,6 +1,6 @@
 import {kInjectionOrder, UCD} from '@/js/consts';
 import * as URLS from '@/js/urls';
-import {deepEqual, isEmptyObj, mapObj} from '@/js/util';
+import {deepEqual, mapObj} from '@/js/util';
 import {broadcast} from '../broadcast';
 import broadcastInjectorConfig from '../broadcast-injector-config';
 import {uuidIndex} from '../common';
@@ -26,7 +26,7 @@ export function calcRemoteId({md5Url, updateUrl, [UCD]: ucd} = {}) {
     || '';
   return id && [
     id,
-    ucd && !isEmptyObj(ucd.vars),
+    !!ucd?.vars,
   ];
 }
 

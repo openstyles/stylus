@@ -7,7 +7,7 @@ import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import * as URLS from '@/js/urls';
 import {
-  clipString, debounce, isEmptyObj, sleep, stringAsRegExp, stringAsRegExpStr, t, tryRegExp, tryURL,
+  clipString, debounce, sleep, stringAsRegExp, stringAsRegExpStr, t, tryRegExp, tryURL,
 } from '@/js/util';
 import {styleFinder, tabUrl, tabUrlSupported} from '.';
 import * as Events from './events';
@@ -488,7 +488,7 @@ function renderFullInfo(entry, style) {
     .replace(/([^.][.。?!]|[\s,].{50,70})\s+/g, '$1\n')
     .replace(/([\r\n]\s*){3,}/g, '\n\n');
   entry.$('.search-result-description').textContent = description;
-  vars = !isEmptyObj(vars);
+  vars = !!vars;
   entry._result._styleVars = vars;
   $toggleDataset(entry, 'customizable', vars);
 }

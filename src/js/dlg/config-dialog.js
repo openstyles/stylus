@@ -14,6 +14,8 @@ export default async function configDialog(style) {
   let saving = false;
   let bodyStyle;
 
+  if (typeof style === 'number')
+    style = await API.styles.getCore({id: style, vars: true});
   const ucd = style[UCD];
   const varsHash = deepCopy(ucd.vars) || {};
   const varNames = Object.keys(varsHash);

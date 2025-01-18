@@ -9,7 +9,7 @@ import * as prefs from '@/js/prefs';
 import {isDark, onDarkChanged} from '@/js/themer';
 import {CHROME, FIREFOX, MOBILE, OPERA} from '@/js/ua';
 import {ownRoot} from '@/js/urls';
-import {capitalize, clamp, clipString, isEmptyObj, sleep, stringAsRegExpStr, t} from '@/js/util';
+import {capitalize, clamp, clipString, sleep, stringAsRegExpStr, t} from '@/js/util';
 import {CHROME_POPUP_BORDER_BUG, getActiveTab, MF} from '@/js/util-webext';
 import * as Events from './events';
 import './hotkeys';
@@ -332,7 +332,7 @@ function createStyleElement(style, entry) {
   name.$entry = entry;
   name.lastChild.textContent = style.customName || style.name;
 
-  cfg.hidden = ucd ? isEmptyObj(ucd.vars) : !style.url || !`${style.updateUrl}`.includes('?');
+  cfg.hidden = ucd ? !ucd.vars : !style.url || !`${style.updateUrl}`.includes('?');
   if (!cfg.hidden && cfg.href !== cfgUrl) {
     const el = template[ucd ? 'config' : 'configExternal'].cloneNode(true);
     if (cfgUrl) el.href = cfgUrl;

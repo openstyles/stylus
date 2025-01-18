@@ -4,7 +4,7 @@ import {animateElement, scrollElementIntoView} from '@/js/dom-util';
 import {breakWord, template} from '@/js/localization';
 import * as prefs from '@/js/prefs';
 import {TO_CSS} from '@/js/sections-util';
-import {isEmptyObj, sessionStore, t} from '@/js/util';
+import {sessionStore, t} from '@/js/util';
 import {filterAndAppend} from './filters';
 import {renderFavs} from './render';
 import * as sorter from './sorter';
@@ -90,7 +90,7 @@ function createParts(isNew) {
 export function createStyleElement({styleMeta: style, styleNameLC: nameLC, styleSize: size}) {
   const ud = style[UCD];
   const {updateUrl} = style;
-  const configurable = ud && ud.vars && !isEmptyObj(ud.vars);
+  const configurable = !!ud?.vars;
   const name = style.customName || style.name;
   const version = ud ? ud.version : '';
   const isNew = newUI.cfg.enabled;

@@ -91,7 +91,7 @@ export function fixKnownProblems(style, revive) {
   if (revive && (
     !Array.isArray(v = style.sections) && (v = 0, true) ||
     /* @import must precede `vars` that we add at beginning */
-    !isEmptyObj(style[UCD]?.vars) && v.some(hasVarsAndImport)
+    style[UCD]?.vars && v.some(hasVarsAndImport)
   )) {
     if (!v && !style.sourceCode) {
       style.customName = 'Damaged style #' + style.id;

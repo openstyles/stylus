@@ -69,7 +69,7 @@ const ENTRY_ROUTES = {
   },
 
   '.configure-usercss'(event, {styleMeta}) {
-    configDialog(styleMeta);
+    configDialog(styleMeta[UCD].vars ? styleMeta.id : styleMeta);
   },
 
   [SEL_EXPANDER]: expandTargets,

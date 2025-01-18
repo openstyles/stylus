@@ -10,8 +10,7 @@ const menuExclusions = [];
 
 export function configure(event, entry) {
   if (!this.target) {
-    hotkeys.pause(async () =>
-      configDialog(await API.styles.getCore({id: entry.styleId, vars: true})));
+    hotkeys.pause(() => configDialog(entry.styleId));
   } else {
     openURLandHide.call(this, event);
   }
