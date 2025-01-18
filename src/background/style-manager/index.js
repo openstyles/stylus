@@ -216,8 +216,8 @@ export function getCore({id, code, sections, size, vars} = {}) {
       style.sections = tmp;
     if (!code)
       style.sourceCode = undefined;
-    if (!vars && (tmp = style[UCD]))
-      style[UCD] = {...tmp, vars: tmp.vars ? {} : undefined};
+    if (!vars && (tmp = style[UCD]) && tmp.vars)
+      style[UCD] = {...tmp, vars: {}};
     res.push(style);
   }
   return id ? res[0] : res;

@@ -68,8 +68,8 @@ const ENTRY_ROUTES = {
     setHocus($('#message-box-buttons > button'), false);
   },
 
-  '.configure-usercss'(event, {styleMeta}) {
-    configDialog(styleMeta[UCD].vars ? styleMeta.id : styleMeta);
+  '.configure-usercss'(event, {styleId}) {
+    configDialog(styleId);
   },
 
   [SEL_EXPANDER]: expandTargets,
