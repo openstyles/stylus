@@ -2,9 +2,9 @@ import {kApplyPort, kStyleIds, kUrl} from '@/js/consts';
 import {onDisconnect} from '@/js/msg';
 import {supported} from '@/js/urls';
 import {ignoreChromeError} from '@/js/util-webext';
-import {bgBusy, bgInit, onUnload, onUrl} from './common';
+import {bgBusy, bgInit, onUnload, onTabUrlChange, onUrlChange} from './common';
 import {stateDB} from './db';
-import {kCommitted, onUrlChange} from './navigation-manager';
+import {kCommitted} from './navigation-manager';
 
 /** @typedef {{ url:string, styleIds: {[frameId:string]: number[]} }} StyleIdsFrameMap */
 /** @type {Map<number,{ id: number, nonce:Object, url:Object, styleIds: StyleIdsFrameMap }>} */
@@ -109,9 +109,9 @@ bgBusy.then(() => {
       obj[kUrl] = {0: url};
     else
       (obj[kUrl] ??= {})[frameId] = url;
-    if (frameId) return;
     if (__.MV3) stateDB.put(obj, tabId);
-    for (const fn of onUrl) fn(tabId, url, oldUrl);
+    if (frameId) return;
+    for (const fn of onTabUrlChange) fn(tabId, url, oldUrl);
   });
 });
 

@@ -24,9 +24,14 @@ export const dataHub = {
 };
 const data = {__proto__: null};
 
+/** @type {Set<(isDark: boolean) => ?>} */
 export const onSchemeChange = new Set();
+/** @type {Set<(tabId: number, url: string, oldUrl?: string) => ?>} */
+export const onTabUrlChange = new Set();
+/** @type {Set<(tabId: number, frameId: number, port: chrome.runtime.Port) => ?>} */
 export const onUnload = new Set();
-export const onUrl = new Set();
+/** @type {Set<(data: Object, type: 'committed'|'history'|'hash') => ?>} */
+export const onUrlChange = new Set();
 
 export const uuidIndex = Object.assign(new Map(), {
   custom: {},

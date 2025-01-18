@@ -1,4 +1,4 @@
-import {kDisableAll, kStyleIds, kUrl} from '@/js/consts';
+import {kDisableAll, kStyleIds} from '@/js/consts';
 import {__values as __prefs, subscribe} from '@/js/prefs';
 import {CHROME, FIREFOX, MOBILE, VIVALDI} from '@/js/ua';
 import {debounce, t} from '@/js/util';
@@ -70,11 +70,10 @@ onUnload.add((tabId, frameId, port) => {
  */
 export function updateIconBadge(styleIds, lazyBadge) {
   // FIXME: in some cases, we only have to redraw the badge. is it worth a optimization?
-  const {tab: {id: tabId}, TDM, url} = this.sender;
+  const {tab: {id: tabId}, TDM} = this.sender;
   const frameId = TDM > 0 ? 0 : this.sender.frameId;
   const value = styleIds.length ? styleIds.map(Number) : undefined;
   tabMan.set(tabId, kStyleIds, frameId, value);
-  tabMan.set(tabId, kUrl, frameId, value && url);
   debounce(refreshStaleBadges, frameId && lazyBadge ? 250 : 0);
   staleBadges.add(tabId);
   if (!frameId) refreshIcon(tabId, true);

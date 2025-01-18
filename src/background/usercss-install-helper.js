@@ -5,7 +5,7 @@ import * as prefs from '@/js/prefs';
 import {FIREFOX} from '@/js/ua';
 import * as URLS from '@/js/urls';
 import {getHost, RX_META} from '@/js/util';
-import {bgBusy, onUrl} from './common';
+import {bgBusy, onTabUrlChange} from './common';
 import download from './download';
 import tabCache, * as tabMan from './tab-manager';
 import {openURL} from './tab-util';
@@ -27,8 +27,8 @@ export function getInstallCode(url) {
 }
 
 function toggle(key, val, isInit) {
-  if (val) onUrl.add(maybeInstall);
-  else onUrl.delete(maybeInstall);
+  if (val) onTabUrlChange.add(maybeInstall);
+  else onTabUrlChange.delete(maybeInstall);
   if (!__.MV3 || !isInit) toggleUrlInstaller(val);
 }
 

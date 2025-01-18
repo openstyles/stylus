@@ -5,11 +5,9 @@ import {chromeProtectsNTP} from '@/js/urls';
 import {deepEqual} from '@/js/util';
 import {ignoreChromeError, MF} from '@/js/util-webext';
 import {pingTab, sendTab} from './broadcast';
-import {bgBusy} from './common';
+import {bgBusy, onUrlChange} from './common';
 import tabCache from './tab-manager';
 
-/** @type {Set<(data: Object, type: 'committed'|'history'|'hash') => ?>} */
-export const onUrlChange = new Set();
 export const webNavigation = chrome.webNavigation;
 /** @type {{ url: chrome.events.UrlFilter[] }} */
 const WEBNAV_FILTER_STYLABLE = {
