@@ -1,6 +1,6 @@
 import {kHocused, kHocusedAttr} from '@/js/consts';
 import {notIncludedInArray} from '@/js/util';
-import {$create, $toggleDataset} from './dom';
+import {$create, $toggleDataset, cssFieldSizing} from './dom';
 import * as prefs from './prefs';
 import '@/css/spinner.css';
 
@@ -198,10 +198,9 @@ export function setupLivePrefs(ids) {
       const oldValue = getValue(el);
       const diff = !isSame(el, oldValue, value);
       const type = el.type;
-      if (type === 'select-one') {
-        if ((init || diff) && el.classList.contains('fit-width')) {
-          fitSelectBox(el, value, init); /* global fitSelectBox */
-        }
+      if (type === 'select-one'
+      && !cssFieldSizing && (init || diff) && el.classList.contains('fit-width')) {
+        fitSelectBox(el, value, init); /* global fitSelectBox */
       } else if (diff) {
         if (type === 'radio') {
           el.checked = value === oldValue;
