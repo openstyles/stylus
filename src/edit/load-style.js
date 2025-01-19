@@ -32,7 +32,7 @@ function loadStyle({style = makeNewStyleObj(), isUC, si, template}) {
     const str = `${params}`;
     history.replaceState({}, '', location.pathname + (str ? '?' : '') + str);
   }
-  loadCmTheme();
+  return loadCmTheme();
 }
 
 function makeNewStyleObj() {
