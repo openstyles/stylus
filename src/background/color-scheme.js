@@ -54,6 +54,7 @@ if (__.MV3) {
       offscreen.keepAlive(val);
   }, true), clientDataJobs.size ? 50/*let the client page load first*/ : 0));
 } else {
+  saved = true;
   refreshSystemDark();
 }
 
