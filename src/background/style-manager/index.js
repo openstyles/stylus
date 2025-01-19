@@ -205,8 +205,8 @@ export function getByUrl(url, id = null) {
  */
 export function getCore({id, code, sections, size, vars} = {}) {
   const res = [];
-  for (let style of id ? [dataMap.get(id)] : dataMap.values()) {
-    style = {...style.style};
+  for (let {style} of id ? [dataMap.get(id)] : dataMap.values()) {
+    style = {...style};
     let tmp;
     if (size)
       style[k_size] = calcObjSize(style);

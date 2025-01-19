@@ -113,7 +113,10 @@ async function doDownload(url, {
         resp.onload = () => resolve(resp.response);
       });
     } else if (port) {
-      data = await fetchWithProgress(resp, responseType, headers, jobKey);
+      data = '';
+      for await (const value of resp.body.pipeThrough(new TextDecoderStream()))
+        reportProgress(jobKey, [(data += value).length]);
+      // TODO: report total length when https://github.com/whatwg/fetch/issues/1358 is fixed
     } else {
       data = await resp[responseType === 'arraybuffer' ? 'arrayBuffer' : responseType]();
     }
@@ -168,43 +171,6 @@ function extractHeaders(src, headers) {
       : src.getResponseHeader(h);
   }
   return res;
-}
-
-/**
- * @param {Response} resp
- * @param {string} responseType
- * @param {Headers} headers
- * @param {string} jobKey
- */
-async function fetchWithProgress(resp, responseType, headers, jobKey) {
-  const chunks = [];
-  let loadedLength = 0;
-  let data;
-  for await (const value of resp.body) {
-    chunks.push(value);
-    loadedLength += value.length;
-    reportProgress(jobKey, [loadedLength]);
-    // TODO: report total length when https://github.com/whatwg/fetch/issues/1358 is fixed
-  }
-  if (chunks.length === 1) {
-    data = chunks[0];
-  } else {
-    data = new Uint8Array(loadedLength);
-    loadedLength = 0;
-    for (const c of chunks) {
-      data.set(c, loadedLength);
-      loadedLength += c.length;
-    }
-  }
-  if (responseType === 'blob') {
-    data = new Blob([data], {type: headers.get(kContentType)});
-  } else if (responseType === 'arraybuffer') {
-    data = data.buffer;
-  } else {
-    data = new TextDecoder().decode(data);
-    if (responseType === 'json') data = JSON.parse(data);
-  }
-  return data;
 }
 
 function reportProgress(jobKey, msg) {

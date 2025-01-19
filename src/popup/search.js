@@ -569,6 +569,7 @@ async function fetchIndex() {
   indexing = Promise.all(jobs).then(() => {
     indexing = null;
     elNote.style.opacity = 0;
+    start();
   });
   // Polyfilling a leaky Promise.race, https://crbug.com/42203149
   await new Promise((resolve, reject) => {
@@ -580,7 +581,7 @@ async function fetchIndex() {
 async function fetchIndexJob([url, prefix, transform]) {
   let el = $create('div', {title: url});
   $id('pct').append(el);
-  onConnect[url] = port => {
+  onConnect[prefix] = port => {
     port.onMessage.addListener(([done, total]) => {
       if (!el) return;
       el.textContent = total
@@ -590,13 +591,12 @@ async function fetchIndexJob([url, prefix, transform]) {
   };
   for (let triesLeft = 3; triesLeft--;) {
     try {
-      const res = transform(await API.download(url, {responseType: 'json', port: url}));
+      const res = transform(JSON.parse(await API.download(url, {port: prefix})));
       for (const v of res) v.i = `${prefix}-${v.i}`;
       if (!index) {
         index = res;
       } else {
         index = index.concat(res);
-        ready.then(start);
       }
       break;
     } catch (e) {
