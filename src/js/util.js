@@ -44,18 +44,18 @@ export const debounce = /*@__PURE__*/(() => {
   };
   return Object.assign((fn, delay, ...args) => {
     delay = +delay || 0;
-    const time = performance.now() + delay;
+    let time;
     let old = timers.get(fn);
     if (!old) {
       timers.set(fn, old = {});
-    } else if (delay && old.time < time) {
+    } else if (delay && old.time < (time = performance.now() + delay)) {
       clearTimer(old);
     } else if (old.args.length === args.length && old.args.every((a, i) => a === args[i])) {
       // Not using deepEqual because a different object reference means a different `args`
       return;
     }
     old.args = args;
-    old.time = time;
+    old.time = delay && (time ?? performance.now() + delay);
     old.timer = setTimeout(run, delay, fn, args);
   }, {
     timers,
