@@ -104,7 +104,7 @@ export function important(str) {
  * Switches to the next/previous keyboard-focusable element.
  * Doesn't check `visibility` or `display` via getComputedStyle for simplicity.
  * @param {HTMLElement} rootElement
- * @param {Number} step - for exmaple 1 or -1 (or 0 to focus the first focusable el in the box)
+ * @param {Number} step - for example 1 or -1 (or 0 to focus the first focusable el in the box)
  * @returns {HTMLElement|false|undefined} -
  *   HTMLElement: focus changed,
  *   false: focus unchanged,
