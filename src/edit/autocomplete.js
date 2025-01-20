@@ -18,7 +18,7 @@ const rxCmTopFunc = /^(top|documentTypes|atBlock)/;
 const rxCmVarTagColor = /^(variable|tag|error)/;
 const rxConsume = /([-\w]*\s*:\s?)?/yu;
 const rxCruftAtStart = /^[^\w\s]\s*/;
-const rxFilterable = /^(--|[#.\w])\S*\s*$|^@/;
+const rxFilterable = /(--|[#.\w])\S*\s*$|@/;
 const rxHexColor = /[0-9a-f]+\b|$|\s/yi;
 const rxMaybeProp1 = /^(prop(erty|\?)|atom|error|tag)/;
 const rxMaybeProp2 = /^(block|atBlock_parens|maybeprop)/;
@@ -79,7 +79,7 @@ async function helper(cm) {
          a < arr.length || ok && !(arr.length = ok);
          a++) {
       v = arr[a];
-      if (v.text.indexOf(prevMatch) === v.i) {
+      if ((v.text || v).indexOf(prevMatch) === v.i) {
         if (ok < a) arr[ok] = v;
         ok++;
       }
@@ -117,6 +117,8 @@ async function helper(cm) {
       (end = styles[i]) &&
       isSameToken(text, style, end)
     ) i += 2;
+    rxFilterable.lastIndex = prev;
+    prev = Math.max(prev, text.search(rxFilterable));
     str = text.slice(prev, end);
     const left = text.slice(prev, ch).trim();
     const L = (leftLC = left.toLowerCase())[0];
@@ -229,32 +231,30 @@ async function helper(cm) {
     list.sort();
   }
   const len = leftLC.length;
-  if (!leftLC || rxFilterable.test(leftLC)) {
-    const names1 = new Map();
-    const names2 = new Map();
-    for (const v of list) {
-      i = leftLC ? v.toLowerCase().indexOf(leftLC) : 0;
-      if (i >= 0) (i ? names2 : names1).set(v, new Completion(i, v));
-    }
-    list = [...names1.values(), ...names2.values()];
-    if (!prop) {
-      const values1 = new Map();
-      const values2 = new Map();
-      if (!cssPropNames) await initCssProps();
-      for (const name of cssPropNames) {
-        i = 0;
-        for (let a, b, v, lc = cssPropsLC[name];
-          i >= 0 && (!leftLC || (i = lc.indexOf(leftLC, i)) >= 0);
-          i = leftLC ? b : b + 1 || b/*retain -1 to end the loop*/
-        ) {
-          a = leftLC ? lc.lastIndexOf('\n', i) + 1 : i;
-          b = lc.indexOf('\n', i + len);
-          v = cssProps[name].slice(a, b < 0 ? 1e9 : b);
-          (i === a ? values1 : values2).set(name + v, new Completion(i - a, name, v));
-        }
+  const names1 = new Map();
+  const names2 = new Map();
+  for (const v of list) {
+    i = leftLC ? v.toLowerCase().indexOf(leftLC) : 0;
+    if (i >= 0) (i ? names2 : names1).set(v, new Completion(i, v));
+  }
+  list = [...names1.values(), ...names2.values()];
+  if (!prop) {
+    const values1 = new Map();
+    const values2 = new Map();
+    if (!cssPropNames) await initCssProps();
+    for (const name of cssPropNames) {
+      i = 0;
+      for (let a, b, v, lc = cssPropsLC[name];
+        i >= 0 && (!leftLC || (i = lc.indexOf(leftLC, i)) >= 0);
+        i = leftLC ? b : b + 1 || b/*retain -1 to end the loop*/
+      ) {
+        a = leftLC ? lc.lastIndexOf('\n', i) + 1 : i;
+        b = lc.indexOf('\n', i + len);
+        v = cssProps[name].slice(a, b < 0 ? 1e9 : b);
+        (i === a ? values1 : values2).set(name + v, new Completion(i - a, name, v));
       }
-      list.push(...values1.values(), ...values2.values());
     }
+    list.push(...values1.values(), ...values2.values());
   }
   prev += Math.max(0, str.search(rxNonSpace));
   prevMatch = text.slice(prev, ch);
