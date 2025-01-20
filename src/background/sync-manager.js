@@ -88,12 +88,12 @@ export async function putDoc({_id, _rev}) {
 
 export async function setDriveOptions(driveName, options) {
   const key = `secure/sync/driveOptions/${driveName}`;
-  await chromeSync.setValue(key, options);
+  await chromeSync.set({[key]: options});
 }
 
 export async function getDriveOptions(driveName) {
   const key = `secure/sync/driveOptions/${driveName}`;
-  return await chromeSync.getValue(key) || {};
+  return (await chromeSync.get(key))[key] || {};
 }
 
 export async function start(name = delayedInit) {
@@ -229,7 +229,7 @@ function initController() {
       return chromeLocal.getValue(STORAGE_KEY + drive.name);
     },
     setState(drive, state) {
-      return chromeLocal.setValue(STORAGE_KEY + drive.name, state);
+      return chromeLocal.set({[STORAGE_KEY + drive.name]: state});
     },
     retryMaxAttempts: 10,
     retryExp: 1.2,

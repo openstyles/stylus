@@ -290,7 +290,7 @@ async function onAlarm({name}) {
 }
 
 function resetInterval() {
-  chromeLocal.setValue('lastUpdateTime', lastUpdateTime = Date.now());
+  chromeLocal.set({lastUpdateTime: lastUpdateTime = Date.now()});
   schedule();
 }
 
@@ -315,7 +315,7 @@ async function flushQueue(lines) {
   lines.push(time + (logQueue[0] && logQueue[0].text || ''));
   lines.push(...logQueue.slice(1).map(item => item.text));
 
-  chromeLocal.setValue('updateLog', lines);
+  chromeLocal.set({updateLog: lines});
   logLastWriteTime = Date.now();
   logQueue = [];
 }

@@ -874,12 +874,12 @@ function readStorage() {
 }
 
 function writeStorage() {
-  chromeLocal.getValue('editor').then((val = {}) =>
-    chromeLocal.setValue('editor', Object.assign(val, {
-      find: stateFind,
-      replace: stateReplace,
-      icase: stateIcase,
-    })));
+  chromeLocal.getValue('editor').then((val = {}) => {
+    val.find = stateFind;
+    val.replace = stateReplace;
+    val.icase = stateIcase;
+    chromeLocal.set({editor: val});
+  });
 }
 
 //endregion

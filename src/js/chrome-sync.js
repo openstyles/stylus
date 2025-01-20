@@ -17,12 +17,10 @@ export const remove = /*@__PURE__*/run.bind(syncApi.remove);
 export const get = /*@__PURE__*/syncApi.get.bind(syncApi);
 /** @type {(what: object) => Promise<void>} */
 export const set = /*@__PURE__*/run.bind(syncApi.set);
-export const getValue = async key => (await get(key))[key];
-export const setValue = (key, value) => set({[key]: value});
 const toLZ = value => compressToUTF16(JSON.stringify(value));
 export const unLZ = val => tryJSONparse(decompressFromUTF16(val));
 export const getLZValue = async key => unLZ((await get(key))[key]);
-export const setLZValue = (key, value) => setValue(key, toLZ(value));
+export const setLZValue = (key, value) => set({[key]: toLZ(value)});
 
 let busy;
 

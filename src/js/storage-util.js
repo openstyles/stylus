@@ -4,9 +4,6 @@ const StorageExtras = {
   async getValue(key) {
     return (await this.get(key))[key];
   },
-  async setValue(key, value) {
-    await this.set({[key]: value});
-  },
 };
 
 export const chromeLocal =

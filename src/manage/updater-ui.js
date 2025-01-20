@@ -280,7 +280,7 @@ export default async function UpdateHistory(show, el, selector) {
 
   function deleteHistory() {
     if (deleted) {
-      chromeLocal.setValue('updateLog', logText.split('\n'));
+      chromeLocal.set({updateLog: logText.split('\n')});
       setTimeout(scrollToBottom);
     } else {
       chromeLocal.remove('updateLog');
