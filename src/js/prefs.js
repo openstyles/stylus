@@ -173,7 +173,7 @@ export const get = key => {
   return res && typeof res === 'object' ? deepCopy(res) : res;
 };
 
-export let set = (key, val, isSynced) => {
+export const set = (key, val, isSynced) => {
   const old = values[key];
   const def = defaults[key];
   const type = typeof def;
@@ -191,10 +191,8 @@ export let set = (key, val, isSynced) => {
   /* browser.storage is slow and can randomly lose values if the tab was closed immediately,
    so we're sending the value to the background script which will save it to the storage;
    the extra bonus is that invokeAPI is immediate in extension tabs. */
-  return true;
+  return __.IS_BG ? set._bgSet(key, val) : true;
 };
-
-export const __newSet = fn => (set = fn);
 
 export const reset = key => {
   set(key, deepCopy(defaults[key]));
@@ -236,7 +234,7 @@ export const unsubscribe = (keys, fn) => {
 };
 
 function upload() {
-  API.prefs.upload(toUpload);
+  API.setPrefs(toUpload);
   toUpload = null;
 }
 

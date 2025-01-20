@@ -17,7 +17,7 @@ import initContextMenus from './context-menus';
 import {draftsDB, mirrorStorage, prefsDB, stateDB} from './db';
 import download from './download';
 import {refreshIconsWhenReady, updateIconBadge} from './icon-manager';
-import prefsApi from './prefs-api';
+import {setPrefs} from './prefs-api';
 import setClientData from './set-client-data';
 import * as styleMan from './style-manager';
 import * as styleCache from './style-manager/cache';
@@ -45,13 +45,13 @@ Object.assign(API, /** @namespace API */ {
   openManager,
   openURL,
   pingTab,
+  setPrefs,
   setSystemDark,
   updateIconBadge,
 
   //#endregion
   //#region API namespaced actions
 
-  prefs: prefsApi,
   styles: styleMan,
   sync: syncMan,
   updater: updateMan,

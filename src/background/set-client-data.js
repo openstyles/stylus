@@ -6,7 +6,7 @@ import {isDark, setSystemDark} from './color-scheme';
 import {bgBusy, dataHub, isVivaldi} from './common';
 import {prefsDB, stateDB} from './db';
 import makePopupData from './popup-data';
-import prefsApi from './prefs-api';
+import {nondefaults} from './prefs-api';
 import * as styleMan from './style-manager';
 import {webRequestBlocking} from './style-via-webrequest';
 import * as syncMan from './sync-manager';
@@ -83,7 +83,7 @@ export default async function setClientData({
     apply: styleMan.getSectionsByUrl(pageUrl, null, true),
     dark: isDark,
     favicon: FIREFOX || isVivaldi,
-    prefs: prefsApi.get(),
+    prefs: nondefaults,
   }, PROVIDERS[page]?.(url));
   const results = await Promise.all(Object.values(jobs));
   Object.keys(jobs).forEach((id, i) => (jobs[id] = results[i]));
