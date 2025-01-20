@@ -7,7 +7,7 @@ let sugarss = null;
 /** @namespace WorkerAPI */
 Object.assign(COMMANDS, {
 
-  async csslint(code, config) {
+  csslint(code, config) {
     importScriptsOnce('parserlib.js', 'csslint.js'); /* global CSSLint */
     return CSSLint
       .verify(code, config).messages
