@@ -5,10 +5,7 @@ import {FIREFOX} from '@/js/ua';
 export const THEMES = __.THEMES;
 export const THEME_KEY = 'editor.theme';
 const DEFAULT = 'default';
-const EL = document.head.appendChild($tag(FIREFOX ? 'link' : 'style'));
-EL.id = 'cm-theme';
-if (__.BUILD !== 'chrome' && FIREFOX)
-  EL.rel = 'stylesheet';
+let EL;
 
 export async function loadCmTheme(name = prefs.get(THEME_KEY)) {
   let css;
@@ -20,6 +17,16 @@ export async function loadCmTheme(name = prefs.get(THEME_KEY)) {
     prefs.set(THEME_KEY, name);
   } else if (!css) {
     css = `${__.CM_PATH}${name}.css`;
+    if (!EL) {
+      if (__.BUILD !== 'chrome' && FIREFOX) {
+        EL = $tag('link');
+        EL.rel = 'stylesheet';
+      } else {
+        EL = $tag('style');
+      }
+      EL.id = 'cm-theme';
+      document.head.appendChild(EL);
+    }
     // Firefox delays visual updates so we can fetch the theme asynchronously
     if (__.BUILD !== 'chrome' && FIREFOX) {
       EL.href = css;
@@ -32,6 +39,5 @@ export async function loadCmTheme(name = prefs.get(THEME_KEY)) {
       css = THEMES[name] = xhr.response;
     }
   }
-  EL.dataset.theme = name;
-  EL.textContent = css;
+  if (EL) EL.textContent = css;
 }
