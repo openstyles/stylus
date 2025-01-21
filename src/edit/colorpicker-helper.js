@@ -5,54 +5,56 @@ import {t} from '@/js/util';
 import cmFactory from './codemirror-factory';
 
 const {defaults, commands} = CodeMirror;
+const ECP = 'editor.colorpicker.';
+const CP = 'colorpicker';
 
-prefs.subscribe('editor.colorpicker.hotkey', (id, hotkey) => {
-  commands.colorpicker = invokeColorpicker;
+prefs.subscribe(ECP + 'hotkey', (id, hotkey) => {
+  commands[CP] = invokeColorpicker;
   for (const key in extraKeys) {
-    if (extraKeys[key] === 'colorpicker') {
+    if (extraKeys[key] === CP) {
       delete extraKeys[key];
       break;
     }
   }
   if (hotkey) {
-    extraKeys[hotkey] = 'colorpicker';
+    extraKeys[hotkey] = CP;
   }
 }, true);
 
-prefs.subscribe('editor.colorpicker', (id, enabled) => {
-  const keyName = prefs.__values['editor.colorpicker.hotkey'];
-  defaults.colorpicker = enabled;
+prefs.subscribe(ECP.slice(0, -1), (id, enabled) => {
+  const keyName = prefs.__values[ECP + 'hotkey'];
+  defaults[CP] = enabled;
   if (enabled) {
     if (keyName) {
-      commands.colorpicker = invokeColorpicker;
-      extraKeys[keyName] = 'colorpicker';
+      commands[CP] = invokeColorpicker;
+      extraKeys[keyName] = CP;
     }
-    defaults.colorpicker = {
+    defaults[CP] = {
       tooltip: t('colorpickerTooltip'),
       popup: {
         tooltipForSwitcher: t('colorpickerSwitchFormatTooltip'),
         paletteLine: t('numberedLine'),
         paletteHint: t('colorpickerPaletteHint'),
-        hexUppercase: prefs.__values['editor.colorpicker.hexUppercase'],
+        hexUppercase: prefs.__values[ECP + 'hexUppercase'],
         embedderCallback: state => {
-          ['hexUppercase', 'color']
-            .filter(name => state[name] !== prefs.__values['editor.colorpicker.' + name])
-            .forEach(name => prefs.set('editor.colorpicker.' + name, state[name]));
+          for (const k of ['hexUppercase', 'color'])
+            if (state[k] !== prefs.__values[ECP + k])
+              prefs.set(ECP + k, state[k]);
         },
         get maxHeight() {
-          return prefs.__values['editor.colorpicker.maxHeight'];
+          return prefs.__values[ECP + 'maxHeight'];
         },
         set maxHeight(h) {
-          prefs.set('editor.colorpicker.maxHeight', h);
+          prefs.set(ECP + 'maxHeight', h);
         },
       },
     };
   } else {
     delete extraKeys[keyName];
   }
-  cmFactory.globalSetOption('colorpicker', defaults.colorpicker);
+  cmFactory.globalSetOption(CP, defaults[CP]);
 }, true);
 
 function invokeColorpicker(cm) {
-  cm.state.colorpicker.openPopup(prefs.__values['editor.colorpicker.color']);
+  cm.state[CP].openPopup(prefs.__values[ECP + 'color']);
 }
