@@ -35,7 +35,7 @@ const ENGINES = {
 };
 
 linterMan.register(async (text, _options, cm) => {
-  const linter = prefs.get('editor.linter');
+  const linter = prefs.__values['editor.linter'];
   if (linter) {
     const {mode} = cm.options;
     const currentFirst = Object.entries(ENGINES).sort(([a]) => a === linter ? -1 : 1);

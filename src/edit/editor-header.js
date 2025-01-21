@@ -65,7 +65,7 @@ async function peekDetails(evt) {
   elDetails.open = false;
 }
 
-function showHotkeyInTooltip(_, mapName = prefs.get('editor.keyMap')) {
+function showHotkeyInTooltip(_, mapName = prefs.__values['editor.keyMap']) {
   for (const el of $$('[data-hotkey-tooltip]')) {
     if (el._hotkeyTooltipKeyMap !== mapName) {
       el._hotkeyTooltipKeyMap = mapName;

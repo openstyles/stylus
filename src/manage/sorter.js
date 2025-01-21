@@ -70,7 +70,7 @@ const selectOptions = [
 ];
 const splitRegex = /\s*,\s*/;
 const ID = 'manage.newUI.sort';
-const getPref = () => prefs.get(ID) || prefs.defaults[ID];
+const getPref = () => prefs.__values[ID] || prefs.defaults[ID];
 
 export let columns = 1;
 let minWidth;

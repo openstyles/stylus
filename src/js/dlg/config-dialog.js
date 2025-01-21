@@ -96,7 +96,7 @@ export default async function configDialog(style) {
     const va = target.va;
     if (va) {
       va.dirty = varsInitial[va.name] !== (isDefault(va) ? va.default : va.value);
-      if (prefs.get('config.autosave') && !justSaved) {
+      if (prefs.__values['config.autosave'] && !justSaved) {
         debounce(save, AUTOSAVE_DELAY, {anyChangeIsDirty: true});
         return;
       }
@@ -360,7 +360,7 @@ export default async function configDialog(style) {
       } else {
         va.input.value = value;
       }
-      if (!prefs.get('config.autosave')) {
+      if (!prefs.__values['config.autosave']) {
         renderValueState(va);
       }
     }

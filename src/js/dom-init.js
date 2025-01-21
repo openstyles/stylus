@@ -67,7 +67,7 @@ if ($rootCL.contains('normal-layout')) {
         return width;
       },
     });
-    prefs.ready.then(() => dom.setHWProp(prefs.get(HWprefId)));
+    prefs.ready.then(() => dom.setHWProp(prefs.__values[HWprefId]));
   }
   window.on('load', () => import('./dom-on-load'), {once: true});
 }

@@ -53,7 +53,7 @@ export default function initStyleViaApi() {
   }
 
   async function styleApply({id = null, ignoreUrlCheck = false}, {tab, frameId, url}) {
-    if (prefs.get('disableAll')) {
+    if (prefs.__values['disableAll']) {
       return;
     }
     const {tabFrames, frameStyles} = getCachedData(tab.id, frameId);

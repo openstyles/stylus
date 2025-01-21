@@ -79,7 +79,7 @@ const prefKeys = prefs.knownKeys.filter(k =>
 const {insertTab, insertSoftTab} = CodeMirror.commands;
 prefs.ready.then(() => {
   for (const key of prefKeys) {
-    cmDefaults[prefToCmOpt(key)] = prefs.get(key);
+    cmDefaults[prefToCmOpt(key)] = prefs.__values[key];
   }
   for (const [key, fn] of Object.entries({
     'editor.tabSize'(cm, value) {
@@ -102,7 +102,7 @@ prefs.ready.then(() => {
       cm.setOption('configureMouse', value ? configureMouseFn : null);
     },
   })) {
-    CodeMirror.defineOption(prefToCmOpt(key), prefs.get(key), fn);
+    CodeMirror.defineOption(prefToCmOpt(key), prefs.__values[key], fn);
     prefKeys.push(key);
   }
 });

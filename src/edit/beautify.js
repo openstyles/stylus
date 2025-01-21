@@ -34,9 +34,10 @@ async function beautify(scope, ui = true) {
   if (!cssBeautifyMod) {
     cssBeautifyMod = (await import('@/vendor-overwrites/beautify/beautify-css-mod')).default;
   }
-  const tabs = prefs.get('editor.indentWithTabs');
-  const options = Object.assign(prefs.defaults['editor.beautify'], prefs.get('editor.beautify'));
-  options.indent_size = tabs ? 1 : prefs.get('editor.tabSize');
+  const tabs = prefs.__values['editor.indentWithTabs'];
+  const options = Object.assign(prefs.defaults['editor.beautify'],
+    prefs.__values['editor.beautify']);
+  options.indent_size = tabs ? 1 : prefs.__values['editor.tabSize'];
   options.indent_char = tabs ? '\t' : ' ';
   if (ui) {
     ui = createBeautifyUI(scope, options);

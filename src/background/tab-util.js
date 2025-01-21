@@ -30,9 +30,9 @@ const EMPTY_TAB = [
 export async function openEditor(params) {
   const u = new URL(chrome.runtime.getURL('edit.html'));
   u.search = new URLSearchParams(params);
-  const wnd = browserWindows && prefs.get('openEditInWindow');
-  const wndPos = wnd && prefs.get('windowPosition');
-  const wndBase = wnd && prefs.get('openEditInWindow.popup') ? {type: 'popup'} : {};
+  const wnd = browserWindows && prefs.__values.openEditInWindow;
+  const wndPos = wnd && prefs.__values.windowPosition;
+  const wndBase = wnd && prefs.__values['openEditInWindow.popup'] ? {type: 'popup'} : {};
   const ffBug = wnd && FIREFOX; // https://bugzil.la/1271047
   for (let tab, retry = 0; retry < (wndPos ? 2 : 1); ++retry) {
     try {

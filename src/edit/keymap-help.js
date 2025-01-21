@@ -13,7 +13,7 @@ let tableBody;
 
 export function keymapHelp() {
   const PREF = 'editor.keyMap';
-  const keyMap = mergeKeyMaps({}, prefs.get(PREF), extraKeys);
+  const keyMap = mergeKeyMaps({}, prefs.__values[PREF], extraKeys);
   const keyMapSorted = Object.keys(keyMap)
     .map(key => ({key, cmd: keyMap[key]}))
     .sort((a, b) => (a.cmd < b.cmd || (a.cmd === b.cmd && a.key < b.key) ? -1 : 1));

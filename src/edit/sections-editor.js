@@ -53,7 +53,7 @@ export default function SectionsEditor() {
     updateLivePreview,
     updateMeta,
 
-    getCurrentLinter: () => prefs.get('editor.linter'),
+    getCurrentLinter: () => prefs.__values['editor.linter'],
 
     getEditors() {
       return sections.filter(s => !s.removed).map(s => s.cm);

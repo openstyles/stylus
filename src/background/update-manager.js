@@ -61,7 +61,7 @@ export async function checkAllStyles({
   save = true,
   ignoreDigest,
   observe,
-  onlyEnabled = prefs.get('updateOnlyEnabled'),
+  onlyEnabled = prefs.__values.updateOnlyEnabled,
 } = {}) {
   resetInterval();
   checkingAll = true;
@@ -271,7 +271,7 @@ function getDateFromVer(style) {
 }
 
 function schedule() {
-  const interval = prefs.get('updateInterval') * 60 * 60 * 1000;
+  const interval = prefs.__values.updateInterval * 60 * 60 * 1000;
   if (interval > 0) {
     const elapsed = Math.max(0, Date.now() - lastUpdateTime);
     chrome.alarms.create(ALARM_NAME, {

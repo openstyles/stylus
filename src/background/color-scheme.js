@@ -79,7 +79,7 @@ export function shouldIncludeStyle({preferScheme: ps}) {
 }
 
 function calcTime(key) {
-  const [h, m] = prefs.get(key).split(':');
+  const [h, m] = prefs.__values[key].split(':');
   return (h * 3600 + m * 60) * 1000;
 }
 
@@ -107,8 +107,8 @@ function onNightChanged(force) {
   if (force !== true) return debounce(onNightChanged, 0, true);
   updateTimePreferDark();
   // recreating both alarms as the user may have been in a different timezone when setting the other one
-  createAlarm(kSTART, prefs.get(kSTART));
-  createAlarm(kEND, prefs.get(kEND));
+  createAlarm(kSTART, prefs.__values[kSTART]);
+  createAlarm(kEND, prefs.__values[kEND]);
 }
 
 function updateTimePreferDark() {

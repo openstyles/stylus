@@ -20,7 +20,7 @@ prefs.subscribe('editor.colorpicker.hotkey', (id, hotkey) => {
 }, true);
 
 prefs.subscribe('editor.colorpicker', (id, enabled) => {
-  const keyName = prefs.get('editor.colorpicker.hotkey');
+  const keyName = prefs.__values['editor.colorpicker.hotkey'];
   defaults.colorpicker = enabled;
   if (enabled) {
     if (keyName) {
@@ -33,14 +33,14 @@ prefs.subscribe('editor.colorpicker', (id, enabled) => {
         tooltipForSwitcher: t('colorpickerSwitchFormatTooltip'),
         paletteLine: t('numberedLine'),
         paletteHint: t('colorpickerPaletteHint'),
-        hexUppercase: prefs.get('editor.colorpicker.hexUppercase'),
+        hexUppercase: prefs.__values['editor.colorpicker.hexUppercase'],
         embedderCallback: state => {
           ['hexUppercase', 'color']
-            .filter(name => state[name] !== prefs.get('editor.colorpicker.' + name))
+            .filter(name => state[name] !== prefs.__values['editor.colorpicker.' + name])
             .forEach(name => prefs.set('editor.colorpicker.' + name, state[name]));
         },
         get maxHeight() {
-          return prefs.get('editor.colorpicker.maxHeight');
+          return prefs.__values['editor.colorpicker.maxHeight'];
         },
         set maxHeight(h) {
           prefs.set('editor.colorpicker.maxHeight', h);
@@ -54,5 +54,5 @@ prefs.subscribe('editor.colorpicker', (id, enabled) => {
 }, true);
 
 function invokeColorpicker(cm) {
-  cm.state.colorpicker.openPopup(prefs.get('editor.colorpicker.color'));
+  cm.state.colorpicker.openPopup(prefs.__values['editor.colorpicker.color']);
 }

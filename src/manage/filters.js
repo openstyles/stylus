@@ -23,7 +23,7 @@ router.watch({search: [fltSearch, fltMode]}, ([search, mode]) => {
   const firstRun = !elSearch;
   if (firstRun) initFilters();
   elSearch.value = search || '';
-  elSearchMode.value = mode || prefs.get(fltModePref);
+  elSearchMode.value = mode || prefs.__values[fltModePref];
   if (firstRun) filterOnChange({forceRefilter: true});
   else searchStyles();
 });
@@ -120,7 +120,7 @@ function initFilters() {
       }
     }
     if (elSearchMode.value === 'url') {
-      elSearchMode.value = prefs.get(fltModePref);
+      elSearchMode.value = prefs.__values[fltModePref];
     }
     filterOnChange({forceRefilter: true});
     router.updateSearch({[fltSearch]: '', [fltMode]: ''});

@@ -104,7 +104,7 @@ setTimeout(() => !cm && showSpinner($id('header')), 200);
     messageBox.alert(isNaN(error) ? `${error}` : 'HTTP Error ' + error, 'pre');
     return;
   }
-  const theme = prefs.get(THEME_KEY);
+  const theme = prefs.__values[THEME_KEY];
   loadCmTheme(theme);
   cm = CodeMirror($('.main'), {
     value: sourceCode || style.sourceCode,

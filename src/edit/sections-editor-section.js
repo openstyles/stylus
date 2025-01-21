@@ -34,7 +34,7 @@ export default class EditorSection {
         ? ws.height = si ? si.height : '100vh'
         : ws.height;
       el.style.setProperty('--cm-height', h);
-      at[prefs.get('editor.targetsFirst') ? 'after' : 'before'](wrapper);
+      at[prefs.__values['editor.targetsFirst'] ? 'after' : 'before'](wrapper);
     }, {
       value: sectionData.code,
       finishInit(_) {

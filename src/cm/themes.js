@@ -7,7 +7,7 @@ export const THEME_KEY = 'editor.theme';
 const DEFAULT = 'default';
 let EL;
 
-export async function loadCmTheme(name = prefs.get(THEME_KEY)) {
+export async function loadCmTheme(name = prefs.__values[THEME_KEY]) {
   let css;
   if (name === DEFAULT) {
     css = '';

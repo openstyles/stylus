@@ -22,7 +22,7 @@ let media;
 
 export function readPrefs(dest = cfg, cb) {
   for (const id of ids) {
-    const val = dest[id] = prefs.get(prefKeyForId(id));
+    const val = dest[id] = prefs.__values[prefKeyForId(id)];
     if (cb) cb(id, val);
   }
 }

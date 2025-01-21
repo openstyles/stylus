@@ -45,7 +45,7 @@ const originalHelper = CodeMirror.hint.css || (() => {});
 
 const AOT_ID = 'autocompleteOnTyping';
 const AOT_PREF_ID = 'editor.' + AOT_ID;
-const aot = prefs.get(AOT_PREF_ID);
+const aot = prefs.__values[AOT_PREF_ID];
 
 let cssAts, cssColors, cssMedia, cssProps, cssPropsLC, cssPropNames;
 let /** @type {AutocompleteSpec} */ cssSpecData;

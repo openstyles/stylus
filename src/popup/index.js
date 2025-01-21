@@ -270,7 +270,7 @@ function makeCrumb(key, val, name, body, isDomain) {
 }
 
 function sortStyles(entries) {
-  const enabledFirst = prefs.get('popup.enabledFirst');
+  const enabledFirst = prefs.__values['popup.enabledFirst'];
   return entries.sort(({styleMeta: a}, {styleMeta: b}) =>
     Boolean(a.frameUrl) - Boolean(b.frameUrl) ||
     enabledFirst && Boolean(b.enabled) - Boolean(a.enabled) ||
@@ -296,7 +296,7 @@ function showStyles(frames) {
 
 export function resortEntries(entries) {
   // `entries` is specified only at startup, after that we respect the prefs
-  if (entries || prefs.get('popup.autoResort')) {
+  if (entries || prefs.__values['popup.autoResort']) {
     installed.append(...sortStyles(entries || [...installed.children]));
   }
 }

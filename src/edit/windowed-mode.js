@@ -31,7 +31,7 @@ async function initWindowedMode() {
   if (isSimple) EmbeddedPopup();
   editor.isWindowed = isSimple || (
     history.length === 1 &&
-    (__.MV3 || await prefs.ready, prefs.get('openEditInWindow')) &&
+    (__.MV3 || await prefs.ready, prefs.__values['openEditInWindow']) &&
     (await browserWindows.getAll()).length > 1 &&
     (await browser.tabs.query({currentWindow: true})).length === 1
   );
@@ -50,7 +50,7 @@ async function onTabAttached(tabId, info) {
   const openEditInWindow = win.tabs.length === 1;
   // FF-only because Chrome retardedly resets the size during dragging
   if (openEditInWindow && FIREFOX) {
-    browserWindows.update(info.newWindowId, prefs.get('windowPosition'));
+    browserWindows.update(info.newWindowId, prefs.__values['windowPosition']);
   }
   prefs.set('openEditInWindow', openEditInWindow);
 }

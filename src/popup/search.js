@@ -74,7 +74,7 @@ let rxCategory;
 let searchGlobals = !tabUrlSupported || $searchGlobals.checked;
 /** @type {RegExp[]} */
 let query = [];
-let order = prefs.get('popup.findSort');
+let order = prefs.__values['popup.findSort'];
 let scrollToFirstResult = true;
 let displayedPage = 1;
 let totalPages = 1;

@@ -117,7 +117,7 @@ export function createHotkeyInput(prefId, {buttons = true, onDone}) {
     /(Shift-)?./, // a single character
     /(?=.)(Shift-?|Ctrl-?|Control-?|Alt-?|Meta-?)*(Escape|Tab|Page(Up|Down)|Arrow(Up|Down|Left|Right)|Home|End)?/,
   ].map(r => r.source || r).join('|') + ')$', 'i');
-  const initialValue = prefs.get(prefId);
+  const initialValue = prefs.__values[prefId];
   const input = $create('input', {
     spellcheck: false,
     onpaste: e => onkeydown(e, e.clipboardData.getData('text')),
@@ -182,13 +182,13 @@ export function showCodeMirrorPopup(title, html, options) {
   let cm = popup.codebox = CodeMirror(popup._contents, Object.assign({
     mode: 'css',
     lineNumbers: true,
-    lineWrapping: prefs.get('editor.lineWrapping'),
+    lineWrapping: prefs.__values['editor.lineWrapping'],
     foldGutter: true,
     gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'],
     matchBrackets: true,
     styleActiveLine: true,
-    theme: prefs.get(THEME_KEY),
-    keyMap: prefs.get('editor.keyMap'),
+    theme: prefs.__values[THEME_KEY],
+    keyMap: prefs.__values['editor.keyMap'],
   }, options));
   cm.focus();
 

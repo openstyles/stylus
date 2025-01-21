@@ -44,7 +44,7 @@ export default function EmbeddedPopup() {
       id: ID,
       src: actionPopupUrl,
       height: 600,
-      width: prefs.get('popupWidth'),
+      width: prefs.__values.popupWidth,
       onload: initFrame,
     });
     window.on('mousedown', removePopup);

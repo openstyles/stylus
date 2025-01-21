@@ -181,7 +181,7 @@ export default function SourceEditor() {
   }
 
   function getCurrentLinter() {
-    const name = prefs.get('editor.linter');
+    const name = prefs.__values['editor.linter'];
     if (cm.getOption('mode') !== 'css' && name === 'csslint') {
       return 'stylelint';
     }
@@ -191,7 +191,7 @@ export default function SourceEditor() {
   function setupNewStyle(tpl) {
     const comment = `/* ${t('usercssReplaceTemplateSectionBody')} */`;
     const sec0 = style.sections[0];
-    sec0.code = ' '.repeat(prefs.get('editor.tabSize')) + comment;
+    sec0.code = ' '.repeat(prefs.__values['editor.tabSize']) + comment;
     if (Object.keys(sec0).length === 1) { // the only key is 'code'
       sec0.domains = ['example.com'];
     }
