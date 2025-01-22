@@ -1,12 +1,11 @@
-import {DB, IMPORT_THROTTLE, k_size, kInjectionOrder, kStyleViaXhr, kUrl, UCD} from '@/js/consts';
-import {STORAGE_KEY} from '@/js/prefs';
+import {IMPORT_THROTTLE, k_size, kStyleViaXhr, kUrl, UCD} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '@/js/sections-util';
 import {calcObjSize, mapObj} from '@/js/util';
 import {broadcast} from '../broadcast';
 import * as colorScheme from '../color-scheme';
-import {bgBusy, bgInit, onSchemeChange, uuidIndex} from '../common';
-import {db, draftsDB, execMirror, prefsDB} from '../db';
+import {uuidIndex} from '../common';
+import {db, draftsDB} from '../db';
 import * as syncMan from '../sync-manager';
 import tabCache from '../tab-manager';
 import {getUrlOrigin} from '../tab-util';
@@ -14,82 +13,16 @@ import * as usercssMan from '../usercss-manager';
 import * as uswApi from '../usw-api';
 import * as styleCache from './cache';
 import {buildCache} from './cache-builder';
-import './connector';
-import {fixKnownProblems, onBeforeSave, onSaved} from './fixer';
+import './init';
+import {onBeforeSave, onSaved} from './fixer';
 import {urlMatchSection, urlMatchStyle} from './matcher';
 import {
   broadcastStyleUpdated, calcRemoteId, dataMap, getById, getByUuid,
-  mergeWithMapped, order, orderWrap, setOrderImpl, storeInMap,
+  mergeWithMapped, order, orderWrap, setOrderImpl,
 } from './util';
-
-bgInit.push(async () => {
-  __.DEBUGLOG('styleMan init...');
-  let mirrored;
-  let [orderFromDb, styles] = await Promise.all([
-    prefsDB.get(kInjectionOrder),
-    db.getAll(),
-    styleCache.loadAll(),
-  ]);
-  if (!orderFromDb)
-    orderFromDb = await execMirror(STORAGE_KEY, 'get', kInjectionOrder);
-  if (!styles[0])
-    styles = mirrored = await execMirror(DB, 'getAll');
-  setOrderImpl(orderFromDb, {store: false});
-  initStyleMap(styles, mirrored);
-  styleCache.hydrate(dataMap);
-  __.DEBUGLOG('styleMan init done');
-});
-
-onSchemeChange.add(() => {
-  for (const {style} of dataMap.values()) {
-    if (colorScheme.SCHEMES.includes(style.preferScheme)) {
-      broadcastStyleUpdated(style, 'colorScheme');
-    }
-  }
-});
-
-styleCache.setOnDeleted(val => {
-  for (const id in val.sections) {
-    dataMap.get(+id)?.appliesTo.delete(val.url);
-  }
-});
 
 export * from '../style-search-db';
 export {getById as get};
-
-async function initStyleMap(styles, mirrored) {
-  let fix, fixed, lost, i, style, len;
-  for (i = 0, len = 0, style; i < styles.length; i++) {
-    style = styles[i];
-    if (+style.id > 0
-    && typeof style._id === 'string'
-    && typeof style.sections?.[0]?.code === 'string') {
-      storeInMap(style);
-      if (mirrored) {
-        if (i > len) styles[len] = style;
-        len++;
-      }
-    } else {
-      try { fix = fixKnownProblems(style, true); } catch {}
-      if (fix) (fixed ??= new Map()).set(style.id, fix);
-      else (lost ??= []).push(style);
-    }
-  }
-  styles.length = len;
-  if (lost)
-    console.error(`Skipped ${lost.length} unrecoverable styles:`, lost);
-  if (fixed) {
-    console[mirrored ? 'log' : 'warn'](`Fixed ${fixed.size} styles, ids:`, ...fixed.keys());
-    fixed = await Promise.all([...fixed.values(), bgBusy]);
-    fixed.pop();
-    if (mirrored) {
-      styles.push(...fixed);
-      fixed.forEach(storeInMap);
-    }
-  }
-  if (styles.length)
-    setTimeout(db.putMany, 100, styles);
-}
 
 /** @returns {Promise<void>} */
 export async function config(id, prop, value) {
