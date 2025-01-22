@@ -57,9 +57,9 @@ async function doBroadcast() {
     }
     tabs.length = tabsLen;
   } else if (activeTab) {
-    for (const t of tabCache.values()) {
-      if (t[kStyleIds] && !t[kUrl][0].startsWith(ownRoot)) {
-        tabsLen = tabs[t.id === activeTab.id ? 'unshift' : 'push'](t.id);
+    for (const {id, [kUrl]: url, [kStyleIds]: styleIds} of tabCache.values()) {
+      if (styleIds && url && url[0] && !url[0].startsWith(ownRoot)) {
+        tabsLen = tabs[id === activeTab.id ? 'unshift' : 'push'](id);
       }
     }
   }

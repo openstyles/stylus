@@ -280,11 +280,15 @@ export function getSectionsByUrl(url, id, isInitialApply) {
     buildCache(cache, url, res);
   }
   res = cache.sections;
+  res = id
+    ? ((res = res[id])) ? [res] : []
+    : Object.values(res);
+  if (isInitialApply === true && res.length) {
+    (td[kUrl] ??= {})[frameId] ??= url;
+  }
   return {
     cfg,
-    sections: id
-      ? ((res = res[id])) ? [res] : []
-      : Object.values(res),
+    sections: res,
   };
 }
 

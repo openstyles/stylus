@@ -1,7 +1,7 @@
 import '@/js/browser';
 import {kAboutBlank, kUrl} from '@/js/consts';
 import {CHROME, FIREFOX} from '@/js/ua';
-import {chromeProtectsNTP} from '@/js/urls';
+import {chromeProtectsNTP, ownRoot} from '@/js/urls';
 import {deepEqual} from '@/js/util';
 import {ignoreChromeError, MF} from '@/js/util-webext';
 import {pingTab, sendTab} from './broadcast';
@@ -11,7 +11,10 @@ import tabCache from './tab-manager';
 export const webNavigation = chrome.webNavigation;
 /** @type {{ url: chrome.events.UrlFilter[] }} */
 const WEBNAV_FILTER_STYLABLE = {
-  url: [{schemes: ['http', 'https', 'file', 'ftp', 'ftps']}],
+  url: [
+    {schemes: ['http', 'https', 'file', 'ftp', 'ftps']},
+    {urlPrefix: ownRoot},
+  ],
 };
 export const kCommitted = 'committed';
 let prevData = {};
