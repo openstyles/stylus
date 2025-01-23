@@ -15,7 +15,9 @@ export default async function makePopupData() {
   if (FIREFOX && tab.status === 'loading' && tab.url === kAboutBlank) {
     tab = await waitForTabUrl(tab.id);
   }
-  let url = tab.pendingUrl || tab.url || ''; // new Chrome uses pendingUrl while connecting
+  // In modern Chrome `url` is for the current tab's contents, so it may be undefined
+  // when a newly created tab is still connecting to `pendingUrl`.
+  let url = tab.url || tab.pendingUrl || '';
   let tmp;
   const td = tabCache.get(tab.id);
   const isOwn = url.startsWith(ownRoot);
