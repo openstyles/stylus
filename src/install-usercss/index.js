@@ -126,6 +126,8 @@ setTimeout(() => !cm && showSpinner($id('header')), 200);
   updateMeta();
   if (dup) {
     ($(`[name="ss-scheme"][value="${dup.preferScheme}"]`) || {}).checked = true;
+  } else {
+    $('.live-reload span').textContent = t('liveReloadAfterInstall');
   }
   for (let type of ['in', 'ex']) {
     const el = $id('ss-' + (type += 'clusions'));

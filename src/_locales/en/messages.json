@@ -743,6 +743,10 @@
     "message": "See a full list of rules",
     "description": "Stylelint or CSSLint rules label added immediately before a link"
   },
+  "liveReloadAfterInstall": {
+    "message": "Live reload after installation",
+    "description": "The alternative label of \"Live reload\" checkbox (liveReloadLabel translation key) for a style that wasn't installed yet"
+  },
   "liveReloadError": {
     "message": "An error occurred while watching the file",
     "description": "The label of live-reload error"
