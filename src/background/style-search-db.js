@@ -54,9 +54,10 @@ export function searchDb({query, mode, ids}) {
     const m = /^\/(.+?)\/([gimsuy]*)$/.exec(query);
     const rx = m && tryRegExp(m[1], m[2]);
     const test = rx ? rx.test.bind(rx) : createTester(query);
-    for (const {style} of dataMap) {
-      if ((!ids || ids.includes(style.id)) &&
-        (!query || modeHandler(style, test))) {
+    for (let style of ids || dataMap.values()) {
+      if ((!ids || (style = dataMap.get(style))) &&
+          (style = style.style) &&
+          (!query || modeHandler(style, test))) {
         res.push(style.id);
       }
     }
