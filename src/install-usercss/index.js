@@ -190,6 +190,7 @@ setTimeout(() => !cm && showSpinner($id('header')), 200);
 
 function updateMeta(newStyle) {
   if (newStyle) {
+    // also triggers an update of the currently shown configDialog
     Object.assign(style, newStyle);
     for (const k in style) if (!(k in newStyle)) delete style[k];
   }

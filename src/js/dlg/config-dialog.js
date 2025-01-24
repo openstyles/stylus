@@ -13,26 +13,25 @@ export default async function configDialog(style) {
   const AUTOSAVE_DELAY = 400;
   let saving = false;
   let bodyStyle;
+  let ucd, varsHash, varNames, vars, varsInitial;
 
   if (typeof style === 'number')
     style = await API.styles.getCore({id: style, vars: true});
-  const ucd = style[UCD];
-  const varsHash = deepCopy(ucd.vars) || {};
-  const varNames = Object.keys(varsHash);
-  const vars = varNames.map(name => varsHash[name]);
-  let varsInitial = getInitialValues(varsHash);
 
-  const elements = [];
-  const pathname = location.pathname.slice(1);
-  const isPopup = pathname === 'popup.html';
+  init(false, false);
+  const isPopup = document.body.id === 'stylus-popup';
   const colorpicker = vars.some(v => v.type === 'color')
     ? (await import('@/js/color/color-picker')).default()
     : null;
-  const buttons = {};
-
-  buildConfigForm();
-  renderValues();
-  vars.forEach(renderValueState);
+  const elBody = $create('.config-body');
+  const btnSave = $create('button[data-cmd=save]',
+    {disabled: true, onclick: save},
+    t('confirmSave'));
+  const btnDefault = $create('button[data-cmd=default]',
+    {disabled: true, onclick: useDefault, title: t('optionsReset')},
+    t('genericResetLabel'));
+  const btnClose = $create('button[data-cmd=close]',
+    t('confirmClose'));
 
   return messageBox.show({
     title: `${style.customName || style.name} v${ucd.version}`,
@@ -41,18 +40,9 @@ export default async function configDialog(style) {
       $create('.config-heading', ucd.supportURL &&
         $createLink({className: '.external-support', href: ucd.supportURL},
           t('externalFeedback'))),
-      $create('.config-body', elements),
+      elBody,
     ],
-    buttons: [
-      $create('button[data-cmd=save]',
-        {disabled: true, onclick: save},
-        t('confirmSave')),
-      $create('button[data-cmd=default]',
-        {disabled: true, onclick: useDefault, title: t('optionsReset')},
-        t('genericResetLabel')),
-      $create('button[data-cmd=close]',
-        t('confirmClose')),
-    ],
+    buttons: [btnSave, btnDefault, btnClose],
     onshow,
   }).then(onhide);
 
@@ -74,19 +64,38 @@ export default async function configDialog(style) {
         t('configOnChange'),
       ]));
     setupLivePrefs(['config.autosave']);
-    box.style.setProperty('--num', vars.length);
-    if (isPopup && !MOBILE) {
-      adjustSizeForPopup(box);
-    }
     box.on('change', onchange);
-    buttons.save = box.$('[data-cmd="save"]');
-    buttons.default = box.$('[data-cmd="default"]');
-    buttons.close = box.$('[data-cmd="close"]');
-    updateButtons();
-    updateOverlayScrollbar($id('message-box-contents'));
+    init(null, box);
+  }
+
+  function init(newUCD, box = messageBox.element) {
+    if (newUCD || !ucd) {
+      ucd = newUCD || style[UCD];
+      Object.defineProperty(style, UCD, {
+        get: () => ucd,
+        set: init,
+      });
+      varsHash = deepCopy(ucd.vars) || {};
+      varNames = Object.keys(varsHash);
+      vars = varNames.map(name => varsHash[name]);
+      varsInitial = getInitialValues(varsHash);
+    }
+    if (box) {
+      elBody.textContent = '';
+      buildConfigForm();
+      renderValues();
+      vars.forEach(renderValueState);
+      box.style.setProperty('--num', vars.length);
+      if (isPopup && !MOBILE) {
+        adjustSizeForPopup(box);
+      }
+      updateButtons();
+      updateOverlayScrollbar($id('message-box-contents'));
+    }
   }
 
   function onhide() {
+    Object.defineProperty(style, UCD, {value: ucd});
     if (bodyStyle != null) document.body.style.cssText = bodyStyle;
     colorpicker?.hide();
   }
@@ -109,9 +118,9 @@ export default async function configDialog(style) {
 
   function updateButtons() {
     const someDirty = vars.some(va => va.dirty);
-    buttons.save.disabled = !someDirty;
-    buttons.default.disabled = vars.every(isDefault);
-    buttons.close.textContent = t(someDirty ? 'confirmCancel' : 'confirmClose');
+    btnSave.disabled = !someDirty;
+    btnDefault.disabled = vars.every(isDefault);
+    btnClose.textContent = t(someDirty ? 'confirmCancel' : 'confirmClose');
   }
 
   function updateOverlayScrollbar(el) {
@@ -207,6 +216,7 @@ export default async function configDialog(style) {
   }
 
   function buildConfigForm() {
+    const elements = [];
     let resetter =
       $create('a.config-reset-icon', {tabIndex: 0, title: t('genericResetLabel')},
         $create('i.i-close'));
@@ -304,6 +314,7 @@ export default async function configDialog(style) {
 
       va.savedValue = va.value;
     }
+    elBody.append(...elements);
   }
 
   function updateVarOnBlur() {
