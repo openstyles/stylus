@@ -1,3 +1,4 @@
+import {pKeepAlive} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {bgBusy} from '../common';
 
@@ -12,7 +13,7 @@ let idleDuration;
 
 keepAlive(bgBusy);
 __.KEEP_ALIVE = keepAlive;
-prefs.subscribe('keepAlive', (_, val) => {
+prefs.subscribe(pKeepAlive, (_, val) => {
   idleDuration = Math.max(30, val * 60 | 0/*to integer*/ || 0/*if val is not a number*/);
   TTL = val * 60e3;
   if (!pulse || !TTL && !busy) reschedule();

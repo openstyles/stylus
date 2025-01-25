@@ -91,6 +91,7 @@ declare namespace Injection {
     top?: string | false;
     off?: boolean;
     order?: Order;
+    wake?: boolean;
   }
   interface Order {
     main: Record<string,number>;

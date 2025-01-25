@@ -3,7 +3,7 @@ import {k_deepCopy, kApplyPort} from '@/js/consts';
 import {onMessage} from '@/js/msg';
 import {API, isFrame, TDM, updateTDM} from '@/js/msg-api';
 import * as styleInjector from './style-injector';
-import {FF, isXml, own, ownId} from './style-injector';
+import {FF, isXml, own, ownId, runtime} from './style-injector';
 
 const SYM_ID = 'styles';
 const kPageShow = 'pageshow';
@@ -27,7 +27,7 @@ const instanceId = (FF || !__.MV3 && !CSS.supports('top', '1ic')) && Math.random
  * so we'll add the styles only if the iframe becomes visible */
 const xoEventId = `${instanceId || Math.random()}`;
 
-const NAV_ID = 'url:' + chrome.runtime.id;
+const NAV_ID = 'url:' + runtime.id;
 /** Firefox disallows direct access to global variables in the parent's "isolated world".
  * Chrome 63 and older can't construct EventTarget, so we detect them via ResizeObserver,
  * using a typeof check to skip an implicit global for <html id="ResizeObserver"> */
@@ -70,16 +70,8 @@ if (TDM < 0) {
 }
 styleInjector.onInjectorUpdate = () => {
   updateCount();
-  if (isFrame) {
-    updateExposeIframes();
-    if (!styleInjector.list.length) {
-      port?.disconnect();
-      port = null;
-    } else if (!port) {
-      port = chrome.runtime.connect({name: kApplyPort});
-      port.onDisconnect.addListener(() => (port = null));
-    }
-  }
+  if (isFrame) updateExposeIframes();
+  if (isFrame || own.cfg.wake) updatePort();
 };
 styleInjector.selfDestruct = selfDestruct;
 // Declare all vars before init() or it'll throw due to "temporal dead zone" of const/let
@@ -98,7 +90,8 @@ async function init() {
     else data = !__.ENTRY && !isFrameSameOrigin && !isXml && getStylesViaXhr();
     // XML in Chrome will be auto-converted to html later, so we can't style it via XHR now
   }
-  if (!chrome.runtime.id) return selfDestruct();
+  if (!runtime.id)
+    return selfDestruct();
   await applyStyles(data, true);
 }
 
@@ -118,7 +111,7 @@ function getStylesViaXhr() {
   try {
     const blobId = (document.cookie.split(ownId + '=')[1] || '').split(';')[0];
     if (!blobId) return; // avoiding an exception so we don't spoil debugging in devtools
-    const url = 'blob:' + chrome.runtime.getURL(blobId);
+    const url = 'blob:' + runtime.getURL(blobId);
     document.cookie = `${ownId}=1; max-age=0; SameSite=Lax`; // remove our cookie
     const xhr = new XMLHttpRequest();
     xhr.open('GET', url, false); // synchronous
@@ -189,7 +182,7 @@ function processThrottled() {
 }
 
 function updateConfig({cfg}) {
-  for (const k in cfg) {
+  for (const /** @type {keyof Injection.Config}*/ k in cfg) {
     const v = cfg[k];
     if (v === own.cfg[k]) continue;
     if (k === 'top' && !isFrame) continue;
@@ -197,6 +190,7 @@ function updateConfig({cfg}) {
     if (k === 'off') updateDisableAll();
     else if (k === 'order') styleInjector.sort();
     else if (k === 'top') updateExposeIframes();
+    else if (k === 'wake' && __.MV3) updatePort();
     else styleInjector.updateConfig(own.cfg);
   }
 }
@@ -234,6 +228,16 @@ function updateCount() {
   }
 }
 
+function updatePort() {
+  if (!(__.MV3 && own.cfg.wake) && !styleInjector.list.length) {
+    port?.disconnect();
+    port = null;
+  } else if (!port && (isFrame || __.MV3 && own.cfg.wake)) {
+    port = runtime.connect({name: kApplyPort});
+    port.onDisconnect.addListener(onPortDisconnected);
+  }
+}
+
 function updateUrl(url) {
   if (url !== matchUrl) {
     matchUrl = url;
@@ -249,7 +253,8 @@ function onFrameElementInView(cb) {
 
 /** @param {IntersectionObserverEntry[]} entries */
 function onIntersect(entries) {
-  if (!chrome.runtime.id) return selfDestruct();
+  if (!runtime.id)
+    return selfDestruct();
   for (const e of entries) {
     if (e.intersectionRatio) {
       xo.unobserve(e.target);
@@ -259,15 +264,30 @@ function onIntersect(entries) {
 }
 
 function onBFCache(e) {
-  if (!chrome.runtime.id) return selfDestruct();
+  if (!runtime.id)
+    return selfDestruct();
   if (e.isTrusted && e.persisted) {
     throttledCount = '';
     init(); // styles may have been toggled while we were in bfcache
   }
 }
 
+function onPortDisconnected() {
+  if (__.MV3 && own.cfg.wake)
+    addEventListener('mousedown', wakeUpSW, true);
+  port = null;
+}
+
+function wakeUpSW(e) {
+  if (!runtime.id)
+    return selfDestruct();
+  if (!port && e.target.closest('a')?.href)
+    updatePort();
+}
+
 function onReified(e) {
-  if (!chrome.runtime.id) return selfDestruct();
+  if (!runtime.id)
+    return selfDestruct();
   if (e.isTrusted) {
     updateTDM(2);
     document.onprerenderingchange = null;
@@ -287,6 +307,7 @@ function selfDestruct() {
   if (mqDark) mqDark.onchange = null;
   if (offscreen) for (const fn of offscreen) fn();
   if (TDM < 0) document.onprerenderingchange = null;
+  if (__.MV3) removeEventListener('mousedown', wakeUpSW, true);
   navHubParent?.removeEventListener(NAV_ID, onUrlChanged, true);
   offscreen = null;
   styleInjector.shutdown();

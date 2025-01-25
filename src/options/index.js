@@ -1,5 +1,6 @@
 import '@/js/dom-init';
 import '@/js/browser';
+import {pKeepAlive} from '@/js/consts';
 import {$create} from '@/js/dom';
 import {getEventKeyName, messageBox, setInputValue, setupLivePrefs} from '@/js/dom-util';
 import {htmlToTemplate, tBody, template, templateCache} from '@/js/localization';
@@ -18,7 +19,7 @@ $$('input[min], input[max]').forEach(enforceInputRange);
 $('#FOUC .items').textContent = t(__.MV3 ? 'optionFOUCMV3' : 'optionFOUCMV2')
   .replace('<a>', t('optionsAdvancedStyleViaXhr'))
   .replace('<b>', t('optionKeepAlive'));
-$id('keepAlive').previousElementSibling.firstChild.textContent +=
+$id(pKeepAlive).previousElementSibling.firstChild.textContent +=
   (/^(zh|ja|ko)/.test($root.lang) ? '' : ' ') +
   t('optionKeepAlive2').trim();
 for (const el of $$('[show-if]')) {

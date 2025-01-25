@@ -131,5 +131,6 @@ function onPortDisconnected(port) {
   const {sender} = port;
   const tabId = sender.tab?.id;
   const frameId = sender.frameId;
+  if (!frameId) return; // ignoring unload of previous page while navigating to a new URL
   for (const fn of onUnload) fn(tabId, frameId, port);
 }

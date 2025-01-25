@@ -1,3 +1,4 @@
+import {pKeepAlive} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {isEmptyObj} from '@/js/util';
 import {broadcast} from './broadcast';
@@ -9,6 +10,7 @@ let sentCfg = {};
 const INJECTOR_CONFIG_MAP = {
   exposeIframes: 'top',
   disableAll: 'off',
+  [pKeepAlive]: 'wake',
   styleViaASS: 'ass',
 };
 
@@ -19,6 +21,8 @@ onSchemeChange.add(broadcastInjectorConfig.bind(null, 'dark'));
 
 export default function broadcastInjectorConfig(key, val) {
   key = INJECTOR_CONFIG_MAP[key] || key;
+  if (key === pKeepAlive)
+    val = val >= 0;
   if (!cfg) {
     cfg = {};
     cfg[key] = val;

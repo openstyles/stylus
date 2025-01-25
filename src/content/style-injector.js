@@ -10,7 +10,8 @@ const kAss = 'adoptedStyleSheets';
 export const own = /** @type {Injection.Response} */{
   cfg: {off: false, top: ''},
 };
-export const ownId = chrome.runtime.id;
+export const runtime = chrome.runtime;
+export const ownId = runtime.id;
 export const isXml = !__.ENTRY && document instanceof XMLDocument;
 const wrappedDoc = __.BUILD !== 'chrome' && FF && document.wrappedJSObject
   || document;
@@ -221,7 +222,7 @@ function setTextAndName(el, {id, code, name}) {
     if (el.dataset.name !== name) el.dataset.name = name;
     if (!FF) { // Firefox doesn't support sourceURL comment in CSS
       name = encodeURIComponent(name.replace(/[?#/']/g, toSafeChar));
-      code += `\n/*# sourceURL=${chrome.runtime.getURL(name)}.user.css#${id}${
+      code += `\n/*# sourceURL=${runtime.getURL(name)}.user.css#${id}${
         window !== top ? '#' + Math.random().toString(36).slice(2) : '' // https://crbug.com/1298600
       } */`;
     }
@@ -297,7 +298,8 @@ function removeStyle(style) {
 }
 
 function restoreOrder(mutations) {
-  if (!chrome.runtime.id) return selfDestruct();
+  if (!runtime.id)
+    return selfDestruct();
   let bad;
   let el = list.length && list[0].el;
   if (!el) {
@@ -360,7 +362,8 @@ export function updateConfig(cfg) {
 }
 
 function updateRoot() {
-  if (!chrome.runtime.id) return selfDestruct();
+  if (!runtime.id)
+    return selfDestruct();
   // Known to change mysteriously in iframes without triggering RewriteObserver
   if (root !== document.documentElement) {
     root = document.documentElement;

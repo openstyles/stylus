@@ -1,4 +1,4 @@
-import {IMPORT_THROTTLE, k_size, kStyleViaXhr, kUrl, UCD} from '@/js/consts';
+import {IMPORT_THROTTLE, k_size, kStyleViaXhr, kUrl, pKeepAlive, UCD} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '@/js/sections-util';
 import {calcObjSize, mapObj} from '@/js/util';
@@ -188,6 +188,7 @@ export function getSectionsByUrl(url, id, isInitialApply) {
       isTop ? '' // apply.js will use location.origin
         : getUrlOrigin(tab.url || td[kUrl]?.[0])
     ),
+    wake: p[pKeepAlive] >= 0,
     order,
   };
   if (isInitialApply === 'cfg') {
