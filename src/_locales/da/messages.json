@@ -1,6 +1,6 @@
 {
   "InaccessibleFileHint": {
-    "message": "Stylus kan ikke tilgå nogle filtyper (fx .pdf, .json)."
+    "message": "Stylus kan ikke tilgå nogle filtyper (f.eks. .pdf, .json)."
   },
   "addStyleLabel": {
     "message": "Skriv ny stil"
@@ -47,7 +47,7 @@
     "message": "Fjern"
   },
   "appliesRemoveError": {
-    "message": "Kan ikke fjerne sidste 'Anvendes på'-optegnelse"
+    "message": "Kan ikke fjerne sidste 'Anvendes på'-post"
   },
   "appliesSpecify": {
     "message": "Angiv"
@@ -64,23 +64,32 @@
   "author": {
     "message": "Forfatter"
   },
+  "backupMessage": {
+    "message": "For at importere sikkerhedskopien skal du trække og slippe den her eller klikke på knappen Importér.\n\nFor at eksportere en kompatibel sikkerhedskopi til Stylus ældre end 1.5.18, højreklik eller shift-klik på knappen Eksportér."
+  },
+  "backupReminder": {
+    "message": "<b>Stile kan gå tabt</b> ved strømafbrydelse, browserfejl eller brugerfejl.<hr><b>Sikkerhedskopiér dine data:</b> Konfigurer 'Synkroniser til skyen' i indstillingerne, eller klik manuelt på eksportknappen efter store ændringer. Eller allerhelst, opsæt automatisk sikkerhedskopiering med en dedikeret app."
+  },
   "bckpInstStyles": {
-    "message": "Eksportér stil"
+    "message": "Eksportér stile"
   },
   "checkAllUpdates": {
-    "message": "Tjek alle stiler for opdateringer"
+    "message": "Tjek alle stile for opdateringer"
   },
   "checkAllUpdatesForce": {
-    "message": "Tjek igen, jeg redigerede ikke nogen stil!"
+    "message": "Tjek igen. Jeg redigerede ikke nogen stile!"
   },
   "checkForUpdate": {
-    "message": "Tjek efter opdatering"
+    "message": "Tjek for opdatering"
   },
   "checkingForUpdate": {
     "message": "Tjekker..."
   },
   "clickToUninstall": {
     "message": "Klik for at afinstallere"
+  },
+  "cm_arrowKeysTraverse": {
+    "message": "Piletaster ↑↓ navigerer gennem sektioner"
   },
   "cm_autoCloseBrackets": {
     "message": "Luk automatisk paranteser og citationstegn"
@@ -100,7 +109,708 @@
   "cm_keyMap": {
     "message": "Tastegenveje"
   },
+  "cm_lineWrapping": {
+    "message": "Ordombrydning"
+  },
+  "cm_matchHighlight": {
+    "message": "Fremhævning"
+  },
+  "cm_matchHighlightSelection": {
+    "message": "Kun markering"
+  },
+  "cm_matchHighlightToken": {
+    "message": "Ord under markør"
+  },
+  "cm_resizeGripHint": {
+    "message": "Dobbeltklik for at maksimere/gendanne højden"
+  },
+  "cm_selectByTokens": {
+    "message": "Dobbeltklik vælger ord"
+  },
+  "cm_selectByTokensTooltip": {
+    "message": "Eksempler på ord: .foo-bar-2 #aabbcc 0.32 !important\nNår deaktiveret, vælges ord adskilt af tegnsætning."
+  },
+  "cm_smartIndent": {
+    "message": "Brug smart indrykning"
+  },
+  "cm_tabSize": {
+    "message": "Tabulatorstørrelse"
+  },
+  "cm_theme": {
+    "message": "Tema"
+  },
+  "colorpickerTooltip": {
+    "message": "Åbn farvevælger"
+  },
+  "configOnChange": {
+    "message": "ved ændringer"
+  },
+  "configOnChangeTooltip": {
+    "message": "Gem og anvend ændringer automatisk"
+  },
+  "configureStyle": {
+    "message": "Konfigurer"
+  },
+  "confirmCancel": {
+    "message": "Annuller"
+  },
+  "confirmClose": {
+    "message": "Luk"
+  },
+  "confirmDefault": {
+    "message": "Brug standard"
+  },
+  "confirmDelete": {
+    "message": "Slet"
+  },
+  "confirmDiscardChanges": {
+    "message": "Kassér ændringerne?"
+  },
+  "confirmNo": {
+    "message": "Nej"
+  },
+  "confirmSave": {
+    "message": "Gem"
+  },
+  "confirmYes": {
+    "message": "Ja"
+  },
+  "connectingDropbox": {
+    "message": "Forbinder Dropbox..."
+  },
+  "connectingDropboxNotAllowed": {
+    "message": "Forbindelse til Dropbox er kun tilgængelig i apps installeret direkte fra webbutikken"
+  },
+  "copied": {
+    "message": "Kopieret til udklipsholder"
+  },
+  "copy": {
+    "message": "Kopiér til udklipsholder"
+  },
+  "customNameHint": {
+    "message": "Indtast et brugerdefineret navn her for at omdøbe stilen i UI uden at påvirke dens opdateringer"
+  },
+  "customNameResetHint": {
+    "message": "Stop brug af tilpasset navn og skift til stilens eget navn"
+  },
+  "dateAbbrHour": {
+    "message": "$value$t.",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "dateInstalled": {
+    "message": "Installationsdato"
+  },
+  "dateUpdated": {
+    "message": "Opdateringsdato"
+  },
+  "dbError": {
+    "message": "En fejl opstod ved brug af Stylus-databasen. Vil du besøge en webside med mulige løsninger?"
+  },
+  "defaultTheme": {
+    "message": "standard"
+  },
+  "deleteStyleConfirm": {
+    "message": "Er du sikker på, at du vil slette denne stil?"
+  },
+  "deleteStyleLabel": {
+    "message": "Slet"
+  },
+  "description": {
+    "message": "Redesign internettet med Stylus, en user styles-administrator. Med Stylus kan du nemt installere temaer og skins til populære hjemmesider."
+  },
+  "disableAllStyles": {
+    "message": "Slå alle stile fra"
+  },
+  "disableAllStylesOff": {
+    "message": "Stile er slået fra"
+  },
+  "disableStyleLabel": {
+    "message": "Slå fra"
+  },
+  "draftAction": {
+    "message": "Vælg 'Ja' for at indlæse udkastet eller 'Nej' for at kassere det."
+  },
+  "draftTitle": {
+    "message": "Udkast til gendannelse. Oprettet $date$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "dragDropMessage": {
+    "message": "Slip din sikkerhedskopi hvor som helst på siden for at importere."
+  },
+  "dragDropUsercssTabstrip": {
+    "message": "For at installere filen skal du slippe den på fanelinjen (området, hvor fanetitlerne vises)."
+  },
+  "editDeleteText": {
+    "message": "Slet"
+  },
+  "editGotoLine": {
+    "message": "Gå til linje (eller linje:kol)"
+  },
+  "editStyleHeading": {
+    "message": "Rediger stil"
+  },
+  "editStyleLabel": {
+    "message": "Rediger"
+  },
+  "editStyleTitle": {
+    "message": "Rediger stilen $stylename$",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "editorSettings": {
+    "message": "Editorindstillinger"
+  },
+  "emptyCode": {
+    "message": "Stilsektioner for denne URL er tomme"
+  },
+  "enableStyleLabel": {
+    "message": "Slå til"
+  },
+  "excludeStyleByDomainLabel": {
+    "message": "Ekskluder det aktuelle domæne"
+  },
+  "excludeStyleByUrlLabel": {
+    "message": "Ekskluder den aktuelle URL"
+  },
+  "exportCompatible": {
+    "message": "Eksportér (kompatibel tilstand)"
+  },
+  "exportLabel": {
+    "message": "Eksportér"
+  },
+  "exportSavedSuccess": {
+    "message": "Filen blev gemt"
+  },
+  "externalHomepage": {
+    "message": "Hjemmeside"
+  },
+  "externalLink": {
+    "message": "Eksternt link"
+  },
+  "externalUsercssDocument": {
+    "message": "Dokumentation for UserCSS"
+  },
+  "filteredStyles": {
+    "message": "$numShown$ vist ud af $numTotal$",
+    "placeholders": {
+      "numShown": {
+        "content": "$1"
+      },
+      "numTotal": {
+        "content": "$2"
+      }
+    }
+  },
+  "filteredStylesAllHidden": {
+    "message": "De nuværende filtre matcher ingen stile"
+  },
+  "findStyles": {
+    "message": "Find stile"
+  },
+  "findStylesOnline": {
+    "message": "Klik for at finde stile online."
+  },
+  "general": {
+    "message": "Generelt"
+  },
   "genericAdd": {
     "message": "Tilføj"
+  },
+  "genericClone": {
+    "message": "Dupliker"
+  },
+  "genericDescription": {
+    "message": "Beskrivelse"
+  },
+  "genericDisabledLabel": {
+    "message": "Deaktiveret"
+  },
+  "genericEnabledLabel": {
+    "message": "Aktiveret"
+  },
+  "genericError": {
+    "message": "Fejl"
+  },
+  "genericHistoryLabel": {
+    "message": "Historik"
+  },
+  "genericMaximum": {
+    "message": "maksimum"
+  },
+  "genericNext": {
+    "message": "Næste"
+  },
+  "genericPrevious": {
+    "message": "Forrige"
+  },
+  "genericResetLabel": {
+    "message": "Nulstil"
+  },
+  "genericSavedMessage": {
+    "message": "Gemt"
+  },
+  "genericSize": {
+    "message": "Størrelse"
+  },
+  "genericTitle": {
+    "message": "Titel"
+  },
+  "genericUnknown": {
+    "message": "Ukendt"
+  },
+  "gettingStyles": {
+    "message": "Henter alle stile..."
+  },
+  "headerResizerHint": {
+    "message": "Hold Shift nede for at ændre størrelsen kun i denne type UI, dvs. editor, administrator, installatør"
+  },
+  "helpAlt": {
+    "message": "Hjælp"
+  },
+  "helpKeyMapCommand": {
+    "message": "Skriv et kommandonavn"
+  },
+  "helpKeyMapHotkey": {
+    "message": "Tryk på en genvejstast"
+  },
+  "hostDisabled": {
+    "message": "Denne vært blev deaktiveret grundet en fejl i den nuværende browserversion"
+  },
+  "importAppendLabel": {
+    "message": "Føj til stil"
+  },
+  "importAppendTooltip": {
+    "message": "Føj den importerede stil til den aktuelle stil"
+  },
+  "importLabel": {
+    "message": "Importér"
+  },
+  "importPreprocessor": {
+    "message": "Stile med en <code>@preprocessor</code> fungerer ikke i klassisk tilstand. Du kan skifte til UserCSS-tilstand ved at: 1) åbne stiladministratoren, 2) krydse af for 'som UserCSS', 3) klikke på 'Skriv ny stil'\n\nImportér nu alligevel?"
+  },
+  "importPreprocessorTitle": {
+    "message": "Potentielt problem grundet @preprocessor"
+  },
+  "importReplaceLabel": {
+    "message": "Overskriv stil"
+  },
+  "importReplaceTooltip": {
+    "message": "Kassér nuværende stil og overskriv den med den importerede"
+  },
+  "importReportLegendAdded": {
+    "message": "tilføjet"
+  },
+  "importReportLegendIdentical": {
+    "message": "identisk(e) sprunget over"
+  },
+  "importReportLegendInvalid": {
+    "message": "ugyldig(e) sprunget over"
+  },
+  "importReportLegendUpdatedBoth": {
+    "message": "opdateret både metainfo og kode"
+  },
+  "importReportLegendUpdatedCode": {
+    "message": "opdateret kode"
+  },
+  "importReportLegendUpdatedMeta": {
+    "message": "opdateret metainfo"
+  },
+  "importReportTitle": {
+    "message": "Import af stile fuldført"
+  },
+  "importReportUnchanged": {
+    "message": "Intet blev ændret."
+  },
+  "importReportUndone": {
+    "message": "stile blev tilbageført"
+  },
+  "importReportUndoneTitle": {
+    "message": "Importen er blevet annulleret"
+  },
+  "installButton": {
+    "message": "Installer stil"
+  },
+  "installButtonInstalled": {
+    "message": "Stil blev installeret"
+  },
+  "installButtonReinstall": {
+    "message": "Geninstaller stil"
+  },
+  "installButtonUpdate": {
+    "message": "Opdater stil"
+  },
+  "installUpdate": {
+    "message": "Installer opdatering"
+  },
+  "installUpdateFrom": {
+    "message": "Stilen er i øjeblikket opdateret fra $url$",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "installUpdateFromLabel": {
+    "message": "Tjek for opdateringer"
+  },
+  "license": {
+    "message": "Licens"
+  },
+  "linkGetHelp": {
+    "message": "Få hjælp"
+  },
+  "linkGetShareStyles": {
+    "message": "Hent og del stile"
+  },
+  "linkGetStyles": {
+    "message": "Hent stile"
+  },
+  "linkTranslate": {
+    "message": "Oversæt"
+  },
+  "linterCSSLintIncompatible": {
+    "message": "CSSLint understøtter ikke præprocessoren $preprocessorname$",
+    "placeholders": {
+      "preprocessorname": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterCSSLintSettings": {
+    "message": "(Indstil regel som: 0 = deaktiveret; 1 = advarsel; 2 = fejl)"
+  },
+  "linterConfigPopupTitle": {
+    "message": "Konfiguration af $linter$-regler",
+    "placeholders": {
+      "linter": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterConfigTooltip": {
+    "message": "Klik for at konfigurere denne linter"
+  },
+  "linterIssues": {
+    "message": "Problemer"
+  },
+  "linterIssuesHelp": {
+    "message": "Disse problemer blev fundet af $link$:",
+    "placeholders": {
+      "link": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterJSONError": {
+    "message": "Ugyldigt JSON-format"
+  },
+  "linterResetMessage": {
+    "message": "Tryk på Ctrl-Z (eller Cmd-Z) i tekstboksen for at fortryde utilsigtet nulstilling"
+  },
+  "linterRulesLink": {
+    "message": "Se den fulde liste over regler"
+  },
+  "liveReloadAfterInstall": {
+    "message": "Live genindlæsning efter installation"
+  },
+  "liveReloadError": {
+    "message": "Der opstod en fejl under visning af filen"
+  },
+  "liveReloadInstallHint": {
+    "message": "Hold denne fane åben for at opdatere stilen automatisk ved eksterne ændringer."
+  },
+  "liveReloadInstallHintFF": {
+    "message": "Hold både denne fane og den oprindelige fane åben for at opdatere stilen automatisk ved eksterne ændringer."
+  },
+  "liveReloadLabel": {
+    "message": "Live genindlæsning"
+  },
+  "manageFavicons": {
+    "message": "Favicons i 'Anvendes på'-kolonnen"
+  },
+  "manageFaviconsGray": {
+    "message": "Udtonet"
+  },
+  "manageFaviconsHelp": {
+    "message": "Stylus bruger den eksterne tjeneste https://icons.duckduckgo.com"
+  },
+  "manageFilters": {
+    "message": "Filtre"
+  },
+  "manageHeading": {
+    "message": "Installerede stile"
+  },
+  "manageMaxTargets": {
+    "message": "Antal 'Anvendes på'-elementer"
+  },
+  "manageMinColumnWidth": {
+    "message": "Minimum kolonnebredde (i pixels; 9999 deaktiverer multikolonne-tilstand)"
+  },
+  "manageNewStyleAsUsercss": {
+    "message": "som UserCSS"
+  },
+  "manageNewUI": {
+    "message": "Tabellayout"
+  },
+  "manageOnlyDisabled": {
+    "message": "Kun deaktiverede stile"
+  },
+  "manageOnlyEnabled": {
+    "message": "Kun aktiverede stile"
+  },
+  "manageOnlyExternal": {
+    "message": "Kun eksterne stile"
+  },
+  "manageOnlyLocal": {
+    "message": "Kun lokalt oprettede stile"
+  },
+  "manageOnlyLocalTooltip": {
+    "message": "(de stile, der ikke er installeret via en userstyles.org-side)"
+  },
+  "manageOnlyNonUsercss": {
+    "message": "Kun stile, der ikke er UserCSS"
+  },
+  "manageOnlyUpdates": {
+    "message": "Kun med opdateringer eller problemer"
+  },
+  "manageOnlyUsercss": {
+    "message": "Kun UserCSS-stile"
+  },
+  "masterSwitch": {
+    "message": "Hovedafbryder"
+  },
+  "menuShowBadge": {
+    "message": "Vis antal aktive stile"
+  },
+  "meta_invalidCheckboxDefault": {
+    "message": "Ugyldigt @var-afkrydsningsfelt: værdi skal være 0 eller 1"
+  },
+  "meta_invalidColor": {
+    "message": "Ugyldig @var-farve: $color$ er ikke en farve",
+    "placeholders": {
+      "color": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidNumber": {
+    "message": "Forventede et tal"
+  },
+  "meta_invalidRange": {
+    "message": "Ugyldig @var-$type$: værdi skal være et tal eller array",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeDefault": {
+    "message": "Ugyldig @var-$type$: standardværdi er null",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMax": {
+    "message": "Ugyldig @var-$type$: standardværdi er større end maksimum",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidWord": {
+    "message": "Forventede et ord"
+  },
+  "meta_missingChar": {
+    "message": "Forventede tegn: $chars$",
+    "placeholders": {
+      "chars": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_missingEOT": {
+    "message": "Forventede EOT-data"
+  },
+  "meta_unknownMeta": {
+    "message": "Ukendt metadata: $key$",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownPreprocessor": {
+    "message": "Ukendt @preprocessor: $preprocessor$",
+    "placeholders": {
+      "preprocessor": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownVarType": {
+    "message": "Ukendt @$varkey$-type: $vartype$",
+    "placeholders": {
+      "varkey": {
+        "content": "$1"
+      },
+      "vartype": {
+        "content": "$2"
+      }
+    }
+  },
+  "noFileToImport": {
+    "message": "For at importere dine stile bør du først eksportere dem."
+  },
+  "noStylesForSite": {
+    "message": "Ingen stile installeret for denne side."
+  },
+  "numberedLine": {
+    "message": "Linje:"
+  },
+  "openManage": {
+    "message": "Administrer"
+  },
+  "openOptions": {
+    "message": "Indstillinger"
+  },
+  "optionCompactWidth": {
+    "message": "Maks. vinduesbredde for kompakt UI-layout (i pixels)"
+  },
+  "optionFOUC": {
+    "message": "Stile anvendt for sent?"
+  },
+  "optionFOUCMV2": {
+    "message": "Overvej at aktivere '<a>'."
+  },
+  "optionFOUCMV3": {
+    "message": "Overvej at aktivere '<a>' og øge '<b>'."
+  },
+  "optionKeepAlive": {
+    "message": "Varighed af stilcache"
+  },
+  "optionKeepAlive2": {
+    "message": "(i minutter; -1 = ingen grænse)"
+  },
+  "optionKeepAliveIdle": {
+    "message": "...selv hvis browseren er inaktiv"
+  },
+  "optionsActions": {
+    "message": "Handlinger"
+  },
+  "optionsAdvanced": {
+    "message": "Avanceret"
+  },
+  "optionsAdvancedAutoSwitchSchemeNever": {
+    "message": "Deaktiveret. Mørk/lys-indstillingen i stile ignoreres."
+  },
+  "optionsAdvancedContextDelete": {
+    "message": "Tilføj 'Slet' i editorens kontekstmenu"
+  },
+  "optionsAdvancedNewStyleAsUsercss": {
+    "message": "Skriv ny stil som UserCSS"
+  },
+  "optionsBadgeDisabled": {
+    "message": "Baggrundsfarve, når deaktiveret"
+  },
+  "optionsBadgeNormal": {
+    "message": "Baggrundsfarve"
+  },
+  "optionsCheck": {
+    "message": "Opdater stile"
+  },
+  "optionsCheckUpdate": {
+    "message": "Tjek for og installer alle tilgængelige opdateringer"
+  },
+  "optionsCustomizeBadge": {
+    "message": "Badge på værktøjslinje-ikonet"
+  },
+  "optionsCustomizeIcon": {
+    "message": "Værktøjslinje-ikon"
+  },
+  "optionsCustomizePopup": {
+    "message": "Pop op"
+  },
+  "optionsCustomizeSync": {
+    "message": "Synk. til cloud"
+  },
+  "optionsCustomizeUpdate": {
+    "message": "Opdateringer"
+  },
+  "optionsHeading": {
+    "message": "Indstillinger"
+  },
+  "optionsIconAuto": {
+    "message": "Match den mørke/lyse tilstand"
+  },
+  "optionsIconDark": {
+    "message": "Mørke browsertemaer"
+  },
+  "optionsIconLight": {
+    "message": "Lyse browsertemaer"
+  },
+  "optionsOpen": {
+    "message": "Åbn"
+  },
+  "optionsOpenManager": {
+    "message": "Administrer stile"
+  },
+  "optionsPopupWidth": {
+    "message": "Pop op-bredde (i pixels)"
+  },
+  "optionsReset": {
+    "message": "Nulstil indstillingerne til standardværdier"
+  },
+  "optionsResetButton": {
+    "message": "Nulstil indstillinger"
+  },
+  "optionsStylusThemes": {
+    "message": "Klik på Stylus-ikonet i browserens værktøjslinje på enhver Stylus-side, inklusive denne, og klik derefter på 'Find stile'"
+  },
+  "optionsSubheading": {
+    "message": "Flere indstillinger"
+  },
+  "optionsSyncLogin": {
+    "message": "Log ind"
+  },
+  "optionsSyncNone": {
+    "message": "Ingen"
+  },
+  "optionsSyncPassword": {
+    "message": "Adgangskode"
+  },
+  "optionsSyncStatusRelogin": {
+    "message": "Sessionen udløb. Log venligst ind igen."
+  },
+  "optionsSyncStatusSyncing": {
+    "message": "Synkroniserer..."
+  },
+  "optionsSyncSyncNow": {
+    "message": "Synkroniser nu"
+  },
+  "optionsSyncUsername": {
+    "message": "Brugernavn"
+  },
+  "optionsUpdateInterval": {
+    "message": "Userstyle auto-opdateringsinterval i timer (angiv 0 for at deaktivere)"
+  },
+  "styleEnabledLabel": {
+    "message": "Aktiveret"
+  },
+  "styleSaveLabel": {
+    "message": "Gem"
   }
 }

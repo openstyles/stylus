@@ -534,6 +534,9 @@
   "linterRulesLink": {
     "message": "Vollständige Liste der Regeln anzeigen"
   },
+  "liveReloadAfterInstall": {
+    "message": "Seite direkt neu laden nach der Installation"
+  },
   "liveReloadError": {
     "message": "Bei der Echtzeitaktualisierung der Datei ist ein Fehler aufgetreten"
   },

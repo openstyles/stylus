@@ -340,6 +340,9 @@
   "findStylesOnline": {
     "message": "クリックしてオンラインでスタイルを検索。"
   },
+  "general": {
+    "message": "一般"
+  },
   "genericAdd": {
     "message": "追加"
   },
@@ -545,6 +548,9 @@
   },
   "linterRulesLink": {
     "message": "ルールの完全なリストを見る"
+  },
+  "liveReloadAfterInstall": {
+    "message": "インストール後に自動リロード"
   },
   "liveReloadError": {
     "message": "ファイルの監視中にエラーが発生しました"
@@ -821,6 +827,9 @@
   },
   "openOptions": {
     "message": "オプション"
+  },
+  "optionCompactWidth": {
+    "message": "コンパクトUIの最大ウィンドウ幅 (ピクセル単位)"
   },
   "optionFOUC": {
     "message": "スタイルの適用が遅すぎる?"

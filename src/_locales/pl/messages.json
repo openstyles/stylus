@@ -378,6 +378,9 @@
   "findStylesOnline": {
     "message": "Kliknij, aby znaleźć style online."
   },
+  "general": {
+    "message": "Ogólne"
+  },
   "genericAdd": {
     "message": "Dodaj"
   },
@@ -577,6 +580,9 @@
   },
   "linterRulesLink": {
     "message": "Zobacz pełną listę reguł"
+  },
+  "liveReloadAfterInstall": {
+    "message": "Przeładowanie na żywo po instalacji"
   },
   "liveReloadError": {
     "message": "Wystąpił błąd podczas oglądania pliku"
@@ -853,6 +859,9 @@
   },
   "openOptions": {
     "message": "Opcje"
+  },
+  "optionCompactWidth": {
+    "message": "Maksymalna szerokość okna dla kompaktowego układu interfejsu użytkownika (w pikselach)"
   },
   "optionFOUC": {
     "message": "Style zastosowane zbyt późno?"
