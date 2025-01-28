@@ -42,6 +42,11 @@ $iconGapY: .25rem;
     }
     &[data-type=age] {
       flex: 0 0 4ch;
+      /* languages with a long abbreviation for month/year/day */
+      &:lang(zh),
+      &:lang(vi) {
+        flex: 0 0 5em;
+      }
     }
     &[data-type=size] {
       flex: 0 0 var(--size-width);
