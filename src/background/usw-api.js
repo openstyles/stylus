@@ -9,7 +9,7 @@ import {worker} from './util';
 
 const KEYS_OUT = ['description', 'homepage', 'license', 'name'];
 const KEYS_IN = [...KEYS_OUT, 'id', 'namespace', 'username'];
-const pushId = id => dataHub.set('usw' + id, true);
+const pushId = (id, val = true) => dataHub.set('usw' + id, val);
 const popId = id => dataHub.del('usw' + id);
 
 class TokenHooks {
@@ -110,7 +110,7 @@ export async function publish(id, code, usw) {
  */
 export async function revoke(id) {
   try {
-    pushId(id, true);
+    pushId(id);
     await revokeToken('userstylesworld', new TokenHooks(id));
     const style = styleMan.get(id);
     if (style) {
