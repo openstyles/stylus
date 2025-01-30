@@ -157,9 +157,9 @@ function flush() {
 
 /** @return {Promise<void>} */
 async function flushLater() {
-  const delay = bgBusy ? 5000/*to let the browser settle down on startup*/ : 50;
-  if (bgBusy) await bgBusy; // bgBusy will be null after await
-  setTimeout(flush, delay);
+  timer = setTimeout(flush, bgBusy
+    ? (await bgBusy, 5000) // to let the browser settle down on startup
+    : 50);
 }
 
 /** @template {MatchCache.Entry} T
@@ -168,7 +168,7 @@ async function flushLater() {
 export function hit(val) {
   if (val) {
     toWrite.add(val);
-    timer ??= flushLater();
+    if (!timer) flushLater();
   }
   return val;
 }
