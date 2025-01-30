@@ -47,7 +47,7 @@ async function onNavigation(navType, data) {
     }
   }
   const {tabId} = data;
-  const td = tabCache.get(tabId);
+  const td = tabCache[tabId];
   if (td && navType !== kCommitted) {
     const {frameId: f, documentId: d, frameType, url} = data;
     const isTop = !frameType && !f || frameType === 'outer_frame';

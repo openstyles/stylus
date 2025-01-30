@@ -4,7 +4,7 @@ import * as prefs from '@/js/prefs';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {actionPopupUrl, ownRoot} from '@/js/urls';
 import {deepEqual, isEmptyObj} from '@/js/util';
-import {ownId, toggleListener} from '@/js/util-webext';
+import {ignoreChromeError, ownId, toggleListener} from '@/js/util-webext';
 import * as colorScheme from './color-scheme';
 import {bgBusy, bgPreInit, dataHub, onUnload} from './common';
 import {stateDB} from './db';
@@ -60,7 +60,7 @@ prefs.ready.then(() => {
 bgBusy.then(() => {
   const tabIds = [];
   for (let key in ruleIdKeys) {
-    if (!tabCache.has(key = parseInt(key))) {
+    if (!tabCache[key = parseInt(key)]) {
       tabIds.push(key);
     }
   }
@@ -126,7 +126,7 @@ function toggle(prefKey) {
   curXHR = xhr;
 }
 
-/** @type {typeof chrome.webRequest.onBeforeRequest.callback} */
+/** @param {browser.webRequest._OnBeforeRequestDetails} req */
 async function prepareStyles(req) {
   const {tabId, frameId, url} = req; if (tabId < 0) return;
   const key = tabId + ':' + frameId;
@@ -141,7 +141,7 @@ async function prepareStyles(req) {
   if (__.MV3 && bgPreInitLen) { // bgPreInit in progress, let's join it
     bgPreInit.push(
       styleCache.loadOne(url),
-      frameId ? tabMan.load(tabId) : undefined,
+      frameId ? browser.tabs.get(tabId).catch(ignoreChromeError) : undefined,
       isDark,
     );
     const all = Promise.all(bgPreInit);
@@ -327,7 +327,7 @@ async function removeTemporaryTab(tabId) {
   try {
     await chrome.tabs.get(tabId);
   } catch {
-    tabMan.remove(tabId);
+    delete tabCache[tabId];
     removeTabData([tabId]);
   }
 }

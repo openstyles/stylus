@@ -59,7 +59,7 @@ function initIcons(runNow = !__.MV3) {
 }
 
 onUnload.add((tabId, frameId, port) => {
-  if (frameId && tabCache.get(tabId)?.[kStyleIds]) {
+  if (frameId && tabCache[tabId]?.[kStyleIds]) {
     updateIconBadge.call(port, [], true);
   }
 });
@@ -89,7 +89,8 @@ export function overrideBadge({text = '', color = '', title = ''} = {}) {
   badgeOvr.color = color;
   refreshIconBadgeColor();
   setBadgeText({text});
-  for (const tabId of tabCache.keys()) {
+  for (let tabId in tabCache) {
+    tabId = +tabId;
     if (text) {
       setBadgeText({tabId, text});
     } else {
@@ -115,7 +116,7 @@ function getIconName(hasStyles = false) {
 }
 
 function refreshIcon(tabId, force = false) {
-  const td = tabCache.get(tabId) || {id: tabId};
+  const td = tabCache[tabId] || {id: tabId};
   const oldIcon = td.icon;
   const newIcon = getIconName(td[kStyleIds]?.[0]);
   // (changing the icon only for the main page, frameId = 0)
@@ -142,7 +143,7 @@ function getIconPath(icon) {
 /** @return {number | ''} */
 function getStyleCount(tabId) {
   const allIds = new Set();
-  for (const frameData of Object.values(tabCache.get(tabId)?.[kStyleIds] || {}))
+  for (const frameData of Object.values(tabCache[tabId]?.[kStyleIds] || {}))
     frameData.forEach(allIds.add, allIds);
   return allIds.size || '';
 }
@@ -183,15 +184,15 @@ function refreshIconBadgeColor() {
 }
 
 function refreshAllIcons() {
-  for (const tabId of tabCache.keys()) {
-    refreshIcon(tabId);
+  for (const tabId in tabCache) {
+    refreshIcon(+tabId);
   }
   refreshGlobalIcon();
 }
 
 function refreshAllIconsBadgeText() {
-  for (const tabId of tabCache.keys()) {
-    refreshIconBadgeText(tabId);
+  for (const tabId in tabCache) {
+    refreshIconBadgeText(+tabId);
   }
 }
 

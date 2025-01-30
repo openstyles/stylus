@@ -65,6 +65,21 @@ declare interface StyleSection {
   regexps?: string[];
 }
 
+type TabCache = {[tabId:string]: TabCacheEntry};
+
+declare interface StyleIdsFrameMap {
+  url: string;
+  styleIds: {[frameId: string]: number[]};
+}
+
+declare interface TabCacheEntry {
+ id: number;
+ incognito: boolean;
+ nonce: Object;
+ url: Object;
+ styleIds:  StyleIdsFrameMap;
+}
+
 declare namespace Injection {
   interface Response {
     cfg: Config;

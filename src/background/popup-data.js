@@ -19,7 +19,7 @@ export default async function makePopupData() {
   // when a newly created tab is still connecting to `pendingUrl`.
   let url = tab.url || tab.pendingUrl || '';
   let tmp;
-  const td = tabCache.get(tab.id);
+  const td = tabCache[tab.id];
   const isOwn = url.startsWith(ownRoot);
   const [
     ping0 = __.MV3 && !td?.[kPopup] && (

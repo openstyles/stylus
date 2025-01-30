@@ -94,7 +94,7 @@ async function loadFromFile(tabId) {
 async function loadFromUrl(tabId, url) {
   return (
     url.startsWith('file:') ||
-    tabCache.get(tabId)?.[MIME]
+    tabCache[tabId]?.[MIME]
   ) && download(url);
 }
 
@@ -112,7 +112,7 @@ function reduceUsercssGlobs(res, host) {
 
 async function maybeInstall(tabId, url, oldUrl = '') {
   if (url.includes('.user.') &&
-      tabCache.get(tabId)?.[MIME] !== false &&
+      tabCache[tabId]?.[MIME] !== false &&
       /^(https?|file|ftps?):/.test(url) &&
       /\.user\.(css|less|styl)$/.test(url.split(/[#?]/, 1)[0]) &&
       !oldUrl.startsWith(makeInstallerUrl(url))) {

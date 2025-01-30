@@ -57,7 +57,7 @@ async function doBroadcast() {
     }
     tabs.length = tabsLen;
   } else if (activeTab) {
-    for (const {id, [kUrl]: url, [kStyleIds]: styleIds} of tabCache.values()) {
+    for (const {id, [kUrl]: url, [kStyleIds]: styleIds} of Object.values(tabCache)) {
       if (styleIds && url && url[0] && !url[0].startsWith(ownRoot)) {
         tabsLen = tabs[id === activeTab.id ? 'unshift' : 'push'](id);
       }
@@ -72,7 +72,7 @@ async function doBroadcast() {
     return;
   }
   for (const tabId of tabs) {
-    const msg = !nStyled || tabCache.get(tabId)?.[kStyleIds]
+    const msg = !nStyled || tabCache[tabId]?.[kStyleIds]
       ? msgStyled ??= data
       : msgUnstyled ??= data.filter((v, i) => !styled[i]);
     const num = msg.length;

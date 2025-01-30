@@ -176,7 +176,7 @@ export function getSectionsByUrl(url, id, isInitialApply) {
   const {sender = {}} = this || {};
   const {tab = {}, frameId, TDM} = sender;
   const isTop = !frameId || TDM || sender.type === 'main_frame'; // prerendering in onBeforeRequest
-  const td = tabCache.get(sender.tabId || tab.id) || {};
+  const td = tabCache[sender.tabId || tab.id] || {};
   /** @type {Injection.Config} */
   const cfg = !id && {
     ass: p.styleViaASS,
