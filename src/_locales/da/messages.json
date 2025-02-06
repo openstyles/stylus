@@ -112,6 +112,9 @@
   "cm_lineWrapping": {
     "message": "Ordombrydning"
   },
+  "cm_linter": {
+    "message": "CSS-linter"
+  },
   "cm_matchHighlight": {
     "message": "Fremhævning"
   },
@@ -150,6 +153,9 @@
   },
   "configureStyle": {
     "message": "Konfigurer"
+  },
+  "configureStyleOnHomepage": {
+    "message": "Konfigurer på hjemmesiden"
   },
   "confirmCancel": {
     "message": "Annuller"
@@ -201,6 +207,14 @@
       }
     }
   },
+  "dateAbbrYear": {
+    "message": "$value$år",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
   "dateInstalled": {
     "message": "Installationsdato"
   },
@@ -229,7 +243,7 @@
     "message": "Stile er slået fra"
   },
   "disableStyleLabel": {
-    "message": "Slå fra"
+    "message": "Deaktiver"
   },
   "draftAction": {
     "message": "Vælg 'Ja' for at indlæse udkastet eller 'Nej' for at kassere det."
@@ -268,6 +282,9 @@
       }
     }
   },
+  "editTargetsFirst": {
+    "message": "Vis mål før kode"
+  },
   "editorSettings": {
     "message": "Editorindstillinger"
   },
@@ -275,7 +292,7 @@
     "message": "Stilsektioner for denne URL er tomme"
   },
   "enableStyleLabel": {
-    "message": "Slå til"
+    "message": "Aktiver"
   },
   "excludeStyleByDomainLabel": {
     "message": "Ekskluder det aktuelle domæne"
@@ -631,6 +648,12 @@
       }
     }
   },
+  "meta_invalidString": {
+    "message": "Forventede en citeret streng"
+  },
+  "meta_invalidVersion": {
+    "message": "Ugyldigt versionsnummer"
+  },
   "meta_invalidWord": {
     "message": "Forventede et ord"
   },
@@ -645,11 +668,30 @@
   "meta_missingEOT": {
     "message": "Forventede EOT-data"
   },
+  "meta_missingMandatory": {
+    "message": "Mangler obligatoriske metadata: $keys$",
+    "placeholders": {
+      "keys": {
+        "content": "$1"
+      }
+    }
+  },
   "meta_unknownMeta": {
     "message": "Ukendt metadata: $key$",
     "placeholders": {
       "key": {
         "content": "$1"
+      }
+    }
+  },
+  "meta_unknownMetaTypo": {
+    "message": "Måske @$keyOk$? Ukendt metadata: @$keyErr$",
+    "placeholders": {
+      "keyErr": {
+        "content": "$1"
+      },
+      "keyOk": {
+        "content": "$2"
       }
     }
   },
@@ -807,10 +849,389 @@
   "optionsUpdateInterval": {
     "message": "Userstyle auto-opdateringsinterval i timer (angiv 0 for at deaktivere)"
   },
+  "overwriteFileExport": {
+    "message": "Vil du overskrive en eksisterende fil?"
+  },
+  "paginationCurrent": {
+    "message": "Nuværende side"
+  },
+  "paginationEstimated": {
+    "message": "Estimeret antal sider"
+  },
+  "paginationNext": {
+    "message": "Næste side"
+  },
+  "paginationPrevious": {
+    "message": "Forrige side"
+  },
+  "paginationTotal": {
+    "message": "Sider i alt"
+  },
+  "parseUsercssError": {
+    "message": "Stylus kunne ikke analysere UserCSS:"
+  },
+  "popupBorders": {
+    "message": "Tilføj hvide kanter på siderne"
+  },
+  "popupBordersTooltip": {
+    "message": "Nyttigt til mørke temaer i den nye Chrome, da den ikke længere farver sidekanterne"
+  },
+  "popupHotkeysTooltip": {
+    "message": "Klik for at se tilgængelige genvejstaster"
+  },
+  "popupManageSiteStyles": {
+    "message": "Administrer sidestile"
+  },
+  "popupManageTooltip": {
+    "message": "Shift-klik eller højreklik åbner administratoren med stile til den aktuelle side"
+  },
+  "popupMenuButtonTooltip": {
+    "message": "Handlingsmenu"
+  },
+  "popupOpenEditInPopup": {
+    "message": "...uden adresselinje"
+  },
+  "popupOpenEditInWindow": {
+    "message": "Åbn editor i et nyt vindue"
+  },
+  "popupOpenEditInWindowTooltip": {
+    "message": "Aktiveres også ved at fjerne editorfanen fra et browservindue,\nog deaktiveres ved at sætte en enkelt editorfane ind i et andet vindue."
+  },
+  "popupStylesFirst": {
+    "message": "Stile før kommandoer"
+  },
+  "prefShowBadge": {
+    "message": "Antal aktive stile for den aktuelle side"
+  },
+  "preferScheme": {
+    "message": "Præference for mørk/lys tilstand"
+  },
+  "preferSchemeDark": {
+    "message": "Mørk"
+  },
+  "preferSchemeLight": {
+    "message": "Lys"
+  },
+  "preferSchemeNone": {
+    "message": "Ingen (altid anvendt)"
+  },
+  "previewLabel": {
+    "message": "Live forhåndsvisning"
+  },
+  "previewTooltip": {
+    "message": "Anvender midlertidigt ændringerne uden at gemme.\nGem stilen for at gøre ændringerne permanente."
+  },
+  "publish": {
+    "message": "Udgiv"
+  },
+  "publishStyle": {
+    "message": "Udgiv stil"
+  },
+  "publishUsw": {
+    "message": "Bruger <userstyles.world>"
+  },
+  "readingStyles": {
+    "message": "Læser stile..."
+  },
+  "reload": {
+    "message": "Genindlæs"
+  },
+  "replace": {
+    "message": "Erstat"
+  },
+  "replaceAll": {
+    "message": "Erstat alle"
+  },
+  "replaceWith": {
+    "message": "Erstat med"
+  },
+  "retrieveBckp": {
+    "message": "Importér stile"
+  },
+  "retrieveDropboxSync": {
+    "message": "Dropbox-import"
+  },
+  "saveAsTemplate": {
+    "message": "Gem som skabelon"
+  },
+  "search": {
+    "message": "Søg"
+  },
+  "searchGlobalStyles": {
+    "message": "Søg også efter globale stile"
+  },
+  "searchNumberOfResults": {
+    "message": "Antal matches"
+  },
+  "searchResultInstallCount": {
+    "message": "Installationer i alt"
+  },
+  "searchResultNoneFound": {
+    "message": "Ingen stile fundet til denne side."
+  },
+  "searchResultRating": {
+    "message": "Bedømmelse"
+  },
+  "searchResultUpdated": {
+    "message": "Opdateret"
+  },
+  "searchResultWeeklyCount": {
+    "message": "Ugentlige installationer"
+  },
+  "searchStylesAll": {
+    "message": "Alle"
+  },
+  "searchStylesCode": {
+    "message": "CSS-kode"
+  },
+  "searchStylesMatchUrl": {
+    "message": "Efter URL"
+  },
+  "searchStylesName": {
+    "message": "Navn"
+  },
+  "sectionAdd": {
+    "message": "Tilføj en ny sektion"
+  },
+  "sectionCode": {
+    "message": "Kode"
+  },
+  "sectionRemove": {
+    "message": "Fjern sektion"
+  },
+  "sectionRestore": {
+    "message": "Gendan fjernet sektion"
+  },
+  "sections": {
+    "message": "Sektioner"
+  },
+  "settings": {
+    "message": "Indstillinger"
+  },
+  "shortcuts": {
+    "message": "Genveje"
+  },
+  "shortcutsNote": {
+    "message": "Definer tastaturgenveje"
+  },
+  "sortDateNewestFirst": {
+    "message": "nyeste først"
+  },
+  "sortDateOldestFirst": {
+    "message": "ældste først"
+  },
+  "sortLabel": {
+    "message": "Vælg en sortering til de installerede stile"
+  },
+  "sortLabelTitleAsc": {
+    "message": "Titel stigende"
+  },
+  "sortLabelTitleDesc": {
+    "message": "Titel faldende"
+  },
+  "sortStylesHelpTitle": {
+    "message": "Sortér indhold"
+  },
+  "styleBadRegexp": {
+    "message": "Regexp er ugyldig."
+  },
+  "styleBeautify": {
+    "message": "Forskøn"
+  },
+  "styleBeautifyIndentConditional": {
+    "message": "Indryk @media, @supports"
+  },
+  "styleBeautifyPreserveNewlines": {
+    "message": "Bevar nye linjer"
+  },
+  "styleCancelEditLabel": {
+    "message": "Tilbage til stiladministrator"
+  },
+  "styleChangesNotSaved": {
+    "message": "Du har foretaget ændringer i stilen uden at gemme."
+  },
+  "styleEditor": {
+    "message": "Stil-editor"
+  },
   "styleEnabledLabel": {
     "message": "Aktiveret"
   },
+  "styleFromMozillaFormatError": {
+    "message": "Kunne ikke importere fra Mozilla-format"
+  },
+  "styleFromMozillaFormatPrompt": {
+    "message": "Indsæt Mozilla-formatkoden"
+  },
+  "styleInstall": {
+    "message": "Installer '$stylename$' i Stylus?",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleInstallFailed": {
+    "message": "Kunne ikke installere userstyle!\n$error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleInstallOverwrite": {
+    "message": "'$stylename$' er allerede installeret. Overskriv?\nVersion: $oldVersion$ -> $newVersion$",
+    "placeholders": {
+      "newVersion": {
+        "content": "$3"
+      },
+      "oldVersion": {
+        "content": "$2"
+      },
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleManager": {
+    "message": "Stiladministrator"
+  },
+  "styleMissingName": {
+    "message": "Indtast et navn"
+  },
+  "styleMozillaFormatHeading": {
+    "message": "Mozilla-format"
+  },
+  "styleName": {
+    "message": "Stilnavn"
+  },
+  "styleNotAppliedSchemeDark": {
+    "message": "Denne stil anvendes kun i Mørk Tilstand"
+  },
+  "styleNotAppliedSchemeLight": {
+    "message": "Denne stil anvendes kun i Lys Tilstand"
+  },
+  "stylePreferSchemeLabel": {
+    "message": "Mørk/lys tilstand"
+  },
+  "styleRegexpTestFull": {
+    "message": "Matchende faner"
+  },
+  "styleRegexpTestInvalid": {
+    "message": "Ugyldig(e) regexp'er sprunget over"
+  },
+  "styleRegexpTestNone": {
+    "message": "Ingen matchende faner"
+  },
+  "styleRegexpTestPartial": {
+    "message": "Matcher ikke helt, og er derfor sprunget over"
+  },
   "styleSaveLabel": {
     "message": "Gem"
+  },
+  "styleSettings": {
+    "message": "Stil-indstillinger"
+  },
+  "styleToMozillaFormatTitle": {
+    "message": "Stil i Mozilla-format"
+  },
+  "styleUpdate": {
+    "message": "Er du sikker på, at du vil opdatere '$stylename$'?",
+    "placeholders": {
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleUpdateDiscardChanges": {
+    "message": "Stilen er ændret uden for editoren. Vil du genindlæse stilen?"
+  },
+  "styleUpdateUrlLabel": {
+    "message": "Opdater URL"
+  },
+  "stylusUnavailableForURL": {
+    "message": "Stylus virker ikke på sider som denne."
+  },
+  "stylusUnavailableForURLdetails": {
+    "message": "Som et sikkerhedstiltag forbyder browseren udvidelser at påvirke dens indbyggede sider (som chrome://version, den nye standardfane i Chrome 61, about:addons osv.) samt andre udvidelsers sider. Hver browser begrænser også adgangen til sit eget udvidelsesgalleri (som Chrome Webshop eller AMO)."
+  },
+  "syncError": {
+    "message": "Synk. mislykkedes"
+  },
+  "toggleStyle": {
+    "message": "Slå stil til/fra"
+  },
+  "undo": {
+    "message": "Fortryd"
+  },
+  "undoGlobal": {
+    "message": "Fortryd i alle sektioner"
+  },
+  "unreachableAMO": {
+    "message": "Firefox forbyder adgang til siden."
+  },
+  "unreachableAMOHint": {
+    "message": "For at tillade adgang: Åbn <about:config>, højreklik på listen, vælg 'Ny' → 'Boolean', indsæt <privacy.resistFingerprinting.block_mozAddonManager>, og klik på OK → <true> → OK. Genindlæs derefter <addons.mozilla.org>."
+  },
+  "unreachableContentScript": {
+    "message": "Kunne ikke kommunikere med siden. Prøv at genindlæse fanen."
+  },
+  "unzipStyles": {
+    "message": "Udpakker stile..."
+  },
+  "updateAllCheckSucceededNoUpdate": {
+    "message": "Ingen opdateringer fundet."
+  },
+  "updateCheckFailBadResponseCode": {
+    "message": "Opdatering mislykkedes: server svarede med koden $code$.",
+    "placeholders": {
+      "code": {
+        "content": "$1"
+      }
+    }
+  },
+  "updateCheckFailServerUnreachable": {
+    "message": "Opdatering mislykkedes: server kunne ikke nås."
+  },
+  "updateCheckHistory": {
+    "message": "Historik over opdateringstjek"
+  },
+  "updateCheckManualUpdateForce": {
+    "message": "Installer opdatering (lokale redigeringer overskrives)"
+  },
+  "updateCheckManualUpdateHint": {
+    "message": "En tvungen opdatering overskriver alle lokale ændringer."
+  },
+  "updateCheckSkippedLocallyEdited": {
+    "message": "Denne stil blev redigeret lokalt."
+  },
+  "updateCheckSkippedMaybeLocallyEdited": {
+    "message": "Denne stil er muligvis blevet redigeret lokalt."
+  },
+  "updateCheckSucceededNoUpdate": {
+    "message": "Stilen er opdateret."
+  },
+  "updateCompleted": {
+    "message": "Opdatering fuldført."
+  },
+  "updatesCurrentlyInstalled": {
+    "message": "Opdateringer installeret:"
+  },
+  "uploadingFile": {
+    "message": "Uploader fil..."
+  },
+  "usercssReplaceTemplateSectionBody": {
+    "message": "Indsæt kode her..."
+  },
+  "versionInvalidOlder": {
+    "message": "Versionen er ældre end den installerede stil."
+  },
+  "writeStyleFor": {
+    "message": "Skriv stil for:"
+  },
+  "writeStyleForURL": {
+    "message": "denne URL"
+  },
+  "zipStyles": {
+    "message": "Pakker stile..."
   }
 }

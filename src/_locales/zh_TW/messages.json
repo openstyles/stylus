@@ -584,6 +584,9 @@
   "linterRulesLink": {
     "message": "見完整的規則清單"
   },
+  "liveReloadAfterInstall": {
+    "message": "安裝後即時重新載入"
+  },
   "liveReloadError": {
     "message": "觀看檔案時發生錯誤"
   },
