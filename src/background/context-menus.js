@@ -28,8 +28,10 @@ const COMMANDS = {
   [kStyleDisableAll]: cmdStyleDisableAll,
 };
 
+const chromeMenus = chrome.contextMenus;
+
 /** id is either a prefs id or an i18n key to be used for the title */
-const MENUS = Object.assign({
+const MENUS = !chromeMenus ? {} : Object.assign({
   'show-badge': [togglePref, {title: 'menuShowBadge'}],
   [kDisableAll]: [cmdStyleDisableAll, {title: 'disableAllStyles'}],
   [kStyleManager]: [cmdOpenManager],
@@ -47,7 +49,7 @@ const MENUS = Object.assign({
 });
 
 chrome.commands?.onCommand.addListener(id => COMMANDS[id]());
-chrome.contextMenus.onClicked.addListener((info, tab) => MENUS[info.menuItemId][0](info, tab));
+chromeMenus?.onClicked.addListener((info, tab) => MENUS[info.menuItemId][0](info, tab));
 
 export default function initContextMenus() {
   createContextMenus(Object.keys(MENUS), true);
@@ -75,12 +77,12 @@ export default function initContextMenus() {
           continue;
         }
       }
-      chrome.contextMenus.create(item, ignoreChromeError);
+      chromeMenus.create(item, ignoreChromeError);
     }
   }
 
   function toggleCheckmark(id, checked) {
-    chrome.contextMenus.update(id, {checked}, ignoreChromeError);
+    chromeMenus.update(id, {checked}, ignoreChromeError);
   }
 
   /** Circumvents the bug with disabling check marks in Chrome 62-64 */
@@ -93,7 +95,7 @@ export default function initContextMenus() {
     if (checked) {
       createContextMenus([id]);
     } else {
-      chrome.contextMenus.remove(id, ignoreChromeError);
+      chromeMenus.remove(id, ignoreChromeError);
     }
   }
 

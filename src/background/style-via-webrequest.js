@@ -34,7 +34,8 @@ const req2key = req => req.tabId + ':' + req.frameId;
 const revokeObjectURL = blobId => blobId &&
   (__.MV3 ? offscreen : URL).revokeObjectURL(BLOB_URL_PREFIX + blobId);
 const toSend = {};
-export const webRequestBlocking = browser.permissions.contains({
+export const webRequestBlocking = __.BUILD !== 'chrome' && FIREFOX
+|| browser.permissions.contains({
   permissions: ['webRequestBlocking'],
 });
 const ruleIdKeys = {};
