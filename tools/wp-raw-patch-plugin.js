@@ -73,7 +73,8 @@ class RawEnvPlugin {
           const assetSource = assets[assetName];
           const str = assetSource.source();
           if (reserved) {
-            `${str}`.split('function __webpack_require__')[0].match(rxUnmangled)
+            `${str}`.replace(/^\/\*+\/.*/, '') // skip lines with webpack machinery
+              .match(rxUnmangled)
               .forEach(reserved.add, reserved);
             MANGLE.forEach(reserved.delete, reserved);
           }
