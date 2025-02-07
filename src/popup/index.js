@@ -33,8 +33,6 @@ const xo = new IntersectionObserver(onIntersect);
   const data = (__.MV3 ? prefs.clientData : await prefs.clientData)[kPopup];
   initPopup(...data);
   showStyles(...data);
-  // Wait for Firefox to resizes the popup so innerHeight corresponds to the actual body height
-  if (FIREFOX) await new Promise(requestAnimationFrame);
   prevHeight = Math.max(innerHeight, 150);
   if (!MOBILE) window.on('resize', onWindowResize);
 })();
