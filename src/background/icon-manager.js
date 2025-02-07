@@ -67,13 +67,15 @@ onUnload.add((tabId, frameId, port) => {
 /**
  * @param {(number|string)[]} styleIds
  * @param {boolean} [lazyBadge] preventing flicker during page load
+ * @param {number} [iid] instance id
  */
-export function updateIconBadge(styleIds, lazyBadge) {
+export function updateIconBadge(styleIds, lazyBadge, iid) {
   // FIXME: in some cases, we only have to redraw the badge. is it worth a optimization?
   const {tab: {id: tabId}, TDM} = this.sender;
   const frameId = TDM > 0 ? 0 : this.sender.frameId;
   const value = styleIds.length ? styleIds.map(Number) : undefined;
   tabMan.set(tabId, kStyleIds, frameId, value);
+  if (iid) tabMan.set(tabId, 'iid', frameId, value && iid);
   debounce(refreshStaleBadges, frameId && lazyBadge ? 250 : 0);
   staleBadges.add(tabId);
   if (!frameId) refreshIcon(tabId, true);

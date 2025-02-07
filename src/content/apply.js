@@ -21,7 +21,7 @@ if (isFrame) {
 const isFrameNoUrl = isFrameSameOrigin && location.protocol === 'about:';
 
 /** Polyfill for documentId in Firefox and Chrome pre-106 */
-const instanceId = (FF || !__.MV3 && !CSS.supports('top', '1ic')) && Math.random() || undefined;
+const instanceId = (FF || !__.MV3 && !CSS.supports('top', '1ic')) && Math.random() || 0;
 /** about:blank iframes are often used by sites for file upload or background tasks,
  * and they may break if unexpected DOM stuff is present at `load` event
  * so we'll add the styles only if the iframe becomes visible */
@@ -163,7 +163,7 @@ function applyOnMessage(req, sender, multi) {
       break;
 
     case 'urlChanged':
-      if (matchUrl === req.old)
+      if (req.iid === instanceId)
         updateUrl(req.url);
       break;
 
@@ -227,7 +227,7 @@ function updateCount() {
   if (isUnstylable) API.styleViaAPI({method: 'updateCount'});
   else if (!throttled
   && throttledCount !== (str = (ids = [...styleInjector.table.keys()]).join(','))) {
-    API.updateIconBadge(ids, lazyBadge);
+    API.updateIconBadge(ids, lazyBadge, instanceId);
     throttledCount = str;
   }
 }

@@ -49,12 +49,18 @@ async function onNavigation(navType, data) {
   const {tabId} = data;
   const td = tabCache[tabId];
   if (td && navType !== kCommitted) {
-    const {frameId: f, documentId: d, frameType, url} = data;
-    const isTop = !frameType && !f || frameType === 'outer_frame';
-    const oldUrl = td[kUrl]?.[f];
-    if (oldUrl !== url)
-      sendTab(tabId, {method: 'urlChanged', top: isTop, old: oldUrl, url},
-        __.MV3 || d ? {documentId: d} : {frameId: f});
+    const {frameId: f, url} = data;
+    if (td[kUrl]?.[f] !== url) {
+      const {documentId: d, frameType} = data;
+      sendTab(tabId, {
+        method: 'urlChanged',
+        top: !frameType && !f || frameType === 'outer_frame',
+        iid: !__.MV3 && td.iid?.[f] || 0,
+        url,
+      }, __.MV3 || d
+        ? {documentId: d}
+        : {frameId: f});
+    }
   }
   for (const fn of onUrlChange) fn(data, navType);
 }
