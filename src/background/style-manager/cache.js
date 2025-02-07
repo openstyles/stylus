@@ -26,7 +26,7 @@ export function add(val) {
 export function clear() {
   if (onDeleted) cache.forEach(onDeleted);
   cache.clear();
-  cacheDB.clear();
+  if (__.MV3) cacheDB.clear();
   if (timer) timer = clearTimeout(timer);
 }
 
@@ -118,7 +118,7 @@ function del(items) {
     cache.delete(items[i] = val.url);
     onDeleted(val);
   }
-  cacheDB.deleteMany(items);
+  if (__.MV3) cacheDB.deleteMany(items);
 }
 
 /** @return {void} */
@@ -150,7 +150,7 @@ function flush() {
     bare.push(res);
   }
   if (toDel) del(toDel);
-  cacheDB.putMany(bare);
+  if (__.MV3) cacheDB.putMany(bare);
   toWrite.clear();
   timer = null;
 }

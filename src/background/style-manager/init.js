@@ -15,7 +15,7 @@ bgInit.push(async () => {
   let [orderFromDb, styles] = await Promise.all([
     prefsDB.get(kInjectionOrder),
     db.getAll(),
-    styleCache.loadAll(),
+    __.MV3 ? styleCache.loadAll() : [],
   ]);
   if (!orderFromDb)
     orderFromDb = await execMirror(STORAGE_KEY, 'get', kInjectionOrder);

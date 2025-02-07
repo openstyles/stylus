@@ -60,7 +60,7 @@ const getDbProxy = (dbName, {
   new Proxy({dbName}, proxyHandler)
 ));
 
-export const cacheDB = getDbProxy(CACHE_DB, {id: 'url'});
+export const cacheDB = __.MV3 && getDbProxy(CACHE_DB, {id: 'url'});
 export const db = getDbProxy(DB, {id: true, store: 'styles'});
 export const draftsDB = getDbProxy(DRAFTS_DB);
 /** Storage for big items that may exceed 8kB limit of chrome.storage.sync.
