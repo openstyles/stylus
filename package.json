@@ -68,6 +68,7 @@
     "build-firefox": "webpack-cli --node-env firefox",
     "watch-mv2": "webpack-cli watch --node-env any-mv2",
     "watch-mv3": "webpack-cli watch --node-env chrome-mv3",
+    "watch-firefox": "webpack-cli watch --node-env firefox",
     "zip": "pnpm test && node tools/build-zip.js",
     "zip-chrome-mv2": "pnpm test && node tools/build-zip.js chrome-mv2",
     "zip-chrome-mv3": "pnpm test && node tools/build-zip.js chrome-mv3",
