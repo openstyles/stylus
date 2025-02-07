@@ -37,7 +37,7 @@ const navHubParent = isFrameNoUrl && (navHubGlobal ? parent : parent[NAV_ID]) ||
 
 // FIXME: move this to background page when following bugs are fixed:
 // https://bugzil.la/1587723, https://crbug.com/968651
-const mqDark = !isFrame && matchMedia('(prefers-color-scheme: dark)');
+let mqDark;
 
 // dynamic iframes don't have a URL yet so we'll use their parent's URL (hash isn't inherited)
 let matchUrl = isFrameNoUrl
@@ -60,11 +60,6 @@ if (!FF) {
   };
 }
 navHubParent?.addEventListener(NAV_ID, onUrlChanged, true);
-if (mqDark) {
-  mqDark.onchange = ({matches: m}) => {
-    if (m !== own.cfg.dark) API.setSystemDark(own.cfg.dark = m);
-  };
-}
 if (TDM < 0) {
   document.onprerenderingchange = onReified;
 }
@@ -95,12 +90,21 @@ async function init() {
   await applyStyles(data, true);
 }
 
+function initMQ() {
+  mqDark = matchMedia('(prefers-color-scheme: dark)');
+  mqDark.onchange = ({matches: m}) => {
+    if (m !== own.cfg.dark)
+      API.setSystemDark(own.cfg.dark = m);
+  };
+  return mqDark;
+}
+
 async function applyStyles(data, isInitial = !own.sections) {
   if (!data) data = await API.styles.getSectionsByUrl(matchUrl, null, isInitial);
   if (!data.cfg) data.cfg = own.cfg;
   Object.assign(own, global[Symbol.for(SYM_ID)] = data);
   if (!isFrame && own.cfg.top === '') own.cfg.top = location.origin; // used by child frames via parentStyles
-  if (!isFrame && own.cfg.dark !== mqDark.matches) mqDark.onchange(mqDark);
+  if (!isFrame && own.cfg.dark !== (mqDark ?? initMQ()).matches) mqDark.onchange(mqDark);
   if (styleInjector.list.length) styleInjector.apply(own, true);
   else if (!own.cfg.off) styleInjector.apply(own);
   styleInjector.toggle(!own.cfg.off);
