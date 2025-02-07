@@ -125,7 +125,7 @@ async function testDB() {
   await dbExecIndexedDB(DB, 'delete', e.id); // throws if `e` or id is null
 }
 
-async function useChromeStorage(err) {
+function useChromeStorage(err) {
   if (err) {
     chromeLocal.set({
       [FALLBACK]: true,
