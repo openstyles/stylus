@@ -67,6 +67,9 @@ h1 {
     visibility: hidden;
   }
 }
+#disableAll-label {
+  margin-bottom: calc($pad/2);
+}
 #manage-settings {
   display: flex;
   flex-flow: column;
@@ -359,13 +362,10 @@ h1 {
 
 .filter-selection {
   position: relative;
-  left: -9px;
+  $shift: 8px;
+  left: -$shift;
   #header & label {
-    display: flex;
-    box-sizing: border-box;
-    align-items: center;
-    height: 18px;
-    padding: 0 0 0 8px;
+    padding-left: $shift;
   }
   select {
     height: 18px;
@@ -378,17 +378,12 @@ h1 {
     }
   }
   .select-wrapper {
+    margin-left: -3px;
     &::after {
       margin-top: 2px;
       top: 0;
       right: 0;
     }
-    cursor: default;
-    border: none;
-    max-width: calc(100% - 2em);
-    position: absolute;
-    top: 0;
-    left: 20px;
   }
 }
 
@@ -475,18 +470,17 @@ button i {
   content: " (" attr(data-value) ")";
 }
 
-.update-in-progress {
-  #check-all-updates {
-    position: relative;
-  }
-  #update-progress {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
+#check-all-updates {
+  position: relative;
+}
+#update-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  opacity: .35;
+  .update-in-progress & {
     background-color: currentColor;
-    content: "";
-    opacity: .35;
   }
 }
 

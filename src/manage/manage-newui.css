@@ -140,10 +140,14 @@ $iconGapY: .25rem;
     padding: .5ex 1.5ex;
     border: 1px solid #ded597;
     background-color: #fffbd6;
+    :root[data-ui-theme="dark"] & {
+      background-color: #646140;
+      border-color: #7f7847;
+    }
     border-radius: 4px;
     box-shadow: 2px 3px 10px rgba(0,0,0,.25);
     font-size: 90%;
-    animation: fadeout 10s;
+    animation: fadeout 10s cubic-bezier(1, 0, 1, 1);
     animation-fill-mode: both;
     pointer-events: none;
   }
@@ -159,6 +163,10 @@ $iconGapY: .25rem;
   .can-update:not([data-details$="locally edited"]) .update:after {
     background-color: #c0fff0;
     border: 1px solid #89cac9;
+    :root[data-ui-theme="dark"] & {
+      background-color: #355a51;
+      border-color: #4b7474;
+    }
   }
   .applies-to {
     padding: calc(var(--padY) / 2) 0 calc(var(--padY) / 2) 1em;

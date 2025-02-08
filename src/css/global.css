@@ -329,11 +329,13 @@ html:not(.all-disabled) {
     content: attr(data-on);
   }
 }
+#disableAll-label {
+  display: inline-flex;
+}
 .all-disabled {
   #disableAll-label {
     font-weight: bold;
     color: var(--red1);
-    display: inline-flex;
     &::after {
       content: attr(data-off);
     }
