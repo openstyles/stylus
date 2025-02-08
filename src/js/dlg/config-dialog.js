@@ -95,7 +95,7 @@ export default async function configDialog(style) {
   }
 
   function onhide() {
-    Object.defineProperty(style, UCD, {value: ucd});
+    Object.defineProperty(style, UCD, {value: ucd, writable: true});
     if (bodyStyle != null) document.body.style.cssText = bodyStyle;
     colorpicker?.hide();
   }
