@@ -23,4 +23,4 @@ if (typeof window.oldCode !== 'string') {
 }
 
 // passing the result to tabs.executeScript
-window.oldCode; // eslint-disable-line no-unused-expressions
+oldCode; /* global oldCode*/// eslint-disable-line no-unused-expressions

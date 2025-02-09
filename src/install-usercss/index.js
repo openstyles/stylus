@@ -77,7 +77,7 @@ setTimeout(() => !cm && showSpinner($id('header')), 200);
       .then(code => code || getData())
       .catch(getData);
   } else if (!__.MV3) {
-    getData = PortDownloader();
+    getData = PortDownloader(initialUrl, tabId);
     firstGet = getData({force: true});
   }
 
