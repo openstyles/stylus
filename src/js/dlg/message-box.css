@@ -24,7 +24,7 @@
     min-width: 10rem;
     max-width: 50vw;
     min-height: 5rem;
-    max-height: 90vh;
+    max-height: 90dvh;
     position: fixed;
     display: flex;
     flex-direction: column;

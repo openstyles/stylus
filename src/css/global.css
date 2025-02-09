@@ -47,7 +47,8 @@ body {
   margin: 0;
   hyphens: auto;
   .mobile > & {
-    max-height: 100vh;
+    height: 100vh; /* for old browsers */
+    height: 100dvh;
   }
   &:lang(ja) {
     font-family: Arial, 'Meiryo UI', 'MS Gothic', system-ui, sans-serif;

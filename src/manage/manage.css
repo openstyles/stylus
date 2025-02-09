@@ -155,7 +155,6 @@ h1 {
     order: 99;
     main {
       min-width: 25vw;
-      padding-bottom: $pad;
     }
     hr {
       display: inline-block;
@@ -404,7 +403,9 @@ h1 {
 }
 
 #links {
-  margin: 0 $pad 0 0;
+  .normal-layout & {
+    margin: 0 $pad 0 0;
+  }
   details:not([open]) h2::after {
     content: "...";
   }
