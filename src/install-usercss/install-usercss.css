@@ -285,6 +285,7 @@ li {
   height: 20px;
 }
 #message-box.config-dialog {
+  width: 0; /* prevents covering the entire page */
   background: none;
   > div {
     box-shadow: 5px 5px 50px rgba(0, 0, 0, 0.75); /* copied from message-box.css + darkened the color */
