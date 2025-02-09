@@ -81,7 +81,8 @@ prefs.ready.then(() => tBody(() => {
   mqCompact?.(val => {
     for (const el of $$(SEL))
       if (!el.matches('.ignore-pref'))
-        el.open = !val && prefs.__values[el.dataset.pref];
+        el.open = (!val || !el.classList.contains('ignore-pref-if-compact'))
+          && prefs.__values[el.dataset.pref];
   });
   function canSave(el) {
     return !el.matches('.ignore-pref, .compact-layout .ignore-pref-if-compact');
