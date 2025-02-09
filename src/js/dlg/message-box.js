@@ -164,7 +164,7 @@ messageBox.show = ({
     messageBox.element =
       $create('div', {id, className}, [
         $create('div', [
-          $create(`#${id}-title`, {onmousedown: messageBox.listeners.mouseDown}, title),
+          $create(`#${id}-title.ellipsis`, {onmousedown: messageBox.listeners.mouseDown}, title),
           $create(`#${id}-close-icon`, {onclick: messageBox.listeners.closeIcon},
             $create('i.i-close')),
           $create(`#${id}-contents`, tHTML(contents)),

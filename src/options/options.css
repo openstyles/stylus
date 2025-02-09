@@ -149,6 +149,7 @@ input[type=time] {
   margin-left: 0;
 }
 
+.mobile .desktop-only,
 label.disabled,
 #favs.disabled + label {
   color: var(--c65);

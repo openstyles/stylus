@@ -14,17 +14,15 @@ prefs.subscribe('disableAll', (_, val) => {
   $rootCL.toggle('all-disabled', val);
 }, true);
 
-{
-  const cls = [
-    __.MV3 && 'mv3',
-    MOBILE && 'mobile',
-    !WINDOWS && 'non-windows',
-    FIREFOX ? 'firefox' : OPERA ? 'opera' : VIVALDI && 'vivaldi',
-  ].filter(Boolean).join(' ');
-  if (cls) $root.className += ' ' + cls;
-  // set language for a) CSS :lang pseudo and b) hyphenation
-  $root.lang = chrome.i18n.getUILanguage();
-}
+$root.classList.add(
+  __.MV3 ? 'mv3' : 'mv2',
+  MOBILE ? 'mobile' : 'desktop',
+  WINDOWS ? 'windows' : 'non-windows',
+  FIREFOX ? 'firefox' : 'chromium',
+  ...OPERA ? ['opera'] : VIVALDI ? ['vivaldi'] : [],
+);
+// set language for a) CSS :lang pseudo and b) hyphenation
+$root.lang = chrome.i18n.getUILanguage();
 
 if ($rootCL.contains('normal-layout')) {
   let /** @type {MediaQueryList}*/ mq;

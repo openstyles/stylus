@@ -69,7 +69,7 @@
   </template>
 
   <template data-id="updaterIcons">
-    <span class="updater-icons">
+    <span class="updater-icons flex">
       <a class="check-update" i18n="title:checkForUpdate" tabindex="0">
         <i class=i-update-check></i>
       </a>
@@ -166,13 +166,12 @@
 
       <div class="filter-selection">
       <template data-id="onlyUpdates">
-        <label id="only-updates">
+        <label id="only-updates" i18n="+manageOnlyUpdates">
           <input type="checkbox"
                  data-filter=".can-update, .update-problem, .update-done"
                  data-filter-hide=":not(.updatable):not(.update-done),
                                    .no-update:not(.update-problem),
                                    .updatable:not(.can-update):not(.update-problem):not(.update-done)">
-          <span i18n="manageOnlyUpdates"></span>
         </label>
       </template>
       </div>

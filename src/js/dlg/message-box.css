@@ -1,4 +1,5 @@
 #message-box {
+  --gap: 3rem;
   top: 0;
   left: 0;
   right: 0;
@@ -12,12 +13,14 @@
   -moz-user-select: none;
 
   #stylus-popup & {
+    align-items: center;
+    justify-content: center;
     animation: none;
   }
 
   > div {
-    top: 3rem;
-    right: 3rem;
+    top: var(--gap);
+    right: var(--gap);
     min-width: 10rem;
     max-width: 50vw;
     min-height: 5rem;
@@ -29,6 +32,13 @@
     box-shadow: 5px 5px 50px rgba(0, 0, 0, 0.225);
     z-index: 9999991;
     -moz-user-select: text;
+    @media screen and (max-width: 850px), compact {
+      --gap: 1rem;
+      max-width: calc(100% - 2*var(--gap));
+    }
+    @media (max-height: 600px) {
+      --gap: 1rem;
+    }
   }
 
   &.fadeout {
@@ -162,17 +172,5 @@
   .non-windows & > :nth-child(1),
   > :nth-child(n + 2) {
     margin-left: .5rem;
-  }
-}
-
-#stylus-popup #message-box {
-  margin: 0;
-  align-items: center;
-  justify-content: center;
-  > div {
-    max-height: 90vh;
-    max-width: 90vw;
-    top: auto;
-    right: auto;
   }
 }

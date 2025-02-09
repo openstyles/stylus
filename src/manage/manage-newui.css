@@ -53,7 +53,6 @@ $iconGapY: .25rem;
     }
     &[data-type=version] {
       color: var(--c40);
-      padding-left: .5em;
       font-weight: normal;
     }
     &[data-type=version]:is([data-is-date], [data-value=""], [data-value="1.0.0"]) {

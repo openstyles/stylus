@@ -285,8 +285,6 @@ li {
   height: 20px;
 }
 #message-box.config-dialog {
-  width: 0;
-  height: 0;
   background: none;
   > div {
     box-shadow: 5px 5px 50px rgba(0, 0, 0, 0.75); /* copied from message-box.css + darkened the color */
@@ -311,10 +309,6 @@ li {
     min-height: 300px;
   }
   #header-contents {
-    display: flex;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    align-items: flex-start;
     > :not(.w100) {
       margin-right: 1rem;
     }
@@ -336,7 +330,7 @@ li {
   }
   #message-box.config-dialog > div {
     top: auto;
-    bottom: 3rem;
+    bottom: var(--gap);
   }
   h1 {
     flex-wrap: nowrap;

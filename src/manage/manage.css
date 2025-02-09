@@ -78,18 +78,15 @@ h1 {
 .settings-column {
   width: 100%;
   margin-bottom: $pad;
-  summary:empty + main {
-    margin-top: -$pad;
-  }
 }
 [id=actions] /* reducing specificity */ {
   flex: 1;
-  /* TODO: find a reliable way to polyfill `gap` for flexbox in Chrome<84,FF<63 */
-  details {
-    width: 0;
+  min-width: 240px;
+  @media (450px < width < 700px) {
+    order: 2;
   }
   main {
-    margin: -$pad calc(-$pad/2) calc(-$pad/2) 0;
+    margin: 0 calc(-$pad/2) calc(-$pad/2) 0;
     .compact-layout & {
       margin-right: $pad;
     }
@@ -140,7 +137,7 @@ h1 {
   }
   #backup {
     $gap: $iconGapY;
-    margin: calc($pad/2) -$gap 0 0;
+    margin: calc($pad/4) -$gap 0 0;
     > * {
       margin: 0 $gap $gap 0;
     }
@@ -155,9 +152,11 @@ h1 {
 }
 #backup-hint {
   .compact-layout & {
-    margin: -$pad calc($pad/2) calc($pad/2) 0;
-    flex-basis: 100%;
     order: 99;
+    main {
+      min-width: 25vw;
+      padding-bottom: $pad;
+    }
     hr {
       display: inline-block;
       width: .25em;
@@ -252,6 +251,11 @@ h1 {
 .applies-to {
   overflow-wrap: anywhere;
 }
+.style-info {
+  &[data-type=version] {
+    padding-left: .5em;
+  }
+}
 .applies-to,
 .actions {
   padding-left: 15px;
@@ -324,21 +328,26 @@ h1 {
   }
 }
 
-#header {
+[id=header] {
   details {
     &:not([open]) {
       &, & h2 {
         padding-bottom: 0;
       }
     }
-    &[open] summary {
-      padding-bottom: .5rem;
-    }
   }
   summary {
     margin-top: .25rem;
     margin-left: calc(-1 * $summaryX);
     cursor: auto;
+    .normal-layout &:empty {
+      width: 0;
+      height: 0;
+    }
+    .compact-layout & {
+      padding: calc(.5*$pad) calc(.75*$pad);
+      margin-top: -$pad;
+    }
     h2 {
       display: inline;
       border-bottom: 1px dotted transparent;
@@ -395,7 +404,7 @@ h1 {
 }
 
 #links {
-  margin: calc($pad/-2) $pad 0 0;
+  margin: 0 $pad 0 0;
   details:not([open]) h2::after {
     content: "...";
   }
@@ -699,19 +708,6 @@ button i {
     word-break: break-all;
   }
 
-  #search-wrapper,
-  #sort-wrapper,
-  #header summary {
-    max-width: 50vw;
-  }
-
-  #message-box > div {
-    left: 0;
-    right: 0!important;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
   #header {
     height: auto;
     padding: 0;
@@ -721,6 +717,9 @@ button i {
     z-index: 1000;
     border-right: none;
     border-bottom: 1px dashed var(--c65);
+    details > main {
+      margin: -$pad 0 0 $pad;
+    }
   }
   #stats {
     position: static;
@@ -731,19 +730,16 @@ button i {
   #manage-settings {
     flex-flow: wrap;
     padding: $pad 0 0 $pad;
-    margin: 0;
   }
   .settings-column {
     display: flex;
-    align-items: flex-start;
+    align-items: stretch;
     flex-flow: wrap;
-    flex: 1 1;
+    flex: 1 1 auto;
     width: auto;
     height: fit-content;
-    margin: 0 $pad $pad 0;
-  }
-  .filter-selection {
-    width: 100%;
+    margin: -$pad $pad $pad 0;
+    padding-top: $pad;
   }
   #installed {
     margin-top: 0;
