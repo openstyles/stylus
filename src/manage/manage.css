@@ -81,9 +81,9 @@ h1 {
 }
 [id=actions] /* reducing specificity */ {
   flex: 1;
-  min-width: 240px;
   @media (450px < width < 700px) {
     order: 2;
+    min-width: 240px;
   }
   main {
     margin: 0 calc(-$pad/2) calc(-$pad/2) 0;
