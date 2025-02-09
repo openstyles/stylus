@@ -9,7 +9,7 @@
   -moz-appearance: none;
   appearance: none;
   border: none;
-  flex-basis: var(--width);
+  flex: 0 0 var(--width); /* ensuring min/max width */
   width: var(--width);
   height: calc(var(--knob) - 2 * var(--pad));
   border-radius: var(--knob);
