@@ -205,6 +205,9 @@ i,
   &[open] {
     overflow-y: auto;
     margin-top: calc(1.5*var(--pad));
+    &.settings {
+      min-height: 6em;
+    }
     > summary {
       position: absolute;
       margin-top: calc(-1.5*var(--pad));
@@ -223,6 +226,7 @@ i,
     padding-left: 13px; /* clicking directly on details-marker doesn't set pref so we cover it with h2 */
     max-width: calc(var(--header-width) - 2*var(--pad));
     vertical-align: middle;
+    font-size: 16px;
     &,
     > :first-child {
       white-space: nowrap;
