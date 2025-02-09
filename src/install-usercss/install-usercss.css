@@ -1,7 +1,6 @@
 body {
   overflow: hidden;
   display: flex;
-  height: 100vh;
 }
 
 img.icon {

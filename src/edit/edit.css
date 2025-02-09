@@ -8,10 +8,6 @@ $plus-minus-pad: .5rem;
   --target-gapY: 2px;
 }
 
-body {
-  height: 100vh;
-}
-
 #global-progress {
   position: fixed;
   height: 4px;
@@ -71,7 +67,6 @@ html:not(.is-new-style) #heading::before {
 /************ header ************/
 #header {
   width: var(--header-width);
-  height: 100vh;
   overflow: hidden;
   position: fixed;
   top: 0;
@@ -677,7 +672,7 @@ i,
     padding: var(--pad-y2) var(--pad-x);
   }
   .contents {
-    max-height: calc(100vh - var(--top) - 4rem);
+    max-height: calc(var(--100dvh) - var(--top) - 4rem);
     overflow-y: auto;
     padding: var(--pad-y) var(--pad-x);
   }

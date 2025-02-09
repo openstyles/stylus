@@ -24,7 +24,7 @@
     min-width: 10rem;
     max-width: 50vw;
     min-height: 5rem;
-    max-height: 90dvh;
+    max-height: calc(var(--100dvh) - 2*var(--gap));
     position: fixed;
     display: flex;
     flex-direction: column;

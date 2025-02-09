@@ -39,6 +39,10 @@
   --gold1: gold;
   --red1: hsl(0, 70%, 45%);
   --zebra: hsla(0, 0%, 50%, 0.05);
+  --100dvh: 100dvh;
+  @supports not (height: 1dvh) {
+    --100dvh: 100vh;
+  }
 }
 body {
   font: normal 12px var(--family);
@@ -47,8 +51,7 @@ body {
   margin: 0;
   hyphens: auto;
   .mobile > & {
-    height: 100vh; /* for old browsers */
-    height: 100dvh;
+    max-height: var(--100dvh);
   }
   &:lang(ja) {
     font-family: Arial, 'Meiryo UI', 'MS Gothic', system-ui, sans-serif;
@@ -61,7 +64,9 @@ body {
     font-family: Arial, 'Microsoft JhengHei UI', 'Microsoft JhengHei', system-ui, sans-serif;
   }
 }
-
+.dvh100 {
+  height: var(--100dvh);
+}
 a {
   color: var(--fg);
   transition: color .1s;
