@@ -52,7 +52,6 @@
   position: relative; /* for incremental-search */
   padding: 1px 1px 1px 1rem; /* keyboard focus outline */
   color: var(--fg);
-  transition: transform .25s ease-in-out;
   z-index: 1;
   user-select: none;
   white-space: nowrap;
