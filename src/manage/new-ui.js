@@ -72,7 +72,7 @@ export function render(isInit) {
 
   if (changed.enabled || iconsMissing && !favsBusy && !partEntry) {
     installed.textContent = '';
-    API.styles.getAll().then(showStyles);
+    API.styles.getCore({sections: true, size: true}).then(showStyles);
     return;
   }
   if (changed.targets) {
