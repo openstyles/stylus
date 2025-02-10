@@ -52,10 +52,8 @@ const TARGETS = [
   process.exit(1);
 });
 
-function patchManifest(str, target) {
-  const [/*BUILD*/, /*FLAVOR*/, CHANNEL] = target.split('-');
+function patchManifest(str) {
   const mj = JSON.parse(str);
-  if (CHANNEL) mj.name += ` (${CHANNEL})`;
   delete mj.key;
   return mj;
 }

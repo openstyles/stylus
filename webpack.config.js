@@ -361,6 +361,19 @@ function makeManifest(files) {
     else base[key] = val;
   }
   let ver = base.version;
+  if (BUILD === 'firefox') {
+    base.options_ui = {
+      /*
+       * Linking to dashboard, not to options, because this is aimed at users who removed the icon
+       * from the toolbar (they rarely use Stylus) so they visit about:addons instead.
+       */
+      page: 'manage.html',
+      open_in_tab: true,
+    };
+  }
+  if (CHANNEL) {
+    base.name += ` (${CHANNEL})`;
+  }
   if (MV3 && CHANNEL === 'beta' && parseInt(ver) === 2) {
     ver = base.version = 3 + ver.slice(1);
   }
