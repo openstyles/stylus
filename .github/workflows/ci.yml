@@ -29,20 +29,29 @@ jobs:
 
       - run: echo "_REV=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      # MV2
-
-      - run: rm -rf dist && pnpm build-mv2
-      - uses: actions/upload-artifact@v4
-        with:
-          name: 'stylus-mv2-${{ env._VER }}-${{ env._REV }}'
-          path: 'dist/*'
-          if-no-files-found: error
-
       # MV3 chrome
 
       - run: rm -rf dist && pnpm build-chrome-mv3
       - uses: actions/upload-artifact@v4
         with:
           name: 'stylus-chrome-mv3-${{ env._VER }}-${{ env._REV }}'
+          path: 'dist/*'
+          if-no-files-found: error
+
+      # MV2 firefox
+
+      - run: rm -rf dist && pnpm build-firefox
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'stylus-firefox-mv2-${{ env._VER }}-${{ env._REV }}'
+          path: 'dist/*'
+          if-no-files-found: error
+
+      # MV2
+
+      - run: rm -rf dist && pnpm build-mv2
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'stylus-mv2-${{ env._VER }}-${{ env._REV }}'
           path: 'dist/*'
           if-no-files-found: error
