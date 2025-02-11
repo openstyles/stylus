@@ -328,7 +328,7 @@ async function removeTemporaryTab(tabId) {
   try {
     await chrome.tabs.get(tabId);
   } catch {
-    delete tabCache[tabId];
+    tabMan.remove(tabId);
     removeTabData([tabId]);
   }
 }

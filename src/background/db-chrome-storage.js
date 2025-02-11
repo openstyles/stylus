@@ -1,7 +1,5 @@
 import {DB, UCD} from '@/js/consts';
-import {chromeLocal} from '@/js/storage-util';
-
-const GET_KEYS = !!chromeLocal.getKeys;
+import {chromeLocal, GET_KEYS} from '@/js/storage-util';
 
 export default class ChromeStorageDB {
 
@@ -43,11 +41,12 @@ export default class ChromeStorageDB {
     return key;
   }
 
-  async putMany(items) {
+  async putMany(items, keys) {
     const data = {};
     const res = [];
-    for (const item of items) {
-      const id = item.id ??= (!this._max && await this._init(), this._max++);
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const id = keys ? keys[i] : item.id ??= (!this._max && await this._init(), this._max++);
       data[this._prefix + id] = this._mirror && item[UCD]
         ? {...item, sections: undefined}
         : item;

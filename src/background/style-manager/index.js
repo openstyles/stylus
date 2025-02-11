@@ -11,7 +11,7 @@ import tabCache from '../tab-manager';
 import {getUrlOrigin} from '../tab-util';
 import * as usercssMan from '../usercss-manager';
 import * as uswApi from '../usw-api';
-import * as styleCache from './cache';
+import cacheData, * as styleCache from './cache';
 import {buildCache} from './cache-builder';
 import './init';
 import {onBeforeSave, onSaved} from './fixer';
@@ -205,14 +205,14 @@ export function getSectionsByUrl(url, id, isInitialApply) {
        TODO: if FF will do the same, this won't work as is: FF reports onCommitted too late */
     url = res || url;
   }
-  cache = styleCache.get(url);
+  cache = cacheData.get(url);
   if (!cache) {
     cache = {url, sections: {}};
-    styleCache.add(cache);
     buildCache(cache, url);
   } else if ((res = cache.maybeMatch)) {
     buildCache(cache, url, res);
   }
+  styleCache.add(cache);
   res = cache.sections;
   res = id
     ? ((res = res[id])) ? [res] : []
@@ -296,8 +296,11 @@ export function remove(id, reason) {
   db.delete(id);
   if (sync) syncMan.remove(uuid, Date.now());
   for (const url of appliesTo) {
-    const cache = styleCache.get(url);
-    if (cache) delete cache.sections[id];
+    const cache = cacheData.get(url);
+    if (cache) {
+      delete cache.sections[id];
+      styleCache.hit(cache);
+    }
   }
   dataMap.delete(id);
   uuidIndex.delete(uuid);

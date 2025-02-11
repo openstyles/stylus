@@ -118,7 +118,7 @@ function getIconName(hasStyles = false) {
 }
 
 function refreshIcon(tabId, force = false) {
-  const td = tabCache[tabId] || {id: tabId};
+  const td = tabCache[tabId] || {};
   const oldIcon = td.icon;
   const newIcon = getIconName(td[kStyleIds]?.[0]);
   // (changing the icon only for the main page, frameId = 0)

@@ -204,7 +204,7 @@ declare interface RemotePortEvent extends MessageEvent {
 declare interface IDBObjectStoreMany extends IDBObjectStore {
   deleteMany: (ids: any[]) => Promise<any[]>;
   getMany: (ids: any[]) => Promise<any[]>;
-  putMany: (items: any[]) => Promise<any[]>;
+  putMany: (items: any[], ids?: any[]) => Promise<any[]>;
 }
 
 declare var $: typeof document.querySelector;

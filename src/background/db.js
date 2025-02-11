@@ -60,12 +60,14 @@ const getDbProxy = (dbName, {
   new Proxy({dbName}, proxyHandler)
 ));
 
+/** @type {IDBObjectStoreMany} */
 export const cacheDB = __.MV3 && getDbProxy(CACHE_DB, {id: 'url'});
 export const db = getDbProxy(DB, {id: true, store: 'styles'});
 export const draftsDB = getDbProxy(DRAFTS_DB);
 /** Storage for big items that may exceed 8kB limit of chrome.storage.sync.
  * To make an item syncable register it with uuidIndex.addCustom. */
 export const prefsDB = getDbProxy(STORAGE_KEY);
+/** @type {IDBObjectStoreMany} */
 export const stateDB = __.MV3 && getDbProxy(STATE_DB, {store: 'kv'});
 
 Object.assign(API, /** @namespace API */ {
@@ -146,7 +148,7 @@ async function dbExecIndexedDB(dbName, method, ...args) {
   if (mode && dbName in MIRROR)
     execMirror(...arguments);
   return method.endsWith('Many')
-    ? storeMany(store, method.slice(0, -4), args[0])
+    ? storeMany(store, method.slice(0, -4), ...args)
     : new Promise((resolve, reject) => {
       /** @type {IDBRequest} */
       const request = store[method](...args);
@@ -155,7 +157,7 @@ async function dbExecIndexedDB(dbName, method, ...args) {
     });
 }
 
-function storeMany(store, method, items) {
+function storeMany(store, method, items, keys) {
   let num = 0;
   let resolve, reject;
   const p = new Promise((ok, ko) => {
@@ -168,9 +170,9 @@ function storeMany(store, method, items) {
     results[req.i] = req.result;
     if (!--num) resolve(results);
   };
-  for (const item of items) {
+  while (num < items.length) {
     /** @type {IDBRequest} */
-    const req = store[method](item);
+    const req = store[method](items[num], keys?.[num]);
     req.onerror = reject;
     req.onsuccess = onsuccess;
     req.i = num;
@@ -243,8 +245,8 @@ export async function execMirror(dbName, method, a, b) {
         a = new Response(a).body.pipeThrough(new CompressionStream('gzip'));
       return mirror.put(b, new Response(a, MIRROR_INIT));
     case 'putMany':
-      for (b of a)
-        await execMirror(dbName, 'put', b);
+      for (let i = 0; i < a.length; i++)
+        await execMirror(dbName, 'put', a[i], b?.[i]);
   }
 }
 

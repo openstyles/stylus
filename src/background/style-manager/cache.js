@@ -1,5 +1,6 @@
 import {bgBusy} from '../common';
 import {cacheDB, db as styleDB} from '../db';
+import {bgMortal, bgMortalChanged} from '../tab-manager';
 
 let onDeleted;
 let timer;
@@ -11,23 +12,24 @@ const toWrite = new Set();
 
 export default cache;
 
-/** @param {string} url
- * @return {?MatchCache.Entry} */
-export const get = url => (url = cache.get(url)) && hit(url);
+bgMortalChanged.add(val => {
+  if (val) cacheDB.putMany(Object.values(cache));
+  else cacheDB.clear();
+});
 
 /** @param {MatchCache.Entry} val
  * @return {void} */
 export function add(val) {
-  cache.set(val.url, hit(val));
+  cache.set(val.url, bgMortal ? hit(val) : val);
   if (cache.size >= MAX) prune();
 }
 
 /** @return {void} */
 export function clear() {
   if (onDeleted) cache.forEach(onDeleted);
-  cache.clear();
-  if (__.MV3) cacheDB.clear();
+  if (__.MV3 && bgMortal) cacheDB.clear();
   if (timer) timer = clearTimeout(timer);
+  cache.clear();
 }
 
 /** @param {string} url
@@ -118,7 +120,7 @@ function del(items) {
     cache.delete(items[i] = val.url);
     onDeleted(val);
   }
-  if (__.MV3) cacheDB.deleteMany(items);
+  if (__.MV3 && bgMortal) cacheDB.deleteMany(items);
 }
 
 /** @return {void} */
@@ -166,7 +168,7 @@ async function flushLater() {
  * @param {T} val
  * @return {T} */
 export function hit(val) {
-  if (val) {
+  if (val && bgMortal) {
     toWrite.add(val);
     if (!timer) flushLater();
   }
