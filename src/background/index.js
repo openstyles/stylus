@@ -5,6 +5,7 @@ import {DNR, getRuleIds, updateDynamicRules, updateSessionRules} from '@/js/dnr'
 import {_execute, onMessage} from '@/js/msg';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
+import {chromeSession} from '@/js/storage-util';
 import {CHROME, FIREFOX, MOBILE, WINDOWS} from '@/js/ua';
 import {sleep} from '@/js/util';
 import {broadcast, pingTab} from './broadcast';
@@ -89,6 +90,9 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
     styleCache.clear(),
   );
   if (__.MV3) {
+    chromeSession.setAccessLevel({
+      accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS',
+    });
     (bgPreInit.length ? bgPreInit : bgInit).push(
       stateDB.clear(),
       DNR.getDynamicRules().then(rules => updateDynamicRules(undefined, getRuleIds(rules))),
@@ -105,10 +109,10 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
 });
 
 if (__.MV3) {
-  chrome.storage.session.get('init', async ({init}) => {
+  chromeSession.get('init', async ({init}) => {
     __.DEBUGLOG('new session:', !init);
     if (init) return;
-    chrome.storage.session.set({init: true});
+    chromeSession.set({init: true});
     onStartup();
     await bgBusy;
     reinjectContentScripts();

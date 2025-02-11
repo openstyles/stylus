@@ -184,10 +184,8 @@ export function getSectionsByUrl(url, id, isInitialApply) {
     // TODO: enable in FF when it supports sourceURL comment in style elements (also options.html)
     name: p.exposeStyleName,
     nonce: td.nonce?.[frameId],
-    top: isInitialApply && p.exposeIframes && (
-      isTop ? '' // apply.js will use location.origin
-        : getUrlOrigin(tab.url || td[kUrl]?.[0])
-    ),
+    top: p.exposeIframes,
+    topUrl: isTop ? '' : getUrlOrigin(tab.url || td[kUrl]?.[0]),
     wake: p[pKeepAlive] >= 0,
     order,
   };
@@ -318,7 +316,7 @@ export function remove(id, reason) {
   broadcast({
     method: 'styleDeleted',
     style: {id},
-  }, {onlyIfStyled: true});
+  });
   return id;
 }
 

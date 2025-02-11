@@ -1,91 +1,18 @@
 import '@/js/browser';
-import {kStyleIds, kUrl} from '@/js/consts';
+import {kBroadcast} from '@/js/consts';
 import {rxIgnorableError} from '@/js/msg-api';
-import {ownRoot, supported} from '@/js/urls';
-import {getActiveTab} from '@/js/util-webext';
-import tabCache, {someInjectable} from './tab-manager';
-import {getWindowClients} from './util';
+import {chromeLocal, chromeSession} from '@/js/storage-util';
 
-let /**@type{?[]}*/toBroadcast;
-let /**@type{boolean[]}*/toBroadcastStyled;
-let broadcasting;
+let toBroadcast;
 
-/**
- * @param {?} data
- * @param {{}} [opts]
- * @param {boolean} [opts.onlyIfStyled] - only tabs that are known to contain styles
- * @param {(tab?:Tab)=>?} [opts.getData] - provides data for this tab, nullish result = skips tab
- * @return {Promise<?[]>}
- */
-export function broadcast(data, {onlyIfStyled, getData} = {}) {
-  if (getData && !(data = getData())) {
-    return;
-  }
-  (toBroadcast ??= []).push(data);
-  (toBroadcastStyled ??= []).push(!!onlyIfStyled);
-  broadcasting ??= setTimeout(doBroadcast);
+export function broadcast(data) {
+  toBroadcast ??= (setTimeout(doBroadcast), []);
+  toBroadcast.push(data);
 }
 
-async function doBroadcast() {
-  const jobs = [];
-  const nStyled = toBroadcastStyled.indexOf(false);
-  const bAllStyled = nStyled < 0;
-  const [client, tabs, activeTab] = await Promise.all([
-    !__.MV3 || getWindowClients(), // TODO: detect the popup in Chrome MV2 incognito window?
-    bAllStyled ? [] : browser.tabs.query({}),
-    bAllStyled && someInjectable() && getActiveTab(),
-  ]);
-  const data = toBroadcast;
-  const styled = toBroadcastStyled;
-  toBroadcast = toBroadcastStyled = broadcasting = null;
-  let msgUnstyled, msgStyled;
-  // filter supported tabs in-place and move the active tab to the beginning
-  let tabsLen = 0;
-  if (!bAllStyled) {
-    for (let i = 0, t, url; i < tabs.length; i++) {
-      t = tabs[i];
-      if (t.discarded || !(url = t.url) || url.startsWith(ownRoot) || !supported(t.url)) {
-        continue;
-      }
-      if (i && t.active) {
-        tabs[tabsLen] = tabs[0];
-        tabs[0] = t.id;
-      } else {
-        tabs[tabsLen] = t.id;
-      }
-      tabsLen++;
-    }
-    tabs.length = tabsLen;
-  } else if (activeTab) {
-    for (const {id, [kUrl]: url, [kStyleIds]: styleIds} of Object.values(tabCache)) {
-      if (styleIds && url && url[0] && !url[0].startsWith(ownRoot)) {
-        tabsLen = tabs[id === activeTab.id ? 'unshift' : 'push'](id);
-      }
-    }
-  }
-  if (client) {
-    jobs.push(broadcastExtension(
-      data.length > 1 ? data : data[0],
-      data.length > 1
-    ));
-  } else if (!tabsLen) {
-    return;
-  }
-  for (const tabId of tabs) {
-    const msg = !nStyled || tabCache[tabId]?.[kStyleIds]
-      ? msgStyled ??= data
-      : msgUnstyled ??= data.filter((v, i) => !styled[i]);
-    const num = msg.length;
-    if (num && jobs.push(sendTab(
-      tabId,
-      num > 1 ? msg : msg[0],
-      undefined,
-      num > 1
-    )) > 20) {
-      await Promise.all(jobs.splice(0));
-    }
-  }
-  await Promise.all(jobs);
+function doBroadcast() {
+  (chromeSession || chromeLocal).set({[kBroadcast]: toBroadcast});
+  toBroadcast = null;
 }
 
 export function broadcastExtension(data, multi) {

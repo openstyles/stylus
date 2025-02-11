@@ -103,7 +103,8 @@ declare namespace Injection {
     dark?: boolean;
     name?: boolean;
     nonce?: string;
-    top?: string | false;
+    top?: boolean;
+    topUrl?: string;
     off?: boolean;
     order?: Order;
     wake?: boolean;

@@ -3,7 +3,6 @@ import * as prefs from '@/js/prefs';
 import {isEmptyObj} from '@/js/util';
 import {broadcast} from './broadcast';
 import {bgBusy, onSchemeChange} from './common';
-import {getUrlOrigin} from './tab-util';
 
 let cfg;
 let sentCfg = {};
@@ -39,18 +38,10 @@ const data = {
   cfg,
 };
 
-function setTop(tab) {
-  data.cfg.top = tab && getUrlOrigin(tab.url);
-  return data;
-}
-
 function throttle() {
   if (!isEmptyObj(cfg)) {
     data.cfg = cfg;
-    broadcast(data, {
-      getData: cfg.top && setTop,
-      onlyIfStyled: !('off' in cfg || 'dark' in cfg),
-    });
+    broadcast(data);
   }
   sentCfg = cfg;
   cfg = null;

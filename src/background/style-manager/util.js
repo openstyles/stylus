@@ -57,7 +57,7 @@ export function broadcastStyleUpdated(style, reason, isNew) {
       id: style.id,
       enabled: style.enabled,
     },
-  }, {onlyIfStyled: !style.enabled});
+  });
 }
 
 export async function setOrderImpl(data, {

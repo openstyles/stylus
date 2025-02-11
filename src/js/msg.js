@@ -56,6 +56,8 @@ function onRuntimeMessage({data, multi, TDM}, sender, sendResponse) {
   if (__.ENTRY === true && !__.IS_BG && data.method === kInvokeAPI) {
     return;
   }
+  if (multi && !(multi = data.length > 1))
+    data = data[0];
   sender.TDM = TDM;
   let res = __.IS_BG && global[k_busy];
   res = res

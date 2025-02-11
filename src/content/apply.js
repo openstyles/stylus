@@ -1,5 +1,5 @@
 // WARNING: make sure util-webext.js runs first and sets _deepCopy
-import {k_deepCopy, kApplyPort} from '@/js/consts';
+import {k_deepCopy, kApplyPort, kBroadcast} from '@/js/consts';
 import {onMessage} from '@/js/msg';
 import {API, isFrame, TDM, updateTDM} from '@/js/msg-api';
 import * as styleInjector from './style-injector';
@@ -73,6 +73,10 @@ styleInjector.selfDestruct = selfDestruct;
 init();
 onMessage.set(applyOnMessage, true);
 addEventListener(kPageShow, onBFCache);
+{
+  const S = chrome.storage;
+  (S.session || S.local.onChanged && S.local || S).onChanged.addListener(onStorage);
+}
 
 async function init() {
   if (isUnstylable) return API.styleViaAPI({method: 'styleApply'});
@@ -103,7 +107,8 @@ async function applyStyles(data, isInitial = !own.sections) {
   if (!data) data = await API.styles.getSectionsByUrl(matchUrl, null, isInitial);
   if (!data.cfg) data.cfg = own.cfg;
   Object.assign(own, global[Symbol.for(SYM_ID)] = data);
-  if (!isFrame && own.cfg.top === '') own.cfg.top = location.origin; // used by child frames via parentStyles
+  // used by child frames via parentStyles
+  if (!isFrame && own.cfg.topUrl === '') own.cfg.topUrl = location.origin;
   if (!isFrame && own.cfg.dark !== (mqDark ?? initMQ()).matches) mqDark.onchange(mqDark);
   if (styleInjector.list.length) styleInjector.apply(own, true);
   else if (!own.cfg.off) styleInjector.apply(own);
@@ -125,13 +130,16 @@ function getStylesViaXhr() {
 }
 
 function applyOnMessage(req, sender, multi) {
+  if (multi) {
+    if (req[1]) {
+      throttled ??= Promise.resolve().then(processThrottled) && [];
+      throttled.push(req);
+      return;
+    }
+    req = req[0];
+  }
   if (isUnstylable && /^(style|urlChanged)/.test(req.method)) {
     API.styleViaAPI(req);
-    return;
-  }
-  if (multi) {
-    throttled ??= Promise.resolve().then(processThrottled) && [];
-    throttled.push(req);
     return;
   }
   const {style} = req;
@@ -189,7 +197,7 @@ function updateConfig({cfg}) {
   for (const /** @type {keyof Injection.Config}*/ k in cfg) {
     const v = cfg[k];
     if (v === own.cfg[k]) continue;
-    if (k === 'top' && !isFrame) continue;
+    if (!isFrame && (k === 'top' || k === 'topUrl')) continue;
     own.cfg[k] = v;
     if (k === 'off') updateDisableAll();
     else if (k === 'order') styleInjector.sort();
@@ -215,8 +223,9 @@ function updateExposeIframes() {
   if (!el) return; // got no styles so styleInjector didn't wait for <html>
   if (!own.cfg.top || !styleInjector.list.length) {
     if (el.hasAttribute(attr)) el.removeAttribute(attr);
-  } else if (el.getAttribute(attr) !== own.cfg.top) { // Checking first to avoid DOM mutations
-    el.setAttribute(attr, own.cfg.top);
+  } else if (el.getAttribute(attr) !== own.cfg.topUrl) {
+    // Checking first to avoid DOM mutations
+    el.setAttribute(attr, own.cfg.topUrl);
   }
 }
 
@@ -297,6 +306,14 @@ function onReified(e) {
     document.onprerenderingchange = null;
     API.styles.getSectionsByUrl('', 0, 'cfg').then(updateConfig);
     updateCount();
+  }
+}
+
+async function onStorage(changes) {
+  if ((changes = changes[kBroadcast]) && (changes = changes.newValue)) {
+    if (document.visibilityState !== 'visible')
+      await new Promise(setTimeout);
+    applyOnMessage(changes, null, true);
   }
 }
 
