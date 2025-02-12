@@ -26,9 +26,9 @@ if (__.ENTRY) {
     if (fnOff) port.onDisconnect.addListener(fnOff);
   });
 }
-{
+if (!__.IS_BG) {
   const S = chrome.storage;
-  (S.session || S.local.onChanged && S.local || S).onChanged.addListener(onStorage);
+  (S.session || !__.MV3 && (S.local.onChanged ? S.local : S)).onChanged.addListener(onStorage);
 }
 
 export function _execute(data, sender, multi) {
