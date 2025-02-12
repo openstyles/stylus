@@ -1,5 +1,5 @@
 import '@/js/browser';
-import {kAboutBlank, kUrl} from '@/js/consts';
+import {kAboutBlank} from '@/js/consts';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {chromeProtectsNTP, ownRoot} from '@/js/urls';
 import {deepEqual} from '@/js/util';
@@ -50,17 +50,15 @@ async function onNavigation(navType, data) {
   const td = tabCache[tabId];
   if (td && navType !== kCommitted) {
     const {frameId: f, url} = data;
-    if (td[kUrl]?.[f] !== url) {
-      const {documentId: d, frameType} = data;
-      sendTab(tabId, {
-        method: 'urlChanged',
-        top: !frameType && !f || frameType === 'outer_frame',
-        iid: !__.MV3 && td.iid?.[f] || 0,
-        url,
-      }, __.MV3 || d
-        ? {documentId: d}
-        : {frameId: f});
-    }
+    const {documentId: d, frameType} = data;
+    sendTab(tabId, {
+      method: 'urlChanged',
+      top: !frameType && !f || frameType === 'outer_frame',
+      iid: !__.MV3 && td.iid?.[f] || 0,
+      url,
+    }, __.MV3 || d
+      ? {documentId: d}
+      : {frameId: f});
   }
   for (const fn of onUrlChange) fn(data, navType);
 }
