@@ -5,7 +5,7 @@ import * as prefs from '@/js/prefs';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {actionPopupUrl, ownRoot} from '@/js/urls';
 import {deepEqual, isEmptyObj} from '@/js/util';
-import {ignoreChromeError, ownId, toggleListener} from '@/js/util-webext';
+import {ownId, toggleListener} from '@/js/util-webext';
 import * as colorScheme from './color-scheme';
 import {bgBusy, bgPreInit, clientDataJobs, dataHub, onUnload} from './common';
 import {stateDB} from './db';
@@ -13,7 +13,6 @@ import {webNavigation} from './navigation-manager';
 import offscreen from './offscreen';
 import makePopupData from './popup-data';
 import {getSectionsByUrl} from './style-manager';
-import * as styleCache from './style-manager/cache';
 import tabCache, * as tabMan from './tab-manager';
 
 const idCSP = 'patchCsp';
@@ -136,32 +135,14 @@ function toggle(prefKey) {
 async function prepareStyles(req) {
   const {tabId, frameId, url} = req; if (tabId < 0) return;
   const key = tabId + ':' + frameId;
-  const bgPreInitLen = __.MV3 && bgPreInit.length;
-  const isDark = curXHR
-    && colorScheme.isSystem()
-    && !tabMan.someInjectable()
-    && colorScheme.refreshSystemDark();
-  __.DEBUGLOG('prepareStyles', key, req, {isDark});
-  if (!curXHR && !curCSP && !bgBusy) return;
-  let cached, unlock;
-  let lock = __.MV3 && bgPreInitLen && new Promise(resolve => (unlock = resolve));
-  if (__.MV3 && bgPreInitLen) { // bgPreInit in progress, let's join it
-    bgPreInit.push(
-      styleCache.loadOne(url),
-      frameId ? browser.tabs.get(tabId).catch(ignoreChromeError) : undefined,
-      isDark,
-    );
-    const all = Promise.all(bgPreInit);
-    if (lock) bgPreInit.push(lock); // keeps bgBusy from resolving until we're done here
-    [cached, req.tab] = (await all).slice(bgPreInitLen);
-    __.DEBUGLOG('prepareStyles cache', key, cached);
-  }
-  if (!cached && bgBusy) {
-    if (lock) lock = unlock(); // set to undefined
+  const isInit = bgBusy;
+  __.DEBUGLOG('prepareStyles', key, req);
+  if (!curXHR && !curCSP && !bgBusy)
+    return;
+  if (bgBusy)
     await bgBusy;
-  } else if (!bgPreInitLen && isDark && __.MV3) {
-    await isDark;
-  }
+  if (curXHR && colorScheme.isSystem() && (isInit || !tabMan.someInjectable()))
+    await colorScheme.refreshSystemDark();
   const oldData = toSend[key];
   const data = oldData || {};
   const payload = data.payload = getSectionsByUrl.call({sender: req}, url, null, kStyleViaXhr);
@@ -172,7 +153,6 @@ async function prepareStyles(req) {
     await prepareStylesMV3(tabId, frameId, url, data, key, payload);
   }
   toSend[key] = data;
-  if (lock) setTimeout(unlock);
   __.DEBUGLOG('prepareStyles done', key, data);
 }
 

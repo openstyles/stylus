@@ -60,7 +60,7 @@ const putObject = obj => stateDB.putMany(
 );
 
 export const bgMortalChanged = __.MV3 && new Set();
-export let bgMortal;
+let bgMortal;
 
 bgInit.push(async () => {
   const [saved, tabs] = await Promise.all([

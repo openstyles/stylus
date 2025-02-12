@@ -4,7 +4,6 @@ import {STORAGE_KEY} from '@/js/prefs';
 import * as colorScheme from '../color-scheme';
 import {bgBusy, bgInit, onSchemeChange} from '../common';
 import {db, draftsDB, execMirror, prefsDB} from '../db';
-import {bgMortal} from '../tab-manager';
 import * as styleCache from './cache';
 import './init';
 import {fixKnownProblems} from './fixer';
@@ -16,7 +15,6 @@ bgInit.push(async () => {
   let [orderFromDb, styles] = await Promise.all([
     prefsDB.get(kInjectionOrder),
     db.getAll(),
-    __.MV3 && bgMortal ? styleCache.loadAll() : [],
   ]);
   if (!orderFromDb)
     orderFromDb = await execMirror(STORAGE_KEY, 'get', kInjectionOrder);
@@ -24,7 +22,6 @@ bgInit.push(async () => {
     styles = mirrored = await execMirror(DB, 'getAll');
   setOrderImpl(orderFromDb, {store: false});
   initStyleMap(styles, mirrored);
-  styleCache.hydrate(dataMap);
   __.DEBUGLOG('styleMan init done');
 });
 

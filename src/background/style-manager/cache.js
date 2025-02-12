@@ -1,6 +1,4 @@
 import {bgBusy} from '../common';
-import {cacheDB, db as styleDB} from '../db';
-import {bgMortal, bgMortalChanged} from '../tab-manager';
 
 let onDeleted;
 let timer;
@@ -12,71 +10,18 @@ const toWrite = new Set();
 
 export default cache;
 
-if (__.MV3) {
-  bgMortalChanged.add(val => {
-    if (val) cacheDB.putMany(Object.values(cache));
-    else cacheDB.clear();
-  });
-}
-
 /** @param {MatchCache.Entry} val
  * @return {void} */
 export function add(val) {
-  cache.set(val.url, bgMortal ? hit(val) : val);
+  cache.set(val.url, hit(val));
   if (cache.size >= MAX) prune();
 }
 
 /** @return {void} */
 export function clear() {
   if (onDeleted) cache.forEach(onDeleted);
-  if (__.MV3 && bgMortal) cacheDB.clear();
   if (timer) timer = clearTimeout(timer);
   cache.clear();
-}
-
-/** @param {string} url
- * @return {Promise<?MatchCache.Entry>} */
-export async function loadOne(url) {
-  const val = await cacheDB.get(url);
-  if (val) {
-    cache.set(url, hit(val));
-    const styleIds = Object.keys(val.sections ??= {}).map(Number);
-    const styles = styleIds.length ? await styleDB.getMany(styleIds) : [];
-    for (const style of styles) {
-      if (!style || !make(val, style)) {
-        del([val]);
-        return;
-      }
-    }
-  }
-  return val;
-}
-
-/** @return {Promise<void>} */
-export async function loadAll() {
-  for (const val of await cacheDB.getAll()) {
-    if (!cache.has(val.url)) {
-      cache.set(val.url, val);
-    }
-  }
-}
-
-/** @param {StyleDataMap} dataMap
- * @return {void} */
-export function hydrate(dataMap) {
-  const toDel = [];
-  for (const val of cache.values()) {
-    for (const id in (val.sections ??= {})) {
-      const data = dataMap.get(+id);
-      if (!data || !make(val, data.style)) {
-        toDel.push(val);
-        break;
-      } else {
-        data.appliesTo.add(val.url);
-      }
-    }
-  }
-  if (toDel[0]) del(toDel);
 }
 
 /**
@@ -122,39 +67,12 @@ function del(items) {
     cache.delete(items[i] = val.url);
     onDeleted(val);
   }
-  if (__.MV3 && bgMortal) cacheDB.deleteMany(items);
 }
 
 /** @return {void} */
 function flush() {
-  const bare = [];
-  let toDel;
-  nextEntry:
-  for (const val of toWrite) {
-    const {d, url, sections} = val;
-    /** @type {MatchCache.IndexMap} */
-    const indexes = {};
-    /** @type {MatchCache.DbEntry} */
-    const res = {};
-    let styleId;
-    for (styleId in sections) {
-      /** @type {Injection.Sections | MatchCache.Index} */
-      const sec = sections[styleId];
-      const idx = sec && (Array.isArray(sec) ? sec : sec.idx);
-      if (!idx) {
-        (toDel ??= []).push(val);
-        continue nextEntry;
-      }
-      indexes[styleId] = idx;
-    }
-    // Adding the meaningful props first to ensure their visibility in devtools DB viewer
-    if (styleId) res.sections = indexes;
-    res.d = [d?.[1] || 0, new Date()];
-    res.url = url;
-    bare.push(res);
-  }
-  if (toDel) del(toDel);
-  if (__.MV3) cacheDB.putMany(bare);
+  for (const val of toWrite)
+    val.d = [val.d?.[1] || 0, new Date()];
   toWrite.clear();
   timer = null;
 }
@@ -170,7 +88,7 @@ async function flushLater() {
  * @param {T} val
  * @return {T} */
 export function hit(val) {
-  if (val && bgMortal) {
+  if (val) {
     toWrite.add(val);
     if (!timer) flushLater();
   }
