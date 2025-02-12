@@ -205,7 +205,7 @@ i,
   &[open] {
     overflow-y: auto;
     margin-top: calc(1.5*var(--pad));
-    &.settings {
+    .normal-layout &.settings {
       min-height: 6em;
     }
     > summary {
