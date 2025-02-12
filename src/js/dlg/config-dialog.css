@@ -18,7 +18,8 @@
   }
   #stylus-popup & {
     > div {
-      position: relative;
+      top: auto;
+      right: auto;
     }
     .config-body label {
       --item-padY: .5em;
