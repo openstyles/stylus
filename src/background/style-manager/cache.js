@@ -12,10 +12,12 @@ const toWrite = new Set();
 
 export default cache;
 
-bgMortalChanged.add(val => {
-  if (val) cacheDB.putMany(Object.values(cache));
-  else cacheDB.clear();
-});
+if (__.MV3) {
+  bgMortalChanged.add(val => {
+    if (val) cacheDB.putMany(Object.values(cache));
+    else cacheDB.clear();
+  });
+}
 
 /** @param {MatchCache.Entry} val
  * @return {void} */

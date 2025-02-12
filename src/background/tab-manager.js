@@ -59,7 +59,7 @@ const putObject = obj => stateDB.putMany(
   Object.keys(obj).map(Number)
 );
 
-export const bgMortalChanged = new Set();
+export const bgMortalChanged = __.MV3 && new Set();
 export let bgMortal;
 
 bgInit.push(async () => {
