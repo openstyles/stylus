@@ -1,5 +1,5 @@
 // WARNING: make sure util-webext.js runs first and sets _deepCopy
-import {k_deepCopy, kApplyPort, kBroadcast} from '@/js/consts';
+import {k_deepCopy, kApplyPort} from '@/js/consts';
 import {onMessage} from '@/js/msg';
 import {API, isFrame, TDM, updateTDM} from '@/js/msg-api';
 import * as styleInjector from './style-injector';
@@ -73,10 +73,6 @@ styleInjector.selfDestruct = selfDestruct;
 init();
 onMessage.set(applyOnMessage, true);
 addEventListener(kPageShow, onBFCache);
-{
-  const S = chrome.storage;
-  (S.session || S.local.onChanged && S.local || S).onChanged.addListener(onStorage);
-}
 
 async function init() {
   if (isUnstylable) return API.styleViaAPI({method: 'styleApply'});
@@ -131,12 +127,9 @@ function getStylesViaXhr() {
 
 function applyOnMessage(req, sender, multi) {
   if (multi) {
-    if (req[1]) {
-      throttled ??= Promise.resolve().then(processThrottled) && [];
-      throttled.push(req);
-      return;
-    }
-    req = req[0];
+    throttled ??= Promise.resolve().then(processThrottled) && [];
+    throttled.push(req);
+    return;
   }
   if (isUnstylable && /^(style|urlChanged)/.test(req.method)) {
     API.styleViaAPI(req);
@@ -306,14 +299,6 @@ function onReified(e) {
     document.onprerenderingchange = null;
     API.styles.getSectionsByUrl('', 0, 'cfg').then(updateConfig);
     updateCount();
-  }
-}
-
-async function onStorage(changes) {
-  if ((changes = changes[kBroadcast]) && (changes = changes.newValue)) {
-    if (document.visibilityState !== 'visible')
-      await new Promise(setTimeout);
-    applyOnMessage(changes, null, true);
   }
 }
 

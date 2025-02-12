@@ -1,4 +1,4 @@
-import {k_busy, kInvokeAPI} from '@/js/consts';
+import {k_busy, kBroadcast, kInvokeAPI} from '@/js/consts';
 import {bgReadySignal} from './msg-api';
 
 /** @type {Map<function,boolean>} true: returned value is used as the reply */
@@ -26,13 +26,19 @@ if (__.ENTRY) {
     if (fnOff) port.onDisconnect.addListener(fnOff);
   });
 }
+{
+  const S = chrome.storage;
+  (S.session || S.local.onChanged && S.local || S).onChanged.addListener(onStorage);
+}
 
 export function _execute(data, sender, multi) {
   let result;
   let res;
   let i = 0;
   if (__.ENTRY !== 'sw' && multi) {
-    data = (multi = data)[0];
+    multi = data.length > 1;
+    if (multi) multi = data;
+    data = data[0];
   }
   do {
     for (const [fn, replyAllowed] of onMessage) {
@@ -56,8 +62,6 @@ function onRuntimeMessage({data, multi, TDM}, sender, sendResponse) {
   if (__.ENTRY === true && !__.IS_BG && data.method === kInvokeAPI) {
     return;
   }
-  if (multi && !(multi = data.length > 1))
-    data = data[0];
   sender.TDM = TDM;
   let res = __.IS_BG && global[k_busy];
   res = res
@@ -68,4 +72,12 @@ function onRuntimeMessage({data, multi, TDM}, sender, sendResponse) {
     return true;
   }
   if (res !== undefined) sendResponse(wrapData(res));
+}
+
+async function onStorage(changes) {
+  if ((changes = changes[kBroadcast]) && (changes = changes.newValue)) {
+    if (document.visibilityState !== 'visible')
+      await new Promise(setTimeout);
+    onRuntimeMessage({data: changes, multi: true}, {}, wrapData);
+  }
 }
