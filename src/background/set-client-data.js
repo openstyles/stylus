@@ -80,7 +80,7 @@ export default async function setClientData({
   const url = new URL(pageUrl);
   const page = url.pathname.slice(1/*"/"*/, -5/*".html"*/);
   const jobs = /** @namespace StylusClientData */ Object.assign({
-    apply: styleMan.getSectionsByUrl(pageUrl, null, true),
+    apply: styleMan.getSectionsByUrl(pageUrl, {init: true}),
     dark: isDark,
     favicon: FIREFOX || isVivaldi,
     prefs: nondefaults,

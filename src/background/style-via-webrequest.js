@@ -1,12 +1,13 @@
 import {kAppJson, kMainFrame, kPopup, kStyleViaXhr, kSubFrame} from '@/js/consts';
 import {updateSessionRules} from '@/js/dnr';
+import {CLIENT} from '@/js/port';
 import * as prefs from '@/js/prefs';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {actionPopupUrl, ownRoot} from '@/js/urls';
 import {deepEqual, isEmptyObj} from '@/js/util';
 import {ignoreChromeError, ownId, toggleListener} from '@/js/util-webext';
 import * as colorScheme from './color-scheme';
-import {bgBusy, bgPreInit, dataHub, onUnload} from './common';
+import {bgBusy, bgPreInit, clientDataJobs, dataHub, onUnload} from './common';
 import {stateDB} from './db';
 import {webNavigation} from './navigation-manager';
 import offscreen from './offscreen';
@@ -51,6 +52,10 @@ if (__.MV3) {
     ruleIds = await stateDB.get(kRuleIds) || {};
     for (const id in ruleIds) ruleIdKeys[ruleIds[id]] = +id;
   })());
+  bgBusy.then(() => setTimeout(() => prefs.subscribe(kStyleViaXhr, (key, val) => {
+    if (val || offscreen[CLIENT])
+      offscreen.keepAlive(val);
+  }, true), clientDataJobs.size ? 50/*let the client page load first*/ : 0));
 }
 
 prefs.ready.then(() => {
@@ -132,7 +137,8 @@ async function prepareStyles(req) {
   const {tabId, frameId, url} = req; if (tabId < 0) return;
   const key = tabId + ':' + frameId;
   const bgPreInitLen = __.MV3 && bgPreInit.length;
-  const isDark = colorScheme.isSystem()
+  const isDark = curXHR
+    && colorScheme.isSystem()
     && !tabMan.someInjectable()
     && colorScheme.refreshSystemDark();
   __.DEBUGLOG('prepareStyles', key, req, {isDark});

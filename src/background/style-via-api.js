@@ -60,7 +60,7 @@ export default function initStyleViaApi() {
     if (id === null && !ignoreUrlCheck && frameStyles.url === url) {
       return;
     }
-    const {sections} = getSectionsByUrl(url, id);
+    const {sections} = getSectionsByUrl(url, {id});
     const tasks = [];
     for (const sec of sections.sort((a, b) => calcOrder(a) - calcOrder(b))) {
       const styleId = sec.id;

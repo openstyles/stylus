@@ -1,9 +1,8 @@
-import {BIT_DARK, BIT_SYS_DARK, kDark, kStyleViaXhr} from '@/js/consts';
-import {CLIENT} from '@/js/port';
+import {BIT_DARK, BIT_SYS_DARK, kDark} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {debounce, isCssDarkScheme} from '@/js/util';
 import {broadcastExtension} from './broadcast';
-import {bgBusy, bgPreInit, clientDataJobs, onSchemeChange} from './common';
+import {bgBusy, bgPreInit, onSchemeChange} from './common';
 import {stateDB} from './db';
 import offscreen from './offscreen';
 
@@ -46,13 +45,6 @@ if (__.MV3) {
       update();
     }
   }));
-  bgBusy.then(() => setTimeout(() => prefs.subscribe([kSTATE, kStyleViaXhr], (key, val, init) => {
-    if (init && key !== kStyleViaXhr) // only process the last one on init
-      return;
-    val = prefs.__values[kSTATE] === kSystem || prefs.__values[kStyleViaXhr];
-    if (val || offscreen[CLIENT])
-      offscreen.keepAlive(val);
-  }, true), clientDataJobs.size ? 50/*let the client page load first*/ : 0));
 } else {
   saved = true;
   refreshSystemDark();

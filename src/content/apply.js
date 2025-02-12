@@ -37,6 +37,7 @@ const navHubParent = isFrameNoUrl && (navHubGlobal ? parent : parent[NAV_ID]) ||
 
 // FIXME: move this to background page when following bugs are fixed:
 // https://bugzil.la/1587723, https://crbug.com/968651
+/** @type {MediaQueryList} */
 let mqDark;
 
 // dynamic iframes don't have a URL yet so we'll use their parent's URL (hash isn't inherited)
@@ -92,23 +93,31 @@ async function init() {
 
 function initMQ() {
   mqDark = matchMedia('(prefers-color-scheme: dark)');
-  mqDark.onchange = ({matches: m}) => {
-    if (m !== own.cfg.dark)
-      API.setSystemDark(own.cfg.dark = m);
-  };
+  if (!isFrameSameOrigin) {
+    mqDark.onchange = ({matches: m}) => {
+      if (m !== own.cfg.dark)
+        API.setSystemDark(own.cfg.dark = m);
+    };
+  }
   return mqDark;
 }
 
 async function applyStyles(data, isInitial = !own.sections) {
-  if (!data) data = await API.styles.getSectionsByUrl(matchUrl, null, isInitial);
+  if (!data) data = await getStyles({init: isInitial});
   if (!data.cfg) data.cfg = own.cfg;
   Object.assign(own, global[Symbol.for(SYM_ID)] = data);
   // used by child frames via parentStyles
   if (!isFrame && own.cfg.topUrl === '') own.cfg.topUrl = location.origin;
-  if (!isFrame && own.cfg.dark !== (mqDark ?? initMQ()).matches) mqDark.onchange(mqDark);
   if (styleInjector.list.length) styleInjector.apply(own, true);
   else if (!own.cfg.off) styleInjector.apply(own);
   styleInjector.toggle(!own.cfg.off);
+}
+
+function getStyles(opts) {
+  return API.styles.getSectionsByUrl(matchUrl, {
+    ...opts,
+    dark: (mqDark ?? initMQ()).matches,
+  });
 }
 
 /** Must be executed inside try/catch */
@@ -147,7 +156,7 @@ function applyOnMessage(req, sender, multi) {
     case 'styleUpdated':
       if (!own.sections && own.cfg.off) break;
       if (style.enabled) {
-        API.styles.getSectionsByUrl(matchUrl, style.id).then(res =>
+        getStyles({id: style.id}).then(res =>
           res.sections.length
             ? styleInjector.apply(res)
             : styleInjector.removeId(style.id));
@@ -158,8 +167,7 @@ function applyOnMessage(req, sender, multi) {
 
     case 'styleAdded':
       if ((own.sections || !own.cfg.off) && style.enabled) {
-        API.styles.getSectionsByUrl(matchUrl, style.id)
-          .then(styleInjector.apply);
+        getStyles({id: style.id}).then(styleInjector.apply);
       }
       break;
 
@@ -297,7 +305,7 @@ function onReified(e) {
   if (e.isTrusted) {
     updateTDM(2);
     document.onprerenderingchange = null;
-    API.styles.getSectionsByUrl('', 0, 'cfg').then(updateConfig);
+    getStyles({init: 'cfg'}).then(updateConfig);
     updateCount();
   }
 }
@@ -310,7 +318,7 @@ function selfDestruct() {
   // In Chrome content script is orphaned on an extension update/reload
   // so we need to detach event listeners
   removeEventListener(kPageShow, onBFCache);
-  if (mqDark) mqDark.onchange = null;
+  if (mqDark) mqDark = mqDark.onchange = null;
   if (offscreen) for (const fn of offscreen) fn();
   if (TDM < 0) document.onprerenderingchange = null;
   if (__.MV3) removeEventListener('mousedown', wakeUpSW, true);

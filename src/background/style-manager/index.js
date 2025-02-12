@@ -168,9 +168,11 @@ export function getRemoteInfo(id) {
 }
 
 /** @returns {Injection.Response} */
-export function getSectionsByUrl(url, id, isInitialApply) {
+export function getSectionsByUrl(url, {id, init, dark} = {}) {
+  if (dark != null)
+    colorScheme.setSystemDark(dark);
   const p = prefs.__values;
-  if (isInitialApply && p.disableAll) {
+  if (init && p.disableAll) {
     return {cfg: {off: true}};
   }
   const {sender = {}} = this || {};
@@ -189,12 +191,12 @@ export function getSectionsByUrl(url, id, isInitialApply) {
     wake: p[pKeepAlive] >= 0,
     order,
   };
-  if (isInitialApply === 'cfg') {
+  if (init === 'cfg') {
     return {cfg};
   }
   let res, cache;
   if (frameId === 0
-  && isInitialApply !== kStyleViaXhr
+  && init !== kStyleViaXhr
   && (res = td[kUrl])
   && (res = res[0]) !== url
   && res.split('#', 1)[0] === url.split('#', 1)[0]) {
@@ -215,7 +217,7 @@ export function getSectionsByUrl(url, id, isInitialApply) {
   res = id
     ? ((res = res[id])) ? [res] : []
     : Object.values(res);
-  if (isInitialApply === true && res.length) {
+  if (init === true && res.length) {
     (td[kUrl] ??= {})[frameId] ??= url;
   }
   return {
