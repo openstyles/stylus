@@ -11,6 +11,7 @@ export function broadcast(data) {
 }
 
 function doBroadcast() {
+  toBroadcast.push(Math.random());
   (chromeSession || chromeLocal).set({[kBroadcast]: toBroadcast});
   toBroadcast = null;
 }

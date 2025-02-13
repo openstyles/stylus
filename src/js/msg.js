@@ -78,6 +78,7 @@ async function onStorage(changes) {
   if ((changes = changes[kBroadcast]) && (changes = changes.newValue)) {
     if (document.visibilityState !== 'visible')
       await new Promise(setTimeout);
+    changes.pop();
     onRuntimeMessage({data: changes, multi: true}, {}, wrapData);
   }
 }
