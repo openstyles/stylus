@@ -67,7 +67,7 @@ export default async function makePopupData() {
   for (const sortedFrames of [known, unknown]) {
     for (const f of sortedFrames.values()) {
       const u = f.url ??= '';
-      f.isDupe = urls.has(u);
+      f.isDupe = f.frameId && urls.has(u);
       urls.add(u);
       frames.push(f);
     }
