@@ -8,7 +8,7 @@ $iconGapY: 4px;
   --name-padding-left: 20px;
   --name-width: 30ch;
   --size-width: 4ch;
-  --action-size: 20px;
+  --action-size: var(--icon-font-size);
 }
 body {
   /* Fill the entire viewport to enable json import via drag'n'drop */

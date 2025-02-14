@@ -69,16 +69,11 @@ const GlobalRoutes = {
     }
     menuHide();
   },
-  '.copy'(event) {
-    event.preventDefault();
-    const target = document.activeElement;
-    const message = $('.copy-message');
+  '.copy'({target}) {
     navigator.clipboard.writeText(target.textContent);
     target.classList.add('copied');
-    message.classList.add('show-message');
     setTimeout(() => {
       target.classList.remove('copied');
-      message.classList.remove('show-message');
     }, 1000);
   },
 };

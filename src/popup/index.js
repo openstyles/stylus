@@ -185,10 +185,12 @@ async function initPopup(frames, ping0, tab, urlSupported) {
     ].filter(Boolean).join('\n');
     const renderToken = s => s[0] === '<'
       ? $create('a.copy', {
-        textContent: s.slice(1, -1),
         tabIndex: 0,
         title: t('copy'),
-      })
+      }, [
+        s.slice(1, -1),
+        $create('i.i-copy'),
+      ])
       : s;
     const renderLine = line => $create('p', line.split(/(<.*?>)/).map(renderToken));
     const noteNode = $createFragment(note.split('\n').map(renderLine));

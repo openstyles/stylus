@@ -263,7 +263,7 @@ html[style*="border"] .entry:nth-child(-n+10):before {
 }
 
 a.configure[target="_blank"] .i-config {
-  font-size: 20px;
+  font-size: var(--icon-font-size);
   margin-top: 1px;
 }
 
@@ -645,43 +645,24 @@ a:hover i {
     margin: 0;
   }
   .copy {
-    cursor: pointer;
-    transition: all .1s;
-    text-decoration: underline;
-    text-decoration-style: dotted;
+    cursor: copy;
+    hyphens: none;
+    word-break: break-word;
     font-weight: bold;
     &:hover {
       color: var(--fg);
+      text-decoration: underline;
+      &:not(.copied) {
+        text-decoration-style: dotted;
+      }
+    }
+    i {
+      font-size: var(--icon-font-size);
+      line-height: var(--font-size);
     }
     &.copied {
-      background: hsl(170, 40%, 80%);
-      color: var(--fg);
+      color: var(--accent-1);
     }
-    &::after {
-      content: '';
-      background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAMAAAC67D+PAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAGUExURQAAAAAAAKVnuc8AAAABdFJOUwBA5thmAAAAIElEQVQI12NgYGCEAgYgkwEMGBFijEhixDMZkUSRLQAACpYALjrE2uIAAAAASUVORK5CYII=) center no-repeat;
-      height: 10px;
-      width: 10px;
-      display: inline-flex;
-      margin-left: 3px;
-    }
-  }
-}
-.copy-message {
-  white-space: nowrap;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  font-weight: bold;
-  font-size: 13px;
-  text-align: center;
-  padding: 4px 0;
-  background: hsl(170, 40%, 80%);
-  color: var(--fg);
-  z-index: 10;
-  &:not(.show-message) {
-    display: none;
   }
 }
 

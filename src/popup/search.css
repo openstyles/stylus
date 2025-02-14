@@ -113,7 +113,7 @@
     margin: -6px 4px -6px 0;
   }
   & span {
-    font-size: 12px;
+    font-size: var(--font-size);
     font-weight: 600;
   }
   .search-result:hover & {

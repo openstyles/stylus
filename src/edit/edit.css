@@ -408,7 +408,7 @@ i,
   > label::before {
     content: attr(data-index) ":";
     margin-right: 0.25rem;
-    font-size: 12px;
+    font-size: var(--font-size);
   }
 }
 .code-label {
@@ -694,7 +694,7 @@ i,
     margin: 0 0 2px;
   }
   .keymap-list {
-    font-size: 12px;
+    font-size: var(--font-size);
     padding: 0 3px 0 0;
     border-spacing: 0;
     word-break: break-all;

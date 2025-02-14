@@ -280,8 +280,8 @@ li {
 }
 
 .configure-usercss .i-config {
-  width: 20px;
-  height: 20px;
+  width: var(--icon-font-size);
+  height: var(--icon-font-size);
 }
 #message-box.config-dialog {
   width: 0; /* prevents covering the entire page */

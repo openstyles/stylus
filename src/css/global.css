@@ -9,6 +9,8 @@
 }
 :root {
   --family: Arial, "Helvetica Neue", Helvetica, system-ui, sans-serif;
+  --font-size: 12px;
+  --icon-font-size: 20px;
   --input-height: 24px;
   --cmin: hsl(0, 0%, 00%);
   --c00: hsl(0, 0%, 00%);
@@ -45,7 +47,7 @@
   }
 }
 body {
-  font: normal 12px var(--family);
+  font: normal var(--font-size) var(--family);
   background-color: var(--bg);
   color: var(--fg);
   margin: 0;
@@ -147,7 +149,7 @@ i {
   }
   vertical-align: middle;
   transition: color .1s;
-  font: 20px/1 icons;
+  font: var(--icon-font-size)/1 icons;
   color: var(--c40);
   &:hover {
     color: var(--fg);
@@ -287,8 +289,8 @@ summary {
 
 .hollow-gear {
   cursor: default;
-  height: 20px;
-  font: normal 20px icons;
+  height: var(--icon-font-size);
+  font: normal var(--icon-font-size) icons;
   fill: transparent;
   stroke: currentColor;
   vertical-align: middle;
@@ -503,7 +505,7 @@ body {
 @font-face {
   font-family: 'icons';
   src: url(icons.ttf) format('truetype');
-  unicode-range: /*AUTO-GENERATED-ICON-RANGE*/ U+20,U+2195,U+2197,U+21b2,U+21b6,U+222a,U+2298,U+22c1,U+22ee,U+24d8,U+25bc,U+25f4,U+2611,U+2699,U+26c8,U+270f,U+2713,U+2714,U+2716,U+2795,U+2796,U+27f3,U+d83e;
+  unicode-range: /*AUTO-GENERATED-ICON-RANGE*/ U+20,U+2195,U+2197,U+21b2,U+21b6,U+222a,U+2298,U+22c1,U+22ee,U+2398,U+24d8,U+25bc,U+25f4,U+2611,U+2699,U+26c8,U+270f,U+2713,U+2714,U+2716,U+2795,U+2796,U+27f3,U+d83e;
 }
 
 /*AUTO-GENERATED-ICON*/ .i-check1::after { content: "✓"; }
@@ -512,6 +514,7 @@ body {
 /*AUTO-GENERATED-ICON*/ .i-close::after { content: "✖"; }
 /*AUTO-GENERATED-ICON*/ .i-cloud::after { content: "⛈"; }
 /*AUTO-GENERATED-ICON*/ .i-config::after { content: "⚙"; }
+/*AUTO-GENERATED-ICON*/ .i-copy::after { content: "⎘"; }
 /*AUTO-GENERATED-ICON*/ .i-edit::after { content: "✏"; }
 /*AUTO-GENERATED-ICON*/ .i-empty::after { content: "⊘"; }
 /*AUTO-GENERATED-ICON*/ .i-external::after { content: "↗"; }
