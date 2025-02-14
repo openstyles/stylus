@@ -8,5 +8,5 @@ const StorageExtras = {
 
 export const chromeLocal =
   /*@__PURE__*/Object.assign(browser.storage.local, StorageExtras);
-export const chromeSession = chrome.storage.session;
+export const chromeSession = browser.storage.session;
 export const GET_KEYS = !!chromeLocal.getKeys;
