@@ -36,8 +36,7 @@ export function _execute(data, sender, multi) {
   let res;
   let i = 0;
   if (__.ENTRY !== 'sw' && multi) {
-    multi = data.length > 1;
-    if (multi) multi = data;
+    multi = data.length > 1 && data;
     data = data[0];
   }
   do {
