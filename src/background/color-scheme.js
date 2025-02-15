@@ -126,7 +126,7 @@ function update(type, val) {
   if (isDark !== val) {
     isDark = val;
     if (isDark !== notified && saved != null)
-      notify();
+      debounce(notify);
   }
 }
 

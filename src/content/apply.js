@@ -114,10 +114,9 @@ async function applyStyles(data, isInitial = !own.sections) {
 }
 
 function getStyles(opts) {
-  return API.styles.getSectionsByUrl(matchUrl, {
-    ...opts,
-    dark: (mqDark ?? initMQ()).matches,
-  });
+  // <iframe> element's color-scheme CSS style is enforced on its contents per the spec
+  if (!isFrame) opts.dark = (mqDark ?? initMQ()).matches;
+  return API.styles.getSectionsByUrl(matchUrl, opts);
 }
 
 /** Must be executed inside try/catch */
