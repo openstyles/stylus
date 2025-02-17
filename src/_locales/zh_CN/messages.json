@@ -73,6 +73,9 @@
   "backupMessage": {
     "message": "选择/拖拽 JSON 备份文件到本页面来导入备份。\n\n若要导出 Stylus V1.5.18 之前的兼容备份，请右击或Shift+左击「导出」按钮。"
   },
+  "backupReminder": {
+    "message": "样式可能会因为断电，浏览器漏洞，个人错误而导致 <b>丢失</b>。<hr><b>备份您的资料：</b>在选项中配置「同步到云端」，或者在进行重大更改时手动单击「导出」按钮，最好使用专门的应用程序自动备份所有的数据"
+  },
   "bckpInstStyles": {
     "message": "导出所有样式"
   },
@@ -90,6 +93,9 @@
   },
   "clickToUninstall": {
     "message": "点击卸载"
+  },
+  "cm_arrowKeysTraverse": {
+    "message": "箭头键↑↓切换部分"
   },
   "cm_autoCloseBrackets": {
     "message": "括弧配对"
@@ -307,8 +313,14 @@
       }
     }
   },
+  "editTargetsFirst": {
+    "message": "在代码前显示目标"
+  },
   "editorSettings": {
     "message": "编辑器设置"
+  },
+  "emptyCode": {
+    "message": "这部分的 URL 是空的"
   },
   "enableStyleLabel": {
     "message": "启用"
@@ -357,8 +369,17 @@
   "filteredStylesAllHidden": {
     "message": "没有样式匹配当前的过滤器选项"
   },
+  "find": {
+    "message": "查找"
+  },
   "findStyles": {
     "message": "查找更多样式"
+  },
+  "findStylesOnline": {
+    "message": "点击从网上寻找新样式"
+  },
+  "general": {
+    "message": "一般"
   },
   "genericAdd": {
     "message": "添加"
@@ -380,6 +401,12 @@
   },
   "genericHistoryLabel": {
     "message": "历史"
+  },
+  "genericMaximum": {
+    "message": "最大值"
+  },
+  "genericMinimum": {
+    "message": "最小值"
   },
   "genericNext": {
     "message": "继续"
@@ -557,6 +584,9 @@
   "linterRulesLink": {
     "message": "查看完整的规则清单"
   },
+  "liveReloadAfterInstall": {
+    "message": "安装后实时加载"
+  },
   "liveReloadError": {
     "message": "查看文件时发生错误"
   },
@@ -587,6 +617,9 @@
   "manageMaxTargets": {
     "message": "「应用于」列每个样式显示的对象数量"
   },
+  "manageMinColumnWidth": {
+    "message": "最小列宽度（以像素为单位；9999 停用多列模式）"
+  },
   "manageNewStyleAsUsercss": {
     "message": "作为 UserCSS"
   },
@@ -616,6 +649,9 @@
   },
   "manageOnlyUsercss": {
     "message": "只显示 UserCSS 样式"
+  },
+  "masterSwitch": {
+    "message": "总开关"
   },
   "menuShowBadge": {
     "message": "显示计数器角标"
@@ -668,6 +704,14 @@
   },
   "meta_invalidRangeMultipleUnits": {
     "message": "无效 @var $type$：多个单位被定义",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeStep": {
+    "message": "无效的 @var$type$：预设值不是一个数字或范围",
     "placeholders": {
       "type": {
         "content": "$1"
@@ -818,6 +862,27 @@
   },
   "openOptions": {
     "message": "选项"
+  },
+  "optionCompactWidth": {
+    "message": "紧凑型 UI 布局的最大窗口宽度（以像素为单位）"
+  },
+  "optionFOUC": {
+    "message": "样式应用的太晚了？"
+  },
+  "optionFOUCMV2": {
+    "message": "考虑启用 「<a>」。"
+  },
+  "optionFOUCMV3": {
+    "message": "考虑启用 「<a>」并增加 「<b>」。"
+  },
+  "optionKeepAlive": {
+    "message": "样式缓存时间"
+  },
+  "optionKeepAlive2": {
+    "message": "（以分钟为单位，-1 = 无限制）"
+  },
+  "optionKeepAliveIdle": {
+    "message": "...即使浏览器处于不活跃状态"
   },
   "optionsActions": {
     "message": "操作"
