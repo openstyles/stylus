@@ -30,7 +30,7 @@ body {
   display: flex;
   flex-direction: column;
 }
-body[style*="max-height:"] > main {
+#installed-wrapper {
   overflow-y: auto;
 }
 
