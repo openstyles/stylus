@@ -11,8 +11,8 @@ $iconGapY: 4px;
   --action-size: var(--icon-font-size);
 }
 body {
-  /* Fill the entire viewport to enable json import via drag'n'drop */
   display: flex;
+  height: var(--100dvh); /* Fill the entire viewport to enable json import via drag'n'drop */
 }
 
 #header:lang(ja) h1 {
