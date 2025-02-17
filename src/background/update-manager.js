@@ -3,7 +3,7 @@ import {UCD} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {calcStyleDigest, styleSectionsEqual} from '@/js/sections-util';
 import {chromeLocal} from '@/js/storage-util';
-import {extractUsoaId, isCdnUrl, isLocalhost, usoApi} from '@/js/urls';
+import {extractUsoaId, isCdnUrl, isLocalhost, rxGF, usoApi} from '@/js/urls';
 import {debounce, deepMerge, getHost, sleep} from '@/js/util';
 import {ignoreChromeError} from '@/js/util-webext';
 import {bgBusy} from './common';
@@ -173,15 +173,20 @@ export async function checkStyle(opts) {
   async function updateUsercss(css) {
     let oldVer = ucd.version;
     let oldEtag = style.etag;
-    const m2 = (css || extractUsoaId(updateUrl)) &&
+    let m = (css || extractUsoaId(updateUrl)) &&
       await getEmbeddedMeta(css || style.sourceCode);
-    if (m2 && m2.updateUrl) {
-      updateUrl = m2.updateUrl;
-      oldVer = m2[UCD].version || '0';
+    if (m && m.updateUrl) {
+      updateUrl = m.updateUrl;
+      oldVer = m[UCD].version || '0';
       oldEtag = '';
     } else if (css) {
       return;
     }
+    /* Using the more efficient HEAD+GET approach for greasyfork instead of GET+GET,
+       because if ETAG header changes it normally means an update so we don't need to
+       download meta additionally in a separate request. */
+    if ((m = updateUrl.match(rxGF))[5] === 'meta')
+      updateUrl = m[1] + 'user' + m[6];
     if (oldEtag && oldEtag === await downloadEtag(updateUrl)) {
       return Promise.reject(STATES.SAME_CODE);
     }
