@@ -212,7 +212,9 @@ async function initPopup(frames, ping0, tab, urlSupported) {
  */
 function createWriterElement(frame, index) {
   const {frameId, parentFrameId, isDupe} = frame;
-  const url = tabUrlSupported || frameId ? frame.url : 'https://www.example.com/abcd';
+  const url = tabUrlSupported || frameId
+    ? frame.url.split('#')[0]
+    : 'https://www.example.com/abcd';
   const isAbout = url.startsWith('about:');
   const crumbs = [];
   if (!url) return;
