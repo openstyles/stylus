@@ -177,7 +177,7 @@ function createStyle(style) {
   let {id} = style;
   if (ass) {
     if (!exposeStyleName)
-      id = randomIds[id] ??= performance.now().toString(36);
+      id = randomIds[id] ??= Math.random().toString(36).slice(2);
     id = MEDIA + id;
     el = new CSSStyleSheet({media: id});
     setTextAndName(el, style);
