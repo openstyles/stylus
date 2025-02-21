@@ -200,25 +200,32 @@ i,
   color: var(--fg);
 }
 /* collapsibles */
-#details-wrapper details {
-  margin-right: var(--header-resizer-width);
-  &[open] {
-    overflow-y: auto;
-    margin-top: calc(1.5*var(--pad));
-    .normal-layout &.settings {
-      min-height: 6em;
-    }
-    > summary {
-      position: absolute;
-      margin-top: calc(-1.5*var(--pad));
+#details-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden;
+  margin-top: var(--pad05);
+  details {
+    margin-right: var(--header-resizer-width);
+    &[open] {
+      overflow-y: auto;
+      margin-top: calc(1.5 * var(--pad));
+      .normal-layout &.settings {
+        min-height: 6em;
+      }
+      > summary {
+        position: absolute;
+        margin-top: calc(-1.5 * var(--pad));
+      }
     }
   }
-}
-#details-wrapper summary {
-  align-items: center;
-  margin-left: .25em;
-  white-space: nowrap;
-  overflow: hidden;
+  summary {
+    align-items: center;
+    margin-left: .25em;
+    white-space: nowrap;
+    overflow: hidden;
+  }
   h2 {
     display: inline-block;
     border-bottom: 1px dotted transparent;
@@ -237,17 +244,10 @@ i,
   .icon {
     margin-top: -.1em;
   }
-}
-#details-wrapper details > :not(summary) {
-  margin: 0 var(--pad05) 0 var(--pad);
-  padding: calc(var(--pad)/4) 0;
-}
-#details-wrapper {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  overflow: hidden;
-  margin-top: var(--pad05);
+  details > :not(summary) {
+    margin: 0 var(--pad05) 0 var(--pad);
+    padding: calc(var(--pad)/4) 0;
+  }
 }
 #actions .buttons {
   display: inline-flex;
