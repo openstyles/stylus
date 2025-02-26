@@ -29,7 +29,7 @@ const rxNonWordEnd = /[^-\w]$/u;
 const rxPropOrEnd = /^([-a-z]*)(: ?|\()?$/i;
 const rxPropChars = /(\s*[-a-z(]+)?/yi;
 const rxPropEnd = /[\s:()]*/y;
-const rxVar = /(^|[^-.\w\u0080-\uFFFF])var\(/iyu;
+const rxVar = /(^|[^-.\w\u0080-\uFFFF])var\(-?/iyu;
 /** Using a string to avoid syntax error while loading this script in old browsers */
 const rxWordStart = __.MV3 ? /(?<![-\w]|#[0-9a-f]*)/
   : tryRegExp('(?<![-\\w]|#[0-9a-f]*)');
@@ -142,7 +142,7 @@ async function helper(cm) {
     }
     else if (L === '-' /*--var*/ || L === '(' /*var()*/)
     {
-      list = str.startsWith('--') || testAt(rxVar, ch - 5, text)
+      list = str.startsWith('--') || testAt(rxVar, ch - 5 - left.endsWith('-'), text)
         ? findAllCssVars(cm, left)
         : [];
       if (str.startsWith('(')) {
