@@ -90,9 +90,6 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
     styleCache.clear(),
   );
   if (__.MV3) {
-    chromeSession.setAccessLevel({
-      accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS',
-    });
     (bgPreInit.length ? bgPreInit : bgInit).push(
       stateDB.clear(),
       DNR.getDynamicRules().then(rules => updateDynamicRules(undefined, getRuleIds(rules))),

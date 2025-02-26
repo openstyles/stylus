@@ -1,4 +1,4 @@
-import {k_busy, kBroadcast, kInvokeAPI} from '@/js/consts';
+import {k_busy, kInvokeAPI} from '@/js/consts';
 import {bgReadySignal} from './msg-api';
 
 /** @type {Map<function,boolean>} true: returned value is used as the reply */
@@ -25,9 +25,6 @@ if (__.ENTRY) {
     if (fnOn) fnOn(port);
     if (fnOff) port.onDisconnect.addListener(fnOff);
   });
-}
-if (__.MV3 && !__.IS_BG) {
-  chrome.storage.session.onChanged.addListener(onStorage);
 }
 
 export function _execute(data, sender, multi) {
@@ -70,13 +67,4 @@ function onRuntimeMessage({data, multi, TDM}, sender, sendResponse) {
     return true;
   }
   if (res !== undefined) sendResponse(wrapData(res));
-}
-
-async function onStorage(changes) {
-  if ((changes = changes[kBroadcast]) && (changes = changes.newValue)) {
-    if (document.visibilityState !== 'visible')
-      await new Promise(setTimeout);
-    changes.pop();
-    onRuntimeMessage({data: changes, multi: true}, {}, wrapData);
-  }
 }
