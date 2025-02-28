@@ -92,15 +92,15 @@ chrome.runtime.onInstalled.addListener(({reason, previousVersion}) => {
   if (__.MV3) {
     (bgPreInit.length ? bgPreInit : bgInit).push(
       stateDB.clear(),
-      DNR.getDynamicRules().then(rules => updateDynamicRules(undefined, getRuleIds(rules))),
+      DNR.getDynamicRules().then(rules => updateDynamicRules(undefined, getRuleIds(rules)))
+        .then(() => prefs.ready)
+        .then(() => usercssMan.toggleUrlInstaller()),
       DNR.getSessionRules().then(rules => updateSessionRules(undefined, getRuleIds(rules))),
     );
     refreshIconsWhenReady();
   }
   (async () => {
     if (bgBusy) await bgBusy;
-    if (__.MV3 && prefs.__values[usercssMan.kUrlInstaller])
-      usercssMan.toggleUrlInstaller(true);
     mirrorStorage(dataMap);
   })();
 });

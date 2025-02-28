@@ -12,7 +12,7 @@ import {openURL} from './tab-util';
 
 const installCodeCache = {};
 const MIME = 'mime';
-export const kUrlInstaller = 'urlInstaller';
+const kUrlInstaller = 'urlInstaller';
 
 bgBusy.then(() => {
   prefs.subscribe(kUrlInstaller, toggle, true);
@@ -32,7 +32,7 @@ function toggle(key, val, isInit) {
   if (!__.MV3 || !isInit) toggleUrlInstaller(val);
 }
 
-export function toggleUrlInstaller(val) {
+export function toggleUrlInstaller(val = prefs.__values[kUrlInstaller]) {
   const urls = val ? [''] : [
     /* Known distribution sites where we ignore urlInstaller option, because
        they open .user.css URL only when the "Install" button is clicked.
