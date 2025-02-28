@@ -145,7 +145,7 @@ async function prepareStyles(req) {
     await colorScheme.refreshSystemDark();
   const oldData = toSend[key];
   const data = oldData || {};
-  const payload = data.payload = getSectionsByUrl.call({sender: req}, url, null, kStyleViaXhr);
+  const payload = data.payload = getSectionsByUrl.call({sender: req}, url, {init: kStyleViaXhr});
   const willStyle = payload.sections.length;
   data.url = url;
   if (oldData) removePreloadedStyles(null, key, data, willStyle);
