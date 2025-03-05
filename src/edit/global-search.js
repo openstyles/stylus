@@ -134,7 +134,6 @@ const EVENTS = {
     stateDialog.off('focusin', EVENTS.onfocusin);
     trimUndoHistory();
     enableUndoButton(stateUndoHistory.length);
-    if (stateFind) doSearch({canAdvance: false});
   },
 };
 
@@ -173,7 +172,6 @@ COMMANDS.replaceAll = COMMANDS.replace;
 //endregion
 
 Object.assign(CodeMirror.commands, COMMANDS);
-readStorage();
 
 //region Find
 
@@ -541,6 +539,7 @@ async function focusDialog(type, cm) {
   if (stateFind) {
     doSearch({canAdvance: false});
   }
+  stateFirstRun = false;
 }
 
 function dialogShown(type) {
@@ -865,12 +864,12 @@ function radiateArray(arr, focalIndex) {
   return result;
 }
 
-function readStorage() {
-  chromeLocal.getValue('editor').then((val = {}) => {
-    stateFind = val.find || '';
-    stateReplace = val.replace || '';
-    stateIcase = val.icase || stateIcase;
-  });
+export async function init() {
+  ({
+    find: stateFind = stateFind,
+    replace: stateReplace = stateReplace,
+    icase: stateIcase = stateIcase,
+  } = await chromeLocal.getValue('editor') || {});
 }
 
 function writeStorage() {

@@ -35,7 +35,7 @@ tBody();
   const cmCommands = CodeMirror.commands;
   for (const cmd of ['find', 'findNext', 'findPrev', 'replace', 'replaceAll']) {
     cmCommands[cmd] = async (...args) => {
-      await import('./global-search');
+      await (await import('./global-search')).init();
       cmCommands[cmd](...args);
     };
   }
