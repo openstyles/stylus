@@ -1,7 +1,7 @@
 import '@/js/browser';
 import {rxIgnorableError} from '@/js/msg-api';
 import {ownRoot} from '@/js/urls';
-import {sleep} from '@/js/util';
+import {sleep0} from '@/js/util';
 import {getWindowClients} from './util';
 
 let toBroadcast;
@@ -30,7 +30,7 @@ async function doBroadcast() {
          so we're yielding for a possible navigation/messaging event. */
       if (++cnt > 50) {
         cnt = 0;
-        await sleep();
+        await sleep0();
       }
     }
   }

@@ -14,6 +14,8 @@ export const hasOwn = /*@__PURE__*/Object.call.bind({}.hasOwnProperty);
 export const isCssDarkScheme = () => matchMedia('(prefers-color-scheme:dark)').matches;
 export const isObject = val => typeof val === 'object' && val;
 export const sleep = ms => new Promise(ms > 0 ? cb => setTimeout(cb, ms) : setTimeout);
+/** uses scheduler.yield() to prioritize continuation of the initiator over another task */
+export const sleep0 = () => global.scheduler?.yield?.() || new Promise(setTimeout);
 export const stringAsRegExpStr = s => s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&');
 export const stringAsRegExp = (s, flags) => new RegExp(stringAsRegExpStr(s), flags);
 export const RX_META = /\/\*!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i;

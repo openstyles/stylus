@@ -1,7 +1,7 @@
 import '@/js/browser';
 import {kUrl} from '@/js/consts';
 import * as URLS from '@/js/urls';
-import {sleep, stringAsRegExpStr} from '@/js/util';
+import {sleep0, stringAsRegExpStr} from '@/js/util';
 import {ignoreChromeError, MF} from '@/js/util-webext';
 import {sendTab} from './broadcast';
 import {webNavigation} from './navigation-manager';
@@ -40,7 +40,7 @@ export default async function reinjectContentScripts(targetTab) {
   }
   let busyTabsTimer;
 
-  if (!targetTab) await sleep();
+  if (!targetTab) await sleep0();
 
   for (const tab of targetTab ? [targetTab] : await browser.tabs.query({})) {
     const url = tab.pendingUrl || tab.url;

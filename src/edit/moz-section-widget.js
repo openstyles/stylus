@@ -3,7 +3,7 @@ import {$create} from '@/js/dom';
 import {messageBox} from '@/js/dom-util';
 import {htmlToTemplate, templateCache} from '@/js/localization';
 import {onMessage} from '@/js/msg';
-import {sleep, t} from '@/js/util';
+import {sleep0, t} from '@/js/util';
 import {CodeMirror} from '@/cm';
 import editor from './editor';
 import MozSectionFinder from './moz-section-finder';
@@ -83,7 +83,7 @@ export default function MozSectionWidget(cm, finder = MozSectionFinder(cm)) {
       async '.add-applies-to'(elItem, func) {
         const pos = func.item.find(1);
         cm.replaceRange(`, ${func.str.type}("")`, pos, pos);
-        await sleep();
+        await sleep0();
         elItem.nextElementSibling.$('input').focus();
       },
     };

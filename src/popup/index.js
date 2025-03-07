@@ -9,7 +9,7 @@ import * as prefs from '@/js/prefs';
 import {isDark, onDarkChanged} from '@/js/themer';
 import {CHROME, FIREFOX, MOBILE, OPERA} from '@/js/ua';
 import {ownRoot} from '@/js/urls';
-import {capitalize, clamp, clipString, sleep, stringAsRegExpStr, t} from '@/js/util';
+import {capitalize, clamp, clipString, sleep0, stringAsRegExpStr, t} from '@/js/util';
 import {CHROME_POPUP_BORDER_BUG, getActiveTab, MF} from '@/js/util-webext';
 import * as Events from './events';
 import './hotkeys';
@@ -168,7 +168,7 @@ async function initPopup(frames, ping0, tab, urlSupported) {
     }
     // FF and some Chrome forks (e.g. CentBrowser) implement tab-on-demand
     // so we'll wait a bit to handle popup being invoked right after switching
-    await sleep();
+    await sleep0();
     tab = await getActiveTab();
   }
 
