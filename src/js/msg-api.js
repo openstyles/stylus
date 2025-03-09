@@ -2,7 +2,7 @@ import {kInvokeAPI} from '@/js/consts';
 
 export const FF = __.BUILD !== 'chrome' && (
   __.ENTRY
-    ? 'contextualIdentities' in chrome
+    ? 'contextualIdentities' in chrome || 'activityLog' in chrome
     : global !== window
 );
 export const rxIgnorableError = /(R)eceiving end does not exist|The message (port|channel) closed|moved into back\/forward cache/;
