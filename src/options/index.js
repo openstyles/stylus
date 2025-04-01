@@ -43,7 +43,8 @@ $id('manage.newUI.favicons').onclick = () => {
 };
 $id('shortcuts').onclick = () => {
   if (__.BUILD !== 'chrome' && FIREFOX) {
-    customizeHotkeys();
+    if (!browser.commands?.openShortcutSettings?.())
+      customizeHotkeys();
   } else {
     API.openURL({
       url: `${OPERA ? 'opera://settings' : 'chrome://extensions'}/configureCommands`,
