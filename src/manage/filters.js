@@ -11,9 +11,12 @@ import {installed} from './util';
 export const filtersSelector = {
   hide: '',
   unhide: '',
-  numShown: 0,
-  numTotal: 0,
+  numShown: -1,
+  numTotal: -1,
 };
+const getValue = el => el.type === 'checkbox'
+  ? el.checked
+  : el.value.trim();
 const fltSearch = 'search';
 export const fltMode = 'searchMode';
 const fltModePref = 'manage.searchMode';
@@ -24,8 +27,7 @@ router.watch({search: [fltSearch, fltMode]}, ([search, mode]) => {
   if (firstRun) initFilters();
   elSearch.value = search || '';
   elSearchMode.value = mode || prefs.__values[fltModePref];
-  if (firstRun) filterOnChange({forceRefilter: true});
-  else searchStyles();
+  if (!firstRun) searchStyles();
 });
 
 function initFilters() {
@@ -128,7 +130,6 @@ function initFilters() {
 }
 
 function filterOnChange({target, forceRefilter, alreadySearched}) {
-  const getValue = el => (el.type === 'checkbox' ? el.checked : el.value.trim());
   if (!forceRefilter) {
     const value = getValue(target);
     if (value === target.lastValue) {
@@ -136,35 +137,39 @@ function filterOnChange({target, forceRefilter, alreadySearched}) {
     }
     target.lastValue = value;
   }
-  const enabledFilters = [...$$('#header [data-filter]')].filter(el => getValue(el));
-  const buildFilter = hide =>
-    (hide ? '' : '.entry.hidden') +
-    [...enabledFilters.map(el =>
-      el.dataset[hide ? 'filterHide' : 'filter']
-        .split(/,\s*/)
-        .map(s => (hide ? '.entry:not(.hidden)' : '') + s)
-        .join(',')),
-    ].join(hide ? ',' : '');
   Object.assign(filtersSelector, {
     hide: buildFilter(true),
     unhide: buildFilter(false),
   });
-  reapplyFilter(installed, alreadySearched).then(updateStripes);
+  if (elSearch) // only if initialized
+    reapplyFilter(installed, alreadySearched).then(updateStripes);
 }
 
-export function filterAndAppend({entry, container}) {
+function buildFilter(hide) {
+  return (hide ? '' : '.entry.hidden') +
+    [...$$('#header [data-filter]')].map(el => getValue(el) &&
+      el.dataset[hide ? 'filterHide' : 'filter']
+        .split(/,\s*/)
+        .map(s => (hide ? '.entry:not(.hidden)' : '') + s)
+        .join(','),
+    ).filter(Boolean).join(hide ? ',' : '');
+}
+
+export function filterAndAppend({entry, container}, alreadySearched) {
   if (!container) {
     fitNameColumn(undefined, entry.styleMeta);
     fitSizeColumn(undefined, entry);
   }
-  return reapplyFilter(container || [entry], undefined, entry);
+  return reapplyFilter(container || [entry], alreadySearched, entry);
 }
 
 /**
  * @returns {Promise} resolves on async search
  */
 async function reapplyFilter(container = installed, alreadySearched, entry) {
-  if (!alreadySearched && elSearch.value.trim()) {
+  if (!alreadySearched
+  && elSearch.value.trim()
+  && (container[0] || container.firstChild)) {
     await searchStyles({immediately: true, container});
   }
   // reverse the visibility, otherwise reapplyFilter will see no need to work

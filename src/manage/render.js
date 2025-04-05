@@ -273,11 +273,11 @@ export function showStyles(styles = [], matchUrlIds) {
     )) {
       const entry = createStyleElement(sorted[index++]);
       if (matchUrlIds && !matchUrlIds.includes(entry.styleMeta.id)) {
-        entry.classList.add('not-matching');
+        entry.classList.add('not-matching', 'hidden');
       }
       renderBin.appendChild(entry);
     }
-    filterAndAppend({container: renderBin}).then(sorter.updateStripes);
+    filterAndAppend({container: renderBin}, matchUrlIds).then(sorter.updateStripes);
     if (index < sorted.length) {
       requestAnimationFrame(renderStyles);
       if (firstRun && favsBusy) renderFavs();
