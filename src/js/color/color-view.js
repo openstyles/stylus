@@ -30,7 +30,7 @@ const RX_DETECT = new RegExp('(^|[\\s(){}[\\]:,/"=])' +
   ')', 'gi');
 const RX_DETECT_FUNC = /((rgb|hsl)a?|hwb)\(/iy;
 const RX_COMMENT = /\/\*([^*]+|\*(?!\/))*(\*\/|$)/g;
-const RX_STYLE = /(?:^|\s)(?:atom|keyword|variable callee|builtin)(?:\s|$)/;
+const RX_STYLE = /(?:^|\s)(?:atom|keyword|variable callee)(?:\s|$)/;
 const SPACE1K = ' '.repeat(1000);
 const ALLOWED_STYLES = ['atom', 'keyword', 'callee', 'comment', 'string'];
 
