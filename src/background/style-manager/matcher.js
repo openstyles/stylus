@@ -46,9 +46,6 @@ function urlMatchExclusion(e) {
 
 export function urlMatchStyle(query, style) {
   let ovr;
-  if ((ovr = style.exclusions) && ovr.some(urlMatchExclusion, query)) {
-    return 'excluded';
-  }
   if (!style.enabled) {
     return 'disabled';
   }
@@ -57,6 +54,9 @@ export function urlMatchStyle(query, style) {
   }
   if ((ovr = style.inclusions) && ovr.some(urlMatchExclusion, query)) {
     return 'included';
+  }
+  if ((ovr = style.exclusions) && ovr.some(urlMatchExclusion, query)) {
+    return 'excluded';
   }
   return true;
 }

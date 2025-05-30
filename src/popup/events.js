@@ -7,6 +7,7 @@ import * as hotkeys from './hotkeys';
 
 const menu = $id('menu');
 const menuExclusions = [];
+const menuInclusions = [];
 
 export function configure(event, entry) {
   if (!this.target) {
@@ -140,6 +141,16 @@ function menuInit() {
     input.onchange = () => {
       el.classList.toggle('enabled', input.checked);
       API.styles.toggleOverride(menu.styleId, rule, false, input.checked);
+    };
+  }
+  for (const el of $$('[data-include]')) {
+    const input = el.$('input');
+    const rule = u.origin +
+      (el.dataset.include === 'domain' ? '/*' : u.pathname.replace(/\*/g, '\\*'));
+    menuInclusions.push({el, input, rule});
+    input.onchange = () => {
+      el.classList.toggle('enabled', input.checked);
+      API.styles.toggleOverride(menu.styleId, rule, true, input.checked);
     };
   }
 }
