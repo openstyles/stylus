@@ -124,25 +124,29 @@ function initFilters() {
     if (elSearchMode.value === 'url') {
       elSearchMode.value = prefs.__values[fltModePref];
     }
-    filterOnChange({forceRefilter: true});
+    filterOnChange({force: true});
     router.updateSearch({[fltSearch]: '', [fltMode]: ''});
   };
+
+  buildFilters();
 }
 
-function filterOnChange({target, forceRefilter, alreadySearched}) {
-  if (!forceRefilter) {
+function filterOnChange({target, force, alreadySearched}) {
+  if (!force) {
     const value = getValue(target);
     if (value === target.lastValue) {
       return;
     }
     target.lastValue = value;
   }
-  Object.assign(filtersSelector, {
-    hide: buildFilter(true),
-    unhide: buildFilter(false),
-  });
+  buildFilters();
   if (elSearch) // only if initialized
     reapplyFilter(installed, alreadySearched).then(updateStripes);
+}
+
+function buildFilters() {
+  filtersSelector.hide = buildFilter(true);
+  filtersSelector.unhide = buildFilter(false);
 }
 
 function buildFilter(hide) {
@@ -289,7 +293,7 @@ async function searchStyles({immediately, container} = {}) {
     }
   }
   if (needsRefilter && !container) {
-    filterOnChange({forceRefilter: true, alreadySearched: true});
+    filterOnChange({force: true, alreadySearched: true});
   }
   return container;
 }
