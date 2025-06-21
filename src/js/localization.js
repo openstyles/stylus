@@ -42,7 +42,9 @@ export const tHTML = html => typeof html !== 'string'
 let onBodyListeners = [];
 
 function tElements(elems) {
-  for (const el of elems) {
+  for (const el of !elems.$$ ? elems
+    : !elems.tagName ? elems.$$(SELECTOR)
+      : [elems, ...elems.$$(SELECTOR)]) {
     const attr = el.getAttribute('i18n');
     if (!attr) continue;
     for (let item of attr.split(',')) {
@@ -66,7 +68,7 @@ function createTemplate(el) {
   const first = content.firstChild;
   const res = first.nextSibling ? content : first;
   if (id) templateCache[id] = res;
-  tElements(res.$$(SELECTOR));
+  tElements(res);
   return res;
 }
 
@@ -74,7 +76,7 @@ export function htmlToTemplate(html) {
   const el = parseHtml(html).body;
   const first = el.firstChild;
   const res = first.nextSibling ? $createFragment(el.childNodes) : first;
-  tElements(res.$$(SELECTOR));
+  tElements(res);
   return res;
 }
 
@@ -163,7 +165,7 @@ export function formatRelativeDate(date, style) {
 
 export function tBody(fn) {
   if (!fn) {
-    tElements(document.$$(SELECTOR));
+    tElements(document);
     const tpl = template.body;
     if (tpl && tpl !== document.body) {
       (template.body = document.body).append(tpl);
