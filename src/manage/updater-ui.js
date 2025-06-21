@@ -16,15 +16,14 @@ const btnApply = elAll.$('#apply-all-updates');
 const btnCheck = $id('check-all-updates');
 const btnCheckForce = elAll.$('#check-all-updates-force');
 const elNoUpdates = elAll.$('#update-all-no-updates');
-const elOnlyUpdates = template.onlyUpdates;
+const elOnlyUpdates = $id('only-updates');
 btnCheck.onclick = btnCheckForce.onclick = checkUpdateAll;
 btnApply.onclick = applyUpdateAll;
 
 for (const el of [...elAll.children]) $detach(el);
-for (const id of ['updateAll', 'onlyUpdates']) {
+for (const id of ['updateAll']) {
   $(`template[data-id="${id}"]`).replaceWith(template[id]);
 }
-$detach(elOnlyUpdates);
 {
   const kBtns = 'manage.actions.expanded';
   const kOnly = 'updateOnlyEnabled';
@@ -143,7 +142,7 @@ function reportUpdateState({updated, style, error, STATES}) {
     newClasses['can-update'] = true;
     entry.updatedCode = style;
     entry.$('.update-note').textContent = '';
-    $detach(elOnlyUpdates, false);
+    elOnlyUpdates.classList.remove('hidden');
   } else if (!entry.classList.contains('can-update')) {
     const same = (
       error === STATES.SAME_MD5 ||
@@ -206,7 +205,7 @@ function renderUpdatesOnlyFilter({show, check} = {}) {
   show = show !== undefined ? show : mightUpdate;
   check = check !== undefined ? show && check : checkbox.checked && mightUpdate;
 
-  $detach(elOnlyUpdates, !show);
+  elOnlyUpdates.classList.toggle('hidden', !show);
   checkbox.checked = check && show;
   checkbox.dispatchEvent(new Event('change'));
 

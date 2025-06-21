@@ -165,15 +165,13 @@
       </div>
 
       <div class="filter-selection">
-      <template data-id="onlyUpdates">
-        <label id="only-updates" i18n="+manageOnlyUpdates">
+        <label id="only-updates" i18n="+manageOnlyUpdates" class="hidden">
           <input type="checkbox"
                  data-filter=".can-update, .update-problem, .update-done"
                  data-filter-hide=":not(.updatable):not(.update-done),
                                    .no-update:not(.update-problem),
                                    .updatable:not(.can-update):not(.update-problem):not(.update-done)">
         </label>
-      </template>
       </div>
 
       <div id="search-wrapper">
