@@ -70,6 +70,9 @@
   "backupMessage": {
     "message": "Pour importer le fichier de sauvegarde, faites un cliquer-déposer sur cette page ou cliquez sur le bouton Importer.\n\nPour exporter une sauvegarde compatible avec une version de Stylus plus ancienne que 1.5.18, effectuez un clic droit ou un appui sur la touche Maj + clic sur le bouton Exporter."
   },
+  "backupReminder": {
+    "message": "<b>Les styles peuvent être perdus</b> dû à une panne de courant, des bugs dans le navigateur, ou une erreur personnelle.<hr><b>Sauvegarder vos données:</b> soit configurez “Synchroniser vers le cloud” dans les options soit cliquez manuellement sur le bouton d’export à chaque fois que vous faites des changements significatifs ou, de préférence, configurez des sauvegardes automatiques de toutes vos données en utilisant une application dédiée."
+  },
   "bckpInstStyles": {
     "message": "Exporter des styles"
   },
@@ -347,8 +350,17 @@
   "filteredStylesAllHidden": {
     "message": "Les filtres appliqués actuellement ne correspondent à aucun style"
   },
+  "find": {
+    "message": "Rechercher"
+  },
   "findStyles": {
     "message": "Trouver des styles"
+  },
+  "findStylesOnline": {
+    "message": "Cliquez pour trouver des styles en ligne."
+  },
+  "general": {
+    "message": "Général"
   },
   "genericAdd": {
     "message": "Ajouter"
@@ -541,6 +553,9 @@
   "linterRulesLink": {
     "message": "Voir la liste complète des règles"
   },
+  "liveReloadAfterInstall": {
+    "message": "Rechargement immédiat après l’installation"
+  },
   "liveReloadError": {
     "message": "Une erreur est survenue durant la surveillance du fichier"
   },
@@ -603,6 +618,9 @@
   },
   "manageOnlyUsercss": {
     "message": "Styles UserCSS uniquement"
+  },
+  "masterSwitch": {
+    "message": "Interrupteur général"
   },
   "menuShowBadge": {
     "message": "Montrer le nombre de styles actifs"
@@ -810,6 +828,27 @@
   },
   "openManage": {
     "message": "Gestion"
+  },
+  "optionCompactWidth": {
+    "message": "Taille maximum de la fenêtre pour l’UI compact (en pixels)"
+  },
+  "optionFOUC": {
+    "message": "Les styles sont appliquées trop tard?"
+  },
+  "optionFOUCMV2": {
+    "message": "Envisagez d’activer “<a>”."
+  },
+  "optionFOUCMV3": {
+    "message": "Envisagez d’activer “<a>” et d’augmenter “<b>”."
+  },
+  "optionKeepAlive": {
+    "message": "Durée du cache de style"
+  },
+  "optionKeepAlive2": {
+    "message": "(en minutes, -1 = pas de limite)"
+  },
+  "optionKeepAliveIdle": {
+    "message": "… même si le navigateur est inactif"
   },
   "optionsAdvanced": {
     "message": "Avancé"
@@ -1111,6 +1150,9 @@
   },
   "searchGlobalStyles": {
     "message": "Chercher aussi des styles globaux."
+  },
+  "searchGlobalStylesHint": {
+    "message": "Inclut les styles qui s’appliquent à tous les sites si le nom contient le texte de recherche, ou le site courant"
   },
   "searchNumberOfResults": {
     "message": "Nombre de correspondances"
@@ -1486,6 +1528,14 @@
   },
   "versionInvalidOlder": {
     "message": "La version est antérieure à celle déjà installée."
+  },
+  "webRequestBlockingMV3Note": {
+    "message": "Requiert la permission webRequestBlocking qui peut être activé en ManifestV3 en utilisant une de ces méthodes:\n\n 1) Exportez la sauvegarde, configurez la politique <a href='https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist'>ExtensionInstallForcelist</a> pour l’id “$id$” de cette extension, redémarrez le navigateur, attendez que l’extension soit installée, importez la sauvegarde dans le gestionnaire de style, et si vous le souhaitez, épinglez l’icône à la barre d’outil.\n\n 2) Modifiez la ligne de commande dans l’icône ou lanceur du navigateur: ajoutez une espace et <code><nobr>--allowlisted-extension-id=$id$</nobr></code>",
+    "placeholders": {
+      "id": {
+        "content": "$1"
+      }
+    }
   },
   "writeStyleFor": {
     "message": "Écrire un style pour :"
