@@ -420,6 +420,12 @@
   "excludeStyleByUrlLabel": {
     "message": "Exclude the current URL"
   },
+  "includeStyleByDomainLabel": {
+    "message": "Include the current domain"
+  },
+  "includeStyleByUrlLabel": {
+    "message": "Include the current URL"
+  },
   "exportLabel": {
     "message": "Export",
     "description": "Label for the button to export a style (editor) or all styles (style manager)"
