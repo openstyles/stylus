@@ -52,7 +52,8 @@ let logQueue = [];
 let logLastWriteTime = 0;
 
 bgBusy.then(async () => {
-  lastUpdateTime = await chromeLocal.getValue('lastUpdateTime') || Date.now();
+  lastUpdateTime = await chromeLocal.getValue('lastUpdateTime');
+  if (!lastUpdateTime) rememberNow();
   prefs.subscribe('updateInterval', schedule, true);
   chrome.alarms.onAlarm.addListener(onAlarm);
 });
@@ -63,7 +64,8 @@ export async function checkAllStyles({
   observe,
   onlyEnabled = prefs.__values.updateOnlyEnabled,
 } = {}) {
-  resetInterval();
+  rememberNow();
+  schedule();
   checkingAll = true;
   const port = observe && chrome.runtime.connect({name: 'updater'});
   const styles = styleMan.getAll().filter(s =>
@@ -294,9 +296,8 @@ async function onAlarm({name}) {
   }
 }
 
-function resetInterval() {
+function rememberNow() {
   chromeLocal.set({lastUpdateTime: lastUpdateTime = Date.now()});
-  schedule();
 }
 
 function log(text) {
