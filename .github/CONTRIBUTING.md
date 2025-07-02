@@ -23,7 +23,7 @@ If not, then provide details describing which page the feature will effect, e.g.
 
 ## Adding translations
 
-You can help us translate the extension on [Transifex](https://www.transifex.com/github-7/Stylus).
+You can help us translate the extension on [Transifex](https://explore.transifex.com/github-7/Stylus/).
 Only the languages supported by the web store are allowed:
 https://developer.chrome.com/docs/webstore/i18n/#localeTable
 
