@@ -169,7 +169,9 @@ export function getRemoteInfo(id) {
 
 /** @returns {Injection.Response} */
 export function getSectionsByUrl(url, {id, init, dark} = {}) {
-  if (dark != null)
+  // Init the scheme once, then rely on matchMedia->onchange event
+  // TODO: rework caching to set just the sender's scheme i.e. not globally
+  if (dark != null && colorScheme.isDark == null)
     colorScheme.setSystemDark(dark);
   const p = prefs.__values;
   if (init && p.disableAll) {
