@@ -10,7 +10,7 @@
     "codemirror": "5.65.10",
     "csslint-mod": "github:openstyles/csslint-mod#semver:^v1.0.2",
     "db-to-cloud": "^0.7.0",
-    "less": "^4.2.2",
+    "less": "^4.3.0",
     "lz-string-unsafe": "1.4.4-fork-1",
     "stylelint-bundle": "^16.5.0",
     "stylus-lang-bundle": "^0.64.0",
