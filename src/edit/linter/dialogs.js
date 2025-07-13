@@ -230,17 +230,10 @@ async function onConfigSave(event) {
   const cfg = getConfigRules(json);
   const defaults = getConfigRules(DEFAULTS[linter]);
   // Explicitly disabling rules enabled in our defaults but not present in the user config
+  // & removing disabled rules disabled in our defaults to reduce the size of config in sync storage
   for (const id in defaults) {
     if (!(id in cfg)) cfg[id] = isStylelint ? false : 0;
-  }
-  /* Removing rules with a default value to reduce the size of config in sync storage and to use
-   * newer defaults in a newer version of the extension in the unlikely case we change them. */
-  for (const id in cfg) {
-    const def = defaults[id];
-    const val = cfg[id];
-    if (val ? def && JSON.stringify(val) === JSON.stringify(def) : !def) {
-      delete cfg[id];
-    }
+    else if (!cfg[id] && !defaults[id]) delete cfg[id];
   }
   setLZValue(LZ_KEY[linter], json);
   cmDlg.markClean();
