@@ -362,6 +362,7 @@ function makeManifest(files) {
   }
   let ver = base.version;
   if (BUILD === 'firefox') {
+    delete base.key;
     base.options_ui = {
       /*
        * Linking to dashboard, not to options, because this is aimed at users who removed the icon
