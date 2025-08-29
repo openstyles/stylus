@@ -224,17 +224,23 @@ function showTooltipNote(event) {
 
 function splitLongTooltips() {
   for (const el of $$('[title]')) {
-    tooltips.set(el, el.title);
-    // Strip html tags but allow <invalid-html-tags> which we use to emphasize stuff
-    el.title = el.title.replace(/(\n\s*)?<\/?[a-z]+[^>]*>(\n\s*)?/g, ' ');
-    if (el.title.length < 50) {
+    if (tooltips.has(el))
       continue;
+    const old = el.title;
+    // Strip html tags but allow <invalid-html-tags> which we use to emphasize stuff
+    const title = old.replace(/(\n\s*)?<\/?[a-z]+[^>]*>(\n\s*)?/g, ' ');
+    tooltips.set(el, old);
+    let tmp = '';
+    if (title.length < 50) {
+      tmp = title;
+    } else {
+      for (const s of title.split(/\n+/)) {
+        tmp += s.replace(/([.?!]\s+|[．。？！]\s*|.{50,60},)\s+/gu, '$1\n')
+          .replace(/(.{50,80}(?=.{40,}))\s+/gu, '$1\n');
+        tmp += '\n\n';
+      }
     }
-    const newTitle = el.title
-      .split(/\n+/)
-      .map(s => s.replace(/([.?!]\s+|[．。？！]\s*|.{50,60},)\s+/gu, '$1\n'))
-      .map(s => s.replace(/(.{50,80}(?=.{40,}))\s+/gu, '$1\n'))
-      .join('\n\n');
-    if (newTitle !== el.title) el.title = newTitle;
+    if (tmp !== old)
+      el.title = tmp;
   }
 }
