@@ -106,7 +106,7 @@ function toggle(prefKey) {
     return;
   }
   let v;
-  if (__.BUILD !== 'chrome' && FIREFOX || off !== curOFF && (
+  if (__.BUILD !== 'chrome' && FIREFOX || off !== curOFF || !off && (
     __.MV3
       ? csp !== curCSP
       : (xhr || csp) !== (curXHR || curCSP)
@@ -114,10 +114,10 @@ function toggle(prefKey) {
     v = chrome.webRequest.onHeadersReceived;
     // unregister first since new registrations are additive internally
     toggleListener(v, false, modifyHeaders);
-    toggleListener(v, !off, modifyHeaders, WR_FILTER, [
+    if (!off && (xhr || csp)) toggleListener(v, true, modifyHeaders, WR_FILTER, [
       'blocking',
       'responseHeaders',
-      !__.MV3 && xhr && chrome.webRequest.OnHeadersReceivedOptions.EXTRA_HEADERS,
+      chrome.webRequest.OnHeadersReceivedOptions.EXTRA_HEADERS,
     ].filter(Boolean));
   }
   // In MV3 even without xhr/csp we need it to wake up the background script earlier to avoid FOUC
