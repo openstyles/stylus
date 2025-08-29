@@ -89,9 +89,11 @@ export function sanitizeHtml(str) {
   const root = parseHtml(str).body;
   const toRemove = [];
   const walker = document.createTreeWalker(root);
-  for (let n; (n = walker.nextNode());) {
-    if (n.nodeType === Node.TEXT_NODE) {
-      n.nodeValue = breakWord(n.nodeValue);
+  for (let n, v0, v; (n = walker.nextNode());) {
+    if (n.nodeType === 3 /*Node.TEXT_NODE*/) {
+      if ((v = n.parentNode) && (v = v.tagName) !== 'NOBR' && v !== 'PRE' && v !== 'CODE' &&
+          (v = breakWord(v0 = n.nodeValue)) !== v0)
+        n.nodeValue = v;
     } else if (ALLOWED_TAGS.includes(n.localName)) {
       const isA = n.localName === 'a';
       for (const attr of n.attributes) {

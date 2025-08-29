@@ -79,7 +79,7 @@ for (const el of $$('[data-clickable]')) {
       el.classList.add('disabled');
       el.$('.icon').after($create('a.broken[data-cmd=note]', {
         tabIndex: 0,
-        title: t('webRequestBlockingMV3Note', chrome.runtime.id),
+        title: t('webRequestBlockingMV3Note', `<code>${chrome.runtime.id}</code>`),
       }, '⚒'));
     }
   }
