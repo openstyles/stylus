@@ -18,8 +18,8 @@ importers:
         specifier: github:openstyles/csslint-mod#semver:^v1.0.2
         version: https://codeload.github.com/openstyles/csslint-mod/tar.gz/040386dbf077050d9942562cf0c905cadf1f66cd
       db-to-cloud:
-        specifier: ^0.7.0
-        version: 0.7.0
+        specifier: ^0.8.0
+        version: 0.8.0
       less:
         specifier: ^4.3.0
         version: 4.3.0
@@ -1568,8 +1568,8 @@ packages:
   cubic2quad@1.2.1:
     resolution: {integrity: sha512-wT5Y7mO8abrV16gnssKdmIhIbA9wSkeMzhh27jAguKrV82i24wER0vL5TGhUJ9dbJNDcigoRZ0IAHFEEEI4THQ==}
 
-  db-to-cloud@0.7.0:
-    resolution: {integrity: sha512-fs3FS6vMLk7E6gnuao9lJqTU+ohy6Pa9fqgZSVnoICMsCfqrnyYj+reA81xOmw9kfqVQNdtu+zZv67IJThrMvA==}
+  db-to-cloud@0.8.0:
+    resolution: {integrity: sha512-dtAUl9NvQmTyF2MBSFeZZz1UXhBSj3jBlN/GrFVCH/jJKJD7M3ZfdmunCsfq+BtLBEnQF8SrVOM9cnkJXxXQwg==}
     engines: {node: '>=8'}
 
   debounce@1.2.1:
@@ -4855,7 +4855,7 @@ snapshots:
 
   cubic2quad@1.2.1: {}
 
-  db-to-cloud@0.7.0:
+  db-to-cloud@0.8.0:
     dependencies:
       '@eight04/read-write-lock': 0.1.0
       universal-base64: 2.1.0
