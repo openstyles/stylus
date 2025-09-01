@@ -3,7 +3,7 @@
     "message": "Το Stylus δεν έχει πρόσβαση σε κάποια αρχεία (π.χ. τα αρχεία .pdf και .json)"
   },
   "addStyleLabel": {
-    "message": "Γράψτε νέο στυλ"
+    "message": "Νέο στυλ"
   },
   "addStyleTitle": {
     "message": "Προσθήκη στυλ"
@@ -23,25 +23,31 @@
     }
   },
   "appliesDisplayTruncatedSuffix": {
-    "message": "και πολλά άλλα"
+    "message": "και άλλα"
   },
   "appliesDomainOption": {
-    "message": "URL στον τομέα"
+    "message": "Διευθύνσεις URL στον τομέα:"
   },
   "appliesHelp": {
-    "message": "Χρησιμοποιήστε το \"Ισχύει για\" έλεγχοι ώστε να περιοριστουν ποιες διευθύνσεις τον κώδικα σε αυτό το τμήμα να εφαρμόζονται."
+    "message": "Χρησιμοποιήστε αυτά τα στοιχεία ελέγχου για να ορίσετε τις διευθύνσεις URL στις οποίες θα εφαρμόζεται το στυλ."
   },
   "appliesLabel": {
     "message": "Ισχύει για"
+  },
+  "appliesLineWidgetLabel": {
+    "message": "Εμφάνιση των στοιχείων ελέγχου «Ισχύει για»"
   },
   "appliesLineWidgetWarning": {
     "message": "Δε λειτουργεί με minified CSS."
   },
   "appliesRegexpOption": {
-    "message": "Διευθύνσεις URL που ταιριάζουν με την κανονική έκφραση"
+    "message": "Διευθύνσεις URL που ταιριάζουν με το regular expression:"
   },
   "appliesRemove": {
     "message": "Αφαίρεση"
+  },
+  "appliesRemoveError": {
+    "message": "Δεν ήταν δυνατή δυνατή η αφαίρεση της τελευταίας καταχώρισης"
   },
   "appliesSpecify": {
     "message": "Καθορισμός"
@@ -50,10 +56,10 @@
     "message": "Τα πάντα"
   },
   "appliesUrlOption": {
-    "message": "διεύθυνση URL"
+    "message": "Διεύθυνση URL:"
   },
   "appliesUrlPrefixOption": {
-    "message": "Διευθύνσεις URL που αρχίζουν με"
+    "message": "Διευθύνσεις URL που αρχίζουν από:"
   },
   "applyAllUpdates": {
     "message": "Εφαρμογή όλων των ενημερώσεων"
@@ -62,7 +68,13 @@
     "message": "Συντάκτης"
   },
   "backupButtons": {
-    "message": "Δημιουργήστε αντίγραφο ασφαλείας"
+    "message": "Αντίγραφα ασφαλείας"
+  },
+  "backupMessage": {
+    "message": "Για να εισάγετε ένα αντίγραφο ασφαλείας σύρετέ το και αποθέστε το σε αυτήν τη σελίδα, ή κάντε κλικ στο κουμπί «Εισαγωγή».\n\nΓια να εξάγετε ένα αρχείο αντιγράφων ασφαλείας συμβατό με τις εκδόσεις Stylus που είναι παλαιότερες της 1.5.18 κάντε δεξί κλικ στο κουμπί «Εξαγωγή» ή κάντε κλικ στο κουμπί «Εξαγωγή» κρατώντας το πλήκτρο Shift πατημένο."
+  },
+  "backupReminder": {
+    "message": "<b>Τα στυλ σας ενδέχεται να χαθούν</b> λόγω διακοπής ρεύματος, λόγω σφαλμάτων στο πρόγραμμα περιήγησης που χρησιμοποιείτε ή ακόμα και λόγω δικού σας λάθους.<hr><b>Δημιουργήστε αντίγραφα ασφαλείας:</b> είτε ρυθμίστε την επιλογή «Συγχρονισμός με το cloud» στις ρυθμίσεις είτε κάντε κλικ στο κουμπί «Εξαγωγή» κάθε φορά που κάνετε σημαντικές αλλαγές ή, προτιμότερα, ρυθμίστε την αυτόματη δημιουργία αντιγράφων ασφαλείας χρησιμοποιώντας μια κατάλληλη εφαρμογή."
   },
   "bckpInstStyles": {
     "message": "Εξαγωγή στυλ"
@@ -80,13 +92,22 @@
     "message": "Έλεγχος..."
   },
   "clickToUninstall": {
-    "message": "Πατήστε για απεγκατάσταση"
+    "message": "Κάντε κλικ για απεγκατάσταση"
+  },
+  "cm_arrowKeysTraverse": {
+    "message": "Χρήση πλήκτρων ↑↓ για μετακίνηση σε ενότητες"
   },
   "cm_autoCloseBrackets": {
     "message": "Αυτόματο κλείσιμο παρενθέσεων και εισαγωγικών"
   },
+  "cm_autoCloseBracketsTooltip": {
+    "message": "Αυτόματο κλείσιμο παρενθέσεων, αγκύλων, αγκίστρων και εισαγωγικών: ()[]{}''\"\""
+  },
   "cm_autocompleteOnTyping": {
-    "message": "Αυτόματη συμπλήρωση καθώς πληκτρολογείτε"
+    "message": "Ενεργοποίηση αυτόματης συμπλήρωσης"
+  },
+  "cm_colorpicker": {
+    "message": "Εργαλεία επιλογής χρώματος για χρώματα CSS"
   },
   "cm_indentWithTabs": {
     "message": "Χρήση καρτελών με έξυπνη εσοχή"
@@ -101,19 +122,37 @@
     "message": "Υπογράμμιση"
   },
   "cm_matchHighlightSelection": {
-    "message": "Μόνο επιλογή"
+    "message": "μόνο της επιλογής"
+  },
+  "cm_matchHighlightToken": {
+    "message": "του στοιχείου (token) κάτω από τον κέρσορα"
   },
   "cm_resizeGripHint": {
     "message": "Διπλό κλικ για μεγιστοποίηση/επαναφορά ύψους"
+  },
+  "cm_selectByTokens": {
+    "message": "Το διπλό κλικ επιλέγει tokens"
+  },
+  "cm_selectByTokensTooltip": {
+    "message": "Παραδείγματα tokens: .foo-bar-2 #aabbcc 0.32 !important\nΌταν είναι απενεργοποιημένο: επιλέγονται οι λέξεις που χωρίζονται από σημεία στίξης."
   },
   "cm_smartIndent": {
     "message": "Χρήση έξυπνης εσοχής"
   },
   "cm_tabSize": {
-    "message": "Μέγεθος καρτέλας"
+    "message": "Πλάτος χαρακτήρα tab"
   },
   "cm_theme": {
     "message": "Θέμα"
+  },
+  "colorpickerPaletteHint": {
+    "message": "Κάντε δεξί κλικ σε ένα δείγμα χρώματος για να περιηγηθείτε στις γραμμές προέλευσής του"
+  },
+  "colorpickerSwitchFormatTooltip": {
+    "message": "Εναλλαγή των εξής μορφών: HEX -> RGB -> HSL.\nΚάντε κλικ σε αυτό το κουμπί κρατώντας το πλήκτρο Shift πατημένο για να αλλάξετε τη φορά εναλλαγής.\nΕναλλακτικά, μπορείτε να χρησιμοποιήσετε τα πλήκτρα PgUp (PageUp) και PgDown (PageDown)."
+  },
+  "colorpickerTooltip": {
+    "message": "Άνοιγμα εργαλείου επιλογής χρώματος"
   },
   "configOnChange": {
     "message": "στην αλλαγή"
@@ -151,6 +190,9 @@
   "confirmSave": {
     "message": "Αποθήκευση"
   },
+  "confirmStop": {
+    "message": "Διακοπή"
+  },
   "confirmYes": {
     "message": "Ναι"
   },
@@ -158,13 +200,19 @@
     "message": "Σύνδεση με το Dropbox..."
   },
   "connectingDropboxNotAllowed": {
-    "message": "Η σύνδεση με το Dropbox είναι διαθέσιμη μόνο σε εφαρμογές εγκατεστημένες απευθείας από το κατάστημα ιστού webstore"
+    "message": "Η σύνδεση με το Dropbox είναι διαθέσιμη μόνο σε εφαρμογές εγκατεστημένες απευθείας από webstore"
   },
   "copied": {
     "message": "Αντιγράφηκε στο πρόχειρο"
   },
   "copy": {
     "message": "Αντιγραφή στο πρόχειρο"
+  },
+  "customNameHint": {
+    "message": "Εισάγετε ένα νέο όνομα εδώ. Η διαδικασία αυτόματης ενημέρωσης του στυλ δε θα επηρεαστεί."
+  },
+  "customNameResetHint": {
+    "message": "Επαναφορά στο αρχικό όνομα του στυλ"
   },
   "dateAbbrDay": {
     "message": "$value$μ",
@@ -205,25 +253,39 @@
     "message": "Ημερομηνία ενημέρωσης"
   },
   "dbError": {
-    "message": "Παρουσιάστηκε σφάλμα χρησιμοποιώντας την κομψή βάση δεδομένων. Θα θέλατε να επισκεφθείτε μια ιστοσελίδα με πιθανές λύσεις;"
+    "message": "Παρουσιάστηκε σφάλμα κατά τη χρήση της βάσης δεδομένων του Stylus. Θέλετε να επισκεφθείτε μια ιστοσελίδα με πιθανές λύσεις;"
   },
   "defaultTheme": {
     "message": "προεπιλογή"
   },
   "deleteStyleConfirm": {
-    "message": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το στυλ;"
+    "message": "Θέλετε σίγουρα να διαγράψετε αυτό το στυλ;"
   },
   "deleteStyleLabel": {
     "message": "Διαγραφή"
   },
   "description": {
-    "message": "Επαναπροσδιορίση του διαδίκτυου με το  Stylus, έναν διαχειριστή στυλ. Το Stylus σας επιτρέπει να εγκαταστήσετε εύκολα themes και skins για πολλές δημοφιλείς ιστοσελίδες."
+    "message": "Επανασχεδιάστε τις αγαπημένες ιστοσελίδες με το Stylus, μια επέκταση διαχείρισης στυλ. Το Stylus σάς επιτρέπει να εγκαθιστάτε εύκολα θέματα και skins για πολλές δημοφιλείς ιστοσελίδες."
   },
   "disableAllStyles": {
     "message": "Απενεργοποιηση ολων των στυλ"
   },
+  "disableAllStylesOff": {
+    "message": "Τα στυλ έχουν απενεργοποιηθεί"
+  },
   "disableStyleLabel": {
     "message": "Απενεργοποίηση"
+  },
+  "draftAction": {
+    "message": "Κάντε κλικ στο κουμπί «Ναι» για να φορτώσετε αυτό το προσχέδιο και στο κουμπί «Όχι» για να το διαγράψετε."
+  },
+  "draftTitle": {
+    "message": "Αποθηκευμένο προσχέδιο, δημιουργήθηκε $date$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
   },
   "dragDropMessage": {
     "message": "Αποθέστε το αντίγραφο ασφαλείας σας οπουδήποτε σε αυτήν τη σελίδα για εισαγωγή."
@@ -251,6 +313,15 @@
       }
     }
   },
+  "editTargetsFirst": {
+    "message": "Εμφάνιση λίστας URL πριν τον κώδικα"
+  },
+  "editorSettings": {
+    "message": "Ρυθμίσεις επεξεργαστή κειμένου"
+  },
+  "emptyCode": {
+    "message": "Οι ενότητες του στυλ για αυτήν τη διεύθυνση URL είναι κενές"
+  },
   "enableStyleLabel": {
     "message": "Ενεργοποίηση"
   },
@@ -258,13 +329,16 @@
     "message": "Εξαίρεση του τρέχοντος τομέα"
   },
   "excludeStyleByUrlLabel": {
-    "message": "Εξαίρεση του τρέχοντος URL"
+    "message": "Εξαίρεση της τρέχουσας διεύθυνσης URL"
+  },
+  "exportCompatible": {
+    "message": "Εξαγωγή (λειτουργία συμβατότητας)"
   },
   "exportLabel": {
     "message": "Εξαγωγή"
   },
   "exportSavedSuccess": {
-    "message": "Το αρχείο αποθηκεύτηκε επιτυχώς."
+    "message": "Το αρχείο αποθηκεύτηκε με επιτυχία."
   },
   "externalFeedback": {
     "message": "Σχόλια"
@@ -273,13 +347,13 @@
     "message": "Αρχική σελίδα"
   },
   "externalLink": {
-    "message": "Εξωτερική σύνδεση"
+    "message": "Εξωτερικός σύνδεσμος"
   },
   "externalSupport": {
     "message": "Υποστήριξη"
   },
   "externalUsercssDocument": {
-    "message": "Τεκμηρίωση για UserCSS"
+    "message": "Τεκμηρίωση UserCSS"
   },
   "filteredStyles": {
     "message": "Βλέπετε $numShown$ από 2$numTotal$ συνολικά",
@@ -293,16 +367,28 @@
     }
   },
   "filteredStylesAllHidden": {
-    "message": "Τα φίλτρα που εφαρμόζονται αυτήν τη στιγμή δεν ταιριάζουν με κανένα στυλ"
+    "message": "Δε βρέθηκε κανένα στυλ με αυτά τα φίλτρα"
+  },
+  "find": {
+    "message": "Εύρεση"
   },
   "findStyles": {
     "message": "Εύρεση στυλ"
+  },
+  "findStylesOnline": {
+    "message": "Κάντε κλικ για να βρείτε στυλ στο διαδίκτυο."
+  },
+  "general": {
+    "message": "Γενικά"
   },
   "genericAdd": {
     "message": "Προσθήκη"
   },
   "genericClone": {
     "message": "Δημιουργία αντιγράφου"
+  },
+  "genericDescription": {
+    "message": "Περιγραφή"
   },
   "genericDisabledLabel": {
     "message": "Απενεργοποιημένο"
@@ -316,6 +402,12 @@
   "genericHistoryLabel": {
     "message": "Ιστορικό"
   },
+  "genericMaximum": {
+    "message": "μέγιστο"
+  },
+  "genericMinimum": {
+    "message": "ελάχιστο"
+  },
   "genericNext": {
     "message": "Επόμενο"
   },
@@ -328,6 +420,12 @@
   "genericSavedMessage": {
     "message": "Αποθηκεύτηκε"
   },
+  "genericSize": {
+    "message": "Μέγεθος"
+  },
+  "genericTest": {
+    "message": "Δοκιμή"
+  },
   "genericTitle": {
     "message": "Τίτλος"
   },
@@ -337,6 +435,9 @@
   "gettingStyles": {
     "message": "Λήψη όλων των στυλ..."
   },
+  "headerResizerHint": {
+    "message": "Κρατήστε πατημένο το πλήκτρο Shift για να αλλάξετε το μέγεθος της διεπαφής χρήστη (δηλαδή του επεξεργαστή κειμένου και της σελίδας διαχείρισης και εγκατάστασης στυλ)"
+  },
   "helpAlt": {
     "message": "Βοήθεια"
   },
@@ -344,28 +445,61 @@
     "message": "Πληκτρολογήστε μια εντολή"
   },
   "helpKeyMapHotkey": {
-    "message": "Πληκτρολογήστε ένα hotkey"
+    "message": "Πληκτρολογήστε έναν συνδυασμό πλήκτρων"
+  },
+  "hostDisabled": {
+    "message": "Αυτό το host έχει απενεργοποιηθεί λόγω σφάλματος στην τρέχουσα έκδοση του προγράμματος περιήγησης που χρησιμοποιείτε"
+  },
+  "importAppendLabel": {
+    "message": "Προσθήκη στο στυλ"
+  },
+  "importAppendTooltip": {
+    "message": "Προσάρτηση του εισαγόμενου στυλ στο τρέχων στυλ"
   },
   "importLabel": {
     "message": "Εισαγωγή"
   },
+  "importPreprocessor": {
+    "message": "Τα στυλ με <code>@preprocessor</code> δε λειτουργούν στην κλασική λειτουργία. Μπορείτε όμως να αλλάξετε τον επεξεργαστή κειμένου στη λειτουργία UserCSS ως εξής: 1) μεταβείτε στη σελίδα διαχείρισης στυλ, 2) ενεργοποιήστε την επιλογή «UserCSS», 3) κάντε κλικ στο κουμπί «Νέο στυλ»\n\nΘέλετε παρολ' αυτά να πραγματοποιηθεί η εισαγωγή;"
+  },
+  "importPreprocessorTitle": {
+    "message": "Πιθανό πρόβλημα λόγω χρήσης @preprocessor"
+  },
   "importReplaceLabel": {
     "message": "Αντικατάσταση στυλ"
+  },
+  "importReplaceTooltip": {
+    "message": "Απόρριψη του περιεχομένου του τρέχοντος στυλ και αντικατάσταση με το εισαγόμενο στυλ"
   },
   "importReportLegendAdded": {
     "message": "προστέθηκαν"
   },
+  "importReportLegendIdentical": {
+    "message": "παραλείφθηκαν επειδή ήταν πανομοιότυπα"
+  },
+  "importReportLegendInvalid": {
+    "message": "παραλείφθηκαν επειδή δεν ήταν έγκυρα"
+  },
+  "importReportLegendUpdatedBoth": {
+    "message": "ενημερώθηκαν (μεταδεδομένα και κώδικας)"
+  },
   "importReportLegendUpdatedCode": {
-    "message": "ενημερωμένος κώδικας"
+    "message": "ενημερώθηκαν (μόνο ο κώδικας)"
+  },
+  "importReportLegendUpdatedMeta": {
+    "message": "ενημερώθηκαν (μόνο τα μεταδεδομένα)"
   },
   "importReportTitle": {
-    "message": "Η εισαγωγή στυλ τελείωσε"
+    "message": "Η εισαγωγή στυλ ολοκληρώθηκε"
   },
   "importReportUnchanged": {
-    "message": "Τίποτα δεν άλλαξε"
+    "message": "Δεν πραγματοποιήθηκε καμία αλλαγή."
+  },
+  "importReportUndone": {
+    "message": "στυλ επανήλθαν στην προηγούμενη κατάσταση"
   },
   "importReportUndoneTitle": {
-    "message": "Η εισαγωγή έχει αναιρεθεί"
+    "message": "Η εισαγωγή αναιρέθηκε"
   },
   "installButton": {
     "message": "Εγκατάσταση στυλ"
@@ -382,6 +516,14 @@
   "installUpdate": {
     "message": "Εγκατάσταση ενημέρωσης"
   },
+  "installUpdateFrom": {
+    "message": "Το στυλ ενημερώνεται από τη διεύθυνση $url$ προς το παρόν",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
   "installUpdateFromLabel": {
     "message": "Έλεγχος για ενημερώσεις"
   },
@@ -391,17 +533,47 @@
   "linkGetHelp": {
     "message": "Βοήθεια"
   },
+  "linkGetShareStyles": {
+    "message": "Λήψη και κοινοποίηση στυλ"
+  },
   "linkGetStyles": {
     "message": "Λήψη στυλ"
   },
   "linkTranslate": {
     "message": "Μετάφραση"
   },
+  "linterCSSLintIncompatible": {
+    "message": "Το εργαλείο CSSLint δεν υποστηρίζει το preprocessor $preprocessorname$",
+    "placeholders": {
+      "preprocessorname": {
+        "content": "$1"
+      }
+    }
+  },
+  "linterCSSLintSettings": {
+    "message": "(Πιθανές τιμές για κάθε κανόνα: 0 = απενεργοποιημένος, 1 = προειδοποίηση, 2 = σφάλμα)"
+  },
+  "linterConfigPopupTitle": {
+    "message": "Ρύθμιση κανόνων του $linter$",
+    "placeholders": {
+      "linter": {
+        "content": "$1"
+      }
+    }
+  },
   "linterConfigTooltip": {
-    "message": "Πατήστε εδώ για να ρυθμίσετε το linter"
+    "message": "Κάντε κλικ εδώ για να ρυθμίσετε το linter"
   },
   "linterIssues": {
     "message": "Ζητήματα"
+  },
+  "linterIssuesHelp": {
+    "message": "Τα ακόλουθα ζητήματα εντοπίστηκαν από το εργαλείο $link$:",
+    "placeholders": {
+      "link": {
+        "content": "$1"
+      }
+    }
   },
   "linterJSONError": {
     "message": "Μη έγκυρη μορφή JSON"
@@ -409,11 +581,50 @@
   "linterResetMessage": {
     "message": "Για αναίρεση μιας κατά λάθος επαναφοράς, πατήστε Ctrl-Z (ή Cmd-Z) στο πλαίσιο κειμένου"
   },
+  "linterRulesLink": {
+    "message": "Δείτε την πλήρη λίστα κανόνων"
+  },
+  "liveReloadAfterInstall": {
+    "message": "Ανανέωση αμέσως μετά την εγκατάσταση"
+  },
+  "liveReloadError": {
+    "message": "Δεν ήταν δυνατή η παρακολούθηση του αρχείου"
+  },
+  "liveReloadInstallHint": {
+    "message": "Κρατήστε αυτήν την καρτέλα ανοιχτή ώστε το στυλ να ενημερώνεται αυτόματα κάθε φορά που πραγματοποιούνται εξωτερικές αλλαγές"
+  },
+  "liveReloadInstallHintFF": {
+    "message": "Κρατήστε ανοιχτές τόσο αυτήν όσο και την αρχική καρτέλα ώστε το στυλ να ενημερώνεται αυτόματα κάθε φορά που πραγματοποιούνται εξωτερικές αλλαγές"
+  },
+  "liveReloadLabel": {
+    "message": "Ζωντανή ανανέωση"
+  },
+  "manageFavicons": {
+    "message": "Εμφάνιση favicons στη λίστα διευθύνσεων URL στις οποίες εφαρμόζεται το στυλ"
+  },
+  "manageFaviconsGray": {
+    "message": "Γκριζάρισμα favicons"
+  },
+  "manageFaviconsHelp": {
+    "message": "Το Stylus χρησιμοποιεί την εξωτερική υπηρεσία https://icons.duckduckgo.com για τη λήψη favicons"
+  },
   "manageFilters": {
     "message": "Φίλτρα"
   },
   "manageHeading": {
-    "message": "Εγκατεστημένα Στυλ"
+    "message": "Εγκατεστημένα στυλ"
+  },
+  "manageMaxTargets": {
+    "message": "Μέγιστο εμφανιζόμενο πλήθος στοιχείων της λίστας διευθύνσεων URL στις οποίες εφαρμόζεται ένα στυλ "
+  },
+  "manageMinColumnWidth": {
+    "message": "Ελάχιστο πλάτος στήλος (σε pixels· η τιμή 9999 απενεργοποιεί τη λειτουργεία πολλαπλών στηλών)"
+  },
+  "manageNewStyleAsUsercss": {
+    "message": "UserCSS"
+  },
+  "manageNewUI": {
+    "message": "Εμφάνιση των στυλ σε διάταξη πίνακα"
   },
   "manageOnlyDisabled": {
     "message": "Μόνο απενεργοποιημένα στυλ"
@@ -427,23 +638,254 @@
   "manageOnlyLocal": {
     "message": "Μόνο στυλ δημιουργημένα τοπικά"
   },
-  "manageTitle": {
-    "message": "Κομψή"
+  "manageOnlyLocalTooltip": {
+    "message": "(στυλ που δεν έχουν εγκατασταθεί από την ιστοσελίδα userstyles.org)"
+  },
+  "manageOnlyNonUsercss": {
+    "message": "Στυλ όχι της μορφής UserCSS"
+  },
+  "manageOnlyUpdates": {
+    "message": "Μόνο με ζητήματα ή διαθέσιμες ενημερώσεις"
+  },
+  "manageOnlyUsercss": {
+    "message": "Στυλ μόνο της μορφής UserCSS"
+  },
+  "masterSwitch": {
+    "message": "Γενικός διακόπτης"
   },
   "menuShowBadge": {
-    "message": "Εμφάνιση ενεργους καταμέτρησης στυλ"
+    "message": "Εμφάνιση πλήθους ενεργοποιημένων στυλ"
+  },
+  "meta_invalidCheckboxDefault": {
+    "message": "Μη έγκυρο @var checkbox: η τιμή του πρέπει να είναι είτε 0 είτε 1"
+  },
+  "meta_invalidColor": {
+    "message": "Μη έγκυρο χρώμα @var: το χρώμα $color$ δεν είναι έγκυρο",
+    "placeholders": {
+      "color": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidNumber": {
+    "message": "Αναμένεται αριθμός"
+  },
+  "meta_invalidRange": {
+    "message": "Μη έγκυρο @var $type$: η τιμή πρέπει να είναι είτε αριθμός είτε πίνακας (array)",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeDefault": {
+    "message": "Μη έγκυρο @var $type$: η προεπιλεγμένη τιμή είναι null",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMax": {
+    "message": "Μη έγκυρο @var $type$: η προεπιλεγμένη τιμή είναι μεγαλύτερη από τη μέγιστη δυνατή",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMin": {
+    "message": "Μη έγκυρο @var $type$: η προεπιλεγμένη τιμή είναι μικρότερη από την ελάχιστη δυνατή",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeMultipleUnits": {
+    "message": "Μη έγκυρο @var $type$: έχουν οριστεί πολλές μονάδες",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeStep": {
+    "message": "Μη έγκυρο @var $type$: η τιμή δεν είναι ακέραιο πολλαπλάσιο του βήματος",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeTooManyValues": {
+    "message": "Μη έγκυρο @var $type$: ο πίνακας (array) περιέχει πάρα πολλά στοιχεία",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidRangeUnits": {
+    "message": "Μη έγκυρο @var $type$: η μονάδα «$units$» δεν είναι έγκυρη",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      },
+      "units": {
+        "content": "$2"
+      }
+    }
+  },
+  "meta_invalidRangeValue": {
+    "message": "Μη έγκυρο @var $type$: τα στοιχεία του πίνακα (array) πρέπει να είναι αριθμοί, συμβολοσειρές (string) ή null",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidSelect": {
+    "message": "Μη έγκυρο @var select: η προεπιλεγμένη τιμή πρέπει να είναι είτε πίνακας (array) είτε αντικείμενο (object)"
+  },
+  "meta_invalidSelectEmptyOptions": {
+    "message": "Μη έγκυρο @var select: η λίστα επιλογών είναι κενή"
+  },
+  "meta_invalidSelectLabel": {
+    "message": "Μη έγκυρο @var select: η ετικέτα της επιλογής δεν έχει οριστεί"
+  },
+  "meta_invalidSelectMultipleDefaults": {
+    "message": "Μη έγκυρο @var select: έχουν οριστεί περισσότερες από μία προεπιλεγμένες επιλογές"
+  },
+  "meta_invalidSelectNameDuplicated": {
+    "message": "Μη έγκυρο @var select: το όνομα της επιλογής είναι διπλό"
+  },
+  "meta_invalidSelectValue": {
+    "message": "Μη έγκυρο @var select: οι τιμές του πίνακα/αντικειμένου πρέπει να είναι συμβολοσειρές"
+  },
+  "meta_invalidSelectValueMismatch": {
+    "message": "Μη έγκυρο @var select: η τιμή αυτή δεν υπάρχει στη λίστα επιλογών"
+  },
+  "meta_invalidString": {
+    "message": "Αναμένεται συμβολοσειρά (string) περικλεισμένη σε εισαγωγικά"
+  },
+  "meta_invalidURLProtocol": {
+    "message": "Μη έγκυρο πρωτόκολλο URL. Μόνο οι επιλογές http και https είναι επιτρεπτές: $protocol$",
+    "placeholders": {
+      "protocol": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_invalidVersion": {
+    "message": "Μη έγκυρη μορφή έκδοσης"
+  },
+  "meta_invalidWord": {
+    "message": "Αναμένεται λέξη"
+  },
+  "meta_missingChar": {
+    "message": "Αναμένονται οι χαρακτήρες: $chars$",
+    "placeholders": {
+      "chars": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_missingEOT": {
+    "message": "Αναμένονται δεδομένα EOT"
+  },
+  "meta_missingMandatory": {
+    "message": "Απουσιάζουν τα εξής υποχρεωτικά μεταδεδομένα: $keys$",
+    "placeholders": {
+      "keys": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownJSONLiteral": {
+    "message": "Μη έγκυρο αρχείο JSON: το $literal$ δεν είναι έγκυρο JSON literal",
+    "placeholders": {
+      "literal": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownMeta": {
+    "message": "Άγνωστο μεταδεδομένο: $key$",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownMetaTypo": {
+    "message": "Μήπως εννοείτε @$keyOk$; Άγνωστο μεταδεδομένο: @$keyErr$",
+    "placeholders": {
+      "keyErr": {
+        "content": "$1"
+      },
+      "keyOk": {
+        "content": "$2"
+      }
+    }
+  },
+  "meta_unknownPreprocessor": {
+    "message": "Άγνωστο @preprocessor: $preprocessor$",
+    "placeholders": {
+      "preprocessor": {
+        "content": "$1"
+      }
+    }
+  },
+  "meta_unknownVarType": {
+    "message": "Άγνωστος τύπος @$varkey$: $vartype$",
+    "placeholders": {
+      "varkey": {
+        "content": "$1"
+      },
+      "vartype": {
+        "content": "$2"
+      }
+    }
   },
   "noFileToImport": {
     "message": "Για να εισάγετε τα στυλ σας, πρέπει πρώτα να τα εξάγετε."
   },
   "noStylesForSite": {
-    "message": "Δεν υπάρχουν εγκατεστημένα στυλ για αυτή την ιστοσελίδα."
+    "message": "Δεν υπάρχουν εγκατεστημένα στυλ από αυτή την ιστοσελίδα."
+  },
+  "numberedLine": {
+    "message": "Γραμμή:"
   },
   "openManage": {
-    "message": "Διαχείριση εγκατεστημένων στυλ"
+    "message": "Διαχείριση στυλ"
   },
   "openOptions": {
-    "message": "Επιλογές"
+    "message": "Ρυθμίσεις"
+  },
+  "optionCompactWidth": {
+    "message": "Μέγιστο πλάτος παραθύρου για συμπαγή διάταξη UI (σε pixels)"
+  },
+  "optionFOUC": {
+    "message": "Καθυστερεί η φόρτωση των στυλ;"
+  },
+  "optionFOUCMV2": {
+    "message": "Δοκιμάστε να ενεργοποιήσετε την επιλογή «<a>»."
+  },
+  "optionFOUCMV3": {
+    "message": "Δοκιμάστε να ενεργοποιήσετε την επιλογή «<a>» και να αυξήσετε την τιμή «<b>»."
+  },
+  "optionKeepAlive": {
+    "message": "Διάρκεια προσωρινής μνήμης των στυλ"
+  },
+  "optionKeepAlive2": {
+    "message": "(σε λεπτά, -1 = χωρίς όριο)"
+  },
+  "optionKeepAliveIdle": {
+    "message": "...ακόμα και αν το πρόγραμμα περιήγησης δεν είναι ενεργό"
+  },
+  "optionKeepAliveNote": {
+    "message": "Αυξήστε αυτήν την τιμή αν παρατηρήσετε πως το περιεχόμενο μιας ιστοσελίδας το οποίο δεν έχει επηρεαστεί από κάποιο στυλ αναβοσβήνει όταν την επισκέπτεστε ύστερα από μια περίοδο αδράνειας του προγράμματος περιήγησης (flashing of unstyled content ή αλλιώς πρόβλημα FOUC).\n\n-1 = η προεπιλεγμένη συμπεριφορά στο ManifestV2 (χωρίς όριο).\n0 = η προεπιλεγμένη συμπεριφορά στο ManifestV3 (μισό λεπτό).\n\nΗ προσωρινή μνήμη καταναλώνει 30MB (ή και παραπάνω) περισσότερη μνήμη RAM, αλλά η ανανέωσή της είναι ιδιαίτερα χρονοβόρα και ενδέχεται να προκαλέσει το πρόβλημα FOUC ανάλογα με την ιστοσελίδα που βρίσκεστε, την ταχύτητα σύνδεσής σας στο διαδίκτυο, το πλήθος των εγκατεστημένων στυλ, το μέγεθος της μνήμης RAM και την απόδοση της CPU."
   },
   "optionsActions": {
     "message": "Ενέργειες"
@@ -451,8 +893,47 @@
   "optionsAdvanced": {
     "message": "Για προχωρημένους"
   },
+  "optionsAdvancedAutoSwitchSchemeBySystem": {
+    "message": "Με βάση τις ρυθμίσεις συστήματος"
+  },
+  "optionsAdvancedAutoSwitchSchemeByTime": {
+    "message": "Τις νυχτερινές ώρες:"
+  },
+  "optionsAdvancedAutoSwitchSchemeNever": {
+    "message": "Απενεργοποιημένη. Οι ρυθμίσεις αντοιχτόχρωμης/σκουρόχρωμης λειτουργίας στα στυλ αγνοούνται."
+  },
   "optionsAdvancedContextDelete": {
-    "message": "Προσθήκη του 'Delete' στο μενού περιβάλλοντος του προγράμματος επεξεργασίας"
+    "message": "Προσθήκη του κουμπιού «Διαγραφή» στο μενού περιβάλλοντος του επεξεργαστή κειμένου"
+  },
+  "optionsAdvancedExposeIframes": {
+    "message": "Πρόσβαση σε iframes μέσω HTML[stylus-iframe]"
+  },
+  "optionsAdvancedExposeIframesNote": {
+    "message": "Επιτρέπει την πρόσβαση στο top site domain σε κάθε iframe.\nΕπιτρέπει τη συγγραφή κώδικα CSS για iframe, η οποία είναι δυνατή ως εξής:\nhtml[stylus-iframe$$=\"twitter.com\"] h1 { display:none }"
+  },
+  "optionsAdvancedExposeStyleName": {
+    "message": "Πρόσβαση στο όνομα του στυλ"
+  },
+  "optionsAdvancedExposeStyleNameNote": {
+    "message": "Επιτρέπει την πρόσβαση στο όνομα του στυλ κάθε σελίδας στην οποία αυτό εφαρμόζεται, με σκοπό τον ευκολότερο εντοπισμό σφαλμάτων μέσω των εργαλείων για προγραμματιστές (devtools). Για την εφαρμογή αυτής της ρύθμισης είναι απαραίτητη η επαναφόρτωση όλων των επηρεαζόμενων καρτελών."
+  },
+  "optionsAdvancedNewStyleAsUsercss": {
+    "message": "Νέο στυλ UserCSS"
+  },
+  "optionsAdvancedPatchCsp": {
+    "message": "Τροποποίηση <code>CSP</code> προκειμένου να επιτρέπεται η φόρτωση τυχόν τρίτων αρχείων που αξιοποιεί ένα στυλ"
+  },
+  "optionsAdvancedPatchCspNote": {
+    "message": "Ενεργοποιήστε αυτήν την επιλογή αν κάποιο στυλ απαιτεί για την ορθή λειτουργία του τη φόρτωση εικόνων ή γραμματοσειρών, η οποία όμως δεν είναι δυνατή εξαιτίας αυστηρής πολιτικής <code>CSP</code> (<code>Content-Security-Policy</code>) που εφαρμόζουν ορισμένες ιστοσελίδες.\n\nΗ ενεργοποίηση αυτής της επιλογής χαλαρώνει τους περιορισμούς της πολιτικής <code>CSP</code> επιτρέποντας κατά συνέπεια τη φόρτωση του περιεχομένου που απαιτεί το στυλ για τη σωστή λειτουργία του. Η ενεργοποίηση της ρύθμισης, πάντως, συνιστάται να πραγματοποιηθεί μόνο από προχωρημένους χρήστες, οι οποίοι είναι σε θέση να γνωρίζουν τις πιθανές επιπτώσεις ασφαλείας, αλλά και μπορούν να παρακολουθούν το περιεχόμενο που επιτρέπουν να ληφθεί. Για περισσότερες πληροφορίες, μπορείτε να αναζητήσετε τον όρο «CSS-based attacks» (επιθέσεις μέσω κώδικα CSS).\n\nΣημειώνουμε επίσης πως η ενεργοποίηση της επιλογής αυτής ενδέχεται να μην έχει κανένα αποτέλεσμα αν κάποια άλλη επέκταση τροποποιεί γενικά τις αποκρίσεις διαδικτυακών αιτημάτων."
+  },
+  "optionsAdvancedStyleViaASS": {
+    "message": "Παράκαμψη του CSP 'style-src' μέσω adoptedStyleSheets"
+  },
+  "optionsAdvancedStyleViaXhr": {
+    "message": "Λειτουργία άμεσης εφαρμογής στυλ"
+  },
+  "optionsAdvancedStyleViaXhrNote": {
+    "message": "Ενεργοποιήστε αυτήν την επιλογή αν παρατηρείτε πως το περιεχόμενο μιας ιστοσελίδας το οποίο δεν έχει επηρεαστεί από κάποιο στυλ αναβοσβήνει όταν την επισκέπτεστε (flashing of unstyled content ή αλλιώς πρόβλημα FOUC). Το πρόβλημα αυτό συναντάται ιδιαιτέρως με στυλ που υλοποιούν σκουρόχρωμη λειτουργία για μια ιστοσελίδα.\n\nΗ ρύθμιση αυτή αξιοποιεί το συγχρονισμένο (synchronous) και πλέον απαρχαιωμένο XMLHttpRequest, το οποίο εκτελείται σε εσωτερικό επίπεδο προκειμένου να ανακτηθεί η μνήμη cache της επέκτασης· με άλλα λόγια δεν αποτελεί διαδικτυακό αίτημα και για τον λόγο αυτό δεν επηρεάζει σχεδόν καθόλου την επίδοση της επέκτασης."
   },
   "optionsBadgeDisabled": {
     "message": "Χρώμα φόντου όταν είναι απενεργοποιημένο"
@@ -469,8 +950,14 @@
   "optionsCustomizeBadge": {
     "message": "Σήμα στο εικονίδιο της γραμμής εργαλείων"
   },
+  "optionsCustomizeIcon": {
+    "message": "Εικονίδιο γραμμής εργαλείων"
+  },
   "optionsCustomizePopup": {
     "message": "Αναδυόμενο παράθυρο"
+  },
+  "optionsCustomizeSync": {
+    "message": "Συγχρονισμός με το cloud"
   },
   "optionsCustomizeUpdate": {
     "message": "Ενημερώσεις"
@@ -478,8 +965,14 @@
   "optionsHeading": {
     "message": "Επιλογές"
   },
+  "optionsIconAuto": {
+    "message": "Σε αντιστοιχία με τη Σκουρόχρωμη/Ανοιχτόχρωμη λειτουργία της επέκτασης"
+  },
   "optionsIconDark": {
-    "message": "Σκούρο θέμα φυλλομετρητή"
+    "message": "Σκουρόχρωμη λειτουργία προγράμματος περιήγησης"
+  },
+  "optionsIconLight": {
+    "message": "Ανοιχτόχρωμη λειτουργία προγράμματος περιήγησης"
   },
   "optionsOpen": {
     "message": "Άνοιγμα"
@@ -491,13 +984,16 @@
     "message": "Πλάτος αναδυόμενου παραθύρου (σε pixels)"
   },
   "optionsReset": {
-    "message": "Επαναφορά ρυθμίσεων στις προεπιλεγμένες"
+    "message": "Επαναφορά προεπιλεγμένων ρυθμίσεων"
   },
   "optionsResetButton": {
-    "message": "Επαναφορά επιλογών"
+    "message": "Επαναφορά ρυθμίσεων"
+  },
+  "optionsStylusThemes": {
+    "message": "Κάντε κλικ στο εικονίδιο του Stylus στη γραμμή εργαλείων του προγράμματος περιήγησης ενώ βρίσκεστε σε μια τυχαία σελίδα της επέκτασης (όπως για παράδειγμα αυτή εδώ) και στη συνέχεια κάντε κλικ στο κουμπί «Εύρεση στυλ»"
   },
   "optionsSubheading": {
-    "message": "Περισσότερες επιλογές"
+    "message": "Περισσότερες ρυθμίσεις"
   },
   "optionsSyncConnect": {
     "message": "Σύνδεση"
@@ -505,29 +1001,78 @@
   "optionsSyncDisconnect": {
     "message": "Αποσύνδεση"
   },
+  "optionsSyncLogin": {
+    "message": "Σύνδεση"
+  },
+  "optionsSyncNone": {
+    "message": "Να μη γίνεται συγχρονισμός"
+  },
+  "optionsSyncPassword": {
+    "message": "Κωδικός πρόσβασης"
+  },
   "optionsSyncStatusConnected": {
-    "message": "Συνδεδεμένο"
+    "message": "Έγινε σύνδεση"
   },
   "optionsSyncStatusConnecting": {
     "message": "Σύνδεση..."
   },
   "optionsSyncStatusDisconnected": {
-    "message": "Αποσυνδέθηκε"
+    "message": "Έγινε αποσύνδεση"
   },
   "optionsSyncStatusDisconnecting": {
     "message": "Αποσύνδεση..."
   },
+  "optionsSyncStatusPull": {
+    "message": "Γίνεται λήψη των στυλ ($loaded$ από $total$)",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusPush": {
+    "message": "Γίνεται μεταφόρτωση των στυλ ($loaded$ από $total$)",
+    "placeholders": {
+      "loaded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsSyncStatusRelogin": {
+    "message": "Η συνεδρία έληξε, συνδεθείτε ξανά."
+  },
   "optionsSyncStatusSyncing": {
-    "message": "Συγχρονισμός ..."
+    "message": "Συγχρονισμός..."
   },
   "optionsSyncSyncNow": {
     "message": "Συγχρονισμός τώρα"
   },
   "optionsSyncUrl": {
-    "message": "διεύθυνση URL"
+    "message": "Διεύθυνση URL"
+  },
+  "optionsSyncUsername": {
+    "message": "Όνομα χρήστη"
   },
   "optionsUpdateInterval": {
     "message": "Διάστημα αυτόματης ενημέρωσης των στυλ σε ώρες (0 για απενεργοποίηση)"
+  },
+  "optionsUrlInstaller": {
+    "message": "Άνοιγμα της σελίδας εγκατάστασης στυλ κατά τη μετάβαση σε διεύθυνση URL που λήγει σε .user.css"
+  },
+  "overwriteFileExport": {
+    "message": "Θέλετε να αντικατασταθεί το υπάρχον αρχείο;"
+  },
+  "paginationCurrent": {
+    "message": "Τρέχουσα σελίδα"
+  },
+  "paginationEstimated": {
+    "message": "Εκτιμώμενο πλήθος σελίδων"
   },
   "paginationNext": {
     "message": "Επόμενη σελίδα"
@@ -535,20 +1080,95 @@
   "paginationPrevious": {
     "message": "Προηγούμενη σελίδα"
   },
+  "paginationTotal": {
+    "message": "Πλήθος σελίδων"
+  },
+  "parseUsercssError": {
+    "message": "Δεν ήταν δυνατή η ανάλυση του κώδικα UserCSS:"
+  },
+  "popupAutoResort": {
+    "message": "Εκ νέου ταξινόμηση των στυλ στο αναδυόμενο παράθυρο μετά την εναλλαγή"
+  },
+  "popupBorders": {
+    "message": "Προσθήκη λευκών περιγραμμάτων στις πλευρές"
+  },
   "popupBordersTooltip": {
-    "message": "Χρήσιμο για σκούρα θέματα στο καινούριο Chrome, καθώς δε βάφει πλέον τα ακριανά περιθώρια."
+    "message": "Χρήσιμο για σκούρα θέματα στις νεότερες εκδόσεις του Chrome, καθώς δεν επηρεάζονται πλέον τα πλαϊνά περιθώρια."
+  },
+  "popupHotkeysInfo": {
+    "message": "<1>-<9>, <0> (επίσης και στο numpad): ενεργοποιούν/απενεργοποιούν το ν-οστό στυλ (το 0 αντιστοιχεί στο 10ο στη σειρά στυλ)\n<A>-<Z>: απενεργοποιεί το πρώτο στυλ του οποίου το όνομα αρχίζει από το γράμμα που πληκτρολογήθηκε\n<Shift>: ανοίγει το στυλ στο οποίο γίνεται κλικ στον επεξεργαστή κειμένου\n<Numpad +>: ενεργοποιεί όλα τα στυλ της λίστας\n<Numpad –>: απενεργοποιεί όλα τα στυλ της λίστας\n<Numpad *> και <`> (backtick): ενεργοποιεί/απενεργοποιεί τα στυλ που ήταν αρχικώς ενεργοποιημένα τη στιγμή που άνοιξε το αναδυόμενο παράθυρο (popup) της επέκτασης, χωρίς να επηρεάζει στυλ που τυχόν ενεργοποιήθηκαν μετά το άνοιγμα του popup. Διευκολύνεται έτσι η επαναφορά των στυλ στην αρχική τους κατάσταση ύστερα από τυχόν δοκιμές:  <Numpad –> <Numpad *>\nΠερισσότερες πληροφορίες στο wiki"
+  },
+  "popupHotkeysTooltip": {
+    "message": "Κάντε κλικ για να δείτε τους διαθέσιμους συνδυασμούς πλήκτρων"
+  },
+  "popupManageSiteStyles": {
+    "message": "Διαχείριση στυλ αυτής της ιστοσελίδας"
+  },
+  "popupManageTooltip": {
+    "message": "Κάντε κλικ κρατώντας το πλήκτρο Shift πατημένο ή απλά δεξί κλικ για να ανοίξετε τη σελίδα διαχείρισης των στυλ που εφαρμόζονται σε αυτήν την ιστοσελίδα"
+  },
+  "popupMenuButtonTooltip": {
+    "message": "Μενού ενεργειών"
+  },
+  "popupOpenEditInPopup": {
+    "message": "...χωρίς τη γραμμή διεθύνσεων"
   },
   "popupOpenEditInWindow": {
-    "message": "Άνοιγμα επεξαργαστή σε νέο παράθυρο"
+    "message": "Άνοιγμα επεξαργαστή κειμένου σε νέο παράθυρο"
+  },
+  "popupOpenEditInWindowTooltip": {
+    "message": "Η ρύθμιση αυτή μπορεί επιπλέον να ενεργοποιηθεί με τη μετακίνηση της καρτέλας στην οποία βρίσκεται ο επεξεργαστής κειμένου σε νέο παράθυρο του προγράμματος περιήγησης,\nκαι αντίστοιχα μπορεί να απενεργοποιηθεί με τη μετακίνηση της καρτέλας στο παράθυρο όπου ανήκε."
   },
   "popupStylesFirst": {
-    "message": "Στυλ λίστας πριν των εντολών στο μενού του κουμπιού γραμμής εργαλείων"
+    "message": "Εμφάνιση στυλ πριν τις εντολές στο μενού κουμπιών της γραμμής εργαλείων"
   },
   "prefShowBadge": {
     "message": "Εμφάνιση αριθμού των στυλ που δραστηριοποιούνται για την τρέχουσα τοποθεσία στην μπάρα εργαλείων"
   },
+  "preferScheme": {
+    "message": "Σκουρόχρωμη/Ανοιχτόχρωμη λειτουργία"
+  },
+  "preferSchemeAlways": {
+    "message": "Η επιλογή αυτή αγνοείται προς το παρόν επειδή η δυνατότητα εναλλαγής σκουρόχρωμης/ανοιχτόχρωμης λειτουργίας έχει απενεργοποιηθεί από τις ρυθμίσεις της επέκτασης"
+  },
+  "preferSchemeDark": {
+    "message": "Σκουρόχρωμη"
+  },
+  "preferSchemeLight": {
+    "message": "Ανοιχτόχρωμη"
+  },
+  "preferSchemeNone": {
+    "message": "Τίποτα (εφαρμόζεται πάντα)"
+  },
+  "previewLabel": {
+    "message": "Ζωντανή προεπισκόπηση"
+  },
+  "previewTooltip": {
+    "message": "Εφαρμόζει προσωρινά τις αλλαγές, χωρίς όμως να τις αποθηκεύσει.\nΑποθηκεύστε το στυλ για να οριστικοποιήσετε τις αλλαγές."
+  },
+  "publish": {
+    "message": "Δημοσίευση"
+  },
+  "publishPush": {
+    "message": "Μεταφόρτωση στυλ"
+  },
+  "publishReconnect": {
+    "message": "Δοκιμάστε να αποσυνδεθείτε και στη συνέχεια δημοσιεύστε το στυλ εκ νέου"
+  },
+  "publishRetry": {
+    "message": "Το Stylus προσπαθεί ακόμα να δημοσιεύσει αυτό το στυλ. Εντούτοις, μπορείτε να προσπαθήσετε να το δημοσιεύσετε εκ νέου αν δε βλέπετε κάποια δραστηριότητα αυθεντικοποίησης ή κάποιο σχετικό αναδυόμενο παράθυρο. Θέλετε να γίνει νέα προσπάθεια τώρα;"
+  },
+  "publishStyle": {
+    "message": "Δημοσίευση στυλ"
+  },
+  "publishUsw": {
+    "message": "Χρησιμοποιείται η πλατφόρμα <userstyles.world>"
+  },
   "readingStyles": {
     "message": "Ανάγνωση στυλ..."
+  },
+  "reload": {
+    "message": "Ανανέωση"
   },
   "replace": {
     "message": "Αντικατάσταση"
@@ -559,35 +1179,83 @@
   "replaceWith": {
     "message": "Αντικατάσταση με"
   },
+  "restoreTemplate": {
+    "message": "Επαναφορά του προεπιλεγμένου προτύπου.\n\n(Οι ανοιχτές σελίδας του επεξεργαστή κειμένου δε θα επηρεαστούν.)"
+  },
   "retrieveBckp": {
     "message": "Εισαγωγή στυλ"
   },
   "retrieveDropboxSync": {
     "message": "Εισαγωγή από το Dropbox"
   },
+  "saveAsTemplate": {
+    "message": "Αποθήκευση ως πρότυπο"
+  },
   "search": {
     "message": "Αναζήτηση"
   },
+  "searchCaseSensitive": {
+    "message": "Διάκριση πεζών-κεφαλαίων"
+  },
   "searchGlobalStyles": {
-    "message": "Επίσης, αναζητήστε καθολικά στυλ"
+    "message": "Εύρεση σε όλα τα στυλ"
+  },
+  "searchGlobalStylesHint": {
+    "message": "Περιλαμβάνει όλα τα στυλ τα οποία εφαρμόζονται σε όλες τις ιστοσελίδες αν το όνομά τους περιέχει το κείμενο προς εύρεση ή την τρέχουσα ιστοσελίδα"
+  },
+  "searchNumberOfResults": {
+    "message": "Πλήθος αποτελεσμάτων"
+  },
+  "searchNumberOfResults2": {
+    "message": "Πλήθος αποτελεσμάτων εύρεσης στον κώδικα και στη λίστα διευθύνσεων URL στις οποίες εφαρμόζονται τα στυλ"
   },
   "searchRegexp": {
-    "message": "Χρησιμοποιήστε τη σύνταξη /re/ για αναζήτηση με regexp."
+    "message": "Χρησιμοποιήστε τη σύνταξη /re/ για εύρεση με regexp."
   },
   "searchResultInstallCount": {
-    "message": "Συνολικός αριθμός εγκαταστάσεων"
+    "message": "Πλήθος εγκαταστάσεων"
+  },
+  "searchResultNoneFound": {
+    "message": "Δε βρέθηκαν στυλ για αυτήν την ιστοσελίδα."
+  },
+  "searchResultNotMatching": {
+    "message": "Αυτό το στυλ είναι εγκατεστημένο αλλά δεν εφαρμόζεται στην τρέχουσα διεύθυνση URL"
+  },
+  "searchResultNotMatchingNote": {
+    "message": "Μπορείτε να ζητήσετε από τον συντάκτη του στυλ να συμπεριλάβει αυτή τη διεύθυνση URL στην αντίστοιχη λίστα.\n\nΕναλλακτικά, μπορείτε να ανοίξετε το στυλ από τη σελίδα διαχείρισης στυλ και να το επεξεργαστείτε.\nΗ ενέργεια όμως αυτή θα έχει ως αποτέλεσμα τη διακοπή της αυτόματης ενημέρωσης αυτού του στυλ."
+  },
+  "searchResultRating": {
+    "message": "Βαθμολογία"
   },
   "searchResultUpdated": {
     "message": "Ενημερωμένο"
   },
   "searchResultWeeklyCount": {
-    "message": "Εβδομαδιαίος αριθμός εγκαταστάσεων"
+    "message": "Πλήθος εβδομαδιαίων εγκαταστάσεων"
+  },
+  "searchStyleQueryHint": {
+    "message": "Εύρεση στυλ με βάση το όνομά τους (γίνεται διάκριση πεζών-κεφαλαίων σε περίπτωση που πληκτρολογηθεί ένα κεφαλαίο γράμμα):\nκάποιες λέξεις - όλες αυτές οι λέξεις με οποιαδήποτε σειρά\n\"κάποιες λέξεις\" - αυτή ακριβώς η φράση χωρίς τα εισαγωγικά\n/foo.*bar/i - regular expression χωρίς διαστήματα (χρησιμοποιήστε \\s αντί διαστημάτων)"
+  },
+  "searchStylesAll": {
+    "message": "Όλα"
+  },
+  "searchStylesCode": {
+    "message": "Κώδικας CSS"
+  },
+  "searchStylesHelp": {
+    "message": "Το πλήκτρο </> ή ο συνδυασμός πλήκτρων <Ctrl-F> εστιάζει στο πεδίο της εύρεσης.\nΗ προεπιλεγμένη λειτουργία είναι η λειτουργία εύρεσης απλού κειμένου για όλους τους όρους που χωρίζονται με διαστήματα, σε οποιαδήποτε σειρά.\nΓια αναζήτηση μιας ακριβούς φράσης, περικλείστε τις λέξεις που την αποτελούν σε εισαγωγικά όπως στο ακόλουθο παράδειγμα: <\".header ~ div\">\nΓια τη χρήση regular expressions, χρησιμοποιήστε καθέτους (/) και flags όπως στο ακόλουθο παράδειγμα: </body.*?\\ba\\b/i>\nΜε την επιλογή «Διεύθυνση URL» μπορείτε να αναζητήσετε στυλ τα οποία εφαρμόζονται σε κάποια πλήρως καθορισμένη διεύθυνση URL, όπως η https://www.example.org/\nΜε την επιλογή «Μεταδεδομένα» μπορείτε να αναζητήσετε στυλ με βάση το όνομά τους, τις διευθύνσεις URL στις οποίες εφαρμόζονται, τη διεύθυνση URL εγκατάστασης ή/και ενημέρωσης, καθώς και οποιοδήποτε άλλο δεδομένο ενός στυλ της μορφής UserCSS."
+  },
+  "searchStylesMatchUrl": {
+    "message": "Διεύθυνση URL"
+  },
+  "searchStylesMeta": {
+    "message": "Μεταδεδομένα"
   },
   "searchStylesName": {
     "message": "Όνομα"
   },
   "sectionAdd": {
-    "message": "Προσθήκη ένος άλλου τμήματος"
+    "message": "Προσθήκη ενότητας"
   },
   "sectionCode": {
     "message": "Κώδικας"
@@ -595,11 +1263,26 @@
   "sectionRemove": {
     "message": "Αφαίρεση ενότητας"
   },
+  "sectionRestore": {
+    "message": "Επαναφορά διαγεγραμμένης ενότητας"
+  },
+  "sectionUserCSS": {
+    "message": "Ο κλασικός επεξεργαστής κειμένου με ενότητες δεν υποστηρίζει τη σύνταξη UserCSS. Για να τη χρησιμοποιήσετε, ενεργοποιήστε την επιλογή «UserCSS» στη σελίδα διαχείρισης στυλ και στη συνέχεια δημιουργήστε ένα νέο στυλ. Κατόπιν, αντιγράψτε τον κώδικα που έχετε γράψει μέχρι στιγμής κάνοντας κλικ στο κουμπί «Εξαγωγή» σε αυτόν τον επεξεργαστή κειμένου και επικολλήστε τον στο νέο στυλ."
+  },
   "sections": {
     "message": "Ενότητες"
   },
+  "settings": {
+    "message": "Ρυθμίσεις"
+  },
   "shortcuts": {
     "message": "Συντομεύσεις"
+  },
+  "shortcutsNote": {
+    "message": "Ορισμός συντομεύσεων πληκτρολογίου"
+  },
+  "shortcutsNoteFF": {
+    "message": "Στο Firefox (έκδοση 66 ή νεότερη) μπορείτε να ανοίξετε την ενσωματωμένη στο πρόγραμμα περιήγησης διεπαφή χρήστη για συντομεύσεις πληκτρολογίου ως εξής:\n1) κάντε δεξί κλικ στο εικονίδιο του Stylus που βρίσκεται στη γραμμή εργαλείων και στη συνέχεια κάντε κλικ στην επιλογή «Διαχείριση»\n(εναλλακτικά, μεταβείτε στη σελίδα about:addons μέσω του κύριου μενού ή με τον συνδυασμό πλήκτρων Ctrl-Shift-A),\n2) στη σελίδα που ανοίγει, κάντε κλικ στο εικονίδιο του γραναζιού στην πάνω δεξιά γωνία,\n3) κάντε κλικ στην επιλογή «Διαχείριση συντομεύσεων επεκτάσεων» .\n\nΜπορείτε, βέβαια, να επεξεργαστείτε τις συντομεύσεις πληκτρολογίου και από εδώ."
   },
   "sortDateNewestFirst": {
     "message": "πιο πρόσφατα πρώτα"
@@ -607,11 +1290,29 @@
   "sortDateOldestFirst": {
     "message": "πιο παλιά πρώτα"
   },
+  "sortLabel": {
+    "message": "Εφαρμόστε ένα φίλτρο ταξινόμησης στα εγκατεστημένα στυλ"
+  },
+  "sortLabelTitleAsc": {
+    "message": "Τίτλος – Αύξουσα σειρά"
+  },
+  "sortLabelTitleDesc": {
+    "message": "Τίτλος – φθίνουσα σειρά"
+  },
+  "sortStylesHelp": {
+    "message": "Επιλέξτε τον τύπο της ταξινόμησης που θέλετε να εφαρμόσετε στα εγκατεστημένα στυλ από το αντίστοιχο αναπτυσσόμενο μενού (dropdown). H προεπιλεγμένη ρύθμιση ταξινομεί αλφαβητικά (Α έως Ω) τα με βάση τον τίτλο τους. Ακόμη, κάθε επιλογή της υπο-ομάδας «Τίτλος – Φθίνουσα σειρά» εφαρμόζει φθίνουσα αλφαβητική ταξινόμηση (Ω ως Α) των στυλ με βάση τον τίτλο τους.\nΥπάρχουν και άλλες επιλογές που επιτρέπουν την ταξινόμηση των στυλ με περισσότερα κριτήρια. Σκεφτείτε το σαν ταξινόμηση ενός πίνακα με πολλές στήλες όπου κάθε κατηγορία μιας επιλογής (μεταξύ των χαρακτήρων +) αντιπροσωπεύει μία στήλη ή μία ομάδα.\nΓια παράδειγμα, με την επιλογή της ρύθμισης «Ενεργοποιημένο + Τίτλος», τα ενεργοποιημένα στυλ εμφανίζονται πρώτα στη λίστα, ενώ μέσα σε κάθε «ομάδα» (ενεργοποιημένα ή απενεργοποιημένα) τα στυλ ταξινομούνται αλφαβητικά με βάση τον τίτλο τους (Α ως Ω)."
+  },
+  "sortStylesHelpTitle": {
+    "message": "Ταξινόμηση"
+  },
   "styleBadRegexp": {
     "message": "Το Regexp δεν είναι έγκυρο."
   },
   "styleBeautify": {
     "message": "Ωραιοποίηση"
+  },
+  "styleBeautifyHint": {
+    "message": "Συμβουλή: κάντε δεξί κλικ στο κουμπί «Ωραιοποίηση» ή χρησιμοποιήστε τον παρακάτω συνδυασμό πλήκτρων ώστε η ωραιοποίηση να πραγματοποιείται χωρίς την εμφάνιση αυτού του πάνελ"
   },
   "styleBeautifyIndentConditional": {
     "message": "Διόρθωση εσοχής για @media και @supports"
@@ -619,51 +1320,177 @@
   "styleBeautifyPreserveNewlines": {
     "message": "Διατήρηση νέων γραμμών (newlines)"
   },
+  "styleCancelEditLabel": {
+    "message": "Επιστροφή στη σελίδα διαχείρισης στυλ"
+  },
   "styleChangesNotSaved": {
-    "message": "Έχετε κάνει αλλαγές σε αυτό το ύφος χωρίς αποθήκευση."
+    "message": "Έχετε πραγματοποιήσει αλλαγές σε αυτό το στυλ οι οποίες δεν έχουν αποθηκευτεί."
+  },
+  "styleEditor": {
+    "message": "Επεξεργαστής στυλ"
   },
   "styleEnabledLabel": {
-    "message": "Ενεργοποιημένη"
+    "message": "Ενεργοποιημένο"
+  },
+  "styleExcludeLabel": {
+    "message": "Ιστοσελίδες στις οποίες δεν εφαρμόζεται το στυλ"
+  },
+  "styleFromMozillaFormatError": {
+    "message": "Δεν ήταν δυνατή η εισαγωγή στυλ της μορφής Mozilla"
+  },
+  "styleFromMozillaFormatPrompt": {
+    "message": "Επικολλήστε τον κώδικα της μορφής Mozilla"
+  },
+  "styleIncludeLabel": {
+    "message": "Ιστοσελίδες στις οποίες εφαρμόζεται το στυλ"
+  },
+  "styleInjectionImportance": {
+    "message": "Ορισμός στυλ ως «σημαντικού»/μη «σημαντικού»"
+  },
+  "styleInjectionOrder": {
+    "message": "Σειρά εφαρμογής στυλ"
+  },
+  "styleInjectionOrderHint": {
+    "message": "Μεταφέρετε και αποθέστε ένα στυλ για να αλλάξετε τη σειρά εφαρμογής του. Τα στυλ εφαρμόζονται διαδοχικά με τη σειρά που φαίνεται παρακάτω. Έτσι, ένα στυλ στο τέλος της λίστας έχει τη δυνατότητα να αναιρέσει τις αλλαγές που επέφερε ένα στυλ το οποίο βρίσκεται στην κορυφή της λίστας."
+  },
+  "styleInjectionOrderHint_prio": {
+    "message": "Τα «σημαντικά» στυλ που φαίνονται παρακάτω εφαρμόζονται πάντα τελευταία ώστε να έχουν τη δυνατότητα να αναιρέσουν τυχόν αλλαγές που επιφέρουν άλλα, πιο πρόσφατα εγκατεστημένα στυλ. Κάντε κλικ στο αστέρι δίπλα από κάποιο στυλ για να το μετακινήσετε στη λίστα με τα «σημαντικά» στυλ."
   },
   "styleInstall": {
-    "message": "Εγκατάσταση του '$stylename$' στο Stylus;",
+    "message": "Εγκατάσταση του στυλ «$stylename$» στο Stylus;",
     "placeholders": {
       "stylename": {
         "content": "$1"
       }
     }
+  },
+  "styleInstallFailed": {
+    "message": "Δεν ήταν δυνατή η εγκατάσταση του στυλ!\n$error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleInstallOverwrite": {
+    "message": "Το στυλ «$stylename$» είναι ήδη εγκατεστημένο. Να γίνει αντικατάσταση;\nΈκδοση: $oldVersion$ ->$newVersion$",
+    "placeholders": {
+      "newVersion": {
+        "content": "$3"
+      },
+      "oldVersion": {
+        "content": "$2"
+      },
+      "stylename": {
+        "content": "$1"
+      }
+    }
+  },
+  "styleManager": {
+    "message": "Διαχείριση στυλ"
   },
   "styleMissingName": {
     "message": "Εισάγετε ένα όνομα"
   },
+  "styleMozillaFormatHeading": {
+    "message": "Μορφή Mozilla"
+  },
+  "styleName": {
+    "message": "Όνομα στυλ"
+  },
+  "styleNotAppliedRegexpProblemTooltip": {
+    "message": "Δεν ήταν δυνατή η εφαρμογή του στυλ λόγω λανθασμένης χρήσης της συνάρτησης 'regexp()'"
+  },
+  "styleNotAppliedSchemeDark": {
+    "message": "Αυτό το στυλ είναι διαθέσιμο μόνο με τη σκουρόχρωμη λειτουργία"
+  },
+  "styleNotAppliedSchemeLight": {
+    "message": "Αυτό το στυλ είναι διαθέσιμο μόνο με την ανοιχτόχρωμη λειτουργία"
+  },
+  "stylePreferSchemeLabel": {
+    "message": "Σκουρόχρωμη/Ανοιχτόχρωμη λειτουργία"
+  },
+  "styleRegexpInvalidExplanation": {
+    "message": "Δεν ήταν δυνατή η μεταγλώττιση ορισμένων κανόνων της συνάρτησης 'regexp()'."
+  },
+  "styleRegexpPartialExplanation": {
+    "message": "Αυτό το στυλ χρησιμοποιεί regexps μερικής αντιστοίχισης (partially matching regexps) κατά παράβαση <a href='https://developer.mozilla.org/docs/Web/CSS/@document'>της τεκμηρίωσης του CSS4 @document</a>, η οποία επιβάλλει υποχρεωτικά την πλήρη αντιστοίχιση διευθύνσεων URL (full URL match). Για τον λόγο αυτό, οι επηρεαζόμενες ενότητες του CSS κώδικα δεν εφαρμόστηκαν στην ιστοσελίδα αυτή. Είναι πιθανό αυτό το στυλ να δημιουργήθηκε από την επέκταση Stylish-for-Chrome, η οποία ήδη από την πρώτη της έκδοση ελέγχει λανθασμένα τους κανόνες της συνάρτησης 'regexp()' (γνωστό σφάλμα)."
+  },
+  "styleRegexpProblemTooltip": {
+    "message": "Πλήθος ενοτήτων του στυλ που δεν εφαρμόστηκαν λόγω λανθασμένης χρήσης της 'regexp()'"
+  },
+  "styleRegexpTestFull": {
+    "message": "Καρτέλες που αντιστοιχούν"
+  },
+  "styleRegexpTestInvalid": {
+    "message": "Τα μη έγκυρα regexps παραλείφθηκαν"
+  },
   "styleRegexpTestNone": {
     "message": "Δε βρέθηκαν καρτέλες που αντιστοιχούν."
+  },
+  "styleRegexpTestNote": {
+    "message": "Σημείωση: χρησιμοποιήστε έναν μόνο χαρακτήρα \\ για escaping στο πεδίο εισαγωγής regexp. Αυτός θα μετατραπεί αυτόματα σε \\\\ στον κώδικα το στυλ σύμφωνα με το specification της CSS σχετικά με τις συμβολοσειρές (strings) που περικλείονται σε εισαγωγικά."
+  },
+  "styleRegexpTestNoteStar": {
+    "message": "Αν θέλετε το μοτίβο να αντιστοιχίζει ως πρόθημα (prefix), προσθέστε τους χαρακτήρες <.*> στο τέλος του, όπως στο εξής παράδειγμα: <https?://(www\\.)?foo\\.com/(one|two).*>"
+  },
+  "styleRegexpTestPartial": {
+    "message": "Η αντιστοίχιση δεν ήταν πλήρης και για αυτό παραλείφθηκε"
+  },
+  "styleRegexpTestTitle": {
+    "message": "Λίστα ανοιχτών καρτελών που αντιστοιχούν (κάντε κλικ στη διεύθυνση URL για να εστιάσετε στην αντίστοιχη καρτέλα)"
   },
   "styleSaveLabel": {
     "message": "Αποθήκευση"
   },
+  "styleSettings": {
+    "message": "Ρυθμίσεις στυλ"
+  },
   "styleToMozillaFormatHelp": {
     "message": "Η μορφή του Mozilla κώδικα μπορεί να χρησιμοποιηθεί με το Stylish για το Firefox και μπορεί να υποβληθεί στο userstyles.org."
   },
+  "styleToMozillaFormatTitle": {
+    "message": "Στυλ σε μορφή Mozilla"
+  },
   "styleUpdate": {
-    "message": "Είστε σίγουροι ότι θέλετε να ενημερώσετε το '$stylename$';",
+    "message": "Θέλετε σίγουρα να ενημερώσετε το στυλ «$stylename$»;",
     "placeholders": {
       "stylename": {
         "content": "$1"
       }
     }
   },
+  "styleUpdateDiscardChanges": {
+    "message": "Αυτό το στυλ έχει υποστεί επεξεργασία από άλλη πηγή. Θέλετε να πραγματοποιηθεί ανανέωσή του;"
+  },
+  "styleUpdateUrlLabel": {
+    "message": "Ενημέρωση διεύθυνσης URL"
+  },
   "stylusUnavailableForURL": {
-    "message": "To Stylus δεν λειτουργεί σε σελίδες όπως αυτή."
+    "message": "Η επέκταση Stylus δε λειτουργεί σε σελίδες όπως αυτή."
   },
   "stylusUnavailableForURLdetails": {
-    "message": "Ως μέτρο ασφαλείας, ο φυλλομετρητής απαγορεύει στα πρόσθετα να επέμβουν στις built-in σελίδες του (όπως π.χ. chrome://version, η σελίδα νέας καρτέλας από το Chrome 61 και μετά, about:addons, κλπ.), καθώς και τις σελίδες άλλωων προσθέτων. Επιπλέον, κάθε φυλλομετρητής περιορίζει την πρόσβαση στο κατάστημα προσθέτων (όπως το Chrome Web Store ή το AMO)."
+    "message": "Για λόγους ασφαλείας, το πρόγραμμα περιήγησης απαγορεύει στις επεκτάσεις να παρεμβαίνουν με οποιονδήποτε τρόπο στις built-in σελίδες του (όπως π.χ. η σελίδα chrome://version, η σελίδα νέας καρτέλας από το Chrome 61 και μετά, η σελίδα about:addons, κ.ο.κ.), καθώς και στις σελίδες άλλων επεκτάσεων. Επιπλέον, κάθε πρόγραμμα περιήγησης περιορίζει την πρόσβαση σε καταστήματα επεκτάσεων (όπως το Chrome Web Store ή το AMO)."
   },
   "syncError": {
     "message": "Ο συγχρονισμός απέτυχε"
   },
+  "syncErrorLock": {
+    "message": "Η βάση δεδομένων της επέκτασης χρησιμοποιείται αυτή τη στιγμή. Το κλείδωμα θα λήξει σε $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "syncErrorRelogin": {
+    "message": "Ο συγχρονισμός απέτυχε. Δοκιμάστε να συνδεθείτε ξανά στις ρυθμίσεις του Stylus."
+  },
+  "syncStorageErrorSaving": {
+    "message": "Δεν ήταν δυνατή η αποθήκευση αυτής της τιμής. Δοκιμάστε να μειώσετε το μέγεθος του κειμένου."
+  },
   "toggleStyle": {
-    "message": "Αλλαγή στυλ"
+    "message": "Ενεργοποίηση/απενεργοποίηση στυλ"
   },
   "undo": {
     "message": "Αναίρεση"
@@ -671,8 +1498,26 @@
   "undoGlobal": {
     "message": "Αναίρεση όλων των ενεργειών"
   },
+  "unreachableAMO": {
+    "message": "Το Firefox δεν επιτρέπει την πρόσβαση σε αυτήν την ιστοσελίδα."
+  },
+  "unreachableAMOHint": {
+    "message": "Για να επιτρέψετε την πρόσβαση, μεταβείτε στη σελίδα <about:config> και κάντε δεξί κλικ στη λίστα που εμφανίζεται. Στη συνέχεια, κάντε κλικ στο κουμπί «Νέο» και κατόπιν στην επιλογή «Αληθείας». Έπειτα, επικολλήστε το εξής κείμενο: <privacy.resistFingerprinting.block_mozAddonManager> και κάντε κλικ διαδοχικά στα κουμπιά «ΟΚ», <true> και πάλι «ΟΚ». Τέλος, επαναφορτώστε τη σελίδα <addons.mozilla.org>."
+  },
+  "unreachableCSP": {
+    "message": "Δοκιμάστε να ενεργοποιήσετε την επιλογή «Τροποποίηση CSP» από τις ρυθμίσεις του Stylus."
+  },
+  "unreachableContentScript": {
+    "message": "Δεν ήταν δυνατή η επικοινωνία με τη σελίδα. Δοκιμάστε να ανανεώσετε την καρτέλα."
+  },
   "unreachableFileHint": {
-    "message": "Το Stylus έχει πρόσβαση στις file:// διευθύνσεις URL μόνο αν έχετε επιλέξει το αντίστοιχο πλαίσιο ελέγχου για το πρόσθετο Stylus στη σελίδα chrome://extensions."
+    "message": "Το Stylus έχει πρόσβαση στις file:// διευθύνσεις URL μόνο αν έχετε επιλέξει το αντίστοιχο πλαίσιο ελέγχου για την επέκταση στη σελίδα chrome://extensions."
+  },
+  "unreachableMozSiteHint": {
+    "message": "Στις νεότερες εκδόσεις του Firefox (60 και εξής), χρειάζεται να διαγράψετε αυτόν τον τομέα από τη λίστα <extensions.webextensions.restrictedDomains> η οποία βρίσκεται στη σελίδα <about:config>."
+  },
+  "unreachableMozSiteHintOldFF": {
+    "message": "Μόνο οι νεότερες εκδόσεις του Firefox (59 και εξής) μπορούν να ρυθμιστούν με τρόπο τέτοιο ώστε να επιτρέπεται στο WebExtensions να προσθέτει στοιχεία τύπου style σε ιστοσελίδες (όπως αυτή) που εφαρμόζουν πολιτική CSP."
   },
   "unzipStyles": {
     "message": "Αποσυμπίεση στυλ..."
@@ -681,10 +1526,10 @@
     "message": "Όλα τα στυλ είναι ενημερωμένα."
   },
   "updateAllCheckSucceededSomeEdited": {
-    "message": "Δεν έχει γίνει έλεγχος ενημερώσεων για κάποια στυλ, για να αποφευχθεί η πιθανότητα απώλειας τοπικών επεξεργασιών. Οι ενημερώσεις μπορούν να εξαναγκαστούν ελέγχοντας το κάθε στυλ ξεχωριστά ή ελέγχοντας πάλι όλα τα στυλ (τοπικές επεξεργασίες θα αντικατασταθούν)"
+    "message": "Δεν έχει γίνει έλεγχος ενημερώσεων για κάποια στυλ προκειμένου να αποφευχθεί η πιθανότητα απώλειας τοπικών αλλαγών. Τυχόν τοπικές αλλαγές μπορούν να αντικατασταθούν είτε με την εκτέλεση ελέγχου για ενημερώσεις για κάθε στυλ ξεχωριστά, είτε με την εκτέλεση νέου ελέγχου για όλα τα στυλ."
   },
   "updateCheckFailBadResponseCode": {
-    "message": "Αποτυχία ενημέρωσης: ο διακομιστής ανταποκρίθηκε με κωδικό $code$.",
+    "message": "Δεν ήταν δυνατός ο έλεγχος για ενημερώσεις: ο διακομιστής αποκρίθηκε με κωδικό $code$.",
     "placeholders": {
       "code": {
         "content": "$1"
@@ -692,13 +1537,22 @@
     }
   },
   "updateCheckFailServerUnreachable": {
-    "message": "Αποτυχία ενημέρωσης: απρόσιτος διακομιστής."
+    "message": "Δεν ήταν δυνατός ο έλεγχος για ενημερώσεις: δεν ήταν δυνατή η επικοινωνία με τον διακομιστή"
+  },
+  "updateCheckHistory": {
+    "message": "Ιστορικό ελέγχων για ενημερώσεις"
+  },
+  "updateCheckManualUpdateForce": {
+    "message": "Εγκατάσταση ενημέρωσης (οι τοπικές αλλαγές θα αντικατασταθούν)"
+  },
+  "updateCheckManualUpdateHint": {
+    "message": "Η ενέργεια αυτή θα αντικαταστήσει τυχόν τοπικές αλλαγές."
   },
   "updateCheckSkippedLocallyEdited": {
-    "message": "Το στυλ επεξεργάστηκε τοπικά στον υπολογιστή σας."
+    "message": "Αυτό το στυλ έχει υποστεί επεξεργασία τοπικά στον υπολογιστή σας."
   },
   "updateCheckSkippedMaybeLocallyEdited": {
-    "message": "Το στυλ αυτό μπορεί να έχει επεξεργαστεί τοπικά στον υπολογιστή σας."
+    "message": "Αυτό το στυλ μπορεί να έχει υποστεί επεξεργασία τοπικά στον υπολογιστή σας."
   },
   "updateCheckSucceededNoUpdate": {
     "message": "Το στυλ είναι ενημερωμένο."
@@ -712,14 +1566,34 @@
   "uploadingFile": {
     "message": "Μεταφόρτωση αρχείου..."
   },
+  "usercssAvoidOverwriting": {
+    "message": "Παρακαλούμε αλλάξτε την τιμή μιας από τις κεφαλίδες @name, @namespace προκειμένου να αποφευχθεί η αντικατάσταση ενός υπάρχοντος στυλ."
+  },
+  "usercssConfigIncomplete": {
+    "message": "Το στυλ ενημερώθηκε ή διαγράφηκε μετά την εμφάνιση του παραθύρου διαλόγου ρυθμίσεων. Οι ακόλουθες μεταβλητές δεν αποθηκεύτηκαν προκειμένου να μην αλλοιωθούν τα μεταδεδομένα του στυλ:"
+  },
   "usercssEditorNamePlaceholder": {
     "message": "Καθορίστε το @name στον κώδικα"
+  },
+  "usercssReplaceTemplateConfirmation": {
+    "message": "Να γίνει αντικατάσταση του προεπιλεγμένου προτύπου για νέα στυλ της μορφής UserCSS με τον τρέχοντα κώδικα;"
+  },
+  "usercssReplaceTemplateSectionBody": {
+    "message": "Εισάγετε τον κώδικα εδώ..."
   },
   "versionInvalidOlder": {
     "message": "Η έκδοση αυτή είναι παλαιότερη από αυτήν που είναι ήδη εγκατεστημένη."
   },
+  "webRequestBlockingMV3Note": {
+    "message": "Απαιτεί την άδεια webRequestBlocking, η οποία στο ManifestV3 μπορεί να παραχωρηθεί με έναν από τους δύο παρακάτω τρόπους:\n1) Εξάγετε ένα αντίγραφο ασφαλείας και ρυθμίστε την πολιτική <a href='https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist'>ExtensionInstallForcelist</a> για το αναγνωριστικό της επέκτασης: $id$. Στη συνέχεια, επανεκκινήστε το πρόγραμμα περιήγησης και περιμένετε έως ότου ολοκληρωθεί η εγκατάσταση της επέκτασης. Τέλος, εισάγετε το αντίγραφο ασφαλείας στη σελίδα διαχείρισης στυλ και καρφιτσώστε (προαιρετικά) το εικονίδιο της επέκτασης στη γραμμή εργαλείων.\n\n2) Τροποποιήστε την εντολή με την οποία πραγματοποιείται η εκκίνηση του προγράμματος περιήγησης: στην ήδη υπάρχουσα εντολή προσθέστε ένα διάστημα και στη συνέχεια τον ακόλουθο κώδικα: <code><nobr>--allowlisted-extension-id=$id$</nobr></code>",
+    "placeholders": {
+      "id": {
+        "content": "$1"
+      }
+    }
+  },
   "writeStyleFor": {
-    "message": "Γράψτε νέο στυλ για:"
+    "message": "Νέο στυλ για:"
   },
   "writeStyleForURL": {
     "message": "αυτή την διεύθυνση URL"
