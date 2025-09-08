@@ -1,14 +1,14 @@
-import { createParser, ParseError } from "usercss-meta";
-import { importScriptsOnce } from "./worker-util";
+import {createParser, ParseError} from 'usercss-meta';
+import {importScriptsOnce} from './worker-util';
 
-const PREPROCESSORS = new Set(["default", "uso", "stylus", "less"]);
+const PREPROCESSORS = new Set(['default', 'uso', 'stylus', 'less']);
 
 // Custom parser for @match directive
 function parseMatch(state) {
   // Parse single match pattern (one per @match directive)
-  let currentMatch = "";
+  let currentMatch = '';
   let inQuotes = false;
-  let quoteChar = "";
+  let quoteChar = '';
 
   while (state.lastIndex < state.text.length) {
     const char = state.text[state.lastIndex];
@@ -22,12 +22,12 @@ function parseMatch(state) {
 
     if (inQuotes && char === quoteChar) {
       inQuotes = false;
-      quoteChar = "";
+      quoteChar = '';
       state.lastIndex++;
       continue;
     }
 
-    if (!inQuotes && char === "\n") {
+    if (!inQuotes && char === '\n') {
       break;
     }
 
@@ -36,7 +36,7 @@ function parseMatch(state) {
   }
 
   // Clean up the match pattern
-  const cleanMatch = currentMatch.trim().replace(/^["']|["']$/g, "");
+  const cleanMatch = currentMatch.trim().replace(/^["']|["']$/g, '');
 
   // Initialize matches array if it doesn't exist
   if (!Array.isArray(state.usercssData.match)) {
@@ -60,7 +60,7 @@ function collectAllMatches(metadata) {
   const matchRegex = /@match\s+([^\n]+)/g;
   let match;
   while ((match = matchRegex.exec(metadata)) !== null) {
-    const pattern = match[1].trim().replace(/^["']|["']$/g, "");
+    const pattern = match[1].trim().replace(/^["']|["']$/g, '');
     if (pattern) {
       allMatches.push(pattern);
     }
@@ -75,7 +75,7 @@ function isValidMatchPattern(pattern) {
   // Pattern should be in format: protocol://host/path
   // Examples: *://*.example.com/*, *://example.com/*, https://example.com/*
 
-  if (!pattern || typeof pattern !== "string") {
+  if (!pattern || typeof pattern !== 'string') {
     return false;
   }
 
@@ -83,8 +83,8 @@ function isValidMatchPattern(pattern) {
   try {
     // Replace wildcards with placeholder values for URL validation
     const testPattern = pattern
-      .replace(/\*/g, "example")
-      .replace(/\/\*$/, "/test");
+      .replace(/\*/g, 'example')
+      .replace(/\/\*$/, '/test');
 
     new URL(testPattern);
     return true;
@@ -92,26 +92,25 @@ function isValidMatchPattern(pattern) {
     return false;
   }
 }
-
 const options = {
   parseKey: {
     match: parseMatch,
   },
   validateKey: {
-    preprocessor: (state) => {
+    preprocessor: state => {
       if (!PREPROCESSORS.has(state.value)) {
         throw new ParseError({
-          code: "unknownPreprocessor",
+          code: 'unknownPreprocessor',
           args: [state.value],
           index: state.valueIndex,
         });
       }
     },
-    match: (state) => {
+    match: state => {
       // Validate single match pattern
       if (!isValidMatchPattern(state.value)) {
         throw new ParseError({
-          code: "invalidMatchPattern",
+          code: 'invalidMatchPattern',
           args: [state.value],
           index: state.valueIndex,
         });
@@ -119,22 +118,22 @@ const options = {
     },
   },
   // Don't overwrite match values, collect them instead
-  unknownKey: "assign",
+  unknownKey: 'assign',
   validateVar: {
-    select: (state) => {
-      if (state.varResult.options.every((o) => o.name !== state.value)) {
+    select: state => {
+      if (state.varResult.options.every(o => o.name !== state.value)) {
         throw new ParseError({
-          code: "invalidSelectValueMismatch",
+          code: 'invalidSelectValueMismatch',
           index: state.valueIndex,
         });
       }
     },
-    color: (state) => {
-      importScriptsOnce("color-converter.js"); /* global colorConverter */
+    color: state => {
+      importScriptsOnce('color-converter.js'); /* global colorConverter */
       const color = colorConverter.parse(state.value);
       if (!color) {
         throw new ParseError({
-          code: "invalidColor",
+          code: 'invalidColor',
           args: [state.value],
           index: state.valueIndex,
         });
@@ -144,16 +143,15 @@ const options = {
   },
 };
 const parser = createParser(options);
-const looseParser = createParser(
-  Object.assign({}, options, {
-    allowErrors: true,
-    unknownKey: "throw",
-  })
-);
+const looseParser = createParser(Object.assign({}, options, {
+  allowErrors: true,
+  unknownKey: 'throw',
+}));
 
 const metaParser = {
+
   lint: looseParser.parse,
-  parse: (text) => {
+  parse: text => {
     const result = parser.parse(text);
     // Post-process to collect all @match patterns
     if (result.metadata) {

@@ -1,34 +1,34 @@
-import { kStyleIdPrefix, UCD } from "@/js/consts";
-import { $toggleDataset } from "@/js/dom";
-import { animateElement, scrollElementIntoView } from "@/js/dom-util";
-import { breakWord, template } from "@/js/localization";
-import * as prefs from "@/js/prefs";
-import { TO_CSS } from "@/js/sections-util";
-import { sessionStore, t } from "@/js/util";
-import { filterAndAppend } from "./filters";
-import { renderFavs } from "./render";
-import * as sorter from "./sorter";
-import { installed, newUI, padLeft, styleToDummyEntry } from "./util";
+import {kStyleIdPrefix, UCD} from '@/js/consts';
+import {$toggleDataset} from '@/js/dom';
+import {animateElement, scrollElementIntoView} from '@/js/dom-util';
+import {breakWord, template} from '@/js/localization';
+import * as prefs from '@/js/prefs';
+import {TO_CSS} from '@/js/sections-util';
+import {sessionStore, t} from '@/js/util';
+import {filterAndAppend} from './filters';
+import {renderFavs} from './render';
+import * as sorter from './sorter';
+import {installed, newUI, padLeft, styleToDummyEntry} from './util';
 
-export * from "./render-favs";
+export * from './render-favs';
 
 const AGES = [
-  [24, "h", t("dateAbbrHour", "\x01")],
-  [30, "d", t("dateAbbrDay", "\x01")],
-  [12, "m", t("dateAbbrMonth", "\x01")],
-  [Infinity, "y", t("dateAbbrYear", "\x01")],
+  [24, 'h', t('dateAbbrHour', '\x01')],
+  [30, 'd', t('dateAbbrDay', '\x01')],
+  [12, 'm', t('dateAbbrMonth', '\x01')],
+  [Infinity, 'y', t('dateAbbrYear', '\x01')],
 ];
-const canRenderAll = CSS.supports("content-visibility", "auto");
-const groupThousands = (num) => `${num}`.replace(/\d(?=(\d{3})+$)/g, "$&\xA0");
-const renderSize = (size) => groupThousands(Math.round(size / 1024)) + "k";
+const canRenderAll = CSS.supports('content-visibility', 'auto');
+const groupThousands = num => `${num}`.replace(/\d(?=(\d{3})+$)/g, '$&\xA0');
+const renderSize = size => groupThousands(Math.round(size / 1024)) + 'k';
 const nameLengths = new Map();
-const partEditHrefBase = "edit.html?id=";
+const partEditHrefBase = 'edit.html?id=';
 const partDecorations = {
-  urlPrefixesAfter: "*",
-  regexpsBefore: "/",
-  regexpsAfter: "/",
-  matchesBefore: "",
-  matchesAfter: "",
+  urlPrefixesAfter: '*',
+  regexpsBefore: '/',
+  regexpsAfter: '/',
+  matchesBefore: '',
+  matchesAfter: '',
 };
 /** Hiding date-like version as it's too long and is already shown in the age column */
 const rxIsDateVer = /^20\d{4,6}(?:\.\d\d?){2}$/;
@@ -50,12 +50,7 @@ let partChecker,
   partOldCheckUpdate,
   partOldConfigure,
   partTargets;
-let tplConfigureIcon,
-  tplEverything,
-  tplExtra,
-  tplSep,
-  tplTarget,
-  tplUpdaterIcons;
+let tplConfigureIcon, tplEverything, tplExtra, tplSep, tplTarget, tplUpdaterIcons;
 
 function createAgeText(el, style) {
   let val = style.updateDate || style.installDate;
@@ -64,14 +59,14 @@ function createAgeText(el, style) {
     for (const [max, unit, text] of AGES) {
       const rounded = Math.round(val);
       if (rounded < max) {
-        el.textContent = text.replace("\x01", rounded);
+        el.textContent = text.replace('\x01', rounded);
         el.dataset.value = padLeft(Math.round(rounded), 2) + unit;
         break;
       }
       val /= max;
     }
   } else if (el.firstChild) {
-    el.textContent = "";
+    el.textContent = '';
     delete el.dataset.value;
   }
 }
@@ -79,52 +74,44 @@ function createAgeText(el, style) {
 /** Performance booster: query the sub-elements just once, then reuse the references */
 function createParts(isNew) {
   partNewUI = isNew;
-  partEntry = template[isNew ? "styleNewUI" : "style"].cloneNode(true);
+  partEntry = template[isNew ? 'styleNewUI' : 'style'].cloneNode(true);
   partEntryClassBase = partEntry.className;
-  partChecker = partEntry.$("input") || {};
-  partNameLink = partEntry.$(".style-name-link");
-  partEditLink = partEntry.$(".style-edit-link") || {};
-  partHomepage = partEntry.$(".homepage");
-  partInfoAge = partEntry.$("[data-type=age]");
-  partInfoSize = partEntry.$("[data-type=size]");
-  partInfoVer = partEntry.$("[data-type=version]");
-  partTargets = partEntry.$(".targets");
-  partOldConfigure = !isNew && partEntry.$(".configure-usercss");
-  partOldCheckUpdate = !isNew && partEntry.$(".check-update");
+  partChecker = partEntry.$('input') || {};
+  partNameLink = partEntry.$('.style-name-link');
+  partEditLink = partEntry.$('.style-edit-link') || {};
+  partHomepage = partEntry.$('.homepage');
+  partInfoAge = partEntry.$('[data-type=age]');
+  partInfoSize = partEntry.$('[data-type=size]');
+  partInfoVer = partEntry.$('[data-type=version]');
+  partTargets = partEntry.$('.targets');
+  partOldConfigure = !isNew && partEntry.$('.configure-usercss');
+  partOldCheckUpdate = !isNew && partEntry.$('.check-update');
   return partEntry;
 }
 
-export function createStyleElement({
-  styleMeta: style,
-  styleNameLC: nameLC,
-  styleSize: size,
-}) {
+export function createStyleElement({styleMeta: style, styleNameLC: nameLC, styleSize: size}) {
   const ud = style[UCD];
-  const { updateUrl } = style;
+  const {updateUrl} = style;
   const configurable = !!ud?.vars;
   const name = style.customName || style.name;
-  const version = ud ? ud.version : "";
+  const version = ud ? ud.version : '';
   const isNew = newUI.cfg.enabled;
   if (isNew !== partNewUI) createParts(isNew);
   partChecker.checked = style.enabled;
   partNameLink.firstChild.textContent = breakWord(name);
   partNameLink.href = partEditLink.href = partEditHrefBase + style.id;
-  partHomepage.href = partHomepage.title = style.url || "";
+  partHomepage.href = partHomepage.title = style.url || '';
   partInfoVer.textContent = version;
   partInfoVer.dataset.value = version;
   // USO-raw and USO-archive version is a date for which we show the Age column
-  $toggleDataset(
-    partInfoVer,
-    "isDate",
-    version.length >= 8 && rxIsDateVer.test(version)
-  );
+  $toggleDataset(partInfoVer, 'isDate', version.length >= 8 && rxIsDateVer.test(version));
   createAgeText(partInfoAge, style);
   partInfoSize.dataset.value = Math.log10(size || 1) >> 0; // for CSS to target big/small styles
   partInfoSize.textContent = renderSize(size);
-  partInfoSize.title = `${t("genericSize")}: ${groupThousands(size)} B`;
+  partInfoSize.title = `${t('genericSize')}: ${groupThousands(size)} B`;
   if (!isNew) {
-    partOldConfigure.classList.toggle("hidden", !configurable);
-    partOldCheckUpdate.classList.toggle("hidden", !updateUrl);
+    partOldConfigure.classList.toggle('hidden', !configurable);
+    partOldCheckUpdate.classList.toggle('hidden', !updateUrl);
   }
   // Now that we assigned the parts, we can clone the element
   const entry = partEntry.cloneNode(true);
@@ -133,33 +120,21 @@ export function createStyleElement({
   entry.styleNameLC = nameLC;
   entry.styleMeta = style;
   entry.styleSize = size;
-  entry.className =
-    partEntryClassBase +
-    " " +
-    (style.enabled ? "enabled" : "disabled") +
-    (updateUrl ? " updatable" : "") +
-    (ud ? " usercss" : "");
+  entry.className = partEntryClassBase + ' ' +
+    (style.enabled ? 'enabled' : 'disabled') +
+    (updateUrl ? ' updatable' : '') +
+    (ud ? ' usercss' : '');
   if (isNew && (updateUrl || configurable)) {
-    entry
-      .$(".actions")
-      .append(
-        ...[
-          updateUrl &&
-            (tplUpdaterIcons ??= template.updaterIcons).cloneNode(true),
-          configurable &&
-            (tplConfigureIcon ??= template.configureIcon).cloneNode(true),
-        ].filter(Boolean)
-      );
+    entry.$('.actions').append(...[
+      updateUrl && (tplUpdaterIcons ??= template.updaterIcons).cloneNode(true),
+      configurable && (tplConfigureIcon ??= template.configureIcon).cloneNode(true),
+    ].filter(Boolean));
   }
-  createTargetsElement({ entry, style });
+  createTargetsElement({entry, style});
   return entry;
 }
 
-export function createTargetsElement({
-  entry,
-  expanded,
-  style = entry.styleMeta,
-}) {
+export function createTargetsElement({entry, expanded, style = entry.styleMeta}) {
   const isNew = newUI.cfg.enabled;
   const maxTargets = expanded ? 1000 : isNew ? newUI.cfg.targets : 10;
   if (!maxTargets) {
@@ -167,8 +142,8 @@ export function createTargetsElement({
     return;
   }
   const displayed = new Set();
-  const entryTargets = entry.$(".targets");
-  const expanderCls = entry.$(".applies-to").classList;
+  const entryTargets = entry.$('.targets');
+  const expanderCls = entry.$('.applies-to').classList;
   const targets = partTargets.cloneNode(true);
   const toAppend = [];
   let container = targets;
@@ -188,49 +163,35 @@ export function createTargetsElement({
         displayed.add(targetValue);
         let displayValue = targetValue;
         // Clean up @match patterns to show only domain with subdomain
-        if (
-          type === "matches" &&
-          targetValue.startsWith("*://") &&
-          targetValue.includes("/*")
-        ) {
+        if (type === 'matches' && targetValue.startsWith('*://') && targetValue.includes('/*')) {
           const matchDomain = targetValue.match(/:\/\/(\*\.)?([^\/\*]+)/);
           if (matchDomain) {
             const domain = matchDomain[2];
-            const subdomain = matchDomain[1] ? "*." : "";
-            displayValue = subdomain + domain + "/*";
+            const subdomain = matchDomain[1] ? '*.' : '';
+            displayValue = subdomain + domain + '/*';
           }
         }
         const text =
-          (partDecorations[type + "Before"] || "") +
+          (partDecorations[type + 'Before'] || '') +
           displayValue +
-          (partDecorations[type + "After"] || "");
-        if (
-          el &&
-          el.dataset.type === type &&
-          el.lastChild.textContent === text
-        ) {
+          (partDecorations[type + 'After'] || '');
+        if (el && el.dataset.type === type && el.lastChild.textContent === text) {
           const next = el.nextElementSibling;
           // TODO: collect all in a fragment and use a single container.append()
           toAppend.push(el);
           el = next;
           continue;
         }
-        const element = (tplTarget ??= template.appliesToTarget).cloneNode(
-          true
-        );
+        const element = (tplTarget ??= template.appliesToTarget).cloneNode(true);
         if (!isNew) {
           if (numTargets === maxTargets) {
-            const extra = (tplExtra ??= template.extraAppliesTo).cloneNode(
-              true
-            );
+            const extra = (tplExtra ??= template.extraAppliesTo).cloneNode(true);
             toAppend.push(extra);
             container.append(...toAppend);
             container = extra;
             toAppend.length = 0;
           } else if (numTargets > 1) {
-            toAppend.push(
-              (tplSep ??= template.appliesToSeparator).cloneNode(true)
-            );
+            toAppend.push((tplSep ??= template.appliesToSeparator).cloneNode(true));
           }
         }
         element.dataset.type = type;
@@ -242,29 +203,23 @@ export function createTargetsElement({
   }
   container.append(...toAppend);
   if (isNew && numTargets > newUI.cfg.targets) {
-    expanderCls.add("has-more");
+    expanderCls.add('has-more');
   }
   if (numTargets) {
     entryTargets.parentElement.replaceChild(targets, entryTargets);
   } else if (
-    !entry.classList.contains("global") ||
+    !entry.classList.contains('global') ||
     !entryTargets.firstElementChild
   ) {
     if (entryTargets.firstElementChild) {
-      entryTargets.textContent = "";
+      entryTargets.textContent = '';
     }
-    entryTargets.appendChild(
-      (tplEverything ??= template.appliesToEverything).cloneNode(true)
-    );
+    entryTargets.appendChild((tplEverything ??= template.appliesToEverything).cloneNode(true));
   }
-  entry.classList.toggle("global", !numTargets);
+  entry.classList.toggle('global', !numTargets);
   entry._allTargetsRendered = allTargetsRendered;
   entry._numTargets = numTargets;
-  if (isNew)
-    entry.style.setProperty(
-      "--num-targets",
-      Math.min(numTargets, newUI.cfg.targets)
-    );
+  if (isNew) entry.style.setProperty('--num-targets', Math.min(numTargets, newUI.cfg.targets));
 }
 
 function highlightEditedStyle() {
@@ -280,34 +235,30 @@ function highlightEditedStyle() {
 export function fitNameColumn(styles, style) {
   if (style) calcNameLenKey(style);
   styles = styles ? styles.map(calcNameLenKey) : [...nameLengths.values()];
-  const pick = sorter.columns > 1 ? 0.8 : 0.95; // quotient of entries in single line
+  const pick = sorter.columns > 1 ? .8 : .95; // quotient of entries in single line
   const extras = 5; // average for optional extras like " UC ", "v1.0.0"
-  const res = (nameLengths.res =
-    styles.sort()[(nameLengths.size * pick) | 0] + extras - 1e9);
-  $root.style.setProperty("--name-width", res + "ch");
+  const res = nameLengths.res = styles.sort()[nameLengths.size * pick | 0] + extras - 1e9;
+  $root.style.setProperty('--name-width', res + 'ch');
 }
 
 function calcNameLenKey(style) {
-  const name = style.displayName || style.name || "";
-  const len =
-    (1e9 + // aligning the key for sort() which uses string comparison
-      (style.enabled ? 1.05 /*bold factor*/ : 1) *
-        (name.length +
-          name.replace(rxNonCJK, "").length) /*CJK glyph is 2x wide*/) |
-    0;
+  const name = style.displayName || style.name || '';
+  const len = 1e9 + // aligning the key for sort() which uses string comparison
+    (style.enabled ? 1.05/*bold factor*/ : 1) *
+    (name.length + name.replace(rxNonCJK, '').length/*CJK glyph is 2x wide*/) | 0;
   nameLengths.set(style.id, len);
   return len;
 }
 
 export function fitSizeColumn(entries = installed.children, entry) {
-  let res = (entry && renderSize(entry.styleSize).length) || 0;
+  let res = entry && renderSize(entry.styleSize).length || 0;
   if (!res) {
     for (const e of entries) res = Math.max(res, e.styleSize);
     res = renderSize(res).length;
-  } else if (res <= parseInt($root.style.getPropertyValue("--size-width"))) {
+  } else if (res <= parseInt($root.style.getPropertyValue('--size-width'))) {
     return;
   }
-  $root.style.setProperty("--size-width", res + "ch");
+  $root.style.setProperty('--size-width', res + 'ch');
 }
 
 export function showStyles(styles = [], matchUrlIds) {
@@ -316,10 +267,9 @@ export function showStyles(styles = [], matchUrlIds) {
   let index = 0;
   let firstRun = true;
   const scrollY = history.state?.scrollY;
-  const shouldRenderAll =
-    scrollY > window.innerHeight ||
-    sessionStore.justEditedStyleId ||
-    canRenderAll;
+  const shouldRenderAll = scrollY > window.innerHeight
+    || sessionStore.justEditedStyleId
+    || canRenderAll;
   const renderBin = document.createDocumentFragment();
   favsBusy = newUI.hasFavs();
   fitNameColumn(styles);
@@ -329,19 +279,18 @@ export function showStyles(styles = [], matchUrlIds) {
 
   function renderStyles() {
     const t0 = !shouldRenderAll && performance.now();
-    while (
-      index < sorted.length &&
-      (shouldRenderAll || (index & 7) < 7 || performance.now() - t0 < 50)
-    ) {
+    while (index < sorted.length && (
+      shouldRenderAll ||
+      (index & 7) < 7 ||
+      performance.now() - t0 < 50
+    )) {
       const entry = createStyleElement(sorted[index++]);
       if (matchUrlIds && !matchUrlIds.includes(entry.styleMeta.id)) {
-        entry.classList.add("not-matching", "hidden");
+        entry.classList.add('not-matching', 'hidden');
       }
       renderBin.appendChild(entry);
     }
-    filterAndAppend({ container: renderBin }, matchUrlIds).then(
-      sorter.updateStripes
-    );
+    filterAndAppend({container: renderBin}, matchUrlIds).then(sorter.updateStripes);
     if (index < sorted.length) {
       requestAnimationFrame(renderStyles);
       if (firstRun && favsBusy) renderFavs();
@@ -363,12 +312,12 @@ export function updateTotal(delta) {
     return;
   }
   installed.dataset.total = numStyles;
-  elLinksParent ??= (elLinks = $id("links")).parentNode;
-  const det = elLinks.$("details");
-  const prefId = "manage.links.expanded";
-  $toggleDataset(det, "pref", numStyles && prefId);
+  elLinksParent ??= (elLinks = $id('links')).parentNode;
+  const det = elLinks.$('details');
+  const prefId = 'manage.links.expanded';
+  $toggleDataset(det, 'pref', numStyles && prefId);
   det.open = !numStyles || prefs.__values[prefId];
   if (!numStyles) installed.after(elLinks);
   else elLinksParent.append(elLinks);
-  $rootCL.toggle("empty", !numStyles);
+  $rootCL.toggle('empty', !numStyles);
 }
