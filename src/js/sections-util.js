@@ -1,24 +1,26 @@
 export const TO_CSS = {
-  domains: 'domain',
-  urlPrefixes: 'url-prefix',
-  urls: 'url',
-  regexps: 'regexp',
+  domains: "domain",
+  urlPrefixes: "url-prefix",
+  urls: "url",
+  regexps: "regexp",
+  matches: "match",
 };
 export const FROM_CSS = {
-  'domain': 'domains',
-  'url-prefix': 'urlPrefixes',
-  'url': 'urls',
-  'regexp': 'regexps',
+  domain: "domains",
+  "url-prefix": "urlPrefixes",
+  url: "urls",
+  regexp: "regexps",
+  match: "matches",
 };
 const STYLE_CODE_EMPTY_RE =
-  /\s+|\/\*([^*]+|\*(?!\/))*(\*\/|$)|@namespace[^;]+;|@charset[^;]+;/iyu;
+  /\s+|\/\*([^*]+|\*(?!\/))*(\*\/|$)|@namespace[^;]+;|@charset[^;]+;/iuy;
 const rxEscape = /[\\"]/g;
 
 /**
  * @param {StyleObj} style
  * @returns {string}
  */
-export const styleToCss = style => {
+export const styleToCss = (style) => {
   const res = [];
   for (const section of style.sections) {
     let funcs, arr, cssName;
@@ -26,26 +28,42 @@ export const styleToCss = style => {
       if ((arr = section[propName])) {
         cssName = TO_CSS[propName];
         for (const v of arr) {
-          res.push(funcs ? ', ' : res.length ? '\n\n@-moz-document ' : '@-moz-document ',
-            cssName, '("', v.replace(rxEscape, '\\$&'), '")');
+          res.push(
+            funcs
+              ? ", "
+              : res.length
+              ? "\n\n@-moz-document "
+              : "@-moz-document ",
+            cssName,
+            '("',
+            v.replace(rxEscape, "\\$&"),
+            '")'
+          );
           funcs = true;
         }
       }
     }
-    res.push(funcs ? ' {\n' : '', section.code, funcs ? '\n}' : '');
+    res.push(funcs ? " {\n" : "", section.code, funcs ? "\n}" : "");
   }
-  return res.join('');
+  return res.join("");
 };
 
 /** @param {StyleSection} sec */
 export function styleCodeEmpty(sec) {
-  const {code} = sec;
+  const { code } = sec;
   let res = !code;
   if (res || (res = sec._empty) != null) return res;
   const len = code.length;
-  const rx = STYLE_CODE_EMPTY_RE; rx.lastIndex = 0;
-  let i = 0; while (rx.exec(code) && (i = rx.lastIndex) !== len) {/**/}
-  Object.defineProperty(sec, '_empty', {value: res = i === len, configurable: true});
+  const rx = STYLE_CODE_EMPTY_RE;
+  rx.lastIndex = 0;
+  let i = 0;
+  while (rx.exec(code) && (i = rx.lastIndex) !== len) {
+    /**/
+  }
+  Object.defineProperty(sec, "_empty", {
+    value: (res = i === len),
+    configurable: true,
+  });
   styleCodeEmpty.lastIndex = i;
   return res;
 }
@@ -57,7 +75,7 @@ export function styleCodeEmpty(sec) {
  * @param {Object} b - second style object
  * @returns {?boolean}
  */
-export function styleSectionsEqual({sections: a}, {sections: b}) {
+export function styleSectionsEqual({ sections: a }, { sections: b }) {
   return a && b && a.length === b.length && a.every(sameSection, b);
 }
 
@@ -75,11 +93,14 @@ function sameSection(secA, i) {
 }
 
 function equalOrEmpty(a, b, isStr) {
-  const typeA = isStr ? typeof a === 'string' : Array.isArray(a);
-  const typeB = isStr ? typeof b === 'string' : Array.isArray(b);
-  return typeA && typeB && (isStr ? a === b : a.length === b.length && arrayEquals(a, b)) ||
-    (a == null || typeA && !a.length) &&
-    (b == null || typeB && !b.length);
+  const typeA = isStr ? typeof a === "string" : Array.isArray(a);
+  const typeB = isStr ? typeof b === "string" : Array.isArray(b);
+  return (
+    (typeA &&
+      typeB &&
+      (isStr ? a === b : a.length === b.length && arrayEquals(a, b))) ||
+    ((a == null || (typeA && !a.length)) && (b == null || (typeB && !b.length)))
+  );
 }
 
 function arrayEquals(a, b) {
@@ -93,23 +114,30 @@ function thisIncludes(el) {
 export async function calcStyleDigest(style) {
   const src = style.usercssData
     ? style.sourceCode
-    // retain known properties in an arbitrarily predefined order
-    : JSON.stringify((style.sections || []).map(section => ({
-      code: section.code || '',
-      urls: section.urls || [],
-      urlPrefixes: section.urlPrefixes || [],
-      domains: section.domains || [],
-      regexps: section.regexps || [],
-    })));
+    : // retain known properties in an arbitrarily predefined order
+      JSON.stringify(
+        (style.sections || []).map((section) => ({
+          code: section.code || "",
+          urls: section.urls || [],
+          urlPrefixes: section.urlPrefixes || [],
+          domains: section.domains || [],
+          regexps: section.regexps || [],
+          matches: section.matches || [],
+        }))
+      );
   const srcBytes = new TextEncoder().encode(src);
-  const res = await crypto.subtle.digest('SHA-1', srcBytes);
-  return Array.from(new Uint8Array(res), b => (0x100 + b).toString(16).slice(1)).join('');
+  const res = await crypto.subtle.digest("SHA-1", srcBytes);
+  return Array.from(new Uint8Array(res), (b) =>
+    (0x100 + b).toString(16).slice(1)
+  ).join("");
 }
 
 export function styleJSONseemsValid(json) {
-  return json
-    && typeof json.name == 'string'
-    && json.name.trim()
-    && Array.isArray(json.sections)
-    && typeof json.sections[0]?.code === 'string';
+  return (
+    json &&
+    typeof json.name == "string" &&
+    json.name.trim() &&
+    Array.isArray(json.sections) &&
+    typeof json.sections[0]?.code === "string"
+  );
 }
