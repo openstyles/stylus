@@ -41,7 +41,7 @@ const editor = self.editor = {
   toc,
 
   applyScrollInfo(cm, si = editor.scrollInfo.cms?.[0]) {
-    if (si && si.sel) {
+    if (si && si.sel) try {
       const bmOpts = {sublimeBookmark: true, clearWhenEmpty: false}; // copied from sublime.js
       const bms = cm.state.sublimeBookmarks = [];
       for (const b of si.bookmarks) bms.push(cm.markText(b.from, b.to, bmOpts));
@@ -49,7 +49,7 @@ const editor = self.editor = {
       Object.assign(cm.display.scroller, si.scroll); // for source editor
       Object.assign(cm.doc, si.scroll); // for sectioned editor
       return si;
-    }
+    } catch {}
   },
 
   cancel: () => location.assign('/manage.html'),
@@ -60,7 +60,7 @@ const editor = self.editor = {
       scrollY: window.scrollY,
       /** @type {EditorScrollInfo[]} */
       cms: editor.getEditors().map(cm => /** @namespace EditorScrollInfo */({
-        bookmarks: (cm.state.sublimeBookmarks || []).map(b => b.find()),
+        bookmarks: (cm.state.sublimeBookmarks || []).map(b => b.find()).filter(Boolean),
         focus: cm.hasFocus(),
         height: cm.display.wrapper.style.height.replace('100vh', ''),
         parentHeight: cm.display.wrapper.parentElement.offsetHeight,
