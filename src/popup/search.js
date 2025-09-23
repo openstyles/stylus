@@ -127,8 +127,7 @@ styleFinder.inSite = event => {
     where === 'usw' &&
       `${URLS.usw}search?q=${catQ}` ||
     where === 'gf' &&
-      'https://greasyfork.org/' + ($root.lang.split('-')[0] || 'en') +
-      `/scripts${tabUrlSupported
+      `https://greasyfork.org/scripts${tabUrlSupported
         ? tryURL(tabUrl).hostname.replace(/^(www\.)?/, '/by-site/')
         : ''
       }?language=css${add('&q=', q)}`;
