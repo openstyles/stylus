@@ -22,7 +22,7 @@ export async function renderFavs(container = installed) {
   const regexpMatchDomain = /^.*?:\/\/\W*([-.\w]+)/;
   for (const target of container.$$('.target')) {
     const type = target.dataset.type;
-    const targetValue = target.textContent;
+    const targetValue = target.dataset.targetValue || target.textContent;
     if (!targetValue) continue;
     let favicon = '';
     if (type === 'domains') {
@@ -35,11 +35,17 @@ export async function renderFavs(container = installed) {
         .replace(regexpReplaceExtraCharacters, '')
         .match(regexpMatchRegExp);
       favicon = favicon ? favicon.shift() : '';
+    } else if (type === 'matches') {
+      // Extract domain from @match pattern like *://*.wikipedia.org/*
+      const matchDomain = targetValue.match(/:\/\/(\*\.)?([^\/\*]+)/);
+      if (matchDomain) {
+        favicon = matchDomain[2];
+      }
     } else if (/^(f|ht)tps?:/.test(targetValue)) {
       favicon = targetValue.match(regexpMatchDomain);
       favicon = favicon ? favicon[1].replace(/\W+$/, '') : '';
     }
-    if (!favicon || badFavs.includes(favicon)) {
+    if (!favicon || (type !== 'matches' && badFavs.includes(favicon))) {
       if (!target.firstElementChild) target.prepend($create('b'));
       continue;
     }

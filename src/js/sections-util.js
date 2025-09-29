@@ -3,12 +3,14 @@ export const TO_CSS = {
   urlPrefixes: 'url-prefix',
   urls: 'url',
   regexps: 'regexp',
+  matches: 'match',
 };
 export const FROM_CSS = {
   'domain': 'domains',
   'url-prefix': 'urlPrefixes',
   'url': 'urls',
   'regexp': 'regexps',
+  'match': 'matches',
 };
 const STYLE_CODE_EMPTY_RE =
   /\s+|\/\*([^*]+|\*(?!\/))*(\*\/|$)|@namespace[^;]+;|@charset[^;]+;/iyu;
@@ -100,6 +102,7 @@ export async function calcStyleDigest(style) {
       urlPrefixes: section.urlPrefixes || [],
       domains: section.domains || [],
       regexps: section.regexps || [],
+      matches: section.matches || [],
     })));
   const srcBytes = new TextEncoder().encode(src);
   const res = await crypto.subtle.digest('SHA-1', srcBytes);

@@ -27,6 +27,8 @@ const partDecorations = {
   urlPrefixesAfter: '*',
   regexpsBefore: '/',
   regexpsAfter: '/',
+  matchesBefore: '',
+  matchesAfter: '',
 };
 /** Hiding date-like version as it's too long and is already shown in the age column */
 const rxIsDateVer = /^20\d{4,6}(?:\.\d\d?){2}$/;
@@ -159,9 +161,19 @@ export function createTargetsElement({entry, expanded, style = entry.styleMeta})
           break;
         }
         displayed.add(targetValue);
+        let displayValue = targetValue;
+        // Clean up @match patterns to show only domain with subdomain
+        if (type === 'matches' && targetValue.startsWith('*://') && targetValue.includes('/*')) {
+          const matchDomain = targetValue.match(/:\/\/(\*\.)?([^\/\*]+)/);
+          if (matchDomain) {
+            const domain = matchDomain[2];
+            const subdomain = matchDomain[1] ? '*.' : '';
+            displayValue = subdomain + domain + '/*';
+          }
+        }
         const text =
           (partDecorations[type + 'Before'] || '') +
-          targetValue +
+          displayValue +
           (partDecorations[type + 'After'] || '');
         if (el && el.dataset.type === type && el.lastChild.textContent === text) {
           const next = el.nextElementSibling;
@@ -183,6 +195,7 @@ export function createTargetsElement({entry, expanded, style = entry.styleMeta})
           }
         }
         element.dataset.type = type;
+        element.dataset.targetValue = targetValue; // Store original value for favicon
         element.append(text);
         toAppend.push(element);
       }

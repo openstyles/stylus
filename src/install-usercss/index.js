@@ -8,7 +8,7 @@ import {htmlToTemplate, tBody} from '@/js/localization';
 import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {styleCodeEmpty} from '@/js/sections-util';
-import {isLocalhost} from '@/js/urls';
+import {isLocalhost, favicon} from '@/js/urls';
 import {clipString, debounce, deepEqual, sessionStore, t, tryURL} from '@/js/util';
 import {closeCurrentTab} from '@/js/util-webext';
 import DirectDownloader from './direct-downloader';
@@ -229,7 +229,35 @@ function updateMeta(newStyle) {
   replaceChildren($('.meta-license'), data.license, true);
   replaceChildren($('.external-link'), makeExternalLink());
   getAppliesTo().then(list =>
-    replaceChildren($('.applies-to'), list.map(s => $create('li', s))));
+    replaceChildren($('.applies-to'), list.map(s => {
+      const li = $create('li');
+      // Add favicon for @match patterns and clean up display
+      if (s.startsWith('*://') && s.includes('/*')) {
+        const matchDomain = s.match(/:\/\/(\*\.)?([^/*]+)/);
+        if (matchDomain) {
+          const domain = matchDomain[2];
+          const subdomain = matchDomain[1] ? '*.' : '';
+          const cleanDisplay = subdomain + domain + '/*';
+          const img = $create('img', {
+            src: favicon(domain),
+            width: 16,
+            height: 16,
+            style: 'margin-right: 4px; vertical-align: middle;',
+            onerror: function() {
+              // If favicon fails to load, hide the image
+              this.style.display = 'none';
+            }
+          });
+          li.appendChild(img);
+          li.appendChild(document.createTextNode(cleanDisplay));
+        } else {
+          li.textContent = s;
+        }
+      } else {
+        li.textContent = s;
+      }
+      return li;
+    })));
 
   Object.assign($('.configure-usercss'), {
     hidden: !data.vars,
@@ -378,7 +406,7 @@ async function getAppliesTo() {
   }
   let numGlobals = 0;
   const res = [];
-  const TARGETS = ['urls', 'urlPrefixes', 'domains', 'regexps'];
+  const TARGETS = ['urls', 'urlPrefixes', 'domains', 'regexps', 'matches'];
   for (const section of style.sections) {
     const targets = [].concat(...TARGETS.map(_ => section[_]).filter(Boolean));
     res.push(...targets);

@@ -11,7 +11,7 @@ const compileExclusion = createCompiler(buildExclusion);
 
 function buildExclusion(text) {
   // match pattern
-  const match = text.match(/^(\*|[\w-]+):\/\/(\*\.)?([\w.]+\/.*)/);
+  const match = text.match(/^(\*|[\w-]+):\/\/(\*\.)?([\w.-]+\/.*)/);
   if (!match) {
     return '^' + compileGlob(text) + '$';
   }
@@ -62,7 +62,7 @@ export function urlMatchStyle(query, style) {
 }
 
 export function urlMatchSection(query, section, skipEmptyGlobal) {
-  let dd, ddL, pp, ppL, rr, rrL, uu, uuL;
+  let dd, ddL, pp, ppL, rr, rrL, uu, uuL, mm, mmL;
   if (
     (dd = section.domains) && (ddL = dd.length) && dd.some(urlMatchDomain, query) ||
     (pp = section.urlPrefixes) && (ppL = pp.length) && pp.some(urlMatchPrefix, query) ||
@@ -74,7 +74,8 @@ export function urlMatchSection(query, section, skipEmptyGlobal) {
       uu.includes(query.url) ||
       uu.includes(query.urlWithoutHash ??= query.url.split('#', 1)[0])
     ) ||
-    (rr = section.regexps) && (rrL = rr.length) && rr.some(urlMatchRegexp, query)
+    (rr = section.regexps) && (rrL = rr.length) && rr.some(urlMatchRegexp, query) ||
+    (mm = section.matches) && (mmL = mm.length) && mm.some(urlMatchPattern, query)
   ) {
     return true;
   }
@@ -88,7 +89,7 @@ export function urlMatchSection(query, section, skipEmptyGlobal) {
     return 'sloppy';
   }
   // TODO: check for invalid regexps?
-  return !rrL && !ppL && !uuL && !ddL &&
+  return !rrL && !ppL && !uuL && !ddL && !mmL &&
     // We allow only intentionally targeted sections for own pages
     !(query.isOwnPage ??= query.url.startsWith(ownRoot)) &&
     (!skipEmptyGlobal || !styleCodeEmpty(section));
@@ -116,4 +117,60 @@ function urlMatchRegexp(r) {
 function urlMatchRegexpSloppy(r) {
   return (!(this.isOwnPage ??= this.url.startsWith(ownRoot)) || EXT_RE.test(r)) &&
     compileSloppyRe(r).test(this.url);
+}
+
+/** @this {MatchQuery} */
+function urlMatchPattern(pattern) {
+  // Convert @match pattern to regex (similar to Tampermonkey)
+  // Examples: *://*.example.com/*, *://example.com/*, https://example.com/*
+
+  try {
+    const url = new URL(this.url);
+    const urlWithoutParams = this.urlWithoutParams ??= this.url.split(/[?#]/, 1)[0];
+
+    // Parse the pattern
+    const match = pattern.match(/^(\*|[\w-]+):\/\/(\*\.)?([\w.-]+\/.*)$/);
+    if (!match) {
+      // If pattern doesn't match expected format, try exact match
+      return urlWithoutParams === pattern;
+    }
+
+    const [, protocol, subdomainWildcard, hostAndPath] = match;
+
+    // Check protocol
+    if (protocol !== '*' && url.protocol !== protocol + ':') {
+      return false;
+    }
+
+    // Check hostname
+    const hostname = url.hostname;
+    if (subdomainWildcard) {
+      // Pattern like *.example.com
+      const domain = hostAndPath.split('/')[0];
+      if (!hostname.endsWith('.' + domain) && hostname !== domain) {
+        return false;
+      }
+    } else {
+      // Exact hostname match
+      const domain = hostAndPath.split('/')[0];
+      if (hostname !== domain) {
+        return false;
+      }
+    }
+
+    // Check path
+    const pathPattern = hostAndPath.substring(hostAndPath.indexOf('/'));
+    if (pathPattern === '/*') {
+      return true; // Any path
+    } else if (pathPattern.endsWith('/*')) {
+      // Prefix match
+      const prefix = pathPattern.slice(0, -2);
+      return url.pathname.startsWith(prefix);
+    } else {
+      // Exact path match
+      return url.pathname === pathPattern;
+    }
+  } catch {
+    return false;
+  }
 }
