@@ -47,9 +47,13 @@ export function $create(selector, props, guts) {
     for (let i = 1, a; (a = tica[i++]);)
       el.setAttribute((a = a.split(']')[0].split('='))[0], a[1] || '');
   }
-  if (props != null) {
-    if (getObjectType(props) === '[object Object]') Object.assign(el, props);
-    else guts = props;
+  if (getObjectType(props) === '[object Object]') {
+    const {on} = props;
+    if (on) for (const k in on) el.on(k, on[k]);
+    Object.assign(el, props);
+    if (on) delete el.on;
+  } else if (props != null) {
+    guts = props;
   }
   if (guts != null) {
     if (typeof guts === 'string') el.textContent = guts;

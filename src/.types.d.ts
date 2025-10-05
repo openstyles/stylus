@@ -254,5 +254,6 @@ type WritableElementProps = PickMatchingProps<HTMLElement,String>
 
 type AppendableChild = String | Node;
 type AppendableChildren = Iterable<AppendableChild>;
-type AppendableElementGuts = AppendableChild | AppendableChildren;
+type AppendableElementGuts = AppendableChild | AppendableChildren
+  | {on: {[key in keyof GlobalEventHandlersEventMap]: EventListenerOrEventListenerObject | Function}};
 type ElementTags = keyof HTMLElementTagNameMap;
