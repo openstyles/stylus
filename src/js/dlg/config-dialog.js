@@ -33,6 +33,7 @@ export default async function configDialog(style) {
   const btnClose = $create('button[data-cmd=close]',
     t('confirmClose'));
 
+  let elCfg;
   return messageBox.show({
     title: `${style.customName || style.name} v${ucd.version}`,
     className: 'config-dialog',
@@ -56,7 +57,8 @@ export default async function configDialog(style) {
   }
 
   function onshow(box) {
-    $('#message-box-buttons button').after(
+    elCfg = box;
+    box.$('#message-box-buttons button').after(
       $create('label#config-autosave-wrapper', {
         title: t('configOnChangeTooltip'),
       }, [
@@ -68,7 +70,7 @@ export default async function configDialog(style) {
     init(null, box);
   }
 
-  function init(newUCD, box = messageBox.element) {
+  function init(newUCD, box = elCfg) {
     if (newUCD || !ucd) {
       ucd = newUCD || style[UCD];
       Object.defineProperty(style, UCD, {
@@ -191,10 +193,11 @@ export default async function configDialog(style) {
       vars.forEach(va => onchange({target: va.input, justSaved: true}));
       renderValues();
       updateButtons();
-      $('.config-error')?.remove();
+      elCfg.$('.config-error')?.remove();
     } catch (errors) {
-      const el = messageBox.element.$('.config-error') ||
-        $id('message-box-buttons').insertAdjacentElement('afterbegin', $create('.config-error'));
+      const el = elCfg.$('.config-error') ||
+        elCfg.$('#message-box-buttons').insertAdjacentElement('afterbegin',
+          $create('.config-error'));
       el.textContent =
         el.title = (Array.isArray(errors) ? errors : [errors])
           .map(e => e.stack || e.message || `${e}`)
@@ -393,15 +396,14 @@ export default async function configDialog(style) {
 
   function showColorpicker(event) {
     event.preventDefault();
-    window.off('keydown', messageBox.listeners.key, true);
-    const box = $id('message-box-contents');
+    messageBox.pauseAll();
     const r = this.getBoundingClientRect();
     colorpicker.show({
       va: this.va,
       color: this.va.value || this.va.default,
       top: Math.min(r.bottom, innerHeight - 220),
       right: innerWidth - r.left - 10,
-      guessBrightness: box,
+      guessBrightness: elCfg.$('#message-box-contents'),
       callback: onColorChanged,
     });
   }
@@ -416,9 +418,8 @@ export default async function configDialog(style) {
   }
 
   function restoreEscInDialog() {
-    if (!$('.colorpicker-popup') && messageBox.element) {
-      window.on('keydown', messageBox.listeners.key, true);
-    }
+    if (!$('.colorpicker-popup'))
+      messageBox.pauseAll(false);
   }
 
   function adjustSizeForPopup(box) {

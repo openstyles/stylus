@@ -8,9 +8,10 @@ export let configDialog = async (...args) => (
   configDialog = (await import('./dlg/config-dialog')).default
 )(...args);
 
+/** @type {typeof import('./dlg/message-box')} */
 export let messageBox = /*@__PURE__*/new Proxy({}, {
   get: (_, key) => async (...args) => (
-    messageBox = (await import('./dlg/message-box')).default
+    messageBox = (await import('./dlg/message-box'))
   )[key](...args),
 });
 

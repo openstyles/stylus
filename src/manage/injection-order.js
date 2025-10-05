@@ -4,9 +4,14 @@ import {messageBox} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
 import {t} from '@/js/util';
 
+/** @type {MessageBox} */
+let ui;
+
 export default async function InjectionOrder(show, el, selector) {
   if (!show) {
-    return messageBox.close();
+    await ui?.close();
+    ui = null;
+    return;
   }
   const SEL_ENTRY = '.injection-order-entry';
   const [groups] = await Promise.all([
@@ -32,6 +37,9 @@ export default async function InjectionOrder(show, el, selector) {
     className: 'center-dialog ' + selector.slice(1),
     blockScroll: true,
     buttons: [t('confirmClose')],
+    onshow() {
+      ui = this;
+    },
   });
 
   function makeEntry(style) {

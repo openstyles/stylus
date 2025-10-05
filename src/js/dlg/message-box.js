@@ -4,202 +4,209 @@ import {tHTML} from '@/js/localization';
 import {clamp, t} from '@/js/util';
 import './message-box.css';
 
-// TODO: convert this singleton mess so we can show many boxes at once
-const messageBox = {
-  element: null,
-  listeners: null,
-  _blockScroll: null,
-  _originalFocus: null,
-  _resolve: null,
-};
-export default messageBox;
+/** @type {Set<MessageBox>} */
+const boxes = new Set();
 
-messageBox.close = async isAnimated => {
-  window.off('keydown', messageBox.listeners.key, true);
-  window.off('scroll', messageBox.listeners.scroll);
-  window.off('mouseup', messageBox.listeners.mouseUp);
-  window.off('mousemove', messageBox.listeners.mouseMove);
-  if (isAnimated) {
-    await animateElement(messageBox.element, 'fadeout');
-  }
-  messageBox.element.remove();
-  messageBox.element = null;
-  messageBox._resolve = null;
-};
+export function pauseAll(paused = true) {
+  for (const b of boxes) b.paused = paused;
+}
 
-/**
- * @param {Object} params
- * @param {String} params.title
- * @param {String|Node|Object|Array<String|Node|Object>} params.contents
- *        a string gets parsed via tHTML,
- *        a non-string is passed as is to $create()
- * @param {String} [params.className]
- *        CSS class name of the message box element
- * @param {Array<String|{textContent: String, onclick: Function, ...etc}>} [params.buttons]
- *        ...etc means anything $create() can handle
- * @param {Function(messageboxElement)} [params.onshow]
- *        invoked after the messagebox is shown
- * @param {Boolean} [params.blockScroll]
- *        blocks the page scroll
- * @returns {Promise}
- *        resolves to an object with optionally present properties depending on the interaction:
- *        {button: Number, enter: Boolean, esc: Boolean}
- */
-messageBox.show = ({
-  title,
-  contents,
-  className = '',
-  buttons = [],
-  onshow,
-  blockScroll,
-}) => {
-  if (!messageBox.listeners) initOwnListeners();
-  createElement();
-  bindGlobalListeners();
-  document.body.appendChild(messageBox.element);
-
-  messageBox._originalFocus = document.activeElement;
-  // focus the first focusable child but skip the first external link which is usually `feedback`
-  if ((moveFocus(messageBox.element, 0) || {}).target === '_blank' &&
-      /config-dialog/.test(className)) {
-    moveFocus(messageBox.element, 1);
-  }
-  if (document.activeElement === messageBox._originalFocus) {
-    document.body.focus();
-  }
-
-  if (typeof onshow === 'function') {
-    onshow(messageBox.element);
-  }
-
-  if (!$id('message-box-title').textContent) {
-    $id('message-box-title').hidden = true;
-    $id('message-box-close-icon').hidden = true;
-  }
-
-  return new Promise(resolve => {
-    messageBox._resolve = resolve;
-  });
-
-  function initOwnListeners() {
-    let listening = false;
-    let offsetX = 0;
-    let offsetY = 0;
-    let clickX, clickY;
-    messageBox.listeners = {
-      closeIcon() {
-        resolveWith({button: -1});
-      },
-      button() {
-        resolveWith({button: this.buttonIndex});
-      },
-      key(event) {
-        const {key, shiftKey, ctrlKey, altKey, metaKey, target} = event;
-        if (shiftKey && key !== 'Tab' || ctrlKey || altKey || metaKey) {
-          return;
-        }
-        switch (key) {
-          case 'Enter':
-            if (closestFocusable(target)) {
-              return;
-            }
-            break;
-          case 'Escape':
-            event.preventDefault();
-            event.stopPropagation();
-            break;
-          case 'Tab':
-            moveFocus(messageBox.element, shiftKey ? -1 : 1);
-            event.preventDefault();
-            return;
-          default:
-            return;
-        }
-        resolveWith(key === 'Enter' ? {enter: true} : {esc: true});
-      },
-      scroll() {
-        scrollTo(messageBox._blockScroll.x, messageBox._blockScroll.y);
-      },
-      mouseDown(event) {
-        if (event.button !== 0) {
-          return;
-        }
-        if (!listening) {
-          window.on('mouseup', messageBox.listeners.mouseUp, {passive: true});
-          window.on('mousemove', messageBox.listeners.mouseMove, {passive: true});
-          listening = true;
-        }
-        clickX = event.clientX - offsetX;
-        clickY = event.clientY - offsetY;
-      },
-      mouseUp(event) {
-        if (event.button !== 0) {
-          return;
-        }
-        window.off('mouseup', messageBox.listeners.mouseUp);
-        window.off('mousemove', messageBox.listeners.mouseMove);
-        listening = false;
-      },
-      mouseMove(event) {
-        offsetX = clamp(event.clientX, 30, innerWidth - 30) - clickX;
-        offsetY = clamp(event.clientY, 30, innerHeight - 30) - clickY;
-        messageBox.element.firstChild.style.transform = `translate(${offsetX}px,${offsetY}px)`;
-      },
-    };
-  }
-
-  function resolveWith(value) {
-    setTimeout(messageBox._resolve, 0, value);
-    if (messageBox.element.contains(document.activeElement)) {
-      messageBox._originalFocus.focus();
-    }
-    messageBox.close(true);
-  }
-
-  function createElement() {
-    if (messageBox.element) {
-      messageBox.close();
-    }
-    const id = 'message-box';
-    messageBox.element =
-      $create('div', {id, className}, [
+export class MessageBox {
+  /** @readonly
+   * @type {HTMLElement} */
+  el = null;
+  originalFocus = null;
+  paused = false;
+  #blockScroll = null;
+  #moving = false;
+  #resolve = null;
+  #clickX = 0;
+  #clickY = 0;
+  #offsetX = 0;
+  #offsetY = 0;
+  /**
+   * @typedef MessageBoxParams
+   * @prop {String} title
+   * @prop {String|Node|Object|Array<String|Node|Object>} contents
+   *        a string gets parsed via tHTML,
+   *        a non-string is passed as is to $create()
+   * @prop {String} [className]
+   *        CSS class name of the message box element
+   * @prop {Array<String | WritableElementProps | AppendableElementGuts>} [buttons]
+   *        anything $create() can handle
+   * @prop {Boolean} [blockScroll]
+   *        blocks the page scroll
+   */
+  /** @param {MessageBoxParams} params */
+  constructor({
+    title,
+    contents,
+    className = '',
+    buttons = [],
+    blockScroll,
+  }) {
+    this.#blockScroll = blockScroll;
+    this.el =
+      $create('div', {id: 'message-box', className}, [
         $create('div', [
-          $create(`#${id}-title.ellipsis`, {onmousedown: messageBox.listeners.mouseDown}, title),
-          $create(`#${id}-close-icon`, {onclick: messageBox.listeners.closeIcon},
+          $create('#message-box-title.ellipsis', {on: {mousedown: this}}, title),
+          $create('#message-box-close-icon',
+            {on: {click: this.#resolveWith.bind(this, {button: -1})}},
             $create('i.i-close')),
-          $create(`#${id}-contents`, tHTML(contents)),
-          $create(`#${id}-buttons`, buttons.filter(Boolean).map((btn, buttonIndex) => {
+          $create('#message-box-contents', tHTML(contents)),
+          $create('#message-box-buttons', buttons.filter(Boolean).map((btn, buttonIndex) => {
             if (btn.localName !== 'button') btn = $create('button', btn);
             btn.buttonIndex = buttonIndex;
-            btn.onclick ??= messageBox.listeners.button;
+            btn.on('click', this.#resolveWith.bind(this, {button: buttonIndex}));
             return btn;
           })),
         ]),
       ]);
   }
 
-  function bindGlobalListeners() {
-    messageBox._blockScroll = blockScroll && {x: scrollX, y: scrollY};
-    if (blockScroll) {
-      window.on('scroll', messageBox.listeners.scroll, {passive: false});
+  /**
+   * @typedef {{
+   *   button?: Number,
+   *   enter?: Boolean,
+   *   esc?: Boolean,
+   * }} MessageBoxResult
+   */
+  /**
+   * @param {(elem: HTMLElement) => void} [onshow]
+   * @returns {Promise<MessageBoxResult>}
+   * */
+  open(onshow) {
+    const el = this.el;
+    document.body.appendChild(el);
+    window.on('keydown', this, true);
+    if (this.#blockScroll) {
+      window.on('scroll', this, {passive: false});
+      this.#blockScroll = {x: scrollX, y: scrollY};
     }
-    window.on('keydown', messageBox.listeners.key, true);
+    boxes.delete(this);
+    pauseAll();
+    this.paused = false;
+    boxes.add(this);
+    // focus the first focusable child but skip the first external link which is usually `feedback`
+    this.originalFocus = document.activeElement;
+    if (moveFocus(el, 0)?.target === '_blank' && el.classList.contains('config-dialog'))
+      moveFocus(el, 1);
+    if (document.activeElement === this.originalFocus)
+      document.body.focus();
+    if (typeof onshow === 'function')
+      onshow.call(this, el);
+    return new Promise(resolve => {
+      this.#resolve = resolve;
+    });
   }
-};
+
+  async close(isAnimated) {
+    if (!this.#resolve) // re-entry while waiting for closing animation
+      return;
+    if (this.el.contains(document.activeElement))
+      this.originalFocus.focus();
+    this.#resolve = this.originalFocus = null;
+    window.off('keydown', this, true);
+    window.off('scroll', this);
+    window.off('mouseup', this);
+    window.off('mousemove', this);
+    boxes.delete(this);
+    pauseAll(false);
+    this.paused = true;
+    if (isAnimated)
+      await animateElement(this.el, 'fadeout');
+    this.el.remove();
+  }
+
+  #resolveWith(value) {
+    if (!this.#resolve) // re-entry while waiting for closing animation
+      return;
+    setTimeout(this.#resolve, 0, value);
+    this.close(true);
+  }
+
+  /** @private */
+  handleEvent(evt) {
+    if (this.paused)
+      return;
+    switch (evt.type) {
+      case 'keydown': return this.#onKey(evt);
+      case 'mousedown': return this.#onMouseDown(evt);
+      case 'mousemove': return this.#onMouseMove(evt);
+      case 'mouseup': return this.#onMouseUp(evt);
+      case 'scroll': return this.#onScroll(evt);
+    }
+  }
+
+  #onKey(evt) {
+    const {key, shiftKey, ctrlKey, altKey, metaKey, target} = evt;
+    if (shiftKey && key !== 'Tab' || ctrlKey || altKey || metaKey) {
+      return;
+    }
+    switch (key) {
+      case 'Enter':
+        if (closestFocusable(target)) {
+          return;
+        }
+        break;
+      case 'Escape':
+        evt.preventDefault();
+        evt.stopPropagation();
+        break;
+      case 'Tab':
+        moveFocus(this.el, shiftKey ? -1 : 1);
+        evt.preventDefault();
+        return;
+      default:
+        return;
+    }
+    this.#resolveWith(key === 'Enter' ? {enter: true} : {esc: true});
+  }
+
+  #onMouseDown(evt) {
+    if (evt.button)
+      return;
+    if (!this.#moving) {
+      window.on('mouseup', this, {passive: true});
+      window.on('mousemove', this, {passive: true});
+      this.#moving = true;
+    }
+    this.#clickX = evt.clientX - this.#offsetX;
+    this.#clickY = evt.clientY - this.#offsetY;
+  }
+
+  #onMouseUp(evt) {
+    if (evt.button !== 0) return;
+    window.off('mouseup', this);
+    window.off('mousemove', this);
+    this.#moving = false;
+  }
+
+  #onMouseMove(evt) {
+    this.#offsetX = clamp(evt.clientX, 30, innerWidth - 30) - this.#clickX;
+    this.#offsetY = clamp(evt.clientY, 30, innerHeight - 30) - this.#clickY;
+    this.el.firstChild.style.transform = `translate(${this.#offsetX}px,${this.#offsetY}px)`;
+  }
+
+  #onScroll() {
+    scrollTo(this.#blockScroll.x, this.#blockScroll.y);
+  }
+}
 
 /**
  * @param {String|Node|Array<String|Node>} contents
  * @param {String} [className] like 'pre' for monospace font
  * @param {String} [title]
- * @returns {Promise<Boolean>} same as show()
+ * @returns {Promise<MessageBoxResult>}
  */
-messageBox.alert = (contents, className, title) =>
-  messageBox.show({
+export function alert(contents, className, title) {
+  return new MessageBox({
     title,
     contents,
     className: `center ${className || ''}`,
     buttons: [t('confirmClose')],
-  });
+  }).open();
+}
 
 /**
  * @param {String|Node|Array<String|Node>} contents
@@ -207,12 +214,19 @@ messageBox.alert = (contents, className, title) =>
  * @param {String} [title]
  * @returns {Promise<Boolean>} resolves to true when confirmed
  */
-messageBox.confirm = async (contents, className, title) => {
-  const res = await messageBox.show({
+export async function confirm(contents, className, title) {
+  const res = await new MessageBox({
     title,
     contents,
     className: `center ${className || ''}`,
     buttons: [t('confirmYes'), t('confirmNo')],
-  });
+  }).open();
   return res.button === 0 || res.enter;
-};
+}
+
+/**
+ * @param {MessageBoxParams & {onshow: (elem: HTMLElement) => void}} params
+ * @returns {Promise<MessageBoxResult>} */
+export function show(params) {
+  return new MessageBox(params).open(params.onshow);
+}

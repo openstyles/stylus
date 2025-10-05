@@ -19,6 +19,8 @@ const elNoUpdates = elAll.$('#update-all-no-updates');
 const elOnlyUpdates = $id('only-updates');
 btnCheck.onclick = btnCheckForce.onclick = checkUpdateAll;
 btnApply.onclick = applyUpdateAll;
+/** @type {MessageBox} */
+let uiLog;
 
 for (const el of [...elAll.children]) $detach(el);
 for (const id of ['updateAll']) {
@@ -215,7 +217,9 @@ function renderUpdatesOnlyFilter({show, check} = {}) {
 
 export default async function UpdateHistory(show, el, selector) {
   if (!show) {
-    return messageBox.close();
+    await uiLog?.close();
+    uiLog = null;
+    return;
   }
   const log = $create(selector);
   let scroller, toggler;
@@ -234,13 +238,14 @@ export default async function UpdateHistory(show, el, selector) {
       t('confirmOK'),
       logText && {textContent: t('confirmDelete'), onclick: deleteHistory},
     ],
-    onshow: logText && (() => {
-      scroller = $id('message-box-contents');
+    onshow: logText && (function (box) {
+      uiLog = this;
+      scroller = box.$('#message-box-contents');
       scroller.tabIndex = 0;
       setTimeout(() => scroller.focus());
       scrollToBottom();
 
-      $('#message-box-buttons button').insertAdjacentElement('afterend',
+      box.$('#message-box-buttons button').insertAdjacentElement('afterend',
         // TODO: add a <template> or a common function to create such controls
         $create('label', [
           toggler = $create('input', {type: 'checkbox', checked: true, onchange: toggleSkipped}),
