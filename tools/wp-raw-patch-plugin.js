@@ -39,6 +39,7 @@ const STAGE = (/**@type {typeof import('webpack/types').Compilation}*/webpack.Co
   .PROCESS_ASSETS_STAGE_OPTIMIZE_COMPATIBILITY;
 const NAME = __filename.slice(__dirname.length + 1).replace(/\.\w+$/, '');
 const SYM = Symbol(NAME);
+const CLASS_DECL = 'ClassDeclaration';
 const CONST = 'const';
 const FUNC = 'func';
 const MAKE_NS = `\
@@ -105,8 +106,11 @@ function findStaticExports(parser) {
     for (let top of ast.body) {
       if (top.type === 'ExportNamedDeclaration' || top.type === 'ExportDefaultDeclaration')
         top = top.declaration;
-      if (!top || top.kind !== CONST && top.type !== 'FunctionDeclaration')
-        continue;
+      if (!top || !(
+        top.kind === CONST ||
+        top.type === CLASS_DECL ||
+        top.type === 'FunctionDeclaration'
+      )) continue;
       for (const td of top.declarations || [top]) {
         if (!(tc ??= topConsts.get(parser.scope)))
           topConsts.set(parser.scope, tc = new Set());
@@ -128,7 +132,7 @@ function findStaticExports(parser) {
             if (decl?.type === 'FunctionDeclaration') {
               dep[SYM] = FUNC;
             } else if (
-              (decl?.kind === CONST || exp.specifiers) &&
+              (exp.specifiers || decl && (decl.kind === CONST || decl.type === CLASS_DECL)) &&
               topConsts.get(parser.scope)?.has(name)
             ) {
               dep[SYM] = CONST;
