@@ -66,17 +66,24 @@ export async function setOrderImpl(data, {
   store = true,
   sync,
 } = {}) {
-  if (!data || !data.value || deepEqual(data.value, orderWrap.value)) {
+  const groups = data?.value;
+  if (!groups || deepEqual(groups, orderWrap.value)) {
     return;
   }
   Object.assign(orderWrap, data, sync && {_rev: Date.now()});
   if (calc) {
-    for (const [type, group] of Object.entries(data.value)) {
+    for (const type in groups) {
+      const src = groups[type];
       const dst = order[type] = {};
-      group.forEach((uuid, i) => {
-        const id = uuidIndex.get(uuid);
-        if (id) dst[id] = i;
-      });
+      let uniq = true;
+      for (let i = 0, styleId, iDup; i < src.length; i++) {
+        if ((styleId = uuidIndex.get(src[i]))) {
+          if ((iDup = dst[styleId]) >= 0)
+            uniq = src[iDup] = false;
+          dst[styleId] = i;
+        }
+      }
+      if (!uniq) groups[type] = src.filter(Boolean);
     }
   }
   if (broadcastAllowed) {
