@@ -53,7 +53,7 @@ if (getFSH) {
   addEventListener('drop', async e => {
     const dt = e.dataTransfer;
     const file = dt.files[0];
-    if (file.type.includes('json')) {
+    if (file?.type.includes('json')) {
       return;
     }
     if (!/\.(css|styl|less)$/i.test(file.name)) {
