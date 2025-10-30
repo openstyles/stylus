@@ -29,7 +29,7 @@ const rxNonWordEnd = /[^-\w]$/u;
 const rxPropOrEnd = /^([-a-z]*)(: ?|\()?$/i;
 const rxPropChars = /(\s*[-a-z(]+)?/yi;
 const rxPropEnd = /[\s:()]*/y;
-const rxVar = /(^|[^-.\w\u0080-\uFFFF])var\(-?/iyu;
+const rxVarEnv = /(?:^|[^-.\w\u0080-\uFFFF])(?:var|(e)nv)\(-?/iyu;
 /** Using a string to avoid syntax error while loading this script in old browsers */
 const rxWordStart = __.MV3 ? /(?<![-\w]|#[0-9a-f]*)/
   : tryRegExp('(?<![-\\w]|#[0-9a-f]*)');
@@ -142,9 +142,15 @@ async function helper(cm) {
     }
     else if (L === '-' /*--var*/ || L === '(' /*var()*/)
     {
-      list = str.startsWith('--') || testAt(rxVar, ch - 5 - left.endsWith('-'), text)
-        ? findAllCssVars(cm, left)
-        : [];
+      list = str.startsWith('--') ? findAllCssVars(cm, left) :
+        !testAt(rxVarEnv, ch - 5 - left.endsWith('-'), text) ? [] :
+          !RegExp.$1 ? findAllCssVars(cm, left) : ['preferred-text-scale',
+            'safe-area-inset-top', 'safe-area-inset-bottom', 'safe-area-inset-right',
+            'safe-area-inset-left', 'safe-area-max-inset-top', 'safe-area-max-inset-bottom',
+            'safe-area-max-inset-right', 'safe-area-max-inset-left', 'viewport-segment-width',
+            'viewport-segment-height', 'viewport-segment-top', 'viewport-segment-bottom',
+            'viewport-segment-left', 'viewport-segment-right',
+          ];
       if (str.startsWith('(')) {
         prev++;
         leftLC = left.slice(1);
