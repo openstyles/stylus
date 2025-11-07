@@ -1,39 +1,26 @@
-# Stylus
-
-Stylus is a fork of Stylish for Chrome, also compatible with Firefox as a WebExtension
+Stylus is a browser extension to restyle the websites via CSS themes, compatible with Chrome, Firefox, and any Chromium-based browsers.
 
 ## Highlights
 
-* Lightweight content script (10kB) runs in about a millisecond so it doesn't slow down web pages
-* In addition to the userstyles.org site, styles with customizable parameters can also be installed from .user.css or .user.styl URLs (see [Usercss format wiki](https://github.com/openstyles/stylus/wiki/Usercss)).
-* Site styles can be discovered and previewed in the popup using inline search with screenshot thumbnails.
-* A backup feature which is compatible with other userstyles managers.
-* Configurable automatic update function for installed styles.
-* Customizable UI, optional layouts, and tweaks.
-* Two different optional code validators with user-configurable rules: CSSLint and Stylelint.
-  * Both validators use Web Worker API to run in a separate background thread inside the editor tab without blocking your interaction with the code.
-  * CSSLint is heavily modified compared to the effectively frozen original one and supports various CSS3 features as well as CSS4 Color and CSS Grid syntax.
+* No analytics/tracking - this is our foundational principle as Stylus was created solely because the original Stylish extension was sold to a Web analytics company.
+* Lots of themes in external galleries like [USW](https://userstyles.world/explore), [USO archive](https://uso.kkx.one/browse/categories), [greasyfork](https://greasyfork.org/en/scripts/by-site/*?language=css):
+  * click the `Find` button in the popup UI,
+  * click the screenshot to apply the style to the website,
+  * click the screenshot again to uninstall the style.
+* [UserCSS](https://github.com/openstyles/stylus/wiki/Usercss) styles with advanced customization installable from any raw plain text URL.
+* Cloud sync for Dropbox, GDrive, OneDrive, or any WebDAV-compatible server.
+* Backup to a JSON file compatible with other userstyles managers.
+* Auto-update for styles, configurable in each style and globally in the options.
+* Lightweight content script (~10kB) in the web pages runs in about a millisecond.
+* Lots of options to configure UI and behavior.
+* Built-in editor for your own CSS themes (CSS/LESS/Stylus) that highlights problems using up-to-date linters ([Stylelint](https://stylelint.io/) and [CSSLint-mod](https://github.com/openstyles/csslint-mod)) with customizable rules.
+* Support for external IDE or advanced editor via the [live reload feature](https://github.com/openstyles/stylus/wiki/Writing-UserCSS#live-reload-on-the-fly-previewingwhen-developing-styles-locally-in-another-editoride) e.g. you can write SASS/SCSS by setting up a build step to produce standard CSS in a separate file that will be tracked by Stylus.
 
-## Releases
+<details><summary>
 
-1. [Chrome Web Store](https://chrome.google.com/webstore/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne) or [beta](https://chrome.google.com/webstore/detail/stylus-beta/apmmpaebfobifelkijhaljbmpcgbjbdo)
-2. [Firefox add-ons](https://addons.mozilla.org/firefox/addon/styl-us/) or [beta](https://github.com/openstyles/stylus/releases) (as an xpi file)
+## Screenshots
 
-In Opera browser please use our extension from Chrome Web Store, see [the instruction](https://github.com/openstyles/stylus/wiki/Opera,-Outdated-Stylus).
-
-## Nightly test builds [![ci](https://github.com/openstyles/stylus/actions/workflows/ci.yml/badge.svg)](https://github.com/openstyles/stylus/actions/workflows/ci.yml)
-
-Downloading requires a github.com account.
-
-1. open https://github.com/openstyles/stylus/actions/workflows/ci.yml
-2. open an entry and download the build listed in `Artifacts` e.g. `stylus-chrome-mv3-3.0.7-fc0999b` is a ManifestV3 build for Chrome/Chromium 128 or newer, `fc0999b` is the commit hash.
-3. Install it as an unpacked extension in Chrome or as a temporary extension in Firefox.
-
-In Chrome, it runs in parallel to the existing Stylus extension from the web store if you have one, so you may want to disable it while testing. This is because the id is not pinned and is generated from the full directory path of the unpacked extension.
-
-In Firefox, it'll temporarily replace the existing Stylus extension. To restore the main extension, restart the browser.
-
-<details><summary><h2>Screenshots</h2></summary>
+</summary>
 
 * Manager
 
@@ -65,48 +52,30 @@ In Firefox, it'll temporarily replace the existing Stylus extension. To restore 
 
 </details>
 
-## Help
+## Releases
 
-* [Stylus help and FAQ in our Wiki](https://github.com/openstyles/stylus/wiki)
-* [Discussion section](https://add0n.com/stylus.html#reviews) of our representation on add0n.com
-* Discord: [![Discord][chat-image]][chat-link]
+1. [Chrome Web Store](https://chrome.google.com/webstore/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne) or [beta](https://chrome.google.com/webstore/detail/stylus-beta/apmmpaebfobifelkijhaljbmpcgbjbdo)<br>for modern Chrome (v128+) and Chromium-based browsers like Brave, Opera, Vivaldi.
 
-[chat-image]: https://img.shields.io/discord/379521691774353408.svg
-[chat-link]: https://discordapp.com/widget?id=379521691774353408
+2. [Mozilla addons](https://addons.mozilla.org/firefox/addon/styl-us/) or [beta](https://github.com/openstyles/stylus/releases) (as an xpi file)<br>for Firefox and any Gecko-based browser.
 
-## Contributing
+3. [Zip file](https://github.com/openstyles/stylus/releases) with `-mv2` suffix to _load as an unpacked extension_<br>for older Chromium-based browsers which only support ManifestV2 version.
 
-The source is hosted on [GitHub](https://github.com/openstyles/stylus) and pull requests are welcome.
+## Pre-release test builds (nightlies) [![badge](https://github.com/openstyles/stylus/actions/workflows/ci.yml/badge.svg)](https://github.com/openstyles/stylus/actions/workflows/ci.yml)
 
-You can help us translate the extension on [Transifex](https://explore.transifex.com/github-7/Stylus/).
+1. click a workflow entry in https://github.com/openstyles/stylus/actions/workflows/ci.yml,
+2. download the file in `Artifacts` - this requires a github.com account,
+3. install it, see [the instruction](https://github.com/openstyles/stylus/wiki/Install-Stylus-from-GitHub).
 
-See our [contributing](./.github/CONTRIBUTING.md) page for more details.
+## Asking questions, participating, contributing
 
-## License
+* Bugs, discussions, questions, ideas, pull requests: https://github.com/openstyles/stylus
+* Wiki for many common tasks and questions: https://github.com/openstyles/stylus/wiki
+* Discord: https://discordapp.com/widget?id=379521691774353408 ![Discord](https://img.shields.io/discord/379521691774353408.svg)
+* Helping with translation: https://explore.transifex.com/github-7/Stylus/
+* Guidelines and more info: https://github.com/openstyles/stylus/CONTRIBUTING.md
 
-Inherited code from the original [Stylish](https://github.com/stylish-userstyles/stylish/):
+## License: [GPLv3](./LICENSE)
 
-Copyright &copy; 2005-2014 [Jason Barnabe](jason.barnabe@gmail.com)
-
-Current Stylus:
-
-Copyright &copy; 2017-2023 [Stylus Team](https://github.com/openstyles/stylus/graphs/contributors)
-
-**[GNU GPLv3](./LICENSE)**
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-### External libraries
-
-The licenses of [external libraries](./vendor) used in this project or [modified versions of external libraries](./vendor-overwrites) can be found in their respective directory.
+* Copyright &copy; 2017-2025 [Stylus Team](https://github.com/openstyles/stylus/graphs/contributors)
+* Copyright &copy; 2005-2014 [Jason Barnabe](jason.barnabe@gmail.com) for the ever diminishing parts of the original [Stylish](https://github.com/stylish-userstyles/stylish/).
+* Licenses of modified external libraries: [vendor-overwrites](./src/vendor-overwrites).

@@ -25,7 +25,7 @@ If not, then provide details describing which page the feature will effect, e.g.
 
 You can help us translate the extension on [Transifex](https://explore.transifex.com/github-7/Stylus/).
 Only the languages supported by the web store are allowed:
-https://developer.chrome.com/docs/webstore/i18n/#localeTable
+https://developer.chrome.com/docs/extensions/reference/api/i18n#locales
 
 
 ## Pull requests
@@ -39,7 +39,7 @@ https://developer.chrome.com/docs/webstore/i18n/#localeTable
 
 ## Build scripts
 
-See [BUILD.md](../BUILD.md) for more information.
+See [BUILD.md](BUILD.md) for more information.
 
 ## Contact us
 
