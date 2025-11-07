@@ -3,7 +3,7 @@
   "version": "2.3.17",
   "minimum_chrome_version": "",
   "description": "__MSG_description__",
-  "homepage_url": "https://add0n.com/stylus.html",
+  "homepage_url": "https://github.com/openstyles/stylus",
   "manifest_version": 0,
   "icons": {
     "16": "icon/16.png",
