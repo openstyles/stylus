@@ -132,6 +132,28 @@ export default async function compileUsercss(preprocessor, code, vars) {
   }
   importScriptsOnce('moz-parser.js', 'parserlib.js'); /* global extractSections */
   const res = extractSections({code});
+
+  // Process @match directives from metadata
+  if (vars && vars._usercssData && vars._usercssData.match) {
+    // Convert @match patterns to @-moz-document sections
+    for (const section of res.sections) {
+      if (!section.matches) {
+        section.matches = [];
+      }
+    }
+
+    // If no sections exist, create a global one
+    if (res.sections.length === 0) {
+      res.sections.push({
+        code: '',
+        matches: vars._usercssData.match,
+      });
+    } else {
+      // Add @match patterns to the first section
+      res.sections[0].matches = vars._usercssData.match;
+    }
+  }
+
   if (builder.post) {
     builder.post(res.sections, vars);
   }

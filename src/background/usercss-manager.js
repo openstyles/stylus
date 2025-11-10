@@ -56,8 +56,14 @@ export async function build({
 }
 
 export async function buildCode(style) {
-  const {sourceCode: code, [UCD]: {vars, preprocessor}} = style;
-  const {sections, errors, log} = await worker.compileUsercss(preprocessor, code, vars);
+  const {sourceCode: code, [UCD]: {vars, preprocessor, match}} = style;
+
+  // Pass @match data to compiler
+  const varsWithMatch = vars
+    ? {...vars, _usercssData: {match}}
+    : {_usercssData: {match}};
+
+  const {sections, errors, log} = await worker.compileUsercss(preprocessor, code, varsWithMatch);
   const recoverable = errors.every(e => e.recoverable);
   if (!sections.length || !recoverable) {
     throw !recoverable ? errors : 'Style does not contain any actual CSS to apply.';

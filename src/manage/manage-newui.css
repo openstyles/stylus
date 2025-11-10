@@ -1,27 +1,29 @@
 /* postcss-simple-vars */
 $pad: 1rem;
-$iconGapX: .75rem;
-$iconGapY: .25rem;
+$iconGapX: 0.75rem;
+$iconGapY: 0.25rem;
 
 @media not all, newui {
   .disabled.entry i {
     color: var(--c80);
-    transition: color .5s .1s;
+    transition: color 0.5s 0.1s;
   }
   #installed {
-    margin-top: .25rem;
+    margin-top: 0.25rem;
   }
   .entry {
     --target-height: 18px;
     --name-size: 14px;
-    --padY: .5rem;
-    padding: 0 .5em;
+    --padY: 0.5rem;
+    padding: 0 0.5em;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     border: none;
-    contain-intrinsic-block-size: auto max(
-      var(--num-targets, 0) * var(--target-height) + var(--padY),
-      var(--padY) * 2 + var(--name-size) * 1.2/*line-height*/);
+    contain-intrinsic-block-size: auto
+      max(
+        var(--num-targets, 0) * var(--target-height) + var(--padY),
+        var(--padY) * 2 + var(--name-size) * 1.2 /*line-height*/
+      );
     &.odd {
       background-color: var(--zebra);
     }
@@ -36,11 +38,11 @@ $iconGapY: .25rem;
     }
   }
   .style-info {
-    &:is([data-type=size], [data-type=age]) {
+    &:is([data-type="size"], [data-type="age"]) {
       color: var(--c50);
       justify-content: end;
     }
-    &[data-type=age] {
+    &[data-type="age"] {
       flex: 0 0 4ch;
       /* languages with a long abbreviation for month/year/day */
       &:lang(zh),
@@ -48,14 +50,18 @@ $iconGapY: .25rem;
         flex: 0 0 5em;
       }
     }
-    &[data-type=size] {
+    &[data-type="size"] {
       flex: 0 0 var(--size-width);
     }
-    &[data-type=version] {
+    &[data-type="version"] {
       color: var(--c40);
       font-weight: normal;
     }
-    &[data-type=version]:is([data-is-date], [data-value=""], [data-value="1.0.0"]) {
+    &[data-type="version"]:is(
+        [data-is-date],
+        [data-value=""],
+        [data-value="1.0.0"]
+      ) {
       display: none;
     }
   }
@@ -136,7 +142,7 @@ $iconGapY: .25rem;
     position: absolute;
     width: max-content;
     max-width: 25vw;
-    padding: .5ex 1.5ex;
+    padding: 0.5ex 1.5ex;
     border: 1px solid #ded597;
     background-color: #fffbd6;
     :root[data-ui-theme="dark"] & {
@@ -144,7 +150,7 @@ $iconGapY: .25rem;
       border-color: #7f7847;
     }
     border-radius: 4px;
-    box-shadow: 2px 3px 10px rgba(0,0,0,.25);
+    box-shadow: 2px 3px 10px rgba(0, 0, 0, 0.25);
     font-size: 90%;
     animation: fadeout 10s cubic-bezier(1, 0, 1, 1);
     animation-fill-mode: both;
@@ -178,6 +184,10 @@ $iconGapY: .25rem;
     overflow: hidden;
     max-height: calc(var(--num-targets) * 18px);
     width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em;
   }
   .expander {
     cursor: pointer;
@@ -188,7 +198,7 @@ $iconGapY: .25rem;
     display: flex;
     align-items: center;
     &:hover {
-      background: hsla(0, 0%, 50%, .05);
+      background: hsla(0, 0%, 50%, 0.05);
     }
     & i {
       width: 16px;
@@ -200,28 +210,28 @@ $iconGapY: .25rem;
     }
   }
   .target {
-    display: block;
+    display: inline-block;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     padding-right: 1em;
     line-height: var(--target-height);
-    width: 0;
-    min-width: 100%;
+    width: auto;
+    min-width: auto;
     box-sizing: border-box;
     & img {
       width: 16px;
       height: 16px;
       vertical-align: middle;
       margin: -1px 4px 0 -20px;
-      transition: opacity .5s, filter .5s;
+      transition: opacity 0.5s, filter 0.5s;
       /* workaround for the buggy CSS filter: images in the hidden overflow are shown on Mac */
       backface-visibility: hidden;
       visibility: hidden;
     }
     .favicons-grayed & img {
       filter: grayscale(1);
-      opacity: .25;
+      opacity: 0.25;
     }
     .has-favicons & {
       padding-left: 20px;
@@ -234,7 +244,7 @@ $iconGapY: .25rem;
       filter: none;
     }
     & b::after {
-      content: '?';
+      content: "?";
       margin: -2px 4px 0 -20px;
       display: inline-block;
       vertical-align: baseline;
