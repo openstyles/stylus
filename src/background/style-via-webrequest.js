@@ -1,7 +1,9 @@
-import {kAppJson, kMainFrame, kPopup, kStyleViaXhr, kSubFrame} from '@/js/consts';
+import {
+  kAppJson, kMainFrame, kPopup, kSubFrame, pDisableAll, pPatchCsp, pStyleViaXhr,
+} from '@/js/consts';
 import {updateSessionRules} from '@/js/dnr';
 import {CLIENT} from '@/js/port';
-import * as prefs from '@/js/prefs';
+import {__values, subscribe} from '@/js/prefs';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {actionPopupUrl, ownRoot} from '@/js/urls';
 import {deepEqual, isEmptyObj} from '@/js/util';
@@ -11,12 +13,11 @@ import {bgBusy, bgPreInit, clientDataJobs, dataHub, onUnload} from './common';
 import {stateDB} from './db';
 import {webNavigation} from './navigation-manager';
 import offscreen from './offscreen';
+import {isOptionSite, optionSites} from './option-sites';
 import makePopupData from './popup-data';
 import {getSectionsByUrl} from './style-manager';
 import tabCache, * as tabMan from './tab-manager';
 
-const idCSP = 'patchCsp';
-const idOFF = 'disableAll';
 const REVOKE_TIMEOUT = 10e3;
 const kRuleIds = 'ruleIds';
 const kSetCookie = 'set-cookie'; // must be lowercase
@@ -34,33 +35,28 @@ const req2key = req => req.tabId + ':' + req.frameId;
 const revokeObjectURL = blobId => blobId &&
   (__.MV3 ? offscreen : URL).revokeObjectURL(BLOB_URL_PREFIX + blobId);
 const toSend = {};
-export const webRequestBlocking = __.BUILD !== 'chrome' && FIREFOX
-|| browser.permissions.contains({
-  permissions: ['webRequestBlocking'],
-});
 const ruleIdKeys = {};
+export let webRequestBlocking = __.BUILD !== 'chrome' && !!FIREFOX
+  || browser.permissions.contains({permissions: ['webRequestBlocking']}).then(res => (
+    webRequestBlocking = res
+  ));
 let ruleIds;
-let timer;
 let curOFF = true;
-let curCSP = false;
-let curXHR = false;
+let flushPending, setupPending;
 
 if (__.MV3) {
-  toggle(); // register listeners synchronously so they wake up the SW next time it dies
+  setup(); // register listeners synchronously so they can receive the wakeup event
   bgPreInit.push((async () => {
     ruleIds = await stateDB.get(kRuleIds) || {};
     for (const id in ruleIds) ruleIdKeys[ruleIds[id]] = +id;
   })());
-  bgBusy.then(() => setTimeout(() => prefs.subscribe(kStyleViaXhr, (key, val) => {
+  bgBusy.then(() => setTimeout(() => subscribe(pStyleViaXhr, (key, val) => {
     if (val || offscreen[CLIENT])
       offscreen.keepAlive(val);
   }, true), clientDataJobs.size ? 50/*let the client page load first*/ : 0));
 }
 
-prefs.ready.then(() => {
-  toggle(__.MV3); // in MV3 this will unregister unused listeners
-  prefs.subscribe([idOFF, idCSP, kStyleViaXhr], toggle);
-});
+subscribe([pDisableAll], setup, true);
 
 bgBusy.then(() => {
   const tabIds = [];
@@ -96,60 +92,47 @@ if (CHROME && __.BUILD !== 'firefox') {
   });
 }
 
-function toggle(prefKey) {
-  // Must register all listeners synchronously to make them wake the SW
-  const mv3init = __.MV3 && !prefKey;
-  const off = prefs.__values[idOFF];
-  const csp = !off && prefs.__values[idCSP];
-  const xhr = !off && prefs.__values[kStyleViaXhr];
-  if (!mv3init && xhr === curXHR && csp === curCSP && off === curOFF) {
-    return;
-  }
-  let v;
-  if (__.BUILD !== 'chrome' && FIREFOX || off !== curOFF || !off && (
-    __.MV3
-      ? csp !== curCSP
-      : (xhr || csp) !== (curXHR || curCSP)
-  )) {
-    v = chrome.webRequest.onHeadersReceived;
-    // unregister first since new registrations are additive internally
-    toggleListener(v, false, modifyHeaders);
-    if (!off && (xhr || csp)) toggleListener(v, true, modifyHeaders, WR_FILTER, [
-      'blocking',
+async function setup(key) {
+  if (key) return (setupPending ??= setTimeout(setup)); // when many keys are changed at once
+  setupPending = null;
+  const OFF = __values[pDisableAll];
+  if (curOFF !== OFF) {
+    curOFF = OFF;
+    // in MV3 onBeforeRequest also wakes up the background script earlier to avoid FOUC
+    toggleListener(chrome.webRequest.onBeforeRequest, !OFF, prepareStyles, WR_FILTER);
+    toggleListener(chrome.webRequest.onHeadersReceived, !OFF, modifyHeaders, WR_FILTER, !OFF && [
       'responseHeaders',
+      (webRequestBlocking.then ? await webRequestBlocking : webRequestBlocking)
+        && 'blocking',
       chrome.webRequest.OnHeadersReceivedOptions.EXTRA_HEADERS,
     ].filter(Boolean));
   }
-  // In MV3 even without xhr/csp we need it to wake up the background script earlier to avoid FOUC
-  if (mv3init || off !== curOFF && (__.MV3 || (xhr || csp) !== (curXHR || curCSP))) {
-    toggleListener(chrome.webRequest.onBeforeRequest,
-      mv3init || !off && (__.MV3 || xhr || csp),
-      prepareStyles, WR_FILTER);
-  }
-  curCSP = csp;
-  curOFF = off;
-  curXHR = xhr;
 }
 
 /** @param {browser.webRequest._OnBeforeRequestDetails} req */
 async function prepareStyles(req) {
   const {tabId, frameId, url} = req; if (tabId < 0) return;
+  let v;
   const key = tabId + ':' + frameId;
   const isInit = bgBusy;
+  const cspOn = __values[pPatchCsp]
+    && (!(v = optionSites[pPatchCsp]) || isOptionSite(v, url));
+  const xhrOn = __values[pStyleViaXhr]
+    && (!(v = optionSites[pStyleViaXhr]) || isOptionSite(v, url));
   __.DEBUGLOG('prepareStyles', key, req);
-  if (!curXHR && !curCSP && !bgBusy)
+  if (!xhrOn && !cspOn && !bgBusy)
     return;
   if (bgBusy)
     await bgBusy;
-  if (curXHR && colorScheme.isSystem() && (isInit || !tabMan.someInjectable()))
+  if (xhrOn && colorScheme.isSystem() && (isInit || !tabMan.someInjectable()))
     await colorScheme.refreshSystemDark();
   const oldData = toSend[key];
   const data = oldData || {};
-  const payload = data.payload = getSectionsByUrl.call({sender: req}, url, {init: kStyleViaXhr});
+  const payload = data.payload = getSectionsByUrl.call({sender: req}, url, {init: pStyleViaXhr});
   const willStyle = payload.sections.length;
   data.url = url;
   if (oldData) removePreloadedStyles(null, key, data, willStyle);
-  if (__.MV3 && curXHR && willStyle) {
+  if (__.MV3 && xhrOn && willStyle) {
     await prepareStylesMV3(tabId, frameId, url, data, key, payload);
   }
   toSend[key] = data;
@@ -182,7 +165,7 @@ async function prepareStylesMV3(tabId, frameId, url, data, key, payload) {
   }
   ruleIds[ruleId] = key;
   ruleIdKeys[key] = ruleId;
-  timer ??= setTimeout(flushState);
+  flushPending ??= setTimeout(flushState);
   await updateSessionRules([{
     id: ruleId,
     condition: {
@@ -203,26 +186,32 @@ async function prepareStylesMV3(tabId, frameId, url, data, key, payload) {
 function modifyHeaders(req) {
   const key = req2key(req);
   const data = toSend[key]; if (!data) return;
+  let v;
   const {responseHeaders} = req;
   const {payload} = data;
-  const secs = payload.sections;
-  const csp = (FIREFOX || curCSP) && findHeader(responseHeaders, 'content-security-policy');
+  const styled = payload.sections.length;
+  const cspOn = __values[pPatchCsp]
+    && (!(v = optionSites[pPatchCsp]) || isOptionSite(v, req.url));
+  let csp = (FIREFOX || cspOn) && findHeader(responseHeaders, 'content-security-policy');
   if (csp) {
-    const m = csp.value.match(rxNONCE);
+    const m = (v = csp.value).match(rxNONCE);
     if (m) tabMan.set(req.tabId, 'nonce', req.frameId, payload.cfg.nonce = m[1]);
     // We don't change CSP if there are no styles when the page is loaded
     // TODO: show a reminder in the popup to reload the tab when the user enables a style
-    if (curCSP && secs[0]) patchCsp(csp);
+    csp = cspOn && styled && {value: patchCsp(v)};
   }
-  if (!secs[0]) {
+  if (!styled) {
     removePreloadedStyles(req, key, data);
     return;
   }
   let blobId;
-  if (curXHR && (
+  if (__values[pStyleViaXhr] && (
+    !(v = optionSites[pStyleViaXhr]) || isOptionSite(v, req.url)
+  ) && (
     blobId = (data.blobId ??=
       !__.MV3 && URL.createObjectURL(makeBlob(payload)).slice(BLOB_URL_PREFIX.length)
-    ))) {
+    )
+  )) {
     blobId = makeXhrCookie(blobId);
     if (!__.MV3 || !findHeader(responseHeaders, kSetCookie, blobId)) {
       responseHeaders.push({name: kSetCookie, value: blobId});
@@ -230,15 +219,14 @@ function modifyHeaders(req) {
       blobId = false;
     }
   }
-  if (blobId || csp && curCSP) {
+  if (blobId || csp) {
     return {responseHeaders};
   }
 }
 
-/** @param {chrome.webRequest.HttpHeader} csp */
-function patchCsp(csp) {
+function patchCsp(str) {
   const src = {};
-  for (let p of csp.value.split(/[;,]/)) {
+  for (let p of str.split(/[;,]/)) {
     p = p.trim().split(/\s+/);
     src[p[0]] = p.slice(1);
   }
@@ -251,7 +239,7 @@ function patchCsp(csp) {
   if (src.sandbox && !src.sandbox.includes('allow-same-origin')) {
     src.sandbox.push('allow-same-origin');
   }
-  csp.value = Object.entries(src).map(([k, v]) =>
+  return Object.entries(src).map(([k, v]) =>
     `${k}${v.length ? ' ' : ''}${v.join(' ')}`).join('; ');
 }
 
@@ -283,7 +271,7 @@ export function removePreloadedStyles(req, key = req2key(req), data = toSend[key
   if (__.MV3 && !keep && (data ? ruleIds[v = data.ruleId] : v = ruleIdKeys[key])) {
     delete ruleIds[v];
     delete ruleIdKeys[key];
-    timer ??= setTimeout(flushState);
+    flushPending ??= setTimeout(flushState);
     updateSessionRules(undefined, [v]);
   }
 }
@@ -301,7 +289,7 @@ function removeTabData(tabIds) {
   }
   if (ids.length) {
     updateSessionRules(undefined, ids);
-    timer ??= setTimeout(flushState);
+    flushPending ??= setTimeout(flushState);
   }
   for (const key in toSend) {
     if (tabIds.test(key)) {
@@ -328,7 +316,7 @@ function findHeader(headers, name, value) {
 }
 
 function flushState() {
-  timer = null;
+  flushPending = null;
   if (isEmptyObj(ruleIds)) {
     stateDB.delete(kRuleIds);
   } else {

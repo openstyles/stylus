@@ -1,4 +1,4 @@
-import {pKeepAlive} from '@/js/consts';
+import {pDisableAll, pExposeIframes, pKeepAlive, pStyleViaASS} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {isEmptyObj} from '@/js/util';
 import {broadcast} from './broadcast';
@@ -7,10 +7,10 @@ import {bgBusy, onSchemeChange} from './common';
 let cfg;
 let sentCfg = {};
 const INJECTOR_CONFIG_MAP = {
-  exposeIframes: 'top',
-  disableAll: 'off',
+  [pExposeIframes]: 'top',
+  [pDisableAll]: 'off',
   [pKeepAlive]: 'wake',
-  styleViaASS: 'ass',
+  [pStyleViaASS]: 'ass',
 };
 
 bgBusy.then(() => {

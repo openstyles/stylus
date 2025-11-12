@@ -1,7 +1,9 @@
 import '@/js/browser';
+import {pExposeIframes, pStyleViaASS} from '@/js/consts';
 import {rxIgnorableError} from '@/js/msg-api';
 import {ownRoot} from '@/js/urls';
 import {sleep0} from '@/js/util';
+import {isOptionSite, optionSites} from './option-sites';
 import {getWindowClients} from './util';
 
 let toBroadcast;
@@ -17,6 +19,9 @@ async function doBroadcast() {
     browser.tabs.query({}),
   ]);
   const data = toBroadcast;
+  const {cfg} = data;
+  const assSites = cfg?.ass && optionSites[pStyleViaASS];
+  const iframeSites = cfg?.top && optionSites[pExposeIframes];
   toBroadcast = null;
   if (!__.MV3 || clients[0])
     broadcastExtension(data, true);
@@ -25,6 +30,8 @@ async function doBroadcast() {
   tabs.sort((a, b) => b.active - a.active); // start with active tabs in all windows
   for (const t of tabs) {
     if (!t.discarded && (url = t.url) && !url.startsWith(ownRoot)) {
+      if (assSites) cfg.ass = isOptionSite(assSites, url);
+      if (iframeSites) cfg.top = isOptionSite(iframeSites, url);
       sendTab(t.id, data, null, true);
       /* Broadcast messages are tiny, but sending them takes some time anyway,
          so we're yielding for a possible navigation/messaging event. */

@@ -1,5 +1,7 @@
 /** Don't use this file in content script context! */
-import {k_busy} from '@/js/consts';
+import {
+  k_busy, pDisableAll, pExposeIframes, pPatchCsp, pStyleViaASS, pStyleViaXhr,
+} from '@/js/consts';
 import {API} from './msg-api';
 import {deepCopy, deepEqual, isCssDarkScheme, makePropertyPopProxy} from './util';
 import {onStorageChanged} from './util-webext';
@@ -22,18 +24,27 @@ export const clientData = !__.IS_BG && (
 const defaults = {
   __proto__: null,
   // TODO: sort everything aphabetically
-  'disableAll': false,            // boss key
-  'exposeIframes': false,         // Add 'stylus-iframe' attribute to HTML element in all iframes
+  [pDisableAll]: false,            // boss key
+  [pExposeIframes]: false,         // Add 'stylus-iframe' attribute to HTML element in all iframes
+  [pExposeIframes + '.sites']: '',
+  [pExposeIframes + '.sitesOnly']: false,
   'exposeStyleName': false,       // Add style name to the style for better devtools experience
   'keepAlive': 0,                 // in minutes
   'keepAliveIdle': false,         // keep alive an idle browser
   'newStyleAsUsercss': false,     // create new style in usercss format
   'openEditInWindow': false,      // new editor opens in a own browser window
   'openEditInWindow.popup': false, // new editor opens in a simplified browser window without omnibox
-  'patchCsp': false,              // add data: and popular image hosting sites to strict CSP
+  [pPatchCsp]: false,              // add data: and popular image hosting sites to strict CSP
+  [pPatchCsp + '.sites']: '',
+  [pPatchCsp + '.sitesOnly']: false,
   'show-badge': true,             // display text on popup menu icon
-  'styleViaASS': false,           // document.adoptedStyleSheets
-  'styleViaXhr': false,           // early style injection to avoid FOUC
+  [pStyleViaASS]: false,           // document.adoptedStyleSheets
+  [pStyleViaASS + '.sites']: '',
+  [pStyleViaASS + '.sitesOnly']: false,
+  [pStyleViaXhr]: false,           // early style injection to avoid FOUC
+  [pStyleViaXhr + '.sites']: '',
+  [pStyleViaXhr + '.sitesOnly']: false,
+
   'urlInstaller': true,           // auto-open installer page for supported .user.css urls
   'windowPosition': {},           // detached window position
   'compactWidth': 850,

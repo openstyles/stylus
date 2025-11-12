@@ -60,6 +60,7 @@ async function toggleEmbeddedOptions(show, el, selector, toggler) {
     el.contentWindow.location = '/options.html#' + toggler.id;
     await new Promise(resolve => (window.closeOptions = resolve));
   } else {
+    el.contentDocument.activeElement?.blur(); // auto-save text input on closing
     await animateElement(el, 'fadeout');
     el.remove();
   }

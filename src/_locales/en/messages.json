@@ -1153,6 +1153,13 @@
   "optionsAdvancedPatchCspNote": {
     "message": "Enable this if styles contain images or fonts which fail to load on sites with a strict <code>CSP</code> (<code>Content-Security-Policy</code>).\n\nEnabling this setting will relax <code>CSP</code> restrictions, allowing essential style content to load. This option is only intended for advanced users who understand the potential security implications, and accept responsibility for monitoring the content which they're allowing. Read about CSS-based attacks for more information.\n\nAlso be aware, this particular setting is not guaranteed to take effect if another installed extension modifies the network response first."
   },
+  "optionsAdvancedSites": {
+    "message": "...only on matching sites",
+    "description": "Label of the advanced option shown below several options with customizable sites like optionsAdvancedStyleViaXhr"
+  },
+  "optionsAdvancedSitesNote": {
+    "message": "<abc.com> one site.\n<*.abc.com> site + sub-domains.\n<-m.abc.com> exclusion using \"-\" prefix.\n<*> all sites (useful with exclusions).\n<#abc.com> ignored due to invalid character.\n<*://abc.*/xyz> simple glob pattern.\n<https://abc.com/xyz> full URL.\nThe entries are separated with a space or a new line. The text is auto-saved when pressing Ctrl-S or ⌘S in the input or clicking outside the input or closing the options."
+  },
   "optionsAdvancedStyleViaASS": {
     "message": "Circumvent CSP 'style-src' via adoptedStyleSheets"
   },

@@ -1,11 +1,15 @@
-import {IMPORT_THROTTLE, k_size, kStyleViaXhr, kUrl, pKeepAlive, UCD} from '@/js/consts';
-import * as prefs from '@/js/prefs';
+import {
+  IMPORT_THROTTLE, k_size, kUrl, pDisableAll, pExposeIframes, pKeepAlive, pStyleViaASS,
+  pStyleViaXhr, UCD,
+} from '@/js/consts';
+import {__values} from '@/js/prefs';
 import {calcStyleDigest, styleCodeEmpty} from '@/js/sections-util';
 import {calcObjSize, mapObj} from '@/js/util';
 import {broadcast} from '../broadcast';
 import * as colorScheme from '../color-scheme';
 import {uuidIndex} from '../common';
 import {db, draftsDB} from '../db';
+import {isOptionSite, optionSites} from '../option-sites';
 import * as syncMan from '../sync-manager';
 import tabCache from '../tab-manager';
 import {getUrlOrigin} from '../tab-util';
@@ -167,65 +171,70 @@ export function getRemoteInfo(id) {
   return res;
 }
 
-/** @returns {Injection.Response} */
+/**
+ * @param {string} url
+ * @param {number} [id]
+ * @param {boolean | 'cfg' | 'styleViaXhr'} [init]
+ * @param {boolean} [dark]
+ * @returns {Injection.Response}
+ */
 export function getSectionsByUrl(url, {id, init, dark} = {}) {
   // Init the scheme once, then rely on matchMedia->onchange event
   // TODO: rework caching to set just the sender's scheme i.e. not globally
   if (dark != null && colorScheme.isDark == null)
     colorScheme.setSystemDark(dark);
-  const p = prefs.__values;
-  if (init && p.disableAll) {
+  if (init && __values[pDisableAll]) {
     return {cfg: {off: true}};
   }
+  let cache, v;
+  const res = {};
   const {sender = {}} = this || {};
   const {tab = {}, frameId, TDM} = sender;
   const isTop = !frameId || TDM || sender.type === 'main_frame'; // prerendering in onBeforeRequest
   const td = tabCache[sender.tabId || tab.id] || {};
   /** @type {Injection.Config} */
-  const cfg = !id && {
-    ass: p.styleViaASS,
+  res.cfg = !id && {
+    ass: __values[pStyleViaASS],
     dark: isTop && colorScheme.isDark,
     // TODO: enable in FF when it supports sourceURL comment in style elements (also options.html)
-    name: p.exposeStyleName,
+    name: __values.exposeStyleName,
     nonce: td.nonce?.[frameId],
-    top: p.exposeIframes,
+    top: __values[pExposeIframes] &&
+      (!(v = optionSites[pExposeIframes]) || isOptionSite(v, url)),
     topUrl: isTop ? '' : getUrlOrigin(tab.url || td[kUrl]?.[0]),
-    wake: p[pKeepAlive] >= 0,
+    wake: __values[pKeepAlive] >= 0,
     order,
   };
   if (init === 'cfg') {
-    return {cfg};
+    return res;
   }
-  let res, cache;
   if (frameId === 0
-  && init !== kStyleViaXhr
-  && (res = td[kUrl])
-  && (res = res[0]) !== url
-  && res.split('#', 1)[0] === url.split('#', 1)[0]) {
+  && init !== pStyleViaXhr
+  && (v = td[kUrl])
+  && (v = v[0]) !== url
+  && v.split('#', 1)[0] === url.split('#', 1)[0]) {
     /* Chrome hides text frament from location.href of the page e.g. #:~:text=foo
        so we'll use the real URL reported by webNavigation API.
        TODO: if FF will do the same, this won't work as is: FF reports onCommitted too late */
-    url = res || url;
+    url = v || url;
   }
   cache = cacheData.get(url);
   if (!cache) {
     cache = {url, sections: {}};
     buildCache(cache, url);
-  } else if ((res = cache.maybeMatch)) {
-    buildCache(cache, url, res);
+  } else if ((v = cache.maybeMatch)) {
+    buildCache(cache, url, v);
   }
   styleCache.add(cache);
-  res = cache.sections;
-  res = id
-    ? ((res = res[id])) ? [res] : []
-    : Object.values(res);
-  if (init === true && res.length) {
+  v = cache.sections;
+  v = id
+    ? ((v = v[id])) ? [v] : []
+    : Object.values(v);
+  if (init === true && v.length) {
     (td[kUrl] ??= {})[frameId] ??= url;
   }
-  return {
-    cfg,
-    sections: res,
-  };
+  res.sections = v;
+  return res;
 }
 
 /** @returns {Promise<{style?:StyleObj, err?:?}[]>} */

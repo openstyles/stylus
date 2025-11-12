@@ -1,8 +1,16 @@
+/* postcss-simple-vars */
+$outerPad: 50px;
+$colW: 500px;
+$docMin1W: 550px;
+$docMin2W: 1050px;
+$footerH: calc(2rem + var(--pad05));
+$blockBorder: 1px dotted var(--c80);
+
 :root {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   background: none;
+  @media (min-width: $docMin1W) {
+    padding: $outerPad;
+  }
   --pad: 1rem;
   --pad05: calc(.5 * var(--pad));
   --value-cell-w: 6ch;
@@ -10,10 +18,16 @@
 
 body {
   background: none;
+  position: relative;
+  margin: auto;
+  width: fit-content;
+  padding-bottom: $footerH;
   display: flex;
   flex-direction: column;
-  max-width: 850px;
   max-height: var(--100dvh);
+  @media (min-height: $docMin1W) {
+    max-height: calc(var(--100dvh) - $outerPad * 2);
+  }
   box-sizing: border-box;
   border: 1px solid var(--c60);
   box-shadow: 0px 5px 15px 3px hsla(0, 0%, 0%, .35);
@@ -21,9 +35,12 @@ body {
 
 main {
   background: var(--bg);
-  display: flex;
-  flex-direction: column;
   overflow-y: auto;
+  @media (min-width: $docMin2W) {
+    columns: 2;
+    column-gap: 0;
+    column-rule: $blockBorder;
+  }
 }
 
 .clickable {
@@ -63,9 +80,10 @@ label.chromium-only > :first-child::after {
   align-items: center;
   padding: var(--pad05) var(--pad);
   position: relative;
+  break-inside: avoid;
   flex-shrink: 0; /* TODO: remove when minimum_chrome_version >= 72 */
-  &:nth-last-child(n + 2) {
-    border-bottom: 1px dotted var(--c80);
+  &:nth-child(n + 2) {
+    border-top: $blockBorder;
   }
 }
 
@@ -84,16 +102,30 @@ h2 {
 }
 label {
   display: flex;
-  align-items: center;
-  .items:not(.no-stretch) & > :first-child {
-    margin-right: 8px;
+  &:not(.sites) {
+    align-items: center;
+  }
+  > p {
+    margin: 0 8px 0 0;
     flex-grow: 1;
   }
   .swap & {
     min-height: var(--input-height);
-    > :first-child {
-      order: 2;
+    > p:first-child {
       margin-right: 0;
+      order: 2;
+    }
+  }
+  &.sites {
+    &.disabled .slider:checked {
+      color: var(--c70);
+      --color-on: var(--c90);
+    }
+    :not(:has(input:checked)) + & { /* doesn't work in old browsers */
+      display: none;
+    }
+    :not(input:checked) + p textarea {
+      display: none;
     }
   }
 }
@@ -143,6 +175,18 @@ input[type="color"] {
 input[type=time] {
   margin: 0 .5em;
 }
+textarea {
+  width: 100%;
+  max-height: 25vh;
+  font: inherit;
+  &:not(:hover, :focus) {
+    border-color: var(--c80);
+    resize: none;
+  }
+  &:hover, &:focus {
+    resize: vertical;
+  }
+}
 .slider {
   margin-left: 0;
 }
@@ -151,13 +195,13 @@ input[type=time] {
 label.disabled,
 #favs.disabled + label {
   color: var(--c65);
-  input {
+  input, textarea {
     opacity: .5;
   }
 }
 
-#FOUC {
-  background: #fb04;
+#FOUC h2 {
+  color: var(--red1);
 }
 
 footer {
@@ -168,7 +212,13 @@ footer {
   border-top: 1px solid var(--c60);
   border-bottom: none;
   display: flex;
-  & button {
+  height: $footerH;
+  box-sizing: border-box;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  button {
     margin: 0 .25em;
   }
 }

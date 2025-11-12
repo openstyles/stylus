@@ -26,7 +26,6 @@ export const kPopup = 'popup';
 export const kResolve = 'resolve';
 export const kStyleIdPrefix = 'style-';
 export const kStyleIds = 'styleIds';
-export const kStyleViaXhr = 'styleViaXhr';
 export const kSubFrame = 'sub_frame';
 export const kUrl = 'url';
 export const kUrls = 'urls';
@@ -45,5 +44,10 @@ export const BIT_DARK = 1;
 export const BIT_SYS_DARK = 2;
 
 //#region prefs
+export const pDisableAll = 'disableAll';
+export const pExposeIframes = 'exposeIframes';
 export const pKeepAlive = 'keepAlive';
+export const pPatchCsp = 'patchCsp';
+export const pStyleViaASS = 'styleViaASS';
+export const pStyleViaXhr = 'styleViaXhr';
 //#endregion

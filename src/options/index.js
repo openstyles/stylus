@@ -22,9 +22,6 @@ $('#FOUC .items').textContent = t(__.MV3 ? 'optionFOUCMV3' : 'optionFOUCMV2')
 $id(pKeepAlive).previousElementSibling.firstChild.textContent +=
   (/^(zh|ja|ko)/.test($root.lang) ? '' : ' ') +
   t('optionKeepAlive2').trim();
-for (const el of $$('[show-if]')) {
-  prefs.subscribe(el.getAttribute('show-if').match(/[.\w]+/)[0], toggleShowIf, true);
-}
 if (!__.MV3 && __.BUILD !== 'firefox' && CHROME_POPUP_BORDER_BUG) {
   $id('popupWidth').closest('.items').append(template.popupBorders);
 }
@@ -72,20 +69,50 @@ for (const el of $$('[data-clickable]')) {
 }
 (async () => {
   const {wrb} = __.MV3 ? prefs.clientData : await prefs.clientData;
-  setupLivePrefs();
+  const note = template.sites.$('[data-cmd=note]');
+  const onTextInput = function () {
+    const rows = this.value.match(/^/gm).length;
+    if (this.rows !== rows) this.rows = rows;
+  };
+  const onTextKey = function (e) {
+    if (e.key === 's' && (e.metaKey === MAC && e.ctrlKey === !MAC) && !e.altKey && !e.shiftKey)
+      this.dispatchEvent(new Event('change'));
+  };
+  note.title = `<table>${
+    note.title.replace(/<([^>]+)>\s*([^<\n]+)/g, (_, a, b) =>
+      `<tr><td><code>${a}</code></td><td>${b}</td></tr>`)
+  }</table>`;
+  for (const el of $$('[show-if]')) {
+    const id = el.getAttribute('show-if').match(/[.\w]+/)[0];
+    prefs.subscribe(id, toggleShowIf, true);
+    if (el.matches('.sites')) {
+      el.appendChild(template.sites.cloneNode(true));
+      for (const elDep of el.$$('[id*="$"]')) {
+        elDep.id = elDep.id.replace('$', id);
+        if (elDep.localName === 'textarea') {
+          elDep.on('keydown', onTextKey);
+          elDep.on('input', onTextInput);
+          onTextInput.call(elDep);
+        }
+      }
+    }
+  }
   if (wrb === false) {
     for (let el of $$('#patchCsp')) {
       el = el.closest('label');
       el.classList.add('disabled');
+      el.nextElementSibling.classList.add('disabled');
       el.$('.icon').after($create('a.broken[data-cmd=note]', {
         tabIndex: 0,
         title: t('webRequestBlockingMV3Note', `<code>${chrome.runtime.id}</code>`),
       }, '⚒'));
     }
   }
+  top.on('beforeunload', () => document.activeElement?.blur()); // auto-save on closing
   if (location.hash === '#sync-styles') {
     $('.cloud-name').focus();
   }
+  setupLivePrefs();
 })();
 
 function customizeHotkeys() {
@@ -148,7 +175,8 @@ function enforceInputRange(element) {
 
 function toggleShowIf(key, val) {
   for (const el of $$(`[show-if*="${key}"]`)) {
-    const [, not, id, op, opVal] = el.getAttribute('show-if').match(/^(!?)([.\w]+)(!?=)?(.*)/);
+    const [, not, id, op, opVal] = el.getAttribute('show-if')
+      .match(/^\s*(!\s*)?([.\w]+)\s*(?:(!?=)\s*(\S*))?/);
     if (id === key) {
       el.classList.toggle('disabled', !(
         not ? !val : !op ? val :

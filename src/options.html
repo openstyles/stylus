@@ -9,9 +9,19 @@
 
   <template data-id="popupBorders">
     <label>
-      <span i18n="popupBorders, title:popupBordersTooltip"></span>
+      <p i18n="popupBorders, title:popupBordersTooltip"></p>
       <input type="checkbox" id="popup.borders" class="slider">
     </label>
+  </template>
+
+  <template data-id="sites">
+    <input type="checkbox" id="$.sitesOnly" class="slider">
+    <p i18n="optionsAdvancedSites">
+      <a i18n="title:optionsAdvancedSitesNote" data-cmd="note" class=icon tabindex="0">
+        <i class=i-info></i>
+      </a>
+      <textarea id="$.sites"></textarea>
+    </p>
   </template>
 
   <template data-id="body">
@@ -28,11 +38,11 @@
         <h2 i18n="optionsCustomizeUpdate"></h2>
         <div class="items swap">
           <label>
-            <span i18n="optionsUpdateInterval" data-clickable="0"></span>
+            <p i18n="optionsUpdateInterval" data-clickable="0"></p>
             <input type="number" min="0" id="updateInterval">
           </label>
           <label>
-            <span i18n="manageOnlyEnabled"></span>
+            <p i18n="manageOnlyEnabled"></p>
             <input type="checkbox" id="updateOnlyEnabled" class="slider">
           </label>
         </div>
@@ -42,7 +52,7 @@
         <h2 i18n="optionsCustomizeSync"></h2>
         <div class="items swap">
           <label>
-            <span class="sync-status no-stretch"></span>
+            <p class="sync-status no-stretch"></p>
             <div class="select-wrapper">
               <select class="cloud-name">
                 <option value="none" i18n="optionsSyncNone"></option>
@@ -98,7 +108,7 @@
 
       <div class="block">
         <h2 i18n="optionsCustomizeIcon"></h2>
-        <div class="items no-stretch">
+        <div class="items">
           <label>
             <span class="radio-wrapper" i18n="+optionsIconAuto">
               <input type="radio" name="iconset" value="-1" data-value-type="number">
@@ -132,15 +142,15 @@
         <h2 i18n="optionsCustomizeBadge"></h2>
         <div class="items swap">
           <label>
-            <span i18n="prefShowBadge"></span>
+            <p i18n="prefShowBadge"></p>
             <input type="checkbox" id="show-badge" class="slider">
           </label>
           <label>
-            <span i18n="optionsBadgeNormal"></span>
+            <p i18n="optionsBadgeNormal"></p>
             <input type="color" id="badgeNormal">
           </label>
           <label>
-            <span i18n="optionsBadgeDisabled"></span>
+            <p i18n="optionsBadgeDisabled"></p>
             <input type="color" id="badgeDisabled">
           </label>
         </div>
@@ -150,43 +160,33 @@
         <h2 i18n="optionsCustomizePopup"></h2>
         <div class="items swap">
           <label class="desktop-only">
-            <span i18n="optionsPopupWidth,+genericMinimum"> — </span>
+            <p i18n="optionsPopupWidth,+genericMinimum"> — </p>
             <input type="number" id="popupWidth" min="200" max="800">
           </label>
           <label class="desktop-only">
-            <span i18n="optionsPopupWidth,+genericMaximum"> — </span>
+            <p i18n="optionsPopupWidth,+genericMaximum"> — </p>
             <input type="number" id="popupWidthMax" min="200" max="800">
           </label>
           <label>
-            <span i18n="popupStylesFirst"></span>
+            <p i18n="popupStylesFirst"></p>
             <input type="checkbox" id="popup.stylesFirst" class="slider">
           </label>
           <label>
-            <span i18n="popupAutoResort"></span>
+            <p i18n="popupAutoResort"></p>
             <input type="checkbox" id="popup.autoResort" class="slider">
           </label>
           <label>
-            <span i18n="popupOpenEditInWindow">
+            <p i18n="popupOpenEditInWindow">
               <a i18n="title:popupOpenEditInWindowTooltip"
                  data-cmd="note" class="icon" tabindex="0">
                 <i class="i-info"></i>
               </a>
-            </span>
+            </p>
             <input type="checkbox" id="openEditInWindow" class="slider">
           </label>
           <label show-if="openEditInWindow">
-            <span i18n="popupOpenEditInPopup"></span>
+            <p i18n="popupOpenEditInPopup"></p>
             <input type="checkbox" id="openEditInWindow.popup" class="slider">
-          </label>
-        </div>
-      </div>
-
-      <div class="block chromium-only">
-        <h2 i18n="styleEditor"></h2>
-        <div class="items swap">
-          <label class="chromium-only">
-            <span i18n="optionsAdvancedContextDelete"></span>
-            <input type="checkbox" id="editor.contextDelete" class="slider">
           </label>
         </div>
       </div>
@@ -195,28 +195,28 @@
         <h2 i18n="styleManager"></h2>
         <div class="items swap">
           <label>
-            <span i18n="manageNewUI"></span>
+            <p i18n="manageNewUI"></p>
             <input type="checkbox" id="manage.newUI" class="slider">
           </label>
           <label show-if="manage.newUI" id="favs">
-            <span i18n="manageFavicons">
+            <p i18n="manageFavicons">
               <a i18n="title:manageFaviconsHelp"
                  data-cmd="note" class=icon tabindex="0">
                 <i class=i-info></i>
               </a>
-            </span>
+            </p>
             <input type="checkbox" id="manage.newUI.favicons" class="slider">
           </label>
           <label show-if="manage.newUI.favicons">
-            <span i18n="manageFaviconsGray"></span>
+            <p i18n="manageFaviconsGray"></p>
             <input type="checkbox" id="manage.newUI.faviconsGray" class="slider">
           </label>
           <label>
-            <span i18n="manageMaxTargets"></span>
+            <p i18n="manageMaxTargets"></p>
             <input id="manage.newUI.targets" type="number" min="0" max="99">
           </label>
           <label>
-            <span i18n="manageMinColumnWidth" data-clickable="9999" class="no-stretch"></span>
+            <p i18n="manageMinColumnWidth" data-clickable="9999" class="no-stretch"></p>
             <input id="manage.minColumnWidth" type="number" min="300" max="9999">
           </label>
         </div>
@@ -226,8 +226,16 @@
         <h2 i18n="general"></h2>
         <div class="items swap">
           <label>
-            <span i18n="optionCompactWidth"></span>
+            <p i18n="optionsUrlInstaller"></p>
+            <input type="checkbox" id="urlInstaller" class="slider">
+          </label>
+          <label>
+            <p i18n="optionCompactWidth"></p>
             <input type="number" id="compactWidth" min="100" max="9999">
+          </label>
+          <label class="chromium-only">
+            <p i18n="optionsAdvancedContextDelete"></p>
+            <input type="checkbox" id="editor.contextDelete" class="slider">
           </label>
         </div>
       </div>
@@ -236,60 +244,60 @@
         <h2 i18n="optionsAdvanced"></h2>
         <div class="items swap">
           <label class="mv3-only">
-            <span i18n="optionKeepAlive" data-clickable="-1">
+            <p i18n="optionKeepAlive" data-clickable="-1">
               <a i18n="title:optionKeepAliveNote" data-cmd="note" class=icon tabindex="0">
                 <i class=i-info></i>
               </a>
-            </span>
+            </p>
             <input id="keepAlive" type="number" min="-1" max="999">
           </label>
           <label class="mv3-only" show-if="keepAlive!=-1">
-            <span i18n="optionKeepAliveIdle" data-clickable="-1"></span>
+            <p i18n="optionKeepAliveIdle" data-clickable="-1"></p>
             <input type="checkbox" id="keepAliveIdle" class="slider">
           </label>
           <label>
-            <span i18n="optionsAdvancedStyleViaXhr">
+            <p i18n="optionsAdvancedStyleViaXhr">
               <a i18n="title:optionsAdvancedStyleViaXhrNote"
                  data-cmd="note" class=icon tabindex="0">
                 <i class=i-info></i>
               </a>
-            </span>
+            </p>
             <input type="checkbox" id="styleViaXhr" class="slider">
           </label>
+          <label class="sites" show-if="styleViaXhr"></label>
           <label>
-            <span i18n="html:optionsAdvancedPatchCsp">
+            <p i18n="html:optionsAdvancedPatchCsp">
               <a i18n="title:optionsAdvancedPatchCspNote"
                  data-cmd="note" class=icon tabindex="0">
                 <i class=i-info></i>
               </a>
-            </span>
+            </p>
             <input type="checkbox" id="patchCsp" class="slider">
           </label>
+          <label class="sites" show-if="patchCsp"></label>
           <label>
-            <span i18n="optionsAdvancedStyleViaASS"></span>
+            <p i18n="optionsAdvancedStyleViaASS"></p>
             <input type="checkbox" id="styleViaASS" class="slider">
           </label>
+          <label class="sites" show-if="styleViaASS"></label>
           <label>
-            <span i18n="optionsAdvancedExposeIframes">
+            <p i18n="optionsAdvancedExposeIframes">
               <a i18n="title:optionsAdvancedExposeIframesNote"
                  data-cmd="note" class=icon tabindex="0">
                 <i class=i-info></i>
               </a>
-            </span>
+            </p>
             <input type="checkbox" id="exposeIframes" class="slider">
           </label>
+          <label class="sites" show-if="exposeIframes"></label>
           <label>
-            <span i18n="optionsAdvancedExposeStyleName">
+            <p i18n="optionsAdvancedExposeStyleName">
               <a i18n="title:optionsAdvancedExposeStyleNameNote"
                  data-cmd="note" class=icon tabindex="0">
                 <i class=i-info></i>
               </a>
-            </span>
+            </p>
             <input type="checkbox" id="exposeStyleName" class="slider">
-          </label>
-          <label>
-            <span i18n="optionsUrlInstaller"></span>
-            <input type="checkbox" id="urlInstaller" class="slider">
           </label>
         </div>
       </div>
