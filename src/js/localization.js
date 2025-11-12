@@ -15,7 +15,10 @@ export const templateCache = {};
 export const template = /*@__PURE__*/new Proxy(templateCache, {
   get: (obj, k) => obj[k] || createTemplate($(`template[data-id="${k}"]`)),
 });
-const ALLOWED_TAGS = ['a', 'b', 'br', 'code', 'i', 'hr', 'nobr', 'small', 'sub', 'sup', 'wbr'];
+/** Nuke everything except safe tags without attributes and "a" with href="https://..." */
+const RX_DISALLOWED_TAG = /<\/?(?!a(?:\s+href\s*=\s*['"]?https:\/\/[^<>'"]['"]?\s*)?>|(?:b|br|code|i|hr|nobr|small|sub|sup|table|tr|td|wbr)>)[a-z\d]+(?:\s+[^<>]*)?>/gi;
+/** Break long text unless inside the specified tags */
+const RX_LONG_TEXT = /(<)(?:(?:nobr|pre|code)>[^>]+|\/?[a-z\d]+(?:\s+[^<>]*)?>)|\s*[^<]{11,}\s*/gi;
 const RX_WORD_BREAK = /([\w{-\uFFFF]{10}|[\w{-\uFFFF]{5,10}[!'")*,./]|((?!\s)\W){10})(?!\s|$)/gu;
 const SELECTOR = '[i18n]';
 const RELATIVE_UNITS = [
@@ -35,7 +38,7 @@ export const breakWord = text => text.length <= 10 ? text
 export const parseHtml = str => new DOMParser().parseFromString(str, 'text/html');
 export const tHTML = html => typeof html !== 'string'
   ? html
-  : /<\w+/.test(html) // check for html tags
+  : html.includes('<') // check for html tags
     ? $createFragment(sanitizeHtml(html))
     : document.createTextNode(html);
 
@@ -55,7 +58,7 @@ function tElements(elems) {
       const key = i > 0 && item.slice(add, i);
       const val = t(i > 0 ? item.slice(i + 1).trim() : add ? item.slice(1) : item);
       if (!key) el[fn](breakWord(val));
-      else if (key === 'html') el[fn](...sanitizeHtml(val));
+      else if (key === 'html') el[fn](...val.includes('<') ? sanitizeHtml(val) : [breakWord(val)]);
       else el.setAttribute(key, breakWord(val));
     }
     el.removeAttribute('i18n');
@@ -86,31 +89,15 @@ export function htmlToTemplateCache(html) {
 }
 
 export function sanitizeHtml(str) {
-  const root = parseHtml(str).body;
-  const toRemove = [];
-  const walker = document.createTreeWalker(root);
-  for (let n, v0, v; (n = walker.nextNode());) {
-    if (n.nodeType === 3 /*Node.TEXT_NODE*/) {
-      if ((v = n.parentNode) && (v = v.tagName) !== 'NOBR' && v !== 'PRE' && v !== 'CODE' &&
-          (v = breakWord(v0 = n.nodeValue)) !== v0)
-        n.nodeValue = v;
-    } else if (ALLOWED_TAGS.includes(n.localName)) {
-      const isA = n.localName === 'a';
-      for (const attr of n.attributes) {
-        if (!(isA && attr.localName === 'href' && /^https?:/.test(n.href))) {
-          n.removeAttribute(attr.name);
-        }
-      }
-      if (isA) {
-        n.target = '_blank';
-        n.rel = 'noreferrer';
-      }
-    } else {
-      toRemove.push(n);
-    }
-  }
-  for (const n of toRemove) {
-    n.parentNode?.removeChild(n); // not using .remove() as there may be a non-element
+  let root;
+  str = str.replace(RX_DISALLOWED_TAG, '');
+  if (!str.includes('<')) {
+    root = $tag('div');
+    root.textContent = breakWord(str);
+  } else {
+    str = str.replace(/<a\s+/gi, '$&target=_blank rel=noreferrer ')
+      .replace(RX_LONG_TEXT, (s, tag) => tag ? s : s.replace(RX_WORD_BREAK, '$&\u00AD'));
+    root = parseHtml(str).body;
   }
   return root.childNodes;
 }

@@ -225,7 +225,7 @@ function splitLongTooltips() {
       continue;
     const old = el.title;
     // Strip html tags but allow <invalid-html-tags> which we use to emphasize stuff
-    const title = old.replace(/(\n\s*)?<\/?[a-z]+[^>]*>(\n\s*)?/g, ' ');
+    const title = old.replace(/(\n\s*)?<\/?[a-z]+(\s+[a-z]+=[^>]*?)?>(\n\s*)?/g, ' ');
     tooltips.set(el, old);
     let tmp = '';
     if (title.length < 50) {
