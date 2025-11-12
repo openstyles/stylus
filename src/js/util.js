@@ -18,6 +18,10 @@ export const sleep = ms => new Promise(ms > 0 ? cb => setTimeout(cb, ms) : setTi
 export const sleep0 = () => global.scheduler?.yield?.() || new Promise(setTimeout);
 export const stringAsRegExpStr = s => s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&');
 export const stringAsRegExp = (s, flags) => new RegExp(stringAsRegExpStr(s), flags);
+/** like stringAsRegExpStr but non-escaped "*" is replaced with ".*" */
+export const globAsRegExpStr = s => s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&')
+  .replace(/(^|[^\\])\\\*/g, '$1.*')
+  .replace(/\\\\\\\*/g, '\\*');
 export const RX_META = /\/\*!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i;
 
 const tCache = /*@__PURE__*/new Map();

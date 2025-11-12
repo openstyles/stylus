@@ -1,6 +1,6 @@
 import {styleCodeEmpty} from '@/js/sections-util';
 import {ownRoot} from '@/js/urls';
-import {stringAsRegExpStr, tryRegExp, tryURL} from '@/js/util';
+import {globAsRegExpStr, tryRegExp, tryURL} from '@/js/util';
 import * as colorScheme from '../color-scheme';
 
 const BAD_MATCHER = {test: () => false};
@@ -13,19 +13,14 @@ function buildExclusion(text) {
   // match pattern
   const match = text.match(/^(\*|[\w-]+):\/\/(\*\.)?([\w.]+\/.*)/);
   if (!match) {
-    return '^' + compileGlob(text) + '$';
+    return '^' + globAsRegExpStr(text) + '$';
   }
   return '^' +
     (match[1] === '*' ? '[\\w-]+' : match[1]) +
     '://' +
     (match[2] ? '(?:[\\w.]+\\.)?' : '') +
-    compileGlob(match[3]) +
+    globAsRegExpStr(match[3]) +
     '$';
-}
-
-function compileGlob(text) {
-  return stringAsRegExpStr(text)
-    .replace(/\\\\\\\*|\\\*/g, m => m.length > 2 ? m : '.*');
 }
 
 function createCompiler(compile) {
