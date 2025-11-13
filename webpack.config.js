@@ -18,6 +18,8 @@ const {
   BUILD, CHANNEL, DEV, MANIFEST, MV3, ROOT, ZIP, nukeHtmlSpaces,
 } = require('./tools/util');
 
+global.localStorage = {}; // workaround for node 25 and HtmlWebpackPlugin's `...global`
+
 const {DEBUG, GITHUB_ACTIONS} = process.env;
 const SRC = ROOT + 'src/';
 const DST = ROOT + 'dist/';
