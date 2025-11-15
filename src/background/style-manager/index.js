@@ -194,7 +194,8 @@ export function getSectionsByUrl(url, {id, init, dark} = {}) {
   const td = tabCache[sender.tabId || tab.id] || {};
   /** @type {Injection.Config} */
   res.cfg = !id && {
-    ass: __values[pStyleViaASS],
+    ass: __values[pStyleViaASS] &&
+      (!(v = optionSites[pStyleViaASS]) || isOptionSite(v, url)),
     dark: isTop && colorScheme.isDark,
     // TODO: enable in FF when it supports sourceURL comment in style elements (also options.html)
     name: __values.exposeStyleName,
