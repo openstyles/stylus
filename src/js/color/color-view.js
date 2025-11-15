@@ -1,9 +1,10 @@
+import {CodeMirror} from '@/cm';
 import {getStyleAtPos} from '@/cm/util';
 import * as colorConverter from '@/js/color/color-converter';
 import ColorPicker from '@/js/color/color-picker';
-import {CodeMirror} from '@/cm';
+import {CHROME, FIREFOX} from '@/js/ua';
 
-//region Constants
+//#region Constants
 
 const COLORVIEW_CLASS = 'colorview';
 export const COLORVIEW_SWATCH_CLASS = COLORVIEW_CLASS + '-swatch';
@@ -11,38 +12,17 @@ export const COLORVIEW_SWATCH_PROP = `--${COLORVIEW_SWATCH_CLASS}`;
 const CLOSE_POPUP_EVENT = 'close-colorpicker-popup';
 
 const {RX_COLOR, testAt} = colorConverter;
-const RX_UNSUPPORTED = !__.MV3 && (s => s && new RegExp(s))([
-  !CSS.supports('color', '#abcd') && /#(.{4}){1,2}$/,
-  !CSS.supports('color', 'hwb(1 0% 0%)') && /^hwb\(/,
-  !CSS.supports('color', 'rgb(1e2,0,0)') && /\de/,
-  !CSS.supports('color', 'rgb(1.5,0,0)') &&
-  /^rgba?\((([^,]+,){0,2}[^,]*\.|(\s*\S+\s+){0,2}\S*\.)/,
-  !CSS.supports('color', 'rgb(1,2,3,.5)') && /[^a]\(([^,]+,){3}/,
-  !CSS.supports('color', 'rgb(1,2,3,50%)') && /\((([^,]+,){3}|(\s*\S+[\s/]+){3}).*?%/,
-  !CSS.supports('color', 'rgb(1 2 3 / 1)') && /^[^,]+$/,
-  !CSS.supports('color', 'hsl(1turn, 2%, 3%)') && /deg|g?rad|turn/,
-].filter(Boolean).map(rx => rx.source).join('|'));
-const RX_DETECT = new RegExp('(^|[\\s(){}[\\]:,/"=])' +
-  '(' +
-    RX_COLOR.hex.source + '|' +
-    '(?:(?:rgb|hsl)a?|hwb)(?=\\()|(?:' + [...colorConverter.NAMED_COLORS.keys()].join('|') + ')' +
-    '(?=[\\s;(){}[\\]/"!]|$)' +
-  ')', 'gi');
-const RX_DETECT_FUNC = /((rgb|hsl)a?|hwb)\(/iy;
-const RX_COMMENT = /\/\*([^*]+|\*(?!\/))*(\*\/|$)/g;
-const RX_STYLE = /(?:^|\s)(?:atom|keyword|variable callee)(?:\s|$)/;
-const SPACE1K = ' '.repeat(1000);
-const ALLOWED_STYLES = ['atom', 'keyword', 'callee', 'comment', 'string'];
-
+const blankOutComments = s => ' '.repeat(s.length);
 // milliseconds to work on invisible colors per one run
 const TIME_BUDGET = 50;
-
+let ALLOWED_STYLES, RXS_FUNCS, RX_COMMENT, RX_DETECT, RX_DETECT_FUNC;
+let RX_PARENS, RX_STYLE, RX_UNSUPPORTED;
 // on initial paint the view doesn't have a size yet
 // so we process the maximum number of lines that can fit in the window
 let maxRenderChunkSize = Math.ceil(window.innerHeight / 14);
 
-//endregion
-//region CodeMirror Events
+//#endregion
+//#region CodeMirror Events
 
 const CM_EVENTS = {
   changes(cm, info) {
@@ -73,10 +53,8 @@ const CM_EVENTS = {
   },
 };
 
-//endregion
-//region ColorSwatch
-
-const cache = new Set();
+//#endregion
+//#region ColorSwatch
 
 class ColorSwatch {
   constructor(cm, options = {}) {
@@ -92,6 +70,31 @@ class ColorSwatch {
           cursor: auto;
         }
       `;
+    }
+    if (!RX_DETECT) {
+      ALLOWED_STYLES = /^(?:atom|keyword|callee|comment|string)(?=\s|$)/;
+      RXS_FUNCS = '(?:(?:rgb|hsl)a?|hwb|(?:ok)?l(?:ab|ch)|color(?:-mix)?|light-dark)';
+      RX_COMMENT = /\/\*(?:[^*]+|\*(?!\/))*(?:\*\/|$)/g;
+      RX_DETECT = new RegExp(String.raw`(^|[\s(){}[\]:,/"=])(${
+        RX_COLOR.hex.source}|${
+        RXS_FUNCS}(?=\()|(?:${
+        [...colorConverter.NAMED_COLORS.keys()].join('|')})(?=[\s;(){}[\]/"!]|$))`, 'gi');
+      RX_DETECT_FUNC = new RegExp(RXS_FUNCS + '\\(', 'iy');
+      RX_PARENS = new RegExp('[()]|' + RX_COMMENT.source, 'g');
+      RX_STYLE = /(?:^|\s)(?:atom|keyword|variable callee)(?:\s|$)/;
+      if (!__.MV3 && (CHROME < 125 || FIREFOX < 128)) {
+        const str = [
+          ['#abcd', '#(.{4}){1,2}$'],
+          ['hwb(1 0% 0%)', '^hwb\\('],
+          ['rgb(1e2,0,0)', '\\de'],
+          ['rgb(1.5,0,0)', String.raw`^rgba?\((([^,]+,){0,2}[^,]*\.|(\s*\S+\s+){0,2}\S*\.)`],
+          ['rgb(1,2,3,.5)', '[^a]\\(([^,]+,){3}'],
+          ['rgb(1,2,3,50%)', String.raw`\((([^,]+,){3}|(\s*\S+[\s/]+){3}).*?%`],
+          ['rgb(1 2 3 / 1)', '^[^,]+$'],
+          ['hsl(1turn, 2%, 3%)', 'deg|g?rad|turn'],
+        ].map(e => !CSS.supports('color', e[0]) && e[1]).filter(Boolean).join('|');
+        if (str) RX_UNSUPPORTED = new RegExp(RX_UNSUPPORTED, 'i');
+      }
     }
     this.colorize();
     this.registerEvents();
@@ -128,8 +131,8 @@ class ColorSwatch {
   }
 }
 
-//endregion
-//region CodeMirror registration
+//#endregion
+//#region CodeMirror registration
 
 CodeMirror.defineOption('colorpicker', false, (cm, value, oldValue) => {
   if (oldValue && oldValue !== CodeMirror.Init && cm.state.colorpicker) {
@@ -140,8 +143,8 @@ CodeMirror.defineOption('colorpicker', false, (cm, value, oldValue) => {
   }
 });
 
-//endregion
-//region Colorizing
+//#endregion
+//#region Colorizing
 
 function colorizeAll(state) {
   const {cm} = state;
@@ -332,46 +335,56 @@ function colorizeLine(state, lineHandle) {
 
 
 function colorizeLineViaStyles(state, lineHandle, styleIndex = 1) {
-  const {styles} = lineHandle;
-  let {text} = lineHandle;
+  const {styles, text} = lineHandle;
   let spanIndex = 0;
-  let uncommented = false;
-  let span, style, start, end, len, isHex, isFunc, color;
-
+  let span, style, start, end, len, isHex, func, color;
   let {markedSpans} = lineHandle;
   let spansSorted = false;
   let spansZombies = markedSpans && markedSpans.length;
   const spanGeneration = state.now;
-
   // all comments may get blanked out in the loop
   const endsWithComment = text.endsWith('*/');
 
-  for (let i = styleIndex; i + 1 < styles.length; i += 2) {
+  for (let i = styleIndex, j; i + 1 < styles.length; i += 2) {
     style = styles[i + 1];
     if (!style || !RX_STYLE.test(style)) continue;
 
     start = i > 2 ? styles[i - 2] : 0;
     end = styles[i];
     len = end - start;
-    isHex = text[start] === '#';
-    isFunc = text[end] === '(';
-
-    if (isFunc && (len < 3 || len > 4 || !testAt(RX_DETECT_FUNC, start, text))) continue;
-    if (isFunc && !uncommented) {
-      text = blankOutComments(text, start);
-      uncommented = true;
+    isHex = text.charCodeAt(start) === 35/* # */;
+    func = text.charCodeAt(end) === 40/* ( */;
+    if (func) {
+      if (len < 3 || !testAt(RX_DETECT_FUNC, start, text))
+        continue;
+      func = text.slice(start, end).toLowerCase();
+      end++;
+      let m;
+      let num = 1;
+      while ((RX_PARENS.lastIndex = end, m = RX_PARENS.exec(text))) {
+        end = RX_PARENS.lastIndex;
+        m = m[0];
+        if (m === '(') ++num;
+        else if (m === ')' && !--num)
+          break;
+      }
     }
-
-    color = text.slice(start, isFunc ? text.indexOf(')', end) + 1 : end);
-    const j = !isHex && !isFunc && color.indexOf('!');
+    color = text.slice(start, end);
+    j = !isHex && !func && color.indexOf('!');
     if (j > 0) {
       color = color.slice(0, j);
       end = start + j;
     }
     const spanState = markedSpans && checkSpan();
     if (spanState === 'same') continue;
-    if (checkColor()) {
-      (spanState ? redeem : mark)(getSafeColorValue());
+    if (isHex ? testAt(RX_COLOR.hex, 0, color)
+        : func ? !RX_COLOR[func] || testAt(RX_COLOR[func], 0, color.slice(func.length + 1, -1))
+          : colorConverter.NAMED_COLORS.has(color.toLowerCase())) {
+      (spanState ? redeem : mark)(
+        !__.MV3 && (isHex || func && RX_COLOR[func]) && RX_UNSUPPORTED?.test(color)
+          ? colorConverter.format(colorConverter.parse(color), 'rgb')
+          : color
+      );
     }
   }
 
@@ -379,22 +392,6 @@ function colorizeLineViaStyles(state, lineHandle, styleIndex = 1) {
 
   state.inComment = style && style.includes('comment') && !endsWithComment;
   state.line++;
-  return;
-
-  function checkColor() {
-    if (isHex) return testAt(RX_COLOR.hex, 0, color);
-    if (!isFunc) return colorConverter.NAMED_COLORS.has(color.toLowerCase());
-
-    const colorLower = color.toLowerCase();
-    if (cache.has(colorLower)) return true;
-
-    const type = color.substr(0, 3);
-    const value = color.slice(len + 1, -1);
-    if (!testAt(RX_COLOR[type], 0, value)) return false;
-
-    cache.add(colorLower);
-    return true;
-  }
 
   function mark(colorValue) {
     const {line} = state;
@@ -404,13 +401,6 @@ function colorizeLineViaStyles(state, lineHandle, styleIndex = 1) {
       css: COLORVIEW_SWATCH_PROP + ':' + colorValue,
       color,
     });
-  }
-
-  function getSafeColorValue() {
-    if (isHex && color.length !== 5 && color.length !== 9) return color;
-    if (!RX_UNSUPPORTED || !RX_UNSUPPORTED.test(color)) return color;
-    const value = colorConverter.parse(color);
-    return colorConverter.format(value, 'rgb');
   }
 
   // update or skip or delete existing swatches
@@ -430,7 +420,7 @@ function colorizeLineViaStyles(state, lineHandle, styleIndex = 1) {
         spansZombies--;
         span.generation = spanGeneration;
         const same = color === span.marker.color &&
-          (isFunc || /\W|^$/i.test(text.substr(start + color.length, 1)));
+          (func || /\W|^$/i.test(text.substr(start + color.length, 1)));
         if (same) return 'same';
         state.markersToRemove.push(span.marker);
         return 'redeem';
@@ -460,8 +450,8 @@ function colorizeLineViaStyles(state, lineHandle, styleIndex = 1) {
   }
 }
 
-//endregion
-//region Popup
+//#endregion
+//#region Popup
 
 function openPopupForCursor(state, defaultColor) {
   const {line, ch} = state.cm.getCursor();
@@ -588,8 +578,8 @@ function paletteCallback(el) {
   cm.jumpToPos({line, ch: 0});
 }
 
-//endregion
-//region Utility
+//#endregion
+//#region Utility
 
 function updateMarkers(state) {
   state.markersToRemove.forEach(m => m.clear());
@@ -621,11 +611,11 @@ function findNearestColor({styles, text}, pos) {
     start = m.index + m[1].length;
     const token = m[2].toLowerCase();
     const style = getStyleAtPos(styles, start + 1, 0);
-    const allowed = !style || ALLOWED_STYLES.includes(style.split(' ', 1)[0]);
+    const allowed = !style || ALLOWED_STYLES.test(style);
     if (!allowed) {
       color = '';
     } else if (text[start + token.length] === '(') {
-      const tail = blankOutComments(text.slice(start), 0);
+      const tail = text.slice(start).replace(RX_COMMENT, blankOutComments);
       color = tail.slice(0, tail.indexOf(')') + 1);
       const type = color.slice(0, 3);
       const value = color.slice(token.length + 1, -1);
@@ -677,16 +667,6 @@ function highlightColor(state, data) {
 }
 
 
-function blankOutComments(text, start) {
-  const cmtStart = text.indexOf('/*', start);
-  return cmtStart < 0 ? text : (
-    text.slice(0, cmtStart) +
-    text.slice(cmtStart)
-      .replace(RX_COMMENT, s =>
-        SPACE1K.repeat(s.length / 1000 | 0) + SPACE1K.slice(0, s.length % 1000))
-  );
-}
-
 function hitTest({button, target, offsetX, offsetY}) {
   if (button) return;
   const swatch = target.closest('.' + COLORVIEW_CLASS);
@@ -701,4 +681,4 @@ function hitTest({button, target, offsetX, offsetY}) {
   return swatchClicked && swatch;
 }
 
-//endregion
+//#endregion
