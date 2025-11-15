@@ -923,6 +923,12 @@
   "optionsAdvancedPatchCspNote": {
     "message": "Włącz tę opcję, jeśli style zawierają obrazy lub czcionki, które nie ładują się w witrynach ze ścisłym<code>CSP</code> (<code>Content-Security-Policy</code>).\n\nWłączenie tego ustawienia złagodzi ograniczenia <code>CSP</code>, umożliwiając załadowanie podstawowej zawartości stylu. Ta opcja jest przeznaczona tylko dla zaawansowanych użytkowników, którzy rozumieją potencjalne konsekwencje dla bezpieczeństwa i przyjmują odpowiedzialność za monitorowanie treści, na które zezwalają. Przeczytaj o atakach opartych na CSS, aby uzyskać więcej informacji.\n\nNależy również pamiętać, że to szczególne ustawienie nie jest gwarantowane, jeśli inne zainstalowane rozszerzenie zmodyfikuje najpierw odpowiedź sieci."
   },
+  "optionsAdvancedSites": {
+    "message": "...tylko na dopasownych witrynach"
+  },
+  "optionsAdvancedSitesNote": {
+    "message": "<abc.com> jedna witryna.\n<*.abc.com> witryna + subdomeny.\n<-m.abc.com> wykluczenie za pomocą prefiksu \"-\".\n<*> wszystkie witryny (przydatne w przypadku wykluczeń).\n<#abc.com> ignorowane z powodu nieprawidłowego znaku.\n<*://abc.*/xyz> prosty wzorzec glob.\n<https://abc.com/xyz> pełny adres URL.\nWpisy są rozdzielone spacją lub nową linią. Tekst jest automatycznie zapisywany po naciśnięciu Ctrl+S lub ⌘S w polu wprowadzania, kliknięciu poza polem wprowadzania lub zamknięciu opcji."
+  },
   "optionsAdvancedStyleViaASS": {
     "message": "Obejdź 'style-src' CSP za pomocą adoptedStyleSheets"
   },
