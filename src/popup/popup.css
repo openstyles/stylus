@@ -92,17 +92,17 @@ body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colo
 #installed {
   counter-reset: style-number;
   position: relative;
-  & input {
+  input {
     pointer-events: none;
     color: var(--fg);
     &::after {
       height: auto;
     }
   }
-  & .actions {
+  .actions {
     cursor: default;
   }
-  & a:hover i {
+  a:hover i {
     color: var(--accent-1);
   }
 }
@@ -232,8 +232,11 @@ body > div:not([id=message-box]/*avoiding # to keep specificity low*/):not(.colo
   position: absolute;
   top: 0;
   right: 4px;
-  color: var(--c65);
+  color: var(--c75);
   line-height: var(--entry-h);
+}
+.entry:nth-child(-n+10):hover:before {
+  color: var(--c50);
 }
 .entry:nth-child(10):before {
   content: "0";
@@ -245,14 +248,15 @@ html[style*="border"] .entry:nth-child(-n+10):before {
 }
 
 .entry .actions {
-  margin-left: -1px;
-  margin-right: -1px;
   > :not([hidden]) {
     width: var(--inner-padding);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     margin-left: 2px;
+    html.mobile & {
+      margin-left: 6px;
+    }
   }
   > a.configure {
     padding-right: 2px;
@@ -261,7 +265,9 @@ html[style*="border"] .entry:nth-child(-n+10):before {
     }
   }
 }
-
+.menu-button {
+  padding-right: 2px;
+}
 a.configure[target="_blank"] .i-config {
   font-size: var(--icon-font-size);
   margin-top: 1px;
@@ -341,11 +347,11 @@ a.configure[target="_blank"] .i-config {
     > div, [data-cmd=delete] {
       border-color: #c00;
     }
-    & header {
+    header {
       background: rgba(255, 0, 0, .25);
     }
   }
-  & header {
+  header {
     font-weight: bold;
     background: var(--c90);
     display: flex;
@@ -358,7 +364,7 @@ a.configure[target="_blank"] .i-config {
       font-size: 20px;
     }
   }
-  & main {
+  main {
     > * {
       display: flex;
     }
@@ -366,17 +372,17 @@ a.configure[target="_blank"] .i-config {
       padding-top: .5em;
     }
   }
-  & [data-cmd="delete"]:not([data-focused-via-click]):focus {
+  [data-cmd="delete"]:not([data-focused-via-click]):focus {
     box-shadow: 0 0 0 1px red; /* Using box-shadow instead of the ugly outline in new Chrome */
   }
-  & .enabled {
+  .enabled {
     color: var(--accent-1);
   }
-  & .disabled {
+  .disabled {
     color: var(--c60);
     cursor: help;
   }
-  & footer {
+  footer {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -585,7 +591,7 @@ a:hover i {
   margin-right: calc(-1 * var(--btn-gap));
   background: var(--bg);
   justify-content: space-between;
-  & button:not(:hover) {
+  button:not(:hover) {
     border-color: transparent;
     background: none;
   }
@@ -641,7 +647,7 @@ a:hover i {
 }
 .blocked-info {
   background-color: var(--c98);
-  & label {
+  label {
     padding: .75em var(--outer-padding) .5em;
     display: block;
     font-weight: bold;
@@ -649,7 +655,7 @@ a:hover i {
     background-color: var(--bg);
     border-bottom: var(--border);
   }
-  & p {
+  p {
     padding: 1px 0 var(--outer-padding);
     margin: 0;
   }
@@ -704,7 +710,7 @@ a:hover i {
     z-index: 5;
   }
 
-  & div {
+  div {
     padding: 1em;
     border-top: 1px solid var(--c85);
     background-color: var(--bg);
@@ -720,14 +726,14 @@ a:hover i {
     }
   }
 
-  & p {
+  p {
     text-indent: -3px;
     &:last-child {
       margin-bottom: 0;
     }
   }
 
-  & mark {
+  mark {
     display: inline-block;
     color: var(--fg);
     background: linear-gradient(var(--c80), var(--bg));
