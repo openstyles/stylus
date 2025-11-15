@@ -1,6 +1,6 @@
 import '@/js/dom-init';
 import {kStyleIdPrefix, UCD} from '@/js/consts';
-import {$create} from '@/js/dom';
+import {$create, $toggleClasses} from '@/js/dom';
 import {template} from '@/js/localization';
 import {ownRoot} from '@/js/urls';
 import {capitalize, clipString, stringAsRegExpStr, t} from '@/js/util';
@@ -104,15 +104,17 @@ export function createStyleElement(style, entry) {
   const cfgUrl = ucd ? '' : style.url;
   const cls = entry.classList;
 
-  cls.toggle('empty', style.empty);
-  cls.toggle('disabled', !enabled);
-  cls.toggle('enabled', enabled);
-  cls.toggle('force-applied', style.included);
-  cls.toggle('not-applied', style.excluded || style.sloppy || style.excludedScheme);
-  cls.toggle('regexp-partial', style.sloppy);
-  cls.toggle('frame', !!frameUrl);
-
-  entry.$('input').checked = enabled;
+  $toggleClasses(entry, {
+    'empty': style.empty,
+    'disabled': !enabled,
+    'enabled': enabled,
+    'force-applied': style.included,
+    'not-applied': style.excluded || style.sloppy || style.excludedScheme,
+    'regexp-partial': style.sloppy,
+    'frame': frameUrl,
+  });
+  if (enabled)
+    entry.$('input').checked = true;
 
   name.$entry = entry;
   name.lastChild.textContent = style.customName || style.name;
