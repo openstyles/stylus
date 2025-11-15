@@ -38,6 +38,7 @@ const defaults = {
   [pPatchCsp + '.sites']: '',
   [pPatchCsp + '.sitesOnly']: false,
   'show-badge': true,             // display text on popup menu icon
+  'skipTurnstiles': false,         // skip Cloudflare turnstiles to prevent potential fingerprinting
   [pStyleViaASS]: false,           // document.adoptedStyleSheets
   [pStyleViaASS + '.sites']: '',
   [pStyleViaASS + '.sitesOnly']: false,

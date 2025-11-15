@@ -185,9 +185,18 @@ async function prepareStylesMV3(tabId, frameId, url, data, key, payload) {
 /** @param {chrome.webRequest.WebResponseHeadersDetails} req */
 function modifyHeaders(req) {
   const key = req2key(req);
-  const data = toSend[key]; if (!data) return;
-  let v;
+  const data = toSend[key];
   const {responseHeaders} = req;
+  if (__values.skipTurnstiles &&
+      req.statusCode === 403 &&
+      findHeader(responseHeaders, 'cf-mitigated', 'challenge')
+  ) {
+    if (data) removePreloadedStyles(req, key, data);
+    tabMan.set(req.tabId, 'skip', req.frameId, true);
+    return;
+  }
+  if (!data) return;
+  let v;
   const {payload} = data;
   const styled = payload.sections.length;
   const cspOn = __values[pPatchCsp]

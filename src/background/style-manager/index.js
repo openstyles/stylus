@@ -192,6 +192,11 @@ export function getSectionsByUrl(url, {id, init, dark} = {}) {
   const {tab = {}, frameId, TDM} = sender;
   const isTop = !frameId || TDM || sender.type === 'main_frame'; // prerendering in onBeforeRequest
   const td = tabCache[sender.tabId || tab.id] || {};
+  const {skip} = td;
+  if (skip?.[frameId]) {
+    delete skip[frameId];
+    return {cfg: {off: true}};
+  }
   /** @type {Injection.Config} */
   res.cfg = !id && {
     ass: __values[pStyleViaASS] &&
