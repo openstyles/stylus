@@ -18,7 +18,9 @@
           <div class="regexp-problem-indicator" data-cmd="note" i18n="title:styleRegexpProblemTooltip">!</div>
         </div>
         <div class="actions">
-          <a class="configure" href="#"></a>
+          <a class="configure" tabindex="0">
+            <i class="i-config"></i>
+          </a>
           <a class="style-edit-link" href="edit.html" i18n="title:editStyleLabel">
             <i class=i-edit></i>
           </a>
@@ -28,18 +30,6 @@
         </div>
       </div>
     </div>
-  </template>
-
-  <template data-id="config">
-    <a class="configure" i18n="title:configureStyle" tabindex="0">
-      <i class="i-config"></i>
-    </a>
-  </template>
-
-  <template data-id="configExternal">
-    <a class="configure" i18n="title:configureStyleOnHomepage" target="_blank">
-      <i class="i-external"></i>
-    </a>
   </template>
 
   <template data-id="regexpProblemExplanation">
@@ -112,7 +102,10 @@
 
   <div id="menu" hidden>
     <div>
-      <header class="ellipsis">title</header>
+      <header>
+        <span class="ellipsis"></span>
+        <a id="home" class="icon" target="_blank"><i class="i-external"></i></a>
+      </header>
       <main>
         <label data-exclude="domain" i18n="+excludeStyleByDomainLabel"><input type="checkbox"></label>
         <label data-exclude="url" i18n="+excludeStyleByUrlLabel"><input type="checkbox"></label>

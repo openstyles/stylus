@@ -321,7 +321,7 @@ a.configure[target="_blank"] .i-config {
   bottom: 0;
   left: 0;
   right: 0;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   z-index: 2147483647;
   background-color: rgba(0, 0, 0, 0.4);
@@ -348,6 +348,15 @@ a.configure[target="_blank"] .i-config {
   & header {
     font-weight: bold;
     background: var(--c90);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    a {
+      margin-left: 1em;
+    }
+    i {
+      font-size: 20px;
+    }
   }
   & main {
     > * {

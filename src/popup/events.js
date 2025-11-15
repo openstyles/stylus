@@ -1,6 +1,8 @@
 import {configDialog, getEventKeyName, moveFocus} from '@/js/dom-util';
 import {template} from '@/js/localization';
 import {API} from '@/js/msg-api';
+import {FIREFOX} from '@/js/ua';
+import {t} from '@/js/util';
 import {getActiveTab} from '@/js/util-webext';
 import {resortEntries, tabUrl} from '.';
 import * as hotkeys from './hotkeys';
@@ -87,17 +89,30 @@ const EntryRoutes = {
   '.configure': configure,
   '.menu-button'(event, entry) {
     if (!menuExclusions.length) menuInit();
-    const exc = entry.styleMeta.exclusions || [];
+    const be = entry.getBoundingClientRect();
+    const style = /**@type{StyleObj}*/entry.styleMeta;
+    const {url} = style;
+    const [elTitle, elHome] = menu.$('header').children;
+    const exc = style.exclusions || [];
     for (const x of menuExclusions) {
       x.el.title = x.rule;
       x.el.classList.toggle('enabled',
         x.input.checked = exc.includes(x.rule));
     }
     menu.classList.remove('delete');
-    menu.styleId = entry.styleId;
+    menu.styleId = style.id;
     menu.hidden = false;
     window.on('keydown', menuOnKey);
-    menu.$('header').textContent = entry.$('.style-name').textContent;
+    elTitle.textContent = entry.$('.style-name').textContent;
+    elHome.hidden = !url;
+    if (url) Object.assign(elHome, {
+      href: url,
+      // Firefox already shows the target of links in a popup
+      title: t('externalHomepage') + (FIREFOX ? '' : '\n' + url),
+    });
+    const menuH = menu.firstElementChild.offsetHeight + 1;
+    const popupH = $root.clientHeight;
+    menu.style.paddingTop = Math.min(be.bottom, popupH - menuH - 8) + 'px';
     moveFocus(menu, 0);
   },
   '.style-edit-link': openEditor,

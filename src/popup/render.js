@@ -98,11 +98,10 @@ export function createStyleElement(style, entry) {
       onmousedown: Events.maybeEdit,
     });
   }
-  const {enabled, frameUrl, [UCD]: ucd} = style;
+  const {enabled, frameUrl, url, [UCD]: ucd} = style;
   const name = entry.$('.style-name');
   const cfg = entry.$('.configure');
-  const cfgUrl = ucd ? '' : style.url;
-  const cls = entry.classList;
+  const hasVars = ucd ? ucd.vars : url && /\?[^#=]/.test(style.updateUrl);
 
   $toggleClasses(entry, {
     'empty': style.empty,
@@ -119,12 +118,15 @@ export function createStyleElement(style, entry) {
   name.$entry = entry;
   name.lastChild.textContent = style.customName || style.name;
 
-  cfg.hidden = ucd ? !ucd.vars : !style.url || !`${style.updateUrl}`.includes('?');
-  if (!cfg.hidden && cfg.href !== cfgUrl) {
-    const el = template[ucd ? 'config' : 'configExternal'].cloneNode(true);
-    if (cfgUrl) el.href = cfgUrl;
-    else el.removeAttribute('href');
-    cfg.replaceWith(el);
+  if (!hasVars)
+    cfg.hidden = true;
+  else if (ucd)
+    cfg.title = t('configureStyle');
+  else {
+    cfg.href = url;
+    cfg.target = '_blank';
+    cfg.title = t('configureStyleOnHomepage') + '\n' + url;
+    cfg.$('i').className = 'i-external';
   }
 
   if (frameUrl) {
