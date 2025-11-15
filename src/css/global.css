@@ -68,6 +68,7 @@ body {
 }
 .dvh100 {
   height: var(--100dvh);
+  box-sizing: border-box;
 }
 a {
   color: var(--fg);

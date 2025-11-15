@@ -71,7 +71,6 @@ html:not(.is-new-style) #heading::before {
   position: fixed;
   top: 0;
   padding-top: var(--pad);
-  box-sizing: border-box;
   z-index: 10;
   display: flex;
   flex-direction: column;
