@@ -43,9 +43,6 @@
   "appliesRemove": {
     "message": "Kaldır"
   },
-  "appliesSpecify": {
-    "message": "Belirt"
-  },
   "appliesToEverything": {
     "message": "Her şey"
   },
@@ -58,11 +55,8 @@
   "author": {
     "message": "Yazar"
   },
-  "backupButtons": {
+  "backup": {
     "message": "Yedek"
-  },
-  "bckpInstStyles": {
-    "message": "Dışa aktar"
   },
   "checkAllUpdates": {
     "message": "Tüm stiller için güncellemeleri denetle"
@@ -175,15 +169,6 @@
   "confirmYes": {
     "message": "Evet"
   },
-  "connectingDropbox": {
-    "message": "Dropbox'a bağlanıyor..."
-  },
-  "connectingDropboxNotAllowed": {
-    "message": "Dropbox'a bağlanmak yalnızca doğrudan web mağazasından yüklenen uygulamalarda kullanılabilir"
-  },
-  "copied": {
-    "message": "Kopyalandı"
-  },
   "copy": {
     "message": "Kopyala"
   },
@@ -235,14 +220,6 @@
   "editStyleLabel": {
     "message": "Düzenle"
   },
-  "editStyleTitle": {
-    "message": "$stylename$ Stilini Düzenleyin",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "editorSettings": {
     "message": "Editör ayarları"
   },
@@ -261,8 +238,8 @@
   "exportLabel": {
     "message": "Dışa aktar"
   },
-  "exportSavedSuccess": {
-    "message": "Dosya başarıyla kaydedildi"
+  "exportStyles": {
+    "message": "Dışa aktar"
   },
   "externalFeedback": {
     "message": "Geribildirim"
@@ -326,9 +303,6 @@
   "genericResetLabel": {
     "message": "Yenile"
   },
-  "genericSavedMessage": {
-    "message": "Kaydedildi"
-  },
   "genericSize": {
     "message": "Boyut"
   },
@@ -349,9 +323,6 @@
   },
   "helpKeyMapHotkey": {
     "message": "Bir kısayol tuşuna basın"
-  },
-  "hostDisabled": {
-    "message": "Bu ana bilgisayar, kullanılan tarayıcının mevcut sürümündeki bir hata nedeniyle devre dışı bırakıldı"
   },
   "importAppendLabel": {
     "message": "Stile ekle"
@@ -394,6 +365,9 @@
   },
   "importReportUndoneTitle": {
     "message": "İçe aktarma geri alındı"
+  },
+  "importStyles": {
+    "message": "Stilleri içe aktar"
   },
   "installButton": {
     "message": "Stil kur"
@@ -440,9 +414,6 @@
   "manageFilters": {
     "message": "Filtreler"
   },
-  "manageHeading": {
-    "message": "Yüklü Stiller"
-  },
   "manageMaxTargets": {
     "message": "Uygulanan ögelerin sayısı"
   },
@@ -461,11 +432,11 @@
   "manageOnlyUpdates": {
     "message": "Sadece güncellemeler ya da sorunlar ile"
   },
+  "manageStyles": {
+    "message": "Stilleri yönet"
+  },
   "menuShowBadge": {
     "message": "Etkin stil sayısını göster"
-  },
-  "noFileToImport": {
-    "message": "Stillerinizi içe aktarmak için önce dışa aktarmanız gerekir."
   },
   "noStylesForSite": {
     "message": "Bu site için hiçbir stil yüklenmedi."
@@ -475,9 +446,6 @@
   },
   "openOptions": {
     "message": "Seçenekler"
-  },
-  "optionsActions": {
-    "message": "İşlemler"
   },
   "optionsAdvanced": {
     "message": "Gelişmiş"
@@ -493,12 +461,6 @@
   },
   "optionsBadgeNormal": {
     "message": "Arkaplan rengi"
-  },
-  "optionsCheck": {
-    "message": "Stilleri güncelle"
-  },
-  "optionsCheckUpdate": {
-    "message": "Uygun tüm güncellemeleri kontrol et ve yükle."
   },
   "optionsCustomizeBadge": {
     "message": "Araç çubuğu simgesindeki rozet"
@@ -524,12 +486,6 @@
   "optionsIconLight": {
     "message": "Açık tarayıcı temaları"
   },
-  "optionsOpen": {
-    "message": "Aç"
-  },
-  "optionsOpenManager": {
-    "message": "Stilleri yönet"
-  },
   "optionsPopupWidth": {
     "message": "Popup genişliği (piksel cinsinden)"
   },
@@ -538,9 +494,6 @@
   },
   "optionsResetButton": {
     "message": "Sıfırlama seçenekleri"
-  },
-  "optionsSubheading": {
-    "message": "Daha Fazla Seçenek"
   },
   "optionsSyncConnect": {
     "message": "Bağlan"
@@ -605,9 +558,6 @@
   "previewLabel": {
     "message": "Canlı önizleme"
   },
-  "readingStyles": {
-    "message": "Stiller okunuyor..."
-  },
   "reload": {
     "message": "Yenile"
   },
@@ -620,14 +570,11 @@
   "replaceWith": {
     "message": "Şununla değiştir"
   },
-  "retrieveBckp": {
-    "message": "Stilleri içe aktar"
-  },
-  "retrieveDropboxSync": {
-    "message": "Dropbox'a aktar"
-  },
   "saveAsTemplate": {
     "message": "Şablon olarak kaydet"
+  },
+  "saved": {
+    "message": "Kaydedildi"
   },
   "search": {
     "message": "Ara"
@@ -769,14 +716,6 @@
   "styleToMozillaFormatTitle": {
     "message": "Mozilla biçeminde bir stil"
   },
-  "styleUpdate": {
-    "message": "\";$stylename$\" stilini güncelleştirmek istiyor musunuz?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleUpdateDiscardChanges": {
     "message": "Bu stil editör dışında değiştirildi. Stili yenilemek ister misiniz?"
   },
@@ -806,9 +745,6 @@
   },
   "unreachableFileHint": {
     "message": "Stylus, eğer siz Stylus chrome://extensions sayfasından ilgili onay kutusunu işaretlerseniz file:// adreslerine erişebilir."
-  },
-  "unzipStyles": {
-    "message": "Stiller açılıyor..."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Güncelleme bulunamadı."
@@ -845,12 +781,6 @@
   "updateCompleted": {
     "message": "Güncelleme tamamlandı."
   },
-  "updatesCurrentlyInstalled": {
-    "message": "Kurulan güncellemeler:"
-  },
-  "uploadingFile": {
-    "message": "Dosya Yükleniyor..."
-  },
   "usercssAvoidOverwriting": {
     "message": "Mevcut bir stilin üzerine yazmaktan kaçınmak için lütfen @name veya @ ad alanının değerini değiştirin."
   },
@@ -874,8 +804,5 @@
   },
   "writeStyleForURL": {
     "message": "bu URL"
-  },
-  "zipStyles": {
-    "message": "Stiller sıkıştırılıyor..."
   }
 }

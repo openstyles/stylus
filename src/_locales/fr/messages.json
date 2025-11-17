@@ -49,9 +49,6 @@
   "appliesRemoveError": {
     "message": "Impossible de supprimer la dernière entrée « s’applique à »"
   },
-  "appliesSpecify": {
-    "message": "Préciser"
-  },
   "appliesToEverything": {
     "message": "Tout"
   },
@@ -64,17 +61,11 @@
   "author": {
     "message": "Auteur"
   },
-  "backupButtons": {
+  "backup": {
     "message": "Sauvegarde"
-  },
-  "backupMessage": {
-    "message": "Pour importer le fichier de sauvegarde, faites un cliquer-déposer sur cette page ou cliquez sur le bouton Importer.\n\nPour exporter une sauvegarde compatible avec une version de Stylus plus ancienne que 1.5.18, effectuez un clic droit ou un appui sur la touche Maj + clic sur le bouton Exporter."
   },
   "backupReminder": {
     "message": "<b>Les styles peuvent être perdus</b> dû à une panne de courant, des bugs dans le navigateur, ou une erreur personnelle.<hr><b>Sauvegarder vos données:</b> soit configurez “Synchroniser vers le cloud” dans les options soit cliquez manuellement sur le bouton d’export à chaque fois que vous faites des changements significatifs ou, de préférence, configurez des sauvegardes automatiques de toutes vos données en utilisant une application dédiée."
-  },
-  "bckpInstStyles": {
-    "message": "Exporter des styles"
   },
   "checkAllUpdates": {
     "message": "Rechercher des mises à jour"
@@ -196,15 +187,6 @@
   "confirmYes": {
     "message": "Oui"
   },
-  "connectingDropbox": {
-    "message": "Connexion à Dropbox…"
-  },
-  "connectingDropboxNotAllowed": {
-    "message": "La connexion à Dropbox est disponible uniquement dans les applications installées directement depuis le Web Store."
-  },
-  "copied": {
-    "message": "Copié dans le presse-papier"
-  },
   "copy": {
     "message": "Copier dans le presse-papier"
   },
@@ -289,14 +271,6 @@
   "editStyleLabel": {
     "message": "Modifier"
   },
-  "editStyleTitle": {
-    "message": "Modifier le style $stylename$",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "editTargetsFirst": {
     "message": "Afficher les sites-cible avant le code"
   },
@@ -321,8 +295,8 @@
   "exportLabel": {
     "message": "Exporter"
   },
-  "exportSavedSuccess": {
-    "message": "Fichier sauvegardé avec succès"
+  "exportStyles": {
+    "message": "Exporter des styles"
   },
   "externalFeedback": {
     "message": "Commentaires"
@@ -389,9 +363,6 @@
   "genericResetLabel": {
     "message": "Ré-initialiser"
   },
-  "genericSavedMessage": {
-    "message": "Enregistré"
-  },
   "genericSize": {
     "message": "Taille"
   },
@@ -415,9 +386,6 @@
   },
   "helpKeyMapHotkey": {
     "message": "Pressez un raccourci clavier"
-  },
-  "hostDisabled": {
-    "message": "Cet hôte a été désactivé en raison d'un bogue dans la version actuelle du navigateur utilisé"
   },
   "importAppendLabel": {
     "message": "Ajouter au style"
@@ -469,6 +437,9 @@
   },
   "importReportUndoneTitle": {
     "message": "L’import a été annulé"
+  },
+  "importStyles": {
+    "message": "Importer des styles"
   },
   "installButton": {
     "message": "Installer le style"
@@ -580,17 +551,11 @@
   "manageFilters": {
     "message": "Filtres"
   },
-  "manageHeading": {
-    "message": "Styles installés"
-  },
   "manageMaxTargets": {
     "message": "Nombre d’items « s’applique à »"
   },
   "manageMinColumnWidth": {
     "message": "Largeur de colonne minimale (en pixel ; 9999 désactive le mode multicolonne)"
-  },
-  "manageNewStyleAsUsercss": {
-    "message": "en tant que UserCSS"
   },
   "manageNewUI": {
     "message": "Affichage en grille"
@@ -618,6 +583,9 @@
   },
   "manageOnlyUsercss": {
     "message": "Styles UserCSS uniquement"
+  },
+  "manageStyles": {
+    "message": "Gérer les styles"
   },
   "masterSwitch": {
     "message": "Interrupteur général"
@@ -817,9 +785,6 @@
       }
     }
   },
-  "noFileToImport": {
-    "message": "Pour importer vos styles, vous devez d’abord les exporter."
-  },
   "noStylesForSite": {
     "message": "Aucun style n'est installé pour ce site."
   },
@@ -901,12 +866,6 @@
   "optionsBadgeNormal": {
     "message": "Couleur d'arrière plan"
   },
-  "optionsCheck": {
-    "message": "Mettre à jour les styles"
-  },
-  "optionsCheckUpdate": {
-    "message": "Vérifier et installer toutes les mises à jour disponibles"
-  },
   "optionsCustomizeBadge": {
     "message": "Badge sur l’icône de la barre d’outils"
   },
@@ -928,12 +887,6 @@
   "optionsIconLight": {
     "message": "Thème clair"
   },
-  "optionsOpen": {
-    "message": "Ouvrir"
-  },
-  "optionsOpenManager": {
-    "message": "Gérer les styles"
-  },
   "optionsPopupWidth": {
     "message": "Largeur de la popup (en pixels)"
   },
@@ -945,9 +898,6 @@
   },
   "optionsStylusThemes": {
     "message": "Cliquez sur l'cône Stylus dans la barre d'outils du navigateur, puis sur « Trouver des styles »"
-  },
-  "optionsSubheading": {
-    "message": "Plus de paramètres"
   },
   "optionsSyncConnect": {
     "message": "Connecter"
@@ -1061,9 +1011,6 @@
   "popupMenuButtonTooltip": {
     "message": "Actions"
   },
-  "popupOpenEditInPopup": {
-    "message": "…sans la barre d'adresse"
-  },
   "popupOpenEditInWindow": {
     "message": "Ouvrir l'éditeur dans une nouvelle fenêtre"
   },
@@ -1115,9 +1062,6 @@
   "publishUsw": {
     "message": "Utiliser <userstyles.world>"
   },
-  "readingStyles": {
-    "message": "Lecture des styles…"
-  },
   "reload": {
     "message": "Recharger"
   },
@@ -1133,14 +1077,11 @@
   "restoreTemplate": {
     "message": "Rétablir le modèle par défaut.\n\n(Les pages ouvertes dans l'éditeur ne seront pas modifiées.)"
   },
-  "retrieveBckp": {
-    "message": "Importer des styles"
-  },
-  "retrieveDropboxSync": {
-    "message": "Importer depuis Dropbox"
-  },
   "saveAsTemplate": {
     "message": "Sauvegarder comme modèle"
+  },
+  "saved": {
+    "message": "Enregistré"
   },
   "search": {
     "message": "Rechercher"
@@ -1397,14 +1338,6 @@
   "styleToMozillaFormatTitle": {
     "message": "Style au format Mozilla"
   },
-  "styleUpdate": {
-    "message": "Voulez-vous mettre à jour « $stylename$ » ?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleUpdateDiscardChanges": {
     "message": "Le style a été changé en dehors de l’éditeur. Voulez-vous recharger le style ?"
   },
@@ -1464,9 +1397,6 @@
   "unreachableMozSiteHintOldFF": {
     "message": "Seulement dans Firefox 59 et plus récent que les extensions-web peuvent être configurés pour autoriser de rajouter des éléments de style sur les sites protégés CSP comme celui-ci."
   },
-  "unzipStyles": {
-    "message": "Décompression des styles…"
-  },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Aucune mise à jour trouvée."
   },
@@ -1505,12 +1435,6 @@
   "updateCompleted": {
     "message": "Mise à jour terminée."
   },
-  "updatesCurrentlyInstalled": {
-    "message": "Mises à jour installées :"
-  },
-  "uploadingFile": {
-    "message": "Envoi du fichier…"
-  },
   "usercssAvoidOverwriting": {
     "message": "Veuillez changer la valeur de @name ou @namespace afin d'éviter d'écraser un style pré-existant."
   },
@@ -1542,8 +1466,5 @@
   },
   "writeStyleForURL": {
     "message": "cette URL"
-  },
-  "zipStyles": {
-    "message": "Compression des styles…"
   }
 }

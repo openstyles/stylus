@@ -49,9 +49,6 @@
   "appliesRemoveError": {
     "message": "Kann letzten \"Gilt für\" Eintrag nicht entfernen"
   },
-  "appliesSpecify": {
-    "message": "Angeben"
-  },
   "appliesToEverything": {
     "message": "Alles"
   },
@@ -64,17 +61,11 @@
   "author": {
     "message": "Autor"
   },
-  "backupButtons": {
+  "backup": {
     "message": "Datensicherung"
-  },
-  "backupMessage": {
-    "message": "Um die Backupdatei zu importieren, ziehe sie in diese Seite oder klicke auf die Import-Schaltfläche.\n\nZum Exportieren einer mit Stylus 1.5.18 (und älter) kompatiblen Backupdatei, rechtsklicke oder Shift-klicke auf die Export-Schaltfläche."
   },
   "backupReminder": {
     "message": "<b>Styles können verloren gehen</b> durch Stromausfall, Browser- oder Anwenderfehler. <hr><b>Sichere deine Daten:</b> Entweder in den Optionen „Mit der Cloud synchronisieren“ nutzen oder nach wesentlichen Änderungen manuell über die Exportschaltfläche. Erstelle am besten eine automatische Sicherung all deiner Daten mit einem Backupprogramm."
-  },
-  "bckpInstStyles": {
-    "message": "Styles exportieren"
   },
   "checkAllUpdates": {
     "message": "Nach Updates suchen"
@@ -187,15 +178,6 @@
   "confirmYes": {
     "message": "Ja"
   },
-  "connectingDropbox": {
-    "message": "Verbinde mit Dropbox..."
-  },
-  "connectingDropboxNotAllowed": {
-    "message": "Verbindung zur Dropbox ist nur in Apps verfügbar, die direkt vom Webstore installiert wurden"
-  },
-  "copied": {
-    "message": "In die Zwischenablage kopiert"
-  },
   "copy": {
     "message": "In die Zwischenablage kopieren"
   },
@@ -264,14 +246,6 @@
   "editStyleLabel": {
     "message": "Bearbeiten"
   },
-  "editStyleTitle": {
-    "message": "Style $stylename$ bearbeiten",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "editTargetsFirst": {
     "message": "Zeige Ziel-URLs am Bereichsanfang"
   },
@@ -296,8 +270,8 @@
   "exportLabel": {
     "message": "Exportieren"
   },
-  "exportSavedSuccess": {
-    "message": "Datei erfolgreich gespeichert"
+  "exportStyles": {
+    "message": "Styles exportieren"
   },
   "externalLink": {
     "message": "Externer Link"
@@ -370,9 +344,6 @@
   "genericResetLabel": {
     "message": "Zurücksetzen"
   },
-  "genericSavedMessage": {
-    "message": "Gespeichert"
-  },
   "genericSize": {
     "message": "Größe"
   },
@@ -396,9 +367,6 @@
   },
   "helpKeyMapHotkey": {
     "message": "Hotkey drücken"
-  },
-  "hostDisabled": {
-    "message": "Dieser Host wurde deaktiviert, weil die aktuell genutzte Version deines Browsers einen Fehler enthält."
   },
   "importAppendLabel": {
     "message": "Zum Style anfügen"
@@ -450,6 +418,9 @@
   },
   "importReportUndoneTitle": {
     "message": "Importierung wurde rückgängig gemacht."
+  },
+  "importStyles": {
+    "message": "Styles importieren"
   },
   "installButton": {
     "message": "Style installieren"
@@ -561,17 +532,11 @@
   "manageFilters": {
     "message": "Filter"
   },
-  "manageHeading": {
-    "message": "Installierte Styles"
-  },
   "manageMaxTargets": {
     "message": "Anzahl der \"Gilt für\" Elemente"
   },
   "manageMinColumnWidth": {
     "message": "Minimale Spaltenbreite (in Pixeln. 9999 deaktiviert den Mehrspalten-Modus)"
-  },
-  "manageNewStyleAsUsercss": {
-    "message": "als UserCSS"
   },
   "manageNewUI": {
     "message": "Tabellenlayout"
@@ -599,6 +564,9 @@
   },
   "manageOnlyUsercss": {
     "message": "Nur UserCSS Styles"
+  },
+  "manageStyles": {
+    "message": "Verwaltung"
   },
   "masterSwitch": {
     "message": "Hauptschalter"
@@ -798,9 +766,6 @@
       }
     }
   },
-  "noFileToImport": {
-    "message": "Keine Importdatei vorhanden. Um Styles zu importieren, solltest du sie zuerst exportieren."
-  },
   "noStylesForSite": {
     "message": "Für diese Webseite sind keine Styles installiert."
   },
@@ -836,9 +801,6 @@
   },
   "optionKeepAliveNote": {
     "message": "Erhöhe den Wert, wenn beim Öffnen einer Seite nach längerer Nichtbenutzung des Browsers ein Blinken von ungestyltem Inhalt (FOUC) auftritt.\n\n-1 = ManifestV2 Standardverhalten (Kein Limit).\n0 = ManifestV3 Standardverhalten (halbe Minute).\n\nDer Cache benötigt 30 MB oder mehr RAM, aber der Wiederaufbau kann zu viel Zeit in Anspruch nehmen und zu FOUC führen je nach Website, Netzwerkgeschwindigkeit, Anzahl der Styles, RAM-Größe und CPU-Leistung."
-  },
-  "optionsActions": {
-    "message": "Aktionen"
   },
   "optionsAdvanced": {
     "message": "Erweitert"
@@ -891,12 +853,6 @@
   "optionsBadgeNormal": {
     "message": "Hintergrundfarbe"
   },
-  "optionsCheck": {
-    "message": "Styles aktualisieren"
-  },
-  "optionsCheckUpdate": {
-    "message": "Alle verfügbaren Updates Installieren"
-  },
   "optionsCustomizeBadge": {
     "message": "Badge auf dem Toolbar-Icon"
   },
@@ -918,12 +874,6 @@
   "optionsIconLight": {
     "message": "Helle Browser-Themes"
   },
-  "optionsOpen": {
-    "message": "Öffnen"
-  },
-  "optionsOpenManager": {
-    "message": "Verwaltung"
-  },
   "optionsPopupWidth": {
     "message": "Popup-Breite (in Pixeln)"
   },
@@ -935,9 +885,6 @@
   },
   "optionsStylusThemes": {
     "message": "Klicke auf einer beliebigen Stylus Seite auf das Stylus-Symbol in der Werkzeugleiste des Browsers, dann klicke auf \"Styles finden\""
-  },
-  "optionsSubheading": {
-    "message": "Mehr Optionen"
   },
   "optionsSyncConnect": {
     "message": "Verbinden"
@@ -1051,9 +998,6 @@
   "popupMenuButtonTooltip": {
     "message": "Aktionsmenü"
   },
-  "popupOpenEditInPopup": {
-    "message": "…ohne Adresszeile"
-  },
   "popupOpenEditInWindow": {
     "message": "Editor in neuem Fenster öffnen"
   },
@@ -1105,9 +1049,6 @@
   "publishUsw": {
     "message": "Via <userstyles.world>"
   },
-  "readingStyles": {
-    "message": "Lese Styles..."
-  },
   "reload": {
     "message": "Neu laden"
   },
@@ -1123,11 +1064,11 @@
   "restoreTemplate": {
     "message": "Standard-Template wiederherstellen.\n\n(Die gerade geöffneten Editorseiten werden nicht verändert.)"
   },
-  "retrieveBckp": {
-    "message": "Styles importieren"
-  },
   "saveAsTemplate": {
     "message": "Als Template speichern"
+  },
+  "saved": {
+    "message": "Gespeichert"
   },
   "search": {
     "message": "Suche"
@@ -1381,14 +1322,6 @@
   "styleToMozillaFormatTitle": {
     "message": "Style im Mozilla Format"
   },
-  "styleUpdate": {
-    "message": "Möchtest Du \"$stylename$\" wirklich aktualisieren?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleUpdateDiscardChanges": {
     "message": "Der Style wurde außerhalb des Editors verändert. Style neu laden?"
   },
@@ -1445,9 +1378,6 @@
   "unreachableMozSiteHintOldFF": {
     "message": "Erst ab Firefox 59 können WebExtensions Style-Elemente auf CSP-geschützten Seiten wie dieser hinzufügen."
   },
-  "unzipStyles": {
-    "message": "Entpacke Styles..."
-  },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Keine Updates gefunden."
   },
@@ -1486,12 +1416,6 @@
   "updateCompleted": {
     "message": "Aktualisierung abgeschlossen."
   },
-  "updatesCurrentlyInstalled": {
-    "message": "Installierte Updates:"
-  },
-  "uploadingFile": {
-    "message": "Lade Styles hoch..."
-  },
   "usercssAvoidOverwriting": {
     "message": "Bitte ändere @name oder @namespace, um das Überschreiben eines bereits existierenden Styles zu verhindern."
   },
@@ -1523,8 +1447,5 @@
   },
   "writeStyleForURL": {
     "message": "diese URL"
-  },
-  "zipStyles": {
-    "message": "Packe Styles..."
   }
 }

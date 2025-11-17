@@ -49,9 +49,6 @@
   "appliesRemoveError": {
     "message": "Nem lehet eltávolítani az utolsó 'érvényes erre' bejegyzést"
   },
-  "appliesSpecify": {
-    "message": "Leszűkítés"
-  },
   "appliesToEverything": {
     "message": "Minden"
   },
@@ -64,11 +61,8 @@
   "author": {
     "message": "Szerző"
   },
-  "backupButtons": {
+  "backup": {
     "message": "Biztonsági mentés"
-  },
-  "bckpInstStyles": {
-    "message": "Stílusok exportálása"
   },
   "checkAllUpdates": {
     "message": "Összes stílus frissítésének ellenőrzése"
@@ -181,15 +175,6 @@
   "confirmYes": {
     "message": "Igen"
   },
-  "connectingDropbox": {
-    "message": "Kapcsolódás Dropboxhoz..."
-  },
-  "connectingDropboxNotAllowed": {
-    "message": "Dropboxhoz csak közvetlenül a web-boltból telepített alkalmazásból lehet kapcsolódni."
-  },
-  "copied": {
-    "message": "Vágólapra másolva"
-  },
   "copy": {
     "message": "Másolás vágólapra"
   },
@@ -290,14 +275,6 @@
   "editStyleLabel": {
     "message": "Szerkesztés"
   },
-  "editStyleTitle": {
-    "message": "A(z) $stylename$ stílus szerkesztése",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "editorSettings": {
     "message": "Szerkesztőbeállítások"
   },
@@ -316,8 +293,8 @@
   "exportLabel": {
     "message": "Exportálás"
   },
-  "exportSavedSuccess": {
-    "message": "A fájl sikeresen elmentve."
+  "exportStyles": {
+    "message": "Stílusok exportálása"
   },
   "externalFeedback": {
     "message": "Visszajelzés"
@@ -380,9 +357,6 @@
   },
   "genericResetLabel": {
     "message": "VIsszaállítás"
-  },
-  "genericSavedMessage": {
-    "message": "Mentve"
   },
   "genericSize": {
     "message": "Méret"
@@ -461,6 +435,9 @@
   },
   "importReportUndoneTitle": {
     "message": "Az importálás vissza lett vonva"
+  },
+  "importStyles": {
+    "message": "Stílusok importálása"
   },
   "installButton": {
     "message": "Stílus telepítése"
@@ -563,14 +540,8 @@
   "manageFilters": {
     "message": "Szűrők"
   },
-  "manageHeading": {
-    "message": "Telepített stílusok"
-  },
   "manageMaxTargets": {
     "message": "'Érvényes erre' elemek kijelzendő száma"
-  },
-  "manageNewStyleAsUsercss": {
-    "message": "UserCSS-ként"
   },
   "manageOnlyDisabled": {
     "message": "Csak a letiltott stílusok"
@@ -595,6 +566,9 @@
   },
   "manageOnlyUsercss": {
     "message": "Csak UserCSS stílusok"
+  },
+  "manageStyles": {
+    "message": "Stílusok kezelése"
   },
   "menuShowBadge": {
     "message": "Aktív stílusok számlálójának mutatása"
@@ -772,9 +746,6 @@
       }
     }
   },
-  "noFileToImport": {
-    "message": "A stílusok importálásához előbb exportálni kell őket."
-  },
   "noStylesForSite": {
     "message": "Nincs telepítve stílus ehhez az oldalhoz."
   },
@@ -783,9 +754,6 @@
   },
   "openOptions": {
     "message": "Beállítások"
-  },
-  "optionsActions": {
-    "message": "Műveletek"
   },
   "optionsAdvanced": {
     "message": "Haladó"
@@ -807,12 +775,6 @@
   },
   "optionsBadgeNormal": {
     "message": "Háttérszín"
-  },
-  "optionsCheck": {
-    "message": "Stílusok frissítése"
-  },
-  "optionsCheckUpdate": {
-    "message": "Az összes frissítés ellenőrzése és telepítése"
   },
   "optionsCustomizeBadge": {
     "message": "Ikon képe az eszköztáron"
@@ -838,12 +800,6 @@
   "optionsIconLight": {
     "message": "Világos böngészőtémák"
   },
-  "optionsOpen": {
-    "message": "Megnyitás"
-  },
-  "optionsOpenManager": {
-    "message": "Stílusok kezelése"
-  },
   "optionsPopupWidth": {
     "message": "Felugró ablak szélessége (pixelben)"
   },
@@ -852,9 +808,6 @@
   },
   "optionsResetButton": {
     "message": "Alapértelmezés visszaállítása"
-  },
-  "optionsSubheading": {
-    "message": "További beállítások"
   },
   "optionsSyncConnect": {
     "message": "Kapcsolódás"
@@ -971,9 +924,6 @@
   "previewTooltip": {
     "message": "Átmenetileg alkalmazza a változtatásokat mentés nélkül.\nMentsd a stílust, hogy a változtatások véglegesek legyenek!"
   },
-  "readingStyles": {
-    "message": "Stílusok olvasása..."
-  },
   "replace": {
     "message": "Csere"
   },
@@ -983,11 +933,8 @@
   "replaceWith": {
     "message": "Csere a következővel"
   },
-  "retrieveBckp": {
-    "message": "Stílusok importálása"
-  },
-  "retrieveDropboxSync": {
-    "message": "Importálás Dropboxból"
+  "saved": {
+    "message": "Mentve"
   },
   "search": {
     "message": "Keresés"
@@ -1163,14 +1110,6 @@
   "styleToMozillaFormatTitle": {
     "message": "Mozilla formátumú stílus"
   },
-  "styleUpdate": {
-    "message": "Biztos, hogy frissíteni akarod a(z) „$stylename$” stílust?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleUpdateDiscardChanges": {
     "message": "A stílus módosítva lett a szerkesztőn kívül. Szeretnéd újratölteni?"
   },
@@ -1206,9 +1145,6 @@
   },
   "unreachableMozSiteHintOldFF": {
     "message": "Csak a Firefox 59 vagy annál újabb állítható be az ilyen CSP-védett oldalak stílusának átszabása WebExtensions kiegészítőkön keresztül."
-  },
-  "unzipStyles": {
-    "message": "Stílusok kibontása..."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Nem találhatók frissítések."
@@ -1248,12 +1184,6 @@
   "updateCompleted": {
     "message": "A frissítés befejeződött."
   },
-  "updatesCurrentlyInstalled": {
-    "message": "Frissítve:"
-  },
-  "uploadingFile": {
-    "message": "Fájl feltöltése..."
-  },
   "usercssAvoidOverwriting": {
     "message": "Kérlek, módosítsd a @name vagy a @namespace értékét, nehogy felül legyen írva az egyik létező stílus!"
   },
@@ -1277,8 +1207,5 @@
   },
   "writeStyleForURL": {
     "message": "ehhez az URL-hez"
-  },
-  "zipStyles": {
-    "message": "Stílusok tömörítése..."
   }
 }

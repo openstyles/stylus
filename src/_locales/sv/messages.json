@@ -49,9 +49,6 @@
   "appliesRemoveError": {
     "message": "Kan inte ta bort senaste \"tillämpad för\" post"
   },
-  "appliesSpecify": {
-    "message": "Specificera"
-  },
   "appliesToEverything": {
     "message": "Allt"
   },
@@ -67,11 +64,8 @@
   "author": {
     "message": "Författare"
   },
-  "backupButtons": {
+  "backup": {
     "message": "Säkerhetskopiera"
-  },
-  "bckpInstStyles": {
-    "message": "Exportera stilar"
   },
   "checkAllUpdates": {
     "message": "Sök efter uppdateringar"
@@ -181,15 +175,6 @@
   "confirmYes": {
     "message": "Ja"
   },
-  "connectingDropbox": {
-    "message": "Ansluter Dropbox..."
-  },
-  "connectingDropboxNotAllowed": {
-    "message": "Anslutning till Dropbox är endast tillgänglig i appar installerade direkt från webbutiken"
-  },
-  "copied": {
-    "message": "Kopierad till urklipp"
-  },
   "copy": {
     "message": "Kopiera till urklipp"
   },
@@ -235,14 +220,6 @@
   "editStyleLabel": {
     "message": "Ändra"
   },
-  "editStyleTitle": {
-    "message": "Ändra stilen $stylename$",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "enableStyleLabel": {
     "message": "Aktivera"
   },
@@ -255,8 +232,8 @@
   "exportLabel": {
     "message": "Exportera"
   },
-  "exportSavedSuccess": {
-    "message": "Filen sparades"
+  "exportStyles": {
+    "message": "Exportera stilar"
   },
   "externalFeedback": {
     "message": "Återkoppling"
@@ -313,9 +290,6 @@
   },
   "genericResetLabel": {
     "message": "Återställ"
-  },
-  "genericSavedMessage": {
-    "message": "Sparad"
   },
   "genericTitle": {
     "message": "Titel"
@@ -379,6 +353,9 @@
   },
   "importReportUndoneTitle": {
     "message": "Importen har ångrats"
+  },
+  "importStyles": {
+    "message": "Importera stilar"
   },
   "installButton": {
     "message": "Installera stil"
@@ -475,14 +452,8 @@
   "manageFilters": {
     "message": "Filter"
   },
-  "manageHeading": {
-    "message": "Installerade stilar"
-  },
   "manageMaxTargets": {
     "message": "Antal tillämpad-för objekt"
-  },
-  "manageNewStyleAsUsercss": {
-    "message": "som UserCSS"
   },
   "manageOnlyDisabled": {
     "message": "Endast inaktiverade stilar"
@@ -507,6 +478,9 @@
   },
   "manageOnlyUsercss": {
     "message": "Endast UserCSS-stilar"
+  },
+  "manageStyles": {
+    "message": "Hantera stilar"
   },
   "menuShowBadge": {
     "message": "Visa antalet aktiva stilar"
@@ -692,9 +666,6 @@
       }
     }
   },
-  "noFileToImport": {
-    "message": "För att importera dina stilar bör du exportera dem först."
-  },
   "noStylesForSite": {
     "message": "Inga stilar installerade för denna webbplats."
   },
@@ -706,9 +677,6 @@
   },
   "openOptions": {
     "message": "Alternativ"
-  },
-  "optionsActions": {
-    "message": "Åtgärder"
   },
   "optionsAdvanced": {
     "message": "Avancerat"
@@ -731,12 +699,6 @@
   "optionsBadgeNormal": {
     "message": "Bakgrundsfärg"
   },
-  "optionsCheck": {
-    "message": "Uppdatera stilar"
-  },
-  "optionsCheckUpdate": {
-    "message": "Leta efter och installera alla tillgängliga uppdateringar"
-  },
   "optionsCustomizeBadge": {
     "message": "Bricka på verktygsfältsikonen"
   },
@@ -758,12 +720,6 @@
   "optionsIconLight": {
     "message": "Ljusa webbläsarteman"
   },
-  "optionsOpen": {
-    "message": "Öppna"
-  },
-  "optionsOpenManager": {
-    "message": "Hantera stilar"
-  },
   "optionsPopupWidth": {
     "message": "Bredd på popup (i pixlar)"
   },
@@ -772,9 +728,6 @@
   },
   "optionsResetButton": {
     "message": "Återställ alternativ"
-  },
-  "optionsSubheading": {
-    "message": "Mer alternativ"
   },
   "optionsSyncConnect": {
     "message": "Anslut"
@@ -869,9 +822,6 @@
   "previewTooltip": {
     "message": "Tillämpar tillfälligt ändringarna utan att spara.\nSpara stilen för att göra ändringarna permanenta."
   },
-  "readingStyles": {
-    "message": "Läsar format..."
-  },
   "replace": {
     "message": "Ersätt"
   },
@@ -881,11 +831,8 @@
   "replaceWith": {
     "message": "Ersätt med"
   },
-  "retrieveBckp": {
-    "message": "Importera stilar"
-  },
-  "retrieveDropboxSync": {
-    "message": "Dropbox importering"
+  "saved": {
+    "message": "Sparad"
   },
   "search": {
     "message": "Sök"
@@ -1070,14 +1017,6 @@
   "styleToMozillaFormatTitle": {
     "message": "Stil i Mozilla-format"
   },
-  "styleUpdate": {
-    "message": "Är du säker på att du vill uppdatera '$stylename$'?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleUpdateDiscardChanges": {
     "message": "Stilen ändras utanför redigeraren. Vill du uppdatera stilen?"
   },
@@ -1113,9 +1052,6 @@
   },
   "unreachableMozSiteHintOldFF": {
     "message": "Endast Firefox 59 och nyare kan konfigureras för att tillåta WebExtensions att lägga till stilelement på CSP-skyddade webbplatser som den här."
-  },
-  "unzipStyles": {
-    "message": "Packar upp stilar..."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Inga uppdateringar hittades."
@@ -1155,12 +1091,6 @@
   "updateCompleted": {
     "message": "Uppdatering slutförd."
   },
-  "updatesCurrentlyInstalled": {
-    "message": "Uppdateringar installerade:"
-  },
-  "uploadingFile": {
-    "message": "Skickar filen..."
-  },
   "usercssAvoidOverwriting": {
     "message": "Vänligen ändra värdet på @name eller @ namespace för att undvika att skriva över en befintlig stil."
   },
@@ -1184,8 +1114,5 @@
   },
   "writeStyleForURL": {
     "message": "denna webbadress"
-  },
-  "zipStyles": {
-    "message": "Packar stilar..."
   }
 }

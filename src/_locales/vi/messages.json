@@ -49,9 +49,6 @@
   "appliesRemoveError": {
     "message": "Không thể xoá mục \"Áp dụng với\" cuối cùng"
   },
-  "appliesSpecify": {
-    "message": "Chỉ định"
-  },
   "appliesToEverything": {
     "message": "Tất cả"
   },
@@ -61,14 +58,8 @@
   "author": {
     "message": "Tác giả"
   },
-  "backupButtons": {
+  "backup": {
     "message": "Sao lưu"
-  },
-  "backupMessage": {
-    "message": "Để nhập tập tin sao lưu, kéo và thả nó vào trang này hoặc nhấp vào nút Nhập.\n\nĐể xuất một bản sao lưu tương thích với Stylus trước phiên bản 1.5.18, nhấp chuột phải hoặc nhấn giữ Shift khi nhấp chuột trái vào nút Xuất."
-  },
-  "bckpInstStyles": {
-    "message": "Xuất bảng định kiểu"
   },
   "checkForUpdate": {
     "message": "Kiểm tra bản cập nhật mới"
@@ -169,15 +160,6 @@
   "confirmYes": {
     "message": "Có"
   },
-  "connectingDropbox": {
-    "message": "Đang kết nối với Dropbox..."
-  },
-  "connectingDropboxNotAllowed": {
-    "message": "Tính năng kết nối với Dropbox chỉ khả dụng khi cài ứng dụng trực tiếp từ cửa hàng web"
-  },
-  "copied": {
-    "message": "Đã chép vào khay nhớ tạm"
-  },
   "copy": {
     "message": "Chép vào khay nhớ tạm"
   },
@@ -252,14 +234,6 @@
   "editStyleLabel": {
     "message": "Sửa"
   },
-  "editStyleTitle": {
-    "message": "Sửa bảng định kiểu $stylename$",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "editorSettings": {
     "message": "Cài đặt trình soạn thảo"
   },
@@ -272,8 +246,8 @@
   "exportLabel": {
     "message": "Xuất"
   },
-  "exportSavedSuccess": {
-    "message": "Lưu thành công"
+  "exportStyles": {
+    "message": "Xuất bảng định kiểu"
   },
   "externalFeedback": {
     "message": "Phản hồi"
@@ -313,9 +287,6 @@
   },
   "genericResetLabel": {
     "message": "Đặt lại"
-  },
-  "genericSavedMessage": {
-    "message": "Đã lưu"
   },
   "genericTest": {
     "message": "Thứ"
@@ -369,6 +340,9 @@
   },
   "linterJSONError": {
     "message": "Định dạng JSON không hợp lệ"
+  },
+  "saved": {
+    "message": "Đã lưu"
   },
   "styleEnabledLabel": {
     "message": "Kích hoạt"

@@ -49,9 +49,6 @@
   "appliesRemoveError": {
     "message": "Kan ikke fjerne sidste 'Anvendes på'-post"
   },
-  "appliesSpecify": {
-    "message": "Angiv"
-  },
   "appliesToEverything": {
     "message": "Alt"
   },
@@ -64,14 +61,8 @@
   "author": {
     "message": "Forfatter"
   },
-  "backupMessage": {
-    "message": "For at importere sikkerhedskopien skal du trække og slippe den her eller klikke på knappen Importér.\n\nFor at eksportere en kompatibel sikkerhedskopi til Stylus ældre end 1.5.18, højreklik eller shift-klik på knappen Eksportér."
-  },
   "backupReminder": {
     "message": "<b>Stile kan gå tabt</b> ved strømafbrydelse, browserfejl eller brugerfejl.<hr><b>Sikkerhedskopiér dine data:</b> Konfigurer 'Synkroniser til skyen' i indstillingerne, eller klik manuelt på eksportknappen efter store ændringer. Eller allerhelst, opsæt automatisk sikkerhedskopiering med en dedikeret app."
-  },
-  "bckpInstStyles": {
-    "message": "Eksportér stile"
   },
   "checkAllUpdates": {
     "message": "Tjek alle stile for opdateringer"
@@ -181,15 +172,6 @@
   "confirmYes": {
     "message": "Ja"
   },
-  "connectingDropbox": {
-    "message": "Forbinder Dropbox..."
-  },
-  "connectingDropboxNotAllowed": {
-    "message": "Forbindelse til Dropbox er kun tilgængelig i apps installeret direkte fra webbutikken"
-  },
-  "copied": {
-    "message": "Kopieret til udklipsholder"
-  },
   "copy": {
     "message": "Kopiér til udklipsholder"
   },
@@ -274,14 +256,6 @@
   "editStyleLabel": {
     "message": "Rediger"
   },
-  "editStyleTitle": {
-    "message": "Rediger stilen $stylename$",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "editTargetsFirst": {
     "message": "Vis mål før kode"
   },
@@ -306,8 +280,8 @@
   "exportLabel": {
     "message": "Eksportér"
   },
-  "exportSavedSuccess": {
-    "message": "Filen blev gemt"
+  "exportStyles": {
+    "message": "Eksportér stile"
   },
   "externalHomepage": {
     "message": "Hjemmeside"
@@ -374,9 +348,6 @@
   "genericResetLabel": {
     "message": "Nulstil"
   },
-  "genericSavedMessage": {
-    "message": "Gemt"
-  },
   "genericSize": {
     "message": "Størrelse"
   },
@@ -400,9 +371,6 @@
   },
   "helpKeyMapHotkey": {
     "message": "Tryk på en genvejstast"
-  },
-  "hostDisabled": {
-    "message": "Denne vært blev deaktiveret grundet en fejl i den nuværende browserversion"
   },
   "importAppendLabel": {
     "message": "Føj til stil"
@@ -454,6 +422,9 @@
   },
   "importReportUndoneTitle": {
     "message": "Importen er blevet annulleret"
+  },
+  "importStyles": {
+    "message": "Importér stile"
   },
   "installButton": {
     "message": "Installer stil"
@@ -565,17 +536,11 @@
   "manageFilters": {
     "message": "Filtre"
   },
-  "manageHeading": {
-    "message": "Installerede stile"
-  },
   "manageMaxTargets": {
     "message": "Antal 'Anvendes på'-elementer"
   },
   "manageMinColumnWidth": {
     "message": "Minimum kolonnebredde (i pixels; 9999 deaktiverer multikolonne-tilstand)"
-  },
-  "manageNewStyleAsUsercss": {
-    "message": "som UserCSS"
   },
   "manageNewUI": {
     "message": "Tabellayout"
@@ -603,6 +568,9 @@
   },
   "manageOnlyUsercss": {
     "message": "Kun UserCSS-stile"
+  },
+  "manageStyles": {
+    "message": "Administrer stile"
   },
   "masterSwitch": {
     "message": "Hovedafbryder"
@@ -714,9 +682,6 @@
       }
     }
   },
-  "noFileToImport": {
-    "message": "For at importere dine stile bør du først eksportere dem."
-  },
   "noStylesForSite": {
     "message": "Ingen stile installeret for denne side."
   },
@@ -750,9 +715,6 @@
   "optionKeepAliveIdle": {
     "message": "...selv hvis browseren er inaktiv"
   },
-  "optionsActions": {
-    "message": "Handlinger"
-  },
   "optionsAdvanced": {
     "message": "Avanceret"
   },
@@ -770,12 +732,6 @@
   },
   "optionsBadgeNormal": {
     "message": "Baggrundsfarve"
-  },
-  "optionsCheck": {
-    "message": "Opdater stile"
-  },
-  "optionsCheckUpdate": {
-    "message": "Tjek for og installer alle tilgængelige opdateringer"
   },
   "optionsCustomizeBadge": {
     "message": "Badge på værktøjslinje-ikonet"
@@ -804,12 +760,6 @@
   "optionsIconLight": {
     "message": "Lyse browsertemaer"
   },
-  "optionsOpen": {
-    "message": "Åbn"
-  },
-  "optionsOpenManager": {
-    "message": "Administrer stile"
-  },
   "optionsPopupWidth": {
     "message": "Pop op-bredde (i pixels)"
   },
@@ -821,9 +771,6 @@
   },
   "optionsStylusThemes": {
     "message": "Klik på Stylus-ikonet i browserens værktøjslinje på enhver Stylus-side, inklusive denne, og klik derefter på 'Find stile'"
-  },
-  "optionsSubheading": {
-    "message": "Flere indstillinger"
   },
   "optionsSyncLogin": {
     "message": "Log ind"
@@ -888,9 +835,6 @@
   "popupMenuButtonTooltip": {
     "message": "Handlingsmenu"
   },
-  "popupOpenEditInPopup": {
-    "message": "...uden adresselinje"
-  },
   "popupOpenEditInWindow": {
     "message": "Åbn editor i et nyt vindue"
   },
@@ -930,9 +874,6 @@
   "publishUsw": {
     "message": "Bruger <userstyles.world>"
   },
-  "readingStyles": {
-    "message": "Læser stile..."
-  },
   "reload": {
     "message": "Genindlæs"
   },
@@ -945,14 +886,11 @@
   "replaceWith": {
     "message": "Erstat med"
   },
-  "retrieveBckp": {
-    "message": "Importér stile"
-  },
-  "retrieveDropboxSync": {
-    "message": "Dropbox-import"
-  },
   "saveAsTemplate": {
     "message": "Gem som skabelon"
+  },
+  "saved": {
+    "message": "Gemt"
   },
   "search": {
     "message": "Søg"
@@ -1134,14 +1072,6 @@
   "styleToMozillaFormatTitle": {
     "message": "Stil i Mozilla-format"
   },
-  "styleUpdate": {
-    "message": "Er du sikker på, at du vil opdatere '$stylename$'?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleUpdateDiscardChanges": {
     "message": "Stilen er ændret uden for editoren. Vil du genindlæse stilen?"
   },
@@ -1174,9 +1104,6 @@
   },
   "unreachableContentScript": {
     "message": "Kunne ikke kommunikere med siden. Prøv at genindlæse fanen."
-  },
-  "unzipStyles": {
-    "message": "Udpakker stile..."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Ingen opdateringer fundet."
@@ -1213,12 +1140,6 @@
   "updateCompleted": {
     "message": "Opdatering fuldført."
   },
-  "updatesCurrentlyInstalled": {
-    "message": "Opdateringer installeret:"
-  },
-  "uploadingFile": {
-    "message": "Uploader fil..."
-  },
   "usercssReplaceTemplateSectionBody": {
     "message": "Indsæt kode her..."
   },
@@ -1230,8 +1151,5 @@
   },
   "writeStyleForURL": {
     "message": "denne URL"
-  },
-  "zipStyles": {
-    "message": "Pakker stile..."
   }
 }

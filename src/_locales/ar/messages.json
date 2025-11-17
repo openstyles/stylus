@@ -37,9 +37,6 @@
   "appliesRemove": {
     "message": "إزالة"
   },
-  "appliesSpecify": {
-    "message": "تحديد"
-  },
   "appliesToEverything": {
     "message": "كل شيء"
   },
@@ -85,14 +82,6 @@
   "editStyleLabel": {
     "message": "تعديل"
   },
-  "editStyleTitle": {
-    "message": "تعديل النمط $stylename$",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "enableStyleLabel": {
     "message": "تمكين"
   },
@@ -107,9 +96,6 @@
   },
   "installUpdate": {
     "message": "تثبيت التحديث"
-  },
-  "manageHeading": {
-    "message": "الأنماط المثبتة"
   },
   "noStylesForSite": {
     "message": "لم يتم تثبيت أي أنماط لموقع الويب هذا."

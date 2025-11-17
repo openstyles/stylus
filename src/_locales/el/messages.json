@@ -49,9 +49,6 @@
   "appliesRemoveError": {
     "message": "Δεν ήταν δυνατή δυνατή η αφαίρεση της τελευταίας καταχώρισης"
   },
-  "appliesSpecify": {
-    "message": "Καθορισμός"
-  },
   "appliesToEverything": {
     "message": "Τα πάντα"
   },
@@ -67,17 +64,11 @@
   "author": {
     "message": "Συντάκτης"
   },
-  "backupButtons": {
+  "backup": {
     "message": "Αντίγραφα ασφαλείας"
-  },
-  "backupMessage": {
-    "message": "Για να εισάγετε ένα αντίγραφο ασφαλείας σύρετέ το και αποθέστε το σε αυτήν τη σελίδα, ή κάντε κλικ στο κουμπί «Εισαγωγή».\n\nΓια να εξάγετε ένα αρχείο αντιγράφων ασφαλείας συμβατό με τις εκδόσεις Stylus που είναι παλαιότερες της 1.5.18 κάντε δεξί κλικ στο κουμπί «Εξαγωγή» ή κάντε κλικ στο κουμπί «Εξαγωγή» κρατώντας το πλήκτρο Shift πατημένο."
   },
   "backupReminder": {
     "message": "<b>Τα στυλ σας ενδέχεται να χαθούν</b> λόγω διακοπής ρεύματος, λόγω σφαλμάτων στο πρόγραμμα περιήγησης που χρησιμοποιείτε ή ακόμα και λόγω δικού σας λάθους.<hr><b>Δημιουργήστε αντίγραφα ασφαλείας:</b> είτε ρυθμίστε την επιλογή «Συγχρονισμός με το cloud» στις ρυθμίσεις είτε κάντε κλικ στο κουμπί «Εξαγωγή» κάθε φορά που κάνετε σημαντικές αλλαγές ή, προτιμότερα, ρυθμίστε την αυτόματη δημιουργία αντιγράφων ασφαλείας χρησιμοποιώντας μια κατάλληλη εφαρμογή."
-  },
-  "bckpInstStyles": {
-    "message": "Εξαγωγή στυλ"
   },
   "checkAllUpdates": {
     "message": "Έλεγχος όλων των στυλ για ενημερώσεις"
@@ -196,15 +187,6 @@
   "confirmYes": {
     "message": "Ναι"
   },
-  "connectingDropbox": {
-    "message": "Σύνδεση με το Dropbox..."
-  },
-  "connectingDropboxNotAllowed": {
-    "message": "Η σύνδεση με το Dropbox είναι διαθέσιμη μόνο σε εφαρμογές εγκατεστημένες απευθείας από webstore"
-  },
-  "copied": {
-    "message": "Αντιγράφηκε στο πρόχειρο"
-  },
   "copy": {
     "message": "Αντιγραφή στο πρόχειρο"
   },
@@ -305,14 +287,6 @@
   "editStyleLabel": {
     "message": "Επεξεργασία"
   },
-  "editStyleTitle": {
-    "message": "Επεξεργασία του στυλ $stylename$",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "editTargetsFirst": {
     "message": "Εμφάνιση λίστας URL πριν τον κώδικα"
   },
@@ -337,8 +311,8 @@
   "exportLabel": {
     "message": "Εξαγωγή"
   },
-  "exportSavedSuccess": {
-    "message": "Το αρχείο αποθηκεύτηκε με επιτυχία."
+  "exportStyles": {
+    "message": "Εξαγωγή στυλ"
   },
   "externalFeedback": {
     "message": "Σχόλια"
@@ -417,9 +391,6 @@
   "genericResetLabel": {
     "message": "Επαναφορά"
   },
-  "genericSavedMessage": {
-    "message": "Αποθηκεύτηκε"
-  },
   "genericSize": {
     "message": "Μέγεθος"
   },
@@ -446,9 +417,6 @@
   },
   "helpKeyMapHotkey": {
     "message": "Πληκτρολογήστε έναν συνδυασμό πλήκτρων"
-  },
-  "hostDisabled": {
-    "message": "Αυτό το host έχει απενεργοποιηθεί λόγω σφάλματος στην τρέχουσα έκδοση του προγράμματος περιήγησης που χρησιμοποιείτε"
   },
   "importAppendLabel": {
     "message": "Προσθήκη στο στυλ"
@@ -500,6 +468,9 @@
   },
   "importReportUndoneTitle": {
     "message": "Η εισαγωγή αναιρέθηκε"
+  },
+  "importStyles": {
+    "message": "Εισαγωγή στυλ"
   },
   "installButton": {
     "message": "Εγκατάσταση στυλ"
@@ -611,17 +582,11 @@
   "manageFilters": {
     "message": "Φίλτρα"
   },
-  "manageHeading": {
-    "message": "Εγκατεστημένα στυλ"
-  },
   "manageMaxTargets": {
     "message": "Μέγιστο εμφανιζόμενο πλήθος στοιχείων της λίστας διευθύνσεων URL στις οποίες εφαρμόζεται ένα στυλ "
   },
   "manageMinColumnWidth": {
     "message": "Ελάχιστο πλάτος στήλος (σε pixels· η τιμή 9999 απενεργοποιεί τη λειτουργεία πολλαπλών στηλών)"
-  },
-  "manageNewStyleAsUsercss": {
-    "message": "UserCSS"
   },
   "manageNewUI": {
     "message": "Εμφάνιση των στυλ σε διάταξη πίνακα"
@@ -649,6 +614,9 @@
   },
   "manageOnlyUsercss": {
     "message": "Στυλ μόνο της μορφής UserCSS"
+  },
+  "manageStyles": {
+    "message": "Διαχείριση στυλ"
   },
   "masterSwitch": {
     "message": "Γενικός διακόπτης"
@@ -848,9 +816,6 @@
       }
     }
   },
-  "noFileToImport": {
-    "message": "Για να εισάγετε τα στυλ σας, πρέπει πρώτα να τα εξάγετε."
-  },
   "noStylesForSite": {
     "message": "Δεν υπάρχουν εγκατεστημένα στυλ από αυτή την ιστοσελίδα."
   },
@@ -886,9 +851,6 @@
   },
   "optionKeepAliveNote": {
     "message": "Αυξήστε αυτήν την τιμή αν παρατηρήσετε πως το περιεχόμενο μιας ιστοσελίδας το οποίο δεν έχει επηρεαστεί από κάποιο στυλ αναβοσβήνει όταν την επισκέπτεστε ύστερα από μια περίοδο αδράνειας του προγράμματος περιήγησης (flashing of unstyled content ή αλλιώς πρόβλημα FOUC).\n\n-1 = η προεπιλεγμένη συμπεριφορά στο ManifestV2 (χωρίς όριο).\n0 = η προεπιλεγμένη συμπεριφορά στο ManifestV3 (μισό λεπτό).\n\nΗ προσωρινή μνήμη καταναλώνει 30MB (ή και παραπάνω) περισσότερη μνήμη RAM, αλλά η ανανέωσή της είναι ιδιαίτερα χρονοβόρα και ενδέχεται να προκαλέσει το πρόβλημα FOUC ανάλογα με την ιστοσελίδα που βρίσκεστε, την ταχύτητα σύνδεσής σας στο διαδίκτυο, το πλήθος των εγκατεστημένων στυλ, το μέγεθος της μνήμης RAM και την απόδοση της CPU."
-  },
-  "optionsActions": {
-    "message": "Ενέργειες"
   },
   "optionsAdvanced": {
     "message": "Για προχωρημένους"
@@ -941,12 +903,6 @@
   "optionsBadgeNormal": {
     "message": "Χρώμα υποβάθρου"
   },
-  "optionsCheck": {
-    "message": "Ενημέρωση στυλ"
-  },
-  "optionsCheckUpdate": {
-    "message": "Έλεγχος και εγκατάσταση διαθέσιμων ενημερώσεων"
-  },
   "optionsCustomizeBadge": {
     "message": "Σήμα στο εικονίδιο της γραμμής εργαλείων"
   },
@@ -974,12 +930,6 @@
   "optionsIconLight": {
     "message": "Ανοιχτόχρωμη λειτουργία προγράμματος περιήγησης"
   },
-  "optionsOpen": {
-    "message": "Άνοιγμα"
-  },
-  "optionsOpenManager": {
-    "message": "Διαχείριση στυλ"
-  },
   "optionsPopupWidth": {
     "message": "Πλάτος αναδυόμενου παραθύρου (σε pixels)"
   },
@@ -991,9 +941,6 @@
   },
   "optionsStylusThemes": {
     "message": "Κάντε κλικ στο εικονίδιο του Stylus στη γραμμή εργαλείων του προγράμματος περιήγησης ενώ βρίσκεστε σε μια τυχαία σελίδα της επέκτασης (όπως για παράδειγμα αυτή εδώ) και στη συνέχεια κάντε κλικ στο κουμπί «Εύρεση στυλ»"
-  },
-  "optionsSubheading": {
-    "message": "Περισσότερες ρυθμίσεις"
   },
   "optionsSyncConnect": {
     "message": "Σύνδεση"
@@ -1110,9 +1057,6 @@
   "popupMenuButtonTooltip": {
     "message": "Μενού ενεργειών"
   },
-  "popupOpenEditInPopup": {
-    "message": "...χωρίς τη γραμμή διεθύνσεων"
-  },
   "popupOpenEditInWindow": {
     "message": "Άνοιγμα επεξαργαστή κειμένου σε νέο παράθυρο"
   },
@@ -1164,9 +1108,6 @@
   "publishUsw": {
     "message": "Χρησιμοποιείται η πλατφόρμα <userstyles.world>"
   },
-  "readingStyles": {
-    "message": "Ανάγνωση στυλ..."
-  },
   "reload": {
     "message": "Ανανέωση"
   },
@@ -1182,14 +1123,11 @@
   "restoreTemplate": {
     "message": "Επαναφορά του προεπιλεγμένου προτύπου.\n\n(Οι ανοιχτές σελίδας του επεξεργαστή κειμένου δε θα επηρεαστούν.)"
   },
-  "retrieveBckp": {
-    "message": "Εισαγωγή στυλ"
-  },
-  "retrieveDropboxSync": {
-    "message": "Εισαγωγή από το Dropbox"
-  },
   "saveAsTemplate": {
     "message": "Αποθήκευση ως πρότυπο"
+  },
+  "saved": {
+    "message": "Αποθηκεύτηκε"
   },
   "search": {
     "message": "Αναζήτηση"
@@ -1452,14 +1390,6 @@
   "styleToMozillaFormatTitle": {
     "message": "Στυλ σε μορφή Mozilla"
   },
-  "styleUpdate": {
-    "message": "Θέλετε σίγουρα να ενημερώσετε το στυλ «$stylename$»;",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleUpdateDiscardChanges": {
     "message": "Αυτό το στυλ έχει υποστεί επεξεργασία από άλλη πηγή. Θέλετε να πραγματοποιηθεί ανανέωσή του;"
   },
@@ -1519,9 +1449,6 @@
   "unreachableMozSiteHintOldFF": {
     "message": "Μόνο οι νεότερες εκδόσεις του Firefox (59 και εξής) μπορούν να ρυθμιστούν με τρόπο τέτοιο ώστε να επιτρέπεται στο WebExtensions να προσθέτει στοιχεία τύπου style σε ιστοσελίδες (όπως αυτή) που εφαρμόζουν πολιτική CSP."
   },
-  "unzipStyles": {
-    "message": "Αποσυμπίεση στυλ..."
-  },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Όλα τα στυλ είναι ενημερωμένα."
   },
@@ -1560,12 +1487,6 @@
   "updateCompleted": {
     "message": "Η ενημέρωση ολοκληρώθηκε."
   },
-  "updatesCurrentlyInstalled": {
-    "message": "Ενημερώσεις που εγκαταστάθηκαν"
-  },
-  "uploadingFile": {
-    "message": "Μεταφόρτωση αρχείου..."
-  },
   "usercssAvoidOverwriting": {
     "message": "Παρακαλούμε αλλάξτε την τιμή μιας από τις κεφαλίδες @name, @namespace προκειμένου να αποφευχθεί η αντικατάσταση ενός υπάρχοντος στυλ."
   },
@@ -1597,8 +1518,5 @@
   },
   "writeStyleForURL": {
     "message": "αυτή την διεύθυνση URL"
-  },
-  "zipStyles": {
-    "message": "Συμπίεση στυλ..."
   }
 }

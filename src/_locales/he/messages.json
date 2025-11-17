@@ -46,9 +46,6 @@
   "appliesRemoveError": {
     "message": "לא ניתן להסיר את הערך 'חל על' האחרון"
   },
-  "appliesSpecify": {
-    "message": "פרט"
-  },
   "appliesToEverything": {
     "message": "כל האתרים"
   },
@@ -64,11 +61,8 @@
   "author": {
     "message": "מחבר"
   },
-  "backupButtons": {
+  "backup": {
     "message": "גיבוי"
-  },
-  "bckpInstStyles": {
-    "message": "ייצא עיצובים"
   },
   "checkAllUpdates": {
     "message": "בדוקים עדכונים עבור כל העיצובים"
@@ -184,15 +178,6 @@
   "confirmYes": {
     "message": "כן"
   },
-  "connectingDropbox": {
-    "message": "מתחבר אל Dropbox..."
-  },
-  "connectingDropboxNotAllowed": {
-    "message": "התחברות אל Dropbox זמינה רק בהרחבות המותקנות ישירות מחנות האינטרנט"
-  },
-  "copied": {
-    "message": "הועתק אל לוח ההעתקה"
-  },
   "copy": {
     "message": "העתק אל לוח ההעתקה"
   },
@@ -238,14 +223,6 @@
   "editStyleLabel": {
     "message": "ערוך"
   },
-  "editStyleTitle": {
-    "message": "עריכת העיצוב $stylename$",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "enableStyleLabel": {
     "message": "אפשר"
   },
@@ -258,8 +235,8 @@
   "exportLabel": {
     "message": "ייצא"
   },
-  "exportSavedSuccess": {
-    "message": "קובץ נשמר בהצלחה"
+  "exportStyles": {
+    "message": "ייצא עיצובים"
   },
   "externalFeedback": {
     "message": "חוות דעת"
@@ -320,9 +297,6 @@
   "genericResetLabel": {
     "message": "איפוס"
   },
-  "genericSavedMessage": {
-    "message": "נשמר"
-  },
   "genericTitle": {
     "message": "כותרת"
   },
@@ -340,9 +314,6 @@
   },
   "helpKeyMapHotkey": {
     "message": "לחץ על המקש החם"
-  },
-  "hostDisabled": {
-    "message": "מארח זה הושבת בגלל באג בגרסה הנוכחית של הדפדפן בו נעשה שימוש"
   },
   "importAppendLabel": {
     "message": "צרף לעיצוב"
@@ -388,6 +359,9 @@
   },
   "importReportUndoneTitle": {
     "message": "הייבוא בוטל"
+  },
+  "importStyles": {
+    "message": "ייבוא עיצובים"
   },
   "installButton": {
     "message": "התקן עיצוב"
@@ -484,14 +458,8 @@
   "manageFilters": {
     "message": "מסננים"
   },
-  "manageHeading": {
-    "message": "עיצובים מותקנים"
-  },
   "manageMaxTargets": {
     "message": "מספר הפריטים ה־'מוחלים על'"
-  },
-  "manageNewStyleAsUsercss": {
-    "message": "כ־UserCSS"
   },
   "manageOnlyDisabled": {
     "message": "רק עיצובים מושבתים"
@@ -516,6 +484,9 @@
   },
   "manageOnlyUsercss": {
     "message": "רק עיצובי UserCSS"
+  },
+  "manageStyles": {
+    "message": "נהל עיצובים"
   },
   "menuShowBadge": {
     "message": "הצג כמות עיצובים מאופשרים"
@@ -543,9 +514,6 @@
   "meta_missingEOT": {
     "message": "נדרש מידע EOT"
   },
-  "noFileToImport": {
-    "message": "כדי לייבא את הסגנונות שלך, עליך לייצא אותם תחילה."
-  },
   "noStylesForSite": {
     "message": "לא הותקנו עיצובים עבור אתר זה."
   },
@@ -554,9 +522,6 @@
   },
   "openOptions": {
     "message": "אפשרויות"
-  },
-  "optionsActions": {
-    "message": "פעולות"
   },
   "optionsAdvanced": {
     "message": "מתקדם"
@@ -578,12 +543,6 @@
   },
   "optionsBadgeNormal": {
     "message": "צבע רקע"
-  },
-  "optionsCheck": {
-    "message": "עדכן עיצובים"
-  },
-  "optionsCheckUpdate": {
-    "message": "בדוק והתקן את כל העדכונים הזמינים"
   },
   "optionsCustomizeBadge": {
     "message": "תג על האייקון בסרגל הכלים"
@@ -609,12 +568,6 @@
   "optionsIconLight": {
     "message": "ערכות נושא בהירות לדפדפן"
   },
-  "optionsOpen": {
-    "message": "פתח"
-  },
-  "optionsOpenManager": {
-    "message": "נהל עיצובים"
-  },
   "optionsPopupWidth": {
     "message": "רוחב החלון הקופץ (בפיקסלים)"
   },
@@ -623,9 +576,6 @@
   },
   "optionsResetButton": {
     "message": "אפס אפשרויות"
-  },
-  "optionsSubheading": {
-    "message": "אפשרויות נוספות"
   },
   "optionsSyncConnect": {
     "message": "התחבר"
@@ -739,9 +689,6 @@
   "previewTooltip": {
     "message": "החלת השינויים באופן זמני ללא שמירה.\nשמור את העיצוב על־מנת להפוך את השינויים לקבועים."
   },
-  "readingStyles": {
-    "message": "קורא עיצובים..."
-  },
   "replace": {
     "message": "החלף"
   },
@@ -751,11 +698,8 @@
   "replaceWith": {
     "message": "החלף עם"
   },
-  "retrieveBckp": {
-    "message": "ייבוא עיצובים"
-  },
-  "retrieveDropboxSync": {
-    "message": "Dropbox ייבוא"
+  "saved": {
+    "message": "נשמר"
   },
   "search": {
     "message": "חיפוש"
@@ -919,14 +863,6 @@
   "styleToMozillaFormatTitle": {
     "message": "עיצוב ב־Mozilla-format"
   },
-  "styleUpdate": {
-    "message": "האם אתה בטוח שברצונך לעדכן את '$stylename$'?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "stylusUnavailableForURL": {
     "message": "Stylus לא עובד על דפים כמו זה."
   },
@@ -953,9 +889,6 @@
   },
   "unreachableFileHint": {
     "message": "Stylus יכול לגשת לכתובות אתר file:// רק אם תיבת הסימון המתאימה עבור סיומת Stylus פעילה בדף chrome://extensions."
-  },
-  "unzipStyles": {
-    "message": "מחלץ עיצובים..."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "לא נמצאו עדכונים."
@@ -995,12 +928,6 @@
   "updateCompleted": {
     "message": "העדכון הושלם."
   },
-  "updatesCurrentlyInstalled": {
-    "message": "העדכונים הותקנו."
-  },
-  "uploadingFile": {
-    "message": "מעלה קובץ..."
-  },
   "usercssAvoidOverwriting": {
     "message": "אנא שנה את הערך של @name or @namespace על־מנת להמנע מדריסה של עיצוב קיים."
   },
@@ -1018,8 +945,5 @@
   },
   "writeStyleForURL": {
     "message": "הקישור הנוכחי"
-  },
-  "zipStyles": {
-    "message": "מקבץ עיצובים..."
   }
 }

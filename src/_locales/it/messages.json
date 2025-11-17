@@ -46,9 +46,6 @@
   "appliesRemove": {
     "message": "Rimuovi"
   },
-  "appliesSpecify": {
-    "message": "Specifica"
-  },
   "appliesToEverything": {
     "message": "Tutto"
   },
@@ -60,12 +57,6 @@
   },
   "author": {
     "message": "Autore"
-  },
-  "backupMessage": {
-    "message": "Per importare il file di backup, selezionalo e rilascialo in questa pagina oppure utilizza il bottone Importa\n\nPer esportare un backup compatibile con Stylus versione 1.5.18 e oltre, selezionalo col tasto destro oppure shift-click il pulsante Esporta"
-  },
-  "bckpInstStyles": {
-    "message": "Esporta stili"
   },
   "checkAllUpdates": {
     "message": "Verifica la disponibilità di aggiornamenti per tutti gli stili"
@@ -166,15 +157,6 @@
   "confirmYes": {
     "message": "Si"
   },
-  "connectingDropbox": {
-    "message": "Connessione in corso a Dropbox..."
-  },
-  "connectingDropboxNotAllowed": {
-    "message": "La connessione a Dropbox è disponibile soltanto nelle app installate direttamente dal webstore"
-  },
-  "copied": {
-    "message": "Copiato negli appunti"
-  },
   "copy": {
     "message": "Copia negli appunti"
   },
@@ -237,14 +219,6 @@
   "editStyleLabel": {
     "message": "Modifica"
   },
-  "editStyleTitle": {
-    "message": "Modifica dello stile $stylename$",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "editorSettings": {
     "message": "Impostazioni editore"
   },
@@ -253,6 +227,9 @@
   },
   "exportLabel": {
     "message": "Esporta"
+  },
+  "exportStyles": {
+    "message": "Esporta stili"
   },
   "externalLink": {
     "message": "Link esterno"
@@ -306,9 +283,6 @@
   },
   "genericResetLabel": {
     "message": "Reimposta"
-  },
-  "genericSavedMessage": {
-    "message": "Salvato"
   },
   "genericTitle": {
     "message": "Titolo"
@@ -369,6 +343,9 @@
   },
   "importReportUndoneTitle": {
     "message": "Importazione annullata"
+  },
+  "importStyles": {
+    "message": "Importa stili"
   },
   "installButton": {
     "message": "Installa stile"
@@ -434,12 +411,6 @@
   "manageFilters": {
     "message": "Filtri"
   },
-  "manageHeading": {
-    "message": "Stili installati"
-  },
-  "manageNewStyleAsUsercss": {
-    "message": "come UserCSS"
-  },
   "manageOnlyDisabled": {
     "message": "Solo stili disattivati"
   },
@@ -460,6 +431,9 @@
   },
   "manageOnlyUsercss": {
     "message": "Solo stili UserCSS"
+  },
+  "manageStyles": {
+    "message": "Organizza stili"
   },
   "menuShowBadge": {
     "message": "Mostra contatore stili attivi"
@@ -517,9 +491,6 @@
   "openOptions": {
     "message": "Opzioni"
   },
-  "optionsActions": {
-    "message": "Azioni"
-  },
   "optionsAdvanced": {
     "message": "Avanzato"
   },
@@ -531,12 +502,6 @@
   },
   "optionsBadgeNormal": {
     "message": "Colore sfondo"
-  },
-  "optionsCheck": {
-    "message": "Aggiorna stili"
-  },
-  "optionsCheckUpdate": {
-    "message": "Controlla e installa gli aggiornamenti disponibili"
   },
   "optionsCustomizeUpdate": {
     "message": "Aggiornamenti"
@@ -550,12 +515,6 @@
   "optionsIconLight": {
     "message": "Temi browser chiari"
   },
-  "optionsOpen": {
-    "message": "Apri"
-  },
-  "optionsOpenManager": {
-    "message": "Organizza stili"
-  },
   "optionsPopupWidth": {
     "message": "Larghezza popup (in pixel)"
   },
@@ -564,9 +523,6 @@
   },
   "optionsResetButton": {
     "message": "Reimposta opzioni"
-  },
-  "optionsSubheading": {
-    "message": "Più Opzioni"
   },
   "optionsSyncLogin": {
     "message": "Accedi"
@@ -619,8 +575,8 @@
   "replaceWith": {
     "message": "Sostituisci con"
   },
-  "retrieveBckp": {
-    "message": "Importa stili"
+  "saved": {
+    "message": "Salvato"
   },
   "search": {
     "message": "Cerca"
@@ -754,14 +710,6 @@
   "styleToMozillaFormatTitle": {
     "message": "Stile in formato Mozilla"
   },
-  "styleUpdate": {
-    "message": "Sei sicuro di voler aggiornare  '$stylename$'?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "stylusUnavailableForURL": {
     "message": "Stylus non funziona in pagine come questa."
   },
@@ -817,9 +765,6 @@
   },
   "updateCompleted": {
     "message": "Aggiornamento completato."
-  },
-  "updatesCurrentlyInstalled": {
-    "message": "Aggiornamenti installati:"
   },
   "usercssReplaceTemplateSectionBody": {
     "message": "Inserisci codice qui..."

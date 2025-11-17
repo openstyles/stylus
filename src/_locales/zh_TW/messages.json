@@ -49,9 +49,6 @@
   "appliesRemoveError": {
     "message": "無法移除最後的「套用到」項目"
   },
-  "appliesSpecify": {
-    "message": "指定"
-  },
   "appliesToEverything": {
     "message": "全部"
   },
@@ -67,17 +64,8 @@
   "author": {
     "message": "作者"
   },
-  "backupButtons": {
-    "message": "備份"
-  },
-  "backupMessage": {
-    "message": "要匯入備份檔案，請將其拖曳至此頁面或點擊匯入按鈕。\n\n要匯出相容於比 1.5.18 還舊的 Stylus 版本的備份，請右鍵點擊或按住 Shift 然後點擊匯出按鈕。"
-  },
   "backupReminder": {
     "message": "樣式可能會因為停電、瀏覽器臭蟲、個人錯誤而<b>遺失</b>。<hr><b>備份您的資料：</b>在選項中設定「同步至雲端」，或者每當您進行重大變更時手動按一下匯出按鈕，或者最好使用專用的應用程式設定自動備份所有資料。"
-  },
-  "bckpInstStyles": {
-    "message": "匯出樣式"
   },
   "checkAllUpdates": {
     "message": "檢查所有樣式更新"
@@ -196,15 +184,6 @@
   "confirmYes": {
     "message": "是"
   },
-  "connectingDropbox": {
-    "message": "正在連線至 Dropbox……"
-  },
-  "connectingDropboxNotAllowed": {
-    "message": "連線到 Dropbox 僅在直接從 webstore 安裝的應用程式中可用"
-  },
-  "copied": {
-    "message": "已複製到剪貼簿"
-  },
   "copy": {
     "message": "複製到剪貼簿"
   },
@@ -305,14 +284,6 @@
   "editStyleLabel": {
     "message": "編輯"
   },
-  "editStyleTitle": {
-    "message": "編輯樣式 $stylename$",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "editTargetsFirst": {
     "message": "在程式碼前顯示目標"
   },
@@ -336,9 +307,6 @@
   },
   "exportLabel": {
     "message": "匯出"
-  },
-  "exportSavedSuccess": {
-    "message": "檔案儲存成功"
   },
   "externalFeedback": {
     "message": "回饋"
@@ -417,9 +385,6 @@
   "genericResetLabel": {
     "message": "重設"
   },
-  "genericSavedMessage": {
-    "message": "已儲存"
-  },
   "genericSize": {
     "message": "大小"
   },
@@ -446,9 +411,6 @@
   },
   "helpKeyMapHotkey": {
     "message": "按下快速鍵"
-  },
-  "hostDisabled": {
-    "message": "由於所用目前版本瀏覽器的臭蟲，此主機已被停用"
   },
   "importAppendLabel": {
     "message": "追加到樣式"
@@ -611,17 +573,11 @@
   "manageFilters": {
     "message": "過濾器"
   },
-  "manageHeading": {
-    "message": "已安裝的樣式"
-  },
   "manageMaxTargets": {
     "message": "已套用項目的數量"
   },
   "manageMinColumnWidth": {
     "message": "最小欄位寬度（以像素為單位；9999 停用多欄模式）"
-  },
-  "manageNewStyleAsUsercss": {
-    "message": "做為 UserCSS"
   },
   "manageNewUI": {
     "message": "表格版面配置"
@@ -848,9 +804,6 @@
       }
     }
   },
-  "noFileToImport": {
-    "message": "要匯入您的樣式，您必須先匯出。"
-  },
   "noStylesForSite": {
     "message": "目前網站沒有安裝任何樣式。"
   },
@@ -886,9 +839,6 @@
   },
   "optionKeepAliveNote": {
     "message": "如果您在一段時間未與瀏覽器互動後，開啟頁面時遇到未套用樣式內容閃爍 (FOUC)，請增加該值。\n\n-1 = ManifestV2 預設行為（無限制）。\n0 = ManifestV3 預設行為（半分鐘）。\n\n快取需要 30MB 或更多的 RAM，但重建快取可能會花費太多時間並導致 FOUC，這取決於網站、網路速度、樣式數量、RAM 大小與 CPU 效能。"
-  },
-  "optionsActions": {
-    "message": "動作"
   },
   "optionsAdvanced": {
     "message": "進階"
@@ -926,6 +876,12 @@
   "optionsAdvancedPatchCspNote": {
     "message": "如果樣式包含無法在有嚴格 <code>CSP</code>（<code>內容安全策略</code>）的網站上載入的圖片或字型，請啟用此選項。\n\n啟用此設定將會放寬 <code>CSP</code> 限制，允許基本的樣式內容載入。此選項僅適用於了解潛在的安全問題，且接受監視其允許內容責任的進階使用者。閱讀關於以 CSS 為基礎的攻擊來取得更多資訊。\n\n另外請注意，如果已經有另一個已安裝的附加元件先修改了網路回應，則無法保證此設定可起作用。"
   },
+  "optionsAdvancedSites": {
+    "message": "……僅限於相符的網站"
+  },
+  "optionsAdvancedSitesNote": {
+    "message": "<abc.com> 單一網站。\n<*.abc.com> 網站+子網域。\n<-m.abc.com> 使用「-」前綴排除。\n<*> 所有網站（與排除功能搭配時很有用）。\n<#abc.com> 因無效字元而忽略。\n<*://abc.*/xyz> 簡易的萬用字元模式。\n<https://abc.com/xyz> 完整 URL。\n各項目以空格或換行符號分隔。在輸入框內按下 Ctrl-S 或 ⌘S 鍵、點擊輸入框外部區域，或關閉選項時，文字內容將自動儲存。"
+  },
   "optionsAdvancedStyleViaASS": {
     "message": "透過 adoptedStyleSheets 規避 CSP 'style-src'"
   },
@@ -940,12 +896,6 @@
   },
   "optionsBadgeNormal": {
     "message": "背景色彩"
-  },
-  "optionsCheck": {
-    "message": "更新樣式"
-  },
-  "optionsCheckUpdate": {
-    "message": "檢查並安裝所有可用的更新"
   },
   "optionsCustomizeBadge": {
     "message": "在工具列圖示上的徽章"
@@ -974,12 +924,6 @@
   "optionsIconLight": {
     "message": "亮色瀏覽器主題"
   },
-  "optionsOpen": {
-    "message": "開啟"
-  },
-  "optionsOpenManager": {
-    "message": "管理樣式"
-  },
   "optionsPopupWidth": {
     "message": "彈出視窗寬度（以像素計）"
   },
@@ -991,9 +935,6 @@
   },
   "optionsStylusThemes": {
     "message": "點擊任何 Stylus 頁面（包含這個）的瀏覽器工具列中的 Stylus 圖示，然後點擊「尋找樣式」"
-  },
-  "optionsSubheading": {
-    "message": "更多選項"
   },
   "optionsSyncConnect": {
     "message": "連線"
@@ -1107,9 +1048,6 @@
   "popupMenuButtonTooltip": {
     "message": "動作選單"
   },
-  "popupOpenEditInPopup": {
-    "message": "……沒有地址列"
-  },
   "popupOpenEditInWindow": {
     "message": "在新視窗開啟編輯器"
   },
@@ -1161,9 +1099,6 @@
   "publishUsw": {
     "message": "使用 <userstyles.world>"
   },
-  "readingStyles": {
-    "message": "正在讀取樣式……"
-  },
   "reload": {
     "message": "重启"
   },
@@ -1178,12 +1113,6 @@
   },
   "restoreTemplate": {
     "message": "還原預設範本。\n\n（不會變更目前開啟的編輯器頁面。）"
-  },
-  "retrieveBckp": {
-    "message": "匯入樣式"
-  },
-  "retrieveDropboxSync": {
-    "message": "Dropbox 匯入"
   },
   "saveAsTemplate": {
     "message": "另存為範本"
@@ -1449,14 +1378,6 @@
   "styleToMozillaFormatTitle": {
     "message": "Mozilla格式樣式表"
   },
-  "styleUpdate": {
-    "message": "你確定你要更新 '$stylename$' ？",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleUpdateDiscardChanges": {
     "message": "樣式已在編輯器外變更。您想要重新載入樣式嗎？"
   },
@@ -1516,9 +1437,6 @@
   "unreachableMozSiteHintOldFF": {
     "message": "僅 Firefox 59 或更新版本上可以設定為允許 WebExtension 在受 CSP 保護的網站（例如此網站）上新增樣式。"
   },
-  "unzipStyles": {
-    "message": "正在解壓縮樣式……"
-  },
   "updateAllCheckSucceededNoUpdate": {
     "message": "樣式都是最新的。"
   },
@@ -1557,12 +1475,6 @@
   "updateCompleted": {
     "message": "更新完成。"
   },
-  "updatesCurrentlyInstalled": {
-    "message": "更新已安裝的："
-  },
-  "uploadingFile": {
-    "message": "正在上傳檔案……"
-  },
   "usercssAvoidOverwriting": {
     "message": "請變更 @name 或 @namespace 的值以避免覆寫既有的樣式。"
   },
@@ -1594,8 +1506,5 @@
   },
   "writeStyleForURL": {
     "message": "此網址"
-  },
-  "zipStyles": {
-    "message": "正在壓縮樣式……"
   }
 }

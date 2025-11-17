@@ -49,9 +49,6 @@
   "appliesRemoveError": {
     "message": "마지막 '적용 대상' 항목은 제거할 수 없습니다"
   },
-  "appliesSpecify": {
-    "message": "개별 지정"
-  },
   "appliesToEverything": {
     "message": "전부"
   },
@@ -64,11 +61,8 @@
   "author": {
     "message": "작성자"
   },
-  "backupButtons": {
+  "backup": {
     "message": "백업"
-  },
-  "bckpInstStyles": {
-    "message": "스타일 내보내기"
   },
   "checkAllUpdates": {
     "message": "모든 스타일 업데이트 확인"
@@ -184,15 +178,6 @@
   "confirmYes": {
     "message": "예"
   },
-  "connectingDropbox": {
-    "message": "Dropbox 연결 중..."
-  },
-  "connectingDropboxNotAllowed": {
-    "message": "Dropbox 연결은 웹 스토어에서 직접 설치한 앱에서만 가능합니다."
-  },
-  "copied": {
-    "message": "클립보드에 복사됨"
-  },
   "copy": {
     "message": "클립보드에 복사"
   },
@@ -247,14 +232,6 @@
   "editStyleLabel": {
     "message": "수정"
   },
-  "editStyleTitle": {
-    "message": " $stylename$ 스타일 수정",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "enableStyleLabel": {
     "message": "활성화"
   },
@@ -267,8 +244,8 @@
   "exportLabel": {
     "message": "내보내기"
   },
-  "exportSavedSuccess": {
-    "message": "파일 저장에 성공했습니다."
+  "exportStyles": {
+    "message": "스타일 내보내기"
   },
   "externalFeedback": {
     "message": "피드백"
@@ -332,9 +309,6 @@
   "genericResetLabel": {
     "message": "초기화"
   },
-  "genericSavedMessage": {
-    "message": "저장됨"
-  },
   "genericTitle": {
     "message": "제목"
   },
@@ -352,9 +326,6 @@
   },
   "helpKeyMapHotkey": {
     "message": "단축키를 입력하세요"
-  },
-  "hostDisabled": {
-    "message": "이 호스트는 현재 사용 중인 브라우저 버전의 버그로 인해 비활성화되었습니다"
   },
   "importAppendLabel": {
     "message": "스타일에 추가"
@@ -406,6 +377,9 @@
   },
   "importReportUndoneTitle": {
     "message": "가져오기가 취소되었습니다."
+  },
+  "importStyles": {
+    "message": "스타일 가져오기"
   },
   "installButton": {
     "message": "스타일 설치"
@@ -517,14 +491,8 @@
   "manageFilters": {
     "message": "필터"
   },
-  "manageHeading": {
-    "message": "설치한 스타일 목록"
-  },
   "manageMaxTargets": {
     "message": "적용 대상 항목 수"
-  },
-  "manageNewStyleAsUsercss": {
-    "message": "UserCSS로 작성"
   },
   "manageOnlyDisabled": {
     "message": "비활성화된 스타일만"
@@ -549,6 +517,9 @@
   },
   "manageOnlyUsercss": {
     "message": "UserCSS 스타일만"
+  },
+  "manageStyles": {
+    "message": "스타일 관리"
   },
   "menuShowBadge": {
     "message": "활성화된 스타일 개수 표시"
@@ -737,9 +708,6 @@
       }
     }
   },
-  "noFileToImport": {
-    "message": "스타일을 가져오려면, 먼저 내보내야 합니다."
-  },
   "noStylesForSite": {
     "message": "현재 사이트에 설치한 스타일이 없습니다."
   },
@@ -751,9 +719,6 @@
   },
   "openOptions": {
     "message": "옵션"
-  },
-  "optionsActions": {
-    "message": "동작"
   },
   "optionsAdvanced": {
     "message": "고급"
@@ -785,12 +750,6 @@
   "optionsBadgeNormal": {
     "message": "배경 색"
   },
-  "optionsCheck": {
-    "message": "스타일 업데이트"
-  },
-  "optionsCheckUpdate": {
-    "message": "사용 가능한 모든 업데이트 확인 및 설치"
-  },
   "optionsCustomizeBadge": {
     "message": "툴바 아이콘 뱃지"
   },
@@ -815,12 +774,6 @@
   "optionsIconLight": {
     "message": "밝은 브라우저 테마"
   },
-  "optionsOpen": {
-    "message": "열기"
-  },
-  "optionsOpenManager": {
-    "message": "스타일 관리"
-  },
   "optionsPopupWidth": {
     "message": "팝업 너비 (픽셀 단위)"
   },
@@ -829,9 +782,6 @@
   },
   "optionsResetButton": {
     "message": "설정 초기화"
-  },
-  "optionsSubheading": {
-    "message": "추가 옵션"
   },
   "optionsSyncConnect": {
     "message": "연결"
@@ -969,9 +919,6 @@
   "publishUsw": {
     "message": "<userstyles.world> 사용"
   },
-  "readingStyles": {
-    "message": "스타일 읽어들이는 중..."
-  },
   "replace": {
     "message": "바꾸기"
   },
@@ -981,11 +928,8 @@
   "replaceWith": {
     "message": "바꿀 내용"
   },
-  "retrieveBckp": {
-    "message": "스타일 가져오기"
-  },
-  "retrieveDropboxSync": {
-    "message": "Dropbox 가져오기"
+  "saved": {
+    "message": "저장됨"
   },
   "search": {
     "message": "검색"
@@ -1191,14 +1135,6 @@
   "styleToMozillaFormatTitle": {
     "message": "Mozilla 형식으로 변환한 스타일"
   },
-  "styleUpdate": {
-    "message": "'$stylename$'을(를) 정말 수정하시겠습니까?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleUpdateDiscardChanges": {
     "message": "이 스타일은 편집기 외부에서 변경되었습니다. 스타일을 다시 로딩하시겠습니까?"
   },
@@ -1241,9 +1177,6 @@
   "unreachableMozSiteHintOldFF": {
     "message": "Firefox 59 버전 이상에서만 이처럼 CSP 보호 정책이 적용된 사이트에 웹 확장 기능으로 스타일 요소를 추가할 수 있도록 설정 가능합니다."
   },
-  "unzipStyles": {
-    "message": "스타일 압축 푸는 중..."
-  },
   "updateAllCheckSucceededNoUpdate": {
     "message": "이용 가능한 업데이트가 없습니다."
   },
@@ -1282,12 +1215,6 @@
   "updateCompleted": {
     "message": "업데이트가 완료됐습니다."
   },
-  "updatesCurrentlyInstalled": {
-    "message": "설치된 업데이트:"
-  },
-  "uploadingFile": {
-    "message": "파일 업로드 중..."
-  },
   "usercssAvoidOverwriting": {
     "message": "기존에 존재하는 스타일이 덮어씌워지는 것을 방지하려면 @name이나 @namespace 값을 변경하세요."
   },
@@ -1311,8 +1238,5 @@
   },
   "writeStyleForURL": {
     "message": "현재 URL"
-  },
-  "zipStyles": {
-    "message": "스타일 압축 중..."
   }
 }

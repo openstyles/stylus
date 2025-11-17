@@ -49,9 +49,6 @@
   "appliesRemoveError": {
     "message": "Kan laatste ‘Van toepassing op’-item niet verwijderen"
   },
-  "appliesSpecify": {
-    "message": "Specificeren"
-  },
   "appliesToEverything": {
     "message": "Alles"
   },
@@ -64,14 +61,8 @@
   "author": {
     "message": "Maker"
   },
-  "backupButtons": {
-    "message": "Back-up"
-  },
-  "backupMessage": {
-    "message": "Sleep het back-upbestand naar deze pagina of klik op de knop Importeren om het te importeren.\n\nRechtsklik of shift-klik op de knop Exporteren om een compatibele back-up voor Stylus ouder dan 1.5.18 te exporteren."
-  },
-  "bckpInstStyles": {
-    "message": "Stijlen exporteren"
+  "backupReminder": {
+    "message": "<b>Stijlen kunnen verloren gaan</b> als gevolg van stroomuitval, bugs in de browser, of gebruikersfouten.<hr><b>Maak een back-up van uw gegevens:</b> configureer ‘Synchroniseren met cloud’ in de opties, of klik handmatig op de exporteerknop wanneer u belangrijke wijzigingen aanbrengt. Configureer bij voorkeur het automatisch maken van back-ups van al uw gegevens via een toegewijde app."
   },
   "checkAllUpdates": {
     "message": "Alle stijlen controleren op updates"
@@ -190,15 +181,6 @@
   "confirmYes": {
     "message": "Ja"
   },
-  "connectingDropbox": {
-    "message": "Dropbox koppelen..."
-  },
-  "connectingDropboxNotAllowed": {
-    "message": "Koppelen met Dropbox is alleen beschikbaar in apps die direct vanuit de webstore zijn geïnstalleerd"
-  },
-  "copied": {
-    "message": "Gekopieerd naar klembord"
-  },
   "copy": {
     "message": "Kopiëren naar klembord"
   },
@@ -283,14 +265,6 @@
   "editStyleLabel": {
     "message": "Bewerken"
   },
-  "editStyleTitle": {
-    "message": "Stijl $stylename$ bewerken",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "editTargetsFirst": {
     "message": "Doelen tonen vóór code"
   },
@@ -314,9 +288,6 @@
   },
   "exportLabel": {
     "message": "Exporteren"
-  },
-  "exportSavedSuccess": {
-    "message": "Bestand opgeslagen"
   },
   "externalHomepage": {
     "message": "Startpagina"
@@ -349,6 +320,12 @@
   },
   "findStyles": {
     "message": "Stijlen zoeken"
+  },
+  "findStylesOnline": {
+    "message": "Klik om stijlen online te zoeken."
+  },
+  "general": {
+    "message": "Algemeen"
   },
   "genericAdd": {
     "message": "Toevoegen"
@@ -386,9 +363,6 @@
   "genericResetLabel": {
     "message": "Standaardwaarden"
   },
-  "genericSavedMessage": {
-    "message": "Opgeslagen"
-  },
   "genericSize": {
     "message": "Grootte"
   },
@@ -415,9 +389,6 @@
   },
   "helpKeyMapHotkey": {
     "message": "Druk op een sneltoets"
-  },
-  "hostDisabled": {
-    "message": "Deze host is uitgeschakeld vanwege een bug in de huidige versie van de gebruikte browser"
   },
   "importAppendLabel": {
     "message": "Toevoegen aan stijl"
@@ -553,6 +524,9 @@
   "linterRulesLink": {
     "message": "Volledige regellijst bekijken"
   },
+  "liveReloadAfterInstall": {
+    "message": "Live herladen na installatie"
+  },
   "liveReloadError": {
     "message": "Er is een fout opgetreden tijdens het bekijken van het bestand"
   },
@@ -574,17 +548,11 @@
   "manageFaviconsHelp": {
     "message": "Stylus gebruikt een externe dienst: https://icons.duckduckgo.com"
   },
-  "manageHeading": {
-    "message": "Geïnstalleerde stijlen"
-  },
   "manageMaxTargets": {
     "message": "Aantal ‘Van toepassing op’-items"
   },
   "manageMinColumnWidth": {
     "message": "Minimale kolombreedte (in pixels; 9999 schakelt de modus met meerdere kolommen uit)"
-  },
-  "manageNewStyleAsUsercss": {
-    "message": "als UserCSS"
   },
   "manageNewUI": {
     "message": "Tabelindeling"
@@ -612,6 +580,9 @@
   },
   "manageOnlyUsercss": {
     "message": "Alleen UserCSS-stijlen"
+  },
+  "masterSwitch": {
+    "message": "Hoofdschakelaar"
   },
   "menuShowBadge": {
     "message": "Aantal actieve stijlen tonen"
@@ -808,9 +779,6 @@
       }
     }
   },
-  "noFileToImport": {
-    "message": "Als u uw stijlen wilt importeren, dient u deze eerst te exporteren."
-  },
   "noStylesForSite": {
     "message": "Geen geïnstalleerde stijlen voor deze website."
   },
@@ -823,8 +791,29 @@
   "openOptions": {
     "message": "Opties"
   },
-  "optionsActions": {
-    "message": "Acties"
+  "optionCompactWidth": {
+    "message": "Max. vensterbreedte voor compacte UI-indeling (in pixels)"
+  },
+  "optionFOUC": {
+    "message": "Stijlen te laat toegepast?"
+  },
+  "optionFOUCMV2": {
+    "message": "Overweeg ‘<a>’ in te schakelen."
+  },
+  "optionFOUCMV3": {
+    "message": "Overweeg ‘<a>’ in te schakelen en ‘<b>’ te verhogen."
+  },
+  "optionKeepAlive": {
+    "message": "Duur van stijlcache"
+  },
+  "optionKeepAlive2": {
+    "message": "(in minuten, -1 = geen limiet)"
+  },
+  "optionKeepAliveIdle": {
+    "message": "...zelfs als de browser inactief is"
+  },
+  "optionKeepAliveNote": {
+    "message": "Verhoog deze waarde als u knipperende inhoud zonder stijlen (‘FOUC’) ondervindt bij het openen van een pagina nadat u de browser even niet hebt gebruikt.\n\n-1 = Standaardgedrag voor ManifestV2 (geen limiet).\n0 = Standaardgedrag voor ManifestV3 (een halve minuut).\n\nDe cache gebruikt 30MB of meer RAM, maar opnieuw opbouwen ervan kan te veel tijd kosten en FOUC veroorzaken, afhankelijk van de website, netwerksnelheid, hoeveelheid stijlen, RAM-grootte en CPU-prestaties."
   },
   "optionsAdvanced": {
     "message": "Geavanceerd"
@@ -862,6 +851,12 @@
   "optionsAdvancedPatchCspNote": {
     "message": "Schakel dit in als stijlen afbeeldingen of lettertypen bevatten die niet worden geladen op websites met een streng <code>CSP</code> (<code>inhoudsbeveiligingsbeleid</code>).\n\nHet inschakelen van deze instelling versoepelt <code>CSP</code>-restricties, waardoor essentiële stijlinhoud kan worden geladen. Deze optie is alleen bedoeld voor gevorderde gebruikers die de mogelijke gevolgen op beveiligingsgebied begrijpen, en die de verantwoordelijkheid voor het monitoren van de toegestane inhoud accepteren. Lees meer over CSS-gebaseerde aanvallen voor meer informatie.\n\nHoud er ook rekening mee dat deze specifieke instelling geen garantie geeft op een goede werking als een andere geïnstalleerde extensie eerst het netwerkantwoord aanpast."
   },
+  "optionsAdvancedSites": {
+    "message": "...alleen op overeenkomende websites"
+  },
+  "optionsAdvancedSitesNote": {
+    "message": "<abc.com> één website.\n<*.abc.com> website + subdomeinen.\n<-m.abc.com> uitsluiting middels ‘-’-voorvoegsel.\n<*> alle websites (handig bij uitsluitingen).\n<#abc.com> genegeerd vanwege ongeldig teken.\n<*://abc.*/xyz> eenvoudig glob-patroon.\n<https://abc.com/xyz> volledige URL.\nDe vermeldingen worden gescheiden door een spatie of een nieuwe regel. De tekst wordt automatisch opgeslagen bij het drukken op Ctrl-S of ⌘S in het invoerveld, of door buiten het invoerveld te klikken of de opties te sluiten."
+  },
   "optionsAdvancedStyleViaASS": {
     "message": "CSP ‘style-src’ omzeilen via adoptedStyleSheets"
   },
@@ -876,12 +871,6 @@
   },
   "optionsBadgeNormal": {
     "message": "Achtergrondkleur"
-  },
-  "optionsCheck": {
-    "message": "Stijlen bijwerken"
-  },
-  "optionsCheckUpdate": {
-    "message": "Controleren op updates en deze installeren"
   },
   "optionsCustomizeBadge": {
     "message": "Badge op het werkbalkpictogram"
@@ -907,12 +896,6 @@
   "optionsIconLight": {
     "message": "Lichte browserthema’s"
   },
-  "optionsOpen": {
-    "message": "Openen"
-  },
-  "optionsOpenManager": {
-    "message": "Stijlen beheren"
-  },
   "optionsPopupWidth": {
     "message": "Pop-upbreedte (in pixels)"
   },
@@ -924,9 +907,6 @@
   },
   "optionsStylusThemes": {
     "message": "Klik op een willekeurige Stylus-pagina (waaronder deze) op het Stylus-pictogram in de browserwerkbalk, en klik daarna op ‘Stijlen zoeken’."
-  },
-  "optionsSubheading": {
-    "message": "Meer opties"
   },
   "optionsSyncConnect": {
     "message": "Koppelen"
@@ -1040,9 +1020,6 @@
   "popupMenuButtonTooltip": {
     "message": "Actiemenu"
   },
-  "popupOpenEditInPopup": {
-    "message": "…zonder adresbalk"
-  },
   "popupOpenEditInWindow": {
     "message": "Editor openen in nieuw venster"
   },
@@ -1094,9 +1071,6 @@
   "publishUsw": {
     "message": "Op <userstyles.world>"
   },
-  "readingStyles": {
-    "message": "Stijlen lezen..."
-  },
   "reload": {
     "message": "Opnieuw laden"
   },
@@ -1111,12 +1085,6 @@
   },
   "restoreTemplate": {
     "message": "De standaardsjabloon herstellen.\n\n(De momenteel geopende editorpagina’s worden niet gewijzigd.)"
-  },
-  "retrieveBckp": {
-    "message": "Stijlen importeren"
-  },
-  "retrieveDropboxSync": {
-    "message": "Dropbox - Importeren"
   },
   "saveAsTemplate": {
     "message": "Opslaan als sjabloon"
@@ -1379,14 +1347,6 @@
   "styleToMozillaFormatTitle": {
     "message": "Stijl in Mozilla-opmaak"
   },
-  "styleUpdate": {
-    "message": "Weet u zeker dat u ‘$stylename$’ wilt bijwerken?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleUpdateDiscardChanges": {
     "message": "Deze stijl is buiten de editor om gewijzigd. Wilt u de stijl opnieuw laden?"
   },
@@ -1446,9 +1406,6 @@
   "unreachableMozSiteHintOldFF": {
     "message": "Alleen Firefox 59 en hoger kunnen worden geconfigureerd om WebExtensions stijlelementen te laten toevoegen op door CSP beveiligde websites zoals deze."
   },
-  "unzipStyles": {
-    "message": "Stijlen uitpakken..."
-  },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Geen updates gevonden."
   },
@@ -1487,12 +1444,6 @@
   "updateCompleted": {
     "message": "Update voltooid."
   },
-  "updatesCurrentlyInstalled": {
-    "message": "Geïnstalleerde updates:"
-  },
-  "uploadingFile": {
-    "message": "Bestand uploaden..."
-  },
   "usercssAvoidOverwriting": {
     "message": "Wijzig de waarde van @name of @namespace om te voorkomen dat een bestaande stijl wordt overschreven."
   },
@@ -1511,13 +1462,18 @@
   "versionInvalidOlder": {
     "message": "De versie is ouder dan de geïnstalleerde stijl."
   },
+  "webRequestBlockingMV3Note": {
+    "message": "Vereist de toestemming webRequestBlocking, die in ManifestV3 kan worden ingeschakeld via een van deze methoden:\n\n 1) Exporteer de back-up, configureer het beleid <a href='https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist'>ExtensionInstallForcelist</a> voor de ID ‘$id$’ van deze extensie, herstart de browser, wacht tot de extensie is geïnstalleerd, importeer de back-up in de stijlbeheerder, en zet optioneel het pictogram vast aan de werkbalk.\n\n 2) Pas de opdrachtregel aan in het pictogram of de launcher van de browser: voeg een spatie en <code><nobr>--allowlisted-extension-id=$id$</nobr></code> toe.",
+    "placeholders": {
+      "id": {
+        "content": "$1"
+      }
+    }
+  },
   "writeStyleFor": {
     "message": "Stijl schrijven voor:"
   },
   "writeStyleForURL": {
     "message": "deze URL"
-  },
-  "zipStyles": {
-    "message": "Stijlen inpakken..."
   }
 }

@@ -49,9 +49,6 @@
   "appliesRemoveError": {
     "message": "Não é possível remover a última 'aplica-se a' entrada"
   },
-  "appliesSpecify": {
-    "message": "Especificar"
-  },
   "appliesToEverything": {
     "message": "Tudo"
   },
@@ -64,11 +61,8 @@
   "author": {
     "message": "Autor"
   },
-  "backupButtons": {
+  "backup": {
     "message": "Cópia de segurança"
-  },
-  "bckpInstStyles": {
-    "message": "Exportar estilos"
   },
   "checkAllUpdates": {
     "message": "Verificar todos os estilos por atualizações"
@@ -181,15 +175,6 @@
   "confirmYes": {
     "message": "Sim"
   },
-  "connectingDropbox": {
-    "message": "Conectando ao Dropbox..."
-  },
-  "connectingDropboxNotAllowed": {
-    "message": "Conectar ao Dropbox somente é disponível em apps instalados diretamente da loja web"
-  },
-  "copied": {
-    "message": "Copiado para a área de transferência"
-  },
   "copy": {
     "message": "Copiar para a área de transferência"
   },
@@ -252,14 +237,6 @@
   "editStyleLabel": {
     "message": "Editar"
   },
-  "editStyleTitle": {
-    "message": "Editar Estilo $stylename$",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "enableStyleLabel": {
     "message": "Ativar"
   },
@@ -272,8 +249,8 @@
   "exportLabel": {
     "message": "Exportar"
   },
-  "exportSavedSuccess": {
-    "message": "Arquivo salvo com sucesso"
+  "exportStyles": {
+    "message": "Exportar estilos"
   },
   "externalLink": {
     "message": "Hiperligação externa"
@@ -325,9 +302,6 @@
   "genericResetLabel": {
     "message": "Repor"
   },
-  "genericSavedMessage": {
-    "message": "Guardado"
-  },
   "genericTitle": {
     "message": "Título"
   },
@@ -345,9 +319,6 @@
   },
   "helpKeyMapHotkey": {
     "message": "Prima uma tecla de atalho"
-  },
-  "hostDisabled": {
-    "message": "Este hospedeiro foi desabilitado devido a um bug na versão atual que o navegador utilizado se encontra"
   },
   "importAppendLabel": {
     "message": "Acrescentar ao estilo"
@@ -399,6 +370,9 @@
   },
   "importReportUndoneTitle": {
     "message": "A Importação foi anulada"
+  },
+  "importStyles": {
+    "message": "Importar estilos"
   },
   "installButton": {
     "message": "Instalar estilo"
@@ -504,14 +478,8 @@
   "manageFilters": {
     "message": "Filtros"
   },
-  "manageHeading": {
-    "message": "Estilos Instalados"
-  },
   "manageMaxTargets": {
     "message": "Número de aplica-se a itens"
-  },
-  "manageNewStyleAsUsercss": {
-    "message": "como UserCSS"
   },
   "manageOnlyDisabled": {
     "message": "Apenas estilos desativados"
@@ -536,6 +504,9 @@
   },
   "manageOnlyUsercss": {
     "message": "Apenas estilos UserCSS"
+  },
+  "manageStyles": {
+    "message": "Gerir estilos"
   },
   "menuShowBadge": {
     "message": "Mostrar a contagem de estilos ativados"
@@ -595,9 +566,6 @@
       }
     }
   },
-  "noFileToImport": {
-    "message": "Para importar seus estilos, você deve exportar primeiro."
-  },
   "noStylesForSite": {
     "message": "Nenhum estilo instalado para este site."
   },
@@ -606,9 +574,6 @@
   },
   "openOptions": {
     "message": "Opções"
-  },
-  "optionsActions": {
-    "message": "Ações"
   },
   "optionsAdvanced": {
     "message": "Avançadas"
@@ -627,12 +592,6 @@
   },
   "optionsBadgeNormal": {
     "message": "Cor de fundo"
-  },
-  "optionsCheck": {
-    "message": "Atualizar estilos"
-  },
-  "optionsCheckUpdate": {
-    "message": "Procurar para e instalar todas as atualizações disponíveis"
   },
   "optionsCustomizeBadge": {
     "message": "Distintivo no ícone da barra de ferramentas"
@@ -655,12 +614,6 @@
   "optionsIconLight": {
     "message": "Temas claros do browser"
   },
-  "optionsOpen": {
-    "message": "Abrir"
-  },
-  "optionsOpenManager": {
-    "message": "Gerir estilos"
-  },
   "optionsPopupWidth": {
     "message": "Popup largura (em pixeis)"
   },
@@ -669,9 +622,6 @@
   },
   "optionsResetButton": {
     "message": "Restabelecer opções"
-  },
-  "optionsSubheading": {
-    "message": "Mais Opções"
   },
   "optionsSyncConnect": {
     "message": "Conectar"
@@ -757,9 +707,6 @@
   "previewTooltip": {
     "message": "Temporariamente aplica as alterações sem guardar.\nGuarde o estilo para tornar as alterações permanentes."
   },
-  "readingStyles": {
-    "message": "Lendo estilos..."
-  },
   "replace": {
     "message": "Substituir"
   },
@@ -769,11 +716,8 @@
   "replaceWith": {
     "message": "Substituir com"
   },
-  "retrieveBckp": {
-    "message": "Importar estilos"
-  },
-  "retrieveDropboxSync": {
-    "message": "Importar do Dropbox"
+  "saved": {
+    "message": "Guardado"
   },
   "search": {
     "message": "Pesquisar"
@@ -952,14 +896,6 @@
   "styleToMozillaFormatTitle": {
     "message": "Estilo no formato Mozilla"
   },
-  "styleUpdate": {
-    "message": "Tem a certeza que quer atualizar '$stylename$'?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleUpdateDiscardChanges": {
     "message": "O estilo é alterado fora do editor. Gostaria de recarregar o estilo?"
   },
@@ -995,9 +931,6 @@
   },
   "unreachableMozSiteHintOldFF": {
     "message": "Somente o Firefox 59 e o mais recente podem ser configurados para permitir que WebExtensions incluam elementos de estilo em sites protegidos por CSP como este."
-  },
-  "unzipStyles": {
-    "message": "Descompactando estilos..."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Nenhuma atualização encontrada."
@@ -1037,12 +970,6 @@
   "updateCompleted": {
     "message": "Atualização completa."
   },
-  "updatesCurrentlyInstalled": {
-    "message": "Atualizações instaladas:"
-  },
-  "uploadingFile": {
-    "message": "Enviando arquivo..."
-  },
   "usercssAvoidOverwriting": {
     "message": "Por favor modifique o valor de @name ou @namespace para evitar sobrescrever um estilo existente."
   },
@@ -1066,8 +993,5 @@
   },
   "writeStyleForURL": {
     "message": "este URL"
-  },
-  "zipStyles": {
-    "message": "Compactando estilos..."
   }
 }

@@ -49,9 +49,6 @@
   "appliesRemoveError": {
     "message": "Нельзя удалить последний элемент"
   },
-  "appliesSpecify": {
-    "message": "Указать"
-  },
   "appliesToEverything": {
     "message": "Все"
   },
@@ -64,17 +61,11 @@
   "author": {
     "message": "Автор"
   },
-  "backupButtons": {
+  "backup": {
     "message": "Резервное копирование"
-  },
-  "backupMessage": {
-    "message": "Чтобы импортировать архив стилей, перетащите файл в эту страницу или нажмите кнопку Импорт.\n\nЧтобы экспортировать совместимый архив для старого Stylus ранее чем 1.5.18, кликните на кнопку Экспорт правой кнопкой мыши или с нажатой клавишей Shift."
   },
   "backupReminder": {
     "message": "<b>Стили могут быть потеряны</b> из-за сбоев в электросети, ошибок в браузере или личных ошибок.<hr> <b>Резервное копирование данных:</b> либо настройте \"Синхронизацию с облаком\" в настройках, либо вручную нажимайте кнопку \"Экспорт\" каждый раз, когда вносите значительные изменения или настройте автоматическое резервное копирование всех ваших данных с помощью отдельного приложения."
-  },
-  "bckpInstStyles": {
-    "message": "Экспорт стилей"
   },
   "checkAllUpdates": {
     "message": "Проверить наличие обновлений для всех стилей"
@@ -196,15 +187,6 @@
   "confirmYes": {
     "message": "Да"
   },
-  "connectingDropbox": {
-    "message": "Подключение Dropbox..."
-  },
-  "connectingDropboxNotAllowed": {
-    "message": "Подключение к Dropbox доступно только в приложениях, установленных непосредственно из веб-магазина"
-  },
-  "copied": {
-    "message": "Скопировано в буфер обмена"
-  },
   "copy": {
     "message": "Скопировать в буфер обмена"
   },
@@ -305,14 +287,6 @@
   "editStyleLabel": {
     "message": "Изменить"
   },
-  "editStyleTitle": {
-    "message": "Изменение стиля \"$stylename$\"",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "editTargetsFirst": {
     "message": "Показывать целевые сайты перед кодом"
   },
@@ -337,8 +311,8 @@
   "exportLabel": {
     "message": "Экспорт"
   },
-  "exportSavedSuccess": {
-    "message": "Файл успешно сохранён"
+  "exportStyles": {
+    "message": "Экспорт стилей"
   },
   "externalFeedback": {
     "message": "Отзывы"
@@ -417,9 +391,6 @@
   "genericResetLabel": {
     "message": "Сброс"
   },
-  "genericSavedMessage": {
-    "message": "Сохранено"
-  },
   "genericSize": {
     "message": "Размер"
   },
@@ -446,9 +417,6 @@
   },
   "helpKeyMapHotkey": {
     "message": "Нажмите клавишу"
-  },
-  "hostDisabled": {
-    "message": "Этот хост был отключён из-за ошибки в текущей версии используемого браузера"
   },
   "importAppendLabel": {
     "message": "Добавить к стилю"
@@ -500,6 +468,9 @@
   },
   "importReportUndoneTitle": {
     "message": "Откат импорта завершён"
+  },
+  "importStyles": {
+    "message": "Импорт стилей"
   },
   "installButton": {
     "message": "Установить стиль"
@@ -614,17 +585,11 @@
   "manageFilters": {
     "message": "Фильтры"
   },
-  "manageHeading": {
-    "message": "Менеджер стилей"
-  },
   "manageMaxTargets": {
     "message": "Кол-во целевых сайтов/выражений"
   },
   "manageMinColumnWidth": {
     "message": "Минимальная ширина столбца (в пикселях; 9999 отключает многоколоночный режим)"
-  },
-  "manageNewStyleAsUsercss": {
-    "message": "в виде UserCSS"
   },
   "manageNewUI": {
     "message": "Новый интерфейс"
@@ -652,6 +617,9 @@
   },
   "manageOnlyUsercss": {
     "message": "Только UserCSS стили"
+  },
+  "manageStyles": {
+    "message": "Менеджер стилей"
   },
   "masterSwitch": {
     "message": "Главный переключатель"
@@ -851,9 +819,6 @@
       }
     }
   },
-  "noFileToImport": {
-    "message": "Чтобы импортировать ваши стили, вы должны сначала экспортировать их."
-  },
   "noStylesForSite": {
     "message": "Для этого сайта не установлено ни одного стиля."
   },
@@ -889,9 +854,6 @@
   },
   "optionKeepAliveNote": {
     "message": "Увеличьте этот параметр, если вы столкнулись с миганием нестилизованного контента (FOUC) при открытии страницы после длительного бездействия браузера.\n\n-1 = Поведение ManifestV2 по умолчанию (без ограничений).\n0 = Поведение ManifestV3 по умолчанию (полминуты).\n\nКэш занимает от 30 МБ оперативной памяти, но его восстановление может потребовать слишком много времени и вызвать FOUC в зависимости от сайта, скорости сети, количества стилей, размера оперативной памяти и быстродействия процессора."
-  },
-  "optionsActions": {
-    "message": "Другие действия"
   },
   "optionsAdvanced": {
     "message": "Другое"
@@ -944,12 +906,6 @@
   "optionsBadgeNormal": {
     "message": "Цвет фона"
   },
-  "optionsCheck": {
-    "message": "Обновить стили"
-  },
-  "optionsCheckUpdate": {
-    "message": "Найти и установить обновления стилей"
-  },
   "optionsCustomizeBadge": {
     "message": "Значок на пиктограмме в панели"
   },
@@ -977,12 +933,6 @@
   "optionsIconLight": {
     "message": "Светлый интерфейс браузера"
   },
-  "optionsOpen": {
-    "message": "Открыть"
-  },
-  "optionsOpenManager": {
-    "message": "Менеджер стилей"
-  },
   "optionsPopupWidth": {
     "message": "Ширина всплывающего окна (в пикселях)"
   },
@@ -994,9 +944,6 @@
   },
   "optionsStylusThemes": {
     "message": "Нажмите на значок с буквой S в верхней панели браузера на любой странице Stylus, в том числе и этой, затем нажмите «Найти стили»"
-  },
-  "optionsSubheading": {
-    "message": "Дополнительно"
   },
   "optionsSyncConnect": {
     "message": "Подключить"
@@ -1113,9 +1060,6 @@
   "popupMenuButtonTooltip": {
     "message": "Меню действий"
   },
-  "popupOpenEditInPopup": {
-    "message": "...без адресной строки"
-  },
   "popupOpenEditInWindow": {
     "message": "Открывать редактор в новом окне"
   },
@@ -1167,9 +1111,6 @@
   "publishUsw": {
     "message": "Использует <userstyles.world>"
   },
-  "readingStyles": {
-    "message": "Чтение стилей..."
-  },
   "reload": {
     "message": "Перезагрузить расширение"
   },
@@ -1185,14 +1126,11 @@
   "restoreTemplate": {
     "message": "Восстановить шаблон по-умолчанию.\n\n(Не влияет на уже открытые страницы редактирования)"
   },
-  "retrieveBckp": {
-    "message": "Импорт стилей"
-  },
-  "retrieveDropboxSync": {
-    "message": "Импорт Dropbox"
-  },
   "saveAsTemplate": {
     "message": "Сохранить как шаблон"
+  },
+  "saved": {
+    "message": "Сохранено"
   },
   "search": {
     "message": "Поиск"
@@ -1455,14 +1393,6 @@
   "styleToMozillaFormatTitle": {
     "message": "Стиль в формате Mozilla"
   },
-  "styleUpdate": {
-    "message": "Подтвердите обновление стиля '$stylename$'.",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleUpdateDiscardChanges": {
     "message": "Стиль был изменён вне редактора. Перезагрузить?"
   },
@@ -1522,9 +1452,6 @@
   "unreachableMozSiteHintOldFF": {
     "message": "Только Firefox 59 и более новые версии могут быть настроены на разрешение WebExtensions добавлять элементы стиля на сайтах, защищённых CSP, таких как этот."
   },
-  "unzipStyles": {
-    "message": "Распаковка стилей..."
-  },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Обновлений нет."
   },
@@ -1563,12 +1490,6 @@
   "updateCompleted": {
     "message": "Обновление завершено."
   },
-  "updatesCurrentlyInstalled": {
-    "message": "Установлено обновлений:"
-  },
-  "uploadingFile": {
-    "message": "Загрузка файла..."
-  },
   "usercssAvoidOverwriting": {
     "message": "Измените значение @name или @namespace, пожалуйста, чтобы предотвратить перезапись существующего стиля."
   },
@@ -1600,8 +1521,5 @@
   },
   "writeStyleForURL": {
     "message": "этого адреса"
-  },
-  "zipStyles": {
-    "message": "Запаковка стилей..."
   }
 }

@@ -49,9 +49,6 @@
   "appliesRemoveError": {
     "message": "Не можна видалити останній елемент"
   },
-  "appliesSpecify": {
-    "message": "Вказати"
-  },
   "appliesToEverything": {
     "message": "Все"
   },
@@ -64,14 +61,8 @@
   "author": {
     "message": "Автор"
   },
-  "backupButtons": {
+  "backup": {
     "message": "Резервне копіювання"
-  },
-  "backupMessage": {
-    "message": "Щоб імпортувати файл резервної копії, перетягніть його на цю сторінку або натисніть кнопку «Імпорт».\n\nЩоб експортувати сумісну резервну копію для Stylus, старішого за 1.5.18, клацніть по кнопці «Експорт» правою кнопкою миші або утримуючи Shift."
-  },
-  "bckpInstStyles": {
-    "message": "Експорт стилів"
   },
   "checkAllUpdates": {
     "message": "Перевірити оновлення для усіх стилів"
@@ -193,15 +184,6 @@
   "confirmYes": {
     "message": "Так"
   },
-  "connectingDropbox": {
-    "message": "Підключення Dropbox..."
-  },
-  "connectingDropboxNotAllowed": {
-    "message": "Підключення до Dropbox доступне лише в програмах, встановлених безпосередньо з веб-магазину"
-  },
-  "copied": {
-    "message": "Скопійовано в буфер обміну"
-  },
   "copy": {
     "message": "Копіювати в буфер обміну"
   },
@@ -302,14 +284,6 @@
   "editStyleLabel": {
     "message": "Редагувати"
   },
-  "editStyleTitle": {
-    "message": "Редагувати стиль $stylename$",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "editorSettings": {
     "message": "Налаштування редактора"
   },
@@ -328,8 +302,8 @@
   "exportLabel": {
     "message": "Експорт"
   },
-  "exportSavedSuccess": {
-    "message": "Файл сбережено успішно"
+  "exportStyles": {
+    "message": "Експорт стилів"
   },
   "externalFeedback": {
     "message": "Зворотній зв'язок"
@@ -393,9 +367,6 @@
   "genericResetLabel": {
     "message": "Скинути"
   },
-  "genericSavedMessage": {
-    "message": "Збережено"
-  },
   "genericSize": {
     "message": "Розмір"
   },
@@ -422,9 +393,6 @@
   },
   "helpKeyMapHotkey": {
     "message": "Натисніть клавішу"
-  },
-  "hostDisabled": {
-    "message": "Цей хост вимкнено через помилку в поточній версії браузера, що використовується"
   },
   "importAppendLabel": {
     "message": "Додати до стилю"
@@ -473,6 +441,9 @@
   },
   "importReportUndoneTitle": {
     "message": "Імпорт скасовано"
+  },
+  "importStyles": {
+    "message": "Імпорт стилів"
   },
   "installButton": {
     "message": "Встановити стиль"
@@ -581,17 +552,11 @@
   "manageFilters": {
     "message": "Фільтри"
   },
-  "manageHeading": {
-    "message": "Встановити Styles"
-  },
   "manageMaxTargets": {
     "message": "Кількість цільових елементів"
   },
   "manageMinColumnWidth": {
     "message": "Мінімальна ширина колонки (у пікселях, 9999 вимикає багатоколонковий режим)"
-  },
-  "manageNewStyleAsUsercss": {
-    "message": "як UserCSS"
   },
   "manageOnlyDisabled": {
     "message": "Лише вимкнені стилі"
@@ -616,6 +581,9 @@
   },
   "manageOnlyUsercss": {
     "message": "Лише стилі UserCSS"
+  },
+  "manageStyles": {
+    "message": "Управління стилями"
   },
   "menuShowBadge": {
     "message": "Показати кількість активних стилів"
@@ -812,9 +780,6 @@
       }
     }
   },
-  "noFileToImport": {
-    "message": "Щоб імпортувати стилі, спершу їх потрібно експортувати."
-  },
   "noStylesForSite": {
     "message": "Не встановлено стилів для цього сайту."
   },
@@ -826,9 +791,6 @@
   },
   "openOptions": {
     "message": "Налаштування"
-  },
-  "optionsActions": {
-    "message": "Дія"
   },
   "optionsAdvanced": {
     "message": "Інше"
@@ -872,12 +834,6 @@
   "optionsBadgeNormal": {
     "message": "Колір фону"
   },
-  "optionsCheck": {
-    "message": "Оновлення стилів"
-  },
-  "optionsCheckUpdate": {
-    "message": "Перевірити та встановити усі доступні оновлення"
-  },
   "optionsCustomizeBadge": {
     "message": "Значок на зображенні з панелі"
   },
@@ -905,12 +861,6 @@
   "optionsIconLight": {
     "message": "Світлі теми браузера"
   },
-  "optionsOpen": {
-    "message": "Відкрити"
-  },
-  "optionsOpenManager": {
-    "message": "Управління стилями"
-  },
   "optionsPopupWidth": {
     "message": "Ширина спливаючого вікна (у пікселях)"
   },
@@ -922,9 +872,6 @@
   },
   "optionsStylusThemes": {
     "message": "Клацніть піктограму Stylus на панелі інструментів браузера на будь-якій сторінці Stylus, включаючи цю, а потім натисніть \"Знайти стилі\""
-  },
-  "optionsSubheading": {
-    "message": "Додатково"
   },
   "optionsSyncConnect": {
     "message": "З'єднати"
@@ -1086,9 +1033,6 @@
   "publishUsw": {
     "message": "Використовуючи <userstyles.world>"
   },
-  "readingStyles": {
-    "message": "Зчитування стилів..."
-  },
   "reload": {
     "message": "Перезавантажити"
   },
@@ -1104,14 +1048,11 @@
   "restoreTemplate": {
     "message": "Відновити шаблон за замовчуванням.\n\n(Наразі відкриті сторінки редактора не зміняться.)"
   },
-  "retrieveBckp": {
-    "message": "Імпорт стилів"
-  },
-  "retrieveDropboxSync": {
-    "message": "Імпорт з Dropbox"
-  },
   "saveAsTemplate": {
     "message": "Зберегти як шаблон"
+  },
+  "saved": {
+    "message": "Збережено"
   },
   "search": {
     "message": "Пошук"
@@ -1314,14 +1255,6 @@
   "styleToMozillaFormatTitle": {
     "message": "Стиль у форматі Mozilla"
   },
-  "styleUpdate": {
-    "message": "Ви дійсно бажаєте оновити '$stylename$'?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleUpdateUrlLabel": {
     "message": "URL-адреса оновлень"
   },
@@ -1357,9 +1290,6 @@
   "unreachableAMO": {
     "message": "Firefox блокує доступ до сайту."
   },
-  "unzipStyles": {
-    "message": "Розпакування стилів..."
-  },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Оновлень не знайдено."
   },
@@ -1377,16 +1307,10 @@
   "updateCompleted": {
     "message": "Оновлення завершено."
   },
-  "updatesCurrentlyInstalled": {
-    "message": "Встановлені оновлення:"
-  },
   "writeStyleFor": {
     "message": "Створити стиль для:"
   },
   "writeStyleForURL": {
     "message": "цей URL"
-  },
-  "zipStyles": {
-    "message": "Запаковування стилів ... "
   }
 }

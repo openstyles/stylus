@@ -64,10 +64,6 @@
     "message": "Can not remove last 'applies to' entry",
     "description": "Error displayed when the last 'applies' is going to be removed"
   },
-  "appliesSpecify": {
-    "message": "Specify",
-    "description": "Label for the button to make a style apply only to specific sites"
-  },
   "appliesToEverything": {
     "message": "Everything",
     "description": "Text displayed for styles that apply to all sites"
@@ -88,20 +84,13 @@
     "message": "Author",
     "description": "Label for the style author"
   },
-  "backupButtons": {
+  "backup": {
     "message": "Backup",
     "description": "Heading for backup"
-  },
-  "backupMessage": {
-    "message": "To import the backup file, drag'n'drop it into this page or click the Import button.\n\nTo export a compatible backup for Stylus older than 1.5.18, right-click or shift-click the Export button.",
-    "description": "Text for Backup section's (i) in style manager"
   },
   "backupReminder": {
     "message": "<b>Styles may be lost</b> due to power failure, bugs in the browser, personal mistake.<hr><b>Backup your data:</b> either configure \"Sync to cloud\" in the options or manually click the export button whenever you make significant changes or, preferably, set up automatic backup of all your data using a dedicated app.",
     "description": "Shown in the style manager. Text between <b> and </b> is in bold font, <hr> is just an empty line in-between to make the text more readable."
-  },
-  "bckpInstStyles": {
-    "message": "Export styles"
   },
   "checkAllUpdates": {
     "message": "Check all styles for updates",
@@ -122,6 +111,10 @@
   "clickToUninstall": {
     "message": "Click to uninstall",
     "description": "Label for the overlay on a style thumbnail when installed via inline search in the popup"
+  },
+  "cm_arrowKeysTraverse": {
+    "message": "Arrow keys ↑↓ traverse sections",
+    "description": "Label for the option in the editor."
   },
   "cm_autoCloseBrackets": {
     "message": "Autoclose brackets and quotes",
@@ -190,10 +183,6 @@
     "message": "Theme",
     "description": "Label for the style editor's CSS theme."
   },
-  "cm_arrowKeysTraverse": {
-    "message": "Arrow keys ↑↓ traverse sections",
-    "description": "Label for the option in the editor."
-  },
   "colorpickerPaletteHint": {
     "message": "Right-click a swatch to cycle through its source lines"
   },
@@ -256,16 +245,6 @@
   "confirmYes": {
     "message": "Yes",
     "description": "'Yes' button in a confirm dialog"
-  },
-  "connectingDropbox": {
-    "message": "Connecting Dropbox..."
-  },
-  "connectingDropboxNotAllowed": {
-    "message": "Connecting to Dropbox is only available in apps installed directly from the webstore"
-  },
-  "copied": {
-    "message": "Copied to clipboard",
-    "description": "Message shown when content has been copied to the clipboard"
   },
   "copy": {
     "message": "Copy to clipboard",
@@ -354,6 +333,10 @@
     "message": "Disable",
     "description": "Label for the button to disable a style"
   },
+  "draftAction": {
+    "message": "Choose 'Yes' to load this draft or 'No' to discard it.",
+    "description": "Displayed in the editor after the browser/extension crashed"
+  },
   "draftTitle": {
     "message": "Draft recovery, created $date$",
     "placeholders": {
@@ -362,10 +345,6 @@
       }
     },
     "description": "Title of the modal displayed in the editor when an unsaved draft is found, the $date$ looks like '1 hour ago' in user's current UI language"
-  },
-  "draftAction": {
-    "message": "Choose 'Yes' to load this draft or 'No' to discard it.",
-    "description": "Displayed in the editor after the browser/extension crashed"
   },
   "dragDropMessage": {
     "message": "Drop your backup file anywhere on this page to import.",
@@ -391,15 +370,6 @@
     "message": "Edit",
     "description": "Label for the button to go to the edit style page"
   },
-  "editStyleTitle": {
-    "message": "Edit Style $stylename$",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    },
-    "description": "Title of the page for editing styles"
-  },
   "editTargetsFirst": {
     "message": "Show targets before code",
     "description": "Option to show targeted sites before the code in the sectioned editor"
@@ -420,15 +390,15 @@
   "excludeStyleByUrlLabel": {
     "message": "Exclude the current URL"
   },
+  "exportCompatible": {
+    "message": "Export (compatible mode)"
+  },
   "exportLabel": {
     "message": "Export",
     "description": "Label for the button to export a style (editor) or all styles (style manager)"
   },
-  "exportCompatible": {
-    "message": "Export (compatible mode)"
-  },
-  "exportSavedSuccess": {
-    "message": "File saved with success"
+  "exportStyles": {
+    "message": "Export styles"
   },
   "externalFeedback": {
     "message": "Feedback",
@@ -527,10 +497,6 @@
     "message": "Reset",
     "description": "Used in various parts of UI to indicate that something may be reset to its original state"
   },
-  "genericSavedMessage": {
-    "message": "Saved",
-    "description": "Used in various parts of the UI to indicate that something was saved"
-  },
   "genericSize": {
     "message": "Size"
   },
@@ -564,10 +530,6 @@
   "helpKeyMapHotkey": {
     "message": "Press a hotkey",
     "description": "Placeholder text of inputbox in keymap help popup on the edit style page. Must be very short"
-  },
-  "hostDisabled": {
-    "message": "This host has been disabled due to a bug in the current version of the browser being used",
-    "description": "Tooltip for cloud host disabled"
   },
   "importAppendLabel": {
     "message": "Append to style",
@@ -635,6 +597,9 @@
     "message": "Import has been undone",
     "description": "Title of the message box shown after undoing the import of styles"
   },
+  "importStyles": {
+    "message": "Import styles"
+  },
   "installButton": {
     "message": "Install style",
     "description": "Label for install button"
@@ -676,13 +641,13 @@
     "message": "Get help",
     "description": "Homepage link text in style manager e.g. https://add0n.com/stylus.html#features with chat/FAQ/intro/info"
   },
-  "linkGetStyles": {
-    "message": "Get styles",
-    "description": "Help link text in style manager e.g. https://userstyles.org"
-  },
   "linkGetShareStyles": {
     "message": "Get and share styles",
     "description": "Link text for https://userstyles.world/ in style manager"
+  },
+  "linkGetStyles": {
+    "message": "Get styles",
+    "description": "Help link text in style manager e.g. https://userstyles.org"
   },
   "linkStylusWiki": {
     "message": "Wiki",
@@ -779,20 +744,12 @@
     "message": "Filters",
     "description": "Label for filters container"
   },
-  "manageHeading": {
-    "message": "Installed Styles",
-    "description": "Heading for style manager"
-  },
   "manageMaxTargets": {
     "message": "Number of applies-to items",
     "description": "Label for the numeric input box to limit max number of applies-to targets in the new UI in style manager"
   },
   "manageMinColumnWidth": {
     "message": "Minimum column width (in pixels; 9999 disables multi-column mode)"
-  },
-  "manageNewStyleAsUsercss": {
-    "message": "as UserCSS",
-    "description": "VERY SHORT label for the checkbox next to the 'Write new style' button in the style manager"
   },
   "manageNewUI": {
     "message": "Table layout",
@@ -830,9 +787,8 @@
     "message": "Only UserCSS styles",
     "description": "Checkbox to show only UserCSS styles"
   },
-  "manageTitle": {
-    "message": "Stylus",
-    "description": "Title for style manager"
+  "manageStyles": {
+    "message": "Manage styles"
   },
   "masterSwitch": {
     "message": "Master switch",
@@ -1065,9 +1021,6 @@
     },
     "description": "Error displayed when unknown variable type is parsed"
   },
-  "noFileToImport": {
-    "message": "To import your styles, you should export it first."
-  },
   "noStylesForSite": {
     "message": "No styles installed for this site.",
     "description": "Text displayed when no styles are installed for the current site"
@@ -1113,11 +1066,17 @@
   "optionKeepAliveNote": {
     "message": "Increase it if you encounter flashing of unstyled content (FOUC) when opening a page after not interacting with the browser for a while.\n\n-1 = ManifestV2 default behavior (no limit).\n0 = ManifestV3 default behavior (half a minute).\n\nThe cache takes 30MB or more of RAM, but rebuilding it may take too much time and cause FOUC depending on the website, network speed, amount of styles, RAM size, and CPU performance."
   },
-  "optionsActions": {
-    "message": "Actions"
-  },
   "optionsAdvanced": {
     "message": "Advanced"
+  },
+  "optionsAdvancedAutoSwitchSchemeBySystem": {
+    "message": "By system preference"
+  },
+  "optionsAdvancedAutoSwitchSchemeByTime": {
+    "message": "By night time:"
+  },
+  "optionsAdvancedAutoSwitchSchemeNever": {
+    "message": "Disabled. The dark/light setting in styles is ignored."
   },
   "optionsAdvancedContextDelete": {
     "message": "Add 'Delete' in editor context menu"
@@ -1137,15 +1096,6 @@
   },
   "optionsAdvancedNewStyleAsUsercss": {
     "message": "Write new style as UserCSS"
-  },
-  "optionsAdvancedAutoSwitchSchemeNever": {
-    "message": "Disabled. The dark/light setting in styles is ignored."
-  },
-  "optionsAdvancedAutoSwitchSchemeBySystem": {
-    "message": "By system preference"
-  },
-  "optionsAdvancedAutoSwitchSchemeByTime": {
-    "message": "By night time:"
   },
   "optionsAdvancedPatchCsp": {
     "message": "Patch <code>CSP</code> to allow style assets"
@@ -1175,12 +1125,6 @@
   "optionsBadgeNormal": {
     "message": "Background color"
   },
-  "optionsCheck": {
-    "message": "Update styles"
-  },
-  "optionsCheckUpdate": {
-    "message": "Check for and install all available updates"
-  },
   "optionsCustomizeBadge": {
     "message": "Badge on the toolbar icon"
   },
@@ -1209,12 +1153,6 @@
   "optionsIconLight": {
     "message": "Light browser themes"
   },
-  "optionsOpen": {
-    "message": "Open"
-  },
-  "optionsOpenManager": {
-    "message": "Manage styles"
-  },
   "optionsPopupWidth": {
     "message": "Popup width (in pixels)"
   },
@@ -1227,10 +1165,6 @@
   "optionsStylusThemes": {
     "message": "Click the Stylus icon in the browser toolbar on any Stylus page including this one, then click 'Find styles'"
   },
-  "optionsSubheading": {
-    "message": "More Options",
-    "description": "Subheading for options section in style manager."
-  },
   "optionsSyncConnect": {
     "message": "Connect"
   },
@@ -1242,6 +1176,9 @@
   },
   "optionsSyncNone": {
     "message": "None"
+  },
+  "optionsSyncPassword": {
+    "message": "Password"
   },
   "optionsSyncStatusConnected": {
     "message": "Connected"
@@ -1277,15 +1214,6 @@
       }
     }
   },
-  "optionsSyncUsername": {
-    "message": "Username"
-  },
-  "optionsSyncPassword": {
-    "message": "Password"
-  },
-  "optionsSyncUrl": {
-    "message": "URL"
-  },
   "optionsSyncStatusRelogin": {
     "message": "Session expired, please log in again."
   },
@@ -1294,6 +1222,12 @@
   },
   "optionsSyncSyncNow": {
     "message": "Sync now"
+  },
+  "optionsSyncUrl": {
+    "message": "URL"
+  },
+  "optionsSyncUsername": {
+    "message": "Username"
   },
   "optionsUpdateInterval": {
     "message": "Userstyle autoupdate interval in hours (specify 0 to disable)"
@@ -1373,6 +1307,10 @@
     "message": "Styles before commands",
     "description": "Label for the checkbox controlling section order in the popup."
   },
+  "prefShowBadge": {
+    "message": "Number of styles active for the current site",
+    "description": "Label for the checkbox controlling toolbar badge text."
+  },
   "preferScheme": {
     "message": "Dark/Light mode preference"
   },
@@ -1387,10 +1325,6 @@
   },
   "preferSchemeNone": {
     "message": "None (always applied)"
-  },
-  "prefShowBadge": {
-    "message": "Number of styles active for the current site",
-    "description": "Label for the checkbox controlling toolbar badge text."
   },
   "previewLabel": {
     "message": "Live preview",
@@ -1422,9 +1356,6 @@
     "message": "Using <userstyles.world>",
     "description": "Name of the link to https://userstyles.world in the editor"
   },
-  "readingStyles": {
-    "message": "Reading styles..."
-  },
   "reload": {
     "message": "Reload",
     "description": "Context menu to reload the extension when installed in developer mode"
@@ -1444,14 +1375,12 @@
   "restoreTemplate": {
     "message": "Restore the default template.\n\n(The currently open editor pages won't change.)"
   },
-  "retrieveBckp": {
-    "message": "Import styles"
-  },
-  "retrieveDropboxSync": {
-    "message": "Dropbox Import"
-  },
   "saveAsTemplate": {
     "message": "Save as template"
+  },
+  "saved": {
+    "message": "Saved",
+    "description": "Used in various parts of the UI to indicate that something was saved"
   },
   "search": {
     "message": "Search",
@@ -1635,6 +1564,9 @@
     "message": "Enabled",
     "description": "Label for the enabled state of styles"
   },
+  "styleExcludeLabel": {
+    "message": "Custom excluded sites"
+  },
   "styleFromMozillaFormatError": {
     "message": "Failed to import from Mozilla format",
     "description": "Label for the import error"
@@ -1642,6 +1574,24 @@
   "styleFromMozillaFormatPrompt": {
     "message": "Paste the Mozilla-format code",
     "description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
+  },
+  "styleIncludeLabel": {
+    "message": "Custom included sites"
+  },
+  "styleInjectionImportance": {
+    "message": "Toggle style's importance"
+  },
+  "styleInjectionOrder": {
+    "message": "Style injection order",
+    "description": "Tooltip for the button in style manager to open the dialog and also the title of this dialog"
+  },
+  "styleInjectionOrderHint": {
+    "message": "Drag'n'drop a style to change its position. Styles are injected sequentially in the order shown below so a style further down the list can override the earlier styles.",
+    "description": "Hint in the injection order dialog in style manager"
+  },
+  "styleInjectionOrderHint_prio": {
+    "message": "Important styles listed below are always injected last so they can override any newly installed styles. Click the style's mark to toggle its importance.",
+    "description": "Hint at the bottom of the injection order dialog in style manager"
   },
   "styleInstall": {
     "message": "Install '$stylename$' into Stylus?",
@@ -1700,6 +1650,9 @@
   "styleNotAppliedSchemeLight": {
     "message": "This style is only applied in Light Mode"
   },
+  "stylePreferSchemeLabel": {
+    "message": "Dark/Light mode"
+  },
   "styleRegexpInvalidExplanation": {
     "message": "Some 'regexp()' rules that could not be compiled at all."
   },
@@ -1754,18 +1707,12 @@
     "message": "Style in Mozilla format",
     "description": "Title of the popup with the style code in Mozilla format, shown after pressing the Export button on Edit style page"
   },
-  "styleUpdate": {
-    "message": "Are you sure you want to update '$stylename$'?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    },
-    "description": "Confirmation when updating a style"
-  },
   "styleUpdateDiscardChanges": {
     "message": "The style is changed outside of the editor. Would you like to reload the style?",
     "description": "Confirmation to update the style in the editor"
+  },
+  "styleUpdateUrlLabel": {
+    "message": "Update URL"
   },
   "stylusUnavailableForURL": {
     "message": "Stylus doesn't work on pages like this.",
@@ -1775,39 +1722,8 @@
     "message": "As a security precaution, the browser prohibits extensions from affecting its built-in pages (like chrome://version, the standard new tab page as of Chrome 61, about:addons, and so on) as well as other extensions' pages. Each browser also restricts access to its own extensions gallery (like Chrome Web Store or AMO).",
     "description": "Sub-note in the toolbar pop-up when on a URL Stylus can't affect"
   },
-  "styleUpdateUrlLabel": {
-    "message": "Update URL"
-  },
-  "stylePreferSchemeLabel": {
-    "message": "Dark/Light mode"
-  },
-  "styleIncludeLabel": {
-    "message": "Custom included sites"
-  },
-  "styleInjectionImportance": {
-    "message": "Toggle style's importance"
-  },
-  "styleInjectionOrder": {
-    "message": "Style injection order",
-    "description": "Tooltip for the button in style manager to open the dialog and also the title of this dialog"
-  },
-  "styleInjectionOrderHint": {
-    "message": "Drag'n'drop a style to change its position. Styles are injected sequentially in the order shown below so a style further down the list can override the earlier styles.",
-    "description": "Hint in the injection order dialog in style manager"
-  },
-  "styleInjectionOrderHint_prio": {
-    "message": "Important styles listed below are always injected last so they can override any newly installed styles. Click the style's mark to toggle its importance.",
-    "description": "Hint at the bottom of the injection order dialog in style manager"
-  },
-  "styleExcludeLabel": {
-    "message": "Custom excluded sites"
-  },
   "syncError": {
     "message": "Sync failed",
-    "description": "Tooltip for the toolbar icon"
-  },
-  "syncErrorRelogin": {
-    "message": "Sync failed. Try logging in again in the Stylus options.",
     "description": "Tooltip for the toolbar icon"
   },
   "syncErrorLock": {
@@ -1817,6 +1733,10 @@
         "content": "$1"
       }
     }
+  },
+  "syncErrorRelogin": {
+    "message": "Sync failed. Try logging in again in the Stylus options.",
+    "description": "Tooltip for the toolbar icon"
   },
   "syncStorageErrorSaving": {
     "message": "The value cannot be saved. Try reducing the amount of text.",
@@ -1842,13 +1762,13 @@
     "message": "To allow access open <about:config>, right-click the list, click 'New', then 'Boolean', paste <privacy.resistFingerprinting.block_mozAddonManager> and click OK, <true>, OK, reload the <addons.mozilla.org> page.",
     "description": "Note in the popup when opened on addons.mozilla.org in Firefox >= 59"
   },
-  "unreachableContentScript": {
-    "message": "Could not communicate with the page. Try reloading the tab.",
-    "description": "Note in the toolbar popup usually on file:// URLs after [re]loading Stylus"
-  },
   "unreachableCSP": {
     "message": "Try enabling \"Patch CSP\" in Stylus options.",
     "description": "Note in the popup when opened on a site with CSP that breaks injection in Firefox"
+  },
+  "unreachableContentScript": {
+    "message": "Could not communicate with the page. Try reloading the tab.",
+    "description": "Note in the toolbar popup usually on file:// URLs after [re]loading Stylus"
   },
   "unreachableFileHint": {
     "message": "Stylus can access file:// URLs only if you enable the corresponding checkbox for Stylus extension on chrome://extensions page.",
@@ -1861,9 +1781,6 @@
   "unreachableMozSiteHintOldFF": {
     "message": "Only Firefox 59 and newer can be configured to allow WebExtensions to add style elements on CSP-protected sites such as this one.",
     "description": "Note in the popup when opened on a restricted mozilla site in Firefox < 59"
-  },
-  "unzipStyles": {
-    "message": "Unzipping styles..."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "No updates found.",
@@ -1913,13 +1830,6 @@
     "message": "Update completed.",
     "description": "Text that displays when an update completed"
   },
-  "updatesCurrentlyInstalled": {
-    "message": "Updates installed:",
-    "description": "Text that displays when an update is installed on options page. Followed by the number of currently installed updates."
-  },
-  "uploadingFile": {
-    "message": "Uploading File..."
-  },
   "usercssAvoidOverwriting": {
     "message": "Please change the value of @name or @namespace to avoid overwriting an existing style.",
     "description": "Shown in a message box when attempting to save a new UserCSS style that would overwrite an existing one."
@@ -1957,8 +1867,5 @@
   "writeStyleForURL": {
     "message": "this URL",
     "description": "Text for link in toolbar pop-up to write a new style for the current URL"
-  },
-  "zipStyles": {
-    "message": "Zipping styles..."
   }
 }

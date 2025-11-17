@@ -46,9 +46,6 @@
   "appliesRemoveError": {
     "message": "Poslední záznam „platí pro“ nelze odebrat."
   },
-  "appliesSpecify": {
-    "message": "Specifikovat"
-  },
   "appliesToEverything": {
     "message": "Vše"
   },
@@ -64,11 +61,8 @@
   "author": {
     "message": "Autor"
   },
-  "backupButtons": {
+  "backup": {
     "message": "Zálohovat"
-  },
-  "bckpInstStyles": {
-    "message": "Exportovat styly"
   },
   "checkAllUpdates": {
     "message": "Aktualizovat všechny styly"
@@ -178,9 +172,6 @@
   "confirmYes": {
     "message": "Ano"
   },
-  "connectingDropbox": {
-    "message": "Připojování k Dropboxu…"
-  },
   "dateInstalled": {
     "message": "Datum instalace"
   },
@@ -223,22 +214,14 @@
   "editStyleLabel": {
     "message": "Upravit"
   },
-  "editStyleTitle": {
-    "message": "Upravit styl $stylename$",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "enableStyleLabel": {
     "message": "Povolit"
   },
   "exportLabel": {
     "message": "Exportovat"
   },
-  "exportSavedSuccess": {
-    "message": "Soubor úspěšně uložen"
+  "exportStyles": {
+    "message": "Exportovat styly"
   },
   "externalFeedback": {
     "message": "Zpětná vazba"
@@ -298,9 +281,6 @@
   },
   "genericResetLabel": {
     "message": "Resetovat"
-  },
-  "genericSavedMessage": {
-    "message": "Uloženo"
   },
   "genericTitle": {
     "message": "Název"
@@ -364,6 +344,9 @@
   },
   "importReportUndoneTitle": {
     "message": "Import byl přerušen"
+  },
+  "importStyles": {
+    "message": "Importovat styly"
   },
   "installButton": {
     "message": "Instalovat styl"
@@ -463,14 +446,8 @@
   "manageFilters": {
     "message": "Filtry"
   },
-  "manageHeading": {
-    "message": "Nainstalované styly"
-  },
   "manageMaxTargets": {
     "message": "Počet položek v části „Platí pro“"
-  },
-  "manageNewStyleAsUsercss": {
-    "message": "jako UserCSS"
   },
   "manageOnlyDisabled": {
     "message": "Pouze vypnuté styly"
@@ -495,6 +472,9 @@
   },
   "manageOnlyUsercss": {
     "message": "Pouze UserCSS styly"
+  },
+  "manageStyles": {
+    "message": "Spravovat styly"
   },
   "menuShowBadge": {
     "message": "Zobrazit počet aktivních stylů"
@@ -538,9 +518,6 @@
       }
     }
   },
-  "noFileToImport": {
-    "message": "Před importem stylů byste je měli nejprve exportovat."
-  },
   "noStylesForSite": {
     "message": "Pro tento web není nainstalován žádný styl."
   },
@@ -549,9 +526,6 @@
   },
   "openOptions": {
     "message": "Možnosti"
-  },
-  "optionsActions": {
-    "message": "Akce"
   },
   "optionsAdvanced": {
     "message": "Pokročilé"
@@ -570,12 +544,6 @@
   },
   "optionsBadgeNormal": {
     "message": "Barva pozadí"
-  },
-  "optionsCheck": {
-    "message": "Aktualizovat styly"
-  },
-  "optionsCheckUpdate": {
-    "message": "Vyhledávat a instalovat všechny aktualizace"
   },
   "optionsCustomizeBadge": {
     "message": "Ikona tlačítka na panelu"
@@ -598,12 +566,6 @@
   "optionsIconLight": {
     "message": "Světlé vzhledy"
   },
-  "optionsOpen": {
-    "message": "Otevřít"
-  },
-  "optionsOpenManager": {
-    "message": "Spravovat styly"
-  },
   "optionsPopupWidth": {
     "message": "Šířka vyskakovacího okna [px]"
   },
@@ -612,9 +574,6 @@
   },
   "optionsResetButton": {
     "message": "Obnovit nastavení"
-  },
-  "optionsSubheading": {
-    "message": "Další možnosti"
   },
   "optionsSyncUrl": {
     "message": "URL adresa"
@@ -673,9 +632,6 @@
   "previewTooltip": {
     "message": "Dočasně použije změny bez uložení.\nUložte styl pro trvalé zachování změn."
   },
-  "readingStyles": {
-    "message": "Čtení stylů…"
-  },
   "replace": {
     "message": "Nahradit"
   },
@@ -685,8 +641,8 @@
   "replaceWith": {
     "message": "Nahradit s"
   },
-  "retrieveBckp": {
-    "message": "Importovat styly"
+  "saved": {
+    "message": "Uloženo"
   },
   "search": {
     "message": "Vyhledat"
@@ -859,14 +815,6 @@
   "styleToMozillaFormatTitle": {
     "message": "Styl v Mozilla formátu"
   },
-  "styleUpdate": {
-    "message": "Určitě chcete aktualizovat „$stylename$“?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleUpdateDiscardChanges": {
     "message": "Styl byl změněn mimo editor. Chcete styl znovu načíst?"
   },
@@ -902,9 +850,6 @@
   },
   "unreachableMozSiteHintOldFF": {
     "message": "Pouze Firefox 59 a novější může být nakonfigurován tak, aby rozšíření typu WebExtensions mohla přidávat styly na stránky chráněné CSP (Content Security Policy) – jako je tato."
-  },
-  "unzipStyles": {
-    "message": "Rozbalování stylů…"
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Aktualizace nenalezeny."
@@ -944,12 +889,6 @@
   "updateCompleted": {
     "message": "Aktalizace dokončena."
   },
-  "updatesCurrentlyInstalled": {
-    "message": "Instalované aktualizace:"
-  },
-  "uploadingFile": {
-    "message": "Nahrávání souboru…"
-  },
   "usercssAvoidOverwriting": {
     "message": "Prosím, změňte hodnotu @name nebo @namespace ať nedojde k přepsání existujícího stylu."
   },
@@ -973,8 +912,5 @@
   },
   "writeStyleForURL": {
     "message": "tuto URL"
-  },
-  "zipStyles": {
-    "message": "Balení stylů…"
   }
 }

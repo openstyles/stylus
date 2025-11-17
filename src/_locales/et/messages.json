@@ -49,9 +49,6 @@
   "appliesRemoveError": {
     "message": "Viimast 'rakendub'-sisestust ei saa eemaldada"
   },
-  "appliesSpecify": {
-    "message": "Täpsusta"
-  },
   "appliesToEverything": {
     "message": "Kõik"
   },
@@ -64,11 +61,8 @@
   "author": {
     "message": "Autor"
   },
-  "backupButtons": {
+  "backup": {
     "message": "Varunda"
-  },
-  "bckpInstStyles": {
-    "message": "Ekspordi stiilid"
   },
   "checkAllUpdates": {
     "message": "Kontrolli kõikide stiilide uuendusi"
@@ -178,15 +172,6 @@
   "confirmYes": {
     "message": "Jah"
   },
-  "connectingDropbox": {
-    "message": "Dropboxiga ühendumine..."
-  },
-  "connectingDropboxNotAllowed": {
-    "message": "Dropboxiga ühendumine on saadaval ainult veebipoe kaudu installitud rakendustes"
-  },
-  "copied": {
-    "message": "Kopeeritud lõikelauale"
-  },
   "copy": {
     "message": "Kopeeri lõikelauale"
   },
@@ -235,14 +220,6 @@
   "editStyleLabel": {
     "message": "Muuda"
   },
-  "editStyleTitle": {
-    "message": "Muuda stiili $stylename$",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "enableStyleLabel": {
     "message": "Luba"
   },
@@ -255,8 +232,8 @@
   "exportLabel": {
     "message": "Ekspordi"
   },
-  "exportSavedSuccess": {
-    "message": "Fail edukalt salvestatud"
+  "exportStyles": {
+    "message": "Ekspordi stiilid"
   },
   "externalFeedback": {
     "message": "Tagasiside"
@@ -317,9 +294,6 @@
   "genericResetLabel": {
     "message": "Lähtesta"
   },
-  "genericSavedMessage": {
-    "message": "Salvestatud"
-  },
   "genericTitle": {
     "message": "Pealkiri"
   },
@@ -337,9 +311,6 @@
   },
   "helpKeyMapHotkey": {
     "message": "Vajuta kiirklahvi"
-  },
-  "hostDisabled": {
-    "message": "See host on keelatud hetkel kasutatavas brauseri praeguses versioonis oleva vea tõttu"
   },
   "importAppendLabel": {
     "message": "Lisa stiilile"
@@ -385,6 +356,9 @@
   },
   "importReportUndoneTitle": {
     "message": "Importimine on tagasi võetud"
+  },
+  "importStyles": {
+    "message": "Impordi stiilid"
   },
   "installButton": {
     "message": "Paigalda stiil"
@@ -487,14 +461,8 @@
   "manageFilters": {
     "message": "Filtrid"
   },
-  "manageHeading": {
-    "message": "Paigaldatud stiilid"
-  },
   "manageMaxTargets": {
     "message": "Rakendub-üksuste arv"
-  },
-  "manageNewStyleAsUsercss": {
-    "message": "UserCSS-ina"
   },
   "manageOnlyDisabled": {
     "message": "Ainult keelatud stiilid"
@@ -519,6 +487,9 @@
   },
   "manageOnlyUsercss": {
     "message": "Ainult UserCSS stiilid"
+  },
+  "manageStyles": {
+    "message": "Halda stiile"
   },
   "menuShowBadge": {
     "message": "Kuva aktiivsete stiilide hulka"
@@ -628,9 +599,6 @@
       }
     }
   },
-  "noFileToImport": {
-    "message": "Oma stiilide importimiseks peaksid esmalt selle eksportima."
-  },
   "noStylesForSite": {
     "message": "Sellele saidile pole stiile paigaldatud."
   },
@@ -639,9 +607,6 @@
   },
   "openOptions": {
     "message": "Valikud"
-  },
-  "optionsActions": {
-    "message": "Tegevused"
   },
   "optionsAdvanced": {
     "message": "Täpsem"
@@ -663,12 +628,6 @@
   },
   "optionsBadgeNormal": {
     "message": "Taustavärv"
-  },
-  "optionsCheck": {
-    "message": "Uuenda stiile"
-  },
-  "optionsCheckUpdate": {
-    "message": "Kontrolli ja paigalda kõik saadaolevad uuendused"
   },
   "optionsCustomizeBadge": {
     "message": "Number tööriistaribaikoonil"
@@ -694,12 +653,6 @@
   "optionsIconLight": {
     "message": "Heledad brauseriteemad"
   },
-  "optionsOpen": {
-    "message": "Ava"
-  },
-  "optionsOpenManager": {
-    "message": "Halda stiile"
-  },
   "optionsPopupWidth": {
     "message": "Hüpikakna laius (pikslites)"
   },
@@ -708,9 +661,6 @@
   },
   "optionsResetButton": {
     "message": "Lähtesta valikud"
-  },
-  "optionsSubheading": {
-    "message": "Rohkem valikuid"
   },
   "optionsSyncNone": {
     "message": "Pole"
@@ -793,9 +743,6 @@
   "previewTooltip": {
     "message": "Ajutiselt rakendab muudatused ilma salvestamata.\nMuudatuste püsivaks tegemiseks salvesta stiil."
   },
-  "readingStyles": {
-    "message": "Stiilide lugemine..."
-  },
   "replace": {
     "message": "Asenda"
   },
@@ -805,11 +752,8 @@
   "replaceWith": {
     "message": "Asenda tekstiga"
   },
-  "retrieveBckp": {
-    "message": "Impordi stiilid"
-  },
-  "retrieveDropboxSync": {
-    "message": "Dropboxi importimine"
+  "saved": {
+    "message": "Salvestatud"
   },
   "search": {
     "message": "Otsi"
@@ -985,14 +929,6 @@
   "styleToMozillaFormatTitle": {
     "message": "Stiil Mozilla-vormingus"
   },
-  "styleUpdate": {
-    "message": "Kas soovid kindlasti uuendada \"$stylename$\"?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleUpdateDiscardChanges": {
     "message": "Stiili on redaktoriväliselt muudetud. Kas soovid stiili uuesti laadida?"
   },
@@ -1028,9 +964,6 @@
   },
   "unreachableMozSiteHintOldFF": {
     "message": "Ainult Firefox 59 ja uuem on võimalik seadistada lubama WebExtensionsil lisada stiilielemente CSP-kaitstud saitidele nagu see."
-  },
-  "unzipStyles": {
-    "message": "Stiilide lahtipakkimine..."
   },
   "updateAllCheckSucceededNoUpdate": {
     "message": "Uuendusi ei leitud."
@@ -1070,12 +1003,6 @@
   "updateCompleted": {
     "message": "Uuendus teostatud."
   },
-  "updatesCurrentlyInstalled": {
-    "message": "Uuendused paigaldatud:"
-  },
-  "uploadingFile": {
-    "message": "Faili üleslaadimine..."
-  },
   "usercssAvoidOverwriting": {
     "message": "Olemasoleva stiili ülekirjutamise vältimiseks palun muuda @name või @namespace väärtused."
   },
@@ -1099,8 +1026,5 @@
   },
   "writeStyleForURL": {
     "message": "see URL"
-  },
-  "zipStyles": {
-    "message": "Stiilide kokkupakkimine..."
   }
 }

@@ -46,9 +46,6 @@
   "appliesRemoveError": {
     "message": "Nu se poate șterge 'aplicabil pentru'"
   },
-  "appliesSpecify": {
-    "message": "Specificați"
-  },
   "appliesToEverything": {
     "message": "Totul"
   },
@@ -60,9 +57,6 @@
   },
   "author": {
     "message": "Autor"
-  },
-  "bckpInstStyles": {
-    "message": "Exportați teme"
   },
   "checkAllUpdates": {
     "message": "Verificați toate temele pentru update-uri"
@@ -193,16 +187,11 @@
   "editStyleLabel": {
     "message": "Modificați"
   },
-  "editStyleTitle": {
-    "message": "Modificați tema $stylename$",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "enableStyleLabel": {
     "message": "Activați"
+  },
+  "exportStyles": {
+    "message": "Exportați teme"
   },
   "externalLink": {
     "message": "Link extern"
@@ -256,9 +245,6 @@
   },
   "genericResetLabel": {
     "message": "Resetați"
-  },
-  "genericSavedMessage": {
-    "message": "Salvat"
   },
   "genericTitle": {
     "message": "Titlu"
@@ -316,6 +302,9 @@
   },
   "importReportUndoneTitle": {
     "message": "Importarea a fost anulată"
+  },
+  "importStyles": {
+    "message": "Importați teme"
   },
   "installButton": {
     "message": "Instalați tema"
@@ -406,9 +395,6 @@
   "manageFilters": {
     "message": "Filtre"
   },
-  "manageHeading": {
-    "message": "Teme instalate"
-  },
   "manageMaxTargets": {
     "message": "Numărul obiectelor la care se aplică"
   },
@@ -436,6 +422,9 @@
   "manageOnlyUsercss": {
     "message": "Doar teme UserCSS"
   },
+  "manageStyles": {
+    "message": "Managerul de teme"
+  },
   "menuShowBadge": {
     "message": "Afișați numărul temelor active"
   },
@@ -450,9 +439,6 @@
   },
   "openOptions": {
     "message": "Opțiuni"
-  },
-  "optionsActions": {
-    "message": "Acțiuni"
   },
   "optionsAdvanced": {
     "message": "Avansat"
@@ -472,12 +458,6 @@
   "optionsBadgeNormal": {
     "message": "Culoare de fundal"
   },
-  "optionsCheck": {
-    "message": "Updatați temele"
-  },
-  "optionsCheckUpdate": {
-    "message": "Verificați și instalează toate update-urile"
-  },
   "optionsCustomizeBadge": {
     "message": "Bulinuța de pe iconița din toolbar"
   },
@@ -493,12 +473,6 @@
   "optionsIconLight": {
     "message": "Teme albe pentru browser"
   },
-  "optionsOpen": {
-    "message": "Deschideți"
-  },
-  "optionsOpenManager": {
-    "message": "Managerul de teme"
-  },
   "optionsPopupWidth": {
     "message": "Mărimea ferestrei popup (în pixeli)"
   },
@@ -507,9 +481,6 @@
   },
   "optionsResetButton": {
     "message": "Resetați opțiunile"
-  },
-  "optionsSubheading": {
-    "message": "Mai multe opțiuni"
   },
   "optionsUpdateInterval": {
     "message": "Intervalul de autoupdate în ore (0 pentru dezactivat)"
@@ -571,8 +542,8 @@
   "replaceWith": {
     "message": "Înlocuiți cu"
   },
-  "retrieveBckp": {
-    "message": "Importați teme"
+  "saved": {
+    "message": "Salvat"
   },
   "search": {
     "message": "Căutați"
@@ -739,14 +710,6 @@
   "styleToMozillaFormatTitle": {
     "message": "Scrieți în format Mozilla"
   },
-  "styleUpdate": {
-    "message": "Sunteți sigur că doriți să faceți update la '$stylename$'?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleUpdateDiscardChanges": {
     "message": "Tema a fost modificată în afara editorului. Doriți să reâncărcați tema?"
   },
@@ -817,9 +780,6 @@
   },
   "updateCompleted": {
     "message": "Update realizat."
-  },
-  "updatesCurrentlyInstalled": {
-    "message": "Update-uri instalate:"
   },
   "usercssAvoidOverwriting": {
     "message": "Vă rugăm să modificați valoarea @name și @namespace pentru a împiedica scrierea peste o temă  existentă."

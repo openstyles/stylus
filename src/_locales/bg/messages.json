@@ -34,9 +34,6 @@
   "appliesRemove": {
     "message": "Премахване"
   },
-  "appliesSpecify": {
-    "message": "Уточняване"
-  },
   "appliesToEverything": {
     "message": "Всичко"
   },
@@ -49,11 +46,8 @@
   "applyAllUpdates": {
     "message": "Прилагане на всички обновления"
   },
-  "backupButtons": {
+  "backup": {
     "message": "Резервни копия"
-  },
-  "bckpInstStyles": {
-    "message": "Изнасяне на стилове"
   },
   "checkAllUpdates": {
     "message": "Проверка на всички стилове за обновления"
@@ -157,19 +151,14 @@
   "editStyleLabel": {
     "message": "Редактиране"
   },
-  "editStyleTitle": {
-    "message": "Редактиране на стила $stylename$",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "enableStyleLabel": {
     "message": "Включване"
   },
   "exportLabel": {
     "message": "Изнасяне"
+  },
+  "exportStyles": {
+    "message": "Изнасяне на стилове"
   },
   "genericAdd": {
     "message": "Добавяне"
@@ -237,6 +226,9 @@
   "importReportUndoneTitle": {
     "message": "Внасянето беше отменено"
   },
+  "importStyles": {
+    "message": "Внасяне на стилове"
+  },
   "installUpdate": {
     "message": "Инсталиране на обновлението"
   },
@@ -266,9 +258,6 @@
   "manageFilters": {
     "message": "Филтри"
   },
-  "manageHeading": {
-    "message": "Инсталирани стилове"
-  },
   "manageMaxTargets": {
     "message": "Брой на видимите приложими адреси"
   },
@@ -284,8 +273,8 @@
   "manageOnlyUpdates": {
     "message": "Само стилове с обновления или проблеми"
   },
-  "manageTitle": {
-    "message": "Стилове"
+  "manageStyles": {
+    "message": "Управление на стиловете"
   },
   "menuShowBadge": {
     "message": "Брой на активните стилове"
@@ -298,9 +287,6 @@
   },
   "openOptions": {
     "message": "Настройки"
-  },
-  "optionsActions": {
-    "message": "Действия"
   },
   "optionsAdvanced": {
     "message": "Разширени"
@@ -316,12 +302,6 @@
   },
   "optionsBadgeNormal": {
     "message": "Цвят на фона"
-  },
-  "optionsCheck": {
-    "message": "Обновяване на стиловете"
-  },
-  "optionsCheckUpdate": {
-    "message": "Проверка и инсталиране на наличните обновления"
   },
   "optionsCustomizeBadge": {
     "message": "Значка на иконката на лентата"
@@ -344,12 +324,6 @@
   "optionsIconLight": {
     "message": "Светли теми"
   },
-  "optionsOpen": {
-    "message": "Отваряне"
-  },
-  "optionsOpenManager": {
-    "message": "Управление на стиловете"
-  },
   "optionsPopupWidth": {
     "message": "Ширина на падащия прозорец (в пиксели)"
   },
@@ -358,9 +332,6 @@
   },
   "optionsResetButton": {
     "message": "Зануляване на настройките"
-  },
-  "optionsSubheading": {
-    "message": "Още настройки"
   },
   "optionsSyncUrl": {
     "message": "Адрес"
@@ -379,9 +350,6 @@
   },
   "replaceWith": {
     "message": "Заместване с"
-  },
-  "retrieveBckp": {
-    "message": "Внасяне на стилове"
   },
   "search": {
     "message": "Търсене"
@@ -478,14 +446,6 @@
   "styleToMozillaFormatTitle": {
     "message": "Стил във формат на Мозила"
   },
-  "styleUpdate": {
-    "message": "Сигурни ли сте, че искате да обновите '$stylename$'?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "stylusUnavailableForURL": {
     "message": "Разширението не работи на такива страници."
   },
@@ -544,9 +504,6 @@
   },
   "updateCompleted": {
     "message": "Обновяването е завършено."
-  },
-  "updatesCurrentlyInstalled": {
-    "message": "Инсталирани обновления:"
   },
   "writeStyleFor": {
     "message": "Писане на стил за: "

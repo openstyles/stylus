@@ -34,9 +34,6 @@
   "appliesRemove": {
     "message": "Poista"
   },
-  "appliesSpecify": {
-    "message": "Tarkenna"
-  },
   "appliesToEverything": {
     "message": "Kaikki"
   },
@@ -79,14 +76,6 @@
   "editStyleLabel": {
     "message": "Muokkaa"
   },
-  "editStyleTitle": {
-    "message": "Muokkaa Tyyliä $stylename$",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "enableStyleLabel": {
     "message": "Aktivoi"
   },
@@ -101,12 +90,6 @@
   },
   "installUpdate": {
     "message": "Asenna päivitys"
-  },
-  "manageHeading": {
-    "message": "Asennetut Tyylit"
-  },
-  "manageTitle": {
-    "message": "Tyylikäs"
   },
   "noStylesForSite": {
     "message": "Ei asennettuja tyylejä tällä sivustolla."

@@ -34,9 +34,6 @@
   "appliesRemove": {
     "message": "Уклони"
   },
-  "appliesSpecify": {
-    "message": "Детаљније"
-  },
   "appliesToEverything": {
     "message": "Све"
   },
@@ -124,14 +121,6 @@
   "editStyleLabel": {
     "message": "Уреди"
   },
-  "editStyleTitle": {
-    "message": "Уреди стил $stylename$",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "enableStyleLabel": {
     "message": "Омогући"
   },
@@ -190,9 +179,6 @@
   },
   "manageFilters": {
     "message": "Филтери"
-  },
-  "manageHeading": {
-    "message": "Инсталирани стилови"
   },
   "manageOnlyEnabled": {
     "message": "Само омогућени стилови"
@@ -288,14 +274,6 @@
   },
   "styleToMozillaFormatTitle": {
     "message": "Стил у Mozilla формату"
-  },
-  "styleUpdate": {
-    "message": "Да ли сте сигурни да желите да ажурирате '$stylename$'?",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
   },
   "stylusUnavailableForURL": {
     "message": "Stylus не ради на страницама као што је ова."

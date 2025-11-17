@@ -11,9 +11,6 @@
   "author": {
     "message": "Autors"
   },
-  "bckpInstStyles": {
-    "message": "Eksportēt stilus"
-  },
   "checkingForUpdate": {
     "message": "Pārbauda..."
   },
@@ -34,9 +31,6 @@
   },
   "confirmSave": {
     "message": "Saglabāt"
-  },
-  "copied": {
-    "message": "Kopēts starpliktuvē"
   },
   "copy": {
     "message": "Kopēt starpliktuvē"
@@ -78,6 +72,9 @@
   "editStyleLabel": {
     "message": "Rediģēt"
   },
+  "exportStyles": {
+    "message": "Eksportēt stilus"
+  },
   "genericAdd": {
     "message": "Pievienot"
   },
@@ -87,14 +84,14 @@
   "genericDisabledLabel": {
     "message": "Atspējots"
   },
-  "genericSavedMessage": {
-    "message": "Saglabāts"
-  },
   "genericSize": {
     "message": "Izmērs"
   },
   "genericTitle": {
     "message": "Nosaukums"
+  },
+  "importStyles": {
+    "message": "Importēt stilus"
   },
   "linterJSONError": {
     "message": "Nederīgs JSON formāts"
@@ -102,23 +99,14 @@
   "optionsBadgeNormal": {
     "message": "Fona krāsa"
   },
-  "optionsCheck": {
-    "message": "Atjaunināt stilus"
-  },
-  "optionsOpen": {
-    "message": "Atvērt"
-  },
   "optionsSyncPassword": {
     "message": "Parole"
   },
   "optionsSyncUsername": {
     "message": "Lietotājvārds"
   },
-  "retrieveBckp": {
-    "message": "Importēt stilus"
-  },
-  "retrieveDropboxSync": {
-    "message": "Dropbox importēšana"
+  "saved": {
+    "message": "Saglabāts"
   },
   "search": {
     "message": "Meklēt"
@@ -137,8 +125,5 @@
   },
   "unreachableAMO": {
     "message": "Firefox aizliedz piekļuvi tīmekļa vietnei."
-  },
-  "uploadingFile": {
-    "message": "Augšupielādē failu..."
   }
 }

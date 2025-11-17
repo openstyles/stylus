@@ -49,9 +49,6 @@
   "appliesRemoveError": {
     "message": "不能移除最后一个「应用于」条目"
   },
-  "appliesSpecify": {
-    "message": "指定"
-  },
   "appliesToEverything": {
     "message": "所有页面"
   },
@@ -67,17 +64,11 @@
   "author": {
     "message": "作者"
   },
-  "backupButtons": {
+  "backup": {
     "message": "备份"
-  },
-  "backupMessage": {
-    "message": "选择/拖拽 JSON 备份文件到本页面来导入备份。\n\n若要导出 Stylus V1.5.18 之前的兼容备份，请右击或Shift+左击「导出」按钮。"
   },
   "backupReminder": {
     "message": "样式可能会因为断电，浏览器漏洞，个人错误而导致 <b>丢失</b>。<hr><b>备份您的资料：</b>在选项中配置「同步到云端」，或者在进行重大更改时手动单击「导出」按钮，最好使用专门的应用程序自动备份所有的数据"
-  },
-  "bckpInstStyles": {
-    "message": "导出所有样式"
   },
   "checkAllUpdates": {
     "message": "全部检查更新"
@@ -196,15 +187,6 @@
   "confirmYes": {
     "message": "是"
   },
-  "connectingDropbox": {
-    "message": "正在连接至 Dropbox..."
-  },
-  "connectingDropboxNotAllowed": {
-    "message": "连接到 Dropbox 功能仅适用于直接从 Webstore 安装的应用程序"
-  },
-  "copied": {
-    "message": "已复制到粘贴板"
-  },
   "copy": {
     "message": "复制到粘贴板"
   },
@@ -305,14 +287,6 @@
   "editStyleLabel": {
     "message": "编辑"
   },
-  "editStyleTitle": {
-    "message": "修改样式“$stylename$”",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "editTargetsFirst": {
     "message": "在代码前显示目标"
   },
@@ -337,8 +311,8 @@
   "exportLabel": {
     "message": "导出"
   },
-  "exportSavedSuccess": {
-    "message": "文件保存成功"
+  "exportStyles": {
+    "message": "导出所有样式"
   },
   "externalFeedback": {
     "message": "反馈"
@@ -417,9 +391,6 @@
   "genericResetLabel": {
     "message": "重置"
   },
-  "genericSavedMessage": {
-    "message": "已保存"
-  },
   "genericSize": {
     "message": "大小"
   },
@@ -446,9 +417,6 @@
   },
   "helpKeyMapHotkey": {
     "message": "按下热键"
-  },
-  "hostDisabled": {
-    "message": "由于当前使用的浏览器版本中存在的错误，此主机已被禁用"
   },
   "importAppendLabel": {
     "message": "追加导入"
@@ -500,6 +468,9 @@
   },
   "importReportUndoneTitle": {
     "message": "样式导入被取消"
+  },
+  "importStyles": {
+    "message": "导入所有样式"
   },
   "installButton": {
     "message": "安装样式"
@@ -611,17 +582,11 @@
   "manageFilters": {
     "message": "过滤器"
   },
-  "manageHeading": {
-    "message": "已安装的样式"
-  },
   "manageMaxTargets": {
     "message": "「应用于」列每个样式显示的对象数量"
   },
   "manageMinColumnWidth": {
     "message": "最小列宽度（以像素为单位；9999 停用多列模式）"
-  },
-  "manageNewStyleAsUsercss": {
-    "message": "作为 UserCSS"
   },
   "manageNewUI": {
     "message": "表格布局"
@@ -649,6 +614,9 @@
   },
   "manageOnlyUsercss": {
     "message": "只显示 UserCSS 样式"
+  },
+  "manageStyles": {
+    "message": "管理样式"
   },
   "masterSwitch": {
     "message": "总开关"
@@ -848,9 +816,6 @@
       }
     }
   },
-  "noFileToImport": {
-    "message": "要导入你的样式，你应该先导出。"
-  },
   "noStylesForSite": {
     "message": "此网站没有样式。"
   },
@@ -886,9 +851,6 @@
   },
   "optionKeepAliveNote": {
     "message": "如果您在一段时间未与浏览器交互后打开页面时遇到无样式内容  闪烁(FOUC)，请增加此值。\n\n-1 = ManifestV2 默认行为（无限制）。\n0 = ManifestV3 默认行为（半分钟）。\n\n缓存占用 30MB 或更多 RAM，但重建缓存可能需要更多时间并导致 FOUC，具体取决于网站、网络速度、样式数量、RAM 大小和 CPU 性能。"
-  },
-  "optionsActions": {
-    "message": "操作"
   },
   "optionsAdvanced": {
     "message": "高级设置"
@@ -941,12 +903,6 @@
   "optionsBadgeNormal": {
     "message": "背景颜色"
   },
-  "optionsCheck": {
-    "message": "检查样式更新"
-  },
-  "optionsCheckUpdate": {
-    "message": "检查并安装所有可用的更新"
-  },
   "optionsCustomizeBadge": {
     "message": "计数器角标"
   },
@@ -971,12 +927,6 @@
   "optionsIconLight": {
     "message": "浅色浏览器主题"
   },
-  "optionsOpen": {
-    "message": "打开"
-  },
-  "optionsOpenManager": {
-    "message": "管理样式"
-  },
   "optionsPopupWidth": {
     "message": "Popup 弹框总宽度（px）"
   },
@@ -988,9 +938,6 @@
   },
   "optionsStylusThemes": {
     "message": "在任意 Stylus 页面（包括这个）点击浏览器工具栏的 Stylus 图标，然后点击「寻找样式」"
-  },
-  "optionsSubheading": {
-    "message": "附加选项"
   },
   "optionsSyncConnect": {
     "message": "连接"
@@ -1104,9 +1051,6 @@
   "popupMenuButtonTooltip": {
     "message": "操作菜单"
   },
-  "popupOpenEditInPopup": {
-    "message": "无地址栏的新窗口"
-  },
   "popupOpenEditInWindow": {
     "message": "在新窗口打开编辑器"
   },
@@ -1158,9 +1102,6 @@
   "publishUsw": {
     "message": "使用 <userstyles.world>"
   },
-  "readingStyles": {
-    "message": "正在读取样式..."
-  },
   "reload": {
     "message": "重启"
   },
@@ -1176,14 +1117,11 @@
   "restoreTemplate": {
     "message": "恢复默认模板。\n\n（不会改变当前打开的编辑器页面）"
   },
-  "retrieveBckp": {
-    "message": "导入所有样式"
-  },
-  "retrieveDropboxSync": {
-    "message": "从 Dropbox 导入"
-  },
   "saveAsTemplate": {
     "message": "另存为模板"
+  },
+  "saved": {
+    "message": "已保存"
   },
   "search": {
     "message": "搜索"
@@ -1446,14 +1384,6 @@
   "styleToMozillaFormatTitle": {
     "message": "Mozilla 格式的样式"
   },
-  "styleUpdate": {
-    "message": "是否更新 “$stylename$”？",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleUpdateDiscardChanges": {
     "message": "样式已经在编辑器外被修改。需要重新加载样式吗？"
   },
@@ -1513,9 +1443,6 @@
   "unreachableMozSiteHintOldFF": {
     "message": "Firefox ⩾59 才能配置为允许 WebExtensions 在受 CSP 保护的网站上（例如本站）添加样式元素。"
   },
-  "unzipStyles": {
-    "message": "正在解压样式..."
-  },
   "updateAllCheckSucceededNoUpdate": {
     "message": "没有找到更新。"
   },
@@ -1554,12 +1481,6 @@
   "updateCompleted": {
     "message": "更新已完成。"
   },
-  "updatesCurrentlyInstalled": {
-    "message": "更新已安装："
-  },
-  "uploadingFile": {
-    "message": "正在上传文件..."
-  },
   "usercssAvoidOverwriting": {
     "message": "请修改 @name 或 @namespace 的值以免覆盖现有样式。"
   },
@@ -1591,8 +1512,5 @@
   },
   "writeStyleForURL": {
     "message": "URL"
-  },
-  "zipStyles": {
-    "message": "正在压缩样式..."
   }
 }

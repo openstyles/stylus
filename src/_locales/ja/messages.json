@@ -49,9 +49,6 @@
   "appliesRemoveError": {
     "message": "「適用先」の最後の項目を削除することはできません"
   },
-  "appliesSpecify": {
-    "message": "個別指定"
-  },
   "appliesToEverything": {
     "message": "すべて"
   },
@@ -64,17 +61,8 @@
   "author": {
     "message": "作者"
   },
-  "backupButtons": {
-    "message": "バックアップ"
-  },
-  "backupMessage": {
-    "message": "バックアップファイルをインポートする場合、このページにドラッグ&ドロップするか、インポートボタンをクリックしてください。\nまた、Stylus 1.5.18 より古い形式でバックアップしたい場合は、エクスポートボタンを 右クリック もしくは shift-クリック してください。"
-  },
   "backupReminder": {
     "message": "停電、ブラウザのバグ、人為的なミスにより<b>スタイルが失われることがあります。</b><hr><b>データをバックアップしてください : </b>オプションで「クラウドとの同期」を設定するか、大きな変更を加えた際に手動でエクスポートボタンをクリックするか、できれば、専用アプリを使用して、全データを自動でバックアップするように設定してください。"
-  },
-  "bckpInstStyles": {
-    "message": "スタイルをエクスポート"
   },
   "checkAllUpdates": {
     "message": "全スタイルの更新をチェック"
@@ -190,15 +178,6 @@
   "confirmYes": {
     "message": "はい"
   },
-  "connectingDropbox": {
-    "message": "Dropboxに接続中..."
-  },
-  "connectingDropboxNotAllowed": {
-    "message": "Dropboxへの接続は、webstoreから直接インストールしたアプリ内でのみ可能です"
-  },
-  "copied": {
-    "message": "クリップボードへコピーしました"
-  },
   "copy": {
     "message": "クリップボードへコピー"
   },
@@ -267,14 +246,6 @@
   "editStyleLabel": {
     "message": "編集"
   },
-  "editStyleTitle": {
-    "message": "スタイル「$stylename$」を編集",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "editTargetsFirst": {
     "message": "コードの前にターゲットを表示"
   },
@@ -298,9 +269,6 @@
   },
   "exportLabel": {
     "message": "エクスポート"
-  },
-  "exportSavedSuccess": {
-    "message": "ファイルをセーブしました"
   },
   "externalFeedback": {
     "message": "フィードバック"
@@ -379,9 +347,6 @@
   "genericResetLabel": {
     "message": "リセット"
   },
-  "genericSavedMessage": {
-    "message": "保存しました"
-  },
   "genericSize": {
     "message": "サイズ"
   },
@@ -408,9 +373,6 @@
   },
   "helpKeyMapHotkey": {
     "message": "ホットキーを押す"
-  },
-  "hostDisabled": {
-    "message": "使用中のブラウザの現在のバージョンの不具合のため、このホストは無効にされています"
   },
   "importAppendLabel": {
     "message": "スタイルに追加"
@@ -576,17 +538,11 @@
   "manageFilters": {
     "message": "フィルター"
   },
-  "manageHeading": {
-    "message": "インストール済みスタイル"
-  },
   "manageMaxTargets": {
     "message": "適用先欄の表示件数"
   },
   "manageMinColumnWidth": {
     "message": "最小カラム幅 (ピクセル単位。9999にすると、マルチカラムモードを無効にします)"
-  },
-  "manageNewStyleAsUsercss": {
-    "message": "UserCSSとして"
   },
   "manageNewUI": {
     "message": "テーブル形式レイアウト"
@@ -813,9 +769,6 @@
       }
     }
   },
-  "noFileToImport": {
-    "message": "スタイルをインポートするには、まずエクスポートする必要があります。"
-  },
   "noStylesForSite": {
     "message": "該当するスタイルはありません。"
   },
@@ -851,9 +804,6 @@
   },
   "optionKeepAliveNote": {
     "message": "しばらくブラウザで操作していなかったページを開いたときに、スタイルを適用していないコンテンツが点滅 (FOUC) する場合は、この値を増やしてください。\n\n-1 = マニフェスト V2 のデフォルト設定 (リミットなし)\n0 = マニフェスト V3 のデフォルト設定 (30秒)\n\nキャッシュは30MB以上のRAMを占有しますが、Webサイト、ネットワーク速度、スタイルの数、RAM容量、CPU性能によっては、キャッシュの再構築に時間がかかり、FOUC が発生する可能性があります。"
-  },
-  "optionsActions": {
-    "message": "アクション"
   },
   "optionsAdvanced": {
     "message": "上級者向け"
@@ -891,6 +841,12 @@
   "optionsAdvancedPatchCspNote": {
     "message": "厳格な<code>CSP</code>(<code>Content-Security-Policy</code>)を持つサイトで、ロードできない画像やフォントを含んだスタイルの場合に、これを有効にします。\n\nこの設定を有効にすると、<code>CSP</code>の制限をゆるめて、必要なコンテンツのロードを許可します。このオプションは、潜在的なセキュリティへの影響を理解し、許可しているコンテンツを監視する責任を持つことができる上級ユーザーのみを対象としています。 詳細については、CSSベースの攻撃に関する資料をお読みください。\n\nまた、インストールされている別の拡張機能が最初にネットワークの応答を変更した場合、この特別な設定が有効になるとは限らないことに注意してください。"
   },
+  "optionsAdvancedSites": {
+    "message": "...マッチしたサイトのみ"
+  },
+  "optionsAdvancedSitesNote": {
+    "message": "<abc.com> ひとつのサイト\n<*.abc.com> サイト + サブドメイン\n<-m.abc.com> 先頭に「-」を付けると除外\n<*> すべてのサイト（除外と組合せ可能）\n<#abc.com> 不正な文字があると無視されます\n<*://abc.*/xyz> ワイルドカード\n<https://abc.com/xyz> 完全なURL\n各項目は、スペースまたは改行で区切られます。入力中の文字列は、Ctrl-S または ⌘S を押すか、入力欄の外側をクリックするか、オプション画面を閉じると、自動で保存されます。"
+  },
   "optionsAdvancedStyleViaASS": {
     "message": "adoptedStyleSheetsによってCSPの 'style-src' の問題を回避する"
   },
@@ -905,12 +861,6 @@
   },
   "optionsBadgeNormal": {
     "message": "背景色"
-  },
-  "optionsCheck": {
-    "message": "スタイルを更新"
-  },
-  "optionsCheckUpdate": {
-    "message": "使用可能なすべての更新を確認してインストールする"
   },
   "optionsCustomizeBadge": {
     "message": "アイコンの修飾"
@@ -939,12 +889,6 @@
   "optionsIconLight": {
     "message": "明るいブラウザのテーマ"
   },
-  "optionsOpen": {
-    "message": "開く"
-  },
-  "optionsOpenManager": {
-    "message": "スタイルを管理"
-  },
   "optionsPopupWidth": {
     "message": "ポップアップの幅（ピクセル単位）"
   },
@@ -956,9 +900,6 @@
   },
   "optionsStylusThemes": {
     "message": "このページを含む任意のStylusのページで、ブラウザのツールバー内のStylusアイコンをクリックして、「スタイルを検索」をクリックします"
-  },
-  "optionsSubheading": {
-    "message": "その他のオプション"
   },
   "optionsSyncConnect": {
     "message": "接続"
@@ -1072,9 +1013,6 @@
   "popupMenuButtonTooltip": {
     "message": "アクションメニュー"
   },
-  "popupOpenEditInPopup": {
-    "message": "アドレスバーなしで…"
-  },
   "popupOpenEditInWindow": {
     "message": "新しいウィンドウでエディタを開く"
   },
@@ -1126,9 +1064,6 @@
   "publishUsw": {
     "message": "<userstyles.world> の使用"
   },
-  "readingStyles": {
-    "message": "スタイルを読み込み中..."
-  },
   "reload": {
     "message": "リロード"
   },
@@ -1143,12 +1078,6 @@
   },
   "restoreTemplate": {
     "message": "デフォルトのテンプレートに戻す。\n\n（現在エディタで開いているものは変化しません。）"
-  },
-  "retrieveBckp": {
-    "message": "スタイルをインポート"
-  },
-  "retrieveDropboxSync": {
-    "message": "Dropboxからインポート"
   },
   "saveAsTemplate": {
     "message": "テンプレートとして保存"
@@ -1411,14 +1340,6 @@
   "styleToMozillaFormatTitle": {
     "message": "Mozilla形式のスタイル"
   },
-  "styleUpdate": {
-    "message": "「$stylename$」を更新してもよろしいですか？",
-    "placeholders": {
-      "stylename": {
-        "content": "$1"
-      }
-    }
-  },
   "styleUpdateDiscardChanges": {
     "message": "このスタイルはエディタの外部で変更されました。このスタイルをリロードしますか？"
   },
@@ -1478,9 +1399,6 @@
   "unreachableMozSiteHintOldFF": {
     "message": "このようなCSPで保護されたサイトへのスタイル要素の追加を、Web拡張機能に許可するためには、Firefox 59 以降が必要です。"
   },
-  "unzipStyles": {
-    "message": "スタイルをZip解凍中..."
-  },
   "updateAllCheckSucceededNoUpdate": {
     "message": "更新は見つかりませんでした。"
   },
@@ -1519,12 +1437,6 @@
   "updateCompleted": {
     "message": "更新が完了しました。"
   },
-  "updatesCurrentlyInstalled": {
-    "message": "更新がインストールされました:"
-  },
-  "uploadingFile": {
-    "message": "スタイルをアップロード中..."
-  },
   "usercssAvoidOverwriting": {
     "message": "既存のスタイルの上書きを避けるために、@name または @namespace の値を変更してください。"
   },
@@ -1556,8 +1468,5 @@
   },
   "writeStyleForURL": {
     "message": "このURL"
-  },
-  "zipStyles": {
-    "message": "スタイルをZip圧縮中..."
   }
 }

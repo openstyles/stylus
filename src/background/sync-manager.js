@@ -318,8 +318,7 @@ function setError(err) {
 
 function translateErrorMessage(err) {
   if (err.name === 'LockError') {
-    return browser.i18n.getMessage('syncErrorLock',
-      new Date(err.expire).toLocaleString([], {timeStyle: 'short'}));
+    return t('syncErrorLock', new Date(err.expire).toLocaleString([], {timeStyle: 'short'}));
   }
   return err.message || JSON.stringify(err);
 }
