@@ -11,7 +11,16 @@
     "48": "icon/48.png",
     "128": "icon/128.png"
   },
-  "permissions": [],
+  "permissions": [
+    "alarms",
+    "contextMenus",
+    "storage",
+    "tabs",
+    "unlimitedStorage",
+    "webNavigation",
+    "webRequest",
+    "webRequestBlocking"
+  ],
   "background": {},
   "commands": {
     "openManage": {"description": "__MSG_openManage__"},

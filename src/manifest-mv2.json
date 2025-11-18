@@ -2,14 +2,6 @@
   "minimum_chrome_version": "56",
   "manifest_version": 2,
   "permissions": [
-    "alarms",
-    "contextMenus",
-    "storage",
-    "tabs",
-    "unlimitedStorage",
-    "webNavigation",
-    "webRequest",
-    "webRequestBlocking",
     "<all_urls>"
   ],
   "background": {

@@ -2,19 +2,11 @@
   "minimum_chrome_version": "128",
   "manifest_version": 3,
   "permissions": [
-    "alarms",
-    "contextMenus",
     "declarativeNetRequestWithHostAccess",
     "identity",
     "idle",
     "offscreen",
-    "scripting",
-    "storage",
-    "tabs",
-    "unlimitedStorage",
-    "webNavigation",
-    "webRequest",
-    "webRequestBlocking"
+    "scripting"
   ],
   "host_permissions": [
     "<all_urls>"
