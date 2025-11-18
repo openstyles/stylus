@@ -531,6 +531,8 @@ module.exports = [
   MV3 && makeLibrary('db-to-cloud/lib/drive/webdav', 'webdav'),
 
   makeContentScript('apply.js'),
+  makeContentScript('hook-uso.js'),
+  MV3 && makeContentScript('hook-uso-page-mv3.js'),
   makeLibrary('@/js/worker.js', undefined, {
     plugins: [new RawEnvPlugin({ENTRY: 'worker'})],
   }),

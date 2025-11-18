@@ -39,7 +39,7 @@
     {
       "matches": ["https://userstyles.org/*"],
       "run_at": "document_start",
-      "js": ["js/install-hook-userstyles.js"]
+      "js": ["js/hook-uso.js"]
     }
   ],
   "browser_action": {

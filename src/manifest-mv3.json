@@ -26,6 +26,12 @@
       "matches": ["https://userstyles.world/*"],
       "js": ["js/install-hook-userstylesworld.js"],
       "run_at": "document_start"
+    },
+    {
+      "matches": ["https://userstyles.org/*"],
+      "js": ["js/hook-uso-page-mv3.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
     }
   ],
   "web_accessible_resources": [{

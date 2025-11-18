@@ -25,7 +25,7 @@ export async function getUpdatability(usoId, asObject) {
   const md5Url = getMd5Url(usoId);
   const md5 = await fetchText(md5Url);
   const dup = await findStyle(usoId, md5Url);
-  // see STATE_EVENTS in install-hook-userstyles.js
+  // see STATE_EVENTS in hook-uso.js
   const state = !dup ? 0 : dup[UCD] || dup.originalMd5 === md5 ? 2 : 1;
   return asObject
     ? {dup, md5, md5Url, state}
