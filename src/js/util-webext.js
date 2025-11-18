@@ -15,6 +15,7 @@ export const CHROME_POPUP_BORDER_BUG = !__.MV3 && (CHROME >= 62 && CHROME <= 74)
 export const browserWindows = browser.windows;
 /** A scoped listener won't trigger for our [big] stuff in `local`, Chrome 73+, FF */
 export const onStorageChanged = chrome.storage.sync.onChanged || chrome.storage.onChanged;
+export const webNavigation = browser.webNavigation;
 
 export const getOwnTab = () => browser.tabs.getCurrent();
 

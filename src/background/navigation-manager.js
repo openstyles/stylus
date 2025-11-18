@@ -3,12 +3,11 @@ import {kAboutBlank} from '@/js/consts';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {chromeProtectsNTP, ownRoot} from '@/js/urls';
 import {deepEqual} from '@/js/util';
-import {ignoreChromeError, MF} from '@/js/util-webext';
+import {ignoreChromeError, MF, webNavigation} from '@/js/util-webext';
 import {pingTab, sendTab} from './broadcast';
 import {bgBusy, onUrlChange} from './common';
 import tabCache from './tab-manager';
 
-export const webNavigation = chrome.webNavigation;
 /** @type {{ url: chrome.events.UrlFilter[] }} */
 const WEBNAV_FILTER_STYLABLE = {
   url: [
