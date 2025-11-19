@@ -97,12 +97,11 @@ for (const el of $$('[data-clickable]')) {
       }
     }
   }
-  if (wrb === false) {
-    for (let el of $$('#patchCsp')) {
-      el = el.closest('label');
+  if (!wrb) {
+    let icon;
+    for (const el of $$('.webRequestBlocking')) {
       el.classList.add('disabled');
-      el.nextElementSibling.classList.add('disabled');
-      el.$('.icon').after($create('a.broken[data-cmd=note]', {
+      el.$('p').append(icon ? icon.cloneNode(true) : icon = $create('a.broken[data-cmd=note]', {
         tabIndex: 0,
         title: t('webRequestBlockingMV3Note', `<code>${chrome.runtime.id}</code>`),
       }, '⚒'));

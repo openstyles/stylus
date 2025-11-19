@@ -193,7 +193,7 @@ textarea {
 
 .mobile .desktop-only,
 label.disabled,
-#favs.disabled + label {
+label.disabled + .sites {
   color: var(--c65);
   input, textarea {
     opacity: .5;

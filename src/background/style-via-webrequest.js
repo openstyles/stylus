@@ -9,7 +9,7 @@ import {actionPopupUrl, ownRoot} from '@/js/urls';
 import {deepEqual, isEmptyObj} from '@/js/util';
 import {ownId, toggleListener, webNavigation} from '@/js/util-webext';
 import * as colorScheme from './color-scheme';
-import {bgBusy, bgPreInit, clientDataJobs, dataHub, onUnload} from './common';
+import {bgBusy, bgPreInit, clientDataJobs, dataHub, onUnload, WRBTest, WRB} from './common';
 import {stateDB} from './db';
 import offscreen from './offscreen';
 import {isOptionSite, optionSites} from './option-sites';
@@ -35,10 +35,6 @@ const revokeObjectURL = blobId => blobId &&
   (__.MV3 ? offscreen : URL).revokeObjectURL(BLOB_URL_PREFIX + blobId);
 const toSend = {};
 const ruleIdKeys = {};
-export let webRequestBlocking = __.BUILD !== 'chrome' && !!FIREFOX
-  || browser.permissions.contains({permissions: ['webRequestBlocking']}).then(res => (
-    webRequestBlocking = res
-  ));
 let ruleIds;
 let curOFF = true;
 let flushPending, setupPending;
@@ -101,8 +97,7 @@ async function setup(key) {
     toggleListener(chrome.webRequest.onBeforeRequest, !OFF, prepareStyles, WR_FILTER);
     toggleListener(chrome.webRequest.onHeadersReceived, !OFF, modifyHeaders, WR_FILTER, !OFF && [
       'responseHeaders',
-      (webRequestBlocking.then ? await webRequestBlocking : webRequestBlocking)
-        && 'blocking',
+      (WRBTest ? await WRBTest : WRB) && 'blocking',
       chrome.webRequest.OnHeadersReceivedOptions.EXTRA_HEADERS,
     ].filter(Boolean));
   }

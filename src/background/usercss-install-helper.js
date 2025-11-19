@@ -5,7 +5,7 @@ import * as prefs from '@/js/prefs';
 import {FIREFOX} from '@/js/ua';
 import * as URLS from '@/js/urls';
 import {getHost, RX_META} from '@/js/util';
-import {bgBusy, onTabUrlChange} from './common';
+import {bgBusy, onTabUrlChange, WRB} from './common';
 import download from './download';
 import tabCache, * as tabMan from './tab-manager';
 import {openURL} from './tab-util';
@@ -70,7 +70,7 @@ export function toggleUrlInstaller(val = prefs.__values[kUrlInstaller]) {
     chrome.webRequest.onHeadersReceived.addListener(maybeInstallByMime, {
       urls: urls.reduce(reduceUsercssGlobs, []),
       types: [kMainFrame],
-    }, ['responseHeaders', 'blocking']);
+    }, ['responseHeaders', WRB && 'blocking'].filter(Boolean));
   }
 }
 

@@ -1,5 +1,5 @@
 import {k_busy, kResolve} from '@/js/consts';
-import {CHROME} from '@/js/ua';
+import {CHROME, FIREFOX} from '@/js/ua';
 import {browserWindows} from '@/js/util-webext';
 
 /** Minimal init for a wake-up event */
@@ -41,6 +41,14 @@ export const uuidIndex = Object.assign(new Map(), {
   },
 });
 
+export let WRB = __.BUILD === 'chrome' ? null : !!FIREFOX;
+export let WRBTest = __.BUILD !== 'firefox' && CHROME &&
+  browser.permissions.contains({permissions: ['webRequestBlocking']}).then(res => {
+    WRBTest = null;
+    WRB = res;
+    return res;
+  });
+
 export let isVivaldi = !!(browserWindows && CHROME) && (async () => {
   const wnd = (await browserWindows.getAll())[0] ||
     await new Promise(resolve => browserWindows.onCreated.addListener(function onCreated(w) {
@@ -55,6 +63,7 @@ export let bgBusy = global[k_busy] = (_ =>
   Object.assign(new Promise(cb => (_ = cb)), {[kResolve]: _})
 )();
 
+bgPreInit.push(WRBTest);
 bgBusy.then(() => {
   bgBusy = null;
   delete global[k_busy];

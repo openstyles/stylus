@@ -3,12 +3,11 @@ import {API} from '@/js/msg-api';
 import * as prefs from '@/js/prefs';
 import {FIREFOX} from '@/js/ua';
 import {isDark, setSystemDark} from './color-scheme';
-import {bgBusy, dataHub, isVivaldi} from './common';
+import {bgBusy, dataHub, isVivaldi, WRB, WRBTest} from './common';
 import {prefsDB, stateDB} from './db';
 import makePopupData from './popup-data';
 import {nondefaults} from './prefs-api';
 import * as styleMan from './style-manager';
-import {webRequestBlocking} from './style-via-webrequest';
 import * as syncMan from './sync-manager';
 import * as usercssTemplate from './usercss-template';
 
@@ -55,7 +54,7 @@ const PROVIDERS = {
     return /** @namespace StylusClientData */ {
       sync: status,
       syncOpts: drive ? syncMan.getDriveOptions(drive) : {},
-      wrb: webRequestBlocking,
+      wrb: WRBTest || WRB,
     };
   },
   popup: () => ({
