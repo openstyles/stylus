@@ -79,7 +79,7 @@ for (const el of $$('[data-clickable]')) {
       this.dispatchEvent(new Event('change'));
   };
   note.title = `<table>${
-    note.title.replace(/<([^>]+)>\s*([^<\n]+)/g, (_, a, b) =>
+    note.title.replace(/<([^>]+)>([^<\n]+)/g, (_, a, b) =>
       `<tr><td><code>${a}</code></td><td>${b}</td></tr>`)
   }</table>`;
   for (const el of $$('[show-if]')) {

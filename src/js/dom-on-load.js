@@ -13,6 +13,11 @@ import {clamp, debounce, t, tryURL} from './util';
 
 const SPLIT_BTN_MENU = '.split-btn-menu';
 const tooltips = new WeakMap();
+/** Strips html tags but allows <invalid-html-tags> which we use to emphasize stuff */
+const rxTag = /(\n\s*)?<\/?[a-z]+(?:\s+[a-z]+=[^>]*)?>/g;
+const rxLong1 = /([.?!]\s+|[．。？！]\s*|.{55,70},)\s+/gu;
+const rxLong2 = /(.{55,70}(?=.{50,}))\s+/gu;
+
 splitLongTooltips();
 addTooltipsToEllipsized();
 window.on('mousedown', suppressFocusRingOnClick, {passive: true});
@@ -224,20 +229,18 @@ function splitLongTooltips() {
     if (tooltips.has(el))
       continue;
     const old = el.title;
-    // Strip html tags but allow <invalid-html-tags> which we use to emphasize stuff
-    const title = old.replace(/(\n\s*)?<\/?[a-z]+(\s+[a-z]+=[^>]*?)?>(\n\s*)?/g, ' ');
     tooltips.set(el, old);
-    let tmp = '';
-    if (title.length < 50) {
-      tmp = title;
-    } else {
-      for (const s of title.split(/\n+/)) {
-        tmp += s.replace(/([.?!]\s+|[．。？！]\s*|.{50,60},)\s+/gu, '$1\n')
-          .replace(/(.{50,80}(?=.{40,}))\s+/gu, '$1\n');
-        tmp += '\n\n';
+    let res = old.includes('<') ? old.replace(rxTag, '$1') : old;
+    if (res.length > 60) {
+      for (let arr = res.split(/\n+/), a = res = '', b, cut, i = 0; i < arr.length; i++) {
+        a = arr[i];
+        b = a.length <= 60 ? a : a.replace(rxLong1, '$1\n').replace(rxLong2, '$1\n');
+        res += cut || i && b !== a ? '\n\n' : '\n';
+        res += b;
+        cut = b !== a;
       }
     }
-    if (tmp !== old)
-      el.title = tmp;
+    if (res !== old)
+      el.title = res;
   }
 }
