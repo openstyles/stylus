@@ -1,4 +1,6 @@
 import '@/js/browser';
+import {pOpenEditInWindow} from '@/js/consts';
+import {urlParams} from '@/js/dom';
 import * as prefs from '@/js/prefs';
 import {FIREFOX} from '@/js/ua';
 import {sessionStore, tryJSONparse} from '@/js/util';
@@ -6,6 +8,7 @@ import {browserWindows, getOwnTab} from '@/js/util-webext';
 import editor from './editor';
 import EmbeddedPopup from './embedded-popup';
 
+export let isWindowed;
 let ownTabId;
 if (browserWindows) {
   initWindowedMode();
@@ -26,15 +29,12 @@ getOwnTab().then(tab => {
 
 async function initWindowedMode() {
   chrome.tabs.onAttached.addListener(onTabAttached);
-  // Chrome 96+ bug: the type is 'app' for a window that was restored via Ctrl-Shift-T
-  const isSimple = ['app', 'popup'].includes((await browserWindows.getCurrent()).type);
-  if (isSimple) EmbeddedPopup();
-  editor.isWindowed = isSimple || (
-    history.length === 1 &&
-    (__.MV3 || await prefs.ready, prefs.__values['openEditInWindow']) &&
+  isWindowed = urlParams.has('popup');
+  if (isWindowed) EmbeddedPopup();
+  else isWindowed = history.length === 1 &&
+    (__.MV3 || await prefs.ready, prefs.__values[pOpenEditInWindow]) &&
     (await browserWindows.getAll()).length > 1 &&
-    (await browser.tabs.query({currentWindow: true})).length === 1
-  );
+    (await browser.tabs.query({currentWindow: true})).length === 1;
 }
 
 async function onTabAttached(tabId, info) {
@@ -42,7 +42,7 @@ async function onTabAttached(tabId, info) {
     return;
   }
   if (info.newPosition !== 0) {
-    prefs.set('openEditInWindow', false);
+    prefs.set(pOpenEditInWindow, false);
     return;
   }
   const win = await browserWindows.get(info.newWindowId, {populate: true});
@@ -52,5 +52,5 @@ async function onTabAttached(tabId, info) {
   if (openEditInWindow && FIREFOX) {
     browserWindows.update(info.newWindowId, prefs.__values['windowPosition']);
   }
-  prefs.set('openEditInWindow', openEditInWindow);
+  prefs.set(pOpenEditInWindow, openEditInWindow);
 }

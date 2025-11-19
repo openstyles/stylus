@@ -1029,6 +1029,10 @@
     "message": "Line:",
     "description": "Will be followed by one or more line numbers in the editor."
   },
+  "openAsPopupWindow": {
+    "message": "...without toolbars and tabs",
+    "description": "Label for the checkbox after 'Open editor in a new window' checkbox, so it's like a continuation of the sentence."
+  },
   "openManage": {
     "message": "Manage",
     "description": "Link to open style manager."
@@ -1290,10 +1294,6 @@
   "popupMenuButtonTooltip": {
     "message": "Action menu",
     "description": "Tooltip for menu button in popup."
-  },
-  "popupOpenEditInPopup": {
-    "message": "...without address bar",
-    "description": "Label for the checkbox after 'Open editor in a new window' checkbox, so these two make a sentence."
   },
   "popupOpenEditInWindow": {
     "message": "Open editor in a new window",

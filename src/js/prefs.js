@@ -1,6 +1,6 @@
 /** Don't use this file in content script context! */
 import {
-  k_busy, pDisableAll, pExposeIframes, pPatchCsp, pStyleViaASS, pStyleViaXhr,
+  k_busy, pDisableAll, pExposeIframes, pOpenEditInWindow, pPatchCsp, pStyleViaASS, pStyleViaXhr,
 } from '@/js/consts';
 import {API} from './msg-api';
 import {deepCopy, deepEqual, isCssDarkScheme, makePropertyPopProxy} from './util';
@@ -32,8 +32,8 @@ const defaults = {
   'keepAlive': 0,                 // in minutes
   'keepAliveIdle': false,         // keep alive an idle browser
   'newStyleAsUsercss': false,     // create new style in usercss format
-  'openEditInWindow': false,      // new editor opens in a own browser window
-  'openEditInWindow.popup': false, // new editor opens in a simplified browser window without omnibox
+  [pOpenEditInWindow]: false,      // new editor opens in a own browser window
+  [pOpenEditInWindow + '.popup']: false, // simplified browser window without omnibox
   [pPatchCsp]: false,              // add data: and popular image hosting sites to strict CSP
   [pPatchCsp + '.sites']: '',
   [pPatchCsp + '.sitesOnly']: false,

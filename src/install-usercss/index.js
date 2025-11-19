@@ -2,7 +2,7 @@ import '@/js/dom-init';
 import {CodeMirror, loadCmTheme, THEME_KEY} from '@/cm';
 import compareVersion from '@/js/cmpver';
 import {UCD} from '@/js/consts';
-import {$$remove, $create, $createLink} from '@/js/dom';
+import {$$remove, $create, $createLink, urlParams} from '@/js/dom';
 import {configDialog, messageBox, showSpinner} from '@/js/dom-util';
 import {htmlToTemplate, tBody} from '@/js/localization';
 import {API} from '@/js/msg-api';
@@ -50,14 +50,14 @@ tBody();
 setTimeout(() => !cm && showSpinner($id('header')), 200);
 
 (async function init() {
-  if (location.hash) {
-    history.replaceState(null, '',
-      location.pathname + '?updateUrl=' + encodeURIComponent(location.hash.slice(1)));
+  const {hash} = location;
+  if (hash) {
+    urlParams.set('updateUrl', initialUrl = hash.slice(1));
+    history.replaceState(null, '', location.pathname + '?' + urlParams);
   }
-  const params = new URLSearchParams(location.search);
   fsh = window.fsh;
-  tabId = params.has('tabId') ? Number(params.get('tabId')) : -1;
-  initialUrl = fsh ? fsh._url : params.get('updateUrl');
+  tabId = +(urlParams.get('tabId') || -1);
+  initialUrl ??= fsh ? fsh._url : urlParams.get('updateUrl');
 
   /** @type {Promise<?string>} */
   let firstGet;

@@ -47,6 +47,7 @@ export const BIT_SYS_DARK = 2;
 export const pDisableAll = 'disableAll';
 export const pExposeIframes = 'exposeIframes';
 export const pKeepAlive = 'keepAlive';
+export const pOpenEditInWindow = 'openEditInWindow';
 export const pPatchCsp = 'patchCsp';
 export const pStyleViaASS = 'styleViaASS';
 export const pStyleViaXhr = 'styleViaXhr';

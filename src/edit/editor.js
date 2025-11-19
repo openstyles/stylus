@@ -20,7 +20,6 @@ let wasDirty = false;
 const editor = self.editor = {
   dirty,
   isUsercss: false,
-  isWindowed: false,
   livePreviewLazy: cb => debounce(cb, prefs.__values['editor.livePreview.delay'] * 1000),
   /** @type {'customName'|'name'} */
   nameTarget: 'name',

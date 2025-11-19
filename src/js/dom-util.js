@@ -128,6 +128,28 @@ export function moveFocus(rootElement, step) {
   }
 }
 
+export function saveWindowPosition(prefKey) {
+  let v;
+  if (
+    prefs.__values[prefKey] &&
+    document.visibilityState === 'visible' &&
+    (v = screenX) !== -32000 && // Chrome uses this value for minimized windows
+    ( // only if not maximized
+      v > 0 || v <= -10 || (v = screenY) > 0 || v <= -10 ||
+      (v = outerWidth - screen.availWidth) < 0 || v >= 10 ||
+      (v = outerHeight - screen.availHeight) < 0 || v >= 10
+    )
+  ) {
+    prefs.set('windowPosition', v = {
+      left: screenX,
+      top: screenY,
+      width: outerWidth,
+      height: outerHeight,
+    });
+    return v;
+  }
+}
+
 /**
  * Scrolls `window` or the closest parent with `class="scroller"` if the element is not visible,
  * centering the element in the view

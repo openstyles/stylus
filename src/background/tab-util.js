@@ -1,4 +1,5 @@
 import '@/js/browser';
+import {pOpenEditInWindow} from '@/js/consts';
 import * as prefs from '@/js/prefs';
 import {CHROME, FIREFOX} from '@/js/ua';
 import {browserWindows, getActiveTab} from '@/js/util-webext';
@@ -29,17 +30,18 @@ const EMPTY_TAB = [
  */
 export async function openEditor(params) {
   const u = new URL(chrome.runtime.getURL('edit.html'));
-  u.search = new URLSearchParams(params);
-  const wnd = browserWindows && prefs.__values.openEditInWindow;
+  const usp = u.search = new URLSearchParams(params);
+  const wnd = browserWindows && prefs.__values[pOpenEditInWindow];
   const wndPos = wnd && prefs.__values.windowPosition;
-  const wndBase = wnd && prefs.__values['openEditInWindow.popup'] ? {type: 'popup'} : {};
+  const wndPopup = wnd && prefs.__values[pOpenEditInWindow + '.popup'] && {type: 'popup'};
   const ffBug = wnd && FIREFOX; // https://bugzil.la/1271047
+  if (wndPopup) usp.set('popup', '1');
   for (let tab, retry = 0; retry < (wndPos ? 2 : 1); ++retry) {
     try {
       tab = tab || await openURL({
         url: `${u}`,
         currentWindow: null,
-        newWindow: wnd && Object.assign({}, wndBase, !ffBug && !retry && wndPos),
+        newWindow: wnd && Object.assign({}, wndPopup, !ffBug && !retry && wndPos),
       });
       if (ffBug && !retry) await browserWindows.update(tab.windowId, wndPos);
       return tab;

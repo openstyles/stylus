@@ -1,32 +1,14 @@
-import {kCodeMirror} from '@/js/consts';
+import {kCodeMirror, pOpenEditInWindow} from '@/js/consts';
+import {saveWindowPosition} from '@/js/dom-util';
 import {API} from '@/js/msg-api';
-import * as prefs from '@/js/prefs';
 import {sessionStore, t} from '@/js/util';
 import editor from './editor';
 import {helpPopup} from './util';
+import {isWindowed} from './windowed-mode';
 
 window.on('beforeunload', e => {
-  let pos;
-  if (editor.isWindowed &&
-      document.visibilityState === 'visible' &&
-      prefs.__values.openEditInWindow &&
-      screenX !== -32000 && // Chrome uses this value for minimized windows
-      ( // only if not maximized
-        screenX > 0 || outerWidth < screen.availWidth ||
-        screenY > 0 || outerHeight < screen.availHeight ||
-        screenX <= -10 || outerWidth >= screen.availWidth + 10 ||
-        screenY <= -10 || outerHeight >= screen.availHeight + 10
-      )
-  ) {
-    pos = {
-      left: screenX,
-      top: screenY,
-      width: outerWidth,
-      height: outerHeight,
-    };
-    prefs.set('windowPosition', pos);
-  }
-  sessionStore.windowPos = JSON.stringify(pos || {});
+  if (isWindowed)
+    sessionStore.windowPos = JSON.stringify(saveWindowPosition(pOpenEditInWindow) || {});
   API.saveScroll(editor.style.id, editor.makeScrollInfo());
   const activeElement = document.activeElement;
   if (activeElement) {
