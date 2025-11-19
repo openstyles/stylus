@@ -1,6 +1,7 @@
 /** Don't use this file in content script context! */
 import {
   k_busy, pDisableAll, pExposeIframes, pOpenEditInWindow, pPatchCsp, pStyleViaASS, pStyleViaXhr,
+  pUrlInstaller,
 } from '@/js/consts';
 import {API} from './msg-api';
 import {deepCopy, deepEqual, isCssDarkScheme, makePropertyPopProxy} from './util';
@@ -45,7 +46,7 @@ const defaults = {
   [pStyleViaXhr + '.sites']: '',
   [pStyleViaXhr + '.sitesOnly']: false,
 
-  'urlInstaller': true,           // auto-open installer page for supported .user.css urls
+  [pUrlInstaller]: true,          // auto-open installer page for supported .user.css urls
   'windowPosition': {},           // detached window position
   'compactWidth': 850,
 

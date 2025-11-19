@@ -1,12 +1,8 @@
 import {onMessage} from '@/js/msg';
-import {deepEqual} from '@/js/util';
 
 const buffer = history.state?.buffer || [];
 const watchers = [];
-
-export function getSearch(key) {
-  return new URLSearchParams(location.search).get(key);
-}
+let needInit;
 
 /** When showing the UI, `showHide` function must resolve only when the UI is closed */
 export function makeToggle(toggler, hashId, showHide, loadDeps) {
@@ -34,35 +30,39 @@ export function push(url) {
 }
 
 export function update() {
-  if (!buffer.length) {
-    buffer.push(location.href);
-  } else if (buffer[buffer.length - 1] === location.href) {
-    if (watchers.some(w => !w.init)) callWatchers();
-    return;
-  } else if (buffer.length > 1 && buffer[buffer.length - 2] === location.href) {
+  const len = buffer.length;
+  const url = location.href;
+  if (!len) {
+    buffer.push(url);
+  } else if (buffer[len - 1] === url) {
+    if (!needInit)
+      return;
+  } else if (len > 1 && buffer[len - 2] === url) {
     buffer.pop();
   } else {
-    buffer.push(location.href);
+    buffer.push(url);
   }
   callWatchers();
 }
 
 function callWatchers() {
-  for (const w of watchers) {
-    const {options, callback} = w;
-    w.init = true;
-    let state;
-    if (options.hash) {
-      state = options.hash === location.hash;
-    } else if (options.search) {
-      const search = new URLSearchParams(location.search);
-      state = options.search.map(key => search.get(key));
+  for (const [options, callback] of watchers) {
+    let state, serialized;
+    const {hash, search} = options;
+    if (hash) {
+      state = hash === location.hash;
+      serialized = state;
+    } else if (search) {
+      state = new URLSearchParams(location.search);
+      state = search.map(state.get, state);
+      serialized = JSON.stringify(state);
     }
-    if (!deepEqual(state, options.currentState)) {
-      options.currentState = state;
+    if (options.state !== serialized) {
+      options.state = serialized;
       callback(state);
     }
   }
+  needInit = false;
 }
 
 /**
@@ -89,11 +89,13 @@ export function updateHash(hash) {
  */
 export function updateSearch(what, value) {
   const u = new URL(location);
-  const entries = typeof what === 'object' ? Object.entries(what) : [[what, value]];
-  for (const [key, val] of entries) {
-    if (val) u.searchParams.set(key, val);
-    else u.searchParams.delete(key);
-  }
+  const usp = u.searchParams;
+  if (typeof what === 'object') {
+    for (const key in what)
+      if ((value = what[key])) usp.set(key, value);
+      else usp.delete(key);
+  } else if (value) usp.set(what, value);
+  else usp.delete(what);
   history.replaceState(history.state, null, `${u}`);
   buffer.pop();
   update();
@@ -109,7 +111,8 @@ export function watch(options, callback) {
    When watching search params, callback receives a list of values.
    When watching hash, callback receives a boolean.
    */
-  watchers.push({options, callback});
+  watchers.push([options, callback]);
+  needInit = true;
 }
 
 window.on('popstate', update);

@@ -1,5 +1,5 @@
 import '@/js/browser';
-import {kContentType, kMainFrame} from '@/js/consts';
+import {kContentType, kMainFrame, pUrlInstaller} from '@/js/consts';
 import {DNR_ID_INSTALLER, updateDynamicRules} from '@/js/dnr';
 import * as prefs from '@/js/prefs';
 import {FIREFOX} from '@/js/ua';
@@ -7,15 +7,15 @@ import * as URLS from '@/js/urls';
 import {getHost, RX_META} from '@/js/util';
 import {bgBusy, onTabUrlChange, WRB} from './common';
 import download from './download';
+import {findHeader} from './style-via-webrequest';
 import tabCache, * as tabMan from './tab-manager';
 import {openURL} from './tab-util';
 
 const installCodeCache = {};
 const MIME = 'mime';
-const kUrlInstaller = 'urlInstaller';
 
 bgBusy.then(() => {
-  prefs.subscribe(kUrlInstaller, toggle, true);
+  prefs.subscribe(pUrlInstaller, toggle, true);
 });
 
 export function getInstallCode(url) {
@@ -32,7 +32,7 @@ function toggle(key, val, isInit) {
   if (!__.MV3 || !isInit) toggleUrlInstaller(val);
 }
 
-export function toggleUrlInstaller(val = prefs.__values[kUrlInstaller]) {
+export function toggleUrlInstaller(val = prefs.__values[pUrlInstaller]) {
   const urls = val ? [''] : [
     /* Known distribution sites where we ignore urlInstaller option, because
        they open .user.css URL only when the "Install" button is clicked.
@@ -78,12 +78,6 @@ function clearInstallCode(url) {
   delete installCodeCache[url];
 }
 
-/** Ignoring .user.css response that is not a plain text but a web page.
- * Not using a whitelist of types as the possibilities are endless e.g. text/x-css-stylus */
-function isContentTypeText(type) {
-  return /^text\/(?!html)/i.test(type);
-}
-
 // in Firefox we have to use a content script to read file://
 async function loadFromFile(tabId) {
   return (await browser.tabs.executeScript(tabId, {
@@ -125,8 +119,10 @@ async function maybeInstall(tabId, url, oldUrl = '') {
 }
 
 function maybeInstallByMime({tabId, url, responseHeaders}) {
-  const h = responseHeaders.find(_ => _.name.toLowerCase() === kContentType);
-  const isText = h && isContentTypeText(h.value);
+  const h = findHeader(responseHeaders, kContentType);
+  /** Ignoring .user.css response that is not a plain text but a web page.
+   * Not using a whitelist of types as the possibilities are endless e.g. text/x-css-stylus */
+  const isText = h && /^text\/(?!html)/i.test(h.value);
   tabMan.set(tabId, MIME, isText);
   if (isText) {
     openInstallerPage(tabId, url, {});

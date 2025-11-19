@@ -301,7 +301,7 @@ async function removeTemporaryTab(tabId) {
   }
 }
 
-function findHeader(headers, name, value) {
+export function findHeader(headers, name, value) {
   for (const h of headers) {
     if (h.name.toLowerCase() === name && (value == null || h.value === value)) {
       return h;
