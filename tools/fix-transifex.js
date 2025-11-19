@@ -2,6 +2,7 @@
 
 const childProcess = require('child_process');
 const fs = require('fs');
+const chalk = require('chalk');
 const {SRC} = require('./util');
 
 const DIR = SRC + '_locales/';
@@ -46,16 +47,17 @@ if (COMMIT_CMD) try {
 } catch {}
 
 function fixLngFile(lng) {
-  let numUnknown = 0;
   let numUntranslated = 0;
   let numVarsFixed = 0;
+  const unknown = [];
   const json = readLngJson(lng);
   const res = {};
   for (const [key, val] of Object.entries(json).sort(sortAlpha)) {
-    const {placeholders, message} = src[key] || {};
-    if (!message) {
-      numUnknown++;
-    } else if (!val.message || val.message === message) {
+    const {placeholders, message: msgSrc} = src[key] || {};
+    const msg = val.message;
+    if (!msgSrc) {
+      unknown.push(`\n\t${chalk.bold(key)}: ${msg.length > 50 ? msg.slice(0, 50) + '...' : msg}`);
+    } else if (!msg || msg === msgSrc) {
       numUntranslated++;
     } else {
       delete val.description;
@@ -76,12 +78,12 @@ function fixLngFile(lng) {
     } else {
       fs.writeFileSync(makeFileName(lng), resStr + '\n', 'utf8');
       err = [
-        numUnknown && `${numUnknown} unknown (dropped)`,
+        unknown.length && chalk.magenta(`${unknown.length} unknown (dropped)`),
         numUntranslated && `${numUntranslated} untranslated (dropped)`,
         numVarsFixed && `${numVarsFixed} missing placeholders (restored)`,
-      ].filter(Boolean).join(', ');
+      ].filter(Boolean).join(', ') + unknown.join('');
     }
-    if (err) console.log(`${lng}: ${err}`);
+    if (err) console.log(`${chalk.bold.red(lng)}: ${err}`);
     return err;
   }
 }
