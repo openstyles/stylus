@@ -14,6 +14,10 @@ $powerOverlap: 4px; /* must be >= 1px (transparent edge) */
   --hover-disabled: var(--c40);
   scrollbar-width: none; /* suppressing the redundant overall scrollbar */
 }
+:root.mobile {
+  --inner-padding: 25px;
+  --entry-h: 36px;
+}
 [data-ui-theme="dark"] {
   --red1: hsl(0, 85%, 65%);
   --hover: var(--cmin);
