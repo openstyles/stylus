@@ -324,6 +324,9 @@ summary {
   width: 0;
   flex: auto;
 }
+.ws-nowrap {
+  white-space: nowrap;
+}
 .ellipsis {
   white-space: nowrap;
   overflow: hidden;

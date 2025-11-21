@@ -1,15 +1,14 @@
 import {styleCodeEmpty} from '@/js/sections-util';
 import {ownRoot} from '@/js/urls';
 import {globAsRegExpStr, tryRegExp, tryURL} from '@/js/util';
-import * as colorScheme from '../color-scheme';
 
 const BAD_MATCHER = {test: () => false};
 const EXT_RE = /\bextension\b/;
 const compileRe = createCompiler(text => `^(${text})$`);
 const compileSloppyRe = createCompiler(text => `^${text}$`);
-const compileExclusion = createCompiler(buildExclusion);
+const compileGlob = createCompiler(buildGlobRe);
 
-function buildExclusion(text) {
+function buildGlobRe(text) {
   // match pattern
   const match = text.match(/^(\*|[\w-]+):\/\/(\*\.)?([\w.]+\/.*)/);
   if (!match) {
@@ -33,27 +32,6 @@ function createCompiler(compile) {
     if (!re) cache.set(text, re = tryRegExp(compile(text)) || BAD_MATCHER);
     return re;
   };
-}
-
-function urlMatchExclusion(e) {
-  return compileExclusion(e).test(this.urlWithoutParams ??= this.url.split(/[?#]/, 1)[0]);
-}
-
-export function urlMatchStyle(query, style) {
-  let ovr;
-  if ((ovr = style.exclusions) && ovr.some(urlMatchExclusion, query)) {
-    return 'excluded';
-  }
-  if (!style.enabled) {
-    return 'disabled';
-  }
-  if (!colorScheme.shouldIncludeStyle(style)) {
-    return 'excludedScheme';
-  }
-  if ((ovr = style.inclusions) && ovr.some(urlMatchExclusion, query)) {
-    return 'included';
-  }
-  return true;
 }
 
 export function urlMatchSection(query, section, skipEmptyGlobal) {
@@ -94,6 +72,11 @@ function urlMatchDomain(d) {
   const _d = this.domain ??= tryURL(this.url).hostname;
   return d === _d ||
     _d[_d.length - d.length - 1] === '.' && _d.endsWith(d);
+}
+
+/** @this {MatchQuery} */
+export function urlMatchGlob(e) {
+  return compileGlob(e).test(this.urlWithoutParams ??= this.url.split(/[?#]/, 1)[0]);
 }
 
 /** @this {MatchQuery} */

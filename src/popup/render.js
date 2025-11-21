@@ -108,7 +108,7 @@ export function createStyleElement(style, entry) {
     'disabled': !enabled,
     'enabled': enabled,
     'force-applied': style.included,
-    'not-applied': style.excluded || style.sloppy || style.excludedScheme,
+    'not-applied': style.excluded || style.sloppy || style.excludedScheme || style.overridden,
     'regexp-partial': style.sloppy,
     'frame': frameUrl,
   });
@@ -143,11 +143,17 @@ export function createStyleElement(style, entry) {
 /** @param {IntersectionObserverEntry[]} results */
 export function onIntersect(results) {
   for (const {target: $name, boundingClientRect: r} of results) {
+    /** @type {StyleObj & MatchUrlResult} */
     const style = $name.$entry.styleMeta;
-    $name.title = style.sloppy ? t('styleNotAppliedRegexpProblemTooltip') :
-      style.excludedScheme ? t(`styleNotAppliedScheme${capitalize(style.preferScheme)}`) :
-        $name.scrollWidth > r.width + 1 ? $name.textContent :
-          '';
+    const inc = style.included ? t('styleForceApplied')
+      : style.overridden && t('styleNotAppliedOverridden');
+    $name.title = [
+      style.sloppy && t('styleNotAppliedRegexpProblemTooltip'),
+      style.excludedScheme && t(`styleNotAppliedScheme${capitalize(style.preferScheme)}`),
+      inc && inc.replace('<INC>', t('styleSitesInclude')),
+    ].filter(Boolean).join('\n') ||
+      $name.scrollWidth > r.width + 1 && $name.textContent ||
+      '';
   }
 }
 

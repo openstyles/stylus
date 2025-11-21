@@ -64,7 +64,7 @@ prefs.subscribe(kSTATE, (_, val) => {
 }, true);
 
 /** @param {StyleObj} _ */
-export function shouldIncludeStyle({preferScheme: ps}) {
+export function themeAllowsStyle({preferScheme: ps}) {
   return prefState === kNever ||
     ps !== kDark && ps !== kLight ||
     isDark === (ps === kDark);

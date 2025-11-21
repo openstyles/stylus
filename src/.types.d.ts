@@ -32,6 +32,8 @@ declare interface StyleObj {
   customName?: string;
   exclusions?: string[];
   inclusions?: string[];
+  /** override style's own specifiers */
+  overridden?: boolean;
   installDate?: number;
   installationUrl?: string;
   md5Url?: string;
@@ -67,17 +69,17 @@ declare interface StyleSection {
 
 type TabCache = {[tabId:string]: TabCacheEntry};
 
+declare interface TabCacheEntry {
+  id: number;
+  incognito: boolean;
+  nonce: Object;
+  url: Object;
+  styleIds:  StyleIdsFrameMap;
+}
+
 declare interface StyleIdsFrameMap {
   url: string;
   styleIds: {[frameId: string]: number[]};
-}
-
-declare interface TabCacheEntry {
- id: number;
- incognito: boolean;
- nonce: Object;
- url: Object;
- styleIds:  StyleIdsFrameMap;
 }
 
 declare namespace Injection {
@@ -136,6 +138,18 @@ declare interface MatchQuery {
   isOwnPage?: boolean;
   urlWithoutHash?: string;
   urlWithoutParams?: string;
+}
+
+declare interface MatchUrlResult {
+  empty: boolean;
+  sloppy: boolean;
+  style: StyleObj;
+  // optionals
+  excluded?: boolean;
+  excludedScheme?: boolean;
+  included?: boolean;
+  /** not included and not matching the original sites */
+  overridden?: boolean;
 }
 
 declare interface UsercssData {

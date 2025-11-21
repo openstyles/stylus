@@ -43,6 +43,7 @@ function StyleSettings(ui) {
   const pendingSetters = new Map();
   const updaters = [
     initCheckbox(elUpd, 'updatable', tryURL(style.updateUrl).href),
+    initCheckbox('#ss-overridden', 'overridden', false),
     initInput('#ss-update-url', 'updateUrl', '', {
       validate(el) {
         elUpd.disabled = !el.value || !el.validity.valid;

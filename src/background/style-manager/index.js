@@ -19,10 +19,10 @@ import cacheData, * as styleCache from './cache';
 import {buildCache} from './cache-builder';
 import './init';
 import {onBeforeSave, onSaved} from './fixer';
-import {urlMatchSection, urlMatchStyle} from './matcher';
+import {urlMatchGlob, urlMatchSection} from './matcher';
 import {
-  broadcastStyleUpdated, calcRemoteId, dataMap, getById, getByUuid,
-  mergeWithMapped, order, orderWrap, setOrderImpl,
+  broadcastStyleUpdated, calcRemoteId, dataMap, getById, getByUuid, mergeWithMapped, order,
+  orderWrap, setOrderImpl,
 } from './util';
 
 export * from '../style-search-db';
@@ -33,7 +33,8 @@ export async function config(id, prop, value) {
   const style = Object.assign({}, getById(id));
   const d = dataMap.get(id);
   style[prop] = (d.preview || {})[prop] = value;
-  if (prop === 'inclusions' || prop === 'exclusions') styleCache.clear();
+  if (prop === 'inclusions' || prop === 'overridden' || prop === 'exclusions')
+    styleCache.clear();
   await save(style, 'config');
 }
 
@@ -80,56 +81,46 @@ export function getAllOrdered(keys) {
     : res;
 }
 
-/** @returns {StylesByUrlResult[]} */
-export function getByUrl(url, id = null) {
+/**
+ * @param {string} url
+ * @param {number} [id]
+ * @returns {MatchUrlResult[]}
+ */
+export function getByUrl(url, id) {
   // FIXME: do we want to cache this? Who would like to open popup rapidly
   // or search the DB with the same URL?
-  const result = [];
+  const results = [];
   const query = {url};
   for (const {style} of id ? [dataMap.get(id)].filter(Boolean) : dataMap.values()) {
+    let ovr;
+    let matching;
+    /** Make sure to use the same logic in getAppliedCode and getByUrl */
+    const res = {
+      excluded: (ovr = style.exclusions) && ovr.some(urlMatchGlob, query),
+      excludedScheme: !colorScheme.themeAllowsStyle(style),
+      included: matching = (ovr = style.inclusions) && ovr.some(urlMatchGlob, query),
+      overridden: !matching && style.overridden && ovr?.length,
+    };
+    const isIncluded = matching;
     let empty = true;
-    let excluded = false;
-    let excludedScheme = false;
-    let included = false;
     let sloppy = false;
-    let sectionMatched = false;
-    let match = urlMatchStyle(query, style);
-    // TODO: enable this when the function starts returning false
-    // if (match === false) {
-    // continue;
-    // }
-    if (match === 'included') {
-      included = true;
+    for (let arr = style.sections, i = 0; i < arr.length && (!matching || empty || !sloppy); i++) {
+      const sec = arr[i];
+      const secMatch = isIncluded || urlMatchSection(query, sec, true);
+      if (!secMatch)
+        continue;
+      matching = true;
+      sloppy ||= secMatch === 'sloppy';
+      empty &&= styleCodeEmpty(sec);
     }
-    if (match === 'excluded') {
-      excluded = true;
-    }
-    if (match === 'excludedScheme') {
-      excludedScheme = true;
-    }
-    for (const section of style.sections) {
-      match = urlMatchSection(query, section, true);
-      if (match) {
-        if (match === 'sloppy') {
-          sloppy = true;
-        }
-        sectionMatched = true;
-        if (empty) empty = styleCodeEmpty(section);
-      }
-    }
-    if (sectionMatched || included) {
-      result.push(/** @namespace StylesByUrlResult */ {
-        empty,
-        excluded,
-        excludedScheme,
-        included,
-        sectionMatched,
-        sloppy,
-        style: getCore({id: style.id}),
-      });
+    if (matching) {
+      res.empty = empty;
+      res.sloppy = sloppy;
+      res.style = getCore({id: style.id});
+      results.push(res);
     }
   }
-  return result;
+  return results;
 }
 
 /**

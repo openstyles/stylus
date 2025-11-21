@@ -1564,8 +1564,9 @@
     "message": "Enabled",
     "description": "Label for the enabled state of styles"
   },
-  "styleExcludeLabel": {
-    "message": "Custom excluded sites"
+  "styleForceApplied": {
+    "message": "Force-applied via \"<INC>\" in style settings",
+    "description": "Tooltip in the popup for styles, <INC> = translation for Personal included sites"
   },
   "styleFromMozillaFormatError": {
     "message": "Failed to import from Mozilla format",
@@ -1574,9 +1575,6 @@
   "styleFromMozillaFormatPrompt": {
     "message": "Paste the Mozilla-format code",
     "description": "Prompt in the dialog displayed after clicking 'Import from Mozilla format' button"
-  },
-  "styleIncludeLabel": {
-    "message": "Custom included sites"
   },
   "styleInjectionImportance": {
     "message": "Toggle style's importance"
@@ -1640,6 +1638,10 @@
   "styleName": {
     "message": "Style name"
   },
+  "styleNotAppliedOverridden": {
+    "message": "Your \"<INC>\" in style settings override style's original sites",
+    "description": "Tooltip in the popup for styles, <INC> = translation for Personal included sites"
+  },
   "styleNotAppliedRegexpProblemTooltip": {
     "message": "Style was not applied due to its incorrect usage of 'regexp()'",
     "description": "Tooltip in the popup for styles that were not applied at all"
@@ -1698,6 +1700,19 @@
   "styleSettings": {
     "message": "Style settings",
     "description": "Label/title for style settings dialog"
+  },
+  "styleSitesExclude": {
+    "message": "Personal excluded sites"
+  },
+  "styleSitesInclude": {
+    "message": "Personal included sites"
+  },
+  "styleSitesIncludeNote": {
+    "message": "Sites where this style is enabled on your personal device, either added to or used instead of the sites defined by the style depending on the checkbox. Useful for external styles that you shouldn't edit in order to keep them auto-updatable. Note that in multi-sectioned styles all sections are enabled for your added site, even those that were meant for specific pages of the original site."
+  },
+  "styleSitesIncludeOvr": {
+    "message": "override style",
+    "description": "Checkbox in the editor that reads like a continuation of the previous label: `Personal included sites` [x] `override original`, i.e. enabling it will cause personal included sites to override the style"
   },
   "styleToMozillaFormatHelp": {
     "message": "The Mozilla format of the code can be submitted to userstyles.org and used with the classic Stylish for Firefox",

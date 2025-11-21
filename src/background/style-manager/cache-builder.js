@@ -1,6 +1,7 @@
 import {styleCodeEmpty} from '@/js/sections-util';
+import {themeAllowsStyle} from '../color-scheme';
 import cacheData, * as styleCache from './cache';
-import {urlMatchSection, urlMatchStyle} from './matcher';
+import {urlMatchGlob, urlMatchSection} from './matcher';
 import {dataMap} from './util';
 
 /** @param {StyleObj} style
@@ -18,7 +19,7 @@ export function buildCacheForStyle(style) {
       (cache.maybeMatch ??= new Set()).add(id);
       continue;
     }
-    const code = getAppliedCode({url}, styleToApply);
+    const code = styleToApply.enabled && getAppliedCode({url}, styleToApply);
     if (code) {
       updated.add(url);
       buildCacheEntry(cache, styleToApply, code);
@@ -65,16 +66,20 @@ function buildCacheEntry(entry, style, [idx, code]) {
 /** Get styles matching a URL, including sloppy regexps and excluded items.
  * @param {MatchQuery} query
  * @param {StyleObj} style
- * @return {?Array}
+ * @return {[number[], string[]] | void}
  */
 function getAppliedCode(query, style) {
-  const result = urlMatchStyle(query, style);
-  const isIncluded = result === 'included';
+  let v;
+  /** Make sure to use the same logic in getAppliedCode and getByUrl */
+  const result = style.enabled &&
+    themeAllowsStyle(style) &&
+    (!(v = style.exclusions) || !v.length || v.some(urlMatchGlob, query)) &&
+    (!(v = style.inclusions) || !v.length || -v.some(urlMatchGlob, query) || !style.overridden);
+  if (!result)
+    return;
+  const isIncluded = result < 0;
   const code = [];
   const idx = [];
-  if (!isIncluded && result !== true) {
-    return;
-  }
   let i = 0;
   for (const section of style.sections) {
     if ((isIncluded || urlMatchSection(query, section) === true)

@@ -20,11 +20,18 @@
     <input name="ss-scheme" type="radio" value="light">
   </label>
 </div>
-<label i18n="styleIncludeLabel">
+<div>
+  <label for="ss-inclusions" i18n="styleSitesInclude"></label>
+  <a class="icon" tabindex="0" data-cmd="note" i18n="title:styleSitesIncludeNote">
+    <i class="i-info"></i>
+  </a> <!--preserving space-->
+  <label i18n="+styleSitesIncludeOvr" class="ws-nowrap">
+    <input id="ss-overridden" type="checkbox">
+  </label>
   <textarea id="ss-inclusions" spellcheck="false" class="w100"
             placeholder="*://www.aaa.com/*"></textarea>
-</label>
-<label i18n="styleExcludeLabel">
+</div>
+<label i18n="styleSitesExclude">
   <textarea id="ss-exclusions" spellcheck="false" class="w100"
             placeholder="*://www.aaa.com/*"></textarea>
 </label>

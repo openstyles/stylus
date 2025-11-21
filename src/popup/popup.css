@@ -284,6 +284,14 @@ a.configure[target="_blank"] .i-config {
   pointer-events: auto;
   font-size: 14px;
 }
+.force-applied {
+  .style-name {
+    color: var(--accent-2);
+  }
+  &:hover .style-name {
+    color: var(--accent-1);
+  }
+}
 .not-applied {
   .style-name, .actions > * {
     opacity: .25;
