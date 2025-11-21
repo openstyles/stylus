@@ -73,7 +73,7 @@ function getAppliedCode(query, style) {
   /** Make sure to use the same logic in getAppliedCode and getByUrl */
   const result = style.enabled &&
     themeAllowsStyle(style) &&
-    (!(v = style.exclusions) || !v.length || v.some(urlMatchGlob, query)) &&
+    (!(v = style.exclusions) || !v.length || !v.some(urlMatchGlob, query)) &&
     (!(v = style.inclusions) || !v.length || -v.some(urlMatchGlob, query) || !style.overridden);
   if (!result)
     return;
