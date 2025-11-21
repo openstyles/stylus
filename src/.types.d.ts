@@ -142,14 +142,13 @@ declare interface MatchQuery {
 
 declare interface MatchUrlResult {
   empty: boolean;
+  excluded: boolean;
+  excludedScheme: boolean;
+  included: boolean;
+  /** not included and not matching the original sites */
+  overridden: boolean;
   sloppy: boolean;
   style: StyleObj;
-  // optionals
-  excluded?: boolean;
-  excludedScheme?: boolean;
-  included?: boolean;
-  /** not included and not matching the original sites */
-  overridden?: boolean;
 }
 
 declare interface UsercssData {
