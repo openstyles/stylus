@@ -1,16 +1,16 @@
 import {styleCodeEmpty} from '@/js/sections-util';
 import {ownRoot} from '@/js/urls';
-import {globAsRegExpStr, tryRegExp, tryURL} from '@/js/util';
+import {globAsRegExpStr, tryURL} from '@/js/util';
 
-const BAD_MATCHER = {test: () => false};
+const BAD_MATCHER = /^$/;
 const EXT_RE = /\bextension\b/;
-const compileRe = createCompiler(text => `^(${text})$`);
-const compileSloppyRe = createCompiler(text => `^${text}$`);
-const compileGlob = createCompiler(buildGlobRe);
+const GLOB_RE = /^(\*|[\w-]+):\/\/(\*\.)?([\w.]+\/.*)/;
+const CACHE_MAX = 1000;
+/** @type {Map<string,RegExp>} */
+const cache = new Map();
 
 function buildGlobRe(text) {
-  // match pattern
-  const match = text.match(/^(\*|[\w-]+):\/\/(\*\.)?([\w.]+\/.*)/);
+  const match = text.match(GLOB_RE);
   if (!match) {
     return '^' + globAsRegExpStr(text) + '$';
   }
@@ -22,16 +22,23 @@ function buildGlobRe(text) {
     '$';
 }
 
-function createCompiler(compile) {
-  // FIXME: FIFO cache doesn't work well here, if we want to match many
-  // regexps more than the cache size, we will never hit the cache because
-  // the first cache is deleted. So we use a simple map but it leaks memory.
-  const cache = new Map();
-  return text => {
-    let re = cache.get(text);
-    if (!re) cache.set(text, re = tryRegExp(compile(text)) || BAD_MATCHER);
-    return re;
-  };
+/**
+ * @param {(s: string) => string} text
+ * @return {(text) => RegExp}
+ */
+function compile(text) {
+  let re;
+  try { re = new RegExp(text); } catch { re = BAD_MATCHER; }
+  cache.set(text, re);
+  if (cache.size > CACHE_MAX) {
+    // delete the least recently used key
+    const firstKey = cache.keys().next().value;
+    cache.delete(firstKey);
+    // increase recency of this key
+    if (text !== firstKey) cache.delete(text);
+    cache.set(text, re);
+  }
+  return re;
 }
 
 export function urlMatchSection(query, section, skipEmptyGlobal) {
@@ -76,7 +83,8 @@ function urlMatchDomain(d) {
 
 /** @this {MatchQuery} */
 export function urlMatchGlob(e) {
-  return compileGlob(e).test(this.urlWithoutParams ??= this.url.split(/[?#]/, 1)[0]);
+  return (cache.get(e) || compile(buildGlobRe(e)))
+    .test(this.urlWithoutParams ??= this.url.split(/[?#]/, 1)[0]);
 }
 
 /** @this {MatchQuery} */
@@ -87,11 +95,11 @@ function urlMatchPrefix(p) {
 /** @this {MatchQuery} */
 function urlMatchRegexp(r) {
   return (!(this.isOwnPage ??= this.url.startsWith(ownRoot)) || EXT_RE.test(r)) &&
-    compileRe(r).test(this.url);
+    (cache.get(r) || compile(`^(${r})$`)).test(this.url);
 }
 
 /** @this {MatchQuery} */
 function urlMatchRegexpSloppy(r) {
   return (!(this.isOwnPage ??= this.url.startsWith(ownRoot)) || EXT_RE.test(r)) &&
-    compileSloppyRe(r).test(this.url);
+    (cache.get(r) || compile(`^${r}$`)).test(this.url);
 }
