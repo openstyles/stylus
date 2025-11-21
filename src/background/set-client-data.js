@@ -16,9 +16,6 @@ const kEditorScrollInfo = 'editorScrollInfo';
 const RESPONSE_INIT = {
   headers: {'cache-control': 'no-cache'},
 };
-const ASSIGN_FUNC_STR = __.MV3 && `${function (data) {
-  Object.assign(this[__.CLIENT_DATA], data);
-}}`;
 const PROVIDERS = {
   edit(url) {
     const id = +url.searchParams.get('id');
@@ -87,6 +84,6 @@ export default async function setClientData({
   const results = await Promise.all(Object.values(jobs));
   Object.keys(jobs).forEach((id, i) => (jobs[id] = results[i]));
   return __.MV3
-    ? new Response(`(${ASSIGN_FUNC_STR})(${JSON.stringify(jobs)})`, RESPONSE_INIT)
+    ? new Response(`Object.assign(${__.CLIENT_DATA},${JSON.stringify(jobs)})`, RESPONSE_INIT)
     : jobs;
 }
