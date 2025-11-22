@@ -13,9 +13,10 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const InlineConstantExportsPlugin = require('@automattic/webpack-inline-constant-exports-plugin');
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 const {RawEnvPlugin} = require('./tools/wp-raw-patch-plugin');
+const patchCodemirror = require('./tools/wp-patch-codemirror');
 const {
   escapeForRe, getManifestOvrName, transESM2var, transSourceMap,
-  BUILD, CHANNEL, DEV, MANIFEST, MV3, ROOT, ZIP, nukeHtmlSpaces,
+  BUILD, CHANNEL, CM_PACKAGE_PATH, DEV, MANIFEST, MV3, ROOT, ZIP, nukeHtmlSpaces,
 } = require('./tools/util');
 
 global.localStorage = {}; // workaround for node 25 and HtmlWebpackPlugin's `...global`
@@ -51,7 +52,6 @@ const RESOLVE_VIA_SHIM = {
 };
 const MAX_CHUNKNAME_LEN = 24; // in Windows, path+name is limited to 260 chars
 const CM_PATH = CSS + 'cm-themes/';
-const CM_PACKAGE_PATH = path.dirname(require.resolve('codemirror/package.json')) + path.sep;
 const THEME_PATH = CM_PACKAGE_PATH.replaceAll('\\', '/') + '/theme';
 const THEME_NAMES = Object.fromEntries(fs.readdirSync(THEME_PATH)
   .sort()
@@ -114,7 +114,7 @@ const addWrapper = (banner = INTRO + ';', footer = '}', test = /\.js$/) => [
   new webpack.BannerPlugin({raw: true, test, banner: footer, footer: true}),
 ];
 const getTerserOptions = (cm, ovr) => ({
-  [cm ? 'include' : 'exclude']: /node_modules|codemirror(?!-factory)/,
+  [cm ? 'include' : 'exclude']: /node_modules|codemirror(?!-factory)|src[/\\]cm[/\\]css(-data)?\.js/,
   extractComments: false,
   terserOptions: {
     ecma: MV3 ? 2024 : 2017,
@@ -211,6 +211,7 @@ const getBaseConfig = () => ({
         loader: './tools/wp-lzstring-loader.js',
         test: require.resolve('lz-string-unsafe'),
       },
+      ...patchCodemirror,
     ].filter(Boolean),
   },
   optimization: {

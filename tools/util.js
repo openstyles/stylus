@@ -98,6 +98,7 @@ function transSourceMap(buf, from) {
 module.exports = {
   BUILD,
   CHANNEL,
+  CM_PACKAGE_PATH: path.dirname(require.resolve('codemirror/package.json')) + path.sep,
   DEV,
   FLAVOR,
   MANIFEST,

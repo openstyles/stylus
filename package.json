@@ -8,7 +8,7 @@
   "dependencies": {
     "@eight04/draggable-list": "^0.3.0",
     "codemirror": "5.65.10",
-    "csslint-mod": "github:openstyles/csslint-mod#semver:^v1.0.3",
+    "csslint-mod": "github:openstyles/csslint-mod#semver:^v1.0.4",
     "db-to-cloud": "^0.8.0",
     "less": "^4.4.2",
     "lz-string-unsafe": "1.4.4-fork-1",
@@ -51,6 +51,7 @@
     "postcss-nested": "^6.2.0",
     "postcss-preset-env": "^9.6.0",
     "postcss-simple-vars": "^7.0.1",
+    "string-replace-loader": "^3.2.0",
     "svg2ttf": "^6.0.3",
     "svgicons2svgfont": "^15.0.1",
     "terser-webpack-plugin": "^5.3.14",
@@ -79,7 +80,8 @@
     "preversion": "pnpm test",
     "version": "node tools/sync-manifest-version.js && git add .",
     "bump": "pnpm version patch",
-    "bump-stable": "pnpm version minor"
+    "bump-stable": "pnpm version minor",
+    "postinstall": "node tools/build-cm-css-data.js"
   },
   "engines": {
     "node": ">=22.12.0"

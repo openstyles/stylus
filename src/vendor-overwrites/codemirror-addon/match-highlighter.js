@@ -94,9 +94,9 @@ import CodeMirror from 'codemirror';
     if (state.options.annotateScrollbar && cm.showMatchesOnScrollbar) {
       var searchFor = hasBoundary ?
         new RegExp(
-          (/[a-z]/i.test(query[0]) ? "\\b" : "") +
+          (/^\w/.test(query) ? "\\b" : "") +
             query.replace(/[\\\[.+*?(){|^$]/g, "\\$&") +
-            (/[a-z]/i.test(query[query.length - 1]) ? "\\b" : ""),
+            (/\w$/.test(query) ? "\\b" : ""),
           "m"
         ) : query;
       state.matchesonscroll = cm.showMatchesOnScrollbar(searchFor, false,

@@ -15,8 +15,8 @@ importers:
         specifier: 5.65.10
         version: 5.65.10
       csslint-mod:
-        specifier: github:openstyles/csslint-mod#semver:^v1.0.3
-        version: https://codeload.github.com/openstyles/csslint-mod/tar.gz/6b3079f205395a6669ddb41bfb97bdbe4d7f101a
+        specifier: github:openstyles/csslint-mod#semver:^v1.0.4
+        version: https://codeload.github.com/openstyles/csslint-mod/tar.gz/c1d08c40e800d880aba25e4642502d7928c57955
       db-to-cloud:
         specifier: ^0.8.0
         version: 0.8.0
@@ -138,6 +138,9 @@ importers:
       postcss-simple-vars:
         specifier: ^7.0.1
         version: 7.0.1(postcss@8.5.6)
+      string-replace-loader:
+        specifier: ^3.2.0
+        version: 3.2.0(webpack@5.102.1)
       svg2ttf:
         specifier: ^6.0.3
         version: 6.0.3
@@ -1572,9 +1575,9 @@ packages:
     engines: {node: '>=4'}
     hasBin: true
 
-  csslint-mod@https://codeload.github.com/openstyles/csslint-mod/tar.gz/6b3079f205395a6669ddb41bfb97bdbe4d7f101a:
-    resolution: {tarball: https://codeload.github.com/openstyles/csslint-mod/tar.gz/6b3079f205395a6669ddb41bfb97bdbe4d7f101a}
-    version: 1.0.3
+  csslint-mod@https://codeload.github.com/openstyles/csslint-mod/tar.gz/c1d08c40e800d880aba25e4642502d7928c57955:
+    resolution: {tarball: https://codeload.github.com/openstyles/csslint-mod/tar.gz/c1d08c40e800d880aba25e4642502d7928c57955}
+    version: 1.0.4
 
   cssnano-preset-default@7.0.7:
     resolution: {integrity: sha512-jW6CG/7PNB6MufOrlovs1TvBTEVmhY45yz+bd0h6nw3h6d+1e+/TX+0fflZ+LzvZombbT5f+KC063w9VoHeHow==}
@@ -3006,6 +3009,12 @@ packages:
   source-map@0.7.4:
     resolution: {integrity: sha512-l3BikUxvPOcn5E74dZiq5BGsTb5yEwhaTSzccU6t4sDOH8NWJCstKO5QT2CvtFoK6F0saL7p9xHAqHOlCPJygA==}
     engines: {node: '>= 8'}
+
+  string-replace-loader@3.2.0:
+    resolution: {integrity: sha512-q7+F4DC6MAKkszF3ZQEuZ3dDH25wXPxFA0maTLk3TOTAYPLDgwqCeCKIvOd8xJhYYYl+EXusYRCyKIJliT/olg==}
+    engines: {node: '>=4'}
+    peerDependencies:
+      webpack: ^5
 
   string-width@4.2.3:
     resolution: {integrity: sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==}
@@ -4894,7 +4903,7 @@ snapshots:
 
   cssesc@3.0.0: {}
 
-  csslint-mod@https://codeload.github.com/openstyles/csslint-mod/tar.gz/6b3079f205395a6669ddb41bfb97bdbe4d7f101a: {}
+  csslint-mod@https://codeload.github.com/openstyles/csslint-mod/tar.gz/c1d08c40e800d880aba25e4642502d7928c57955: {}
 
   cssnano-preset-default@7.0.7(postcss@8.5.6):
     dependencies:
@@ -6347,6 +6356,11 @@ snapshots:
   source-map@0.6.1: {}
 
   source-map@0.7.4: {}
+
+  string-replace-loader@3.2.0(webpack@5.102.1):
+    dependencies:
+      schema-utils: 4.3.3
+      webpack: 5.102.1(webpack-cli@6.0.1)
 
   string-width@4.2.3:
     dependencies:

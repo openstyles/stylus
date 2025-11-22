@@ -13,7 +13,7 @@ const pickedCms = new WeakSet();
 
 export const addSuffix = (obj, suffix) =>
   // Sorting first, otherwise "foo-bar:" would precede "foo:"
-  (Object.keys(obj).sort().join(suffix + '\n') + suffix).split('\n');
+  ([...obj.keys()].sort().join(suffix + '\n') + suffix).split('\n');
 
 export class Completion {
   /* eslint-disable class-methods-use-this */

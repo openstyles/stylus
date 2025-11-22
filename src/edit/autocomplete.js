@@ -40,7 +40,7 @@ const cssMime = CodeMirror.mimeModes['text/css'];
 const docFuncs = addSuffix(cssMime.documentTypes, '(');
 const docFuncsStr = '\n' + docFuncs.join('\n');
 const {tokenHooks} = cssMime;
-const originalCommentHook = tokenHooks['/'];
+const originalCommentHook = tokenHooks[47/* / */];
 const originalHelper = CodeMirror.hint.css || (() => {});
 
 const AOT_ID = 'autocompleteOnTyping';
@@ -57,7 +57,7 @@ CodeMirror.defineOption(AOT_ID, aot, (cm, value) => {
 prefs.subscribe(AOT_PREF_ID, (key, val) => cmFactory.globalSetOption(AOT_ID, val), aot);
 CodeMirror.registerHelper('hint', 'css', helper);
 CodeMirror.registerHelper('hint', 'stylus', helper);
-tokenHooks['/'] = tokenizeUsoVariables;
+tokenHooks[47/* / */] = tokenizeUsoVariables;
 
 /** @param {CodeMirror.Editor} cm */
 async function helper(cm) {

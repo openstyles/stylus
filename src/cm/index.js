@@ -29,9 +29,9 @@ import 'codemirror/addon/selection/active-line';
 import 'codemirror/keymap/emacs';
 import 'codemirror/keymap/sublime';
 import 'codemirror/keymap/vim';
-import 'codemirror/mode/css/css';
 import 'codemirror/mode/stylus/stylus';
 import '@/vendor-overwrites/codemirror-addon/match-highlighter.js';
+import './css';
 import {THEME_KEY} from './themes';
 import './index.css';
 
