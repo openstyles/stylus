@@ -266,9 +266,9 @@ function selectTokenOnDoubleclick(cm, pos) {
   const isSpace = atSpace(ch);
   let wordChars =
     isNumber ? /[-+\w.%]/y :
-    isCss ? /[-\w@]/y :
+    isCss ? /[-\w@\u00A1-\uFFFF]/yu :
     isSpace ? /\s/y :
-    atWord(ch) ? /\w/y : /[^\w\s]/y;
+    atWord(ch) ? /\w\u00A1-\uFFFF/yu : /[^\w\s\u00A1-\uFFFF]/yu;
 
   let a = ch;
   while (a && at(wordChars, a)) a--;
@@ -286,7 +286,7 @@ function selectTokenOnDoubleclick(cm, pos) {
   }
 
   if (!found) {
-    wordChars = isCss ? /[-\w]*/y : new RegExp(wordChars.source + '*', 'uy');
+    wordChars = isCss ? /[-\w\u00A1-\uFFFF]*/yu : new RegExp(wordChars.source + '*', 'uy');
     b = ch + execAt(wordChars, ch)[0].length;
   }
 
