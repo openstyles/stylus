@@ -149,6 +149,7 @@ export function onIntersect(results) {
       : style.overridden && t('styleNotAppliedOverridden');
     $name.title = [
       style.sloppy && t('styleNotAppliedRegexpProblemTooltip'),
+      style.excluded && t('styleNotAppliedExcluded').replace('<EXC>', t('styleSitesExclude')),
       style.excludedScheme && t(`styleNotAppliedScheme${capitalize(style.preferScheme)}`),
       inc && inc.replace('<INC>', t('styleSitesInclude')),
     ].filter(Boolean).join('\n') ||

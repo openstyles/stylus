@@ -1638,6 +1638,10 @@
   "styleName": {
     "message": "Style name"
   },
+  "styleNotAppliedExcluded": {
+    "message": "Excluded via \"<EXC>\" in style settings",
+    "description": "Tooltip in the popup for styles, <EXC> = translation for Personal excluded sites"
+  },
   "styleNotAppliedOverridden": {
     "message": "Your \"<INC>\" in style settings override style's original sites",
     "description": "Tooltip in the popup for styles, <INC> = translation for Personal included sites"
