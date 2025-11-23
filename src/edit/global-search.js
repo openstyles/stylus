@@ -4,7 +4,7 @@ import {cssFieldSizing, $toggleDataset, $create} from '@/js/dom';
 import {setInputValue} from '@/js/dom-util';
 import {htmlToTemplateCache, templateCache} from '@/js/localization';
 import {chromeLocal} from '@/js/storage-util';
-import {debounce, stringAsRegExp, t, tryRegExp} from '@/js/util';
+import {debounce, RX_MAYBE_REGEXP, stringAsRegExp, t, tryRegExp} from '@/js/util';
 import {CodeMirror} from '@/cm';
 import editor from './editor';
 import html from './global-search.html';
@@ -24,8 +24,6 @@ const TARGET_CLASS = 'search-target-editor';
 const MATCH_CLASS = 'search-target-match';
 const MATCH_TOKEN_NAME = 'searching';
 const APPLIES_VALUE_CLASS = 'applies-value';
-
-const RX_MAYBE_REGEXP = /^\s*\/(.+?)\/([simguy]*)\s*$/;
 
 let stateFirstRun = true;
 /** used for case-sensitive matching directly */

@@ -1,7 +1,7 @@
 import {styleCodeEmpty} from '@/js/sections-util';
 import {themeAllowsStyle} from '../color-scheme';
 import cacheData, * as styleCache from './cache';
-import {urlMatchGlob, urlMatchSection} from './matcher';
+import {urlMatchOverride, urlMatchSection} from './matcher';
 import {dataMap} from './util';
 
 /** @param {StyleObj} style
@@ -73,8 +73,8 @@ function getAppliedCode(query, style) {
   /** Make sure to use the same logic in getAppliedCode and getByUrl */
   const result = style.enabled &&
     themeAllowsStyle(style) &&
-    (!(v = style.exclusions) || !v.length || !v.some(urlMatchGlob, query)) &&
-    (!(v = style.inclusions) || !v.length || -v.some(urlMatchGlob, query) || !style.overridden);
+    (!(v = style.exclusions) || !v.length || !v.some(urlMatchOverride, query)) &&
+    (!(v = style.inclusions) || !v.length || -v.some(urlMatchOverride, query) || !style.overridden);
   if (!result)
     return;
   const isIncluded = result < 0;

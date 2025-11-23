@@ -19,7 +19,7 @@ import cacheData, * as styleCache from './cache';
 import {buildCache} from './cache-builder';
 import './init';
 import {onBeforeSave, onSaved} from './fixer';
-import {urlMatchGlob, urlMatchSection} from './matcher';
+import {urlMatchOverride, urlMatchSection} from './matcher';
 import {
   broadcastStyleUpdated, calcRemoteId, dataMap, getById, getByUuid, mergeWithMapped, order,
   orderWrap, setOrderImpl,
@@ -96,9 +96,9 @@ export function getByUrl(url, id) {
     let matching;
     /** Make sure to use the same logic in getAppliedCode and getByUrl */
     const res = {
-      excluded: (ovr = style.exclusions) && ovr.some(urlMatchGlob, query),
+      excluded: (ovr = style.exclusions) && ovr.some(urlMatchOverride, query),
       excludedScheme: !colorScheme.themeAllowsStyle(style),
-      included: matching = (ovr = style.inclusions) && ovr.some(urlMatchGlob, query),
+      included: matching = (ovr = style.inclusions) && ovr.some(urlMatchOverride, query),
       overridden: !matching && style.overridden && ovr?.length,
     };
     const isIncluded = matching;

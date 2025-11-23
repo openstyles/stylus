@@ -22,6 +22,7 @@ export const stringAsRegExp = (s, flags) => new RegExp(stringAsRegExpStr(s), fla
 export const globAsRegExpStr = s => s.replace(/[{}()[\]\\.+*?^$|]/g, '\\$&')
   .replace(/(^|[^\\])\\\*/g, '$1.*')
   .replace(/\\\\\\\*/g, '\\*');
+export const RX_MAYBE_REGEXP = /^\s*\/(.+?)\/([simguy]*)\s*$/;
 export const RX_META = /\/\*!?\s*==userstyle==[\s\S]*?==\/userstyle==\s*\*\//i;
 
 const tCache = /*@__PURE__*/new Map();

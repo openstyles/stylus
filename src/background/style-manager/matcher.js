@@ -1,6 +1,6 @@
 import {styleCodeEmpty} from '@/js/sections-util';
 import {ownRoot} from '@/js/urls';
-import {globAsRegExpStr, tryURL} from '@/js/util';
+import {globAsRegExpStr, RX_MAYBE_REGEXP, tryURL} from '@/js/util';
 
 const BAD_MATCHER = /^$/;
 const EXT_RE = /\bextension\b/;
@@ -9,11 +9,14 @@ const CACHE_MAX = 1000;
 /** @type {Map<string,RegExp>} */
 const cache = new Map();
 
-function buildGlobRe(text) {
-  const match = text.match(GLOB_RE);
+function buildOverrideRe(text) {
+  const slashed = text.startsWith('/');
+  const match = text.match(slashed ? RX_MAYBE_REGEXP : GLOB_RE);
   if (!match) {
     return '^' + globAsRegExpStr(text) + '$';
   }
+  if (slashed)
+    return match;
   return '^' +
     (match[1] === '*' ? '[\\w-]+' : match[1]) +
     '://' +
@@ -23,12 +26,22 @@ function buildGlobRe(text) {
 }
 
 /**
- * @param {(s: string) => string} text
- * @return {(text) => RegExp}
+ * @param {string | string[]} text - string or regexp match array
+ * @return {RegExp}
  */
 function compile(text) {
   let re;
-  try { re = new RegExp(text); } catch { re = BAD_MATCHER; }
+  try {
+    if (typeof text === 'string') {
+      re = new RegExp(text);
+    } else {
+      re = text;
+      text = text[0]; // use the whole string as a key for the cache map
+      re = new RegExp(re[1], re[2]);
+    }
+  } catch {
+    re = BAD_MATCHER;
+  }
   cache.set(text, re);
   if (cache.size > CACHE_MAX) {
     // delete the least recently used key
@@ -82,8 +95,8 @@ function urlMatchDomain(d) {
 }
 
 /** @this {MatchQuery} */
-export function urlMatchGlob(e) {
-  return (cache.get(e) || compile(buildGlobRe(e)))
+export function urlMatchOverride(e) {
+  return (cache.get(e) || compile(buildOverrideRe(e)))
     .test(this.urlWithoutParams ??= this.url.split(/[?#]/, 1)[0]);
 }
 
